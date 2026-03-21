@@ -1,0 +1,153 @@
+[build-system]
+requires = [
+    "setuptools>=61.0",
+    "cython>=3.0.0",
+    "numpy>=2.0.0",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "openptv2"
+version = "1.0.0"
+description = "Unified OpenPTV: Particle Tracking Velocimetry with dual-engine support"
+readme = "README.md"
+license = {text = "LGPL-3.0-or-later"}
+authors = [
+    {name = "OpenPTV Community", email = "openptv@googlegroups.com"}
+]
+requires-python = ">=3.11,<3.14"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: MacOS",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Cython",
+    "Programming Language :: C",
+    "Topic :: Scientific/Engineering :: Physics",
+    "Topic :: Scientific/Engineering :: Visualization",
+]
+dependencies = [
+    "numpy>=2.0.0",
+    "pyyaml>=6.0",
+    "scipy>=1.10.0",
+]
+
+[project.optional-dependencies]
+gui = [
+    "traits>=6.4.0",
+    "traitsui>=7.4.0",
+    "enable>=6.1.0",
+    "chaco>=6.1.0",
+    "PySide6>=6.0.0",
+    "scikit-image>=0.20.0",
+    "pandas>=2.0.0",
+    "matplotlib>=3.7.0",
+    "tables>=3.8.0",
+    "tqdm>=4.65.0",
+    "imagecodecs>=2023.1.23",
+    "flowtracks>=0.3.0",
+    "Pygments>=2.15.0",
+    "pyparsing>=3.0.0",
+    "marimo>=0.19.10",
+]
+numba = [
+    "numba>=0.60.0",
+]
+test = [
+    "pytest>=8.0.0",
+    "pytest-cov>=5.0.0",
+]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-cov>=5.0.0",
+    "mypy>=1.10.0",
+    "pre-commit>=4.0.0",
+    "ruff>=0.5.0",
+    "traits>=6.4.0",
+    "traitsui>=7.4.0",
+    "enable>=6.1.0",
+    "chaco>=6.1.0",
+    "PySide6>=6.0.0",
+    "scikit-image>=0.20.0",
+    "pandas>=2.0.0",
+    "matplotlib>=3.7.0",
+    "tables>=3.8.0",
+    "tqdm>=4.65.0",
+    "imagecodecs>=2023.1.23",
+    "flowtracks>=0.3.0",
+    "Pygments>=2.15.0",
+    "pyparsing>=3.0.0",
+    "marimo>=0.19.10",
+    "numba>=0.60.0",
+]
+docs = [
+    "sphinx>=8.0.0",
+    "sphinx-autoapi>=3.0.0",
+    "pydata-sphinx-theme>=0.16.0",
+    "myst-parser>=5.0.0",
+]
+
+[project.scripts]
+openptv2-gui = "gui.pyptv.pyptv_gui:main"
+openptv2-batch = "gui.pyptv.pyptv_batch:main"
+openptv2-validate = "openptv2.validate:main"
+pyptv = "gui.pyptv.pyptv_gui:main"
+
+[tool.setuptools]
+# Package configuration
+# Note: optv package is installed by CMake build, not listed here
+packages = [
+    "openptv2",
+    "algorithms",
+    "gui",
+    "gui.pyptv",
+    "gui.pyptv.calibration_output",
+]
+include-package-data = true
+zip-safe = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests", "bindings/tests", "gui/pyptv/tests"]
+python_files = ["test_*.py"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "gui: marks tests that require GUI",
+    "engine_optv: marks tests for optv engine",
+    "engine_python: marks tests for Python engine",
+]
+
+[tool.coverage.run]
+branch = true
+source = ["openptv2", "algorithms", "gui.pyptv"]
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true
+strict = false
+
+[tool.ruff]
+target-version = "py311"
+line-length = 88
+indent-width = 4
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I"]
+ignore = ["D1"]
+
+[tool.uv]
+dev-dependencies = [
+    "pytest>=8.0.0",
+    "pytest-cov>=5.0.0",
+    "mypy>=1.10.0",
+    "pre-commit>=4.0.0",
+    "ruff>=0.5.0",
+]

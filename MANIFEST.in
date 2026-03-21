@@ -1,0 +1,25 @@
+include README.md
+include LICENSE
+include pyproject.toml
+include setup.py
+
+# Include C source files
+recursive-include lib *.c *.h *.txt
+recursive-include lib/src *.c
+recursive-include lib/include *.h
+
+# Include Cython sources
+recursive-include bindings *.pyx *.pxd *.py *.toml
+recursive-include bindings/optv *.pyx *.pxd *.py
+
+# Include Python packages
+recursive-include openptv2 *.py *.pxd
+recursive-include pyptv *.py
+recursive-include gui/pyptv *.py
+
+# Include GUI files
+recursive-include gui *.py *.toml
+
+# Include tests
+recursive-include tests *.py
+recursive-include lib/tests *.c

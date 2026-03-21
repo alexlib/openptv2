@@ -1,0 +1,76 @@
+[build-system]
+requires = ["setuptools>=45", "wheel", "setuptools_scm>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pyptv"
+version = "0.4.3"
+description = "Python GUI for the OpenPTV library `liboptv`"
+authors = [
+    {name = "Alex Liberzon", email = "alex.liberzon@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering :: Physics",
+    "Topic :: Scientific/Engineering :: Visualization"
+]
+dependencies = [
+    "numpy>=2.0.0,<2.7",
+    "optv>=0.3.2",
+    "traits>=6.4.0",
+    "traitsui>=7.4.0",
+    "enable>=6.1.0",
+    "chaco>=6.1.0",
+    "PySide6>=6.0.0",
+    "scikit-image>=0.20.0",
+    "scipy>=1.10.0",
+    "pandas>=2.0.0",
+    "matplotlib>=3.7.0",
+    "tables>=3.8.0",
+    "tqdm>=4.65.0",
+    "imagecodecs>=2023.1.23",
+    "flowtracks>=0.3.0",
+    "Pygments>=2.15.0",
+    "pyparsing>=3.0.0",
+    "pytest>=8.4.1",
+    "marimo>=0.19.10",
+]
+
+[project.urls]
+Homepage = "https://github.com/alexlib/pyptv"
+Documentation = "https://openptv-python.readthedocs.io"
+Repository = "https://github.com/alexlib/pyptv.git"
+Issues = "https://github.com/alexlib/pyptv/issues"
+OpenPTV = "http://www.openptv.net"
+
+[project.scripts]
+pyptv = "pyptv.pyptv_gui:main"
+
+[tool.setuptools]
+packages = ["pyptv"]
+
+[tool.black]
+line-length = 88
+target-version = ["py310"]
+include = '\.pyi?$'
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+
+[tool.pytest.ini_options]
+minversion = "0.4.3"
+addopts = "-v -x --tb=short"
+testpaths = ["tests"]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::UserWarning",
+]

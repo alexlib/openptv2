@@ -1,0 +1,166 @@
+{
+  "version": "1",
+  "metadata": {
+    "marimo_version": "0.20.4",
+    "script_metadata_hash": null
+  },
+  "cells": [
+    {
+      "id": "Hbol",
+      "code_hash": "72ea28e390edaada40e5d6de8d53476e",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h1 id=\"grid-based-calibration-refinement-for-openptv\">Grid-Based Calibration Refinement for OpenPTV</h1>\n<span class=\"paragraph\">This notebook performs bundle adjustment calibration refinement using a planar grid target.</span>\n<span class=\"paragraph\"><strong>Workflow:</strong></span>\n<ol>\n<li>Load PyPTV experiment parameters from YAML file</li>\n<li>Load calibration images and initial calibration</li>\n<li>Detect grid points using OpenCV</li>\n<li>\n<span class=\"paragraph\">Optimize camera exterior orientation using geometric constraints:</span>\n<ul>\n<li><strong>Planarity</strong>: All grid points lie on a single plane</li>\n<li><strong>Distance</strong>: Adjacent points at known spacing (e.g., 120 mm)</li>\n</ul>\n</li>\n</ol>\n<span class=\"paragraph\">This is analogous to dumbbell calibration but uses a planar grid with multiple constraints.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "setup",
+      "code_hash": "85e6329454e62d54d6fcfc291a9b8634",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "MJUe",
+      "code_hash": "ace43168d4a7e18849dac8b3658d6f01",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "vblA",
+      "code_hash": "c40474a4b11a739133f9b2e72e5aeef2",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "bkHC",
+      "code_hash": "7943308baca13e57dbeff55278bcc2ed",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "lEQa",
+      "code_hash": "762636276331dff6494beb6485364a5c",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "PKri",
+      "code_hash": "6fa4e1ff6b41dcfa2d665c72dbea0fa7",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "Xref",
+      "code_hash": "dee9ed8e709b1391fb8c9a80b1d4874d",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "SFPL",
+      "code_hash": "11d213109a391d9c2a5100fcaf244949",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "BYtC",
+      "code_hash": "259fc89cb246c7fb5c90ee974992c020",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "RGSE",
+      "code_hash": "a4e47f78ce145990dd743f346f33695a",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "Kclp",
+      "code_hash": "692891abb7a6e7359f46361d0d578992",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "emfo",
+      "code_hash": "680ea5b0dc2732d80cbfce559b8fdde9",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "Hstk",
+      "code_hash": "72802d00b198b980c7a951a40bca6b3e",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "nWHF",
+      "code_hash": "5d8eab23f7204e5a58cd3973ff626235",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "iLit",
+      "code_hash": "239ba3dda386423fc9bdcd00121dba3e",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "ZHCJ",
+      "code_hash": "e6b7d0da183171f4d67239f84d48ac04",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "ROlb",
+      "code_hash": "2ca993cef0be6063743e70525b1e47f1",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "qnkX",
+      "code_hash": "d0d0846216388391ef29803a58c67f9e",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "TqIu",
+      "code_hash": "2e20c9304858406f072665cfd21fbb2e",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "Vxnm",
+      "code_hash": "d52fa0a602bdf2f6e42a27e8eb7b3ef0",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "DnEU",
+      "code_hash": "1d75305602a38a45e58c066e807de7ce",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "ulZA",
+      "code_hash": "e056c778f3b87545189b2248b2a0cae1",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "ecfG",
+      "code_hash": "807dc2ce59836c009991a240194345ce",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "Pvdt",
+      "code_hash": "13230c59ff2f2eb0f414d86d8e75c5ea",
+      "outputs": [],
+      "console": []
+    }
+  ]
+}

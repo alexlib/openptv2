@@ -1,0 +1,456 @@
+# Building openptv2 from Source
+
+This document provides instructions for building openptv2 from source for development.
+
+## Prerequisites
+
+### Required Dependencies
+
+| Dependency | Version | Purpose |
+|------------|---------|---------|
+| Python | 3.11, 3.12, 3.13 | Runtime |
+| CMake | 3.15+ | C library build |
+| C Compiler | gcc/clang/MSVC | C/C++ compilation |
+| Cython | 3.0+ | Python bindings |
+| NumPy | 2.0+ | Array operations |
+
+### Recommended: uv Package Manager
+
+We recommend using [uv](https://github.com/astral-sh/uv) for dependency management:
+
+```bash
+# Install uv
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+---
+
+## Quick Start (Development Installation)
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/openptv/openptv2.git
+cd openptv2
+```
+
+### 2. Install Dependencies and Build
+
+**Using uv (recommended):**
+```bash
+uv sync --extra dev
+```
+
+**Using pip:**
+```bash
+pip install -e ".[dev]"
+```
+
+### 3. Verify Installation
+
+```bash
+python -c "import openptv2; print(openptv2.__version__)"
+python -c "from openptv2 import Tracker; print('OK')"
+```
+
+---
+
+## Detailed Build Steps
+
+### Step 1: Install System Dependencies
+
+**Linux (Debian/Ubuntu):**
+```bash
+sudo apt-get update
+sudo apt-get install -y cmake build-essential python3-dev
+```
+
+**Linux (Fedora/RHEL):**
+```bash
+sudo dnf install -y cmake gcc gcc-c++ python3-devel
+```
+
+**macOS:**
+```bash
+xcode-select --install
+brew install cmake  # Optional
+```
+
+**Windows:**
+- Install [Microsoft Visual C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/)
+- Install [CMake](https://cmake.org/download/)
+
+### Step 2: Set Up Virtual Environment
+
+**Using uv:**
+```bash
+uv venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
+```
+
+**Using venv:**
+```bash
+python -m venv .venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
+```
+
+### Step 3: Install Python Dependencies
+
+**Using uv:**
+```bash
+uv sync --extra dev
+```
+
+**Using pip:**
+```bash
+pip install scikit-build-core cython numpy>=2.0.0
+pip install -e ".[dev]"
+```
+
+### Step 4: Build Process (Automatic)
+
+When you run `uv sync` or `pip install -e .`, the build system automatically:
+
+1. **Configures CMake** for the C library (`lib/`)
+2. **Compiles C code** into a static library
+3. **Runs Cython** on all `.pyx` files in `bindings/optv/`
+4. **Compiles Cython extensions** and links with C library
+5. **Installs** the `optv` package to site-packages
+6. **Installs** the `openptv2` Python package
+7. **Installs** the `algorithms` package (Python/Numba engine)
+8. **Installs** the `gui` package
+
+### Step 5: Verify Build
+
+```bash
+# Test imports
+python -c "import openptv2; print('openptv2:', openptv2.__version__)"
+python -c "import optv; print('optv:', optv.__version__)"
+python -c "from openptv2.algorithms import numba_impl; print('algorithms: OK')"
+
+# Test engine info
+python -c "import openptv2; print(openptv2.get_engine_info())"
+
+# Run tests
+pytest tests/ -v --tb=short
+```
+
+---
+
+## Build Architecture
+
+### Build Flow
+
+```
+┌─────────────────┐
+│  C source (lib/)│
+└────────┬────────┘
+         │ CMake compiles
+         ▼
+┌─────────────────┐
+│  Static library │
+└────────┬────────┘
+         │ Cython wraps
+         ▼
+┌─────────────────┐
+│  optv package   │
+│  (site-packages)│
+└─────────────────┘
+```
+
+### Build System Components
+
+| Component | Tool | Purpose |
+|-----------|------|---------|
+| C library | CMake | Cross-platform C build |
+| Cython bindings | scikit-build-core + Cython | Wheel building |
+| Python package | setuptools | Package installation |
+| Dependency management | uv/pip | Package management |
+
+### Project Structure and Build
+
+```
+openptv2/
+├── lib/                    # C source → compiled by CMake
+│   ├── src/
+│   ├── include/
+│   └── CMakeLists.txt
+├── bindings/               # Cython sources → compiled by scikit-build-core
+│   ├── optv/*.pyx         # Cython modules
+│   ├── optv/*.pxd
+│   └── pyproject.toml     # scikit-build-core config
+├── openptv2/              # Pure Python → installed as-is
+│   └── *.py
+├── algorithms/            # Pure Python (Numba) → installed as-is
+│   └── *.py
+├── gui/                   # Pure Python (TraitsUI) → installed as-is
+│   └── pyptv/
+└── CMakeLists.txt         # Root build config
+```
+
+---
+
+## Manual Build (Advanced)
+
+### Build C Library Only
+
+```bash
+cd lib
+mkdir build && cd build
+cmake ..
+make
+```
+
+### Build Cython Bindings Only
+
+```bash
+cd bindings
+pip install scikit-build-core cython numpy
+python -m build --wheel
+```
+
+### Install Without Editable Mode
+
+```bash
+# Build wheel
+python -m build
+
+# Install wheel
+pip install dist/openptv2-*.whl
+```
+
+---
+
+## Development Workflow
+
+### 1. Make Changes
+
+Edit source files in:
+- `lib/src/` - C code (requires rebuild)
+- `bindings/optv/` - Cython code (requires rebuild)
+- `openptv2/` - Python code (no rebuild needed)
+- `algorithms/` - Python code (no rebuild needed)
+- `gui/` - Python GUI code (no rebuild needed)
+
+### 2. Rebuild (if C/Cython changed)
+
+```bash
+# Using uv
+uv sync --extra dev
+
+# Using pip
+pip install -e ".[dev]"
+```
+
+### 3. Run Tests
+
+```bash
+# All tests
+pytest
+
+# Specific test categories
+pytest tests/integration/ -v
+pytest tests/engine_comparison/ -v
+pytest bindings/tests/ -v
+pytest gui/tests/ -v
+
+# C library tests
+cd lib && mkdir build && cd build && cmake .. && ctest
+```
+
+### 4. Check Code Quality
+
+```bash
+# Type checking
+mypy openptv2/ algorithms/
+
+# Linting
+ruff check openptv2/ algorithms/ gui/
+
+# Format code
+ruff format openptv2/ algorithms/ gui/
+```
+
+---
+
+## Troubleshooting
+
+### Common Issues
+
+#### 1. "ModuleNotFoundError: No module named 'optv'"
+
+The C/Cython bindings weren't built. Run:
+
+```bash
+uv sync --extra dev
+# or
+pip install -e ".[dev]"
+```
+
+#### 2. "CMake not found"
+
+Install CMake:
+
+```bash
+# Linux
+sudo apt-get install cmake  # Debian/Ubuntu
+sudo dnf install cmake      # Fedora
+
+# macOS
+brew install cmake
+
+# Windows
+# Download from https://cmake.org/download/
+```
+
+#### 3. "Cython not found"
+
+```bash
+pip install cython>=3.0.0
+```
+
+#### 4. "ImportError: file too short" or ".so corrupted"
+
+Clean and rebuild:
+
+```bash
+# Remove build artifacts
+rm -rf build/ .eggs/ *.egg-info
+
+# Remove compiled extensions
+find . -name "*.so" -delete
+
+# Rebuild
+uv sync --extra dev
+```
+
+#### 5. C Compilation Errors
+
+**Linux:** Ensure build tools are installed:
+```bash
+sudo apt-get install build-essential
+```
+
+**macOS:** Install Xcode Command Line Tools:
+```bash
+xcode-select --install
+```
+
+**Windows:** Install MSVC Build Tools from:
+https://visualstudio.microsoft.com/visual-cpp-build-tools/
+
+#### 6. NumPy Version Mismatch
+
+```bash
+pip install numpy>=2.0.0
+```
+
+#### 7. "No module named 'algorithms'"
+
+The algorithms package should be installed. Check:
+
+```bash
+pip install -e ".[dev]"
+```
+
+---
+
+## Building for Production
+
+### Build Source Distribution and Wheel
+
+```bash
+# Install build tools
+pip install build
+
+# Build
+python -m build
+
+# Output:
+# dist/openptv2-1.0.0.tar.gz      (source distribution)
+# dist/openptv2-1.0.0-*.whl       (wheel)
+```
+
+### Build with scikit-build-core
+
+```bash
+pip install scikit-build-core
+python -m build --wheel
+```
+
+### Platform-Specific Notes
+
+**Linux:**
+- Use `auditwheel` to check wheel compatibility:
+  ```bash
+  auditwheel repair dist/*.whl
+  ```
+
+**macOS:**
+- Set architecture for Apple Silicon:
+  ```bash
+  export ARCHFLAGS="-arch arm64"
+  ```
+- For Intel:
+  ```bash
+  export ARCHFLAGS="-arch x86_64"
+  ```
+
+**Windows:**
+- Use `delvewheel` to repair wheels:
+  ```bash
+  delvewheel repair dist/*.whl
+  ```
+
+---
+
+## Performance Tips
+
+### Release Build
+
+```bash
+# Set build type
+export CMAKE_BUILD_TYPE=Release
+
+# Build
+uv sync --extra dev --no-build-isolation
+```
+
+### Compiler Optimizations
+
+```bash
+# GCC/Clang optimizations
+export CFLAGS="-O3 -march=native"
+export CXXFLAGS="-O3 -march=native"
+
+# Build
+uv sync --extra dev
+```
+
+---
+
+## Continuous Integration
+
+The project uses GitHub Actions to:
+- Build wheels for Linux, Windows, macOS
+- Run tests on pull requests
+- Upload wheels to PyPI on release
+
+See `.github/workflows/` for configuration.
+
+---
+
+## Getting Help
+
+If you encounter issues:
+
+1. Check this document
+2. Search existing [GitHub issues](https://github.com/openptv/openptv2/issues)
+3. Ask on the [mailing list](https://groups.google.com/g/openptv)
+4. Check the [FAQ](docs/faq.md) (if available)
+
+---
+
+## License
+
+LGPL-3.0 or later. See [LICENSE](LICENSE) for details.
