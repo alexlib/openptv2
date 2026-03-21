@@ -7,7 +7,7 @@ requires = [
 build-backend = "scikit_build_core.build"
 
 [project]
-name = "openptv2-bindings"
+name = "optv"
 version = "1.0.0"
 description = "OpenPTV Python bindings (Cython)"
 readme = "README.md"
@@ -25,7 +25,7 @@ dependencies = [
 cmake.version = ">=3.15"
 wheel.packages = ["optv"]
 
-# CMake settings
+# CMake settings - use parent directory
 cmake.source-dir = ".."
 cmake.build-type = "Release"
 
