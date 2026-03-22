@@ -36,6 +36,14 @@ env/
 *.log
 test_output_*.log
 
+# Bindings build artifacts (generated, not source)
+bindings/build/
+bindings/optv/*.c
+bindings/optv/*.so
+bindings/optv/__pycache__/
+bindings/liboptv/
+bindings/*.egg-info/
+
 # Test output files (generated during tests, not test data)
 bindings/tests/testing_fodder/burgers/tmp*
 bindings/tests/testing_fodder/burgers/res_orig/
