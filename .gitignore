@@ -28,6 +28,13 @@ env/
 .vscode/
 .idea/
 *.swp
+
+# GUI test output
+gui/tests/test_cavity/res/
+gui/tests/test_cavity/img/*_targets
+gui/tests/test_cavity/cal/*.ori
+gui/tests/test_cavity/*.addpar
+gui/tests/test_cavity/tmp.*
 *.swo
 *~
 
