@@ -1,7 +1,7 @@
-# openptv2 Development Status & Next Steps Plan
+# openptv2 Development Status
 
-**Date**: March 22, 2026
-**Version**: 1.0.0 (development)
+**Date**: March 22, 2026  
+**Version**: 1.0.0 (development)  
 **Repository**: https://github.com/alexlib/openptv2
 
 ---
@@ -26,7 +26,7 @@
 
 #### Dependencies
 - [x] Python 3.11 environment created (`.venv311/`)
-- [x] **optv built from local source (v0.3.1)** - working!
+- [x] **optv built from local source (v0.3.2)** - working!
 - [x] openptv2 installed in editable mode
 - [x] GUI dependencies installed (traits, traitsui, PySide6, chaco, etc.)
 - [x] algorithms package populated from openptv-python
@@ -74,7 +74,7 @@ pip install -e .         # Builds and installs
 
 ### ⚠️ Known Issues
 
-#### 2. Python/Numba Engine Not Implemented
+#### 1. Python/Numba Engine Not Implemented
 
 **Problem**: `algorithms/` module imports but numba backend not functional.
 
@@ -87,7 +87,7 @@ pip install -e .         # Builds and installs
 
 ---
 
-#### 3. Test Coverage Incomplete
+#### 2. Test Coverage Incomplete
 
 **Problem**: Many integration tests have collection errors or skip.
 
@@ -99,159 +99,27 @@ pip install -e .         # Builds and installs
 
 ---
 
-## Next Steps Plan
+#### 3. GUI Not Yet Tested
 
-### Phase 2: Python/Numba Engine (Priority: HIGH)
+**Problem**: GUI has not been tested with local bindings.
 
-**Goal**: Dual-engine architecture with identical results
+**Status**: Pending verification.
 
-#### Task 2.1: Integrate algorithms Package
-- [ ] Fix algorithms imports (openptv_python dependency)
-- [ ] Create `algorithms/numba_impl.py` entry point
-- [ ] Add numba to dependencies
-- [ ] Test: `from openptv2.algorithms import numba_impl`
-
-#### Task 2.2: Engine Selector
-- [ ] Update `openptv2/engine.py` to use algorithms.numba_impl
-- [ ] Add `set_engine("python")` support
-- [ ] Add `set_engine("optv")` support
-- [ ] Test: Both engines can be selected
-
-#### Task 2.3: Engine Comparison Tests
-- [ ] Create test fixtures for comparison
-- [ ] Implement `validate_all()` function
-- [ ] Add `--validate-engine` CLI flag
-- [ ] Test: Both engines produce identical results (tolerance 1e-10)
-
-**Estimated Time**: 16-24 hours
-**Success Criteria**: `openptv2.set_engine("python")` works, engine comparison tests pass
+**Impact**:
+- Phase 1 completion not fully verified
+- End-to-end workflow unconfirmed
 
 ---
 
-### Phase 3: GUI Integration (Priority: MEDIUM)
+## Phase Status Overview
 
-**Goal**: Fully functional GUI with local optv bindings
+| Phase | Description | Status |
+|-------|-------------|--------|
+| Phase 1 | Copy & Integrate | ✅ Complete (GUI test pending) |
+| Phase 2 | Python/Numba Fallback | ⏳ Not started |
+| Phase 3 | Unification & Polish | ⏳ Not started |
 
-#### Task 3.1: GUI Testing
-- [ ] Launch GUI: `openptv2-gui`
-- [ ] Test basic tracking workflow
-- [ ] Test calibration workflow
-- [ ] Document any GUI issues
-
-#### Task 3.2: GUI Improvements (Optional)
-- [ ] Add engine selection dropdown
-- [ ] Add real-time visualization
-- [ ] Add marimo notebook integration
-- [ ] Test: GUI works with both engines
-
-**Estimated Time**: 8-16 hours
-**Success Criteria**: GUI launches and tracks particles successfully
-
----
-
-### Phase 4: CI/CD Setup (Priority: MEDIUM)
-
-**Goal**: Automated testing and wheel building
-
-#### Task 4.1: GitHub Actions
-- [x] Create `.github/workflows/cibuildwheel.yml` for wheel building
-- [ ] Create `.github/workflows/test.yml` for PR testing
-- [ ] Configure cibuildwheel for multi-platform wheels
-- [ ] Test: Push triggers automated builds
-
-#### Task 4.2: PyPI Release
-- [ ] Configure PyPI credentials
-- [ ] Create release workflow
-- [ ] Test: Tag creates release and uploads wheels
-
-**Estimated Time**: 8-12 hours
-**Success Criteria**: Every push runs tests, tags create releases
-
----
-
-### Phase 5: Documentation & Examples (Priority: LOW)
-
-**Goal**: Complete user documentation
-
-#### Task 5.1: User Guides
-- [ ] Create `docs/tutorials/quickstart.md`
-- [ ] Create `docs/user_guide/gui.md`
-- [ ] Create `docs/user_guide/batch.md`
-- [ ] Create `docs/algorithms/` explanations
-
-#### Task 5.2: API Documentation
-- [ ] Configure Sphinx in `docs/sphinx/`
-- [ ] Generate API reference from docstrings
-- [ ] Deploy to GitHub Pages
-- [ ] Test: Documentation builds and deploys
-
-#### Task 5.3: Example Notebooks
-- [ ] Create Jupyter/marimo notebooks
-- [ ] Add example datasets
-- [ ] Test: Notebooks execute successfully
-
-**Estimated Time**: 12-20 hours
-**Success Criteria**: Complete documentation deployed, examples work
-
----
-
-## Immediate Next Actions
-
-### This Week
-1. **Test GUI** (Phase 3.1) - Verify end-to-end workflow with local bindings
-2. **Start Phase 2** - Integrate Python/Numba engine
-3. **Update README** - Document new build process
-
-### Next Week
-1. **Complete Phase 2** - Dual engine with comparison tests
-2. **Set up CI/CD** (Phase 4) - Automated testing on PRs
-3. **Document current state** - Update all docs
-
-### This Month
-1. **Complete Phases 2, 3, 4** - Core functionality
-2. **Prepare v1.0.0 release** - First official release
-
----
-
-## Technical Debt
-
-| Issue | Impact | Priority |
-|-------|--------|----------|
-| No Python engine | No fallback option | HIGH |
-| Incomplete tests | No regression testing | MEDIUM |
-| CI/CD not fully configured | Manual testing required | MEDIUM |
-| Sparse docs | Hard for new users | LOW |
-
----
-
-## Success Metrics
-
-### Phase 1 Complete ✅
-- [x] Repository structure matches design plan
-- [x] All imports work with local optv
-- [x] Basic tests pass
-- [x] Local build from source works
-- [x] Wheel building configured
-
-### Phase 2 Complete
-- [ ] Both engines available
-- [ ] Engine comparison tests pass
-- [ ] `--engine` flag works in GUI and CLI
-
-### Phase 3 Complete
-- [ ] GUI fully functional
-- [ ] End-to-end tracking works
-- [ ] No critical bugs
-
-### Phase 4 Complete
-- [ ] CI runs on every PR
-- [ ] Wheels built for Linux, Windows, macOS
-- [ ] PyPI releases automated
-
-### Phase 5 Complete
-- [ ] Complete documentation
-- [ ] Example notebooks
-- [ ] v1.0.0 released
+*See DESIGN_PLAN.md for detailed phase descriptions and success criteria.*
 
 ---
 
@@ -285,12 +153,22 @@ Wheels are automatically built on push to `main` or tags for:
 
 ---
 
+## Next Steps
+
+Per DESIGN_PLAN.md, the next priorities are:
+
+1. **Test GUI** - Verify Phase 1 completion
+2. **Phase 2** - Implement Python/Numba fallback engine
+3. **Phase 3** - Unification and polish
+
+---
+
 ## Contact & Resources
 
 - **Repository**: https://github.com/alexlib/openptv2
 - **Issues**: https://github.com/alexlib/openptv2/issues
 - **Mailing List**: openptv@googlegroups.com
-- **Design Plan**: DESIGN_PLAN.md
+- **Design Plan**: [DESIGN_PLAN.md](DESIGN_PLAN.md)
 
 ---
 
