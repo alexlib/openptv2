@@ -28,8 +28,8 @@ from chaco.api import (
 from chaco.tools.image_inspector_tool import ImageInspectorTool
 from chaco.tools.better_zoom import BetterZoom as SimpleZoom
 
-from gui.pyptv.text_box_overlay import TextBoxOverlay
-from gui.pyptv.code_editor import oriEditor, addparEditor
+from .text_box_overlay import TextBoxOverlay
+from .code_editor import oriEditor, addparEditor
 
 
 from optv.imgcoord import image_coordinates
@@ -40,8 +40,8 @@ from optv.calibration import Calibration
 from optv.tracking_framebuf import TargetArray
 
 
-from gui.pyptv import ptv
-from gui.pyptv.experiment import Experiment
+from . import ptv
+from .experiment import Experiment
 
 
 # recognized names for the flags:

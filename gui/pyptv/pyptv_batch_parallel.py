@@ -31,8 +31,8 @@ import multiprocessing
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from typing import Union, List, Tuple
 
-from gui.pyptv.ptv import py_start_proc_c, py_sequence_loop, generate_short_file_bases
-from gui.pyptv.experiment import Experiment
+from .ptv import py_start_proc_c, py_sequence_loop, generate_short_file_bases
+from .experiment import Experiment
 
 # Configure logging
 logging.basicConfig(

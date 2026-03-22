@@ -13,8 +13,8 @@ import sys
 import json
 import importlib
 
-from gui.pyptv.ptv import generate_short_file_bases, py_start_proc_c
-from gui.pyptv.experiment import Experiment
+from .ptv import generate_short_file_bases, py_start_proc_c
+from .experiment import Experiment
 
 
 def load_plugins_config(exp_path: Path):

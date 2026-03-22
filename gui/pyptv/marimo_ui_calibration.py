@@ -81,7 +81,7 @@ def _(ChartPuck, Path, mo, plt, pm):
     calibration_widgets = {}
 
     # Base directory for relative paths
-    base_dir = Path("tests/test_cavity")
+    base_dir = Path(__file__).parent.parent / "tests" / "test_cavity"
 
     for i, img_name in enumerate(cal_images):
         cam_key = f"camera_{i}"

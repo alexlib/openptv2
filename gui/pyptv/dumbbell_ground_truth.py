@@ -20,8 +20,8 @@ from optv.imgcoord import image_coordinates
 from optv.transforms import convert_arr_metric_to_pixel
 from optv.tracking_framebuf import TargetArray
 
-from gui.pyptv.parameter_manager import ParameterManager
-from gui.pyptv import ptv
+from .parameter_manager import ParameterManager
+from . import ptv
 
 
 @dataclass(frozen=True)

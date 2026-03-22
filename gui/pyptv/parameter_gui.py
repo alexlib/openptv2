@@ -10,7 +10,7 @@ from traitsui.api import (
     spring,
 )
 
-from gui.pyptv.experiment import Experiment
+from .experiment import Experiment
 
 
 DEFAULT_STRING = "---"

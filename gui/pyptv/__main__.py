@@ -1,3 +1,3 @@
-from gui.pyptv import cli
+from . import cli
 
 cli()

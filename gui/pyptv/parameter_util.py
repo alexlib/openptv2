@@ -18,8 +18,8 @@ from pathlib import Path
 from typing import Union, Optional
 import argparse
 
-from gui.pyptv.parameter_manager import ParameterManager
-from gui.pyptv.experiment import Experiment
+from .parameter_manager import ParameterManager
+from .experiment import Experiment
 
 
 def legacy_to_yaml(parameters_dir: Union[str, Path], 

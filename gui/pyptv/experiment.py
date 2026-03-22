@@ -9,7 +9,7 @@ import copy
 import shutil
 from pathlib import Path
 from traits.api import HasTraits, Instance, List, Str, Bool, Any
-from gui.pyptv.parameter_manager import ParameterManager
+from .parameter_manager import ParameterManager
 
 
 class Paramset(HasTraits):

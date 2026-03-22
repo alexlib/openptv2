@@ -29,8 +29,8 @@ from scipy.optimize import least_squares
 
 from optv.transforms import convert_arr_pixel_to_metric
 
-from gui.pyptv.parameter_manager import ParameterManager
-from gui.pyptv import ptv
+from .parameter_manager import ParameterManager
+from . import ptv
 
 
 @dataclass(frozen=True)

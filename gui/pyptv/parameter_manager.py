@@ -1,6 +1,6 @@
 import yaml
 from pathlib import Path
-from gui.pyptv import legacy_parameters as legacy_params
+from . import legacy_parameters as legacy_params
 
 # Minimal ParameterManager for converting between .par directories and YAML files.
 

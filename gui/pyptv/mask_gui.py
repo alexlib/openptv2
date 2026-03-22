@@ -26,9 +26,9 @@ from chaco.api import (
 from chaco.tools.image_inspector_tool import ImageInspectorTool
 from chaco.tools.better_zoom import BetterZoom as SimpleZoom
 
-from gui.pyptv.text_box_overlay import TextBoxOverlay
-from gui.pyptv import ptv
-from gui.pyptv.experiment import Experiment
+from .text_box_overlay import TextBoxOverlay
+from . import ptv
+from .experiment import Experiment
 
 
 # recognized names for the flags:

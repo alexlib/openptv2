@@ -21,7 +21,7 @@ from skimage.util import img_as_ubyte
 from skimage.color import rgb2gray
 
 # Backend imports (supports both optv and openptv-python)
-from gui.pyptv._backend import (
+from ._backend import (
     Calibration,
     ControlParams,
     SequenceParams,
@@ -54,7 +54,7 @@ example from Tracker documentation:
 """
 
 # PyPTV imports
-from gui.pyptv.parameter_manager import ParameterManager
+from .parameter_manager import ParameterManager
 
 # Constants
 NAMES = ["cc", "xh", "yh", "k1", "k2", "k3", "p1", "p2", "scale", "shear"]

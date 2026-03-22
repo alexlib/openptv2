@@ -15,7 +15,7 @@ from traits.api import (
 from traitsui.api import Item, Group, View, ListEditor
 
 from pathlib import Path
-from gui.pyptv.experiment import Experiment
+from .experiment import Experiment
 
 
 def get_path(filename):

@@ -30,9 +30,9 @@ from skimage.util import img_as_ubyte
 from skimage.color import rgb2gray
 
 from optv.segmentation import target_recognition
-from gui.pyptv import ptv
-from gui.pyptv.text_box_overlay import TextBoxOverlay
-from gui.pyptv.quiverplot import QuiverPlot
+from . import ptv
+from .text_box_overlay import TextBoxOverlay
+from .quiverplot import QuiverPlot
 
 
 # -------------------------------------------
@@ -285,7 +285,16 @@ class DetectionGUI(HasTraits):
     # Buttons to apply range changes
     button_update_ranges = Button(label="Update Slider Ranges")
 
-    def __init__(self, working_directory=Path("tests/test_cavity")):
+    def __init__(self, working_directory=None):
+        """Initialize detection GUI with optional working directory.
+        
+        Args:
+            working_directory: Path to working directory. If None, uses current directory.
+        """
+        if working_directory is None:
+            working_directory = Path.cwd()
+        elif isinstance(working_directory, str):
+            working_directory = Path(working_directory)
         super(DetectionGUI, self).__init__()
 
         self.working_directory = Path(working_directory)

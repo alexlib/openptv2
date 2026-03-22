@@ -27,8 +27,8 @@ import sys
 import time
 from typing import Union
 
-from gui.pyptv.ptv import py_start_proc_c, py_trackcorr_init, py_sequence_loop, generate_short_file_bases
-from gui.pyptv.experiment import Experiment
+from .ptv import py_start_proc_c, py_trackcorr_init, py_sequence_loop, generate_short_file_bases
+from .experiment import Experiment
 
 
 

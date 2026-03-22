@@ -81,7 +81,7 @@ def _(Path, sys):
 def _(mo):
     working_dir = mo.ui.text(
         label="Working directory",
-        value="tests/test_cavity",
+        value=str(Path(__file__).parent.parent / "tests" / "test_cavity"),
         full_width=True,
     )
     image_name = mo.ui.text(

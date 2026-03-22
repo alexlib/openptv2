@@ -17,16 +17,16 @@ from enable.component_editor import ComponentEditor
 from skimage.util import img_as_ubyte
 from skimage.io import imread
 from skimage.color import rgb2gray
-from gui.pyptv.experiment import Experiment, Paramset
-from gui.pyptv.quiverplot import QuiverPlot
-from gui.pyptv.detection_gui import DetectionGUI
-from gui.pyptv.mask_gui import MaskGUI
-from gui.pyptv.parameter_gui import Main_Params, Calib_Params, Tracking_Params
-from gui.pyptv import __version__, ptv
+from .experiment import Experiment, Paramset
+from .quiverplot import QuiverPlot
+from .detection_gui import DetectionGUI
+from .mask_gui import MaskGUI
+from .parameter_gui import Main_Params, Calib_Params, Tracking_Params
+from . import __version__, ptv
 from optv.epipolar import epipolar_curve
 from optv.imgcoord import image_coordinates
 from optv.transforms import convert_arr_metric_to_pixel
-from gui.pyptv.calibration_gui import CalibrationGUI
+from .calibration_gui import CalibrationGUI
 
 """PyPTV_GUI is the GUI for the OpenPTV (www.openptv.net) written in
 Python with Traits, TraitsUI, Numpy, Scipy and Chaco
