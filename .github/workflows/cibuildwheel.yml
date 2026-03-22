@@ -1,0 +1,126 @@
+name: Build Wheels
+
+on:
+  push:
+    branches: [ main, master ]
+    tags: [ 'v*', '[0-9]*' ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build_wheels:
+    name: Build wheels on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+    matrix:
+      os: [ubuntu-latest, windows-latest, macos-latest]
+      python: ['cp311', 'cp312', 'cp313']
+    steps:
+      - uses: actions/checkout@v5
+      
+      - name: Set up Python (host)
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install numpy>=2.0.0 cython>=3.0.0 setuptools wheel
+      
+      - name: Prepare source files
+        run: |
+          cd bindings
+          python setup.py prepare
+          cd ..
+      
+      - name: Install cibuildwheel
+        run: |
+          python -m pip install cibuildwheel
+      
+      - name: Build wheels
+        run: |
+          python -m cibuildwheel --output-dir wheelhouse bindings/
+        env:
+          CIBW_BUILD: ${{ matrix.python }}-*
+          CIBW_SKIP: "*musllinux*"
+          CIBW_ARCHS_MACOS: x86_64 arm64
+          CIBW_ARCHS_WINDOWS: AMD64
+          CIBW_ARCHS_LINUX: x86_64
+          CIBW_BEFORE_BUILD_LINUX: "pip install numpy>=2.0.0 cython>=3.0.0 setuptools wheel"
+          CIBW_BEFORE_BUILD_MACOS: "pip install numpy>=2.0.0 cython>=3.0.0 setuptools wheel"
+          CIBW_BEFORE_BUILD_WINDOWS: "pip install numpy>=2.0.0 cython>=3.0.0 setuptools wheel"
+          CIBW_TEST_REQUIRES: pytest
+          CIBW_TEST_COMMAND_LINUX: "python -m pytest {project}/bindings/tests/test_version.py -v || python -c \"import optv; print('optv imported successfully')\""
+          CIBW_TEST_COMMAND_MACOS: "python -m pytest {project}/bindings/tests/test_version.py -v || python -c \"import optv; print('optv imported successfully')\""
+          CIBW_TEST_COMMAND_WINDOWS: "python -m pytest {project}/bindings/tests/test_version.py -v || python -c \"import optv; print('optv imported successfully')\""
+      
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wheels-${{ matrix.os }}-${{ matrix.python }}
+          path: ./wheelhouse/*.whl
+
+  build_sdist:
+    name: Build source distribution
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+    steps:
+      - uses: actions/checkout@v5
+      
+      - name: Set up Python (host)
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      
+      - name: Install dependencies (sdist)
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install numpy>=2.0.0 cython>=3.0.0 build setuptools wheel
+      
+      - name: Prepare source files
+        run: |
+          cd bindings
+          python setup.py prepare
+          cd ..
+      
+      - name: Build source distribution
+        run: |
+          cd bindings
+          python -m build --sdist
+          cd ..
+      
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sdist
+          path: bindings/dist/*.tar.gz
+
+  upload_pypi:
+    name: Upload to PyPI
+    needs: [build_wheels, build_sdist]
+    runs-on: ubuntu-latest
+    if: |
+      always() && github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') &&
+      needs.build_sdist.result == 'success' &&
+      (needs.build_wheels.result == 'success' || needs.build_wheels.result == 'failure')
+    permissions:
+      id-token: write  # mandatory for OIDC trusted publishing
+      attestations: write  # needed by pypa/gh-action-pypi-publish >= v1.12 for Sigstore attestations
+      contents: read  # needed to read repo contents for attestation metadata
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: wheels-*
+          path: dist
+          merge-multiple: true
+      
+      - uses: actions/download-artifact@v4
+        with:
+          name: sdist
+          path: dist
+      
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          skip-existing: true

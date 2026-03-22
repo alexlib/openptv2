@@ -1,119 +1,59 @@
-# CMakeLists.txt for building Cython bindings with scikit-build-core
+# CMakeLists.txt for building the C library (liboptv)
+# Note: Python bindings are now built using setuptools (see bindings/setup.py)
+# This CMakeLists.txt is kept for C-only projects that want to use liboptv directly
+
 cmake_minimum_required(VERSION 3.15)
-project(optv VERSION 1.0.0 LANGUAGES C CXX)
+project(optv VERSION 1.0.0 LANGUAGES C)
 
 # Set C standard
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
-# Set C++ standard for Cython-generated code
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-# Find Python and required packages
-find_package(Python 3.11 COMPONENTS Interpreter Development.Module NumPy REQUIRED)
-
-# Get NumPy include directory
-execute_process(
-    COMMAND ${Python_EXECUTABLE} -c "import numpy; print(numpy.get_include())"
-    OUTPUT_VARIABLE NUMPY_INCLUDE_DIR
-    OUTPUT_STRIP_TRAILING_WHITESPACE
-)
-
-# Build the C library first
+# Build the C library
 set(LIBOPTV_SOURCES
-    ../lib/src/tracking_frame_buf.c
-    ../lib/src/calibration.c
-    ../lib/src/parameters.c
-    ../lib/src/lsqadj.c
-    ../lib/src/ray_tracing.c
-    ../lib/src/trafo.c
-    ../lib/src/vec_utils.c
-    ../lib/src/image_processing.c
-    ../lib/src/multimed.c
-    ../lib/src/imgcoord.c
-    ../lib/src/epi.c
-    ../lib/src/orientation.c
-    ../lib/src/sortgrid.c
-    ../lib/src/segmentation.c
-    ../lib/src/correspondences.c
-    ../lib/src/track.c
-    ../lib/src/tracking_run.c
-    ../lib/src/track3d.c
+    src/tracking_frame_buf.c
+    src/calibration.c
+    src/parameters.c
+    src/lsqadj.c
+    src/ray_tracing.c
+    src/trafo.c
+    src/vec_utils.c
+    src/image_processing.c
+    src/multimed.c
+    src/imgcoord.c
+    src/epi.c
+    src/orientation.c
+    src/sortgrid.c
+    src/segmentation.c
+    src/correspondences.c
+    src/track.c
+    src/tracking_run.c
+    src/track3d.c
 )
 
-# Create the C library
+# Create the C library (static)
 add_library(optv_lib STATIC ${LIBOPTV_SOURCES})
-target_include_directories(optv_lib PUBLIC ${CMAKE_SOURCE_DIR}/../lib/include)
+target_include_directories(optv_lib PUBLIC ${CMAKE_SOURCE_DIR}/include)
 
 if(UNIX)
     target_link_libraries(optv_lib PRIVATE m)
 endif()
 
-# Cython sources in optv/
-set(CYTHON_MODULES
-    tracking_framebuf
-    tracker
-    calibration
-    correspondences
-    epipolar
-    image_processing
-    imgcoord
-    orientation
-    parameters
-    segmentation
-    transforms
+# Install the library and headers
+install(TARGETS optv_lib
+    ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION lib
 )
 
-# Build each Cython module
-foreach(MODULE ${CYTHON_MODULES})
-    set(PYX_FILE "optv/${MODULE}.pyx")
-    set(PXD_FILE "optv/${MODULE}.pxd")
-    set(C_FILE "${CMAKE_CURRENT_BINARY_DIR}/optv/${MODULE}.cxx")
-
-    # Run Cython to generate C++ file
-    add_custom_command(
-        OUTPUT ${C_FILE}
-        COMMAND ${Python_EXECUTABLE} -m cython --cplus -3
-            -I ${CMAKE_SOURCE_DIR}
-            -I ${CMAKE_SOURCE_DIR}/optv
-            -o ${C_FILE}
-            ${PYX_FILE}
-        DEPENDS ${PYX_FILE} ${PXD_FILE}
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-        COMMENT "Running Cython on ${MODULE}.pyx"
-    )
-
-    # Create Python extension module using CXX compiler
-    Python_add_library(optv_${MODULE} MODULE ${C_FILE})
-
-    target_include_directories(optv_${MODULE} PRIVATE
-        ${CMAKE_SOURCE_DIR}
-        ${CMAKE_SOURCE_DIR}/optv
-        ${CMAKE_SOURCE_DIR}/../lib/include
-        ${NUMPY_INCLUDE_DIR}
-    )
-
-    target_link_libraries(optv_${MODULE} PRIVATE Python::Module optv_lib)
-
-    set_target_properties(optv_${MODULE} PROPERTIES
-        PREFIX ""
-        OUTPUT_NAME "${MODULE}"
-        SUFFIX "${Python_SOABI}${CMAKE_SHARED_MODULE_SUFFIX}"
-    )
-
-    # Install to optv package directory
-    install(TARGETS optv_${MODULE}
-        LIBRARY DESTINATION optv
-    )
-endforeach()
-
-# Install Python package files
-install(DIRECTORY optv/
-    DESTINATION optv
-    FILES_MATCHING PATTERN "*.py"
-    PATTERN "*.pxd"
-    PATTERN "__pycache__" EXCLUDE
-    PATTERN "*.c" EXCLUDE
-    PATTERN "*.cxx" EXCLUDE
+install(DIRECTORY include/
+    DESTINATION include
+    FILES_MATCHING PATTERN "*.h"
 )
+
+# Option to build tests
+option(BUILD_TESTS "Build C library tests" OFF)
+if(BUILD_TESTS)
+    find_package(Check REQUIRED)
+    enable_testing()
+    add_subdirectory(tests)
+endif()

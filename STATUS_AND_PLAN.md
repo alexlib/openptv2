@@ -1,7 +1,7 @@
 # openptv2 Development Status & Next Steps Plan
 
-**Date**: March 22, 2026  
-**Version**: 1.0.0 (development)  
+**Date**: March 22, 2026
+**Version**: 1.0.0 (development)
 **Repository**: https://github.com/alexlib/openptv2
 
 ---
@@ -18,13 +18,15 @@
 
 #### Build System
 - [x] CMake configuration for C library (`lib/CMakeLists.txt`)
-- [x] scikit-build-core configuration for Cython bindings (`bindings/pyproject.toml`)
+- [x] **setuptools configuration for Cython bindings** (`bindings/setup.py`, `bindings/pyproject.toml`)
 - [x] Main project configuration (`pyproject.toml`)
 - [x] Documentation for building (`docs/developer_guide/building.md`)
+- [x] **GitHub Actions workflow for wheel building** (`.github/workflows/cibuildwheel.yml`)
+- [x] **Local wheel building script** (`run_cibuildwheel.sh`)
 
 #### Dependencies
 - [x] Python 3.11 environment created (`.venv311/`)
-- [x] optv package installed from PyPI (v0.3.2) - pre-built C/Cython bindings
+- [x] **optv built from local source (v0.3.1)** - working!
 - [x] openptv2 installed in editable mode
 - [x] GUI dependencies installed (traits, traitsui, PySide6, chaco, etc.)
 - [x] algorithms package populated from openptv-python
@@ -42,30 +44,35 @@
 
 ---
 
-### ⚠️ Known Issues
+### ✅ Resolved Issues
 
-#### 1. Local Cython Bindings Build Fails
+#### 1. Local Cython Bindings Build - FIXED
 
-**Problem**: Building optv from local `bindings/` source fails with C++ compilation errors.
+**Solution**: Switched from scikit-build-core to setuptools with a `prepare` command.
 
-**Error**:
+**Build Process**:
+```bash
+cd bindings
+python setup.py prepare  # Copies C sources, runs Cython
+pip install -e .         # Builds and installs
 ```
-fatal error: optv/vec_utils.h: No such file or directory
-```
 
-**Root Cause**: 
-- Cython-generated C++ code uses `#include "optv/vec_utils.h"` format
-- Header files need to be in `lib/include/optv/` subdirectory (done)
-- C++ complex type declarations conflict with Cython-generated code
+**Key Changes**:
+- `bindings/setup.py` - Custom setup with `prepare` and `build_ext` commands
+- `bindings/pyproject.toml` - Uses setuptools instead of scikit-build-core
+- C sources copied from `../lib/src/` to `bindings/liboptv/src/`
+- Headers copied from `../lib/include/` to `bindings/liboptv/include/`
+- Each extension module includes all C library sources directly
 
-**Current Workaround**: Use pre-built optv package from PyPI (v0.3.2)
-
-**Impact**: 
-- Development requires PyPI package, not local source
-- Cannot test local C code changes easily
-- Build reproducibility depends on external package
+**Impact**:
+- ✅ Local development now possible without PyPI package
+- ✅ C code changes can be tested immediately
+- ✅ Reproducible builds with `run_cibuildwheel.sh`
+- ✅ Binary wheels can be built for all platforms via GitHub Actions
 
 ---
+
+### ⚠️ Known Issues
 
 #### 2. Python/Numba Engine Not Implemented
 
@@ -94,32 +101,7 @@ fatal error: optv/vec_utils.h: No such file or directory
 
 ## Next Steps Plan
 
-### Phase 1B: Fix Local Build (Priority: HIGH)
-
-**Goal**: Build optv from local source successfully
-
-#### Task 1.1: Fix Header Include Paths
-- [ ] Update Cython `.pxd` files to use correct include paths
-- [ ] Modify CMakeLists.txt to copy headers to build directory
-- [ ] Test: `cd bindings && uv pip install --no-build-isolation .`
-
-#### Task 1.2: Fix C++ Compilation
-- [ ] Add `#include <complex>` to Cython-generated code
-- [ ] Or switch to C mode: `cython --c` instead of `--cplus`
-- [ ] Update `bindings/CMakeLists.txt` Python_add_library flags
-- [ ] Test: Build completes without errors
-
-#### Task 1.3: Create Build Script
-- [ ] Create `scripts/build_bindings.sh` for reproducible builds
-- [ ] Document build process in README
-- [ ] Test: Fresh environment can build from source
-
-**Estimated Time**: 4-8 hours  
-**Success Criteria**: `uv pip install bindings/` produces working optv package
-
----
-
-### Phase 2: Python/Numba Engine (Priority: MEDIUM)
+### Phase 2: Python/Numba Engine (Priority: HIGH)
 
 **Goal**: Dual-engine architecture with identical results
 
@@ -141,7 +123,7 @@ fatal error: optv/vec_utils.h: No such file or directory
 - [ ] Add `--validate-engine` CLI flag
 - [ ] Test: Both engines produce identical results (tolerance 1e-10)
 
-**Estimated Time**: 16-24 hours  
+**Estimated Time**: 16-24 hours
 **Success Criteria**: `openptv2.set_engine("python")` works, engine comparison tests pass
 
 ---
@@ -162,18 +144,18 @@ fatal error: optv/vec_utils.h: No such file or directory
 - [ ] Add marimo notebook integration
 - [ ] Test: GUI works with both engines
 
-**Estimated Time**: 8-16 hours  
+**Estimated Time**: 8-16 hours
 **Success Criteria**: GUI launches and tracks particles successfully
 
 ---
 
-### Phase 4: CI/CD Setup (Priority: LOW)
+### Phase 4: CI/CD Setup (Priority: MEDIUM)
 
 **Goal**: Automated testing and wheel building
 
 #### Task 4.1: GitHub Actions
+- [x] Create `.github/workflows/cibuildwheel.yml` for wheel building
 - [ ] Create `.github/workflows/test.yml` for PR testing
-- [ ] Create `.github/workflows/build.yml` for wheel building
 - [ ] Configure cibuildwheel for multi-platform wheels
 - [ ] Test: Push triggers automated builds
 
@@ -182,7 +164,7 @@ fatal error: optv/vec_utils.h: No such file or directory
 - [ ] Create release workflow
 - [ ] Test: Tag creates release and uploads wheels
 
-**Estimated Time**: 8-12 hours  
+**Estimated Time**: 8-12 hours
 **Success Criteria**: Every push runs tests, tags create releases
 
 ---
@@ -208,7 +190,7 @@ fatal error: optv/vec_utils.h: No such file or directory
 - [ ] Add example datasets
 - [ ] Test: Notebooks execute successfully
 
-**Estimated Time**: 12-20 hours  
+**Estimated Time**: 12-20 hours
 **Success Criteria**: Complete documentation deployed, examples work
 
 ---
@@ -216,19 +198,18 @@ fatal error: optv/vec_utils.h: No such file or directory
 ## Immediate Next Actions
 
 ### This Week
-1. **Fix local build** (Phase 1B) - Enable local development
-2. **Test GUI** (Phase 3.1) - Verify end-to-end workflow
-3. **Document issues** - Create GitHub issues for tracking
+1. **Test GUI** (Phase 3.1) - Verify end-to-end workflow with local bindings
+2. **Start Phase 2** - Integrate Python/Numba engine
+3. **Update README** - Document new build process
 
 ### Next Week
-1. **Start Phase 2** - Integrate Python/Numba engine
-2. **Write engine comparison tests** - Ensure parity
-3. **Update README** - Document current state
+1. **Complete Phase 2** - Dual engine with comparison tests
+2. **Set up CI/CD** (Phase 4) - Automated testing on PRs
+3. **Document current state** - Update all docs
 
 ### This Month
-1. **Complete Phases 1B, 2, 3** - Core functionality
-2. **Set up CI/CD** (Phase 4) - Automated testing
-3. **Prepare v1.0.0 release** - First official release
+1. **Complete Phases 2, 3, 4** - Core functionality
+2. **Prepare v1.0.0 release** - First official release
 
 ---
 
@@ -236,21 +217,21 @@ fatal error: optv/vec_utils.h: No such file or directory
 
 | Issue | Impact | Priority |
 |-------|--------|----------|
-| Local build fails | Cannot test C changes | HIGH |
-| No Python engine | No fallback option | MEDIUM |
+| No Python engine | No fallback option | HIGH |
 | Incomplete tests | No regression testing | MEDIUM |
-| No CI/CD | Manual testing required | LOW |
+| CI/CD not fully configured | Manual testing required | MEDIUM |
 | Sparse docs | Hard for new users | LOW |
 
 ---
 
 ## Success Metrics
 
-### Phase 1 Complete (Current State)
+### Phase 1 Complete ✅
 - [x] Repository structure matches design plan
-- [x] All imports work with PyPI optv
+- [x] All imports work with local optv
 - [x] Basic tests pass
-- [ ] Local build from source works ⚠️
+- [x] Local build from source works
+- [x] Wheel building configured
 
 ### Phase 2 Complete
 - [ ] Both engines available
@@ -271,6 +252,36 @@ fatal error: optv/vec_utils.h: No such file or directory
 - [ ] Complete documentation
 - [ ] Example notebooks
 - [ ] v1.0.0 released
+
+---
+
+## Build Instructions
+
+### Building from Source
+
+```bash
+# Using Python 3.11 environment
+cd bindings
+python setup.py prepare
+pip install -e .
+```
+
+### Building Binary Wheels
+
+```bash
+# Local wheel build (current Python version)
+./run_cibuildwheel.sh
+
+# Or manually with cibuildwheel
+pip install cibuildwheel
+python -m cibuildwheel --output-dir wheelhouse bindings/
+```
+
+### GitHub Actions
+
+Wheels are automatically built on push to `main` or tags for:
+- Python 3.11, 3.12, 3.13
+- Linux (x86_64), Windows (AMD64), macOS (x86_64, arm64)
 
 ---
 
