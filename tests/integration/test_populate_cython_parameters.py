@@ -2,9 +2,9 @@ import sys
 sys.path.insert(0, '.')
 import numpy as np
 from pathlib import Path
-from pyptv.experiment import Experiment
-from pyptv.ptv import py_start_proc_c, _populate_cpar, _populate_tpar, _populate_spar
-from pyptv.parameter_util import legacy_to_yaml
+from gui.pyptv.experiment import Experiment
+from gui.pyptv.ptv import py_start_proc_c, _populate_cpar, _populate_tpar, _populate_spar
+from gui.pyptv.parameter_util import legacy_to_yaml
 
 def test_parameter_translation_pipeline():
     """Test the complete parameter translation pipeline step by step."""

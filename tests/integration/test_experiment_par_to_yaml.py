@@ -1,6 +1,6 @@
 import pytest
 from pathlib import Path
-from pyptv.parameter_manager import ParameterManager
+from gui.pyptv.parameter_manager import ParameterManager
 import yaml
 
 TRACK_DIR = Path(__file__).parent / "test_cavity"

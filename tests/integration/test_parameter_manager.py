@@ -4,7 +4,7 @@ Test script for the improved ParameterManager functionality
 """
 import pytest
 
-from pyptv.parameter_manager import ParameterManager
+from gui.pyptv.parameter_manager import ParameterManager
 
 
 def test_man_ori_dat_roundtrip(tmp_path):

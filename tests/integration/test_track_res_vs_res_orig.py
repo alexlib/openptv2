@@ -1,9 +1,9 @@
 import pytest
 import shutil
 from pathlib import Path
-from pyptv import pyptv_batch
-from pyptv.experiment import Experiment
-from pyptv.parameter_manager import ParameterManager
+from gui.pyptv import pyptv_batch
+from gui.pyptv.experiment import Experiment
+from gui.pyptv.parameter_manager import ParameterManager
 import filecmp
 import yaml
 

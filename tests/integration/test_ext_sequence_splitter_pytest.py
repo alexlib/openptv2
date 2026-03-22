@@ -3,7 +3,7 @@
 import pytest
 from pathlib import Path
 
-from pyptv.pyptv_batch_plugins import run_batch
+from gui.pyptv.pyptv_batch_plugins import run_batch
 
 @pytest.mark.integration
 def test_ext_sequence_splitter_plugin():

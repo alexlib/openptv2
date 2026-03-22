@@ -1,6 +1,6 @@
 import pytest
 from pathlib import Path
-from pyptv import pyptv_batch
+from gui.pyptv import pyptv_batch
 import tempfile
 import shutil
 import yaml
@@ -64,7 +64,7 @@ def test_pyptv_batch_with_repetitions(test_data_dir):
 
 def test_pyptv_batch_validation_errors():
     """Test that proper validation errors are raised"""
-    from pyptv.pyptv_batch import ProcessingError
+    from gui.pyptv.pyptv_batch import ProcessingError
     
     # Test non-existent YAML file
     with pytest.raises(ProcessingError, match="YAML parameter file does not exist"):
@@ -244,7 +244,7 @@ def test_pyptv_batch_tracking_mode_only_with_temp_yaml_collect_results(test_data
     # Run tracking mode and capture output to file, set cwd to test_dir
     with tempfile.NamedTemporaryFile('w+', delete=False, suffix='.txt', dir=test_dir) as out_file:
         out_path = out_file.name
-        cmd = [sys.executable, '-m', 'pyptv.pyptv_batch', os.path.basename(temp_yaml), str(start_frame), str(end_frame), '--mode', 'tracking']
+        cmd = [sys.executable, '-m', 'gui.pyptv.pyptv_batch', os.path.basename(temp_yaml), str(start_frame), str(end_frame), '--mode', 'tracking']
         try:
             subprocess.run(cmd, stdout=out_file, stderr=subprocess.STDOUT, check=True, cwd=test_dir)
         except subprocess.CalledProcessError:
@@ -286,7 +286,7 @@ def test_pyptv_batch_tracking_mode_only_with_temp_yaml_collect_results(test_data
             # Run tracking mode and capture output
             with tempfile.NamedTemporaryFile('w+', delete=False, suffix='.txt', dir=test_dir) as out_file2:
                 out_path2 = out_file2.name
-                cmd2 = [sys.executable, '-m', 'pyptv.pyptv_batch', os.path.basename(temp_yaml2), str(start_frame), str(end_frame), '--mode', 'tracking']
+                cmd2 = [sys.executable, '-m', 'gui.pyptv.pyptv_batch', os.path.basename(temp_yaml2), str(start_frame), str(end_frame), '--mode', 'tracking']
                 try:
                     subprocess.run(cmd2, stdout=out_file2, stderr=subprocess.STDOUT, check=True, cwd=test_dir)
                 except subprocess.CalledProcessError:
@@ -361,7 +361,7 @@ def optimize_tracking_parameters(test_data_dir):
         # Run tracking mode and capture output
         with tempfile.NamedTemporaryFile('w+', delete=False, suffix='.txt', dir=test_dir) as out_file:
             out_path = out_file.name
-            cmd = [sys.executable, '-m', 'pyptv.pyptv_batch', os.path.basename(temp_yaml), str(start_frame), str(end_frame), '--mode', 'tracking']
+            cmd = [sys.executable, '-m', 'gui.pyptv.pyptv_batch', os.path.basename(temp_yaml), str(start_frame), str(end_frame), '--mode', 'tracking']
             try:
                 subprocess.run(cmd, stdout=out_file, stderr=subprocess.STDOUT, check=True, cwd=test_dir)
             except subprocess.CalledProcessError:

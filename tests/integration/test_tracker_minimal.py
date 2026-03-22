@@ -2,8 +2,8 @@ import os
 import shutil
 import pytest
 from pathlib import Path
-from pyptv.parameter_manager import ParameterManager
-from pyptv.ptv import Tracker
+from gui.pyptv.parameter_manager import ParameterManager
+from gui.pyptv.ptv import Tracker
 from optv.tracker import Tracker, default_naming
 
 @pytest.mark.usefixtures("tmp_path")
@@ -31,7 +31,7 @@ def test_tracker_minimal(tmp_path):
         pm = ParameterManager()
         pm.from_yaml(param_path)
 
-        from pyptv.ptv import py_start_proc_c
+        from gui.pyptv.ptv import py_start_proc_c
         cpar, spar, vpar, track_par, tpar, cals, epar = py_start_proc_c(pm)
 
         for cam_id, short_name in enumerate(pm.get_target_filenames()):

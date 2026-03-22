@@ -2,7 +2,7 @@ import unittest
 import copy
 from optv.calibration import Calibration
 
-from pyptv.ptv import clone_calibration
+from gui.pyptv.ptv import clone_calibration
 
 class TestCalibrationCopy(unittest.TestCase):
     def test_clone_calibration(self):

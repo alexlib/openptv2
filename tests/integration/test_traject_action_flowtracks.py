@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import MagicMock, patch, call
-from pyptv.pyptv_gui import TreeMenuHandler
+from gui.pyptv.pyptv_gui import TreeMenuHandler
 
 @pytest.fixture
 def mock_info():
@@ -33,7 +33,7 @@ def mock_traj():
 
 @pytest.fixture
 def patch_flowtracks_and_helpers(mock_traj):
-    with patch("pyptv.flowtracks_utils.compute_flowtracks_trajectories_from_guiobj") as mock_compute:
+    with patch("gui.pyptv.flowtracks_utils.compute_flowtracks_trajectories_from_guiobj") as mock_compute:
         # Return dummy results for the plotting step
         mock_compute.return_value = {
             'heads_x': [[1], [2]], 'heads_y': [[3], [4]],

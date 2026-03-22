@@ -1,7 +1,7 @@
 import pytest
-from pyptv.parameter_manager import ParameterManager
+from gui.pyptv.parameter_manager import ParameterManager
 from pathlib import Path
-from pyptv.experiment import Experiment
+from gui.pyptv.experiment import Experiment
 
 HERE = Path(__file__).parent
 

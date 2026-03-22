@@ -1,6 +1,6 @@
 import filecmp
 from pathlib import Path
-from pyptv import legacy_parameters
+from gui.pyptv import legacy_parameters
 import shutil
 
 def test_legacy_parameters_roundtrip(tmp_path):

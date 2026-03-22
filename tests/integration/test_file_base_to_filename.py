@@ -1,6 +1,6 @@
 
 import pytest
-from pyptv.ptv import extract_cam_ids, generate_short_file_bases
+from gui.pyptv.ptv import extract_cam_ids, generate_short_file_bases
 
 @pytest.mark.parametrize("img_bases, expected_cam_ids", [
     (["cam1_%d.tif", "cam2_%03d.tif", "cam3.%d"], [1, 2, 3]),

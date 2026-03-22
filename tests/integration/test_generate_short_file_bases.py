@@ -1,5 +1,5 @@
 import pytest
-from pyptv.ptv import generate_short_file_bases
+from gui.pyptv.ptv import generate_short_file_bases
 
 @pytest.mark.parametrize("img_base_names, expected", [
     (

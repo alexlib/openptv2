@@ -8,7 +8,7 @@ from pathlib import Path
 
 import numpy as np
 
-from pyptv.dumbbell_ground_truth import DumbbellGTSpec, generate_dumbbell_target_files
+from gui.pyptv.dumbbell_ground_truth import DumbbellGTSpec, generate_dumbbell_target_files
 
 
 def _copy_tree(src: Path, dst: Path) -> None:
@@ -49,11 +49,11 @@ def test_standalone_dumbbell_calibration_cycle(tmp_path: Path):
     start.write(str(ori1).encode("utf-8"), str(ori1).replace(".ori", ".addpar").encode("utf-8"))
 
     # 4) Run the standalone script (as requested) to re-fit extrinsics.
-    script = Path(__file__).parents[1] / "scripts" / "standalone_dumbbell_calibration.py"
     proc = subprocess.run(
         [
             sys.executable,
-            str(script),
+            "-m",
+            "gui.scripts.standalone_dumbbell_calibration",
             str(yaml_path),
             "--fixed-cams",
             "0",

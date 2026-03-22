@@ -1,5 +1,5 @@
 import yaml
-from pyptv.parameter_manager import ParameterManager
+from gui.pyptv.parameter_manager import ParameterManager
 from pathlib import Path
 
 def test_print_cavity_yaml():

@@ -3,7 +3,7 @@
 import pytest
 import numpy as np
 from unittest.mock import patch
-from pyptv.ptv import image_split, negative, simple_highpass
+from gui.pyptv.ptv import image_split, negative, simple_highpass
 from optv.parameters import ControlParams
 
 
@@ -105,7 +105,7 @@ class TestSimpleHighpass:
         """Test basic highpass filtering with mocked preprocess_image to avoid segfaults"""
         img = np.random.randint(0, 255, (50, 50), dtype=np.uint8)
         
-        with patch('pyptv.ptv.preprocess_image') as mock_preprocess:
+        with patch('gui.pyptv.ptv.preprocess_image') as mock_preprocess:
             # Mock the preprocessing to return a safe result
             expected_result = np.zeros((50, 50), dtype=np.uint8)
             mock_preprocess.return_value = expected_result
@@ -123,7 +123,7 @@ class TestSimpleHighpass:
         """Test that simple_highpass has the correct function signature"""
         img = np.random.randint(100, 150, (30, 30), dtype=np.uint8)
         
-        with patch('pyptv.ptv.preprocess_image') as mock_preprocess:
+        with patch('gui.pyptv.ptv.preprocess_image') as mock_preprocess:
             mock_preprocess.return_value = np.zeros((30, 30), dtype=np.uint8)
             
             # Test function can be called with expected arguments
@@ -139,9 +139,9 @@ class TestSimpleHighpass:
         """Test that simple_highpass uses the expected constants"""
         img = np.zeros((20, 20), dtype=np.uint8)
         
-        with patch('pyptv.ptv.preprocess_image') as mock_preprocess:
-            with patch('pyptv.ptv.DEFAULT_NO_FILTER', 0) as mock_no_filter:
-                with patch('pyptv.ptv.DEFAULT_HIGHPASS_FILTER_SIZE', 7) as mock_filter_size:
+        with patch('gui.pyptv.ptv.preprocess_image') as mock_preprocess:
+            with patch('gui.pyptv.ptv.DEFAULT_NO_FILTER', 0) as mock_no_filter:
+                with patch('gui.pyptv.ptv.DEFAULT_HIGHPASS_FILTER_SIZE', 7) as mock_filter_size:
                     mock_preprocess.return_value = np.zeros((20, 20), dtype=np.uint8)
                     
                     simple_highpass(img, self.cpar)

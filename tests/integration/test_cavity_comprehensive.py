@@ -1,16 +1,11 @@
-import sys
 import os
 import pytest
 from pathlib import Path
 import numpy as np
 
 from gui.pyptv.parameter_manager import ParameterManager
-
-# Add pyptv to path
-sys.path.insert(0, str(Path(__file__).parent.parent))
-
-from pyptv.experiment import Experiment
-from pyptv import ptv
+from gui.pyptv.experiment import Experiment
+from gui.pyptv import ptv
 from skimage.io import imread
 from skimage.color import rgb2gray
 from skimage.util import img_as_ubyte
@@ -19,8 +14,8 @@ from skimage.util import img_as_ubyte
 @pytest.fixture
 def test_cavity_setup():
     """Setup fixture for test_cavity experiment"""
-    software_path = Path(__file__).parent.parent
-    test_cavity_path = software_path / "tests" / "test_cavity"
+    software_path = Path(__file__).parent.parent.parent
+    test_cavity_path = software_path / "tests" / "testing_fodder" / "test_cavity"
     
     if not test_cavity_path.exists():
         pytest.skip(f"Test cavity directory does not exist: {test_cavity_path}")
@@ -53,8 +48,8 @@ def test_cavity_setup():
 
 def test_cavity_directory_structure():
     """Test that test_cavity directory has expected structure"""
-    software_path = Path(__file__).parent.parent
-    test_cavity_path = software_path / "tests" / "test_cavity"
+    software_path = Path(__file__).parent.parent.parent
+    test_cavity_path = software_path / "tests" / "testing_fodder" / "test_cavity"
     
     assert test_cavity_path.exists(), f"Test cavity directory does not exist: {test_cavity_path}"
     

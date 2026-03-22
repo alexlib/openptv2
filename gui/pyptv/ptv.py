@@ -20,24 +20,16 @@ from imageio.v3 import imread
 from skimage.util import img_as_ubyte
 from skimage.color import rgb2gray
 
-# Backend imports (supports both optv and openptv-python)
-from ._backend import (
-    Calibration,
-    ControlParams,
-    SequenceParams,
-    TrackingParams,
-    TargetParams,
-    VolumeParams,
-    correspondences,
-    MatchedCoords,
-    preprocess_image,
-    point_positions,
-    target_recognition,
-    TargetArray,
-    Tracker,
-    default_naming,
-    convert_arr_pixel_to_metric,
-)
+# Backend imports from optv
+from optv.calibration import Calibration
+from optv.parameters import ControlParams, SequenceParams, TrackingParams, TargetParams, VolumeParams
+from optv.correspondences import correspondences, MatchedCoords
+from optv.image_processing import preprocess_image
+from optv.orientation import point_positions
+from optv.segmentation import target_recognition
+from optv.tracking_framebuf import TargetArray
+from optv.tracker import Tracker, default_naming
+from optv.transforms import convert_arr_pixel_to_metric, convert_arr_metric_to_pixel
 
 """
 example from Tracker documentation: 
@@ -976,7 +968,8 @@ def full_scipy_calibration(
     cal: Calibration, XYZ: np.ndarray, targs: TargetArray, cpar: ControlParams, flags=[]
 ):
     """Full calibration using scipy.optimize"""
-    from ._backend import convert_arr_metric_to_pixel, image_coordinates
+    from optv.transforms import convert_arr_metric_to_pixel
+    from optv.imgcoord import image_coordinates
 
     def _residuals_k(x, cal, XYZ, xy, cpar):
         cal.set_radial_distortion(x)
@@ -1106,7 +1099,7 @@ def dumbbell_target_func(targets, cpar, calibs, db_length, db_weight):
     float
         The weighted ray convergence + length error measure.
     """
-    from ._backend import multi_cam_point_positions
+    from optv.orientation import multi_cam_point_positions
 
     num_cams = cpar.get_num_cams()
     num_targs = targets.shape[1]
@@ -1162,7 +1155,7 @@ def dumbbell_target_func(targets, cpar, calibs, db_length, db_weight):
 
 def dumbbell_target_residuals(targets, cpar, calibs, db_length, db_weight):
     """Return residuals per target pair for least-squares optimization."""
-    from ._backend import multi_cam_point_positions
+    from optv.orientation import multi_cam_point_positions
 
     num_targs = targets.shape[1]
     if num_targs % 2 != 0:
@@ -1202,7 +1195,7 @@ def dumbbell_ba_residuals(
     calib_vec packs active camera extrinsics and per-frame 3D endpoints.
     targets is shaped (num_cams, num_frames, 2, 2) in metric coordinates.
     """
-    from ._backend import image_coordinates
+    from optv.imgcoord import image_coordinates
 
     if db_length <= 0:
         raise ValueError("Dumbbell length must be positive")
@@ -1433,7 +1426,7 @@ def calib_dumbbell(cal_gui)-> None:
     metric_by_cam = np.array(metric_by_cam)
 
     if db_eps > 0:
-        from ._backend import multi_cam_point_positions
+        from optv.orientation import multi_cam_point_positions
 
         keep_mask = np.ones(num_frames, dtype=bool)
         removed = 0
@@ -1457,8 +1450,8 @@ def calib_dumbbell(cal_gui)-> None:
             raise ValueError("All frames filtered by dumbbell length eps")
 
     def _print_camera_residuals(label: str, metric_targets: np.ndarray) -> None:
-        from ._backend import multi_cam_point_positions
-        from ._backend import image_coordinates
+        from optv.orientation import multi_cam_point_positions
+        from optv.imgcoord import image_coordinates
 
         num_cams_local, num_frames_local, num_targs_local, _ = metric_targets.shape
         sums = np.zeros(num_cams_local, dtype=float)
@@ -1522,7 +1515,7 @@ def calib_dumbbell(cal_gui)-> None:
     calib_vec = calib_vec.flatten()
 
     def _init_dumbbell_points(metric_targets: np.ndarray) -> np.ndarray:
-        from ._backend import multi_cam_point_positions
+        from optv.orientation import multi_cam_point_positions
 
         num_cams_local, num_frames_local, _, _ = metric_targets.shape
         points = np.zeros((num_frames_local, 2, 3), dtype=float)
@@ -1643,8 +1636,8 @@ def calib_dumbbell(cal_gui)-> None:
 def calib_particles(exp):
     """Calibration with particles."""
 
-    from ._backend import Frame
-    
+    from optv.tracking_framebuf import Frame
+
     # Handle both Experiment objects and MainGUI objects
     if hasattr(exp, 'pm'):
         # Traditional experiment object
@@ -1741,7 +1734,7 @@ def calib_particles(exp):
 
 def clone_calibration(calibration_obj):
     """Return a copy of a Calibration object using all get/set methods."""
-    from ._backend import Calibration
+    from optv.calibration import Calibration
     import numpy as np
     new_cal = Calibration()
     new_cal.set_pos(np.array(calibration_obj.get_pos()))

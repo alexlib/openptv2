@@ -1,4 +1,4 @@
-from pyptv import cli
+from gui.pyptv import cli
 
 
 def test_cli_template():

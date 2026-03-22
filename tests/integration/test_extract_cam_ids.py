@@ -1,5 +1,5 @@
 import pytest
-from pyptv.ptv import extract_cam_ids
+from gui.pyptv.ptv import extract_cam_ids
 
 def test_extract_cam_ids_basic():
     # Standard case: cam1, cam2, cam3

@@ -14,7 +14,7 @@ from pathlib import Path
 import logging
 
 # Import our improved pyptv_batch_parallel components
-from pyptv.pyptv_batch_parallel import (
+from gui.pyptv.pyptv_batch_parallel import (
     chunk_ranges,
     validate_experiment_directory, 
     ProcessingError,

@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 from optv.calibration import Calibration
-from pyptv.ptv import clone_calibration
+from gui.pyptv.ptv import clone_calibration
 
 def test_clone_calibration_basic():
     cal = Calibration()

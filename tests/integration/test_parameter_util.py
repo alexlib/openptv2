@@ -3,7 +3,7 @@ import shutil
 import tempfile
 import pytest
 from pathlib import Path
-from pyptv.parameter_util import legacy_to_yaml, yaml_to_legacy
+from gui.pyptv.parameter_util import legacy_to_yaml, yaml_to_legacy
 
 def make_minimal_legacy_dir(tmp_path):
     """Create a minimal legacy parameter folder for testing."""

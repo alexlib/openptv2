@@ -3,7 +3,7 @@ import shutil
 import os
 import yaml
 from pathlib import Path
-from pyptv.parameter_manager import ParameterManager
+from gui.pyptv.parameter_manager import ParameterManager
 
 def create_dummy_par_dir(tmpdir):
     tmp_dir = Path(tmpdir)

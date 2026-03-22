@@ -55,7 +55,7 @@ class Sequence:
 
     def __init__(self, ptv=None, exp=None):
         if ptv is None:
-            from gui.pyptv import ptv
+            from pyptv import ptv
             self.ptv = ptv
         else:
             self.ptv = ptv

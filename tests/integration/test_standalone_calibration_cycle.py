@@ -8,9 +8,9 @@ import numpy as np
 from optv.imgcoord import image_coordinates
 from optv.transforms import convert_arr_metric_to_pixel
 
-from pyptv.ground_truth import generate_ground_truth, save_ground_truth_npz
-from pyptv.standalone_calibration import get_flags_from_yaml, load_parameter_manager, run_standalone_calibration
-from pyptv import ptv
+from gui.pyptv.ground_truth import generate_ground_truth, save_ground_truth_npz
+from gui.pyptv.standalone_calibration import get_flags_from_yaml, load_parameter_manager, run_standalone_calibration
+from gui.pyptv import ptv
 
 
 def _copy_tree(src: Path, dst: Path) -> None:

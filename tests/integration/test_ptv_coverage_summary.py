@@ -85,7 +85,7 @@ This documentation is included to ensure all public functions in ptv.py are cove
 
 # This file serves as documentation and can be run as a test to verify coverage
 import pytest
-from pyptv import ptv
+from gui.pyptv import ptv
 import inspect
 
 def test_function_coverage_documentation():

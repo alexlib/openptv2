@@ -140,7 +140,7 @@ def examine_particle_motion():
 def check_tracking_parameters():
     """Check current tracking parameters in detail"""
     
-    from pyptv.experiment import Experiment
+    from gui.pyptv.experiment import Experiment
     
     test_path = Path(__file__).parent / "test_splitter"
     

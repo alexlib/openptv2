@@ -1,6 +1,6 @@
 import pytest
 from pathlib import Path
-from pyptv import pyptv_batch_parallel
+from gui.pyptv import pyptv_batch_parallel
 
 
 def test_pyptv_batch_parallel(test_data_dir):
@@ -27,7 +27,7 @@ def test_pyptv_batch_parallel(test_data_dir):
 
 def test_pyptv_batch_parallel_validation_errors():
     """Test that proper validation errors are raised for parallel processing"""
-    from pyptv.pyptv_batch_parallel import ProcessingError
+    from gui.pyptv.pyptv_batch_parallel import ProcessingError
     
     # Test non-existent YAML file
     with pytest.raises(ProcessingError, match="YAML parameter file does not exist"):

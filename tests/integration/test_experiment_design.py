@@ -8,8 +8,8 @@ import tempfile
 from pathlib import Path
 import shutil
 
-from pyptv.experiment import Experiment, Paramset
-from pyptv.parameter_manager import ParameterManager
+from gui.pyptv.experiment import Experiment, Paramset
+from gui.pyptv.parameter_manager import ParameterManager
 
 
 @pytest.fixture

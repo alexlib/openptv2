@@ -4,8 +4,8 @@
 import pytest
 import os
 from pathlib import Path
-from pyptv.ptv import py_start_proc_c
-from pyptv.parameter_manager import ParameterManager
+from gui.pyptv.ptv import py_start_proc_c
+from gui.pyptv.parameter_manager import ParameterManager
 
 
 class TestTrackingParameterBug:

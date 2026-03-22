@@ -4,7 +4,7 @@ import pytest
 import numpy as np
 from pathlib import Path
 from unittest.mock import Mock, patch, mock_open
-from pyptv.ptv import (
+from gui.pyptv.ptv import (
     _ensure_directory_writable,
     _ensure_target_output_writable,
     _prepare_output_path,
@@ -99,7 +99,7 @@ class TestWriteTargets:
         """Test writing targets with permission error"""
         targets = [self._make_target()]
 
-        with patch('pyptv.ptv.np.savetxt', side_effect=PermissionError('Permission denied')):
+        with patch('gui.pyptv.ptv.np.savetxt', side_effect=PermissionError('Permission denied')):
             with pytest.raises(PermissionError, match='Cannot write output file'):
                 write_targets(targets, 'cam1', 123456789)
     
@@ -107,7 +107,7 @@ class TestWriteTargets:
         """Test writing targets to invalid path"""
         targets = [self._make_target()]
 
-        with patch('pyptv.ptv.np.savetxt', side_effect=OSError('Disk full')):
+        with patch('gui.pyptv.ptv.np.savetxt', side_effect=OSError('Disk full')):
             with pytest.raises(OSError, match='Failed to write output file'):
                 write_targets(targets, 'cam1', 123456789)
 
@@ -158,7 +158,7 @@ class TestOutputHelpers:
             str((tmp_path / 'nested') / 'cam3'),
         ]
 
-        with patch('pyptv.ptv._ensure_directory_writable') as ensure_dir:
+        with patch('gui.pyptv.ptv._ensure_directory_writable') as ensure_dir:
             _ensure_target_output_writable(base_paths)
 
         checked_dirs = [call.args[0] for call in ensure_dir.call_args_list]
@@ -179,9 +179,9 @@ class TestCorrespondenceWritePreflight:
         sorted_pos = [np.zeros((2, 1))]
         sorted_corresp = [np.zeros((1, 1), dtype=int)]
 
-        with patch('pyptv.ptv.correspondences', return_value=(sorted_pos, sorted_corresp, 1)):
-            with patch('pyptv.ptv._ensure_target_output_writable') as ensure_writable:
-                with patch('pyptv.ptv.write_targets') as write_targets_mock:
+        with patch('gui.pyptv.ptv.correspondences', return_value=(sorted_pos, sorted_corresp, 1)):
+            with patch('gui.pyptv.ptv._ensure_target_output_writable') as ensure_writable:
+                with patch('gui.pyptv.ptv.write_targets') as write_targets_mock:
                     py_correspondences_proc_c(exp)
 
         ensure_writable.assert_called_once_with(exp.target_filenames)

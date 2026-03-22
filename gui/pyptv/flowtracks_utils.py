@@ -1,5 +1,6 @@
 import numpy as np
-from ._backend import image_coordinates, convert_arr_metric_to_pixel
+from optv.imgcoord import image_coordinates
+from optv.transforms import convert_arr_metric_to_pixel
 from flowtracks.io import trajectories_ptvis  # Expose for testing/monkeypatching
 
 def compute_flowtracks_trajectories_from_guiobj(guiobj):
