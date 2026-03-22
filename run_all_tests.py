@@ -463,27 +463,49 @@ class TestRunner:
         """Print test summary."""
         print_header("Test Summary")
         
-        total_tests = 0
+        total_components = 0
         total_passed = 0
         total_failed = 0
         total_skipped = 0
         
+        # Parse pytest output for actual test counts
+        individual_tests_pass = 0
+        individual_tests_fail = 0
+        
         for component, results in self.results.items():
             for result in results:
-                total_tests += 1
+                total_components += 1
                 if result.passed:
                     total_passed += 1
-                elif result.error_type in ['MISSING_DIRECTORY', 'MISSING_CMAKE', 
-                                           'MISSING_PYTEST', 'MISSING_NUMBA']:
+                    # Try to parse pytest output for test count
+                    import re
+                    match = re.search(r'(\d+) passed', result.output)
+                    if match:
+                        individual_tests_pass += int(match.group(1))
+                    match = re.search(r'(\d+) skipped', result.output)
+                    if match:
+                        total_skipped += int(match.group(1))
+                elif result.error_type in ['MISSING_DIRECTORY', 'MISSING_CMAKE',
+                                           'MISSING_PYTEST', 'MISSING_NUMBA',
+                                           'MISSING_TESTS', 'NO_TESTS', 'NOT_READY']:
                     total_skipped += 1
                 else:
                     total_failed += 1
+                    # Try to parse pytest output for failed test count
+                    import re
+                    match = re.search(r'(\d+) failed', result.output)
+                    if match:
+                        individual_tests_fail += int(match.group(1))
         
         print()
-        print(f"  Total:     {total_tests}")
-        print(colorize(f"  Passed:    {total_passed}", Colors.OKGREEN))
-        print(colorize(f"  Failed:    {total_failed}", Colors.FAIL if total_failed > 0 else ''))
-        print(colorize(f"  Skipped:   {total_skipped}", Colors.WARNING if total_skipped > 0 else ''))
+        print(f"  Test Components: {total_components}")
+        if individual_tests_pass > 0 or individual_tests_fail > 0:
+            print(colorize(f"  Individual Tests: {individual_tests_pass + individual_tests_fail} "
+                          f"({individual_tests_pass} pass, {individual_tests_fail} fail)", 
+                          Colors.OKGREEN if individual_tests_fail == 0 else Colors.FAIL))
+        print(colorize(f"  Components Passed: {total_passed}", Colors.OKGREEN))
+        print(colorize(f"  Components Failed: {total_failed}", Colors.FAIL if total_failed > 0 else ''))
+        print(colorize(f"  Components Skipped: {total_skipped}", Colors.WARNING if total_skipped > 0 else ''))
         print(f"  Duration:  {total_duration:.1f}s")
         print()
         
@@ -496,21 +518,31 @@ class TestRunner:
             for result in results:
                 if result.passed:
                     status = colorize("✓ PASS", Colors.OKGREEN)
-                elif result.error_type in ['MISSING_DIRECTORY', 'MISSING_CMAKE', 
-                                           'MISSING_PYTEST', 'MISSING_NUMBA']:
+                elif result.error_type in ['MISSING_DIRECTORY', 'MISSING_CMAKE',
+                                           'MISSING_PYTEST', 'MISSING_NUMBA',
+                                           'MISSING_TESTS', 'NO_TESTS', 'NOT_READY']:
                     status = colorize("⊘ SKIP", Colors.WARNING)
                 else:
                     status = colorize("✗ FAIL", Colors.FAIL)
-            
-            print(f"  {component:20s} {status}")
-            
-            if not results[0].passed and self.verbose and results[0].error_type not in \
-               ['MISSING_DIRECTORY', 'MISSING_CMAKE', 'MISSING_PYTEST', 'MISSING_NUMBA']:
-                # Show error snippet
-                error_output = results[0].output
-                if len(error_output) > 200:
-                    error_output = error_output[-200:]
-                print_info(f"    Error: {error_output.strip()[:100]}...")
+                
+                # Show test count if available
+                test_count = ""
+                if result.passed:
+                    import re
+                    match = re.search(r'(\d+) passed', result.output)
+                    if match:
+                        test_count = f" ({match.group(1)} tests)"
+                
+                print(f"  {component:20s} {status}{test_count}")
+                
+                if not result.passed and self.verbose and result.error_type not in \
+                   ['MISSING_DIRECTORY', 'MISSING_CMAKE', 'MISSING_PYTEST', 'MISSING_NUMBA',
+                    'MISSING_TESTS', 'NO_TESTS', 'NOT_READY']:
+                    # Show error snippet
+                    error_output = result.output
+                    if len(error_output) > 200:
+                        error_output = error_output[-200:]
+                    print_info(f"    Error: {error_output.strip()[:100]}...")
         
         print()
         
