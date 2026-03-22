@@ -107,6 +107,7 @@ packages = [
     "gui",
     "gui.pyptv",
     "gui.pyptv.calibration_output",
+    "pyptv",
 ]
 include-package-data = true
 zip-safe = false

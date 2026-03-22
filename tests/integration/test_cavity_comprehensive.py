@@ -4,7 +4,7 @@ import pytest
 from pathlib import Path
 import numpy as np
 
-from pyptv.parameter_manager import ParameterManager
+from gui.pyptv.parameter_manager import ParameterManager
 
 # Add pyptv to path
 sys.path.insert(0, str(Path(__file__).parent.parent))

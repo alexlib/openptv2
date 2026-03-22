@@ -290,24 +290,7 @@ class TestRunner:
 
         # Run pytest from the gui directory
         print_info("Running pytest on gui/tests/...")
-        # Skip tests with known issues:
-        # - calibration tests: missing test fixtures
-        # - test_detection_bug.py: path resolution issue
-        # - test_pyptv_batch*.py: subprocess import issues
-        # - test_cal_ori_roundtrip.py: missing cal_ori.par files
-        cmd = [
-            self.python, '-m', 'pytest', 'tests/', '-v', '--tb=short',
-            '--ignore=tests/test_cal_ori_roundtrip.py',
-            '--ignore=tests/test_calibration.py',
-            '--ignore=tests/test_calibration_simple.py',
-            '--ignore=tests/test_clone_calibration.py',
-            '--ignore=tests/test_standalone_calibration_cycle.py',
-            '--ignore=tests/test_standalone_dumbbell_calibration_cycle.py',
-            '--ignore=tests/test_detection_bug.py',
-            '--ignore=tests/test_pyptv_batch.py',
-            '--ignore=tests/test_pyptv_batch_parallel.py',
-            '--ignore=tests/test_pyptv_batch_plugins.py',
-        ]
+        cmd = [self.python, '-m', 'pytest', 'tests/', '-v', '--tb=short']
         if not self.verbose:
             cmd.append('--tb=line')
 

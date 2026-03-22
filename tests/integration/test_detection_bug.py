@@ -10,8 +10,8 @@ This test demonstrates that:
 
 import numpy as np
 from pathlib import Path
-from pyptv.experiment import Experiment
-from pyptv.ptv import py_detection_proc_c, _populate_tpar
+from gui.pyptv.experiment import Experiment
+from gui.pyptv.ptv import py_detection_proc_c, _populate_tpar
 from skimage.io import imread
 from skimage.color import rgb2gray
 from skimage.util import img_as_ubyte
@@ -20,7 +20,7 @@ def test_detection_parameters_bug():
     """Test that reproduces the detection parameters bug."""
     
     # Load test parameters
-    test_dir = Path("tests/test_cavity")
+    test_dir = Path("gui/tests/test_cavity")
     yaml_file = test_dir / "parameters_Run1.yaml"
     
     experiment = Experiment()
