@@ -48,12 +48,13 @@ def test_standalone_dumbbell_calibration_cycle(tmp_path: Path):
     start.set_angles(start.get_angles() + np.array([0.01, -0.005, 0.008]))
     start.write(str(ori1).encode("utf-8"), str(ori1).replace(".ori", ".addpar").encode("utf-8"))
 
-    # 4) Run the standalone script (as requested) to re-fit extrinsics.
-    script = Path(__file__).parents[1] / "scripts" / "standalone_dumbbell_calibration.py"
+    # 4) Run the standalone script as a module (it uses relative imports)
+    script_module = "gui.pyptv.standalone_dumbbell_calibration"
     proc = subprocess.run(
         [
             sys.executable,
-            str(script),
+            "-m",
+            script_module,
             str(yaml_path),
             "--fixed-cams",
             "0",
