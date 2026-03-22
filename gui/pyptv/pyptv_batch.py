@@ -17,7 +17,7 @@ Example:
     >>> python pyptv_batch.py tests/test_cavity/parameters_Run1.yaml 10000 10004
 
     Python API usage:
-    >>> from pyptv.pyptv_batch import main
+    >>> from .pyptv_batch import main
     >>> main("tests/test_cavity/parameters_Run1.yaml", 10000, 10004)
 """
 
@@ -254,7 +254,7 @@ def parse_command_line_args() -> tuple[Path, int, int]:
     args = parser.parse_args()
 
     yaml_file = Path(args.yaml_file).resolve()
-    from pyptv.parameter_manager import ParameterManager
+    from .parameter_manager import ParameterManager
     pm = ParameterManager()
     pm.from_yaml(yaml_file)
 
@@ -283,7 +283,7 @@ if __name__ == "__main__":
         python pyptv_batch.py tests/test_cavity/parameters_Run1.yaml 10000 10004
     
     Python API usage:
-        from pyptv.pyptv_batch import main
+        from .pyptv_batch import main
         main("tests/test_cavity/parameters_Run1.yaml", 10000, 10004)
     """
     try:

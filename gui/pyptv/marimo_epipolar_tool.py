@@ -11,15 +11,15 @@ with app.setup:
     from optv.image_processing import preprocess_image
     from optv.calibration import Calibration
 
-    from pyptv.parameter_manager import ParameterManager
-    from pyptv.experiment import Experiment
+    from .parameter_manager import ParameterManager
+    from .experiment import Experiment
     from pathlib import Path
     import matplotlib.pyplot as plt
     import imageio.v3 as iio
     import numpy as np
     import matplotlib
     from optv.parameters import ControlParams, VolumeParams
-    from pyptv import ptv
+    from . import ptv
 
     from optv.segmentation import target_recognition
     from optv.correspondences import MatchedCoords, correspondences

@@ -9,7 +9,7 @@ Example:
     >>> python pyptv_batch_parallel.py experiments/exp1 10001 11001 4
 
     Python API usage:
-    >>> from pyptv.pyptv_batch_parallel import main
+    >>> from .pyptv_batch_parallel import main
     >>> main("experiments/exp1", 10001, 11001, n_processes=4)
 
 The script expects the experiment directory to contain the standard OpenPTV
@@ -334,7 +334,7 @@ def main(
         if mode in ("both", "tracking"):
             logger.info("Starting tracking step (serial, not parallelized)")
             try:
-                from pyptv.pyptv_batch import run_batch
+                from .pyptv_batch import run_batch
                 run_batch(yaml_file, seq_first, seq_last, mode="tracking")
                 logger.info("Tracking step completed successfully.")
             except Exception as e:
@@ -384,7 +384,7 @@ if __name__ == "__main__":
         python pyptv_batch_parallel.py tests/test_cavity/parameters_Run1.yaml 10000 10004 4 --mode both
     
     Python API usage:
-        from pyptv.pyptv_batch_parallel import main
+        from .pyptv_batch_parallel import main
         main("tests/test_cavity/parameters_Run1.yaml", 10000, 10004, n_processes=4, mode="both")
     """
     try:

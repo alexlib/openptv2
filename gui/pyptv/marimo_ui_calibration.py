@@ -35,12 +35,13 @@ def _(mo):
 def _(sys):
     from pathlib import Path
 
-    # Add the parent directory to sys.path if not present to import pyptv package
+    # Note: This is a marimo notebook cell, imports are relative to the package
+    # The pyptv package is available via relative imports
     parent_dir = str(Path(".").absolute())
     if parent_dir not in sys.path:
         sys.path.insert(0, parent_dir)
 
-    from pyptv.parameter_manager import ParameterManager
+    from .parameter_manager import ParameterManager
 
     # Path to the YAML file
     yaml_path = Path("tests/test_cavity/parameters_Run1.yaml")

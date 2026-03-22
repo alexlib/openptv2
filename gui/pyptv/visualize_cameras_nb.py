@@ -29,7 +29,7 @@ def _():
     from mpl_toolkits.mplot3d import Axes3D  # noqa: F401
 
     from optv.calibration import Calibration
-    from pyptv.parameter_manager import ParameterManager
+    from .parameter_manager import ParameterManager
 
     return Calibration, ParameterManager, Path, np, plt
 

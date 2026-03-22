@@ -14,9 +14,9 @@ with app.setup:
     from optv.segmentation import target_recognition
     from optv.correspondences import MatchedCoords, correspondences
 
-    from pyptv import ptv
-    from pyptv.parameter_manager import ParameterManager
-    from pyptv.experiment import Experiment
+    from . import ptv
+    from .parameter_manager import ParameterManager
+    from .experiment import Experiment
 
     from pathlib import Path
     import matplotlib

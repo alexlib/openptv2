@@ -42,8 +42,8 @@ def _(Path, sys):
     if str(repo_root) not in sys.path:
         sys.path.insert(0, str(repo_root))
 
-    from pyptv.parameter_manager import ParameterManager
-    from pyptv.experiment import Experiment
+    from .parameter_manager import ParameterManager
+    from .experiment import Experiment
 
     return Experiment, ParameterManager
 

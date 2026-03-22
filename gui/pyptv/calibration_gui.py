@@ -273,7 +273,7 @@ class CalibrationGUI(HasTraits):
         print(f"Calibration GUI working directory: {Path.cwd()}")
 
         # Create Experiment using the YAML file
-        from pyptv.parameter_manager import ParameterManager
+        from .parameter_manager import ParameterManager
         pm = ParameterManager()
         pm.from_yaml(self.yaml_path)
         self.experiment = Experiment(pm=pm)
@@ -418,7 +418,7 @@ class CalibrationGUI(HasTraits):
     )
 
     def _button_edit_cal_parameters_fired(self):
-        from pyptv.parameter_gui import Calib_Params
+        from .parameter_gui import Calib_Params
         
         # Create and show the calibration parameters GUI
         calib_params_gui = Calib_Params(experiment=self.experiment)

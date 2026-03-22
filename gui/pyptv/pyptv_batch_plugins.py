@@ -19,7 +19,7 @@ from .experiment import Experiment
 
 def load_plugins_config(exp_path: Path):
     """Load available plugins from experiment parameters (YAML) with fallback to plugins.json"""
-    from pyptv.experiment import Experiment
+    from .experiment import Experiment
     try:
         experiment = Experiment()
         experiment.pm.from_yaml(exp_path)  # Corrected to use exp_path

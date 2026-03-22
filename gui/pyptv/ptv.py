@@ -976,7 +976,7 @@ def full_scipy_calibration(
     cal: Calibration, XYZ: np.ndarray, targs: TargetArray, cpar: ControlParams, flags=[]
 ):
     """Full calibration using scipy.optimize"""
-    from pyptv._backend import convert_arr_metric_to_pixel, image_coordinates
+    from ._backend import convert_arr_metric_to_pixel, image_coordinates
 
     def _residuals_k(x, cal, XYZ, xy, cpar):
         cal.set_radial_distortion(x)
@@ -1106,7 +1106,7 @@ def dumbbell_target_func(targets, cpar, calibs, db_length, db_weight):
     float
         The weighted ray convergence + length error measure.
     """
-    from pyptv._backend import multi_cam_point_positions
+    from ._backend import multi_cam_point_positions
 
     num_cams = cpar.get_num_cams()
     num_targs = targets.shape[1]
@@ -1162,7 +1162,7 @@ def dumbbell_target_func(targets, cpar, calibs, db_length, db_weight):
 
 def dumbbell_target_residuals(targets, cpar, calibs, db_length, db_weight):
     """Return residuals per target pair for least-squares optimization."""
-    from pyptv._backend import multi_cam_point_positions
+    from ._backend import multi_cam_point_positions
 
     num_targs = targets.shape[1]
     if num_targs % 2 != 0:
@@ -1202,7 +1202,7 @@ def dumbbell_ba_residuals(
     calib_vec packs active camera extrinsics and per-frame 3D endpoints.
     targets is shaped (num_cams, num_frames, 2, 2) in metric coordinates.
     """
-    from pyptv._backend import image_coordinates
+    from ._backend import image_coordinates
 
     if db_length <= 0:
         raise ValueError("Dumbbell length must be positive")
@@ -1433,7 +1433,7 @@ def calib_dumbbell(cal_gui)-> None:
     metric_by_cam = np.array(metric_by_cam)
 
     if db_eps > 0:
-        from pyptv._backend import multi_cam_point_positions
+        from ._backend import multi_cam_point_positions
 
         keep_mask = np.ones(num_frames, dtype=bool)
         removed = 0
@@ -1457,8 +1457,8 @@ def calib_dumbbell(cal_gui)-> None:
             raise ValueError("All frames filtered by dumbbell length eps")
 
     def _print_camera_residuals(label: str, metric_targets: np.ndarray) -> None:
-        from pyptv._backend import multi_cam_point_positions
-        from pyptv._backend import image_coordinates
+        from ._backend import multi_cam_point_positions
+        from ._backend import image_coordinates
 
         num_cams_local, num_frames_local, num_targs_local, _ = metric_targets.shape
         sums = np.zeros(num_cams_local, dtype=float)
@@ -1522,7 +1522,7 @@ def calib_dumbbell(cal_gui)-> None:
     calib_vec = calib_vec.flatten()
 
     def _init_dumbbell_points(metric_targets: np.ndarray) -> np.ndarray:
-        from pyptv._backend import multi_cam_point_positions
+        from ._backend import multi_cam_point_positions
 
         num_cams_local, num_frames_local, _, _ = metric_targets.shape
         points = np.zeros((num_frames_local, 2, 3), dtype=float)
@@ -1643,7 +1643,7 @@ def calib_dumbbell(cal_gui)-> None:
 def calib_particles(exp):
     """Calibration with particles."""
 
-    from pyptv._backend import Frame
+    from ._backend import Frame
     
     # Handle both Experiment objects and MainGUI objects
     if hasattr(exp, 'pm'):
@@ -1741,7 +1741,7 @@ def calib_particles(exp):
 
 def clone_calibration(calibration_obj):
     """Return a copy of a Calibration object using all get/set methods."""
-    from pyptv._backend import Calibration
+    from ._backend import Calibration
     import numpy as np
     new_cal = Calibration()
     new_cal.set_pos(np.array(calibration_obj.get_pos()))

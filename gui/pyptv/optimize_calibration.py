@@ -17,7 +17,7 @@ def _():
     import shutil
     import numpy as np
     from pathlib import Path
-    import pyptv.parameter_manager as pm
+    from . import parameter_manager as pm
 
     os.chdir(Path(__file__).parent.absolute())
     param_file = Path("../tests/test_cavity/parameters_Run1.yaml")
@@ -263,7 +263,7 @@ def _(Path):
 
 @app.cell
 def _():
-    import pyptv
+    from . import pyptv
 
     dir(pyptv)
     return
@@ -271,7 +271,7 @@ def _():
 
 @app.cell
 def _():
-    import pyptv.legacy_parameters as legacy_parameters
+    from . import legacy_parameters as legacy_parameters
 
     dir(legacy_parameters)
     return

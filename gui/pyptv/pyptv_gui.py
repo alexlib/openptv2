@@ -841,7 +841,7 @@ class TreeMenuHandler(Handler):
         info.object.clear_plots(remove_background=False)
 
         # Compute trajectories using flowtracks utility
-        from pyptv.flowtracks_utils import compute_flowtracks_trajectories_from_guiobj
+        from .flowtracks_utils import compute_flowtracks_trajectories_from_guiobj
         results = compute_flowtracks_trajectories_from_guiobj(info.object)
         
         # Draw trajectories on camera views
@@ -872,7 +872,7 @@ class TreeMenuHandler(Handler):
         seq_params = info.object.get_parameter('sequence')
         seq_first = seq_params['first']
         info.object.load_set_seq_image(seq_first, display_only=True)
-        from pyptv.flowtracks_utils import export_ptv_is_to_paraview
+        from .flowtracks_utils import export_ptv_is_to_paraview
         export_ptv_is_to_paraview()
 
 
@@ -1507,7 +1507,7 @@ def main():
         if arg_path.is_file() and arg_path.suffix in {".yaml", ".yml"}:
             yaml_file = arg_path
             print(f"YAML parameter file provided: {yaml_file}")
-            from pyptv.parameter_manager import ParameterManager
+            from .parameter_manager import ParameterManager
             pm = ParameterManager()
             pm.from_yaml(yaml_file)
 
