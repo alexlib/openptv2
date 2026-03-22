@@ -1527,7 +1527,7 @@ def main():
             raise OSError(f"Argument must be a directory or YAML file, got: {arg_path}")
     else:
         # Fallback to default test directory
-        exp_path = software_path / "tests" / "test_cavity"
+        exp_path = software_path / "gui" / "tests" / "test_cavity"
         exp = Experiment()
         exp.populate_runs(exp_path)
         yaml_file = exp.active_params.yaml_path
