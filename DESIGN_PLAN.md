@@ -35,7 +35,7 @@ openptv2/
 ├── bindings/               # Cython bindings (from openptv/py_bind)
 │   ├── src/
 │   ├── tests/
-│   └── pyproject.toml      # scikit-build-core build config
+│   └── pyproject.toml      # setuptools build config
 │
 ├── algorithms/             # Python/Numba fallback engine (from openptv-python)
 │   ├── tracking.py
@@ -48,6 +48,16 @@ openptv2/
 │   ├── pyptv/
 │   ├── tests/
 │   └── plugins/
+│
+├── openptv2/               # Unified Python package (Phase 3)
+│   ├── __init__.py         # Main entry point, exports all classes
+│   ├── engine.py           # Engine selector (optv vs python)
+│   ├── calibration.py      # Calibration wrapper
+│   ├── correspondence.py   # Correspondence wrapper
+│   ├── tracker.py          # Tracker wrapper
+│   ├── tracking_framebuf.py # Frame buffer wrapper
+│   ├── validate.py         # Validation CLI
+│   └── version.py          # Version info
 │
 ├── docs/                   # Combined documentation
 │   ├── sphinx/             # API reference
@@ -65,6 +75,12 @@ openptv2/
 ├── README.md
 └── LICENSE
 ```
+
+**Note**: The `openptv2/` folder is the **Phase 3 unification package** that provides:
+- Unified API: `import openptv2` as single entry point
+- Engine selection: Switch between optv (C/Cython) and python (Numba) engines
+- Flexible integration: Glues together Cython bindings, Python algorithms, and GUI
+- Backward compatibility: Maintains `optv` and `pyptv` API aliases
 
 ---
 
@@ -245,6 +261,8 @@ openptv2-validate params.yaml --tolerance 1e-10
 
 1. **Unify API**
    - `import openptv2` as single entry point
+   - `openptv2/` folder provides unified interface to all components
+   - Engine selector integrates optv and python engines
    - Maintain `optv` and `pyptv` compatibility aliases
 
 2. **Merge documentation**
@@ -431,7 +449,7 @@ openptv2-gui --params parameters.yaml
 |----------|------|-----------|
 | Repository name: `openptv2` | 2026-03-21 | Clear evolution from existing repos |
 | Directory structure: Option B (functional separation) | 2026-03-21 | Clear separation of concerns, easier maintenance |
-| Build system: scikit-build-core + Cython | 2026-03-21 | Modern standard for C extensions, easy wheel distribution |
+| Build system: setuptools + Cython | 2026-03-22 | Proven approach from openptv, avoids scikit-build-core complexity |
 | Engine switching: Both global and per-function | 2026-03-21 | Maximum flexibility for users and developers |
 | Engine results: Automated testing with 1e-10 tolerance | 2026-03-21 | Ensure identical results between engines |
 | Python/C implementations: Side-by-side permanent | 2026-03-21 | Python for debugging/development, C for production |
@@ -445,6 +463,7 @@ openptv2-gui --params parameters.yaml
 | Migration: Copy → Refactor → Unify | 2026-03-21 | Safest path to working version |
 | Testing: Start with existing tests, expand later | 2026-03-21 | Preserve test coverage, add gradually |
 | Documentation: Combine existing docs first | 2026-03-21 | Working docs before enhancements |
+| `openptv2/` package folder | 2026-03-22 | Phase 3 unification: flexible integration layer for bindings, algorithms, and GUI |
 
 ---
 
@@ -473,6 +492,7 @@ openptv2-gui --params parameters.yaml
 | Jupyter/marimo notebooks | Low | Future |
 | C++ migration exploration | Low | Future |
 | PyTorch/JAX algorithms | Low | Future |
+| `openptv2/` unification package | High | Phase 3 - folder created, implementation pending |
 
 ---
 
