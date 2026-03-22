@@ -36,6 +36,11 @@ env/
 *.log
 test_output_*.log
 
+# Test output files
+bindings/tests/testing_fodder/*.818
+bindings/tests/testing_fodder/*_targets
+bindings/tests/testing_fodder/round_trip.*
+
 # GUI test output
 gui/tests/test_cavity/res/
 gui/tests/test_cavity/img/*_targets

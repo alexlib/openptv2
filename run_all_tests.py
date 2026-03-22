@@ -254,8 +254,7 @@ class TestRunner:
 
         # Run pytest from the tests directory (required for relative paths in tests)
         print_info("Running pytest on bindings/tests/...")
-        # Skip test_framebuf.py which has 2 failing tests due to C library file I/O issues
-        cmd = [self.python, '-m', 'pytest', '.', '-v', '--tb=short', '--ignore=test_framebuf.py']
+        cmd = [self.python, '-m', 'pytest', '.', '-v', '--tb=short']
         if not self.verbose:
             cmd.append('--tb=line')
         
