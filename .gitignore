@@ -36,17 +36,31 @@ env/
 *.log
 test_output_*.log
 
+# Test output files (generated during tests, not test data)
+bindings/tests/testing_fodder/burgers/tmp*
+bindings/tests/testing_fodder/burgers/res_orig/
+bindings/tests/testing_fodder/track/res_orig/
+bindings/tests/testing_fodder/track/newpart/
+bindings/tests/testing_fodder/track/cal/calibration_target.txt
+tests/testing_fodder/burgers/tmp*
+tests/testing_fodder/burgers/res_orig/
+tests/testing_fodder/track/res_orig/
+tests/testing_fodder/track/newpart/
+tests/testing_fodder/track/cal/calibration_target.txt
+
 # GUI test output
-gui/tests/test_cavity/res/
-gui/tests/test_cavity/img/*_targets
-gui/tests/test_cavity/cal/*.ori
-gui/tests/test_cavity/*.addpar
-gui/tests/test_cavity/tmp.*
-.pytest_cache/
-.coverage
-htmlcov/
-.tox/
-.nox/
+gui/tests/test_cavity/tmp*
+gui/tests/test_cavity/parameters_test_new/
+gui/tests/test_cavity/res/added.*
+gui/tests/test_cavity/res/ptv_is.*
+gui/tests/test_cavity/res/rt_is.*
+
+# Integration test output
+tests/integration/test_cavity/tmp*
+tests/integration/test_cavity/parameters_test_new/
+tests/integration/test_cavity/res/added.*
+tests/integration/test_cavity/res/ptv_is.*
+tests/integration/test_cavity/res/rt_is.*
 
 # Build artifacts
 *.o

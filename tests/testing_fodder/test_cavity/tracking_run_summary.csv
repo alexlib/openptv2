@@ -1,0 +1,2 @@
+angle,dacc,dvxmax,dvxmin,dvymax,dvymin,dvzmax,dvzmin,flagNewParticles,avg_particles,avg_links,avg_lost,param_changed,change
+100.0,2.8,15.5,-15.5,15.5,-15.5,15.5,-15.5,True,1028.5,505.2,523.2,,0.0

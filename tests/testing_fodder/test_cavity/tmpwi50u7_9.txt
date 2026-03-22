@@ -1,0 +1,1 @@
+/home/user/Documents/GitHub/openptv2/.venv311/bin/python: Error while finding module specification for 'gui.gui.pyptv.pyptv_batch' (ModuleNotFoundError: No module named 'gui.gui')
