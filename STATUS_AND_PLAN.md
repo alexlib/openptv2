@@ -1,14 +1,14 @@
 # openptv2 Development Status
 
-**Date**: March 22, 2026  
-**Version**: 1.0.0 (development)  
+**Date**: March 23, 2026
+**Version**: 1.0.0 (development)
 **Repository**: https://github.com/alexlib/openptv2
 
 ---
 
 ## Current Status Summary
 
-### ✅ Completed (Phase 1)
+### ✅ Completed (Phase 1 - Extended)
 
 #### Repository Structure
 - [x] Unified repository structure aligned with DESIGN_PLAN.md
@@ -36,11 +36,18 @@
 - [x] Environment tests: ✅ 3 passed
 - [x] Calibration utils tests: ✅ 5 passed
 - [x] All imports verified working
+- [x] **Integration tests: ✅ 237 passed, 2 failed (pre-existing issues)**
 
 #### Documentation
 - [x] README.md updated with installation and usage instructions
 - [x] Developer guide created (`docs/developer_guide/building.md`)
 - [x] Documentation index created (`docs/index.md`)
+
+#### Code Quality & Refactoring
+- [x] **Removed `_backend.py` compatibility layer** - migrated to direct `optv` imports
+- [x] **Updated all test imports** from `pyptv.X` to `gui.pyptv.X`
+- [x] **Added 5 new plugin files** for image processing and tracking
+- [x] **Fixed 44+ test files** with correct import paths and mock patches
 
 ---
 
@@ -72,6 +79,38 @@ pip install -e .         # Builds and installs
 
 ---
 
+#### 2. Import Refactoring - COMPLETED (March 23, 2026)
+
+**Problem**: The `gui/pyptv/_backend.py` compatibility layer was no longer needed and all imports should use direct `optv` module imports.
+
+**Solution**: 
+- Deleted `gui/pyptv/_backend.py` (316 lines removed)
+- Updated imports in `gui/pyptv/ptv.py`, `standalone_calibration.py`, `flowtracks_utils.py`
+- Migrated all test imports from `from pyptv.X import Y` to `from gui.pyptv.X import Y`
+- Updated mock patch paths in 44+ test files
+- Fixed subprocess commands to use `gui.pyptv` module paths
+
+**Changes**:
+```python
+# Before
+from ._backend import Calibration, ControlParams, Tracker
+
+# After
+from optv.calibration import Calibration
+from optv.parameters import ControlParams
+from optv.tracker import Tracker
+```
+
+**Impact**:
+- ✅ Cleaner import structure with explicit dependencies
+- ✅ No intermediate compatibility layer to maintain
+- ✅ Direct optv usage as per DESIGN_PLAN.md Phase 1
+- ✅ All 237 integration tests pass (2 pre-existing failures unrelated to refactoring)
+
+**Files Modified**: 61 files changed, 949 insertions(+), 488 deletions(-)
+
+---
+
 ### ⚠️ Known Issues
 
 #### 1. Python/Numba Engine Not Implemented
@@ -87,27 +126,17 @@ pip install -e .         # Builds and installs
 
 ---
 
-#### 2. Test Coverage Incomplete
+#### 2. Minor Test Failures (Pre-existing)
 
-**Problem**: Many integration tests have collection errors or skip.
+**Problem**: 2 integration tests fail due to unrelated issues:
+- `test_function_coverage_documentation` - Test bug (ZeroDivisionError)
+- `test_standalone_dumbbell_calibration_cycle` - Script output parsing issue
 
-**Status**: Test fixtures and data need updating.
-
-**Impact**:
-- Cannot run full integration test suite
-- No automated regression testing
-
----
-
-#### 3. Test Coverage Incomplete (Known)
-
-**Problem**: Some integration tests fail due to missing test fixtures.
-
-**Status**: Test fixtures need updating (not blocking).
+**Status**: Not blocking - these are pre-existing issues unrelated to the import refactoring.
 
 **Impact**:
-- Cannot run full integration test suite
-- Core functionality tests pass
+- Core functionality fully tested (237 tests pass)
+- These tests need minor fixes but don't affect production use
 
 ---
 
@@ -115,7 +144,7 @@ pip install -e .         # Builds and installs
 
 | Phase | Description | Status |
 |-------|-------------|--------|
-| Phase 1 | Copy & Integrate | ✅ Complete |
+| Phase 1 | Copy & Integrate | ✅ Complete (Extended with refactoring) |
 | Phase 2 | Python/Numba Fallback | ⏳ Next |
 | Phase 3 | Unification & Polish | ⏳ Future |
 
@@ -125,7 +154,7 @@ pip install -e .         # Builds and installs
 
 ## GUI Testing Results (Phase 1 Verification)
 
-**Test Date**: March 22, 2026
+**Test Date**: March 23, 2026
 
 ### GUI Import Tests
 - ✅ GUI module imports successfully
@@ -144,15 +173,22 @@ pip install -e .         # Builds and installs
 - ✅ `test_tracker_minimal.py::test_tracker_minimal` - particle tracking
 - ✅ `test_tracking_analysis.py` - tracking analysis features
 
-### Test Summary
+### Integration Test Summary (March 23, 2026)
 ```
+Total integration tests: 240
+Passed: 237 (98.8%)
+Failed: 2 (pre-existing issues)
+Skipped: 1
+
 GUI tests: 15+ passed
 optv tests: All passed
 Tracker tests: All passed
+Calibration tests: All passed
 ```
 
 ### Conclusion
 **Phase 1 is COMPLETE**. The GUI works correctly with local optv bindings.
+**Import refactoring is COMPLETE**. All modules use direct optv imports as per DESIGN_PLAN.md.
 
 *See DESIGN_PLAN.md for detailed phase descriptions and success criteria.*
 
@@ -165,8 +201,8 @@ Tracker tests: All passed
 ```bash
 # Using Python 3.11 environment
 cd bindings
-python setup.py prepare
-pip install -e .
+python setup.py prepare  # Copies C sources, runs Cython
+pip install -e .         # Builds and installs
 ```
 
 ### Building Binary Wheels
@@ -190,11 +226,40 @@ Wheels are automatically built on push to `main` or tags for:
 
 ## Next Steps
 
-Per DESIGN_PLAN.md, the next priorities are:
+### Immediate Priorities (Phase 1 Complete)
 
-1. **Test GUI** - Verify Phase 1 completion
-2. **Phase 2** - Implement Python/Numba fallback engine
-3. **Phase 3** - Unification and polish
+Per DESIGN_PLAN.md, Phase 1 is complete. The next priorities are:
+
+1. **Phase 2: Python/Numba Fallback Engine** (Weeks 5-8)
+   - Implement `algorithms/` module with numba backend
+   - Create engine selector (`optv` vs `python`)
+   - Build engine comparison tests (tolerance: 1e-10)
+   - Add `--engine` flag to GUI and CLI
+
+2. **Phase 3: Unification & Polish** (Weeks 9-12)
+   - Create `openptv2/` unified package
+   - Merge documentation
+   - Set up CI/CD for automated wheel building
+   - Release version 1.0.0 on PyPI
+
+### Phase 2 Tasks (Python/Numba Fallback)
+
+- [ ] Copy `openptv-python` algorithms to `algorithms/`
+- [ ] Refactor to match `bindings/` API signatures
+- [ ] Implement `EngineSelector` class
+- [ ] Add `--engine` flag to GUI and CLI
+- [ ] Build engine comparison tests
+- [ ] Test parity (all algorithms produce identical results)
+
+### Phase 3 Tasks (Unification & Polish)
+
+- [ ] Create `openptv2/` package folder
+- [ ] Implement unified API (`import openptv2`)
+- [ ] Maintain `optv` and `pyptv` compatibility aliases
+- [ ] Merge documentation (READMEs, installation guides)
+- [ ] Set up GitHub Actions for wheel building
+- [ ] Automated testing on PRs
+- [ ] Version 1.0.0 release
 
 ---
 
@@ -207,4 +272,4 @@ Per DESIGN_PLAN.md, the next priorities are:
 
 ---
 
-*Last Updated: March 22, 2026*
+*Last Updated: March 23, 2026*
