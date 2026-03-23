@@ -108,6 +108,10 @@ class Target:
         """Return sum of grey values."""
         return self.sumg
 
+    def set_tnr(self, tnr: int) -> None:
+        """Set tracking number (used in tracking)."""
+        self.tnr = tnr
+
     def pos(self):
         """Return target position."""
         # return Coord2d(self.x, self.y)
@@ -135,48 +139,112 @@ def sort_target_y(targets: List[Target]) -> List[Target]:
     return sorted(targets, key=lambda t: t.y)
 
 
-# class TargetArray(list):
-#     """Target array class."""
+class TargetArray:
+    """
+    Represents an array of targets. Allows indexing and iteration.
+    Matches the Cython TargetArray API from bindings/optv/tracking_framebuf.pyx
+    """
 
-#     def __init__(self, num_targets: int = 0):
-#         super().__init__(Target() for item in range(num_targets))
+    def __init__(self, size: int = 0):
+        """
+        Arguments:
+        size - if >0, allocates an empty target array (which should be filled
+            by iteration later), otherwise nothing is allocated.
+        """
+        if size <= 0:
+            self._targets = []
+        else:
+            self._targets = [Target() for _ in range(size)]
+        self._num_targets = len(self._targets)
 
-#     def __setitem__(self, index, item):
-#         super().__setitem__(index, item)
+    def sort_y(self):
+        """
+        Sorts the targets in-place by their Y coordinate. This is required for
+        tracking (and relied on by OpenPTV-Python, so a useful step for those
+        who need backwards-compatible output). Also renumbers the targets'
+        ``pnr`` property to the new sort order.
+        """
+        self._targets.sort(key=lambda t: t.y)
+        for tnum, targ in enumerate(self._targets):
+            targ.pnr = tnum
+        self._num_targets = len(self._targets)
 
-#     def insert(self, index, item):
-#         super().insert(index, item)
+    def write(self, file_base: str, frame_num: int):
+        """
+        Writes a _targets file - a text format for targets. First line: number
+        of targets. Each following line: pnr, x, y, n, nx, ny, sumg, tnr.
+        the output file name is of the form <base_name><frame>_targets.
 
-#     def append(self, item):
-#         super().append(str(item))
+        Arguments:
+        file_base - path to the file, base part.
+        frame_num - frame number part of the file name.
+        """
+        if frame_num > 0:
+            fname = f"{file_base}{frame_num:04d}_targets"
+        else:
+            fname = f"{file_base}_targets"
 
-#     def extend(self, other):
-#         if isinstance(other, type(self)):
-#             super().extend(other)
-#         else:
-#             super().extend(item for item in other)
+        with open(fname, "w", encoding="utf-8") as f:
+            f.write(f"{len(self._targets)}\n")
+            for targ in self._targets:
+                f.write(
+                    f"{targ.pnr} {targ.x} {targ.y} {targ.n} {targ.nx} "
+                    f"{targ.ny} {targ.sumg} {targ.tnr}\n"
+                )
 
-#     @property
-#     def num_targs(self):
-#         """Return the number of targets in the list."""
-#         return len(self)
+    def __getitem__(self, ix: int) -> Target:
+        """
+        Returns the Target at index `ix`.
+
+        Arguments:
+        ix - integer, index into the target array.
+
+        Returns:
+        Target instance at index ix.
+        """
+        if ix >= self._num_targets or ix < 0:
+            raise IndexError(f"Index {ix} out of range [0, {self._num_targets})")
+        return self._targets[ix]
+
+    def __setitem__(self, ix: int, item: Target):
+        """Set the Target at index `ix`."""
+        if ix >= self._num_targets or ix < 0:
+            raise IndexError(f"Index {ix} out of range [0, {self._num_targets})")
+        self._targets[ix] = item
+
+    def __len__(self):
+        return self._num_targets
+
+    def append(self, item: Target):
+        """Append a target to the array."""
+        self._targets.append(item)
+        self._num_targets = len(self._targets)
+
+    def extend(self, items):
+        """Extend the array with more targets."""
+        self._targets.extend(items)
+        self._num_targets = len(self._targets)
+
+    @property
+    def num_targs(self):
+        """Return the number of targets in the array."""
+        return self._num_targets
+
+    def __iter__(self):
+        """Iterate over targets."""
+        return iter(self._targets)
 
 
 def read_targets(file_base: str, frame_num: int) -> List[Target]:
     """Read targets from a file."""
     buffer = []
 
-    # # if file_base has an extension, remove it
-    # file_base = file_base.split(".")[0]
-
     if frame_num > 0:
-        # filename = f"{file_base}{frame_num:04d}_targets"
-        fname = file_base % frame_num + "_targets"
+        fname = f"{file_base}{frame_num:04d}_targets"
     else:
         fname = f"{file_base}_targets"
 
     filename = Path(fname)
-    print(f" filename: {filename}")
 
     try:
         with open(filename, "r", encoding="utf-8") as file:
@@ -351,7 +419,7 @@ class Frame:
 
         for file_base in target_file_base:
             if frame_num > 0:
-                required_files.append(Path(file_base % frame_num + "_targets"))
+                required_files.append(Path(f"{file_base}{frame_num:04d}_targets"))
             else:
                 required_files.append(Path(f"{file_base}_targets"))
 
