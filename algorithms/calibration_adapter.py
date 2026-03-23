@@ -43,8 +43,13 @@ class Calibration:
             ori_file = ori_file.decode("utf-8")
         if isinstance(add_file, bytes):
             add_file = add_file.decode("utf-8")
-        if isinstance(add_file, str):
-            add_file = Path(add_file) if add_file else None
+
+        # Handle None or string for add_file
+        if add_file is not None and isinstance(add_file, str):
+            add_file = Path(add_file)
+        elif add_file is None:
+            add_file = None
+
         if isinstance(ori_file, str):
             ori_file = Path(ori_file)
 
@@ -61,8 +66,13 @@ class Calibration:
             ori_file = ori_file.decode("utf-8")
         if isinstance(add_file, bytes):
             add_file = add_file.decode("utf-8")
-        if isinstance(add_file, str):
-            add_file = Path(add_file) if add_file else None
+
+        # Handle None or string
+        if add_file is not None and isinstance(add_file, str):
+            add_file = Path(add_file)
+        elif add_file is None:
+            add_file = None
+
         if isinstance(ori_file, str):
             ori_file = Path(ori_file)
 

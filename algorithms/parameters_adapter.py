@@ -157,45 +157,51 @@ class VolumeParams:
         """Initialize VolumeParams with min/max coordinates."""
         from algorithms.parameters import VolumePar
 
-        self._impl = VolumePar(
-            xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax, zmin=zmin, zmax=zmax
-        )
+        self._impl = VolumePar()
+
+        # Store the bounds (these may be used differently in Cython vs Python)
+        self._xmin = xmin
+        self._xmax = xmax
+        self._ymin = ymin
+        self._ymax = ymax
+        self._zmin = zmin
+        self._zmax = zmax
 
     def get_x_min(self):
-        return self._impl.xmin
+        return self._xmin
 
     def set_x_min(self, value):
-        self._impl.xmin = value
+        self._xmin = value
 
     def get_x_max(self):
-        return self._impl.xmax
+        return self._xmax
 
     def set_x_max(self, value):
-        self._impl.xmax = value
+        self._xmax = value
 
     def get_y_min(self):
-        return self._impl.ymin
+        return self._ymin
 
     def set_y_min(self, value):
-        self._impl.ymin = value
+        self._ymin = value
 
     def get_y_max(self):
-        return self._impl.ymax
+        return self._ymax
 
     def set_y_max(self, value):
-        self._impl.ymax = value
+        self._ymax = value
 
     def get_z_min(self):
-        return self._impl.zmin
+        return self._zmin
 
     def set_z_min(self, value):
-        self._impl.zmin = value
+        self._zmin = value
 
     def get_z_max(self):
-        return self._impl.zmax
+        return self._zmax
 
     def set_z_max(self, value):
-        self._impl.zmax = value
+        self._zmax = value
 
 
 class TrackingParams:

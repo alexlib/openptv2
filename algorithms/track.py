@@ -12,6 +12,7 @@ from .constants import (
     COORD_UNUSED,
     CORRES_NONE,
     MAX_CANDS,
+    MAX_TARGETS,
     NEXT_NONE,
     POS_INF,
     PREV_NONE,
@@ -1352,7 +1353,7 @@ class Tracker:
     call either ``step_forward()`` while it still return True, then call
     ``finalize()`` to finish the run. Alternatively, ``full_forward()`` will
     do all this for you.
-    
+
     This class matches the Cython Tracker API from bindings/optv/tracker.pyx
     for interchangeability with the optv engine.
     """
@@ -1420,7 +1421,7 @@ class Tracker:
     def step_forward(self):
         """
         Perform one tracking step for the current frame of iteration.
-        
+
         Returns:
             bool: True if more frames to process, False if done.
         """
@@ -1445,7 +1446,7 @@ class Tracker:
     def step_forward_3d(self):
         """
         Perform one tracking step for the current frame (3D version).
-        
+
         Note: This is a stub for API compatibility. 3D tracking not yet implemented.
         """
         raise NotImplementedError("3D tracking not yet implemented")
@@ -1453,7 +1454,7 @@ class Tracker:
     def full_forward_3d(self):
         """
         Do a full 3D tracking run from restart to finalize.
-        
+
         Note: This is a stub for API compatibility. 3D tracking not yet implemented.
         """
         raise NotImplementedError("3D tracking not yet implemented")
@@ -1461,7 +1462,7 @@ class Tracker:
     def full_backward(self):
         """
         Do a full backward run on existing tracking results.
-        
+
         Note: Results must exist or this will fail.
         """
         trackback_c(self.run_info)
@@ -1478,10 +1479,10 @@ class Tracker:
     ):
         """
         Track with visualization callbacks - Python engine only.
-        
+
         This method wraps the tracking loop to inject callbacks at key points,
         enabling real-time visualization of the tracking process.
-        
+
         Arguments:
         ---------
         callback: Function called after each frame.
@@ -1495,11 +1496,11 @@ class Tracker:
             Signature: on_particle(frame_num: int, particle_id: int, details: dict)
         on_algorithm_step: Optional function called during algorithm steps.
             Signature: on_algorithm_step(step_name: str, details: dict)
-        
+
         Yields:
         -------
         dict: State dictionary after each frame (same format as callback)
-        
+
         Example:
         -------
         >>> tracker = Tracker(cpar, vpar, tpar, spar, cals)
@@ -1509,21 +1510,21 @@ class Tracker:
         ...     pass  # Process state
         """
         self.restart()
-        
+
         while self.step_forward():
             state = self._get_current_state()
-            
+
             # Call per-frame callback
             callback(self.current_step(), state)
-            
+
             yield state
-        
+
         self.finalize()
 
     def _get_current_state(self):
         """
         Extract current tracking state as NumPy arrays.
-        
+
         Returns:
         -------
         dict: Current state with keys:
@@ -1534,30 +1535,30 @@ class Tracker:
             - 'lost_count': int
         """
         fb = self.run_info.fb
-        
+
         # Extract particle positions (3D)
         if fb.num_parts > 0:
-            particles = np.array([
-                list(fb.path_info[i].x) for i in range(fb.num_parts)
-            ])
-            
+            particles = np.array([list(fb.path_info[i].x) for i in range(fb.num_parts)])
+
             # Extract correspondences
-            correspondences = np.array([
-                [fb.correspond[i].nr] + list(fb.correspond[i].p)
-                for i in range(fb.num_parts)
-            ])
+            correspondences = np.array(
+                [
+                    [fb.correspond[i].nr] + list(fb.correspond[i].p)
+                    for i in range(fb.num_parts)
+                ]
+            )
         else:
             particles = np.empty((0, 3))
             correspondences = np.empty((0, 5), dtype=np.int32)
-        
+
         # Count added/lost (simplified - would need more tracking for exact counts)
         added_count = fb.num_parts
         lost_count = 0  # Would need to track across frames for accurate count
-        
+
         return {
-            'frame_number': self.current_step(),
-            'particles': particles,
-            'correspondences': correspondences,
-            'added_count': added_count,
-            'lost_count': lost_count,
+            "frame_number": self.current_step(),
+            "particles": particles,
+            "correspondences": correspondences,
+            "added_count": added_count,
+            "lost_count": lost_count,
         }
