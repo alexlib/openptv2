@@ -7,7 +7,7 @@ from typing import List, Tuple
 
 import yaml
 
-from openptv_python.constants import TR_MAX_CAMS
+from .constants import TR_MAX_CAMS
 
 TrackParTuple = namedtuple(
     "TrackParTuple",
