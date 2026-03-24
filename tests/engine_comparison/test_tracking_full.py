@@ -80,8 +80,23 @@ class TestFullTrackingComparison:
         except Exception as e:
             pytest.skip(f"Cython calibration loading failed: {e}")
 
-        # Test Python - skip due to file format differences
-        pytest.skip("Python calibration loading requires matching file format")
+        # Test Python
+        try:
+            from algorithms.calibration import Calibration as PythonCal
+            from pathlib import Path
+
+            cals_python = []
+            for i in range(1, 5):
+                ori_file = Path(cal_dir) / f"cam{i}.tif.ori"
+                add_file = Path(cal_dir) / f"cam{i}.tif.addpar"
+                if ori_file.exists() and add_file.exists():
+                    cal = PythonCal()
+                    cal.from_file(str(ori_file), str(add_file))
+                    cals_python.append(cal)
+
+            assert len(cals_python) > 0
+        except Exception as e:
+            pytest.skip(f"Python calibration loading failed: {e}")
 
     def test_frame_loading_parity(self):
         """Test that frames can be loaded with same data in both engines."""

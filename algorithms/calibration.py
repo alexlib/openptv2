@@ -129,7 +129,7 @@ class Calibration:
         self.mmlut_data = mmlut_data
 
     @classmethod
-    def from_file(cls, ori_file: Path, add_file: Path | None):
+    def from_file(cls, ori_file: Path | str, add_file: Path | str | None):
         """
         Read exterior and interior orientation, and if available, parameters for distortion corrections.
 
@@ -143,6 +143,11 @@ class Calibration:
         -------
         - ext_par, int_par, glass, addp: Calibration object parts without multimedia lookup table.
         """
+        # Convert to Path if string
+        ori_file = Path(ori_file) if isinstance(ori_file, str) else ori_file
+        if add_file is not None:
+            add_file = Path(add_file) if isinstance(add_file, str) else add_file
+
         if not ori_file.exists():
             raise IOError(f"File {ori_file} does not exist")
 
