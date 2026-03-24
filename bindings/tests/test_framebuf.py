@@ -28,33 +28,29 @@ class TestTargets(unittest.TestCase):
         self.assertEqual(tarr[0].pos(), (1.5, 2.5))
         self.assertEqual(tarr[1].pos(), (3.5, 4.5))
 
-    @unittest.skip("Known issue: file path not found")
     def test_read_targets(self):
         """Reading a targets file from Python."""
-        targs = read_targets("../../liboptv/tests/testing_fodder/sample_", 42)
+        targs = read_targets("tests/testing_fodder/sample_", 42)
 
         self.assertEqual(len(targs), 2)
         self.assertEqual([targ.tnr() for targ in targs], [1, 0])
         self.assertEqual([targ.pos()[0] for targ in targs], [1127.0, 796.0])
         self.assertEqual([targ.pos()[1] for targ in targs], [796.0, 809.0])
 
-    @unittest.skip("Known issue: file path not found")
-    @unittest.skip("Known issue: causes segmentation fault in Cython/C code")
     def test_sort_y(self):
         """sorting on the Y coordinate in place"""
-        targs = read_targets("testing_fodder/frame/cam1.", 333)
-        revs = read_targets("testing_fodder/frame/cam1_reversed.", 333)
+        targs = read_targets("tests/testing_fodder/frame/cam1.", 333)
+        revs = read_targets("tests/testing_fodder/frame/cam1_reversed.", 333)
         revs.sort_y()
 
         for targ, rev in zip(targs, revs):
             self.assertTrue(targ.pos(), rev.pos())
 
-    @unittest.skip("Known issue: file path not found")
     def test_write_targets(self):
         """Round-trip test of writing targets."""
-        targs = read_targets("../../liboptv/tests/testing_fodder/sample_", 42)
-        targs.write(b"testing_fodder/round_trip.", 1)
-        tback = read_targets("testing_fodder/round_trip.", 1)
+        targs = read_targets("tests/testing_fodder/sample_", 42)
+        targs.write(b"tests/testing_fodder/round_trip.", 1)
+        tback = read_targets("tests/testing_fodder/round_trip.", 1)
 
         self.assertEqual(len(targs), len(tback))
         self.assertEqual([targ.tnr() for targ in targs], [targ.tnr() for targ in tback])
@@ -66,20 +62,21 @@ class TestTargets(unittest.TestCase):
         )
 
     def tearDown(self):
-        filename = "testing_fodder/round_trip.0001_targets"
+        filename = "tests/testing_fodder/round_trip.0001_targets"
         if os.path.exists(filename):
             os.remove(filename)
 
 
 class TestFrame(unittest.TestCase):
-    @unittest.skip("Known issue: file path not found")
     def test_read_frame(self):
         """reading a frame"""
-        targ_files = ["testing_fodder/frame/cam%d.".encode() % c for c in range(1, 5)]
+        targ_files = [
+            "tests/testing_fodder/frame/cam%d.".encode() % c for c in range(1, 5)
+        ]
         frm = Frame(
             4,
-            corres_file_base=b"testing_fodder/frame/rt_is",
-            linkage_file_base=b"testing_fodder/frame/ptv_is",
+            corres_file_base=b"tests/testing_fodder/frame/rt_is",
+            linkage_file_base=b"tests/testing_fodder/frame/ptv_is",
             target_file_base=targ_files,
             frame_num=333,
         )

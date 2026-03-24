@@ -99,16 +99,12 @@ openptv2-validate = "openptv2.validate:main"
 pyptv = "gui.pyptv.pyptv_gui:main"
 
 [tool.setuptools]
-# Package configuration
-# Note: optv package is installed by CMake build, not listed here
 packages = [
     "openptv2",
     "algorithms",
-    "gui",
-    "gui.pyptv",
-    "gui.pyptv.calibration_output",
-    "pyptv",
+    "optv",
 ]
+package-dir = {optv = "bindings/optv"}
 include-package-data = true
 zip-safe = false
 
