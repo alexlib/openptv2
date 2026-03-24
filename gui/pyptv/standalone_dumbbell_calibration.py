@@ -93,7 +93,12 @@ def _read_dumbbell_targets_metric(
 
     # per_frame: (F, C, 2, 2)
     arr = np.asarray(per_frame, dtype=float)
-    if arr.ndim != 4 or arr.shape[1] != num_cams or arr.shape[2] != 2 or arr.shape[3] != 2:
+    if (
+        arr.ndim != 4
+        or arr.shape[1] != num_cams
+        or arr.shape[2] != 2
+        or arr.shape[3] != 2
+    ):
         raise ValueError(f"Unexpected targets shape: {arr.shape}")
 
     # reshape into (C, F*2, 2)
@@ -158,7 +163,9 @@ def run_dumbbell_calibration(
     # Targets are read from the per-camera "short base" as used by ptv.read_targets
     target_bases = pm.get_target_filenames()
     if not target_bases or len(target_bases) < num_cams:
-        raise ValueError("ParameterManager.get_target_filenames() returned an empty/short list")
+        raise ValueError(
+            "ParameterManager.get_target_filenames() returned an empty/short list"
+        )
 
     resolved_bases = []
     for base in target_bases:
@@ -374,11 +381,15 @@ def run_dumbbell_calibration(
                     ori_path = (yaml_path.parent / ori_path).resolve()
                 addpar_path = Path(str(ori_path).replace(".ori", ".addpar"))
                 ori_path.parent.mkdir(parents=True, exist_ok=True)
-                cals[cam].write(str(ori_path).encode("utf-8"), str(addpar_path).encode("utf-8"))
+                cals[cam].write(
+                    str(ori_path).encode("utf-8"), str(addpar_path).encode("utf-8")
+                )
             else:
                 # Fallback: use cpar's calibration base
                 base = cpar.get_cal_img_base_name(cam)
-                cals[cam].write(f"{base}.ori".encode("utf-8"), f"{base}.addpar".encode("utf-8"))
+                cals[cam].write(
+                    f"{base}.ori".encode("utf-8"), f"{base}.addpar".encode("utf-8")
+                )
 
     fun_final = float(best_fun)
     _print_camera_residuals("Final", per_frame_metric)
@@ -391,3 +402,39 @@ def run_dumbbell_calibration(
         n_frames_used=n_used,
         n_frames_total=n_total,
     )
+
+
+def main():
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Run dumbbell calibration")
+    parser.add_argument("yaml_path", type=str, help="Path to parameters YAML file")
+    parser.add_argument(
+        "--fixed-cams",
+        type=int,
+        nargs="+",
+        default=[],
+        help="Camera indices to keep fixed (0-based)",
+    )
+    parser.add_argument("--maxiter", type=int, default=1000, help="Max iterations")
+    parser.add_argument(
+        "--write", action="store_true", help="Write results to calibration files"
+    )
+    args = parser.parse_args()
+
+    result = run_dumbbell_calibration(
+        args.yaml_path,
+        fixed_cams=args.fixed_cams,
+        maxiter=args.maxiter,
+        write=args.write,
+    )
+
+    print(f"fun_initial={result.fun_initial} fun_final={result.fun_final}")
+    print(
+        f"n_frames_used={result.n_frames_used}, n_frames_total={result.n_frames_total}"
+    )
+    print(f"success={result.success}, message={result.message}")
+
+
+if __name__ == "__main__":
+    main()

@@ -18,9 +18,6 @@ def _copy_tree(src: Path, dst: Path) -> None:
     shutil.copytree(src, dst)
 
 
-@pytest.mark.skip(
-    reason="Known bug: generate_dumbbell_target_files writes to wrong location"
-)
 def test_standalone_dumbbell_calibration_cycle(tmp_path: Path):
     """GT calib -> synthetic dumbbell target files -> standalone script -> recover extrinsics."""
 
