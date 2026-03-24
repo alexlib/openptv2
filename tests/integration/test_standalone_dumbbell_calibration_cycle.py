@@ -8,7 +8,10 @@ from pathlib import Path
 
 import numpy as np
 
-from gui.pyptv.dumbbell_ground_truth import DumbbellGTSpec, generate_dumbbell_target_files
+from gui.pyptv.dumbbell_ground_truth import (
+    DumbbellGTSpec,
+    generate_dumbbell_target_files,
+)
 
 
 def _copy_tree(src: Path, dst: Path) -> None:
@@ -32,7 +35,14 @@ def test_standalone_dumbbell_calibration_cycle(tmp_path: Path):
     summary = generate_dumbbell_target_files(
         yaml_path,
         out_root=None,  # write relative to work dir
-        spec=DumbbellGTSpec(first=10001, last=10004, length=25.0, noise_sigma_px=0.0, seed=0, max_tries_per_frame=2000),
+        spec=DumbbellGTSpec(
+            first=10001,
+            last=10004,
+            length=25.0,
+            noise_sigma_px=0.0,
+            seed=0,
+            max_tries_per_frame=2000,
+        ),
     )
     assert summary["frames_written"] == 4
 
@@ -41,19 +51,22 @@ def test_standalone_dumbbell_calibration_cycle(tmp_path: Path):
     ori1 = work / "cal" / "cam2.tif.ori"
     # 3) Perturb the starting calibration (pos + angles) and write it back.
     from optv.calibration import Calibration
+
     start = Calibration()
     addpar = Path(str(ori1).replace(".ori", ".addpar"))
     start.from_file(str(ori1), str(addpar))
     start.set_pos(start.get_pos() + np.array([2.0, -1.0, 1.5]))
     start.set_angles(start.get_angles() + np.array([0.01, -0.005, 0.008]))
-    start.write(str(ori1).encode("utf-8"), str(ori1).replace(".ori", ".addpar").encode("utf-8"))
+    start.write(
+        str(ori1).encode("utf-8"), str(ori1).replace(".ori", ".addpar").encode("utf-8")
+    )
 
     # 4) Run the standalone script (as requested) to re-fit extrinsics.
     proc = subprocess.run(
         [
             sys.executable,
             "-m",
-            "gui.scripts.standalone_dumbbell_calibration",
+            "gui.pyptv.standalone_dumbbell_calibration",
             str(yaml_path),
             "--fixed-cams",
             "0",
@@ -80,5 +93,3 @@ def test_standalone_dumbbell_calibration_cycle(tmp_path: Path):
     assert fun_final < fun_start * 0.5, (
         f"Residuals not improved enough: start={fun_start}, final={fun_final}"
     )
-
-

@@ -103,6 +103,8 @@ packages = [
     "openptv2",
     "algorithms",
     "optv",
+    "gui.pyptv",
+    "gui.plugins",
 ]
 package-dir = {optv = "bindings/optv"}
 include-package-data = true
