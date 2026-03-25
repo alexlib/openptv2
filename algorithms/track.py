@@ -1442,6 +1442,7 @@ class Tracker:
         for step in range(self.run_info.seq_par.first, self.run_info.seq_par.last):
             trackcorr_c_loop(self.run_info, step)
         trackcorr_c_finish(self.run_info, self.run_info.seq_par.last)
+        self.step = 0
 
     def step_forward_3d(self):
         """

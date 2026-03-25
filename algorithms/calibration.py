@@ -325,6 +325,33 @@ class Calibration:
 
         self.glass_par = gvec
 
+    def increment_attribute(self, name: str, delta: float) -> None:
+        """Increment one calibration attribute used by orientation routines."""
+        if name in {"x0", "y0", "z0", "omega", "phi", "kappa"}:
+            self.ext_par[name] += delta
+            if name in {"omega", "phi", "kappa"}:
+                self.update_rotation_matrix()
+            return
+
+        added_index = {
+            "k1": 0,
+            "k2": 1,
+            "k3": 2,
+            "p1": 3,
+            "p2": 4,
+            "scx": 5,
+            "she": 6,
+        }.get(name)
+        if added_index is not None:
+            self.added_par[added_index] += delta
+            return
+
+        if name in {"cc", "xh", "yh"}:
+            self.int_par[name] += delta
+            return
+
+        raise AttributeError(f"Unknown calibration attribute: {name}")
+
     def get_glass_vec(self) -> np.ndarray:
         """Return the glass vector, a 3-element array of float."""
         return self.glass_par
@@ -433,7 +460,6 @@ def compare_glass(g1: np.ndarray, g2: np.ndarray) -> bool:
         bool: True if vectors are identical, False otherwise
     """
     return np.array_equal(g1, g2)
-
 
 def compare_calibration(c1: Calibration, c2: Calibration) -> bool:
     """Compare calibration parameters."""

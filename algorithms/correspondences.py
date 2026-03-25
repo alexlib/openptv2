@@ -16,6 +16,57 @@ from .epi import epi_mm
 from .find_candidate import find_candidate
 from .parameters import ControlPar, VolumePar
 from .tracking_frame_buf import Frame, Target, n_tupel_dtype
+from .trafo import dist_to_flat, pixel_to_metric
+
+
+class MatchedCoords:
+    """Python equivalent of the native MatchedCoords wrapper."""
+
+    def __init__(
+        self,
+        targs,
+        cpar: ControlPar,
+        cal: Calibration,
+        tol: float = 0.00001,
+        reset_numbers: bool = True,
+    ):
+        self._num_pts = len(targs)
+        self.buf = np.recarray(
+            self._num_pts, dtype=[("x", np.float64), ("y", np.float64), ("pnr", np.int_)]
+        )
+
+        for tnum in range(self._num_pts):
+            targ = targs[tnum]
+            if reset_numbers:
+                targ.pnr = tnum
+
+            x_m, y_m = pixel_to_metric(targ.x, targ.y, cpar)
+            x_f, y_f = dist_to_flat(x_m, y_m, cal, tol)
+            self.buf[tnum].x = x_f
+            self.buf[tnum].y = y_f
+            self.buf[tnum].pnr = targ.pnr
+
+        self.buf = self.buf[np.argsort(self.buf.x)]
+
+    def __getitem__(self, index):
+        return self.buf[index]
+
+    def as_arrays(self):
+        pos = np.empty((self._num_pts, 2), dtype=np.float64)
+        pos[:, 0] = self.buf.x
+        pos[:, 1] = self.buf.y
+        pnr = self.buf.pnr.astype(np.int_)
+        return pos, pnr
+
+    def get_by_pnrs(self, pnrs):
+        pnrs = np.asarray(pnrs)
+        pos = np.full((len(pnrs), 2), np.nan, dtype=np.float64)
+        for row in self.buf:
+            which = np.flatnonzero(row.pnr == pnrs)
+            if len(which) > 0:
+                pos[which[0], 0] = row.x
+                pos[which[0], 1] = row.y
+        return pos
 
 Correspond_dtype = np.dtype(
     [
@@ -335,9 +386,25 @@ def match_pairs(
     **The function returns None.**
     """
     count = 0
+    mm = getattr(cpar, "mm", None)
+    if mm is None:
+        get_mm = getattr(cpar, "get_multimedia_params", None)
+        if callable(get_mm):
+            mm = get_mm()
+    if mm is None:
+        raise AttributeError("Control parameters object does not expose multimedia parameters")
+    num_cams = getattr(cpar, "num_cams", None)
+    if num_cams is None:
+        num_cams = getattr(getattr(cpar, "_control_par", None), "num_cams", None)
+    if num_cams is None:
+        get_num_cams = getattr(cpar, "get_num_cams", None)
+        if callable(get_num_cams):
+            num_cams = get_num_cams()
+    if num_cams is None:
+        raise AttributeError("Control parameters object does not expose num_cams")
 
-    for i1 in range(cpar.num_cams - 1):
-        for i2 in range(i1 + 1, cpar.num_cams):
+    for i1 in range(num_cams - 1):
+        for i2 in range(i1 + 1, num_cams):
             for i in range(frm.num_targets[i1]):
                 # if corrected[i1][i].x == PT_UNUSED: # no idea why it's here
                 #     continue
@@ -347,7 +414,7 @@ def match_pairs(
                     corrected[i1][i].y,
                     calib[i1],
                     calib[i2],
-                    cpar.mm,
+                    mm,
                     vpar,
                 )
 
@@ -627,20 +694,29 @@ def correspondences(
 
     """
     nmax = NMAX
+    num_cams = getattr(cpar, "num_cams", None)
+    if num_cams is None:
+        num_cams = getattr(getattr(cpar, "_control_par", None), "num_cams", None)
+    if num_cams is None:
+        get_num_cams = getattr(cpar, "get_num_cams", None)
+        if callable(get_num_cams):
+            num_cams = get_num_cams()
+    if num_cams is None:
+        raise AttributeError("Control parameters object does not expose num_cams")
 
     # Allocation of scratch buffers for internal tasks and return-value space
-    con0 = np.recarray((nmax * cpar.num_cams,), dtype=n_tupel_dtype)
+    con0 = np.recarray((nmax * num_cams,), dtype=n_tupel_dtype)
     con0.p = 0
     con0.corr = 0.0
 
-    con = np.recarray((nmax * cpar.num_cams,), dtype=n_tupel_dtype)
+    con = np.recarray((nmax * num_cams,), dtype=n_tupel_dtype)
     con.p = 0
     con.corr = 0.0
 
-    tim = safely_allocate_target_usage_marks(cpar.num_cams, nmax)
+    tim = safely_allocate_target_usage_marks(num_cams, nmax)
 
     # allocate memory for lists of correspondences
-    corr_list = safely_allocate_adjacency_lists(cpar.num_cams, frm.num_targets)
+    corr_list = safely_allocate_adjacency_lists(num_cams, frm.num_targets)
 
     # if I understand correctly, the number of matches cannot be more than the number of
     # targets (dots) in the first image. In the future we'll replace it by the maximum
@@ -652,38 +728,38 @@ def correspondences(
     match_pairs(corr_list, corrected, frm, vpar, cpar, calib)
 
     # search consistent quadruplets in the corr_list
-    if cpar.num_cams == 4:
+    if num_cams == 4:
         four_camera_matching(
             corr_list, frm.num_targets[0], vpar.corrmin, con0, 4 * nmax
         )
 
-        match_counts[0] = take_best_candidates(con0, con, cpar.num_cams, tim)
+        match_counts[0] = take_best_candidates(con0, con, num_cams, tim)
         match_counts[3] += match_counts[0]
 
     # search consistent triplets: 123, 124, 134, 234
-    if (cpar.num_cams == 4 and cpar.all_cam_flag == 0) or cpar.num_cams == 3:
+    if (num_cams == 4 and cpar.all_cam_flag == 0) or num_cams == 3:
         three_camera_matching(
-            corr_list, cpar.num_cams, frm.num_targets, vpar.corrmin, con0, 4 * nmax, tim
+            corr_list, num_cams, frm.num_targets, vpar.corrmin, con0, 4 * nmax, tim
         )
 
         match_counts[1] = take_best_candidates(
-            con0, con[match_counts[3] :].view(np.recarray), cpar.num_cams, tim
+            con0, con[match_counts[3] :].view(np.recarray), num_cams, tim
         )
         match_counts[3] += match_counts[1]
 
     # Search consistent pairs: 12, 13, 14, 23, 24, 34
-    if cpar.num_cams > 1 and cpar.all_cam_flag == 0:
+    if num_cams > 1 and cpar.all_cam_flag == 0:
         consistent_pair_matching(
-            corr_list, cpar.num_cams, frm.num_targets, vpar.corrmin, con0, 4 * nmax, tim
+            corr_list, num_cams, frm.num_targets, vpar.corrmin, con0, 4 * nmax, tim
         )
         match_counts[2] = take_best_candidates(
-            con0, con[match_counts[3] :].view(np.recarray), cpar.num_cams, tim
+            con0, con[match_counts[3] :].view(np.recarray), num_cams, tim
         )
         match_counts[3] += match_counts[2]
 
     # Give each used pix the correspondence number
     for i in range(match_counts[3]):
-        for j in range(cpar.num_cams):
+        for j in range(num_cams):
             # Skip cameras without a correspondence obviously.
             if con[i].p[j] < 0:
                 continue
@@ -743,12 +819,12 @@ def single_cam_correspondences(
     # intermediary that's x-sorted.
     for pt in range(num_points):
         # From Beat code (issue #118) pix[0][geo[0][i].pnr].tnr=i;
-
-        p1 = corrected[pt].pnr
+        _, pnrs = corrected[pt].as_arrays()
+        p1 = int(pnrs[pt])
         clique_ids[0, pt] = p1
 
         if p1 > -1:
-            targ = img_pts[p1]
+            targ = img_pts[0][p1]
             clique_targs[0, pt, 0] = targ.x
             clique_targs[0, pt, 1] = targ.y
             # we also update the tnr, see docstring of correspondences
@@ -758,3 +834,11 @@ def single_cam_correspondences(
     sorted_corresp = [clique_ids]
 
     return (sorted_pos, sorted_corresp, num_points)
+
+
+def single_cam_correspondence(
+    img_pts: List[Target],
+    corrected: np.recarray,  # List[Coord2d]
+):
+    """Compatibility alias for the native single-camera correspondence API."""
+    return single_cam_correspondences(img_pts, corrected)
