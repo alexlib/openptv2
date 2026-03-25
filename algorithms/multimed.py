@@ -79,15 +79,27 @@ def fast_multimed_r_nlay(
     if zdiff == 0:
         zdiff = 1.0
     it = 0
-    rdiff = 0.1  # Initialize to enter the loop
+    rdiff = 0.1
     beta2 = np.zeros(nlay, dtype=np.float64)
+
+    # Handle r == 0 case (at optical center)
+    if r == 0:
+        return 1.0
 
     while abs(rdiff) > 0.001 and it < n_iter:
         beta1 = np.arctan(rq / zdiff)
         sin_beta1 = np.sin(beta1)
+
+        # Calculate angles for each layer with safety check
         for layer in range(nlay):
-            beta2[layer] = np.arcsin(sin_beta1 * n1 / n2[layer])
-        beta3 = np.arcsin(np.sin(beta1) * n1 / n3)
+            ratio = sin_beta1 * n1 / n2[layer]
+            # Clamp to valid range for arcsin to avoid NaN
+            ratio = np.clip(ratio, -1.0, 1.0)
+            beta2[layer] = np.arcsin(ratio)
+
+        # Calculate final angle with clamping
+        final_ratio = np.clip(sin_beta1 * n1 / n3, -1.0, 1.0)
+        beta3 = np.arcsin(final_ratio)
 
         rbeta = (z0 - d[0]) * np.tan(beta1) - zout * np.tan(beta3)
         for layer in range(nlay):
@@ -97,7 +109,10 @@ def fast_multimed_r_nlay(
         rq += rdiff
         it += 1
 
-    return 1.0 if r == 0 else float(rq / r)
+    if r == 0 or rq == 0:
+        return 1.0
+
+    return float(rq / r)
 
 
 def trans_cam_point(

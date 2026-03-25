@@ -246,3 +246,97 @@ def dist_to_flat(dist_x: float, dist_y: float, cal: Calibration, tol: float = 1e
     flat_x -= cal.int_par.xh
     flat_y -= cal.int_par.yh
     return flat_x, flat_y
+
+
+def correct_arr_brown_affine(
+    input: np.ndarray, calibration: Calibration, out: np.ndarray = None
+) -> np.ndarray:
+    """Correct array of points using Brown affine model (distortion removal).
+
+    Arguments:
+    ---------
+    input: np.ndarray of shape (n, 2) with distorted metric coordinates.
+    calibration: Calibration object with distortion parameters.
+    out: optional output array (if None, new array is created).
+
+    Returns:
+    --------
+    np.ndarray of shape (n, 2) with corrected flat coordinates.
+    """
+    input = np.atleast_2d(input)
+    if input.shape[1] != 2:
+        raise ValueError("Input array must have shape (n, 2)")
+
+    if out is None:
+        out = np.empty_like(input)
+
+    for i in range(input.shape[0]):
+        x, y = correct_brown_affine(input[i, 0], input[i, 1], calibration.added_par)
+        out[i, 0] = x
+        out[i, 1] = y
+
+    return out
+
+
+def distort_arr_brown_affine(
+    input: np.ndarray, calibration: Calibration, out: np.ndarray = None
+) -> np.ndarray:
+    """Apply Brown affine distortion to array of points.
+
+    Arguments:
+    ---------
+    input: np.ndarray of shape (n, 2) with flat metric coordinates.
+    calibration: Calibration object with distortion parameters.
+    out: optional output array (if None, new array is created).
+
+    Returns:
+    --------
+    np.ndarray of shape (n, 2) with distorted coordinates.
+    """
+    input = np.atleast_2d(input)
+    if input.shape[1] != 2:
+        raise ValueError("Input array must have shape (n, 2)")
+
+    if out is None:
+        out = np.empty_like(input)
+
+    for i in range(input.shape[0]):
+        x, y = distort_brown_affine(input[i, 0], input[i, 1], calibration.added_par)
+        out[i, 0] = x
+        out[i, 1] = y
+
+    return out
+
+
+def distorted_to_flat(
+    inp: np.ndarray,
+    calibration: Calibration,
+    out: np.ndarray = None,
+    tol: float = 1e-5,
+) -> np.ndarray:
+    """Convert distorted metric coordinates to flat (undistorted) coordinates.
+
+    Arguments:
+    ---------
+    inp: np.ndarray of shape (n, 2) with distorted metric coordinates.
+    calibration: Calibration object.
+    out: optional output array.
+    tol: tolerance for iterative correction.
+
+    Returns:
+    --------
+    np.ndarray of shape (n, 2) with flat coordinates.
+    """
+    inp = np.atleast_2d(inp)
+    if inp.shape[1] != 2:
+        raise ValueError("Input array must have shape (n, 2)")
+
+    if out is None:
+        out = np.empty_like(inp)
+
+    for i in range(inp.shape[0]):
+        x, y = dist_to_flat(inp[i, 0], inp[i, 1], calibration, tol)
+        out[i, 0] = x
+        out[i, 1] = y
+
+    return out

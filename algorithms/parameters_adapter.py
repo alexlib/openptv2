@@ -62,7 +62,63 @@ class ControlParams:
             n3=object_side_n,
         )
 
+    def __getattr__(self, name):
+        """Delegate any unknown attribute access to the underlying implementation."""
+        if hasattr(self, "_impl") and self._impl is not None:
+            return getattr(self._impl, name)
+        raise AttributeError(
+            f"'{type(self).__name__}' object has no attribute '{name}'"
+        )
+
+    @property
+    def img_base_name(self):
+        """Return list of image base names using getter methods."""
+        return [
+            self._impl.get_img_base_name(i) for i in range(self._impl.get_num_cams())
+        ]
+
+    @property
+    def num_cams(self):
+        # First check if we have a cached value, otherwise get from impl
+        if hasattr(self, "_num_cams"):
+            return self._num_cams
+        return self.get_num_cams()
+
+    @property
+    def imx(self):
+        if hasattr(self, "_imx"):
+            return self._imx
+        return getattr(self._impl, "imx", 0)
+
+    @property
+    def imy(self):
+        if hasattr(self, "_imy"):
+            return self._imy
+        return getattr(self._impl, "imy", 0)
+
+    @property
+    def mm(self):
+        if hasattr(self, "_mm"):
+            return self._mm
+        return getattr(self._impl, "mm", None)
+
+    @property
+    def pix_x(self):
+        if hasattr(self, "_pix_x"):
+            return self._pix_x
+        return getattr(self._impl, "pix_x", 0.0)
+
+    @property
+    def pix_y(self):
+        if hasattr(self, "_pix_y"):
+            return self._pix_y
+        return getattr(self._impl, "pix_y", 0.0)
+
     def get_num_cams(self):
+        # Use the actual _impl if it has num_cams attribute, otherwise use cached
+        if hasattr(self._impl, "num_cams"):
+            return self._impl.num_cams
+        return self._impl.get_num_cams()
         return self._impl.num_cams
 
     def get_hp_flag(self):
@@ -129,6 +185,21 @@ class SequenceParams:
 
         self._impl = SequencePar(img_base_name=img_base, first=first, last=last)
 
+    def __getattr__(self, name):
+        """Delegate any unknown attribute access to the underlying implementation."""
+        if hasattr(self, "_impl") and self._impl is not None:
+            return getattr(self._impl, name)
+        raise AttributeError(
+            f"'{type(self).__name__}' object has no attribute '{name}'"
+        )
+
+    @property
+    def img_base_name(self):
+        """Return list of image base names using getter methods."""
+        return [
+            self._impl.get_img_base_name(i) for i in range(self._impl.get_num_cams())
+        ]
+
     def get_first(self):
         return self._impl.first
 
@@ -166,6 +237,11 @@ class VolumeParams:
         self._ymax = ymax
         self._zmin = zmin
         self._zmax = zmax
+
+        # Additional attributes used by epipolar code
+        self.z_min_lay = [zmin]
+        self.z_max_lay = [zmax]
+        self.x_lay = [xmin, xmax]
 
     def get_x_min(self):
         return self._xmin

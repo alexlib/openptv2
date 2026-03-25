@@ -94,6 +94,10 @@ class Target:
         """Set target number."""
         self.pnr = pnr
 
+    def pnr(self):
+        """Return target number (API compatibility)."""
+        return self.pnr
+
     def set_pixel_counts(self, n, nx, ny):
         """Set number of pixels and number of pixels in x and y."""
         self.n = n
@@ -111,6 +115,10 @@ class Target:
     def set_tnr(self, tnr: int) -> None:
         """Set tracking number (used in tracking)."""
         self.tnr = tnr
+
+    def tnr(self):
+        """Return tracking number (API compatibility)."""
+        return self.tnr
 
     def pos(self):
         """Return target position."""

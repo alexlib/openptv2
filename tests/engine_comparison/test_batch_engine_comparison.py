@@ -128,13 +128,41 @@ def run_batch(yaml_file: Path, engine: str) -> Dict[str, Any]:
     last = params.get("sequence", {}).get("last", 10004)
 
     if engine == "python":
-        from openptv2.engine import set_engine
+        from openptv2.engine import set_engine, get_engine
 
         set_engine("python")
+        print(f"[ENGINE] Set to: {engine}, current: {get_engine()}")
+
+        # Verify Python engine modules are available
+        try:
+            from algorithms.track import Tracker as PythonTracker
+            from algorithms.tracking_frame_buf import Target as PythonTarget
+
+            print(f"[ENGINE] Python Tracker available: {PythonTracker}")
+            print(f"[ENGINE] Python Target available: {PythonTarget}")
+        except ImportError as e:
+            print(f"[ENGINE] ERROR: Python modules not available: {e}")
     else:
-        from openptv2.engine import set_engine
+        from openptv2.engine import set_engine, get_engine
 
         set_engine("optv")
+        print(f"[ENGINE] Set to: {engine}, current: {get_engine()}")
+
+        # Verify optv engine modules are available
+        try:
+            from optv.tracker import Tracker as OptvTracker
+            from optv.tracking_framebuf import Target as OptvTarget
+
+            print(f"[ENGINE] Optv Tracker available: {OptvTracker}")
+            print(f"[ENGINE] Optv Target available: {OptvTarget}")
+        except ImportError as e:
+            print(f"[ENGINE] ERROR: Optv modules not available: {e}")
+
+    # Check what tracker module the batch actually uses
+    import gui.pyptv.ptv as ptv_module
+
+    print(f"[ENGINE] ptv module Tracker: {ptv_module.Tracker}")
+    print(f"[ENGINE] ptv module Tracker module: {ptv_module.Tracker.__module__}")
 
     pyptv_batch.main(yaml_file, first, last)
 

@@ -22,7 +22,13 @@ from skimage.color import rgb2gray
 
 # Backend imports from optv
 from optv.calibration import Calibration
-from optv.parameters import ControlParams, SequenceParams, TrackingParams, TargetParams, VolumeParams
+from optv.parameters import (
+    ControlParams,
+    SequenceParams,
+    TrackingParams,
+    TargetParams,
+    VolumeParams,
+)
 from optv.correspondences import correspondences, MatchedCoords
 from optv.image_processing import preprocess_image
 from optv.orientation import point_positions
@@ -113,7 +119,9 @@ def _ensure_target_output_writable(short_file_bases: List[str]) -> None:
 
     for short_file_base in short_file_bases:
         directory = Path(short_file_base).parent
-        directory_key = str(directory.resolve()) if directory.exists() else str(directory)
+        directory_key = (
+            str(directory.resolve()) if directory.exists() else str(directory)
+        )
         if directory_key in checked_dirs:
             continue
 
@@ -121,183 +129,217 @@ def _ensure_target_output_writable(short_file_bases: List[str]) -> None:
         checked_dirs.add(directory_key)
 
 
-
-def image_split(img: np.ndarray, order = [0,1,3,2]) -> List[np.ndarray]:
-    """Split image into four quadrants.
-    """
+def image_split(img: np.ndarray, order=[0, 1, 3, 2]) -> List[np.ndarray]:
+    """Split image into four quadrants."""
     list_of_images = [
         img[: img.shape[0] // 2, : img.shape[1] // 2],
-        img[: img.shape[0] // 2, img.shape[1] // 2:],
-        img[img.shape[0] // 2:, : img.shape[1] // 2],
-        img[img.shape[0] // 2:, img.shape[1] // 2:],
+        img[: img.shape[0] // 2, img.shape[1] // 2 :],
+        img[img.shape[0] // 2 :, : img.shape[1] // 2],
+        img[img.shape[0] // 2 :, img.shape[1] // 2 :],
     ]
     list_of_images = [list_of_images[i] for i in order]
     return list_of_images
-    
+
+
 def negative(img: np.ndarray) -> np.ndarray:
-    """Convert an 8-bit image to its negative.
-    """
+    """Convert an 8-bit image to its negative."""
     return 255 - img
 
 
 def simple_highpass(img: np.ndarray, cpar: ControlParams) -> np.ndarray:
-    """Apply a simple highpass filter to an image using liboptv preprocess_image.
-    """
+    """Apply a simple highpass filter to an image using liboptv preprocess_image."""
     return preprocess_image(img, DEFAULT_NO_FILTER, cpar, DEFAULT_HIGHPASS_FILTER_SIZE)
 
 
 def _populate_cpar(ptv_params: dict, num_cams: int) -> ControlParams:
     """Populate a ControlParams object from a dictionary containing full parameters.
-    
+
     Args:
         params: Full parameter dictionary with global num_cams and ptv section
     """
     # ptv_params = params.get('ptv', {})
 
-    img_cal_list = ptv_params.get('img_cal', [])
+    img_cal_list = ptv_params.get("img_cal", [])
     if len([x for x in img_cal_list if x is not None]) < num_cams:
         raise ValueError("img_cal_list is too short")
-    
+
     cpar = ControlParams(num_cams)
     # Set required parameters directly from the dictionary, no defaults
-    cpar.set_image_size((ptv_params['imx'], ptv_params['imy']))
-    cpar.set_pixel_size((ptv_params['pix_x'], ptv_params['pix_y']))
-    cpar.set_hp_flag(ptv_params['hp_flag'])
-    cpar.set_allCam_flag(ptv_params['allcam_flag'])
-    cpar.set_tiff_flag(ptv_params['tiff_flag'])
-    cpar.set_chfield(ptv_params['chfield'])
+    cpar.set_image_size((ptv_params["imx"], ptv_params["imy"]))
+    cpar.set_pixel_size((ptv_params["pix_x"], ptv_params["pix_y"]))
+    cpar.set_hp_flag(ptv_params["hp_flag"])
+    cpar.set_allCam_flag(ptv_params["allcam_flag"])
+    cpar.set_tiff_flag(ptv_params["tiff_flag"])
+    cpar.set_chfield(ptv_params["chfield"])
 
     mm_params = cpar.get_multimedia_params()
-    mm_params.set_n1(ptv_params['mmp_n1'])
-    mm_params.set_layers([ptv_params['mmp_n2']], [ptv_params['mmp_d']])
-    mm_params.set_n3(ptv_params['mmp_n3'])
+    mm_params.set_n1(ptv_params["mmp_n1"])
+    mm_params.set_layers([ptv_params["mmp_n2"]], [ptv_params["mmp_d"]])
+    mm_params.set_n3(ptv_params["mmp_n3"])
 
-    img_cal_list = ptv_params['img_cal']
-    
+    img_cal_list = ptv_params["img_cal"]
+
     for i in range(num_cams):  # Use global num_cams
         cpar.set_cal_img_base_name(i, img_cal_list[i])
     return cpar
 
+
 def _populate_spar(seq_params: dict, num_cams: int) -> SequenceParams:
     """Populate a SequenceParams object from a dictionary.
-    
+
     Raises ValueError if required sequence parameters are missing.
     No default values are provided to avoid silent failures.
     """
-    required_params = ['first', 'last', 'base_name']
+    required_params = ["first", "last", "base_name"]
     missing_params = [param for param in required_params if param not in seq_params]
-    
+
     if missing_params:
-        raise ValueError(f"Missing required sequence parameters: {missing_params}. "
-                        f"Available parameters: {list(seq_params.keys())}")
-    
-    base_name_list = seq_params['base_name']
+        raise ValueError(
+            f"Missing required sequence parameters: {missing_params}. "
+            f"Available parameters: {list(seq_params.keys())}"
+        )
+
+    base_name_list = seq_params["base_name"]
 
     if len([x for x in base_name_list if x is not None]) < num_cams:
-        raise ValueError(f"base_name_list length ({len(base_name_list)}) does not match num_cams ({num_cams})")
+        raise ValueError(
+            f"base_name_list length ({len(base_name_list)}) does not match num_cams ({num_cams})"
+        )
 
     spar = SequenceParams(num_cams=num_cams)
-    spar.set_first(seq_params['first'])
-    spar.set_last(seq_params['last'])
-    
+    spar.set_first(seq_params["first"])
+    spar.set_last(seq_params["last"])
+
     # Set base names for each camera
     for i in range(num_cams):
         spar.set_img_base_name(i, base_name_list[i])
-    
+
     return spar
+
 
 def _populate_vpar(crit_params: dict) -> VolumeParams:
     """Populate a VolumeParams object from a dictionary."""
     vpar = VolumeParams()
-    vpar.set_X_lay(crit_params['X_lay'])
-    vpar.set_Zmin_lay(crit_params['Zmin_lay'])
-    vpar.set_Zmax_lay(crit_params['Zmax_lay'])
-    
+    vpar.set_X_lay(crit_params["X_lay"])
+    vpar.set_Zmin_lay(crit_params["Zmin_lay"])
+    vpar.set_Zmax_lay(crit_params["Zmax_lay"])
+
     # Set correspondence parameters
-    vpar.set_eps0(crit_params['eps0'])
-    vpar.set_cn(crit_params['cn'])
-    vpar.set_cnx(crit_params['cnx'])
-    vpar.set_cny(crit_params['cny'])
-    vpar.set_csumg(crit_params['csumg'])
-    vpar.set_corrmin(crit_params['corrmin'])
-    
+    vpar.set_eps0(crit_params["eps0"])
+    vpar.set_cn(crit_params["cn"])
+    vpar.set_cnx(crit_params["cnx"])
+    vpar.set_cny(crit_params["cny"])
+    vpar.set_csumg(crit_params["csumg"])
+    vpar.set_corrmin(crit_params["corrmin"])
+
     return vpar
+
 
 def _populate_track_par(track_params: dict) -> TrackingParams:
     """Populate a TrackingParams object from a dictionary.
-    
+
     Raises ValueError if required tracking parameters are missing.
     No default values are provided to avoid silent tracking failures.
     """
-    required_params = ['dvxmin', 'dvxmax', 'dvymin', 'dvymax', 'dvzmin', 'dvzmax', 'angle', 'dacc', 'flagNewParticles']
+    required_params = [
+        "dvxmin",
+        "dvxmax",
+        "dvymin",
+        "dvymax",
+        "dvzmin",
+        "dvzmax",
+        "angle",
+        "dacc",
+        "flagNewParticles",
+    ]
     missing_params = [param for param in required_params if param not in track_params]
-    
+
     if missing_params:
-        raise ValueError(f"Missing required tracking parameters: {missing_params}. "
-                        f"Available parameters: {list(track_params.keys())}")
-    
+        raise ValueError(
+            f"Missing required tracking parameters: {missing_params}. "
+            f"Available parameters: {list(track_params.keys())}"
+        )
+
     track_par = TrackingParams()
-    track_par.set_dvxmin(track_params['dvxmin'])
-    track_par.set_dvxmax(track_params['dvxmax'])
-    track_par.set_dvymin(track_params['dvymin'])
-    track_par.set_dvymax(track_params['dvymax'])
-    track_par.set_dvzmin(track_params['dvzmin'])
-    track_par.set_dvzmax(track_params['dvzmax'])
-    track_par.set_dangle(track_params['angle'])
-    track_par.set_dacc(track_params['dacc'])
-    track_par.set_add(track_params['flagNewParticles'])
+    track_par.set_dvxmin(track_params["dvxmin"])
+    track_par.set_dvxmax(track_params["dvxmax"])
+    track_par.set_dvymin(track_params["dvymin"])
+    track_par.set_dvymax(track_params["dvymax"])
+    track_par.set_dvzmin(track_params["dvzmin"])
+    track_par.set_dvzmax(track_params["dvzmax"])
+    track_par.set_dangle(track_params["angle"])
+    track_par.set_dacc(track_params["dacc"])
+    track_par.set_add(track_params["flagNewParticles"])
     return track_par
+
 
 def _populate_tpar(targ_params: dict, num_cams: int) -> TargetParams:
     """Populate a TargetParams object from a dictionary."""
     # targ_params = params.get('targ_rec', {})
-    
+
     # Get global num_cams - the single source of truth
     # num_cams = params.get('num_cams', 0)
-    
+
     tpar = TargetParams(num_cams)
     # Handle both 'targ_rec' and 'detect_plate' parameter variants
-    if 'targ_rec' in targ_params:
-        params = targ_params['targ_rec']
-        tpar.set_grey_thresholds(params['gvthres'])
-        tpar.set_pixel_count_bounds((params['nnmin'], params['nnmax']))
-        tpar.set_xsize_bounds((params['nxmin'], params['nxmax']))
-        tpar.set_ysize_bounds((params['nymin'], params['nymax']))
-        tpar.set_min_sum_grey(params['sumg_min'])
-        tpar.set_max_discontinuity(params['disco'])
-    elif 'detect_plate' in targ_params:
-        params = targ_params['detect_plate']
+    if "targ_rec" in targ_params:
+        params = targ_params["targ_rec"]
+        tpar.set_grey_thresholds(params["gvthres"])
+        tpar.set_pixel_count_bounds((params["nnmin"], params["nnmax"]))
+        tpar.set_xsize_bounds((params["nxmin"], params["nxmax"]))
+        tpar.set_ysize_bounds((params["nymin"], params["nymax"]))
+        tpar.set_min_sum_grey(params["sumg_min"])
+        tpar.set_max_discontinuity(params["disco"])
+    elif "detect_plate" in targ_params:
+        params = targ_params["detect_plate"]
         # Convert detect_plate keys to TargetParams fields
         # Ensure all required grey thresholds are present
-        required_gvth_keys = ['gvth_1', 'gvth_2', 'gvth_3', 'gvth_4']
+        required_gvth_keys = ["gvth_1", "gvth_2", "gvth_3", "gvth_4"]
         missing_keys = [k for k in required_gvth_keys if k not in params]
         if missing_keys:
-            raise ValueError(f"Missing required grey threshold keys in detect_plate: {missing_keys}")
-        tpar.set_grey_thresholds([
-            params['gvth_1'],
-            params['gvth_2'],
-            params['gvth_3'],
-            params['gvth_4'],
-        ])
+            raise ValueError(
+                f"Missing required grey threshold keys in detect_plate: {missing_keys}"
+            )
+        tpar.set_grey_thresholds(
+            [
+                params["gvth_1"],
+                params["gvth_2"],
+                params["gvth_3"],
+                params["gvth_4"],
+            ]
+        )
         # Remove default values - all parameters must be explicitly provided
-        required_detect_keys = ['min_npix', 'max_npix', 'min_npix_x', 'max_npix_x', 
-                               'min_npix_y', 'max_npix_y', 'sum_grey', 'tol_dis']
+        required_detect_keys = [
+            "min_npix",
+            "max_npix",
+            "min_npix_x",
+            "max_npix_x",
+            "min_npix_y",
+            "max_npix_y",
+            "sum_grey",
+            "tol_dis",
+        ]
         missing_detect_keys = [k for k in required_detect_keys if k not in params]
         if missing_detect_keys:
-            raise ValueError(f"Missing required detect_plate keys: {missing_detect_keys}")
-            
-        tpar.set_pixel_count_bounds((params['min_npix'], params['max_npix']))
-        tpar.set_xsize_bounds((params['min_npix_x'], params['max_npix_x']))
-        tpar.set_ysize_bounds((params['min_npix_y'], params['max_npix_y']))
-        tpar.set_min_sum_grey(params['sum_grey'])
-        tpar.set_max_discontinuity(params['tol_dis'])
+            raise ValueError(
+                f"Missing required detect_plate keys: {missing_detect_keys}"
+            )
+
+        tpar.set_pixel_count_bounds((params["min_npix"], params["max_npix"]))
+        tpar.set_xsize_bounds((params["min_npix_x"], params["max_npix_x"]))
+        tpar.set_ysize_bounds((params["min_npix_y"], params["max_npix_y"]))
+        tpar.set_min_sum_grey(params["sum_grey"])
+        tpar.set_max_discontinuity(params["tol_dis"])
     else:
-        raise ValueError("Target parameters must contain either 'targ_rec' or 'detect_plate' section.")
+        raise ValueError(
+            "Target parameters must contain either 'targ_rec' or 'detect_plate' section."
+        )
     return tpar
+
 
 def _read_calibrations(cpar: ControlParams, num_cams: int) -> List[Calibration]:
     """Read calibration files for all cameras.
-    
+
     Returns empty/default calibrations if files don't exist, which is normal
     for the calibration GUI before calibrations have been created.
     """
@@ -319,7 +361,7 @@ def _read_calibrations(cpar: ControlParams, num_cams: int) -> List[Calibration]:
         # Check if calibration files exist and are readable
         ori_exists = os.path.isfile(ori_file) and os.access(ori_file, os.R_OK)
         addpar_exists = os.path.isfile(addpar_file) and os.access(addpar_file, os.R_OK)
-        
+
         if ori_exists and addpar_exists:
             # Both files exist, load them
             cal.from_file(ori_file, addpar_file)
@@ -327,9 +369,13 @@ def _read_calibrations(cpar: ControlParams, num_cams: int) -> List[Calibration]:
         else:
             # Files don't exist yet - this is normal for calibration GUI
             # Create default/empty calibration
-            print(f"Calibration files not found for camera {i_cam + 1} - using defaults")
-            print(f"  Missing: {ori_file if not ori_exists else ''} {addpar_file if not addpar_exists else ''}")
-            
+            print(
+                f"Calibration files not found for camera {i_cam + 1} - using defaults"
+            )
+            print(
+                f"  Missing: {ori_file if not ori_exists else ''} {addpar_file if not addpar_exists else ''}"
+            )
+
         cals.append(cal)
 
     return cals
@@ -351,18 +397,18 @@ def py_start_proc_c(
         params = pm.parameters
         num_cams = pm.num_cams
 
-        cpar = _populate_cpar(params['ptv'], num_cams)
-        spar = _populate_spar(params['sequence'], num_cams)
-        vpar = _populate_vpar(params['criteria'])
-        track_par = _populate_track_par(params['track'])
+        cpar = _populate_cpar(params["ptv"], num_cams)
+        spar = _populate_spar(params["sequence"], num_cams)
+        vpar = _populate_vpar(params["criteria"])
+        track_par = _populate_track_par(params["track"])
 
         # Create a dict that contains targ_rec for _populate_tpar
         # Use targ_rec instead of detect_plate to match manual GUI operations
-        target_params_dict = {'targ_rec': params['targ_rec']}
+        target_params_dict = {"targ_rec": params["targ_rec"]}
         tpar = _populate_tpar(target_params_dict, num_cams)
 
-        epar = params.get('examine')
-        
+        epar = params.get("examine")
+
         cals = _read_calibrations(cpar, num_cams)
 
         return cpar, spar, vpar, track_par, tpar, cals, epar
@@ -372,17 +418,16 @@ def py_start_proc_c(
 
 
 def py_pre_processing_c(
-        num_cams: int,
-        list_of_images: List[np.ndarray], 
-        ptv_params: dict, 
+    num_cams: int,
+    list_of_images: List[np.ndarray],
+    ptv_params: dict,
 ) -> List[np.ndarray]:
-    """Apply pre-processing to a list of images.
-    """
+    """Apply pre-processing to a list of images."""
     # num_cams = len(list_of_images)
     cpar = _populate_cpar(ptv_params, num_cams)
     processed_images = []
     for i, img in enumerate(list_of_images):
-        img_lp = img.copy() 
+        img_lp = img.copy()
         processed_images.append(simple_highpass(img_lp, cpar))
 
     return processed_images
@@ -397,16 +442,18 @@ def py_detection_proc_c(
 ) -> Tuple[List[TargetArray], List[MatchedCoords]]:
     """Detect targets in a list of images."""
     # num_cams = len(ptv_params.get('img_cal', []))
-    
+
     if len(list_of_images) != num_cams:
-        raise ValueError(f"Number of images ({len(list_of_images)}) must match number of cameras ({num_cams})")
+        raise ValueError(
+            f"Number of images ({len(list_of_images)}) must match number of cameras ({num_cams})"
+        )
 
     cpar = _populate_cpar(ptv_params, num_cams)
-    
+
     # Create a dict that contains targ_rec for _populate_tpar
     # target_params_dict = {'targ_rec': target_params}
     tpar = _populate_tpar(target_params, num_cams)
-    
+
     cals = _read_calibrations(cpar, num_cams)
 
     detections = []
@@ -429,11 +476,8 @@ def py_detection_proc_c(
 
 
 def py_correspondences_proc_c(exp):
-    """Provides correspondences
-    """
+    """Provides correspondences"""
     frame = 123456789
-
-
 
     sorted_pos, sorted_corresp, num_targs = correspondences(
         exp.detections, exp.corrected, exp.cals, exp.vpar, exp.cpar
@@ -446,11 +490,9 @@ def py_correspondences_proc_c(exp):
 
     for i_cam in range(exp.num_cams):
         write_targets(exp.detections[i_cam], short_file_bases[i_cam], frame)
-        
-    print(
-        f"Frame {frame} had {[s.shape[1] for s in sorted_pos]!r} correspondences."
-    )
-    
+
+    print(f"Frame {frame} had {[s.shape[1] for s in sorted_pos]!r} correspondences.")
+
     return sorted_pos, sorted_corresp, num_targs
 
 
@@ -463,13 +505,15 @@ def py_determination_proc_c(
     vpar: VolumeParams,
     cals: List[Calibration],
 ) -> None:
-    """Calculate 3D positions from 2D correspondences and save to file.
-    """
+    """Calculate 3D positions from 2D correspondences and save to file."""
     concatenated_pos = np.concatenate(sorted_pos, axis=1)
     concatenated_corresp = np.concatenate(sorted_corresp, axis=1)
 
     flat = np.array(
-        [corr.get_by_pnrs(corresp) for corr, corresp in zip(corrected, concatenated_corresp)]
+        [
+            corr.get_by_pnrs(corresp)
+            for corr, corresp in zip(corrected, concatenated_corresp)
+        ]
     )
 
     pos, _ = point_positions(flat.transpose(1, 0, 2), cpar, cals, vpar)
@@ -498,8 +542,7 @@ def py_determination_proc_c(
 
 
 def run_sequence_plugin(exp) -> None:
-    """Load and run plugins for sequence processing.
-    """
+    """Load and run plugins for sequence processing."""
     plugin_dir = Path(os.getcwd()) / "plugins"
     print(f"Plugin directory: {plugin_dir}")
 
@@ -531,8 +574,7 @@ def run_sequence_plugin(exp) -> None:
 
 
 def run_tracking_plugin(exp) -> None:
-    """Load and run plugins for sequence processing.
-    """
+    """Load and run plugins for sequence processing."""
     plugin_dir = Path(os.getcwd()) / "plugins"
     print(f"Plugin directory: {plugin_dir}")
 
@@ -563,17 +605,16 @@ def run_tracking_plugin(exp) -> None:
                         print(f"Error running tracking plugin {plugin_name}: {e}")
 
 
-
 def py_sequence_loop(exp) -> None:
     """Run a sequence of detection, stereo-correspondence, and determination.
-    
+
     Args:
         exp: Either an Experiment object with pm attribute,
              or a MainGUI object with exp1.pm and cached parameter objects
     """
-    
+
     # Handle both Experiment objects and MainGUI objects
-    if hasattr(exp, 'pm'):
+    if hasattr(exp, "pm"):
         # Traditional experiment object
         pm = exp.pm
         num_cams = pm.num_cams
@@ -582,7 +623,7 @@ def py_sequence_loop(exp) -> None:
         vpar = exp.vpar
         tpar = exp.tpar
         cals = exp.cals
-    elif hasattr(exp, 'exp1') and hasattr(exp.exp1, 'pm'):
+    elif hasattr(exp, "exp1") and hasattr(exp.exp1, "pm"):
         # MainGUI object - ensure parameter objects are initialized
         pm = exp.exp1.pm
         num_cams = exp.num_cams
@@ -594,7 +635,7 @@ def py_sequence_loop(exp) -> None:
     else:
         raise ValueError("Object must have either pm or exp1.pm attribute")
 
-    existing_target = pm.get_parameter('pft_version').get('Existing_Target', False)
+    existing_target = pm.get_parameter("pft_version").get("Existing_Target", False)
 
     first_frame = spar.get_first()
     last_frame = spar.get_last()
@@ -619,16 +660,13 @@ def py_sequence_loop(exp) -> None:
                         img = rgb2gray(img)
                     if img.dtype != np.uint8:
                         img = img_as_ubyte(img)
-                if pm.get_parameter('ptv').get('negative', False):
+                if pm.get_parameter("ptv").get("negative", False):
                     print("Negative image")
                     img = negative(img)
-                masking_params = pm.get_parameter('masking')
-                if masking_params and masking_params.get('mask_flag', False):
+                masking_params = pm.get_parameter("masking")
+                if masking_params and masking_params.get("mask_flag", False):
                     try:
-                        background_name = (
-                            masking_params['mask_base_name']
-                            % (i_cam + 1)
-                        )
+                        background_name = masking_params["mask_base_name"] % (i_cam + 1)
                         background = imread(background_name)
                         img = np.clip(img - background, 0, 255).astype(np.uint8)
                     except (ValueError, FileNotFoundError):
@@ -644,7 +682,7 @@ def py_sequence_loop(exp) -> None:
             pos, _ = matched_coords.as_arrays()
             corrected.append(matched_coords)
 
-        # AFter we finished all targs, we can move to correspondences    
+        # AFter we finished all targs, we can move to correspondences
         sorted_pos, sorted_corresp, _ = correspondences(
             detections, corrected, cals, vpar, cpar
         )
@@ -660,7 +698,10 @@ def py_sequence_loop(exp) -> None:
         sorted_pos = np.concatenate(sorted_pos, axis=1)
         sorted_corresp = np.concatenate(sorted_corresp, axis=1)
         flat = np.array(
-            [corr.get_by_pnrs(corresp) for corr, corresp in zip(corrected, sorted_corresp)]
+            [
+                corr.get_by_pnrs(corresp)
+                for corr, corresp in zip(corrected, sorted_corresp)
+            ]
         )
         pos, _ = point_positions(flat.transpose(1, 0, 2), exp.cpar, exp.cals, exp.vpar)
         if len(exp.cals) < 4:
@@ -669,7 +710,9 @@ def py_sequence_loop(exp) -> None:
         else:
             print_corresp = sorted_corresp
 
-        output_path = _prepare_output_path(f"{default_naming['corres'].decode()}.{frame}")
+        output_path = _prepare_output_path(
+            f"{default_naming['corres'].decode()}.{frame}"
+        )
         try:
             with open(output_path, "w", encoding="utf8") as rt_is:
                 rt_is.write(f"{pos.shape[0]}\n")
@@ -678,6 +721,7 @@ def py_sequence_loop(exp) -> None:
                     rt_is.write("%4d %9.3f %9.3f %9.3f %4d %4d %4d %4d\n" % pt_args)
         except OSError as exc:
             _raise_output_write_error(output_path, exc)
+
 
 def py_trackcorr_init(exp):
     """Reads all the necessary stuff into Tracker"""
@@ -703,7 +747,7 @@ def py_trackcorr_init(exp):
 
     for cam_id, short_name in enumerate(target_filenames):
         # print(f"Setting tracker image base name for cam {cam_id+1}: {Path(short_name).resolve()}")
-        exp.spar.set_img_base_name(cam_id, str(Path(short_name).resolve())+'.')
+        exp.spar.set_img_base_name(cam_id, str(Path(short_name).resolve()) + ".")
 
     # print("exp.spar.img_base_names:", [exp.spar.get_img_base_name(i) for i in range(exp.cpar.get_num_cams())])
 
@@ -714,13 +758,189 @@ def py_trackcorr_init(exp):
     #     exp.track_par.get_dangle(), exp.track_par.get_dacc(),
     #     exp.track_par.get_add()
     # )
-    
+
     print("Initializing Tracker with parameters:")
-    tracker = Tracker(
-        exp.cpar, exp.vpar, exp.track_par, exp.spar, exp.cals, default_naming
-    )
+
+    # Get parameters from experiment object
+    cpar = exp.cpar
+    vpar = exp.vpar
+    track_par = exp.track_par
+    spar = exp.spar
+    cals = exp.cals
+
+    # Import engine-aware Tracker based on current engine setting
+    from openptv2.engine import get_engine
+
+    engine = get_engine()
+
+    if engine == "python":
+        from algorithms.track import Tracker as PythonTracker
+        from algorithms.parameters_adapter import (
+            ControlParams,
+            VolumeParams,
+            SequenceParams,
+        )
+        from algorithms.parameters import TrackPar
+
+        # Convert optv parameters to Python adapter format
+        cpar_py = ControlParams(cpar.get_num_cams())
+        cpar_py._impl = cpar
+
+        # Copy required attributes from optv object to adapter
+        if hasattr(cpar, "get_num_cams"):
+            cpar_py._num_cams = cpar.get_num_cams()
+        if hasattr(cpar, "imx"):
+            cpar_py._imx = cpar.imx
+        if hasattr(cpar, "imy"):
+            cpar_py._imy = cpar.imy
+        if hasattr(cpar, "mm"):
+            cpar_py._mm = cpar.mm
+        if hasattr(cpar, "pix_x"):
+            cpar_py._pix_x = cpar.pix_x
+        if hasattr(cpar, "pix_y"):
+            cpar_py._pix_y = cpar.pix_y
+
+        # Create VolumePar from optv VolumeParams
+        from algorithms.parameters import VolumePar
+
+        try:
+            x_lay = list(vpar.get_X_lay()) if hasattr(vpar, "get_X_lay") else []
+        except:
+            x_lay = []
+
+        try:
+            z_min_lay = (
+                list(vpar.get_Zmin_lay()) if hasattr(vpar, "get_Zmin_lay") else []
+            )
+        except:
+            z_min_lay = []
+
+        try:
+            z_max_lay = (
+                list(vpar.get_Zmax_lay()) if hasattr(vpar, "get_Zmax_lay") else []
+            )
+        except:
+            z_max_lay = []
+
+        vpar_py = VolumePar(
+            x_lay=x_lay,
+            z_min_lay=z_min_lay,
+            z_max_lay=z_max_lay,
+            cn=vpar.get_cn() if hasattr(vpar, "get_cn") else 0,
+            cnx=vpar.get_cnx() if hasattr(vpar, "get_cnx") else 0,
+            cny=vpar.get_cny() if hasattr(vpar, "get_cny") else 0,
+            csumg=vpar.get_csumg() if hasattr(vpar, "get_csumg") else 0,
+            eps0=vpar.get_eps0() if hasattr(vpar, "get_eps0") else 0,
+            corrmin=vpar.get_corrmin() if hasattr(vpar, "get_corrmin") else 0,
+        )
+
+        # Convert track_par to Python format
+        tpar_py = TrackPar(
+            dvxmin=track_par.get_dvxmin(),
+            dvxmax=track_par.get_dvxmax(),
+            dvymax=track_par.get_dvymax(),
+            dvymin=track_par.get_dvymin(),
+            dvzmin=track_par.get_dvzmin(),
+            dvzmax=track_par.get_dvzmax(),
+            dacc=track_par.get_dacc(),
+            dangle=track_par.get_dangle(),
+            add=track_par.get_add(),
+        )
+
+        # Create a Python-compatible sequence parameters object
+        from algorithms.parameters import SequencePar
+
+        print(f"[DEBUG] spar type: {type(spar)}")
+        print(f"[DEBUG] cpar.get_num_cams(): {cpar.get_num_cams()}")
+
+        # Get num_cams from cpar (not spar, since optv SequenceParams doesn't have get_num_cams)
+        num_cams = cpar.get_num_cams()
+
+        img_base_list = []
+        for i in range(num_cams):
+            try:
+                base_name = spar.get_img_base_name(i)
+                img_base_list.append(base_name)
+                print(f"[DEBUG] get_img_base_name({i}): {base_name}")
+            except Exception as e:
+                print(f"[DEBUG] get_img_base_name({i}) error: {e}")
+                img_base_list.append("")
+
+        print(f"[DEBUG] img_base_list: {img_base_list}")
+        print(f"[DEBUG] spar.get_first(): {spar.get_first()}")
+        print(f"[DEBUG] spar.get_last(): {spar.get_last()}")
+
+        spar_py = SequencePar(
+            img_base_name=img_base_list, first=spar.get_first(), last=spar.get_last()
+        )
+
+        # Convert optv Calibration objects to Python Calibration objects
+        from algorithms.calibration import Calibration as PythonCalibration
+
+        cals_py = []
+        for cal in cals:
+            # Extract parameters from optv calibration
+            try:
+                # Try to get interior parameters
+                if hasattr(cal, "get_int_par"):
+                    int_par = cal.get_int_par()
+                elif hasattr(cal, "int_par"):
+                    int_par = cal.int_par
+                else:
+                    # Create default interior
+                    int_par = None
+
+                # Try to get exterior parameters
+                if hasattr(cal, "get_ext_par"):
+                    ext_par = cal.get_ext_par()
+                elif hasattr(cal, "ext_par"):
+                    ext_par = cal.ext_par
+                else:
+                    ext_par = None
+
+                # Try to get additional parameters
+                if hasattr(cal, "get_add_par"):
+                    add_par = cal.get_add_par()
+                elif hasattr(cal, "add_par"):
+                    add_par = cal.add_par
+                else:
+                    add_par = None
+
+                # Try to get glass parameters
+                if hasattr(cal, "get_glass_par"):
+                    glass_par = cal.get_glass_par()
+                elif hasattr(cal, "glass_par"):
+                    glass_par = cal.glass_par
+                else:
+                    glass_par = None
+
+                py_cal = PythonCalibration(
+                    ext_par=ext_par,
+                    int_par=int_par,
+                    glass_par=glass_par,
+                    added_par=add_par,
+                )
+                cals_py.append(py_cal)
+            except Exception as e:
+                print(f"[DEBUG] Error converting calibration: {e}")
+                # Fallback: create a basic calibration
+                cals_py.append(PythonCalibration())
+
+        print(f"[DEBUG] Converted {len(cals_py)} calibrations")
+
+        print(f"[ENGINE] Using Python engine: {PythonTracker}")
+
+        tracker = PythonTracker(
+            cpar_py, vpar_py, tpar_py, spar_py, cals_py, default_naming
+        )
+    else:
+        from optv.tracker import Tracker as OptvTracker
+
+        print(f"[ENGINE] Using optv engine: {OptvTracker}")
+        tracker = OptvTracker(cpar, vpar, track_par, spar, cals, default_naming)
 
     return tracker
+
 
 # ------- Utilities ----------#
 
@@ -728,14 +948,13 @@ def py_trackcorr_init(exp):
 def py_get_pix(
     x: List[List[int]], y: List[List[int]]
 ) -> Tuple[List[List[int]], List[List[int]]]:
-    """Get target positions (stub function).
-    """
+    """Get target positions (stub function)."""
     return x, y
 
 
 def py_calibration(selection, exp):
     """Calibration
-    
+
     Args:
         selection: Calibration selection type
         exp: Either an Experiment object with pm attribute,
@@ -792,6 +1011,7 @@ def write_targets(targets: TargetArray, short_file_base: str, frame: int) -> boo
         _raise_output_write_error(output_path, exc)
     return success
 
+
 def read_targets(short_file_base: str, frame: int) -> TargetArray:
     """Read targets from a file."""
     filename = f"{short_file_base}.{frame:04d}_targets"
@@ -835,21 +1055,21 @@ def extract_cam_ids(file_bases: list[str]) -> list[int]:
     # Try to find all numbers in each string, and their context
     if not file_bases:
         raise ValueError("file_bases list is empty")
-    
+
     # If input is a string, convert to a list
     if isinstance(file_bases, str):
         file_bases = [file_bases]
 
     # Remove frame number patterns like %d, %04d, etc.
-    clean_bases = [re.sub(r'%0?\d*d', '', s) for s in file_bases]
+    clean_bases = [re.sub(r"%0?\d*d", "", s) for s in file_bases]
     file_bases = clean_bases
 
     # Helper to extract all (number, context) pairs from a string
     def extract_number_context(s):
         # Find all numbers with up to 4 chars before and after
         matches = []
-        for m in re.finditer(r'([a-zA-Z]{0,4})?(\d+)', s):
-            prefix = m.group(1) or ''
+        for m in re.finditer(r"([a-zA-Z]{0,4})?(\d+)", s):
+            prefix = m.group(1) or ""
             number = m.group(2)
             start = m.start(2)
             matches.append((number, prefix.lower(), start))
@@ -880,7 +1100,7 @@ def extract_cam_ids(file_bases: list[str]) -> list[int]:
         # fallback: just use the last number in each string
         fallback_ids = []
         for idx, s in enumerate(file_bases):
-            found = re.findall(r'(\d+)', s)
+            found = re.findall(r"(\d+)", s)
             if found:
                 fallback_ids.append(int(found[-1]))
             else:
@@ -888,9 +1108,9 @@ def extract_cam_ids(file_bases: list[str]) -> list[int]:
                 fallback_ids.append(None)
         # If any fallback_ids are None, use default SHORT_BASE+idx+1
         if any(x is None for x in fallback_ids):
-            fallback_ids = list(range(1, len(file_bases)+1))
+            fallback_ids = list(range(1, len(file_bases) + 1))
             print("fall back to default list", fallback_ids)
-            
+
         return fallback_ids
 
     cam_idx = candidate_indices[0][0]
@@ -902,14 +1122,14 @@ def extract_cam_ids(file_bases: list[str]) -> list[int]:
             cam_ids.append(int(m[cam_idx][0]))
         else:
             # fallback: last number or default SHORT_BASE+idx+1
-            nums = re.findall(r'(\d+)', ''.join([x[0] for x in m]))
+            nums = re.findall(r"(\d+)", "".join([x[0] for x in m]))
             if nums:
                 cam_ids.append(int(nums[-1]))
             else:
-                cam_ids.append(f"{SHORT_BASE}{idx+1}")
+                cam_ids.append(f"{SHORT_BASE}{idx + 1}")
     # If any cam_ids are not int, fallback to default SHORT_BASE+idx+1
     if any(not isinstance(x, int) for x in cam_ids):
-        cam_ids = list(range(1, len(file_bases)+1))
+        cam_ids = list(range(1, len(file_bases) + 1))
         print("Fallback to default list {cam_ids}")
 
     return cam_ids
@@ -1074,8 +1294,9 @@ Modified for PyPTV on 2025-08-01
 @author: alexlib
 """
 
-# These readers should go in a nice module, but I wait on Max to finish the 
+# These readers should go in a nice module, but I wait on Max to finish the
 # proper bindings.
+
 
 def dumbbell_target_func(targets, cpar, calibs, db_length, db_weight):
     """
@@ -1115,19 +1336,23 @@ def dumbbell_target_func(targets, cpar, calibs, db_length, db_weight):
     # Iterate over pairs of targets
     if num_targs % 2 != 0:
         raise ValueError("Number of targets must be even for dumbbell calibration")
-    
+
     # Process each target pair
     for pt in range(0, num_targs, 2):
         # For each pair of targets (dumbbell ends)
         # Get their 2D positions in all cameras for this pair
-        pair_targets = targets[:, pt:pt+2, :]  # shape: (num_cams, 2, pos)
+        pair_targets = targets[:, pt : pt + 2, :]  # shape: (num_cams, 2, pos)
         # Compute their 3D positions using all cameras
         # Each column: [cam1_t1, cam2_t1, ..., camN_t1], [cam1_t2, ..., camN_t2]
         # So we need to transpose to (2, num_cams, pos)
         pair_targets = pair_targets.transpose(1, 0, 2)  # shape: (2, num_cams, pos)
         # Get 3D positions for each end
-        xyz1, err1 = multi_cam_point_positions(pair_targets[0,np.newaxis], cpar, calibs)
-        xyz2, err2 = multi_cam_point_positions(pair_targets[1,np.newaxis], cpar, calibs)
+        xyz1, err1 = multi_cam_point_positions(
+            pair_targets[0, np.newaxis], cpar, calibs
+        )
+        xyz2, err2 = multi_cam_point_positions(
+            pair_targets[1, np.newaxis], cpar, calibs
+        )
         # xyz1, xyz2 are (1, 3) arrays (single point)
         # Compute the distance between the two ends
         dist = np.linalg.norm(xyz1[0] - xyz2[0])
@@ -1137,7 +1362,6 @@ def dumbbell_target_func(targets, cpar, calibs, db_length, db_weight):
         # Use the error returned by point_positions
         dtot += err1 + err2
 
-
     # Calculate the total error
     len_err_tot /= 2.0  # since we counted pairs, divide by 2
 
@@ -1145,7 +1369,7 @@ def dumbbell_target_func(targets, cpar, calibs, db_length, db_weight):
     dtot /= num_targs / 2.0  # average over pairs
     if db_length <= 0:
         raise ValueError("Dumbbell length must be positive")
-    
+
     if db_weight < 0:
         raise ValueError("Dumbbell weight must be non-negative")
 
@@ -1167,9 +1391,13 @@ def dumbbell_target_residuals(targets, cpar, calibs, db_length, db_weight):
 
     residuals = []
     for pt in range(0, num_targs, 2):
-        pair_targets = targets[:, pt:pt + 2, :].transpose(1, 0, 2)
-        xyz1, err1 = multi_cam_point_positions(pair_targets[0, np.newaxis], cpar, calibs)
-        xyz2, err2 = multi_cam_point_positions(pair_targets[1, np.newaxis], cpar, calibs)
+        pair_targets = targets[:, pt : pt + 2, :].transpose(1, 0, 2)
+        xyz1, err1 = multi_cam_point_positions(
+            pair_targets[0, np.newaxis], cpar, calibs
+        )
+        xyz2, err2 = multi_cam_point_positions(
+            pair_targets[1, np.newaxis], cpar, calibs
+        )
         dist = np.linalg.norm(xyz1[0] - xyz2[0])
         residuals.append(float(err1))
         residuals.append(float(err2))
@@ -1302,49 +1530,50 @@ def dumbbell_ba_jac_sparsity(
     return pattern.tocsr()
 
 
-
-def calib_convergence(calib_vec, targets, calibs, active_cams, cpar,
-    db_length, db_weight, pos_scale=1.0):
+def calib_convergence(
+    calib_vec, targets, calibs, active_cams, cpar, db_length, db_weight, pos_scale=1.0
+):
     """
-    Mediated the ray_convergence function and the parameter format used by 
+    Mediated the ray_convergence function and the parameter format used by
     SciPy optimization routines, by taking a vector of variable calibration
-    parameters and pouring it into the Calibration objects understood by 
+    parameters and pouring it into the Calibration objects understood by
     OpenPTV.
-    
+
     Arguments:
-    calib_vec - 1D array. 3 elements: camera 1 position, 3 element: camera 1 
+    calib_vec - 1D array. 3 elements: camera 1 position, 3 element: camera 1
         angles, next 6 for camera 2 etc.
-    targets - a (c,t,2) array, for t target metric positions in each of c 
+    targets - a (c,t,2) array, for t target metric positions in each of c
         cameras.
-    calibs - an array of per-camera Calibration objects. The permanent fields 
+    calibs - an array of per-camera Calibration objects. The permanent fields
         are retained, the variable fields get overwritten.
-    active_cams - a sequence of True/False values stating whether the 
+    active_cams - a sequence of True/False values stating whether the
         corresponding camera is free to move or just a parameter.
     cpar - a ControlParams object describing the overall setting.
     db_length - expected distance between two dumbbell points.
     db_weight - weight of the distance error in the target function.
-    
+
     Returns:
     The weighted ray convergence + length error measure.
     """
     calib_pars = calib_vec.reshape(-1, 2, 3)
-    
+
     for cam, cal in enumerate(calibs):
         if not active_cams[cam]:
             continue
-        
+
         # Pop a parameters line:
         pars = calib_pars[0]
         calib_pars = calib_pars[1:]
-        
+
         cal.set_pos(pars[0] * pos_scale)
         cal.set_angles(pars[1])
-    
+
     return dumbbell_target_func(targets, cpar, calibs, db_length, db_weight)
 
 
-def calib_convergence_residuals(calib_vec, targets, calibs, active_cams, cpar,
-    db_length, db_weight, pos_scale=1.0):
+def calib_convergence_residuals(
+    calib_vec, targets, calibs, active_cams, cpar, db_length, db_weight, pos_scale=1.0
+):
     """Return residual vector for least-squares optimization."""
     calib_pars = calib_vec.reshape(-1, 2, 3)
 
@@ -1361,7 +1590,7 @@ def calib_convergence_residuals(calib_vec, targets, calibs, active_cams, cpar,
     return dumbbell_target_residuals(targets, cpar, calibs, db_length, db_weight)
 
 
-def calib_dumbbell(cal_gui)-> None:
+def calib_dumbbell(cal_gui) -> None:
     """Calibration with dumbbell targets.
 
     Args:
@@ -1374,11 +1603,11 @@ def calib_dumbbell(cal_gui)-> None:
     target_filenames = pm.get_target_filenames()
 
     # Get dumbbell length from parameters (or set default)
-    dumbbell_params = pm.get_parameter('dumbbell') or {}
-    db_length = dumbbell_params.get('dumbbell_scale')
-    db_weight = dumbbell_params.get('dumbbell_penalty_weight')
-    db_eps = float(dumbbell_params.get('dumbbell_eps') or 0.0)
-    fixed_cam_param = int(dumbbell_params.get('dumbbell_fixed_camera') or 0)
+    dumbbell_params = pm.get_parameter("dumbbell") or {}
+    db_length = dumbbell_params.get("dumbbell_scale")
+    db_weight = dumbbell_params.get("dumbbell_penalty_weight")
+    db_eps = float(dumbbell_params.get("dumbbell_eps") or 0.0)
+    fixed_cam_param = int(dumbbell_params.get("dumbbell_fixed_camera") or 0)
     if db_length is None or float(db_length) <= 0:
         raise ValueError("dumbbell.dumbbell_scale must be > 0")
     if db_weight is None or float(db_weight) < 0:
@@ -1410,12 +1639,14 @@ def calib_dumbbell(cal_gui)-> None:
             # for tix in range(2):
             #     all_targs[frame*2 + tix].extend([frame_targets[cam][tix] for cam in range(num_cams)])
             all_targs.append(frame_targets)
-    
+
     if len(all_targs) == 0:
-        raise ValueError("No frames with two targets per camera found for dumbbell calibration")
+        raise ValueError(
+            "No frames with two targets per camera found for dumbbell calibration"
+        )
 
     all_targs = np.array(all_targs)
-    assert(all_targs.shape[1] == num_cams and all_targs.shape[2] == 2)
+    assert all_targs.shape[1] == num_cams and all_targs.shape[2] == 2
     num_frames, n_cams, num_targs, num_pos = all_targs.shape
 
     metric_by_cam = []
@@ -1481,7 +1712,7 @@ def calib_dumbbell(cal_gui)-> None:
 
     print(f"Using {num_frames} frame(s) for dumbbell calibration")
     per_frame_metric = metric_by_cam
-    
+
     # Generate initial guess vector and bounds for optimization:
     if 1 <= fixed_cam_param <= num_cams:
         fixed_cam = fixed_cam_param - 1
@@ -1491,7 +1722,9 @@ def calib_dumbbell(cal_gui)-> None:
         )
     else:
         fixed_cam = int(np.argmax(coverage)) if num_cams > 0 else 0
-        print(f"Fixing camera {fixed_cam + 1} based on coverage counts: {coverage.tolist()}")
+        print(
+            f"Fixing camera {fixed_cam + 1} based on coverage counts: {coverage.tolist()}"
+        )
 
     active = np.ones(num_cams)
     active[fixed_cam] = 0
@@ -1505,12 +1738,12 @@ def calib_dumbbell(cal_gui)-> None:
     active_ptr = 0
     for cam in range(num_cams):
         if active[cam]:
-            calib_vec[active_ptr,0] = cals[cam].get_pos() / pos_scale
-            calib_vec[active_ptr,1] = cals[cam].get_angles()
+            calib_vec[active_ptr, 0] = cals[cam].get_pos() / pos_scale
+            calib_vec[active_ptr, 1] = cals[cam].get_angles()
             active_ptr += 1
-        
-        # Positions within a neighbourhood of the initial guess, so we don't 
-        # converge to the trivial solution where all cameras are in the same 
+
+        # Positions within a neighbourhood of the initial guess, so we don't
+        # converge to the trivial solution where all cameras are in the same
         # place.
     calib_vec = calib_vec.flatten()
 
@@ -1535,17 +1768,17 @@ def calib_dumbbell(cal_gui)-> None:
 
     points_init = _init_dumbbell_points(per_frame_metric)
     x0 = np.concatenate([calib_vec, points_init.reshape(-1)])
-    
+
     # Test optimizer-ready target function:
     print("Initial values (1 row per active camera, scaled pos, then angle):")
     print(calib_vec.reshape(num_active, -1))
-    print("Current target function (sum of squared residuals):", end=' ')
+    print("Current target function (sum of squared residuals):", end=" ")
     init_residuals = dumbbell_ba_residuals(
         x0, per_frame_metric, cpar, cals, active, db_length, db_weight, pos_scale
     )
     print(np.sum(init_residuals**2))
     _print_camera_residuals("Initial", per_frame_metric)
-    
+
     # Optimization:
     method = "trf"
     loss = "soft_l1"
@@ -1570,7 +1803,15 @@ def calib_dumbbell(cal_gui)-> None:
         res = least_squares(
             dumbbell_ba_residuals,
             best_x,
-            args=(per_frame_metric, cpar, cals, active, db_length, db_weight, pos_scale),
+            args=(
+                per_frame_metric,
+                cpar,
+                cals,
+                active,
+                db_length,
+                db_weight,
+                pos_scale,
+            ),
             xtol=xtol,
             ftol=ftol,
             gtol=gtol,
@@ -1595,42 +1836,39 @@ def calib_dumbbell(cal_gui)-> None:
 
     if res is None:
         raise RuntimeError("Adaptive least_squares did not run")
-        
+
     print("Result of dumbbell calibration")
     cam_params_len = num_active * 6
     print(best_x[:cam_params_len].reshape(num_active, -1))
     print("Success:", res.success, res.message)
-    print("Final target function (sum of squared residuals):", end=' ')
+    print("Final target function (sum of squared residuals):", end=" ")
     final_residuals = dumbbell_ba_residuals(
         best_x, per_frame_metric, cpar, cals, active, db_length, db_weight, pos_scale
     )
     print(np.sum(final_residuals**2))
 
-
     # convert calib_vec back to Calibration objects:
     cam_params_len = num_active * 6
     calib_pars = best_x[:cam_params_len].reshape(-1, 2, 3)
-    
+
     for cam, cal in enumerate(cals):
         if not active[cam]:
             continue
-        
+
         # Pop a parameters line:
         pars = calib_pars[0]
         calib_pars = calib_pars[1:]
-        
+
         cal.set_pos(pars[0] * pos_scale)
         cal.set_angles(pars[1])
 
         _print_camera_residuals("Final", per_frame_metric)
 
-
         # Write the calibration results to files:
         ori_filename = cpar.get_cal_img_base_name(cam)
         addpar_filename = ori_filename + ".addpar"
         ori_filename = ori_filename + ".ori"
-        cal.write(ori_filename.encode('utf-8'), addpar_filename.encode('utf-8'))
-
+        cal.write(ori_filename.encode("utf-8"), addpar_filename.encode("utf-8"))
 
 
 def calib_particles(exp):
@@ -1639,7 +1877,7 @@ def calib_particles(exp):
     from optv.tracking_framebuf import Frame
 
     # Handle both Experiment objects and MainGUI objects
-    if hasattr(exp, 'pm'):
+    if hasattr(exp, "pm"):
         # Traditional experiment object
         pm = exp.pm
         num_cams = pm.num_cams
@@ -1648,7 +1886,7 @@ def calib_particles(exp):
         vpar = exp.vpar
         tpar = exp.tpar
         cals = exp.cals
-    elif hasattr(exp, 'exp1') and hasattr(exp.exp1, 'pm'):
+    elif hasattr(exp, "exp1") and hasattr(exp.exp1, "pm"):
         # MainGUI object - ensure parameter objects are initialized
         pm = exp.exp1.pm
         num_cams = exp.num_cams
@@ -1659,27 +1897,29 @@ def calib_particles(exp):
         cals = exp.cals
     else:
         raise ValueError("Object must have either pm or exp1.pm attribute")
-    
+
     num_cams = cpar.get_num_cams()
     calibs = _read_calibrations(cpar, num_cams)
 
     targ_files = [
-        spar.get_img_base_name(c).split("%d")[0].encode('utf-8')
+        spar.get_img_base_name(c).split("%d")[0].encode("utf-8")
         for c in range(num_cams)
     ]
-    
-    orient_params = pm.get_parameter('orient')
-    shaking_params = pm.get_parameter('shaking')
-    
+
+    orient_params = pm.get_parameter("orient")
+    shaking_params = pm.get_parameter("shaking")
+
     flags = [name for name in NAMES if orient_params.get(name) == 1]
     all_known = []
     all_detected = [[] for c in range(num_cams)]
 
-    for frm_num in range(shaking_params['shaking_first_frame'], shaking_params['shaking_last_frame'] + 1):
+    for frm_num in range(
+        shaking_params["shaking_first_frame"], shaking_params["shaking_last_frame"] + 1
+    ):
         frame = Frame(
             cpar.get_num_cams(),
-            corres_file_base=("res/rt_is").encode('utf-8'),
-            linkage_file_base=("res/ptv_is").encode('utf-8'),
+            corres_file_base=("res/rt_is").encode("utf-8"),
+            linkage_file_base=("res/ptv_is").encode("utf-8"),
             target_file_base=targ_files,
             frame_num=frm_num,
         )
@@ -1720,7 +1960,7 @@ def calib_particles(exp):
         ori_filename = exp.cpar.get_cal_img_base_name(cam)
         addpar_filename = ori_filename + ".addpar"
         ori_filename = ori_filename + ".ori"
-        calibs[cam].write(ori_filename.encode('utf-8'), addpar_filename.encode('utf-8'))
+        calibs[cam].write(ori_filename.encode("utf-8"), addpar_filename.encode("utf-8"))
 
         targ_ix = [t.pnr() for t in targs if t.pnr() != -999]
 
@@ -1736,6 +1976,7 @@ def clone_calibration(calibration_obj):
     """Return a copy of a Calibration object using all get/set methods."""
     from optv.calibration import Calibration
     import numpy as np
+
     new_cal = Calibration()
     new_cal.set_pos(np.array(calibration_obj.get_pos()))
     new_cal.set_angles(np.array(calibration_obj.get_angles()))
