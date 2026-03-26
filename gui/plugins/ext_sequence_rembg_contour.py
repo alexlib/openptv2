@@ -204,7 +204,9 @@ class Sequence:
 
             # Save rt_is
             rt_is_filename = default_naming["corres"]
-            rt_is_filename = rt_is_filename + f".{frame}"
+            if isinstance(rt_is_filename, bytes):
+                rt_is_filename = rt_is_filename.decode("utf-8")
+            rt_is_filename = f"{rt_is_filename}.{frame}"
             with open(rt_is_filename, "w", encoding="utf8") as rt_is:
                 rt_is.write(str(pos.shape[0]) + "\n")
                 for pix, pt in enumerate(pos):

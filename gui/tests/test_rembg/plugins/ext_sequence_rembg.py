@@ -157,8 +157,10 @@ class Sequence:
                 print_corresp = sorted_corresp
 
             # Save rt_is
-            rt_is_filename = default_naming["corres"].decode()
-            rt_is_filename = rt_is_filename + f".{frame}"
+            rt_is_filename = default_naming["corres"]
+            if isinstance(rt_is_filename, bytes):
+                rt_is_filename = rt_is_filename.decode("utf-8")
+            rt_is_filename = f"{rt_is_filename}.{frame}"
             with open(rt_is_filename, "w", encoding="utf8") as rt_is:
                 rt_is.write(str(pos.shape[0]) + "\n")
                 for pix, pt in enumerate(pos):
