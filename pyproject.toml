@@ -114,7 +114,8 @@ zip-safe = false
 testpaths = ["tests", "bindings/tests", "gui/tests"]
 python_files = ["test_*.py"]
 python_functions = ["test_*"]
-addopts = "-v --tb=short"
+pythonpath = ["gui"]
+addopts = "-v --tb=short --import-mode=importlib"
 markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
     "gui: marks tests that require GUI",

@@ -26,6 +26,9 @@ class TestControlParams:
 
         assert optv_cp.get_num_cams() == 4
         assert python_cp.num_cams == 0
+        assert python_cp.get_num_cams() == 0
+        assert python_cp.get_image_size() == (0, 0)
+        assert python_cp.get_pixel_size() == (0.0, 0.0)
 
     def test_control_params_creation_with_values(self):
         """Test ControlParams creation with specific values."""
@@ -47,19 +50,41 @@ class TestControlParams:
         assert python_cp.imy == 2048
         assert abs(python_cp.pix_x - 0.005) < TOLERANCE
         assert abs(python_cp.pix_y - 0.005) < TOLERANCE
+        assert python_cp.get_image_size() == (2048, 2048)
+        assert python_cp.get_pixel_size() == (0.005, 0.005)
 
     def test_control_params_from_file(self, control_params_file):
         """Test loading ControlParams from file."""
         from optv.parameters import ControlParams as OptvCP
-
-        optv_cp = OptvCP(num_cams=4)
-
         from algorithms.parameters import read_control_par as PythonRead
 
+        optv_cp = OptvCP(num_cams=4)
         python_cp = PythonRead(control_params_file)
 
-        assert optv_cp is not None
-        assert python_cp is not None
+        assert optv_cp.get_num_cams() == 4
+        assert python_cp.num_cams == 4
+        assert python_cp.img_base_name == [
+            "dumbbell/cam1_Scene77_4085",
+            "dumbbell/cam2_Scene77_4085",
+            "dumbbell/cam3_Scene77_4085",
+            "dumbbell/cam4_Scene77_4085",
+        ]
+        assert python_cp.cal_img_base_name == [
+            "cal/cam1.tif",
+            "cal/cam2.tif",
+            "cal/cam3.tif",
+            "cal/cam4.tif",
+        ]
+        assert python_cp.hp_flag == 10
+        assert python_cp.all_cam_flag == 11
+        assert python_cp.tiff_flag == 12
+        assert python_cp.get_image_size() == (1280, 1024)
+        assert python_cp.get_pixel_size() == (15.15, 16.16)
+        assert python_cp.chfield == 17
+        assert python_cp.mm.n1 == 18
+        assert python_cp.mm.n2 == [19.19]
+        assert python_cp.mm.n3 == 20.20
+        assert python_cp.mm.d == [21.21]
 
 
 class TestVolumeParams:
@@ -75,6 +100,9 @@ class TestVolumeParams:
 
         assert optv_vp is not None
         assert python_vp is not None
+        assert python_vp.x_lay == []
+        assert python_vp.z_min_lay == []
+        assert python_vp.z_max_lay == []
 
     def test_volume_params_creation_with_values(self):
         """Test VolumeParams creation with specific values."""
@@ -104,15 +132,21 @@ class TestVolumeParams:
             pytest.skip(f"Volume params file not found: {volume_params_file}")
 
         from optv.parameters import VolumeParams as OptvVP
-
-        optv_vp = OptvVP()
-
         from algorithms.parameters import read_volume_par as PythonRead
 
+        optv_vp = OptvVP()
         python_vp = PythonRead(volume_params_file)
 
         assert optv_vp is not None
-        assert python_vp is not None
+        assert python_vp.x_lay == [111.111, 222.222]
+        assert python_vp.z_min_lay == [333.333, 444.444]
+        assert python_vp.z_max_lay == [555.555, 666.666]
+        assert python_vp.cnx == 777.777
+        assert python_vp.cny == 888.888
+        assert python_vp.cn == 999.999
+        assert python_vp.csumg == 1010.1010
+        assert python_vp.corrmin == 1111.1111
+        assert python_vp.eps0 == 1212.1212
 
 
 class TestSequenceParams:
@@ -129,6 +163,7 @@ class TestSequenceParams:
         assert optv_sp is not None
         assert python_sp.first == 0
         assert python_sp.last == 0
+        assert python_sp.img_base_name == []
 
     def test_sequence_params_creation_with_values(self):
         """Test SequenceParams creation with specific values."""
@@ -146,6 +181,7 @@ class TestSequenceParams:
         assert optv_sp is not None
         assert python_sp is not None
         assert optv_sp.get_last() == python_sp.last
+        assert python_sp.img_base_name == []
 
     def test_sequence_params_from_file(self, sequence_params_file):
         """Test loading SequenceParams from file."""
@@ -161,7 +197,14 @@ class TestSequenceParams:
         python_sp = PythonRead(sequence_params_file, num_cams=4)
 
         assert optv_sp is not None
-        assert python_sp is not None
+        assert python_sp.img_base_name == [
+            "dumbbell/cam1_Scene77_",
+            "dumbbell/cam2_Scene77_",
+            "dumbbell/cam3_Scene77_",
+            "dumbbell/cam4_Scene77_",
+        ]
+        assert python_sp.first == 497
+        assert python_sp.last == 597
 
 
 class TestTrackingParams:
@@ -177,6 +220,8 @@ class TestTrackingParams:
 
         assert optv_tp is not None
         assert python_tp is not None
+        assert python_tp.dvxmin == 0.0
+        assert python_tp.dny == 0.0
 
     def test_tracking_params_creation_with_values(self):
         """Test TrackingParams creation with specific values."""
@@ -191,6 +236,8 @@ class TestTrackingParams:
 
         assert optv_tp is not None
         assert python_tp is not None
+        assert python_tp.dvxmin == -3.0
+        assert python_tp.dvxmax == 3.0
 
     def test_tracking_params_from_file(self, tracking_params_file):
         """Test loading TrackingParams from file."""
@@ -206,6 +253,19 @@ class TestTrackingParams:
         python_tp = PythonRead(tracking_params_file)
 
         assert optv_tp is not None
+        assert python_tp.dvxmin == 111.111
+        assert python_tp.dvxmax == 222.222
+        assert python_tp.dvymin == 333.333
+        assert python_tp.dvymax == 444.444
+        assert python_tp.dvzmin == 555.555
+        assert python_tp.dvzmax == 666.666
+        assert python_tp.dangle == 777.777
+        assert python_tp.dacc == 888.888
+        assert python_tp.add == 9
+        assert python_tp.dsumg == 0.0
+        assert python_tp.dn == 0.0
+        assert python_tp.dnx == 0.0
+        assert python_tp.dny == 0.0
 
 
 class TestTargetParams:
@@ -253,6 +313,7 @@ class TestTargetParams:
         python_targp = PythonRead(target_params_file)
 
         assert optv_targp is not None
+        assert python_targp is not None
 
 
 class TestMultimediaParams:

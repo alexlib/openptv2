@@ -15,16 +15,14 @@ def test_installation(test_data_dir):
 
         print(f"PyPTV version: {pyptv.__version__}")
     except ImportError:
-        print("Error: PyPTV is not installed correctly")
-        return False
+        raise AssertionError("Error: PyPTV is not installed correctly")
 
     try:
         import optv
 
         print(f"OpenPTV version: {optv.__version__}")
     except ImportError:
-        print("Error: OpenPTV is not installed correctly")
-        return False
+        raise AssertionError("Error: OpenPTV is not installed correctly")
 
     # Test path to test_cavity
     test_cavity_path = test_data_dir
@@ -42,13 +40,11 @@ def test_installation(test_data_dir):
             print(f"Calibration parameters: {cal.get_pos()}")
         else:
             print("Calibration files not found")
-            return False
+            raise AssertionError("Calibration files not found")
     except Exception as e:
-        print(f"Error loading calibration: {str(e)}")
-        return False
+        raise AssertionError(f"Error loading calibration: {str(e)}")
 
     print("Installation test completed successfully!")
-    return True
 
 
 if __name__ == "__main__":

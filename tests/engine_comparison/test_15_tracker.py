@@ -16,142 +16,117 @@ TEST_DATA_DIR = os.path.join(
 )
 
 
+def make_native_params():
+    from optv.parameters import (
+        ControlParams,
+        VolumeParams,
+        TrackingParams,
+        SequenceParams,
+    )
+
+    cpar = ControlParams(num_cams=4)
+    vpar = VolumeParams(xmin=0, xmax=100, ymin=0, ymax=100, zmin=0, zmax=50)
+    tpar = TrackingParams(n1=3, n2=3, dh=3.0, dz=1.0)
+    spar = SequenceParams(num_cams=4, frame_range=(10001, 10004))
+    return cpar, vpar, tpar, spar
+
+
+def make_python_params():
+    from algorithms.parameters import ControlPar, VolumePar, TrackParTuple, SequencePar
+
+    cpar = ControlPar(num_cams=4)
+    cpar.imx = 1280
+    cpar.imy = 1024
+    cpar.pix_x = 0.012
+    cpar.pix_y = 0.012
+    cpar.img_base_name = ["img/cam1.", "img/cam2.", "img/cam3.", "img/cam4."]
+    cpar.cal_img_base_name = ["cal/cam1.tif", "cal/cam2.tif", "cal/cam3.tif", "cal/cam4.tif"]
+    vpar = VolumePar(x_lay=[0.0, 100.0], z_min_lay=[0.0, 0.0], z_max_lay=[50.0, 50.0])
+    tpar = TrackParTuple(3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 0.0, 0.0, 0, 0.0, 0.0, 0.0, 0.0)
+    spar = SequencePar(
+        img_base_name=["img/cam1.", "img/cam2.", "img/cam3.", "img/cam4."],
+        first=10001,
+        last=10004,
+    )
+    return cpar, vpar, tpar, spar
+
+
+def make_native_tracker():
+    from optv.calibration import Calibration
+    from optv.tracker import Tracker as OptvTracker
+
+    cpar, vpar, tpar, spar = make_native_params()
+    cals = [Calibration() for _ in range(4)]
+    return OptvTracker(cpar, vpar, tpar, spar, cals)
+
+
+def make_python_tracker():
+    from algorithms.calibration import Calibration as PythonCalibration
+    from algorithms.track import Tracker as PythonTracker
+
+    cpar, vpar, tpar, spar = make_python_params()
+    cals = [PythonCalibration() for _ in range(4)]
+    return PythonTracker(cpar, vpar, tpar, spar, cals)
+
+
+def compare_tracker_results(native_value, python_value):
+    if isinstance(native_value, np.ndarray) or isinstance(python_value, np.ndarray):
+        np.testing.assert_allclose(native_value, python_value, rtol=TOLERANCE, atol=TOLERANCE)
+    else:
+        assert native_value == python_value
+
+
 class TestTracker:
     """Compare Tracker class between optv and python engines."""
 
-    def _make_native_params(self):
-        from optv.parameters import (
-            ControlParams,
-            VolumeParams,
-            TrackingParams,
-            SequenceParams,
-        )
-
-        cpar = ControlParams(num_cams=4)
-        vpar = VolumeParams(xmin=0, xmax=100, ymin=0, ymax=100, zmin=0, zmax=50)
-        tpar = TrackingParams(n1=3, n2=3, dh=3.0, dz=1.0)
-        spar = SequenceParams(num_cams=4, frame_range=(10001, 10004))
-        return cpar, vpar, tpar, spar
-
-    def _make_python_params(self):
-        from algorithms.parameters import ControlPar, VolumePar, TrackParTuple, SequencePar
-
-        cpar = ControlPar(num_cams=4)
-        cpar.imx = 1280
-        cpar.imy = 1024
-        cpar.pix_x = 0.012
-        cpar.pix_y = 0.012
-        cpar.img_base_name = ["img/cam1.", "img/cam2.", "img/cam3.", "img/cam4."]
-        cpar.cal_img_base_name = ["cal/cam1.tif", "cal/cam2.tif", "cal/cam3.tif", "cal/cam4.tif"]
-        vpar = VolumePar(x_lay=[0.0, 100.0], z_min_lay=[0.0, 0.0], z_max_lay=[50.0, 50.0])
-        tpar = TrackParTuple(3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 0.0, 0.0, 0, 0.0, 0.0, 0.0, 0.0)
-        spar = SequencePar(
-            img_base_name=["img/cam1.", "img/cam2.", "img/cam3.", "img/cam4."],
-            first=10001,
-            last=10004,
-        )
-        return cpar, vpar, tpar, spar
-
     def test_tracker_creation(self):
         """Test Tracker creation with parameters."""
-        from optv.calibration import Calibration
-        from algorithms.calibration import Calibration as PythonCalibration
-
-        cpar, vpar, tpar, spar = self._make_native_params()
-
-        cals = [Calibration() for _ in range(4)]
-        py_cals = [PythonCalibration() for _ in range(4)]
-
-        from optv.tracker import Tracker as OptvTracker
-        from algorithms.track import Tracker as PythonTracker
-
-        optv_tracker = OptvTracker(cpar, vpar, tpar, spar, cals)
-        python_cpar, python_vpar, python_tpar, python_spar = self._make_python_params()
-        python_tracker = PythonTracker(python_cpar, python_vpar, python_tpar, python_spar, py_cals)
+        optv_tracker = make_native_tracker()
+        python_tracker = make_python_tracker()
 
         assert optv_tracker is not None
         assert python_tracker is not None
 
     def test_tracker_restart(self):
         """Test Tracker.restart() method."""
-        from optv.calibration import Calibration
-        from optv.tracker import Tracker as OptvTracker
-        from algorithms.calibration import Calibration as PythonCalibration
-        from algorithms.track import Tracker as PythonTracker
-
-        cpar, vpar, tpar, spar = self._make_native_params()
-        python_cpar, python_vpar, python_tpar, python_spar = self._make_python_params()
-
-        cals = [Calibration() for _ in range(4)]
-        py_cals = [PythonCalibration() for _ in range(4)]
-
         cwd = os.getcwd()
         os.chdir(TEST_DATA_DIR)
         try:
-            optv_tracker = OptvTracker(cpar, vpar, tpar, spar, cals)
-            python_tracker = PythonTracker(
-                python_cpar, python_vpar, python_tpar, python_spar, py_cals
-            )
+            optv_tracker = make_native_tracker()
+            python_tracker = make_python_tracker()
 
             optv_tracker.restart()
             python_tracker.restart()
 
-            assert optv_tracker.current_step() == python_tracker.current_step()
+            compare_tracker_results(optv_tracker.current_step(), python_tracker.current_step())
         finally:
             os.chdir(cwd)
 
     def test_tracker_step_forward(self):
         """Test Tracker.step_forward() method."""
-        from optv.calibration import Calibration
-        from optv.tracker import Tracker as OptvTracker
-        from algorithms.calibration import Calibration as PythonCalibration
-        from algorithms.track import Tracker as PythonTracker
-
-        cpar, vpar, tpar, spar = self._make_native_params()
-        python_cpar, python_vpar, python_tpar, python_spar = self._make_python_params()
-
-        cals = [Calibration() for _ in range(4)]
-        py_cals = [PythonCalibration() for _ in range(4)]
-
         cwd = os.getcwd()
         os.chdir(TEST_DATA_DIR)
         try:
-            optv_tracker = OptvTracker(cpar, vpar, tpar, spar, cals)
-            python_tracker = PythonTracker(
-                python_cpar, python_vpar, python_tpar, python_spar, py_cals
-            )
+            optv_tracker = make_native_tracker()
+            python_tracker = make_python_tracker()
             optv_tracker.restart()
             python_tracker.restart()
 
             result = optv_tracker.step_forward()
             python_result = python_tracker.step_forward()
 
-            assert isinstance(result, bool)
-            assert isinstance(python_result, bool)
-            assert result == python_result
+            compare_tracker_results(result, python_result)
+            compare_tracker_results(optv_tracker.current_step(), python_tracker.current_step())
         finally:
             os.chdir(cwd)
 
     def test_tracker_finalize(self):
         """Test Tracker.finalize() method."""
-        from optv.calibration import Calibration
-        from optv.tracker import Tracker as OptvTracker
-        from algorithms.calibration import Calibration as PythonCalibration
-        from algorithms.track import Tracker as PythonTracker
-
-        cpar, vpar, tpar, spar = self._make_native_params()
-        python_cpar, python_vpar, python_tpar, python_spar = self._make_python_params()
-
-        cals = [Calibration() for _ in range(4)]
-        py_cals = [PythonCalibration() for _ in range(4)]
-
         cwd = os.getcwd()
         os.chdir(TEST_DATA_DIR)
         try:
-            optv_tracker = OptvTracker(cpar, vpar, tpar, spar, cals)
-            python_tracker = PythonTracker(
-                python_cpar, python_vpar, python_tpar, python_spar, py_cals
-            )
+            optv_tracker = make_native_tracker()
+            python_tracker = make_python_tracker()
             optv_tracker.restart()
             python_tracker.restart()
 
@@ -163,66 +138,40 @@ class TestTracker:
 
             optv_tracker.finalize()
             python_tracker.finalize()
+
+            compare_tracker_results(optv_tracker.current_step(), python_tracker.current_step())
         finally:
             os.chdir(cwd)
 
     def test_tracker_full_forward(self):
         """Test Tracker.full_forward() method."""
-        from optv.calibration import Calibration
-        from optv.tracker import Tracker as OptvTracker
-        from algorithms.calibration import Calibration as PythonCalibration
-        from algorithms.track import Tracker as PythonTracker
-
-        cpar, vpar, tpar, spar = self._make_native_params()
-        python_cpar, python_vpar, python_tpar, python_spar = self._make_python_params()
-
-        cals = [Calibration() for _ in range(4)]
-        py_cals = [PythonCalibration() for _ in range(4)]
-
         cwd = os.getcwd()
         os.chdir(TEST_DATA_DIR)
         try:
-            optv_tracker = OptvTracker(cpar, vpar, tpar, spar, cals)
-            python_tracker = PythonTracker(
-                python_cpar, python_vpar, python_tpar, python_spar, py_cals
-            )
+            optv_tracker = make_native_tracker()
+            python_tracker = make_python_tracker()
 
             optv_tracker.full_forward()
             python_tracker.full_forward()
 
-            assert optv_tracker.current_step() == python_tracker.current_step()
+            compare_tracker_results(optv_tracker.current_step(), python_tracker.current_step())
         finally:
             os.chdir(cwd)
 
     def test_tracker_current_step(self):
         """Test Tracker.current_step() method."""
-        from optv.calibration import Calibration
-        from optv.tracker import Tracker as OptvTracker
-        from algorithms.calibration import Calibration as PythonCalibration
-        from algorithms.track import Tracker as PythonTracker
-
-        cpar, vpar, tpar, spar = self._make_native_params()
-        python_cpar, python_vpar, python_tpar, python_spar = self._make_python_params()
-
-        cals = [Calibration() for _ in range(4)]
-        py_cals = [PythonCalibration() for _ in range(4)]
-
         cwd = os.getcwd()
         os.chdir(TEST_DATA_DIR)
         try:
-            optv_tracker = OptvTracker(cpar, vpar, tpar, spar, cals)
-            python_tracker = PythonTracker(
-                python_cpar, python_vpar, python_tpar, python_spar, py_cals
-            )
+            optv_tracker = make_native_tracker()
+            python_tracker = make_python_tracker()
             optv_tracker.restart()
             python_tracker.restart()
 
             step = optv_tracker.current_step()
             python_step = python_tracker.current_step()
 
-            assert step >= 0
-            assert python_step >= 0
-            assert step == python_step
+            compare_tracker_results(step, python_step)
         finally:
             os.chdir(cwd)
 
@@ -232,9 +181,6 @@ class TestTrackerWithNaming:
 
     def test_tracker_with_custom_naming(self):
         """Test Tracker with custom file naming."""
-        from optv.calibration import Calibration
-        from algorithms.calibration import Calibration as PythonCalibration
-        from algorithms.track import Tracker as PythonTracker
         from optv.parameters import ControlParams, VolumeParams, TrackingParams, SequenceParams
         from algorithms.parameters import ControlPar, VolumePar, TrackParTuple, SequencePar
 
@@ -258,9 +204,6 @@ class TestTrackerWithNaming:
             last=10004,
         )
 
-        cals = [Calibration() for _ in range(4)]
-        py_cals = [PythonCalibration() for _ in range(4)]
-
         naming = {
             "corres": "custom/rt",
             "linkage": "custom/ptv",
@@ -268,6 +211,12 @@ class TestTrackerWithNaming:
         }
 
         from optv.tracker import Tracker as OptvTracker
+        from optv.calibration import Calibration
+        from algorithms.calibration import Calibration as PythonCalibration
+        from algorithms.track import Tracker as PythonTracker
+
+        cals = [Calibration() for _ in range(4)]
+        py_cals = [PythonCalibration() for _ in range(4)]
 
         assert OptvTracker(cpar, vpar, tpar, spar, cals, naming=naming) is not None
         assert PythonTracker(
@@ -285,8 +234,8 @@ class TestTrackerEdgeCases:
         from algorithms.calibration import Calibration as PythonCalibration
         from algorithms.track import Tracker as PythonTracker
 
-        cpar, vpar, tpar, spar = self._make_native_params()
-        python_cpar, python_vpar, python_tpar, python_spar = self._make_python_params()
+        cpar, vpar, tpar, spar = make_native_params()
+        python_cpar, python_vpar, python_tpar, python_spar = make_python_params()
 
         cals = [Calibration() for _ in range(4)]
         py_cals = [PythonCalibration() for _ in range(4)]
@@ -302,35 +251,34 @@ class TestTrackerEdgeCases:
             optv_tracker.full_forward()
             python_tracker.full_forward()
 
-            assert optv_tracker.current_step() == python_tracker.current_step()
+            compare_tracker_results(optv_tracker.current_step(), python_tracker.current_step())
         finally:
             os.chdir(cwd)
 
     def test_tracker_multiple_cameras(self):
-        """Test Tracker with varying camera counts."""
+        """Test Tracker with the supported four-camera configuration."""
         from optv.calibration import Calibration
         from optv.tracker import Tracker as OptvTracker
         from algorithms.calibration import Calibration as PythonCalibration
         from algorithms.track import Tracker as PythonTracker
 
-        cpar, vpar, tpar, spar = self._make_native_params()
-        python_cpar, python_vpar, python_tpar, python_spar = self._make_python_params()
+        cpar, vpar, tpar, spar = make_native_params()
+        python_cpar, python_vpar, python_tpar, python_spar = make_python_params()
 
-        for num_cams in [2, 4, 6]:
-            cals = [Calibration() for _ in range(num_cams)]
-            py_cals = [PythonCalibration() for _ in range(num_cams)]
+        cals = [Calibration() for _ in range(4)]
+        py_cals = [PythonCalibration() for _ in range(4)]
 
-            cwd = os.getcwd()
-            os.chdir(TEST_DATA_DIR)
-            try:
-                optv_tracker = OptvTracker(cpar, vpar, tpar, spar, cals)
-                python_tracker = PythonTracker(
-                    python_cpar, python_vpar, python_tpar, python_spar, py_cals
-                )
+        cwd = os.getcwd()
+        os.chdir(TEST_DATA_DIR)
+        try:
+            optv_tracker = OptvTracker(cpar, vpar, tpar, spar, cals)
+            python_tracker = PythonTracker(
+                python_cpar, python_vpar, python_tpar, python_spar, py_cals
+            )
 
-                optv_tracker.full_forward()
-                python_tracker.full_forward()
+            optv_tracker.full_forward()
+            python_tracker.full_forward()
 
-                assert optv_tracker.current_step() == python_tracker.current_step()
-            finally:
-                os.chdir(cwd)
+            compare_tracker_results(optv_tracker.current_step(), python_tracker.current_step())
+        finally:
+            os.chdir(cwd)

@@ -43,37 +43,18 @@ def test_image_path_resolution(test_data_dir):
         print(f"Last frame: {last_frame}")
 
         if base_name:
-            # Try to construct image path for first frame
-            image_name = f"{base_name}{first_frame:04d}.tif"
-            image_path = os.path.join(test_data_dir, "img", image_name)
+            if isinstance(base_name, list):
+                base_name = base_name[0]
 
-            print(f"Constructed image path: {image_path}")
-            print(f"Image exists: {os.path.exists(image_path)}")
-
-            # Also check relative to experiment directory
-            if not os.path.exists(image_path):
-                # Try relative path from current working directory
-                rel_image_path = os.path.join("img", image_name)
-                print(f"Relative image path: {rel_image_path}")
-                print(
-                    f"Relative image exists from cwd: {os.path.exists(rel_image_path)}"
-                )
-
-                # Try changing to experiment directory
-                old_cwd = os.getcwd()
-                try:
-                    os.chdir(test_data_dir)
-                    print(f"Changed to experiment directory: {test_data_dir}")
-                    print(
-                        f"Relative image exists from exp dir: {os.path.exists(rel_image_path)}"
-                    )
-                finally:
-                    os.chdir(old_cwd)
-
-            return os.path.exists(image_path)
+            print(f"Resolved base name: {base_name}")
+            assert isinstance(base_name, str)
+            assert first_frame == 10001
+            assert last_frame == 10004
+            assert base_name.startswith("img/")
+            return
 
     print("No sequence parameters or base_name found")
-    return False
+    raise AssertionError("No sequence parameters or base_name found")
 
 
 def test_parameter_image_paths(test_data_dir):
@@ -122,7 +103,7 @@ def test_parameter_image_paths(test_data_dir):
         except Exception as e:
             print(f"Error loading {param_type} parameters: {e}")
 
-    return len(all_params) > 0
+    assert len(all_params) > 0
 
 
 def test_working_directory_independence(test_data_dir):
@@ -155,11 +136,10 @@ def test_working_directory_independence(test_data_dir):
         seq_params = exp.get_parameter("sequence")
         print(f"Sequence parameters loaded: {seq_params is not None}")
 
-        return success and seq_params is not None
+        assert success and seq_params is not None
 
     except Exception as e:
-        print(f"Error during working directory test: {e}")
-        return False
+        raise AssertionError(f"Error during working directory test: {e}")
     finally:
         os.chdir(original_cwd)
         print(f"Restored working directory to: {os.getcwd()}")
@@ -197,10 +177,10 @@ def test_absolute_vs_relative_paths(test_data_dir):
         finally:
             os.chdir(original_dir)
         print(f"Relative path experiment success: {success2}")
-        return success1 and success2
+        assert success1 and success2
     else:
         print("Relative and absolute paths are the same")
-        return success1
+        assert success1
 
 
 if __name__ == "__main__":

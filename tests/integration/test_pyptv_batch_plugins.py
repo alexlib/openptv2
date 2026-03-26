@@ -3,26 +3,27 @@
 import subprocess
 import sys
 from pathlib import Path
+import pytest
 
 
 def test_batch_plugins_runs():
     """Test that pyptv_batch_plugins runs without errors"""
     
     # Path to the script
-    script_path = Path(__file__).parent.parent / "pyptv" / "pyptv_batch_plugins.py"
-    test_exp_path = Path(__file__).parent.parent / "tests" / "test_splitter"
+    script_path = Path(__file__).parent.parent.parent / "gui" / "pyptv" / "pyptv_batch_plugins.py"
+    test_exp_path = Path(__file__).parent.parent.parent / "gui" / "tests" / "test_splitter"
     yaml_file = test_exp_path / "parameters_Run1.yaml"
     
     # Check if test experiment exists
     if not test_exp_path.exists():
-        print(f"❌ Test experiment not found: {test_exp_path}")
-        return False
+        pytest.skip(f"Test experiment not found: {test_exp_path}")
     
     modes = ["both", "sequence", "tracking"]
     for mode in modes:
         cmd = [
             sys.executable,
-            str(script_path),
+            "-m",
+            "gui.pyptv.pyptv_batch_plugins",
             str(yaml_file),
             "1000001",
             "1000005",
@@ -45,14 +46,13 @@ def test_batch_plugins_runs():
                 print(f"✅ Batch processing completed successfully for mode: {mode}")
             else:
                 print(f"❌ Process failed with return code: {result.returncode} for mode: {mode}")
-                return False
+                raise AssertionError(
+                    f"Process failed with return code: {result.returncode} for mode: {mode}"
+                )
         except subprocess.TimeoutExpired:
-            print(f"❌ Process timed out for mode: {mode}")
-            return False
+            raise AssertionError(f"Process timed out for mode: {mode}")
         except Exception as e:
-            print(f"❌ Error running process for mode {mode}: {e}")
-            return False
-    return True
+            raise AssertionError(f"Error running process for mode {mode}: {e}")
 
 
 if __name__ == "__main__":

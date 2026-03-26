@@ -27,34 +27,6 @@ class Calibration:
         """Create an empty calibration object."""
         self._impl = CalibrationImpl()
 
-    @classmethod
-    def from_file(
-        cls, ori_file: Union[str, bytes], add_file: Optional[Union[str, bytes]] = None
-    ):
-        """
-        Read calibration from files.
-
-        Arguments:
-        ori_file: path of file containing interior and exterior orientation data.
-        add_file: path of file containing added (distortions) parameters.
-        """
-        # Convert bytes to str if needed
-        if isinstance(ori_file, bytes):
-            ori_file = ori_file.decode("utf-8")
-        if isinstance(add_file, bytes):
-            add_file = add_file.decode("utf-8")
-
-        # Handle None or string for add_file
-        if add_file is not None and isinstance(add_file, str):
-            add_file = Path(add_file)
-        elif add_file is None:
-            add_file = None
-
-        if isinstance(ori_file, str):
-            ori_file = Path(ori_file)
-
-        return CalibrationImpl.from_file(ori_file, add_file)
-
     def from_file(
         self, ori_file: Union[str, bytes], add_file: Optional[Union[str, bytes]] = None
     ):
@@ -76,7 +48,8 @@ class Calibration:
         if isinstance(ori_file, str):
             ori_file = Path(ori_file)
 
-        self._impl = CalibrationImpl.from_file(ori_file, add_file)
+        self._impl = CalibrationImpl()
+        self._impl.from_file(ori_file, add_file)
         return self
 
     def write(
