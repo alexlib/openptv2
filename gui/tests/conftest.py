@@ -7,7 +7,7 @@ import shutil
 def test_data_dir():
     """Fixture to set up test data directory"""
     # Get the absolute path to the test_cavity directory
-    test_dir = Path(__file__).parent / "test_cavity"
+    test_dir = Path(__file__).parent.parent.parent / "test_data" / "test_cavity"
     if not test_dir.exists():
         pytest.skip(f"Test data directory {test_dir} not found")
     return test_dir
@@ -32,7 +32,7 @@ def clean_test_environment(test_data_dir):
 
 
 def pytest_runtest_setup(item):
-    if 'qt' in item.keywords:
+    if "qt" in item.keywords:
         try:
             import PySide6  # or PySide6, depending on your package
         except ImportError:

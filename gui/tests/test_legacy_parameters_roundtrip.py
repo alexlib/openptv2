@@ -3,9 +3,12 @@ from pathlib import Path
 from pyptv import legacy_parameters
 import shutil
 
+
 def test_legacy_parameters_roundtrip(tmp_path):
     # Source directory with original parameter files
-    src_dir = Path(__file__).parent / "test_cavity" / "parameters"
+    src_dir = (
+        Path(__file__).parent.parent.parent / "test_data" / "test_cavity" / "parameters"
+    )
     assert src_dir.exists(), f"Source directory {src_dir} does not exist!"
 
     # Destination directory for roundtrip
@@ -39,8 +42,12 @@ def test_legacy_parameters_roundtrip(tmp_path):
             with open(src_file, "r") as f1, open(dest_file, "r") as f2:
                 src_lines = [line.strip() for line in f1]
                 dest_lines = [line.strip() for line in f2]
-                assert src_lines == dest_lines, f"Mismatch in {src_file.name}:\n{src_lines}\n!=\n{dest_lines}"
+                assert src_lines == dest_lines, (
+                    f"Mismatch in {src_file.name}:\n{src_lines}\n!=\n{dest_lines}"
+                )
+
 
 if __name__ == "__main__":
     import pytest
+
     pytest.main([__file__, "-v", "--tb=short"])
