@@ -18,8 +18,8 @@ from optv.epipolar import epipolar_curve
 
 class TestEpipolarCurve(unittest.TestCase):
     def test_two_cameras(self):
-        ori_tmpl = "tests/testing_fodder/calibration/sym_cam{cam_num}.tif.ori"
-        add_file = "tests/testing_fodder/calibration/cam1.tif.addpar"
+        ori_tmpl = "test_data/calibration/sym_cam{cam_num}.tif.ori"
+        add_file = "test_data/calibration/cam1.tif.addpar"
 
         orig_cal = Calibration()
         orig_cal.from_file(ori_tmpl.format(cam_num=1).encode(), add_file.encode())
@@ -31,11 +31,11 @@ class TestEpipolarCurve(unittest.TestCase):
         proj_cal.set_angles(np.r_[0.0, 3 * np.pi / 4.0, 0.0])
 
         cpar = ControlParams(4)
-        cpar.read_control_par("tests/testing_fodder/corresp/control.par")
+        cpar.read_control_par("test_data/corresp/control.par")
         sens_size = cpar.get_image_size()
 
         vpar = VolumeParams()
-        vpar.read_volume_par("tests/testing_fodder/corresp/criteria.par")
+        vpar.read_volume_par("test_data/corresp/criteria.par")
         vpar.set_Zmin_lay([-10, -10])
         vpar.set_Zmax_lay([10, 10])
 

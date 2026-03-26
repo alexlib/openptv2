@@ -11,11 +11,11 @@ import numpy as np
 
 # Relative path from test file to test data
 TEST_DATA_DIR = os.path.join(
-    os.path.dirname(__file__), "..", "testing_fodder", "calibration"
+    os.path.dirname(__file__), "..", "..", "test_data", "calibration"
 )
 
 TEST_DATA_DIR_SINGLE_CAM = os.path.join(
-    os.path.dirname(__file__), "..", "testing_fodder", "single_cam", "calibration"
+    os.path.dirname(__file__), "..", "..", "test_data", "single_cam", "calibration"
 )
 
 TOLERANCE = 1e-7

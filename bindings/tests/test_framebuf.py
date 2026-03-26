@@ -30,7 +30,7 @@ class TestTargets(unittest.TestCase):
 
     def test_read_targets(self):
         """Reading a targets file from Python."""
-        targs = read_targets("tests/testing_fodder/sample_", 42)
+        targs = read_targets("test_data/sample_", 42)
 
         self.assertEqual(len(targs), 2)
         self.assertEqual([targ.tnr() for targ in targs], [1, 0])
@@ -39,8 +39,8 @@ class TestTargets(unittest.TestCase):
 
     def test_sort_y(self):
         """sorting on the Y coordinate in place"""
-        targs = read_targets("tests/testing_fodder/frame/cam1.", 333)
-        revs = read_targets("tests/testing_fodder/frame/cam1_reversed.", 333)
+        targs = read_targets("test_data/frame/cam1.", 333)
+        revs = read_targets("test_data/frame/cam1_reversed.", 333)
         revs.sort_y()
 
         for targ, rev in zip(targs, revs):
@@ -48,9 +48,9 @@ class TestTargets(unittest.TestCase):
 
     def test_write_targets(self):
         """Round-trip test of writing targets."""
-        targs = read_targets("tests/testing_fodder/sample_", 42)
-        targs.write(b"tests/testing_fodder/round_trip.", 1)
-        tback = read_targets("tests/testing_fodder/round_trip.", 1)
+        targs = read_targets("test_data/sample_", 42)
+        targs.write(b"test_data/round_trip.", 1)
+        tback = read_targets("test_data/round_trip.", 1)
 
         self.assertEqual(len(targs), len(tback))
         self.assertEqual([targ.tnr() for targ in targs], [targ.tnr() for targ in tback])
@@ -62,7 +62,7 @@ class TestTargets(unittest.TestCase):
         )
 
     def tearDown(self):
-        filename = "tests/testing_fodder/round_trip.0001_targets"
+        filename = "test_data/round_trip.0001_targets"
         if os.path.exists(filename):
             os.remove(filename)
 
@@ -70,13 +70,11 @@ class TestTargets(unittest.TestCase):
 class TestFrame(unittest.TestCase):
     def test_read_frame(self):
         """reading a frame"""
-        targ_files = [
-            "tests/testing_fodder/frame/cam%d.".encode() % c for c in range(1, 5)
-        ]
+        targ_files = ["test_data/frame/cam%d.".encode() % c for c in range(1, 5)]
         frm = Frame(
             4,
-            corres_file_base=b"tests/testing_fodder/frame/rt_is",
-            linkage_file_base=b"tests/testing_fodder/frame/ptv_is",
+            corres_file_base=b"test_data/frame/rt_is",
+            linkage_file_base=b"test_data/frame/ptv_is",
             target_file_base=targ_files,
             frame_num=333,
         )

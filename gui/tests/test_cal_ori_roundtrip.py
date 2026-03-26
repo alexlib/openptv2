@@ -7,8 +7,8 @@ from pyptv.parameter_manager import ParameterManager
 @pytest.mark.parametrize(
     "src_dir",
     [
-        "tests/integration/test_cavity/parameters",
-        "tests/integration/test_splitter/parameters",
+        "test_data/test_cavity/parameters",
+        "test_data/test_splitter/parameters",
     ],
 )
 def test_cal_ori_roundtrip(src_dir, tmp_path):

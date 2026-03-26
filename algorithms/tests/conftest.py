@@ -12,7 +12,7 @@ from pathlib import Path
 import pytest
 import os
 
-FIXTURES = Path(__file__).parent.parent / "testing_fodder"
+FIXTURES = Path(__file__).parent.parent.parent / "test_data"
 
 TOLERANCES = {
     "trafo": 1e-10,

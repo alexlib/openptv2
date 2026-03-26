@@ -18,7 +18,7 @@ import numpy as np
 from typing import Dict, List, Tuple, Any
 
 
-TEST_DATA_DIR = Path(__file__).parent.parent / "testing_fodder" / "test_cavity"
+TEST_DATA_DIR = Path(__file__).parent.parent.parent / "test_data" / "test_cavity"
 TOLERANCE = 1e-10
 
 

@@ -12,7 +12,7 @@ from .conftest import get_tolerance
 
 TOLERANCE = get_tolerance("tracker")
 TEST_DATA_DIR = os.path.join(
-    os.path.dirname(__file__), "..", "integration", "test_cavity"
+    os.path.dirname(__file__), "..", "..", "test_data", "test_cavity"
 )
 
 
@@ -40,7 +40,12 @@ def make_python_params():
     cpar.pix_x = 0.012
     cpar.pix_y = 0.012
     cpar.img_base_name = ["img/cam1.", "img/cam2.", "img/cam3.", "img/cam4."]
-    cpar.cal_img_base_name = ["cal/cam1.tif", "cal/cam2.tif", "cal/cam3.tif", "cal/cam4.tif"]
+    cpar.cal_img_base_name = [
+        "cal/cam1.tif",
+        "cal/cam2.tif",
+        "cal/cam3.tif",
+        "cal/cam4.tif",
+    ]
     vpar = VolumePar(x_lay=[0.0, 100.0], z_min_lay=[0.0, 0.0], z_max_lay=[50.0, 50.0])
     tpar = TrackParTuple(3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 0.0, 0.0, 0, 0.0, 0.0, 0.0, 0.0)
     spar = SequencePar(
@@ -71,7 +76,9 @@ def make_python_tracker():
 
 def compare_tracker_results(native_value, python_value):
     if isinstance(native_value, np.ndarray) or isinstance(python_value, np.ndarray):
-        np.testing.assert_allclose(native_value, python_value, rtol=TOLERANCE, atol=TOLERANCE)
+        np.testing.assert_allclose(
+            native_value, python_value, rtol=TOLERANCE, atol=TOLERANCE
+        )
     else:
         assert native_value == python_value
 
@@ -98,7 +105,9 @@ class TestTracker:
             optv_tracker.restart()
             python_tracker.restart()
 
-            compare_tracker_results(optv_tracker.current_step(), python_tracker.current_step())
+            compare_tracker_results(
+                optv_tracker.current_step(), python_tracker.current_step()
+            )
         finally:
             os.chdir(cwd)
 
@@ -116,7 +125,9 @@ class TestTracker:
             python_result = python_tracker.step_forward()
 
             compare_tracker_results(result, python_result)
-            compare_tracker_results(optv_tracker.current_step(), python_tracker.current_step())
+            compare_tracker_results(
+                optv_tracker.current_step(), python_tracker.current_step()
+            )
         finally:
             os.chdir(cwd)
 
@@ -139,7 +150,9 @@ class TestTracker:
             optv_tracker.finalize()
             python_tracker.finalize()
 
-            compare_tracker_results(optv_tracker.current_step(), python_tracker.current_step())
+            compare_tracker_results(
+                optv_tracker.current_step(), python_tracker.current_step()
+            )
         finally:
             os.chdir(cwd)
 
@@ -154,7 +167,9 @@ class TestTracker:
             optv_tracker.full_forward()
             python_tracker.full_forward()
 
-            compare_tracker_results(optv_tracker.current_step(), python_tracker.current_step())
+            compare_tracker_results(
+                optv_tracker.current_step(), python_tracker.current_step()
+            )
         finally:
             os.chdir(cwd)
 
@@ -181,8 +196,18 @@ class TestTrackerWithNaming:
 
     def test_tracker_with_custom_naming(self):
         """Test Tracker with custom file naming."""
-        from optv.parameters import ControlParams, VolumeParams, TrackingParams, SequenceParams
-        from algorithms.parameters import ControlPar, VolumePar, TrackParTuple, SequencePar
+        from optv.parameters import (
+            ControlParams,
+            VolumeParams,
+            TrackingParams,
+            SequenceParams,
+        )
+        from algorithms.parameters import (
+            ControlPar,
+            VolumePar,
+            TrackParTuple,
+            SequencePar,
+        )
 
         cpar = ControlParams(num_cams=4)
         vpar = VolumeParams(xmin=0, xmax=100, ymin=0, ymax=100, zmin=0, zmax=50)
@@ -195,9 +220,18 @@ class TestTrackerWithNaming:
         python_cpar.pix_x = 0.012
         python_cpar.pix_y = 0.012
         python_cpar.img_base_name = ["img/cam1.", "img/cam2.", "img/cam3.", "img/cam4."]
-        python_cpar.cal_img_base_name = ["cal/cam1.tif", "cal/cam2.tif", "cal/cam3.tif", "cal/cam4.tif"]
-        python_vpar = VolumePar(x_lay=[0.0, 100.0], z_min_lay=[0.0, 0.0], z_max_lay=[50.0, 50.0])
-        python_tpar = TrackParTuple(3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 0.0, 0.0, 0, 0.0, 0.0, 0.0, 0.0)
+        python_cpar.cal_img_base_name = [
+            "cal/cam1.tif",
+            "cal/cam2.tif",
+            "cal/cam3.tif",
+            "cal/cam4.tif",
+        ]
+        python_vpar = VolumePar(
+            x_lay=[0.0, 100.0], z_min_lay=[0.0, 0.0], z_max_lay=[50.0, 50.0]
+        )
+        python_tpar = TrackParTuple(
+            3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 0.0, 0.0, 0, 0.0, 0.0, 0.0, 0.0
+        )
         python_spar = SequencePar(
             img_base_name=["img/cam1.", "img/cam2.", "img/cam3.", "img/cam4."],
             first=10001,
@@ -219,9 +253,17 @@ class TestTrackerWithNaming:
         py_cals = [PythonCalibration() for _ in range(4)]
 
         assert OptvTracker(cpar, vpar, tpar, spar, cals, naming=naming) is not None
-        assert PythonTracker(
-            python_cpar, python_vpar, python_tpar, python_spar, py_cals, naming=naming
-        ) is not None
+        assert (
+            PythonTracker(
+                python_cpar,
+                python_vpar,
+                python_tpar,
+                python_spar,
+                py_cals,
+                naming=naming,
+            )
+            is not None
+        )
 
 
 class TestTrackerEdgeCases:
@@ -251,7 +293,9 @@ class TestTrackerEdgeCases:
             optv_tracker.full_forward()
             python_tracker.full_forward()
 
-            compare_tracker_results(optv_tracker.current_step(), python_tracker.current_step())
+            compare_tracker_results(
+                optv_tracker.current_step(), python_tracker.current_step()
+            )
         finally:
             os.chdir(cwd)
 
@@ -279,6 +323,8 @@ class TestTrackerEdgeCases:
             optv_tracker.full_forward()
             python_tracker.full_forward()
 
-            compare_tracker_results(optv_tracker.current_step(), python_tracker.current_step())
+            compare_tracker_results(
+                optv_tracker.current_step(), python_tracker.current_step()
+            )
         finally:
             os.chdir(cwd)

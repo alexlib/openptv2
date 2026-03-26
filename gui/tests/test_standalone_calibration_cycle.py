@@ -9,7 +9,11 @@ from optv.imgcoord import image_coordinates
 from optv.transforms import convert_arr_metric_to_pixel
 
 from pyptv.ground_truth import generate_ground_truth, save_ground_truth_npz
-from pyptv.standalone_calibration import get_flags_from_yaml, load_parameter_manager, run_standalone_calibration
+from pyptv.standalone_calibration import (
+    get_flags_from_yaml,
+    load_parameter_manager,
+    run_standalone_calibration,
+)
 from pyptv import ptv
 
 
@@ -22,7 +26,7 @@ def _copy_tree(src: Path, dst: Path) -> None:
 def test_standalone_calibration_full_cycle(tmp_path: Path):
     """GT -> synthetic 2D -> full_calibration -> reprojection error ~= 0."""
 
-    src = Path(__file__).parent / "test_cavity"
+    src = Path(__file__).parent.parent.parent / "test_data" / "test_cavity"
     work = tmp_path / "cavity"
     _copy_tree(src, work)
 
@@ -54,7 +58,9 @@ def test_standalone_calibration_full_cycle(tmp_path: Path):
     rms_by_cam = []
     for cam, cal in enumerate(cals):
         projected_metric = image_coordinates(gt.xyz, cal, cpar.get_multimedia_params())
-        pix = np.asarray(convert_arr_metric_to_pixel(projected_metric, cpar), dtype=float).reshape(-1, 2)
+        pix = np.asarray(
+            convert_arr_metric_to_pixel(projected_metric, cpar), dtype=float
+        ).reshape(-1, 2)
         err = pix - gt.xy[cam]
         rms = float(np.sqrt(np.mean(np.sum(err * err, axis=1))))
         rms_by_cam.append(rms)

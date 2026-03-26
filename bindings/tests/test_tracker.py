@@ -17,15 +17,15 @@ from optv.calibration import Calibration
 from optv.parameters import ControlParams, VolumeParams, TrackingParams, SequenceParams
 
 framebuf_naming = {
-    "corres": b"tests/testing_fodder/track/res/particles",
-    "linkage": b"tests/testing_fodder/track/res/linkage",
-    "prio": b"tests/testing_fodder/track/res/whatever",
+    "corres": b"test_data/track/res/particles",
+    "linkage": b"test_data/track/res/linkage",
+    "prio": b"test_data/track/res/whatever",
 }
 
 
 class TestTracker(unittest.TestCase):
     def setUp(self):
-        with open(b"tests/testing_fodder/track/conf.yaml") as f:
+        with open(b"test_data/track/conf.yaml") as f:
             yaml_conf = yaml.load(f, Loader=yaml.FullLoader)
         seq_cfg = yaml_conf["sequence"]
 
@@ -54,9 +54,7 @@ class TestTracker(unittest.TestCase):
 
     def test_forward(self):
         """Manually running a full forward tracking run."""
-        shutil.copytree(
-            "tests/testing_fodder/track/res_orig/", "tests/testing_fodder/track/res/"
-        )
+        shutil.copytree("test_data/track/res_orig/", "test_data/track/res/")
 
         self.tracker.restart()
         last_step = 10001
@@ -64,7 +62,7 @@ class TestTracker(unittest.TestCase):
             # print(f"step is {self.tracker.current_step()}\n")
             # print(self.tracker.current_step() > last_step)
             self.assertTrue(self.tracker.current_step() > last_step)
-            with open("tests/testing_fodder/track/res/linkage.%d" % last_step) as f:
+            with open("test_data/track/res/linkage.%d" % last_step) as f:
                 lines = f.readlines()
                 # print(last_step,lines[0])
                 if last_step == 10003:
@@ -76,9 +74,7 @@ class TestTracker(unittest.TestCase):
 
     def test_forward_3d(self):
         """Manually running a full forward tracking run."""
-        shutil.copytree(
-            "tests/testing_fodder/track/res_orig/", "tests/testing_fodder/track/res/"
-        )
+        shutil.copytree("test_data/track/res_orig/", "test_data/track/res/")
 
         self.tracker.restart()
         last_step = 10001
@@ -86,7 +82,7 @@ class TestTracker(unittest.TestCase):
             # print(f"step is {self.tracker.current_step()}\n")
             # print(self.tracker.current_step() > last_step)
             self.assertGreater(self.tracker.current_step(), last_step)
-            with open("tests/testing_fodder/track/res/linkage.%d" % last_step) as f:
+            with open("test_data/track/res/linkage.%d" % last_step) as f:
                 lines = f.readlines()
                 # print(last_step,lines[0])
                 if last_step == 10003:
@@ -98,27 +94,21 @@ class TestTracker(unittest.TestCase):
 
     def test_full_forward(self):
         """Automatic full forward tracking run."""
-        shutil.copytree(
-            "tests/testing_fodder/track/res_orig/", "tests/testing_fodder/track/res/"
-        )
+        shutil.copytree("test_data/track/res_orig/", "test_data/track/res/")
         self.tracker.full_forward()
         # if it passes without error, we assume it's ok. The actual test is in
         # the C code.
 
     def test_full_forward_3d(self):
         """Automatic full forward tracking run."""
-        shutil.copytree(
-            "tests/testing_fodder/track/res_orig/", "tests/testing_fodder/track/res/"
-        )
+        shutil.copytree("test_data/track/res_orig/", "test_data/track/res/")
         self.tracker.full_forward_3d()
         # if it passes without error, we assume it's ok. The actual test is in
         # the C code.
 
     def test_full_backward(self):
         """Automatic full backward correction phase."""
-        shutil.copytree(
-            "tests/testing_fodder/track/res_orig/", "tests/testing_fodder/track/res/"
-        )
+        shutil.copytree("test_data/track/res_orig/", "test_data/track/res/")
         self.tracker.full_forward()
         self.tracker.full_backward()
         # if it passes without error, we assume it's ok. The actual test is in
@@ -165,8 +155,8 @@ class TestTracker(unittest.TestCase):
         )
 
     def tearDown(self):
-        if os.path.exists("tests/testing_fodder/track/res/"):
-            shutil.rmtree("tests/testing_fodder/track/res/")
+        if os.path.exists("test_data/track/res/"):
+            shutil.rmtree("test_data/track/res/")
 
 
 if __name__ == "__main__":

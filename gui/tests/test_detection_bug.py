@@ -21,7 +21,7 @@ def test_detection_parameters_bug():
     """Test that reproduces the detection parameters bug."""
 
     # Load test parameters
-    test_dir = Path("tests/integration/test_cavity")
+    test_dir = Path("test_data/test_cavity")
     yaml_file = test_dir / "parameters_Run1.yaml"
 
     experiment = Experiment()

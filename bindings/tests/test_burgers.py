@@ -17,15 +17,15 @@ from optv.calibration import Calibration
 from optv.parameters import ControlParams, VolumeParams, TrackingParams, SequenceParams
 
 framebuf_naming = {
-    "corres": b"tests/testing_fodder/burgers/res/rt_is",
-    "linkage": b"tests/testing_fodder/burgers/res/ptv_is",
-    "prio": b"tests/testing_fodder/burgers/res/whatever",
+    "corres": b"test_data/burgers/res/rt_is",
+    "linkage": b"test_data/burgers/res/ptv_is",
+    "prio": b"test_data/burgers/res/whatever",
 }
 
 
 class TestTracker(unittest.TestCase):
     def setUp(self):
-        with open(b"tests/testing_fodder/burgers/conf.yaml") as f:
+        with open(b"test_data/burgers/conf.yaml") as f:
             yaml_conf = yaml.load(f, Loader=yaml.FullLoader)
         seq_cfg = yaml_conf["sequence"]
 
@@ -52,7 +52,7 @@ class TestTracker(unittest.TestCase):
 
     def test_forward(self):
         """Manually running a full forward tracking run."""
-        # path = 'tests/testing_fodder/burgers/res'
+        # path = 'test_data/burgers/res'
         # try:
         #     os.mkdir(path)
         # except OSError:
@@ -61,19 +61,19 @@ class TestTracker(unittest.TestCase):
         #     print("Successfully created the directory %s " % path)
 
         shutil.copytree(
-            "tests/testing_fodder/burgers/res_orig/",
-            "tests/testing_fodder/burgers/res/",
+            "test_data/burgers/res_orig/",
+            "test_data/burgers/res/",
         )
         shutil.copytree(
-            "tests/testing_fodder/burgers/img_orig/",
-            "tests/testing_fodder/burgers/img/",
+            "test_data/burgers/img_orig/",
+            "test_data/burgers/img/",
         )
 
         self.tracker.restart()
         last_step = 10001
         while self.tracker.step_forward():
             self.assertTrue(self.tracker.current_step() > last_step)
-            with open("tests/testing_fodder/burgers/res/rt_is.%d" % last_step) as f:
+            with open("test_data/burgers/res/rt_is.%d" % last_step) as f:
                 lines = f.readlines()
                 # print(last_step,lines[0])
                 # print(lines)
@@ -86,7 +86,7 @@ class TestTracker(unittest.TestCase):
 
     def test_forward_3d(self):
         """Manually running a full forward tracking run."""
-        # path = 'tests/testing_fodder/burgers/res'
+        # path = 'test_data/burgers/res'
         # try:
         #     os.mkdir(path)
         # except OSError:
@@ -95,19 +95,19 @@ class TestTracker(unittest.TestCase):
         #     print("Successfully created the directory %s " % path)
 
         shutil.copytree(
-            "tests/testing_fodder/burgers/res_orig/",
-            "tests/testing_fodder/burgers/res/",
+            "test_data/burgers/res_orig/",
+            "test_data/burgers/res/",
         )
         shutil.copytree(
-            "tests/testing_fodder/burgers/img_orig/",
-            "tests/testing_fodder/burgers/img/",
+            "test_data/burgers/img_orig/",
+            "test_data/burgers/img/",
         )
 
         self.tracker.restart()
         last_step = 10001
         while self.tracker.step_forward_3d():
             self.assertTrue(self.tracker.current_step() > last_step)
-            with open("tests/testing_fodder/burgers/res/rt_is.%d" % last_step) as f:
+            with open("test_data/burgers/res/rt_is.%d" % last_step) as f:
                 lines = f.readlines()
                 # print(last_step,lines[0])
                 # print(lines)
@@ -120,14 +120,14 @@ class TestTracker(unittest.TestCase):
 
     def test_full_forward(self):
         """Automatic full forward tracking run."""
-        # os.mkdir('tests/testing_fodder/burgers/res')
+        # os.mkdir('test_data/burgers/res')
         shutil.copytree(
-            "tests/testing_fodder/burgers/res_orig/",
-            "tests/testing_fodder/burgers/res/",
+            "test_data/burgers/res_orig/",
+            "test_data/burgers/res/",
         )
         shutil.copytree(
-            "tests/testing_fodder/burgers/img_orig/",
-            "tests/testing_fodder/burgers/img/",
+            "test_data/burgers/img_orig/",
+            "test_data/burgers/img/",
         )
         self.tracker.full_forward()
         # if it passes without error, we assume it's ok. The actual test is in
@@ -135,14 +135,14 @@ class TestTracker(unittest.TestCase):
 
     def test_full_forward_3d(self):
         """Automatic full forward tracking run."""
-        # os.mkdir('tests/testing_fodder/burgers/res')
+        # os.mkdir('test_data/burgers/res')
         shutil.copytree(
-            "tests/testing_fodder/burgers/res_orig/",
-            "tests/testing_fodder/burgers/res/",
+            "test_data/burgers/res_orig/",
+            "test_data/burgers/res/",
         )
         shutil.copytree(
-            "tests/testing_fodder/burgers/img_orig/",
-            "tests/testing_fodder/burgers/img/",
+            "test_data/burgers/img_orig/",
+            "test_data/burgers/img/",
         )
         self.tracker.full_forward_3d()
         # if it passes without error, we assume it's ok. The actual test is in
@@ -151,12 +151,12 @@ class TestTracker(unittest.TestCase):
     def test_full_backward(self):
         """Automatic full backward correction phase."""
         shutil.copytree(
-            "tests/testing_fodder/burgers/res_orig/",
-            "tests/testing_fodder/burgers/res/",
+            "test_data/burgers/res_orig/",
+            "test_data/burgers/res/",
         )
         shutil.copytree(
-            "tests/testing_fodder/burgers/img_orig/",
-            "tests/testing_fodder/burgers/img/",
+            "test_data/burgers/img_orig/",
+            "test_data/burgers/img/",
         )
         self.tracker.full_forward()
         self.tracker.full_backward()
@@ -164,10 +164,10 @@ class TestTracker(unittest.TestCase):
         # the C code.
 
     def tearDown(self):
-        if os.path.exists("tests/testing_fodder/burgers/res/"):
-            shutil.rmtree("tests/testing_fodder/burgers/res/")
-        if os.path.exists("tests/testing_fodder/burgers/img/"):
-            shutil.rmtree("tests/testing_fodder/burgers/img/")
+        if os.path.exists("test_data/burgers/res/"):
+            shutil.rmtree("test_data/burgers/res/")
+        if os.path.exists("test_data/burgers/img/"):
+            shutil.rmtree("test_data/burgers/img/")
             # print("there is a /res folder\n")
             # pass
 

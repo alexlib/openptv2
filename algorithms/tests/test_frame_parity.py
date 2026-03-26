@@ -16,8 +16,7 @@ import numpy as np
 # Test data location - use absolute path from project root
 TEST_DATA_DIR = os.path.join(
     os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
-    "tests",
-    "testing_fodder",
+    "test_data",
     "frame",
 )
 

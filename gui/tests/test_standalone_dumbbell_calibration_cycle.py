@@ -21,7 +21,7 @@ def _copy_tree(src: Path, dst: Path) -> None:
 def test_standalone_dumbbell_calibration_cycle(tmp_path: Path):
     """GT calib -> synthetic dumbbell target files -> standalone script -> recover extrinsics."""
 
-    src = Path(__file__).parent / "test_cavity"
+    src = Path(__file__).parent.parent.parent / "test_data" / "test_cavity"
     work = tmp_path / "cavity"
     _copy_tree(src, work)
 

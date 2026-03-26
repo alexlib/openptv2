@@ -5,9 +5,9 @@ import numpy, os, filecmp, shutil
 
 class Test_Calibration(unittest.TestCase):
     def setUp(self):
-        self.input_ori_file_name = b"tests/testing_fodder/calibration/cam1.tif.ori"
-        self.input_add_file_name = b"tests/testing_fodder/calibration/cam2.tif.addpar"
-        self.output_directory = b"tests/testing_fodder/calibration/testing_output/"
+        self.input_ori_file_name = b"test_data/calibration/cam1.tif.ori"
+        self.input_add_file_name = b"test_data/calibration/cam2.tif.addpar"
+        self.output_directory = b"test_data/calibration/testing_output/"
 
         # create a temporary output directory (will be deleted by the end of test)
         if not os.path.exists(self.output_directory):

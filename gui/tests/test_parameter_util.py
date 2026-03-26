@@ -148,7 +148,7 @@ def test_yaml_to_legacy_minimal(tmp_path):
 def test_legacy_to_yaml_and_back(tmp_path):
     """Test round-trip conversion with real test_cavity data."""
     # Use the existing test_cavity/parameters directory as legacy input
-    legacy_dir = Path("tests/integration/test_cavity/parameters")
+    legacy_dir = Path("test_data/test_cavity/parameters")
     if not legacy_dir.exists():
         pytest.skip("test_cavity/parameters directory not found")
 

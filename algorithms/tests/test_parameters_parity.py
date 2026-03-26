@@ -10,7 +10,7 @@ import pytest
 import numpy as np
 
 # Relative path from test file to test data
-TEST_DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "testing_fodder")
+TEST_DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "test_data")
 
 TOLERANCE = 1e-7
 

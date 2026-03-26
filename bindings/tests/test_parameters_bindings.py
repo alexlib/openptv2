@@ -46,9 +46,7 @@ class Test_MultimediaParams(unittest.TestCase):
 
 class Test_TrackingParams(unittest.TestCase):
     def setUp(self):
-        self.input_tracking_par_file_name = (
-            "tests/testing_fodder/tracking_parameters/track.par"
-        )
+        self.input_tracking_par_file_name = "test_data/tracking_parameters/track.par"
 
         # create an instance of TrackingParams class
         # testing setters that are used in constructor
@@ -117,9 +115,7 @@ class Test_TrackingParams(unittest.TestCase):
 
 class Test_SequenceParams(unittest.TestCase):
     def setUp(self):
-        self.input_sequence_par_file_name = (
-            "tests/testing_fodder/sequence_parameters/sequence.par"
-        )
+        self.input_sequence_par_file_name = "test_data/sequence_parameters/sequence.par"
 
         # create an instance of SequencParams class
         self.seq_obj = SequenceParams(num_cams=4)
@@ -179,12 +175,8 @@ class Test_SequenceParams(unittest.TestCase):
 
 class Test_VolumeParams(unittest.TestCase):
     def setUp(self):
-        self.input_volume_par_file_name = (
-            "tests/testing_fodder/volume_parameters/volume.par"
-        )
-        self.temp_output_directory = (
-            "tests/testing_fodder/volume_parameters/testing_output"
-        )
+        self.input_volume_par_file_name = "test_data/volume_parameters/volume.par"
+        self.temp_output_directory = "test_data/volume_parameters/testing_output"
 
         # create a temporary output directory (will be deleted by the end of test)
         if not os.path.exists(self.temp_output_directory):
@@ -297,12 +289,8 @@ class Test_VolumeParams(unittest.TestCase):
 
 class Test_ControlParams(unittest.TestCase):
     def setUp(self):
-        self.input_control_par_file_name = (
-            "tests/testing_fodder/control_parameters/control.par"
-        )
-        self.temp_output_directory = (
-            "tests/testing_fodder/control_parameters/testing_output"
-        )
+        self.input_control_par_file_name = "test_data/control_parameters/control.par"
+        self.temp_output_directory = "test_data/control_parameters/testing_output"
 
         # create a temporary output directory (will be deleted by the end of test)
         if not os.path.exists(self.temp_output_directory):
@@ -431,7 +419,7 @@ class Test_ControlParams(unittest.TestCase):
 
 class TestTargetParams(unittest.TestCase):
     def test_read(self):
-        inp_filename = "tests/testing_fodder/target_parameters/targ_rec.par"
+        inp_filename = "test_data/target_parameters/targ_rec.par"
         tp = TargetParams()
         tp.read(inp_filename)
 

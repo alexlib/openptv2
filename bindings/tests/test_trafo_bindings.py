@@ -13,14 +13,12 @@ import numpy as np
 
 class Test_transforms(unittest.TestCase):
     def setUp(self):
-        self.input_control_par_file_name = (
-            "tests/testing_fodder/control_parameters/control.par"
-        )
+        self.input_control_par_file_name = "test_data/control_parameters/control.par"
         self.control = ControlParams(4)
         self.control.read_control_par(self.input_control_par_file_name)
 
-        self.input_ori_file_name = "tests/testing_fodder/calibration/cam1.tif.ori"
-        self.input_add_file_name = "tests/testing_fodder/calibration/cam2.tif.addpar"
+        self.input_ori_file_name = "test_data/calibration/cam1.tif.ori"
+        self.input_add_file_name = "test_data/calibration/cam2.tif.addpar"
 
         self.calibration = Calibration()
         self.calibration.from_file(self.input_ori_file_name, self.input_add_file_name)

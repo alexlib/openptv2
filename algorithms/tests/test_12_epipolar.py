@@ -14,7 +14,7 @@ from .conftest import get_tolerance
 
 TOLERANCE = get_tolerance("epipolar")
 
-FIXTURES = Path(__file__).parent.parent.parent / "testing_fodder"
+FIXTURES = Path(__file__).parent.parent.parent / "test_data"
 
 
 class TestEpipolar:
@@ -30,7 +30,7 @@ import sys
 import numpy as np
 from pathlib import Path
 
-FIXTURES = Path("tests/testing_fodder")
+FIXTURES = Path("test_data")
 
 from optv.epipolar import epipolar_curve as optv_func
 from optv.calibration import Calibration as OptvCal

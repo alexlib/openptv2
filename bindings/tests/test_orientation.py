@@ -18,10 +18,10 @@ from optv.transforms import convert_arr_metric_to_pixel
 
 class Test_Orientation(unittest.TestCase):
     def setUp(self):
-        self.input_ori_file_name = "tests/testing_fodder/calibration/cam1.tif.ori"
-        self.input_add_file_name = "tests/testing_fodder/calibration/cam2.tif.addpar"
-        self.control_file_name = "tests/testing_fodder/control_parameters/control.par"
-        self.volume_file_name = "tests/testing_fodder/corresp/criteria.par"
+        self.input_ori_file_name = "test_data/calibration/cam1.tif.ori"
+        self.input_add_file_name = "test_data/calibration/cam2.tif.addpar"
+        self.control_file_name = "test_data/control_parameters/control.par"
+        self.volume_file_name = "test_data/corresp/criteria.par"
 
         self.calibration = Calibration()
         self.calibration.from_file(self.input_ori_file_name, self.input_add_file_name)
@@ -106,8 +106,8 @@ class Test_Orientation(unittest.TestCase):
         points = np.array([[17, 42, 0], [17, 42, 0]], dtype=float)
 
         num_cams = 4
-        ori_tmpl = "tests/testing_fodder/calibration/sym_cam{cam_num}.tif.ori"
-        add_file = "tests/testing_fodder/calibration/cam1.tif.addpar"
+        ori_tmpl = "test_data/calibration/sym_cam{cam_num}.tif.ori"
+        add_file = "test_data/calibration/cam1.tif.addpar"
         calibs = []
         targs_plain = []
         targs_jigged = []
@@ -168,8 +168,8 @@ class Test_Orientation(unittest.TestCase):
 
         num_cams = 1
         # prepare MultimediaParams
-        cpar_file = "tests/testing_fodder/single_cam/parameters/ptv.par"
-        vpar_file = "tests/testing_fodder/single_cam/parameters/criteria.par"
+        cpar_file = "test_data/single_cam/parameters/ptv.par"
+        vpar_file = "test_data/single_cam/parameters/criteria.par"
         cpar = ControlParams(num_cams)
         cpar.read_control_par(cpar_file)
         mult_params = cpar.get_multimedia_params()
@@ -177,8 +177,8 @@ class Test_Orientation(unittest.TestCase):
         vpar = VolumeParams()
         vpar.read_volume_par(vpar_file)
 
-        ori_name = "tests/testing_fodder/single_cam/calibration/cam_1.tif.ori"
-        add_name = "tests/testing_fodder/single_cam/calibration/cam_1.tif.addpar"
+        ori_name = "test_data/single_cam/calibration/cam_1.tif.ori"
+        add_name = "test_data/single_cam/calibration/cam_1.tif.addpar"
         calibs = []
 
         # read calibration for each camera from files
@@ -224,8 +224,8 @@ class Test_Orientation(unittest.TestCase):
         points = np.array([[17.5, 42, 0], [-17.5, 42, 0]], dtype=float)
 
         num_cams = 4
-        ori_tmpl = "tests/testing_fodder/dumbbell/cam{cam_num}.tif.ori"
-        add_file = "tests/testing_fodder/calibration/cam1.tif.addpar"
+        ori_tmpl = "test_data/dumbbell/cam{cam_num}.tif.ori"
+        add_file = "test_data/calibration/cam1.tif.addpar"
         calibs = []
         targs_plain = []
 
@@ -263,19 +263,19 @@ class TestGradientDescent(unittest.TestCase):
     # Based on the C tests in liboptv/tests/check_orientation.c
 
     def setUp(self):
-        control_file_name = "tests/testing_fodder/corresp/control.par"
+        control_file_name = "test_data/corresp/control.par"
         self.control = ControlParams(4)
         self.control.read_control_par(control_file_name)
 
         self.cal = Calibration()
         self.cal.from_file(
-            "tests/testing_fodder/calibration/cam1.tif.ori",
-            "tests/testing_fodder/calibration/cam1.tif.addpar",
+            "test_data/calibration/cam1.tif.ori",
+            "test_data/calibration/cam1.tif.addpar",
         )
         self.orig_cal = Calibration()
         self.orig_cal.from_file(
-            "tests/testing_fodder/calibration/cam1.tif.ori",
-            "tests/testing_fodder/calibration/cam1.tif.addpar",
+            "test_data/calibration/cam1.tif.ori",
+            "test_data/calibration/cam1.tif.addpar",
         )
 
     def test_external_calibration(self):
