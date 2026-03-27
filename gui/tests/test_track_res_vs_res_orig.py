@@ -8,13 +8,17 @@ import filecmp
 import yaml
 
 
-TRACK_DIR = Path(__file__).parent / "track"
+TRACK_DIR = Path(__file__).parent.parent.parent / "test_data" / "pyptv_track"
 
-@pytest.mark.parametrize("yaml_path, desc", [
-    # ("parameters_Run1.yaml", "2 cameras, no new particles"),
-    # ("parameters_Run2.yaml", "3 cameras, new particle"),
-    ("parameters_Run3.yaml", "3 cameras, newpart, frame by frame"),
-])
+
+@pytest.mark.parametrize(
+    "yaml_path, desc",
+    [
+        # ("parameters_Run1.yaml", "2 cameras, no new particles"),
+        # ("parameters_Run2.yaml", "3 cameras, new particle"),
+        ("parameters_Run3.yaml", "3 cameras, newpart, frame by frame"),
+    ],
+)
 def test_tracking_res_matches_orig(tmp_path, yaml_path, desc):
     # Print image name pattern for debugging
 
@@ -36,9 +40,6 @@ def test_tracking_res_matches_orig(tmp_path, yaml_path, desc):
         if file.is_file():
             file.unlink()
 
-    
-
-
     # 2. Convert .par to YAML
     # exp = Experiment()
     # exp.populate_runs(work_dir)
@@ -56,7 +57,6 @@ def test_tracking_res_matches_orig(tmp_path, yaml_path, desc):
     seq_params = pm.parameters.get("sequence")
     first = seq_params.get("first")
     last = seq_params.get("last")
-
 
     # 4. Run tracking using pyptv_batch.main directly with arguments
     if yaml_name == "parameters_Run3.yaml":
@@ -111,15 +111,11 @@ def test_tracking_res_matches_orig(tmp_path, yaml_path, desc):
     else:
         # Standard test for Run1 and Run2
         pyptv_batch.run_batch(
-            yaml_file=yaml_path,
-            seq_first=first,
-            seq_last=last,
-            mode="tracking"
+            yaml_file=yaml_path, seq_first=first, seq_last=last, mode="tracking"
         )
         # 5. Compare res/ to res_orig/
         res_dir = work_dir / "res"
         res_orig_dir = work_dir / "res_orig"
-
 
         for f in sorted(res_dir.glob("rt_is.*")):
             print(f"\n--- {f.name} ---")
@@ -130,7 +126,6 @@ def test_tracking_res_matches_orig(tmp_path, yaml_path, desc):
             print(f"\n--- {f.name} ---")
             with open(f, "r") as file:
                 print(file.read())
-
 
         # dcmp = filecmp.dircmp(res_dir, res_orig_dir)
         # assert len(dcmp.diff_files) == 0, f"Files differ in {desc}: {dcmp.diff_files}"
