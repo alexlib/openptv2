@@ -1,17 +1,17 @@
 # Values taken from the parameters used in the C test for adding a particle.
 
 cameras:
-  - ori_file: tests/testing_fodder/burgers/cal/cam1.tif.ori
-    addpar_file: tests/testing_fodder/burgers/cal/cam1.tif.addpar
+  - ori_file: test_data/burgers/cal/cam1.tif.ori
+    addpar_file: test_data/burgers/cal/cam1.tif.addpar
 
-  - ori_file: tests/testing_fodder/burgers/cal/cam2.tif.ori
-    addpar_file: tests/testing_fodder/burgers/cal/cam2.tif.addpar
+  - ori_file: test_data/burgers/cal/cam2.tif.ori
+    addpar_file: test_data/burgers/cal/cam2.tif.addpar
 
-  - ori_file: tests/testing_fodder/burgers/cal/cam3.tif.ori
-    addpar_file: tests/testing_fodder/burgers/cal/cam3.tif.addpar
+  - ori_file: test_data/burgers/cal/cam3.tif.ori
+    addpar_file: test_data/burgers/cal/cam3.tif.addpar
 
-  - ori_file: tests/testing_fodder/burgers/cal/cam4.tif.ori
-    addpar_file: tests/testing_fodder/burgers/cal/cam4.tif.addpar
+  - ori_file: test_data/burgers/cal/cam4.tif.ori
+    addpar_file: test_data/burgers/cal/cam4.tif.addpar
 
 scene:
     flags: hp, headers
@@ -39,7 +39,7 @@ correspondences:
     epipolar_band: 0.01   # mm on sensor plane.
     
 sequence:
-    targets_template: tests/testing_fodder/burgers/img/cam{cam:1d}.
+    targets_template: test_data/burgers/img/cam{cam:1d}.
     first: 10001
     last:  10005
 

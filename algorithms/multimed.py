@@ -449,29 +449,31 @@ def volumedimension(
 
                 pos, a = ray_tracing(x, y, cal[i_cam], cpar.mm)
 
-                # TODO: seems that it should be + pos[2] instead of - pos[2]
-                X = pos[0] + (z_min + pos[2]) * a[0] / a[2]
-                Y = pos[1] + (z_min + pos[2]) * a[1] / a[2]
+                # Guard against division by zero when a[2] is zero/near-zero
+                if abs(a[2]) > 1e-10:
+                    X = pos[0] + (z_min + pos[2]) * a[0] / a[2]
+                    Y = pos[1] + (z_min + pos[2]) * a[1] / a[2]
 
-                if X > xmax:
-                    xmax = X
-                if X < xmin:
-                    xmin = X
-                if Y > ymax:
-                    ymax = Y
-                if Y < ymin:
-                    ymin = Y
+                    if X > xmax:
+                        xmax = X
+                    if X < xmin:
+                        xmin = X
+                    if Y > ymax:
+                        ymax = Y
+                    if Y < ymin:
+                        ymin = Y
 
-                X = pos[0] + (z_max - pos[2]) * a[0] / a[2]
-                Y = pos[1] + (z_max - pos[2]) * a[1] / a[2]
+                if abs(a[2]) > 1e-10:
+                    X = pos[0] + (z_max - pos[2]) * a[0] / a[2]
+                    Y = pos[1] + (z_max - pos[2]) * a[1] / a[2]
 
-                if X > xmax:
-                    xmax = X
-                if X < xmin:
-                    xmin = X
-                if Y > ymax:
-                    ymax = Y
-                if Y < ymin:
-                    ymin = Y
+                    if X > xmax:
+                        xmax = X
+                    if X < xmin:
+                        xmin = X
+                    if Y > ymax:
+                        ymax = Y
+                    if Y < ymin:
+                        ymin = Y
 
     return (xmax, xmin, ymax, ymin, z_max, z_min)

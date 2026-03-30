@@ -6,21 +6,22 @@ from pyptv.parameter_manager import ParameterManager
 from pyptv.ptv import Tracker
 from optv.tracker import Tracker, default_naming
 
+
 @pytest.mark.usefixtures("tmp_path")
 def test_tracker_minimal(tmp_path):
-    # Use the real test data from tests/track
-    test_data_dir = Path(__file__).parent / "track"
+    # Use the real test data from test_data/test_cavity
+    test_data_dir = Path(__file__).parent.parent.parent / "test_data" / "test_cavity"
     # Copy all necessary files and folders to tmp_path for isolation
-    # Copy 'cal' folder as usual
+    # Copy 'cal' folder
     shutil.copytree(test_data_dir / "cal", tmp_path / "cal")
     # Copy 'img_orig' to 'img'
     shutil.copytree(test_data_dir / "img_orig", tmp_path / "img")
     # Copy 'res_orig' to 'res'
     shutil.copytree(test_data_dir / "res_orig", tmp_path / "res")
-    # Ensure 'res' folder exists (already created above, but if you want to ensure it's empty, you can recreate it)
-    # If you want to clear and recreate 'res', uncomment below:
-    for fname in ["parameters_Run1.yaml"]:
-        shutil.copy(test_data_dir / fname, tmp_path / fname)
+    # Copy parameters file
+    shutil.copy(
+        test_data_dir / "parameters_Run1.yaml", tmp_path / "parameters_Run1.yaml"
+    )
 
     # Change working directory to tmp_path
     old_cwd = os.getcwd()
@@ -32,16 +33,15 @@ def test_tracker_minimal(tmp_path):
         pm.from_yaml(param_path)
 
         from pyptv.ptv import py_start_proc_c
+
         cpar, spar, vpar, track_par, tpar, cals, epar = py_start_proc_c(pm)
 
         for cam_id, short_name in enumerate(pm.get_target_filenames()):
             # print(f"Setting tracker image base name for cam {cam_id+1}: {Path(short_name).resolve()}")
-            spar.set_img_base_name(cam_id, str(Path(short_name).resolve())+'.')
+            spar.set_img_base_name(cam_id, str(Path(short_name).resolve()) + ".")
 
         # Set up tracker using loaded parameters
-        tracker = Tracker(
-            cpar, vpar, track_par, spar, cals, default_naming
-        )
+        tracker = Tracker(cpar, vpar, track_par, spar, cals, default_naming)
         tracker.full_forward()
 
         # Check that output files are created and contain tracks
