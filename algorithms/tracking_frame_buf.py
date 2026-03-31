@@ -256,7 +256,14 @@ def read_targets(file_base: str, frame_num: int) -> List[Target]:
 
     try:
         with open(filename, "r", encoding="utf-8") as file:
-            num_targets = int(file.readline().strip())
+            first_line = file.readline().strip()
+            if not first_line:
+                # Empty file means no targets
+                return buffer
+            num_targets = int(first_line)
+            if num_targets < 0:
+                # Negative means no targets
+                return buffer
 
             for _ in range(num_targets):
                 line = file.readline().strip().split()
@@ -303,18 +310,21 @@ def write_targets(
     file_name = file_base % frame_num + "_targets"
 
     try:
-        # Convert targets to a 2D numpy array
-        target_arr = np.array(
-            [(t.pnr, t.x, t.y, t.n, t.nx, t.ny, t.sumg, t.tnr) for t in targets]
-        )
-        # Save the target array to file using savetxt
-        np.savetxt(
-            file_name,
-            target_arr,
-            fmt="%4d %9.4f %9.4f %5d %5d %5d %5d %5d",
-            header=f"{num_targets}",
-            comments="",
-        )
+        with open(file_name, "w", encoding="utf8") as f:
+            f.write(f"{num_targets}\n")
+            if num_targets > 0:
+                # Convert targets to a 2D numpy array
+                target_arr = np.array(
+                    [
+                        (t.pnr, t.x, t.y, t.n, t.nx, t.ny, t.sumg, t.tnr)
+                        for t in targets[:num_targets]
+                    ]
+                )
+                np.savetxt(
+                    f,
+                    target_arr,
+                    fmt="%4d %9.4f %9.4f %5d %5d %5d %5d %5d",
+                )
         success = True
     except IOError:
         print(f"Can't open ascii file: {file_name}")
@@ -822,6 +832,9 @@ def read_path_frame(
 
     # we do not need number of particles, reading till EOF
     n_particles = int(filein.readline())
+    # Handle -1 as 0 particles (matching C behavior)
+    if n_particles < 0:
+        n_particles = 0
     # print(f"Reading {n_particles} particles from {fname}")
     # cor_buf = [Corres() for _ in range(n_particles)] # we do not want empty lists
 
@@ -935,10 +948,11 @@ def write_path_frame(
 
     try:
         corres_file = open(corres_fname, "w", encoding="utf8")
-        corres_file.write(f"{num_parts}\n")
+        # Use -1 for empty frames (matching C behavior)
+        corres_file.write(f"{num_parts if num_parts > 0 else -1}\n")
 
         linkage_file = open(linkage_fname, "w", encoding="utf8")
-        linkage_file.write(f"{num_parts}\n")
+        linkage_file.write(f"{num_parts if num_parts > 0 else -1}\n")
 
         if prio_file_base is not None:
             prio_file = open(prio_fname, "w", encoding="utf8")  # type: ignore

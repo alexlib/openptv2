@@ -144,7 +144,11 @@ def register_closest_neighbs(
 
     for cand_idx in range(MAX_CANDS):
         # Set default value for unused foundpix objects
-        if all_cands[cand_idx] == PT_UNUSED:
+        if (
+            all_cands[cand_idx] == PT_UNUSED
+            or all_cands[cand_idx] < 0
+            or all_cands[cand_idx] >= num_targets
+        ):
             reg[cand_idx].ftnr = TR_UNUSED
         else:
             # Register candidate data in the foundpix object
@@ -843,7 +847,9 @@ def trackcorr_c_loop(run_info, step):
         else:
             X[2] = vec_copy(X[1])
             for j in range(fb.num_cams):
-                if curr_corres.p[j] == CORRES_NONE:
+                if curr_corres.p[j] == CORRES_NONE or curr_corres.p[j] >= len(
+                    curr_targets[j]
+                ):
                     v1[j] = point_to_pixel(X[2], cal[j], cpar)
                 else:
                     _ix = curr_corres.p[j]

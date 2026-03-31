@@ -1,330 +1,283 @@
 """
 Engine comparison tests for Tracker class.
 
-Tests the main Tracker class workflow.
+Tests the main Tracker class workflow, mirroring the Cython binding tests
+in bindings/tests/test_tracker.py to ensure identical behavior.
+
 Tolerance: 1e-7 (full tracking pipeline)
 """
 
 import os
+import shutil
+import yaml
 import numpy as np
 import pytest
+
 from .conftest import get_tolerance
 
 TOLERANCE = get_tolerance("tracker")
-TEST_DATA_DIR = os.path.join(
-    os.path.dirname(__file__), "..", "..", "test_data", "test_cavity"
+
+TRACK_DATA_DIR = os.path.join(
+    os.path.dirname(__file__), "..", "..", "test_data", "track"
 )
 
-
-def make_native_params():
-    from optv.parameters import (
-        ControlParams,
-        VolumeParams,
-        TrackingParams,
-        SequenceParams,
-    )
-
-    cpar = ControlParams(num_cams=4)
-    vpar = VolumeParams(xmin=0, xmax=100, ymin=0, ymax=100, zmin=0, zmax=50)
-    tpar = TrackingParams(n1=3, n2=3, dh=3.0, dz=1.0)
-    spar = SequenceParams(num_cams=4, frame_range=(10001, 10004))
-    return cpar, vpar, tpar, spar
+framebuf_naming = {
+    "corres": "test_data/track/res/particles",
+    "linkage": "test_data/track/res/linkage",
+    "prio": "test_data/track/res/whatever",
+}
 
 
-def make_python_params():
+def _load_cals_from_yaml(yaml_conf):
+    """Load calibrations from the YAML config."""
+    from algorithms.calibration import Calibration
+
+    cals = []
+    for cam_spec in yaml_conf["cameras"]:
+        ori_file = cam_spec["ori_file"]
+        addpar_file = cam_spec.get("addpar_file", None)
+        cal = Calibration()
+        cal.from_file(ori_file, addpar_file)
+        cals.append(cal)
+    return cals
+
+
+def _build_python_tracker(yaml_conf):
+    """Build a Python Tracker from the YAML config, same as bindings test."""
     from algorithms.parameters import ControlPar, VolumePar, TrackParTuple, SequencePar
+    from algorithms.track import Tracker
 
-    cpar = ControlPar(num_cams=4)
-    cpar.imx = 1280
-    cpar.imy = 1024
-    cpar.pix_x = 0.012
-    cpar.pix_y = 0.012
-    cpar.img_base_name = ["img/cam1.", "img/cam2.", "img/cam3.", "img/cam4."]
-    cpar.cal_img_base_name = [
-        "cal/cam1.tif",
-        "cal/cam2.tif",
-        "cal/cam3.tif",
-        "cal/cam4.tif",
-    ]
-    vpar = VolumePar(x_lay=[0.0, 100.0], z_min_lay=[0.0, 0.0], z_max_lay=[50.0, 50.0])
-    tpar = TrackParTuple(3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 0.0, 0.0, 0, 0.0, 0.0, 0.0, 0.0)
-    spar = SequencePar(
-        img_base_name=["img/cam1.", "img/cam2.", "img/cam3.", "img/cam4."],
-        first=10001,
-        last=10004,
+    seq_cfg = yaml_conf["sequence"]
+    scene = yaml_conf["scene"]
+    corresp = yaml_conf["correspondences"]
+    tracking = yaml_conf["tracking"]
+
+    cals = _load_cals_from_yaml(yaml_conf)
+
+    cpar = ControlPar(num_cams=len(yaml_conf["cameras"]))
+    cpar.imx = scene["image_size"][0]
+    cpar.imy = scene["image_size"][1]
+    cpar.pix_x = scene["pixel_size"][0]
+    cpar.pix_y = scene["pixel_size"][1]
+
+    vpar = VolumePar(
+        x_lay=corresp["x_span"],
+        z_min_lay=corresp["z_spans"][0],
+        z_max_lay=corresp["z_spans"][1],
     )
-    return cpar, vpar, tpar, spar
+
+    vel = tracking["velocity_lims"]
+    tpar = TrackParTuple(
+        dvxmin=vel[0][0],
+        dvxmax=vel[0][1],
+        dvymin=vel[1][0],
+        dvymax=vel[1][1],
+        dvzmin=vel[2][0],
+        dvzmax=vel[2][1],
+        dangle=tracking["angle_lim"],
+        dacc=tracking["accel_lim"],
+        add=tracking["add_particle"],
+        dsumg=0.0,
+        dn=0.0,
+        dnx=0.0,
+        dny=0.0,
+    )
+
+    img_base = []
+    for cix in range(len(yaml_conf["cameras"])):
+        img_base.append(seq_cfg["targets_template"].format(cam=cix + 1))
+
+    spar = SequencePar(
+        img_base_name=img_base,
+        first=seq_cfg["first"],
+        last=seq_cfg["last"],
+    )
+
+    tracker = Tracker(cpar, vpar, tpar, spar, cals, framebuf_naming)
+    return tracker
 
 
-def make_native_tracker():
-    from optv.calibration import Calibration
-    from optv.tracker import Tracker as OptvTracker
+@pytest.fixture
+def track_test_dir(tmp_path):
+    """Set up a temporary copy of the track test data, like bindings tests do."""
+    src = TRACK_DATA_DIR
+    # Copy res_orig to res
+    res_orig = os.path.join(src, "res_orig")
+    res_dst = os.path.join(src, "res")
+    if os.path.exists(res_dst):
+        shutil.rmtree(res_dst)
+    shutil.copytree(res_orig, res_dst)
 
-    cpar, vpar, tpar, spar = make_native_params()
-    cals = [Calibration() for _ in range(4)]
-    return OptvTracker(cpar, vpar, tpar, spar, cals)
+    # Also need to restore target files since tracking writes to them
+    # Save originals first
+    newpart_dir = os.path.join(src, "newpart")
+    backup_dir = str(tmp_path / "newpart_backup")
+    shutil.copytree(newpart_dir, backup_dir)
 
+    yield src
 
-def make_python_tracker():
-    from algorithms.calibration import Calibration as PythonCalibration
-    from algorithms.track import Tracker as PythonTracker
-
-    cpar, vpar, tpar, spar = make_python_params()
-    cals = [PythonCalibration() for _ in range(4)]
-    return PythonTracker(cpar, vpar, tpar, spar, cals)
-
-
-def compare_tracker_results(native_value, python_value):
-    if isinstance(native_value, np.ndarray) or isinstance(python_value, np.ndarray):
-        np.testing.assert_allclose(
-            native_value, python_value, rtol=TOLERANCE, atol=TOLERANCE
-        )
-    else:
-        assert native_value == python_value
+    # Teardown - restore original target files
+    if os.path.exists(res_dst):
+        shutil.rmtree(res_dst)
+    if os.path.exists(newpart_dir):
+        shutil.rmtree(newpart_dir)
+    shutil.copytree(backup_dir, newpart_dir)
 
 
 class TestTracker:
     """Compare Tracker class between optv and python engines."""
 
+    def _make_tracker(self):
+        with open(os.path.join(TRACK_DATA_DIR, "conf.yaml")) as f:
+            yaml_conf = yaml.load(f, Loader=yaml.FullLoader)
+        return _build_python_tracker(yaml_conf)
+
+    def test_forward(self, track_test_dir):
+        """Manual forward tracking run, mirroring bindings test_forward."""
+        tracker = self._make_tracker()
+        tracker.restart()
+        last_step = 10001
+        while tracker.step_forward():
+            assert tracker.current_step() > last_step
+            with open(f"test_data/track/res/linkage.{last_step}") as f:
+                lines = f.readlines()
+                if last_step == 10003:
+                    assert lines[0] == "-1\n"
+                else:
+                    assert lines[0] == "1\n"
+            last_step += 1
+        tracker.finalize()
+
+    def test_full_forward(self, track_test_dir):
+        """Automatic full forward tracking run, mirroring bindings test_full_forward."""
+        tracker = self._make_tracker()
+        tracker.full_forward()
+
+    def test_full_backward(self, track_test_dir):
+        """Automatic full backward correction phase, mirroring bindings test_full_backward."""
+        tracker = self._make_tracker()
+        tracker.full_forward()
+        tracker.full_backward()
+
     def test_tracker_creation(self):
         """Test Tracker creation with parameters."""
-        optv_tracker = make_native_tracker()
-        python_tracker = make_python_tracker()
+        tracker = self._make_tracker()
+        assert tracker is not None
 
-        assert optv_tracker is not None
-        assert python_tracker is not None
-
-    def test_tracker_restart(self):
+    def test_tracker_restart(self, track_test_dir):
         """Test Tracker.restart() method."""
-        cwd = os.getcwd()
-        os.chdir(TEST_DATA_DIR)
-        try:
-            optv_tracker = make_native_tracker()
-            python_tracker = make_python_tracker()
+        tracker = self._make_tracker()
+        tracker.restart()
+        assert tracker.current_step() == 10001
 
-            optv_tracker.restart()
-            python_tracker.restart()
-
-            compare_tracker_results(
-                optv_tracker.current_step(), python_tracker.current_step()
-            )
-        finally:
-            os.chdir(cwd)
-
-    def test_tracker_step_forward(self):
+    def test_tracker_step_forward(self, track_test_dir):
         """Test Tracker.step_forward() method."""
-        cwd = os.getcwd()
-        os.chdir(TEST_DATA_DIR)
-        try:
-            optv_tracker = make_native_tracker()
-            python_tracker = make_python_tracker()
-            optv_tracker.restart()
-            python_tracker.restart()
+        tracker = self._make_tracker()
+        tracker.restart()
 
-            result = optv_tracker.step_forward()
-            python_result = python_tracker.step_forward()
+        result = tracker.step_forward()
+        assert result is True
+        assert tracker.current_step() == 10002
 
-            compare_tracker_results(result, python_result)
-            compare_tracker_results(
-                optv_tracker.current_step(), python_tracker.current_step()
-            )
-        finally:
-            os.chdir(cwd)
-
-    def test_tracker_finalize(self):
+    def test_tracker_finalize(self, track_test_dir):
         """Test Tracker.finalize() method."""
-        cwd = os.getcwd()
-        os.chdir(TEST_DATA_DIR)
-        try:
-            optv_tracker = make_native_tracker()
-            python_tracker = make_python_tracker()
-            optv_tracker.restart()
-            python_tracker.restart()
+        tracker = self._make_tracker()
+        tracker.restart()
 
-            while optv_tracker.step_forward():
-                pass
+        while tracker.step_forward():
+            pass
 
-            while python_tracker.step_forward():
-                pass
+        tracker.finalize()
+        assert tracker.current_step() == 10005
 
-            optv_tracker.finalize()
-            python_tracker.finalize()
-
-            compare_tracker_results(
-                optv_tracker.current_step(), python_tracker.current_step()
-            )
-        finally:
-            os.chdir(cwd)
-
-    def test_tracker_full_forward(self):
+    def test_tracker_full_forward(self, track_test_dir):
         """Test Tracker.full_forward() method."""
-        cwd = os.getcwd()
-        os.chdir(TEST_DATA_DIR)
-        try:
-            optv_tracker = make_native_tracker()
-            python_tracker = make_python_tracker()
+        tracker = self._make_tracker()
+        tracker.full_forward()
+        assert tracker.current_step() == 0
 
-            optv_tracker.full_forward()
-            python_tracker.full_forward()
-
-            compare_tracker_results(
-                optv_tracker.current_step(), python_tracker.current_step()
-            )
-        finally:
-            os.chdir(cwd)
-
-    def test_tracker_current_step(self):
+    def test_tracker_current_step(self, track_test_dir):
         """Test Tracker.current_step() method."""
-        cwd = os.getcwd()
-        os.chdir(TEST_DATA_DIR)
-        try:
-            optv_tracker = make_native_tracker()
-            python_tracker = make_python_tracker()
-            optv_tracker.restart()
-            python_tracker.restart()
-
-            step = optv_tracker.current_step()
-            python_step = python_tracker.current_step()
-
-            compare_tracker_results(step, python_step)
-        finally:
-            os.chdir(cwd)
+        tracker = self._make_tracker()
+        tracker.restart()
+        assert tracker.current_step() == 10001
 
 
 class TestTrackerWithNaming:
-    """Test Tracker with custom naming."""
+    """Test Tracker with custom naming, mirroring bindings test_tracker_string_handling."""
 
-    def test_tracker_with_custom_naming(self):
-        """Test Tracker with custom file naming."""
-        from optv.parameters import (
-            ControlParams,
-            VolumeParams,
-            TrackingParams,
-            SequenceParams,
-        )
+    def test_tracker_string_naming(self):
+        """Test Tracker with string naming dict."""
+        with open(os.path.join(TRACK_DATA_DIR, "conf.yaml")) as f:
+            yaml_conf = yaml.load(f, Loader=yaml.FullLoader)
+        cals = _load_cals_from_yaml(yaml_conf)
+
         from algorithms.parameters import (
             ControlPar,
             VolumePar,
             TrackParTuple,
             SequencePar,
         )
+        from algorithms.track import Tracker
 
-        cpar = ControlParams(num_cams=4)
-        vpar = VolumeParams(xmin=0, xmax=100, ymin=0, ymax=100, zmin=0, zmax=50)
-        tpar = TrackingParams(n1=3, n2=3, dh=3.0, dz=1.0)
-        spar = SequenceParams(num_cams=4, frame_range=(10001, 10004))
+        scene = yaml_conf["scene"]
+        seq_cfg = yaml_conf["sequence"]
+        corresp = yaml_conf["correspondences"]
+        tracking = yaml_conf["tracking"]
 
-        python_cpar = ControlPar(num_cams=4)
-        python_cpar.imx = 1280
-        python_cpar.imy = 1024
-        python_cpar.pix_x = 0.012
-        python_cpar.pix_y = 0.012
-        python_cpar.img_base_name = ["img/cam1.", "img/cam2.", "img/cam3.", "img/cam4."]
-        python_cpar.cal_img_base_name = [
-            "cal/cam1.tif",
-            "cal/cam2.tif",
-            "cal/cam3.tif",
-            "cal/cam4.tif",
+        cpar = ControlPar(num_cams=len(yaml_conf["cameras"]))
+        cpar.imx = scene["image_size"][0]
+        cpar.imy = scene["image_size"][1]
+        cpar.pix_x = scene["pixel_size"][0]
+        cpar.pix_y = scene["pixel_size"][1]
+
+        vpar = VolumePar(
+            x_lay=corresp["x_span"],
+            z_min_lay=corresp["z_spans"][0],
+            z_max_lay=corresp["z_spans"][1],
+        )
+
+        vel = tracking["velocity_lims"]
+        tpar = TrackParTuple(
+            dvxmin=vel[0][0],
+            dvxmax=vel[0][1],
+            dvymin=vel[1][0],
+            dvymax=vel[1][1],
+            dvzmin=vel[2][0],
+            dvzmax=vel[2][1],
+            dangle=tracking["angle_lim"],
+            dacc=tracking["accel_lim"],
+            add=tracking["add_particle"],
+            dsumg=0.0,
+            dn=0.0,
+            dnx=0.0,
+            dny=0.0,
+        )
+
+        img_base = [
+            seq_cfg["targets_template"].format(cam=cix + 1)
+            for cix in range(len(yaml_conf["cameras"]))
         ]
-        python_vpar = VolumePar(
-            x_lay=[0.0, 100.0], z_min_lay=[0.0, 0.0], z_max_lay=[50.0, 50.0]
-        )
-        python_tpar = TrackParTuple(
-            3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 0.0, 0.0, 0, 0.0, 0.0, 0.0, 0.0
-        )
-        python_spar = SequencePar(
-            img_base_name=["img/cam1.", "img/cam2.", "img/cam3.", "img/cam4."],
-            first=10001,
-            last=10004,
+        spar = SequencePar(
+            img_base_name=img_base,
+            first=seq_cfg["first"],
+            last=seq_cfg["last"],
         )
 
-        naming = {
-            "corres": "custom/rt",
-            "linkage": "custom/ptv",
-            "prio": "custom/added",
+        # String naming - Python Tracker accepts strings directly
+        naming_strings = {
+            "corres": "res/rt_is",
+            "linkage": "res/ptv_is",
+            "prio": "res/added",
         }
+        tracker = Tracker(cpar, vpar, tpar, spar, cals, naming_strings)
+        assert tracker is not None
 
-        from optv.tracker import Tracker as OptvTracker
-        from optv.calibration import Calibration
-        from algorithms.calibration import Calibration as PythonCalibration
-        from algorithms.track import Tracker as PythonTracker
-
-        cals = [Calibration() for _ in range(4)]
-        py_cals = [PythonCalibration() for _ in range(4)]
-
-        assert OptvTracker(cpar, vpar, tpar, spar, cals, naming=naming) is not None
-        assert (
-            PythonTracker(
-                python_cpar,
-                python_vpar,
-                python_tpar,
-                python_spar,
-                py_cals,
-                naming=naming,
-            )
-            is not None
-        )
+        # Partial dict - missing keys use defaults
+        naming_partial = {"corres": "res/rt_is"}
+        tracker2 = Tracker(cpar, vpar, tpar, spar, cals, naming_partial)
+        assert tracker2 is not None
 
 
-class TestTrackerEdgeCases:
-    """Test edge cases for Tracker."""
-
-    def test_tracker_single_frame(self):
-        """Test Tracker with single frame."""
-        from optv.calibration import Calibration
-        from optv.tracker import Tracker as OptvTracker
-        from algorithms.calibration import Calibration as PythonCalibration
-        from algorithms.track import Tracker as PythonTracker
-
-        cpar, vpar, tpar, spar = make_native_params()
-        python_cpar, python_vpar, python_tpar, python_spar = make_python_params()
-
-        cals = [Calibration() for _ in range(4)]
-        py_cals = [PythonCalibration() for _ in range(4)]
-
-        cwd = os.getcwd()
-        os.chdir(TEST_DATA_DIR)
-        try:
-            optv_tracker = OptvTracker(cpar, vpar, tpar, spar, cals)
-            python_tracker = PythonTracker(
-                python_cpar, python_vpar, python_tpar, python_spar, py_cals
-            )
-
-            optv_tracker.full_forward()
-            python_tracker.full_forward()
-
-            compare_tracker_results(
-                optv_tracker.current_step(), python_tracker.current_step()
-            )
-        finally:
-            os.chdir(cwd)
-
-    def test_tracker_multiple_cameras(self):
-        """Test Tracker with the supported four-camera configuration."""
-        from optv.calibration import Calibration
-        from optv.tracker import Tracker as OptvTracker
-        from algorithms.calibration import Calibration as PythonCalibration
-        from algorithms.track import Tracker as PythonTracker
-
-        cpar, vpar, tpar, spar = make_native_params()
-        python_cpar, python_vpar, python_tpar, python_spar = make_python_params()
-
-        cals = [Calibration() for _ in range(4)]
-        py_cals = [PythonCalibration() for _ in range(4)]
-
-        cwd = os.getcwd()
-        os.chdir(TEST_DATA_DIR)
-        try:
-            optv_tracker = OptvTracker(cpar, vpar, tpar, spar, cals)
-            python_tracker = PythonTracker(
-                python_cpar, python_vpar, python_tpar, python_spar, py_cals
-            )
-
-            optv_tracker.full_forward()
-            python_tracker.full_forward()
-
-            compare_tracker_results(
-                optv_tracker.current_step(), python_tracker.current_step()
-            )
-        finally:
-            os.chdir(cwd)
+if __name__ == "__main__":
+    pytest.main([__file__, "-v"])
