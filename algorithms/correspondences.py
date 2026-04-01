@@ -1,5 +1,6 @@
 """Correspondences."""
 
+import math
 from typing import List, Tuple
 
 import numpy as np
@@ -13,7 +14,7 @@ from .constants import (
     PT_UNUSED,
 )
 from .epi import epi_mm
-from .find_candidate import find_candidate
+from .find_candidate import find_candidate, find_start_point_binary
 from .parameters import ControlPar, VolumePar
 from .tracking_frame_buf import Frame, Target, n_tupel_dtype
 from .trafo import dist_to_flat, pixel_to_metric
@@ -422,57 +423,238 @@ def match_pairs(
     if num_cams is None:
         raise AttributeError("Control parameters object does not expose num_cams")
 
+    # Pre-extract raw arrays from corrected coords and targets to avoid
+    # repeated recarray attribute access overhead.
+    _crd_x = [np.asarray(corrected[i].x, dtype=np.float64) for i in range(num_cams)]
+    _crd_y = [np.asarray(corrected[i].y, dtype=np.float64) for i in range(num_cams)]
+    _crd_pnr = [np.asarray(corrected[i].pnr, dtype=np.int64) for i in range(num_cams)]
+
+    _targ_n = []
+    _targ_nx = []
+    _targ_ny = []
+    _targ_sumg = []
+    for i in range(num_cams):
+        nt = frm.num_targets[i]
+        _targ_n.append(
+            np.array([frm.targets[i][j].n for j in range(nt)], dtype=np.int64)
+        )
+        _targ_nx.append(
+            np.array([frm.targets[i][j].nx for j in range(nt)], dtype=np.int64)
+        )
+        _targ_ny.append(
+            np.array([frm.targets[i][j].ny for j in range(nt)], dtype=np.int64)
+        )
+        _targ_sumg.append(
+            np.array([frm.targets[i][j].sumg for j in range(nt)], dtype=np.int64)
+        )
+
+    eps0 = getattr(vpar, "eps0", None)
+    if eps0 is None:
+        get_eps0 = getattr(vpar, "get_eps0", None)
+        if callable(get_eps0):
+            eps0 = get_eps0()
+    cn_val = getattr(vpar, "cn", None)
+    if cn_val is None:
+        get_cn = getattr(vpar, "get_cn", None)
+        if callable(get_cn):
+            cn_val = get_cn()
+    cnx_val = getattr(vpar, "cnx", None)
+    if cnx_val is None:
+        get_cnx = getattr(vpar, "get_cnx", None)
+        if callable(get_cnx):
+            cnx_val = get_cnx()
+    cny_val = getattr(vpar, "cny", None)
+    if cny_val is None:
+        get_cny = getattr(vpar, "get_cny", None)
+        if callable(get_cny):
+            cny_val = get_cny()
+    csumg_val = getattr(vpar, "csumg", None)
+    if csumg_val is None:
+        get_csumg = getattr(vpar, "get_csumg", None)
+        if callable(get_csumg):
+            csumg_val = get_csumg()
+
     for i1 in range(num_cams - 1):
         for i2 in range(i1 + 1, num_cams):
-            for i in range(frm.num_targets[i1]):
-                # if corrected[i1][i].x == PT_UNUSED: # no idea why it's here
-                #     continue
+            num1 = frm.num_targets[i1]
+            num2 = frm.num_targets[i2]
+            crd_x2 = _crd_x[i2]
+            crd_y2 = _crd_y[i2]
+            crd_pnr2 = _crd_pnr[i2]
 
+            for i in range(num1):
                 xa12, ya12, xb12, yb12 = epi_mm(
-                    corrected[i1][i].x,
-                    corrected[i1][i].y,
+                    _crd_x[i1][i],
+                    _crd_y[i1][i],
                     calib[i1],
                     calib[i2],
                     mm,
                     vpar,
                 )
 
-                # print(f" xa12: {xa12}, ya12: {ya12}, xb12: {xb12}, yb12: {yb12} ")
-
-                # origin point in the corr_list
                 corr_lists[i1][i2][i].p1 = i
-                pt1 = corrected[i1][i].pnr
+                pt1 = _crd_pnr[i1][i]
 
-                # search for a conjugate point in corrected[i2]
-                # cand = [Correspond() for _ in range(MAXCAND)]
-
-                cand = find_candidate(
-                    corrected[i2],
-                    frm.targets[i2],
-                    frm.num_targets[i2],
+                # Vectorized candidate search (replaces find_candidate)
+                cand = _find_candidates_vectorized(
+                    crd_x2,
+                    crd_y2,
+                    crd_pnr2,
+                    num2,
+                    _targ_n[i2],
+                    _targ_nx[i2],
+                    _targ_ny[i2],
+                    _targ_sumg[i2],
                     xa12,
                     ya12,
                     xb12,
                     yb12,
-                    frm.targets[i1][pt1].n,
-                    frm.targets[i1][pt1].nx,
-                    frm.targets[i1][pt1].ny,
-                    frm.targets[i1][pt1].sumg,
-                    vpar,
-                    cpar,
-                    calib[i2],
+                    _targ_n[i1][pt1],
+                    _targ_nx[i1][pt1],
+                    _targ_ny[i1][pt1],
+                    _targ_sumg[i1][pt1],
+                    eps0,
+                    cn_val,
+                    cnx_val,
+                    cny_val,
+                    csumg_val,
                 )
 
-                # write first MAXCAND corresponding candidates
-                # to the preliminary corr_list of correspondences
                 count = min(len(cand), MAXCAND)
-
                 for j in range(count):
-                    corr_lists[i1][i2][i].p2[j] = cand[j].pnr
-                    corr_lists[i1][i2][i].corr[j] = cand[j].corr
-                    corr_lists[i1][i2][i].dist[j] = cand[j].tol
+                    corr_lists[i1][i2][i].p2[j] = cand[j][0]
+                    corr_lists[i1][i2][i].corr[j] = cand[j][2]
+                    corr_lists[i1][i2][i].dist[j] = cand[j][1]
 
                 corr_lists[i1][i2][i].n = count
+
+
+def _find_candidates_vectorized(
+    crd_x2,
+    crd_y2,
+    crd_pnr2,
+    num2,
+    targ_n2,
+    targ_nx2,
+    targ_ny2,
+    targ_sumg2,
+    xa,
+    ya,
+    xb,
+    yb,
+    ref_n,
+    ref_nx,
+    ref_ny,
+    ref_sumg,
+    eps0,
+    cn,
+    cnx,
+    cny,
+    csumg,
+):
+    """Vectorized candidate search replacing find_candidate.
+
+    Uses numpy boolean indexing instead of per-element Python loop.
+    Returns list of (pnr, distance, correlation) tuples.
+    """
+    if num2 == 0:
+        return []
+
+    # Line equation: y = m*x + b
+    if abs(xb - xa) < 1e-15:
+        xb = xa + 1e-10
+
+    m = (yb - ya) / (xb - xa)
+    b = ya - m * xa
+    m_norm = math.sqrt(m * m + 1)
+
+    # Normalize search window
+    xa_lo = min(xa, xb) - eps0
+    xa_hi = max(xa, xb) + eps0
+    ya_lo = min(ya, yb) - eps0
+    ya_hi = max(ya, yb) + eps0
+
+    # Binary search for starting index in x-sorted array
+    j0 = find_start_point_binary(crd_x2, num2, xa, eps0)
+
+    # Extract slice starting from j0
+    sl_x = crd_x2[j0:num2]
+    sl_y = crd_y2[j0:num2]
+    sl_pnr = crd_pnr2[j0:num2]
+
+    # Vectorized bounds check
+    mask = (sl_x >= xa_lo) & (sl_x <= xa_hi) & (sl_y >= ya_lo) & (sl_y <= ya_hi)
+
+    # Stop at first x that exceeds upper bound
+    beyond = np.where(sl_x > xa_hi)[0]
+    if len(beyond) > 0:
+        mask[beyond[0] :] = False
+
+    indices = np.where(mask)[0]
+    if len(indices) == 0:
+        return []
+
+    # Vectorized epipolar distance
+    cx = sl_x[indices]
+    cy = sl_y[indices]
+    cpnr = sl_pnr[indices]
+    dists = np.abs((cy - m * cx - b) / m_norm)
+
+    # Filter by distance
+    dmask = dists < eps0
+    if not np.any(dmask):
+        return []
+
+    cpnr = cpnr[dmask]
+    dists = dists[dmask]
+
+    # Vectorized quality computation
+    cand_n = targ_n2[cpnr]
+    cand_nx = targ_nx2[cpnr]
+    cand_ny = targ_ny2[cpnr]
+    cand_sumg = targ_sumg2[cpnr]
+
+    qn = _quality_ratio_vec(ref_n, cand_n)
+    qnx = _quality_ratio_vec(ref_nx, cand_nx)
+    qny = _quality_ratio_vec(ref_ny, cand_ny)
+    qsumg = _quality_ratio_vec(ref_sumg, cand_sumg)
+
+    # Quality filter
+    qmask = (qn >= cn) & (qnx >= cnx) & (qny >= cny) & (qsumg > csumg)
+    if not np.any(qmask):
+        return []
+
+    cpnr = cpnr[qmask]
+    dists = dists[qmask]
+    qn = qn[qmask]
+    qnx = qnx[qmask]
+    qny = qny[qmask]
+    qsumg = qsumg[qmask]
+    cand_sumg = cand_sumg[qmask]
+
+    # Correlation score
+    corrs = (4 * qsumg + 2 * qn + qnx + qny) * (ref_sumg + cand_sumg).astype(np.float64)
+
+    # Preserve x-sorted discovery order (matching original find_candidate
+    # which takes candidates in the order they appear along the epipolar line).
+    # The candidates already maintain order from the numpy filtering,
+    # but we need to limit to MAXCAND.
+    n_take = min(len(cpnr), MAXCAND)
+
+    return [(int(cpnr[k]), float(dists[k]), float(corrs[k])) for k in range(n_take)]
+
+
+def _quality_ratio_vec(a, b):
+    """Vectorized quality ratio: min(a,b)/max(a,b), handling zeros."""
+    a = np.asarray(a, dtype=np.float64)
+    b = np.asarray(b, dtype=np.float64)
+    with np.errstate(divide="ignore", invalid="ignore"):
+        result = np.where(
+            (a == 0) & (b == 0),
+            0.0,
+            np.minimum(a, b) / np.maximum(a, b),
+        )
+    return result
 
 
 def take_best_candidates(

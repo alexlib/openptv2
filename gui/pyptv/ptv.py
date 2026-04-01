@@ -893,8 +893,8 @@ def py_sequence_loop_python(exp) -> None:
         if hasattr(cal, "get_decentering"):
             dc = cal.get_decentering()
             py_cal.set_decentering(dc)
-        if hasattr(cal, "get_affine_trans"):
-            at = cal.get_affine_trans()
+        if hasattr(cal, "get_affine"):
+            at = cal.get_affine()
             py_cal.set_affine_trans(at)
         if hasattr(cal, "get_glass_vec"):
             gv = cal.get_glass_vec()
@@ -953,6 +953,10 @@ def py_sequence_loop_python(exp) -> None:
                 frm.targets[i_cam][tnum].tnr = -1
                 frm.targets[i_cam][tnum].x = t.x if hasattr(t, "x") else 0
                 frm.targets[i_cam][tnum].y = t.y if hasattr(t, "y") else 0
+                frm.targets[i_cam][tnum].n = t.n if hasattr(t, "n") else 0
+                frm.targets[i_cam][tnum].nx = t.nx if hasattr(t, "nx") else 0
+                frm.targets[i_cam][tnum].ny = t.ny if hasattr(t, "ny") else 0
+                frm.targets[i_cam][tnum].sumg = t.sumg if hasattr(t, "sumg") else 0
 
         match_counts = [0] * 4  # [4-cam, 3-cam, 2-cam, total]
         con = alg_correspondences(
