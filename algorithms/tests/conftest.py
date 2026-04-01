@@ -16,25 +16,6 @@ import shutil
 FIXTURES = Path(__file__).parent.parent.parent / "test_data"
 
 
-@pytest.fixture(scope="session", autouse=True)
-def setup_test_data_dirs():
-    """Set up test data directories before tests run."""
-    # Set up test_cavity with res directory if needed
-    test_cavity = FIXTURES / "test_cavity"
-
-    if test_cavity.exists():
-        res_dir = test_cavity / "res"
-        res_orig = test_cavity / "res_orig"
-
-        # Ensure res directory exists (copy from res_orig if needed)
-        if not res_dir.exists() and res_orig.exists():
-            shutil.copytree(res_orig, res_dir)
-
-    yield
-
-    # No cleanup - leave test results for inspection
-
-
 TOLERANCES = {
     "trafo": 1e-10,
     "calibration": 1e-9,
@@ -160,7 +141,7 @@ def tracking_params_file():
 @pytest.fixture
 def target_params_file():
     """Path to target parameters file."""
-    return FIXTURES / "target_parameters" / "target.par"
+    return FIXTURES / "target_parameters" / "targ_rec.par"
 
 
 @pytest.fixture

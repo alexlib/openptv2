@@ -2,7 +2,7 @@
 Full tracking comparison test.
 
 Compares full tracking pipeline between Cython and Python engines
-using real test data from testing_fodder/test_cavity/.
+using real test data from test_data/test_cavity/.
 """
 
 import os

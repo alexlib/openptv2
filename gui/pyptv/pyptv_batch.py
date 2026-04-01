@@ -31,6 +31,7 @@ from .ptv import (
     py_start_proc_c,
     py_trackcorr_init,
     py_sequence_loop,
+    py_sequence_loop_python,
     generate_short_file_bases,
 )
 from .experiment import Experiment
@@ -152,17 +153,28 @@ def run_batch(
         # Centralized: get target_filenames from ParameterManager
         proc_exp.target_filenames = experiment.pm.get_target_filenames()
 
+        # Select sequence loop based on engine
+        from openptv2.engine import get_engine
+
+        engine = get_engine()
+        if engine == "python":
+            seq_loop = py_sequence_loop_python
+            print(f"[ENGINE] Using python sequence loop")
+        else:
+            seq_loop = py_sequence_loop
+            print(f"[ENGINE] Using optv sequence loop")
+
         # Run processing according to mode
         if mode == "both":
             print("Running sequence loop...")
-            py_sequence_loop(proc_exp)
+            seq_loop(proc_exp)
             print("Initializing tracker...")
             tracker = py_trackcorr_init(proc_exp)
             print("Running tracking...")
             tracker.full_forward()
         elif mode == "sequence":
             print("Running sequence loop only...")
-            py_sequence_loop(proc_exp)
+            seq_loop(proc_exp)
         elif mode == "tracking":
             print("Initializing tracker only (skipping sequence)...")
             tracker = py_trackcorr_init(proc_exp)

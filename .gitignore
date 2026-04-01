@@ -126,3 +126,4 @@ algorithms/__pycache__/
 test_data/**/tmp*
 test_data/**/parameters__test_new.yaml
 test_data/**/tracking_run_summary.csv
+/gui/notebooks/__marimo__

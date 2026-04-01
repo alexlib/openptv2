@@ -32,7 +32,8 @@ class MatchedCoords:
     ):
         self._num_pts = len(targs)
         self.buf = np.recarray(
-            self._num_pts, dtype=[("x", np.float64), ("y", np.float64), ("pnr", np.int_)]
+            self._num_pts,
+            dtype=[("x", np.float64), ("y", np.float64), ("pnr", np.int_)],
         )
 
         for tnum in range(self._num_pts):
@@ -51,6 +52,21 @@ class MatchedCoords:
     def __getitem__(self, index):
         return self.buf[index]
 
+    @property
+    def x(self):
+        """Expose x coordinates for compatibility with find_start_point."""
+        return self.buf.x
+
+    @property
+    def y(self):
+        """Expose y coordinates for compatibility with find_candidate."""
+        return self.buf.y
+
+    @property
+    def pnr(self):
+        """Expose pnr for compatibility with find_candidate."""
+        return self.buf.pnr
+
     def as_arrays(self):
         pos = np.empty((self._num_pts, 2), dtype=np.float64)
         pos[:, 0] = self.buf.x
@@ -67,6 +83,7 @@ class MatchedCoords:
                 pos[which[0], 0] = row.x
                 pos[which[0], 1] = row.y
         return pos
+
 
 Correspond_dtype = np.dtype(
     [
@@ -392,7 +409,9 @@ def match_pairs(
         if callable(get_mm):
             mm = get_mm()
     if mm is None:
-        raise AttributeError("Control parameters object does not expose multimedia parameters")
+        raise AttributeError(
+            "Control parameters object does not expose multimedia parameters"
+        )
     num_cams = getattr(cpar, "num_cams", None)
     if num_cams is None:
         num_cams = getattr(getattr(cpar, "_control_par", None), "num_cams", None)

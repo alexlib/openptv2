@@ -44,9 +44,9 @@ class TestCalibrationParity:
 
     def test_calibration_from_file(self):
         """Test loading calibration from file - both engines."""
-        # Test data: calibration files in testing_fodder
+        # Test data: calibration files in test_data
         cal_dir = os.path.join(
-            os.path.dirname(__file__), "..", "testing_fodder", "calibration"
+            os.path.dirname(__file__), "..", "..", "test_data", "calibration"
         )
         ori_file = os.path.join(cal_dir, "cam1.tif.ori")
         add_file = os.path.join(cal_dir, "cam1.tif.addpar")

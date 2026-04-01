@@ -57,3 +57,46 @@ class TestImageProcessing:
 
         assert optv_result.shape == img.shape
         assert optv_result.dtype == img.dtype
+
+    def test_preprocess_image_input_validation(self):
+        """Test preprocess_image input validation, mirroring bindings test_arguments."""
+        from optv.image_processing import preprocess_image as optv_func
+        from optv.parameters import ControlParams
+
+        img = np.array(
+            [
+                [0, 0, 0, 0, 0],
+                [0, 255, 255, 255, 0],
+                [0, 255, 255, 255, 0],
+                [0, 255, 255, 255, 0],
+                [0, 0, 0, 0, 0],
+            ],
+            dtype=np.uint8,
+        )
+        cpar = ControlParams(num_cams=4, image_size=(5, 5), pixel_size=(0.01, 0.01))
+
+        with pytest.raises(ValueError):
+            optv_func(
+                img,
+                filter_hp=0,
+                control=cpar,
+                lowpass_dim=1,
+                output_img=np.empty((5, 4), dtype=np.uint8),
+            )
+
+        with pytest.raises(ValueError):
+            optv_func(
+                img,
+                filter_hp=0,
+                control=cpar,
+                lowpass_dim=1,
+                output_img=np.empty((5, 5, 5), dtype=np.uint8),
+            )
+
+        with pytest.raises(ValueError):
+            optv_func(
+                img,
+                filter_hp=2,
+                control=cpar,
+                output_img=np.empty((5, 5), dtype=np.uint8),
+            )

@@ -153,6 +153,20 @@ class TestTracker:
         tracker = self._make_tracker()
         tracker.full_forward()
 
+    def test_forward_3d(self, track_test_dir):
+        """Manual forward 3D tracking run, mirroring bindings test_forward_3d.
+
+        Skipped: algorithms engine does not yet implement 3D tracking.
+        """
+        pytest.skip("3D tracking not yet implemented in algorithms engine")
+
+    def test_full_forward_3d(self, track_test_dir):
+        """Automatic full forward 3D tracking run, mirroring bindings test_full_forward_3d.
+
+        Skipped: algorithms engine does not yet implement 3D tracking.
+        """
+        pytest.skip("3D tracking not yet implemented in algorithms engine")
+
     def test_full_backward(self, track_test_dir):
         """Automatic full backward correction phase, mirroring bindings test_full_backward."""
         tracker = self._make_tracker()

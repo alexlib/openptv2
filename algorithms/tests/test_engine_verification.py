@@ -146,10 +146,9 @@ class TestOptvImports:
                 TrackingParams,
             )
 
-            # Verify classes exist and work - use correct constructor args
-            # Note: optv Target uses keywords matching the Cython definition
+            # Verify classes exist and work
             cp = ControlParams(num_cams=4)
-            t = OptvTarget(pnr=1, x=100.0, y=200.0)
+            t = OptvTarget(pnr=1, tnr=0, x=100.0, y=200.0, n=0, nx=0, ny=0, sumg=0)
             assert t.pnr() == 1
             pos = t.pos()
             assert pos[0] == 100.0
@@ -159,9 +158,6 @@ class TestOptvImports:
 
         except ImportError as e:
             pytest.skip(f"optv not available: {e}")
-        except Exception as e:
-            # Some optv versions may have different constructors
-            pytest.skip(f"optv initialization issue: {e}")
 
 
 class TestEngineSelectionInAPI:
@@ -225,37 +221,29 @@ class TestParameterConversion:
     def test_sequeparams_to_sequencepar(self):
         """Test converting optv SequenceParams to Python SequencePar."""
         try:
-            from optv.parameters import SequenceParams, ControlParams
+            from optv.parameters import SequenceParams
             from algorithms.parameters import SequencePar
         except ImportError:
             pytest.skip("optv not available")
 
         # Create optv SequenceParams with proper setup
-        cp = ControlParams(num_cams=4)
+        optv_sp = SequenceParams(num_cams=4)
+        optv_sp.set_first(100)
+        optv_sp.set_last(200)
 
-        # SequenceParams may need proper initialization - test what works
         try:
-            optv_sp = SequenceParams(num_cams=cp)
-            optv_sp.set_first(100)
-            optv_sp.set_last(200)
+            img_base = [optv_sp.get_img_base_name(i) for i in range(4)]
+        except UnicodeDecodeError:
+            img_base = [""] * 4
 
-            num_cams = cp.get_num_cams()
+        python_sp = SequencePar(
+            img_base_name=img_base,
+            first=optv_sp.get_first(),
+            last=optv_sp.get_last(),
+        )
 
-            try:
-                img_base = [optv_sp.get_img_base_name(i) for i in range(num_cams)]
-            except UnicodeDecodeError:
-                img_base = [""] * num_cams
-
-            python_sp = SequencePar(
-                img_base_name=img_base,
-                first=optv_sp.get_first(),
-                last=optv_sp.get_last(),
-            )
-
-            assert python_sp.first == 100
-            assert python_sp.last == 200
-        except Exception as e:
-            pytest.skip(f"SequenceParams initialization issue: {e}")
+        assert python_sp.first == 100
+        assert python_sp.last == 200
 
     def test_trackingparams_to_trackpar(self):
         """Test converting optv TrackingParams to Python TrackPar."""
