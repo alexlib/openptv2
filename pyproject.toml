@@ -111,7 +111,7 @@ include-package-data = true
 zip-safe = false
 
 [tool.pytest.ini_options]
-testpaths = ["tests", "bindings/tests", "gui/tests"]
+testpaths = ["algorithms/tests", "bindings/tests", "gui/tests"]
 python_files = ["test_*.py"]
 python_functions = ["test_*"]
 pythonpath = ["gui"]
