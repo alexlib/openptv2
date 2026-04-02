@@ -32,6 +32,7 @@ TOLERANCES = {
     "multimed": 1e-7,
     "tracking_run": 1e-7,
     "tracker": 1e-7,
+    "track3d": 1e-5,
 }
 
 

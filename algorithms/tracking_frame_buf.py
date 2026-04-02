@@ -948,11 +948,10 @@ def write_path_frame(
 
     try:
         corres_file = open(corres_fname, "w", encoding="utf8")
-        # Use -1 for empty frames (matching C behavior)
-        corres_file.write(f"{num_parts if num_parts > 0 else -1}\n")
+        corres_file.write(f"{num_parts}\n")
 
         linkage_file = open(linkage_fname, "w", encoding="utf8")
-        linkage_file.write(f"{num_parts if num_parts > 0 else -1}\n")
+        linkage_file.write(f"{num_parts}\n")
 
         if prio_file_base is not None:
             prio_file = open(prio_fname, "w", encoding="utf8")  # type: ignore

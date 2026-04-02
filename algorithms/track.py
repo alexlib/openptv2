@@ -567,6 +567,32 @@ def sort(n: int, a: List[float], b: List[int]) -> Tuple[List[float], List[int]]:
     return a, b
 
 
+def find_candidates_in_3d(frm, pos, dx, dy, dz, max_cands=MAX_CANDS):
+    """
+    Find particles within a 3D box centered at pos.
+
+    Arguments:
+        frm - Frame object with path_info list
+        pos - (3,) array-like, center position
+        dx, dy, dz - box half-sizes in each dimension
+        max_cands - maximum candidates to return
+
+    Returns:
+        list of particle indices within the box
+    """
+    indices = []
+    for i in range(frm.num_parts):
+        pi = frm.path_info[i]
+        if (
+            abs(pi.x[0] - pos[0]) < dx
+            and abs(pi.x[1] - pos[1]) < dy
+            and abs(pi.x[2] - pos[2]) < dz
+        ):
+            if len(indices) < max_cands:
+                indices.append(i)
+    return indices
+
+
 def point_to_pixel(point: np.ndarray, cal: Calibration, cpar: ControlPar) -> np.ndarray:
     """Return vec2d with pixel positions (x,y) in the camera.
 
@@ -1124,6 +1150,165 @@ def trackcorr_c_finish(run_info, step: int):
     run_info.fb.write_frame_from_start(step)
 
 
+def track3d_loop(run_info, step):
+    """
+    3D tracking loop - links particles in 3D space without camera projection.
+
+    Three-level linking strategy:
+    1. Particles with previous links: predict = 2*curr - prev
+    2. No prev link, neighbors have links: predict = curr + avg_neighbor_velocity
+    3. No prev link, no neighbor links: predict = curr
+
+    Arguments:
+        run_info - TrackingRun object
+        step - current frame number
+    """
+    import math
+
+    fb = run_info.fb
+    tpar = run_info.tpar
+
+    prev = fb.buf[0]
+    curr = fb.buf[1]
+    next_buf = fb.buf[2]
+
+    orig_parts = curr.num_parts
+    count1 = 0
+
+    dx = tpar.dvxmax
+    dy = tpar.dvymax
+    dz = tpar.dvzmax
+
+    # Level 1: Particles with previous links
+    for i in range(orig_parts):
+        curr_pi = curr.path_info[i]
+        if curr_pi.prev_frame < 0:
+            continue
+        prev_idx = curr_pi.prev_frame
+        if prev_idx < 0 or prev_idx >= prev.num_parts:
+            continue
+        prev_pi = prev.path_info[prev_idx]
+
+        # Predict: 2*curr - prev
+        predicted = 2 * curr_pi.x - prev_pi.x
+
+        cand_indices = find_candidates_in_3d(next_buf, predicted, dx, dy, dz)
+
+        decis = [0.0] * len(cand_indices)
+        linkdecis = [0] * len(cand_indices)
+
+        for k, cidx in enumerate(cand_indices):
+            acc = 0.0
+            for d in range(3):
+                diff = curr_pi.x[d] - 2 * next_buf.path_info[cidx].x[d] + prev_pi.x[d]
+                acc += diff * diff
+            decis[k] = math.sqrt(acc)
+            linkdecis[k] = cidx
+
+        if len(cand_indices) > 1:
+            sort(len(decis), decis, linkdecis)
+
+        if cand_indices and next_buf.path_info[linkdecis[0]].prev_frame < 0:
+            curr_pi.next_frame = linkdecis[0]
+            next_buf.path_info[linkdecis[0]].prev_frame = i
+            count1 += 1
+        else:
+            curr_pi.next_frame = -1
+
+    # Level 2: No previous link, but neighbors have previous links
+    for i in range(orig_parts):
+        curr_pi = curr.path_info[i]
+        if curr_pi.prev_frame >= 0 or curr_pi.next_frame >= 0:
+            continue
+
+        vel = np.zeros(3)
+        nvel = 0
+        for j in range(orig_parts):
+            if j == i:
+                continue
+            nbr = curr.path_info[j]
+            if (
+                abs(nbr.x[0] - curr_pi.x[0]) < dx
+                and abs(nbr.x[1] - curr_pi.x[1]) < dy
+                and abs(nbr.x[2] - curr_pi.x[2]) < dz
+                and nbr.prev_frame >= 0
+            ):
+                vel += nbr.x - prev.path_info[nbr.prev_frame].x
+                nvel += 1
+
+        if nvel == 0:
+            continue
+        vel /= nvel
+        predicted = curr_pi.x + vel
+
+        cand_indices = find_candidates_in_3d(next_buf, predicted, dx, dy, dz)
+
+        decis = [0.0] * len(cand_indices)
+        linkdecis = [0] * len(cand_indices)
+
+        for k, cidx in enumerate(cand_indices):
+            acc = 0.0
+            for d in range(3):
+                diff = curr_pi.x[d] - 2 * next_buf.path_info[cidx].x[d] + predicted[d]
+                acc += diff * diff
+            decis[k] = math.sqrt(acc)
+            linkdecis[k] = cidx
+
+        if len(cand_indices) > 1:
+            sort(len(decis), decis, linkdecis)
+
+        if cand_indices and next_buf.path_info[linkdecis[0]].prev_frame < 0:
+            curr_pi.next_frame = linkdecis[0]
+            next_buf.path_info[linkdecis[0]].prev_frame = i
+            count1 += 1
+        else:
+            curr_pi.next_frame = -1
+
+    # Level 3: No previous link, no neighbors with previous links
+    for i in range(orig_parts):
+        curr_pi = curr.path_info[i]
+        if curr_pi.prev_frame >= 0 or curr_pi.next_frame >= 0:
+            continue
+
+        predicted = curr_pi.x.copy()
+
+        cand_indices = find_candidates_in_3d(next_buf, predicted, dx, dy, dz)
+
+        decis = [0.0] * len(cand_indices)
+        linkdecis = [0] * len(cand_indices)
+
+        for k, cidx in enumerate(cand_indices):
+            acc = 0.0
+            for d in range(3):
+                diff = curr_pi.x[d] - 2 * next_buf.path_info[cidx].x[d] + predicted[d]
+                acc += diff * diff
+            decis[k] = math.sqrt(acc)
+            linkdecis[k] = cidx
+
+        if len(cand_indices) > 1:
+            sort(len(decis), decis, linkdecis)
+
+        if cand_indices and next_buf.path_info[linkdecis[0]].prev_frame < 0:
+            curr_pi.next_frame = linkdecis[0]
+            next_buf.path_info[linkdecis[0]].prev_frame = i
+            count1 += 1
+        else:
+            curr_pi.next_frame = -1
+
+    print(
+        f"track3d step: {step}, curr: {fb.buf[1].num_parts}, "
+        f"next: {fb.buf[2].num_parts}, links: {count1}"
+    )
+
+    run_info.npart += fb.buf[1].num_parts
+    run_info.nlinks += count1
+
+    fb.fb_next()
+    fb.write_frame_from_start(step)
+    if step < run_info.seq_par.last - 2:
+        fb.read_frame_at_end(step + 3, 0)
+
+
 def trackback_c(run_info: TrackingRun):
     """Trackback algorithm in C."""
     count1, count2, num_added, quali = 0, 0, 0, 0
@@ -1452,19 +1637,25 @@ class Tracker:
 
     def step_forward_3d(self):
         """
-        Perform one tracking step for the current frame (3D version).
+        Perform one 3D tracking step for the current frame of iteration.
 
-        Note: This is a stub for API compatibility. 3D tracking not yet implemented.
+        Returns:
+            bool: True if more frames to process, False if done.
         """
-        raise NotImplementedError("3D tracking not yet implemented")
+        if self.step >= self.run_info.seq_par.last:
+            return False
+
+        track3d_loop(self.run_info, self.step)
+        self.step += 1
+        return True
 
     def full_forward_3d(self):
-        """
-        Do a full 3D tracking run from restart to finalize.
-
-        Note: This is a stub for API compatibility. 3D tracking not yet implemented.
-        """
-        raise NotImplementedError("3D tracking not yet implemented")
+        """Do a full 3D tracking run from restart to finalize."""
+        track_forward_start(self.run_info)
+        for step in range(self.run_info.seq_par.first, self.run_info.seq_par.last):
+            track3d_loop(self.run_info, step)
+        trackcorr_c_finish(self.run_info, self.run_info.seq_par.last)
+        self.step = 0
 
     def full_backward(self):
         """
