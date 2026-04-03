@@ -38,6 +38,38 @@ def _normalize_file_base(file_base):
     return file_base.rstrip(".")
 
 
+def _target_filename(file_base, frame_num: int) -> str:
+    """Build a target filename from a base and frame number.
+
+    OpenPTV fixtures use both dotted and underscored bases, e.g. `cam1.` and
+    `sample_`. Preserve the caller's separator when it is already part of the
+    base; otherwise fall back to the historical dotted form.
+    """
+    file_base = _normalize_file_base(file_base)
+    if frame_num > 0:
+        if file_base.endswith((".", "_")):
+            return f"{file_base}{frame_num:04d}_targets"
+        return f"{file_base}.{frame_num:04d}_targets"
+    return f"{file_base}_targets"
+
+
+def _target_filename_candidates(file_base, frame_num: int) -> List[str]:
+    """Return likely target filenames for a base and frame number."""
+    primary = _target_filename(file_base, frame_num)
+    candidates = [primary]
+
+    if frame_num > 0:
+        if isinstance(file_base, bytes):
+            file_base = file_base.decode()
+        elif isinstance(file_base, Path):
+            file_base = str(file_base)
+
+        if str(file_base).endswith("."):
+            candidates.append(f"{str(file_base).rstrip('.')}_{frame_num:04d}_targets")
+
+    return list(dict.fromkeys(candidates))
+
+
 n_tupel_dtype = np.dtype([("p", np.int32, (4,)), ("corr", np.float64)])
 
 
@@ -202,11 +234,7 @@ class TargetArray:
         file_base - path to the file, base part.
         frame_num - frame number part of the file name.
         """
-        file_base = _normalize_file_base(file_base)
-        if frame_num > 0:
-            fname = f"{file_base}.{frame_num:04d}_targets"
-        else:
-            fname = f"{file_base}_targets"
+        fname = _target_filename(file_base, frame_num)
 
         with open(fname, "w", encoding="utf-8") as f:
             f.write(f"{len(self._targets)}\n")
@@ -261,15 +289,16 @@ class TargetArray:
 
 def read_targets(file_base: str, frame_num: int) -> List[Target]:
     """Read targets from a file."""
-    file_base = _normalize_file_base(file_base)
     buffer = []
 
-    if frame_num > 0:
-        fname = f"{file_base}.{frame_num:04d}_targets"
-    else:
-        fname = f"{file_base}_targets"
+    filename = None
+    for candidate in _target_filename_candidates(file_base, frame_num):
+        if Path(candidate).exists():
+            filename = Path(candidate)
+            break
 
-    filename = Path(fname)
+    if filename is None:
+        filename = Path(_target_filename(file_base, frame_num))
 
     try:
         with open(filename, "r", encoding="utf-8") as file:
