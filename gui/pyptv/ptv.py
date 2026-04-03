@@ -45,9 +45,9 @@ example from Tracker documentation:
             If None, uses default_naming.
 
     default_naming = {
-        'corres': b'res/rt_is',
-        'linkage': b'res/ptv_is',
-        'prio': b'res/added'
+        'corres': 'res/rt_is',
+        'linkage': 'res/ptv_is',
+        'prio': 'res/added'
     }            
 """
 
@@ -1120,6 +1120,16 @@ def py_trackcorr_init(exp):
             cpar_py._pix_x = cpar.pix_x
         if hasattr(cpar, "pix_y"):
             cpar_py._pix_y = cpar.pix_y
+
+        if getattr(cpar_py, "pix_x", 0.0) == 0.0 or getattr(cpar_py, "pix_y", 0.0) == 0.0:
+            try:
+                ptv_params = exp.pm.get_parameter("ptv")
+            except Exception:
+                ptv_params = {}
+            if getattr(cpar_py, "pix_x", 0.0) == 0.0:
+                cpar_py._pix_x = ptv_params.get("pix_x", 1.0)
+            if getattr(cpar_py, "pix_y", 0.0) == 0.0:
+                cpar_py._pix_y = ptv_params.get("pix_y", 1.0)
 
         # Create VolumePar from optv VolumeParams
         from algorithms.parameters import VolumePar

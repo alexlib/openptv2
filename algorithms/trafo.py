@@ -35,6 +35,8 @@ def fast_pixel_to_metric(
     x_pixel, y_pixel, imx, imy, pix_x, pix_y
 ) -> Tuple[float, float]:
     """Convert pixel coordinates to metric coordinates."""
+    if pix_x == 0 or pix_y == 0:
+        raise ValueError("Pixel size cannot be zero.")
     x_metric = (x_pixel - float(imx) / 2.0) * pix_x
     y_metric = (float(imy) / 2.0 - y_pixel) * pix_y
 
@@ -95,6 +97,10 @@ def fast_metric_to_pixel(
     x_metric, y_metric, imx, imy, pix_x, pix_y
 ) -> Tuple[float, float]:
     """Convert metric coordinates to pixel coordinates."""
+    if pix_x == 0:
+        pix_x = 1.0
+    if pix_y == 0:
+        pix_y = 1.0
     x_pixel = (x_metric / pix_x) + (float(imx) / 2.0)
     y_pixel = (float(imy) / 2.0) - (y_metric / pix_y)
 

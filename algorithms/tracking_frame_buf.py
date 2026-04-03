@@ -996,6 +996,13 @@ def write_path_frame(
     -------
         True on success, False on failure.
     """
+    if isinstance(corres_file_base, bytes):
+        corres_file_base = corres_file_base.decode("utf-8")
+    if isinstance(linkage_file_base, bytes):
+        linkage_file_base = linkage_file_base.decode("utf-8")
+    if isinstance(prio_file_base, bytes):
+        prio_file_base = prio_file_base.decode("utf-8")
+
     corres_fname = f"{corres_file_base}.{frame_num}"
     linkage_fname = f"{linkage_file_base}.{frame_num}"
     prio_fname = f"{prio_file_base}.{frame_num}" if prio_file_base != "" else None

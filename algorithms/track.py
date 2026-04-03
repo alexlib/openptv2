@@ -1581,10 +1581,16 @@ class Tracker:
         if naming is None:
             naming = default_naming
         else:
+            naming = dict(naming)
             # Ensure all required keys are present
             for key in default_naming:
                 if key not in naming:
                     naming[key] = default_naming[key]
+
+        for key in ("corres", "linkage", "prio"):
+            value = naming.get(key)
+            if isinstance(value, bytes):
+                naming[key] = value.decode("utf-8")
 
         self.run_info = TrackingRun(
             spar,
