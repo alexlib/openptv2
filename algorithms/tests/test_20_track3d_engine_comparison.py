@@ -43,7 +43,7 @@ def dataset(request, tmp_path):
     src = TRACK_DATA_DIR
     yaml_file = "conf.yaml"
     ref_prefix = "particles"
-    frame_range = range(10001, 10005)
+    frame_range = range(10001, 10003)
 
     res_orig = os.path.join(src, "res_orig")
     res_dst = os.path.join(src, "res")

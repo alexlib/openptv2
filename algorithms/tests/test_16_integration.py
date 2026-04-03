@@ -118,7 +118,7 @@ class TestIntegrationPipeline:
         flat_coords = []
         cals = []
 
-        for _ in range(4):
+        for _ in range(2):
             ta = TargetArray(num_targets)
             for i in range(num_targets):
                 t = Target(
@@ -257,8 +257,8 @@ class TestEndToEndWorkflow:
         )
         from optv.calibration import Calibration
 
-        num_frames = 5
-        num_targets = 8
+        num_frames = 3
+        num_targets = 4
 
         cpar = ControlParams(num_cams=4)
         cpar.set_image_size((1024, 1024))

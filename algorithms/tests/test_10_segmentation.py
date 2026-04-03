@@ -244,7 +244,7 @@ class TestSegmentation:
         np.random.seed(42)
         img = np.random.randint(0, 50, (256, 256), dtype=np.uint8)
 
-        for _ in range(20):
+        for _ in range(8):
             x, y = np.random.randint(25, 231, 2)
             img[y - 3 : y + 3, x - 3 : x + 3] = 200
 

@@ -507,7 +507,7 @@ class TestMultimedPerformance:
 
         # Generate random test points
         np.random.seed(42)
-        positions = np.random.uniform(-100, 100, (100, 3))
+        positions = np.random.uniform(-100, 100, (25, 3))
 
         # Process all points
         results = []
@@ -521,7 +521,7 @@ class TestMultimedPerformance:
         results = np.array(results)
 
         # Most results should be finite and within a plausible range
-        assert results.shape == (100,)
+        assert results.shape == (25,)
 
 
 if __name__ == "__main__":

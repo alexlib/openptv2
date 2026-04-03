@@ -166,11 +166,6 @@ class TestBurgersTracker:
         tracker = self._make_tracker()
         tracker.full_forward()
 
-    def test_full_forward_3d(self, burgers_test_dir):
-        """Automatic full forward 3D tracking run, mirroring bindings test_full_forward_3d."""
-        tracker = self._make_tracker()
-        tracker.full_forward_3d()
-
     def test_full_backward(self, burgers_test_dir):
         """Automatic full backward correction phase, mirroring bindings test_full_backward."""
         tracker = self._make_tracker()

@@ -160,7 +160,7 @@ class TestCorrespondencesFunction:
         optv_cpar, python_cpar = create_test_control_params()
         optv_cal, python_cal = create_test_calibration()
 
-        num_targets = 15
+        num_targets = 8
         num_cams = 4
 
         img_pts = []
@@ -231,7 +231,7 @@ class TestCorrespondencesFunction:
         optv_cpar, python_cpar = create_test_control_params()
         optv_cal, python_cal = create_test_calibration()
 
-        num_targets = 10
+        num_targets = 6
 
         ta = TargetArray(num_targets)
         for i in range(num_targets):

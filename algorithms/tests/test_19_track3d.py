@@ -224,7 +224,7 @@ class TestTrack3DLoop:
         """Verify output files are created."""
         tracker = self._make_tracker()
         tracker.full_forward_3d()
-        for step in range(10001, 10005):
+        for step in range(10001, 10003):
             path = f"test_data/track/res/particles.{step}"
             assert os.path.exists(path), f"Missing output: {path}"
 

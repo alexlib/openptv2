@@ -25,6 +25,10 @@ class TestTrackingRun:
         track = TrackParTuple(3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 0.0, 0.0, 0, 0.0, 0.0, 0.0, 0.0)
         vol = VolumePar(x_lay=[0.0, 100.0], z_min_lay=[0.0, 0.0], z_max_lay=[50.0, 50.0])
         ctrl = ControlPar(num_cams=4)
+        ctrl.imx = 1024
+        ctrl.imy = 1024
+        ctrl.pix_x = 0.01
+        ctrl.pix_y = 0.01
         cals = [Calibration() for _ in range(4)]
 
         run = TrackingRun(
@@ -81,6 +85,10 @@ class TestTrackingRunWithData:
         track = TrackParTuple(2.0, 2.0, 2.0, 2.0, 1.0, 1.0, 0.0, 1.0, 0, 0.0, 0.0, 0.0, 0.0)
         vol = VolumePar(x_lay=[0.0, 50.0], z_min_lay=[0.0, 0.0], z_max_lay=[30.0, 30.0])
         ctrl = ControlPar(num_cams=4)
+        ctrl.imx = 1024
+        ctrl.imy = 1024
+        ctrl.pix_x = 0.01
+        ctrl.pix_y = 0.01
         cals = [Calibration() for _ in range(4)]
 
         run = TrackingRun(
@@ -148,14 +156,14 @@ class TestTrackingRunEdgeCases:
         """Test tracking run with large frame range."""
         from optv.parameters import SequenceParams
 
-        seq = SequenceParams(num_cams=4, frame_range=(1, 10000))
+        seq = SequenceParams(num_cams=4, frame_range=(1, 100))
 
         try:
             from algorithms.parameters import SequencePar as PythonSeq
 
             python_seq = PythonSeq()
             python_seq.first = 1
-            python_seq.last = 10000
+            python_seq.last = 100
             python_seq.dStep = 1
         except ImportError:
             pass

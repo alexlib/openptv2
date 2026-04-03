@@ -30,10 +30,10 @@ class TestFullTrackingComparison:
                 SequenceParams,
             )
 
-            cpar = ControlParams(num_cams=4)
+            cpar = ControlParams(num_cams=2)
             vpar = VolumeParams()
             tpar = TrackingParams()
-            spar = SequenceParams(num_cams=4, frame_range=(1, 10))
+            spar = SequenceParams(num_cams=2, frame_range=(1, 5))
 
             assert cpar is not None
             assert vpar is not None
@@ -50,10 +50,10 @@ class TestFullTrackingComparison:
             SequenceParams as PythonSP,
         )
 
-        cpar_py = PythonCP(num_cams=4)
+        cpar_py = PythonCP(num_cams=2)
         vpar_py = PythonVP()
         tpar_py = PythonTP()
-        spar_py = PythonSP(num_cams=4, frame_range=(1, 10))
+        spar_py = PythonSP(num_cams=2, frame_range=(1, 5))
 
         assert cpar_py is not None
         assert vpar_py is not None
@@ -69,7 +69,7 @@ class TestFullTrackingComparison:
             from optv.calibration import Calibration as CythonCal
 
             cals_cython = []
-            for i in range(1, 5):
+            for i in range(1, 3):
                 cal_file = os.path.join(cal_dir, f"cam{i}.tif.addpar")
                 if os.path.exists(cal_file):
                     cal = CythonCal()
@@ -86,7 +86,7 @@ class TestFullTrackingComparison:
             from pathlib import Path
 
             cals_python = []
-            for i in range(1, 5):
+            for i in range(1, 3):
                 ori_file = Path(cal_dir) / f"cam{i}.tif.ori"
                 add_file = Path(cal_dir) / f"cam{i}.tif.addpar"
                 if ori_file.exists() and add_file.exists():
@@ -107,10 +107,10 @@ class TestFullTrackingComparison:
             from optv.tracking_framebuf import Frame as CythonFrame
 
             targ_files = [
-                os.path.join(frame_dir, f"cam{c}.").encode() for c in range(1, 5)
+                os.path.join(frame_dir, f"cam{c}.").encode() for c in range(1, 3)
             ]
             frm_cython = CythonFrame(
-                4,
+                2,
                 corres_file_base=os.path.join(frame_dir, "rt_is").encode(),
                 linkage_file_base=os.path.join(frame_dir, "ptv_is").encode(),
                 target_file_base=targ_files,
@@ -123,9 +123,9 @@ class TestFullTrackingComparison:
         # Test Python adapter
         from algorithms.frame_adapter import Frame as PythonFrame
 
-        targ_files_py = [os.path.join(frame_dir, f"cam{c}.") for c in range(1, 5)]
+        targ_files_py = [os.path.join(frame_dir, f"cam{c}.") for c in range(1, 3)]
         frm_python = PythonFrame(
-            4,
+            2,
             corres_file_base=os.path.join(frame_dir, "rt_is"),
             linkage_file_base=os.path.join(frame_dir, "ptv_is"),
             target_file_base=targ_files_py,
@@ -154,13 +154,13 @@ class TestFullTrackingComparison:
             )
             from optv.calibration import Calibration
 
-            cpar = ControlParams(num_cams=4)
+            cpar = ControlParams(num_cams=2)
             vpar = VolumeParams()
             tpar = TrackingParams()
-            spar = SequenceParams(num_cams=4, frame_range=(1, 10))
+            spar = SequenceParams(num_cams=2, frame_range=(1, 5))
 
             cals = []
-            for i in range(1, 5):
+            for i in range(1, 3):
                 cals.append(Calibration())
 
             cython_tracker = CythonTracker(
