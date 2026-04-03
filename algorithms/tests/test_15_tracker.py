@@ -142,7 +142,7 @@ class TestTracker:
             with open(f"test_data/track/res/linkage.{last_step}") as f:
                 lines = f.readlines()
                 if last_step == 10003:
-                    assert lines[0] == "-1\n"
+                    assert lines[0] == "0\n"
                 else:
                     assert lines[0] == "1\n"
             last_step += 1
@@ -154,18 +154,25 @@ class TestTracker:
         tracker.full_forward()
 
     def test_forward_3d(self, track_test_dir):
-        """Manual forward 3D tracking run, mirroring bindings test_forward_3d.
-
-        Skipped: algorithms engine does not yet implement 3D tracking.
-        """
-        pytest.skip("3D tracking not yet implemented in algorithms engine")
+        """Manual forward 3D tracking run, mirroring bindings test_forward_3d."""
+        tracker = self._make_tracker()
+        tracker.restart()
+        last_step = 10001
+        while tracker.step_forward_3d():
+            assert tracker.current_step() > last_step
+            with open(f"test_data/track/res/linkage.{last_step}") as f:
+                lines = f.readlines()
+                if last_step == 10003:
+                    assert lines[0] == "0\n"
+                else:
+                    assert lines[0] == "1\n"
+            last_step += 1
+        tracker.finalize()
 
     def test_full_forward_3d(self, track_test_dir):
-        """Automatic full forward 3D tracking run, mirroring bindings test_full_forward_3d.
-
-        Skipped: algorithms engine does not yet implement 3D tracking.
-        """
-        pytest.skip("3D tracking not yet implemented in algorithms engine")
+        """Automatic full forward 3D tracking run, mirroring bindings test_full_forward_3d."""
+        tracker = self._make_tracker()
+        tracker.full_forward_3d()
 
     def test_full_backward(self, track_test_dir):
         """Automatic full backward correction phase, mirroring bindings test_full_backward."""

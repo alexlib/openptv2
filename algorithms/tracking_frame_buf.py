@@ -23,6 +23,21 @@ from .epi import Coord2d_dtype
 from .parameters import ControlPar
 from .trafo import dist_to_flat, pixel_to_metric
 
+
+def _normalize_file_base(file_base):
+    """Normalize a file base path for constructing target filenames.
+
+    Handles bytes-from-Cython, Path objects, and trailing dots from optv's
+    img_base convention.  The returned value is a clean string without
+    trailing dots, so callers can safely do f"{base}.{frame:04d}_targets".
+    """
+    if isinstance(file_base, bytes):
+        file_base = file_base.decode()
+    elif isinstance(file_base, Path):
+        file_base = str(file_base)
+    return file_base.rstrip(".")
+
+
 n_tupel_dtype = np.dtype([("p", np.int32, (4,)), ("corr", np.float64)])
 
 
@@ -181,14 +196,15 @@ class TargetArray:
         """
         Writes a _targets file - a text format for targets. First line: number
         of targets. Each following line: pnr, x, y, n, nx, ny, sumg, tnr.
-        the output file name is of the form <base_name><frame>_targets.
+        the output file name is of the form <base_name>.<frame>_targets.
 
         Arguments:
         file_base - path to the file, base part.
         frame_num - frame number part of the file name.
         """
+        file_base = _normalize_file_base(file_base)
         if frame_num > 0:
-            fname = f"{file_base}{frame_num:04d}_targets"
+            fname = f"{file_base}.{frame_num:04d}_targets"
         else:
             fname = f"{file_base}_targets"
 
@@ -245,10 +261,11 @@ class TargetArray:
 
 def read_targets(file_base: str, frame_num: int) -> List[Target]:
     """Read targets from a file."""
+    file_base = _normalize_file_base(file_base)
     buffer = []
 
     if frame_num > 0:
-        fname = f"{file_base}{frame_num:04d}_targets"
+        fname = f"{file_base}.{frame_num:04d}_targets"
     else:
         fname = f"{file_base}_targets"
 
@@ -427,6 +444,14 @@ class Frame:
         frame_num: int,
     ) -> bool:
         """Read a frame from the disk."""
+        # Normalize bytes (from Cython) and trailing dots
+        if isinstance(corres_file_base, bytes):
+            corres_file_base = corres_file_base.decode()
+        if isinstance(linkage_file_base, bytes):
+            linkage_file_base = linkage_file_base.decode()
+        if isinstance(prio_file_base, bytes):
+            prio_file_base = prio_file_base.decode()
+
         required_files = [Path(f"{corres_file_base}.{frame_num}")]
 
         if linkage_file_base != "":
@@ -436,8 +461,9 @@ class Frame:
             required_files.append(Path(f"{prio_file_base}.{frame_num}"))
 
         for file_base in target_file_base:
+            file_base = _normalize_file_base(file_base)
             if frame_num > 0:
-                required_files.append(Path(f"{file_base}{frame_num:04d}_targets"))
+                required_files.append(Path(f"{file_base}.{frame_num:04d}_targets"))
             else:
                 required_files.append(Path(f"{file_base}_targets"))
 
