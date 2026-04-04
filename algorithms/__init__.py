@@ -58,8 +58,23 @@ def __getattr__(name):
         "_native_convert",
     ]
 
+    # Modules that require numba - will fail if numba is not installed
+    numba_required_modules = [
+        "calibration",
+        "image_processing",
+        "multimed",
+        "orientation",
+        "ray_tracing",
+        "segmentation",
+        "track",
+        "trafo",
+        "vec_utils",
+        "find_candidate",
+    ]
+
     if name in algorithm_modules:
-        if _NUMBA_AVAILABLE is None:
+        # Only block modules that actually require numba
+        if name in numba_required_modules and _NUMBA_AVAILABLE is None:
             raise ImportError(
                 f"algorithms.{name} requires numba, which is not installed. "
                 "Install with: pip install openptv2[numba]"
