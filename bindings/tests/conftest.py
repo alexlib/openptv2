@@ -15,19 +15,19 @@ REPO_ROOT = TEST_DATA_ROOT.parent
 
 @pytest.fixture(scope="session", autouse=True)
 def _bindings_cwd():
-	"""Run bindings tests from the repo root so relative test_data paths resolve."""
-	previous_cwd = Path.cwd()
-	os.chdir(REPO_ROOT)
-	try:
-		yield
-	finally:
-		os.chdir(previous_cwd)
+    """Run bindings tests from the repo root so relative test_data paths resolve."""
+    previous_cwd = Path.cwd()
+    os.chdir(REPO_ROOT)
+    try:
+        yield
+    finally:
+        os.chdir(previous_cwd)
 
 
 @pytest.fixture(scope="session")
 def test_data_root() -> Path:
-	"""Shared repo-local test_data root for bindings tests."""
-	return TEST_DATA_ROOT
+    """Shared repo-local test_data root for bindings tests."""
+    return TEST_DATA_ROOT
 
 
 # Add the optv package directory to Python path
