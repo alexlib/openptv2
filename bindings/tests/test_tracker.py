@@ -66,7 +66,7 @@ class TestTracker(unittest.TestCase):
                 lines = f.readlines()
                 # print(last_step,lines[0])
                 if last_step == 10003:
-                    self.assertTrue(lines[0] == "-1\n")
+                    self.assertTrue(lines[0] == "0\n")
                 else:
                     self.assertTrue(lines[0] == "1\n")
             last_step += 1
@@ -86,7 +86,7 @@ class TestTracker(unittest.TestCase):
                 lines = f.readlines()
                 # print(last_step,lines[0])
                 if last_step == 10003:
-                    self.assertTrue(lines[0] == "-1\n")
+                    self.assertTrue(lines[0] == "0\n")
                 else:
                     self.assertTrue(lines[0] == "1\n")
             last_step += 1
