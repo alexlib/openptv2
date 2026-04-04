@@ -278,7 +278,7 @@ int read_path_frame(corres *cor_buf, P *path_buf, \
     }
     
     targets = 0;
-    do {
+    while (!feof(filein)) {
         if (linkagein != NULL) {
             read_res = fscanf(linkagein, "%4d %4d %lf %lf %lf\n",
 	            &(path_buf->prev), &(path_buf->next), &discard, &discard, &discard);
@@ -325,6 +325,12 @@ int read_path_frame(corres *cor_buf, P *path_buf, \
             &(cor_buf->p[3]) );
         
         if (read_res != 8) {
+            /* EOF after header (empty file) is OK, return 0.
+               Actual format error returns -1. */
+            if (read_res == EOF) {
+                break;
+            }
+            printf("Bad format for file: %s\n", fname);
             targets = -1;
             break;
         }

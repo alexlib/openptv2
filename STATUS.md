@@ -69,11 +69,49 @@ Both engines (Cython/C and Python/Numba) produce **identical results** when give
 
 ## Known Issues (Pre-existing, Not Introduced)
 
-1. **C empty-frame bug**: `read_path_frame` returns -1 for files with 0 particles. Affects statistics reporting but not actual tracking results.
+1. **Cython `read_targets()` wrapper** (`bindings/optv/tracking_framebuf.pyx:227`): When C returns -1 (file not found), wrapper creates TargetArray with -1 targets → `SystemError` on `len()`.
 
-2. **Cython error handling**: `read_targets()` and `Frame` constructor have edge-case failures on missing/None inputs.
+2. **Cython `Frame` constructor**: Passing `linkage_file_base=None` causes segfault (None → NULL conversion issue).
 
 3. **Python `read_targets()`**: Raises `FileNotFoundError` instead of returning empty list for missing files.
+
+---
+
+## C Bug Fix: `read_path_frame` empty file handling
+
+**File**: `lib/src/tracking_frame_buf.c:280-330`
+
+**Problem**: `do...while(!feof)` always executes once, so empty files (header "0\n" with no data lines) cause `fscanf` to fail and reset `targets = -1`.
+
+**Fix**: Changed to `while (!feof(filein))` and distinguish EOF (normal empty file) from format errors:
+
+```c
+// Before (buggy):
+targets = 0;
+do {
+    read_res = fscanf(...);
+    if (read_res != 8) { targets = -1; break; }
+} while (!feof(filein));
+
+// After (fixed):
+targets = 0;
+while (!feof(filein)) {
+    read_res = fscanf(...);
+    if (read_res != 8) {
+        if (read_res == EOF) break;  // Normal empty file
+        printf("Bad format...");
+        targets = -1; break;          // Actual error
+    }
+    ...
+}
+```
+
+**Status**: C source fixed. Requires rebuilding Cython bindings (`cd bindings && python3 setup.py prepare && python3 setup.py build_ext --inplace`).
+
+**Expected after rebuild**:
+- Both engines report `curr: 0` (not `-1`) for empty frames
+- Both engines report `Average: particles: 0.8` (not `0.5`)
+- Linkage file headers match exactly (no `-1`/`0` normalization needed)
 
 ---
 

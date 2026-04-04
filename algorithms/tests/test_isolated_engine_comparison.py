@@ -321,10 +321,8 @@ class TestIsolatedEngineComparison:
     def test_linkage_files_match(self, isolated_workspaces):
         """Cython and Python produce identical linkage.<frame> files.
 
-        Known difference: C has a bug where files with 0 particles get
-        num_parts=-1 due to do...while(!feof) always executing once.
-        Python correctly reports 0. We compare normalized content,
-        treating -1 and 0 as equivalent for empty frames.
+        After C fix (lib/src/tracking_frame_buf.c): empty frames now
+        correctly report 0 instead of -1. No normalization needed.
         """
         cy_out, py_out, cy_ws, py_ws, frame_range = isolated_workspaces
 
@@ -334,15 +332,6 @@ class TestIsolatedEngineComparison:
                 assert key in py_out, f"Python missing {key}"
                 cy_lines = [line.split() for line in cy_out[key].strip().split("\n")]
                 py_lines = [line.split() for line in py_out[key].strip().split("\n")]
-
-                # Normalize header: -1 (C bug) and 0 (Python correct) both mean empty
-                cy_header = int(cy_lines[0][0])
-                py_header = int(py_lines[0][0])
-                if cy_header == -1 and py_header == 0:
-                    cy_lines[0][0] = "0"
-                elif cy_header == 0 and py_header == -1:
-                    py_lines[0][0] = "0"
-
                 assert cy_lines == py_lines, (
                     f"{key}: linkage content differs\n"
                     f"  Cython: {cy_out[key].strip()!r}\n"
