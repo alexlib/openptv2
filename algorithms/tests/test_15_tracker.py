@@ -62,8 +62,8 @@ def _build_python_tracker(yaml_conf):
 
     vpar = VolumePar(
         x_lay=corresp["x_span"],
-        z_min_lay=corresp["z_spans"][0],
-        z_max_lay=corresp["z_spans"][1],
+        z_min_lay=[corresp["z_spans"][i][0] for i in range(len(corresp["z_spans"]))],
+        z_max_lay=[corresp["z_spans"][i][1] for i in range(len(corresp["z_spans"]))],
     )
 
     vel = tracking["velocity_lims"]
@@ -254,8 +254,12 @@ class TestTrackerWithNaming:
 
         vpar = VolumePar(
             x_lay=corresp["x_span"],
-            z_min_lay=corresp["z_spans"][0],
-            z_max_lay=corresp["z_spans"][1],
+            z_min_lay=[
+                corresp["z_spans"][i][0] for i in range(len(corresp["z_spans"]))
+            ],
+            z_max_lay=[
+                corresp["z_spans"][i][1] for i in range(len(corresp["z_spans"]))
+            ],
         )
 
         vel = tracking["velocity_lims"]

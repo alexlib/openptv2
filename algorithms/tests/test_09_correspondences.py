@@ -197,10 +197,15 @@ class TestCorrespondencesFunction:
             from algorithms.correspondences import correspondences as python_func
             from algorithms.tracking_frame_buf import TargetArray as PythonTA
             from algorithms.correspondences import MatchedCoords as PythonMatchedCoords
+            from algorithms.parameters import VolumePar as PythonVolumePar
+            from algorithms.calibration import Calibration as PythonCal
 
             python_img_pts = []
             python_flat_coords = []
             python_cals = []
+            python_vpar = PythonVolumePar(
+                x_lay=[0.0, 100.0], z_min_lay=[0.0, 0.0], z_max_lay=[50.0, 50.0]
+            )
             for cam in range(num_cams):
                 ta = PythonTA(num_targets)
                 for i in range(num_targets):
@@ -209,7 +214,7 @@ class TestCorrespondencesFunction:
                     ta[i].set_pixel_counts(5, 2, 2)
                     ta[i].set_sum_grey_value(100.0)
                     ta[i].set_tnr(0)
-                cal = create_test_calibration()[1]
+                cal = PythonCal()
                 python_img_pts.append(ta)
                 python_flat_coords.append(PythonMatchedCoords(ta, python_cpar, cal))
                 python_cals.append(cal)
@@ -217,7 +222,7 @@ class TestCorrespondencesFunction:
             python_result = python_func(
                 PythonFrame(num_cams),
                 python_flat_coords,
-                vpar,
+                python_vpar,
                 python_cpar,
                 python_cals,
                 match_counts,
@@ -377,6 +382,8 @@ class TestCorrespondencesEdgeCases:
             from algorithms.tracking_frame_buf import TargetArray as PythonTA
             from algorithms.correspondences import MatchedCoords as PythonMatchedCoords
             from algorithms.parameters import ControlPar as PythonControlPar
+            from algorithms.parameters import VolumePar as PythonVolumePar
+            from algorithms.calibration import Calibration as PythonCal
 
             python_frame = PythonFrame(num_cams)
             python_img_pts = []
@@ -389,6 +396,9 @@ class TestCorrespondencesEdgeCases:
             python_cpar.pix_y = 0.01
             python_cpar.mm.set_layers([1.0], [1.0])
             python_cpar.mm.set_n3(1.0)
+            python_vpar = PythonVolumePar(
+                x_lay=[0.0, 100.0], z_min_lay=[0.0, 0.0], z_max_lay=[50.0, 50.0]
+            )
             for _ in range(num_cams):
                 ta = PythonTA(1)
                 ta[0].set_pnr(0)
@@ -397,7 +407,7 @@ class TestCorrespondencesEdgeCases:
                 ta[0].set_sum_grey_value(100.0)
                 ta[0].set_tnr(0)
                 python_img_pts.append(ta)
-                cal = create_test_calibration()[1]
+                cal = PythonCal()
                 python_flat_coords.append(PythonMatchedCoords(ta, python_cpar, cal))
                 python_cals.append(cal)
 
@@ -407,7 +417,7 @@ class TestCorrespondencesEdgeCases:
             python_result = python_func(
                 python_frame,
                 python_flat_coords,
-                vpar,
+                python_vpar,
                 python_cpar,
                 python_cals,
                 match_counts,

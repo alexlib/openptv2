@@ -69,6 +69,18 @@ class MultimediaPar(Parameters):
     def __post_init__(self):
         if len(self.n2) != len(self.d):
             raise ValueError("n2 and d must have the same length")
+        if len(self.n2) < 1:
+            raise ValueError("n2 and d must have at least one element")
+        if self.n1 <= 0:
+            raise ValueError(f"n1 must be positive, got {self.n1}")
+        if self.n3 <= 0:
+            raise ValueError(f"n3 must be positive, got {self.n3}")
+        for i, n in enumerate(self.n2):
+            if n <= 0:
+                raise ValueError(f"n2[{i}] must be positive, got {n}")
+        for i, di in enumerate(self.d):
+            if di < 0:
+                raise ValueError(f"d[{i}] must be non-negative, got {di}")
 
     def get_nlay(self):
         """Return the number of layers."""
@@ -79,7 +91,9 @@ class MultimediaPar(Parameters):
         return self.n1
 
     def set_n1(self, n1: float):
-        """Return the refractive index of the first medium."""
+        """Set the refractive index of the first medium."""
+        if n1 <= 0:
+            raise ValueError(f"n1 must be positive, got {n1}")
         self.n1 = n1
 
     def get_n3(self):
@@ -87,7 +101,9 @@ class MultimediaPar(Parameters):
         return self.n3
 
     def set_n3(self, n3: float):
-        """Return the refractive index of the last medium."""
+        """Set the refractive index of the last medium."""
+        if n3 <= 0:
+            raise ValueError(f"n3 must be positive, got {n3}")
         self.n3 = n3
 
     def get_n2(self):
@@ -102,10 +118,17 @@ class MultimediaPar(Parameters):
         """Set the layers of the medium."""
         if len(refr_index) != len(thickness):
             raise ValueError("Lengths of refractive index and thickness must be equal.")
-        else:
-            self.n2 = refr_index
-            self.d = thickness
-            self.nlay = len(refr_index)
+        if len(refr_index) < 1:
+            raise ValueError("Must have at least one layer")
+        for i, n in enumerate(refr_index):
+            if n <= 0:
+                raise ValueError(f"n2[{i}] must be positive, got {n}")
+        for i, di in enumerate(thickness):
+            if di < 0:
+                raise ValueError(f"d[{i}] must be non-negative, got {di}")
+        self.n2 = refr_index
+        self.d = thickness
+        self.nlay = len(refr_index)
 
     def __str__(self) -> str:
         return f"nlay = {self.nlay}, n1 = {self.n1}, n2 = {self.n2}, d = {self.d}, n3 = {self.n3}"
@@ -337,9 +360,9 @@ def convert_track_par_to_tuple(track_par: TrackPar) -> TrackParTuple:
 class VolumePar(Parameters):
     """Volume parameters."""
 
-    x_lay: List[float] = field(default_factory=list)
-    z_min_lay: List[float] = field(default_factory=list)
-    z_max_lay: List[float] = field(default_factory=list)
+    x_lay: List[float] = field(default_factory=lambda: [-100.0, 100.0])
+    z_min_lay: List[float] = field(default_factory=lambda: [-50.0])
+    z_max_lay: List[float] = field(default_factory=lambda: [50.0])
     # minimal criteria for number of pixels
     cn: float = field(default_factory=float)
     cnx: float = field(default_factory=float)  # same in x direction
@@ -351,27 +374,50 @@ class VolumePar(Parameters):
         default_factory=float
     )  # minimal correlation value of all criteria
 
-    # def to_dict(self):
-    #     """Convert VolumePar instance to a dictionary."""
-    #     return {
-    #         'x_lay': self.x_lay,
-    #         'z_min_lay': self.z_min_lay,
-    #         'z_max_lay': self.z_max_lay,
-    #         'cn': self.cn,
-    #         'cnx': self.cnx,
-    #         'cny': self.cny,
-    #         'csumg': self.csumg,
-    #         'eps0': self.eps0,
-    #         'corrmin': self.corrmin,
-    #     }
+    def __post_init__(self):
+        if len(self.x_lay) < 2:
+            raise ValueError(
+                f"x_lay must have at least 2 elements, got {len(self.x_lay)}"
+            )
+        if self.x_lay[0] == self.x_lay[1]:
+            raise ValueError(
+                f"x_lay[0] ({self.x_lay[0]}) must differ from x_lay[1] ({self.x_lay[1]})"
+            )
+        if len(self.z_min_lay) < 1:
+            raise ValueError(
+                f"z_min_lay must have at least 1 element, got {len(self.z_min_lay)}"
+            )
+        if len(self.z_max_lay) < 1:
+            raise ValueError(
+                f"z_max_lay must have at least 1 element, got {len(self.z_max_lay)}"
+            )
+        for i, (zmin, zmax) in enumerate(zip(self.z_min_lay, self.z_max_lay)):
+            if zmin >= zmax:
+                raise ValueError(
+                    f"z_min_lay[{i}] ({zmin}) must be less than z_max_lay[{i}] ({zmax})"
+                )
 
     def set_z_min_lay(self, z_min_lay: list[float]) -> None:
         """Set the minimum z coordinate of the layers."""
+        if len(z_min_lay) < 1:
+            raise ValueError("z_min_lay must have at least 1 element")
         self.z_min_lay = z_min_lay
+        self._validate_z_layers()
 
     def set_z_max_lay(self, z_max_lay: list[float]) -> None:
         """Set the maximum z coordinate of the layers."""
+        if len(z_max_lay) < 1:
+            raise ValueError("z_max_lay must have at least 1 element")
         self.z_max_lay = z_max_lay
+        self._validate_z_layers()
+
+    def _validate_z_layers(self):
+        """Validate z layer consistency."""
+        for i, (zmin, zmax) in enumerate(zip(self.z_min_lay, self.z_max_lay)):
+            if zmin >= zmax:
+                raise ValueError(
+                    f"z_min_lay[{i}] ({zmin}) must be less than z_max_lay[{i}] ({zmax})"
+                )
 
     def set_cn(self, cn: float) -> None:
         """Set the refractive index."""
@@ -441,18 +487,30 @@ def compare_volume_par(v1: VolumePar, v2: VolumePar) -> bool:
 class ControlPar(Parameters):
     """Control parameters."""
 
-    num_cams: int = field(default_factory=int)
+    num_cams: int = 4
     img_base_name: List[str] = field(default_factory=list)
     cal_img_base_name: List[str] = field(default_factory=list)
     hp_flag: int = field(default=1)
     all_cam_flag: int = field(default=0)
     tiff_flag: int = field(default=1)
-    imx: int = field(default_factory=int)
-    imy: int = field(default_factory=int)
-    pix_x: float = field(default_factory=float)
-    pix_y: float = field(default_factory=float)
-    chfield: int = field(default_factory=int)
+    imx: int = 1280
+    imy: int = 1024
+    pix_x: float = 0.012
+    pix_y: float = 0.012
+    chfield: int = 0
     mm: MultimediaPar = field(default_factory=MultimediaPar)
+
+    def __post_init__(self):
+        if self.num_cams < 1:
+            raise ValueError(f"num_cams must be at least 1, got {self.num_cams}")
+        if self.imx < 1:
+            raise ValueError(f"imx must be at least 1, got {self.imx}")
+        if self.imy < 1:
+            raise ValueError(f"imy must be at least 1, got {self.imy}")
+        if self.pix_x <= 0:
+            raise ValueError(f"pix_x must be positive, got {self.pix_x}")
+        if self.pix_y <= 0:
+            raise ValueError(f"pix_y must be positive, got {self.pix_y}")
 
     @classmethod
     def from_dict(cls, data):
@@ -463,6 +521,10 @@ class ControlPar(Parameters):
 
     def set_image_size(self, imsize: Tuple[int, int]):
         """Set image size in pixels."""
+        if imsize[0] < 1:
+            raise ValueError(f"imx must be at least 1, got {imsize[0]}")
+        if imsize[1] < 1:
+            raise ValueError(f"imy must be at least 1, got {imsize[1]}")
         self.imx = imsize[0]
         self.imy = imsize[1]
 
@@ -472,6 +534,10 @@ class ControlPar(Parameters):
 
     def set_pixel_size(self, pixsize: Tuple[float, float]):
         """Set pixel size in mm."""
+        if pixsize[0] <= 0:
+            raise ValueError(f"pix_x must be positive, got {pixsize[0]}")
+        if pixsize[1] <= 0:
+            raise ValueError(f"pix_y must be positive, got {pixsize[1]}")
         self.pix_x = pixsize[0]
         self.pix_y = pixsize[1]
 

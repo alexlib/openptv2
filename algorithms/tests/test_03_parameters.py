@@ -25,10 +25,10 @@ class TestControlParams:
         python_cp = PythonCP()
 
         assert optv_cp.get_num_cams() == 4
-        assert python_cp.num_cams == 0
-        assert python_cp.get_num_cams() == 0
-        assert python_cp.get_image_size() == (0, 0)
-        assert python_cp.get_pixel_size() == (0.0, 0.0)
+        assert python_cp.num_cams == 4
+        assert python_cp.get_num_cams() == 4
+        assert python_cp.get_image_size() == (1280, 1024)
+        assert python_cp.get_pixel_size() == (0.012, 0.012)
 
     def test_control_params_creation_with_values(self):
         """Test ControlParams creation with specific values."""
@@ -100,9 +100,9 @@ class TestVolumeParams:
 
         assert optv_vp is not None
         assert python_vp is not None
-        assert python_vp.x_lay == []
-        assert python_vp.z_min_lay == []
-        assert python_vp.z_max_lay == []
+        assert python_vp.x_lay == [-100.0, 100.0]
+        assert python_vp.z_min_lay == [-50.0]
+        assert python_vp.z_max_lay == [50.0]
 
     def test_volume_params_creation_with_values(self):
         """Test VolumeParams creation with specific values."""

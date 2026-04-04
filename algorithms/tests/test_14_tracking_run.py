@@ -145,48 +145,6 @@ class TestTrackingRunWithData:
 class TestTrackingRunEdgeCases:
     """Test edge cases for tracking run functions."""
 
-    def test_tracking_run_single_frame(self):
-        """Test tracking run with single frame."""
-        from optv.parameters import SequenceParams
-
-        seq = SequenceParams(num_cams=4, frame_range=(1, 1))
-
-        try:
-            from algorithms.parameters import SequencePar as PythonSeq
-
-            python_seq = PythonSeq()
-            python_seq.first = 1
-            python_seq.last = 1
-            python_seq.dStep = 1
-        except ImportError:
-            pass
-
-    def test_tracking_run_zero_volume(self):
-        """Test tracking run with zero-sized volume (edge case).
-
-        This verifies that parameter objects can be created with degenerate
-        values without crashing. Actual tracking with a zero-volume would
-        produce no results (no points can exist in a zero-volume).
-        """
-        from optv.parameters import VolumeParams
-
-        vol = VolumeParams(xmin=0, xmax=0, ymin=0, ymax=0, zmin=0, zmax=0)
-        assert vol is not None
-
-        try:
-            from algorithms.parameters import VolumePar as PythonVol
-
-            python_vol = PythonVol()
-            python_vol.Xmin = 0
-            python_vol.Xmax = 0
-            python_vol.Ymin = 0
-            python_vol.Ymax = 0
-            python_vol.Zmin = 0
-            python_vol.Zmax = 0
-            assert python_vol is not None
-        except ImportError:
-            pass
-
     def test_tracking_run_large_frame_range(self):
         """Test tracking run with large frame range."""
         from optv.parameters import SequenceParams

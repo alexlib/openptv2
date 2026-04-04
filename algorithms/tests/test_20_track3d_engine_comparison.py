@@ -113,8 +113,12 @@ class TestTrack3DEngineComparison:
 
         vpar = VolumePar(
             x_lay=corresp["x_span"],
-            z_min_lay=corresp["z_spans"][0],
-            z_max_lay=corresp["z_spans"][1],
+            z_min_lay=[
+                corresp["z_spans"][i][0] for i in range(len(corresp["z_spans"]))
+            ],
+            z_max_lay=[
+                corresp["z_spans"][i][1] for i in range(len(corresp["z_spans"]))
+            ],
         )
 
         vel = tracking["velocity_lims"]
@@ -341,8 +345,12 @@ class TestTrack3DEngineComparison:
         tracking = yaml_conf["tracking"]
         vpar_python = VolumePar(
             x_lay=corresp["x_span"],
-            z_min_lay=corresp["z_spans"][0],
-            z_max_lay=corresp["z_spans"][1],
+            z_min_lay=[
+                corresp["z_spans"][i][0] for i in range(len(corresp["z_spans"]))
+            ],
+            z_max_lay=[
+                corresp["z_spans"][i][1] for i in range(len(corresp["z_spans"]))
+            ],
         )
 
         vel = tracking["velocity_lims"]

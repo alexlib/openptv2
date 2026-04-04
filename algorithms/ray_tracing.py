@@ -132,8 +132,6 @@ def fast_ray_tracing(
     abs_dot_product = np.abs(np.dot(glass_direction, a2))
     if abs_dot_product == 0:
         abs_dot_product = 1e-6  # Avoid division by zero with a small number
-    if distance_param == 0.0:
-        distance_param = 1e-12
     d2 = distance_param / abs_dot_product
 
     a2_scaled = a2 * d2

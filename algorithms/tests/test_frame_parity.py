@@ -38,10 +38,11 @@ from optv.tracking_framebuf import Frame as CythonFrame
 from algorithms.frame_adapter import Frame as PythonFrame
 
 test_data_dir = {TEST_DATA_DIR!r}
-targ_files = [os.path.join(test_data_dir, f\"cam{{c}}.\") for c in range(1, 5)]
+NUM_CAMS = 4
+targ_files = [os.path.join(test_data_dir, f\"cam{{c}}.\") for c in range(1, NUM_CAMS + 1)]
 
 cython_frame = CythonFrame(
-    2,
+    NUM_CAMS,
     corres_file_base=os.path.join(test_data_dir, \"rt_is\").encode(),
     linkage_file_base=os.path.join(test_data_dir, \"ptv_is\").encode(),
     target_file_base=[f.encode() for f in targ_files],
@@ -49,7 +50,7 @@ cython_frame = CythonFrame(
 )
 
 python_frame = PythonFrame(
-    4,
+    NUM_CAMS,
     corres_file_base=os.path.join(test_data_dir, \"rt_is\"),
     linkage_file_base=os.path.join(test_data_dir, \"ptv_is\"),
     target_file_base=targ_files,
@@ -63,7 +64,7 @@ python_pos = python_frame.positions()
 assert cython_pos.shape == python_pos.shape
 np.testing.assert_allclose(cython_pos, python_pos, rtol=TOLERANCE, atol=TOLERANCE)
 
-for cam in range(2):
+for cam in range(NUM_CAMS):
     cython_targs = cython_frame.target_positions_for_camera(cam)
     python_targs = python_frame.target_positions_for_camera(cam)
     assert cython_targs.shape == python_targs.shape

@@ -43,17 +43,13 @@ from algorithms.parameters import MultimediaPar
 ori_tmpl = str(FIXTURES / "calibration/sym_cam{{cam_num}}.tif.ori")
 add_file = str(FIXTURES / "calibration/cam1.tif.addpar")
 
-optv_orig_cal = OptvCal()
-optv_orig_cal.from_file(ori_tmpl.format(cam_num=1), add_file)
-optv_proj_cal = OptvCal()
-optv_proj_cal.from_file(ori_tmpl.format(cam_num=3), add_file)
-
-optv_orig_cal.set_angles(np.r_[0.0, -np.pi / 4.0, 0.0])
-optv_proj_cal.set_angles(np.r_[0.0, 3 * np.pi / 4.0, 0.0])
-
+# Load shared parameters from files once, then use for both engines
 optv_cpar = OptvCParam(4)
 optv_cpar.read_control_par(str(FIXTURES / "corresp/control.par"))
 sens_size = optv_cpar.get_image_size()
+imx, imy = sens_size
+pix_x, pix_y = optv_cpar.get_pixel_size()
+chfield = optv_cpar.get_chfield()
 
 optv_vpar = OptvVParam()
 optv_vpar.read_volume_par(str(FIXTURES / "corresp/criteria.par"))
@@ -65,32 +61,43 @@ mult_params.set_n1(1.0)
 mult_params.set_layers(np.array([1.0]), np.array([1.0]))
 mult_params.set_n3(1.0)
 
+# Calibrations (same files for both engines)
+optv_orig_cal = OptvCal()
+optv_orig_cal.from_file(ori_tmpl.format(cam_num=1), add_file)
+optv_orig_cal.set_angles(np.r_[0.0, -np.pi / 4.0, 0.0])
+optv_proj_cal = OptvCal()
+optv_proj_cal.from_file(ori_tmpl.format(cam_num=3), add_file)
+optv_proj_cal.set_angles(np.r_[0.0, 3 * np.pi / 4.0, 0.0])
+
 python_orig_cal = PythonCal()
 python_orig_cal.from_file(ori_tmpl.format(cam_num=1), add_file)
 python_orig_cal.set_angles(np.array([0.0, -np.pi / 4.0, 0.0]))
-
 python_proj_cal = PythonCal()
 python_proj_cal.from_file(ori_tmpl.format(cam_num=3), add_file)
 python_proj_cal.set_angles(np.array([0.0, 3 * np.pi / 4.0, 0.0]))
 
+# Python ControlPar with SAME values as optv file
 python_cpar = PythonCParam()
-python_cpar.imx = 1280
-python_cpar.imy = 1024
-python_cpar.pix_x = 0.017
-python_cpar.pix_y = 0.017
-python_cpar.chfield = 0
+python_cpar.num_cams = 4
+python_cpar.imx = imx
+python_cpar.imy = imy
+python_cpar.pix_x = pix_x
+python_cpar.pix_y = pix_y
+python_cpar.chfield = chfield
+python_cpar.mm = MultimediaPar(n1=1.0, n2=[1.0], d=[0.0], n3=1.0)
 
-python_vpar = PythonVParam(xmin=-250, xmax=100, ymin=-100, ymax=100, zmin=-10, zmax=10)
-python_vpar.z_min_lay = [-10, -10]
-python_vpar.z_max_lay = [10, 10]
-python_vpar.x_lay = [-250, 100]
-
-python_mmp = MultimediaPar()
-python_mmp.n1 = 1.0
-python_mmp.n2 = [1.0]
-python_mmp.n3 = 1.0
-python_mmp.d = [0.0]
-python_cpar.mm = python_mmp
+# Python VolumePar with SAME values as optv file
+x_lay = list(optv_vpar.get_X_lay())
+z_min_lay = list(optv_vpar.get_Zmin_lay())
+z_max_lay = list(optv_vpar.get_Zmax_lay())
+python_vpar = PythonVParam(
+    xmin=x_lay[0], xmax=x_lay[1],
+    ymin=-100, ymax=100,
+    zmin=z_min_lay[0], zmax=z_max_lay[0],
+)
+python_vpar.x_lay = x_lay
+python_vpar.z_min_lay = z_min_lay
+python_vpar.z_max_lay = z_max_lay
 
 mid = np.array(sens_size) / 2.0
 optv_result = optv_func(mid, optv_orig_cal, optv_proj_cal, 5, optv_cpar, optv_vpar)
