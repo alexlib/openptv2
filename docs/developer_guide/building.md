@@ -449,7 +449,207 @@ The project uses GitHub Actions to:
 - Run tests on pull requests
 - Upload wheels to PyPI on release
 
-See `.github/workflows/` for configuration.
+See [Publishing to PyPI](#publishing-to-pypi) for detailed CI/CD and release instructions.
+
+---
+
+## Publishing to PyPI
+
+This section covers how to release openptv2 to PyPI, including version management and CI/CD setup.
+
+### Version Management
+
+The version is defined in `pyproject.toml`:
+
+```toml
+[project]
+version = "1.0.0"
+```
+
+To update the version:
+
+```bash
+# Edit pyproject.toml and change the version
+vim pyproject.toml
+# Or use sed
+sed -i 's/version = "1.0.0"/version = "1.0.1"/' pyproject.toml
+```
+
+### CI/CD: Automatic Publishing
+
+The project uses GitHub Actions to automatically build and publish wheels to PyPI when a tag is pushed.
+
+#### Workflow: `.github/workflows/cibuildwheel.yml`
+
+The workflow has these jobs:
+
+1. **build_wheels** - Builds wheels for all platforms (Linux, Windows, macOS) and Python versions (3.11-3.14)
+2. **build_sdist** - Builds source distribution
+3. **test_package** - Verifies wheel installation and runs tests
+4. **upload_pypi** - Uploads to PyPI (only on tags)
+
+#### Trigger Conditions
+
+Publishing happens automatically when:
+
+```yaml
+on:
+  push:
+    tags: ['v*', '[0-9]*']  # Tags like v1.0.0, v2.1.3
+```
+
+#### How It Works
+
+```
+┌─────────────┐     ┌─────────────┐     ┌─────────────┐
+│  Push tag   │────▶│ CI builds   │────▶│  Upload to  │
+│  v1.0.0     │     │  wheels     │     │   PyPI      │
+└─────────────┘     └─────────────┘     └─────────────┘
+```
+
+### Creating a Release
+
+#### Step 1: Update Version
+
+```bash
+# Edit version in pyproject.toml
+vim pyproject.toml
+```
+
+#### Step 2: Commit and Tag
+
+```bash
+# Commit the version change
+git add pyproject.toml
+git commit -m "Bump version to 1.0.0"
+
+# Create an annotated tag
+git tag -a v1.0.0 -m "Release version 1.0.0"
+
+# Push the tag (this triggers the workflow)
+git push origin v1.0.0
+```
+
+#### Step 3: Verify
+
+1. Check GitHub Actions workflow run
+2. Verify wheels built for all platforms
+3. Check PyPI for the new release: https://pypi.org/project/openptv2/
+
+### Manual Publishing (Without CI)
+
+If you need to publish manually:
+
+```bash
+# Install build tools
+pip install build twine
+
+# Build source and wheels
+python -m build
+
+# Check the built files
+ls dist/
+
+# Test upload to Test PyPI first
+twine upload --repository testpypi dist/*
+# Test: pip install --index-url https://test.pypi.org/simple/ openptv2
+
+# Upload to production PyPI
+twine upload dist/*
+```
+
+### PyPI Setup (First Time)
+
+#### 1. Create PyPI Account
+
+1. Go to https://pypi.org/account/register/
+2. Create an account
+3. Create an API token at https://pypi.org/manage/account/token/
+
+#### 2. Configure Trusted Publishing (Recommended)
+
+For GitHub Actions to publish securely:
+
+1. Go to https://pypi.org/manage/account/publishing/
+2. Add a new publisher:
+   - **Project name**: `openptv2`
+   - **Owner**: Your GitHub username/organization
+   - **Repository**: `openptv2`
+   - **Workflow**: `cibuildwheel.yml`
+
+This enables OIDC authentication without storing API tokens.
+
+#### 3. Set Up GitHub Secrets (Legacy)
+
+If not using trusted publishing:
+
+1. Go to GitHub repo → Settings → Secrets and variables → Actions
+2. Add secret:
+   - Name: `PYPI_API_TOKEN`
+   - Value: Your PyPI API token
+
+### CI/CD Workflow Details
+
+#### Build Matrix
+
+| OS | Python | Architectures |
+|----|--------|---------------|
+| ubuntu-latest | cp311-cp314 | x86_64, aarch64 (manylinux2014) |
+| windows-latest | cp311-cp314 | AMD64 |
+| macos-latest | cp311-cp314 | x86_64, arm64 |
+
+#### Wheel Outputs
+
+```
+dist/
+├── openptv2-1.0.0-cp311-cp311-manylinux2014_x86_64.whl
+├── openptv2-1.0.0-cp312-cp312-manylinux2014_x86_64.whl
+├── openptv2-1.0.0-cp311-cp311-macosx_x86_64.whl
+├── openptv2-1.0.0-cp311-cp311-macosx_arm64.whl
+├── openptv2-1.0.0-cp311-cp311-win_amd64.whl
+└── ...
+```
+
+#### Testing in CI
+
+Each wheel is tested during build:
+
+```bash
+CIBW_TEST_COMMAND: "python -c \"import openptv2; print('OK')\""
+```
+
+Full test suite runs in `test_package` job (tags only).
+
+### Release Checklist
+
+Before creating a release:
+
+- [ ] Update version in `pyproject.toml`
+- [ ] Update `CHANGELOG.md` (if exists)
+- [ ] Run tests locally: `pytest`
+- [ ] Push changes to main branch
+- [ ] Create and push tag: `git tag -a vX.Y.Z && git push origin vX.Y.Z`
+- [ ] Verify CI builds succeed
+- [ ] Verify PyPI shows new release
+- [ ] Test installation: `pip install openptv2`
+
+### Troubleshooting
+
+#### "Permission denied" when uploading
+
+- Check API token is correct
+- Ensure trusted publishing is configured
+- Verify project name matches
+
+#### "File already exists" on PyPI
+
+- Use `skip-existing: true` in the upload action
+- Or increment version number
+
+#### Build fails in CI
+
+- Check GitHub Actions logs
+- Common issues: missing dependencies, wrong Python version
 
 ---
 
