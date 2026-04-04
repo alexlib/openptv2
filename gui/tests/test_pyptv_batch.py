@@ -22,7 +22,7 @@ def _skip_if_frame_read_failure(error: Exception) -> None:
         )
 
 
-def test_pyptv_batch(test_data_dir, clean_test_environment):
+def test_pyptv_batch(test_data_dir):
     """Test batch processing with test cavity data using YAML parameters and validate output."""
     test_dir = test_data_dir
     assert test_dir.exists(), f"Test directory {test_dir} not found"
@@ -64,7 +64,7 @@ def test_pyptv_batch(test_data_dir, clean_test_environment):
     )
 
 
-def test_pyptv_batch_with_repetitions(test_data_dir, clean_test_environment):
+def test_pyptv_batch_with_repetitions(test_data_dir):
     """Test batch processing with multiple repetitions"""
     test_dir = test_data_dir
     yaml_file = test_dir / "parameters_Run1.yaml"
