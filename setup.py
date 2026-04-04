@@ -111,15 +111,15 @@ if _needs_rebuild():
 # ---------------------------------------------------------------------------
 def get_liboptv_sources():
     """Get all C source files from the bundled liboptv directory."""
-    return [str(f) for f in sorted(LIBOPTV_SRC.glob("*.c"))]
+    return [str(f.relative_to(ROOT)) for f in sorted(LIBOPTV_SRC.glob("*.c"))]
 
 
 def mk_ext(name, cython_c_file):
     """Create a setuptools Extension for one Cython module + the C library."""
     include_dirs = [
         numpy.get_include(),
-        str(LIBOPTV_INC),
-        str(BINDINGS_OPTV),
+        str(LIBOPTV_INC.relative_to(ROOT)),
+        str(BINDINGS_OPTV.relative_to(ROOT)),
     ]
 
     extra_compile_args = []
@@ -130,12 +130,11 @@ def mk_ext(name, cython_c_file):
     else:
         extra_compile_args.extend(["/W4", "/std:c11", "/D_CRT_SECURE_NO_WARNINGS"])
 
-    # Use absolute paths — setuptools handles them fine when running
-    # from the project root (which is always the case for editable installs).
-    all_sources = [str(cython_c_file)] + get_liboptv_sources()
+    # Use relative paths — required for isolated builds (python -m build)
+    all_sources = [str(cython_c_file.relative_to(ROOT))] + get_liboptv_sources()
     # Verify all source files exist before creating extension
     for src in all_sources:
-        if not Path(src).exists():
+        if not (ROOT / src).exists():
             raise FileNotFoundError(
                 f"Source file not found: {src}\n"
                 f"Run 'python setup.py prepare' first, or use 'pip install -e .' "

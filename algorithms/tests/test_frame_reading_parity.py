@@ -142,14 +142,11 @@ class TestFrameReadingParity:
         )
 
     def test_read_targets_missing_file_behavior(self):
-        """Document how each reader handles missing files.
+        """Both readers raise FileNotFoundError for missing files.
 
-        Both readers have issues with missing files:
-        - Python raises FileNotFoundError
-        - Cython returns a corrupted TargetArray (num_targets=-1)
-
-        This is a known discrepancy; the Frame.read() method works around
-        it by checking file existence before calling read_targets.
+        After the Cython wrapper bug fix (bindings/optv/tracking_framebuf.pyx),
+        both readers now consistently raise FileNotFoundError when the targets
+        file is missing or unreadable.
         """
         from algorithms.tracking_frame_buf import (
             read_targets as py_read_targets,
@@ -165,12 +162,9 @@ class TestFrameReadingParity:
         with pytest.raises((FileNotFoundError, IOError)):
             py_read_targets(file_base, frame_num)
 
-        # Cython has a bug: when C returns -1, the wrapper creates a
-        # TargetArray with -1 targets, causing SystemError on len()
-        # This is a known issue in the Cython binding.
-        cy_result = cy_read_targets(file_base, frame_num)
-        # The result is in an invalid state - we just verify it was called
-        assert cy_result is not None
+        # Cython now also raises FileNotFoundError (bug fixed)
+        with pytest.raises(FileNotFoundError):
+            cy_read_targets(file_base, frame_num)
 
     def test_frame_read_file_existence_check(self):
         """Python Frame.read checks file existence before attempting to read."""
