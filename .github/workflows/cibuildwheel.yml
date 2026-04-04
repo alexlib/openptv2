@@ -31,7 +31,7 @@ jobs:
           output-dir: ./wheelhouse
         env:
           CIBW_BUILD: ${{ matrix.python }}-*
-          CIBW_SKIP: "*musllinux*"
+          CIBW_SKIP: "musllinux*"
           CIBW_MANYLINUX_X86_64_IMAGE: "manylinux2014"
           CIBW_MANYLINUX_AARCH64_IMAGE: "manylinux2014"
           CIBW_ARCHS_MACOS: x86_64 arm64
@@ -41,7 +41,11 @@ jobs:
           CIBW_BEFORE_BUILD_MACOS: "pip install --upgrade pip numpy>=2.0.0 cython>=3.0.0 setuptools wheel"
           CIBW_BEFORE_BUILD_WINDOWS: "pip install --upgrade pip numpy>=2.0.0 cython>=3.0.0 setuptools wheel"
           CIBW_TEST_REQUIRES: pytest
-          CIBW_TEST_COMMAND: "python -c \"import openptv2; print('openptv2 OK')\" && python -c \"from optv.tracking_framebuf import Target; print('optv OK')\" && python -c \"from algorithms.tracking_frame_buf import Target; print('algorithms OK')\""
+          CIBW_TEST_COMMAND: >-
+            python -c "import openptv2; print('openptv2 OK')" &&
+            python -c "from optv.tracking_framebuf import Target; print('optv OK')" &&
+            python -c "from algorithms.tracking_frame_buf import Target; print('algorithms OK')"
+          CIBW_BUILD_VERBOSITY: 2
       
       - uses: actions/upload-artifact@v4
         with:
