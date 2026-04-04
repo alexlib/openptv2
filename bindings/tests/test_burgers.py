@@ -25,7 +25,7 @@ framebuf_naming = {
 
 class TestTracker(unittest.TestCase):
     def setUp(self):
-        with open(b"test_data/burgers/conf.yaml") as f:
+        with open("test_data/burgers/conf.yaml") as f:
             yaml_conf = yaml.load(f, Loader=yaml.FullLoader)
         seq_cfg = yaml_conf["sequence"]
 
@@ -33,10 +33,11 @@ class TestTracker(unittest.TestCase):
         img_base = []
         print(yaml_conf["cameras"])
         for cix, cam_spec in enumerate(yaml_conf["cameras"]):
-            cam_spec.setdefault(b"addpar_file", None)
+            cam_spec.setdefault("addpar_file", None)
             cal = Calibration()
             cal.from_file(
-                cam_spec["ori_file"].encode(), cam_spec["addpar_file"].encode()
+                cam_spec["ori_file"].encode(),
+                cam_spec["addpar_file"].encode() if cam_spec["addpar_file"] else None,
             )
             cals.append(cal)
             img_base.append(seq_cfg["targets_template"].format(cam=cix + 1))
