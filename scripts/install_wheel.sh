@@ -21,17 +21,17 @@ if [ ! -f "$WHEEL_FILE" ]; then
     WHEEL_FILE=$(ls "$DIST_DIR"/openptv2-*.whl | head -1)
     echo "Using wheel: $WHEEL_FILE"
 fi
-uv pip install "$WHEEL_FILE[gui]" -v
+uv pip install --python "$TEST_VENV/bin/python" "$WHEEL_FILE[gui]"
 
 echo ""
 echo "=== Installing test dependencies ==="
-uv pip install pytest pytest-cov numba
+uv pip install --python "$TEST_VENV/bin/python" pytest pytest-cov numba
 
 echo ""
 echo "=== Verifying import ==="
-uv run --python "$TEST_VENV/bin/python" -c "import openptv2; import optv; print('OK: Both openptv2 and optv imported successfully')"
+"$TEST_VENV/bin/python" -c "import openptv2; import optv; print('OK: Both openptv2 and optv imported successfully')"
 
 echo ""
 echo "=== Test environment ready at: $TEST_VENV ==="
 echo "To activate: source $TEST_VENV/bin/activate"
-echo "To run tests: uv run --python $TEST_VENV/bin/python -m pytest bindings/tests/ algorithms/tests/ -v"
+echo "To run tests: $TEST_VENV/bin/python -m pytest bindings/tests/ algorithms/tests/ -v"
