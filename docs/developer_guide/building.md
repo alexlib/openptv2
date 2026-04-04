@@ -355,9 +355,22 @@ pip install -e ".[dev]"
 
 ---
 
-## Building for Production
+## Building Binary Wheels
 
-### Build Source Distribution and Wheel
+For building portable binary wheels for distribution (manylinux, macOS, Windows), see:
+
+- [Building Binary Wheels](../../BUILDING_BINARY_WHEELS.md) - Complete guide
+
+Quick commands:
+
+```bash
+# Linux manylinux2014 wheels
+CIBW_BUILD="cp311-*" CIBW_MANYLINUX_X86_64_IMAGE="manylinux2014" \
+  uvx cibuildwheel --platform linux --output-dir ./dist
+
+# Build all platforms via CI
+# See .github/workflows/cibuildwheel.yml
+```
 
 ```bash
 # Install build tools

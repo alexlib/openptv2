@@ -19,6 +19,7 @@ Welcome to the openptv2 documentation.
 ### Developer Documentation
 
 - [Building from Source](building.md) - Detailed build instructions
+- [Building Binary Wheels](../../BUILDING_BINARY_WHEELS.md) - Creating portable wheels
 - [Development Workflow](building.md#development-workflow) - How to develop
 - [Testing](building.md#testing) - Running tests
 - [Code Quality](building.md#check-code-quality) - Linting and formatting
@@ -28,6 +29,7 @@ Welcome to the openptv2 documentation.
 - [Repository Structure](../../README.md#repository-structure) - Project layout
 - [Engine Architecture](../../README.md#engine-comparison) - Dual-engine design
 - [Build System](building.md#build-architecture) - How the build works
+- [Binary Wheels](../../BUILDING_BINARY_WHEELS.md) - manylinux2014 wheels
 
 ### Migration
 

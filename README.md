@@ -153,6 +153,28 @@ pip install -e ".[gui,dev]"
 
 ---
 
+### Installing from Binary Wheels
+
+Pre-built manylinux wheels are available for Linux:
+
+```bash
+# Using pip
+pip install openptv2
+
+# Using uv
+uv pip install openptv2
+```
+
+The wheels are compatible with glibc 2.17+ (CentOS 7, Ubuntu 14.04, Debian 8, etc.)
+
+---
+
+### Building Binary Wheels from Source
+
+See [BUILDING_BINARY_WHEELS.md](BUILDING_BINARY_WHEELS.md) for detailed instructions on building portable binary wheels using cibuildwheel.
+
+---
+
 ### Troubleshooting Installation
 
 #### Common Issues
