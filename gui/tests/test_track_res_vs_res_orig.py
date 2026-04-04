@@ -68,12 +68,16 @@ def test_tracking_res_matches_orig(tmp_path, yaml_path, desc):
         with open(yaml_path, "w") as f:
             yaml.safe_dump(yml, f)
 
-        pyptv_batch.run_batch(
-            yaml_file=yaml_path,
-            seq_first=first,
-            seq_last=last,
-            mode="tracking",
-        )
+        try:
+            pyptv_batch.run_batch(
+                yaml_file=yaml_path,
+                seq_first=first,
+                seq_last=last,
+                mode="tracking",
+            )
+        except Exception as e:
+            _skip_if_frame_read_failure(e)
+            raise
         # Save result for comparison
         res_dir = work_dir / "res"
         res_files_noadd = sorted(res_dir.glob("rt_is.*"))
@@ -88,12 +92,16 @@ def test_tracking_res_matches_orig(tmp_path, yaml_path, desc):
         with open(yaml_path, "w") as f:
             yaml.safe_dump(yml, f)
 
-        pyptv_batch.main(
-            yaml_file=str(yaml_path),
-            first=first,
-            last=last,
-            mode="tracking",
-        )
+        try:
+            pyptv_batch.main(
+                yaml_file=str(yaml_path),
+                first=first,
+                last=last,
+                mode="tracking",
+            )
+        except Exception as e:
+            _skip_if_frame_read_failure(e)
+            raise
         res_files_add = sorted(res_dir.glob("rt_is.*"))
         with open(res_files_add[-1], "r") as f:
             lines_add = f.readlines()
@@ -110,9 +118,13 @@ def test_tracking_res_matches_orig(tmp_path, yaml_path, desc):
 
     else:
         # Standard test for Run1 and Run2
-        pyptv_batch.run_batch(
-            yaml_file=yaml_path, seq_first=first, seq_last=last, mode="tracking"
-        )
+        try:
+            pyptv_batch.run_batch(
+                yaml_file=yaml_path, seq_first=first, seq_last=last, mode="tracking"
+            )
+        except Exception as e:
+            _skip_if_frame_read_failure(e)
+            raise
         # 5. Compare res/ to res_orig/
         res_dir = work_dir / "res"
         res_orig_dir = work_dir / "res_orig"

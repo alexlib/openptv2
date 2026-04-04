@@ -2,14 +2,14 @@
 
 import subprocess
 import sys
+import pytest
 from pathlib import Path
 
 
 def test_batch_plugins_runs():
     """Test that pyptv_batch_plugins runs without errors"""
 
-    # Path to the script
-    script_path = Path(__file__).parent.parent / "pyptv" / "pyptv_batch_plugins.py"
+    gui_dir = Path(__file__).parent.parent
     test_exp_path = Path(__file__).parent.parent.parent / "test_data" / "test_splitter"
     yaml_file = test_exp_path / "parameters_Run1.yaml"
 
@@ -22,7 +22,8 @@ def test_batch_plugins_runs():
     for mode in modes:
         cmd = [
             sys.executable,
-            str(script_path),
+            "-m",
+            "pyptv.pyptv_batch_plugins",
             str(yaml_file),
             "1000001",
             "1000005",
@@ -31,7 +32,7 @@ def test_batch_plugins_runs():
         ]
         print(f"Running command: {' '.join(cmd)}")
         try:
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=60, cwd=gui_dir)
             print("STDOUT:")
             print(result.stdout)
             if result.stderr:
@@ -43,20 +44,14 @@ def test_batch_plugins_runs():
                 print(
                     f"❌ Process failed with return code: {result.returncode} for mode: {mode}"
                 )
-                return False
+                pytest.fail(f"Batch processing failed for mode: {mode}")
         except subprocess.TimeoutExpired:
-            print(f"❌ Process timed out for mode: {mode}")
-            return False
+            pytest.fail(f"Process timed out for mode: {mode}")
         except Exception as e:
-            print(f"❌ Error running process for mode {mode}: {e}")
-            return False
-    return True
+            pytest.fail(f"Error running process for mode {mode}: {e}")
+    assert True
 
 
 if __name__ == "__main__":
-    success = test_batch_plugins_runs()
-    if success:
-        print("\n🎉 Test passed!")
-    else:
-        print("\n💥 Test failed!")
-        sys.exit(1)
+    test_batch_plugins_runs()
+    print("\n🎉 Test passed!")

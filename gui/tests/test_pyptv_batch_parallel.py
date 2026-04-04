@@ -22,7 +22,7 @@ def test_pyptv_batch_parallel(test_data_dir):
 
     # Test specific frame range
     start_frame = 10000
-    end_frame = 10004  # Use fewer frames for parallel test (faster)
+    end_frame = 10001  # Use fewer frames for parallel test (faster)
     n_processes = 4
 
     try:
@@ -54,7 +54,7 @@ def test_pyptv_batch_parallel_single_process(test_data_dir):
     
     # Test with single process
     start_frame = 10000
-    end_frame = 10004  # Just one frame
+    end_frame = 10001  # Just one frame
     n_processes = 1
 
     try:

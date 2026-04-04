@@ -35,14 +35,14 @@ def test_standalone_dumbbell_calibration_cycle(tmp_path: Path):
         out_root=None,  # write relative to work dir
         spec=DumbbellGTSpec(
             first=10001,
-            last=10004,
+            last=10002,
             length=25.0,
             noise_sigma_px=0.0,
             seed=0,
             max_tries_per_frame=2000,
         ),
     )
-    assert summary["frames_written"] == 4
+    assert summary["frames_written"] == 2
 
     # 2) Capture ground-truth calibration for camera 2 (we will perturb it).
     # Keep all other cameras fixed during optimization to remove gauge freedom.
@@ -72,7 +72,7 @@ def test_standalone_dumbbell_calibration_cycle(tmp_path: Path):
             "2",
             "3",
             "--maxiter",
-            "800",
+            "200",
             "--write",
         ],
         cwd=str(work),

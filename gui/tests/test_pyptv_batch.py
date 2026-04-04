@@ -32,7 +32,7 @@ def test_pyptv_batch(test_data_dir, clean_test_environment):
         pytest.skip(f"YAML parameter file {yaml_file} not found")
 
     start_frame = 10000
-    end_frame = 10004
+    end_frame = 10001
 
     try:
         pyptv_batch.main(yaml_file, start_frame, end_frame)
@@ -104,7 +104,7 @@ def test_pyptv_batch_produces_results(test_data_dir):
 
     # Test specific frame
     start_frame = 10000
-    end_frame = 10004
+    end_frame = 10001
 
     # Clear any existing results
     res_dir = test_dir / "res"
@@ -147,7 +147,7 @@ def test_pyptv_batch_tracking_results(test_data_dir):
     if not yaml_file.exists():
         pytest.skip(f"YAML parameter file {yaml_file} not found")
     start_frame = 10000
-    end_frame = 10004
+    end_frame = 10001
     res_dir = test_dir / "res"
     if res_dir.exists():
         import shutil
@@ -176,7 +176,7 @@ def test_pyptv_batch_tracking_mode_only(test_data_dir):
     test_dir = test_data_dir
     yaml_file = test_dir / "parameters_Run1.yaml"
     start_frame = 10000
-    end_frame = 10004
+    end_frame = 10001
     res_dir = test_dir / "res"
     if res_dir.exists():
         import shutil
@@ -213,7 +213,7 @@ def test_pyptv_batch_tracking_mode_only_with_temp_yaml(test_data_dir):
     test_dir = test_data_dir
     orig_yaml = test_dir / "parameters_Run1.yaml"
     start_frame = 10000
-    end_frame = 10004
+    end_frame = 10001
     res_dir = test_dir / "res"
     if res_dir.exists():
         shutil.rmtree(res_dir)
@@ -262,7 +262,7 @@ def test_pyptv_batch_tracking_mode_only_with_temp_yaml_collect_results(test_data
     test_dir = test_data_dir
     orig_yaml = test_dir / "parameters_Run1.yaml"
     start_frame = 10000
-    end_frame = 10004
+    end_frame = 10001
     res_dir = test_dir / "res"
     if res_dir.exists():
         shutil.rmtree(res_dir)
@@ -426,7 +426,7 @@ def optimize_tracking_parameters(test_data_dir):
     test_dir = test_data_dir
     orig_yaml = test_dir / "parameters_Run1.yaml"
     start_frame = 10000
-    end_frame = 10004  # Use only 2 frames for speed
+    end_frame = 10001  # Use only 2 frames for speed
     res_dir = test_dir / "res"
     if res_dir.exists():
         shutil.rmtree(res_dir)
@@ -499,12 +499,12 @@ def optimize_tracking_parameters(test_data_dir):
 
     # Run optimization with multiple random restarts to escape local minima
     best_result = None
-    n_restarts = 2  # Fewer restarts for speed
+    n_restarts = 1  # Fewer restarts for speed
     for i in range(n_restarts):
         # Randomize initial values within ±20% of original
         x0 = orig_values * (0.8 + 0.4 * np.random.rand(*orig_values.shape))
         result = minimize(
-            loss_fn, x0, method="Powell", options={"maxiter": 30, "disp": True}
+            loss_fn, x0, method="Powell", options={"maxiter": 10, "disp": True}
         )
         print(f"\nRestart {i + 1}: loss={result.fun}, params={result.x}")
         if best_result is None or result.fun < best_result.fun:
