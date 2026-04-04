@@ -215,7 +215,12 @@ class TestCorrespondencesFunction:
                 python_cals.append(cal)
             match_counts = [0, 0, 0, 0]
             python_result = python_func(
-                PythonFrame(num_cams), python_flat_coords, vpar, python_cpar, python_cals, match_counts
+                PythonFrame(num_cams),
+                python_flat_coords,
+                vpar,
+                python_cpar,
+                python_cals,
+                match_counts,
             )
         except (ImportError, AttributeError, TypeError) as e:
             pytest.fail(f"Python implementation missing or incomplete: {e}")
@@ -242,6 +247,8 @@ class TestCorrespondencesFunction:
             ta[i].set_tnr(0)
 
         cal = Calibration()
+        cal.set_pos(np.array([0.0, 0.0, 100.0]))
+        cal.set_angles(np.array([0.0, 0.0, 0.0]))
 
         mc = MatchedCoords(ta, optv_cpar, cal)
         img_pts = [ta]
@@ -297,24 +304,6 @@ class TestCorrespondencesEdgeCases:
         )
         cpar.get_multimedia_params().set_layers([1.0], [1.0])
         cpar.get_multimedia_params().set_n3(1.0)
-        from algorithms.parameters import ControlPar as PythonControlPar
-
-        python_cpar = PythonControlPar()
-        python_cpar.imx = 1024
-        python_cpar.imy = 1024
-        python_cpar.pix_x = 0.01
-        python_cpar.pix_y = 0.01
-        from algorithms.parameters import ControlPar as PythonControlPar
-
-        python_cpar = PythonControlPar()
-        python_cpar.imx = 1024
-        python_cpar.imy = 1024
-        python_cpar.pix_x = 0.01
-        python_cpar.pix_y = 0.01
-        _, python_cpar = create_test_control_params()
-        _, python_cpar = create_test_control_params()
-        _, python_cpar = create_test_control_params()
-        _, python_cpar = create_test_control_params()
         optv_cpar, python_cpar = create_test_control_params()
 
         for _ in range(num_cams):
@@ -416,7 +405,12 @@ class TestCorrespondencesEdgeCases:
             python_frame.num_targets = [1 for _ in range(num_cams)]
             match_counts = [0, 0, 0, 0]
             python_result = python_func(
-                python_frame, python_flat_coords, vpar, python_cpar, python_cals, match_counts
+                python_frame,
+                python_flat_coords,
+                vpar,
+                python_cpar,
+                python_cals,
+                match_counts,
             )
         except (ImportError, AttributeError, TypeError) as e:
             pytest.fail(f"Python implementation missing or incomplete: {e}")

@@ -7,8 +7,15 @@ This module provides session-scoped fixtures for test data setup and cleanup.
 import pytest
 from pathlib import Path
 import shutil
+from openptv2.test_support import find_test_data_root
 
-TEST_DATA_DIR = Path(__file__).parent / "test_data"
+TEST_DATA_DIR = find_test_data_root(Path(__file__))
+
+
+@pytest.fixture(scope="session")
+def test_data_root():
+    """Shared repo-local test_data root for tests that need it directly."""
+    return TEST_DATA_DIR
 
 
 @pytest.fixture(scope="session", autouse=True)

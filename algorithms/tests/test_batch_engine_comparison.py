@@ -17,8 +17,10 @@ import yaml
 import numpy as np
 from typing import Dict, List, Tuple, Any
 
+from .conftest import FIXTURES
 
-TEST_DATA_DIR = Path(__file__).parent.parent.parent / "test_data" / "test_cavity"
+
+TEST_DATA_DIR = FIXTURES / "test_cavity"
 TOLERANCE = 1e-10
 
 
@@ -80,6 +82,8 @@ def read_trajectory_file(file_path: Path) -> Tuple[int, np.ndarray]:
 def copy_test_data_with_yaml(source_dir: Path, dest_dir: Path, engine: str) -> Path:
     """Copy test data to a temporary directory and update YAML to use that location.
 
+    Uses symlinks for large read-only directories (img/) to avoid expensive copies.
+
     Args:
         source_dir: Source test data directory
         dest_dir: Destination directory for test
@@ -88,7 +92,20 @@ def copy_test_data_with_yaml(source_dir: Path, dest_dir: Path, engine: str) -> P
     Returns:
         Path to the copied YAML file
     """
-    shutil.copytree(source_dir, dest_dir, dirs_exist_ok=True)
+    dest_dir.mkdir(parents=True, exist_ok=True)
+
+    # Symlink large read-only directories to avoid expensive copies
+    for name in ("img", "img_orig"):
+        src = source_dir / name
+        if src.exists():
+            (dest_dir / name).symlink_to(src.resolve())
+
+    # Copy smaller directories
+    for item in source_dir.iterdir():
+        if item.is_dir() and item.name not in ("img", "img_orig"):
+            shutil.copytree(item, dest_dir / item.name, dirs_exist_ok=True)
+        elif item.is_file():
+            shutil.copy2(item, dest_dir / item.name)
 
     yaml_files = list(dest_dir.glob("parameters*.yaml"))
     if not yaml_files:
@@ -258,8 +275,13 @@ class TestBatchEngineComparison:
         shutil.rmtree(optv_dir, ignore_errors=True)
         shutil.rmtree(python_dir, ignore_errors=True)
 
+    @pytest.mark.slow
     def test_batch_engine_parity(self, temp_dirs):
-        """Run batch with both engines and verify both complete successfully."""
+        """Run batch with both engines and verify both complete successfully.
+
+        Note: Marked as slow because it runs the full batch pipeline twice
+        (once per engine) and compares output files.
+        """
         optv_dir, python_dir = temp_dirs
 
         yaml_optv = copy_test_data_with_yaml(TEST_DATA_DIR, optv_dir, "optv")
@@ -296,14 +318,17 @@ class TestBatchEngineComparison:
                 if "error" in diff:
                     print(f"    {diff['error']}")
 
-        assert optv_result["res_dir"].exists(), "optv run did not produce a result directory"
-        assert python_result["res_dir"].exists(), "python run did not produce a result directory"
+        assert optv_result["res_dir"].exists(), (
+            "optv run did not produce a result directory"
+        )
+        assert python_result["res_dir"].exists(), (
+            "python run did not produce a result directory"
+        )
 
         expected_frames = range(first, last + 1)
         for frame in expected_frames:
             assert (optv_result["res_dir"] / f"rt_is.{frame}").exists()
             assert (python_result["res_dir"] / f"rt_is.{frame}").exists()
-
 
     def test_engines_available(self):
         """Verify both engines are available."""

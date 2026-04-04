@@ -18,18 +18,33 @@ class TestTrackingRun:
     def test_tr_new_creation(self):
         """Test tr_new function for creating tracking run."""
         from algorithms.calibration import Calibration
-        from algorithms.parameters import ControlPar, SequencePar, TrackParTuple, VolumePar
+        from algorithms.parameters import (
+            ControlPar,
+            SequencePar,
+            TrackParTuple,
+            VolumePar,
+        )
         from algorithms.tracking_run import TrackingRun
 
-        seq = SequencePar(img_base_name=["cam1.", "cam2.", "cam3.", "cam4."], first=1, last=100)
-        track = TrackParTuple(3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 0.0, 0.0, 0, 0.0, 0.0, 0.0, 0.0)
-        vol = VolumePar(x_lay=[0.0, 100.0], z_min_lay=[0.0, 0.0], z_max_lay=[50.0, 50.0])
+        seq = SequencePar(
+            img_base_name=["cam1.", "cam2.", "cam3.", "cam4."], first=1, last=100
+        )
+        track = TrackParTuple(
+            3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 0.0, 0.0, 0, 0.0, 0.0, 0.0, 0.0
+        )
+        vol = VolumePar(
+            x_lay=[0.0, 100.0], z_min_lay=[0.0, 0.0], z_max_lay=[50.0, 50.0]
+        )
         ctrl = ControlPar(num_cams=4)
         ctrl.imx = 1024
         ctrl.imy = 1024
         ctrl.pix_x = 0.01
         ctrl.pix_y = 0.01
         cals = [Calibration() for _ in range(4)]
+        for i, cal in enumerate(cals):
+            cal.set_pos(np.array([0.0, 0.0, 100.0 + i * 10.0]))
+            cal.set_angles(np.array([0.0, 0.0, 0.0]))
+            cal.int_par.cc = 10.0
 
         run = TrackingRun(
             seq,
@@ -78,11 +93,20 @@ class TestTrackingRunWithData:
     def test_tracking_run_basic_parameters(self):
         """Test creating tracking run with basic parameters."""
         from algorithms.calibration import Calibration
-        from algorithms.parameters import ControlPar, SequencePar, TrackParTuple, VolumePar
+        from algorithms.parameters import (
+            ControlPar,
+            SequencePar,
+            TrackParTuple,
+            VolumePar,
+        )
         from algorithms.tracking_run import TrackingRun
 
-        seq = SequencePar(img_base_name=["cam1.", "cam2.", "cam3.", "cam4."], first=1, last=10)
-        track = TrackParTuple(2.0, 2.0, 2.0, 2.0, 1.0, 1.0, 0.0, 1.0, 0, 0.0, 0.0, 0.0, 0.0)
+        seq = SequencePar(
+            img_base_name=["cam1.", "cam2.", "cam3.", "cam4."], first=1, last=10
+        )
+        track = TrackParTuple(
+            2.0, 2.0, 2.0, 2.0, 1.0, 1.0, 0.0, 1.0, 0, 0.0, 0.0, 0.0, 0.0
+        )
         vol = VolumePar(x_lay=[0.0, 50.0], z_min_lay=[0.0, 0.0], z_max_lay=[30.0, 30.0])
         ctrl = ControlPar(num_cams=4)
         ctrl.imx = 1024
@@ -90,6 +114,10 @@ class TestTrackingRunWithData:
         ctrl.pix_x = 0.01
         ctrl.pix_y = 0.01
         cals = [Calibration() for _ in range(4)]
+        for i, cal in enumerate(cals):
+            cal.set_pos(np.array([0.0, 0.0, 100.0 + i * 10.0]))
+            cal.set_angles(np.array([0.0, 0.0, 0.0]))
+            cal.int_par.cc = 10.0
 
         run = TrackingRun(
             seq,
@@ -134,10 +162,16 @@ class TestTrackingRunEdgeCases:
             pass
 
     def test_tracking_run_zero_volume(self):
-        """Test tracking run with zero-sized volume."""
+        """Test tracking run with zero-sized volume (edge case).
+
+        This verifies that parameter objects can be created with degenerate
+        values without crashing. Actual tracking with a zero-volume would
+        produce no results (no points can exist in a zero-volume).
+        """
         from optv.parameters import VolumeParams
 
         vol = VolumeParams(xmin=0, xmax=0, ymin=0, ymax=0, zmin=0, zmax=0)
+        assert vol is not None
 
         try:
             from algorithms.parameters import VolumePar as PythonVol
@@ -149,6 +183,7 @@ class TestTrackingRunEdgeCases:
             python_vol.Ymax = 0
             python_vol.Zmin = 0
             python_vol.Zmax = 0
+            assert python_vol is not None
         except ImportError:
             pass
 

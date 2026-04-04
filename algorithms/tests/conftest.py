@@ -8,12 +8,13 @@ This module provides:
 """
 
 import numpy as np
-from pathlib import Path
 import pytest
 import os
 import shutil
+from pathlib import Path
+from openptv2.test_support import find_test_data_root
 
-FIXTURES = Path(__file__).parent.parent.parent / "test_data"
+FIXTURES = find_test_data_root(Path(__file__))
 
 
 TOLERANCES = {

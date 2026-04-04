@@ -8,6 +8,7 @@ Tolerance: 1e-9 (parameter structures)
 import numpy as np
 import pytest
 from pathlib import Path
+import json
 from .conftest import get_tolerance, compare_arrays, compare_values
 
 TOLERANCE = get_tolerance("calibration")
@@ -302,23 +303,16 @@ class TestCalibration:
 
     def test_calibration_from_file(self, calibration_files):
         """Test loading calibration from .ori and .addpar files."""
-        import os
-        import sys
+        cam1_ori, cam1_add = calibration_files["cam1"]
+
         from optv.calibration import Calibration as OptvCal
         from algorithms.calibration import Calibration as PythonCal
 
-        cam1_ori, cam1_add = calibration_files["cam1"]
-
-        print(f"\nCWD: {os.getcwd()}", file=sys.stderr)
-        print(f"cam1_ori: {cam1_ori}, exists: {cam1_ori.exists()}", file=sys.stderr)
-
         optv_cal = OptvCal()
         optv_cal.from_file(str(cam1_ori), str(cam1_add) if cam1_add else None)
-        print(f"optv pos: {optv_cal.get_pos()}", file=sys.stderr)
 
         python_cal = PythonCal()
         python_cal.from_file(str(cam1_ori), str(cam1_add) if cam1_add else None)
-        print(f"python pos: {python_cal.get_pos()}", file=sys.stderr)
 
         np.testing.assert_allclose(
             optv_cal.get_pos(), python_cal.get_pos(), rtol=TOLERANCE, atol=TOLERANCE

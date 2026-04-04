@@ -15,18 +15,22 @@ import numpy as np
 import subprocess
 import sys
 
-# Test data location - use absolute path from project root
-TEST_DATA_DIR = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
-    "test_data",
-    "frame",
-)
+from .conftest import FIXTURES
+
+# Test data location - use the discovered repository-local test_data root.
+TEST_DATA_DIR = os.path.join(FIXTURES, "frame")
 
 
 class TestFrameParity:
     """Test that Frame.read() produces identical results in both engines."""
 
-    def _run_subprocess(self):
+    @pytest.mark.slow
+    def test_frame_parity(self):
+        """Test frame read parity between Cython and Python engines.
+
+        Note: Marked as slow because it runs an isolated subprocess to avoid
+        pytest/C extension memory issues.
+        """
         test_code = f"""
 import os
 import numpy as np
@@ -86,14 +90,6 @@ print(\"TEST_PASSED\")
 
         assert "TEST_PASSED" in result.stdout
 
-    def test_frame_read_cython(self):
-        self._run_subprocess()
-
-    def test_frame_read_python(self):
-        self._run_subprocess()
-
-    def test_frame_parity(self):
-        self._run_subprocess()
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])

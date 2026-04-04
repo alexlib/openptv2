@@ -10,11 +10,9 @@ import pytest
 import subprocess
 import sys
 from pathlib import Path
-from .conftest import get_tolerance
+from .conftest import get_tolerance, FIXTURES
 
 TOLERANCE = get_tolerance("epipolar")
-
-FIXTURES = Path(__file__).parent.parent.parent / "test_data"
 
 
 class TestEpipolar:
@@ -25,12 +23,12 @@ class TestEpipolar:
 
         Runs in isolated subprocess to avoid pytest/C extension memory issues.
         """
-        test_code = """
+        test_code = f"""
 import sys
 import numpy as np
 from pathlib import Path
 
-FIXTURES = Path("test_data")
+FIXTURES = Path({str(FIXTURES)!r})
 
 from optv.epipolar import epipolar_curve as optv_func
 from optv.calibration import Calibration as OptvCal
@@ -42,7 +40,7 @@ from algorithms.parameters import ControlPar as PythonCParam
 from algorithms.parameters_adapter import VolumeParams as PythonVParam
 from algorithms.parameters import MultimediaPar
 
-ori_tmpl = str(FIXTURES / "calibration/sym_cam{cam_num}.tif.ori")
+ori_tmpl = str(FIXTURES / "calibration/sym_cam{{cam_num}}.tif.ori")
 add_file = str(FIXTURES / "calibration/cam1.tif.addpar")
 
 optv_orig_cal = OptvCal()

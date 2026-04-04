@@ -15,7 +15,12 @@ class TestMultimedComparison:
 
     @pytest.fixture
     def simple_calibration(self):
-        """Create a simple calibration for testing."""
+        """Create a simple calibration for testing.
+
+        Uses realistic focal length (cc=10) to avoid degenerate geometry.
+        The trivial medium (n1=n2=n3=1, d=0) ensures radial shift is 1.0
+        regardless of focal length.
+        """
         from algorithms.calibration import Calibration, Exterior, Interior
 
         cal = Calibration()
@@ -25,7 +30,7 @@ class TestMultimedComparison:
         cal.ext_par.z0 = 100.0
 
         cal.int_par = Interior.copy()
-        cal.int_par.cc = 0.0
+        cal.int_par.cc = 10.0
         cal.int_par.xh = 0.0
         cal.int_par.yh = 0.0
 

@@ -2,12 +2,16 @@ import pytest
 from pathlib import Path
 import shutil
 
+from openptv2.test_support import find_test_data_root
+
+
+TEST_DATA_ROOT = find_test_data_root(Path(__file__))
+
 
 @pytest.fixture(scope="session")
 def test_data_dir():
     """Fixture to set up test data directory"""
-    # Get the absolute path to the test_cavity directory
-    test_dir = Path(__file__).parent.parent.parent / "test_data" / "test_cavity"
+    test_dir = TEST_DATA_ROOT / "test_cavity"
     if not test_dir.exists():
         pytest.skip(f"Test data directory {test_dir} not found")
     return test_dir
@@ -16,9 +20,7 @@ def test_data_dir():
 @pytest.fixture(scope="session")
 def test_cavity_integration_dir():
     """Fixture to set up test_cavity_integration directory"""
-    test_dir = (
-        Path(__file__).parent.parent.parent / "test_data" / "test_cavity_integration"
-    )
+    test_dir = TEST_DATA_ROOT / "test_cavity_integration"
     if not test_dir.exists():
         pytest.skip(f"Test data directory {test_dir} not found")
     return test_dir
@@ -58,9 +60,7 @@ def clean_test_environment(test_data_dir):
     cleanup_temp_files()
 
     # Also clean test_cavity_integration
-    integration_dir = (
-        Path(__file__).parent.parent.parent / "test_data" / "test_cavity_integration"
-    )
+    integration_dir = TEST_DATA_ROOT / "test_cavity_integration"
     if integration_dir.exists():
         integration_res = integration_dir / "res"
         if integration_res.exists():

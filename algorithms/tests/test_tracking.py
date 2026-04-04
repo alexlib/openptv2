@@ -104,7 +104,6 @@ class TestEngineComparison:
         assert hasattr(PythonTracker, "step_forward")
         assert hasattr(PythonTracker, "finalize")
 
-    @pytest.mark.slow
     def test_full_tracking_comparison(self):
         """
         Compare full tracking pipeline between engines.
