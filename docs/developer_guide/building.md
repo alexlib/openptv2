@@ -594,9 +594,9 @@ If not using trusted publishing:
 
 | OS | Python | Architectures |
 |----|--------|---------------|
-| ubuntu-latest | cp311-cp314 | x86_64, aarch64 (manylinux2014) |
-| windows-latest | cp311-cp314 | AMD64 |
-| macos-latest | cp311-cp314 | x86_64, arm64 |
+| ubuntu-latest | cp311-cp313 | x86_64, aarch64 (manylinux2014) |
+| windows-latest | cp311-cp313 | AMD64 |
+| macos-latest | cp311-cp313 | x86_64, arm64 |
 
 #### Wheel Outputs
 

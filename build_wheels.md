@@ -76,7 +76,7 @@ requires-python = ">=3.11,<3.15"
 
 | Configuration | Current | New |
 |--------------|---------|-----|
-| Python matrix | cp311, cp312, cp313 | cp311, cp312, cp313, cp314 |
+ | Python matrix | cp311, cp312, cp313 | cp311, cp312, cp313 |
 | CIBW_SKIP | `"*musllinux*"` | (remove) |
 | CIBW_MANYLINUX_X86_64_IMAGE | (not set) | `manylinux2014` |
 | CIBW_MANYLINUX_AARCH64_IMAGE | (not set) | `manylinux2014` |
@@ -106,22 +106,20 @@ openptv2-{version}-cp{python}-cp{python}-{platform}.whl
 | Linux | x86_64 | 3.11 | openptv2-1.0.0-cp311-cp311-manylinux2014_x86_64.whl |
 | Linux | x86_64 | 3.12 | openptv2-1.0.0-cp312-cp312-manylinux2014_x86_64.whl |
 | Linux | x86_64 | 3.13 | openptv2-1.0.0-cp313-cp313-manylinux2014_x86_64.whl |
-| Linux | x86_64 | 3.14 | openptv2-1.0.0-cp314-cp314-manylinux2014_x86_64.whl |
 | Linux | aarch64 | 3.11 | openptv2-1.0.0-cp311-cp311-manylinux2014_aarch64.whl |
 | Linux | aarch64 | 3.12 | openptv2-1.0.0-cp312-cp312-manylinux2014_aarch64.whl |
 | Linux | aarch64 | 3.13 | openptv2-1.0.0-cp313-cp313-manylinux2014_aarch64.whl |
-| Linux | aarch64 | 3.14 | openptv2-1.0.0-cp314-cp314-manylinux2014_aarch64.whl |
-| macOS | x86_64 | 3.11-3.14 | openptv2-1.0.0-cp311-cp311-macosx_x86_64.whl |
-| macOS | arm64 | 3.11-3.14 | openptv2-1.0.0-cp311-cp311-macosx_arm64.whl |
-| Windows | AMD64 | 3.11-3.14 | openptv2-1.0.0-cp311-cp311-win_amd64.whl |
+| macOS | x86_64 | 3.11-3.13 | openptv2-1.0.0-cp311-cp311-macosx_x86_64.whl |
+| macOS | arm64 | 3.11-3.13 | openptv2-1.0.0-cp311-cp311-macosx_arm64.whl |
+| Windows | AMD64 | 3.11-3.13 | openptv2-1.0.0-cp311-cp311-win_amd64.whl |
 
-### Total Wheels Per Release: 32
+### Total Wheels Per Release: 24
 
-- Linux x86_64: 4 (Python 3.11-3.14)
-- Linux aarch64: 4 (Python 3.11-3.14)
-- macOS x86_64: 4 (Python 3.11-3.14)
-- macOS arm64: 4 (Python 3.11-3.14)
-- Windows AMD64: 4 (Python 3.11-3.14)
+- Linux x86_64: 3 (Python 3.11-3.13)
+- Linux aarch64: 3 (Python 3.11-3.13)
+- macOS x86_64: 3 (Python 3.11-3.13)
+- macOS arm64: 3 (Python 3.11-3.13)
+- Windows AMD64: 3 (Python 3.11-3.13)
 
 ---
 

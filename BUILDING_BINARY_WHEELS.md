@@ -125,9 +125,9 @@ The project uses `.github/workflows/cibuildwheel.yml` for automated builds.
 
 | OS | Python Versions |
 |---|-----------------|
-| ubuntu-latest | cp311, cp312, cp313, cp314 |
-| windows-latest | cp311, cp312, cp313, cp314 |
-| macos-latest | cp311, cp312, cp313, cp314 |
+| ubuntu-latest | cp311, cp312, cp313 |
+| windows-latest | cp311, cp312, cp313 |
+| macos-latest | cp311, cp312, cp313 |
 
 ### Output
 

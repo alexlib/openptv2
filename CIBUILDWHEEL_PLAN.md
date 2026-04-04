@@ -8,7 +8,7 @@
 ## Current Issues
 
 1. **Linux wheel not portable**: Built against host system glibc, fails on other Linux distros
-2. **Python version support**: Only builds cp311-cp313, not cp314
+2. **Python version support**: Supports cp311-cp313
 3. **Platform coverage**: Missing proper manylinux, macOS universal, Windows wheels
 4. **pyproject.toml**: `requires-python = ">=3.11,<3.14"` excludes 3.14
 
@@ -17,7 +17,7 @@
 ## Goals
 
 1. Generate portable binary wheels using manylinux2014 standard
-2. Support Python 3.11, 3.12, 3.13, 3.14
+2. Support Python 3.11, 3.12, 3.13
 3. Support Linux (x86_64, aarch64), macOS (x86_64, arm64), Windows (AMD64)
 4. Build and test on GitHub Actions via cibuildwheel
 
