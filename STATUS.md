@@ -116,3 +116,68 @@ All 3 engine comparison tests pass:
 2. (Optional) Fix Cython `Frame` constructor to handle `None` → `NULL` conversion for linkage/prio params
 3. (Optional) Make Python `read_targets()` return empty list on missing file (matching intended behavior)
 4. Consider adding more test data with varied target counts, edge cases
+
+## Isolated Engine Comparison Results
+
+### Problem: Cross-contamination via `_targets` files
+
+Both engines **write** `_targets` files back to the same directory via `write_frame_from_start()` during tracking. When running tests sequentially on the same folder, the second engine reads files already modified by the first, making comparison meaningless.
+
+### Solution: Fully isolated workspaces
+
+Created `test_isolated_engine_comparison.py` which gives each engine a complete copy of `test_data/track/` in separate temp directories.
+
+### Findings
+
+**Particle files (particles.<frame>)**: ✅ Identical — both engines produce the same particle counts and positions.
+
+**Linkage files (linkage.<frame>)**: ⚠️ Header difference only — C writes `-1` for empty frames, Python writes `0`. This is a **C bug** in `lib/src/tracking_frame_buf.c:227-336`:
+
+```c
+int read_path_frame(...) {
+    int targets = -1;  // initialized to -1
+    // ...
+    targets = 0;  // reset before loop
+    do {
+        // ... fscanf fails on empty file ...
+        if (read_res != 8) {
+            targets = -1;  // BUG: resets to -1 on empty file
+            break;
+        }
+    } while (!feof(filein));
+}
+```
+
+The `do...while(!feof)` loop always executes at least once. When a file has `0` particles (just header "0\n"), the `fscanf` fails and `targets` is reset to `-1`. Python correctly returns `0`.
+
+**_targets files**: ✅ Identical — both engines write the same target data when given isolated inputs. No modification of original files occurs.
+
+### Console output comparison
+
+**Python engine (correct):**
+```
+track3d step: 10001, curr: 1, next: 1, links: 1
+track3d step: 10002, curr: 1, next: 0, links: 0
+track3d step: 10003, curr: 0, next: 1, links: 0
+track3d step: 10004, curr: 1, next: 1, links: 1
+Average: particles: 0.8, links: 0.5, lost: 0.2
+```
+
+**Cython engine (C bug affects reporting):**
+```
+track3d step: 10001, curr: 1, next: 1, links: 1
+track3d step: 10002, curr: 1, next: -1, links: 0
+track3d step: 10003, curr: -1, next: 1, links: 0
+track3d step: 10004, curr: 1, next: 1, links: 1
+Average: particles: 0.5, links: 0.5, lost: 0.0
+```
+
+The `-1` values in Cython output are from the C bug, not from algorithm differences. The actual particle positions and target data are identical between engines.
+
+### Test Results
+
+All 4 isolated comparison tests pass:
+- `test_particles_files_match` — Identical particle counts and positions
+- `test_linkage_files_match` — Identical after normalizing -1/0 header convention
+- `test_targets_files_match` — Identical _targets file content
+- `test_original_targets_unchanged` — No unintended modifications to originals
