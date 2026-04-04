@@ -1,7 +1,10 @@
 """
 Engine comparison tests for track3d: Cython vs Python.
 
-Runs both engines on the same data and compares outputs frame-by-frame.
+Each engine writes temporary .par files from the YAML config and then
+reads them through its own native reader. This tests:
+1. Reader parity — same files parsed identically by both engines
+2. Algorithm parity — same inputs produce same outputs
 
 Tolerance: 1e-5 (matches C test EPS)
 """
@@ -11,6 +14,7 @@ import shutil
 import yaml
 import numpy as np
 import pytest
+from pathlib import Path
 
 TOLERANCE = 1e-5
 
@@ -35,6 +39,96 @@ def _read_particles_file(filepath):
         parts = list(map(float, line.split()))
         positions.append(parts[:3])  # x, y, z
     return count, np.array(positions) if positions else np.empty((0, 3))
+
+
+def _write_temp_par_files(src_dir, yaml_conf):
+    """Write temporary .par files from YAML config for both engines to read.
+
+    Returns paths to the temp files.
+    """
+    scene = yaml_conf["scene"]
+    corresp = yaml_conf["correspondences"]
+    tracking = yaml_conf["tracking"]
+    seq_cfg = yaml_conf["sequence"]
+    num_cams = len(yaml_conf["cameras"])
+
+    # --- control.par ---
+    control_par_path = os.path.join(src_dir, "temp_control.par")
+    img_base = [
+        seq_cfg["targets_template"].format(cam=cix + 1) for cix in range(num_cams)
+    ]
+    cal_base = [cam_spec["ori_file"] for cam_spec in yaml_conf["cameras"]]
+    with open(control_par_path, "w") as f:
+        f.write(f"{num_cams}\n")
+        for i in range(num_cams):
+            f.write(f"{img_base[i]}\n")
+            f.write(f"{cal_base[i]}\n")
+        f.write(f"{scene.get('hp_flag', 1)}\n")
+        f.write(f"{scene.get('allcam_flag', 0)}\n")
+        f.write(f"{scene.get('tiff_flag', 1)}\n")
+        f.write(f"{scene['image_size'][0]}\n")
+        f.write(f"{scene['image_size'][1]}\n")
+        f.write(f"{scene['pixel_size'][0]}\n")
+        f.write(f"{scene['pixel_size'][1]}\n")
+        f.write(f"{scene.get('chfield', 0)}\n")
+        f.write(f"{scene.get('cam_side_n', 1.0)}\n")
+        f.write(f"{scene.get('wall_ns', [1.0])[0]}\n")
+        f.write(f"{scene.get('object_side_n', 1.0)}\n")
+        f.write(f"{scene.get('wall_thicks', [0.0])[0]}\n")
+
+    # --- volume.par ---
+    volume_par_path = os.path.join(src_dir, "temp_volume.par")
+    z_spans = corresp["z_spans"]
+    with open(volume_par_path, "w") as f:
+        f.write(f"{corresp['x_span'][0]}\n")
+        f.write(f"{z_spans[0][0]}\n")
+        f.write(f"{z_spans[0][1]}\n")
+        f.write(f"{corresp['x_span'][1]}\n")
+        f.write(f"{z_spans[1][0]}\n")
+        f.write(f"{z_spans[1][1]}\n")
+        f.write(f"{corresp.get('pixels_x', 0.3)}\n")
+        f.write(f"{corresp.get('pixels_y', 0.3)}\n")
+        f.write(f"{corresp.get('pixels_tot', 0.01)}\n")
+        f.write(f"{corresp.get('ref_gray', 0.0)}\n")
+        f.write(f"{corresp.get('min_correlation', 33)}\n")
+        f.write(f"{corresp.get('epipolar_band', 0.15)}\n")
+
+    # --- tracking.par ---
+    tracking_par_path = os.path.join(src_dir, "temp_tracking.par")
+    vel = tracking["velocity_lims"]
+    with open(tracking_par_path, "w") as f:
+        f.write(f"{vel[0][0]}\n")
+        f.write(f"{vel[0][1]}\n")
+        f.write(f"{vel[1][0]}\n")
+        f.write(f"{vel[1][1]}\n")
+        f.write(f"{vel[2][0]}\n")
+        f.write(f"{vel[2][1]}\n")
+        f.write(f"{tracking['angle_lim']}\n")
+        f.write(f"{tracking['accel_lim']}\n")
+        f.write(f"{tracking['add_particle']}\n")
+
+    # --- sequence.par ---
+    sequence_par_path = os.path.join(src_dir, "temp_sequence.par")
+    with open(sequence_par_path, "w") as f:
+        for name in img_base:
+            f.write(f"{name}\n")
+        f.write(f"{seq_cfg['first']}\n")
+        f.write(f"{seq_cfg['last']}\n")
+
+    return control_par_path, volume_par_path, tracking_par_path, sequence_par_path
+
+
+def _cleanup_temp_par_files(src_dir):
+    """Remove temporary .par files."""
+    for fname in (
+        "temp_control.par",
+        "temp_volume.par",
+        "temp_tracking.par",
+        "temp_sequence.par",
+    ):
+        path = os.path.join(src_dir, fname)
+        if os.path.exists(path):
+            os.remove(path)
 
 
 @pytest.fixture(params=["track"])
@@ -67,10 +161,15 @@ def dataset(request, tmp_path):
         extra_path = os.path.join(src, extra)
         if os.path.exists(extra_path):
             shutil.rmtree(extra_path)
+    _cleanup_temp_par_files(src)
 
 
 class TestTrack3DEngineComparison:
-    """Compare Cython and Python track3d implementations."""
+    """Compare Cython and Python track3d implementations.
+
+    Both engines read the SAME temporary .par files through their own
+    native readers, testing reader parity AND algorithm parity.
+    """
 
     def test_python_track3d_matches_reference(self, dataset):
         """Python track3d output matches reference data."""
@@ -79,76 +178,37 @@ class TestTrack3DEngineComparison:
         with open(os.path.join(src, yaml_file)) as f:
             yaml_conf = yaml.load(f, Loader=yaml.FullLoader)
 
+        # Write temp .par files from YAML config
+        ctrl_path, vol_path, track_path, seq_path = _write_temp_par_files(
+            src, yaml_conf
+        )
+
         naming = {
             "corres": f"{src}/res/particles",
             "linkage": f"{src}/res/linkage",
             "prio": f"{src}/res/whatever",
         }
 
-        from algorithms.parameters import (
-            ControlPar,
-            VolumePar,
-            TrackParTuple,
-            SequencePar,
-        )
+        from algorithms.parameters import read_control_par, read_volume_par
+        from algorithms.parameters import read_track_par, read_sequence_par
         from algorithms.track import Tracker
         from algorithms.calibration import Calibration
 
-        cals = []
+        # Python engine reads from temp files via its own reader
+        cpar_python = read_control_par(Path(ctrl_path))
+        vpar_python = read_volume_par(Path(vol_path))
+        tpar_python = read_track_par(Path(track_path))
+        spar_python = read_sequence_par(Path(seq_path))
+
+        cals_python = []
         for cam_spec in yaml_conf["cameras"]:
             cal = Calibration()
             cal.from_file(cam_spec["ori_file"], cam_spec.get("addpar_file", None))
-            cals.append(cal)
+            cals_python.append(cal)
 
-        scene = yaml_conf["scene"]
-        seq_cfg = yaml_conf["sequence"]
-        corresp = yaml_conf["correspondences"]
-        tracking = yaml_conf["tracking"]
-
-        cpar = ControlPar(num_cams=len(yaml_conf["cameras"]))
-        cpar.imx = scene["image_size"][0]
-        cpar.imy = scene["image_size"][1]
-        cpar.pix_x = scene["pixel_size"][0]
-        cpar.pix_y = scene["pixel_size"][1]
-
-        vpar = VolumePar(
-            x_lay=corresp["x_span"],
-            z_min_lay=[
-                corresp["z_spans"][i][0] for i in range(len(corresp["z_spans"]))
-            ],
-            z_max_lay=[
-                corresp["z_spans"][i][1] for i in range(len(corresp["z_spans"]))
-            ],
+        tracker = Tracker(
+            cpar_python, vpar_python, tpar_python, spar_python, cals_python, naming
         )
-
-        vel = tracking["velocity_lims"]
-        tpar = TrackParTuple(
-            dvxmin=vel[0][0],
-            dvxmax=vel[0][1],
-            dvymin=vel[1][0],
-            dvymax=vel[1][1],
-            dvzmin=vel[2][0],
-            dvzmax=vel[2][1],
-            dangle=tracking["angle_lim"],
-            dacc=tracking["accel_lim"],
-            add=tracking["add_particle"],
-            dsumg=0.0,
-            dn=0.0,
-            dnx=0.0,
-            dny=0.0,
-        )
-
-        img_base = [
-            seq_cfg["targets_template"].format(cam=cix + 1)
-            for cix in range(len(yaml_conf["cameras"]))
-        ]
-        spar = SequencePar(
-            img_base_name=img_base,
-            first=seq_cfg["first"],
-            last=seq_cfg["last"],
-        )
-
-        tracker = Tracker(cpar, vpar, tpar, spar, cals, naming)
         tracker.full_forward_3d()
 
         for step in frame_range:
@@ -179,6 +239,11 @@ class TestTrack3DEngineComparison:
         with open(os.path.join(src, yaml_file)) as f:
             yaml_conf = yaml.load(f, Loader=yaml.FullLoader)
 
+        # Write temp .par files from YAML config
+        ctrl_path, vol_path, track_path, seq_path = _write_temp_par_files(
+            src, yaml_conf
+        )
+
         naming = {
             "corres": f"{src}/res/particles",
             "linkage": f"{src}/res/linkage",
@@ -194,7 +259,20 @@ class TestTrack3DEngineComparison:
             SequenceParams,
         )
 
-        cals = []
+        # Cython engine reads from the SAME temp files via its own reader
+        cpar_cython = ControlParams(num_cams=4)
+        cpar_cython.read_control_par(ctrl_path)
+
+        vpar_cython = VolumeParams()
+        vpar_cython.read_volume_par(vol_path)
+
+        tpar_cython = TrackingParams()
+        tpar_cython.read_track_par(track_path)
+
+        spar_cython = SequenceParams(num_cams=4)
+        spar_cython.read_sequence_par(seq_path, 4)
+
+        cals_cython = []
         for cam_spec in yaml_conf["cameras"]:
             cal = CythonCal()
             ori = cam_spec["ori_file"]
@@ -203,23 +281,11 @@ class TestTrack3DEngineComparison:
                 cal.from_file(ori.encode(), addpar.encode())
             else:
                 cal.from_file(ori.encode(), b"")
-            cals.append(cal)
+            cals_cython.append(cal)
 
-        scene = yaml_conf["scene"]
-        cpar = ControlParams(len(yaml_conf["cameras"]), **scene)
-        vpar = VolumeParams(**yaml_conf["correspondences"])
-        tpar = TrackingParams(**yaml_conf["tracking"])
-
-        seq_cfg = yaml_conf["sequence"]
-        img_base = []
-        for cix in range(len(yaml_conf["cameras"])):
-            img_base.append(seq_cfg["targets_template"].format(cam=cix + 1))
-        spar = SequenceParams(
-            image_base=img_base,
-            frame_range=(seq_cfg["first"], seq_cfg["last"]),
+        tracker = CythonTracker(
+            cpar_cython, vpar_cython, tpar_cython, spar_cython, cals_cython, naming
         )
-
-        tracker = CythonTracker(cpar, vpar, tpar, spar, cals, naming)
         tracker.full_forward_3d()
 
         for step in frame_range:
@@ -244,11 +310,19 @@ class TestTrack3DEngineComparison:
                 )
 
     def test_cython_vs_python_track3d_identical(self, dataset):
-        """Cython and Python track3d produce identical results."""
+        """Cython and Python track3d produce identical results.
+
+        Both engines read the SAME temp .par files through their own readers.
+        """
         src, yaml_file, ref_prefix, frame_range = dataset
 
         with open(os.path.join(src, yaml_file)) as f:
             yaml_conf = yaml.load(f, Loader=yaml.FullLoader)
+
+        # Write temp .par files from YAML config
+        ctrl_path, vol_path, track_path, seq_path = _write_temp_par_files(
+            src, yaml_conf
+        )
 
         # Run Cython
         cython_naming = {
@@ -272,6 +346,16 @@ class TestTrack3DEngineComparison:
             SequenceParams,
         )
 
+        # Cython engine reads from temp files
+        cpar_cython = ControlParams(num_cams=4)
+        cpar_cython.read_control_par(ctrl_path)
+        vpar_cython = VolumeParams()
+        vpar_cython.read_volume_par(vol_path)
+        tpar_cython = TrackingParams()
+        tpar_cython.read_track_par(track_path)
+        spar_cython = SequenceParams(num_cams=4)
+        spar_cython.read_sequence_par(seq_path, 4)
+
         cals_cython = []
         for cam_spec in yaml_conf["cameras"]:
             cal = CythonCal()
@@ -282,20 +366,6 @@ class TestTrack3DEngineComparison:
             else:
                 cal.from_file(ori.encode(), b"")
             cals_cython.append(cal)
-
-        scene = yaml_conf["scene"]
-        cpar_cython = ControlParams(len(yaml_conf["cameras"]), **scene)
-        vpar_cython = VolumeParams(**yaml_conf["correspondences"])
-        tpar_cython = TrackingParams(**yaml_conf["tracking"])
-
-        seq_cfg = yaml_conf["sequence"]
-        img_base = []
-        for cix in range(len(yaml_conf["cameras"])):
-            img_base.append(seq_cfg["targets_template"].format(cam=cix + 1))
-        spar_cython = SequenceParams(
-            image_base=img_base,
-            frame_range=(seq_cfg["first"], seq_cfg["last"]),
-        )
 
         cython_tracker = CythonTracker(
             cpar_cython,
@@ -320,65 +390,22 @@ class TestTrack3DEngineComparison:
             dirs_exist_ok=True,
         )
 
-        from algorithms.parameters import (
-            ControlPar,
-            VolumePar,
-            TrackParTuple,
-            SequencePar,
-        )
+        from algorithms.parameters import read_control_par, read_volume_par
+        from algorithms.parameters import read_track_par, read_sequence_par
         from algorithms.track import Tracker
         from algorithms.calibration import Calibration
+
+        # Python engine reads from the SAME temp files
+        cpar_python = read_control_par(Path(ctrl_path))
+        vpar_python = read_volume_par(Path(vol_path))
+        tpar_python = read_track_par(Path(track_path))
+        spar_python = read_sequence_par(Path(seq_path))
 
         cals_python = []
         for cam_spec in yaml_conf["cameras"]:
             cal = Calibration()
             cal.from_file(cam_spec["ori_file"], cam_spec.get("addpar_file", None))
             cals_python.append(cal)
-
-        cpar_python = ControlPar(num_cams=len(yaml_conf["cameras"]))
-        cpar_python.imx = scene["image_size"][0]
-        cpar_python.imy = scene["image_size"][1]
-        cpar_python.pix_x = scene["pixel_size"][0]
-        cpar_python.pix_y = scene["pixel_size"][1]
-
-        corresp = yaml_conf["correspondences"]
-        tracking = yaml_conf["tracking"]
-        vpar_python = VolumePar(
-            x_lay=corresp["x_span"],
-            z_min_lay=[
-                corresp["z_spans"][i][0] for i in range(len(corresp["z_spans"]))
-            ],
-            z_max_lay=[
-                corresp["z_spans"][i][1] for i in range(len(corresp["z_spans"]))
-            ],
-        )
-
-        vel = tracking["velocity_lims"]
-        tpar_python = TrackParTuple(
-            dvxmin=vel[0][0],
-            dvxmax=vel[0][1],
-            dvymin=vel[1][0],
-            dvymax=vel[1][1],
-            dvzmin=vel[2][0],
-            dvzmax=vel[2][1],
-            dangle=tracking["angle_lim"],
-            dacc=tracking["accel_lim"],
-            add=tracking["add_particle"],
-            dsumg=0.0,
-            dn=0.0,
-            dnx=0.0,
-            dny=0.0,
-        )
-
-        img_base = [
-            seq_cfg["targets_template"].format(cam=cix + 1)
-            for cix in range(len(yaml_conf["cameras"]))
-        ]
-        spar_python = SequencePar(
-            img_base_name=img_base,
-            first=seq_cfg["first"],
-            last=seq_cfg["last"],
-        )
 
         python_tracker = Tracker(
             cpar_python,

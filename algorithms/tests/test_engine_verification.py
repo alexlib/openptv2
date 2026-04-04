@@ -7,6 +7,7 @@ all algorithm components use Python implementations instead of optv.
 Tests each algorithm module individually.
 """
 
+import numpy as np
 import pytest
 import sys
 from pathlib import Path
@@ -192,90 +193,67 @@ class TestEngineSelectionInAPI:
 
 
 class TestParameterConversion:
-    """Test parameter conversion between optv and Python formats."""
+    """Test parameter conversion between optv and Python formats.
 
-    def test_controlparams_to_controlpar(self):
-        """Test converting optv ControlParams to Python ControlPar."""
-        from optv.parameters import ControlParams
-        from algorithms.parameters import ControlPar
+    Both engines read the SAME files through their own readers,
+    then we verify the values match.
+    """
 
-        optv_cp = ControlParams(num_cams=4)
+    def test_controlparams_to_controlpar(self, file_control_params):
+        """Test converting optv ControlParams to Python ControlPar from file."""
+        optv_cp, python_cp = file_control_params
+        assert optv_cp is not None, "optv failed to read control.par"
+        assert python_cp is not None, "python failed to read control.par"
 
-        # Create Python ControlPar with same values
-        python_cp = ControlPar(num_cams=optv_cp.get_num_cams())
-
-        assert python_cp.num_cams == 4
-
-    def test_volumeparams_to_volumepar(self):
-        """Test converting optv VolumeParams to Python VolumePar."""
-        from optv.parameters import VolumeParams
-        from algorithms.parameters import VolumePar
-
-        optv_vp = VolumeParams(xmin=-10, xmax=10, ymin=-10, ymax=10, zmin=-10, zmax=10)
-
-        # Create Python VolumePar
-        python_vp = VolumePar()
-
-        assert python_vp is not None
-
-    def test_sequeparams_to_sequencepar(self):
-        """Test converting optv SequenceParams to Python SequencePar."""
-        try:
-            from optv.parameters import SequenceParams
-            from algorithms.parameters import SequencePar
-        except ImportError:
-            pytest.skip("optv not available")
-
-        # Create optv SequenceParams with proper setup
-        optv_sp = SequenceParams(num_cams=4)
-        optv_sp.set_first(100)
-        optv_sp.set_last(200)
-
-        try:
-            img_base = [optv_sp.get_img_base_name(i) for i in range(4)]
-        except UnicodeDecodeError:
-            img_base = [""] * 4
-
-        python_sp = SequencePar(
-            img_base_name=img_base,
-            first=optv_sp.get_first(),
-            last=optv_sp.get_last(),
+        assert python_cp.num_cams == optv_cp.get_num_cams()
+        assert python_cp.imx == optv_cp.get_image_size()[0]
+        assert python_cp.imy == optv_cp.get_image_size()[1]
+        np.testing.assert_allclose(
+            python_cp.pix_x, optv_cp.get_pixel_size()[0], rtol=1e-10
         )
-
-        assert python_sp.first == 100
-        assert python_sp.last == 200
-
-    def test_trackingparams_to_trackpar(self):
-        """Test converting optv TrackingParams to Python TrackPar."""
-        from optv.parameters import TrackingParams
-        from algorithms.parameters import TrackPar
-
-        optv_tp = TrackingParams()
-        optv_tp.set_dvxmin(-5.0)
-        optv_tp.set_dvxmax(5.0)
-        optv_tp.set_dvymin(-5.0)
-        optv_tp.set_dvymax(5.0)
-        optv_tp.set_dvzmin(-5.0)
-        optv_tp.set_dvzmax(5.0)
-        optv_tp.set_dacc(0.5)
-        optv_tp.set_dangle(30.0)
-        optv_tp.set_add(1)
-
-        python_tp = TrackPar(
-            dvxmin=optv_tp.get_dvxmin(),
-            dvxmax=optv_tp.get_dvxmax(),
-            dvymin=optv_tp.get_dvymin(),
-            dvymax=optv_tp.get_dvymax(),
-            dvzmin=optv_tp.get_dvzmin(),
-            dvzmax=optv_tp.get_dvzmax(),
-            dacc=optv_tp.get_dacc(),
-            dangle=optv_tp.get_dangle(),
-            add=optv_tp.get_add(),
+        np.testing.assert_allclose(
+            python_cp.pix_y, optv_cp.get_pixel_size()[1], rtol=1e-10
         )
+        assert python_cp.chfield == optv_cp.get_chfield()
 
-        assert python_tp.dvxmin == -5.0
-        assert python_tp.dvxmax == 5.0
-        assert python_tp.dangle == 30.0
+    def test_volumeparams_to_volumepar(self, file_volume_params):
+        """Test converting optv VolumeParams to Python VolumePar from file."""
+        optv_vp, python_vp = file_volume_params
+        assert optv_vp is not None, "optv failed to read volume.par"
+        assert python_vp is not None, "python failed to read volume.par"
+
+        x_lay = list(optv_vp.get_X_lay())
+        z_min = list(optv_vp.get_Zmin_lay())
+        z_max = list(optv_vp.get_Zmax_lay())
+
+        np.testing.assert_allclose(python_vp.x_lay, x_lay, rtol=1e-10)
+        np.testing.assert_allclose(python_vp.z_min_lay, z_min, rtol=1e-10)
+        np.testing.assert_allclose(python_vp.z_max_lay, z_max, rtol=1e-10)
+
+    def test_sequeparams_to_sequencepar(self, file_sequence_params):
+        """Test converting optv SequenceParams to Python SequencePar from file."""
+        optv_sp, python_sp = file_sequence_params
+        assert optv_sp is not None, "optv failed to read sequence.par"
+        assert python_sp is not None, "python failed to read sequence.par"
+
+        assert python_sp.first == optv_sp.get_first()
+        assert python_sp.last == optv_sp.get_last()
+
+    def test_trackingparams_to_trackpar(self, file_tracking_params):
+        """Test converting optv TrackingParams to Python TrackPar from file."""
+        optv_tp, python_tp = file_tracking_params
+        assert optv_tp is not None, "optv failed to read tracking.par"
+        assert python_tp is not None, "python failed to read tracking.par"
+
+        assert python_tp.dvxmin == optv_tp.get_dvxmin()
+        assert python_tp.dvxmax == optv_tp.get_dvxmax()
+        assert python_tp.dvymin == optv_tp.get_dvymin()
+        assert python_tp.dvymax == optv_tp.get_dvymax()
+        assert python_tp.dvzmin == optv_tp.get_dvzmin()
+        assert python_tp.dvzmax == optv_tp.get_dvzmax()
+        assert python_tp.dangle == optv_tp.get_dangle()
+        assert python_tp.dacc == optv_tp.get_dacc()
+        assert python_tp.add == optv_tp.get_add()
 
 
 class TestAlgorithmParity:

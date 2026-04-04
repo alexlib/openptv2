@@ -3,11 +3,15 @@ Parity test for Parameters classes.
 
 Tests that Cython and Python implementations produce identical results
 for the parameter classes from bindings/optv/parameters.pyx and algorithms/parameters.py.
+
+Each engine reads the SAME parameter files through its own native reader,
+ensuring both reader parity and value parity are tested.
 """
 
 import os
 import pytest
 import numpy as np
+from pathlib import Path
 
 # Relative path from test file to test data
 TEST_DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "test_data")
@@ -18,9 +22,37 @@ TOLERANCE = 1e-7
 class TestParametersParity:
     """Test that parameter classes produce identical results in both engines."""
 
+    def test_control_params_from_file(self, file_control_params):
+        """Both engines read the same control.par file and get identical values."""
+        optv_cpar, python_cpar = file_control_params
+        assert optv_cpar is not None, "optv failed to read control.par"
+        assert python_cpar is not None, "python failed to read control.par"
+
+        assert optv_cpar.get_num_cams() == python_cpar.num_cams
+        assert optv_cpar.get_image_size() == (python_cpar.imx, python_cpar.imy)
+        np.testing.assert_allclose(
+            optv_cpar.get_pixel_size(),
+            (python_cpar.pix_x, python_cpar.pix_y),
+            rtol=TOLERANCE,
+        )
+        assert optv_cpar.get_chfield() == python_cpar.chfield
+
+    def test_volume_params_from_file(self, file_volume_params):
+        """Both engines read the same volume.par file and get identical values."""
+        optv_vpar, python_vpar = file_volume_params
+        assert optv_vpar is not None, "optv failed to read volume.par"
+        assert python_vpar is not None, "python failed to read volume.par"
+
+        x_lay = list(optv_vpar.get_X_lay())
+        z_min = list(optv_vpar.get_Zmin_lay())
+        z_max = list(optv_vpar.get_Zmax_lay())
+
+        np.testing.assert_allclose(x_lay, python_vpar.x_lay, rtol=TOLERANCE)
+        np.testing.assert_allclose(z_min, python_vpar.z_min_lay, rtol=TOLERANCE)
+        np.testing.assert_allclose(z_max, python_vpar.z_max_lay, rtol=TOLERANCE)
+
     def test_control_params_creation(self):
         """Test ControlParams creation in both engines."""
-        # Test Cython
         try:
             from optv.parameters import ControlParams as CythonCP
 
@@ -29,7 +61,6 @@ class TestParametersParity:
         except ImportError:
             pytest.skip("optv not available")
 
-        # Test Python - use adapter
         try:
             from algorithms.parameters_adapter import ControlParams as PythonCP
 

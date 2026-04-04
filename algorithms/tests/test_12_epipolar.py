@@ -1,7 +1,10 @@
 """
 Engine comparison tests for epipolar module - using subprocess isolation.
 
-Tests epipolar_curve function.
+Tests epipolar_curve function. Each engine reads ALL parameters from the
+same files through its own reader, ensuring both reader parity and
+algorithm parity are tested simultaneously.
+
 Tolerance: 1e-7 (complex geometry calculations)
 """
 
@@ -19,7 +22,12 @@ class TestEpipolar:
     """Compare epipolar functions between optv and python engines."""
 
     def test_epipolar_curve_from_files(self):
-        """Test epipolar_curve with parameters from files (like original optv test).
+        """Test epipolar_curve with parameters from files.
+
+        Each engine reads the SAME files through its own reader:
+        - control.par → ControlParams (optv) / ControlPar (python)
+        - criteria.par → VolumeParams (optv) / VolumePar (python)
+        - sym_cam*.tif.ori + cam1.tif.addpar → Calibration (both)
 
         Runs in isolated subprocess to avoid pytest/C extension memory issues.
         """
@@ -32,27 +40,29 @@ FIXTURES = Path({str(FIXTURES)!r})
 
 from optv.epipolar import epipolar_curve as optv_func
 from optv.calibration import Calibration as OptvCal
-from optv.parameters import ControlParams as OptvCParam, VolumeParams as OptvVParam
+from optv.parameters import (
+    ControlParams as OptvCParam,
+    VolumeParams as OptvVParam,
+)
 
 from algorithms.epi import epipolar_curve as python_func
 from algorithms.calibration import Calibration as PythonCal
 from algorithms.parameters import ControlPar as PythonCParam
+from algorithms.parameters import read_control_par, read_volume_par
 from algorithms.parameters_adapter import VolumeParams as PythonVParam
-from algorithms.parameters import MultimediaPar
 
 ori_tmpl = str(FIXTURES / "calibration/sym_cam{{cam_num}}.tif.ori")
 add_file = str(FIXTURES / "calibration/cam1.tif.addpar")
+control_par_file = str(FIXTURES / "corresp/control.par")
+volume_par_file = str(FIXTURES / "corresp/criteria.par")
 
-# Load shared parameters from files once, then use for both engines
+# ---- optv engine reads from files ----
 optv_cpar = OptvCParam(4)
-optv_cpar.read_control_par(str(FIXTURES / "corresp/control.par"))
+optv_cpar.read_control_par(control_par_file)
 sens_size = optv_cpar.get_image_size()
-imx, imy = sens_size
-pix_x, pix_y = optv_cpar.get_pixel_size()
-chfield = optv_cpar.get_chfield()
 
 optv_vpar = OptvVParam()
-optv_vpar.read_volume_par(str(FIXTURES / "corresp/criteria.par"))
+optv_vpar.read_volume_par(volume_par_file)
 optv_vpar.set_Zmin_lay([-10, -10])
 optv_vpar.set_Zmax_lay([10, 10])
 
@@ -61,7 +71,7 @@ mult_params.set_n1(1.0)
 mult_params.set_layers(np.array([1.0]), np.array([1.0]))
 mult_params.set_n3(1.0)
 
-# Calibrations (same files for both engines)
+# Calibrations (optv reads from files)
 optv_orig_cal = OptvCal()
 optv_orig_cal.from_file(ori_tmpl.format(cam_num=1), add_file)
 optv_orig_cal.set_angles(np.r_[0.0, -np.pi / 4.0, 0.0])
@@ -69,6 +79,18 @@ optv_proj_cal = OptvCal()
 optv_proj_cal.from_file(ori_tmpl.format(cam_num=3), add_file)
 optv_proj_cal.set_angles(np.r_[0.0, 3 * np.pi / 4.0, 0.0])
 
+# ---- python engine reads from the SAME files through its own reader ----
+python_cpar = read_control_par(Path(control_par_file))
+python_cpar.mm.set_n1(1.0)
+python_cpar.mm.set_layers([1.0], [0.0])
+python_cpar.mm.set_n3(1.0)
+
+python_vpar = read_volume_par(Path(volume_par_file))
+# Override z_spans to match what optv test sets
+python_vpar.z_min_lay = [-10.0, -10.0]
+python_vpar.z_max_lay = [10.0, 10.0]
+
+# Calibrations (python reads from the SAME files)
 python_orig_cal = PythonCal()
 python_orig_cal.from_file(ori_tmpl.format(cam_num=1), add_file)
 python_orig_cal.set_angles(np.array([0.0, -np.pi / 4.0, 0.0]))
@@ -76,32 +98,22 @@ python_proj_cal = PythonCal()
 python_proj_cal.from_file(ori_tmpl.format(cam_num=3), add_file)
 python_proj_cal.set_angles(np.array([0.0, 3 * np.pi / 4.0, 0.0]))
 
-# Python ControlPar with SAME values as optv file
-python_cpar = PythonCParam()
-python_cpar.num_cams = 4
-python_cpar.imx = imx
-python_cpar.imy = imy
-python_cpar.pix_x = pix_x
-python_cpar.pix_y = pix_y
-python_cpar.chfield = chfield
-python_cpar.mm = MultimediaPar(n1=1.0, n2=[1.0], d=[0.0], n3=1.0)
-
-# Python VolumePar with SAME values as optv file
-x_lay = list(optv_vpar.get_X_lay())
-z_min_lay = list(optv_vpar.get_Zmin_lay())
-z_max_lay = list(optv_vpar.get_Zmax_lay())
-python_vpar = PythonVParam(
-    xmin=x_lay[0], xmax=x_lay[1],
-    ymin=-100, ymax=100,
-    zmin=z_min_lay[0], zmax=z_max_lay[0],
+# Wrap python_vpar in the adapter for the epi function API
+python_vpar_adapter = PythonVParam(
+    xmin=python_vpar.x_lay[0],
+    xmax=python_vpar.x_lay[1],
+    ymin=-100,
+    ymax=100,
+    zmin=python_vpar.z_min_lay[0],
+    zmax=python_vpar.z_max_lay[0],
 )
-python_vpar.x_lay = x_lay
-python_vpar.z_min_lay = z_min_lay
-python_vpar.z_max_lay = z_max_lay
+python_vpar_adapter.x_lay = list(python_vpar.x_lay)
+python_vpar_adapter.z_min_lay = list(python_vpar.z_min_lay)
+python_vpar_adapter.z_max_lay = list(python_vpar.z_max_lay)
 
 mid = np.array(sens_size) / 2.0
 optv_result = optv_func(mid, optv_orig_cal, optv_proj_cal, 5, optv_cpar, optv_vpar)
-python_result = python_func(mid, python_orig_cal, python_proj_cal, 5, python_cpar, python_vpar)
+python_result = python_func(mid, python_orig_cal, python_proj_cal, 5, python_cpar, python_vpar_adapter)
 
 np.testing.assert_allclose(optv_result, python_result, rtol=1e-7, atol=1e-7)
 print("TEST_PASSED")

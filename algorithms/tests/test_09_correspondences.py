@@ -1,13 +1,16 @@
 """
 Engine comparison tests for correspondences module.
 
+Each engine reads the SAME parameter files through its own reader,
+ensuring both reader parity and algorithm parity are tested.
+
 Tests MatchedCoords class and correspondences function.
 Tolerance: 1e-7 (complex matching algorithms)
 """
 
 import numpy as np
 import pytest
-from .conftest import get_tolerance, create_test_control_params, create_test_calibration
+from .conftest import get_tolerance
 
 TOLERANCE = get_tolerance("correspondences")
 
@@ -15,14 +18,17 @@ TOLERANCE = get_tolerance("correspondences")
 class TestMatchedCoords:
     """Compare MatchedCoords between optv and python engines."""
 
-    def test_matched_coords_creation(self):
-        """Test MatchedCoords creation with targets."""
-        from optv.tracking_framebuf import TargetArray, Target
+    def test_matched_coords_creation(self, file_control_params, file_calibration_cam1):
+        """Test MatchedCoords creation with targets from file-based params."""
+        from optv.tracking_framebuf import TargetArray
         from optv.correspondences import MatchedCoords as OptvMatchedCoords
-        from optv.calibration import Calibration
 
-        optv_cpar, python_cpar = create_test_control_params()
-        optv_cal, python_cal = create_test_calibration()
+        optv_cpar, python_cpar = file_control_params
+        optv_cal, python_cal = file_calibration_cam1
+        assert optv_cpar is not None
+        assert python_cpar is not None
+        assert optv_cal is not None
+        assert python_cal is not None
 
         optv_ta = TargetArray(10)
         for i in range(10):
@@ -59,14 +65,17 @@ class TestMatchedCoords:
         except (ImportError, AttributeError) as e:
             pytest.fail(f"Python implementation missing or incomplete: {e}")
 
-    def test_matched_coords_as_arrays(self):
-        """Test MatchedCoords.as_arrays() method."""
-        from optv.tracking_framebuf import TargetArray, Target
+    def test_matched_coords_as_arrays(self, file_control_params, file_calibration_cam1):
+        """Test MatchedCoords.as_arrays() method with file-based params."""
+        from optv.tracking_framebuf import TargetArray
         from optv.correspondences import MatchedCoords as OptvMatchedCoords
-        from optv.calibration import Calibration
 
-        optv_cpar, python_cpar = create_test_control_params()
-        optv_cal, python_cal = create_test_calibration()
+        optv_cpar, python_cpar = file_control_params
+        optv_cal, python_cal = file_calibration_cam1
+        assert optv_cpar is not None
+        assert python_cpar is not None
+        assert optv_cal is not None
+        assert python_cal is not None
 
         optv_ta = TargetArray(5)
         for i in range(5):
@@ -101,14 +110,19 @@ class TestMatchedCoords:
         except (ImportError, AttributeError) as e:
             pytest.fail(f"Python implementation missing or incomplete: {e}")
 
-    def test_matched_coords_get_by_pnrs(self):
-        """Test MatchedCoords.get_by_pnrs() method."""
-        from optv.tracking_framebuf import TargetArray, Target
+    def test_matched_coords_get_by_pnrs(
+        self, file_control_params, file_calibration_cam1
+    ):
+        """Test MatchedCoords.get_by_pnrs() method with file-based params."""
+        from optv.tracking_framebuf import TargetArray
         from optv.correspondences import MatchedCoords as OptvMatchedCoords
-        from optv.calibration import Calibration
 
-        optv_cpar, python_cpar = create_test_control_params()
-        optv_cal, python_cal = create_test_calibration()
+        optv_cpar, python_cpar = file_control_params
+        optv_cal, python_cal = file_calibration_cam1
+        assert optv_cpar is not None
+        assert python_cpar is not None
+        assert optv_cal is not None
+        assert python_cal is not None
 
         optv_ta = TargetArray(8)
         for i in range(8):
@@ -148,17 +162,17 @@ class TestMatchedCoords:
 class TestCorrespondencesFunction:
     """Test correspondences function."""
 
-    def test_correspondences_basic(self):
-        """Test correspondences function with basic data."""
+    def test_correspondences_basic(self, file_control_params, file_calibration_4cam):
+        """Test correspondences function with file-based params."""
         from optv.correspondences import correspondences as optv_func
-        from optv.tracking_framebuf import TargetArray, Target
+        from optv.tracking_framebuf import TargetArray
         from optv.correspondences import MatchedCoords
-        from optv.parameters import ControlParams, VolumeParams
-        from optv.calibration import Calibration
-        from algorithms.tracking_frame_buf import Frame as PythonFrame
+        from optv.parameters import VolumeParams
 
-        optv_cpar, python_cpar = create_test_control_params()
-        optv_cal, python_cal = create_test_calibration()
+        optv_cpar, python_cpar = file_control_params
+        optv_cals, python_cal_list = file_calibration_4cam
+        assert optv_cpar is not None
+        assert python_cpar is not None
 
         num_targets = 8
         num_cams = 4
@@ -177,32 +191,28 @@ class TestCorrespondencesFunction:
                 ta[i].set_tnr(0)
             img_pts.append(ta)
 
-            cal = Calibration()
-
-            mc = MatchedCoords(ta, optv_cpar, cal)
+            mc = MatchedCoords(ta, optv_cpar, optv_cals[cam])
             flat_coords.append(mc)
-            cals.append(cal)
+            cals.append(optv_cals[cam])
 
         vpar = VolumeParams(xmin=0, xmax=100, ymin=0, ymax=100, zmin=0, zmax=50)
-        cparam = ControlParams(
-            num_cams=4, image_size=(1024, 1024), pixel_size=(0.01, 0.01)
-        )
 
         try:
-            optv_result = optv_func(img_pts, flat_coords, cals, vpar, cparam)
+            optv_result = optv_func(img_pts, flat_coords, cals, vpar, optv_cpar)
         except Exception as e:
             pytest.fail(f"optv correspondences failed: {e}")
 
         try:
             from algorithms.correspondences import correspondences as python_func
-            from algorithms.tracking_frame_buf import TargetArray as PythonTA
+            from algorithms.tracking_frame_buf import (
+                TargetArray as PythonTA,
+                Frame as PythonFrame,
+            )
             from algorithms.correspondences import MatchedCoords as PythonMatchedCoords
             from algorithms.parameters import VolumePar as PythonVolumePar
-            from algorithms.calibration import Calibration as PythonCal
 
             python_img_pts = []
             python_flat_coords = []
-            python_cals = []
             python_vpar = PythonVolumePar(
                 x_lay=[0.0, 100.0], z_min_lay=[0.0, 0.0], z_max_lay=[50.0, 50.0]
             )
@@ -214,32 +224,35 @@ class TestCorrespondencesFunction:
                     ta[i].set_pixel_counts(5, 2, 2)
                     ta[i].set_sum_grey_value(100.0)
                     ta[i].set_tnr(0)
-                cal = PythonCal()
                 python_img_pts.append(ta)
+                cal = python_cal_list[cam]
                 python_flat_coords.append(PythonMatchedCoords(ta, python_cpar, cal))
-                python_cals.append(cal)
             match_counts = [0, 0, 0, 0]
             python_result = python_func(
                 PythonFrame(num_cams),
                 python_flat_coords,
                 python_vpar,
                 python_cpar,
-                python_cals,
+                python_cal_list,
                 match_counts,
             )
         except (ImportError, AttributeError, TypeError) as e:
             pytest.fail(f"Python implementation missing or incomplete: {e}")
 
-    def test_single_cam_correspondence(self):
-        """Test single_cam_correspondence function."""
+    def test_single_cam_correspondence(
+        self, file_control_params, file_calibration_cam1
+    ):
+        """Test single_cam_correspondence with file-based params."""
         from optv.correspondences import single_cam_correspondence as optv_func
-        from optv.tracking_framebuf import TargetArray, Target
+        from optv.tracking_framebuf import TargetArray
         from optv.correspondences import MatchedCoords
-        from optv.calibration import Calibration
-        from algorithms.tracking_frame_buf import Frame as PythonFrame
 
-        optv_cpar, python_cpar = create_test_control_params()
-        optv_cal, python_cal = create_test_calibration()
+        optv_cpar, python_cpar = file_control_params
+        optv_cal, python_cal = file_calibration_cam1
+        assert optv_cpar is not None
+        assert python_cpar is not None
+        assert optv_cal is not None
+        assert python_cal is not None
 
         num_targets = 6
 
@@ -251,14 +264,10 @@ class TestCorrespondencesFunction:
             ta[i].set_sum_grey_value(100.0)
             ta[i].set_tnr(0)
 
-        cal = Calibration()
-        cal.set_pos(np.array([0.0, 0.0, 100.0]))
-        cal.set_angles(np.array([0.0, 0.0, 0.0]))
-
-        mc = MatchedCoords(ta, optv_cpar, cal)
+        mc = MatchedCoords(ta, optv_cpar, optv_cal)
         img_pts = [ta]
         flat_coords = [mc]
-        cals = [cal]
+        cals = [optv_cal]
 
         try:
             optv_result = optv_func(img_pts, flat_coords, cals)
@@ -268,9 +277,9 @@ class TestCorrespondencesFunction:
         try:
             from algorithms.correspondences import (
                 single_cam_correspondence as python_func,
+                MatchedCoords as PythonMatchedCoords,
             )
             from algorithms.tracking_frame_buf import TargetArray as PythonTA
-            from algorithms.correspondences import MatchedCoords as PythonMatchedCoords
 
             python_ta = PythonTA(num_targets)
             for i in range(num_targets):
@@ -289,14 +298,19 @@ class TestCorrespondencesFunction:
 class TestCorrespondencesEdgeCases:
     """Test edge cases for correspondence functions."""
 
-    def test_correspondences_empty_targets(self):
+    def test_correspondences_empty_targets(
+        self, file_control_params, file_calibration_4cam
+    ):
         """Test with empty target arrays."""
         from optv.correspondences import correspondences as optv_func
         from optv.tracking_framebuf import TargetArray
         from optv.correspondences import MatchedCoords
-        from optv.parameters import ControlParams, VolumeParams
-        from optv.calibration import Calibration
-        from algorithms.tracking_frame_buf import Frame as PythonFrame
+        from optv.parameters import VolumeParams
+
+        optv_cpar, python_cpar = file_control_params
+        optv_cals, python_cals = file_calibration_4cam
+        assert optv_cpar is not None
+        assert python_cpar is not None
 
         num_cams = 4
 
@@ -304,57 +318,51 @@ class TestCorrespondencesEdgeCases:
         flat_coords = []
         cals = []
 
-        cpar = ControlParams(
-            num_cams=4, image_size=(1024, 1024), pixel_size=(0.01, 0.01)
-        )
-        cpar.get_multimedia_params().set_layers([1.0], [1.0])
-        cpar.get_multimedia_params().set_n3(1.0)
-        optv_cpar, python_cpar = create_test_control_params()
-
-        for _ in range(num_cams):
-            cal = Calibration()
-            mc = MatchedCoords(TargetArray(0), cpar, cal)
+        for cam in range(num_cams):
+            mc = MatchedCoords(TargetArray(0), optv_cpar, optv_cals[cam])
             flat_coords.append(mc)
-            cals.append(cal)
+            cals.append(optv_cals[cam])
 
         vpar = VolumeParams(xmin=0, xmax=100, ymin=0, ymax=100, zmin=0, zmax=50)
 
         try:
-            optv_result = optv_func(img_pts, flat_coords, cals, vpar, cpar)
+            optv_result = optv_func(img_pts, flat_coords, cals, vpar, optv_cpar)
         except Exception:
             pass
 
         try:
             from algorithms.correspondences import correspondences as python_func
+            from algorithms.tracking_frame_buf import Frame as PythonFrame
 
             python_frame = PythonFrame(num_cams)
             python_frame.targets = img_pts
             python_frame.num_targets = [0 for _ in range(num_cams)]
             match_counts = [0, 0, 0, 0]
             python_result = python_func(
-                python_frame, flat_coords, vpar, python_cpar, cals, match_counts
+                python_frame, flat_coords, vpar, python_cpar, python_cals, match_counts
             )
         except (ImportError, AttributeError, TypeError):
             pass
 
-    def test_correspondences_single_target(self):
+    def test_correspondences_single_target(
+        self, file_control_params, file_calibration_4cam
+    ):
         """Test with single target per camera."""
         from optv.correspondences import correspondences as optv_func
-        from optv.tracking_framebuf import TargetArray, Target
+        from optv.tracking_framebuf import TargetArray
         from optv.correspondences import MatchedCoords
-        from optv.parameters import ControlParams, VolumeParams
-        from optv.calibration import Calibration
-        from algorithms.tracking_frame_buf import Frame as PythonFrame
+        from optv.parameters import VolumeParams
+
+        optv_cpar, python_cpar = file_control_params
+        optv_cals, python_cal_list = file_calibration_4cam
+        assert optv_cpar is not None
+        assert python_cpar is not None
 
         num_cams = 4
 
         img_pts = []
         flat_coords = []
         cals = []
-
-        cpar = ControlParams(
-            num_cams=4, image_size=(1024, 1024), pixel_size=(0.01, 0.01)
-        )
 
         for cam in range(num_cams):
             ta = TargetArray(1)
@@ -365,41 +373,33 @@ class TestCorrespondencesEdgeCases:
             ta[0].set_tnr(0)
             img_pts.append(ta)
 
-            cal = Calibration()
-            mc = MatchedCoords(ta, cpar, cal)
+            mc = MatchedCoords(ta, optv_cpar, optv_cals[cam])
             flat_coords.append(mc)
-            cals.append(cal)
+            cals.append(optv_cals[cam])
 
         vpar = VolumeParams(xmin=0, xmax=100, ymin=0, ymax=100, zmin=0, zmax=50)
 
         try:
-            optv_result = optv_func(img_pts, flat_coords, cals, vpar, cpar)
+            optv_result = optv_func(img_pts, flat_coords, cals, vpar, optv_cpar)
         except Exception as e:
             pytest.fail(f"optv correspondences failed: {e}")
 
         try:
             from algorithms.correspondences import correspondences as python_func
-            from algorithms.tracking_frame_buf import TargetArray as PythonTA
+            from algorithms.tracking_frame_buf import (
+                TargetArray as PythonTA,
+                Frame as PythonFrame,
+            )
             from algorithms.correspondences import MatchedCoords as PythonMatchedCoords
-            from algorithms.parameters import ControlPar as PythonControlPar
             from algorithms.parameters import VolumePar as PythonVolumePar
-            from algorithms.calibration import Calibration as PythonCal
 
             python_frame = PythonFrame(num_cams)
             python_img_pts = []
             python_flat_coords = []
-            python_cals = []
-            python_cpar = PythonControlPar()
-            python_cpar.imx = 1024
-            python_cpar.imy = 1024
-            python_cpar.pix_x = 0.01
-            python_cpar.pix_y = 0.01
-            python_cpar.mm.set_layers([1.0], [1.0])
-            python_cpar.mm.set_n3(1.0)
             python_vpar = PythonVolumePar(
                 x_lay=[0.0, 100.0], z_min_lay=[0.0, 0.0], z_max_lay=[50.0, 50.0]
             )
-            for _ in range(num_cams):
+            for cam in range(num_cams):
                 ta = PythonTA(1)
                 ta[0].set_pnr(0)
                 ta[0].set_pos((50.0, 50.0))
@@ -407,9 +407,8 @@ class TestCorrespondencesEdgeCases:
                 ta[0].set_sum_grey_value(100.0)
                 ta[0].set_tnr(0)
                 python_img_pts.append(ta)
-                cal = PythonCal()
+                cal = python_cal_list[cam]
                 python_flat_coords.append(PythonMatchedCoords(ta, python_cpar, cal))
-                python_cals.append(cal)
 
             python_frame.targets = python_img_pts
             python_frame.num_targets = [1 for _ in range(num_cams)]
@@ -419,7 +418,7 @@ class TestCorrespondencesEdgeCases:
                 python_flat_coords,
                 python_vpar,
                 python_cpar,
-                python_cals,
+                python_cal_list,
                 match_counts,
             )
         except (ImportError, AttributeError, TypeError) as e:

@@ -247,7 +247,7 @@ def _load_sequence_params_from_file(par_file):
         from optv.parameters import SequenceParams
 
         optv_spar = SequenceParams(num_cams=4)
-        optv_spar.read_sequence_par(par_str)
+        optv_spar.read_sequence_par(par_str, 4)
     except Exception:
         optv_spar = None
 
@@ -273,14 +273,14 @@ def _load_tracking_params_from_file(par_file):
         from optv.parameters import TrackingParams
 
         optv_tpar = TrackingParams()
-        optv_tpar.read_tracking_par(par_str)
+        optv_tpar.read_track_par(par_str)
     except Exception:
         optv_tpar = None
 
     try:
-        from algorithms.parameters import read_tracking_par
+        from algorithms.parameters import read_track_par
 
-        python_tpar = read_tracking_par(Path(par_str))
+        python_tpar = read_track_par(Path(par_str))
     except Exception:
         python_tpar = None
 
