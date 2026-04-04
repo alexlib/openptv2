@@ -23,6 +23,53 @@ from .epi import Coord2d_dtype
 from .parameters import ControlPar
 from .trafo import dist_to_flat, pixel_to_metric
 
+
+def _normalize_file_base(file_base):
+    """Normalize a file base path for constructing target filenames.
+
+    Handles bytes-from-Cython, Path objects, and trailing dots from optv's
+    img_base convention.  The returned value is a clean string without
+    trailing dots, so callers can safely do f"{base}.{frame:04d}_targets".
+    """
+    if isinstance(file_base, bytes):
+        file_base = file_base.decode()
+    elif isinstance(file_base, Path):
+        file_base = str(file_base)
+    return file_base.rstrip(".")
+
+
+def _target_filename(file_base, frame_num: int) -> str:
+    """Build a target filename from a base and frame number.
+
+    OpenPTV fixtures use both dotted and underscored bases, e.g. `cam1.` and
+    `sample_`. Preserve the caller's separator when it is already part of the
+    base; otherwise fall back to the historical dotted form.
+    """
+    file_base = _normalize_file_base(file_base)
+    if frame_num > 0:
+        if file_base.endswith((".", "_")):
+            return f"{file_base}{frame_num:04d}_targets"
+        return f"{file_base}.{frame_num:04d}_targets"
+    return f"{file_base}_targets"
+
+
+def _target_filename_candidates(file_base, frame_num: int) -> List[str]:
+    """Return likely target filenames for a base and frame number."""
+    primary = _target_filename(file_base, frame_num)
+    candidates = [primary]
+
+    if frame_num > 0:
+        if isinstance(file_base, bytes):
+            file_base = file_base.decode()
+        elif isinstance(file_base, Path):
+            file_base = str(file_base)
+
+        if str(file_base).endswith("."):
+            candidates.append(f"{str(file_base).rstrip('.')}_{frame_num:04d}_targets")
+
+    return list(dict.fromkeys(candidates))
+
+
 n_tupel_dtype = np.dtype([("p", np.int32, (4,)), ("corr", np.float64)])
 
 
@@ -94,6 +141,10 @@ class Target:
         """Set target number."""
         self.pnr = pnr
 
+    def pnr(self):
+        """Return target number (API compatibility)."""
+        return self.pnr
+
     def set_pixel_counts(self, n, nx, ny):
         """Set number of pixels and number of pixels in x and y."""
         self.n = n
@@ -107,6 +158,14 @@ class Target:
     def sum_grey_value(self):
         """Return sum of grey values."""
         return self.sumg
+
+    def set_tnr(self, tnr: int) -> None:
+        """Set tracking number (used in tracking)."""
+        self.tnr = tnr
+
+    def tnr(self):
+        """Return tracking number (API compatibility)."""
+        return self.tnr
 
     def pos(self):
         """Return target position."""
@@ -135,52 +194,122 @@ def sort_target_y(targets: List[Target]) -> List[Target]:
     return sorted(targets, key=lambda t: t.y)
 
 
-# class TargetArray(list):
-#     """Target array class."""
+class TargetArray:
+    """
+    Represents an array of targets. Allows indexing and iteration.
+    Matches the Cython TargetArray API from bindings/optv/tracking_framebuf.pyx
+    """
 
-#     def __init__(self, num_targets: int = 0):
-#         super().__init__(Target() for item in range(num_targets))
+    def __init__(self, size: int = 0):
+        """
+        Arguments:
+        size - if >0, allocates an empty target array (which should be filled
+            by iteration later), otherwise nothing is allocated.
+        """
+        if size <= 0:
+            self._targets = []
+        else:
+            self._targets = [Target() for _ in range(size)]
+        self._num_targets = len(self._targets)
 
-#     def __setitem__(self, index, item):
-#         super().__setitem__(index, item)
+    def sort_y(self):
+        """
+        Sorts the targets in-place by their Y coordinate. This is required for
+        tracking (and relied on by OpenPTV-Python, so a useful step for those
+        who need backwards-compatible output). Also renumbers the targets'
+        ``pnr`` property to the new sort order.
+        """
+        self._targets.sort(key=lambda t: t.y)
+        for tnum, targ in enumerate(self._targets):
+            targ.pnr = tnum
+        self._num_targets = len(self._targets)
 
-#     def insert(self, index, item):
-#         super().insert(index, item)
+    def write(self, file_base: str, frame_num: int):
+        """
+        Writes a _targets file - a text format for targets. First line: number
+        of targets. Each following line: pnr, x, y, n, nx, ny, sumg, tnr.
+        the output file name is of the form <base_name>.<frame>_targets.
 
-#     def append(self, item):
-#         super().append(str(item))
+        Arguments:
+        file_base - path to the file, base part.
+        frame_num - frame number part of the file name.
+        """
+        fname = _target_filename(file_base, frame_num)
 
-#     def extend(self, other):
-#         if isinstance(other, type(self)):
-#             super().extend(other)
-#         else:
-#             super().extend(item for item in other)
+        with open(fname, "w", encoding="utf-8") as f:
+            f.write(f"{len(self._targets)}\n")
+            for targ in self._targets:
+                f.write(
+                    f"{targ.pnr} {targ.x} {targ.y} {targ.n} {targ.nx} "
+                    f"{targ.ny} {targ.sumg} {targ.tnr}\n"
+                )
 
-#     @property
-#     def num_targs(self):
-#         """Return the number of targets in the list."""
-#         return len(self)
+    def __getitem__(self, ix: int) -> Target:
+        """
+        Returns the Target at index `ix`.
+
+        Arguments:
+        ix - integer, index into the target array.
+
+        Returns:
+        Target instance at index ix.
+        """
+        if ix >= self._num_targets or ix < 0:
+            raise IndexError(f"Index {ix} out of range [0, {self._num_targets})")
+        return self._targets[ix]
+
+    def __setitem__(self, ix: int, item: Target):
+        """Set the Target at index `ix`."""
+        if ix >= self._num_targets or ix < 0:
+            raise IndexError(f"Index {ix} out of range [0, {self._num_targets})")
+        self._targets[ix] = item
+
+    def __len__(self):
+        return self._num_targets
+
+    def append(self, item: Target):
+        """Append a target to the array."""
+        self._targets.append(item)
+        self._num_targets = len(self._targets)
+
+    def extend(self, items):
+        """Extend the array with more targets."""
+        self._targets.extend(items)
+        self._num_targets = len(self._targets)
+
+    @property
+    def num_targs(self):
+        """Return the number of targets in the array."""
+        return self._num_targets
+
+    def __iter__(self):
+        """Iterate over targets."""
+        return iter(self._targets)
 
 
 def read_targets(file_base: str, frame_num: int) -> List[Target]:
     """Read targets from a file."""
     buffer = []
 
-    # # if file_base has an extension, remove it
-    # file_base = file_base.split(".")[0]
+    filename = None
+    for candidate in _target_filename_candidates(file_base, frame_num):
+        if Path(candidate).exists():
+            filename = Path(candidate)
+            break
 
-    if frame_num > 0:
-        # filename = f"{file_base}{frame_num:04d}_targets"
-        fname = file_base % frame_num + "_targets"
-    else:
-        fname = f"{file_base}_targets"
-
-    filename = Path(fname)
-    print(f" filename: {filename}")
+    if filename is None:
+        filename = Path(_target_filename(file_base, frame_num))
 
     try:
         with open(filename, "r", encoding="utf-8") as file:
-            num_targets = int(file.readline().strip())
+            first_line = file.readline().strip()
+            if not first_line:
+                # Empty file means no targets
+                return buffer
+            num_targets = int(first_line)
+            if num_targets < 0:
+                # Negative means no targets
+                return buffer
 
             for _ in range(num_targets):
                 line = file.readline().strip().split()
@@ -227,18 +356,21 @@ def write_targets(
     file_name = file_base % frame_num + "_targets"
 
     try:
-        # Convert targets to a 2D numpy array
-        target_arr = np.array(
-            [(t.pnr, t.x, t.y, t.n, t.nx, t.ny, t.sumg, t.tnr) for t in targets]
-        )
-        # Save the target array to file using savetxt
-        np.savetxt(
-            file_name,
-            target_arr,
-            fmt="%4d %9.4f %9.4f %5d %5d %5d %5d %5d",
-            header=f"{num_targets}",
-            comments="",
-        )
+        with open(file_name, "w", encoding="utf8") as f:
+            f.write(f"{num_targets}\n")
+            if num_targets > 0:
+                # Convert targets to a 2D numpy array
+                target_arr = np.array(
+                    [
+                        (t.pnr, t.x, t.y, t.n, t.nx, t.ny, t.sumg, t.tnr)
+                        for t in targets[:num_targets]
+                    ]
+                )
+                np.savetxt(
+                    f,
+                    target_arr,
+                    fmt="%4d %9.4f %9.4f %5d %5d %5d %5d %5d",
+                )
         success = True
     except IOError:
         print(f"Can't open ascii file: {file_name}")
@@ -341,6 +473,14 @@ class Frame:
         frame_num: int,
     ) -> bool:
         """Read a frame from the disk."""
+        # Normalize bytes (from Cython) and trailing dots
+        if isinstance(corres_file_base, bytes):
+            corres_file_base = corres_file_base.decode()
+        if isinstance(linkage_file_base, bytes):
+            linkage_file_base = linkage_file_base.decode()
+        if isinstance(prio_file_base, bytes):
+            prio_file_base = prio_file_base.decode()
+
         required_files = [Path(f"{corres_file_base}.{frame_num}")]
 
         if linkage_file_base != "":
@@ -350,8 +490,9 @@ class Frame:
             required_files.append(Path(f"{prio_file_base}.{frame_num}"))
 
         for file_base in target_file_base:
+            file_base = _normalize_file_base(file_base)
             if frame_num > 0:
-                required_files.append(Path(file_base % frame_num + "_targets"))
+                required_files.append(Path(f"{file_base}.{frame_num:04d}_targets"))
             else:
                 required_files.append(Path(f"{file_base}_targets"))
 
@@ -746,6 +887,9 @@ def read_path_frame(
 
     # we do not need number of particles, reading till EOF
     n_particles = int(filein.readline())
+    # Handle -1 as 0 particles (matching C behavior)
+    if n_particles < 0:
+        n_particles = 0
     # print(f"Reading {n_particles} particles from {fname}")
     # cor_buf = [Corres() for _ in range(n_particles)] # we do not want empty lists
 
@@ -852,6 +996,13 @@ def write_path_frame(
     -------
         True on success, False on failure.
     """
+    if isinstance(corres_file_base, bytes):
+        corres_file_base = corres_file_base.decode("utf-8")
+    if isinstance(linkage_file_base, bytes):
+        linkage_file_base = linkage_file_base.decode("utf-8")
+    if isinstance(prio_file_base, bytes):
+        prio_file_base = prio_file_base.decode("utf-8")
+
     corres_fname = f"{corres_file_base}.{frame_num}"
     linkage_fname = f"{linkage_file_base}.{frame_num}"
     prio_fname = f"{prio_file_base}.{frame_num}" if prio_file_base != "" else None

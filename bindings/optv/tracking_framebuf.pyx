@@ -224,6 +224,11 @@ def read_targets(basename, int frame_num):
     c_string = py_byte_string
     
     num_targets = c_read_targets(tarr, c_string, frame_num)
+    if num_targets < 0:
+        free(tarr)
+        raise FileNotFoundError(
+            f"Targets file not found or error reading: {basename}"
+        )
     ret.set(tarr, num_targets, 1)
     
     return ret
@@ -279,6 +284,10 @@ cdef class Frame:
         prio_file_base - optional, for the linkage file with added 'prio'
             column.
         """
+        if corres_file_base is None or linkage_file_base is None:
+            raise ValueError(
+                "corres_file_base and linkage_file_base cannot be None"
+            )
         cdef char **targ_fb = <char **> malloc(self._num_cams*sizeof(char *))
         cdef char* pb
         

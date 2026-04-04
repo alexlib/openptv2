@@ -47,15 +47,39 @@ def ray_tracing(
     primary_point = np.r_[cal.ext_par.x0, cal.ext_par.y0, cal.ext_par.z0]
     glass = np.ascontiguousarray(cal.glass_par)
     camera = np.array([x, y, -cal.int_par.cc], dtype=np.float64, order="C")
+    distance = getattr(mm, "d", None)
+    if distance is None:
+        get_d = getattr(mm, "get_d", None)
+        if callable(get_d):
+            distance = get_d()
+    refractive_index2 = getattr(mm, "n2", None)
+    if refractive_index2 is None:
+        get_n2 = getattr(mm, "get_n2", None)
+        if callable(get_n2):
+            refractive_index2 = get_n2()
+    if distance is None or refractive_index2 is None:
+        raise AttributeError("Multimedia parameters object does not expose d/n2")
+    refractive_index1 = getattr(mm, "n1", None)
+    if refractive_index1 is None:
+        get_n1 = getattr(mm, "get_n1", None)
+        if callable(get_n1):
+            refractive_index1 = get_n1()
+    refractive_index3 = getattr(mm, "n3", None)
+    if refractive_index3 is None:
+        get_n3 = getattr(mm, "get_n3", None)
+        if callable(get_n3):
+            refractive_index3 = get_n3()
+    if refractive_index1 is None or refractive_index3 is None:
+        raise AttributeError("Multimedia parameters object does not expose n1/n3")
     return fast_ray_tracing(
         camera,
         cal.ext_par.dm,
         primary_point,
         glass,
-        mm.d[0],
-        mm.n1,
-        mm.n2[0],
-        mm.n3,
+        distance[0],
+        refractive_index1,
+        refractive_index2[0],
+        refractive_index3,
     )
 
 

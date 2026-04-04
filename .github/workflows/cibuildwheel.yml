@@ -25,37 +25,23 @@ jobs:
         with:
           python-version: '3.12'
       
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install numpy>=2.0.0 cython>=3.0.0 setuptools wheel
-      
-      - name: Prepare source files
-        run: |
-          cd bindings
-          python setup.py prepare
-          cd ..
-      
-      - name: Install cibuildwheel
-        run: |
-          python -m pip install cibuildwheel
-      
       - name: Build wheels
-        run: |
-          python -m cibuildwheel --output-dir wheelhouse bindings/
+        uses: pypa/cibuildwheel@v2.21
+        with:
+          output-dir: ./wheelhouse
         env:
           CIBW_BUILD: ${{ matrix.python }}-*
           CIBW_SKIP: "*musllinux*"
+          CIBW_MANYLINUX_X86_64_IMAGE: "manylinux2014"
+          CIBW_MANYLINUX_AARCH64_IMAGE: "manylinux2014"
           CIBW_ARCHS_MACOS: x86_64 arm64
           CIBW_ARCHS_WINDOWS: AMD64
-          CIBW_ARCHS_LINUX: x86_64
-          CIBW_BEFORE_BUILD_LINUX: "pip install numpy>=2.0.0 cython>=3.0.0 setuptools wheel"
-          CIBW_BEFORE_BUILD_MACOS: "pip install numpy>=2.0.0 cython>=3.0.0 setuptools wheel"
-          CIBW_BEFORE_BUILD_WINDOWS: "pip install numpy>=2.0.0 cython>=3.0.0 setuptools wheel"
+          CIBW_ARCHS_LINUX: x86_64 aarch64
+          CIBW_BEFORE_BUILD_LINUX: "pip install --upgrade pip numpy>=2.0.0 cython>=3.0.0 setuptools wheel"
+          CIBW_BEFORE_BUILD_MACOS: "pip install --upgrade pip numpy>=2.0.0 cython>=3.0.0 setuptools wheel"
+          CIBW_BEFORE_BUILD_WINDOWS: "pip install --upgrade pip numpy>=2.0.0 cython>=3.0.0 setuptools wheel"
           CIBW_TEST_REQUIRES: pytest
-          CIBW_TEST_COMMAND_LINUX: "python -m pytest {project}/bindings/tests/test_version.py -v || python -c \"import optv; print('optv imported successfully')\""
-          CIBW_TEST_COMMAND_MACOS: "python -m pytest {project}/bindings/tests/test_version.py -v || python -c \"import optv; print('optv imported successfully')\""
-          CIBW_TEST_COMMAND_WINDOWS: "python -m pytest {project}/bindings/tests/test_version.py -v || python -c \"import optv; print('optv imported successfully')\""
+          CIBW_TEST_COMMAND: "python -c \"import openptv2; print('openptv2 OK')\" && python -c \"from optv.tracking_framebuf import Target; print('optv OK')\" && python -c \"from algorithms.tracking_frame_buf import Target; print('algorithms OK')\""
       
       - uses: actions/upload-artifact@v4
         with:
@@ -81,29 +67,57 @@ jobs:
       
       - name: Prepare source files
         run: |
-          cd bindings
           python setup.py prepare
-          cd ..
       
       - name: Build source distribution
         run: |
-          cd bindings
           python -m build --sdist
-          cd ..
       
       - uses: actions/upload-artifact@v4
         with:
           name: sdist
-          path: bindings/dist/*.tar.gz
+          path: dist/*.tar.gz
+
+  test_package:
+    name: Test package
+    needs: [build_wheels, build_sdist]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: wheels-*
+          path: dist
+          merge-multiple: true
+      
+      - uses: actions/download-artifact@v4
+        with:
+          name: sdist
+          path: dist
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install package
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install dist/openptv2-*cp312*manylinux*.whl[test]
+
+      - name: Run tests
+        run: |
+          python -m pytest bindings/tests/ algorithms/tests/ -v --tb=short
 
   upload_pypi:
     name: Upload to PyPI
-    needs: [build_wheels, build_sdist]
+    needs: [build_wheels, build_sdist, test_package]
     runs-on: ubuntu-latest
     if: |
-      always() && github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') &&
+      github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') &&
       needs.build_sdist.result == 'success' &&
-      (needs.build_wheels.result == 'success' || needs.build_wheels.result == 'failure')
+      needs.build_wheels.result == 'success' &&
+      needs.test_package.result == 'success'
     permissions:
       id-token: write  # mandatory for OIDC trusted publishing
       attestations: write  # needed by pypa/gh-action-pypi-publish >= v1.12 for Sigstore attestations

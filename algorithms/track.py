@@ -12,6 +12,7 @@ from .constants import (
     COORD_UNUSED,
     CORRES_NONE,
     MAX_CANDS,
+    MAX_TARGETS,
     NEXT_NONE,
     POS_INF,
     PREV_NONE,
@@ -22,7 +23,13 @@ from .constants import (
 )
 from .imgcoord import img_coord
 from .orientation import point_position
-from .parameters import ControlPar, TrackParTuple, convert_track_par_to_tuple
+from .parameters import (
+    ControlPar,
+    SequencePar,
+    TrackParTuple,
+    VolumePar,
+    convert_track_par_to_tuple,
+)
 from .tracking_frame_buf import Frame, Pathinfo, Target
 from .tracking_run import TrackingRun
 from .trafo import dist_to_flat, metric_to_pixel, pixel_to_metric
@@ -137,7 +144,11 @@ def register_closest_neighbs(
 
     for cand_idx in range(MAX_CANDS):
         # Set default value for unused foundpix objects
-        if all_cands[cand_idx] == PT_UNUSED:
+        if (
+            all_cands[cand_idx] == PT_UNUSED
+            or all_cands[cand_idx] < 0
+            or all_cands[cand_idx] >= num_targets
+        ):
             reg[cand_idx].ftnr = TR_UNUSED
         else:
             # Register candidate data in the foundpix object
@@ -556,6 +567,32 @@ def sort(n: int, a: List[float], b: List[int]) -> Tuple[List[float], List[int]]:
     return a, b
 
 
+def find_candidates_in_3d(frm, pos, dx, dy, dz, max_cands=MAX_CANDS):
+    """
+    Find particles within a 3D box centered at pos.
+
+    Arguments:
+        frm - Frame object with path_info list
+        pos - (3,) array-like, center position
+        dx, dy, dz - box half-sizes in each dimension
+        max_cands - maximum candidates to return
+
+    Returns:
+        list of particle indices within the box
+    """
+    indices = []
+    for i in range(frm.num_parts):
+        pi = frm.path_info[i]
+        if (
+            abs(pi.x[0] - pos[0]) < dx
+            and abs(pi.x[1] - pos[1]) < dy
+            and abs(pi.x[2] - pos[2]) < dz
+        ):
+            if len(indices) < max_cands:
+                indices.append(i)
+    return indices
+
+
 def point_to_pixel(point: np.ndarray, cal: Calibration, cpar: ControlPar) -> np.ndarray:
     """Return vec2d with pixel positions (x,y) in the camera.
 
@@ -836,7 +873,9 @@ def trackcorr_c_loop(run_info, step):
         else:
             X[2] = vec_copy(X[1])
             for j in range(fb.num_cams):
-                if curr_corres.p[j] == CORRES_NONE:
+                if curr_corres.p[j] == CORRES_NONE or curr_corres.p[j] >= len(
+                    curr_targets[j]
+                ):
                     v1[j] = point_to_pixel(X[2], cal[j], cpar)
                 else:
                     _ix = curr_corres.p[j]
@@ -1111,6 +1150,165 @@ def trackcorr_c_finish(run_info, step: int):
     run_info.fb.write_frame_from_start(step)
 
 
+def track3d_loop(run_info, step):
+    """
+    3D tracking loop - links particles in 3D space without camera projection.
+
+    Three-level linking strategy:
+    1. Particles with previous links: predict = 2*curr - prev
+    2. No prev link, neighbors have links: predict = curr + avg_neighbor_velocity
+    3. No prev link, no neighbor links: predict = curr
+
+    Arguments:
+        run_info - TrackingRun object
+        step - current frame number
+    """
+    import math
+
+    fb = run_info.fb
+    tpar = run_info.tpar
+
+    prev = fb.buf[0]
+    curr = fb.buf[1]
+    next_buf = fb.buf[2]
+
+    orig_parts = curr.num_parts
+    count1 = 0
+
+    dx = tpar.dvxmax
+    dy = tpar.dvymax
+    dz = tpar.dvzmax
+
+    # Level 1: Particles with previous links
+    for i in range(orig_parts):
+        curr_pi = curr.path_info[i]
+        if curr_pi.prev_frame < 0:
+            continue
+        prev_idx = curr_pi.prev_frame
+        if prev_idx < 0 or prev_idx >= prev.num_parts:
+            continue
+        prev_pi = prev.path_info[prev_idx]
+
+        # Predict: 2*curr - prev
+        predicted = 2 * curr_pi.x - prev_pi.x
+
+        cand_indices = find_candidates_in_3d(next_buf, predicted, dx, dy, dz)
+
+        decis = [0.0] * len(cand_indices)
+        linkdecis = [0] * len(cand_indices)
+
+        for k, cidx in enumerate(cand_indices):
+            acc = 0.0
+            for d in range(3):
+                diff = curr_pi.x[d] - 2 * next_buf.path_info[cidx].x[d] + prev_pi.x[d]
+                acc += diff * diff
+            decis[k] = math.sqrt(acc)
+            linkdecis[k] = cidx
+
+        if len(cand_indices) > 1:
+            sort(len(decis), decis, linkdecis)
+
+        if cand_indices and next_buf.path_info[linkdecis[0]].prev_frame < 0:
+            curr_pi.next_frame = linkdecis[0]
+            next_buf.path_info[linkdecis[0]].prev_frame = i
+            count1 += 1
+        else:
+            curr_pi.next_frame = -1
+
+    # Level 2: No previous link, but neighbors have previous links
+    for i in range(orig_parts):
+        curr_pi = curr.path_info[i]
+        if curr_pi.prev_frame >= 0 or curr_pi.next_frame >= 0:
+            continue
+
+        vel = np.zeros(3)
+        nvel = 0
+        for j in range(orig_parts):
+            if j == i:
+                continue
+            nbr = curr.path_info[j]
+            if (
+                abs(nbr.x[0] - curr_pi.x[0]) < dx
+                and abs(nbr.x[1] - curr_pi.x[1]) < dy
+                and abs(nbr.x[2] - curr_pi.x[2]) < dz
+                and nbr.prev_frame >= 0
+            ):
+                vel += nbr.x - prev.path_info[nbr.prev_frame].x
+                nvel += 1
+
+        if nvel == 0:
+            continue
+        vel /= nvel
+        predicted = curr_pi.x + vel
+
+        cand_indices = find_candidates_in_3d(next_buf, predicted, dx, dy, dz)
+
+        decis = [0.0] * len(cand_indices)
+        linkdecis = [0] * len(cand_indices)
+
+        for k, cidx in enumerate(cand_indices):
+            acc = 0.0
+            for d in range(3):
+                diff = curr_pi.x[d] - 2 * next_buf.path_info[cidx].x[d] + predicted[d]
+                acc += diff * diff
+            decis[k] = math.sqrt(acc)
+            linkdecis[k] = cidx
+
+        if len(cand_indices) > 1:
+            sort(len(decis), decis, linkdecis)
+
+        if cand_indices and next_buf.path_info[linkdecis[0]].prev_frame < 0:
+            curr_pi.next_frame = linkdecis[0]
+            next_buf.path_info[linkdecis[0]].prev_frame = i
+            count1 += 1
+        else:
+            curr_pi.next_frame = -1
+
+    # Level 3: No previous link, no neighbors with previous links
+    for i in range(orig_parts):
+        curr_pi = curr.path_info[i]
+        if curr_pi.prev_frame >= 0 or curr_pi.next_frame >= 0:
+            continue
+
+        predicted = curr_pi.x.copy()
+
+        cand_indices = find_candidates_in_3d(next_buf, predicted, dx, dy, dz)
+
+        decis = [0.0] * len(cand_indices)
+        linkdecis = [0] * len(cand_indices)
+
+        for k, cidx in enumerate(cand_indices):
+            acc = 0.0
+            for d in range(3):
+                diff = curr_pi.x[d] - 2 * next_buf.path_info[cidx].x[d] + predicted[d]
+                acc += diff * diff
+            decis[k] = math.sqrt(acc)
+            linkdecis[k] = cidx
+
+        if len(cand_indices) > 1:
+            sort(len(decis), decis, linkdecis)
+
+        if cand_indices and next_buf.path_info[linkdecis[0]].prev_frame < 0:
+            curr_pi.next_frame = linkdecis[0]
+            next_buf.path_info[linkdecis[0]].prev_frame = i
+            count1 += 1
+        else:
+            curr_pi.next_frame = -1
+
+    print(
+        f"track3d step: {step}, curr: {fb.buf[1].num_parts}, "
+        f"next: {fb.buf[2].num_parts}, links: {count1}"
+    )
+
+    run_info.npart += fb.buf[1].num_parts
+    run_info.nlinks += count1
+
+    fb.fb_next()
+    fb.write_frame_from_start(step)
+    if step < run_info.seq_par.last - 2:
+        fb.read_frame_at_end(step + 3, 0)
+
+
 def trackback_c(run_info: TrackingRun):
     """Trackback algorithm in C."""
     count1, count2, num_added, quali = 0, 0, 0, 0
@@ -1340,92 +1538,231 @@ default_naming = {
 }
 
 
-# class Tracker:
-#     """
-#     Workflow: instantiate, call restart() to initialize the frame buffer, then.
+class Tracker:
+    """
+    Workflow: instantiate, call restart() to initialize the frame buffer, then
+    call either ``step_forward()`` while it still return True, then call
+    ``finalize()`` to finish the run. Alternatively, ``full_forward()`` will
+    do all this for you.
 
-#     call either ``step_forward()`` while it still return True, then call
-#     ``finalize()`` to finish the run. Alternatively, ``full_forward()`` will
-#     do all this for you.
-#     """
+    This class matches the Cython Tracker API from bindings/optv/tracker.pyx
+    for interchangeability with the optv engine.
+    """
 
-#     def __init__(
-#         self,
-#         cpar: ControlPar,
-#         vpar: VolumePar,
-#         tpar: TrackPar,
-#         spar: SequencePar,
-#         cals: List[Calibration],
-#         naming: dict,
-#         flatten_tol: float = 0.0001,
-#     ):
-#         """
-#         Initialize the tracker.
+    def __init__(
+        self,
+        cpar: ControlPar,
+        vpar: VolumePar,
+        tpar: TrackParTuple,
+        spar: SequencePar,
+        cals: List[Calibration],
+        naming: dict = None,
+        flatten_tol: float = 0.0001,
+    ):
+        """
+        Initialize the tracker.
 
-#         Arguments:
-#         ---------
-#         ControlPar cpar, VolumePar vpar, TrackPar tpar,
-#         SequencePar spar - the usual parameter objects, as read from
-#             anywhere.
-#         cals - a list of Calibratiopn objects.
-#         dict naming - a dictionary with naming rules for the frame buffer
-#             files. See the ``default_naming`` member (which is the default).
-#         """
-#         # We need to keep a reference to the Python objects so that their
-#         # allocations are not freed.
-#         self._keepalive = (cpar, vpar, tpar, spar, cals)
+        Arguments:
+        ---------
+        cpar: ControlPar object
+        vpar: VolumePar object
+        tpar: TrackParTuple object (use convert_track_par_to_tuple if needed)
+        spar: SequencePar object
+        cals: List of Calibration objects
+        naming: Dictionary with naming rules for frame buffer files.
+            Keys: 'corres', 'linkage', 'prio'. Default is default_naming.
+        flatten_tol: Tolerance parameter for flattening operations.
+        """
+        # We need to keep a reference to the Python objects so that their
+        # allocations are not freed.
+        self._keepalive = (cpar, vpar, tpar, spar, cals)
 
-#         self.run_info = TrackingRun(
-#             spar,
-#             tpar,
-#             vpar,
-#             cpar,
-#             TR_BUFSPACE,
-#             MAX_TARGETS,
-#             naming["corres"],
-#             naming["linkage"],
-#             naming["prio"],
-#             cals,
-#             flatten_tol,
-#         )
-#         self.step = self.run_info.seq_par.first
+        # Handle naming dictionary with defaults
+        if naming is None:
+            naming = default_naming
+        else:
+            naming = dict(naming)
+            # Ensure all required keys are present
+            for key in default_naming:
+                if key not in naming:
+                    naming[key] = default_naming[key]
 
-#     def restart(self):
-#         """
-#         Prepare a tracking run. Sets up initial buffers and performs the.
+        for key in ("corres", "linkage", "prio"):
+            value = naming.get(key)
+            if isinstance(value, bytes):
+                naming[key] = value.decode("utf-8")
 
-#         one-time calculations used throughout the loop.
-#         """
-#         self.step = self.run_info.seq_par.first
-#         track_forward_start(self.run_info)
+        self.run_info = TrackingRun(
+            spar,
+            tpar,
+            vpar,
+            cpar,
+            TR_BUFSPACE,
+            MAX_TARGETS,
+            naming["corres"],
+            naming["linkage"],
+            naming["prio"],
+            cals,
+            flatten_tol,
+        )
+        self.step = self.run_info.seq_par.first
 
-#     def step_forward(self):
-#         """Perform one tracking step for the current frame of iteration."""
-#         if self.step >= self.run_info.seq_par.last:
-#             return False
+    def restart(self):
+        """
+        Prepare a tracking run. Sets up initial buffers and performs the
+        one-time calculations used throughout the loop.
+        """
+        self.step = self.run_info.seq_par.first
+        track_forward_start(self.run_info)
 
-#         trackcorr_c_loop(self.run_info, self.step)
-#         self.step += 1
-#         return True
+    def step_forward(self):
+        """
+        Perform one tracking step for the current frame of iteration.
 
-#     def finalize(self):
-#         """Finish a tracking run."""
-#         trackcorr_c_finish(self.run_info, self.step)
+        Returns:
+            bool: True if more frames to process, False if done.
+        """
+        if self.step >= self.run_info.seq_par.last:
+            return False
 
-#     def full_forward(self):
-#         """Do a full tracking run from restart to finalize."""
-#         track_forward_start(self.run_info)
-#         for step in range(self.run_info.seq_par.first, self.run_info.seq_par.last):
-#             trackcorr_c_loop(self.run_info, step)
-#         trackcorr_c_finish(self.run_info, self.run_info.seq_par.last)
+        trackcorr_c_loop(self.run_info, self.step)
+        self.step += 1
+        return True
 
-#     def full_backward(self):
-#         """Do a full backward run on existing tracking results. so make sure.
+    def finalize(self):
+        """Finish a tracking run."""
+        trackcorr_c_finish(self.run_info, self.step)
 
-#         results exist or it will explode in your face.
-#         """
-#         trackback_c(self.run_info)
+    def full_forward(self):
+        """Do a full tracking run from restart to finalize."""
+        track_forward_start(self.run_info)
+        for step in range(self.run_info.seq_par.first, self.run_info.seq_par.last):
+            trackcorr_c_loop(self.run_info, step)
+        trackcorr_c_finish(self.run_info, self.run_info.seq_par.last)
+        self.step = 0
 
-#     def current_step(self):
-#         """Return the current step."""
-#         return self.step
+    def step_forward_3d(self):
+        """
+        Perform one 3D tracking step for the current frame of iteration.
+
+        Returns:
+            bool: True if more frames to process, False if done.
+        """
+        if self.step >= self.run_info.seq_par.last:
+            return False
+
+        track3d_loop(self.run_info, self.step)
+        self.step += 1
+        return True
+
+    def full_forward_3d(self):
+        """Do a full 3D tracking run from restart to finalize."""
+        track_forward_start(self.run_info)
+        for step in range(self.run_info.seq_par.first, self.run_info.seq_par.last):
+            track3d_loop(self.run_info, step)
+        trackcorr_c_finish(self.run_info, self.run_info.seq_par.last)
+        self.step = 0
+
+    def full_backward(self):
+        """
+        Do a full backward run on existing tracking results.
+
+        Note: Results must exist or this will fail.
+        """
+        trackback_c(self.run_info)
+
+    def current_step(self):
+        """Return the current step number."""
+        return self.step
+
+    def track_with_viz(
+        self,
+        callback,
+        on_particle=None,
+        on_algorithm_step=None,
+    ):
+        """
+        Track with visualization callbacks - Python engine only.
+
+        This method wraps the tracking loop to inject callbacks at key points,
+        enabling real-time visualization of the tracking process.
+
+        Arguments:
+        ---------
+        callback: Function called after each frame.
+            Signature: callback(frame_num: int, state: dict)
+            The state dict contains:
+                - 'particles': np.ndarray (N, 3) - 3D particle positions
+                - 'correspondences': np.ndarray (N, 5) - correspondence data
+                - 'added_count': int - particles added in this frame
+                - 'lost_count': int - particles lost in this frame
+        on_particle: Optional function called for each tracked particle.
+            Signature: on_particle(frame_num: int, particle_id: int, details: dict)
+        on_algorithm_step: Optional function called during algorithm steps.
+            Signature: on_algorithm_step(step_name: str, details: dict)
+
+        Yields:
+        -------
+        dict: State dictionary after each frame (same format as callback)
+
+        Example:
+        -------
+        >>> tracker = Tracker(cpar, vpar, tpar, spar, cals)
+        >>> def viz_callback(frame_num, state):
+        ...     print(f"Frame {frame_num}: {len(state['particles'])} particles")
+        >>> for state in tracker.track_with_viz(viz_callback):
+        ...     pass  # Process state
+        """
+        self.restart()
+
+        while self.step_forward():
+            state = self._get_current_state()
+
+            # Call per-frame callback
+            callback(self.current_step(), state)
+
+            yield state
+
+        self.finalize()
+
+    def _get_current_state(self):
+        """
+        Extract current tracking state as NumPy arrays.
+
+        Returns:
+        -------
+        dict: Current state with keys:
+            - 'frame_number': int
+            - 'particles': np.ndarray (N, 3) - 3D positions
+            - 'correspondences': np.ndarray (N, 5) - correspondence data
+            - 'added_count': int
+            - 'lost_count': int
+        """
+        fb = self.run_info.fb
+
+        # Extract particle positions (3D)
+        if fb.num_parts > 0:
+            particles = np.array([list(fb.path_info[i].x) for i in range(fb.num_parts)])
+
+            # Extract correspondences
+            correspondences = np.array(
+                [
+                    [fb.correspond[i].nr] + list(fb.correspond[i].p)
+                    for i in range(fb.num_parts)
+                ]
+            )
+        else:
+            particles = np.empty((0, 3))
+            correspondences = np.empty((0, 5), dtype=np.int32)
+
+        # Count added/lost (simplified - would need more tracking for exact counts)
+        added_count = fb.num_parts
+        lost_count = 0  # Would need to track across frames for accurate count
+
+        return {
+            "frame_number": self.current_step(),
+            "particles": particles,
+            "correspondences": correspondences,
+            "added_count": added_count,
+            "lost_count": lost_count,
+        }

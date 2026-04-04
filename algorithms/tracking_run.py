@@ -5,8 +5,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import List
 
-from openptv_python.calibration import Calibration
-from openptv_python.tracking_frame_buf import FrameBuf
+from .calibration import Calibration
+from .tracking_frame_buf import FrameBuf
 
 from .multimed import volumedimension
 from .parameters import (

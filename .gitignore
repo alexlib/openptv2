@@ -44,31 +44,12 @@ bindings/optv/__pycache__/
 bindings/liboptv/
 bindings/*.egg-info/
 
-# Test output files (generated during tests, not test data)
-bindings/tests/testing_fodder/burgers/tmp*
-bindings/tests/testing_fodder/burgers/res_orig/
-bindings/tests/testing_fodder/track/res_orig/
-bindings/tests/testing_fodder/track/newpart/
-bindings/tests/testing_fodder/track/cal/calibration_target.txt
-tests/testing_fodder/burgers/tmp*
-tests/testing_fodder/burgers/res_orig/
-tests/testing_fodder/track/res_orig/
-tests/testing_fodder/track/newpart/
-tests/testing_fodder/track/cal/calibration_target.txt
-
-# GUI test output
-gui/tests/test_cavity/tmp*
-gui/tests/test_cavity/parameters_test_new/
-gui/tests/test_cavity/res/added.*
-gui/tests/test_cavity/res/ptv_is.*
-gui/tests/test_cavity/res/rt_is.*
 
 # Integration test output
-tests/integration/test_cavity/tmp*
-tests/integration/test_cavity/parameters_test_new/
-tests/integration/test_cavity/res/added.*
-tests/integration/test_cavity/res/ptv_is.*
-tests/integration/test_cavity/res/rt_is.*
+added.*
+ptv_is.*
+rt_is.*
+*_targets
 
 # Build artifacts
 *.o
@@ -85,9 +66,6 @@ Makefile
 compile_commands.json
 
 # Cython generated
-*.c
-*.h
-!*.h.in
 bindings/optv/*.c
 bindings/optv/*.cpp
 bindings/optv/*.h
@@ -120,3 +98,11 @@ uv.lock
 
 # algorithms/ - ignore generated files
 algorithms/__pycache__/
+
+
+# Test temporary files
+test_data/**/tmp*
+test_data/**/parameters__test_new.yaml
+test_data/**/tracking_run_summary.csv
+/gui/notebooks/__marimo__
+**/**/*.*_targets

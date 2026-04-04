@@ -19,6 +19,7 @@ Welcome to the openptv2 documentation.
 ### Developer Documentation
 
 - [Building from Source](building.md) - Detailed build instructions
+- [Building Binary Wheels](../../BUILDING_BINARY_WHEELS.md) - Creating portable wheels
 - [Development Workflow](building.md#development-workflow) - How to develop
 - [Testing](building.md#testing) - Running tests
 - [Code Quality](building.md#check-code-quality) - Linting and formatting
@@ -28,6 +29,7 @@ Welcome to the openptv2 documentation.
 - [Repository Structure](../../README.md#repository-structure) - Project layout
 - [Engine Architecture](../../README.md#engine-comparison) - Dual-engine design
 - [Build System](building.md#build-architecture) - How the build works
+- [Binary Wheels](../../BUILDING_BINARY_WHEELS.md) - manylinux2014 wheels
 
 ### Migration
 
@@ -49,12 +51,34 @@ Welcome to the openptv2 documentation.
 ```
 docs/
 ├── index.md                 # This file
+├── HOW_TO_TEST_GUI.md       # GUI testing guide
+├── BUILDING_BINARY_WHEELS.md # Wheel building guide
 ├── developer_guide/
 │   └── building.md          # Build instructions
-├── algorithms/              # Algorithm documentation (TODO)
+├── algorithms/
+│   └── tracking.md          # Tracking algorithm documentation
 ├── sphinx/                  # API reference (TODO)
 └── tutorials/               # User tutorials (TODO)
 ```
+
+---
+
+## Available Documentation
+
+### Algorithms
+- [Tracking Algorithms](algorithms/tracking.md) - Explanation of track.c vs track3d.c
+
+### Developer Guide
+- [Building from Source](developer_guide/building.md) - Full build instructions
+- [Building Binary Wheels](../../BUILDING_BINARY_WHEELS.md) - manylinux/macOS/Windows wheels
+
+### GUI
+- [Testing the GUI](HOW_TO_TEST_GUI.md) - How to test the GUI
+
+### Scripts
+- [scripts/build_wheel.sh](../../scripts/build_wheel.sh) - Build binary wheel
+- [scripts/install_wheel.sh](../../scripts/install_wheel.sh) - Install wheel in clean venv
+- [scripts/run_tests.sh](../../scripts/run_tests.sh) - Run test suite
 
 ---
 

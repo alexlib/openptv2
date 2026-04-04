@@ -79,15 +79,33 @@ def fast_multimed_r_nlay(
     if zdiff == 0:
         zdiff = 1.0
     it = 0
-    rdiff = 0.1  # Initialize to enter the loop
+    rdiff = 0.1
     beta2 = np.zeros(nlay, dtype=np.float64)
+
+    # Handle r == 0 case (at optical center)
+    if r == 0:
+        return 1.0
 
     while abs(rdiff) > 0.001 and it < n_iter:
         beta1 = np.arctan(rq / zdiff)
         sin_beta1 = np.sin(beta1)
+
+        # Calculate angles for each layer with safety check
         for layer in range(nlay):
-            beta2[layer] = np.arcsin(sin_beta1 * n1 / n2[layer])
-        beta3 = np.arcsin(np.sin(beta1) * n1 / n3)
+            ratio = sin_beta1 * n1 / n2[layer]
+            if ratio < -1.0:
+                ratio = -1.0
+            elif ratio > 1.0:
+                ratio = 1.0
+            beta2[layer] = np.arcsin(ratio)
+
+        # Calculate final angle with clamping
+        final_ratio = sin_beta1 * n1 / n3
+        if final_ratio < -1.0:
+            final_ratio = -1.0
+        elif final_ratio > 1.0:
+            final_ratio = 1.0
+        beta3 = np.arcsin(final_ratio)
 
         rbeta = (z0 - d[0]) * np.tan(beta1) - zout * np.tan(beta3)
         for layer in range(nlay):
@@ -97,7 +115,10 @@ def fast_multimed_r_nlay(
         rq += rdiff
         it += 1
 
-    return 1.0 if r == 0 else float(rq / r)
+    if r == 0 or rq == 0:
+        return 1.0
+
+    return float(rq / r)
 
 
 def trans_cam_point(
@@ -428,29 +449,31 @@ def volumedimension(
 
                 pos, a = ray_tracing(x, y, cal[i_cam], cpar.mm)
 
-                # TODO: seems that it should be + pos[2] instead of - pos[2]
-                X = pos[0] + (z_min + pos[2]) * a[0] / a[2]
-                Y = pos[1] + (z_min + pos[2]) * a[1] / a[2]
+                # Guard against division by zero when a[2] is zero/near-zero
+                if abs(a[2]) > 1e-10:
+                    X = pos[0] + (z_min + pos[2]) * a[0] / a[2]
+                    Y = pos[1] + (z_min + pos[2]) * a[1] / a[2]
 
-                if X > xmax:
-                    xmax = X
-                if X < xmin:
-                    xmin = X
-                if Y > ymax:
-                    ymax = Y
-                if Y < ymin:
-                    ymin = Y
+                    if X > xmax:
+                        xmax = X
+                    if X < xmin:
+                        xmin = X
+                    if Y > ymax:
+                        ymax = Y
+                    if Y < ymin:
+                        ymin = Y
 
-                X = pos[0] + (z_max - pos[2]) * a[0] / a[2]
-                Y = pos[1] + (z_max - pos[2]) * a[1] / a[2]
+                if abs(a[2]) > 1e-10:
+                    X = pos[0] + (z_max - pos[2]) * a[0] / a[2]
+                    Y = pos[1] + (z_max - pos[2]) * a[1] / a[2]
 
-                if X > xmax:
-                    xmax = X
-                if X < xmin:
-                    xmin = X
-                if Y > ymax:
-                    ymax = Y
-                if Y < ymin:
-                    ymin = Y
+                    if X > xmax:
+                        xmax = X
+                    if X < xmin:
+                        xmin = X
+                    if Y > ymax:
+                        ymax = Y
+                    if Y < ymin:
+                        ymin = Y
 
     return (xmax, xmin, ymax, ymin, z_max, z_min)

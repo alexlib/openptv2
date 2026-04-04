@@ -33,6 +33,7 @@ classifiers = [
 ]
 dependencies = [
     "numpy>=2.0.0",
+    "pytest>=9.0.2",
     "pyyaml>=6.0",
     "scipy>=1.10.0",
 ]
@@ -99,24 +100,23 @@ openptv2-validate = "openptv2.validate:main"
 pyptv = "gui.pyptv.pyptv_gui:main"
 
 [tool.setuptools]
-# Package configuration
-# Note: optv package is installed by CMake build, not listed here
 packages = [
     "openptv2",
     "algorithms",
-    "gui",
+    "optv",
     "gui.pyptv",
-    "gui.pyptv.calibration_output",
-    "pyptv",
+    "gui.plugins",
 ]
+package-dir = {optv = "bindings/optv"}
 include-package-data = true
 zip-safe = false
 
 [tool.pytest.ini_options]
-testpaths = ["tests", "bindings/tests", "gui/tests"]
+testpaths = ["algorithms/tests", "bindings/tests", "gui/tests"]
 python_files = ["test_*.py"]
 python_functions = ["test_*"]
-addopts = "-v --tb=short"
+pythonpath = ["gui"]
+addopts = "-v --tb=short --import-mode=importlib"
 markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
     "gui: marks tests that require GUI",

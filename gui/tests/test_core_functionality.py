@@ -6,15 +6,17 @@ import numpy as np
 from optv.calibration import Calibration
 from optv.parameters import VolumeParams
 
+
 @pytest.fixture
 def test_cavity_dir():
     # Fixture to provide the test_cavity directory path
-    return os.path.join(os.path.dirname(__file__), "test_cavity")
+    return os.path.join(
+        os.path.dirname(__file__), "..", "..", "test_data", "test_cavity"
+    )
+
 
 def test_core_functionality(test_cavity_dir, capsys):
     """Test core functionality of pyptv and optv"""
-
-
 
     # Print versions
     print(f"PyPTV version: {pyptv.__version__}")

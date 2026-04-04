@@ -1,5 +1,6 @@
 """Correspondences."""
 
+import math
 from typing import List, Tuple
 
 import numpy as np
@@ -13,9 +14,77 @@ from .constants import (
     PT_UNUSED,
 )
 from .epi import epi_mm
-from .find_candidate import find_candidate
+from .find_candidate import find_candidate, find_start_point_binary
 from .parameters import ControlPar, VolumePar
 from .tracking_frame_buf import Frame, Target, n_tupel_dtype
+from .trafo import dist_to_flat, pixel_to_metric
+
+
+class MatchedCoords:
+    """Python equivalent of the native MatchedCoords wrapper."""
+
+    def __init__(
+        self,
+        targs,
+        cpar: ControlPar,
+        cal: Calibration,
+        tol: float = 0.00001,
+        reset_numbers: bool = True,
+    ):
+        self._num_pts = len(targs)
+        self.buf = np.recarray(
+            self._num_pts,
+            dtype=[("x", np.float64), ("y", np.float64), ("pnr", np.int_)],
+        )
+
+        for tnum in range(self._num_pts):
+            targ = targs[tnum]
+            if reset_numbers:
+                targ.pnr = tnum
+
+            x_m, y_m = pixel_to_metric(targ.x, targ.y, cpar)
+            x_f, y_f = dist_to_flat(x_m, y_m, cal, tol)
+            self.buf[tnum].x = x_f
+            self.buf[tnum].y = y_f
+            self.buf[tnum].pnr = targ.pnr
+
+        self.buf = self.buf[np.argsort(self.buf.x)]
+
+    def __getitem__(self, index):
+        return self.buf[index]
+
+    @property
+    def x(self):
+        """Expose x coordinates for compatibility with find_start_point."""
+        return self.buf.x
+
+    @property
+    def y(self):
+        """Expose y coordinates for compatibility with find_candidate."""
+        return self.buf.y
+
+    @property
+    def pnr(self):
+        """Expose pnr for compatibility with find_candidate."""
+        return self.buf.pnr
+
+    def as_arrays(self):
+        pos = np.empty((self._num_pts, 2), dtype=np.float64)
+        pos[:, 0] = self.buf.x
+        pos[:, 1] = self.buf.y
+        pnr = self.buf.pnr.astype(np.int_)
+        return pos, pnr
+
+    def get_by_pnrs(self, pnrs):
+        pnrs = np.asarray(pnrs)
+        pos = np.full((len(pnrs), 2), np.nan, dtype=np.float64)
+        for row in self.buf:
+            which = np.flatnonzero(row.pnr == pnrs)
+            if len(which) > 0:
+                pos[which[0], 0] = row.x
+                pos[which[0], 1] = row.y
+        return pos
+
 
 Correspond_dtype = np.dtype(
     [
@@ -335,58 +404,257 @@ def match_pairs(
     **The function returns None.**
     """
     count = 0
+    mm = getattr(cpar, "mm", None)
+    if mm is None:
+        get_mm = getattr(cpar, "get_multimedia_params", None)
+        if callable(get_mm):
+            mm = get_mm()
+    if mm is None:
+        raise AttributeError(
+            "Control parameters object does not expose multimedia parameters"
+        )
+    num_cams = getattr(cpar, "num_cams", None)
+    if num_cams is None:
+        num_cams = getattr(getattr(cpar, "_control_par", None), "num_cams", None)
+    if num_cams is None:
+        get_num_cams = getattr(cpar, "get_num_cams", None)
+        if callable(get_num_cams):
+            num_cams = get_num_cams()
+    if num_cams is None:
+        raise AttributeError("Control parameters object does not expose num_cams")
 
-    for i1 in range(cpar.num_cams - 1):
-        for i2 in range(i1 + 1, cpar.num_cams):
-            for i in range(frm.num_targets[i1]):
-                # if corrected[i1][i].x == PT_UNUSED: # no idea why it's here
-                #     continue
+    # Pre-extract raw arrays from corrected coords and targets to avoid
+    # repeated recarray attribute access overhead.
+    _crd_x = [np.asarray(corrected[i].x, dtype=np.float64) for i in range(num_cams)]
+    _crd_y = [np.asarray(corrected[i].y, dtype=np.float64) for i in range(num_cams)]
+    _crd_pnr = [np.asarray(corrected[i].pnr, dtype=np.int64) for i in range(num_cams)]
 
+    _targ_n = []
+    _targ_nx = []
+    _targ_ny = []
+    _targ_sumg = []
+    for i in range(num_cams):
+        nt = frm.num_targets[i]
+        _targ_n.append(
+            np.array([frm.targets[i][j].n for j in range(nt)], dtype=np.int64)
+        )
+        _targ_nx.append(
+            np.array([frm.targets[i][j].nx for j in range(nt)], dtype=np.int64)
+        )
+        _targ_ny.append(
+            np.array([frm.targets[i][j].ny for j in range(nt)], dtype=np.int64)
+        )
+        _targ_sumg.append(
+            np.array([frm.targets[i][j].sumg for j in range(nt)], dtype=np.int64)
+        )
+
+    eps0 = getattr(vpar, "eps0", None)
+    if eps0 is None:
+        get_eps0 = getattr(vpar, "get_eps0", None)
+        if callable(get_eps0):
+            eps0 = get_eps0()
+    cn_val = getattr(vpar, "cn", None)
+    if cn_val is None:
+        get_cn = getattr(vpar, "get_cn", None)
+        if callable(get_cn):
+            cn_val = get_cn()
+    cnx_val = getattr(vpar, "cnx", None)
+    if cnx_val is None:
+        get_cnx = getattr(vpar, "get_cnx", None)
+        if callable(get_cnx):
+            cnx_val = get_cnx()
+    cny_val = getattr(vpar, "cny", None)
+    if cny_val is None:
+        get_cny = getattr(vpar, "get_cny", None)
+        if callable(get_cny):
+            cny_val = get_cny()
+    csumg_val = getattr(vpar, "csumg", None)
+    if csumg_val is None:
+        get_csumg = getattr(vpar, "get_csumg", None)
+        if callable(get_csumg):
+            csumg_val = get_csumg()
+
+    for i1 in range(num_cams - 1):
+        for i2 in range(i1 + 1, num_cams):
+            num1 = frm.num_targets[i1]
+            num2 = frm.num_targets[i2]
+            crd_x2 = _crd_x[i2]
+            crd_y2 = _crd_y[i2]
+            crd_pnr2 = _crd_pnr[i2]
+
+            for i in range(num1):
                 xa12, ya12, xb12, yb12 = epi_mm(
-                    corrected[i1][i].x,
-                    corrected[i1][i].y,
+                    _crd_x[i1][i],
+                    _crd_y[i1][i],
                     calib[i1],
                     calib[i2],
-                    cpar.mm,
+                    mm,
                     vpar,
                 )
 
-                # print(f" xa12: {xa12}, ya12: {ya12}, xb12: {xb12}, yb12: {yb12} ")
-
-                # origin point in the corr_list
                 corr_lists[i1][i2][i].p1 = i
-                pt1 = corrected[i1][i].pnr
+                pt1 = _crd_pnr[i1][i]
 
-                # search for a conjugate point in corrected[i2]
-                # cand = [Correspond() for _ in range(MAXCAND)]
-
-                cand = find_candidate(
-                    corrected[i2],
-                    frm.targets[i2],
-                    frm.num_targets[i2],
+                # Vectorized candidate search (replaces find_candidate)
+                cand = _find_candidates_vectorized(
+                    crd_x2,
+                    crd_y2,
+                    crd_pnr2,
+                    num2,
+                    _targ_n[i2],
+                    _targ_nx[i2],
+                    _targ_ny[i2],
+                    _targ_sumg[i2],
                     xa12,
                     ya12,
                     xb12,
                     yb12,
-                    frm.targets[i1][pt1].n,
-                    frm.targets[i1][pt1].nx,
-                    frm.targets[i1][pt1].ny,
-                    frm.targets[i1][pt1].sumg,
-                    vpar,
-                    cpar,
-                    calib[i2],
+                    _targ_n[i1][pt1],
+                    _targ_nx[i1][pt1],
+                    _targ_ny[i1][pt1],
+                    _targ_sumg[i1][pt1],
+                    eps0,
+                    cn_val,
+                    cnx_val,
+                    cny_val,
+                    csumg_val,
                 )
 
-                # write first MAXCAND corresponding candidates
-                # to the preliminary corr_list of correspondences
                 count = min(len(cand), MAXCAND)
-
                 for j in range(count):
-                    corr_lists[i1][i2][i].p2[j] = cand[j].pnr
-                    corr_lists[i1][i2][i].corr[j] = cand[j].corr
-                    corr_lists[i1][i2][i].dist[j] = cand[j].tol
+                    corr_lists[i1][i2][i].p2[j] = cand[j][0]
+                    corr_lists[i1][i2][i].corr[j] = cand[j][2]
+                    corr_lists[i1][i2][i].dist[j] = cand[j][1]
 
                 corr_lists[i1][i2][i].n = count
+
+
+def _find_candidates_vectorized(
+    crd_x2,
+    crd_y2,
+    crd_pnr2,
+    num2,
+    targ_n2,
+    targ_nx2,
+    targ_ny2,
+    targ_sumg2,
+    xa,
+    ya,
+    xb,
+    yb,
+    ref_n,
+    ref_nx,
+    ref_ny,
+    ref_sumg,
+    eps0,
+    cn,
+    cnx,
+    cny,
+    csumg,
+):
+    """Vectorized candidate search replacing find_candidate.
+
+    Uses numpy boolean indexing instead of per-element Python loop.
+    Returns list of (pnr, distance, correlation) tuples.
+    """
+    if num2 == 0:
+        return []
+
+    # Line equation: y = m*x + b
+    if abs(xb - xa) < 1e-15:
+        xb = xa + 1e-10
+
+    m = (yb - ya) / (xb - xa)
+    b = ya - m * xa
+    m_norm = math.sqrt(m * m + 1)
+
+    # Normalize search window
+    xa_lo = min(xa, xb) - eps0
+    xa_hi = max(xa, xb) + eps0
+    ya_lo = min(ya, yb) - eps0
+    ya_hi = max(ya, yb) + eps0
+
+    # Binary search for starting index in x-sorted array
+    j0 = find_start_point_binary(crd_x2, num2, xa, eps0)
+
+    # Extract slice starting from j0
+    sl_x = crd_x2[j0:num2]
+    sl_y = crd_y2[j0:num2]
+    sl_pnr = crd_pnr2[j0:num2]
+
+    # Vectorized bounds check
+    mask = (sl_x >= xa_lo) & (sl_x <= xa_hi) & (sl_y >= ya_lo) & (sl_y <= ya_hi)
+
+    # Stop at first x that exceeds upper bound
+    beyond = np.where(sl_x > xa_hi)[0]
+    if len(beyond) > 0:
+        mask[beyond[0] :] = False
+
+    indices = np.where(mask)[0]
+    if len(indices) == 0:
+        return []
+
+    # Vectorized epipolar distance
+    cx = sl_x[indices]
+    cy = sl_y[indices]
+    cpnr = sl_pnr[indices]
+    dists = np.abs((cy - m * cx - b) / m_norm)
+
+    # Filter by distance
+    dmask = dists < eps0
+    if not np.any(dmask):
+        return []
+
+    cpnr = cpnr[dmask]
+    dists = dists[dmask]
+
+    # Vectorized quality computation
+    cand_n = targ_n2[cpnr]
+    cand_nx = targ_nx2[cpnr]
+    cand_ny = targ_ny2[cpnr]
+    cand_sumg = targ_sumg2[cpnr]
+
+    qn = _quality_ratio_vec(ref_n, cand_n)
+    qnx = _quality_ratio_vec(ref_nx, cand_nx)
+    qny = _quality_ratio_vec(ref_ny, cand_ny)
+    qsumg = _quality_ratio_vec(ref_sumg, cand_sumg)
+
+    # Quality filter
+    qmask = (qn >= cn) & (qnx >= cnx) & (qny >= cny) & (qsumg > csumg)
+    if not np.any(qmask):
+        return []
+
+    cpnr = cpnr[qmask]
+    dists = dists[qmask]
+    qn = qn[qmask]
+    qnx = qnx[qmask]
+    qny = qny[qmask]
+    qsumg = qsumg[qmask]
+    cand_sumg = cand_sumg[qmask]
+
+    # Correlation score
+    corrs = (4 * qsumg + 2 * qn + qnx + qny) * (ref_sumg + cand_sumg).astype(np.float64)
+
+    # Preserve x-sorted discovery order (matching original find_candidate
+    # which takes candidates in the order they appear along the epipolar line).
+    # The candidates already maintain order from the numpy filtering,
+    # but we need to limit to MAXCAND.
+    n_take = min(len(cpnr), MAXCAND)
+
+    return [(int(cpnr[k]), float(dists[k]), float(corrs[k])) for k in range(n_take)]
+
+
+def _quality_ratio_vec(a, b):
+    """Vectorized quality ratio: min(a,b)/max(a,b), handling zeros."""
+    a = np.asarray(a, dtype=np.float64)
+    b = np.asarray(b, dtype=np.float64)
+    with np.errstate(divide="ignore", invalid="ignore"):
+        result = np.where(
+            (a == 0) & (b == 0),
+            0.0,
+            np.minimum(a, b) / np.maximum(a, b),
+        )
+    return result
 
 
 def take_best_candidates(
@@ -627,20 +895,29 @@ def correspondences(
 
     """
     nmax = NMAX
+    num_cams = getattr(cpar, "num_cams", None)
+    if num_cams is None:
+        num_cams = getattr(getattr(cpar, "_control_par", None), "num_cams", None)
+    if num_cams is None:
+        get_num_cams = getattr(cpar, "get_num_cams", None)
+        if callable(get_num_cams):
+            num_cams = get_num_cams()
+    if num_cams is None:
+        raise AttributeError("Control parameters object does not expose num_cams")
 
     # Allocation of scratch buffers for internal tasks and return-value space
-    con0 = np.recarray((nmax * cpar.num_cams,), dtype=n_tupel_dtype)
+    con0 = np.recarray((nmax * num_cams,), dtype=n_tupel_dtype)
     con0.p = 0
     con0.corr = 0.0
 
-    con = np.recarray((nmax * cpar.num_cams,), dtype=n_tupel_dtype)
+    con = np.recarray((nmax * num_cams,), dtype=n_tupel_dtype)
     con.p = 0
     con.corr = 0.0
 
-    tim = safely_allocate_target_usage_marks(cpar.num_cams, nmax)
+    tim = safely_allocate_target_usage_marks(num_cams, nmax)
 
     # allocate memory for lists of correspondences
-    corr_list = safely_allocate_adjacency_lists(cpar.num_cams, frm.num_targets)
+    corr_list = safely_allocate_adjacency_lists(num_cams, frm.num_targets)
 
     # if I understand correctly, the number of matches cannot be more than the number of
     # targets (dots) in the first image. In the future we'll replace it by the maximum
@@ -652,38 +929,38 @@ def correspondences(
     match_pairs(corr_list, corrected, frm, vpar, cpar, calib)
 
     # search consistent quadruplets in the corr_list
-    if cpar.num_cams == 4:
+    if num_cams == 4:
         four_camera_matching(
             corr_list, frm.num_targets[0], vpar.corrmin, con0, 4 * nmax
         )
 
-        match_counts[0] = take_best_candidates(con0, con, cpar.num_cams, tim)
+        match_counts[0] = take_best_candidates(con0, con, num_cams, tim)
         match_counts[3] += match_counts[0]
 
     # search consistent triplets: 123, 124, 134, 234
-    if (cpar.num_cams == 4 and cpar.all_cam_flag == 0) or cpar.num_cams == 3:
+    if (num_cams == 4 and cpar.all_cam_flag == 0) or num_cams == 3:
         three_camera_matching(
-            corr_list, cpar.num_cams, frm.num_targets, vpar.corrmin, con0, 4 * nmax, tim
+            corr_list, num_cams, frm.num_targets, vpar.corrmin, con0, 4 * nmax, tim
         )
 
         match_counts[1] = take_best_candidates(
-            con0, con[match_counts[3] :].view(np.recarray), cpar.num_cams, tim
+            con0, con[match_counts[3] :].view(np.recarray), num_cams, tim
         )
         match_counts[3] += match_counts[1]
 
     # Search consistent pairs: 12, 13, 14, 23, 24, 34
-    if cpar.num_cams > 1 and cpar.all_cam_flag == 0:
+    if num_cams > 1 and cpar.all_cam_flag == 0:
         consistent_pair_matching(
-            corr_list, cpar.num_cams, frm.num_targets, vpar.corrmin, con0, 4 * nmax, tim
+            corr_list, num_cams, frm.num_targets, vpar.corrmin, con0, 4 * nmax, tim
         )
         match_counts[2] = take_best_candidates(
-            con0, con[match_counts[3] :].view(np.recarray), cpar.num_cams, tim
+            con0, con[match_counts[3] :].view(np.recarray), num_cams, tim
         )
         match_counts[3] += match_counts[2]
 
     # Give each used pix the correspondence number
     for i in range(match_counts[3]):
-        for j in range(cpar.num_cams):
+        for j in range(num_cams):
             # Skip cameras without a correspondence obviously.
             if con[i].p[j] < 0:
                 continue
@@ -743,12 +1020,12 @@ def single_cam_correspondences(
     # intermediary that's x-sorted.
     for pt in range(num_points):
         # From Beat code (issue #118) pix[0][geo[0][i].pnr].tnr=i;
-
-        p1 = corrected[pt].pnr
+        _, pnrs = corrected[pt].as_arrays()
+        p1 = int(pnrs[pt])
         clique_ids[0, pt] = p1
 
         if p1 > -1:
-            targ = img_pts[p1]
+            targ = img_pts[0][p1]
             clique_targs[0, pt, 0] = targ.x
             clique_targs[0, pt, 1] = targ.y
             # we also update the tnr, see docstring of correspondences
@@ -758,3 +1035,11 @@ def single_cam_correspondences(
     sorted_corresp = [clique_ids]
 
     return (sorted_pos, sorted_corresp, num_points)
+
+
+def single_cam_correspondence(
+    img_pts: List[Target],
+    corrected: np.recarray,  # List[Coord2d]
+):
+    """Compatibility alias for the native single-camera correspondence API."""
+    return single_cam_correspondences(img_pts, corrected)

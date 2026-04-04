@@ -133,3 +133,59 @@ def from_native_target(native_target) -> Target:
 
 def from_native_target_array(native_targets: Iterable[object]) -> List[Target]:
     return [from_native_target(target) for target in native_targets]
+
+
+def from_optv_control_par(optv_cpar) -> ControlPar:
+    """Convert optv.ControlParams to native ControlPar."""
+    from .parameters import ControlPar, MultimediaPar
+
+    cpar = ControlPar()
+    cpar.imx = optv_cpar.get_image_size()[0]
+    cpar.imy = optv_cpar.get_image_size()[1]
+    cpar.pix_x = optv_cpar.get_pixel_size()[0]
+    cpar.pix_y = optv_cpar.get_pixel_size()[1]
+    cpar.chfield = 0
+
+    return cpar
+
+
+def from_optv_calibration(optv_cal):
+    """Convert optv.Calibration to native Calibration."""
+    from .calibration import Calibration as NativeCal
+
+    cal = NativeCal()
+    cal.set_pos(optv_cal.get_pos())
+    cal.set_angles(optv_cal.get_angles())
+    cal.set_primary_point(optv_cal.get_primary_point())
+    cal.set_radial_distortion(optv_cal.get_radial_distortion())
+    cal.set_decentering(optv_cal.get_decentering())
+    cal.set_affine_trans(
+        optv_cal.get_affine()
+    )  # optv uses get_affine, not get_affine_trans
+    cal.set_glass_vec(optv_cal.get_glass_vec())
+
+    return cal
+
+
+def from_optv_volume_params(optv_vpar) -> "VolumeParams":
+    """Convert optv.VolumeParams to native VolumeParams.
+
+    Note: optv uses layer-based z values (Zmin_lay, Zmax_lay) while python uses
+    simple z_min, z_max. We use the first layer's values.
+    """
+    from .parameters_adapter import VolumeParams as NativeVolumeParams
+
+    x_lay = optv_vpar.get_X_lay()
+    z_min_lay = optv_vpar.get_Zmin_lay()
+    z_max_lay = optv_vpar.get_Zmax_lay()
+
+    vpar = NativeVolumeParams(
+        xmin=float(x_lay[0]) if len(x_lay) >= 1 else 0.0,
+        xmax=float(x_lay[1]) if len(x_lay) >= 2 else 100.0,
+        ymin=0.0,
+        ymax=100.0,
+        zmin=float(z_min_lay[0]) if len(z_min_lay) >= 1 else 0.0,
+        zmax=float(z_max_lay[0]) if len(z_max_lay) >= 1 else 50.0,
+    )
+
+    return vpar

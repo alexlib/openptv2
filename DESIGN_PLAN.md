@@ -42,12 +42,14 @@ openptv2/
 │   ├── correspondence.py
 │   ├── calibration.py
 │   ├── image_processing.py
-│   └── tests/
+│   ├── tests/              # Algorithm unit tests (pytest)
+│   └── conftest.py
 │
 ├── gui/                    # TraitsUI GUI (from pyptv)
 │   ├── pyptv/
-│   ├── tests/
-│   └── plugins/
+│   ├── tests/              # GUI tests (pytest)
+│   ├── plugins/
+│   └── conftest.py
 │
 ├── openptv2/               # Unified Python package (Phase 3)
 │   ├── __init__.py         # Main entry point, exports all classes
@@ -64,13 +66,11 @@ openptv2/
 │   ├── tutorials/          # User guides
 │   └── algorithms/         # Algorithm explanations
 │
-├── tests/                  # Integration tests (full pipeline)
-│   ├── integration/
-│   ├── engine_comparison/  # C vs Python results
-│   └── fixtures/
-│
 ├── scripts/                # Build, version bump, CI helpers
 │
+├── test_data/              # Shared test data (images, parameters, fixtures)
+│
+├── conftest.py             # Root pytest configuration
 ├── pyproject.toml          # Main project config (uv/pip)
 ├── README.md
 └── LICENSE
@@ -172,7 +172,7 @@ class EngineSelector:
 ### 4.3 Engine Comparison Test
 
 ```python
-# tests/engine_comparison/test_tracking.py
+# algorithms/tests/test_engine_comparison.py
 import pytest
 import numpy as np
 from openptv2 import track_particles
@@ -280,32 +280,46 @@ openptv2-validate params.yaml --tolerance 1e-10
 
 ## 6. Testing Infrastructure
 
-### 6.1 Test Layers
+### 6.1 Test Organization
+
+Tests are distributed across subfolders — each component owns its tests:
+
+```
+openptv2/
+├── lib/tests/              # C library tests (Check framework)
+├── bindings/tests/         # Cython binding tests (pytest)
+├── algorithms/tests/       # Python algorithm tests (pytest)
+├── gui/tests/              # GUI tests (pytest)
+└── test_data/              # Shared test fixtures and data
+```
+
+### 6.2 Test Layers
 
 ```
 ┌─────────────────────────────────────┐
-│  Integration Tests (full pipeline)  │
-│  - Image → Results in working folder│
+│  Integration Tests (per component)  │
+│  - Full pipeline within each module │
 └─────────────────────────────────────┘
          ▲
 ┌─────────────────────────────────────┐
 │  Engine Comparison Tests            │
 │  - optv vs python identical results │
+│  - Located in algorithms/tests/     │
 └─────────────────────────────────────┘
          ▲
 ┌─────────────────────────────────────┐
 │  Unit Tests (per module)            │
-│  - C library tests (Check)          │
-│  - Binding tests (pytest)           │
-│  - Algorithm tests (pytest)         │
-│  - GUI tests (pytest + UI automation│
+│  - lib/tests/     (C, Check)        │
+│  - bindings/tests/ (pytest)         │
+│  - algorithms/tests/ (pytest)       │
+│  - gui/tests/ (pytest + UI)         │
 └─────────────────────────────────────┘
 ```
 
-### 6.2 Test Commands
+### 6.3 Test Commands
 
 ```bash
-# All tests
+# All tests (discovers all subfolder tests/)
 uv run pytest
 
 # C library tests
@@ -314,14 +328,17 @@ cd lib && mkdir build && cd build && cmake .. && ctest
 # Binding tests
 uv run pytest bindings/tests/
 
-# Engine comparison
-uv run pytest tests/engine_comparison/ --validate-engine
+# Algorithm tests
+uv run pytest algorithms/tests/
 
 # GUI tests (headless)
 uv run pytest gui/tests/ --headless
 
-# Full integration test
-uv run python -m openptv2.tests.integration test_experiment/
+# Engine comparison (optv vs python parity)
+uv run pytest algorithms/tests/ -k engine_comparison
+
+# Validation CLI
+openptv2-validate params.yaml --tolerance 1e-10
 ```
 
 ---
@@ -462,6 +479,7 @@ openptv2-gui --params parameters.yaml
 | Backward compatibility: Maintain optv/pyptv APIs | 2026-03-21 | Existing users' workflows must continue |
 | Migration: Copy → Refactor → Unify | 2026-03-21 | Safest path to working version |
 | Testing: Start with existing tests, expand later | 2026-03-21 | Preserve test coverage, add gradually |
+| Testing: Distributed per-component | 2026-04-01 | Each subfolder owns its tests; no centralized tests/ dir |
 | Documentation: Combine existing docs first | 2026-03-21 | Working docs before enhancements |
 | `openptv2/` package folder | 2026-03-22 | Phase 3 unification: flexible integration layer for bindings, algorithms, and GUI |
 

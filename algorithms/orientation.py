@@ -6,7 +6,7 @@ import numpy as np
 import scipy
 from numba import njit, prange
 
-from openptv_python.constants import COORD_UNUSED
+from .constants import COORD_UNUSED
 
 from .calibration import Calibration
 from .constants import CONVERGENCE, IDT, NPAR, NUM_ITER, POS_INF

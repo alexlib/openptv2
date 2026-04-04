@@ -1,6 +1,7 @@
 """Calibration data structures and functions."""
 
 import copy
+import sys
 from pathlib import Path
 from typing import Optional
 
@@ -117,7 +118,7 @@ class Calibration:
         if added_par is None:
             added_par = np.array((0, 0, 0, 0, 0, 1, 0), dtype=np.float64)
         if mmlut is None:
-            mmlut = copy.deepcopy(mm_lut)  # (np.zeros(3), 0, 0, 0)
+            mmlut = copy.deepcopy(mm_lut)
         if mmlut_data is None:
             mmlut_data = np.zeros((mmlut.nr, mmlut.nz), dtype=np.float64)
 
@@ -128,49 +129,30 @@ class Calibration:
         self.mmlut = mmlut
         self.mmlut_data = mmlut_data
 
-    @classmethod
-    def from_file(cls, ori_file: Path, add_file: Path | None):
-        """
-        Read exterior and interior orientation, and if available, parameters for distortion corrections.
+    def load_from_file(self, ori_file: Path | str, add_file: Path | str | None):
+        """Read calibration from .ori and .addpar files into this instance."""
+        ori_file = Path(ori_file) if isinstance(ori_file, str) else ori_file
+        if add_file is not None:
+            add_file = Path(add_file) if isinstance(add_file, str) else add_file
 
-        Arguments:
-        ---------
-        - ori_file: path of file containing interior and exterior orientation data.
-        - add_file: path of file containing added (distortions) parameters.
-        - add_fallback: path to file for use if add_file can't be opened.
-
-        Returns
-        -------
-        - ext_par, int_par, glass, addp: Calibration object parts without multimedia lookup table.
-        """
         if not ori_file.exists():
             raise IOError(f"File {ori_file} does not exist")
 
-        ret = cls()
+        ret = Calibration()
 
         with open(ori_file, "r", encoding="utf-8") as fp:
             tmp = fp.read()
 
         data = np.fromstring(tmp, dtype=float, sep=" ")
-        # print(data)
 
         ret.set_pos(data[:3])
         ret.set_angles(data[3:6])
-        # no need. set_angles updates rotation matrix automatically
-        # ret.set_rotation_matrix(data[6:15].reshape(3, 3))
-        ret.set_primary_point(data[15:18])  # xh, yh, cc
-        ret.glass_par = data[18:]  # glass position vector from the water side
-
-        # double-check that we have the correct rotation matrix
-        # self.ext_par.rotation_matrix()
-
-        # this is anyhow default
-        # self.mmlut.data = None  # no multimedia data yet
+        ret.set_primary_point(data[15:18])
+        ret.glass_par = data[18:]
 
         ret.added_par = np.array([0, 0, 0, 0, 0, 1, 0], dtype=np.float64)
 
-        # Additional parameters
-        if add_file is not None:
+        if add_file is not None and add_file.exists():
             with open(add_file, "r", encoding="utf-8") as fp:
                 addtmp = list(map(float, fp.readline().split()))
 
@@ -178,60 +160,29 @@ class Calibration:
                 ret.set_decentering(np.array(addtmp[3:5]))
                 ret.set_affine_distortion(np.array(addtmp[5:]))
 
-        # except FileNotFoundError:
-        else:
-            # print("no addpar fallback used")  # Waits for proper logging.
-            print("No addpar file found. Using default values for radial distortion")
+        self.ext_par = ret.ext_par
+        self.int_par = ret.int_par
+        self.glass_par = ret.glass_par
+        self.added_par = ret.added_par
+        self.mmlut = ret.mmlut
+        self.mmlut_data = ret.mmlut_data
 
-        return ret
-        # print(f"Calibration data read from files {ori_file} and {add_file}")
+        return self
 
-    def write(self, ori_file: str, addpar_file: str):
-        """Write calibration to file."""
-        success = write_ori(
-            self.ext_par,
-            self.int_par,
-            self.glass_par,
-            self.added_par,
-            ori_file,
-            addpar_file,
-        )
-        if not success:
-            raise IOError("Failed to write ori file")
+    @classmethod
+    def from_file(cls, ori_file: Path | str, add_file: Path | str | None):
+        """Create a new Calibration from .ori and .addpar files."""
+        cal = cls()
+        cal.load_from_file(ori_file, add_file)
+        return cal
 
-    def increment_attribute(self, attr_name, increment_value):
-        """Update the value of an attribute by increment_value."""
-        if hasattr(self.ext_par, attr_name):
-            setattr(
-                self.ext_par,
-                attr_name,
-                getattr(self.ext_par, attr_name) + increment_value,
-            )
-        if hasattr(self.int_par, attr_name):
-            setattr(
-                self.int_par,
-                attr_name,
-                getattr(self.int_par, attr_name) + increment_value,
-            )
-
-    def update_rotation_matrix(self) -> None:
-        """Update the rotation matrix of the exterior orientation."""
-        rotation_matrix(self.ext_par)
-
-    def set_rotation_matrix(self, dm: np.ndarray) -> None:
-        """Set exterior rotation matrix."""
-        if dm.shape != (3, 3):
-            raise ValueError("Illegal argument for exterior rotation matrix")
-        self.ext_par[0]["dm"] = dm
+    def get_pos(self) -> np.ndarray:
+        """Return array of 3 elements representing exterior's x, y, z."""
+        return np.r_[self.ext_par["x0"], self.ext_par["y0"], self.ext_par["z0"]]
 
     def set_pos(self, pos: np.ndarray) -> None:
-        """
-        Set exterior position.
-
-        Parameter: x_y_z_np - numpy array of 3 elements for x, y, z.
-        """
+        """Set exterior position."""
         pos = np.array(pos, dtype=np.float64)
-
         if pos.shape != (3,):
             raise ValueError(
                 "Illegal array argument "
@@ -240,9 +191,9 @@ class Calibration:
             )
         self.ext_par["x0"], self.ext_par["y0"], self.ext_par["z0"] = pos
 
-    def get_pos(self) -> np.ndarray:
-        """Return array of 3 elements representing exterior's x, y, z."""
-        return np.r_[self.ext_par["x0"], self.ext_par["y0"], self.ext_par["z0"]]
+    def update_rotation_matrix(self) -> None:
+        """Update the rotation matrix based on current angles."""
+        rotation_matrix(self.ext_par)
 
     def set_angles(self, o_p_k_np: np.ndarray) -> None:
         """
@@ -353,6 +304,14 @@ class Calibration:
         # self.added_par.scx, self.added_par.she = affine
         self.added_par[5:] = affine
 
+    def set_affine_trans(self, affine: np.ndarray) -> None:
+        """Alias for set_affine_distortion to match optv API."""
+        self.set_affine_distortion(affine)
+
+    def get_affine_trans(self) -> np.ndarray:
+        """Alias for get_affine to match optv API."""
+        return self.get_affine()
+
     def get_affine(self):
         """Return the affine transform parameters [1] as a 2 element array, (scx, she)."""
         # return np.r_[self.added_par.scx, self.added_par.she]
@@ -374,6 +333,33 @@ class Calibration:
             raise ValueError("Expected a 3-element list or array")
 
         self.glass_par = gvec
+
+    def increment_attribute(self, name: str, delta: float) -> None:
+        """Increment one calibration attribute used by orientation routines."""
+        if name in {"x0", "y0", "z0", "omega", "phi", "kappa"}:
+            self.ext_par[name] += delta
+            if name in {"omega", "phi", "kappa"}:
+                self.update_rotation_matrix()
+            return
+
+        added_index = {
+            "k1": 0,
+            "k2": 1,
+            "k3": 2,
+            "p1": 3,
+            "p2": 4,
+            "scx": 5,
+            "she": 6,
+        }.get(name)
+        if added_index is not None:
+            self.added_par[added_index] += delta
+            return
+
+        if name in {"cc", "xh", "yh"}:
+            self.int_par[name] += delta
+            return
+
+        raise AttributeError(f"Unknown calibration attribute: {name}")
 
     def get_glass_vec(self) -> np.ndarray:
         """Return the glass vector, a 3-element array of float."""

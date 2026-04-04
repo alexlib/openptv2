@@ -1,0 +1,20 @@
+FROM python:3.11-slim
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+ENV PATH="/root/.local/bin:$PATH"
+
+WORKDIR /project
+COPY dist/*.whl /project/dist/
+
+RUN uv venv /opt/venv --python 3.11 && \
+    . /opt/venv/bin/activate && \
+    uv pip install /project/dist/openptv2-*.whl[gui] pytest pytest-cov numba
+
+ENV PATH="/opt/venv/bin:$PATH"
+ENV VIRTUAL_ENV=/opt/venv
+
+CMD ["python", "-c", "import openptv2; import optv; print('OK')"]
