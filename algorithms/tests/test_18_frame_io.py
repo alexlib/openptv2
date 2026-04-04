@@ -23,7 +23,7 @@ class TestReadTargets:
         """Reading a targets file from Python, mirroring bindings test."""
         from algorithms.tracking_frame_buf import read_targets
 
-        targs = read_targets("test_data/sample.", 42)
+        targs = read_targets("test_data/sample_", 42)
 
         assert len(targs) == 2
         assert [t.tnr for t in targs] == [1, 0]
