@@ -129,8 +129,8 @@ class Calibration:
         self.mmlut = mmlut
         self.mmlut_data = mmlut_data
 
-    def from_file(self, ori_file: Path | str, add_file: Path | str | None):
-        """Read calibration from .ori and .addpar files."""
+    def load_from_file(self, ori_file: Path | str, add_file: Path | str | None):
+        """Read calibration from .ori and .addpar files into this instance."""
         ori_file = Path(ori_file) if isinstance(ori_file, str) else ori_file
         if add_file is not None:
             add_file = Path(add_file) if isinstance(add_file, str) else add_file
@@ -166,6 +166,15 @@ class Calibration:
         self.added_par = ret.added_par
         self.mmlut = ret.mmlut
         self.mmlut_data = ret.mmlut_data
+
+        return self
+
+    @classmethod
+    def from_file(cls, ori_file: Path | str, add_file: Path | str | None):
+        """Create a new Calibration from .ori and .addpar files."""
+        cal = cls()
+        cal.load_from_file(ori_file, add_file)
+        return cal
 
     def get_pos(self) -> np.ndarray:
         """Return array of 3 elements representing exterior's x, y, z."""
@@ -460,6 +469,7 @@ def compare_glass(g1: np.ndarray, g2: np.ndarray) -> bool:
         bool: True if vectors are identical, False otherwise
     """
     return np.array_equal(g1, g2)
+
 
 def compare_calibration(c1: Calibration, c2: Calibration) -> bool:
     """Compare calibration parameters."""

@@ -311,8 +311,9 @@ class TestCalibration:
         optv_cal = OptvCal()
         optv_cal.from_file(str(cam1_ori), str(cam1_add) if cam1_add else None)
 
-        python_cal = PythonCal()
-        python_cal.from_file(str(cam1_ori), str(cam1_add) if cam1_add else None)
+        python_cal = PythonCal.from_file(
+            str(cam1_ori), str(cam1_add) if cam1_add else None
+        )
 
         np.testing.assert_allclose(
             optv_cal.get_pos(), python_cal.get_pos(), rtol=TOLERANCE, atol=TOLERANCE
@@ -337,8 +338,7 @@ class TestCalibration:
             optv_cal = OptvCal()
             optv_cal.from_file(str(ori_file), str(add_file) if add_file else None)
 
-            python_cal = PythonCal()
-            python_cal.from_file(ori_file, add_file if add_file else None)
+            python_cal = PythonCal.from_file(ori_file, add_file if add_file else None)
 
             np.testing.assert_allclose(
                 optv_cal.get_pos(),
