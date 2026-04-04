@@ -32,9 +32,7 @@ jobs:
       
       - name: Prepare source files
         run: |
-          cd bindings
           python setup.py prepare
-          cd ..
       
       - name: Install cibuildwheel
         run: |
@@ -42,7 +40,7 @@ jobs:
       
       - name: Build wheels
         run: |
-          python -m cibuildwheel --output-dir wheelhouse bindings/
+          python -m cibuildwheel --output-dir wheelhouse .
         env:
           CIBW_BUILD: ${{ matrix.python }}-*
           CIBW_SKIP: "*musllinux*"
@@ -53,9 +51,7 @@ jobs:
           CIBW_BEFORE_BUILD_MACOS: "pip install numpy>=2.0.0 cython>=3.0.0 setuptools wheel"
           CIBW_BEFORE_BUILD_WINDOWS: "pip install numpy>=2.0.0 cython>=3.0.0 setuptools wheel"
           CIBW_TEST_REQUIRES: pytest
-          CIBW_TEST_COMMAND_LINUX: "python -m pytest {project}/bindings/tests/test_version.py -v || python -c \"import optv; print('optv imported successfully')\""
-          CIBW_TEST_COMMAND_MACOS: "python -m pytest {project}/bindings/tests/test_version.py -v || python -c \"import optv; print('optv imported successfully')\""
-          CIBW_TEST_COMMAND_WINDOWS: "python -m pytest {project}/bindings/tests/test_version.py -v || python -c \"import optv; print('optv imported successfully')\""
+          CIBW_TEST_COMMAND: "python -c \"import openptv2; print('openptv2 OK')\" && python -c \"from optv.tracking_framebuf import Target; print('optv OK')\" && python -c \"from algorithms.tracking_frame_buf import Target; print('algorithms OK')\""
       
       - uses: actions/upload-artifact@v4
         with:
@@ -81,20 +77,16 @@ jobs:
       
       - name: Prepare source files
         run: |
-          cd bindings
           python setup.py prepare
-          cd ..
       
       - name: Build source distribution
         run: |
-          cd bindings
           python -m build --sdist
-          cd ..
       
       - uses: actions/upload-artifact@v4
         with:
           name: sdist
-          path: bindings/dist/*.tar.gz
+          path: dist/*.tar.gz
 
   test_package:
     name: Test package
@@ -125,7 +117,7 @@ jobs:
 
       - name: Run tests
         run: |
-          python -m pytest tests/ -v
+          python -m pytest bindings/tests/ algorithms/tests/ -v --tb=short
 
   upload_pypi:
     name: Upload to PyPI
