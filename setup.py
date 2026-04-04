@@ -57,6 +57,9 @@ def _copy_sources():
         dst = LIBOPTV_INC / hdr.name
         if not dst.exists():
             shutil.copy2(str(hdr), str(dst))
+        dst_optv = LIBOPTV_INC / "optv" / hdr.name
+        if not dst_optv.exists():
+            shutil.copy2(str(hdr), str(dst_optv))
 
     optv_sub = LIB_INC / "optv"
     if optv_sub.is_dir():
