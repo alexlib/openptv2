@@ -428,3 +428,18 @@ openptv2 combines work from:
 - Mailing list: openptv@googlegroups.com
 - GitHub: https://github.com/openptv/openptv2
 - Issues: https://github.com/openptv/openptv2/issues
+
+---
+
+## Helper Scripts
+
+The project includes scripts for building and testing:
+
+| Script | Purpose |
+|--------|---------|
+| `scripts/build_wheel.sh` | Build binary wheel from source |
+| `scripts/install_wheel.sh` | Install wheel in clean test environment |
+| `scripts/run_tests.sh` | Run test suite in test environment |
+| `scripts/Dockerfile.slim` | Slim Docker image for testing |
+
+See [BUILDING_BINARY_WHEELS.md](BUILDING_BINARY_WHEELS.md) for detailed usage.
