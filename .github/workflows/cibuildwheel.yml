@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, windows-latest]
         python: ['cp311', 'cp312', 'cp313']
     steps:
       - uses: actions/checkout@v5
@@ -24,7 +24,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-       
+        
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.21
         with:
@@ -34,9 +34,11 @@ jobs:
           CIBW_SKIP: "musllinux*"
           CIBW_BUILD_VERBOSITY: 2
           CIBW_BEFORE_BUILD_LINUX: pip install numpy>=2.0.0 cython>=3.0.0 setuptools wheel && python setup.py prepare
+          CIBW_BEFORE_BUILD_WINDOWS: pip install numpy>=2.0.0 cython>=3.0.0 setuptools wheel && python setup.py prepare
           CIBW_BUILD_FRONTEND: "pip"
           CIBW_MANYLINUX_X86_64_IMAGE: "manylinux2014"
           CIBW_MANYLINUX_AARCH64_IMAGE: "manylinux2014"
+          CIBW_ARCHS_WINDOWS: AMD64
       
       - uses: actions/upload-artifact@v4
         with:
