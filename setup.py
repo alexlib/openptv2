@@ -131,7 +131,9 @@ def mk_ext(name, cython_c_file):
         extra_compile_args.extend(["-Wno-cpp", "-Wno-unused-function"])
         extra_link_args.extend(["-Wl,-rpath,$ORIGIN"])
     else:
-        extra_compile_args.extend(["/W4", "/std:c11", "/D_CRT_SECURE_NO_WARNINGS"])
+        extra_compile_args.extend(
+            ["/W4", "/std:c11", "/D_CRT_SECURE_NO_WARNINGS", "/D_NO_CRT_STDIO_INLINE"]
+        )
 
     # Use relative paths — required for isolated builds (python -m build)
     all_sources = [str(cython_c_file.relative_to(ROOT))] + get_liboptv_sources()
