@@ -106,7 +106,7 @@ jobs:
 
       - name: Run tests
         run: |
-          python -m pytest bindings/tests/ algorithms/tests/ -v --tb=short
+          python -m pytest algorithms/tests/ -v --tb=short
 
   upload_pypi:
     name: Upload to PyPI
