@@ -20,8 +20,7 @@ doubles.
 #endif
 
 #define is_empty(x) isnan(x)
-#define vec_norm_macro(x,y,z) sqrt((x)*(x) + (y)*(y) + (z)*(z))
-#define norm(x,y,z) vec_norm_macro(x,y,z)
+#define vec_calc_norm(x,y,z) sqrt((x)*(x) + (y)*(y) + (z)*(z))
 
 typedef double vec3d[3];
 
