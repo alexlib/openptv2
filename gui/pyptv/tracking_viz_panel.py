@@ -8,7 +8,7 @@ from the tracking preview functionality.
 import numpy as np
 from traits.api import HasTraits, Int, Bool, Instance, List, Float, Str, Button
 from traitsui.api import View, Item, HGroup, VGroup, Group, Label, TextEditor, Spring
-from chaco.api import Plot, ArrayPlotData, ScatterPlot, LinearMapper
+from chaco.api import Plot, ArrayPlotData, LinearMapper
 from enable.component_editor import ComponentEditor
 
 from .tracking_preview import run_tracking_preview
@@ -91,14 +91,13 @@ class TrackingVizPanel(HasTraits):
         self._plot.index_axis.title = "X position"
         self._plot.value_axis.title = "Y position"
 
-        scatter = ScatterPlot(
-            index=self._plot_data.index("x"),
-            value=self._plot_data.value("y"),
+        self._plot.plot(
+            ("x", "y"),
+            type="scatter",
             marker="circle",
             marker_size=3,
             color="blue",
         )
-        self._plot.add(scatter)
 
     def _run_preview_button_fired(self):
         """Run the tracking preview when button is clicked."""
