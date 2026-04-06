@@ -10,11 +10,7 @@ Usage:
     pip install .             # Regular install
 """
 
-import os
-import shutil
 import sys
-import glob
-import subprocess
 from pathlib import Path
 
 from setuptools import setup, Extension, Command, find_packages
@@ -33,40 +29,6 @@ LIB_SRC = ROOT / "lib" / "src"
 LIB_INC = ROOT / "lib" / "include"
 BINDINGS = ROOT / "bindings"
 BINDINGS_OPTV = BINDINGS / "optv"
-LIBOPTV = BINDINGS / "liboptv"
-LIBOPTV_SRC = LIBOPTV / "src"
-LIBOPTV_INC = LIBOPTV / "include"
-
-
-def _ensure_dir(p):
-    Path(p).mkdir(parents=True, exist_ok=True)
-
-
-def _copy_sources():
-    """Copy C sources/headers from lib/ into bindings/liboptv/."""
-    _ensure_dir(LIBOPTV_SRC)
-    _ensure_dir(LIBOPTV_INC)
-    _ensure_dir(LIBOPTV_INC / "optv")
-
-    for src in LIB_SRC.glob("*.c"):
-        dst = LIBOPTV_SRC / src.name
-        if not dst.exists() or src.stat().st_mtime > dst.stat().st_mtime:
-            shutil.copy2(str(src), str(dst))
-
-    for hdr in LIB_INC.glob("*.h"):
-        dst = LIBOPTV_INC / hdr.name
-        if not dst.exists():
-            shutil.copy2(str(hdr), str(dst))
-        dst_optv = LIBOPTV_INC / "optv" / hdr.name
-        if not dst_optv.exists():
-            shutil.copy2(str(hdr), str(dst_optv))
-
-    optv_sub = LIB_INC / "optv"
-    if optv_sub.is_dir():
-        for hdr in optv_sub.glob("*.h"):
-            dst = LIBOPTV_INC / "optv" / hdr.name
-            if not dst.exists():
-                shutil.copy2(str(hdr), str(dst))
 
 
 def _cythonize_all():
@@ -94,17 +56,15 @@ def _needs_rebuild():
         if not c_file.exists() or pyx.stat().st_mtime > c_file.stat().st_mtime:
             return True
     for src in LIB_SRC.glob("*.c"):
-        dst = LIBOPTV_SRC / src.name
-        if not dst.exists() or src.stat().st_mtime > dst.stat().st_mtime:
+        c_file = src.with_suffix(".c")
+        if not c_file.exists() or src.stat().st_mtime > c_file.stat().st_mtime:
             return True
     return False
 
 
 # ---------------------------------------------------------------------------
-# Prepare sources immediately (before setup() is called)
-# This runs in the build backend's working directory (project root).
+# Prepare Cython files before setup() runs
 # ---------------------------------------------------------------------------
-_copy_sources()
 if _needs_rebuild():
     _cythonize_all()
 
@@ -113,15 +73,15 @@ if _needs_rebuild():
 # Extension building
 # ---------------------------------------------------------------------------
 def get_liboptv_sources():
-    """Get all C source files from the bundled liboptv directory."""
-    return [str(f.relative_to(ROOT)) for f in sorted(LIBOPTV_SRC.glob("*.c"))]
+    """Get all C source files from lib/src/."""
+    return [str(f.relative_to(ROOT)) for f in sorted(LIB_SRC.glob("*.c"))]
 
 
 def mk_ext(name, cython_c_file):
     """Create a setuptools Extension for one Cython module + the C library."""
     include_dirs = [
         numpy.get_include(),
-        str(LIBOPTV_INC.relative_to(ROOT)),
+        str(LIB_INC.relative_to(ROOT)),
         str(BINDINGS_OPTV.relative_to(ROOT)),
     ]
 
@@ -169,7 +129,7 @@ def get_extensions():
 class PrepareSources(Command):
     """Prepare C sources and run Cython."""
 
-    description = "Copy C sources and run Cython"
+    description = "Run Cython"
     user_options = []
 
     def initialize_options(self):
@@ -179,15 +139,13 @@ class PrepareSources(Command):
         pass
 
     def run(self):
-        _copy_sources()
         _cythonize_all()
 
 
 class BuildExtWithPrepare(build_ext):
-    """Custom build_ext that prepares sources before compiling."""
+    """Custom build_ext that runs Cython before compiling."""
 
     def run(self):
-        _copy_sources()
         if _needs_rebuild():
             _cythonize_all()
         super().run()
