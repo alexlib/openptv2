@@ -164,8 +164,7 @@ def _load_calibrations_from_file(ori_file, addpar_file=None, pos=None, angles=No
     try:
         from algorithms.calibration import Calibration as PythonCal
 
-        python_cal = PythonCal()
-        python_cal.from_file(ori_str, addpar_str)
+        python_cal = PythonCal.from_file(ori_str, addpar_str)
     except Exception:
         python_cal = None
 

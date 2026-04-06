@@ -299,8 +299,7 @@ class TestDumbbell:
             optv_cal.from_file(ori_file=ori_name, add_file=add_file)
             optv_cals.append(optv_cal)
 
-            python_cal = PythonCal()
-            python_cal.from_file(ori_name, add_file)
+            python_cal = PythonCal.from_file(ori_name, add_file)
             python_cals.append(python_cal)
 
             optv_plain = optv_flat(points, optv_cal, optv_mm)
