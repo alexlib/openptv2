@@ -71,6 +71,9 @@ bindings/optv/*.cpp
 bindings/optv/*.h
 bindings/optv/optv/
 
+# Generated include structure
+lib/include/optv/
+
 # Documentation
 docs/_build/
 

@@ -10,6 +10,7 @@ Usage:
     pip install .             # Regular install
 """
 
+import shutil
 import sys
 from pathlib import Path
 
@@ -31,8 +32,20 @@ BINDINGS = ROOT / "bindings"
 BINDINGS_OPTV = BINDINGS / "optv"
 
 
+def _ensure_include_structure():
+    """Ensure lib/include/optv/ exists with headers for Cython includes."""
+    optv_inc = LIB_INC / "optv"
+    if not optv_inc.exists():
+        optv_inc.mkdir(parents=True)
+        for hdr in LIB_INC.glob("*.h"):
+            dst = optv_inc / hdr.name
+            if not dst.exists():
+                shutil.copy2(hdr, dst)
+
+
 def _cythonize_all():
     """Run Cython on all .pyx files in bindings/optv/."""
+    _ensure_include_structure()
     pyx_files = sorted(BINDINGS_OPTV.glob("*.pyx"))
     if not pyx_files:
         return
@@ -42,7 +55,7 @@ def _cythonize_all():
     cythonize(
         [str(p) for p in pyx_files],
         compiler_directives={"language_level": "3"},
-        include_path=[str(BINDINGS), str(BINDINGS_OPTV)],
+        include_path=[str(BINDINGS), str(BINDINGS_OPTV), str(LIB_INC)],
     )
 
 
