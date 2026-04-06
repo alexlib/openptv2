@@ -13,6 +13,7 @@ Welcome to the openptv2 documentation.
 ### User Documentation
 
 - [User Guide](../tutorials/) - Tutorials and how-to guides
+- [Tracking Visualization](../tutorials/tracking_visualization.md) - Preview tracking results
 - [API Reference](../sphinx/) - API documentation
 - [Algorithm Documentation](../algorithms/) - Algorithm explanations
 
