@@ -7,7 +7,7 @@ from the tracking preview functionality.
 
 import numpy as np
 from traits.api import HasTraits, Int, Bool, Instance, List, Float, Str, Button
-from traitsui.api import View, Item, HGroup, VGroup, Group, Label, TextEditor
+from traitsui.api import View, Item, HGroup, VGroup, Group, Label, TextEditor, Spring
 from chaco.api import Plot, ArrayPlotData, ScatterPlot, LinearMapper
 from enable.component_editor import ComponentEditor
 
@@ -42,7 +42,7 @@ class TrackingVizPanel(HasTraits):
             Label("Tracking Preview"),
             HGroup(
                 Item("run_preview_button", show_label=False),
-                spring=True,
+                Spring(),
             ),
             Group(
                 Label("Frame Navigation"),
@@ -174,6 +174,7 @@ class MultiCameraVizPanel(HasTraits):
     selected_camera = Int(0)
     num_cameras = Int(4)
     num_detections = Int(0)
+    camera_label = Str("")
 
     prev_frame_button = Button("Previous")
     next_frame_button = Button("Next")
@@ -187,7 +188,7 @@ class MultiCameraVizPanel(HasTraits):
                 Label("of"),
                 Item("total_frames", show_label=False, width=50),
                 Item("next_frame_button", show_label=False),
-                Label(f"Camera: {self.num_cameras}"),
+                Item("camera_label", style="readonly"),
             ),
             Item("num_detections", label="Detections:", style="readonly"),
         ),
@@ -201,6 +202,7 @@ class MultiCameraVizPanel(HasTraits):
         super(MultiCameraVizPanel, self).__init__()
         self.preview_data = preview_data
         self.num_cameras = num_cameras
+        self.camera_label = f"Camera: {num_cameras}"
 
         if preview_data is not None:
             self.total_frames = len(preview_data["frames"])
