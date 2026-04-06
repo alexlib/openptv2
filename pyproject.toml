@@ -8,7 +8,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "openptv2"
-version = "0.14.0"
+version = "0.1.5"
 description = "Unified OpenPTV: Particle Tracking Velocimetry with dual-engine support"
 readme = "README.md"
 license = {text = "LGPL-3.0-or-later"}

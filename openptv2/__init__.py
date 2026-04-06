@@ -20,7 +20,7 @@ Example usage:
     >>> openptv2.set_engine("python")
 """
 
-__version__ = "0.14.0"
+__version__ = "0.1.5"
 __author__ = "OpenPTV Community"
 __email__ = "openptv@googlegroups.com"
 
