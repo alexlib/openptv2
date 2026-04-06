@@ -25,26 +25,24 @@ openptv2 combines the best of three repositories into a single, maintainable pac
 
 ## Installation
 
-### For End Users (Pre-built Wheels)
+### Quick Install (Recommended)
 
-**Prerequisites:**
-- Python 3.11, 3.12, or 3.13
-- pip or uv package manager
-
-#### Option 1: Using pip
+Most users will want the GUI included. Install with:
 
 ```bash
-pip install openptv2
+uv pip install openptv2[gui]
 ```
 
-#### Option 2: Using uv (recommended)
+Don't have `uv`? Install it first:
 
 ```bash
-# Install uv if you haven't already
 curl -LsSf https://astral.sh/uv/install.sh | sh
+```
 
-# Install openptv2
-uv add openptv2
+**Alternative with pip:**
+
+```bash
+pip install openptv2[gui]
 ```
 
 #### Verify Installation
@@ -52,6 +50,16 @@ uv add openptv2
 ```bash
 python -c "import openptv2; print(f'openptv2 version: {openptv2.__version__}')"
 python -c "from openptv2 import Tracker; print('Tracker imported successfully')"
+```
+
+### Base Install (No GUI)
+
+If you only need the library (e.g., for scripting or batch processing):
+
+```bash
+uv pip install openptv2
+# or
+pip install openptv2
 ```
 
 ---
@@ -133,19 +141,9 @@ pytest tests/ -v --tb=short
 
 ---
 
-### Installation with GUI Dependencies
+### GUI Dependencies
 
-The GUI requires additional dependencies:
-
-```bash
-# Using uv
-uv sync --all-extras
-
-# Using pip
-pip install -e ".[gui,dev]"
-```
-
-**GUI dependencies include:**
+The `[gui]` extra includes:
 - traits, traitsui (Enthought framework)
 - enable, chaco (visualization)
 - PySide6 (Qt bindings)
