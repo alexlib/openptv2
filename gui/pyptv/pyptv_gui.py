@@ -35,7 +35,8 @@ from .quiverplot import QuiverPlot
 from .detection_gui import DetectionGUI
 from .mask_gui import MaskGUI
 from .parameter_gui import Main_Params, Calib_Params, Tracking_Params
-from . import __version__, ptv
+from openptv2 import __version__ as openptv_version
+from . import ptv
 from optv.epipolar import epipolar_curve
 from optv.imgcoord import image_coordinates
 from optv.transforms import convert_arr_metric_to_pixel
@@ -1241,7 +1242,7 @@ class MainGUI(HasTraits):
             ),
             # Removed message_window from view
         ),
-        title="pyPTV" + __version__,
+        title="pyPTV " + openptv_version,
         id="main_view",
         width=1.0,
         height=1.0,

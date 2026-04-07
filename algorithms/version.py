@@ -1,3 +1,6 @@
-"""Version information for the algorithms package."""
+"""Version information for the algorithms package.
 
-__version__ = "0.1.5"
+Version is managed centrally in pyproject.toml.
+"""
+
+from openptv2.version import __version__
