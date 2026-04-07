@@ -395,14 +395,12 @@ class TrackingDebugPanel(HasTraits):
             ptv_params = self.main_gui.get_parameter("ptv")
             track_params = self.main_gui.get_parameter("tracking")
             vol_params = self.main_gui.get_parameter("volume")
-            calib_params = self.main_gui.get_parameter("calibration")
             seq_params = self.main_gui.get_parameter("sequence")
 
             from algorithms.track import Tracker
             from algorithms.parameters import (
                 ControlPar,
                 VolumePar,
-                read_track_par,
                 SequencePar,
             )
             from algorithms.calibration import Calibration
@@ -447,12 +445,22 @@ class TrackingDebugPanel(HasTraits):
                 spar.last = seq_params.get("last", 10)
 
             cals = []
-            if calib_params:
-                cal_list = calib_params.get("calibrations", [])
-                for cal_data in cal_list[: self.main_gui.num_cams]:
-                    cal = Calibration()
-                    cal.from_file(cal_data.get("ori", ""), cal_data.get("add", None))
-                    cals.append(cal)
+            if hasattr(self.main_gui, "cals") and self.main_gui.cals:
+                cals = self.main_gui.cals
+            else:
+                calib_params = self.main_gui.get_parameter("calibration")
+                if calib_params:
+                    cal_list = calib_params.get("calibrations", [])
+                    for cal_data in cal_list[: self.main_gui.num_cams]:
+                        cal = Calibration()
+                        cal.from_file(
+                            cal_data.get("ori", ""), cal_data.get("add", None)
+                        )
+                        cals.append(cal)
+
+            if not cals:
+                self.status_text = "No calibrations available. Run Init first."
+                return
 
             self.tracker = Tracker(cpar, vpar, tpar, spar, cals)
             self.tracker.restart()
@@ -461,10 +469,13 @@ class TrackingDebugPanel(HasTraits):
                 if not self.tracker.step_forward():
                     break
 
-            self.status_text = f"Loaded {self.num_frames} frames. Click on a particle."
+            self.status_text = f"Loaded {self.num_frames} frames. Click on a particle in the main GUI camera views."
 
         except Exception as e:
+            import traceback
+
             self.status_text = f"Error initializing tracker: {e}"
+            traceback.print_exc()
 
     def _dvxmin_changed(self):
         self._update_tracker_parameters()
