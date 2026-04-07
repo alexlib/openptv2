@@ -1418,9 +1418,13 @@ class MainGUI(HasTraits):
 
     def _tracking_debug_click(self):
         """Handle right-click in tracking debug mode."""
+        print(f"[DEBUG] _tracking_debug_click called")
+
         if not hasattr(self, "cals") or not self.cals:
-            print("No calibrations available. Run Init first.")
+            print("[DEBUG] No calibrations available. Run Init first.")
             return
+
+        print(f"[DEBUG] cals available: {len(self.cals)}")
 
         try:
             from gui.pyptv.tracking_debug_utils import find_nearest_target
@@ -1428,6 +1432,8 @@ class MainGUI(HasTraits):
             i = self.current_camera
             click_x = self.camera_list[i]._click_tool.x
             click_y = self.camera_list[i]._click_tool.y
+
+            print(f"[DEBUG] Click at camera {i}: ({click_x}, {click_y})")
 
             from algorithms.track import Tracker
             from algorithms.parameters import (
@@ -1439,6 +1445,8 @@ class MainGUI(HasTraits):
             from algorithms.parameters import TrackPar
 
             ptv_params = self.get_parameter("ptv")
+            print(f"[DEBUG] ptv_params: {ptv_params is not None}")
+
             vol_params = self.get_parameter("volume")
             seq_params = self.get_parameter("sequence")
 
@@ -1460,6 +1468,8 @@ class MainGUI(HasTraits):
                 vpar.Zmax = vol_params.get("zmax", 50)
 
             track_params = self.get_parameter("tracking")
+            print(f"[DEBUG] track_params: {track_params}")
+
             if track_params:
                 tpar_tuple = TrackParTuple(
                     track_params.get("dvxmin", 0.0),
@@ -1477,6 +1487,7 @@ class MainGUI(HasTraits):
                     track_params.get("dny", 0.0),
                 )
             else:
+                print("[DEBUG] No track_params, using defaults")
                 tpar_tuple = TrackParTuple(
                     0, 20, 0, 20, 0, 20, 10, 5, 0, 0.0, 1.0, 0.0, 0.0
                 )
@@ -1486,20 +1497,32 @@ class MainGUI(HasTraits):
                 spar.first = seq_params.get("first", 1)
                 spar.last = seq_params.get("last", 10)
 
+            print("[DEBUG] Creating tracker...")
             tracker = Tracker(cpar, vpar, tpar_tuple, spar, self.cals)
             tracker.restart()
 
-            for _ in range(8):
-                if not tracker.step_forward():
+            print("[DEBUG] Running tracker steps...")
+            for step_num in range(8):
+                result = tracker.step_forward()
+                print(f"[DEBUG] Step {step_num}: {result}")
+                if not result:
                     break
 
             fb = tracker.run_info.fb
+            print(f"[DEBUG] Buffer size: {len(fb.buf)}")
+
             if len(fb.buf) < 2:
                 print("Not enough frames in buffer")
                 return
 
             frame = fb.buf[1]
+            print(f"[DEBUG] frame has targets: {hasattr(frame, 'targets')}")
+
             targets = frame.targets[i] if hasattr(frame, "targets") else []
+            print(
+                f"[DEBUG] num_targets for cam {i}: {frame.num_targets[i] if hasattr(frame, 'num_targets') else 'N/A'}"
+            )
+
             result = find_nearest_target(targets, click_x, click_y, max_distance=20.0)
 
             if result is None:
