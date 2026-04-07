@@ -1447,9 +1447,18 @@ class MainGUI(HasTraits):
             ptv_params = self.get_parameter("ptv")
             print(f"[DEBUG] ptv_params: {ptv_params is not None}")
 
-            vol_params = self.get_parameter("volume")
-            seq_params = self.get_parameter("sequence")
-            track_params = self.get_parameter("tracking")
+            try:
+                vol_params = self.get_parameter("volume")
+            except ValueError:
+                vol_params = None
+            try:
+                seq_params = self.get_parameter("sequence")
+            except ValueError:
+                seq_params = None
+            try:
+                track_params = self.get_parameter("tracking")
+            except ValueError:
+                track_params = None
 
             print(f"[DEBUG] vol_params: {vol_params is not None}")
             print(f"[DEBUG] seq_params: {seq_params is not None}")
