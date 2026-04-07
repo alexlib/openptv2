@@ -6,6 +6,7 @@ from the tracking preview functionality.
 """
 
 import numpy as np
+from typing import List
 from traits.api import HasTraits, Int, Bool, Instance, List, Float, Str, Button
 from traitsui.api import View, Item, HGroup, VGroup, Group, Label, TextEditor, Spring
 from chaco.api import Plot, ArrayPlotData, LinearMapper
@@ -494,7 +495,7 @@ class TrackingDebugPanel(HasTraits):
         if self.tracker is None:
             return
 
-        from openptv2.parameters import TrackParTuple
+        from algorithms.parameters import TrackParTuple
 
         tpar = TrackParTuple(
             self.dvxmin,
@@ -513,7 +514,117 @@ class TrackingDebugPanel(HasTraits):
         )
 
         self.tracker.run_info.tpar = tpar
-        self._visualize_click(self.clicked_particle)
+
+        if self.clicked_particle >= 0:
+            self._visualize_click(self.clicked_particle)
+
+    def _get_particle_3d_position(self, frame, particle_idx: int) -> np.ndarray:
+        """Get 3D position of a particle from path_info."""
+        if not hasattr(frame, "path_info") or frame.path_info is None:
+            return None
+        if particle_idx >= frame.num_parts:
+            return None
+
+        path = frame.path_info[particle_idx]
+        if path.x is not None and len(path.x) >= 3:
+            return np.array([path.x[0], path.x[1], path.x[2]])
+        return None
+
+    def _get_velocity_from_frame(self, frame, particle_idx: int) -> np.ndarray:
+        """Estimate velocity from particle's previous position."""
+        if not hasattr(frame, "path_info") or frame.path_info is None:
+            return np.array([0.0, 0.0, 0.0])
+        if particle_idx >= frame.num_parts:
+            return np.array([0.0, 0.0, 0.0])
+
+        path = frame.path_info[particle_idx]
+        if hasattr(path, "prev_frame") and path.prev_frame > 0:
+            if hasattr(frame, "prev_frame_data") and frame.prev_frame_data is not None:
+                prev_path = frame.prev_frame_data.path_info[particle_idx]
+                if prev_path.x is not None and path.x is not None:
+                    return np.array(
+                        [
+                            path.x[0] - prev_path.x[0],
+                            path.x[1] - prev_path.x[1],
+                            path.x[2] - prev_path.x[2],
+                        ]
+                    )
+
+        return np.array([0.0, 0.0, 0.0])
+
+        path = frame.path_info[particle_idx]
+        if hasattr(path, "prev_x") and path.prev_x is not None:
+            if hasattr(path, "x") and path.x is not None:
+                return np.array(
+                    [path.x - path.prev_x, path.y - path.prev_y, path.z - path.prev_z]
+                )
+
+        return np.array([0.0, 0.0, 0.0])
+
+    def _draw_search_volumes(self, volumes: List[dict]):
+        """Draw search volume boundaries on all camera views."""
+        if self.main_gui is None or not hasattr(self.main_gui, "camera_list"):
+            return
+
+        colors = ["green", "yellow", "orange"]
+
+        for vol in volumes:
+            frame_offset = vol["frame_offset"]
+            color = colors[frame_offset - 1]
+            cam_bounds = vol["camera_bounds"]
+
+            for cam_idx, bounds in enumerate(cam_bounds):
+                if cam_idx >= len(self.main_gui.camera_list):
+                    continue
+
+                cam = self.main_gui.camera_list[cam_idx]
+                unique_label = f"search_vol_{frame_offset}_{cam_idx}"
+
+                x_coords = [
+                    bounds.left,
+                    bounds.right,
+                    bounds.right,
+                    bounds.left,
+                    bounds.left,
+                ]
+                y_coords = [bounds.up, bounds.up, bounds.down, bounds.down, bounds.up]
+
+                cam.drawline(
+                    f"{unique_label}_x",
+                    f"{unique_label}_y",
+                    x_coords[0],
+                    y_coords[0],
+                    x_coords[1],
+                    y_coords[1],
+                    color,
+                )
+                cam.drawline(
+                    f"{unique_label}_x",
+                    f"{unique_label}_y",
+                    x_coords[1],
+                    y_coords[1],
+                    x_coords[2],
+                    y_coords[2],
+                    color,
+                )
+                cam.drawline(
+                    f"{unique_label}_x",
+                    f"{unique_label}_y",
+                    x_coords[2],
+                    y_coords[2],
+                    x_coords[3],
+                    y_coords[3],
+                    color,
+                )
+                cam.drawline(
+                    f"{unique_label}_x",
+                    f"{unique_label}_y",
+                    x_coords[3],
+                    y_coords[3],
+                    x_coords[4],
+                    y_coords[4],
+                    color,
+                )
 
     def _visualize_click(self, particle_id: int):
         """Visualize search volume and candidates for clicked particle."""
@@ -524,8 +635,20 @@ class TrackingDebugPanel(HasTraits):
         current_frame_idx = min(self.current_frame, len(fb.buf) - 1)
         current_frame = fb.buf[current_frame_idx]
 
+        pos_3d = self._get_particle_3d_position(current_frame, particle_id)
+
+        if pos_3d is None:
+            self.status_text = f"Particle {particle_id} has no 3D position (not linked)"
+            return
+
+        velocity = self._get_velocity_from_frame(current_frame, particle_id)
+
+        volumes = self._compute_search_volumes(pos_3d, velocity)
+        self._draw_search_volumes(volumes)
+
         self.status_text = (
-            f"Visualizing particle ID {particle_id} in frame {current_frame_idx}"
+            f"Visualizing particle {particle_id} at ({pos_3d[0]:.1f}, {pos_3d[1]:.1f}, {pos_3d[2]:.1f}) "
+            f"in frame {current_frame_idx}"
         )
 
     def on_camera_click(self, cam_idx: int, click_x: float, click_y: float):
@@ -540,7 +663,7 @@ class TrackingDebugPanel(HasTraits):
 
         from .tracking_debug_utils import find_nearest_target
 
-        targets = frame.targets[cam_idx] if hasattr(frame, "target") else []
+        targets = frame.targets[cam_idx] if hasattr(frame, "targets") else []
         result = find_nearest_target(targets, click_x, click_y)
 
         if result is not None:
