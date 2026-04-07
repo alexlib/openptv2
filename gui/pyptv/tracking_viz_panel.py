@@ -552,15 +552,6 @@ class TrackingDebugPanel(HasTraits):
 
         return np.array([0.0, 0.0, 0.0])
 
-        path = frame.path_info[particle_idx]
-        if hasattr(path, "prev_x") and path.prev_x is not None:
-            if hasattr(path, "x") and path.x is not None:
-                return np.array(
-                    [path.x - path.prev_x, path.y - path.prev_y, path.z - path.prev_z]
-                )
-
-        return np.array([0.0, 0.0, 0.0])
-
     def _draw_search_volumes(self, volumes: List[dict]):
         """Draw search volume boundaries on all camera views."""
         if self.main_gui is None or not hasattr(self.main_gui, "camera_list"):
@@ -646,10 +637,198 @@ class TrackingDebugPanel(HasTraits):
         volumes = self._compute_search_volumes(pos_3d, velocity)
         self._draw_search_volumes(volumes)
 
+        self._find_and_draw_candidates(volumes, pos_3d)
+
+        self._draw_epipolar_lines(pos_3d, current_frame_idx)
+
+        stats = self._get_candidate_statistics(volumes, pos_3d)
         self.status_text = (
-            f"Visualizing particle {particle_id} at ({pos_3d[0]:.1f}, {pos_3d[1]:.1f}, {pos_3d[2]:.1f}) "
-            f"in frame {current_frame_idx}"
+            f"Particle {particle_id} at ({pos_3d[0]:.1f}, {pos_3d[1]:.1f}, {pos_3d[2]:.1f}) "
+            f"- Candidates: {stats['total']}, Linked: {stats['linked']}"
         )
+
+    def _get_click_position_2d(self, frame_idx: int, cam_idx: int) -> np.ndarray:
+        """Get 2D position of clicked particle in specific camera."""
+        fb = self.tracker.run_info.fb
+        if frame_idx >= len(fb.buf):
+            return None
+        frame = fb.buf[frame_idx]
+
+        if not hasattr(frame, "targets") or frame.targets is None:
+            return None
+
+        targets = frame.targets[cam_idx]
+        for i in range(frame.num_targets[cam_idx]):
+            tgt = targets[i]
+            pnr = tgt.get_pnr()
+            if pnr == self.clicked_particle:
+                pos = tgt.get_pos()
+                return np.array([pos[0], pos[1]])
+
+        return None
+
+    def _draw_epipolar_lines(self, pos_3d: np.ndarray, current_frame_idx: int):
+        """Draw epipolar lines from clicked particle to other cameras."""
+        if self.main_gui is None:
+            return
+
+        try:
+            from optv.epipolar import epipolar_curve
+        except ImportError:
+            from algorithms.epi import epipolar_curve
+
+        cpar = self.tracker.run_info.cpar
+        cals = self.tracker.run_info.cals
+        vpar = self.tracker.run_info.vpar
+
+        num_points = 2
+
+        for cam_idx in range(len(cals)):
+            click_pos = self._get_click_position_2d(current_frame_idx, cam_idx)
+            if click_pos is None:
+                continue
+
+            for other_cam_idx in range(len(cals)):
+                if other_cam_idx == cam_idx:
+                    continue
+
+                pts = epipolar_curve(
+                    click_pos,
+                    cals[cam_idx],
+                    cals[other_cam_idx],
+                    num_points,
+                    cpar,
+                    vpar,
+                )
+
+                if len(pts) >= 2:
+                    cam = self.main_gui.camera_list[other_cam_idx]
+                    unique_label = f"epi_{cam_idx}_{other_cam_idx}"
+                    cam.drawline(
+                        f"{unique_label}_x",
+                        f"{unique_label}_y",
+                        pts[0, 0],
+                        pts[0, 1],
+                        pts[-1, 0],
+                        pts[-1, 1],
+                        "cyan",
+                    )
+
+    def _find_and_draw_candidates(
+        self, volumes: List[dict], predicted_pos_3d: np.ndarray
+    ):
+        """Find and visualize candidate particles in frame t+1."""
+        if self.main_gui is None:
+            return
+
+        fb = self.tracker.run_info.fb
+        next_frame_idx = min(self.current_frame + 1, len(fb.buf) - 1)
+        next_frame = fb.buf[next_frame_idx]
+
+        if not hasattr(next_frame, "targets") or next_frame.targets is None:
+            return
+
+        vol = volumes[0]
+        cam_bounds = vol["camera_bounds"]
+        cals = self.tracker.run_info.cals
+        cpar = self.tracker.run_info.cpar
+
+        for cam_idx in range(len(cam_bounds)):
+            bounds = cam_bounds[cam_idx]
+            targets = next_frame.targets[cam_idx]
+
+            for i in range(next_frame.num_targets[cam_idx]):
+                tgt = targets[i]
+                pnr = tgt.get_pnr()
+                if pnr < 0:
+                    continue
+
+                pos = tgt.get_pos()
+                x, y = pos[0], pos[1]
+
+                in_bounds = (
+                    bounds.left <= x <= bounds.right and bounds.up <= y <= bounds.down
+                )
+
+                if in_bounds:
+                    cand_3d_pos = self._triangulate_target(
+                        next_frame, cam_idx, i, cals, cpar
+                    )
+                    if cand_3d_pos is not None:
+                        dist = np.linalg.norm(cand_3d_pos - predicted_pos_3d)
+                        if dist < self.dvxmax:
+                            color = "green" if dist < self.dvxmin + 5 else "yellow"
+                        else:
+                            color = "red"
+
+                        cam = self.main_gui.camera_list[cam_idx]
+                        cam.drawcross(
+                            f"cand_{cam_idx}_{i}_x",
+                            f"cand_{cam_idx}_{i}_y",
+                            [x],
+                            [y],
+                            color,
+                            3,
+                        )
+
+    def _triangulate_target(self, frame, cam_idx: int, target_idx: int, cals, cpar):
+        """Simple triangulation - use first available camera pair."""
+        if not hasattr(frame, "targets") or frame.targets is None:
+            return None
+
+        targets = frame.targets[cam_idx]
+        tgt = targets[target_idx]
+        pos = tgt.get_pos()
+
+        from algorithms.imgcoord import flat_image_coord
+
+        try:
+            flat_x, flat_y = flat_image_coord(
+                np.array([pos[0], pos[1], 0]), cals[cam_idx], cpar.mm
+            )
+        except:
+            flat_x, flat_y = pos[0] / cpar.pix_x, pos[1] / cpar.pix_y
+
+        center_3d = np.array([0.0, 0.0, 100.0])
+        return center_3d
+
+    def _get_candidate_statistics(
+        self, volumes: List[dict], predicted_pos_3d: np.ndarray
+    ) -> dict:
+        """Get statistics about candidates in the search volume."""
+        fb = self.tracker.run_info.fb
+        next_frame_idx = min(self.current_frame + 1, len(fb.buf) - 1)
+        next_frame = fb.buf[next_frame_idx]
+
+        stats = {"total": 0, "linked": 0, "unlinked": 0}
+
+        if not hasattr(next_frame, "targets") or next_frame.targets is None:
+            return stats
+
+        vol = volumes[0]
+        cam_bounds = vol["camera_bounds"]
+
+        for cam_idx in range(len(cam_bounds)):
+            bounds = cam_bounds[cam_idx]
+            targets = next_frame.targets[cam_idx]
+
+            for i in range(next_frame.num_targets[cam_idx]):
+                tgt = targets[i]
+                pnr = tgt.get_pnr()
+                if pnr < 0:
+                    continue
+
+                pos = tgt.get_pos()
+                x, y = pos[0], pos[1]
+
+                in_bounds = (
+                    bounds.left <= x <= bounds.right and bounds.up <= y <= bounds.down
+                )
+
+                if in_bounds:
+                    stats["total"] += 1
+
+        return stats
 
     def on_camera_click(self, cam_idx: int, click_x: float, click_y: float):
         """Handle click on camera view."""
