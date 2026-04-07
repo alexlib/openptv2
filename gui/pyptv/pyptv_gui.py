@@ -1449,6 +1449,11 @@ class MainGUI(HasTraits):
 
             vol_params = self.get_parameter("volume")
             seq_params = self.get_parameter("sequence")
+            track_params = self.get_parameter("tracking")
+
+            print(f"[DEBUG] vol_params: {vol_params is not None}")
+            print(f"[DEBUG] seq_params: {seq_params is not None}")
+            print(f"[DEBUG] track_params: {track_params is not None}")
 
             cpar = ControlPar()
             cpar.imx = ptv_params["imx"]
@@ -1466,8 +1471,12 @@ class MainGUI(HasTraits):
                 vpar.Ymax = vol_params.get("ymax", 100)
                 vpar.Zmin = vol_params.get("zmin", 0)
                 vpar.Zmax = vol_params.get("zmax", 50)
+            else:
+                print("[DEBUG] Using default vpar values")
+                vpar.Xmin, vpar.Xmax = 0, 100
+                vpar.Ymin, vpar.Ymax = 0, 100
+                vpar.Zmin, vpar.Zmax = 0, 50
 
-            track_params = self.get_parameter("tracking")
             print(f"[DEBUG] track_params: {track_params}")
 
             if track_params:
@@ -1496,6 +1505,9 @@ class MainGUI(HasTraits):
             if seq_params:
                 spar.first = seq_params.get("first", 1)
                 spar.last = seq_params.get("last", 10)
+            else:
+                print("[DEBUG] No seq_params, using defaults")
+                spar.first, spar.last = 1, 10
 
             print("[DEBUG] Creating tracker...")
             tracker = Tracker(cpar, vpar, tpar_tuple, spar, self.cals)
