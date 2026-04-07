@@ -642,10 +642,104 @@ class TrackingDebugPanel(HasTraits):
         self._draw_epipolar_lines(pos_3d, current_frame_idx)
 
         stats = self._get_candidate_statistics(volumes, pos_3d)
+        self._print_candidate_report(
+            particle_id, pos_3d, current_frame_idx, stats, volumes
+        )
+
         self.status_text = (
             f"Particle {particle_id} at ({pos_3d[0]:.1f}, {pos_3d[1]:.1f}, {pos_3d[2]:.1f}) "
-            f"- Candidates: {stats['total']}, Linked: {stats['linked']}"
+            f"- Candidates: {stats['total']}, Close: {stats['close']}, Acceptable: {stats['acceptable']}, Far: {stats['far']}"
         )
+
+    def _print_candidate_report(
+        self,
+        particle_id: int,
+        pos_3d: np.ndarray,
+        frame_idx: int,
+        stats: dict,
+        volumes: List[dict],
+    ):
+        """Print detailed candidate information to console."""
+        print("\n" + "=" * 60)
+        print("TRACKING DEBUG - CANDIDATE ANALYSIS REPORT")
+        print("=" * 60)
+        print(f"Clicked particle ID: {particle_id} in frame {frame_idx}")
+        print(f"3D Position: ({pos_3d[0]:.2f}, {pos_3d[1]:.2f}, {pos_3d[2]:.2f}) mm")
+        print("-" * 60)
+        print("TRACKING PARAMETERS:")
+        print(f"  dvxmin={self.dvxmin}, dvxmax={self.dvxmax}")
+        print(f"  dvymin={self.dvymin}, dvymax={self.dvymax}")
+        print(f"  dvzmin={self.dvzmin}, dvzmax={self.dvzmax}")
+        print(f"  dacc={self.dacc}, dangle={self.dangle}")
+        print("-" * 60)
+        print("SEARCH VOLUME (frame t+1):")
+        vol = volumes[0]
+        cam_bounds = vol["camera_bounds"]
+        for cam_idx, bounds in enumerate(cam_bounds):
+            print(
+                f"  Camera {cam_idx}: x=[{bounds.left:.1f}, {bounds.right:.1f}], y=[{bounds.up:.1f}, {bounds.down:.1f}]"
+            )
+        print("-" * 60)
+        print("CANDIDATE STATISTICS:")
+        print(f"  Total candidates in volume: {stats['total']}")
+        print(f"  Close (within dvxmin): {stats['close']}")
+        print(f"  Acceptable (within dvxmax): {stats['acceptable']}")
+        print(f"  Far (outside dvxmax): {stats['far']}")
+        print("-" * 60)
+        print("DETAILED CANDIDATES (frame t+1):")
+        self._print_candidate_details(volumes, pos_3d)
+        print("=" * 60 + "\n")
+
+    def _print_candidate_details(
+        self, volumes: List[dict], predicted_pos_3d: np.ndarray
+    ):
+        """Print detailed information about each candidate."""
+        fb = self.tracker.run_info.fb
+        next_frame_idx = min(self.current_frame + 1, len(fb.buf) - 1)
+        next_frame = fb.buf[next_frame_idx]
+
+        if not hasattr(next_frame, "targets") or next_frame.targets is None:
+            print("  No target data available")
+            return
+
+        vol = volumes[0]
+        cam_bounds = vol["camera_bounds"]
+
+        printed_any = False
+        for cam_idx in range(len(cam_bounds)):
+            bounds = cam_bounds[cam_idx]
+            targets = next_frame.targets[cam_idx]
+
+            for i in range(next_frame.num_targets[cam_idx]):
+                tgt = targets[i]
+                pnr = tgt.get_pnr()
+                if pnr < 0:
+                    continue
+
+                pos = tgt.get_pos()
+                x, y = pos[0], pos[1]
+
+                in_bounds = (
+                    bounds.left <= x <= bounds.right and bounds.up <= y <= bounds.down
+                )
+
+                if in_bounds:
+                    printed_any = True
+                    dist = np.sqrt((x - bounds.left) ** 2 + (y - bounds.up) ** 2)
+
+                    if dist < self.dvxmin + 5:
+                        category = "CLOSE"
+                    elif dist < self.dvxmax:
+                        category = "ACCEPTABLE"
+                    else:
+                        category = "FAR"
+
+                    print(
+                        f"  Cam {cam_idx}: PNR={pnr}, pos=({x:.1f}, {y:.1f}), dist={dist:.1f}px [{category}]"
+                    )
+
+        if not printed_any:
+            print("  No candidates found in search volume")
 
     def _get_click_position_2d(self, frame_idx: int, cam_idx: int) -> np.ndarray:
         """Get 2D position of clicked particle in specific camera."""
@@ -800,7 +894,7 @@ class TrackingDebugPanel(HasTraits):
         next_frame_idx = min(self.current_frame + 1, len(fb.buf) - 1)
         next_frame = fb.buf[next_frame_idx]
 
-        stats = {"total": 0, "linked": 0, "unlinked": 0}
+        stats = {"total": 0, "close": 0, "acceptable": 0, "far": 0}
 
         if not hasattr(next_frame, "targets") or next_frame.targets is None:
             return stats
@@ -827,6 +921,13 @@ class TrackingDebugPanel(HasTraits):
 
                 if in_bounds:
                     stats["total"] += 1
+                    dist = np.sqrt((x - bounds.left) ** 2 + (y - bounds.up) ** 2)
+                    if dist < self.dvxmin + 5:
+                        stats["close"] += 1
+                    elif dist < self.dvxmax:
+                        stats["acceptable"] += 1
+                    else:
+                        stats["far"] += 1
 
         return stats
 
