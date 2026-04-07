@@ -40,6 +40,7 @@ from optv.epipolar import epipolar_curve
 from optv.imgcoord import image_coordinates
 from optv.transforms import convert_arr_metric_to_pixel
 from .calibration_gui import CalibrationGUI
+from .tracking_viz_panel import create_tracking_debug_panel
 
 """PyPTV_GUI is the GUI for the OpenPTV (www.openptv.net) written in
 Python with Traits, TraitsUI, Numpy, Scipy and Chaco
@@ -786,6 +787,13 @@ class TreeMenuHandler(Handler):
         else:
             print("No tracker initialized. Please run forward tracking first.")
 
+    def track_debug_with_display_action(self, info):
+        """tracking with display - debugging visualization"""
+        mainGui = info.object
+        print("Starting tracking debug panel")
+        panel = create_tracking_debug_panel(mainGui, num_frames=8)
+        panel.configure_traits()
+
     def three_d_positions(self, info):
         """Extracts and saves 3D positions from the list of correspondences"""
 
@@ -1004,6 +1012,11 @@ menu_bar = MenuBar(
         Action(
             name="Tracking backwards",
             action="track_back_action",
+            enabled_when="pass_init",
+        ),
+        Action(
+            name="Debugging with display",
+            action="track_debug_with_display_action",
             enabled_when="pass_init",
         ),
         Action(

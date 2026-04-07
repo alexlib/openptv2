@@ -144,8 +144,8 @@ indent-width = 4
 select = ["E", "W", "F", "I"]
 ignore = ["D1"]
 
-[tool.uv]
-dev-dependencies = [
+[dependency-groups]
+dev = [
     "pytest>=8.0.0",
     "pytest-cov>=5.0.0",
     "mypy>=1.10.0",
