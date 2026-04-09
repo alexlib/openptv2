@@ -785,3 +785,96 @@ class TestMatchPairsSoA:
         for idx in range(taken_soa):
             soa_set.add(tuple(dst_p[idx]))
         assert soa_set == orig_set
+
+    def test_correspondences_soa_vs_original(
+        self, file_control_params, file_calibration_4cam
+    ):
+        """Compare correspondences_soa output against original correspondences."""
+        from algorithms.correspondences import (
+            correspondences as original_correspondences,
+            correspondences_soa,
+            MatchedCoords as PythonMatchedCoords,
+        )
+        from algorithms.tracking_frame_buf import (
+            TargetArray as PythonTA,
+            Frame as PythonFrame,
+        )
+        from algorithms.parameters import VolumePar as PythonVolumePar
+
+        _, python_cpar = file_control_params
+        _, python_cal_list = file_calibration_4cam
+        assert python_cpar is not None
+
+        num_targets = 8
+        num_cams = 4
+
+        python_vpar = PythonVolumePar(
+            x_lay=[0.0, 100.0], z_min_lay=[0.0, 0.0], z_max_lay=[50.0, 50.0],
+        )
+
+        # Build frame + flat_coords for ORIGINAL
+        frm_orig = PythonFrame(num_cams)
+        img_pts_orig = []
+        flat_coords_orig = []
+        for cam in range(num_cams):
+            ta = PythonTA(num_targets)
+            for i in range(num_targets):
+                ta[i].set_pnr(i)
+                ta[i].set_pos((float(i * 10 + cam * 5), float(i * 15 + cam * 3)))
+                ta[i].set_pixel_counts(5, 2, 2)
+                ta[i].set_sum_grey_value(100.0)
+                ta[i].set_tnr(0)
+            img_pts_orig.append(ta)
+            flat_coords_orig.append(
+                PythonMatchedCoords(ta, python_cpar, python_cal_list[cam])
+            )
+        frm_orig.targets = img_pts_orig
+        frm_orig.num_targets = [num_targets] * num_cams
+        match_counts_orig = [0, 0, 0, 0]
+
+        con_orig = original_correspondences(
+            frm_orig, flat_coords_orig, python_vpar, python_cpar,
+            python_cal_list, match_counts_orig,
+        )
+
+        # Build frame + flat_coords for SoA
+        frm_soa = PythonFrame(num_cams)
+        img_pts_soa = []
+        flat_coords_soa = []
+        for cam in range(num_cams):
+            ta = PythonTA(num_targets)
+            for i in range(num_targets):
+                ta[i].set_pnr(i)
+                ta[i].set_pos((float(i * 10 + cam * 5), float(i * 15 + cam * 3)))
+                ta[i].set_pixel_counts(5, 2, 2)
+                ta[i].set_sum_grey_value(100.0)
+                ta[i].set_tnr(0)
+            img_pts_soa.append(ta)
+            flat_coords_soa.append(
+                PythonMatchedCoords(ta, python_cpar, python_cal_list[cam])
+            )
+        frm_soa.targets = img_pts_soa
+        frm_soa.num_targets = [num_targets] * num_cams
+        match_counts_soa = [0, 0, 0, 0]
+
+        con_soa = correspondences_soa(
+            frm_soa, flat_coords_soa, python_vpar, python_cpar,
+            python_cal_list, match_counts_soa,
+        )
+
+        # Compare match counts
+        assert match_counts_soa == match_counts_orig, (
+            f"Match counts differ: orig={match_counts_orig}, soa={match_counts_soa}"
+        )
+
+        # Compare con entries up to total matched
+        total = match_counts_orig[3]
+        for i in range(total):
+            assert tuple(con_soa[i].p) == tuple(con_orig[i].p), (
+                f"con[{i}].p mismatch: orig={tuple(con_orig[i].p)}, "
+                f"soa={tuple(con_soa[i].p)}"
+            )
+            np.testing.assert_allclose(
+                con_soa[i].corr, con_orig[i].corr, rtol=1e-10,
+                err_msg=f"con[{i}].corr mismatch",
+            )

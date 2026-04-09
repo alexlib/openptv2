@@ -398,6 +398,131 @@ def _take_best_candidates_soa(
     return dst_p, dst_corr, taken
 
 
+# ---------------------------------------------------------------------------
+# Phase 3E: SoA correspondences orchestrator + backward-compat wrapper
+# ---------------------------------------------------------------------------
+
+
+def correspondences_soa(
+    frm,
+    corrected,
+    vpar,
+    cpar,
+    calib,
+    match_counts,
+):
+    """SoA correspondences pipeline — drop-in replacement for correspondences().
+
+    Uses match_pairs_soa + SoA matching kernels + SoA take_best_candidates.
+    Returns an n_tupel_dtype recarray (same as the original) for backward compat.
+    """
+    nmax = NMAX
+    num_cams = getattr(cpar, "num_cams", None)
+    if num_cams is None:
+        num_cams = getattr(getattr(cpar, "_control_par", None), "num_cams", None)
+    if num_cams is None:
+        get_num_cams = getattr(cpar, "get_num_cams", None)
+        if callable(get_num_cams):
+            num_cams = get_num_cams()
+    if num_cams is None:
+        raise AttributeError("Control parameters object does not expose num_cams")
+
+    scratch_size = 4 * nmax
+
+    # 1. SoA adjacency
+    corr_n, corr_p2, corr_corr, corr_dist = match_pairs_soa(
+        corrected, frm, vpar, cpar, calib,
+    )
+
+    # Shared target usage marks
+    tusage = np.zeros((num_cams, nmax), dtype=np.int32)
+    target_counts = np.array(frm.num_targets[:num_cams], dtype=np.int32)
+
+    # Accumulate results into a single con buffer (same as original)
+    con_p = np.full((nmax * num_cams, num_cams), -2, dtype=np.int32)
+    con_corr = np.zeros(nmax * num_cams, dtype=np.float64)
+    total_taken = 0
+
+    # 2. Four-camera matching
+    if num_cams == 4:
+        scratch_p = np.full((scratch_size, 4), -2, dtype=np.int32)
+        scratch_c = np.zeros(scratch_size, dtype=np.float64)
+        matched = _four_camera_matching_numba(
+            corr_n, corr_p2, corr_corr, corr_dist,
+            frm.num_targets[0], vpar.corrmin,
+            scratch_p, scratch_c, scratch_size,
+        )
+        dst_p, dst_c, taken = _take_best_candidates_soa(
+            scratch_p, scratch_c, matched, num_cams, tusage,
+        )
+        match_counts[0] = taken
+        match_counts[3] += taken
+        if taken > 0:
+            con_p[total_taken:total_taken + taken] = dst_p[:taken]
+            con_corr[total_taken:total_taken + taken] = dst_c[:taken]
+            total_taken += taken
+
+    # 3. Three-camera matching
+    if (num_cams == 4 and cpar.all_cam_flag == 0) or num_cams == 3:
+        scratch_p = np.full((scratch_size, num_cams), -2, dtype=np.int32)
+        scratch_c = np.zeros(scratch_size, dtype=np.float64)
+        matched = _three_camera_matching_numba(
+            corr_n, corr_p2, corr_corr, corr_dist,
+            num_cams, target_counts, vpar.corrmin,
+            scratch_p, scratch_c, scratch_size,
+            tusage, nmax,
+        )
+        dst_p, dst_c, taken = _take_best_candidates_soa(
+            scratch_p, scratch_c, matched, num_cams, tusage,
+        )
+        match_counts[1] = taken
+        match_counts[3] += taken
+        if taken > 0:
+            con_p[total_taken:total_taken + taken] = dst_p[:taken]
+            con_corr[total_taken:total_taken + taken] = dst_c[:taken]
+            total_taken += taken
+
+    # 4. Consistent pair matching
+    if num_cams > 1 and cpar.all_cam_flag == 0:
+        scratch_p = np.full((scratch_size, num_cams), -2, dtype=np.int32)
+        scratch_c = np.zeros(scratch_size, dtype=np.float64)
+        matched = _consistent_pair_matching_numba(
+            corr_n, corr_p2, corr_corr, corr_dist,
+            num_cams, target_counts, vpar.corrmin,
+            scratch_p, scratch_c, scratch_size,
+            tusage, nmax,
+        )
+        dst_p, dst_c, taken = _take_best_candidates_soa(
+            scratch_p, scratch_c, matched, num_cams, tusage,
+        )
+        match_counts[2] = taken
+        match_counts[3] += taken
+        if taken > 0:
+            con_p[total_taken:total_taken + taken] = dst_p[:taken]
+            con_corr[total_taken:total_taken + taken] = dst_c[:taken]
+            total_taken += taken
+
+    # 5. Convert to n_tupel_dtype recarray for backward compat
+    con = np.recarray((nmax * num_cams,), dtype=n_tupel_dtype)
+    con.p = 0
+    con.corr = 0.0
+    for idx in range(total_taken):
+        for cam in range(num_cams):
+            con[idx].p[cam] = int(con_p[idx, cam])
+        con[idx].corr = con_corr[idx]
+
+    # 6. Give each used pix the correspondence number
+    for i in range(match_counts[3]):
+        for j in range(num_cams):
+            if con[i].p[j] < 0:
+                continue
+            p1 = corrected[j][con[i].p[j]].pnr
+            if p1 > -1 and p1 < 1202590843:
+                frm.targets[j][p1].tnr = i
+
+    return con
+
+
 def match_pairs_soa(
     corrected,
     frm,
@@ -1460,31 +1585,35 @@ def correspondences(
 
     # search consistent quadruplets in the corr_list
     if num_cams == 4:
-        four_camera_matching(
+        matched_4 = four_camera_matching(
             corr_list, frm.num_targets[0], vpar.corrmin, con0, 4 * nmax
         )
 
-        match_counts[0] = take_best_candidates(con0, con, num_cams, tim)
+        match_counts[0] = take_best_candidates(con0[:matched_4], con, num_cams, tim)
         match_counts[3] += match_counts[0]
 
     # search consistent triplets: 123, 124, 134, 234
     if (num_cams == 4 and cpar.all_cam_flag == 0) or num_cams == 3:
-        three_camera_matching(
+        con0.p = 0
+        con0.corr = 0.0
+        matched_3 = three_camera_matching(
             corr_list, num_cams, frm.num_targets, vpar.corrmin, con0, 4 * nmax, tim
         )
 
         match_counts[1] = take_best_candidates(
-            con0, con[match_counts[3] :].view(np.recarray), num_cams, tim
+            con0[:matched_3], con[match_counts[3] :].view(np.recarray), num_cams, tim
         )
         match_counts[3] += match_counts[1]
 
     # Search consistent pairs: 12, 13, 14, 23, 24, 34
     if num_cams > 1 and cpar.all_cam_flag == 0:
-        consistent_pair_matching(
+        con0.p = 0
+        con0.corr = 0.0
+        matched_2 = consistent_pair_matching(
             corr_list, num_cams, frm.num_targets, vpar.corrmin, con0, 4 * nmax, tim
         )
         match_counts[2] = take_best_candidates(
-            con0, con[match_counts[3] :].view(np.recarray), num_cams, tim
+            con0[:matched_2], con[match_counts[3] :].view(np.recarray), num_cams, tim
         )
         match_counts[3] += match_counts[2]
 
