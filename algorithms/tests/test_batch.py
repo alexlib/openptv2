@@ -302,10 +302,13 @@ class TestPythonVsCython:
 
         n = min(n_cy, n_py)
         if n > 0:
-            cy_xyz = cy_data[:n, 1:4][np.lexsort(cy_data[:n, 1:4].T)]
-            py_xyz = py_data[:n, 1:4][np.lexsort(py_data[:n, 1:4].T)]
-            med = np.median(np.linalg.norm(cy_xyz - py_xyz, axis=1))
-            print(f"median 3-D diff = {med:.4f} mm")
+            from scipy.spatial import cKDTree
+            cy_xyz = cy_data[:n_cy, 1:4]
+            py_xyz = py_data[:n_py, 1:4]
+            tree = cKDTree(cy_xyz)
+            dists, _ = tree.query(py_xyz)
+            med = np.median(dists)
+            print(f"median 3-D diff (nearest-neighbour) = {med:.4f} mm")
             assert med < 5.0
 
     @pytest.mark.slow

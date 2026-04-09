@@ -90,7 +90,7 @@ def _fill_adjacency_pair(
         ya_lo = min(ya, yb) - eps0
         ya_hi = max(ya, yb) + eps0
 
-        j0 = find_start_point_binary(tgt_x, num_tgt, xa, eps0)
+        j0 = find_start_point_binary(tgt_x, num_tgt, xa_lo + eps0, eps0)
 
         ref_n = src_ref_n[i]
         ref_nx = src_ref_nx[i]
@@ -129,7 +129,7 @@ def _fill_adjacency_pair(
 
             corr = (4.0 * qsumg + 2.0 * qn + qnx + qny) * (ref_sumg + cand_sumg)
 
-            out_p2[i, count] = pnr_j
+            out_p2[i, count] = j  # sorted-array index, NOT pnr (matches C: cand[count].pnr = j)
             out_dist[i, count] = d
             out_corr[i, count] = corr
             count += 1
@@ -1230,7 +1230,8 @@ def _find_candidates_vectorized(
     ya_hi = max(ya, yb) + eps0
 
     # Binary search for starting index in x-sorted array
-    j0 = find_start_point_binary(crd_x2, num2, xa, eps0)
+    # Use min(xa, xb) like C code which swaps xa/xb before the binary search
+    j0 = find_start_point_binary(crd_x2, num2, min(xa, xb), eps0)
 
     # Extract slice starting from j0
     sl_x = crd_x2[j0:num2]
@@ -1253,6 +1254,8 @@ def _find_candidates_vectorized(
     cx = sl_x[indices]
     cy = sl_y[indices]
     cpnr = sl_pnr[indices]
+    # Sorted-array indices (j0 + offset) — this is what C stores as cand.pnr
+    sorted_idx = (j0 + indices).astype(np.int64)
     dists = np.abs((cy - m * cx - b) / m_norm)
 
     # Filter by distance
@@ -1261,9 +1264,10 @@ def _find_candidates_vectorized(
         return []
 
     cpnr = cpnr[dmask]
+    sorted_idx = sorted_idx[dmask]
     dists = dists[dmask]
 
-    # Vectorized quality computation
+    # Vectorized quality computation (use pnr to look up target properties)
     cand_n = targ_n2[cpnr]
     cand_nx = targ_nx2[cpnr]
     cand_ny = targ_ny2[cpnr]
@@ -1279,7 +1283,7 @@ def _find_candidates_vectorized(
     if not np.any(qmask):
         return []
 
-    cpnr = cpnr[qmask]
+    sorted_idx = sorted_idx[qmask]
     dists = dists[qmask]
     qn = qn[qmask]
     qnx = qnx[qmask]
@@ -1294,9 +1298,10 @@ def _find_candidates_vectorized(
     # which takes candidates in the order they appear along the epipolar line).
     # The candidates already maintain order from the numpy filtering,
     # but we need to limit to MAXCAND.
-    n_take = min(len(cpnr), MAXCAND)
+    n_take = min(len(sorted_idx), MAXCAND)
 
-    return [(int(cpnr[k]), float(dists[k]), float(corrs[k])) for k in range(n_take)]
+    # Return sorted-array index (not pnr) — matches C: cand[count].pnr = j
+    return [(int(sorted_idx[k]), float(dists[k]), float(corrs[k])) for k in range(n_take)]
 
 
 def _quality_ratio_vec(a, b):

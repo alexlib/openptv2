@@ -247,7 +247,14 @@ def _sequence_loop(
             valid = con[:total]
             order = np.argsort(-valid.corr)
             valid = valid[order]
-            corresp = np.array([list(row.p) for row in valid]).T  # (num_cams, N)
+            # con.p values are sorted-array indices into corrected[cam].
+            # Convert to particle numbers (pnr) for get_by_pnrs lookups.
+            corresp_idx = np.array([list(row.p) for row in valid]).T  # (num_cams, N)
+            corresp = np.empty_like(corresp_idx)
+            for i_cam in range(num_cams):
+                mask = corresp_idx[i_cam] >= 0
+                corresp[i_cam] = corresp_idx[i_cam]
+                corresp[i_cam, mask] = corrected[i_cam][corresp_idx[i_cam, mask]].pnr
         else:
             corresp = np.zeros((num_cams, 0), dtype=int)
 
