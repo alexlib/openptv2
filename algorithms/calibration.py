@@ -179,11 +179,19 @@ class Calibration:
 
         return self
 
-    @classmethod
-    def from_file(cls, ori_file: Path | str, add_file: Path | str | None = None):
-        """Create a Calibration populated from .ori and .addpar files."""
-        cal = cls()
-        return cal.load_from_file(ori_file, add_file)
+    def from_file(self_or_ori, ori_file_or_add=None, add_file=None):
+        """Load calibration from .ori and .addpar files.
+
+        Works both as an instance method and as a classmethod-style call:
+          cal = Calibration(); cal.from_file(ori, add)   # instance
+          cal = Calibration.from_file(ori, add)           # classmethod-style
+        """
+        if isinstance(self_or_ori, Calibration):
+            # Instance call: self.from_file(ori_file, add_file)
+            return self_or_ori.load_from_file(ori_file_or_add, add_file)
+        # Class-level call: Calibration.from_file(ori_file, add_file)
+        cal = Calibration()
+        return cal.load_from_file(self_or_ori, ori_file_or_add)
 
     def get_pos(self) -> np.ndarray:
         """Return array of 3 elements representing exterior's x, y, z."""

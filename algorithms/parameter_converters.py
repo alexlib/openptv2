@@ -166,11 +166,13 @@ def _check_required(file_dict, required_defaults, section_name):
     """Check for required keys that are None in defaults.
 
     Returns list of missing required keys.
+    Case-insensitive key lookup is used.
     """
+    lower_keys = {k.lower(): v for k, v in file_dict.items()}
     missing = []
     for key, default_value in required_defaults.items():
         if default_value is None:
-            value = file_dict.get(key)
+            value = file_dict.get(key) or lower_keys.get(key.lower())
             if value is None or (isinstance(value, list) and len(value) == 0):
                 missing.append(key)
     return missing
@@ -299,7 +301,13 @@ def get_track_par_tuple(yaml_params):
     track = _get_section(yaml_params, "track", "tracking")
     t = _merge_with_defaults(track, DEFAULT_TRACK)
 
-    dangle = t.get("dangle") or t.get("angle") or 10
+    # Prefer user-supplied "angle" over default "dangle"
+    if "angle" in track:
+        dangle = track["angle"]
+    elif "dangle" in track:
+        dangle = track["dangle"]
+    else:
+        dangle = t.get("dangle", 10)
 
     return TrackParTuple(
         dvxmin=t["dvxmin"],
