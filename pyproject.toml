@@ -32,6 +32,7 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Visualization",
 ]
 dependencies = [
+    "marimo>=0.23.0",
     "numpy>=2.0.0",
     "pytest>=9.0.2",
     "pyyaml>=6.0",
@@ -39,6 +40,9 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+python-only = [
+    "numba>=0.60.0",
+]
 gui = [
     "traits>=6.4.0",
     "traitsui>=7.4.0",
@@ -144,11 +148,4 @@ indent-width = 4
 select = ["E", "W", "F", "I"]
 ignore = ["D1"]
 
-[dependency-groups]
-dev = [
-    "pytest>=8.0.0",
-    "pytest-cov>=5.0.0",
-    "mypy>=1.10.0",
-    "pre-commit>=4.0.0",
-    "ruff>=0.5.0",
-]
+

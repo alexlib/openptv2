@@ -128,6 +128,15 @@ pip install scikit-build-core cython numpy
 pip install -e ".[dev]"
 ```
 
+**Python-only mode (no C/Cython build):**
+If you only need the pure Python algorithms engine and don't require the Cython `optv` bindings:
+
+```bash
+OPENPTV_PYTHON_ONLY=1 uv pip install -e .
+```
+
+This installs ~100x faster by skipping Cython compilation. Only the `algorithms/` module will be available.
+
 #### Step 3: Verify Build
 
 ```bash

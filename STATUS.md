@@ -1,6 +1,45 @@
 # Project Status - April 2026
 
-**Last updated**: 2026-04-05
+**Last updated**: 2026-04-08
+
+---
+
+## Debug Visualization Feature - In Progress
+
+### Goal
+Implement "Debugging with display" tracking visualization for OpenPTV that allows users to click on detected particles in PyPTV GUI and visualize search volumes, candidates, and epipolar lines.
+
+### Accomplished (April 8, 2026)
+
+#### 1. Fixed `_tracking_debug_click` (pyptv_gui.py)
+- Changed to read parameters from `self.exp1.pm.parameters` directly (dictionary already in memory)
+- Uses both `"track"` and `"tracking"` keys for tracking params (YAML compatibility)
+- Uses both `"criteria"` and `"volume"` keys for volume params (YAML compatibility)
+- Fixed VolumePar to use correct attribute names (`x_lay`, `z_min_lay`, `z_max_lay`)
+- Uses TrackParTuple directly with dict values instead of convert function
+- Handles both YAML formats (simple keys like "xmin" and nested like "X_lay")
+
+#### 2. Added Python-only Installation Mode
+- Modified `setup.py` to check `OPENPTV_PYTHON_ONLY` environment variable
+- When set, skips Cython compilation and returns empty extensions list
+- Full install: ~2 minutes, Python-only: ~1.4 seconds
+- Added documentation in: INSTALL.md, README.md, docs/developer_guide/building.md
+
+#### 3. Documentation Updates
+- Added "Option D — Python-only" to INSTALL.md
+- Added Python-only section to README.md
+- Added Python-only section to docs/developer_guide/building.md
+
+### Key Discoveries
+- VolumePar uses `x_lay`, `z_min_lay`, `z_max_lay` lists (not Xmin/Xmax/Ymin/Ymax)
+- Tracking parameters use key `"track"` not `"tracking"` in YAML
+- Volume parameters use key `"criteria"` not `"volume"` in YAML
+- `convert_track_par_to_tuple()` requires a TrackPar object, not dict - must use TrackParTuple directly with dict values
+- The `OPENPTV_PYTHON_ONLY=1` environment variable can skip Cython build (~100x faster install)
+- Default install always rebuilds Cython even when only Python code changes
+
+### Remaining Issue
+- **Visualization doesn't appear on camera views** - The click handler works but no visualization draws on the canvas
 
 ---
 
@@ -66,33 +105,6 @@
 | algorithms/tests/ | 260+ | ✅ All pass |
 | gui/tests/ | 246 | ✅ All pass |
 | **Total** | **576+** | ✅ All pass |
-
----
-
-## Next Steps
-
-### Priority 1: Complete Phase 3
-
-1. **Implement `--validate-engine` CLI flag**
-   - Add `openptv2-validate` command
-   - Run both engines and compare results
-
-2. **Complete documentation**
-   - Merge READMEs into comprehensive guide
-   - Add API reference (Sphinx)
-   - User tutorials
-
-### Priority 2: PyPI Release
-
-1. **Configure trusted publishing** on PyPI
-2. **Tag version** v1.0.0
-3. **Push tag** to trigger CI build and upload
-
-### Priority 3: Engine Improvements
-
-1. Add `--engine` flag to GUI
-2. Add `--engine` flag to batch processing
-3. Performance benchmarks (optional)
 
 ---
 

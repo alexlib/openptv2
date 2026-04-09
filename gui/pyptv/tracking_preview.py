@@ -21,46 +21,31 @@ def run_tracking_preview(main_gui, num_frames: int = 5) -> Dict:
         - 'tracking_run': The TrackingRun object for accessing final state
     """
     # Get current parameters from the main GUI
-    ptv_params = main_gui.get_parameter("ptv")
-    track_params = main_gui.get_parameter("tracking")
-    vol_params = main_gui.get_parameter("volume")
-    calib_params = main_gui.get_parameter("calibration")
+    pm = main_gui.exp1.pm
+    params = pm.parameters
 
-    if not all([ptv_params, track_params, vol_params, calib_params]):
-        raise ValueError("Missing required parameters for tracking preview")
-
-    # Import required classes
-    from algorithms.parameters import ControlPar, VolumePar, TrackParTuple, SequencePar
+    from algorithms.parameter_converters import (
+        get_control_par,
+        get_sequence_par,
+        get_volume_par,
+        get_track_par_tuple,
+        convert_optv_calibrations,
+    )
     from algorithms.calibration import Calibration
 
     # Convert parameters to the expected types
-    cpar = ControlPar(
-        ptv_params["imx"],
-        ptv_params["imy"],
-        ptv_params.get("num_cams", 2),
-        ptv_params.get("mx", 0),
-        ptv_params.get("my", 0),
-        ptv_params.get("mz", 0),
-    )
+    cpar = get_control_par(params)
+    cpar.num_cams = params.get("num_cams", 4)
+    spar = get_sequence_par(params)
+    vpar = get_volume_par(params)
+    tpar_tuple = get_track_par_tuple(params)
 
-    vpar = VolumePar(
-        vol_params.get("x_lay", [0, 100]),
-        vol_params.get("y_lay", [0, 100]),
-        vol_params.get("z_lay", [0, 100]),
-    )
-
-    # Convert tracking parameters to tuple format
-    tpar_tuple = convert_track_par_to_tuple(track_params)
-
-    spar = SequencePar(
-        ptv_params.get("first", 1),
-        ptv_params.get("last", 10),
-        ptv_params.get("base_name", "cam"),
-    )
+    # Get calibration parameters
+    calib_params = params.get("calibration")
 
     # Get calibration objects
     cals = []
-    if isinstance(calib_params, list):
+    if calib_params and isinstance(calib_params, list):
         for cal_dict in calib_params:
             cal = Calibration()
             # Assuming calib_params is a list of dicts with calibration data
@@ -74,7 +59,8 @@ def run_tracking_preview(main_gui, num_frames: int = 5) -> Dict:
         try:
             import ptv
 
-            _, _, _, _, _, _, _, cals = ptv.py_start_proc_c(main_gui.exp1.pm)
+            _, _, _, _, _, _, cals = ptv.py_start_proc_c(main_gui.exp1.pm)
+            cals = convert_optv_calibrations(cals)
         except Exception:
             # Fallback: create dummy calibrations
             cals = [Calibration() for _ in range(cpar.num_cams)]

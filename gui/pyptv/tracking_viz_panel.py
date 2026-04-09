@@ -392,61 +392,28 @@ class TrackingDebugPanel(HasTraits):
             return
 
         try:
-            ptv_params = self.main_gui.get_parameter("ptv")
-            track_params = self.main_gui.get_parameter("tracking")
-            vol_params = self.main_gui.get_parameter("volume")
-            seq_params = self.main_gui.get_parameter("sequence")
+            pm = self.main_gui.exp1.pm
+            params = pm.parameters
 
             from algorithms.track import Tracker
-            from algorithms.parameters import (
-                ControlPar,
-                VolumePar,
-                SequencePar,
+            from algorithms.parameter_converters import (
+                get_control_par,
+                get_sequence_par,
+                get_volume_par,
+                get_track_par_tuple,
+                convert_optv_calibrations,
             )
             from algorithms.calibration import Calibration
-            from algorithms.parameters import TrackParTuple
 
-            cpar = ControlPar()
-            cpar.imx = ptv_params["imx"]
-            cpar.imy = ptv_params["imy"]
-            cpar.pix_x = ptv_params["pix_x"]
-            cpar.pix_y = ptv_params["pix_y"]
+            cpar = get_control_par(params)
             cpar.num_cams = self.main_gui.num_cams
-            cpar.mm = ptv_params.get("mm", None)
-
-            vpar = VolumePar()
-            if vol_params:
-                vpar.Xmin = vol_params.get("xmin", 0)
-                vpar.Xmax = vol_params.get("xmax", 100)
-                vpar.Ymin = vol_params.get("ymin", 0)
-                vpar.Ymax = vol_params.get("ymax", 100)
-                vpar.Zmin = vol_params.get("zmin", 0)
-                vpar.Zmax = vol_params.get("zmax", 50)
-
-            tpar = TrackParTuple(
-                self.dvxmin,
-                self.dvxmax,
-                self.dvymin,
-                self.dvymax,
-                self.dvzmin,
-                self.dvzmax,
-                self.dangle,
-                self.dacc,
-                0,
-                0.0,
-                1.0,
-                0.0,
-                0.0,
-            )
-
-            spar = SequencePar()
-            if seq_params:
-                spar.first = seq_params.get("first", 1)
-                spar.last = seq_params.get("last", 10)
+            spar = get_sequence_par(params)
+            vpar = get_volume_par(params)
+            tpar = get_track_par_tuple(params)
 
             cals = []
             if hasattr(self.main_gui, "cals") and self.main_gui.cals:
-                cals = self.main_gui.cals
+                cals = convert_optv_calibrations(self.main_gui.cals)
             else:
                 calib_params = self.main_gui.get_parameter("calibration")
                 if calib_params:

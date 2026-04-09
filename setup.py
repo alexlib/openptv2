@@ -10,6 +10,7 @@ Usage:
     pip install .             # Regular install
 """
 
+import os
 import sys
 from pathlib import Path
 
@@ -48,6 +49,8 @@ def _cythonize_all():
 
 def _needs_rebuild():
     """Check if C sources or Cython files changed since last build."""
+    if os.environ.get("OPENPTV_PYTHON_ONLY"):
+        return False
     c_files = list(BINDINGS_OPTV.glob("*.c"))
     if not c_files:
         return True
@@ -74,6 +77,8 @@ if _needs_rebuild():
 # ---------------------------------------------------------------------------
 def get_liboptv_sources():
     """Get all C source files from lib/src/."""
+    if os.environ.get("OPENPTV_PYTHON_ONLY"):
+        return []
     return [str(f.relative_to(ROOT)) for f in sorted(LIB_SRC.glob("*.c"))]
 
 
@@ -115,6 +120,8 @@ def mk_ext(name, cython_c_file):
 
 def get_extensions():
     """Create Extension objects for all Cython modules."""
+    if os.environ.get("OPENPTV_PYTHON_ONLY"):
+        return []
     extensions = []
     for pyx in sorted(BINDINGS_OPTV.glob("*.pyx")):
         c_file = pyx.with_suffix(".c")

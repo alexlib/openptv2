@@ -129,6 +129,16 @@ class Calibration:
         self.mmlut = mmlut
         self.mmlut_data = mmlut_data
 
+    @staticmethod
+    def _create_default_exterior():
+        """Create a default exterior orientation (deep copy)."""
+        return copy.deepcopy(Exterior)
+
+    @staticmethod
+    def _create_default_interior():
+        """Create a default interior orientation (deep copy)."""
+        return copy.deepcopy(Interior)
+
     def load_from_file(self, ori_file: Path | str, add_file: Path | str | None):
         """Read calibration from .ori and .addpar files into this instance."""
         ori_file = Path(ori_file) if isinstance(ori_file, str) else ori_file

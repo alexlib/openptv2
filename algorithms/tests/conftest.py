@@ -533,12 +533,9 @@ def create_test_volume_params():
         from algorithms.parameters import VolumePar
 
         python_vpar = VolumePar()
-        python_vpar.Xmin = 0.0
-        python_vpar.Xmax = 100.0
-        python_vpar.Ymin = 0.0
-        python_vpar.Ymax = 100.0
-        python_vpar.Zmin = 0.0
-        python_vpar.Zmax = 50.0
+        python_vpar.x_lay = [0.0, 100.0]
+        python_vpar.z_min_lay = [0.0]
+        python_vpar.z_max_lay = [50.0]
     except Exception:
         python_vpar = None
 

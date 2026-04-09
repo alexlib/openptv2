@@ -823,7 +823,6 @@ class TreeMenuHandler(Handler):
         """track detected particles"""
         info.object.clear_plots(remove_background=False)
 
-        # Get sequence parameters from ParameterManager
         seq_params = info.object.get_parameter("sequence")
         seq_first = seq_params["first"]
         seq_last = seq_params["last"]
@@ -834,18 +833,19 @@ class TreeMenuHandler(Handler):
 
         print("Starting detect_part_track")
         x1_a, x2_a, y1_a, y2_a = [], [], [], []
+        x1_first, y1_first = [], []
         for i in range(info.object.num_cams):
             x1_a.append([])
             x2_a.append([])
             y1_a.append([])
             y2_a.append([])
+            x1_first.append([])
+            y1_first.append([])
 
         for i_cam in range(info.object.num_cams):
             for i_seq in range(seq_first, seq_last + 1):
                 intx_green, inty_green = [], []
                 intx_blue, inty_blue = [], []
-
-                # print('Inside detected particles plot', short_base_names[i_cam])
 
                 targets = ptv.read_targets(short_base_names[i_cam], i_seq)
 
@@ -857,12 +857,25 @@ class TreeMenuHandler(Handler):
                         intx_blue.append(t.pos()[0])
                         inty_blue.append(t.pos()[1])
 
-                x1_a[i_cam] = x1_a[i_cam] + intx_green
-                x2_a[i_cam] = x2_a[i_cam] + intx_blue
-                y1_a[i_cam] = y1_a[i_cam] + inty_green
-                y2_a[i_cam] = y2_a[i_cam] + inty_blue
+                if i_seq == seq_first:
+                    x1_first[i_cam] = x1_first[i_cam] + intx_green + intx_blue
+                    y1_first[i_cam] = y1_first[i_cam] + inty_green + inty_blue
+                else:
+                    x1_a[i_cam] = x1_a[i_cam] + intx_green
+                    x2_a[i_cam] = x2_a[i_cam] + intx_blue
+                    y1_a[i_cam] = y1_a[i_cam] + inty_green
+                    y2_a[i_cam] = y2_a[i_cam] + inty_blue
 
         for i_cam in range(info.object.num_cams):
+            if x1_first[i_cam]:
+                info.object.camera_list[i_cam].drawcross(
+                    "x_tr_first",
+                    "y_tr_first",
+                    x1_first[i_cam],
+                    y1_first[i_cam],
+                    "orange",
+                    4,
+                )
             info.object.camera_list[i_cam].drawcross(
                 "x_tr_gr", "y_tr_gr", x1_a[i_cam], y1_a[i_cam], "green", 3
             )
@@ -1391,6 +1404,11 @@ class MainGUI(HasTraits):
                 )
 
                 # look for points along epipolars for other cameras
+                from gui.pyptv import ptv
+
+                cpar = ptv._populate_cpar(self.exp1.pm.parameters["ptv"], self.num_cams)
+                vpar = ptv._populate_vpar(self.exp1.pm.parameters["criteria"])
+
                 for j in range(self.num_cams):
                     if i == j:
                         continue
@@ -1399,8 +1417,8 @@ class MainGUI(HasTraits):
                         self.cals[i],
                         self.cals[j],
                         num_points,
-                        self.cpar,
-                        self.vpar,
+                        cpar,
+                        vpar,
                     )
 
                     if len(pts) > 1:
@@ -1417,158 +1435,74 @@ class MainGUI(HasTraits):
                 self.camera_list[i].rclicked = 0
 
     def _tracking_debug_click(self):
-        """Handle right-click in tracking debug mode."""
+        """Handle right-click in tracking debug mode.
+
+        Strategy: Find closest matched point in sorted_pos, then draw
+        its matched positions in other cameras and search volume for next frames.
+        """
         print(f"[DEBUG] _tracking_debug_click called")
 
         if not hasattr(self, "cals") or not self.cals:
             print("[DEBUG] No calibrations available. Run Init first.")
             return
 
-        print(f"[DEBUG] cals available: {len(self.cals)}")
-
         try:
-            from gui.pyptv.tracking_debug_utils import find_nearest_target
-
             i = self.current_camera
             click_x = self.camera_list[i]._click_tool.x
             click_y = self.camera_list[i]._click_tool.y
 
-            print(f"[DEBUG] Click at camera {i}: ({click_x}, {click_y})")
+            print(f"[DEBUG] Click at camera {i}: ({click_x:.1f}, {click_y:.1f})")
 
-            from algorithms.track import Tracker
-            from algorithms.parameters import (
-                ControlPar,
-                VolumePar,
-                TrackParTuple,
-                SequencePar,
-            )
-            from algorithms.parameters import TrackPar
+            if not hasattr(self, "sorted_pos") or self.sorted_pos is None:
+                print("[DEBUG] No sorted_pos available.")
+                if hasattr(self, "detections") and self.detections:
+                    print("[DEBUG] Detections exist but correspondences not run.")
+                    print(
+                        "[DEBUG] Please run: Process menu → 'Correspondences' (Stereo Matching)"
+                    )
+                else:
+                    print("[DEBUG] No detections found.")
+                    print("[DEBUG] Please run first: Process menu → 'Detect Targets'")
+                return
 
-            ptv_params = self.get_parameter("ptv")
-            print(f"[DEBUG] ptv_params: {ptv_params is not None}")
+            point = np.array([click_x, click_y], dtype="float64")
 
-            try:
-                vol_params = self.get_parameter("volume")
-            except ValueError:
-                vol_params = None
-            try:
-                seq_params = self.get_parameter("sequence")
-            except ValueError:
-                seq_params = None
-            try:
-                track_params = self.get_parameter("tracking")
-            except ValueError:
-                track_params = None
+            found_point = None
+            found_idx = None
+            found_type = None
 
-            print(f"[DEBUG] vol_params: {vol_params is not None}")
-            print(f"[DEBUG] seq_params: {seq_params is not None}")
-            print(f"[DEBUG] track_params: {track_params is not None}")
-
-            cpar = ControlPar()
-            cpar.imx = ptv_params["imx"]
-            cpar.imy = ptv_params["imy"]
-            cpar.pix_x = ptv_params["pix_x"]
-            cpar.pix_y = ptv_params["pix_y"]
-            cpar.num_cams = self.num_cams
-            cpar.mm = ptv_params.get("mm", None)
-
-            vpar = VolumePar()
-            if vol_params:
-                vpar.Xmin = vol_params.get("xmin", 0)
-                vpar.Xmax = vol_params.get("xmax", 100)
-                vpar.Ymin = vol_params.get("ymin", 0)
-                vpar.Ymax = vol_params.get("ymax", 100)
-                vpar.Zmin = vol_params.get("zmin", 0)
-                vpar.Zmax = vol_params.get("zmax", 50)
-            else:
-                print("[DEBUG] Using default vpar values")
-                vpar.Xmin, vpar.Xmax = 0, 100
-                vpar.Ymin, vpar.Ymax = 0, 100
-                vpar.Zmin, vpar.Zmax = 0, 50
-
-            print(f"[DEBUG] track_params: {track_params}")
-
-            if track_params:
-                tpar_tuple = TrackParTuple(
-                    track_params.get("dvxmin", 0.0),
-                    track_params.get("dvxmax", 20.0),
-                    track_params.get("dvymin", 0.0),
-                    track_params.get("dvymax", 20.0),
-                    track_params.get("dvzmin", 0.0),
-                    track_params.get("dvzmax", 20.0),
-                    track_params.get("dangle", 10.0),
-                    track_params.get("dacc", 5.0),
-                    track_params.get("add", 0),
-                    track_params.get("dsumg", 0.0),
-                    track_params.get("dn", 1.0),
-                    track_params.get("dnx", 0.0),
-                    track_params.get("dny", 0.0),
+            for idx, pos_type in enumerate(self.sorted_pos):
+                print(
+                    f"[DEBUG] Checking pos_type {idx}, shape: {[p.shape for p in pos_type]}"
                 )
-            else:
-                print("[DEBUG] No track_params, using defaults")
-                tpar_tuple = TrackParTuple(
-                    0, 20, 0, 20, 0, 20, 10, 5, 0, 0.0, 1.0, 0.0, 0.0
-                )
-
-            spar = SequencePar()
-            if seq_params:
-                spar.first = seq_params.get("first", 1)
-                spar.last = seq_params.get("last", 10)
-            else:
-                print("[DEBUG] No seq_params, using defaults")
-                spar.first, spar.last = 1, 10
-
-            print("[DEBUG] Creating tracker...")
-            tracker = Tracker(cpar, vpar, tpar_tuple, spar, self.cals)
-            tracker.restart()
-
-            print("[DEBUG] Running tracker steps...")
-            for step_num in range(8):
-                result = tracker.step_forward()
-                print(f"[DEBUG] Step {step_num}: {result}")
-                if not result:
+                distances = np.linalg.norm(pos_type[i] - point, axis=1)
+                if len(distances) > 0 and np.min(distances) < 20:
+                    min_idx = np.argmin(distances)
+                    print(
+                        f"[DEBUG] Found close match in pos_type {idx}, min_idx={min_idx}, shape of pos_type[i]: {pos_type[i].shape}"
+                    )
+                    if min_idx >= pos_type[i].shape[1]:
+                        print(
+                            f"[DEBUG] Index {min_idx} out of bounds, skipping this pos_type"
+                        )
+                        continue
+                    found_point = pos_type[i][:, min_idx]
+                    found_idx = min_idx
+                    found_type = pos_type
+                    print(
+                        f"[DEBUG] Found closest match at idx {min_idx}, dist={distances[min_idx]:.1f}"
+                    )
                     break
 
-            fb = tracker.run_info.fb
-            print(f"[DEBUG] Buffer size: {len(fb.buf)}")
-
-            if len(fb.buf) < 2:
-                print("Not enough frames in buffer")
+            if found_point is None:
+                print("[DEBUG] No close match found in sorted_pos")
                 return
 
-            frame = fb.buf[1]
-            print(f"[DEBUG] frame has targets: {hasattr(frame, 'targets')}")
-
-            targets = frame.targets[i] if hasattr(frame, "targets") else []
             print(
-                f"[DEBUG] num_targets for cam {i}: {frame.num_targets[i] if hasattr(frame, 'num_targets') else 'N/A'}"
+                f"[DEBUG] Matched point in cam {i}: ({found_point[0]:.1f}, {found_point[1]:.1f})"
             )
 
-            result = find_nearest_target(targets, click_x, click_y, max_distance=20.0)
-
-            if result is None:
-                print(f"No particle found near ({click_x:.1f}, {click_y:.1f})")
-                return
-
-            particle_idx, x, y = result
-            print(
-                f"\n=== Selected particle {particle_idx} at ({x:.1f}, {y:.1f}) in camera {i} ==="
-            )
-
-            path = (
-                frame.path_info[particle_idx]
-                if hasattr(frame, "path_info") and frame.path_info
-                else None
-            )
-            if path and path.x is not None:
-                pos_3d = np.array([path.x[0], path.x[1], path.x[2]])
-                print(
-                    f"3D position: ({pos_3d[0]:.2f}, {pos_3d[1]:.2f}, {pos_3d[2]:.2f})"
-                )
-
-                self._draw_tracking_debug_visualization(tracker, particle_idx, pos_3d)
-            else:
-                print("Particle not linked (no 3D position)")
+            self._draw_tracking_debug_matches(i, found_point, found_idx, found_type)
 
             self.camera_list[i].rclicked = 0
 
@@ -1577,6 +1511,141 @@ class MainGUI(HasTraits):
 
             print(f"Error in tracking debug: {e}")
             traceback.print_exc()
+
+    def _draw_tracking_debug_matches(self, cam_idx, point, match_idx, pos_type):
+        """Draw matched points and search volume for the selected particle."""
+        from gui.pyptv.tracking_debug_utils import (
+            compute_search_bounds_3d,
+            project_search_volume_to_camera,
+        )
+        from gui.pyptv import ptv
+        from optv.epipolar import epipolar_curve
+        from algorithms.parameter_converters import get_track_par_tuple
+        from algorithms.orientation import point_positions
+
+        params = self.exp1.pm.parameters
+        tpar = get_track_par_tuple(params)
+
+        cpar = ptv._populate_cpar(params["ptv"], self.num_cams)
+        vpar = ptv._populate_vpar(params["criteria"])
+
+        py_cals = convert_optv_calibrations(self.cals)
+
+        print(f"[DEBUG] Drawing matched positions from cam {cam_idx}")
+
+        matched_positions = []
+        for j in range(self.num_cams):
+            pos_in_cam = pos_type[j][:, match_idx]
+            matched_positions.append(pos_in_cam)
+            print(
+                f"[DEBUG] Match in cam {j}: ({pos_in_cam[0]:.1f}, {pos_in_cam[1]:.1f})"
+            )
+
+            if j != cam_idx:
+                pts = epipolar_curve(
+                    point,
+                    self.cals[cam_idx],
+                    self.cals[j],
+                    2,
+                    cpar,
+                    vpar,
+                )
+                if len(pts) >= 2:
+                    self.camera_list[j].drawline(
+                        f"debug_epi_{cam_idx}_{j}_x",
+                        f"debug_epi_{cam_idx}_{j}_y",
+                        pts[0, 0],
+                        pts[0, 1],
+                        pts[-1, 0],
+                        pts[-1, 1],
+                        "cyan",
+                    )
+
+        marker_color = "orange" if cam_idx == 0 else "green"
+        self.camera_list[cam_idx].drawcross(
+            "debug_match_x",
+            "debug_match_y",
+            [point[0]],
+            [point[1]],
+            marker_color,
+            4,
+            marker="circle",
+        )
+
+        for j in range(self.num_cams):
+            if j != cam_idx:
+                self.camera_list[j].drawcross(
+                    f"debug_match_{j}_x",
+                    f"debug_match_{j}_y",
+                    [matched_positions[j][0]],
+                    [matched_positions[j][1]],
+                    "green",
+                    3,
+                    marker="circle",
+                )
+
+        target_arr = np.array(
+            [
+                [
+                    [pos[0], pos[1], 1.0] if pos[0] != 0 or pos[1] != 0 else [0, 0, 0]
+                    for pos in matched_positions
+                ]
+            ]
+        )
+
+        pos_3d, valid = point_positions(target_arr, cpar.mm, py_cals, vpar)
+
+        if valid:
+            print(
+                f"[DEBUG] 3D position: ({pos_3d[0, 0]:.2f}, {pos_3d[0, 1]:.2f}, {pos_3d[0, 2]:.2f})"
+            )
+
+            for frame_offset in [1, 2, 3]:
+                velocity = np.array([0.0, 0.0, 0.0])
+                min_b, max_b = compute_search_bounds_3d(
+                    pos_3d[0],
+                    velocity,
+                    tpar.dvxmin,
+                    tpar.dvxmax,
+                    tpar.dvymin,
+                    tpar.dvymax,
+                    tpar.dvzmin,
+                    tpar.dvzmax,
+                    tpar.dacc,
+                    frame_offset,
+                )
+
+                if frame_offset == 1:
+                    search_color = "green"
+                elif frame_offset == 2:
+                    search_color = "yellow"
+                else:
+                    search_color = "orange"
+
+                for cam_num in range(self.num_cams):
+                    bounds_2d = project_search_volume_to_camera(
+                        min_b, max_b, py_cals[cam_num], cpar.mm
+                    )
+
+                    self.camera_list[cam_num].drawrect(
+                        f"search_{frame_offset}_{cam_num}_x",
+                        f"search_{frame_offset}_{cam_num}_y",
+                        bounds_2d["left"],
+                        bounds_2d["right"],
+                        bounds_2d["up"],
+                        bounds_2d["down"],
+                        search_color,
+                        1,
+                    )
+
+            print(
+                f"[DEBUG] Search volumes drawn for t+1 (green), t+2 (yellow), t+3 (orange)"
+            )
+        else:
+            print("[DEBUG] Could not triangulate 3D position")
+
+        for cam in self.camera_list:
+            cam._plot.request_redraw()
 
     def _draw_tracking_debug_visualization(self, tracker, particle_idx, pos_3d):
         """Draw search volumes and candidates for the selected particle."""
@@ -1701,6 +1770,9 @@ class MainGUI(HasTraits):
             f"Search volumes drawn for frames t+1 (green), t+2 (yellow), t+3 (orange)"
         )
         print(f"Epipolar lines (cyan) from particle to other cameras")
+
+        for cam in self.camera_list:
+            cam._plot.request_redraw()
 
     def create_plots(self, images, is_float=False) -> None:
         """Create plots with images
