@@ -137,6 +137,206 @@ def _fill_adjacency_pair(
         out_n[i] = count
 
 
+# ---------------------------------------------------------------------------
+# Phase 3B: Numba matching kernels on SoA arrays
+# ---------------------------------------------------------------------------
+
+
+@njit(cache=True, nogil=True)
+def _four_camera_matching_inner(
+    n_01, p2_01, corr_01, dist_01,
+    n_02, p2_02, corr_02, dist_02,
+    n_03, p2_03, corr_03, dist_03,
+    n_12, p2_12, corr_12, dist_12,
+    n_13, p2_13, corr_13, dist_13,
+    n_23, p2_23, corr_23, dist_23,
+    base_target_count, accept_corr,
+    scratch_p, scratch_corr, scratch_size,
+):
+    """Four-camera matching on pre-extracted 2D pair arrays.
+
+    Each n_XX is 1D (N,), each p2_XX/corr_XX/dist_XX is 2D (N, MAXCAND).
+    """
+    matched = 0
+
+    for i in range(base_target_count):
+        for j in range(n_01[i]):
+            p2 = p2_01[i, j]
+            c01j = corr_01[i, j]
+            d01j = dist_01[i, j]
+
+            for k in range(n_02[i]):
+                p3 = p2_02[i, k]
+                c02k = corr_02[i, k]
+                d02k = dist_02[i, k]
+
+                for ll in range(n_03[i]):
+                    p4 = p2_03[i, ll]
+                    c03ll = corr_03[i, ll]
+                    d03ll = dist_03[i, ll]
+
+                    for m in range(n_12[p2]):
+                        p31 = p2_12[p2, m]
+                        if p3 != p31:
+                            continue
+                        c12m = corr_12[p2, m]
+                        d12m = dist_12[p2, m]
+
+                        for n in range(n_13[p2]):
+                            p41 = p2_13[p2, n]
+                            if p4 != p41:
+                                continue
+                            c13n = corr_13[p2, n]
+                            d13n = dist_13[p2, n]
+
+                            for o in range(n_23[p3]):
+                                p42 = p2_23[p3, o]
+                                if p4 != p42:
+                                    continue
+
+                                total_dist = d01j + d02k + d03ll + d12m + d13n + dist_23[p3, o]
+                                if total_dist == 0.0:
+                                    continue
+                                corr_val = (c01j + c02k + c03ll + c12m + c13n + corr_23[p3, o]) / total_dist
+                                if corr_val <= accept_corr:
+                                    continue
+
+                                scratch_p[matched, 0] = i
+                                scratch_p[matched, 1] = p2
+                                scratch_p[matched, 2] = p3
+                                scratch_p[matched, 3] = p4
+                                scratch_corr[matched] = corr_val
+                                matched += 1
+                                if matched == scratch_size:
+                                    return matched
+    return matched
+
+
+def _four_camera_matching_numba(
+    corr_n, corr_p2, corr_corr, corr_dist,
+    base_target_count, accept_corr,
+    scratch_p, scratch_corr, scratch_size,
+):
+    """Four-camera matching wrapper: extracts pair slices then calls @njit kernel."""
+    return _four_camera_matching_inner(
+        corr_n[0, 1], corr_p2[0, 1], corr_corr[0, 1], corr_dist[0, 1],
+        corr_n[0, 2], corr_p2[0, 2], corr_corr[0, 2], corr_dist[0, 2],
+        corr_n[0, 3], corr_p2[0, 3], corr_corr[0, 3], corr_dist[0, 3],
+        corr_n[1, 2], corr_p2[1, 2], corr_corr[1, 2], corr_dist[1, 2],
+        corr_n[1, 3], corr_p2[1, 3], corr_corr[1, 3], corr_dist[1, 3],
+        corr_n[2, 3], corr_p2[2, 3], corr_corr[2, 3], corr_dist[2, 3],
+        base_target_count, accept_corr,
+        scratch_p, scratch_corr, scratch_size,
+    )
+
+
+def _three_camera_matching_numba(
+    corr_n, corr_p2, corr_corr, corr_dist,
+    num_cams, target_counts, accept_corr,
+    scratch_p, scratch_corr, scratch_size,
+    tusage, nmax,
+):
+    """Three-camera matching on SoA arrays (plain Python, no @njit)."""
+    matched = 0
+
+    for i1 in range(num_cams - 2):
+        for i in range(target_counts[i1]):
+            for i2 in range(i1 + 1, num_cams - 1):
+                p1 = i
+                if p1 >= nmax or tusage[i1, p1] > 0:
+                    continue
+
+                n_i1i2 = corr_n[i1, i2, i]
+                for j in range(n_i1i2):
+                    p2 = corr_p2[i1, i2, i, j]
+                    if p2 >= nmax or tusage[i2, p2] > 0:
+                        continue
+
+                    for i3 in range(i2 + 1, num_cams):
+                        n_i1i3 = corr_n[i1, i3, i]
+                        n_i2i3 = corr_n[i2, i3, p2]
+
+                        for k in range(n_i1i3):
+                            p3 = corr_p2[i1, i3, i, k]
+                            if p3 >= nmax or tusage[i3, p3] > 0:
+                                continue
+
+                            m = -1
+                            for idx in range(n_i2i3):
+                                if corr_p2[i2, i3, p2, idx] == p3:
+                                    m = idx
+                                    break
+                            if m < 0:
+                                continue
+
+                            total_dist = (
+                                corr_dist[i1, i2, i, j]
+                                + corr_dist[i1, i3, i, k]
+                                + corr_dist[i2, i3, p2, m]
+                            )
+                            if total_dist == 0.0:
+                                continue
+                            corr_val = (
+                                corr_corr[i1, i2, i, j]
+                                + corr_corr[i1, i3, i, k]
+                                + corr_corr[i2, i3, p2, m]
+                            ) / total_dist
+
+                            if corr_val <= accept_corr:
+                                continue
+
+                            scratch_p[matched, :] = -2
+                            scratch_p[matched, i1] = p1
+                            scratch_p[matched, i2] = p2
+                            scratch_p[matched, i3] = p3
+                            scratch_corr[matched] = corr_val
+
+                            matched += 1
+                            if matched == scratch_size:
+                                return matched
+    return matched
+
+
+def _consistent_pair_matching_numba(
+    corr_n, corr_p2, corr_corr, corr_dist,
+    num_cams, target_counts, accept_corr,
+    scratch_p, scratch_corr, scratch_size,
+    tusage, nmax,
+):
+    """Consistent pair matching on SoA arrays (plain Python, no @njit)."""
+    matched = 0
+
+    for i1 in range(num_cams - 1):
+        for i2 in range(i1 + 1, num_cams):
+            for i in range(target_counts[i1]):
+                p1 = i
+                if p1 >= nmax or tusage[i1, p1] > 0:
+                    continue
+                if corr_n[i1, i2, i] != 1:
+                    continue
+
+                p2 = corr_p2[i1, i2, i, 0]
+                if p2 >= nmax or tusage[i2, p2] > 0:
+                    continue
+
+                d = corr_dist[i1, i2, i, 0]
+                if d == 0.0:
+                    continue
+                corr_val = corr_corr[i1, i2, i, 0] / d
+                if corr_val <= accept_corr:
+                    continue
+
+                scratch_p[matched, :] = -2
+                scratch_p[matched, i1] = p1
+                scratch_p[matched, i2] = p2
+                scratch_corr[matched] = corr_val
+
+                matched += 1
+                if matched == scratch_size:
+                    return matched
+    return matched
+
+
 def match_pairs_soa(
     corrected,
     frm,

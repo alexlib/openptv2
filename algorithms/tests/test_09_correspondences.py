@@ -579,3 +579,160 @@ class TestMatchPairsSoA:
                             rtol=1e-10,
                             err_msg=f"dist mismatch at ({i1},{i2},{i},{j})",
                         )
+
+    def test_matching_kernels_vs_original(
+        self, file_control_params, file_calibration_4cam
+    ):
+        """Compare Numba matching kernels against original recarray-based matching."""
+        from algorithms.correspondences import (
+            match_pairs,
+            match_pairs_soa,
+            safely_allocate_adjacency_lists,
+            safely_allocate_target_usage_marks,
+            four_camera_matching,
+            three_camera_matching,
+            consistent_pair_matching,
+            _four_camera_matching_numba,
+            _three_camera_matching_numba,
+            _consistent_pair_matching_numba,
+            MatchedCoords as PythonMatchedCoords,
+            MAXCAND,
+            NMAX,
+        )
+        from algorithms.tracking_frame_buf import (
+            TargetArray as PythonTA,
+            Frame as PythonFrame,
+            n_tupel_dtype,
+        )
+        from algorithms.parameters import VolumePar as PythonVolumePar
+
+        _, python_cpar = file_control_params
+        _, python_cal_list = file_calibration_4cam
+        assert python_cpar is not None
+
+        num_targets = 8
+        num_cams = 4
+        nmax = NMAX
+
+        python_vpar = PythonVolumePar(
+            x_lay=[0.0, 100.0], z_min_lay=[0.0, 0.0], z_max_lay=[50.0, 50.0],
+        )
+
+        python_img_pts = []
+        python_flat_coords = []
+        frm = PythonFrame(num_cams)
+
+        for cam in range(num_cams):
+            ta = PythonTA(num_targets)
+            for i in range(num_targets):
+                ta[i].set_pnr(i)
+                ta[i].set_pos((float(i * 10 + cam * 5), float(i * 15 + cam * 3)))
+                ta[i].set_pixel_counts(5, 2, 2)
+                ta[i].set_sum_grey_value(100.0)
+                ta[i].set_tnr(0)
+            python_img_pts.append(ta)
+            python_flat_coords.append(
+                PythonMatchedCoords(ta, python_cpar, python_cal_list[cam])
+            )
+
+        frm.targets = python_img_pts
+        frm.num_targets = [num_targets] * num_cams
+
+        # --- Run original pipeline ---
+        corr_list_orig = safely_allocate_adjacency_lists(num_cams, frm.num_targets)
+        match_pairs(
+            corr_list_orig, python_flat_coords, frm,
+            python_vpar, python_cpar, python_cal_list,
+        )
+
+        # Original four_camera_matching
+        con0_orig = np.recarray((nmax * num_cams,), dtype=n_tupel_dtype)
+        con0_orig.p = 0
+        con0_orig.corr = 0.0
+        matched_orig_4 = four_camera_matching(
+            corr_list_orig, frm.num_targets[0],
+            python_vpar.corrmin, con0_orig, 4 * nmax,
+        )
+
+        # --- Run SoA pipeline ---
+        corr_n, corr_p2, corr_corr, corr_dist = match_pairs_soa(
+            python_flat_coords, frm, python_vpar, python_cpar, python_cal_list,
+        )
+
+        # SoA four_camera_matching
+        scratch_p = np.full((4 * nmax, 4), -2, dtype=np.int32)
+        scratch_corr = np.zeros(4 * nmax, dtype=np.float64)
+        matched_soa_4 = _four_camera_matching_numba(
+            corr_n, corr_p2, corr_corr, corr_dist,
+            frm.num_targets[0], python_vpar.corrmin,
+            scratch_p, scratch_corr, 4 * nmax,
+        )
+
+        assert matched_soa_4 == matched_orig_4, (
+            f"four_camera_matching count mismatch: orig={matched_orig_4}, soa={matched_soa_4}"
+        )
+
+        # Compare quadruplet contents (sort by corr for order-independent comparison)
+        if matched_orig_4 > 0:
+            orig_set = set()
+            for idx in range(matched_orig_4):
+                orig_set.add(tuple(con0_orig[idx].p))
+            soa_set = set()
+            for idx in range(matched_soa_4):
+                soa_set.add(tuple(scratch_p[idx]))
+            assert soa_set == orig_set, (
+                f"four_camera_matching results differ:\norig={orig_set}\nsoa={soa_set}"
+            )
+
+        # --- Three-camera matching ---
+        tim_orig = safely_allocate_target_usage_marks(num_cams, nmax)
+        con_orig = np.recarray((nmax * num_cams,), dtype=n_tupel_dtype)
+        con_orig.p = 0
+        con_orig.corr = 0.0
+
+        con0_orig3 = np.recarray((nmax * num_cams,), dtype=n_tupel_dtype)
+        con0_orig3.p = 0
+        con0_orig3.corr = 0.0
+
+        matched_orig_3 = three_camera_matching(
+            corr_list_orig, num_cams, frm.num_targets,
+            python_vpar.corrmin, con0_orig3, 4 * nmax, tim_orig,
+        )
+
+        tim_soa = np.zeros((num_cams, nmax), dtype=np.int32)
+        scratch_p3 = np.full((4 * nmax, 4), -2, dtype=np.int32)
+        scratch_corr3 = np.zeros(4 * nmax, dtype=np.float64)
+        target_counts = np.array(frm.num_targets, dtype=np.int32)
+
+        matched_soa_3 = _three_camera_matching_numba(
+            corr_n, corr_p2, corr_corr, corr_dist,
+            num_cams, target_counts, python_vpar.corrmin,
+            scratch_p3, scratch_corr3, 4 * nmax,
+            tim_soa, nmax,
+        )
+
+        assert matched_soa_3 == matched_orig_3, (
+            f"three_camera_matching count mismatch: orig={matched_orig_3}, soa={matched_soa_3}"
+        )
+
+        # --- Consistent pair matching ---
+        con0_orig2 = np.recarray((nmax * num_cams,), dtype=n_tupel_dtype)
+        con0_orig2.p = 0
+        con0_orig2.corr = 0.0
+        matched_orig_2 = consistent_pair_matching(
+            corr_list_orig, num_cams, frm.num_targets,
+            python_vpar.corrmin, con0_orig2, 4 * nmax, tim_orig,
+        )
+
+        scratch_p2 = np.full((4 * nmax, 4), -2, dtype=np.int32)
+        scratch_corr2 = np.zeros(4 * nmax, dtype=np.float64)
+        matched_soa_2 = _consistent_pair_matching_numba(
+            corr_n, corr_p2, corr_corr, corr_dist,
+            num_cams, target_counts, python_vpar.corrmin,
+            scratch_p2, scratch_corr2, 4 * nmax,
+            tim_soa, nmax,
+        )
+
+        assert matched_soa_2 == matched_orig_2, (
+            f"consistent_pair_matching count mismatch: orig={matched_orig_2}, soa={matched_soa_2}"
+        )
