@@ -173,54 +173,45 @@ def correct_brown_affine(
     x: float, y: float, ap: np.ndarray, tol: float = 1e-5
 ) -> Tuple[float, float]:
     """Correct a distorted point using the Brown affine model."""
-    r, rq, xq, yq = 0.0, 0.0, x, y
-    itnum = 0
-
     if x == 0 and y == 0:
-        return xq, yq
+        return x, y
 
-    rq = np.sqrt(x**2 + y**2)
-    two_p1 = 2 * ap[3]
-    two_p2 = 2 * ap[4]
-    cos_she = np.cos(ap[6])
+    r_init = np.sqrt(x * x + y * y)
+    if r_init < 1e-10:
+        return 0.0, 0.0
+
     sin_she = np.sin(ap[6])
+    cos_she = np.cos(ap[6])
+    inv_scx = 1.0 / ap[5]
 
-    while True:
-        r = rq
-        common_term = ap[0] * r**2 + ap[1] * r**4 + ap[2] * r**6
-        xq_common = xq * common_term
-        yq_common = yq * common_term
+    xq = (x + y * sin_she) * inv_scx
+    yq = y / cos_she
 
-        xq = (
-            (x + yq * sin_she) / ap[5]
-            - xq_common
-            - ap[3] * (r**2 + 2 * xq**2)
-            - two_p2 * xq * yq
-        )
+    max_iter = 50
+    damping = 0.5
 
-        yq = y / cos_she - yq_common - ap[4] * (r**2 + 2 * yq**2) - two_p1 * xq * yq
+    for _ in range(max_iter):
+        r2 = xq * xq + yq * yq
+        r4 = r2 * r2
+        r6 = r4 * r2
 
-        rq = np.sqrt(xq**2 + yq**2)
+        radial_factor = ap[0] * r2 + ap[1] * r4 + ap[2] * r6
+        dx = xq * radial_factor + ap[3] * (r2 + 2.0 * xq * xq) + 2.0 * ap[4] * xq * yq
+        dy = yq * radial_factor + ap[4] * (r2 + 2.0 * yq * yq) + 2.0 * ap[3] * xq * yq
 
-        if rq > 1.2 * r:
-            rq = 0.5 * r
+        xq_new = (x + y * sin_she) * inv_scx - dx
+        yq_new = y / cos_she - dy
 
-        itnum += 1
+        dx_change = xq_new - xq
+        dy_change = yq_new - yq
 
-        if itnum >= 201 or np.abs(rq - r) <= tol * r:
+        xq += damping * dx_change
+        yq += damping * dy_change
+
+        if np.sqrt(dx_change * dx_change + dy_change * dy_change) < tol:
             break
 
-    r = rq
-    x1 = (
-        (x + yq * sin_she) / ap[5]
-        - xq * common_term
-        - ap[3] * (r**2 + 2 * xq**2)
-        - two_p2 * xq * yq
-    )
-
-    y1 = y / cos_she - yq * common_term - ap[4] * (r**2 + 2 * yq**2) - two_p1 * xq * yq
-
-    return x1, y1
+    return xq, yq
 
 
 def flat_to_dist(flat_x: float, flat_y: float, cal: Calibration) -> Tuple[float, float]:

@@ -818,7 +818,36 @@ def track_forward_start(tr: TrackingRun):
     tr.fb.fb_prev()
 
 
-def trackcorr_c_loop(run_info, step):
+class TrackingObserver:
+    """Collects per-particle tracking events for later visualization.
+
+    Each event is a dict describing one particle's tracking decision at one
+    frame. Attach an instance to ``trackcorr_c_loop`` via the ``observer``
+    parameter to record the full decision tree without modifying the algorithm.
+
+    Attributes
+    ----------
+    events : list[dict]
+        Accumulated tracking events across all frames.
+    """
+
+    def __init__(self):
+        self.events: list = []
+
+    def record(self, event: dict) -> None:
+        self.events.append(event)
+
+    def clear(self):
+        self.events.clear()
+
+    def events_for_frame(self, step: int) -> list:
+        return [e for e in self.events if e["step"] == step]
+
+    def events_for_particle(self, particle_id: int) -> list:
+        return [e for e in self.events if e["particle_id"] == particle_id]
+
+
+def trackcorr_c_loop(run_info, step, observer=None):
     """Sequence loop."""
     # Initialize variables
     philf = np.zeros((4, MAX_CANDS))
@@ -883,13 +912,35 @@ def trackcorr_c_loop(run_info, step):
                     # print(f"v1[{j}], {v1[j]}")
 
         # calculate search cuboid and reproject it to the image space
+        # Compute search limits for observer before candidate search
+        if observer is not None:
+            _obs_xr, _obs_xl, _obs_yd, _obs_yu = searchquader(
+                X[2], tpar, cpar, cal
+            )
         w = sorted_candidates_in_volume(X[2], v1, fb.buf[2], run_info)
         # if not w  # empty
         if w.shape[0] == 1:  # empty means at least one row
+            if observer is not None:
+                observer.record({
+                    "step": step,
+                    "particle_id": h,
+                    "type": "no_candidates",
+                    "pos_3d": X[1].copy(),
+                    "predicted_3d": X[2].copy(),
+                    "prev_3d": X[0].copy() if curr_path_inf.prev_frame >= 0 else None,
+                    "search_center_px": v1.copy(),
+                    "search_rect": {
+                        "xr": _obs_xr.copy(), "xl": _obs_xl.copy(),
+                        "yd": _obs_yd.copy(), "yu": _obs_yu.copy(),
+                    },
+                    "candidates": [],
+                })
             continue
 
         # Continue to find candidates for the candidates.
         count2 += 1
+        # Build candidate list for observer
+        _obs_candidates = []
         mm = 0
         # counter1-loop
         while w[mm].ftnr != TR_UNUSED and len(fb.buf[2].path_info) > w[mm].ftnr:
@@ -1035,6 +1086,14 @@ def trackcorr_c_loop(run_info, step):
                         curr_path_inf.register_link_candidate(rr, w[mm].ftnr)
 
             del wn
+            # Record this candidate for the observer
+            if observer is not None:
+                _obs_candidates.append({
+                    "ftnr": int(w[mm].ftnr),
+                    "cand_3d": X[3].copy(),
+                    "freq": int(w[mm].freq),
+                    "registered": curr_path_inf.inlist > 0,
+                })
             mm += 1  # increment mm
 
         # begin of inlist still zero
@@ -1077,6 +1136,25 @@ def trackcorr_c_loop(run_info, step):
 
         # end of inlist still zero
         # ***********************************
+
+        # Emit full per-particle event for observer
+        if observer is not None:
+            observer.record({
+                "step": step,
+                "particle_id": h,
+                "type": "tracked",
+                "pos_3d": X[1].copy(),
+                "predicted_3d": X[2].copy(),
+                "prev_3d": X[0].copy() if curr_path_inf.prev_frame >= 0 else None,
+                "has_prev": curr_path_inf.prev_frame >= 0,
+                "search_center_px": v1.copy(),
+                "search_rect": {
+                    "xr": _obs_xr.copy(), "xl": _obs_xl.copy(),
+                    "yd": _obs_yd.copy(), "yu": _obs_yu.copy(),
+                } if observer is not None else {},
+                "candidates": _obs_candidates,
+                "inlist": curr_path_inf.inlist,
+            })
 
         del w
 
@@ -1121,6 +1199,19 @@ def trackcorr_c_loop(run_info, step):
             count1 += 1
 
     # end of creation of links with decision check
+
+    # Annotate observer events with final link decisions
+    if observer is not None:
+        for evt in observer.events_for_frame(step):
+            h = evt["particle_id"]
+            pi = fb.buf[1].path_info[h]
+            evt["finaldecis"] = pi.finaldecis
+            evt["next_frame"] = pi.next_frame
+            if pi.next_frame >= 0 and pi.next_frame < len(fb.buf[2].path_info):
+                evt["linked_3d"] = fb.buf[2].path_info[pi.next_frame].x.copy()
+            else:
+                evt["linked_3d"] = None
+
     print(
         f"step: {step}, curr: {fb.buf[1].num_parts}, next_frame: {fb.buf[2].num_parts}, \
             links: {count1}, lost: {fb.buf[1].num_parts - count1}, add: {num_added}"
@@ -1615,9 +1706,12 @@ class Tracker:
         self.step = self.run_info.seq_par.first
         track_forward_start(self.run_info)
 
-    def step_forward(self):
+    def step_forward(self, observer=None):
         """
         Perform one tracking step for the current frame of iteration.
+
+        Args:
+            observer: Optional TrackingObserver to collect per-particle events.
 
         Returns:
             bool: True if more frames to process, False if done.
@@ -1625,7 +1719,7 @@ class Tracker:
         if self.step >= self.run_info.seq_par.last:
             return False
 
-        trackcorr_c_loop(self.run_info, self.step)
+        trackcorr_c_loop(self.run_info, self.step, observer=observer)
         self.step += 1
         return True
 
@@ -1633,11 +1727,15 @@ class Tracker:
         """Finish a tracking run."""
         trackcorr_c_finish(self.run_info, self.step)
 
-    def full_forward(self):
-        """Do a full tracking run from restart to finalize."""
+    def full_forward(self, observer=None):
+        """Do a full tracking run from restart to finalize.
+
+        Args:
+            observer: Optional TrackingObserver to collect per-particle events.
+        """
         track_forward_start(self.run_info)
         for step in range(self.run_info.seq_par.first, self.run_info.seq_par.last):
-            trackcorr_c_loop(self.run_info, step)
+            trackcorr_c_loop(self.run_info, step, observer=observer)
         trackcorr_c_finish(self.run_info, self.run_info.seq_par.last)
         self.step = 0
 

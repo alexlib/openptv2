@@ -58,6 +58,43 @@ def multimed_r_nlay(cal: Calibration, mm: MultimediaPar, pos: np.ndarray) -> flo
 
 
 @njit(fastmath=True, cache=True, nogil=True)
+def fast_get_mmf_from_mmlut_raw(
+    rw: int, origin: np.ndarray, data: np.ndarray, nz: int, nr: int, pos: np.ndarray
+) -> float:
+    """Numba-friendly raw MMLUT lookup."""
+    temp = pos - origin
+    sz = temp[2] / rw
+    iz = int(sz)
+    sz -= iz
+
+    R = float(np.sqrt(temp[0] * temp[0] + temp[1] * temp[1]))
+    sr = R / rw
+    ir = int(sr)
+    sr -= ir
+
+    if ir > nr:
+        return 0.0
+    if iz < 0 or iz > nz:
+        return 0.0
+
+    v4_0 = ir * nz + iz
+    v4_1 = ir * nz + (iz + 1)
+    v4_2 = (ir + 1) * nz + iz
+    v4_3 = (ir + 1) * nz + (iz + 1)
+
+    for v in (v4_0, v4_1, v4_2, v4_3):
+        if v < 0 or v > nr * nz:
+            return 0.0
+
+    return (
+        data[v4_0] * (1 - sr) * (1 - sz)
+        + data[v4_1] * (1 - sr) * sz
+        + data[v4_2] * sr * (1 - sz)
+        + data[v4_3] * sr * sz
+    )
+
+
+@njit(fastmath=True, cache=True, nogil=True)
 def fast_multimed_r_nlay(
     nlay: int,
     n1: float,
@@ -237,6 +274,47 @@ def fast_back_trans_point(
 
 
 @njit(fastmath=True, cache=True, nogil=True)
+def fast_flat_image_coord_raw(
+    orig_pos: np.ndarray,
+    ex_pos: np.ndarray,
+    ex_dm: np.ndarray,
+    int_cc: float,
+    glass_par: np.ndarray,
+    mm_d: np.ndarray,
+    mm_n1: float,
+    mm_n2: np.ndarray,
+    mm_n3: float,
+    mmlut_origin: np.ndarray,
+    mmlut_data: np.ndarray,
+    mmlut_nz: int,
+    mmlut_nr: int,
+    mmlut_rw: int,
+) -> Tuple[float, float]:
+    """Raw-array version of flat_image_coord for batch use."""
+    pos_t, cross_p, cross_c, _ = fast_trans_cam_point(ex_pos, mm_d[0], glass_par, orig_pos)
+
+    mmf = fast_get_mmf_from_mmlut_raw(
+        mmlut_rw, mmlut_origin, mmlut_data, mmlut_nz, mmlut_nr, pos_t
+    )
+    if mmf <= 0.0:
+        mmf = fast_multimed_r_nlay(1, mm_n1, mm_n2, mm_n3, mm_d, ex_pos[0], ex_pos[1], ex_pos[2], pos_t)
+
+    x_t = ex_pos[0] + (pos_t[0] - ex_pos[0]) * mmf
+    y_t = ex_pos[1] + (pos_t[1] - ex_pos[1]) * mmf
+
+    pos_t2 = np.array([x_t, y_t, pos_t[2]])
+    pos = fast_back_trans_point(glass_par, mm_d[0], cross_c, cross_p, pos_t2)
+
+    deno = ex_dm[:, 2].dot(pos - ex_pos)
+    if deno == 0.0:
+        deno = 1.0
+
+    x = -int_cc * ex_dm[:, 0].dot(pos - ex_pos) / deno
+    y = -int_cc * ex_dm[:, 1].dot(pos - ex_pos) / deno
+    return x, y
+
+
+@njit(fastmath=True, cache=True, nogil=True)
 def move_along_ray(glob_z: float, vertex: np.ndarray, direct: np.ndarray) -> np.ndarray:
     """Move along the ray to the global z plane.
 
@@ -366,9 +444,7 @@ def get_mmf_from_mmlut(cal: Calibration, pos: np.ndarray) -> float:
     return fast_get_mmf_from_mmlut(rw, origin, data, nz, nr, pos)
 
 
-# @njit
-
-
+@njit(fastmath=True, cache=True, nogil=True)
 def fast_get_mmf_from_mmlut(
     rw: int, origin: np.ndarray, data: np.ndarray, nz: int, nr: int, pos: np.ndarray
 ) -> float:
@@ -378,7 +454,7 @@ def fast_get_mmf_from_mmlut(
     iz = int(sz)
     sz -= iz
 
-    R = float(np.linalg.norm(np.array([temp[0], temp[1], 0])))
+    R = float(np.sqrt(temp[0] * temp[0] + temp[1] * temp[1]))
     sr = R / rw
     ir = int(sr)
     sr -= ir
@@ -390,25 +466,23 @@ def fast_get_mmf_from_mmlut(
 
     # bilinear interpolation in r/z box
     # get vertices of box
-    v4 = [
-        ir * nz + iz,
-        ir * nz + (iz + 1),
-        (ir + 1) * nz + iz,
-        (ir + 1) * nz + (iz + 1),
-    ]
+    v4_0 = ir * nz + iz
+    v4_1 = ir * nz + (iz + 1)
+    v4_2 = (ir + 1) * nz + iz
+    v4_3 = (ir + 1) * nz + (iz + 1)
 
     # 2. check wther point is inside camera's object volume
     # important for epipolar line computation
-    for i in range(4):
-        if v4[i] < 0 or v4[i] > nr * nz:
+    for v in (v4_0, v4_1, v4_2, v4_3):
+        if v < 0 or v > nr * nz:
             return 0.0
 
     # interpolate
     mmf = (
-        data[v4[0]] * (1 - sr) * (1 - sz)
-        + data[v4[1]] * (1 - sr) * sz
-        + data[v4[2]] * sr * (1 - sz)
-        + data[v4[3]] * sr * sz
+        data[v4_0] * (1 - sr) * (1 - sz)
+        + data[v4_1] * (1 - sr) * sz
+        + data[v4_2] * sr * (1 - sz)
+        + data[v4_3] * sr * sz
     )
 
     return mmf
