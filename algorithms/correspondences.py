@@ -4,6 +4,7 @@ import math
 from typing import List, Tuple
 
 import numpy as np
+from numba import njit
 
 from .calibration import Calibration
 from .constants import (
@@ -14,10 +15,255 @@ from .constants import (
     PT_UNUSED,
 )
 from .epi import epi_mm
-from .find_candidate import find_candidate, find_start_point_binary
+from .find_candidate import find_candidate, find_start_point_binary, quality_ratio
+from .multimed import fast_flat_image_coord_raw, move_along_ray
 from .parameters import ControlPar, VolumePar
+from .ray_tracing import fast_ray_tracing
 from .tracking_frame_buf import Frame, Target, n_tupel_dtype
 from .trafo import dist_to_flat, pixel_to_metric
+
+
+
+# ---------------------------------------------------------------------------
+# Phase 3A: SoA adjacency layout + fused fill kernel
+# ---------------------------------------------------------------------------
+
+
+@njit(cache=True, nogil=True)
+def _fill_adjacency_pair(
+    src_x, src_y, num_src,
+    src_ref_n, src_ref_nx, src_ref_ny, src_ref_sumg,
+    tgt_x, tgt_y, tgt_pnr, num_tgt,
+    tgt_targ_n, tgt_targ_nx, tgt_targ_ny, tgt_targ_sumg,
+    cal1_pos, cal1_dm, cal1_glass, cal1_cc,
+    cal2_pos, cal2_dm, cal2_glass, cal2_cc,
+    mm_n1, mm_d, mm_n2, mm_n3,
+    mmlut_origin, mmlut_data, mmlut_nz, mmlut_nr, mmlut_rw,
+    eps0, cn, cnx, cny, csumg_thresh,
+    x_lay, z_min_lay, z_max_lay,
+    maxcand,
+    out_n, out_p2, out_corr, out_dist,
+):
+    """Fill adjacency for one camera pair.
+
+    Fused @njit kernel combining epi_mm + candidate search into a single
+    compiled loop.  Writes directly to pre-allocated SoA output arrays.
+    """
+    for i in range(num_src):
+        # --- Compute epipolar line (inline epi_mm) ---
+        camera = np.array([src_x[i], src_y[i], -cal1_cc], dtype=np.float64)
+        pos, direction = fast_ray_tracing(
+            camera, cal1_dm, cal1_pos, cal1_glass,
+            mm_d[0], mm_n1, mm_n2[0], mm_n3,
+        )
+
+        denom_x = x_lay[1] - x_lay[0]
+        if denom_x == 0.0:
+            denom_x = 1.0
+        z_min = z_min_lay[0] + (pos[0] - x_lay[0]) * (z_min_lay[1] - z_min_lay[0]) / denom_x
+        z_max = z_max_lay[0] + (pos[0] - x_lay[0]) * (z_max_lay[1] - z_max_lay[0]) / denom_x
+
+        X_min = move_along_ray(z_min, pos, direction)
+        xa, ya = fast_flat_image_coord_raw(
+            X_min, cal2_pos, cal2_dm, cal2_cc, cal2_glass,
+            mm_d, mm_n1, mm_n2, mm_n3,
+            mmlut_origin, mmlut_data, mmlut_nz, mmlut_nr, mmlut_rw,
+        )
+
+        X_max = move_along_ray(z_max, pos, direction)
+        xb, yb = fast_flat_image_coord_raw(
+            X_max, cal2_pos, cal2_dm, cal2_cc, cal2_glass,
+            mm_d, mm_n1, mm_n2, mm_n3,
+            mmlut_origin, mmlut_data, mmlut_nz, mmlut_nr, mmlut_rw,
+        )
+
+        # --- Candidate search (inline find_candidate) ---
+        if abs(xb - xa) < 1e-15:
+            xb = xa + 1e-10
+
+        m = (yb - ya) / (xb - xa)
+        b_val = ya - m * xa
+        m_norm = math.sqrt(m * m + 1.0)
+
+        xa_lo = min(xa, xb) - eps0
+        xa_hi = max(xa, xb) + eps0
+        ya_lo = min(ya, yb) - eps0
+        ya_hi = max(ya, yb) + eps0
+
+        j0 = find_start_point_binary(tgt_x, num_tgt, xa, eps0)
+
+        ref_n = src_ref_n[i]
+        ref_nx = src_ref_nx[i]
+        ref_ny = src_ref_ny[i]
+        ref_sumg = src_ref_sumg[i]
+
+        count = 0
+        for j in range(j0, num_tgt):
+            if tgt_x[j] > xa_hi:
+                break
+            if tgt_x[j] < xa_lo:
+                continue
+            if tgt_y[j] < ya_lo or tgt_y[j] > ya_hi:
+                continue
+
+            d = abs((tgt_y[j] - m * tgt_x[j] - b_val) / m_norm)
+            if d >= eps0:
+                continue
+
+            pnr_j = tgt_pnr[j]
+            cand_n = tgt_targ_n[pnr_j]
+            cand_nx = tgt_targ_nx[pnr_j]
+            cand_ny = tgt_targ_ny[pnr_j]
+            cand_sumg = tgt_targ_sumg[pnr_j]
+
+            qn = quality_ratio(ref_n, cand_n)
+            qnx = quality_ratio(ref_nx, cand_nx)
+            qny = quality_ratio(ref_ny, cand_ny)
+            qsumg = quality_ratio(ref_sumg, cand_sumg)
+
+            if qn < cn or qnx < cnx or qny < cny or qsumg <= csumg_thresh:
+                continue
+
+            if count >= maxcand:
+                break
+
+            corr = (4.0 * qsumg + 2.0 * qn + qnx + qny) * (ref_sumg + cand_sumg)
+
+            out_p2[i, count] = pnr_j
+            out_dist[i, count] = d
+            out_corr[i, count] = corr
+            count += 1
+
+        out_n[i] = count
+
+
+def match_pairs_soa(
+    corrected,
+    frm,
+    vpar,
+    cpar,
+    calib,
+):
+    """SoA version of match_pairs.
+
+    Returns (corr_n, corr_p2, corr_corr, corr_dist) plain numpy arrays
+    replacing the Correspond_dtype recarray.
+    """
+    mm = getattr(cpar, "mm", None)
+    if mm is None:
+        get_mm = getattr(cpar, "get_multimedia_params", None)
+        if callable(get_mm):
+            mm = get_mm()
+    if mm is None:
+        raise AttributeError("Control parameters object does not expose multimedia parameters")
+
+    num_cams = getattr(cpar, "num_cams", None)
+    if num_cams is None:
+        num_cams = getattr(getattr(cpar, "_control_par", None), "num_cams", None)
+    if num_cams is None:
+        get_num_cams = getattr(cpar, "get_num_cams", None)
+        if callable(get_num_cams):
+            num_cams = get_num_cams()
+    if num_cams is None:
+        raise AttributeError("Control parameters object does not expose num_cams")
+
+    # Pre-extract corrected coords
+    crd_x = [np.asarray(corrected[i].x, dtype=np.float64) for i in range(num_cams)]
+    crd_y = [np.asarray(corrected[i].y, dtype=np.float64) for i in range(num_cams)]
+    crd_pnr = [np.asarray(corrected[i].pnr, dtype=np.int64) for i in range(num_cams)]
+
+    # Pre-extract target properties as float64
+    targ_n = []
+    targ_nx = []
+    targ_ny = []
+    targ_sumg = []
+    for i in range(num_cams):
+        nt = frm.num_targets[i]
+        targ_n.append(np.array([frm.targets[i][j].n for j in range(nt)], dtype=np.float64))
+        targ_nx.append(np.array([frm.targets[i][j].nx for j in range(nt)], dtype=np.float64))
+        targ_ny.append(np.array([frm.targets[i][j].ny for j in range(nt)], dtype=np.float64))
+        targ_sumg.append(np.array([frm.targets[i][j].sumg for j in range(nt)], dtype=np.float64))
+
+    # Extract volume params
+    eps0 = float(getattr(vpar, "eps0", None) or getattr(vpar, "get_eps0", lambda: 0)())
+    cn_val = float(getattr(vpar, "cn", None) or getattr(vpar, "get_cn", lambda: 0)())
+    cnx_val = float(getattr(vpar, "cnx", None) or getattr(vpar, "get_cnx", lambda: 0)())
+    cny_val = float(getattr(vpar, "cny", None) or getattr(vpar, "get_cny", lambda: 0)())
+    csumg_val = float(getattr(vpar, "csumg", None) or getattr(vpar, "get_csumg", lambda: 0)())
+    x_lay = np.asarray(vpar.x_lay, dtype=np.float64)
+    z_min_lay = np.asarray(vpar.z_min_lay, dtype=np.float64)
+    z_max_lay = np.asarray(vpar.z_max_lay, dtype=np.float64)
+
+    # Multimedia params
+    mm_n1 = float(mm.n1)
+    mm_d = np.asarray(mm.d, dtype=np.float64)
+    mm_n2 = np.asarray(mm.n2, dtype=np.float64)
+    mm_n3 = float(mm.n3)
+
+    # Extract calibration arrays per camera
+    cal_pos = []
+    cal_dm = []
+    cal_glass = []
+    cal_cc = []
+    cal_mmlut_origin = []
+    cal_mmlut_data = []
+    cal_mmlut_nz = []
+    cal_mmlut_nr = []
+    cal_mmlut_rw = []
+    for c in range(num_cams):
+        cal_pos.append(np.array(
+            [calib[c].ext_par.x0, calib[c].ext_par.y0, calib[c].ext_par.z0],
+            dtype=np.float64,
+        ))
+        cal_dm.append(np.ascontiguousarray(calib[c].ext_par.dm, dtype=np.float64))
+        cal_glass.append(np.ascontiguousarray(calib[c].glass_par, dtype=np.float64))
+        cal_cc.append(float(calib[c].int_par.cc))
+        cal_mmlut_origin.append(np.asarray(calib[c].mmlut["origin"], dtype=np.float64).ravel())
+        mmlut_data_c = np.asarray(calib[c].mmlut_data, dtype=np.float64).ravel()
+        if mmlut_data_c.size == 0:
+            mmlut_data_c = np.zeros(1, dtype=np.float64)
+        cal_mmlut_data.append(mmlut_data_c)
+        cal_mmlut_nz.append(int(calib[c].mmlut["nz"]))
+        cal_mmlut_nr.append(int(calib[c].mmlut["nr"]))
+        cal_mmlut_rw.append(max(int(calib[c].mmlut["rw"]), 1))  # avoid /0 in LUT lookup
+
+    # Allocate SoA output
+    n_max = max(frm.num_targets)
+    corr_n = np.zeros((num_cams, num_cams, n_max), dtype=np.int32)
+    corr_p2 = np.zeros((num_cams, num_cams, n_max, MAXCAND), dtype=np.int32)
+    corr_corr = np.zeros((num_cams, num_cams, n_max, MAXCAND), dtype=np.float64)
+    corr_dist = np.zeros((num_cams, num_cams, n_max, MAXCAND), dtype=np.float64)
+
+    for i1 in range(num_cams - 1):
+        for i2 in range(i1 + 1, num_cams):
+            num1 = frm.num_targets[i1]
+
+            # Pre-compute source reference properties
+            pnr1 = crd_pnr[i1][:num1]
+            src_ref_n = targ_n[i1][pnr1]
+            src_ref_nx = targ_nx[i1][pnr1]
+            src_ref_ny = targ_ny[i1][pnr1]
+            src_ref_sumg = targ_sumg[i1][pnr1]
+
+            _fill_adjacency_pair(
+                crd_x[i1], crd_y[i1], np.int32(num1),
+                src_ref_n, src_ref_nx, src_ref_ny, src_ref_sumg,
+                crd_x[i2], crd_y[i2], crd_pnr[i2],
+                np.int32(frm.num_targets[i2]),
+                targ_n[i2], targ_nx[i2], targ_ny[i2], targ_sumg[i2],
+                cal_pos[i1], cal_dm[i1], cal_glass[i1], cal_cc[i1],
+                cal_pos[i2], cal_dm[i2], cal_glass[i2], cal_cc[i2],
+                mm_n1, mm_d, mm_n2, mm_n3,
+                cal_mmlut_origin[i2], cal_mmlut_data[i2],
+                cal_mmlut_nz[i2], cal_mmlut_nr[i2], cal_mmlut_rw[i2],
+                eps0, cn_val, cnx_val, cny_val, csumg_val,
+                x_lay, z_min_lay, z_max_lay,
+                np.int32(MAXCAND),
+                corr_n[i1, i2], corr_p2[i1, i2],
+                corr_corr[i1, i2], corr_dist[i1, i2],
+            )
+
+    return corr_n, corr_p2, corr_corr, corr_dist
 
 
 class MatchedCoords:

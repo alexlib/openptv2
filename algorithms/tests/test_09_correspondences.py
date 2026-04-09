@@ -484,3 +484,98 @@ class TestCorrespondencesEdgeCases:
             )
         except (ImportError, AttributeError, TypeError) as e:
             pytest.fail(f"Python implementation missing or incomplete: {e}")
+
+
+class TestMatchPairsSoA:
+    """Test SoA match_pairs against current recarray implementation."""
+
+    def test_match_pairs_soa_vs_original(
+        self, file_control_params, file_calibration_4cam
+    ):
+        """Compare match_pairs_soa output against current match_pairs."""
+        from algorithms.correspondences import (
+            match_pairs,
+            match_pairs_soa,
+            safely_allocate_adjacency_lists,
+            MatchedCoords as PythonMatchedCoords,
+            MAXCAND,
+        )
+        from algorithms.tracking_frame_buf import (
+            TargetArray as PythonTA,
+            Frame as PythonFrame,
+        )
+        from algorithms.parameters import VolumePar as PythonVolumePar
+
+        _, python_cpar = file_control_params
+        _, python_cal_list = file_calibration_4cam
+        assert python_cpar is not None
+
+        num_targets = 8
+        num_cams = 4
+
+        python_vpar = PythonVolumePar(
+            x_lay=[0.0, 100.0], z_min_lay=[0.0, 0.0], z_max_lay=[50.0, 50.0],
+        )
+
+        python_img_pts = []
+        python_flat_coords = []
+        frm = PythonFrame(num_cams)
+
+        for cam in range(num_cams):
+            ta = PythonTA(num_targets)
+            for i in range(num_targets):
+                ta[i].set_pnr(i)
+                ta[i].set_pos((float(i * 10 + cam * 5), float(i * 15 + cam * 3)))
+                ta[i].set_pixel_counts(5, 2, 2)
+                ta[i].set_sum_grey_value(100.0)
+                ta[i].set_tnr(0)
+            python_img_pts.append(ta)
+            python_flat_coords.append(
+                PythonMatchedCoords(ta, python_cpar, python_cal_list[cam])
+            )
+
+        frm.targets = python_img_pts
+        frm.num_targets = [num_targets] * num_cams
+
+        # --- Run original match_pairs ---
+        corr_list_orig = safely_allocate_adjacency_lists(num_cams, frm.num_targets)
+        match_pairs(
+            corr_list_orig, python_flat_coords, frm,
+            python_vpar, python_cpar, python_cal_list,
+        )
+
+        # --- Run SoA match_pairs ---
+        corr_n, corr_p2, corr_corr, corr_dist = match_pairs_soa(
+            python_flat_coords, frm, python_vpar, python_cpar, python_cal_list,
+        )
+
+        # --- Compare ---
+        for i1 in range(num_cams - 1):
+            for i2 in range(i1 + 1, num_cams):
+                for i in range(frm.num_targets[i1]):
+                    orig_n = int(corr_list_orig[i1][i2][i].n)
+                    soa_n = int(corr_n[i1, i2, i])
+                    assert soa_n == orig_n, (
+                        f"Mismatch n at pair ({i1},{i2}) target {i}: "
+                        f"orig={orig_n}, soa={soa_n}"
+                    )
+                    for j in range(orig_n):
+                        assert int(corr_p2[i1, i2, i, j]) == int(
+                            corr_list_orig[i1][i2][i].p2[j]
+                        ), (
+                            f"Mismatch p2 at ({i1},{i2},{i},{j}): "
+                            f"orig={corr_list_orig[i1][i2][i].p2[j]}, "
+                            f"soa={corr_p2[i1, i2, i, j]}"
+                        )
+                        np.testing.assert_allclose(
+                            corr_corr[i1, i2, i, j],
+                            corr_list_orig[i1][i2][i].corr[j],
+                            rtol=1e-10,
+                            err_msg=f"corr mismatch at ({i1},{i2},{i},{j})",
+                        )
+                        np.testing.assert_allclose(
+                            corr_dist[i1, i2, i, j],
+                            corr_list_orig[i1][i2][i].dist[j],
+                            rtol=1e-10,
+                            err_msg=f"dist mismatch at ({i1},{i2},{i},{j})",
+                        )
