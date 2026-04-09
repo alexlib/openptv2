@@ -32,6 +32,26 @@ Answers from interview (April 2026):
 
 The `algorithms/correspondences.py` module is a line-by-line port from C. The algorithmic complexity is fine for C, but the **per-iteration constant factor is ~100-1000× larger** in Python due to recarray attribute dispatch, dtype lookup, object boxing, and Python→Numba round-trip overhead.
 
+### Profiled Findings (April 2026)
+
+Phase 1 is already complete in the Python tree, so the current workstream resumes at the matcher.
+
+One-frame profiling on `test_data/test_cavity` showed:
+- detection: 0.4s
+- stereo-matching: 74.4s
+- 3-D determination: 0.1s
+- total frame time: 75.2s
+
+Cumulative correspondence hotspots from cProfile were:
+- `four_camera_matching`: 107.7s
+- `three_camera_matching`: 27.7s
+- `match_pairs`: 17.6s
+- `epi_mm`: 9.8s
+- `_find_candidates_vectorized`: 1.75s
+- `take_best_candidates`: 1.22s
+
+Implication: candidate search is no longer the main bottleneck. The first low-risk slice should remove Python/NumPy allocation work from `three_camera_matching` and make `take_best_candidates` consume only the populated prefix before the larger SoA/Numba work.
+
 ### Constants
 - $C$ = `num_cams` (typically 2–4)
 - $N$ = targets per camera (1000–5000 in production)
@@ -84,7 +104,7 @@ Already `@njit`:
 
 **Problem:** `epi_mm` is called $C^2/2 \cdot N$ times (e.g. $6 \times 5000 = 30{,}000$ calls for 4 cameras × 5000 targets). Each call goes through `ray_tracing()` → `flat_image_coord()`, which create Python objects (`Calibration` copies), do `getattr` checks, and call into Numba one-at-a-time.
 
-**Critical dependency:** `fast_get_mmf_from_mmlut` in `multimed.py` has `@njit` **commented out**. Since MMLUT is always used, this function must be njit-compiled first. It's a simple bilinear interpolation — just uncomment `@njit`, pass `(rw, origin, data, nz, nr, pos)` as plain arrays. Fix: add `cache=True, nogil=True`.
+**Critical dependency:** `fast_get_mmf_from_mmlut` in `multimed.py` is already njit-compiled in the Python tree. Since MMLUT is always used, keep it as the batched epipolar primitive and pass `(rw, origin, data, nz, nr, pos)` as plain arrays.
 
 **Fix:**
 1. **Enable MMLUT in Numba**: Uncomment `@njit(cache=True, nogil=True)` on `fast_get_mmf_from_mmlut`. Pass MMLUT arrays (data, origin, rw, nz, nr) as flat numpy arrays.
@@ -102,29 +122,23 @@ Already `@njit`:
 
 **Expected speedup:** 50-200× for epipolar computation (eliminates ~30,000 Python→Numba round-trips).
 
-**Current progress:** the batch wrapper and bundle reconstruction seam are in place and regression-tested; the remaining work in this phase is the actual fused inner kernel.
+**Status:** completed; the batch wrapper and bundle reconstruction seam are in place and regression-tested.
 
 ---
 
-## Phase 2 — Vectorize `match_pairs` + candidate search
+## Phase 2 — Low-risk matching cleanup before broader vectorization
 
-**Problem:** After Phase 1 gives all epipolar endpoints as $(N,4)$ arrays, the loop still iterates per-target calling `_find_candidates_vectorized` one at a time.
+**Problem:** Profiling showed that the dense matching loops, not the vectorized candidate search, dominate the frame time. `three_camera_matching` still uses `np.where` in the innermost loop, and `take_best_candidates` still sorts the full scratch buffer instead of the populated prefix.
 
 **Fix:**
-1. Replace `find_start_point_binary` with `np.searchsorted` — it handles arrays natively and returns all start indices in one call.
-2. Pre-compute line parameters $(m, b, m\_norm)$ for all $N$ targets as arrays.
-3. Write a `@njit(cache=True, parallel=True)` kernel that, for one camera-pair, processes all $N$ source targets in `prange`:
-   - Binary search for start index.
-   - Scan candidates, compute epipolar distance.
-   - Apply quality filter.
-   - Write results into the SoA adjacency arrays (see Phase 3 data layout).
-4. This merges Phase 2 and Phase 3 data layout change — the candidate search directly populates plain arrays instead of recarrays.
+1. Replace the `np.where` intersection in `three_camera_matching` with a direct scan of the candidate list, matching the C loop structure.
+2. Add an explicit populated-candidate count to `take_best_candidates` and pass the actual counts from `four_camera_matching`, `three_camera_matching`, and `consistent_pair_matching` so only valid candidates are sorted.
+3. Keep `find_start_point_binary` on `np.searchsorted` as the current baseline, but defer further candidate-search work until matching is cheaper or profiling shows candidate search back in the top three hotspots.
+4. Reprofile the one-frame `test_cavity` batch smoke test after each slice. If the bottleneck remains in `four_camera_matching`, move immediately to the SoA/Numba matching work in Phase 3.
 
-**Memory note:** With 5000 targets × 4 cameras, adjacency arrays are `(4, 4, 5000, 40)` for p2/corr/dist ≈ 100 MB. Acceptable for 8–16 GB systems, but pre-allocate once and reuse across frames.
+**Test gate:** all correspondence and batch tests green.
 
-**Test gate:** all 7 correspondence tests green.
-
-**Expected speedup:** 5-20× for candidate search step.
+**Expected speedup:** modest on its own, but it removes avoidable NumPy allocation overhead and exposes the real matching bottleneck more cleanly.
 
 ---
 
