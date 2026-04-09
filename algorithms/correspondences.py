@@ -168,48 +168,70 @@ def four_camera_matching(
     # print(" Four camera matching ")
 
     for i in range(base_target_count):
-        p1 = corr_list[0][1][i].p1
-        for j in range(corr_list[0][1][i].n):
-            p2 = corr_list[0][1][i].p2[j]
-            for k in range(corr_list[0][2][i].n):
-                p3 = corr_list[0][2][i].p2[k]
-                for ll in range(corr_list[0][3][i].n):
-                    p4 = corr_list[0][3][i].p2[ll]
+        pair_01 = corr_list[0][1][i]
+        pair_02 = corr_list[0][2][i]
+        pair_03 = corr_list[0][3][i]
+        p1 = pair_01.p1
 
-                    for m in range(corr_list[1][2][p2].n):
-                        p31 = corr_list[1][2][p2].p2[m]
+        for j in range(pair_01.n):
+            p2 = pair_01.p2[j]
+            corr_01_j = pair_01.corr[j]
+            dist_01_j = pair_01.dist[j]
+
+            for k in range(pair_02.n):
+                p3 = pair_02.p2[k]
+                corr_02_k = pair_02.corr[k]
+                dist_02_k = pair_02.dist[k]
+
+                for ll in range(pair_03.n):
+                    p4 = pair_03.p2[ll]
+                    corr_03_ll = pair_03.corr[ll]
+                    dist_03_ll = pair_03.dist[ll]
+
+                    pair_12 = corr_list[1][2][p2]
+                    pair_13 = corr_list[1][3][p2]
+                    pair_23 = corr_list[2][3][p3]
+
+                    for m in range(pair_12.n):
+                        p31 = pair_12.p2[m]
                         # print(f" p31 {p31} p3 {p3}")
 
                         if p3 != p31:
                             continue
 
-                        for n in range(corr_list[1][3][p2].n):
-                            p41 = corr_list[1][3][p2].p2[n]
+                        corr_12_m = pair_12.corr[m]
+                        dist_12_m = pair_12.dist[m]
+
+                        for n in range(pair_13.n):
+                            p41 = pair_13.p2[n]
                             # print(f" p41 {p41} p4 {p4}")
                             if p4 != p41:
                                 continue
 
-                            for o in range(corr_list[2][3][p3].n):
-                                p42 = corr_list[2][3][p3].p2[o]
+                            corr_13_n = pair_13.corr[n]
+                            dist_13_n = pair_13.dist[n]
+
+                            for o in range(pair_23.n):
+                                p42 = pair_23.p2[o]
 
                                 # print(f" p42 {p42} p4 {p4}")
                                 if p4 != p42:
                                     continue
 
                                 corr = (
-                                    corr_list[0][1][i].corr[j]
-                                    + corr_list[0][2][i].corr[k]
-                                    + corr_list[0][3][i].corr[ll]
-                                    + corr_list[1][2][p2].corr[m]
-                                    + corr_list[1][3][p2].corr[n]
-                                    + corr_list[2][3][p3].corr[o]
+                                    corr_01_j
+                                    + corr_02_k
+                                    + corr_03_ll
+                                    + corr_12_m
+                                    + corr_13_n
+                                    + pair_23.corr[o]
                                 ) / (
-                                    corr_list[0][1][i].dist[j]
-                                    + corr_list[0][2][i].dist[k]
-                                    + corr_list[0][3][i].dist[ll]
-                                    + corr_list[1][2][p2].dist[m]
-                                    + corr_list[1][3][p2].dist[n]
-                                    + corr_list[2][3][p3].dist[o]
+                                    dist_01_j
+                                    + dist_02_k
+                                    + dist_03_ll
+                                    + dist_12_m
+                                    + dist_13_n
+                                    + pair_23.dist[o]
                                 )
 
                                 # print(f" corr {corr}")
@@ -262,34 +284,35 @@ def three_camera_matching(
                     # print(f"p2 {p2}")
 
                     for i3 in range(i2 + 1, num_cams):
-                        for k in range(corr_list[i1][i3][i].n):
-                            p3 = corr_list[i1][i3][i].p2[k]
+                        pair_13 = corr_list[i1][i3][i]
+                        pair_23 = corr_list[i2][i3][p2]
+
+                        for k in range(pair_13.n):
+                            p3 = pair_13.p2[k]
                             if p3 > nmax or tusage[i3][p3] > 0:
                                 continue
 
                             # print(f"p3 {p3}")
 
-                            # corr_list[i2][i3][p2].p2 is a list
-                            # we want to find indices, we have to either
-                            # modify it to numpy array or use
-                            # indices
-                            p2array = np.atleast_1d(corr_list[i2][i3][p2].p2)
-                            indices = np.where(p2array == p3)[0]
-                            if indices.size == 0:
+                            # Direct scan of pair_23 candidates,
+                            # matching the C loop structure.
+                            m = -1
+                            for idx in range(pair_23.n):
+                                if pair_23.p2[idx] == p3:
+                                    m = idx
+                                    break
+
+                            if m < 0:
                                 continue
 
-                            # print(f"indices {indices}")
-                            # print(f"p3 equal to lists {p3} = {p2array[indices]}")
-
-                            m = indices[0]
                             corr = (
                                 corr_list[i1][i2][i].corr[j]
-                                + corr_list[i1][i3][i].corr[k]
-                                + corr_list[i2][i3][p2].corr[m]
+                                + pair_13.corr[k]
+                                + pair_23.corr[m]
                             ) / (
                                 corr_list[i1][i2][i].dist[j]
-                                + corr_list[i1][i3][i].dist[k]
-                                + corr_list[i2][i3][p2].dist[m]
+                                + pair_13.dist[k]
+                                + pair_23.dist[m]
                             )
 
                             # print(f"corr {corr}")

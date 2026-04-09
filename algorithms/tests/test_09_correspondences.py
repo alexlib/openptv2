@@ -239,6 +239,67 @@ class TestCorrespondencesFunction:
         except (ImportError, AttributeError, TypeError) as e:
             pytest.fail(f"Python implementation missing or incomplete: {e}")
 
+
+class TestCandidateSearchHelpers:
+    """Test the candidate search helpers that underpin Phase 2."""
+
+    def test_find_start_point_binary_anchor(self):
+        from algorithms.find_candidate import find_start_point_binary
+
+        x = np.array([-2.0, -1.0, 0.0, 1.0, 2.0], dtype=np.float64)
+        idx = find_start_point_binary(x, len(x), 0.4, 0.2)
+
+        assert 0 <= idx < len(x)
+        assert x[idx] <= 0.4 + 0.2
+
+    def test_vectorized_candidate_search_preserves_x_order(self):
+        from algorithms.correspondences import _find_candidates_vectorized
+
+        crd_x2 = np.array([-1.0, 0.0, 0.2, 0.4, 1.2], dtype=np.float64)
+        crd_y2 = np.array([-1.0, 0.1, 0.15, 0.3, 1.0], dtype=np.float64)
+        crd_pnr2 = np.array([0, 1, 2, 3, 4], dtype=np.int64)
+
+        targ_n2 = np.array([10, 10, 10, 10, 10], dtype=np.int64)
+        targ_nx2 = np.array([10, 10, 10, 10, 10], dtype=np.int64)
+        targ_ny2 = np.array([10, 10, 10, 10, 10], dtype=np.int64)
+        targ_sumg2 = np.array([100, 100, 100, 100, 100], dtype=np.int64)
+
+        cand = _find_candidates_vectorized(
+            crd_x2, crd_y2, crd_pnr2, 5,
+            targ_n2, targ_nx2, targ_ny2, targ_sumg2,
+            -0.5, 0.0, 0.5, 0.4,
+            10, 10, 10, 100,
+            0.5, 0.1, 0.1, 0.1, 0.1,
+        )
+
+        assert len(cand) > 0
+        assert [c[0] for c in cand] == sorted([c[0] for c in cand])
+
+    def test_take_best_candidates_basic(self):
+        from algorithms.correspondences import take_best_candidates
+        from algorithms.tracking_frame_buf import n_tupel_dtype
+
+        # Only populate 2 real candidates out of 2 slots
+        src = np.recarray(2, dtype=n_tupel_dtype)
+        src.p = -1
+        src.corr = 0.0
+        src[0].p = np.array([1, -1, -1, -1], dtype=np.int32)
+        src[0].corr = 0.6
+        src[1].p = np.array([2, -1, -1, -1], dtype=np.int32)
+        src[1].corr = 0.9
+
+        dst = np.recarray(4, dtype=n_tupel_dtype)
+        dst.p = -1
+        dst.corr = 0.0
+        tusage = np.zeros((4, 10), dtype=np.int32)
+
+        taken = take_best_candidates(src, dst, 4, tusage)
+
+        assert taken == 2
+        # Best corr (0.9) should be taken first
+        assert list(dst[0].p) == [2, -1, -1, -1]
+        assert list(dst[1].p) == [1, -1, -1, -1]
+
     def test_single_cam_correspondence(
         self, file_control_params, file_calibration_cam1
     ):
