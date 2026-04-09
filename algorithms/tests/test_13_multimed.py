@@ -15,6 +15,40 @@ TOLERANCE = get_tolerance("multimed")
 class TestMultimed:
     """Compare multimed functions between optv and python engines."""
 
+    def test_fast_get_mmf_from_mmlut(self):
+        """Test the compiled MMLUT lookup helper directly."""
+        from algorithms.multimed import get_mmf_from_mmlut, fast_get_mmf_from_mmlut
+        from algorithms.calibration import Calibration as PythonCal
+
+        cal = PythonCal()
+        cal.mmlut.rw = 10
+        cal.mmlut.origin = np.array([0.0, 0.0, 0.0])
+        cal.mmlut.nr = 2
+        cal.mmlut.nz = 2
+        cal.mmlut_data = np.array(
+            [
+                [1.0, 2.0],
+                [3.0, 4.0],
+            ],
+            dtype=np.float64,
+        )
+
+        pos = np.array([5.0, 0.0, 5.0], dtype=np.float64)
+
+        result = get_mmf_from_mmlut(cal, pos)
+        compiled = fast_get_mmf_from_mmlut(
+            cal.mmlut.rw,
+            cal.mmlut.origin,
+            cal.mmlut_data.flatten(),
+            cal.mmlut.nz,
+            cal.mmlut.nr,
+            pos,
+        )
+
+        assert fast_get_mmf_from_mmlut.nopython_signatures is not None
+        assert len(fast_get_mmf_from_mmlut.nopython_signatures) > 0
+        np.testing.assert_allclose(result, compiled, rtol=1e-12, atol=1e-12)
+
     def test_multimed_r_nlay_basic(self):
         """Test multimed_r_nlay with basic data."""
         from algorithms.calibration import Calibration as PythonCal
@@ -135,6 +169,97 @@ class TestMultimed:
             pytest.fail(f"python multimed_nlay failed: {e}")
 
         assert len(results) == 2
+
+    def test_epi_mm_batch_parity(self):
+        """Test the batched epipolar helper matches repeated scalar calls."""
+        from algorithms.calibration import Calibration as PythonCal
+        from algorithms.epi import (
+            epi_mm,
+            epi_mm_batch,
+            epi_mm_batch_inputs,
+            _epi_mm_batch_restore_inputs,
+            _epi_mm_batch_row,
+        )
+        from algorithms.parameters import MultimediaPar, VolumePar
+
+        cal1 = PythonCal()
+        cal1.set_pos(np.array([0.0, 0.0, 100.0]))
+        cal1.set_angles(np.array([0.0, 0.0, 0.0]))
+
+        cal2 = PythonCal()
+        cal2.set_pos(np.array([25.0, 0.0, 100.0]))
+        cal2.set_angles(np.array([0.0, 0.0, 0.0]))
+
+        mm = MultimediaPar(n1=1.0, n2=[1.0], d=[5.0], n3=1.0)
+        vpar = VolumePar(
+            x_lay=[0.0, 100.0],
+            z_min_lay=[0.0, 0.0],
+            z_max_lay=[50.0, 50.0],
+        )
+
+        xl = np.array([10.0, 20.0, 30.0], dtype=np.float64)
+        yl = np.array([5.0, 15.0, 25.0], dtype=np.float64)
+
+        batch = epi_mm_batch(xl, yl, cal1, cal2, mm, vpar)
+        scalar = np.array([epi_mm(xl[i], yl[i], cal1, cal2, mm, vpar) for i in range(3)])
+
+        np.testing.assert_allclose(batch, scalar, rtol=1e-12, atol=1e-12)
+
+        row = _epi_mm_batch_row(float(xl[0]), float(yl[0]), cal1, cal2, mm, vpar)
+        np.testing.assert_allclose(row, scalar[0], rtol=1e-12, atol=1e-12)
+
+        inputs = epi_mm_batch_inputs(cal1, cal2, mm, vpar)
+        assert inputs.cal1_pos.shape == (3,)
+        assert inputs.cal1_dm.shape == (3, 3)
+        assert inputs.cal1_glass.shape == (3,)
+        assert inputs.cal1_cc == cal1.int_par.cc
+        assert inputs.cal2_pos.shape == (3,)
+        assert inputs.cal2_dm.shape == (3, 3)
+        assert inputs.cal2_glass.shape == (3,)
+        assert inputs.cal2_cc == cal2.int_par.cc
+        assert inputs.mm_n1 == mm.n1
+        assert inputs.mm_d.shape == (1,)
+        assert inputs.mm_n2.shape == (1,)
+        assert inputs.mm_n3 == mm.n3
+        assert inputs.mmlut_origin.shape == (3,)
+        assert inputs.mmlut_data.ndim == 1
+
+        restored_cal1, restored_cal2, restored_mm = _epi_mm_batch_restore_inputs(inputs)
+        np.testing.assert_allclose(restored_cal1.get_pos(), cal1.get_pos(), rtol=1e-12, atol=1e-12)
+        np.testing.assert_allclose(restored_cal2.get_pos(), cal2.get_pos(), rtol=1e-12, atol=1e-12)
+        np.testing.assert_allclose(restored_mm.n2, mm.n2, rtol=1e-12, atol=1e-12)
+        np.testing.assert_allclose(restored_mm.d, mm.d, rtol=1e-12, atol=1e-12)
+        assert restored_mm.n1 == mm.n1
+        assert restored_mm.n3 == mm.n3
+
+    def test_epi_mm_batch_arrays_alias(self):
+        """Test that the arrays alias matches the main batch entry point."""
+        from algorithms.calibration import Calibration as PythonCal
+        from algorithms.epi import epi_mm_batch, epi_mm_batch_arrays
+        from algorithms.parameters import MultimediaPar, VolumePar
+
+        cal1 = PythonCal()
+        cal1.set_pos(np.array([0.0, 0.0, 100.0]))
+        cal1.set_angles(np.array([0.0, 0.0, 0.0]))
+
+        cal2 = PythonCal()
+        cal2.set_pos(np.array([25.0, 0.0, 100.0]))
+        cal2.set_angles(np.array([0.0, 0.0, 0.0]))
+
+        mm = MultimediaPar(n1=1.0, n2=[1.0], d=[5.0], n3=1.0)
+        vpar = VolumePar(
+            x_lay=[0.0, 100.0],
+            z_min_lay=[0.0, 0.0],
+            z_max_lay=[50.0, 50.0],
+        )
+
+        xl = np.array([10.0, 20.0], dtype=np.float64)
+        yl = np.array([5.0, 15.0], dtype=np.float64)
+
+        expected = epi_mm_batch(xl, yl, cal1, cal2, mm, vpar)
+        actual = epi_mm_batch_arrays(xl, yl, cal1, cal2, mm, vpar)
+
+        np.testing.assert_allclose(actual, expected, rtol=1e-12, atol=1e-12)
 
     def test_init_mmlut(self):
         """Test init_mmlut function.

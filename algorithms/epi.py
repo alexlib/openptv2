@@ -1,15 +1,16 @@
 """Epipolar geometry."""
 
-from typing import Tuple
+from typing import NamedTuple, Tuple
 
 import numpy as np
+from numba import njit, prange
 
 # from numba import float64, int32
 from .calibration import Calibration
 from .imgcoord import flat_image_coord, img_coord
-from .multimed import move_along_ray
+from .multimed import fast_flat_image_coord_raw, move_along_ray
 from .parameters import ControlPar, MultimediaPar, VolumePar
-from .ray_tracing import ray_tracing
+from .ray_tracing import fast_ray_tracing, ray_tracing
 from .trafo import dist_to_flat, metric_to_pixel, pixel_to_metric
 
 Candidate_dtype = np.dtype(
@@ -36,6 +37,25 @@ Coord3d_dtype = np.dtype(
         ("z", np.float64),
     ]
 )
+
+
+class EpiMmBatchInputs(NamedTuple):
+    """Plain data bundle for future batched epipolar kernels."""
+
+    cal1_pos: np.ndarray
+    cal1_dm: np.ndarray
+    cal1_glass: np.ndarray
+    cal1_cc: float
+    cal2_pos: np.ndarray
+    cal2_dm: np.ndarray
+    cal2_glass: np.ndarray
+    cal2_cc: float
+    mm_n1: float
+    mm_d: np.ndarray
+    mm_n2: np.ndarray
+    mm_n3: float
+    mmlut_origin: np.ndarray
+    mmlut_data: np.ndarray
 
 
 def sort_coord2d_x(crd: np.ndarray) -> np.ndarray:
@@ -103,6 +123,271 @@ def epi_mm(xl, yl, cal1, cal2, mmp, vpar) -> Tuple[float, float, float, float]:
     xmax, ymax = flat_image_coord(X, cal2, mmp)
 
     return xmin, ymin, xmax, ymax
+
+
+def epi_mm_batch(
+    xl: np.ndarray,
+    yl: np.ndarray,
+    cal1: Calibration,
+    cal2: Calibration,
+    mmp: MultimediaPar,
+    vpar: VolumePar,
+) -> np.ndarray:
+    """Batch version of epi_mm returning one row per input point.
+
+    This is the Phase 1 scaffold: it centralizes the batch API and keeps
+    the scalar implementation as the reference path for parity.
+    """
+    xl = np.asarray(xl, dtype=np.float64)
+    yl = np.asarray(yl, dtype=np.float64)
+    if xl.shape != yl.shape:
+        raise ValueError("xl and yl must have the same shape")
+
+    batch_inputs = epi_mm_batch_inputs(cal1, cal2, mmp, vpar)
+    return _epi_mm_batch_inner(
+        xl,
+        yl,
+        batch_inputs.cal1_pos,
+        batch_inputs.cal1_dm,
+        batch_inputs.cal1_glass,
+        batch_inputs.cal1_cc,
+        batch_inputs.cal2_pos,
+        batch_inputs.cal2_dm,
+        batch_inputs.cal2_glass,
+        batch_inputs.cal2_cc,
+        batch_inputs.mm_n1,
+        batch_inputs.mm_d,
+        batch_inputs.mm_n2,
+        batch_inputs.mm_n3,
+        batch_inputs.mmlut_origin,
+        batch_inputs.mmlut_data,
+        np.asarray(vpar.x_lay, dtype=np.float64),
+        np.asarray(vpar.z_min_lay, dtype=np.float64),
+        np.asarray(vpar.z_max_lay, dtype=np.float64),
+    )
+
+
+def epi_mm_batch_arrays(
+    xl: np.ndarray,
+    yl: np.ndarray,
+    cal1: Calibration,
+    cal2: Calibration,
+    mmp: MultimediaPar,
+    vpar: VolumePar,
+) -> np.ndarray:
+    """Alias for the batch epipolar API used by future array-backed kernels."""
+    return epi_mm_batch(xl, yl, cal1, cal2, mmp, vpar)
+
+
+def epi_mm_batch_inputs(
+    cal1: Calibration,
+    cal2: Calibration,
+    mmp: MultimediaPar,
+    vpar: VolumePar,
+    ) -> EpiMmBatchInputs:
+    """Extract plain arrays needed by a future batched epipolar kernel."""
+    ex1_pos = np.array([cal1.ext_par.x0, cal1.ext_par.y0, cal1.ext_par.z0], dtype=np.float64)
+    ex1_dm = np.ascontiguousarray(cal1.ext_par.dm, dtype=np.float64)
+    glass1 = np.ascontiguousarray(cal1.glass_par, dtype=np.float64)
+    cc1 = float(cal1.int_par.cc)
+
+    ex2_pos = np.array([cal2.ext_par.x0, cal2.ext_par.y0, cal2.ext_par.z0], dtype=np.float64)
+    ex2_dm = np.ascontiguousarray(cal2.ext_par.dm, dtype=np.float64)
+    glass_par = np.ascontiguousarray(cal2.glass_par, dtype=np.float64)
+    cc2 = float(cal2.int_par.cc)
+
+    mm_d = np.asarray(mmp.d, dtype=np.float64)
+    mm_n2 = np.asarray(mmp.n2, dtype=np.float64)
+    mmlut_origin = np.asarray(cal1.mmlut["origin"], dtype=np.float64)
+    mmlut_data = np.asarray(cal1.mmlut_data, dtype=np.float64).ravel()
+
+    return EpiMmBatchInputs(
+        ex1_pos,
+        ex1_dm,
+        glass1,
+        cc1,
+        ex2_pos,
+        ex2_dm,
+        glass_par,
+        cc2,
+        float(mmp.n1),
+        mm_d,
+        mm_n2,
+        float(mmp.n3),
+        mmlut_origin,
+        mmlut_data,
+    )
+
+
+def _epi_mm_batch_row(
+    xl: float,
+    yl: float,
+    cal1: Calibration,
+    cal2: Calibration,
+    mmp: MultimediaPar,
+    vpar: VolumePar,
+) -> np.ndarray:
+    """Compute one batch row using the scalar reference path."""
+    return np.array(epi_mm(xl, yl, cal1, cal2, mmp, vpar), dtype=np.float64)
+
+
+def _epi_mm_batch_row_from_inputs(
+    xl: float,
+    yl: float,
+    batch_inputs: EpiMmBatchInputs,
+    vpar: VolumePar,
+) -> np.ndarray:
+    """Compute one batch row from a pre-extracted batch bundle."""
+    cal1, cal2, mmp = _epi_mm_batch_restore_inputs(batch_inputs)
+
+    return np.array(epi_mm(xl, yl, cal1, cal2, mmp, vpar), dtype=np.float64)
+
+
+@njit(cache=True, parallel=True, nogil=True)
+def _epi_mm_batch_inner(
+    xl: np.ndarray,
+    yl: np.ndarray,
+    cal1_pos: np.ndarray,
+    cal1_dm: np.ndarray,
+    cal1_glass: np.ndarray,
+    cal1_cc: float,
+    cal2_pos: np.ndarray,
+    cal2_dm: np.ndarray,
+    cal2_glass: np.ndarray,
+    cal2_cc: float,
+    mm_n1: float,
+    mm_d: np.ndarray,
+    mm_n2: np.ndarray,
+    mm_n3: float,
+    mmlut_origin: np.ndarray,
+    mmlut_data: np.ndarray,
+    x_lay: np.ndarray,
+    z_min_lay: np.ndarray,
+    z_max_lay: np.ndarray,
+) -> np.ndarray:
+    """Numba batch kernel for epipolar endpoints."""
+    out = np.empty((xl.shape[0], 4), dtype=np.float64)
+
+    for i in prange(xl.shape[0]):
+        camera = np.array([xl[i], yl[i], -cal1_cc], dtype=np.float64)
+        pos, direction = fast_ray_tracing(
+            camera,
+            cal1_dm,
+            cal1_pos,
+            cal1_glass,
+            mm_d[0],
+            mm_n1,
+            mm_n2[0],
+            mm_n3,
+        )
+
+        z_min = z_min_lay[0] + (pos[0] - x_lay[0]) * (z_min_lay[1] - z_min_lay[0]) / (x_lay[1] - x_lay[0])
+        z_max = z_max_lay[0] + (pos[0] - x_lay[0]) * (z_max_lay[1] - z_max_lay[0]) / (x_lay[1] - x_lay[0])
+
+        x_min = move_along_ray(z_min, pos, direction)
+        xmin, ymin = fast_flat_image_coord_raw(
+            x_min,
+            cal2_pos,
+            cal2_dm,
+            cal2_cc,
+            cal2_glass,
+            mm_d,
+            mm_n1,
+            mm_n2,
+            mm_n3,
+            mmlut_origin,
+            mmlut_data,
+            0,
+            0,
+            1,
+        )
+
+        x_max = move_along_ray(z_max, pos, direction)
+        xmax, ymax = fast_flat_image_coord_raw(
+            x_max,
+            cal2_pos,
+            cal2_dm,
+            cal2_cc,
+            cal2_glass,
+            mm_d,
+            mm_n1,
+            mm_n2,
+            mm_n3,
+            mmlut_origin,
+            mmlut_data,
+            0,
+            0,
+            1,
+        )
+
+        out[i, 0] = xmin
+        out[i, 1] = ymin
+        out[i, 2] = xmax
+        out[i, 3] = ymax
+
+    return out
+
+
+def _epi_mm_batch_restore_inputs(
+    batch_inputs: EpiMmBatchInputs,
+) -> tuple[Calibration, Calibration, MultimediaPar]:
+    """Rebuild the scalar objects needed by the reference epipolar path."""
+    cal1 = _epi_mm_batch_restore_calibration_with_mmlut(
+        batch_inputs.cal1_pos,
+        batch_inputs.cal1_dm,
+        batch_inputs.cal1_glass,
+        batch_inputs.cal1_cc,
+        batch_inputs.mmlut_origin,
+        batch_inputs.mmlut_data,
+    )
+    cal2 = _epi_mm_batch_restore_calibration(
+        batch_inputs.cal2_pos,
+        batch_inputs.cal2_dm,
+        batch_inputs.cal2_glass,
+        batch_inputs.cal2_cc,
+    )
+    mmp = _epi_mm_batch_restore_multimedia(batch_inputs)
+    return cal1, cal2, mmp
+
+
+def _epi_mm_batch_restore_calibration(
+    pos: np.ndarray,
+    dm: np.ndarray,
+    glass: np.ndarray,
+    cc: float,
+) -> Calibration:
+    """Rebuild one calibration object from batch bundle fields."""
+    cal = Calibration()
+    cal.set_pos(pos)
+    cal.ext_par.dm = dm
+    cal.glass_par = glass
+    cal.int_par.cc = cc
+    return cal
+
+
+def _epi_mm_batch_restore_calibration_with_mmlut(
+    pos: np.ndarray,
+    dm: np.ndarray,
+    glass: np.ndarray,
+    cc: float,
+    mmlut_origin: np.ndarray,
+    mmlut_data: np.ndarray,
+) -> Calibration:
+    """Rebuild the first calibration, including LUT state."""
+    cal = _epi_mm_batch_restore_calibration(pos, dm, glass, cc)
+    cal.mmlut["origin"] = mmlut_origin
+    cal.mmlut_data = mmlut_data.reshape(cal.mmlut_data.shape)
+    return cal
+
+
+def _epi_mm_batch_restore_multimedia(batch_inputs: EpiMmBatchInputs) -> MultimediaPar:
+    """Rebuild multimedia parameters from the batch bundle."""
+    return MultimediaPar(
+        n1=batch_inputs.mm_n1,
+        n2=list(batch_inputs.mm_n2),
+        d=list(batch_inputs.mm_d),
+        n3=batch_inputs.mm_n3,
+    )
 
 
 def epi_mm_2D(
