@@ -337,6 +337,67 @@ def _consistent_pair_matching_numba(
     return matched
 
 
+# ---------------------------------------------------------------------------
+# Phase 3C: SoA take_best_candidates
+# ---------------------------------------------------------------------------
+
+
+def _take_best_candidates_soa(
+    src_p, src_corr, num_cands, num_cams, tusage,
+):
+    """Take best candidates from SoA scratch buffers.
+
+    Greedy selection: sort by correlation descending, skip candidates with
+    already-used targets.
+
+    Args:
+        src_p: int32 array (max_cands, num_cams) — candidate target indices
+        src_corr: float64 array (max_cands,) — correlation scores
+        num_cands: number of valid candidates in src_p/src_corr
+        num_cams: number of cameras
+        tusage: int32 array (num_cams, nmax) — target usage marks
+
+    Returns:
+        (dst_p, dst_corr, taken) where dst arrays hold the accepted candidates
+        and taken is the count.
+    """
+    if num_cands == 0:
+        dst_p = np.empty((0, num_cams), dtype=np.int32)
+        dst_corr = np.empty(0, dtype=np.float64)
+        return dst_p, dst_corr, 0
+
+    # Sort descending by correlation
+    order = np.argsort(-src_corr[:num_cands])
+
+    dst_p = np.full((num_cands, num_cams), -2, dtype=np.int32)
+    dst_corr = np.zeros(num_cands, dtype=np.float64)
+    taken = 0
+
+    for idx in range(num_cands):
+        ci = order[idx]
+        has_used = False
+        for cam in range(num_cams):
+            tnum = int(src_p[ci, cam])
+            if tnum > -1 and tusage[cam, tnum] > 0:
+                has_used = True
+                break
+
+        if has_used:
+            continue
+
+        # Mark targets as used
+        for cam in range(num_cams):
+            tnum = int(src_p[ci, cam])
+            if tnum > -1:
+                tusage[cam, tnum] += 1
+
+        dst_p[taken] = src_p[ci]
+        dst_corr[taken] = src_corr[ci]
+        taken += 1
+
+    return dst_p, dst_corr, taken
+
+
 def match_pairs_soa(
     corrected,
     frm,

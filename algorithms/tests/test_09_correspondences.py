@@ -736,3 +736,52 @@ class TestMatchPairsSoA:
         assert matched_soa_2 == matched_orig_2, (
             f"consistent_pair_matching count mismatch: orig={matched_orig_2}, soa={matched_soa_2}"
         )
+
+    def test_take_best_candidates_soa(self):
+        """Compare _take_best_candidates_soa against original take_best_candidates."""
+        from algorithms.correspondences import (
+            take_best_candidates,
+            _take_best_candidates_soa,
+        )
+        from algorithms.tracking_frame_buf import n_tupel_dtype
+
+        num_cams = 4
+
+        # Build recarray source with 3 candidates
+        src = np.recarray(3, dtype=n_tupel_dtype)
+        src.p = -1
+        src.corr = 0.0
+        src[0].p = np.array([1, 2, -1, -1], dtype=np.int32)
+        src[0].corr = 0.6
+        src[1].p = np.array([3, 4, -1, -1], dtype=np.int32)
+        src[1].corr = 0.9
+        src[2].p = np.array([1, 5, -1, -1], dtype=np.int32)
+        src[2].corr = 0.7
+
+        # Original
+        dst_orig = np.recarray(10, dtype=n_tupel_dtype)
+        dst_orig.p = -1
+        dst_orig.corr = 0.0
+        tusage_orig = np.zeros((num_cams, 10), dtype=np.int32)
+        taken_orig = take_best_candidates(src.copy(), dst_orig, num_cams, tusage_orig)
+
+        # SoA
+        src_p = np.array([[1, 2, -1, -1], [3, 4, -1, -1], [1, 5, -1, -1]], dtype=np.int32)
+        src_corr = np.array([0.6, 0.9, 0.7], dtype=np.float64)
+        tusage_soa = np.zeros((num_cams, 10), dtype=np.int32)
+        dst_p, dst_c, taken_soa = _take_best_candidates_soa(
+            src_p, src_corr, 3, num_cams, tusage_soa,
+        )
+
+        assert taken_soa == taken_orig, (
+            f"take_best count mismatch: orig={taken_orig}, soa={taken_soa}"
+        )
+
+        # Compare target sets (order may differ if same corr)
+        orig_set = set()
+        for idx in range(taken_orig):
+            orig_set.add(tuple(dst_orig[idx].p))
+        soa_set = set()
+        for idx in range(taken_soa):
+            soa_set.add(tuple(dst_p[idx]))
+        assert soa_set == orig_set
