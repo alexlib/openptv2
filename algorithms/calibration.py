@@ -179,9 +179,11 @@ class Calibration:
 
         return self
 
-    def from_file(self, ori_file: Path | str, add_file: Path | str | None):
-        """Populate this Calibration from .ori and .addpar files."""
-        return self.load_from_file(ori_file, add_file)
+    @classmethod
+    def from_file(cls, ori_file: Path | str, add_file: Path | str | None = None):
+        """Create a Calibration populated from .ori and .addpar files."""
+        cal = cls()
+        return cal.load_from_file(ori_file, add_file)
 
     def get_pos(self) -> np.ndarray:
         """Return array of 3 elements representing exterior's x, y, z."""
