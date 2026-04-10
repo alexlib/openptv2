@@ -12,7 +12,7 @@ from .parameters import ControlPar
 filter_t = np.zeros((3, 3), dtype=float)
 
 
-@njit
+@njit(cache=True)
 def filter_3(img, kernel=None) -> np.ndarray:
     """Apply a 3x3 filter to an image."""
     if img.dtype != np.uint8:
@@ -53,7 +53,7 @@ def filter_3(img, kernel=None) -> np.ndarray:
     return flat_out.reshape(img.shape)
 
 
-@njit
+@njit(cache=True)
 def lowpass_3(img: np.ndarray) -> np.ndarray:
     """Lowpass filter matching the native 3x3 implementation."""
     if img.dtype != np.uint8:
@@ -196,7 +196,7 @@ def fast_box_blur(
 #     return new_img
 
 
-@njit
+@njit(cache=True)
 def subtract_img(img1: np.ndarray, img2: np.ndarray, img_new: np.ndarray) -> None:
     """
     Subtract img2 from img1 and store the result in img_new.
@@ -211,7 +211,7 @@ def subtract_img(img1: np.ndarray, img2: np.ndarray, img_new: np.ndarray) -> Non
     )
 
 
-@njit
+@njit(cache=True)
 def subtract_mask(img: np.ndarray, img_mask: np.ndarray):
     """Subtract mask from image."""
     img_new = np.where(img_mask == 0, 0, img)

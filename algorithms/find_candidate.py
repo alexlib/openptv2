@@ -156,7 +156,7 @@ def find_candidate(
 #     return a / b if a < b else b / a
 
 
-@njit(float64(float64, float64))
+@njit(float64(float64, float64), cache=True)
 def quality_ratio(a: float, b: float) -> float:
     """Return the ratio of the smaller to the larger of the two numbers."""
     if a == 0 and b == 0:
@@ -184,7 +184,7 @@ def find_start_point(crd: np.recarray, num: int, xa: float, vpar: VolumePar) -> 
     return out
 
 
-@njit(int32(float64[:], int32, float64, float64))
+@njit(int32(float64[:], int32, float64, float64), cache=True)
 def find_start_point_binary(x: np.ndarray, num: int, xa: float, eps0: float) -> int:
     # num = len(x)
     j0 = num // 2

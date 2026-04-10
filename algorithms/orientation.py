@@ -33,7 +33,7 @@ def is_singular(matrix):
     return rank < matrix.shape[0]
 
 
-@njit
+@njit(cache=True)
 def skew_midpoint(
     vert1: np.ndarray, direct1: np.ndarray, vert2: np.ndarray, direct2: np.ndarray
 ) -> Tuple[float, np.ndarray]:

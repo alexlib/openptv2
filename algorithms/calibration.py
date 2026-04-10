@@ -9,7 +9,7 @@ import numpy as np
 from numba import njit
 
 
-@njit
+@njit(cache=True)
 def rotation_matrix(ext: np.ndarray) -> None:
     """Calculate the necessary trigonometric functions to rotate the Dmatrix of Exterior ext_par.
 

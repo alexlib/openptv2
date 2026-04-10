@@ -112,7 +112,7 @@ def targ_rec(
     return out
 
 
-@njit(fastmath=True)
+@njit(fastmath=True, cache=True)
 def fast_targ_rec(
     img,
     thres,

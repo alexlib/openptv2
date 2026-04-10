@@ -30,7 +30,7 @@ def pixel_to_metric(
     )
 
 
-@njit
+@njit(cache=True)
 def fast_pixel_to_metric(
     x_pixel, y_pixel, imx, imy, pix_x, pix_y
 ) -> Tuple[float, float]:
@@ -43,7 +43,7 @@ def fast_pixel_to_metric(
     return (x_metric, y_metric)
 
 
-@njit(float64[:, :](int32[:, :], int32, int32, float64, float64))
+@njit(float64[:, :](int32[:, :], int32, int32, float64, float64), cache=True)
 def arr_pixel_to_metric(
     pixel: np.ndarray, imx: int, imy: int, pix_x: float, pix_y: float
 ) -> np.ndarray:
@@ -92,7 +92,7 @@ def metric_to_pixel(
     )
 
 
-@njit
+@njit(cache=True)
 def fast_metric_to_pixel(
     x_metric, y_metric, imx, imy, pix_x, pix_y
 ) -> Tuple[float, float]:
@@ -122,7 +122,7 @@ def arr_metric_to_pixel(metric: np.ndarray, parameters: ControlPar) -> np.ndarra
     )
 
 
-@njit(float64[:, :](float64[:, :], int32, int32, float64, float64))
+@njit(float64[:, :](float64[:, :], int32, int32, float64, float64), cache=True)
 def fast_arr_metric_to_pixel(
     metric: np.ndarray, imx: int, imy: int, pix_x: float, pix_y: float
 ) -> np.ndarray:

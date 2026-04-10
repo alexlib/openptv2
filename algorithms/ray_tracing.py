@@ -83,7 +83,7 @@ def ray_tracing(
     )
 
 
-@njit
+@njit(cache=True)
 def fast_ray_tracing(
     initial_ray_direction: np.ndarray,
     distortion_matrix: np.ndarray,
@@ -349,6 +349,7 @@ def fast_ray_tracing(
 @njit(
     float64[:, :](float64[:, :], float64[:, :], float64[:, :], int64, int64, int64),
     parallel=True,
+    cache=True,
 )
 def matmul_numba_optimized(a, b, c, m, n, k):
     for i in prange(m):
