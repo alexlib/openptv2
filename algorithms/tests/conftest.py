@@ -38,10 +38,35 @@ TOLERANCES = {
     "track3d": 1e-5,
 }
 
+# Structured tolerances for parity tests (rtol, atol).
+TOLERANCE_PAIRS = {
+    "calibration": (1e-10, 1e-12),
+    "geometry": (1e-9, 1e-11),
+    "correspondences": (1e-7, 1e-9),
+    "multimed": (1e-6, 1e-8),
+    "ray_tracing": (1e-6, 1e-8),
+}
+
 
 def get_tolerance(module_name: str) -> float:
     """Get tolerance for a specific module."""
     return TOLERANCES.get(module_name, 1e-7)
+
+
+def get_tolerance_pair(module_name: str) -> tuple[float, float]:
+    """Get (rtol, atol) pair for parity-style numeric comparisons."""
+    return TOLERANCE_PAIRS.get(module_name, (1e-7, 1e-9))
+
+
+@pytest.fixture(scope="session")
+def has_optv() -> bool:
+    """Return whether optv bindings are importable."""
+    try:
+        import optv  # noqa: F401
+
+        return True
+    except Exception:
+        return False
 
 
 # ---------------------------------------------------------------------------

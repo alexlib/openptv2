@@ -126,6 +126,11 @@ markers = [
     "gui: marks tests that require GUI",
     "engine_optv: marks tests for optv engine",
     "engine_python: marks tests for Python engine",
+    "unit: fast deterministic unit tests",
+    "parity: python vs optv/cython parity tests",
+    "perf: performance and throughput tests",
+    "integration: multi-module integration tests",
+    "requires_optv: tests that require optv bindings",
 ]
 
 [tool.coverage.run]
