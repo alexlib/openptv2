@@ -27,14 +27,19 @@ from .trafo import dist_to_flat, pixel_to_metric
 def _normalize_file_base(file_base):
     """Normalize a file base path for constructing target filenames.
 
-    Handles bytes-from-Cython, Path objects, and trailing dots from optv's
-    img_base convention.  The returned value is a clean string without
-    trailing dots, so callers can safely do f"{base}.{frame:04d}_targets".
+    Handles bytes-from-Cython, Path objects, trailing dots from optv's
+    img_base convention, and printf-style format specifiers (e.g. ``%d``,
+    ``%04d``) that appear in YAML sequence base names.  The returned value
+    is a clean string without trailing dots, so callers can safely do
+    ``f"{base}.{frame:04d}_targets"``.
     """
     if isinstance(file_base, bytes):
         file_base = file_base.decode()
     elif isinstance(file_base, Path):
         file_base = str(file_base)
+    # Strip printf-style format specifiers (e.g. %d, %04d) used in YAML
+    import re
+    file_base = re.sub(r"%\d*d", "", file_base)
     return file_base.rstrip(".")
 
 
@@ -421,6 +426,8 @@ class Pathinfo:
 
     def register_link_candidate(self, fitness: float, cand: int) -> None:
         """Register link candidate."""
+        if self.inlist >= POSI:
+            return
         self.decis[self.inlist] = fitness
         self.linkdecis[self.inlist] = cand
         self.inlist += 1
@@ -1020,24 +1027,27 @@ def write_path_frame(
             prio_file.write(f"{num_parts}\n")
 
         for pix in range(num_parts):
+            # Match C printf format: "%4d %4d %10.3f %10.3f %10.3f\n"
             linkage_file.write(
-                f"{path_buf[pix].prev_frame} {path_buf[pix].next_frame} "
-                f"{path_buf[pix].x[0]:.3f} {path_buf[pix].x[1]:.3f} "
-                f"{path_buf[pix].x[2]:.3f}\n"
+                f"{path_buf[pix].prev_frame:4d} {path_buf[pix].next_frame:4d} "
+                f"{path_buf[pix].x[0]:10.3f} {path_buf[pix].x[1]:10.3f} "
+                f"{path_buf[pix].x[2]:10.3f}\n"
             )
 
+            # Match C printf format: "%4d %9.3f %9.3f %9.3f %4d %4d %4d %4d\n"
             corres_file.write(
-                f"{pix + 1} {path_buf[pix].x[0]:.3f} "
-                f"{path_buf[pix].x[1]:.3f} {path_buf[pix].x[2]:.3f} "
-                f"{cor_buf[pix].p[0]} {cor_buf[pix].p[1]} "
-                f"{cor_buf[pix].p[2]} {cor_buf[pix].p[3]}\n"
+                f"{pix + 1:4d} {path_buf[pix].x[0]:9.3f} "
+                f"{path_buf[pix].x[1]:9.3f} {path_buf[pix].x[2]:9.3f} "
+                f"{cor_buf[pix].p[0]:4d} {cor_buf[pix].p[1]:4d} "
+                f"{cor_buf[pix].p[2]:4d} {cor_buf[pix].p[3]:4d}\n"
             )
 
             if prio_file_base is not None:
+                # Match C printf format: "%4d %4d %10.3f %10.3f %10.3f %d\n"
                 prio_file.write(
-                    f"{path_buf[pix].prev_frame} {path_buf[pix].next_frame} "
-                    f"{path_buf[pix].x[0]:.3f} {path_buf[pix].x[1]:.3f} "
-                    f"{path_buf[pix].x[2]:.3f} {path_buf[pix].prio}\n"
+                    f"{path_buf[pix].prev_frame:4d} {path_buf[pix].next_frame:4d} "
+                    f"{path_buf[pix].x[0]:10.3f} {path_buf[pix].x[1]:10.3f} "
+                    f"{path_buf[pix].x[2]:10.3f} {path_buf[pix].prio}\n"
                 )
 
         corres_file.close()

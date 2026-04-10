@@ -1,5 +1,6 @@
 """Tracking algorithm."""
 
+import math
 # from dataclasses import dataclass, field
 from typing import List, Tuple
 
@@ -330,9 +331,9 @@ def candsearch_in_pix(
                 if next_frame[j].y > ymax:
                     break
                 if xmin < next_frame[j].x < xmax and ymin < next_frame[j].y < ymax:
-                    d = np.sqrt(
-                        (cent_x - next_frame[j].x) ** 2
-                        + (cent_y - next_frame[j].y) ** 2
+                    d = math.sqrt(
+                        (cent_x - next_frame[j].x) * (cent_x - next_frame[j].x)
+                        + (cent_y - next_frame[j].y) * (cent_y - next_frame[j].y)
                     )
 
                     if d < dmin:
@@ -416,9 +417,9 @@ def candsearch_in_pix_rest(
                 if next_frame[j].y > ymax:
                     break  # finish search
                 if xmin < next_frame[j].x < xmax and ymin < next_frame[j].y < ymax:
-                    d = np.sqrt(
-                        (cent_x - next_frame[j].x) ** 2
-                        + (cent_y - next_frame[j].y) ** 2
+                    d = math.sqrt(
+                        (cent_x - next_frame[j].x) * (cent_x - next_frame[j].x)
+                        + (cent_y - next_frame[j].y) * (cent_y - next_frame[j].y)
                     )
                     if d < dmin:
                         dmin = d
@@ -943,7 +944,11 @@ def trackcorr_c_loop(run_info, step, observer=None):
         _obs_candidates = []
         mm = 0
         # counter1-loop
-        while w[mm].ftnr != TR_UNUSED and len(fb.buf[2].path_info) > w[mm].ftnr:
+        while (
+            mm < w.shape[0]
+            and w[mm].ftnr != TR_UNUSED
+            and len(fb.buf[2].path_info) > w[mm].ftnr
+        ):
             # search for found corr of current the corr in next_frame with predicted location
 
             # found 3D-position
@@ -970,7 +975,9 @@ def trackcorr_c_loop(run_info, step, observer=None):
                 count3 += 1
                 kk = 0
                 while (
-                    wn[kk].ftnr != TR_UNUSED and len(fb.buf[3].path_info) > wn[kk].ftnr
+                    kk < wn.shape[0]
+                    and wn[kk].ftnr != TR_UNUSED
+                    and len(fb.buf[3].path_info) > wn[kk].ftnr
                 ):
                     # print(f" inside wn[{kk}].ftnr {wn[kk].ftnr}")
                     ref_path_inf = fb.buf[3].path_info[wn[kk].ftnr]
@@ -1461,7 +1468,7 @@ def trackback_c(run_info: TrackingRun):
                 count2 += 1
 
                 i = 0
-                while w[i].ftnr != TR_UNUSED:
+                while i < w.shape[0] and w[i].ftnr != TR_UNUSED:
                     ref_path_inf = fb.buf[2].path_info[w[i].ftnr]
                     X[3] = vec_copy(ref_path_inf.x)
 

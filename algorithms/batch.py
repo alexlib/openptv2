@@ -28,7 +28,8 @@ import numpy as np
 import yaml
 
 from .calibration import Calibration, read_calibration
-from .correspondences import MatchedCoords, correspondences
+from .correspondences import MatchedCoords, correspondences_soa as correspondences
+from .multimed import init_mmlut
 from .image_processing import preprocess_image
 from .orientation import point_positions
 from .parameters import (
@@ -245,8 +246,10 @@ def _sequence_loop(
         total = match_counts[3] if len(match_counts) > 3 else 0
         if total > 0:
             valid = con[:total]
-            order = np.argsort(-valid.corr)
-            valid = valid[order]
+            # Do NOT re-sort by correlation here — correspondences() already
+            # set frm.targets[cam][pnr].tnr = i using indices into `con`.
+            # Re-sorting would break the tnr→particle mapping that the
+            # tracker relies on.
             # con.p values are sorted-array indices into corrected[cam].
             # Convert to particle numbers (pnr) for get_by_pnrs lookups.
             corresp_idx = np.array([list(row.p) for row in valid]).T  # (num_cams, N)
@@ -258,23 +261,25 @@ def _sequence_loop(
         else:
             corresp = np.zeros((num_cams, 0), dtype=int)
 
-        # Write target files
+        # Write target files — use frm.targets which has tnr set by
+        # correspondences(), not the original detections list.
         for i_cam in range(num_cams):
-            targs = detections[i_cam]
+            n = frm.num_targets[i_cam]
             out = Path(f"{short_file_bases[i_cam]}.{frame:04d}_targets")
             out.parent.mkdir(parents=True, exist_ok=True)
             with open(out, "w", encoding="utf8") as f:
-                f.write(f"{len(targs)}\n")
-                for t in targs:
+                f.write(f"{n}\n")
+                for tnum in range(n):
+                    t = frm.targets[i_cam][tnum]
                     f.write(
-                        f"{getattr(t, 'pnr', 0):4d} "
-                        f"{getattr(t, 'x', 0.0):9.4f} "
-                        f"{getattr(t, 'y', 0.0):9.4f} "
-                        f"{getattr(t, 'n', 0):5d} "
-                        f"{getattr(t, 'nx', 0):5d} "
-                        f"{getattr(t, 'ny', 0):5d} "
-                        f"{getattr(t, 'sumg', 0):5d} "
-                        f"{getattr(t, 'tnr', -1):5d}\n"
+                        f"{t.pnr:4d} "
+                        f"{t.x:9.4f} "
+                        f"{t.y:9.4f} "
+                        f"{t.n:5d} "
+                        f"{t.nx:5d} "
+                        f"{t.ny:5d} "
+                        f"{t.sumg:5d} "
+                        f"{t.tnr:5d}\n"
                     )
 
         # 3-D determination via point_positions
@@ -365,6 +370,11 @@ def run_batch(
         tpar_track = _build_track_par(params["track"])
         tpar_detect = _build_target_par(params["targ_rec"], num_cams)
         cals = _read_calibrations_py(params["cal_ori"], num_cams)
+
+        # Initialize multimedia lookup tables for fast ray tracing
+        for cal in cals:
+            init_mmlut(vpar, cpar, cal)
+
         print(f"Parameter setup: {time.perf_counter()-t_setup:.3f}s")
 
         # Override frame range
