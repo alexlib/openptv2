@@ -657,6 +657,16 @@ def searchquader(
     return xr, xl, yd, yu
 
 
+class _CandidateSearchCache:
+    """Reusable buffers for profiler-enabled tracking hot paths."""
+
+    def __init__(self, num_cams: int):
+        n_fp = num_cams * MAX_CANDS
+        self.ftnr = np.full(n_fp, TR_UNUSED, dtype=np.int32)
+        self.freq = np.zeros(n_fp, dtype=np.int32)
+        self.whichcam = np.zeros((n_fp, num_cams), dtype=np.int32)
+
+
 @njit(cache=True, nogil=True)
 def _sort_candidates_by_freq_njit(ftnr, freq, whichcam, num_cams):
     """Sort candidates by frequency — numba-compiled version on plain arrays.
@@ -825,16 +835,31 @@ def sorted_candidates_in_volume(
 ) -> FoundpixResult:
     """Find candidates for continuing a particle's path in the search volume."""
     num_cams = frm.num_cams
-    n_fp = num_cams * MAX_CANDS
+    profile_mode = _tracker_profile_enabled()
 
-    # SoA arrays instead of recarray
-    ftnr = np.full(n_fp, TR_UNUSED, dtype=np.int32)
-    freq = np.zeros(n_fp, dtype=np.int32)
-    whichcam = np.zeros((n_fp, num_cams), dtype=np.int32)
+    if profile_mode:
+        cache = getattr(run, "_candidate_cache", None)
+        if cache is None or cache.ftnr.shape[0] != num_cams * MAX_CANDS:
+            cache = _CandidateSearchCache(num_cams)
+            run._candidate_cache = cache
 
-    # Search limits in image space
-    right, left, down, up = searchquader(center, run.tpar, run.cpar, run.cal,
-                                            raw_cals=run.raw_cal)
+        ftnr = cache.ftnr
+        freq = cache.freq
+        whichcam = cache.whichcam
+        ftnr.fill(TR_UNUSED)
+        freq.fill(0)
+        whichcam.fill(0)
+        right, left, down, up = searchquader(
+            center, run.tpar, run.cpar, run.cal, raw_cals=run.raw_cal
+        )
+    else:
+        n_fp = num_cams * MAX_CANDS
+        ftnr = np.full(n_fp, TR_UNUSED, dtype=np.int32)
+        freq = np.zeros(n_fp, dtype=np.int32)
+        whichcam = np.zeros((n_fp, num_cams), dtype=np.int32)
+        right, left, down, up = searchquader(
+            center, run.tpar, run.cpar, run.cal, raw_cals=run.raw_cal
+        )
 
     # search in pix for candidates in the next_frame time step
     for cam in range(num_cams):
@@ -860,7 +885,11 @@ def sorted_candidates_in_volume(
     # fill and sort candidate struct
     num_cands = _sort_candidates_by_freq_njit(ftnr, freq, whichcam, num_cams)
     if num_cands > 0:
-        return FoundpixResult(ftnr[: num_cands + 1], freq[: num_cands + 1], num_cands + 1)
+        return FoundpixResult(
+            np.array(ftnr[: num_cands + 1], copy=True),
+            np.array(freq[: num_cands + 1], copy=True),
+            num_cands + 1,
+        )
     else:
         return FoundpixResult(
             np.array([TR_UNUSED], dtype=np.int32),
@@ -1731,6 +1760,8 @@ def trackback_c(run_info: TrackingRun):
     fb = run_info.fb
     seq_par = run_info.seq_par
     tpar = run_info.tpar
+    if not isinstance(tpar, TrackParTuple):
+        tpar = convert_track_par_to_tuple(tpar)
     vpar = run_info.vpar
     cpar = run_info.cpar
     cal = run_info.cal
