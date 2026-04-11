@@ -111,10 +111,37 @@ def fast_multimed_r_nlay(
     pos: np.ndarray,
 ) -> float:
     """Faster multimedia model calculation — matches C multimed_r_nlay."""
+    return fast_multimed_r_nlay_scalar(
+        nlay,
+        n1,
+        n2,
+        n3,
+        d,
+        x0,
+        y0,
+        z0,
+        pos[0],
+        pos[1],
+        pos[2],
+    )
+
+
+@njit(fastmath=True, cache=True, nogil=True)
+def fast_multimed_r_nlay_scalar(
+    nlay: int,
+    n1: float,
+    n2: np.ndarray,
+    n3: float,
+    d: np.ndarray,
+    x0: float,
+    y0: float,
+    z0: float,
+    X: float,
+    Y: float,
+    Z: float,
+) -> float:
+    """Scalar-input multimedia model calculation used in LUT filling."""
     n_iter = 40
-    X = pos[0]
-    Y = pos[1]
-    Z = pos[2]
 
     # Extra layers protrude into water side
     zout = Z
@@ -154,6 +181,34 @@ def fast_multimed_r_nlay(
         return rq / r
     else:
         return 1.0
+
+
+@njit(fastmath=True, cache=True, nogil=True)
+def fast_init_mmlut_data(
+    nr: int,
+    nz: int,
+    rw: int,
+    z_min_t: float,
+    x0: float,
+    y0: float,
+    z0: float,
+    nlay: int,
+    n1: float,
+    n2: np.ndarray,
+    n3: float,
+    d: np.ndarray,
+) -> np.ndarray:
+    """Build the multimedia LUT in Numba to avoid Python per-cell overhead."""
+    data = np.empty((nr, nz), dtype=np.float64)
+    for i in range(nr):
+        x = i * rw + x0
+        for j in range(nz):
+            z = j * rw + z_min_t
+            data[i, j] = fast_multimed_r_nlay_scalar(
+                nlay, n1, n2, n3, d, x0, y0, z0, x, y0, z
+            )
+
+    return data
 
 
 def trans_cam_point(
@@ -591,20 +646,40 @@ def init_mmlut(vpar: VolumePar, cpar: ControlPar, cal: Calibration) -> Calibrati
     nz = int((z_max_t - z_min_t) / rw + 1)
 
     # create two dimensional mmlut structure
-    cal.mmlut.origin = np.r_[cal_t.ext_par.x0, cal_t.ext_par.y0, z_min_t]
+    cal_t_x0 = float(cal_t.ext_par.x0)
+    cal_t_y0 = float(cal_t.ext_par.y0)
+    cal_t_z0 = float(cal_t.ext_par.z0)
+
+    cal.mmlut.origin = np.array([cal_t_x0, cal_t_y0, z_min_t], dtype=np.float64)
     cal.mmlut.nr = nr
     cal.mmlut.nz = nz
     cal.mmlut.rw = rw
 
     if cal.mmlut_data.shape == (0, 0):
-        cal.mmlut_data = np.empty((nr, nz), dtype=np.float64)
-        Ri = np.arange(nr) * rw
-        Zi = np.arange(nz) * rw + z_min_t
-
-        for i in range(nr):
-            for j in range(nz):
-                xyz = np.r_[Ri[i] + cal_t.ext_par.x0, cal_t.ext_par.y0, Zi[j]]
-                cal.mmlut_data.flat[i * nz + j] = multimed_r_nlay(cal_t, cpar.mm, xyz)
+        n2_arr = (
+            cpar.mm.n2
+            if isinstance(cpar.mm.n2, np.ndarray)
+            else np.asarray(cpar.mm.n2, dtype=np.float64)
+        )
+        d_arr = (
+            cpar.mm.d
+            if isinstance(cpar.mm.d, np.ndarray)
+            else np.asarray(cpar.mm.d, dtype=np.float64)
+        )
+        cal.mmlut_data = fast_init_mmlut_data(
+            nr,
+            nz,
+            rw,
+            z_min_t,
+            cal_t_x0,
+            cal_t_y0,
+            cal_t_z0,
+            cpar.mm.nlay,
+            cpar.mm.n1,
+            n2_arr,
+            cpar.mm.n3,
+            d_arr,
+        )
 
         # print(f"filled mmlut data with {data}")
         # cal.mmlut_data = data
