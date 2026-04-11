@@ -18,11 +18,16 @@ def numba_warmup():
     """Pre-compile all @njit functions once per session.
 
     Uses the on-disk cache so subsequent runs are fast (~1 s).
+
+    Set OPENPTV_NUMBA_CLEAN_CACHE=1 to force a clean cache for
+    troubleshooting stale-cache issues.
     """
-    # Use a fresh, deterministic cache path per session to avoid stale
-    # llvmlite bitcode from previous environments causing hard crashes.
+    # Use a deterministic cache path so compiled kernels can be reused across
+    # test sessions. Keep an opt-in clean flag for troubleshooting.
     cache_dir = Path(__file__).resolve().parent / ".pytest_numba_cache"
-    shutil.rmtree(cache_dir, ignore_errors=True)
+    clean_cache = os.environ.get("OPENPTV_NUMBA_CLEAN_CACHE", "0").strip().lower()
+    if clean_cache in {"1", "true", "yes", "on"}:
+        shutil.rmtree(cache_dir, ignore_errors=True)
     os.environ["NUMBA_CACHE_DIR"] = str(cache_dir)
 
     from algorithms.tests.conftest_numba_warmup import _warmup_all

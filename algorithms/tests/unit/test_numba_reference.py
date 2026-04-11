@@ -17,6 +17,57 @@ import numpy as np
 import pytest
 
 
+_REAL_DATA_SINGLE_CAM_SETUP = None
+_REAL_DATA_EPI_SETUP = None
+
+
+@pytest.fixture
+def real_data_single_cam_setup(calibration_files, control_params_file, volume_params_file):
+    """Build one real-data calibration/MM LUT once for this module.
+
+    `init_mmlut` is intentionally expensive; cache the single-camera setup used
+    by projection and ray-tracing tests so they do not also pay for a second
+    camera LUT that they never touch.
+    """
+    global _REAL_DATA_SINGLE_CAM_SETUP
+    if _REAL_DATA_SINGLE_CAM_SETUP is not None:
+        return _REAL_DATA_SINGLE_CAM_SETUP
+
+    from algorithms.calibration import Calibration
+    from algorithms.multimed import init_mmlut
+    from algorithms.parameters import read_control_par, read_volume_par
+
+    ori1, add1 = calibration_files["cam1"]
+
+    cal1 = Calibration().from_file(ori1, add1)
+
+    cpar = read_control_par(Path(control_params_file))
+    vpar = read_volume_par(Path(volume_params_file))
+
+    cal1 = init_mmlut(vpar, cpar, cal1)
+    _REAL_DATA_SINGLE_CAM_SETUP = (cpar, vpar, cal1)
+    return _REAL_DATA_SINGLE_CAM_SETUP
+
+
+@pytest.fixture
+def real_data_epi_setup(real_data_single_cam_setup, calibration_files):
+    """Build the second camera MM LUT only for epipolar integration checks."""
+    global _REAL_DATA_EPI_SETUP
+    if _REAL_DATA_EPI_SETUP is not None:
+        return _REAL_DATA_EPI_SETUP
+
+    from algorithms.calibration import Calibration
+    from algorithms.multimed import init_mmlut
+
+    cpar, vpar, cal1 = real_data_single_cam_setup
+    ori2, add2 = calibration_files["sym_cam2"]
+    cal2 = Calibration().from_file(ori2, add2)
+    cal2 = init_mmlut(vpar, cpar, cal2)
+
+    _REAL_DATA_EPI_SETUP = (cpar, vpar, cal1, cal2)
+    return _REAL_DATA_EPI_SETUP
+
+
 class TestNumbaStability:
     """Crash-focused checks for JIT warmup and compilation."""
 
@@ -27,10 +78,8 @@ class TestNumbaStability:
         assert count == 47
         assert elapsed >= 0.0
 
-    def test_warmup_module_runs_in_subprocess_without_crash(self, tmp_path):
-        cache_dir = tmp_path / "numba_cache"
+    def test_warmup_module_runs_in_subprocess_without_crash(self):
         env = os.environ.copy()
-        env["NUMBA_CACHE_DIR"] = str(cache_dir)
 
         proc = subprocess.run(
             [sys.executable, "-m", "algorithms.tests.conftest_numba_warmup"],
@@ -149,23 +198,12 @@ class TestRealDataNumbaExecution:
 
     def test_real_data_projection_pipeline(
         self,
-        calibration_files,
-        control_params_file,
-        volume_params_file,
+        real_data_single_cam_setup,
     ):
-        from algorithms.calibration import Calibration
-        from algorithms.multimed import CalibRawArrays, init_mmlut
-        from algorithms.parameters import read_control_par, read_volume_par
+        from algorithms.multimed import CalibRawArrays
 
-        ori, add = calibration_files["cam1"]
-        cal = Calibration()
-        cal.from_file(ori, add)
-
-        cpar = read_control_par(Path(control_params_file))
-        vpar = read_volume_par(Path(volume_params_file))
-
-        cal = init_mmlut(vpar, cpar, cal)
-        raw = CalibRawArrays(cal, cpar)
+        cpar, _vpar, cal1 = real_data_single_cam_setup
+        raw = CalibRawArrays(cal1, cpar)
 
         px, py = raw.project(np.array([1.0, 1.0, -1.0], dtype=np.float64))
         assert np.isfinite(px)
@@ -173,26 +211,11 @@ class TestRealDataNumbaExecution:
 
     def test_real_data_epi_endpoints(
         self,
-        calibration_files,
-        control_params_file,
-        volume_params_file,
+        real_data_epi_setup,
     ):
-        from algorithms.calibration import Calibration
         from algorithms.epi import epi_mm
-        from algorithms.multimed import init_mmlut
-        from algorithms.parameters import read_control_par, read_volume_par
 
-        ori1, add1 = calibration_files["cam1"]
-        ori2, add2 = calibration_files["sym_cam2"]
-
-        cal1 = Calibration().from_file(ori1, add1)
-        cal2 = Calibration().from_file(ori2, add2)
-
-        cpar = read_control_par(Path(control_params_file))
-        vpar = read_volume_par(Path(volume_params_file))
-
-        cal1 = init_mmlut(vpar, cpar, cal1)
-        cal2 = init_mmlut(vpar, cpar, cal2)
+        cpar, vpar, cal1, cal2 = real_data_epi_setup
 
         xmin, xmax, ymin, ymax = epi_mm(1.0, 1.0, cal1, cal2, cpar.mm, vpar)
 
@@ -201,16 +224,12 @@ class TestRealDataNumbaExecution:
         assert np.isfinite(ymin)
         assert np.isfinite(ymax)
 
-    def test_real_data_ray_tracing(self, calibration_files, control_params_file):
-        from algorithms.calibration import Calibration
-        from algorithms.parameters import read_control_par
+    def test_real_data_ray_tracing(self, real_data_single_cam_setup):
         from algorithms.ray_tracing import ray_tracing
 
-        ori, add = calibration_files["cam1"]
-        cal = Calibration().from_file(ori, add)
-        cpar = read_control_par(Path(control_params_file))
+        cpar, _vpar, cal1 = real_data_single_cam_setup
 
-        x, out = ray_tracing(1.0, 1.0, cal, cpar.mm)
+        x, out = ray_tracing(1.0, 1.0, cal1, cpar.mm)
 
         assert np.all(np.isfinite(x))
         assert np.all(np.isfinite(out))
