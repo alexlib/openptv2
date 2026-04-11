@@ -432,13 +432,13 @@ class TestStage6_CandidateSearch:
                     v1[cam] = point_to_pixel(pos_3d, cals[cam], cpar)
 
                 w = sorted_candidates_in_volume(pos_3d, v1, fb.buf[2], run)
-                n_cands = sum(1 for i in range(w.shape[0]) if w[i].ftnr != TR_UNUSED)
+                n_cands = sum(1 for i in range(w.count) if w.ftnr[i] != TR_UNUSED)
                 print(f"  particle {h}: pos={pos_3d}, {n_cands} candidates")
                 if n_cands > 0:
                     found_any = True
                     for i in range(min(3, n_cands)):
-                        ftnr = w[i].ftnr
-                        freq = w[i].freq
+                        ftnr = w.ftnr[i]
+                        freq = w.freq[i]
                         if ftnr >= fb.buf[2].num_parts:
                             print(f"    cand {i}: ftnr={ftnr} out of range ({fb.buf[2].num_parts})")
                             continue
@@ -501,10 +501,10 @@ class TestStage6_CandidateSearch:
                     v1[cam] = point_to_pixel(pos_3d, cals[cam], cpar)
 
                 w = sorted_candidates_in_volume(pos_3d, v1, fb.buf[2], run)
-                for i in range(w.shape[0]):
-                    if w[i].ftnr == TR_UNUSED:
+                for i in range(w.count):
+                    if w.ftnr[i] == TR_UNUSED:
                         break
-                    ftnr = w[i].ftnr
+                    ftnr = w.ftnr[i]
                     if ftnr >= fb.buf[2].num_parts:
                         continue
                     cand_pos = fb.buf[2].path_info[ftnr].x

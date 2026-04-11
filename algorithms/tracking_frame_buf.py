@@ -461,9 +461,8 @@ class Frame:
         """
         self.path_info = [Pathinfo() for _ in range(max_targets)]
 
-        self.correspond = np.recarray((max_targets), dtype=Corres_dtype)
-        self.correspond.p = TR_UNUSED
-        self.correspond.nr = 0
+        self.corres_nr = np.zeros(max_targets, dtype=np.int32)
+        self.corres_p = np.full((max_targets, 4), TR_UNUSED, dtype=np.int32)
 
         self.targets = [[Target() for _ in range(max_targets)] for _ in range(num_cams)]
         # self.targets = [[] for _ in range(num_cams)]
@@ -522,17 +521,17 @@ class Frame:
             if not path.exists():
                 return False
 
-        cor_buf, path_buf = read_path_frame(
-            # self.correspond, self.path_info = read_path_frame(
+        cor_nr, cor_p, path_buf = read_path_frame(
             corres_file_base,
             linkage_file_base,
             prio_file_base,
             frame_num,
         )
 
-        self.correspond = cor_buf
+        self.corres_nr = cor_nr
+        self.corres_p = cor_p
         self.path_info = path_buf
-        self.num_parts = len(self.correspond)
+        self.num_parts = len(self.corres_nr)
 
         if self.num_parts == -1:
             return False
@@ -557,7 +556,8 @@ class Frame:
     ) -> bool:
         """Write a frame to the disk."""
         status = write_path_frame(
-            self.correspond,
+            self.corres_nr,
+            self.corres_p,
             self.path_info,
             self.num_parts,
             corres_file_base,
@@ -609,7 +609,7 @@ class Frame:
         """
         pos2d = np.empty((self.num_parts, 2))
         for pt in range(self.num_parts):
-            tix = self.correspond[pt].p[cam]
+            tix = self.corres_p[pt, cam]
 
             if tix == CORRES_NONE:
                 pos2d[pt] = np.nan
@@ -876,49 +876,29 @@ def read_path_frame(
     linkage_file_base: str,
     prio_file_base: str,
     frame_num: int,
-) -> Tuple[np.recarray, List[Pathinfo]]:  # List[Corres]
-    """Read a rt_is frames from the disk.
+) -> Tuple[np.ndarray, np.ndarray, List[Pathinfo]]:
+    """Read rt_is frames from disk.
 
-        /* Reads rt_is files. these files contain both the path info and the
-        * information on correspondence between targets on the different images.
-        * Sets fields not in file to default values.
-        *
-        * Arguments:
-        * corres *cor_buf - a buffer of corres structs to fill in from the file.
-        * P *path_buf - same for path info structures.
-        * char* corres_file_base, *linkage_file_base - base names of the output
-        *   correspondence and likage files respectively, to which a frame number
-        *   is added. Without separator.
-        * char *prio_file_base - for the linkage file with added 'prio' column.
-        * int frame_num - number of frame to add to file_base. A value of 0 or less
-        *   means that no frame number should be added. The '.' separator is added
-        * between the name and the frame number.
-        *
-        * Returns:
-        * The number of points read for this frame. -1 on failure.
-    */
-
+    Returns
+    -------
+    corres_nr : int32 array of particle correspondence numbers
+    corres_p : int32 (N, 4) array of per-camera target indices
+    path_buf : list of Pathinfo objects
     """
     fname = f"{corres_file_base}.{frame_num}"
-    # print(fname)
 
     try:
         filein = open(fname, "r", encoding="utf-8")
     except IOError:
         print(f"Can't open ascii file: {fname}")
-        return np.recarray(0, dtype=Corres_dtype), []
+        return np.empty(0, dtype=np.int32), np.empty((0, 4), dtype=np.int32), []
 
-    # we do not need number of particles, reading till EOF
     n_particles = int(filein.readline())
-    # Handle -1 as 0 particles (matching C behavior)
     if n_particles < 0:
         n_particles = 0
-    # print(f"Reading {n_particles} particles from {fname}")
-    # cor_buf = [Corres() for _ in range(n_particles)] # we do not want empty lists
 
-    cor_buf = np.recarray(
-        (n_particles), dtype=Corres_dtype
-    )  # we do not want empty lists
+    corres_nr = np.zeros(n_particles, dtype=np.int32)
+    corres_p = np.full((n_particles, 4), TR_UNUSED, dtype=np.int32)
 
     path_buf = [Pathinfo() for _ in range(n_particles)]
 
@@ -928,7 +908,7 @@ def read_path_frame(
             linkagein = open(fname, "r", encoding="utf-8")
         except IOError:
             print(f"Can't open linkage file: {fname}")
-            return np.recarray(0, dtype=Corres_dtype), []
+            return np.empty(0, dtype=np.int32), np.empty((0, 4), dtype=np.int32), []
 
         linkagein.readline()
     else:
@@ -940,7 +920,7 @@ def read_path_frame(
             prioin = open(fname, "r", encoding="utf-8")
         except IOError:
             print(f"Can't open prio file: {fname}")
-            return np.recarray(0, dtype=Corres_dtype), []
+            return np.empty(0, dtype=np.int32), np.empty((0, 4), dtype=np.int32), []
 
         prioin.readline()
     else:
@@ -957,7 +937,6 @@ def read_path_frame(
             linkage_vals = np.fromstring(linkage_line, dtype=float, sep=" ")
             path_buf[targets].prev_frame = linkage_vals[0].astype(int)
             path_buf[targets].next_frame = linkage_vals[1].astype(int)
-            # path_buf[targets].x = linkage_vals[2:]
 
         if prioin is not None:
             prio_line = prioin.readline()
@@ -972,11 +951,9 @@ def read_path_frame(
         path_buf[targets].linkdecis = [-999] * POSI
 
         vals = np.fromstring(line, dtype=float, sep=" ")
-        cor_buf[targets].nr = targets + 1
-        cor_buf[targets].p = vals[-4:].astype(int)
+        corres_nr[targets] = targets + 1
+        corres_p[targets] = vals[-4:].astype(int)
         path_buf[targets].x = vals[1:-4]
-
-        # print(cor_buf[targets].nr, cor_buf[targets].p, path_buf[targets].x)
 
         targets += 1
 
@@ -986,11 +963,12 @@ def read_path_frame(
     if prioin is not None:
         prioin.close()
 
-    return cor_buf, path_buf
+    return corres_nr, corres_p, path_buf
 
 
 def write_path_frame(
-    cor_buf: np.recarray,  # List[Corres],
+    corres_nr: np.ndarray,
+    corres_p: np.ndarray,
     path_buf: List[Pathinfo],
     num_parts: int,
     corres_file_base: str,
@@ -1054,8 +1032,8 @@ def write_path_frame(
             corres_file.write(
                 f"{pix + 1:4d} {path_buf[pix].x[0]:9.3f} "
                 f"{path_buf[pix].x[1]:9.3f} {path_buf[pix].x[2]:9.3f} "
-                f"{cor_buf[pix].p[0]:4d} {cor_buf[pix].p[1]:4d} "
-                f"{cor_buf[pix].p[2]:4d} {cor_buf[pix].p[3]:4d}\n"
+                f"{corres_p[pix, 0]:4d} {corres_p[pix, 1]:4d} "
+                f"{corres_p[pix, 2]:4d} {corres_p[pix, 3]:4d}\n"
             )
 
             if prio_file_base is not None:
@@ -1085,77 +1063,59 @@ def match_coords(
     cal: Calibration,
     tol: float = 1e-5,
     reset_numbers: bool = False,
-) -> np.recarray:
+) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Match coordinates from all cameras into a single block.
 
     replaces MatchedCoords class in Cython
 
-    The output is the same as the number on one ``target`` from the block
-    to which this block is kept matched. This block is x-sorted.
-
-    NB: the data is not meant to be directly manipulated at this point. The
-    coord_2d arrays are most useful as intermediate objects created and
-    manipulated only by other liboptv functions. Although one can imagine a
-    use case for direct manipulation in Python, it is rare and supporting it
-    is a low priority.
-
+    Returns x-sorted SoA arrays (x, y, pnr).
     """
-    matched_coords = np.recarray(len(targs), dtype=Coord2d_dtype)
+    n = len(targs)
+    _x = np.empty(n, dtype=np.float64)
+    _y = np.empty(n, dtype=np.float64)
+    _pnr = np.empty(n, dtype=np.int_)
 
     for tnum, targ in enumerate(targs):
-        # targ = targs[tnum]
         if reset_numbers:
             targ.pnr = tnum
 
-        x, y = pixel_to_metric(targ.x, targ.y, cpar)
-        matched_coords[tnum].x, matched_coords[tnum].y = dist_to_flat(x, y, cal, tol)
-        matched_coords[tnum].pnr = targ.pnr
+        xm, ym = pixel_to_metric(targ.x, targ.y, cpar)
+        _x[tnum], _y[tnum] = dist_to_flat(xm, ym, cal, tol)
+        _pnr[tnum] = targ.pnr
 
-    matched_coords.sort(order="x")
-
-    return matched_coords
+    order = np.argsort(_x)
+    return _x[order], _y[order], _pnr[order]
 
 
 def matched_coords_as_arrays(
-    matched_coords: np.recarray,  # Coord2d
-) -> Tuple[np.ndarray, np.ndarray]:
-    """
-    Return the data associated with the object (the matched coordinates.
-
-    block) as NumPy arrays.
-
-    Returns
-    -------
-    pos - (n,2) array, the (x,y) flat-coordinates position of n targets.
-    pnr - n-length array, the corresponding target number for each point.
-    """
-    num_pts = matched_coords.shape[0]
-    pos = np.empty((num_pts, 2))
-    pnr = np.empty(num_pts, dtype=np.int_)
-
-    for pt, mc in enumerate(matched_coords):
-        pos[pt, 0] = mc.x
-        pos[pt, 1] = mc.y
-        pnr[pt] = mc.pnr
-
-    return pos, pnr
+    x: np.ndarray, y: np.ndarray,
+) -> np.ndarray:
+    """Stack x/y SoA arrays into (n, 2) position array."""
+    pos = np.empty((len(x), 2), dtype=np.float64)
+    pos[:, 0] = x
+    pos[:, 1] = y
+    return pos
 
 
 def get_by_pnrs(
-    matched_coords: List[np.recarray], pnrs: np.ndarray
-) -> np.ndarray:  # Coord2d
-    """
-    Return the flat positions of points whose pnr property is given, as an.
+    pnr_arr: np.ndarray, x_arr: np.ndarray, y_arr: np.ndarray,
+    pnrs: np.ndarray,
+) -> np.ndarray:
+    """Return flat positions for the given pnr values.
 
-    (n,2) flat position array. Assumes all pnrs are to be found, otherwise
-    there will be garbage at the end of the position array.
+    Parameters
+    ----------
+    pnr_arr, x_arr, y_arr : SoA arrays from match_coords or MatchedCoords
+    pnrs : 1-D array of particle numbers to look up
+
+    Returns
+    -------
+    (n, 2) position array; NaN where pnr not found.
     """
     pos = np.full((len(pnrs), 2), COORD_UNUSED, dtype=np.float64)
-    for pt in matched_coords:
-        which = np.flatnonzero(pt.pnr == pnrs)
+    for i in range(len(pnr_arr)):
+        which = np.flatnonzero(pnr_arr[i] == pnrs)
         if len(which) > 0:
-            which = which[0]
-            pos[which, 0] = pt.x
-            pos[which, 1] = pt.y
-
+            pos[which[0], 0] = x_arr[i]
+            pos[which[0], 1] = y_arr[i]
     return pos

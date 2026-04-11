@@ -240,19 +240,13 @@ def _sequence_loop(
         print(f"  stereo-matching …", flush=True)
         t_corr = time.perf_counter()
         match_counts = [0] * 4
-        con = correspondences(frm, corrected, vpar, cpar, cals, match_counts)
+        con_p, con_corr = correspondences(frm, corrected, vpar, cpar, cals, match_counts)
         print(f"  stereo-matching done  ({time.perf_counter()-t_corr:.1f}s)", flush=True)
 
         total = match_counts[3] if len(match_counts) > 3 else 0
         if total > 0:
-            valid = con[:total]
-            # Do NOT re-sort by correlation here — correspondences() already
-            # set frm.targets[cam][pnr].tnr = i using indices into `con`.
-            # Re-sorting would break the tnr→particle mapping that the
-            # tracker relies on.
-            # con.p values are sorted-array indices into corrected[cam].
-            # Convert to particle numbers (pnr) for get_by_pnrs lookups.
-            corresp_idx = np.array([list(row.p) for row in valid]).T  # (num_cams, N)
+            # con_p is (nmax*num_cams, num_cams) int32 SoA
+            corresp_idx = con_p[:total].T  # (num_cams, N)
             corresp = np.empty_like(corresp_idx)
             for i_cam in range(num_cams):
                 mask = corresp_idx[i_cam] >= 0

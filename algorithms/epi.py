@@ -243,7 +243,7 @@ def _epi_mm_batch_row_from_inputs(
     return np.array(epi_mm(xl, yl, cal1, cal2, mmp, vpar), dtype=np.float64)
 
 
-@njit(cache=True, parallel=True, nogil=True)
+@njit(cache=True)
 def _epi_mm_batch_inner(
     xl: np.ndarray,
     yl: np.ndarray,

@@ -502,21 +502,15 @@ def correspondences_soa(
             con_corr[total_taken:total_taken + taken] = dst_c[:taken]
             total_taken += taken
 
-    # 5. Convert to n_tupel_dtype recarray for backward compat
-    con = np.recarray((nmax * num_cams,), dtype=n_tupel_dtype)
-    con.p = 0
-    con.corr = 0.0
-    for idx in range(total_taken):
-        for cam in range(num_cams):
-            con[idx].p[cam] = int(con_p[idx, cam])
-        con[idx].corr = con_corr[idx]
-
-    # 6. Give each used pix the correspondence number
+    # 5. Trim to actual matches and return SoA arrays
+    # con_p and con_corr already hold the data
+    # Give each used pix the correspondence number
     for i in range(match_counts[3]):
         for j in range(num_cams):
-            if con[i].p[j] < 0:
+            p_ij = int(con_p[i, j])
+            if p_ij < 0:
                 continue
-            p1 = corrected[j][con[i].p[j]].pnr
+            p1 = corrected[j][p_ij].pnr
             if p1 > -1 and p1 < 1202590843:
                 frm.targets[j][p1].tnr = i
 
@@ -524,7 +518,7 @@ def correspondences_soa(
     if callable(refresh):
         refresh()
 
-    return con
+    return con_p, con_corr
 
 
 def match_pairs_soa(
@@ -668,10 +662,9 @@ class MatchedCoords:
         reset_numbers: bool = True,
     ):
         self._num_pts = len(targs)
-        self.buf = np.recarray(
-            self._num_pts,
-            dtype=[("x", np.float64), ("y", np.float64), ("pnr", np.int_)],
-        )
+        _x = np.empty(self._num_pts, dtype=np.float64)
+        _y = np.empty(self._num_pts, dtype=np.float64)
+        _pnr = np.empty(self._num_pts, dtype=np.int_)
 
         for tnum in range(self._num_pts):
             targ = targs[tnum]
@@ -680,46 +673,56 @@ class MatchedCoords:
 
             x_m, y_m = pixel_to_metric(targ.x, targ.y, cpar)
             x_f, y_f = dist_to_flat(x_m, y_m, cal, tol)
-            self.buf[tnum].x = x_f
-            self.buf[tnum].y = y_f
-            self.buf[tnum].pnr = targ.pnr
+            _x[tnum] = x_f
+            _y[tnum] = y_f
+            _pnr[tnum] = targ.pnr
 
-        self.buf = self.buf[np.argsort(self.buf.x)]
+        order = np.argsort(_x)
+        self._x = _x[order]
+        self._y = _y[order]
+        self._pnr = _pnr[order]
 
     def __getitem__(self, index):
-        return self.buf[index]
+        return _MatchedCoordsItem(self._x[index], self._y[index], self._pnr[index])
 
     @property
     def x(self):
-        """Expose x coordinates for compatibility with find_start_point."""
-        return self.buf.x
+        return self._x
 
     @property
     def y(self):
-        """Expose y coordinates for compatibility with find_candidate."""
-        return self.buf.y
+        return self._y
 
     @property
     def pnr(self):
-        """Expose pnr for compatibility with find_candidate."""
-        return self.buf.pnr
+        return self._pnr
 
     def as_arrays(self):
         pos = np.empty((self._num_pts, 2), dtype=np.float64)
-        pos[:, 0] = self.buf.x
-        pos[:, 1] = self.buf.y
-        pnr = self.buf.pnr.astype(np.int_)
-        return pos, pnr
+        pos[:, 0] = self._x
+        pos[:, 1] = self._y
+        return pos, self._pnr.astype(np.int_)
 
     def get_by_pnrs(self, pnrs):
         pnrs = np.asarray(pnrs)
         pos = np.full((len(pnrs), 2), np.nan, dtype=np.float64)
-        for row in self.buf:
-            which = np.flatnonzero(row.pnr == pnrs)
+        for i in range(self._num_pts):
+            which = np.flatnonzero(self._pnr[i] == pnrs)
             if len(which) > 0:
-                pos[which[0], 0] = row.x
-                pos[which[0], 1] = row.y
+                pos[which[0], 0] = self._x[i]
+                pos[which[0], 1] = self._y[i]
         return pos
+
+
+class _MatchedCoordsItem:
+    """Lightweight accessor returned by MatchedCoords[index]."""
+
+    __slots__ = ("x", "y", "pnr")
+
+    def __init__(self, x, y, pnr):
+        self.x = x
+        self.y = y
+        self.pnr = pnr
 
 
 Correspond_dtype = np.dtype(

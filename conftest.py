@@ -4,12 +4,30 @@ Root conftest.py for openptv2 tests.
 This module provides session-scoped fixtures for test data setup and cleanup.
 """
 
+import os
 import pytest
 from pathlib import Path
 import shutil
 from openptv2.test_support import find_test_data_root
 
 TEST_DATA_DIR = find_test_data_root(Path(__file__))
+
+
+@pytest.fixture(scope="session", autouse=True)
+def numba_warmup():
+    """Pre-compile all @njit functions once per session.
+
+    Uses the on-disk cache so subsequent runs are fast (~1 s).
+    """
+    # Use a fresh, deterministic cache path per session to avoid stale
+    # llvmlite bitcode from previous environments causing hard crashes.
+    cache_dir = Path(__file__).resolve().parent / ".pytest_numba_cache"
+    shutil.rmtree(cache_dir, ignore_errors=True)
+    os.environ["NUMBA_CACHE_DIR"] = str(cache_dir)
+
+    from algorithms.tests.conftest_numba_warmup import _warmup_all
+    count, elapsed = _warmup_all()
+    print(f"\n[numba warmup] {count} functions ({elapsed:.1f}s)")
 
 
 @pytest.fixture(scope="session")

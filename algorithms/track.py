@@ -107,17 +107,25 @@ Foundpix_dtype = np.dtype(
     [("ftnr", np.int32), ("freq", np.int32), ("whichcam", np.int32, (TR_MAX_CAMS,))]
 )
 
-# Create an instance of the recarray
-#  foundpix = np.recarray((1,), dtype=Foundpix_dtype)
 
-# Initialize the recarray with the values from the class
-# foundpix['ftnr'] = TR_UNUSED
-# foundpix['freq'] = 0
-# foundpix['whichcam'] = [0] * TR_MAX_CAMS
+class FoundpixResult:
+    """Lightweight SoA container for sorted candidate results.
+
+    Attributes
+    ----------
+    ftnr : int32[n]  – target numbers (TR_UNUSED for empty slots)
+    freq : int32[n]  – frequency counts
+    count : int      – number of valid entries
+    """
+
+    __slots__ = ("ftnr", "freq", "count")
+
+    def __init__(self, ftnr, freq, count):
+        self.ftnr = ftnr
+        self.freq = freq
+        self.count = count
 
 
-# def reset_foundpix_array(arr: List[Foundpix], arr_len: int, num_cams: int) -> None:
-# @njit(cache=True, fastmath=True, nogil=True, parallel=True)
 def reset_foundpix_array(arr: np.ndarray, arr_len: int, num_cams: int) -> None:
     """Set default values for foundpix objects in an array.
 
@@ -249,6 +257,8 @@ def register_closest_neighbs(
     target_x: np.ndarray | None = None,
     target_y: np.ndarray | None = None,
     target_tnr: np.ndarray | None = None,
+    reg_ftnr: np.ndarray | None = None,
+    reg_whichcam: np.ndarray | None = None,
 ) -> List[int]:
     """Register_closest_neighbs() finds candidates for continuing a particle's.
 
@@ -266,8 +276,10 @@ def register_closest_neighbs(
     dr -- right distance to the search area border from its center, [pixel]
     du -- up distance to the search area border from its center, [pixel]
     dd -- down distance to the search area border from its center, [pixel]
-    reg -- an array of foundpix objects, one for each possible neighbour. Output array.
+    reg -- an array of foundpix objects (legacy recarray), or None if SoA.
     cpar -- control parameter object
+    reg_ftnr -- SoA: int32[MAX_CANDS] slice for ftnr output
+    reg_whichcam -- SoA: int32[MAX_CANDS, num_cams] slice for whichcam output
     """
     # all_cands = [-999] * MAX_CANDS  # Initialize all candidate indexes to -999
 
@@ -293,18 +305,30 @@ def register_closest_neighbs(
             targets, num_targets, cent_x, cent_y, dl, dr, du, dd, cpar
         )
 
-    for cand_idx in range(MAX_CANDS):
-        # Set default value for unused foundpix objects
-        if (
-            all_cands[cand_idx] == PT_UNUSED
-            or all_cands[cand_idx] < 0
-            or all_cands[cand_idx] >= num_targets
-        ):
-            reg[cand_idx].ftnr = TR_UNUSED
-        else:
-            # Register candidate data in the foundpix object
-            reg[cand_idx].whichcam[cam] = 1
-            reg[cand_idx].ftnr = targets[all_cands[cand_idx]].tnr
+    # SoA path: write into plain arrays
+    if reg_ftnr is not None and reg_whichcam is not None:
+        for cand_idx in range(MAX_CANDS):
+            if (
+                all_cands[cand_idx] == PT_UNUSED
+                or all_cands[cand_idx] < 0
+                or all_cands[cand_idx] >= num_targets
+            ):
+                reg_ftnr[cand_idx] = TR_UNUSED
+            else:
+                reg_whichcam[cand_idx, cam] = 1
+                reg_ftnr[cand_idx] = targets[all_cands[cand_idx]].tnr
+    else:
+        # Legacy recarray path
+        for cand_idx in range(MAX_CANDS):
+            if (
+                all_cands[cand_idx] == PT_UNUSED
+                or all_cands[cand_idx] < 0
+                or all_cands[cand_idx] >= num_targets
+            ):
+                reg[cand_idx].ftnr = TR_UNUSED
+            else:
+                reg[cand_idx].whichcam[cam] = 1
+                reg[cand_idx].ftnr = targets[all_cands[cand_idx]].tnr
 
     return all_cands
 
@@ -798,14 +822,15 @@ def point_to_pixel(point: np.ndarray, cal: Calibration, cpar: ControlPar) -> Tup
 
 def sorted_candidates_in_volume(
     center: np.ndarray, center_proj: np.ndarray, frm: Frame, run: TrackingRun
-) -> np.ndarray:
+) -> FoundpixResult:
     """Find candidates for continuing a particle's path in the search volume."""
     num_cams = frm.num_cams
     n_fp = num_cams * MAX_CANDS
 
-    # Pre-allocate foundpix array
-    points = np.zeros(n_fp, dtype=Foundpix_dtype).view(np.recarray)
-    points['ftnr'] = TR_UNUSED
+    # SoA arrays instead of recarray
+    ftnr = np.full(n_fp, TR_UNUSED, dtype=np.int32)
+    freq = np.zeros(n_fp, dtype=np.int32)
+    whichcam = np.zeros((n_fp, num_cams), dtype=np.int32)
 
     # Search limits in image space
     right, left, down, up = searchquader(center, run.tpar, run.cpar, run.cal,
@@ -823,22 +848,25 @@ def sorted_candidates_in_volume(
             right[cam],
             up[cam],
             down[cam],
-            points[cam * MAX_CANDS :],
+            None,
             run.cpar,
             target_x=frm.target_x[cam],
             target_y=frm.target_y[cam],
             target_tnr=frm.target_tnr[cam],
+            reg_ftnr=ftnr[cam * MAX_CANDS :],
+            reg_whichcam=whichcam[cam * MAX_CANDS :],
         )
 
     # fill and sort candidate struct
-    num_cands = sort_candidates_by_freq(points, num_cams)
+    num_cands = _sort_candidates_by_freq_njit(ftnr, freq, whichcam, num_cams)
     if num_cands > 0:
-        points = points[: num_cands + 1].view(np.recarray)
+        return FoundpixResult(ftnr[: num_cands + 1], freq[: num_cands + 1], num_cands + 1)
     else:
-        points = np.zeros(1, dtype=Foundpix_dtype).view(np.recarray)
-        points['ftnr'] = TR_UNUSED
-
-    return points
+        return FoundpixResult(
+            np.array([TR_UNUSED], dtype=np.int32),
+            np.array([0], dtype=np.int32),
+            1,
+        )
 
 
 def assess_new_position(
@@ -958,9 +986,10 @@ def add_particle(frm: Frame, pos: np.ndarray, cand_inds: np.ndarray) -> None:
         ref_path_inf = Pathinfo()
         frm.path_info.append(ref_path_inf)
 
-    # Ensure correspond has room for this index
-    if num_parts >= frm.correspond.shape[0]:
-        frm.correspond = np.resize(frm.correspond, num_parts + 1).view(np.recarray)
+    # Ensure corres arrays have room for this index
+    if num_parts >= frm.corres_nr.shape[0]:
+        frm.corres_nr = np.resize(frm.corres_nr, num_parts + 1)
+        frm.corres_p = np.resize(frm.corres_p, (num_parts + 1, 4))
 
     ref_path_inf.x = vec_copy(pos)
     ref_path_inf.reset_links()
@@ -968,14 +997,14 @@ def add_particle(frm: Frame, pos: np.ndarray, cand_inds: np.ndarray) -> None:
     ref_targets = frm.targets
 
     for cam in range(frm.num_cams):
-        frm.correspond[num_parts].p[cam] = CORRES_NONE
+        frm.corres_p[num_parts, cam] = CORRES_NONE
 
         # We always take the 1st candidate, apparently. Why did we fetch 4?
         if cand_inds[cam][0] != PT_UNUSED:
             _ix = cand_inds[cam][0]
             ref_targets[cam][_ix].tnr = num_parts
-            frm.correspond[num_parts].p[cam] = _ix
-            frm.correspond[num_parts].nr = num_parts
+            frm.corres_p[num_parts, cam] = _ix
+            frm.corres_nr[num_parts] = num_parts
 
     frm.num_parts += 1
 
@@ -1083,7 +1112,7 @@ def trackcorr_c_loop(run_info, step, observer=None):
         X[:] = 0.0
 
         curr_path_inf = fb.buf[1].path_info[h]
-        curr_corres = fb.buf[1].correspond[h]
+        curr_corres_p = fb.buf[1].corres_p[h]
 
         curr_path_inf.inlist = 0
 
@@ -1106,12 +1135,12 @@ def trackcorr_c_loop(run_info, step, observer=None):
             X[2] = vec_copy(X[1])
             proj_start = time.perf_counter()
             for j in range(fb.num_cams):
-                if curr_corres.p[j] == CORRES_NONE or curr_corres.p[j] >= len(
+                if curr_corres_p[j] == CORRES_NONE or curr_corres_p[j] >= len(
                     curr_targets[j]
                 ):
                     v1[j] = raw_cal[j].project(X[2])
                 else:
-                    _ix = curr_corres.p[j]
+                    _ix = curr_corres_p[j]
                     v1[j, 0] = curr_targets[j][_ix].x
                     v1[j, 1] = curr_targets[j][_ix].y
                     # print(f"v1[{j}], {v1[j]}")
@@ -1127,7 +1156,7 @@ def trackcorr_c_loop(run_info, step, observer=None):
         w = sorted_candidates_in_volume(X[2], v1, fb.buf[2], run_info)
         cand_search_time += time.perf_counter() - cand_start
         # if not w  # empty
-        if w.shape[0] == 1:  # empty means at least one row
+        if w.count == 1 and w.ftnr[0] == TR_UNUSED:  # empty
             if observer is not None:
                 observer.record({
                     "step": step,
@@ -1152,14 +1181,14 @@ def trackcorr_c_loop(run_info, step, observer=None):
         mm = 0
         # counter1-loop
         while (
-            mm < w.shape[0]
-            and w[mm].ftnr != TR_UNUSED
-            and len(fb.buf[2].path_info) > w[mm].ftnr
+            mm < w.count
+            and w.ftnr[mm] != TR_UNUSED
+            and len(fb.buf[2].path_info) > w.ftnr[mm]
         ):
             # search for found corr of current the corr in next_frame with predicted location
 
             # found 3D-position
-            ref_path_inf = fb.buf[2].path_info[w[mm].ftnr]
+            ref_path_inf = fb.buf[2].path_info[w.ftnr[mm]]
             X[3] = vec_copy(ref_path_inf.x)
             # print(f"X[3] {X[3]}")
 
@@ -1178,16 +1207,16 @@ def trackcorr_c_loop(run_info, step, observer=None):
 
             # end of search in pix
             wn = sorted_candidates_in_volume(X[5], v1, fb.buf[3], run_info)
-            if wn.shape[0] > 1:  # not empty means two rows at least.
+            if wn.count > 1:  # not empty means two rows at least.
                 count3 += 1
                 kk = 0
                 while (
-                    kk < wn.shape[0]
-                    and wn[kk].ftnr != TR_UNUSED
-                    and len(fb.buf[3].path_info) > wn[kk].ftnr
+                    kk < wn.count
+                    and wn.ftnr[kk] != TR_UNUSED
+                    and len(fb.buf[3].path_info) > wn.ftnr[kk]
                 ):
-                    # print(f" inside wn[{kk}].ftnr {wn[kk].ftnr}")
-                    ref_path_inf = fb.buf[3].path_info[wn[kk].ftnr]
+                    # print(f" inside wn[{kk}].ftnr {wn.ftnr[kk]}")
+                    ref_path_inf = fb.buf[3].path_info[wn.ftnr[kk]]
                     X[4] = vec_copy(ref_path_inf.x)
                     #  print(f"X[4] {X[4]}")
 
@@ -1205,7 +1234,7 @@ def trackcorr_c_loop(run_info, step, observer=None):
 
                         acc = (acc0 + acc1) / 2
                         angle = (angle0 + angle1) / 2
-                        quali = wn[kk].freq + w[mm].freq
+                        quali = wn.freq[kk] + w.freq[mm]
 
                         if (
                             acc < tpar.dacc
@@ -1220,8 +1249,8 @@ def trackcorr_c_loop(run_info, step, observer=None):
                                 + acc / tpar.dacc
                                 + angle / tpar.dangle
                             ) / quali
-                            curr_path_inf.register_link_candidate(rr, w[mm].ftnr)
-                            # print(f"kk {kk}, rr {rr}, w[mm].ftnr {w[mm].ftnr}")
+                            curr_path_inf.register_link_candidate(rr, w.ftnr[mm])
+                            # print(f"kk {kk}, rr {rr}, w.ftnr[mm] {w.ftnr[mm]}")
 
                     kk += 1  # End of searching 2nd-frame candidates.
                     # print(f"kk is {kk}")
@@ -1264,11 +1293,11 @@ def trackcorr_c_loop(run_info, step, observer=None):
                         # print(f" dl {dl} ")
                         rr = (
                             dl / run_info.lmax + acc / tpar.dacc + angle / tpar.dangle
-                        ) / (quali + w[mm].freq)
+                        ) / (quali + w.freq[mm])
 
-                        # print(f"acc {acc}, angle {angle}, quali {quali}, w[mm].freq {w[mm].freq}")
-                        # print(f"rr {rr}, w[mm].ftnr {w[mm].ftnr}")
-                        curr_path_inf.register_link_candidate(rr, w[mm].ftnr)
+                        # print(f"acc {acc}, angle {angle}, quali {quali}, w.freq[mm] {w.freq[mm]}")
+                        # print(f"rr {rr}, w.ftnr[mm] {w.ftnr[mm]}")
+                        curr_path_inf.register_link_candidate(rr, w.ftnr[mm])
 
                         if tpar.add:
                             add_particle(fb.buf[3], X[4], philf)
@@ -1289,23 +1318,23 @@ def trackcorr_c_loop(run_info, step, observer=None):
                     if (acc < tpar.dacc and angle < tpar.dangle) or (
                         acc < tpar.dacc / 10
                     ):
-                        quali = w[mm].freq
+                        quali = w.freq[mm]
                         dl = (vec_diff_norm(X[1], X[3]) + vec_diff_norm(X[0], X[1])) / 2
                         rr = (
                             dl / run_info.lmax + acc / tpar.dacc + angle / tpar.dangle
                         ) / quali
 
                         # print(f"prev exists {mm}")
-                        # print(f"rr {rr}, w[mm].ftnr {w[mm].ftnr}")
-                        curr_path_inf.register_link_candidate(rr, w[mm].ftnr)
+                        # print(f"rr {rr}, w.ftnr[mm] {w.ftnr[mm]}")
+                        curr_path_inf.register_link_candidate(rr, w.ftnr[mm])
 
             del wn
             # Record this candidate for the observer
             if observer is not None:
                 _obs_candidates.append({
-                    "ftnr": int(w[mm].ftnr),
+                    "ftnr": int(w.ftnr[mm]),
                     "cand_3d": X[3].copy(),
-                    "freq": int(w[mm].freq),
+                    "freq": int(w.freq[mm]),
                     "registered": curr_path_inf.inlist > 0,
                 })
             mm += 1  # increment mm
@@ -1744,12 +1773,12 @@ def trackback_c(run_info: TrackingRun):
             # calculate searchquader and reprojection in image space
             w = sorted_candidates_in_volume(X[2], n, fb.buf[2], run_info)
 
-            if w is not None:
+            if not (w.count == 1 and w.ftnr[0] == TR_UNUSED):
                 count2 += 1
 
                 i = 0
-                while i < w.shape[0] and w[i].ftnr != TR_UNUSED:
-                    ref_path_inf = fb.buf[2].path_info[w[i].ftnr]
+                while i < w.count and w.ftnr[i] != TR_UNUSED:
+                    ref_path_inf = fb.buf[2].path_info[w.ftnr[i]]
                     X[3] = vec_copy(ref_path_inf.x)
 
                     diff_pos = vec_subt(X[1], X[3])
@@ -1765,17 +1794,15 @@ def trackback_c(run_info: TrackingRun):
                             dl = (
                                 vec_diff_norm(X[1], X[3]) + vec_diff_norm(X[0], X[1])
                             ) / 2  # type: ignore
-                            quali = w[i].freq
+                            quali = w.freq[i]
                             rr = (
                                 dl / run_info.lmax
                                 + acc / tpar.dacc
                                 + angle / tpar.dangle
                             ) / quali
-                            curr_path_inf.register_link_candidate(rr, w[i].ftnr)
+                            curr_path_inf.register_link_candidate(rr, w.ftnr[i])
 
                     i += 1
-
-            del w
 
             # if old wasn't found try to create new particle position from rest
             if tpar.add:
@@ -2158,12 +2185,10 @@ class Tracker:
             particles = np.array([list(fb.path_info[i].x) for i in range(fb.num_parts)])
 
             # Extract correspondences
-            correspondences = np.array(
-                [
-                    [fb.correspond[i].nr] + list(fb.correspond[i].p)
-                    for i in range(fb.num_parts)
-                ]
-            )
+            correspondences = np.column_stack([
+                fb.corres_nr[:fb.num_parts],
+                fb.corres_p[:fb.num_parts],
+            ]) if fb.num_parts > 0 else np.empty((0, 5), dtype=np.int32)
         else:
             particles = np.empty((0, 3))
             correspondences = np.empty((0, 5), dtype=np.int32)

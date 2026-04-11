@@ -22,6 +22,7 @@ from algorithms.track import (
     candsearch_in_pix_rest,
     copy_foundpix_array,
     Foundpix_dtype,
+    FoundpixResult,
     sort_candidates_by_freq,
 )
 
@@ -36,8 +37,8 @@ class TestAddParticle:
         # Simulate existing particles
         for i in range(num_existing):
             frm.path_info[i].x = np.array([float(i), float(i), float(i)])
-            frm.correspond[i].nr = i
-            frm.correspond[i].p[:] = i * 10 + np.arange(4)
+            frm.corres_nr[i] = i
+            frm.corres_p[i, :] = i * 10 + np.arange(4)
         frm.num_parts = num_existing
         return frm
 
@@ -46,7 +47,8 @@ class TestAddParticle:
         frm = self._make_frame(num_cams=4, num_existing=3)
 
         # Snapshot existing records before the call
-        old_corr = frm.correspond[:3].copy()
+        old_nr = frm.corres_nr[:3].copy()
+        old_p = frm.corres_p[:3].copy()
 
         pos = np.array([10.0, 20.0, 30.0])
         cand_inds = np.full((4, MAX_CANDS), PT_UNUSED, dtype=np.int32)
@@ -57,12 +59,12 @@ class TestAddParticle:
 
         # Existing records must be untouched
         for i in range(3):
-            assert frm.correspond[i].nr == old_corr[i].nr, (
-                f"correspond[{i}].nr corrupted: {frm.correspond[i].nr} != {old_corr[i].nr}"
+            assert frm.corres_nr[i] == old_nr[i], (
+                f"corres_nr[{i}] corrupted: {frm.corres_nr[i]} != {old_nr[i]}"
             )
             np.testing.assert_array_equal(
-                frm.correspond[i].p, old_corr[i].p,
-                err_msg=f"correspond[{i}].p corrupted",
+                frm.corres_p[i], old_p[i],
+                err_msg=f"corres_p[{i}] corrupted",
             )
 
     def test_add_particle_sets_new_record_correctly(self):
@@ -75,12 +77,11 @@ class TestAddParticle:
 
         add_particle(frm, pos, cand_inds)
 
-        new_rec = frm.correspond[3]
-        assert new_rec.p[0] == CORRES_NONE  # cam 0 — no candidate
-        assert new_rec.p[1] == 8            # cam 1 — target index 8
-        assert new_rec.p[2] == CORRES_NONE  # cam 2 — no candidate
-        assert new_rec.p[3] == CORRES_NONE  # cam 3 — no candidate
-        assert new_rec.nr == 3
+        assert frm.corres_p[3, 0] == CORRES_NONE  # cam 0 — no candidate
+        assert frm.corres_p[3, 1] == 8            # cam 1 — target index 8
+        assert frm.corres_p[3, 2] == CORRES_NONE  # cam 2 — no candidate
+        assert frm.corres_p[3, 3] == CORRES_NONE  # cam 3 — no candidate
+        assert frm.corres_nr[3] == 3
 
     def test_add_particle_increments_num_parts(self):
         frm = self._make_frame(num_cams=4, num_existing=3)
@@ -362,3 +363,58 @@ class TestSortCandidatesByFreq:
         per_call_us = elapsed / N_ITER * 1e6
         print(f"\n_sort_candidates_by_freq_njit: {per_call_us:.1f} µs/call ({N_ITER} iters)")
         assert per_call_us < 50, f"Too slow: {per_call_us:.1f} µs"
+
+
+# ---------------------------------------------------------------------------
+# 8. FoundpixResult — SoA access pattern used by trackback_c
+# ---------------------------------------------------------------------------
+class TestFoundpixResultAccess:
+    """Verify FoundpixResult fields work with the access pattern in trackback_c."""
+
+    def test_count_and_indexing(self):
+        """FoundpixResult.count, .ftnr[i], .freq[i] work as expected."""
+        ftnr = np.array([10, 20, TR_UNUSED], dtype=np.int32)
+        freq = np.array([3, 2, 0], dtype=np.int32)
+        w = FoundpixResult(ftnr, freq, count=2)
+
+        assert w.count == 2
+        assert w.ftnr[0] == 10
+        assert w.ftnr[1] == 20
+        assert w.freq[0] == 3
+        assert w.freq[1] == 2
+
+    def test_empty_result(self):
+        """Empty result has count=1 with TR_UNUSED sentinel."""
+        w = FoundpixResult(
+            np.array([TR_UNUSED], dtype=np.int32),
+            np.array([0], dtype=np.int32),
+            count=1,
+        )
+        assert w.count == 1
+        assert w.ftnr[0] == TR_UNUSED
+
+    def test_trackback_loop_pattern(self):
+        """Simulate the exact loop pattern from trackback_c."""
+        ftnr = np.array([5, 8, 12, TR_UNUSED], dtype=np.int32)
+        freq = np.array([4, 3, 2, 0], dtype=np.int32)
+        w = FoundpixResult(ftnr, freq, count=3)
+
+        # This is the exact pattern from trackback_c after fix
+        visited = []
+        i = 0
+        while i < w.count and w.ftnr[i] != TR_UNUSED:
+            visited.append((w.ftnr[i], w.freq[i]))
+            i += 1
+
+        assert visited == [(5, 4), (8, 3), (12, 2)]
+
+    def test_empty_skip_pattern(self):
+        """When empty, the trackback_c guard skips the loop."""
+        w = FoundpixResult(
+            np.array([TR_UNUSED], dtype=np.int32),
+            np.array([0], dtype=np.int32),
+            count=1,
+        )
+        # Guard from trackback_c: not (w.count == 1 and w.ftnr[0] == TR_UNUSED)
+        should_enter = not (w.count == 1 and w.ftnr[0] == TR_UNUSED)
+        assert not should_enter

@@ -1,11 +1,10 @@
 from pathlib import Path
-from typing import List
+from typing import List, Tuple
 
 import numpy as np
 
 from .calibration import Calibration
 from .constants import POS_INF, PT_UNUSED, SORTGRID_EPS
-from .epi import Coord3d_dtype
 from .imgcoord import img_coord
 from .parameters import ControlPar
 from .tracking_frame_buf import Target
@@ -120,37 +119,29 @@ def read_sortgrid_par(filename) -> int:
     return eps
 
 
-def read_calblock(filename: Path) -> np.recarray:  # List[Coord3d]:
-    """
-    Read the calibration block file into the structure of 3D positions and pointers.
-
-    Args:
-    ----
-    - filename (str): path to the text file containing the calibration points.
+def read_calblock(filename: Path) -> Tuple[np.ndarray, np.ndarray]:
+    """Read calibration block file into plain arrays.
 
     Returns
     -------
-    - List of Coord3d: 3D positions and integer identification pointers of the calibration
-      target points in the calibration file of class Coord3d. if fails, returns None
+    positions : (N, 3) float64 array of (x, y, z) coordinates
+    pnr : (N,) int32 array of point numbers
     """
-    coords = []
+    positions = []
+    pnrs = []
     try:
         with open(filename, "r", encoding="utf-8") as f:
-            lines = f.readlines()
-            for line in lines:
+            for line in f:
                 values = line.strip().split()
-                pnr = int(values[0])
-                x = float(values[1])
-                y = float(values[2])
-                z = float(values[3])
-                # coord = Coord3d(pnr, x, y, z)
-                coord = np.array([(pnr, x, y, z)], dtype=Coord3d_dtype)
-                coords.append(coord)
+                if len(values) < 4:
+                    continue
+                pnrs.append(int(values[0]))
+                positions.append((float(values[1]), float(values[2]), float(values[3])))
     except FileNotFoundError:
         print(f"Can't open calibration block file: {filename}")
-        return np.recarray(0, dtype=Coord3d_dtype)
+        return np.empty((0, 3), dtype=np.float64), np.empty(0, dtype=np.int32)
     except ValueError:
         print(f"Empty or badly formatted file: {filename}")
-        return np.recarray(0, dtype=Coord3d_dtype)
+        return np.empty((0, 3), dtype=np.float64), np.empty(0, dtype=np.int32)
 
-    return np.array(coords).view(np.recarray)
+    return np.array(positions, dtype=np.float64), np.array(pnrs, dtype=np.int32)

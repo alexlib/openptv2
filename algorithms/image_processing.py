@@ -15,9 +15,6 @@ filter_t = np.zeros((3, 3), dtype=float)
 @njit(cache=True)
 def filter_3(img, kernel=None) -> np.ndarray:
     """Apply a 3x3 filter to an image."""
-    if img.dtype != np.uint8:
-        raise TypeError("Image must be of type uint8")
-
     if kernel is None:
         kernel = np.ones((3, 3), dtype=np.float64)
 
@@ -56,9 +53,6 @@ def filter_3(img, kernel=None) -> np.ndarray:
 @njit(cache=True)
 def lowpass_3(img: np.ndarray) -> np.ndarray:
     """Lowpass filter matching the native 3x3 implementation."""
-    if img.dtype != np.uint8:
-        raise TypeError("Image must be of type uint8")
-
     imx = img.shape[1]
     imy = img.shape[0]
     image_size = imx * imy
