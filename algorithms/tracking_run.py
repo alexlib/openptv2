@@ -8,7 +8,7 @@ from typing import List
 from .calibration import Calibration
 from .tracking_frame_buf import FrameBuf
 
-from .multimed import volumedimension
+from .multimed import volumedimension, CalibRawArrays, init_mmlut
 from .parameters import (
     ControlPar,
     SequencePar,
@@ -97,6 +97,14 @@ class TrackingRun:
 
         self.npart = 0
         self.nlinks = 0
+
+        # Ensure MMLUT is initialized for each camera
+        for c in cal:
+            if c.mmlut.nz == 0:
+                init_mmlut(vpar, cpar, c)
+
+        # Pre-extract raw calibration arrays for fast numba projections
+        self.raw_cal = [CalibRawArrays(c, cpar) for c in cal]
 
 
 def tr_new(

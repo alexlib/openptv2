@@ -11,7 +11,14 @@ from algorithms.correspondences import _find_candidates_vectorized
 from algorithms.epi import Coord2d_dtype
 from algorithms.find_candidate import find_candidate
 from algorithms.parameters import ControlPar, MultimediaPar, VolumePar
-from algorithms.track import candsearch_in_pix, candsearch_in_pix_rest
+from algorithms.track import (
+    Foundpix_dtype,
+    candsearch_in_pix,
+    candsearch_in_pix_rest,
+    register_closest_neighbs,
+    reset_foundpix_array,
+)
+from algorithms.constants import MAX_CANDS, TR_MAX_CAMS, TR_UNUSED
 from algorithms.tracking_frame_buf import Target
 
 
@@ -573,6 +580,52 @@ class TestSmallCaseNativeParity:
         assert native_indices[0] == 1
         assert py_count == native_count
         assert p[0] == native_indices[0]
+
+    def test_register_closest_neighbs_fast_path_matches_public_search(self):
+        rows = _tracking_targets_case_one()
+        center = (0.2, 0.2)
+        bounds = (0.1, 0.1, 0.1, 0.1)
+
+        targets = [
+            Target(pnr=pnr, x=x, y=y, n=n, nx=nx, ny=ny, sumg=sumg, tnr=tnr)
+            for pnr, x, y, n, nx, ny, sumg, tnr in rows
+        ]
+        py_indices = candsearch_in_pix(
+            targets,
+            len(rows),
+            center[0],
+            center[1],
+            bounds[0],
+            bounds[1],
+            bounds[2],
+            bounds[3],
+            _python_control_par(),
+        )
+
+        points = np.array(
+            [(TR_UNUSED, 0, [0] * TR_MAX_CAMS)] * MAX_CANDS,
+            dtype=Foundpix_dtype,
+        ).view(np.recarray)
+        reset_foundpix_array(points, MAX_CANDS, TR_MAX_CAMS)
+
+        fast_indices = register_closest_neighbs(
+            targets,
+            len(rows),
+            0,
+            center[0],
+            center[1],
+            bounds[0],
+            bounds[1],
+            bounds[2],
+            bounds[3],
+            points,
+            _python_control_par(),
+            target_x=np.array([t.x for t in targets], dtype=np.float64),
+            target_y=np.array([t.y for t in targets], dtype=np.float64),
+            target_tnr=np.array([t.tnr for t in targets], dtype=np.int32),
+        )
+
+        assert fast_indices == py_indices
 
     def test_find_candidate_matches_native(self):
         crd, pix, _ = _epi_targets_case()

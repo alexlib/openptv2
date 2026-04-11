@@ -249,16 +249,18 @@ class TargetArray:
                     f"{targ.ny} {targ.sumg} {targ.tnr}\n"
                 )
 
-    def __getitem__(self, ix: int) -> Target:
+    def __getitem__(self, ix):
         """
-        Returns the Target at index `ix`.
+        Returns the Target at index `ix`, or a list of Targets for a slice.
 
         Arguments:
-        ix - integer, index into the target array.
+        ix - integer or slice, index into the target array.
 
         Returns:
-        Target instance at index ix.
+        Target instance at index ix, or list of Targets for a slice.
         """
+        if isinstance(ix, slice):
+            return self._targets[ix]
         if ix >= self._num_targets or ix < 0:
             raise IndexError(f"Index {ix} out of range [0, {self._num_targets})")
         return self._targets[ix]
@@ -466,10 +468,23 @@ class Frame:
         self.targets = [[Target() for _ in range(max_targets)] for _ in range(num_cams)]
         # self.targets = [[] for _ in range(num_cams)]
         self.num_targets = [0] * num_cams
+        self.target_x = [np.empty(0, dtype=np.float64) for _ in range(num_cams)]
+        self.target_y = [np.empty(0, dtype=np.float64) for _ in range(num_cams)]
+        self.target_tnr = [np.empty(0, dtype=np.int32) for _ in range(num_cams)]
 
         self.num_cams = num_cams
         self.max_targets = max_targets
         self.num_parts = 0
+
+    def refresh_target_arrays(self, cam: int | None = None) -> None:
+        """Refresh cached NumPy views of target coordinates and tracking ids."""
+        cams = range(self.num_cams) if cam is None else (cam,)
+        for i_cam in cams:
+            num_targets = self.num_targets[i_cam]
+            targets = self.targets[i_cam][:num_targets]
+            self.target_x[i_cam] = np.array([t.x for t in targets], dtype=np.float64)
+            self.target_y[i_cam] = np.array([t.y for t in targets], dtype=np.float64)
+            self.target_tnr[i_cam] = np.array([t.tnr for t in targets], dtype=np.int32)
 
     def read(
         self,
@@ -525,6 +540,7 @@ class Frame:
         for cam in range(self.num_cams):
             self.targets[cam] = read_targets(target_file_base[cam], frame_num)
             self.num_targets[cam] = len(self.targets[cam])
+            self.refresh_target_arrays(cam)
 
             if self.num_targets[cam] == -1:
                 return False

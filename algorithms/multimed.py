@@ -1,5 +1,7 @@
 from typing import List, Tuple
 
+import math
+
 import numpy as np
 from numba import njit
 
@@ -41,18 +43,20 @@ def multimed_r_nlay(cal: Calibration, mm: MultimediaPar, pos: np.ndarray) -> flo
             # print(f"mmf from data = {mmf}")
             return mmf
 
+    n2_arr = mm.n2 if isinstance(mm.n2, np.ndarray) else np.asarray(mm.n2, dtype=np.float64)
+    d_arr = mm.d if isinstance(mm.d, np.ndarray) else np.asarray(mm.d, dtype=np.float64)
+
     mmf = fast_multimed_r_nlay(
         mm.nlay,
         mm.n1,
-        np.array(mm.n2),
+        n2_arr,
         mm.n3,
-        np.array(mm.d),
+        d_arr,
         cal.ext_par.x0,
         cal.ext_par.y0,
         cal.ext_par.z0,
         pos,
     )
-    # print(f"mmf from a loop = {mmf}")
 
     return mmf
 
@@ -106,56 +110,50 @@ def fast_multimed_r_nlay(
     z0: float,
     pos: np.ndarray,
 ) -> float:
-    """Faster mutlimedia model calculation."""
+    """Faster multimedia model calculation — matches C multimed_r_nlay."""
     n_iter = 40
-    X, Y, Z = pos
-    r = np.linalg.norm(np.array([X - x0, Y - y0]))
+    X = pos[0]
+    Y = pos[1]
+    Z = pos[2]
+
+    # Extra layers protrude into water side
+    zout = Z
+    for i in range(1, nlay):
+        zout += d[i]
+
+    dx = X - x0
+    dy = Y - y0
+    r = math.sqrt(dx * dx + dy * dy)
     rq = r
-    zout = Z + np.sum(d[1:nlay])
-    zdiff = z0 - Z
-    if zdiff == 0:
-        zdiff = 1.0
+
     it = 0
     rdiff = 0.1
-    beta2 = np.zeros(nlay, dtype=np.float64)
+    beta2 = np.empty(nlay, dtype=np.float64)
 
-    # Handle r == 0 case (at optical center)
-    if r == 0:
-        return 1.0
+    while (rdiff > 0.001 or rdiff < -0.001) and it < n_iter:
+        beta1 = math.atan(rq / (z0 - Z))
+        sin_beta1 = math.sin(beta1)
 
-    while abs(rdiff) > 0.001 and it < n_iter:
-        beta1 = np.arctan(rq / zdiff)
-        sin_beta1 = np.sin(beta1)
-
-        # Calculate angles for each layer with safety check
         for layer in range(nlay):
-            ratio = sin_beta1 * n1 / n2[layer]
-            if ratio < -1.0:
-                ratio = -1.0
-            elif ratio > 1.0:
-                ratio = 1.0
-            beta2[layer] = np.arcsin(ratio)
+            beta2[layer] = math.asin(sin_beta1 * n1 / n2[layer])
 
-        # Calculate final angle with clamping
-        final_ratio = sin_beta1 * n1 / n3
-        if final_ratio < -1.0:
-            final_ratio = -1.0
-        elif final_ratio > 1.0:
-            final_ratio = 1.0
-        beta3 = np.arcsin(final_ratio)
+        beta3 = math.asin(sin_beta1 * n1 / n3)
 
-        rbeta = (z0 - d[0]) * np.tan(beta1) - zout * np.tan(beta3)
+        rbeta = (z0 - d[0]) * math.tan(beta1) - zout * math.tan(beta3)
         for layer in range(nlay):
-            rbeta += d[layer] * np.tan(beta2[layer])
+            rbeta += d[layer] * math.tan(beta2[layer])
 
         rdiff = r - rbeta
         rq += rdiff
         it += 1
 
-    if r == 0 or rq == 0:
+    if it >= n_iter:
         return 1.0
 
-    return float(rq / r)
+    if r != 0.0:
+        return rq / r
+    else:
+        return 1.0
 
 
 def trans_cam_point(
@@ -289,29 +287,210 @@ def fast_flat_image_coord_raw(
     mmlut_nz: int,
     mmlut_nr: int,
     mmlut_rw: int,
+    mm_nlay: int = 1,
 ) -> Tuple[float, float]:
     """Raw-array version of flat_image_coord for batch use."""
-    pos_t, cross_p, cross_c, _ = fast_trans_cam_point(ex_pos, mm_d[0], glass_par, orig_pos)
+    pos_t, cross_p, cross_c, z0_t = fast_trans_cam_point(ex_pos, mm_d[0], glass_par, orig_pos)
 
+    # Use transformed calibration: x0=0, y0=0, z0=z0_t (matches C cal_t)
     mmf = fast_get_mmf_from_mmlut_raw(
         mmlut_rw, mmlut_origin, mmlut_data, mmlut_nz, mmlut_nr, pos_t
     )
     if mmf <= 0.0:
-        mmf = fast_multimed_r_nlay(1, mm_n1, mm_n2, mm_n3, mm_d, ex_pos[0], ex_pos[1], ex_pos[2], pos_t)
+        mmf = fast_multimed_r_nlay(
+            mm_nlay, mm_n1, mm_n2, mm_n3, mm_d,
+            0.0, 0.0, z0_t,  # transformed cal: x0=0, y0=0, z0=z0_t
+            pos_t,
+        )
 
-    x_t = ex_pos[0] + (pos_t[0] - ex_pos[0]) * mmf
-    y_t = ex_pos[1] + (pos_t[1] - ex_pos[1]) * mmf
+    # multimed_nlay: Xq = x0 + (pos[0] - x0) * mmf, with x0=0, y0=0
+    x_t = pos_t[0] * mmf
+    y_t = pos_t[1] * mmf
 
     pos_t2 = np.array([x_t, y_t, pos_t[2]])
     pos = fast_back_trans_point(glass_par, mm_d[0], cross_c, cross_p, pos_t2)
 
-    deno = ex_dm[:, 2].dot(pos - ex_pos)
+    dp0 = pos[0] - ex_pos[0]
+    dp1 = pos[1] - ex_pos[1]
+    dp2 = pos[2] - ex_pos[2]
+
+    deno = ex_dm[0, 2] * dp0 + ex_dm[1, 2] * dp1 + ex_dm[2, 2] * dp2
     if deno == 0.0:
         deno = 1.0
 
-    x = -int_cc * ex_dm[:, 0].dot(pos - ex_pos) / deno
-    y = -int_cc * ex_dm[:, 1].dot(pos - ex_pos) / deno
+    x = -int_cc * (ex_dm[0, 0] * dp0 + ex_dm[1, 0] * dp1 + ex_dm[2, 0] * dp2) / deno
+    y = -int_cc * (ex_dm[0, 1] * dp0 + ex_dm[1, 1] * dp1 + ex_dm[2, 1] * dp2) / deno
     return x, y
+
+
+@njit(fastmath=True, cache=True, nogil=True)
+def fast_point_to_pixel(
+    point: np.ndarray,
+    ex_pos: np.ndarray,
+    ex_dm: np.ndarray,
+    int_cc: float,
+    int_xh: float,
+    int_yh: float,
+    added_par: np.ndarray,
+    glass_par: np.ndarray,
+    mm_d: np.ndarray,
+    mm_n1: float,
+    mm_n2: np.ndarray,
+    mm_n3: float,
+    mm_nlay: int,
+    mmlut_origin: np.ndarray,
+    mmlut_data: np.ndarray,
+    mmlut_nz: int,
+    mmlut_nr: int,
+    mmlut_rw: int,
+    imx: int,
+    imy: int,
+    pix_x: float,
+    pix_y: float,
+) -> Tuple[float, float]:
+    """Full 3D-to-pixel pipeline in numba: flat_image_coord + flat_to_dist + metric_to_pixel."""
+    # --- flat_image_coord ---
+    fx, fy = fast_flat_image_coord_raw(
+        point, ex_pos, ex_dm, int_cc, glass_par,
+        mm_d, mm_n1, mm_n2, mm_n3,
+        mmlut_origin, mmlut_data, mmlut_nz, mmlut_nr, mmlut_rw,
+        mm_nlay,
+    )
+
+    # --- flat_to_dist: shift by principal point then apply Brown distortion ---
+    fx += int_xh
+    fy += int_yh
+    if fx != 0.0 or fy != 0.0:
+        r = math.sqrt(fx * fx + fy * fy)
+        r2 = r * r
+        r4 = r2 * r2
+        r6 = r4 * r2
+        k1, k2, k3 = added_par[0], added_par[1], added_par[2]
+        p1, p2 = added_par[3], added_par[4]
+        scx, she = added_par[5], added_par[6]
+        radial = k1 * r2 + k2 * r4 + k3 * r6
+        dx = fx * radial + p1 * (r2 + 2.0 * fx * fx) + 2.0 * p2 * fx * fy
+        dy = fy * radial + p2 * (r2 + 2.0 * fy * fy) + 2.0 * p1 * fx * fy
+        fx += dx
+        fy += dy
+        x_dist = scx * fx - math.sin(she) * fy
+        y_dist = math.cos(she) * fy
+    else:
+        x_dist = 0.0
+        y_dist = 0.0
+
+    # --- metric_to_pixel ---
+    px = x_dist / pix_x + float(imx) / 2.0
+    py = float(imy) / 2.0 - y_dist / pix_y
+    return px, py
+
+
+class CalibRawArrays:
+    """Pre-extracted raw arrays from Calibration for fast numba calls."""
+
+    __slots__ = (
+        'ex_pos', 'ex_dm', 'int_cc', 'int_xh', 'int_yh', 'added_par',
+        'glass_par', 'mm_d', 'mm_n1', 'mm_n2', 'mm_n3', 'mm_nlay',
+        'mmlut_origin', 'mmlut_data', 'mmlut_nz', 'mmlut_nr', 'mmlut_rw',
+        'imx', 'imy', 'pix_x', 'pix_y',
+    )
+
+    def __init__(self, cal, cpar):
+        """Extract arrays from Calibration and ControlPar for numba use.
+
+        Raises ValueError if any required parameter is missing or invalid.
+        """
+        # --- Exterior parameters ---
+        ext = cal.ext_par
+        if ext is None:
+            raise ValueError("CalibRawArrays: cal.ext_par is None")
+        self.ex_pos = np.array([ext.x0, ext.y0, ext.z0], dtype=np.float64)
+        self.ex_dm = np.ascontiguousarray(ext.dm, dtype=np.float64)
+        if self.ex_dm.shape != (3, 3):
+            raise ValueError(
+                f"CalibRawArrays: ext_par.dm has shape {self.ex_dm.shape}, expected (3, 3)"
+            )
+
+        # --- Interior parameters ---
+        ip = cal.int_par
+        if ip is None:
+            raise ValueError("CalibRawArrays: cal.int_par is None")
+        self.int_cc = float(ip.cc)
+        if self.int_cc == 0.0:
+            raise ValueError("CalibRawArrays: int_par.cc (camera constant) is 0")
+        self.int_xh = float(ip.xh)
+        self.int_yh = float(ip.yh)
+
+        # --- Additional (distortion) parameters ---
+        if cal.added_par is None:
+            raise ValueError("CalibRawArrays: cal.added_par is None")
+        self.added_par = np.ascontiguousarray(cal.added_par, dtype=np.float64)
+        if self.added_par.shape != (7,):
+            raise ValueError(
+                f"CalibRawArrays: added_par has shape {self.added_par.shape}, expected (7,)"
+            )
+
+        # --- Glass parameters ---
+        if cal.glass_par is None:
+            raise ValueError("CalibRawArrays: cal.glass_par is None")
+        self.glass_par = np.ascontiguousarray(cal.glass_par, dtype=np.float64)
+
+        # --- Multimedia parameters ---
+        mm = cpar.mm
+        if mm is None:
+            raise ValueError("CalibRawArrays: cpar.mm (MultimediaPar) is None")
+        self.mm_d = np.asarray(mm.d, dtype=np.float64) if not isinstance(mm.d, np.ndarray) else mm.d
+        self.mm_n1 = float(mm.n1)
+        self.mm_n2 = np.asarray(mm.n2, dtype=np.float64) if not isinstance(mm.n2, np.ndarray) else mm.n2
+        self.mm_n3 = float(mm.n3)
+        self.mm_nlay = int(mm.nlay)
+        if self.mm_n1 <= 0.0:
+            raise ValueError(f"CalibRawArrays: mm.n1 = {self.mm_n1}, must be > 0")
+        if self.mm_n3 <= 0.0:
+            raise ValueError(f"CalibRawArrays: mm.n3 = {self.mm_n3}, must be > 0")
+
+        # --- MMLUT ---
+        if cal.mmlut is None:
+            raise ValueError("CalibRawArrays: cal.mmlut is None")
+        self.mmlut_nz = int(cal.mmlut.nz)
+        self.mmlut_nr = int(cal.mmlut.nr)
+        self.mmlut_rw = int(cal.mmlut.rw)
+        if self.mmlut_nz == 0 or self.mmlut_nr == 0 or self.mmlut_rw == 0:
+            raise ValueError(
+                f"CalibRawArrays: MMLUT not initialized "
+                f"(nz={self.mmlut_nz}, nr={self.mmlut_nr}, rw={self.mmlut_rw}). "
+                f"Call init_mmlut() before creating CalibRawArrays."
+            )
+        self.mmlut_origin = np.ascontiguousarray(cal.mmlut.origin.ravel(), dtype=np.float64)
+        if cal.mmlut_data is None:
+            raise ValueError("CalibRawArrays: cal.mmlut_data is None")
+        self.mmlut_data = cal.mmlut_data.ravel()
+        if self.mmlut_data.size == 0:
+            raise ValueError("CalibRawArrays: cal.mmlut_data is empty")
+
+        # --- Image / pixel parameters ---
+        self.imx = int(cpar.imx)
+        self.imy = int(cpar.imy)
+        if self.imx <= 0 or self.imy <= 0:
+            raise ValueError(
+                f"CalibRawArrays: image size invalid (imx={self.imx}, imy={self.imy})"
+            )
+        self.pix_x = float(cpar.pix_x)
+        self.pix_y = float(cpar.pix_y)
+        if self.pix_x <= 0.0 or self.pix_y <= 0.0:
+            raise ValueError(
+                f"CalibRawArrays: pixel size invalid (pix_x={self.pix_x}, pix_y={self.pix_y})"
+            )
+
+    def project(self, point):
+        """Project a 3D point to pixel coordinates."""
+        return fast_point_to_pixel(
+            point, self.ex_pos, self.ex_dm, self.int_cc, self.int_xh, self.int_yh,
+            self.added_par, self.glass_par, self.mm_d, self.mm_n1, self.mm_n2,
+            self.mm_n3, self.mm_nlay, self.mmlut_origin, self.mmlut_data,
+            self.mmlut_nz, self.mmlut_nr, self.mmlut_rw,
+            self.imx, self.imy, self.pix_x, self.pix_y,
+        )
 
 
 @njit(fastmath=True, cache=True, nogil=True)
@@ -437,9 +616,9 @@ def get_mmf_from_mmlut(cal: Calibration, pos: np.ndarray) -> float:
     """Get the refractive index of the medium at a given position."""
     rw = cal.mmlut.rw
     origin = cal.mmlut.origin
-    data = cal.mmlut_data.flatten()  # type: ignore
-    nz = cal.mmlut.nz
-    nr = cal.mmlut.nr
+    data = cal.mmlut_data.ravel()  # view, no copy
+    nz = int(cal.mmlut.nz)
+    nr = int(cal.mmlut.nr)
 
     return fast_get_mmf_from_mmlut(rw, origin, data, nz, nr, pos)
 

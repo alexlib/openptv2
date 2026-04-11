@@ -50,6 +50,23 @@ def _read_rt_is(path: Path):
     return n, np.array(rows) if rows else np.empty((0, 8))
 
 
+def _read_target_tnrs(path: Path) -> list[int]:
+    """Read a *_targets file and return the parsed tnr column."""
+    if not path.exists():
+        return []
+    with open(path) as f:
+        lines = f.readlines()
+    if len(lines) <= 1:
+        return []
+
+    tnrs: list[int] = []
+    for line in lines[1:]:
+        parts = line.split()
+        if len(parts) >= 8:
+            tnrs.append(int(parts[7]))
+    return tnrs
+
+
 def _copy_test_env(dest: Path, *, copy_res_orig: bool = False) -> Path:
     """Clone test_cavity into *dest* (img/ is symlinked, not copied).
 
@@ -202,6 +219,17 @@ class TestPythonBatch:
         assert rt.exists(), f"Missing {rt}"
         n, _ = _read_rt_is(rt)
         assert n > 0, f"Frame {FRAME}: zero correspondences"
+
+        target_files = sorted((work_dir / "img").glob(f"*{FRAME:04d}_targets"))
+        assert target_files, f"No target files were written for frame {FRAME}"
+
+        linked_targets = sum(
+            1 for target_file in target_files for tnr in _read_target_tnrs(target_file)
+            if tnr != -1
+        )
+        assert linked_targets > 0, (
+            f"Frame {FRAME}: target files were written but all links were lost"
+        )
 
     @pytest.mark.slow
     def test_tracking_on_preexisting_res(self, py_batch_dir_with_res):

@@ -520,6 +520,10 @@ def correspondences_soa(
             if p1 > -1 and p1 < 1202590843:
                 frm.targets[j][p1].tnr = i
 
+    refresh = getattr(frm, "refresh_target_arrays", None)
+    if callable(refresh):
+        refresh()
+
     return con
 
 
@@ -1632,6 +1636,10 @@ def correspondences(
             p1 = corrected[j][con[i].p[j]].pnr
             if p1 > -1 and p1 < 1202590843:
                 frm.targets[j][p1].tnr = i
+
+    refresh = getattr(frm, "refresh_target_arrays", None)
+    if callable(refresh):
+        refresh()
 
     # Free all other allocations
     # deallocate_adjacency_lists(corr_list, cpar.num_cams)

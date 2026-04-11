@@ -1,11 +1,16 @@
 """Tracking algorithm."""
 
+import cProfile
+import io
 import math
+import os
+import pstats
+import time
 # from dataclasses import dataclass, field
 from typing import List, Tuple
 
 import numpy as np
-from numba import float64, njit
+from numba import float64, njit, types
 
 from .calibration import Calibration
 from .constants import (
@@ -31,6 +36,7 @@ from .parameters import (
     VolumePar,
     convert_track_par_to_tuple,
 )
+from .multimed import fast_point_to_pixel
 from .tracking_frame_buf import Frame, Pathinfo, Target
 from .tracking_run import TrackingRun
 from .trafo import dist_to_flat, metric_to_pixel, pixel_to_metric
@@ -41,6 +47,48 @@ default_naming = {
     "linkage": "res/ptv_is",
     "prio": "res/added",
 }
+
+
+def _tracker_env_flag(name: str) -> bool:
+    value = os.environ.get(name, "")
+    return value not in ("", "0", "false", "False", "no", "off")
+
+
+def _tracker_debug_enabled() -> bool:
+    return _tracker_env_flag("OPENPTV_TRACK_DEBUG")
+
+
+def _tracker_profile_enabled() -> bool:
+    return _tracker_env_flag("OPENPTV_TRACK_PROFILE")
+
+
+def _tracker_log(tag: str, step: int, message: str) -> None:
+    print(f"[tracker:{tag} step={step}] {message}")
+
+
+def _tracker_print_profile(
+    profile: cProfile.Profile, tag: str, step: int, limit: int = 12
+) -> None:
+    stream = io.StringIO()
+    stats = pstats.Stats(profile, stream=stream)
+    stats.strip_dirs().sort_stats("cumulative").print_stats(limit)
+    print(f"[tracker:{tag} step={step}] cProfile top {limit}")
+    print(stream.getvalue().rstrip())
+
+
+def _target_search_arrays(next_frame: List[Target], num_targets: int):
+    """Extract contiguous arrays for the candidate search kernel."""
+    target_x = np.empty(num_targets, dtype=np.float64)
+    target_y = np.empty(num_targets, dtype=np.float64)
+    target_tnr = np.empty(num_targets, dtype=np.int32)
+
+    for i in range(num_targets):
+        targ = next_frame[i]
+        target_x[i] = targ.x
+        target_y[i] = targ.y
+        target_tnr[i] = targ.tnr
+
+    return target_x, target_y, target_tnr
 
 
 # @dataclass
@@ -79,13 +127,9 @@ def reset_foundpix_array(arr: np.ndarray, arr_len: int, num_cams: int) -> None:
     arr_len -- array length
     num_cams -- number of places in the whichcam member of foundpix.
     """
-    for i in range(arr_len):
-        arr[i]["ftnr"] = TR_UNUSED
-        arr[i]["freq"] = 0
-        for j in range(num_cams):
-            # Set default values for unused foundpix objects
-            arr[i]["whichcam"][j] = 0
-
+    arr['ftnr'][:arr_len] = TR_UNUSED
+    arr['freq'][:arr_len] = 0
+    arr['whichcam'][:arr_len] = 0
     return None
 
 
@@ -93,16 +137,101 @@ def copy_foundpix_array(
     dest: np.ndarray, src: np.ndarray, arr_len: int, num_cams: int
 ) -> None:
     """Copy the relevant part of foundpix array."""
-    for i in range(arr_len):
-        # Copy values from source foundpix object to destination foundpix object
-        dest[i].ftnr = src[i].ftnr
-        dest[i].freq = src[i].freq
+    dest[:arr_len] = src[:arr_len]
 
-        # Copy values from source whichcam member to destination whichcam member
-        for cam in range(num_cams):
-            dest[i].whichcam[cam] = src[i].whichcam[cam]
 
-    return None
+@njit(cache=True, fastmath=True, nogil=True)
+def _candsearch_in_pix_core(
+    target_x: np.ndarray,
+    target_y: np.ndarray,
+    target_tnr: np.ndarray,
+    num_targets: int,
+    cent_x: float,
+    cent_y: float,
+    dl: float,
+    dr: float,
+    du: float,
+    dd: float,
+    imx: float,
+    imy: float,
+    require_unused: bool,
+):
+    """Return the four closest candidate indices in pixel space."""
+    p = np.empty(MAX_CANDS, dtype=np.int32)
+    for i in range(MAX_CANDS):
+        p[i] = PT_UNUSED
+
+    dmin = 1e20
+    p1 = p2 = p3 = p4 = PT_UNUSED
+    d1 = d2 = d3 = d4 = dmin
+
+    xmin = cent_x - dl
+    xmax = cent_x + dr
+    ymin = cent_y - du
+    ymax = cent_y + dd
+
+    if xmin < 0.0:
+        xmin = 0.0
+    if xmax > imx:
+        xmax = imx
+    if ymin < 0.0:
+        ymin = 0.0
+    if ymax > imy:
+        ymax = imy
+
+    scanned_rows = 0
+    if 0.0 <= cent_x <= imx and 0.0 <= cent_y <= imy:
+        j0 = num_targets // 2
+        dj = num_targets // 4
+        while dj > 1:
+            if target_y[j0] < ymin:
+                j0 += dj
+            else:
+                j0 -= dj
+            dj //= 2
+
+        j0 -= 12
+        if j0 < 0:
+            j0 = 0
+
+        for j in range(j0, num_targets):
+            scanned_rows += 1
+            if require_unused:
+                if target_tnr[j] != TR_UNUSED:
+                    continue
+            elif target_tnr[j] == TR_UNUSED:
+                continue
+
+            if target_y[j] > ymax:
+                break
+
+            if xmin < target_x[j] < xmax and ymin < target_y[j] < ymax:
+                d = math.sqrt(
+                    (cent_x - target_x[j]) * (cent_x - target_x[j])
+                    + (cent_y - target_y[j]) * (cent_y - target_y[j])
+                )
+
+                if d < dmin:
+                    dmin = d
+
+                if d < d1:
+                    p4, p3, p2, p1 = p3, p2, p1, j
+                    d4, d3, d2, d1 = d3, d2, d1, d
+                elif d1 < d < d2:
+                    p4, p3, p2 = p3, p2, j
+                    d4, d3, d2 = d3, d2, d
+                elif d2 < d < d3:
+                    p4, p3 = p3, j
+                    d4, d3 = d3, d
+                elif d3 < d < d4:
+                    p4 = j
+                    d4 = d
+
+    p[0] = p1
+    p[1] = p2
+    p[2] = p3
+    p[3] = p4
+    return p, scanned_rows
 
 
 def register_closest_neighbs(
@@ -117,6 +246,9 @@ def register_closest_neighbs(
     dd: float,
     reg: np.ndarray,
     cpar: ControlPar,
+    target_x: np.ndarray | None = None,
+    target_y: np.ndarray | None = None,
+    target_tnr: np.ndarray | None = None,
 ) -> List[int]:
     """Register_closest_neighbs() finds candidates for continuing a particle's.
 
@@ -139,9 +271,27 @@ def register_closest_neighbs(
     """
     # all_cands = [-999] * MAX_CANDS  # Initialize all candidate indexes to -999
 
-    all_cands = candsearch_in_pix(
-        targets, num_targets, cent_x, cent_y, dl, dr, du, dd, cpar
-    )
+    if target_x is not None and target_y is not None and target_tnr is not None:
+        all_cands, _ = _candsearch_in_pix_core(
+            target_x,
+            target_y,
+            target_tnr,
+            num_targets,
+            cent_x,
+            cent_y,
+            dl,
+            dr,
+            du,
+            dd,
+            cpar.imx,
+            cpar.imy,
+            False,
+        )
+        all_cands = all_cands.tolist()
+    else:
+        all_cands = candsearch_in_pix(
+            targets, num_targets, cent_x, cent_y, dl, dr, du, dd, cpar
+        )
 
     for cand_idx in range(MAX_CANDS):
         # Set default value for unused foundpix objects
@@ -235,13 +385,12 @@ def pos3d_in_bounds(pos: np.ndarray, bounds: TrackParTuple) -> bool:
 
 
 @njit(
-    float64[:](float64[:], float64[:], float64[:]),
+    types.UniTuple(float64, 2)(float64[:], float64[:], float64[:]),
     cache=True,
     fastmath=True,
     nogil=True,
-    parallel=True,
 )
-def angle_acc(start: np.ndarray, pred: np.ndarray, cand: np.ndarray) -> np.ndarray:
+def angle_acc(start: np.ndarray, pred: np.ndarray, cand: np.ndarray):
     """Calculate the angle between the (1st order) numerical velocity vectors.
 
     to the predicted next_frame position and to the candidate actual position. The
@@ -267,7 +416,7 @@ def angle_acc(start: np.ndarray, pred: np.ndarray, cand: np.ndarray) -> np.ndarr
     if np.all(v0 == -v1):
         angle = 200.0
     elif np.all(v0 == v1):
-        angle = 0
+        angle = 0.0
     else:
         dot_product = np.sum(v0 * v1)
         norm_start_pred = np.linalg.norm(start - pred)
@@ -280,7 +429,7 @@ def angle_acc(start: np.ndarray, pred: np.ndarray, cand: np.ndarray) -> np.ndarr
             cosine = min(1.0, max(-1.0, cosine))
             angle = (200.0 / np.pi) * np.arccos(cosine)
 
-    return np.array([angle, acc])
+    return angle, acc
 
 
 def candsearch_in_pix(
@@ -295,67 +444,41 @@ def candsearch_in_pix(
     cpar: ControlPar,
 ) -> List[int]:
     """Search for a nearest candidate in unmatched target list."""
-    # counter = 0
-    dmin = 1e20
-    p1 = p2 = p3 = p4 = TR_UNUSED
-    p = [-1] * MAX_CANDS
-    d1, d2, d3, d4 = dmin, dmin, dmin, dmin
+    debug = _tracker_debug_enabled()
+    cand_start = time.perf_counter()
+    bounds_start = time.perf_counter()
+    target_x, target_y, target_tnr = _target_search_arrays(next_frame, num_targets)
+    bounds_elapsed = time.perf_counter() - bounds_start
 
-    xmin, xmax, ymin, ymax = cent_x - dl, cent_x + dr, cent_y - du, cent_y + dd
+    scan_start = time.perf_counter()
+    p, scanned_rows = _candsearch_in_pix_core(
+        target_x,
+        target_y,
+        target_tnr,
+        num_targets,
+        cent_x,
+        cent_y,
+        dl,
+        dr,
+        du,
+        dd,
+        cpar.imx,
+        cpar.imy,
+        False,
+    )
+    scan_elapsed = time.perf_counter() - scan_start
 
-    if xmin < 0:
-        xmin = 0
-    if xmax > cpar.imx:
-        xmax = cpar.imx
-    if ymin < 0:
-        ymin = 0
-    if ymax > cpar.imy:
-        ymax = cpar.imy
+    p = p.tolist()
 
-    if cent_x >= 0 and cent_x <= cpar.imx and cent_y >= 0 and cent_y <= cpar.imy:
-        j0 = num_targets // 2
-        dj = num_targets // 4
-        while dj > 1:
-            if next_frame[j0].y < ymin:
-                j0 += dj
-            else:
-                j0 -= dj
-            dj //= 2
-
-        j0 -= 12
-        if j0 < 0:
-            j0 = 0
-
-        for j in range(j0, num_targets):
-            if next_frame[j].tnr != -1:
-                if next_frame[j].y > ymax:
-                    break
-                if xmin < next_frame[j].x < xmax and ymin < next_frame[j].y < ymax:
-                    d = math.sqrt(
-                        (cent_x - next_frame[j].x) * (cent_x - next_frame[j].x)
-                        + (cent_y - next_frame[j].y) * (cent_y - next_frame[j].y)
-                    )
-
-                    if d < dmin:
-                        dmin = d
-
-                    if d < d1:
-                        p4, p3, p2, p1 = p3, p2, p1, j
-                        d4, d3, d2, d1 = d3, d2, d1, d
-                    elif d1 < d < d2:
-                        p4, p3, p2 = p3, p2, j
-                        d4, d3, d2 = d3, d2, d
-                    elif d2 < d < d3:
-                        p4, p3 = p3, j
-                        d4, d3 = d3, d
-                    elif d3 < d < d4:
-                        p4 = j
-                        d4 = d
-
-        p[0] = p1
-        p[1] = p2
-        p[2] = p3
-        p[3] = p4
+    if debug:
+        _tracker_log(
+            "candsearch_in_pix",
+            int(num_targets),
+            (
+                f"bounds={bounds_elapsed:.3f}s scan={scan_elapsed:.3f}s "
+                f"scanned_rows={scanned_rows} total={time.perf_counter() - cand_start:.3f}s"
+            ),
+        )
 
         # print("from inside p = ", p)
 
@@ -397,6 +520,7 @@ def candsearch_in_pix_rest(
     """
     counter = 0
     dmin = POS_INF
+    p[0] = PT_UNUSED
     xmin, xmax, ymin, ymax = cent_x - dl, cent_x + dr, cent_y - du, cent_y + dd
 
     xmin = max(xmin, 0.0)
@@ -425,34 +549,32 @@ def candsearch_in_pix_rest(
                         dmin = d
                         p[0] = j
 
-        if p[0] != -1:
+        if p[0] != PT_UNUSED:
             counter += 1
 
     return counter
 
 
 def searchquader(
-    point: np.ndarray, tpar: TrackParTuple, cpar: ControlPar, cal: List[Calibration]
+    point: np.ndarray, tpar: TrackParTuple, cpar: ControlPar, cal: List[Calibration],
+    raw_cals=None,
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     """Calculate the search volume in image space."""
     mins = np.array([tpar.dvxmin, tpar.dvymin, tpar.dvzmin])
     maxes = np.array([tpar.dvxmax, tpar.dvymax, tpar.dvzmax])
 
-    quader = np.zeros((8, 3))
-    xr = np.zeros(cpar.num_cams)
-    xl = np.zeros(cpar.num_cams)
-    yd = np.zeros(cpar.num_cams)
-    yu = np.zeros(cpar.num_cams)
+    corner = np.empty(3, dtype=np.float64)
 
-    for pt in range(8):
-        quader[pt] = point.copy()
-        # print(f" pt {pt} {quader[pt]}")
-        for dim in range(3):
-            if pt & (1 << dim):
-                quader[pt][dim] += maxes[dim]
-            else:
-                quader[pt][dim] += mins[dim]
-        # print(f" pt {pt} {quader[pt]}")
+    xr = np.empty(cpar.num_cams, dtype=np.float64)
+    xl = np.empty(cpar.num_cams, dtype=np.float64)
+    yd = np.empty(cpar.num_cams, dtype=np.float64)
+    yu = np.empty(cpar.num_cams, dtype=np.float64)
+
+    base_x = point[0]
+    base_y = point[1]
+    base_z = point[2]
+
+    use_fast = raw_cals is not None
 
     # calculation of search area in each camera
     for i in range(cpar.num_cams):
@@ -463,22 +585,35 @@ def searchquader(
         yu[i] = cpar.imy
 
         # pixel position of a search center
-        center = point_to_pixel(point, cal[i], cpar)
-        # print(" center", center[0], center[1])
+        if use_fast:
+            center_x, center_y = raw_cals[i].project(point)
+        else:
+            center = np.empty(2, dtype=np.float64)
+            _point_to_pixel_into(point, cal[i], cpar, center)
+            center_x = center[0]
+            center_y = center[1]
 
-        # mark 4 corners of the search region in pixels
+        # mark 8 corners of the search region in pixels
         for pt in range(8):
-            corner = point_to_pixel(quader[pt], cal[i], cpar)
-            # print(" corner", corner[0], corner[1])
+            corner[0] = base_x + (maxes[0] if pt & 1 else mins[0])
+            corner[1] = base_y + (maxes[1] if pt & 2 else mins[1])
+            corner[2] = base_z + (maxes[2] if pt & 4 else mins[2])
 
-            if corner[0] < xl[i]:
-                xl[i] = corner[0]
-            if corner[1] < yu[i]:
-                yu[i] = corner[1]
-            if corner[0] > xr[i]:
-                xr[i] = corner[0]
-            if corner[1] > yd[i]:
-                yd[i] = corner[1]
+            if use_fast:
+                cpx, cpy = raw_cals[i].project(corner)
+            else:
+                corner_proj = np.empty(2, dtype=np.float64)
+                _point_to_pixel_into(corner, cal[i], cpar, corner_proj)
+                cpx, cpy = corner_proj[0], corner_proj[1]
+
+            if cpx < xl[i]:
+                xl[i] = cpx
+            if cpy < yu[i]:
+                yu[i] = cpy
+            if cpx > xr[i]:
+                xr[i] = cpx
+            if cpy > yd[i]:
+                yd[i] = cpy
 
         if xl[i] < 0:
             xl[i] = 0
@@ -489,60 +624,103 @@ def searchquader(
         if yd[i] > cpar.imy:
             yd[i] = cpar.imy
 
-        # print(" xl", xl[i], " xr", xr[i], " yu", yu[i], " yd", yd[i])
-
         # eventually xr, xl, yd, yu are pixel distances relative to the point
-        xr[i] = xr[i] - center[0]
-        xl[i] = center[0] - xl[i]
-        yd[i] = yd[i] - center[1]
-        yu[i] = center[1] - yu[i]
-
-        # print(" xl", xl[i], " xr", xr[i], " yu", yu[i], " yd", yd[i])
+        xr[i] = xr[i] - center_x
+        xl[i] = center_x - xl[i]
+        yd[i] = yd[i] - center_y
+        yu[i] = center_y - yu[i]
 
     return xr, xl, yd, yu
 
 
-def sort_candidates_by_freq(foundpix: np.ndarray, num_cams: int) -> int:
-    """Sort candidates by frequency."""
+@njit(cache=True, nogil=True)
+def _sort_candidates_by_freq_njit(ftnr, freq, whichcam, num_cams):
+    """Sort candidates by frequency — numba-compiled version on plain arrays.
+
+    Arguments:
+    ---------
+    ftnr -- int32[n] target numbers (TR_UNUSED for empty)
+    freq -- int32[n] frequency counts (zeroed on entry)
+    whichcam -- int32[n, num_cams] camera flags (zeroed on entry)
+    num_cams -- int, number of cameras
+
+    Returns:
+    -------
+    int, number of distinct valid candidates after sort
+    """
+    n = num_cams * 4  # MAX_CANDS = 4
+
+    # Phase 1: mark whichcam — for each item, mark which cameras saw it
+    for i in range(n):
+        if ftnr[i] == -1:  # TR_UNUSED
+            continue
+        for j in range(num_cams):
+            base = 4 * j
+            for m in range(4):
+                if ftnr[i] == ftnr[base + m]:
+                    whichcam[i, j] = 1
+
+    # Phase 2: count frequency
+    for i in range(n):
+        if ftnr[i] == -1:
+            continue
+        for j in range(num_cams):
+            if whichcam[i, j] == 1:
+                freq[i] += 1
+
+    # Phase 3: sort by freq descending (insertion sort, n<=16)
+    for i in range(1, n):
+        key_ftnr = ftnr[i]
+        key_freq = freq[i]
+        key_wc = whichcam[i].copy()
+        j = i - 1
+        while j >= 0 and freq[j] < key_freq:
+            ftnr[j + 1] = ftnr[j]
+            freq[j + 1] = freq[j]
+            whichcam[j + 1] = whichcam[j]
+            j -= 1
+        ftnr[j + 1] = key_ftnr
+        freq[j + 1] = key_freq
+        whichcam[j + 1] = key_wc
+
+    # Phase 4: prune duplicates and singletons
+    for i in range(n):
+        if ftnr[i] == -1:
+            continue
+        for j in range(i + 1, n):
+            if ftnr[i] == ftnr[j] or freq[j] < 2:
+                freq[j] = 0
+                ftnr[j] = -1
+
+    # Phase 5: sort again (same insertion sort)
+    for i in range(1, n):
+        key_ftnr = ftnr[i]
+        key_freq = freq[i]
+        key_wc = whichcam[i].copy()
+        j = i - 1
+        while j >= 0 and freq[j] < key_freq:
+            ftnr[j + 1] = ftnr[j]
+            freq[j + 1] = freq[j]
+            whichcam[j + 1] = whichcam[j]
+            j -= 1
+        ftnr[j + 1] = key_ftnr
+        freq[j + 1] = key_freq
+        whichcam[j + 1] = key_wc
+
     different = 0
-
-    # where what was found
-    for i in range(num_cams * MAX_CANDS):
-        for j in range(num_cams):
-            for m in range(MAX_CANDS):
-                if foundpix[i].ftnr == foundpix[4 * j + m].ftnr:
-                    foundpix[i].whichcam[j] = 1
-
-    # how often was ftnr found
-    for i in range(num_cams * MAX_CANDS):
-        for j in range(num_cams):
-            if foundpix[i].whichcam[j] == 1 and foundpix[i].ftnr != TR_UNUSED:
-                foundpix[i].freq += 1
-
-    # sort freq
-    for i in range(1, num_cams * MAX_CANDS):
-        for j in range(num_cams * MAX_CANDS - 1, i - 1, -1):
-            if foundpix[j - 1].freq < foundpix[j].freq:
-                foundpix[j - 1], foundpix[j] = foundpix[j], foundpix[j - 1]
-
-    # prune the duplicates or those that are found only once
-    for i in range(num_cams * MAX_CANDS):
-        for j in range(i + 1, num_cams * MAX_CANDS):
-            if foundpix[i].ftnr == foundpix[j].ftnr or foundpix[j].freq < 2:
-                foundpix[j].freq = 0
-                foundpix[j].ftnr = TR_UNUSED
-
-    # sort freq again on the clean dataset
-    for i in range(1, num_cams * MAX_CANDS):
-        for j in range(num_cams * MAX_CANDS - 1, i - 1, -1):
-            if foundpix[j - 1].freq < foundpix[j].freq:
-                foundpix[j - 1], foundpix[j] = foundpix[j], foundpix[j - 1]
-
-    for i in range(num_cams * MAX_CANDS):
-        if foundpix[i].freq != 0:
+    for i in range(n):
+        if freq[i] != 0:
             different += 1
 
     return different
+
+
+def sort_candidates_by_freq(foundpix: np.ndarray, num_cams: int) -> int:
+    """Sort candidates by frequency — delegates to @njit kernel."""
+    ftnr = foundpix['ftnr']
+    freq = foundpix['freq']
+    whichcam = foundpix['whichcam']
+    return _sort_candidates_by_freq_njit(ftnr, freq, whichcam, num_cams)
 
 
 def sort(n: int, a: List[float], b: List[int]) -> Tuple[List[float], List[int]]:
@@ -594,46 +772,47 @@ def find_candidates_in_3d(frm, pos, dx, dy, dz, max_cands=MAX_CANDS):
     return indices
 
 
-def point_to_pixel(point: np.ndarray, cal: Calibration, cpar: ControlPar) -> np.ndarray:
-    """Return vec2d with pixel positions (x,y) in the camera.
+def _point_to_pixel_into(
+    point: np.ndarray, cal: Calibration, cpar: ControlPar, out: np.ndarray
+) -> None:
+    """Write pixel positions (x,y) into *out*.
 
     Arguments:
     ---------
     point -- vec3d point in 3D space
     cal -- Calibration parameters
     cpar -- Control parameters (num cams, multimedia parameters, cpar->mm, etc.)
-
-    Returns
-    -------
-    vec2d with pixel positions (x,y) in the camera.
     """
-    # print(f"point {point}")
-    # print(f"cal {cal}")
-    # print(f"cpar.mm {cpar.mm}")
-
     x, y = img_coord(point, cal, cpar.mm)
-    # print("img coord x, y", x, y)
     x, y = metric_to_pixel(x, y, cpar)
-    # print("metric to pixel x, y", x, y)
-    return np.array([x, y])
+    out[0] = x
+    out[1] = y
+
+
+def point_to_pixel(point: np.ndarray, cal: Calibration, cpar: ControlPar) -> Tuple[float, float]:
+    """Return pixel positions (x,y) in the camera."""
+    out = np.empty(2, dtype=np.float64)
+    _point_to_pixel_into(point, cal, cpar, out)
+    return out[0], out[1]
 
 
 def sorted_candidates_in_volume(
     center: np.ndarray, center_proj: np.ndarray, frm: Frame, run: TrackingRun
 ) -> np.ndarray:
     """Find candidates for continuing a particle's path in the search volume."""
-    # points = [Foundpix() for _ in range(frm.num_cams * MAX_CANDS)]
-    points = np.array(
-        [(TR_UNUSED, 0, [0] * TR_MAX_CAMS)] * (frm.num_cams * MAX_CANDS),
-        dtype=Foundpix_dtype,
-    ).view(np.recarray)
-    reset_foundpix_array(points, frm.num_cams * MAX_CANDS, frm.num_cams)
+    num_cams = frm.num_cams
+    n_fp = num_cams * MAX_CANDS
+
+    # Pre-allocate foundpix array
+    points = np.zeros(n_fp, dtype=Foundpix_dtype).view(np.recarray)
+    points['ftnr'] = TR_UNUSED
 
     # Search limits in image space
-    right, left, down, up = searchquader(center, run.tpar, run.cpar, run.cal)
+    right, left, down, up = searchquader(center, run.tpar, run.cpar, run.cal,
+                                            raw_cals=run.raw_cal)
 
     # search in pix for candidates in the next_frame time step
-    for cam in range(frm.num_cams):
+    for cam in range(num_cams):
         register_closest_neighbs(
             frm.targets[cam],
             frm.num_targets[cam],
@@ -646,18 +825,18 @@ def sorted_candidates_in_volume(
             down[cam],
             points[cam * MAX_CANDS :],
             run.cpar,
+            target_x=frm.target_x[cam],
+            target_y=frm.target_y[cam],
+            target_tnr=frm.target_tnr[cam],
         )
 
     # fill and sort candidate struct
-    num_cands = sort_candidates_by_freq(points, frm.num_cams)
+    num_cands = sort_candidates_by_freq(points, num_cams)
     if num_cands > 0:
         points = points[: num_cands + 1].view(np.recarray)
-        # points[-1] = np.ndarray((1,), dtype = Foundpix_dtype)
-        # points[-1].ftnr = TR_UNUSED
     else:
-        points = np.array(
-            [(TR_UNUSED, 0, [0] * TR_MAX_CAMS)], dtype=Foundpix_dtype
-        ).view(np.recarray)
+        points = np.zeros(1, dtype=Foundpix_dtype).view(np.recarray)
+        points['ftnr'] = TR_UNUSED
 
     return points
 
@@ -685,10 +864,9 @@ def assess_new_position(
 
     """
     # Output variables
-    targ_pos = np.array(
-        [[COORD_UNUSED, COORD_UNUSED] for _ in range(run.cpar.num_cams)]
-    )
-    cand_inds = np.array([[-1] * MAX_CANDS for _ in range(run.cpar.num_cams)])
+    nc = run.cpar.num_cams
+    targ_pos = np.full((nc, 2), COORD_UNUSED, dtype=np.float64)
+    cand_inds = np.full((nc, MAX_CANDS), -1, dtype=np.int32)
 
     # Search rectangle limits
     left, right, up, down = ADD_PART, ADD_PART, ADD_PART, ADD_PART
@@ -698,7 +876,7 @@ def assess_new_position(
 
     for cam in range(run.cpar.num_cams):
         # Convert 3D search position to 2D pixel coordinates
-        pixel = point_to_pixel(pos, run.cal[cam], run.cpar)
+        pixel = run.raw_cal[cam].project(pos)
         # print(f"pos {pos}")
         # print(f"pixel {pixel}")
 
@@ -772,16 +950,17 @@ def add_particle(frm: Frame, pos: np.ndarray, cand_inds: np.ndarray) -> None:
     - cand_inds (list[list[int]]): Indices of candidate targets for association with this particle.
     """
     num_parts = frm.num_parts
-    if num_parts > len(frm.path_info):
+
+    # Ensure path_info has room for this index
+    if num_parts < len(frm.path_info):
         ref_path_inf = frm.path_info[num_parts]
-        ref_corres = frm.correspond[num_parts]
     else:
         ref_path_inf = Pathinfo()
         frm.path_info.append(ref_path_inf)
-        frm.correspond = np.resize(frm.correspond, frm.correspond.shape[0] + 1).view(
-            np.recarray
-        )
-        ref_corres = frm.correspond.view(np.recarray)
+
+    # Ensure correspond has room for this index
+    if num_parts >= frm.correspond.shape[0]:
+        frm.correspond = np.resize(frm.correspond, num_parts + 1).view(np.recarray)
 
     ref_path_inf.x = vec_copy(pos)
     ref_path_inf.reset_links()
@@ -789,14 +968,14 @@ def add_particle(frm: Frame, pos: np.ndarray, cand_inds: np.ndarray) -> None:
     ref_targets = frm.targets
 
     for cam in range(frm.num_cams):
-        ref_corres.p[cam] = CORRES_NONE
+        frm.correspond[num_parts].p[cam] = CORRES_NONE
 
         # We always take the 1st candidate, apparently. Why did we fetch 4?
         if cand_inds[cam][0] != PT_UNUSED:
             _ix = cand_inds[cam][0]
             ref_targets[cam][_ix].tnr = num_parts
-            ref_corres.p[cam] = _ix
-            ref_corres.nr = num_parts
+            frm.correspond[num_parts].p[cam] = _ix
+            frm.correspond[num_parts].nr = num_parts
 
     frm.num_parts += 1
 
@@ -850,6 +1029,12 @@ class TrackingObserver:
 
 def trackcorr_c_loop(run_info, step, observer=None):
     """Sequence loop."""
+    debug = _tracker_debug_enabled()
+    profile = cProfile.Profile() if _tracker_profile_enabled() else None
+    if profile is not None:
+        profile.enable()
+
+    step_start = time.perf_counter()
     # Initialize variables
     philf = np.zeros((4, MAX_CANDS))
     # quali = 0
@@ -869,18 +1054,33 @@ def trackcorr_c_loop(run_info, step, observer=None):
 
     fb = run_info.fb
     cal = run_info.cal
+    raw_cal = run_info.raw_cal
     tpar = convert_track_par_to_tuple(run_info.tpar)
     vpar = run_info.vpar
     cpar = run_info.cpar
     curr_targets = fb.buf[1].targets
+
+    if debug:
+        _tracker_log(
+            "trackcorr",
+            step,
+            f"start curr_parts={fb.buf[1].num_parts} next_parts={fb.buf[2].num_parts} prev_parts={fb.buf[0].num_parts}",
+        )
 
     v1 = np.zeros((cpar.num_cams, 2))  # volume center projection on cameras
     v2 = np.zeros((cpar.num_cams, 2))  # volume center projection on cameras
 
     # try to track correspondences from previous 0 - corp, variable h
     orig_parts = fb.buf[1].num_parts
+    particle_loop_start = time.perf_counter()
+    proj_time = 0.0
+    cand_search_time = 0.0
+    decision_time = 0.0
+    add_time = 0.0
+    progress_interval = 50
+    X = np.zeros((6, 3))
     for h in range(orig_parts):
-        X = np.zeros((6, 3))
+        X[:] = 0.0
 
         curr_path_inf = fb.buf[1].path_info[h]
         curr_corres = fb.buf[1].correspond[h]
@@ -898,27 +1098,34 @@ def trackcorr_c_loop(run_info, step, observer=None):
             X[0] = vec_copy(ref_path_inf.x)
             X[2] = search_volume_center_moving(ref_path_inf.x, curr_path_inf.x)
 
+            proj_start = time.perf_counter()
             for j in range(fb.num_cams):
-                v1[j] = point_to_pixel(X[2], cal[j], cpar)
+                v1[j] = raw_cal[j].project(X[2])
+            proj_time += time.perf_counter() - proj_start
         else:
             X[2] = vec_copy(X[1])
+            proj_start = time.perf_counter()
             for j in range(fb.num_cams):
                 if curr_corres.p[j] == CORRES_NONE or curr_corres.p[j] >= len(
                     curr_targets[j]
                 ):
-                    v1[j] = point_to_pixel(X[2], cal[j], cpar)
+                    v1[j] = raw_cal[j].project(X[2])
                 else:
                     _ix = curr_corres.p[j]
-                    v1[j] = np.r_[curr_targets[j][_ix].x, curr_targets[j][_ix].y]
+                    v1[j, 0] = curr_targets[j][_ix].x
+                    v1[j, 1] = curr_targets[j][_ix].y
                     # print(f"v1[{j}], {v1[j]}")
+            proj_time += time.perf_counter() - proj_start
 
         # calculate search cuboid and reproject it to the image space
         # Compute search limits for observer before candidate search
         if observer is not None:
             _obs_xr, _obs_xl, _obs_yd, _obs_yu = searchquader(
-                X[2], tpar, cpar, cal
+                X[2], tpar, cpar, cal, raw_cals=run_info.raw_cal
             )
+        cand_start = time.perf_counter()
         w = sorted_candidates_in_volume(X[2], v1, fb.buf[2], run_info)
+        cand_search_time += time.perf_counter() - cand_start
         # if not w  # empty
         if w.shape[0] == 1:  # empty means at least one row
             if observer is not None:
@@ -966,7 +1173,7 @@ def trackcorr_c_loop(run_info, step, observer=None):
             # print(f"X[5] {X[5]}")
 
             for j in range(fb.num_cams):
-                v1[j] = point_to_pixel(X[5], cal[j], cpar)
+                v1[j] = raw_cal[j].project(X[5])
                 #  print(f"v1[{j}], {v1[j]}")
 
             # end of search in pix
@@ -1103,6 +1310,7 @@ def trackcorr_c_loop(run_info, step, observer=None):
                 })
             mm += 1  # increment mm
 
+        decision_start = time.perf_counter()
         # begin of inlist still zero
         if tpar.add:
             if curr_path_inf.inlist == 0 and curr_path_inf.prev_frame >= 0:
@@ -1141,6 +1349,8 @@ def trackcorr_c_loop(run_info, step, observer=None):
                             num_added += 1
                     in_volume = 0
 
+                    decision_time += time.perf_counter() - decision_start
+
         # end of inlist still zero
         # ***********************************
 
@@ -1165,7 +1375,17 @@ def trackcorr_c_loop(run_info, step, observer=None):
 
         del w
 
+        if debug and ((h + 1) % progress_interval == 0 or h + 1 == orig_parts):
+            _tracker_log(
+                "trackcorr",
+                step,
+                f"progress particle {h + 1}/{orig_parts} cand_rows={count2} two_stage_rows={count3}",
+            )
+
+    particle_loop_elapsed = time.perf_counter() - particle_loop_start
+
     # sort decis and give preliminary "finaldecis"
+    sort_start = time.perf_counter()
     for h in range(fb.buf[1].num_parts):
         curr_path_inf = fb.buf[1].path_info[h]
 
@@ -1206,6 +1426,7 @@ def trackcorr_c_loop(run_info, step, observer=None):
             count1 += 1
 
     # end of creation of links with decision check
+    sort_elapsed = time.perf_counter() - sort_start
 
     # Annotate observer events with final link decisions
     if observer is not None:
@@ -1224,6 +1445,18 @@ def trackcorr_c_loop(run_info, step, observer=None):
             links: {count1}, lost: {fb.buf[1].num_parts - count1}, add: {num_added}"
     )
 
+    if debug:
+        _tracker_log(
+            "trackcorr",
+            step,
+            (
+                f"timings total={time.perf_counter() - step_start:.3f}s "
+                f"particle_loop={particle_loop_elapsed:.3f}s link_sort={sort_elapsed:.3f}s"
+                f" projection={proj_time:.3f}s cand_search={cand_search_time:.3f}s"
+                f" decision={decision_time:.3f}s add={add_time:.3f}s"
+            ),
+        )
+
     # for the average of particles and links
     run_info.npart = run_info.npart + fb.buf[1].num_parts
     run_info.nlinks = run_info.nlinks + count1
@@ -1234,6 +1467,10 @@ def trackcorr_c_loop(run_info, step, observer=None):
     if step < run_info.seq_par.last - 2:
         fb.read_frame_at_end(step + 3, False)
     # end of sequence loop
+
+    if profile is not None:
+        profile.disable()
+        _tracker_print_profile(profile, "trackcorr", step)
 
 
 def trackcorr_c_finish(run_info, step: int):
@@ -1263,6 +1500,12 @@ def track3d_loop(run_info, step):
     """
     import math
 
+    debug = _tracker_debug_enabled()
+    profile = cProfile.Profile() if _tracker_profile_enabled() else None
+    if profile is not None:
+        profile.enable()
+
+    step_start = time.perf_counter()
     fb = run_info.fb
     tpar = run_info.tpar
 
@@ -1277,7 +1520,19 @@ def track3d_loop(run_info, step):
     dy = tpar.dvymax
     dz = tpar.dvzmax
 
+    level1_elapsed = 0.0
+    level2_elapsed = 0.0
+    level3_elapsed = 0.0
+
+    if debug:
+        _tracker_log(
+            "track3d",
+            step,
+            f"start curr_parts={curr.num_parts} next_parts={next_buf.num_parts} prev_parts={prev.num_parts}",
+        )
+
     # Level 1: Particles with previous links
+    level1_start = time.perf_counter()
     for i in range(orig_parts):
         curr_pi = curr.path_info[i]
         if curr_pi.prev_frame < 0:
@@ -1313,7 +1568,10 @@ def track3d_loop(run_info, step):
         else:
             curr_pi.next_frame = -1
 
+    level1_elapsed = time.perf_counter() - level1_start
+
     # Level 2: No previous link, but neighbors have previous links
+    level2_start = time.perf_counter()
     for i in range(orig_parts):
         curr_pi = curr.path_info[i]
         if curr_pi.prev_frame >= 0 or curr_pi.next_frame >= 0:
@@ -1362,7 +1620,10 @@ def track3d_loop(run_info, step):
         else:
             curr_pi.next_frame = -1
 
+    level2_elapsed = time.perf_counter() - level2_start
+
     # Level 3: No previous link, no neighbors with previous links
+    level3_start = time.perf_counter()
     for i in range(orig_parts):
         curr_pi = curr.path_info[i]
         if curr_pi.prev_frame >= 0 or curr_pi.next_frame >= 0:
@@ -1393,16 +1654,35 @@ def track3d_loop(run_info, step):
         else:
             curr_pi.next_frame = -1
 
+    level3_elapsed = time.perf_counter() - level3_start
+
     print(
         f"track3d step: {step}, curr: {fb.buf[1].num_parts}, "
         f"next: {fb.buf[2].num_parts}, links: {count1}"
     )
+
+    if debug:
+        _tracker_log(
+            "track3d",
+            step,
+            (
+                f"timings total={time.perf_counter() - step_start:.3f}s "
+                f"level1={level1_elapsed:.3f}s level2={level2_elapsed:.3f}s level3={level3_elapsed:.3f}s"
+            ),
+        )
 
     run_info.npart += fb.buf[1].num_parts
     run_info.nlinks += count1
 
     fb.fb_next()
     fb.write_frame_from_start(step)
+
+    if debug:
+        _tracker_log("track3d", step, "frame rotated and written")
+
+    if profile is not None:
+        profile.disable()
+        _tracker_print_profile(profile, "track3d", step)
     if step < run_info.seq_par.last - 2:
         fb.read_frame_at_end(step + 3, 0)
 
@@ -1410,7 +1690,9 @@ def track3d_loop(run_info, step):
 def trackback_c(run_info: TrackingRun):
     """Trackback algorithm in C."""
     count1, count2, num_added, quali = 0, 0, 0, 0
-    Ymin, Ymax, npart, nlinks = 0, 0, 0.0, 0.0
+    npart, nlinks = 0.0, 0.0
+    Ymin = run_info.ymin
+    Ymax = run_info.ymax
 
     philf = np.zeros((4, MAX_CANDS))
     X = np.empty((6, 3))
@@ -1423,6 +1705,7 @@ def trackback_c(run_info: TrackingRun):
     vpar = run_info.vpar
     cpar = run_info.cpar
     cal = run_info.cal
+    raw_cal = run_info.raw_cal
 
     step = 0
 
@@ -1442,10 +1725,7 @@ def trackback_c(run_info: TrackingRun):
             if curr_path_inf.next_frame < 0 or curr_path_inf.prev_frame != -1:
                 continue
 
-            for j in range(6):
-                X[j] = np.zeros(
-                    3,
-                )  # check it out
+            X[:] = 0.0
 
             curr_path_inf.inlist = 0
 
@@ -1459,7 +1739,7 @@ def trackback_c(run_info: TrackingRun):
             X[2] = search_volume_center_moving(ref_path_inf.x, curr_path_inf.x)
 
             for j in range(fb.num_cams):
-                n[j] = point_to_pixel(X[2], cal[j], cpar)
+                n[j] = raw_cal[j].project(X[2])
 
             # calculate searchquader and reprojection in image space
             w = sorted_candidates_in_volume(X[2], n, fb.buf[2], run_info)
@@ -1726,7 +2006,14 @@ class Tracker:
         if self.step >= self.run_info.seq_par.last:
             return False
 
+        if _tracker_debug_enabled():
+            _tracker_log("Tracker", self.step, "step_forward start")
+
         trackcorr_c_loop(self.run_info, self.step, observer=observer)
+
+        if _tracker_debug_enabled():
+            _tracker_log("Tracker", self.step, "step_forward done")
+
         self.step += 1
         return True
 
@@ -1740,10 +2027,17 @@ class Tracker:
         Args:
             observer: Optional TrackingObserver to collect per-particle events.
         """
+        if _tracker_debug_enabled():
+            _tracker_log("Tracker", self.run_info.seq_par.first, "full_forward start")
+
         track_forward_start(self.run_info)
         for step in range(self.run_info.seq_par.first, self.run_info.seq_par.last):
             trackcorr_c_loop(self.run_info, step, observer=observer)
         trackcorr_c_finish(self.run_info, self.run_info.seq_par.last)
+
+        if _tracker_debug_enabled():
+            _tracker_log("Tracker", self.run_info.seq_par.last, "full_forward done")
+
         self.step = 0
 
     def step_forward_3d(self):
@@ -1756,16 +2050,30 @@ class Tracker:
         if self.step >= self.run_info.seq_par.last:
             return False
 
+        if _tracker_debug_enabled():
+            _tracker_log("Tracker", self.step, "step_forward_3d start")
+
         track3d_loop(self.run_info, self.step)
+
+        if _tracker_debug_enabled():
+            _tracker_log("Tracker", self.step, "step_forward_3d done")
+
         self.step += 1
         return True
 
     def full_forward_3d(self):
         """Do a full 3D tracking run from restart to finalize."""
+        if _tracker_debug_enabled():
+            _tracker_log("Tracker", self.run_info.seq_par.first, "full_forward_3d start")
+
         track_forward_start(self.run_info)
         for step in range(self.run_info.seq_par.first, self.run_info.seq_par.last):
             track3d_loop(self.run_info, step)
         trackcorr_c_finish(self.run_info, self.run_info.seq_par.last)
+
+        if _tracker_debug_enabled():
+            _tracker_log("Tracker", self.run_info.seq_par.last, "full_forward_3d done")
+
         self.step = 0
 
     def full_backward(self):

@@ -54,6 +54,33 @@ class TestFrame:
             assert optv_frm is not None
             assert python_pos.shape[1] == 2
 
+    def test_target_cache_refreshes_from_targets(self):
+        """Test that cached target arrays mirror the current target records."""
+        from algorithms.tracking_frame_buf import Frame as PythonFrame, Target
+
+        frm = PythonFrame(num_cams=2, max_targets=4)
+
+        frm.targets[0][0] = Target(pnr=10, x=1.5, y=2.5, tnr=-1)
+        frm.targets[0][1] = Target(pnr=11, x=3.5, y=4.5, tnr=7)
+        frm.targets[0][2] = Target(pnr=12, x=5.5, y=6.5, tnr=-1)
+        frm.num_targets[0] = 3
+
+        frm.targets[1][0] = Target(pnr=20, x=7.25, y=8.25, tnr=3)
+        frm.num_targets[1] = 1
+
+        frm.refresh_target_arrays()
+
+        np.testing.assert_allclose(frm.target_x[0], [1.5, 3.5, 5.5])
+        np.testing.assert_allclose(frm.target_y[0], [2.5, 4.5, 6.5])
+        np.testing.assert_array_equal(frm.target_tnr[0], [-1, 7, -1])
+        np.testing.assert_allclose(frm.target_x[1], [7.25])
+        np.testing.assert_allclose(frm.target_y[1], [8.25])
+        np.testing.assert_array_equal(frm.target_tnr[1], [3])
+
+        frm.targets[0][1].tnr = 42
+        frm.refresh_target_arrays(0)
+        np.testing.assert_array_equal(frm.target_tnr[0], [-1, 42, -1])
+
 
 class TestFramePositions:
     """Test positions() method in detail."""
