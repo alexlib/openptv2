@@ -1339,8 +1339,8 @@ def trackcorr_c_loop(run_info, step, observer=None):
             # end of creating new particle position
             # ***************************************************************
 
-            # try to link if kk is not found/good enough and prev exist
-            if curr_path_inf.inlist == 0 and curr_path_inf.prev_frame >= 0:
+            # try to link if kk is not found/good enough
+            if curr_path_inf.inlist == 0:
                 diff_pos = vec_subt(X[3], X[1])
                 if pos3d_in_bounds(diff_pos, tpar):
                     angle, acc = angle_acc(X[1], X[2], X[3])

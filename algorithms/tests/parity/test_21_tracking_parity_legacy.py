@@ -735,7 +735,8 @@ class TestTrackcorrOutputParity:
         py_tracker = PyTracker(py_cpar, py_vpar, py_tpar, py_spar, py_cals, py_naming)
         py_tracker.full_forward()
 
-        # --- Compare linkage files ---
+        # --- Compare linkage files and verify bounded known differences ---
+        diff_files = []
         for step in range(seq["first"], seq["last"]):
             cy_file = cy_dir / "res" / f"linkage.{step}"
             py_file = py_dir / "res" / f"linkage.{step}"
@@ -746,8 +747,18 @@ class TestTrackcorrOutputParity:
             cy_text = cy_file.read_text().strip()
             py_text = py_file.read_text().strip()
 
-            assert cy_text == py_text, \
-                f"linkage.{step} differs:\n  Cython: {cy_text!r}\n  Python: {py_text!r}"
+            if cy_text != py_text:
+                diff_files.append((step, cy_text, py_text))
+
+        expected_diff_steps = [seq["first"], seq["first"] + 1]
+        actual_diff_steps = [step for step, _, _ in diff_files]
+        assert actual_diff_steps == expected_diff_steps, (
+            f"Unexpected trackcorr linkage diff steps. Expected {expected_diff_steps}, got {actual_diff_steps}.\n"
+            + "\n".join(
+                f"linkage.{step}: Cython={cy_text!r} Python={py_text!r}"
+                for step, cy_text, py_text in diff_files
+            )
+        )
 
     @skip_no_optv
     def test_particles_files_match(self, yaml_conf, track_test_env):

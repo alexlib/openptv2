@@ -237,6 +237,22 @@ def _parse_whatever(path: Path):
     return n, rows
 
 
+def _xyz_for_correspondence(res_dir: Path, frame: int, corres: tuple[int, int, int, int]) -> np.ndarray:
+    _, rows = _parse_rt(res_dir / f"rt_is.{frame}")
+    for row in rows:
+        if row["p"] == corres:
+            return row["xyz"]
+    raise AssertionError(f"No particle with correspondences={corres} in rt_is.{frame}")
+
+
+def _find_ptv_row_by_xyz(res_dir: Path, frame: int, xyz: np.ndarray, atol: float = 1e-9):
+    _, rows = _parse_ptv(res_dir / f"ptv_is.{frame}")
+    for row in rows:
+        if np.allclose(row["xyz"], xyz, atol=atol, rtol=0.0):
+            return row
+    return None
+
+
 def _compare_result_dirs(left: Path, right: Path, atol: float = 1e-12) -> list[FileDiff]:
     diffs: list[FileDiff] = []
 
@@ -316,7 +332,12 @@ def test_burgers_trackcorr_forward_python_vs_cython_value_by_value(tmp_path: Pat
     cy_out = _run_tracker("cython", "forward", work, conf)
 
     diffs = _compare_result_dirs(py_out, cy_out)
-    assert diffs == [], "\n".join(f"{d.file}: {d.message}" for d in diffs)
+    diff_files = sorted({d.file for d in diffs})
+    expected_diff_files = ["ptv_is.10004", "ptv_is.10005", "whatever.10004", "whatever.10005"]
+    assert diff_files == expected_diff_files, (
+        f"Unexpected trackcorr forward diff set. Expected {expected_diff_files}, got {diff_files}.\n"
+        + "\n".join(f"{d.file}: {d.message}" for d in diffs)
+    )
 
 
 @pytest.mark.slow
@@ -337,12 +358,18 @@ def test_burgers_track3d_forward_python_vs_cython_verify_deviations(tmp_path: Pa
 
     py_ptv = sorted([f for f in py_files if f.startswith("ptv_is.")])
     cy_ptv = sorted([f for f in cy_files if f.startswith("ptv_is.")])
-    assert py_ptv == ["ptv_is.10001", "ptv_is.10005"]
+    assert py_ptv == ["ptv_is.10001", "ptv_is.10002", "ptv_is.10003", "ptv_is.10004", "ptv_is.10005"]
     assert cy_ptv == ["ptv_is.10001", "ptv_is.10002", "ptv_is.10003", "ptv_is.10004", "ptv_is.10005"]
 
     py_whatever = sorted([f for f in py_files if f.startswith("whatever.")])
     cy_whatever = sorted([f for f in cy_files if f.startswith("whatever.")])
-    assert py_whatever == ["whatever.10001", "whatever.10005"]
+    assert py_whatever == [
+        "whatever.10001",
+        "whatever.10002",
+        "whatever.10003",
+        "whatever.10004",
+        "whatever.10005",
+    ]
     assert cy_whatever == [
         "whatever.10001",
         "whatever.10002",
@@ -367,7 +394,7 @@ def test_burgers_track3d_forward_python_vs_cython_verify_deviations(tmp_path: Pa
 
     diffs = _compare_result_dirs(py_common, cy_common)
     diff_files = sorted({d.file for d in diffs})
-    expected_diff_files = ["ptv_is.10001", "rt_is.10001", "whatever.10001"]
+    expected_diff_files: list[str] = []
     assert diff_files == expected_diff_files, (
         f"Unexpected track3d diff set. Expected {expected_diff_files}, got {diff_files}.\n"
         + "\n".join(f"{d.file}: {d.message}" for d in diffs)
@@ -390,7 +417,15 @@ def test_burgers_trackcorr_backward_python_vs_cython_verify_deviations(tmp_path:
     diffs = _compare_result_dirs(py_out, cy_out)
     diff_files = sorted({d.file for d in diffs})
 
-    expected = ["ptv_is.10002", "rt_is.10002", "whatever.10002"]
+    expected = [
+        "ptv_is.10002",
+        "ptv_is.10004",
+        "ptv_is.10005",
+        "rt_is.10002",
+        "whatever.10002",
+        "whatever.10004",
+        "whatever.10005",
+    ]
     assert diff_files == expected, (
         f"Unexpected backward diff set. Expected {expected}, got {diff_files}.\n"
         + "\n".join(f"{d.file}: {d.message}" for d in diffs)
@@ -417,3 +452,55 @@ def test_burgers_python_complete_step_process_matches_full_forward(tmp_path: Pat
 
     diffs = _compare_result_dirs(step_out, full_out)
     assert diffs == [], "\n".join(f"{d.file}: {d.message}" for d in diffs)
+
+
+@pytest.mark.slow
+@pytest.mark.parity
+def test_burgers_python_forward_relinks_reappeared_particle_in_both_trackers(tmp_path: Path):
+    """When only frames 10001..10005 exist, P2 re-appearance at 10004 must still link to 10005.
+
+    This is the regression for the trackcorr fallback path used when no 10006 lookahead exists.
+    """
+    work = _copy_burgers_workspace(tmp_path)
+    conf = _localize_conf(yaml.safe_load((work / "conf.yaml").read_text()), work)
+
+    p2_corres = (2, 2, 2, 2)
+
+    for mode in ("forward", "forward_3d"):
+        out = _run_tracker("python", mode, work, conf)
+        p2_10004 = _xyz_for_correspondence(out, 10004, p2_corres)
+        p2_10005 = _xyz_for_correspondence(out, 10005, p2_corres)
+
+        row_10004 = _find_ptv_row_by_xyz(out, 10004, p2_10004)
+        row_10005 = _find_ptv_row_by_xyz(out, 10005, p2_10005)
+
+        assert row_10004 is not None, f"{mode}: missing P2 row in ptv_is.10004"
+        assert row_10005 is not None, f"{mode}: missing P2 row in ptv_is.10005"
+        assert row_10004["next"] >= 0, f"{mode}: expected P2 10004->10005 link"
+        assert row_10005["prev"] >= 0, f"{mode}: expected P2 10005 to have predecessor"
+
+
+@pytest.mark.slow
+@pytest.mark.parity
+def test_burgers_python_backward_starts_from_forward_and_keeps_relinked_segment(tmp_path: Path):
+    """Backward tracking should operate on top of forward output and keep valid re-linked segments."""
+    work = _copy_burgers_workspace(tmp_path)
+    conf = _localize_conf(yaml.safe_load((work / "conf.yaml").read_text()), work)
+
+    forward_out = _run_tracker("python", "forward", work, conf)
+    backward_out = _run_tracker("python", "backward", work, conf)
+
+    p2_corres = (2, 2, 2, 2)
+    p2_10004 = _xyz_for_correspondence(backward_out, 10004, p2_corres)
+    p2_10005 = _xyz_for_correspondence(backward_out, 10005, p2_corres)
+
+    row_10004 = _find_ptv_row_by_xyz(backward_out, 10004, p2_10004)
+    row_10005 = _find_ptv_row_by_xyz(backward_out, 10005, p2_10005)
+
+    assert row_10004 is not None
+    assert row_10005 is not None
+    assert row_10004["next"] >= 0
+    assert row_10005["prev"] >= 0
+
+    fw_bw_diffs = _compare_result_dirs(forward_out, backward_out)
+    assert fw_bw_diffs != [], "Backward pass should update at least one output file."
