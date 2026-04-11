@@ -485,6 +485,15 @@ class Frame:
             self.target_y[i_cam] = np.array([t.y for t in targets], dtype=np.float64)
             self.target_tnr[i_cam] = np.array([t.tnr for t in targets], dtype=np.int32)
 
+    @property
+    def correspond(self) -> np.recarray:
+        """Compatibility accessor returning correspondence records (nr, p)."""
+        cor = np.recarray((self.num_parts,), dtype=Corres_dtype)
+        if self.num_parts > 0:
+            cor.nr = self.corres_nr[: self.num_parts]
+            cor.p = self.corres_p[: self.num_parts]
+        return cor
+
     def read(
         self,
         corres_file_base: str,
@@ -526,6 +535,7 @@ class Frame:
             linkage_file_base,
             prio_file_base,
             frame_num,
+            include_corres_nr=True,
         )
 
         self.corres_nr = cor_nr
@@ -876,7 +886,8 @@ def read_path_frame(
     linkage_file_base: str,
     prio_file_base: str,
     frame_num: int,
-) -> Tuple[np.ndarray, np.ndarray, List[Pathinfo]]:
+    include_corres_nr: bool = False,
+):
     """Read rt_is frames from disk.
 
     Returns
@@ -891,7 +902,10 @@ def read_path_frame(
         filein = open(fname, "r", encoding="utf-8")
     except IOError:
         print(f"Can't open ascii file: {fname}")
-        return np.empty(0, dtype=np.int32), np.empty((0, 4), dtype=np.int32), []
+        if include_corres_nr:
+            return np.empty(0, dtype=np.int32), np.empty((0, 4), dtype=np.int32), []
+        empty_cor = np.recarray((0,), dtype=Corres_dtype)
+        return empty_cor, []
 
     n_particles = int(filein.readline())
     if n_particles < 0:
@@ -908,7 +922,10 @@ def read_path_frame(
             linkagein = open(fname, "r", encoding="utf-8")
         except IOError:
             print(f"Can't open linkage file: {fname}")
-            return np.empty(0, dtype=np.int32), np.empty((0, 4), dtype=np.int32), []
+            if include_corres_nr:
+                return np.empty(0, dtype=np.int32), np.empty((0, 4), dtype=np.int32), []
+            empty_cor = np.recarray((0,), dtype=Corres_dtype)
+            return empty_cor, []
 
         linkagein.readline()
     else:
@@ -920,7 +937,10 @@ def read_path_frame(
             prioin = open(fname, "r", encoding="utf-8")
         except IOError:
             print(f"Can't open prio file: {fname}")
-            return np.empty(0, dtype=np.int32), np.empty((0, 4), dtype=np.int32), []
+            if include_corres_nr:
+                return np.empty(0, dtype=np.int32), np.empty((0, 4), dtype=np.int32), []
+            empty_cor = np.recarray((0,), dtype=Corres_dtype)
+            return empty_cor, []
 
         prioin.readline()
     else:
@@ -963,7 +983,15 @@ def read_path_frame(
     if prioin is not None:
         prioin.close()
 
-    return corres_nr, corres_p, path_buf
+    if include_corres_nr:
+        return corres_nr, corres_p, path_buf
+
+    cor_buf = np.recarray((targets,), dtype=Corres_dtype)
+    if targets > 0:
+        cor_buf.nr = corres_nr[:targets]
+        cor_buf.p = corres_p[:targets]
+
+    return cor_buf, path_buf
 
 
 def write_path_frame(

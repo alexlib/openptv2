@@ -426,6 +426,48 @@ class TestStage5_FullCorrespondences:
             f"Total should be {NUM_PTS}, got {match_counts[3]}"
         )
 
+    def test_frame_soa_fields_populated(self):
+        """correspondences() must populate frm.num_parts, corres_nr, corres_p."""
+        cpar = _build_cpar()
+        cals = _load_calibrations()
+        vpar = _build_vpar()
+        frm, corrected = _generate_targets(cals, cpar)
+
+        match_counts = [0] * 4
+        correspondences(frm, corrected, vpar, cpar, cals, match_counts)
+
+        # num_parts must equal total matches
+        assert frm.num_parts == NUM_PTS, (
+            f"frm.num_parts={frm.num_parts}, expected {NUM_PTS}"
+        )
+        # corres_nr must be set for each particle
+        for i in range(NUM_PTS):
+            assert frm.corres_nr[i] == i, (
+                f"corres_nr[{i}]={frm.corres_nr[i]}, expected {i}"
+            )
+        # corres_p must hold valid target indices (all >= 0, no CORRES_NONE=-1)
+        # since it's a 4-cam test all 4 cameras should have matches
+        for i in range(NUM_PTS):
+            for j in range(NUM_CAMS):
+                assert frm.corres_p[i, j] >= 0, (
+                    f"corres_p[{i},{j}]={frm.corres_p[i,j]}: "
+                    f"expected valid target index, got CORRES_NONE"
+                )
+                # Index must be within valid range for this camera
+                assert frm.corres_p[i, j] < frm.num_targets[j], (
+                    f"corres_p[{i},{j}]={frm.corres_p[i,j]} >= "
+                    f"num_targets[{j}]={frm.num_targets[j]}"
+                )
+        # targets must have their tnr set to the particle index
+        # (checked via corres_p back-reference)
+        for i in range(NUM_PTS):
+            for j in range(NUM_CAMS):
+                tix = frm.corres_p[i, j]
+                tnr = frm.targets[j][tix].tnr
+                assert tnr == i, (
+                    f"targets[{j}][{tix}].tnr={tnr}, expected {i}"
+                )
+
     @pytest.mark.skipif(not _optv_available(), reason="optv not installed")
     def test_correspondences_match_cython(self):
         """Python match_counts must equal Cython match_counts."""

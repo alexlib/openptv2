@@ -502,10 +502,17 @@ def correspondences_soa(
             con_corr[total_taken:total_taken + taken] = dst_c[:taken]
             total_taken += taken
 
-    # 5. Trim to actual matches and return SoA arrays
-    # con_p and con_corr already hold the data
-    # Give each used pix the correspondence number
-    for i in range(match_counts[3]):
+    # 5. Keep legacy return shape (n_tupel recarray) for compatibility.
+    # Give each used pix the correspondence number and populate Frame SoA fields
+    total = match_counts[3]
+    # Ensure Frame SoA arrays are large enough
+    if total > frm.corres_nr.shape[0]:
+        frm.corres_nr = np.resize(frm.corres_nr, total)
+        frm.corres_p = np.resize(frm.corres_p, (total, 4))
+
+    for i in range(total):
+        frm.corres_nr[i] = i
+        frm.corres_p[i, :] = CORRES_NONE
         for j in range(num_cams):
             p_ij = int(con_p[i, j])
             if p_ij < 0:
@@ -513,12 +520,20 @@ def correspondences_soa(
             p1 = corrected[j][p_ij].pnr
             if p1 > -1 and p1 < 1202590843:
                 frm.targets[j][p1].tnr = i
+                frm.corres_p[i, j] = p1  # p1 is the target index in frm.targets[j]
+
+    frm.num_parts = total
 
     refresh = getattr(frm, "refresh_target_arrays", None)
     if callable(refresh):
         refresh()
 
-    return con_p, con_corr
+    # Return recarray format for backward compatibility with tests and other code
+    # Pack SoA format (con_p, con_corr) back into n_tupel_dtype recarray
+    con = np.recarray((total_taken,), dtype=n_tupel_dtype)
+    con.p = con_p[:total_taken]
+    con.corr = con_corr[:total_taken]
+    return con
 
 
 def match_pairs_soa(
@@ -681,6 +696,7 @@ class MatchedCoords:
         self._x = _x[order]
         self._y = _y[order]
         self._pnr = _pnr[order]
+        self._buf = None
 
     def __getitem__(self, index):
         return _MatchedCoordsItem(self._x[index], self._y[index], self._pnr[index])
@@ -696,6 +712,19 @@ class MatchedCoords:
     @property
     def pnr(self):
         return self._pnr
+
+    @property
+    def buf(self):
+        """Compatibility view with fields x/y/pnr expected by legacy tests."""
+        if self._buf is None:
+            self._buf = np.recarray(
+                (self._num_pts,),
+                dtype=[("x", np.float64), ("y", np.float64), ("pnr", np.int32)],
+            )
+            self._buf.x = self._x
+            self._buf.y = self._y
+            self._buf.pnr = self._pnr.astype(np.int32)
+        return self._buf
 
     def as_arrays(self):
         pos = np.empty((self._num_pts, 2), dtype=np.float64)
@@ -1527,7 +1556,7 @@ def correspondences(
     cpar: ControlPar,
     calib: List[Calibration],
     match_counts: List[int],
-) -> np.recarray:  # n_tupel_dtype
+) -> Tuple[np.ndarray, np.ndarray]:
     """Find correspondences between cameras.
 
     /*  correspondences() generates a list of tuple target numbers (one for each
@@ -1629,8 +1658,16 @@ def correspondences(
         )
         match_counts[3] += match_counts[2]
 
-    # Give each used pix the correspondence number
-    for i in range(match_counts[3]):
+    # Give each used pix the correspondence number and populate Frame SoA fields
+    total = match_counts[3]
+    # Ensure Frame SoA arrays are large enough
+    if total > frm.corres_nr.shape[0]:
+        frm.corres_nr = np.resize(frm.corres_nr, total)
+        frm.corres_p = np.resize(frm.corres_p, (total, 4))
+
+    for i in range(total):
+        frm.corres_nr[i] = i
+        frm.corres_p[i, :] = CORRES_NONE
         for j in range(num_cams):
             # Skip cameras without a correspondence obviously.
             if con[i].p[j] < 0:
@@ -1639,6 +1676,9 @@ def correspondences(
             p1 = corrected[j][con[i].p[j]].pnr
             if p1 > -1 and p1 < 1202590843:
                 frm.targets[j][p1].tnr = i
+                frm.corres_p[i, j] = p1  # p1 is the target index in frm.targets[j]
+
+    frm.num_parts = total
 
     refresh = getattr(frm, "refresh_target_arrays", None)
     if callable(refresh):
@@ -1649,7 +1689,10 @@ def correspondences(
     # deallocate_target_usage_marks(tim, cpar.num_cams)
     # del con0
 
-    return con
+    # Return recarray format for backward compatibility
+    # con has shape (nmax*num_cams,) with dtype n_tupel_dtype
+    # Only return the valid entries (up to match_counts[3])
+    return con[:match_counts[3]]
 
 
 def single_cam_correspondences(

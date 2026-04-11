@@ -69,8 +69,8 @@ class TestMultimed:
 
         python_result = python_func(python_cal, mmp, test_point)
 
-        assert python_result is not None
-        assert python_result > 0
+        # Default MultimediaPar has n1=n2=n3=1 → trivial single-medium, shift = 1.0
+        assert abs(python_result - 1.0) < 1e-10
 
     def test_trans_cam_point(self):
         """Test trans_cam_point function."""
@@ -87,15 +87,16 @@ class TestMultimed:
 
         test_point = np.array([50.0, 50.0, 50.0])
 
-        try:
-            python_result = trans_cam_point(
-                python_cal.ext_par, mm, glass_dir, test_point
-            )
-        except Exception as e:
-            pytest.fail(f"python trans_cam_point failed: {e}")
+        pos_t, cross_p, cross_c, z0 = trans_cam_point(
+            python_cal.ext_par, mm, glass_dir, test_point
+        )
 
-        assert python_result is not None
-        assert len(python_result) == 4
+        # glass_par=[0,0,1] (magnitude 1, pointing in z), cam at z=100, d=5:
+        # dist_cam_glas = dot([0,0,100],[0,0,1])/1 - 1 - 5 = 94; z0 = 94+5 = 99
+        assert abs(z0 - 99.0) < 1e-10
+        assert cross_c.shape == (3,)
+        assert cross_p.shape == (3,)
+        assert pos_t.shape == (3,)
 
     def test_back_trans_point(self):
         """Test back_trans_point function."""
@@ -112,15 +113,13 @@ class TestMultimed:
 
         test_point = np.array([50.0, 50.0, 50.0])
 
-        try:
-            pos_t, cross_p, cross_c, _ = trans_cam_point(
-                python_cal.ext_par, mm, glass, test_point
-            )
-            python_result = back_trans_point(pos_t, mm, glass, cross_p, cross_c)
-        except Exception as e:
-            pytest.fail(f"python back_trans_point failed: {e}")
+        pos_t, cross_p, cross_c, _ = trans_cam_point(
+            python_cal.ext_par, mm, glass, test_point
+        )
+        recovered = back_trans_point(pos_t, mm, glass, cross_p, cross_c)
 
-        assert python_result is not None
+        # back_trans_point is the inverse of trans_cam_point
+        np.testing.assert_allclose(recovered, test_point, atol=1e-6)
 
     def test_move_along_ray(self):
         """Test move_along_ray function."""
@@ -130,12 +129,8 @@ class TestMultimed:
         direct = np.array([0.0, 0.0, 1.0])
         glob_z = 50.0
 
-        try:
-            python_result = move_along_ray(glob_z, vertex, direct)
-        except Exception as e:
-            pytest.fail(f"python move_along_ray failed: {e}")
+        python_result = move_along_ray(glob_z, vertex, direct)
 
-        assert python_result is not None
         np.testing.assert_allclose(
             python_result, np.array([0.0, 0.0, 50.0]), rtol=1e-10
         )
@@ -160,15 +155,18 @@ class TestMultimed:
             ]
         )
 
-        try:
-            results = []
-            for pt in test_points:
-                r = multimed_nlay(python_cal, mmp, pt)
-                results.append(r)
-        except Exception as e:
-            pytest.fail(f"python multimed_nlay failed: {e}")
+        results = []
+        for pt in test_points:
+            Xq, Yq = multimed_nlay(python_cal, mmp, pt)
+            results.append((Xq, Yq))
 
         assert len(results) == 2
+        # Point (0,0,z) is on the camera axis → Xq=0, Yq=0 regardless of shift
+        Xq_axis, Yq_axis = multimed_nlay(
+            python_cal, mmp, np.array([0.0, 0.0, 30.0])
+        )
+        assert abs(Xq_axis) < 1e-10
+        assert abs(Yq_axis) < 1e-10
 
     def test_epi_mm_batch_parity(self):
         """Test the batched epipolar helper matches repeated scalar calls."""

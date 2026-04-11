@@ -240,13 +240,15 @@ def _sequence_loop(
         print(f"  stereo-matching …", flush=True)
         t_corr = time.perf_counter()
         match_counts = [0] * 4
-        con_p, con_corr = correspondences(frm, corrected, vpar, cpar, cals, match_counts)
+        con = correspondences(frm, corrected, vpar, cpar, cals, match_counts)
         print(f"  stereo-matching done  ({time.perf_counter()-t_corr:.1f}s)", flush=True)
 
         total = match_counts[3] if len(match_counts) > 3 else 0
-        if total > 0:
-            # con_p is (nmax*num_cams, num_cams) int32 SoA
-            corresp_idx = con_p[:total].T  # (num_cams, N)
+        if total > 0 and len(con) > 0:
+            # con is a recarray with .p (num_cams) and .corr fields
+            # Extract p field: (N, num_cams) int32
+            con_p = con.p[:total]
+            corresp_idx = con_p.T  # (num_cams, N)
             corresp = np.empty_like(corresp_idx)
             for i_cam in range(num_cams):
                 mask = corresp_idx[i_cam] >= 0
