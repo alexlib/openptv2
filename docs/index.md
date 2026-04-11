@@ -17,6 +17,7 @@ Welcome to the openptv2 documentation.
 - [Tracking Debug Visualization](../tutorials/tracking_debug_visualization.md) - Debug tracking parameters interactively
 - [API Reference](../sphinx/) - API documentation
 - [Algorithm Documentation](../algorithms/) - Algorithm explanations
+- [Burgers Case Study](../algorithms/burgers_gap_relinking_case_study.md) - Detailed analysis of tracking deviation and recovery
 
 ### Developer Documentation
 

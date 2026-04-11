@@ -2,6 +2,18 @@
 
 OpenPTV implements two tracking strategies for particle trajectory reconstruction:
 
+## Case Study: Burgers Dataset Gap Relinking
+
+For a detailed analysis of how these algorithms differ when particles re-appear after a gap, including:
+- **7 trajectories vs 6 trajectories** from the same 5-frame dataset
+- **Root cause analysis** of the algorithmic divergence
+- **Backward tracking recovery capabilities** and limitations
+- **Numerical insights** for designing better tracking methods
+
+See: [Burgers Gap Relinking Case Study](burgers_gap_relinking_case_study.md)
+
+---
+
 ## Overview
 
 | Feature | `track.c` | `track3d.c` |
