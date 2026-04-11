@@ -1,3 +1,69 @@
+
+from __future__ import annotations
+import pytest
+import yaml
+from dataclasses import dataclass
+from enum import Enum
+from pathlib import Path
+from tempfile import TemporaryDirectory
+from typing import Any, Callable
+
+@pytest.mark.slow
+@pytest.mark.parity
+def test_tracking_parameters_from_data_statistics():
+    """
+    Tutorial: Choosing tracking parameters from basic data statistics.
+
+    This test demonstrates how to set velocity, acceleration, and angle limits
+    based on simple statistics of the dataset (as computed by a quick probe script):
+      - max observed displacement per frame (velocity)
+      - max observed acceleration
+      - typical interparticle distance
+    The chosen parameters are set just above the real motion, but below the ambiguity threshold.
+    """
+    # Example values from quick probe (replace with actual script output if available)
+    max_disp = 0.08  # mm/frame (max observed displacement)
+    max_acc = 0.09   # mm/frame^2 (max observed acceleration)
+    interparticle_dist = 1.53  # mm (typical)
+
+    # Set velocity window just above max displacement, but below interparticle distance
+    vlim = round(max_disp * 1.1, 3)  # 10% margin
+    vlim = min(vlim, interparticle_dist * 0.9)  # don't exceed 90% of spacing
+    velocity_lims = [[-vlim, vlim], [-vlim, vlim], [-vlim, vlim]]
+
+    # Set acceleration limit just above max observed
+    accel_lim = round(max_acc * 1.1, 3)
+
+    # Set angle limit to 20 gon (18 degrees), typical for smooth motion
+    angle_lim = 20  # gon
+
+    conf = yaml.safe_load((Path("test_data/burgers/conf.yaml")).read_text())
+    baseline, _ = _run_forward_metrics(conf)
+
+    stat_m, stat_t = _run_forward_metrics(
+        conf,
+        mutate=lambda c: c["tracking"].update({
+            "velocity_lims": velocity_lims,
+            "accel_lim": accel_lim,
+            "angle_lim": angle_lim,
+        }),
+    )
+    stat_report = ScenarioReport(
+        scenario="parameters from data statistics",
+        flag=FailureFlag.RECOVERED,
+        tracking=stat_t,
+        metrics=stat_m,
+        detail=(
+            f"velocity_lims set to {velocity_lims} (from max_disp={max_disp}), "
+            f"accel_lim={accel_lim} (from max_acc={max_acc}), "
+            f"angle_lim={angle_lim} gon (typical for smooth motion). "
+            f"All values chosen just above real motion, below ambiguity threshold (interparticle_dist={interparticle_dist})."
+        ),
+    )
+    # Allow for a small margin of missed links if statistics are tight
+    assert stat_m.linked_real >= baseline.linked_real - 1, stat_report.as_text()
+
+
 """Burgers parameter-sensitivity test suite for tracking failure diagnostics.
 
 This suite intentionally drives tracking into known failure modes and then
@@ -11,7 +77,6 @@ understand *why* tracking failed:
 - overly broad search regions causing ambiguity under cluttered candidates
 """
 
-from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum

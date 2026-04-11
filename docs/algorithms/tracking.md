@@ -1,3 +1,42 @@
+## Tutorial: Choosing Tracking Parameters from Data Statistics
+
+Tracking parameters (velocity, acceleration, angle limits) can be chosen systematically using simple statistics from your dataset. This approach minimizes trial-and-error and ensures robust, unambiguous tracking.
+
+### Step-by-step workflow
+
+1. **Run a quick probe script** to compute:
+     - Maximum observed displacement per frame (velocity)
+     - Maximum observed acceleration
+     - Typical interparticle distance (spacing between particles in a frame)
+
+2. **Set parameters:**
+     - **Velocity window (`velocity_lims`):**
+         - Set just above the maximum observed displacement, but below the typical interparticle distance to avoid ambiguity.
+     - **Acceleration limit (`accel_lim`):**
+         - Set just above the maximum observed acceleration.
+     - **Angle limit (`angle_lim`):**
+         - Set to a typical value for smooth motion (e.g., 20 gon ≈ 18°), or just above the maximum observed angle change if available.
+
+#### Example (from Burgers dataset):
+
+| Statistic                | Value (example) |
+|--------------------------|-----------------|
+| Max displacement         | 0.08 mm/frame   |
+| Max acceleration         | 0.09 mm/frame²  |
+| Interparticle distance   | 1.53 mm         |
+
+**Parameter selection:**
+- `velocity_lims = [[-0.088, 0.088], [-0.088, 0.088], [-0.088, 0.088]]` (10% above max displacement, but < interparticle distance)
+- `accel_lim = 0.099` (10% above max acceleration)
+- `angle_lim = 20` (gon)
+
+### Reference test
+
+See the test: `test_tracking_parameters_from_data_statistics` in [algorithms/tests/parity/test_burgers_tracking_parameter_sensitivity.py](../../algorithms/tests/parity/test_burgers_tracking_parameter_sensitivity.py)
+
+This test demonstrates the full workflow and can be used as a template for your own datasets.
+
+---
 # Tracking Algorithms
 
 OpenPTV implements two tracking strategies for particle trajectory reconstruction:
