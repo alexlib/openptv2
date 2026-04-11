@@ -5,7 +5,7 @@ import yaml
 import numpy as np
 from pathlib import Path
 
-os.chdir(Path(__file__).parent / "test_data" / "test_cavity")
+os.chdir(Path(__file__).parent.parent / "tests" / "test_data" / "test_cavity")
 
 try:
     from optv.correspondences import correspondences as cy_correspondences

@@ -6,7 +6,7 @@ import numpy as np
 from pathlib import Path
 
 # Run from repo root
-os.chdir(Path(__file__).parent / "test_data" / "test_cavity")
+os.chdir(Path(__file__).parent.parent / "tests" / "test_data" / "test_cavity")
 
 from algorithms.batch import (
     _build_control_par, _build_sequence_par, _build_volume_par,
