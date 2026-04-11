@@ -1519,8 +1519,10 @@ def trackcorr_c_loop(run_info, step, observer=None):
     run_info.npart = run_info.npart + fb.buf[1].num_parts
     run_info.nlinks = run_info.nlinks + count1
 
+    # C loop exits with step == seq_par.first; Python keeps the last iterated
+    # value, so write explicitly to the first frame number here.
     fb.fb_next()
-    fb.write_frame_from_start(step)
+    fb.write_frame_from_start(seq_par.first)
 
     if step < run_info.seq_par.last - 2:
         fb.read_frame_at_end(step + 3, False)
