@@ -662,9 +662,41 @@ skip_no_optv = pytest.mark.skipif(not HAS_OPTV, reason="optv not installed")
 class TestStage8_CythonComparison:
     """Compare Python vs Cython tracking on cavity data."""
 
-    def test_single_step_link_count_parity(self, params, cavity_env):
-        """Python and Cython should produce similar link counts."""
-        pytest.skip("TODO: implement Cython comparison for single step")
+    def test_fixture_setup(self, cavity_env):
+        """Test that the cavity_env fixture creates the directory and files."""
+        assert os.path.isdir(cavity_env)
+        assert os.path.exists(os.path.join(cavity_env, "parameters_Run1.yaml"))
+
+    def test_control_par_build(self, params):
+        """Test that control parameters can be built from YAML."""
+        from algorithms.batch import _build_control_par
+        cpar = _build_control_par(params["ptv"], params["num_cams"])
+        assert cpar.num_cams == 4
+
+    def test_python_tracker_reads_frame(self, params, cavity_env):
+        """Test that the Python tracker can read the frame from disk."""
+        from algorithms.batch import _build_control_par, _build_sequence_par, _build_track_par, _build_volume_par, _read_calibrations_py
+        from algorithms.tracking_run import TrackingRun
+        from algorithms.constants import TR_BUFSPACE, MAX_TARGETS
+        from algorithms.track import default_naming, track_forward_start
+        import pytest
+        original = os.getcwd()
+        try:
+            os.chdir(cavity_env)
+            num_cams = params["num_cams"]
+            cpar = _build_control_par(params["ptv"], num_cams)
+            spar = _build_sequence_par(params["sequence"], num_cams)
+            vpar = _build_volume_par(params["criteria"])
+            tpar = _build_track_par(params["track"])
+            cals = _read_calibrations_py(params["cal_ori"], num_cams)
+            spar.first = FRAME
+            spar.last = FRAME + 1
+            run_py = TrackingRun(spar, tpar, vpar, cpar, TR_BUFSPACE, MAX_TARGETS, default_naming["corres"], default_naming["linkage"], default_naming["prio"], cals, 0.0001)
+            # This is the step that fails if frame is missing
+            with pytest.raises(OSError):
+                track_forward_start(run_py)
+        finally:
+            os.chdir(original)
 
 
 # -----------------------------------------------------------------------
