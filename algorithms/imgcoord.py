@@ -1,107 +1,129 @@
-"""Image coordinates."""
+"""Image coordinate projection from 3D world positions.
 
-from typing import Tuple
+Translation of lib/src/imgcoord.c and lib/include/imgcoord.h.
+
+Projects 3D world positions to 2D image coordinates, with or without
+distortion modeling.
+"""
 
 import numpy as np
-
-from .calibration import Calibration
-from .multimed import back_trans_point, multimed_nlay, trans_cam_point
-from .parameters import MultimediaPar
-from .trafo import flat_to_dist
+from .trafo import flat_to_dist as _flat_to_dist
 
 
 def flat_image_coord(
-    orig_pos: np.ndarray, cal: Calibration, mm: MultimediaPar
-) -> Tuple[float, float]:
-    """Flat image coordinate.
+    pos: np.ndarray,
+    ext_x0: float,
+    ext_y0: float,
+    ext_z0: float,
+    ext_dm: np.ndarray,
+    int_cc: float,
+    glass_vec_x: float,
+    glass_vec_y: float,
+    glass_vec_z: float,
+    mm_n1: float,
+    mm_n2_0: float,
+    mm_n3: float,
+    mm_d0: float,
+) -> tuple[float, float]:
+    """Project 3D position to undistorted metric image coordinates.
+
+    Calculates projection from world space to metric coordinates
+    in image space without distortions.
 
     Args:
-    ----
-        orig_pos (np.ndarray): 3D position
-        cal (Calibration): camera calibration
-        mm (Multimedia): multimedia parameters
+        pos: 3D world position (x, y, z).
+        ext_x0, ext_y0, ext_z0: camera center.
+        ext_dm: 3x3 rotation matrix.
+        int_cc: camera constant (focal length).
+        glass_vec_x, glass_vec_y, glass_vec_z: glass normal.
+        mm_n1, mm_n2_0, mm_n3, mm_d0: multimedia parameters.
 
-    Returns
-    -------
-        _type_: _description_
+    Returns:
+        (x, y) undistorted metric coordinates.
     """
-    if orig_pos.shape != (3,):
-        raise ValueError("orig_pos must be a 3D vector")
+    from .multimed import trans_cam_point, back_trans_point, multimed_nlay
 
-    cal_t = Calibration(mmlut=cal.mmlut)
-
-    # This block calculate 3D position in an imaginary air-filled space,
-    # i.e. where the point will have been seen in the absence of refractive
-    # layers between it and the camera.
-    pos_t, cross_p, cross_c, cal_t.ext_par.z0 = trans_cam_point(
-        cal.ext_par, mm, cal.glass_par, orig_pos
+    # Transform through multimedia interface
+    pos_t, cross_p, cross_c = trans_cam_point(
+        pos, ext_x0, ext_y0, ext_z0,
+        glass_vec_x, glass_vec_y, glass_vec_z,
+        mm_n1, mm_n2_0, mm_n3, mm_d0,
     )
 
-    # print(f"pos_t {pos_t}")
-    # print(f"cross_p {cross_p}")
-    # print(f"cros_c {cross_c}")
+    # Get radial shift
+    X_t, Y_t = multimed_nlay(
+        pos_t[0], pos_t[1], pos_t[2],
+        ext_x0, ext_y0, mm_n1, mm_n2_0, mm_n3, mm_d0,
+    )
+    pos_t = np.array([X_t, Y_t, pos_t[2]])
 
-    x_t, y_t = multimed_nlay(cal_t, mm, pos_t)
-    # print(f"x_t {x_t}, y_t {y_t}")
+    # Transform back
+    pos = back_trans_point(
+        pos_t, cross_p, cross_c,
+        glass_vec_x, glass_vec_y, glass_vec_z,
+        mm_n1, mm_n2_0, mm_n3, mm_d0,
+    )
 
-    pos_t = np.r_[x_t, y_t, pos_t[2]]
-    pos = back_trans_point(pos_t, mm, cal.glass_par, cross_p, cross_c)
+    # Perspective projection
+    dx = pos[0] - ext_x0
+    dy = pos[1] - ext_y0
+    dz = pos[2] - ext_z0
 
-    dm = cal.ext_par.dm
-    origin = np.r_[cal.ext_par.x0, cal.ext_par.y0, cal.ext_par.z0]
+    deno = ext_dm[0, 2] * dx + ext_dm[1, 2] * dy + ext_dm[2, 2] * dz
 
-    deno = np.dot(dm[:, 2], (pos - origin))
-    if deno == 0:
-        deno = 1
+    x = -int_cc * (ext_dm[0, 0] * dx + ext_dm[1, 0] * dy + ext_dm[2, 0] * dz) / deno
+    y = -int_cc * (ext_dm[0, 1] * dx + ext_dm[1, 1] * dy + ext_dm[2, 1] * dz) / deno
 
-    x = -cal.int_par.cc * np.dot(dm[:, 0], (pos - origin)) / deno
-    y = -cal.int_par.cc * np.dot(dm[:, 1], (pos - origin)) / deno
-
-    return x, y
-
-
-def flat_image_coordinates(
-    orig_pos: np.ndarray, cal: Calibration, mm: MultimediaPar
-) -> np.ndarray:
-    """Flat image coordinates in array mode."""
-    out = np.empty((orig_pos.shape[0], 2))
-
-    for i, row in enumerate(orig_pos):
-        out[i, 0], out[i, 1] = flat_image_coord(row, cal, mm)
-
-    return out
+    return float(x), float(y)
 
 
 def img_coord(
-    pos: np.ndarray, cal: Calibration, mm: MultimediaPar
-) -> Tuple[float, float]:
-    """Estimate metric coordinates in image space (mm)."""
-    # Estimate metric coordinates in image space using flat_image_coord()
-    if pos.shape[0] != 3:
-        raise ValueError("pos must be a 3D vector")
+    pos: np.ndarray,
+    ext_x0: float,
+    ext_y0: float,
+    ext_z0: float,
+    ext_dm: np.ndarray,
+    int_cc: float,
+    int_xh: float,
+    int_yh: float,
+    glass_vec_x: float,
+    glass_vec_y: float,
+    glass_vec_z: float,
+    mm_n1: float,
+    mm_n2_0: float,
+    mm_n3: float,
+    mm_d0: float,
+    k1: float,
+    k2: float,
+    k3: float,
+    p1: float,
+    p2: float,
+    scx: float,
+    she: float,
+) -> tuple[float, float]:
+    """Project 3D position to distorted metric image coordinates.
 
-    x, y = flat_image_coord(pos, cal, mm)
-    # print(f"flat_image_coord: x = {x}, y = {y}")
+    Uses flat_image_coord then applies Brown distortion model.
 
-    # Distort the metric coordinates using the Brown distortion model
-    x, y = flat_to_dist(x, y, cal)
+    Args:
+        pos: 3D world position (x, y, z).
+        ext_x0, ext_y0, ext_z0: camera center.
+        ext_dm: 3x3 rotation matrix.
+        int_cc: camera constant.
+        int_xh, int_yh: principal point.
+        glass_vec_x, glass_vec_y, glass_vec_z: glass normal.
+        mm_n1, mm_n2_0, mm_n3, mm_d0: multimedia parameters.
+        k1, k2, k3, p1, p2, scx, she: distortion parameters.
 
-    # print("f flat_to_dist: x = {x}, y = {y}")
+    Returns:
+        (x, y) distorted metric coordinates.
+    """
+    x, y = flat_image_coord(
+        pos,
+        ext_x0, ext_y0, ext_z0, ext_dm, int_cc,
+        glass_vec_x, glass_vec_y, glass_vec_z,
+        mm_n1, mm_n2_0, mm_n3, mm_d0,
+    )
 
-    return x, y
-
-
-def image_coordinates(
-    orig_pos: np.ndarray, cal: Calibration, mm: MultimediaPar
-) -> np.ndarray:
-    """Image coordinates in array mode."""
-    npoints = orig_pos.shape[0]
-    out = np.empty((npoints, 2), dtype=float)
-
-    for i in range(npoints):
-        if orig_pos[i].shape != (3,):
-            raise ValueError("orig_pos must be a 3D vector")
-
-        out[i, 0], out[i, 1] = img_coord(orig_pos[i], cal, mm)
-
-    return out
+    # Apply distortion
+    return _flat_to_dist(x, y, int_xh, int_yh, k1, k2, k3, p1, p2, scx, she)

@@ -1,673 +1,313 @@
-"""Epipolar geometry."""
+"""Epipolar geometry for multi-camera correspondence matching.
 
-from typing import NamedTuple, Tuple
+Translation of lib/src/epi.c and lib/include/epi.h.
+
+Computes epipolar lines and candidate matching between cameras.
+"""
 
 import numpy as np
-from numba import njit, prange
+from dataclasses import dataclass
 
-# from numba import float64, int32
-from .calibration import Calibration
-from .imgcoord import flat_image_coord, img_coord
-from .multimed import fast_flat_image_coord_raw, move_along_ray
-from .parameters import ControlPar, MultimediaPar, VolumePar
-from .ray_tracing import fast_ray_tracing, ray_tracing
-from .trafo import dist_to_flat, metric_to_pixel, pixel_to_metric
-
-Candidate_dtype = np.dtype(
-    [
-        ("pnr", np.int32),
-        ("tol", np.float64),
-        ("corr", np.float64),
-    ]
-)
-
-Coord2d_dtype = np.dtype(
-    [
-        ("pnr", np.int32),
-        ("x", np.float64),
-        ("y", np.float64),
-    ]
-)
-
-Coord3d_dtype = np.dtype(
-    [
-        ("pnr", np.int32),
-        ("x", np.float64),
-        ("y", np.float64),
-        ("z", np.float64),
-    ]
-)
+# Maximum number of candidates per search
+MAXCAND = 200
 
 
-class EpiMmBatchInputs(NamedTuple):
-    """Plain data bundle for future batched epipolar kernels."""
+@dataclass
+class Candidate:
+    """A candidate match from epipolar search.
 
-    cal1_pos: np.ndarray
-    cal1_dm: np.ndarray
-    cal1_glass: np.ndarray
-    cal1_cc: float
-    cal2_pos: np.ndarray
-    cal2_dm: np.ndarray
-    cal2_glass: np.ndarray
-    cal2_cc: float
-    mm_n1: float
-    mm_d: np.ndarray
-    mm_n2: np.ndarray
-    mm_n3: float
-    mmlut_origin: np.ndarray
-    mmlut_data: np.ndarray
+    Attributes:
+        pnr: particle number (index into sorted coordinate array).
+        tol: distance from epipolar line.
+        corr: correlation score.
+    """
+    pnr: int
+    tol: float
+    corr: float
 
 
-def sort_coord2d_x(crd: np.ndarray) -> np.ndarray:
-    """Quicksort for coordinates by x ."""
-    return np.sort(crd, order="x")
+@dataclass
+class Coord2d:
+    """2D coordinate with particle reference.
+
+    Attributes:
+        pnr: particle number.
+        x, y: flat-image (undistorted) coordinates.
+    """
+    pnr: int
+    x: float
+    y: float
 
 
-def sort_coord2d_y(crd: np.ndarray) -> np.ndarray:
-    """Sort coordinates by y."""
-    return np.sort(crd, order="y")
+def epi_mm(
+    xl: float,
+    yl: float,
+    cal1: dict,
+    cal2: dict,
+    mm_n1: float,
+    mm_n2_0: float,
+    mm_n3: float,
+    mm_d0: float,
+    vpar_X_lay: tuple[float, float],
+    vpar_Zmin_lay: tuple[float, float],
+    vpar_Zmax_lay: tuple[float, float],
+) -> tuple[float, float, float, float]:
+    """Compute epipolar line endpoints in second camera.
 
-
-def epi_mm(xl, yl, cal1, cal2, mmp, vpar) -> Tuple[float, float, float, float]:
-    """Return the end points of the epipolar line in the "second" camera.
-
-    /*  epi_mm() takes a point in images space of one camera, positions of this
-    and another camera and returns the epipolar line (in millimeter units)
-    that corresponds to the point of interest in the another camera space.
-
-    Arguments:
-    ---------
-    double xl, yl - position of the point on the origin camera's image space,
-        in [mm].
-    Calibration *cal1 - position of the origin camera
-    Calibration *cal2 - position of camera on which the line is projected.
-    mm_np *mmp - pointer to multimedia model of the experiment.
-    volume_par *vpar - limits the search in 3D for the epipolar line
-
-    Output:
-    xmin,ymin and xmax,ymax - end points of the epipolar line in the "second"
-        camera
-    */
+    Takes a point in image space of one camera and returns the
+    epipolar line (in mm) projected onto the second camera.
 
     Args:
-    ----
-        xl (_type_): _description_
-        yl (_type_): _description_
-        cal1 (_type_): _description_
-        cal2 (_type_): _description_
-        mmp (_type_): _description_
-        vpar (_type_): _description_
+        xl, yl: point position in origin camera's image space [mm].
+        cal1: origin camera calibration (dm, x0, y0, z0, cc, glass, etc.).
+        cal2: target camera calibration.
+        mm_n1, mm_n2_0, mm_n3, mm_d0: multimedia parameters.
+        vpar_X_lay: (X_left, X_right) volume boundaries.
+        vpar_Zmin_lay: (Zmin_left, Zmin_right).
+        vpar_Zmax_lay: (Zmax_left, Zmax_right).
 
-    Returns
-    -------
-        _type_: _description_
+    Returns:
+        (xmin, ymin, xmax, ymax) endpoints of epipolar line in second camera.
     """
-    pos, v = ray_tracing(xl, yl, cal1, mmp)
+    from .ray_tracing import ray_tracing
+    from .multimed import move_along_ray
+    from .imgcoord import flat_image_coord
 
-    # calculate min and max depth for position (valid only for one setup)
-    z_min = vpar.z_min_lay[0] + (pos[0] - vpar.x_lay[0]) * (
-        vpar.z_min_lay[1] - vpar.z_min_lay[0]
-    ) / (vpar.x_lay[1] - vpar.x_lay[0])
-
-    z_max = float(
-        vpar.z_max_lay[0]
-        + (pos[0] - vpar.x_lay[0])
-        * (vpar.z_max_lay[1] - vpar.z_max_lay[0])
-        / (vpar.x_lay[1] - vpar.x_lay[0])
+    # Ray trace from origin camera
+    pos, v = ray_tracing(
+        xl, yl,
+        cal1["dm"], cal1["x0"], cal1["y0"], cal1["z0"], cal1["cc"],
+        cal1["gx"], cal1["gy"], cal1["gz"],
+        mm_n1, mm_n2_0, mm_n3, mm_d0,
     )
 
-    X = move_along_ray(z_min, pos, v)
-    xmin, ymin = flat_image_coord(X, cal2, mmp)
+    # Calculate Z min/max for position
+    X_lay_0, X_lay_1 = vpar_X_lay
+    Zmin_lay_0, Zmin_lay_1 = vpar_Zmin_lay
+    Zmax_lay_0, Zmax_lay_1 = vpar_Zmax_lay
 
-    X = move_along_ray(z_max, pos, v)
-    xmax, ymax = flat_image_coord(X, cal2, mmp)
+    Zmin = Zmin_lay_0 + (pos[0] - X_lay_0) * (Zmin_lay_1 - Zmin_lay_0) / (X_lay_1 - X_lay_0)
+    Zmax = Zmax_lay_0 + (pos[0] - X_lay_0) * (Zmax_lay_1 - Zmax_lay_0) / (X_lay_1 - X_lay_0)
+
+    # Project endpoints onto second camera
+    X_at_Zmin = move_along_ray(Zmin, pos, v)
+    xmin, ymin = flat_image_coord(
+        X_at_Zmin,
+        cal2["x0"], cal2["y0"], cal2["z0"], cal2["dm"], cal2["cc"],
+        cal2["gx"], cal2["gy"], cal2["gz"],
+        mm_n1, mm_n2_0, mm_n3, mm_d0,
+    )
+
+    X_at_Zmax = move_along_ray(Zmax, pos, v)
+    xmax, ymax = flat_image_coord(
+        X_at_Zmax,
+        cal2["x0"], cal2["y0"], cal2["z0"], cal2["dm"], cal2["cc"],
+        cal2["gx"], cal2["gy"], cal2["gz"],
+        mm_n1, mm_n2_0, mm_n3, mm_d0,
+    )
 
     return xmin, ymin, xmax, ymax
 
 
-def epi_mm_batch(
-    xl: np.ndarray,
-    yl: np.ndarray,
-    cal1: Calibration,
-    cal2: Calibration,
-    mmp: MultimediaPar,
-    vpar: VolumePar,
-) -> np.ndarray:
-    """Batch version of epi_mm returning one row per input point.
-
-    This is the Phase 1 scaffold: it centralizes the batch API and keeps
-    the scalar implementation as the reference path for parity.
-    """
-    xl = np.asarray(xl, dtype=np.float64)
-    yl = np.asarray(yl, dtype=np.float64)
-    if xl.shape != yl.shape:
-        raise ValueError("xl and yl must have the same shape")
-
-    batch_inputs = epi_mm_batch_inputs(cal1, cal2, mmp, vpar)
-    return _epi_mm_batch_inner(
-        xl,
-        yl,
-        batch_inputs.cal1_pos,
-        batch_inputs.cal1_dm,
-        batch_inputs.cal1_glass,
-        batch_inputs.cal1_cc,
-        batch_inputs.cal2_pos,
-        batch_inputs.cal2_dm,
-        batch_inputs.cal2_glass,
-        batch_inputs.cal2_cc,
-        batch_inputs.mm_n1,
-        batch_inputs.mm_d,
-        batch_inputs.mm_n2,
-        batch_inputs.mm_n3,
-        batch_inputs.mmlut_origin,
-        batch_inputs.mmlut_data,
-        np.asarray(vpar.x_lay, dtype=np.float64),
-        np.asarray(vpar.z_min_lay, dtype=np.float64),
-        np.asarray(vpar.z_max_lay, dtype=np.float64),
-    )
-
-
-def epi_mm_batch_arrays(
-    xl: np.ndarray,
-    yl: np.ndarray,
-    cal1: Calibration,
-    cal2: Calibration,
-    mmp: MultimediaPar,
-    vpar: VolumePar,
-) -> np.ndarray:
-    """Alias for the batch epipolar API used by future array-backed kernels."""
-    return epi_mm_batch(xl, yl, cal1, cal2, mmp, vpar)
-
-
-def epi_mm_batch_inputs(
-    cal1: Calibration,
-    cal2: Calibration,
-    mmp: MultimediaPar,
-    vpar: VolumePar,
-    ) -> EpiMmBatchInputs:
-    """Extract plain arrays needed by a future batched epipolar kernel."""
-    ex1_pos = np.array([cal1.ext_par.x0, cal1.ext_par.y0, cal1.ext_par.z0], dtype=np.float64)
-    ex1_dm = np.ascontiguousarray(cal1.ext_par.dm, dtype=np.float64)
-    glass1 = np.ascontiguousarray(cal1.glass_par, dtype=np.float64)
-    cc1 = float(cal1.int_par.cc)
-
-    ex2_pos = np.array([cal2.ext_par.x0, cal2.ext_par.y0, cal2.ext_par.z0], dtype=np.float64)
-    ex2_dm = np.ascontiguousarray(cal2.ext_par.dm, dtype=np.float64)
-    glass_par = np.ascontiguousarray(cal2.glass_par, dtype=np.float64)
-    cc2 = float(cal2.int_par.cc)
-
-    mm_d = np.asarray(mmp.d, dtype=np.float64)
-    mm_n2 = np.asarray(mmp.n2, dtype=np.float64)
-    mmlut_origin = np.asarray(cal1.mmlut["origin"], dtype=np.float64)
-    mmlut_data = np.asarray(cal1.mmlut_data, dtype=np.float64).ravel()
-
-    return EpiMmBatchInputs(
-        ex1_pos,
-        ex1_dm,
-        glass1,
-        cc1,
-        ex2_pos,
-        ex2_dm,
-        glass_par,
-        cc2,
-        float(mmp.n1),
-        mm_d,
-        mm_n2,
-        float(mmp.n3),
-        mmlut_origin,
-        mmlut_data,
-    )
-
-
-def _epi_mm_batch_row(
+def epi_mm_2d(
     xl: float,
     yl: float,
-    cal1: Calibration,
-    cal2: Calibration,
-    mmp: MultimediaPar,
-    vpar: VolumePar,
-) -> np.ndarray:
-    """Compute one batch row using the scalar reference path."""
-    return np.array(epi_mm(xl, yl, cal1, cal2, mmp, vpar), dtype=np.float64)
-
-
-def _epi_mm_batch_row_from_inputs(
-    xl: float,
-    yl: float,
-    batch_inputs: EpiMmBatchInputs,
-    vpar: VolumePar,
-) -> np.ndarray:
-    """Compute one batch row from a pre-extracted batch bundle."""
-    cal1, cal2, mmp = _epi_mm_batch_restore_inputs(batch_inputs)
-
-    return np.array(epi_mm(xl, yl, cal1, cal2, mmp, vpar), dtype=np.float64)
-
-
-@njit(cache=True)
-def _epi_mm_batch_inner(
-    xl: np.ndarray,
-    yl: np.ndarray,
-    cal1_pos: np.ndarray,
-    cal1_dm: np.ndarray,
-    cal1_glass: np.ndarray,
-    cal1_cc: float,
-    cal2_pos: np.ndarray,
-    cal2_dm: np.ndarray,
-    cal2_glass: np.ndarray,
-    cal2_cc: float,
+    cal: dict,
     mm_n1: float,
-    mm_d: np.ndarray,
-    mm_n2: np.ndarray,
+    mm_n2_0: float,
     mm_n3: float,
-    mmlut_origin: np.ndarray,
-    mmlut_data: np.ndarray,
-    x_lay: np.ndarray,
-    z_min_lay: np.ndarray,
-    z_max_lay: np.ndarray,
+    mm_d0: float,
+    vpar_X_lay: tuple[float, float],
+    vpar_Zmin_lay: tuple[float, float],
+    vpar_Zmax_lay: tuple[float, float],
 ) -> np.ndarray:
-    """Numba batch kernel for epipolar endpoints."""
-    out = np.empty((xl.shape[0], 4), dtype=np.float64)
+    """Compute 3D position for single-camera multimedia case.
 
-    for i in prange(xl.shape[0]):
-        camera = np.array([xl[i], yl[i], -cal1_cc], dtype=np.float64)
-        pos, direction = fast_ray_tracing(
-            camera,
-            cal1_dm,
-            cal1_pos,
-            cal1_glass,
-            mm_d[0],
-            mm_n1,
-            mm_n2[0],
-            mm_n3,
-        )
-
-        z_min = z_min_lay[0] + (pos[0] - x_lay[0]) * (z_min_lay[1] - z_min_lay[0]) / (x_lay[1] - x_lay[0])
-        z_max = z_max_lay[0] + (pos[0] - x_lay[0]) * (z_max_lay[1] - z_max_lay[0]) / (x_lay[1] - x_lay[0])
-
-        x_min = move_along_ray(z_min, pos, direction)
-        xmin, ymin = fast_flat_image_coord_raw(
-            x_min,
-            cal2_pos,
-            cal2_dm,
-            cal2_cc,
-            cal2_glass,
-            mm_d,
-            mm_n1,
-            mm_n2,
-            mm_n3,
-            mmlut_origin,
-            mmlut_data,
-            0,
-            0,
-            1,
-        )
-
-        x_max = move_along_ray(z_max, pos, direction)
-        xmax, ymax = fast_flat_image_coord_raw(
-            x_max,
-            cal2_pos,
-            cal2_dm,
-            cal2_cc,
-            cal2_glass,
-            mm_d,
-            mm_n1,
-            mm_n2,
-            mm_n3,
-            mmlut_origin,
-            mmlut_data,
-            0,
-            0,
-            1,
-        )
-
-        out[i, 0] = xmin
-        out[i, 1] = ymin
-        out[i, 2] = xmax
-        out[i, 3] = ymax
-
-    return out
-
-
-def _epi_mm_batch_restore_inputs(
-    batch_inputs: EpiMmBatchInputs,
-) -> tuple[Calibration, Calibration, MultimediaPar]:
-    """Rebuild the scalar objects needed by the reference epipolar path."""
-    cal1 = _epi_mm_batch_restore_calibration_with_mmlut(
-        batch_inputs.cal1_pos,
-        batch_inputs.cal1_dm,
-        batch_inputs.cal1_glass,
-        batch_inputs.cal1_cc,
-        batch_inputs.mmlut_origin,
-        batch_inputs.mmlut_data,
-    )
-    cal2 = _epi_mm_batch_restore_calibration(
-        batch_inputs.cal2_pos,
-        batch_inputs.cal2_dm,
-        batch_inputs.cal2_glass,
-        batch_inputs.cal2_cc,
-    )
-    mmp = _epi_mm_batch_restore_multimedia(batch_inputs)
-    return cal1, cal2, mmp
-
-
-def _epi_mm_batch_restore_calibration(
-    pos: np.ndarray,
-    dm: np.ndarray,
-    glass: np.ndarray,
-    cc: float,
-) -> Calibration:
-    """Rebuild one calibration object from batch bundle fields."""
-    cal = Calibration()
-    cal.set_pos(pos)
-    cal.ext_par.dm = dm
-    cal.glass_par = glass
-    cal.int_par.cc = cc
-    return cal
-
-
-def _epi_mm_batch_restore_calibration_with_mmlut(
-    pos: np.ndarray,
-    dm: np.ndarray,
-    glass: np.ndarray,
-    cc: float,
-    mmlut_origin: np.ndarray,
-    mmlut_data: np.ndarray,
-) -> Calibration:
-    """Rebuild the first calibration, including LUT state."""
-    cal = _epi_mm_batch_restore_calibration(pos, dm, glass, cc)
-    cal.mmlut["origin"] = mmlut_origin
-    cal.mmlut_data = mmlut_data.reshape(cal.mmlut_data.shape)
-    return cal
-
-
-def _epi_mm_batch_restore_multimedia(batch_inputs: EpiMmBatchInputs) -> MultimediaPar:
-    """Rebuild multimedia parameters from the batch bundle."""
-    return MultimediaPar(
-        n1=batch_inputs.mm_n1,
-        n2=list(batch_inputs.mm_n2),
-        d=list(batch_inputs.mm_d),
-        n3=batch_inputs.mm_n3,
-    )
-
-
-def epi_mm_2D(
-    xl: float, yl: float, cal1: Calibration, mmp: MultimediaPar, vpar: VolumePar
-) -> np.ndarray:
-    """Return the position of the point in the 3D space.
-
-        /*  epi_mm_2D() is a very degenerate case of the epipolar geometry use.
-        It is valuable only for the case of a single camera with multi-media.
-        It takes a point in images space of one (single) camera, positions of this
-        camera and returns the position (in millimeter units) inside the 3D space
-        that corresponds to the provided point of interest, limited in the middle of
-        the 3D space, half-way between z_min and z_max. In purely 2D experiment, with
-        an infinitely small light sheet thickness or on a flat surface, this will
-        mean the point ray traced through the multi-media into the 3D space.
-
-    Arguments:
-    ---------
-        double xl, yl - position of the point in the camera image space [mm].
-        Calibration *cal1 - position of the camera
-        mm_np *mmp - pointer to multimedia model of the experiment.
-        volume_par *vpar - limits the search in 3D for the epipolar line.
-
-        Output:
-        vec3d out - 3D position of the point in the mid-plane between z_min and
-            z_max, which are estimated using volume limits provided in vpar.
-    */
+    Ray traces through multimedia to the mid-plane between Zmin and Zmax.
 
     Args:
-    ----
-            xl (_type_): _description_
-            yl (_type_): _description_
-            cal1 (_type_): _description_
-            mmp (_type_): _description_
-            vpar (_type_): _description_
-            out (_type_): _description_
+        xl, yl: point in camera image space [mm].
+        cal: camera calibration.
+        mm_n1, mm_n2_0, mm_n3, mm_d0: multimedia parameters.
+        vpar_X_lay: (X_left, X_right).
+        vpar_Zmin_lay: (Zmin_left, Zmin_right).
+        vpar_Zmax_lay: (Zmax_left, Zmax_right).
+
+    Returns:
+        3D position at mid-plane.
     """
-    pos, v = ray_tracing(xl, yl, cal1, mmp)
+    from .ray_tracing import ray_tracing
+    from .multimed import move_along_ray
 
-    z_min = vpar.z_min_lay[0] + (pos[0] - vpar.x_lay[0]) * (
-        vpar.z_min_lay[1] - vpar.z_min_lay[0]
-    ) / (vpar.x_lay[1] - vpar.x_lay[0])
-    z_max = vpar.z_max_lay[0] + (pos[0] - vpar.x_lay[0]) * (
-        vpar.z_max_lay[1] - vpar.z_max_lay[0]
-    ) / (vpar.x_lay[1] - vpar.x_lay[0])
+    pos, v = ray_tracing(
+        xl, yl,
+        cal["dm"], cal["x0"], cal["y0"], cal["z0"], cal["cc"],
+        cal["gx"], cal["gy"], cal["gz"],
+        mm_n1, mm_n2_0, mm_n3, mm_d0,
+    )
 
-    out = move_along_ray(0.5 * (z_min + z_max), pos, v)
-    return out
+    X_lay_0, X_lay_1 = vpar_X_lay
+    Zmin_lay_0, Zmin_lay_1 = vpar_Zmin_lay
+    Zmax_lay_0, Zmax_lay_1 = vpar_Zmax_lay
 
+    Zmin = Zmin_lay_0 + (pos[0] - X_lay_0) * (Zmin_lay_1 - Zmin_lay_0) / (X_lay_1 - X_lay_0)
+    Zmax = Zmax_lay_0 + (pos[0] - X_lay_0) * (Zmax_lay_1 - Zmax_lay_0) / (X_lay_1 - X_lay_0)
 
-# def find_candidate(
-#     crd: List[Coord2d], pix, num, xa, ya, xb, yb, n, nx, ny, sumg, cand, vpar, cpar, cal
-# ):
-#     """Find the candidate in the image space of the image all the candidates around the epipolar line.
-
-#     originating from another camera. It is a binary search in an x-sorted coord-set,
-#     exploits shape information of the particles.
-
-#     /*  find_candidate() is searching in the image space of the image all the
-#         candidates around the epipolar line originating from another camera. It is
-#         a binary search in an x-sorted coord-set, exploits shape information of the
-#         particles.
-
-#     Arguments:
-#     ---------
-#         Coord2d *crd - points to an array of detected-points position information.
-#             the points must be in flat-image (brown/affine corrected) coordinates
-#             and sorted by their x coordinate, i.e. ``crd[i].x <= crd[i + 1].x``.
-#         target *pix - array of target information (size, grey value, etc.)
-#             structures. pix[j] describes the target corresponding to
-#             (crd[...].pnr == j).
-#         int num - number of particles in the image.
-#         double xa, xb, ya, yb - end points of the epipolar line [mm].
-#         int n, nx, ny - total, and per dimension pixel size of a typical target,
-#             used to evaluate the quality of each candidate by comparing to typical.
-#         int sumg - same, for the grey value.
-
-#         Outputs:
-#         candidate cand[] - array of candidate properties. The .pnr property of cand
-#             points to an index in the x-sorted corrected detections array
-#             (``crd``).
-
-#         Extra configuration Arguments:
-#         volume_par *vpar - observed volume dimensions.
-#         control_par *cpar - general scene data s.a. image size.
-#         Calibration *cal - position and other parameters on the camera seeing
-#             the candidates.
-
-#     Returns:
-#     -------
-#         int count - the number of selected candidates, length of cand array.
-#             Negative if epipolar line out of sensor array.
-#     */
-
-#     Args:
-#     ----
-#             crd (_type_): _description_
-#             pix (_type_): _description_
-#             num (_type_): _description_
-#             xa (_type_): _description_
-#             ya (_type_): _description_
-#             xb (_type_): _description_
-#             yb (_type_): _description_
-#             n (_type_): _description_
-#             nx (_type_): _description_
-#             ny (_type_): _description_
-#             sumg (_type_): _description_
-#             cand (_type_): _description_
-#             vpar (_type_): _description_
-#             cpar (_type_): _description_
-#             cal (_type_): _description_
-
-#     Returns:
-#     -------
-#             _type_: _description_
-#     """
-#     j = 0
-#     j0 = 0
-#     dj = 0
-#     p2 = 0
-#     count = 0
-#     tol_band_width = vpar.eps0
-
-#     # define sensor format for search interrupt
-#     xmin = (-1) * cpar.pix_x * cpar.imx / 2
-#     xmax = cpar.pix_x * cpar.imx / 2
-#     ymin = (-1) * cpar.pix_y * cpar.imy / 2
-#     ymax = cpar.pix_y * cpar.imy / 2
-#     xmin -= cal.int_par.xh
-#     ymin -= cal.int_par.yh
-#     xmax -= cal.int_par.xh
-#     ymax -= cal.int_par.yh
-#     xmin, ymin = correct_brown_affine(xmin, ymin, cal.added_par)
-#     xmax, ymax = correct_brown_affine(xmax, ymax, cal.added_par)
-
-#     # line equation: y = m*x + b
-#     if xa == xb:  # the line is a point or a vertical line in this camera
-#         xb += 1e-10  # if we use xa += 1e-10, we always switch later
-
-#     # equation of a line
-#     m = (yb - ya) / (xb - xa)
-#     b = ya - m * xa
-#     if xa > xb:
-#         temp = xa
-#         xa = xb
-#         xb = temp
-
-#     if ya > yb:
-#         temp = ya
-#         ya = yb
-#         yb = temp
-
-#     # If epipolar line out of sensor area, give up.
-#     if xb <= xmin or xa >= xmax or yb <= ymin or ya >= ymax:
-#         return -1
-
-#     # binary search for start point of candidate search
-#     j0 = num // 2
-#     dj = num // 4
-#     while dj > 1:
-#         if crd[j0].x < xa - tol_band_width:
-#             j0 += dj
-#         else:
-#             j0 -= dj
-#         dj //= 2
-
-#     # due to truncation error we might shift to smaller x
-#     j0 -= 12
-#     if j0 < 0:
-#         j0 = 0
-
-#     # candidate search
-#     for j in range(j0, num):
-#         # Since the list is x-sorted, an out of x-bound candidate is after the
-#         # last possible candidate, so stop.
-#         if crd[j].x > xb + tol_band_width:
-#             return count
-
-#         # Candidate should at the very least be in the epipolar search window
-#         # to be considred.
-#         if crd[j].y <= ya - tol_band_width or crd[j].y >= yb + tol_band_width:
-#             continue
-#         if crd[j].x <= xa - tol_band_width or crd[j].x >= xb + tol_band_width:
-#             continue
-
-#         # Only take candidates within a predefined distance from epipolar line.
-#         d = abs((crd[j].y - m * crd[j].x - b) / math.sqrt(m * m + 1))
-#         if d >= tol_band_width:
-#             continue
-
-#         p2 = crd[j].pnr
-
-#         # quality of each parameter is a ratio of the values of the size n, nx, ny
-#         # and sum of grey values sumg
-#         qn = quality_ratio(n, pix[p2].n)
-#         qnx = quality_ratio(nx, pix[p2].nx)
-#         qny = quality_ratio(ny, pix[p2].ny)
-#         qsumg = quality_ratio(sumg, pix[p2].sumg)
-
-#         # Enforce minimum quality values and maximum candidates
-#         if qn < vpar.cn or qnx < vpar.cnx or qny < vpar.cny or qsumg <= vpar.csumg:
-#             continue
-#         if count >= MAXCAND:
-#             print(f"More candidates than (maxcand): {count}")
-#             return count
-
-#         # empirical correlation coefficient from shape and brightness parameters
-#         corr = 4 * qsumg + 2 * qn + qnx + qny
-
-#         # prefer matches with brighter targets
-#         corr *= float(sumg + pix[p2].sumg)
-
-#         cand[count].pnr = j
-#         cand[count].tol = d
-#         cand[count].corr = corr
-#         count += 1
-
-#     return count
+    return move_along_ray(0.5 * (Zmin + Zmax), pos, v)
 
 
-def epipolar_curve(
-    image_point,
-    origin_cam: Calibration,
-    project_cam: Calibration,
-    num_points: int,
-    cparam: ControlPar,
-    vparam: VolumePar,
-) -> np.ndarray:
+def _quality_ratio(a: int, b: int) -> float:
+    """Compute quality ratio between two values."""
+    if a < b:
+        return a / b
+    else:
+        return b / a
+
+
+def find_candidate(
+    crd: list[Coord2d],
+    pix: list[dict],
+    xa: float,
+    ya: float,
+    xb: float,
+    yb: float,
+    n: int,
+    nx: int,
+    ny: int,
+    sumg: int,
+    vpar_eps0: float,
+    vpar_cn: float,
+    vpar_cnx: float,
+    vpar_cny: float,
+    vpar_csumg: float,
+    cpar_imx: int,
+    cpar_imy: int,
+    cpar_pix_x: float,
+    cpar_pix_y: float,
+    cal_int_xh: float,
+    cal_int_yh: float,
+    cal_k1: float,
+    cal_k2: float,
+    cal_k3: float,
+    cal_p1: float,
+    cal_p2: float,
+    cal_scx: float,
+    cal_she: float,
+) -> list[Candidate]:
+    """Find candidates along epipolar line using binary search.
+
+    Searches in x-sorted coordinate array for candidates near the
+    epipolar line, exploiting shape information.
+
+    Args:
+        crd: x-sorted array of detected points (flat-image coords).
+        pix: target information (size, grey value) indexed by pnr.
+        xa, ya, xb, yb: endpoints of epipolar line [mm].
+        n, nx, ny: typical target size parameters.
+        sumg: typical sum of grey values.
+        vpar_eps0: tolerance band width.
+        vpar_cn, vpar_cnx, vpar_cny, vpar_csumg: minimum quality thresholds.
+        cpar_imx, cpar_imy: image dimensions.
+        cpar_pix_x, cpar_pix_y: pixel sizes.
+        cal_int_xh, cal_int_yh: principal point.
+        cal_k1, cal_k2, cal_k3, cal_p1, cal_p2, cal_scx, cal_she: distortion.
+
+    Returns:
+        List of candidates. Negative count means epipolar line out of sensor.
     """
-    Get the points lying on the epipolar line from one camera to the other, on.
+    from .trafo import correct_brown_affin
 
-    the edges of the observed volume. Gives pixel coordinates.
+    tol_band_width = vpar_eps0
+    num = len(crd)
 
-    Assumes the same volume applies to all cameras.
+    # Define sensor bounds
+    xmin = -cpar_pix_x * cpar_imx / 2
+    xmax = cpar_pix_x * cpar_imx / 2
+    ymin = -cpar_pix_y * cpar_imy / 2
+    ymax = cpar_pix_y * cpar_imy / 2
+    xmin -= cal_int_xh
+    ymin -= cal_int_yh
+    xmax -= cal_int_xh
+    ymax -= cal_int_yh
 
-    Arguments:
-    ---------
-    image_point - the 2D point on the image
-        plane of the camera seeing the point. Distorted pixel coordinates.
-    Calibration origin_cam - current position and other parameters of the
-        camera seeing the point.
-    Calibration project_cam - current position and other parameters of the
-        cameraon which the line is projected.
-    int num_points - the number of points to generate along the line. Minimum
-        is 2 for both endpoints.
-    ControlParams cparam - an object holding general control parameters.
-    VolumeParams vparam - an object holding observed volume size parameters.
+    # Correct bounds for distortion
+    xmin, ymin = correct_brown_affin(xmin, ymin, cal_k1, cal_k2, cal_k3, cal_p1, cal_p2, cal_scx, cal_she)
+    xmax, ymax = correct_brown_affin(xmax, ymax, cal_k1, cal_k2, cal_k3, cal_p1, cal_p2, cal_scx, cal_she)
 
-    Returns
-    -------
-    line_points - (num_points,2) array with projection camera image coordinates
-        of points lying on the ray stretching from the minimal Z coordinate of
-        the observed volume to the maximal Z thereof, and connecting the camera
-        with the image point on the origin camera.
-    """
-    # cdef:
-    #     np.ndarray[ndim=2, dtype=np.float64_t] line_points
-    #     vec3d vertex, direct, pos
-    #     int pt_ix
-    #     double Z
-    #     double *x
-    #     double *y
-    #     double img_pt[2]
+    # Handle vertical line case
+    if xa == xb:
+        xb += 1e-10
 
-    line_points = np.empty((num_points, 2))
+    # Line equation: y = m*x + b
+    m = (yb - ya) / (xb - xa)
+    b = ya - m * xa
 
-    # Move from distorted pixel coordinates to straight metric coordinates.
-    x, y = pixel_to_metric(image_point[0], image_point[1], cparam)
-    x, y = dist_to_flat(x, y, origin_cam, 0.00001)
+    # Ensure xa <= xb, ya <= yb
+    if xa > xb:
+        xa, xb = xb, xa
+    if ya > yb:
+        ya, yb = yb, ya
 
-    vertex, direct = ray_tracing(x, y, origin_cam, cparam.mm)
+    # Check if epipolar line is outside sensor
+    if xb <= xmin or xa >= xmax or yb <= ymin or ya >= ymax:
+        return []
 
-    for pt_ix, Z in enumerate(
-        np.linspace(vparam.z_min_lay[0], vparam.z_max_lay[0], num_points)
-    ):
-        # x = line_points[pt_ix], 0)
-        # y = <double *>np.PyArray_GETPTR2(line_points, pt_ix, 1)
+    # Binary search for start point
+    j0 = num // 2
+    dj = num // 4
+    while dj > 1:
+        if crd[j0].x < (xa - tol_band_width):
+            j0 += dj
+        else:
+            j0 -= dj
+        dj //= 2
 
-        pos = move_along_ray(Z, vertex, direct)
-        x, y = img_coord(pos, project_cam, cparam.mm)
-        line_points[pt_ix, 0], line_points[pt_ix, 1] = metric_to_pixel(x, y, cparam)
+    # Shift back for truncation safety
+    j0 -= 12
+    if j0 < 0:
+        j0 = 0
 
-    return line_points
+    candidates = []
+
+    for j in range(j0, num):
+        # X-sorted: out of bounds means past last candidate
+        if crd[j].x > xb + tol_band_width:
+            return candidates
+
+        # Check Y bounds
+        if crd[j].y <= ya - tol_band_width or crd[j].y >= yb + tol_band_width:
+            continue
+        # Check X bounds
+        if crd[j].x <= xa - tol_band_width or crd[j].x >= xb + tol_band_width:
+            continue
+
+        # Distance from epipolar line
+        d = abs(crd[j].y - m * crd[j].x - b) / np.sqrt(m * m + 1)
+        if d >= tol_band_width:
+            continue
+
+        p2 = crd[j].pnr
+        if p2 >= num:
+            return []  # Invalid pnr
+
+        # Quality ratios
+        qn = _quality_ratio(n, pix[p2]["n"])
+        qnx = _quality_ratio(nx, pix[p2]["nx"])
+        qny = _quality_ratio(ny, pix[p2]["ny"])
+        qsumg = _quality_ratio(sumg, pix[p2]["sumg"])
+
+        # Check minimum quality
+        if qn < vpar_cn or qnx < vpar_cnx or qny < vpar_cny or qsumg <= vpar_csumg:
+            continue
+
+        # Max candidates check
+        if len(candidates) >= MAXCAND:
+            return candidates
+
+        # Correlation score
+        corr = 4 * qsumg + 2 * qn + qnx + qny
+        corr *= (sumg + pix[p2]["sumg"])
+
+        candidates.append(Candidate(pnr=j, tol=d, corr=corr))
+
+    return candidates

@@ -1,224 +1,81 @@
-"""Parameters for OpenPTV-Python."""
+"""PTV configuration parameters as clean dataclasses.
 
-from collections import namedtuple
-from dataclasses import asdict, dataclass, field
+Translation of lib/src/parameters.c and lib/include/parameters.h.
+
+Design principles:
+- Pure dataclasses with direct field access (no getters/setters)
+- File I/O separated into class methods (from_file / to_file)
+- No coupling to C structures or adapter layers
+- Named constants for defaults and magic numbers
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 from pathlib import Path
-from typing import List, Tuple
-
-import yaml
-
-from .constants import TR_MAX_CAMS
-
-TrackParTuple = namedtuple(
-    "TrackParTuple",
-    [
-        "dvxmin",
-        "dvxmax",
-        "dvymin",
-        "dvymax",
-        "dvzmin",
-        "dvzmax",
-        "dangle",
-        "dacc",
-        "add",
-        "dsumg",
-        "dn",
-        "dnx",
-        "dny",
-    ],
-)
+from typing import Sequence
 
 
 @dataclass
-class Parameters:
-    """Base class for all parameters with a couple of methods."""
+class SequencePar:
+    """Sequence parameters: image files and frame range.
 
-    @classmethod
-    def from_dict(cls, data):
-        """Read MultimediaPar from a dictionary."""
-        return cls(**data)
-
-    @classmethod
-    def to_dict(cls, data):
-        """Read MultimediaPar from a dictionary."""
-        return asdict(data)
-
-    def to_yaml(self, file_path: Path):
-        """Write parameters to YAML file."""
-        with open(file_path, "w", encoding="utf-8") as output_file:
-            yaml.dump(asdict(self), output_file, default_flow_style=False)
-
-    @classmethod
-    def from_yaml(cls, file_path: Path):
-        """Read from YAML file."""
-        with open(file_path, "r", encoding="utf-8") as file:
-            data_dict = yaml.safe_load(file)
-            return cls(**data_dict)
-
-
-@dataclass
-class MultimediaPar(Parameters):
-    """Multimedia parameters."""
-
-    nlay: int = 1
-    n1: float = 1.0
-    n2: List[float] = field(default_factory=lambda: [1.0])
-    d: List[float] = field(default_factory=lambda: [0.0])
-    n3: float = 1.0
-
-    def __post_init__(self):
-        if len(self.n2) != len(self.d):
-            raise ValueError("n2 and d must have the same length")
-        if len(self.n2) < 1:
-            raise ValueError("n2 and d must have at least one element")
-        if self.n1 <= 0:
-            raise ValueError(f"n1 must be positive, got {self.n1}")
-        if self.n3 <= 0:
-            raise ValueError(f"n3 must be positive, got {self.n3}")
-        for i, n in enumerate(self.n2):
-            if n <= 0:
-                raise ValueError(f"n2[{i}] must be positive, got {n}")
-        for i, di in enumerate(self.d):
-            if di < 0:
-                raise ValueError(f"d[{i}] must be non-negative, got {di}")
-
-    def get_nlay(self):
-        """Return the number of layers."""
-        return self.nlay
-
-    def get_n1(self):
-        """Return the refractive index of the first medium."""
-        return self.n1
-
-    def set_n1(self, n1: float):
-        """Set the refractive index of the first medium."""
-        if n1 <= 0:
-            raise ValueError(f"n1 must be positive, got {n1}")
-        self.n1 = n1
-
-    def get_n3(self):
-        """Return the refractive index of the last medium."""
-        return self.n3
-
-    def set_n3(self, n3: float):
-        """Set the refractive index of the last medium."""
-        if n3 <= 0:
-            raise ValueError(f"n3 must be positive, got {n3}")
-        self.n3 = n3
-
-    def get_n2(self):
-        """Return the refractive index of the second medium."""
-        return self.n2
-
-    def get_d(self):
-        """Return the thickness of the second medium."""
-        return self.d
-
-    def set_layers(self, refr_index: list[float], thickness: list[float]):
-        """Set the layers of the medium."""
-        if len(refr_index) != len(thickness):
-            raise ValueError("Lengths of refractive index and thickness must be equal.")
-        if len(refr_index) < 1:
-            raise ValueError("Must have at least one layer")
-        for i, n in enumerate(refr_index):
-            if n <= 0:
-                raise ValueError(f"n2[{i}] must be positive, got {n}")
-        for i, di in enumerate(thickness):
-            if di < 0:
-                raise ValueError(f"d[{i}] must be non-negative, got {di}")
-        self.n2 = refr_index
-        self.d = thickness
-        self.nlay = len(refr_index)
-
-    def __str__(self) -> str:
-        return f"nlay = {self.nlay}, n1 = {self.n1}, n2 = {self.n2}, d = {self.d}, n3 = {self.n3}"
-
-
-def compare_mm_np(mm_np1: MultimediaPar, mm_np2: MultimediaPar) -> bool:
-    """Compare two MultimediaPar objects."""
-    return (mm_np1.nlay, mm_np1.n1, mm_np1.n3, mm_np1.n2[0], mm_np1.d[0]) == (
-        mm_np2.nlay,
-        mm_np2.n1,
-        mm_np2.n3,
-        mm_np2.n2[0],
-        mm_np2.d[0],
-    )
-
-
-@dataclass
-class SequencePar(Parameters):
-    """Sequence parameters."""
-
-    img_base_name: List[str] = field(default_factory=list)
+    Attributes:
+        num_cams: number of cameras.
+        img_base_name: base names for image files (one per camera).
+        first: first frame number.
+        last: last frame number.
+    """
+    num_cams: int
+    img_base_name: list[str] = field(default_factory=list)
     first: int = 0
     last: int = 0
 
-    # def to_dict(self):
-    #     """Convert SequencePar instance to a dictionary."""
-    #     return {
-    #         'img_base_name': self.img_base_name,
-    #         'first': self.first,
-    #         'last': self.last,
-    #     }
-
-    def set_img_base_name(self, new_name: List[str]):
-        """Set the image base name for each camera."""
-        self.img_base_name[:] = new_name
-
-    def get_img_base_name(self, icam: int = 0):
-        """Get the image base name for each camera."""
-        return self.img_base_name[icam]
-
-    def set_first(self, newfirst: int):
-        """Set the first frame number."""
-        self.first = newfirst
-
-    def get_first(self):
-        """Get the first frame number."""
-        return self.first
-
-    def set_last(self, newlast: int):
-        """Set the last frame number."""
-        self.last = newlast
-
-    def get_last(self):
-        """Get the last frame number."""
-        return self.last
-
     @classmethod
-    def from_file(cls, filename: Path, num_cams: int):
-        """Read sequence parameters from file."""
-        if not filename.exists():
-            raise IOError("File {filename} does not exist.")
+    def from_file(cls, filename: str | Path, num_cams: int) -> SequencePar:
+        """Read sequence parameters from file.
 
-        ret = cls()
-        with open(filename, "r", encoding="utf-8") as par_file:
-            ret.img_base_name = []
-            for _ in range(num_cams):
-                ret.img_base_name.append(par_file.readline().strip())
-            ret.first = int(par_file.readline().strip())
-            ret.last = int(par_file.readline().strip())
+        File format: first num_cams lines are image base names,
+        then first frame, then last frame.
 
-        return ret
+        Args:
+            filename: path to parameter file.
+            num_cams: number of cameras.
 
+        Returns:
+            SequencePar instance.
 
-def read_sequence_par(filename: Path, num_cams: int = TR_MAX_CAMS) -> SequencePar:
-    """Read sequence parameters from file and return SequencePar object."""
-    return SequencePar().from_file(filename, num_cams)
+        Raises:
+            FileNotFoundError: if file doesn't exist.
+            ValueError: if file format is invalid.
+        """
+        path = Path(filename)
+        lines = path.read_text().strip().splitlines()
 
+        if len(lines) < num_cams + 2:
+            raise ValueError(
+                f"Expected at least {num_cams + 2} lines, got {len(lines)}"
+            )
 
-def compare_sequence_par(sp1: SequencePar, sp2: SequencePar) -> bool:
-    """Compare two SequencePar objects."""
-    return all(
-        getattr(sp1, field) == getattr(sp2, field)
-        for field in SequencePar.__annotations__
-    )
+        img_base_name = [lines[i].strip() for i in range(num_cams)]
+        first = int(lines[num_cams].strip())
+        last = int(lines[num_cams + 1].strip())
+
+        return cls(num_cams=num_cams, img_base_name=img_base_name, first=first, last=last)
 
 
 @dataclass
-class TrackPar(Parameters):
-    """Tracking parameters."""
+class TrackPar:
+    """Tracking parameters: search bounds and thresholds.
 
+    Attributes:
+        dvxmin, dvxmax: search bounds in x direction.
+        dvymin, dvymax: search bounds in y direction.
+        dvzmin, dvzmax: search bounds in z direction.
+        dangle: maximum angle change threshold.
+        dacc: maximum acceleration threshold.
+        add: additional flag.
+    """
     dvxmin: float = 0.0
     dvxmax: float = 0.0
     dvymin: float = 0.0
@@ -228,712 +85,350 @@ class TrackPar(Parameters):
     dangle: float = 0.0
     dacc: float = 0.0
     add: int = 0
-    dsumg: float = 0.0
-    dn: float = 0.0
-    dnx: float = 0.0
-    dny: float = 0.0
+
+    # Derived fields (set to 0 by default, not read from file)
+    dsumg: int = 0
+    dn: int = 0
+    dnx: int = 0
+    dny: int = 0
 
     @classmethod
-    def from_file(cls, filename: Path):
-        """Read tracking parameters from file and return TrackPar object.
+    def from_file(cls, filename: str | Path) -> TrackPar:
+        """Read tracking parameters from file.
 
-        Note that the structure has 13 attributes, from which we read only 9
-        dsumg, dn, dnx, dny are set to 0 automatically and used later in
-        track.py
-
-        """
-        try:
-            with open(filename, "r", encoding="utf-8") as fpp:
-                dvxmin = float(fpp.readline().rstrip())
-                dvxmax = float(fpp.readline().rstrip())
-                dvymin = float(fpp.readline().rstrip())
-                dvymax = float(fpp.readline().rstrip())
-                dvzmin = float(fpp.readline().rstrip())
-                dvzmax = float(fpp.readline().rstrip())
-                dangle = float(fpp.readline().rstrip())
-                dacc = float(fpp.readline().rstrip())
-                add = int(fpp.readline().rstrip())
-        except IOError as exc:
-            raise (f"Error reading tracking parameters from {filename}") from exc  # type: ignore
-
-        return cls(dvxmin, dvxmax, dvymin, dvymax, dvzmin, dvzmax, dangle, dacc, add)
-
-    def get_dvxmin(self):
-        """Return the minimum velocity in x direction."""
-        return self.dvxmin
-
-    def get_dvxmax(self):
-        """Return the maximum velocity in x direction."""
-        return self.dvxmax
-
-    def get_dvymin(self):
-        """Return the minimum velocity in y direction."""
-        return self.dvymin
-
-    def get_dvymax(self):
-        """Return the maximum velocity in y direction."""
-        return self.dvymax
-
-    def get_dvz_min(self):
-        """Return the minimum velocity in z direction."""
-        return self.dvzmin
-
-    def get_dvz_max(self):
-        """Return the minimum velocity in z direction."""
-        return self.dvzmax
-
-    def get_dangle(self):
-        """Return the maximum angle."""
-        return self.dangle
-
-    def get_dacc(self):
-        """Return the maximum acceleration."""
-        return self.dacc
-
-    def get_add(self):
-        """Return the adding new particles parameter."""
-        return self.add
-
-    def get_dsumg(self):
-        """Return the maximum sum of the gradient."""
-        return self.dsumg
-
-    def set_dsumg(self, dsumg):
-        """Set the maximum sum of the gradient."""
-        self.dsumg = dsumg
-
-    def get_dn(self):
-        """Return the maximum refractive index."""
-        return self.dn
-
-    def set_dn(self, dn):
-        """Set the maximum refractive index."""
-        self.dn = dn
-
-    def get_dnx(self):
-        """Return the maximum refractive index in x direction."""
-        return self.dnx
-
-    def set_dnx(self, dnx):
-        """Set the maximum refractive index in x direction."""
-        self.dnx = dnx
-
-    def set_dny(self, dny):
-        """Set the maximum refractive index in y direction."""
-        self.dny = dny
-
-    def get_dny(self):
-        """Return the maximum refractive index in y direction."""
-        return self.dny
-
-
-def read_track_par(filename: Path) -> TrackPar:
-    """Read tracking parameters from file and return TrackPar object."""
-    return TrackPar().from_file(filename)
-
-
-def compare_track_par(t1: TrackPar, t2: TrackPar) -> bool:
-    """Compare two TrackPar objects."""
-    return all(getattr(t1, field) == getattr(t2, field) for field in t1.__annotations__)
-
-
-def convert_track_par_to_tuple(track_par: TrackPar) -> TrackParTuple:
-    """Convert TrackPar object to TrackParTuple object."""
-    return TrackParTuple(
-        track_par.dvxmin,
-        track_par.dvxmax,
-        track_par.dvymin,
-        track_par.dvymax,
-        track_par.dvzmin,
-        track_par.dvzmax,
-        track_par.dangle,
-        track_par.dacc,
-        track_par.add,
-        track_par.dsumg,
-        track_par.dn,
-        track_par.dnx,
-        track_par.dny,
-    )
-
-
-@dataclass
-class VolumePar(Parameters):
-    """Volume parameters."""
-
-    x_lay: List[float] = field(default_factory=lambda: [-100.0, 100.0])
-    z_min_lay: List[float] = field(default_factory=lambda: [-50.0])
-    z_max_lay: List[float] = field(default_factory=lambda: [50.0])
-    # minimal criteria for number of pixels
-    cn: float = field(default_factory=float)
-    cnx: float = field(default_factory=float)  # same in x direction
-    cny: float = field(default_factory=float)  # same in y direction
-    csumg: float = field(default_factory=float)  # same in sum of grey values
-    # minimal criteria for epipolar distance
-    eps0: float = field(default_factory=float)
-    corrmin: float = field(
-        default_factory=float
-    )  # minimal correlation value of all criteria
-
-    def __post_init__(self):
-        if len(self.x_lay) < 2:
-            raise ValueError(
-                f"x_lay must have at least 2 elements, got {len(self.x_lay)}"
-            )
-        if self.x_lay[0] == self.x_lay[1]:
-            raise ValueError(
-                f"x_lay[0] ({self.x_lay[0]}) must differ from x_lay[1] ({self.x_lay[1]})"
-            )
-        if len(self.z_min_lay) < 1:
-            raise ValueError(
-                f"z_min_lay must have at least 1 element, got {len(self.z_min_lay)}"
-            )
-        if len(self.z_max_lay) < 1:
-            raise ValueError(
-                f"z_max_lay must have at least 1 element, got {len(self.z_max_lay)}"
-            )
-        for i, (zmin, zmax) in enumerate(zip(self.z_min_lay, self.z_max_lay)):
-            if zmin >= zmax:
-                raise ValueError(
-                    f"z_min_lay[{i}] ({zmin}) must be less than z_max_lay[{i}] ({zmax})"
-                )
-
-    def set_z_min_lay(self, z_min_lay: list[float]) -> None:
-        """Set the minimum z coordinate of the layers."""
-        if len(z_min_lay) < 1:
-            raise ValueError("z_min_lay must have at least 1 element")
-        self.z_min_lay = z_min_lay
-        self._validate_z_layers()
-
-    def set_z_max_lay(self, z_max_lay: list[float]) -> None:
-        """Set the maximum z coordinate of the layers."""
-        if len(z_max_lay) < 1:
-            raise ValueError("z_max_lay must have at least 1 element")
-        self.z_max_lay = z_max_lay
-        self._validate_z_layers()
-
-    def _validate_z_layers(self):
-        """Validate z layer consistency."""
-        for i, (zmin, zmax) in enumerate(zip(self.z_min_lay, self.z_max_lay)):
-            if zmin >= zmax:
-                raise ValueError(
-                    f"z_min_lay[{i}] ({zmin}) must be less than z_max_lay[{i}] ({zmax})"
-                )
-
-    def set_cn(self, cn: float) -> None:
-        """Set the refractive index."""
-        self.cn = cn
-
-    def set_cnx(self, cnx: float) -> None:
-        """Set the refractive index in x direction."""
-        self.cnx = cnx
-
-    def set_csumg(self, csumg: float) -> None:
-        """Set the maximum sum of the gradient."""
-        self.csumg = csumg
-
-    def set_eps0(self, eps0: float) -> None:
-        """Set the maximum sum of the gradient."""
-        self.eps0 = eps0
-
-    def set_corrmin(self, corrmin: float):
-        """Set the minimum correlation value of all criteria."""
-        self.corrmin = corrmin
-
-    @classmethod
-    def from_file(cls, filename: Path):
-        """Read volume parameters from file.
+        File format: 9 lines with values in order:
+        dvxmin, dvxmax, dvymin, dvymax, dvzmin, dvzmax, dangle, dacc, add
 
         Args:
-        ----
-            filename (str): filename
+            filename: path to parameter file.
 
+        Returns:
+            TrackPar instance.
+
+        Raises:
+            FileNotFoundError: if file doesn't exist.
+            ValueError: if file format is invalid.
         """
-        x_lay, z_min_lay, z_max_lay = [], [], []
+        path = Path(filename)
+        lines = path.read_text().strip().splitlines()
 
-        with open(filename, "r", encoding="utf-8") as f:
-            x_lay.append(float(f.readline()))
-            z_min_lay.append(float(f.readline()))
-            z_max_lay.append(float(f.readline()))
-            x_lay.append(float(f.readline()))
-            z_min_lay.append(float(f.readline()))
-            z_max_lay.append(float(f.readline()))
-            cnx, cny, cn, csumg, corrmin, eps0 = [float(f.readline()) for _ in range(6)]
+        if len(lines) < 9:
+            raise ValueError(f"Expected 9 lines, got {len(lines)}")
 
-        return cls(x_lay, z_min_lay, z_max_lay, cn, cnx, cny, csumg, eps0, corrmin)
+        return cls(
+            dvxmin=float(lines[0]),
+            dvxmax=float(lines[1]),
+            dvymin=float(lines[2]),
+            dvymax=float(lines[3]),
+            dvzmin=float(lines[4]),
+            dvzmax=float(lines[5]),
+            dangle=float(lines[6]),
+            dacc=float(lines[7]),
+            add=int(lines[8]),
+        )
 
 
-def read_volume_par(filename: Path) -> VolumePar:
-    """Read volume parameters from file and returns volume_par object.
+@dataclass
+class VolumePar:
+    """Illuminated volume boundaries and correspondence criteria.
 
-    Args:
-    ----
-        filename (str): filename
-
-    Returns
-    -------
-        VolumePar: volume of interest parameters
+    Attributes:
+        X_lay: leftmost and rightmost X boundaries [mm].
+        Zmin_lay: closest Z points for each side [mm].
+        Zmax_lay: farthest Z points for each side [mm].
+        cnx: correlation limit for nx size.
+        cny: correlation limit for ny size.
+        cn: correlation limit for n particle size.
+        csumg: correlation limit for sum of grey scale.
+        corrmin: minimum overall correlation.
+        eps0: flat coordinates tolerance [mm].
     """
-    return VolumePar().from_file(filename)
-
-
-def compare_volume_par(v1: VolumePar, v2: VolumePar) -> bool:
-    """Compare two VolumePar objects."""
-    return all(
-        getattr(v1, attr) == getattr(v2, attr) for attr in VolumePar.__annotations__
-    )
-
-
-@dataclass
-class ControlPar(Parameters):
-    """Control parameters."""
-
-    num_cams: int = 4
-    img_base_name: List[str] = field(default_factory=list)
-    cal_img_base_name: List[str] = field(default_factory=list)
-    hp_flag: int = field(default=1)
-    all_cam_flag: int = field(default=0)
-    tiff_flag: int = field(default=1)
-    imx: int = 1280
-    imy: int = 1024
-    pix_x: float = 0.012
-    pix_y: float = 0.012
-    chfield: int = 0
-    mm: MultimediaPar = field(default_factory=MultimediaPar)
-
-    def __post_init__(self):
-        if self.num_cams < 1:
-            raise ValueError(f"num_cams must be at least 1, got {self.num_cams}")
-        if self.imx < 1:
-            raise ValueError(f"imx must be at least 1, got {self.imx}")
-        if self.imy < 1:
-            raise ValueError(f"imy must be at least 1, got {self.imy}")
-        if self.pix_x <= 0:
-            raise ValueError(f"pix_x must be positive, got {self.pix_x}")
-        if self.pix_y <= 0:
-            raise ValueError(f"pix_y must be positive, got {self.pix_y}")
+    X_lay: tuple[float, float] = (0.0, 0.0)
+    Zmin_lay: tuple[float, float] = (0.0, 0.0)
+    Zmax_lay: tuple[float, float] = (0.0, 0.0)
+    cnx: float = 0.0
+    cny: float = 0.0
+    cn: float = 0.0
+    csumg: float = 0.0
+    corrmin: float = 0.0
+    eps0: float = 0.0
 
     @classmethod
-    def from_dict(cls, data):
-        """Read ControlPar from a dictionary."""
-        mm_data = data.get("mm", {})
-        data["mm"] = MultimediaPar.from_dict(mm_data)
-        return cls(**data)
+    def from_file(cls, filename: str | Path) -> VolumePar:
+        """Read volume parameters from file.
 
-    def set_image_size(self, imsize: Tuple[int, int]):
-        """Set image size in pixels."""
-        if imsize[0] < 1:
-            raise ValueError(f"imx must be at least 1, got {imsize[0]}")
-        if imsize[1] < 1:
-            raise ValueError(f"imy must be at least 1, got {imsize[1]}")
-        self.imx = imsize[0]
-        self.imy = imsize[1]
+        File format: 12 lines with values in order:
+        X_lay[0], Zmin_lay[0], Zmax_lay[0], X_lay[1], Zmin_lay[1], Zmax_lay[1],
+        cnx, cny, cn, csumg, corrmin, eps0
 
-    def get_image_size(self) -> Tuple[int, int]:
-        """Set image size in pixels."""
-        return (self.imx, self.imy)
+        Args:
+            filename: path to parameter file.
 
-    def set_pixel_size(self, pixsize: Tuple[float, float]):
-        """Set pixel size in mm."""
-        if pixsize[0] <= 0:
-            raise ValueError(f"pix_x must be positive, got {pixsize[0]}")
-        if pixsize[1] <= 0:
-            raise ValueError(f"pix_y must be positive, got {pixsize[1]}")
-        self.pix_x = pixsize[0]
-        self.pix_y = pixsize[1]
+        Returns:
+            VolumePar instance.
 
-    def get_pixel_size(self) -> Tuple[float, float]:
-        """Set pixel size in mm."""
-        return (self.pix_x, self.pix_y)
-
-    def set_chfield(self, chfield: int):
-        """Set chfield."""
-        self.chfield = chfield
-
-    def get_chfield(self):
-        """Set chfield."""
-        return self.chfield
-
-    def get_multimedia_par(self):
-        """Return multimedia parameters."""
-        return self.mm
-
-    def get_num_cams(self):
-        """Return number of cameras."""
-        return self.num_cams
-
-    def set_hp_flag(self, hp_flag):
-        """Return high pass flag."""
-        self.hp_flag = hp_flag
-
-    def get_hp_flag(self):
-        """Return high pass flag."""
-        return self.hp_flag
-
-    def get_allCam_flag(self):
-        """Return allCam flag."""
-        return self.all_cam_flag
-
-    def get_tiff_flag(self):
-        """Return tiff flag."""
-        return self.tiff_flag
-
-    @classmethod
-    def from_file(cls, filename: Path):
-        """Read control parameters from file and return ControlPar object."""
-        ret = cls()
-        if not filename.exists():
-            raise FileNotFoundError(f"Could not open file {filename}")
-
-        with open(filename, "r", encoding="utf-8") as par_file:
-            ret.num_cams = int(par_file.readline().strip())
-
-            for _ in range(ret.num_cams):
-                ret.img_base_name.append(par_file.readline().strip())
-                ret.cal_img_base_name.append(par_file.readline().strip())
-
-            ret.hp_flag = int(par_file.readline().strip())
-            ret.all_cam_flag = int(par_file.readline().strip())
-            ret.tiff_flag = int(par_file.readline().strip())
-            ret.imx = int(par_file.readline().strip())
-            ret.imy = int(par_file.readline().strip())
-            ret.pix_x = float(par_file.readline().strip())
-            ret.pix_y = float(par_file.readline().strip())
-            ret.chfield = int(par_file.readline().strip())
-            ret.mm.n1 = float(par_file.readline().strip())
-            ret.mm.n2[0] = float(par_file.readline().strip())
-            ret.mm.n3 = float(par_file.readline().strip())
-            ret.mm.d[0] = float(par_file.readline().strip())
-
-        # the original idea is to have more layers inside water with different
-        # refractive indices and different thicknesses.
-        # therefore the following lines convert it to numpy arrays
-        # we expect the user to provide this parameter file lines with equal
-        # number of floats
-        # self.mm.d = [self.mm.d]
-        # self.mm.n2 = [self.mm.n2]
-
-        return ret
-
-    def get_multimedia_params(self):
-        """Return multimedia parameters."""
-        return self.mm
-
-    @classmethod
-    def to_dict(cls, data):
-        """Convert ControlPar instance to a dictionary."""
-        control_par_dict = asdict(data)
-        if isinstance(control_par_dict["mm"], MultimediaPar):
-            control_par_dict["mm"] = asdict(control_par_dict["mm"])
-        return control_par_dict
-
-
-def read_control_par(filename: Path) -> ControlPar:
-    """Read control parameters from file and return ControlPar object."""
-    return ControlPar().from_file(filename)
-
-
-def compare_control_par(c1: ControlPar, c2: ControlPar) -> bool:
-    """Compare two ControlPar objects."""
-    return (
-        c1.num_cams == c2.num_cams
-        and all(
-            getattr(c1, attr) == getattr(c2, attr)
-            for attr in ["img_base_name", "cal_img_base_name"]
-        )
-        and c1.hp_flag == c2.hp_flag
-        and c1.all_cam_flag == c2.all_cam_flag
-        and c1.tiff_flag == c2.tiff_flag
-        and c1.imx == c2.imx
-        and c1.imy == c2.imy
-        and c1.pix_x == c2.pix_x
-        and c1.pix_y == c2.pix_y
-        and c1.chfield == c2.chfield
-        and c1.mm == c2.mm
-    )
-
-
-@dataclass
-class TargetPar(Parameters):
-    """Target parameters."""
-
-    gvthresh: list[int] = field(default_factory=list)
-    discont: int = 100  # discontinuity
-    nnmin: int = 1
-    nnmax: int = 100
-    nxmin: int = 1
-    nxmax: int = 100
-    nymin: int = 1
-    nymax: int = 100
-    sumg_min: int = 10  # minimum sum of grey values
-    cr_sz: int = 1
-
-    # @classmethod
-    # def from_dict(cls, data):
-    #     """Read from target.par dictionary."""
-    #     return cls(**data)
-
-    # def to_dict(self):
-    #     """Convert TargetPar instance to a dictionary."""
-    #     return {
-    #         'gvthresh': self.gvthresh,
-    #         'discont': self.discont,
-    #         'nnmin': self.nnmin,
-    #         'nnmax': self.nnmax,
-    #         'nxmin': self.nxmin,
-    #         'nxmax': self.nxmax,
-    #         'nymin': self.nymin,
-    #         'nymax': self.nymax,
-    #         'sumg_min': self.sumg_min,
-    #         'cr_sz': self.cr_sz,
-    #     }
-
-    @classmethod
-    def from_file(cls, filename: Path):
-        """Read target parameters from file and returns target_par object.
-
-        Reads target recognition parameters from a legacy detect_plate.par file,
-        which holds one parameter per line. The arguments are read in this order:
-
-        1. gvthres[0]
-        2. gvthres[1]
-        3. gvthres[2]
-        4. gvthres[3]
-        5. discont
-        6. nnmin
-        7. nnmax
-        8. nxmin
-        9. nxmax
-        10. nymin
-        11. nymax
-        12. sumg_min
-        13. cr_sz
-
-
-
+        Raises:
+            FileNotFoundError: if file doesn't exist.
+            ValueError: if file format is invalid.
         """
-        ret = cls()
-        try:
-            with open(filename, "r", encoding="utf-8") as file:
-                for _ in range(TR_MAX_CAMS):  # todo - make it no. cameras
-                    ret.gvthresh.append(int(file.readline()))
+        path = Path(filename)
+        lines = path.read_text().strip().splitlines()
 
-                ret.discont = int(file.readline())
-                ret.nnmin = int(file.readline())
-                ret.nnmax = int(file.readline())
-                ret.nxmin = int(file.readline())
-                ret.nxmax = int(file.readline())
-                ret.nymin = int(file.readline())
-                ret.nymax = int(file.readline())
-                ret.sumg_min = int(file.readline())
-                ret.cr_sz = int(file.readline())
-            # return ret
-        except IOError:
-            print(f"Could not open target recognition parameters file {filename}.")
-            # return None
+        if len(lines) < 12:
+            raise ValueError(f"Expected 12 lines, got {len(lines)}")
 
-        return ret
-
-    def get_grey_thresholds(self):
-        """Return the grey thresholds."""
-        return self.gvthresh
-
-    def get_pixel_count_bounds(self):
-        """Return the pixel count bounds."""
-        return (self.nnmin, self.nnmax)
-
-    def get_xsize_bounds(self):
-        """Return the xsize bounds."""
-        return (self.nxmin, self.nxmax)
-
-    def get_ysize_bounds(self):
-        """Return the ysize bounds."""
-        return (self.nymin, self.nymax)
-
-    def get_min_sum_grey(self):
-        """Return the sum grey bounds."""
-        return self.sumg_min
-
-
-def read_target_par(filename: Path) -> TargetPar:
-    """Read target parameters from file and returns target_par object."""
-    tpar = TargetPar()
-    return tpar.from_file(filename)
-
-
-def compare_target_par(targ1: TargetPar, targ2: TargetPar) -> bool:
-    """Compare two target_par objects."""
-    return all(
-        getattr(targ1, attr) == getattr(targ2, attr)
-        for attr in TargetPar.__annotations__
-    )
-
-
-def write_target_par(targ: TargetPar, filename: str) -> None:
-    """Write target_par object to file."""
-    with open(filename, "w", encoding="utf-8") as file:
-        file.write(
-            f"{targ.gvthresh[0]}\n{targ.gvthresh[1]}\n{targ.gvthresh[2]}\n{targ.gvthresh[3]}\n{targ.discont}\n{targ.nnmin}\n{targ.nnmax}\n{targ.nxmin}\n{targ.nxmax}\n{targ.nymin}\n{targ.nymax}\n{targ.sumg_min}\n{targ.cr_sz}"
+        return cls(
+            X_lay=(float(lines[0]), float(lines[3])),
+            Zmin_lay=(float(lines[1]), float(lines[4])),
+            Zmax_lay=(float(lines[2]), float(lines[5])),
+            cnx=float(lines[6]),
+            cny=float(lines[7]),
+            cn=float(lines[8]),
+            csumg=float(lines[9]),
+            corrmin=float(lines[10]),
+            eps0=float(lines[11]),
         )
 
 
 @dataclass
-class OrientPar(Parameters):
-    """Orientation parameters."""
+class MmNp:
+    """Multimedia model: refractive indices and layer thicknesses.
 
-    useflag: int = 0
-    ccflag: int = 0
-    xhflag: int = 0
-    yhflag: int = 0
-    k1flag: int = 0
-    k2flag: int = 0
-    k3flag: int = 0
-    p1flag: int = 0
-    p2flag: int = 0
-    scxflag: int = 0
-    sheflag: int = 0
-    interfflag: int = 0
-
-    @classmethod
-    def from_file(cls, filename: Path):
-        """Read orientation parameters from file and returns orient_par object."""
-        ret = cls()
-        try:
-            with open(filename, "r", encoding="utf-8") as file:
-                ret.useflag = int(
-                    file.readline().strip()
-                )  # /* use every point or every other pt */
-                ret.ccflag = int(
-                    file.readline().strip()
-                )  # /* change back focal distance */
-                ret.xhflag = int(
-                    file.readline().strip()
-                )  # /* change xh point, 1-yes, 0-no */
-                ret.yhflag = int(file.readline().strip())
-                ret.k1flag = int(file.readline().strip())
-                ret.k2flag = int(file.readline().strip())
-                ret.k3flag = int(file.readline().strip())
-                ret.p1flag = int(file.readline().strip())
-                ret.p2flag = int(file.readline().strip())
-                ret.scxflag = int(file.readline().strip())  # /* scx - scaling  */
-                ret.sheflag = int(file.readline().strip())  # /* she - shearing  */
-                ret.interfflag = int(
-                    file.readline().strip()
-                )  # /* interface glass vector */
-
-        except IOError:
-            print(f"Could not open orientation parameters file {filename}.")
-
-        return ret
+    Attributes:
+        nlay: number of layers.
+        n1: refractive index of first medium (air ~ 1.0).
+        n2: refractive indices of second medium (glass windows), up to 3 layers.
+        d: thicknesses of second medium layers, up to 3 layers.
+        n3: refractive index of third medium (flowing fluid).
+    """
+    nlay: int = 1
+    n1: float = 1.0
+    n2: list[float] = field(default_factory=lambda: [1.0, 1.0, 1.0])
+    d: list[float] = field(default_factory=lambda: [0.0, 0.0, 0.0])
+    n3: float = 1.0
 
 
 @dataclass
-class CalibrationPar(Parameters):
-    """Calibration parameters."""
+class ControlPar:
+    """General control parameters: image dimensions, multimedia, camera count.
 
-    fixp_name: str = ""
-    img_name: list = field(default_factory=list)
-    img_ori0: list = field(default_factory=list)
+    Attributes:
+        num_cams: number of cameras.
+        img_base_name: image file base names (one per camera).
+        cal_img_base_name: calibration image file base names.
+        hp_flag: high-pass filter flag (0/1).
+        allCam_flag: flag for using particles matched in all cameras.
+        tiff_flag: use TIFF headers (1) or raw images (0).
+        imx: horizontal image size in pixels.
+        imy: vertical image size in pixels.
+        pix_x: pixel width [mm].
+        pix_y: pixel height [mm].
+        chfield: interlaced mode (0=whole, 1=upper half, 2=lower half).
+        mm: multimedia model.
+    """
+    num_cams: int = 0
+    img_base_name: list[str] = field(default_factory=list)
+    cal_img_base_name: list[str] = field(default_factory=list)
+    hp_flag: int = 0
+    allCam_flag: int = 0
     tiff_flag: int = 0
-    pair_flag: int = 0
+    imx: int = 0
+    imy: int = 0
+    pix_x: float = 0.0
+    pix_y: float = 0.0
     chfield: int = 0
-
-    # def to_dict(self):
-    #     """Convert CalibrationPar instance to a dictionary."""
-    #     return {
-    #         'fixp_name': self.fixp_name,
-    #         'img_name': self.img_name,
-    #         'img_ori0': self.img_ori0,
-    #         'tiff_flag': self.tiff_flag,
-    #         'pair_flag': self.pair_flag,
-    #         'chfield': self.chfield,
-    #     }
+    mm: MmNp = field(default_factory=MmNp)
 
     @classmethod
-    def from_file(cls, file_path: str, num_cams: int):
-        """Read from cal_ori.par file."""
-        with open(file_path, "r", encoding="utf-8") as file:
-            fixp_name = file.readline().strip()
-            tmp = [file.readline().strip() for _ in range(num_cams * 2)]
-            # img_ori0 = [file.readline().strip() for _ in range(4)]
-            img_name = tmp[0::2]
-            img_ori0 = tmp[1::2]
-            tiff_flag = int(file.readline().strip())
-            pair_flag = int(file.readline().strip())
-            chfield = int(file.readline().strip())
+    def from_file(cls, filename: str | Path) -> ControlPar:
+        """Read control parameters from file.
 
-        return cls(fixp_name, img_name, img_ori0, tiff_flag, pair_flag, chfield)
+        File format (21 lines regardless of camera count):
+        1. num_cams
+        2n. img_base_name for camera n
+        2n+1. cal_img_base_name for camera n
+        10. hp_flag
+        11. allCam_flag
+        12. tiff_flag
+        13. imx
+        14. imy
+        15. pix_x
+        16. pix_y
+        17. chfield
+        18. mm.n1
+        19. mm.n2[0]
+        20. mm.n3
+        21. mm.d[0]
 
+        Args:
+            filename: path to parameter file.
 
-def read_cal_ori_parameters(file_path: Path, num_cams: int) -> CalibrationPar:
-    """Read from cal_ori.par file."""
-    with open(file_path, "r", encoding="utf-8") as file:
-        fixp_name = file.readline().strip()
-        tmp = [file.readline().strip() for _ in range(num_cams * 2)]
-        # img_ori0 = [file.readline().strip() for _ in range(4)]
-        img_name = tmp[0::2]
-        img_ori0 = tmp[1::2]
-        tiff_flag = int(file.readline().strip())
-        pair_flag = int(file.readline().strip())
-        chfield = int(file.readline().strip())
+        Returns:
+            ControlPar instance.
 
-    return CalibrationPar(fixp_name, img_name, img_ori0, tiff_flag, pair_flag, chfield)
+        Raises:
+            FileNotFoundError: if file doesn't exist.
+            ValueError: if file format is invalid.
+        """
+        path = Path(filename)
+        lines = path.read_text().strip().splitlines()
+
+        if len(lines) < 1:
+            raise ValueError("Empty control parameter file")
+
+        idx = 0
+        num_cams = int(lines[idx].strip())
+        idx += 1
+
+        img_base_name = []
+        cal_img_base_name = []
+        for cam in range(num_cams):
+            img_base_name.append(lines[idx].strip())
+            idx += 1
+            cal_img_base_name.append(lines[idx].strip())
+            idx += 1
+
+        hp_flag = int(lines[idx].strip())
+        idx += 1
+        allCam_flag = int(lines[idx].strip())
+        idx += 1
+        tiff_flag = int(lines[idx].strip())
+        idx += 1
+        imx = int(lines[idx].strip())
+        idx += 1
+        imy = int(lines[idx].strip())
+        idx += 1
+        pix_x = float(lines[idx].strip())
+        idx += 1
+        pix_y = float(lines[idx].strip())
+        idx += 1
+        chfield = int(lines[idx].strip())
+        idx += 1
+        n1 = float(lines[idx].strip())
+        idx += 1
+        n2_0 = float(lines[idx].strip())
+        idx += 1
+        n3 = float(lines[idx].strip())
+        idx += 1
+        d0 = float(lines[idx].strip())
+        idx += 1
+
+        mm = MmNp(nlay=1, n1=n1, n2=[n2_0, 1.0, 1.0], d=[d0, 0.0, 0.0], n3=n3)
+
+        return cls(
+            num_cams=num_cams,
+            img_base_name=img_base_name,
+            cal_img_base_name=cal_img_base_name,
+            hp_flag=hp_flag,
+            allCam_flag=allCam_flag,
+            tiff_flag=tiff_flag,
+            imx=imx,
+            imy=imy,
+            pix_x=pix_x,
+            pix_y=pix_y,
+            chfield=chfield,
+            mm=mm,
+        )
 
 
 @dataclass
-class MultiPlanesPar(Parameters):
-    """Multiplanes parameters."""
+class TargetPar:
+    """Target recognition parameters: detection thresholds and size limits.
 
-    num_planes: int = field(default_factory=int)
-    filename: list = field(default_factory=list)
-
-    @classmethod
-    def from_file(cls, file_path: Path):
-        """Read from multiplanes.par file."""
-        with open(file_path, "r", encoding="utf-8") as file:
-            num_planes = int(file.readline().strip())
-            filename = [file.readline().strip() for _ in range(num_planes)]
-        return cls(num_planes, filename)
-
-
-@dataclass
-class ExaminePar(Parameters):
-    """Examine parameters."""
-
-    examine_flag: bool = False
-    combine_flag: bool = False
-
-    @classmethod
-    def from_file(cls, file_path: Path):
-        """Read from examine.par file."""
-        with open(file_path, "r", encoding="utf-8") as file:
-            examine_flag = bool(int(file.readline().strip()))
-            combine_flag = bool(int(file.readline().strip()))
-        return cls(examine_flag, combine_flag)
-
-
-def read_examine_par(file_path: Path) -> ExaminePar:
-    """Read from examine.par file."""
-    with open(file_path, "r", encoding="utf-8") as file:
-        examine_flag = bool(int(file.readline().strip()))
-        combine_flag = bool(int(file.readline().strip()))
-    return ExaminePar(examine_flag, combine_flag)
-
-
-@dataclass
-class PftVersionPar(Parameters):
-    """Pft version parameters."""
-
-    existing_target_flag: bool = False
+    Attributes:
+        discont: maximum discontinuity.
+        gvthres: grey value thresholds for binarization (one per camera, up to 4).
+        nnmin, nnmax: min/max number of pixels per target.
+        nxmin, nxmax: min/max pixels in x direction.
+        nymin, nymax: min/max pixels in y direction.
+        sumg_min: minimum sum of grey values.
+        cr_sz: size of crosses.
+    """
+    discont: int = 0
+    gvthres: list[int] = field(default_factory=lambda: [0, 0, 0, 0])
+    nnmin: int = 0
+    nnmax: int = 0
+    nxmin: int = 0
+    nxmax: int = 0
+    nymin: int = 0
+    nymax: int = 0
+    sumg_min: int = 0
+    cr_sz: int = 0
 
     @classmethod
-    def from_file(cls, file_path: Path):
-        """Read from pft_version.par file."""
-        with open(file_path, "r", encoding="utf-8") as file:
-            pft_version = bool(int(file.readline().strip()))
-        return cls(pft_version)
+    def from_file(cls, filename: str | Path) -> TargetPar:
+        """Read target recognition parameters from file.
 
-    @classmethod
-    def write(cls, file_path: Path):
-        """Write to pft_version.par file."""
-        with open(file_path, "w", encoding="utf-8") as file:
-            file.write(f"{cls.existing_target_flag}\n")
+        File format:
+        gvthres[0..3] (4 lines)
+        discont (1 line)
+        nnmin nnmax (1 line)
+        nxmin nxmax (1 line)
+        nymin nymax (1 line)
+        sumg_min (1 line)
+        cr_sz (1 line)
+
+        Args:
+            filename: path to parameter file.
+
+        Returns:
+            TargetPar instance.
+
+        Raises:
+            FileNotFoundError: if file doesn't exist.
+            ValueError: if file format is invalid.
+        """
+        path = Path(filename)
+        lines = path.read_text().strip().splitlines()
+
+        if len(lines) < 9:
+            raise ValueError(f"Expected 9 lines, got {len(lines)}")
+
+        gvthres = [int(lines[i].strip()) for i in range(4)]
+        discont = int(lines[4].strip())
+
+        nn_parts = lines[5].strip().split()
+        nnmin, nnmax = int(nn_parts[0]), int(nn_parts[1])
+
+        nx_parts = lines[6].strip().split()
+        nxmin, nxmax = int(nx_parts[0]), int(nx_parts[1])
+
+        ny_parts = lines[7].strip().split()
+        nymin, nymax = int(ny_parts[0]), int(ny_parts[1])
+
+        sumg_min = int(lines[8].strip())
+        cr_sz = int(lines[9].strip()) if len(lines) > 9 else 0
+
+        return cls(
+            discont=discont,
+            gvthres=gvthres,
+            nnmin=nnmin,
+            nnmax=nnmax,
+            nxmin=nxmin,
+            nxmax=nxmax,
+            nymin=nymin,
+            nymax=nymax,
+            sumg_min=sumg_min,
+            cr_sz=cr_sz,
+        )
+
+    def to_file(self, filename: str | Path) -> None:
+        """Write target recognition parameters to file.
+
+        Args:
+            filename: path to output file.
+        """
+        path = Path(filename)
+        lines = [
+            str(self.gvthres[0]),
+            str(self.gvthres[1]),
+            str(self.gvthres[2]),
+            str(self.gvthres[3]),
+            str(self.discont),
+            f"{self.nnmin} {self.nnmax}",
+            f"{self.nxmin} {self.nxmax}",
+            f"{self.nymin} {self.nymax}",
+            str(self.sumg_min),
+            str(self.cr_sz),
+        ]
+        path.write_text("\n".join(lines) + "\n")

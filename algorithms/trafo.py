@@ -1,189 +1,278 @@
-"""Module for coordinate transformations."""
+"""Coordinate transformations between pixel, metric, and flat-image systems.
 
-from typing import Tuple
+Translation of lib/src/trafo.c and lib/include/trafo.h.
+
+Transforms between:
+- Pixel coordinates: raw image coordinates (0..imx, 0..imy)
+- Metric coordinates: physical coordinates on sensor (mm), centered
+- Flat-image coordinates: undistorted metric coordinates (ideal pinhole)
+- Distorted coordinates: metric coordinates with Brown distortion applied
+"""
 
 import numpy as np
-from numba import float64, int32, njit
-
-from .calibration import Calibration
-from .parameters import ControlPar
+from dataclasses import dataclass
 
 
-def pixel_to_metric(
-    x_pixel: float, y_pixel: float, parameters: ControlPar
-) -> Tuple[float, float]:
+# Y-remap mode constants (for interlaced cameras)
+NO_REMAP = 0
+DOUBLED_PLUS_ONE = 1
+DOUBLED = 2
+
+
+def old_pixel_to_metric(
+    x_pixel: float,
+    y_pixel: float,
+    im_size_x: int,
+    im_size_y: int,
+    pix_size_x: float,
+    pix_size_y: float,
+    y_remap_mode: int = NO_REMAP,
+) -> tuple[float, float]:
     """Convert pixel coordinates to metric coordinates.
 
-    Arguments:
-    ---------
-    x_metric, y_metric (float): output metric coordinates.
-    x_pixel, y_pixel (float): input pixel coordinates.
-    parameters (ControlPar): control structure holding image and pixel sizes.
+    Args:
+        x_pixel, y_pixel: input pixel coordinates.
+        im_size_x, im_size_y: image dimensions in pixels.
+        pix_size_x, pix_size_y: pixel size in mm.
+        y_remap_mode: 0=normal, 1=odd lines, 2=even lines (interlaced).
+
+    Returns:
+        (x_metric, y_metric) tuple.
     """
-    return fast_pixel_to_metric(
-        x_pixel,
-        y_pixel,
-        parameters.imx,
-        parameters.imy,
-        parameters.pix_x,
-        parameters.pix_y,
-    )
+    # Apply y remapping
+    if y_remap_mode == DOUBLED_PLUS_ONE:
+        y_pixel = 2.0 * y_pixel + 1.0
+    elif y_remap_mode == DOUBLED:
+        y_pixel = 2.0 * y_pixel
+
+    x_metric = (x_pixel - im_size_x / 2.0) * pix_size_x
+    y_metric = (im_size_y / 2.0 - y_pixel) * pix_size_y
+
+    return x_metric, y_metric
 
 
-@njit(cache=True)
-def fast_pixel_to_metric(
-    x_pixel, y_pixel, imx, imy, pix_x, pix_y
-) -> Tuple[float, float]:
-    """Convert pixel coordinates to metric coordinates."""
-    if pix_x == 0 or pix_y == 0:
-        raise ValueError("Pixel size cannot be zero.")
-    x_metric = (x_pixel - float(imx) / 2.0) * pix_x
-    y_metric = (float(imy) / 2.0 - y_pixel) * pix_y
-
-    return (x_metric, y_metric)
-
-
-@njit(float64[:, :](int32[:, :], int32, int32, float64, float64), cache=True)
-def arr_pixel_to_metric(
-    pixel: np.ndarray, imx: int, imy: int, pix_x: float, pix_y: float
-) -> np.ndarray:
-    """Convert pixel coordinates to metric coordinates.
-
-    Arguments:
-    ---------
-    imx (float): image width in pixels.
-    imy (float): image height in pixels.
-    pix_x (float): pixel size in x-direction.
-    pix_y (float): pixel size in y-direction.
-
-    Returns
-    -------
-    metric (np.ndarray): output metric coordinates.
-
-    """
-    metric = np.empty_like(pixel, dtype=np.float64)
-    metric[:, 0] = (pixel[:, 0] - imx / 2.0) * pix_x
-    metric[:, 1] = (imy / 2.0 - pixel[:, 1]) * pix_y
-
-    return metric
-
-
-def metric_to_pixel(
-    x_metric: float, y_metric: float, parameters: ControlPar
-) -> Tuple[float, float]:
+def old_metric_to_pixel(
+    x_metric: float,
+    y_metric: float,
+    im_size_x: int,
+    im_size_y: int,
+    pix_size_x: float,
+    pix_size_y: float,
+    y_remap_mode: int = NO_REMAP,
+) -> tuple[float, float]:
     """Convert metric coordinates to pixel coordinates.
 
-    Arguments:
-    ---------
-    x_metric, y_metric (float): input metric coordinates.
-    parameters (ControlPar): control structure holding image and pixel sizes.
+    Args:
+        x_metric, y_metric: input metric coordinates.
+        im_size_x, im_size_y: image dimensions in pixels.
+        pix_size_x, pix_size_y: pixel size in mm.
+        y_remap_mode: 0=normal, 1=odd lines, 2=even lines (interlaced).
 
-    Returns
-    -------
-    x_pixel, y_pixel (float): output pixel coordinates.
+    Returns:
+        (x_pixel, y_pixel) tuple.
     """
-    return fast_metric_to_pixel(
-        x_metric,
-        y_metric,
-        parameters.imx,
-        parameters.imy,
-        parameters.pix_x,
-        parameters.pix_y,
-    )
+    x_pixel = x_metric / pix_size_x + im_size_x / 2.0
+    y_pixel = im_size_y / 2.0 - y_metric / pix_size_y
 
-
-@njit(cache=True)
-def fast_metric_to_pixel(
-    x_metric, y_metric, imx, imy, pix_x, pix_y
-) -> Tuple[float, float]:
-    """Convert metric coordinates to pixel coordinates."""
-    x_pixel = (x_metric / pix_x) + (float(imx) / 2.0)
-    y_pixel = (float(imy) / 2.0) - (y_metric / pix_y)
+    # Apply y remapping (inverse)
+    if y_remap_mode == DOUBLED_PLUS_ONE:
+        y_pixel = (y_pixel - 1.0) / 2.0
+    elif y_remap_mode == DOUBLED:
+        y_pixel = y_pixel / 2.0
 
     return x_pixel, y_pixel
 
 
-def arr_metric_to_pixel(metric: np.ndarray, parameters: ControlPar) -> np.ndarray:
-    """Convert an array of metric coordinates to pixel coordinates.
+def pixel_to_metric(
+    x_pixel: float,
+    y_pixel: float,
+    imx: int,
+    imy: int,
+    pix_x: float,
+    pix_y: float,
+    chfield: int = NO_REMAP,
+) -> tuple[float, float]:
+    """Convert pixel to metric coordinates using control parameters.
 
-    Arguments:
-    ---------
-    metric (np.ndarray): input array of metric coordinates.
-    parameters (ControlPar): control structure holding image and pixel sizes.
+    Args:
+        x_pixel, y_pixel: input pixel coordinates.
+        imx, imy: image dimensions in pixels.
+        pix_x, pix_y: pixel size in mm.
+        chfield: y-remap mode (NO_REMAP, DOUBLED_PLUS_ONE, DOUBLED).
 
-    Returns
-    -------
-    pixel (np.ndarray): output array of pixel coordinates.
+    Returns:
+        (x_metric, y_metric) tuple.
     """
-    metric = np.atleast_2d(metric)
-
-    return fast_arr_metric_to_pixel(
-        metric, parameters.imx, parameters.imy, parameters.pix_x, parameters.pix_y
-    )
+    return old_pixel_to_metric(x_pixel, y_pixel, imx, imy, pix_x, pix_y, chfield)
 
 
-@njit(float64[:, :](float64[:, :], int32, int32, float64, float64), cache=True)
-def fast_arr_metric_to_pixel(
-    metric: np.ndarray, imx: int, imy: int, pix_x: float, pix_y: float
-) -> np.ndarray:
-    """Convert an array of metric coordinates to pixel coordinates."""
-    pixel = np.zeros_like(metric)
-    pixel[:, 0] = (metric[:, 0] / pix_x) + (imx / 2.0)
-    pixel[:, 1] = (imy / 2.0) - (metric[:, 1] / pix_y)
+def metric_to_pixel(
+    x_metric: float,
+    y_metric: float,
+    imx: int,
+    imy: int,
+    pix_x: float,
+    pix_y: float,
+    chfield: int = NO_REMAP,
+) -> tuple[float, float]:
+    """Convert metric to pixel coordinates using control parameters.
 
-    return pixel
+    Args:
+        x_metric, y_metric: input metric coordinates.
+        imx, imy: image dimensions in pixels.
+        pix_x, pix_y: pixel size in mm.
+        chfield: y-remap mode.
+
+    Returns:
+        (x_pixel, y_pixel) tuple.
+    """
+    return old_metric_to_pixel(x_metric, y_metric, imx, imy, pix_x, pix_y, chfield)
 
 
-@njit(fastmath=True, cache=True, nogil=True)
-def distort_brown_affine(
+def distort_brown_affin(
     x: float,
     y: float,
-    ap: np.ndarray,
-) -> Tuple[float, float]:
-    """Distort a point using the Brown affine model.
+    k1: float,
+    k2: float,
+    k3: float,
+    p1: float,
+    p2: float,
+    scx: float,
+    she: float,
+) -> tuple[float, float]:
+    """Apply Brown distortion to undistorted metric coordinates.
 
-    ap: ap52_dtype: np.recarray with fields k1, k2, k3, p1, p2, scx, she
-        presented here as a np.array
+    Transforms ideal pinhole coordinates to real distorted image coordinates.
 
+    Args:
+        x, y: undistorted metric coordinates.
+        k1, k2, k3: radial distortion coefficients.
+        p1, p2: decentering distortion coefficients.
+        scx: scale factor.
+        she: shear angle.
+
+    Returns:
+        (x_distorted, y_distorted) tuple.
     """
-    if x == 0 and y == 0:
-        return 0, 0
+    r = np.sqrt(x * x + y * y)
 
-    r = np.sqrt(x**2 + y**2)
+    if r < 1e-10:
+        return 0.0, 0.0
 
-    x += (
-        x * (ap[0] * r**2 + ap[1] * r**4 + ap[2] * r**6)
-        + ap[3] * (r**2 + 2 * x**2)
-        + 2 * ap[4] * x * y
-    )
-    y += (
-        y * (ap[0] * r**2 + ap[1] * r**4 + ap[2] * r**6)
-        + ap[4] * (r**2 + 2 * y**2)
-        + 2 * ap[3] * x * y
-    )
+    # Radial distortion
+    r2 = r * r
+    r4 = r2 * r2
+    r6 = r4 * r2
+    radial_factor = 1.0 + k1 * r2 + k2 * r4 + k3 * r6
 
-    x1 = ap[5] * x - np.sin(ap[6]) * y
-    y1 = np.cos(ap[6]) * y
+    # Decentering distortion
+    x_dist = x * radial_factor + p1 * (r2 + 2 * x * x) + 2 * p2 * x * y
+    y_dist = y * radial_factor + p2 * (r2 + 2 * y * y) + 2 * p1 * x * y
 
-    return x1, y1
+    # Affine transformation
+    sin_she = np.sin(she)
+    cos_she = np.cos(she)
+
+    x1 = scx * (x_dist - sin_she * y_dist)
+    y1 = scx * cos_she * y_dist
+
+    return float(x1), float(y1)
 
 
-@njit(fastmath=True, cache=True, nogil=True)
-def correct_brown_affine(
-    x: float, y: float, ap: np.ndarray, tol: float = 1e-5
-) -> Tuple[float, float]:
-    """Correct a distorted point using the Brown affine model."""
-    if x == 0 and y == 0:
-        return x, y
+def correct_brown_affin(
+    x: float,
+    y: float,
+    k1: float,
+    k2: float,
+    k3: float,
+    p1: float,
+    p2: float,
+    scx: float,
+    she: float,
+) -> tuple[float, float]:
+    """Inverse Brown distortion (single iteration, for backward compatibility).
 
+    Args:
+        x, y: distorted metric coordinates.
+        k1, k2, k3: radial distortion coefficients.
+        p1, p2: decentering distortion coefficients.
+        scx: scale factor.
+        she: shear angle.
+
+    Returns:
+        (x_flat, y_flat) undistorted coordinates.
+    """
+    sin_she = np.sin(she)
+    cos_she = np.cos(she)
+    inv_scx = 1.0 / scx
+
+    # Initial guess: inverse affine transformation
+    xq = x * inv_scx
+    yq = y * inv_scx / cos_she
+    xq += yq * sin_she
+
+    max_iter = 20
+    damping = 0.7
+    tol = 1e-8
+
+    for _ in range(max_iter):
+        xq_old, yq_old = xq, yq
+
+        # Forward distort current guess
+        xt, yt = distort_brown_affin(xq, yq, k1, k2, k3, p1, p2, scx, she)
+
+        # Error
+        dx = (x - xt) * inv_scx
+        dy = (y - yt) * inv_scx
+
+        # Update with damping
+        xq += dx * damping
+        yq += dy * damping
+
+        # Check convergence
+        change = np.sqrt((xq - xq_old) ** 2 + (yq - yq_old) ** 2)
+        pos_magnitude = np.sqrt(xq * xq + yq * yq)
+        if pos_magnitude > 1e-10 and change / pos_magnitude < tol:
+            break
+
+    return xq, yq
+
+
+def correct_brown_affine_exact(
+    x: float,
+    y: float,
+    k1: float,
+    k2: float,
+    k3: float,
+    p1: float,
+    p2: float,
+    scx: float,
+    she: float,
+    tol: float = 1e-8,
+) -> tuple[float, float]:
+    """Iteratively solve inverse Brown distortion with full convergence.
+
+    Args:
+        x, y: distorted metric coordinates.
+        k1, k2, k3: radial distortion coefficients.
+        p1, p2: decentering distortion coefficients.
+        scx: scale factor.
+        she: shear angle.
+        tol: convergence tolerance.
+
+    Returns:
+        (x_flat, y_flat) undistorted coordinates.
+    """
     r_init = np.sqrt(x * x + y * y)
+
     if r_init < 1e-10:
         return 0.0, 0.0
 
-    sin_she = np.sin(ap[6])
-    cos_she = np.cos(ap[6])
-    inv_scx = 1.0 / ap[5]
+    sin_she = np.sin(she)
+    cos_she = np.cos(she)
+    inv_scx = 1.0 / scx
 
+    # Initial guess: inverse affine transformation
     xq = (x + y * sin_she) * inv_scx
     yq = y / cos_she
 
@@ -195,9 +284,10 @@ def correct_brown_affine(
         r4 = r2 * r2
         r6 = r4 * r2
 
-        radial_factor = ap[0] * r2 + ap[1] * r4 + ap[2] * r6
-        dx = xq * radial_factor + ap[3] * (r2 + 2.0 * xq * xq) + 2.0 * ap[4] * xq * yq
-        dy = yq * radial_factor + ap[4] * (r2 + 2.0 * yq * yq) + 2.0 * ap[3] * xq * yq
+        radial_factor = k1 * r2 + k2 * r4 + k3 * r6
+
+        dx = xq * radial_factor + p1 * (r2 + 2 * xq * xq) + 2 * p2 * xq * yq
+        dy = yq * radial_factor + p2 * (r2 + 2 * yq * yq) + 2 * p1 * xq * yq
 
         xq_new = (x + y * sin_she) * inv_scx - dx
         yq_new = y / cos_she - dy
@@ -208,128 +298,68 @@ def correct_brown_affine(
         xq += damping * dx_change
         yq += damping * dy_change
 
-        if np.sqrt(dx_change * dx_change + dy_change * dy_change) < tol:
+        if np.sqrt(dx_change ** 2 + dy_change ** 2) < tol:
             break
 
     return xq, yq
 
 
-def flat_to_dist(flat_x: float, flat_y: float, cal: Calibration) -> Tuple[float, float]:
-    """Convert flat-image coordinates to real-image coordinates.
+def flat_to_dist(
+    flat_x: float,
+    flat_y: float,
+    xh: float,
+    yh: float,
+    k1: float,
+    k2: float,
+    k3: float,
+    p1: float,
+    p2: float,
+    scx: float,
+    she: float,
+) -> tuple[float, float]:
+    """Convert flat-image to distorted metric coordinates.
 
-    Make coordinates relative to sensor center rather than primary point
-    image coordinates, because distortion formula assumes it, [1] p.180.
-    """
-    # print(f"flat_x {flat_x}, flat_y {flat_y}")
-    # print(f"cal.int {cal.int_par.xh}, {cal.int_par.yh}")
-    flat_x += cal.int_par.xh
-    flat_y += cal.int_par.yh
-
-    # print(f"flat_x {flat_x}, flat_y {flat_y}")
-
-    dist_x, dist_y = distort_brown_affine(flat_x, flat_y, cal.added_par)
-    # print(f"dist_x {dist_x}, dist_y {dist_y}")
-
-    return dist_x, dist_y
-
-
-def dist_to_flat(dist_x: float, dist_y: float, cal: Calibration, tol: float = 1e-5):
-    """Convert real-image coordinates to flat-image coordinates."""
-    flat_x, flat_y = correct_brown_affine(dist_x, dist_y, cal.added_par, tol)
-    flat_x -= cal.int_par.xh
-    flat_y -= cal.int_par.yh
-    return flat_x, flat_y
-
-
-def correct_arr_brown_affine(
-    input: np.ndarray, calibration: Calibration, out: np.ndarray = None
-) -> np.ndarray:
-    """Correct array of points using Brown affine model (distortion removal).
-
-    Arguments:
-    ---------
-    input: np.ndarray of shape (n, 2) with distorted metric coordinates.
-    calibration: Calibration object with distortion parameters.
-    out: optional output array (if None, new array is created).
+    Args:
+        flat_x, flat_y: flat-image (undistorted, centered) coordinates.
+        xh, yh: principal point (sensor shift).
+        k1, k2, k3, p1, p2, scx, she: distortion parameters.
 
     Returns:
-    --------
-    np.ndarray of shape (n, 2) with corrected flat coordinates.
+        (dist_x, dist_y) distorted metric coordinates.
     """
-    input = np.atleast_2d(input)
-    if input.shape[1] != 2:
-        raise ValueError("Input array must have shape (n, 2)")
+    # Make coordinates relative to sensor center
+    flat_x += xh
+    flat_y += yh
 
-    if out is None:
-        out = np.empty_like(input)
-
-    for i in range(input.shape[0]):
-        x, y = correct_brown_affine(input[i, 0], input[i, 1], calibration.added_par)
-        out[i, 0] = x
-        out[i, 1] = y
-
-    return out
+    return distort_brown_affin(flat_x, flat_y, k1, k2, k3, p1, p2, scx, she)
 
 
-def distort_arr_brown_affine(
-    input: np.ndarray, calibration: Calibration, out: np.ndarray = None
-) -> np.ndarray:
-    """Apply Brown affine distortion to array of points.
+def dist_to_flat(
+    dist_x: float,
+    dist_y: float,
+    xh: float,
+    yh: float,
+    k1: float,
+    k2: float,
+    k3: float,
+    p1: float,
+    p2: float,
+    scx: float,
+    she: float,
+    tol: float = 1e-8,
+) -> tuple[float, float]:
+    """Convert distorted metric to flat-image coordinates.
 
-    Arguments:
-    ---------
-    input: np.ndarray of shape (n, 2) with flat metric coordinates.
-    calibration: Calibration object with distortion parameters.
-    out: optional output array (if None, new array is created).
+    Args:
+        dist_x, dist_y: distorted metric coordinates.
+        xh, yh: principal point (sensor shift).
+        k1, k2, k3, p1, p2, scx, she: distortion parameters.
+        tol: convergence tolerance.
 
     Returns:
-    --------
-    np.ndarray of shape (n, 2) with distorted coordinates.
+        (flat_x, flat_y) flat-image coordinates.
     """
-    input = np.atleast_2d(input)
-    if input.shape[1] != 2:
-        raise ValueError("Input array must have shape (n, 2)")
-
-    if out is None:
-        out = np.empty_like(input)
-
-    for i in range(input.shape[0]):
-        x, y = distort_brown_affine(input[i, 0], input[i, 1], calibration.added_par)
-        out[i, 0] = x
-        out[i, 1] = y
-
-    return out
-
-
-def distorted_to_flat(
-    inp: np.ndarray,
-    calibration: Calibration,
-    out: np.ndarray = None,
-    tol: float = 1e-5,
-) -> np.ndarray:
-    """Convert distorted metric coordinates to flat (undistorted) coordinates.
-
-    Arguments:
-    ---------
-    inp: np.ndarray of shape (n, 2) with distorted metric coordinates.
-    calibration: Calibration object.
-    out: optional output array.
-    tol: tolerance for iterative correction.
-
-    Returns:
-    --------
-    np.ndarray of shape (n, 2) with flat coordinates.
-    """
-    inp = np.atleast_2d(inp)
-    if inp.shape[1] != 2:
-        raise ValueError("Input array must have shape (n, 2)")
-
-    if out is None:
-        out = np.empty_like(inp)
-
-    for i in range(inp.shape[0]):
-        x, y = dist_to_flat(inp[i, 0], inp[i, 1], calibration, tol)
-        out[i, 0] = x
-        out[i, 1] = y
-
-    return out
+    flat_x, flat_y = correct_brown_affine_exact(
+        dist_x, dist_y, k1, k2, k3, p1, p2, scx, she, tol
+    )
+    return flat_x - xh, flat_y - yh

@@ -1,25 +1,61 @@
-from dataclasses import dataclass, field
-from typing import List
+"""Particle detection via thresholding and peak fitting.
+
+Translation of lib/src/segmentation.c and lib/include/segmentation.h.
+
+Provides:
+- targ_rec: thresholding and center-of-gravity with peak fitting
+- peak_fit: two-pass component labeling with reunification
+- check_touch: detect touching peaks
+
+Uses NumPy vectorized operations where possible, with clear Python
+logic for the connected component labeling algorithms.
+"""
 
 import numpy as np
-from numba import njit
-from scipy.ndimage import center_of_mass, gaussian_filter, label, maximum_filter
+from dataclasses import dataclass, field
+from collections import deque
 
-from ._native_compat import HAS_NATIVE_SEGMENTATION, native_target_recognition
-from ._native_convert import (
-    from_native_target_array,
-    to_native_control_par,
-    to_native_target_par,
-)
-from .constants import CORRES_NONE, MAX_TARGETS
-from .parameters import ControlPar, TargetPar
-from .tracking_frame_buf import Target
+# Constant for no correspondence assigned
+CORRES_NONE = -1
+
+
+@dataclass
+class Target:
+    """Detected particle target.
+
+    Attributes:
+        pnr: particle number (index).
+        x, y: centroid coordinates.
+        n: number of pixels in target.
+        nx, ny: extent in x and y.
+        sumg: sum of grey values.
+        tnr: correspondence number (-1 = unassigned).
+    """
+    pnr: int = 0
+    x: float = 0.0
+    y: float = 0.0
+    n: int = 0
+    nx: int = 0
+    ny: int = 0
+    sumg: int = 0
+    tnr: int = CORRES_NONE
 
 
 @dataclass
 class Peak:
-    """Peak dataclass."""
+    """Internal peak representation for peak fitting.
 
+    Attributes:
+        pos: linear position of peak maximum.
+        status: peak status flag.
+        xmin, xmax, ymin, ymax: bounding box.
+        n: number of pixels.
+        sumg: sum of grey values.
+        x, y: weighted centroid (before normalization).
+        unr: unified peak reference.
+        touch: list of touching peak indices.
+        n_touch: number of touches.
+    """
     pos: int = 0
     status: int = 0
     xmin: int = 0
@@ -31,631 +67,431 @@ class Peak:
     x: float = 0.0
     y: float = 0.0
     unr: int = 0
-    touch: list[int] = field(default_factory=list, repr=False)
+    touch: list[int] = field(default_factory=list)
     n_touch: int = 0
+
+
+def _is_local_maximum(img: np.ndarray, i: int, j: int, imx: int, imy: int) -> bool:
+    """Check if pixel (i,j) is a local maximum among 8 neighbors."""
+    gv = img[i, j]
+    return (
+        gv >= img[i, j - 1]
+        and gv >= img[i, j + 1]
+        and gv >= img[i - 1, j]
+        and gv >= img[i + 1, j]
+        and gv >= img[i - 1, j - 1]
+        and gv >= img[i + 1, j - 1]
+        and gv >= img[i - 1, j + 1]
+        and gv >= img[i + 1, j + 1]
+    )
+
+
+def check_touch(tpeak: Peak, p1: int, p2: int) -> None:
+    """Mark two peaks as touching if not already marked.
+
+    Args:
+        tpeak: peak array (mutated).
+        p1: first peak index.
+        p2: second peak index.
+    """
+    if p2 == 0 or p2 == p1:
+        return
+
+    # Check if already marked
+    if p2 in tpeak.touch:
+        return
+
+    # Mark touch (max 3 touches)
+    if tpeak.n_touch < 3:
+        tpeak.touch.append(p2)
+        tpeak.n_touch += 1
 
 
 def targ_rec(
     img: np.ndarray,
-    targ_par: TargetPar,
-    xmin: int,
-    xmax: int,
-    ymin: int,
-    ymax: int,
-    cpar: ControlPar,
-    num_cam,
-) -> List[Target]:
-    """Target recognition function."""
-    if (
-        HAS_NATIVE_SEGMENTATION
-        and xmin <= 0
-        and ymin <= 0
-        and xmax >= cpar.imx
-        and ymax >= cpar.imy
-    ):
-        native_tpar = to_native_target_par(targ_par)
-        native_cpar = to_native_control_par(cpar)
-        native_targets = native_target_recognition(
-            img,
-            native_tpar,
-            int(num_cam),
-            native_cpar,
-            subrange_x=None,
-            subrange_y=None,
-        )
-        targets = from_native_target_array(native_targets)
-        threshold = targ_par.gvthresh[int(num_cam)]
-        for target in targets:
-            target.sumg -= target.n * threshold
-        return targets
+    gvthres: int,
+    discont: int,
+    nnmin: int,
+    nnmax: int,
+    nxmin: int,
+    nxmax: int,
+    nymin: int,
+    nymax: int,
+    sumg_min: int,
+    xmin: int = 1,
+    xmax: int = -1,
+    ymin: int = 1,
+    ymax: int = -1,
+) -> list[Target]:
+    """Thresholding and center-of-gravity with peak fitting.
 
-    thres = targ_par.gvthresh[num_cam]
-    disco = targ_par.discont
+    Uses 4-neighbors for connectivity and 8 for local maxima detection.
 
-    # Make sure the min/max coordinates don't cause us to access memory
-    # outside the image memory.
-    if xmin <= 0:
-        xmin = 1
-    if ymin <= 0:
-        ymin = 1
-    if xmax >= cpar.imx:
-        xmax = cpar.imx - 1
-    if ymax >= cpar.imy:
-        ymax = cpar.imy - 1
+    Args:
+        img: input image (2D uint8, shape (imy, imx)).
+        gvthres: grey value threshold for binarization.
+        discont: maximum discontinuity for peak growth.
+        nnmin, nnmax: min/max number of pixels per target.
+        nxmin, nxmax: min/max extent in x.
+        nymin, nymax: min/max extent in y.
+        sumg_min: minimum sum of grey values.
+        xmin, xmax, ymin, ymax: search area (defaults to image bounds).
 
-    nnmin, nnmax = targ_par.nnmin, targ_par.nnmax
-    nxmin, nxmax = targ_par.nxmin, targ_par.nxmax
-    nymin, nymax = targ_par.nymin, targ_par.nymax
-    sumg_min = targ_par.sumg_min
+    Returns:
+        List of detected targets.
+    """
+    imy, imx = img.shape
+    if xmax < 0:
+        xmax = imx - 1
+    if ymax < 0:
+        ymax = imy - 1
 
-    pix = fast_targ_rec(
-        img,
-        thres,
-        disco,
-        nnmin,
-        nnmax,
-        nxmin,
-        nxmax,
-        nymin,
-        nymax,
-        sumg_min,
-        xmin,
-        xmax,
-        ymin,
-        ymax,
-    )
+    # Clamp bounds
+    xmin = max(xmin, 1)
+    ymin = max(ymin, 1)
+    xmax = min(xmax, imx - 1)
+    ymax = min(ymax, imy - 1)
 
-    out = [
-        Target(x=x, y=y, tnr=CORRES_NONE, pnr=pnr, n=numpix, nx=nx, ny=ny, sumg=sumg)
-        for x, y, _, pnr, numpix, nx, ny, sumg in pix
-    ]
-    return out
+    # Working copy
+    img0 = img.copy()
+    targets = []
 
-
-@njit(fastmath=True, cache=True)
-def fast_targ_rec(
-    img,
-    thres,
-    disco,
-    nnmin,
-    nnmax,
-    nxmin,
-    nxmax,
-    nymin,
-    nymax,
-    sumg_min,
-    xmin,
-    xmax,
-    ymin,
-    ymax,
-) -> List:
-    """Target recognition function."""
-    n = 0
-    n_wait = 0
-    n_targets = 0
-    sumg = 0
-    numpix = 0
-
-    img0 = img.copy()  # copy the original image
-
-    waitlist = [[0] * 2 for _ in range(MAX_TARGETS)]
-
-    xa = 0
-    ya = 0
-    xb = 0
-    yb = 0
-    x4 = [0] * 4
-    y4 = [0] * 4
-
-    pix = []
+    # Waitlist for BFS (using deque for efficiency)
+    waitlist: deque[tuple[int, int]] = deque()
 
     for i in range(ymin, ymax):
         for j in range(xmin, xmax):
-            # note i=y = rows = top to bottom
-            # j=x = columns - left to right
             gv = img0[i, j]
-            if gv > thres:
-                if (
-                    (gv >= img0[i, j - 1])
-                    and (gv >= img0[i, j + 1])
-                    and (gv >= img0[(i - 1), j])
-                    and (gv >= img0[(i + 1), j])
-                    and (gv >= img0[(i - 1), j - 1])
-                    and (gv >= img0[(i + 1), j - 1])
-                    and (gv >= img0[(i - 1), j + 1])
-                    and (gv >= img0[(i + 1), j + 1])
-                ):
-                    yn = i
-                    xn = j
 
-                    sumg = int(gv)
-                    img0[i, j] = 0
+            if gv <= gvthres:
+                continue
 
-                    xa = xn
-                    xb = xn
-                    ya = yn
-                    yb = yn
+            # Check local maximum
+            if j == 0 or j >= imx - 1 or i == 0 or i >= imy - 1:
+                continue
+            if not _is_local_maximum(img0, i, j, imx, imy):
+                continue
 
-                    gv -= thres  # intensity above the threshold
-                    x = (xn) * gv
-                    y = yn * gv
-                    numpix = 1
-                    waitlist[0][0] = j
-                    waitlist[0][1] = i
-                    n_wait = 1
+            # Found a peak - start region growing
+            xn, yn = j, i
+            sumg = int(gv)
+            img0[i, j] = 0  # Mark as processed
 
-                    while n_wait > 0:
-                        gvref = img[waitlist[0][1], waitlist[0][0]]
+            xa, xb = xn, xn
+            ya, yb = yn, yn
 
-                        x4[0] = waitlist[0][0] - 1
-                        y4[0] = waitlist[0][1]
-                        x4[1] = waitlist[0][0] + 1
-                        y4[1] = waitlist[0][1]
-                        x4[2] = waitlist[0][0]
-                        y4[2] = waitlist[0][1] - 1
-                        x4[3] = waitlist[0][0]
-                        y4[3] = waitlist[0][1] + 1
+            gv_weighted = gv - gvthres
+            x = float(xn) * gv_weighted
+            y = float(yn) * gv_weighted
+            numpix = 1
 
-                        for n in range(4):
-                            xn = x4[n]
-                            yn = y4[n]
-                            if xn >= xmax or yn >= ymax or xn < 0 or yn < 0:
-                                continue
+            waitlist.clear()
+            waitlist.append((j, i))
 
-                            gv = img0[yn, xn]
+            while waitlist:
+                wx, wy = waitlist.popleft()
+                gvref = img[wy, wx]
 
-                            if (
-                                (gv > thres)
-                                and (xn > xmin - 1)
-                                and (xn < xmax + 1)
-                                and (yn > ymin - 1)
-                                and (yn < ymax + 1)
-                                and (gv <= gvref + disco)
-                                and (gvref + disco >= img[yn - 1, xn])
-                                and (gvref + disco >= img[yn + 1, xn])
-                                and (gvref + disco >= img[yn, xn - 1])
-                                and (gvref + disco >= img[yn, xn + 1])
-                            ):
-                                # print(f"gv = {gv} sumg = {sumg}")
-                                sumg += gv
-                                # print(f"gv = {gv} sumg = {sumg}")
-                                img0[yn, xn] = 0
-                                if xn < xa:
-                                    xa = xn
-                                if xn > xb:
-                                    xb = xn
-                                if yn < ya:
-                                    ya = yn
-                                if yn > yb:
-                                    yb = yn
-                                waitlist[n_wait][0] = xn
-                                waitlist[n_wait][1] = yn
+                # 4-neighbor offsets
+                neighbors = [(wx - 1, wy), (wx + 1, wy), (wx, wy - 1), (wx, wy + 1)]
 
-                                # Coordinates are weighted by grey value, normed later.
-                                x += (xn) * (gv - thres)
-                                y += yn * (gv - thres)
-
-                                numpix += 1
-                                n_wait += 1
-
-                        n_wait -= 1
-                        for m in range(n_wait):
-                            waitlist[m][0] = waitlist[m + 1][0]
-                            waitlist[m][1] = waitlist[m + 1][1]
-                        waitlist[n_wait][0] = 0
-                        waitlist[n_wait][1] = 0
-
-                    if (
-                        xa == (xmin - 1)
-                        or ya == (ymin - 1)
-                        or xb == (xmax + 1)
-                        or yb == (ymax + 1)
-                    ):
+                for nx_pos, ny_pos in neighbors:
+                    if not (xmin - 1 <= nx_pos <= xmax and ymin - 1 <= ny_pos <= ymax):
                         continue
 
-                    nx = xb - xa + 1
-                    ny = yb - ya + 1
+                    neighbor_gv = img0[ny_pos, nx_pos]
 
+                    if neighbor_gv <= gvthres:
+                        continue
+
+                    # Check discontinuity and peak fitting criteria
                     if (
-                        numpix >= nnmin
-                        and numpix <= nnmax
-                        and nx >= nxmin
-                        and nx <= nxmax
-                        and ny >= nymin
-                        and ny <= nymax
-                        and sumg > sumg_min
+                        neighbor_gv <= gvref + discont
+                        and gvref + discont >= img[ny_pos - 1, nx_pos]
+                        and gvref + discont >= img[ny_pos + 1, nx_pos]
+                        and gvref + discont >= img[ny_pos, nx_pos - 1]
+                        and gvref + discont >= img[ny_pos, nx_pos + 1]
                     ):
-                        sumg -= numpix * thres
-                        # finish the grey-value weighting:
-                        x /= sumg
-                        x += 0.5
-                        y /= sumg
-                        y += 0.5
-                        pix.append([x, y, CORRES_NONE, n_targets, numpix, nx, ny, sumg])
-                        n_targets += 1
-                        xn = x
-                        yn = y
+                        sumg += neighbor_gv
+                        img0[ny_pos, nx_pos] = 0
 
-    # t = TargetArray(num_targs=n_targets)
-    # t.num_targs = n_targets
-    # t.targs = pix
-    return pix
+                        xa = min(xa, nx_pos)
+                        xb = max(xb, nx_pos)
+                        ya = min(ya, ny_pos)
+                        yb = max(yb, ny_pos)
+
+                        waitlist.append((nx_pos, ny_pos))
+
+                        x += nx_pos * (neighbor_gv - gvthres)
+                        y += ny_pos * (neighbor_gv - gvthres)
+                        numpix += 1
+
+            # Check if target touches image borders
+            if xa == xmin - 1 or ya == ymin - 1 or xb == xmax or yb == ymax:
+                continue
+
+            # Get extents
+            nx = xb - xa + 1
+            ny = yb - ya + 1
+
+            # Acceptance criteria
+            if (
+                nnmin <= numpix <= nnmax
+                and nxmin <= nx <= nxmax
+                and nymin <= ny <= nymax
+                and sumg > sumg_min
+            ):
+                sumg_normalized = sumg - numpix * gvthres
+                x_final = x / sumg_normalized + 0.5
+                y_final = y / sumg_normalized + 0.5
+
+                targets.append(
+                    Target(
+                        pnr=len(targets),
+                        x=x_final,
+                        y=y_final,
+                        n=numpix,
+                        nx=nx,
+                        ny=ny,
+                        sumg=sumg,
+                        tnr=CORRES_NONE,
+                    )
+                )
+
+    # Guard against empty result
+    if not targets:
+        targets.append(
+            Target(pnr=0, x=1, y=1, n=1, nx=1, ny=1, sumg=1, tnr=CORRES_NONE)
+        )
+
+    return targets
 
 
 def peak_fit(
     img: np.ndarray,
-    targ_par: TargetPar,
-    xmin: int,
-    xmax: int,
-    ymin: int,
-    ymax: int,
-    cpar: ControlPar,
-    num_cam: int,
-) -> List[Target]:
-    """Fit the peaks in the image to a gaussian."""
-    imx, imy = cpar.imx, cpar.imy
-    n_peaks = 0
-    n_wait = 0
-    x8, y8 = [0, 1, 0, -1], [1, 0, -1, 0]
-    p2 = 0
-    thres = targ_par.gvthresh[num_cam]
-    disco = targ_par.discont
-    intx1, inty1 = 0, 0
-    unify = 0
-    unified = 0
-    non_unified = 0
-    gv, gvref = 0, 0
-    gv1, gv2 = 0, 0
-    x1, x2, y1, y2, s12 = 0.0, 0.0, 0.0, 0.0, 0.0
-    label_img = [0] * (imx * imy)
-    peaks: List[Peak] = []
-    waitlist: List[List[int]] = [[]]
-    pix: List[Target] = []
-    n_target = 0
+    gvthres: int,
+    discont: int,
+    nnmin: int,
+    nnmax: int,
+    nxmin: int,
+    nxmax: int,
+    nymin: int,
+    nymax: int,
+    sumg_min: int,
+    xmin: int = 1,
+    xmax: int = -1,
+    ymin: int = 1,
+    ymax: int = -1,
+) -> list[Target]:
+    """Two-pass component labeling with peak fitting and reunification.
 
+    First pass: mark pixels above threshold, find local maxima, grow regions.
+    Second pass: collect centroid data, detect touches.
+    Third pass: reunification test (profile and distance criteria).
+    Fourth pass: output accepted targets.
+
+    Args:
+        img: input image (2D uint8, shape (imy, imx)).
+        gvthres: grey value threshold.
+        discont: maximum discontinuity.
+        nnmin, nnmax: min/max pixels per target.
+        nxmin, nxmax: min/max x extent.
+        nymin, nymax: min/max y extent.
+        sumg_min: minimum sum of grey values.
+        xmin, xmax, ymin, ymax: search area.
+
+    Returns:
+        List of detected targets.
+    """
+    imy, imx = img.shape
+    if xmax < 0:
+        xmax = imx
+    if ymax < 0:
+        ymax = imy
+
+    # Label image
+    label_img = np.zeros((imy, imx), dtype=np.int32)
+    peaks: list[Peak] = []
+
+    # ---- Pass 1: Connectivity analysis with peak search ----
     for i in range(ymin, ymax - 1):
         for j in range(xmin, xmax):
             n = i * imx + j
+            gv = img[i, j]
 
-            # compare with threshold
-            gv = img[n]
-            if gv <= thres:
+            if gv <= gvthres:
+                continue
+            if label_img[i, j] != 0:
                 continue
 
-            # skip already labeled pixel
-            if label_img[n] != 0:
+            # Check local maximum
+            if not _is_local_maximum(img, i, j, imx, imy):
                 continue
 
-            # check whether pixel is a local maximum
-            if (
-                gv >= img[n - 1]
-                and gv >= img[n + 1]
-                and gv >= img[n - imx]
-                and gv >= img[n + imx]
-                and gv >= img[n - imx - 1]
-                and gv >= img[n + imx - 1]
-                and gv >= img[n - imx + 1]
-                and gv >= img[n + imx + 1]
-            ):
-                # label peak in label_img, initialize peak
-                n_peaks += 1
-                label_img[n] = n_peaks
-                peaks.append(Peak(pos=n, status=1, xmin=j, xmax=i, ymin=i, ymax=i))
+            # New peak
+            n_peaks = len(peaks) + 1
+            label_img[i, j] = n_peaks
 
-                waitlist[0][0] = j
-                waitlist[0][1] = i
-                n_wait = 1
+            peak = Peak(
+                pos=n,
+                status=1,
+                xmin=j,
+                xmax=j,
+                ymin=i,
+                ymax=i,
+            )
+            peaks.append(peak)
 
-                while n_wait > 0:
-                    gvref = img[imx * waitlist[0][1] + waitlist[0][0]]
-                    x8 = [
-                        waitlist[0][0] - 1,
-                        waitlist[0][0] + 1,
-                        waitlist[0][0],
-                        waitlist[0][0],
-                    ]
-                    y8 = [
-                        waitlist[0][1],
-                        waitlist[0][1],
-                        waitlist[0][1] - 1,
-                        waitlist[0][1] + 1,
-                    ]
+            # BFS region growing
+            waitlist: deque[tuple[int, int]] = deque([(j, i)])
 
-                    for k in range(4):
-                        yn = y8[k]
-                        xn = x8[k]
+            while waitlist:
+                wx, wy = waitlist.popleft()
+                gvref = img[wy, wx]
 
-                        if xn < 0 or xn >= imx or yn < 0 or yn >= imy:
-                            continue
+                neighbors = [(wx - 1, wy), (wx + 1, wy), (wx, wy - 1), (wx, wy + 1)]
 
-                        n = imx * yn + xn
-                        if label_img[n] != 0:
-                            continue
+                for nx_pos, ny_pos in neighbors:
+                    if nx_pos < 0 or nx_pos >= imx or ny_pos < 0 or ny_pos >= imy:
+                        continue
+                    if label_img[ny_pos, nx_pos] != 0:
+                        continue
 
-                        gv = img[n]
+                    neighbor_gv = img[ny_pos, nx_pos]
 
-                        # conditions for threshold, discontinuity, image borders and peak fitting
-                        if (
-                            (gv > thres)
-                            and (xn >= xmin)
-                            and (xn < xmax)
-                            and (yn >= ymin)
-                            and (yn < ymax - 1)
-                            and (gv <= gvref + disco)
-                            and (gvref + disco >= img[imx * (yn - 1) + xn])
-                            and (gvref + disco >= img[imx * (yn + 1) + xn])
-                            and (gvref + disco >= img[imx * yn + (xn - 1)])
-                            and (gvref + disco >= img[imx * yn + (xn + 1)])
-                        ):
-                            label_img[imx * yn + xn] = n_peaks
-                            waitlist[n_wait][0] = xn
-                            waitlist[n_wait][1] = yn
-                            n_wait += 1
+                    if (
+                        neighbor_gv > gvthres
+                        and xmin <= nx_pos < xmax
+                        and ymin <= ny_pos < ymax - 1
+                        and neighbor_gv <= gvref + discont
+                        and gvref + discont >= img[ny_pos - 1, nx_pos]
+                        and gvref + discont >= img[ny_pos + 1, nx_pos]
+                        and gvref + discont >= img[ny_pos, nx_pos - 1]
+                        and gvref + discont >= img[ny_pos, nx_pos + 1]
+                    ):
+                        label_img[ny_pos, nx_pos] = n_peaks
+                        waitlist.append((nx_pos, ny_pos))
 
-                    n_wait -= 1
-                    for m in range(n_wait):
-                        waitlist[m][0] = waitlist[m + 1][0]
-                        waitlist[m][1] = waitlist[m + 1][1]
-                    waitlist[n_wait][0] = 0
-                    waitlist[n_wait][1] = 0
-
-    # 2.:    process label image
-    #        (collect data for center of gravity, shape and brightness parameters)
-    #        get touch events
-
+    # ---- Pass 2: Collect data and detect touches ----
     for i in range(ymin, ymax):
         for j in range(xmin, xmax):
             n = i * imx + j
+            label = label_img[i, j]
 
-            if label_img[n] > 0:
-                # process pixel
-                pnr = label_img[n]
-                gv = img[n]
-                ptr_peak = peaks[pnr - 1]
-                ptr_peak.n += 1
-                ptr_peak.sumg += gv
-                ptr_peak.x += j * gv
-                ptr_peak.y += i * gv
-
-                if j < ptr_peak.xmin:
-                    ptr_peak.xmin = j
-                if j > ptr_peak.xmax:
-                    ptr_peak.xmax = j
-                if i < ptr_peak.ymin:
-                    ptr_peak.ymin = i
-                if i > ptr_peak.ymax:
-                    ptr_peak.ymax = i
-
-                # get touch events
-                if i > 0 and j > 1:
-                    check_touch(ptr_peak, pnr, label_img[n - imx - 1])
-                if i > 0:
-                    check_touch(ptr_peak, pnr, label_img[n - imx])
-                if i > 0 and j < imy - 1:
-                    check_touch(ptr_peak, pnr, label_img[n - imx + 1])
-                if j > 0:
-                    check_touch(ptr_peak, pnr, label_img[n - 1])
-                if j < imy - 1:
-                    check_touch(ptr_peak, pnr, label_img[n + 1])
-                if i < imx - 1 and j > 0:
-                    check_touch(ptr_peak, pnr, label_img[n + imx - 1])
-                if i < imx - 1:
-                    check_touch(ptr_peak, pnr, label_img[n + imx])
-                if i < imx - 1 and j < imy - 1:
-                    check_touch(ptr_peak, pnr, label_img[n + imx + 1])
-
-    # 3.: reunification test: profile and distance
-
-    for i in range(n_peaks):
-        if peaks[i].n_touch == 0:
-            continue  # no touching targets
-        if peaks[i].unr != 0:
-            continue  # target already unified
-
-        # profile criterion
-        # point 1
-        x1 = peaks[i].x / peaks[i].sumg
-        y1 = peaks[i].y / peaks[i].sumg
-        gv1 = img[peaks[i].pos]
-
-        # consider all touching points
-        for j in range(peaks[i].n_touch):
-            p2 = peaks[i].touch[j] - 1
-
-            if p2 >= n_peaks:
-                continue  # workaround memory overwrite problem
-            if p2 < 0:
-                continue  # workaround memory overwrite problem
-            if peaks[p2].unr != 0:
-                continue  # target already unified
-
-            # point 2
-            x2 = peaks[p2].x / peaks[p2].sumg
-            y2 = peaks[p2].y / peaks[p2].sumg
-
-            gv2 = img[peaks[p2].pos]
-
-            s12 = ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5
-
-            # consider profile dot for dot
-            # if any points is by more than disco below profile, do not unify
-            if s12 < 2.0:
-                unify = 1
-            else:
-                unify = 1
-                for ll in range(1, int(s12)):
-                    intx1 = int(x1 + ll * (x2 - x1) / s12)
-                    inty1 = int(y1 + ll * (y2 - y1) / s12)
-                    gv = img[inty1 * imx + intx1] + disco
-                    if gv < gv1 + ll * (gv2 - gv1) / s12 or gv < gv1 or gv < gv2:
-                        unify = 0
-                    if unify == 0:
-                        break
-            if unify == 0:
-                non_unified += 1
+            if label <= 0:
                 continue
 
-            # otherwise unify targets
-            unified += 1
-            peaks[i].unr = p2
-            peaks[p2].x += peaks[i].x
-            peaks[p2].y += peaks[i].y
-            peaks[p2].sumg += peaks[i].sumg
-            peaks[p2].n += peaks[i].n
-            if peaks[i].xmin < peaks[p2].xmin:
-                peaks[p2].xmin = peaks[i].xmin
-            if peaks[i].ymin < peaks[p2].ymin:
-                peaks[p2].ymin = peaks[i].ymin
-            if peaks[i].xmax > peaks[p2].xmax:
-                peaks[p2].xmax = peaks[i].xmax
-            if peaks[i].ymax > peaks[p2].ymax:
-                peaks[p2].ymax = peaks[i].ymax
+            pnr = label - 1
+            peak = peaks[pnr]
+            gv = img[i, j]
 
-    # 4.: process targets
-    for i in range(n_peaks):
-        # check whether target touches image borders
-        if peaks[i].xmin == xmin and (xmax - xmin) > 32:
+            peak.n += 1
+            peak.sumg += gv
+            peak.x += j * gv
+            peak.y += i * gv
+
+            peak.xmin = min(peak.xmin, j)
+            peak.xmax = max(peak.xmax, j)
+            peak.ymin = min(peak.ymin, i)
+            peak.ymax = max(peak.ymax, i)
+
+            # Check 8-neighbors for touches
+            for di, dj in [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]:
+                ni, nj = i + di, j + dj
+                if 0 <= ni < imy and 0 <= nj < imx:
+                    neighbor_label = label_img[ni, nj]
+                    check_touch(peak, label, neighbor_label)
+
+    # ---- Pass 3: Reunification test ----
+    for i, peak_i in enumerate(peaks):
+        if peak_i.n_touch == 0 or peak_i.unr != 0:
             continue
-        if peaks[i].ymin == ymin and (xmax - xmin) > 32:
+
+        x1 = peak_i.x / peak_i.sumg
+        y1 = peak_i.y / peak_i.sumg
+        gv1 = img.flat[peak_i.pos]
+
+        for j_idx in peak_i.touch:
+            p2 = j_idx - 1
+            if p2 < 0 or p2 >= len(peaks) or peaks[p2].unr != 0:
+                continue
+
+            peak_j = peaks[p2]
+            x2 = peak_j.x / peak_j.sumg
+            y2 = peak_j.y / peak_j.sumg
+            gv2 = img.flat[peak_j.pos]
+
+            s12 = np.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+
+            # Profile criterion
+            unify = s12 < 2.0
+            if not unify:
+                unify = True
+                for l in range(1, int(s12)):
+                    intx1 = int(x1 + l * (x2 - x1) / s12)
+                    inty1 = int(y1 + l * (y2 - y1) / s12)
+                    gv = img[inty1, intx1] + discont
+                    if (
+                        gv < gv1 + l * (gv2 - gv1) / s12
+                        or gv < gv1
+                        or gv < gv2
+                    ):
+                        unify = False
+                        break
+
+            if not unify:
+                continue
+
+            # Unify targets
+            peak_i.unr = p2 + 1  # 1-indexed
+            peak_j.x += peak_i.x
+            peak_j.y += peak_i.y
+            peak_j.sumg += peak_i.sumg
+            peak_j.n += peak_i.n
+            peak_j.xmin = min(peak_j.xmin, peak_i.xmin)
+            peak_j.ymin = min(peak_j.ymin, peak_i.ymin)
+            peak_j.xmax = max(peak_j.xmax, peak_i.xmax)
+            peak_j.ymax = max(peak_j.ymax, peak_i.ymax)
+
+    # ---- Pass 4: Output targets ----
+    targets = []
+    for i, peak in enumerate(peaks):
+        # Skip if unified into another
+        if peak.unr != 0:
             continue
-        if peaks[i].xmax == xmax - 1 and (xmax - xmin) > 32:
-            continue
-        if peaks[i].ymax == ymax - 1 and (xmax - xmin) > 32:
-            continue
+
+        # Check border touching
+        width = xmax - xmin
+        if width > 32:
+            if peak.xmin == xmin or peak.ymin == ymin:
+                continue
+            if peak.xmax == xmax - 1 or peak.ymax == ymax - 1:
+                continue
+
+        # Acceptance criteria
+        nx = peak.xmax - peak.xmin + 1
+        ny = peak.ymax - peak.ymin + 1
 
         if (
-            peaks[i].unr == 0
-            and peaks[i].sumg > targ_par.sumg_min
-            and (peaks[i].xmax - peaks[i].xmin + 1) >= targ_par.nxmin
-            and (peaks[i].ymax - peaks[i].ymin + 1) >= targ_par.nymin
-            and (peaks[i].xmax - peaks[i].xmin) < targ_par.nxmax
-            and (peaks[i].ymax - peaks[i].ymin) < targ_par.nymax
-            and peaks[i].n >= targ_par.nnmin
-            and peaks[i].n <= targ_par.nnmax
+            peak.sumg > sumg_min
+            and nxmin <= nx <= nxmax
+            and nymin <= ny <= nymax
+            and nnmin <= peak.n <= nnmax
         ):
-            sumg = peaks[i].sumg
+            x_final = 0.5 + peak.x / peak.sumg
+            y_final = 0.5 + peak.y / peak.sumg
 
-            # target coordinates
-            pix.append(Target())
-            pix[n_target].x = 0.5 + peaks[i].x / sumg
-            pix[n_target].y = 0.5 + peaks[i].y / sumg
+            targets.append(
+                Target(
+                    pnr=len(targets),
+                    x=x_final,
+                    y=y_final,
+                    n=peak.n,
+                    nx=nx,
+                    ny=ny,
+                    sumg=peak.sumg,
+                    tnr=CORRES_NONE,
+                )
+            )
 
-            # target shape parameters
-            pix[n_target].sumg = sumg
-            pix[n_target].n = peaks[i].n
-            pix[n_target].nx = peaks[i].xmax - peaks[i].xmin + 1
-            pix[n_target].ny = peaks[i].ymax - peaks[i].ymin + 1
-            pix[n_target].tnr = CORRES_NONE
-            pix[n_target].pnr = n_target
-            n_target += 1
-
-    # t = TargetArray(num_targets=n_target)
-    # t.num_targs = n_target
-    # t.append(pix)
-    return pix
-
-
-def check_touch(tpeak, p1, p2):
-    done = False
-
-    if p2 == 0:
-        return
-    if p2 == p1:
-        return
-
-    # check whether p1, p2 are already marked as touching
-    for m in range(tpeak.n_touch):
-        if tpeak.touch[m] == p2:
-            done = True
-
-    # mark touch event
-    if not done:
-        tpeak.touch[tpeak.n_touch] = p2
-        tpeak.n_touch += 1
-        # don't allow for more than 4 touches
-        if tpeak.n_touch > 3:
-            tpeak.n_touch = 3
-
-
-def peak_fit_new(
-    image: np.ndarray, threshold: float = 0.5, sigma: float = 1.0
-) -> List[Peak]:
-    """
-    Find local maxima in an image using a Gaussian filter and a maximum filter,.
-
-    and returns their positions and intensities.
-
-    Args:
-    ----
-        image (np.ndarray): The image to analyze.
-        threshold (float): The minimum intensity value for a peak to be considered.
-        sigma (float): The standard deviation of the Gaussian filter.
-
-    Returns
-    -------
-        List[Peak]: A list of Peak objects representing the detected peaks.
-    """
-    smoothed = gaussian_filter(image, sigma)
-    mask = smoothed > threshold * np.max(smoothed)  # type: ignore
-    maxima = maximum_filter(smoothed, footprint=np.ones((3, 3))) == smoothed
-    labeled, num_objects = label(maxima)  # type: ignore
-    peaks = []
-    for i in range(num_objects):
-        indices = np.argwhere(labeled == i + 1)
-        coordinates = np.array(
-            [center_of_mass(mask[indices[:, 0], indices[:, 1]])[::-1]]
-        )
-        intensity = smoothed[indices[:, 0], indices[:, 1]].max()
-        x, y = np.mean(coordinates, axis=0)
-        peaks.append(Peak(int(round(x)), int(round(y)), intensity))
-    return peaks
-
-
-def target_recognition(
-    img: np.ndarray,
-    tpar: TargetPar,
-    cam: int,
-    cparam: ControlPar,
-    subrange_x=None,
-    subrange_y=None,
-) -> List[Target]:
-    """
-    Detect targets (contiguous bright blobs) in an image.
-
-    Limited to ~20,000 targets per image for now. This limitation comes from
-    the structure of underlying C code.
-
-    Arguments:
-    ---------
-    img - a numpy array holding the 8-bit gray image.
-    tpar - target recognition parameters s.a. size bounds etc.
-    cam - number of camera that took the picture, needed for getting
-        correct parameters for this image.
-    cparam - an object holding general control parameters.
-    subrange_x - optional, tuple of min and max pixel coordinates to search
-        between. Default is to search entire image width.
-    subrange_y - optional, tuple of min and max pixel coordinates to search
-        between. Default is to search entire image height.
-
-    Returns
-    -------
-    Number of  object holding the targets found.
-    """
-    # Set the subrange (to default if not given):
-    if subrange_x is None:
-        xmin, xmax = 0, cparam.imx
-    else:
-        xmin, xmax = subrange_x
-
-    if subrange_y is None:
-        ymin, ymax = 0, cparam.imy
-    else:
-        ymin, ymax = subrange_y
-
-    if img.shape[0] < ymax or img.shape[1] < xmax:
-        raise ValueError("region of detection is larger than image dimensions")
-
-    # The core Python implementation of targ_rec:
-    target_array = targ_rec(img, tpar, xmin, xmax, ymin, ymax, cparam, cam)
-
-    return target_array
+    return targets

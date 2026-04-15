@@ -1,111 +1,41 @@
+"""Pure-Python PTV algorithms using NumPy vectorized operations.
+
+This package is a clean-room translation of the C library in lib/src/
+into Python using:
+- NumPy vectorized operations for all numerical computations
+- Structure-of-Arrays (SoA) layout for batch data
+- dataclasses for parameter/configuration objects
+- No adapter layers, no dual storage, no getter/setter boilerplate
+
+Each module corresponds directly to a C source file:
+  vec_utils.py       <- lib/src/vec_utils.c
+  lsqadj.py          <- lib/src/lsqadj.c
+  calibration.py     <- lib/src/calibration.c
+  parameters.py      <- lib/src/parameters.c
+  trafo.py           <- lib/src/trafo.c
+  multimed.py        <- lib/src/multimed.c
+  ray_tracing.py     <- lib/src/ray_tracing.c
+  imgcoord.py        <- lib/src/imgcoord.c
+  image_processing.py <- lib/src/image_processing.c
+  segmentation.py    <- lib/src/segmentation.c
+  epi.py             <- lib/src/epi.c
+  correspondences.py <- lib/src/correspondences.c
+  orientation.py     <- lib/src/orientation.c
+  sortgrid.py        <- lib/src/sortgrid.c
+  tracking_frame_buf.py <- lib/src/tracking_frame_buf.c
+  tracking_run.py    <- lib/src/tracking_run.c
+  track.py           <- lib/src/track.c
+  track3d.py         <- lib/src/track3d.c
+
+Design principles:
+1. Single data model - no adapter layers
+2. SoA-only storage - no dual object/array storage
+3. Data model separated from serialization
+4. No getter/setter methods - use dataclass fields directly
+5. Small, testable function kernels
+6. Named constants for all magic numbers
+7. Clear module boundaries with minimal imports
+8. Consistent error handling with specific exceptions
+9. No dead code
+10. Consistent use of dataclasses/ndarrays
 """
-Python/Numba fallback engine for openptv2.
-
-This module provides pure Python implementations of OpenPTV algorithms
-using NumPy and Numba for JIT acceleration. It produces identical results
-to the C/Cython engine (within floating-point tolerance) and is used for:
-
-- Debugging and development
-- Real-time visualization of algorithm steps
-- Algorithm prototyping before C implementation
-- Systems where C compilation is not available
-
-This implementation is based on openptv-python:
-https://github.com/openptv/openptv-python
-"""
-
-try:
-    from .version import __version__
-except ImportError:  # pragma: no cover
-    __version__ = "999"
-
-# Core algorithm modules — imported lazily to avoid hard dependency on numba.
-# The Python/Numba engine is optional; the C/Cython engine works without it.
-_NUMBA_AVAILABLE = False
-
-
-def __getattr__(name):
-    """Lazy-load algorithm modules to avoid requiring numba at import time."""
-    global _NUMBA_AVAILABLE
-    if _NUMBA_AVAILABLE is False:
-        try:
-            import numba  # noqa: F401
-
-            _NUMBA_AVAILABLE = True
-        except ImportError:
-            _NUMBA_AVAILABLE = None  # Mark as checked but unavailable
-
-    algorithm_modules = [
-        "calibration",
-        "correspondences",
-        "epi",
-        "image_processing",
-        "imgcoord",
-        "multimed",
-        "orientation",
-        "parameters",
-        "ray_tracing",
-        "segmentation",
-        "sortgrid",
-        "track",
-        "tracking_frame_buf",
-        "tracking_run",
-        "trafo",
-        "vec_utils",
-        "constants",
-        "find_candidate",
-        "_native_compat",
-        "_native_convert",
-    ]
-
-    # Modules that require numba - will fail if numba is not installed
-    numba_required_modules = [
-        "calibration",
-        "image_processing",
-        "multimed",
-        "orientation",
-        "ray_tracing",
-        "segmentation",
-        "track",
-        "trafo",
-        "vec_utils",
-        "find_candidate",
-    ]
-
-    if name in algorithm_modules:
-        # Only block modules that actually require numba
-        if name in numba_required_modules and _NUMBA_AVAILABLE is None:
-            raise ImportError(
-                f"algorithms.{name} requires numba, which is not installed. "
-                "Install with: pip install openptv2[numba]"
-            )
-        import importlib
-
-        return importlib.import_module(f".{name}", __name__)
-
-    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
-
-
-__all__ = [
-    "__version__",
-    "calibration",
-    "correspondences",
-    "epi",
-    "image_processing",
-    "imgcoord",
-    "multimed",
-    "orientation",
-    "parameters",
-    "ray_tracing",
-    "segmentation",
-    "sortgrid",
-    "track",
-    "tracking_frame_buf",
-    "tracking_run",
-    "trafo",
-    "vec_utils",
-    "constants",
-    "find_candidate",
-    "_native_compat",
-    "_native_convert",
-]
