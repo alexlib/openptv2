@@ -39,6 +39,7 @@ def filter_3(
         ValueError: if filter kernel is all zeros.
     """
     img = np.asarray(img, dtype=np.float64)
+    img = np.asarray(img, dtype=np.float64)
     filt = np.asarray(filt, dtype=np.float64)
 
     filt_sum = filt.sum()
@@ -47,17 +48,24 @@ def filter_3(
 
     result = np.zeros_like(img)
 
-    # Use scipy-style convolution via sliding window for clarity
-    # Pad image for edge handling (wrap mode)
-    padded = np.pad(img, 1, mode="wrap")
-
-    for i in range(1, imy - 1):
-        for j in range(1, imx - 1):
-            region = padded[i - 1 : i + 2, j - 1 : j + 2]
-            val = (region * filt).sum() / filt_sum
+    # Process the full image, but for borders, use partial neighborhoods (as in C)
+    for i in range(imy):
+        for j in range(imx):
+            # For border pixels, use the nearest valid 3x3 region (pad with edge values)
+            i0 = max(i - 1, 0)
+            i1 = min(i + 2, imy)
+            j0 = max(j - 1, 0)
+            j1 = min(j + 2, imx)
+            region = img[i0:i1, j0:j1]
+            # Pad region to 3x3 if at edge/corner
+            padded = np.full((3, 3), 0.0)
+            padded[
+                (1 - (i - i0)) : (1 + (i1 - i)),
+                (1 - (j - j0)) : (1 + (j1 - j)),
+            ] = region
+            val = (padded * filt).sum() / filt_sum
             val = np.clip(val, min_brightness, 255)
             result[i, j] = val
-
     return result.astype(np.uint8)
 
 
@@ -75,20 +83,23 @@ def lowpass_3(img: np.ndarray, imx: int, imy: int) -> np.ndarray:
     """
     img = np.asarray(img, dtype=np.float64)
     result = np.zeros_like(img)
-
-    # Pad with wrap mode
-    padded = np.pad(img, 1, mode="wrap")
-
-    # Vectorized: use stride tricks or simple slicing
-    # For clarity, we use a loop over the 9 neighbors
-    total = np.zeros_like(padded)
-    for di in range(-1, 2):
-        for dj in range(-1, 2):
-            total += np.roll(np.roll(padded, -di, axis=0), -dj, axis=1)
-
-    # Crop back to original size and average
-    result = (total[1:-1, 1:-1] / 9.0).astype(np.uint8)
-    return result
+    # Use same border logic as filter_3: for each pixel, use nearest valid 3x3 region, pad with zeros
+    for i in range(imy):
+        for j in range(imx):
+            i0 = max(i - 1, 0)
+            i1 = min(i + 2, imy)
+            j0 = max(j - 1, 0)
+            j1 = min(j + 2, imx)
+            region = img[i0:i1, j0:j1]
+            padded = np.full((3, 3), 0.0)
+            padded[
+                (1 - (i - i0)) : (1 + (i1 - i)),
+                (1 - (j - j0)) : (1 + (j1 - j)),
+            ] = region
+            val = padded.sum() / 9.0
+            val = np.clip(val, 0, 255)
+            result[i, j] = val
+    return result.astype(np.uint8)
 
 
 def fast_box_blur(
