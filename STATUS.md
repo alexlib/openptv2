@@ -129,13 +129,43 @@ Binary wheels available in `dist/`:
 
 ---
 
-## Key Files
+## April 16, 2026 — C-to-Python Translation Progress
 
-| Category | Files |
-|----------|-------|
-| Build | `pyproject.toml`, `setup.py`, `CMakeLists.txt` |
-| CI/CD | `.github/workflows/cibuildwheel.yml` |
-| Docs | `README.md`, `BUILDING_BINARY_WHEELS.md`, `docs/` |
-| Tests | `bindings/tests/`, `algorithms/tests/`, `gui/tests/` |
-| Scripts | `scripts/build_wheel.sh`, `scripts/install_wheel.sh`, `scripts/run_tests.sh` |
-| Plans | `DESIGN_PLAN.md`, `STATUS.md`, `SETUP_PLAN.md` |
+### Segmentation Module (targ_rec)
+- Fully translated to Python as a direct, structure-of-arrays mapping from C.
+- Target dataclass matches C struct target.
+- Python targ_rec is a standalone function, not a method, and returns a list of Target objects (like C target pix[] array).
+- All segmentation tests pass (algorithms/tests/test_segmentation.py).
+- Code committed and pushed to remote.
+
+### Modules Already Translated and Tested
+- calibration
+- correspondences
+- epi
+- image_processing
+- imgcoord
+- lsqadj
+- multimed
+- orientation
+- parameters
+- ray_tracing
+- segmentation (now complete and passing)
+- trafo
+- vec_utils
+
+### Modules Remaining to Translate and Test
+- peak_fit (in segmentation.c, not yet fully ported/tested in Python)
+- check_touch (helper for peak_fit, not yet ported)
+- Any other C modules in lib/src/ or lib/include/ not yet present in algorithms/
+- Ensure all corresponding tests from lib/tests/ are ported to algorithms/tests/ and pass
+
+### Next Steps
+1. Translate and test peak_fit and check_touch from C to Python, ensuring direct logic mapping and structure-of-arrays approach.
+2. Review lib/src/ for any additional C modules not yet ported.
+3. Review lib/tests/ for any tests not yet ported to algorithms/tests/.
+4. For each new module:
+   - Translate C code to Python in algorithms/
+   - Translate and adapt tests to algorithms/tests/
+   - Run pytest and ensure all tests pass
+
+---
