@@ -779,8 +779,8 @@ def volumedimension(
 
                 # Guard against division by zero when a[2] is zero/near-zero
                 if abs(a[2]) > 1e-10:
-                    X = pos[0] + (z_min + pos[2]) * a[0] / a[2]
-                    Y = pos[1] + (z_min + pos[2]) * a[1] / a[2]
+                    X = pos[0] + (z_min - pos[2]) * a[0] / a[2]
+                    Y = pos[1] + (z_min - pos[2]) * a[1] / a[2]
 
                     if X > xmax:
                         xmax = X

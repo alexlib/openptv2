@@ -5,6 +5,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import List
 
+import numpy as np
+
 from .calibration import Calibration
 from .tracking_frame_buf import FrameBuf
 
@@ -105,6 +107,33 @@ class TrackingRun:
 
         # Pre-extract raw calibration arrays for fast numba projections
         self.raw_cal = [CalibRawArrays(c, cpar) for c in cal]
+
+        # Pack calibration data for all cameras into single arrays for Numba vectorization
+        self.cal_ex_pos = np.ascontiguousarray(np.stack([c.ex_pos for c in self.raw_cal]))
+        self.cal_ex_dm = np.ascontiguousarray(np.stack([c.ex_dm for c in self.raw_cal]))
+        self.cal_int_cc = np.ascontiguousarray(np.array([c.int_cc for c in self.raw_cal], dtype=np.float64))
+        self.cal_int_xh = np.ascontiguousarray(np.array([c.int_xh for c in self.raw_cal], dtype=np.float64))
+        self.cal_int_yh = np.ascontiguousarray(np.array([c.int_yh for c in self.raw_cal], dtype=np.float64))
+        self.cal_added_par = np.ascontiguousarray(np.stack([c.added_par for c in self.raw_cal]))
+        self.cal_glass_par = np.ascontiguousarray(np.stack([c.glass_par for c in self.raw_cal]))
+        
+        self.cal_mm_d = np.ascontiguousarray(np.stack([c.mm_d for c in self.raw_cal]))
+        self.cal_mm_n1 = np.ascontiguousarray(np.array([c.mm_n1 for c in self.raw_cal], dtype=np.float64))
+        self.cal_mm_n2 = np.ascontiguousarray(np.stack([c.mm_n2 for c in self.raw_cal]))
+        self.cal_mm_n3 = np.ascontiguousarray(np.array([c.mm_n3 for c in self.raw_cal], dtype=np.float64))
+        self.cal_mm_nlay = np.ascontiguousarray(np.array([c.mm_nlay for c in self.raw_cal], dtype=np.int32))
+        
+        self.cal_mmlut_origin = np.ascontiguousarray(np.stack([c.mmlut_origin for c in self.raw_cal]))
+        self.cal_mmlut_nz = np.ascontiguousarray(np.array([c.mmlut_nz for c in self.raw_cal], dtype=np.int32))
+        self.cal_mmlut_nr = np.ascontiguousarray(np.array([c.mmlut_nr for c in self.raw_cal], dtype=np.int32))
+        self.cal_mmlut_rw = np.ascontiguousarray(np.array([c.mmlut_rw for c in self.raw_cal], dtype=np.int32))
+        self.cal_imx = np.ascontiguousarray(np.array([c.imx for c in self.raw_cal], dtype=np.int32))
+        self.cal_imy = np.ascontiguousarray(np.array([c.imy for c in self.raw_cal], dtype=np.int32))
+        self.cal_pix_x = np.ascontiguousarray(np.array([c.pix_x for c in self.raw_cal], dtype=np.float64))
+        self.cal_pix_y = np.ascontiguousarray(np.array([c.pix_y for c in self.raw_cal], dtype=np.float64))
+
+        # List of arrays for varying-size data (LUTs can have different sizes)
+        self.cal_mmlut_data = [c.mmlut_data for c in self.raw_cal]
 
 
 def tr_new(

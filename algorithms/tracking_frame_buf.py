@@ -459,21 +459,57 @@ class Frame:
         max_targets - number of elements to allocate for the different buffers
             held by a frame.
         """
+        self.num_cams = num_cams
+        self.max_targets = max_targets
+        self.num_parts = 0
+
+        # Legacy object-based storage
         self.path_info = [Pathinfo() for _ in range(max_targets)]
+
+        # SoA storage for Numba acceleration
+        self.path_x = np.zeros((max_targets, 3), dtype=np.float64)
+        self.path_prev = np.full(max_targets, PREV_NONE, dtype=np.int32)
+        self.path_next = np.full(max_targets, NEXT_NONE, dtype=np.int32)
+        self.path_prio = np.full(max_targets, PRIO_DEFAULT, dtype=np.int32)
+        self.path_decis = np.zeros((max_targets, POSI), dtype=np.float64)
+        self.path_linkdecis = np.zeros((max_targets, POSI), dtype=np.int32)
+        self.path_inlist = np.zeros(max_targets, dtype=np.int32)
+        self.path_finaldecis = np.zeros(max_targets, dtype=np.float64)
 
         self.corres_nr = np.zeros(max_targets, dtype=np.int32)
         self.corres_p = np.full((max_targets, 4), TR_UNUSED, dtype=np.int32)
 
         self.targets = [[Target() for _ in range(max_targets)] for _ in range(num_cams)]
-        # self.targets = [[] for _ in range(num_cams)]
         self.num_targets = [0] * num_cams
         self.target_x = [np.empty(0, dtype=np.float64) for _ in range(num_cams)]
         self.target_y = [np.empty(0, dtype=np.float64) for _ in range(num_cams)]
         self.target_tnr = [np.empty(0, dtype=np.int32) for _ in range(num_cams)]
 
-        self.num_cams = num_cams
-        self.max_targets = max_targets
-        self.num_parts = 0
+    def refresh_path_info_arrays(self) -> None:
+        """Sync SoA arrays from Pathinfo objects."""
+        for i in range(self.num_parts):
+            pi = self.path_info[i]
+            self.path_x[i] = pi.x
+            self.path_prev[i] = pi.prev_frame
+            self.path_next[i] = pi.next_frame
+            self.path_prio[i] = pi.prio
+            self.path_decis[i] = pi.decis
+            self.path_linkdecis[i] = pi.linkdecis
+            self.path_inlist[i] = pi.inlist
+            self.path_finaldecis[i] = pi.finaldecis
+
+    def refresh_path_info_objects(self) -> None:
+        """Sync Pathinfo objects from SoA arrays."""
+        for i in range(self.num_parts):
+            pi = self.path_info[i]
+            pi.x = self.path_x[i].copy()
+            pi.prev_frame = int(self.path_prev[i])
+            pi.next_frame = int(self.path_next[i])
+            pi.prio = int(self.path_prio[i])
+            pi.decis = list(self.path_decis[i])
+            pi.linkdecis = list(self.path_linkdecis[i])
+            pi.inlist = int(self.path_inlist[i])
+            pi.finaldecis = float(self.path_finaldecis[i])
 
     def refresh_target_arrays(self, cam: int | None = None) -> None:
         """Refresh cached NumPy views of target coordinates and tracking ids."""
@@ -528,6 +564,7 @@ class Frame:
 
         for path in required_files:
             if not path.exists():
+                print(f"DEBUG: missing required file: {path}")
                 return False
 
         cor_nr, cor_p, path_buf = read_path_frame(
@@ -538,21 +575,47 @@ class Frame:
             include_corres_nr=True,
         )
 
-        self.corres_nr = cor_nr
-        self.corres_p = cor_p
-        self.path_info = path_buf
-        self.num_parts = len(self.corres_nr)
+        n = len(cor_nr)
+        if n > self.max_targets:
+            # Should not happen with default constants, but handle gracefully
+            n = self.max_targets
+
+        self.corres_nr[:n] = cor_nr[:n]
+        self.corres_p[:n] = cor_p[:n]
+        self.path_info[:n] = path_buf[:n]
+        self.num_parts = n
+        
+        # Sync SoA arrays from the newly read data
+        self.refresh_path_info_arrays()
 
         if self.num_parts == -1:
             return False
 
         for cam in range(self.num_cams):
-            self.targets[cam] = read_targets(target_file_base[cam], frame_num)
+            targs = read_targets(target_file_base[cam], frame_num)
+            for i, t in enumerate(targs):
+                t.pnr = i
+            self.targets[cam] = targs
             self.num_targets[cam] = len(self.targets[cam])
-            self.refresh_target_arrays(cam)
 
-            if self.num_targets[cam] == -1:
-                return False
+            # Reset tnr for all targets first
+            for t in self.targets[cam]:
+                t.tnr = TR_UNUSED
+
+        # Set tnr based on correspondence
+        for p_idx in range(self.num_parts):
+            for cam in range(self.num_cams):
+                t_idx = self.corres_p[p_idx, cam]
+                if 0 <= t_idx < self.num_targets[cam]:
+                    self.targets[cam][t_idx].tnr = p_idx
+
+        # NOW sort targets by Y for binary search in candidate search
+        for cam in range(self.num_cams):
+            self.targets[cam].sort(key=lambda t: t.y)
+
+        # Refresh arrays after setting tnr and sorting
+        for cam in range(self.num_cams):
+            self.refresh_target_arrays(cam)
 
         return True
 
@@ -1034,7 +1097,7 @@ def write_path_frame(
 
     corres_fname = f"{corres_file_base}.{frame_num}"
     linkage_fname = f"{linkage_file_base}.{frame_num}"
-    prio_fname = f"{prio_file_base}.{frame_num}" if prio_file_base != "" else None
+    prio_fname = f"{prio_file_base}.{frame_num}" if prio_file_base else None
     success = False
 
     try:
@@ -1044,7 +1107,7 @@ def write_path_frame(
         linkage_file = open(linkage_fname, "w", encoding="utf8")
         linkage_file.write(f"{num_parts}\n")
 
-        if prio_file_base is not None:
+        if prio_fname is not None:
             prio_file = open(prio_fname, "w", encoding="utf8")  # type: ignore
             prio_file.write(f"{num_parts}\n")
 
@@ -1064,7 +1127,7 @@ def write_path_frame(
                 f"{corres_p[pix, 2]:4d} {corres_p[pix, 3]:4d}\n"
             )
 
-            if prio_file_base is not None:
+            if prio_fname is not None:
                 # Match C printf format: "%4d %4d %10.3f %10.3f %10.3f %d\n"
                 prio_file.write(
                     f"{path_buf[pix].prev_frame:4d} {path_buf[pix].next_frame:4d} "
@@ -1074,7 +1137,7 @@ def write_path_frame(
 
         corres_file.close()
         linkage_file.close()
-        if prio_file_base is not None:
+        if prio_fname is not None:
             prio_file.close()
 
         success = True

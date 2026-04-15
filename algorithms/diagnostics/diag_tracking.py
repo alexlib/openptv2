@@ -16,7 +16,8 @@ from algorithms.batch import (
 )
 from algorithms.track import Tracker, default_naming
 
-TEST_DATA_DIR = Path("test_data/test_cavity")
+# Use absolute path to ensure it's found after chdir
+TEST_DATA_DIR = Path("/home/user/Documents/GitHub/openptv2/test_data/test_cavity")
 YAML_FILE = TEST_DATA_DIR / "parameters_Run1.yaml"
 
 with open(YAML_FILE) as f:
@@ -48,9 +49,12 @@ for item in TEST_DATA_DIR.iterdir():
 
 res = work_dir / "res"
 res.mkdir(exist_ok=True)
-src_res = TEST_DATA_DIR / "res_orig"
-for f in src_res.iterdir():
-    shutil.copy2(f, res / f.name)
+src_res = TEST_DATA_DIR / "res"
+if src_res.exists():
+    for f in src_res.iterdir():
+        shutil.copy2(f, res / f.name)
+else:
+    print(f"Warning: {src_res} not found, tracking might fail to load initial correspondences")
 
 os.chdir(work_dir)
 cals = _read_calibrations_py(params["cal_ori"], num_cams)
