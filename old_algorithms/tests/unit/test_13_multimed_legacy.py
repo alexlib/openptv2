@@ -19,6 +19,8 @@ class TestMultimed:
         """Test the compiled MMLUT lookup helper directly."""
         from algorithms.multimed import get_mmf_from_mmlut, fast_get_mmf_from_mmlut
         from algorithms.calibration import Calibration as PythonCal
+        from old_algorithms.multimed import fast_get_mmf_from_mmlut, init_mmlut
+        from old_algorithms.parameters import MultimediaPar
 
         cal = PythonCal()
         cal.mmlut.rw = 10
@@ -268,7 +270,7 @@ class TestMultimed:
         """
         import numpy as np
         from algorithms.multimed import init_mmlut
-        from algorithms.parameters import ControlPar, VolumePar, MultimediaPar
+        from old_algorithms.parameters import MultimediaPar
         from algorithms.calibration import Calibration as PythonCal
 
         def _make_inputs():

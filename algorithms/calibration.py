@@ -336,3 +336,57 @@ class Calibration:
                 f"{ap.p1:.8f} {ap.p2:.8f} {ap.scx:.8f} {ap.she:.8f}"
             ]
             add_path.write_text("\n".join(add_lines) + "\n")
+
+
+def compare_exterior(e1: Exterior, e2: Exterior) -> bool:
+    """Compare two Exterior objects for equality (all fields, including dm)."""
+    if not np.allclose(e1.dm, e2.dm):
+        return False
+    return (
+        e1.x0 == e2.x0 and
+        e1.y0 == e2.y0 and
+        e1.z0 == e2.z0 and
+        e1.omega == e2.omega and
+        e1.phi == e2.phi and
+        e1.kappa == e2.kappa
+    )
+
+def compare_interior(i1: Interior, i2: Interior) -> bool:
+    """Compare two Interior objects for equality."""
+    return (
+        i1.xh == i2.xh and
+        i1.yh == i2.yh and
+        i1.cc == i2.cc
+    )
+
+def compare_glass(g1: Glass, g2: Glass) -> bool:
+    """Compare two Glass objects for equality (only normal vector)."""
+    return (
+        g1.vec_x == g2.vec_x and
+        g1.vec_y == g2.vec_y and
+        g1.vec_z == g2.vec_z
+    )
+
+def compare_addpar(a1: AddedPar, a2: AddedPar) -> bool:
+    """Compare two AddedPar (distortion) objects for equality."""
+    return (
+        a1.k1 == a2.k1 and
+        a1.k2 == a2.k2 and
+        a1.k3 == a2.k3 and
+        a1.p1 == a2.p1 and
+        a1.p2 == a2.p2 and
+        a1.scx == a2.scx and
+        a1.she == a2.she
+    )
+
+def compare_calib(c1: Calibration, c2: Calibration) -> bool:
+    """Deep comparison of two Calibration objects (all fields except mmlut)."""
+    return (
+        compare_exterior(c1.ext_par, c2.ext_par)
+        and compare_interior(c1.int_par, c2.int_par)
+        and compare_glass(c1.glass_par, c2.glass_par)
+        and compare_addpar(c1.added_par, c2.added_par)
+    )
+
+# read_calibration and write_calibration are already covered by from_file and to_file methods.
+# The rotation_matrix logic is implemented in Exterior.compute_rotation_matrix().

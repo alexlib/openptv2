@@ -112,7 +112,15 @@ def multimed_r_nlay_iterative(
 
         beta2 = []
         for i in range(mm_nlay):
-            beta2.append(np.arcsin(np.sin(beta1) * mm_n1 / mm_n2_0))
+            arg = np.sin(beta1) * mm_n1 / mm_n2_0
+            if arg < -1.0 - tol or arg > 1.0 + tol:
+                raise ValueError(
+                    f"Total internal reflection: arcsin argument out of bounds ({arg}). "
+                    f"Check geometry and refractive indices. "
+                    f"Parameters: pos_x={pos_x}, pos_y={pos_y}, pos_z={pos_z}, ext_x0={ext_x0}, ext_y0={ext_y0}, ext_z0={ext_z0}, mm_n1={mm_n1}, mm_n2_0={mm_n2_0}, mm_n3={mm_n3}, mm_d0={mm_d0}, mm_nlay={mm_nlay}, i={i}, beta1={beta1}, arg={arg}"
+                )
+            arg_clipped = np.clip(arg, -1.0, 1.0)
+            beta2.append(np.arcsin(arg_clipped))
 
         beta3 = np.arcsin(np.sin(beta1) * mm_n1 / mm_n3)
 
@@ -405,3 +413,8 @@ def volumedimension(
                         if Y < ymin: ymin = Y
 
     return xmax, xmin, ymax, ymin, Zmax, Zmin
+
+
+def init_mmlut(*args, **kwargs):
+    """Stub for init_mmlut to allow test imports. Needs real implementation."""
+    raise NotImplementedError("init_mmlut is not implemented in algorithms.multimed.py")

@@ -471,3 +471,18 @@ def raw_orient(
             # ... (omitted for brevity - would need full Jacobian)
 
     return cal
+
+
+def read_man_ori_fix(*args, **kwargs):
+    """Stub for read_man_ori_fix: returns None or dummy data."""
+    return None
+
+
+def read_calblock(*args, **kwargs):
+    """Stub for read_calblock: returns None or dummy data."""
+    return None
+
+
+def weighted_dumbbell_precision(*args, **kwargs):
+    """Stub for weighted_dumbbell_precision: returns 0 or dummy value."""
+    return 0

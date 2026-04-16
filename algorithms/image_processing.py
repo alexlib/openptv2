@@ -267,3 +267,8 @@ def prepare_image(
         img_hp = filter_3(img_hp, filt, imx, imy)
 
     return img_hp
+
+
+def copy_images(imgs):
+    """Stub for copy_images: returns a copy of the input list of images."""
+    return [np.copy(img) for img in imgs]
