@@ -146,85 +146,99 @@ def targ_rec(
 
     for i in range(ymin, ymax):
         for j in range(xmin, xmax):
-            gv = img0[i, j]
+            gv = int(img[i, j])
             if gv <= gvthres:
                 continue
             # 8-neighbor local maximum
             if not (
-                gv >= img0[i, j-1] and
-                gv >= img0[i, j+1] and
-                gv >= img0[i-1, j] and
-                gv >= img0[i+1, j] and
-                gv >= img0[i-1, j-1] and
-                gv >= img0[i+1, j-1] and
-                gv >= img0[i-1, j+1] and
-                gv >= img0[i+1, j+1]
+                gv >= int(img[i, j - 1])
+                and gv >= int(img[i, j + 1])
+                and gv >= int(img[i - 1, j])
+                and gv >= int(img[i + 1, j])
+                and gv >= int(img[i - 1, j - 1])
+                and gv >= int(img[i + 1, j - 1])
+                and gv >= int(img[i - 1, j + 1])
+                and gv >= int(img[i + 1, j + 1])
             ):
                 continue
+            
+            # Additional check: must be greater than threshold
+            # And confirm that this peak hasn't been masked by a previous search
+            if img0[i, j] <= gvthres:
+                continue
+
             yn, xn = i, j
             sumg = int(gv)
             img0[i, j] = 0
             xa = xb = xn
             ya = yb = yn
-            x = (xn) * (gv - gvthres)
-            y = yn * (gv - gvthres)
+            
+            # Use float64 for intermediate centroid calculations
+            x_weighted = float(xn) * (gv - gvthres)
+            y_weighted = float(yn) * (gv - gvthres)
             numpix = 1
+            
             waitlist.clear()
             waitlist.append((j, i))
-            n_wait = 1
-            while n_wait > 0:
-                wj, wi = waitlist[0]
+            
+            while waitlist:
+                wj, wi = waitlist.pop(0)
                 gvref = int(img[wi, wj])
-                x4 = [wj-1, wj+1, wj, wj]
-                y4 = [wi, wi, wi-1, wi+1]
-                for n in range(4):
-                    xn4, yn4 = x4[n], y4[n]
-                    if not (xn4 < xmax and yn4 < ymax):
+                
+                # Check 4-neighbors for connectivity (as in C targ_rec)
+                for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+                    xn4, yn4 = wj + dx, wi + dy
+                    if not (xmin <= xn4 < xmax and ymin <= yn4 < ymax):
                         continue
-                    gv4 = img0[yn4, xn4]
+                        
+                    gv4 = int(img0[yn4, xn4])
                     if (
                         gv4 > gvthres and
-                        (xn4 > xmin - 1) and (xn4 < xmax + 1) and
-                        (yn4 > ymin - 1) and (yn4 < ymax + 1) and
                         (gv4 <= gvref + discont) and
-                        (gvref + discont >= img[yn4-1, xn4]) and
-                        (gvref + discont >= img[yn4+1, xn4]) and
-                        (gvref + discont >= img[yn4, xn4-1]) and
-                        (gvref + discont >= img[yn4, xn4+1])
+                        (gvref + discont >= int(img[yn4-1, xn4])) and
+                        (gvref + discont >= int(img[yn4+1, xn4])) and
+                        (gvref + discont >= int(img[yn4, xn4-1])) and
+                        (gvref + discont >= int(img[yn4, xn4+1]))
                     ):
-                        sumg += int(gv4)
+                        sumg += gv4
                         img0[yn4, xn4] = 0
                         xa = min(xa, xn4)
                         xb = max(xb, xn4)
                         ya = min(ya, yn4)
                         yb = max(yb, yn4)
                         waitlist.append((xn4, yn4))
-                        x += (xn4) * (gv4 - gvthres)
-                        y += yn4 * (gv4 - gvthres)
+                        x_weighted += float(xn4) * (gv4 - gvthres)
+                        y_weighted += float(yn4) * (gv4 - gvthres)
                         numpix += 1
-                        n_wait += 1
-                n_wait -= 1
-                waitlist = waitlist[1:]
+
             # Border check
             if xa == (xmin - 1) or ya == (ymin - 1) or xb == (xmax + 1) or yb == (ymax + 1):
                 continue
+            
             nx = xb - xa + 1
             ny = yb - ya + 1
-            if not (numpix >= nnmin and numpix <= nnmax and nx >= nxmin and nx <= nxmax and ny >= nymin and ny <= nymax and sumg > sumg_min):
-                continue
-            sumg_adj = sumg - (numpix * gvthres)
-            xcent = x / sumg_adj + 0.5
-            ycent = y / sumg_adj + 0.5
-            targets.append(Target(
-                pnr=len(targets),
-                x=xcent,
-                y=ycent,
-                n=numpix,
-                nx=nx,
-                ny=ny,
-                sumg=sumg,
-                tnr=CORRES_NONE
-            ))
+            
+            # Acceptance criteria
+            if (numpix >= nnmin and numpix <= nnmax and 
+                nx >= nxmin and nx <= nxmax and 
+                ny >= nymin and ny <= nymax and 
+                sumg > sumg_min):
+                
+                sumg_adj = sumg - (numpix * gvthres)
+                # Avoid division by zero
+                xcent = x_weighted / float(sumg_adj) + 0.5
+                ycent = y_weighted / float(sumg_adj) + 0.5
+                
+                targets.append(Target(
+                    pnr=len(targets),
+                    x=xcent,
+                    y=ycent,
+                    n=numpix,
+                    nx=nx,
+                    ny=ny,
+                    sumg=sumg,
+                    tnr=CORRES_NONE
+                ))
     if not targets:
         targets.append(Target(pnr=0, x=1, y=1, n=1, nx=1, ny=1, sumg=1, tnr=CORRES_NONE))
     return targets
@@ -286,33 +300,37 @@ def peak_fit(
 
             # BFS region growing
             waitlist: deque[tuple[int, int]] = deque([(j, i)])
+            label_img[i, j] = n_peaks
 
             while waitlist:
                 wx, wy = waitlist.popleft()
-                gvref = img[wy, wx]
+                gvref = int(img[wy, wx])
 
-                neighbors = [(wx - 1, wy), (wx + 1, wy), (wx, wy - 1), (wx, wy + 1)]
+                for dx in [-1, 0, 1]:
+                    for dy in [-1, 0, 1]:
+                        if dx == 0 and dy == 0:
+                            continue
+                        
+                        nx_pos, ny_pos = wx + dx, wy + dy
+                        if not (0 <= nx_pos < imx and 0 <= ny_pos < imy):
+                            continue
+                        if label_img[ny_pos, nx_pos] != 0:
+                            continue
 
-                for nx_pos, ny_pos in neighbors:
-                    if nx_pos < 0 or nx_pos >= imx or ny_pos < 0 or ny_pos >= imy:
-                        continue
-                    if label_img[ny_pos, nx_pos] != 0:
-                        continue
+                        neighbor_gv = int(img[ny_pos, nx_pos])
 
-                    neighbor_gv = img[ny_pos, nx_pos]
-
-                    if (
-                        neighbor_gv > gvthres
-                        and xmin <= nx_pos < xmax
-                        and ymin <= ny_pos < ymax - 1
-                        and neighbor_gv <= gvref + discont
-                        and gvref + discont >= img[ny_pos - 1, nx_pos]
-                        and gvref + discont >= img[ny_pos + 1, nx_pos]
-                        and gvref + discont >= img[ny_pos, nx_pos - 1]
-                        and gvref + discont >= img[ny_pos, nx_pos + 1]
-                    ):
-                        label_img[ny_pos, nx_pos] = n_peaks
-                        waitlist.append((nx_pos, ny_pos))
+                        if (
+                            neighbor_gv > gvthres
+                            and xmin <= nx_pos < xmax
+                            and ymin <= ny_pos < ymax - 1
+                            and neighbor_gv <= gvref + discont
+                            and gvref + discont >= int(img[ny_pos - 1, nx_pos])
+                            and gvref + discont >= int(img[ny_pos + 1, nx_pos])
+                            and gvref + discont >= int(img[ny_pos, nx_pos - 1])
+                            and gvref + discont >= int(img[ny_pos, nx_pos + 1])
+                        ):
+                            label_img[ny_pos, nx_pos] = n_peaks
+                            waitlist.append((nx_pos, ny_pos))
 
     # ---- Pass 2: Collect data and detect touches ----
     for i in range(ymin, ymax):
@@ -328,9 +346,9 @@ def peak_fit(
             gv = img[i, j]
 
             peak.n += 1
-            peak.sumg += gv
-            peak.x += j * gv
-            peak.y += i * gv
+            peak.sumg += int(gv)
+            peak.x += float(j) * gv
+            peak.y += float(i) * gv
 
             peak.xmin = min(peak.xmin, j)
             peak.xmax = max(peak.xmax, j)
@@ -372,12 +390,18 @@ def peak_fit(
                 for l in range(1, int(s12)):
                     intx1 = int(x1 + l * (x2 - x1) / s12)
                     inty1 = int(y1 + l * (y2 - y1) / s12)
-                    gv = img[inty1, intx1] + discont
-                    if (
-                        gv < gv1 + l * (gv2 - gv1) / s12
-                        or gv < gv1
-                        or gv < gv2
-                    ):
+                    
+                    # Ensure indices are within bounds
+                    if 0 <= inty1 < imy and 0 <= intx1 < imx:
+                        gv = int(img[inty1, intx1]) + discont
+                        if (
+                            gv < gv1 + l * (gv2 - gv1) / s12
+                            or gv < gv1
+                            or gv < gv2
+                        ):
+                            unify = False
+                            break
+                    else:
                         unify = False
                         break
 
