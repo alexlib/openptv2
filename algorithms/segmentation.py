@@ -41,6 +41,63 @@ class Target:
     tnr: int = CORRES_NONE
 
 
+@dataclass
+class Peak:
+    """Detected peak for connectivity analysis."""
+    pos: int = 0
+    status: int = 0
+    xmin: int = 0
+    xmax: int = 0
+    ymin: int = 0
+    ymax: int = 0
+    n: int = 0
+    sumg: int = 0
+    x: float = 0.0
+    y: float = 0.0
+    unr: int = 0
+    touch: list[int] = field(default_factory=lambda: [0, 0, 0, 0])
+    n_touch: int = 0
+
+
+def check_touch(tpeak: Peak, p1: int, p2: int) -> None:
+    """Check whether p1, p2 are already marked as touching and mark them otherwise.
+
+    Matches C implementation exactly, including the cap on touches.
+    """
+    if p2 == 0:
+        return
+    if p2 == p1:
+        return
+
+    # check whether p1, p2 are already marked as touching
+    for m in range(tpeak.n_touch):
+        if tpeak.touch[m] == p2:
+            return
+
+    # mark touch event
+    tpeak.touch[tpeak.n_touch] = p2
+    tpeak.n_touch += 1
+
+    # don't allow for more than 4 touches (C caps at 3, meaning index 3 is max)
+    if tpeak.n_touch > 3:
+        tpeak.n_touch = 3
+
+
+def _is_local_maximum(img: np.ndarray, i: int, j: int, imx: int, imy: int) -> bool:
+    """Check if pixel at (i, j) is an 8-neighbor local maximum."""
+    gv = img[i, j]
+    return (
+        gv >= img[i, j - 1]
+        and gv >= img[i, j + 1]
+        and gv >= img[i - 1, j]
+        and gv >= img[i + 1, j]
+        and gv >= img[i - 1, j - 1]
+        and gv >= img[i + 1, j - 1]
+        and gv >= img[i - 1, j + 1]
+        and gv >= img[i + 1, j + 1]
+    )
+
+
 def targ_rec(
     img: np.ndarray,
     gvthres: int,
