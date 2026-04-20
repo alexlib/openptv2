@@ -1,7 +1,6 @@
 import numpy as np
 
-# Define MAX_CANDS for test compatibility
-MAX_CANDS = 4
+from .constants import MAX_CANDS, PT_UNUSED, TR_UNUSED
 
 
 # Define Foundpix_dtype for test compatibility
@@ -52,46 +51,88 @@ def pos3d_in_bounds(pos, bounds):
     return bool(result)
 
 def angle_acc(start, pred, cand):
-    """Calculate angle (in gon) and acceleration between predicted and candidate positions."""
-    # start, pred, cand: np.array shape (3,)
-    v1 = np.array(pred) - np.array(start)
-    v2 = np.array(cand) - np.array(start)
-    norm1 = np.linalg.norm(v1)
-    norm2 = np.linalg.norm(v2)
-    if norm1 == 0 or norm2 == 0:
+    """Calculate angle (in gon) and acceleration between predicted and candidate positions.
+
+    Matches C angle_acc: returns (angle, acc).
+    Special cases: opposite directions = 200 gon, same direction = 0 gon.
+    """
+    v0 = np.asarray(pred) - np.asarray(start)
+    v1 = np.asarray(cand) - np.asarray(start)
+
+    if np.array_equal(v0, -v1):
+        angle = 200.0
+    elif np.array_equal(v0, v1):
         angle = 0.0
     else:
-        dot = np.dot(v1, v2) / (norm1 * norm2)
-        dot = np.clip(dot, -1.0, 1.0)
-        angle = np.arccos(dot) * 200.0 / np.pi  # convert rad to gon
-    acc = np.linalg.norm(v2 - v1)
+        norm0 = np.linalg.norm(v0)
+        norm1 = np.linalg.norm(v1)
+        if norm0 == 0 or norm1 == 0:
+            angle = 0.0
+        else:
+            dot = np.dot(v0, v1) / (norm0 * norm1)
+            dot = np.clip(dot, -1.0, 1.0)
+            angle = np.arccos(dot) * 200.0 / np.pi
+
+    acc = np.linalg.norm(v1 - v0)
     return angle, acc
 
 def candsearch_in_pix(next_targets, num_targets, cent_x, cent_y, dl, dr, du, dd, cpar):
+    """Search for up to 4 nearest candidates in a list of targets.
+
+    Matches C candsearch_in_pix: returns (counter, p) where counter is the
+    number of candidates found and p is a list of 4 target indices
+    (PT_UNUSED=-999 for unused slots).
     """
-    Search for up to 4 nearest candidates in a list of targets.
-    Returns indices of up to 4 candidates.
-    """
-    imx = cpar.imx
-    imy = cpar.imy
-    xmin = max(cent_x - dl, 0.0)
-    xmax = min(cent_x + dr, imx)
-    ymin = max(cent_y - du, 0.0)
-    ymax = min(cent_y + dd, imy)
+    from .constants import PT_UNUSED, TR_UNUSED
+
+    p = [PT_UNUSED] * 4
+
+    xmin = cent_x - dl
+    xmax = cent_x + dr
+    ymin = cent_y - du
+    ymax = cent_y + dd
+
+    if xmin < 0.0:
+        xmin = 0.0
+    if xmax > cpar.imx:
+        xmax = cpar.imx
+    if ymin < 0.0:
+        ymin = 0.0
+    if ymax > cpar.imy:
+        ymax = cpar.imy
+
+    p1 = p2 = p3 = p4 = PT_UNUSED
     dmin = 1e20
-    p = [-999, -999, -999, -999]
     d1 = d2 = d3 = d4 = dmin
-    p1 = p2 = p3 = p4 = -999
-    for j, t in enumerate(next_targets):
-        x = getattr(t, 'xh', getattr(t, 'x', 0.0))
-        y = getattr(t, 'yh', getattr(t, 'y', 0.0))
-        if getattr(t, 'tnr', 0) != -999:
-            if y > ymax:
+
+    if not (0.0 <= cent_x <= cpar.imx and 0.0 <= cent_y <= cpar.imy):
+        return p
+
+    # Binary search for start point
+    j0 = num_targets // 2
+    dj = num_targets // 4
+    while dj > 1:
+        if next_targets[j0].y < ymin:
+            j0 += dj
+        else:
+            j0 -= dj
+        dj //= 2
+
+    j0 -= 12
+    if j0 < 0:
+        j0 = 0
+
+    for j in range(j0, num_targets):
+        t = next_targets[j]
+        if t.tnr != TR_UNUSED:
+            if t.y > ymax:
                 break
-            if xmin < x < xmax and ymin < y < ymax:
-                d = np.sqrt((cent_x - x) ** 2 + (cent_y - y) ** 2)
+            if t.x > xmin and t.x < xmax and t.y > ymin and t.y < ymax:
+                d = np.sqrt((cent_x - t.x) ** 2 + (cent_y - t.y) ** 2)
+
                 if d < dmin:
                     dmin = d
+
                 if d < d1:
                     p4, p3, p2, p1 = p3, p2, p1, j
                     d4, d3, d2, d1 = d3, d2, d1, d
@@ -104,37 +145,66 @@ def candsearch_in_pix(next_targets, num_targets, cent_x, cent_y, dl, dr, du, dd,
                 elif d3 < d < d4:
                     p4 = j
                     d4 = d
+
     p[0], p[1], p[2], p[3] = p1, p2, p3, p4
     return p
 
 def candsearch_in_pix_rest(next_targets, num_targets, cent_x, cent_y, dl, dr, du, dd, p, cpar):
+    """Search for the nearest unmatched candidate (tnr == TR_UNUSED).
+
+    Matches C candsearch_in_pix_rest: returns number of candidates (0 or 1)
+    and sets p[0] to the target index if found.
     """
-    Search for the nearest unmatched candidate in a list of targets.
-    Returns number of matches and updates p in place.
-    """
-    imx = cpar.imx
-    imy = cpar.imy
-    xmin = max(cent_x - dl, 0.0)
-    xmax = min(cent_x + dr, imx)
-    ymin = max(cent_y - du, 0.0)
-    ymax = min(cent_y + dd, imy)
+    from .constants import PT_UNUSED, TR_UNUSED
+
+    xmin = cent_x - dl
+    xmax = cent_x + dr
+    ymin = cent_y - du
+    ymax = cent_y + dd
+
+    if xmin < 0.0:
+        xmin = 0.0
+    if xmax > cpar.imx:
+        xmax = cpar.imx
+    if ymin < 0.0:
+        ymin = 0.0
+    if ymax > cpar.imy:
+        ymax = cpar.imy
+
+    p[0] = PT_UNUSED
+    counter = 0
     dmin = 1e20
-    idx = -999
-    for j, t in enumerate(next_targets):
-        x = getattr(t, 'xh', getattr(t, 'x', 0.0))
-        y = getattr(t, 'yh', getattr(t, 'y', 0.0))
-        if getattr(t, 'tnr', 0) == -1:  # TR_UNUSED
-            if y > ymax:
+
+    if not (0.0 <= cent_x <= cpar.imx and 0.0 <= cent_y <= cpar.imy):
+        return 0
+
+    # Binary search for start point
+    j0 = num_targets // 2
+    dj = num_targets // 4
+    while dj > 1:
+        if next_targets[j0].y < ymin:
+            j0 += dj
+        else:
+            j0 -= dj
+        dj //= 2
+
+    j0 -= 12
+    if j0 < 0:
+        j0 = 0
+
+    for j in range(j0, num_targets):
+        t = next_targets[j]
+        if t.tnr == TR_UNUSED:
+            if t.y > ymax:
                 break
-            if xmin < x < xmax and ymin < y < ymax:
-                d = np.sqrt((cent_x - x) ** 2 + (cent_y - y) ** 2)
+            if t.x > xmin and t.x < xmax and t.y > ymin and t.y < ymax:
+                d = np.sqrt((cent_x - t.x) ** 2 + (cent_y - t.y) ** 2)
                 if d < dmin:
                     dmin = d
-                    idx = j
-    if idx != -999:
-        p[0] = idx
-        return 1
-    return 0
+                    p[0] = j
+                    counter = 1
+
+    return counter
 
 def reset_foundpix_array(arr, n, num_cams):
     """Reset foundpix array to default values."""
@@ -152,19 +222,54 @@ def copy_foundpix_array(dest, src, n, num_cams):
         dest[i]['whichcam'][:num_cams] = src[i]['whichcam'][:num_cams]
 
 def sort_candidates_by_freq(items, num_cams):
-    """Sort foundpix items in place by frequency of appearance across cameras."""
-    # This is a simplified version; assumes items is a list of dicts with 'ftnr' and 'whichcam'
-    # Count frequency for each unique ftnr
-    freq_map = {}
-    for item in items:
-        ftnr = item['ftnr']
-        if ftnr not in freq_map:
-            freq_map[ftnr] = 0
-        freq_map[ftnr] += sum(item['whichcam'])
-    # Sort items by frequency (descending)
-    items.sort(key=lambda x: freq_map.get(x['ftnr'], 0), reverse=True)
-    # Return number of distinct particles
-    return len(set(item['ftnr'] for item in items if item['ftnr'] != -1))
+    """Sort foundpix items in place by frequency of appearance across cameras.
+
+    Matches C sort_candidates_by_freq exactly:
+    1. Mark which cameras saw each ftnr
+    2. Count frequency
+    3. Sort by freq descending
+    4. Prune duplicates and singletons
+    5. Sort again
+    """
+    n = num_cams * MAX_CANDS
+
+    # Step 1: where what was found
+    for i in range(n):
+        for j in range(num_cams):
+            for m in range(MAX_CANDS):
+                if items[i]['ftnr'] == items[4 * j + m]['ftnr']:
+                    items[i]['whichcam'][j] = 1
+
+    # Step 2: how often was ftnr found
+    for i in range(n):
+        for j in range(num_cams):
+            if items[i]['whichcam'][j] == 1 and items[i]['ftnr'] != TR_UNUSED:
+                items[i]['freq'] += 1
+
+    # Step 3: bubble sort by freq descending
+    for i in range(1, n):
+        for j in range(n - 1, i - 1, -1):
+            if items[j - 1]['freq'] < items[j]['freq']:
+                items[j - 1], items[j] = items[j].copy(), items[j - 1].copy()
+
+    # Step 4: prune duplicates or those found only once
+    for i in range(n):
+        for j in range(i + 1, n):
+            if items[i]['ftnr'] == items[j]['ftnr'] or items[j]['freq'] < 2:
+                items[j]['freq'] = 0
+                items[j]['ftnr'] = TR_UNUSED
+
+    # Step 5: sort again
+    for i in range(1, n):
+        for j in range(n - 1, i - 1, -1):
+            if items[j - 1]['freq'] < items[j]['freq']:
+                items[j - 1], items[j] = items[j].copy(), items[j - 1].copy()
+
+    different = 0
+    for i in range(n):
+        if items[i]['freq'] != 0:
+            different += 1
+    return different
 
 def sort(n, a, b):
     """Sort float array a and int array b in ascending order of a. Returns sorted arrays."""
@@ -174,21 +279,72 @@ def sort(n, a, b):
     sorted_b = [bf for _, bf in combined]
     return sorted_a, sorted_b
 
+def point_to_pixel(point, cal, cpar):
+    """Project 3D point to pixel coordinates."""
+    from .imgcoord import img_coord
+    from .trafo import metric_to_pixel
+    x, y = img_coord(point, cal, cpar.mm)
+    return metric_to_pixel(x, y, cpar)
+
+
 def searchquader(point, tpar, cpar, calib):
-    """
-    Compute the search rectangle (quader) in pixel coordinates for each camera.
+    """Compute the search rectangle in pixel coordinates for each camera.
+
+    Projects 8 corners of the search volume cuboid to pixel space and finds
+    the bounding box relative to the center projection.
+
     Returns (xr, xl, yd, yu) arrays for each camera.
     """
-    # This is a simplified version for test coverage. The real implementation would use calibration and projection.
     num_cams = cpar.num_cams
     xr = np.zeros(num_cams)
     xl = np.zeros(num_cams)
     yd = np.zeros(num_cams)
     yu = np.zeros(num_cams)
-    for cam in range(num_cams):
-        # For test coverage, use dummy values based on tpar and cpar
-        xr[cam] = cpar.imx if hasattr(cpar, 'imx') else 0
-        xl[cam] = 0.0
-        yd[cam] = 0.0
-        yu[cam] = cpar.imy if hasattr(cpar, 'imy') else 0
+
+    mins = np.array([tpar.dvxmin, tpar.dvymin, tpar.dvzmin])
+    maxes = np.array([tpar.dvxmax, tpar.dvymax, tpar.dvzmax])
+
+    quader = np.zeros((8, 3))
+    for pt in range(8):
+        quader[pt] = point.copy()
+        for dim in range(3):
+            if pt & (1 << dim):
+                quader[pt, dim] += maxes[dim]
+            else:
+                quader[pt, dim] += mins[dim]
+
+    for i in range(num_cams):
+        xr[i] = 0
+        xl[i] = cpar.imx
+        yd[i] = 0
+        yu[i] = cpar.imy
+
+        cx, cy = point_to_pixel(point, calib[i], cpar)
+
+        for pt in range(8):
+            corner_x, corner_y = point_to_pixel(quader[pt], calib[i], cpar)
+
+            if corner_x < xl[i]:
+                xl[i] = corner_x
+            if corner_y < yu[i]:
+                yu[i] = corner_y
+            if corner_x > xr[i]:
+                xr[i] = corner_x
+            if corner_y > yd[i]:
+                yd[i] = corner_y
+
+        if xl[i] < 0:
+            xl[i] = 0
+        if yu[i] < 0:
+            yu[i] = 0
+        if xr[i] > cpar.imx:
+            xr[i] = cpar.imx
+        if yd[i] > cpar.imy:
+            yd[i] = cpar.imy
+
+        xr[i] = xr[i] - cx
+        xl[i] = cx - xl[i]
+        yd[i] = yd[i] - cy
+        yu[i] = cy - yu[i]
+
     return xr, xl, yd, yu

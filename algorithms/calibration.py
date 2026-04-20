@@ -128,7 +128,7 @@ class MmLut:
     origin: np.ndarray = field(default_factory=lambda: np.zeros(3, dtype=np.float64))
     nr: int = 0
     nz: int = 0
-    rw: float = 2.0
+    rw: int = 2
     data: Optional[np.ndarray] = None  # 1D array of size nr * nz
 
     @property

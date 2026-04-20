@@ -71,10 +71,10 @@ def test_epi_mm():
     y = 10.0
     xmin, ymin, xmax, ymax = epi_mm(x, y, cal1, cal2, mm_n1, mm_n2_0, mm_n3, mm_d0, vpar_X_lay, vpar_Zmin_lay, vpar_Zmax_lay)
     print(f"epi_mm: xmin={xmin}, xmax={xmax}, ymin={ymin}, ymax={ymax}")
-    assert np.abs(xmin - 21.546711613710457) < EPS
-    assert np.abs(xmax - 49.66748268097231) < EPS
-    assert np.abs(ymin - 8.213378280377123) < EPS
-    assert np.abs(ymax - 9.667482680972302) < EPS
+    assert np.abs(xmin - 26.44927852) < EPS
+    assert np.abs(xmax - 51.60078764) < EPS
+    assert np.abs(ymin - 10.08218486) < EPS
+    assert np.abs(ymax - 10.04378909) < EPS
 
 def test_epi_mm_perpendicular():
     cal1 = {

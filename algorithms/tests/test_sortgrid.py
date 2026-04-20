@@ -3,7 +3,7 @@ import pytest
 from algorithms.sortgrid import sortgrid, nearest_neighbour_pix, read_sortgrid_par, read_calblock
 from algorithms.calibration import Calibration
 from algorithms.parameters import ControlPar
-from openptv2.tracking_framebuf import Target, read_targets
+from algorithms.tracking_frame_buf import Target, read_targets
 from pathlib import Path
 
 EPS = 1e-6
@@ -13,53 +13,49 @@ def test_nearest_neighbour_pix():
         def __init__(self, x, y): self.x = x; self.y = y; self.pnr = 0
     t1 = SimpleTarget(1127.0, 796.0)
     targets = [t1]
-    
+
     pnr = nearest_neighbour_pix(targets, 1128.0, 795.0, 0.0)
     assert pnr == -999
-    
+
     pnr = nearest_neighbour_pix(targets, 1128.0, 795.0, -1.0)
     assert pnr == -999
-        
+
     pnr = nearest_neighbour_pix(targets, -1127.0, -796.0, 1e3)
     assert pnr == -999
-    
+
     pnr = nearest_neighbour_pix(targets, 1127.0, 796.0, 1e-5)
     assert pnr == 0
 
 def test_read_sortgrid_par():
-    correct_eps = 20 # Value from sortgrid.par in burgers/parameters
-    eps = read_sortgrid_par("test_data/burgers/parameters/sortgrid.par")
+    correct_eps = 25
+    eps = read_sortgrid_par("test_data/parameters/sortgrid.par")
     assert eps == correct_eps
 
 def test_read_calblock():
-    calblock_file = Path("test_data/burgers/cal/target_file.txt")
+    calblock_file = Path("test_data/calibration/calblock.txt")
     assert calblock_file.exists()
-    
+
     fix, num_points = read_calblock(calblock_file)
-    assert num_points == 25
+    assert num_points == 5
 
 def test_sortgrid():
-    eps = 20
-def test_sortgrid():
-    eps = 20
-    # For file at test_data/burgers/img_orig/cam1.10001_targets
-    # file_base = "test_data/burgers/img_orig/cam1."
-    # The read_targets implementation expects `file_base` + `frame_num` + `_targets`
-    # Let's verify the `read_targets` implementation
-    pix = read_targets("test_data/burgers/img_orig/cam1.", 10001)
-    assert len(pix) > 0
+    eps = read_sortgrid_par("test_data/parameters/sortgrid.par")
+    assert eps == 25
 
-    ori_file = "test_data/burgers/cal/cam1.tif.ori"
-    add_file = "test_data/burgers/cal/cam1.tif.addpar"
+    pix = read_targets("test_data/sample_", 42)
+    assert len(pix) == 2
 
-    cal = Calibration.from_file(ori_file, add_file)
-    cpar = ControlPar.from_file("test_data/burgers/parameters/ptv.par")
-    fix, nfix = read_calblock("test_data/burgers/cal/target_file.txt")
-    assert nfix == 25
+    cal = Calibration.from_file("test_data/calibration/cam1.tif.ori",
+                                "test_data/calibration/cam1.tif.addpar")
+    cpar = ControlPar.from_file("test_data/parameters/ptv.par")
+    fix, nfix = read_calblock("test_data/calibration/calblock.txt")
+    assert nfix == 5
 
-    # Sort grid
     sorted_pix = sortgrid(cal, cpar, nfix, fix, len(pix), eps, pix)
-    
-    # Verify that at least some were assigned (pnr != -999)
-    assigned = [p for p in sorted_pix if p is not None and hasattr(p, 'pnr') and p.pnr != -999]
-    assert len(assigned) > 0
+    assert sorted_pix[0] is None or sorted_pix[0].pnr == -999
+    assert sorted_pix[1] is None or sorted_pix[1].pnr == -999
+
+    sorted_pix = sortgrid(cal, cpar, nfix, fix, len(pix), 120, pix)
+    assert sorted_pix[1] is not None
+    assert sorted_pix[1].pnr == 1
+    assert sorted_pix[1].x == 796

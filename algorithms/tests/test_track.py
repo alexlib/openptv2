@@ -9,7 +9,7 @@ from algorithms.track import (
     candsearch_in_pix, candsearch_in_pix_rest, sort, reset_foundpix_array,
     copy_foundpix_array, searchquader, sort_candidates_by_freq,
     track_forward_start, trackcorr_c_loop, trackcorr_c_finish, trackback_c,
-    Foundpix_dtype
+    Foundpix_dtype, MAX_CANDS
 )
 from algorithms.tracking_frame_buf import Target
 from algorithms.tracking_run import tr_new
@@ -21,7 +21,7 @@ from algorithms.calibration import Calibration
 
 EPS = 1e-5
 
-def read_all_calibration(num_cams, base_path="testing_fodder/track"):
+def read_all_calibration(num_cams, base_path="test_data/track"):
     cals = []
     for cam in range(num_cams):
         ori_name = f"{base_path}/cal/cam{cam + 1}.tif.ori"
@@ -198,11 +198,13 @@ def test_copy_foundpix_array():
 def test_searchquader():
     point = np.array([185.5, 3.2, 203.9])
     
-    cpar = read_control_par("testing_fodder/track/parameters/ptv.par")
+    cpar = read_control_par("test_data/track/parameters/ptv.par")
     cpar.mm.n2[0] = 1.0000001
     cpar.mm.n3 = 1.0000001
 
-    tpar = TrackParTuple(0.4, 120, 0.2, -0.2, 0.1, -0.1, 0.1, -0.1, 0, 0., 0., 0., 1.)
+    tpar = TrackParTuple(dvxmin=-0.2, dvxmax=0.2, dvymin=-0.1, dvymax=0.1,
+                         dvzmin=-0.1, dvzmax=0.1, dangle=120, dacc=0.4,
+                         add=1, dsumg=0, dn=0, dnx=0, dny=0)
 
     calib = read_all_calibration(cpar.num_cams)
 
@@ -212,11 +214,15 @@ def test_searchquader():
     assert abs(yu[1] - 0.437303) < local_eps
 
     cpar.num_cams = 1
-    tpar1 = TrackParTuple(0.4, 120, 0.0, -0.0, 0.0, -0.0, 0.0, -0.0, 0, 0., 0., 0., 1.)
+    tpar1 = TrackParTuple(dvxmin=0.0, dvxmax=0.0, dvymin=0.0, dvymax=0.0,
+                          dvzmin=0.0, dvzmax=0.0, dangle=120, dacc=0.4,
+                          add=0, dsumg=0, dn=0, dnx=0, dny=0)
     xr, xl, yd, yu = searchquader(point, tpar1, cpar, calib)
     assert abs(xr[0] - 0.0) < EPS
 
-    tpar2 = TrackParTuple(0.4, 120, 1000.0, -1000.0, 1000.0, -1000.0, 1000.0, -1000.0, 0, 0., 0., 0., 1.)
+    tpar2 = TrackParTuple(dvxmin=-1000.0, dvxmax=1000.0, dvymin=-1000.0, dvymax=1000.0,
+                          dvzmin=-1000.0, dvzmax=1000.0, dangle=120, dacc=0.4,
+                          add=0, dsumg=0, dn=0, dnx=0, dny=0)
     xr, xl, yd, yu = searchquader(point, tpar2, cpar, calib)
     assert abs(xr[0] + xl[0] - cpar.imx) < EPS
     assert abs(yd[0] + yu[0] - cpar.imy) < EPS
@@ -240,7 +246,7 @@ def test_trackcorr_no_add():
     import os
     original = os.getcwd()
     try:
-        os.chdir("testing_fodder/track")
+        os.chdir("test_data/track")
         if os.path.exists("res"): shutil.rmtree("res")
         if os.path.exists("img"): shutil.rmtree("img")
         shutil.copytree("res_orig", "res")
@@ -280,7 +286,7 @@ def test_trackcorr_with_add():
     import os
     original = os.getcwd()
     try:
-        os.chdir("testing_fodder/track")
+        os.chdir("test_data/track")
         if os.path.exists("res"): shutil.rmtree("res")
         if os.path.exists("img"): shutil.rmtree("img")
         shutil.copytree("res_orig", "res")
@@ -320,7 +326,7 @@ def test_cavity():
     import os
     original = os.getcwd()
     try:
-        os.chdir("testing_fodder/test_cavity")
+        os.chdir("test_data/test_cavity")
         if os.path.exists("res"): shutil.rmtree("res")
         if os.path.exists("img"): shutil.rmtree("img")
         shutil.copytree("res_orig", "res")
@@ -363,7 +369,7 @@ def test_burgers():
     import os
     original = os.getcwd()
     try:
-        os.chdir("testing_fodder/burgers")
+        os.chdir("test_data/burgers")
         if os.path.exists("res"): shutil.rmtree("res")
         if os.path.exists("img"): shutil.rmtree("img")
         shutil.copytree("res_orig", "res")
@@ -406,7 +412,7 @@ def test_trackback():
     import os
     original = os.getcwd()
     try:
-        os.chdir("testing_fodder/track")
+        os.chdir("test_data/track")
         if os.path.exists("res"): shutil.rmtree("res")
         if os.path.exists("img"): shutil.rmtree("img")
         shutil.copytree("res_orig", "res")

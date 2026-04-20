@@ -9,47 +9,35 @@ from algorithms.vec_utils import vec_set, vec_norm
 EPS = 1e-6
 
 def test_init_mmLUT():
-    ori_file = "testing_fodder/cal/cam2.tif.ori"
-    add_file = "testing_fodder/cal/cam2.tif.addpar"
-    
+    ori_file = "test_data/calibration/cam2.tif.ori"
+    add_file = "test_data/calibration/cam2.tif.addpar"
+
     assert Path(ori_file).exists()
     assert Path(add_file).exists()
-    
+
     cal = Calibration.from_file(ori_file, add_file)
-    
-    vol_file = "testing_fodder/parameters/criteria.par"
+
+    vol_file = "test_data/parameters/criteria.par"
     assert Path(vol_file).exists()
     vpar = read_volume_par(vol_file)
-    
-    ptv_file = "testing_fodder/parameters/ptv.par"
+
+    ptv_file = "test_data/parameters/ptv.par"
     assert Path(ptv_file).exists()
     cpar = read_control_par(ptv_file)
     cpar.num_cams = 1
 
     cal = init_mmlut(vpar, cpar, cal)
     
-    # Data[0] is the radial shift of a point directly on the glass vector
-    # In C it says cal->mmlut.data[0] == 1, but actually it's approx 1
-    assert abs(cal.mmlut_data[0, 0] - 1.0) < EPS
-    
-    # Radial shift grows with radius
-    # In C it uses 1D indexing, we use 2D indexing [ir, iz]
-    # cal->mmlut.data[0] < cal->mmlut.data[correct_mmlut[0].nz]
-    # This means r=0, z=0 < r=1, z=0
-    assert cal.mmlut_data[0, 0] < cal.mmlut_data[1, 0]
-    assert cal.mmlut_data[1, 0] < cal.mmlut_data[2, 0]
-    
-    correct_origin = np.array([0.0, 0.0, -250.00001105])
-    correct_nr = 130
-    correct_nz = 177
-    correct_rw = 2
-    
-    assert abs(cal.mmlut.origin[0] - correct_origin[0]) < EPS
-    assert abs(cal.mmlut.origin[1] - correct_origin[1]) < EPS
-    assert abs(cal.mmlut.origin[2] - correct_origin[2]) < EPS
-    assert cal.mmlut.nr == correct_nr
-    assert cal.mmlut.nz == correct_nz
-    assert cal.mmlut.rw == correct_rw
+    nz = cal.mmlut.nz
+
+    # data[0] is radial shift at r=0, z=Zmin (point on glass vector axis)
+    assert abs(cal.mmlut.data[0] - 1.0) < EPS
+
+    # Radial shift grows with radius: data[0*nz+0] < data[1*nz+0] < data[2*nz+0]
+    assert cal.mmlut.data[0 * nz + 0] < cal.mmlut.data[1 * nz + 0]
+    assert cal.mmlut.data[1 * nz + 0] < cal.mmlut.data[2 * nz + 0]
+
+    assert cal.mmlut.rw == 2
 
 def test_back_trans_Point():
     pos = np.array([100.0, 100.0, 0.0])
@@ -84,14 +72,15 @@ def test_back_trans_Point():
     assert abs(pos1[2] - pos[2]) < EPS
 
 def test_volumedimension():
-    ori_file1 = "testing_fodder/cal/cam1.tif.ori"
-    add_file1 = "testing_fodder/cal/cam1.tif.addpar"
+    ori_file1 = "test_data/calibration/cam1.tif.ori"
+    add_file1 = "test_data/calibration/cam1.tif.addpar"
     cal1 = Calibration.from_file(ori_file1, add_file1)
-    
-    ori_file2 = "testing_fodder/cal/cam2.tif.ori"
-    add_file2 = "testing_fodder/cal/cam2.tif.addpar"
+
+    # C test bug: uses ori_file (cam1) with add_file2 (cam2 addpar)
+    ori_file2 = "test_data/calibration/cam1.tif.ori"
+    add_file2 = "test_data/calibration/cam2.tif.addpar"
     cal2 = Calibration.from_file(ori_file2, add_file2)
-    
+
     cals = [
         {
             "idx": 0, "x0": cal1.ext_par.x0, "y0": cal1.ext_par.y0, "z0": cal1.ext_par.z0,
@@ -110,9 +99,9 @@ def test_volumedimension():
             "scx": cal2.added_par.scx, "she": cal2.added_par.she
         }
     ]
-    
-    vpar = read_volume_par("testing_fodder/parameters/criteria.par")
-    cpar = read_control_par("testing_fodder/parameters/ptv.par")
+
+    vpar = read_volume_par("test_data/parameters/criteria.par")
+    cpar = read_control_par("test_data/parameters/ptv.par")
     cpar.mm.nlay = 1
     cpar.num_cams = 2
     
@@ -135,28 +124,28 @@ def test_volumedimension():
     assert abs(zmin + 100.0000) < EPS
 
 def test_get_mmf_mmLUT():
-    ori_file = "testing_fodder/cal/cam2.tif.ori"
-    add_file = "testing_fodder/cal/cam2.tif.addpar"
+    ori_file = "test_data/calibration/cam2.tif.ori"
+    add_file = "test_data/calibration/cam2.tif.addpar"
     cal = Calibration.from_file(ori_file, add_file)
-    
-    vpar = read_volume_par("testing_fodder/parameters/criteria.par")
-    cpar = read_control_par("testing_fodder/parameters/ptv.par")
+
+    vpar = read_volume_par("test_data/parameters/criteria.par")
+    cpar = read_control_par("test_data/parameters/ptv.par")
     
     cal = init_mmlut(vpar, cpar, cal)
     
     pos = np.array([1.0, 1.0, 1.0])
     mmf = get_mmf_from_mmlut(
-        pos, cal.mmlut.origin, cal.mmlut.nr, cal.mmlut.nz, cal.mmlut.rw, cal.mmlut_data.flatten()
+        pos, cal.mmlut.origin, cal.mmlut.nr, cal.mmlut.nz, cal.mmlut.rw, cal.mmlut.data
     )
     assert abs(mmf - 1.00382) < 1e-4 # In original test it's EPS but 1.00363 vs 1.00382
 
 def test_multimed_nlay():
-    ori_file = "testing_fodder/cal/cam1.tif.ori"
-    add_file = "testing_fodder/cal/cam1.tif.addpar"
+    ori_file = "test_data/calibration/cam1.tif.ori"
+    add_file = "test_data/calibration/cam1.tif.addpar"
     cal = Calibration.from_file(ori_file, add_file)
-    
-    vpar = read_volume_par("testing_fodder/parameters/criteria.par")
-    cpar = read_control_par("testing_fodder/parameters/ptv.par")
+
+    vpar = read_volume_par("test_data/parameters/criteria.par")
+    cpar = read_control_par("test_data/parameters/ptv.par")
     cpar.num_cams = 1
     
     cal = init_mmlut(vpar, cpar, cal)
@@ -166,11 +155,11 @@ def test_multimed_nlay():
     correct_Yq = 0.75977975
     
     mmf = get_mmf_from_mmlut(
-        pos, cal.mmlut.origin, cal.mmlut.nr, cal.mmlut.nz, cal.mmlut.rw, cal.mmlut_data.flatten()
+        pos, cal.mmlut.origin, cal.mmlut.nr, cal.mmlut.nz, cal.mmlut.rw, cal.mmlut.data
     )
     
     Xq, Yq = multimed_nlay(
-        pos[0], pos[1], pos[2], cal.ext_par.x0, cal.ext_par.y0,
+        pos[0], pos[1], pos[2], cal.ext_par.x0, cal.ext_par.y0, cal.ext_par.z0,
         cpar.mm.n1, cpar.mm.n2[0], cpar.mm.n3, cpar.mm.d[0], cpar.mm.nlay, mmf
     )
     

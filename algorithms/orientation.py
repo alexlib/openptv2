@@ -8,68 +8,17 @@ parameters using known 3D points and their 2D image projections.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+import copy
 from pathlib import Path
 
 import numpy as np
 
-
-@dataclass
-class OrientPar:
-    """Flags for which parameters to adjust during orientation.
-
-    Attributes:
-        useflag: which points to use (0=all, 1=even, 2=odd, 3=every 3rd).
-        ccflag: fix back focal distance.
-        xhflag, yhflag: fix principal point offsets.
-        k1flag, k2flag, k3flag: fix radial distortion.
-        p1flag, p2flag: fix decentering distortion.
-        scxflag, sheflag: fix scale/shear.
-        interfflag: fix glass interface vector.
-    """
-    useflag: int = 0
-    ccflag: int = 0
-    xhflag: int = 0
-    yhflag: int = 0
-    k1flag: int = 0
-    k2flag: int = 0
-    k3flag: int = 0
-    p1flag: int = 0
-    p2flag: int = 0
-    scxflag: int = 0
-    sheflag: int = 0
-    interfflag: int = 0
-
-    @classmethod
-    def from_file(cls, filename: str | Path) -> OrientPar:
-        """Read orientation parameters from file.
-
-        Args:
-            filename: path to parameter file.
-
-        Returns:
-            OrientPar instance.
-        """
-        path = Path(filename)
-        lines = path.read_text().strip().splitlines()
-
-        if len(lines) < 12:
-            raise ValueError(f"Expected 12 lines, got {len(lines)}")
-
-        return cls(
-            useflag=int(lines[0]),
-            ccflag=int(lines[1]),
-            xhflag=int(lines[2]),
-            yhflag=int(lines[3]),
-            k1flag=int(lines[4]),
-            k2flag=int(lines[5]),
-            k3flag=int(lines[6]),
-            p1flag=int(lines[7]),
-            p2flag=int(lines[8]),
-            scxflag=int(lines[9]),
-            sheflag=int(lines[10]),
-            interfflag=int(lines[11]),
-        )
+NPAR = 19
+IDT = 10
+NUM_ITER = 80
+POS_INF = 1e20
+CONVERGENCE = 0.00001
+COORD_UNUSED = -1e10
 
 
 def skew_midpoint(
@@ -78,411 +27,596 @@ def skew_midpoint(
     vert2: np.ndarray,
     direct2: np.ndarray,
 ) -> tuple[float, np.ndarray]:
-    """Find midpoint of shortest distance segment between two skew rays.
+    """Find midpoint of shortest distance segment between two skew rays."""
+    sp_diff = vert2 - vert1
+    perp_both = np.cross(direct1, direct2)
+    scale = np.dot(perp_both, perp_both)
 
-    Args:
-        vert1, direct1: vertex and direction of first ray.
-        vert2, direct2: vertex and direction of second ray.
+    if scale < 1e-20:
+        return np.linalg.norm(sp_diff), (vert1 + vert2) / 2
 
-    Returns:
-        (distance, midpoint) where midpoint is the average of closest points.
-    """
-    # Cross product of directions
-    cross = np.cross(direct1, direct2)
-    cross_norm = np.linalg.norm(cross)
+    temp = np.cross(sp_diff, direct2)
+    on1 = vert1 + direct1 * (np.dot(perp_both, temp) / scale)
 
-    if cross_norm < 1e-10:
-        # Parallel rays - return midpoint of vertices
-        return np.linalg.norm(vert2 - vert1), (vert1 + vert2) / 2
+    temp = np.cross(sp_diff, direct1)
+    on2 = vert2 + direct2 * (np.dot(perp_both, temp) / scale)
 
-    # Normalized cross
-    n = cross / cross_norm
-
-    # Distance between rays
-    diff = vert2 - vert1
-    dist = abs(np.dot(diff, n))
-
-    # Closest points (simplified - full solution uses linear system)
-    # For now, return midpoint
-    midpoint = (vert1 + vert2) / 2
+    dist = np.linalg.norm(on1 - on2)
+    midpoint = (on1 + on2) * 0.5
 
     return dist, midpoint
 
 
-def point_position(
-    targets: list[tuple[float, float]],
-    calibrations: list[dict],
-    mm_params: dict,
-) -> tuple[np.ndarray, float]:
+def point_position(targets, num_cams, mm, cals):
     """Compute average 3D position from multiple camera rays.
 
     Args:
-        targets: per-camera 2D image coordinates.
-        calibrations: per-camera calibration dicts.
-        mm_params: multimedia parameters.
+        targets: (num_cams, 2) array of metric flat coordinates.
+        num_cams: number of cameras.
+        mm: MultimediaPar or MmNp with n1, n2, n3, d attributes.
+        cals: list of Calibration objects.
 
     Returns:
         (position, avg_ray_distance) tuple.
     """
     from .ray_tracing import ray_tracing
 
-    num_cams = len(targets)
     vertices = []
-    directions = []
+    directs = []
 
-    # Ray trace from each camera
     for cam in range(num_cams):
-        cal = calibrations[cam]
-        x, y = targets[cam]
+        x, y = targets[cam, 0], targets[cam, 1]
+        if x == COORD_UNUSED:
+            vertices.append(None)
+            directs.append(None)
+            continue
 
+        cal = cals[cam]
         pos, direction = ray_tracing(
             x, y,
-            cal["dm"], cal["x0"], cal["y0"], cal["z0"], cal["cc"],
-            cal["gx"], cal["gy"], cal["gz"],
-            mm_params["n1"], mm_params["n2_0"], mm_params["n3"], mm_params["d0"],
+            cal.ext_par.dm,
+            cal.ext_par.x0, cal.ext_par.y0, cal.ext_par.z0,
+            cal.int_par.cc,
+            cal.glass_par.vec_x, cal.glass_par.vec_y, cal.glass_par.vec_z,
+            mm.n1, mm.n2[0], mm.n3, mm.d[0],
         )
         vertices.append(pos)
-        directions.append(direction)
+        directs.append(direction)
 
-    # Find pairwise skew midpoints
-    total_dist = 0.0
-    count = 0
-    sum_positions = np.zeros(3)
+    dtot = 0.0
+    num_used_pairs = 0
+    point_tot = np.zeros(3)
 
-    for i in range(num_cams):
-        for j in range(i + 1, num_cams):
-            dist, midpoint = skew_midpoint(
-                vertices[i], directions[i],
-                vertices[j], directions[j],
+    for cam in range(num_cams):
+        if vertices[cam] is None:
+            continue
+        for pair in range(cam + 1, num_cams):
+            if vertices[pair] is None:
+                continue
+            num_used_pairs += 1
+            d, point = skew_midpoint(
+                vertices[cam], directs[cam],
+                vertices[pair], directs[pair],
             )
-            total_dist += dist
-            sum_positions += midpoint
-            count += 1
+            dtot += d
+            point_tot += point
 
-    if count == 0:
+    if num_used_pairs == 0:
         return np.zeros(3), 0.0
 
-    avg_position = sum_positions / count
-    avg_dist = total_dist / count
-
-    return avg_position, avg_dist
+    res = point_tot / num_used_pairs
+    return res, dtot / num_used_pairs
 
 
-def num_deriv_exterior(
-    cal: dict,
-    cpar: dict,
-    pos: np.ndarray,
-    dpos: float = 0.1,
-    dang: float = 0.0001,
-) -> tuple[np.ndarray, np.ndarray]:
-    """Compute numerical derivatives of image coordinates w.r.t. exterior params.
+def weighted_dumbbell_precision(targets, num_targs, num_cams, mm, cals,
+                                db_length, db_weight):
+    """Weighted sum of dumbbell precision measures.
 
     Args:
-        cal: calibration dict (dm, x0, y0, z0, omega, phi, kappa, cc, etc.).
-        cpar: control parameters.
-        pos: 3D world position.
-        dpos: position perturbation step.
-        dang: angle perturbation step.
+        targets: (num_targs, num_cams, 2) array.
+        num_targs: number of target points.
+        num_cams: number of cameras.
+        mm: multimedia parameters.
+        cals: list of Calibration objects.
+        db_length: expected dumbbell length.
+        db_weight: weight of length error vs ray convergence.
 
     Returns:
-        (x_ders, y_ders) each shape (6,) for x0,y0,z0,omega,phi,kappa.
+        Weighted precision measure (float).
+    """
+    dtot = 0.0
+    len_err_tot = 0.0
+    res = [np.zeros(3), np.zeros(3)]
+
+    for pt in range(num_targs):
+        targs_pt = targets[pt]
+        r, d = point_position(targs_pt, num_cams, mm, cals)
+        res[pt % 2] = r
+        dtot += d
+
+        if pt % 2 == 1:
+            diff = res[0] - res[1]
+            dist = np.linalg.norm(diff)
+            if dist > db_length:
+                len_err_tot += 1 - db_length / dist
+            else:
+                len_err_tot += 1 - dist / db_length
+
+    return dtot / num_targs + db_weight * len_err_tot / (0.5 * num_targs)
+
+
+def num_deriv_exterior(cal, cpar, dpos, dang, pos):
+    """Compute numerical derivatives of image coords w.r.t. exterior params.
+
+    Args:
+        cal: Calibration object (temporarily modified, then restored).
+        cpar: ControlPar object.
+        dpos: position step.
+        dang: angle step.
+        pos: 3D world position.
+
+    Returns:
+        (x_ders, y_ders) each shape (6,).
     """
     from .imgcoord import img_coord
 
-    def project(cal_mod: dict) -> tuple[float, float]:
-        return img_coord(
-            pos,
-            cal_mod["x0"], cal_mod["y0"], cal_mod["z0"],
-            cal_mod["dm"], cal_mod["cc"],
-            cal_mod["int_xh"], cal_mod["int_yh"],
-            cal_mod["gx"], cal_mod["gy"], cal_mod["gz"],
-            cal_mod.get("mm_n1", 1.0), cal_mod.get("mm_n2_0", 1.0),
-            cal_mod.get("mm_n3", 1.0), cal_mod.get("mm_d0", 0.0),
-            cal_mod.get("k1", 0.0), cal_mod.get("k2", 0.0),
-            cal_mod.get("k3", 0.0), cal_mod.get("p1", 0.0),
-            cal_mod.get("p2", 0.0), cal_mod.get("scx", 1.0),
-            cal_mod.get("she", 0.0),
-        )
-
-    x0, y0 = project(cal)
+    cal.ext_par.compute_rotation_matrix()
+    xs, ys = img_coord(pos, cal, cpar.mm)
 
     x_ders = np.zeros(6)
     y_ders = np.zeros(6)
 
-    # Position derivatives
-    for i, param in enumerate(["x0", "y0", "z0"]):
-        cal_plus = cal.copy()
-        cal_minus = cal.copy()
-        cal_plus[param] = cal[param] + dpos
-        cal_minus[param] = cal[param] - dpos
+    var_names = ['x0', 'y0', 'z0', 'omega', 'phi', 'kappa']
 
-        x_plus, y_plus = project(cal_plus)
-        x_minus, y_minus = project(cal_minus)
+    for pd in range(6):
+        step = dang if pd > 2 else dpos
 
-        x_ders[i] = (x_plus - x_minus) / (2 * dpos)
-        y_ders[i] = (y_plus - y_minus) / (2 * dpos)
+        orig = getattr(cal.ext_par, var_names[pd])
+        setattr(cal.ext_par, var_names[pd], orig + step)
 
-    # Angle derivatives
-    for i, param in enumerate(["omega", "phi", "kappa"]):
-        cal_plus = cal.copy()
-        cal_minus = cal.copy()
-        cal_plus[param] = cal[param] + dang
-        cal_minus[param] = cal[param] - dang
+        if pd > 2:
+            cal.ext_par.compute_rotation_matrix()
 
-        # Recompute rotation matrix
-        from .calibration import Exterior
-        ext_plus = Exterior(
-            x0=cal["x0"], y0=cal["y0"], z0=cal["z0"],
-            omega=cal_plus["omega"], phi=cal_plus["phi"], kappa=cal_plus["kappa"],
-        )
-        ext_plus.compute_rotation_matrix()
-        cal_plus["dm"] = ext_plus.dm
+        xpd, ypd = img_coord(pos, cal, cpar.mm)
+        x_ders[pd] = (xpd - xs) / step
+        y_ders[pd] = (ypd - ys) / step
 
-        ext_minus = Exterior(
-            x0=cal["x0"], y0=cal["y0"], z0=cal["z0"],
-            omega=cal_minus["omega"], phi=cal_minus["phi"], kappa=cal_minus["kappa"],
-        )
-        ext_minus.compute_rotation_matrix()
-        cal_minus["dm"] = ext_minus.dm
+        setattr(cal.ext_par, var_names[pd], orig)
 
-        x_plus, y_plus = project(cal_plus)
-        x_minus, y_minus = project(cal_minus)
-
-        x_ders[i + 3] = (x_plus - x_minus) / (2 * dang)
-        y_ders[i + 3] = (y_plus - y_minus) / (2 * dang)
-
+    cal.ext_par.compute_rotation_matrix()
     return x_ders, y_ders
 
 
-def orient(
-    calibrations: list[dict],
-    cpar: dict,
-    fix_points: list[np.ndarray],
-    image_points: list[list[tuple[float, float]]],
-    flags: OrientPar,
-    mm_params: dict,
-    max_iter: int = 80,
-    tol: float = 1e-5,
-) -> tuple[list[dict], np.ndarray] | None:
-    """Bundle adjustment using Gauss-Markov model.
-
-    Iteratively refines calibration parameters to minimize reprojection error.
-
-    Args:
-        calibrations: per-camera calibration dicts.
-        cpar: control parameters.
-        fix_points: known 3D positions.
-        image_points: per-camera 2D image correspondences.
-        flags: which parameters to adjust.
-        mm_params: multimedia parameters.
-        max_iter: maximum iterations.
-        tol: convergence tolerance.
-
-    Returns:
-        (updated_calibrations, residuals) or None on failure.
-    """
-    from .lsqadj import ata, atl, matinv, matmul
-
-    num_cams = len(calibrations)
-    n_points = len(fix_points)
-
-    # Build design matrix and observations
-    # Simplified: only adjust exterior (6 params per camera)
-    n_params = 6 * num_cams
-    n_obs = 2 * n_points * num_cams  # x and y per point per camera
-
-    A = np.zeros((n_obs, n_params))
-    y = np.zeros(n_obs)
-    P = np.eye(n_obs)  # Weight matrix
-
-    for iteration in range(max_iter):
-        obs_idx = 0
-
-        for cam in range(num_cams):
-            cal = calibrations[cam]
-
-            for pt_idx in range(n_points):
-                # Skip if not using this point
-                if flags.useflag == 1 and pt_idx % 2 != 0:
-                    obs_idx += 2
-                    continue
-                if flags.useflag == 2 and pt_idx % 2 != 1:
-                    obs_idx += 2
-                    continue
-                if flags.useflag == 3 and pt_idx % 3 != 0:
-                    obs_idx += 2
-                    continue
-
-                # Project current estimate
-                x_pred, y_pred = img_coord(
-                    fix_points[pt_idx],
-                    cal["x0"], cal["y0"], cal["z0"],
-                    cal["dm"], cal["cc"],
-                    cal["int_xh"], cal["int_yh"],
-                    cal["gx"], cal["gy"], cal["gz"],
-                    mm_params["n1"], mm_params["n2_0"],
-                    mm_params["n3"], mm_params["d0"],
-                    cal.get("k1", 0.0), cal.get("k2", 0.0),
-                    cal.get("k3", 0.0), cal.get("p1", 0.0),
-                    cal.get("p2", 0.0), cal.get("scx", 1.0),
-                    cal.get("she", 0.0),
-                )
-
-                # Observations (residuals)
-                y[obs_idx] = image_points[cam][pt_idx][0] - x_pred
-                y[obs_idx + 1] = image_points[cam][pt_idx][1] - y_pred
-
-                # Numerical derivatives
-                x_ders, y_ders = num_deriv_exterior(cal, cpar, fix_points[pt_idx])
-
-                # Fill design matrix
-                param_offset = 6 * cam
-                A[obs_idx, param_offset:param_offset + 6] = x_ders
-                A[obs_idx + 1, param_offset:param_offset + 6] = y_ders
-
-                obs_idx += 2
-
-        # Solve normal equations: beta = (A^T P A)^{-1} A^T P y
-        ATA = ata(A, n_obs, n_params)
-        ATy = atl(A, y, n_obs, n_params)
-
-        try:
-            matinv(ATA, n_params)
-        except ZeroDivisionError:
-            return None
-
-        beta = matmul(ATA, ATy, n_params)
-
-        # Update parameters
-        for cam in range(num_cams):
-            cal = calibrations[cam]
-            param_offset = 6 * cam
-
-            cal["x0"] += beta[param_offset]
-            cal["y0"] += beta[param_offset + 1]
-            cal["z0"] += beta[param_offset + 2]
-            cal["omega"] += beta[param_offset + 3]
-            cal["phi"] += beta[param_offset + 4]
-            cal["kappa"] += beta[param_offset + 5]
-
-            # Recompute rotation matrix
-            from .calibration import Exterior
-            ext = Exterior(
-                x0=cal["x0"], y0=cal["y0"], z0=cal["z0"],
-                omega=cal["omega"], phi=cal["phi"], kappa=cal["kappa"],
-            )
-            ext.compute_rotation_matrix()
-            cal["dm"] = ext.dm
-
-        # Check convergence
-        if np.max(np.abs(beta)) < tol:
-            break
-
-    # Compute residuals
-    residuals = np.zeros(n_points)
-    for pt_idx in range(n_points):
-        positions = []
-        for cam in range(num_cams):
-            positions.append(
-                point_position(
-                    [image_points[cam][pt_idx]],
-                    [calibrations[cam]],
-                    mm_params,
-                )[0]
-            )
-        residuals[pt_idx] = np.std(positions)
-
-    return calibrations, residuals
-
-
-def raw_orient(
-    cal: dict,
-    cpar: dict,
-    fix_points: list[np.ndarray],
-    image_points: list[tuple[float, float]],
-    mm_params: dict,
-    max_iter: int = 20,
-    tol: float = 0.1,
-) -> dict | None:
+def raw_orient(cal, cpar, nfix, fix, pix):
     """Simplified orientation using only 6 exterior parameters.
 
-    For manual orientation from typically 4 clicked points.
-
     Args:
-        cal: calibration dict.
-        cpar: control parameters.
-        fix_points: known 3D positions.
-        image_points: 2D image correspondences.
-        mm_params: multimedia parameters.
-        max_iter: maximum iterations.
-        tol: convergence tolerance.
+        cal: Calibration (modified in place on success).
+        cpar: ControlPar.
+        nfix: number of fix points.
+        fix: list/array of 3D positions, shape (nfix, 3).
+        pix: list of Target objects with .x, .y attributes.
 
     Returns:
-        Updated calibration dict or None on failure.
+        True on success, False on failure.
     """
-    for iteration in range(max_iter):
-        # Compute current reprojection error
-        error = 0.0
-        for pt_idx in range(len(fix_points)):
-            x_pred, y_pred = img_coord(
-                fix_points[pt_idx],
-                cal["x0"], cal["y0"], cal["z0"],
-                cal["dm"], cal["cc"],
-                cal["int_xh"], cal["int_yh"],
-                cal["gx"], cal["gy"], cal["gz"],
-                mm_params["n1"], mm_params["n2_0"],
-                mm_params["n3"], mm_params["d0"],
-                cal.get("k1", 0.0), cal.get("k2", 0.0),
-                cal.get("k3", 0.0), cal.get("p1", 0.0),
-                cal.get("p2", 0.0), cal.get("scx", 1.0),
-                cal.get("she", 0.0),
+    from .imgcoord import img_coord
+    from .trafo import pixel_to_metric, correct_brown_affin
+    from .lsqadj import ata, atl, matinv, matmul
+
+    dm = 0.0001
+    drad = 0.0001
+
+    cal.added_par.k1 = 0
+    cal.added_par.k2 = 0
+    cal.added_par.k3 = 0
+    cal.added_par.p1 = 0
+    cal.added_par.p2 = 0
+    cal.added_par.scx = 1
+    cal.added_par.she = 0
+
+    itnum = 0
+    stopflag = 0
+
+    while stopflag == 0 and itnum < 20:
+        itnum += 1
+
+        X = np.zeros((2 * nfix, 6))
+        y = np.zeros(2 * nfix)
+        n = 0
+
+        for i in range(nfix):
+            xc, yc = pixel_to_metric(pix[i].x, pix[i].y, cpar)
+
+            cal.ext_par.compute_rotation_matrix()
+            xp, yp = img_coord(np.asarray(fix[i]), cal, cpar.mm)
+
+            x_ders, y_ders = num_deriv_exterior(cal, cpar, dm, drad,
+                                                np.asarray(fix[i]))
+
+            X[n, :] = x_ders
+            X[n + 1, :] = y_ders
+
+            y[n] = xc - xp
+            y[n + 1] = yc - yp
+
+            n += 2
+
+        XPX = ata(X[:n], n, 6)
+        XPX = matinv(XPX, 6)
+        XPy = atl(X[:n], y[:n], n, 6)
+        beta = matmul(XPX, XPy, 6, 6)
+
+        stopflag = 1
+        for i in range(6):
+            if abs(beta[i]) > 0.1:
+                stopflag = 0
+
+        cal.ext_par.x0 += beta[0]
+        cal.ext_par.y0 += beta[1]
+        cal.ext_par.z0 += beta[2]
+        cal.ext_par.omega += beta[3]
+        cal.ext_par.phi += beta[4]
+        cal.ext_par.kappa += beta[5]
+
+    if stopflag:
+        cal.ext_par.compute_rotation_matrix()
+
+    return bool(stopflag)
+
+
+def orient(cal_in, cpar, nfix, fix, pix, flags, sigmabeta):
+    """Bundle adjustment using Gauss-Markov model.
+
+    Args:
+        cal_in: Calibration (modified in place on success).
+        cpar: ControlPar.
+        nfix: number of fix points.
+        fix: (nfix, 3) array of known 3D positions.
+        pix: list of Target objects with .x, .y, .pnr attributes.
+        flags: OrientPar with flags for which params to adjust.
+        sigmabeta: output array of size 20 for parameter deviations.
+
+    Returns:
+        Array of residuals on success, None on failure.
+    """
+    from .imgcoord import img_coord
+    from .trafo import pixel_to_metric, correct_brown_affin
+    from .lsqadj import ata, atl, matinv, matmul
+    from .vec_utils import vec_set, unit_vector, vec_norm
+
+    dm = 0.00001
+    drad = 0.0000001
+
+    cal = copy.deepcopy(cal_in)
+
+    maxsize = nfix * 2 + IDT
+
+    P = np.ones(maxsize)
+    y = np.zeros(maxsize)
+    X = np.zeros((maxsize, NPAR))
+
+    for i in range(NPAR):
+        sigmabeta[i] = 0.0
+
+    numbers = 18 if flags.interfflag else 16
+
+    glass_dir = np.array([cal.glass_par.vec_x, cal.glass_par.vec_y,
+                          cal.glass_par.vec_z])
+    nGl = vec_norm(glass_dir)
+
+    e1_x = 2 * cal.glass_par.vec_z - 3 * cal.glass_par.vec_x
+    e1_y = 3 * cal.glass_par.vec_x - 1 * cal.glass_par.vec_z
+    e1_z = 1 * cal.glass_par.vec_y - 2 * cal.glass_par.vec_y
+    e1 = unit_vector(np.array([e1_x, e1_y, e1_z]))
+
+    e2_x = e1[1] * cal.glass_par.vec_z - e1[2] * cal.glass_par.vec_x
+    e2_y = e1[2] * cal.glass_par.vec_x - e1[0] * cal.glass_par.vec_z
+    e2_z = e1[0] * cal.glass_par.vec_y - e1[1] * cal.glass_par.vec_y
+    e2 = unit_vector(np.array([e2_x, e2_y, e2_z]))
+
+    al = 0.0
+    be = 0.0
+    ga = 0.0
+
+    ident = np.array([
+        cal.int_par.cc, cal.int_par.xh, cal.int_par.yh,
+        cal.added_par.k1, cal.added_par.k2, cal.added_par.k3,
+        cal.added_par.p1, cal.added_par.p2,
+        cal.added_par.scx, cal.added_par.she,
+    ])
+
+    safety_x = cal.glass_par.vec_x
+    safety_y = cal.glass_par.vec_y
+    safety_z = cal.glass_par.vec_z
+
+    itnum = 0
+    stopflag = 0
+
+    while stopflag == 0 and itnum < NUM_ITER:
+        itnum += 1
+
+        X[:] = 0.0
+        y[:] = 0.0
+        P[:] = 1.0
+        n = 0
+
+        for i in range(nfix):
+            if pix[i].pnr != i:
+                continue
+
+            if flags.useflag == 1 and (i % 2) == 0:
+                continue
+            if flags.useflag == 2 and (i % 2) != 0:
+                continue
+            if flags.useflag == 3 and (i % 3) == 0:
+                continue
+
+            xc, yc = pixel_to_metric(pix[i].x, pix[i].y, cpar)
+            xc, yc = correct_brown_affin(
+                xc, yc,
+                cal.added_par.k1, cal.added_par.k2, cal.added_par.k3,
+                cal.added_par.p1, cal.added_par.p2,
+                cal.added_par.scx, cal.added_par.she,
             )
-            error += (image_points[pt_idx][0] - x_pred) ** 2
-            error += (image_points[pt_idx][1] - y_pred) ** 2
 
-        if error < tol:
-            break
+            cal.ext_par.compute_rotation_matrix()
+            xp, yp = img_coord(np.asarray(fix[i]), cal, cpar.mm)
 
-        # Numerical gradient descent (simplified)
-        dpos = 0.1
-        dang = 0.0001
+            r = np.sqrt(xp * xp + yp * yp)
 
-        for param in ["x0", "y0", "z0", "omega", "phi", "kappa"]:
-            cal_plus = cal.copy()
-            cal_minus = cal.copy()
+            X[n, 7] = cal.added_par.scx
+            X[n + 1, 7] = np.sin(cal.added_par.she)
 
-            step = dpos if param in ["x0", "y0", "z0"] else dang
-            cal_plus[param] = cal[param] + step
-            cal_minus[param] = cal[param] - step
+            X[n, 8] = 0
+            X[n + 1, 8] = 1
 
-            # Recompute dm for angle changes
-            if param in ["omega", "phi", "kappa"]:
-                from .calibration import Exterior
-                ext_plus = Exterior(
-                    x0=cal["x0"], y0=cal["y0"], z0=cal["z0"],
-                    omega=cal_plus.get("omega", cal["omega"]),
-                    phi=cal_plus.get("phi", cal["phi"]),
-                    kappa=cal_plus.get("kappa", cal["kappa"]),
-                )
-                ext_plus.compute_rotation_matrix()
-                cal_plus["dm"] = ext_plus.dm
+            X[n, 9] = cal.added_par.scx * xp * r * r
+            X[n + 1, 9] = yp * r * r
 
-            # Compute gradients (simplified)
-            # ... (omitted for brevity - would need full Jacobian)
+            X[n, 10] = cal.added_par.scx * xp * r**4
+            X[n + 1, 10] = yp * r**4
 
-    return cal
+            X[n, 11] = cal.added_par.scx * xp * r**6
+            X[n + 1, 11] = yp * r**6
+
+            X[n, 12] = cal.added_par.scx * (2 * xp * xp + r * r)
+            X[n + 1, 12] = 2 * xp * yp
+
+            X[n, 13] = 2 * cal.added_par.scx * xp * yp
+            X[n + 1, 13] = 2 * yp * yp + r * r
+
+            qq = cal.added_par.k1 * r * r
+            qq += cal.added_par.k2 * r**4
+            qq += cal.added_par.k3 * r**6
+            qq += 1
+            X[n, 14] = (xp * qq
+                        + cal.added_par.p1 * (r * r + 2 * xp * xp)
+                        + 2 * cal.added_par.p2 * xp * yp)
+            X[n + 1, 14] = 0
+
+            X[n, 15] = -np.cos(cal.added_par.she) * yp
+            X[n + 1, 15] = -np.sin(cal.added_par.she) * yp
+
+            x_ders, y_ders = num_deriv_exterior(cal, cpar, dm, drad,
+                                                np.asarray(fix[i]))
+            X[n, 0:6] = x_ders
+            X[n + 1, 0:6] = y_ders
+
+            # cc derivative
+            cal.int_par.cc += dm
+            cal.ext_par.compute_rotation_matrix()
+            xpd, ypd = img_coord(np.asarray(fix[i]), cal, cpar.mm)
+            X[n, 6] = (xpd - xp) / dm
+            X[n + 1, 6] = (ypd - yp) / dm
+            cal.int_par.cc -= dm
+
+            # glass interface derivatives
+            al += dm
+            cal.glass_par.vec_x += e1[0] * nGl * al
+            cal.glass_par.vec_y += e1[1] * nGl * al
+            cal.glass_par.vec_z += e1[2] * nGl * al
+            xpd, ypd = img_coord(np.asarray(fix[i]), cal, cpar.mm)
+            X[n, 16] = (xpd - xp) / dm
+            X[n + 1, 16] = (ypd - yp) / dm
+            al -= dm
+            cal.glass_par.vec_x = safety_x
+            cal.glass_par.vec_y = safety_y
+            cal.glass_par.vec_z = safety_z
+
+            be += dm
+            cal.glass_par.vec_x += e2[0] * nGl * be
+            cal.glass_par.vec_y += e2[1] * nGl * be
+            cal.glass_par.vec_z += e2[2] * nGl * be
+            xpd, ypd = img_coord(np.asarray(fix[i]), cal, cpar.mm)
+            X[n, 17] = (xpd - xp) / dm
+            X[n + 1, 17] = (ypd - yp) / dm
+            be -= dm
+            cal.glass_par.vec_x = safety_x
+            cal.glass_par.vec_y = safety_y
+            cal.glass_par.vec_z = safety_z
+
+            ga += dm
+            cal.glass_par.vec_x += cal.glass_par.vec_x * nGl * ga
+            cal.glass_par.vec_y += cal.glass_par.vec_y * nGl * ga
+            cal.glass_par.vec_z += cal.glass_par.vec_z * nGl * ga
+            xpd, ypd = img_coord(np.asarray(fix[i]), cal, cpar.mm)
+            X[n, 18] = (xpd - xp) / dm
+            X[n + 1, 18] = (ypd - yp) / dm
+            ga -= dm
+            cal.glass_par.vec_x = safety_x
+            cal.glass_par.vec_y = safety_y
+            cal.glass_par.vec_z = safety_z
+
+            y[n] = xc - xp
+            y[n + 1] = yc - yp
+
+            n += 2
+
+        n_obs = n
+
+        # identity constraints
+        for i in range(IDT):
+            X[n_obs + i, 6 + i] = 1
+
+        y[n_obs + 0] = ident[0] - cal.int_par.cc
+        y[n_obs + 1] = ident[1] - cal.int_par.xh
+        y[n_obs + 2] = ident[2] - cal.int_par.yh
+        y[n_obs + 3] = ident[3] - cal.added_par.k1
+        y[n_obs + 4] = ident[4] - cal.added_par.k2
+        y[n_obs + 5] = ident[5] - cal.added_par.k3
+        y[n_obs + 6] = ident[6] - cal.added_par.p1
+        y[n_obs + 7] = ident[7] - cal.added_par.p2
+        y[n_obs + 8] = ident[8] - cal.added_par.scx
+        y[n_obs + 9] = ident[9] - cal.added_par.she
+
+        P[n_obs + 0] = 1 if flags.ccflag else POS_INF
+        P[n_obs + 1] = 1 if flags.xhflag else POS_INF
+        P[n_obs + 2] = 1 if flags.yhflag else POS_INF
+        P[n_obs + 3] = 1 if flags.k1flag else POS_INF
+        P[n_obs + 4] = 1 if flags.k2flag else POS_INF
+        P[n_obs + 5] = 1 if flags.k3flag else POS_INF
+        P[n_obs + 6] = 1 if flags.p1flag else POS_INF
+        P[n_obs + 7] = 1 if flags.p2flag else POS_INF
+        P[n_obs + 8] = 1 if flags.scxflag else POS_INF
+        P[n_obs + 9] = 1 if flags.sheflag else POS_INF
+
+        n_obs += IDT
+
+        # homogenize
+        Xh = np.zeros_like(X[:n_obs])
+        yh = np.zeros(n_obs)
+        for i in range(n_obs):
+            p = np.sqrt(P[i])
+            Xh[i] = p * X[i]
+            yh[i] = p * y[i]
+
+        XPX = ata(Xh, n_obs, numbers)
+        XPX = matinv(XPX, numbers)
+        XPy = atl(Xh, yh, n_obs, numbers)
+        beta = matmul(XPX, XPy, numbers, numbers)
+
+        stopflag = 1
+        for i in range(numbers):
+            if abs(beta[i]) > CONVERGENCE:
+                stopflag = 0
+
+        if not flags.ccflag:
+            beta[6] = 0.0
+        if not flags.xhflag:
+            beta[7] = 0.0
+        if not flags.yhflag:
+            beta[8] = 0.0
+        if not flags.k1flag:
+            beta[9] = 0.0
+        if not flags.k2flag:
+            beta[10] = 0.0
+        if not flags.k3flag:
+            beta[11] = 0.0
+        if not flags.p1flag:
+            beta[12] = 0.0
+        if not flags.p2flag:
+            beta[13] = 0.0
+        if not flags.scxflag:
+            beta[14] = 0.0
+        if not flags.sheflag:
+            beta[15] = 0.0
+
+        cal.ext_par.x0 += beta[0]
+        cal.ext_par.y0 += beta[1]
+        cal.ext_par.z0 += beta[2]
+        cal.ext_par.omega += beta[3]
+        cal.ext_par.phi += beta[4]
+        cal.ext_par.kappa += beta[5]
+        cal.int_par.cc += beta[6]
+        cal.int_par.xh += beta[7]
+        cal.int_par.yh += beta[8]
+        cal.added_par.k1 += beta[9]
+        cal.added_par.k2 += beta[10]
+        cal.added_par.k3 += beta[11]
+        cal.added_par.p1 += beta[12]
+        cal.added_par.p2 += beta[13]
+        cal.added_par.scx += beta[14]
+        cal.added_par.she += beta[15]
+
+        if flags.interfflag:
+            cal.glass_par.vec_x += e1[0] * nGl * beta[16]
+            cal.glass_par.vec_y += e1[1] * nGl * beta[16]
+            cal.glass_par.vec_z += e1[2] * nGl * beta[16]
+            cal.glass_par.vec_x += e2[0] * nGl * beta[17]
+            cal.glass_par.vec_y += e2[1] * nGl * beta[17]
+            cal.glass_par.vec_z += e2[2] * nGl * beta[17]
+
+    # compute residuals
+    beta_full = np.zeros(NPAR)
+    beta_full[:numbers] = beta[:numbers]
+    Xbeta = X[:n_obs] @ beta_full
+    omega = 0.0
+    resi = np.zeros(n_obs)
+    for i in range(n_obs):
+        resi[i] = Xbeta[i] - y[i]
+        omega += resi[i] * P[i] * resi[i]
+
+    sigmabeta[NPAR] = np.sqrt(omega / (n_obs - numbers))
+    for i in range(numbers):
+        sigmabeta[i] = sigmabeta[NPAR] * np.sqrt(XPX[i, i])
+
+    if stopflag:
+        cal.ext_par.compute_rotation_matrix()
+        cal_in.ext_par = copy.deepcopy(cal.ext_par)
+        cal_in.int_par = copy.deepcopy(cal.int_par)
+        cal_in.glass_par = copy.deepcopy(cal.glass_par)
+        cal_in.added_par = copy.deepcopy(cal.added_par)
+        cal_in.mmlut = copy.deepcopy(cal.mmlut)
+        return resi
+    else:
+        return None
 
 
-def read_man_ori_fix(*args, **kwargs):
-    """Stub for read_man_ori_fix: returns None or dummy data."""
-    return None
+def read_man_ori_fix(calblock_filename, man_ori_filename, cam):
+    """Read manual orientation fix points.
+
+    Args:
+        calblock_filename: path to calibration target file.
+        man_ori_filename: path to manual orientation parameter file.
+        cam: camera index (0-based).
+
+    Returns:
+        List of 4 vec3d arrays, or None on failure.
+    """
+    from .sortgrid import read_calblock as _read_calblock
+
+    man_path = Path(man_ori_filename)
+    if not man_path.exists():
+        return None
+
+    lines = man_path.read_text().strip().splitlines()
+    if len(lines) < (cam + 1) * 4:
+        return None
+
+    nr = []
+    for i in range(4):
+        try:
+            nr.append(int(lines[cam * 4 + i].strip()))
+        except (ValueError, IndexError):
+            return None
+
+    fix, num_fix = _read_calblock(calblock_filename)
+    if num_fix < 4:
+        return None
+
+    fix4 = []
+    for i in range(4):
+        pnr = nr[i] - 1
+        if 0 <= pnr < num_fix:
+            fix4.append(fix[pnr].copy())
+        else:
+            return None
+
+    return fix4
 
 
-def read_calblock(*args, **kwargs):
-    """Stub for read_calblock: returns None or dummy data."""
-    return None
-
-
-def weighted_dumbbell_precision(*args, **kwargs):
-    """Stub for weighted_dumbbell_precision: returns 0 or dummy value."""
-    return 0
+def read_calblock(filename):
+    """Read calibration block file. Delegates to sortgrid.read_calblock."""
+    from .sortgrid import read_calblock as _read_calblock
+    return _read_calblock(filename)

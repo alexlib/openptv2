@@ -154,7 +154,13 @@ class ControlPar:
         d0 = float(lines[idx].strip())
         idx += 1
         mm = MmNp(nlay=1, n1=n1, n2=[n2_0, 1.0, 1.0], d=[d0, 0.0, 0.0], n3=n3)
-        return ControlPar(num_cams, img_base_name, cal_img_base_name, hp_flag, allCam_flag, tiff_flag, imx, imy, pix_x, pix_y, chfield, mm)
+        return ControlPar(
+            num_cams=num_cams, img_base_name=img_base_name,
+            cal_img_base_name=cal_img_base_name, hp_flag=hp_flag,
+            allCam_flag=allCam_flag, tiff_flag=tiff_flag,
+            imx=imx, imy=imy, pix_x=pix_x, pix_y=pix_y,
+            chfield=chfield, mm=mm,
+        )
 
 class TargetPar:
     def __init__(self, gvthres=None, discont=0, nnmin=0, nnmax=0, nxmin=0, nxmax=0, nymin=0, nymax=0, sumg_min=0, cr_sz=0):
@@ -204,14 +210,38 @@ class TargetPar:
 
 
 class OrientPar:
-    """Stub for OrientPar: add fields as needed for tests."""
-    def __init__(self, *args, **kwargs):
-        pass
+    def __init__(self, useflag=0, ccflag=0, xhflag=0, yhflag=0,
+                 k1flag=0, k2flag=0, k3flag=0, p1flag=0, p2flag=0,
+                 scxflag=0, sheflag=0, interfflag=0):
+        self.useflag = useflag
+        self.ccflag = ccflag
+        self.xhflag = xhflag
+        self.yhflag = yhflag
+        self.k1flag = k1flag
+        self.k2flag = k2flag
+        self.k3flag = k3flag
+        self.p1flag = p1flag
+        self.p2flag = p2flag
+        self.scxflag = scxflag
+        self.sheflag = sheflag
+        self.interfflag = interfflag
+
+    @staticmethod
+    def from_file(filename):
+        path = Path(filename)
+        lines = path.read_text().strip().splitlines()
+        flags = [int(line.strip()) for line in lines[:12]]
+        while len(flags) < 12:
+            flags.append(0)
+        return OrientPar(*flags)
 
 class MultimediaPar:
-    """Stub for MultimediaPar: add fields as needed for tests."""
-    def __init__(self, *args, **kwargs):
-        pass
+    def __init__(self, n1=1.0, n2=None, d=None, n3=1.0, nlay=1):
+        self.n1 = n1
+        self.n2 = np.ones(3) if n2 is None else np.array(n2, dtype=np.float64)
+        self.d = np.zeros(3) if d is None else np.array(d, dtype=np.float64)
+        self.n3 = n3
+        self.nlay = nlay
 
 # Aliases for compatibility with legacy test code (must be after all class definitions)
 read_control_par = ControlPar.from_file

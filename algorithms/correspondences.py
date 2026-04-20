@@ -4,31 +4,20 @@ Translation of lib/src/correspondences.c and lib/include/correspondences.h.
 
 Establishes correspondences between detected targets across 2-4 cameras
 using epipolar geometry and clique finding.
-
-Design:
-- SoA layout for n-tupels (p0, p1, p2, p3, corr arrays)
-- No quicksort implementations - use numpy.argsort
-- Clear separation of matching stages
 """
-
-from __future__ import annotations
 
 import numpy as np
 from dataclasses import dataclass, field
-from typing import Sequence
 
-# Maximum correspondences per frame
+from .epi import MAXCAND
+
 NMAX = 20240
+PT_UNUSED = -999
 
 
 @dataclass
 class NTupel:
-    """A correspondence match across multiple cameras.
-
-    Attributes:
-        p: target indices per camera (-1 if none), length 4.
-        corr: correspondence quality score.
-    """
+    """A correspondence match across multiple cameras."""
     p: list[int] = field(default_factory=lambda: [-1, -1, -1, -1])
     corr: float = 0.0
 
@@ -37,459 +26,383 @@ class NTupel:
 class Correspond:
     """Adjacency list entry for candidate matching.
 
-    Attributes:
-        p1: master point number.
-        p2: candidate point numbers.
-        corr: feature-based correlation coefficients.
-        dist: distances perpendicular to epipolar line.
+    Matches C correspond struct: indexed by target index in source camera.
     """
     p1: int = 0
-    p2: list[int] = field(default_factory=list)
-    corr: list[float] = field(default_factory=list)
-    dist: list[float] = field(default_factory=list)
+    n: int = 0
+    p2: np.ndarray = field(default_factory=lambda: np.zeros(MAXCAND, dtype=np.int32))
+    corr: np.ndarray = field(default_factory=lambda: np.zeros(MAXCAND, dtype=np.float64))
+    dist: np.ndarray = field(default_factory=lambda: np.zeros(MAXCAND, dtype=np.float64))
 
 
-def match_pairs(
-    targets: list[list[dict]],
-    corrected: list[list[tuple[float, float]]],
-    vpar: dict,
-    cpar: dict,
-    calibrations: list[dict],
-    mm_params: dict,
-) -> list[list[Correspond]]:
+def quicksort_target_y(pix):
+    """Sort target list by y coordinate in place."""
+    pix.sort(key=lambda t: t.y)
+
+
+def quicksort_coord2d_x(crd):
+    """Sort Coord2d list by x coordinate in place."""
+    crd.sort(key=lambda c: c.x)
+
+
+def safely_allocate_adjacency_lists(num_cams, target_counts):
+    """Allocate pairwise adjacency lists.
+
+    Returns lists[c1][c2] as a 2D list where lists[c1][c2] is an array
+    of Correspond objects of length target_counts[c1], for c1 < c2.
+    """
+    lists = [[None] * num_cams for _ in range(num_cams)]
+    for c1 in range(num_cams - 1):
+        for c2 in range(c1 + 1, num_cams):
+            lists[c1][c2] = [Correspond(p1=0, n=0) for _ in range(target_counts[c1])]
+    return lists
+
+
+def match_pairs(lists, corrected, frm, vpar, cpar, calib):
     """Build pairwise adjacency lists between all camera pairs.
 
-    For each target in each camera, projects epipolar lines into other
-    cameras and finds candidate matches.
+    Matches C match_pairs exactly. For each target in camera i1,
+    projects epipolar lines into camera i2 and finds candidate matches.
 
     Args:
-        targets: per-camera target lists (each target is a dict with n, nx, ny, sumg, x, y).
-        corrected: per-camera corrected (flat-image) coordinates [(x, y), ...].
-        vpar: volume parameters (eps0, cn, cnx, cny, csumg, X_lay, Zmin_lay, Zmax_lay).
-        cpar: control parameters (imx, imy, pix_x, pix_y, chfield).
-        calibrations: per-camera calibration dicts.
-        mm_params: multimedia parameters.
-
-    Returns:
-        adj_lists[i][j]: list of Correspond from camera i to camera j.
+        lists: adjacency lists[c1][c2], allocated by safely_allocate_adjacency_lists.
+        corrected: per-camera x-sorted Coord2d arrays.
+        frm: Frame object with targets and num_targets.
+        vpar: VolumePar.
+        cpar: ControlPar.
+        calib: list of Calibration objects.
     """
-    from .epi import epi_mm, find_candidate, Coord2d
+    from .epi import epi_mm, find_candidate, Candidate
 
-    num_cams = len(targets)
-    adj_lists = [[[] for _ in range(num_cams)] for _ in range(num_cams)]
+    for i1 in range(cpar.num_cams - 1):
+        for i2 in range(i1 + 1, cpar.num_cams):
+            for i in range(frm.num_targets[i1]):
+                if corrected[i1][i].x == PT_UNUSED:
+                    continue
 
-    for cam1 in range(num_cams):
-        for cam2 in range(cam1 + 1, num_cams):
-            # Build sorted coordinate list for cam2
-            crd2 = [
-                Coord2d(pnr=j, x=corrected[cam2][j][0], y=corrected[cam2][j][1])
-                for j in range(len(corrected[cam2]))
-            ]
-            # Sort by x for binary search
-            sort_idx = np.argsort([c.x for c in crd2])
-            crd2_sorted = [crd2[i] for i in sort_idx]
-
-            for t1_idx, t1 in enumerate(targets[cam1]):
-                # Get epipolar line in cam2
                 xmin, ymin, xmax, ymax = epi_mm(
-                    corrected[cam1][t1_idx][0],
-                    corrected[cam1][t1_idx][1],
-                    calibrations[cam1],
-                    calibrations[cam2],
-                    mm_params["n1"],
-                    mm_params["n2_0"],
-                    mm_params["n3"],
-                    mm_params["d0"],
-                    tuple(vpar["X_lay"]),
-                    tuple(vpar["Zmin_lay"]),
-                    tuple(vpar["Zmax_lay"]),
-                )
+                    corrected[i1][i].x, corrected[i1][i].y,
+                    calib[i1], calib[i2], cpar.mm, vpar)
 
-                # Find candidates
-                cands = find_candidate(
-                    crd2_sorted,
-                    targets[cam2],
+                lists[i1][i2][i].p1 = i
+                pt1 = corrected[i1][i].pnr
+
+                cand = []
+                count = find_candidate(
+                    corrected[i2], frm.targets[i2],
+                    frm.num_targets[i2],
                     xmin, ymin, xmax, ymax,
-                    t1["n"], t1["nx"], t1["ny"], t1["sumg"],
-                    vpar["eps0"],
-                    vpar["cn"], vpar["cnx"], vpar["cny"], vpar["csumg"],
-                    cpar["imx"], cpar["imy"],
-                    cpar["pix_x"], cpar["pix_y"],
-                    calibrations[cam2]["int_xh"],
-                    calibrations[cam2]["int_yh"],
-                    calibrations[cam2]["k1"], calibrations[cam2]["k2"],
-                    calibrations[cam2]["k3"], calibrations[cam2]["p1"],
-                    calibrations[cam2]["p2"], calibrations[cam2]["scx"],
-                    calibrations[cam2]["she"],
-                )
+                    frm.targets[i1][pt1].n, frm.targets[i1][pt1].nx,
+                    frm.targets[i1][pt1].ny, frm.targets[i1][pt1].sumg,
+                    cand, vpar, cpar, calib[i2])
 
-                if cands:
-                    corr_entry = Correspond(
-                        p1=t1_idx,
-                        p2=[c.pnr for c in cands],
-                        corr=[c.corr for c in cands],
-                        dist=[c.tol for c in cands],
-                    )
-                    adj_lists[cam1][cam2].append(corr_entry)
+                if count > MAXCAND:
+                    count = MAXCAND
 
-            # Repeat for cam2 -> cam1
-            crd1 = [
-                Coord2d(pnr=j, x=corrected[cam1][j][0], y=corrected[cam1][j][1])
-                for j in range(len(corrected[cam1]))
-            ]
-            sort_idx = np.argsort([c.x for c in crd1])
-            crd1_sorted = [crd1[i] for i in sort_idx]
-
-            for t2_idx, t2 in enumerate(targets[cam2]):
-                xmin, ymin, xmax, ymax = epi_mm(
-                    corrected[cam2][t2_idx][0],
-                    corrected[cam2][t2_idx][1],
-                    calibrations[cam2],
-                    calibrations[cam1],
-                    mm_params["n1"],
-                    mm_params["n2_0"],
-                    mm_params["n3"],
-                    mm_params["d0"],
-                    tuple(vpar["X_lay"]),
-                    tuple(vpar["Zmin_lay"]),
-                    tuple(vpar["Zmax_lay"]),
-                )
-
-                cands = find_candidate(
-                    crd1_sorted,
-                    targets[cam1],
-                    xmin, ymin, xmax, ymax,
-                    t2["n"], t2["nx"], t2["ny"], t2["sumg"],
-                    vpar["eps0"],
-                    vpar["cn"], vpar["cnx"], vpar["cny"], vpar["csumg"],
-                    cpar["imx"], cpar["imy"],
-                    cpar["pix_x"], cpar["pix_y"],
-                    calibrations[cam1]["int_xh"],
-                    calibrations[cam1]["int_yh"],
-                    calibrations[cam1]["k1"], calibrations[cam1]["k2"],
-                    calibrations[cam1]["k3"], calibrations[cam1]["p1"],
-                    calibrations[cam1]["p2"], calibrations[cam1]["scx"],
-                    calibrations[cam1]["she"],
-                )
-
-                if cands:
-                    corr_entry = Correspond(
-                        p1=t2_idx,
-                        p2=[c.pnr for c in cands],
-                        corr=[c.corr for c in cands],
-                        dist=[c.tol for c in cands],
-                    )
-                    adj_lists[cam2][cam1].append(corr_entry)
-
-    return adj_lists
+                for j in range(count):
+                    lists[i1][i2][i].p2[j] = cand[j].pnr
+                    lists[i1][i2][i].corr[j] = cand[j].corr
+                    lists[i1][i2][i].dist[j] = cand[j].tol
+                lists[i1][i2][i].n = count
 
 
-def four_camera_matching(
-    adj_lists: list[list[list[Correspond]]],
-    base_target_count: int,
-    accept_corr: float,
-) -> list[NTupel]:
+def four_camera_matching(lists, base_target_count, accept_corr, scratch, scratch_size):
     """Find consistent 4-camera correspondences (quadruplets).
 
-    Cross-references all 6 pairwise adjacency lists to find
-    targets that are mutually consistent across all 4 cameras.
-
-    Args:
-        adj_lists: pairwise adjacency lists [cam_i][cam_j].
-        base_target_count: number of targets in base camera.
-        accept_corr: minimum correlation threshold.
+    Matches C four_camera_matching exactly.
 
     Returns:
-        List of 4-tupel matches.
+        int, the number of candidate cliques found.
     """
-    num_cams = 4
-    quadruplets = []
+    matched = 0
 
-    # Build lookup: (cam1, p1) -> set of cam2->p2 mappings
-    pair_lookup = {}
-    for cam1 in range(num_cams):
-        for cam2 in range(num_cams):
-            if cam1 == cam2:
-                continue
-            key = (cam1, cam2)
-            pair_lookup[key] = {}
-            for corr_entry in adj_lists[cam1][cam2]:
-                p1 = corr_entry.p1
-                for idx, p2 in enumerate(corr_entry.p2):
-                    if p1 not in pair_lookup[key]:
-                        pair_lookup[key][p1] = {}
-                    pair_lookup[key][p1][p2] = corr_entry.corr[idx]
+    for i in range(base_target_count):
+        p1 = lists[0][1][i].p1
+        for j in range(lists[0][1][i].n):
+            for k in range(lists[0][2][i].n):
+                for l in range(lists[0][3][i].n):
+                    p2 = lists[0][1][i].p2[j]
+                    p3 = lists[0][2][i].p2[k]
+                    p4 = lists[0][3][i].p2[l]
 
-    # For each target in camera 0, try to find consistent matches
-    for p0 in range(base_target_count):
-        # Get candidates in other cameras
-        cands_per_cam = {}
-        for cam in range(1, num_cams):
-            if (0, cam) in pair_lookup and p0 in pair_lookup[(0, cam)]:
-                cands_per_cam[cam] = list(pair_lookup[(0, cam)][p0].keys())
-            else:
-                cands_per_cam[cam] = []
+                    for m in range(lists[1][2][p2].n):
+                        p31 = lists[1][2][p2].p2[m]
+                        if p3 != p31:
+                            continue
 
-        if any(len(c) == 0 for c in cands_per_cam.values()):
-            continue
+                        for n in range(lists[1][3][p2].n):
+                            p41 = lists[1][3][p2].p2[n]
+                            if p4 != p41:
+                                continue
 
-        # Check consistency across all pairs
-        for p1 in cands_per_cam[1]:
-            for p2 in cands_per_cam[2]:
-                for p3 in cands_per_cam[3]:
-                    # Verify all cross-pairs exist
-                    if (
-                        p2 not in pair_lookup.get((1, 2), {}).get(p1, {})
-                        or p3 not in pair_lookup.get((1, 3), {}).get(p1, {})
-                        or p3 not in pair_lookup.get((2, 3), {}).get(p2, {})
-                    ):
+                            for o in range(lists[2][3][p3].n):
+                                p42 = lists[2][3][p3].p2[o]
+                                if p4 != p42:
+                                    continue
+
+                                corr = (lists[0][1][i].corr[j]
+                                    + lists[0][2][i].corr[k]
+                                    + lists[0][3][i].corr[l]
+                                    + lists[1][2][p2].corr[m]
+                                    + lists[1][3][p2].corr[n]
+                                    + lists[2][3][p3].corr[o]) / (
+                                    lists[0][1][i].dist[j]
+                                    + lists[0][2][i].dist[k]
+                                    + lists[0][3][i].dist[l]
+                                    + lists[1][2][p2].dist[m]
+                                    + lists[1][3][p2].dist[n]
+                                    + lists[2][3][p3].dist[o])
+
+                                if corr <= accept_corr:
+                                    continue
+
+                                scratch[matched].p[0] = p1
+                                scratch[matched].p[1] = p2
+                                scratch[matched].p[2] = p3
+                                scratch[matched].p[3] = p4
+                                scratch[matched].corr = corr
+
+                                matched += 1
+                                if matched == scratch_size:
+                                    return matched
+    return matched
+
+
+def three_camera_matching(lists, num_cams, target_counts, accept_corr,
+                          scratch, scratch_size, tusage):
+    """Find consistent 3-camera correspondences (triplets).
+
+    Matches C three_camera_matching exactly.
+
+    Returns:
+        int, the number of candidate cliques found.
+    """
+    matched = 0
+
+    for i1 in range(num_cams - 2):
+        for i in range(target_counts[i1]):
+            for i2 in range(i1 + 1, num_cams - 1):
+                p1 = lists[i1][i2][i].p1
+                if p1 > NMAX or tusage[i1][p1] > 0:
+                    continue
+
+                for j in range(lists[i1][i2][i].n):
+                    p2 = lists[i1][i2][i].p2[j]
+                    if p2 > NMAX or tusage[i2][p2] > 0:
                         continue
 
-                    # Compute average correlation
-                    corrs = [
-                        pair_lookup[(0, 1)][p0][p1],
-                        pair_lookup[(0, 2)][p0][p2],
-                        pair_lookup[(0, 3)][p0][p3],
-                        pair_lookup[(1, 2)][p1][p2],
-                        pair_lookup[(1, 3)][p1][p3],
-                        pair_lookup[(2, 3)][p2][p3],
-                    ]
-                    avg_corr = sum(corrs) / len(corrs)
+                    for i3 in range(i2 + 1, num_cams):
+                        for k in range(lists[i1][i3][i].n):
+                            p3 = lists[i1][i3][i].p2[k]
+                            if p3 > NMAX or tusage[i3][p3] > 0:
+                                continue
 
-                    if avg_corr >= accept_corr:
-                        quadruplets.append(
-                            NTupel(p=[p0, p1, p2, p3], corr=avg_corr)
-                        )
+                            for m_idx in range(lists[i2][i3][p2].n):
+                                if p3 != lists[i2][i3][p2].p2[m_idx]:
+                                    continue
 
-    return quadruplets
+                                corr = (lists[i1][i2][i].corr[j]
+                                    + lists[i1][i3][i].corr[k]
+                                    + lists[i2][i3][p2].corr[m_idx]) / (
+                                    lists[i1][i2][i].dist[j]
+                                    + lists[i1][i3][i].dist[k]
+                                    + lists[i2][i3][p2].dist[m_idx])
 
+                                if corr <= accept_corr:
+                                    continue
 
-def three_camera_matching(
-    adj_lists: list[list[list[Correspond]]],
-    target_counts: list[int],
-    accept_corr: float,
-    used_targets: list[set[int]],
-) -> list[NTupel]:
-    """Find 3-camera correspondences, skipping targets used by quadruplets.
+                                for nc in range(num_cams):
+                                    scratch[matched].p[nc] = -2
 
-    Args:
-        adj_lists: pairwise adjacency lists.
-        target_counts: number of targets per camera.
-        accept_corr: minimum correlation threshold.
-        used_targets: sets of target indices already used (per camera).
+                                scratch[matched].p[i1] = p1
+                                scratch[matched].p[i2] = p2
+                                scratch[matched].p[i3] = p3
+                                scratch[matched].corr = corr
 
-    Returns:
-        List of 3-tupel matches.
-    """
-    num_cams = 4
-    triplets = []
-
-    # Build lookup
-    pair_lookup = {}
-    for cam1 in range(num_cams):
-        for cam2 in range(num_cams):
-            if cam1 == cam2:
-                continue
-            key = (cam1, cam2)
-            pair_lookup[key] = {}
-            for corr_entry in adj_lists[cam1][cam2]:
-                p1 = corr_entry.p1
-                for idx, p2 in enumerate(corr_entry.p2):
-                    if p1 not in pair_lookup[key]:
-                        pair_lookup[key][p1] = {}
-                    pair_lookup[key][p1][p2] = corr_entry.corr[idx]
-
-    # Try all 3-camera combinations
-    cam_combos = [(0, 1, 2), (0, 1, 3), (0, 2, 3), (1, 2, 3)]
-
-    for c1, c2, c3 in cam_combos:
-        for p1 in range(target_counts[c1]):
-            if p1 in used_targets[c1]:
-                continue
-
-            if (c1, c2) not in pair_lookup or p1 not in pair_lookup[(c1, c2)]:
-                continue
-
-            for p2 in pair_lookup[(c1, c2)][p1]:
-                if p2 in used_targets[c2]:
-                    continue
-
-                if (c1, c3) not in pair_lookup or p1 not in pair_lookup[(c1, c3)]:
-                    continue
-
-                for p3 in pair_lookup[(c1, c3)][p1]:
-                    if p3 in used_targets[c3]:
-                        continue
-
-                    # Check c2-c3 consistency
-                    if p3 not in pair_lookup.get((c2, c3), {}).get(p2, {}):
-                        continue
-
-                    avg_corr = (
-                        pair_lookup[(c1, c2)][p1][p2]
-                        + pair_lookup[(c1, c3)][p1][p3]
-                        + pair_lookup[(c2, c3)][p2][p3]
-                    ) / 3.0
-
-                    if avg_corr >= accept_corr:
-                        p = [-1, -1, -1, -1]
-                        p[c1] = p1
-                        p[c2] = p2
-                        p[c3] = p3
-                        triplets.append(NTupel(p=p, corr=avg_corr))
-
-    return triplets
+                                matched += 1
+                                if matched == scratch_size:
+                                    return matched
+    return matched
 
 
-def consistent_pair_matching(
-    adj_lists: list[list[list[Correspond]]],
-    target_counts: list[int],
-    accept_corr: float,
-    used_targets: list[set[int]],
-) -> list[NTupel]:
-    """Find unambiguous 2-camera pairs (only one candidate).
+def consistent_pair_matching(lists, num_cams, target_counts, accept_corr,
+                             scratch, scratch_size, tusage):
+    """Find unambiguous 2-camera pairs.
 
-    Args:
-        adj_lists: pairwise adjacency lists.
-        target_counts: number of targets per camera.
-        accept_corr: minimum correlation threshold.
-        used_targets: sets of already-used target indices.
+    Matches C consistent_pair_matching exactly.
 
     Returns:
-        List of 2-tupel matches.
+        int, the number of pairs found.
     """
-    num_cams = 4
-    pairs = []
+    matched = 0
 
-    for cam1 in range(num_cams):
-        for cam2 in range(cam1 + 1, num_cams):
-            for corr_entry in adj_lists[cam1][cam2]:
-                p1 = corr_entry.p1
-                if p1 in used_targets[cam1]:
+    for i1 in range(num_cams - 1):
+        for i2 in range(i1 + 1, num_cams):
+            for i in range(target_counts[i1]):
+                p1 = lists[i1][i2][i].p1
+                if p1 > NMAX or tusage[i1][p1] > 0:
                     continue
 
-                if len(corr_entry.p2) != 1:
+                if lists[i1][i2][i].n != 1:
                     continue
 
-                p2 = corr_entry.p2[0]
-                if p2 in used_targets[cam2]:
+                p2 = lists[i1][i2][i].p2[0]
+                if p2 > NMAX or tusage[i2][p2] > 0:
                     continue
 
-                # Check reverse: cam2->cam1 should also have only 1 candidate
-                reverse_match = None
-                for rev_entry in adj_lists[cam2][cam1]:
-                    if rev_entry.p1 == p2:
-                        reverse_match = rev_entry
-                        break
-
-                if reverse_match is None or len(reverse_match.p2) != 1:
-                    continue
-                if reverse_match.p2[0] != p1:
+                corr = lists[i1][i2][i].corr[0] / lists[i1][i2][i].dist[0]
+                if corr <= accept_corr:
                     continue
 
-                corr = corr_entry.corr[0]
-                if corr >= accept_corr:
-                    p = [-1, -1, -1, -1]
-                    p[cam1] = p1
-                    p[cam2] = p2
-                    pairs.append(NTupel(p=p, corr=corr))
+                for nc in range(num_cams):
+                    scratch[matched].p[nc] = -2
 
-    return pairs
+                scratch[matched].p[i1] = p1
+                scratch[matched].p[i2] = p2
+                scratch[matched].corr = corr
+
+                matched += 1
+                if matched == scratch_size:
+                    return matched
+    return matched
 
 
-def take_best_candidates(
-    src: list[NTupel],
-    num_cams: int,
-) -> list[NTupel]:
-    """Sort by correlation and greedily select non-overlapping matches.
+def take_best_candidates(src, dst, num_cams, num_cands, tusage):
+    """Take candidates by descending correlation, skipping used targets.
 
-    Args:
-        src: unsorted list of n-tupel candidates.
-        num_cams: number of cameras.
+    Matches C take_best_candidates exactly.
 
     Returns:
-        Sorted, non-overlapping matches.
+        int, the number of cliques taken.
     """
-    # Sort by correlation descending
-    sorted_matches = sorted(src, key=lambda m: -m.corr)
+    src[:num_cands] = sorted(src[:num_cands], key=lambda t: -t.corr)
 
-    used = [set() for _ in range(num_cams)]
-    result = []
-
-    for match in sorted_matches:
-        # Check if any target is already used
-        conflict = False
+    taken = 0
+    for cand in range(num_cands):
+        has_used = False
         for cam in range(num_cams):
-            if match.p[cam] >= 0 and match.p[cam] in used[cam]:
-                conflict = True
+            tnum = src[cand].p[cam]
+            if tnum > -1 and tusage[cam][tnum] > 0:
+                has_used = True
                 break
 
-        if conflict:
+        if has_used:
             continue
 
-        # Accept this match
         for cam in range(num_cams):
-            if match.p[cam] >= 0:
-                used[cam].add(match.p[cam])
-        result.append(match)
+            tnum = src[cand].p[cam]
+            if tnum > -1:
+                tusage[cam][tnum] += 1
 
-    return result
+        dst[taken] = NTupel(p=list(src[cand].p), corr=src[cand].corr)
+        taken += 1
+    return taken
 
 
-def correspondences(
-    targets: list[list[dict]],
-    corrected: list[list[tuple[float, float]]],
-    vpar: dict,
-    cpar: dict,
-    calibrations: list[dict],
-    mm_params: dict,
-    accept_corr: float = 0.0,
-) -> list[NTupel]:
-    """Full correspondence matching pipeline.
+def correct_frame(frm, calib, cpar, tol):
+    """Transition from pixel to metric to flat coordinates, x-sorted.
 
-    Priority order: quadruplets > triplets > pairs.
+    Matches C correct_frame from check_correspondences.c.
 
     Args:
-        targets: per-camera target lists.
-        corrected: per-camera corrected coordinates.
-        vpar: volume parameters.
-        cpar: control parameters.
-        calibrations: per-camera calibrations.
-        mm_params: multimedia parameters.
-        accept_corr: minimum correlation threshold.
+        frm: Frame object.
+        calib: list of Calibration objects.
+        cpar: ControlPar.
+        tol: tolerance for iterative flattening.
 
     Returns:
-        List of accepted n-tupel correspondences.
+        list of lists of Coord2d, one per camera, x-sorted.
     """
-    num_cams = len(targets)
-    target_counts = [len(t) for t in targets]
+    from .epi import Coord2d
+    from .trafo import pixel_to_metric, dist_to_flat
 
-    # Stage 1: Build pairwise adjacencies
-    adj_lists = match_pairs(targets, corrected, vpar, cpar, calibrations, mm_params)
+    corrected = []
+    for cam in range(cpar.num_cams):
+        cam_coords = []
+        for part in range(frm.num_targets[cam]):
+            t = frm.targets[cam][part]
+            xm, ym = pixel_to_metric(t.x, t.y, cpar)
 
-    # Stage 2: Find quadruplets (4-camera matches)
-    quadruplets = four_camera_matching(adj_lists, target_counts[0], accept_corr)
+            ap = calib[cam].added_par
+            ip = calib[cam].int_par
+            fx, fy = dist_to_flat(xm, ym,
+                ip.xh, ip.yh,
+                ap.k1, ap.k2, ap.k3, ap.p1, ap.p2, ap.scx, ap.she,
+                tol)
 
-    # Track used targets
-    used_targets = [set() for _ in range(num_cams)]
-    for match in quadruplets:
-        for cam in range(num_cams):
-            if match.p[cam] >= 0:
-                used_targets[cam].add(match.p[cam])
+            cam_coords.append(Coord2d(pnr=t.pnr, x=fx, y=fy))
 
-    # Stage 3: Find triplets
-    triplets = three_camera_matching(adj_lists, target_counts, accept_corr, used_targets)
+        quicksort_coord2d_x(cam_coords)
+        corrected.append(cam_coords)
 
-    for match in triplets:
-        for cam in range(num_cams):
-            if match.p[cam] >= 0:
-                used_targets[cam].add(match.p[cam])
+    return corrected
 
-    # Stage 4: Find consistent pairs
-    pairs = consistent_pair_matching(adj_lists, target_counts, accept_corr, used_targets)
 
-    # Combine and deduplicate
-    all_matches = quadruplets + triplets + pairs
+def correspondences(frm, corrected, vpar, cpar, calib):
+    """Full correspondence matching pipeline.
 
-    # Select best non-overlapping
-    return take_best_candidates(all_matches, num_cams)
+    Matches C correspondences() exactly.
+
+    Args:
+        frm: Frame object.
+        corrected: per-camera x-sorted Coord2d arrays (from correct_frame).
+        vpar: VolumePar.
+        cpar: ControlPar.
+        calib: list of Calibration objects.
+
+    Returns:
+        (con, match_counts) where con is the list of NTupel correspondences
+        and match_counts is [quads, trips, pairs, total].
+    """
+    num_cams = cpar.num_cams
+    con0_size = num_cams * NMAX
+    con0 = [NTupel() for _ in range(con0_size)]
+    con = [NTupel() for _ in range(con0_size)]
+
+    tusage = [[0] * NMAX for _ in range(num_cams)]
+
+    lists = safely_allocate_adjacency_lists(num_cams, frm.num_targets)
+
+    for i in range(NMAX):
+        for j in range(num_cams):
+            con0[i].p[j] = -1
+        con0[i].corr = 0.0
+
+    match_counts = [0, 0, 0, 0]
+
+    match_pairs(lists, corrected, frm, vpar, cpar, calib)
+
+    if num_cams == 4:
+        match0 = four_camera_matching(lists, frm.num_targets[0],
+            vpar.corrmin, con0, 4 * NMAX)
+
+        match_counts[0] = take_best_candidates(con0, con, num_cams, match0, tusage)
+        match_counts[3] += match_counts[0]
+
+    if (num_cams == 4 and cpar.allCam_flag == 0) or num_cams == 3:
+        match0 = three_camera_matching(lists, num_cams, frm.num_targets,
+            vpar.corrmin, con0, 4 * NMAX, tusage)
+
+        offset = match_counts[3]
+        match_counts[1] = take_best_candidates(con0, con[offset:], num_cams,
+            match0, tusage)
+        match_counts[3] += match_counts[1]
+
+    if num_cams > 1 and cpar.allCam_flag == 0:
+        match0 = consistent_pair_matching(lists, num_cams, frm.num_targets,
+            vpar.corrmin, con0, 4 * NMAX, tusage)
+
+        offset = match_counts[3]
+        match_counts[2] = take_best_candidates(con0, con[offset:], num_cams,
+            match0, tusage)
+        match_counts[3] += match_counts[2]
+
+    for i in range(match_counts[3]):
+        for j in range(num_cams):
+            if con[i].p[j] < 0:
+                continue
+            p1 = corrected[j][con[i].p[j]].pnr
+            if p1 > -1 and p1 < 1202590843:
+                frm.targets[j][p1].tnr = i
+
+    return con[:match_counts[3]], match_counts

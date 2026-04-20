@@ -16,10 +16,10 @@ from algorithms.vec_utils import vec_set, vec_cmp, vec_subt, vec_norm, vec_copy
 EPS = 1e-6
 
 def test_file_reading():
-    f1 = Path("testing_fodder/cal/calblock.txt")
+    f1 = Path("test_data/calibration/calblock.txt")
     assert f1.exists(), "Cannot open calblock.txt"
 
-    f2 = Path("testing_fodder/parameters/man_ori.par")
+    f2 = Path("test_data/parameters/man_ori.par")
     assert f2.exists(), "Cannot open man_ori.par"
 
     fix4 = read_man_ori_fix(f1, f2, 0)
@@ -27,27 +27,27 @@ def test_file_reading():
     assert len(fix4) == 4
 
 def test_calblock_content():
-    f1 = Path("testing_fodder/cal/calblock.txt")
+    f1 = Path("test_data/calibration/calblock.txt")
     fix, num_fix = read_calblock(f1)
     assert fix is not None, "read_calblock failed"
     assert num_fix > 0
 
 def test_raw_orient():
-    fix4_wrong = read_man_ori_fix("testing_fodder/cal/calblock.txt",
-                                  "testing_fodder/parameters/wrong_man_ori.par", 0)
+    fix4_wrong = read_man_ori_fix("test_data/calibration/calblock.txt",
+                                  "test_data/parameters/wrong_man_ori.par", 0)
     assert fix4_wrong is None
 
-    fix4 = read_man_ori_fix("testing_fodder/cal/calblock.txt",
-                            "testing_fodder/parameters/man_ori.par", 0)
+    fix4 = read_man_ori_fix("test_data/calibration/calblock.txt",
+                            "test_data/parameters/man_ori.par", 0)
     assert fix4 is not None
     assert len(fix4) == 4
     assert fix4[3][2] == 8.0
 
-    ori_file = "testing_fodder/cal/cam1.tif.ori"
-    add_file = "testing_fodder/cal/cam1.tif.addpar"
+    ori_file = "test_data/calibration/cam1.tif.ori"
+    add_file = "test_data/calibration/cam1.tif.addpar"
 
     cal = Calibration.from_file(ori_file, add_file)
-    cpar = ControlPar.from_file("testing_fodder/parameters/ptv.par")
+    cpar = ControlPar.from_file("test_data/parameters/ptv.par")
 
     pix4 = [Target() for _ in range(4)]
     for i in range(4):
@@ -84,11 +84,11 @@ def test_orient():
                 fix[pt_id] = np.array([(ix * 10) - 60, iy * 5, iz * 5])
                 pt_id += 1
 
-    ori_file = "testing_fodder/cal/sym_cam1.tif.ori"
-    add_file = "testing_fodder/cal/cam1.tif.addpar"
+    ori_file = "test_data/calibration/sym_cam1.tif.ori"
+    add_file = "test_data/calibration/cam1.tif.addpar"
 
     cal = Calibration.from_file(ori_file, add_file)
-    cpar = ControlPar.from_file("testing_fodder/parameters/ptv.par")
+    cpar = ControlPar.from_file("test_data/parameters/ptv.par")
 
     pix = [Target() for _ in range(64)]
     for i in range(64):
@@ -98,7 +98,7 @@ def test_orient():
         pix[i].y = y_pix
         pix[i].pnr = i
 
-    opar = OrientPar.from_file("testing_fodder/parameters/orient.par")
+    opar = OrientPar.from_file("test_data/parameters/orient.par")
 
     cal.ext_par.x0 -= 15.0
     cal.ext_par.y0 += 15.0
@@ -172,7 +172,7 @@ def test_point_position():
     targs_jigged = np.zeros((num_cams, 2))
 
     calib = []
-    ori_tmpl = "testing_fodder/cal/sym_cam{}.tif.ori"
+    ori_tmpl = "test_data/calibration/sym_cam{}.tif.ori"
     media_par = MultimediaPar(n1=1., n2=[1.0], d=[1.0], n3=1.)
     
     point = np.array([17., 42., 0.])
@@ -180,7 +180,7 @@ def test_point_position():
 
     for cam in range(num_cams):
         ori_name = ori_tmpl.format(cam + 1)
-        cal = Calibration.from_file(ori_name, "testing_fodder/cal/cam1.tif.addpar")
+        cal = Calibration.from_file(ori_name, "test_data/calibration/cam1.tif.addpar")
         calib.append(cal)
 
         xp, yp = img_coord(point, cal, media_par)
@@ -213,12 +213,12 @@ def test_convergence_measure():
     targets = np.zeros((16, num_cams, 2))
     calib = []
 
-    ori_tmpl = "testing_fodder/cal/sym_cam{}.tif.ori"
+    ori_tmpl = "test_data/calibration/sym_cam{}.tif.ori"
     media_par = MultimediaPar(n1=1., n2=[1.0], d=[1.0], n3=1.)
 
     for cam in range(num_cams):
         ori_name = ori_tmpl.format(cam + 1)
-        cal = Calibration.from_file(ori_name, "testing_fodder/cal/cam1.tif.addpar")
+        cal = Calibration.from_file(ori_name, "test_data/calibration/cam1.tif.addpar")
         calib.append(cal)
 
     for cpt_horz in range(4):

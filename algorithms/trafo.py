@@ -84,49 +84,43 @@ def old_metric_to_pixel(
 
 
 def pixel_to_metric(
-    x_pixel: float,
-    y_pixel: float,
-    imx: int,
-    imy: int,
-    pix_x: float,
-    pix_y: float,
-    chfield: int = NO_REMAP,
+    x_pixel,
+    y_pixel=None,
+    imx_or_cpar=None,
+    imy=None,
+    pix_x=None,
+    pix_y=None,
+    chfield=NO_REMAP,
 ) -> tuple[float, float]:
-    """Convert pixel to metric coordinates using control parameters.
+    """Convert pixel to metric coordinates.
 
-    Args:
-        x_pixel, y_pixel: input pixel coordinates.
-        imx, imy: image dimensions in pixels.
-        pix_x, pix_y: pixel size in mm.
-        chfield: y-remap mode (NO_REMAP, DOUBLED_PLUS_ONE, DOUBLED).
-
-    Returns:
-        (x_metric, y_metric) tuple.
+    Accepts either (x, y, cpar) or (x, y, imx, imy, pix_x, pix_y, chfield).
     """
-    return old_pixel_to_metric(x_pixel, y_pixel, imx, imy, pix_x, pix_y, chfield)
+    if imy is None and hasattr(imx_or_cpar, 'imx'):
+        cpar = imx_or_cpar
+        return old_pixel_to_metric(x_pixel, y_pixel,
+                                   cpar.imx, cpar.imy, cpar.pix_x, cpar.pix_y, cpar.chfield)
+    return old_pixel_to_metric(x_pixel, y_pixel, imx_or_cpar, imy, pix_x, pix_y, chfield)
 
 
 def metric_to_pixel(
-    x_metric: float,
-    y_metric: float,
-    imx: int,
-    imy: int,
-    pix_x: float,
-    pix_y: float,
-    chfield: int = NO_REMAP,
+    x_metric,
+    y_metric=None,
+    imx_or_cpar=None,
+    imy=None,
+    pix_x=None,
+    pix_y=None,
+    chfield=NO_REMAP,
 ) -> tuple[float, float]:
-    """Convert metric to pixel coordinates using control parameters.
+    """Convert metric to pixel coordinates.
 
-    Args:
-        x_metric, y_metric: input metric coordinates.
-        imx, imy: image dimensions in pixels.
-        pix_x, pix_y: pixel size in mm.
-        chfield: y-remap mode.
-
-    Returns:
-        (x_pixel, y_pixel) tuple.
+    Accepts either (x, y, cpar) or (x, y, imx, imy, pix_x, pix_y, chfield).
     """
-    return old_metric_to_pixel(x_metric, y_metric, imx, imy, pix_x, pix_y, chfield)
+    if imy is None and hasattr(imx_or_cpar, 'imx'):
+        cpar = imx_or_cpar
+        return old_metric_to_pixel(x_metric, y_metric,
+                                   cpar.imx, cpar.imy, cpar.pix_x, cpar.pix_y, cpar.chfield)
+    return old_metric_to_pixel(x_metric, y_metric, imx_or_cpar, imy, pix_x, pix_y, chfield)
 
 
 def distort_brown_affin(

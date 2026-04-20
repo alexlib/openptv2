@@ -21,6 +21,7 @@ def multimed_nlay(
     pos_z: float,
     ext_x0: float,
     ext_y0: float,
+    ext_z0: float,
     mm_n1: float,
     mm_n2_0: float,
     mm_n3: float,
@@ -30,12 +31,9 @@ def multimed_nlay(
 ) -> tuple[float, float]:
     """Compute radial-shifted Xq, Yq positions.
 
-    Creates the Xq, Yq points for each X, Y point in image space
-    using radial shift from the multimedia model.
-
     Args:
         pos_x, pos_y, pos_z: 3D particle position.
-        ext_x0, ext_y0: camera center x, y.
+        ext_x0, ext_y0, ext_z0: camera center.
         mm_n1, mm_n2_0, mm_n3: refractive indices.
         mm_d0: glass thickness.
         mm_nlay: number of layers.
@@ -45,13 +43,11 @@ def multimed_nlay(
         (Xq, Yq) 2D position on glass surface.
     """
     if mmf > 0 and mmf != 1.0:
-        # Use pre-computed multimedia factor
         radial_shift = mmf
     else:
-        # Compute iteratively
         radial_shift = multimed_r_nlay_iterative(
             pos_x, pos_y, pos_z,
-            ext_x0, ext_y0,
+            ext_x0, ext_y0, ext_z0,
             mm_n1, mm_n2_0, mm_n3, mm_d0, mm_nlay,
         )
 
@@ -155,23 +151,17 @@ def trans_cam_point(
     mm_n2_0: float,
     mm_n3: float,
     mm_d0: float,
-) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, float]:
     """Project global-coordinate points through glass surface.
 
     Projects camera center and observed point onto the glass surface.
 
-    Args:
-        pos: observed point 3D position.
-        ext_x0, ext_y0, ext_z0: camera center.
-        glass_vec_x, glass_vec_y, glass_vec_z: glass normal vector.
-        mm_n1, mm_n2_0, mm_n3: refractive indices (unused here, for API consistency).
-        mm_d0: glass thickness.
-
     Returns:
-        (pos_t, cross_p, cross_c) where:
+        (pos_t, cross_p, cross_c, ext_t_z0) where:
         - pos_t: transformed position in camera-local coords
         - cross_p: observed point projection on glass
         - cross_c: camera position projection on glass
+        - ext_t_z0: transformed camera z0 (dist_cam_glas + mm_d0)
     """
     glass_dir = np.array([glass_vec_x, glass_vec_y, glass_vec_z], dtype=np.float64)
     primary_pt = np.array([ext_x0, ext_y0, ext_z0], dtype=np.float64)
@@ -188,6 +178,9 @@ def trans_cam_point(
     renorm = vec_scalar_mul(glass_dir, dist_point_glas / dist_o_glas)
     cross_p = vec_subt(pos, renorm)
 
+    # Transformed exterior z0
+    ext_t_z0 = dist_cam_glas + mm_d0
+
     # Transformed position
     renorm = vec_scalar_mul(glass_dir, mm_d0 / dist_o_glas)
     temp = vec_subt(cross_c, renorm)
@@ -195,7 +188,7 @@ def trans_cam_point(
 
     pos_t = np.array([vec_norm(temp), 0.0, dist_point_glas], dtype=np.float64)
 
-    return pos_t, cross_p, cross_c
+    return pos_t, cross_p, cross_c, ext_t_z0
 
 
 def back_trans_point(
@@ -293,7 +286,7 @@ def get_mmf_from_mmlut(
     R = np.sqrt(temp[0] ** 2 + temp[1] ** 2)
     sr = R / mmlut_rw
     ir = int(sr)
-    sr -= iz
+    sr -= ir
 
     # Check if point is inside LUT bounds
     if ir > mmlut_nr:
@@ -415,6 +408,136 @@ def volumedimension(
     return xmax, xmin, ymax, ymin, Zmax, Zmin
 
 
-def init_mmlut(*args, **kwargs):
-    """Stub for init_mmlut to allow test imports. Needs real implementation."""
-    raise NotImplementedError("init_mmlut is not implemented in algorithms.multimed.py")
+def init_mmlut(vpar, cpar, cal):
+    """Initialize multimedia look-up table for a single camera.
+
+    Translates C init_mmlut from lib/src/multimed.c.
+
+    Args:
+        vpar: VolumePar with Zmin_lay, Zmax_lay.
+        cpar: ControlPar with imx, imy, pix_x, pix_y, chfield, mm.
+        cal: Calibration object. Modified in-place (mmlut populated).
+
+    Returns:
+        The modified Calibration object.
+    """
+    from .trafo import pixel_to_metric, correct_brown_affin
+    from .ray_tracing import ray_tracing
+
+    rw = 2.0
+
+    xc = [0.0, float(cpar.imx)]
+    yc = [0.0, float(cpar.imy)]
+
+    Zmin = vpar.Zmin_lay[0]
+    Zmax = vpar.Zmax_lay[0]
+    if vpar.Zmin_lay[1] < Zmin:
+        Zmin = vpar.Zmin_lay[1]
+    if vpar.Zmax_lay[1] > Zmax:
+        Zmax = vpar.Zmax_lay[1]
+
+    Zmin -= Zmin % rw
+    Zmax += rw - Zmax % rw
+
+    Zmin_t = Zmin
+    Zmax_t = Zmax
+    Rmax = 0.0
+
+    # cal_t starts as copy of cal's exterior
+    cal_t_x0 = cal.ext_par.x0
+    cal_t_y0 = cal.ext_par.y0
+    cal_t_z0 = cal.ext_par.z0
+
+    for i in range(2):
+        for j in range(2):
+            x, y = pixel_to_metric(
+                xc[i], yc[j], cpar.imx, cpar.imy,
+                cpar.pix_x, cpar.pix_y, cpar.chfield,
+            )
+            x -= cal.int_par.xh
+            y -= cal.int_par.yh
+
+            x, y = correct_brown_affin(
+                x, y,
+                cal.added_par.k1, cal.added_par.k2, cal.added_par.k3,
+                cal.added_par.p1, cal.added_par.p2,
+                cal.added_par.scx, cal.added_par.she,
+            )
+
+            pos, a = ray_tracing(
+                x, y,
+                cal.ext_par.dm,
+                cal.ext_par.x0, cal.ext_par.y0, cal.ext_par.z0,
+                cal.int_par.cc,
+                cal.glass_par.vec_x, cal.glass_par.vec_y, cal.glass_par.vec_z,
+                cpar.mm.n1, cpar.mm.n2[0], cpar.mm.n3, cpar.mm.d[0],
+            )
+
+            xyz = move_along_ray(Zmin, pos, a)
+            xyz_t, cross_p, cross_c, ext_t_z0 = trans_cam_point(
+                xyz,
+                cal.ext_par.x0, cal.ext_par.y0, cal.ext_par.z0,
+                cal.glass_par.vec_x, cal.glass_par.vec_y, cal.glass_par.vec_z,
+                cpar.mm.n1, cpar.mm.n2[0], cpar.mm.n3, cpar.mm.d[0],
+            )
+            cal_t_x0 = 0.0
+            cal_t_y0 = 0.0
+            cal_t_z0 = ext_t_z0
+
+            if xyz_t[2] < Zmin_t:
+                Zmin_t = xyz_t[2]
+            if xyz_t[2] > Zmax_t:
+                Zmax_t = xyz_t[2]
+
+            R = np.sqrt((xyz_t[0] - cal_t_x0) ** 2 + (xyz_t[1] - cal_t_y0) ** 2)
+            if R > Rmax:
+                Rmax = R
+
+            xyz = move_along_ray(Zmax, pos, a)
+            xyz_t, cross_p, cross_c, ext_t_z0 = trans_cam_point(
+                xyz,
+                cal.ext_par.x0, cal.ext_par.y0, cal.ext_par.z0,
+                cal.glass_par.vec_x, cal.glass_par.vec_y, cal.glass_par.vec_z,
+                cpar.mm.n1, cpar.mm.n2[0], cpar.mm.n3, cpar.mm.d[0],
+            )
+            cal_t_x0 = 0.0
+            cal_t_y0 = 0.0
+            cal_t_z0 = ext_t_z0
+
+            if xyz_t[2] < Zmin_t:
+                Zmin_t = xyz_t[2]
+            if xyz_t[2] > Zmax_t:
+                Zmax_t = xyz_t[2]
+
+            R = np.sqrt((xyz_t[0] - cal_t_x0) ** 2 + (xyz_t[1] - cal_t_y0) ** 2)
+            if R > Rmax:
+                Rmax = R
+
+    Rmax += rw - (Rmax % rw)
+
+    nr = int(Rmax / rw + 1)
+    nz = int((Zmax_t - Zmin_t) / rw + 1)
+
+    cal.mmlut.origin = np.array([cal_t_x0, cal_t_y0, Zmin_t], dtype=np.float64)
+    cal.mmlut.nr = nr
+    cal.mmlut.nz = nz
+    cal.mmlut.rw = int(rw)
+
+    if cal.mmlut.data is None:
+        Ri = np.arange(nr) * rw
+        Zi = Zmin_t + np.arange(nz) * rw
+
+        data = np.zeros(nr * nz, dtype=np.float64)
+        for i in range(nr):
+            for j in range(nz):
+                xyz = np.array([Ri[i] + cal_t_x0, cal_t_y0, Zi[j]], dtype=np.float64)
+                data[i * nz + j] = multimed_r_nlay_iterative(
+                    xyz[0], xyz[1], xyz[2],
+                    cal_t_x0, cal_t_y0, cal_t_z0,
+                    cpar.mm.n1, cpar.mm.n2[0], cpar.mm.n3, cpar.mm.d[0],
+                    cpar.mm.nlay,
+                )
+
+        cal.mmlut.data = data
+
+    return cal

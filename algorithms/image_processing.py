@@ -38,35 +38,28 @@ def filter_3(
     Raises:
         ValueError: if filter kernel is all zeros.
     """
-    img = np.asarray(img, dtype=np.float64)
-    img = np.asarray(img, dtype=np.float64)
+    src = np.asarray(img, dtype=np.float64).ravel()
     filt = np.asarray(filt, dtype=np.float64)
 
     filt_sum = filt.sum()
     if filt_sum == 0:
         raise ValueError("Filter kernel sum is zero")
 
-    result = np.zeros_like(img)
+    image_size = imx * imy
+    result = np.zeros(image_size, dtype=np.float64)
 
-    # Process the full image, but for borders, use partial neighborhoods (as in C)
-    for i in range(imy):
-        for j in range(imx):
-            # For border pixels, use the nearest valid 3x3 region (pad with edge values)
-            i0 = max(i - 1, 0)
-            i1 = min(i + 2, imy)
-            j0 = max(j - 1, 0)
-            j1 = min(j + 2, imx)
-            region = img[i0:i1, j0:j1]
-            # Pad region to 3x3 if at edge/corner
-            padded = np.full((3, 3), 0.0)
-            padded[
-                (1 - (i - i0)) : (1 + (i1 - i)),
-                (1 - (j - j0)) : (1 + (j1 - j)),
-            ] = region
-            val = (padded * filt).sum() / filt_sum
-            val = np.clip(val, min_brightness, 255)
-            result[i, j] = val
-    return result.astype(np.uint8)
+    # C processes linear indices [imx+1, image_size-imx-1), using
+    # wrap-around at row edges (accessing end of previous / start of next row).
+    end = image_size - imx - 1
+    for idx in range(imx + 1, end):
+        buf = (filt[0, 0] * src[idx - imx - 1] + filt[0, 1] * src[idx - imx] + filt[0, 2] * src[idx - imx + 1]
+             + filt[1, 0] * src[idx - 1]       + filt[1, 1] * src[idx]       + filt[1, 2] * src[idx + 1]
+             + filt[2, 0] * src[idx + imx - 1] + filt[2, 1] * src[idx + imx] + filt[2, 2] * src[idx + imx + 1])
+        buf /= filt_sum
+        buf = max(min_brightness, min(buf, 255))
+        result[idx] = buf
+
+    return result.reshape(imy, imx).astype(np.uint8)
 
 
 def lowpass_3(img: np.ndarray, imx: int, imy: int) -> np.ndarray:
@@ -81,25 +74,18 @@ def lowpass_3(img: np.ndarray, imx: int, imy: int) -> np.ndarray:
     Returns:
         Blurred image as 2D uint8 array.
     """
-    img = np.asarray(img, dtype=np.float64)
-    result = np.zeros_like(img)
-    # Use same border logic as filter_3: for each pixel, use nearest valid 3x3 region, pad with zeros
-    for i in range(imy):
-        for j in range(imx):
-            i0 = max(i - 1, 0)
-            i1 = min(i + 2, imy)
-            j0 = max(j - 1, 0)
-            j1 = min(j + 2, imx)
-            region = img[i0:i1, j0:j1]
-            padded = np.full((3, 3), 0.0)
-            padded[
-                (1 - (i - i0)) : (1 + (i1 - i)),
-                (1 - (j - j0)) : (1 + (j1 - j)),
-            ] = region
-            val = padded.sum() / 9.0
-            val = np.clip(val, 0, 255)
-            result[i, j] = val
-    return result.astype(np.uint8)
+    src = np.asarray(img, dtype=np.float64).ravel()
+    image_size = imx * imy
+    result = np.zeros(image_size, dtype=np.float64)
+
+    end = image_size - imx - 1
+    for idx in range(imx + 1, end):
+        buf = (src[idx - imx - 1] + src[idx - imx] + src[idx - imx + 1]
+             + src[idx - 1]       + src[idx]       + src[idx + 1]
+             + src[idx + imx - 1] + src[idx + imx] + src[idx + imx + 1])
+        result[idx] = int(buf / 9.0)
+
+    return result.reshape(imy, imx).astype(np.uint8)
 
 
 def fast_box_blur(
@@ -110,52 +96,82 @@ def fast_box_blur(
 ) -> np.ndarray:
     """Perform box blur using linear-time algorithm.
 
-    Equivalent to an all-ones kernel of size (2*filt_span+1)^2,
-    but runs in O(filt_span * imx * imy) instead of O(filt_span^2 * imx * imy).
-
-    Args:
-        img: input image as 2D uint8 array (imy, imx).
-        filt_span: half-width of blur kernel (total size = 2*filt_span+1).
-        imx, imy: image dimensions.
-
-    Returns:
-        Blurred image as 2D uint8 array.
+    Direct translation of C fast_box_blur. Uses sliding-window accumulation
+    in both row and column directions.
     """
-    img = np.asarray(img, dtype=np.float64)
+    src = np.asarray(img, dtype=np.float64).reshape(imy, imx)
     n = 2 * filt_span + 1
     nq = n * n
-
-    # Horizontal pass
     row_accum = np.zeros((imy, imx), dtype=np.float64)
 
     for i in range(imy):
-        row = img[i, :]
-        # Cumulative sum approach
-        cumsum = np.cumsum(np.pad(row, filt_span, mode="edge"))
-        row_accum[i, :] = (cumsum[n:] - cumsum[:-n]) / n
+        accum = src[i, 0]
+        row_accum[i, 0] = accum * n
 
-    # Vertical pass
+        # Elements 1..filt_span: growing filter
+        for j in range(1, min(filt_span + 1, imx)):
+            left_idx = 2 * j - 1
+            right_idx = 2 * j
+            if right_idx < imx:
+                accum += src[i, left_idx] + src[i, right_idx]
+            elif left_idx < imx:
+                accum += src[i, left_idx]
+            m = 2 * j + 1
+            row_accum[i, j] = accum * n / m
+
+        # Middle elements: constant-size sliding window
+        for j in range(filt_span + 1, imx - filt_span if imx > filt_span else imx):
+            accum += src[i, j + filt_span] - src[i, j - filt_span - 1]
+            row_accum[i, j] = accum
+
+        # Last elements: shrinking filter
+        end_start = max(imx - filt_span, filt_span + 1)
+        left_ptr = imx - n
+        m = n - 2
+        for j in range(end_start, imx):
+            if left_ptr >= 0 and left_ptr + 1 < imx:
+                accum -= src[i, left_ptr] + src[i, left_ptr + 1]
+            row_accum[i, j] = accum * n / m if m > 0 else 0
+            left_ptr += 2
+            m -= 2
+
+    # Column pass
     col_accum = np.zeros(imx, dtype=np.float64)
-    result = np.zeros_like(img)
+    dest = np.zeros((imy, imx), dtype=np.float64)
 
     # First line
-    col_accum = row_accum[0, :].copy()
-    result[0, :] = col_accum / n
+    col_accum[:] = row_accum[0, :]
+    dest[0, :] = col_accum / n
 
-    # Middle lines with sliding window
-    for i in range(1, imy):
-        if i <= filt_span:
-            col_accum += row_accum[i, :]
-            result[i, :] = n * col_accum / nq / (2 * i + 1)
-        elif i < imy - filt_span:
-            col_accum += row_accum[i, :] - row_accum[i - n, :]
-            result[i, :] = col_accum / nq
-        else:
-            col_accum -= row_accum[i - n, :]
-            remaining = imy - i
-            result[i, :] = n * col_accum / nq / (2 * remaining + 1)
+    # Lines 1..filt_span: growing vertical filter (add 2 lines per iteration)
+    for i in range(1, min(filt_span + 1, imy)):
+        r1 = 2 * i - 1
+        r2 = 2 * i
+        if r2 < imy:
+            col_accum += row_accum[r1, :] + row_accum[r2, :]
+        elif r1 < imy:
+            col_accum += row_accum[r1, :]
+        dest[i, :] = n * col_accum / nq / (2 * i + 1)
 
-    return result.astype(np.uint8)
+    # Middle lines: constant-size sliding window
+    ptr1_row = 0
+    ptr2_row = n
+    for i in range(filt_span + 1, max(imy - filt_span, filt_span + 1)):
+        if ptr2_row < imy:
+            col_accum += row_accum[ptr2_row, :] - row_accum[ptr1_row, :]
+        dest[i, :] = col_accum / nq
+        ptr1_row += 1
+        ptr2_row += 1
+
+    # Last lines: shrinking vertical filter
+    for i in range(filt_span, 0, -1):
+        r1 = imy - 2 * i - 1
+        r2 = r1 + 1
+        if 0 <= r1 < imy and r2 < imy:
+            col_accum -= row_accum[r1, :] + row_accum[r2, :]
+        dest[imy - i, :] = n * col_accum / nq / (2 * i + 1)
+
+    return dest.astype(np.uint8)
 
 
 def split(img: np.ndarray, half_selector: int, imx: int, imy: int) -> np.ndarray:

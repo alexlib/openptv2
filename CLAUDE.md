@@ -1,65 +1,75 @@
 # CLAUDE.md
 
-Behavioral guidelines to reduce common LLM coding mistakes. Merge with project-specific instructions as needed.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-**Tradeoff:** These guidelines bias toward caution over speed. For trivial tasks, use judgment.
+## Project Overview
 
-## 1. Think Before Coding
+openptv2 is a Particle Tracking Velocimetry (PTV) library with a dual-engine architecture:
+- **C core + Cython bindings** (`lib/` + `bindings/`) — production engine (`optv`)
+- **Pure Python/NumPy** (`algorithms/`) — debuggable engine, a direct C-to-Python translation
+- **openptv2 package** (`openptv2/`) — unified API with engine selection
+- **GUI** (`gui/`) — TraitsUI-based desktop application
 
-**Don't assume. Don't hide confusion. Surface tradeoffs.**
+Active work: translating remaining C modules in `lib/src/` to Python in `algorithms/`. Each `algorithms/*.py` maps 1:1 to a `lib/src/*.c` file. See `STATUS.md` for translation progress.
 
-Before implementing:
-- State your assumptions explicitly. If uncertain, ask.
-- If multiple interpretations exist, present them - don't pick silently.
-- If a simpler approach exists, say so. Push back when warranted.
-- If something is unclear, stop. Name what's confusing. Ask.
+## Commands
 
-## 2. Simplicity First
+Always use `uv` — never bare `python` or `pip`.
 
-**Minimum code that solves the problem. Nothing speculative.**
+```bash
+# Setup
+uv sync --extra dev
 
-- No features beyond what was asked.
-- No abstractions for single-use code.
-- No "flexibility" or "configurability" that wasn't requested.
-- No error handling for impossible scenarios.
-- If you write 200 lines and it could be 50, rewrite it.
+# Run all tests (configured testpaths: algorithms/tests, bindings/tests, gui/tests)
+uv run pytest
 
-Ask yourself: "Would a senior engineer say this is overcomplicated?" If yes, simplify.
+# Run a single test file
+uv run pytest algorithms/tests/test_vec_utils.py -v
 
-## 3. Surgical Changes
+# Run a single test function
+uv run pytest algorithms/tests/test_vec_utils.py::test_dot -v
 
-**Touch only what you must. Clean up only your own mess.**
+# Run tests by marker
+uv run pytest -m unit
+uv run pytest -m "not slow"
 
-When editing existing code:
-- Don't "improve" adjacent code, comments, or formatting.
-- Don't refactor things that aren't broken.
-- Match existing style, even if you'd do it differently.
-- If you notice unrelated dead code, mention it - don't delete it.
+# Lint
+uv run ruff check .
 
-When your changes create orphans:
-- Remove imports/variables/functions that YOUR changes made unused.
-- Don't remove pre-existing dead code unless asked.
+# Type check
+uv run mypy openptv2/
 
-The test: Every changed line should trace directly to the user's request.
+# Build C library (needed for optv engine)
+cd lib && mkdir -p build && cd build && cmake .. && make
 
-## 4. Goal-Driven Execution
-
-**Define success criteria. Loop until verified.**
-
-Transform tasks into verifiable goals:
-- "Add validation" → "Write tests for invalid inputs, then make them pass"
-- "Fix the bug" → "Write a test that reproduces it, then make it pass"
-- "Refactor X" → "Ensure tests pass before and after"
-
-For multi-step tasks, state a brief plan:
-```
-1. [Step] → verify: [check]
-2. [Step] → verify: [check]
-3. [Step] → verify: [check]
+# Python-only install (skips Cython build, ~100x faster)
+OPENPTV_PYTHON_ONLY=1 uv pip install -e .
 ```
 
-Strong success criteria let you loop independently. Weak criteria ("make it work") require constant clarification.
+## Architecture
 
----
+**Engine selection** (`openptv2/engine.py`): Thread-local `EngineSelector` picks between `optv` (C/Cython) and `python` (NumPy). Falls back to Python if optv is unavailable.
 
-**These guidelines are working if:** fewer unnecessary changes in diffs, fewer rewrites due to overcomplication, and clarifying questions come before implementation rather than after mistakes.
+**algorithms/ design principles** (from `algorithms/__init__.py`):
+- Structure-of-Arrays (SoA) layout for batch data
+- Dataclasses for parameters — no getter/setter boilerplate
+- No adapter layers or dual storage
+- Each module is a standalone translation of its C counterpart
+
+**Test data**: `test_data/` contains calibration files, parameter files, and fixture data used across all test suites. Tests import from `algorithms.*` directly (e.g., `from algorithms.vec_utils import ...`).
+
+**old_algorithms/**: Previous Python translation attempt — kept for reference/parity testing but not the active codebase. New work goes in `algorithms/`.
+
+## Code Style
+
+- Python 3.11+, line length 88 (ruff configured)
+- ruff lint rules: E, W, F, I (no docstring enforcement)
+- Match the direct-translation style in `algorithms/`: function names mirror C originals, SoA patterns, numpy vectorized operations
+- Tests use pytest with markers: `unit`, `parity`, `perf`, `integration`, `requires_optv`, `slow`, `gui`
+
+## Behavioral Guidelines
+
+- State assumptions explicitly before implementing. If uncertain, ask.
+- Minimum code that solves the problem — no speculative features or abstractions.
+- Touch only what the task requires. Don't "improve" adjacent code.
+- Define verifiable success criteria. Reproduce bugs with tests before fixing.
