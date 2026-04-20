@@ -29,11 +29,16 @@ def compare_targets(t1, t2):
             t1.sumg == t2.sumg and t1.tnr == t2.tnr)
 
 
-def read_targets(file_base, frame_num):
+def _resolve_file_base(file_base, frame_num):
+    if '%d' in file_base:
+        return (file_base % frame_num) + "_targets"
     if frame_num > 0:
-        fname = f"{file_base}{frame_num:04d}_targets"
-    else:
-        fname = f"{file_base}_targets"
+        return f"{file_base}{frame_num:04d}_targets"
+    return f"{file_base}_targets"
+
+
+def read_targets(file_base, frame_num):
+    fname = _resolve_file_base(file_base, frame_num)
 
     try:
         with open(fname, 'r') as f:
@@ -59,10 +64,7 @@ def read_targets(file_base, frame_num):
 
 
 def write_targets(tbuf, num_targets, file_base, frame_num):
-    if frame_num == 0:
-        fname = f"{file_base}_targets"
-    else:
-        fname = f"{file_base}{frame_num:04d}_targets"
+    fname = _resolve_file_base(file_base, frame_num)
 
     try:
         with open(fname, 'w') as f:
@@ -310,14 +312,16 @@ class Frame:
 
     def read(self, corres_file_base, linkage_file_base, prio_file_base,
              target_file_base, frame_num):
+        fname = f"{corres_file_base}.{frame_num}"
+        if not Path(fname).exists():
+            return False
+
         cor_list, path_list = read_path_frame(
             corres_file_base,
             linkage_file_base if linkage_file_base else "",
             prio_file_base if prio_file_base else "",
             frame_num
         )
-        if not cor_list and not path_list:
-            return False
 
         self.num_parts = len(cor_list)
         for i in range(self.num_parts):

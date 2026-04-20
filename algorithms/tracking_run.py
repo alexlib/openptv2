@@ -1,7 +1,8 @@
 import numpy as np
 from dataclasses import dataclass, field
 from algorithms.parameters import SequencePar, TrackPar, VolumePar, ControlPar
-from algorithms.tracking_frame_buf import Frame
+from algorithms.tracking_frame_buf import FrameBuf
+
 
 @dataclass
 class TrackingRun:
@@ -16,19 +17,33 @@ class TrackingRun:
     prio_file_base: str
     cal: list
     flatten_tol: float
-    fb: Frame = field(init=False)
+    fb: FrameBuf = field(init=False)
     lmax: float = field(init=False)
+    ymin: float = field(init=False)
+    ymax: float = field(init=False)
     npart: int = 0
     nlinks: int = 0
 
     def __post_init__(self):
-        self.fb = Frame(self.cpar.num_cams, self.max_targets)
-        # lmax: Euclidean norm of the tracking volume diagonal
+        self.fb = FrameBuf(
+            self.buf_len, self.cpar.num_cams, self.max_targets,
+            self.corres_file_base, self.linkage_file_base,
+            self.prio_file_base, self.seq_par.img_base_name)
+
         self.lmax = np.linalg.norm([
-            self.tpar.dvxmax - self.tpar.dvxmin,
-            self.tpar.dvymax - self.tpar.dvymin,
-            self.tpar.dvzmax - self.tpar.dvzmin
+            self.tpar.dvxmin - self.tpar.dvxmax,
+            self.tpar.dvymin - self.tpar.dvymax,
+            self.tpar.dvzmin - self.tpar.dvzmax
         ])
+
+        from algorithms.multimed import volumedimension
+        xmax, xmin, self.ymax, self.ymin, zmax, zmin = volumedimension(
+            self.vpar, self.cpar, self.cal)
+        self.vpar.X_lay[1] = xmax
+        self.vpar.X_lay[0] = xmin
+        self.vpar.Zmax_lay[1] = zmax
+        self.vpar.Zmin_lay[0] = zmin
+
 
 def tr_new(seq_par, tpar, vpar, cpar, buf_len, max_targets,
            corres_file_base, linkage_file_base, prio_file_base, cal, flatten_tol):

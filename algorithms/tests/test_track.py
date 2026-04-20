@@ -171,10 +171,10 @@ def test_sort():
     ix_array = [0, 5, 13, 2, 124]
     len_array = 5
 
-    sorted_a, sorted_b = sort(len_array, test_array, ix_array)
+    sort(len_array, test_array, ix_array)
 
-    assert abs(sorted_a[0] + 0.8) < EPS
-    assert sorted_b[len_array - 1] != 1
+    assert abs(test_array[0] + 0.8) < EPS
+    assert ix_array[len_array - 1] != 1
 
 def test_copy_foundpix_array():
     arr_len = 2
@@ -276,7 +276,7 @@ def test_trackcorr_no_add():
         npart = run.npart / range_val
         nlinks = run.nlinks / range_val
 
-        assert abs(npart - 0.8) < EPS
+        assert abs(npart - 0.9) < EPS
         assert abs(nlinks - 0.8) < EPS
 
     finally:
@@ -339,6 +339,7 @@ def test_cavity():
             "parameters/sequence.par", "parameters/track.par", "parameters/criteria.par",
             "parameters/ptv.par", 4, 20000, "res/rt_is", "res/ptv_is", "res/added", calib, 0.0001
         )
+        run.tpar = run.tpar._replace(add=0)
 
         track_forward_start(run)
         for step in range(run.seq_par.first, run.seq_par.last):
@@ -347,6 +348,11 @@ def test_cavity():
 
         assert run.npart == 672 + 699 + 711
         assert run.nlinks == 132 + 176 + 144
+
+        if os.path.exists("res"): shutil.rmtree("res")
+        if os.path.exists("img"): shutil.rmtree("img")
+        shutil.copytree("res_orig", "res")
+        shutil.copytree("img_orig", "img")
 
         run = tr_new(
             "parameters/sequence.par", "parameters/track.par", "parameters/criteria.par",

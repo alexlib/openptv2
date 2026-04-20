@@ -135,7 +135,7 @@ def track3d_loop(run_info, step):
     print(f"track3d step: {step}, curr: {fb.buf[1].num_parts}, next: {fb.buf[2].num_parts}, links: {count1}")
     run_info.npart += fb.buf[1].num_parts
     run_info.nlinks += count1
-    fb.next()
+    fb.fb_next()
     fb.write_frame_from_start(step)
     if step < run_info.seq_par.last - 2:
-        fb.read_frame_at_end(step + 3, 0)
+        fb.read_frame_at_end(step + 3, read_links=False)

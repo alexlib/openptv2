@@ -5,7 +5,7 @@ import shutil
 from pathlib import Path
 
 from algorithms.track3d import find_candidates_in_3d, track3d_loop
-from algorithms.track import track_forward_start
+from algorithms.track import track_forward_start, trackcorr_c_finish
 from algorithms.tracking_frame_buf import Frame
 from algorithms.tracking_run import tr_new
 from algorithms.parameters import read_control_par

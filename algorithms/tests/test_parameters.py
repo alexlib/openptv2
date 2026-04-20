@@ -75,7 +75,7 @@ def test_read_volume_par():
         X_lay=(-250.0, 250.0),
         Zmin_lay=(-100.0, -100.0),
         Zmax_lay=(100.0, 100.0),
-        cnx=0.01, cny=0.3, cn=0.3, csumg=0.01, corrmin=1.0, eps0=33.0
+        cnx=0.3, cny=0.3, cn=0.01, csumg=0.01, corrmin=33.0, eps0=1.0
     )
     assert compare_volume_par(vpar, vpar_correct)
 

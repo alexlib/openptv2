@@ -81,40 +81,14 @@ def test_volumedimension():
     add_file2 = "test_data/calibration/cam2.tif.addpar"
     cal2 = Calibration.from_file(ori_file2, add_file2)
 
-    cals = [
-        {
-            "idx": 0, "x0": cal1.ext_par.x0, "y0": cal1.ext_par.y0, "z0": cal1.ext_par.z0,
-            "dm": cal1.ext_par.dm, "cc": cal1.int_par.cc,
-            "gx": cal1.glass_par.vec_x, "gy": cal1.glass_par.vec_y, "gz": cal1.glass_par.vec_z,
-            "k1": cal1.added_par.k1, "k2": cal1.added_par.k2, "k3": cal1.added_par.k3,
-            "p1": cal1.added_par.p1, "p2": cal1.added_par.p2,
-            "scx": cal1.added_par.scx, "she": cal1.added_par.she
-        },
-        {
-            "idx": 1, "x0": cal2.ext_par.x0, "y0": cal2.ext_par.y0, "z0": cal2.ext_par.z0,
-            "dm": cal2.ext_par.dm, "cc": cal2.int_par.cc,
-            "gx": cal2.glass_par.vec_x, "gy": cal2.glass_par.vec_y, "gz": cal2.glass_par.vec_z,
-            "k1": cal2.added_par.k1, "k2": cal2.added_par.k2, "k3": cal2.added_par.k3,
-            "p1": cal2.added_par.p1, "p2": cal2.added_par.p2,
-            "scx": cal2.added_par.scx, "she": cal2.added_par.she
-        }
-    ]
+    cals = [cal1, cal2]
 
     vpar = read_volume_par("test_data/parameters/criteria.par")
     cpar = read_control_par("test_data/parameters/ptv.par")
     cpar.mm.nlay = 1
     cpar.num_cams = 2
-    
-    int_xh = [cal1.int_par.xh, cal2.int_par.xh]
-    int_yh = [cal1.int_par.yh, cal2.int_par.yh]
-    added_par_list = [cal1.added_par, cal2.added_par]
-    
-    xmax, xmin, ymax, ymin, zmax, zmin = volumedimension(
-        vpar.X_lay, vpar.Zmin_lay, vpar.Zmax_lay, cals,
-        cpar.imx, cpar.imy, cpar.pix_x, cpar.pix_y, cpar.chfield,
-        int_xh, int_yh, added_par_list,
-        cpar.mm.n1, cpar.mm.n2[0], cpar.mm.n3, cpar.mm.d[0]
-    )
+
+    xmax, xmin, ymax, ymin, zmax, zmin = volumedimension(vpar, cpar, cals)
     
     assert abs(xmax - 73.02053752) < EPS
     assert abs(xmin + 46.80667189) < EPS

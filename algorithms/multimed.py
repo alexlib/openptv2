@@ -318,37 +318,15 @@ def get_mmf_from_mmlut(
     return float(mmf)
 
 
-def volumedimension(
-    vpar_X_lay: tuple[float, float],
-    vpar_Zmin_lay: tuple[float, float],
-    vpar_Zmax_lay: tuple[float, float],
-    cal_list: list[dict],
-    imx: int,
-    imy: int,
-    pix_x: float,
-    pix_y: float,
-    chfield: int,
-    int_xh: list[float],
-    int_yh: list[float],
-    added_par_list: list[dict],
-    mm_n1: float,
-    mm_n2_0: float,
-    mm_n3: float,
-    mm_d0: float,
-) -> tuple[float, float, float, float, float, float]:
+def volumedimension(vpar, cpar, cal):
     """Find measurement volume limits in 3D space.
 
+    Matches C volumedimension exactly.
+
     Args:
-        vpar_X_lay: (X_left, X_right) boundaries.
-        vpar_Zmin_lay: (Zmin_left, Zmin_right) boundaries.
-        vpar_Zmax_lay: (Zmax_left, Zmax_right) boundaries.
-        cal_list: list of calibration dicts (one per camera).
-        imx, imy: image dimensions.
-        pix_x, pix_y: pixel sizes.
-        chfield: y-remap mode.
-        int_xh, int_yh: principal points per camera.
-        added_par_list: distortion params per camera.
-        mm_n1, mm_n2_0, mm_n3, mm_d0: multimedia params.
+        vpar: VolumePar with X_lay, Zmin_lay, Zmax_lay.
+        cpar: ControlPar with imx, imy, pix_x, pix_y, chfield, mm.
+        cal: list of Calibration objects.
 
     Returns:
         (xmax, xmin, ymax, ymin, zmax, zmin) volume bounds.
@@ -356,39 +334,40 @@ def volumedimension(
     from .trafo import pixel_to_metric, correct_brown_affin
     from .ray_tracing import ray_tracing
 
-    xc = [0.0, float(imx)]
-    yc = [0.0, float(imy)]
+    xc = [0.0, float(cpar.imx)]
+    yc = [0.0, float(cpar.imy)]
 
-    Zmin = min(vpar_Zmin_lay)
-    Zmax = max(vpar_Zmax_lay)
+    Zmin = vpar.Zmin_lay[0]
+    Zmax = vpar.Zmax_lay[0]
+    if vpar.Zmin_lay[1] < Zmin:
+        Zmin = vpar.Zmin_lay[1]
+    if vpar.Zmax_lay[1] > Zmax:
+        Zmax = vpar.Zmax_lay[1]
 
     xmin = xmax = 0.0
     ymin = ymax = 0.0
     first = True
 
-    for cam_cal in cal_list:
+    for i_cam in range(cpar.num_cams):
+        c = cal[i_cam]
+        ap = c.added_par
+        mm = cpar.mm
+
         for i in range(2):
             for j in range(2):
-                x, y = pixel_to_metric(
-                    xc[i], yc[j], imx, imy, pix_x, pix_y, chfield
-                )
-                x -= int_xh[cam_cal["idx"]]
-                y -= int_yh[cam_cal["idx"]]
+                x, y = pixel_to_metric(xc[i], yc[j], cpar)
+                x -= c.int_par.xh
+                y -= c.int_par.yh
 
                 x, y = correct_brown_affin(
-                    x, y,
-                    cam_cal["k1"], cam_cal["k2"], cam_cal["k3"],
-                    cam_cal["p1"], cam_cal["p2"],
-                    cam_cal["scx"], cam_cal["she"],
-                )
+                    x, y, ap.k1, ap.k2, ap.k3, ap.p1, ap.p2, ap.scx, ap.she)
 
                 pos, a = ray_tracing(
                     x, y,
-                    cam_cal["dm"],
-                    cam_cal["x0"], cam_cal["y0"], cam_cal["z0"],
-                    cam_cal["cc"],
-                    cam_cal["gx"], cam_cal["gy"], cam_cal["gz"],
-                    mm_n1, mm_n2_0, mm_n3, mm_d0,
+                    c.ext_par.dm, c.ext_par.x0, c.ext_par.y0, c.ext_par.z0,
+                    c.int_par.cc,
+                    c.glass_par.vec_x, c.glass_par.vec_y, c.glass_par.vec_z,
+                    mm.n1, mm.n2[0], mm.n3, mm.d[0],
                 )
 
                 for Z in [Zmin, Zmax]:
