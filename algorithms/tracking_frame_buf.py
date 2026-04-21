@@ -401,8 +401,6 @@ class Frame:
 
     def write(self, corres_file_base, linkage_file_base, prio_file_base,
               target_file_base, frame_num):
-        self._sync_soa_to_path()
-
         ok = write_path_frame(
             self.correspond, self.path_info, self.num_parts,
             corres_file_base, linkage_file_base,

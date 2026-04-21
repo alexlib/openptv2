@@ -20,6 +20,9 @@ from .track_kernels import (
     candsearch_in_pix_rest_jit as _candsearch_in_pix_rest_jit,
     searchquader_jit as _searchquader_jit,
     sort_candidates_by_freq_jit as _sort_candidates_by_freq_jit,
+    sorted_candidates_jit as _sorted_candidates_jit,
+    point_position_jit as _point_position_jit,
+    trackcorr_loop_jit as _trackcorr_loop_jit,
     HAS_NUMBA,
 )
 
@@ -572,6 +575,41 @@ def sorted_candidates_in_volume(center, center_proj, frm, run,
                                 _packed_cals=None, _pix_info=None,
                                 _jit_tuples=None):
     num_cams = frm.num_cams
+
+    if HAS_NUMBA and _jit_tuples is not None:
+        cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t = _jit_tuples
+        if _pix_info is not None:
+            c_imx, c_imy, imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield = _pix_info
+        else:
+            c_imx = run.cpar.imx; c_imy = run.cpar.imy
+            imx_half = c_imx * 0.5; imy_half = c_imy * 0.5
+            inv_pix_x = 1.0 / run.cpar.pix_x; inv_pix_y = 1.0 / run.cpar.pix_y
+            c_chfield = run.cpar.chfield
+
+        center_arr = np.asarray(center, dtype=np.float64)
+        cpx = np.array([center_proj[j][0] for j in range(num_cams)], dtype=np.float64)
+        cpy = np.array([center_proj[j][1] for j in range(num_cams)], dtype=np.float64)
+        nt = np.array(frm.num_targets[:num_cams], dtype=np.int32)
+
+        ftnr, freq, whichcam, num_cands = _sorted_candidates_jit(
+            center_arr, cpx, cpy, num_cams, MAX_CANDS,
+            cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t,
+            tuple(frm.targ_x[:num_cams]), tuple(frm.targ_y[:num_cams]),
+            tuple(frm.targ_tnr[:num_cams]), nt,
+            run.tpar.dvxmin, run.tpar.dvxmax, run.tpar.dvymin,
+            run.tpar.dvymax, run.tpar.dvzmin, run.tpar.dvzmax,
+            imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield,
+            c_imx, c_imy, TR_UNUSED,
+        )
+        if num_cands > 0:
+            result = []
+            for i in range(num_cands):
+                result.append({'ftnr': int(ftnr[i]), 'freq': int(freq[i]),
+                               'whichcam': list(whichcam[i])})
+            result.append({'ftnr': TR_UNUSED, 'freq': 0, 'whichcam': [0]*num_cams})
+            return result
+        return None
+
     n = num_cams * MAX_CANDS
     points = _make_foundpix_array(n, num_cams)
 
@@ -588,20 +626,6 @@ def sorted_candidates_in_volume(center, center_proj, frm, run,
             cam_slice, run.cpar,
             _targ_x=frm.targ_x[cam], _targ_y=frm.targ_y[cam],
             _targ_tnr=frm.targ_tnr[cam])
-
-    if HAS_NUMBA:
-        ftnr = np.array([p[0] for p in points], dtype=np.int32)
-        freq = np.zeros(n, dtype=np.int32)
-        whichcam = np.array([p[2] for p in points], dtype=np.int32)
-        num_cands = _sort_candidates_by_freq_jit(ftnr, freq, whichcam, n, num_cams, MAX_CANDS)
-        if num_cands > 0:
-            result = []
-            for i in range(num_cands):
-                result.append({'ftnr': int(ftnr[i]), 'freq': int(freq[i]),
-                               'whichcam': list(whichcam[i])})
-            result.append({'ftnr': TR_UNUSED, 'freq': 0, 'whichcam': [0]*num_cams})
-            return result
-        return None
 
     num_cands = sort_candidates_by_freq(points, num_cams)
     if num_cands > 0:
@@ -703,6 +727,25 @@ def track_forward_start(run):
     run.fb.fb_prev()
 
 
+def _sync_soa_to_aos(frm):
+    """Fast SoA->AoS sync — only copies fields needed for file I/O."""
+    for i in range(frm.num_parts):
+        p = frm.path_info[i]
+        p.x[:] = frm.path_x[i]
+        p.prev = int(frm.path_prev[i])
+        p.next = int(frm.path_next[i])
+        p.prio = int(frm.path_prio[i])
+
+        c = frm.correspond[i]
+        c.nr = int(frm.corres_nr[i])
+        c.p[:] = frm.corres_p[i]
+
+    for cam in range(frm.num_cams):
+        tnr_arr = frm.targ_tnr[cam]
+        for j in range(frm.num_targets[cam]):
+            frm.targets[cam][j].tnr = int(tnr_arr[j])
+
+
 def trackcorr_c_loop(run_info, step):
     from .orientation import point_position
 
@@ -711,23 +754,89 @@ def trackcorr_c_loop(run_info, step):
     tpar = run_info.tpar
     vpar = run_info.vpar
     cpar = run_info.cpar
-    curr_targets = fb.buf[1].targets
 
     c_imx = cpar.imx; c_imy = cpar.imy
     imx_half = c_imx * 0.5; imy_half = c_imy * 0.5
     inv_pix_x = 1.0 / cpar.pix_x; inv_pix_y = 1.0 / cpar.pix_y
     c_chfield = cpar.chfield; c_mm = cpar.mm
-    packed_cals = [_pack_cal(cal[j], c_mm) for j in range(fb.num_cams)]
+
     if HAS_NUMBA:
         jit_cals, jit_mmluts = _pack_cams_jit(cal, c_mm)
         _jt = _pack_cams_jit_tuples(jit_cals, jit_mmluts)
-    else:
-        _jt = None
+        cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t = _jt
+
+        nc = fb.num_cams
+        orig_parts = fb.buf[1].num_parts
+
+        fb.buf[0]._sync_path_to_soa()
+        fb.buf[1]._sync_path_to_soa()
+        fb.buf[2]._sync_path_to_soa()
+        fb.buf[3]._sync_path_to_soa()
+
+        np2 = np.array([fb.buf[2].num_parts], dtype=np.int32)
+        np3 = np.array([fb.buf[3].num_parts], dtype=np.int32)
+        nt2 = np.array(fb.buf[2].num_targets[:nc], dtype=np.int32)
+        nt3 = np.array(fb.buf[3].num_targets[:nc], dtype=np.int32)
+
+        count1, num_added = _trackcorr_loop_jit(
+            orig_parts,
+            fb.buf[0].path_x,
+            fb.buf[1].path_x, fb.buf[1].path_prev, fb.buf[1].path_next,
+            fb.buf[1].path_inlist, fb.buf[1].path_finaldecis,
+            fb.buf[1].path_decis, fb.buf[1].path_linkdecis,
+            fb.buf[1].corres_p,
+            tuple(fb.buf[1].targ_x[:nc]), tuple(fb.buf[1].targ_y[:nc]),
+            fb.buf[2].path_x, fb.buf[2].path_prev, fb.buf[2].path_next,
+            fb.buf[2].path_inlist, fb.buf[2].path_prio,
+            fb.buf[2].path_finaldecis, fb.buf[2].path_decis,
+            fb.buf[2].path_linkdecis, fb.buf[2].corres_p,
+            fb.buf[2].corres_nr,
+            tuple(fb.buf[2].targ_x[:nc]), tuple(fb.buf[2].targ_y[:nc]),
+            tuple(fb.buf[2].targ_tnr[:nc]), nt2, np2,
+            fb.buf[3].path_x, fb.buf[3].path_prev, fb.buf[3].path_next,
+            fb.buf[3].path_inlist, fb.buf[3].path_prio,
+            fb.buf[3].path_finaldecis, fb.buf[3].path_decis,
+            fb.buf[3].path_linkdecis, fb.buf[3].corres_p,
+            fb.buf[3].corres_nr,
+            tuple(fb.buf[3].targ_x[:nc]), tuple(fb.buf[3].targ_y[:nc]),
+            tuple(fb.buf[3].targ_tnr[:nc]), nt3, np3,
+            cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t,
+            tpar.dvxmin, tpar.dvxmax, tpar.dvymin, tpar.dvymax,
+            tpar.dvzmin, tpar.dvzmax, tpar.dacc, tpar.dangle,
+            int(tpar.add), run_info.lmax,
+            vpar.X_lay[0], vpar.X_lay[1], run_info.ymin, run_info.ymax,
+            vpar.Zmin_lay[0], vpar.Zmax_lay[1],
+            nc, imx_half, imy_half, inv_pix_x, inv_pix_y,
+            c_chfield, float(c_imx), float(c_imy),
+            cpar.pix_x, cpar.pix_y, run_info.flatten_tol,
+        )
+
+        fb.buf[2].num_parts = int(np2[0])
+        fb.buf[3].num_parts = int(np3[0])
+
+        _sync_soa_to_aos(fb.buf[1])
+        _sync_soa_to_aos(fb.buf[2])
+        _sync_soa_to_aos(fb.buf[3])
+
+        print(f"step: {step}, curr: {fb.buf[1].num_parts}, "
+              f"next: {fb.buf[2].num_parts}, links: {count1}, "
+              f"lost: {fb.buf[1].num_parts - count1}, add: {num_added}")
+
+        run_info.npart = run_info.npart + fb.buf[1].num_parts
+        run_info.nlinks = run_info.nlinks + count1
+
+        fb.fb_next()
+        fb.write_frame_from_start(step)
+        if step < run_info.seq_par.last - 2:
+            fb.read_frame_at_end(step + 3, read_links=False)
+        return
+
+    # ===== Python fallback (no Numba) =====
+    curr_targets = fb.buf[1].targets
+    packed_cals = [_pack_cal(cal[j], c_mm) for j in range(fb.num_cams)]
+    _jt = None
 
     def _ptp(pos, j):
-        if HAS_NUMBA:
-            return _ptp_jit(pos, jit_cals[j], jit_mmluts[j],
-                            imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield)
         return _point_to_pixel_packed(pos, packed_cals[j], imx_half, imy_half,
                                       inv_pix_x, inv_pix_y, c_chfield)
 
@@ -820,8 +929,6 @@ def trackcorr_c_loop(run_info, step):
             v2 = [[0.0, 0.0] for _ in range(TR_MAX_CAMS)]
             philf = [[PT_UNUSED] * MAX_CANDS for _ in range(TR_MAX_CAMS)]
             quali = assess_new_position(X[5], v2, philf, fb.buf[3], run_info,
-                                        _jit_cals=jit_cals if HAS_NUMBA else None,
-                                        _jit_mmluts=jit_mmluts if HAS_NUMBA else None,
                                         _pix_info=_pi)
 
             if quali >= 2:
@@ -871,8 +978,6 @@ def trackcorr_c_loop(run_info, step):
                 v2 = [[0.0, 0.0] for _ in range(TR_MAX_CAMS)]
                 philf = [[PT_UNUSED] * MAX_CANDS for _ in range(TR_MAX_CAMS)]
                 quali = assess_new_position(X[2], v2, philf, fb.buf[2], run_info,
-                                            _jit_cals=jit_cals if HAS_NUMBA else None,
-                                            _jit_mmluts=jit_mmluts if HAS_NUMBA else None,
                                             _pix_info=_pi)
 
                 if quali >= 2:
@@ -1043,7 +1148,10 @@ def trackback_c(run_info):
                         in_volume = 0
 
                         v2_arr = np.array(v2[:fb.num_cams], dtype=np.float64)
-                        X[3], _dl = point_position(v2_arr, fb.num_cams, cpar.mm, cal)
+                        if HAS_NUMBA:
+                            X[3], _dl = _point_position_jit(v2_arr, fb.num_cams, _jt[0])
+                        else:
+                            X[3], _dl = point_position(v2_arr, fb.num_cams, cpar.mm, cal)
 
                         if (vpar.X_lay[0] < X[3][0] < vpar.X_lay[1] and
                                 Ymin < X[3][1] < Ymax and

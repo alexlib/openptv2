@@ -373,12 +373,12 @@ Remaining irreducible costs: I/O (~0.10s), one-time JIT setup per step (~0.01s),
 
 ## Measured Results
 
-| Test | Before | Phase 0 (mmlut) | Phase 1 (scalar+packed) | Phase 3 (all JIT) |
-|---|---|---|---|---|
-| cavity track3d | ~400s | 5.9s (68x) | ~5s (80x) | ~5s (80x) |
-| cavity trackcorr | ~400s | 225s (1.8x) | 10.5s (38x) | 2.15s (186x) |
-| burgers track3d | 1.4s | 0.9s | 0.9s | 0.9s |
-| all 25 track tests | - | - | 38s total | 25s total |
+| Test | Before | Phase 0 (mmlut) | Phase 1 (scalar+packed) | Phase 3 (all JIT) | Phase 4 (monolithic) |
+|---|---|---|---|---|---|
+| cavity track3d | ~400s | 5.9s (68x) | ~5s (80x) | ~5s (80x) | ~5s (80x) |
+| cavity trackcorr | ~400s | 225s (1.8x) | 10.5s (38x) | 2.15s (186x) | 0.198s (~2000x) |
+| burgers track3d | 1.4s | 0.9s | 0.9s | 0.9s | 0.9s |
+| all 25 track tests | - | - | 38s total | 25s total | ~18s total |
 
 **Phase 3 JIT progression (cavity trackcorr):**
 - point_to_pixel_jit only: 6.4s
@@ -399,7 +399,7 @@ Remaining irreducible costs: I/O (~0.10s), one-time JIT setup per step (~0.01s),
 - cProfile inflates large-function cost, so always verify with wall-clock timing.
 - All parity tests pass with exact numerical results vs C/Cython.
 
-**Remaining bottleneck breakdown (cavity trackcorr, 2.15s total):**
+**Remaining bottleneck breakdown (cavity trackcorr, 2.15s total, pre-Phase 4):**
 - `register_closest_neighbs` wrapper: ~0.42s — Python overhead around JIT candsearch dispatch
 - `sorted_candidates_in_volume` overhead: ~0.33s — foundpix list creation + numpy array conversion for JIT sort
 - `searchquader` wrapper: ~0.30s — Python quader construction before JIT dispatch
@@ -407,6 +407,27 @@ Remaining irreducible costs: I/O (~0.10s), one-time JIT setup per step (~0.01s),
 - `pos3d_in_bounds`: ~0.09s — pure Python
 - trackcorr_c_loop main body: ~0.33s — Python loop overhead, attribute access, list construction
 - I/O (read/write frames): ~0.10s
+
+**Phase 4 progression (cavity trackcorr with_add, ~700 particles/frame):**
+- Step 4a (SoA for Pathinfo/Corres): no runtime change (data structure prep)
+- Step 4b (JIT point_position): no significant change (only ~55 calls/step)
+- Step 4c (fused sorted_candidates_jit): 2.15s → 1.17s (1.8x from eliminating Python glue)
+- Step 4d (monolithic trackcorr_loop_jit): 1.17s → 0.238s (4.9x from single JIT entry)
+- Step 4e (optimized SoA↔AoS sync): 0.238s → 0.198s (skipping decis/linkdecis in sync)
+
+**Phase 4 key findings:**
+- The monolithic JIT approach was the right call: collapsing ~40K Python function calls per step to one Python→Numba entry eliminated ~1.9s of dispatch overhead.
+- Numba→Numba calls have zero dispatch overhead, so all inner functions (angle_acc, pos3d_in_bounds, vec3_dist, etc.) that were too cheap to JIT individually now run at native speed.
+- SoA↔AoS sync was initially 0.26s/step because `_sync_soa_to_path` copied 80-element decis/linkdecis arrays per particle. A fast `_sync_soa_to_aos` that only copies I/O-relevant fields (x, prev, next, prio, corres_nr, corres_p, targ_tnr) cut this to ~0.09s.
+- Mutable scalar passing (num_parts for frames 2/3 that grow during add_particle) handled via 1-element numpy arrays.
+- Per-camera data passed as tuples of arrays (targ_x, targ_y, targ_tnr) — Numba handles tuple indexing efficiently.
+- JIT cache loading is ~0.66s one-time (amortized over 400+ steps).
+- Added `pixel_to_metric_jit` and `dist_to_flat_jit` (iterative Brown distortion inversion, 50 iterations) to track_kernels.py for the assess_new_position JIT path.
+
+**Post-Phase 4 breakdown (cavity trackcorr, 0.198s/step):**
+- Actual JIT computation: ~0.10s
+- SoA↔AoS sync (4x _sync_path_to_soa + 3x _sync_soa_to_aos): ~0.07s
+- I/O (read/write frames): ~0.03s
 
 ## Summary
 
@@ -416,16 +437,16 @@ Remaining irreducible costs: I/O (~0.10s), one-time JIT setup per step (~0.01s),
 | 1. Scalar kernels + foundpix + inlined chain | 2-3 days | 38-80x | Yes, plain Python | DONE |
 | 2. SoA data | 3-5 days | — | Yes, numpy arrays | SKIPPED (minimal SoA done for targets) |
 | 3. Numba JIT (all kernels) | ~1 day | 186x | Yes, remove @njit to debug | DONE |
-| 4a. SoA for Pathinfo/Corres | ~1 day | — | Yes, numpy arrays | TODO |
-| 4b. JIT point_position | ~0.5 days | — | Yes | TODO |
-| 4c. Fused sorted_candidates_jit | ~0.5 days | ~280x | Yes | TODO |
-| 4d. trackcorr_inner_jit | ~2 days | ~600-700x | Yes | TODO |
-| 4e. Wire up + sync | ~0.5 days | — | Yes | TODO |
+| 4a. SoA for Pathinfo/Corres | ~1 day | — | Yes, numpy arrays | DONE |
+| 4b. JIT point_position | ~0.5 days | — | Yes | DONE |
+| 4c. Fused sorted_candidates_jit | ~0.5 days | ~280x | Yes | DONE |
+| 4d. trackcorr_inner_jit | ~2 days | ~2000x | Yes | DONE |
+| 4e. Wire up + sync | ~0.5 days | — | Yes | DONE |
 
-**Current state: cavity trackcorr 2.15s (186x speedup), cavity track3d ~5s.**
-**Phase 4 target: cavity trackcorr ~0.3s (~600-700x), approaching C/Cython speed.**
+**Current state: cavity trackcorr 0.198s (~2000x speedup), cavity track3d ~5s.**
+**Phase 4 target was ~0.3s — achieved 0.198s, exceeding the target by 1.5x.**
 
-The remaining ~2s is Python glue overhead: function wrappers, foundpix list creation, dict packing/unpacking, Python object attribute access. Phase 4 eliminates this by running the entire per-particle loop body inside one `@njit` function operating on SoA numpy arrays.
+All 24 tracking tests pass with exact numerical results vs C/Cython. The monolithic JIT eliminated ~1.9s of Python glue overhead by running the entire per-particle loop body inside one `@njit` function operating on SoA numpy arrays.
 
 ## Design Principles
 
