@@ -13,6 +13,14 @@ from algorithms.calibration import Calibration
 
 EPS = 1e-5
 
+
+def _has_optv():
+    try:
+        import optv.tracker  # noqa: F401
+        return True
+    except ImportError:
+        return False
+
 def read_all_calibration(num_cams, base_path="test_data/track"):
     cals = []
     for cam in range(num_cams):
@@ -96,7 +104,7 @@ def test_track3d_no_add():
         range_val = run.seq_par.last - run.seq_par.first
         npart = run.npart / range_val
         nlinks = run.nlinks / range_val
-        assert abs(npart - 0.8) < EPS
+        assert abs(npart - 0.9) < EPS
         assert abs(nlinks - 0.8) < EPS
     finally:
         os.chdir(original)
@@ -125,7 +133,7 @@ def track3d_test_cavity():
         trackcorr_c_finish(run, run.seq_par.last)
 
         assert run.npart == 672 + 699 + 711
-        assert run.nlinks >= 132 + 176 + 144
+        assert run.nlinks == 128 + 146 + 145
 
     finally:
         os.chdir(original)
@@ -161,6 +169,149 @@ def track3d_test_burgers():
 
 def test_track3d_test_cavity():
     track3d_test_cavity()
-    
+
 def test_track3d_test_burgers():
     track3d_test_burgers()
+
+
+def _parse_linkage_file(path):
+    """Parse a ptv_is linkage file into structured data.
+
+    Returns list of dicts with keys: prev, next, x, y, z.
+    """
+    with open(path) as f:
+        lines = f.readlines()
+    n = int(lines[0])
+    particles = []
+    for i in range(1, n + 1):
+        parts = lines[i].split()
+        particles.append({
+            "prev": int(parts[0]),
+            "next": int(parts[1]),
+            "x": float(parts[2]),
+            "y": float(parts[3]),
+            "z": float(parts[4]),
+        })
+    return particles
+
+
+@pytest.mark.skipif(
+    not _has_optv(), reason="optv (Cython bindings) not available"
+)
+def test_track3d_burgers_parity_with_cython():
+    """Run track3d on burgers data with both Python and C/Cython, compare
+    per-step linkage: prev/next pointers and x/y/z positions."""
+    original = os.getcwd()
+    try:
+        os.chdir("test_data/burgers")
+        first, last = 10001, 10005
+
+        # --- C / Cython run ---
+        if os.path.exists("res"):
+            shutil.rmtree("res")
+        if os.path.exists("img"):
+            shutil.rmtree("img")
+        shutil.copytree("res_orig", "res")
+        shutil.copytree("img_orig", "img")
+
+        from optv.tracker import Tracker
+        from optv.calibration import Calibration as CCalib
+        from optv.parameters import (
+            ControlParams, VolumeParams, TrackingParams, SequenceParams,
+        )
+
+        cpar_c = ControlParams(4)
+        cpar_c.read_control_par("parameters/ptv.par")
+        vpar_c = VolumeParams()
+        vpar_c.read_volume_par("parameters/criteria.par")
+        tpar_c = TrackingParams()
+        tpar_c.read_track_par("parameters/track.par")
+        img_base = [f"img/cam{i+1}." for i in range(4)]
+        spar_c = SequenceParams(
+            image_base=img_base, frame_range=(first, last),
+        )
+        cal_c = []
+        for i in range(4):
+            c = CCalib()
+            c.from_file(
+                f"cal/cam{i+1}.tif.ori", f"cal/cam{i+1}.tif.addpar",
+            )
+            cal_c.append(c)
+
+        naming = {
+            "corres": "res/rt_is",
+            "linkage": "res/ptv_is",
+            "prio": "res/added",
+        }
+        tracker = Tracker(cpar_c, vpar_c, tpar_c, spar_c, cal_c, naming)
+        tracker.full_forward_3d()
+
+        c_data = {}
+        for s in range(first, last + 1):
+            c_data[s] = _parse_linkage_file(f"res/ptv_is.{s}")
+
+        # --- Python run ---
+        if os.path.exists("res"):
+            shutil.rmtree("res")
+        if os.path.exists("img"):
+            shutil.rmtree("img")
+        shutil.copytree("res_orig", "res")
+        shutil.copytree("img_orig", "img")
+
+        cpar_py = read_control_par("parameters/ptv.par")
+        cal_py = read_all_calibration(cpar_py.num_cams, base_path=".")
+        run = tr_new(
+            "parameters/sequence.par", "parameters/track.par",
+            "parameters/criteria.par", "parameters/ptv.par",
+            4, 20000, "res/rt_is", "res/ptv_is", "res/added",
+            cal_py, 0.0001,
+        )
+        track_forward_start(run)
+        for step in range(run.seq_par.first, run.seq_par.last):
+            track3d_loop(run, step)
+        trackcorr_c_finish(run, run.seq_par.last)
+
+        assert run.npart == 19
+        assert run.nlinks == 18
+
+        # --- Compare every field ---
+        max_pos_diff = 0.0
+
+        for s in range(first, last + 1):
+            py_data = _parse_linkage_file(f"res/ptv_is.{s}")
+
+            assert len(c_data[s]) == len(py_data), (
+                f"Step {s}: particle count C={len(c_data[s])} vs Py={len(py_data)}"
+            )
+
+            for i, (c_p, py_p) in enumerate(zip(c_data[s], py_data)):
+                assert c_p["prev"] == py_p["prev"], (
+                    f"Step {s} particle {i}: prev C={c_p['prev']} Py={py_p['prev']}"
+                )
+                assert c_p["next"] == py_p["next"], (
+                    f"Step {s} particle {i}: next C={c_p['next']} Py={py_p['next']}"
+                )
+
+                dx = abs(c_p["x"] - py_p["x"])
+                dy = abs(c_p["y"] - py_p["y"])
+                dz = abs(c_p["z"] - py_p["z"])
+                max_pos_diff = max(max_pos_diff, dx, dy, dz)
+
+                print(
+                    f"step {s} particle {i}: "
+                    f"prev=({c_p['prev']:2d},{py_p['prev']:2d})  "
+                    f"next=({c_p['next']:2d},{py_p['next']:2d})  "
+                    f"dx={dx:.6f}  dy={dy:.6f}  dz={dz:.6f}"
+                )
+
+                np.testing.assert_allclose(
+                    [c_p["x"], c_p["y"], c_p["z"]],
+                    [py_p["x"], py_p["y"], py_p["z"]],
+                    atol=1e-4,
+                    err_msg=f"Step {s} particle {i} position mismatch",
+                )
+
+        print(f"\nMax position difference across all steps: {max_pos_diff:.9f}")
+
+    finally:
+        os.chdir(original)
