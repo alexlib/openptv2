@@ -17,7 +17,8 @@ from algorithms.calibration import Calibration
 from algorithms.parameters import read_control_par
 from algorithms.tracking_run import tr_new
 from algorithms.track import (
-    track_forward_start, trackcorr_c_loop, trackcorr_c_finish, point_to_pixel,
+    track_forward_start, trackcorr_c_loop, trackcorr_c_finish, trackback_c,
+    point_to_pixel,
 )
 from algorithms.track3d import track3d_loop
 
@@ -386,6 +387,14 @@ def _setup_working_copy():
     shutil.copytree(TEST_DIR / "img_orig", img)
 
 
+def _setup_working_copy_res_only():
+    """Reset only res/ (keeps img/ from prior run for second forward pass)."""
+    res = TEST_DIR / "res"
+    if res.exists():
+        shutil.rmtree(res)
+    shutil.copytree(TEST_DIR / "res_orig", res)
+
+
 # ---------------------------------------------------------------------------
 # Tests
 # ---------------------------------------------------------------------------
@@ -659,6 +668,150 @@ class TestSyntheticComparison:
                 f"trackcorr ({tc_correct}) found fewer correct links than "
                 f"track3d ({t3_correct})"
             )
+
+        finally:
+            os.chdir(original)
+
+
+class TestSyntheticForwardBackwardForward:
+    """Test forward-backward-forward workflow on synthetic data."""
+
+    def _run_fbf(self, add):
+        """Run forward-backward-forward and return per-frame link counts."""
+        _setup_working_copy()
+        cpar = read_control_par("parameters/ptv.par")
+        cals = [
+            Calibration.from_file(
+                f"cal/cam{i+1}.tif.ori", f"cal/cam{i+1}.tif.addpar"
+            )
+            for i in range(cpar.num_cams)
+        ]
+
+        run = tr_new(
+            "parameters/sequence.par", "parameters/track.par",
+            "parameters/criteria.par", "parameters/ptv.par",
+            4, 20000, "res/rt_is", "res/ptv_is", "res/added",
+            cals, 0.0001,
+        )
+        run.tpar = run.tpar._replace(add=add)
+
+        # Forward
+        track_forward_start(run)
+        for step in range(run.seq_par.first, run.seq_par.last):
+            trackcorr_c_loop(run, step)
+        trackcorr_c_finish(run, run.seq_par.last)
+        fwd_nlinks = run.nlinks
+
+        # Backward
+        trackback_c(run)
+
+        # Forward again
+        _setup_working_copy_res_only()
+        run2 = tr_new(
+            "parameters/sequence.par", "parameters/track.par",
+            "parameters/criteria.par", "parameters/ptv.par",
+            4, 20000, "res/rt_is", "res/ptv_is", "res/added",
+            cals, 0.0001,
+        )
+        run2.tpar = run2.tpar._replace(add=add)
+        track_forward_start(run2)
+        for step in range(run2.seq_par.first, run2.seq_par.last):
+            trackcorr_c_loop(run2, step)
+        trackcorr_c_finish(run2, run2.seq_par.last)
+
+        return run2, fwd_nlinks
+
+    def test_fbf_preserves_links(self, synthetic_data):
+        """Forward-backward-forward should not lose correct links."""
+        original = os.getcwd()
+        try:
+            os.chdir(TEST_DIR)
+            run, fwd_nlinks = self._run_fbf(add=0)
+
+            frames = synthetic_data["frames"]
+            gt_next = synthetic_data["gt_next"]
+            slot_to_pid = synthetic_data["slot_to_pid"]
+
+            n_correct, n_wrong, n_missed, errors = _validate_tracking_result(
+                frames, gt_next, slot_to_pid, "fbf"
+            )
+
+            print(f"\nFBF: correct={n_correct}, wrong={n_wrong}, missed={n_missed}")
+            print(f"  fwd_nlinks={fwd_nlinks}, fbf_nlinks={run.nlinks}")
+
+            assert n_wrong == 0, f"FBF produced wrong links:\n" + "\n".join(errors)
+            assert run.nlinks >= fwd_nlinks, (
+                f"FBF lost links: {run.nlinks} < forward-only {fwd_nlinks}"
+            )
+
+            max_jump, _ = _check_trajectory_distances(frames, "fbf")
+            assert max_jump < 10.0, f"FBF trajectory jump {max_jump:.3f} too large"
+
+        finally:
+            os.chdir(original)
+
+    def test_fbf_backward_does_not_corrupt(self, synthetic_data):
+        """Backward pass must not overwrite correct prev/next links."""
+        original = os.getcwd()
+        try:
+            os.chdir(TEST_DIR)
+            _setup_working_copy()
+            cpar = read_control_par("parameters/ptv.par")
+            cals = [
+                Calibration.from_file(
+                    f"cal/cam{i+1}.tif.ori", f"cal/cam{i+1}.tif.addpar"
+                )
+                for i in range(cpar.num_cams)
+            ]
+
+            run = tr_new(
+                "parameters/sequence.par", "parameters/track.par",
+                "parameters/criteria.par", "parameters/ptv.par",
+                4, 20000, "res/rt_is", "res/ptv_is", "res/added",
+                cals, 0.0001,
+            )
+
+            # Forward
+            track_forward_start(run)
+            for step in range(run.seq_par.first, run.seq_par.last):
+                trackcorr_c_loop(run, step)
+            trackcorr_c_finish(run, run.seq_par.last)
+
+            # Snapshot forward results
+            fwd_links = {}
+            for frame in range(FIRST, LAST + 1):
+                path = TEST_DIR / f"res/ptv_is.{frame}"
+                if path.exists():
+                    fwd_links[frame] = _parse_linkage(path)
+
+            # Backward
+            trackback_c(run)
+
+            # Check backward didn't corrupt any frame
+            for frame in range(FIRST, LAST + 1):
+                path = TEST_DIR / f"res/ptv_is.{frame}"
+                if not path.exists():
+                    continue
+                back_data = _parse_linkage(path)
+                fwd_data = fwd_links[frame]
+
+                assert len(back_data) == len(fwd_data), (
+                    f"Frame {frame}: particle count changed "
+                    f"({len(fwd_data)} -> {len(back_data)})"
+                )
+
+                for slot in range(len(fwd_data)):
+                    # next links must be preserved
+                    assert back_data[slot]["next"] == fwd_data[slot]["next"], (
+                        f"Frame {frame} slot {slot}: next link changed "
+                        f"({fwd_data[slot]['next']} -> {back_data[slot]['next']})"
+                    )
+                    # prev links can only be added, not removed
+                    if fwd_data[slot]["prev"] >= 0:
+                        assert back_data[slot]["prev"] == fwd_data[slot]["prev"], (
+                            f"Frame {frame} slot {slot}: existing prev link changed "
+                            f"({fwd_data[slot]['prev']} -> {back_data[slot]['prev']})"
+                        )
 
         finally:
             os.chdir(original)

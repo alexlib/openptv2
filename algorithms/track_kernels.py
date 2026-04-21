@@ -1424,6 +1424,269 @@ def trackcorr_loop_jit(
 
 
 @njit(cache=True)
+def trackback_loop_jit(
+    num_parts_1,
+    # Frame 0 (forward/next in time — read only)
+    path_x_0,
+    # Frame 1 (current — read/write)
+    path_x_1, path_prev_1, path_next_1, path_inlist_1,
+    path_finaldecis_1, path_decis_1, path_linkdecis_1,
+    # Frame 2 (backward/prev in time — read/write)
+    path_x_2, path_prev_2, path_next_2, num_parts_2,
+    targ_x_2, targ_y_2, targ_tnr_2, num_targets_2,
+    corres_p_2, corres_nr_2,
+    path_inlist_2, path_prio_2, path_finaldecis_2,
+    path_decis_2, path_linkdecis_2,
+    # Frame 3 (further backward — read only, for extra angle check)
+    path_x_3, path_prev_3,
+    # Calibration
+    cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t,
+    # Tracking params
+    dvxmin, dvxmax, dvymin, dvymax, dvzmin, dvzmax,
+    dacc, dangle, add_flag, lmax,
+    # Volume bounds
+    X_lay_0, X_lay_1, ymin, ymax, Zmin_lay_0, Zmax_lay_1,
+    # Pixel params
+    num_cams,
+    imx_half, imy_half, inv_pix_x, inv_pix_y,
+    chfield, imx, imy, pix_x, pix_y, flatten_tol,
+):
+    """Backward tracking loop — JIT compiled.
+
+    For each particle in buf[1] with next >= 0 and prev == -1,
+    searches for candidates in buf[2] (backward in time).
+    """
+    count1 = 0
+    num_added = 0
+    cpx = np.empty(num_cams, dtype=np.float64)
+    cpy = np.empty(num_cams, dtype=np.float64)
+    X = np.zeros((6, 3), dtype=np.float64)
+
+    for h in range(num_parts_1):
+        next_h = path_next_1[h]
+        prev_h = path_prev_1[h]
+
+        if (next_h < 0) or (prev_h != -1):
+            continue
+
+        path_inlist_1[h] = 0
+
+        X[1, 0] = path_x_1[h, 0]
+        X[1, 1] = path_x_1[h, 1]
+        X[1, 2] = path_x_1[h, 2]
+
+        X[0, 0] = path_x_0[next_h, 0]
+        X[0, 1] = path_x_0[next_h, 1]
+        X[0, 2] = path_x_0[next_h, 2]
+
+        # Predict backward: 2*curr - next (mirror of forward prediction)
+        X[2, 0] = 2.0 * X[1, 0] - X[0, 0]
+        X[2, 1] = 2.0 * X[1, 1] - X[0, 1]
+        X[2, 2] = 2.0 * X[1, 2] - X[0, 2]
+
+        for j in range(num_cams):
+            px, py = point_to_pixel_jit(
+                X[2], cal_t[j], md_t[j], mo_t[j],
+                mnr_t[j], mnz_t[j], mrw_t[j],
+                imx_half, imy_half, inv_pix_x, inv_pix_y, chfield)
+            cpx[j] = px
+            cpy[j] = py
+
+        w_ftnr, w_freq, w_wc, w_nc = sorted_candidates_jit(
+            X[2], cpx, cpy, num_cams, MAX_CANDS_K,
+            cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t,
+            targ_x_2, targ_y_2, targ_tnr_2, num_targets_2,
+            dvxmin, dvxmax, dvymin, dvymax, dvzmin, dvzmax,
+            imx_half, imy_half, inv_pix_x, inv_pix_y, chfield,
+            imx, imy, TR_UNUSED_K)
+
+        if w_nc > 0:
+            i = 0
+            while i < w_nc:
+                ftnr_i = w_ftnr[i]
+                X[3, 0] = path_x_2[ftnr_i, 0]
+                X[3, 1] = path_x_2[ftnr_i, 1]
+                X[3, 2] = path_x_2[ftnr_i, 2]
+
+                dp0 = X[1, 0] - X[3, 0]
+                dp1 = X[1, 1] - X[3, 1]
+                dp2 = X[1, 2] - X[3, 2]
+
+                if (dvxmin < dp0 < dvxmax and
+                        dvymin < dp1 < dvymax and
+                        dvzmin < dp2 < dvzmax):
+                    angle, acc = angle_acc_jit(
+                        X[1, 0], X[1, 1], X[1, 2],
+                        X[2, 0], X[2, 1], X[2, 2],
+                        X[3, 0], X[3, 1], X[3, 2])
+
+                    if (acc < dacc and angle < dangle) or acc < dacc * 0.1:
+                        d13 = math.sqrt(
+                            (X[1, 0] - X[3, 0]) ** 2 +
+                            (X[1, 1] - X[3, 1]) ** 2 +
+                            (X[1, 2] - X[3, 2]) ** 2)
+                        d01 = math.sqrt(
+                            (X[0, 0] - X[1, 0]) ** 2 +
+                            (X[0, 1] - X[1, 1]) ** 2 +
+                            (X[0, 2] - X[1, 2]) ** 2)
+                        dl = (d13 + d01) * 0.5
+                        quali = w_freq[i]
+                        rr = (dl / lmax + acc / dacc + angle / dangle) / quali
+
+                        inlist = path_inlist_1[h]
+                        if inlist < POSI_K:
+                            path_decis_1[h, inlist] = rr
+                            path_linkdecis_1[h, inlist] = ftnr_i
+                            path_inlist_1[h] = inlist + 1
+
+                i += 1
+
+        if add_flag:
+            if path_inlist_1[h] == 0:
+                targ_pos, cand_inds, quali = assess_new_position_jit(
+                    X[2], num_cams, ADD_PART_K,
+                    cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t,
+                    targ_x_2, targ_y_2, targ_tnr_2, num_targets_2,
+                    imx_half, imy_half, inv_pix_x, inv_pix_y, chfield,
+                    imx, imy, pix_x, pix_y, flatten_tol,
+                    TR_UNUSED_K, COORD_UNUSED_K)
+
+                if quali >= 2:
+                    in_volume = 0
+                    pos_new, dl_pp = point_position_jit(
+                        targ_pos, num_cams, cal_t)
+                    X[3, 0] = pos_new[0]
+                    X[3, 1] = pos_new[1]
+                    X[3, 2] = pos_new[2]
+
+                    if (X_lay_0 < X[3, 0] < X_lay_1 and
+                            ymin < X[3, 1] < ymax and
+                            Zmin_lay_0 < X[3, 2] < Zmax_lay_1):
+                        in_volume = 1
+
+                    dp0 = X[1, 0] - X[3, 0]
+                    dp1 = X[1, 1] - X[3, 1]
+                    dp2 = X[1, 2] - X[3, 2]
+
+                    if (in_volume == 1 and
+                            dvxmin < dp0 < dvxmax and
+                            dvymin < dp1 < dvymax and
+                            dvzmin < dp2 < dvzmax):
+                        angle, acc = angle_acc_jit(
+                            X[1, 0], X[1, 1], X[1, 2],
+                            X[2, 0], X[2, 1], X[2, 2],
+                            X[3, 0], X[3, 1], X[3, 2])
+
+                        if (acc < dacc and angle < dangle) or acc < dacc * 0.1:
+                            d13 = math.sqrt(
+                                (X[1, 0] - X[3, 0]) ** 2 +
+                                (X[1, 1] - X[3, 1]) ** 2 +
+                                (X[1, 2] - X[3, 2]) ** 2)
+                            d01 = math.sqrt(
+                                (X[0, 0] - X[1, 0]) ** 2 +
+                                (X[0, 1] - X[1, 1]) ** 2 +
+                                (X[0, 2] - X[1, 2]) ** 2)
+                            dl = (d13 + d01) * 0.5
+                            rr = (dl / lmax + acc / dacc + angle / dangle) / quali
+
+                            np2 = num_parts_2[0]
+                            inlist = path_inlist_1[h]
+                            if inlist < POSI_K:
+                                path_decis_1[h, inlist] = rr
+                                path_linkdecis_1[h, inlist] = np2
+                                path_inlist_1[h] = inlist + 1
+
+                            path_x_2[np2, 0] = X[3, 0]
+                            path_x_2[np2, 1] = X[3, 1]
+                            path_x_2[np2, 2] = X[3, 2]
+                            path_prev_2[np2] = PREV_NONE_K
+                            path_next_2[np2] = NEXT_NONE_K
+                            path_inlist_2[np2] = 0
+                            path_prio_2[np2] = 4
+                            path_finaldecis_2[np2] = 1000000.0
+                            for ki in range(POSI_K):
+                                path_decis_2[np2, ki] = 0.0
+                                path_linkdecis_2[np2, ki] = PT_UNUSED
+                            for ci in range(num_cams):
+                                corres_p_2[np2, ci] = CORRES_NONE_K
+                            corres_nr_2[np2] = np2
+                            for ci in range(num_cams):
+                                if cand_inds[ci] != PT_UNUSED:
+                                    idx = cand_inds[ci]
+                                    targ_tnr_2[ci][idx] = np2
+                                    corres_p_2[np2, ci] = idx
+                            num_parts_2[0] = np2 + 1
+                            num_added += 1
+
+                    in_volume = 0
+
+    # Sort candidates
+    for h in range(num_parts_1):
+        inlist = path_inlist_1[h]
+        if inlist > 0:
+            flag = True
+            while flag:
+                flag = False
+                for i in range(inlist - 1):
+                    if path_decis_1[h, i] > path_decis_1[h, i + 1]:
+                        path_decis_1[h, i], path_decis_1[h, i + 1] = (
+                            path_decis_1[h, i + 1], path_decis_1[h, i])
+                        path_linkdecis_1[h, i], path_linkdecis_1[h, i + 1] = (
+                            path_linkdecis_1[h, i + 1], path_linkdecis_1[h, i])
+                        flag = True
+
+    # Link resolution — trackback style
+    for h in range(num_parts_1):
+        if path_inlist_1[h] > 0:
+            best_cand = path_linkdecis_1[h, 0]
+
+            # Case 1: candidate has no links at all
+            if (path_prev_2[best_cand] == PREV_NONE_K and
+                    path_next_2[best_cand] == NEXT_NONE_K):
+                path_finaldecis_1[h] = path_decis_1[h, 0]
+                path_prev_1[h] = best_cand
+                path_next_2[best_cand] = h
+                num_added += 1
+
+            # Case 2: candidate has a prev but no next — extra angle check
+            elif (path_prev_2[best_cand] != PREV_NONE_K and
+                    path_next_2[best_cand] == NEXT_NONE_K):
+                X[0, 0] = path_x_0[path_next_1[h], 0]
+                X[0, 1] = path_x_0[path_next_1[h], 1]
+                X[0, 2] = path_x_0[path_next_1[h], 2]
+                X[1, 0] = path_x_1[h, 0]
+                X[1, 1] = path_x_1[h, 1]
+                X[1, 2] = path_x_1[h, 2]
+                X[3, 0] = path_x_2[best_cand, 0]
+                X[3, 1] = path_x_2[best_cand, 1]
+                X[3, 2] = path_x_2[best_cand, 2]
+
+                prev_of_cand = path_prev_2[best_cand]
+                X[4, 0] = path_x_3[prev_of_cand, 0]
+                X[4, 1] = path_x_3[prev_of_cand, 1]
+                X[4, 2] = path_x_3[prev_of_cand, 2]
+
+                for j in range(3):
+                    X[5, j] = 0.5 * (5.0 * X[3, j] - 4.0 * X[1, j] + X[0, j])
+
+                angle, acc = angle_acc_jit(
+                    X[3, 0], X[3, 1], X[3, 2],
+                    X[4, 0], X[4, 1], X[4, 2],
+                    X[5, 0], X[5, 1], X[5, 2])
+
+                if (acc < dacc and angle < dangle) or acc < dacc * 0.1:
+                    path_finaldecis_1[h] = path_decis_1[h, 0]
+                    path_prev_1[h] = best_cand
+                    path_next_2[best_cand] = h
+                    num_added += 1
+
+        if path_prev_1[h] != PREV_NONE_K:
+            count1 += 1
+
+    return count1, num_added
+
+
+@njit(cache=True)
 def _find_closest_in_3d(path_x_2, np2, pred_x, pred_y, pred_z,
                          dx, dy, dz, max_cands,
                          cand_inds, cand_dists):

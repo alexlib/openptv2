@@ -23,6 +23,7 @@ from .track_kernels import (
     sorted_candidates_jit as _sorted_candidates_jit,
     point_position_jit as _point_position_jit,
     trackcorr_loop_jit as _trackcorr_loop_jit,
+    trackback_loop_jit as _trackback_loop_jit,
     HAS_NUMBA,
 )
 
@@ -1113,126 +1114,181 @@ def trackback_c(run_info):
         fb.fb_next()
     fb.fb_prev()
 
+    nc = fb.num_cams
+
     for step in range(seq_par.last - 1, seq_par.first, -1):
-        for h in range(fb.buf[1].num_parts):
-            curr_path_inf = fb.buf[1].path_info[h]
 
-            if not ((curr_path_inf.next < 0) or (curr_path_inf.prev != -1)):
-                continue
+        if HAS_NUMBA:
+            fb.buf[0]._sync_path_to_soa()
+            fb.buf[1]._sync_path_to_soa()
+            fb.buf[2]._sync_path_to_soa()
+            fb.buf[3]._sync_path_to_soa()
 
-            X = [np.zeros(3) for _ in range(6)]
-            curr_path_inf.inlist = 0
-            X[1][:] = curr_path_inf.x
+            cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t = _jt
+            num_parts_2 = np.array([fb.buf[2].num_parts], dtype=np.int32)
 
-            ref_path_inf = fb.buf[0].path_info[curr_path_inf.next]
-            X[0][:] = ref_path_inf.x
-            X[2][:] = search_volume_center_moving(ref_path_inf.x, curr_path_inf.x)
+            count1, num_added = _trackback_loop_jit(
+                fb.buf[1].num_parts,
+                fb.buf[0].path_x,
+                fb.buf[1].path_x, fb.buf[1].path_prev, fb.buf[1].path_next,
+                fb.buf[1].path_inlist,
+                fb.buf[1].path_finaldecis, fb.buf[1].path_decis,
+                fb.buf[1].path_linkdecis,
+                fb.buf[2].path_x, fb.buf[2].path_prev, fb.buf[2].path_next,
+                num_parts_2,
+                fb.buf[2].targ_x, fb.buf[2].targ_y, fb.buf[2].targ_tnr,
+                fb.buf[2].num_targets,
+                fb.buf[2].corres_p, fb.buf[2].corres_nr,
+                fb.buf[2].path_inlist, fb.buf[2].path_prio,
+                fb.buf[2].path_finaldecis,
+                fb.buf[2].path_decis, fb.buf[2].path_linkdecis,
+                fb.buf[3].path_x, fb.buf[3].path_prev,
+                cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t,
+                tpar.dvxmin, tpar.dvxmax, tpar.dvymin, tpar.dvymax,
+                tpar.dvzmin, tpar.dvzmax,
+                tpar.dacc, tpar.dangle, tpar.add, run_info.lmax,
+                vpar.X_lay[0], vpar.X_lay[1], Ymin, Ymax,
+                vpar.Zmin_lay[0], vpar.Zmax_lay[1],
+                nc, imx_half, imy_half, inv_pix_x, inv_pix_y,
+                c_chfield, c_imx, c_imy, cpar.pix_x, cpar.pix_y,
+                run_info.flatten_tol,
+            )
 
-            n = [[0.0, 0.0] for _ in range(fb.num_cams)]
-            for j in range(fb.num_cams):
-                n[j] = list(_ptp(X[2], j))
+            fb.buf[2].num_parts = int(num_parts_2[0])
 
-            _pi = (c_imx, c_imy, imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield)
-            w = sorted_candidates_in_volume(X[2], n, fb.buf[2], run_info,
-                                            _packed_cals=packed_cals, _pix_info=_pi,
-                                            _jit_tuples=_jt)
+            _sync_soa_to_aos(fb.buf[1])
+            _sync_soa_to_aos(fb.buf[2])
 
-            if w is not None:
-                i = 0
-                while w[i]['ftnr'] != TR_UNUSED:
-                    ref_path_inf = fb.buf[2].path_info[w[i]['ftnr']]
-                    X[3][:] = ref_path_inf.x
+        else:
+            for h in range(fb.buf[1].num_parts):
+                curr_path_inf = fb.buf[1].path_info[h]
 
-                    diff_pos = X[1] - X[3]
-                    if pos3d_in_bounds(diff_pos, tpar):
-                        angle, acc = angle_acc(X[1], X[2], X[3])
-                        if ((acc < tpar.dacc and angle < tpar.dangle) or
-                                (acc < tpar.dacc / 10)):
-                            dl = (_vec3_dist(X[1], X[3]) +
-                                  _vec3_dist(X[0], X[1])) / 2
-                            quali = w[i]['freq']
-                            rr = (dl / run_info.lmax + acc / tpar.dacc +
-                                  angle / tpar.dangle) / quali
-                            register_link_candidate(curr_path_inf, rr, w[i]['ftnr'])
-                    i += 1
+                if not ((curr_path_inf.next < 0) or (curr_path_inf.prev != -1)):
+                    continue
 
-            if tpar.add:
-                if curr_path_inf.inlist == 0:
-                    v2 = [[0.0, 0.0] for _ in range(TR_MAX_CAMS)]
-                    philf = [[PT_UNUSED] * MAX_CANDS for _ in range(TR_MAX_CAMS)]
-                    quali = assess_new_position(X[2], v2, philf, fb.buf[2], run_info,
-                                                _jit_cals=jit_cals if HAS_NUMBA else None,
-                                                _jit_mmluts=jit_mmluts if HAS_NUMBA else None,
-                                                _pix_info=_pi)
-                    if quali >= 2:
-                        in_volume = 0
+                X = [np.zeros(3) for _ in range(6)]
+                curr_path_inf.inlist = 0
+                X[1][:] = curr_path_inf.x
 
-                        v2_arr = np.array(v2[:fb.num_cams], dtype=np.float64)
-                        if HAS_NUMBA:
-                            X[3], _dl = _point_position_jit(v2_arr, fb.num_cams, _jt[0])
-                        else:
-                            X[3], _dl = point_position(v2_arr, fb.num_cams, cpar.mm, cal)
+                ref_path_inf = fb.buf[0].path_info[curr_path_inf.next]
+                X[0][:] = ref_path_inf.x
+                X[2][:] = search_volume_center_moving(ref_path_inf.x, curr_path_inf.x)
 
-                        if (vpar.X_lay[0] < X[3][0] < vpar.X_lay[1] and
-                                Ymin < X[3][1] < Ymax and
-                                vpar.Zmin_lay[0] < X[3][2] < vpar.Zmax_lay[1]):
-                            in_volume = 1
+                n = [[0.0, 0.0] for _ in range(fb.num_cams)]
+                for j in range(fb.num_cams):
+                    n[j] = list(_ptp(X[2], j))
+
+                _pi = (c_imx, c_imy, imx_half, imy_half, inv_pix_x, inv_pix_y,
+                       c_chfield)
+                w = sorted_candidates_in_volume(X[2], n, fb.buf[2], run_info,
+                                                _packed_cals=packed_cals,
+                                                _pix_info=_pi,
+                                                _jit_tuples=_jt)
+
+                if w is not None:
+                    i = 0
+                    while w[i]['ftnr'] != TR_UNUSED:
+                        ref_path_inf = fb.buf[2].path_info[w[i]['ftnr']]
+                        X[3][:] = ref_path_inf.x
 
                         diff_pos = X[1] - X[3]
-                        if in_volume == 1 and pos3d_in_bounds(diff_pos, tpar):
+                        if pos3d_in_bounds(diff_pos, tpar):
                             angle, acc = angle_acc(X[1], X[2], X[3])
                             if ((acc < tpar.dacc and angle < tpar.dangle) or
                                     (acc < tpar.dacc / 10)):
                                 dl = (_vec3_dist(X[1], X[3]) +
                                       _vec3_dist(X[0], X[1])) / 2
+                                quali = w[i]['freq']
                                 rr = (dl / run_info.lmax + acc / tpar.dacc +
                                       angle / tpar.dangle) / quali
                                 register_link_candidate(
-                                    curr_path_inf, rr, fb.buf[2].num_parts)
-                                add_particle(fb.buf[2], X[3], philf)
-                        in_volume = 0
+                                    curr_path_inf, rr, w[i]['ftnr'])
+                        i += 1
 
-        for h in range(fb.buf[1].num_parts):
-            curr_path_inf = fb.buf[1].path_info[h]
-            if curr_path_inf.inlist > 0:
-                sort(curr_path_inf.inlist, curr_path_inf.decis,
-                     curr_path_inf.linkdecis)
+                if tpar.add:
+                    if curr_path_inf.inlist == 0:
+                        v2 = [[0.0, 0.0] for _ in range(TR_MAX_CAMS)]
+                        philf = [[PT_UNUSED] * MAX_CANDS for _ in range(TR_MAX_CAMS)]
+                        quali = assess_new_position(
+                            X[2], v2, philf, fb.buf[2], run_info,
+                            _jit_cals=jit_cals if HAS_NUMBA else None,
+                            _jit_mmluts=jit_mmluts if HAS_NUMBA else None,
+                            _pix_info=_pi)
+                        if quali >= 2:
+                            in_volume = 0
+                            v2_arr = np.array(v2[:fb.num_cams], dtype=np.float64)
+                            if HAS_NUMBA:
+                                X[3], _dl = _point_position_jit(
+                                    v2_arr, fb.num_cams, _jt[0])
+                            else:
+                                X[3], _dl = point_position(
+                                    v2_arr, fb.num_cams, cpar.mm, cal)
 
-        count1 = 0
-        num_added = 0
-        for h in range(fb.buf[1].num_parts):
-            curr_path_inf = fb.buf[1].path_info[h]
+                            if (vpar.X_lay[0] < X[3][0] < vpar.X_lay[1] and
+                                    Ymin < X[3][1] < Ymax and
+                                    vpar.Zmin_lay[0] < X[3][2] < vpar.Zmax_lay[1]):
+                                in_volume = 1
 
-            if curr_path_inf.inlist > 0:
-                ref_path_inf = fb.buf[2].path_info[curr_path_inf.linkdecis[0]]
+                            diff_pos = X[1] - X[3]
+                            if in_volume == 1 and pos3d_in_bounds(diff_pos, tpar):
+                                angle, acc = angle_acc(X[1], X[2], X[3])
+                                if ((acc < tpar.dacc and angle < tpar.dangle) or
+                                        (acc < tpar.dacc / 10)):
+                                    dl = (_vec3_dist(X[1], X[3]) +
+                                          _vec3_dist(X[0], X[1])) / 2
+                                    rr = (dl / run_info.lmax + acc / tpar.dacc +
+                                          angle / tpar.dangle) / quali
+                                    register_link_candidate(
+                                        curr_path_inf, rr, fb.buf[2].num_parts)
+                                    add_particle(fb.buf[2], X[3], philf)
+                            in_volume = 0
 
-                if (ref_path_inf.prev == PREV_NONE and
-                        ref_path_inf.next == NEXT_NONE):
-                    curr_path_inf.finaldecis = curr_path_inf.decis[0]
-                    curr_path_inf.prev = curr_path_inf.linkdecis[0]
-                    fb.buf[2].path_info[curr_path_inf.prev].next = h
-                    num_added += 1
+            for h in range(fb.buf[1].num_parts):
+                curr_path_inf = fb.buf[1].path_info[h]
+                if curr_path_inf.inlist > 0:
+                    sort(curr_path_inf.inlist, curr_path_inf.decis,
+                         curr_path_inf.linkdecis)
 
-                if (ref_path_inf.prev != PREV_NONE and
-                        ref_path_inf.next == NEXT_NONE):
-                    X = [np.zeros(3) for _ in range(6)]
-                    X[0][:] = fb.buf[0].path_info[curr_path_inf.next].x
-                    X[1][:] = curr_path_inf.x
-                    X[3][:] = ref_path_inf.x
-                    X[4][:] = fb.buf[3].path_info[ref_path_inf.prev].x
-                    for j in range(3):
-                        X[5][j] = 0.5 * (5.0 * X[3][j] - 4.0 * X[1][j] + X[0][j])
+            count1 = 0
+            num_added = 0
+            for h in range(fb.buf[1].num_parts):
+                curr_path_inf = fb.buf[1].path_info[h]
 
-                    angle, acc = angle_acc(X[3], X[4], X[5])
-                    if ((acc < tpar.dacc and angle < tpar.dangle) or
-                            (acc < tpar.dacc / 10)):
+                if curr_path_inf.inlist > 0:
+                    ref_path_inf = fb.buf[2].path_info[
+                        curr_path_inf.linkdecis[0]]
+
+                    if (ref_path_inf.prev == PREV_NONE and
+                            ref_path_inf.next == NEXT_NONE):
                         curr_path_inf.finaldecis = curr_path_inf.decis[0]
                         curr_path_inf.prev = curr_path_inf.linkdecis[0]
                         fb.buf[2].path_info[curr_path_inf.prev].next = h
                         num_added += 1
 
-            if curr_path_inf.prev != PREV_NONE:
-                count1 += 1
+                    if (ref_path_inf.prev != PREV_NONE and
+                            ref_path_inf.next == NEXT_NONE):
+                        X = [np.zeros(3) for _ in range(6)]
+                        X[0][:] = fb.buf[0].path_info[
+                            curr_path_inf.next].x
+                        X[1][:] = curr_path_inf.x
+                        X[3][:] = ref_path_inf.x
+                        X[4][:] = fb.buf[3].path_info[
+                            ref_path_inf.prev].x
+                        for j in range(3):
+                            X[5][j] = 0.5 * (
+                                5.0 * X[3][j] - 4.0 * X[1][j] + X[0][j])
+
+                        angle, acc = angle_acc(X[3], X[4], X[5])
+                        if ((acc < tpar.dacc and angle < tpar.dangle) or
+                                (acc < tpar.dacc / 10)):
+                            curr_path_inf.finaldecis = curr_path_inf.decis[0]
+                            curr_path_inf.prev = curr_path_inf.linkdecis[0]
+                            fb.buf[2].path_info[
+                                curr_path_inf.prev].next = h
+                            num_added += 1
+
+                if curr_path_inf.prev != PREV_NONE:
+                    count1 += 1
 
         print(f"step: {step}, curr: {fb.buf[1].num_parts}, "
               f"next: {fb.buf[2].num_parts}, links: {count1}, "
@@ -1253,6 +1309,6 @@ def trackback_c(run_info):
           f"links: {nlinks:5.1f}, lost: {npart - nlinks:5.1f}")
 
     fb.fb_next()
-    fb.write_frame_from_start(step)
+    fb.write_frame_from_start(seq_par.first)
 
     return nlinks
