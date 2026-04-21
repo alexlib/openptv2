@@ -36,13 +36,17 @@ class TrackingRun:
             self.tpar.dvzmin - self.tpar.dvzmax
         ])
 
-        from algorithms.multimed import volumedimension
+        from algorithms.multimed import volumedimension, init_mmlut
         xmax, xmin, self.ymax, self.ymin, zmax, zmin = volumedimension(
             self.vpar, self.cpar, self.cal)
         self.vpar.X_lay[1] = xmax
         self.vpar.X_lay[0] = xmin
         self.vpar.Zmax_lay[1] = zmax
         self.vpar.Zmin_lay[0] = zmin
+
+        for c in self.cal:
+            if not c.mmlut.is_initialized:
+                init_mmlut(self.vpar, self.cpar, c)
 
 
 def tr_new(seq_par, tpar, vpar, cpar, buf_len, max_targets,

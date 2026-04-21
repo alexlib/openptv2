@@ -24,11 +24,9 @@ def flat_image_coord(
     mm_n2_0: float,
     mm_n3: float,
     mm_d0: float,
+    mmlut=None,
 ) -> tuple[float, float]:
     """Project 3D position to undistorted metric image coordinates.
-
-    Calculates projection from world space to metric coordinates
-    in image space without distortions.
 
     Args:
         pos: 3D world position (x, y, z).
@@ -37,34 +35,41 @@ def flat_image_coord(
         int_cc: camera constant (focal length).
         glass_vec_x, glass_vec_y, glass_vec_z: glass normal.
         mm_n1, mm_n2_0, mm_n3, mm_d0: multimedia parameters.
+        mmlut: MmLut object (optional). If provided and initialized,
+            uses LUT interpolation instead of iterative ray tracing.
 
     Returns:
         (x, y) undistorted metric coordinates.
     """
-    from .multimed import trans_cam_point, back_trans_point, multimed_nlay
+    from .multimed import trans_cam_point, back_trans_point, multimed_nlay, get_mmf_from_mmlut
 
-    # Transform through multimedia interface
     pos_t, cross_p, cross_c, ext_t_z0 = trans_cam_point(
         pos, ext_x0, ext_y0, ext_z0,
         glass_vec_x, glass_vec_y, glass_vec_z,
         mm_n1, mm_n2_0, mm_n3, mm_d0,
     )
 
-    # Get radial shift using transformed camera center (0, 0, ext_t_z0)
+    mmf = 1.0
+    if mmlut is not None and mmlut.data is not None:
+        mmf = get_mmf_from_mmlut(
+            pos_t, mmlut.origin, mmlut.nr, mmlut.nz, mmlut.rw, mmlut.data,
+        )
+        if mmf <= 0:
+            mmf = 1.0
+
     X_t, Y_t = multimed_nlay(
         pos_t[0], pos_t[1], pos_t[2],
         0.0, 0.0, ext_t_z0, mm_n1, mm_n2_0, mm_n3, mm_d0,
+        mmf=mmf,
     )
     pos_t = np.array([X_t, Y_t, pos_t[2]])
 
-    # Transform back
     pos = back_trans_point(
         pos_t, cross_p, cross_c,
         glass_vec_x, glass_vec_y, glass_vec_z,
         mm_n1, mm_n2_0, mm_n3, mm_d0,
     )
 
-    # Perspective projection
     dx = pos[0] - ext_x0
     dy = pos[1] - ext_y0
     dz = pos[2] - ext_z0
@@ -108,6 +113,7 @@ def img_coord(
     if ext_z0 is None and hasattr(ext_x0_or_cal, 'ext_par'):
         cal = ext_x0_or_cal
         mm = ext_y0_or_mm
+        mmlut = cal.mmlut if cal.mmlut.is_initialized else None
         return _img_coord_params(
             pos,
             cal.ext_par.x0, cal.ext_par.y0, cal.ext_par.z0,
@@ -118,6 +124,7 @@ def img_coord(
             cal.added_par.k1, cal.added_par.k2, cal.added_par.k3,
             cal.added_par.p1, cal.added_par.p2,
             cal.added_par.scx, cal.added_par.she,
+            mmlut=mmlut,
         )
     return _img_coord_params(
         pos, ext_x0_or_cal, ext_y0_or_mm, ext_z0, ext_dm, int_cc,
@@ -130,11 +137,13 @@ def _img_coord_params(
     pos, ext_x0, ext_y0, ext_z0, ext_dm, int_cc,
     int_xh, int_yh, glass_vec_x, glass_vec_y, glass_vec_z,
     mm_n1, mm_n2_0, mm_n3, mm_d0, k1, k2, k3, p1, p2, scx, she,
+    mmlut=None,
 ):
     x, y = flat_image_coord(
         pos,
         ext_x0, ext_y0, ext_z0, ext_dm, int_cc,
         glass_vec_x, glass_vec_y, glass_vec_z,
         mm_n1, mm_n2_0, mm_n3, mm_d0,
+        mmlut=mmlut,
     )
     return _flat_to_dist(x, y, int_xh, int_yh, k1, k2, k3, p1, p2, scx, she)
