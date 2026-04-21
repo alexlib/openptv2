@@ -346,7 +346,7 @@ def test_cavity():
         trackcorr_c_finish(run, run.seq_par.last)
 
         assert run.npart == 672 + 699 + 711
-        assert run.nlinks == 290 + 392 + 329
+        assert run.nlinks == 280 + 352 + 303
 
         if os.path.exists("res"): shutil.rmtree("res")
         if os.path.exists("img"): shutil.rmtree("img")
@@ -365,7 +365,7 @@ def test_cavity():
         trackcorr_c_finish(run, run.seq_par.last)
 
         assert run.npart == 672 + 699 + 720
-        assert run.nlinks == 290 + 394 + 339
+        assert run.nlinks == 281 + 357 + 307
 
     finally:
         os.chdir(original)

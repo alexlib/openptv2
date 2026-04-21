@@ -218,3 +218,73 @@ track3d.c:  track3d step: 10001, curr: 1, next: 1, links: 0
 | Need backward gap filling | `track.c` |
 | Fast iteration on 3D data | `track3d.c` |
 | Multi-camera redundancy required | `track.c` |
+
+---
+
+## Python Translation Status
+
+Both `track.c` and `track3d.c` have been fully translated to Python in `algorithms/track.py` and `algorithms/track3d.py`. The Python implementations include Numba JIT-compiled fast paths.
+
+### Parity with C/Cython
+
+| Dataset | track3d | trackcorr |
+|---------|---------|-----------|
+| **Burgers** (5 frames, 5 particles) | Exact match | Exact match |
+| **Cavity** (4 frames, ~700 particles) | Exact match | Python produces more links (see below) |
+| **Synthetic** (8 frames, 15 particles) | 99% recovery, 0 wrong | 100% recovery, 0 wrong |
+
+### Python Improvements Over C
+
+The Python `trackcorr_c_loop` includes two improvements not present in the C code:
+
+#### 1. Phase 3: Losers Retry
+
+When two particles compete for the same target in conflict resolution, C drops the loser permanently. Python lets the loser try its fallback candidates (2nd, 3rd best matches) if they're still unclaimed. On the cavity dataset, this recovers ~27 additional correct links.
+
+```python
+# Phase 3: Losers retry with fallback candidates (claim unclaimed only)
+for h in range(fb.buf[1].num_parts):
+    curr_path_inf = fb.buf[1].path_info[h]
+    if curr_path_inf.inlist > 1 and curr_path_inf.next == NEXT_NONE:
+        for ti in range(1, curr_path_inf.inlist):
+            cand = curr_path_inf.linkdecis[ti]
+            if fb.buf[2].path_info[cand].prev == PREV_NONE:
+                curr_path_inf.next = cand
+                fb.buf[2].path_info[cand].prev = h
+                break
+```
+
+#### 2. Stale Buffer Fix
+
+When `step >= last - 2`, no new frame can be loaded into the last buffer slot after rotation. C leaves stale data from a previous frame in that slot, which `assess_new_position` may search and produce spurious links. Python clears the slot:
+
+```python
+fb.fb_next()
+fb.write_frame_from_start(step)
+if step < run_info.seq_par.last - 2:
+    fb.read_frame_at_end(step + 3, read_links=False)
+else:
+    fb.buf[fb.buf_len - 1].num_parts = 0  # clear stale data
+```
+
+#### C count1 Overcounting Bug
+
+The C code increments `count1` inside the conflict resolution loop. When particle B loses a conflict to particle A (B processed first, B.next set to NEXT_NONE), B has already been counted. The final `count1` is inflated. Python counts in a separate loop after all conflicts are resolved, producing the correct count. This explains why C's `printf` reports more links than actually appear in the output files.
+
+### Synthetic Test Suite
+
+A synthetic test case (`algorithms/tests/test_synthetic_tracking.py`) validates both algorithms against known ground truth:
+
+- **15 particles** with diverse trajectories:
+  - 5 constant-velocity straight lines
+  - 3 constant-acceleration curved paths
+  - 2 near-miss paths (close approach)
+  - 2 parallel neighbors (3-unit separation)
+  - 2 actual crossing paths
+  - 1 late entry (appears at frame 3)
+- **8 frames** (10001–10008)
+- **5 test cases**: link correctness, recovery rate, trajectory distance validation, and trackcorr >= track3d comparison
+
+```bash
+uv run pytest algorithms/tests/test_synthetic_tracking.py -v
+```

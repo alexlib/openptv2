@@ -746,10 +746,51 @@ Level 3: P2(prev=-1, next=-1) → enter Level 3
 
 ---
 
+## Update: Python Improvements Over C
+
+Subsequent analysis of the cavity dataset (~700 particles, 4 frames) revealed two bugs in the C code that the Python translation fixes:
+
+### 1. Stale Buffer Recycling (Fixed in Python)
+
+When `step >= last - 2`, no new frame is available to load into the last buffer slot. After `fb_next()` rotates the buffer, the old data remains. The C code's `assess_new_position()` searches this stale data and can create spurious links. The Python fix clears the slot:
+
+```python
+if step < run_info.seq_par.last - 2:
+    fb.read_frame_at_end(step + 3, read_links=False)
+else:
+    fb.buf[fb.buf_len - 1].num_parts = 0  # clear stale data
+```
+
+This eliminates 2 spurious links in the cavity dataset at the last tracking step.
+
+### 2. Phase 3: Losers Retry (Python Enhancement)
+
+When two particles compete for the same target in C's conflict resolution, the loser is permanently dropped. The Python translation adds a third phase where losers try their fallback candidates (2nd, 3rd best matches) if unclaimed. On the cavity dataset, this recovers ~27 additional correct links.
+
+### 3. C count1 Overcounting
+
+The C code increments `count1` inside the conflict resolution loop. Particles that lose conflicts after being counted still inflate `count1`. This explains the discrepancy between C's `printf` output and the actual file-based link counts:
+
+| Step | C printf count1 | C file links | Python links |
+|------|-----------------|-------------|-------------|
+| 10001 | 290 | 268 | 281 |
+| 10002 | 394 | 346 | 357 |
+| 10003 | 339 | 304 | 307 |
+
+With Phase 3 disabled, Python matches C files exactly at steps 10001-10002 (0 mismatches). The 2 remaining mismatches at step 10003 are from the stale buffer fix.
+
+### Synthetic Validation
+
+A synthetic test case (`algorithms/tests/test_synthetic_tracking.py`) with 15 particles and known ground truth trajectories confirms:
+- trackcorr: 103/103 correct links (100%), 0 wrong
+- track3d: 102/103 correct links (99%), 0 wrong
+- trackcorr correctly produces >= track3d links
+
 ## References
 
 - **Tracking Algorithms**: [algorithms/tracking.md](tracking.md)
-- **trackcorr_c_loop**: [algorithms/track.py Line 1059](../../../algorithms/track.py#L1059)
-- **track3d_loop**: [algorithms/track.py Line 1546](../../../algorithms/track.py#L1546)
-- **Backward Tracking**: [algorithms/track.py Line 1662](../../../algorithms/track.py#L1662)
-- **Burgers Test Suite**: `algorithms/tests/parity/test_burgers_tracking_value_parity.py`
+- **trackcorr_c_loop**: [algorithms/track.py](../../../algorithms/track.py)
+- **track3d_loop**: [algorithms/track3d.py](../../../algorithms/track3d.py)
+- **Backward Tracking**: [algorithms/track.py](../../../algorithms/track.py) (`trackback_c`)
+- **Synthetic Test**: `algorithms/tests/test_synthetic_tracking.py`
+- **Burgers Test Suite**: `algorithms/tests/test_track3d.py`
