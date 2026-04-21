@@ -9,6 +9,7 @@ Handles:
 - Volume dimension calculations
 """
 
+import math
 import numpy as np
 from .vec_utils import (
     vec_set, vec_norm, vec_dot, vec_scalar_mul, vec_add, vec_subt, unit_vector
@@ -88,41 +89,43 @@ def multimed_r_nlay_iterative(
     Returns:
         Radial shift factor (default 1.0 if no solution).
     """
-    # 1-medium case: no refraction
     if mm_n1 == 1.0 and mm_nlay == 1 and mm_n2_0 == 1.0 and mm_n3 == 1.0:
         return 1.0
 
     if mm_d is None:
         mm_d = [mm_d0]
 
-    # Extra layers protrude into water side
     zout = pos_z
     for i in range(1, mm_nlay):
         zout += mm_d[i]
 
-    r = np.sqrt((pos_x - ext_x0) ** 2 + (pos_y - ext_y0) ** 2)
+    dx = pos_x - ext_x0
+    dy = pos_y - ext_y0
+    r = math.sqrt(dx * dx + dy * dy)
     rq = r
 
     for it in range(n_iter):
-        beta1 = np.arctan(rq / (ext_z0 - pos_z))
+        beta1 = math.atan(rq / (ext_z0 - pos_z))
+        sin_beta1 = math.sin(beta1)
 
         beta2 = []
         for i in range(mm_nlay):
-            arg = np.sin(beta1) * mm_n1 / mm_n2_0
+            arg = sin_beta1 * mm_n1 / mm_n2_0
             if arg < -1.0 - tol or arg > 1.0 + tol:
                 raise ValueError(
-                    f"Total internal reflection: arcsin argument out of bounds ({arg}). "
-                    f"Check geometry and refractive indices. "
-                    f"Parameters: pos_x={pos_x}, pos_y={pos_y}, pos_z={pos_z}, ext_x0={ext_x0}, ext_y0={ext_y0}, ext_z0={ext_z0}, mm_n1={mm_n1}, mm_n2_0={mm_n2_0}, mm_n3={mm_n3}, mm_d0={mm_d0}, mm_nlay={mm_nlay}, i={i}, beta1={beta1}, arg={arg}"
+                    f"Total internal reflection: arcsin argument out of bounds ({arg})."
                 )
-            arg_clipped = np.clip(arg, -1.0, 1.0)
-            beta2.append(np.arcsin(arg_clipped))
+            if arg > 1.0:
+                arg = 1.0
+            elif arg < -1.0:
+                arg = -1.0
+            beta2.append(math.asin(arg))
 
-        beta3 = np.arcsin(np.sin(beta1) * mm_n1 / mm_n3)
+        beta3 = math.asin(sin_beta1 * mm_n1 / mm_n3)
 
-        rbeta = (ext_z0 - mm_d0) * np.tan(beta1) - zout * np.tan(beta3)
+        rbeta = (ext_z0 - mm_d0) * math.tan(beta1) - zout * math.tan(beta3)
         for i in range(mm_nlay):
-            rbeta += mm_d[i] * np.tan(beta2[i])
+            rbeta += mm_d[i] * math.tan(beta2[i])
 
         rdiff = r - rbeta
         rq += rdiff
@@ -130,7 +133,6 @@ def multimed_r_nlay_iterative(
         if abs(rdiff) < tol:
             break
     else:
-        # Did not converge
         return 1.0
 
     if r != 0:
@@ -152,41 +154,35 @@ def trans_cam_point(
     mm_n3: float,
     mm_d0: float,
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray, float]:
-    """Project global-coordinate points through glass surface.
+    """Project global-coordinate points through glass surface."""
+    gx, gy, gz = glass_vec_x, glass_vec_y, glass_vec_z
+    dist_o_glas = math.sqrt(gx * gx + gy * gy + gz * gz)
+    inv_dog = 1.0 / dist_o_glas
 
-    Projects camera center and observed point onto the glass surface.
+    dot_cam = ext_x0 * gx + ext_y0 * gy + ext_z0 * gz
+    dist_cam_glas = dot_cam * inv_dog - dist_o_glas - mm_d0
 
-    Returns:
-        (pos_t, cross_p, cross_c, ext_t_z0) where:
-        - pos_t: transformed position in camera-local coords
-        - cross_p: observed point projection on glass
-        - cross_c: camera position projection on glass
-        - ext_t_z0: transformed camera z0 (dist_cam_glas + mm_d0)
-    """
-    glass_dir = np.array([glass_vec_x, glass_vec_y, glass_vec_z], dtype=np.float64)
-    primary_pt = np.array([ext_x0, ext_y0, ext_z0], dtype=np.float64)
+    dot_pos = pos[0] * gx + pos[1] * gy + pos[2] * gz
+    dist_point_glas = dot_pos * inv_dog - dist_o_glas
 
-    dist_o_glas = vec_norm(glass_dir)
-    dist_cam_glas = vec_dot(primary_pt, glass_dir) / dist_o_glas - dist_o_glas - mm_d0
-    dist_point_glas = vec_dot(pos, glass_dir) / dist_o_glas - dist_o_glas
+    s_cam = dist_cam_glas * inv_dog
+    cross_c = np.array([ext_x0 - gx * s_cam, ext_y0 - gy * s_cam, ext_z0 - gz * s_cam])
 
-    # Camera projection
-    renorm = vec_scalar_mul(glass_dir, dist_cam_glas / dist_o_glas)
-    cross_c = vec_subt(primary_pt, renorm)
+    s_pt = dist_point_glas * inv_dog
+    cross_p = np.array([pos[0] - gx * s_pt, pos[1] - gy * s_pt, pos[2] - gz * s_pt])
 
-    # Point projection
-    renorm = vec_scalar_mul(glass_dir, dist_point_glas / dist_o_glas)
-    cross_p = vec_subt(pos, renorm)
-
-    # Transformed exterior z0
     ext_t_z0 = dist_cam_glas + mm_d0
 
-    # Transformed position
-    renorm = vec_scalar_mul(glass_dir, mm_d0 / dist_o_glas)
-    temp = vec_subt(cross_c, renorm)
-    temp = vec_subt(cross_p, temp)
+    s_d = mm_d0 * inv_dog
+    ag_x = cross_c[0] - gx * s_d
+    ag_y = cross_c[1] - gy * s_d
+    ag_z = cross_c[2] - gz * s_d
+    tmp_x = cross_p[0] - ag_x
+    tmp_y = cross_p[1] - ag_y
+    tmp_z = cross_p[2] - ag_z
 
-    pos_t = np.array([vec_norm(temp), 0.0, dist_point_glas], dtype=np.float64)
+    pos_t = np.array([math.sqrt(tmp_x * tmp_x + tmp_y * tmp_y + tmp_z * tmp_z),
+                      0.0, dist_point_glas])
 
     return pos_t, cross_p, cross_c, ext_t_z0
 
@@ -203,38 +199,33 @@ def back_trans_point(
     mm_n3: float,
     mm_d0: float,
 ) -> np.ndarray:
-    """Transform from local coordinates back to global 3D space.
+    """Transform from local coordinates back to global 3D space."""
+    gx, gy, gz = glass_vec_x, glass_vec_y, glass_vec_z
+    n_gl = math.sqrt(gx * gx + gy * gy + gz * gz)
+    inv_ngl = 1.0 / n_gl
 
-    Opposite direction transfer from X_t, Y_t, Z_t to X, Y, Z.
+    s_d = mm_d0 * inv_ngl
+    ag_x = cross_c[0] - gx * s_d
+    ag_y = cross_c[1] - gy * s_d
+    ag_z = cross_c[2] - gz * s_d
 
-    Args:
-        pos_t: transformed position (x_t, y_t, z_t).
-        cross_p: point projection on glass.
-        cross_c: camera projection on glass.
-        glass_vec_x, glass_vec_y, glass_vec_z: glass normal.
-        mm_n1, mm_n2_0, mm_n3: refractive indices (unused here).
-        mm_d0: glass thickness.
+    tmp_x = cross_p[0] - ag_x
+    tmp_y = cross_p[1] - ag_y
+    tmp_z = cross_p[2] - ag_z
+    n_ve = math.sqrt(tmp_x * tmp_x + tmp_y * tmp_y + tmp_z * tmp_z)
 
-    Returns:
-        Global 3D position.
-    """
-    glass_dir = np.array([glass_vec_x, glass_vec_y, glass_vec_z], dtype=np.float64)
-    n_gl = vec_norm(glass_dir)
-
-    renorm = vec_scalar_mul(glass_dir, mm_d0 / n_gl)
-    after_glass = vec_subt(cross_c, renorm)
-    temp = vec_subt(cross_p, after_glass)
-
-    n_ve = vec_norm(temp)
-
-    renorm = vec_scalar_mul(glass_dir, -pos_t[2] / n_gl)
-    pos = vec_subt(after_glass, renorm)
+    s_z = -pos_t[2] * inv_ngl
+    px = ag_x - gx * s_z
+    py = ag_y - gy * s_z
+    pz = ag_z - gz * s_z
 
     if n_ve > 0:
-        renorm = vec_scalar_mul(temp, -pos_t[0] / n_ve)
-        pos = vec_subt(pos, renorm)
+        s_x = -pos_t[0] / n_ve
+        px -= tmp_x * s_x
+        py -= tmp_y * s_x
+        pz -= tmp_z * s_x
 
-    return pos
+    return np.array([px, py, pz])
 
 
 def move_along_ray(
@@ -278,12 +269,14 @@ def get_mmf_from_mmlut(
     Returns:
         Multimedia factor (0 if outside LUT bounds).
     """
-    temp = pos - mmlut_origin
-    sz = temp[2] / mmlut_rw
+    tx = pos[0] - mmlut_origin[0]
+    ty = pos[1] - mmlut_origin[1]
+    tz = pos[2] - mmlut_origin[2]
+    sz = tz / mmlut_rw
     iz = int(sz)
     sz -= iz
 
-    R = np.sqrt(temp[0] ** 2 + temp[1] ** 2)
+    R = math.sqrt(tx * tx + ty * ty)
     sr = R / mmlut_rw
     ir = int(sr)
     sr -= ir
@@ -468,7 +461,7 @@ def init_mmlut(vpar, cpar, cal):
             if xyz_t[2] > Zmax_t:
                 Zmax_t = xyz_t[2]
 
-            R = np.sqrt((xyz_t[0] - cal_t_x0) ** 2 + (xyz_t[1] - cal_t_y0) ** 2)
+            R = math.sqrt((xyz_t[0] - cal_t_x0) ** 2 + (xyz_t[1] - cal_t_y0) ** 2)
             if R > Rmax:
                 Rmax = R
 
@@ -488,7 +481,7 @@ def init_mmlut(vpar, cpar, cal):
             if xyz_t[2] > Zmax_t:
                 Zmax_t = xyz_t[2]
 
-            R = np.sqrt((xyz_t[0] - cal_t_x0) ** 2 + (xyz_t[1] - cal_t_y0) ** 2)
+            R = math.sqrt((xyz_t[0] - cal_t_x0) ** 2 + (xyz_t[1] - cal_t_y0) ** 2)
             if R > Rmax:
                 Rmax = R
 

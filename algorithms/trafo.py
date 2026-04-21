@@ -9,6 +9,7 @@ Transforms between:
 - Distorted coordinates: metric coordinates with Brown distortion applied
 """
 
+import math
 import numpy as np
 from dataclasses import dataclass
 
@@ -148,24 +149,21 @@ def distort_brown_affin(
     Returns:
         (x_distorted, y_distorted) tuple.
     """
-    r = np.sqrt(x * x + y * y)
+    r = math.sqrt(x * x + y * y)
 
     if r < 1e-10:
         return 0.0, 0.0
 
-    # Radial distortion
     r2 = r * r
     r4 = r2 * r2
     r6 = r4 * r2
     radial_factor = 1.0 + k1 * r2 + k2 * r4 + k3 * r6
 
-    # Decentering distortion
     x_dist = x * radial_factor + p1 * (r2 + 2 * x * x) + 2 * p2 * x * y
     y_dist = y * radial_factor + p2 * (r2 + 2 * y * y) + 2 * p1 * x * y
 
-    # Affine transformation
-    sin_she = np.sin(she)
-    cos_she = np.cos(she)
+    sin_she = math.sin(she)
+    cos_she = math.cos(she)
 
     x1 = scx * (x_dist - sin_she * y_dist)
     y1 = scx * cos_she * y_dist
@@ -196,8 +194,8 @@ def correct_brown_affin(
     Returns:
         (x_flat, y_flat) undistorted coordinates.
     """
-    sin_she = np.sin(she)
-    cos_she = np.cos(she)
+    sin_she = math.sin(she)
+    cos_she = math.cos(she)
     inv_scx = 1.0 / scx
 
     # Initial guess: inverse affine transformation
@@ -224,8 +222,8 @@ def correct_brown_affin(
         yq += dy * damping
 
         # Check convergence
-        change = np.sqrt((xq - xq_old) ** 2 + (yq - yq_old) ** 2)
-        pos_magnitude = np.sqrt(xq * xq + yq * yq)
+        change = math.sqrt((xq - xq_old) ** 2 + (yq - yq_old) ** 2)
+        pos_magnitude = math.sqrt(xq * xq + yq * yq)
         if pos_magnitude > 1e-10 and change / pos_magnitude < tol:
             break
 
@@ -257,13 +255,13 @@ def correct_brown_affine_exact(
     Returns:
         (x_flat, y_flat) undistorted coordinates.
     """
-    r_init = np.sqrt(x * x + y * y)
+    r_init = math.sqrt(x * x + y * y)
 
     if r_init < 1e-10:
         return 0.0, 0.0
 
-    sin_she = np.sin(she)
-    cos_she = np.cos(she)
+    sin_she = math.sin(she)
+    cos_she = math.cos(she)
     inv_scx = 1.0 / scx
 
     # Initial guess: inverse affine transformation
@@ -292,7 +290,7 @@ def correct_brown_affine_exact(
         xq += damping * dx_change
         yq += damping * dy_change
 
-        if np.sqrt(dx_change ** 2 + dy_change ** 2) < tol:
+        if math.sqrt(dx_change ** 2 + dy_change ** 2) < tol:
             break
 
     return xq, yq

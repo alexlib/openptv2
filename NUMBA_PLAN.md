@@ -227,17 +227,39 @@ This phase is optional because Phase 3 (Numba) already achieves near-C speed. Ba
 
 **Expected speedup:** 2-3x over Phase 3.
 
+## Measured Results (Phase 0+1 implemented)
+
+| Test | Before | Phase 0 (mmlut) | Phase 0+1a (scalar + foundpix) | Phase 0+1b (inlined + packed) |
+|---|---|---|---|---|
+| cavity track3d | ~400s | 5.9s (68x) | ~5s (80x) | ~5s (80x) |
+| cavity trackcorr | ~400s | 225s (1.8x) | 38s (10.5x) | 10.5s (38x) |
+| burgers track3d | 1.4s | 0.9s | 0.9s | 0.9s |
+| all 25 track tests | - | - | 55s total | 38s total |
+
+**Key findings:**
+- Phase 0 (mmlut) was transformative for track3d (~68x) because its runtime was dominated by projection math.
+- For trackcorr, the numpy structured array overhead in `sort_candidates_by_freq` was the real bottleneck (~73% of runtime per profiling). Replacing `Foundpix_dtype` recarray with plain Python lists gave the biggest speedup (225s -> 38s).
+- `math.*` vs `np.*` for scalar operations helped but was secondary (~10% improvement).
+- Inlining the full projection chain (`point_to_pixel` → `img_coord` → `flat_image_coord` → `flat_to_dist` → `metric_to_pixel`) + pre-packing calibration fields into tuples once per camera cut trackcorr from 38s to 10.5s (3.6x). Also inlined `get_mmf_from_mmlut`, `multimed_nlay`, and moved lazy imports to module level.
+- Note: cProfile inflates large-function cost (43.7s profiled vs 12.3s actual), so always verify with wall-clock timing.
+- All parity tests still pass with exact 0.000000 position difference vs C/Cython.
+
+**Remaining bottleneck breakdown (cavity trackcorr, 10.5s total):**
+- `_point_to_pixel_packed`: 4.74s (479K calls, 10µs/call) — 45% — pure scalar math, needs Numba
+- `candsearch_in_pix`: 3.79s (45K calls, 85µs/call) — 36% — Target object attribute access, needs SoA
+- Other (sort, angle_acc, I/O): ~2.0s — 19%
+
 ## Summary
 
-| Phase | Effort | Cumulative speedup | Debuggable? |
-|---|---|---|---|
-| 0. Wire up mmlut | ~2 hours | 1.3-1.5x | Yes, existing code |
-| 1. Scalar kernels | 2-3 days | 4-7x | Yes, plain Python |
-| 2. SoA data | 3-5 days | 8-20x | Yes, numpy arrays |
-| 3. Numba JIT | 2-3 days | 50-100x | Yes, remove @njit to debug |
-| 4. Batch vectorize | 3-5 days | 100-300x | Yes |
+| Phase | Effort | Cumulative speedup | Debuggable? | Status |
+|---|---|---|---|---|
+| 0. Wire up mmlut | ~2 hours | 1.8-68x | Yes, existing code | DONE |
+| 1. Scalar kernels + foundpix + inlined chain | 2-3 days | 38-80x | Yes, plain Python | DONE |
+| 2. SoA data | 3-5 days | 50-150x | Yes, numpy arrays | TODO |
+| 3. Numba JIT | 2-3 days | 100-500x | Yes, remove @njit to debug | TODO |
+| 4. Batch vectorize | 3-5 days | 200-1000x | Yes | TODO |
 
-**Total estimate: ~2 weeks to go from ~400s to ~4-8s (close to C/Cython speed).**
+**Current state: cavity trackcorr 10.5s, cavity track3d 5s. Target: <5s for both.**
 
 ## Design Principles
 

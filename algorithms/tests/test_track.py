@@ -9,7 +9,7 @@ from algorithms.track import (
     candsearch_in_pix, candsearch_in_pix_rest, sort, reset_foundpix_array,
     copy_foundpix_array, searchquader, sort_candidates_by_freq,
     track_forward_start, trackcorr_c_loop, trackcorr_c_finish, trackback_c,
-    Foundpix_dtype, MAX_CANDS
+    Foundpix_dtype, MAX_CANDS, _make_foundpix_array,
 )
 from algorithms.tracking_frame_buf import Target
 from algorithms.tracking_run import tr_new
@@ -180,20 +180,20 @@ def test_copy_foundpix_array():
     arr_len = 2
     num_cams = 2
 
-    src = np.zeros(arr_len, dtype=Foundpix_dtype).view(np.recarray)
-    src[0].ftnr = 1; src[0].freq = 1; src[0].whichcam[:2] = [1, 0]
-    src[1].ftnr = 2; src[1].freq = 5; src[1].whichcam[:2] = [1, 1]
+    src = _make_foundpix_array(arr_len, num_cams)
+    src[0][0] = 1; src[0][1] = 1; src[0][2][:2] = [1, 0]
+    src[1][0] = 2; src[1][1] = 5; src[1][2][:2] = [1, 1]
 
-    dest = np.zeros(arr_len, dtype=Foundpix_dtype).view(np.recarray)
+    dest = _make_foundpix_array(arr_len, num_cams)
     reset_foundpix_array(dest, arr_len, num_cams)
 
-    assert dest[1].ftnr == -1
-    assert dest[0].freq == 0
-    assert dest[1].whichcam[0] == 0
+    assert dest[1][0] == -1   # ftnr
+    assert dest[0][1] == 0    # freq
+    assert dest[1][2][0] == 0 # whichcam
 
     copy_foundpix_array(dest, src, arr_len, num_cams)
 
-    assert dest[1].ftnr == 2
+    assert dest[1][0] == 2    # ftnr
 
 def test_searchquader():
     point = np.array([185.5, 3.2, 203.9])
@@ -230,17 +230,16 @@ def test_searchquader():
 def test_sort_candidates_by_freq():
     num_cams = 2
     n = num_cams * MAX_CANDS
-    dest = np.zeros(n, dtype=Foundpix_dtype).view(np.recarray)
-    reset_foundpix_array(dest, n, num_cams)
+    dest = _make_foundpix_array(n, num_cams)
 
-    dest[0].ftnr = 1; dest[0].freq = 0; dest[0].whichcam[:2] = [1, 0]
-    dest[1].ftnr = 2; dest[1].freq = 0; dest[1].whichcam[:2] = [1, 1]
+    dest[0][0] = 1; dest[0][1] = 0; dest[0][2][:2] = [1, 0]
+    dest[1][0] = 2; dest[1][1] = 0; dest[1][2][:2] = [1, 1]
 
     num_parts = sort_candidates_by_freq(dest, num_cams)
 
-    assert dest[0].ftnr == 2
-    assert dest[0].freq == 2
-    assert dest[1].freq == 0
+    assert dest[0][0] == 2    # ftnr
+    assert dest[0][1] == 2    # freq
+    assert dest[1][1] == 0    # freq
 
 def test_trackcorr_no_add():
     import os

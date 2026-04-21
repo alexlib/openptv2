@@ -6,6 +6,7 @@ Traces optical rays through multi-media interfaces (air-glass-water)
 using Snell's law and returns the crossing point and direction vector.
 """
 
+import math
 import numpy as np
 from .vec_utils import vec_set, unit_vector, vec_dot, vec_norm, vec_scalar_mul, vec_add, vec_subt
 
@@ -76,8 +77,8 @@ def ray_tracing(
     bp = unit_vector(tmp2)
 
     # Transform direction inside glass using Snell's law
-    p = np.sqrt(1 - n * n) * mm_n1 / mm_n2_0  # glass parallel
-    n_glass = -np.sqrt(1 - p * p)  # glass normal
+    p = math.sqrt(1 - n * n) * mm_n1 / mm_n2_0  # glass parallel
+    n_glass = -math.sqrt(1 - p * p)  # glass normal
 
     # Propagation length in glass
     tmp1 = vec_scalar_mul(bp, p)
@@ -95,9 +96,9 @@ def ray_tracing(
     tmp2 = vec_subt(a2, tmp2_for_sub)
     bp = unit_vector(tmp2)
 
-    p = np.sqrt(1 - n_a2 * n_a2)
+    p = math.sqrt(1 - n_a2 * n_a2)
     p = p * mm_n2_0 / mm_n3
-    n_final = -np.sqrt(1 - p * p)
+    n_final = -math.sqrt(1 - p * p)
 
     tmp1 = vec_scalar_mul(bp, p)
     tmp2 = vec_scalar_mul(glass_dir, n_final)

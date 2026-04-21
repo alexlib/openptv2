@@ -1,5 +1,6 @@
 """Tracking algorithms — Python translation of lib/src/track.c."""
 
+import math
 import numpy as np
 
 from .constants import (
@@ -7,12 +8,178 @@ from .constants import (
     COORD_UNUSED, TR_BUFSPACE, TR_MAX_CAMS, ADD_PART,
 )
 from .tracking_frame_buf import register_link_candidate, reset_links
+from .multimed import (
+    multimed_nlay as _multimed_nlay,
+    multimed_r_nlay_iterative as _multimed_r_nlay_iterative,
+)
 
 Foundpix_dtype = np.dtype([
     ("ftnr", np.int32),
     ("freq", np.int32),
     ("whichcam", np.int32, (4,)),
 ])
+
+
+def _vec3_dist(a, b):
+    dx = a[0] - b[0]
+    dy = a[1] - b[1]
+    dz = a[2] - b[2]
+    return math.sqrt(dx * dx + dy * dy + dz * dz)
+
+
+def _pack_cal(cal, mm):
+    """Pre-extract calibration fields into a tuple for fast access."""
+    ext = cal.ext_par; ip = cal.int_par; gp = cal.glass_par; ap = cal.added_par
+    gx = gp.vec_x; gy = gp.vec_y; gz = gp.vec_z
+    dist_o_glas = math.sqrt(gx * gx + gy * gy + gz * gz)
+    inv_dog = 1.0 / dist_o_glas
+    mmlut = cal.mmlut
+    mmlut_data = mmlut.data
+    return (
+        ext.x0, ext.y0, ext.z0,
+        ext.dm[0, 0], ext.dm[1, 0], ext.dm[2, 0],
+        ext.dm[0, 1], ext.dm[1, 1], ext.dm[2, 1],
+        ext.dm[0, 2], ext.dm[1, 2], ext.dm[2, 2],
+        ip.cc, ip.xh, ip.yh,
+        gx, gy, gz, dist_o_glas, inv_dog,
+        mm.n1, mm.n2[0], mm.n3, mm.d[0],
+        ap.k1, ap.k2, ap.k3, ap.p1, ap.p2, ap.scx, ap.she,
+        mmlut_data,
+        mmlut.origin if mmlut_data is not None else None,
+        mmlut.nr if mmlut_data is not None else 0,
+        mmlut.nz if mmlut_data is not None else 0,
+        mmlut.rw if mmlut_data is not None else 0,
+    )
+
+
+def _point_to_pixel_packed(pos, pc, imx_half, imy_half, inv_pix_x, inv_pix_y, chfield):
+    """Project 3D position to pixel coordinates using pre-packed calibration."""
+    pos0 = float(pos[0]); pos1 = float(pos[1]); pos2 = float(pos[2])
+
+    (ext_x0, ext_y0, ext_z0,
+     dm00, dm10, dm20, dm01, dm11, dm21, dm02, dm12, dm22,
+     int_cc, xh, yh,
+     gx, gy, gz, dist_o_glas, inv_dog,
+     mm_n1, mm_n2_0, mm_n3, mm_d0,
+     k1, k2, k3, p1, p2, scx, she,
+     mmlut_data, mmlut_origin, mmlut_nr, mmlut_nz, mmlut_rw) = pc
+
+    dot_cam = ext_x0 * gx + ext_y0 * gy + ext_z0 * gz
+    dist_cam_glas = dot_cam * inv_dog - dist_o_glas - mm_d0
+
+    dot_pos = pos0 * gx + pos1 * gy + pos2 * gz
+    dist_point_glas = dot_pos * inv_dog - dist_o_glas
+
+    s_cam = dist_cam_glas * inv_dog
+    cc_x = ext_x0 - gx * s_cam
+    cc_y = ext_y0 - gy * s_cam
+    cc_z = ext_z0 - gz * s_cam
+
+    s_pt = dist_point_glas * inv_dog
+    cp_x = pos0 - gx * s_pt
+    cp_y = pos1 - gy * s_pt
+    cp_z = pos2 - gz * s_pt
+
+    ext_t_z0 = dist_cam_glas + mm_d0
+
+    s_d = mm_d0 * inv_dog
+    ag_x = cc_x - gx * s_d
+    ag_y = cc_y - gy * s_d
+    ag_z = cc_z - gz * s_d
+    tmp_x = cp_x - ag_x
+    tmp_y = cp_y - ag_y
+    tmp_z = cp_z - ag_z
+
+    pos_t_0 = math.sqrt(tmp_x * tmp_x + tmp_y * tmp_y + tmp_z * tmp_z)
+    pos_t_2 = dist_point_glas
+
+    # === mmlut lookup + multimed_nlay (inlined) ===
+    radial_shift = 1.0
+    if mmlut_data is not None:
+        tx = pos_t_0 - mmlut_origin[0]
+        ty = -mmlut_origin[1]
+        tz = pos_t_2 - mmlut_origin[2]
+        sz = tz / mmlut_rw
+        iz = int(sz)
+        sz -= iz
+        R = math.sqrt(tx * tx + ty * ty)
+        sr = R / mmlut_rw
+        ir = int(sr)
+        sr -= ir
+        if ir <= mmlut_nr and iz >= 0 and iz <= mmlut_nz:
+            v0 = ir * mmlut_nz + iz
+            v3 = v0 + mmlut_nz + 1
+            if v0 >= 0 and v3 <= mmlut_nr * mmlut_nz:
+                mmf = (
+                    mmlut_data[v0] * (1 - sr) * (1 - sz)
+                    + mmlut_data[v0 + 1] * (1 - sr) * sz
+                    + mmlut_data[v0 + mmlut_nz] * sr * (1 - sz)
+                    + mmlut_data[v3] * sr * sz
+                )
+                if mmf > 0:
+                    radial_shift = mmf
+    if radial_shift == 1.0:
+        radial_shift = _multimed_r_nlay_iterative(
+            pos_t_0, 0.0, pos_t_2, 0.0, 0.0, ext_t_z0,
+            mm_n1, mm_n2_0, mm_n3, mm_d0,
+        )
+    X_t = pos_t_0 * radial_shift
+
+    # === back_trans_point (inlined) ===
+    s_z = -pos_t_2 * inv_dog
+    bx = ag_x - gx * s_z
+    by = ag_y - gy * s_z
+    bz = ag_z - gz * s_z
+
+    if pos_t_0 > 0:
+        s_x = -X_t / pos_t_0
+        bx -= tmp_x * s_x
+        by -= tmp_y * s_x
+        bz -= tmp_z * s_x
+
+    # === perspective projection ===
+    dx = bx - ext_x0
+    dy = by - ext_y0
+    dz = bz - ext_z0
+
+    deno = dm02 * dx + dm12 * dy + dm22 * dz
+    x = -int_cc * (dm00 * dx + dm10 * dy + dm20 * dz) / deno
+    y = -int_cc * (dm01 * dx + dm11 * dy + dm21 * dz) / deno
+
+    # === flat_to_dist + distort_brown_affin (inlined) ===
+    x += xh
+    y += yh
+    r = math.sqrt(x * x + y * y)
+    if r < 1e-10:
+        x_dist = 0.0
+        y_dist = 0.0
+    else:
+        r2 = r * r
+        r4 = r2 * r2
+        radial_factor = 1.0 + k1 * r2 + k2 * r4 + k3 * r4 * r2
+        xd = x * radial_factor + p1 * (r2 + 2 * x * x) + 2 * p2 * x * y
+        yd = y * radial_factor + p2 * (r2 + 2 * y * y) + 2 * p1 * x * y
+        sin_she = math.sin(she)
+        cos_she = math.cos(she)
+        x_dist = scx * (xd - sin_she * yd)
+        y_dist = scx * cos_she * yd
+
+    # === metric_to_pixel (inlined) ===
+    x_pixel = x_dist * inv_pix_x + imx_half
+    y_pixel = imy_half - y_dist * inv_pix_y
+
+    if chfield == 1:
+        y_pixel = (y_pixel - 1.0) * 0.5
+    elif chfield == 2:
+        y_pixel = y_pixel * 0.5
+
+    return x_pixel, y_pixel
+
+
+def _point_to_pixel_fast(pos, cal, imx, imy, pix_x, pix_y, chfield, mm):
+    """Project 3D position to pixel coordinates — convenience wrapper."""
+    pc = _pack_cal(cal, mm)
+    return _point_to_pixel_packed(pos, pc, imx * 0.5, imy * 0.5, 1.0 / pix_x, 1.0 / pix_y, chfield)
 
 
 def predict(prev_pos, curr_pos, c):
@@ -37,24 +204,34 @@ def pos3d_in_bounds(pos, bounds):
 
 
 def angle_acc(start, pred, cand):
-    v0 = np.asarray(pred) - np.asarray(start)
-    v1 = np.asarray(cand) - np.asarray(start)
+    v0x = pred[0] - start[0]
+    v0y = pred[1] - start[1]
+    v0z = pred[2] - start[2]
+    v1x = cand[0] - start[0]
+    v1y = cand[1] - start[1]
+    v1z = cand[2] - start[2]
 
-    if np.array_equal(v0, -v1):
+    if v0x == -v1x and v0y == -v1y and v0z == -v1z:
         angle = 200.0
-    elif np.array_equal(v0, v1):
+    elif v0x == v1x and v0y == v1y and v0z == v1z:
         angle = 0.0
     else:
-        norm0 = np.linalg.norm(v0)
-        norm1 = np.linalg.norm(v1)
+        norm0 = math.sqrt(v0x * v0x + v0y * v0y + v0z * v0z)
+        norm1 = math.sqrt(v1x * v1x + v1y * v1y + v1z * v1z)
         if norm0 == 0 or norm1 == 0:
             angle = 0.0
         else:
-            dot = np.dot(v0, v1) / (norm0 * norm1)
-            dot = np.clip(dot, -1.0, 1.0)
-            angle = np.arccos(dot) * 200.0 / np.pi
+            dot = (v0x * v1x + v0y * v1y + v0z * v1z) / (norm0 * norm1)
+            if dot > 1.0:
+                dot = 1.0
+            elif dot < -1.0:
+                dot = -1.0
+            angle = math.acos(dot) * 200.0 / math.pi
 
-    acc = np.linalg.norm(v1 - v0)
+    dx = v1x - v0x
+    dy = v1y - v0y
+    dz = v1z - v0z
+    acc = math.sqrt(dx * dx + dy * dy + dz * dz)
     return angle, acc
 
 
@@ -102,7 +279,7 @@ def candsearch_in_pix(next_targets, num_targets, cent_x, cent_y,
             if t.y > ymax:
                 break
             if t.x > xmin and t.x < xmax and t.y > ymin and t.y < ymax:
-                d = np.sqrt((cent_x - t.x) ** 2 + (cent_y - t.y) ** 2)
+                d = math.sqrt((cent_x - t.x) ** 2 + (cent_y - t.y) ** 2)
 
                 if d < dmin:
                     dmin = d
@@ -166,7 +343,7 @@ def candsearch_in_pix_rest(next_targets, num_targets, cent_x, cent_y,
             if t.y > ymax:
                 break
             if t.x > xmin and t.x < xmax and t.y > ymin and t.y < ymax:
-                d = np.sqrt((cent_x - t.x) ** 2 + (cent_y - t.y) ** 2)
+                d = math.sqrt((cent_x - t.x) ** 2 + (cent_y - t.y) ** 2)
                 if d < dmin:
                     dmin = d
                     p[0] = j
@@ -177,51 +354,68 @@ def candsearch_in_pix_rest(next_targets, num_targets, cent_x, cent_y,
 
 def reset_foundpix_array(arr, n, num_cams):
     for i in range(n):
-        arr[i]['ftnr'] = TR_UNUSED
-        arr[i]['freq'] = 0
-        arr[i]['whichcam'][:num_cams] = [0] * num_cams
+        arr[i][0] = TR_UNUSED  # ftnr
+        arr[i][1] = 0          # freq
+        for j in range(num_cams):
+            arr[i][2][j] = 0   # whichcam
 
 
 def copy_foundpix_array(dest, src, n, num_cams):
     for i in range(n):
-        dest[i]['ftnr'] = src[i]['ftnr']
-        dest[i]['freq'] = src[i]['freq']
-        dest[i]['whichcam'][:num_cams] = src[i]['whichcam'][:num_cams]
+        dest[i][0] = src[i][0]
+        dest[i][1] = src[i][1]
+        for j in range(num_cams):
+            dest[i][2][j] = src[i][2][j]
+
+
+def _make_foundpix(num_cams):
+    """Create a single foundpix entry as [ftnr, freq, whichcam_list]."""
+    return [TR_UNUSED, 0, [0] * num_cams]
+
+
+def _make_foundpix_array(n, num_cams):
+    """Create array of n foundpix entries as plain Python lists."""
+    return [_make_foundpix(num_cams) for _ in range(n)]
 
 
 def sort_candidates_by_freq(items, num_cams):
     n = num_cams * MAX_CANDS
 
     for i in range(n):
+        ftnr_i = items[i][0]
         for j in range(num_cams):
             for m in range(MAX_CANDS):
-                if items[i]['ftnr'] == items[4 * j + m]['ftnr']:
-                    items[i]['whichcam'][j] = 1
+                if ftnr_i == items[4 * j + m][0]:
+                    items[i][2][j] = 1
 
     for i in range(n):
-        for j in range(num_cams):
-            if items[i]['whichcam'][j] == 1 and items[i]['ftnr'] != TR_UNUSED:
-                items[i]['freq'] += 1
+        ftnr_i = items[i][0]
+        if ftnr_i != TR_UNUSED:
+            wc = items[i][2]
+            for j in range(num_cams):
+                if wc[j] == 1:
+                    items[i][1] += 1
 
     for i in range(1, n):
         for j in range(n - 1, i - 1, -1):
-            if items[j - 1]['freq'] < items[j]['freq']:
-                items[j - 1], items[j] = items[j].copy(), items[j - 1].copy()
+            if items[j - 1][1] < items[j][1]:
+                items[j - 1], items[j] = items[j], items[j - 1]
 
     for i in range(n):
+        ftnr_i = items[i][0]
         for j in range(i + 1, n):
-            if items[i]['ftnr'] == items[j]['ftnr'] or items[j]['freq'] < 2:
-                items[j]['freq'] = 0
-                items[j]['ftnr'] = TR_UNUSED
+            if items[j][0] == ftnr_i or items[j][1] < 2:
+                items[j][1] = 0
+                items[j][0] = TR_UNUSED
 
     for i in range(1, n):
         for j in range(n - 1, i - 1, -1):
-            if items[j - 1]['freq'] < items[j]['freq']:
-                items[j - 1], items[j] = items[j].copy(), items[j - 1].copy()
+            if items[j - 1][1] < items[j][1]:
+                items[j - 1], items[j] = items[j], items[j - 1]
 
     different = 0
     for i in range(n):
-        if items[i]['freq'] != 0:
+        if items[i][1] != 0:
             different += 1
     return different
 
@@ -239,64 +433,74 @@ def sort(n, a, b):
 
 
 def point_to_pixel(point, cal, cpar):
-    from .imgcoord import img_coord
-    from .trafo import metric_to_pixel
-    x, y = img_coord(point, cal, cpar.mm)
-    return metric_to_pixel(x, y, cpar)
+    return _point_to_pixel_fast(
+        point, cal, cpar.imx, cpar.imy, cpar.pix_x, cpar.pix_y, cpar.chfield, cpar.mm,
+    )
 
 
-def searchquader(point, tpar, cpar, calib):
+def searchquader(point, tpar, cpar, calib, _packed_cals=None, _pix_info=None):
     num_cams = cpar.num_cams
     xr = np.zeros(num_cams)
     xl = np.zeros(num_cams)
     yd = np.zeros(num_cams)
     yu = np.zeros(num_cams)
 
-    mins = np.array([tpar.dvxmin, tpar.dvymin, tpar.dvzmin])
-    maxes = np.array([tpar.dvxmax, tpar.dvymax, tpar.dvzmax])
+    px, py, pz = point[0], point[1], point[2]
+    dxmin, dymin, dzmin = tpar.dvxmin, tpar.dvymin, tpar.dvzmin
+    dxmax, dymax, dzmax = tpar.dvxmax, tpar.dvymax, tpar.dvzmax
 
-    quader = np.zeros((8, 3))
+    quader = np.empty((8, 3))
     for pt in range(8):
-        quader[pt] = point.copy()
-        for dim in range(3):
-            if pt & (1 << dim):
-                quader[pt, dim] += maxes[dim]
-            else:
-                quader[pt, dim] += mins[dim]
+        quader[pt, 0] = px + (dxmax if pt & 1 else dxmin)
+        quader[pt, 1] = py + (dymax if pt & 2 else dymin)
+        quader[pt, 2] = pz + (dzmax if pt & 4 else dzmin)
+
+    if _pix_info is not None:
+        c_imx, c_imy, imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield = _pix_info
+    else:
+        c_imx = cpar.imx; c_imy = cpar.imy
+        imx_half = c_imx * 0.5; imy_half = c_imy * 0.5
+        inv_pix_x = 1.0 / cpar.pix_x; inv_pix_y = 1.0 / cpar.pix_y
+        c_chfield = cpar.chfield
+
+    if _packed_cals is None:
+        c_mm = cpar.mm
+        _packed_cals = [_pack_cal(calib[i], c_mm) for i in range(num_cams)]
 
     for i in range(num_cams):
-        xr[i] = 0
-        xl[i] = cpar.imx
-        yd[i] = 0
-        yu[i] = cpar.imy
+        pc = _packed_cals[i]
+        xr_i = 0.0
+        xl_i = float(c_imx)
+        yd_i = 0.0
+        yu_i = float(c_imy)
 
-        cx, cy = point_to_pixel(point, calib[i], cpar)
+        cx, cy = _point_to_pixel_packed(point, pc, imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield)
 
         for pt in range(8):
-            corner_x, corner_y = point_to_pixel(quader[pt], calib[i], cpar)
+            corner_x, corner_y = _point_to_pixel_packed(quader[pt], pc, imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield)
 
-            if corner_x < xl[i]:
-                xl[i] = corner_x
-            if corner_y < yu[i]:
-                yu[i] = corner_y
-            if corner_x > xr[i]:
-                xr[i] = corner_x
-            if corner_y > yd[i]:
-                yd[i] = corner_y
+            if corner_x < xl_i:
+                xl_i = corner_x
+            if corner_y < yu_i:
+                yu_i = corner_y
+            if corner_x > xr_i:
+                xr_i = corner_x
+            if corner_y > yd_i:
+                yd_i = corner_y
 
-        if xl[i] < 0:
-            xl[i] = 0
-        if yu[i] < 0:
-            yu[i] = 0
-        if xr[i] > cpar.imx:
-            xr[i] = cpar.imx
-        if yd[i] > cpar.imy:
-            yd[i] = cpar.imy
+        if xl_i < 0:
+            xl_i = 0
+        if yu_i < 0:
+            yu_i = 0
+        if xr_i > c_imx:
+            xr_i = c_imx
+        if yd_i > c_imy:
+            yd_i = c_imy
 
-        xr[i] = xr[i] - cx
-        xl[i] = cx - xl[i]
-        yd[i] = yd[i] - cy
-        yu[i] = cy - yu[i]
+        xr[i] = xr_i - cx
+        xl[i] = cx - xl_i
+        yd[i] = yd_i - cy
+        yu[i] = cy - yu_i
 
     return xr, xl, yd, yu
 
@@ -307,34 +511,36 @@ def register_closest_neighbs(targets, num_targets, cam, cent_x, cent_y,
                                   dl, dr, du, dd, cpar)
     for cand in range(MAX_CANDS):
         if all_cands[cand] == PT_UNUSED:
-            reg[cand]['ftnr'] = TR_UNUSED
+            reg[cand][0] = TR_UNUSED  # ftnr
         else:
-            reg[cand]['whichcam'][cam] = 1
-            reg[cand]['ftnr'] = targets[all_cands[cand]].tnr
+            reg[cand][2][cam] = 1     # whichcam
+            reg[cand][0] = targets[all_cands[cand]].tnr  # ftnr
 
 
-def sorted_candidates_in_volume(center, center_proj, frm, run):
+def sorted_candidates_in_volume(center, center_proj, frm, run,
+                                _packed_cals=None, _pix_info=None):
     num_cams = frm.num_cams
-    points = np.zeros(num_cams * MAX_CANDS, dtype=Foundpix_dtype).view(np.recarray)
-    reset_foundpix_array(points, num_cams * MAX_CANDS, num_cams)
+    n = num_cams * MAX_CANDS
+    points = _make_foundpix_array(n, num_cams)
 
-    xr, xl, yd, yu = searchquader(center, run.tpar, run.cpar, run.cal)
+    xr, xl, yd, yu = searchquader(center, run.tpar, run.cpar, run.cal,
+                                  _packed_cals=_packed_cals, _pix_info=_pix_info)
 
     for cam in range(num_cams):
+        cam_slice = points[cam * MAX_CANDS:(cam + 1) * MAX_CANDS]
         register_closest_neighbs(
             frm.targets[cam], frm.num_targets[cam], cam,
             center_proj[cam][0], center_proj[cam][1],
             xl[cam], xr[cam], yu[cam], yd[cam],
-            points[cam * MAX_CANDS:(cam + 1) * MAX_CANDS], run.cpar)
+            cam_slice, run.cpar)
 
     num_cands = sort_candidates_by_freq(points, num_cams)
     if num_cands > 0:
-        result = np.zeros(num_cands + 1, dtype=Foundpix_dtype).view(np.recarray)
+        result = []
         for i in range(num_cands):
-            result[i]['ftnr'] = points[i]['ftnr']
-            result[i]['freq'] = points[i]['freq']
-            result[i]['whichcam'][:] = points[i]['whichcam'][:]
-        result[num_cands]['ftnr'] = TR_UNUSED
+            result.append({'ftnr': points[i][0], 'freq': points[i][1],
+                           'whichcam': points[i][2][:] })
+        result.append({'ftnr': TR_UNUSED, 'freq': 0, 'whichcam': [0]*num_cams})
         return result
     return None
 
@@ -347,8 +553,12 @@ def assess_new_position(pos, targ_pos, cand_inds, frm, run):
     for cam in range(TR_MAX_CAMS):
         targ_pos[cam][0] = targ_pos[cam][1] = COORD_UNUSED
 
+    c_imx = run.cpar.imx; c_imy = run.cpar.imy
+    c_pix_x = run.cpar.pix_x; c_pix_y = run.cpar.pix_y
+    c_chfield = run.cpar.chfield; c_mm = run.cpar.mm
+
     for cam in range(run.cpar.num_cams):
-        px, py = point_to_pixel(pos, run.cal[cam], run.cpar)
+        px, py = _point_to_pixel_fast(pos, run.cal[cam], c_imx, c_imy, c_pix_x, c_pix_y, c_chfield, c_mm)
 
         num_cands = candsearch_in_pix_rest(
             frm.targets[cam], frm.num_targets[cam],
@@ -413,6 +623,12 @@ def trackcorr_c_loop(run_info, step):
     cpar = run_info.cpar
     curr_targets = fb.buf[1].targets
 
+    c_imx = cpar.imx; c_imy = cpar.imy
+    imx_half = c_imx * 0.5; imy_half = c_imy * 0.5
+    inv_pix_x = 1.0 / cpar.pix_x; inv_pix_y = 1.0 / cpar.pix_y
+    c_chfield = cpar.chfield; c_mm = cpar.mm
+    packed_cals = [_pack_cal(cal[j], c_mm) for j in range(fb.num_cams)]
+
     count1 = 0
     num_added = 0
     orig_parts = fb.buf[1].num_parts
@@ -434,18 +650,20 @@ def trackcorr_c_loop(run_info, step):
             X[2][:] = search_volume_center_moving(ref_path_inf.x, curr_path_inf.x)
 
             for j in range(fb.num_cams):
-                v1[j] = list(point_to_pixel(X[2], cal[j], cpar))
+                v1[j] = list(_point_to_pixel_packed(X[2], packed_cals[j], imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield))
         else:
             X[2][:] = X[1]
             for j in range(fb.num_cams):
                 if curr_corres.p[j] == CORRES_NONE:
-                    v1[j] = list(point_to_pixel(X[2], cal[j], cpar))
+                    v1[j] = list(_point_to_pixel_packed(X[2], packed_cals[j], imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield))
                 else:
                     _ix = curr_corres.p[j]
                     v1[j][0] = curr_targets[j][_ix].x
                     v1[j][1] = curr_targets[j][_ix].y
 
-        w = sorted_candidates_in_volume(X[2], v1, fb.buf[2], run_info)
+        _pi = (c_imx, c_imy, imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield)
+        w = sorted_candidates_in_volume(X[2], v1, fb.buf[2], run_info,
+                                        _packed_cals=packed_cals, _pix_info=_pi)
         if w is None:
             continue
 
@@ -462,9 +680,10 @@ def trackcorr_c_loop(run_info, step):
                 X[5][:] = search_volume_center_moving(X[1], X[3])
 
             for j in range(fb.num_cams):
-                v1[j] = list(point_to_pixel(X[5], cal[j], cpar))
+                v1[j] = list(_point_to_pixel_packed(X[5], packed_cals[j], imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield))
 
-            wn = sorted_candidates_in_volume(X[5], v1, fb.buf[3], run_info)
+            wn = sorted_candidates_in_volume(X[5], v1, fb.buf[3], run_info,
+                                             _packed_cals=packed_cals, _pix_info=_pi)
             if wn is not None:
                 count3 = 0
                 kk = 0
@@ -487,8 +706,8 @@ def trackcorr_c_loop(run_info, step):
 
                         if ((acc < tpar.dacc and angle < tpar.dangle) or
                                 (acc < tpar.dacc / 10)):
-                            dl = (np.linalg.norm(X[1] - X[3]) +
-                                  np.linalg.norm(X[4] - X[3])) / 2
+                            dl = (_vec3_dist(X[1], X[3]) +
+                                  _vec3_dist(X[4], X[3])) / 2
                             rr = (dl / run_info.lmax + acc / tpar.dacc +
                                   angle / tpar.dangle) / quali
                             register_link_candidate(curr_path_inf, rr, w[mm]['ftnr'])
@@ -513,8 +732,8 @@ def trackcorr_c_loop(run_info, step):
                     angle, acc = angle_acc(X[3], X[4], X[5])
                     if ((acc < tpar.dacc and angle < tpar.dangle) or
                             (acc < tpar.dacc / 10)):
-                        dl = (np.linalg.norm(X[1] - X[3]) +
-                              np.linalg.norm(X[4] - X[3])) / 2
+                        dl = (_vec3_dist(X[1], X[3]) +
+                              _vec3_dist(X[4], X[3])) / 2
                         rr = (dl / run_info.lmax + acc / tpar.dacc +
                               angle / tpar.dangle) / (quali + w[mm]['freq'])
                         register_link_candidate(curr_path_inf, rr, w[mm]['ftnr'])
@@ -532,8 +751,8 @@ def trackcorr_c_loop(run_info, step):
                     if ((acc < tpar.dacc and angle < tpar.dangle) or
                             (acc < tpar.dacc / 10)):
                         quali = w[mm]['freq']
-                        dl = (np.linalg.norm(X[1] - X[3]) +
-                              np.linalg.norm(X[0] - X[1])) / 2
+                        dl = (_vec3_dist(X[1], X[3]) +
+                              _vec3_dist(X[0], X[1])) / 2
                         rr = (dl / run_info.lmax + acc / tpar.dacc +
                               angle / tpar.dangle) / quali
                         register_link_candidate(curr_path_inf, rr, w[mm]['ftnr'])
@@ -563,8 +782,8 @@ def trackcorr_c_loop(run_info, step):
                         angle, acc = angle_acc(X[1], X[2], X[3])
                         if ((acc < tpar.dacc and angle < tpar.dangle) or
                                 (acc < tpar.dacc / 10)):
-                            dl = (np.linalg.norm(X[1] - X[3]) +
-                                  np.linalg.norm(X[0] - X[1])) / 2
+                            dl = (_vec3_dist(X[1], X[3]) +
+                                  _vec3_dist(X[0], X[1])) / 2
                             rr = (dl / run_info.lmax + acc / tpar.dacc +
                                   angle / tpar.dangle) / quali
                             register_link_candidate(
@@ -631,6 +850,12 @@ def trackback_c(run_info):
     cpar = run_info.cpar
     fb = run_info.fb
 
+    c_imx = cpar.imx; c_imy = cpar.imy
+    imx_half = c_imx * 0.5; imy_half = c_imy * 0.5
+    inv_pix_x = 1.0 / cpar.pix_x; inv_pix_y = 1.0 / cpar.pix_y
+    c_chfield = cpar.chfield; c_mm = cpar.mm
+    packed_cals = [_pack_cal(cal[j], c_mm) for j in range(fb.num_cams)]
+
     Ymin = 0.0
     Ymax = 0.0
     npart = 0.0
@@ -658,9 +883,11 @@ def trackback_c(run_info):
 
             n = [[0.0, 0.0] for _ in range(fb.num_cams)]
             for j in range(fb.num_cams):
-                n[j] = list(point_to_pixel(X[2], cal[j], cpar))
+                n[j] = list(_point_to_pixel_packed(X[2], packed_cals[j], imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield))
 
-            w = sorted_candidates_in_volume(X[2], n, fb.buf[2], run_info)
+            _pi = (c_imx, c_imy, imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield)
+            w = sorted_candidates_in_volume(X[2], n, fb.buf[2], run_info,
+                                            _packed_cals=packed_cals, _pix_info=_pi)
 
             if w is not None:
                 i = 0
@@ -673,8 +900,8 @@ def trackback_c(run_info):
                         angle, acc = angle_acc(X[1], X[2], X[3])
                         if ((acc < tpar.dacc and angle < tpar.dangle) or
                                 (acc < tpar.dacc / 10)):
-                            dl = (np.linalg.norm(X[1] - X[3]) +
-                                  np.linalg.norm(X[0] - X[1])) / 2
+                            dl = (_vec3_dist(X[1], X[3]) +
+                                  _vec3_dist(X[0], X[1])) / 2
                             quali = w[i]['freq']
                             rr = (dl / run_info.lmax + acc / tpar.dacc +
                                   angle / tpar.dangle) / quali
@@ -702,8 +929,8 @@ def trackback_c(run_info):
                             angle, acc = angle_acc(X[1], X[2], X[3])
                             if ((acc < tpar.dacc and angle < tpar.dangle) or
                                     (acc < tpar.dacc / 10)):
-                                dl = (np.linalg.norm(X[1] - X[3]) +
-                                      np.linalg.norm(X[0] - X[1])) / 2
+                                dl = (_vec3_dist(X[1], X[3]) +
+                                      _vec3_dist(X[0], X[1])) / 2
                                 rr = (dl / run_info.lmax + acc / tpar.dacc +
                                       angle / tpar.dangle) / quali
                                 register_link_candidate(
