@@ -310,6 +310,61 @@ class Frame:
         self.num_targets = [0] * num_cams
         self.num_parts = 0
 
+        # SoA for targets (per camera)
+        self.targ_x = [np.zeros(max_targets, dtype=np.float64) for _ in range(num_cams)]
+        self.targ_y = [np.zeros(max_targets, dtype=np.float64) for _ in range(num_cams)]
+        self.targ_tnr = [np.full(max_targets, PT_UNUSED, dtype=np.int32) for _ in range(num_cams)]
+
+        # SoA for Pathinfo
+        self.path_x = np.zeros((max_targets, 3), dtype=np.float64)
+        self.path_prev = np.full(max_targets, PREV_NONE, dtype=np.int32)
+        self.path_next = np.full(max_targets, NEXT_NONE, dtype=np.int32)
+        self.path_prio = np.full(max_targets, 4, dtype=np.int32)
+        self.path_inlist = np.zeros(max_targets, dtype=np.int32)
+        self.path_finaldecis = np.full(max_targets, 1000000.0, dtype=np.float64)
+        self.path_decis = np.zeros((max_targets, POSI), dtype=np.float64)
+        self.path_linkdecis = np.full((max_targets, POSI), PT_UNUSED, dtype=np.int32)
+
+        # SoA for Corres
+        self.corres_nr = np.zeros(max_targets, dtype=np.int32)
+        self.corres_p = np.full((max_targets, 4), CORRES_NONE, dtype=np.int32)
+
+    def _sync_path_to_soa(self):
+        """Copy AoS path_info/correspond into SoA arrays."""
+        for i in range(self.num_parts):
+            p = self.path_info[i]
+            self.path_x[i] = p.x
+            self.path_prev[i] = p.prev
+            self.path_next[i] = p.next
+            self.path_prio[i] = p.prio
+            self.path_inlist[i] = p.inlist
+            self.path_finaldecis[i] = p.finaldecis
+            for k in range(len(p.decis)):
+                self.path_decis[i, k] = p.decis[k]
+                self.path_linkdecis[i, k] = p.linkdecis[k]
+
+            c = self.correspond[i]
+            self.corres_nr[i] = c.nr
+            self.corres_p[i] = c.p
+
+    def _sync_soa_to_path(self):
+        """Copy SoA arrays back into AoS path_info/correspond."""
+        for i in range(self.num_parts):
+            p = self.path_info[i]
+            p.x[:] = self.path_x[i]
+            p.prev = int(self.path_prev[i])
+            p.next = int(self.path_next[i])
+            p.prio = int(self.path_prio[i])
+            p.inlist = int(self.path_inlist[i])
+            p.finaldecis = float(self.path_finaldecis[i])
+            for k in range(POSI):
+                p.decis[k] = float(self.path_decis[i, k])
+                p.linkdecis[k] = int(self.path_linkdecis[i, k])
+
+            c = self.correspond[i]
+            c.nr = int(self.corres_nr[i])
+            c.p[:] = self.corres_p[i]
+
     def read(self, corres_file_base, linkage_file_base, prio_file_base,
              target_file_base, frame_num):
         fname = f"{corres_file_base}.{frame_num}"
@@ -328,16 +383,26 @@ class Frame:
             self.correspond[i] = cor_list[i]
             self.path_info[i] = path_list[i]
 
+        self._sync_path_to_soa()
+
         for cam in range(self.num_cams):
             targets = read_targets(target_file_base[cam], frame_num)
             self.num_targets[cam] = len(targets)
+            tx = self.targ_x[cam]
+            ty = self.targ_y[cam]
+            ttnr = self.targ_tnr[cam]
             for j, t in enumerate(targets):
                 self.targets[cam][j] = t
+                tx[j] = t.x
+                ty[j] = t.y
+                ttnr[j] = t.tnr
 
         return True
 
     def write(self, corres_file_base, linkage_file_base, prio_file_base,
               target_file_base, frame_num):
+        self._sync_soa_to_path()
+
         ok = write_path_frame(
             self.correspond, self.path_info, self.num_parts,
             corres_file_base, linkage_file_base,

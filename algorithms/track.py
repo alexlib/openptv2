@@ -12,6 +12,16 @@ from .multimed import (
     multimed_nlay as _multimed_nlay,
     multimed_r_nlay_iterative as _multimed_r_nlay_iterative,
 )
+from .track_kernels import (
+    pack_cal_array as _pack_cal_array,
+    pack_mmlut as _pack_mmlut,
+    point_to_pixel_jit as _point_to_pixel_jit,
+    candsearch_in_pix_jit as _candsearch_in_pix_jit,
+    candsearch_in_pix_rest_jit as _candsearch_in_pix_rest_jit,
+    searchquader_jit as _searchquader_jit,
+    sort_candidates_by_freq_jit as _sort_candidates_by_freq_jit,
+    HAS_NUMBA,
+)
 
 Foundpix_dtype = np.dtype([
     ("ftnr", np.int32),
@@ -25,6 +35,34 @@ def _vec3_dist(a, b):
     dy = a[1] - b[1]
     dz = a[2] - b[2]
     return math.sqrt(dx * dx + dy * dy + dz * dz)
+
+
+def _pack_cams_jit(cals, mm):
+    """Pack all cameras for JIT: returns (cal_arrays, mmlut_tuples)."""
+    cal_arrays = [_pack_cal_array(c, mm) for c in cals]
+    mmlut_tuples = [_pack_mmlut(c) for c in cals]
+    return cal_arrays, mmlut_tuples
+
+
+def _pack_cams_jit_tuples(jit_cals, jit_mmluts):
+    """Convert lists to tuples for Numba searchquader_jit."""
+    return (
+        tuple(jit_cals),
+        tuple(m[0] for m in jit_mmluts),
+        tuple(m[1] for m in jit_mmluts),
+        tuple(m[2] for m in jit_mmluts),
+        tuple(m[3] for m in jit_mmluts),
+        tuple(m[4] for m in jit_mmluts),
+    )
+
+
+def _ptp_jit(pos, cal_arr, mmlut_tup, imx_half, imy_half, inv_pix_x, inv_pix_y, chfield):
+    """Call the JIT kernel with pre-packed arrays."""
+    return _point_to_pixel_jit(
+        pos, cal_arr, mmlut_tup[0], mmlut_tup[1],
+        mmlut_tup[2], mmlut_tup[3], mmlut_tup[4],
+        imx_half, imy_half, inv_pix_x, inv_pix_y, chfield,
+    )
 
 
 def _pack_cal(cal, mm):
@@ -438,12 +476,9 @@ def point_to_pixel(point, cal, cpar):
     )
 
 
-def searchquader(point, tpar, cpar, calib, _packed_cals=None, _pix_info=None):
+def searchquader(point, tpar, cpar, calib, _packed_cals=None, _pix_info=None,
+                 _jit_tuples=None):
     num_cams = cpar.num_cams
-    xr = np.zeros(num_cams)
-    xl = np.zeros(num_cams)
-    yd = np.zeros(num_cams)
-    yu = np.zeros(num_cams)
 
     px, py, pz = point[0], point[1], point[2]
     dxmin, dymin, dzmin = tpar.dvxmin, tpar.dvymin, tpar.dvzmin
@@ -463,9 +498,21 @@ def searchquader(point, tpar, cpar, calib, _packed_cals=None, _pix_info=None):
         inv_pix_x = 1.0 / cpar.pix_x; inv_pix_y = 1.0 / cpar.pix_y
         c_chfield = cpar.chfield
 
+    if _jit_tuples is not None:
+        cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t = _jit_tuples
+        pos_arr = np.asarray(point, dtype=np.float64)
+        return _searchquader_jit(
+            pos_arr, quader, num_cams, cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t,
+            imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield, c_imx, c_imy)
+
     if _packed_cals is None:
         c_mm = cpar.mm
         _packed_cals = [_pack_cal(calib[i], c_mm) for i in range(num_cams)]
+
+    xr = np.zeros(num_cams)
+    xl = np.zeros(num_cams)
+    yd = np.zeros(num_cams)
+    yu = np.zeros(num_cams)
 
     for i in range(num_cams):
         pc = _packed_cals[i]
@@ -475,27 +522,17 @@ def searchquader(point, tpar, cpar, calib, _packed_cals=None, _pix_info=None):
         yu_i = float(c_imy)
 
         cx, cy = _point_to_pixel_packed(point, pc, imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield)
-
         for pt in range(8):
             corner_x, corner_y = _point_to_pixel_packed(quader[pt], pc, imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield)
+            if corner_x < xl_i: xl_i = corner_x
+            if corner_y < yu_i: yu_i = corner_y
+            if corner_x > xr_i: xr_i = corner_x
+            if corner_y > yd_i: yd_i = corner_y
 
-            if corner_x < xl_i:
-                xl_i = corner_x
-            if corner_y < yu_i:
-                yu_i = corner_y
-            if corner_x > xr_i:
-                xr_i = corner_x
-            if corner_y > yd_i:
-                yd_i = corner_y
-
-        if xl_i < 0:
-            xl_i = 0
-        if yu_i < 0:
-            yu_i = 0
-        if xr_i > c_imx:
-            xr_i = c_imx
-        if yd_i > c_imy:
-            yd_i = c_imy
+        if xl_i < 0: xl_i = 0
+        if yu_i < 0: yu_i = 0
+        if xr_i > c_imx: xr_i = c_imx
+        if yd_i > c_imy: yd_i = c_imy
 
         xr[i] = xr_i - cx
         xl[i] = cx - xl_i
@@ -506,25 +543,41 @@ def searchquader(point, tpar, cpar, calib, _packed_cals=None, _pix_info=None):
 
 
 def register_closest_neighbs(targets, num_targets, cam, cent_x, cent_y,
-                             dl, dr, du, dd, reg, cpar):
-    all_cands = candsearch_in_pix(targets, num_targets, cent_x, cent_y,
-                                  dl, dr, du, dd, cpar)
-    for cand in range(MAX_CANDS):
-        if all_cands[cand] == PT_UNUSED:
-            reg[cand][0] = TR_UNUSED  # ftnr
-        else:
-            reg[cand][2][cam] = 1     # whichcam
-            reg[cand][0] = targets[all_cands[cand]].tnr  # ftnr
+                             dl, dr, du, dd, reg, cpar,
+                             _targ_x=None, _targ_y=None, _targ_tnr=None):
+    if HAS_NUMBA and _targ_x is not None:
+        p0, p1, p2, p3 = _candsearch_in_pix_jit(
+            _targ_x, _targ_y, _targ_tnr, num_targets,
+            cent_x, cent_y, dl, dr, du, dd,
+            cpar.imx, cpar.imy, TR_UNUSED)
+        all_cands = [p0, p1, p2, p3]
+        for cand in range(MAX_CANDS):
+            if all_cands[cand] == PT_UNUSED:
+                reg[cand][0] = TR_UNUSED
+            else:
+                reg[cand][2][cam] = 1
+                reg[cand][0] = int(_targ_tnr[all_cands[cand]])
+    else:
+        all_cands = candsearch_in_pix(targets, num_targets, cent_x, cent_y,
+                                      dl, dr, du, dd, cpar)
+        for cand in range(MAX_CANDS):
+            if all_cands[cand] == PT_UNUSED:
+                reg[cand][0] = TR_UNUSED
+            else:
+                reg[cand][2][cam] = 1
+                reg[cand][0] = targets[all_cands[cand]].tnr
 
 
 def sorted_candidates_in_volume(center, center_proj, frm, run,
-                                _packed_cals=None, _pix_info=None):
+                                _packed_cals=None, _pix_info=None,
+                                _jit_tuples=None):
     num_cams = frm.num_cams
     n = num_cams * MAX_CANDS
     points = _make_foundpix_array(n, num_cams)
 
     xr, xl, yd, yu = searchquader(center, run.tpar, run.cpar, run.cal,
-                                  _packed_cals=_packed_cals, _pix_info=_pix_info)
+                                  _packed_cals=_packed_cals, _pix_info=_pix_info,
+                                  _jit_tuples=_jit_tuples)
 
     for cam in range(num_cams):
         cam_slice = points[cam * MAX_CANDS:(cam + 1) * MAX_CANDS]
@@ -532,7 +585,23 @@ def sorted_candidates_in_volume(center, center_proj, frm, run,
             frm.targets[cam], frm.num_targets[cam], cam,
             center_proj[cam][0], center_proj[cam][1],
             xl[cam], xr[cam], yu[cam], yd[cam],
-            cam_slice, run.cpar)
+            cam_slice, run.cpar,
+            _targ_x=frm.targ_x[cam], _targ_y=frm.targ_y[cam],
+            _targ_tnr=frm.targ_tnr[cam])
+
+    if HAS_NUMBA:
+        ftnr = np.array([p[0] for p in points], dtype=np.int32)
+        freq = np.zeros(n, dtype=np.int32)
+        whichcam = np.array([p[2] for p in points], dtype=np.int32)
+        num_cands = _sort_candidates_by_freq_jit(ftnr, freq, whichcam, n, num_cams, MAX_CANDS)
+        if num_cands > 0:
+            result = []
+            for i in range(num_cands):
+                result.append({'ftnr': int(ftnr[i]), 'freq': int(freq[i]),
+                               'whichcam': list(whichcam[i])})
+            result.append({'ftnr': TR_UNUSED, 'freq': 0, 'whichcam': [0]*num_cams})
+            return result
+        return None
 
     num_cands = sort_candidates_by_freq(points, num_cams)
     if num_cands > 0:
@@ -545,7 +614,8 @@ def sorted_candidates_in_volume(center, center_proj, frm, run,
     return None
 
 
-def assess_new_position(pos, targ_pos, cand_inds, frm, run):
+def assess_new_position(pos, targ_pos, cand_inds, frm, run,
+                        _jit_cals=None, _jit_mmluts=None, _pix_info=None):
     from .trafo import pixel_to_metric, dist_to_flat
 
     left = right = up = down = ADD_PART
@@ -554,21 +624,40 @@ def assess_new_position(pos, targ_pos, cand_inds, frm, run):
         targ_pos[cam][0] = targ_pos[cam][1] = COORD_UNUSED
 
     c_imx = run.cpar.imx; c_imy = run.cpar.imy
-    c_pix_x = run.cpar.pix_x; c_pix_y = run.cpar.pix_y
-    c_chfield = run.cpar.chfield; c_mm = run.cpar.mm
+
+    if _pix_info is not None:
+        _, _, imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield = _pix_info
+    else:
+        imx_half = c_imx * 0.5; imy_half = c_imy * 0.5
+        inv_pix_x = 1.0 / run.cpar.pix_x; inv_pix_y = 1.0 / run.cpar.pix_y
+        c_chfield = run.cpar.chfield
 
     for cam in range(run.cpar.num_cams):
-        px, py = _point_to_pixel_fast(pos, run.cal[cam], c_imx, c_imy, c_pix_x, c_pix_y, c_chfield, c_mm)
+        if HAS_NUMBA and _jit_cals is not None:
+            px, py = _ptp_jit(pos, _jit_cals[cam], _jit_mmluts[cam],
+                              imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield)
+        else:
+            px, py = _point_to_pixel_fast(pos, run.cal[cam], c_imx, c_imy,
+                                          run.cpar.pix_x, run.cpar.pix_y,
+                                          c_chfield, run.cpar.mm)
 
-        num_cands = candsearch_in_pix_rest(
-            frm.targets[cam], frm.num_targets[cam],
-            px, py, left, right, up, down,
-            cand_inds[cam], run.cpar)
+        if HAS_NUMBA and hasattr(frm, 'targ_x'):
+            best, num_cands = _candsearch_in_pix_rest_jit(
+                frm.targ_x[cam], frm.targ_y[cam], frm.targ_tnr[cam],
+                frm.num_targets[cam], px, py, left, right, up, down,
+                c_imx, c_imy, TR_UNUSED)
+            if num_cands > 0:
+                cand_inds[cam][0] = best
+        else:
+            num_cands = candsearch_in_pix_rest(
+                frm.targets[cam], frm.num_targets[cam],
+                px, py, left, right, up, down,
+                cand_inds[cam], run.cpar)
 
         if num_cands > 0:
             _ix = cand_inds[cam][0]
-            targ_pos[cam][0] = frm.targets[cam][_ix].x
-            targ_pos[cam][1] = frm.targets[cam][_ix].y
+            targ_pos[cam][0] = frm.targ_x[cam][_ix] if hasattr(frm, 'targ_x') else frm.targets[cam][_ix].x
+            targ_pos[cam][1] = frm.targ_y[cam][_ix] if hasattr(frm, 'targ_x') else frm.targets[cam][_ix].y
 
     valid_cams = 0
     for cam in range(run.cpar.num_cams):
@@ -601,6 +690,7 @@ def add_particle(frm, pos, cand_inds):
         if cand_inds[cam][0] != PT_UNUSED:
             _ix = cand_inds[cam][0]
             frm.targets[cam][_ix].tnr = num_parts
+            frm.targ_tnr[cam][_ix] = num_parts
             ref_corres.p[cam] = _ix
             ref_corres.nr = num_parts
     frm.num_parts += 1
@@ -628,6 +718,18 @@ def trackcorr_c_loop(run_info, step):
     inv_pix_x = 1.0 / cpar.pix_x; inv_pix_y = 1.0 / cpar.pix_y
     c_chfield = cpar.chfield; c_mm = cpar.mm
     packed_cals = [_pack_cal(cal[j], c_mm) for j in range(fb.num_cams)]
+    if HAS_NUMBA:
+        jit_cals, jit_mmluts = _pack_cams_jit(cal, c_mm)
+        _jt = _pack_cams_jit_tuples(jit_cals, jit_mmluts)
+    else:
+        _jt = None
+
+    def _ptp(pos, j):
+        if HAS_NUMBA:
+            return _ptp_jit(pos, jit_cals[j], jit_mmluts[j],
+                            imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield)
+        return _point_to_pixel_packed(pos, packed_cals[j], imx_half, imy_half,
+                                      inv_pix_x, inv_pix_y, c_chfield)
 
     count1 = 0
     num_added = 0
@@ -650,12 +752,12 @@ def trackcorr_c_loop(run_info, step):
             X[2][:] = search_volume_center_moving(ref_path_inf.x, curr_path_inf.x)
 
             for j in range(fb.num_cams):
-                v1[j] = list(_point_to_pixel_packed(X[2], packed_cals[j], imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield))
+                v1[j] = list(_ptp(X[2], j))
         else:
             X[2][:] = X[1]
             for j in range(fb.num_cams):
                 if curr_corres.p[j] == CORRES_NONE:
-                    v1[j] = list(_point_to_pixel_packed(X[2], packed_cals[j], imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield))
+                    v1[j] = list(_ptp(X[2], j))
                 else:
                     _ix = curr_corres.p[j]
                     v1[j][0] = curr_targets[j][_ix].x
@@ -663,7 +765,8 @@ def trackcorr_c_loop(run_info, step):
 
         _pi = (c_imx, c_imy, imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield)
         w = sorted_candidates_in_volume(X[2], v1, fb.buf[2], run_info,
-                                        _packed_cals=packed_cals, _pix_info=_pi)
+                                        _packed_cals=packed_cals, _pix_info=_pi,
+                                        _jit_tuples=_jt)
         if w is None:
             continue
 
@@ -680,10 +783,11 @@ def trackcorr_c_loop(run_info, step):
                 X[5][:] = search_volume_center_moving(X[1], X[3])
 
             for j in range(fb.num_cams):
-                v1[j] = list(_point_to_pixel_packed(X[5], packed_cals[j], imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield))
+                v1[j] = list(_ptp(X[5], j))
 
             wn = sorted_candidates_in_volume(X[5], v1, fb.buf[3], run_info,
-                                             _packed_cals=packed_cals, _pix_info=_pi)
+                                             _packed_cals=packed_cals, _pix_info=_pi,
+                                             _jit_tuples=_jt)
             if wn is not None:
                 count3 = 0
                 kk = 0
@@ -715,7 +819,10 @@ def trackcorr_c_loop(run_info, step):
 
             v2 = [[0.0, 0.0] for _ in range(TR_MAX_CAMS)]
             philf = [[PT_UNUSED] * MAX_CANDS for _ in range(TR_MAX_CAMS)]
-            quali = assess_new_position(X[5], v2, philf, fb.buf[3], run_info)
+            quali = assess_new_position(X[5], v2, philf, fb.buf[3], run_info,
+                                        _jit_cals=jit_cals if HAS_NUMBA else None,
+                                        _jit_mmluts=jit_mmluts if HAS_NUMBA else None,
+                                        _pix_info=_pi)
 
             if quali >= 2:
                 in_volume = 0
@@ -763,7 +870,10 @@ def trackcorr_c_loop(run_info, step):
             if curr_path_inf.inlist == 0 and curr_path_inf.prev >= 0:
                 v2 = [[0.0, 0.0] for _ in range(TR_MAX_CAMS)]
                 philf = [[PT_UNUSED] * MAX_CANDS for _ in range(TR_MAX_CAMS)]
-                quali = assess_new_position(X[2], v2, philf, fb.buf[2], run_info)
+                quali = assess_new_position(X[2], v2, philf, fb.buf[2], run_info,
+                                            _jit_cals=jit_cals if HAS_NUMBA else None,
+                                            _jit_mmluts=jit_mmluts if HAS_NUMBA else None,
+                                            _pix_info=_pi)
 
                 if quali >= 2:
                     X[3][:] = X[2]
@@ -855,6 +965,18 @@ def trackback_c(run_info):
     inv_pix_x = 1.0 / cpar.pix_x; inv_pix_y = 1.0 / cpar.pix_y
     c_chfield = cpar.chfield; c_mm = cpar.mm
     packed_cals = [_pack_cal(cal[j], c_mm) for j in range(fb.num_cams)]
+    if HAS_NUMBA:
+        jit_cals, jit_mmluts = _pack_cams_jit(cal, c_mm)
+        _jt = _pack_cams_jit_tuples(jit_cals, jit_mmluts)
+    else:
+        _jt = None
+
+    def _ptp(pos, j):
+        if HAS_NUMBA:
+            return _ptp_jit(pos, jit_cals[j], jit_mmluts[j],
+                            imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield)
+        return _point_to_pixel_packed(pos, packed_cals[j], imx_half, imy_half,
+                                      inv_pix_x, inv_pix_y, c_chfield)
 
     Ymin = 0.0
     Ymax = 0.0
@@ -883,11 +1005,12 @@ def trackback_c(run_info):
 
             n = [[0.0, 0.0] for _ in range(fb.num_cams)]
             for j in range(fb.num_cams):
-                n[j] = list(_point_to_pixel_packed(X[2], packed_cals[j], imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield))
+                n[j] = list(_ptp(X[2], j))
 
             _pi = (c_imx, c_imy, imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield)
             w = sorted_candidates_in_volume(X[2], n, fb.buf[2], run_info,
-                                            _packed_cals=packed_cals, _pix_info=_pi)
+                                            _packed_cals=packed_cals, _pix_info=_pi,
+                                            _jit_tuples=_jt)
 
             if w is not None:
                 i = 0
@@ -912,7 +1035,10 @@ def trackback_c(run_info):
                 if curr_path_inf.inlist == 0:
                     v2 = [[0.0, 0.0] for _ in range(TR_MAX_CAMS)]
                     philf = [[PT_UNUSED] * MAX_CANDS for _ in range(TR_MAX_CAMS)]
-                    quali = assess_new_position(X[2], v2, philf, fb.buf[2], run_info)
+                    quali = assess_new_position(X[2], v2, philf, fb.buf[2], run_info,
+                                                _jit_cals=jit_cals if HAS_NUMBA else None,
+                                                _jit_mmluts=jit_mmluts if HAS_NUMBA else None,
+                                                _pix_info=_pi)
                     if quali >= 2:
                         in_volume = 0
 

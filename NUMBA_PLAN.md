@@ -214,40 +214,199 @@ cal_flat = np.zeros((num_cams, 28), dtype=np.float64)
 
 **Expected speedup:** 50-100x over Phase 2 (approaching C speed).
 
-### Phase 4: Batch vectorization (optional)
+### Phase 4: Fuse the per-particle loop body into Numba
 
-Once SoA is in place, some operations can be vectorized across all particles simultaneously:
+The remaining ~2s is dominated by Python glue overhead — not computation. Every per-particle iteration crosses the Python→Numba boundary ~10 times, creates foundpix lists, builds dict results, and accesses `Pathinfo`/`Corres` objects via Python slot lookups. The only way to eliminate this overhead is to push the entire per-particle loop body into a single `@njit` function.
 
-- Project all N particles through all cameras in one batch call (N x cameras matrix ops).
-- Compute all search volumes in one pass.
-- Vectorized distance computations for candidate search (broadcast over target arrays).
-- Batch angle/acceleration for all candidate pairs.
+**Why this is hard (and why Phase 3 stopped here):**
 
-This phase is optional because Phase 3 (Numba) already achieves near-C speed. Batch vectorization helps most when particle counts are very large (>1000 per frame).
+1. **Pathinfo/Corres are Python objects.** The main loop reads/writes `path_info[h].x`, `.prev`, `.next`, `.inlist`, `.decis[]`, `.linkdecis[]`, `.finaldecis` and `correspond[h].p[cam]`. Numba cannot touch Python objects — these must become SoA arrays on `Frame`.
 
-**Expected speedup:** 2-3x over Phase 3.
+2. **`sorted_candidates_in_volume` returns Python dicts.** The `w[mm]['ftnr']` / `w[mm]['freq']` interface wraps JIT results back into Python dicts, then the loop immediately unpacks them. Moving the consumer (angle_acc, register_link_candidate, etc.) into the same JIT function eliminates this round-trip.
 
-## Measured Results (Phase 0+1 implemented)
+3. **`point_position` (ray tracing + skew midpoint) is still pure Python.** Called ~55 times per step (only for `add_particle` paths), it uses `np.cross`, `np.dot`, `np.linalg.norm`, and the `ray_tracing` module. Must be JIT'd or inlined before the full loop body can compile.
 
-| Test | Before | Phase 0 (mmlut) | Phase 0+1a (scalar + foundpix) | Phase 0+1b (inlined + packed) |
+4. **`add_particle` mutates Frame state.** It writes to `path_info`, `correspond`, `targ_tnr`, `targets`, and increments `num_parts`. With SoA, these become array writes that Numba can do directly.
+
+**Strategy: SoA Frame + monolithic `trackcorr_inner_jit`**
+
+The approach is NOT to vectorize across particles (they are inherently sequential — each `add_particle` can create new candidates for later iterations). Instead, keep the sequential per-particle loop but run it entirely inside one Numba function that operates on numpy arrays.
+
+**Step 4a: SoA arrays for Pathinfo and Corres on Frame** (~1 day)
+
+Add contiguous numpy arrays to `Frame` alongside the existing Python objects (dual storage, like we did for `targ_x/y/tnr`):
+
+```python
+class Frame:
+    # --- existing AoS (keep for I/O and non-hot-path callers) ---
+    path_info:   list[Pathinfo]
+    correspond:  list[Corres]
+    targets:     list[list[Target]]
+
+    # --- new SoA (hot-path arrays) ---
+    path_x:          ndarray  # (max_targets, 3) float64
+    path_prev:       ndarray  # (max_targets,)   int32
+    path_next:       ndarray  # (max_targets,)   int32
+    path_prio:       ndarray  # (max_targets,)   int32
+    path_inlist:     ndarray  # (max_targets,)   int32
+    path_finaldecis: ndarray  # (max_targets,)   float64
+    path_decis:      ndarray  # (max_targets, POSI) float64
+    path_linkdecis:  ndarray  # (max_targets, POSI) int32
+
+    corres_nr:       ndarray  # (max_targets,)   int32
+    corres_p:        ndarray  # (max_targets, 4) int32
+
+    # --- already done ---
+    targ_x:     list[ndarray]  # per camera
+    targ_y:     list[ndarray]  # per camera
+    targ_tnr:   list[ndarray]  # per camera
+```
+
+`Frame.read()` populates both AoS and SoA. After the hot loop, SoA is synced back to AoS for `Frame.write()`. POSI=80 means `path_decis` is (N, 80) — 640 bytes per particle, modest.
+
+Files: `tracking_frame_buf.py` (add arrays, populate in `read`), `track.py` (read/write SoA in the link-resolution loops at the end of `trackcorr_c_loop`).
+
+**Step 4b: JIT `point_position` (ray_tracing + skew_midpoint)** (~0.5 days)
+
+`point_position` is called ~55 times per step (only from `assess_new_position` when `quali >= 2`). It's not a major bottleneck at current call volume, but it's a blocker for compiling the loop body because it uses Python objects and numpy high-level ops.
+
+Create `point_position_jit(targets_flat, num_cams, cal_arrays, mmlut_tuples, mm_params)` in `track_kernels.py`:
+- Inline `ray_tracing` (it's just the inverse of `flat_image_coord` — ~40 lines of scalar math).
+- Inline `skew_midpoint` (cross product + dot product — ~20 lines of scalar math).
+- Accept the same packed cal arrays already used by `point_to_pixel_jit`.
+
+**Step 4c: `sorted_candidates_in_volume_jit`** (~0.5 days)
+
+Fuse `searchquader_jit` + `candsearch_in_pix_jit` (all cams) + `sort_candidates_by_freq_jit` into one `@njit` function. Currently these are three separate JIT calls with Python glue (foundpix list creation, numpy array conversion) between them. The fused version:
+
+```python
+@njit(cache=True)
+def sorted_candidates_jit(center, center_proj, num_cams, cal_arrays, mmlut_tuples,
+                          targ_x_tuple, targ_y_tuple, targ_tnr_tuple,
+                          num_targets, tpar_bounds, pix_info):
+    """Returns (ftnr, freq, whichcam, num_valid) — all numpy arrays."""
+    xr, xl, yd, yu = searchquader_jit(...)
+    # candsearch per camera, write directly into ftnr/whichcam arrays
+    # sort in-place
+    return ftnr, freq, whichcam, num_valid
+```
+
+Eliminates: `_make_foundpix_array` (0.09s), list→numpy conversion (0.11s), `register_closest_neighbs` wrapper (0.42s), `searchquader` wrapper (0.30s) = ~0.9s.
+
+**Step 4d: `trackcorr_inner_jit`** (~2 days)
+
+The main event. One `@njit` function that processes all particles for one step:
+
+```python
+@njit(cache=True)
+def trackcorr_inner_jit(
+    # Frame 0 (previous) SoA
+    f0_path_x, f0_path_prev, f0_path_next, ...,
+    # Frame 1 (current) SoA
+    f1_path_x, f1_path_prev, f1_path_next, f1_path_inlist,
+    f1_path_decis, f1_path_linkdecis, f1_path_finaldecis,
+    f1_corres_p, f1_num_parts,
+    # Frame 2 (next) SoA — same fields
+    # Frame 3 (next-next) SoA — same fields
+    # Target SoA per camera (as tuples of arrays)
+    # Packed calibration arrays (tuples)
+    # Tracking parameters (scalars)
+    # Volume parameters (scalars)
+):
+    """Process all particles for one tracking step.
+
+    Returns (count1, num_added, updated SoA arrays).
+    """
+    for h in range(f1_num_parts):
+        # Everything currently in trackcorr_c_loop's inner loop:
+        # - search_volume_center_moving (inline: 3 subtracts + 3 adds)
+        # - point_to_pixel_jit (already compiled, zero-overhead Numba→Numba call)
+        # - sorted_candidates_jit (fused searchquader+candsearch+sort)
+        # - angle_acc (inline: ~15 float ops)
+        # - pos3d_in_bounds (inline: 6 comparisons)
+        # - _vec3_dist (inline: 3 subtracts + sqrt)
+        # - register_link_candidate (inline: 2 array writes + increment)
+        # - assess_new_position (inline: point_to_pixel_jit + candsearch_rest_jit per cam)
+        # - point_position_jit (for add_particle paths)
+        # - add_particle (inline: array writes)
+```
+
+All intermediate functions (`angle_acc`, `pos3d_in_bounds`, `_vec3_dist`, `search_volume_center_moving`, `register_link_candidate`) become either inlined scalar math or Numba→Numba calls with zero dispatch overhead. The ~40K Python function calls per step collapse to one Python→Numba entry and one exit.
+
+The link-resolution loops (lines 905-927 in current `trackcorr_c_loop`) can also move into a separate `@njit` function or stay in Python — they're O(num_parts) with minimal work per iteration and only run once per step.
+
+**Step 4e: Wire it up and sync** (~0.5 days)
+
+`trackcorr_c_loop` becomes:
+1. Pack frames' SoA arrays into local variables (cheap — just array references).
+2. Call `trackcorr_inner_jit(...)` — one JIT entry.
+3. Run link-resolution (can stay Python or be a second JIT call).
+4. Sync SoA back to AoS for `write_frame_from_start`.
+
+**What this eliminates (cavity trackcorr profile, 2.15s):**
+
+| Cost | Source | Eliminated by |
+|---|---|---|
+| 0.42s | `register_closest_neighbs` wrapper | Fused into `sorted_candidates_jit` |
+| 0.33s | `sorted_candidates_in_volume` glue | Fused into `sorted_candidates_jit` |
+| 0.30s | `searchquader` wrapper | Fused into `sorted_candidates_jit` |
+| 0.33s | `trackcorr_c_loop` main body overhead | Entire loop in JIT |
+| 0.18s | `angle_acc` Python calls | Inlined in JIT (zero dispatch) |
+| 0.09s | `_make_foundpix_array` | Eliminated (pre-allocated in JIT) |
+| 0.09s | `pos3d_in_bounds` Python calls | Inlined in JIT |
+| 0.12s | `_ptp_jit` wrapper calls | Direct Numba→Numba calls |
+| **~1.86s** | **Total eliminable** | |
+
+Remaining irreducible costs: I/O (~0.10s), one-time JIT setup per step (~0.01s), `point_position` for add_particle (~0.02s). **Expected time: ~0.3s** (approaching C speed).
+
+**Risk assessment:**
+
+- **Numba function signature size:** `trackcorr_inner_jit` will have ~40-50 parameters (4 frames × ~10 arrays each + cals + params). Numba handles this fine — it's just pointer passing. Use a helper that unpacks Frame SoA into the flat arg list.
+- **Debuggability:** Remove `@njit` and the function runs as plain Python (same arrays, same logic). The SoA arrays are inspectable with standard numpy tools.
+- **Correctness:** The function signature forces all state to be explicit — no hidden mutations through Python object references. This actually makes it *easier* to verify than the current code.
+- **AoS/SoA sync bugs:** The dual-storage pattern (keep AoS for I/O, SoA for compute) requires careful sync. Limit sync points to `Frame.read()` (AoS→SoA) and post-loop (SoA→AoS for write). Consider adding a `Frame.sync_to_aos()` method.
+- **`add_particle` changes array sizes:** `num_parts` grows during the loop. Pre-allocate SoA arrays to `max_targets` (already done) and track `num_parts` as an integer.
+
+**Effort:** 4-5 days total.
+**Expected speedup:** 7x over Phase 3 (2.15s → ~0.3s), 600-700x cumulative from original.
+**Debuggable:** Yes — remove `@njit` to run as plain Python on the same SoA arrays.
+
+## Measured Results
+
+| Test | Before | Phase 0 (mmlut) | Phase 1 (scalar+packed) | Phase 3 (all JIT) |
 |---|---|---|---|---|
 | cavity track3d | ~400s | 5.9s (68x) | ~5s (80x) | ~5s (80x) |
-| cavity trackcorr | ~400s | 225s (1.8x) | 38s (10.5x) | 10.5s (38x) |
+| cavity trackcorr | ~400s | 225s (1.8x) | 10.5s (38x) | 2.15s (186x) |
 | burgers track3d | 1.4s | 0.9s | 0.9s | 0.9s |
-| all 25 track tests | - | - | 55s total | 38s total |
+| all 25 track tests | - | - | 38s total | 25s total |
+
+**Phase 3 JIT progression (cavity trackcorr):**
+- point_to_pixel_jit only: 6.4s
+- + candsearch_in_pix_jit (SoA targets): 3.0s
+- + searchquader_jit (batched) + sort_candidates_by_freq_jit: 2.7s
+- + assess_new_position JIT path: 2.15s
 
 **Key findings:**
 - Phase 0 (mmlut) was transformative for track3d (~68x) because its runtime was dominated by projection math.
 - For trackcorr, the numpy structured array overhead in `sort_candidates_by_freq` was the real bottleneck (~73% of runtime per profiling). Replacing `Foundpix_dtype` recarray with plain Python lists gave the biggest speedup (225s -> 38s).
-- `math.*` vs `np.*` for scalar operations helped but was secondary (~10% improvement).
-- Inlining the full projection chain (`point_to_pixel` → `img_coord` → `flat_image_coord` → `flat_to_dist` → `metric_to_pixel`) + pre-packing calibration fields into tuples once per camera cut trackcorr from 38s to 10.5s (3.6x). Also inlined `get_mmf_from_mmlut`, `multimed_nlay`, and moved lazy imports to module level.
-- Note: cProfile inflates large-function cost (43.7s profiled vs 12.3s actual), so always verify with wall-clock timing.
-- All parity tests still pass with exact 0.000000 position difference vs C/Cython.
+- Inlining the full projection chain + pre-packing calibration fields into tuples cut trackcorr from 38s to 10.5s (3.6x).
+- Numba JIT for point_to_pixel (0.9µs/call vs 10µs Python) cut 10.5s to 6.4s.
+- candsearch_in_pix_jit with minimal SoA (targ_x/y/tnr arrays on Frame) cut 6.4s to 3.0s.
+- Batching searchquader into one JIT call eliminated 442K Python→Numba dispatches (2.3µs each = 1.0s saved).
+- JIT sort_candidates_by_freq eliminated 0.64s of pure-Python bubble sort.
+- Routing assess_new_position through JIT point_to_pixel path (was using slow Python path) saved ~0.6s.
+- angle_acc JIT was tested but reverted: dispatch overhead (2.3µs × 40K calls) exceeded the savings from JIT-compiling the lightweight scalar math.
+- cProfile inflates large-function cost, so always verify with wall-clock timing.
+- All parity tests pass with exact numerical results vs C/Cython.
 
-**Remaining bottleneck breakdown (cavity trackcorr, 10.5s total):**
-- `_point_to_pixel_packed`: 4.74s (479K calls, 10µs/call) — 45% — pure scalar math, needs Numba
-- `candsearch_in_pix`: 3.79s (45K calls, 85µs/call) — 36% — Target object attribute access, needs SoA
-- Other (sort, angle_acc, I/O): ~2.0s — 19%
+**Remaining bottleneck breakdown (cavity trackcorr, 2.15s total):**
+- `register_closest_neighbs` wrapper: ~0.42s — Python overhead around JIT candsearch dispatch
+- `sorted_candidates_in_volume` overhead: ~0.33s — foundpix list creation + numpy array conversion for JIT sort
+- `searchquader` wrapper: ~0.30s — Python quader construction before JIT dispatch
+- `angle_acc`: ~0.18s — pure Python scalar math (JIT dispatch overhead exceeds savings)
+- `pos3d_in_bounds`: ~0.09s — pure Python
+- trackcorr_c_loop main body: ~0.33s — Python loop overhead, attribute access, list construction
+- I/O (read/write frames): ~0.10s
 
 ## Summary
 
@@ -255,11 +414,18 @@ This phase is optional because Phase 3 (Numba) already achieves near-C speed. Ba
 |---|---|---|---|---|
 | 0. Wire up mmlut | ~2 hours | 1.8-68x | Yes, existing code | DONE |
 | 1. Scalar kernels + foundpix + inlined chain | 2-3 days | 38-80x | Yes, plain Python | DONE |
-| 2. SoA data | 3-5 days | 50-150x | Yes, numpy arrays | TODO |
-| 3. Numba JIT | 2-3 days | 100-500x | Yes, remove @njit to debug | TODO |
-| 4. Batch vectorize | 3-5 days | 200-1000x | Yes | TODO |
+| 2. SoA data | 3-5 days | — | Yes, numpy arrays | SKIPPED (minimal SoA done for targets) |
+| 3. Numba JIT (all kernels) | ~1 day | 186x | Yes, remove @njit to debug | DONE |
+| 4a. SoA for Pathinfo/Corres | ~1 day | — | Yes, numpy arrays | TODO |
+| 4b. JIT point_position | ~0.5 days | — | Yes | TODO |
+| 4c. Fused sorted_candidates_jit | ~0.5 days | ~280x | Yes | TODO |
+| 4d. trackcorr_inner_jit | ~2 days | ~600-700x | Yes | TODO |
+| 4e. Wire up + sync | ~0.5 days | — | Yes | TODO |
 
-**Current state: cavity trackcorr 10.5s, cavity track3d 5s. Target: <5s for both.**
+**Current state: cavity trackcorr 2.15s (186x speedup), cavity track3d ~5s.**
+**Phase 4 target: cavity trackcorr ~0.3s (~600-700x), approaching C/Cython speed.**
+
+The remaining ~2s is Python glue overhead: function wrappers, foundpix list creation, dict packing/unpacking, Python object attribute access. Phase 4 eliminates this by running the entire per-particle loop body inside one `@njit` function operating on SoA numpy arrays.
 
 ## Design Principles
 
