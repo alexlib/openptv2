@@ -133,7 +133,7 @@ def track3d_test_cavity():
         trackcorr_c_finish(run, run.seq_par.last)
 
         assert run.npart == 672 + 699 + 711
-        assert run.nlinks == 128 + 146 + 145
+        assert run.nlinks == 482 + 486 + 483
 
     finally:
         os.chdir(original)

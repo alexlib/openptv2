@@ -1391,7 +1391,7 @@ def trackcorr_loop_jit(
             path_finaldecis_1[h] = path_decis_1[h, 0]
             path_next_1[h] = path_linkdecis_1[h, 0]
 
-    # Phase 2: Resolve conflicts
+    # Phase 2: Resolve conflicts (original single-pass)
     for h in range(orig_parts_1):
         if path_inlist_1[h] > 0:
             next_h = path_next_1[h]
@@ -1404,7 +1404,231 @@ def trackcorr_loop_jit(
                     path_prev_2[next_h] = h
                 else:
                     path_next_1[h] = NEXT_NONE_K
+
+    # Phase 3: Losers retry with fallback candidates (claim unclaimed only)
+    for h in range(orig_parts_1):
+        if path_inlist_1[h] > 1 and path_next_1[h] == NEXT_NONE_K:
+            for ti in range(1, path_inlist_1[h]):
+                cand = path_linkdecis_1[h, ti]
+                if path_prev_2[cand] == PREV_NONE_K:
+                    path_next_1[h] = cand
+                    path_finaldecis_1[h] = path_decis_1[h, ti]
+                    path_prev_2[cand] = h
+                    break
+
+    for h in range(orig_parts_1):
         if path_next_1[h] != NEXT_NONE_K:
             count1 += 1
 
     return count1, num_added
+
+
+@njit(cache=True)
+def _find_closest_in_3d(path_x_2, np2, pred_x, pred_y, pred_z,
+                         dx, dy, dz, max_cands,
+                         cand_inds, cand_dists):
+    """Find up to max_cands closest candidates by distance within a 3D box.
+
+    Maintains a running top-N by distance, matching candsearch_in_pix logic.
+    Writes into pre-allocated cand_inds/cand_dists arrays.
+    Returns the number of candidates found.
+    """
+    n_found = 0
+    for s in range(max_cands):
+        cand_inds[s] = -1
+        cand_dists[s] = 1e20
+
+    for k in range(np2):
+        ddx = path_x_2[k, 0] - pred_x
+        ddy = path_x_2[k, 1] - pred_y
+        ddz = path_x_2[k, 2] - pred_z
+        if abs(ddx) < dx and abs(ddy) < dy and abs(ddz) < dz:
+            d = math.sqrt(ddx * ddx + ddy * ddy + ddz * ddz)
+            for slot in range(max_cands):
+                if d < cand_dists[slot]:
+                    for s in range(max_cands - 1, slot, -1):
+                        cand_inds[s] = cand_inds[s - 1]
+                        cand_dists[s] = cand_dists[s - 1]
+                    cand_inds[slot] = k
+                    cand_dists[slot] = d
+                    break
+
+    for s in range(max_cands):
+        if cand_inds[s] >= 0:
+            n_found += 1
+    return n_found
+
+
+@njit(cache=True)
+def track3d_loop_jit(
+    orig_parts,
+    # Frame 0 (prev) — read only
+    path_x_0, path_prev_0, num_parts_0,
+    # Frame 1 (curr) — read/write
+    path_x_1, path_prev_1, path_next_1, num_parts_1,
+    # Frame 2 (next) — read/write
+    path_x_2, path_prev_2, path_next_2, num_parts_2,
+    # Tracking params
+    dx, dy, dz,
+    max_cands,
+):
+    """Full track3d loop (3 levels) — single JIT entry.
+
+    Level 1: particles with previous links — predict from velocity.
+    Level 2: no prev link — average velocity from neighbors.
+    Level 3: no prev link, no neighbor info — use current position.
+
+    Returns count1 (number of links established).
+    """
+    count1 = 0
+    np2 = num_parts_2
+    cand_inds = np.empty(max_cands, dtype=np.int32)
+    cand_dists = np.empty(max_cands, dtype=np.float64)
+    decis_vals = np.empty(max_cands, dtype=np.float64)
+    decis_inds = np.empty(max_cands, dtype=np.int32)
+
+    # ===== Level 1: Particles with previous links =====
+    for i in range(orig_parts):
+        if path_prev_1[i] < 0:
+            continue
+        prev_idx = path_prev_1[i]
+        if prev_idx < 0 or prev_idx >= num_parts_0:
+            continue
+
+        pred_x = 2.0 * path_x_1[i, 0] - path_x_0[prev_idx, 0]
+        pred_y = 2.0 * path_x_1[i, 1] - path_x_0[prev_idx, 1]
+        pred_z = 2.0 * path_x_1[i, 2] - path_x_0[prev_idx, 2]
+
+        n_cands = _find_closest_in_3d(path_x_2, np2, pred_x, pred_y, pred_z,
+                                       dx, dy, dz, max_cands, cand_inds, cand_dists)
+        if n_cands == 0:
+            path_next_1[i] = -1
+            continue
+
+        n_decis = 0
+        for ci in range(n_cands):
+            k = cand_inds[ci]
+            d0 = path_x_1[i, 0] - 2.0 * path_x_2[k, 0] + path_x_0[prev_idx, 0]
+            d1 = path_x_1[i, 1] - 2.0 * path_x_2[k, 1] + path_x_0[prev_idx, 1]
+            d2 = path_x_1[i, 2] - 2.0 * path_x_2[k, 2] + path_x_0[prev_idx, 2]
+            acc = math.sqrt(d0 * d0 + d1 * d1 + d2 * d2)
+            decis_vals[n_decis] = acc
+            decis_inds[n_decis] = k
+            n_decis += 1
+
+        if n_decis > 1:
+            for si in range(n_decis - 1):
+                for sj in range(n_decis - 1, si, -1):
+                    if decis_vals[sj - 1] > decis_vals[sj]:
+                        decis_vals[sj - 1], decis_vals[sj] = decis_vals[sj], decis_vals[sj - 1]
+                        decis_inds[sj - 1], decis_inds[sj] = decis_inds[sj], decis_inds[sj - 1]
+
+        if path_prev_2[decis_inds[0]] < 0:
+            path_next_1[i] = decis_inds[0]
+            path_prev_2[decis_inds[0]] = i
+            count1 += 1
+        else:
+            path_next_1[i] = -1
+
+    # ===== Level 2: No previous link, neighbor velocity =====
+    for i in range(orig_parts):
+        if path_prev_1[i] >= 0 or path_next_1[i] >= 0:
+            continue
+
+        vel_x = 0.0; vel_y = 0.0; vel_z = 0.0
+        nvel = 0
+        cx = path_x_1[i, 0]; cy = path_x_1[i, 1]; cz = path_x_1[i, 2]
+
+        for j in range(orig_parts):
+            if j == i:
+                continue
+            if (abs(path_x_1[j, 0] - cx) < dx and
+                    abs(path_x_1[j, 1] - cy) < dy and
+                    abs(path_x_1[j, 2] - cz) < dz and
+                    path_prev_1[j] >= 0):
+                pj = path_prev_1[j]
+                vel_x += path_x_1[j, 0] - path_x_0[pj, 0]
+                vel_y += path_x_1[j, 1] - path_x_0[pj, 1]
+                vel_z += path_x_1[j, 2] - path_x_0[pj, 2]
+                nvel += 1
+
+        if nvel == 0:
+            continue
+
+        inv_nvel = 1.0 / nvel
+        pred_x = cx + vel_x * inv_nvel
+        pred_y = cy + vel_y * inv_nvel
+        pred_z = cz + vel_z * inv_nvel
+
+        n_cands = _find_closest_in_3d(path_x_2, np2, pred_x, pred_y, pred_z,
+                                       dx, dy, dz, max_cands, cand_inds, cand_dists)
+        if n_cands == 0:
+            path_next_1[i] = -1
+            continue
+
+        n_decis = 0
+        for ci in range(n_cands):
+            k = cand_inds[ci]
+            d0 = cx - 2.0 * path_x_2[k, 0] + pred_x
+            d1 = cy - 2.0 * path_x_2[k, 1] + pred_y
+            d2 = cz - 2.0 * path_x_2[k, 2] + pred_z
+            acc = math.sqrt(d0 * d0 + d1 * d1 + d2 * d2)
+            decis_vals[n_decis] = acc
+            decis_inds[n_decis] = k
+            n_decis += 1
+
+        if n_decis > 1:
+            for si in range(n_decis - 1):
+                for sj in range(n_decis - 1, si, -1):
+                    if decis_vals[sj - 1] > decis_vals[sj]:
+                        decis_vals[sj - 1], decis_vals[sj] = decis_vals[sj], decis_vals[sj - 1]
+                        decis_inds[sj - 1], decis_inds[sj] = decis_inds[sj], decis_inds[sj - 1]
+
+        if path_prev_2[decis_inds[0]] < 0:
+            path_next_1[i] = decis_inds[0]
+            path_prev_2[decis_inds[0]] = i
+            count1 += 1
+        else:
+            path_next_1[i] = -1
+
+    # ===== Level 3: No previous link, no neighbors — static prediction =====
+    for i in range(orig_parts):
+        if path_prev_1[i] >= 0 or path_next_1[i] >= 0:
+            continue
+
+        pred_x = path_x_1[i, 0]
+        pred_y = path_x_1[i, 1]
+        pred_z = path_x_1[i, 2]
+
+        n_cands = _find_closest_in_3d(path_x_2, np2, pred_x, pred_y, pred_z,
+                                       dx, dy, dz, max_cands, cand_inds, cand_dists)
+        if n_cands == 0:
+            path_next_1[i] = -1
+            continue
+
+        n_decis = 0
+        for ci in range(n_cands):
+            k = cand_inds[ci]
+            d0 = pred_x - 2.0 * path_x_2[k, 0] + pred_x
+            d1 = pred_y - 2.0 * path_x_2[k, 1] + pred_y
+            d2 = pred_z - 2.0 * path_x_2[k, 2] + pred_z
+            acc = math.sqrt(d0 * d0 + d1 * d1 + d2 * d2)
+            decis_vals[n_decis] = acc
+            decis_inds[n_decis] = k
+            n_decis += 1
+
+        if n_decis > 1:
+            for si in range(n_decis - 1):
+                for sj in range(n_decis - 1, si, -1):
+                    if decis_vals[sj - 1] > decis_vals[sj]:
+                        decis_vals[sj - 1], decis_vals[sj] = decis_vals[sj], decis_vals[sj - 1]
+                        decis_inds[sj - 1], decis_inds[sj] = decis_inds[sj], decis_inds[sj - 1]
+
+        if path_prev_2[decis_inds[0]] < 0:
+            path_next_1[i] = decis_inds[0]
+            path_prev_2[decis_inds[0]] = i
+            count1 += 1
+        else:
+            path_next_1[i] = -1
+
+    return count1

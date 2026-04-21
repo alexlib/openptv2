@@ -829,6 +829,8 @@ def trackcorr_c_loop(run_info, step):
         fb.write_frame_from_start(step)
         if step < run_info.seq_par.last - 2:
             fb.read_frame_at_end(step + 3, read_links=False)
+        else:
+            fb.buf[fb.buf_len - 1].num_parts = 0
         return
 
     # ===== Python fallback (no Numba) =====
@@ -1015,20 +1017,36 @@ def trackcorr_c_loop(run_info, step):
             curr_path_inf.finaldecis = curr_path_inf.decis[0]
             curr_path_inf.next = curr_path_inf.linkdecis[0]
 
+    # Phase 2: Resolve conflicts (single-pass)
     for h in range(fb.buf[1].num_parts):
         curr_path_inf = fb.buf[1].path_info[h]
         if curr_path_inf.inlist > 0:
-            ref_path_inf = fb.buf[2].path_info[curr_path_inf.next]
+            next_h = curr_path_inf.next
+            ref_path_inf = fb.buf[2].path_info[next_h]
             if ref_path_inf.prev == PREV_NONE:
                 ref_path_inf.prev = h
             else:
-                if (fb.buf[1].path_info[ref_path_inf.prev].finaldecis >
-                        curr_path_inf.finaldecis):
-                    fb.buf[1].path_info[ref_path_inf.prev].next = NEXT_NONE
+                prev_of_next = ref_path_inf.prev
+                if fb.buf[1].path_info[prev_of_next].finaldecis > curr_path_inf.finaldecis:
+                    fb.buf[1].path_info[prev_of_next].next = NEXT_NONE
                     ref_path_inf.prev = h
                 else:
                     curr_path_inf.next = NEXT_NONE
-        if curr_path_inf.next != NEXT_NONE:
+
+    # Phase 3: Losers retry with fallback candidates (claim unclaimed only)
+    for h in range(fb.buf[1].num_parts):
+        curr_path_inf = fb.buf[1].path_info[h]
+        if curr_path_inf.inlist > 1 and curr_path_inf.next == NEXT_NONE:
+            for ti in range(1, curr_path_inf.inlist):
+                cand = curr_path_inf.linkdecis[ti]
+                if fb.buf[2].path_info[cand].prev == PREV_NONE:
+                    curr_path_inf.next = cand
+                    curr_path_inf.finaldecis = curr_path_inf.decis[ti]
+                    fb.buf[2].path_info[cand].prev = h
+                    break
+
+    for h in range(fb.buf[1].num_parts):
+        if fb.buf[1].path_info[h].next != NEXT_NONE:
             count1 += 1
 
     print(f"step: {step}, curr: {fb.buf[1].num_parts}, "
@@ -1042,6 +1060,8 @@ def trackcorr_c_loop(run_info, step):
     fb.write_frame_from_start(step)
     if step < run_info.seq_par.last - 2:
         fb.read_frame_at_end(step + 3, read_links=False)
+    else:
+        fb.buf[fb.buf_len - 1].num_parts = 0
 
 
 def trackcorr_c_finish(run_info, step):
