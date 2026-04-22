@@ -68,7 +68,10 @@ Created `algorithms/compat/` package with optv-compatible API wrappers:
 - ✅ `epipolar.py` — Re-export epipolar_curve from epi.py
 - ✅ Test coverage: 12/12 tests passing in `test_compat_processing.py`
 
-### Phase 3: Correspondences & Tracker (Pending)
+### Phase 3: Correspondences & Tracker ✅ Complete
+- ✅ `correspondences.py` — MatchedCoords class + correspondences wrapper (~210 lines)
+- ✅ `tracker.py` — Tracker class wrapping functional tracking API (~165 lines)
+- ✅ Test coverage: 9/9 tests passing in `test_compat_workflow.py`
 ### Phase 4: Parameter Converters (Pending)
 ### Phase 5: Engine Dispatch Layer (Pending)
 ### Phase 6: GUI Migration (Pending)
