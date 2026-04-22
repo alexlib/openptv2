@@ -25,6 +25,58 @@ class Coord2d:
     y: float
 
 
+def epipolar_curve(image_point, origin_cal, project_cal, num_points, cpar, vpar):
+    """Generate points along the epipolar line projected into a second camera.
+
+    Takes a distorted pixel coordinate in one camera and produces the
+    epipolar curve as seen in a second camera, sampled at num_points
+    evenly-spaced Z values between the observed volume's Zmin and Zmax.
+
+    Args:
+        image_point: (2,) array, distorted pixel coordinates in origin camera.
+        origin_cal: Calibration of the camera seeing the point.
+        project_cal: Calibration of the camera onto which the line is projected.
+        num_points: number of samples along the line (minimum 2 for endpoints).
+        cpar: ControlPar with image size and multimedia parameters.
+        vpar: VolumePar with observed volume Z limits.
+
+    Returns:
+        (num_points, 2) array of pixel coordinates in the projection camera.
+    """
+    from .trafo import pixel_to_metric, metric_to_pixel, dist_to_flat
+    from .ray_tracing import ray_tracing
+    from .multimed import move_along_ray
+    from .imgcoord import img_coord
+
+    xp, yp = pixel_to_metric(image_point[0], image_point[1], cpar)
+
+    ap = origin_cal.added_par
+    xf, yf = dist_to_flat(
+        xp, yp,
+        origin_cal.int_par.xh, origin_cal.int_par.yh,
+        ap.k1, ap.k2, ap.k3, ap.p1, ap.p2, ap.scx, ap.she,
+    )
+
+    pos, direct = ray_tracing(
+        xf, yf,
+        origin_cal.ext_par.dm,
+        origin_cal.ext_par.x0, origin_cal.ext_par.y0, origin_cal.ext_par.z0,
+        origin_cal.int_par.cc,
+        origin_cal.glass_par.vec_x, origin_cal.glass_par.vec_y,
+        origin_cal.glass_par.vec_z,
+        cpar.mm.n1, cpar.mm.n2[0], cpar.mm.n3, cpar.mm.d[0],
+    )
+
+    line_points = np.empty((num_points, 2))
+    for i, Z in enumerate(np.linspace(vpar.Zmin_lay[0], vpar.Zmax_lay[0],
+                                      num_points)):
+        pt3d = move_along_ray(Z, pos, direct)
+        xm, ym = img_coord(pt3d, project_cal, cpar.mm)
+        line_points[i, 0], line_points[i, 1] = metric_to_pixel(xm, ym, cpar)
+
+    return line_points
+
+
 def epi_mm(xl, yl, cal1, cal2, mmp, vpar):
     """Compute epipolar line endpoints in second camera.
 
