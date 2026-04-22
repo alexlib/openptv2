@@ -50,5 +50,28 @@ Translating the OpenPTV C library (`lib/src/**`) into pure Python with NumPy (`a
 1. **Stale buffer recycling**: when `step >= last - 2`, C doesn't clear `buf[buf_len-1]` after rotation, causing `assess_new_position` to search stale data
 2. **Overcounted count1**: C counts links inside the conflict resolution loop, so particles that lose conflicts after being counted inflate `count1`
 
+## 🔧 Dual-Engine GUI Integration Progress
+
+### Phase 1: Compatibility Layer — Core Objects ✅ Complete
+Created `algorithms/compat/` package with optv-compatible API wrappers:
+- ✅ `calibration.py` — Calibration wrapper with getter/setter methods
+- ✅ `parameters.py` — ControlParams, VolumeParams, TrackingParams, SequenceParams, TargetParams, MultimediaParams wrappers
+- ✅ `tracking_framebuf.py` — Target, TargetArray, Frame wrappers with constants (CORRES_NONE, PT_UNUSED)
+- ✅ Test coverage: 13/13 tests passing in `test_compat_core.py`
+
+### Phase 2: Processing Function Wrappers (In Progress)
+- ⏳ `transforms.py` — Batch transform wrappers
+- ⏳ `imgcoord.py` — Image coordinate batch wrappers
+- ⏳ `image_processing.py` — preprocess_image wrapper
+- ⏳ `segmentation.py` — target_recognition wrapper
+- ⏳ `orientation.py` — Re-export with compat unwrapping
+- ⏳ `epipolar.py` — Re-export from epi.py
+
+### Phase 3: Correspondences & Tracker (Pending)
+### Phase 4: Parameter Converters (Pending)
+### Phase 5: Engine Dispatch Layer (Pending)
+### Phase 6: GUI Migration (Pending)
+### Phase 7: Parity Tests (Pending)
+
 ## 🚀 Next Step
-Implement `check_touch` in `algorithms/segmentation.py` and verify `segmentation` tests.
+Continue Phase 2: Create processing function wrappers for transforms, imgcoord, image_processing, segmentation, orientation, and epipolar modules.
