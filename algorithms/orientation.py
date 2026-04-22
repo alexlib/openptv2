@@ -656,3 +656,225 @@ def read_calblock(filename):
     """Read calibration block file. Delegates to sortgrid.read_calblock."""
     from .sortgrid import read_calblock as _read_calblock
     return _read_calblock(filename)
+
+
+def external_calibration(cal, ref_pts, img_pts, cpar):
+    """Update exterior calibration from known 3D-2D correspondences.
+
+    Thin wrapper around raw_orient(). Converts pixel-coordinate arrays
+    into Target objects and calls the iterative 6-parameter solver.
+
+    Args:
+        cal: Calibration object (modified in place on success).
+        ref_pts: (n, 3) array of known 3D positions.
+        img_pts: (n, 2) array of pixel coordinates.
+        cpar: ControlPar object.
+
+    Returns:
+        True if iteration converged, False otherwise.
+    """
+    from .tracking_frame_buf import Target
+
+    ref_pts = np.ascontiguousarray(ref_pts, dtype=np.float64)
+    img_pts = np.ascontiguousarray(img_pts, dtype=np.float64)
+
+    targs = []
+    for i in range(len(img_pts)):
+        targs.append(Target(pnr=i, x=img_pts[i, 0], y=img_pts[i, 1]))
+
+    return raw_orient(cal, cpar, len(ref_pts), ref_pts, targs)
+
+
+def full_calibration(cal, ref_pts, img_pts, cpar, flags=None):
+    """Full calibration adjusting exterior, interior, and distortion params.
+
+    Thin wrapper around orient(). Accepts either a list of Target objects
+    or a list of flag name strings, converts to OrientPar, and calls the
+    full bundle adjustment.
+
+    Args:
+        cal: Calibration object (modified in place on success).
+        ref_pts: (n, 3) array of known 3D positions.
+        img_pts: list of Target objects with .x, .y, .pnr attributes,
+            ordered by matching reference point (as done by
+            match_detection_to_ref).
+        cpar: ControlPar object.
+        flags: list of flag name strings to enable. Recognized:
+            'cc', 'xh', 'yh', 'k1', 'k2', 'k3', 'p1', 'p2',
+            'scale', 'shear'. If None, no flags enabled (raw-like).
+
+    Returns:
+        (residuals, used, err_est) tuple:
+            residuals: (n, 2) array of x/y residuals per point.
+            used: n-length array of target pnr values.
+            err_est: (NPAR+1,) array of error estimates per DOF.
+
+    Raises:
+        ValueError: if orient() iteration did not converge.
+    """
+    from .parameters import OrientPar
+
+    if flags is None:
+        flags = []
+
+    orient_par = OrientPar(
+        useflag=0,
+        ccflag=1 if 'cc' in flags else 0,
+        xhflag=1 if 'xh' in flags else 0,
+        yhflag=1 if 'yh' in flags else 0,
+        k1flag=1 if 'k1' in flags else 0,
+        k2flag=1 if 'k2' in flags else 0,
+        k3flag=1 if 'k3' in flags else 0,
+        p1flag=1 if 'p1' in flags else 0,
+        p2flag=1 if 'p2' in flags else 0,
+        scxflag=1 if 'scale' in flags else 0,
+        sheflag=1 if 'shear' in flags else 0,
+        interfflag=0,
+    )
+
+    ref_pts = np.ascontiguousarray(ref_pts, dtype=np.float64)
+    sigmabeta = np.zeros(NPAR + 1)
+
+    residuals = orient(cal, cpar, len(ref_pts), ref_pts, img_pts,
+                       orient_par, sigmabeta)
+
+    if residuals is None:
+        raise ValueError("Orientation iteration failed, need better setup.")
+
+    n = len(img_pts)
+    ret = np.empty((n, 2))
+    used = np.empty(n, dtype=np.int32)
+
+    for i in range(n):
+        ret[i, 0] = residuals[2 * i]
+        ret[i, 1] = residuals[2 * i + 1]
+        used[i] = img_pts[i].pnr
+
+    return ret, used, sigmabeta
+
+
+def match_detection_to_ref(cal, ref_pts, img_pts, cpar, eps=25):
+    """Match detected targets to reference 3D points via back-projection.
+
+    Thin wrapper around sortgrid(). Projects reference points into the
+    image and matches each to the nearest detected target within eps pixels.
+
+    Args:
+        cal: Calibration object.
+        ref_pts: (n, 3) array of known 3D positions.
+        img_pts: list of Target objects (detected points).
+        cpar: ControlPar object.
+        eps: pixel search radius (default 25).
+
+    Returns:
+        List of Target objects sorted by reference point order.
+        Unmatched entries have pnr=-999.
+    """
+    from .sortgrid import sortgrid
+
+    ref_pts = np.ascontiguousarray(ref_pts, dtype=np.float64)
+
+    return sortgrid(cal, cpar, len(ref_pts), ref_pts, len(img_pts),
+                    eps, img_pts)
+
+
+def multi_cam_point_positions(targets, cpar, cals):
+    """Calculate 3D positions from multi-camera 2D projections.
+
+    Convenience wrapper matching the Cython binding API signature.
+    Uses point_position() for each target point.
+
+    Args:
+        targets: (num_targets, num_cams, 2) array of metric flat coordinates.
+        cpar: ControlPar (used for multimedia parameters via cpar.mm).
+        cals: list of Calibration objects.
+
+    Returns:
+        (positions, rcm) tuple:
+            positions: (n, 3) array of 3D positions.
+            rcm: n-length array of ray convergence measures.
+    """
+    targets = np.ascontiguousarray(targets, dtype=np.float64)
+    num_targets = targets.shape[0]
+    num_cams = targets.shape[1]
+
+    res = np.empty((num_targets, 3), dtype=np.float64)
+    rcm = np.empty(num_targets, dtype=np.float64)
+
+    for pt in range(num_targets):
+        pos, dist = point_position(targets[pt], num_cams, cpar.mm, cals)
+        res[pt] = pos
+        rcm[pt] = dist
+
+    return res, rcm
+
+
+def point_positions(targets, cpar, cals, vpar=None):
+    """Dispatch to single or multi-camera point position calculation.
+
+    Matches the Cython binding API: selects single_cam or multi_cam
+    based on the number of calibrations provided.
+
+    Args:
+        targets: (num_targets, num_cams, 2) array of metric flat coords.
+        cpar: ControlPar (used for multimedia parameters).
+        cals: list of Calibration objects.
+        vpar: VolumePar (required for single camera case only).
+
+    Returns:
+        (positions, rcm) tuple.
+    """
+    if len(cals) == 1:
+        return single_cam_point_positions(targets, cpar, cals, vpar)
+    elif len(cals) > 1:
+        return multi_cam_point_positions(targets, cpar, cals)
+    else:
+        raise ValueError("wrong number of cameras in point_positions")
+
+
+def single_cam_point_positions(targets, cpar, cals, vpar):
+    """Calculate 3D positions from single-camera 2D projections.
+
+    Uses ray tracing with z-plane intersection. For a single camera,
+    the depth (z) is estimated from the volume parameters and the ray
+    direction.
+
+    Args:
+        targets: (num_targets, 1, 2) array of metric flat coordinates.
+        cpar: ControlPar.
+        cals: list with one Calibration object.
+        vpar: VolumePar with z_min_lay, z_max_lay for depth limits.
+
+    Returns:
+        (positions, rcm) tuple where rcm is zeros (no ray convergence
+        measure for single camera).
+    """
+    from .ray_tracing import ray_tracing
+
+    targets = np.ascontiguousarray(targets, dtype=np.float64)
+    num_targets = targets.shape[0]
+
+    res = np.empty((num_targets, 3), dtype=np.float64)
+    rcm = np.zeros(num_targets, dtype=np.float64)
+
+    cal = cals[0]
+    mm = cpar.mm
+    z_mid = 0.5 * (vpar.z_min_lay[0] + vpar.z_max_lay[0])
+
+    for pt in range(num_targets):
+        x, y = targets[pt, 0, 0], targets[pt, 0, 1]
+        pos, direct = ray_tracing(
+            x, y,
+            cal.ext_par.dm,
+            cal.ext_par.x0, cal.ext_par.y0, cal.ext_par.z0,
+            cal.int_par.cc,
+            cal.glass_par.vec_x, cal.glass_par.vec_y, cal.glass_par.vec_z,
+            mm.n1, mm.n2[0], mm.n3, mm.d[0],
+        )
+        if abs(direct[2]) > 1e-10:
+            t = (z_mid - pos[2]) / direct[2]
+            res[pt] = pos + t * direct
+        else:
+            res[pt] = pos
+
+    return res, rcm
