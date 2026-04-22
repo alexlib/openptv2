@@ -28,7 +28,7 @@ def _():
     import matplotlib.pyplot as plt
     from mpl_toolkits.mplot3d import Axes3D  # noqa: F401
 
-    from optv.calibration import Calibration
+    from openptv2.calibration import Calibration
     from .parameter_manager import ParameterManager
 
     return Calibration, ParameterManager, Path, np, plt

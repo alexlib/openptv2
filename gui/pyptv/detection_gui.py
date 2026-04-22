@@ -29,7 +29,7 @@ from skimage.io import imread
 from skimage.util import img_as_ubyte
 from skimage.color import rgb2gray
 
-from optv.segmentation import target_recognition
+from openptv2.segmentation import target_recognition
 from . import ptv
 from .text_box_overlay import TextBoxOverlay
 from .quiverplot import QuiverPlot

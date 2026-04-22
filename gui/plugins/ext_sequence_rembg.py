@@ -6,9 +6,9 @@ from pathlib import Path
 from skimage import img_as_ubyte
 from skimage.color import rgb2gray
 
-from optv.correspondences import correspondences, MatchedCoords
-from optv.tracker import default_naming
-from optv.orientation import point_positions
+from openptv2.correspondences import correspondences, MatchedCoords
+from openptv2.tracker import default_naming
+from openptv2.orientation import point_positions
 
 
 

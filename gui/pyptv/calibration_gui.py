@@ -32,12 +32,12 @@ from .text_box_overlay import TextBoxOverlay
 from .code_editor import oriEditor, addparEditor
 
 
-from optv.imgcoord import image_coordinates
-from optv.transforms import convert_arr_metric_to_pixel
-from optv.orientation import match_detection_to_ref
-from optv.orientation import external_calibration, full_calibration
-from optv.calibration import Calibration
-from optv.tracking_framebuf import TargetArray
+from openptv2.imgcoord import image_coordinates
+from openptv2.transforms import convert_arr_metric_to_pixel
+from openptv2.orientation import match_detection_to_ref
+from openptv2.orientation import external_calibration, full_calibration
+from openptv2.calibration import Calibration
+from openptv2.tracking_framebuf import TargetArray
 
 
 from . import ptv

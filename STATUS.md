@@ -90,7 +90,17 @@ Created `algorithms/compat/` package with optv-compatible API wrappers:
   - Each checks engine and imports from optv.* or algorithms.compat.*
 - ✅ Updated `openptv2/__init__.py` to re-export all public symbols
 - ✅ Tested: Both engines work, imports succeed, engine switching via env var
-### Phase 6: GUI Migration (Pending)
+### Phase 6: GUI Migration ✅ Complete
+- ✅ Replaced all `from optv.*` imports with `from openptv2.*` in GUI files:
+  - gui/pyptv/ptv.py: Top-level imports (lines 24-38) + 13 inline imports
+  - gui/pyptv/pyptv_gui.py, calibration_gui.py, detection_gui.py
+  - gui/pyptv/standalone_calibration.py, standalone_dumbbell_calibration.py
+  - gui/pyptv/ground_truth.py, dumbbell_ground_truth.py
+  - gui/pyptv/flowtracks_utils.py, tracking_viz_panel.py
+  - gui/pyptv/visualize_cameras_nb.py, visualize_rt_is_nb.py
+  - gui/plugins/ext_sequence_*.py (3 plugin files)
+- ✅ Total: 57+ import statements updated across 15 files
+- ✅ Verified: GUI imports successfully with both engines
 ### Phase 7: Parity Tests (Pending)
 
 ## 🚀 Next Step

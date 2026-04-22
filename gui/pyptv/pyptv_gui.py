@@ -37,9 +37,9 @@ from .mask_gui import MaskGUI
 from .parameter_gui import Main_Params, Calib_Params, Tracking_Params
 from openptv2 import __version__ as openptv_version
 from . import ptv
-from optv.epipolar import epipolar_curve
-from optv.imgcoord import image_coordinates
-from optv.transforms import convert_arr_metric_to_pixel
+from openptv2.epipolar import epipolar_curve
+from openptv2.imgcoord import image_coordinates
+from openptv2.transforms import convert_arr_metric_to_pixel
 from .calibration_gui import CalibrationGUI
 from .tracking_viz_panel import create_tracking_viz_panel
 
@@ -1508,7 +1508,7 @@ class MainGUI(HasTraits):
             project_search_volume_to_camera,
         )
         from gui.pyptv import ptv
-        from optv.epipolar import epipolar_curve
+        from openptv2.epipolar import epipolar_curve
         from algorithms.parameter_converters import get_track_par_tuple
         from algorithms.orientation import point_positions
 
@@ -1642,7 +1642,7 @@ class MainGUI(HasTraits):
             compute_search_bounds_3d,
             project_search_volume_to_camera,
         )
-        from optv.epipolar import epipolar_curve
+        from openptv2.epipolar import epipolar_curve
 
         fb = tracker.run_info.fb
         cpar = tracker.run_info.cpar

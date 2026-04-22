@@ -11,9 +11,9 @@ from typing import Sequence
 
 import numpy as np
 
-from optv.calibration import Calibration
-from optv.orientation import external_calibration, full_calibration
-from optv.tracking_framebuf import TargetArray
+from openptv2.calibration import Calibration
+from openptv2.orientation import external_calibration, full_calibration
+from openptv2.tracking_framebuf import TargetArray
 
 from .parameter_manager import ParameterManager
 from . import ptv

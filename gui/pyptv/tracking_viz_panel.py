@@ -760,7 +760,7 @@ class TrackingDebugPanel(HasTraits):
             return
 
         try:
-            from optv.epipolar import epipolar_curve
+            from openptv2.epipolar import epipolar_curve
         except ImportError:
             from algorithms.epi import epipolar_curve
 

@@ -16,9 +16,9 @@ from pathlib import Path
 
 import numpy as np
 
-from optv.calibration import Calibration
-from optv.imgcoord import image_coordinates
-from optv.transforms import convert_arr_metric_to_pixel
+from openptv2.calibration import Calibration
+from openptv2.imgcoord import image_coordinates
+from openptv2.transforms import convert_arr_metric_to_pixel
 
 from .parameter_manager import ParameterManager
 from . import ptv

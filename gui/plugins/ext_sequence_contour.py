@@ -8,9 +8,9 @@ from skimage import filters, measure, morphology
 from skimage.color import rgb2gray, label2rgb
 from skimage.morphology import binary_erosion, binary_dilation, disk
 
-from optv.correspondences import correspondences, MatchedCoords
-from optv.tracker import default_naming
-from optv.orientation import point_positions
+from openptv2.correspondences import correspondences, MatchedCoords
+from openptv2.tracker import default_naming
+from openptv2.orientation import point_positions
 
 import matplotlib.pyplot as plt
 
