@@ -59,13 +59,14 @@ Created `algorithms/compat/` package with optv-compatible API wrappers:
 - ✅ `tracking_framebuf.py` — Target, TargetArray, Frame wrappers with constants (CORRES_NONE, PT_UNUSED)
 - ✅ Test coverage: 13/13 tests passing in `test_compat_core.py`
 
-### Phase 2: Processing Function Wrappers (In Progress)
-- ⏳ `transforms.py` — Batch transform wrappers
-- ⏳ `imgcoord.py` — Image coordinate batch wrappers
-- ⏳ `image_processing.py` — preprocess_image wrapper
-- ⏳ `segmentation.py` — target_recognition wrapper
-- ⏳ `orientation.py` — Re-export with compat unwrapping
-- ⏳ `epipolar.py` — Re-export from epi.py
+### Phase 2: Processing Function Wrappers ✅ Complete
+- ✅ `transforms.py` — Batch transform wrappers (convert_arr_pixel_to_metric, convert_arr_metric_to_pixel, etc.)
+- ✅ `imgcoord.py` — Image coordinate batch wrappers (image_coordinates, flat_image_coordinates)
+- ✅ `image_processing.py` — preprocess_image wrapper
+- ✅ `segmentation.py` — target_recognition wrapper
+- ✅ `orientation.py` — Re-export calibration functions with compat unwrapping
+- ✅ `epipolar.py` — Re-export epipolar_curve from epi.py
+- ✅ Test coverage: 12/12 tests passing in `test_compat_processing.py`
 
 ### Phase 3: Correspondences & Tracker (Pending)
 ### Phase 4: Parameter Converters (Pending)
