@@ -72,7 +72,12 @@ Created `algorithms/compat/` package with optv-compatible API wrappers:
 - ✅ `correspondences.py` — MatchedCoords class + correspondences wrapper (~210 lines)
 - ✅ `tracker.py` — Tracker class wrapping functional tracking API (~165 lines)
 - ✅ Test coverage: 9/9 tests passing in `test_compat_workflow.py`
-### Phase 4: Parameter Converters (Pending)
+### Phase 4: Parameter Converters ✅ Complete
+- ✅ Added missing parameter classes to `algorithms/parameters.py` (~65 lines):
+  - CalibrationPar, MultiPlanesPar, ExaminePar, PftVersionPar
+- ✅ Ported `algorithms/parameter_converters.py` from old_algorithms (~451 lines)
+  - All YAML→parameter converters: get_control_par, get_volume_par, get_track_par_tuple, etc.
+  - Kept convert_optv_calibrations for backward compatibility
 ### Phase 5: Engine Dispatch Layer (Pending)
 ### Phase 6: GUI Migration (Pending)
 ### Phase 7: Parity Tests (Pending)

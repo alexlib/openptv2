@@ -243,6 +243,78 @@ class MultimediaPar:
         self.n3 = n3
         self.nlay = nlay
 
+class CalibrationPar:
+    """Calibration parameters for calibration workflow."""
+
+    def __init__(self, fixp_name="", img_cal_name=None, img_ori=None, tiff_flag=0, pair_flag=0, chfield=0):
+        self.fixp_name = fixp_name
+        self.img_cal_name = img_cal_name if img_cal_name is not None else []
+        self.img_ori = img_ori if img_ori is not None else []
+        self.tiff_flag = tiff_flag
+        self.pair_flag = pair_flag
+        self.chfield = chfield
+
+    @staticmethod
+    def from_file(file_path: str, num_cams: int):
+        """Read from cal_ori.par file."""
+        with open(file_path, "r", encoding="utf-8") as file:
+            fixp_name = file.readline().strip()
+            tmp = [file.readline().strip() for _ in range(num_cams * 2)]
+            img_cal_name = tmp[0::2]
+            img_ori = tmp[1::2]
+            tiff_flag = int(file.readline().strip())
+            pair_flag = int(file.readline().strip())
+            chfield = int(file.readline().strip())
+
+        return CalibrationPar(fixp_name, img_cal_name, img_ori, tiff_flag, pair_flag, chfield)
+
+
+class MultiPlanesPar:
+    """Multiplanes parameters."""
+
+    def __init__(self, num_planes=0, filename=None):
+        self.num_planes = num_planes
+        self.filename = filename if filename is not None else []
+
+    @staticmethod
+    def from_file(file_path: str):
+        """Read from multiplanes.par file."""
+        with open(file_path, "r", encoding="utf-8") as file:
+            num_planes = int(file.readline().strip())
+            filename = [file.readline().strip() for _ in range(num_planes)]
+        return MultiPlanesPar(num_planes, filename)
+
+
+class ExaminePar:
+    """Examine parameters."""
+
+    def __init__(self, examine_flag=False, combine_flag=False):
+        self.examine_flag = examine_flag
+        self.combine_flag = combine_flag
+
+    @staticmethod
+    def from_file(file_path: str):
+        """Read from examine.par file."""
+        with open(file_path, "r", encoding="utf-8") as file:
+            examine_flag = bool(int(file.readline().strip()))
+            combine_flag = bool(int(file.readline().strip()))
+        return ExaminePar(examine_flag, combine_flag)
+
+
+class PftVersionPar:
+    """PFT version parameters."""
+
+    def __init__(self, existing_target_flag=False):
+        self.existing_target_flag = existing_target_flag
+
+    @staticmethod
+    def from_file(file_path: str):
+        """Read from pft_version.par file."""
+        with open(file_path, "r", encoding="utf-8") as file:
+            existing_target_flag = bool(int(file.readline().strip()))
+        return PftVersionPar(existing_target_flag)
+
+
 # Aliases for compatibility with legacy test code (must be after all class definitions)
 read_control_par = ControlPar.from_file
 read_volume_par = VolumePar.from_file
