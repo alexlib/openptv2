@@ -578,17 +578,11 @@ def test_point_positions_parity():
 
 @pytest.mark.skipif(not _has_optv(), reason="optv (Cython bindings) not available")
 def test_dumbbell_parity():
-    """Compare Python weighted_dumbbell_precision ordering and point_position.
-
-    The C dumbbell_target_func has a Cython binding bug: it doesn't call
-    np.ascontiguousarray on the transposed targets array, so the C code
-    reads strided memory as contiguous vec2d, producing the bogus 7.14860
-    regression value. With a contiguous array, C gives ~0 (matching Python).
-    We verify the Python result is correct and the C bug is reproducible.
-    """
+    """Compare Python weighted_dumbbell_precision against C dumbbell_target_func."""
     from optv.calibration import Calibration as CCalib
     from optv.parameters import ControlParams as CControlParams
     from optv.orientation import dumbbell_target_func
+    from optv.imgcoord import flat_image_coordinates as c_flat_img_coord
 
     control_file = "test_data/control_parameters/control.par"
 
@@ -601,50 +595,19 @@ def test_dumbbell_parity():
 
     points = np.array([[17.5, 42, 0], [-17.5, 42, 0]], dtype=float)
     num_cams = 4
-
-    py_calibs = []
     ori_tmpl = "test_data/dumbbell/cam{}.tif.ori"
     add_file = "test_data/calibration/cam1.tif.addpar"
 
+    c_calibs = []
+    py_calibs = []
     for cam in range(num_cams):
         ori_name = ori_tmpl.format(cam + 1)
+        c_cal = CCalib()
+        c_cal.from_file(ori_file=ori_name, add_file=add_file)
+        c_calibs.append(c_cal)
         py_calibs.append(Calibration.from_file(ori_name, add_file))
 
-    # Use img_coord (full model) so forward/backward are consistent
-    media_par = MultimediaPar(n1=1., n2=[1.0], d=[1.0], n3=1.)
-
-    py_targs = np.zeros((len(points), num_cams, 2))
-    for pt_idx in range(len(points)):
-        for cam in range(num_cams):
-            xp, yp = img_coord(points[pt_idx], py_calibs[cam], media_par)
-            py_targs[pt_idx, cam, 0] = xp
-            py_targs[pt_idx, cam, 1] = yp
-
-    tf_base = weighted_dumbbell_precision(
-        py_targs, len(points), num_cams, media_par, py_calibs, 35.0, 0.0,
-    )
-    tf_weighted = weighted_dumbbell_precision(
-        py_targs, len(points), num_cams, media_par, py_calibs, 35.0, 1.0,
-    )
-    tf_wrong_len = weighted_dumbbell_precision(
-        py_targs, len(points), num_cams, media_par, py_calibs, 25.0, 1.0,
-    )
-
-    # With consistent forward/backward models, base measure should be near-zero
-    assert tf_base < 1e-6
-
-    # Wrong length should add error
-    assert tf_wrong_len > tf_weighted
-    assert tf_wrong_len > tf_base
-
-    # Verify C ordering invariant also holds (regression value from C test)
-    from optv.imgcoord import flat_image_coordinates as c_flat_img_coord
-    c_calibs = []
-    for cam in range(num_cams):
-        c_cal = CCalib()
-        c_cal.from_file(ori_tmpl.format(cam + 1), add_file)
-        c_calibs.append(c_cal)
-
+    # --- C/Cython path ---
     c_targs = []
     for cam_cal in c_calibs:
         c_targs.append(c_flat_img_coord(points, cam_cal, c_mm))
@@ -654,10 +617,33 @@ def test_dumbbell_parity():
     c_tf_w = dumbbell_target_func(c_targs, c_cpar, c_calibs, 35.0, 1.0)
     c_tf_wrong = dumbbell_target_func(c_targs, c_cpar, c_calibs, 25.0, 1.0)
 
-    np.testing.assert_allclose(c_tf, 7.14860, atol=1e-4)
-    assert c_tf_wrong > c_tf_w > c_tf
+    # --- Python path ---
+    media_par = MultimediaPar(n1=1., n2=[1.0], d=[1.0], n3=1.)
 
-    # With contiguous array the C bug disappears — result matches Python
-    c_targs_contig = np.ascontiguousarray(c_targs)
-    c_tf_fixed = dumbbell_target_func(c_targs_contig, c_cpar, c_calibs, 35.0, 0.0)
-    assert c_tf_fixed < 1e-6
+    py_targs = np.zeros((len(points), num_cams, 2))
+    for pt_idx in range(len(points)):
+        for cam in range(num_cams):
+            xp, yp = img_coord(points[pt_idx], py_calibs[cam], media_par)
+            py_targs[pt_idx, cam, 0] = xp
+            py_targs[pt_idx, cam, 1] = yp
+
+    py_tf = weighted_dumbbell_precision(
+        py_targs, len(points), num_cams, media_par, py_calibs, 35.0, 0.0,
+    )
+    py_tf_w = weighted_dumbbell_precision(
+        py_targs, len(points), num_cams, media_par, py_calibs, 35.0, 1.0,
+    )
+    py_tf_wrong = weighted_dumbbell_precision(
+        py_targs, len(points), num_cams, media_par, py_calibs, 25.0, 1.0,
+    )
+
+    # Both should be near-zero (perfect convergence with n1=n2=n3=1)
+    assert c_tf < 1e-6
+    assert py_tf < 1e-6
+
+    # Wrong length increases the measure
+    assert c_tf_wrong > c_tf
+    assert py_tf_wrong > py_tf
+
+    # Python and C agree
+    np.testing.assert_allclose(py_tf_wrong, c_tf_wrong, atol=1e-4)
