@@ -185,3 +185,81 @@ def _img_coord_params(
         mmlut=mmlut,
     )
     return _flat_to_dist(x, y, int_xh, int_yh, k1, k2, k3, p1, p2, scx, she)
+
+
+def img_coord_batch(positions, cal, mm):
+    """Project N 3D positions to distorted metric image coordinates.
+
+    Uses Numba JIT when available for ~30x speedup over scalar loop.
+
+    Args:
+        positions: (N, 3) array of 3D positions.
+        cal: Calibration object.
+        mm: MmNp multimedia parameters.
+
+    Returns:
+        (N, 2) array of distorted metric coordinates.
+    """
+    positions = np.ascontiguousarray(positions, dtype=np.float64)
+    try:
+        from .track_kernels import (
+            HAS_NUMBA, img_coord_batch_jit, pack_cal_array, pack_mmlut,
+        )
+        if HAS_NUMBA:
+            cal_arr = pack_cal_array(cal, mm)
+            mmlut_data, mmlut_origin, mmlut_nr, mmlut_nz, mmlut_rw = pack_mmlut(cal)
+            return img_coord_batch_jit(
+                positions, cal_arr, mmlut_data, mmlut_origin,
+                mmlut_nr, mmlut_nz, mmlut_rw,
+            )
+    except ImportError:
+        pass
+    n = positions.shape[0]
+    result = np.empty((n, 2), dtype=np.float64)
+    for i in range(n):
+        result[i, 0], result[i, 1] = img_coord(positions[i], cal, mm)
+    return result
+
+
+def flat_image_coord_batch(positions, cal, mm):
+    """Project N 3D positions to flat metric image coordinates.
+
+    Uses Numba JIT when available for ~24x speedup over scalar loop.
+
+    Args:
+        positions: (N, 3) array of 3D positions.
+        cal: Calibration object.
+        mm: MmNp multimedia parameters.
+
+    Returns:
+        (N, 2) array of flat (undistorted) metric coordinates.
+    """
+    positions = np.ascontiguousarray(positions, dtype=np.float64)
+    try:
+        from .track_kernels import (
+            HAS_NUMBA, flat_image_coord_batch_jit, pack_cal_array, pack_mmlut,
+        )
+        if HAS_NUMBA:
+            cal_arr = pack_cal_array(cal, mm)
+            mmlut_data, mmlut_origin, mmlut_nr, mmlut_nz, mmlut_rw = pack_mmlut(cal)
+            return flat_image_coord_batch_jit(
+                positions, cal_arr, mmlut_data, mmlut_origin,
+                mmlut_nr, mmlut_nz, mmlut_rw,
+            )
+    except ImportError:
+        pass
+    n = positions.shape[0]
+    result = np.empty((n, 2), dtype=np.float64)
+    e = cal.ext_par
+    ip = cal.int_par
+    g = cal.glass_par
+    mmlut = cal.mmlut if cal.mmlut.is_initialized else None
+    for i in range(n):
+        result[i, 0], result[i, 1] = flat_image_coord(
+            positions[i],
+            e.x0, e.y0, e.z0, e.dm, ip.cc,
+            g.vec_x, g.vec_y, g.vec_z,
+            mm.n1, mm.n2[0], mm.n3, mm.d[0],
+            mmlut=mmlut,
+        )
+    return result

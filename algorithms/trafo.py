@@ -124,6 +124,68 @@ def metric_to_pixel(
     return old_metric_to_pixel(x_metric, y_metric, imx_or_cpar, imy, pix_x, pix_y, chfield)
 
 
+def pixel_to_metric_batch(xy, cpar):
+    """Convert N pixel coordinates to metric.
+
+    Uses Numba JIT when available for parallel acceleration.
+
+    Args:
+        xy: (N, 2) array of pixel coordinates.
+        cpar: ControlPar with imx, imy, pix_x, pix_y, chfield.
+
+    Returns:
+        (N, 2) array of metric coordinates.
+    """
+    xy = np.ascontiguousarray(xy, dtype=np.float64)
+    try:
+        from .track_kernels import HAS_NUMBA, pixel_to_metric_batch_jit
+        if HAS_NUMBA:
+            return pixel_to_metric_batch_jit(
+                xy, cpar.imx, cpar.imy, cpar.pix_x, cpar.pix_y, cpar.chfield,
+            )
+    except ImportError:
+        pass
+    n = xy.shape[0]
+    result = np.empty((n, 2), dtype=np.float64)
+    for i in range(n):
+        result[i, 0], result[i, 1] = old_pixel_to_metric(
+            xy[i, 0], xy[i, 1], cpar.imx, cpar.imy,
+            cpar.pix_x, cpar.pix_y, cpar.chfield,
+        )
+    return result
+
+
+def metric_to_pixel_batch(xy, cpar):
+    """Convert N metric coordinates to pixel.
+
+    Uses Numba JIT when available for parallel acceleration.
+
+    Args:
+        xy: (N, 2) array of metric coordinates.
+        cpar: ControlPar with imx, imy, pix_x, pix_y, chfield.
+
+    Returns:
+        (N, 2) array of pixel coordinates.
+    """
+    xy = np.ascontiguousarray(xy, dtype=np.float64)
+    try:
+        from .track_kernels import HAS_NUMBA, metric_to_pixel_batch_jit
+        if HAS_NUMBA:
+            return metric_to_pixel_batch_jit(
+                xy, cpar.imx, cpar.imy, cpar.pix_x, cpar.pix_y, cpar.chfield,
+            )
+    except ImportError:
+        pass
+    n = xy.shape[0]
+    result = np.empty((n, 2), dtype=np.float64)
+    for i in range(n):
+        result[i, 0], result[i, 1] = old_metric_to_pixel(
+            xy[i, 0], xy[i, 1], cpar.imx, cpar.imy,
+            cpar.pix_x, cpar.pix_y, cpar.chfield,
+        )
+    return result
+
+
 def distort_brown_affin(
     x: float,
     y: float,

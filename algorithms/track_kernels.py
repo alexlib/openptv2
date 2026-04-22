@@ -9,10 +9,11 @@ import math
 import numpy as np
 
 try:
-    from numba import njit
+    from numba import njit, prange
     HAS_NUMBA = True
 except ImportError:
     HAS_NUMBA = False
+    prange = range
     def njit(*args, **kwargs):
         def decorator(fn):
             return fn
@@ -1895,3 +1896,240 @@ def track3d_loop_jit(
             path_next_1[i] = -1
 
     return count1
+
+
+# ============================================================
+# Batch kernels for standalone API acceleration
+# ============================================================
+
+@njit(cache=True)
+def metric_to_pixel_jit(x_metric, y_metric, imx, imy, pix_x, pix_y, chfield):
+    """Convert metric to pixel coordinates — Numba-compiled."""
+    x_pixel = x_metric / pix_x + imx * 0.5
+    y_pixel = imy * 0.5 - y_metric / pix_y
+    if chfield == 1:
+        y_pixel = (y_pixel - 1.0) * 0.5
+    elif chfield == 2:
+        y_pixel = y_pixel * 0.5
+    return x_pixel, y_pixel
+
+
+@njit(cache=True)
+def _flat_image_coord_jit(pos, cal, mmlut_data, mmlut_origin,
+                           mmlut_nr, mmlut_nz, mmlut_rw):
+    """Project 3D to flat metric image coordinates — Numba-compiled.
+
+    Returns (x, y) without distortion or pixel conversion.
+    """
+    pos0 = pos[0]; pos1 = pos[1]; pos2 = pos[2]
+
+    ext_x0 = cal[0]; ext_y0 = cal[1]; ext_z0 = cal[2]
+    dm00 = cal[3]; dm10 = cal[4]; dm20 = cal[5]
+    dm01 = cal[6]; dm11 = cal[7]; dm21 = cal[8]
+    dm02 = cal[9]; dm12 = cal[10]; dm22 = cal[11]
+    int_cc = cal[12]
+    gx = cal[15]; gy = cal[16]; gz = cal[17]
+    inv_dog = cal[19]
+    mm_n1 = cal[20]; mm_n2_0 = cal[21]; mm_n3 = cal[22]; mm_d0 = cal[23]
+
+    dot_cam = ext_x0 * gx + ext_y0 * gy + ext_z0 * gz
+    dist_o_glas = cal[18]
+    dist_cam_glas = dot_cam * inv_dog - dist_o_glas - mm_d0
+
+    dot_pos = pos0 * gx + pos1 * gy + pos2 * gz
+    dist_point_glas = dot_pos * inv_dog - dist_o_glas
+
+    s_cam = dist_cam_glas * inv_dog
+    cc_x = ext_x0 - gx * s_cam
+    cc_y = ext_y0 - gy * s_cam
+    cc_z = ext_z0 - gz * s_cam
+
+    s_pt = dist_point_glas * inv_dog
+    cp_x = pos0 - gx * s_pt
+    cp_y = pos1 - gy * s_pt
+    cp_z = pos2 - gz * s_pt
+
+    ext_t_z0 = dist_cam_glas + mm_d0
+
+    s_d = mm_d0 * inv_dog
+    ag_x = cc_x - gx * s_d
+    ag_y = cc_y - gy * s_d
+    ag_z = cc_z - gz * s_d
+    tmp_x = cp_x - ag_x
+    tmp_y = cp_y - ag_y
+    tmp_z = cp_z - ag_z
+
+    pos_t_0 = math.sqrt(tmp_x * tmp_x + tmp_y * tmp_y + tmp_z * tmp_z)
+    pos_t_2 = dist_point_glas
+
+    radial_shift = 1.0
+    has_mmlut = len(mmlut_data) > 0
+    if has_mmlut:
+        tx = pos_t_0 - mmlut_origin[0]
+        ty = -mmlut_origin[1]
+        tz = pos_t_2 - mmlut_origin[2]
+        sz = tz / mmlut_rw
+        iz = int(sz)
+        sz -= iz
+        R = math.sqrt(tx * tx + ty * ty)
+        sr = R / mmlut_rw
+        ir = int(sr)
+        sr -= ir
+        if ir <= mmlut_nr and iz >= 0 and iz <= mmlut_nz:
+            v0 = ir * mmlut_nz + iz
+            v3 = v0 + mmlut_nz + 1
+            if v0 >= 0 and v3 <= mmlut_nr * mmlut_nz:
+                mmf = (mmlut_data[v0] * (1.0 - sr) * (1.0 - sz)
+                       + mmlut_data[v0 + 1] * (1.0 - sr) * sz
+                       + mmlut_data[v0 + mmlut_nz] * sr * (1.0 - sz)
+                       + mmlut_data[v3] * sr * sz)
+                if mmf > 0.0:
+                    radial_shift = mmf
+    if radial_shift == 1.0:
+        radial_shift = _multimed_r_nlay_1layer(
+            pos_t_0, 0.0, pos_t_2, 0.0, 0.0, ext_t_z0,
+            mm_n1, mm_n2_0, mm_n3, mm_d0,
+        )
+    X_t = pos_t_0 * radial_shift
+
+    s_z = -pos_t_2 * inv_dog
+    bx = ag_x - gx * s_z
+    by = ag_y - gy * s_z
+    bz = ag_z - gz * s_z
+    if pos_t_0 > 0.0:
+        s_x = -X_t / pos_t_0
+        bx -= tmp_x * s_x
+        by -= tmp_y * s_x
+        bz -= tmp_z * s_x
+
+    dx = bx - ext_x0
+    dy = by - ext_y0
+    dz = bz - ext_z0
+    deno = dm02 * dx + dm12 * dy + dm22 * dz
+    x = -int_cc * (dm00 * dx + dm10 * dy + dm20 * dz) / deno
+    y = -int_cc * (dm01 * dx + dm11 * dy + dm21 * dz) / deno
+
+    return x, y
+
+
+@njit(cache=True)
+def _img_coord_jit(pos, cal, mmlut_data, mmlut_origin,
+                    mmlut_nr, mmlut_nz, mmlut_rw):
+    """Project 3D to distorted metric image coordinates — Numba-compiled."""
+    x, y = _flat_image_coord_jit(pos, cal, mmlut_data, mmlut_origin,
+                                  mmlut_nr, mmlut_nz, mmlut_rw)
+
+    xh = cal[13]; yh = cal[14]
+    k1 = cal[24]; k2 = cal[25]; k3 = cal[26]
+    p1 = cal[27]; p2 = cal[28]; scx = cal[29]; she = cal[30]
+
+    x += xh
+    y += yh
+    r = math.sqrt(x * x + y * y)
+    if r < 1e-10:
+        return 0.0, 0.0
+
+    r2 = r * r
+    r4 = r2 * r2
+    radial_factor = 1.0 + k1 * r2 + k2 * r4 + k3 * r4 * r2
+    xd = x * radial_factor + p1 * (r2 + 2.0 * x * x) + 2.0 * p2 * x * y
+    yd = y * radial_factor + p2 * (r2 + 2.0 * y * y) + 2.0 * p1 * x * y
+    sin_she = math.sin(she)
+    cos_she = math.cos(she)
+    x_dist = scx * (xd - sin_she * yd)
+    y_dist = scx * cos_she * yd
+
+    return x_dist, y_dist
+
+
+@njit(cache=True, parallel=True)
+def img_coord_batch_jit(positions, cal, mmlut_data, mmlut_origin,
+                         mmlut_nr, mmlut_nz, mmlut_rw):
+    """Project N 3D positions to distorted metric coords — parallel Numba."""
+    n = positions.shape[0]
+    result = np.empty((n, 2), dtype=np.float64)
+    for i in prange(n):
+        result[i, 0], result[i, 1] = _img_coord_jit(
+            positions[i], cal, mmlut_data, mmlut_origin,
+            mmlut_nr, mmlut_nz, mmlut_rw)
+    return result
+
+
+@njit(cache=True, parallel=True)
+def flat_image_coord_batch_jit(positions, cal, mmlut_data, mmlut_origin,
+                                mmlut_nr, mmlut_nz, mmlut_rw):
+    """Project N 3D positions to flat metric coords — parallel Numba."""
+    n = positions.shape[0]
+    result = np.empty((n, 2), dtype=np.float64)
+    for i in prange(n):
+        result[i, 0], result[i, 1] = _flat_image_coord_jit(
+            positions[i], cal, mmlut_data, mmlut_origin,
+            mmlut_nr, mmlut_nz, mmlut_rw)
+    return result
+
+
+@njit(cache=True, parallel=True)
+def ray_tracing_batch_jit(xy, cal):
+    """Trace N rays through multi-media interface — parallel Numba.
+
+    Args:
+        xy: (N, 2) float64 — metric image coordinates.
+        cal: (31,) float64 — packed calibration.
+
+    Returns:
+        (positions, directions) each (N, 3) float64.
+    """
+    n = xy.shape[0]
+    positions = np.empty((n, 3), dtype=np.float64)
+    directions = np.empty((n, 3), dtype=np.float64)
+    for i in prange(n):
+        Xx, Xy, Xz, ox, oy, oz = _ray_tracing_jit(xy[i, 0], xy[i, 1], cal)
+        positions[i, 0] = Xx; positions[i, 1] = Xy; positions[i, 2] = Xz
+        directions[i, 0] = ox; directions[i, 1] = oy; directions[i, 2] = oz
+    return positions, directions
+
+
+@njit(cache=True, parallel=True)
+def point_position_batch_jit(all_targets, num_pts, num_cams, cal_arrays):
+    """Triangulate M targets from N cameras — parallel Numba.
+
+    Args:
+        all_targets: (M, num_cams, 2) float64.
+        num_pts: M.
+        num_cams: N.
+        cal_arrays: tuple of (31,) float64 arrays.
+
+    Returns:
+        (positions, distances) — (M, 3) and (M,) float64.
+    """
+    positions = np.empty((num_pts, 3), dtype=np.float64)
+    distances = np.empty(num_pts, dtype=np.float64)
+    for i in prange(num_pts):
+        pos, dist = point_position_jit(all_targets[i], num_cams, cal_arrays)
+        positions[i, 0] = pos[0]
+        positions[i, 1] = pos[1]
+        positions[i, 2] = pos[2]
+        distances[i] = dist
+    return positions, distances
+
+
+@njit(cache=True, parallel=True)
+def pixel_to_metric_batch_jit(xy, imx, imy, pix_x, pix_y, chfield):
+    """Convert N pixel coordinates to metric — parallel Numba."""
+    n = xy.shape[0]
+    result = np.empty((n, 2), dtype=np.float64)
+    for i in prange(n):
+        result[i, 0], result[i, 1] = pixel_to_metric_jit(
+            xy[i, 0], xy[i, 1], imx, imy, pix_x, pix_y, chfield)
+    return result
+
+
+@njit(cache=True, parallel=True)
+def metric_to_pixel_batch_jit(xy, imx, imy, pix_x, pix_y, chfield):
+    """Convert N metric coordinates to pixel — parallel Numba."""
+    n = xy.shape[0]
+    result = np.empty((n, 2), dtype=np.float64)
+    for i in prange(n):
+        result[i, 0], result[i, 1] = metric_to_pixel_jit(
+            xy[i, 0], xy[i, 1], imx, imy, pix_x, pix_y, chfield)
+    return result
