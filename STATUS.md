@@ -78,7 +78,18 @@ Created `algorithms/compat/` package with optv-compatible API wrappers:
 - ✅ Ported `algorithms/parameter_converters.py` from old_algorithms (~451 lines)
   - All YAML→parameter converters: get_control_par, get_volume_par, get_track_par_tuple, etc.
   - Kept convert_optv_calibrations for backward compatibility
-### Phase 5: Engine Dispatch Layer (Pending)
+### Phase 5: Engine Dispatch Layer ✅ Complete
+- ✅ Updated `openptv2/engine.py` with OPENPTV_ENGINE env var support
+  - `_detect_engine()`: Auto-detect based on env var or availability
+  - `get_engine()`, `set_engine()`: Updated with initialization checks
+  - `is_optv_available()`, `is_python_available()`: Availability checks
+- ✅ Created 11 dispatch modules in `openptv2/` (~15 lines each):
+  - calibration.py, parameters.py, correspondences.py, image_processing.py
+  - segmentation.py, tracking_framebuf.py, tracker.py, transforms.py
+  - imgcoord.py, orientation.py, epipolar.py
+  - Each checks engine and imports from optv.* or algorithms.compat.*
+- ✅ Updated `openptv2/__init__.py` to re-export all public symbols
+- ✅ Tested: Both engines work, imports succeed, engine switching via env var
 ### Phase 6: GUI Migration (Pending)
 ### Phase 7: Parity Tests (Pending)
 

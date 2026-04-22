@@ -6,183 +6,135 @@ and the Python/Numba fallback engine.
 
 Example usage:
     >>> from openptv2 import get_engine, set_engine
-    >>> 
+    >>>
     >>> # Check current engine
-    >>> print(get_engine())  # 'optv'
-    >>> 
+    >>> print(get_engine())  # 'optv' or 'python'
+    >>>
     >>> # Switch to Python engine for debugging
     >>> set_engine("python")
-    >>> 
-    >>> # Use per-call engine selection
-    >>> from openptv2 import track_particles
-    >>> result = track_particles(images, engine="python")
+    >>>
+    >>> # Set via environment variable
+    >>> import os
+    >>> os.environ["OPENPTV_ENGINE"] = "python"
 """
 
+import os
 from typing import Optional, Literal, Any
 import threading
 
 EngineType = Literal["optv", "python"]
 
-# Thread-local storage for engine selection
-_local = threading.local()
-_local.default_engine = "optv"
-_local._instance = None
+# Global engine state (determined once at import time)
+_default_engine = None
+_engine_initialized = False
 
 
-class EngineSelector:
+def _detect_engine():
     """
-    Engine selector for openptv2.
-    
-    Manages switching between the C/Cython (optv) engine and the
-    Python/Numba fallback engine. Supports both global and per-call
-    engine selection.
-    
-    Attributes:
-        default_engine: Default engine to use ("optv" or "python")
-        fallback_reason: Reason for falling back to Python engine
-        
-    Example:
-        >>> selector = EngineSelector(default_engine="optv")
-        >>> engine = selector.select()  # Returns optv engine
-        >>> engine = selector.select("python")  # Returns Python engine
-    """
-    
-    def __init__(self, default_engine: EngineType = "optv"):
-        """
-        Initialize the engine selector.
-        
-        Args:
-            default_engine: Default engine to use ("optv" or "python")
-        """
-        self.default_engine = default_engine
-        self.fallback_reason: Optional[str] = None
-        self._optv_engine = None
-        self._python_engine = None
-        self._validate_engines()
-    
-    def _validate_engines(self):
-        """Validate that at least one engine is available."""
-        optv_ok = False
-        python_ok = False
+    Detect which engine to use based on environment and availability.
 
-        try:
-            import optv
-            self._optv_engine = optv
-            optv_ok = True
-        except ImportError as e:
-            self.fallback_reason = f"optv not available: {e}"
-        
-        try:
-            from .algorithms import numba_impl
-            self._python_engine = numba_impl
-            python_ok = True
-        except (ImportError, ModuleNotFoundError) as e:
-            if not optv_ok:
-                raise RuntimeError(
-                    f"No engine available. optv: {self.fallback_reason}, "
-                    f"python: {e}"
-                )
-        
-        if not optv_ok and not python_ok:
-            raise RuntimeError("No engine available")
-    
-    def select(
-        self, 
-        engine: Optional[EngineType] = None
-    ) -> Any:
-        """
-        Select and return an engine instance.
-        
-        Args:
-            engine: Engine to use. If None, uses default_engine.
-            
-        Returns:
-            Engine instance (either optv or python)
-            
-        Raises:
-            ValueError: If unknown engine is specified
-            RuntimeError: If selected engine is not available
-        """
-        engine = engine or self.default_engine
-        
-        if engine == "optv":
-            if self._optv_engine is not None:
-                return self._optv_engine
-            # Fall back to Python if optv not available
-            if self._python_engine is not None:
-                return self._python_engine
-            raise RuntimeError("optv engine not available")
-        
-        elif engine == "python":
-            if self._python_engine is not None:
-                return self._python_engine
-            raise RuntimeError("Python engine not available")
-        
-        else:
-            raise ValueError(f"Unknown engine: {engine}. Use 'optv' or 'python'.")
-    
-    def get_available_engines(self) -> list[EngineType]:
-        """
-        Return list of available engines.
-        
-        Returns:
-            List of available engine names
-        """
-        available = []
-        if self._optv_engine is not None:
-            available.append("optv")
-        if self._python_engine is not None:
-            available.append("python")
-        return available
+    Checks in order:
+    1. OPENPTV_ENGINE environment variable
+    2. Auto-detect: prefer optv if available, fallback to python
+
+    Returns:
+        str: Engine name ("optv" or "python")
+    """
+    global _default_engine, _engine_initialized
+
+    if _engine_initialized:
+        return _default_engine
+
+    # Check environment variable
+    env_engine = os.environ.get("OPENPTV_ENGINE", "").lower()
+    if env_engine in ("python", "algorithms"):
+        _default_engine = "python"
+        _engine_initialized = True
+        return _default_engine
+    elif env_engine == "optv":
+        _default_engine = "optv"
+        _engine_initialized = True
+        return _default_engine
+
+    # Auto-detect: prefer optv if available
+    try:
+        import optv  # noqa: F401
+        _default_engine = "optv"
+    except ImportError:
+        _default_engine = "python"
+
+    _engine_initialized = True
+    return _default_engine
 
 
 def get_engine() -> EngineType:
     """
     Get the current default engine.
-    
+
+    Detects engine from environment variable or auto-detects on first call.
+
     Returns:
         Current default engine name ("optv" or "python")
     """
-    return getattr(_local, "default_engine", "optv")
+    return _detect_engine()
 
 
 def set_engine(engine: EngineType) -> None:
     """
-    Set the default engine globally (for current thread).
-    
+    Set the default engine.
+
+    Note: Must be called before importing any openptv2.* modules.
+    Once modules are imported, they cache the engine selection.
+
     Args:
         engine: Engine to use ("optv" or "python")
-        
+
     Raises:
         ValueError: If unknown engine is specified
+        RuntimeError: If called after engine already initialized
     """
+    global _default_engine, _engine_initialized
+
     if engine not in ("optv", "python"):
         raise ValueError(f"Unknown engine: {engine}. Use 'optv' or 'python'.")
-    _local.default_engine = engine
+
+    if _engine_initialized:
+        import warnings
+        warnings.warn(
+            "Engine already initialized. set_engine() must be called before "
+            "importing openptv2 modules. Setting environment variable instead.",
+            RuntimeWarning
+        )
+
+    _default_engine = engine
+    _engine_initialized = True
+    # Also set environment variable for subprocess consistency
+    os.environ["OPENPTV_ENGINE"] = engine
 
 
-def get_selector() -> EngineSelector:
+def is_optv_available() -> bool:
     """
-    Get or create the global engine selector instance.
-    
+    Check if optv (C/Cython) engine is available.
+
     Returns:
-        EngineSelector instance
+        True if optv can be imported, False otherwise
     """
-    if _local._instance is None:
-        _local._instance = EngineSelector(default_engine=get_engine())
-    return _local._instance
+    try:
+        import optv  # noqa: F401
+        return True
+    except ImportError:
+        return False
 
 
-def select_engine(engine: Optional[EngineType] = None) -> Any:
+def is_python_available() -> bool:
     """
-    Select and return an engine instance.
-    
-    Convenience function that uses the global selector.
-    
-    Args:
-        engine: Engine to use. If None, uses default_engine.
-        
+    Check if python (algorithms) engine is available.
+
     Returns:
-        Engine instance
+        True if algorithms package is available, False otherwise
     """
-    return get_selector().select(engine)
+    try:
+        import algorithms  # noqa: F401
+        return True
+    except ImportError:
+        return False

@@ -3,61 +3,63 @@ openptv2 - Unified OpenPTV: Particle Tracking Velocimetry
 
 This package provides a unified interface to OpenPTV algorithms with
 dual-engine support:
-- optv: C/Cython engine (default, fastest)
-- python: Python/Numba engine (for debugging and visualization)
+- optv: C/Cython engine (default if available, fastest)
+- python: Pure Python/Numba engine (for debugging, cloud deployment)
+
+Engine selection via environment variable:
+    export OPENPTV_ENGINE=python  # Use Python engine
+    export OPENPTV_ENGINE=optv    # Use C/Cython engine (default)
 
 Example usage:
     >>> import openptv2
-    >>> from openptv2 import Tracker, Calibration
+    >>> from openptv2 import Tracker, Calibration, ControlParams
     >>>
-    >>> # Use default engine (optv)
-    >>> tracker = Tracker()
+    >>> # Engine auto-detected based on OPENPTV_ENGINE or availability
+    >>> cal = Calibration.from_file("cam1.tif.ori", "cam1.tif.addpar")
     >>>
-    >>> # Use Python engine for debugging
-    >>> tracker = Tracker(engine="python")
-    >>>
-    >>> # Global engine setting
-    >>> openptv2.set_engine("python")
+    >>> # Check current engine
+    >>> print(openptv2.get_engine())  # 'optv' or 'python'
 """
 
-__version__ = "0.1.5"
+__version__ = "0.2.0"
 __author__ = "OpenPTV Community"
 __email__ = "openptv@googlegroups.com"
 
-# Engine selection
-from .engine import get_engine, set_engine, EngineSelector
+# Engine selection API
+from .engine import get_engine, set_engine, is_optv_available, is_python_available
 
-# Import main classes (will be populated by engine loader)
-from . import tracking_framebuf
-from . import tracker
-from . import calibration
-from . import correspondence
-
-# Convenience imports
-from .tracking_framebuf import Target, Targets
-from .tracker import Tracker, TrackingParameters
-from .calibration import Calibration, Orientation
-from .correspondence import Correspondence
-
-# Backward compatibility with optv API
-# These aliases allow existing code to work without changes
-# Note: optv is installed as a separate package from bindings/
-try:
-    import optv as _optv
-
-    # Re-export optv bindings for backward compatibility
-    from optv import *
-except ImportError:
-    # optv not available, will use Python engine
-    pass
-
-# Backward compatibility with pyptv API
-# Import GUI components if available
-try:
-    from gui import pyptv_gui
-    from gui.pyptv_gui import main as pyptv_main
-except ImportError:
-    pass
+# Import all modules (engine-aware)
+from .calibration import Calibration
+from .parameters import (
+    ControlParams,
+    VolumeParams,
+    TrackingParams,
+    SequenceParams,
+    TargetParams,
+    MultimediaParams,
+)
+from .correspondences import MatchedCoords, correspondences
+from .image_processing import preprocess_image
+from .segmentation import target_recognition
+from .tracking_framebuf import Target, TargetArray, Frame, read_targets
+from .tracker import Tracker, default_naming
+from .transforms import (
+    convert_arr_pixel_to_metric,
+    convert_arr_metric_to_pixel,
+    correct_arr_brown_affine,
+    distort_arr_brown_affine,
+    distorted_to_flat,
+)
+from .imgcoord import image_coordinates, flat_image_coordinates
+from .orientation import (
+    point_positions,
+    external_calibration,
+    full_calibration,
+    match_detection_to_ref,
+    multi_cam_point_positions,
+    dumbbell_target_func,
+)
+from .epipolar import epipolar_curve
 
 
 def get_version():
@@ -74,56 +76,60 @@ def get_engine_info():
     """
     info = {
         "default_engine": get_engine(),
-        "optv_available": False,
-        "python_available": False,
+        "optv_available": is_optv_available(),
+        "python_available": is_python_available(),
     }
 
-    try:
-        import optv
-
-        info["optv_available"] = True
-        info["optv_version"] = getattr(optv, "__version__", "unknown")
-    except ImportError:
-        info["optv_error"] = "optv C/Cython engine not available"
-
-    try:
-        from .algorithms import numba_impl
-
-        info["python_available"] = True
-    except (ImportError, ModuleNotFoundError):
-        info["python_error"] = "Python/Numba engine not available"
+    if is_optv_available():
+        try:
+            import optv
+            info["optv_version"] = getattr(optv, "__version__", "unknown")
+        except Exception:
+            pass
 
     return info
 
 
-def validate_engines(tolerance=1e-10):
-    """
-    Validate that both engines produce identical results.
-
-    Args:
-        tolerance: Floating-point tolerance for comparison
-
-    Returns:
-        dict: Validation results for each algorithm
-    """
-    from .tests.engine_comparison import validate_all
-
-    return validate_all(tolerance=tolerance)
-
-
-# Module metadata
+# Module exports
 __all__ = [
-    "Target",
-    "Targets",
-    "Tracker",
-    "TrackingParameters",
-    "Calibration",
-    "Orientation",
-    "Correspondence",
-    "get_engine",
-    "set_engine",
-    "EngineSelector",
-    "get_version",
-    "get_engine_info",
-    "validate_engines",
+    # Engine API
+    'get_engine',
+    'set_engine',
+    'is_optv_available',
+    'is_python_available',
+    'get_version',
+    'get_engine_info',
+    # Core classes
+    'Calibration',
+    'ControlParams',
+    'VolumeParams',
+    'TrackingParams',
+    'SequenceParams',
+    'TargetParams',
+    'MultimediaParams',
+    'Target',
+    'TargetArray',
+    'Frame',
+    'Tracker',
+    'MatchedCoords',
+    # Functions
+    'correspondences',
+    'preprocess_image',
+    'target_recognition',
+    'read_targets',
+    'default_naming',
+    'convert_arr_pixel_to_metric',
+    'convert_arr_metric_to_pixel',
+    'correct_arr_brown_affine',
+    'distort_arr_brown_affine',
+    'distorted_to_flat',
+    'image_coordinates',
+    'flat_image_coordinates',
+    'point_positions',
+    'external_calibration',
+    'full_calibration',
+    'match_detection_to_ref',
+    'multi_cam_point_positions',
+    'dumbbell_target_func',
+    'epipolar_curve',
 ]
