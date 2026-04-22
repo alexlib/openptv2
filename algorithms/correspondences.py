@@ -384,8 +384,11 @@ def correspondences(frm, corrected, vpar, cpar, calib):
             vpar.corrmin, con0, 4 * NMAX, tusage)
 
         offset = match_counts[3]
-        match_counts[1] = take_best_candidates(con0, con[offset:], num_cams,
+        tmp = con[offset:]
+        match_counts[1] = take_best_candidates(con0, tmp, num_cams,
             match0, tusage)
+        for k in range(match_counts[1]):
+            con[offset + k] = tmp[k]
         match_counts[3] += match_counts[1]
 
     if num_cams > 1 and cpar.allCam_flag == 0:
@@ -393,8 +396,11 @@ def correspondences(frm, corrected, vpar, cpar, calib):
             vpar.corrmin, con0, 4 * NMAX, tusage)
 
         offset = match_counts[3]
-        match_counts[2] = take_best_candidates(con0, con[offset:], num_cams,
+        tmp = con[offset:]
+        match_counts[2] = take_best_candidates(con0, tmp, num_cams,
             match0, tusage)
+        for k in range(match_counts[2]):
+            con[offset + k] = tmp[k]
         match_counts[3] += match_counts[2]
 
     for i in range(match_counts[3]):

@@ -279,9 +279,9 @@ def get_volume_par(yaml_params):
     x_lay = vol.get("X_lay") or vol.get("x_lay")
 
     return VolumePar(
-        x_lay=x_lay,
-        z_min_lay=z_min,
-        z_max_lay=z_max,
+        X_lay=x_lay,
+        Zmin_lay=z_min,
+        Zmax_lay=z_max,
         cn=opt.get("cn", 0),
         cnx=opt.get("cnx", 0),
         cny=opt.get("cny", 0),
@@ -335,7 +335,7 @@ def get_target_par(yaml_params):
     p = _merge_with_defaults(plate, DEFAULT_DETECT_PLATE)
 
     return TargetPar(
-        gvthresh=[
+        gvthres=[
             p.get("gvth_1", 40),
             p.get("gvth_2", 40),
             p.get("gvth_3", 40),
