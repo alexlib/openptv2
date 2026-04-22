@@ -1,0 +1,1212 @@
+"""Tracking frame buffer."""
+
+from collections import deque
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Deque, List, Tuple
+
+import numpy as np
+
+from .calibration import Calibration
+from .constants import (
+    COORD_UNUSED,
+    CORRES_NONE,
+    MAX_TARGETS,
+    NEXT_NONE,
+    POSI,
+    PREV_NONE,
+    PRIO_DEFAULT,
+    PT_UNUSED,
+    TR_UNUSED,
+)
+from .epi import Coord2d_dtype
+from .parameters import ControlPar
+from .trafo import dist_to_flat, pixel_to_metric
+
+
+def _normalize_file_base(file_base):
+    """Normalize a file base path for constructing target filenames.
+
+    Handles bytes-from-Cython, Path objects, trailing dots from optv's
+    img_base convention, and printf-style format specifiers (e.g. ``%d``,
+    ``%04d``) that appear in YAML sequence base names.  The returned value
+    is a clean string without trailing dots, so callers can safely do
+    ``f"{base}.{frame:04d}_targets"``.
+    """
+    if isinstance(file_base, bytes):
+        file_base = file_base.decode()
+    elif isinstance(file_base, Path):
+        file_base = str(file_base)
+    # Strip printf-style format specifiers (e.g. %d, %04d) used in YAML
+    import re
+    file_base = re.sub(r"%\d*d", "", file_base)
+    return file_base.rstrip(".")
+
+
+def _target_filename(file_base, frame_num: int) -> str:
+    """Build a target filename from a base and frame number.
+
+    OpenPTV fixtures use both dotted and underscored bases, e.g. `cam1.` and
+    `sample_`. Preserve the caller's separator when it is already part of the
+    base; otherwise fall back to the historical dotted form.
+    """
+    file_base = _normalize_file_base(file_base)
+    if frame_num > 0:
+        if file_base.endswith((".", "_")):
+            return f"{file_base}{frame_num:04d}_targets"
+        return f"{file_base}.{frame_num:04d}_targets"
+    return f"{file_base}_targets"
+
+
+def _target_filename_candidates(file_base, frame_num: int) -> List[str]:
+    """Return likely target filenames for a base and frame number."""
+    primary = _target_filename(file_base, frame_num)
+    candidates = [primary]
+
+    if frame_num > 0:
+        if isinstance(file_base, bytes):
+            file_base = file_base.decode()
+        elif isinstance(file_base, Path):
+            file_base = str(file_base)
+
+        if str(file_base).endswith("."):
+            candidates.append(f"{str(file_base).rstrip('.')}_{frame_num:04d}_targets")
+
+    return list(dict.fromkeys(candidates))
+
+
+n_tupel_dtype = np.dtype([("p", np.int32, (4,)), ("corr", np.float64)])
+
+
+def quicksort_n_tupel(arr: np.recarray) -> np.recarray:
+    """
+    Quicksorts a list of n_tupel instances based on the corr attribute.
+
+    previously called quicksort_con
+
+    Args:
+    ----
+      n_tupel_list: Array of n_tupel instances.
+
+    Returns
+    -------
+      A list of n_tupel instances, sorted by the corr attribute.
+    """
+    # inline sorting
+    arr.sort(order="corr")
+    return arr
+
+
+Corres_dtype = np.dtype(
+    [
+        ("nr", np.int32),
+        ("p", np.int32, (4,)),  # -1 for no correspondence
+    ]
+)
+
+
+# def __eq__(self, other):
+#     return self.nr == other.nr and np.all(self.p == other.p)
+
+
+def compare_corres(c1: np.recarray, c2: np.recarray) -> bool:
+    """
+    Compare two Corres instances.
+
+    Args:
+    ----
+        c1: A Corres array
+        c2: A Corres array.
+
+    Returns
+    -------
+        True if the Corres instances are equal, False otherwise.
+    """
+    return (c1 == c2).all()
+
+
+@dataclass
+class Target:
+    """Target structure for tracking."""
+
+    pnr: int = PT_UNUSED  # target number
+    x: float = 0.0  # pixel position
+    y: float = 0.0  # pixel position
+    n: int = 0  # number of pixels
+    nx: int = 0  # in x
+    ny: int = 0  # in y
+    sumg: int = 0  # sum of grey values
+    tnr: int = -1  # used in tracking
+
+    def set_pos(self, pos: Tuple[float, float]) -> None:
+        """Set target position."""
+        self.x, self.y = pos
+
+    def set_pnr(self, pnr):
+        """Set target number."""
+        self.pnr = pnr
+
+    def pnr(self):
+        """Return target number (API compatibility)."""
+        return self.pnr
+
+    def set_pixel_counts(self, n, nx, ny):
+        """Set number of pixels and number of pixels in x and y."""
+        self.n = n
+        self.nx = nx
+        self.ny = ny
+
+    def set_sum_grey_value(self, sumg):
+        """Set sum of grey values."""
+        self.sumg = sumg
+
+    def sum_grey_value(self):
+        """Return sum of grey values."""
+        return self.sumg
+
+    def set_tnr(self, tnr: int) -> None:
+        """Set tracking number (used in tracking)."""
+        self.tnr = tnr
+
+    def tnr(self):
+        """Return tracking number (API compatibility)."""
+        return self.tnr
+
+    def pos(self):
+        """Return target position."""
+        # return Coord2d(self.x, self.y)
+        return (self.x, self.y)
+
+    def count_pixels(self):
+        """Return number of pixels."""
+        return (self.n, self.nx, self.ny)
+
+    def __eq__(self, __value) -> bool:
+        return (
+            self.pnr == __value.pnr  # type: ignore
+            and self.x == __value.x  # type: ignore
+            and self.y == __value.y  # type: ignore
+            and self.n == __value.n  # type: ignore
+            and self.nx == __value.nx  # type: ignore
+            and self.ny == __value.ny  # type: ignore
+            and self.sumg == __value.sumg  # type: ignore
+            and self.tnr == __value.tnr  # type: ignore
+        )
+
+
+def sort_target_y(targets: List[Target]) -> List[Target]:
+    """Sort targets by y coordinate."""
+    return sorted(targets, key=lambda t: t.y)
+
+
+class TargetArray:
+    """
+    Represents an array of targets. Allows indexing and iteration.
+    Matches the Cython TargetArray API from bindings/optv/tracking_framebuf.pyx
+    """
+
+    def __init__(self, size: int = 0):
+        """
+        Arguments:
+        size - if >0, allocates an empty target array (which should be filled
+            by iteration later), otherwise nothing is allocated.
+        """
+        if size <= 0:
+            self._targets = []
+        else:
+            self._targets = [Target() for _ in range(size)]
+        self._num_targets = len(self._targets)
+
+    def sort_y(self):
+        """
+        Sorts the targets in-place by their Y coordinate. This is required for
+        tracking (and relied on by OpenPTV-Python, so a useful step for those
+        who need backwards-compatible output). Also renumbers the targets'
+        ``pnr`` property to the new sort order.
+        """
+        self._targets.sort(key=lambda t: t.y)
+        for tnum, targ in enumerate(self._targets):
+            targ.pnr = tnum
+        self._num_targets = len(self._targets)
+
+    def write(self, file_base: str, frame_num: int):
+        """
+        Writes a _targets file - a text format for targets. First line: number
+        of targets. Each following line: pnr, x, y, n, nx, ny, sumg, tnr.
+        the output file name is of the form <base_name>.<frame>_targets.
+
+        Arguments:
+        file_base - path to the file, base part.
+        frame_num - frame number part of the file name.
+        """
+        fname = _target_filename(file_base, frame_num)
+
+        with open(fname, "w", encoding="utf-8") as f:
+            f.write(f"{len(self._targets)}\n")
+            for targ in self._targets:
+                f.write(
+                    f"{targ.pnr} {targ.x} {targ.y} {targ.n} {targ.nx} "
+                    f"{targ.ny} {targ.sumg} {targ.tnr}\n"
+                )
+
+    def __getitem__(self, ix):
+        """
+        Returns the Target at index `ix`, or a list of Targets for a slice.
+
+        Arguments:
+        ix - integer or slice, index into the target array.
+
+        Returns:
+        Target instance at index ix, or list of Targets for a slice.
+        """
+        if isinstance(ix, slice):
+            return self._targets[ix]
+        if ix >= self._num_targets or ix < 0:
+            raise IndexError(f"Index {ix} out of range [0, {self._num_targets})")
+        return self._targets[ix]
+
+    def __setitem__(self, ix: int, item: Target):
+        """Set the Target at index `ix`."""
+        if ix >= self._num_targets or ix < 0:
+            raise IndexError(f"Index {ix} out of range [0, {self._num_targets})")
+        self._targets[ix] = item
+
+    def __len__(self):
+        return self._num_targets
+
+    def append(self, item: Target):
+        """Append a target to the array."""
+        self._targets.append(item)
+        self._num_targets = len(self._targets)
+
+    def extend(self, items):
+        """Extend the array with more targets."""
+        self._targets.extend(items)
+        self._num_targets = len(self._targets)
+
+    @property
+    def num_targs(self):
+        """Return the number of targets in the array."""
+        return self._num_targets
+
+    def __iter__(self):
+        """Iterate over targets."""
+        return iter(self._targets)
+
+
+def read_targets(file_base: str, frame_num: int) -> List[Target]:
+    """Read targets from a file."""
+    buffer = []
+
+    filename = None
+    for candidate in _target_filename_candidates(file_base, frame_num):
+        if Path(candidate).exists():
+            filename = Path(candidate)
+            break
+
+    if filename is None:
+        filename = Path(_target_filename(file_base, frame_num))
+
+    try:
+        with open(filename, "r", encoding="utf-8") as file:
+            first_line = file.readline().strip()
+            if not first_line:
+                # Empty file means no targets
+                return buffer
+            num_targets = int(first_line)
+            if num_targets < 0:
+                # Negative means no targets
+                return buffer
+
+            for _ in range(num_targets):
+                line = file.readline().strip().split()
+
+                if len(line) != 8:
+                    raise ValueError(f"Bad format for file: {filename}")
+
+                targ = Target(
+                    pnr=int(line[0]),
+                    x=float(line[1]),
+                    y=float(line[2]),
+                    n=int(line[3]),
+                    nx=int(line[4]),
+                    ny=int(line[5]),
+                    sumg=int(line[6]),
+                    tnr=int(line[7]),
+                )
+
+                buffer.append(targ)
+
+    except IOError as err:
+        print(f"Can't open ascii file: {filename}")
+        raise err
+
+    # print(f" read {len(buffer)} targets from {filename}")
+    return buffer
+
+
+def write_targets(
+    targets: List[Target], num_targets: int, file_base: str, frame_num: int
+) -> bool:
+    """Write targets to a file."""
+    success = False
+
+    # fix old-type names, that are like cam1.# or just cam1.
+    if "#" in file_base:
+        file_base = file_base.replace("#", "%05d")
+    if "%" not in file_base:
+        file_base = file_base + "%05d"
+
+    if frame_num == 0:
+        frame_num = 123456789
+
+    file_name = file_base % frame_num + "_targets"
+
+    try:
+        with open(file_name, "w", encoding="utf8") as f:
+            f.write(f"{num_targets}\n")
+            if num_targets > 0:
+                # Convert targets to a 2D numpy array
+                target_arr = np.array(
+                    [
+                        (t.pnr, t.x, t.y, t.n, t.nx, t.ny, t.sumg, t.tnr)
+                        for t in targets[:num_targets]
+                    ]
+                )
+                np.savetxt(
+                    f,
+                    target_arr,
+                    fmt="%4d %9.4f %9.4f %5d %5d %5d %5d %5d",
+                )
+        success = True
+    except IOError:
+        print(f"Can't open ascii file: {file_name}")
+
+    return success
+
+
+def compare_targets(t1: Target, t2: Target):
+    """Check that target t1 is equal to target t2, i.e., all their fields are equal.
+
+    Arguments:
+    ---------
+    t1, t2 (tuple): the target structures to compare.
+
+    Returns
+    -------
+    bool: True if all fields are equal, False otherwise.
+    """
+    return t1 == t2
+
+
+@dataclass
+class Pathinfo:
+    """Pathinfo structure for tracking."""
+
+    x: np.ndarray = field(default_factory=lambda: np.zeros(3))
+    prev_frame: int = PREV_NONE
+    next_frame: int = NEXT_NONE
+    prio: int = PRIO_DEFAULT
+    decis: List[float] = field(default_factory=lambda: [0.0] * POSI)
+    finaldecis: float = 0.0
+    linkdecis: List[int] = field(default_factory=lambda: [0] * POSI)
+    inlist: int = 0
+
+    def __eq__(self, other):
+        if not isinstance(other, Pathinfo):
+            return False
+        return (
+            (self.x == other.x).all()
+            and self.prev_frame == other.prev_frame
+            and self.next_frame == other.next_frame
+            and self.prio == other.prio
+            and (self.decis == other.decis)
+            and self.finaldecis == other.finaldecis
+            and (self.linkdecis == other.linkdecis)
+            and self.inlist == other.inlist
+        )
+
+    def register_link_candidate(self, fitness: float, cand: int) -> None:
+        """Register link candidate."""
+        if self.inlist >= POSI:
+            return
+        self.decis[self.inlist] = fitness
+        self.linkdecis[self.inlist] = cand
+        self.inlist += 1
+
+    def reset_links(self) -> None:
+        """Reset links."""
+        self.prev_frame = PREV_NONE
+        self.next_frame = NEXT_NONE
+        self.prio = PRIO_DEFAULT
+
+
+def compare_path_info(path_info1: Pathinfo, path_info2: Pathinfo) -> bool:
+    """Compare path info."""
+    return path_info1 == path_info2
+
+
+class Frame:
+    """Frame structure for tracking."""
+
+    def __init__(self, num_cams: int, max_targets: int = MAX_TARGETS):
+        """
+        Initialize a frame object, allocates its arrays and sets up the frame data.
+
+        Arguments:
+        ---------
+        num_cams - number of cameras per frame.
+        max_targets - number of elements to allocate for the different buffers
+            held by a frame.
+        """
+        self.num_cams = num_cams
+        self.max_targets = max_targets
+        self.num_parts = 0
+
+        # Legacy object-based storage
+        self.path_info = [Pathinfo() for _ in range(max_targets)]
+
+        # SoA storage for Numba acceleration
+        self.path_x = np.zeros((max_targets, 3), dtype=np.float64)
+        self.path_prev = np.full(max_targets, PREV_NONE, dtype=np.int32)
+        self.path_next = np.full(max_targets, NEXT_NONE, dtype=np.int32)
+        self.path_prio = np.full(max_targets, PRIO_DEFAULT, dtype=np.int32)
+        self.path_decis = np.zeros((max_targets, POSI), dtype=np.float64)
+        self.path_linkdecis = np.zeros((max_targets, POSI), dtype=np.int32)
+        self.path_inlist = np.zeros(max_targets, dtype=np.int32)
+        self.path_finaldecis = np.zeros(max_targets, dtype=np.float64)
+
+        self.corres_nr = np.zeros(max_targets, dtype=np.int32)
+        self.corres_p = np.full((max_targets, 4), TR_UNUSED, dtype=np.int32)
+
+        self.targets = [[Target() for _ in range(max_targets)] for _ in range(num_cams)]
+        self.num_targets = [0] * num_cams
+        self.target_x = [np.empty(0, dtype=np.float64) for _ in range(num_cams)]
+        self.target_y = [np.empty(0, dtype=np.float64) for _ in range(num_cams)]
+        self.target_tnr = [np.empty(0, dtype=np.int32) for _ in range(num_cams)]
+
+    def refresh_path_info_arrays(self) -> None:
+        """Sync SoA arrays from Pathinfo objects."""
+        for i in range(self.num_parts):
+            pi = self.path_info[i]
+            self.path_x[i] = pi.x
+            self.path_prev[i] = pi.prev_frame
+            self.path_next[i] = pi.next_frame
+            self.path_prio[i] = pi.prio
+            self.path_decis[i] = pi.decis
+            self.path_linkdecis[i] = pi.linkdecis
+            self.path_inlist[i] = pi.inlist
+            self.path_finaldecis[i] = pi.finaldecis
+
+    def refresh_path_info_objects(self) -> None:
+        """Sync Pathinfo objects from SoA arrays."""
+        for i in range(self.num_parts):
+            pi = self.path_info[i]
+            pi.x = self.path_x[i].copy()
+            pi.prev_frame = int(self.path_prev[i])
+            pi.next_frame = int(self.path_next[i])
+            pi.prio = int(self.path_prio[i])
+            pi.decis = list(self.path_decis[i])
+            pi.linkdecis = list(self.path_linkdecis[i])
+            pi.inlist = int(self.path_inlist[i])
+            pi.finaldecis = float(self.path_finaldecis[i])
+
+    def refresh_target_arrays(self, cam: int | None = None) -> None:
+        """Refresh cached NumPy views of target coordinates and tracking ids."""
+        cams = range(self.num_cams) if cam is None else (cam,)
+        for i_cam in cams:
+            num_targets = self.num_targets[i_cam]
+            targets = self.targets[i_cam][:num_targets]
+            self.target_x[i_cam] = np.array([t.x for t in targets], dtype=np.float64)
+            self.target_y[i_cam] = np.array([t.y for t in targets], dtype=np.float64)
+            self.target_tnr[i_cam] = np.array([t.tnr for t in targets], dtype=np.int32)
+
+    @property
+    def correspond(self) -> np.recarray:
+        """Compatibility accessor returning correspondence records (nr, p)."""
+        cor = np.recarray((self.num_parts,), dtype=Corres_dtype)
+        if self.num_parts > 0:
+            cor.nr = self.corres_nr[: self.num_parts]
+            cor.p = self.corres_p[: self.num_parts]
+        return cor
+
+    def read(
+        self,
+        corres_file_base: str,
+        linkage_file_base: str,
+        prio_file_base: str,
+        target_file_base: List[str],
+        frame_num: int,
+    ) -> bool:
+        """Read a frame from the disk."""
+        # Normalize bytes (from Cython) and trailing dots
+        if isinstance(corres_file_base, bytes):
+            corres_file_base = corres_file_base.decode()
+        if isinstance(linkage_file_base, bytes):
+            linkage_file_base = linkage_file_base.decode()
+        if isinstance(prio_file_base, bytes):
+            prio_file_base = prio_file_base.decode()
+
+        required_files = [Path(f"{corres_file_base}.{frame_num}")]
+
+        if linkage_file_base != "":
+            required_files.append(Path(f"{linkage_file_base}.{frame_num}"))
+
+        if prio_file_base != "":
+            required_files.append(Path(f"{prio_file_base}.{frame_num}"))
+
+        for file_base in target_file_base:
+            file_base = _normalize_file_base(file_base)
+            if frame_num > 0:
+                required_files.append(Path(f"{file_base}.{frame_num:04d}_targets"))
+            else:
+                required_files.append(Path(f"{file_base}_targets"))
+
+        for path in required_files:
+            if not path.exists():
+                print(f"DEBUG: missing required file: {path}")
+                return False
+
+        cor_nr, cor_p, path_buf = read_path_frame(
+            corres_file_base,
+            linkage_file_base,
+            prio_file_base,
+            frame_num,
+            include_corres_nr=True,
+        )
+
+        n = len(cor_nr)
+        if n > self.max_targets:
+            # Should not happen with default constants, but handle gracefully
+            n = self.max_targets
+
+        self.corres_nr[:n] = cor_nr[:n]
+        self.corres_p[:n] = cor_p[:n]
+        self.path_info[:n] = path_buf[:n]
+        self.num_parts = n
+        
+        # Sync SoA arrays from the newly read data
+        self.refresh_path_info_arrays()
+
+        if self.num_parts == -1:
+            return False
+
+        for cam in range(self.num_cams):
+            targs = read_targets(target_file_base[cam], frame_num)
+            for i, t in enumerate(targs):
+                t.pnr = i
+            self.targets[cam] = targs
+            self.num_targets[cam] = len(self.targets[cam])
+
+            # Reset tnr for all targets first
+            for t in self.targets[cam]:
+                t.tnr = TR_UNUSED
+
+        # Set tnr based on correspondence
+        for p_idx in range(self.num_parts):
+            for cam in range(self.num_cams):
+                t_idx = self.corres_p[p_idx, cam]
+                if 0 <= t_idx < self.num_targets[cam]:
+                    self.targets[cam][t_idx].tnr = p_idx
+
+        # NOW sort targets by Y for binary search in candidate search
+        for cam in range(self.num_cams):
+            self.targets[cam].sort(key=lambda t: t.y)
+
+        # Refresh arrays after setting tnr and sorting
+        for cam in range(self.num_cams):
+            self.refresh_target_arrays(cam)
+
+        return True
+
+    def write(
+        self,
+        corres_file_base: str,
+        linkage_file_base: str,
+        prio_file_base: str,
+        target_file_base: List[str],
+        frame_num: int,
+    ) -> bool:
+        """Write a frame to the disk."""
+        status = write_path_frame(
+            self.corres_nr,
+            self.corres_p,
+            self.path_info,
+            self.num_parts,
+            corres_file_base,
+            linkage_file_base,
+            prio_file_base,
+            frame_num,
+        )
+
+        if status == 0:
+            return False
+
+        for cam in range(self.num_cams):
+            status = write_targets(
+                self.targets[cam],
+                self.num_targets[cam],
+                target_file_base[cam],
+                frame_num,
+            )
+
+            if status == 0:
+                return False
+
+        return True
+
+    def positions(self) -> np.ndarray:
+        """Return an (n,3) array 3D positions on n particles in the frame."""
+        pos3d = np.empty((self.num_parts, 3))
+        for pt in range(self.num_parts):
+            pos3d[pt] = self.path_info[pt].x
+
+        return pos3d
+
+    def target_positions_for_camera(self, cam: int) -> np.ndarray:
+        """
+        Get all targets in this frame as seen by the selected camere. The.
+
+        targets are returned in the order corresponding to the particle order
+        returned by ``positions()``.
+
+        Arguments:
+        ---------
+        int cam - camera number, starting from 0.
+
+        Returns
+        -------
+        an (n,2) array with the 2D position of targets detected in the image
+            seen by camera ``cam``. for each 3D position. If no target in this
+            camera belongs to the 3D position, its target is set to NaN.
+        """
+        pos2d = np.empty((self.num_parts, 2))
+        for pt in range(self.num_parts):
+            tix = self.corres_p[pt, cam]
+
+            if tix == CORRES_NONE:
+                pos2d[pt] = np.nan
+            else:
+                pos2d[pt, 0] = self.targets[cam][tix].x
+                pos2d[pt, 1] = self.targets[cam][tix].y
+
+        return pos2d
+
+    def __repr__(self):
+        return f"<Frame num_parts={self.num_parts} num_cams={self.num_cams} max_targets={self.max_targets}>"
+
+    # def frame_init(num_cams: int, max_targets: int):
+    # """Initialize a frame structure."""
+    # frame = Frame(max_targets=max_targets, num_cams=num_cams)
+    # for cam in range(num_cams):
+    #     frame.targets[cam] = [Target() for _ in range(max_targets)]
+    #     frame.num_targets[cam] = 0
+
+    # return frame
+
+
+# class RingVector:
+#     def __init__(self, capacity):
+#         self.capacity = capacity
+#         self.data = [None] * capacity
+#         self.size = 0
+#         self.head = 0
+
+#     def push(self, item):
+#         if self.size < self.capacity:
+#             self.data[(self.head + self.size) % self.capacity] = item
+#             self.size += 1
+#         else:
+#             # Handle the case where the ring is full (optional)
+#             print("Ring is full, cannot push item.")
+
+#     def pop(self):
+#         if self.size > 0:
+#             item = self.data[self.head]
+#             self.head = (self.head + 1) % self.capacity
+#             self.size -= 1
+#             return item
+#         else:
+#             # Handle the case where the ring is empty (optional)
+#             print("Ring is empty, cannot pop item.")
+
+# # Example usage:
+# ring = RingVector(5)
+# ring.push(1)
+# ring.push(2)
+# ring.push(3)
+# ring.push(4)
+# ring.push(5)
+
+# print("Initial Ring:", ring.data)
+
+# ring.push(6)  # This will print "Ring is full, cannot push item."
+
+# popped_item = ring.pop()
+# print("Popped item:", popped_item)
+# print("Updated Ring:", ring.data)
+
+
+class FrameBufBase:
+    """Frame buffer class."""
+
+    def __init__(
+        self,
+        buf: Deque[Frame],
+        # _ring_vec: Deque[Frame],
+        buf_len: int = 4,
+        num_cams: int = 1,
+    ):
+        self.buf: Deque[Frame] = buf
+        # self._ring_vec: Deque[Frame] = _ring_vec
+        self.buf_len = buf_len
+        self.num_cams = num_cams
+        self.size = 0
+        self.head = 0
+
+    def push(self, item: Frame):
+        """Push an item onto the buffer."""
+        if self.size < self.buf_len:
+            self.buf[(self.head + self.size) % self.buf_len] = item
+            self.size += 1
+        else:
+            # Handle the case where the ring is full (optional)
+            print("Ring is full, cannot push item.")
+
+    def pop(self):
+        """Pop an item from the buffer."""
+        if self.size > 0:
+            item = self.buf[self.head]
+            self.head = (self.head + 1) % self.buf_len
+            self.size -= 1
+            return item
+        else:
+            # Handle the case where the ring is empty (optional)
+            print("Ring is empty, cannot pop item.")
+
+    def fb_next(self):
+        """Advances the start pointer of the frame buffer and.
+
+        resetting it to the beginning after exceeding the buffer length.
+
+        Arguments:
+        ---------
+        self - the framebuf to advance.
+        """
+        # self.head += 1
+
+        # if self.head >= self.buf_len: # reset, but this is not necessary for the deque
+        #     self.buf = self._ring_vec
+
+        # seems that this is just deque.rotate(1)
+        self.buf.rotate(-1)  # [0,1,2,3] -> [1,2,3,0] -> will be [1,2,3,4]
+
+    def fb_prev(self):
+        """Back the start pointer of the frame buffer and.
+
+        setting it to the end after exceeding the buffer start.
+
+        Arguments:
+        ---------
+        self - the framebuf to advance.
+        """
+        # self.buf -= 1
+        # if self.buf < self._ring_vec:
+        #     self.buf = self._ring_vec + self.buf_len - 1
+
+        self.buf.rotate(1)  # [0,1,2,3] -> [3, 0, 1, 2] -> [-1, 0, 1, 2]
+
+
+class FrameBuf(FrameBufBase):
+    """Frame buffer class."""
+
+    def __init__(
+        self,
+        buf_len: int,
+        num_cams: int,
+        max_targets: int,
+        corres_file_base: str,
+        linkage_file_base: str,
+        prio_file_base: str,
+        target_file_base: List[str],
+    ):
+        super().__init__(
+            buf=deque(
+                [Frame(num_cams, max_targets) for _ in range(buf_len)], maxlen=buf_len
+            ),
+            # _ring_vec=deque(
+            #     [Frame(num_cams, max_targets) for _ in range(buf_len)], maxlen=buf_len
+            # ),
+            buf_len=buf_len,
+            num_cams=num_cams,
+        )
+
+        self.size = buf_len
+        self.head = 0
+
+        self.corres_file_base = corres_file_base
+        self.linkage_file_base = linkage_file_base
+        self.prio_file_base = prio_file_base
+        self.target_file_base = target_file_base
+
+    # def write_frame_from_start(self, frame_num):
+    #     """Write a frame to disk and advance the buffer."""
+    #     # Write the frame to disk
+    #     frame = self.buf[0]  # first frame
+    #     cor_buf = frame.correspond
+    #     path_buf = frame.path_info
+    #     num_parts = frame.num_parts
+
+    #     write_path_frame(
+    #         cor_buf,
+    #         path_buf,
+    #         num_parts,
+    #         self.corres_file_base,
+    #         self.linkage_file_base,
+    #         self.prio_file_base,
+    #         frame_num,
+    #     )
+
+    #     # Advance the buffer
+    #     # self.buf.appendleft(Frame(self.num_cams, MAX_TARGETS))
+
+    def read_frame_at_end(self, frame_num: int, read_links: bool = False) -> None:
+        """Read a frame from the disk and add it to the end of the buffer."""
+        frame = self.buf[-1]  # last frame
+
+        if read_links:
+            success = frame.read(
+                self.corres_file_base,
+                self.linkage_file_base,
+                self.prio_file_base,
+                self.target_file_base,
+                frame_num,
+            )
+        else:
+            success = frame.read(
+                self.corres_file_base, "", "", self.target_file_base, frame_num
+            )
+
+        if not success:
+            raise IOError("Could not read frame from disk")
+
+    def disk_read_frame_at_end(self, frame_num: int, read_links: bool):
+        """Read a frame to the last position in the ring.
+
+        Arguments:
+        ---------
+        self_base - the framebuf object doing the reading.
+        frame_num - number of the frame to read in the sequence of frames.
+        read_links - whether or not to read data in the linkage/prio files.
+
+        Returns
+        -------
+        True on success, false on failure.
+        """
+        frame = self.buf[-1]  # always the last one on the right
+        if read_links:
+            return frame.read(
+                self.corres_file_base,
+                self.linkage_file_base,
+                self.prio_file_base,
+                self.target_file_base,
+                frame_num,
+            )
+        else:
+            return frame.read(
+                self.corres_file_base,
+                "",
+                "",
+                self.target_file_base,
+                frame_num,
+            )
+
+    def write_frame_from_start(self, frame_num: int):
+        """Write the frame to the first position in the ring.
+
+        Arguments:
+        ---------
+        self_base - the framebuf object doing the reading.
+        frame_num - number of the frame to write in the sequence of frames.
+
+        Returns
+        -------
+        True on success, false on failure.
+        """
+        frame = self.buf[0]  # always the first one on the left
+
+        return frame.write(
+            self.corres_file_base,
+            self.linkage_file_base,
+            self.prio_file_base,
+            self.target_file_base,
+            frame_num,
+        )
+
+
+def read_path_frame(
+    corres_file_base: str,
+    linkage_file_base: str,
+    prio_file_base: str,
+    frame_num: int,
+    include_corres_nr: bool = False,
+):
+    """Read rt_is frames from disk.
+
+    Returns
+    -------
+    corres_nr : int32 array of particle correspondence numbers
+    corres_p : int32 (N, 4) array of per-camera target indices
+    path_buf : list of Pathinfo objects
+    """
+    fname = f"{corres_file_base}.{frame_num}"
+
+    try:
+        filein = open(fname, "r", encoding="utf-8")
+    except IOError:
+        print(f"Can't open ascii file: {fname}")
+        if include_corres_nr:
+            return np.empty(0, dtype=np.int32), np.empty((0, 4), dtype=np.int32), []
+        empty_cor = np.recarray((0,), dtype=Corres_dtype)
+        return empty_cor, []
+
+    n_particles = int(filein.readline())
+    if n_particles < 0:
+        n_particles = 0
+
+    corres_nr = np.zeros(n_particles, dtype=np.int32)
+    corres_p = np.full((n_particles, 4), TR_UNUSED, dtype=np.int32)
+
+    path_buf = [Pathinfo() for _ in range(n_particles)]
+
+    if linkage_file_base != "":
+        fname = f"{linkage_file_base}.{frame_num}"
+        try:
+            linkagein = open(fname, "r", encoding="utf-8")
+        except IOError:
+            print(f"Can't open linkage file: {fname}")
+            if include_corres_nr:
+                return np.empty(0, dtype=np.int32), np.empty((0, 4), dtype=np.int32), []
+            empty_cor = np.recarray((0,), dtype=Corres_dtype)
+            return empty_cor, []
+
+        linkagein.readline()
+    else:
+        linkagein = None
+
+    if prio_file_base != "":
+        fname = f"{prio_file_base}.{frame_num}"
+        try:
+            prioin = open(fname, "r", encoding="utf-8")
+        except IOError:
+            print(f"Can't open prio file: {fname}")
+            if include_corres_nr:
+                return np.empty(0, dtype=np.int32), np.empty((0, 4), dtype=np.int32), []
+            empty_cor = np.recarray((0,), dtype=Corres_dtype)
+            return empty_cor, []
+
+        prioin.readline()
+    else:
+        prioin = None
+
+    targets = 0
+    while True:
+        line = filein.readline()
+        if not line:
+            break
+
+        if linkagein is not None:
+            linkage_line = linkagein.readline()
+            linkage_vals = np.fromstring(linkage_line, dtype=float, sep=" ")
+            path_buf[targets].prev_frame = linkage_vals[0].astype(int)
+            path_buf[targets].next_frame = linkage_vals[1].astype(int)
+
+        if prioin is not None:
+            prio_line = prioin.readline()
+            prio_vals = np.fromstring(prio_line, dtype=float, sep=" ")
+            path_buf[targets].prio = prio_vals[-1].astype(int)
+        else:
+            path_buf[targets].prio = 4
+
+        path_buf[targets].inlist = 0
+        path_buf[targets].finaldecis = 1000000.0
+        path_buf[targets].decis = [0] * POSI  # type: ignore
+        path_buf[targets].linkdecis = [-999] * POSI
+
+        vals = np.fromstring(line, dtype=float, sep=" ")
+        corres_nr[targets] = targets + 1
+        corres_p[targets] = vals[-4:].astype(int)
+        path_buf[targets].x = vals[1:-4]
+
+        targets += 1
+
+    filein.close()
+    if linkagein is not None:
+        linkagein.close()
+    if prioin is not None:
+        prioin.close()
+
+    if include_corres_nr:
+        return corres_nr, corres_p, path_buf
+
+    cor_buf = np.recarray((targets,), dtype=Corres_dtype)
+    if targets > 0:
+        cor_buf.nr = corres_nr[:targets]
+        cor_buf.p = corres_p[:targets]
+
+    return cor_buf, path_buf
+
+
+def write_path_frame(
+    corres_nr: np.ndarray,
+    corres_p: np.ndarray,
+    path_buf: List[Pathinfo],
+    num_parts: int,
+    corres_file_base: str,
+    linkage_file_base: str,
+    prio_file_base: str,
+    frame_num: int,
+) -> bool:
+    """
+    Write a frame of path and correspondence info.
+
+    The correspondence and linkage information for a frame with the next and previous
+    frames is written. The information is distributed among two files. The rt_is file holds
+    correspondence and position data, and the ptv_is holds linkage data.
+
+    Args:
+    ----
+        cor_buf: List of corres structs to write to the files.
+        path_buf: List of path info structures.
+        num_parts: Number of particles represented by the cor_buf and path_buf arrays.
+        corres_file_base: Base name of the output correspondence file.
+        linkage_file_base: Base name of the output linkage file.
+        prio_file_base: Base name of the output priority file (optional).
+        frame_num: Number of the frame to add to file_base.
+
+    Returns
+    -------
+        True on success, False on failure.
+    """
+    if isinstance(corres_file_base, bytes):
+        corres_file_base = corres_file_base.decode("utf-8")
+    if isinstance(linkage_file_base, bytes):
+        linkage_file_base = linkage_file_base.decode("utf-8")
+    if isinstance(prio_file_base, bytes):
+        prio_file_base = prio_file_base.decode("utf-8")
+
+    corres_fname = f"{corres_file_base}.{frame_num}"
+    linkage_fname = f"{linkage_file_base}.{frame_num}"
+    prio_fname = f"{prio_file_base}.{frame_num}" if prio_file_base else None
+    success = False
+
+    try:
+        corres_file = open(corres_fname, "w", encoding="utf8")
+        corres_file.write(f"{num_parts}\n")
+
+        linkage_file = open(linkage_fname, "w", encoding="utf8")
+        linkage_file.write(f"{num_parts}\n")
+
+        if prio_fname is not None:
+            prio_file = open(prio_fname, "w", encoding="utf8")  # type: ignore
+            prio_file.write(f"{num_parts}\n")
+
+        for pix in range(num_parts):
+            # Match C printf format: "%4d %4d %10.3f %10.3f %10.3f\n"
+            linkage_file.write(
+                f"{path_buf[pix].prev_frame:4d} {path_buf[pix].next_frame:4d} "
+                f"{path_buf[pix].x[0]:10.3f} {path_buf[pix].x[1]:10.3f} "
+                f"{path_buf[pix].x[2]:10.3f}\n"
+            )
+
+            # Match C printf format: "%4d %9.3f %9.3f %9.3f %4d %4d %4d %4d\n"
+            corres_file.write(
+                f"{pix + 1:4d} {path_buf[pix].x[0]:9.3f} "
+                f"{path_buf[pix].x[1]:9.3f} {path_buf[pix].x[2]:9.3f} "
+                f"{corres_p[pix, 0]:4d} {corres_p[pix, 1]:4d} "
+                f"{corres_p[pix, 2]:4d} {corres_p[pix, 3]:4d}\n"
+            )
+
+            if prio_fname is not None:
+                # Match C printf format: "%4d %4d %10.3f %10.3f %10.3f %d\n"
+                prio_file.write(
+                    f"{path_buf[pix].prev_frame:4d} {path_buf[pix].next_frame:4d} "
+                    f"{path_buf[pix].x[0]:10.3f} {path_buf[pix].x[1]:10.3f} "
+                    f"{path_buf[pix].x[2]:10.3f} {path_buf[pix].prio}\n"
+                )
+
+        corres_file.close()
+        linkage_file.close()
+        if prio_fname is not None:
+            prio_file.close()
+
+        success = True
+
+    except IOError as e:
+        print(f"Can't open file {e.filename} for writing")
+
+    return success
+
+
+def match_coords(
+    targs: List[Target],
+    cpar: ControlPar,
+    cal: Calibration,
+    tol: float = 1e-5,
+    reset_numbers: bool = False,
+) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Match coordinates from all cameras into a single block.
+
+    replaces MatchedCoords class in Cython
+
+    Returns x-sorted SoA arrays (x, y, pnr).
+    """
+    n = len(targs)
+    _x = np.empty(n, dtype=np.float64)
+    _y = np.empty(n, dtype=np.float64)
+    _pnr = np.empty(n, dtype=np.int_)
+
+    for tnum, targ in enumerate(targs):
+        if reset_numbers:
+            targ.pnr = tnum
+
+        xm, ym = pixel_to_metric(targ.x, targ.y, cpar)
+        _x[tnum], _y[tnum] = dist_to_flat(xm, ym, cal, tol)
+        _pnr[tnum] = targ.pnr
+
+    order = np.argsort(_x)
+    return _x[order], _y[order], _pnr[order]
+
+
+def matched_coords_as_arrays(
+    x: np.ndarray, y: np.ndarray,
+) -> np.ndarray:
+    """Stack x/y SoA arrays into (n, 2) position array."""
+    pos = np.empty((len(x), 2), dtype=np.float64)
+    pos[:, 0] = x
+    pos[:, 1] = y
+    return pos
+
+
+def get_by_pnrs(
+    pnr_arr: np.ndarray, x_arr: np.ndarray, y_arr: np.ndarray,
+    pnrs: np.ndarray,
+) -> np.ndarray:
+    """Return flat positions for the given pnr values.
+
+    Parameters
+    ----------
+    pnr_arr, x_arr, y_arr : SoA arrays from match_coords or MatchedCoords
+    pnrs : 1-D array of particle numbers to look up
+
+    Returns
+    -------
+    (n, 2) position array; NaN where pnr not found.
+    """
+    pos = np.full((len(pnrs), 2), COORD_UNUSED, dtype=np.float64)
+    for i in range(len(pnr_arr)):
+        which = np.flatnonzero(pnr_arr[i] == pnrs)
+        if len(which) > 0:
+            pos[which[0], 0] = x_arr[i]
+            pos[which[0], 1] = y_arr[i]
+    return pos

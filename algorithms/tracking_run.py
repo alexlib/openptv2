@@ -1,135 +1,80 @@
-"""Tracking run module."""
-
-import math
-from dataclasses import dataclass
-from pathlib import Path
-from typing import List
-
-from .calibration import Calibration
-from .tracking_frame_buf import FrameBuf
-
-from .multimed import volumedimension
-from .parameters import (
-    ControlPar,
-    SequencePar,
-    TrackParTuple,
-    VolumePar,
-    convert_track_par_to_tuple,
-    read_control_par,
-    read_sequence_par,
-    read_track_par,
-    read_volume_par,
-)
+import numpy as np
+from dataclasses import dataclass, field
+from algorithms.parameters import SequencePar, TrackPar, VolumePar, ControlPar
+from algorithms.tracking_frame_buf import FrameBuf
 
 
 @dataclass
 class TrackingRun:
-    """A tracking run."""
-
-    fb: FrameBuf
     seq_par: SequencePar
-    tpar: TrackParTuple
+    tpar: TrackPar
     vpar: VolumePar
     cpar: ControlPar
-    cal: List[Calibration]
-    flatten_tol: float = 0.0
-    ymin: float = 0.0
-    ymax: float = 0.0
-    lmax: float = 0.0
+    buf_len: int
+    max_targets: int
+    corres_file_base: str
+    linkage_file_base: str
+    prio_file_base: str
+    cal: list
+    flatten_tol: float
+    fb: FrameBuf = field(init=False)
+    lmax: float = field(init=False)
+    ymin: float = field(init=False)
+    ymax: float = field(init=False)
     npart: int = 0
     nlinks: int = 0
 
-    def __init__(
-        self,
-        seq_par: SequencePar,
-        tpar: TrackParTuple,
-        vpar: VolumePar,
-        cpar: ControlPar,
-        buf_len: int,
-        max_targets: int,
-        corres_file_base: str,
-        linkage_file_base: str,
-        prio_file_base: str,
-        cal: List[Calibration],
-        flatten_tol: float,
-    ):
-        self.tpar = tpar
-        self.vpar = vpar
-        self.cpar = cpar
-        self.seq_par = seq_par
-        self.cal = cal
-        self.flatten_tol = flatten_tol
-
+    def __post_init__(self):
         self.fb = FrameBuf(
-            buf_len,
-            cpar.num_cams,
-            max_targets,
-            corres_file_base,
-            linkage_file_base,
-            prio_file_base,
-            seq_par.img_base_name,
-        )
+            self.buf_len, self.cpar.num_cams, self.max_targets,
+            self.corres_file_base, self.linkage_file_base,
+            self.prio_file_base, self.seq_par.img_base_name)
 
-        self.lmax = math.sqrt(
-            (tpar.dvxmin - tpar.dvxmax) ** 2
-            + (tpar.dvymin - tpar.dvymax) ** 2
-            + (tpar.dvzmin - tpar.dvzmax) ** 2
-        )
+        self.lmax = np.linalg.norm([
+            self.tpar.dvxmin - self.tpar.dvxmax,
+            self.tpar.dvymin - self.tpar.dvymax,
+            self.tpar.dvzmin - self.tpar.dvzmax
+        ])
 
-        (
-            vpar.x_lay[1],
-            vpar.x_lay[0],
-            self.ymax,
-            self.ymin,
-            vpar.z_max_lay[1],
-            vpar.z_min_lay[0],
-        ) = volumedimension(
-            vpar.x_lay[1],
-            vpar.x_lay[0],
-            self.ymax,
-            self.ymin,
-            vpar.z_max_lay[1],
-            vpar.z_min_lay[0],
-            vpar,
-            cpar,
-            cal,
-        )
+        from algorithms.multimed import volumedimension, init_mmlut
+        xmax, xmin, self.ymax, self.ymin, zmax, zmin = volumedimension(
+            self.vpar, self.cpar, self.cal)
+        self.vpar.X_lay[1] = xmax
+        self.vpar.X_lay[0] = xmin
+        self.vpar.Zmax_lay[1] = zmax
+        self.vpar.Zmin_lay[0] = zmin
 
-        self.npart = 0
-        self.nlinks = 0
+        for c in self.cal:
+            if not c.mmlut.is_initialized:
+                init_mmlut(self.vpar, self.cpar, c)
 
 
-def tr_new(
-    seq_par_fname: Path,
-    tpar_fname: Path,
-    vpar_fname: Path,
-    cpar_fname: Path,
-    buf_len: int,
-    max_targets: int,
-    corres_file_base: str,
-    linkage_file_base: str,
-    prio_file_base: str,
-    cal: List[Calibration],
-    flatten_tol: float,
-) -> TrackingRun:
-    """Create a new tracking run from legacy files."""
-    cpar = read_control_par(cpar_fname)
-    seq_par = read_sequence_par(seq_par_fname, cpar.num_cams)
-    tpar = convert_track_par_to_tuple(read_track_par(tpar_fname))
-    vpar = read_volume_par(vpar_fname)
+def tr_new(seq_par, tpar, vpar, cpar, buf_len, max_targets,
+           corres_file_base, linkage_file_base, prio_file_base, cal, flatten_tol):
+    """Python translation of C tr_new/tr_new_legacy.
 
-    tr = TrackingRun(
-        seq_par,
-        tpar,
-        vpar,
-        cpar,
-        buf_len,
-        max_targets,
-        corres_file_base,
-        linkage_file_base,
-        prio_file_base,
-        cal,
-        flatten_tol,
+    Accepts either parameter objects or file paths. If file paths are
+    passed, reads and constructs parameter objects automatically.
+    """
+    from algorithms.parameters import (
+        SequencePar, TrackPar, VolumePar, ControlPar,
+        convert_track_par_to_tuple,
     )
 
-    return tr
+    if isinstance(cpar, str):
+        cpar_obj = ControlPar.from_file(cpar)
+    else:
+        cpar_obj = cpar
+
+    if isinstance(seq_par, str):
+        seq_par = SequencePar.from_file(seq_par, cpar_obj.num_cams)
+
+    if isinstance(tpar, str):
+        tpar = TrackPar.from_file(tpar)
+        tpar = convert_track_par_to_tuple(tpar)
+
+    if isinstance(vpar, str):
+        vpar = VolumePar.from_file(vpar)
+
+    return TrackingRun(seq_par, tpar, vpar, cpar_obj, buf_len, max_targets,
+                       corres_file_base, linkage_file_base, prio_file_base, cal, flatten_tol)

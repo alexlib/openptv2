@@ -1,156 +1,147 @@
-from pathlib import Path
-from typing import List
+"""Sortgrid operations for PTV calibration.
 
+Translation of lib/src/sortgrid.c and lib/include/sortgrid.h.
+
+Provides:
+- sortgrid: matches calibration 3D targets to detected 2D points.
+- nearest_neighbour_pix: helper to find the closest pixel.
+- read_sortgrid_par: reads search radius.
+- read_calblock: reads 3D calibration point coordinates.
+"""
+
+import math
 import numpy as np
+from typing import Tuple
+from pathlib import Path
 
-from .calibration import Calibration
-from .constants import POS_INF, PT_UNUSED, SORTGRID_EPS
-from .epi import Coord3d_dtype
-from .imgcoord import img_coord
-from .parameters import ControlPar
 from .tracking_frame_buf import Target
-from .trafo import metric_to_pixel
 
 
-def sortgrid(
-    cal: Calibration,
-    cpar: ControlPar,
-    nfix: int,
-    fix: np.ndarray,
-    eps: float,
-    pix: List[Target],
-) -> List[Target]:
-    """Sorts the grid points according to the image coordinates.
+def nearest_neighbour_pix(pix: list, x: float, y: float, eps: float) -> int:
+    """Search for the nearest target in the image space within epsilon distance."""
+    if eps < 0:
+        return -999
 
-    /* sortgrid () is sorting detected target points by back-projection. Three dimensional
-    positions of the dots on the calibration target are provided with the known IDs. The
-    points are back-projected onto the image space and the nearest neighbour dots
-    identified by image processing routines are selected and sorted according to the
-    pre-defined IDs. The one to one correspondence provides a data on which the
-    calibration process is based on. The nearest neighbour search is a primitive
-    minimum distance search within a pre-defined radius (default = 10) read from the
-    `sortgrid.par` parameter file (radius is given in pixels).
+    pnr = -999
+    dmin = 1e20
 
-    Arguments:
-    ---------
-    Calibration: calibration parameters
-    Control: control parameters
-    nfix is the integer number of points in the calibration text file
-    vec3d fix[] structure 3d positions and integer identification pointers of
-    the calibration target points in the calibration file
-    num is the number of detected (by image processing) dots on the calibration image
+    xmin, xmax = x - eps, x + eps
+    ymin, ymax = y - eps, y + eps
 
-    Output:
-    target sorted_pix[] is the array of targets or detected dots that have an ID (pnr),
-    pixel position, size of the dot, sum of grey values and another identification (tnr)
-    the pnr pointer is the row number of the dot in the calibration block file
-
-    """
-    sorted_pix = [Target() for _ in range(nfix)]
-
-    for i in range(nfix):
-        xp, yp = img_coord(fix[i], cal, cpar.mm)
-
-        calib_point = metric_to_pixel(xp, yp, cpar)
-
-        if (
-            (calib_point[0] > -eps)
-            and (calib_point[1] > -eps)
-            and (calib_point[0] < cpar.imx + eps)
-            and (calib_point[1] < cpar.imy + eps)
-        ):
-            j = nearest_neighbour_pix(pix, calib_point[0], calib_point[1], eps)
-
-            if j != -999:
-                sorted_pix[i] = pix[j]
-                sorted_pix[i].pnr = i
-
-    return sorted_pix
-
-
-def nearest_neighbour_pix(pix: List[Target], x: float, y: float, eps: float):
-    """Find the nearest neighbour pixel to the given point.
-
-    Args:
-    ----
-        pix: array of point objects of size (num,), where each point object has x and y attributes.
-        num: number of points in pix.
-        x: x-coordinate of the point to find the nearest neighbour for.
-        y: y-coordinate of the point to find the nearest neighbour for.
-        eps: radius of the search region around the point.
-
-    Returns
-    -------
-        pnr: index of the nearest neighbour pixel in pix. If no pixel is
-             found within the search region, PT_UNUSED is returned.
-    """
-    pnr = PT_UNUSED
-    dmin = POS_INF
-    xmin, xmax, ymin, ymax = x - eps, x + eps, y - eps, y + eps
-
-    for count, t in enumerate(pix):
-        if ymin < t.y < ymax and xmin < t.x < xmax:
-            d = np.sqrt((x - t.x) ** 2 + (y - t.y) ** 2)
+    for j, p in enumerate(pix):
+        if ymin < p.y < ymax and xmin < p.x < xmax:
+            d = math.sqrt((x - p.x)**2 + (y - p.y)**2)
             if d < dmin:
                 dmin = d
-                pnr = count
+                pnr = j
 
     return pnr
 
-    # indices = np.where((pix['y'] > ymin) & (pix['y'] < ymax) & (pix['x'] > xmin) & (pix['x'] < xmax))[0]
 
-    # if indices.size > 0:
-    #     dists = np.sqrt((pix['x'][indices] - x) ** 2 + (pix['y'][indices] - y) ** 2)
-    #     min_index = np.argmin(dists)
-    #     pnr = indices[min_index]
+def _nearest_neighbour_arr(
+    pix_x: np.ndarray, pix_y: np.ndarray,
+    x: float, y: float, eps: float,
+) -> int:
+    """Vectorized nearest-neighbour search over pre-extracted coordinate arrays."""
+    if eps < 0:
+        return -999
 
-    # return pnr
+    mask = (
+        (pix_x > x - eps) & (pix_x < x + eps)
+        & (pix_y > y - eps) & (pix_y < y + eps)
+    )
+    if not mask.any():
+        return -999
+
+    dx = pix_x[mask] - x
+    dy = pix_y[mask] - y
+    dist_sq = dx * dx + dy * dy
+    idx_in_mask = dist_sq.argmin()
+    return int(np.flatnonzero(mask)[idx_in_mask])
 
 
-def read_sortgrid_par(filename) -> int:
-    """Read the parameters for the sortgrid function from a file."""
+def read_sortgrid_par(filename: str | Path) -> int:
+    """Read search radius for sortgrid."""
+    path = Path(filename)
+    if not path.exists():
+        print(f"Error: {filename} does not exist.")
+        return 0
     try:
-        with open(filename, "r", encoding="utf-8") as fpp:
-            eps = int(fpp.readline())
-    except IOError:
-        print(f"Can't open sortgrid parameter file: {filename} using default value")
-        # handle error
-        eps = SORTGRID_EPS
+        return int(path.read_text().strip())
+    except (ValueError, IndexError):
+        print(f"Error reading sortgrid parameter from {filename}")
+        return 0
 
-    return eps
+def read_calblock(filename: str | Path) -> Tuple[np.ndarray, int]:
+    """Read calibration target 3D coordinates.
 
-
-def read_calblock(filename: Path) -> np.recarray:  # List[Coord3d]:
+    Returns:
+        (fix, num_points) where fix is an (N, 3) array.
     """
-    Read the calibration block file into the structure of 3D positions and pointers.
-
-    Args:
-    ----
-    - filename (str): path to the text file containing the calibration points.
-
-    Returns
-    -------
-    - List of Coord3d: 3D positions and integer identification pointers of the calibration
-      target points in the calibration file of class Coord3d. if fails, returns None
-    """
-    coords = []
-    try:
-        with open(filename, "r", encoding="utf-8") as f:
-            lines = f.readlines()
-            for line in lines:
-                values = line.strip().split()
-                pnr = int(values[0])
-                x = float(values[1])
-                y = float(values[2])
-                z = float(values[3])
-                # coord = Coord3d(pnr, x, y, z)
-                coord = np.array([(pnr, x, y, z)], dtype=Coord3d_dtype)
-                coords.append(coord)
-    except FileNotFoundError:
+    path = Path(filename)
+    if not path.exists():
         print(f"Can't open calibration block file: {filename}")
-        return np.recarray(0, dtype=Coord3d_dtype)
-    except ValueError:
-        print(f"Empty or badly formatted file: {filename}")
-        return np.recarray(0, dtype=Coord3d_dtype)
+        return np.empty((0, 3)), 0
 
-    return np.array(coords).view(np.recarray)
+    data = np.loadtxt(path)
+    if data.size == 0:
+        print(f"Empty or badly formatted file: {filename}")
+        return np.empty((0, 3)), 0
+
+    num_points = data.shape[0]
+    fix = data[:, 1:4]
+
+    return fix, num_points
+
+
+def sortgrid(
+    cal: "Calibration",
+    cpar: "ControlPar",
+    nfix: int,
+    fix: np.ndarray,
+    num: int,
+    eps: int,
+    pix: list,
+) -> list:
+    """Sort detected target points by back-projection.
+
+    Returns:
+        List of Target objects sorted by calibration point ID.
+        Unmatched entries have pnr=-999.
+    """
+    from .imgcoord import img_coord
+    from .trafo import metric_to_pixel
+
+    sorted_pix = [Target(pnr=-999) for _ in range(nfix)]
+
+    imx, imy = cpar.imx, cpar.imy
+    pix_size_x, pix_size_y = cpar.pix_x, cpar.pix_y
+    chfield = cpar.chfield
+    mm = cpar.mm
+    feps = float(eps)
+
+    use_vec = len(pix) >= 16
+    if use_vec:
+        pix_x = np.array([p.x for p in pix], dtype=np.float64)
+        pix_y = np.array([p.y for p in pix], dtype=np.float64)
+        nn_func = lambda px, py: _nearest_neighbour_arr(pix_x, pix_y, px, py, feps)
+    else:
+        nn_func = lambda px, py: nearest_neighbour_pix(pix, px, py, feps)
+
+    for i in range(nfix):
+        xp, yp = img_coord(fix[i], cal, mm)
+        px, py = metric_to_pixel(xp, yp, imx, imy, pix_size_x, pix_size_y, chfield)
+
+        if (px > -eps and py > -eps
+                and px < imx + eps and py < imy + eps):
+
+            j = nn_func(px, py)
+
+            if j != -999:
+                t = pix[j]
+                sorted_pix[i] = Target(
+                    pnr=i, x=t.x, y=t.y, n=t.n,
+                    nx=t.nx, ny=t.ny, sumg=t.sumg, tnr=t.tnr,
+                )
+
+    return sorted_pix

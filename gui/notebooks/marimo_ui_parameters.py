@@ -38,12 +38,14 @@ def _(mo):
 
 @app.cell
 def _(Path, sys):
-    repo_root = Path(".").resolve()
-    if str(repo_root) not in sys.path:
+    repo_root = Path("..").resolve()
+    gui_root = repo_root / "pyptv"
+    if str(gui_root) not in sys.path:
         sys.path.insert(0, str(repo_root))
+        sys.path.insert(0, str(gui_root))
 
-    from .parameter_manager import ParameterManager
-    from .experiment import Experiment
+    from pyptv.parameter_manager import ParameterManager
+    from pyptv.experiment import Experiment
 
     return Experiment, ParameterManager
 
@@ -88,21 +90,17 @@ def _(num_cams):
             return default
         return lst[idx] if idx < len(lst) and lst[idx] is not None else default
 
-
     def sec(params, name):
         v = params.get(name)
         return v if isinstance(v, dict) else {}
-
 
     def pair2(v, default0=0, default1=0):
         if isinstance(v, (list, tuple)) and len(v) >= 2:
             return v[0], v[1]
         return default0, default1
 
-
     def safe_bool(v, default=False):
         return bool(v) if v is not None else default
-
 
     def safe_int(v, default=0):
         try:
@@ -110,19 +108,16 @@ def _(num_cams):
         except Exception:
             return default
 
-
     def safe_float(v, default=0.0):
         try:
             return float(v)
         except Exception:
             return default
 
-
     def _clamp4(values):
         out = list(values) if isinstance(values, list) else []
         out += ["---"] * (4 - len(out))
         return out[:4]
-
 
     def _active_cam_count(v):
         try:
@@ -170,9 +165,7 @@ def _(
         label="High pass filter", value=safe_bool(_ptv.get("hp_flag"), False)
     )
 
-    ui_tiff = mo.ui.checkbox(
-        label="TIFF", value=safe_bool(_ptv.get("tiff_flag"), True)
-    )
+    ui_tiff = mo.ui.checkbox(label="TIFF", value=safe_bool(_ptv.get("tiff_flag"), True))
     ui_imx = mo.ui.number(
         label="Image width (imx)", value=safe_int(_ptv.get("imx"), 0), step=1
     )
@@ -371,9 +364,7 @@ def _(
             mo.hstack(
                 [ui_Xmin, ui_Xmax, ui_Zmin1, ui_Zmin2, ui_Zmax1, ui_Zmax2], gap=1
             ),
-            mo.hstack(
-                [ui_cnx, ui_cny, ui_cn, ui_csumg, ui_corrmin, ui_eps0], gap=1
-            ),
+            mo.hstack([ui_cnx, ui_cny, ui_cn, ui_csumg, ui_corrmin, ui_eps0], gap=1),
             mo.hstack([ui_mask_flag, ui_mask_base], gap=1),
             save_main_btn,
         ]
@@ -541,9 +532,7 @@ def _(list_get, mo, params, safe_bool, safe_float, safe_int, sec):
         label="Combine_Flag", value=safe_bool(_examine.get("Combine_Flag"), False)
     )
 
-    ui_pnfo = mo.ui.number(
-        label="pnfo", value=safe_int(_orient.get("pnfo"), 0), step=1
-    )
+    ui_pnfo = mo.ui.number(label="pnfo", value=safe_int(_orient.get("pnfo"), 0), step=1)
     ui_cc = mo.ui.checkbox(label="cc", value=safe_bool(_orient.get("cc"), False))
     ui_xh = mo.ui.checkbox(label="xh", value=safe_bool(_orient.get("xh"), False))
     ui_yh = mo.ui.checkbox(label="yh", value=safe_bool(_orient.get("yh"), False))
@@ -772,9 +761,7 @@ def _(mo, params, safe_bool, safe_float, sec):
 
 @app.cell
 def _(cal_tab, main_tab, mo, track_tab):
-    tabs = mo.ui.tabs(
-        {"Main": main_tab, "Calibration": cal_tab, "Tracking": track_tab}
-    )
+    tabs = mo.ui.tabs({"Main": main_tab, "Calibration": cal_tab, "Tracking": track_tab})
     tabs
     return
 
@@ -886,7 +873,6 @@ def _(
         ):
             exp.pm.parameters[name] = {}
         return exp.pm.parameters[name]
-
 
     messages = []
 

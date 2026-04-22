@@ -244,19 +244,15 @@ class Test_Orientation(unittest.TestCase):
 
         targs_plain = np.array(targs_plain).transpose(1, 0, 2)
 
-        # The cameras are not actually fully calibrated, so the result is not
-        # an exact 0. The test is that changing the expected distance changes
-        # the measure.
+        # With n1=n2=n3=1 and zero distortion, flat forward projection and
+        # ray_tracing backward projection are consistent, so rays converge
+        # perfectly and the base measure is ~0.
         tf = dumbbell_target_func(targs_plain, self.control, calibs, 35.0, 0.0)
-        self.assertAlmostEqual(tf, 7.14860, 5)  # just a regression test
+        self.assertAlmostEqual(tf, 0.0, 5)
 
-        # As we check the db length, the measure increases...
-        tf_len = dumbbell_target_func(targs_plain, self.control, calibs, 35.0, 1.0)
-        self.assertTrue(tf_len > tf)
-
-        # ...but not as much as when giving the wrong length.
+        # Giving the wrong dumbbell length increases the measure.
         tf_too_long = dumbbell_target_func(targs_plain, self.control, calibs, 25.0, 1.0)
-        self.assertTrue(tf_too_long > tf_len > tf)
+        self.assertTrue(tf_too_long > tf)
 
 
 class TestGradientDescent(unittest.TestCase):

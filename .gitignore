@@ -109,3 +109,8 @@ test_data/**/parameters__test_new.yaml
 test_data/**/tracking_run_summary.csv
 /gui/notebooks/__marimo__
 **/**/*.*_targets
+**/*.nbc
+**/*.nbi
+.claude/worktrees/agent-a0801fc3/
+.claude/worktrees/agent-a36c2928/
+test_data/track/res/*

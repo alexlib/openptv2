@@ -35,7 +35,8 @@ from .quiverplot import QuiverPlot
 from .detection_gui import DetectionGUI
 from .mask_gui import MaskGUI
 from .parameter_gui import Main_Params, Calib_Params, Tracking_Params
-from . import __version__, ptv
+from openptv2 import __version__ as openptv_version
+from . import ptv
 from optv.epipolar import epipolar_curve
 from optv.imgcoord import image_coordinates
 from optv.transforms import convert_arr_metric_to_pixel
@@ -811,7 +812,6 @@ class TreeMenuHandler(Handler):
         """track detected particles"""
         info.object.clear_plots(remove_background=False)
 
-        # Get sequence parameters from ParameterManager
         seq_params = info.object.get_parameter("sequence")
         seq_first = seq_params["first"]
         seq_last = seq_params["last"]
@@ -822,18 +822,19 @@ class TreeMenuHandler(Handler):
 
         print("Starting detect_part_track")
         x1_a, x2_a, y1_a, y2_a = [], [], [], []
+        x1_first, y1_first = [], []
         for i in range(info.object.num_cams):
             x1_a.append([])
             x2_a.append([])
             y1_a.append([])
             y2_a.append([])
+            x1_first.append([])
+            y1_first.append([])
 
         for i_cam in range(info.object.num_cams):
             for i_seq in range(seq_first, seq_last + 1):
                 intx_green, inty_green = [], []
                 intx_blue, inty_blue = [], []
-
-                # print('Inside detected particles plot', short_base_names[i_cam])
 
                 targets = ptv.read_targets(short_base_names[i_cam], i_seq)
 
@@ -845,12 +846,25 @@ class TreeMenuHandler(Handler):
                         intx_blue.append(t.pos()[0])
                         inty_blue.append(t.pos()[1])
 
-                x1_a[i_cam] = x1_a[i_cam] + intx_green
-                x2_a[i_cam] = x2_a[i_cam] + intx_blue
-                y1_a[i_cam] = y1_a[i_cam] + inty_green
-                y2_a[i_cam] = y2_a[i_cam] + inty_blue
+                if i_seq == seq_first:
+                    x1_first[i_cam] = x1_first[i_cam] + intx_green + intx_blue
+                    y1_first[i_cam] = y1_first[i_cam] + inty_green + inty_blue
+                else:
+                    x1_a[i_cam] = x1_a[i_cam] + intx_green
+                    x2_a[i_cam] = x2_a[i_cam] + intx_blue
+                    y1_a[i_cam] = y1_a[i_cam] + inty_green
+                    y2_a[i_cam] = y2_a[i_cam] + inty_blue
 
         for i_cam in range(info.object.num_cams):
+            if x1_first[i_cam]:
+                info.object.camera_list[i_cam].drawcross(
+                    "x_tr_first",
+                    "y_tr_first",
+                    x1_first[i_cam],
+                    y1_first[i_cam],
+                    "orange",
+                    4,
+                )
             info.object.camera_list[i_cam].drawcross(
                 "x_tr_gr", "y_tr_gr", x1_a[i_cam], y1_a[i_cam], "green", 3
             )
@@ -1230,7 +1244,7 @@ class MainGUI(HasTraits):
             ),
             # Removed message_window from view
         ),
-        title="pyPTV" + __version__,
+        title="pyPTV " + openptv_version,
         id="main_view",
         width=1.0,
         height=1.0,
@@ -1336,6 +1350,11 @@ class MainGUI(HasTraits):
 
     def right_click_process(self):
         """Shows a line in camera color code corresponding to a point on another camera's view plane"""
+
+        if hasattr(self, "_tracking_debug_active") and self._tracking_debug_active:
+            self._tracking_debug_click()
+            return
+
         num_points = 2
 
         if hasattr(self, "sorted_pos") and self.sorted_pos is not None:
@@ -1374,6 +1393,11 @@ class MainGUI(HasTraits):
                 )
 
                 # look for points along epipolars for other cameras
+                from gui.pyptv import ptv
+
+                cpar = ptv._populate_cpar(self.exp1.pm.parameters["ptv"], self.num_cams)
+                vpar = ptv._populate_vpar(self.exp1.pm.parameters["criteria"])
+
                 for j in range(self.num_cams):
                     if i == j:
                         continue
@@ -1382,8 +1406,8 @@ class MainGUI(HasTraits):
                         self.cals[i],
                         self.cals[j],
                         num_points,
-                        self.cpar,
-                        self.vpar,
+                        cpar,
+                        vpar,
                     )
 
                     if len(pts) > 1:
@@ -1398,6 +1422,346 @@ class MainGUI(HasTraits):
                         )
 
                 self.camera_list[i].rclicked = 0
+
+    def _tracking_debug_click(self):
+        """Handle right-click in tracking debug mode.
+
+        Strategy: Find closest matched point in sorted_pos, then draw
+        its matched positions in other cameras and search volume for next frames.
+        """
+        print(f"[DEBUG] _tracking_debug_click called")
+
+        if not hasattr(self, "cals") or not self.cals:
+            print("[DEBUG] No calibrations available. Run Init first.")
+            return
+
+        try:
+            i = self.current_camera
+            click_x = self.camera_list[i]._click_tool.x
+            click_y = self.camera_list[i]._click_tool.y
+
+            print(f"[DEBUG] Click at camera {i}: ({click_x:.1f}, {click_y:.1f})")
+
+            if not hasattr(self, "sorted_pos") or self.sorted_pos is None:
+                print("[DEBUG] No sorted_pos available.")
+                if hasattr(self, "detections") and self.detections:
+                    print("[DEBUG] Detections exist but correspondences not run.")
+                    print(
+                        "[DEBUG] Please run: Process menu → 'Correspondences' (Stereo Matching)"
+                    )
+                else:
+                    print("[DEBUG] No detections found.")
+                    print("[DEBUG] Please run first: Process menu → 'Detect Targets'")
+                return
+
+            point = np.array([click_x, click_y], dtype="float64")
+
+            found_point = None
+            found_idx = None
+            found_type = None
+
+            for idx, pos_type in enumerate(self.sorted_pos):
+                print(
+                    f"[DEBUG] Checking pos_type {idx}, shape: {[p.shape for p in pos_type]}"
+                )
+                distances = np.linalg.norm(pos_type[i] - point, axis=1)
+                if len(distances) > 0 and np.min(distances) < 20:
+                    min_idx = np.argmin(distances)
+                    print(
+                        f"[DEBUG] Found close match in pos_type {idx}, min_idx={min_idx}, shape of pos_type[i]: {pos_type[i].shape}"
+                    )
+                    if min_idx >= pos_type[i].shape[1]:
+                        print(
+                            f"[DEBUG] Index {min_idx} out of bounds, skipping this pos_type"
+                        )
+                        continue
+                    found_point = pos_type[i][:, min_idx]
+                    found_idx = min_idx
+                    found_type = pos_type
+                    print(
+                        f"[DEBUG] Found closest match at idx {min_idx}, dist={distances[min_idx]:.1f}"
+                    )
+                    break
+
+            if found_point is None:
+                print("[DEBUG] No close match found in sorted_pos")
+                return
+
+            print(
+                f"[DEBUG] Matched point in cam {i}: ({found_point[0]:.1f}, {found_point[1]:.1f})"
+            )
+
+            self._draw_tracking_debug_matches(i, found_point, found_idx, found_type)
+
+            self.camera_list[i].rclicked = 0
+
+        except Exception as e:
+            import traceback
+
+            print(f"Error in tracking debug: {e}")
+            traceback.print_exc()
+
+    def _draw_tracking_debug_matches(self, cam_idx, point, match_idx, pos_type):
+        """Draw matched points and search volume for the selected particle."""
+        from gui.pyptv.tracking_debug_utils import (
+            compute_search_bounds_3d,
+            project_search_volume_to_camera,
+        )
+        from gui.pyptv import ptv
+        from optv.epipolar import epipolar_curve
+        from algorithms.parameter_converters import get_track_par_tuple
+        from algorithms.orientation import point_positions
+
+        params = self.exp1.pm.parameters
+        tpar = get_track_par_tuple(params)
+
+        cpar = ptv._populate_cpar(params["ptv"], self.num_cams)
+        vpar = ptv._populate_vpar(params["criteria"])
+
+        py_cals = convert_optv_calibrations(self.cals)
+
+        print(f"[DEBUG] Drawing matched positions from cam {cam_idx}")
+
+        matched_positions = []
+        for j in range(self.num_cams):
+            pos_in_cam = pos_type[j][:, match_idx]
+            matched_positions.append(pos_in_cam)
+            print(
+                f"[DEBUG] Match in cam {j}: ({pos_in_cam[0]:.1f}, {pos_in_cam[1]:.1f})"
+            )
+
+            if j != cam_idx:
+                pts = epipolar_curve(
+                    point,
+                    self.cals[cam_idx],
+                    self.cals[j],
+                    2,
+                    cpar,
+                    vpar,
+                )
+                if len(pts) >= 2:
+                    self.camera_list[j].drawline(
+                        f"debug_epi_{cam_idx}_{j}_x",
+                        f"debug_epi_{cam_idx}_{j}_y",
+                        pts[0, 0],
+                        pts[0, 1],
+                        pts[-1, 0],
+                        pts[-1, 1],
+                        "cyan",
+                    )
+
+        marker_color = "orange" if cam_idx == 0 else "green"
+        self.camera_list[cam_idx].drawcross(
+            "debug_match_x",
+            "debug_match_y",
+            [point[0]],
+            [point[1]],
+            marker_color,
+            4,
+            marker="circle",
+        )
+
+        for j in range(self.num_cams):
+            if j != cam_idx:
+                self.camera_list[j].drawcross(
+                    f"debug_match_{j}_x",
+                    f"debug_match_{j}_y",
+                    [matched_positions[j][0]],
+                    [matched_positions[j][1]],
+                    "green",
+                    3,
+                    marker="circle",
+                )
+
+        target_arr = np.array(
+            [
+                [
+                    [pos[0], pos[1], 1.0] if pos[0] != 0 or pos[1] != 0 else [0, 0, 0]
+                    for pos in matched_positions
+                ]
+            ]
+        )
+
+        pos_3d, valid = point_positions(target_arr, cpar.mm, py_cals, vpar)
+
+        if valid:
+            print(
+                f"[DEBUG] 3D position: ({pos_3d[0, 0]:.2f}, {pos_3d[0, 1]:.2f}, {pos_3d[0, 2]:.2f})"
+            )
+
+            for frame_offset in [1, 2, 3]:
+                velocity = np.array([0.0, 0.0, 0.0])
+                min_b, max_b = compute_search_bounds_3d(
+                    pos_3d[0],
+                    velocity,
+                    tpar.dvxmin,
+                    tpar.dvxmax,
+                    tpar.dvymin,
+                    tpar.dvymax,
+                    tpar.dvzmin,
+                    tpar.dvzmax,
+                    tpar.dacc,
+                    frame_offset,
+                )
+
+                if frame_offset == 1:
+                    search_color = "green"
+                elif frame_offset == 2:
+                    search_color = "yellow"
+                else:
+                    search_color = "orange"
+
+                for cam_num in range(self.num_cams):
+                    bounds_2d = project_search_volume_to_camera(
+                        min_b, max_b, py_cals[cam_num], cpar.mm
+                    )
+
+                    self.camera_list[cam_num].drawrect(
+                        f"search_{frame_offset}_{cam_num}_x",
+                        f"search_{frame_offset}_{cam_num}_y",
+                        bounds_2d["left"],
+                        bounds_2d["right"],
+                        bounds_2d["up"],
+                        bounds_2d["down"],
+                        search_color,
+                        1,
+                    )
+
+            print(
+                f"[DEBUG] Search volumes drawn for t+1 (green), t+2 (yellow), t+3 (orange)"
+            )
+        else:
+            print("[DEBUG] Could not triangulate 3D position")
+
+        for cam in self.camera_list:
+            cam._plot.request_redraw()
+
+    def _draw_tracking_debug_visualization(self, tracker, particle_idx, pos_3d):
+        """Draw search volumes and candidates for the selected particle."""
+        from gui.pyptv.tracking_debug_utils import (
+            compute_search_bounds_3d,
+            project_search_volume_to_camera,
+        )
+        from optv.epipolar import epipolar_curve
+
+        fb = tracker.run_info.fb
+        cpar = tracker.run_info.cpar
+        cals = tracker.run_info.cals
+        vpar = tracker.run_info.vpar
+        tpar = tracker.run_info.tpar
+
+        velocity = np.array([0.0, 0.0, 0.0])
+
+        volumes = []
+        for frame_offset in [1, 2, 3]:
+            min_b, max_b = compute_search_bounds_3d(
+                pos_3d,
+                velocity,
+                tpar.dvxmin,
+                tpar.dvxmax,
+                tpar.dvymin,
+                tpar.dvymax,
+                tpar.dvzmin,
+                tpar.dvzmax,
+                tpar.dacc,
+                frame_offset,
+            )
+
+            cam_bounds = []
+            for cal in cals:
+                b = project_search_volume_to_camera(min_b, max_b, cal, cpar)
+                cam_bounds.append(b)
+
+            volumes.append({"frame_offset": frame_offset, "camera_bounds": cam_bounds})
+
+        colors = ["green", "yellow", "orange"]
+        for vol in volumes:
+            frame_offset = vol["frame_offset"]
+            color = colors[frame_offset - 1]
+            cam_bounds = vol["camera_bounds"]
+
+            for cam_idx, bounds in enumerate(cam_bounds):
+                if cam_idx >= len(self.camera_list):
+                    continue
+                cam = self.camera_list[cam_idx]
+                unique = f"dbg_{frame_offset}_{cam_idx}"
+                cam.drawline(
+                    f"{unique}_x",
+                    f"{unique}_y",
+                    bounds.left,
+                    bounds.up,
+                    bounds.right,
+                    bounds.down,
+                    color,
+                )
+
+        next_frame = fb.buf[2] if len(fb.buf) > 2 else None
+        if next_frame and hasattr(next_frame, "targets"):
+            vol = volumes[0]
+            for cam_idx in range(len(vol["camera_bounds"])):
+                bounds = vol["camera_bounds"][cam_idx]
+                targets = next_frame.targets[cam_idx]
+
+                for i in range(next_frame.num_targets[cam_idx]):
+                    tgt = targets[i]
+                    if tgt.get_pnr() < 0:
+                        continue
+                    pos = tgt.get_pos()
+                    x, y = pos[0], pos[1]
+
+                    in_bounds = (
+                        bounds.left <= x <= bounds.right
+                        and bounds.up <= y <= bounds.down
+                    )
+                    if in_bounds:
+                        dist = np.sqrt((x - bounds.left) ** 2 + (y - bounds.up) ** 2)
+                        if dist < tpar.dvxmin + 5:
+                            c = "green"
+                        elif dist < tpar.dvxmax:
+                            c = "yellow"
+                        else:
+                            c = "red"
+                        self.camera_list[cam_idx].drawcross(
+                            f"cand_{cam_idx}_{i}_x",
+                            f"cand_{cam_idx}_{i}_y",
+                            [x],
+                            [y],
+                            c,
+                            3,
+                        )
+
+        for cam_idx in range(len(cals)):
+            click_pos = np.array([0.0, 0.0])
+            for i in range(fb.buf[1].num_targets[cam_idx]):
+                tgt = fb.buf[1].targets[cam_idx][i]
+                if tgt.get_pnr() == particle_idx:
+                    click_pos = np.array([tgt.get_pos()[0], tgt.get_pos()[1]])
+                    break
+
+            for other_cam in range(len(cals)):
+                if other_cam == cam_idx:
+                    continue
+                pts = epipolar_curve(
+                    click_pos, cals[cam_idx], cals[other_cam], 2, cpar, vpar
+                )
+                if len(pts) >= 2:
+                    self.camera_list[other_cam].drawline(
+                        f"epi_{cam_idx}_{other_cam}_x",
+                        f"epi_{cam_idx}_{other_cam}_y",
+                        pts[0, 0],
+                        pts[0, 1],
+                        pts[-1, 0],
+                        pts[-1, 1],
+                        "cyan",
+                    )
+
+        print(
+            f"Search volumes drawn for frames t+1 (green), t+2 (yellow), t+3 (orange)"
+        )
+        print(f"Epipolar lines (cyan) from particle to other cameras")
+
+        for cam in self.camera_list:
+            cam._plot.request_redraw()
 
     def create_plots(self, images, is_float=False) -> None:
         """Create plots with images
