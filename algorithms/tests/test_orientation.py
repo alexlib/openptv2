@@ -4,7 +4,7 @@ from pathlib import Path
 
 from algorithms.orientation import (
     read_man_ori_fix, read_calblock, raw_orient, orient,
-    skew_midpoint, point_position, weighted_dumbbell_precision
+    skew_midpoint, point_position, weighted_dumbbell_precision,
 )
 from algorithms.calibration import Calibration
 from algorithms.parameters import ControlPar, OrientPar, MultimediaPar
@@ -14,6 +14,20 @@ from algorithms.tracking_frame_buf import Target
 from algorithms.vec_utils import vec_set, vec_cmp, vec_subt, vec_norm, vec_copy
 
 EPS = 1e-6
+
+
+def _has_optv():
+    try:
+        from optv.orientation import (
+            external_calibration, full_calibration,
+            point_positions, dumbbell_target_func,
+        )
+        return True
+    except ImportError:
+        return False
+
+
+# --- Unit tests ---
 
 def test_file_reading():
     f1 = Path("test_data/calibration/calblock.txt")
@@ -148,7 +162,6 @@ def test_orient():
         abs(cal.ext_par.phi - org_cal.ext_par.phi) / 180 +
         abs(cal.ext_par.kappa - org_cal.ext_par.kappa) / 180
     )
-    # The C code tests diff - 19.495073 < 1E-6. That's bizarre, but we test the C translation logic.
     assert abs(diff - 19.495073) < 1e-6
 
 def test_ray_distance_midpoint():
@@ -174,7 +187,7 @@ def test_point_position():
     calib = []
     ori_tmpl = "test_data/calibration/sym_cam{}.tif.ori"
     media_par = MultimediaPar(n1=1., n2=[1.0], d=[1.0], n3=1.)
-    
+
     point = np.array([17., 42., 0.])
     jigg_amp = 0.5
 
@@ -253,3 +266,398 @@ def test_convergence_measure():
     jigged_correct = 16 * 4 * (2 * jigg_amp) / (16 * 6)
 
     assert abs(jigged_skew_dist - jigged_correct) < 0.05
+
+
+# --- Parity tests against Cython bindings ---
+
+
+def _make_ref_pts_grid():
+    """Create a 4x4x4 grid of 3D calibration points (64 points)."""
+    fix = np.zeros((64, 3))
+    pt_id = 0
+    for ix in range(4):
+        for iy in range(4):
+            for iz in range(4):
+                fix[pt_id] = [(ix * 10) - 60, iy * 5, iz * 5]
+                pt_id += 1
+    return fix
+
+
+@pytest.mark.skipif(not _has_optv(), reason="optv (Cython bindings) not available")
+def test_external_calibration_parity():
+    """Compare Python raw_orient against C external_calibration."""
+    from optv.calibration import Calibration as CCalib
+    from optv.parameters import ControlParams as CControlParams
+    from optv.orientation import external_calibration
+    from optv.imgcoord import image_coordinates
+    from optv.transforms import convert_arr_metric_to_pixel
+
+    ori_file = "test_data/calibration/cam1.tif.ori"
+    add_file = "test_data/calibration/cam1.tif.addpar"
+    control_file = "test_data/corresp/control.par"
+
+    ref_pts = np.array([
+        [-40.0, -25.0, 8.0],
+        [40.0, -15.0, 0.0],
+        [40.0, 15.0, 0.0],
+        [40.0, 0.0, 8.0],
+    ])
+
+    # --- C/Cython path ---
+    c_cal = CCalib()
+    c_cal.from_file(ori_file, add_file)
+    c_cpar = CControlParams(4)
+    c_cpar.read_control_par(control_file)
+
+    c_targets = convert_arr_metric_to_pixel(
+        image_coordinates(ref_pts, c_cal, c_cpar.get_multimedia_params()),
+        c_cpar,
+    )
+    c_targets[:, 1] -= 0.1
+
+    c_success = external_calibration(c_cal, ref_pts, c_targets, c_cpar)
+
+    # --- Python path ---
+    py_cal = Calibration.from_file(ori_file, add_file)
+    py_cpar = ControlPar.from_file(control_file)
+
+    pix4 = []
+    py_cal_orig = Calibration.from_file(ori_file, add_file)
+    for i in range(len(ref_pts)):
+        xp, yp = img_coord(ref_pts[i], py_cal_orig, py_cpar.mm)
+        x_pix, y_pix = metric_to_pixel(xp, yp, py_cpar)
+        pix4.append(Target(x=x_pix, y=y_pix - 0.1))
+
+    py_success = raw_orient(py_cal, py_cpar, len(ref_pts), ref_pts, pix4)
+
+    # --- Compare ---
+    assert c_success == py_success, f"C={c_success}, Python={py_success}"
+
+    c_pos = c_cal.get_pos()
+    c_ang = c_cal.get_angles()
+    py_pos = np.array([py_cal.ext_par.x0, py_cal.ext_par.y0, py_cal.ext_par.z0])
+    py_ang = np.array([py_cal.ext_par.omega, py_cal.ext_par.phi, py_cal.ext_par.kappa])
+
+    np.testing.assert_allclose(py_pos, c_pos, atol=1e-3,
+                               err_msg="Position mismatch after raw_orient")
+    np.testing.assert_allclose(py_ang, c_ang, atol=1e-4,
+                               err_msg="Angles mismatch after raw_orient")
+
+
+@pytest.mark.skipif(not _has_optv(), reason="optv (Cython bindings) not available")
+def test_full_calibration_parity():
+    """Compare Python orient against C full_calibration."""
+    from optv.calibration import Calibration as CCalib
+    from optv.parameters import ControlParams as CControlParams
+    from optv.orientation import full_calibration
+    from optv.imgcoord import image_coordinates
+    from optv.transforms import convert_arr_metric_to_pixel
+    from optv.tracking_framebuf import TargetArray
+
+    ori_file = "test_data/calibration/cam1.tif.ori"
+    add_file = "test_data/calibration/cam1.tif.addpar"
+    control_file = "test_data/corresp/control.par"
+
+    ref_pts = _make_ref_pts_grid()
+    nfix = len(ref_pts)
+
+    # --- C/Cython path ---
+    c_cal = CCalib()
+    c_cal.from_file(ori_file, add_file)
+    c_cpar = CControlParams(4)
+    c_cpar.read_control_par(control_file)
+
+    c_targets_px = convert_arr_metric_to_pixel(
+        image_coordinates(ref_pts, c_cal, c_cpar.get_multimedia_params()),
+        c_cpar,
+    )
+
+    target_array = TargetArray(nfix)
+    for i in range(nfix):
+        target_array[i].set_pnr(i)
+        target_array[i].set_pos(c_targets_px[i])
+
+    c_cal.set_pos(c_cal.get_pos() + np.r_[15.0, -15.0, 15.0])
+    c_cal.set_angles(c_cal.get_angles() + np.r_[-0.5, 0.5, -0.5])
+
+    c_ret, c_used, c_err = full_calibration(c_cal, ref_pts, target_array, c_cpar)
+
+    # --- Python path ---
+    py_cal = Calibration.from_file(ori_file, add_file)
+    py_cpar = ControlPar.from_file(control_file)
+
+    pix = [Target() for _ in range(nfix)]
+    py_cal_orig = Calibration.from_file(ori_file, add_file)
+    for i in range(nfix):
+        xp, yp = img_coord(ref_pts[i], py_cal_orig, py_cpar.mm)
+        x_pix, y_pix = metric_to_pixel(xp, yp, py_cpar)
+        pix[i].x = x_pix
+        pix[i].y = y_pix
+        pix[i].pnr = i
+
+    py_cal.ext_par.x0 += 15.0
+    py_cal.ext_par.y0 -= 15.0
+    py_cal.ext_par.z0 += 15.0
+    py_cal.ext_par.omega -= 0.5
+    py_cal.ext_par.phi += 0.5
+    py_cal.ext_par.kappa -= 0.5
+
+    opar = OrientPar()
+    sigmabeta = np.zeros(20)
+    py_resi = orient(py_cal, py_cpar, nfix, ref_pts, pix, opar, sigmabeta)
+
+    # --- Compare ---
+    assert py_resi is not None, "Python orient failed to converge"
+
+    c_pos = c_cal.get_pos()
+    c_ang = c_cal.get_angles()
+    py_pos = np.array([py_cal.ext_par.x0, py_cal.ext_par.y0, py_cal.ext_par.z0])
+    py_ang = np.array([py_cal.ext_par.omega, py_cal.ext_par.phi, py_cal.ext_par.kappa])
+
+    np.testing.assert_allclose(py_pos, c_pos, atol=1e-3,
+                               err_msg="Position mismatch after orient")
+    np.testing.assert_allclose(py_ang, c_ang, atol=1e-4,
+                               err_msg="Angles mismatch after orient")
+
+
+@pytest.mark.skipif(not _has_optv(), reason="optv (Cython bindings) not available")
+def test_full_calibration_with_flags_parity():
+    """Compare Python orient with cc/xh flags against C full_calibration."""
+    from optv.calibration import Calibration as CCalib
+    from optv.parameters import ControlParams as CControlParams
+    from optv.orientation import full_calibration
+    from optv.imgcoord import image_coordinates
+    from optv.transforms import convert_arr_metric_to_pixel
+    from optv.tracking_framebuf import TargetArray
+
+    ori_file = "test_data/calibration/cam1.tif.ori"
+    add_file = "test_data/calibration/cam1.tif.addpar"
+    control_file = "test_data/corresp/control.par"
+
+    ref_pts = _make_ref_pts_grid()
+    nfix = len(ref_pts)
+
+    # --- C/Cython path ---
+    c_cal = CCalib()
+    c_cal.from_file(ori_file, add_file)
+    c_cpar = CControlParams(4)
+    c_cpar.read_control_par(control_file)
+
+    c_targets_px = convert_arr_metric_to_pixel(
+        image_coordinates(ref_pts, c_cal, c_cpar.get_multimedia_params()),
+        c_cpar,
+    )
+
+    target_array = TargetArray(nfix)
+    for i in range(nfix):
+        target_array[i].set_pnr(i)
+        target_array[i].set_pos(c_targets_px[i])
+
+    c_cal.set_pos(c_cal.get_pos() + np.r_[15.0, -15.0, 15.0])
+    c_cal.set_angles(c_cal.get_angles() + np.r_[-0.5, 0.5, -0.5])
+
+    c_ret, c_used, c_err = full_calibration(
+        c_cal, ref_pts, target_array, c_cpar, flags=['cc', 'xh'],
+    )
+
+    # --- Python path ---
+    py_cal = Calibration.from_file(ori_file, add_file)
+    py_cpar = ControlPar.from_file(control_file)
+
+    pix = [Target() for _ in range(nfix)]
+    py_cal_orig = Calibration.from_file(ori_file, add_file)
+    for i in range(nfix):
+        xp, yp = img_coord(ref_pts[i], py_cal_orig, py_cpar.mm)
+        x_pix, y_pix = metric_to_pixel(xp, yp, py_cpar)
+        pix[i].x = x_pix
+        pix[i].y = y_pix
+        pix[i].pnr = i
+
+    py_cal.ext_par.x0 += 15.0
+    py_cal.ext_par.y0 -= 15.0
+    py_cal.ext_par.z0 += 15.0
+    py_cal.ext_par.omega -= 0.5
+    py_cal.ext_par.phi += 0.5
+    py_cal.ext_par.kappa -= 0.5
+
+    opar = OrientPar(ccflag=1, xhflag=1)
+    sigmabeta = np.zeros(20)
+    py_resi = orient(py_cal, py_cpar, nfix, ref_pts, pix, opar, sigmabeta)
+
+    # --- Compare ---
+    assert py_resi is not None, "Python orient with flags failed to converge"
+
+    c_pos = c_cal.get_pos()
+    c_ang = c_cal.get_angles()
+    c_pp = c_cal.get_primary_point()
+
+    py_pos = np.array([py_cal.ext_par.x0, py_cal.ext_par.y0, py_cal.ext_par.z0])
+    py_ang = np.array([py_cal.ext_par.omega, py_cal.ext_par.phi, py_cal.ext_par.kappa])
+    py_pp = np.array([py_cal.int_par.xh, py_cal.int_par.yh, py_cal.int_par.cc])
+
+    np.testing.assert_allclose(py_pos, c_pos, atol=1e-3,
+                               err_msg="Position mismatch after orient with flags")
+    np.testing.assert_allclose(py_ang, c_ang, atol=1e-4,
+                               err_msg="Angles mismatch after orient with flags")
+    np.testing.assert_allclose(py_pp, c_pp, atol=1e-3,
+                               err_msg="Primary point mismatch after orient with flags")
+
+
+@pytest.mark.skipif(not _has_optv(), reason="optv (Cython bindings) not available")
+def test_point_positions_parity():
+    """Compare Python point_position against C point_positions (multi-cam)."""
+    from optv.calibration import Calibration as CCalib
+    from optv.parameters import ControlParams as CControlParams, VolumeParams as CVolumeParams
+    from optv.orientation import point_positions
+    from optv.imgcoord import image_coordinates
+
+    control_file = "test_data/control_parameters/control.par"
+    volume_file = "test_data/corresp/criteria.par"
+
+    c_cpar = CControlParams(4)
+    c_cpar.read_control_par(control_file)
+    c_vpar = CVolumeParams()
+    c_vpar.read_volume_par(volume_file)
+
+    c_mm = c_cpar.get_multimedia_params()
+    c_mm.set_n1(1.0)
+    c_mm.set_layers(np.array([1.0]), np.array([1.0]))
+    c_mm.set_n3(1.0)
+
+    num_cams = 4
+    points = np.array([[17, 42, 0], [17, 42, 0]], dtype=float)
+
+    c_calibs = []
+    py_calibs = []
+    ori_tmpl = "test_data/calibration/sym_cam{}.tif.ori"
+    add_file = "test_data/calibration/cam1.tif.addpar"
+
+    for cam in range(num_cams):
+        ori_name = ori_tmpl.format(cam + 1)
+        c_cal = CCalib()
+        c_cal.from_file(ori_file=ori_name, add_file=add_file)
+        c_calibs.append(c_cal)
+
+        py_cal = Calibration.from_file(ori_name, add_file)
+        py_calibs.append(py_cal)
+
+    # --- C/Cython path ---
+    c_targs = []
+    for cam_cal in c_calibs:
+        c_targs.append(image_coordinates(points, cam_cal, c_mm))
+    c_targs = np.array(c_targs).transpose(1, 0, 2)
+
+    c_res, c_rcm = point_positions(c_targs, c_cpar, c_calibs, c_vpar)
+
+    # --- Python path ---
+    media_par = MultimediaPar(n1=1., n2=[1.0], d=[1.0], n3=1.)
+
+    py_targs = np.zeros((num_cams, 2))
+    py_results = []
+    py_rcms = []
+
+    for pt_idx in range(len(points)):
+        for cam in range(num_cams):
+            xp, yp = img_coord(points[pt_idx], py_calibs[cam], media_par)
+            py_targs[cam, 0] = xp
+            py_targs[cam, 1] = yp
+
+        r, d = point_position(py_targs, num_cams, media_par, py_calibs)
+        py_results.append(r)
+        py_rcms.append(d)
+
+    py_res = np.array(py_results)
+    py_rcm = np.array(py_rcms)
+
+    # --- Compare ---
+    np.testing.assert_allclose(py_res, c_res, atol=1e-6,
+                               err_msg="3D positions differ")
+    np.testing.assert_allclose(py_rcm, c_rcm, atol=1e-10,
+                               err_msg="Ray convergence measures differ")
+
+
+@pytest.mark.skipif(not _has_optv(), reason="optv (Cython bindings) not available")
+def test_dumbbell_parity():
+    """Compare Python weighted_dumbbell_precision ordering and point_position.
+
+    The C dumbbell_target_func has a Cython binding bug: it doesn't call
+    np.ascontiguousarray on the transposed targets array, so the C code
+    reads strided memory as contiguous vec2d, producing the bogus 7.14860
+    regression value. With a contiguous array, C gives ~0 (matching Python).
+    We verify the Python result is correct and the C bug is reproducible.
+    """
+    from optv.calibration import Calibration as CCalib
+    from optv.parameters import ControlParams as CControlParams
+    from optv.orientation import dumbbell_target_func
+
+    control_file = "test_data/control_parameters/control.par"
+
+    c_cpar = CControlParams(4)
+    c_cpar.read_control_par(control_file)
+    c_mm = c_cpar.get_multimedia_params()
+    c_mm.set_n1(1.0)
+    c_mm.set_layers(np.array([1.0]), np.array([1.0]))
+    c_mm.set_n3(1.0)
+
+    points = np.array([[17.5, 42, 0], [-17.5, 42, 0]], dtype=float)
+    num_cams = 4
+
+    py_calibs = []
+    ori_tmpl = "test_data/dumbbell/cam{}.tif.ori"
+    add_file = "test_data/calibration/cam1.tif.addpar"
+
+    for cam in range(num_cams):
+        ori_name = ori_tmpl.format(cam + 1)
+        py_calibs.append(Calibration.from_file(ori_name, add_file))
+
+    # Use img_coord (full model) so forward/backward are consistent
+    media_par = MultimediaPar(n1=1., n2=[1.0], d=[1.0], n3=1.)
+
+    py_targs = np.zeros((len(points), num_cams, 2))
+    for pt_idx in range(len(points)):
+        for cam in range(num_cams):
+            xp, yp = img_coord(points[pt_idx], py_calibs[cam], media_par)
+            py_targs[pt_idx, cam, 0] = xp
+            py_targs[pt_idx, cam, 1] = yp
+
+    tf_base = weighted_dumbbell_precision(
+        py_targs, len(points), num_cams, media_par, py_calibs, 35.0, 0.0,
+    )
+    tf_weighted = weighted_dumbbell_precision(
+        py_targs, len(points), num_cams, media_par, py_calibs, 35.0, 1.0,
+    )
+    tf_wrong_len = weighted_dumbbell_precision(
+        py_targs, len(points), num_cams, media_par, py_calibs, 25.0, 1.0,
+    )
+
+    # With consistent forward/backward models, base measure should be near-zero
+    assert tf_base < 1e-6
+
+    # Wrong length should add error
+    assert tf_wrong_len > tf_weighted
+    assert tf_wrong_len > tf_base
+
+    # Verify C ordering invariant also holds (regression value from C test)
+    from optv.imgcoord import flat_image_coordinates as c_flat_img_coord
+    c_calibs = []
+    for cam in range(num_cams):
+        c_cal = CCalib()
+        c_cal.from_file(ori_tmpl.format(cam + 1), add_file)
+        c_calibs.append(c_cal)
+
+    c_targs = []
+    for cam_cal in c_calibs:
+        c_targs.append(c_flat_img_coord(points, cam_cal, c_mm))
+    c_targs = np.array(c_targs).transpose(1, 0, 2)
+
+    c_tf = dumbbell_target_func(c_targs, c_cpar, c_calibs, 35.0, 0.0)
+    c_tf_w = dumbbell_target_func(c_targs, c_cpar, c_calibs, 35.0, 1.0)
+    c_tf_wrong = dumbbell_target_func(c_targs, c_cpar, c_calibs, 25.0, 1.0)
+
+    np.testing.assert_allclose(c_tf, 7.14860, atol=1e-4)
+    assert c_tf_wrong > c_tf_w > c_tf
+
+    # With contiguous array the C bug disappears — result matches Python
+    c_targs_contig = np.ascontiguousarray(c_targs)
+    c_tf_fixed = dumbbell_target_func(c_targs_contig, c_cpar, c_calibs, 35.0, 0.0)
+    assert c_tf_fixed < 1e-6

@@ -9,42 +9,56 @@ Provides:
 - read_calblock: reads 3D calibration point coordinates.
 """
 
+import math
 import numpy as np
-from typing import Optional, Tuple
+from typing import Tuple
 from pathlib import Path
 
-# Placeholder for Target struct until tracking_frame_buf is translated
-# In actual code, this would be imported from the correct module
-# from .tracking_frame_buf import Target 
+from .tracking_frame_buf import Target
+
 
 def nearest_neighbour_pix(pix: list, x: float, y: float, eps: float) -> int:
-    """Search for the nearest target in the image space within epsilon distance.
-
-    Args:
-        pix: List of target objects (must have .x and .y attributes).
-        x, y: Search coordinates.
-        eps: Search radius.
-
-    Returns:
-        Index of the nearest target or -999 if none found.
-    """
+    """Search for the nearest target in the image space within epsilon distance."""
     if eps < 0:
         return -999
-        
+
     pnr = -999
     dmin = 1e20
-    
+
     xmin, xmax = x - eps, x + eps
     ymin, ymax = y - eps, y + eps
 
     for j, p in enumerate(pix):
         if ymin < p.y < ymax and xmin < p.x < xmax:
-            d = np.sqrt((x - p.x)**2 + (y - p.y)**2)
+            d = math.sqrt((x - p.x)**2 + (y - p.y)**2)
             if d < dmin:
                 dmin = d
                 pnr = j
-                
+
     return pnr
+
+
+def _nearest_neighbour_arr(
+    pix_x: np.ndarray, pix_y: np.ndarray,
+    x: float, y: float, eps: float,
+) -> int:
+    """Vectorized nearest-neighbour search over pre-extracted coordinate arrays."""
+    if eps < 0:
+        return -999
+
+    mask = (
+        (pix_x > x - eps) & (pix_x < x + eps)
+        & (pix_y > y - eps) & (pix_y < y + eps)
+    )
+    if not mask.any():
+        return -999
+
+    dx = pix_x[mask] - x
+    dy = pix_y[mask] - y
+    dist_sq = dx * dx + dy * dy
+    idx_in_mask = dist_sq.argmin()
+    return int(np.flatnonzero(mask)[idx_in_mask])
+
 
 def read_sortgrid_par(filename: str | Path) -> int:
     """Read search radius for sortgrid."""
@@ -68,17 +82,17 @@ def read_calblock(filename: str | Path) -> Tuple[np.ndarray, int]:
     if not path.exists():
         print(f"Can't open calibration block file: {filename}")
         return np.empty((0, 3)), 0
-        
+
     data = np.loadtxt(path)
     if data.size == 0:
         print(f"Empty or badly formatted file: {filename}")
         return np.empty((0, 3)), 0
-        
-    # Calibration target points are indices (ignore), x, y, z
+
     num_points = data.shape[0]
     fix = data[:, 1:4]
-    
+
     return fix, num_points
+
 
 def sortgrid(
     cal: "Calibration",
@@ -91,39 +105,43 @@ def sortgrid(
 ) -> list:
     """Sort detected target points by back-projection.
 
-    Args:
-        cal: Calibration object.
-        cpar: Control parameters.
-        nfix: Number of points in calibration file.
-        fix: (N, 3) array of calibration target 3D positions.
-        num: Number of detected dots.
-        eps: Search radius in pixels.
-        pix: List of detected targets.
-
     Returns:
-        List of targets sorted by their ID (pnr), unassigned marked with pnr=-999.
+        List of Target objects sorted by calibration point ID.
+        Unmatched entries have pnr=-999.
     """
     from .imgcoord import img_coord
     from .trafo import metric_to_pixel
 
-    sorted_pix = [None] * nfix
-    # Initialize with placeholder
-    for i in range(nfix):
-        # We need a way to represent an unassigned target
-        # Using a dummy Target if needed, or keeping it as None
-        sorted_pix[i] = None
+    sorted_pix = [Target(pnr=-999) for _ in range(nfix)]
+
+    imx, imy = cpar.imx, cpar.imy
+    pix_size_x, pix_size_y = cpar.pix_x, cpar.pix_y
+    chfield = cpar.chfield
+    mm = cpar.mm
+    feps = float(eps)
+
+    use_vec = len(pix) >= 16
+    if use_vec:
+        pix_x = np.array([p.x for p in pix], dtype=np.float64)
+        pix_y = np.array([p.y for p in pix], dtype=np.float64)
+        nn_func = lambda px, py: _nearest_neighbour_arr(pix_x, pix_y, px, py, feps)
+    else:
+        nn_func = lambda px, py: nearest_neighbour_pix(pix, px, py, feps)
 
     for i in range(nfix):
-        xp, yp = img_coord(fix[i], cal, cpar.mm)
-        px, py = metric_to_pixel(xp, yp, cpar.imx, cpar.imy, cpar.pix_x, cpar.pix_y, cpar.chfield)
-        
-        if (px > -eps and py > -eps and 
-            px < cpar.imx + eps and py < cpar.imy + eps):
-            
-            j = nearest_neighbour_pix(pix, px, py, float(eps))
-            
+        xp, yp = img_coord(fix[i], cal, mm)
+        px, py = metric_to_pixel(xp, yp, imx, imy, pix_size_x, pix_size_y, chfield)
+
+        if (px > -eps and py > -eps
+                and px < imx + eps and py < imy + eps):
+
+            j = nn_func(px, py)
+
             if j != -999:
-                sorted_pix[i] = pix[j]
-                sorted_pix[i].pnr = i
-                
+                t = pix[j]
+                sorted_pix[i] = Target(
+                    pnr=i, x=t.x, y=t.y, n=t.n,
+                    nx=t.nx, ny=t.ny, sumg=t.sumg, tnr=t.tnr,
+                )
+
     return sorted_pix

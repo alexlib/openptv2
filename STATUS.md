@@ -20,7 +20,7 @@ Translating the OpenPTV C library (`lib/src/**`) into pure Python with NumPy (`a
 | `orientation` | ✅ Complete | Fully translated and tested. |
 | `correspondences` | ✅ Complete | Fully translated and tested. |
 | `segmentation` | ⏳ In Progress | `targ_rec` done, `peak_fit` needs `check_touch`. |
-| `sortgrid` | 📝 Pending | |
+| `sortgrid` | ✅ Complete | Bug fixed, parity with C/Cython verified, vectorized NN. |
 | `tracking_frame_buf`| ✅ Complete | Frame buffer, file I/O, SoA sync all working. |
 | `tracking_run` | ✅ Complete | `tr_new`, `volumedimension`, all parameters wired up. |
 | `track` | ✅ Complete | `trackcorr_c_loop`, `trackback_c`, conflict resolution with Phase 3 improvement. Numba JIT path. Parity-tested against C on burgers (exact match) and cavity (improvement over C). |

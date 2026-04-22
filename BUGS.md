@@ -116,7 +116,7 @@
   ├───────────────────────────────────────────────────┼─────────────────────────┼──────────────────────────────────────────────────────────────────────┤      
   │ copy_images signature mismatch                    │ image_processing.py:272 │ C copies one image; Python copies a list                             │
   ├───────────────────────────────────────────────────┼─────────────────────────┼──────────────────────────────────────────────────────────────────────┤      
-  │ sortgrid returns None instead of Target(pnr=-999) │ sortgrid.py:111-114     │ Will crash when accessing .pnr on unmatched entries                  │
+  │ ✅ sortgrid returns None instead of Target(pnr=-999) │ sortgrid.py:111-114     │ Fixed: returns Target(pnr=-999), copies instead of aliasing          │
   ├───────────────────────────────────────────────────┼─────────────────────────┼──────────────────────────────────────────────────────────────────────┤      
   │ C bug: compare_sequence_par                       │ parameters.c:102        │ Compares sp1 to itself instead of sp2 (C bug, not Python)            │
   └───────────────────────────────────────────────────┴─────────────────────────┴──────────────────────────────────────────────────────────────────────┘      
@@ -151,9 +151,9 @@
   ├────────────────────┼──────────────────────┼────────────────────────────────────────────────────────────┤                                                  
   │ segmentation       │ Good                 │ Minor boundary differences                                 │
   ├────────────────────┼──────────────────────┼────────────────────────────────────────────────────────────┤                                                  
-  │ sortgrid           │ Broken               │ Returns None objects, signature mismatches                 │
+  │ sortgrid           │ ✅ Fixed             │ Parity with C/Cython verified, vectorized NN search        │
   ├────────────────────┼──────────────────────┼────────────────────────────────────────────────────────────┤                                                  
-  │ orientation        │ Skeleton             │ ~90% unimplemented                                         │
+  │ orientation        │ ✅ Complete          │ Parity-tested: raw_orient, orient, point_position, dumbbell │
   ├────────────────────┼──────────────────────┼────────────────────────────────────────────────────────────┤                                                  
   │ tracking_frame_buf │ ✅ Fixed             │ All methods implemented, SoA sync, file I/O                │
   ├────────────────────┼──────────────────────┼────────────────────────────────────────────────────────────┤                                                  

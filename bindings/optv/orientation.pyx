@@ -358,6 +358,8 @@ def dumbbell_target_func(np.ndarray[ndim=3, dtype=DTYPE_t] targets,
         calibration **calib = cal_list2arr(cals)
         int cam, num_cams
     
+    targets = np.ascontiguousarray(targets)
+
     num_cams = targets.shape[1]
     num_pts = targets.shape[0]
     ctargets = <vec2d **>calloc(num_pts, sizeof(vec2d*))
