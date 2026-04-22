@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 import os
 import optv
-from optv.calibration import Calibration
-from optv.parameters import ControlParams
+from openptv2.calibration import Calibration
+from openptv2.parameters import ControlParams
 
 
 def test_optv_functionality(test_data_dir):

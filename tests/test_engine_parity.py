@@ -19,19 +19,28 @@ import os
 TEST_DATA = Path(__file__).parent.parent / "test_data" / "synthetic"
 
 
+def _load_cal(cam_num):
+    """Helper: create Calibration and load from file (instance method pattern)."""
+    from openptv2 import Calibration
+
+    cal = Calibration()
+    cal.from_file(
+        str(TEST_DATA / "cal" / f"cam{cam_num}.tif.ori"),
+        str(TEST_DATA / "cal" / f"cam{cam_num}.tif.addpar")
+    )
+    return cal
+
+
 class TestBasicAPI:
     """Test basic API operations with current engine."""
 
     def test_calibration_read(self):
         """Verify calibration can be read."""
-        from openptv2 import Calibration, get_engine
+        from openptv2 import get_engine
 
         print(f"\nTesting with engine: {get_engine()}")
 
-        cal = Calibration.from_file(
-            str(TEST_DATA / "cal" / "cam1.tif.ori"),
-            str(TEST_DATA / "cal" / "cam1.tif.addpar")
-        )
+        cal = _load_cal(1)
 
         # Test getters
         pos = cal.get_pos()
@@ -143,34 +152,38 @@ class TestBasicAPI:
     def test_target_array(self):
         """Verify TargetArray operations."""
         from openptv2 import TargetArray, get_engine
-        from algorithms.tracking_frame_buf import Target as AlgoTarget
 
         print(f"\nTesting with engine: {get_engine()}")
 
-        # Create target array
-        targets = [
-            AlgoTarget(pnr=i, x=float(i*10), y=100.0 - i*5, n=10, nx=3, ny=3, sumg=100, tnr=-1)
-            for i in range(5)
-        ]
-        ta = TargetArray(targets)
+        if get_engine() == "python":
+            from algorithms.tracking_frame_buf import Target as AlgoTarget
+            targets = [
+                AlgoTarget(pnr=i, x=float(i*10), y=100.0 - i*5, n=10, nx=3, ny=3, sumg=100, tnr=-1)
+                for i in range(5)
+            ]
+            ta = TargetArray(targets)
+        else:
+            # optv TargetArray takes int size, then fill via set methods
+            ta = TargetArray(5)
+            for i in range(5):
+                ta[i].set_pnr(i)
+                ta[i].set_pos((float(i*10), 100.0 - i*5))
+                ta[i].set_sum_grey_value(100)
 
         assert len(ta) == 5
 
         # Test sorting
         ta.sort_y()
-        y_vals = [ta[i].y() for i in range(5)]
+        y_vals = [ta[i].pos()[1] for i in range(5)]
         assert y_vals == sorted(y_vals)
 
     def test_image_coordinates(self):
         """Verify 3D→2D projection."""
-        from openptv2 import Calibration, MultimediaParams, image_coordinates, get_engine
+        from openptv2 import MultimediaParams, image_coordinates, get_engine
 
         print(f"\nTesting with engine: {get_engine()}")
 
-        cal = Calibration.from_file(
-            str(TEST_DATA / "cal" / "cam1.tif.ori"),
-            str(TEST_DATA / "cal" / "cam1.tif.addpar")
-        )
+        cal = _load_cal(1)
         mm = MultimediaParams(n1=1.0, n3=1.0)
 
         positions = np.array([
@@ -187,28 +200,20 @@ class TestBasicAPI:
     def test_epipolar_curve(self):
         """Verify epipolar curve generation."""
         from openptv2 import (
-            Calibration, ControlParams, VolumeParams, epipolar_curve, get_engine
+            ControlParams, VolumeParams, epipolar_curve, get_engine
         )
 
         print(f"\nTesting with engine: {get_engine()}")
 
-        cal1 = Calibration.from_file(
-            str(TEST_DATA / "cal" / "cam1.tif.ori"),
-            str(TEST_DATA / "cal" / "cam1.tif.addpar")
-        )
-        cal2 = Calibration.from_file(
-            str(TEST_DATA / "cal" / "cam2.tif.ori"),
-            str(TEST_DATA / "cal" / "cam2.tif.addpar")
-        )
+        cal1 = _load_cal(1)
+        cal2 = _load_cal(2)
 
+        # Use real parameter files for proper multimedia setup
         cpar = ControlParams(num_cams=4)
-        cpar.set_image_size((1280, 1024))
-        cpar.set_pixel_size((0.012, 0.012))
+        cpar.read_control_par(str(TEST_DATA / "parameters" / "ptv.par"))
 
         vpar = VolumeParams()
-        vpar.set_X_lay(np.array([-100.0, 100.0]))
-        vpar.set_Zmin_lay(np.array([-50.0, -50.0]))
-        vpar.set_Zmax_lay(np.array([50.0, 50.0]))
+        vpar.read_volume_par(str(TEST_DATA / "parameters" / "criteria.par"))
 
         point = np.array([640.0, 512.0])
         curve = epipolar_curve(point, cal1, cal2, 10, cpar, vpar)
@@ -219,19 +224,13 @@ class TestBasicAPI:
     def test_tracker_creation(self):
         """Verify Tracker can be created."""
         from openptv2 import (
-            Calibration, ControlParams, VolumeParams, TrackingParams,
+            ControlParams, VolumeParams, TrackingParams,
             SequenceParams, Tracker, get_engine
         )
 
         print(f"\nTesting with engine: {get_engine()}")
 
-        cals = [
-            Calibration.from_file(
-                str(TEST_DATA / "cal" / f"cam{i+1}.tif.ori"),
-                str(TEST_DATA / "cal" / f"cam{i+1}.tif.addpar")
-            )
-            for i in range(4)
-        ]
+        cals = [_load_cal(i + 1) for i in range(4)]
 
         cpar = ControlParams(num_cams=4)
         cpar.set_image_size((1280, 1024))
@@ -257,7 +256,8 @@ class TestBasicAPI:
         tracker = Tracker(cpar, vpar, tpar, spar, cals)
 
         assert tracker is not None
-        assert tracker.current_step() == -1  # Not initialized
+        # optv initializes step to 0, compat to -1
+        assert tracker.current_step() in (0, -1)
 
 
 def test_engine_detection():

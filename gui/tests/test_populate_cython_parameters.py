@@ -102,7 +102,7 @@ def test_parameter_translation_pipeline():
         from imageio.v3 import imread
         from skimage.color import rgb2gray
         from skimage.util import img_as_ubyte
-        from optv.segmentation import target_recognition
+        from openptv2.segmentation import target_recognition
 
         # Find first image
         img_base = spar.get_img_base_name(0)

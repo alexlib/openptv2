@@ -25,18 +25,18 @@ def test_optv_imports():
     print("Testing optv imports...")
     print("=" * 60)
     
-    from optv.tracking_framebuf import Target, Frame, read_targets, TargetArray
-    from optv.calibration import Calibration
-    from optv.segmentation import target_recognition
-    from optv.epipolar import epipolar_curve
-    from optv.imgcoord import image_coordinates
-    from optv.transforms import (
+    from openptv2.tracking_framebuf import Target, Frame, read_targets, TargetArray
+    from openptv2.calibration import Calibration
+    from openptv2.segmentation import target_recognition
+    from openptv2.epipolar import epipolar_curve
+    from openptv2.imgcoord import image_coordinates
+    from openptv2.transforms import (
         convert_arr_metric_to_pixel,
         convert_arr_pixel_to_metric,
         distorted_to_flat
     )
-    from optv.tracker import Tracker
-    from optv.parameters import ControlParams, VolumeParams, TrackingParams, SequenceParams
+    from openptv2.tracker import Tracker
+    from openptv2.parameters import ControlParams, VolumeParams, TrackingParams, SequenceParams
     
     print("✅ All optv imports successful")
     return True
@@ -48,8 +48,8 @@ def test_target_detection():
     print("Testing target detection (segmentation)...")
     print("=" * 60)
     
-    from optv.segmentation import target_recognition
-    from optv.parameters import ControlParams
+    from openptv2.segmentation import target_recognition
+    from openptv2.parameters import ControlParams
     
     # Create a simple test image (synthetic)
     test_image = np.zeros((100, 100), dtype=np.uint8)
@@ -87,7 +87,7 @@ def test_calibration():
     print("Testing calibration...")
     print("=" * 60)
     
-    from optv.calibration import Calibration
+    from openptv2.calibration import Calibration
     
     # Create a calibration object
     cal = Calibration()
@@ -115,8 +115,8 @@ def test_epipolar_geometry():
     print("Testing epipolar geometry...")
     print("=" * 60)
     
-    from optv.calibration import Calibration
-    from optv.epipolar import epipolar_curve
+    from openptv2.calibration import Calibration
+    from openptv2.epipolar import epipolar_curve
     import numpy as np
     
     # Create two simple calibrations for two cameras
@@ -141,11 +141,11 @@ def test_coordinate_transforms():
     print("Testing coordinate transforms...")
     print("=" * 60)
     
-    from optv.transforms import (
+    from openptv2.transforms import (
         convert_arr_pixel_to_metric,
         convert_arr_metric_to_pixel
     )
-    from optv.parameters import ControlParams
+    from openptv2.parameters import ControlParams
     import numpy as np
     
     # Create test data
@@ -207,9 +207,9 @@ def test_tracker():
     print("=" * 60)
     
     try:
-        from optv.parameters import ControlParams, VolumeParams, TrackingParams, SequenceParams
-        from optv.calibration import Calibration
-        from optv.tracker import Tracker
+        from openptv2.parameters import ControlParams, VolumeParams, TrackingParams, SequenceParams
+        from openptv2.calibration import Calibration
+        from openptv2.tracker import Tracker
         
         # Create parameters with num_cams=2
         num_cams = 2

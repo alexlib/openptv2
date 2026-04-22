@@ -19,8 +19,8 @@ def test_numpy_array_compatibility():
 
 def test_optv_integration():
     """Test integration with optv package"""
-    from optv.calibration import Calibration
-    from optv.parameters import ControlParams
+    from openptv2.calibration import Calibration
+    from openptv2.parameters import ControlParams
 
     # Create test calibration
     cal = Calibration()

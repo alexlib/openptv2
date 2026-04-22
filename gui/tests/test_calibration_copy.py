@@ -1,6 +1,6 @@
 import unittest
 import copy
-from optv.calibration import Calibration
+from openptv2.calibration import Calibration
 
 from pyptv.ptv import clone_calibration
 

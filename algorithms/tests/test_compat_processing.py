@@ -32,6 +32,13 @@ TEST_DATA = Path(__file__).parent.parent.parent / "test_data" / "synthetic"
 CALIB_PATH = TEST_DATA / "cal" / "cam1.tif"
 
 
+def _load_cal(ori_file, add_file):
+    """Load calibration using instance method pattern (matching optv API)."""
+    cal = Calibration()
+    cal.from_file(ori_file, add_file)
+    return cal
+
+
 class TestTransformsCompat:
     """Test transform wrapper functions."""
 
@@ -105,7 +112,7 @@ class TestImgCoordCompat:
 
     def test_image_coordinates(self):
         """Test 3D to 2D projection."""
-        cal = Calibration.from_file(
+        cal = _load_cal(
             str(CALIB_PATH) + ".ori",
             str(CALIB_PATH) + ".addpar"
         )
@@ -121,7 +128,7 @@ class TestImgCoordCompat:
 
     def test_flat_image_coordinates(self):
         """Test flat (undistorted) projection."""
-        cal = Calibration.from_file(
+        cal = _load_cal(
             str(CALIB_PATH) + ".ori",
             str(CALIB_PATH) + ".addpar"
         )
@@ -241,11 +248,11 @@ class TestEpipolarCompat:
 
     def test_epipolar_curve(self):
         """Test epipolar curve generation."""
-        cal1 = Calibration.from_file(
+        cal1 = _load_cal(
             str(TEST_DATA / "cal" / "cam1.tif") + ".ori",
             str(TEST_DATA / "cal" / "cam1.tif") + ".addpar"
         )
-        cal2 = Calibration.from_file(
+        cal2 = _load_cal(
             str(TEST_DATA / "cal" / "cam2.tif") + ".ori",
             str(TEST_DATA / "cal" / "cam2.tif") + ".addpar"
         )

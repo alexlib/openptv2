@@ -4,7 +4,7 @@ import pytest
 from pathlib import Path
 from pyptv.parameter_manager import ParameterManager
 from pyptv.ptv import Tracker
-from optv.tracker import Tracker, default_naming
+from openptv2.tracker import Tracker, default_naming
 
 
 @pytest.mark.usefixtures("tmp_path")

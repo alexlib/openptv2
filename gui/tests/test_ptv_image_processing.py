@@ -4,7 +4,7 @@ import pytest
 import numpy as np
 from unittest.mock import patch
 from pyptv.ptv import image_split, negative, simple_highpass
-from optv.parameters import ControlParams
+from openptv2.parameters import ControlParams
 
 
 class TestImageSplit:

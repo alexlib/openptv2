@@ -22,7 +22,7 @@ def _():
 
 @app.cell
 def _():
-    import optv
+    import openptv2
 
     return
 
@@ -39,7 +39,7 @@ def _():
     """
 
     import unittest, os, numpy as np
-    from optv.tracking_framebuf import read_targets, Target, TargetArray, Frame
+    from openptv2.tracking_framebuf import read_targets, Target, TargetArray, Frame
 
 
     return Frame, Target, TargetArray, np, os, read_targets, unittest

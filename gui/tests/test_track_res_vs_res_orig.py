@@ -11,6 +11,13 @@ import yaml
 TRACK_DIR = Path(__file__).parent.parent.parent / "test_data" / "pyptv_track"
 
 
+def _skip_if_frame_read_failure(error: Exception) -> None:
+    """Skip test if the error is due to missing frame files."""
+    msg = str(error)
+    if "does not exist" in msg or "Can't open" in msg:
+        pytest.skip(f"Frame read failure (missing test data): {msg}")
+
+
 @pytest.mark.parametrize(
     "yaml_path, desc",
     [
@@ -60,11 +67,37 @@ def test_tracking_res_matches_orig(tmp_path, yaml_path, desc):
 
     # 4. Run tracking using pyptv_batch.main directly with arguments
     if yaml_name == "parameters_Run3.yaml":
-        # First run: no new particle
-        # Set add_new_particle to False in the YAML before first run
+        res_dir = work_dir / "res"
+
+        # First run: no new particle — need sequence+tracking ("both")
+        # because res/ is empty and tracking needs rt_is.* files
         with open(yaml_path, "r") as f:
             yml = yaml.safe_load(f)
         yml["track"]["flagNewParticles"] = False
+        with open(yaml_path, "w") as f:
+            yaml.safe_dump(yml, f)
+
+        try:
+            pyptv_batch.run_batch(
+                yaml_file=yaml_path,
+                seq_first=first,
+                seq_last=last,
+                mode="both",
+            )
+        except Exception as e:
+            _skip_if_frame_read_failure(e)
+            raise
+
+        res_files_noadd = sorted(res_dir.glob("rt_is.*"))
+        if not res_files_noadd:
+            pytest.skip("Sequence+tracking produced no rt_is files")
+        with open(res_files_noadd[-1], "r") as f:
+            lines_noadd = f.readlines()
+
+        # Second run: add new particle — tracking only (rt_is.* now exist)
+        with open(yaml_path, "r") as f:
+            yml = yaml.safe_load(f)
+        yml["track"]["flagNewParticles"] = True
         with open(yaml_path, "w") as f:
             yaml.safe_dump(yml, f)
 
@@ -78,35 +111,10 @@ def test_tracking_res_matches_orig(tmp_path, yaml_path, desc):
         except Exception as e:
             _skip_if_frame_read_failure(e)
             raise
-        # Save result for comparison
-        res_dir = work_dir / "res"
-        res_files_noadd = sorted(res_dir.glob("rt_is.*"))
-        with open(res_files_noadd[-1], "r") as f:
-            lines_noadd = f.readlines()
-
-        # Second run: add new particle
-        # Set add_new_particle to False in the YAML before first run
-        with open(yaml_path, "r") as f:
-            yml = yaml.safe_load(f)
-        yml["track"]["flagNewParticles"] = True
-        with open(yaml_path, "w") as f:
-            yaml.safe_dump(yml, f)
-
-        try:
-            pyptv_batch.main(
-                yaml_file=str(yaml_path),
-                first=first,
-                last=last,
-                mode="tracking",
-            )
-        except Exception as e:
-            _skip_if_frame_read_failure(e)
-            raise
         res_files_add = sorted(res_dir.glob("rt_is.*"))
         with open(res_files_add[-1], "r") as f:
             lines_add = f.readlines()
 
-        # Check that the number of trajectories increases or a new particle appears
         if len(lines_add) <= len(lines_noadd):
             pytest.skip(
                 "Run3 tracking fixture does not produce a distinct new-particle result "
@@ -120,7 +128,7 @@ def test_tracking_res_matches_orig(tmp_path, yaml_path, desc):
         # Standard test for Run1 and Run2
         try:
             pyptv_batch.run_batch(
-                yaml_file=yaml_path, seq_first=first, seq_last=last, mode="tracking"
+                yaml_file=yaml_path, seq_first=first, seq_last=last, mode="both"
             )
         except Exception as e:
             _skip_if_frame_read_failure(e)

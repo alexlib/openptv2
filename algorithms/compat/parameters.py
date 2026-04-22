@@ -16,8 +16,12 @@ from algorithms.parameters import (
 class MultimediaParams:
     """Wrapper for algorithms.parameters.MmNp with optv-compatible API."""
 
-    def __init__(self, n1=1.0, n2=None, n3=1.0, d=None):
+    def __init__(self, n1=1.0, n2=None, n3=1.0, d=None, _mm=None):
         """Initialize multimedia parameters."""
+        if _mm is not None:
+            self._mm = _mm
+            return
+
         if n2 is None:
             n2 = np.ones(3, dtype=np.float64)
         if d is None:
@@ -77,6 +81,10 @@ class ControlParams:
     def __init__(self, num_cams=0, **kwargs):
         """Initialize control parameters."""
         self._cpar = AlgoControlPar(num_cams=num_cams, **kwargs)
+        if not self._cpar.img_base_name:
+            self._cpar.img_base_name = [""] * num_cams
+        if not self._cpar.cal_img_base_name:
+            self._cpar.cal_img_base_name = [""] * num_cams
 
     def get_num_cams(self):
         """Get number of cameras."""
@@ -133,13 +141,8 @@ class ControlParams:
         self._cpar.chfield = int(chfield)
 
     def get_multimedia_params(self):
-        """Get multimedia parameters."""
-        return MultimediaParams(
-            n1=self._cpar.mm.n1,
-            n2=self._cpar.mm.n2,
-            n3=self._cpar.mm.n3,
-            d=self._cpar.mm.d
-        )
+        """Get multimedia parameters (returns wrapper around same underlying object)."""
+        return MultimediaParams(_mm=self._cpar.mm)
 
     def get_img_base_name(self, cam):
         """Get image base name for camera."""
@@ -157,13 +160,9 @@ class ControlParams:
         """Set calibration image base name for camera."""
         self._cpar.cal_img_base_name[cam] = str(name)
 
-    @classmethod
-    def read_control_par(cls, filename):
-        """Read control parameters from file."""
-        cpar = AlgoControlPar.from_file(filename)
-        instance = cls(num_cams=0)  # Dummy
-        instance._cpar = cpar
-        return instance
+    def read_control_par(self, filename):
+        """Read control parameters from file (in-place, like optv)."""
+        self._cpar = AlgoControlPar.from_file(filename)
 
 
 class VolumeParams:
@@ -251,13 +250,9 @@ class VolumeParams:
         """Set corrmin parameter."""
         self._vpar.corrmin = float(corrmin)
 
-    @classmethod
-    def read_volume_par(cls, filename):
-        """Read volume parameters from file."""
-        vpar = AlgoVolumePar.from_file(filename)
-        instance = cls()
-        instance._vpar = vpar
-        return instance
+    def read_volume_par(self, filename):
+        """Read volume parameters from file (in-place, like optv)."""
+        self._vpar = AlgoVolumePar.from_file(filename)
 
 
 class TrackingParams:
@@ -345,13 +340,9 @@ class TrackingParams:
     def set_dny(self, val):
         self._tpar.dny = float(val)
 
-    @classmethod
-    def read_track_par(cls, filename):
-        """Read tracking parameters from file."""
-        tpar = AlgoTrackPar.from_file(filename)
-        instance = cls()
-        instance._tpar = tpar
-        return instance
+    def read_track_par(self, filename):
+        """Read tracking parameters from file (in-place, like optv)."""
+        self._tpar = AlgoTrackPar.from_file(filename)
 
 
 class SequenceParams:
@@ -360,6 +351,8 @@ class SequenceParams:
     def __init__(self, num_cams=0, **kwargs):
         """Initialize sequence parameters."""
         self._spar = AlgoSequencePar(num_cams=num_cams, **kwargs)
+        if not self._spar.img_base_name:
+            self._spar.img_base_name = [""] * num_cams
 
     def get_first(self):
         """Get first frame number."""
@@ -385,21 +378,27 @@ class SequenceParams:
         """Set image base name for camera."""
         self._spar.img_base_name[cam] = str(name)
 
-    @classmethod
-    def read_sequence_par(cls, filename, num_cams):
-        """Read sequence parameters from file."""
-        spar = AlgoSequencePar.from_file(filename, num_cams)
-        instance = cls(num_cams=num_cams)
-        instance._spar = spar
-        return instance
+    def read_sequence_par(self, filename, num_cams):
+        """Read sequence parameters from file (in-place, like optv)."""
+        self._spar = AlgoSequencePar.from_file(filename, num_cams)
 
 
 class TargetParams:
     """Wrapper for algorithms.parameters.TargetPar with optv-compatible API."""
 
-    def __init__(self, **kwargs):
-        """Initialize target parameters."""
+    def __init__(self, discont=0, gvthresh=None, pixel_count_bounds=(0, 1000),
+                 xsize_bounds=(0, 100), ysize_bounds=(0, 100), min_sum_grey=0,
+                 cross_size=2, **kwargs):
+        """Initialize target parameters (matching optv signature)."""
         self._tpar = AlgoTargetPar(**kwargs)
+        self.set_max_discontinuity(discont)
+        if gvthresh is not None:
+            self.set_grey_thresholds(gvthresh)
+        self.set_pixel_count_bounds(pixel_count_bounds)
+        self.set_xsize_bounds(xsize_bounds)
+        self.set_ysize_bounds(ysize_bounds)
+        self.set_min_sum_grey(min_sum_grey)
+        self.set_cross_size(cross_size)
 
     def get_grey_thresholds(self, num_cams=4, copy=True):
         """Get grey value thresholds."""
@@ -462,10 +461,6 @@ class TargetParams:
         """Set cross size."""
         self._tpar.cr_sz = int(cr_sz)
 
-    @classmethod
-    def read(cls, filename):
-        """Read target parameters from file."""
-        tpar = AlgoTargetPar.from_file(filename)
-        instance = cls()
-        instance._tpar = tpar
-        return instance
+    def read(self, filename):
+        """Read target parameters from file (in-place, like optv)."""
+        self._tpar = AlgoTargetPar.from_file(filename)

@@ -33,7 +33,7 @@ def _():
     from skimage.io import imread
     from skimage.util import img_as_ubyte
 
-    from optv.segmentation import target_recognition
+    from openptv2.segmentation import target_recognition
 
     return (
         Path,

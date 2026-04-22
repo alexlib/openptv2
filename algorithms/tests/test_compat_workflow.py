@@ -20,6 +20,13 @@ from algorithms.tracking_frame_buf import Target as AlgoTarget
 TEST_DATA = Path(__file__).parent.parent.parent / "test_data" / "synthetic"
 
 
+def _load_cal(ori_file, add_file):
+    """Load calibration using instance method pattern (matching optv API)."""
+    cal = Calibration()
+    cal.from_file(ori_file, add_file)
+    return cal
+
+
 class TestMatchedCoordsCompat:
     """Test MatchedCoords wrapper."""
 
@@ -113,7 +120,7 @@ class TestCorrespondencesCompat:
 
         # Load calibrations
         cals = [
-            Calibration.from_file(
+            _load_cal(
                 str(TEST_DATA / "cal" / f"cam{i+1}.tif.ori"),
                 str(TEST_DATA / "cal" / f"cam{i+1}.tif.addpar")
             )
@@ -150,7 +157,7 @@ class TestTrackerCompat:
         num_cams = 4
 
         cals = [
-            Calibration.from_file(
+            _load_cal(
                 str(TEST_DATA / "cal" / f"cam{i+1}.tif.ori"),
                 str(TEST_DATA / "cal" / f"cam{i+1}.tif.addpar")
             )
@@ -190,7 +197,7 @@ class TestTrackerCompat:
         num_cams = 1
 
         cals = [
-            Calibration.from_file(
+            _load_cal(
                 str(TEST_DATA / "cal" / "cam1.tif.ori"),
                 str(TEST_DATA / "cal" / "cam1.tif.addpar")
             )

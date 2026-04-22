@@ -3,7 +3,7 @@
 import pytest
 import numpy as np
 from pyptv.ptv import _populate_cpar, _populate_spar, _populate_vpar, _populate_track_par, _populate_tpar
-from optv.parameters import ControlParams, SequenceParams, VolumeParams, TrackingParams, TargetParams
+from openptv2.parameters import ControlParams, SequenceParams, VolumeParams, TrackingParams, TargetParams
 
 
 class TestPopulateCpar:

@@ -310,7 +310,7 @@ def test_particle_detection(test_cavity_setup):
     # since we need the correct detection API
     try:
         # Try to detect using available functions
-        from optv.segmentation import target_recognition
+        from openptv2.segmentation import target_recognition
 
         detections = []
         for i, img in enumerate(processed_images):

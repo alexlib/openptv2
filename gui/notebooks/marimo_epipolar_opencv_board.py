@@ -5,14 +5,14 @@ app = marimo.App(width="columns")
 
 with app.setup:
     import marimo as mo
-    from optv.epipolar import epipolar_curve
-    from optv.imgcoord import image_coordinates
-    from optv.transforms import convert_arr_metric_to_pixel
-    from optv.image_processing import preprocess_image
-    from optv.calibration import Calibration
-    from optv.parameters import ControlParams, VolumeParams
-    from optv.segmentation import target_recognition
-    from optv.correspondences import MatchedCoords, correspondences
+    from openptv2.epipolar import epipolar_curve
+    from openptv2.imgcoord import image_coordinates
+    from openptv2.transforms import convert_arr_metric_to_pixel
+    from openptv2.image_processing import preprocess_image
+    from openptv2.calibration import Calibration
+    from openptv2.parameters import ControlParams, VolumeParams
+    from openptv2.segmentation import target_recognition
+    from openptv2.correspondences import MatchedCoords, correspondences
 
     from . import ptv
     from .parameter_manager import ParameterManager
@@ -284,7 +284,7 @@ def _(cals, cpar, images, num_cams, sorted_pos, vpar):
 
 @app.cell
 def _(cals, cpar, matched, sorted_corresp, sorted_pos, vpar):
-    from optv.orientation import point_positions
+    from openptv2.orientation import point_positions
     concatenated_pos = np.concatenate(sorted_pos, axis=1)
     concatenated_corresp = np.concatenate(sorted_corresp, axis=1)
 

@@ -48,7 +48,7 @@ def test_standalone_dumbbell_calibration_cycle(tmp_path: Path):
     # Keep all other cameras fixed during optimization to remove gauge freedom.
     ori1 = work / "cal" / "cam2.tif.ori"
     # 3) Perturb the starting calibration (pos + angles) and write it back.
-    from optv.calibration import Calibration
+    from openptv2.calibration import Calibration
 
     start = Calibration()
     addpar = Path(str(ori1).replace(".ori", ".addpar"))

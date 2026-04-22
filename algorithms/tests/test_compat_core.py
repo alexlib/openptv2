@@ -23,8 +23,9 @@ class TestCalibrationCompat:
     """Test Calibration wrapper API."""
 
     def test_from_file(self):
-        """Test reading calibration from file."""
-        cal = Calibration.from_file(
+        """Test reading calibration from file (instance method, like optv)."""
+        cal = Calibration()
+        cal.from_file(
             str(CALIB_PATH) + ".ori",
             str(CALIB_PATH) + ".addpar"
         )
@@ -56,8 +57,8 @@ class TestCalibrationCompat:
         retrieved = cal.get_angles()
         np.testing.assert_allclose(retrieved, angles, rtol=1e-6)
 
-        # Test primary point
-        pp = np.array([5.0, 6.0])
+        # Test primary point (3 elements: xh, yh, cc)
+        pp = np.array([5.0, 6.0, 100.0])
         cal.set_primary_point(pp)
         np.testing.assert_array_equal(cal.get_primary_point(), pp)
 

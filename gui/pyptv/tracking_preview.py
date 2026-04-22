@@ -2,7 +2,7 @@
 
 import numpy as np
 from typing import Dict, List, Tuple, Optional
-from algorithms.track import Tracker
+from openptv2.tracker import Tracker
 from algorithms.parameters import convert_track_par_to_tuple
 
 

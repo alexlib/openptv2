@@ -16,14 +16,14 @@ from pyptv.ptv import (
     py_start_proc_c,
 )
 from pyptv.parameter_manager import ParameterManager
-from optv.parameters import (
+from openptv2.parameters import (
     ControlParams,
     SequenceParams,
     VolumeParams,
     TrackingParams,
     TargetParams,
 )
-from optv.calibration import Calibration
+from openptv2.calibration import Calibration
 
 
 class TestPopulateCpar:

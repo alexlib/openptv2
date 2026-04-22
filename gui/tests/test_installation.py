@@ -5,7 +5,7 @@ Test script to verify pyptv installation
 
 import os
 import sys
-from optv.calibration import Calibration
+from openptv2.calibration import Calibration
 
 
 def test_installation(test_data_dir):

@@ -5,7 +5,7 @@ import numpy as np
 import os
 from pathlib import Path
 from unittest.mock import Mock, patch, MagicMock
-from optv.correspondences import MatchedCoords
+from openptv2.correspondences import MatchedCoords
 from pyptv.ptv import (
     _read_calibrations,
     generate_short_file_bases,
@@ -17,8 +17,8 @@ from pyptv.ptv import (
     py_trackcorr_init,
 )
 from pyptv.experiment import Experiment
-from optv.parameters import ControlParams
-from optv.calibration import Calibration
+from openptv2.parameters import ControlParams
+from openptv2.calibration import Calibration
 
 
 @pytest.fixture
@@ -225,7 +225,7 @@ class TestPyDeterminationProcC:
         num_cams = test_cavity_exp.pm.num_cams
         sorted_pos = [np.array([]).reshape(0, 2) for _ in range(num_cams)]
         sorted_corresp = [np.array([]).reshape(0, 1) for _ in range(num_cams)]
-        from optv.tracking_framebuf import TargetArray
+        from openptv2.tracking_framebuf import TargetArray
 
         corrected = [
             MatchedCoords(TargetArray(0), cpar, cals[i]) for i in range(num_cams)

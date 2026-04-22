@@ -1,5 +1,4 @@
 import numpy as np
-import optv
 from packaging import version
 
 
@@ -12,9 +11,11 @@ def test_numpy_version():
         f"Expected numpy >={min_version} <{max_version}, got {np_version}"
 
 
-def test_optv_version():
-    """Verify optv version compatibility"""
-    assert optv.__version__ >= "0.3.0", f"Expected optv 0.3.0, got {optv.__version__}"
+def test_engine_available():
+    """Verify at least one engine (optv or python) is available."""
+    from openptv2 import get_engine, is_optv_available, is_python_available
+    assert is_optv_available() or is_python_available(), "No engine available"
+    assert get_engine() in ("optv", "python")
 
 
 def test_numpy_functionality():

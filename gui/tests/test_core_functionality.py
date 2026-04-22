@@ -3,8 +3,8 @@ import optv
 import pytest
 import pyptv
 import numpy as np
-from optv.calibration import Calibration
-from optv.parameters import VolumeParams
+from openptv2.calibration import Calibration
+from openptv2.parameters import VolumeParams
 
 
 @pytest.fixture
