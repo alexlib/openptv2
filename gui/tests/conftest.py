@@ -18,12 +18,9 @@ def test_data_dir():
 
 
 @pytest.fixture(scope="session")
-def test_cavity_integration_dir():
-    """Fixture to set up test_cavity_integration directory"""
-    test_dir = TEST_DATA_ROOT / "test_cavity_integration"
-    if not test_dir.exists():
-        pytest.skip(f"Test data directory {test_dir} not found")
-    return test_dir
+def test_cavity_integration_dir(test_data_dir):
+    """Backward-compatible alias to the canonical cavity test dataset."""
+    return test_data_dir
 
 
 # Note: Test data setup/cleanup is handled by root conftest.py's
