@@ -14,8 +14,10 @@ import numpy as np
 from typing import List, Tuple, Dict, Optional
 from dataclasses import dataclass
 
-from algorithms.parameters import TrackPar, ControlPar, VolumePar
-from algorithms.calibration import Calibration
+from openptv2 import TrackingParams as TrackPar
+from openptv2 import ControlParams as ControlPar
+from openptv2 import VolumeParams as VolumePar
+from openptv2 import Calibration
 
 
 @dataclass
@@ -103,7 +105,7 @@ def project_search_volume_to_camera(
     Returns:
         SearchVolumeBounds in pixel coordinates
     """
-    from algorithms.imgcoord import flat_image_coord
+    from openptv2 import flat_image_coordinates
 
     # Create corner points of the 3D box
     corners = np.array(
@@ -119,14 +121,12 @@ def project_search_volume_to_camera(
         ]
     )
 
-    # Project each corner to 2D
-    coords_2d = []
-    for corner in corners:
-        try:
-            x, y = flat_image_coord(corner, cal, cpar.mm)
-            coords_2d.append([x, y])
-        except:
-            coords_2d.append([0, 0])
+    # Project each corner to 2D using batch function
+    try:
+        result = flat_image_coordinates(corners, cal, cpar.mm)
+        coords_2d = result.tolist()
+    except Exception:
+        coords_2d = [[0, 0]] * len(corners)
 
     coords_2d = np.array(coords_2d)
 
@@ -197,9 +197,8 @@ def compute_candidate_3d_distances(
     Returns:
         Updated candidates with distance_3d filled
     """
-    from algorithms.orientation import point_position
-
     # For each candidate, triangulate from 2D and compute distance
+    # In real implementation, we'd use point_positions from openptv2
     for cand in candidates:
         # Create fake target data for triangulation
         # In real implementation, we'd use actual 2D positions from all cameras

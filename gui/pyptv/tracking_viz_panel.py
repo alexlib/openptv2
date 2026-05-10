@@ -410,15 +410,15 @@ class TrackingDebugPanel(HasTraits):
             pm = self.main_gui.exp1.pm
             params = pm.parameters
 
-            from algorithms.track import Tracker
-            from algorithms.parameter_converters import (
+            from openptv2 import (
+                Tracker,
+                Calibration,
                 get_control_par,
                 get_sequence_par,
                 get_volume_par,
                 get_track_par_tuple,
                 convert_optv_calibrations,
             )
-            from algorithms.calibration import Calibration
 
             cpar = get_control_par(params)
             cpar.num_cams = self.main_gui.num_cams
@@ -488,7 +488,7 @@ class TrackingDebugPanel(HasTraits):
         if self.tracker is None:
             return
 
-        from algorithms.parameters import TrackParTuple
+        from openptv2 import TrackParTuple
 
         tpar = TrackParTuple(
             self.dvxmin,
@@ -759,10 +759,7 @@ class TrackingDebugPanel(HasTraits):
         if self.main_gui is None:
             return
 
-        try:
-            from openptv2.epipolar import epipolar_curve
-        except ImportError:
-            from algorithms.epi import epipolar_curve
+        from openptv2 import epipolar_curve
 
         cpar = self.tracker.run_info.cpar
         cals = self.tracker.run_info.cals
@@ -867,13 +864,13 @@ class TrackingDebugPanel(HasTraits):
         tgt = targets[target_idx]
         pos = tgt.get_pos()
 
-        from algorithms.imgcoord import flat_image_coord
+        from openptv2 import flat_image_coordinates
 
         try:
-            flat_x, flat_y = flat_image_coord(
-                np.array([pos[0], pos[1], 0]), cals[cam_idx], cpar.mm
-            )
-        except:
+            pos_3d = np.array([[pos[0], pos[1], 0.0]])  # Shape (1, 3) for batch function
+            result = flat_image_coordinates(pos_3d, cals[cam_idx], cpar.mm)
+            flat_x, flat_y = result[0]
+        except Exception:
             flat_x, flat_y = pos[0] / cpar.pix_x, pos[1] / cpar.pix_y
 
         center_3d = np.array([0.0, 0.0, 100.0])

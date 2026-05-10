@@ -33,6 +33,9 @@ else:
         MultimediaParams,
     )
 
+# Import utility types and functions from algorithms (no engine dispatch needed)
+from algorithms.parameters import TrackParTuple, convert_track_par_to_tuple
+
 __all__ = [
     'ControlParams',
     'VolumeParams',
@@ -40,4 +43,6 @@ __all__ = [
     'SequenceParams',
     'TargetParams',
     'MultimediaParams',
+    'TrackParTuple',
+    'convert_track_par_to_tuple',
 ]

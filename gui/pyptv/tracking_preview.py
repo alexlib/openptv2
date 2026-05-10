@@ -2,8 +2,16 @@
 
 import numpy as np
 from typing import Dict, List, Tuple, Optional
-from openptv2.tracker import Tracker
-from algorithms.parameters import convert_track_par_to_tuple
+from openptv2 import (
+    Tracker,
+    Calibration,
+    convert_track_par_to_tuple,
+    get_control_par,
+    get_sequence_par,
+    get_volume_par,
+    get_track_par_tuple,
+    convert_optv_calibrations,
+)
 
 
 def run_tracking_preview(main_gui, num_frames: int = 5) -> Dict:
@@ -23,15 +31,6 @@ def run_tracking_preview(main_gui, num_frames: int = 5) -> Dict:
     # Get current parameters from the main GUI
     pm = main_gui.exp1.pm
     params = pm.parameters
-
-    from algorithms.parameter_converters import (
-        get_control_par,
-        get_sequence_par,
-        get_volume_par,
-        get_track_par_tuple,
-        convert_optv_calibrations,
-    )
-    from algorithms.calibration import Calibration
 
     # Convert parameters to the expected types
     cpar = get_control_par(params)
