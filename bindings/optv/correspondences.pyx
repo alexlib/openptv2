@@ -1,3 +1,4 @@
+# cython: language_level=3
 # -*- coding: utf-8 -*-
 """
 Implementation of bindings for correspondences and related data structures.
@@ -151,10 +152,17 @@ def correspondences(list img_pts, list flat_coords, list cals,
     num_targs - total number of targets (must be greater than the sum of 
         previous 3).
     """
-    cdef: 
+    cdef:
         int num_cams = len(cals)
 
-    # Special case of a single camera, follow the single_cam_correspondence docstring    
+    # Validate that calibration list matches control parameters
+    if num_cams != cparam.get_num_cams():
+        raise ValueError(
+            f"Number of calibrations ({num_cams}) does not match "
+            f"control parameters num_cams ({cparam.get_num_cams()})"
+        )
+
+    # Special case of a single camera, follow the single_cam_correspondence docstring
     if num_cams == 1:
         sorted_pos, sorted_corresp, num_targs = single_cam_correspondence(img_pts, flat_coords, cals)
         return sorted_pos, sorted_corresp, num_targs
@@ -254,10 +262,10 @@ def single_cam_correspondence(list img_pts, list flat_coords, list cals):
     num_targs - total number of targets (must be greater than the sum of 
         previous 3). 
     """
-    cdef: 
+    cdef:
         int pt, num_points
-        coord_2d *corrected = <coord_2d *> malloc(sizeof(coord_2d *))
-    
+        coord_2d *corrected
+
     corrected = (<MatchedCoords>flat_coords[0]).buf
 
     sorted_pos = [None]
@@ -282,7 +290,7 @@ def single_cam_correspondence(list img_pts, list flat_coords, list cals):
         if p1 > -1:
             targ = img_pts[0][p1]
             clique_targs[0, pt, 0] = (<Target> targ)._targ.x
-            clique_targs[0, pt, 1] = (<Target> targ)._targ.x
+            clique_targs[0, pt, 1] = (<Target> targ)._targ.y
             # we also update the tnr, see docstring of correspondences
             (<Target> targ)._targ.tnr = pt
 

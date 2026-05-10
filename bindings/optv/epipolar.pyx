@@ -1,3 +1,4 @@
+# cython: language_level=3
 """
 not so much a binding for the epipolar code, as a more general implementation
 of epipolar curve finding using a similar algorithm to that in epi.c.

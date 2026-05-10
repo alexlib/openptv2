@@ -62,7 +62,7 @@ cdef class MultimediaParams:
         self._mm_np[0].n1 = 1.0 if n1 is None else n1
         self._mm_np[0].n3 = 1.0 if n3 is None else n3
         self._mm_np[0].nlay = 0
-        
+
         # Initialize arrays with zeros
         for i in range(3):
             self._mm_np[0].n2[i] = 0.0
@@ -99,10 +99,10 @@ cdef class MultimediaParams:
         else:
             for i in range(len(refr_index)):
                 self._mm_np[0].n2[i] = refr_index[i]
-            
+
             for i in range(len(thickness)):
                 self._mm_np[0].d[i] = thickness[i]
-            
+
             self._mm_np[0].nlay = len(refr_index)
 
     def get_n2(self, copy=True):
@@ -813,7 +813,7 @@ cdef class TargetParams:
         if len(gvthresh) > 4:
             raise ValueError("Can't store more than 4 grey-level thresholds.")
         
-        for gvx in xrange(len(gvthresh)):
+        for gvx in range(len(gvthresh)):
             self._targ_par.gvthres[gvx] = gvthresh[gvx]
     
     def get_pixel_count_bounds(self):

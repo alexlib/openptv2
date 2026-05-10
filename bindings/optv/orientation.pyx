@@ -1,3 +1,4 @@
+# cython: language_level=3
 import numpy as np
 cimport numpy as np
 np.import_array()
@@ -163,9 +164,10 @@ def single_cam_point_positions(np.ndarray[ndim=3, dtype=DTYPE_t] targets,
     for pt in range(num_targets):
         targ = targets[pt]
         epi_mm_2D (targ[0][0], targ[0][1],
-                            calib[0], cparam._control_par.mm, vparam._volume_par, 
+                            calib[0], cparam._control_par.mm, vparam._volume_par,
                             <vec3d> np.PyArray_GETPTR2(res, pt, 0));
 
+    free(calib)
     return res, rcm
           
 
@@ -208,6 +210,7 @@ def multi_cam_point_positions(np.ndarray[ndim=3, dtype=DTYPE_t] targets,
                                  cparam._control_par.mm, calib,
                                  <vec3d> np.PyArray_GETPTR2(res, pt, 0))
 
+    free(calib)
     return res, rcm
 
 def external_calibration(Calibration cal, 
@@ -367,6 +370,10 @@ def dumbbell_target_func(np.ndarray[ndim=3, dtype=DTYPE_t] targets,
     for pt in range(num_pts):
         targ = targets[pt]
         ctargets[pt] = <vec2d *>(targ.data)
-    
-    return weighted_dumbbell_precision(ctargets, num_pts, num_cams, 
+
+    result = weighted_dumbbell_precision(ctargets, num_pts, num_cams,
         cparam._control_par.mm, calib,  db_length, db_weight)
+
+    free(ctargets)
+    free(calib)
+    return result

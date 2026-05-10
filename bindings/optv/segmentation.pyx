@@ -1,3 +1,4 @@
+# cython: language_level=3
 # -*- coding: utf-8 -*-
 """
 Bindings for image segmentation / target recognition routins in liboptv.

@@ -1,3 +1,4 @@
+# cython: language_level=3
 # Implementation of Python binding to calibrtion.h C module
 #
 # References:
@@ -79,6 +80,9 @@ cdef class Calibration:
             (<char *>ori_bytes if ori_bytes is not None else <char *>0),
             (<char *>add_bytes if add_bytes is not None else <char *>0),
             (<char *>fallback_bytes if fallback_bytes is not None else <char *>0))
+
+        if self._calibration == NULL:
+            raise FileNotFoundError(f"Failed to read calibration from {ori_file}")
         
     def write(self, filename, add_file):
         """

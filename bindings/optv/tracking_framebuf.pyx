@@ -1,3 +1,4 @@
+# cython: language_level=3
 # Implementation of the trackin_frame_buf minimal interface.
 
 from libc.stdlib cimport malloc, free
@@ -306,9 +307,10 @@ cdef class Frame:
             free_frame(self._frm)
         
         frame_init(self._frm, self._num_cams, MAX_TARGETS)
-        success = read_frame(self._frm, corres_file_base, linkage_file_base, 
+        success = read_frame(self._frm, corres_file_base, linkage_file_base,
             pb, targ_fb, frame_num)
-        
+
+        free(targ_fb)
         return success
      
     def positions(Frame self):

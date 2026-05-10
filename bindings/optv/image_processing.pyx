@@ -1,3 +1,4 @@
+# cython: language_level=3
 from optv.parameters cimport ControlParams, control_par
 import numpy as np
 cimport numpy as np
@@ -47,9 +48,10 @@ def preprocess_image(np.ndarray[ndim=2, dtype=np.uint8_t] input_img,
     else:
         filter_file=b""
         
-    for arr in (input_img, output_img):
-        if not arr.flags['C_CONTIGUOUS']:
-            np.ascontiguousarray(arr)
+    if not input_img.flags['C_CONTIGUOUS']:
+        input_img = np.ascontiguousarray(input_img)
+    if not output_img.flags['C_CONTIGUOUS']:
+        output_img = np.ascontiguousarray(output_img)
     
     if (1 != prepare_image( < unsigned char *> input_img.data,
                             < unsigned char *> output_img.data,
