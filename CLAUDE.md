@@ -58,8 +58,6 @@ OPENPTV_PYTHON_ONLY=1 uv pip install -e .
 
 **Test data**: `test_data/` contains calibration files, parameter files, and fixture data used across all test suites. Tests import from `algorithms.*` directly (e.g., `from algorithms.vec_utils import ...`).
 
-**old_algorithms/**: Previous Python translation attempt — kept for reference/parity testing but not the active codebase. New work goes in `algorithms/`.
-
 ## Code Style
 
 - Python 3.11+, line length 88 (ruff configured)
