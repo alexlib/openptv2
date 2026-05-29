@@ -139,13 +139,15 @@ This installs ~100x faster by skipping Cython compilation. Only the `algorithms/
 
 #### Step 3: Verify Build
 
+Always run verification inside your virtual environment to ensure the compiled libraries are correctly found:
+
 ```bash
 # Test imports
-python -c "import openptv2; print(f'openptv2 version: {openptv2.__version__}')"
-python -c "from openptv2 import Tracker; print('Tracker imported successfully')"
+uv run python -c "import openptv2; print(f'openptv2 version: {openptv2.__version__}')"
+uv run python -c "from openptv2 import Tracker; print('Tracker imported successfully')"
 
-# Run tests
-pytest tests/ -v --tb=short
+# Run core tests
+uv run python -m pytest algorithms/tests/ bindings/tests/ -v
 ```
 
 ---

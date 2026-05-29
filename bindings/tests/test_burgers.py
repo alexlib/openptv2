@@ -25,6 +25,8 @@ framebuf_naming = {
 
 class TestTracker(unittest.TestCase):
     def setUp(self):
+        shutil.rmtree("test_data/burgers/res/", ignore_errors=True)
+        shutil.rmtree("test_data/burgers/img/", ignore_errors=True)
         with open("test_data/burgers/conf.yaml") as f:
             yaml_conf = yaml.load(f, Loader=yaml.FullLoader)
         seq_cfg = yaml_conf["sequence"]

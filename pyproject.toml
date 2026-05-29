@@ -112,9 +112,13 @@ packages = [
     "gui.pyptv",
     "gui.plugins",
 ]
-package-dir = {optv = "bindings/optv"}
 include-package-data = true
 zip-safe = false
+
+[tool.setuptools.package-dir]
+optv = "bindings/optv"
+"gui.pyptv" = "gui/pyptv"
+"gui.plugins" = "gui/plugins"
 
 [tool.pytest.ini_options]
 testpaths = ["algorithms/tests", "bindings/tests", "gui/tests"]

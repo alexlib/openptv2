@@ -127,18 +127,33 @@ This skips the Cython compilation and installs ~100x faster. Only the `algorithm
 
 ### Step 4: Verify
 
+> [!IMPORTANT]
+> Always ensure you run commands within the active virtual environment where `openptv2` is installed to avoid running global python/pytest versions, which can lead to `ModuleNotFoundError` or segmentation faults due to mismatched compiled library versions.
+
+Either activate your virtual environment first:
 ```bash
-# Test C/Cython engine
-python -c "from optv.tracking_framebuf import Target; print('optv OK')"
+source .venv/bin/activate
+```
 
-# Test Python engine
-python -c "from algorithms.tracking_frame_buf import Target; print('algorithms OK')"
+Or run all verification commands with `uv run`:
 
-# Test unified package
-python -c "from openptv2 import Tracker; print('openptv2 OK')"
+**1. Test Core Modules and Bindings:**
+```bash
+uv run python -c "from optv.tracking_framebuf import Target; print('optv bindings: OK')"
+uv run python -c "from algorithms.tracking_frame_buf import Target; print('algorithms engine: OK')"
+uv run python -c "from openptv2 import Tracker; print('openptv2 unified: OK')"
+uv run python -c "import gui.pyptv.pyptv_gui; print('pyptv GUI imports: OK')"
+```
 
-# Run tests
-uv run pytest algorithms/tests/ bindings/tests/ -v --tb=short
+**2. Run the Test Suite:**
+To run the standard C library and Python algorithm tests:
+```bash
+uv run python -m pytest algorithms/tests/ bindings/tests/ -v
+```
+
+To run all tests including the GUI:
+```bash
+uv run python -m pytest -v
 ```
 
 ---

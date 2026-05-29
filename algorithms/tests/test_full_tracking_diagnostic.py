@@ -233,7 +233,7 @@ def cavity_setup(tmp_path):
     }
 
 
-def test_full_pipeline_diagnostic(cavity_setup):
+def test_full_pipeline_diagnostic(cavity_setup, monkeypatch):
     """Run the complete pipeline with detailed logging at every stage."""
     import os
     from skimage.io import imread
@@ -251,7 +251,7 @@ def test_full_pipeline_diagnostic(cavity_setup):
     work_dir = cfg["work_dir"]
     params = cfg["params"]
 
-    os.chdir(work_dir)
+    monkeypatch.chdir(work_dir)
 
     # ---------------------------------------------------------------
     # LOG: Parameters

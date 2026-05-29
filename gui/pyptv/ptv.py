@@ -52,6 +52,7 @@ example from Tracker documentation:
 # PyPTV imports
 from .parameter_manager import ParameterManager
 from . import ptv_calibration
+from .ptv_calibration import _read_calibrations, clone_calibration
 
 # Constants
 DEFAULT_FRAME_NUM = 123456789

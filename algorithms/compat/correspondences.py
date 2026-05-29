@@ -49,20 +49,32 @@ class MatchedCoords:
             return
 
         # Extract pixel positions
+        targets_list = self._targets
         if hasattr(self._targets, '_targets'):
-            # TargetArray
-            positions = np.array([
-                [self._targets._targets[i].x, self._targets._targets[i].y]
-                for i in range(num_targets)
-            ])
-            pnrs = [self._targets._targets[i].pnr for i in range(num_targets)]
-        else:
-            # List of Target
-            positions = np.array([
-                [self._targets[i].x, self._targets[i].y]
-                for i in range(num_targets)
-            ])
-            pnrs = [self._targets[i].pnr for i in range(num_targets)]
+            targets_list = self._targets._targets
+
+        positions = []
+        pnrs = []
+        for i in range(num_targets):
+            t = targets_list[i]
+            if hasattr(t, 'pos') and callable(t.pos):
+                pos_val = t.pos()
+                x_val, y_val = pos_val[0], pos_val[1]
+            else:
+                x_val, y_val = t.x, t.y
+
+            if hasattr(t, 'pnr'):
+                if callable(t.pnr):
+                    pnr_val = t.pnr()
+                else:
+                    pnr_val = t.pnr
+            else:
+                pnr_val = 0
+
+            positions.append([x_val, y_val])
+            pnrs.append(pnr_val)
+
+        positions = np.array(positions)
 
         # Pixel → metric
         metric = convert_arr_pixel_to_metric(positions, self._cpar)
@@ -130,13 +142,33 @@ def correspondences(img_pts, flat_coords, cals, vparam, cparam):
     frame = AlgoFrame(num_cams=num_cams, max_targets=1000)
 
     # Copy targets to frame
+    from algorithms.tracking_frame_buf import Target as AlgoTarget
     for cam in range(num_cams):
         if hasattr(img_pts[cam], '_targets'):
             targets = img_pts[cam]._targets
         else:
             targets = img_pts[cam]
 
-        frame.targets[cam] = targets
+        # Convert targets if they are from optv/Cython
+        converted_targets = []
+        for t in targets:
+            if not hasattr(t, 'n'):
+                # Optv/Cython target
+                nx, ny = t.count_pixels()[1], t.count_pixels()[2]
+                converted_targets.append(AlgoTarget(
+                    pnr=t.pnr(),
+                    x=t.pos()[0],
+                    y=t.pos()[1],
+                    n=t.count_pixels()[0],
+                    nx=nx,
+                    ny=ny,
+                    sumg=t.sum_grey_value(),
+                    tnr=t.tnr()
+                ))
+            else:
+                converted_targets.append(t)
+
+        frame.targets[cam] = converted_targets
         frame.num_targets[cam] = len(targets)
 
     # Extract corrected coordinates

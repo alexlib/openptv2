@@ -12,6 +12,28 @@ from algorithms.trafo import (
 )
 
 
+def _unwrap_cpar(cpar):
+    if hasattr(cpar, '_cpar'):
+        return cpar._cpar
+    if hasattr(cpar, 'control_par'):
+        return cpar.control_par
+    if hasattr(cpar, 'get_pixel_size') and hasattr(cpar, 'get_image_size'):
+        from algorithms.parameters import ControlPar, MmNp
+        px, py = cpar.get_pixel_size()
+        imx, imy = cpar.get_image_size()
+        return ControlPar(
+            num_cams=cpar.get_num_cams(),
+            imx=imx, imy=imy,
+            pix_x=px, pix_y=py,
+            hp_flag=cpar.get_hp_flag(),
+            all_cam_flag=cpar.get_allCam_flag(),
+            tiff_flag=cpar.get_tiff_flag(),
+            chfield=cpar.get_chfield(),
+            mm=MmNp(n1=1.0)
+        )
+    return cpar
+
+
 def convert_arr_pixel_to_metric(input_arr, cpar, out=None):
     """
     Convert pixel coordinates to metric coordinates (batch operation).
@@ -24,7 +46,8 @@ def convert_arr_pixel_to_metric(input_arr, cpar, out=None):
     Returns:
         ndarray[n, 2] of metric coordinates
     """
-    result = pixel_to_metric_batch(input_arr, cpar._cpar)
+    raw_cpar = _unwrap_cpar(cpar)
+    result = pixel_to_metric_batch(input_arr, raw_cpar)
     if out is not None:
         out[:] = result
         return out
@@ -43,7 +66,8 @@ def convert_arr_metric_to_pixel(input_arr, cpar, out=None):
     Returns:
         ndarray[n, 2] of pixel coordinates
     """
-    result = metric_to_pixel_batch(input_arr, cpar._cpar)
+    raw_cpar = _unwrap_cpar(cpar)
+    result = metric_to_pixel_batch(input_arr, raw_cpar)
     if out is not None:
         out[:] = result
         return out

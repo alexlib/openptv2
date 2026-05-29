@@ -101,7 +101,7 @@ def test_calibration_parameter_parity(cavity_dir):
                 # optv transforms module
                 from optv.transforms import convert_arr_pixel_to_metric as o_ptm
 
-                metric_o[j] = o_ptm(test_pts[j : j + 1], cpar)[0]  # approximate
+            cpar_c = cpar.control_par if hasattr(cpar, 'control_par') else cpar
             metric_c = convert_arr_pixel_to_metric(test_pts, cpar_c)
 
             print(
