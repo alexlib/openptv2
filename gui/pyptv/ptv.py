@@ -62,6 +62,32 @@ DEFAULT_NO_FILTER = 0
 SHORT_BASE = "cam"  # Use this as the short base for camera file naming
 
 
+def _extract_frame_num(img_name: str) -> int:
+    """Extract frame number from image filename if possible, else return DEFAULT_FRAME_NUM."""
+    if not img_name:
+        return DEFAULT_FRAME_NUM
+
+    # Try parsing suffix as an integer, e.g. "img/cam1.10002" -> 10002
+    suffix = Path(img_name).suffix
+    if suffix and suffix.startswith("."):
+        try:
+            return int(suffix[1:])
+        except ValueError:
+            pass
+
+    # Try finding digits in the stem, e.g. "00000001" or "cam1_10002"
+    stem = Path(img_name).stem
+    digits = re.findall(r"\d+", stem)
+    if digits:
+        try:
+            return int(digits[-1])
+        except ValueError:
+            pass
+
+    return DEFAULT_FRAME_NUM
+
+
+
 def _prepare_output_path(filename: str) -> Path:
     """Return a writable output path, creating parent directories when needed."""
     output_path = Path(filename)
@@ -477,7 +503,18 @@ def py_detection_proc_c(
 
 def py_correspondences_proc_c(exp):
     """Provides correspondences"""
-    frame = 123456789
+    frame = DEFAULT_FRAME_NUM
+    if hasattr(exp, "exp1") and hasattr(exp.exp1, "pm"):
+        pm = exp.exp1.pm
+    elif hasattr(exp, "pm"):
+        pm = exp.pm
+    else:
+        pm = None
+
+    if pm is not None:
+        ptv_params = pm.get_parameter("ptv")
+        if isinstance(ptv_params, dict) and "img_name" in ptv_params and ptv_params["img_name"]:
+            frame = _extract_frame_num(ptv_params["img_name"][0])
 
     sorted_pos, sorted_corresp, num_targs = correspondences(
         exp.detections, exp.corrected, exp.cals, exp.vpar, exp.cpar
@@ -504,6 +541,7 @@ def py_determination_proc_c(
     cpar: ControlParams,
     vpar: VolumeParams,
     cals: List[Calibration],
+    frame: int = DEFAULT_FRAME_NUM,
 ) -> None:
     """Calculate 3D positions from 2D correspondences and save to file."""
     concatenated_pos = np.concatenate(sorted_pos, axis=1)
@@ -525,7 +563,7 @@ def py_determination_proc_c(
         print_corresp = concatenated_corresp
 
     output_path = _prepare_output_path(
-        f"{default_naming['corres'].decode()}.{DEFAULT_FRAME_NUM}"
+        f"{default_naming['corres'].decode()}.{frame}"
     )
 
     print(f"Prepared {output_path} to write positions")

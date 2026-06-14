@@ -407,5 +407,15 @@ class TestReadRtIsFile:
                 read_rt_is_file('zero_rows.rt')
 
 
+class TestExtractFrameNum:
+    def test_extract_frame_num_patterns(self):
+        from pyptv.ptv import _extract_frame_num
+        assert _extract_frame_num("img/cam1.10002") == 10002
+        assert _extract_frame_num("img/cam1_10002.png") == 10002
+        assert _extract_frame_num("img/00000025.tif") == 25
+        assert _extract_frame_num("img/cam_no_numbers.png") == 123456789
+        assert _extract_frame_num("") == 123456789
+
+
 if __name__ == "__main__":
     pytest.main([__file__])

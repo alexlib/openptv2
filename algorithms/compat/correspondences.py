@@ -28,13 +28,17 @@ class MatchedCoords:
             cpar: ControlParams instance
             cal: Calibration instance
             tol: Tolerance for distortion correction
-            reset_numbers: Whether to reset particle numbers (unused)
+            reset_numbers: Whether to reset particle numbers
         """
-        self._targets = targets if hasattr(targets, '_targets') else targets
+        self._targets = targets._targets if hasattr(targets, '_targets') else targets
         self._cpar = cpar
         self._cal = cal
         self._tol = tol
         self._corrected = []
+
+        if reset_numbers:
+            for i in range(len(self._targets)):
+                self._targets[i].pnr = i
 
         # Apply corrections to each target
         self._apply_corrections()
@@ -49,20 +53,11 @@ class MatchedCoords:
             return
 
         # Extract pixel positions
-        if hasattr(self._targets, '_targets'):
-            # TargetArray
-            positions = np.array([
-                [self._targets._targets[i].x, self._targets._targets[i].y]
-                for i in range(num_targets)
-            ])
-            pnrs = [self._targets._targets[i].pnr for i in range(num_targets)]
-        else:
-            # List of Target
-            positions = np.array([
-                [self._targets[i].x, self._targets[i].y]
-                for i in range(num_targets)
-            ])
-            pnrs = [self._targets[i].pnr for i in range(num_targets)]
+        positions = np.array([
+            [self._targets[i].x, self._targets[i].y]
+            for i in range(num_targets)
+        ])
+        pnrs = [self._targets[i].pnr for i in range(num_targets)]
 
         # Pixel → metric
         metric = convert_arr_pixel_to_metric(positions, self._cpar)

@@ -797,15 +797,21 @@ class TreeMenuHandler(Handler):
 
     def three_d_positions(self, info):
         """Extracts and saves 3D positions from the list of correspondences"""
+        mainGui = info.object
+        frame = ptv.DEFAULT_FRAME_NUM
+        ptv_params = mainGui.get_parameter("ptv")
+        if isinstance(ptv_params, dict) and "img_name" in ptv_params and ptv_params["img_name"]:
+            frame = ptv._extract_frame_num(ptv_params["img_name"][0])
 
         ptv.py_determination_proc_c(
-            info.object.num_cams,
-            info.object.sorted_pos,
-            info.object.sorted_corresp,
-            info.object.corrected,
-            info.object.cpar,
-            info.object.vpar,
-            info.object.cals,
+            mainGui.num_cams,
+            mainGui.sorted_pos,
+            mainGui.sorted_corresp,
+            mainGui.corrected,
+            mainGui.cpar,
+            mainGui.vpar,
+            mainGui.cals,
+            frame=frame,
         )
 
     def detect_part_track(self, info):
