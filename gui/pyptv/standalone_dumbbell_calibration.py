@@ -30,7 +30,7 @@ from scipy.optimize import least_squares
 from openptv2.transforms import convert_arr_pixel_to_metric
 
 from gui.pyptv.parameter_manager import ParameterManager
-from gui.pyptv import ptv
+from gui.pyptv import ptv, ptv_calibration
 
 
 @dataclass(frozen=True)
@@ -291,7 +291,7 @@ def run_dumbbell_calibration(
     x0 = np.concatenate([calib_vec.reshape(-1), points_init.reshape(-1)])
 
     def residuals(x: np.ndarray) -> np.ndarray:
-        return ptv.dumbbell_ba_residuals(
+        return ptv_calibration.dumbbell_ba_residuals(
             x,
             per_frame_metric,
             cpar,
@@ -323,7 +323,7 @@ def run_dumbbell_calibration(
     best_fun = float(np.sum(initial_residuals**2))
     res = None
 
-    jac_sparsity = ptv.dumbbell_ba_jac_sparsity(
+    jac_sparsity = ptv_calibration.dumbbell_ba_jac_sparsity(
         per_frame_metric,
         active,
         float(db_weight),

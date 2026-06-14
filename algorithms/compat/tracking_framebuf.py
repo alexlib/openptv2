@@ -32,6 +32,12 @@ class Target:
             self._target = AlgoTarget(**kwargs)
         elif isinstance(target, AlgoTarget):
             self._target = target
+        elif hasattr(target, 'pnr') and hasattr(target, 'x'):
+            self._target = AlgoTarget(
+                pnr=target.pnr, x=target.x, y=target.y,
+                n=target.n, nx=target.nx, ny=target.ny,
+                sumg=target.sumg, tnr=target.tnr
+            )
         else:
             raise TypeError(f"Expected Target, got {type(target)}")
 
@@ -119,6 +125,11 @@ class TargetArray:
             self._targets[idx] = val._target
         elif isinstance(val, AlgoTarget):
             self._targets[idx] = val
+        elif hasattr(val, 'pnr') and hasattr(val, 'x'):
+            self._targets[idx] = AlgoTarget(
+                pnr=val.pnr, x=val.x, y=val.y, n=val.n,
+                nx=val.nx, ny=val.ny, sumg=val.sumg, tnr=val.tnr
+            )
         else:
             raise TypeError(f"Expected Target or AlgoTarget, got {type(val)}")
 

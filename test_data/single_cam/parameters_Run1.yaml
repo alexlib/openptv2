@@ -1,0 +1,147 @@
+num_cams: 1
+plugins:
+  available_tracking:
+  - default
+  available_sequence:
+  - default
+  selected_tracking: default
+  selected_sequence: default
+cal_ori:
+  chfield: 0
+  fixp_name: calibration/calblock.txt
+  img_cal_name:
+  - calibration/cam_1.tif
+  img_ori:
+  - calibration/cam_1.tif.ori
+  pair_flag: false
+  tiff_flag: false
+  cal_splitter: false
+criteria:
+  X_lay:
+  - -100
+  - 100
+  Zmax_lay:
+  - 1
+  - 1
+  Zmin_lay:
+  - -1
+  - -1
+  cn: 0.02
+  cnx: 0.02
+  cny: 0.02
+  corrmin: 33.0
+  csumg: 0.02
+  eps0: 0.05
+detect_plate:
+  gvth_1: 10
+  gvth_2: 8
+  gvth_3: 8
+  gvth_4: 8
+  max_npix: 900
+  max_npix_x: 30
+  max_npix_y: 30
+  min_npix: 49
+  min_npix_x: 7
+  min_npix_y: 7
+  size_cross: 3
+  sum_grey: 30
+  tol_dis: 250
+dumbbell:
+  dumbbell_eps: 0.0
+  dumbbell_gradient_descent: 0.0
+  dumbbell_niter: 0
+  dumbbell_penalty_weight: 0.0
+  dumbbell_scale: 0.0
+  dumbbell_step: 0
+examine:
+  Combine_Flag: false
+  Examine_Flag: false
+man_ori:
+  nr:
+  - 109
+  - 114
+  - 125
+  - 143
+multi_planes:
+  n_planes: 3
+  plane_name:
+  - img/calib_a_cam
+  - img/calib_b_cam
+  - img/calib_c_cam
+orient:
+  cc: 0
+  interf: 0
+  k1: 0
+  k2: 0
+  k3: 0
+  p1: 0
+  p2: 0
+  pnfo: 0
+  scale: 0
+  shear: 0
+  xh: 0
+  yh: 0
+pft_version:
+  Existing_Target: 0
+ptv:
+  allcam_flag: false
+  chfield: 0
+  hp_flag: true
+  img_cal:
+  - calibration/cam_1.tif
+  img_name:
+  - img/img.10004
+  imx: 320
+  imy: 240
+  mmp_d: 1.0
+  mmp_n1: 1.0
+  mmp_n2: 1.0
+  mmp_n3: 1.0
+  pix_x: 0.01
+  pix_y: 0.01
+  tiff_flag: false
+  splitter: false
+sequence:
+  base_name:
+  - img/img.
+  first: 10004
+  last: 10103
+shaking:
+  shaking_first_frame: 20
+  shaking_last_frame: 30
+  shaking_max_num_frames: 5
+  shaking_max_num_points: 20
+sortgrid:
+  radius: 10
+targ_rec:
+  cr_sz: 2
+  disco: 80
+  gvthres:
+  - 5
+  - 5
+  - 5
+  - 5
+  nnmax: 320000
+  nnmin: 4
+  nxmax: 400
+  nxmin: 2
+  nymax: 800
+  nymin: 2
+  sumg_min: 30
+track:
+  angle: 150.0
+  dacc: 0.5
+  dvxmax: 0.2
+  dvxmin: -0.2
+  dvymax: 0.2
+  dvymin: -0.2
+  dvzmax: 0.2
+  dvzmin: -0.2
+  flagNewParticles: true
+masking:
+  mask_flag: false
+  mask_base_name: ''
+unsharp_mask:
+  flag: false
+  size: 3
+  strength: 1.0
