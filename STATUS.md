@@ -162,5 +162,8 @@ python -m gui.pyptv.pyptv_gui
 4. **Future-proof:** Easy to add algorithms-only features (Numba, JAX)
 5. **Zero overhead:** Wrappers are thin, no performance penalty
 
-## 🚀 Next Step
-Continue Phase 2: Create processing function wrappers for transforms, imgcoord, image_processing, segmentation, orientation, and epipolar modules.
+## 🚀 Next Immediate Steps
+1. ✅ **Consolidate Parameter Management:** With the GUI reverting to TraitsUI (abandoning the Tkinter migration), we have completed the integration of `ParameterManager` into the legacy `gui/pyptv` code.
+2. ✅ **Phase out `.par` and `exec()`:** Standardized on `.yaml` files exclusively for configuration, but preserved legacy `.par` translation for backward compatibility. All `exec()` usages in the `gui/` directory have been replaced with safe `getattr()` calls.
+3. ✅ **Distribution & Parity:** Verified Engine Parity (C vs Numba vs pure Python). Tested engine selection and cross-validated tracking results successfully.
+4. **Binary Wheels & Installers:** Provide precompiled C binary wheels to ensure robust multi-engine fallback prior to building PyInstaller standalone executables.
