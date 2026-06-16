@@ -234,7 +234,7 @@ def cavity_work(tmp_path):
 # The test
 # ---------------------------------------------------------------------------
 
-def test_full_batch_pipeline(cavity_work):
+def test_full_batch_pipeline(cavity_work, monkeypatch):
     """Full pipeline: detect → compare _targets → correspond → compare rt_is → track."""
     import os
     from skimage.io import imread
@@ -251,7 +251,7 @@ def test_full_batch_pipeline(cavity_work):
     res_orig = cfg["res_orig"]
     params = cfg["params"]
 
-    os.chdir(work_dir)
+    monkeypatch.chdir(work_dir)
 
     # =======================================================================
     # LOG: Parameters

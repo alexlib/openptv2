@@ -261,23 +261,93 @@ result = track_particles(images, engine="python")
 
 ### GUI
 
-```bash
-# Launch the GUI
-openptv2-gui
+Launch the graphical interface using the unified console scripts. Ensure your virtual environment is activated (`source .venv/bin/activate`) or prefix the commands with `uv run`:
 
-# Or with specific engine
-openptv2-gui --engine python
+```bash
+# Launch the GUI using the standard openptv2-gui or shorter pyptv_gui shortcut
+uv run pyptv_gui
+
+# Launch the GUI specifying the C/Cython engine and working directory
+uv run pyptv_gui --engine=optv --workdir=./test_data/test_cavity
+
+# Or using the debug engine and short arguments
+uv run pyptv_gui -e python -w ./test_data/test_cavity
 ```
 
 ### Batch Processing
 
-```bash
-# Serial batch
-openptv2-batch parameters.yaml 1 100
+Run high-throughput processing sequences using command-line batch utilities (ensure your virtual environment is activated or use `uv run`):
 
-# Parallel batch
-python -m openptv2.gui.pyptv_batch_parallel parameters.yaml 1 100 4
+```bash
+# Run batch processing specifying the engine, workdir directory, and frame range
+uv run pyptv_batch --engine=python --workdir=./test_data/test_cavity --first=10000 --last=10005
+
+# Or using the shorter command line format
+uv run pyptv_batch -e optv -w ./test_data/test_cavity -f 10000 -l 10004
+
+# Run with legacy positional arguments (for backward compatibility)
+uv run pyptv_batch ./test_data/test_cavity/parameters_Run1.yaml 10000 10004
+
+# Parallel batch processing
+uv run python -m openptv2.gui.pyptv_batch_parallel parameters_Run1.yaml 10000 10004 4
 ```
+
+### Command-line Shortcuts and Running Without `uv`
+
+You can run these command-line tools without prefixing them with `uv run` using any of the following approaches:
+
+#### 1. Activate the Virtual Environment (Standard Workflow)
+By activating the project's virtual environment, the environment's `bin/` directory is added to your shell's `PATH`. This registers all entry points (like `pyptv_gui`, `pyptv`, `pyptv_batch`) directly in your terminal:
+```bash
+source .venv/bin/activate
+
+# Now run directly without uv
+pyptv_gui -e python -w ./test_data/test_cavity
+```
+
+#### 2. Execute via Direct Path
+If you do not wish to activate the virtual environment, you can run the built executable directly from the local `.venv` folder:
+```bash
+./.venv/bin/pyptv_gui -e python -w ./test_data/test_cavity
+```
+
+#### 3. Define Shell Aliases (Global Access)
+To run these shortcuts cleanly from any directory without manual paths, add alias entries to your shell profile (e.g., `~/.bashrc` or `~/.zshrc`):
+```bash
+# Add these lines to ~/.bashrc or ~/.zshrc
+alias pyptv_gui='/home/user/Documents/GitHub/openptv2/.venv/bin/pyptv_gui'
+alias pyptv_batch='/home/user/Documents/GitHub/openptv2/.venv/bin/pyptv_batch'
+```
+```bash
+# Reload shell profile
+source ~/.bashrc
+
+# Now launch cleanly from any folder
+pyptv_gui -e python -w ./test_data/test_cavity
+```
+
+---
+
+### Default Engine Auto-Detection
+
+When no tracking engine is explicitly passed via CLI arguments or API functions, the library dynamically detects which engine to use in the following order:
+
+1. **Environment Variable (`OPENPTV_ENGINE`)**:
+   * If `OPENPTV_ENGINE` is set to `"python"` (or `"algorithms"`), it defaults to the **pure Python/Numba** engine.
+   * If `OPENPTV_ENGINE` is set to `"optv"`, it defaults to the **C/Cython** engine.
+2. **Availability Check (Fallback)**:
+   * The library attempts to import the compiled Cython bindings (`import optv`). If successful, it defaults to the high-performance **`optv`** engine.
+   * If the C library/Cython bindings are not compiled (e.g., in Python-only developer mode), it automatically falls back to **`python`**.
+
+---
+
+### Short vs. Long Options
+
+Both styles are fully supported across all command-line scripts. Choose based on your context:
+
+* **Short Options (`-e`, `-w`, `-f`, `-l`)**: Best for manual terminal use, quick debugging, and live interactive typing.
+* **Long Options (`--engine`, `--workdir`, `--first`, `--last`)**: Best for automation scripts, documentation, and config files to maximize readability.
+
 
 ---
 

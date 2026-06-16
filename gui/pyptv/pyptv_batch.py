@@ -27,14 +27,7 @@ import sys
 import time
 from typing import Union
 
-from .ptv import (
-    py_start_proc_c,
-    py_trackcorr_init,
-    py_sequence_loop,
-    py_sequence_loop_python,
-    generate_short_file_bases,
-)
-from .experiment import Experiment
+
 
 
 class ProcessingError(Exception):
@@ -115,6 +108,7 @@ def run_batch(
         os.chdir(exp_path)
 
         # Create experiment and load YAML parameters
+        from .experiment import Experiment
         experiment = Experiment()
 
         # Load parameters from YAML file
@@ -122,6 +116,12 @@ def run_batch(
         experiment.pm.from_yaml(yaml_file)
 
         print(f"Initializing processing with num_cams = {experiment.pm.num_cams}")
+        from .ptv import (
+            py_start_proc_c,
+            py_trackcorr_init,
+            py_sequence_loop,
+            py_sequence_loop_python,
+        )
         cpar, spar, vpar, track_par, tpar, cals, epar = py_start_proc_c(experiment.pm)
 
         # Set sequence parameters
@@ -188,6 +188,8 @@ def run_batch(
         print("Batch processing completed successfully")
 
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         raise ProcessingError(f"Batch processing failed: {e}")
     finally:
         # Restore original working directory
@@ -263,11 +265,11 @@ def main(
         raise ProcessingError(f"Unexpected error: {e}")
 
 
-def parse_command_line_args() -> tuple[Path, int, int]:
+def parse_command_line_args() -> tuple[Path, int, int, str]:
     """Parse and validate command line arguments.
 
     Returns:
-        Tuple of (yaml_file_path, first_frame, last_frame)
+        Tuple of (yaml_file_path, first_frame, last_frame, mode)
 
     Raises:
         ValueError: If arguments are invalid
@@ -275,9 +277,33 @@ def parse_command_line_args() -> tuple[Path, int, int]:
     import argparse
 
     parser = argparse.ArgumentParser(description="PyPTV batch processing")
-    parser.add_argument("yaml_file", type=str, help="YAML parameter file")
+    parser.add_argument("yaml_file", type=str, nargs="?", help="YAML parameter file")
     parser.add_argument("first_frame", type=int, nargs="?", help="First frame number")
     parser.add_argument("last_frame", type=int, nargs="?", help="Last frame number")
+    parser.add_argument(
+        "--workdir",
+        "-w",
+        type=str,
+        help="YAML parameter file or experiment directory",
+    )
+    parser.add_argument(
+        "--first",
+        "-f",
+        type=int,
+        help="First frame number",
+    )
+    parser.add_argument(
+        "--last",
+        "-l",
+        type=int,
+        help="Last frame number",
+    )
+    parser.add_argument(
+        "--engine",
+        "-e",
+        choices=["optv", "python"],
+        help="Tracking engine to use: 'optv' or 'python'",
+    )
     parser.add_argument(
         "--mode",
         choices=["both", "sequence", "tracking"],
@@ -291,49 +317,69 @@ def parse_command_line_args() -> tuple[Path, int, int]:
     )
     args = parser.parse_args()
 
+    engine = args.engine
     if args.debug_mode:
+        engine = "python"
+
+    if engine:
+        os.environ["OPENPTV_ENGINE"] = engine
         try:
             from openptv2.engine import set_engine
 
-            set_engine("python")
-            print("DEBUG MODE: Using Python/Numba engine for tracking")
+            set_engine(engine)
         except ImportError as e:
-            print(f"Warning: Could not set Python engine: {e}")
+            print(f"Warning: Could not set tracking engine {engine}: {e}")
 
-    yaml_file = Path(args.yaml_file).resolve()
+    # Resolve and log the actual tracking engine being used (explicit or auto-detected)
+    from openptv2.engine import get_engine
+    print(f"Using tracking engine: {get_engine()}")
+
+    yaml_arg = args.workdir or args.yaml_file
+    if not yaml_arg:
+        parser.print_help()
+        raise ValueError(
+            "Please provide a YAML parameter file or experiment directory "
+            "via --workdir/-w or as a positional argument."
+        )
+
+    yaml_path = Path(yaml_arg).resolve()
+    if yaml_path.is_dir():
+        yaml_files = list(yaml_path.glob("*parameters_*.yaml"))
+        if not yaml_files:
+            yaml_files = list(yaml_path.glob("*.yaml")) + list(yaml_path.glob("*.yml"))
+
+        if not yaml_files:
+            raise ValueError(f"No YAML parameter files found in directory {yaml_path}")
+
+        yaml_file = sorted(set(yaml_files))[0]
+        print(f"Directory provided. Selected parameter file: {yaml_file}")
+    else:
+        yaml_file = yaml_path
+
     from .parameter_manager import ParameterManager
 
     pm = ParameterManager()
     pm.from_yaml(yaml_file)
 
-    if args.first_frame is not None:
-        first_frame = args.first_frame
-    else:
-        first_frame = pm.parameters.get("sequence").get("first")
+    first_frame = args.first if args.first is not None else args.first_frame
+    if first_frame is None:
+        seq = pm.parameters.get("sequence")
+        if seq:
+            first_frame = seq.get("first")
 
-    if args.last_frame is not None:
-        last_frame = args.last_frame
-    else:
-        last_frame = pm.parameters.get("sequence").get("last")
+    last_frame = args.last if args.last is not None else args.last_frame
+    if last_frame is None:
+        seq = pm.parameters.get("sequence")
+        if seq:
+            last_frame = seq.get("last")
 
     mode = args.mode
 
     return yaml_file, first_frame, last_frame, mode
 
 
-if __name__ == "__main__":
-    """Entry point for command line execution.
-    
-    Command line usage:
-        python pyptv_batch.py <yaml_file> <first_frame> <last_frame>
-        
-    Example:
-        python pyptv_batch.py tests/test_cavity/parameters_Run1.yaml 10000 10004
-    
-    Python API usage:
-        from .pyptv_batch import main
-        main("tests/test_cavity/parameters_Run1.yaml", 10000, 10004)
-    """
+def main_cli() -> None:
+    """Entry point for command line execution."""
     try:
         print("Starting batch processing")
         print(f"Command line arguments: {sys.argv}")
@@ -352,3 +398,19 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"Unexpected error: {e}")
         sys.exit(1)
+
+
+if __name__ == "__main__":
+    """Entry point for command line execution.
+    
+    Command line usage:
+        python pyptv_batch.py <yaml_file> <first_frame> <last_frame>
+        
+    Example:
+        python pyptv_batch.py tests/test_cavity/parameters_Run1.yaml 10000 10004
+    
+    Python API usage:
+        from .pyptv_batch import main
+        main("tests/test_cavity/parameters_Run1.yaml", 10000, 10004)
+    """
+    main_cli()

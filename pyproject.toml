@@ -100,9 +100,11 @@ docs = [
 
 [project.scripts]
 openptv2-gui = "gui.pyptv.pyptv_gui:main"
-openptv2-batch = "gui.pyptv.pyptv_batch:main"
+openptv2-batch = "gui.pyptv.pyptv_batch:main_cli"
 openptv2-validate = "openptv2.validate:main"
 pyptv = "gui.pyptv.pyptv_gui:main"
+pyptv_gui = "gui.pyptv.pyptv_gui:main"
+pyptv_batch = "gui.pyptv.pyptv_batch:main_cli"
 
 [tool.setuptools]
 packages = [

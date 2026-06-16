@@ -1933,17 +1933,36 @@ def main():
         action="store_true",
         help="Use Python/Numba engine for debugging instead of C/Cython (optv)",
     )
+    parser.add_argument(
+        "--engine",
+        "-e",
+        choices=["optv", "python"],
+        help="Tracking engine to use: 'optv' (C/Cython) or 'python' (Python/Numba)",
+    )
+    parser.add_argument(
+        "--workdir",
+        "-w",
+        help="YAML file or experiment directory",
+    )
     parser.add_argument("path", nargs="?", help="YAML file or experiment directory")
     args = parser.parse_args()
 
+    engine = args.engine
     if args.debug_mode:
+        engine = "python"
+
+    if engine:
+        os.environ["OPENPTV_ENGINE"] = engine
         try:
             from openptv2.engine import set_engine
 
-            set_engine("python")
-            print("DEBUG MODE: Using Python/Numba engine for tracking")
+            set_engine(engine)
         except ImportError as e:
-            print(f"Warning: Could not set Python engine: {e}")
+            print(f"Warning: Could not set tracking engine {engine}: {e}")
+
+    # Resolve and log the actual tracking engine being used (explicit or auto-detected)
+    from openptv2.engine import get_engine
+    print(f"Using tracking engine: {get_engine()}")
 
     software_path = Path.cwd().resolve()
     print(f"Running PyPTV from {software_path}")
@@ -1952,7 +1971,7 @@ def main():
     exp_path = None
     exp = None
 
-    path_arg = args.path
+    path_arg = args.workdir or args.path
     if path_arg is not None:
         arg_path = Path(path_arg).resolve()
         # first option - suppy YAML file path and this would be your experiment

@@ -65,11 +65,18 @@ class MatchedCoords:
         # Metric → flat (distortion correction)
         flat = distorted_to_flat(metric, self._cal, tol=self._tol)
 
-        # Store as Coord2d objects
+        # Store as Coord2d objects and sort by x coordinate (matching C's quicksort_coord2d_x)
         self._corrected = [
             Coord2d(x=flat[i, 0], y=flat[i, 1], pnr=pnrs[i])
             for i in range(num_targets)
         ]
+        self._corrected.sort(key=lambda c: c.x)
+
+    def __len__(self):
+        return len(self._corrected)
+
+    def __getitem__(self, index):
+        return self._corrected[index]
 
     def as_arrays(self):
         """

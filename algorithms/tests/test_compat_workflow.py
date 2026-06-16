@@ -66,7 +66,7 @@ class TestMatchedCoordsCompat:
         cpar.set_image_size((1280, 1024))
         cpar.set_pixel_size((0.012, 0.012))
 
-        mc = MatchedCoords(ta, cpar, cal)
+        mc = MatchedCoords(ta, cpar, cal, reset_numbers=False)
         pos, pnr = mc.as_arrays()
 
         assert pos.shape == (2, 2)
@@ -145,7 +145,7 @@ class TestCorrespondencesCompat:
         )
 
         # Should have no correspondences
-        assert sorted_pos.shape[0] == 0
+        assert all(arr.shape[1] == 0 for arr in sorted_pos)
         assert len(num_targs) == num_cams
 
 

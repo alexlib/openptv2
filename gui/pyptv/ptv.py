@@ -770,15 +770,13 @@ def py_sequence_loop_python(exp) -> None:
     Args:
         exp: Same ProcessingExperiment object as py_sequence_loop expects.
     """
-    from algorithms.segmentation import target_recognition as alg_target_recognition
-    from algorithms.correspondences import (
-        MatchedCoords as AlgMatchedCoords,
-        correspondences as alg_correspondences,
-    )
+    from algorithms.compat.segmentation import target_recognition as alg_target_recognition
+    from algorithms.compat.correspondences import MatchedCoords as AlgMatchedCoords
+    from algorithms.correspondences import correspondences as alg_correspondences
     from algorithms.orientation import point_positions as alg_point_positions
-    from algorithms.track import default_naming as alg_default_naming
+    from algorithms.compat.tracker import default_naming as alg_default_naming
     from algorithms.parameters import ControlPar, VolumePar, TargetPar, MultimediaPar
-    from algorithms.calibration import Calibration as AlgCalibration
+    from algorithms.compat.calibration import Calibration as AlgCalibration
     from algorithms.tracking_frame_buf import Frame, Target, read_targets
 
     # Handle both Experiment objects and MainGUI objects
@@ -821,6 +819,7 @@ def py_sequence_loop_python(exp) -> None:
         cpar_py.hp_flag = cpar.get_hp_flag()
     if hasattr(cpar, "get_allCam_flag"):
         cpar_py.all_cam_flag = cpar.get_allCam_flag()
+        cpar_py.allCam_flag = cpar.get_allCam_flag()
     if hasattr(cpar, "get_tiff_flag"):
         cpar_py.tiff_flag = cpar.get_tiff_flag()
     if hasattr(cpar, "get_chfield"):
@@ -844,17 +843,23 @@ def py_sequence_loop_python(exp) -> None:
     vpar_py = VolumePar()
     if hasattr(vpar, "get_X_lay"):
         try:
-            vpar_py.x_lay = list(vpar.get_X_lay())
+            val = list(vpar.get_X_lay())
+            vpar_py.x_lay = val
+            vpar_py.X_lay = np.array(val, dtype=np.float64)
         except Exception:
             pass
     if hasattr(vpar, "get_Zmin_lay"):
         try:
-            vpar_py.z_min_lay = list(vpar.get_Zmin_lay())
+            val = list(vpar.get_Zmin_lay())
+            vpar_py.z_min_lay = val
+            vpar_py.Zmin_lay = np.array(val, dtype=np.float64)
         except Exception:
             pass
     if hasattr(vpar, "get_Zmax_lay"):
         try:
-            vpar_py.z_max_lay = list(vpar.get_Zmax_lay())
+            val = list(vpar.get_Zmax_lay())
+            vpar_py.z_max_lay = val
+            vpar_py.Zmax_lay = np.array(val, dtype=np.float64)
         except Exception:
             pass
     for attr in ("cn", "cnx", "cny", "csumg", "eps0", "corrmin"):
@@ -967,7 +972,7 @@ def py_sequence_loop_python(exp) -> None:
                     except (ValueError, FileNotFoundError):
                         print("failed to read the mask")
                 high_pass = simple_highpass(img, cpar)
-                targs = alg_target_recognition(high_pass, tpar_py, i_cam, cpar_py)
+                targs = alg_target_recognition(high_pass, tpar, i_cam, cpar)
 
             if len(targs) > 0:
                 if hasattr(targs, "sort_y"):
@@ -976,38 +981,59 @@ def py_sequence_loop_python(exp) -> None:
                     targs.sort(key=lambda t: t.y)
 
             detections.append(targs)
-            matched_coords = AlgMatchedCoords(targs, cpar_py, cals_py[i_cam])
+            matched_coords = AlgMatchedCoords(targs, cpar, cals_py[i_cam])
             pos, _ = matched_coords.as_arrays()
             corrected.append(matched_coords)
 
         # Build a Frame for algorithms correspondences
-        frm = Frame(num_cams=num_cams)
+        frm = Frame(num_cams=num_cams, max_targets=10000)
         for i_cam in range(num_cams):
             n = len(detections[i_cam])
             frm.num_targets[i_cam] = n
             for tnum in range(n):
                 t = detections[i_cam][tnum]
-                frm.targets[i_cam][tnum].pnr = t.pnr if hasattr(t, "pnr") else tnum
+                t_native = t._target if hasattr(t, "_target") else t
+                frm.targets[i_cam][tnum].pnr = t_native.pnr
                 frm.targets[i_cam][tnum].tnr = -1
-                frm.targets[i_cam][tnum].x = t.x if hasattr(t, "x") else 0
-                frm.targets[i_cam][tnum].y = t.y if hasattr(t, "y") else 0
-                frm.targets[i_cam][tnum].n = t.n if hasattr(t, "n") else 0
-                frm.targets[i_cam][tnum].nx = t.nx if hasattr(t, "nx") else 0
-                frm.targets[i_cam][tnum].ny = t.ny if hasattr(t, "ny") else 0
-                frm.targets[i_cam][tnum].sumg = t.sumg if hasattr(t, "sumg") else 0
+                frm.targets[i_cam][tnum].x = t_native.x
+                frm.targets[i_cam][tnum].y = t_native.y
+                frm.targets[i_cam][tnum].n = t_native.n
+                frm.targets[i_cam][tnum].nx = t_native.nx
+                frm.targets[i_cam][tnum].ny = t_native.ny
+                frm.targets[i_cam][tnum].sumg = t_native.sumg
+                
+                # Update SoA
+                frm.targ_x[i_cam][tnum] = t_native.x
+                frm.targ_y[i_cam][tnum] = t_native.y
+                frm.targ_tnr[i_cam][tnum] = -1
 
         match_counts = [0] * 4  # [4-cam, 3-cam, 2-cam, total]
-        con = alg_correspondences(
-            frm, corrected, vpar_py, cpar_py, cals_py, match_counts
+        con, counts = alg_correspondences(
+            frm, [mc._corrected for mc in corrected], vpar_py, cpar_py, [c._cal for c in cals_py]
         )
-        # Convert n_tupel recarray to optv-style sorted_pos, sorted_corresp
+        match_counts[0] = counts[0]
+        match_counts[1] = counts[1]
+        match_counts[2] = counts[2]
+        match_counts[3] = counts[3]
         total = match_counts[3] if len(match_counts) > 3 else 0
         if total > 0:
             valid = con[:total]
             # Sort by correlation descending (highest quality first)
-            order = np.argsort(-valid.corr)
-            valid = valid[order]
-            corresp = np.array([list(row.p) for row in valid]).T  # (num_cams, N)
+            valid.sort(key=lambda x: x.corr, reverse=True)
+            
+            # Map the x-sorted indices row.p to original target indices (pnrs)
+            corresp_list = []
+            for row in valid:
+                mapped_p = []
+                for cam in range(num_cams):
+                    idx = row.p[cam]
+                    if idx >= 0:
+                        mapped_p.append(corrected[cam]._corrected[idx].pnr)
+                    else:
+                        mapped_p.append(-1)
+                corresp_list.append(mapped_p)
+            
+            corresp = np.array(corresp_list).T  # (num_cams, N)
             sorted_corresp = [corresp]
             sorted_pos = [np.zeros((3, corresp.shape[1]))]
         else:
@@ -1024,14 +1050,15 @@ def py_sequence_loop_python(exp) -> None:
                 with open(output_path, "w", encoding="utf8") as f:
                     f.write(f"{len(targs)}\n")
                     for t in targs:
-                        pnr = t.pnr if hasattr(t, "pnr") else 0
-                        x = t.x if hasattr(t, "x") else 0.0
-                        y = t.y if hasattr(t, "y") else 0.0
-                        n = t.n if hasattr(t, "n") else 0
-                        nx = t.nx if hasattr(t, "nx") else 0
-                        ny = t.ny if hasattr(t, "ny") else 0
-                        sumg = t.sumg if hasattr(t, "sumg") else 0
-                        tnr = t.tnr if hasattr(t, "tnr") else -1
+                        t_native = t._target if hasattr(t, "_target") else t
+                        pnr = t_native.pnr
+                        x = t_native.x
+                        y = t_native.y
+                        n = t_native.n
+                        nx = t_native.nx
+                        ny = t_native.ny
+                        sumg = t_native.sumg
+                        tnr = t_native.tnr
                         f.write(
                             f"{pnr:4d} {x:9.4f} {y:9.4f} {n:5d} {nx:5d} "
                             f"{ny:5d} {sumg:5d} {tnr:5d}\n"
@@ -1051,7 +1078,7 @@ def py_sequence_loop_python(exp) -> None:
                 ]
             )
             pos, _ = alg_point_positions(
-                flat.transpose(1, 0, 2), cpar_py.mm, cals_py, vpar_py
+                flat.transpose(1, 0, 2), cpar_py, [c._cal for c in cals_py], vpar_py
             )
         else:
             pos = np.zeros((0, 3))
