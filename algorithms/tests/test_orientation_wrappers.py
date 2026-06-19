@@ -284,6 +284,9 @@ class TestCythonParity:
 
     @pytest.fixture(autouse=True)
     def _require_optv(self):
+        import os
+        if os.environ.get("OPENPTV_ENGINE") == "python":
+            pytest.skip("optv parity tests are disabled when OPENPTV_ENGINE == 'python'")
         pytest.importorskip("optv")
 
     def _load_optv_cal(self, ori, add):

@@ -18,6 +18,12 @@ from collections import deque
 # Constant for no correspondence assigned
 CORRES_NONE = -1
 
+try:
+    from .track_kernels import targ_rec_jit as _targ_rec_jit
+    _HAS_NUMBA = True
+except ImportError:
+    _HAS_NUMBA = False
+
 
 
 
@@ -140,30 +146,54 @@ def targ_rec(
     xmax = min(xmax, imx - 1)
     ymax = min(ymax, imy - 1)
 
-    img0 = img.copy()
+    img_u8 = np.asarray(img, dtype=np.uint8)
+
+    if _HAS_NUMBA:
+        img0 = img_u8.copy()
+        max_targets = (xmax - xmin) * (ymax - ymin)
+        n_found, ox, oy, on, onx, ony, osumg = _targ_rec_jit(
+            img_u8, img0,
+            np.int64(gvthres), np.int64(discont),
+            np.int64(nnmin), np.int64(nnmax),
+            np.int64(nxmin), np.int64(nxmax),
+            np.int64(nymin), np.int64(nymax),
+            np.int64(sumg_min),
+            np.int32(xmin), np.int32(ymin),
+            np.int32(xmax), np.int32(ymax),
+            np.int64(max_targets),
+        )
+        if n_found == 0:
+            return [Target(pnr=0, x=1, y=1, n=1, nx=1, ny=1, sumg=1, tnr=CORRES_NONE)]
+        return [
+            Target(pnr=k, x=float(ox[k]), y=float(oy[k]),
+                   n=int(on[k]), nx=int(onx[k]), ny=int(ony[k]),
+                   sumg=int(osumg[k]), tnr=CORRES_NONE)
+            for k in range(n_found)
+        ]
+
+    img0 = img_u8.copy()
     targets = []
     waitlist = []
 
     for i in range(ymin, ymax):
         for j in range(xmin, xmax):
-            gv = int(img[i, j])
+            gv = int(img_u8[i, j])
             if gv <= gvthres:
                 continue
-            # 8-neighbor local maximum
+            # 8-neighbor local maximum (check original image)
             if not (
-                gv >= int(img[i, j - 1])
-                and gv >= int(img[i, j + 1])
-                and gv >= int(img[i - 1, j])
-                and gv >= int(img[i + 1, j])
-                and gv >= int(img[i - 1, j - 1])
-                and gv >= int(img[i + 1, j - 1])
-                and gv >= int(img[i - 1, j + 1])
-                and gv >= int(img[i + 1, j + 1])
+                gv >= int(img_u8[i, j - 1])
+                and gv >= int(img_u8[i, j + 1])
+                and gv >= int(img_u8[i - 1, j])
+                and gv >= int(img_u8[i + 1, j])
+                and gv >= int(img_u8[i - 1, j - 1])
+                and gv >= int(img_u8[i + 1, j - 1])
+                and gv >= int(img_u8[i - 1, j + 1])
+                and gv >= int(img_u8[i + 1, j + 1])
             ):
                 continue
-            
-            # Additional check: must be greater than threshold
-            # And confirm that this peak hasn't been masked by a previous search
+
+            # Skip if this pixel was already consumed by a previous BFS
             if img0[i, j] <= gvthres:
                 continue
 
@@ -172,33 +202,31 @@ def targ_rec(
             img0[i, j] = 0
             xa = xb = xn
             ya = yb = yn
-            
-            # Use float64 for intermediate centroid calculations
+
             x_weighted = float(xn) * (gv - gvthres)
             y_weighted = float(yn) * (gv - gvthres)
             numpix = 1
-            
+
             waitlist.clear()
             waitlist.append((j, i))
-            
+
             while waitlist:
                 wj, wi = waitlist.pop(0)
-                gvref = int(img[wi, wj])
-                
-                # Check 4-neighbors for connectivity (as in C targ_rec)
+                gvref = int(img_u8[wi, wj])
+
                 for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
                     xn4, yn4 = wj + dx, wi + dy
                     if not (xmin <= xn4 < xmax and ymin <= yn4 < ymax):
                         continue
-                        
+
                     gv4 = int(img0[yn4, xn4])
                     if (
                         gv4 > gvthres and
                         (gv4 <= gvref + discont) and
-                        (gvref + discont >= int(img[yn4-1, xn4])) and
-                        (gvref + discont >= int(img[yn4+1, xn4])) and
-                        (gvref + discont >= int(img[yn4, xn4-1])) and
-                        (gvref + discont >= int(img[yn4, xn4+1]))
+                        (gvref + discont >= int(img_u8[yn4 - 1, xn4])) and
+                        (gvref + discont >= int(img_u8[yn4 + 1, xn4])) and
+                        (gvref + discont >= int(img_u8[yn4, xn4 - 1])) and
+                        (gvref + discont >= int(img_u8[yn4, xn4 + 1]))
                     ):
                         sumg += gv4
                         img0[yn4, xn4] = 0
@@ -211,24 +239,21 @@ def targ_rec(
                         y_weighted += float(yn4) * (gv4 - gvthres)
                         numpix += 1
 
-            # Border check
             if xa == (xmin - 1) or ya == (ymin - 1) or xb == (xmax + 1) or yb == (ymax + 1):
                 continue
-            
+
             nx = xb - xa + 1
             ny = yb - ya + 1
-            
-            # Acceptance criteria
-            if (numpix >= nnmin and numpix <= nnmax and 
-                nx >= nxmin and nx <= nxmax and 
-                ny >= nymin and ny <= nymax and 
-                sumg > sumg_min):
-                
+
+            if (numpix >= nnmin and numpix <= nnmax and
+                    nx >= nxmin and nx <= nxmax and
+                    ny >= nymin and ny <= nymax and
+                    sumg > sumg_min):
+
                 sumg_adj = sumg - (numpix * gvthres)
-                # Avoid division by zero
                 xcent = x_weighted / float(sumg_adj) + 0.5
                 ycent = y_weighted / float(sumg_adj) + 0.5
-                
+
                 targets.append(Target(
                     pnr=len(targets),
                     x=xcent,
@@ -239,6 +264,7 @@ def targ_rec(
                     sumg=sumg,
                     tnr=CORRES_NONE
                 ))
+
     if not targets:
         targets.append(Target(pnr=0, x=1, y=1, n=1, nx=1, ny=1, sumg=1, tnr=CORRES_NONE))
     return targets

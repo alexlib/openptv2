@@ -96,6 +96,9 @@ docs = [
     "sphinx-autoapi>=3.0.0",
     "pydata-sphinx-theme>=0.16.0",
     "myst-parser>=5.0.0",
+    "mkdocs>=1.5.0",
+    "mkdocs-material>=9.4.0",
+    "pymdown-extensions>=10.0",
 ]
 
 [project.scripts]

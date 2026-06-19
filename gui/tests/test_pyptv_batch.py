@@ -64,6 +64,122 @@ def test_pyptv_batch(test_data_dir):
     )
 
 
+def test_pyptv_batch_full_tracking_links(test_data_dir):
+    """Test full batch processing from 10000 to 10004 and verify that a significant number of links are established."""
+    test_dir = test_data_dir
+    yaml_file = test_dir / "parameters_Run1.yaml"
+    if not yaml_file.exists():
+        pytest.skip(f"YAML parameter file {yaml_file} not found")
+
+    start_frame = 10000
+    end_frame = 10004
+
+    # Clear any existing results
+    res_dir = test_dir / "res"
+    if res_dir.exists():
+        import shutil
+        shutil.rmtree(res_dir)
+
+    # We run the batch processing CLI as a subprocess to capture the C-level printf outputs reliably,
+    # as C buffers may not flush or get redirected cleanly in the same Python process.
+    import subprocess
+    import tempfile
+    import re
+    import os
+
+    with tempfile.NamedTemporaryFile("w+", delete=False, suffix=".txt", dir=test_dir) as out_file:
+        out_path = out_file.name
+        cmd = [
+            sys.executable,
+            "-m",
+            "gui.pyptv.pyptv_batch",
+            yaml_file.name,
+            str(start_frame),
+            str(end_frame),
+        ]
+        try:
+            subprocess.run(
+                cmd, stdout=out_file, stderr=subprocess.STDOUT, check=True, cwd=test_dir
+            )
+        except subprocess.CalledProcessError as e:
+            out_file.flush()
+            with open(out_path, "r") as f:
+                print("\n--- Subprocess output ---")
+                print(f.read())
+            pytest.fail(f"Batch subprocess processing for full tracking failed: {str(e)}")
+
+    assert res_dir.exists(), "Results directory should be created"
+
+    # 1. Parse raw forward tracking links printed to stdout
+    # e.g., "step: 10000, curr: 998, next: 1043, links: 453, lost: 545, add: 0"
+    raw_step_links = {}
+    with open(out_path, "r") as f:
+        for line in f:
+            m = re.search(r"step:\s*(\d+),.*links:\s*(\d+)", line)
+            if m:
+                step = int(m.group(1))
+                links = int(m.group(2))
+                raw_step_links[step] = links
+
+    try:
+        os.unlink(out_path)
+    except Exception:
+        pass
+
+    # Expected raw forward tracking link counts printed by the engine:
+    expected_raw_links = {
+        10000: 453,
+        10001: 570,
+        10002: 504,
+        10003: 494,
+    }
+
+    # Verify stdout raw tracking links against reference values with a tight 5% tolerance
+    for step, expected in expected_raw_links.items():
+        actual = raw_step_links.get(step, 0)
+        tolerance = int(expected * 0.05)  # 5% tolerance
+        assert abs(actual - expected) <= tolerance, (
+            f"Raw forward tracking mismatch on step {step}: got {actual} links, expected ~{expected} (±{tolerance})"
+        )
+
+    # 2. Parse final post-processed link counts saved on disk in ptv_is.* files:
+    step_links = {}
+    for frame in range(start_frame, end_frame):
+        ptv_file = res_dir / f"ptv_is.{frame}"
+        assert ptv_file.exists(), f"Tracking linkage file {ptv_file} should exist"
+        content = ptv_file.read_text().strip().split("\n")
+        frame_links = 0
+        if len(content) > 1:
+            for line in content[1:]:
+                parts = line.split()
+                if len(parts) >= 2:
+                    # Index 1 is the next frame's particle index, >= 0 means linked
+                    next_idx = int(parts[1])
+                    if next_idx >= 0:
+                        frame_links += 1
+        step_links[frame] = frame_links
+
+    total_links = sum(step_links.values())
+    print(f"Stdout raw tracking links: {raw_step_links}")
+    print(f"Disk ptv_is tracking links per frame: {step_links} (Total: {total_links})")
+
+    # Expected final post-processed link counts after backward tracking/conflict pruning:
+    expected_disk_links = {
+        10000: 407,
+        10001: 497,
+        10002: 455,
+        10003: 436,
+    }
+
+    # Verify disk-persisted links against reference values with a tight 5% tolerance
+    for frame, expected in expected_disk_links.items():
+        actual = step_links.get(frame, 0)
+        tolerance = int(expected * 0.05)  # 5% tolerance
+        assert abs(actual - expected) <= tolerance, (
+            f"Disk-persisted tracking mismatch on frame {frame}: got {actual} links, expected ~{expected} (±{tolerance})"
+        )
+
+
 def test_pyptv_batch_with_repetitions(test_data_dir):
     """Test batch processing with multiple repetitions"""
     test_dir = test_data_dir
