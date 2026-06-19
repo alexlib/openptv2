@@ -61,6 +61,13 @@ DEFAULT_NO_FILTER = 0
 SHORT_BASE = "cam"  # Use this as the short base for camera file naming
 
 
+def _safe_decode(val) -> str:
+    """Safely decode bytes to string or return the string directly."""
+    if isinstance(val, bytes):
+        return val.decode("utf-8")
+    return str(val)
+
+
 def _extract_frame_num(img_name: str) -> int:
     """Extract frame number from image filename if possible, else return DEFAULT_FRAME_NUM."""
     if not img_name:
@@ -520,7 +527,7 @@ def py_determination_proc_c(
         print_corresp = concatenated_corresp
 
     output_path = _prepare_output_path(
-        f"{default_naming['corres'].decode()}.{frame}"
+        f"{_safe_decode(default_naming['corres'])}.{frame}"
     )
 
     print(f"Prepared {output_path} to write positions")
@@ -706,7 +713,7 @@ def py_sequence_loop(exp) -> None:
             print_corresp = sorted_corresp
 
         output_path = _prepare_output_path(
-            f"{default_naming['corres'].decode()}.{frame}"
+            f"{_safe_decode(default_naming['corres'])}.{frame}"
         )
         try:
             with open(output_path, "w", encoding="utf8") as rt_is:

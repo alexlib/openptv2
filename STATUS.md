@@ -90,9 +90,8 @@ Created `algorithms/compat/` package with optv-compatible API wrappers:
   - Each checks engine and imports from optv.* or algorithms.compat.*
 - ✅ Updated `openptv2/__init__.py` to re-export all public symbols
 - ✅ Tested: Both engines work, imports succeed, engine switching via env var
-### Phase 6: GUI Migration & Tkinter Modernization ✅ Complete
-- ✅ Reimplemented the full GUI stack from legacy Enthought TraitsUI/Chaco to **Tkinter/ttkbootstrap/Matplotlib**.
-- ✅ Completely removed all `traits`, `traitsui`, and `chaco` dependencies from `pyproject.toml` and GUI codebase.
+### Phase 6: GUI Alignment & Decoupling ✅ Complete
+- ✅ Integrated the TraitsUI/Chaco-based GUI with the `openptv2` dispatcher layer.
 - ✅ Replaced all `from optv.*` imports with `from openptv2.*` in GUI files:
   - gui/pyptv/ptv.py, parameter_gui.py, detection_gui.py, calibration_gui.py, code_editor.py
   - gui/pyptv/standalone_calibration.py, standalone_dumbbell_calibration.py
@@ -149,7 +148,8 @@ python -m gui.pyptv.pyptv_gui
 5. **Zero overhead:** Wrappers are thin, no performance penalty.
 
 ## 🚀 Next Immediate Steps
-1. ✅ **Tkinter/ttkbootstrap Migration**: Fully migrated the legacy Enthought TraitsUI GUI to a modern Tkinter stack, successfully removing all TraitsUI dependencies.
+1. ✅ **GUI Maintenance & Alignment**: Verified and stabilized the Enthought TraitsUI/Chaco GUI stack to work seamlessly with the new pure Python engine.
 2. ✅ **Consolidate Parameter Management & YAML transition**: Completed integration of `ParameterManager` into `gui/pyptv` code and standardized exclusively on YAML files.
 3. ✅ **Resolve Bug Regressions & Parity**: Fixed standalone dumbbell calibration import bugs and overhauled `correspondences.py` with robust duck-typing to handle both Python and Cython read-only target APIs seamlessly.
-4. **Binary Wheels & Installers**: Setup `cibuildwheel` configurations for multi-platform compilation of Cython engine wheels, followed by one-click installers via PyInstaller.
+4. ✅ **Binary Wheels**: Setup `cibuildwheel` configurations for multi-platform compilation of Cython engine wheels.
+5. **Installers & Fallbacks**: Setup one-click installers via PyInstaller, and verify dual-engine fallback functionality.

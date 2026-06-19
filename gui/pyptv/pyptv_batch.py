@@ -265,7 +265,7 @@ def main(
         raise ProcessingError(f"Unexpected error: {e}")
 
 
-def parse_command_line_args() -> tuple[Path, int, int, str]:
+def parse_command_line_args(args_list=None) -> tuple[Path, int, int, str]:
     """Parse and validate command line arguments.
 
     Returns:
@@ -315,7 +315,7 @@ def parse_command_line_args() -> tuple[Path, int, int, str]:
         action="store_true",
         help="Use Python/Numba engine for debugging instead of C/Cython (optv)",
     )
-    args = parser.parse_args()
+    args = parser.parse_args(args_list)
 
     engine = args.engine
     if args.debug_mode:

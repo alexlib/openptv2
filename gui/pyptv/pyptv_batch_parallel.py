@@ -320,7 +320,8 @@ def main(
             logger.info(f"Frame chunks: {ranges}")
             successful_chunks = 0
             failed_chunks = 0
-            with ProcessPoolExecutor(max_workers=n_processes) as executor:
+            ctx = multiprocessing.get_context("spawn")
+            with ProcessPoolExecutor(max_workers=n_processes, mp_context=ctx) as executor:
                 future_to_range = {
                     executor.submit(
                         run_sequence_chunk, yaml_file, chunk_first, chunk_last

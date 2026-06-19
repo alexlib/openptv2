@@ -102,6 +102,7 @@ docs = [
 ]
 
 [project.scripts]
+openptv = "openptv2.cli:main"
 openptv2-gui = "gui.pyptv.pyptv_gui:main"
 openptv2-batch = "gui.pyptv.pyptv_batch:main_cli"
 openptv2-validate = "openptv2.validate:main"

@@ -96,10 +96,45 @@ if _needs_rebuild():
 # Extension building
 # ---------------------------------------------------------------------------
 def get_liboptv_sources():
-    """Get all C source files from lib/src/."""
+    """Get all C source files from lib/src/ in dependency-safe order."""
     if os.environ.get("OPENPTV_PYTHON_ONLY"):
         return []
-    return [str(f.relative_to(ROOT)) for f in sorted(LIB_SRC.glob("*.c"))]
+    
+    # Safe topological dependency order for symbol resolution (high-level first, low-level last)
+    safe_order = [
+        "tracking_run.c",
+        "track3d.c",
+        "track.c",
+        "segmentation.c",
+        "correspondences.c",
+        "epi.c",
+        "imgcoord.c",
+        "image_processing.c",
+        "sortgrid.c",
+        "parameters.c",
+        "orientation.c",
+        "calibration.c",
+        "tracking_frame_buf.c",
+        "multimed.c",
+        "ray_tracing.c",
+        "lsqadj.c",
+        "trafo.c",
+        "vec_utils.c"
+    ]
+    
+    sources = []
+    for name in safe_order:
+        p = LIB_SRC / name
+        if p.exists():
+            sources.append(str(p.relative_to(ROOT)))
+            
+    # Fallback for any other/new .c files
+    seen = {Path(s).name for s in sources}
+    for f in sorted(LIB_SRC.glob("*.c")):
+        if f.name not in seen:
+            sources.append(str(f.relative_to(ROOT)))
+            
+    return sources
 
 
 def mk_ext(name, cython_c_file):
