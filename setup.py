@@ -178,11 +178,11 @@ class BuildExtWithPrepare(build_ext):
         # Windows, which causes fatal C1083 permission errors in cibuildwheel.
         if sys.platform.startswith("win"):
             self.parallel = None
-            return
-        # Enable parallel C compilation to speed up builds on multi-core CPUs
-        if not self.parallel:
-            self.parallel = os.cpu_count() or 1
-            print(f"[OpenPTV2] Parallel compilation enabled: compiling with {self.parallel} jobs.")
+        else:
+            # Enable parallel C compilation to speed up builds on multi-core CPUs
+            if not self.parallel:
+                self.parallel = os.cpu_count() or 1
+                print(f"[OpenPTV2] Parallel compilation enabled: compiling with {self.parallel} jobs.")
 
     def run(self):
         if _needs_rebuild():
