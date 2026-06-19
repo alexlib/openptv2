@@ -96,13 +96,18 @@ docs = [
     "sphinx-autoapi>=3.0.0",
     "pydata-sphinx-theme>=0.16.0",
     "myst-parser>=5.0.0",
+    "mkdocs>=1.5.0",
+    "mkdocs-material>=9.4.0",
+    "pymdown-extensions>=10.0",
 ]
 
 [project.scripts]
 openptv2-gui = "gui.pyptv.pyptv_gui:main"
-openptv2-batch = "gui.pyptv.pyptv_batch:main"
+openptv2-batch = "gui.pyptv.pyptv_batch:main_cli"
 openptv2-validate = "openptv2.validate:main"
 pyptv = "gui.pyptv.pyptv_gui:main"
+pyptv_gui = "gui.pyptv.pyptv_gui:main"
+pyptv_batch = "gui.pyptv.pyptv_batch:main_cli"
 
 [tool.setuptools]
 packages = [

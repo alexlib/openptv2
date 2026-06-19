@@ -204,6 +204,7 @@ def _correct_targets(targets, cpar, cal):
 def cavity_setup(tmp_path):
     """Load cavity parameters and calibrations."""
     import shutil
+    import os
 
     if not YAML_PATH.exists():
         pytest.skip("Cavity test data not available")
@@ -226,11 +227,15 @@ def cavity_setup(tmp_path):
         if f.is_file():
             f.unlink()
 
-    return {
-        "params": params, "cpar": cpar, "vpar": vpar, "tpar": tpar,
-        "track_par": track_par, "spar": spar, "cals": cals,
-        "work_dir": work, "num_cams": params.get("num_cams", 4),
-    }
+    original = os.getcwd()
+    try:
+        yield {
+            "params": params, "cpar": cpar, "vpar": vpar, "tpar": tpar,
+            "track_par": track_par, "spar": spar, "cals": cals,
+            "work_dir": work, "num_cams": params.get("num_cams", 4),
+        }
+    finally:
+        os.chdir(original)
 
 
 def test_full_pipeline_diagnostic(cavity_setup, monkeypatch):

@@ -53,6 +53,15 @@ class TestTracker(unittest.TestCase):
 
         self.tracker = Tracker(cpar, vpar, tpar, spar, cals, framebuf_naming)
 
+    def copy_data_dirs(self):
+        for dst, src in [
+            ("test_data/burgers/res/", "test_data/burgers/res_orig/"),
+            ("test_data/burgers/img/", "test_data/burgers/img_orig/"),
+        ]:
+            if os.path.exists(dst):
+                shutil.rmtree(dst)
+            shutil.copytree(src, dst)
+
     def test_forward(self):
         """Manually running a full forward tracking run."""
         # path = 'test_data/burgers/res'
@@ -63,14 +72,7 @@ class TestTracker(unittest.TestCase):
         # else:
         #     print("Successfully created the directory %s " % path)
 
-        shutil.copytree(
-            "test_data/burgers/res_orig/",
-            "test_data/burgers/res/",
-        )
-        shutil.copytree(
-            "test_data/burgers/img_orig/",
-            "test_data/burgers/img/",
-        )
+        self.copy_data_dirs()
 
         self.tracker.restart()
         last_step = 10001
@@ -97,14 +99,7 @@ class TestTracker(unittest.TestCase):
         # else:
         #     print("Successfully created the directory %s " % path)
 
-        shutil.copytree(
-            "test_data/burgers/res_orig/",
-            "test_data/burgers/res/",
-        )
-        shutil.copytree(
-            "test_data/burgers/img_orig/",
-            "test_data/burgers/img/",
-        )
+        self.copy_data_dirs()
 
         self.tracker.restart()
         last_step = 10001
@@ -124,14 +119,7 @@ class TestTracker(unittest.TestCase):
     def test_full_forward(self):
         """Automatic full forward tracking run."""
         # os.mkdir('test_data/burgers/res')
-        shutil.copytree(
-            "test_data/burgers/res_orig/",
-            "test_data/burgers/res/",
-        )
-        shutil.copytree(
-            "test_data/burgers/img_orig/",
-            "test_data/burgers/img/",
-        )
+        self.copy_data_dirs()
         self.tracker.full_forward()
         # if it passes without error, we assume it's ok. The actual test is in
         # the C code.
@@ -139,28 +127,14 @@ class TestTracker(unittest.TestCase):
     def test_full_forward_3d(self):
         """Automatic full forward tracking run."""
         # os.mkdir('test_data/burgers/res')
-        shutil.copytree(
-            "test_data/burgers/res_orig/",
-            "test_data/burgers/res/",
-        )
-        shutil.copytree(
-            "test_data/burgers/img_orig/",
-            "test_data/burgers/img/",
-        )
+        self.copy_data_dirs()
         self.tracker.full_forward_3d()
         # if it passes without error, we assume it's ok. The actual test is in
         # the C code.
 
     def test_full_backward(self):
         """Automatic full backward correction phase."""
-        shutil.copytree(
-            "test_data/burgers/res_orig/",
-            "test_data/burgers/res/",
-        )
-        shutil.copytree(
-            "test_data/burgers/img_orig/",
-            "test_data/burgers/img/",
-        )
+        self.copy_data_dirs()
         self.tracker.full_forward()
         self.tracker.full_backward()
         # if it passes without error, we assume it's ok. The actual test is in

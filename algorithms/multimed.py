@@ -15,6 +15,12 @@ from .vec_utils import (
     vec_set, vec_norm, vec_dot, vec_scalar_mul, vec_add, vec_subt, unit_vector
 )
 
+try:
+    from .track_kernels import init_mmlut_data_jit as _init_mmlut_data_jit
+    _HAS_NUMBA = True
+except ImportError:
+    _HAS_NUMBA = False
+
 
 def multimed_nlay(
     pos_x: float,
@@ -496,19 +502,26 @@ def init_mmlut(vpar, cpar, cal):
     cal.mmlut.rw = int(rw)
 
     if cal.mmlut.data is None:
-        Ri = np.arange(nr) * rw
-        Zi = Zmin_t + np.arange(nz) * rw
-
-        data = np.zeros(nr * nz, dtype=np.float64)
-        for i in range(nr):
-            for j in range(nz):
-                xyz = np.array([Ri[i] + cal_t_x0, cal_t_y0, Zi[j]], dtype=np.float64)
-                data[i * nz + j] = multimed_r_nlay_iterative(
-                    xyz[0], xyz[1], xyz[2],
-                    cal_t_x0, cal_t_y0, cal_t_z0,
-                    cpar.mm.n1, cpar.mm.n2[0], cpar.mm.n3, cpar.mm.d[0],
-                    cpar.mm.nlay,
-                )
+        if _HAS_NUMBA and cpar.mm.nlay == 1:
+            data = _init_mmlut_data_jit(
+                nr, nz, rw,
+                cal_t_x0, cal_t_y0, cal_t_z0,
+                Zmin_t,
+                cpar.mm.n1, cpar.mm.n2[0], cpar.mm.n3, cpar.mm.d[0],
+            )
+        else:
+            Ri = np.arange(nr) * rw
+            Zi = Zmin_t + np.arange(nz) * rw
+            data = np.zeros(nr * nz, dtype=np.float64)
+            for i in range(nr):
+                for j in range(nz):
+                    xyz = np.array([Ri[i] + cal_t_x0, cal_t_y0, Zi[j]], dtype=np.float64)
+                    data[i * nz + j] = multimed_r_nlay_iterative(
+                        xyz[0], xyz[1], xyz[2],
+                        cal_t_x0, cal_t_y0, cal_t_z0,
+                        cpar.mm.n1, cpar.mm.n2[0], cpar.mm.n3, cpar.mm.d[0],
+                        cpar.mm.nlay,
+                    )
 
         cal.mmlut.data = data
 

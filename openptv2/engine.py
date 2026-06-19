@@ -98,11 +98,12 @@ def set_engine(engine: EngineType) -> None:
     if engine not in ("optv", "python"):
         raise ValueError(f"Unknown engine: {engine}. Use 'optv' or 'python'.")
 
-    if _engine_initialized:
+    if _engine_initialized and _default_engine != engine:
         import warnings
         warnings.warn(
-            "Engine already initialized. set_engine() must be called before "
-            "importing openptv2 modules. Setting environment variable instead.",
+            f"Engine already initialized to '{_default_engine}'. Changing to '{engine}' "
+            "after importing openptv2 modules may have no effect on already loaded modules. "
+            "Setting environment variable instead.",
             RuntimeWarning
         )
 

@@ -53,9 +53,16 @@ class TestTracker(unittest.TestCase):
             self.cpar, self.vpar, self.tpar, self.spar, self.cals, framebuf_naming
         )
 
+    def copy_data_dirs(self):
+        dst = "test_data/track/res/"
+        src = "test_data/track/res_orig/"
+        if os.path.exists(dst):
+            shutil.rmtree(dst)
+        shutil.copytree(src, dst)
+
     def test_forward(self):
         """Manually running a full forward tracking run."""
-        shutil.copytree("test_data/track/res_orig/", "test_data/track/res/")
+        self.copy_data_dirs()
 
         self.tracker.restart()
         last_step = 10001
@@ -75,7 +82,7 @@ class TestTracker(unittest.TestCase):
 
     def test_forward_3d(self):
         """Manually running a full forward tracking run."""
-        shutil.copytree("test_data/track/res_orig/", "test_data/track/res/")
+        self.copy_data_dirs()
 
         self.tracker.restart()
         last_step = 10001
@@ -95,14 +102,14 @@ class TestTracker(unittest.TestCase):
 
     def test_full_forward(self):
         """Automatic full forward tracking run."""
-        shutil.copytree("test_data/track/res_orig/", "test_data/track/res/")
+        self.copy_data_dirs()
         self.tracker.full_forward()
         # if it passes without error, we assume it's ok. The actual test is in
         # the C code.
 
     def test_full_forward_3d(self):
         """Automatic full forward tracking run."""
-        shutil.copytree("test_data/track/res_orig/", "test_data/track/res/")
+        self.copy_data_dirs()
         self.tracker.full_forward_3d()
         # if it passes without error, we assume it's ok. The actual test is in
         # the C code.
@@ -111,7 +118,7 @@ class TestTracker(unittest.TestCase):
         """Verify track3d output matches reference res_orig/ files."""
         import numpy as np
 
-        shutil.copytree("test_data/track/res_orig/", "test_data/track/res/")
+        self.copy_data_dirs()
         self.tracker.full_forward_3d()
 
         for step in range(10001, 10005):
@@ -151,7 +158,7 @@ class TestTracker(unittest.TestCase):
 
     def test_forward_3d_step_by_step_output(self):
         """Verify step_forward_3d produces correct per-step output."""
-        shutil.copytree("test_data/track/res_orig/", "test_data/track/res/")
+        self.copy_data_dirs()
 
         self.tracker.restart()
         last_step = 10001
@@ -170,7 +177,7 @@ class TestTracker(unittest.TestCase):
 
     def test_full_backward(self):
         """Automatic full backward correction phase."""
-        shutil.copytree("test_data/track/res_orig/", "test_data/track/res/")
+        self.copy_data_dirs()
         self.tracker.full_forward()
         self.tracker.full_backward()
         # if it passes without error, we assume it's ok. The actual test is in

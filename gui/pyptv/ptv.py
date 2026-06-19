@@ -61,6 +61,32 @@ DEFAULT_NO_FILTER = 0
 SHORT_BASE = "cam"  # Use this as the short base for camera file naming
 
 
+def _extract_frame_num(img_name: str) -> int:
+    """Extract frame number from image filename if possible, else return DEFAULT_FRAME_NUM."""
+    if not img_name:
+        return DEFAULT_FRAME_NUM
+
+    # Try parsing suffix as an integer, e.g. "img/cam1.10002" -> 10002
+    suffix = Path(img_name).suffix
+    if suffix and suffix.startswith("."):
+        try:
+            return int(suffix[1:])
+        except ValueError:
+            pass
+
+    # Try finding digits in the stem, e.g. "00000001" or "cam1_10002"
+    stem = Path(img_name).stem
+    digits = re.findall(r"\d+", stem)
+    if digits:
+        try:
+            return int(digits[-1])
+        except ValueError:
+            pass
+
+    return DEFAULT_FRAME_NUM
+
+
+
 def _prepare_output_path(filename: str) -> Path:
     """Return a writable output path, creating parent directories when needed."""
     output_path = Path(filename)
@@ -434,7 +460,18 @@ def py_detection_proc_c(
 
 def py_correspondences_proc_c(exp):
     """Provides correspondences"""
-    frame = 123456789
+    frame = DEFAULT_FRAME_NUM
+    if hasattr(exp, "exp1") and hasattr(exp.exp1, "pm"):
+        pm = exp.exp1.pm
+    elif hasattr(exp, "pm"):
+        pm = exp.pm
+    else:
+        pm = None
+
+    if pm is not None:
+        ptv_params = pm.get_parameter("ptv")
+        if isinstance(ptv_params, dict) and "img_name" in ptv_params and ptv_params["img_name"]:
+            frame = _extract_frame_num(ptv_params["img_name"][0])
 
     sorted_pos, sorted_corresp, num_targs = correspondences(
         exp.detections, exp.corrected, exp.cals, exp.vpar, exp.cpar
@@ -461,6 +498,7 @@ def py_determination_proc_c(
     cpar: ControlParams,
     vpar: VolumeParams,
     cals: List[Calibration],
+    frame: int = DEFAULT_FRAME_NUM,
 ) -> None:
     """Calculate 3D positions from 2D correspondences and save to file."""
     concatenated_pos = np.concatenate(sorted_pos, axis=1)
@@ -482,7 +520,7 @@ def py_determination_proc_c(
         print_corresp = concatenated_corresp
 
     output_path = _prepare_output_path(
-        f"{default_naming['corres'].decode()}.{DEFAULT_FRAME_NUM}"
+        f"{default_naming['corres'].decode()}.{frame}"
     )
 
     print(f"Prepared {output_path} to write positions")
@@ -689,15 +727,13 @@ def py_sequence_loop_python(exp) -> None:
     Args:
         exp: Same ProcessingExperiment object as py_sequence_loop expects.
     """
-    from algorithms.segmentation import target_recognition as alg_target_recognition
-    from algorithms.correspondences import (
-        MatchedCoords as AlgMatchedCoords,
-        correspondences as alg_correspondences,
-    )
+    from algorithms.compat.segmentation import target_recognition as alg_target_recognition
+    from algorithms.compat.correspondences import MatchedCoords as AlgMatchedCoords
+    from algorithms.correspondences import correspondences as alg_correspondences
     from algorithms.orientation import point_positions as alg_point_positions
-    from algorithms.track import default_naming as alg_default_naming
+    from algorithms.compat.tracker import default_naming as alg_default_naming
     from algorithms.parameters import ControlPar, VolumePar, TargetPar, MultimediaPar
-    from algorithms.calibration import Calibration as AlgCalibration
+    from algorithms.compat.calibration import Calibration as AlgCalibration
     from algorithms.tracking_frame_buf import Frame, Target, read_targets
 
     # Handle both Experiment objects and MainGUI objects
@@ -740,6 +776,7 @@ def py_sequence_loop_python(exp) -> None:
         cpar_py.hp_flag = cpar.get_hp_flag()
     if hasattr(cpar, "get_allCam_flag"):
         cpar_py.all_cam_flag = cpar.get_allCam_flag()
+        cpar_py.allCam_flag = cpar.get_allCam_flag()
     if hasattr(cpar, "get_tiff_flag"):
         cpar_py.tiff_flag = cpar.get_tiff_flag()
     if hasattr(cpar, "get_chfield"):
@@ -763,17 +800,23 @@ def py_sequence_loop_python(exp) -> None:
     vpar_py = VolumePar()
     if hasattr(vpar, "get_X_lay"):
         try:
-            vpar_py.x_lay = list(vpar.get_X_lay())
+            val = list(vpar.get_X_lay())
+            vpar_py.x_lay = val
+            vpar_py.X_lay = np.array(val, dtype=np.float64)
         except Exception:
             pass
     if hasattr(vpar, "get_Zmin_lay"):
         try:
-            vpar_py.z_min_lay = list(vpar.get_Zmin_lay())
+            val = list(vpar.get_Zmin_lay())
+            vpar_py.z_min_lay = val
+            vpar_py.Zmin_lay = np.array(val, dtype=np.float64)
         except Exception:
             pass
     if hasattr(vpar, "get_Zmax_lay"):
         try:
-            vpar_py.z_max_lay = list(vpar.get_Zmax_lay())
+            val = list(vpar.get_Zmax_lay())
+            vpar_py.z_max_lay = val
+            vpar_py.Zmax_lay = np.array(val, dtype=np.float64)
         except Exception:
             pass
     for attr in ("cn", "cnx", "cny", "csumg", "eps0", "corrmin"):
@@ -886,7 +929,7 @@ def py_sequence_loop_python(exp) -> None:
                     except (ValueError, FileNotFoundError):
                         print("failed to read the mask")
                 high_pass = simple_highpass(img, cpar)
-                targs = alg_target_recognition(high_pass, tpar_py, i_cam, cpar_py)
+                targs = alg_target_recognition(high_pass, tpar, i_cam, cpar)
 
             if len(targs) > 0:
                 if hasattr(targs, "sort_y"):
@@ -895,38 +938,59 @@ def py_sequence_loop_python(exp) -> None:
                     targs.sort(key=lambda t: t.y)
 
             detections.append(targs)
-            matched_coords = AlgMatchedCoords(targs, cpar_py, cals_py[i_cam])
+            matched_coords = AlgMatchedCoords(targs, cpar, cals_py[i_cam])
             pos, _ = matched_coords.as_arrays()
             corrected.append(matched_coords)
 
         # Build a Frame for algorithms correspondences
-        frm = Frame(num_cams=num_cams)
+        frm = Frame(num_cams=num_cams, max_targets=10000)
         for i_cam in range(num_cams):
             n = len(detections[i_cam])
             frm.num_targets[i_cam] = n
             for tnum in range(n):
                 t = detections[i_cam][tnum]
-                frm.targets[i_cam][tnum].pnr = t.pnr if hasattr(t, "pnr") else tnum
+                t_native = t._target if hasattr(t, "_target") else t
+                frm.targets[i_cam][tnum].pnr = t_native.pnr
                 frm.targets[i_cam][tnum].tnr = -1
-                frm.targets[i_cam][tnum].x = t.x if hasattr(t, "x") else 0
-                frm.targets[i_cam][tnum].y = t.y if hasattr(t, "y") else 0
-                frm.targets[i_cam][tnum].n = t.n if hasattr(t, "n") else 0
-                frm.targets[i_cam][tnum].nx = t.nx if hasattr(t, "nx") else 0
-                frm.targets[i_cam][tnum].ny = t.ny if hasattr(t, "ny") else 0
-                frm.targets[i_cam][tnum].sumg = t.sumg if hasattr(t, "sumg") else 0
+                frm.targets[i_cam][tnum].x = t_native.x
+                frm.targets[i_cam][tnum].y = t_native.y
+                frm.targets[i_cam][tnum].n = t_native.n
+                frm.targets[i_cam][tnum].nx = t_native.nx
+                frm.targets[i_cam][tnum].ny = t_native.ny
+                frm.targets[i_cam][tnum].sumg = t_native.sumg
+                
+                # Update SoA
+                frm.targ_x[i_cam][tnum] = t_native.x
+                frm.targ_y[i_cam][tnum] = t_native.y
+                frm.targ_tnr[i_cam][tnum] = -1
 
         match_counts = [0] * 4  # [4-cam, 3-cam, 2-cam, total]
-        con = alg_correspondences(
-            frm, corrected, vpar_py, cpar_py, cals_py, match_counts
+        con, counts = alg_correspondences(
+            frm, [mc._corrected for mc in corrected], vpar_py, cpar_py, [c._cal for c in cals_py]
         )
-        # Convert n_tupel recarray to optv-style sorted_pos, sorted_corresp
+        match_counts[0] = counts[0]
+        match_counts[1] = counts[1]
+        match_counts[2] = counts[2]
+        match_counts[3] = counts[3]
         total = match_counts[3] if len(match_counts) > 3 else 0
         if total > 0:
             valid = con[:total]
             # Sort by correlation descending (highest quality first)
-            order = np.argsort(-valid.corr)
-            valid = valid[order]
-            corresp = np.array([list(row.p) for row in valid]).T  # (num_cams, N)
+            valid.sort(key=lambda x: x.corr, reverse=True)
+            
+            # Map the x-sorted indices row.p to original target indices (pnrs)
+            corresp_list = []
+            for row in valid:
+                mapped_p = []
+                for cam in range(num_cams):
+                    idx = row.p[cam]
+                    if idx >= 0:
+                        mapped_p.append(corrected[cam]._corrected[idx].pnr)
+                    else:
+                        mapped_p.append(-1)
+                corresp_list.append(mapped_p)
+            
+            corresp = np.array(corresp_list).T  # (num_cams, N)
             sorted_corresp = [corresp]
             sorted_pos = [np.zeros((3, corresp.shape[1]))]
         else:
@@ -943,14 +1007,15 @@ def py_sequence_loop_python(exp) -> None:
                 with open(output_path, "w", encoding="utf8") as f:
                     f.write(f"{len(targs)}\n")
                     for t in targs:
-                        pnr = t.pnr if hasattr(t, "pnr") else 0
-                        x = t.x if hasattr(t, "x") else 0.0
-                        y = t.y if hasattr(t, "y") else 0.0
-                        n = t.n if hasattr(t, "n") else 0
-                        nx = t.nx if hasattr(t, "nx") else 0
-                        ny = t.ny if hasattr(t, "ny") else 0
-                        sumg = t.sumg if hasattr(t, "sumg") else 0
-                        tnr = t.tnr if hasattr(t, "tnr") else -1
+                        t_native = t._target if hasattr(t, "_target") else t
+                        pnr = t_native.pnr
+                        x = t_native.x
+                        y = t_native.y
+                        n = t_native.n
+                        nx = t_native.nx
+                        ny = t_native.ny
+                        sumg = t_native.sumg
+                        tnr = t_native.tnr
                         f.write(
                             f"{pnr:4d} {x:9.4f} {y:9.4f} {n:5d} {nx:5d} "
                             f"{ny:5d} {sumg:5d} {tnr:5d}\n"
@@ -970,7 +1035,7 @@ def py_sequence_loop_python(exp) -> None:
                 ]
             )
             pos, _ = alg_point_positions(
-                flat.transpose(1, 0, 2), cpar_py.mm, cals_py, vpar_py
+                flat.transpose(1, 0, 2), cpar_py, [c._cal for c in cals_py], vpar_py
             )
         else:
             pos = np.zeros((0, 3))
@@ -1050,182 +1115,10 @@ def py_trackcorr_init(exp):
     from openptv2.engine import get_engine
 
     engine = get_engine()
+    print(f"[ENGINE] Using {engine} engine for Tracker")
 
-    if engine == "python":
-        from algorithms.track import Tracker as PythonTracker
-        from algorithms.parameters_adapter import (
-            ControlParams,
-            VolumeParams,
-            SequenceParams,
-        )
-        from algorithms.parameters import TrackPar
-
-        # Convert optv parameters to Python adapter format
-        cpar_py = ControlParams(cpar.get_num_cams())
-        cpar_py._impl = cpar
-
-        # Copy required attributes from optv object to adapter
-        if hasattr(cpar, "get_num_cams"):
-            cpar_py._num_cams = cpar.get_num_cams()
-        if hasattr(cpar, "imx"):
-            cpar_py._imx = cpar.imx
-        if hasattr(cpar, "imy"):
-            cpar_py._imy = cpar.imy
-        if hasattr(cpar, "mm"):
-            cpar_py._mm = cpar.mm
-        if hasattr(cpar, "pix_x"):
-            cpar_py._pix_x = cpar.pix_x
-        if hasattr(cpar, "pix_y"):
-            cpar_py._pix_y = cpar.pix_y
-
-        if getattr(cpar_py, "pix_x", 0.0) == 0.0 or getattr(cpar_py, "pix_y", 0.0) == 0.0:
-            try:
-                ptv_params = exp.pm.get_parameter("ptv")
-            except Exception:
-                ptv_params = {}
-            if getattr(cpar_py, "pix_x", 0.0) == 0.0:
-                cpar_py._pix_x = ptv_params.get("pix_x", 1.0)
-            if getattr(cpar_py, "pix_y", 0.0) == 0.0:
-                cpar_py._pix_y = ptv_params.get("pix_y", 1.0)
-
-        # Create VolumePar from optv VolumeParams
-        from algorithms.parameters import VolumePar
-
-        try:
-            x_lay = list(vpar.get_X_lay()) if hasattr(vpar, "get_X_lay") else []
-        except:
-            x_lay = []
-
-        try:
-            z_min_lay = (
-                list(vpar.get_Zmin_lay()) if hasattr(vpar, "get_Zmin_lay") else []
-            )
-        except:
-            z_min_lay = []
-
-        try:
-            z_max_lay = (
-                list(vpar.get_Zmax_lay()) if hasattr(vpar, "get_Zmax_lay") else []
-            )
-        except:
-            z_max_lay = []
-
-        vpar_py = VolumePar(
-            x_lay=x_lay,
-            z_min_lay=z_min_lay,
-            z_max_lay=z_max_lay,
-            cn=vpar.get_cn() if hasattr(vpar, "get_cn") else 0,
-            cnx=vpar.get_cnx() if hasattr(vpar, "get_cnx") else 0,
-            cny=vpar.get_cny() if hasattr(vpar, "get_cny") else 0,
-            csumg=vpar.get_csumg() if hasattr(vpar, "get_csumg") else 0,
-            eps0=vpar.get_eps0() if hasattr(vpar, "get_eps0") else 0,
-            corrmin=vpar.get_corrmin() if hasattr(vpar, "get_corrmin") else 0,
-        )
-
-        # Convert track_par to Python format
-        tpar_py = TrackPar(
-            dvxmin=track_par.get_dvxmin(),
-            dvxmax=track_par.get_dvxmax(),
-            dvymax=track_par.get_dvymax(),
-            dvymin=track_par.get_dvymin(),
-            dvzmin=track_par.get_dvzmin(),
-            dvzmax=track_par.get_dvzmax(),
-            dacc=track_par.get_dacc(),
-            dangle=track_par.get_dangle(),
-            add=track_par.get_add(),
-        )
-
-        # Create a Python-compatible sequence parameters object
-        from algorithms.parameters import SequencePar
-
-        print(f"[DEBUG] spar type: {type(spar)}")
-        print(f"[DEBUG] cpar.get_num_cams(): {cpar.get_num_cams()}")
-
-        # Get num_cams from cpar (not spar, since optv SequenceParams doesn't have get_num_cams)
-        num_cams = cpar.get_num_cams()
-
-        img_base_list = []
-        for i in range(num_cams):
-            try:
-                base_name = spar.get_img_base_name(i)
-                img_base_list.append(base_name)
-                print(f"[DEBUG] get_img_base_name({i}): {base_name}")
-            except Exception as e:
-                print(f"[DEBUG] get_img_base_name({i}) error: {e}")
-                img_base_list.append("")
-
-        print(f"[DEBUG] img_base_list: {img_base_list}")
-        print(f"[DEBUG] spar.get_first(): {spar.get_first()}")
-        print(f"[DEBUG] spar.get_last(): {spar.get_last()}")
-
-        spar_py = SequencePar(
-            img_base_name=img_base_list, first=spar.get_first(), last=spar.get_last()
-        )
-
-        # Convert optv Calibration objects to Python Calibration objects
-        from algorithms.calibration import Calibration as PythonCalibration
-
-        cals_py = []
-        for cal in cals:
-            # Extract parameters from optv calibration
-            try:
-                # Try to get interior parameters
-                if hasattr(cal, "get_int_par"):
-                    int_par = cal.get_int_par()
-                elif hasattr(cal, "int_par"):
-                    int_par = cal.int_par
-                else:
-                    # Create default interior
-                    int_par = None
-
-                # Try to get exterior parameters
-                if hasattr(cal, "get_ext_par"):
-                    ext_par = cal.get_ext_par()
-                elif hasattr(cal, "ext_par"):
-                    ext_par = cal.ext_par
-                else:
-                    ext_par = None
-
-                # Try to get additional parameters
-                if hasattr(cal, "get_add_par"):
-                    add_par = cal.get_add_par()
-                elif hasattr(cal, "add_par"):
-                    add_par = cal.add_par
-                else:
-                    add_par = None
-
-                # Try to get glass parameters
-                if hasattr(cal, "get_glass_par"):
-                    glass_par = cal.get_glass_par()
-                elif hasattr(cal, "glass_par"):
-                    glass_par = cal.glass_par
-                else:
-                    glass_par = None
-
-                py_cal = PythonCalibration(
-                    ext_par=ext_par,
-                    int_par=int_par,
-                    glass_par=glass_par,
-                    added_par=add_par,
-                )
-                cals_py.append(py_cal)
-            except Exception as e:
-                print(f"[DEBUG] Error converting calibration: {e}")
-                # Fallback: create a basic calibration
-                cals_py.append(PythonCalibration())
-
-        print(f"[DEBUG] Converted {len(cals_py)} calibrations")
-
-        print(f"[ENGINE] Using Python engine: {PythonTracker}")
-
-        tracker = PythonTracker(
-            cpar_py, vpar_py, tpar_py, spar_py, cals_py, default_naming
-        )
-    else:
-        from openptv2.tracker import Tracker as OptvTracker
-
-        print(f"[ENGINE] Using optv engine: {OptvTracker}")
-        tracker = OptvTracker(cpar, vpar, track_par, spar, cals, default_naming)
+    tracker = Tracker(cpar, vpar, track_par, spar, cals, default_naming)
+    return tracker
 
     return tracker
 

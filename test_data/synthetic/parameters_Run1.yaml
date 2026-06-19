@@ -1,0 +1,73 @@
+num_cams: 4
+plugins:
+  available_tracking:
+  - default
+  available_sequence:
+  - default
+  selected_tracking: default
+  selected_sequence: default
+criteria:
+  X_lay:
+  - -100
+  - 100
+  Zmax_lay:
+  - 100
+  - 50
+  Zmin_lay:
+  - -100
+  - -50
+  cn: 0.2
+  cnx: 0.2
+  cny: 0.2
+  corrmin: 50.0
+  csumg: 0.2
+  eps0: 0.1
+ptv:
+  allcam_flag: false
+  chfield: 0
+  hp_flag: true
+  img_cal:
+  - cal/cam1.tif
+  - cal/cam2.tif
+  - cal/cam3.tif
+  - cal/cam4.tif
+  img_name:
+  - img/cam1.10001
+  - img/cam2.10001
+  - img/cam3.10001
+  - img/cam4.10001
+  imx: 1280
+  imy: 1024
+  mmp_d: 6.0
+  mmp_n1: 1.0
+  mmp_n2: 1.33
+  mmp_n3: 1.46
+  pix_x: 0.012
+  pix_y: 0.012
+  tiff_flag: true
+  splitter: false
+sequence:
+  base_name:
+  - img/cam1.
+  - img/cam2.
+  - img/cam3.
+  - img/cam4.
+  first: 10001
+  last: 10008
+track:
+  angle: 120.0
+  dacc: 5.0
+  dvxmax: 10.0
+  dvxmin: -10.0
+  dvymax: 10.0
+  dvymin: -10.0
+  dvzmax: 10.0
+  dvzmin: -10.0
+  flagNewParticles: true
+masking:
+  mask_flag: false
+  mask_base_name: ''
+unsharp_mask:
+  flag: false
+  size: 3
+  strength: 1.0

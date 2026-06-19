@@ -125,6 +125,9 @@ def test_epipolar_curve_equatorial():
 
 
 def _has_optv():
+    import os
+    if os.environ.get("OPENPTV_ENGINE") == "python":
+        return False
     try:
         from optv.epipolar import epipolar_curve  # noqa: F401
         return True

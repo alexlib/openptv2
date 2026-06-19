@@ -28,13 +28,17 @@ class MatchedCoords:
             cpar: ControlParams instance
             cal: Calibration instance
             tol: Tolerance for distortion correction
-            reset_numbers: Whether to reset particle numbers (unused)
+            reset_numbers: Whether to reset particle numbers
         """
-        self._targets = targets if hasattr(targets, '_targets') else targets
+        self._targets = targets._targets if hasattr(targets, '_targets') else targets
         self._cpar = cpar
         self._cal = cal
         self._tol = tol
         self._corrected = []
+
+        if reset_numbers:
+            for i in range(len(self._targets)):
+                self._targets[i].pnr = i
 
         # Apply corrections to each target
         self._apply_corrections()
@@ -82,11 +86,18 @@ class MatchedCoords:
         # Metric → flat (distortion correction)
         flat = distorted_to_flat(metric, self._cal, tol=self._tol)
 
-        # Store as Coord2d objects
+        # Store as Coord2d objects and sort by x coordinate (matching C's quicksort_coord2d_x)
         self._corrected = [
             Coord2d(x=flat[i, 0], y=flat[i, 1], pnr=pnrs[i])
             for i in range(num_targets)
         ]
+        self._corrected.sort(key=lambda c: c.x)
+
+    def __len__(self):
+        return len(self._corrected)
+
+    def __getitem__(self, index):
+        return self._corrected[index]
 
     def as_arrays(self):
         """
@@ -110,13 +121,19 @@ class MatchedCoords:
             pnrs: List or array of particle numbers to keep
 
         Returns:
-            ndarray[n, 2]: Filtered positions
+            ndarray[len(pnrs), 2]: Filtered positions
         """
-        pnrs_set = set(pnrs)
-        filtered = [c for c in self._corrected if c.pnr in pnrs_set]
-        if len(filtered) == 0:
-            return np.empty((0, 2))
-        return np.array([[c.x, c.y] for c in filtered])
+        pos = np.full((len(pnrs), 2), -999.0, dtype=np.float64)
+        
+        # Build mapping from pnr to coordinate
+        pnr_to_coord = {c.pnr: (c.x, c.y) for c in self._corrected}
+        
+        for i, p in enumerate(pnrs):
+            if p in pnr_to_coord:
+                pos[i, 0] = pnr_to_coord[p][0]
+                pos[i, 1] = pnr_to_coord[p][1]
+                
+        return pos
 
 
 def correspondences(img_pts, flat_coords, cals, vparam, cparam):
@@ -183,20 +200,35 @@ def correspondences(img_pts, flat_coords, cals, vparam, cparam):
     )
 
     # Convert NTupel list to optv format
-    # sorted_pos: particle numbers per camera (-1 if no match)
-    # sorted_corresp: correspondence index (which NTupel)
-    num_matches = len([nt for nt in ntupels if nt.p[0] != -1])
+    sorted_pos = [None] * (num_cams - 1)
+    sorted_corresp = [None] * (num_cams - 1)
+    last_count = 0
 
-    sorted_pos = np.full((num_matches, num_cams), -1, dtype=np.int32)
-    sorted_corresp = np.zeros((num_matches, num_cams), dtype=np.float64)
+    for clique_type in range(num_cams - 1):
+        num_points = match_counts[4 - num_cams + clique_type]
+        clique_targs = np.full((num_cams, num_points, 2), -999.0, dtype=np.float64)  # PT_UNUSED = -999
+        clique_ids = np.full((num_cams, num_points), -1, dtype=np.intp)              # CORRES_NONE = -1
 
-    idx = 0
-    for i, nt in enumerate(ntupels):
-        if nt.p[0] != -1:  # Valid correspondence
-            for cam in range(num_cams):
-                sorted_pos[idx, cam] = nt.p[cam]
-                sorted_corresp[idx, cam] = nt.corr
-            idx += 1
+        for cam in range(num_cams):
+            for pt in range(num_points):
+                geo_id = ntupels[pt + last_count].p[cam]
+                if geo_id < 0:
+                    continue
+
+                p1 = corrected[cam][geo_id].pnr
+                clique_ids[cam, pt] = p1
+
+                if p1 > -1:
+                    if hasattr(img_pts[cam], '_targets'):
+                        targ = img_pts[cam]._targets[p1]
+                    else:
+                        targ = img_pts[cam][p1]
+                    clique_targs[cam, pt, 0] = targ.x
+                    clique_targs[cam, pt, 1] = targ.y
+
+        last_count += num_points
+        sorted_pos[clique_type] = clique_targs
+        sorted_corresp[clique_type] = clique_ids
 
     # Return target counts per camera
     num_targs = [frame.num_targets[cam] for cam in range(num_cams)]

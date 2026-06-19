@@ -31,7 +31,10 @@ class MultimediaParams:
         if isinstance(n2, (list, np.ndarray)):
             n2_arr = np.asarray(n2, dtype=np.float64)
             if n2_arr.size == 3:
-                nlay = 1 + np.sum(n2_arr > 0)
+                d_arr = np.asarray(d, dtype=np.float64) if d is not None else np.zeros(3)
+                nlay = max(1, int(np.sum(d_arr > 0)))
+            else:
+                nlay = n2_arr.size
 
         self._mm = AlgoMmNp(nlay=nlay, n1=n1, n2=n2, d=d, n3=n3)
 
@@ -63,8 +66,8 @@ class MultimediaParams:
         """Set middle layer parameters."""
         self._mm.n2 = np.asarray(n2, dtype=np.float64)
         self._mm.d = np.asarray(d, dtype=np.float64)
-        # Update nlay
-        self._mm.nlay = 1 + np.sum(self._mm.n2 > 0)
+        # Update nlay to match Cython/C API: nlay is the number of middle layers
+        self._mm.nlay = len(n2)
 
     def get_n3(self):
         """Get refractive index of last layer (glass)."""

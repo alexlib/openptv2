@@ -166,12 +166,13 @@ The GUI requires additional dependencies (Qt, TraitsUI, etc.):
 uv sync --all-extras
 ```
 
-Launch:
+Launch (after activating virtual environment or using `uv run`):
 ```bash
+uv run openptv2-gui
+# or, if virtual environment is activated (source .venv/bin/activate):
 openptv2-gui
-# or
-pyptv
 ```
+
 
 ---
 
