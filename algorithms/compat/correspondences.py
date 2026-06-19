@@ -230,8 +230,13 @@ def correspondences(img_pts, flat_coords, cals, vparam, cparam):
                         targ = img_pts[cam]._targets[p1]
                     else:
                         targ = img_pts[cam][p1]
-                    clique_targs[cam, pt, 0] = targ.x
-                    clique_targs[cam, pt, 1] = targ.y
+                    if hasattr(targ, 'pos') and callable(targ.pos):
+                        pos_val = targ.pos()
+                        x_val, y_val = pos_val[0], pos_val[1]
+                    else:
+                        x_val, y_val = targ.x, targ.y
+                    clique_targs[cam, pt, 0] = x_val
+                    clique_targs[cam, pt, 1] = y_val
 
         last_count += num_points
         sorted_pos[clique_type] = clique_targs
