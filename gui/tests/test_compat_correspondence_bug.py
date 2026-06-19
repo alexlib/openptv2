@@ -239,7 +239,7 @@ def test_compat_correspondences_parity(cavity_dir):
             print(f"    cam{i_cam + 1}: {len(targs_c)} targets (compat)")
 
         sp_c, sc_c, nt_c = comp_corr(det_c, corr_c, cals_c, vpar_c, cpar_c)
-        total_c = sp_c.shape[0] if sp_c is not None else 0
+        total_c = sum(x.shape[1] for x in sp_c if x is not None)
         print(f"  COMPAT: total={total_c}")
 
         # Also test: compat correspondences but using OPTV detections
@@ -253,7 +253,7 @@ def test_compat_correspondences_parity(cavity_dir):
             print(f"    cam{i_cam + 1}: {len(targs_o)} targets (opTV -> compat)")
 
         sp_w, sc_w, nt_w = comp_corr(det_w, corr_w, cals_c, vpar_c, cpar_c)
-        total_w = sp_w.shape[0] if sp_w is not None else 0
+        total_w = sum(x.shape[1] for x in sp_w if x is not None)
         print(f"  COMPAT+optv targets: total={total_w}")
 
         # Test: raw correspondences using COMPAT params (unwrap ._cal, ._cpar, etc)

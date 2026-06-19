@@ -38,7 +38,14 @@ class MatchedCoords:
 
         if reset_numbers:
             for i in range(len(self._targets)):
-                self._targets[i].pnr = i
+                t = self._targets[i]
+                if hasattr(t, 'set_pnr') and callable(t.set_pnr):
+                    t.set_pnr(i)
+                else:
+                    try:
+                        t.pnr = i
+                    except AttributeError:
+                        pass
 
         # Apply corrections to each target
         self._apply_corrections()
