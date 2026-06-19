@@ -46,11 +46,11 @@ def _ensure_include_structure():
 
 def _cythonize_all():
     """Run Cython on all .pyx files in bindings/optv/."""
-    print("⚡ [OpenPTV2] Starting Cythonization of bindings...")
+    print("[OpenPTV2] Starting Cythonization of bindings...")
     _ensure_include_structure()
     pyx_files = sorted(BINDINGS_OPTV.glob("*.pyx"))
     if not pyx_files:
-        print("⚠️ [OpenPTV2] No .pyx files found to cythonize.")
+        print("[OpenPTV2] WARNING: No .pyx files found to cythonize.")
         return
 
     from Cython.Build import cythonize
@@ -60,27 +60,27 @@ def _cythonize_all():
         compiler_directives={"language_level": "3"},
         include_path=[str(BINDINGS), str(BINDINGS_OPTV), str(LIB_INC)],
     )
-    print("✅ [OpenPTV2] Cythonization completed successfully.")
+    print("[OpenPTV2] Cythonization completed successfully.")
 
 
 def _needs_rebuild():
     """Check if C sources or Cython files changed since last build."""
     if os.environ.get("OPENPTV_PYTHON_ONLY"):
-        print("🔌 [OpenPTV2] OPENPTV_PYTHON_ONLY is set. Skipping compilation.")
+        print("[OpenPTV2] OPENPTV_PYTHON_ONLY is set. Skipping compilation.")
         return False
     c_files = list(BINDINGS_OPTV.glob("*.c"))
     if not c_files:
-        print("📝 [OpenPTV2] No existing compiled C files found. Rebuild required.")
+        print("[OpenPTV2] No existing compiled C files found. Rebuild required.")
         return True
     for pyx in BINDINGS_OPTV.glob("*.pyx"):
         c_file = pyx.with_suffix(".c")
         if not c_file.exists() or pyx.stat().st_mtime > c_file.stat().st_mtime:
-            print(f"📝 [OpenPTV2] Cython file modified: {pyx.name}. Rebuild required.")
+            print(f"[OpenPTV2] Cython file modified: {pyx.name}. Rebuild required.")
             return True
     for src in LIB_SRC.glob("*.c"):
         c_file = src.with_suffix(".c")
         if not c_file.exists() or src.stat().st_mtime > c_file.stat().st_mtime:
-            print(f"📝 [OpenPTV2] C library source modified: {src.name}. Rebuild required.")
+            print(f"[OpenPTV2] C library source modified: {src.name}. Rebuild required.")
             return True
     return False
 
@@ -174,17 +174,22 @@ class BuildExtWithPrepare(build_ext):
 
     def finalize_options(self):
         super().finalize_options()
-        # Enable parallel C compilation to speed up builds on multi-core CPUs
-        if not self.parallel:
-            self.parallel = os.cpu_count() or 1
-            print(f"🚀 [OpenPTV2] Parallel compilation enabled: compiling with {self.parallel} jobs.")
+        # Parallel extension builds race on shared lib/src/*.c object paths on
+        # Windows, which causes fatal C1083 permission errors in cibuildwheel.
+        if sys.platform.startswith("win"):
+            self.parallel = None
+        else:
+            # Enable parallel C compilation to speed up builds on multi-core CPUs
+            if not self.parallel:
+                self.parallel = os.cpu_count() or 1
+                print(f"[OpenPTV2] Parallel compilation enabled: compiling with {self.parallel} jobs.")
 
     def run(self):
         if _needs_rebuild():
             _cythonize_all()
-        print("🔨 [OpenPTV2] Compiling and linking C/Cython extensions...")
+        print("[OpenPTV2] Compiling and linking C/Cython extensions...")
         super().run()
-        print("🎉 [OpenPTV2] C/Cython extensions built successfully!")
+        print("[OpenPTV2] C/Cython extensions built successfully!")
 
 
 class BuildPyWithExtensions(build_py):
