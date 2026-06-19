@@ -174,8 +174,12 @@ class BuildExtWithPrepare(build_ext):
 
     def finalize_options(self):
         super().finalize_options()
+        # Parallel extension builds race on shared lib/src/*.c object paths on
+        # Windows, which causes fatal C1083 permission errors in cibuildwheel.
+        if sys.platform.startswith("win"):
+            self.parallel = None
         # Enable parallel C compilation to speed up builds on multi-core CPUs
-        if not self.parallel:
+        elif not self.parallel:
             self.parallel = os.cpu_count() or 1
             print(f"[OpenPTV2] Parallel compilation enabled: compiling with {self.parallel} jobs.")
 
