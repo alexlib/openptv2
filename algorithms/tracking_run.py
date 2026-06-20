@@ -1,3 +1,4 @@
+import cython
 import numpy as np
 from dataclasses import dataclass, field
 from algorithms.parameters import SequencePar, TrackPar, VolumePar, ControlPar
@@ -78,3 +79,8 @@ def tr_new(seq_par, tpar, vpar, cpar, buf_len, max_targets,
 
     return TrackingRun(seq_par, tpar, vpar, cpar_obj, buf_len, max_targets,
                        corres_file_base, linkage_file_base, prio_file_base, cal, flatten_tol)
+
+
+def is_compiled() -> bool:
+    """Return whether this module is compiled to C."""
+    return cython.compiled

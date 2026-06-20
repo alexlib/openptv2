@@ -152,4 +152,4 @@ python -m gui.pyptv.pyptv_gui
 2. ✅ **Consolidate Parameter Management & YAML transition**: Completed integration of `ParameterManager` into `gui/pyptv` code and standardized exclusively on YAML files.
 3. ✅ **Resolve Bug Regressions & Parity**: Fixed standalone dumbbell calibration import bugs and overhauled `correspondences.py` with robust duck-typing to handle both Python and Cython read-only target APIs seamlessly.
 4. ✅ **Binary Wheels**: Setup `cibuildwheel` configurations for multi-platform compilation of Cython engine wheels.
-5. **Installers & Fallbacks**: Setup one-click installers via PyInstaller, and verify dual-engine fallback functionality.
+5. **Verify Fallbacks**: Verify dual-engine fallback functionality.

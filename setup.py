@@ -2,8 +2,8 @@
 """
 Unified build script for openptv2.
 
-Builds the C library, Cython bindings, and installs all Python packages
-(algorithms, openptv2, gui) in one step.
+Builds and packages only the Cython 3 Pure Python modules in algorithms/
+and installs all Python packages (algorithms, openptv2, gui, optv).
 
 Usage:
     pip install -e .          # Development install
@@ -11,7 +11,6 @@ Usage:
 """
 
 import os
-import shutil
 import sys
 from pathlib import Path
 
@@ -27,61 +26,62 @@ import numpy
 # Paths — always relative to this setup.py file (project root)
 # ---------------------------------------------------------------------------
 ROOT = Path(__file__).parent.resolve()
-LIB_SRC = ROOT / "lib" / "src"
-LIB_INC = ROOT / "lib" / "include"
-BINDINGS = ROOT / "bindings"
-BINDINGS_OPTV = BINDINGS / "optv"
 
-
-def _ensure_include_structure():
-    """Ensure lib/include/optv/ exists with headers for Cython includes."""
-    optv_inc = LIB_INC / "optv"
-    if not optv_inc.exists():
-        optv_inc.mkdir(parents=True)
-        for hdr in LIB_INC.glob("*.h"):
-            dst = optv_inc / hdr.name
-            if not dst.exists():
-                shutil.copy2(hdr, dst)
+# All 18 modules translated from the C library to Cython 3 Pure Python
+ALGORITHMS_MODULES = [
+    "vec_utils",
+    "trafo",
+    "lsqadj",
+    "multimed",
+    "ray_tracing",
+    "calibration",
+    "parameters",
+    "imgcoord",
+    "orientation",
+    "image_processing",
+    "segmentation",
+    "sortgrid",
+    "epi",
+    "correspondences",
+    "tracking_frame_buf",
+    "tracking_run",
+    "track",
+    "track3d",
+    "track_kernels"
+]
 
 
 def _cythonize_all():
-    """Run Cython on all .pyx files in bindings/optv/."""
-    print("[OpenPTV2] Starting Cythonization of bindings...")
-    _ensure_include_structure()
-    pyx_files = sorted(BINDINGS_OPTV.glob("*.pyx"))
-    if not pyx_files:
-        print("[OpenPTV2] WARNING: No .pyx files found to cythonize.")
-        return
-
+    """Run Cython on all Pure Python modules in algorithms/."""
+    print("[OpenPTV2] Starting Cythonization of algorithms pure Python modules...")
+    
     from Cython.Build import cythonize
 
-    cythonize(
-        [str(p) for p in pyx_files],
-        compiler_directives={"language_level": "3"},
-        include_path=[str(BINDINGS), str(BINDINGS_OPTV), str(LIB_INC)],
-    )
-    print("[OpenPTV2] Cythonization completed successfully.")
+    # Cythonize all algorithms pure Python modules (Pure Python Mode)
+    for mod in ALGORITHMS_MODULES:
+        py_file = ROOT / "algorithms" / f"{mod}.py"
+        if py_file.exists():
+            cythonize(
+                [str(py_file.relative_to(ROOT))],
+                compiler_directives={"language_level": "3"},
+            )
+    print("[OpenPTV2] Cythonization of algorithms completed successfully.")
 
 
 def _needs_rebuild():
-    """Check if C sources or Cython files changed since last build."""
+    """Check if Pure Python modules changed since last build."""
     if os.environ.get("OPENPTV_PYTHON_ONLY"):
         print("[OpenPTV2] OPENPTV_PYTHON_ONLY is set. Skipping compilation.")
         return False
-    c_files = list(BINDINGS_OPTV.glob("*.c"))
-    if not c_files:
-        print("[OpenPTV2] No existing compiled C files found. Rebuild required.")
-        return True
-    for pyx in BINDINGS_OPTV.glob("*.pyx"):
-        c_file = pyx.with_suffix(".c")
-        if not c_file.exists() or pyx.stat().st_mtime > c_file.stat().st_mtime:
-            print(f"[OpenPTV2] Cython file modified: {pyx.name}. Rebuild required.")
-            return True
-    for src in LIB_SRC.glob("*.c"):
-        c_file = src.with_suffix(".c")
-        if not c_file.exists() or src.stat().st_mtime > c_file.stat().st_mtime:
-            print(f"[OpenPTV2] C library source modified: {src.name}. Rebuild required.")
-            return True
+        
+    # Check if pure Python modules need rebuilding
+    for mod in ALGORITHMS_MODULES:
+        py_file = ROOT / "algorithms" / f"{mod}.py"
+        if py_file.exists():
+            py_c = py_file.with_suffix(".c")
+            if not py_c.exists() or py_file.stat().st_mtime > py_c.stat().st_mtime:
+                print(f"[OpenPTV2] Pure Python module modified: {mod}.py. Rebuild required.")
+                return True
     return False
 
 
@@ -92,96 +92,35 @@ if _needs_rebuild():
     _cythonize_all()
 
 
-# ---------------------------------------------------------------------------
-# Extension building
-# ---------------------------------------------------------------------------
-def get_liboptv_sources():
-    """Get all C source files from lib/src/ in dependency-safe order."""
-    if os.environ.get("OPENPTV_PYTHON_ONLY"):
-        return []
-    
-    # Safe topological dependency order for symbol resolution (high-level first, low-level last)
-    safe_order = [
-        "tracking_run.c",
-        "track3d.c",
-        "track.c",
-        "segmentation.c",
-        "correspondences.c",
-        "epi.c",
-        "imgcoord.c",
-        "image_processing.c",
-        "sortgrid.c",
-        "parameters.c",
-        "orientation.c",
-        "calibration.c",
-        "tracking_frame_buf.c",
-        "multimed.c",
-        "ray_tracing.c",
-        "lsqadj.c",
-        "trafo.c",
-        "vec_utils.c"
-    ]
-    
-    sources = []
-    for name in safe_order:
-        p = LIB_SRC / name
-        if p.exists():
-            sources.append(str(p.relative_to(ROOT)))
-            
-    # Fallback for any other/new .c files
-    seen = {Path(s).name for s in sources}
-    for f in sorted(LIB_SRC.glob("*.c")):
-        if f.name not in seen:
-            sources.append(str(f.relative_to(ROOT)))
-            
-    return sources
-
-
-def mk_ext(name, cython_c_file):
-    """Create a setuptools Extension for one Cython module + the C library."""
-    include_dirs = [
-        numpy.get_include(),
-        str(LIB_INC.relative_to(ROOT)),
-        str(BINDINGS_OPTV.relative_to(ROOT)),
-    ]
-
-    extra_compile_args = []
-    extra_link_args = []
-    if not sys.platform.startswith("win"):
-        extra_compile_args.extend(["-Wno-cpp", "-Wno-unused-function"])
-        extra_link_args.extend(["-Wl,-rpath,$ORIGIN"])
-    else:
-        extra_compile_args.extend(["/W4", "/std:c11", "/D_CRT_SECURE_NO_WARNINGS"])
-
-    # Use relative paths — required for isolated builds (python -m build)
-    all_sources = [str(cython_c_file.relative_to(ROOT))] + get_liboptv_sources()
-    # Verify all source files exist before creating extension
-    for src in all_sources:
-        if not (ROOT / src).exists():
-            raise FileNotFoundError(
-                f"Source file not found: {src}\n"
-                f"Run 'python setup.py prepare' first, or use 'pip install -e .' "
-                f"which triggers preparation automatically."
-            )
-
-    return Extension(
-        name,
-        all_sources,
-        include_dirs=include_dirs,
-        extra_compile_args=extra_compile_args,
-        extra_link_args=extra_link_args,
-    )
-
-
 def get_extensions():
     """Create Extension objects for all Cython modules."""
     if os.environ.get("OPENPTV_PYTHON_ONLY"):
         return []
     extensions = []
-    for pyx in sorted(BINDINGS_OPTV.glob("*.pyx")):
-        c_file = pyx.with_suffix(".c")
-        module_name = f"optv.{pyx.stem}"
-        extensions.append(mk_ext(module_name, c_file))
+    
+    # Cython 3 Pure Python algorithms extensions only
+    for mod in ALGORITHMS_MODULES:
+        py_file = ROOT / "algorithms" / f"{mod}.py"
+        if py_file.exists():
+            c_file = py_file.with_suffix(".c")
+            extra_compile_args = []
+            extra_link_args = []
+            if not sys.platform.startswith("win"):
+                extra_compile_args.extend(["-Wno-cpp", "-Wno-unused-function"])
+                extra_link_args.extend(["-Wl,-rpath,$ORIGIN"])
+            else:
+                extra_compile_args.extend(["/W4", "/std:c11", "/D_CRT_SECURE_NO_WARNINGS"])
+
+            extensions.append(
+                Extension(
+                    f"algorithms.{mod}",
+                    sources=[str(c_file.relative_to(ROOT))],
+                    include_dirs=[numpy.get_include()],
+                    extra_compile_args=extra_compile_args,
+                    extra_link_args=extra_link_args,
+                )
+            )
+        
     return extensions
 
 
@@ -209,15 +148,9 @@ class BuildExtWithPrepare(build_ext):
 
     def finalize_options(self):
         super().finalize_options()
-        # Parallel extension builds race on shared lib/src/*.c object paths on
-        # Windows, which causes fatal C1083 permission errors in cibuildwheel.
-        if sys.platform.startswith("win"):
-            self.parallel = None
-        else:
-            # Enable parallel C compilation to speed up builds on multi-core CPUs
-            if not self.parallel:
-                self.parallel = os.cpu_count() or 1
-                print(f"[OpenPTV2] Parallel compilation enabled: compiling with {self.parallel} jobs.")
+        # Parallel extension builds race on shared lib/src/*.c object paths on all platforms,
+        # which causes fatal permission errors or missing/corrupted symbols.
+        self.parallel = None
 
     def run(self):
         if _needs_rebuild():

@@ -1,3 +1,5 @@
+import cython
+
 # Convert TrackPar to TrackParTuple for test compatibility
 def convert_track_par_to_tuple(track_par):
     return TrackParTuple(
@@ -246,6 +248,7 @@ class MultimediaPar:
 class CalibrationPar:
     """Calibration parameters for calibration workflow."""
 
+
     def __init__(self, fixp_name="", img_cal_name=None, img_ori=None, tiff_flag=0, pair_flag=0, chfield=0):
         self.fixp_name = fixp_name
         self.img_cal_name = img_cal_name if img_cal_name is not None else []
@@ -320,3 +323,8 @@ read_control_par = ControlPar.from_file
 read_volume_par = VolumePar.from_file
 read_sequence_par = SequencePar.from_file
 read_track_par = TrackPar.from_file
+
+
+def is_compiled() -> bool:
+    """Return whether this module is compiled to C."""
+    return cython.compiled

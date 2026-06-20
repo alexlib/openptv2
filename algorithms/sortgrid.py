@@ -8,6 +8,8 @@ Provides:
 - read_sortgrid_par: reads search radius.
 - read_calblock: reads 3D calibration point coordinates.
 """
+import cython
+
 
 import math
 import numpy as np
@@ -145,3 +147,8 @@ def sortgrid(
                 )
 
     return sorted_pix
+
+
+def is_compiled() -> bool:
+    """Return whether this module is compiled to C."""
+    return cython.compiled

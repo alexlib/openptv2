@@ -1,4 +1,6 @@
 """Tracking algorithms — Python translation of lib/src/track.c."""
+import cython
+
 
 import math
 import numpy as np
@@ -1312,3 +1314,8 @@ def trackback_c(run_info):
     fb.write_frame_from_start(seq_par.first)
 
     return nlinks
+
+
+def is_compiled() -> bool:
+    """Return whether this module is compiled to C."""
+    return cython.compiled

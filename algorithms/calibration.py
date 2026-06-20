@@ -10,8 +10,9 @@ Provides:
 - MmLut: multimedia look-up table
 - Calibration: aggregates all above
 """
-
 from __future__ import annotations
+
+import cython
 
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -390,3 +391,8 @@ def compare_calib(c1: Calibration, c2: Calibration) -> bool:
 
 # read_calibration and write_calibration are already covered by from_file and to_file methods.
 # The rotation_matrix logic is implemented in Exterior.compute_rotation_matrix().
+
+
+def is_compiled() -> bool:
+    """Return whether this module is compiled to C."""
+    return cython.compiled

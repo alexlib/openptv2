@@ -1,3 +1,4 @@
+import cython
 import numpy as np
 
 from .track_kernels import track3d_loop_jit as _track3d_loop_jit, HAS_NUMBA
@@ -201,3 +202,8 @@ def track3d_loop(run_info, step):
     fb.write_frame_from_start(step)
     if step < run_info.seq_par.last - 2:
         fb.read_frame_at_end(step + 3, read_links=False)
+
+
+def is_compiled() -> bool:
+    """Return whether this module is compiled to C."""
+    return cython.compiled

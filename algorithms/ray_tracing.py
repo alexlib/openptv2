@@ -7,26 +7,41 @@ using Snell's law and returns the crossing point and direction vector.
 """
 
 import math
+import cython
 import numpy as np
-from .vec_utils import vec_set, unit_vector, vec_dot, vec_norm, vec_scalar_mul, vec_add, vec_subt
 
 
+@cython.ccall
+@cython.locals(
+    norm_tmp1=cython.double, tx=cython.double, ty=cython.double, tz=cython.double,
+    start_dir_x=cython.double, start_dir_y=cython.double, start_dir_z=cython.double,
+    norm_glass=cython.double, glass_dir_x=cython.double, glass_dir_y=cython.double, glass_dir_z=cython.double,
+    c=cython.double, dist_cam_glass=cython.double, dot_glass_start=cython.double, d1=cython.double,
+    Xb_x=cython.double, Xb_y=cython.double, Xb_z=cython.double,
+    n=cython.double, bp_x=cython.double, bp_y=cython.double, bp_z=cython.double, norm_bp=cython.double,
+    p=cython.double, n_glass=cython.double,
+    a2_x=cython.double, a2_y=cython.double, a2_z=cython.double,
+    dot_glass_a2=cython.double, d2=cython.double,
+    X_x=cython.double, X_y=cython.double, X_z=cython.double,
+    n_a2=cython.double, n_final=cython.double,
+    out_x=cython.double, out_y=cython.double, out_z=cython.double
+)
 def ray_tracing(
-    x: float,
-    y: float,
-    ext_dm: np.ndarray,
-    ext_x0: float,
-    ext_y0: float,
-    ext_z0: float,
-    int_cc: float,
-    glass_vec_x: float,
-    glass_vec_y: float,
-    glass_vec_z: float,
-    mm_n1: float,
-    mm_n2_0: float,
-    mm_n3: float,
-    mm_d0: float,
-) -> tuple[np.ndarray, np.ndarray]:
+    x: cython.double,
+    y: cython.double,
+    ext_dm: cython.double[:, :],
+    ext_x0: cython.double,
+    ext_y0: cython.double,
+    ext_z0: cython.double,
+    int_cc: cython.double,
+    glass_vec_x: cython.double,
+    glass_vec_y: cython.double,
+    glass_vec_z: cython.double,
+    mm_n1: cython.double,
+    mm_n2_0: cython.double,
+    mm_n3: cython.double,
+    mm_d0: cython.double,
+) -> tuple:
     """Trace a ray through multi-media interface.
 
     Traces the optical ray through layers (typically air-glass-water)
@@ -49,62 +64,84 @@ def ray_tracing(
         direction vector in final medium (3,).
     """
     # Initial ray direction in camera coordinate system
-    tmp1 = np.array([x, y, -int_cc], dtype=np.float64)
-    tmp1 = unit_vector(tmp1)
+    norm_tmp1 = math.sqrt(x * x + y * y + int_cc * int_cc)
+    tx = x / norm_tmp1
+    ty = y / norm_tmp1
+    tz = -int_cc / norm_tmp1
 
-    # Transform to global coordinate system
-    start_dir = ext_dm @ tmp1
-
-    # Primary point (camera center)
-    primary_point = np.array([ext_x0, ext_y0, ext_z0], dtype=np.float64)
+    # Transform to global coordinate system (ext_dm @ tmp1)
+    start_dir_x = ext_dm[0, 0] * tx + ext_dm[0, 1] * ty + ext_dm[0, 2] * tz
+    start_dir_y = ext_dm[1, 0] * tx + ext_dm[1, 1] * ty + ext_dm[1, 2] * tz
+    start_dir_z = ext_dm[2, 0] * tx + ext_dm[2, 1] * ty + ext_dm[2, 2] * tz
 
     # Glass normal (unit vector)
-    glass_vec = np.array([glass_vec_x, glass_vec_y, glass_vec_z], dtype=np.float64)
-    glass_dir = unit_vector(glass_vec)
-    c = vec_norm(glass_vec) + mm_d0
+    norm_glass = math.sqrt(glass_vec_x * glass_vec_x + glass_vec_y * glass_vec_y + glass_vec_z * glass_vec_z)
+    glass_dir_x = glass_vec_x / norm_glass
+    glass_dir_y = glass_vec_y / norm_glass
+    glass_dir_z = glass_vec_z / norm_glass
+    c = norm_glass + mm_d0
 
     # Project start ray on glass vector to find n1/n2 interface
-    dist_cam_glass = vec_dot(glass_dir, primary_point) - c
-    d1 = -dist_cam_glass / vec_dot(glass_dir, start_dir)
+    dist_cam_glass = (glass_dir_x * ext_x0 + glass_dir_y * ext_y0 + glass_dir_z * ext_z0) - c
+    dot_glass_start = glass_dir_x * start_dir_x + glass_dir_y * start_dir_y + glass_dir_z * start_dir_z
+    d1 = -dist_cam_glass / dot_glass_start
 
-    tmp1 = vec_scalar_mul(start_dir, d1)
-    Xb = vec_add(primary_point, tmp1)
+    # Xb = primary_point + start_dir * d1
+    Xb_x = ext_x0 + start_dir_x * d1
+    Xb_y = ext_y0 + start_dir_y * d1
+    Xb_z = ext_z0 + start_dir_z * d1
 
     # Decompose ray into glass-normal and glass-parallel components
-    n = vec_dot(start_dir, glass_dir)
-    tmp1 = vec_scalar_mul(glass_dir, n)
-    tmp2 = vec_subt(start_dir, tmp1)
-    bp = unit_vector(tmp2)
+    n = start_dir_x * glass_dir_x + start_dir_y * glass_dir_y + start_dir_z * glass_dir_z
+    bp_x = start_dir_x - glass_dir_x * n
+    bp_y = start_dir_y - glass_dir_y * n
+    bp_z = start_dir_z - glass_dir_z * n
+    norm_bp = math.sqrt(bp_x * bp_x + bp_y * bp_y + bp_z * bp_z)
+    if norm_bp > 0:
+        bp_x /= norm_bp
+        bp_y /= norm_bp
+        bp_z /= norm_bp
 
     # Transform direction inside glass using Snell's law
-    p = math.sqrt(1 - n * n) * mm_n1 / mm_n2_0  # glass parallel
-    n_glass = -math.sqrt(1 - p * p)  # glass normal
+    p = math.sqrt(1.0 - n * n) * mm_n1 / mm_n2_0  # glass parallel
+    n_glass = -math.sqrt(1.0 - p * p)  # glass normal
 
     # Propagation length in glass
-    tmp1 = vec_scalar_mul(bp, p)
-    tmp2 = vec_scalar_mul(glass_dir, n_glass)
-    a2 = vec_add(tmp1, tmp2)
-    d2 = mm_d0 / abs(vec_dot(glass_dir, a2))
+    a2_x = bp_x * p + glass_dir_x * n_glass
+    a2_y = bp_y * p + glass_dir_y * n_glass
+    a2_z = bp_z * p + glass_dir_z * n_glass
+    
+    dot_glass_a2 = glass_dir_x * a2_x + glass_dir_y * a2_y + glass_dir_z * a2_z
+    d2 = mm_d0 / abs(dot_glass_a2)
 
-    # Point on horizontal plane between n2, n3
-    tmp1 = vec_scalar_mul(a2, d2)
-    X = vec_add(Xb, tmp1)
+    # Point X on horizontal plane between n2, n3
+    X_x = Xb_x + a2_x * d2
+    X_y = Xb_y + a2_y * d2
+    X_z = Xb_z + a2_z * d2
 
     # Direction in next medium
-    n_a2 = vec_dot(a2, glass_dir)
-    tmp2_for_sub = vec_scalar_mul(glass_dir, n_glass)  # reuse n_glass component
-    tmp2 = vec_subt(a2, tmp2_for_sub)
-    bp = unit_vector(tmp2)
+    n_a2 = a2_x * glass_dir_x + a2_y * glass_dir_y + a2_z * glass_dir_z
+    bp_x = a2_x - glass_dir_x * n_glass
+    bp_y = a2_y - glass_dir_y * n_glass
+    bp_z = a2_z - glass_dir_z * n_glass
+    norm_bp = math.sqrt(bp_x * bp_x + bp_y * bp_y + bp_z * bp_z)
+    if norm_bp > 0:
+        bp_x /= norm_bp
+        bp_y /= norm_bp
+        bp_z /= norm_bp
 
-    p = math.sqrt(1 - n_a2 * n_a2)
+    p = math.sqrt(1.0 - n_a2 * n_a2)
     p = p * mm_n2_0 / mm_n3
-    n_final = -math.sqrt(1 - p * p)
+    n_final = -math.sqrt(1.0 - p * p)
 
-    tmp1 = vec_scalar_mul(bp, p)
-    tmp2 = vec_scalar_mul(glass_dir, n_final)
-    out = vec_add(tmp1, tmp2)
+    out_x = bp_x * p + glass_dir_x * n_final
+    out_y = bp_y * p + glass_dir_y * n_final
+    out_z = bp_z * p + glass_dir_z * n_final
 
-    return X, out
+    return (
+        np.array([X_x, X_y, X_z], dtype=np.float64),
+        np.array([out_x, out_y, out_z], dtype=np.float64)
+    )
 
 
 def ray_tracing_batch(xy, cal, mm):
@@ -145,3 +182,8 @@ def ray_tracing_batch(xy, cal, mm):
         positions[i] = pos
         directions[i] = d
     return positions, directions
+
+
+def is_compiled() -> bool:
+    """Return whether this module is compiled to C."""
+    return cython.compiled

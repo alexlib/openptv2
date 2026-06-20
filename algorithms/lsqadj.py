@@ -12,6 +12,8 @@ These are the core matrix operations used in Gauss-Markov models:
 All functions operate on row-major (C-order) flat arrays to match
 the C implementation's memory layout.
 """
+import cython
+
 
 import numpy as np
 
@@ -133,3 +135,8 @@ def norm_cross(a: np.ndarray, b: np.ndarray) -> np.ndarray:
 
     cross = vec_cross(a, b)
     return unit_vector(cross)
+
+
+def is_compiled() -> bool:
+    """Return whether this module is compiled to C."""
+    return cython.compiled

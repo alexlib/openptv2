@@ -10,6 +10,8 @@ Provides:
 Uses NumPy vectorized operations where possible, with clear Python
 logic for the connected component labeling algorithms.
 """
+import cython
+
 
 import numpy as np
 from dataclasses import dataclass, field
@@ -487,3 +489,8 @@ def peak_fit(
             )
 
     return targets
+
+
+def is_compiled() -> bool:
+    """Return whether this module is compiled to C."""
+    return cython.compiled

@@ -10,6 +10,7 @@ Handles:
 """
 
 import math
+import cython
 import numpy as np
 from .vec_utils import (
     vec_set, vec_norm, vec_dot, vec_scalar_mul, vec_add, vec_subt, unit_vector
@@ -22,20 +23,27 @@ except ImportError:
     _HAS_NUMBA = False
 
 
+# Y-remap mode constants (for interlaced cameras)
+NO_REMAP: cython.int = 0
+DOUBLED_PLUS_ONE: cython.int = 1
+DOUBLED: cython.int = 2
+
+
+@cython.ccall
 def multimed_nlay(
-    pos_x: float,
-    pos_y: float,
-    pos_z: float,
-    ext_x0: float,
-    ext_y0: float,
-    ext_z0: float,
-    mm_n1: float,
-    mm_n2_0: float,
-    mm_n3: float,
-    mm_d0: float,
-    mm_nlay: int = 1,
-    mmf: float = 1.0,
-) -> tuple[float, float]:
+    pos_x: cython.double,
+    pos_y: cython.double,
+    pos_z: cython.double,
+    ext_x0: cython.double,
+    ext_y0: cython.double,
+    ext_z0: cython.double,
+    mm_n1: cython.double,
+    mm_n2_0: cython.double,
+    mm_n3: cython.double,
+    mm_d0: cython.double,
+    mm_nlay: cython.int = 1,
+    mmf: cython.double = 1.0,
+) -> tuple:
     """Compute radial-shifted Xq, Yq positions.
 
     Args:
@@ -49,6 +57,7 @@ def multimed_nlay(
     Returns:
         (Xq, Yq) 2D position on glass surface.
     """
+    radial_shift: cython.double = 1.0
     if mmf > 0 and mmf != 1.0:
         radial_shift = mmf
     else:
@@ -58,28 +67,34 @@ def multimed_nlay(
             mm_n1, mm_n2_0, mm_n3, mm_d0, mm_nlay,
         )
 
-    Xq = ext_x0 + (pos_x - ext_x0) * radial_shift
-    Yq = ext_y0 + (pos_y - ext_y0) * radial_shift
+    Xq: cython.double = ext_x0 + (pos_x - ext_x0) * radial_shift
+    Yq: cython.double = ext_y0 + (pos_y - ext_y0) * radial_shift
 
     return Xq, Yq
 
 
+@cython.ccall
+@cython.locals(
+    zout=cython.double, dx=cython.double, dy=cython.double, r=cython.double, rq=cython.double,
+    it=cython.int, beta1=cython.double, sin_beta1=cython.double, arg=cython.double,
+    beta3=cython.double, rbeta=cython.double, rdiff=cython.double, i=cython.int
+)
 def multimed_r_nlay_iterative(
-    pos_x: float,
-    pos_y: float,
-    pos_z: float,
-    ext_x0: float,
-    ext_y0: float,
-    ext_z0: float,
-    mm_n1: float,
-    mm_n2_0: float,
-    mm_n3: float,
-    mm_d0: float,
-    mm_nlay: int = 1,
-    mm_d: list[float] | None = None,
-    n_iter: int = 40,
-    tol: float = 0.001,
-) -> float:
+    pos_x: cython.double,
+    pos_y: cython.double,
+    pos_z: cython.double,
+    ext_x0: cython.double,
+    ext_y0: cython.double,
+    ext_z0: cython.double,
+    mm_n1: cython.double,
+    mm_n2_0: cython.double,
+    mm_n3: cython.double,
+    mm_d0: cython.double,
+    mm_nlay: cython.int = 1,
+    mm_d=None,
+    n_iter: cython.int = 40,
+    tol: cython.double = 0.001,
+) -> cython.double:
     """Iteratively compute radial shift factor.
 
     Args:
@@ -98,12 +113,13 @@ def multimed_r_nlay_iterative(
     if mm_n1 == 1.0 and mm_nlay == 1 and mm_n2_0 == 1.0 and mm_n3 == 1.0:
         return 1.0
 
-    if mm_d is None:
-        mm_d = [mm_d0]
-
     zout = pos_z
-    for i in range(1, mm_nlay):
-        zout += mm_d[i]
+    if mm_d is not None:
+        for i in range(1, mm_nlay):
+            zout += mm_d[i]
+    else:
+        # Defaults to mm_d = [mm_d0]
+        pass
 
     dx = pos_x - ext_x0
     dy = pos_y - ext_y0
@@ -114,24 +130,30 @@ def multimed_r_nlay_iterative(
         beta1 = math.atan(rq / (ext_z0 - pos_z))
         sin_beta1 = math.sin(beta1)
 
-        beta2 = []
-        for i in range(mm_nlay):
-            arg = sin_beta1 * mm_n1 / mm_n2_0
-            if arg < -1.0 - tol or arg > 1.0 + tol:
-                raise ValueError(
-                    f"Total internal reflection: arcsin argument out of bounds ({arg})."
-                )
-            if arg > 1.0:
-                arg = 1.0
-            elif arg < -1.0:
-                arg = -1.0
-            beta2.append(math.asin(arg))
+        # We construct beta2 list
+        # arg = sin_beta1 * mm_n1 / mm_n2_0
+        arg = sin_beta1 * mm_n1 / mm_n2_0
+        if arg < -1.0 - tol or arg > 1.0 + tol:
+            raise ValueError(
+                f"Total internal reflection: arcsin argument out of bounds ({arg})."
+            )
+        if arg > 1.0:
+            arg = 1.0
+        elif arg < -1.0:
+            arg = -1.0
+        
+        # Single layer is the most common case
+        beta2_val: cython.double = math.asin(arg)
 
         beta3 = math.asin(sin_beta1 * mm_n1 / mm_n3)
 
         rbeta = (ext_z0 - mm_d0) * math.tan(beta1) - zout * math.tan(beta3)
-        for i in range(mm_nlay):
-            rbeta += mm_d[i] * math.tan(beta2[i])
+        if mm_d is not None:
+            for i in range(mm_nlay):
+                # Note: original code repeats beta2 computation but here it is identical for single n2
+                rbeta += mm_d[i] * math.tan(beta2_val)
+        else:
+            rbeta += mm_d0 * math.tan(beta2_val)
 
         rdiff = r - rbeta
         rq += rdiff
@@ -147,19 +169,29 @@ def multimed_r_nlay_iterative(
         return 1.0
 
 
+@cython.ccall
+@cython.locals(
+    gx=cython.double, gy=cython.double, gz=cython.double,
+    dist_o_glas=cython.double, inv_dog=cython.double,
+    dot_cam=cython.double, dist_cam_glas=cython.double,
+    dot_pos=cython.double, dist_point_glas=cython.double,
+    s_cam=cython.double, s_pt=cython.double, ext_t_z0=cython.double,
+    s_d=cython.double, ag_x=cython.double, ag_y=cython.double, ag_z=cython.double,
+    tmp_x=cython.double, tmp_y=cython.double, tmp_z=cython.double
+)
 def trans_cam_point(
-    pos: np.ndarray,
-    ext_x0: float,
-    ext_y0: float,
-    ext_z0: float,
-    glass_vec_x: float,
-    glass_vec_y: float,
-    glass_vec_z: float,
-    mm_n1: float,
-    mm_n2_0: float,
-    mm_n3: float,
-    mm_d0: float,
-) -> tuple[np.ndarray, np.ndarray, np.ndarray, float]:
+    pos: cython.double[:],
+    ext_x0: cython.double,
+    ext_y0: cython.double,
+    ext_z0: cython.double,
+    glass_vec_x: cython.double,
+    glass_vec_y: cython.double,
+    glass_vec_z: cython.double,
+    mm_n1: cython.double,
+    mm_n2_0: cython.double,
+    mm_n3: cython.double,
+    mm_d0: cython.double,
+) -> tuple:
     """Project global-coordinate points through glass surface."""
     gx, gy, gz = glass_vec_x, glass_vec_y, glass_vec_z
     dist_o_glas = math.sqrt(gx * gx + gy * gy + gz * gz)
@@ -172,10 +204,10 @@ def trans_cam_point(
     dist_point_glas = dot_pos * inv_dog - dist_o_glas
 
     s_cam = dist_cam_glas * inv_dog
-    cross_c = np.array([ext_x0 - gx * s_cam, ext_y0 - gy * s_cam, ext_z0 - gz * s_cam])
+    cross_c = np.array([ext_x0 - gx * s_cam, ext_y0 - gy * s_cam, ext_z0 - gz * s_cam], dtype=np.float64)
 
     s_pt = dist_point_glas * inv_dog
-    cross_p = np.array([pos[0] - gx * s_pt, pos[1] - gy * s_pt, pos[2] - gz * s_pt])
+    cross_p = np.array([pos[0] - gx * s_pt, pos[1] - gy * s_pt, pos[2] - gz * s_pt], dtype=np.float64)
 
     ext_t_z0 = dist_cam_glas + mm_d0
 
@@ -188,22 +220,32 @@ def trans_cam_point(
     tmp_z = cross_p[2] - ag_z
 
     pos_t = np.array([math.sqrt(tmp_x * tmp_x + tmp_y * tmp_y + tmp_z * tmp_z),
-                      0.0, dist_point_glas])
+                      0.0, dist_point_glas], dtype=np.float64)
 
     return pos_t, cross_p, cross_c, ext_t_z0
 
 
+@cython.ccall
+@cython.locals(
+    gx=cython.double, gy=cython.double, gz=cython.double,
+    n_gl=cython.double, inv_ngl=cython.double,
+    s_d=cython.double, ag_x=cython.double, ag_y=cython.double, ag_z=cython.double,
+    tmp_x=cython.double, tmp_y=cython.double, tmp_z=cython.double,
+    n_ve=cython.double, s_z=cython.double,
+    px=cython.double, py=cython.double, pz=cython.double,
+    s_x=cython.double
+)
 def back_trans_point(
-    pos_t: np.ndarray,
-    cross_p: np.ndarray,
-    cross_c: np.ndarray,
-    glass_vec_x: float,
-    glass_vec_y: float,
-    glass_vec_z: float,
-    mm_n1: float,
-    mm_n2_0: float,
-    mm_n3: float,
-    mm_d0: float,
+    pos_t: cython.double[:],
+    cross_p: cython.double[:],
+    cross_c: cython.double[:],
+    glass_vec_x: cython.double,
+    glass_vec_y: cython.double,
+    glass_vec_z: cython.double,
+    mm_n1: cython.double,
+    mm_n2_0: cython.double,
+    mm_n3: cython.double,
+    mm_d0: cython.double,
 ) -> np.ndarray:
     """Transform from local coordinates back to global 3D space."""
     gx, gy, gz = glass_vec_x, glass_vec_y, glass_vec_z
@@ -231,50 +273,37 @@ def back_trans_point(
         py -= tmp_y * s_x
         pz -= tmp_z * s_x
 
-    return np.array([px, py, pz])
+    return np.array([px, py, pz], dtype=np.float64)
 
 
+@cython.ccall
 def move_along_ray(
-    glob_Z: float,
-    vertex: np.ndarray,
-    direct: np.ndarray,
+    glob_Z: cython.double,
+    vertex: cython.double[:],
+    direct: cython.double[:],
 ) -> np.ndarray:
-    """Find point along ray at given global Z value.
-
-    Args:
-        glob_Z: target Z coordinate.
-        vertex: ray origin (3,).
-        direct: ray direction unit vector (3,).
-
-    Returns:
-        Point on ray at Z = glob_Z.
-    """
-    x = vertex[0] + (glob_Z - vertex[2]) * direct[0] / direct[2]
-    y = vertex[1] + (glob_Z - vertex[2]) * direct[1] / direct[2]
+    """Find point along ray at given global Z value."""
+    x: cython.double = vertex[0] + (glob_Z - vertex[2]) * direct[0] / direct[2]
+    y: cython.double = vertex[1] + (glob_Z - vertex[2]) * direct[1] / direct[2]
     return np.array([x, y, glob_Z], dtype=np.float64)
 
 
+@cython.ccall
+@cython.locals(
+    tx=cython.double, ty=cython.double, tz=cython.double,
+    sz=cython.double, iz=cython.int,
+    R=cython.double, sr=cython.double, ir=cython.int,
+    v=cython.int, mmf=cython.double
+)
 def get_mmf_from_mmlut(
-    pos: np.ndarray,
-    mmlut_origin: np.ndarray,
-    mmlut_nr: int,
-    mmlut_nz: int,
-    mmlut_rw: float,
-    mmlut_data: np.ndarray,
-) -> float:
-    """Get multimedia factor from look-up table via bilinear interpolation.
-
-    Args:
-        pos: 3D position.
-        mmlut_origin: LUT grid origin (x0, y0, z0).
-        mmlut_nr: number of radial grid points.
-        mmlut_nz: number of axial grid points.
-        mmlut_rw: grid spacing.
-        mmlut_data: 1D array of size nr * nz.
-
-    Returns:
-        Multimedia factor (0 if outside LUT bounds).
-    """
+    pos: cython.double[:],
+    mmlut_origin: cython.double[:],
+    mmlut_nr: cython.int,
+    mmlut_nz: cython.int,
+    mmlut_rw: cython.double,
+    mmlut_data: cython.double[:],
+) -> cython.double:
+    """Get multimedia factor from look-up table via bilinear interpolation."""
     tx = pos[0] - mmlut_origin[0]
     ty = pos[1] - mmlut_origin[1]
     tz = pos[2] - mmlut_origin[2]
@@ -294,27 +323,26 @@ def get_mmf_from_mmlut(
         return 0.0
 
     # Get vertices of box for bilinear interpolation
-    v4 = [
-        ir * mmlut_nz + iz,
-        ir * mmlut_nz + (iz + 1),
-        (ir + 1) * mmlut_nz + iz,
-        (ir + 1) * mmlut_nz + (iz + 1),
-    ]
+    v4_0: cython.int = ir * mmlut_nz + iz
+    v4_1: cython.int = ir * mmlut_nz + (iz + 1)
+    v4_2: cython.int = (ir + 1) * mmlut_nz + iz
+    v4_3: cython.int = (ir + 1) * mmlut_nz + (iz + 1)
 
-    # Check bounds
-    for v in v4:
-        if v < 0 or v > mmlut_nr * mmlut_nz:
-            return 0.0
+    max_v: cython.int = mmlut_nr * mmlut_nz
+    if v4_0 < 0 or v4_0 > max_v: return 0.0
+    if v4_1 < 0 or v4_1 > max_v: return 0.0
+    if v4_2 < 0 or v4_2 > max_v: return 0.0
+    if v4_3 < 0 or v4_3 > max_v: return 0.0
 
     # Bilinear interpolation
     mmf = (
-        mmlut_data[v4[0]] * (1 - sr) * (1 - sz)
-        + mmlut_data[v4[1]] * (1 - sr) * sz
-        + mmlut_data[v4[2]] * sr * (1 - sz)
-        + mmlut_data[v4[3]] * sr * sz
+        mmlut_data[v4_0] * (1 - sr) * (1 - sz)
+        + mmlut_data[v4_1] * (1 - sr) * sz
+        + mmlut_data[v4_2] * sr * (1 - sz)
+        + mmlut_data[v4_3] * sr * sz
     )
 
-    return float(mmf)
+    return mmf
 
 
 def volumedimension(vpar, cpar, cal):
@@ -526,3 +554,8 @@ def init_mmlut(vpar, cpar, cal):
         cal.mmlut.data = data
 
     return cal
+
+
+def is_compiled() -> bool:
+    """Return whether this module is compiled to C."""
+    return cython.compiled

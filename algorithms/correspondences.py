@@ -5,6 +5,8 @@ Translation of lib/src/correspondences.c and lib/include/correspondences.h.
 Establishes correspondences between detected targets across 2-4 cameras
 using epipolar geometry and clique finding.
 """
+import cython
+
 
 import numpy as np
 from dataclasses import dataclass, field
@@ -412,3 +414,8 @@ def correspondences(frm, corrected, vpar, cpar, calib):
                 frm.targets[j][p1].tnr = i
 
     return con[:match_counts[3]], match_counts
+
+
+def is_compiled() -> bool:
+    """Return whether this module is compiled to C."""
+    return cython.compiled

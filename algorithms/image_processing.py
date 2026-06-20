@@ -9,22 +9,22 @@ Provides:
 - Interlaced image splitting
 - Image preparation for particle detection
 """
+import cython
+
 
 import numpy as np
 from pathlib import Path
 
-try:
-    from numba import njit, prange
-    HAS_NUMBA = True
-except ImportError:
-    HAS_NUMBA = False
-    def njit(*args, **kwargs):
-        def decorator(fn):
-            return fn
-        if len(args) == 1 and callable(args[0]):
-            return args[0]
-        return decorator
-    prange = range
+HAS_NUMBA = False
+prange = range
+
+def njit(*args, **kwargs):
+    def decorator(fn):
+        return fn
+    if len(args) == 1 and callable(args[0]):
+        return args[0]
+    return decorator
+
 
 
 # --------------- Numba JIT kernels ---------------
@@ -457,3 +457,8 @@ def prepare_image(
 def copy_images(imgs):
     """Stub for copy_images: returns a copy of the input list of images."""
     return [np.copy(img) for img in imgs]
+
+
+def is_compiled() -> bool:
+    """Return whether this module is compiled to C."""
+    return cython.compiled

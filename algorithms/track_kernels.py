@@ -8,18 +8,27 @@ fallbacks are used transparently.
 import math
 import numpy as np
 
-try:
-    from numba import njit, prange
-    HAS_NUMBA = True
-except ImportError:
-    HAS_NUMBA = False
-    prange = range
-    def njit(*args, **kwargs):
-        def decorator(fn):
-            return fn
-        if len(args) == 1 and callable(args[0]):
-            return args[0]
-        return decorator
+import cython
+
+# We have fully removed Numba from all algorithms to use pure Python mode of Cython 3+.
+# To avoid refactoring all files that check for HAS_NUMBA to decide whether
+# to use these high-performance kernels, we set HAS_NUMBA to True so they
+# always invoke these optimized, Cython-compiled pathways.
+HAS_NUMBA = True
+prange = range
+
+def njit(*args, **kwargs):
+    def decorator(fn):
+        return fn
+    if len(args) == 1 and callable(args[0]):
+        return args[0]
+    return decorator
+
+
+def is_compiled() -> bool:
+    """Return whether this module is compiled to C."""
+    return cython.compiled
+
 
 # Cal array layout (31 float64):
 #  0-2:   ext_x0, ext_y0, ext_z0

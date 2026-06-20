@@ -5,8 +5,9 @@ Translation of lib/src/orientation.c and lib/include/orientation.h.
 Determines camera exterior orientation and refines interior/distortion
 parameters using known 3D points and their 2D image projections.
 """
-
 from __future__ import annotations
+
+import cython
 
 import copy
 from pathlib import Path
@@ -878,3 +879,8 @@ def single_cam_point_positions(targets, cpar, cals, vpar):
             res[pt] = pos
 
     return res, rcm
+
+
+def is_compiled() -> bool:
+    """Return whether this module is compiled to C."""
+    return cython.compiled

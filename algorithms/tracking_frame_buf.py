@@ -2,6 +2,8 @@
 
 Translation of lib/src/tracking_frame_buf.c and lib/include/tracking_frame_buf.h.
 """
+import cython
+
 
 import numpy as np
 from pathlib import Path
@@ -461,3 +463,8 @@ class FrameBuf:
 
 
 Corres_dtype = np.dtype([('nr', np.int32), ('p', np.int32, (4,))])
+
+
+def is_compiled() -> bool:
+    """Return whether this module is compiled to C."""
+    return cython.compiled

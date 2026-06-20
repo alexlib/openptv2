@@ -1,4 +1,4 @@
-"""3D vector utilities using NumPy vectorized operations.
+"""3D vector utilities using NumPy vectorized operations and Cython 3 Pure Python optimization.
 
 Translation of lib/src/vec_utils.c and lib/include/vec_utils.h.
 
@@ -9,6 +9,8 @@ full NumPy vectorization and future Numba acceleration.
 For single-vector operations, plain float or length-3 arrays are accepted.
 """
 
+import math
+import cython
 import numpy as np
 from typing import Tuple
 
@@ -16,15 +18,17 @@ from typing import Tuple
 EMPTY_CELL = np.nan
 
 
-def is_empty(x: float) -> bool:
+@cython.ccall
+def is_empty(x: cython.double) -> cython.bint:
     """Check if a value represents an empty cell (NaN)."""
-    return np.isnan(x)
+    return math.isnan(x)
 
 
 # ---------------------------------------------------------------------------
 # Single-vector operations (direct translations of C functions)
 # ---------------------------------------------------------------------------
 
+@cython.ccall
 def vec_init() -> np.ndarray:
     """Return a 3D vector initialized to NaN.
 
@@ -34,7 +38,8 @@ def vec_init() -> np.ndarray:
     return np.full(3, np.nan, dtype=np.float64)
 
 
-def vec_set(x: float, y: float, z: float) -> np.ndarray:
+@cython.ccall
+def vec_set(x: cython.double, y: cython.double, z: cython.double) -> np.ndarray:
     """Create a 3D vector from components.
 
     Args:
@@ -46,7 +51,8 @@ def vec_set(x: float, y: float, z: float) -> np.ndarray:
     return np.array([x, y, z], dtype=np.float64)
 
 
-def vec_copy(src: np.ndarray) -> np.ndarray:
+@cython.ccall
+def vec_copy(src: cython.double[:]) -> np.ndarray:
     """Copy a 3D vector.
 
     Args:
@@ -55,10 +61,11 @@ def vec_copy(src: np.ndarray) -> np.ndarray:
     Returns:
         A new ndarray copy.
     """
-    return src.copy()
+    return np.array([src[0], src[1], src[2]], dtype=np.float64)
 
 
-def vec_subt(from_vec: np.ndarray, sub: np.ndarray) -> np.ndarray:
+@cython.ccall
+def vec_subt(from_vec: cython.double[:], sub: cython.double[:]) -> np.ndarray:
     """Subtract two 3D vectors.
 
     Args:
@@ -68,10 +75,15 @@ def vec_subt(from_vec: np.ndarray, sub: np.ndarray) -> np.ndarray:
     Returns:
         from_vec - sub as ndarray of shape (3,).
     """
-    return from_vec - sub
+    return np.array([
+        from_vec[0] - sub[0],
+        from_vec[1] - sub[1],
+        from_vec[2] - sub[2]
+    ], dtype=np.float64)
 
 
-def vec_add(vec1: np.ndarray, vec2: np.ndarray) -> np.ndarray:
+@cython.ccall
+def vec_add(vec1: cython.double[:], vec2: cython.double[:]) -> np.ndarray:
     """Add two 3D vectors.
 
     Args:
@@ -80,10 +92,15 @@ def vec_add(vec1: np.ndarray, vec2: np.ndarray) -> np.ndarray:
     Returns:
         vec1 + vec2 as ndarray of shape (3,).
     """
-    return vec1 + vec2
+    return np.array([
+        vec1[0] + vec2[0],
+        vec1[1] + vec2[1],
+        vec1[2] + vec2[2]
+    ], dtype=np.float64)
 
 
-def vec_scalar_mul(vec: np.ndarray, scalar: float) -> np.ndarray:
+@cython.ccall
+def vec_scalar_mul(vec: cython.double[:], scalar: cython.double) -> np.ndarray:
     """Multiply a vector by a scalar.
 
     Args:
@@ -93,10 +110,15 @@ def vec_scalar_mul(vec: np.ndarray, scalar: float) -> np.ndarray:
     Returns:
         scalar * vec as ndarray of shape (3,).
     """
-    return scalar * vec
+    return np.array([
+        vec[0] * scalar,
+        vec[1] * scalar,
+        vec[2] * scalar
+    ], dtype=np.float64)
 
 
-def vec_norm(vec: np.ndarray) -> float:
+@cython.ccall
+def vec_norm(vec: cython.double[:]) -> cython.double:
     """Compute the Euclidean norm of a 3D vector.
 
     Args:
@@ -105,10 +127,11 @@ def vec_norm(vec: np.ndarray) -> float:
     Returns:
         ||vec|| as float.
     """
-    return float(np.sqrt(vec[0] ** 2 + vec[1] ** 2 + vec[2] ** 2))
+    return math.sqrt(vec[0] ** 2 + vec[1] ** 2 + vec[2] ** 2)
 
 
-def vec_diff_norm(vec1: np.ndarray, vec2: np.ndarray) -> float:
+@cython.ccall
+def vec_diff_norm(vec1: cython.double[:], vec2: cython.double[:]) -> cython.double:
     """Compute the norm of the difference between two vectors.
 
     This is optimized compared to calling vec_norm(vec_subt(...)).
@@ -119,13 +142,14 @@ def vec_diff_norm(vec1: np.ndarray, vec2: np.ndarray) -> float:
     Returns:
         ||vec1 - vec2|| as float.
     """
-    dx = vec1[0] - vec2[0]
-    dy = vec1[1] - vec2[1]
-    dz = vec1[2] - vec2[2]
-    return float(np.sqrt(dx * dx + dy * dy + dz * dz))
+    dx: cython.double = vec1[0] - vec2[0]
+    dy: cython.double = vec1[1] - vec2[1]
+    dz: cython.double = vec1[2] - vec2[2]
+    return math.sqrt(dx * dx + dy * dy + dz * dz)
 
 
-def vec_dot(vec1: np.ndarray, vec2: np.ndarray) -> float:
+@cython.ccall
+def vec_dot(vec1: cython.double[:], vec2: cython.double[:]) -> cython.double:
     """Compute the dot product of two 3D vectors.
 
     Args:
@@ -134,10 +158,11 @@ def vec_dot(vec1: np.ndarray, vec2: np.ndarray) -> float:
     Returns:
         vec1 . vec2 as float.
     """
-    return float(vec1[0] * vec2[0] + vec1[1] * vec2[1] + vec1[2] * vec2[2])
+    return vec1[0] * vec2[0] + vec1[1] * vec2[1] + vec1[2] * vec2[2]
 
 
-def vec_cross(vec1: np.ndarray, vec2: np.ndarray) -> np.ndarray:
+@cython.ccall
+def vec_cross(vec1: cython.double[:], vec2: cython.double[:]) -> np.ndarray:
     """Compute the cross product of two 3D vectors.
 
     Args:
@@ -153,7 +178,8 @@ def vec_cross(vec1: np.ndarray, vec2: np.ndarray) -> np.ndarray:
     ], dtype=np.float64)
 
 
-def vec_cmp(vec1: np.ndarray, vec2: np.ndarray) -> bool:
+@cython.ccall
+def vec_cmp(vec1: cython.double[:], vec2: cython.double[:]) -> cython.bint:
     """Check exact equality of two vectors.
 
     Args:
@@ -162,10 +188,11 @@ def vec_cmp(vec1: np.ndarray, vec2: np.ndarray) -> bool:
     Returns:
         True if all components are exactly equal.
     """
-    return bool(np.all(vec1 == vec2))
+    return (vec1[0] == vec2[0]) and (vec1[1] == vec2[1]) and (vec1[2] == vec2[2])
 
 
-def vec_approx_cmp(vec1: np.ndarray, vec2: np.ndarray, eps: float = 1e-10) -> bool:
+@cython.ccall
+def vec_approx_cmp(vec1: cython.double[:], vec2: cython.double[:], eps: cython.double = 1e-10) -> cython.bint:
     """Check approximate equality of two vectors.
 
     Args:
@@ -175,10 +202,15 @@ def vec_approx_cmp(vec1: np.ndarray, vec2: np.ndarray, eps: float = 1e-10) -> bo
     Returns:
         True if |vec1[i] - vec2[i]| <= eps for all i.
     """
-    return bool(np.all(np.abs(vec1 - vec2) <= eps))
+    return (
+        (abs(vec1[0] - vec2[0]) <= eps) and
+        (abs(vec1[1] - vec2[1]) <= eps) and
+        (abs(vec1[2] - vec2[2]) <= eps)
+    )
 
 
-def unit_vector(vec: np.ndarray) -> np.ndarray:
+@cython.ccall
+def unit_vector(vec: cython.double[:]) -> np.ndarray:
     """Normalize a vector to unit length.
 
     If the vector has zero norm, returns the original vector unchanged
@@ -190,10 +222,15 @@ def unit_vector(vec: np.ndarray) -> np.ndarray:
     Returns:
         vec / ||vec|| as ndarray of shape (3,).
     """
-    norm = vec_norm(vec)
+    norm: cython.double = vec_norm(vec)
     if norm == 0.0:
-        return vec.copy()
-    return vec / norm
+        return np.array([vec[0], vec[1], vec[2]], dtype=np.float64)
+    return np.array([vec[0] / norm, vec[1] / norm, vec[2] / norm], dtype=np.float64)
+
+
+def is_compiled() -> bool:
+    """Return whether this module is compiled to C."""
+    return cython.compiled
 
 
 # ---------------------------------------------------------------------------
@@ -214,6 +251,10 @@ class Vec3dBatch:
     """
 
     __slots__ = ("x", "y", "z")
+
+    x: np.ndarray
+    y: np.ndarray
+    z: np.ndarray
 
     def __init__(
         self,
@@ -268,7 +309,7 @@ class Vec3dBatch:
 
     def __getitem__(self, idx: int) -> np.ndarray:
         """Get a single vector as a (3,) array."""
-        return np.array([self.x[idx], self.y[idx], self.z[idx]])
+        return np.array([self.x[idx], self.y[idx], self.z[idx]], dtype=np.float64)
 
     def __setitem__(self, idx: int, value: np.ndarray):
         """Set a single vector from a (3,) array."""

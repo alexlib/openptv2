@@ -5,10 +5,12 @@ Translation of lib/src/epi.c and lib/include/epi.h.
 Computes epipolar lines and candidate matching between cameras.
 """
 
+import math
+import cython
 import numpy as np
 from dataclasses import dataclass
 
-MAXCAND = 200
+MAXCAND: cython.int = 200
 
 
 @dataclass
@@ -25,7 +27,14 @@ class Coord2d:
     y: float
 
 
-def epipolar_curve(image_point, origin_cal, project_cal, num_points, cpar, vpar):
+@cython.ccall
+@cython.locals(
+    xp=cython.double, yp=cython.double,
+    xf=cython.double, yf=cython.double,
+    i=cython.int, Z=cython.double,
+    xm=cython.double, ym=cython.double
+)
+def epipolar_curve(image_point, origin_cal, project_cal, num_points: cython.int, cpar, vpar) -> np.ndarray:
     """Generate points along the epipolar line projected into a second camera.
 
     Takes a distorted pixel coordinate in one camera and produces the
@@ -77,7 +86,14 @@ def epipolar_curve(image_point, origin_cal, project_cal, num_points, cpar, vpar)
     return line_points
 
 
-def epi_mm(xl, yl, cal1, cal2, mmp, vpar):
+@cython.ccall
+@cython.locals(
+    xl=cython.double, yl=cython.double,
+    Zmin=cython.double, Zmax=cython.double,
+    xmin=cython.double, ymin=cython.double,
+    xmax=cython.double, ymax=cython.double
+)
+def epi_mm(xl: cython.double, yl: cython.double, cal1, cal2, mmp, vpar):
     """Compute epipolar line endpoints in second camera.
 
     Args:
@@ -133,7 +149,12 @@ def epi_mm(xl, yl, cal1, cal2, mmp, vpar):
     return xmin, ymin, xmax, ymax
 
 
-def epi_mm_2d(xl, yl, cal, mmp, vpar):
+@cython.ccall
+@cython.locals(
+    xl=cython.double, yl=cython.double,
+    Zmin=cython.double, Zmax=cython.double
+)
+def epi_mm_2d(xl: cython.double, yl: cython.double, cal, mmp, vpar) -> np.ndarray:
     """Compute 3D position for single-camera multimedia case."""
     from .ray_tracing import ray_tracing
     from .multimed import move_along_ray
@@ -159,14 +180,27 @@ def epi_mm_2d(xl, yl, cal, mmp, vpar):
     return move_along_ray(0.5 * (Zmin + Zmax), pos, v)
 
 
-def _quality_ratio(a, b):
+@cython.ccall
+def _quality_ratio(a: cython.double, b: cython.double) -> cython.double:
     if a < b:
-        return float(a) / float(b)
-    return float(b) / float(a)
+        return a / b
+    return b / a
 
 
-def find_candidate(crd, pix, num, xa, ya, xb, yb, n, nx, ny, sumg,
-                   cand_out, vpar, cpar, cal):
+@cython.ccall
+@cython.locals(
+    num=cython.int, xa=cython.double, ya=cython.double, xb=cython.double, yb=cython.double,
+    n=cython.int, nx=cython.int, ny=cython.int, sumg=cython.int,
+    tol_band_width=cython.double, count=cython.int,
+    xmin=cython.double, xmax=cython.double, ymin=cython.double, ymax=cython.double,
+    m=cython.double, b=cython.double, temp=cython.double,
+    j0=cython.int, dj=cython.int, j=cython.int, p2=cython.int,
+    d=cython.double, qn=cython.double, qnx=cython.double, qny=cython.double, qsumg=cython.double,
+    corr=cython.double
+)
+def find_candidate(crd, pix, num: cython.int, xa: cython.double, ya: cython.double,
+                   xb: cython.double, yb: cython.double, n: cython.int, nx: cython.int,
+                   ny: cython.int, sumg: cython.int, cand_out, vpar, cpar, cal) -> cython.int:
     """Find candidates along epipolar line.
 
     Matches C find_candidate exactly.
@@ -242,7 +276,7 @@ def find_candidate(crd, pix, num, xa, ya, xb, yb, n, nx, ny, sumg,
         if crd[j].x <= xa - tol_band_width or crd[j].x >= xb + tol_band_width:
             continue
 
-        d = abs((crd[j].y - m * crd[j].x - b) / np.sqrt(m * m + 1))
+        d = abs((crd[j].y - m * crd[j].x - b) / math.sqrt(m * m + 1))
         if d >= tol_band_width:
             continue
 
@@ -267,3 +301,8 @@ def find_candidate(crd, pix, num, xa, ya, xb, yb, n, nx, ny, sumg,
         count += 1
 
     return count
+
+
+def is_compiled() -> bool:
+    """Return whether this module is compiled to C."""
+    return cython.compiled
