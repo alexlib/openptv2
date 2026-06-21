@@ -12,7 +12,7 @@ COPY dist/*.whl /project/dist/
 
 RUN uv venv /opt/venv --python 3.11 && \
     . /opt/venv/bin/activate && \
-    uv pip install /project/dist/openptv2-*.whl[gui] pytest pytest-cov numba
+    uv pip install /project/dist/openptv2-*.whl[gui] pytest pytest-cov
 
 ENV PATH="/opt/venv/bin:$PATH"
 ENV VIRTUAL_ENV=/opt/venv

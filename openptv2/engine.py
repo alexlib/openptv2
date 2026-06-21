@@ -2,7 +2,7 @@
 Engine selection module for openptv2.
 
 Provides functionality to switch between the C/Cython (optv) engine
-and the Python/Numba fallback engine.
+and the Python fallback engine.
 
 Example usage:
     >>> from openptv2 import get_engine, set_engine

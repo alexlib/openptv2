@@ -1931,13 +1931,13 @@ def main():
     parser.add_argument(
         "--debug-mode",
         action="store_true",
-        help="Use Python/Numba engine for debugging instead of C/Cython (optv)",
+        help="Use Python engine for debugging instead of C/Cython (optv)",
     )
     parser.add_argument(
         "--engine",
         "-e",
         choices=["optv", "python"],
-        help="Tracking engine to use: 'optv' (C/Cython) or 'python' (Python/Numba)",
+        help="Tracking engine to use: 'optv' (C/Cython) or 'python' (Python)",
     )
     parser.add_argument(
         "--workdir",

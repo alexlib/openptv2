@@ -228,8 +228,6 @@ def _img_coord_params(
 def img_coord_batch(positions, cal, mm):
     """Project N 3D positions to distorted metric image coordinates.
 
-    Uses Numba JIT when available for ~30x speedup over scalar loop.
-
     Args:
         positions: (N, 3) array of 3D positions.
         cal: Calibration object.
@@ -239,20 +237,6 @@ def img_coord_batch(positions, cal, mm):
         (N, 2) array of distorted metric coordinates.
     """
     positions = np.ascontiguousarray(positions, dtype=np.float64)
-    try:
-        from .track_kernels import (
-            HAS_NUMBA, img_coord_batch_jit, pack_cal_array, pack_mmlut,
-        )
-        if HAS_NUMBA:
-            cal_arr = pack_cal_array(cal, mm)
-            mmlut_data, mmlut_origin, mmlut_nr, mmlut_nz, mmlut_rw = pack_mmlut(cal)
-            return img_coord_batch_jit(
-                positions, cal_arr, mmlut_data, mmlut_origin,
-                mmlut_nr, mmlut_nz, mmlut_rw,
-            )
-    except ImportError:
-        pass
-
     return _img_coord_batch_impl(positions, cal, mm)
 
 
@@ -305,8 +289,6 @@ def _img_coord_batch_impl(positions: cython.double[:, :], cal, mm) -> np.ndarray
 def flat_image_coord_batch(positions, cal, mm):
     """Project N 3D positions to flat metric image coordinates.
 
-    Uses Numba JIT when available for ~24x speedup over scalar loop.
-
     Args:
         positions: (N, 3) array of 3D positions.
         cal: Calibration object.
@@ -316,20 +298,6 @@ def flat_image_coord_batch(positions, cal, mm):
         (N, 2) array of flat (undistorted) metric coordinates.
     """
     positions = np.ascontiguousarray(positions, dtype=np.float64)
-    try:
-        from .track_kernels import (
-            HAS_NUMBA, flat_image_coord_batch_jit, pack_cal_array, pack_mmlut,
-        )
-        if HAS_NUMBA:
-            cal_arr = pack_cal_array(cal, mm)
-            mmlut_data, mmlut_origin, mmlut_nr, mmlut_nz, mmlut_rw = pack_mmlut(cal)
-            return flat_image_coord_batch_jit(
-                positions, cal_arr, mmlut_data, mmlut_origin,
-                mmlut_nr, mmlut_nz, mmlut_rw,
-            )
-    except ImportError:
-        pass
-
     return _flat_image_coord_batch_impl(positions, cal, mm)
 
 

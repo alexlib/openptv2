@@ -1,28 +1,14 @@
-"""Numba-compiled kernels for the tracking hot path.
+"""Compiled kernels for the tracking hot path.
 
-These are JIT-compiled versions of _point_to_pixel_packed and
-multimed_r_nlay_iterative. When Numba is unavailable, plain Python
-fallbacks are used transparently.
+Optimized implementations of point_to_pixel, multimed_r_nlay_iterative,
+and full tracking loops. These run as plain Python when uncompiled and at
+C speed when compiled via Cython 3 Pure Python Mode.
 """
 
 import math
 import numpy as np
 
 import cython
-
-# We have fully removed Numba from all algorithms to use pure Python mode of Cython 3+.
-# To avoid refactoring all files that check for HAS_NUMBA to decide whether
-# to use these high-performance kernels, we set HAS_NUMBA to True so they
-# always invoke these optimized, Cython-compiled pathways.
-HAS_NUMBA = True
-prange = range
-
-def njit(*args, **kwargs):
-    def decorator(fn):
-        return fn
-    if len(args) == 1 and callable(args[0]):
-        return args[0]
-    return decorator
 
 
 def is_compiled() -> bool:
@@ -45,7 +31,7 @@ CAL_ARRAY_SIZE = 31
 
 
 def pack_cal_array(cal, mm):
-    """Pack calibration into a flat float64 array for Numba kernels."""
+    """Pack calibration into a flat float64 array for compiled kernels."""
     ext = cal.ext_par
     ip = cal.int_par
     gp = cal.glass_par
@@ -71,7 +57,7 @@ def pack_cal_array(cal, mm):
 
 
 def pack_mmlut(cal):
-    """Pack mmlut into Numba-friendly arrays.
+    """Pack mmlut into kernel-friendly arrays.
 
     Returns (data, origin, nr, nz, rw). If no mmlut, data has length 0.
     """
@@ -85,11 +71,10 @@ def pack_mmlut(cal):
             0, 0, 0.0)
 
 
-@njit(cache=True)
 def _multimed_r_nlay_1layer(pos_x, pos_y, pos_z,
                              ext_x0, ext_y0, ext_z0,
                              mm_n1, mm_n2_0, mm_n3, mm_d0):
-    """Single-layer iterative radial shift — Numba-compiled."""
+    """Single-layer iterative radial shift."""
     if mm_n1 == 1.0 and mm_n2_0 == 1.0 and mm_n3 == 1.0:
         return 1.0
 
@@ -137,11 +122,10 @@ def _multimed_r_nlay_1layer(pos_x, pos_y, pos_z,
     return 1.0
 
 
-@njit(cache=True)
 def point_to_pixel_jit(pos, cal, mmlut_data, mmlut_origin,
                        mmlut_nr, mmlut_nz, mmlut_rw,
                        imx_half, imy_half, inv_pix_x, inv_pix_y, chfield):
-    """Project 3D position to pixel coordinates — Numba-compiled.
+    """Project 3D position to pixel coordinates.
 
     Args:
         pos: (3,) float64 array — 3D position.
@@ -282,11 +266,10 @@ def point_to_pixel_jit(pos, cal, mmlut_data, mmlut_origin,
 
 PT_UNUSED = -999
 
-@njit(cache=True)
 def candsearch_in_pix_jit(targ_x, targ_y, targ_tnr, num_targets,
                            cent_x, cent_y, dl, dr, du, dd,
                            imx, imy, tr_unused):
-    """Find up to 4 closest candidates in pixel search area — Numba-compiled.
+    """Find up to 4 closest candidates in pixel search area.
 
     Args:
         targ_x, targ_y: float64 arrays of target coordinates.
@@ -357,11 +340,10 @@ def candsearch_in_pix_jit(targ_x, targ_y, targ_tnr, num_targets,
     return p1, p2, p3, p4
 
 
-@njit(cache=True)
 def candsearch_in_pix_rest_jit(targ_x, targ_y, targ_tnr, num_targets,
                                 cent_x, cent_y, dl, dr, du, dd,
                                 imx, imy, tr_unused):
-    """Find closest unused candidate — Numba-compiled.
+    """Find closest unused candidate.
 
     Returns:
         (index, count) — index of closest candidate with tnr==TR_UNUSED, count (0 or 1).
@@ -414,15 +396,14 @@ def candsearch_in_pix_rest_jit(targ_x, targ_y, targ_tnr, num_targets,
     return best, counter
 
 
-@njit(cache=True)
 def searchquader_jit(point, quader, num_cams, cal_arrays, mmlut_datas,
                      mmlut_origins, mmlut_nrs, mmlut_nzs, mmlut_rws,
                      imx_half, imy_half, inv_pix_x, inv_pix_y, chfield,
                      imx, imy):
-    """Compute search area for all cameras — Numba-compiled.
+    """Compute search area for all cameras.
 
     Projects point + 8 corner points through all cameras in a single JIT call,
-    eliminating per-projection Python→Numba dispatch overhead.
+    eliminating per-projection dispatch overhead.
 
     Args:
         point: (3,) float64 — center position.
@@ -479,9 +460,8 @@ def searchquader_jit(point, quader, num_cams, cal_arrays, mmlut_datas,
     return xr, xl, yd, yu
 
 
-@njit(cache=True)
 def sort_candidates_by_freq_jit(ftnr, freq, whichcam, n, num_cams, max_cands):
-    """Sort candidates by frequency — Numba-compiled, matches C algorithm.
+    """Sort candidates by frequency, matches C algorithm.
 
     Args:
         ftnr: (n,) int32 — candidate target numbers (TR_UNUSED = -1).
@@ -541,7 +521,6 @@ def sort_candidates_by_freq_jit(ftnr, freq, whichcam, n, num_cams, max_cands):
     return num_valid
 
 
-@njit(cache=True)
 def sorted_candidates_jit(
     center, center_proj_x, center_proj_y,
     num_cams, max_cands,
@@ -657,10 +636,9 @@ def sorted_candidates_jit(
     return ftnr, freq, whichcam, num_valid
 
 
-@njit(cache=True)
 def angle_acc_jit(start_x, start_y, start_z, pred_x, pred_y, pred_z,
                   cand_x, cand_y, cand_z):
-    """Compute angle and acceleration between predicted and candidate — Numba-compiled."""
+    """Compute angle and acceleration between predicted and candidate."""
     v0x = pred_x - start_x
     v0y = pred_y - start_y
     v0z = pred_z - start_z
@@ -692,9 +670,8 @@ def angle_acc_jit(start_x, start_y, start_z, pred_x, pred_y, pred_z,
     return angle, acc
 
 
-@njit(cache=True)
 def _ray_tracing_jit(x, y, cal):
-    """Trace ray through multi-media interface — Numba-compiled.
+    """Trace ray through multi-media interface.
 
     Returns (Xx, Xy, Xz, ox, oy, oz) — crossing point and direction.
     """
@@ -781,9 +758,8 @@ def _ray_tracing_jit(x, y, cal):
 COORD_UNUSED = -1e10
 
 
-@njit(cache=True)
 def point_position_jit(targets, num_cams, cal_arrays):
-    """Compute 3D position from multiple camera rays — Numba-compiled.
+    """Compute 3D position from multiple camera rays.
 
     Args:
         targets: (num_cams, 2) float64 — metric flat coordinates per camera.
@@ -875,9 +851,8 @@ def point_position_jit(targets, num_cams, cal_arrays):
     return pos, dtot
 
 
-@njit(cache=True)
 def pixel_to_metric_jit(x_pixel, y_pixel, imx, imy, pix_x, pix_y, chfield):
-    """Convert pixel to metric coordinates — Numba-compiled."""
+    """Convert pixel to metric coordinates."""
     yp = y_pixel
     if chfield == 1:
         yp = 2.0 * yp + 1.0
@@ -888,10 +863,9 @@ def pixel_to_metric_jit(x_pixel, y_pixel, imx, imy, pix_x, pix_y, chfield):
     return x_metric, y_metric
 
 
-@njit(cache=True)
 def dist_to_flat_jit(dist_x, dist_y, xh, yh, k1, k2, k3, p1, p2, scx, she,
                      tol):
-    """Inverse Brown distortion — Numba-compiled."""
+    """Inverse Brown distortion."""
     r_init = math.sqrt(dist_x * dist_x + dist_y * dist_y)
     if r_init < 1e-10:
         return -xh, -yh
@@ -930,7 +904,6 @@ def dist_to_flat_jit(dist_x, dist_y, xh, yh, k1, k2, k3, p1, p2, scx, she,
     return xq - xh, yq - yh
 
 
-@njit(cache=True)
 def assess_new_position_jit(
     pos, num_cams, add_part,
     cal_arrays, mmlut_datas, mmlut_origins, mmlut_nrs, mmlut_nzs, mmlut_rws,
@@ -996,7 +969,6 @@ COORD_UNUSED_K = -1e10
 ADD_PART_K = 3.0
 
 
-@njit(cache=True)
 def trackcorr_loop_jit(
     orig_parts_1,
     # Frame 0 (prev — read only)
@@ -1030,7 +1002,7 @@ def trackcorr_loop_jit(
     """Full per-particle tracking loop + link resolution — single JIT entry.
 
     All internal calls (sorted_candidates, angle_acc, assess_new_position,
-    point_position) are Numba->Numba with zero dispatch overhead.
+    point_position) are compiled with zero dispatch overhead.
 
     Args:
         num_parts_2, num_parts_3: (1,) int32 arrays — mutable particle counts.
@@ -1433,7 +1405,6 @@ def trackcorr_loop_jit(
     return count1, num_added
 
 
-@njit(cache=True)
 def trackback_loop_jit(
     num_parts_1,
     # Frame 0 (forward/next in time — read only)
@@ -1696,7 +1667,6 @@ def trackback_loop_jit(
     return count1, num_added
 
 
-@njit(cache=True)
 def _find_closest_in_3d(path_x_2, np2, pred_x, pred_y, pred_z,
                          dx, dy, dz, max_cands,
                          cand_inds, cand_dists):
@@ -1732,7 +1702,6 @@ def _find_closest_in_3d(path_x_2, np2, pred_x, pred_y, pred_z,
     return n_found
 
 
-@njit(cache=True)
 def track3d_loop_jit(
     orig_parts,
     # Frame 0 (prev) — read only
@@ -1911,9 +1880,8 @@ def track3d_loop_jit(
 # Batch kernels for standalone API acceleration
 # ============================================================
 
-@njit(cache=True)
 def metric_to_pixel_jit(x_metric, y_metric, imx, imy, pix_x, pix_y, chfield):
-    """Convert metric to pixel coordinates — Numba-compiled."""
+    """Convert metric to pixel coordinates."""
     x_pixel = x_metric / pix_x + imx * 0.5
     y_pixel = imy * 0.5 - y_metric / pix_y
     if chfield == 1:
@@ -1923,10 +1891,9 @@ def metric_to_pixel_jit(x_metric, y_metric, imx, imy, pix_x, pix_y, chfield):
     return x_pixel, y_pixel
 
 
-@njit(cache=True)
 def _flat_image_coord_jit(pos, cal, mmlut_data, mmlut_origin,
                            mmlut_nr, mmlut_nz, mmlut_rw):
-    """Project 3D to flat metric image coordinates — Numba-compiled.
+    """Project 3D to flat metric image coordinates.
 
     Returns (x, y) without distortion or pixel conversion.
     """
@@ -2021,10 +1988,9 @@ def _flat_image_coord_jit(pos, cal, mmlut_data, mmlut_origin,
     return x, y
 
 
-@njit(cache=True)
 def _img_coord_jit(pos, cal, mmlut_data, mmlut_origin,
                     mmlut_nr, mmlut_nz, mmlut_rw):
-    """Project 3D to distorted metric image coordinates — Numba-compiled."""
+    """Project 3D to distorted metric image coordinates."""
     x, y = _flat_image_coord_jit(pos, cal, mmlut_data, mmlut_origin,
                                   mmlut_nr, mmlut_nz, mmlut_rw)
 
@@ -2051,35 +2017,32 @@ def _img_coord_jit(pos, cal, mmlut_data, mmlut_origin,
     return x_dist, y_dist
 
 
-@njit(cache=True, parallel=True)
 def img_coord_batch_jit(positions, cal, mmlut_data, mmlut_origin,
                          mmlut_nr, mmlut_nz, mmlut_rw):
-    """Project N 3D positions to distorted metric coords — parallel Numba."""
+    """Project N 3D positions to distorted metric coords."""
     n = positions.shape[0]
     result = np.empty((n, 2), dtype=np.float64)
-    for i in prange(n):
+    for i in range(n):
         result[i, 0], result[i, 1] = _img_coord_jit(
             positions[i], cal, mmlut_data, mmlut_origin,
             mmlut_nr, mmlut_nz, mmlut_rw)
     return result
 
 
-@njit(cache=True, parallel=True)
 def flat_image_coord_batch_jit(positions, cal, mmlut_data, mmlut_origin,
                                 mmlut_nr, mmlut_nz, mmlut_rw):
-    """Project N 3D positions to flat metric coords — parallel Numba."""
+    """Project N 3D positions to flat metric coords."""
     n = positions.shape[0]
     result = np.empty((n, 2), dtype=np.float64)
-    for i in prange(n):
+    for i in range(n):
         result[i, 0], result[i, 1] = _flat_image_coord_jit(
             positions[i], cal, mmlut_data, mmlut_origin,
             mmlut_nr, mmlut_nz, mmlut_rw)
     return result
 
 
-@njit(cache=True, parallel=True)
 def ray_tracing_batch_jit(xy, cal):
-    """Trace N rays through multi-media interface — parallel Numba.
+    """Trace N rays through multi-media interface.
 
     Args:
         xy: (N, 2) float64 — metric image coordinates.
@@ -2091,16 +2054,15 @@ def ray_tracing_batch_jit(xy, cal):
     n = xy.shape[0]
     positions = np.empty((n, 3), dtype=np.float64)
     directions = np.empty((n, 3), dtype=np.float64)
-    for i in prange(n):
+    for i in range(n):
         Xx, Xy, Xz, ox, oy, oz = _ray_tracing_jit(xy[i, 0], xy[i, 1], cal)
         positions[i, 0] = Xx; positions[i, 1] = Xy; positions[i, 2] = Xz
         directions[i, 0] = ox; directions[i, 1] = oy; directions[i, 2] = oz
     return positions, directions
 
 
-@njit(cache=True, parallel=True)
 def point_position_batch_jit(all_targets, num_pts, num_cams, cal_arrays):
-    """Triangulate M targets from N cameras — parallel Numba.
+    """Triangulate M targets from N cameras.
 
     Args:
         all_targets: (M, num_cams, 2) float64.
@@ -2113,7 +2075,7 @@ def point_position_batch_jit(all_targets, num_pts, num_cams, cal_arrays):
     """
     positions = np.empty((num_pts, 3), dtype=np.float64)
     distances = np.empty(num_pts, dtype=np.float64)
-    for i in prange(num_pts):
+    for i in range(num_pts):
         pos, dist = point_position_jit(all_targets[i], num_cams, cal_arrays)
         positions[i, 0] = pos[0]
         positions[i, 1] = pos[1]
@@ -2122,33 +2084,30 @@ def point_position_batch_jit(all_targets, num_pts, num_cams, cal_arrays):
     return positions, distances
 
 
-@njit(cache=True, parallel=True)
 def pixel_to_metric_batch_jit(xy, imx, imy, pix_x, pix_y, chfield):
-    """Convert N pixel coordinates to metric — parallel Numba."""
+    """Convert N pixel coordinates to metric."""
     n = xy.shape[0]
     result = np.empty((n, 2), dtype=np.float64)
-    for i in prange(n):
+    for i in range(n):
         result[i, 0], result[i, 1] = pixel_to_metric_jit(
             xy[i, 0], xy[i, 1], imx, imy, pix_x, pix_y, chfield)
     return result
 
 
-@njit(cache=True, parallel=True)
 def metric_to_pixel_batch_jit(xy, imx, imy, pix_x, pix_y, chfield):
-    """Convert N metric coordinates to pixel — parallel Numba."""
+    """Convert N metric coordinates to pixel."""
     n = xy.shape[0]
     result = np.empty((n, 2), dtype=np.float64)
-    for i in prange(n):
+    for i in range(n):
         result[i, 0], result[i, 1] = metric_to_pixel_jit(
             xy[i, 0], xy[i, 1], imx, imy, pix_x, pix_y, chfield)
     return result
 
 
-@njit(cache=True)
 def targ_rec_jit(img, img0, gvthres, discont,
                  nnmin, nnmax, nxmin, nxmax, nymin, nymax, sumg_min,
                  xmin, ymin, xmax, ymax, max_targets):
-    """BFS flood-fill target recognition — Numba JIT.
+    """BFS flood-fill target recognition.
 
     Args:
         img: original uint8 image (imy, imx) — read-only for neighbor checks.
@@ -2290,7 +2249,6 @@ def targ_rec_jit(img, img0, gvthres, discont,
     return n_targets, out_x, out_y, out_n, out_nx, out_ny, out_sumg
 
 
-@njit(cache=True, parallel=True)
 def init_mmlut_data_jit(nr, nz, rw, cal_t_x0, cal_t_y0, cal_t_z0,
                         Zmin_t, mm_n1, mm_n2_0, mm_n3, mm_d0):
     """Fill mmlut data grid in parallel — single-layer multimedia.
@@ -2310,7 +2268,7 @@ def init_mmlut_data_jit(nr, nz, rw, cal_t_x0, cal_t_y0, cal_t_z0,
         data: (nr * nz,) float64 array of radial shift factors.
     """
     data = np.empty(nr * nz, dtype=np.float64)
-    for i in prange(nr):
+    for i in range(nr):
         R = i * rw + cal_t_x0
         for j in range(nz):
             Z = Zmin_t + j * rw

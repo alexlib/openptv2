@@ -15,153 +15,6 @@ import cython
 import numpy as np
 from pathlib import Path
 
-HAS_NUMBA = False
-prange = range
-
-def njit(*args, **kwargs):
-    def decorator(fn):
-        return fn
-    if len(args) == 1 and callable(args[0]):
-        return args[0]
-    return decorator
-
-
-
-# --------------- Numba JIT kernels ---------------
-
-@njit(cache=True, parallel=True)
-def _filter_3_jit(src, filt_flat, filt_sum, imx, imy, min_brightness):
-    image_size = imx * imy
-    result = np.zeros(image_size, dtype=np.uint8)
-    f00, f01, f02 = filt_flat[0], filt_flat[1], filt_flat[2]
-    f10, f11, f12 = filt_flat[3], filt_flat[4], filt_flat[5]
-    f20, f21, f22 = filt_flat[6], filt_flat[7], filt_flat[8]
-    end = image_size - imx - 1
-    for idx in prange(imx + 1, end):
-        buf = (f00 * src[idx - imx - 1] + f01 * src[idx - imx] + f02 * src[idx - imx + 1]
-             + f10 * src[idx - 1]       + f11 * src[idx]       + f12 * src[idx + 1]
-             + f20 * src[idx + imx - 1] + f21 * src[idx + imx] + f22 * src[idx + imx + 1])
-        buf = buf / filt_sum
-        if buf < min_brightness:
-            buf = min_brightness
-        elif buf > 255.0:
-            buf = 255.0
-        result[idx] = np.uint8(buf)
-    return result
-
-
-@njit(cache=True, parallel=True)
-def _lowpass_3_jit(src, imx, imy):
-    image_size = imx * imy
-    result = np.zeros(image_size, dtype=np.uint8)
-    end = image_size - imx - 1
-    for idx in prange(imx + 1, end):
-        buf = (src[idx - imx - 1] + src[idx - imx] + src[idx - imx + 1]
-             + src[idx - 1]       + src[idx]       + src[idx + 1]
-             + src[idx + imx - 1] + src[idx + imx] + src[idx + imx + 1])
-        result[idx] = buf // 9
-    return result
-
-
-@njit(cache=True, parallel=True)
-def _box_blur_row_pass_jit(src_flat, row_accum, filt_span, imx, imy):
-    """Row pass — parallelized across rows."""
-    n = 2 * filt_span + 1
-    for i in prange(imy):
-        rs = i * imx
-        accum = np.int32(src_flat[rs])
-        row_accum[rs] = accum * n
-
-        for j in range(1, filt_span + 1):
-            if j >= imx:
-                break
-            li = 2 * j - 1
-            ri = 2 * j
-            if ri < imx:
-                accum += src_flat[rs + li] + src_flat[rs + ri]
-            elif li < imx:
-                accum += src_flat[rs + li]
-            m = 2 * j + 1
-            row_accum[rs + j] = accum * n // m
-
-        mid_end = imx - filt_span if imx > filt_span else imx
-        for j in range(filt_span + 1, mid_end):
-            accum += src_flat[rs + j + filt_span] - src_flat[rs + j - filt_span - 1]
-            row_accum[rs + j] = accum
-
-        end_start = imx - filt_span
-        if end_start < filt_span + 1:
-            end_start = filt_span + 1
-        left_ptr = imx - n
-        m = n - 2
-        for j in range(end_start, imx):
-            if left_ptr >= 0 and left_ptr + 1 < imx:
-                accum -= src_flat[rs + left_ptr] + src_flat[rs + left_ptr + 1]
-            if m > 0:
-                row_accum[rs + j] = accum * n // m
-            left_ptr += 2
-            m -= 2
-
-
-@njit(cache=True)
-def _fast_box_blur_jit(src_flat, filt_span, imx, imy):
-    n = 2 * filt_span + 1
-    nq = n * n
-    image_size = imx * imy
-    row_accum = np.zeros(image_size, dtype=np.int32)
-    dest = np.zeros(image_size, dtype=np.uint8)
-
-    _box_blur_row_pass_jit(src_flat, row_accum, filt_span, imx, imy)
-
-    # Column pass (sequential — vertical dependency)
-    col_accum = np.zeros(imx, dtype=np.int32)
-    for j in range(imx):
-        col_accum[j] = row_accum[j]
-        dest[j] = np.uint8(col_accum[j] // n)
-
-    for i in range(1, filt_span + 1):
-        if i >= imy:
-            break
-        r1 = 2 * i - 1
-        r2 = 2 * i
-        ds = i * imx
-        for j in range(imx):
-            if r2 < imy:
-                col_accum[j] += row_accum[r1 * imx + j] + row_accum[r2 * imx + j]
-            elif r1 < imy:
-                col_accum[j] += row_accum[r1 * imx + j]
-            dest[ds + j] = np.uint8(n * col_accum[j] // nq // (2 * i + 1))
-
-    ptr1_row = 0
-    ptr2_row = n
-    mid_upper = imy - filt_span
-    if mid_upper < filt_span + 1:
-        mid_upper = filt_span + 1
-    for i in range(filt_span + 1, mid_upper):
-        ds = i * imx
-        if ptr2_row < imy:
-            for j in range(imx):
-                col_accum[j] += row_accum[ptr2_row * imx + j] - row_accum[ptr1_row * imx + j]
-                dest[ds + j] = np.uint8(col_accum[j] // nq)
-        else:
-            for j in range(imx):
-                dest[ds + j] = np.uint8(col_accum[j] // nq)
-        ptr1_row += 1
-        ptr2_row += 1
-
-    for i in range(filt_span, 0, -1):
-        r1 = imy - 2 * i - 1
-        r2 = r1 + 1
-        ds = (imy - i) * imx
-        if 0 <= r1 < imy and r2 < imy:
-            for j in range(imx):
-                col_accum[j] -= row_accum[r1 * imx + j] + row_accum[r2 * imx + j]
-                dest[ds + j] = np.uint8(n * col_accum[j] // nq // (2 * i + 1))
-        else:
-            for j in range(imx):
-                dest[ds + j] = np.uint8(n * col_accum[j] // nq // (2 * i + 1))
-
-    return dest
 
 
 def filter_3(
@@ -193,11 +46,6 @@ def filter_3(
     if filt_sum == 0:
         raise ValueError("Filter kernel sum is zero")
 
-    if HAS_NUMBA:
-        src = np.ascontiguousarray(img, dtype=np.float64).ravel()
-        return _filter_3_jit(src, filt.ravel(), filt_sum, imx, imy,
-                             float(min_brightness)).reshape(imy, imx)
-
     src = np.asarray(img, dtype=np.float64).ravel()
     image_size = imx * imy
     result = np.zeros(image_size, dtype=np.float64)
@@ -228,10 +76,6 @@ def lowpass_3(img: np.ndarray, imx: int, imy: int) -> np.ndarray:
     Returns:
         Blurred image as 2D uint8 array.
     """
-    if HAS_NUMBA:
-        src = np.ascontiguousarray(img, dtype=np.int16).ravel()
-        return _lowpass_3_jit(src, imx, imy).reshape(imy, imx)
-
     src = np.asarray(img, dtype=np.float64).ravel()
     image_size = imx * imy
     result = np.zeros(image_size, dtype=np.float64)
@@ -300,10 +144,6 @@ def fast_box_blur(
     Direct translation of C fast_box_blur. Uses sliding-window accumulation
     in both row and column directions.
     """
-    if HAS_NUMBA:
-        src_flat = np.ascontiguousarray(img, dtype=np.int32).ravel()
-        return _fast_box_blur_jit(src_flat, filt_span, imx, imy).reshape(imy, imx)
-
     src = np.asarray(img, dtype=np.float64).reshape(imy, imx)
     n = 2 * filt_span + 1
     nq = n * n

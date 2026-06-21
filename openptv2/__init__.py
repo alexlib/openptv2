@@ -4,7 +4,7 @@ openptv2 - Unified OpenPTV: Particle Tracking Velocimetry
 This package provides a unified interface to OpenPTV algorithms with
 dual-engine support:
 - optv: C/Cython engine (default if available, fastest)
-- python: Pure Python/Numba engine (for debugging, cloud deployment)
+- python: Pure Python engine (for debugging, cloud deployment)
 
 Engine selection via environment variable:
     export OPENPTV_ENGINE=python  # Use Python engine

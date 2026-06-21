@@ -147,9 +147,59 @@ python -m gui.pyptv.pyptv_gui
 4. **Future-proof:** Easy to add algorithms-only features (Numba, JAX).
 5. **Zero overhead:** Wrappers are thin, no performance penalty.
 
-## 🚀 Next Immediate Steps
-1. ✅ **GUI Maintenance & Alignment**: Verified and stabilized the Enthought TraitsUI/Chaco GUI stack to work seamlessly with the new pure Python engine.
-2. ✅ **Consolidate Parameter Management & YAML transition**: Completed integration of `ParameterManager` into `gui/pyptv` code and standardized exclusively on YAML files.
-3. ✅ **Resolve Bug Regressions & Parity**: Fixed standalone dumbbell calibration import bugs and overhauled `correspondences.py` with robust duck-typing to handle both Python and Cython read-only target APIs seamlessly.
-4. ✅ **Binary Wheels**: Setup `cibuildwheel` configurations for multi-platform compilation of Cython engine wheels.
-5. **Verify Fallbacks**: Verify dual-engine fallback functionality.
+## 🔄 Cython 3 Pure Python Consolidation
+
+See `CYTHON_3_PURE_PYTHON_PLAN.md` for the full master plan. We are eliminating the dual-engine architecture and standardizing on **Cython 3 Pure Python Mode** as the single engine.
+
+### Current State (2026-06-21)
+
+**Phase 1 (Housekeeping & Deletion):** NOT STARTED
+- `lib/` still present (73 C/H files)
+- `bindings/` still present (81 files)
+- `openptv2/engine.py` and 11 forwarder modules still present
+- `openptv2/__init__.py` still imports from forwarders, not `algorithms/` directly
+
+**Phase 2 (Cython 3 Annotations):** ~30% DONE
+- All 19 algorithm modules have `import cython`
+- 6 of 19 modules have `@cython.ccall`/`@cython.boundscheck`/etc decorators:
+  `vec_utils`, `trafo`, `imgcoord`, `multimed`, `epi`, `ray_tracing`
+- 13 modules still lack performance decorators
+- 11 modules still reference Numba (`HAS_NUMBA`, `@njit`, `try: import numba`)
+- `track_kernels.py` has a no-op `njit` shim but still uses the decorator everywhere
+
+**Phase 3 (Build System):** PARTIAL
+- `setup.py` has `cythonize()` for `algorithms/*.py` ✅
+- `pyproject.toml` still lists `numba>=0.60.0` in main, optional, and dev deps ❌
+
+**Phase 4 (GUI Integration):** Blocked on Phase 1
+**Phase 5 (Verification):** Blocked on Phases 1-4
+
+### Next Steps
+
+#### Step 1: Remove Numba (all references)
+Clean removal of all Numba code paths, shims, and dependencies:
+1. **`algorithms/track_kernels.py`**: Remove the `njit` shim and all `@njit(cache=True)` decorators. Replace with `@cython.ccall` (or `@cython.cfunc` for internal helpers). Replace `prange = range` with proper Cython parallel constructs or plain `range`.
+2. **11 algorithm modules**: Remove `try: import numba` / `HAS_NUMBA` / `if HAS_NUMBA:` conditional branches. Keep only the direct function calls (the "Numba path" code is already the correct algorithm, just strip the conditionals).
+3. **`algorithms/image_processing.py`**: Remove `@njit` kernels and `if HAS_NUMBA:` branches; annotate with Cython decorators instead.
+4. **`pyproject.toml`**: Remove `numba>=0.60.0` from all dependency groups.
+5. **Docstrings/comments**: Remove all "Numba JIT", "Numba-compiled", "when Numba is available" language.
+
+#### Step 2: Verify C algorithm parity
+Systematic audit of each `algorithms/*.py` against its C counterpart in `lib/src/*.c`:
+- Line-by-line comparison of algorithm logic, constants, edge cases
+- Ensure no Python-only shortcuts diverged from the C originals
+- Focus on the tracking hot path (`track.py`, `track3d.py`, `track_kernels.py`)
+- Run parity tests against known datasets (burgers, cavity, synthetic)
+
+#### Step 3: Complete Cython 3 annotations (remaining 13 modules)
+Add `@cython.ccall`, `@cython.cfunc`, `@cython.boundscheck(False)`, typed locals, and memoryviews to:
+`calibration`, `correspondences`, `image_processing`, `lsqadj`, `orientation`,
+`parameters`, `segmentation`, `sortgrid`, `track`, `track3d`, `track_kernels`,
+`tracking_frame_buf`, `tracking_run`
+
+#### Step 4: The Great Purge (Phase 1 of the plan)
+Delete `lib/`, `bindings/`, `openptv2/engine.py`, forwarder modules.
+Rewire `openptv2/__init__.py` to import directly from `algorithms/`.
+
+#### Step 5: Build & test
+Verify compilation, wheel builds, GUI, and full test suite.

@@ -26,7 +26,6 @@ from .track_kernels import (
     point_position_jit as _point_position_jit,
     trackcorr_loop_jit as _trackcorr_loop_jit,
     trackback_loop_jit as _trackback_loop_jit,
-    HAS_NUMBA,
 )
 
 Foundpix_dtype = np.dtype([
@@ -51,7 +50,7 @@ def _pack_cams_jit(cals, mm):
 
 
 def _pack_cams_jit_tuples(jit_cals, jit_mmluts):
-    """Convert lists to tuples for Numba searchquader_jit."""
+    """Convert lists to tuples for searchquader_jit."""
     return (
         tuple(jit_cals),
         tuple(m[0] for m in jit_mmluts),
@@ -551,27 +550,17 @@ def searchquader(point, tpar, cpar, calib, _packed_cals=None, _pix_info=None,
 def register_closest_neighbs(targets, num_targets, cam, cent_x, cent_y,
                              dl, dr, du, dd, reg, cpar,
                              _targ_x=None, _targ_y=None, _targ_tnr=None):
-    if HAS_NUMBA and _targ_x is not None:
-        p0, p1, p2, p3 = _candsearch_in_pix_jit(
-            _targ_x, _targ_y, _targ_tnr, num_targets,
-            cent_x, cent_y, dl, dr, du, dd,
-            cpar.imx, cpar.imy, TR_UNUSED)
-        all_cands = [p0, p1, p2, p3]
-        for cand in range(MAX_CANDS):
-            if all_cands[cand] == PT_UNUSED:
-                reg[cand][0] = TR_UNUSED
-            else:
-                reg[cand][2][cam] = 1
-                reg[cand][0] = int(_targ_tnr[all_cands[cand]])
-    else:
-        all_cands = candsearch_in_pix(targets, num_targets, cent_x, cent_y,
-                                      dl, dr, du, dd, cpar)
-        for cand in range(MAX_CANDS):
-            if all_cands[cand] == PT_UNUSED:
-                reg[cand][0] = TR_UNUSED
-            else:
-                reg[cand][2][cam] = 1
-                reg[cand][0] = targets[all_cands[cand]].tnr
+    p0, p1, p2, p3 = _candsearch_in_pix_jit(
+        _targ_x, _targ_y, _targ_tnr, num_targets,
+        cent_x, cent_y, dl, dr, du, dd,
+        cpar.imx, cpar.imy, TR_UNUSED)
+    all_cands = [p0, p1, p2, p3]
+    for cand in range(MAX_CANDS):
+        if all_cands[cand] == PT_UNUSED:
+            reg[cand][0] = TR_UNUSED
+        else:
+            reg[cand][2][cam] = 1
+            reg[cand][0] = int(_targ_tnr[all_cands[cand]])
 
 
 def sorted_candidates_in_volume(center, center_proj, frm, run,
@@ -579,63 +568,35 @@ def sorted_candidates_in_volume(center, center_proj, frm, run,
                                 _jit_tuples=None):
     num_cams = frm.num_cams
 
-    if HAS_NUMBA and _jit_tuples is not None:
-        cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t = _jit_tuples
-        if _pix_info is not None:
-            c_imx, c_imy, imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield = _pix_info
-        else:
-            c_imx = run.cpar.imx; c_imy = run.cpar.imy
-            imx_half = c_imx * 0.5; imy_half = c_imy * 0.5
-            inv_pix_x = 1.0 / run.cpar.pix_x; inv_pix_y = 1.0 / run.cpar.pix_y
-            c_chfield = run.cpar.chfield
+    cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t = _jit_tuples
+    if _pix_info is not None:
+        c_imx, c_imy, imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield = _pix_info
+    else:
+        c_imx = run.cpar.imx; c_imy = run.cpar.imy
+        imx_half = c_imx * 0.5; imy_half = c_imy * 0.5
+        inv_pix_x = 1.0 / run.cpar.pix_x; inv_pix_y = 1.0 / run.cpar.pix_y
+        c_chfield = run.cpar.chfield
 
-        center_arr = np.asarray(center, dtype=np.float64)
-        cpx = np.array([center_proj[j][0] for j in range(num_cams)], dtype=np.float64)
-        cpy = np.array([center_proj[j][1] for j in range(num_cams)], dtype=np.float64)
-        nt = np.array(frm.num_targets[:num_cams], dtype=np.int32)
+    center_arr = np.asarray(center, dtype=np.float64)
+    cpx = np.array([center_proj[j][0] for j in range(num_cams)], dtype=np.float64)
+    cpy = np.array([center_proj[j][1] for j in range(num_cams)], dtype=np.float64)
+    nt = np.array(frm.num_targets[:num_cams], dtype=np.int32)
 
-        ftnr, freq, whichcam, num_cands = _sorted_candidates_jit(
-            center_arr, cpx, cpy, num_cams, MAX_CANDS,
-            cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t,
-            tuple(frm.targ_x[:num_cams]), tuple(frm.targ_y[:num_cams]),
-            tuple(frm.targ_tnr[:num_cams]), nt,
-            run.tpar.dvxmin, run.tpar.dvxmax, run.tpar.dvymin,
-            run.tpar.dvymax, run.tpar.dvzmin, run.tpar.dvzmax,
-            imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield,
-            c_imx, c_imy, TR_UNUSED,
-        )
-        if num_cands > 0:
-            result = []
-            for i in range(num_cands):
-                result.append({'ftnr': int(ftnr[i]), 'freq': int(freq[i]),
-                               'whichcam': list(whichcam[i])})
-            result.append({'ftnr': TR_UNUSED, 'freq': 0, 'whichcam': [0]*num_cams})
-            return result
-        return None
-
-    n = num_cams * MAX_CANDS
-    points = _make_foundpix_array(n, num_cams)
-
-    xr, xl, yd, yu = searchquader(center, run.tpar, run.cpar, run.cal,
-                                  _packed_cals=_packed_cals, _pix_info=_pix_info,
-                                  _jit_tuples=_jit_tuples)
-
-    for cam in range(num_cams):
-        cam_slice = points[cam * MAX_CANDS:(cam + 1) * MAX_CANDS]
-        register_closest_neighbs(
-            frm.targets[cam], frm.num_targets[cam], cam,
-            center_proj[cam][0], center_proj[cam][1],
-            xl[cam], xr[cam], yu[cam], yd[cam],
-            cam_slice, run.cpar,
-            _targ_x=frm.targ_x[cam], _targ_y=frm.targ_y[cam],
-            _targ_tnr=frm.targ_tnr[cam])
-
-    num_cands = sort_candidates_by_freq(points, num_cams)
+    ftnr, freq, whichcam, num_cands = _sorted_candidates_jit(
+        center_arr, cpx, cpy, num_cams, MAX_CANDS,
+        cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t,
+        tuple(frm.targ_x[:num_cams]), tuple(frm.targ_y[:num_cams]),
+        tuple(frm.targ_tnr[:num_cams]), nt,
+        run.tpar.dvxmin, run.tpar.dvxmax, run.tpar.dvymin,
+        run.tpar.dvymax, run.tpar.dvzmin, run.tpar.dvzmax,
+        imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield,
+        c_imx, c_imy, TR_UNUSED,
+    )
     if num_cands > 0:
         result = []
         for i in range(num_cands):
-            result.append({'ftnr': points[i][0], 'freq': points[i][1],
-                           'whichcam': points[i][2][:] })
+            result.append({'ftnr': int(ftnr[i]), 'freq': int(freq[i]),
+                           'whichcam': list(whichcam[i])})
         result.append({'ftnr': TR_UNUSED, 'freq': 0, 'whichcam': [0]*num_cams})
         return result
     return None
@@ -660,31 +621,20 @@ def assess_new_position(pos, targ_pos, cand_inds, frm, run,
         c_chfield = run.cpar.chfield
 
     for cam in range(run.cpar.num_cams):
-        if HAS_NUMBA and _jit_cals is not None:
-            px, py = _ptp_jit(pos, _jit_cals[cam], _jit_mmluts[cam],
-                              imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield)
-        else:
-            px, py = _point_to_pixel_fast(pos, run.cal[cam], c_imx, c_imy,
-                                          run.cpar.pix_x, run.cpar.pix_y,
-                                          c_chfield, run.cpar.mm)
+        px, py = _ptp_jit(pos, _jit_cals[cam], _jit_mmluts[cam],
+                          imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield)
 
-        if HAS_NUMBA and hasattr(frm, 'targ_x'):
-            best, num_cands = _candsearch_in_pix_rest_jit(
-                frm.targ_x[cam], frm.targ_y[cam], frm.targ_tnr[cam],
-                frm.num_targets[cam], px, py, left, right, up, down,
-                c_imx, c_imy, TR_UNUSED)
-            if num_cands > 0:
-                cand_inds[cam][0] = best
-        else:
-            num_cands = candsearch_in_pix_rest(
-                frm.targets[cam], frm.num_targets[cam],
-                px, py, left, right, up, down,
-                cand_inds[cam], run.cpar)
+        best, num_cands = _candsearch_in_pix_rest_jit(
+            frm.targ_x[cam], frm.targ_y[cam], frm.targ_tnr[cam],
+            frm.num_targets[cam], px, py, left, right, up, down,
+            c_imx, c_imy, TR_UNUSED)
+        if num_cands > 0:
+            cand_inds[cam][0] = best
 
         if num_cands > 0:
             _ix = cand_inds[cam][0]
-            targ_pos[cam][0] = frm.targ_x[cam][_ix] if hasattr(frm, 'targ_x') else frm.targets[cam][_ix].x
-            targ_pos[cam][1] = frm.targ_y[cam][_ix] if hasattr(frm, 'targ_x') else frm.targets[cam][_ix].y
+            targ_pos[cam][0] = frm.targ_x[cam][_ix]
+            targ_pos[cam][1] = frm.targ_y[cam][_ix]
 
     valid_cams = 0
     for cam in range(run.cpar.num_cams):
@@ -763,294 +713,62 @@ def trackcorr_c_loop(run_info, step):
     inv_pix_x = 1.0 / cpar.pix_x; inv_pix_y = 1.0 / cpar.pix_y
     c_chfield = cpar.chfield; c_mm = cpar.mm
 
-    if HAS_NUMBA:
-        jit_cals, jit_mmluts = _pack_cams_jit(cal, c_mm)
-        _jt = _pack_cams_jit_tuples(jit_cals, jit_mmluts)
-        cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t = _jt
+    jit_cals, jit_mmluts = _pack_cams_jit(cal, c_mm)
+    _jt = _pack_cams_jit_tuples(jit_cals, jit_mmluts)
+    cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t = _jt
 
-        nc = fb.num_cams
-        orig_parts = fb.buf[1].num_parts
-
-        fb.buf[0]._sync_path_to_soa()
-        fb.buf[1]._sync_path_to_soa()
-        fb.buf[2]._sync_path_to_soa()
-        fb.buf[3]._sync_path_to_soa()
-
-        np2 = np.array([fb.buf[2].num_parts], dtype=np.int32)
-        np3 = np.array([fb.buf[3].num_parts], dtype=np.int32)
-        nt2 = np.array(fb.buf[2].num_targets[:nc], dtype=np.int32)
-        nt3 = np.array(fb.buf[3].num_targets[:nc], dtype=np.int32)
-
-        count1, num_added = _trackcorr_loop_jit(
-            orig_parts,
-            fb.buf[0].path_x,
-            fb.buf[1].path_x, fb.buf[1].path_prev, fb.buf[1].path_next,
-            fb.buf[1].path_inlist, fb.buf[1].path_finaldecis,
-            fb.buf[1].path_decis, fb.buf[1].path_linkdecis,
-            fb.buf[1].corres_p,
-            tuple(fb.buf[1].targ_x[:nc]), tuple(fb.buf[1].targ_y[:nc]),
-            fb.buf[2].path_x, fb.buf[2].path_prev, fb.buf[2].path_next,
-            fb.buf[2].path_inlist, fb.buf[2].path_prio,
-            fb.buf[2].path_finaldecis, fb.buf[2].path_decis,
-            fb.buf[2].path_linkdecis, fb.buf[2].corres_p,
-            fb.buf[2].corres_nr,
-            tuple(fb.buf[2].targ_x[:nc]), tuple(fb.buf[2].targ_y[:nc]),
-            tuple(fb.buf[2].targ_tnr[:nc]), nt2, np2,
-            fb.buf[3].path_x, fb.buf[3].path_prev, fb.buf[3].path_next,
-            fb.buf[3].path_inlist, fb.buf[3].path_prio,
-            fb.buf[3].path_finaldecis, fb.buf[3].path_decis,
-            fb.buf[3].path_linkdecis, fb.buf[3].corres_p,
-            fb.buf[3].corres_nr,
-            tuple(fb.buf[3].targ_x[:nc]), tuple(fb.buf[3].targ_y[:nc]),
-            tuple(fb.buf[3].targ_tnr[:nc]), nt3, np3,
-            cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t,
-            tpar.dvxmin, tpar.dvxmax, tpar.dvymin, tpar.dvymax,
-            tpar.dvzmin, tpar.dvzmax, tpar.dacc, tpar.dangle,
-            int(tpar.add), run_info.lmax,
-            vpar.X_lay[0], vpar.X_lay[1], run_info.ymin, run_info.ymax,
-            vpar.Zmin_lay[0], vpar.Zmax_lay[1],
-            nc, imx_half, imy_half, inv_pix_x, inv_pix_y,
-            c_chfield, float(c_imx), float(c_imy),
-            cpar.pix_x, cpar.pix_y, run_info.flatten_tol,
-        )
-
-        fb.buf[2].num_parts = int(np2[0])
-        fb.buf[3].num_parts = int(np3[0])
-
-        _sync_soa_to_aos(fb.buf[1])
-        _sync_soa_to_aos(fb.buf[2])
-        _sync_soa_to_aos(fb.buf[3])
-
-        print(f"step: {step}, curr: {fb.buf[1].num_parts}, "
-              f"next: {fb.buf[2].num_parts}, links: {count1}, "
-              f"lost: {fb.buf[1].num_parts - count1}, add: {num_added}")
-
-        run_info.npart = run_info.npart + fb.buf[1].num_parts
-        run_info.nlinks = run_info.nlinks + count1
-
-        fb.fb_next()
-        fb.write_frame_from_start(step)
-        if step < run_info.seq_par.last - 2:
-            fb.read_frame_at_end(step + 3, read_links=False)
-        else:
-            fb.buf[fb.buf_len - 1].num_parts = 0
-        return
-
-    # ===== Python fallback (no Numba) =====
-    curr_targets = fb.buf[1].targets
-    packed_cals = [_pack_cal(cal[j], c_mm) for j in range(fb.num_cams)]
-    _jt = None
-
-    def _ptp(pos, j):
-        return _point_to_pixel_packed(pos, packed_cals[j], imx_half, imy_half,
-                                      inv_pix_x, inv_pix_y, c_chfield)
-
-    count1 = 0
-    num_added = 0
+    nc = fb.num_cams
     orig_parts = fb.buf[1].num_parts
 
-    for h in range(orig_parts):
-        X = [np.zeros(3) for _ in range(6)]
+    fb.buf[0]._sync_path_to_soa()
+    fb.buf[1]._sync_path_to_soa()
+    fb.buf[2]._sync_path_to_soa()
+    fb.buf[3]._sync_path_to_soa()
 
-        curr_path_inf = fb.buf[1].path_info[h]
-        curr_corres = fb.buf[1].correspond[h]
-        curr_path_inf.inlist = 0
+    np2 = np.array([fb.buf[2].num_parts], dtype=np.int32)
+    np3 = np.array([fb.buf[3].num_parts], dtype=np.int32)
+    nt2 = np.array(fb.buf[2].num_targets[:nc], dtype=np.int32)
+    nt3 = np.array(fb.buf[3].num_targets[:nc], dtype=np.int32)
 
-        X[1][:] = curr_path_inf.x
+    count1, num_added = _trackcorr_loop_jit(
+        orig_parts,
+        fb.buf[0].path_x,
+        fb.buf[1].path_x, fb.buf[1].path_prev, fb.buf[1].path_next,
+        fb.buf[1].path_inlist, fb.buf[1].path_finaldecis,
+        fb.buf[1].path_decis, fb.buf[1].path_linkdecis,
+        fb.buf[1].corres_p,
+        tuple(fb.buf[1].targ_x[:nc]), tuple(fb.buf[1].targ_y[:nc]),
+        fb.buf[2].path_x, fb.buf[2].path_prev, fb.buf[2].path_next,
+        fb.buf[2].path_inlist, fb.buf[2].path_prio,
+        fb.buf[2].path_finaldecis, fb.buf[2].path_decis,
+        fb.buf[2].path_linkdecis, fb.buf[2].corres_p,
+        fb.buf[2].corres_nr,
+        tuple(fb.buf[2].targ_x[:nc]), tuple(fb.buf[2].targ_y[:nc]),
+        tuple(fb.buf[2].targ_tnr[:nc]), nt2, np2,
+        fb.buf[3].path_x, fb.buf[3].path_prev, fb.buf[3].path_next,
+        fb.buf[3].path_inlist, fb.buf[3].path_prio,
+        fb.buf[3].path_finaldecis, fb.buf[3].path_decis,
+        fb.buf[3].path_linkdecis, fb.buf[3].corres_p,
+        fb.buf[3].corres_nr,
+        tuple(fb.buf[3].targ_x[:nc]), tuple(fb.buf[3].targ_y[:nc]),
+        tuple(fb.buf[3].targ_tnr[:nc]), nt3, np3,
+        cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t,
+        tpar.dvxmin, tpar.dvxmax, tpar.dvymin, tpar.dvymax,
+        tpar.dvzmin, tpar.dvzmax, tpar.dacc, tpar.dangle,
+        int(tpar.add), run_info.lmax,
+        vpar.X_lay[0], vpar.X_lay[1], run_info.ymin, run_info.ymax,
+        vpar.Zmin_lay[0], vpar.Zmax_lay[1],
+        nc, imx_half, imy_half, inv_pix_x, inv_pix_y,
+        c_chfield, float(c_imx), float(c_imy),
+        cpar.pix_x, cpar.pix_y, run_info.flatten_tol,
+    )
 
-        v1 = [[0.0, 0.0] for _ in range(fb.num_cams)]
+    fb.buf[2].num_parts = int(np2[0])
+    fb.buf[3].num_parts = int(np3[0])
 
-        if curr_path_inf.prev >= 0:
-            ref_path_inf = fb.buf[0].path_info[curr_path_inf.prev]
-            X[0][:] = ref_path_inf.x
-            X[2][:] = search_volume_center_moving(ref_path_inf.x, curr_path_inf.x)
-
-            for j in range(fb.num_cams):
-                v1[j] = list(_ptp(X[2], j))
-        else:
-            X[2][:] = X[1]
-            for j in range(fb.num_cams):
-                if curr_corres.p[j] == CORRES_NONE:
-                    v1[j] = list(_ptp(X[2], j))
-                else:
-                    _ix = curr_corres.p[j]
-                    v1[j][0] = curr_targets[j][_ix].x
-                    v1[j][1] = curr_targets[j][_ix].y
-
-        _pi = (c_imx, c_imy, imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield)
-        w = sorted_candidates_in_volume(X[2], v1, fb.buf[2], run_info,
-                                        _packed_cals=packed_cals, _pix_info=_pi,
-                                        _jit_tuples=_jt)
-        if w is None:
-            continue
-
-        count2 = 0
-        mm = 0
-        while w[mm]['ftnr'] != TR_UNUSED:
-            ref_path_inf = fb.buf[2].path_info[w[mm]['ftnr']]
-            X[3][:] = ref_path_inf.x
-
-            if curr_path_inf.prev >= 0:
-                for j in range(3):
-                    X[5][j] = 0.5 * (5.0 * X[3][j] - 4.0 * X[1][j] + X[0][j])
-            else:
-                X[5][:] = search_volume_center_moving(X[1], X[3])
-
-            for j in range(fb.num_cams):
-                v1[j] = list(_ptp(X[5], j))
-
-            wn = sorted_candidates_in_volume(X[5], v1, fb.buf[3], run_info,
-                                             _packed_cals=packed_cals, _pix_info=_pi,
-                                             _jit_tuples=_jt)
-            if wn is not None:
-                count3 = 0
-                kk = 0
-                while wn[kk]['ftnr'] != TR_UNUSED:
-                    ref_path_inf = fb.buf[3].path_info[wn[kk]['ftnr']]
-                    X[4][:] = ref_path_inf.x
-
-                    diff_pos = X[4] - X[3]
-                    if pos3d_in_bounds(diff_pos, tpar):
-                        angle1, acc1 = angle_acc(X[3], X[4], X[5])
-                        if curr_path_inf.prev >= 0:
-                            angle0, acc0 = angle_acc(X[1], X[2], X[3])
-                        else:
-                            acc0 = acc1
-                            angle0 = angle1
-
-                        acc = (acc0 + acc1) / 2
-                        angle = (angle0 + angle1) / 2
-                        quali = wn[kk]['freq'] + w[mm]['freq']
-
-                        if ((acc < tpar.dacc and angle < tpar.dangle) or
-                                (acc < tpar.dacc / 10)):
-                            dl = (_vec3_dist(X[1], X[3]) +
-                                  _vec3_dist(X[4], X[3])) / 2
-                            rr = (dl / run_info.lmax + acc / tpar.dacc +
-                                  angle / tpar.dangle) / quali
-                            register_link_candidate(curr_path_inf, rr, w[mm]['ftnr'])
-                    kk += 1
-
-            v2 = [[0.0, 0.0] for _ in range(TR_MAX_CAMS)]
-            philf = [[PT_UNUSED] * MAX_CANDS for _ in range(TR_MAX_CAMS)]
-            quali = assess_new_position(X[5], v2, philf, fb.buf[3], run_info,
-                                        _pix_info=_pi)
-
-            if quali >= 2:
-                in_volume = 0
-                v2_arr = np.array(v2[:cpar.num_cams], dtype=np.float64)
-                X[4], dl = point_position(v2_arr, cpar.num_cams, cpar.mm, cal)
-
-                if (vpar.X_lay[0] < X[4][0] < vpar.X_lay[1] and
-                        run_info.ymin < X[4][1] < run_info.ymax and
-                        vpar.Zmin_lay[0] < X[4][2] < vpar.Zmax_lay[1]):
-                    in_volume = 1
-
-                diff_pos = X[3] - X[4]
-                if in_volume == 1 and pos3d_in_bounds(diff_pos, tpar):
-                    angle, acc = angle_acc(X[3], X[4], X[5])
-                    if ((acc < tpar.dacc and angle < tpar.dangle) or
-                            (acc < tpar.dacc / 10)):
-                        dl = (_vec3_dist(X[1], X[3]) +
-                              _vec3_dist(X[4], X[3])) / 2
-                        rr = (dl / run_info.lmax + acc / tpar.dacc +
-                              angle / tpar.dangle) / (quali + w[mm]['freq'])
-                        register_link_candidate(curr_path_inf, rr, w[mm]['ftnr'])
-
-                        if tpar.add:
-                            add_particle(fb.buf[3], X[4], philf)
-                            num_added += 1
-                in_volume = 0
-            quali = 0
-
-            if curr_path_inf.inlist == 0 and curr_path_inf.prev >= 0:
-                diff_pos = X[3] - X[1]
-                if pos3d_in_bounds(diff_pos, tpar):
-                    angle, acc = angle_acc(X[1], X[2], X[3])
-                    if ((acc < tpar.dacc and angle < tpar.dangle) or
-                            (acc < tpar.dacc / 10)):
-                        quali = w[mm]['freq']
-                        dl = (_vec3_dist(X[1], X[3]) +
-                              _vec3_dist(X[0], X[1])) / 2
-                        rr = (dl / run_info.lmax + acc / tpar.dacc +
-                              angle / tpar.dangle) / quali
-                        register_link_candidate(curr_path_inf, rr, w[mm]['ftnr'])
-
-            mm += 1
-
-        if tpar.add:
-            if curr_path_inf.inlist == 0 and curr_path_inf.prev >= 0:
-                v2 = [[0.0, 0.0] for _ in range(TR_MAX_CAMS)]
-                philf = [[PT_UNUSED] * MAX_CANDS for _ in range(TR_MAX_CAMS)]
-                quali = assess_new_position(X[2], v2, philf, fb.buf[2], run_info,
-                                            _pix_info=_pi)
-
-                if quali >= 2:
-                    X[3][:] = X[2]
-                    in_volume = 0
-
-                    v2_arr = np.array(v2[:fb.num_cams], dtype=np.float64)
-                    X[3], dl = point_position(v2_arr, fb.num_cams, cpar.mm, cal)
-
-                    if (vpar.X_lay[0] < X[3][0] < vpar.X_lay[1] and
-                            run_info.ymin < X[3][1] < run_info.ymax and
-                            vpar.Zmin_lay[0] < X[3][2] < vpar.Zmax_lay[1]):
-                        in_volume = 1
-
-                    diff_pos = X[2] - X[3]
-                    if in_volume == 1 and pos3d_in_bounds(diff_pos, tpar):
-                        angle, acc = angle_acc(X[1], X[2], X[3])
-                        if ((acc < tpar.dacc and angle < tpar.dangle) or
-                                (acc < tpar.dacc / 10)):
-                            dl = (_vec3_dist(X[1], X[3]) +
-                                  _vec3_dist(X[0], X[1])) / 2
-                            rr = (dl / run_info.lmax + acc / tpar.dacc +
-                                  angle / tpar.dangle) / quali
-                            register_link_candidate(
-                                curr_path_inf, rr, fb.buf[2].num_parts)
-                            add_particle(fb.buf[2], X[3], philf)
-                            num_added += 1
-                    in_volume = 0
-
-    for h in range(fb.buf[1].num_parts):
-        curr_path_inf = fb.buf[1].path_info[h]
-        if curr_path_inf.inlist > 0:
-            sort(curr_path_inf.inlist, curr_path_inf.decis,
-                 curr_path_inf.linkdecis)
-            curr_path_inf.finaldecis = curr_path_inf.decis[0]
-            curr_path_inf.next = curr_path_inf.linkdecis[0]
-
-    # Phase 2: Resolve conflicts (single-pass)
-    for h in range(fb.buf[1].num_parts):
-        curr_path_inf = fb.buf[1].path_info[h]
-        if curr_path_inf.inlist > 0:
-            next_h = curr_path_inf.next
-            ref_path_inf = fb.buf[2].path_info[next_h]
-            if ref_path_inf.prev == PREV_NONE:
-                ref_path_inf.prev = h
-            else:
-                prev_of_next = ref_path_inf.prev
-                if fb.buf[1].path_info[prev_of_next].finaldecis > curr_path_inf.finaldecis:
-                    fb.buf[1].path_info[prev_of_next].next = NEXT_NONE
-                    ref_path_inf.prev = h
-                else:
-                    curr_path_inf.next = NEXT_NONE
-
-    # Phase 3: Losers retry with fallback candidates (claim unclaimed only)
-    for h in range(fb.buf[1].num_parts):
-        curr_path_inf = fb.buf[1].path_info[h]
-        if curr_path_inf.inlist > 1 and curr_path_inf.next == NEXT_NONE:
-            for ti in range(1, curr_path_inf.inlist):
-                cand = curr_path_inf.linkdecis[ti]
-                if fb.buf[2].path_info[cand].prev == PREV_NONE:
-                    curr_path_inf.next = cand
-                    curr_path_inf.finaldecis = curr_path_inf.decis[ti]
-                    fb.buf[2].path_info[cand].prev = h
-                    break
-
-    for h in range(fb.buf[1].num_parts):
-        if fb.buf[1].path_info[h].next != NEXT_NONE:
-            count1 += 1
+    _sync_soa_to_aos(fb.buf[1])
+    _sync_soa_to_aos(fb.buf[2])
+    _sync_soa_to_aos(fb.buf[3])
 
     print(f"step: {step}, curr: {fb.buf[1].num_parts}, "
           f"next: {fb.buf[2].num_parts}, links: {count1}, "
@@ -1092,19 +810,8 @@ def trackback_c(run_info):
     imx_half = c_imx * 0.5; imy_half = c_imy * 0.5
     inv_pix_x = 1.0 / cpar.pix_x; inv_pix_y = 1.0 / cpar.pix_y
     c_chfield = cpar.chfield; c_mm = cpar.mm
-    packed_cals = [_pack_cal(cal[j], c_mm) for j in range(fb.num_cams)]
-    if HAS_NUMBA:
-        jit_cals, jit_mmluts = _pack_cams_jit(cal, c_mm)
-        _jt = _pack_cams_jit_tuples(jit_cals, jit_mmluts)
-    else:
-        _jt = None
-
-    def _ptp(pos, j):
-        if HAS_NUMBA:
-            return _ptp_jit(pos, jit_cals[j], jit_mmluts[j],
-                            imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield)
-        return _point_to_pixel_packed(pos, packed_cals[j], imx_half, imy_half,
-                                      inv_pix_x, inv_pix_y, c_chfield)
+    jit_cals, jit_mmluts = _pack_cams_jit(cal, c_mm)
+    _jt = _pack_cams_jit_tuples(jit_cals, jit_mmluts)
 
     Ymin = 0.0
     Ymax = 0.0
@@ -1120,177 +827,45 @@ def trackback_c(run_info):
 
     for step in range(seq_par.last - 1, seq_par.first, -1):
 
-        if HAS_NUMBA:
-            fb.buf[0]._sync_path_to_soa()
-            fb.buf[1]._sync_path_to_soa()
-            fb.buf[2]._sync_path_to_soa()
-            fb.buf[3]._sync_path_to_soa()
+        fb.buf[0]._sync_path_to_soa()
+        fb.buf[1]._sync_path_to_soa()
+        fb.buf[2]._sync_path_to_soa()
+        fb.buf[3]._sync_path_to_soa()
 
-            cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t = _jt
-            num_parts_2 = np.array([fb.buf[2].num_parts], dtype=np.int32)
+        cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t = _jt
+        num_parts_2 = np.array([fb.buf[2].num_parts], dtype=np.int32)
 
-            count1, num_added = _trackback_loop_jit(
-                fb.buf[1].num_parts,
-                fb.buf[0].path_x,
-                fb.buf[1].path_x, fb.buf[1].path_prev, fb.buf[1].path_next,
-                fb.buf[1].path_inlist,
-                fb.buf[1].path_finaldecis, fb.buf[1].path_decis,
-                fb.buf[1].path_linkdecis,
-                fb.buf[2].path_x, fb.buf[2].path_prev, fb.buf[2].path_next,
-                num_parts_2,
-                fb.buf[2].targ_x, fb.buf[2].targ_y, fb.buf[2].targ_tnr,
-                fb.buf[2].num_targets,
-                fb.buf[2].corres_p, fb.buf[2].corres_nr,
-                fb.buf[2].path_inlist, fb.buf[2].path_prio,
-                fb.buf[2].path_finaldecis,
-                fb.buf[2].path_decis, fb.buf[2].path_linkdecis,
-                fb.buf[3].path_x, fb.buf[3].path_prev,
-                cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t,
-                tpar.dvxmin, tpar.dvxmax, tpar.dvymin, tpar.dvymax,
-                tpar.dvzmin, tpar.dvzmax,
-                tpar.dacc, tpar.dangle, tpar.add, run_info.lmax,
-                vpar.X_lay[0], vpar.X_lay[1], Ymin, Ymax,
-                vpar.Zmin_lay[0], vpar.Zmax_lay[1],
-                nc, imx_half, imy_half, inv_pix_x, inv_pix_y,
-                c_chfield, c_imx, c_imy, cpar.pix_x, cpar.pix_y,
-                run_info.flatten_tol,
-            )
+        count1, num_added = _trackback_loop_jit(
+            fb.buf[1].num_parts,
+            fb.buf[0].path_x,
+            fb.buf[1].path_x, fb.buf[1].path_prev, fb.buf[1].path_next,
+            fb.buf[1].path_inlist,
+            fb.buf[1].path_finaldecis, fb.buf[1].path_decis,
+            fb.buf[1].path_linkdecis,
+            fb.buf[2].path_x, fb.buf[2].path_prev, fb.buf[2].path_next,
+            num_parts_2,
+            fb.buf[2].targ_x, fb.buf[2].targ_y, fb.buf[2].targ_tnr,
+            fb.buf[2].num_targets,
+            fb.buf[2].corres_p, fb.buf[2].corres_nr,
+            fb.buf[2].path_inlist, fb.buf[2].path_prio,
+            fb.buf[2].path_finaldecis,
+            fb.buf[2].path_decis, fb.buf[2].path_linkdecis,
+            fb.buf[3].path_x, fb.buf[3].path_prev,
+            cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t,
+            tpar.dvxmin, tpar.dvxmax, tpar.dvymin, tpar.dvymax,
+            tpar.dvzmin, tpar.dvzmax,
+            tpar.dacc, tpar.dangle, tpar.add, run_info.lmax,
+            vpar.X_lay[0], vpar.X_lay[1], Ymin, Ymax,
+            vpar.Zmin_lay[0], vpar.Zmax_lay[1],
+            nc, imx_half, imy_half, inv_pix_x, inv_pix_y,
+            c_chfield, c_imx, c_imy, cpar.pix_x, cpar.pix_y,
+            run_info.flatten_tol,
+        )
 
-            fb.buf[2].num_parts = int(num_parts_2[0])
+        fb.buf[2].num_parts = int(num_parts_2[0])
 
-            _sync_soa_to_aos(fb.buf[1])
-            _sync_soa_to_aos(fb.buf[2])
-
-        else:
-            for h in range(fb.buf[1].num_parts):
-                curr_path_inf = fb.buf[1].path_info[h]
-
-                if not ((curr_path_inf.next < 0) or (curr_path_inf.prev != -1)):
-                    continue
-
-                X = [np.zeros(3) for _ in range(6)]
-                curr_path_inf.inlist = 0
-                X[1][:] = curr_path_inf.x
-
-                ref_path_inf = fb.buf[0].path_info[curr_path_inf.next]
-                X[0][:] = ref_path_inf.x
-                X[2][:] = search_volume_center_moving(ref_path_inf.x, curr_path_inf.x)
-
-                n = [[0.0, 0.0] for _ in range(fb.num_cams)]
-                for j in range(fb.num_cams):
-                    n[j] = list(_ptp(X[2], j))
-
-                _pi = (c_imx, c_imy, imx_half, imy_half, inv_pix_x, inv_pix_y,
-                       c_chfield)
-                w = sorted_candidates_in_volume(X[2], n, fb.buf[2], run_info,
-                                                _packed_cals=packed_cals,
-                                                _pix_info=_pi,
-                                                _jit_tuples=_jt)
-
-                if w is not None:
-                    i = 0
-                    while w[i]['ftnr'] != TR_UNUSED:
-                        ref_path_inf = fb.buf[2].path_info[w[i]['ftnr']]
-                        X[3][:] = ref_path_inf.x
-
-                        diff_pos = X[1] - X[3]
-                        if pos3d_in_bounds(diff_pos, tpar):
-                            angle, acc = angle_acc(X[1], X[2], X[3])
-                            if ((acc < tpar.dacc and angle < tpar.dangle) or
-                                    (acc < tpar.dacc / 10)):
-                                dl = (_vec3_dist(X[1], X[3]) +
-                                      _vec3_dist(X[0], X[1])) / 2
-                                quali = w[i]['freq']
-                                rr = (dl / run_info.lmax + acc / tpar.dacc +
-                                      angle / tpar.dangle) / quali
-                                register_link_candidate(
-                                    curr_path_inf, rr, w[i]['ftnr'])
-                        i += 1
-
-                if tpar.add:
-                    if curr_path_inf.inlist == 0:
-                        v2 = [[0.0, 0.0] for _ in range(TR_MAX_CAMS)]
-                        philf = [[PT_UNUSED] * MAX_CANDS for _ in range(TR_MAX_CAMS)]
-                        quali = assess_new_position(
-                            X[2], v2, philf, fb.buf[2], run_info,
-                            _jit_cals=jit_cals if HAS_NUMBA else None,
-                            _jit_mmluts=jit_mmluts if HAS_NUMBA else None,
-                            _pix_info=_pi)
-                        if quali >= 2:
-                            in_volume = 0
-                            v2_arr = np.array(v2[:fb.num_cams], dtype=np.float64)
-                            if HAS_NUMBA:
-                                X[3], _dl = _point_position_jit(
-                                    v2_arr, fb.num_cams, _jt[0])
-                            else:
-                                X[3], _dl = point_position(
-                                    v2_arr, fb.num_cams, cpar.mm, cal)
-
-                            if (vpar.X_lay[0] < X[3][0] < vpar.X_lay[1] and
-                                    Ymin < X[3][1] < Ymax and
-                                    vpar.Zmin_lay[0] < X[3][2] < vpar.Zmax_lay[1]):
-                                in_volume = 1
-
-                            diff_pos = X[1] - X[3]
-                            if in_volume == 1 and pos3d_in_bounds(diff_pos, tpar):
-                                angle, acc = angle_acc(X[1], X[2], X[3])
-                                if ((acc < tpar.dacc and angle < tpar.dangle) or
-                                        (acc < tpar.dacc / 10)):
-                                    dl = (_vec3_dist(X[1], X[3]) +
-                                          _vec3_dist(X[0], X[1])) / 2
-                                    rr = (dl / run_info.lmax + acc / tpar.dacc +
-                                          angle / tpar.dangle) / quali
-                                    register_link_candidate(
-                                        curr_path_inf, rr, fb.buf[2].num_parts)
-                                    add_particle(fb.buf[2], X[3], philf)
-                            in_volume = 0
-
-            for h in range(fb.buf[1].num_parts):
-                curr_path_inf = fb.buf[1].path_info[h]
-                if curr_path_inf.inlist > 0:
-                    sort(curr_path_inf.inlist, curr_path_inf.decis,
-                         curr_path_inf.linkdecis)
-
-            count1 = 0
-            num_added = 0
-            for h in range(fb.buf[1].num_parts):
-                curr_path_inf = fb.buf[1].path_info[h]
-
-                if curr_path_inf.inlist > 0:
-                    ref_path_inf = fb.buf[2].path_info[
-                        curr_path_inf.linkdecis[0]]
-
-                    if (ref_path_inf.prev == PREV_NONE and
-                            ref_path_inf.next == NEXT_NONE):
-                        curr_path_inf.finaldecis = curr_path_inf.decis[0]
-                        curr_path_inf.prev = curr_path_inf.linkdecis[0]
-                        fb.buf[2].path_info[curr_path_inf.prev].next = h
-                        num_added += 1
-
-                    if (ref_path_inf.prev != PREV_NONE and
-                            ref_path_inf.next == NEXT_NONE):
-                        X = [np.zeros(3) for _ in range(6)]
-                        X[0][:] = fb.buf[0].path_info[
-                            curr_path_inf.next].x
-                        X[1][:] = curr_path_inf.x
-                        X[3][:] = ref_path_inf.x
-                        X[4][:] = fb.buf[3].path_info[
-                            ref_path_inf.prev].x
-                        for j in range(3):
-                            X[5][j] = 0.5 * (
-                                5.0 * X[3][j] - 4.0 * X[1][j] + X[0][j])
-
-                        angle, acc = angle_acc(X[3], X[4], X[5])
-                        if ((acc < tpar.dacc and angle < tpar.dangle) or
-                                (acc < tpar.dacc / 10)):
-                            curr_path_inf.finaldecis = curr_path_inf.decis[0]
-                            curr_path_inf.prev = curr_path_inf.linkdecis[0]
-                            fb.buf[2].path_info[
-                                curr_path_inf.prev].next = h
-                            num_added += 1
-
-                if curr_path_inf.prev != PREV_NONE:
-                    count1 += 1
+        _sync_soa_to_aos(fb.buf[1])
+        _sync_soa_to_aos(fb.buf[2])
 
         print(f"step: {step}, curr: {fb.buf[1].num_parts}, "
               f"next: {fb.buf[2].num_parts}, links: {count1}, "

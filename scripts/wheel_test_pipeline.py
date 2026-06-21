@@ -330,7 +330,7 @@ def run_import_tests(python_path: str, verbose: bool = False) -> list[dict]:
             "cmd": "import openptv2; info = openptv2.get_engine_info(); print(info)",
         },
         {
-            "name": "algorithms package import (lazy, no numba required)",
+            "name": "algorithms package import",
             "cmd": "import algorithms; print('algorithms package OK (lazy import)')",
         },
     ]
@@ -379,19 +379,12 @@ def run_installed_tests(
     # Install test dependencies
     print_info("Installing test dependencies...")
     success, output, duration = run_cmd(
-        [python_path, "-m", "pip", "install", "pytest", "pytest-cov", "numba"],
+        [python_path, "-m", "pip", "install", "pytest", "pytest-cov"],
         verbose=verbose,
     )
     if not success:
-        print_warning("numba installation failed, running tests without it")
-        # Retry without numba
-        success, output, duration = run_cmd(
-            [python_path, "-m", "pip", "install", "pytest", "pytest-cov"],
-            verbose=verbose,
-        )
-        if not success:
-            print_failure("Test dependency installation failed")
-            return False, output, duration
+        print_failure("Test dependency installation failed")
+        return False, output, duration
 
     # Run tests from project root (uses installed package)
     print_info("Running pytest...")

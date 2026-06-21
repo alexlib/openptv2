@@ -1,4 +1,4 @@
-"""Compare all 4 tracking cases on burgers data:
+"""Compare tracking cases on burgers data:
 1. trackcorr Python
 2. trackcorr Cython
 3. track3d Python
@@ -82,13 +82,7 @@ def collect_files(first, last, linkage_base="res/ptv_is", corres_base="res/rt_is
 
 
 def run_trackcorr_python(first, last):
-    """Run trackcorr with Python fallback (no Numba)."""
-    import algorithms.track_kernels as tk
-    old_has_numba = tk.HAS_NUMBA
-    tk.HAS_NUMBA = False
-    import algorithms.track as at
-    at.HAS_NUMBA = False
-
+    """Run trackcorr with Python algorithms."""
     from algorithms.track import track_forward_start, trackcorr_c_loop, trackcorr_c_finish
     from algorithms.parameters import read_control_par
     from algorithms.tracking_run import tr_new
@@ -110,8 +104,6 @@ def run_trackcorr_python(first, last):
     trackcorr_c_finish(run, run.seq_par.last)
 
     result = collect_files(first, last)
-    tk.HAS_NUMBA = old_has_numba
-    at.HAS_NUMBA = old_has_numba
     return result, run.npart, run.nlinks, step_links
 
 
@@ -156,13 +148,7 @@ def run_track3d_cython_native(first, last):
 
 
 def run_track3d_python(first, last):
-    """Run track3d with Python fallback."""
-    import algorithms.track_kernels as tk
-    old_has_numba = tk.HAS_NUMBA
-    tk.HAS_NUMBA = False
-    import algorithms.track3d as at3
-    at3.HAS_NUMBA = False
-
+    """Run track3d with Python algorithms."""
     from algorithms.track3d import track3d_loop
     from algorithms.track import track_forward_start, trackcorr_c_finish
     from algorithms.parameters import read_control_par
@@ -186,48 +172,6 @@ def run_track3d_python(first, last):
     trackcorr_c_finish(run, run.seq_par.last)
 
     result = collect_files(first, last)
-    tk.HAS_NUMBA = old_has_numba
-    at3.HAS_NUMBA = old_has_numba
-    return result, run.npart, run.nlinks, step_links
-
-
-def run_track3d_cython(first, last):
-    """Run track3d with Cython by using optv Tracker with simple (track3d) mode.
-
-    Note: optv doesn't expose track3d_loop directly as a separate mode.
-    We use the Python track3d with Numba JIT (if available) as the 'fast' path.
-    """
-    import algorithms.track_kernels as tk
-    old_has_numba = tk.HAS_NUMBA
-    tk.HAS_NUMBA = True  # use JIT path
-    import algorithms.track3d as at3
-    at3.HAS_NUMBA = True
-
-    from algorithms.track3d import track3d_loop
-    from algorithms.track import track_forward_start, trackcorr_c_finish
-    from algorithms.parameters import read_control_par
-    from algorithms.tracking_run import tr_new
-
-    reset_test_data()
-    cpar = read_control_par("parameters/ptv.par")
-    calib = read_all_calibration(cpar.num_cams)
-    run = tr_new(
-        "parameters/sequence.par", "parameters/track.par", "parameters/criteria.par",
-        "parameters/ptv.par", 4, 20000, "res/rt_is", "res/ptv_is", "res/added",
-        calib, 0.0001
-    )
-    run.tpar = run.tpar._replace(add=0)
-    track_forward_start(run)
-    step_links = []
-    for step in range(run.seq_par.first, run.seq_par.last):
-        old_nlinks = run.nlinks
-        track3d_loop(run, step)
-        step_links.append(int(run.nlinks - old_nlinks))
-    trackcorr_c_finish(run, run.seq_par.last)
-
-    result = collect_files(first, last)
-    tk.HAS_NUMBA = old_has_numba
-    at3.HAS_NUMBA = old_has_numba
     return result, run.npart, run.nlinks, step_links
 
 
@@ -275,7 +219,7 @@ def main():
         steps = list(range(first, last + 1))
 
         print("=" * 80)
-        print("RUNNING ALL 5 CASES ON BURGERS DATA")
+        print("RUNNING ALL 4 CASES ON BURGERS DATA")
         print("=" * 80)
 
         # Case 1: trackcorr Cython (C trackcorr_c_loop via full_forward)
@@ -294,16 +238,11 @@ def main():
         print("\n--- Case 4: track3d Python ---")
         t3_py_data, t3_py_npart, t3_py_nlinks, t3_py_step_links = run_track3d_python(first, last)
 
-        # Case 5: track3d Numba/JIT
-        print("\n--- Case 5: track3d Numba/JIT ---")
-        t3_jit_data, t3_jit_npart, t3_jit_nlinks, t3_jit_step_links = run_track3d_cython(first, last)
-
         all_cases = [
             ("TC-Cy", tc_cy),
             ("TC-Py", tc_py_data),
             ("T3-Cy", t3_cy),
             ("T3-Py", t3_py_data),
-            ("T3-JIT", t3_jit_data),
         ]
 
         print("\n" + "=" * 80)
@@ -327,7 +266,6 @@ def main():
 
         print(f"\ntrackcorr Python: npart={tc_py_npart}, nlinks={tc_py_nlinks}, step_links={tc_py_step_links}")
         print(f"track3d Python: npart={t3_py_npart}, nlinks={t3_py_nlinks}, step_links={t3_py_step_links}")
-        print(f"track3d JIT: npart={t3_jit_npart}, nlinks={t3_jit_nlinks}, step_links={t3_jit_step_links}")
 
         print("\n" + "=" * 80)
         print("PARTICLE COUNTS PER STEP")
@@ -349,7 +287,6 @@ def main():
         pairs = [
             ("TC-Cy", tc_cy, "TC-Py", tc_py_data, "trackcorr: Cython vs Python"),
             ("T3-Cy", t3_cy, "T3-Py", t3_py_data, "track3d: Cython vs Python"),
-            ("T3-Py", t3_py_data, "T3-JIT", t3_jit_data, "track3d: Python vs JIT"),
             ("TC-Cy", tc_cy, "T3-Cy", t3_cy, "Cython: trackcorr vs track3d"),
             ("TC-Py", tc_py_data, "T3-Py", t3_py_data, "Python: trackcorr vs track3d"),
         ]

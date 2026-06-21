@@ -397,7 +397,7 @@ def parse_command_line_args():
     parser.add_argument(
         "--debug-mode",
         action="store_true",
-        help="Use Python/Numba engine for debugging instead of C/Cython (optv)",
+        help="Use Python engine for debugging instead of C/Cython (optv)",
     )
     args = parser.parse_args()
 
@@ -406,7 +406,7 @@ def parse_command_line_args():
             from openptv2.engine import set_engine
 
             set_engine("python")
-            print("DEBUG MODE: Using Python/Numba engine for tracking")
+            print("DEBUG MODE: Using Python engine for tracking")
         except ImportError as e:
             print(f"Warning: Could not set Python engine: {e}")
 

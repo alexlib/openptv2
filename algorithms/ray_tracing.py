@@ -147,8 +147,6 @@ def ray_tracing(
 def ray_tracing_batch(xy, cal, mm):
     """Trace N rays through multi-media interface.
 
-    Uses Numba JIT when available for parallel acceleration.
-
     Args:
         xy: (N, 2) array of metric image coordinates.
         cal: Calibration object.
@@ -158,15 +156,6 @@ def ray_tracing_batch(xy, cal, mm):
         (positions, directions) — each (N, 3) float64 arrays.
     """
     xy = np.ascontiguousarray(xy, dtype=np.float64)
-    try:
-        from .track_kernels import (
-            HAS_NUMBA, ray_tracing_batch_jit, pack_cal_array,
-        )
-        if HAS_NUMBA:
-            cal_arr = pack_cal_array(cal, mm)
-            return ray_tracing_batch_jit(xy, cal_arr)
-    except ImportError:
-        pass
     n = xy.shape[0]
     positions = np.empty((n, 3), dtype=np.float64)
     directions = np.empty((n, 3), dtype=np.float64)

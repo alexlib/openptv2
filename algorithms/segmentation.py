@@ -20,11 +20,7 @@ from collections import deque
 # Constant for no correspondence assigned
 CORRES_NONE = -1
 
-try:
-    from .track_kernels import targ_rec_jit as _targ_rec_jit
-    _HAS_NUMBA = True
-except ImportError:
-    _HAS_NUMBA = False
+from .track_kernels import targ_rec_jit as _targ_rec_jit
 
 
 
@@ -150,126 +146,27 @@ def targ_rec(
 
     img_u8 = np.asarray(img, dtype=np.uint8)
 
-    if _HAS_NUMBA:
-        img0 = img_u8.copy()
-        max_targets = (xmax - xmin) * (ymax - ymin)
-        n_found, ox, oy, on, onx, ony, osumg = _targ_rec_jit(
-            img_u8, img0,
-            np.int64(gvthres), np.int64(discont),
-            np.int64(nnmin), np.int64(nnmax),
-            np.int64(nxmin), np.int64(nxmax),
-            np.int64(nymin), np.int64(nymax),
-            np.int64(sumg_min),
-            np.int32(xmin), np.int32(ymin),
-            np.int32(xmax), np.int32(ymax),
-            np.int64(max_targets),
-        )
-        if n_found == 0:
-            return [Target(pnr=0, x=1, y=1, n=1, nx=1, ny=1, sumg=1, tnr=CORRES_NONE)]
-        return [
-            Target(pnr=k, x=float(ox[k]), y=float(oy[k]),
-                   n=int(on[k]), nx=int(onx[k]), ny=int(ony[k]),
-                   sumg=int(osumg[k]), tnr=CORRES_NONE)
-            for k in range(n_found)
-        ]
-
     img0 = img_u8.copy()
-    targets = []
-    waitlist = []
-
-    for i in range(ymin, ymax):
-        for j in range(xmin, xmax):
-            gv = int(img_u8[i, j])
-            if gv <= gvthres:
-                continue
-            # 8-neighbor local maximum (check original image)
-            if not (
-                gv >= int(img_u8[i, j - 1])
-                and gv >= int(img_u8[i, j + 1])
-                and gv >= int(img_u8[i - 1, j])
-                and gv >= int(img_u8[i + 1, j])
-                and gv >= int(img_u8[i - 1, j - 1])
-                and gv >= int(img_u8[i + 1, j - 1])
-                and gv >= int(img_u8[i - 1, j + 1])
-                and gv >= int(img_u8[i + 1, j + 1])
-            ):
-                continue
-
-            # Skip if this pixel was already consumed by a previous BFS
-            if img0[i, j] <= gvthres:
-                continue
-
-            yn, xn = i, j
-            sumg = int(gv)
-            img0[i, j] = 0
-            xa = xb = xn
-            ya = yb = yn
-
-            x_weighted = float(xn) * (gv - gvthres)
-            y_weighted = float(yn) * (gv - gvthres)
-            numpix = 1
-
-            waitlist.clear()
-            waitlist.append((j, i))
-
-            while waitlist:
-                wj, wi = waitlist.pop(0)
-                gvref = int(img_u8[wi, wj])
-
-                for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
-                    xn4, yn4 = wj + dx, wi + dy
-                    if not (xmin <= xn4 < xmax and ymin <= yn4 < ymax):
-                        continue
-
-                    gv4 = int(img0[yn4, xn4])
-                    if (
-                        gv4 > gvthres and
-                        (gv4 <= gvref + discont) and
-                        (gvref + discont >= int(img_u8[yn4 - 1, xn4])) and
-                        (gvref + discont >= int(img_u8[yn4 + 1, xn4])) and
-                        (gvref + discont >= int(img_u8[yn4, xn4 - 1])) and
-                        (gvref + discont >= int(img_u8[yn4, xn4 + 1]))
-                    ):
-                        sumg += gv4
-                        img0[yn4, xn4] = 0
-                        xa = min(xa, xn4)
-                        xb = max(xb, xn4)
-                        ya = min(ya, yn4)
-                        yb = max(yb, yn4)
-                        waitlist.append((xn4, yn4))
-                        x_weighted += float(xn4) * (gv4 - gvthres)
-                        y_weighted += float(yn4) * (gv4 - gvthres)
-                        numpix += 1
-
-            if xa == (xmin - 1) or ya == (ymin - 1) or xb == (xmax + 1) or yb == (ymax + 1):
-                continue
-
-            nx = xb - xa + 1
-            ny = yb - ya + 1
-
-            if (numpix >= nnmin and numpix <= nnmax and
-                    nx >= nxmin and nx <= nxmax and
-                    ny >= nymin and ny <= nymax and
-                    sumg > sumg_min):
-
-                sumg_adj = sumg - (numpix * gvthres)
-                xcent = x_weighted / float(sumg_adj) + 0.5
-                ycent = y_weighted / float(sumg_adj) + 0.5
-
-                targets.append(Target(
-                    pnr=len(targets),
-                    x=xcent,
-                    y=ycent,
-                    n=numpix,
-                    nx=nx,
-                    ny=ny,
-                    sumg=sumg,
-                    tnr=CORRES_NONE
-                ))
-
-    if not targets:
-        targets.append(Target(pnr=0, x=1, y=1, n=1, nx=1, ny=1, sumg=1, tnr=CORRES_NONE))
-    return targets
+    max_targets = (xmax - xmin) * (ymax - ymin)
+    n_found, ox, oy, on, onx, ony, osumg = _targ_rec_jit(
+        img_u8, img0,
+        np.int64(gvthres), np.int64(discont),
+        np.int64(nnmin), np.int64(nnmax),
+        np.int64(nxmin), np.int64(nxmax),
+        np.int64(nymin), np.int64(nymax),
+        np.int64(sumg_min),
+        np.int32(xmin), np.int32(ymin),
+        np.int32(xmax), np.int32(ymax),
+        np.int64(max_targets),
+    )
+    if n_found == 0:
+        return [Target(pnr=0, x=1, y=1, n=1, nx=1, ny=1, sumg=1, tnr=CORRES_NONE)]
+    return [
+        Target(pnr=k, x=float(ox[k]), y=float(oy[k]),
+               n=int(on[k]), nx=int(onx[k]), ny=int(ony[k]),
+               sumg=int(osumg[k]), tnr=CORRES_NONE)
+        for k in range(n_found)
+    ]
 def peak_fit(
     img: np.ndarray,
     gvthres: int,
@@ -334,31 +231,27 @@ def peak_fit(
                 wx, wy = waitlist.popleft()
                 gvref = int(img[wy, wx])
 
-                for dx in [-1, 0, 1]:
-                    for dy in [-1, 0, 1]:
-                        if dx == 0 and dy == 0:
-                            continue
-                        
-                        nx_pos, ny_pos = wx + dx, wy + dy
-                        if not (0 <= nx_pos < imx and 0 <= ny_pos < imy):
-                            continue
-                        if label_img[ny_pos, nx_pos] != 0:
-                            continue
+                for dx, dy in [(0, -1), (0, 1), (-1, 0), (1, 0)]:
+                    nx_pos, ny_pos = wx + dx, wy + dy
+                    if not (0 <= nx_pos < imx and 0 <= ny_pos < imy):
+                        continue
+                    if label_img[ny_pos, nx_pos] != 0:
+                        continue
 
-                        neighbor_gv = int(img[ny_pos, nx_pos])
+                    neighbor_gv = int(img[ny_pos, nx_pos])
 
-                        if (
-                            neighbor_gv > gvthres
-                            and xmin <= nx_pos < xmax
-                            and ymin <= ny_pos < ymax - 1
-                            and neighbor_gv <= gvref + discont
-                            and gvref + discont >= int(img[ny_pos - 1, nx_pos])
-                            and gvref + discont >= int(img[ny_pos + 1, nx_pos])
-                            and gvref + discont >= int(img[ny_pos, nx_pos - 1])
-                            and gvref + discont >= int(img[ny_pos, nx_pos + 1])
-                        ):
-                            label_img[ny_pos, nx_pos] = n_peaks
-                            waitlist.append((nx_pos, ny_pos))
+                    if (
+                        neighbor_gv > gvthres
+                        and xmin <= nx_pos < xmax
+                        and ymin <= ny_pos < ymax - 1
+                        and neighbor_gv <= gvref + discont
+                        and gvref + discont >= int(img[ny_pos - 1, nx_pos])
+                        and gvref + discont >= int(img[ny_pos + 1, nx_pos])
+                        and gvref + discont >= int(img[ny_pos, nx_pos - 1])
+                        and gvref + discont >= int(img[ny_pos, nx_pos + 1])
+                    ):
+                        label_img[ny_pos, nx_pos] = n_peaks
+                        waitlist.append((nx_pos, ny_pos))
 
     # ---- Pass 2: Collect data and detect touches ----
     for i in range(ymin, ymax):

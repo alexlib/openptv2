@@ -313,7 +313,7 @@ def parse_command_line_args(args_list=None) -> tuple[Path, int, int, str]:
     parser.add_argument(
         "--debug-mode",
         action="store_true",
-        help="Use Python/Numba engine for debugging instead of C/Cython (optv)",
+        help="Use Python engine for debugging instead of C/Cython (optv)",
     )
     args = parser.parse_args(args_list)
 

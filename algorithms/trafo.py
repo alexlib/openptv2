@@ -169,14 +169,6 @@ def pixel_to_metric_batch(xy: cython.double[:, :], cpar) -> np.ndarray:
         (N, 2) array of metric coordinates.
     """
     xy_arr = np.ascontiguousarray(xy, dtype=np.float64)
-    try:
-        from .track_kernels import HAS_NUMBA, pixel_to_metric_batch_jit
-        if HAS_NUMBA:
-            return pixel_to_metric_batch_jit(
-                xy_arr, cpar.imx, cpar.imy, cpar.pix_x, cpar.pix_y, cpar.chfield,
-            )
-    except ImportError:
-        pass
 
     n: cython.Py_ssize_t = xy_arr.shape[0]
     result: np.ndarray = np.empty((n, 2), dtype=np.float64)
@@ -217,14 +209,6 @@ def metric_to_pixel_batch(xy: cython.double[:, :], cpar) -> np.ndarray:
         (N, 2) array of pixel coordinates.
     """
     xy_arr = np.ascontiguousarray(xy, dtype=np.float64)
-    try:
-        from .track_kernels import HAS_NUMBA, metric_to_pixel_batch_jit
-        if HAS_NUMBA:
-            return metric_to_pixel_batch_jit(
-                xy_arr, cpar.imx, cpar.imy, cpar.pix_x, cpar.pix_y, cpar.chfield,
-            )
-    except ImportError:
-        pass
 
     n: cython.Py_ssize_t = xy_arr.shape[0]
     result: np.ndarray = np.empty((n, 2), dtype=np.float64)

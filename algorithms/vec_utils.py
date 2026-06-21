@@ -4,7 +4,7 @@ Translation of lib/src/vec_utils.c and lib/include/vec_utils.h.
 
 Uses Structure-of-Arrays (SoA) layout: instead of an array of vec3d objects,
 we store three separate arrays (x, y, z) for batch operations. This enables
-full NumPy vectorization and future Numba acceleration.
+full NumPy vectorization and Cython 3 compilation.
 
 For single-vector operations, plain float or length-3 arrays are accepted.
 """
@@ -242,7 +242,7 @@ class Vec3dBatch:
 
     Instead of storing N vectors as an (N, 3) array, we store three
     separate (N,) arrays for x, y, z components. This enables fully
-    vectorized NumPy operations and future Numba acceleration.
+    vectorized NumPy operations and Cython 3 compilation.
 
     Attributes:
         x: (N,) array of x components

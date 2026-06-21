@@ -41,9 +41,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-python-only = [
-    "numba>=0.60.0",
-]
+python-only = []
 gui = [
     "traits>=6.4.0",
     "traitsui>=7.4.0",
@@ -60,9 +58,6 @@ gui = [
     "Pygments>=2.15.0",
     "pyparsing>=3.0.0",
     "marimo>=0.19.10",
-]
-numba = [
-    "numba>=0.60.0",
 ]
 test = [
     "pytest>=8.0.0",
@@ -89,7 +84,6 @@ dev = [
     "Pygments>=2.15.0",
     "pyparsing>=3.0.0",
     "marimo>=0.19.10",
-    "numba>=0.60.0",
 ]
 docs = [
     "sphinx>=8.0.0",
