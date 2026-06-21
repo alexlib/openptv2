@@ -85,7 +85,7 @@ def read_calblock(filename: str | Path) -> Tuple[np.ndarray, int]:
         print(f"Can't open calibration block file: {filename}")
         return np.empty((0, 3)), 0
 
-    data = np.loadtxt(path)
+    data = np.loadtxt(path, ndmin=2)
     if data.size == 0:
         print(f"Empty or badly formatted file: {filename}")
         return np.empty((0, 3)), 0

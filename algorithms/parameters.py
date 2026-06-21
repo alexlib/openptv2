@@ -179,19 +179,16 @@ class TargetPar:
     @staticmethod
     def from_file(filename):
         path = Path(filename)
-        lines = path.read_text().strip().splitlines()
-        if len(lines) < 9:
-            raise ValueError(f"Expected 9 lines, got {len(lines)}")
-        gvthres = [int(lines[i].strip()) for i in range(4)]
-        discont = int(lines[4].strip())
-        nn_parts = lines[5].strip().split()
-        nnmin, nnmax = int(nn_parts[0]), int(nn_parts[1])
-        nx_parts = lines[6].strip().split()
-        nxmin, nxmax = int(nx_parts[0]), int(nx_parts[1])
-        ny_parts = lines[7].strip().split()
-        nymin, nymax = int(ny_parts[0]), int(ny_parts[1])
-        sumg_min = int(lines[8].strip())
-        cr_sz = int(lines[9].strip()) if len(lines) > 9 else 0
+        tokens = path.read_text().split()
+        if len(tokens) < 12:
+            raise ValueError(f"Expected at least 12 values, got {len(tokens)}")
+        gvthres = [int(tokens[i]) for i in range(4)]
+        discont = int(tokens[4])
+        nnmin, nnmax = int(tokens[5]), int(tokens[6])
+        nxmin, nxmax = int(tokens[7]), int(tokens[8])
+        nymin, nymax = int(tokens[9]), int(tokens[10])
+        sumg_min = int(tokens[11])
+        cr_sz = int(tokens[12]) if len(tokens) > 12 else 0
         return TargetPar(gvthres, discont, nnmin, nnmax, nxmin, nxmax, nymin, nymax, sumg_min, cr_sz)
     def to_file(self, filename):
         path = Path(filename)

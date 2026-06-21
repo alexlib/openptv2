@@ -5,7 +5,8 @@
       "Bash(uv run *)",
       "Bash(OPENPTV_PYTHON_ONLY=1 uv run pytest --co -q)",
       "Bash(git stash *)",
-      "Bash(OPENPTV_PYTHON_ONLY=1 uv run pytest algorithms/tests/ -v --tb=line)"
+      "Bash(OPENPTV_PYTHON_ONLY=1 uv run pytest algorithms/tests/ -v --tb=line)",
+      "Bash(OPENPTV_PYTHON_ONLY=1 uv run pytest algorithms/tests/ -v --tb=short)"
     ]
   }
 }

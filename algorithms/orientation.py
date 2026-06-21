@@ -614,14 +614,14 @@ def read_man_ori_fix(calblock_filename, man_ori_filename, cam):
     if not man_path.exists():
         return None
 
-    lines = man_path.read_text().strip().splitlines()
-    if len(lines) < (cam + 1) * 4:
+    tokens = man_path.read_text().split()
+    if len(tokens) < (cam + 1) * 4:
         return None
 
     nr = []
     for i in range(4):
         try:
-            nr.append(int(lines[cam * 4 + i].strip()))
+            nr.append(int(tokens[cam * 4 + i]))
         except (ValueError, IndexError):
             return None
 

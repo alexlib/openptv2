@@ -294,9 +294,18 @@ def prepare_image(
     return img_hp
 
 
-def copy_images(imgs):
-    """Stub for copy_images: returns a copy of the input list of images."""
-    return [np.copy(img) for img in imgs]
+def copy_images(src, dest=None, imx=None, imy=None):
+    """Copy image data from src to dest, matching C's copy_images semantics.
+
+    If dest is provided, copies src into dest in-place and returns dest.
+    If only src is provided (a list of images), returns copies (legacy API).
+    """
+    if isinstance(src, list):
+        return [np.copy(img) for img in src]
+    if dest is not None:
+        np.copyto(dest, src)
+        return dest
+    return src.copy()
 
 
 def is_compiled() -> bool:
