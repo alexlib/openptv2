@@ -17,10 +17,26 @@ NMAX = 20240
 PT_UNUSED = -999
 
 
+def _default_ntupel_p():
+    return [-1, -1, -1, -1]
+
+
+def _default_correspond_p2():
+    return np.zeros(MAXCAND, dtype=np.int32)
+
+
+def _default_correspond_corr():
+    return np.zeros(MAXCAND, dtype=np.float64)
+
+
+def _default_correspond_dist():
+    return np.zeros(MAXCAND, dtype=np.float64)
+
+
 @dataclass
 class NTupel:
     """A correspondence match across multiple cameras."""
-    p: list[int] = field(default_factory=lambda: [-1, -1, -1, -1])
+    p: list[int] = field(default_factory=_default_ntupel_p)
     corr: float = 0.0
 
 
@@ -32,21 +48,40 @@ class Correspond:
     """
     p1: int = 0
     n: int = 0
-    p2: np.ndarray = field(default_factory=lambda: np.zeros(MAXCAND, dtype=np.int32))
-    corr: np.ndarray = field(default_factory=lambda: np.zeros(MAXCAND, dtype=np.float64))
-    dist: np.ndarray = field(default_factory=lambda: np.zeros(MAXCAND, dtype=np.float64))
+    p2: np.ndarray = field(default_factory=_default_correspond_p2)
+    corr: np.ndarray = field(default_factory=_default_correspond_corr)
+    dist: np.ndarray = field(default_factory=_default_correspond_dist)
 
 
+@cython.ccall
 def quicksort_target_y(pix):
     """Sort target list by y coordinate in place."""
-    pix.sort(key=lambda t: t.y)
+    i: cython.int
+    j: cython.int
+    for i in range(1, len(pix)):
+        item = pix[i]
+        j = i
+        while j > 0 and pix[j - 1].y > item.y:
+            pix[j] = pix[j - 1]
+            j -= 1
+        pix[j] = item
 
 
+@cython.ccall
 def quicksort_coord2d_x(crd):
     """Sort Coord2d list by x coordinate in place."""
-    crd.sort(key=lambda c: c.x)
+    i: cython.int
+    j: cython.int
+    for i in range(1, len(crd)):
+        item = crd[i]
+        j = i
+        while j > 0 and crd[j - 1].x > item.x:
+            crd[j] = crd[j - 1]
+            j -= 1
+        crd[j] = item
 
 
+@cython.ccall
 def safely_allocate_adjacency_lists(num_cams, target_counts):
     """Allocate pairwise adjacency lists.
 
@@ -54,12 +89,15 @@ def safely_allocate_adjacency_lists(num_cams, target_counts):
     of Correspond objects of length target_counts[c1], for c1 < c2.
     """
     lists = [[None] * num_cams for _ in range(num_cams)]
+    c1: cython.int
+    c2: cython.int
     for c1 in range(num_cams - 1):
         for c2 in range(c1 + 1, num_cams):
             lists[c1][c2] = [Correspond(p1=0, n=0) for _ in range(target_counts[c1])]
     return lists
 
 
+@cython.ccall
 def match_pairs(lists, corrected, frm, vpar, cpar, calib):
     """Build pairwise adjacency lists between all camera pairs.
 
@@ -76,6 +114,12 @@ def match_pairs(lists, corrected, frm, vpar, cpar, calib):
     """
     from .epi import epi_mm, find_candidate, Candidate
 
+    i1: cython.int
+    i2: cython.int
+    i: cython.int
+    j: cython.int
+    pt1: cython.int
+    count: cython.int
     for i1 in range(cpar.num_cams - 1):
         for i2 in range(i1 + 1, cpar.num_cams):
             for i in range(frm.num_targets[i1]):
@@ -108,6 +152,7 @@ def match_pairs(lists, corrected, frm, vpar, cpar, calib):
                 lists[i1][i2][i].n = count
 
 
+@cython.ccall
 def four_camera_matching(lists, base_target_count, accept_corr, scratch, scratch_size):
     """Find consistent 4-camera correspondences (quadruplets).
 
@@ -116,7 +161,22 @@ def four_camera_matching(lists, base_target_count, accept_corr, scratch, scratch
     Returns:
         int, the number of candidate cliques found.
     """
-    matched = 0
+    matched: cython.int = 0
+    i: cython.int
+    j: cython.int
+    k: cython.int
+    l: cython.int
+    m: cython.int
+    n: cython.int
+    o: cython.int
+    p1: cython.int
+    p2: cython.int
+    p3: cython.int
+    p4: cython.int
+    p31: cython.int
+    p41: cython.int
+    p42: cython.int
+    corr: cython.double
 
     for i in range(base_target_count):
         p1 = lists[0][1][i].p1
@@ -170,6 +230,7 @@ def four_camera_matching(lists, base_target_count, accept_corr, scratch, scratch
     return matched
 
 
+@cython.ccall
 def three_camera_matching(lists, num_cams, target_counts, accept_corr,
                           scratch, scratch_size, tusage):
     """Find consistent 3-camera correspondences (triplets).
@@ -179,7 +240,19 @@ def three_camera_matching(lists, num_cams, target_counts, accept_corr,
     Returns:
         int, the number of candidate cliques found.
     """
-    matched = 0
+    matched: cython.int = 0
+    i1: cython.int
+    i2: cython.int
+    i3: cython.int
+    i: cython.int
+    j: cython.int
+    k: cython.int
+    m_idx: cython.int
+    nc: cython.int
+    p1: cython.int
+    p2: cython.int
+    p3: cython.int
+    corr: cython.double
 
     for i1 in range(num_cams - 2):
         for i in range(target_counts[i1]):
@@ -227,6 +300,7 @@ def three_camera_matching(lists, num_cams, target_counts, accept_corr,
     return matched
 
 
+@cython.ccall
 def consistent_pair_matching(lists, num_cams, target_counts, accept_corr,
                              scratch, scratch_size, tusage):
     """Find unambiguous 2-camera pairs.
@@ -236,7 +310,14 @@ def consistent_pair_matching(lists, num_cams, target_counts, accept_corr,
     Returns:
         int, the number of pairs found.
     """
-    matched = 0
+    matched: cython.int = 0
+    i1: cython.int
+    i2: cython.int
+    i: cython.int
+    nc: cython.int
+    p1: cython.int
+    p2: cython.int
+    corr: cython.double
 
     for i1 in range(num_cams - 1):
         for i2 in range(i1 + 1, num_cams):
@@ -269,6 +350,7 @@ def consistent_pair_matching(lists, num_cams, target_counts, accept_corr,
     return matched
 
 
+@cython.ccall
 def take_best_candidates(src, dst, num_cams, num_cands, tusage):
     """Take candidates by descending correlation, skipping used targets.
 
@@ -277,7 +359,15 @@ def take_best_candidates(src, dst, num_cams, num_cands, tusage):
     Returns:
         int, the number of cliques taken.
     """
-    src[:num_cands] = sorted(src[:num_cands], key=lambda t: -t.corr)
+    i: cython.int
+    j: cython.int
+    for i in range(1, num_cands):
+        item = src[i]
+        j = i
+        while j > 0 and src[j - 1].corr < item.corr:
+            src[j] = src[j - 1]
+            j -= 1
+        src[j] = item
 
     taken = 0
     for cand in range(num_cands):
@@ -301,6 +391,7 @@ def take_best_candidates(src, dst, num_cams, num_cands, tusage):
     return taken
 
 
+@cython.ccall
 def correct_frame(frm, calib, cpar, tol):
     """Transition from pixel to metric to flat coordinates, x-sorted.
 
@@ -340,6 +431,7 @@ def correct_frame(frm, calib, cpar, tol):
     return corrected
 
 
+@cython.ccall
 def correspondences(frm, corrected, vpar, cpar, calib):
     """Full correspondence matching pipeline.
 

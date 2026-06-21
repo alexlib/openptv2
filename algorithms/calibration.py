@@ -339,6 +339,7 @@ class Calibration:
             add_path.write_text("\n".join(add_lines) + "\n")
 
 
+@cython.ccall
 def compare_exterior(e1: Exterior, e2: Exterior) -> bool:
     """Compare two Exterior objects for equality (all fields, including dm)."""
     if not np.allclose(e1.dm, e2.dm):
@@ -352,6 +353,7 @@ def compare_exterior(e1: Exterior, e2: Exterior) -> bool:
         e1.kappa == e2.kappa
     )
 
+@cython.ccall
 def compare_interior(i1: Interior, i2: Interior) -> bool:
     """Compare two Interior objects for equality."""
     return (
@@ -360,6 +362,7 @@ def compare_interior(i1: Interior, i2: Interior) -> bool:
         i1.cc == i2.cc
     )
 
+@cython.ccall
 def compare_glass(g1: Glass, g2: Glass) -> bool:
     """Compare two Glass objects for equality (only normal vector)."""
     return (
@@ -368,6 +371,7 @@ def compare_glass(g1: Glass, g2: Glass) -> bool:
         g1.vec_z == g2.vec_z
     )
 
+@cython.ccall
 def compare_addpar(a1: AddedPar, a2: AddedPar) -> bool:
     """Compare two AddedPar (distortion) objects for equality."""
     return (
@@ -380,6 +384,7 @@ def compare_addpar(a1: AddedPar, a2: AddedPar) -> bool:
         a1.she == a2.she
     )
 
+@cython.ccall
 def compare_calib(c1: Calibration, c2: Calibration) -> bool:
     """Deep comparison of two Calibration objects (all fields except mmlut)."""
     return (

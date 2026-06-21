@@ -39,6 +39,8 @@ def multimed_nlay(
     mm_d0: cython.double,
     mm_nlay: cython.int = 1,
     mmf: cython.double = 1.0,
+    mm_n2=None,
+    mm_d=None,
 ) -> tuple:
     """Compute radial-shifted Xq, Yq positions.
 
@@ -61,6 +63,7 @@ def multimed_nlay(
             pos_x, pos_y, pos_z,
             ext_x0, ext_y0, ext_z0,
             mm_n1, mm_n2_0, mm_n3, mm_d0, mm_nlay,
+            mm_n2=mm_n2, mm_d=mm_d,
         )
 
     Xq: cython.double = ext_x0 + (pos_x - ext_x0) * radial_shift
@@ -87,6 +90,7 @@ def multimed_r_nlay_iterative(
     mm_n3: cython.double,
     mm_d0: cython.double,
     mm_nlay: cython.int = 1,
+    mm_n2=None,
     mm_d=None,
     n_iter: cython.int = 40,
     tol: cython.double = 0.001,
@@ -109,13 +113,14 @@ def multimed_r_nlay_iterative(
     if mm_n1 == 1.0 and mm_nlay == 1 and mm_n2_0 == 1.0 and mm_n3 == 1.0:
         return 1.0
 
+    if mm_n2 is None:
+        mm_n2 = [mm_n2_0]
+    if mm_d is None:
+        mm_d = [mm_d0]
+
     zout = pos_z
-    if mm_d is not None:
-        for i in range(1, mm_nlay):
-            zout += mm_d[i]
-    else:
-        # Defaults to mm_d = [mm_d0]
-        pass
+    for i in range(1, mm_nlay):
+        zout += mm_d[i]
 
     dx = pos_x - ext_x0
     dy = pos_y - ext_y0
@@ -126,30 +131,25 @@ def multimed_r_nlay_iterative(
         beta1 = math.atan(rq / (ext_z0 - pos_z))
         sin_beta1 = math.sin(beta1)
 
-        # We construct beta2 list
-        # arg = sin_beta1 * mm_n1 / mm_n2_0
-        arg = sin_beta1 * mm_n1 / mm_n2_0
-        if arg < -1.0 - tol or arg > 1.0 + tol:
-            raise ValueError(
-                f"Total internal reflection: arcsin argument out of bounds ({arg})."
-            )
+        beta2_vals = [0.0] * mm_nlay
+        for i in range(mm_nlay):
+            arg = sin_beta1 * mm_n1 / mm_n2[i]
+            if arg > 1.0:
+                arg = 1.0
+            elif arg < -1.0:
+                arg = -1.0
+            beta2_vals[i] = math.asin(arg)
+
+        arg = sin_beta1 * mm_n1 / mm_n3
         if arg > 1.0:
             arg = 1.0
         elif arg < -1.0:
             arg = -1.0
-        
-        # Single layer is the most common case
-        beta2_val: cython.double = math.asin(arg)
-
-        beta3 = math.asin(sin_beta1 * mm_n1 / mm_n3)
+        beta3 = math.asin(arg)
 
         rbeta = (ext_z0 - mm_d0) * math.tan(beta1) - zout * math.tan(beta3)
-        if mm_d is not None:
-            for i in range(mm_nlay):
-                # Note: original code repeats beta2 computation but here it is identical for single n2
-                rbeta += mm_d[i] * math.tan(beta2_val)
-        else:
-            rbeta += mm_d0 * math.tan(beta2_val)
+        for i in range(mm_nlay):
+            rbeta += mm_d[i] * math.tan(beta2_vals[i])
 
         rdiff = r - rbeta
         rq += rdiff
@@ -545,6 +545,8 @@ def init_mmlut(vpar, cpar, cal):
                         cal_t_x0, cal_t_y0, cal_t_z0,
                         cpar.mm.n1, cpar.mm.n2[0], cpar.mm.n3, cpar.mm.d[0],
                         cpar.mm.nlay,
+                        mm_n2=cpar.mm.n2,
+                        mm_d=cpar.mm.d,
                     )
 
         cal.mmlut.data = data

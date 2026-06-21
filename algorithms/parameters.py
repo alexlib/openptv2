@@ -1,6 +1,7 @@
 import cython
 
 # Convert TrackPar to TrackParTuple for test compatibility
+@cython.ccall
 def convert_track_par_to_tuple(track_par):
     return TrackParTuple(
         track_par.dvxmin, track_par.dvxmax, track_par.dvymin, track_par.dvymax,

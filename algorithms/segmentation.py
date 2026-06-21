@@ -63,6 +63,7 @@ class Peak:
     n_touch: int = 0
 
 
+@cython.ccall
 def check_touch(tpeak: Peak, p1: int, p2: int) -> None:
     """Check whether p1, p2 are already marked as touching and mark them otherwise.
 
@@ -73,6 +74,7 @@ def check_touch(tpeak: Peak, p1: int, p2: int) -> None:
     if p2 == p1:
         return
 
+    m: cython.int
     # check whether p1, p2 are already marked as touching
     for m in range(tpeak.n_touch):
         if tpeak.touch[m] == p2:
@@ -87,7 +89,7 @@ def check_touch(tpeak: Peak, p1: int, p2: int) -> None:
         tpeak.n_touch = 3
 
 
-def _is_local_maximum(img: np.ndarray, i: int, j: int, imx: int, imy: int) -> bool:
+def _is_local_maximum(img: np.ndarray, i: cython.int, j: cython.int, imx: cython.int, imy: cython.int) -> bool:
     """Check if pixel at (i, j) is an 8-neighbor local maximum."""
     gv = img[i, j]
     return (
@@ -102,6 +104,7 @@ def _is_local_maximum(img: np.ndarray, i: int, j: int, imx: int, imy: int) -> bo
     )
 
 
+@cython.ccall
 def targ_rec(
     img: np.ndarray,
     gvthres: int,
@@ -160,13 +163,18 @@ def targ_rec(
         np.int64(max_targets),
     )
     if n_found == 0:
-        return [Target(pnr=0, x=1, y=1, n=1, nx=1, ny=1, sumg=1, tnr=CORRES_NONE)]
+        return [Target(pnr=1, x=1, y=1, n=1, nx=1, ny=1, sumg=1, tnr=CORRES_NONE)]
     return [
         Target(pnr=k, x=float(ox[k]), y=float(oy[k]),
                n=int(on[k]), nx=int(onx[k]), ny=int(ony[k]),
                sumg=int(osumg[k]), tnr=CORRES_NONE)
         for k in range(n_found)
     ]
+
+
+@cython.ccall
+@cython.boundscheck(False)
+@cython.wraparound(False)
 def peak_fit(
     img: np.ndarray,
     gvthres: int,
@@ -189,6 +197,10 @@ def peak_fit(
         xmax = imx
     if ymax < 0:
         ymax = imy
+
+    i: cython.Py_ssize_t
+    j: cython.Py_ssize_t
+    gv: cython.int
 
     # Label image
     label_img = np.zeros((imy, imx), dtype=np.int32)

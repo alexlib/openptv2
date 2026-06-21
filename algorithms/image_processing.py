@@ -17,173 +17,157 @@ from pathlib import Path
 
 
 
+@cython.ccall
+@cython.boundscheck(False)
+@cython.wraparound(False)
 def filter_3(
     img: np.ndarray,
     filt: np.ndarray,
-    imx: int,
-    imy: int,
-    min_brightness: int = 8,
+    imx: cython.int,
+    imy: cython.int,
+    min_brightness: cython.int = 8,
 ) -> np.ndarray:
-    """Apply a 3x3 filter kernel to an image.
-
-    The first and last lines are not processed. Edges use wrap-around.
-    Minimal brightness in output is enforced.
-
-    Args:
-        img: input image as 2D uint8 array (imy, imx).
-        filt: 3x3 filter kernel.
-        imx, imy: image dimensions.
-        min_brightness: minimum output pixel value.
-
-    Returns:
-        Filtered image as 2D uint8 array.
-
-    Raises:
-        ValueError: if filter kernel is all zeros.
-    """
-    filt = np.asarray(filt, dtype=np.float64)
-    filt_sum = filt.sum()
+    """Apply the C 3x3 filter kernel with matching integer semantics."""
+    filt = np.asarray(filt, dtype=np.float64).reshape(3, 3)
+    filt_sum = float(filt.sum())
     if filt_sum == 0:
         raise ValueError("Filter kernel sum is zero")
 
-    src = np.asarray(img, dtype=np.float64).ravel()
+    src = np.asarray(img, dtype=np.uint8).reshape(imy, imx).ravel()
     image_size = imx * imy
-    result = np.zeros(image_size, dtype=np.float64)
+    result = np.zeros(image_size, dtype=np.uint8)
 
     start = imx + 1
     end = image_size - imx - 1
-    idx = np.arange(start, end)
+    for idx in range(start, end):
+        total = (
+            filt[0, 0] * src[idx - imx - 1]
+            + filt[0, 1] * src[idx - imx]
+            + filt[0, 2] * src[idx - imx + 1]
+            + filt[1, 0] * src[idx - 1]
+            + filt[1, 1] * src[idx]
+            + filt[1, 2] * src[idx + 1]
+            + filt[2, 0] * src[idx + imx - 1]
+            + filt[2, 1] * src[idx + imx]
+            + filt[2, 2] * src[idx + imx + 1]
+        )
+        buf = int(total / filt_sum)
+        if buf > 255:
+            buf = 255
+        if buf < min_brightness:
+            buf = min_brightness
+        result[idx] = buf
 
-    buf = (filt[0, 0] * src[idx - imx - 1] + filt[0, 1] * src[idx - imx] + filt[0, 2] * src[idx - imx + 1]
-         + filt[1, 0] * src[idx - 1]       + filt[1, 1] * src[idx]       + filt[1, 2] * src[idx + 1]
-         + filt[2, 0] * src[idx + imx - 1] + filt[2, 1] * src[idx + imx] + filt[2, 2] * src[idx + imx + 1])
-    buf /= filt_sum
-    np.clip(buf, min_brightness, 255, out=buf)
-    result[start:end] = buf
-
-    return result.reshape(imy, imx).astype(np.uint8)
+    return result.reshape(imy, imx)
 
 
-def lowpass_3(img: np.ndarray, imx: int, imy: int) -> np.ndarray:
-    """Apply a 3x3 averaging (box) filter.
-
-    Simplified version of filter_3 with uniform kernel.
-
-    Args:
-        img: input image as 2D uint8 array (imy, imx).
-        imx, imy: image dimensions.
-
-    Returns:
-        Blurred image as 2D uint8 array.
-    """
-    src = np.asarray(img, dtype=np.float64).ravel()
+@cython.ccall
+@cython.boundscheck(False)
+@cython.wraparound(False)
+def lowpass_3(img: np.ndarray, imx: cython.int, imy: cython.int) -> np.ndarray:
+    """Apply the C 3x3 low-pass filter with integer division."""
+    src = np.asarray(img, dtype=np.uint8).reshape(imy, imx).ravel()
     image_size = imx * imy
-    result = np.zeros(image_size, dtype=np.float64)
+    result = np.zeros(image_size, dtype=np.uint8)
 
     start = imx + 1
     end = image_size - imx - 1
-    idx = np.arange(start, end)
+    for idx in range(start, end):
+        total = (
+            int(src[idx])
+            + int(src[idx - imx - 1])
+            + int(src[idx - imx])
+            + int(src[idx - imx + 1])
+            + int(src[idx - 1])
+            + int(src[idx + 1])
+            + int(src[idx + imx - 1])
+            + int(src[idx + imx])
+            + int(src[idx + imx + 1])
+        )
+        result[idx] = total // 9
 
-    buf = (src[idx - imx - 1] + src[idx - imx] + src[idx - imx + 1]
-         + src[idx - 1]       + src[idx]       + src[idx + 1]
-         + src[idx + imx - 1] + src[idx + imx] + src[idx + imx + 1])
-    result[start:end] = (buf / 9.0).astype(np.int64)
-
-    return result.reshape(imy, imx).astype(np.uint8)
-
-
-def _box_blur_row_pass(src, filt_span, imy, imx):
-    """Row pass of fast_box_blur — vectorized across all rows."""
-    n = 2 * filt_span + 1
-    row_accum = np.zeros((imy, imx), dtype=np.float64)
-
-    # col 0: accum = src[:, 0], row_accum[:, 0] = accum * n
-    accum = src[:, 0].copy()
-    row_accum[:, 0] = accum * n
-
-    # Growing filter: cols 1..filt_span
-    for j in range(1, min(filt_span + 1, imx)):
-        left_idx = 2 * j - 1
-        right_idx = 2 * j
-        if right_idx < imx:
-            accum += src[:, left_idx] + src[:, right_idx]
-        elif left_idx < imx:
-            accum += src[:, left_idx]
-        m = 2 * j + 1
-        row_accum[:, j] = accum * n / m
-
-    # Middle: constant-size sliding window
-    mid_end = imx - filt_span if imx > filt_span else imx
-    for j in range(filt_span + 1, mid_end):
-        accum += src[:, j + filt_span] - src[:, j - filt_span - 1]
-        row_accum[:, j] = accum
-
-    # Shrinking filter: last filt_span columns
-    end_start = max(imx - filt_span, filt_span + 1)
-    left_ptr = imx - n
-    m = n - 2
-    for j in range(end_start, imx):
-        if left_ptr >= 0 and left_ptr + 1 < imx:
-            accum -= src[:, left_ptr] + src[:, left_ptr + 1]
-        if m > 0:
-            row_accum[:, j] = accum * n / m
-        left_ptr += 2
-        m -= 2
-
-    return row_accum
+    return result.reshape(imy, imx)
 
 
+@cython.ccall
+@cython.boundscheck(False)
+@cython.wraparound(False)
 def fast_box_blur(
     img: np.ndarray,
-    filt_span: int,
-    imx: int,
-    imy: int,
+    filt_span: cython.int,
+    imx: cython.int,
+    imy: cython.int,
 ) -> np.ndarray:
-    """Perform box blur using linear-time algorithm.
-
-    Direct translation of C fast_box_blur. Uses sliding-window accumulation
-    in both row and column directions.
-    """
-    src = np.asarray(img, dtype=np.float64).reshape(imy, imx)
+    """Perform the C box blur with matching integer rounding."""
+    src = np.asarray(img, dtype=np.uint8).reshape(imy, imx).ravel()
     n = 2 * filt_span + 1
     nq = n * n
+    image_size = imx * imy
+    row_accum = np.zeros(image_size, dtype=np.int64)
+    col_accum = np.zeros(imx, dtype=np.int64)
+    dest = np.zeros(image_size, dtype=np.uint8)
 
-    row_accum = _box_blur_row_pass(src, filt_span, imy, imx)
+    for row in range(imy):
+        row_start = row * imx
+        accum = int(src[row_start])
+        row_accum[row_start] = accum * n
 
-    # Column pass (already vectorized across columns via row slicing)
-    col_accum = row_accum[0, :].copy()
-    dest = np.zeros((imy, imx), dtype=np.float64)
-    dest[0, :] = col_accum / n
+        for col in range(1, min(filt_span + 1, imx)):
+            left_idx = row_start + 2 * col - 1
+            right_idx = row_start + 2 * col
+            accum += int(src[left_idx]) + int(src[right_idx])
+            m = 2 * col + 1
+            row_accum[row_start + col] = accum * n // m
 
-    for i in range(1, min(filt_span + 1, imy)):
-        r1 = 2 * i - 1
-        r2 = 2 * i
-        if r2 < imy:
-            col_accum += row_accum[r1, :] + row_accum[r2, :]
-        elif r1 < imy:
-            col_accum += row_accum[r1, :]
-        dest[i, :] = n * col_accum / nq / (2 * i + 1)
+        for col in range(filt_span + 1, imx - filt_span):
+            accum += int(src[row_start + col + filt_span]) - int(src[row_start + col - filt_span - 1])
+            row_accum[row_start + col] = accum
 
-    ptr1_row = 0
-    ptr2_row = n
-    for i in range(filt_span + 1, max(imy - filt_span, filt_span + 1)):
-        if ptr2_row < imy:
-            col_accum += row_accum[ptr2_row, :] - row_accum[ptr1_row, :]
-        dest[i, :] = col_accum / nq
-        ptr1_row += 1
-        ptr2_row += 1
+        left_ptr = row_start + imx - n
+        m = n - 2
+        for col in range(max(imx - filt_span, filt_span + 1), imx):
+            accum -= int(src[left_ptr]) + int(src[left_ptr + 1])
+            row_accum[row_start + col] = accum * n // m
+            left_ptr += 2
+            m -= 2
 
-    for i in range(filt_span, 0, -1):
-        r1 = imy - 2 * i - 1
-        r2 = r1 + 1
-        if 0 <= r1 < imy and r2 < imy:
-            col_accum -= row_accum[r1, :] + row_accum[r2, :]
-        dest[imy - i, :] = n * col_accum / nq / (2 * i + 1)
+    for col in range(imx):
+        col_accum[col] = row_accum[col]
+        dest[col] = col_accum[col] // n
 
-    return dest.astype(np.uint8)
+    for row in range(1, min(filt_span + 1, imy)):
+        ptr1 = (2 * row - 1) * imx
+        ptr2 = ptr1 + imx
+        out = row * imx
+        for col in range(imx):
+            col_accum[col] += row_accum[ptr1 + col] + row_accum[ptr2 + col]
+            dest[out + col] = (n * col_accum[col]) // nq // (2 * row + 1)
+
+    ptr1 = 0
+    ptr2 = imx * n
+    for row in range(filt_span + 1, imy - filt_span):
+        out = row * imx
+        for col in range(imx):
+            col_accum[col] += row_accum[ptr2 + col] - row_accum[ptr1 + col]
+            dest[out + col] = col_accum[col] // nq
+        ptr1 += imx
+        ptr2 += imx
+
+    for row in range(filt_span, 0, -1):
+        ptr1 = (imy - 2 * row - 1) * imx
+        ptr2 = ptr1 + imx
+        out = (imy - row) * imx
+        for col in range(imx):
+            col_accum[col] -= row_accum[ptr1 + col] + row_accum[ptr2 + col]
+            dest[out + col] = (n * col_accum[col]) // nq // (2 * row + 1)
+
+    return dest.reshape(imy, imx)
 
 
-def split(img: np.ndarray, half_selector: int, imx: int, imy: int) -> np.ndarray:
+@cython.ccall
+@cython.boundscheck(False)
+@cython.wraparound(False)
+def split(img: np.ndarray, half_selector: cython.int, imx: cython.int, imy: cython.int) -> np.ndarray:
     """Extract even or odd lines into first half of image.
 
     Used with interlaced cameras.
@@ -213,6 +197,7 @@ def split(img: np.ndarray, half_selector: int, imx: int, imy: int) -> np.ndarray
     return img
 
 
+@cython.ccall
 def subtract_img(img1: np.ndarray, img2: np.ndarray) -> np.ndarray:
     """Subtract img2 from img1, clamping to zero.
 
@@ -227,6 +212,7 @@ def subtract_img(img1: np.ndarray, img2: np.ndarray) -> np.ndarray:
     return np.clip(result, 0, 255).astype(np.uint8)
 
 
+@cython.ccall
 def subtract_mask(img: np.ndarray, mask: np.ndarray) -> np.ndarray:
     """Apply mask to image: zero pixels where mask is zero.
 
@@ -242,14 +228,15 @@ def subtract_mask(img: np.ndarray, mask: np.ndarray) -> np.ndarray:
     return result
 
 
+@cython.ccall
 def prepare_image(
     img: np.ndarray,
-    dim_lp: int,
-    imx: int,
-    imy: int,
-    filter_hp: int = 0,
+    dim_lp: cython.int,
+    imx: cython.int,
+    imy: cython.int,
+    filter_hp: cython.int = 0,
     filter_file: str | Path | None = None,
-    chfield: int = 0,
+    chfield: cython.int = 0,
 ) -> np.ndarray:
     """Prepare image for particle detection: smoothing + optional filtering.
 
@@ -294,6 +281,7 @@ def prepare_image(
     return img_hp
 
 
+@cython.ccall
 def copy_images(src, dest=None, imx=None, imy=None):
     """Copy image data from src to dest, matching C's copy_images semantics.
 

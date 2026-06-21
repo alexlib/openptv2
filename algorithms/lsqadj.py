@@ -18,6 +18,7 @@ import cython
 import numpy as np
 
 
+@cython.ccall
 def ata(a: np.ndarray, m: int, n: int) -> np.ndarray:
     """Compute A^T @ A for a submatrix of A.
 
@@ -37,6 +38,7 @@ def ata(a: np.ndarray, m: int, n: int) -> np.ndarray:
     return sub.T @ sub
 
 
+@cython.ccall
 def atl(a: np.ndarray, l: np.ndarray, m: int, n: int) -> np.ndarray:
     """Compute A^T @ l for a submatrix of A.
 
@@ -57,6 +59,9 @@ def atl(a: np.ndarray, l: np.ndarray, m: int, n: int) -> np.ndarray:
     return sub.T @ l
 
 
+@cython.ccall
+@cython.boundscheck(False)
+@cython.wraparound(False)
 def matinv(a: np.ndarray, n: int) -> np.ndarray:
     """Invert a square matrix via Gauss-Jordan elimination.
 
@@ -74,25 +79,32 @@ def matinv(a: np.ndarray, n: int) -> np.ndarray:
         ZeroDivisionError: if a diagonal element is zero.
     """
     a = np.asarray(a, dtype=np.float64).reshape(-1, n)[:n, :n].copy()
-    n_large = n  # in our simplified API, n_large == n
+    n_large: cython.int = n  # in our simplified API, n_large == n
+    n_int: cython.int = n
 
-    for ipiv in range(n):
+    ipiv: cython.Py_ssize_t
+    irow: cython.Py_ssize_t
+    icol: cython.Py_ssize_t
+    pivot: cython.double
+    npivot: cython.double
+
+    for ipiv in range(n_int):
         pivot = 1.0 / a[ipiv, ipiv]
         npivot = -pivot
 
         # Update off-pivot elements
-        for irow in range(n):
-            for icol in range(n):
+        for irow in range(n_int):
+            for icol in range(n_int):
                 if irow != ipiv and icol != ipiv:
                     a[irow, icol] -= a[ipiv, icol] * a[irow, ipiv] * pivot
 
         # Scale pivot row (excluding pivot element)
-        for icol in range(n):
+        for icol in range(n_int):
             if ipiv != icol:
                 a[ipiv, icol] *= npivot
 
         # Scale pivot column (excluding pivot element)
-        for irow in range(n):
+        for irow in range(n_int):
             if ipiv != irow:
                 a[irow, ipiv] *= pivot
 
@@ -102,6 +114,7 @@ def matinv(a: np.ndarray, n: int) -> np.ndarray:
     return a
 
 
+@cython.ccall
 def matmul(b: np.ndarray, c: np.ndarray, m: int, n: int) -> np.ndarray:
     """Compute b @ c for submatrix b and sub-vector c.
 
@@ -121,6 +134,7 @@ def matmul(b: np.ndarray, c: np.ndarray, m: int, n: int) -> np.ndarray:
     return b[:m, :n] @ c[:n]
 
 
+@cython.ccall
 def norm_cross(a: np.ndarray, b: np.ndarray) -> np.ndarray:
     """Compute the normalized cross product of two 3-vectors.
 

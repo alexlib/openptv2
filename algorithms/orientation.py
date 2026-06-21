@@ -22,6 +22,7 @@ CONVERGENCE = 0.00001
 COORD_UNUSED = -1e10
 
 
+@cython.ccall
 def skew_midpoint(
     vert1: np.ndarray,
     direct1: np.ndarray,
@@ -48,6 +49,7 @@ def skew_midpoint(
     return dist, midpoint
 
 
+@cython.ccall
 def point_position(targets, num_cams, mm, cals):
     """Compute average 3D position from multiple camera rays.
 
@@ -64,6 +66,13 @@ def point_position(targets, num_cams, mm, cals):
 
     vertices = []
     directs = []
+
+    cam: cython.int
+    pair: cython.int
+    num_used_pairs: cython.int = 0
+    dtot: cython.double = 0.0
+    x: cython.double
+    y: cython.double
 
     for cam in range(num_cams):
         x, y = targets[cam, 0], targets[cam, 1]
@@ -109,6 +118,9 @@ def point_position(targets, num_cams, mm, cals):
     return res, dtot / num_used_pairs
 
 
+@cython.ccall
+@cython.boundscheck(False)
+@cython.wraparound(False)
 def point_position_batch(targets, num_cams, mm, cals):
     """Compute 3D positions from multiple camera rays for M targets.
 
@@ -122,9 +134,10 @@ def point_position_batch(targets, num_cams, mm, cals):
         (positions, distances) — (M, 3) and (M,) float64 arrays.
     """
     targets = np.ascontiguousarray(targets, dtype=np.float64)
-    num_pts = targets.shape[0]
+    num_pts: cython.Py_ssize_t = targets.shape[0]
     positions = np.empty((num_pts, 3), dtype=np.float64)
     distances = np.empty(num_pts, dtype=np.float64)
+    i: cython.Py_ssize_t
     for i in range(num_pts):
         pos, dist = point_position(targets[i], num_cams, mm, cals)
         positions[i] = pos
@@ -132,6 +145,7 @@ def point_position_batch(targets, num_cams, mm, cals):
     return positions, distances
 
 
+@cython.ccall
 def weighted_dumbbell_precision(targets, num_targs, num_cams, mm, cals,
                                 db_length, db_weight):
     """Weighted sum of dumbbell precision measures.
@@ -169,6 +183,7 @@ def weighted_dumbbell_precision(targets, num_targs, num_cams, mm, cals,
     return dtot / num_targs + db_weight * len_err_tot / (0.5 * num_targs)
 
 
+@cython.ccall
 def num_deriv_exterior(cal, cpar, dpos, dang, pos):
     """Compute numerical derivatives of image coords w.r.t. exterior params.
 
@@ -211,6 +226,7 @@ def num_deriv_exterior(cal, cpar, dpos, dang, pos):
     return x_ders, y_ders
 
 
+@cython.ccall
 def raw_orient(cal, cpar, nfix, fix, pix):
     """Simplified orientation using only 6 exterior parameters.
 
@@ -228,8 +244,8 @@ def raw_orient(cal, cpar, nfix, fix, pix):
     from .trafo import pixel_to_metric, correct_brown_affin
     from .lsqadj import ata, atl, matinv, matmul
 
-    dm = 0.0001
-    drad = 0.0001
+    dm: cython.double = 0.0001
+    drad: cython.double = 0.0001
 
     cal.added_par.k1 = 0
     cal.added_par.k2 = 0
@@ -239,8 +255,10 @@ def raw_orient(cal, cpar, nfix, fix, pix):
     cal.added_par.scx = 1
     cal.added_par.she = 0
 
-    itnum = 0
-    stopflag = 0
+    itnum: cython.int = 0
+    stopflag: cython.int = 0
+    i: cython.int
+    n: cython.int
 
     while stopflag == 0 and itnum < 20:
         itnum += 1
@@ -289,6 +307,7 @@ def raw_orient(cal, cpar, nfix, fix, pix):
     return bool(stopflag)
 
 
+@cython.ccall
 def orient(cal_in, cpar, nfix, fix, pix, flags, sigmabeta):
     """Bundle adjustment using Gauss-Markov model.
 
@@ -309,8 +328,8 @@ def orient(cal_in, cpar, nfix, fix, pix, flags, sigmabeta):
     from .lsqadj import ata, atl, matinv, matmul
     from .vec_utils import vec_set, unit_vector, vec_norm
 
-    dm = 0.00001
-    drad = 0.0000001
+    dm: cython.double = 0.00001
+    drad: cython.double = 0.0000001
 
     cal = copy.deepcopy(cal_in)
 
@@ -354,8 +373,12 @@ def orient(cal_in, cpar, nfix, fix, pix, flags, sigmabeta):
     safety_y = cal.glass_par.vec_y
     safety_z = cal.glass_par.vec_z
 
-    itnum = 0
-    stopflag = 0
+    itnum: cython.int = 0
+    stopflag: cython.int = 0
+    i: cython.int
+    n: cython.int
+    n_obs: cython.int
+    pd: cython.int
 
     while stopflag == 0 and itnum < NUM_ITER:
         itnum += 1
@@ -597,6 +620,7 @@ def orient(cal_in, cpar, nfix, fix, pix, flags, sigmabeta):
         return None
 
 
+@cython.ccall
 def read_man_ori_fix(calblock_filename, man_ori_filename, cam):
     """Read manual orientation fix points.
 
@@ -640,12 +664,14 @@ def read_man_ori_fix(calblock_filename, man_ori_filename, cam):
     return fix4
 
 
+@cython.ccall
 def read_calblock(filename):
     """Read calibration block file. Delegates to sortgrid.read_calblock."""
     from .sortgrid import read_calblock as _read_calblock
     return _read_calblock(filename)
 
 
+@cython.ccall
 def external_calibration(cal, ref_pts, img_pts, cpar):
     """Update exterior calibration from known 3D-2D correspondences.
 
@@ -673,6 +699,7 @@ def external_calibration(cal, ref_pts, img_pts, cpar):
     return raw_orient(cal, cpar, len(ref_pts), ref_pts, targs)
 
 
+@cython.ccall
 def full_calibration(cal, ref_pts, img_pts, cpar, flags=None):
     """Full calibration adjusting exterior, interior, and distortion params.
 
@@ -741,6 +768,7 @@ def full_calibration(cal, ref_pts, img_pts, cpar, flags=None):
     return ret, used, sigmabeta
 
 
+@cython.ccall
 def match_detection_to_ref(cal, ref_pts, img_pts, cpar, eps=25):
     """Match detected targets to reference 3D points via back-projection.
 
@@ -766,6 +794,7 @@ def match_detection_to_ref(cal, ref_pts, img_pts, cpar, eps=25):
                     eps, img_pts)
 
 
+@cython.ccall
 def multi_cam_point_positions(targets, cpar, cals):
     """Calculate 3D positions from multi-camera 2D projections.
 
@@ -783,12 +812,13 @@ def multi_cam_point_positions(targets, cpar, cals):
             rcm: n-length array of ray convergence measures.
     """
     targets = np.ascontiguousarray(targets, dtype=np.float64)
-    num_targets = targets.shape[0]
-    num_cams = targets.shape[1]
+    num_targets: cython.int = targets.shape[0]
+    num_cams: cython.int = targets.shape[1]
 
     res = np.empty((num_targets, 3), dtype=np.float64)
     rcm = np.empty(num_targets, dtype=np.float64)
 
+    pt: cython.int
     for pt in range(num_targets):
         pos, dist = point_position(targets[pt], num_cams, cpar.mm, cals)
         res[pt] = pos
@@ -797,6 +827,7 @@ def multi_cam_point_positions(targets, cpar, cals):
     return res, rcm
 
 
+@cython.ccall
 def point_positions(targets, cpar, cals, vpar=None):
     """Dispatch to single or multi-camera point position calculation.
 
@@ -820,6 +851,7 @@ def point_positions(targets, cpar, cals, vpar=None):
         raise ValueError("wrong number of cameras in point_positions")
 
 
+@cython.ccall
 def single_cam_point_positions(targets, cpar, cals, vpar):
     """Calculate 3D positions from single-camera 2D projections.
 
@@ -840,15 +872,19 @@ def single_cam_point_positions(targets, cpar, cals, vpar):
     from .ray_tracing import ray_tracing
 
     targets = np.ascontiguousarray(targets, dtype=np.float64)
-    num_targets = targets.shape[0]
+    num_targets: cython.int = targets.shape[0]
 
     res = np.empty((num_targets, 3), dtype=np.float64)
     rcm = np.zeros(num_targets, dtype=np.float64)
 
     cal = cals[0]
     mm = cpar.mm
-    z_mid = 0.5 * (vpar.z_min_lay[0] + vpar.z_max_lay[0])
+    z_mid: cython.double = 0.5 * (vpar.z_min_lay[0] + vpar.z_max_lay[0])
 
+    pt: cython.int
+    x: cython.double
+    y: cython.double
+    t: cython.double
     for pt in range(num_targets):
         x, y = targets[pt, 0, 0], targets[pt, 0, 1]
         pos, direct = ray_tracing(

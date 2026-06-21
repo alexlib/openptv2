@@ -42,6 +42,17 @@ def test_mean_filter():
     out2 = lowpass_3(img, 5, 5)
     assert images_equal(out1, out2, offset=6, discard=6)
 
+
+def test_filter_3_matches_c_min_brightness_and_border_handling():
+    img = np.ones((5, 5), dtype=np.uint8)
+    filt = np.ones((3, 3), dtype=np.float64)
+
+    out = filter_3(img, filt, 5, 5)
+
+    expected = np.zeros((5, 5), dtype=np.uint8)
+    expected.ravel()[6:19] = 8
+    assert np.array_equal(out, expected)
+
 def test_box_blur():
     img = np.array([
          0,   0,   0,   0, 0,

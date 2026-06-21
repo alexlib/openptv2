@@ -6,6 +6,9 @@ from .track_kernels import track3d_loop_jit as _track3d_loop_jit
 MAX_CANDS = 4
 
 
+@cython.ccall
+@cython.boundscheck(False)
+@cython.wraparound(False)
 def find_candidates_in_3d(frm, pos, dx, dy, dz, max_cands=MAX_CANDS):
     """Find up to max_cands closest candidates within a 3D box.
 
@@ -15,6 +18,13 @@ def find_candidates_in_3d(frm, pos, dx, dy, dz, max_cands=MAX_CANDS):
     import math
     indices = [-1] * max_cands
     dists = [1e20] * max_cands
+    i: cython.Py_ssize_t
+    slot: cython.Py_ssize_t
+    s: cython.Py_ssize_t
+    ddx: cython.double
+    ddy: cython.double
+    ddz: cython.double
+    d: cython.double
     for i in range(frm.num_parts):
         x = frm.path_info[i].x
         ddx = x[0] - pos[0]
@@ -32,6 +42,7 @@ def find_candidates_in_3d(frm, pos, dx, dy, dz, max_cands=MAX_CANDS):
                     break
     return [idx for idx in indices if idx >= 0]
 
+@cython.ccall
 def sort(n, a, b):
     """
     Sorts float array a and int array b in ascending order of a. Returns sorted arrays.
@@ -62,6 +73,7 @@ def _sync_soa_to_aos(frm):
             frm.targets[cam][j].tnr = int(tnr_arr[j])
 
 
+@cython.ccall
 def track3d_loop(run_info, step):
     """
     Python translation of C track3d_loop.

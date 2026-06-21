@@ -3,7 +3,15 @@ import pytest
 from pathlib import Path
 from algorithms.calibration import Calibration, Exterior, Interior, Glass, AddedPar
 from algorithms.parameters import ControlPar, VolumePar, MmNp, read_control_par, read_volume_par
-from algorithms.multimed import init_mmlut, back_trans_point, volumedimension, get_mmf_from_mmlut, multimed_nlay, trans_cam_point
+from algorithms.multimed import (
+    init_mmlut,
+    back_trans_point,
+    volumedimension,
+    get_mmf_from_mmlut,
+    multimed_nlay,
+    multimed_r_nlay_iterative,
+    trans_cam_point,
+)
 from algorithms.vec_utils import vec_set, vec_norm
 
 EPS = 1e-6
@@ -139,6 +147,63 @@ def test_multimed_nlay():
     
     assert abs(Xq - correct_Xq) < EPS
     assert abs(Yq - correct_Yq) < EPS
+
+
+def _multimed_r_nlay_reference(
+    pos_x, pos_y, pos_z,
+    ext_x0, ext_y0, ext_z0,
+    mm_n1, mm_n2, mm_n3, mm_d,
+):
+    zout = pos_z
+    for i in range(1, len(mm_d)):
+        zout += mm_d[i]
+
+    r = ((pos_x - ext_x0) ** 2 + (pos_y - ext_y0) ** 2) ** 0.5
+    rq = r
+
+    for _ in range(40):
+        beta1 = np.arctan(rq / (ext_z0 - pos_z))
+        beta2 = [np.arcsin(np.sin(beta1) * mm_n1 / n2) for n2 in mm_n2]
+        beta3 = np.arcsin(np.sin(beta1) * mm_n1 / mm_n3)
+
+        rbeta = (ext_z0 - mm_d[0]) * np.tan(beta1) - zout * np.tan(beta3)
+        for d, b2 in zip(mm_d, beta2, strict=True):
+            rbeta += d * np.tan(b2)
+
+        rdiff = r - rbeta
+        rq += rdiff
+        if abs(rdiff) < 0.001:
+            break
+    else:
+        return 1.0
+
+    return rq / r if r != 0 else 1.0
+
+
+def test_multimed_r_nlay_iterative_uses_all_layers():
+    pos_x, pos_y, pos_z = 12.0, -4.0, 30.0
+    ext_x0, ext_y0, ext_z0 = 1.5, -2.5, 120.0
+    mm_n1 = 1.0
+    mm_n2 = [1.49, 1.37]
+    mm_n3 = 1.33
+    mm_d = [5.0, 2.0]
+
+    expected = _multimed_r_nlay_reference(
+        pos_x, pos_y, pos_z,
+        ext_x0, ext_y0, ext_z0,
+        mm_n1, mm_n2, mm_n3, mm_d,
+    )
+
+    actual = multimed_r_nlay_iterative(
+        pos_x, pos_y, pos_z,
+        ext_x0, ext_y0, ext_z0,
+        mm_n1, mm_n2[0], mm_n3, mm_d[0],
+        mm_nlay=2,
+        mm_n2=mm_n2,
+        mm_d=mm_d,
+    )
+
+    assert abs(actual - expected) < EPS
 
 def test_trans_Cam_Point():
     pos = np.array([100.0, 100.0, 0.0])

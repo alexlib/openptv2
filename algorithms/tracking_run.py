@@ -50,6 +50,7 @@ class TrackingRun:
                 init_mmlut(self.vpar, self.cpar, c)
 
 
+@cython.ccall
 def tr_new(seq_par, tpar, vpar, cpar, buf_len, max_targets,
            corres_file_base, linkage_file_base, prio_file_base, cal, flatten_tol):
     """Python translation of C tr_new/tr_new_legacy.

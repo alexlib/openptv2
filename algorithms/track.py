@@ -225,18 +225,21 @@ def _point_to_pixel_fast(pos, cal, imx, imy, pix_x, pix_y, chfield, mm):
     return _point_to_pixel_packed(pos, pc, imx * 0.5, imy * 0.5, 1.0 / pix_x, 1.0 / pix_y, chfield)
 
 
+@cython.ccall
 def predict(prev_pos, curr_pos, c):
     prev_pos = np.asarray(prev_pos)
     curr_pos = np.asarray(curr_pos)
     c[:] = curr_pos + (curr_pos - prev_pos)
 
 
+@cython.ccall
 def search_volume_center_moving(prev_pos, curr_pos):
     prev_pos = np.asarray(prev_pos)
     curr_pos = np.asarray(curr_pos)
     return curr_pos + (curr_pos - prev_pos)
 
 
+@cython.ccall
 def pos3d_in_bounds(pos, bounds):
     x, y, z = pos
     return bool(
@@ -246,13 +249,22 @@ def pos3d_in_bounds(pos, bounds):
     )
 
 
+@cython.ccall
 def angle_acc(start, pred, cand):
-    v0x = pred[0] - start[0]
-    v0y = pred[1] - start[1]
-    v0z = pred[2] - start[2]
-    v1x = cand[0] - start[0]
-    v1y = cand[1] - start[1]
-    v1z = cand[2] - start[2]
+    v0x: cython.double = pred[0] - start[0]
+    v0y: cython.double = pred[1] - start[1]
+    v0z: cython.double = pred[2] - start[2]
+    v1x: cython.double = cand[0] - start[0]
+    v1y: cython.double = cand[1] - start[1]
+    v1z: cython.double = cand[2] - start[2]
+    angle: cython.double
+    norm0: cython.double
+    norm1: cython.double
+    dot: cython.double
+    dx: cython.double
+    dy: cython.double
+    dz: cython.double
+    acc: cython.double
 
     if v0x == -v1x and v0y == -v1y and v0z == -v1z:
         angle = 200.0
@@ -278,14 +290,29 @@ def angle_acc(start, pred, cand):
     return angle, acc
 
 
+@cython.ccall
+@cython.boundscheck(False)
+@cython.wraparound(False)
 def candsearch_in_pix(next_targets, num_targets, cent_x, cent_y,
                       dl, dr, du, dd, cpar):
     p = [PT_UNUSED] * 4
-
-    xmin = cent_x - dl
-    xmax = cent_x + dr
-    ymin = cent_y - du
-    ymax = cent_y + dd
+    xmin: cython.double = cent_x - dl
+    xmax: cython.double = cent_x + dr
+    ymin: cython.double = cent_y - du
+    ymax: cython.double = cent_y + dd
+    p1: cython.int
+    p2: cython.int
+    p3: cython.int
+    p4: cython.int
+    j: cython.Py_ssize_t
+    j0: cython.int
+    dj: cython.int
+    dmin: cython.double
+    d: cython.double
+    d1: cython.double
+    d2: cython.double
+    d3: cython.double
+    d4: cython.double
 
     if xmin < 0.0:
         xmin = 0.0
@@ -344,12 +371,21 @@ def candsearch_in_pix(next_targets, num_targets, cent_x, cent_y,
     return p
 
 
+@cython.ccall
+@cython.boundscheck(False)
+@cython.wraparound(False)
 def candsearch_in_pix_rest(next_targets, num_targets, cent_x, cent_y,
                            dl, dr, du, dd, p, cpar):
-    xmin = cent_x - dl
-    xmax = cent_x + dr
-    ymin = cent_y - du
-    ymax = cent_y + dd
+    xmin: cython.double = cent_x - dl
+    xmax: cython.double = cent_x + dr
+    ymin: cython.double = cent_y - du
+    ymax: cython.double = cent_y + dd
+    counter: cython.int
+    j: cython.Py_ssize_t
+    j0: cython.int
+    dj: cython.int
+    dmin: cython.double
+    d: cython.double
 
     if xmin < 0.0:
         xmin = 0.0
@@ -395,7 +431,12 @@ def candsearch_in_pix_rest(next_targets, num_targets, cent_x, cent_y,
     return counter
 
 
+@cython.ccall
+@cython.boundscheck(False)
+@cython.wraparound(False)
 def reset_foundpix_array(arr, n, num_cams):
+    i: cython.Py_ssize_t
+    j: cython.Py_ssize_t
     for i in range(n):
         arr[i][0] = TR_UNUSED  # ftnr
         arr[i][1] = 0          # freq
@@ -403,7 +444,12 @@ def reset_foundpix_array(arr, n, num_cams):
             arr[i][2][j] = 0   # whichcam
 
 
+@cython.ccall
+@cython.boundscheck(False)
+@cython.wraparound(False)
 def copy_foundpix_array(dest, src, n, num_cams):
+    i: cython.Py_ssize_t
+    j: cython.Py_ssize_t
     for i in range(n):
         dest[i][0] = src[i][0]
         dest[i][1] = src[i][1]
@@ -421,8 +467,16 @@ def _make_foundpix_array(n, num_cams):
     return [_make_foundpix(num_cams) for _ in range(n)]
 
 
+@cython.ccall
+@cython.boundscheck(False)
+@cython.wraparound(False)
 def sort_candidates_by_freq(items, num_cams):
-    n = num_cams * MAX_CANDS
+    n: cython.int = num_cams * MAX_CANDS
+    i: cython.Py_ssize_t
+    j: cython.Py_ssize_t
+    m: cython.Py_ssize_t
+    ftnr_i: cython.int
+    different: cython.int
 
     for i in range(n):
         ftnr_i = items[i][0]
@@ -463,8 +517,12 @@ def sort_candidates_by_freq(items, num_cams):
     return different
 
 
+@cython.ccall
+@cython.boundscheck(False)
+@cython.wraparound(False)
 def sort(n, a, b):
     """Bubble sort arrays a and b by ascending a values, in-place (matches C)."""
+    i: cython.Py_ssize_t
     flag = True
     while flag:
         flag = False
@@ -475,12 +533,14 @@ def sort(n, a, b):
                 flag = True
 
 
+@cython.ccall
 def point_to_pixel(point, cal, cpar):
     return _point_to_pixel_fast(
         point, cal, cpar.imx, cpar.imy, cpar.pix_x, cpar.pix_y, cpar.chfield, cpar.mm,
     )
 
 
+@cython.ccall
 def searchquader(point, tpar, cpar, calib, _packed_cals=None, _pix_info=None,
                  _jit_tuples=None):
     num_cams = cpar.num_cams
@@ -547,6 +607,9 @@ def searchquader(point, tpar, cpar, calib, _packed_cals=None, _pix_info=None,
     return xr, xl, yd, yu
 
 
+@cython.ccall
+@cython.boundscheck(False)
+@cython.wraparound(False)
 def register_closest_neighbs(targets, num_targets, cam, cent_x, cent_y,
                              dl, dr, du, dd, reg, cpar,
                              _targ_x=None, _targ_y=None, _targ_tnr=None):
@@ -555,6 +618,7 @@ def register_closest_neighbs(targets, num_targets, cam, cent_x, cent_y,
         cent_x, cent_y, dl, dr, du, dd,
         cpar.imx, cpar.imy, TR_UNUSED)
     all_cands = [p0, p1, p2, p3]
+    cand: cython.Py_ssize_t
     for cand in range(MAX_CANDS):
         if all_cands[cand] == PT_UNUSED:
             reg[cand][0] = TR_UNUSED
@@ -563,6 +627,7 @@ def register_closest_neighbs(targets, num_targets, cam, cent_x, cent_y,
             reg[cand][0] = int(_targ_tnr[all_cands[cand]])
 
 
+@cython.ccall
 def sorted_candidates_in_volume(center, center_proj, frm, run,
                                 _packed_cals=None, _pix_info=None,
                                 _jit_tuples=None):
@@ -602,11 +667,19 @@ def sorted_candidates_in_volume(center, center_proj, frm, run,
     return None
 
 
+@cython.ccall
 def assess_new_position(pos, targ_pos, cand_inds, frm, run,
                         _jit_cals=None, _jit_mmluts=None, _pix_info=None):
     from .trafo import pixel_to_metric, dist_to_flat
 
-    left = right = up = down = ADD_PART
+    left: cython.double = ADD_PART
+    right: cython.double = ADD_PART
+    up: cython.double = ADD_PART
+    down: cython.double = ADD_PART
+    cam: cython.Py_ssize_t
+    valid_cams: cython.int
+    best: cython.int
+    num_cands: cython.int
 
     for cam in range(TR_MAX_CAMS):
         targ_pos[cam][0] = targ_pos[cam][1] = COORD_UNUSED
@@ -655,6 +728,7 @@ def assess_new_position(pos, targ_pos, cand_inds, frm, run,
     return valid_cams
 
 
+@cython.ccall
 def add_particle(frm, pos, cand_inds):
     num_parts = frm.num_parts
     ref_path_inf = frm.path_info[num_parts]
@@ -673,6 +747,7 @@ def add_particle(frm, pos, cand_inds):
     frm.num_parts += 1
 
 
+@cython.ccall
 def track_forward_start(run):
     for step in range(run.seq_par.first, run.seq_par.first + TR_BUFSPACE - 1):
         run.fb.read_frame_at_end(step, read_links=False)
@@ -699,6 +774,7 @@ def _sync_soa_to_aos(frm):
             frm.targets[cam][j].tnr = int(tnr_arr[j])
 
 
+@cython.ccall
 def trackcorr_c_loop(run_info, step):
     from .orientation import point_position
 
@@ -785,6 +861,7 @@ def trackcorr_c_loop(run_info, step):
         fb.buf[fb.buf_len - 1].num_parts = 0
 
 
+@cython.ccall
 def trackcorr_c_finish(run_info, step):
     range_val = run_info.seq_par.last - run_info.seq_par.first
     npart = run_info.npart / range_val
@@ -796,6 +873,7 @@ def trackcorr_c_finish(run_info, step):
     run_info.fb.write_frame_from_start(step)
 
 
+@cython.ccall
 def trackback_c(run_info):
     from .orientation import point_position
 

@@ -25,6 +25,7 @@ class Target:
         self.tnr = tnr
 
 
+@cython.ccall
 def compare_targets(t1, t2):
     return (t1.pnr == t2.pnr and t1.x == t2.x and t1.y == t2.y and
             t1.n == t2.n and t1.nx == t2.nx and t1.ny == t2.ny and
@@ -39,6 +40,7 @@ def _resolve_file_base(file_base, frame_num):
     return f"{file_base}_targets"
 
 
+@cython.ccall
 def read_targets(file_base, frame_num):
     fname = _resolve_file_base(file_base, frame_num)
 
@@ -65,6 +67,7 @@ def read_targets(file_base, frame_num):
         return []
 
 
+@cython.ccall
 def write_targets(tbuf, num_targets, file_base, frame_num):
     fname = _resolve_file_base(file_base, frame_num)
 
@@ -88,6 +91,7 @@ class Corres:
         self.p = np.array([CORRES_NONE] * 4, dtype=np.int32) if p is None else np.asarray(p, dtype=np.int32)
 
 
+@cython.ccall
 def compare_corres(c1, c2):
     return (c1.nr == c2.nr and
             c1.p[0] == c2.p[0] and c1.p[1] == c2.p[1] and
@@ -111,6 +115,9 @@ class Pathinfo:
         self.linkdecis = [PT_UNUSED] * POSI if linkdecis is None else list(linkdecis)
 
 
+@cython.ccall
+@cython.boundscheck(False)
+@cython.wraparound(False)
 def compare_path_info(p1, p2):
     if not (p1.prev == p2.prev and p1.next == p2.next and
             p1.prio == p2.prio and p1.finaldecis == p2.finaldecis and
@@ -124,18 +131,21 @@ def compare_path_info(p1, p2):
     return True
 
 
+@cython.ccall
 def register_link_candidate(path, fitness, cand):
     path.decis[path.inlist] = fitness
     path.linkdecis[path.inlist] = cand
     path.inlist += 1
 
 
+@cython.ccall
 def reset_links(path):
     path.prev = PREV_NONE
     path.next = NEXT_NONE
     path.prio = 2  # PRIO_DEFAULT
 
 
+@cython.ccall
 def read_path_frame(corres_file_base, linkage_file_base, prio_file_base,
                     frame_num):
     fname = f"{corres_file_base}.{frame_num}"
@@ -231,6 +241,7 @@ def read_path_frame(corres_file_base, linkage_file_base, prio_file_base,
     return cor_buf, path_buf
 
 
+@cython.ccall
 def write_path_frame(cor_buf, path_buf, num_parts, corres_file_base,
                      linkage_file_base, prio_file_base, frame_num):
     corres_fname = f"{corres_file_base}.{frame_num}"

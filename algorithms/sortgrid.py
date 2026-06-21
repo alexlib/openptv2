@@ -19,10 +19,17 @@ from pathlib import Path
 from .tracking_frame_buf import Target
 
 
+@cython.ccall
+@cython.boundscheck(False)
 def nearest_neighbour_pix(pix: list, x: float, y: float, eps: float) -> int:
     """Search for the nearest target in the image space within epsilon distance."""
     if eps < 0:
         return -999
+
+    j: cython.Py_ssize_t
+    d: cython.double
+    dmin: cython.double
+    pnr: cython.int
 
     pnr = -999
     dmin = 1e20
@@ -42,7 +49,7 @@ def nearest_neighbour_pix(pix: list, x: float, y: float, eps: float) -> int:
 
 def _nearest_neighbour_arr(
     pix_x: np.ndarray, pix_y: np.ndarray,
-    x: float, y: float, eps: float,
+    x: cython.double, y: cython.double, eps: cython.double,
 ) -> int:
     """Vectorized nearest-neighbour search over pre-extracted coordinate arrays."""
     if eps < 0:
@@ -62,6 +69,7 @@ def _nearest_neighbour_arr(
     return int(np.flatnonzero(mask)[idx_in_mask])
 
 
+@cython.ccall
 def read_sortgrid_par(filename: str | Path) -> int:
     """Read search radius for sortgrid."""
     path = Path(filename)
@@ -74,6 +82,7 @@ def read_sortgrid_par(filename: str | Path) -> int:
         print(f"Error reading sortgrid parameter from {filename}")
         return 0
 
+@cython.ccall
 def read_calblock(filename: str | Path) -> Tuple[np.ndarray, int]:
     """Read calibration target 3D coordinates.
 
@@ -113,6 +122,9 @@ def sortgrid(
     """
     from .imgcoord import img_coord
     from .trafo import metric_to_pixel
+
+    i: cython.Py_ssize_t
+    j: cython.int
 
     sorted_pix = [Target(pnr=-999) for _ in range(nfix)]
 

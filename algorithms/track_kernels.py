@@ -30,8 +30,11 @@ def is_compiled() -> bool:
 CAL_ARRAY_SIZE = 31
 
 
+@cython.ccall
 def pack_cal_array(cal, mm):
     """Pack calibration into a flat float64 array for compiled kernels."""
+    dist_o_glas: cython.double
+    gx: cython.double; gy: cython.double; gz: cython.double
     ext = cal.ext_par
     ip = cal.int_par
     gp = cal.glass_par
@@ -56,6 +59,7 @@ def pack_cal_array(cal, mm):
     return c
 
 
+@cython.ccall
 def pack_mmlut(cal):
     """Pack mmlut into kernel-friendly arrays.
 
@@ -71,10 +75,18 @@ def pack_mmlut(cal):
             0, 0, 0.0)
 
 
-def _multimed_r_nlay_1layer(pos_x, pos_y, pos_z,
-                             ext_x0, ext_y0, ext_z0,
-                             mm_n1, mm_n2_0, mm_n3, mm_d0):
+@cython.boundscheck(False)
+@cython.wraparound(False)
+def _multimed_r_nlay_1layer(pos_x: cython.double, pos_y: cython.double, pos_z: cython.double,
+                             ext_x0: cython.double, ext_y0: cython.double, ext_z0: cython.double,
+                             mm_n1: cython.double, mm_n2_0: cython.double, mm_n3: cython.double, mm_d0: cython.double):
     """Single-layer iterative radial shift."""
+    zout: cython.double
+    dx: cython.double; dy: cython.double; r: cython.double; rq: cython.double
+    it: cython.int
+    denom: cython.double; beta1: cython.double; sin_beta1: cython.double
+    arg: cython.double; beta2_0: cython.double; arg3: cython.double; beta3: cython.double
+    rbeta: cython.double; rdiff: cython.double
     if mm_n1 == 1.0 and mm_n2_0 == 1.0 and mm_n3 == 1.0:
         return 1.0
 
@@ -122,9 +134,13 @@ def _multimed_r_nlay_1layer(pos_x, pos_y, pos_z,
     return 1.0
 
 
-def point_to_pixel_jit(pos, cal, mmlut_data, mmlut_origin,
-                       mmlut_nr, mmlut_nz, mmlut_rw,
-                       imx_half, imy_half, inv_pix_x, inv_pix_y, chfield):
+@cython.ccall
+def point_to_pixel_jit(pos: cython.double[:], cal: cython.double[:],
+                       mmlut_data: cython.double[:], mmlut_origin: cython.double[:],
+                       mmlut_nr: cython.int, mmlut_nz: cython.int, mmlut_rw: cython.double,
+                       imx_half: cython.double, imy_half: cython.double,
+                       inv_pix_x: cython.double, inv_pix_y: cython.double,
+                       chfield: cython.int):
     """Project 3D position to pixel coordinates.
 
     Args:
@@ -141,6 +157,39 @@ def point_to_pixel_jit(pos, cal, mmlut_data, mmlut_origin,
     Returns:
         (x_pixel, y_pixel) tuple.
     """
+    pos0: cython.double; pos1: cython.double; pos2: cython.double
+    ext_x0: cython.double; ext_y0: cython.double; ext_z0: cython.double
+    dm00: cython.double; dm10: cython.double; dm20: cython.double
+    dm01: cython.double; dm11: cython.double; dm21: cython.double
+    dm02: cython.double; dm12: cython.double; dm22: cython.double
+    int_cc: cython.double; xh: cython.double; yh: cython.double
+    gx: cython.double; gy: cython.double; gz: cython.double
+    inv_dog: cython.double; mm_n1: cython.double; mm_n2_0: cython.double; mm_n3: cython.double; mm_d0: cython.double
+    k1: cython.double; k2: cython.double; k3: cython.double
+    p1: cython.double; p2: cython.double; scx: cython.double; she: cython.double
+    dot_cam: cython.double; dist_o_glas: cython.double; dist_cam_glas: cython.double
+    dot_pos: cython.double; dist_point_glas: cython.double
+    s_cam: cython.double; cc_x: cython.double; cc_y: cython.double; cc_z: cython.double
+    s_pt: cython.double; cp_x: cython.double; cp_y: cython.double; cp_z: cython.double
+    ext_t_z0: cython.double; s_d: cython.double
+    ag_x: cython.double; ag_y: cython.double; ag_z: cython.double
+    tmp_x: cython.double; tmp_y: cython.double; tmp_z: cython.double
+    pos_t_0: cython.double; pos_t_2: cython.double
+    radial_shift: cython.double
+    has_mmlut: cython.bint
+    tx: cython.double; ty: cython.double; tz: cython.double
+    sz: cython.double; iz: cython.int
+    R: cython.double; sr: cython.double; ir: cython.int
+    v0: cython.int; v3: cython.int; mmf: cython.double
+    X_t: cython.double
+    s_z: cython.double; bx: cython.double; by: cython.double; bz: cython.double
+    s_x: cython.double
+    dx: cython.double; dy: cython.double; dz: cython.double; deno: cython.double
+    x: cython.double; y: cython.double; r: cython.double; r2: cython.double; r4: cython.double
+    radial_factor: cython.double; xd: cython.double; yd: cython.double
+    sin_she: cython.double; cos_she: cython.double
+    x_dist: cython.double; y_dist: cython.double
+    x_pixel: cython.double; y_pixel: cython.double
     pos0 = pos[0]; pos1 = pos[1]; pos2 = pos[2]
 
     ext_x0 = cal[0]; ext_y0 = cal[1]; ext_z0 = cal[2]
@@ -266,9 +315,14 @@ def point_to_pixel_jit(pos, cal, mmlut_data, mmlut_origin,
 
 PT_UNUSED = -999
 
-def candsearch_in_pix_jit(targ_x, targ_y, targ_tnr, num_targets,
-                           cent_x, cent_y, dl, dr, du, dd,
-                           imx, imy, tr_unused):
+@cython.ccall
+@cython.boundscheck(False)
+@cython.wraparound(False)
+def candsearch_in_pix_jit(targ_x: cython.double[:], targ_y: cython.double[:], targ_tnr: cython.int[:],
+                           num_targets: cython.int,
+                           cent_x: cython.double, cent_y: cython.double,
+                           dl: cython.double, dr: cython.double, du: cython.double, dd: cython.double,
+                           imx: cython.double, imy: cython.double, tr_unused: cython.int):
     """Find up to 4 closest candidates in pixel search area.
 
     Args:
@@ -284,6 +338,12 @@ def candsearch_in_pix_jit(targ_x, targ_y, targ_tnr, num_targets,
         (p0, p1, p2, p3) — indices of up to 4 closest candidates,
         PT_UNUSED for empty slots.
     """
+    xmin: cython.double; xmax: cython.double; ymin: cython.double; ymax: cython.double
+    p1: cython.int; p2: cython.int; p3: cython.int; p4: cython.int
+    d1: cython.double; d2: cython.double; d3: cython.double; d4: cython.double
+    j0: cython.int; dj: cython.int; j: cython.int
+    ty: cython.double; tx: cython.double
+    dx: cython.double; dy: cython.double; d: cython.double
     xmin = cent_x - dl
     xmax = cent_x + dr
     ymin = cent_y - du
@@ -340,14 +400,24 @@ def candsearch_in_pix_jit(targ_x, targ_y, targ_tnr, num_targets,
     return p1, p2, p3, p4
 
 
-def candsearch_in_pix_rest_jit(targ_x, targ_y, targ_tnr, num_targets,
-                                cent_x, cent_y, dl, dr, du, dd,
-                                imx, imy, tr_unused):
+@cython.ccall
+@cython.boundscheck(False)
+@cython.wraparound(False)
+def candsearch_in_pix_rest_jit(targ_x: cython.double[:], targ_y: cython.double[:], targ_tnr: cython.int[:],
+                                num_targets: cython.int,
+                                cent_x: cython.double, cent_y: cython.double,
+                                dl: cython.double, dr: cython.double, du: cython.double, dd: cython.double,
+                                imx: cython.double, imy: cython.double, tr_unused: cython.int):
     """Find closest unused candidate.
 
     Returns:
         (index, count) — index of closest candidate with tnr==TR_UNUSED, count (0 or 1).
     """
+    xmin: cython.double; xmax: cython.double; ymin: cython.double; ymax: cython.double
+    best: cython.int; dmin: cython.double; counter: cython.int
+    j0: cython.int; dj: cython.int; j: cython.int
+    ty: cython.double; tx: cython.double
+    dx: cython.double; dy: cython.double; d: cython.double
     xmin = cent_x - dl
     xmax = cent_x + dr
     ymin = cent_y - du
@@ -396,10 +466,15 @@ def candsearch_in_pix_rest_jit(targ_x, targ_y, targ_tnr, num_targets,
     return best, counter
 
 
-def searchquader_jit(point, quader, num_cams, cal_arrays, mmlut_datas,
-                     mmlut_origins, mmlut_nrs, mmlut_nzs, mmlut_rws,
-                     imx_half, imy_half, inv_pix_x, inv_pix_y, chfield,
-                     imx, imy):
+@cython.ccall
+@cython.boundscheck(False)
+@cython.wraparound(False)
+def searchquader_jit(point: cython.double[:], quader: cython.double[:, :], num_cams: cython.int,
+                     cal_arrays, mmlut_datas, mmlut_origins,
+                     mmlut_nrs, mmlut_nzs, mmlut_rws,
+                     imx_half: cython.double, imy_half: cython.double,
+                     inv_pix_x: cython.double, inv_pix_y: cython.double,
+                     chfield: cython.int, imx: cython.double, imy: cython.double):
     """Compute search area for all cameras.
 
     Projects point + 8 corner points through all cameras in a single JIT call,
@@ -417,6 +492,10 @@ def searchquader_jit(point, quader, num_cams, cal_arrays, mmlut_datas,
     Returns:
         (xr, xl, yd, yu) — each (num_cams,) float64.
     """
+    i: cython.Py_ssize_t; pt: cython.Py_ssize_t
+    xr_i: cython.double; xl_i: cython.double; yd_i: cython.double; yu_i: cython.double
+    cx: cython.double; cy: cython.double; corner_x: cython.double; corner_y: cython.double
+    mrw: cython.double; mnr: cython.int; mnz: cython.int
     xr = np.zeros(num_cams, dtype=np.float64)
     xl = np.zeros(num_cams, dtype=np.float64)
     yd = np.zeros(num_cams, dtype=np.float64)
@@ -460,7 +539,12 @@ def searchquader_jit(point, quader, num_cams, cal_arrays, mmlut_datas,
     return xr, xl, yd, yu
 
 
-def sort_candidates_by_freq_jit(ftnr, freq, whichcam, n, num_cams, max_cands):
+@cython.ccall
+@cython.boundscheck(False)
+@cython.wraparound(False)
+def sort_candidates_by_freq_jit(ftnr: cython.int[:], freq: cython.int[:],
+                                 whichcam: cython.int[:, :],
+                                 n: cython.int, num_cams: cython.int, max_cands: cython.int):
     """Sort candidates by frequency, matches C algorithm.
 
     Args:
@@ -474,6 +558,8 @@ def sort_candidates_by_freq_jit(ftnr, freq, whichcam, n, num_cams, max_cands):
     Returns:
         num_valid: number of valid candidates after sort.
     """
+    i: cython.int; j: cython.int; m: cython.int; k: cython.int
+    ftnr_i: cython.int; num_valid: cython.int
     tr_unused = -1
 
     for i in range(n):
@@ -521,18 +607,32 @@ def sort_candidates_by_freq_jit(ftnr, freq, whichcam, n, num_cams, max_cands):
     return num_valid
 
 
+@cython.ccall
+@cython.boundscheck(False)
+@cython.wraparound(False)
 def sorted_candidates_jit(
-    center, center_proj_x, center_proj_y,
-    num_cams, max_cands,
+    center: cython.double[:], center_proj_x: cython.double[:], center_proj_y: cython.double[:],
+    num_cams: cython.int, max_cands: cython.int,
     cal_arrays, mmlut_datas, mmlut_origins, mmlut_nrs, mmlut_nzs, mmlut_rws,
     targ_x_tuple, targ_y_tuple, targ_tnr_tuple, num_targets,
-    dvxmin, dvxmax, dvymin, dvymax, dvzmin, dvzmax,
-    imx_half, imy_half, inv_pix_x, inv_pix_y, chfield, imx, imy, tr_unused,
+    dvxmin: cython.double, dvxmax: cython.double, dvymin: cython.double, dvymax: cython.double,
+    dvzmin: cython.double, dvzmax: cython.double,
+    imx_half: cython.double, imy_half: cython.double,
+    inv_pix_x: cython.double, inv_pix_y: cython.double,
+    chfield: cython.int, imx: cython.double, imy: cython.double, tr_unused: cython.int,
 ):
     """Fused searchquader + candsearch + sort — single JIT entry.
 
     Returns (ftnr, freq, whichcam, num_valid).
     """
+    n: cython.int; px: cython.double; py: cython.double; pz: cython.double
+    i: cython.int; pt: cython.int
+    xr_i: cython.double; xl_i: cython.double; yd_i: cython.double; yu_i: cython.double
+    cx: cython.double; cy: cython.double; corner_x: cython.double; corner_y: cython.double
+    mrw: cython.double; mnr: cython.int; mnz: cython.int
+    cam: cython.int; base: cython.int; ci: cython.int; idx: cython.int
+    ftnr_i: cython.int; num_valid: cython.int; j: cython.int; m: cython.int; k: cython.int
+    p0: cython.int; p1: cython.int; p2: cython.int; p3: cython.int
     n = num_cams * max_cands
 
     # --- searchquader inlined ---
@@ -636,9 +736,15 @@ def sorted_candidates_jit(
     return ftnr, freq, whichcam, num_valid
 
 
-def angle_acc_jit(start_x, start_y, start_z, pred_x, pred_y, pred_z,
-                  cand_x, cand_y, cand_z):
+@cython.ccall
+def angle_acc_jit(start_x: cython.double, start_y: cython.double, start_z: cython.double,
+                  pred_x: cython.double, pred_y: cython.double, pred_z: cython.double,
+                  cand_x: cython.double, cand_y: cython.double, cand_z: cython.double):
     """Compute angle and acceleration between predicted and candidate."""
+    v0x: cython.double; v0y: cython.double; v0z: cython.double
+    v1x: cython.double; v1y: cython.double; v1z: cython.double
+    angle: cython.double; norm0: cython.double; norm1: cython.double; dot: cython.double
+    dx: cython.double; dy: cython.double; dz: cython.double; acc: cython.double
     v0x = pred_x - start_x
     v0y = pred_y - start_y
     v0z = pred_z - start_z
@@ -670,11 +776,31 @@ def angle_acc_jit(start_x, start_y, start_z, pred_x, pred_y, pred_z,
     return angle, acc
 
 
-def _ray_tracing_jit(x, y, cal):
+@cython.boundscheck(False)
+@cython.wraparound(False)
+def _ray_tracing_jit(x: cython.double, y: cython.double, cal: cython.double[:]):
     """Trace ray through multi-media interface.
 
     Returns (Xx, Xy, Xz, ox, oy, oz) — crossing point and direction.
     """
+    ext_x0: cython.double; ext_y0: cython.double; ext_z0: cython.double
+    dm00: cython.double; dm10: cython.double; dm20: cython.double
+    dm01: cython.double; dm11: cython.double; dm21: cython.double
+    dm02: cython.double; dm12: cython.double; dm22: cython.double
+    int_cc: cython.double; gx: cython.double; gy: cython.double; gz: cython.double
+    mm_n1: cython.double; mm_n2_0: cython.double; mm_n3: cython.double; mm_d0: cython.double
+    t0: cython.double; t1: cython.double; t2: cython.double; tn: cython.double
+    sd0: cython.double; sd1: cython.double; sd2: cython.double
+    gn: cython.double; gd0: cython.double; gd1: cython.double; gd2: cython.double
+    c: cython.double; dcg: cython.double; denom: cython.double; d1: cython.double
+    Xb0: cython.double; Xb1: cython.double; Xb2: cython.double
+    n: cython.double; bp0: cython.double; bp1: cython.double; bp2: cython.double; bpn: cython.double
+    p: cython.double; n_glass: cython.double
+    a2_0: cython.double; a2_1: cython.double; a2_2: cython.double
+    d2_denom: cython.double; d2: cython.double
+    Xx: cython.double; Xy: cython.double; Xz: cython.double
+    n_a2: cython.double; p2: cython.double; n_final: cython.double
+    ox: cython.double; oy: cython.double; oz: cython.double
     ext_x0 = cal[0]; ext_y0 = cal[1]; ext_z0 = cal[2]
     dm00 = cal[3]; dm10 = cal[4]; dm20 = cal[5]
     dm01 = cal[6]; dm11 = cal[7]; dm21 = cal[8]
@@ -758,7 +884,10 @@ def _ray_tracing_jit(x, y, cal):
 COORD_UNUSED = -1e10
 
 
-def point_position_jit(targets, num_cams, cal_arrays):
+@cython.ccall
+@cython.boundscheck(False)
+@cython.wraparound(False)
+def point_position_jit(targets: cython.double[:, :], num_cams: cython.int, cal_arrays):
     """Compute 3D position from multiple camera rays.
 
     Args:
@@ -769,6 +898,23 @@ def point_position_jit(targets, num_cams, cal_arrays):
     Returns:
         (pos, avg_dist) — (3,) float64 position and average ray distance.
     """
+    cam: cython.int; pair: cython.int
+    tx: cython.double; ty: cython.double
+    Xx: cython.double; Xy: cython.double; Xz: cython.double
+    ox: cython.double; oy: cython.double; oz: cython.double
+    dtot: cython.double; num_used: cython.int
+    px: cython.double; py: cython.double; pz: cython.double
+    v1x: cython.double; v1y: cython.double; v1z: cython.double
+    d1x: cython.double; d1y: cython.double; d1z: cython.double
+    v2x: cython.double; v2y: cython.double; v2z: cython.double
+    d2x: cython.double; d2y: cython.double; d2z: cython.double
+    sp0: cython.double; sp1: cython.double; sp2: cython.double
+    pb0: cython.double; pb1: cython.double; pb2: cython.double; scale: cython.double
+    dist: cython.double; mx: cython.double; my: cython.double; mz: cython.double
+    t0: cython.double; t1: cython.double; t2: cython.double
+    s1: cython.double; on1x: cython.double; on1y: cython.double; on1z: cython.double
+    s2: cython.double; on2x: cython.double; on2y: cython.double; on2z: cython.double
+    ddx: cython.double; ddy: cython.double; ddz: cython.double
     verts_x = np.empty(num_cams, dtype=np.float64)
     verts_y = np.empty(num_cams, dtype=np.float64)
     verts_z = np.empty(num_cams, dtype=np.float64)
@@ -851,8 +997,13 @@ def point_position_jit(targets, num_cams, cal_arrays):
     return pos, dtot
 
 
-def pixel_to_metric_jit(x_pixel, y_pixel, imx, imy, pix_x, pix_y, chfield):
+@cython.ccall
+def pixel_to_metric_jit(x_pixel: cython.double, y_pixel: cython.double,
+                         imx: cython.int, imy: cython.int,
+                         pix_x: cython.double, pix_y: cython.double,
+                         chfield: cython.int):
     """Convert pixel to metric coordinates."""
+    yp: cython.double; x_metric: cython.double; y_metric: cython.double
     yp = y_pixel
     if chfield == 1:
         yp = 2.0 * yp + 1.0
@@ -863,9 +1014,22 @@ def pixel_to_metric_jit(x_pixel, y_pixel, imx, imy, pix_x, pix_y, chfield):
     return x_metric, y_metric
 
 
-def dist_to_flat_jit(dist_x, dist_y, xh, yh, k1, k2, k3, p1, p2, scx, she,
-                     tol):
+@cython.ccall
+@cython.boundscheck(False)
+@cython.wraparound(False)
+def dist_to_flat_jit(dist_x: cython.double, dist_y: cython.double,
+                     xh: cython.double, yh: cython.double,
+                     k1: cython.double, k2: cython.double, k3: cython.double,
+                     p1: cython.double, p2: cython.double,
+                     scx: cython.double, she: cython.double, tol: cython.double):
     """Inverse Brown distortion."""
+    r_init: cython.double; sin_she: cython.double; cos_she: cython.double; inv_scx: cython.double
+    xq: cython.double; yq: cython.double
+    _: cython.int
+    r2: cython.double; r4: cython.double; r6: cython.double
+    radial_factor: cython.double; dx: cython.double; dy: cython.double
+    xq_new: cython.double; yq_new: cython.double
+    dx_change: cython.double; dy_change: cython.double
     r_init = math.sqrt(dist_x * dist_x + dist_y * dist_y)
     if r_init < 1e-10:
         return -xh, -yh
@@ -904,17 +1068,26 @@ def dist_to_flat_jit(dist_x, dist_y, xh, yh, k1, k2, k3, p1, p2, scx, she,
     return xq - xh, yq - yh
 
 
+@cython.ccall
+@cython.boundscheck(False)
+@cython.wraparound(False)
 def assess_new_position_jit(
-    pos, num_cams, add_part,
+    pos: cython.double[:], num_cams: cython.int, add_part: cython.double,
     cal_arrays, mmlut_datas, mmlut_origins, mmlut_nrs, mmlut_nzs, mmlut_rws,
     targ_x_tuple, targ_y_tuple, targ_tnr_tuple, num_targets,
-    imx_half, imy_half, inv_pix_x, inv_pix_y, chfield, imx, imy,
-    pix_x, pix_y, flatten_tol, tr_unused, coord_unused,
+    imx_half: cython.double, imy_half: cython.double,
+    inv_pix_x: cython.double, inv_pix_y: cython.double,
+    chfield: cython.int, imx: cython.int, imy: cython.int,
+    pix_x: cython.double, pix_y: cython.double,
+    flatten_tol: cython.double, tr_unused: cython.int, coord_unused: cython.double,
 ):
     """Assess new position: project, find unused targets, undistort.
 
     Returns (targ_pos, cand_inds, valid_cams).
     """
+    cam: cython.int; valid_cams: cython.int; best: cython.int; count: cython.int
+    px: cython.double; py: cython.double
+    mx: cython.double; my: cython.double; fx: cython.double; fy: cython.double
     targ_pos = np.full((num_cams, 2), coord_unused, dtype=np.float64)
     cand_inds = np.full(num_cams, PT_UNUSED, dtype=np.int32)
 
@@ -969,35 +1142,38 @@ COORD_UNUSED_K = -1e10
 ADD_PART_K = 3.0
 
 
+@cython.ccall
+@cython.boundscheck(False)
+@cython.wraparound(False)
 def trackcorr_loop_jit(
-    orig_parts_1,
+    orig_parts_1: cython.int,
     # Frame 0 (prev — read only)
-    path_x_0,
+    path_x_0: cython.double[:, :],
     # Frame 1 (curr — read/write)
-    path_x_1, path_prev_1, path_next_1, path_inlist_1,
-    path_finaldecis_1, path_decis_1, path_linkdecis_1,
-    corres_p_1, targ_x_1, targ_y_1,
+    path_x_1: cython.double[:, :], path_prev_1: cython.int[:], path_next_1: cython.int[:], path_inlist_1: cython.int[:],
+    path_finaldecis_1: cython.double[:], path_decis_1: cython.double[:, :], path_linkdecis_1: cython.int[:, :],
+    corres_p_1: cython.int[:, :], targ_x_1, targ_y_1,
     # Frame 2 (next — read/write)
-    path_x_2, path_prev_2, path_next_2, path_inlist_2,
-    path_prio_2, path_finaldecis_2, path_decis_2, path_linkdecis_2,
-    corres_p_2, corres_nr_2,
-    targ_x_2, targ_y_2, targ_tnr_2, num_targets_2, num_parts_2,
+    path_x_2: cython.double[:, :], path_prev_2: cython.int[:], path_next_2: cython.int[:], path_inlist_2: cython.int[:],
+    path_prio_2: cython.int[:], path_finaldecis_2: cython.double[:], path_decis_2: cython.double[:, :], path_linkdecis_2: cython.int[:, :],
+    corres_p_2: cython.int[:, :], corres_nr_2: cython.int[:],
+    targ_x_2, targ_y_2, targ_tnr_2, num_targets_2: cython.int[:], num_parts_2: cython.int[:],
     # Frame 3 (next-next — read/write)
-    path_x_3, path_prev_3, path_next_3, path_inlist_3,
-    path_prio_3, path_finaldecis_3, path_decis_3, path_linkdecis_3,
-    corres_p_3, corres_nr_3,
-    targ_x_3, targ_y_3, targ_tnr_3, num_targets_3, num_parts_3,
+    path_x_3: cython.double[:, :], path_prev_3: cython.int[:], path_next_3: cython.int[:], path_inlist_3: cython.int[:],
+    path_prio_3: cython.int[:], path_finaldecis_3: cython.double[:], path_decis_3: cython.double[:, :], path_linkdecis_3: cython.int[:, :],
+    corres_p_3: cython.int[:, :], corres_nr_3: cython.int[:],
+    targ_x_3, targ_y_3, targ_tnr_3, num_targets_3: cython.int[:], num_parts_3: cython.int[:],
     # Calibration
     cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t,
     # Tracking params
-    dvxmin, dvxmax, dvymin, dvymax, dvzmin, dvzmax,
-    dacc, dangle, add_flag, lmax,
+    dvxmin: cython.double, dvxmax: cython.double, dvymin: cython.double, dvymax: cython.double, dvzmin: cython.double, dvzmax: cython.double,
+    dacc: cython.double, dangle: cython.double, add_flag: cython.int, lmax: cython.double,
     # Volume bounds
-    X_lay_0, X_lay_1, ymin, ymax, Zmin_lay_0, Zmax_lay_1,
+    X_lay_0: cython.double, X_lay_1: cython.double, ymin: cython.double, ymax: cython.double, Zmin_lay_0: cython.double, Zmax_lay_1: cython.double,
     # Pixel params
-    num_cams,
-    imx_half, imy_half, inv_pix_x, inv_pix_y,
-    chfield, imx, imy, pix_x, pix_y, flatten_tol,
+    num_cams: cython.int,
+    imx_half: cython.double, imy_half: cython.double, inv_pix_x: cython.double, inv_pix_y: cython.double,
+    chfield: cython.int, imx: cython.double, imy: cython.double, pix_x: cython.double, pix_y: cython.double, flatten_tol: cython.double,
 ):
     """Full per-particle tracking loop + link resolution — single JIT entry.
 
@@ -1010,6 +1186,18 @@ def trackcorr_loop_jit(
     Returns:
         (count1, num_added) — number of links established and particles added.
     """
+    count1: cython.int; num_added: cython.int; n_sc: cython.int
+    h: cython.int; j: cython.int; mm: cython.int; kk: cython.int
+    prev_h: cython.int; ftnr_mm: cython.int; ftnr_kk: cython.int
+    ki: cython.int; ci: cython.int; inlist: cython.int
+    np2: cython.int; np3: cython.int; in_volume: cython.int; quali: cython.int
+    i: cython.int; ti: cython.int; cand: cython.int
+    px: cython.double; py: cython.double
+    dp0: cython.double; dp1: cython.double; dp2: cython.double
+    angle1: cython.double; acc1: cython.double; angle0: cython.double; acc0: cython.double
+    acc: cython.double; angle: cython.double; rr: cython.double
+    d13: cython.double; d43: cython.double; dl: cython.double
+    d01: cython.double; quali_f: cython.int
     count1 = 0
     num_added = 0
     n_sc = num_cams * MAX_CANDS_K
@@ -1163,7 +1351,7 @@ def trackcorr_loop_jit(
                 cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t,
                 targ_x_3, targ_y_3, targ_tnr_3, num_targets_3,
                 imx_half, imy_half, inv_pix_x, inv_pix_y, chfield,
-                imx, imy, pix_x, pix_y, flatten_tol,
+                int(imx), int(imy), pix_x, pix_y, flatten_tol,
                 TR_UNUSED_K, COORD_UNUSED_K)
 
             if quali >= 2:
@@ -1282,7 +1470,7 @@ def trackcorr_loop_jit(
                     cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t,
                     targ_x_2, targ_y_2, targ_tnr_2, num_targets_2,
                     imx_half, imy_half, inv_pix_x, inv_pix_y, chfield,
-                    imx, imy, pix_x, pix_y, flatten_tol,
+                    int(imx), int(imy), pix_x, pix_y, flatten_tol,
                     TR_UNUSED_K, COORD_UNUSED_K)
 
                 if quali2 >= 2:
@@ -1405,38 +1593,51 @@ def trackcorr_loop_jit(
     return count1, num_added
 
 
+@cython.ccall
+@cython.boundscheck(False)
+@cython.wraparound(False)
 def trackback_loop_jit(
-    num_parts_1,
+    num_parts_1: cython.int,
     # Frame 0 (forward/next in time — read only)
-    path_x_0,
+    path_x_0: cython.double[:, :],
     # Frame 1 (current — read/write)
-    path_x_1, path_prev_1, path_next_1, path_inlist_1,
-    path_finaldecis_1, path_decis_1, path_linkdecis_1,
+    path_x_1: cython.double[:, :], path_prev_1: cython.int[:], path_next_1: cython.int[:], path_inlist_1: cython.int[:],
+    path_finaldecis_1: cython.double[:], path_decis_1: cython.double[:, :], path_linkdecis_1: cython.int[:, :],
     # Frame 2 (backward/prev in time — read/write)
-    path_x_2, path_prev_2, path_next_2, num_parts_2,
-    targ_x_2, targ_y_2, targ_tnr_2, num_targets_2,
-    corres_p_2, corres_nr_2,
-    path_inlist_2, path_prio_2, path_finaldecis_2,
-    path_decis_2, path_linkdecis_2,
+    path_x_2: cython.double[:, :], path_prev_2: cython.int[:], path_next_2: cython.int[:], num_parts_2: cython.int[:],
+    targ_x_2, targ_y_2, targ_tnr_2, num_targets_2: cython.int[:],
+    corres_p_2: cython.int[:, :], corres_nr_2: cython.int[:],
+    path_inlist_2: cython.int[:], path_prio_2: cython.int[:], path_finaldecis_2: cython.double[:],
+    path_decis_2: cython.double[:, :], path_linkdecis_2: cython.int[:, :],
     # Frame 3 (further backward — read only, for extra angle check)
-    path_x_3, path_prev_3,
+    path_x_3: cython.double[:, :], path_prev_3: cython.int[:],
     # Calibration
     cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t,
     # Tracking params
-    dvxmin, dvxmax, dvymin, dvymax, dvzmin, dvzmax,
-    dacc, dangle, add_flag, lmax,
+    dvxmin: cython.double, dvxmax: cython.double, dvymin: cython.double, dvymax: cython.double, dvzmin: cython.double, dvzmax: cython.double,
+    dacc: cython.double, dangle: cython.double, add_flag: cython.int, lmax: cython.double,
     # Volume bounds
-    X_lay_0, X_lay_1, ymin, ymax, Zmin_lay_0, Zmax_lay_1,
+    X_lay_0: cython.double, X_lay_1: cython.double, ymin: cython.double, ymax: cython.double, Zmin_lay_0: cython.double, Zmax_lay_1: cython.double,
     # Pixel params
-    num_cams,
-    imx_half, imy_half, inv_pix_x, inv_pix_y,
-    chfield, imx, imy, pix_x, pix_y, flatten_tol,
+    num_cams: cython.int,
+    imx_half: cython.double, imy_half: cython.double, inv_pix_x: cython.double, inv_pix_y: cython.double,
+    chfield: cython.int, imx: cython.double, imy: cython.double, pix_x: cython.double, pix_y: cython.double, flatten_tol: cython.double,
 ):
     """Backward tracking loop — JIT compiled.
 
     For each particle in buf[1] with next >= 0 and prev == -1,
     searches for candidates in buf[2] (backward in time).
     """
+    count1: cython.int; num_added: cython.int
+    h: cython.int; i: cython.int; j: cython.int; ki: cython.int; ci: cython.int
+    next_h: cython.int; prev_h: cython.int; ftnr_i: cython.int
+    inlist: cython.int; best_cand: cython.int; prev_of_cand: cython.int
+    np2: cython.int; in_volume: cython.int; quali: cython.int; ti: cython.int
+    px: cython.double; py: cython.double
+    dp0: cython.double; dp1: cython.double; dp2: cython.double
+    angle: cython.double; acc: cython.double; rr: cython.double
+    d13: cython.double; d01: cython.double; dl: cython.double; idx: cython.int
+    flag: cython.bint
     count1 = 0
     num_added = 0
     cpx = np.empty(num_cams, dtype=np.float64)
@@ -1529,7 +1730,7 @@ def trackback_loop_jit(
                     cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t,
                     targ_x_2, targ_y_2, targ_tnr_2, num_targets_2,
                     imx_half, imy_half, inv_pix_x, inv_pix_y, chfield,
-                    imx, imy, pix_x, pix_y, flatten_tol,
+                    int(imx), int(imy), pix_x, pix_y, flatten_tol,
                     TR_UNUSED_K, COORD_UNUSED_K)
 
                 if quali >= 2:
@@ -1667,15 +1868,21 @@ def trackback_loop_jit(
     return count1, num_added
 
 
-def _find_closest_in_3d(path_x_2, np2, pred_x, pred_y, pred_z,
-                         dx, dy, dz, max_cands,
-                         cand_inds, cand_dists):
+@cython.boundscheck(False)
+@cython.wraparound(False)
+def _find_closest_in_3d(path_x_2: cython.double[:, :], np2: cython.int,
+                         pred_x: cython.double, pred_y: cython.double, pred_z: cython.double,
+                         dx: cython.double, dy: cython.double, dz: cython.double,
+                         max_cands: cython.int,
+                         cand_inds: cython.int[:], cand_dists: cython.double[:]):
     """Find up to max_cands closest candidates by distance within a 3D box.
 
     Maintains a running top-N by distance, matching candsearch_in_pix logic.
     Writes into pre-allocated cand_inds/cand_dists arrays.
     Returns the number of candidates found.
     """
+    s: cython.int; k: cython.int; slot: cython.int
+    ddx: cython.double; ddy: cython.double; ddz: cython.double; d: cython.double
     n_found = 0
     for s in range(max_cands):
         cand_inds[s] = -1
@@ -1702,17 +1909,20 @@ def _find_closest_in_3d(path_x_2, np2, pred_x, pred_y, pred_z,
     return n_found
 
 
+@cython.ccall
+@cython.boundscheck(False)
+@cython.wraparound(False)
 def track3d_loop_jit(
-    orig_parts,
+    orig_parts: cython.int,
     # Frame 0 (prev) — read only
-    path_x_0, path_prev_0, num_parts_0,
+    path_x_0: cython.double[:, :], path_prev_0: cython.int[:], num_parts_0: cython.int,
     # Frame 1 (curr) — read/write
-    path_x_1, path_prev_1, path_next_1, num_parts_1,
+    path_x_1: cython.double[:, :], path_prev_1: cython.int[:], path_next_1: cython.int[:], num_parts_1: cython.int,
     # Frame 2 (next) — read/write
-    path_x_2, path_prev_2, path_next_2, num_parts_2,
+    path_x_2: cython.double[:, :], path_prev_2: cython.int[:], path_next_2: cython.int[:], num_parts_2: cython.int,
     # Tracking params
-    dx, dy, dz,
-    max_cands,
+    dx: cython.double, dy: cython.double, dz: cython.double,
+    max_cands: cython.int,
 ):
     """Full track3d loop (3 levels) — single JIT entry.
 
@@ -1722,6 +1932,16 @@ def track3d_loop_jit(
 
     Returns count1 (number of links established).
     """
+    count1: cython.int; np2: cython.int
+    i: cython.int; j: cython.int; ci: cython.int
+    prev_idx: cython.int
+    pred_x: cython.double; pred_y: cython.double; pred_z: cython.double
+    n_cands: cython.int; n_decis: cython.int; k: cython.int
+    d0: cython.double; d1: cython.double; d2: cython.double; acc: cython.double
+    si: cython.int; sj: cython.int
+    vel_x: cython.double; vel_y: cython.double; vel_z: cython.double
+    nvel: cython.int; cx: cython.double; cy: cython.double; cz: cython.double
+    pj: cython.int; inv_nvel: cython.double
     count1 = 0
     np2 = num_parts_2
     cand_inds = np.empty(max_cands, dtype=np.int32)
@@ -1880,8 +2100,13 @@ def track3d_loop_jit(
 # Batch kernels for standalone API acceleration
 # ============================================================
 
-def metric_to_pixel_jit(x_metric, y_metric, imx, imy, pix_x, pix_y, chfield):
+@cython.ccall
+def metric_to_pixel_jit(x_metric: cython.double, y_metric: cython.double,
+                         imx: cython.int, imy: cython.int,
+                         pix_x: cython.double, pix_y: cython.double,
+                         chfield: cython.int):
     """Convert metric to pixel coordinates."""
+    x_pixel: cython.double; y_pixel: cython.double
     x_pixel = x_metric / pix_x + imx * 0.5
     y_pixel = imy * 0.5 - y_metric / pix_y
     if chfield == 1:
@@ -1891,12 +2116,37 @@ def metric_to_pixel_jit(x_metric, y_metric, imx, imy, pix_x, pix_y, chfield):
     return x_pixel, y_pixel
 
 
-def _flat_image_coord_jit(pos, cal, mmlut_data, mmlut_origin,
-                           mmlut_nr, mmlut_nz, mmlut_rw):
+@cython.boundscheck(False)
+@cython.wraparound(False)
+def _flat_image_coord_jit(pos: cython.double[:], cal: cython.double[:],
+                           mmlut_data: cython.double[:], mmlut_origin: cython.double[:],
+                           mmlut_nr: cython.int, mmlut_nz: cython.int, mmlut_rw: cython.double):
     """Project 3D to flat metric image coordinates.
 
     Returns (x, y) without distortion or pixel conversion.
     """
+    pos0: cython.double; pos1: cython.double; pos2: cython.double
+    ext_x0: cython.double; ext_y0: cython.double; ext_z0: cython.double
+    dm00: cython.double; dm10: cython.double; dm20: cython.double
+    dm01: cython.double; dm11: cython.double; dm21: cython.double
+    dm02: cython.double; dm12: cython.double; dm22: cython.double
+    int_cc: cython.double; gx: cython.double; gy: cython.double; gz: cython.double
+    inv_dog: cython.double; mm_n1: cython.double; mm_n2_0: cython.double; mm_n3: cython.double; mm_d0: cython.double
+    dot_cam: cython.double; dist_o_glas: cython.double; dist_cam_glas: cython.double
+    dot_pos: cython.double; dist_point_glas: cython.double
+    s_cam: cython.double; cc_x: cython.double; cc_y: cython.double; cc_z: cython.double
+    s_pt: cython.double; cp_x: cython.double; cp_y: cython.double; cp_z: cython.double
+    ext_t_z0: cython.double; s_d: cython.double
+    ag_x: cython.double; ag_y: cython.double; ag_z: cython.double
+    tmp_x: cython.double; tmp_y: cython.double; tmp_z: cython.double
+    pos_t_0: cython.double; pos_t_2: cython.double
+    radial_shift: cython.double; has_mmlut: cython.bint
+    tx: cython.double; ty: cython.double; tz: cython.double
+    sz: cython.double; iz: cython.int; R: cython.double; sr: cython.double; ir: cython.int
+    v0: cython.int; v3: cython.int; mmf: cython.double; X_t: cython.double
+    s_z: cython.double; bx: cython.double; by: cython.double; bz: cython.double; s_x: cython.double
+    dx: cython.double; dy: cython.double; dz: cython.double; deno: cython.double
+    x: cython.double; y: cython.double
     pos0 = pos[0]; pos1 = pos[1]; pos2 = pos[2]
 
     ext_x0 = cal[0]; ext_y0 = cal[1]; ext_z0 = cal[2]
@@ -1988,9 +2238,19 @@ def _flat_image_coord_jit(pos, cal, mmlut_data, mmlut_origin,
     return x, y
 
 
-def _img_coord_jit(pos, cal, mmlut_data, mmlut_origin,
-                    mmlut_nr, mmlut_nz, mmlut_rw):
+@cython.boundscheck(False)
+@cython.wraparound(False)
+def _img_coord_jit(pos: cython.double[:], cal: cython.double[:],
+                    mmlut_data: cython.double[:], mmlut_origin: cython.double[:],
+                    mmlut_nr: cython.int, mmlut_nz: cython.int, mmlut_rw: cython.double):
     """Project 3D to distorted metric image coordinates."""
+    xh: cython.double; yh: cython.double
+    k1: cython.double; k2: cython.double; k3: cython.double
+    p1: cython.double; p2: cython.double; scx: cython.double; she: cython.double
+    x: cython.double; y: cython.double; r: cython.double; r2: cython.double; r4: cython.double
+    radial_factor: cython.double; xd: cython.double; yd: cython.double
+    sin_she: cython.double; cos_she: cython.double
+    x_dist: cython.double; y_dist: cython.double
     x, y = _flat_image_coord_jit(pos, cal, mmlut_data, mmlut_origin,
                                   mmlut_nr, mmlut_nz, mmlut_rw)
 
@@ -2017,9 +2277,14 @@ def _img_coord_jit(pos, cal, mmlut_data, mmlut_origin,
     return x_dist, y_dist
 
 
-def img_coord_batch_jit(positions, cal, mmlut_data, mmlut_origin,
-                         mmlut_nr, mmlut_nz, mmlut_rw):
+@cython.ccall
+@cython.boundscheck(False)
+@cython.wraparound(False)
+def img_coord_batch_jit(positions: cython.double[:, :], cal: cython.double[:],
+                         mmlut_data: cython.double[:], mmlut_origin: cython.double[:],
+                         mmlut_nr: cython.int, mmlut_nz: cython.int, mmlut_rw: cython.double):
     """Project N 3D positions to distorted metric coords."""
+    n: cython.Py_ssize_t; i: cython.Py_ssize_t
     n = positions.shape[0]
     result = np.empty((n, 2), dtype=np.float64)
     for i in range(n):
@@ -2029,9 +2294,14 @@ def img_coord_batch_jit(positions, cal, mmlut_data, mmlut_origin,
     return result
 
 
-def flat_image_coord_batch_jit(positions, cal, mmlut_data, mmlut_origin,
-                                mmlut_nr, mmlut_nz, mmlut_rw):
+@cython.ccall
+@cython.boundscheck(False)
+@cython.wraparound(False)
+def flat_image_coord_batch_jit(positions: cython.double[:, :], cal: cython.double[:],
+                                mmlut_data: cython.double[:], mmlut_origin: cython.double[:],
+                                mmlut_nr: cython.int, mmlut_nz: cython.int, mmlut_rw: cython.double):
     """Project N 3D positions to flat metric coords."""
+    n: cython.Py_ssize_t; i: cython.Py_ssize_t
     n = positions.shape[0]
     result = np.empty((n, 2), dtype=np.float64)
     for i in range(n):
@@ -2041,7 +2311,10 @@ def flat_image_coord_batch_jit(positions, cal, mmlut_data, mmlut_origin,
     return result
 
 
-def ray_tracing_batch_jit(xy, cal):
+@cython.ccall
+@cython.boundscheck(False)
+@cython.wraparound(False)
+def ray_tracing_batch_jit(xy: cython.double[:, :], cal: cython.double[:]):
     """Trace N rays through multi-media interface.
 
     Args:
@@ -2051,6 +2324,9 @@ def ray_tracing_batch_jit(xy, cal):
     Returns:
         (positions, directions) each (N, 3) float64.
     """
+    n: cython.Py_ssize_t; i: cython.Py_ssize_t
+    Xx: cython.double; Xy: cython.double; Xz: cython.double
+    ox: cython.double; oy: cython.double; oz: cython.double
     n = xy.shape[0]
     positions = np.empty((n, 3), dtype=np.float64)
     directions = np.empty((n, 3), dtype=np.float64)
@@ -2061,7 +2337,11 @@ def ray_tracing_batch_jit(xy, cal):
     return positions, directions
 
 
-def point_position_batch_jit(all_targets, num_pts, num_cams, cal_arrays):
+@cython.ccall
+@cython.boundscheck(False)
+@cython.wraparound(False)
+def point_position_batch_jit(all_targets: cython.double[:, :, :], num_pts: cython.int,
+                              num_cams: cython.int, cal_arrays):
     """Triangulate M targets from N cameras.
 
     Args:
@@ -2073,6 +2353,8 @@ def point_position_batch_jit(all_targets, num_pts, num_cams, cal_arrays):
     Returns:
         (positions, distances) — (M, 3) and (M,) float64.
     """
+    i: cython.Py_ssize_t
+    dist: cython.double
     positions = np.empty((num_pts, 3), dtype=np.float64)
     distances = np.empty(num_pts, dtype=np.float64)
     for i in range(num_pts):
@@ -2084,8 +2366,13 @@ def point_position_batch_jit(all_targets, num_pts, num_cams, cal_arrays):
     return positions, distances
 
 
-def pixel_to_metric_batch_jit(xy, imx, imy, pix_x, pix_y, chfield):
+@cython.ccall
+@cython.boundscheck(False)
+@cython.wraparound(False)
+def pixel_to_metric_batch_jit(xy: cython.double[:, :], imx: cython.int, imy: cython.int,
+                               pix_x: cython.double, pix_y: cython.double, chfield: cython.int):
     """Convert N pixel coordinates to metric."""
+    n: cython.Py_ssize_t; i: cython.Py_ssize_t
     n = xy.shape[0]
     result = np.empty((n, 2), dtype=np.float64)
     for i in range(n):
@@ -2094,8 +2381,13 @@ def pixel_to_metric_batch_jit(xy, imx, imy, pix_x, pix_y, chfield):
     return result
 
 
-def metric_to_pixel_batch_jit(xy, imx, imy, pix_x, pix_y, chfield):
+@cython.ccall
+@cython.boundscheck(False)
+@cython.wraparound(False)
+def metric_to_pixel_batch_jit(xy: cython.double[:, :], imx: cython.int, imy: cython.int,
+                               pix_x: cython.double, pix_y: cython.double, chfield: cython.int):
     """Convert N metric coordinates to pixel."""
+    n: cython.Py_ssize_t; i: cython.Py_ssize_t
     n = xy.shape[0]
     result = np.empty((n, 2), dtype=np.float64)
     for i in range(n):
@@ -2104,9 +2396,15 @@ def metric_to_pixel_batch_jit(xy, imx, imy, pix_x, pix_y, chfield):
     return result
 
 
-def targ_rec_jit(img, img0, gvthres, discont,
-                 nnmin, nnmax, nxmin, nxmax, nymin, nymax, sumg_min,
-                 xmin, ymin, xmax, ymax, max_targets):
+@cython.ccall
+@cython.boundscheck(False)
+@cython.wraparound(False)
+def targ_rec_jit(img, img0, gvthres: cython.int, discont: cython.int,
+                 nnmin: cython.int, nnmax: cython.int,
+                 nxmin: cython.int, nxmax: cython.int, nymin: cython.int, nymax: cython.int,
+                 sumg_min: cython.int,
+                 xmin: cython.int, ymin: cython.int, xmax: cython.int, ymax: cython.int,
+                 max_targets: cython.int):
     """BFS flood-fill target recognition.
 
     Args:
@@ -2124,6 +2422,14 @@ def targ_rec_jit(img, img0, gvthres, discont,
         (n_targets, out_x, out_y, out_n, out_nx, out_ny, out_sumg)
         First n_targets elements of each output array are valid.
     """
+    n_targets: cython.int; queue_size: cython.int
+    i: cython.int; j: cython.int; d: cython.int
+    xa: cython.int; xb: cython.int; ya: cython.int; yb: cython.int
+    x_weighted: cython.double; y_weighted: cython.double
+    head: cython.int; tail: cython.int
+    wj: cython.int; wi: cython.int
+    xn4: cython.int; yn4: cython.int
+    nx: cython.int; ny: cython.int
     out_x = np.empty(max_targets, dtype=np.float64)
     out_y = np.empty(max_targets, dtype=np.float64)
     out_n = np.empty(max_targets, dtype=np.int64)
@@ -2249,8 +2555,13 @@ def targ_rec_jit(img, img0, gvthres, discont,
     return n_targets, out_x, out_y, out_n, out_nx, out_ny, out_sumg
 
 
-def init_mmlut_data_jit(nr, nz, rw, cal_t_x0, cal_t_y0, cal_t_z0,
-                        Zmin_t, mm_n1, mm_n2_0, mm_n3, mm_d0):
+@cython.ccall
+@cython.boundscheck(False)
+@cython.wraparound(False)
+def init_mmlut_data_jit(nr: cython.int, nz: cython.int, rw: cython.double,
+                        cal_t_x0: cython.double, cal_t_y0: cython.double, cal_t_z0: cython.double,
+                        Zmin_t: cython.double, mm_n1: cython.double, mm_n2_0: cython.double,
+                        mm_n3: cython.double, mm_d0: cython.double):
     """Fill mmlut data grid in parallel — single-layer multimedia.
 
     Computes the radial shift factor for every (R, Z) grid point using
@@ -2267,6 +2578,8 @@ def init_mmlut_data_jit(nr, nz, rw, cal_t_x0, cal_t_y0, cal_t_z0,
     Returns:
         data: (nr * nz,) float64 array of radial shift factors.
     """
+    i: cython.int; j: cython.int
+    R: cython.double; Z: cython.double
     data = np.empty(nr * nz, dtype=np.float64)
     for i in range(nr):
         R = i * rw + cal_t_x0

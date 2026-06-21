@@ -84,3 +84,13 @@ def test_targ_rec():
     gvthres2 = 252
     targets3 = targ_rec(img1, gvthres2, discont, nnmin, nnmax, nxmin, nxmax, nymin, nymax, sumg_min)
     assert len(targets3) == 1
+
+
+def test_targ_rec_matches_c_dummy_target_when_no_particle_found():
+    img = np.zeros((5, 5), dtype=np.uint8)
+    targets = targ_rec(img, 250, 5, 1, 10, 1, 10, 1, 10, 12)
+
+    assert len(targets) == 1
+    assert targets[0].pnr == 1
+    assert targets[0].x == 1
+    assert targets[0].y == 1
