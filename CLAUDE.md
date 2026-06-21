@@ -42,8 +42,8 @@ uv run mypy openptv2/
 # Build C library (needed for optv engine)
 cd lib && mkdir -p build && cd build && cmake .. && make
 
-# Python-only install (skips Cython build, ~100x faster)
-OPENPTV_PYTHON_ONLY=1 uv pip install -e .
+# Editable install
+uv pip install -e .
 ```
 
 ## Architecture

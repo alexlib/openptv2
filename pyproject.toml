@@ -41,7 +41,6 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-python-only = []
 gui = [
     "traits>=6.4.0",
     "traitsui>=7.4.0",

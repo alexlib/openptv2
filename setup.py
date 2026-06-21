@@ -10,7 +10,6 @@ Usage:
     pip install .             # Regular install
 """
 
-import os
 import sys
 from pathlib import Path
 
@@ -70,10 +69,6 @@ def _cythonize_all():
 
 def _needs_rebuild():
     """Check if Pure Python modules changed since last build."""
-    if os.environ.get("OPENPTV_PYTHON_ONLY"):
-        print("[OpenPTV2] OPENPTV_PYTHON_ONLY is set. Skipping compilation.")
-        return False
-        
     # Check if pure Python modules need rebuilding
     for mod in ALGORITHMS_MODULES:
         py_file = ROOT / "algorithms" / f"{mod}.py"
@@ -94,8 +89,6 @@ if _needs_rebuild():
 
 def get_extensions():
     """Create Extension objects for all Cython modules."""
-    if os.environ.get("OPENPTV_PYTHON_ONLY"):
-        return []
     extensions = []
     
     # Cython 3 Pure Python algorithms extensions only

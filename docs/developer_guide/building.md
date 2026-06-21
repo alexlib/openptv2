@@ -46,12 +46,10 @@ uv sync --extra dev
 pip install -e ".[dev]"
 ```
 
-**Python-only mode (no C/Cython build):**
+**Editable install with the default Cython 3 build:**
 ```bash
-OPENPTV_PYTHON_ONLY=1 uv pip install -e .
+uv pip install -e .
 ```
-
-This skips Cython compilation and installs ~100x faster. Only the `algorithms/` module will be available.
 
 ### 3. Verify Installation
 

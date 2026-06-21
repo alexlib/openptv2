@@ -110,20 +110,11 @@ python setup.py build_ext --inplace
 pip install -e ".[dev]"
 ```
 
-**Option D — Python-only (no C/Cython build):**
-
-If you only need the pure Python algorithms engine and don't require the Cython `optv` bindings:
+**Option D — Editable install using the default Cython 3 build:**
 
 ```bash
-OPENPTV_PYTHON_ONLY=1 uv pip install -e .
+uv pip install -e .
 ```
-
-Or add to your shell profile:
-```bash
-export OPENPTV_PYTHON_ONLY=1
-```
-
-This skips the Cython compilation and installs ~100x faster. Only the `algorithms/` module will be available (not `optv.*`).
 
 ### Step 4: Verify
 
