@@ -1,37 +1,13 @@
-"""Orientation module with engine-aware dispatch."""
+"""Orientation exports for the single Cython-backed runtime."""
 
-from openptv2.engine import get_engine
-
-_engine = get_engine()
-
-if _engine == "optv":
-    try:
-        from optv.orientation import (
-            point_positions,
-            external_calibration,
-            full_calibration,
-            match_detection_to_ref,
-            multi_cam_point_positions,
-            dumbbell_target_func,
-        )
-    except ImportError:
-        from algorithms.compat.orientation import (
-            point_positions,
-            external_calibration,
-            full_calibration,
-            match_detection_to_ref,
-            multi_cam_point_positions,
-            dumbbell_target_func,
-        )
-else:
-    from algorithms.compat.orientation import (
-        point_positions,
-        external_calibration,
-        full_calibration,
-        match_detection_to_ref,
-        multi_cam_point_positions,
-        dumbbell_target_func,
-    )
+from algorithms.compat.orientation import (
+    dumbbell_target_func,
+    external_calibration,
+    full_calibration,
+    match_detection_to_ref,
+    multi_cam_point_positions,
+    point_positions,
+)
 
 __all__ = [
     'point_positions',

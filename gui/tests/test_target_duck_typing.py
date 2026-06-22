@@ -1,13 +1,3 @@
-import os
-import pytest
-from openptv2.engine import get_engine
-
-if get_engine() == "optv":
-    pytest.skip(
-        "Duck-typing of Target is only supported in the python/compatibility engine.", 
-        allow_module_level=True
-    )
-
 from openptv2.tracking_framebuf import TargetArray, Target
 from algorithms.segmentation import Target as SegTarget
 

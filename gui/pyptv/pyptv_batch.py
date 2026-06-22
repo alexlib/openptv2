@@ -153,16 +153,8 @@ def run_batch(
         # Centralized: get target_filenames from ParameterManager
         proc_exp.target_filenames = experiment.pm.get_target_filenames()
 
-        # Select sequence loop based on engine
-        from openptv2.engine import get_engine
-
-        engine = get_engine()
-        if engine == "python":
-            seq_loop = py_sequence_loop_python
-            print(f"[ENGINE] Using python sequence loop")
-        else:
-            seq_loop = py_sequence_loop
-            print(f"[ENGINE] Using optv sequence loop")
+        seq_loop = py_sequence_loop
+        print("[ENGINE] Using single Cython 3 sequence loop")
 
         # Run processing according to mode
         if mode == "both":
@@ -301,8 +293,7 @@ def parse_command_line_args(args_list=None) -> tuple[Path, int, int, str]:
     parser.add_argument(
         "--engine",
         "-e",
-        choices=["optv", "python"],
-        help="Tracking engine to use: 'optv' or 'python'",
+        help="Deprecated compatibility flag. Ignored in the single-engine runtime.",
     )
     parser.add_argument(
         "--mode",
@@ -313,26 +304,17 @@ def parse_command_line_args(args_list=None) -> tuple[Path, int, int, str]:
     parser.add_argument(
         "--debug-mode",
         action="store_true",
-        help="Use Python engine for debugging instead of C/Cython (optv)",
+        help="Deprecated compatibility flag. Ignored in the single-engine runtime.",
     )
     args = parser.parse_args(args_list)
 
-    engine = args.engine
-    if args.debug_mode:
-        engine = "python"
+    if args.engine or args.debug_mode:
+        print(
+            "Ignoring legacy engine-selection flags; openptv2 now uses a single "
+            "Cython 3 runtime."
+        )
 
-    if engine:
-        os.environ["OPENPTV_ENGINE"] = engine
-        try:
-            from openptv2.engine import set_engine
-
-            set_engine(engine)
-        except ImportError as e:
-            print(f"Warning: Could not set tracking engine {engine}: {e}")
-
-    # Resolve and log the actual tracking engine being used (explicit or auto-detected)
-    from openptv2.engine import get_engine
-    print(f"Using tracking engine: {get_engine()}")
+    print("Using tracking engine: cython3-pure-python")
 
     yaml_arg = args.workdir or args.yaml_file
     if not yaml_arg:

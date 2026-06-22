@@ -1118,11 +1118,7 @@ def py_trackcorr_init(exp):
     spar = exp.spar
     cals = exp.cals
 
-    # Import engine-aware Tracker based on current engine setting
-    from openptv2.engine import get_engine
-
-    engine = get_engine()
-    print(f"[ENGINE] Using {engine} engine for Tracker")
+    print("[ENGINE] Using single Cython 3 tracker runtime")
 
     tracker = Tracker(cpar, vpar, track_par, spar, cals, default_naming)
     return tracker

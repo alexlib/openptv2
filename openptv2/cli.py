@@ -2,7 +2,7 @@
 """
 Unified command-line interface (CLI) for openptv2.
 
-Exposes subcommands for headless tracking, engine validation, and launching the GUI.
+Exposes subcommands for headless tracking, runtime validation, and launching the GUI.
 """
 
 import sys
@@ -18,7 +18,7 @@ def print_help():
     print()
     print("Available Commands:")
     print("  track       Run headless batch sequence and tracking processing")
-    print("  validate    Validate optv vs Python engine consistency on test data")
+    print("  validate    Validate the single Cython runtime on bundled test data")
     print("  gui         Launch the interactive 3D-PTV GUI")
     print()
     print("For help on any specific command, run:")

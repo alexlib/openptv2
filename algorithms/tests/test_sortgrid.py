@@ -16,9 +16,6 @@ from pathlib import Path
 
 
 def _has_optv():
-    import os
-    if os.environ.get("OPENPTV_ENGINE") == "python":
-        return False
     try:
         from optv.orientation import match_detection_to_ref
         return True

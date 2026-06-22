@@ -53,16 +53,12 @@ def _(mo):
 
 @app.cell
 def _(base_path, res_dir, yaml):
-    """Run tracking with the Python engine + observer."""
+    """Run tracking with the single runtime + observer."""
     import sys, os
     sys.path.insert(0, str(base_path.parent.parent))
     os.chdir(str(base_path))
 
     from gui.pyptv import pyptv_batch
-    from openptv2.engine import set_engine
-
-    # Use optv for the correspondence step (batch), then Python for tracking
-    set_engine("optv")
 
     yaml_path = base_path / "parameters_Run1.yaml"
     with open(yaml_path) as f:
@@ -79,12 +75,12 @@ def _(base_path, res_dir, yaml):
     print("Running batch (correspondence): frames 10001-10004")
     pyptv_batch.main(temp_yaml, 10001, 10004)
     print("Batch complete!")
-    return params, pyptv_batch, set_engine, temp_yaml, yaml_path
+    return params, pyptv_batch, temp_yaml, yaml_path
 
 
 @app.cell
-def _(base_path, params, set_engine, yaml):
-    """Run tracking with the Python engine and observer attached."""
+def _(base_path, params, yaml):
+    """Run tracking with the single runtime and observer attached."""
     from gui.pyptv.ptv import py_start_proc_c
     from gui.pyptv.parameter_manager import ParameterManager
     from algorithms.track import Tracker, TrackingObserver, default_naming
@@ -93,8 +89,6 @@ def _(base_path, params, set_engine, yaml):
     )
     from algorithms.calibration import Calibration as PythonCalibration
     from algorithms.parameters_adapter import ControlParams
-
-    set_engine("python")
 
     # Load parameters via the same path the batch uses
     pm = ParameterManager(base_path / "parameters_Run1.yaml")

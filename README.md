@@ -242,20 +242,13 @@ tracks = tracker.track([t.coordinates for t in targets])
 print(f"Found {len(tracks)} tracks")
 ```
 
-### Engine Selection
+### Runtime
 
 ```python
 import openptv2
 
-# Use default (fastest) engine
-openptv2.set_engine("optv")
-
-# Use Python engine for debugging
-openptv2.set_engine("python")
-
-# Per-call engine selection
-from openptv2 import track_particles
-result = track_particles(images, engine="python")
+print(openptv2.get_runtime_info())
+# {'engine': 'cython3-pure-python', 'compiled': True/False, 'package': 'openptv2'}
 ```
 
 ### GUI
@@ -266,11 +259,8 @@ Launch the graphical interface using the unified console scripts. Ensure your vi
 # Launch the GUI using the standard openptv2-gui or shorter pyptv_gui shortcut
 uv run pyptv_gui
 
-# Launch the GUI specifying the C/Cython engine and working directory
-uv run pyptv_gui --engine=optv --workdir=./test_data/test_cavity
-
-# Or using the debug engine and short arguments
-uv run pyptv_gui -e python -w ./test_data/test_cavity
+# Launch the GUI in the single-engine runtime
+uv run pyptv_gui --workdir=./test_data/test_cavity
 ```
 
 ### Batch Processing
@@ -278,11 +268,8 @@ uv run pyptv_gui -e python -w ./test_data/test_cavity
 Run high-throughput processing sequences using command-line batch utilities (ensure your virtual environment is activated or use `uv run`):
 
 ```bash
-# Run batch processing specifying the engine, workdir directory, and frame range
-uv run pyptv_batch --engine=python --workdir=./test_data/test_cavity --first=10000 --last=10005
-
-# Or using the shorter command line format
-uv run pyptv_batch -e optv -w ./test_data/test_cavity -f 10000 -l 10004
+# Run batch processing with the single runtime
+uv run pyptv_batch --workdir=./test_data/test_cavity --first=10000 --last=10005
 
 # Run with legacy positional arguments (for backward compatibility)
 uv run pyptv_batch ./test_data/test_cavity/parameters_Run1.yaml 10000 10004
@@ -301,13 +288,13 @@ By activating the project's virtual environment, the environment's `bin/` direct
 source .venv/bin/activate
 
 # Now run directly without uv
-pyptv_gui -e python -w ./test_data/test_cavity
+pyptv_gui -w ./test_data/test_cavity
 ```
 
 #### 2. Execute via Direct Path
 If you do not wish to activate the virtual environment, you can run the built executable directly from the local `.venv` folder:
 ```bash
-./.venv/bin/pyptv_gui -e python -w ./test_data/test_cavity
+./.venv/bin/pyptv_gui -w ./test_data/test_cavity
 ```
 
 #### 3. Define Shell Aliases (Global Access)
@@ -322,21 +309,18 @@ alias pyptv_batch='/home/user/Documents/GitHub/openptv2/.venv/bin/pyptv_batch'
 source ~/.bashrc
 
 # Now launch cleanly from any folder
-pyptv_gui -e python -w ./test_data/test_cavity
+pyptv_gui -w ./test_data/test_cavity
 ```
 
 ---
 
-### Default Engine Auto-Detection
+### Single Runtime Behavior
 
-When no tracking engine is explicitly passed via CLI arguments or API functions, the library dynamically detects which engine to use in the following order:
+OpenPTV2 now ships a single runtime:
 
-1. **Environment Variable (`OPENPTV_ENGINE`)**:
-   * If `OPENPTV_ENGINE` is set to `"python"` (or `"algorithms"`), it defaults to the **pure Python/Numba** engine.
-   * If `OPENPTV_ENGINE` is set to `"optv"`, it defaults to the **C/Cython** engine.
-2. **Availability Check (Fallback)**:
-   * The library attempts to import the compiled Cython bindings (`import optv`). If successful, it defaults to the high-performance **`optv`** engine.
-   * If the C library/Cython bindings are not compiled (e.g., in Python-only developer mode), it automatically falls back to **`python`**.
+1. **One codebase:** `algorithms/*.py` is the only implementation path.
+2. **Two execution modes:** the same modules run interpreted during development and compiled when built through Cython 3.
+3. **No engine switching:** `OPENPTV_ENGINE`, `set_engine()`, and `optv` dispatching are no longer part of the runtime model.
 
 ---
 

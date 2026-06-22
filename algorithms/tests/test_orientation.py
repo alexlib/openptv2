@@ -17,9 +17,6 @@ EPS = 1e-6
 
 
 def _has_optv():
-    import os
-    if os.environ.get("OPENPTV_ENGINE") == "python":
-        return False
     try:
         from optv.orientation import (
             external_calibration, full_calibration,

@@ -3,7 +3,7 @@
 Unified build script for openptv2.
 
 Builds and packages only the Cython 3 Pure Python modules in algorithms/
-and installs all Python packages (algorithms, openptv2, gui, optv).
+and installs the Python packages used by the unified single-engine runtime.
 
 Usage:
     pip install -e .          # Development install
@@ -148,9 +148,9 @@ class BuildExtWithPrepare(build_ext):
     def run(self):
         if _needs_rebuild():
             _cythonize_all()
-        print("[OpenPTV2] Compiling and linking C/Cython extensions...")
+        print("[OpenPTV2] Compiling and linking Cython extensions...")
         super().run()
-        print("[OpenPTV2] C/Cython extensions built successfully!")
+        print("[OpenPTV2] Cython extensions built successfully!")
 
 
 class BuildPyWithExtensions(build_py):
@@ -192,12 +192,9 @@ if __name__ == "__main__":
                 "gui.pyptv.*",
                 "gui.plugins",
                 "gui.plugins.*",
-                "optv",
-                "optv.*",
             ],
         ),
         package_dir={
-            "optv": "bindings/optv",
             "gui.pyptv": "gui/pyptv",
             "gui.plugins": "gui/plugins",
         },
@@ -210,8 +207,5 @@ if __name__ == "__main__":
             "prepare": PrepareSources,
         },
         include_package_data=True,
-        package_data={
-            "optv": ["*.pxd", "*.pyx", "optv/*.h"],
-        },
         zip_safe=False,
     )

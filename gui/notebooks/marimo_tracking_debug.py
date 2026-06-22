@@ -23,11 +23,8 @@ def _():
 
 @app.cell
 def _(base_path, res_dir):
-    # Run batch sequence with optv engine
+    # Run batch sequence with the single runtime
     from gui.pyptv import pyptv_batch
-    from openptv2.engine import set_engine
-
-    set_engine("optv")
 
     yaml_path = base_path / "parameters_Run1.yaml"
     with open(yaml_path) as f:

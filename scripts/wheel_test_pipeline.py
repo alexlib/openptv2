@@ -302,32 +302,16 @@ def run_import_tests(python_path: str, verbose: bool = False) -> list[dict]:
             "cmd": "import openptv2; print(f'openptv2 v{openptv2.__version__}')",
         },
         {
-            "name": "optv Cython bindings import",
-            "cmd": "from optv.tracking_framebuf import Target, TargetArray; print('optv.tracking_framebuf OK')",
-        },
-        {
-            "name": "optv calibration import",
-            "cmd": "from optv.calibration import Calibration; print('optv.calibration OK')",
-        },
-        {
-            "name": "optv tracker import",
-            "cmd": "from optv.tracker import Tracker; print('optv.tracker OK')",
-        },
-        {
-            "name": "openptv2 engine selector",
-            "cmd": "from openptv2.engine import EngineSelector, get_engine, set_engine; print('engine selector OK')",
-        },
-        {
             "name": "openptv2 unified imports",
-            "cmd": "from openptv2 import Target, Tracker, Calibration, Correspondence; print('unified imports OK')",
+            "cmd": "from openptv2 import Target, Tracker, Calibration, MatchedCoords; print('unified imports OK')",
         },
         {
             "name": "openptv2 version",
             "cmd": "import openptv2; print(openptv2.get_version())",
         },
         {
-            "name": "openptv2 engine info",
-            "cmd": "import openptv2; info = openptv2.get_engine_info(); print(info)",
+            "name": "openptv2 runtime info",
+            "cmd": "import openptv2; info = openptv2.get_runtime_info(); print(info)",
         },
         {
             "name": "algorithms package import",

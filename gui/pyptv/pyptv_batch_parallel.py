@@ -397,18 +397,15 @@ def parse_command_line_args():
     parser.add_argument(
         "--debug-mode",
         action="store_true",
-        help="Use Python engine for debugging instead of C/Cython (optv)",
+        help="Deprecated compatibility flag. Ignored in the single-engine runtime.",
     )
     args = parser.parse_args()
 
     if args.debug_mode:
-        try:
-            from openptv2.engine import set_engine
-
-            set_engine("python")
-            print("DEBUG MODE: Using Python engine for tracking")
-        except ImportError as e:
-            print(f"Warning: Could not set Python engine: {e}")
+        print(
+            "Ignoring legacy debug-mode flag; openptv2 now uses a single "
+            "Cython 3 runtime."
+        )
 
     yaml_file = Path(args.yaml_file).resolve()
     first_frame = args.first_frame

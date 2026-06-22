@@ -1931,13 +1931,12 @@ def main():
     parser.add_argument(
         "--debug-mode",
         action="store_true",
-        help="Use Python engine for debugging instead of C/Cython (optv)",
+        help="Deprecated compatibility flag. Ignored in the single-engine runtime.",
     )
     parser.add_argument(
         "--engine",
         "-e",
-        choices=["optv", "python"],
-        help="Tracking engine to use: 'optv' (C/Cython) or 'python' (Python)",
+        help="Deprecated compatibility flag. Ignored in the single-engine runtime.",
     )
     parser.add_argument(
         "--workdir",
@@ -1947,22 +1946,13 @@ def main():
     parser.add_argument("path", nargs="?", help="YAML file or experiment directory")
     args = parser.parse_args()
 
-    engine = args.engine
-    if args.debug_mode:
-        engine = "python"
+    if args.engine or args.debug_mode:
+        print(
+            "Ignoring legacy engine-selection flags; openptv2 now uses a single "
+            "Cython 3 runtime."
+        )
 
-    if engine:
-        os.environ["OPENPTV_ENGINE"] = engine
-        try:
-            from openptv2.engine import set_engine
-
-            set_engine(engine)
-        except ImportError as e:
-            print(f"Warning: Could not set tracking engine {engine}: {e}")
-
-    # Resolve and log the actual tracking engine being used (explicit or auto-detected)
-    from openptv2.engine import get_engine
-    print(f"Using tracking engine: {get_engine()}")
+    print("Using tracking engine: cython3-pure-python")
 
     software_path = Path.cwd().resolve()
     print(f"Running PyPTV from {software_path}")

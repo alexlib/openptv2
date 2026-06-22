@@ -9,7 +9,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "openptv2"
 version = "0.1.7"
-description = "Unified OpenPTV: Particle Tracking Velocimetry with dual-engine support"
+description = "OpenPTV2 single-engine particle tracking with Cython 3 pure Python modules"
 readme = "README.md"
 license = {text = "LGPL-3.0-or-later"}
 authors = [
@@ -107,7 +107,6 @@ pyptv_batch = "gui.pyptv.pyptv_batch:main_cli"
 packages = [
     "openptv2",
     "algorithms",
-    "optv",
     "gui.pyptv",
     "gui.plugins",
 ]
@@ -115,12 +114,11 @@ include-package-data = true
 zip-safe = false
 
 [tool.setuptools.package-dir]
-optv = "bindings/optv"
 "gui.pyptv" = "gui/pyptv"
 "gui.plugins" = "gui/plugins"
 
 [tool.pytest.ini_options]
-testpaths = ["algorithms/tests", "bindings/tests", "gui/tests"]
+testpaths = ["algorithms/tests", "gui/tests", "tests"]
 python_files = ["test_*.py"]
 python_functions = ["test_*"]
 pythonpath = ["gui"]
@@ -128,13 +126,10 @@ addopts = "-v --tb=short --import-mode=importlib"
 markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
     "gui: marks tests that require GUI",
-    "engine_optv: marks tests for optv engine",
-    "engine_python: marks tests for Python engine",
     "unit: fast deterministic unit tests",
-    "parity: python vs optv/cython parity tests",
+    "parity: compiled-vs-reference parity tests",
     "perf: performance and throughput tests",
     "integration: multi-module integration tests",
-    "requires_optv: tests that require optv bindings",
 ]
 
 [tool.coverage.run]
