@@ -17,15 +17,15 @@ from .multimed import (
 from .track_kernels import (
     pack_cal_array as _pack_cal_array,
     pack_mmlut as _pack_mmlut,
-    point_to_pixel_jit as _point_to_pixel_jit,
-    candsearch_in_pix_jit as _candsearch_in_pix_jit,
-    candsearch_in_pix_rest_jit as _candsearch_in_pix_rest_jit,
-    searchquader_jit as _searchquader_jit,
-    sort_candidates_by_freq_jit as _sort_candidates_by_freq_jit,
-    sorted_candidates_jit as _sorted_candidates_jit,
-    point_position_jit as _point_position_jit,
-    trackcorr_loop_jit as _trackcorr_loop_jit,
-    trackback_loop_jit as _trackback_loop_jit,
+    point_to_pixel_fast as _point_to_pixel_fast,
+    candsearch_in_pix_fast as _candsearch_in_pix_fast,
+    candsearch_in_pix_rest_fast as _candsearch_in_pix_rest_fast,
+    searchquader_fast as _searchquader_fast,
+    sort_candidates_by_freq_fast as _sort_candidates_by_freq_fast,
+    sorted_candidates_fast as _sorted_candidates_fast,
+    point_position_fast as _point_position_fast,
+    trackcorr_loop_fast as _trackcorr_loop_fast,
+    trackback_loop_fast as _trackback_loop_fast,
 )
 
 Foundpix_dtype = np.dtype([
@@ -42,15 +42,15 @@ def _vec3_dist(a, b):
     return math.sqrt(dx * dx + dy * dy + dz * dz)
 
 
-def _pack_cams_jit(cals, mm):
-    """Pack all cameras for JIT: returns (cal_arrays, mmlut_tuples)."""
+def _pack_cams_fast(cals, mm):
+    """Pack all cameras for compiled: returns (cal_arrays, mmlut_tuples)."""
     cal_arrays = [_pack_cal_array(c, mm) for c in cals]
     mmlut_tuples = [_pack_mmlut(c) for c in cals]
     return cal_arrays, mmlut_tuples
 
 
-def _pack_cams_jit_tuples(jit_cals, jit_mmluts):
-    """Convert lists to tuples for searchquader_jit."""
+def _pack_cams_fast_tuples(jit_cals, jit_mmluts):
+    """Convert lists to tuples for searchquader_fast."""
     return (
         tuple(jit_cals),
         tuple(m[0] for m in jit_mmluts),
@@ -61,9 +61,9 @@ def _pack_cams_jit_tuples(jit_cals, jit_mmluts):
     )
 
 
-def _ptp_jit(pos, cal_arr, mmlut_tup, imx_half, imy_half, inv_pix_x, inv_pix_y, chfield):
-    """Call the JIT kernel with pre-packed arrays."""
-    return _point_to_pixel_jit(
+def _ptp_fast(pos, cal_arr, mmlut_tup, imx_half, imy_half, inv_pix_x, inv_pix_y, chfield):
+    """Call the compiled kernel with pre-packed arrays."""
+    return _point_to_pixel_fast(
         pos, cal_arr, mmlut_tup[0], mmlut_tup[1],
         mmlut_tup[2], mmlut_tup[3], mmlut_tup[4],
         imx_half, imy_half, inv_pix_x, inv_pix_y, chfield,
@@ -542,7 +542,7 @@ def point_to_pixel(point, cal, cpar):
 
 @cython.ccall
 def searchquader(point, tpar, cpar, calib, _packed_cals=None, _pix_info=None,
-                 _jit_tuples=None):
+                 _fast_tuples=None):
     num_cams = cpar.num_cams
 
     px, py, pz = point[0], point[1], point[2]
@@ -563,10 +563,10 @@ def searchquader(point, tpar, cpar, calib, _packed_cals=None, _pix_info=None,
         inv_pix_x = 1.0 / cpar.pix_x; inv_pix_y = 1.0 / cpar.pix_y
         c_chfield = cpar.chfield
 
-    if _jit_tuples is not None:
-        cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t = _jit_tuples
+    if _fast_tuples is not None:
+        cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t = _fast_tuples
         pos_arr = np.asarray(point, dtype=np.float64)
-        return _searchquader_jit(
+        return _searchquader_fast(
             pos_arr, quader, num_cams, cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t,
             imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield, c_imx, c_imy)
 
@@ -613,7 +613,7 @@ def searchquader(point, tpar, cpar, calib, _packed_cals=None, _pix_info=None,
 def register_closest_neighbs(targets, num_targets, cam, cent_x, cent_y,
                              dl, dr, du, dd, reg, cpar,
                              _targ_x=None, _targ_y=None, _targ_tnr=None):
-    p0, p1, p2, p3 = _candsearch_in_pix_jit(
+    p0, p1, p2, p3 = _candsearch_in_pix_fast(
         _targ_x, _targ_y, _targ_tnr, num_targets,
         cent_x, cent_y, dl, dr, du, dd,
         cpar.imx, cpar.imy, TR_UNUSED)
@@ -630,10 +630,10 @@ def register_closest_neighbs(targets, num_targets, cam, cent_x, cent_y,
 @cython.ccall
 def sorted_candidates_in_volume(center, center_proj, frm, run,
                                 _packed_cals=None, _pix_info=None,
-                                _jit_tuples=None):
+                                _fast_tuples=None):
     num_cams = frm.num_cams
 
-    cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t = _jit_tuples
+    cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t = _fast_tuples
     if _pix_info is not None:
         c_imx, c_imy, imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield = _pix_info
     else:
@@ -647,7 +647,7 @@ def sorted_candidates_in_volume(center, center_proj, frm, run,
     cpy = np.array([center_proj[j][1] for j in range(num_cams)], dtype=np.float64)
     nt = np.array(frm.num_targets[:num_cams], dtype=np.int32)
 
-    ftnr, freq, whichcam, num_cands = _sorted_candidates_jit(
+    ftnr, freq, whichcam, num_cands = _sorted_candidates_fast(
         center_arr, cpx, cpy, num_cams, MAX_CANDS,
         cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t,
         tuple(frm.targ_x[:num_cams]), tuple(frm.targ_y[:num_cams]),
@@ -669,7 +669,7 @@ def sorted_candidates_in_volume(center, center_proj, frm, run,
 
 @cython.ccall
 def assess_new_position(pos, targ_pos, cand_inds, frm, run,
-                        _jit_cals=None, _jit_mmluts=None, _pix_info=None):
+                        _fast_cals=None, _fast_mmluts=None, _pix_info=None):
     from .trafo import pixel_to_metric, dist_to_flat
 
     left: cython.double = ADD_PART
@@ -694,10 +694,10 @@ def assess_new_position(pos, targ_pos, cand_inds, frm, run,
         c_chfield = run.cpar.chfield
 
     for cam in range(run.cpar.num_cams):
-        px, py = _ptp_jit(pos, _jit_cals[cam], _jit_mmluts[cam],
+        px, py = _ptp_fast(pos, _fast_cals[cam], _fast_mmluts[cam],
                           imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield)
 
-        best, num_cands = _candsearch_in_pix_rest_jit(
+        best, num_cands = _candsearch_in_pix_rest_fast(
             frm.targ_x[cam], frm.targ_y[cam], frm.targ_tnr[cam],
             frm.num_targets[cam], px, py, left, right, up, down,
             c_imx, c_imy, TR_UNUSED)
@@ -789,8 +789,8 @@ def trackcorr_c_loop(run_info, step):
     inv_pix_x = 1.0 / cpar.pix_x; inv_pix_y = 1.0 / cpar.pix_y
     c_chfield = cpar.chfield; c_mm = cpar.mm
 
-    jit_cals, jit_mmluts = _pack_cams_jit(cal, c_mm)
-    _jt = _pack_cams_jit_tuples(jit_cals, jit_mmluts)
+    jit_cals, jit_mmluts = _pack_cams_fast(cal, c_mm)
+    _jt = _pack_cams_fast_tuples(jit_cals, jit_mmluts)
     cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t = _jt
 
     nc = fb.num_cams
@@ -806,7 +806,7 @@ def trackcorr_c_loop(run_info, step):
     nt2 = np.array(fb.buf[2].num_targets[:nc], dtype=np.int32)
     nt3 = np.array(fb.buf[3].num_targets[:nc], dtype=np.int32)
 
-    count1, num_added = _trackcorr_loop_jit(
+    count1, num_added = _trackcorr_loop_fast(
         orig_parts,
         fb.buf[0].path_x,
         fb.buf[1].path_x, fb.buf[1].path_prev, fb.buf[1].path_next,
@@ -888,8 +888,8 @@ def trackback_c(run_info):
     imx_half = c_imx * 0.5; imy_half = c_imy * 0.5
     inv_pix_x = 1.0 / cpar.pix_x; inv_pix_y = 1.0 / cpar.pix_y
     c_chfield = cpar.chfield; c_mm = cpar.mm
-    jit_cals, jit_mmluts = _pack_cams_jit(cal, c_mm)
-    _jt = _pack_cams_jit_tuples(jit_cals, jit_mmluts)
+    jit_cals, jit_mmluts = _pack_cams_fast(cal, c_mm)
+    _jt = _pack_cams_fast_tuples(jit_cals, jit_mmluts)
 
     Ymin = 0.0
     Ymax = 0.0
@@ -912,8 +912,9 @@ def trackback_c(run_info):
 
         cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t = _jt
         num_parts_2 = np.array([fb.buf[2].num_parts], dtype=np.int32)
+        nt2 = np.array(fb.buf[2].num_targets[:nc], dtype=np.int32)
 
-        count1, num_added = _trackback_loop_jit(
+        count1, num_added = _trackback_loop_fast(
             fb.buf[1].num_parts,
             fb.buf[0].path_x,
             fb.buf[1].path_x, fb.buf[1].path_prev, fb.buf[1].path_next,
@@ -923,7 +924,7 @@ def trackback_c(run_info):
             fb.buf[2].path_x, fb.buf[2].path_prev, fb.buf[2].path_next,
             num_parts_2,
             fb.buf[2].targ_x, fb.buf[2].targ_y, fb.buf[2].targ_tnr,
-            fb.buf[2].num_targets,
+            nt2,
             fb.buf[2].corres_p, fb.buf[2].corres_nr,
             fb.buf[2].path_inlist, fb.buf[2].path_prio,
             fb.buf[2].path_finaldecis,

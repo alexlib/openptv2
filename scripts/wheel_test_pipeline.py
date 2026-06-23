@@ -376,7 +376,6 @@ def run_installed_tests(
         python_path,
         "-m",
         "pytest",
-        "bindings/tests/",
         "algorithms/tests/",
         "-v",
         "--tb=short",

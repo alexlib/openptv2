@@ -16,7 +16,7 @@ from .vec_utils import (
     vec_set, vec_norm, vec_dot, vec_scalar_mul, vec_add, vec_subt, unit_vector
 )
 
-from .track_kernels import init_mmlut_data_jit as _init_mmlut_data_jit
+from .track_kernels import init_mmlut_data_fast as _init_mmlut_data_fast
 
 
 # Y-remap mode constants (for interlaced cameras)
@@ -527,7 +527,7 @@ def init_mmlut(vpar, cpar, cal):
 
     if cal.mmlut.data is None:
         if cpar.mm.nlay == 1:
-            data = _init_mmlut_data_jit(
+            data = _init_mmlut_data_fast(
                 nr, nz, rw,
                 cal_t_x0, cal_t_y0, cal_t_z0,
                 Zmin_t,

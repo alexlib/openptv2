@@ -1,7 +1,7 @@
 import cython
 import numpy as np
 
-from .track_kernels import track3d_loop_jit as _track3d_loop_jit
+from .track_kernels import track3d_loop_fast as _track3d_loop_fast
 
 MAX_CANDS = 4
 
@@ -94,7 +94,7 @@ def track3d_loop(run_info, step):
     fb.buf[1]._sync_path_to_soa()
     fb.buf[2]._sync_path_to_soa()
 
-    count1 = _track3d_loop_jit(
+    count1 = _track3d_loop_fast(
         orig_parts,
         fb.buf[0].path_x, fb.buf[0].path_prev, fb.buf[0].num_parts,
         fb.buf[1].path_x, fb.buf[1].path_prev, fb.buf[1].path_next,

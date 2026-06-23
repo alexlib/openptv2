@@ -158,13 +158,14 @@ See `CYTHON_3_PURE_PYTHON_PLAN.md` for the full master plan. We are eliminating 
 - `openptv2/*` dispatch modules now import the single compatibility/runtime layer directly
 - Remaining repository cleanup is focused on deleting legacy `lib/` and `bindings/` trees plus stale comparison utilities
 
-**Phase 2 (Cython 3 Annotations):** SUBSTANTIALLY COMPLETE
-- The translated algorithm modules already use `cython` imports and decorators broadly
-- Numba-specific code paths have been removed; remaining cleanup is naming/doc wording around historical `_jit` helpers
+**Phase 2 (Cython 3 Annotations):** ✅ COMPLETE
+- The translated algorithm modules use `cython` imports and decorators broadly.
+- Numba-specific code paths have been completely removed.
 
-**Phase 3 (Build System):** IN PROGRESS
-- `setup.py` cythonizes `algorithms/*.py`
-- `pyproject.toml` no longer packages `optv` or `bindings/tests`
+**Phase 3 (Build System):** ✅ COMPLETE
+- `setup.py` compiles and cythonizes all 18 `algorithms/*.py` modules into C extensions.
+- `pyproject.toml` dependencies and setup are completely cleaned up and ready for Cython 3 Pure Python wheels.
+- Tested and verified local extension compilation via `uv build --wheel`.
 
 **Phase 4 (GUI Integration):** IN PROGRESS
 - GUI entry points now run against the single runtime and ignore legacy engine-selection flags for compatibility

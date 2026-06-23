@@ -20,7 +20,7 @@ from collections import deque
 # Constant for no correspondence assigned
 CORRES_NONE = -1
 
-from .track_kernels import targ_rec_jit as _targ_rec_jit
+from .track_kernels import targ_rec_fast as _targ_rec_fast
 
 
 
@@ -151,7 +151,7 @@ def targ_rec(
 
     img0 = img_u8.copy()
     max_targets = (xmax - xmin) * (ymax - ymin)
-    n_found, ox, oy, on, onx, ony, osumg = _targ_rec_jit(
+    n_found, ox, oy, on, onx, ony, osumg = _targ_rec_fast(
         img_u8, img0,
         np.int64(gvthres), np.int64(discont),
         np.int64(nnmin), np.int64(nnmax),
