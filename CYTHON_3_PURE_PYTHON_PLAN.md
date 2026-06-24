@@ -1,6 +1,6 @@
 # OpenPTV2 Single-Engine Consolidation: Cython 3 Pure Python Master Plan
 
-This document establishes the consolidated, single master roadmap for transitioning **OpenPTV2** to a single-engine architecture. We are eliminating all legacy C library files, legacy Cython bindings, Numba, and dual-engine fallback layers, standardizing exclusively on **Cython 3 Pure Python Mode (Strategy B)**.
+This document establishes the consolidated, single master roadmap for transitioning **OpenPTV2** to a single-engine architecture. We are standardizing on **Cython 3 Pure Python Mode (Strategy B)** while keeping the legacy C library and Cython bindings available as verification and performance baselines until the final transition gate is satisfied.
 
 ---
 
@@ -19,7 +19,7 @@ graph TD
 
 ### 1. Unified and Simplified Core
 *   **The Single-Engine Standard:** Every algorithm is written as a standard Python `.py` file decorated with PEP 484 type hints and Cython-specific compiler instructions.
-*   **No Legacy C/Bindings Redundancy:** We completely eliminate the native C library in `lib/`, the duplicate bindings in `bindings/`, duplicate pure Python fallbacks, and Numba JIT paths.
+*   **Single Target Architecture:** The destination architecture removes the native C library in `lib/`, the duplicate bindings in `bindings/`, duplicate pure Python fallbacks, and Numba JIT paths.
 *   **Performance Parity:** The compiled Cython 3 pure Python modules will execute at native C speed, matching or exceeding the speed of the legacy C library with Cython bindings today.
 *   **TraitsUI/Chaco GUI Preservation:** The modern TraitsUI/Chaco desktop interface will run seamlessly on top of these precompiled modules.
 
@@ -80,8 +80,8 @@ All array manipulations use memoryviews (e.g., `cython.double[:]`) to read/write
 
 ## 📈 Detailed Migration Roadmap
 
-### Phase 1: Refactoring & Auditing Core Algorithms (`algorithms/`)
-We will perform a careful pass over the 18 translated modules inside `algorithms/` to audit and optimize their annotations:
+### Phase 1: Refactoring, Auditing, and Optimizing Core Algorithms (`algorithms/`)
+We will perform a careful pass over the translated modules inside `algorithms/` to audit and optimize their annotations:
 1.  **Low-Level Math & Structs:** `vec_utils`, `lsqadj`, `parameters`, `trafo`, `multimed`, `ray_tracing`, `imgcoord`.
 2.  **Detection & Calibration:** `calibration`, `image_processing`, `segmentation`, `sortgrid`, `orientation`, `epi`.
 3.  **Tracking & Framebuf Pipelines:** `correspondences`, `tracking_frame_buf`, `tracking_run`, `track`, `track3d`, `track_kernels`.
@@ -90,11 +90,12 @@ We will perform a careful pass over the 18 translated modules inside `algorithms
 *   Add comprehensive local variable definitions (`x: cython.double = ...`) to prevent fallback to Python objects inside core loops.
 *   Apply compiler optimization decorators: `@cython.boundscheck(False)` and `@cython.wraparound(False)`.
 *   Ensure all standard floating-point functions import from standard library `math` or compiled math extensions to eliminate dynamic Python calls.
+*   Optimize the algorithms until the compiled path reaches the required speed and stability targets.
 
-### Phase 2: Build System & Dependency Cleanup
+### Phase 2: Build System, Dependency Cleanup, and Reference Baseline Retention
 1.  **Refactor `setup.py`:**
-    *   Prioritize/Compile the 18 `algorithms/*.py` modules into standard `.c` extension wrappers using `cythonize` and package them as compiled extensions.
-    *   Temporarily keep `liboptv` C files and `bindings` compiling as legacy options for verification and speed comparison.
+    *   Prioritize/compile the `algorithms/*.py` modules into standard `.c` extension wrappers using `cythonize` and package them as compiled extensions.
+    *   Keep `lib/` and `bindings/` buildable during the transition so they remain available for verification, speed comparison, and floating-point accuracy checks.
 2.  **Clean up `pyproject.toml`:**
     *   Remove Numba from optional/dev dependencies.
     *   Update classifiers to emphasize Cython 3 Pure Python integration.
@@ -108,19 +109,30 @@ We will perform a careful pass over the 18 translated modules inside `algorithms
 2.  **Desktop Run Integration:**
     *   Verify the TraitsUI/Chaco GUI successfully loads and executes against the precompiled extensions, automatically falling back to interpreted mode during development if the extensions are uncompiled.
 
-### Phase 4: Verification & Parity Testing (with Speed Comparison)
+### Phase 4: Verification, Floating-Point Accuracy, and Speed Comparison
 1.  **Test Parity Automation:**
     *   Run tests under interpreted mode (`is_compiled() == False`) to ensure standard step-debugging works natively.
     *   Run tests under precompiled mode (`is_compiled() == True`) to ensure performance and correctness.
+    *   Keep the legacy `lib/` + `bindings/` path available until compiled-algorithm results are validated against it.
 2.  **Dataset Testing:**
     *   **Burgers Dataset (5 frames):** Assert exact match of tracking links.
     *   **Cavity Dataset (4 frames, 700+ particles):** Verify correct links and benchmark execution times to confirm C-level speeds.
     *   **Synthetic Dataset (8 frames):** Confirm 100% correct links.
-3.  **Speed Comparison & Verification:**
-    *   Run speed benchmarks comparing the new Cython 3 Pure Python compiled engine against the legacy C library (`lib/` and `bindings/`) to verify we have achieved performance parity or speedup.
+3.  **Floating-Point Accuracy Validation:**
+    *   Validate numerical results against the legacy C + Cython path to agreed floating-point tolerances.
+    *   Document any intentional improvements or bug fixes that produce controlled deviations from the historical implementation.
+4.  **Speed Comparison & Stability Verification:**
+    *   Run speed benchmarks comparing the new compiled Cython 3 Pure Python engine against the legacy C library (`lib/` and `bindings/`) to verify performance parity or speedup.
+    *   Run stability/regression checks until the optimized compiled path is ready to replace the legacy implementation.
 
 ### Phase 5: Codebase Housekeeping & Deletion (The Great Purge)
-Once all verifications, tests, and speed comparisons confirm 100% correctness and parity, we will execute the final cleanup:
+Only after the following deletion gate is satisfied will we execute the final cleanup:
+1.  **All tests pass** for the interpreted and compiled Cython 3 runtime.
+2.  **Floating-point accuracy is validated** against the legacy C + Cython reference path.
+3.  **Compiled performance matches or exceeds** the original C + Cython implementation on agreed benchmarks.
+4.  **Stability is verified** and the algorithms are optimized to the required production level.
+
+After those conditions are met:
 1.  **Delete `lib/`:** Completely remove all C source (`.c`) and header (`.h`) files.
 2.  **Delete `bindings/`:** Completely remove the legacy Cython wrappers (e.g., `bindings/optv/`) and associated setup code.
 3.  **Delete Dispatch Layer:**
@@ -132,19 +144,22 @@ Once all verifications, tests, and speed comparisons confirm 100% correctness an
 
 ## 🚀 Key Milestones & Checklist
 
-- [x] **Phase 1: Core Algorithm Verification & Optimization**
-  - [x] Audit variable annotations and memoryviews in the 18 modules under `algorithms/`.
-  - [x] Apply high-performance optimization decorators to all computational loops.
-- [x] **Phase 2: Build System & Wheels**
-  - [x] Strip/configure setup compiled extensions.
-  - [x] Verify local extension compilation via `pip install -e .`.
-  - [x] Validate wheel builds via `cibuildwheel`.
+- [ ] **Phase 1: Core Algorithm Verification & Optimization**
+  - [ ] Audit variable annotations and memoryviews in the translated modules under `algorithms/`.
+  - [ ] Apply high-performance optimization decorators to all computational loops.
+  - [ ] Optimize compiled performance and stability to the required target level.
+- [ ] **Phase 2: Build System & Reference Baseline**
+  - [ ] Configure setup compiled extensions for the Cython 3 runtime.
+  - [ ] Keep `lib/` and `bindings/` available as a verification and benchmark baseline until transition exit criteria are met.
+  - [ ] Validate local extension compilation and wheel builds.
 - [ ] **Phase 3: GUI Preservation & Execution**
   - [ ] Run the TraitsUI/Chaco GUI with the compiled Cython 3 pure Python backend.
   - [ ] Validate standard calibration, detection, and tracking sequences.
-- [ ] **Phase 4: Extensive Validation Suite & Speed Comparisons**
-  - [ ] Assert 100% test passing under `pytest tests/` and `pytest gui/tests/`.
-  - [ ] Verify numerical exact parity and C-level speed benchmarks.
+- [ ] **Phase 4: Extensive Validation Suite, Accuracy, and Speed**
+  - [ ] Assert 100% test passing under the active test suite.
+  - [ ] Validate floating-point accuracy against the legacy C + Cython reference path.
+  - [ ] Verify compiled speed parity or speedup against the original implementation.
+  - [ ] Verify runtime stability after optimization.
 - [ ] **Phase 5: Housekeeping & Deletion (The Great Purge)**
   - [ ] Delete legacy `lib/` C library.
   - [ ] Delete legacy `bindings/` Cython bindings.
