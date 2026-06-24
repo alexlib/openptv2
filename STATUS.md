@@ -78,20 +78,12 @@ Created `algorithms/compat/` package with optv-compatible API wrappers:
 - ✅ Ported `algorithms/parameter_converters.py` from old_algorithms (~451 lines)
   - All YAML→parameter converters: get_control_par, get_volume_par, get_track_par_tuple, etc.
   - Kept convert_optv_calibrations for backward compatibility
-### Phase 5: Engine Dispatch Layer ✅ Complete
-- ✅ Updated `openptv2/engine.py` with OPENPTV_ENGINE env var support
-  - `_detect_engine()`: Auto-detect based on env var or availability
-  - `get_engine()`, `set_engine()`: Updated with initialization checks
-  - `is_optv_available()`, `is_python_available()`: Availability checks
-- ✅ Created 11 dispatch modules in `openptv2/` (~15 lines each):
-  - calibration.py, parameters.py, correspondences.py, image_processing.py
-  - segmentation.py, tracking_framebuf.py, tracker.py, transforms.py
-  - imgcoord.py, orientation.py, epipolar.py
-  - Each checks engine and imports from optv.* or algorithms.compat.*
-- ✅ Updated `openptv2/__init__.py` to re-export all public symbols
-- ✅ Tested: Both engines work, imports succeed, engine switching via env var
+### Phase 5: Public API Alignment ✅ Complete
+- ✅ `openptv2/` now exposes a single compatibility/runtime layer
+- ✅ Legacy dispatch logic has been removed from the public modules
+- ✅ `openptv2.__init__` exports runtime metadata via `get_runtime_info()`
 ### Phase 6: GUI Alignment & Decoupling ✅ Complete
-- ✅ Integrated the TraitsUI/Chaco-based GUI with the `openptv2` dispatcher layer.
+- ✅ Integrated the TraitsUI/Chaco-based GUI with the `openptv2` single runtime.
 - ✅ Replaced all `from optv.*` imports with `from openptv2.*` in GUI files:
   - gui/pyptv/ptv.py, parameter_gui.py, detection_gui.py, calibration_gui.py, code_editor.py
   - gui/pyptv/standalone_calibration.py, standalone_dumbbell_calibration.py
@@ -99,16 +91,16 @@ Created `algorithms/compat/` package with optv-compatible API wrappers:
   - gui/pyptv/flowtracks_utils.py, tracking_viz_panel.py
   - gui/plugins/ext_sequence_*.py (3 plugin files)
 - ✅ Total: 57+ import statements updated across 15 files
-- ✅ Verified: GUI imports and runs successfully with both engines.
+- ✅ Verified: GUI imports and runs successfully with the unified runtime.
 
 ### Phase 7: Parity Tests & Code Clean Up ✅ Complete
-- ✅ Created `tests/test_engine_parity.py` (9 tests).
-- ✅ Implemented robust automated GUI tests under `gui/tests/` verifying all components pass perfectly (257 total tests passed!).
-- ✅ Verified engine detection and switching works correctly.
+- ✅ Implemented automated GUI tests under `gui/tests/`.
+- ✅ Added runtime validation coverage for the unified API.
+- ✅ Removed dual-engine dispatcher tests.
 
-## 🎉 Dual-Engine Architecture Summary
+## 🎉 Single-Engine Architecture Summary
 
-**Completed:** Phases 1-7 (all main items complete and verified)
+**Completed:** The repository now targets a single Cython 3 pure-Python runtime.
 
 ### What We Built
 1. **Compatibility Layer** (`algorithms/compat/`, ~2,000 lines)
@@ -116,36 +108,30 @@ Created `algorithms/compat/` package with optv-compatible API wrappers:
    - Getter/setter methods, TargetArray class, batch wrappers.
    - Includes robust duck-typing supporting both pure Python and read-only C/Cython wrapper targets.
 
-2. **Engine Dispatch** (`openptv2/`, ~600 lines)
-   - 11 dispatch modules: auto-select optv.* or algorithms.compat.*
-   - Environment variable: `OPENPTV_ENGINE=python` or `optv`
-   - Automatic fallback if optv unavailable.
+2. **Public API Layer** (`openptv2/`)
+   - Re-exports the compatibility/runtime surface without engine switching.
+   - Reports runtime metadata via `get_runtime_info()`.
 
 3. **GUI Integration** (15 files updated)
    - All 57+ `from optv.*` → `from openptv2.*`
    - Zero code duplication, single import source.
-   - Works with both engines transparently.
+   - Works with the unified runtime transparently.
 
 ### How It Works
 ```bash
-# Use Python engine (algorithms)
-export OPENPTV_ENGINE=python
-python -m gui.pyptv.pyptv_gui
+# Run interpreted modules during development
+uv run python -m gui.pyptv.pyptv_gui --workdir=./test_data/test_cavity
 
-# Use C/Cython engine (optv, default)
-export OPENPTV_ENGINE=optv
-python -m gui.pyptv.pyptv_gui
-
-# Auto-detect (prefers optv if available)
-python -m gui.pyptv.pyptv_gui
+# Or build/install the package so the same modules run compiled
+uv pip install -e .
 ```
 
 ### Benefits
-1. **Cloud-friendly:** Python-only install (no C compilation).
-2. **Debuggable:** Step through Python code, add print statements.
-3. **Backward compatible:** Existing optv code works unchanged.
-4. **Future-proof:** Easy to add algorithms-only features (Numba, JAX).
-5. **Zero overhead:** Wrappers are thin, no performance penalty.
+1. **Single source of truth:** one implementation path in `algorithms/`.
+2. **Debuggable:** step through Python code when running uncompiled modules.
+3. **High performance:** the same modules compile under Cython 3.
+4. **Simpler packaging:** no separate C library or binding tree to maintain.
+5. **Stable API:** `openptv2` continues to expose the compatibility surface used by the GUI.
 
 ## 🔄 Cython 3 Pure Python Consolidation
 

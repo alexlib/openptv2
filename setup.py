@@ -141,7 +141,7 @@ class BuildExtWithPrepare(build_ext):
 
     def finalize_options(self):
         super().finalize_options()
-        # Parallel extension builds race on shared lib/src/*.c object paths on all platforms,
+        # Parallel extension builds race on shared generated C sources on all platforms,
         # which causes fatal permission errors or missing/corrupted symbols.
         self.parallel = None
 
