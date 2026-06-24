@@ -49,15 +49,15 @@ def _pack_cams_fast(cals, mm):
     return cal_arrays, mmlut_tuples
 
 
-def _pack_cams_fast_tuples(jit_cals, jit_mmluts):
+def _pack_cams_fast_tuples(fast_cals, fast_mmluts):
     """Convert lists to tuples for searchquader_fast."""
     return (
-        tuple(jit_cals),
-        tuple(m[0] for m in jit_mmluts),
-        tuple(m[1] for m in jit_mmluts),
-        tuple(m[2] for m in jit_mmluts),
-        tuple(m[3] for m in jit_mmluts),
-        tuple(m[4] for m in jit_mmluts),
+        tuple(fast_cals),
+        tuple(m[0] for m in fast_mmluts),
+        tuple(m[1] for m in fast_mmluts),
+        tuple(m[2] for m in fast_mmluts),
+        tuple(m[3] for m in fast_mmluts),
+        tuple(m[4] for m in fast_mmluts),
     )
 
 
@@ -789,8 +789,8 @@ def trackcorr_c_loop(run_info, step):
     inv_pix_x = 1.0 / cpar.pix_x; inv_pix_y = 1.0 / cpar.pix_y
     c_chfield = cpar.chfield; c_mm = cpar.mm
 
-    jit_cals, jit_mmluts = _pack_cams_fast(cal, c_mm)
-    _jt = _pack_cams_fast_tuples(jit_cals, jit_mmluts)
+    fast_cals, fast_mmluts = _pack_cams_fast(cal, c_mm)
+    _jt = _pack_cams_fast_tuples(fast_cals, fast_mmluts)
     cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t = _jt
 
     nc = fb.num_cams
@@ -888,8 +888,8 @@ def trackback_c(run_info):
     imx_half = c_imx * 0.5; imy_half = c_imy * 0.5
     inv_pix_x = 1.0 / cpar.pix_x; inv_pix_y = 1.0 / cpar.pix_y
     c_chfield = cpar.chfield; c_mm = cpar.mm
-    jit_cals, jit_mmluts = _pack_cams_fast(cal, c_mm)
-    _jt = _pack_cams_fast_tuples(jit_cals, jit_mmluts)
+    fast_cals, fast_mmluts = _pack_cams_fast(cal, c_mm)
+    _jt = _pack_cams_fast_tuples(fast_cals, fast_mmluts)
 
     Ymin = 0.0
     Ymax = 0.0

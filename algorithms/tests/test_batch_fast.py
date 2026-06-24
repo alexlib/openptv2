@@ -1,6 +1,6 @@
-"""Tests for batch JIT-accelerated functions.
+"""Tests for batch Compiled-accelerated functions.
 
-Verifies that batch JIT functions produce identical results to scalar Python
+Verifies that batch Compiled functions produce identical results to scalar Python
 versions, and measures speedup.
 """
 
@@ -209,7 +209,7 @@ def test_batch_speedup(setup):
             )
             targets[i, cam] = [x, y]
 
-    # Warmup JIT
+    # Warmup Compiled
     img_coord_batch(positions[:2], cal, mm)
     flat_image_coord_batch(positions[:2], cal, mm)
     ray_tracing_batch(xy_metric[:2], cal, mm)
@@ -271,7 +271,7 @@ def test_batch_speedup(setup):
           lambda: [metric_to_pixel(xy_metric[i, 0], xy_metric[i, 1], cpar) for i in range(N)],
           lambda: metric_to_pixel_batch(xy_metric, cpar))
 
-    print("\n=== Batch JIT Speedup Results ===")
+    print("\n=== Batch Compiled Speedup Results ===")
     print(f"{'Function':<25} {'Scalar (ms)':>12} {'Batch (ms)':>12} {'Speedup':>10}")
     print("-" * 65)
     for name, (t_s, t_b, ratio) in results.items():
