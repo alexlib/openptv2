@@ -546,19 +546,207 @@ def _img_coord_batch_impl(positions: cython.double[:, :], cal, mm) -> np.ndarray
         mmlut_rw = mmlut.rw
         mmlut_data = mmlut.data
 
+    # Hoist point-independent calculations from flat_image_coord
+    gx: cython.double = glass_vec_x
+    gy: cython.double = glass_vec_y
+    gz: cython.double = glass_vec_z
+
+    dist_o_glas: cython.double = math.sqrt(gx * gx + gy * gy + gz * gz)
+    inv_dog: cython.double = 1.0 / dist_o_glas
+
+    dot_cam: cython.double = ext_x0 * gx + ext_y0 * gy + ext_z0 * gz
+    dist_cam_glas: cython.double = dot_cam * inv_dog - dist_o_glas - mm_d0
+
+    s_cam: cython.double = dist_cam_glas * inv_dog
+    cc_x: cython.double = ext_x0 - gx * s_cam
+    cc_y: cython.double = ext_y0 - gy * s_cam
+    cc_z: cython.double = ext_z0 - gz * s_cam
+
+    ext_t_z0: cython.double = dist_cam_glas + mm_d0
+
+    s_d: cython.double = mm_d0 * inv_dog
+    ag_x: cython.double = cc_x - gx * s_d
+    ag_y: cython.double = cc_y - gy * s_d
+    ag_z: cython.double = cc_z - gz * s_d
+
+    # Hoist point-independent calculations from flat_to_dist
+    sin_she: cython.double = math.sin(she)
+    cos_she: cython.double = math.cos(she)
+
     i: cython.int
-    x: cython.double
-    y: cython.double
+    pos0: cython.double
+    pos1: cython.double
+    pos2: cython.double
+    dot_pos: cython.double
+    dist_point_glas: cython.double
+    s_pt: cython.double
+    cp_x: cython.double
+    cp_y: cython.double
+    cp_z: cython.double
+    tmp_x: cython.double
+    tmp_y: cython.double
+    tmp_z: cython.double
+    pos_t_0: cython.double
+    pos_t_2: cython.double
+    mmf: cython.double
+    radial_shift: cython.double
+    X_t: cython.double
+    inv_ngl: cython.double
+    n_ve: cython.double
+    s_z: cython.double
+    bx: cython.double
+    by: cython.double
+    bz: cython.double
+    s_x: cython.double
+    dx: cython.double
+    dy: cython.double
+    dz: cython.double
+    deno: cython.double
+    flat_x: cython.double
+    flat_y: cython.double
+
+    x_pt: cython.double
+    y_pt: cython.double
+    r_pt: cython.double
+    r2: cython.double
+    r4: cython.double
+    r6: cython.double
+    radial_factor: cython.double
+    x_dist: cython.double
+    y_dist: cython.double
+
+    it: cython.int
+    beta1: cython.double
+    sin_beta1: cython.double
+    beta2: cython.double
+    beta3: cython.double
+    rbeta: cython.double
+    rdiff: cython.double
+    arg: cython.double
+    r_val: cython.double
+    rq: cython.double
+
     for i in range(n):
-        x, y = _flat_image_coord_core(
-            positions[i, 0], positions[i, 1], positions[i, 2],
-            ext_x0, ext_y0, ext_z0, ext_dm, int_cc,
-            glass_vec_x, glass_vec_y, glass_vec_z,
-            mm_n1, mm_n2_0, mm_n3, mm_d0,
-            has_mmlut, mmlut_origin_x, mmlut_origin_y, mmlut_origin_z,
-            mmlut_nr, mmlut_nz, mmlut_rw, mmlut_data,
-        )
-        res_mv[i, 0], res_mv[i, 1] = _flat_to_dist_core(x, y, int_xh, int_yh, k1, k2, k3, p1, p2, scx, she)
+        pos0 = positions[i, 0]
+        pos1 = positions[i, 1]
+        pos2 = positions[i, 2]
+
+        dot_pos = pos0 * gx + pos1 * gy + pos2 * gz
+        dist_point_glas = dot_pos * inv_dog - dist_o_glas
+
+        s_pt = dist_point_glas * inv_dog
+        cp_x = pos0 - gx * s_pt
+        cp_y = pos1 - gy * s_pt
+        cp_z = pos2 - gz * s_pt
+
+        tmp_x = cp_x - ag_x
+        tmp_y = cp_y - ag_y
+        tmp_z = cp_z - ag_z
+
+        pos_t_0 = math.sqrt(tmp_x * tmp_x + tmp_y * tmp_y + tmp_z * tmp_z)
+        pos_t_2 = dist_point_glas
+
+        # === mmlut lookup ===
+        mmf = 1.0
+        if has_mmlut:
+            mmf = _get_mmf_from_mmlut_core(
+                pos_t_0, 0.0, pos_t_2,
+                mmlut_origin_x, mmlut_origin_y, mmlut_origin_z,
+                mmlut_nr, mmlut_nz, mmlut_rw, mmlut_data,
+            )
+            if mmf <= 0.0:
+                mmf = 1.0
+
+        # === multimedia nlay ===
+        radial_shift = 1.0
+        if mmf > 0.0 and mmf != 1.0:
+            radial_shift = mmf
+        else:
+            if mm_n1 == 1.0 and mm_n2_0 == 1.0 and mm_n3 == 1.0:
+                radial_shift = 1.0
+            else:
+                r_val = pos_t_0
+                rq = r_val
+
+                for it in range(40):
+                    beta1 = math.atan(rq / (ext_t_z0 - pos_t_2))
+                    sin_beta1 = math.sin(beta1)
+
+                    arg = sin_beta1 * mm_n1 / mm_n2_0
+                    if arg > 1.0:
+                        arg = 1.0
+                    elif arg < -1.0:
+                        arg = -1.0
+                    beta2 = math.asin(arg)
+
+                    arg = sin_beta1 * mm_n1 / mm_n3
+                    if arg > 1.0:
+                        arg = 1.0
+                    elif arg < -1.0:
+                        arg = -1.0
+                    beta3 = math.asin(arg)
+
+                    rbeta = (ext_t_z0 - mm_d0) * math.tan(beta1) - pos_t_2 * math.tan(beta3) + mm_d0 * math.tan(beta2)
+                    rdiff = r_val - rbeta
+                    rq += rdiff
+
+                    if abs(rdiff) < 0.001:
+                        break
+                else:
+                    rq = r_val
+
+                if r_val != 0.0:
+                    radial_shift = rq / r_val
+                else:
+                    radial_shift = 1.0
+
+        X_t = pos_t_0 * radial_shift
+
+        # === back_trans_point ===
+        inv_ngl = inv_dog
+        n_ve = pos_t_0
+
+        s_z = -pos_t_2 * inv_ngl
+        bx = ag_x - gx * s_z
+        by = ag_y - gy * s_z
+        bz = ag_z - gz * s_z
+
+        if n_ve > 0:
+            s_x = -X_t / n_ve
+            bx -= tmp_x * s_x
+            by -= tmp_y * s_x
+            bz -= tmp_z * s_x
+
+        # === perspective projection ===
+        dx = bx - ext_x0
+        dy = by - ext_y0
+        dz = bz - ext_z0
+
+        deno = ext_dm[0, 2] * dx + ext_dm[1, 2] * dy + ext_dm[2, 2] * dz
+
+        flat_x = -int_cc * (ext_dm[0, 0] * dx + ext_dm[1, 0] * dy + ext_dm[2, 0] * dz) / deno
+        flat_y = -int_cc * (ext_dm[0, 1] * dx + ext_dm[1, 1] * dy + ext_dm[2, 1] * dz) / deno
+
+        # === flat to dist ===
+        x_pt = flat_x + int_xh
+        y_pt = flat_y + int_yh
+
+        r_pt = math.sqrt(x_pt * x_pt + y_pt * y_pt)
+        if r_pt < 1e-10:
+            res_mv[i, 0] = 0.0
+            res_mv[i, 1] = 0.0
+        else:
+            r2 = r_pt * r_pt
+            r4 = r2 * r2
+            r6 = r4 * r2
+            radial_factor = 1.0 + k1 * r2 + k2 * r4 + k3 * r6
+
+            x_dist = x_pt * radial_factor + p1 * (r2 + 2.0 * x_pt * x_pt) + 2.0 * p2 * x_pt * y_pt
+            y_dist = y_pt * radial_factor + p2 * (r2 + 2.0 * y_pt * y_pt) + 2.0 * p1 * x_pt * y_pt
+
+            res_mv[i, 0] = scx * (x_dist - sin_she * y_dist)
+            res_mv[i, 1] = scx * cos_she * y_dist
+
     return result
 
 
@@ -619,16 +807,171 @@ def _flat_image_coord_batch_impl(positions: cython.double[:, :], cal, mm) -> np.
         mmlut_rw = mmlut.rw
         mmlut_data = mmlut.data
 
+    # Hoist point-independent calculations from flat_image_coord
+    gx: cython.double = glass_vec_x
+    gy: cython.double = glass_vec_y
+    gz: cython.double = glass_vec_z
+
+    dist_o_glas: cython.double = math.sqrt(gx * gx + gy * gy + gz * gz)
+    inv_dog: cython.double = 1.0 / dist_o_glas
+
+    dot_cam: cython.double = ext_x0 * gx + ext_y0 * gy + ext_z0 * gz
+    dist_cam_glas: cython.double = dot_cam * inv_dog - dist_o_glas - mm_d0
+
+    s_cam: cython.double = dist_cam_glas * inv_dog
+    cc_x: cython.double = ext_x0 - gx * s_cam
+    cc_y: cython.double = ext_y0 - gy * s_cam
+    cc_z: cython.double = ext_z0 - gz * s_cam
+
+    ext_t_z0: cython.double = dist_cam_glas + mm_d0
+
+    s_d: cython.double = mm_d0 * inv_dog
+    ag_x: cython.double = cc_x - gx * s_d
+    ag_y: cython.double = cc_y - gy * s_d
+    ag_z: cython.double = cc_z - gz * s_d
+
     i: cython.int
+    pos0: cython.double
+    pos1: cython.double
+    pos2: cython.double
+    dot_pos: cython.double
+    dist_point_glas: cython.double
+    s_pt: cython.double
+    cp_x: cython.double
+    cp_y: cython.double
+    cp_z: cython.double
+    tmp_x: cython.double
+    tmp_y: cython.double
+    tmp_z: cython.double
+    pos_t_0: cython.double
+    pos_t_2: cython.double
+    mmf: cython.double
+    radial_shift: cython.double
+    X_t: cython.double
+    inv_ngl: cython.double
+    n_ve: cython.double
+    s_z: cython.double
+    bx: cython.double
+    by: cython.double
+    bz: cython.double
+    s_x: cython.double
+    dx: cython.double
+    dy: cython.double
+    dz: cython.double
+    deno: cython.double
+
+    it: cython.int
+    beta1: cython.double
+    sin_beta1: cython.double
+    beta2: cython.double
+    beta3: cython.double
+    rbeta: cython.double
+    rdiff: cython.double
+    arg: cython.double
+    r_val: cython.double
+    rq: cython.double
+
     for i in range(n):
-        res_mv[i, 0], res_mv[i, 1] = _flat_image_coord_core(
-            positions[i, 0], positions[i, 1], positions[i, 2],
-            ext_x0, ext_y0, ext_z0, ext_dm, int_cc,
-            glass_vec_x, glass_vec_y, glass_vec_z,
-            mm_n1, mm_n2_0, mm_n3, mm_d0,
-            has_mmlut, mmlut_origin_x, mmlut_origin_y, mmlut_origin_z,
-            mmlut_nr, mmlut_nz, mmlut_rw, mmlut_data,
-        )
+        pos0 = positions[i, 0]
+        pos1 = positions[i, 1]
+        pos2 = positions[i, 2]
+
+        dot_pos = pos0 * gx + pos1 * gy + pos2 * gz
+        dist_point_glas = dot_pos * inv_dog - dist_o_glas
+
+        s_pt = dist_point_glas * inv_dog
+        cp_x = pos0 - gx * s_pt
+        cp_y = pos1 - gy * s_pt
+        cp_z = pos2 - gz * s_pt
+
+        tmp_x = cp_x - ag_x
+        tmp_y = cp_y - ag_y
+        tmp_z = cp_z - ag_z
+
+        pos_t_0 = math.sqrt(tmp_x * tmp_x + tmp_y * tmp_y + tmp_z * tmp_z)
+        pos_t_2 = dist_point_glas
+
+        # === mmlut lookup ===
+        mmf = 1.0
+        if has_mmlut:
+            mmf = _get_mmf_from_mmlut_core(
+                pos_t_0, 0.0, pos_t_2,
+                mmlut_origin_x, mmlut_origin_y, mmlut_origin_z,
+                mmlut_nr, mmlut_nz, mmlut_rw, mmlut_data,
+            )
+            if mmf <= 0.0:
+                mmf = 1.0
+
+        # === multimedia nlay ===
+        radial_shift = 1.0
+        if mmf > 0.0 and mmf != 1.0:
+            radial_shift = mmf
+        else:
+            if mm_n1 == 1.0 and mm_n2_0 == 1.0 and mm_n3 == 1.0:
+                radial_shift = 1.0
+            else:
+                r_val = pos_t_0
+                rq = r_val
+
+                for it in range(40):
+                    beta1 = math.atan(rq / (ext_t_z0 - pos_t_2))
+                    sin_beta1 = math.sin(beta1)
+
+                    arg = sin_beta1 * mm_n1 / mm_n2_0
+                    if arg > 1.0:
+                        arg = 1.0
+                    elif arg < -1.0:
+                        arg = -1.0
+                    beta2 = math.asin(arg)
+
+                    arg = sin_beta1 * mm_n1 / mm_n3
+                    if arg > 1.0:
+                        arg = 1.0
+                    elif arg < -1.0:
+                        arg = -1.0
+                    beta3 = math.asin(arg)
+
+                    rbeta = (ext_t_z0 - mm_d0) * math.tan(beta1) - pos_t_2 * math.tan(beta3) + mm_d0 * math.tan(beta2)
+                    rdiff = r_val - rbeta
+                    rq += rdiff
+
+                    if abs(rdiff) < 0.001:
+                        break
+                else:
+                    rq = r_val
+
+                if r_val != 0.0:
+                    radial_shift = rq / r_val
+                else:
+                    radial_shift = 1.0
+
+        X_t = pos_t_0 * radial_shift
+
+        # === back_trans_point ===
+        inv_ngl = inv_dog
+        n_ve = pos_t_0
+
+        s_z = -pos_t_2 * inv_ngl
+        bx = ag_x - gx * s_z
+        by = ag_y - gy * s_z
+        bz = ag_z - gz * s_z
+
+        if n_ve > 0:
+            s_x = -X_t / n_ve
+            bx -= tmp_x * s_x
+            by -= tmp_y * s_x
+            bz -= tmp_z * s_x
+
+        # === perspective projection ===
+        dx = bx - ext_x0
+        dy = by - ext_y0
+        dz = bz - ext_z0
+
+        deno = ext_dm[0, 2] * dx + ext_dm[1, 2] * dy + ext_dm[2, 2] * dz
+
+        res_mv[i, 0] = -int_cc * (ext_dm[0, 0] * dx + ext_dm[1, 0] * dy + ext_dm[2, 0] * dz) / deno
+        res_mv[i, 1] = -int_cc * (ext_dm[0, 1] * dx + ext_dm[1, 1] * dy + ext_dm[2, 1] * dz) / deno
+
     return result
 
 

@@ -41,6 +41,7 @@ def _legacy_modules() -> dict[str, Any] | None:
             "calibration": importlib.import_module("optv.calibration"),
             "epipolar": importlib.import_module("optv.epipolar"),
             "imgcoord": importlib.import_module("optv.imgcoord"),
+            "orientation": importlib.import_module("optv.orientation"),
             "parameters": importlib.import_module("optv.parameters"),
             "segmentation": importlib.import_module("optv.segmentation"),
             "transforms": importlib.import_module("optv.transforms"),
@@ -289,6 +290,50 @@ def validate_segmentation(
     return CheckResult("segmentation", "PASS", f"matched {len(targets)} targets")
 
 
+def validate_point_positions(
+    tolerance: float,
+    legacy: dict[str, Any] | None,
+) -> CheckResult:
+    cals = [_load_openptv_calibration(i) for i in range(1, 5)]
+    cpar = _build_openptv_control()
+    rng = np.random.default_rng(42)
+    positions_3d = rng.uniform(-10, 10, (10, 3))
+    
+    targets = np.empty((10, 4, 2), dtype=np.float64)
+    for cam in range(4):
+        targets[:, cam, :] = openptv2.image_coordinates(positions_3d, cals[cam], cpar.mm)
+
+    positions, rcm = openptv2.multi_cam_point_positions(targets, cpar, cals)
+
+    if legacy is None:
+        if positions.shape != (10, 3) or rcm.shape != (10,):
+            return CheckResult(
+                "point_positions",
+                "FAIL",
+                "unexpected shape",
+            )
+        return CheckResult("point_positions", "PASS", "finite positions produced")
+
+    legacy_cals = [_load_legacy_calibration(legacy, i) for i in range(1, 5)]
+    legacy_cpar = _build_legacy_control(legacy)
+    legacy_positions, legacy_rcm = legacy["orientation"].multi_cam_point_positions(
+        targets,
+        legacy_cpar,
+        legacy_cals,
+    )
+
+    pos_check = _compare_arrays("point_positions_pos", positions, legacy_positions, tolerance)
+    if pos_check.failed:
+        return CheckResult("point_positions", "FAIL", f"Positions mismatch: {pos_check.detail}")
+
+    rcm_check = _compare_arrays("point_positions_rcm", rcm, legacy_rcm, tolerance)
+    if rcm_check.failed:
+        return CheckResult("point_positions", "FAIL", f"RCM mismatch: {rcm_check.detail}")
+
+    max_diff = max(_max_abs_diff(positions, legacy_positions), _max_abs_diff(rcm, legacy_rcm))
+    return CheckResult("point_positions", "PASS", f"max abs diff {max_diff:.3e}")
+
+
 def _benchmark_operation(func, iterations: int) -> float:
     start = time.perf_counter()
     for _ in range(iterations):
@@ -323,6 +368,9 @@ def benchmark_against_legacy(
     positions[:, 1] = positions[:, 1] * 80.0 - 40.0
     positions[:, 2] = positions[:, 2] * 80.0 + 60.0
 
+    cals = [_load_openptv_calibration(i) for i in range(1, 5)]
+    legacy_cals = [_load_legacy_calibration(legacy, i) for i in range(1, 5)]
+
     openptv_time = _benchmark_operation(
         lambda: openptv2.convert_arr_pixel_to_metric(pixels, cpar),
         iterations,
@@ -340,12 +388,32 @@ def benchmark_against_legacy(
         iterations,
     )
 
+    bench_positions_3d = np.random.default_rng(42).uniform(-20, 20, (512, 3))
+    bench_targets = np.empty((512, 4, 2), dtype=np.float64)
+    for cam in range(4):
+        bench_targets[:, cam, :] = openptv2.image_coordinates(bench_positions_3d, cals[cam], mm)
+
+    openptv_pointpos = _benchmark_operation(
+        lambda: openptv2.multi_cam_point_positions(bench_targets, cpar, cals),
+        iterations,
+    )
+    legacy_pointpos = _benchmark_operation(
+        lambda: legacy["orientation"].multi_cam_point_positions(
+            bench_targets,
+            legacy_cpar,
+            legacy_cals,
+        ),
+        iterations,
+    )
+
     ratio_transform = legacy_time / openptv_time if openptv_time > 0 else 0.0
     ratio_imgcoord = legacy_imgcoord / openptv_imgcoord if openptv_imgcoord > 0 else 0.0
-    min_ratio = min(ratio_transform, ratio_imgcoord)
+    ratio_pointpos = legacy_pointpos / openptv_pointpos if openptv_pointpos > 0 else 0.0
+    min_ratio = min(ratio_transform, ratio_imgcoord, ratio_pointpos)
     detail = (
         f"pixel_to_metric ratio={ratio_transform:.3f}, "
-        f"image_coordinates ratio={ratio_imgcoord:.3f}"
+        f"image_coordinates ratio={ratio_imgcoord:.3f}, "
+        f"point_positions ratio={ratio_pointpos:.3f}"
     )
 
     if min_speed_ratio is None:
@@ -385,6 +453,7 @@ def run_validation_suite(
             validate_image_coordinates(tolerance, legacy),
             validate_epipolar_curve(tolerance, legacy),
             validate_segmentation(tolerance, legacy),
+            validate_point_positions(tolerance, legacy),
         ]
     )
 

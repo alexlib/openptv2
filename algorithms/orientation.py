@@ -884,7 +884,7 @@ def multi_cam_point_positions(targets, cpar, cals):
     """Calculate 3D positions from multi-camera 2D projections.
 
     Convenience wrapper matching the Cython binding API signature.
-    Uses point_position() for each target point.
+    Uses point_position_batch() directly for speed.
 
     Args:
         targets: (num_targets, num_cams, 2) array of metric flat coordinates.
@@ -897,19 +897,9 @@ def multi_cam_point_positions(targets, cpar, cals):
             rcm: n-length array of ray convergence measures.
     """
     targets = np.ascontiguousarray(targets, dtype=np.float64)
-    num_targets: cython.int = targets.shape[0]
     num_cams: cython.int = targets.shape[1]
+    return point_position_batch(targets, num_cams, cpar.mm, cals)
 
-    res = np.empty((num_targets, 3), dtype=np.float64)
-    rcm = np.empty(num_targets, dtype=np.float64)
-
-    pt: cython.int
-    for pt in range(num_targets):
-        pos, dist = point_position(targets[pt], num_cams, cpar.mm, cals)
-        res[pt] = pos
-        rcm[pt] = dist
-
-    return res, rcm
 
 
 @cython.ccall

@@ -156,9 +156,7 @@ def metric_to_pixel(
 
 
 @cython.ccall
-@cython.boundscheck(False)
-@cython.wraparound(False)
-def pixel_to_metric_batch(xy: cython.double[:, :], cpar) -> np.ndarray:
+def pixel_to_metric_batch(xy, cpar) -> np.ndarray:
     """Convert N pixel coordinates to metric.
 
     Args:
@@ -168,37 +166,30 @@ def pixel_to_metric_batch(xy: cython.double[:, :], cpar) -> np.ndarray:
     Returns:
         (N, 2) array of metric coordinates.
     """
-    xy_arr = np.ascontiguousarray(xy, dtype=np.float64)
+    xy_arr = np.asarray(xy, dtype=np.float64)
 
-    n: cython.Py_ssize_t = xy_arr.shape[0]
-    result: np.ndarray = np.empty((n, 2), dtype=np.float64)
-    result_view: cython.double[:, :] = result
-    xy_view: cython.double[:, :] = xy_arr
-
-    imx: cython.int = cpar.imx
-    imy: cython.int = cpar.imy
+    imx: cython.double = cpar.imx
+    imy: cython.double = cpar.imy
     pix_x: cython.double = cpar.pix_x
     pix_y: cython.double = cpar.pix_y
     chfield: cython.int = cpar.chfield
 
-    i: cython.Py_ssize_t
-    y_pixel: cython.double
-    for i in range(n):
-        y_pixel = xy_view[i, 1]
-        if chfield == DOUBLED_PLUS_ONE:
-            y_pixel = 2.0 * y_pixel + 1.0
-        elif chfield == DOUBLED:
-            y_pixel = 2.0 * y_pixel
+    result = np.empty_like(xy_arr)
+    result[:, 0] = (xy_arr[:, 0] - imx / 2.0) * pix_x
 
-        result_view[i, 0] = (xy_view[i, 0] - imx / 2.0) * pix_x
-        result_view[i, 1] = (imy / 2.0 - y_pixel) * pix_y
+    if chfield == DOUBLED_PLUS_ONE:
+        y_pixel = 2.0 * xy_arr[:, 1] + 1.0
+    elif chfield == DOUBLED:
+        y_pixel = 2.0 * xy_arr[:, 1]
+    else:
+        y_pixel = xy_arr[:, 1]
+
+    result[:, 1] = (imy / 2.0 - y_pixel) * pix_y
     return result
 
 
 @cython.ccall
-@cython.boundscheck(False)
-@cython.wraparound(False)
-def metric_to_pixel_batch(xy: cython.double[:, :], cpar) -> np.ndarray:
+def metric_to_pixel_batch(xy, cpar) -> np.ndarray:
     """Convert N metric coordinates to pixel.
 
     Args:
@@ -208,38 +199,26 @@ def metric_to_pixel_batch(xy: cython.double[:, :], cpar) -> np.ndarray:
     Returns:
         (N, 2) array of pixel coordinates.
     """
-    xy_arr = np.ascontiguousarray(xy, dtype=np.float64)
+    xy_arr = np.asarray(xy, dtype=np.float64)
 
-    n: cython.Py_ssize_t = xy_arr.shape[0]
-    result: np.ndarray = np.empty((n, 2), dtype=np.float64)
-    result_view: cython.double[:, :] = result
-    xy_view: cython.double[:, :] = xy_arr
-
-    imx: cython.int = cpar.imx
-    imy: cython.int = cpar.imy
+    imx: cython.double = cpar.imx
+    imy: cython.double = cpar.imy
     pix_x: cython.double = cpar.pix_x
     pix_y: cython.double = cpar.pix_y
     chfield: cython.int = cpar.chfield
 
-    i: cython.Py_ssize_t
-    x_metric: cython.double
-    y_metric: cython.double
-    x_pixel: cython.double
-    y_pixel: cython.double
-    for i in range(n):
-        x_metric = xy_view[i, 0]
-        y_metric = xy_view[i, 1]
-        x_pixel = x_metric / pix_x + imx / 2.0
-        y_pixel = imy / 2.0 - y_metric / pix_y
+    result = np.empty_like(xy_arr)
+    result[:, 0] = xy_arr[:, 0] / pix_x + imx / 2.0
+    y_pixel = imy / 2.0 - xy_arr[:, 1] / pix_y
 
-        if chfield == DOUBLED_PLUS_ONE:
-            y_pixel = (y_pixel - 1.0) / 2.0
-        elif chfield == DOUBLED:
-            y_pixel = y_pixel / 2.0
+    if chfield == DOUBLED_PLUS_ONE:
+        y_pixel = (y_pixel - 1.0) / 2.0
+    elif chfield == DOUBLED:
+        y_pixel = y_pixel / 2.0
 
-        result_view[i, 0] = x_pixel
-        result_view[i, 1] = y_pixel
+    result[:, 1] = y_pixel
     return result
+
 
 
 @cython.ccall
