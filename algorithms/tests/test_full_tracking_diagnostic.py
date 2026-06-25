@@ -238,6 +238,7 @@ def cavity_setup(tmp_path):
         os.chdir(original)
 
 
+@pytest.mark.slow
 def test_full_pipeline_diagnostic(cavity_setup, monkeypatch):
     """Run the complete pipeline with detailed logging at every stage."""
     import os

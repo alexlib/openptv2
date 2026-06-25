@@ -53,11 +53,16 @@ markdown_extensions:
 
 nav:
   - Home: index.md
+  - Installation & Setup: installation.md
+  - First Steps: first_steps.md
   - Tutorials:
+    - End-to-End Tracking Tutorial: tutorials/getting_started_tutorial.md
     - Tracking Visualization: tutorials/tracking_visualization.md
     - Debug Visualization: tutorials/tracking_debug_visualization.md
+  - Running Tests: tests.md
   - Developer Guide:
     - Building from Source: developer_guide/building.md
+    - Packaging & Releases: developer_guide/packaging_and_releases.md
     - GUI Testing Guide: HOW_TO_TEST_GUI.md
   - Algorithms:
     - Tracking Core: algorithms/tracking.md

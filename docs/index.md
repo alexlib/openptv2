@@ -6,38 +6,28 @@ Welcome to the openptv2 documentation.
 
 ### Getting Started
 
-- [Installation](../../README.md#installation) - Install openptv2
-- [Quick Start](../../README.md#usage) - Basic usage examples
-- [Building from Source](building.md) - Development installation
+- [Installation & Platform Setup](installation.md) - Installing on Linux, macOS, Windows, VMs, and WSL
+- [First Steps](first_steps.md) - Basic programmatic usage, GUI navigation, and command-line batching
+- [End-to-End Tutorial](tutorials/getting_started_tutorial.md) - Step-by-step 3D particle tracking tutorial
 
 ### User Documentation
 
-- [User Guide](../tutorials/) - Tutorials and how-to guides
-- [Tracking Visualization](../tutorials/tracking_visualization.md) - Preview tracking results
-- [Tracking Debug Visualization](../tutorials/tracking_debug_visualization.md) - Debug tracking parameters interactively
-- [API Reference](../sphinx/) - API documentation
-- [Algorithm Documentation](../algorithms/) - Algorithm explanations
-- [Burgers Case Study](../algorithms/burgers_gap_relinking_case_study.md) - Detailed analysis of tracking deviation and recovery
+- [Tracking Visualization](tutorials/tracking_visualization.md) - Preview tracking results
+- [Tracking Debug Visualization](tutorials/tracking_debug_visualization.md) - Debug tracking parameters interactively
+- [Running Tests](tests.md) - Command-line test suite, excluding slow tests, running native C and virtual wheel pipelines
+- [Algorithm Documentation](algorithms/tracking.md) - Algorithm explanations
+- [Burgers Case Study](algorithms/burgers_gap_relinking_case_study.md) - Detailed analysis of tracking deviation and recovery
 
 ### Developer Documentation
 
-- [Building from Source](building.md) - Detailed build instructions
-- [Building Binary Wheels](../../BUILDING_BINARY_WHEELS.md) - Creating portable wheels
-- [Development Workflow](building.md#development-workflow) - How to develop
-- [Testing](building.md#testing) - Running tests
-- [Code Quality](building.md#check-code-quality) - Linting and formatting
-
-### Architecture
-
-- [Repository Structure](../../README.md#repository-structure) - Project layout
-- [Engine Architecture](../../README.md#engine-comparison) - Dual-engine design
-- [Build System](building.md#build-architecture) - How the build works
-- [Binary Wheels](../../BUILDING_BINARY_WHEELS.md) - manylinux2014 wheels
+- [Building from Source](developer_guide/building.md) - Detailed build instructions
+- [Packaging & Releases](developer_guide/packaging_and_releases.md) - Building binary wheels and releasing them on PyPI and GitHub
+- [GUI Testing Guide](HOW_TO_TEST_GUI.md) - How to test the GUI
+- [Development Workflow](developer_guide/building.md#development-workflow) - How to develop
 
 ### Migration
 
-- [From optv](../../README.md#migration-from-optvpyptv) - Migrating from optv
-- [From pyptv](../../README.md#migration-from-optvpyptv) - Migrating from pyptv
+- [From optv/pyptv](index.md#migration-from-optvpyptv) - Migrating from legacy packages
 
 ---
 

@@ -127,7 +127,7 @@ class TestRunner:
     
     def _run_pytest(self, test_dir: Path, cwd: Path, timeout: int = 300) -> Tuple[bool, str, float]:
         """Run pytest using the Python executable."""
-        cmd = [self.python, '-m', 'pytest', str(test_dir), '-v', '--tb=short']
+        cmd = [self.python, '-m', 'pytest', str(test_dir), '-v', '-m', 'not slow', '--tb=short']
         if not self.verbose:
             cmd.append('--tb=line')
         
@@ -337,7 +337,7 @@ class TestRunner:
 
         # Run pytest
         print_info("Running pytest on algorithms/tests/...")
-        cmd = [self.python, '-m', 'pytest', 'tests/', '-v', '--tb=short']
+        cmd = [self.python, '-m', 'pytest', 'tests/', '-v', '-m', 'not slow', '--tb=short']
         if not self.verbose:
             cmd.append('--tb=line')
 

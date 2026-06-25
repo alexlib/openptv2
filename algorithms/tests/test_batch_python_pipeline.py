@@ -234,6 +234,7 @@ def cavity_work(tmp_path):
 # The test
 # ---------------------------------------------------------------------------
 
+@pytest.mark.slow
 def test_full_batch_pipeline(cavity_work, monkeypatch):
     """Full pipeline: detect → compare _targets → correspond → compare rt_is → track."""
     import os
