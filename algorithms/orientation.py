@@ -171,6 +171,101 @@ def point_position_batch(targets, num_cams: cython.int, mm, cals):
     x: cython.double
     y: cython.double
 
+    # 1. Unpack multimedia params once
+    # Handle wrapper layers if needed
+    if hasattr(mm, '_mm'):
+        mm_obj = mm._mm
+    else:
+        mm_obj = mm
+    mm_n1: cython.double = mm_obj.n1
+    mm_n2_0: cython.double = mm_obj.n2[0]
+    mm_n3: cython.double = mm_obj.n3
+    mm_d0: cython.double = mm_obj.d[0]
+
+    # 2. Extract calibration attributes for all cams into typed memoryviews
+    ext_dm_all = np.empty((num_cams, 3, 3), dtype=np.float64)
+    ext_x0_all = np.empty(num_cams, dtype=np.float64)
+    ext_y0_all = np.empty(num_cams, dtype=np.float64)
+    ext_z0_all = np.empty(num_cams, dtype=np.float64)
+    int_cc_all = np.empty(num_cams, dtype=np.float64)
+    
+    glass_dir_x = np.empty(num_cams, dtype=np.float64)
+    glass_dir_y = np.empty(num_cams, dtype=np.float64)
+    glass_dir_z = np.empty(num_cams, dtype=np.float64)
+    dist_cam_glass = np.empty(num_cams, dtype=np.float64)
+
+    ext_dm_mv: cython.double[:, :, :] = ext_dm_all
+    ext_x0_mv: cython.double[:] = ext_x0_all
+    ext_y0_mv: cython.double[:] = ext_y0_all
+    ext_z0_mv: cython.double[:] = ext_z0_all
+    int_cc_mv: cython.double[:] = int_cc_all
+    
+    glass_dir_x_mv: cython.double[:] = glass_dir_x
+    glass_dir_y_mv: cython.double[:] = glass_dir_y
+    glass_dir_z_mv: cython.double[:] = glass_dir_z
+    dist_cam_glass_mv: cython.double[:] = dist_cam_glass
+
+    for cam in range(num_cams):
+        cal = cals[cam]
+        if hasattr(cal, "_cal"):
+            cal_obj = cal._cal
+        else:
+            cal_obj = cal
+        ext_dm_all[cam, :, :] = cal_obj.ext_par.dm
+        ext_x0_mv[cam] = cal_obj.ext_par.x0
+        ext_y0_mv[cam] = cal_obj.ext_par.y0
+        ext_z0_mv[cam] = cal_obj.ext_par.z0
+        int_cc_mv[cam] = cal_obj.int_par.cc
+        
+        g_x: cython.double = cal_obj.glass_par.vec_x
+        g_y: cython.double = cal_obj.glass_par.vec_y
+        g_z: cython.double = cal_obj.glass_par.vec_z
+        norm_g: cython.double = math.sqrt(g_x*g_x + g_y*g_y + g_z*g_z)
+        
+        glass_dir_x_mv[cam] = g_x / norm_g
+        glass_dir_y_mv[cam] = g_y / norm_g
+        glass_dir_z_mv[cam] = g_z / norm_g
+        
+        c: cython.double = norm_g + mm_d0
+        dist_cam_glass_mv[cam] = (glass_dir_x_mv[cam] * ext_x0_mv[cam] + glass_dir_y_mv[cam] * ext_y0_mv[cam] + glass_dir_z_mv[cam] * ext_z0_mv[cam]) - c
+
+    # Local variables for inlined ray tracing core
+    tx: cython.double
+    ty: cython.double
+    tz: cython.double
+    norm_tmp1: cython.double
+    start_dir_x: cython.double
+    start_dir_y: cython.double
+    start_dir_z: cython.double
+    dot_glass_start: cython.double
+    d1: cython.double
+    Xb_x: cython.double
+    Xb_y: cython.double
+    Xb_z: cython.double
+    n: cython.double
+    bp_x: cython.double
+    bp_y: cython.double
+    bp_z: cython.double
+    norm_bp: cython.double
+    p: cython.double
+    n_glass: cython.double
+    a2_x: cython.double
+    a2_y: cython.double
+    a2_z: cython.double
+    dot_glass_a2: cython.double
+    d2: cython.double
+    X_x: cython.double
+    X_y: cython.double
+    X_z: cython.double
+    n_a2: cython.double
+    n_final: cython.double
+    out_x: cython.double
+    out_y: cython.double
+    out_z: cython.double
+    g_dx: cython.double
+    g_dy: cython.double
+    g_dz: cython.double
+
     for i in range(num_pts):
         for cam in range(num_cams):
             x = targets_mv[i, cam, 0]
@@ -180,16 +275,76 @@ def point_position_batch(targets, num_cams: cython.int, mm, cals):
                 continue
             used_mv[cam] = 1
 
-            cal = cals[cam]
-            _ray_tracing_core(
-                x, y,
-                cal.ext_par.dm,
-                cal.ext_par.x0, cal.ext_par.y0, cal.ext_par.z0,
-                cal.int_par.cc,
-                cal.glass_par.vec_x, cal.glass_par.vec_y, cal.glass_par.vec_z,
-                mm.n1, mm.n2[0], mm.n3, mm.d[0],
-                vertices_mv[cam, :], directs_mv[cam, :]
-            )
+            cc: cython.double = int_cc_mv[cam]
+            norm_tmp1 = math.sqrt(x * x + y * y + cc * cc)
+            tx = x / norm_tmp1
+            ty = y / norm_tmp1
+            tz = -cc / norm_tmp1
+
+            start_dir_x = ext_dm_mv[cam, 0, 0] * tx + ext_dm_mv[cam, 0, 1] * ty + ext_dm_mv[cam, 0, 2] * tz
+            start_dir_y = ext_dm_mv[cam, 1, 0] * tx + ext_dm_mv[cam, 1, 1] * ty + ext_dm_mv[cam, 1, 2] * tz
+            start_dir_z = ext_dm_mv[cam, 2, 0] * tx + ext_dm_mv[cam, 2, 1] * ty + ext_dm_mv[cam, 2, 2] * tz
+
+            g_dx = glass_dir_x_mv[cam]
+            g_dy = glass_dir_y_mv[cam]
+            g_dz = glass_dir_z_mv[cam]
+
+            dot_glass_start = g_dx * start_dir_x + g_dy * start_dir_y + g_dz * start_dir_z
+            d1 = -dist_cam_glass_mv[cam] / dot_glass_start
+
+            Xb_x = ext_x0_mv[cam] + start_dir_x * d1
+            Xb_y = ext_y0_mv[cam] + start_dir_y * d1
+            Xb_z = ext_z0_mv[cam] + start_dir_z * d1
+
+            n = start_dir_x * g_dx + start_dir_y * g_dy + start_dir_z * g_dz
+            bp_x = start_dir_x - g_dx * n
+            bp_y = start_dir_y - g_dy * n
+            bp_z = start_dir_z - g_dz * n
+            norm_bp = math.sqrt(bp_x * bp_x + bp_y * bp_y + bp_z * bp_z)
+            if norm_bp > 0:
+                bp_x /= norm_bp
+                bp_y /= norm_bp
+                bp_z /= norm_bp
+
+            p = math.sqrt(1.0 - n * n) * mm_n1 / mm_n2_0
+            n_glass = -math.sqrt(1.0 - p * p)
+
+            a2_x = bp_x * p + g_dx * n_glass
+            a2_y = bp_y * p + g_dy * n_glass
+            a2_z = bp_z * p + g_dz * n_glass
+
+            dot_glass_a2 = g_dx * a2_x + g_dy * a2_y + g_dz * a2_z
+            d2 = mm_d0 / abs(dot_glass_a2)
+
+            X_x = Xb_x + a2_x * d2
+            X_y = Xb_y + a2_y * d2
+            X_z = Xb_z + a2_z * d2
+
+            n_a2 = a2_x * g_dx + a2_y * g_dy + a2_z * g_dz
+            bp_x = a2_x - g_dx * n_glass
+            bp_y = a2_y - g_dy * n_glass
+            bp_z = a2_z - g_dz * n_glass
+            norm_bp = math.sqrt(bp_x * bp_x + bp_y * bp_y + bp_z * bp_z)
+            if norm_bp > 0:
+                bp_x /= norm_bp
+                bp_y /= norm_bp
+                bp_z /= norm_bp
+
+            p = math.sqrt(1.0 - n_a2 * n_a2)
+            p = p * mm_n2_0 / mm_n3
+            n_final = -math.sqrt(1.0 - p * p)
+
+            out_x = bp_x * p + g_dx * n_final
+            out_y = bp_y * p + g_dy * n_final
+            out_z = bp_z * p + g_dz * n_final
+
+            vertices_mv[cam, 0] = X_x
+            vertices_mv[cam, 1] = X_y
+            vertices_mv[cam, 2] = X_z
+
+            directs_mv[cam, 0] = out_x
+            directs_mv[cam, 1] = out_y
+            directs_mv[cam, 2] = out_z
 
         dtot = 0.0
         num_used_pairs = 0

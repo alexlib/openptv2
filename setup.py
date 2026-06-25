@@ -55,22 +55,30 @@ def _cythonize_all():
     print("[OpenPTV2] Starting Cythonization of algorithms pure Python modules...")
     
     from Cython.Build import cythonize
+    import os
 
-    # Cythonize all algorithms pure Python modules (Pure Python Mode)
+    # Collect all existing pure Python modules
+    targets = []
     for mod in ALGORITHMS_MODULES:
         py_file = ROOT / "algorithms" / f"{mod}.py"
         if py_file.exists():
-            cythonize(
-                [str(py_file.relative_to(ROOT))],
-                compiler_directives={
-                    "language_level": "3",
-                    "boundscheck": False,
-                    "wraparound": False,
-                    "cdivision": True,
-                    "nonecheck": False,
-                    "initializedcheck": False,
-                },
-            )
+            targets.append(str(py_file.relative_to(ROOT)))
+
+    # Cythonize all modules in a single call in parallel
+    if targets:
+        nthreads = min(4, os.cpu_count() or 1)
+        cythonize(
+            targets,
+            nthreads=nthreads,
+            compiler_directives={
+                "language_level": "3",
+                "boundscheck": False,
+                "wraparound": False,
+                "cdivision": True,
+                "nonecheck": False,
+                "initializedcheck": False,
+            },
+        )
     print("[OpenPTV2] Cythonization of algorithms completed successfully.")
 
 
@@ -148,9 +156,10 @@ class BuildExtWithPrepare(build_ext):
 
     def finalize_options(self):
         super().finalize_options()
-        # Parallel extension builds race on shared generated C sources on all platforms,
-        # which causes fatal permission errors or missing/corrupted symbols.
-        self.parallel = None
+        import os
+        # We can compile extensions in parallel since generated C sources are pre-generated
+        # and static before compiling begins.
+        self.parallel = min(4, os.cpu_count() or 1)
 
     def run(self):
         if _needs_rebuild():
