@@ -41,6 +41,8 @@ jobs:
           CIBW_MANYLINUX_AARCH64_IMAGE: "manylinux2014"
           CIBW_ARCHS_WINDOWS: AMD64
           CIBW_ARCHS_MACOS: x86_64 arm64
+          CIBW_TEST_REQUIRES: "pytest numpy cython"
+          CIBW_TEST_COMMAND: "pytest {project}/algorithms/tests/ -v -m \"not slow\" --tb=short"
       
       - uses: actions/upload-artifact@v4
         with:
