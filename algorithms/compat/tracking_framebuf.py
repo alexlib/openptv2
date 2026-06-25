@@ -143,8 +143,7 @@ class TargetArray:
 
     def write(self, file_base, frame_num):
         """Write targets to file."""
-        filename = f"{file_base}{frame_num:04d}_targets"
-        return write_targets(self._targets, len(self._targets), filename, frame_num)
+        return write_targets(self._targets, len(self._targets), file_base, frame_num)
 
     @staticmethod
     def read_targets(base_name, frame_num, cpar=None):
@@ -159,8 +158,7 @@ class TargetArray:
         Returns:
             TargetArray instance
         """
-        filename = f"{base_name}{frame_num:04d}_targets"
-        targets = read_targets(filename, frame_num)
+        targets = read_targets(base_name, frame_num)
         return TargetArray(targets)
 
 

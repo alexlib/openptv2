@@ -134,3 +134,33 @@ plt.show()
 ```
 
 This completes your end-to-end particle tracking workflow with OpenPTV2!
+
+---
+
+## Programmatic Snapshot Generation for Visual Tutorials
+
+For generating premium, publication-quality figures directly from the Python/C API, we include a reference tutorial snapshot generator script inside the repository at `docs/tutorials/generate_tutorial_snapshots.py`.
+
+This script:
+1. Loads the camera calibrations and control parameters.
+2. Reads the raw TIFF camera images and loads detected 2D particle targets.
+3. Loads the 3D particle tracking trajectories from disk.
+4. Mapped 3D trajectories back onto the 2D camera image planes using pinhole camera projection equations.
+5. Saves clean, high-resolution figures.
+
+You can execute this generation script using:
+```bash
+uv run python docs/tutorials/generate_tutorial_snapshots.py
+```
+
+It generates the following two high-resolution visualizations under the `docs/tutorials/images/` directory:
+
+### 1. 3D Particle Trajectories Snapshot
+A modern, transparent grid 3D plot displaying the tracked 3D continuous physical particle trajectories from the cavity flow dataset.
+
+![3D Particle Trajectories](images/trajectory_3d.png)
+
+### 2. 2D Camera Projections and Target Overlays Snapshot
+The raw camera image frame overlaid with the loaded 2D detected particle targets (cyan `+`) and the projected 3D trajectory paths (orange lines with gold `o` endpoints) mapped back onto the camera sensor.
+
+![2D Camera Overlays](images/camera_projection_2d.png)
