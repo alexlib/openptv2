@@ -9,9 +9,15 @@ Handles:
 - Volume dimension calculations
 """
 
-import math
 import cython
 import numpy as np
+
+if cython.compiled:
+    from cython.cimports.libc.math import (
+        sqrt as c_sqrt, tan as c_tan, asin as c_asin, atan as c_atan, sin as c_sin,
+    )
+else:
+    from math import sqrt as c_sqrt, tan as c_tan, asin as c_asin, atan as c_atan, sin as c_sin
 from .vec_utils import (
     vec_set, vec_norm, vec_dot, vec_scalar_mul, vec_add, vec_subt, unit_vector
 )
@@ -124,12 +130,12 @@ def multimed_r_nlay_iterative(
 
     dx = pos_x - ext_x0
     dy = pos_y - ext_y0
-    r = math.sqrt(dx * dx + dy * dy)
+    r = c_sqrt(dx * dx + dy * dy)
     rq = r
 
     for it in range(n_iter):
-        beta1 = math.atan(rq / (ext_z0 - pos_z))
-        sin_beta1 = math.sin(beta1)
+        beta1 = c_atan(rq / (ext_z0 - pos_z))
+        sin_beta1 = c_sin(beta1)
 
         beta2_vals = [0.0] * mm_nlay
         for i in range(mm_nlay):
@@ -138,18 +144,18 @@ def multimed_r_nlay_iterative(
                 arg = 1.0
             elif arg < -1.0:
                 arg = -1.0
-            beta2_vals[i] = math.asin(arg)
+            beta2_vals[i] = c_asin(arg)
 
         arg = sin_beta1 * mm_n1 / mm_n3
         if arg > 1.0:
             arg = 1.0
         elif arg < -1.0:
             arg = -1.0
-        beta3 = math.asin(arg)
+        beta3 = c_asin(arg)
 
-        rbeta = (ext_z0 - mm_d0) * math.tan(beta1) - zout * math.tan(beta3)
+        rbeta = (ext_z0 - mm_d0) * c_tan(beta1) - zout * c_tan(beta3)
         for i in range(mm_nlay):
-            rbeta += mm_d[i] * math.tan(beta2_vals[i])
+            rbeta += mm_d[i] * c_tan(beta2_vals[i])
 
         rdiff = r - rbeta
         rq += rdiff
@@ -190,7 +196,7 @@ def trans_cam_point(
 ) -> tuple:
     """Project global-coordinate points through glass surface."""
     gx, gy, gz = glass_vec_x, glass_vec_y, glass_vec_z
-    dist_o_glas = math.sqrt(gx * gx + gy * gy + gz * gz)
+    dist_o_glas = c_sqrt(gx * gx + gy * gy + gz * gz)
     inv_dog = 1.0 / dist_o_glas
 
     dot_cam = ext_x0 * gx + ext_y0 * gy + ext_z0 * gz
@@ -215,7 +221,7 @@ def trans_cam_point(
     tmp_y = cross_p[1] - ag_y
     tmp_z = cross_p[2] - ag_z
 
-    pos_t = np.array([math.sqrt(tmp_x * tmp_x + tmp_y * tmp_y + tmp_z * tmp_z),
+    pos_t = np.array([c_sqrt(tmp_x * tmp_x + tmp_y * tmp_y + tmp_z * tmp_z),
                       0.0, dist_point_glas], dtype=np.float64)
 
     return pos_t, cross_p, cross_c, ext_t_z0
@@ -245,7 +251,7 @@ def back_trans_point(
 ) -> np.ndarray:
     """Transform from local coordinates back to global 3D space."""
     gx, gy, gz = glass_vec_x, glass_vec_y, glass_vec_z
-    n_gl = math.sqrt(gx * gx + gy * gy + gz * gz)
+    n_gl = c_sqrt(gx * gx + gy * gy + gz * gz)
     inv_ngl = 1.0 / n_gl
 
     s_d = mm_d0 * inv_ngl
@@ -256,7 +262,7 @@ def back_trans_point(
     tmp_x = cross_p[0] - ag_x
     tmp_y = cross_p[1] - ag_y
     tmp_z = cross_p[2] - ag_z
-    n_ve = math.sqrt(tmp_x * tmp_x + tmp_y * tmp_y + tmp_z * tmp_z)
+    n_ve = c_sqrt(tmp_x * tmp_x + tmp_y * tmp_y + tmp_z * tmp_z)
 
     s_z = -pos_t[2] * inv_ngl
     px = ag_x - gx * s_z
@@ -307,7 +313,7 @@ def get_mmf_from_mmlut(
     iz = int(sz)
     sz -= iz
 
-    R = math.sqrt(tx * tx + ty * ty)
+    R = c_sqrt(tx * tx + ty * ty)
     sr = R / mmlut_rw
     ir = int(sr)
     sr -= ir
@@ -491,7 +497,7 @@ def init_mmlut(vpar, cpar, cal):
             if xyz_t[2] > Zmax_t:
                 Zmax_t = xyz_t[2]
 
-            R = math.sqrt((xyz_t[0] - cal_t_x0) ** 2 + (xyz_t[1] - cal_t_y0) ** 2)
+            R = c_sqrt((xyz_t[0] - cal_t_x0) ** 2 + (xyz_t[1] - cal_t_y0) ** 2)
             if R > Rmax:
                 Rmax = R
 
@@ -511,7 +517,7 @@ def init_mmlut(vpar, cpar, cal):
             if xyz_t[2] > Zmax_t:
                 Zmax_t = xyz_t[2]
 
-            R = math.sqrt((xyz_t[0] - cal_t_x0) ** 2 + (xyz_t[1] - cal_t_y0) ** 2)
+            R = c_sqrt((xyz_t[0] - cal_t_x0) ** 2 + (xyz_t[1] - cal_t_y0) ** 2)
             if R > Rmax:
                 Rmax = R
 

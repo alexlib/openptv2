@@ -7,8 +7,12 @@ parameters using known 3D points and their 2D image projections.
 """
 from __future__ import annotations
 
-import math
 import cython
+
+if cython.compiled:
+    from cython.cimports.libc.math import sqrt as c_sqrt
+else:
+    from math import sqrt as c_sqrt
 
 import copy
 from pathlib import Path
@@ -49,7 +53,7 @@ def _skew_midpoint_core(
         midpoint[0] = (v1_0 + v2_0) * 0.5
         midpoint[1] = (v1_1 + v2_1) * 0.5
         midpoint[2] = (v1_2 + v2_2) * 0.5
-        return math.sqrt(sp_x * sp_x + sp_y * sp_y + sp_z * sp_z)
+        return c_sqrt(sp_x * sp_x + sp_y * sp_y + sp_z * sp_z)
 
     t1_x: cython.double = sp_y * d2_2 - sp_z * d2_1
     t1_y: cython.double = sp_z * d2_0 - sp_x * d2_2
@@ -74,7 +78,7 @@ def _skew_midpoint_core(
     diff_x: cython.double = on1_x - on2_x
     diff_y: cython.double = on1_y - on2_y
     diff_z: cython.double = on1_z - on2_z
-    dist: cython.double = math.sqrt(diff_x * diff_x + diff_y * diff_y + diff_z * diff_z)
+    dist: cython.double = c_sqrt(diff_x * diff_x + diff_y * diff_y + diff_z * diff_z)
 
     midpoint[0] = (on1_x + on2_x) * 0.5
     midpoint[1] = (on1_y + on2_y) * 0.5
@@ -220,7 +224,7 @@ def point_position_batch(targets, num_cams: cython.int, mm, cals):
         g_x: cython.double = cal_obj.glass_par.vec_x
         g_y: cython.double = cal_obj.glass_par.vec_y
         g_z: cython.double = cal_obj.glass_par.vec_z
-        norm_g: cython.double = math.sqrt(g_x*g_x + g_y*g_y + g_z*g_z)
+        norm_g: cython.double = c_sqrt(g_x*g_x + g_y*g_y + g_z*g_z)
         
         glass_dir_x_mv[cam] = g_x / norm_g
         glass_dir_y_mv[cam] = g_y / norm_g
@@ -276,7 +280,7 @@ def point_position_batch(targets, num_cams: cython.int, mm, cals):
             used_mv[cam] = 1
 
             cc: cython.double = int_cc_mv[cam]
-            norm_tmp1 = math.sqrt(x * x + y * y + cc * cc)
+            norm_tmp1 = c_sqrt(x * x + y * y + cc * cc)
             tx = x / norm_tmp1
             ty = y / norm_tmp1
             tz = -cc / norm_tmp1
@@ -300,14 +304,14 @@ def point_position_batch(targets, num_cams: cython.int, mm, cals):
             bp_x = start_dir_x - g_dx * n
             bp_y = start_dir_y - g_dy * n
             bp_z = start_dir_z - g_dz * n
-            norm_bp = math.sqrt(bp_x * bp_x + bp_y * bp_y + bp_z * bp_z)
+            norm_bp = c_sqrt(bp_x * bp_x + bp_y * bp_y + bp_z * bp_z)
             if norm_bp > 0:
                 bp_x /= norm_bp
                 bp_y /= norm_bp
                 bp_z /= norm_bp
 
-            p = math.sqrt(1.0 - n * n) * mm_n1 / mm_n2_0
-            n_glass = -math.sqrt(1.0 - p * p)
+            p = c_sqrt(1.0 - n * n) * mm_n1 / mm_n2_0
+            n_glass = -c_sqrt(1.0 - p * p)
 
             a2_x = bp_x * p + g_dx * n_glass
             a2_y = bp_y * p + g_dy * n_glass
@@ -324,15 +328,15 @@ def point_position_batch(targets, num_cams: cython.int, mm, cals):
             bp_x = a2_x - g_dx * n_glass
             bp_y = a2_y - g_dy * n_glass
             bp_z = a2_z - g_dz * n_glass
-            norm_bp = math.sqrt(bp_x * bp_x + bp_y * bp_y + bp_z * bp_z)
+            norm_bp = c_sqrt(bp_x * bp_x + bp_y * bp_y + bp_z * bp_z)
             if norm_bp > 0:
                 bp_x /= norm_bp
                 bp_y /= norm_bp
                 bp_z /= norm_bp
 
-            p = math.sqrt(1.0 - n_a2 * n_a2)
+            p = c_sqrt(1.0 - n_a2 * n_a2)
             p = p * mm_n2_0 / mm_n3
-            n_final = -math.sqrt(1.0 - p * p)
+            n_final = -c_sqrt(1.0 - p * p)
 
             out_x = bp_x * p + g_dx * n_final
             out_y = bp_y * p + g_dy * n_final
