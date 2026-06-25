@@ -1,9 +1,15 @@
 """Tracking algorithms — Python translation of lib/src/track.c."""
 import cython
-
-
-import math
 import numpy as np
+
+if cython.compiled:
+    from cython.cimports.libc.math import (
+        sqrt as c_sqrt, sin as c_sin, cos as c_cos, acos as c_acos,
+    )
+else:
+    from math import sqrt as c_sqrt, sin as c_sin, cos as c_cos, acos as c_acos
+
+_M_PI: cython.double = 3.141592653589793
 
 from .constants import (
     MAX_CANDS, PT_UNUSED, TR_UNUSED, CORRES_NONE, PREV_NONE, NEXT_NONE,
@@ -39,7 +45,7 @@ def _vec3_dist(a, b):
     dx = a[0] - b[0]
     dy = a[1] - b[1]
     dz = a[2] - b[2]
-    return math.sqrt(dx * dx + dy * dy + dz * dz)
+    return c_sqrt(dx * dx + dy * dy + dz * dz)
 
 
 def _pack_cams_fast(cals, mm):
@@ -74,7 +80,7 @@ def _pack_cal(cal, mm):
     """Pre-extract calibration fields into a tuple for fast access."""
     ext = cal.ext_par; ip = cal.int_par; gp = cal.glass_par; ap = cal.added_par
     gx = gp.vec_x; gy = gp.vec_y; gz = gp.vec_z
-    dist_o_glas = math.sqrt(gx * gx + gy * gy + gz * gz)
+    dist_o_glas = c_sqrt(gx * gx + gy * gy + gz * gz)
     inv_dog = 1.0 / dist_o_glas
     mmlut = cal.mmlut
     mmlut_data = mmlut.data
@@ -133,7 +139,7 @@ def _point_to_pixel_packed(pos, pc, imx_half, imy_half, inv_pix_x, inv_pix_y, ch
     tmp_y = cp_y - ag_y
     tmp_z = cp_z - ag_z
 
-    pos_t_0 = math.sqrt(tmp_x * tmp_x + tmp_y * tmp_y + tmp_z * tmp_z)
+    pos_t_0 = c_sqrt(tmp_x * tmp_x + tmp_y * tmp_y + tmp_z * tmp_z)
     pos_t_2 = dist_point_glas
 
     # === mmlut lookup + multimed_nlay (inlined) ===
@@ -145,7 +151,7 @@ def _point_to_pixel_packed(pos, pc, imx_half, imy_half, inv_pix_x, inv_pix_y, ch
         sz = tz / mmlut_rw
         iz = int(sz)
         sz -= iz
-        R = math.sqrt(tx * tx + ty * ty)
+        R = c_sqrt(tx * tx + ty * ty)
         sr = R / mmlut_rw
         ir = int(sr)
         sr -= ir
@@ -192,7 +198,7 @@ def _point_to_pixel_packed(pos, pc, imx_half, imy_half, inv_pix_x, inv_pix_y, ch
     # === flat_to_dist + distort_brown_affin (inlined) ===
     x += xh
     y += yh
-    r = math.sqrt(x * x + y * y)
+    r = c_sqrt(x * x + y * y)
     if r < 1e-10:
         x_dist = 0.0
         y_dist = 0.0
@@ -202,8 +208,8 @@ def _point_to_pixel_packed(pos, pc, imx_half, imy_half, inv_pix_x, inv_pix_y, ch
         radial_factor = 1.0 + k1 * r2 + k2 * r4 + k3 * r4 * r2
         xd = x * radial_factor + p1 * (r2 + 2 * x * x) + 2 * p2 * x * y
         yd = y * radial_factor + p2 * (r2 + 2 * y * y) + 2 * p1 * x * y
-        sin_she = math.sin(she)
-        cos_she = math.cos(she)
+        sin_she = c_sin(she)
+        cos_she = c_cos(she)
         x_dist = scx * (xd - sin_she * yd)
         y_dist = scx * cos_she * yd
 
@@ -271,8 +277,8 @@ def angle_acc(start, pred, cand):
     elif v0x == v1x and v0y == v1y and v0z == v1z:
         angle = 0.0
     else:
-        norm0 = math.sqrt(v0x * v0x + v0y * v0y + v0z * v0z)
-        norm1 = math.sqrt(v1x * v1x + v1y * v1y + v1z * v1z)
+        norm0 = c_sqrt(v0x * v0x + v0y * v0y + v0z * v0z)
+        norm1 = c_sqrt(v1x * v1x + v1y * v1y + v1z * v1z)
         if norm0 == 0 or norm1 == 0:
             angle = 0.0
         else:
@@ -281,12 +287,12 @@ def angle_acc(start, pred, cand):
                 dot = 1.0
             elif dot < -1.0:
                 dot = -1.0
-            angle = math.acos(dot) * 200.0 / math.pi
+            angle = c_acos(dot) * 200.0 / _M_PI
 
     dx = v1x - v0x
     dy = v1y - v0y
     dz = v1z - v0z
-    acc = math.sqrt(dx * dx + dy * dy + dz * dz)
+    acc = c_sqrt(dx * dx + dy * dy + dz * dz)
     return angle, acc
 
 
@@ -349,7 +355,7 @@ def candsearch_in_pix(next_targets, num_targets, cent_x, cent_y,
             if t.y > ymax:
                 break
             if t.x > xmin and t.x < xmax and t.y > ymin and t.y < ymax:
-                d = math.sqrt((cent_x - t.x) ** 2 + (cent_y - t.y) ** 2)
+                d = c_sqrt((cent_x - t.x) ** 2 + (cent_y - t.y) ** 2)
 
                 if d < dmin:
                     dmin = d
@@ -422,7 +428,7 @@ def candsearch_in_pix_rest(next_targets, num_targets, cent_x, cent_y,
             if t.y > ymax:
                 break
             if t.x > xmin and t.x < xmax and t.y > ymin and t.y < ymax:
-                d = math.sqrt((cent_x - t.x) ** 2 + (cent_y - t.y) ** 2)
+                d = c_sqrt((cent_x - t.x) ** 2 + (cent_y - t.y) ** 2)
                 if d < dmin:
                     dmin = d
                     p[0] = j

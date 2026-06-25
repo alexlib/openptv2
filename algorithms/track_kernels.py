@@ -5,10 +5,21 @@ and full tracking loops. These run as plain Python when uncompiled and at
 C speed when compiled via Cython 3 Pure Python Mode.
 """
 
-import math
+import cython
 import numpy as np
 
-import cython
+if cython.compiled:
+    from cython.cimports.libc.math import (
+        sqrt as c_sqrt, sin as c_sin, cos as c_cos,
+        tan as c_tan, asin as c_asin, acos as c_acos, atan as c_atan,
+    )
+else:
+    from math import (
+        sqrt as c_sqrt, sin as c_sin, cos as c_cos,
+        tan as c_tan, asin as c_asin, acos as c_acos, atan as c_atan,
+    )
+
+_M_PI: cython.double = 3.141592653589793
 
 
 def is_compiled() -> bool:
@@ -40,7 +51,7 @@ def pack_cal_array(cal, mm):
     gp = cal.glass_par
     ap = cal.added_par
     gx, gy, gz = gp.vec_x, gp.vec_y, gp.vec_z
-    dist_o_glas = math.sqrt(gx * gx + gy * gy + gz * gz)
+    dist_o_glas = c_sqrt(gx * gx + gy * gy + gz * gz)
 
     c = np.empty(CAL_ARRAY_SIZE, dtype=np.float64)
     c[0] = ext.x0;  c[1] = ext.y0;  c[2] = ext.z0
@@ -93,33 +104,33 @@ def _multimed_r_nlay_1layer(pos_x: cython.double, pos_y: cython.double, pos_z: c
     zout = pos_z
     dx = pos_x - ext_x0
     dy = pos_y - ext_y0
-    r = math.sqrt(dx * dx + dy * dy)
+    r = c_sqrt(dx * dx + dy * dy)
     rq = r
 
     for it in range(40):
         denom = ext_z0 - pos_z
         if denom == 0.0:
             return 1.0
-        beta1 = math.atan(rq / denom)
-        sin_beta1 = math.sin(beta1)
+        beta1 = c_atan(rq / denom)
+        sin_beta1 = c_sin(beta1)
 
         arg = sin_beta1 * mm_n1 / mm_n2_0
         if arg > 1.0:
             arg = 1.0
         elif arg < -1.0:
             arg = -1.0
-        beta2_0 = math.asin(arg)
+        beta2_0 = c_asin(arg)
 
         arg3 = sin_beta1 * mm_n1 / mm_n3
         if arg3 > 1.0:
             arg3 = 1.0
         elif arg3 < -1.0:
             arg3 = -1.0
-        beta3 = math.asin(arg3)
+        beta3 = c_asin(arg3)
 
-        rbeta = ((ext_z0 - mm_d0) * math.tan(beta1)
-                 + mm_d0 * math.tan(beta2_0)
-                 - zout * math.tan(beta3))
+        rbeta = ((ext_z0 - mm_d0) * c_tan(beta1)
+                 + mm_d0 * c_tan(beta2_0)
+                 - zout * c_tan(beta3))
 
         rdiff = r - rbeta
         rq += rdiff
@@ -231,7 +242,7 @@ def point_to_pixel_fast(pos: cython.double[:], cal: cython.double[:],
     tmp_y = cp_y - ag_y
     tmp_z = cp_z - ag_z
 
-    pos_t_0 = math.sqrt(tmp_x * tmp_x + tmp_y * tmp_y + tmp_z * tmp_z)
+    pos_t_0 = c_sqrt(tmp_x * tmp_x + tmp_y * tmp_y + tmp_z * tmp_z)
     pos_t_2 = dist_point_glas
 
     # mmlut lookup + multimed_nlay
@@ -244,7 +255,7 @@ def point_to_pixel_fast(pos: cython.double[:], cal: cython.double[:],
         sz = tz / mmlut_rw
         iz = int(sz)
         sz -= iz
-        R = math.sqrt(tx * tx + ty * ty)
+        R = c_sqrt(tx * tx + ty * ty)
         sr = R / mmlut_rw
         ir = int(sr)
         sr -= ir
@@ -287,7 +298,7 @@ def point_to_pixel_fast(pos: cython.double[:], cal: cython.double[:],
     # flat_to_dist + distort_brown_affin
     x += xh
     y += yh
-    r = math.sqrt(x * x + y * y)
+    r = c_sqrt(x * x + y * y)
     if r < 1e-10:
         x_dist = 0.0
         y_dist = 0.0
@@ -297,8 +308,8 @@ def point_to_pixel_fast(pos: cython.double[:], cal: cython.double[:],
         radial_factor = 1.0 + k1 * r2 + k2 * r4 + k3 * r4 * r2
         xd = x * radial_factor + p1 * (r2 + 2.0 * x * x) + 2.0 * p2 * x * y
         yd = y * radial_factor + p2 * (r2 + 2.0 * y * y) + 2.0 * p1 * x * y
-        sin_she = math.sin(she)
-        cos_she = math.cos(she)
+        sin_she = c_sin(she)
+        cos_she = c_cos(she)
         x_dist = scx * (xd - sin_she * yd)
         y_dist = scx * cos_she * yd
 
@@ -382,7 +393,7 @@ def candsearch_in_pix_fast(targ_x: cython.double[:], targ_y: cython.double[:], t
             if tx > xmin and tx < xmax and ty > ymin and ty < ymax:
                 dx = cent_x - tx
                 dy = cent_y - ty
-                d = math.sqrt(dx * dx + dy * dy)
+                d = c_sqrt(dx * dx + dy * dy)
 
                 if d < d1:
                     p4 = p3; p3 = p2; p2 = p1; p1 = j
@@ -457,7 +468,7 @@ def candsearch_in_pix_rest_fast(targ_x: cython.double[:], targ_y: cython.double[
             if tx > xmin and tx < xmax and ty > ymin and ty < ymax:
                 dx = cent_x - tx
                 dy = cent_y - ty
-                d = math.sqrt(dx * dx + dy * dy)
+                d = c_sqrt(dx * dx + dy * dy)
                 if d < dmin:
                     dmin = d
                     best = j
@@ -757,8 +768,8 @@ def angle_acc_fast(start_x: cython.double, start_y: cython.double, start_z: cyth
     elif v0x == v1x and v0y == v1y and v0z == v1z:
         angle = 0.0
     else:
-        norm0 = math.sqrt(v0x * v0x + v0y * v0y + v0z * v0z)
-        norm1 = math.sqrt(v1x * v1x + v1y * v1y + v1z * v1z)
+        norm0 = c_sqrt(v0x * v0x + v0y * v0y + v0z * v0z)
+        norm1 = c_sqrt(v1x * v1x + v1y * v1y + v1z * v1z)
         if norm0 == 0.0 or norm1 == 0.0:
             angle = 0.0
         else:
@@ -767,12 +778,12 @@ def angle_acc_fast(start_x: cython.double, start_y: cython.double, start_z: cyth
                 dot = 1.0
             elif dot < -1.0:
                 dot = -1.0
-            angle = math.acos(dot) * 200.0 / math.pi
+            angle = c_acos(dot) * 200.0 / _M_PI
 
     dx = v1x - v0x
     dy = v1y - v0y
     dz = v1z - v0z
-    acc = math.sqrt(dx * dx + dy * dy + dz * dz)
+    acc = c_sqrt(dx * dx + dy * dy + dz * dz)
     return angle, acc
 
 
@@ -811,7 +822,7 @@ def _ray_tracing_fast(x: cython.double, y: cython.double, cal: cython.double[:])
 
     # tmp1 = unit_vector([x, y, -int_cc])
     t0 = x; t1 = y; t2 = -int_cc
-    tn = math.sqrt(t0 * t0 + t1 * t1 + t2 * t2)
+    tn = c_sqrt(t0 * t0 + t1 * t1 + t2 * t2)
     if tn > 0.0:
         t0 /= tn; t1 /= tn; t2 /= tn
 
@@ -821,7 +832,7 @@ def _ray_tracing_fast(x: cython.double, y: cython.double, cal: cython.double[:])
     sd2 = dm20 * t0 + dm21 * t1 + dm22 * t2
 
     # glass_dir = unit_vector(glass_vec)
-    gn = math.sqrt(gx * gx + gy * gy + gz * gz)
+    gn = c_sqrt(gx * gx + gy * gy + gz * gz)
     if gn > 0.0:
         gd0 = gx / gn; gd1 = gy / gn; gd2 = gz / gn
     else:
@@ -842,13 +853,13 @@ def _ray_tracing_fast(x: cython.double, y: cython.double, cal: cython.double[:])
     n = sd0 * gd0 + sd1 * gd1 + sd2 * gd2
     # bp = unit_vector(start_dir - glass_dir * n)
     bp0 = sd0 - gd0 * n; bp1 = sd1 - gd1 * n; bp2 = sd2 - gd2 * n
-    bpn = math.sqrt(bp0 * bp0 + bp1 * bp1 + bp2 * bp2)
+    bpn = c_sqrt(bp0 * bp0 + bp1 * bp1 + bp2 * bp2)
     if bpn > 0.0:
         bp0 /= bpn; bp1 /= bpn; bp2 /= bpn
 
     # Snell's law: air -> glass
-    p = math.sqrt(1.0 - n * n) * mm_n1 / mm_n2_0
-    n_glass = -math.sqrt(1.0 - p * p)
+    p = c_sqrt(1.0 - n * n) * mm_n1 / mm_n2_0
+    n_glass = -c_sqrt(1.0 - p * p)
 
     # a2 = bp * p + glass_dir * n_glass
     a2_0 = bp0 * p + gd0 * n_glass
@@ -867,12 +878,12 @@ def _ray_tracing_fast(x: cython.double, y: cython.double, cal: cython.double[:])
     n_a2 = a2_0 * gd0 + a2_1 * gd1 + a2_2 * gd2
     # bp = unit_vector(a2 - glass_dir * n_glass)
     bp0 = a2_0 - gd0 * n_glass; bp1 = a2_1 - gd1 * n_glass; bp2 = a2_2 - gd2 * n_glass
-    bpn = math.sqrt(bp0 * bp0 + bp1 * bp1 + bp2 * bp2)
+    bpn = c_sqrt(bp0 * bp0 + bp1 * bp1 + bp2 * bp2)
     if bpn > 0.0:
         bp0 /= bpn; bp1 /= bpn; bp2 /= bpn
 
-    p2 = math.sqrt(1.0 - n_a2 * n_a2) * mm_n2_0 / mm_n3
-    n_final = -math.sqrt(1.0 - p2 * p2)
+    p2 = c_sqrt(1.0 - n_a2 * n_a2) * mm_n2_0 / mm_n3
+    n_final = -c_sqrt(1.0 - p2 * p2)
 
     ox = bp0 * p2 + gd0 * n_final
     oy = bp1 * p2 + gd1 * n_final
@@ -958,7 +969,7 @@ def point_position_fast(targets: cython.double[:, :], num_cams: cython.int, cal_
             scale = pb0 * pb0 + pb1 * pb1 + pb2 * pb2
 
             if scale < 1e-20:
-                dist = math.sqrt(sp0 * sp0 + sp1 * sp1 + sp2 * sp2)
+                dist = c_sqrt(sp0 * sp0 + sp1 * sp1 + sp2 * sp2)
                 mx = (v1x + v2x) * 0.5
                 my = (v1y + v2y) * 0.5
                 mz = (v1z + v2z) * 0.5
@@ -978,7 +989,7 @@ def point_position_fast(targets: cython.double[:, :], num_cams: cython.int, cal_
                 on2x = v2x + d2x * s2; on2y = v2y + d2y * s2; on2z = v2z + d2z * s2
 
                 ddx = on1x - on2x; ddy = on1y - on2y; ddz = on1z - on2z
-                dist = math.sqrt(ddx * ddx + ddy * ddy + ddz * ddz)
+                dist = c_sqrt(ddx * ddx + ddy * ddy + ddz * ddz)
                 mx = (on1x + on2x) * 0.5
                 my = (on1y + on2y) * 0.5
                 mz = (on1z + on2z) * 0.5
@@ -1030,12 +1041,12 @@ def dist_to_flat_fast(dist_x: cython.double, dist_y: cython.double,
     radial_factor: cython.double; dx: cython.double; dy: cython.double
     xq_new: cython.double; yq_new: cython.double
     dx_change: cython.double; dy_change: cython.double
-    r_init = math.sqrt(dist_x * dist_x + dist_y * dist_y)
+    r_init = c_sqrt(dist_x * dist_x + dist_y * dist_y)
     if r_init < 1e-10:
         return -xh, -yh
 
-    sin_she = math.sin(she)
-    cos_she = math.cos(she)
+    sin_she = c_sin(she)
+    cos_she = c_cos(she)
     inv_scx = 1.0 / scx
 
     xq = (dist_x + dist_y * sin_she) * inv_scx
@@ -1062,7 +1073,7 @@ def dist_to_flat_fast(dist_x: cython.double, dist_y: cython.double,
         xq += 0.5 * dx_change
         yq += 0.5 * dy_change
 
-        if math.sqrt(dx_change * dx_change + dy_change * dy_change) < tol:
+        if c_sqrt(dx_change * dx_change + dy_change * dy_change) < tol:
             break
 
     return xq - xh, yq - yh
@@ -1328,11 +1339,11 @@ def trackcorr_loop_fast(
                         quali = wn_freq[kk] + w_freq[mm]
 
                         if (acc < dacc and angle < dangle) or acc < dacc * 0.1:
-                            d13 = math.sqrt(
+                            d13 = c_sqrt(
                                 (X[1, 0] - X[3, 0]) ** 2 +
                                 (X[1, 1] - X[3, 1]) ** 2 +
                                 (X[1, 2] - X[3, 2]) ** 2)
-                            d43 = math.sqrt(
+                            d43 = c_sqrt(
                                 (X[4, 0] - X[3, 0]) ** 2 +
                                 (X[4, 1] - X[3, 1]) ** 2 +
                                 (X[4, 2] - X[3, 2]) ** 2)
@@ -1384,11 +1395,11 @@ def trackcorr_loop_fast(
                         X[5, 0], X[5, 1], X[5, 2])
 
                     if (acc < dacc and angle < dangle) or acc < dacc * 0.1:
-                        d13 = math.sqrt(
+                        d13 = c_sqrt(
                             (X[1, 0] - X[3, 0]) ** 2 +
                             (X[1, 1] - X[3, 1]) ** 2 +
                             (X[1, 2] - X[3, 2]) ** 2)
-                        d43 = math.sqrt(
+                        d43 = c_sqrt(
                             (X[4, 0] - X[3, 0]) ** 2 +
                             (X[4, 1] - X[3, 1]) ** 2 +
                             (X[4, 2] - X[3, 2]) ** 2)
@@ -1445,11 +1456,11 @@ def trackcorr_loop_fast(
 
                     if (acc < dacc and angle < dangle) or acc < dacc * 0.1:
                         quali_f = w_freq[mm]
-                        d13 = math.sqrt(
+                        d13 = c_sqrt(
                             (X[1, 0] - X[3, 0]) ** 2 +
                             (X[1, 1] - X[3, 1]) ** 2 +
                             (X[1, 2] - X[3, 2]) ** 2)
-                        d01 = math.sqrt(
+                        d01 = c_sqrt(
                             (X[0, 0] - X[1, 0]) ** 2 +
                             (X[0, 1] - X[1, 1]) ** 2 +
                             (X[0, 2] - X[1, 2]) ** 2)
@@ -1503,11 +1514,11 @@ def trackcorr_loop_fast(
                             X[3, 0], X[3, 1], X[3, 2])
 
                         if (acc < dacc and angle < dangle) or acc < dacc * 0.1:
-                            d13 = math.sqrt(
+                            d13 = c_sqrt(
                                 (X[1, 0] - X[3, 0]) ** 2 +
                                 (X[1, 1] - X[3, 1]) ** 2 +
                                 (X[1, 2] - X[3, 2]) ** 2)
-                            d01 = math.sqrt(
+                            d01 = c_sqrt(
                                 (X[0, 0] - X[1, 0]) ** 2 +
                                 (X[0, 1] - X[1, 1]) ** 2 +
                                 (X[0, 2] - X[1, 2]) ** 2)
@@ -1709,11 +1720,11 @@ def trackback_loop_fast(
                         X[3, 0], X[3, 1], X[3, 2])
 
                     if (acc < dacc and angle < dangle) or acc < dacc * 0.1:
-                        d13 = math.sqrt(
+                        d13 = c_sqrt(
                             (X[1, 0] - X[3, 0]) ** 2 +
                             (X[1, 1] - X[3, 1]) ** 2 +
                             (X[1, 2] - X[3, 2]) ** 2)
-                        d01 = math.sqrt(
+                        d01 = c_sqrt(
                             (X[0, 0] - X[1, 0]) ** 2 +
                             (X[0, 1] - X[1, 1]) ** 2 +
                             (X[0, 2] - X[1, 2]) ** 2)
@@ -1766,11 +1777,11 @@ def trackback_loop_fast(
                             X[3, 0], X[3, 1], X[3, 2])
 
                         if (acc < dacc and angle < dangle) or acc < dacc * 0.1:
-                            d13 = math.sqrt(
+                            d13 = c_sqrt(
                                 (X[1, 0] - X[3, 0]) ** 2 +
                                 (X[1, 1] - X[3, 1]) ** 2 +
                                 (X[1, 2] - X[3, 2]) ** 2)
-                            d01 = math.sqrt(
+                            d01 = c_sqrt(
                                 (X[0, 0] - X[1, 0]) ** 2 +
                                 (X[0, 1] - X[1, 1]) ** 2 +
                                 (X[0, 2] - X[1, 2]) ** 2)
@@ -1899,7 +1910,7 @@ def _find_closest_in_3d(path_x_2: cython.double[:, :], np2: cython.int,
         ddy = path_x_2[k, 1] - pred_y
         ddz = path_x_2[k, 2] - pred_z
         if abs(ddx) < dx and abs(ddy) < dy and abs(ddz) < dz:
-            d = math.sqrt(ddx * ddx + ddy * ddy + ddz * ddz)
+            d = c_sqrt(ddx * ddx + ddy * ddy + ddz * ddz)
             for slot in range(max_cands):
                 if d < cand_dists[slot]:
                     for s in range(max_cands - 1, slot, -1):
@@ -1984,7 +1995,7 @@ def track3d_loop_fast(
             d0 = path_x_1[i, 0] - 2.0 * path_x_2[k, 0] + path_x_0[prev_idx, 0]
             d1 = path_x_1[i, 1] - 2.0 * path_x_2[k, 1] + path_x_0[prev_idx, 1]
             d2 = path_x_1[i, 2] - 2.0 * path_x_2[k, 2] + path_x_0[prev_idx, 2]
-            acc = math.sqrt(d0 * d0 + d1 * d1 + d2 * d2)
+            acc = c_sqrt(d0 * d0 + d1 * d1 + d2 * d2)
             decis_vals[n_decis] = acc
             decis_inds[n_decis] = k
             n_decis += 1
@@ -2045,7 +2056,7 @@ def track3d_loop_fast(
             d0 = cx - 2.0 * path_x_2[k, 0] + pred_x
             d1 = cy - 2.0 * path_x_2[k, 1] + pred_y
             d2 = cz - 2.0 * path_x_2[k, 2] + pred_z
-            acc = math.sqrt(d0 * d0 + d1 * d1 + d2 * d2)
+            acc = c_sqrt(d0 * d0 + d1 * d1 + d2 * d2)
             decis_vals[n_decis] = acc
             decis_inds[n_decis] = k
             n_decis += 1
@@ -2085,7 +2096,7 @@ def track3d_loop_fast(
             d0 = pred_x - 2.0 * path_x_2[k, 0] + pred_x
             d1 = pred_y - 2.0 * path_x_2[k, 1] + pred_y
             d2 = pred_z - 2.0 * path_x_2[k, 2] + pred_z
-            acc = math.sqrt(d0 * d0 + d1 * d1 + d2 * d2)
+            acc = c_sqrt(d0 * d0 + d1 * d1 + d2 * d2)
             decis_vals[n_decis] = acc
             decis_inds[n_decis] = k
             n_decis += 1
@@ -2196,7 +2207,7 @@ def _flat_image_coord_fast(pos: cython.double[:], cal: cython.double[:],
     tmp_y = cp_y - ag_y
     tmp_z = cp_z - ag_z
 
-    pos_t_0 = math.sqrt(tmp_x * tmp_x + tmp_y * tmp_y + tmp_z * tmp_z)
+    pos_t_0 = c_sqrt(tmp_x * tmp_x + tmp_y * tmp_y + tmp_z * tmp_z)
     pos_t_2 = dist_point_glas
 
     radial_shift = 1.0
@@ -2208,7 +2219,7 @@ def _flat_image_coord_fast(pos: cython.double[:], cal: cython.double[:],
         sz = tz / mmlut_rw
         iz = int(sz)
         sz -= iz
-        R = math.sqrt(tx * tx + ty * ty)
+        R = c_sqrt(tx * tx + ty * ty)
         sr = R / mmlut_rw
         ir = int(sr)
         sr -= ir
@@ -2271,7 +2282,7 @@ def _img_coord_fast(pos: cython.double[:], cal: cython.double[:],
 
     x += xh
     y += yh
-    r = math.sqrt(x * x + y * y)
+    r = c_sqrt(x * x + y * y)
     if r < 1e-10:
         return 0.0, 0.0
 
@@ -2280,8 +2291,8 @@ def _img_coord_fast(pos: cython.double[:], cal: cython.double[:],
     radial_factor = 1.0 + k1 * r2 + k2 * r4 + k3 * r4 * r2
     xd = x * radial_factor + p1 * (r2 + 2.0 * x * x) + 2.0 * p2 * x * y
     yd = y * radial_factor + p2 * (r2 + 2.0 * y * y) + 2.0 * p1 * x * y
-    sin_she = math.sin(she)
-    cos_she = math.cos(she)
+    sin_she = c_sin(she)
+    cos_she = c_cos(she)
     x_dist = scx * (xd - sin_she * yd)
     y_dist = scx * cos_she * yd
 
