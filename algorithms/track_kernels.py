@@ -1202,9 +1202,12 @@ def trackcorr_loop_fast(
     num_added = 0
     n_sc = num_cams * MAX_CANDS_K
 
-    cpx = np.empty(num_cams, dtype=np.float64)
-    cpy = np.empty(num_cams, dtype=np.float64)
-    X = np.zeros((6, 3), dtype=np.float64)
+    _cpx = np.empty(num_cams, dtype=np.float64)
+    _cpy = np.empty(num_cams, dtype=np.float64)
+    _X = np.zeros((6, 3), dtype=np.float64)
+    cpx: cython.double[:] = _cpx
+    cpy: cython.double[:] = _cpy
+    X: cython.double[:, :] = _X
 
     for h in range(orig_parts_1):
         path_inlist_1[h] = 0
@@ -1640,9 +1643,12 @@ def trackback_loop_fast(
     flag: cython.bint
     count1 = 0
     num_added = 0
-    cpx = np.empty(num_cams, dtype=np.float64)
-    cpy = np.empty(num_cams, dtype=np.float64)
-    X = np.zeros((6, 3), dtype=np.float64)
+    _cpx = np.empty(num_cams, dtype=np.float64)
+    _cpy = np.empty(num_cams, dtype=np.float64)
+    _X = np.zeros((6, 3), dtype=np.float64)
+    cpx: cython.double[:] = _cpx
+    cpy: cython.double[:] = _cpy
+    X: cython.double[:, :] = _X
 
     for h in range(num_parts_1):
         next_h = path_next_1[h]
@@ -1944,10 +1950,15 @@ def track3d_loop_fast(
     pj: cython.int; inv_nvel: cython.double
     count1 = 0
     np2 = num_parts_2
-    cand_inds = np.empty(max_cands, dtype=np.int32)
-    cand_dists = np.empty(max_cands, dtype=np.float64)
-    decis_vals = np.empty(max_cands, dtype=np.float64)
-    decis_inds = np.empty(max_cands, dtype=np.int32)
+    _cand_inds = np.empty(max_cands, dtype=np.int32)
+    _cand_dists = np.empty(max_cands, dtype=np.float64)
+    _decis_vals = np.empty(max_cands, dtype=np.float64)
+    _decis_inds = np.empty(max_cands, dtype=np.int32)
+    
+    cand_inds: cython.int[:] = _cand_inds
+    cand_dists: cython.double[:] = _cand_dists
+    decis_vals: cython.double[:] = _decis_vals
+    decis_inds: cython.int[:] = _decis_inds
 
     # ===== Level 1: Particles with previous links =====
     for i in range(orig_parts):
@@ -2399,7 +2410,7 @@ def metric_to_pixel_batch_fast(xy: cython.double[:, :], imx: cython.int, imy: cy
 @cython.ccall
 @cython.boundscheck(False)
 @cython.wraparound(False)
-def targ_rec_fast(img, img0, gvthres: cython.int, discont: cython.int,
+def targ_rec_fast(img: cython.uchar[:, :], img0: cython.uchar[:, :], gvthres: cython.int, discont: cython.int,
                  nnmin: cython.int, nnmax: cython.int,
                  nxmin: cython.int, nxmax: cython.int, nymin: cython.int, nymax: cython.int,
                  sumg_min: cython.int,
@@ -2430,6 +2441,8 @@ def targ_rec_fast(img, img0, gvthres: cython.int, discont: cython.int,
     wj: cython.int; wi: cython.int
     xn4: cython.int; yn4: cython.int
     nx: cython.int; ny: cython.int
+    gv: cython.int; sumg: cython.int; numpix: cython.int
+    gvref: cython.int; gv4: cython.int; sumg_adj: cython.int
     out_x = np.empty(max_targets, dtype=np.float64)
     out_y = np.empty(max_targets, dtype=np.float64)
     out_n = np.empty(max_targets, dtype=np.int64)
@@ -2450,22 +2463,22 @@ def targ_rec_fast(img, img0, gvthres: cython.int, discont: cython.int,
 
     for i in range(ymin, ymax):
         for j in range(xmin, xmax):
-            gv = np.int64(img[i, j])
+            gv = img[i, j]
             if gv <= gvthres:
                 continue
 
             # 8-neighbor local maximum check
-            if not (gv >= np.int64(img[i, j - 1]) and
-                    gv >= np.int64(img[i, j + 1]) and
-                    gv >= np.int64(img[i - 1, j]) and
-                    gv >= np.int64(img[i + 1, j]) and
-                    gv >= np.int64(img[i - 1, j - 1]) and
-                    gv >= np.int64(img[i + 1, j - 1]) and
-                    gv >= np.int64(img[i - 1, j + 1]) and
-                    gv >= np.int64(img[i + 1, j + 1])):
+            if not (gv >= img[i, j - 1] and
+                    gv >= img[i, j + 1] and
+                    gv >= img[i - 1, j] and
+                    gv >= img[i + 1, j] and
+                    gv >= img[i - 1, j - 1] and
+                    gv >= img[i + 1, j - 1] and
+                    gv >= img[i - 1, j + 1] and
+                    gv >= img[i + 1, j + 1]):
                 continue
 
-            if np.int64(img0[i, j]) <= gvthres:
+            if img0[i, j] <= gvthres:
                 continue
 
             # Start BFS from this peak
@@ -2475,7 +2488,7 @@ def targ_rec_fast(img, img0, gvthres: cython.int, discont: cython.int,
             ya = i; yb = i
             x_weighted = float(j) * float(gv - gvthres)
             y_weighted = float(i) * float(gv - gvthres)
-            numpix = np.int64(1)
+            numpix = 1
 
             head = np.int32(0)
             tail = np.int32(1)
@@ -2483,27 +2496,27 @@ def targ_rec_fast(img, img0, gvthres: cython.int, discont: cython.int,
             qy[0] = np.int32(i)
 
             while head != tail:
-                wj = np.int32(qx[head])
-                wi = np.int32(qy[head])
+                wj = qx[head]
+                wi = qy[head]
                 head += 1
                 if head >= queue_size:
                     head = 0
-                gvref = np.int64(img[wi, wj])
+                gvref = img[wi, wj]
 
                 for d in range(4):
-                    xn4 = np.int32(wj + dx4[d])
-                    yn4 = np.int32(wi + dy4[d])
+                    xn4 = wj + dx4[d]
+                    yn4 = wi + dy4[d]
 
                     if xn4 < xmin or xn4 >= xmax or yn4 < ymin or yn4 >= ymax:
                         continue
 
-                    gv4 = np.int64(img0[yn4, xn4])
+                    gv4 = img0[yn4, xn4]
                     if (gv4 > gvthres and
                             gv4 <= gvref + discont and
-                            gvref + discont >= np.int64(img[yn4 - 1, xn4]) and
-                            gvref + discont >= np.int64(img[yn4 + 1, xn4]) and
-                            gvref + discont >= np.int64(img[yn4, xn4 - 1]) and
-                            gvref + discont >= np.int64(img[yn4, xn4 + 1])):
+                            gvref + discont >= img[yn4 - 1, xn4] and
+                            gvref + discont >= img[yn4 + 1, xn4] and
+                            gvref + discont >= img[yn4, xn4 - 1] and
+                            gvref + discont >= img[yn4, xn4 + 1]):
                         sumg += gv4
                         img0[yn4, xn4] = 0
                         if xn4 < xa:

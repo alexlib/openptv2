@@ -117,3 +117,4 @@ test_data/track/res/*
 algorithms/*.c
 /site
 /wheelhouse
+*.html

@@ -100,15 +100,15 @@ def lowpass_3(img: np.ndarray, imx: cython.int, imy: cython.int) -> np.ndarray:
     end = image_size - imx - 1
     for idx in range(start, end):
         total = (
-            int(src_mv[idx])
-            + int(src_mv[idx - imx - 1])
-            + int(src_mv[idx - imx])
-            + int(src_mv[idx - imx + 1])
-            + int(src_mv[idx - 1])
-            + int(src_mv[idx + 1])
-            + int(src_mv[idx + imx - 1])
-            + int(src_mv[idx + imx])
-            + int(src_mv[idx + imx + 1])
+            src_mv[idx]
+            + src_mv[idx - imx - 1]
+            + src_mv[idx - imx]
+            + src_mv[idx - imx + 1]
+            + src_mv[idx - 1]
+            + src_mv[idx + 1]
+            + src_mv[idx + imx - 1]
+            + src_mv[idx + imx]
+            + src_mv[idx + imx + 1]
         )
         result_mv[idx] = total // 9
 
@@ -162,24 +162,24 @@ def fast_box_blur(
 
     for row in range(imy):
         row_start = row * imx
-        accum = int(src_mv[row_start])
+        accum = src_mv[row_start]
         row_accum_mv[row_start] = accum * n
 
         for col in range(1, min(filt_span + 1, imx)):
             left_idx = row_start + 2 * col - 1
             right_idx = row_start + 2 * col
-            accum += int(src_mv[left_idx]) + int(src_mv[right_idx])
+            accum += src_mv[left_idx] + src_mv[right_idx]
             m = 2 * col + 1
             row_accum_mv[row_start + col] = accum * n // m
 
         for col in range(filt_span + 1, imx - filt_span):
-            accum += int(src_mv[row_start + col + filt_span]) - int(src_mv[row_start + col - filt_span - 1])
+            accum += src_mv[row_start + col + filt_span] - src_mv[row_start + col - filt_span - 1]
             row_accum_mv[row_start + col] = accum
 
         left_ptr = row_start + imx - n
         m = n - 2
         for col in range(max(imx - filt_span, filt_span + 1), imx):
-            accum -= int(src_mv[left_ptr]) + int(src_mv[left_ptr + 1])
+            accum -= src_mv[left_ptr] + src_mv[left_ptr + 1]
             row_accum_mv[row_start + col] = accum * n // m
             left_ptr += 2
             m -= 2

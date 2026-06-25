@@ -2,12 +2,12 @@
 
 from algorithms.track_kernels import is_compiled as _is_compiled
 
-from .calibration import Calibration
-from .correspondences import MatchedCoords, correspondences
-from .epipolar import epipolar_curve
-from .image_processing import preprocess_image
-from .imgcoord import flat_image_coordinates, image_coordinates
-from .orientation import (
+from algorithms.compat.calibration import Calibration
+from algorithms.compat.correspondences import MatchedCoords, correspondences
+from algorithms.compat.epipolar import epipolar_curve
+from algorithms.compat.image_processing import preprocess_image
+from algorithms.compat.imgcoord import flat_image_coordinates, image_coordinates
+from algorithms.compat.orientation import (
     dumbbell_target_func,
     external_calibration,
     full_calibration,
@@ -15,7 +15,7 @@ from .orientation import (
     multi_cam_point_positions,
     point_positions,
 )
-from .parameter_converters import (
+from algorithms.parameter_converters import (
     convert_optv_calibrations,
     get_all_params,
     get_calibration_par,
@@ -30,20 +30,22 @@ from .parameter_converters import (
     get_track_par_tuple,
     get_volume_par,
 )
-from .parameters import (
+from algorithms.parameters import (
+    TrackParTuple,
+    convert_track_par_to_tuple,
+)
+from algorithms.compat.parameters import (
     ControlParams,
     MultimediaParams,
     SequenceParams,
     TargetParams,
-    TrackParTuple,
     TrackingParams,
     VolumeParams,
-    convert_track_par_to_tuple,
 )
-from .segmentation import target_recognition
-from .tracker import Tracker, default_naming
-from .tracking_framebuf import Frame, Target, TargetArray, read_targets
-from .transforms import (
+from algorithms.compat.segmentation import target_recognition
+from algorithms.compat.tracker import Tracker, default_naming
+from algorithms.compat.tracking_framebuf import Frame, Target, TargetArray, read_targets
+from algorithms.compat.transforms import (
     convert_arr_metric_to_pixel,
     convert_arr_pixel_to_metric,
     correct_arr_brown_affine,

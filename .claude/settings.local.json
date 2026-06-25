@@ -7,7 +7,9 @@
       "Bash(git stash *)",
       "Bash(OPENPTV_PYTHON_ONLY=1 uv run pytest algorithms/tests/ -v --tb=line)",
       "Bash(OPENPTV_PYTHON_ONLY=1 uv run pytest algorithms/tests/ -v --tb=short)",
-      "Bash(git *)"
+      "Bash(git *)",
+      "Bash(python3 *)",
+      "Bash(sort -k1,1)"
     ]
   }
 }
