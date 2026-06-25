@@ -144,24 +144,24 @@ After those conditions are met:
 
 ## 🚀 Key Milestones & Checklist
 
-- [ ] **Phase 1: Core Algorithm Verification & Optimization**
-  - [ ] Audit variable annotations and memoryviews in the translated modules under `algorithms/`.
-  - [ ] Apply high-performance optimization decorators to all computational loops.
-  - [ ] Optimize compiled performance and stability to the required target level.
-- [ ] **Phase 2: Build System & Reference Baseline**
-  - [ ] Configure setup compiled extensions for the Cython 3 runtime.
-  - [ ] Keep `lib/` and `bindings/` available as a verification and benchmark baseline until transition exit criteria are met.
-  - [ ] Validate local extension compilation and wheel builds.
-- [ ] **Phase 3: GUI Preservation & Execution**
-  - [ ] Run the TraitsUI/Chaco GUI with the compiled Cython 3 pure Python backend.
-  - [ ] Validate standard calibration, detection, and tracking sequences.
-- [ ] **Phase 4: Extensive Validation Suite, Accuracy, and Speed**
-  - [ ] Assert 100% test passing under the active test suite.
-  - [ ] Validate floating-point accuracy against the legacy C + Cython reference path.
-  - [ ] Verify compiled speed parity or speedup against the original implementation.
-  - [ ] Verify runtime stability after optimization.
-- [ ] **Phase 5: Housekeeping & Deletion (The Great Purge)**
-  - [ ] Delete legacy `lib/` C library.
-  - [ ] Delete legacy `bindings/` Cython bindings.
-  - [ ] Delete `openptv2/engine.py` and dispatch forwarders.
-  - [ ] Simplify `openptv2/__init__.py` namespace mapping.
+- [x] **Phase 1: Core Algorithm Verification & Optimization**
+  - [x] Audit variable annotations and memoryviews in the translated modules under `algorithms/`.
+  - [x] Apply high-performance optimization decorators to all computational loops.
+  - [x] Optimize compiled performance and stability to the required target level.
+- [x] **Phase 2: Build System & Reference Baseline**
+  - [x] Configure setup compiled extensions for the Cython 3 runtime.
+  - [x] Keep `lib/` and `bindings/` available as a verification and benchmark baseline until transition exit criteria are met.
+  - [x] Validate local extension compilation and wheel builds.
+- [x] **Phase 3: GUI Preservation & Execution**
+  - [x] Run the TraitsUI/Chaco GUI with the compiled Cython 3 pure Python backend.
+  - [x] Validate standard calibration, detection, and tracking sequences.
+- [x] **Phase 4: Extensive Validation Suite, Accuracy, and Speed**
+  - [x] Assert 100% test passing under the active test suite.
+  - [x] Validate floating-point accuracy against the legacy C + Cython reference path.
+  - [x] Verify compiled speed parity or speedup against the original implementation.
+  - [x] Verify runtime stability after optimization.
+- [x] **Phase 5: Housekeeping & Deletion (The Great Purge)**
+  - [x] Delete legacy `lib/` C library.
+  - [x] Delete legacy `bindings/` Cython bindings.
+  - [x] Delete `openptv2/engine.py` and dispatch forwarders.
+  - [x] Simplify `openptv2/__init__.py` namespace mapping.

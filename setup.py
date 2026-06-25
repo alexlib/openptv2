@@ -77,7 +77,6 @@ def _cythonize_all():
                 "cdivision": True,
                 "nonecheck": False,
                 "initializedcheck": False,
-                "profile": True,
             },
         )
     print("[OpenPTV2] Cythonization of algorithms completed successfully.")

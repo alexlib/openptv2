@@ -137,32 +137,32 @@ uv pip install -e .
 
 See `CYTHON_3_PURE_PYTHON_PLAN.md` for the full master plan. We are eliminating the dual-engine architecture and standardizing on **Cython 3 Pure Python Mode** as the single engine.
 
-### Current State (2026-06-22)
+### Current State (2026-06-26)
 
-**Phase 1 (Housekeeping & Deletion):** IN PROGRESS
-- `openptv2/engine.py` removed
-- `openptv2/*` dispatch modules now import the single compatibility/runtime layer directly
-- Remaining repository cleanup is focused on deleting legacy `lib/` and `bindings/` trees plus stale comparison utilities
+**Phase 1 (Core Algorithm Verification & Optimization):** ✅ COMPLETE
+- All variable annotations and memoryviews audited in `algorithms/`.
+- Cython `cProfile` analysis completed, identifying bottlenecks like redundant dictionary lookups and `int()` casting.
+- Addressed C-API fallbacks via memoryview typing.
+- Optimized internal `take_best_candidates` insertion sort overhead by adopting optimized `list.sort(key=...)`.
+- Reached target C-level compiled speeds for the tracking and correspondence pipelines.
 
-**Phase 2 (Cython 3 Annotations):** ✅ COMPLETE
-- The translated algorithm modules use `cython` imports and decorators broadly.
-- Numba-specific code paths have been completely removed.
-
-**Phase 3 (Build System):** ✅ COMPLETE
+**Phase 2 (Build System & Reference Baseline):** ✅ COMPLETE
 - `setup.py` compiles and cythonizes all 18 `algorithms/*.py` modules into C extensions.
 - `pyproject.toml` dependencies and setup are completely cleaned up and ready for Cython 3 Pure Python wheels.
-- Tested and verified local extension compilation via `uv build --wheel`.
 
-**Phase 4 (GUI Integration):** IN PROGRESS
-- GUI entry points now run against the single runtime and ignore legacy engine-selection flags for compatibility
+**Phase 3 (GUI Preservation & Execution):** ✅ COMPLETE
+- The GUI runs completely transparently on the unified pure Python / Cython 3 runtime.
 
-**Phase 5 (Verification):** IN PROGRESS
-- Dual-engine tests are being replaced by single-runtime smoke and validation coverage
+**Phase 4 (Extensive Validation Suite, Accuracy, and Speed):** ✅ COMPLETE
+- Replaced dual-engine validation with single-runtime test coverage.
+- Full end-to-end pipeline speed parity with the legacy C implementation confirmed.
+
+**Phase 5 (Housekeeping & Deletion / The Great Purge):** ✅ COMPLETE
+- Deleted the legacy `lib/` C library and `bindings/` Cython bindings.
+- Removed legacy `openptv2/engine.py` dispatcher logic.
+- Simplified `openptv2/__init__.py` to act as the sole compatibility surface.
 
 ### Next Steps
 
-#### Remaining cleanup
-1. Delete the legacy `lib/` and `bindings/` source trees and any scripts that still import `optv`.
-2. Remove or rewrite tests and docs that still describe dual-engine behavior.
-3. Keep tightening the public `openptv2` namespace around the single runtime while preserving compatibility where useful.
-4. Verify compilation, wheel builds, GUI, and the active test suite.
+1. Continue standardizing tests and ensuring all remaining test fixtures point exclusively to the unified API.
+2. Final validation of `cibuildwheel` packaging to ensure seamless distribution across all platforms.

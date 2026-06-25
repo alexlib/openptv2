@@ -359,15 +359,12 @@ def take_best_candidates(src, dst, num_cams, num_cands, tusage):
     Returns:
         int, the number of cliques taken.
     """
-    i: cython.int
-    j: cython.int
-    for i in range(1, num_cands):
-        item = src[i]
-        j = i
-        while j > 0 and src[j - 1].corr < item.corr:
-            src[j] = src[j - 1]
-            j -= 1
-        src[j] = item
+    import operator
+    
+    # Sort the active slice of src using Python's optimized Timsort
+    src_slice = src[:num_cands]
+    src_slice.sort(key=operator.attrgetter('corr'), reverse=True)
+    src[:num_cands] = src_slice
 
     taken = 0
     for cand in range(num_cands):
