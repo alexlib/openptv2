@@ -11,7 +11,17 @@ Before starting, ensure OpenPTV2 is installed with scientific dependencies:
 uv pip install "openptv2[gui]"
 ```
 
-Make sure the directory `test_data/test_cavity/` exists in your workspace. This contains the required camera setups and images.
+For a complete, real-world sample dataset to use with this tutorial, first download the `test_cavity` case from Git:
+```bash
+git clone https://github.com/openptv/test_cavity
+```
+
+You can run the interactive OpenPTV2 GUI on this dataset at any time using:
+```bash
+uv run openptv2-gui ./test_cavity
+```
+
+*(Note: If you are running code directly from the repository, a small mock version of this dataset is also included under `test_data/test_cavity`.)*
 
 ---
 

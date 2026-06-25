@@ -6,12 +6,17 @@ This guide gets you started using OpenPTV2 both via Python scripting and through
 
 ## 1. Obtaining Sample Data
 
-OpenPTV2 includes sample datasets for testing and verification. The primary dataset is the **cavity flow experiment** (`test_data/test_cavity`), which features:
-- Calibration files for 4 cameras (`cal/cam1.ori`, etc.)
-- Multi-camera image sequences (`img/cam1_10000.tif`, etc.)
-- Parameter files specifying experiment settings (`parameters_Run1.yaml`)
+For a complete, real-world sample dataset to explore, it is highly recommended to download the official `test_cavity` case from Git using:
+```bash
+git clone https://github.com/openptv/test_cavity
+```
 
-You can locate this folder directly inside your cloned repository root.
+You can then launch the OpenPTV2 GUI directly pointing to this folder:
+```bash
+uv run openptv2-gui ./test_cavity
+```
+
+*(Note: A small mock version of this dataset is also pre-included inside your cloned repository root under `test_data/test_cavity` for running internal unit tests.)*
 
 ---
 
