@@ -9,10 +9,12 @@ Provides:
 - read_calblock: reads 3D calibration point coordinates.
 """
 import cython
-
-
-import math
 import numpy as np
+
+if cython.compiled:
+    from cython.cimports.libc.math import sqrt as c_sqrt
+else:
+    from math import sqrt as c_sqrt
 from typing import Tuple
 from pathlib import Path
 
@@ -39,7 +41,7 @@ def nearest_neighbour_pix(pix: list, x: float, y: float, eps: float) -> int:
 
     for j, p in enumerate(pix):
         if ymin < p.y < ymax and xmin < p.x < xmax:
-            d = math.sqrt((x - p.x)**2 + (y - p.y)**2)
+            d = c_sqrt((x - p.x)**2 + (y - p.y)**2)
             if d < dmin:
                 dmin = d
                 pnr = j

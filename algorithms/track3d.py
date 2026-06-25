@@ -1,6 +1,11 @@
 import cython
 import numpy as np
 
+if cython.compiled:
+    from cython.cimports.libc.math import sqrt as c_sqrt
+else:
+    from math import sqrt as c_sqrt
+
 from .track_kernels import track3d_loop_fast as _track3d_loop_fast
 
 MAX_CANDS = 4
@@ -15,7 +20,6 @@ def find_candidates_in_3d(frm, pos, dx, dy, dz, max_cands=MAX_CANDS):
     Maintains a running top-N by distance (like candsearch_in_pix does in 2D),
     so the returned candidates are the closest, not just the first found.
     """
-    import math
     indices = [-1] * max_cands
     dists = [1e20] * max_cands
     i: cython.Py_ssize_t
@@ -31,7 +35,7 @@ def find_candidates_in_3d(frm, pos, dx, dy, dz, max_cands=MAX_CANDS):
         ddy = x[1] - pos[1]
         ddz = x[2] - pos[2]
         if abs(ddx) < dx and abs(ddy) < dy and abs(ddz) < dz:
-            d = math.sqrt(ddx * ddx + ddy * ddy + ddz * ddz)
+            d = c_sqrt(ddx * ddx + ddy * ddy + ddz * ddz)
             for slot in range(max_cands):
                 if d < dists[slot]:
                     for s in range(max_cands - 1, slot, -1):

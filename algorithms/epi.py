@@ -5,9 +5,13 @@ Translation of lib/src/epi.c and lib/include/epi.h.
 Computes epipolar lines and candidate matching between cameras.
 """
 
-import math
 import cython
 import numpy as np
+
+if cython.compiled:
+    from cython.cimports.libc.math import sqrt as c_sqrt
+else:
+    from math import sqrt as c_sqrt
 from dataclasses import dataclass
 
 MAXCAND: cython.int = 200
@@ -276,7 +280,7 @@ def find_candidate(crd, pix, num: cython.int, xa: cython.double, ya: cython.doub
         if crd[j].x <= xa - tol_band_width or crd[j].x >= xb + tol_band_width:
             continue
 
-        d = abs((crd[j].y - m * crd[j].x - b) / math.sqrt(m * m + 1))
+        d = abs((crd[j].y - m * crd[j].x - b) / c_sqrt(m * m + 1))
         if d >= tol_band_width:
             continue
 
