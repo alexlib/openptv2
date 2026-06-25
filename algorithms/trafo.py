@@ -9,9 +9,13 @@ Transforms between:
 - Distorted coordinates: metric coordinates with Brown distortion applied
 """
 
-import math
 import cython
 import numpy as np
+
+if cython.compiled:
+    from cython.cimports.libc.math import sqrt as c_sqrt, sin as c_sin, cos as c_cos
+else:
+    from math import sqrt as c_sqrt, sin as c_sin, cos as c_cos
 
 # Y-remap mode constants (for interlaced cameras)
 NO_REMAP: cython.int = 0
@@ -247,7 +251,7 @@ def distort_brown_affin(
     Returns:
         (x_distorted, y_distorted) tuple.
     """
-    r: cython.double = math.sqrt(x * x + y * y)
+    r: cython.double = c_sqrt(x * x + y * y)
 
     if r < 1e-10:
         return 0.0, 0.0
@@ -260,8 +264,8 @@ def distort_brown_affin(
     x_dist: cython.double = x * radial_factor + p1 * (r2 + 2.0 * x * x) + 2.0 * p2 * x * y
     y_dist: cython.double = y * radial_factor + p2 * (r2 + 2.0 * y * y) + 2.0 * p1 * x * y
 
-    sin_she: cython.double = math.sin(she)
-    cos_she: cython.double = math.cos(she)
+    sin_she: cython.double = c_sin(she)
+    cos_she: cython.double = c_cos(she)
 
     x1: cython.double = scx * (x_dist - sin_she * y_dist)
     y1: cython.double = scx * cos_she * y_dist
@@ -293,8 +297,8 @@ def correct_brown_affin(
     Returns:
         (x_flat, y_flat) undistorted coordinates.
     """
-    sin_she: cython.double = math.sin(she)
-    cos_she: cython.double = math.cos(she)
+    sin_she: cython.double = c_sin(she)
+    cos_she: cython.double = c_cos(she)
     inv_scx: cython.double = 1.0 / scx
 
     # Initial guess: inverse affine transformation
@@ -334,8 +338,8 @@ def correct_brown_affin(
         yq += dy * damping
 
         # Check convergence
-        change = math.sqrt((xq - xq_old) ** 2 + (yq - yq_old) ** 2)
-        pos_magnitude = math.sqrt(xq * xq + yq * yq)
+        change = c_sqrt((xq - xq_old) ** 2 + (yq - yq_old) ** 2)
+        pos_magnitude = c_sqrt(xq * xq + yq * yq)
         if pos_magnitude > 1e-10 and change / pos_magnitude < tol:
             break
 
@@ -368,13 +372,13 @@ def correct_brown_affine_exact(
     Returns:
         (x_flat, y_flat) undistorted coordinates.
     """
-    r_init: cython.double = math.sqrt(x * x + y * y)
+    r_init: cython.double = c_sqrt(x * x + y * y)
 
     if r_init < 1e-10:
         return 0.0, 0.0
 
-    sin_she: cython.double = math.sin(she)
-    cos_she: cython.double = math.cos(she)
+    sin_she: cython.double = c_sin(she)
+    cos_she: cython.double = c_cos(she)
     inv_scx: cython.double = 1.0 / scx
 
     # Initial guess: inverse affine transformation
@@ -415,7 +419,7 @@ def correct_brown_affine_exact(
         xq += damping * dx_change
         yq += damping * dy_change
 
-        if math.sqrt(dx_change ** 2 + dy_change ** 2) < tol:
+        if c_sqrt(dx_change ** 2 + dy_change ** 2) < tol:
             break
 
     return xq, yq
@@ -513,8 +517,8 @@ def correct_brown_affine_batch(
     result_view: cython.double[:, :] = result
     xy_view: cython.double[:, :] = xy
 
-    sin_she: cython.double = math.sin(she)
-    cos_she: cython.double = math.cos(she)
+    sin_she: cython.double = c_sin(she)
+    cos_she: cython.double = c_cos(she)
     inv_scx: cython.double = 1.0 / scx
     damping: cython.double = 0.7
     tol: cython.double = 1e-8
@@ -556,7 +560,7 @@ def correct_brown_affine_batch(
             yq_old = yq
 
             # Inlined distort_brown_affin
-            r = math.sqrt(xq * xq + yq * yq)
+            r = c_sqrt(xq * xq + yq * yq)
             if r < 1e-10:
                 xt = 0.0
                 yt = 0.0
@@ -576,8 +580,8 @@ def correct_brown_affine_batch(
             xq += dx * damping
             yq += dy * damping
 
-            change = math.sqrt((xq - xq_old) ** 2 + (yq - yq_old) ** 2)
-            pos_magnitude = math.sqrt(xq * xq + yq * yq)
+            change = c_sqrt((xq - xq_old) ** 2 + (yq - yq_old) ** 2)
+            pos_magnitude = c_sqrt(xq * xq + yq * yq)
             if pos_magnitude > 1e-10 and change / pos_magnitude < tol:
                 break
 
@@ -605,8 +609,8 @@ def distort_brown_affine_batch(
     result_view: cython.double[:, :] = result
     xy_view: cython.double[:, :] = xy
 
-    sin_she: cython.double = math.sin(she)
-    cos_she: cython.double = math.cos(she)
+    sin_she: cython.double = c_sin(she)
+    cos_she: cython.double = c_cos(she)
 
     i: cython.Py_ssize_t
     x: cython.double
@@ -622,7 +626,7 @@ def distort_brown_affine_batch(
     for i in range(n):
         x = xy_view[i, 0]
         y = xy_view[i, 1]
-        r = math.sqrt(x * x + y * y)
+        r = c_sqrt(x * x + y * y)
         if r < 1e-10:
             result_view[i, 0] = 0.0
             result_view[i, 1] = 0.0

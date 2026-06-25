@@ -6,9 +6,13 @@ Traces optical rays through multi-media interfaces (air-glass-water)
 using Snell's law and returns the crossing point and direction vector.
 """
 
-import math
 import cython
 import numpy as np
+
+if cython.compiled:
+    from cython.cimports.libc.math import sqrt as c_sqrt
+else:
+    from math import sqrt as c_sqrt
 
 
 @cython.ccall
@@ -33,7 +37,7 @@ def _ray_tracing_core(
     out: cython.double[:],
 ) -> cython.void:
     # Initial ray direction in camera coordinate system
-    norm_tmp1: cython.double = math.sqrt(x * x + y * y + int_cc * int_cc)
+    norm_tmp1: cython.double = c_sqrt(x * x + y * y + int_cc * int_cc)
     tx: cython.double = x / norm_tmp1
     ty: cython.double = y / norm_tmp1
     tz: cython.double = -int_cc / norm_tmp1
@@ -44,7 +48,7 @@ def _ray_tracing_core(
     start_dir_z: cython.double = ext_dm[2, 0] * tx + ext_dm[2, 1] * ty + ext_dm[2, 2] * tz
 
     # Glass normal (unit vector)
-    norm_glass: cython.double = math.sqrt(glass_vec_x * glass_vec_x + glass_vec_y * glass_vec_y + glass_vec_z * glass_vec_z)
+    norm_glass: cython.double = c_sqrt(glass_vec_x * glass_vec_x + glass_vec_y * glass_vec_y + glass_vec_z * glass_vec_z)
     glass_dir_x: cython.double = glass_vec_x / norm_glass
     glass_dir_y: cython.double = glass_vec_y / norm_glass
     glass_dir_z: cython.double = glass_vec_z / norm_glass
@@ -65,15 +69,15 @@ def _ray_tracing_core(
     bp_x: cython.double = start_dir_x - glass_dir_x * n
     bp_y: cython.double = start_dir_y - glass_dir_y * n
     bp_z: cython.double = start_dir_z - glass_dir_z * n
-    norm_bp: cython.double = math.sqrt(bp_x * bp_x + bp_y * bp_y + bp_z * bp_z)
+    norm_bp: cython.double = c_sqrt(bp_x * bp_x + bp_y * bp_y + bp_z * bp_z)
     if norm_bp > 0:
         bp_x /= norm_bp
         bp_y /= norm_bp
         bp_z /= norm_bp
 
     # Transform direction inside glass using Snell's law
-    p: cython.double = math.sqrt(1.0 - n * n) * mm_n1 / mm_n2_0  # glass parallel
-    n_glass: cython.double = -math.sqrt(1.0 - p * p)  # glass normal
+    p: cython.double = c_sqrt(1.0 - n * n) * mm_n1 / mm_n2_0  # glass parallel
+    n_glass: cython.double = -c_sqrt(1.0 - p * p)  # glass normal
 
     # Propagation length in glass
     a2_x: cython.double = bp_x * p + glass_dir_x * n_glass
@@ -93,15 +97,15 @@ def _ray_tracing_core(
     bp_x = a2_x - glass_dir_x * n_glass
     bp_y = a2_y - glass_dir_y * n_glass
     bp_z = a2_z - glass_dir_z * n_glass
-    norm_bp = math.sqrt(bp_x * bp_x + bp_y * bp_y + bp_z * bp_z)
+    norm_bp = c_sqrt(bp_x * bp_x + bp_y * bp_y + bp_z * bp_z)
     if norm_bp > 0:
         bp_x /= norm_bp
         bp_y /= norm_bp
         bp_z /= norm_bp
 
-    p = math.sqrt(1.0 - n_a2 * n_a2)
+    p = c_sqrt(1.0 - n_a2 * n_a2)
     p = p * mm_n2_0 / mm_n3
-    n_final: cython.double = -math.sqrt(1.0 - p * p)
+    n_final: cython.double = -c_sqrt(1.0 - p * p)
 
     out_x: cython.double = bp_x * p + glass_dir_x * n_final
     out_y: cython.double = bp_y * p + glass_dir_y * n_final
@@ -201,7 +205,7 @@ def ray_tracing_batch(xy, cal, mm):
     mm_d0: cython.double = mm.d[0]
 
     # Hoist point-independent calculations from _ray_tracing_core
-    norm_glass: cython.double = math.sqrt(glass_vec_x * glass_vec_x + glass_vec_y * glass_vec_y + glass_vec_z * glass_vec_z)
+    norm_glass: cython.double = c_sqrt(glass_vec_x * glass_vec_x + glass_vec_y * glass_vec_y + glass_vec_z * glass_vec_z)
     glass_dir_x: cython.double = glass_vec_x / norm_glass
     glass_dir_y: cython.double = glass_vec_y / norm_glass
     glass_dir_z: cython.double = glass_vec_z / norm_glass
@@ -250,7 +254,7 @@ def ray_tracing_batch(xy, cal, mm):
         y = xy_mv[i, 1]
 
         # Initial ray direction in camera coordinate system
-        norm_tmp1 = math.sqrt(x * x + y * y + int_cc * int_cc)
+        norm_tmp1 = c_sqrt(x * x + y * y + int_cc * int_cc)
         tx = x / norm_tmp1
         ty = y / norm_tmp1
         tz = -int_cc / norm_tmp1
@@ -274,15 +278,15 @@ def ray_tracing_batch(xy, cal, mm):
         bp_x = start_dir_x - glass_dir_x * n_dot
         bp_y = start_dir_y - glass_dir_y * n_dot
         bp_z = start_dir_z - glass_dir_z * n_dot
-        norm_bp = math.sqrt(bp_x * bp_x + bp_y * bp_y + bp_z * bp_z)
+        norm_bp = c_sqrt(bp_x * bp_x + bp_y * bp_y + bp_z * bp_z)
         if norm_bp > 0:
             bp_x /= norm_bp
             bp_y /= norm_bp
             bp_z /= norm_bp
 
         # Transform direction inside glass using Snell's law
-        p = math.sqrt(1.0 - n_dot * n_dot) * mm_n1 / mm_n2_0  # glass parallel
-        n_glass = -math.sqrt(1.0 - p * p)  # glass normal
+        p = c_sqrt(1.0 - n_dot * n_dot) * mm_n1 / mm_n2_0  # glass parallel
+        n_glass = -c_sqrt(1.0 - p * p)  # glass normal
 
         # Propagation length in glass
         a2_x = bp_x * p + glass_dir_x * n_glass
@@ -302,15 +306,15 @@ def ray_tracing_batch(xy, cal, mm):
         bp_x = a2_x - glass_dir_x * n_glass
         bp_y = a2_y - glass_dir_y * n_glass
         bp_z = a2_z - glass_dir_z * n_glass
-        norm_bp = math.sqrt(bp_x * bp_x + bp_y * bp_y + bp_z * bp_z)
+        norm_bp = c_sqrt(bp_x * bp_x + bp_y * bp_y + bp_z * bp_z)
         if norm_bp > 0:
             bp_x /= norm_bp
             bp_y /= norm_bp
             bp_z /= norm_bp
 
-        p = math.sqrt(1.0 - n_a2 * n_a2)
+        p = c_sqrt(1.0 - n_a2 * n_a2)
         p = p * mm_n2_0 / mm_n3
-        n_final = -math.sqrt(1.0 - p * p)
+        n_final = -c_sqrt(1.0 - p * p)
 
         out_x = bp_x * p + glass_dir_x * n_final
         out_y = bp_y * p + glass_dir_y * n_final
