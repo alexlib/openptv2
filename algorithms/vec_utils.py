@@ -9,9 +9,13 @@ full NumPy vectorization and Cython 3 compilation.
 For single-vector operations, plain float or length-3 arrays are accepted.
 """
 
-import math
 import cython
 import numpy as np
+
+if cython.compiled:
+    from cython.cimports.libc.math import sqrt as c_sqrt, isnan as c_isnan
+else:
+    from math import sqrt as c_sqrt, isnan as c_isnan
 from typing import Tuple
 
 # Sentinel value for empty/unused cells (matches C's EMPTY_CELL = NaN)
@@ -21,7 +25,7 @@ EMPTY_CELL = np.nan
 @cython.ccall
 def is_empty(x: cython.double) -> cython.bint:
     """Check if a value represents an empty cell (NaN)."""
-    return math.isnan(x)
+    return c_isnan(x)
 
 
 # ---------------------------------------------------------------------------
@@ -127,7 +131,7 @@ def vec_norm(vec: cython.double[:]) -> cython.double:
     Returns:
         ||vec|| as float.
     """
-    return math.sqrt(vec[0] ** 2 + vec[1] ** 2 + vec[2] ** 2)
+    return c_sqrt(vec[0] ** 2 + vec[1] ** 2 + vec[2] ** 2)
 
 
 @cython.ccall
@@ -145,7 +149,7 @@ def vec_diff_norm(vec1: cython.double[:], vec2: cython.double[:]) -> cython.doub
     dx: cython.double = vec1[0] - vec2[0]
     dy: cython.double = vec1[1] - vec2[1]
     dz: cython.double = vec1[2] - vec2[2]
-    return math.sqrt(dx * dx + dy * dy + dz * dz)
+    return c_sqrt(dx * dx + dy * dy + dz * dz)
 
 
 @cython.ccall
