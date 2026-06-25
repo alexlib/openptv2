@@ -5,7 +5,7 @@ Translation of lib/src/lsqadj.c and lib/include/lsqadj.h.
 These are the core matrix operations used in Gauss-Markov models:
 - ata: A^T @ A (normal equations matrix)
 - atl: A^T @ l (normal equations RHS)
-- matinv: matrix inversion via Gauss-Jordan elimination
+- matinv: matrix inversion via np.linalg.inv (LAPACK)
 - matmul: matrix-vector multiplication
 - norm_cross: normalized cross product of two 3-vectors
 
@@ -60,13 +60,8 @@ def atl(a: np.ndarray, l: np.ndarray, m: int, n: int) -> np.ndarray:
 
 
 @cython.ccall
-@cython.boundscheck(False)
-@cython.wraparound(False)
 def matinv(a: np.ndarray, n: int) -> np.ndarray:
-    """Invert a square matrix via Gauss-Jordan elimination.
-
-    Matches the C `matinv()` function which performs in-place inversion.
-    This function returns a new array (does not modify input).
+    """Invert a square matrix.
 
     Args:
         a: matrix of shape (n, n) or (n_large, n_large).
@@ -76,42 +71,9 @@ def matinv(a: np.ndarray, n: int) -> np.ndarray:
         Inverse of a[:n, :n] as ndarray of shape (n, n).
 
     Raises:
-        ZeroDivisionError: if a diagonal element is zero.
+        np.linalg.LinAlgError: if a is singular.
     """
-    a = np.asarray(a, dtype=np.float64).reshape(-1, n)[:n, :n].copy()
-    n_large: cython.int = n  # in our simplified API, n_large == n
-    n_int: cython.int = n
-
-    ipiv: cython.Py_ssize_t
-    irow: cython.Py_ssize_t
-    icol: cython.Py_ssize_t
-    pivot: cython.double
-    npivot: cython.double
-
-    for ipiv in range(n_int):
-        pivot = 1.0 / a[ipiv, ipiv]
-        npivot = -pivot
-
-        # Update off-pivot elements
-        for irow in range(n_int):
-            for icol in range(n_int):
-                if irow != ipiv and icol != ipiv:
-                    a[irow, icol] -= a[ipiv, icol] * a[irow, ipiv] * pivot
-
-        # Scale pivot row (excluding pivot element)
-        for icol in range(n_int):
-            if ipiv != icol:
-                a[ipiv, icol] *= npivot
-
-        # Scale pivot column (excluding pivot element)
-        for irow in range(n_int):
-            if ipiv != irow:
-                a[irow, ipiv] *= pivot
-
-        # Set pivot element
-        a[ipiv, ipiv] = pivot
-
-    return a
+    return np.linalg.inv(np.asarray(a, dtype=np.float64).reshape(-1, n)[:n, :n])
 
 
 @cython.ccall
