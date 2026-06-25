@@ -62,7 +62,14 @@ def _cythonize_all():
         if py_file.exists():
             cythonize(
                 [str(py_file.relative_to(ROOT))],
-                compiler_directives={"language_level": "3"},
+                compiler_directives={
+                    "language_level": "3",
+                    "boundscheck": False,
+                    "wraparound": False,
+                    "cdivision": True,
+                    "nonecheck": False,
+                    "initializedcheck": False,
+                },
             )
     print("[OpenPTV2] Cythonization of algorithms completed successfully.")
 
@@ -99,10 +106,10 @@ def get_extensions():
             extra_compile_args = []
             extra_link_args = []
             if not sys.platform.startswith("win"):
-                extra_compile_args.extend(["-Wno-cpp", "-Wno-unused-function"])
+                extra_compile_args.extend(["-O3", "-Wno-cpp", "-Wno-unused-function"])
                 extra_link_args.extend(["-Wl,-rpath,$ORIGIN"])
             else:
-                extra_compile_args.extend(["/W4", "/std:c11", "/D_CRT_SECURE_NO_WARNINGS"])
+                extra_compile_args.extend(["/O2", "/W4", "/std:c11", "/D_CRT_SECURE_NO_WARNINGS"])
 
             extensions.append(
                 Extension(
