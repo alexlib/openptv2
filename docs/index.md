@@ -21,6 +21,7 @@ Welcome to the openptv2 documentation.
 ### Developer Documentation
 
 - [Building from Source](developer_guide/building.md) - Detailed build instructions
+- [Documentation Workflow](developer_guide/documentation_workflow.md) - Editing documentation and deploying to GitHub Pages
 - [Packaging & Releases](developer_guide/packaging_and_releases.md) - Building binary wheels and releasing them on PyPI and GitHub
 - [GUI Testing Guide](HOW_TO_TEST_GUI.md) - How to test the GUI
 - [Development Workflow](developer_guide/building.md#development-workflow) - How to develop
