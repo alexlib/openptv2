@@ -12,10 +12,209 @@ import numpy as np
 from .trafo import flat_to_dist as _flat_to_dist
 from .multimed import multimed_nlay as _multimed_nlay, get_mmf_from_mmlut as _get_mmf_from_mmlut
 
+_DUMMY_MMLUT_DATA = np.zeros(1, dtype=np.float64)
 
-@cython.ccall
-def flat_image_coord(
-    pos: cython.double[:],
+
+@cython.cfunc
+@cython.inline
+@cython.boundscheck(False)
+@cython.wraparound(False)
+def _flat_to_dist_core(
+    flat_x: cython.double,
+    flat_y: cython.double,
+    xh: cython.double,
+    yh: cython.double,
+    k1: cython.double,
+    k2: cython.double,
+    k3: cython.double,
+    p1: cython.double,
+    p2: cython.double,
+    scx: cython.double,
+    she: cython.double,
+) -> tuple:
+    x: cython.double = flat_x + xh
+    y: cython.double = flat_y + yh
+
+    r: cython.double = math.sqrt(x * x + y * y)
+    if r < 1e-10:
+        return 0.0, 0.0
+
+    r2: cython.double = r * r
+    r4: cython.double = r2 * r2
+    r6: cython.double = r4 * r2
+    radial_factor: cython.double = 1.0 + k1 * r2 + k2 * r4 + k3 * r6
+
+    x_dist: cython.double = x * radial_factor + p1 * (r2 + 2.0 * x * x) + 2.0 * p2 * x * y
+    y_dist: cython.double = y * radial_factor + p2 * (r2 + 2.0 * y * y) + 2.0 * p1 * x * y
+
+    sin_she: cython.double = math.sin(she)
+    cos_she: cython.double = math.cos(she)
+
+    x1: cython.double = scx * (x_dist - sin_she * y_dist)
+    y1: cython.double = scx * cos_she * y_dist
+
+    return x1, y1
+
+
+@cython.cfunc
+@cython.inline
+@cython.boundscheck(False)
+@cython.wraparound(False)
+def _get_mmf_from_mmlut_core(
+    pos_x: cython.double,
+    pos_y: cython.double,
+    pos_z: cython.double,
+    mmlut_origin_x: cython.double,
+    mmlut_origin_y: cython.double,
+    mmlut_origin_z: cython.double,
+    mmlut_nr: cython.int,
+    mmlut_nz: cython.int,
+    mmlut_rw: cython.double,
+    mmlut_data: cython.double[:],
+) -> cython.double:
+    tx: cython.double = pos_x - mmlut_origin_x
+    ty: cython.double = pos_y - mmlut_origin_y
+    tz: cython.double = pos_z - mmlut_origin_z
+    sz: cython.double = tz / mmlut_rw
+    iz: cython.int = int(sz)
+    sz -= iz
+
+    R: cython.double = math.sqrt(tx * tx + ty * ty)
+    sr: cython.double = R / mmlut_rw
+    ir: cython.int = int(sr)
+    sr -= ir
+
+    # Check if point is inside LUT bounds
+    if ir > mmlut_nr:
+        return 0.0
+    if iz < 0 or iz > mmlut_nz:
+        return 0.0
+
+    # Get vertices of box for bilinear interpolation
+    v4_0: cython.int = ir * mmlut_nz + iz
+    v4_1: cython.int = ir * mmlut_nz + (iz + 1)
+    v4_2: cython.int = (ir + 1) * mmlut_nz + iz
+    v4_3: cython.int = (ir + 1) * mmlut_nz + (iz + 1)
+
+    max_v: cython.int = mmlut_nr * mmlut_nz
+    if v4_0 < 0 or v4_0 > max_v: return 0.0
+    if v4_1 < 0 or v4_1 > max_v: return 0.0
+    if v4_2 < 0 or v4_2 > max_v: return 0.0
+    if v4_3 < 0 or v4_3 > max_v: return 0.0
+
+    # Bilinear interpolation
+    mmf: cython.double = (
+        mmlut_data[v4_0] * (1.0 - sr) * (1.0 - sz)
+        + mmlut_data[v4_1] * (1.0 - sr) * sz
+        + mmlut_data[v4_2] * sr * (1.0 - sz)
+        + mmlut_data[v4_3] * sr * sz
+    )
+
+    return mmf
+
+
+@cython.cfunc
+@cython.inline
+@cython.boundscheck(False)
+@cython.wraparound(False)
+def _multimed_r_1lay_iterative(
+    pos_x: cython.double,
+    pos_z: cython.double,
+    ext_z0: cython.double,
+    mm_n1: cython.double,
+    mm_n2_0: cython.double,
+    mm_n3: cython.double,
+    mm_d0: cython.double,
+) -> cython.double:
+    if mm_n1 == 1.0 and mm_n2_0 == 1.0 and mm_n3 == 1.0:
+        return 1.0
+
+    r: cython.double = pos_x
+    rq: cython.double = r
+
+    it: cython.int
+    beta1: cython.double
+    sin_beta1: cython.double
+    beta2: cython.double
+    beta3: cython.double
+    rbeta: cython.double
+    rdiff: cython.double
+    arg: cython.double
+
+    # Constants for iteration
+    n_iter: cython.int = 40
+    tol: cython.double = 0.001
+
+    for it in range(n_iter):
+        beta1 = math.atan(rq / (ext_z0 - pos_z))
+        sin_beta1 = math.sin(beta1)
+
+        arg = sin_beta1 * mm_n1 / mm_n2_0
+        if arg > 1.0:
+            arg = 1.0
+        elif arg < -1.0:
+            arg = -1.0
+        beta2 = math.asin(arg)
+
+        arg = sin_beta1 * mm_n1 / mm_n3
+        if arg > 1.0:
+            arg = 1.0
+        elif arg < -1.0:
+            arg = -1.0
+        beta3 = math.asin(arg)
+
+        rbeta = (ext_z0 - mm_d0) * math.tan(beta1) - pos_z * math.tan(beta3) + mm_d0 * math.tan(beta2)
+        rdiff = r - rbeta
+        rq += rdiff
+
+        if abs(rdiff) < tol:
+            break
+    else:
+        return 1.0
+
+    if r != 0.0:
+        return rq / r
+    else:
+        return 1.0
+
+
+@cython.cfunc
+@cython.inline
+@cython.boundscheck(False)
+@cython.wraparound(False)
+def _multimed_nlay_core(
+    pos_x: cython.double,
+    pos_z: cython.double,
+    ext_z0: cython.double,
+    mm_n1: cython.double,
+    mm_n2_0: cython.double,
+    mm_n3: cython.double,
+    mm_d0: cython.double,
+    mmf: cython.double,
+) -> tuple:
+    radial_shift: cython.double = 1.0
+    if mmf > 0.0 and mmf != 1.0:
+        radial_shift = mmf
+    else:
+        radial_shift = _multimed_r_1lay_iterative(
+            pos_x, pos_z, ext_z0,
+            mm_n1, mm_n2_0, mm_n3, mm_d0,
+        )
+
+    Xq: cython.double = pos_x * radial_shift
+    Yq: cython.double = 0.0
+
+    return Xq, Yq
+
+
+@cython.cfunc
+@cython.inline
+@cython.boundscheck(False)
+@cython.wraparound(False)
+def _flat_image_coord_core(
+    pos0: cython.double,
+    pos1: cython.double,
+    pos2: cython.double,
     ext_x0: cython.double,
     ext_y0: cython.double,
     ext_z0: cython.double,
@@ -28,16 +227,15 @@ def flat_image_coord(
     mm_n2_0: cython.double,
     mm_n3: cython.double,
     mm_d0: cython.double,
-    mmlut=None,
+    has_mmlut: cython.bint,
+    mmlut_origin_x: cython.double,
+    mmlut_origin_y: cython.double,
+    mmlut_origin_z: cython.double,
+    mmlut_nr: cython.int,
+    mmlut_nz: cython.int,
+    mmlut_rw: cython.double,
+    mmlut_data: cython.double[:],
 ) -> tuple:
-    """Project 3D position to undistorted metric image coordinates.
-
-    Inlines trans_cam_point + multimed_nlay + back_trans_point to avoid
-    intermediate numpy array allocations in the hot path.
-    """
-    pos0: cython.double = pos[0]
-    pos1: cython.double = pos[1]
-    pos2: cython.double = pos[2]
     gx: cython.double = glass_vec_x
     gy: cython.double = glass_vec_y
     gz: cython.double = glass_vec_z
@@ -77,23 +275,23 @@ def flat_image_coord(
 
     # === mmlut lookup ===
     mmf: cython.double = 1.0
-    if mmlut is not None and mmlut.data is not None:
-        mmf = _get_mmf_from_mmlut(
-            (pos_t_0, 0.0, pos_t_2), mmlut.origin, mmlut.nr, mmlut.nz, mmlut.rw, mmlut.data,
+    if has_mmlut:
+        mmf = _get_mmf_from_mmlut_core(
+            pos_t_0, 0.0, pos_t_2,
+            mmlut_origin_x, mmlut_origin_y, mmlut_origin_z,
+            mmlut_nr, mmlut_nz, mmlut_rw, mmlut_data,
         )
-        if mmf <= 0:
+        if mmf <= 0.0:
             mmf = 1.0
 
-    X_t_val, Y_t_val = _multimed_nlay(
-        pos_t_0, 0.0, pos_t_2,
-        0.0, 0.0, ext_t_z0, mm_n1, mm_n2_0, mm_n3, mm_d0,
-        mmf=mmf,
+    X_t_val, Y_t_val = _multimed_nlay_core(
+        pos_t_0, pos_t_2, ext_t_z0,
+        mm_n1, mm_n2_0, mm_n3, mm_d0,
+        mmf,
     )
     X_t: cython.double = X_t_val
-    Y_t: cython.double = Y_t_val
 
     # === back_trans_point (inlined) ===
-    n_gl: cython.double = dist_o_glas
     inv_ngl: cython.double = inv_dog
 
     # ag_x/y/z already computed above (after_glass)
@@ -117,22 +315,59 @@ def flat_image_coord(
     dy: cython.double = by - ext_y0
     dz: cython.double = bz - ext_z0
 
-    dm00: cython.double = ext_dm[0, 0]
-    dm10: cython.double = ext_dm[1, 0]
-    dm20: cython.double = ext_dm[2, 0]
-    dm01: cython.double = ext_dm[0, 1]
-    dm11: cython.double = ext_dm[1, 1]
-    dm21: cython.double = ext_dm[2, 1]
-    dm02: cython.double = ext_dm[0, 2]
-    dm12: cython.double = ext_dm[1, 2]
-    dm22: cython.double = ext_dm[2, 2]
+    deno: cython.double = ext_dm[0, 2] * dx + ext_dm[1, 2] * dy + ext_dm[2, 2] * dz
 
-    deno: cython.double = dm02 * dx + dm12 * dy + dm22 * dz
-
-    x: cython.double = -int_cc * (dm00 * dx + dm10 * dy + dm20 * dz) / deno
-    y: cython.double = -int_cc * (dm01 * dx + dm11 * dy + dm21 * dz) / deno
+    x: cython.double = -int_cc * (ext_dm[0, 0] * dx + ext_dm[1, 0] * dy + ext_dm[2, 0] * dz) / deno
+    y: cython.double = -int_cc * (ext_dm[0, 1] * dx + ext_dm[1, 1] * dy + ext_dm[2, 1] * dz) / deno
 
     return x, y
+
+
+@cython.ccall
+def flat_image_coord(
+    pos: cython.double[:],
+    ext_x0: cython.double,
+    ext_y0: cython.double,
+    ext_z0: cython.double,
+    ext_dm: cython.double[:, :],
+    int_cc: cython.double,
+    glass_vec_x: cython.double,
+    glass_vec_y: cython.double,
+    glass_vec_z: cython.double,
+    mm_n1: cython.double,
+    mm_n2_0: cython.double,
+    mm_n3: cython.double,
+    mm_d0: cython.double,
+    mmlut=None,
+) -> tuple:
+    """Project 3D position to undistorted metric image coordinates."""
+    has_mmlut: cython.bint = False
+    mmlut_origin_x: cython.double = 0.0
+    mmlut_origin_y: cython.double = 0.0
+    mmlut_origin_z: cython.double = 0.0
+    mmlut_nr: cython.int = 0
+    mmlut_nz: cython.int = 0
+    mmlut_rw: cython.double = 0.0
+    mmlut_data: cython.double[:] = _DUMMY_MMLUT_DATA
+
+    if mmlut is not None and mmlut.data is not None:
+        has_mmlut = True
+        mmlut_origin_x = mmlut.origin[0]
+        mmlut_origin_y = mmlut.origin[1]
+        mmlut_origin_z = mmlut.origin[2]
+        mmlut_nr = mmlut.nr
+        mmlut_nz = mmlut.nz
+        mmlut_rw = mmlut.rw
+        mmlut_data = mmlut.data
+
+    return _flat_image_coord_core(
+        pos[0], pos[1], pos[2],
+        ext_x0, ext_y0, ext_z0, ext_dm, int_cc,
+        glass_vec_x, glass_vec_y, glass_vec_z,
+        mm_n1, mm_n2_0, mm_n3, mm_d0,
+        has_mmlut, mmlut_origin_x, mmlut_origin_y, mmlut_origin_z,
+        mmlut_nr, mmlut_nz, mmlut_rw, mmlut_data,
+    )
 
 
 def img_coord(
@@ -213,16 +448,36 @@ def _img_coord_params(
     she: cython.double,
     mmlut=None,
 ) -> tuple:
+    has_mmlut: cython.bint = False
+    mmlut_origin_x: cython.double = 0.0
+    mmlut_origin_y: cython.double = 0.0
+    mmlut_origin_z: cython.double = 0.0
+    mmlut_nr: cython.int = 0
+    mmlut_nz: cython.int = 0
+    mmlut_rw: cython.double = 0.0
+    mmlut_data: cython.double[:] = _DUMMY_MMLUT_DATA
+
+    if mmlut is not None and mmlut.data is not None:
+        has_mmlut = True
+        mmlut_origin_x = mmlut.origin[0]
+        mmlut_origin_y = mmlut.origin[1]
+        mmlut_origin_z = mmlut.origin[2]
+        mmlut_nr = mmlut.nr
+        mmlut_nz = mmlut.nz
+        mmlut_rw = mmlut.rw
+        mmlut_data = mmlut.data
+
     x: cython.double
     y: cython.double
-    x, y = flat_image_coord(
-        pos,
+    x, y = _flat_image_coord_core(
+        pos[0], pos[1], pos[2],
         ext_x0, ext_y0, ext_z0, ext_dm, int_cc,
         glass_vec_x, glass_vec_y, glass_vec_z,
         mm_n1, mm_n2_0, mm_n3, mm_d0,
-        mmlut=mmlut,
+        has_mmlut, mmlut_origin_x, mmlut_origin_y, mmlut_origin_z,
+        mmlut_nr, mmlut_nz, mmlut_rw, mmlut_data,
     )
-    return _flat_to_dist(x, y, int_xh, int_yh, k1, k2, k3, p1, p2, scx, she)
+    return _flat_to_dist_core(x, y, int_xh, int_yh, k1, k2, k3, p1, p2, scx, she)
 
 
 def img_coord_batch(positions, cal, mm):
@@ -241,6 +496,8 @@ def img_coord_batch(positions, cal, mm):
 
 
 @cython.ccall
+@cython.boundscheck(False)
+@cython.wraparound(False)
 def _img_coord_batch_impl(positions: cython.double[:, :], cal, mm) -> np.ndarray:
     n: cython.int = positions.shape[0]
     result = np.empty((n, 2), dtype=np.float64)
@@ -270,19 +527,38 @@ def _img_coord_batch_impl(positions: cython.double[:, :], cal, mm) -> np.ndarray
     she: cython.double = cal.added_par.she
     mmlut = cal.mmlut if cal.mmlut.is_initialized else None
 
+    has_mmlut: cython.bint = False
+    mmlut_origin_x: cython.double = 0.0
+    mmlut_origin_y: cython.double = 0.0
+    mmlut_origin_z: cython.double = 0.0
+    mmlut_nr: cython.int = 0
+    mmlut_nz: cython.int = 0
+    mmlut_rw: cython.double = 0.0
+    mmlut_data: cython.double[:] = _DUMMY_MMLUT_DATA
+
+    if mmlut is not None and mmlut.data is not None:
+        has_mmlut = True
+        mmlut_origin_x = mmlut.origin[0]
+        mmlut_origin_y = mmlut.origin[1]
+        mmlut_origin_z = mmlut.origin[2]
+        mmlut_nr = mmlut.nr
+        mmlut_nz = mmlut.nz
+        mmlut_rw = mmlut.rw
+        mmlut_data = mmlut.data
+
     i: cython.int
     x: cython.double
     y: cython.double
     for i in range(n):
-        x, y = _img_coord_params(
-            positions[i, :],
+        x, y = _flat_image_coord_core(
+            positions[i, 0], positions[i, 1], positions[i, 2],
             ext_x0, ext_y0, ext_z0, ext_dm, int_cc,
-            int_xh, int_yh, glass_vec_x, glass_vec_y, glass_vec_z,
-            mm_n1, mm_n2_0, mm_n3, mm_d0, k1, k2, k3, p1, p2, scx, she,
-            mmlut=mmlut,
+            glass_vec_x, glass_vec_y, glass_vec_z,
+            mm_n1, mm_n2_0, mm_n3, mm_d0,
+            has_mmlut, mmlut_origin_x, mmlut_origin_y, mmlut_origin_z,
+            mmlut_nr, mmlut_nz, mmlut_rw, mmlut_data,
         )
-        res_mv[i, 0] = x
-        res_mv[i, 1] = y
+        res_mv[i, 0], res_mv[i, 1] = _flat_to_dist_core(x, y, int_xh, int_yh, k1, k2, k3, p1, p2, scx, she)
     return result
 
 
@@ -302,6 +578,8 @@ def flat_image_coord_batch(positions, cal, mm):
 
 
 @cython.ccall
+@cython.boundscheck(False)
+@cython.wraparound(False)
 def _flat_image_coord_batch_impl(positions: cython.double[:, :], cal, mm) -> np.ndarray:
     n: cython.int = positions.shape[0]
     result = np.empty((n, 2), dtype=np.float64)
@@ -322,19 +600,35 @@ def _flat_image_coord_batch_impl(positions: cython.double[:, :], cal, mm) -> np.
     mm_d0: cython.double = mm.d[0]
     mmlut = cal.mmlut if cal.mmlut.is_initialized else None
 
+    has_mmlut: cython.bint = False
+    mmlut_origin_x: cython.double = 0.0
+    mmlut_origin_y: cython.double = 0.0
+    mmlut_origin_z: cython.double = 0.0
+    mmlut_nr: cython.int = 0
+    mmlut_nz: cython.int = 0
+    mmlut_rw: cython.double = 0.0
+    mmlut_data: cython.double[:] = _DUMMY_MMLUT_DATA
+
+    if mmlut is not None and mmlut.data is not None:
+        has_mmlut = True
+        mmlut_origin_x = mmlut.origin[0]
+        mmlut_origin_y = mmlut.origin[1]
+        mmlut_origin_z = mmlut.origin[2]
+        mmlut_nr = mmlut.nr
+        mmlut_nz = mmlut.nz
+        mmlut_rw = mmlut.rw
+        mmlut_data = mmlut.data
+
     i: cython.int
-    x: cython.double
-    y: cython.double
     for i in range(n):
-        x, y = flat_image_coord(
-            positions[i, :],
+        res_mv[i, 0], res_mv[i, 1] = _flat_image_coord_core(
+            positions[i, 0], positions[i, 1], positions[i, 2],
             ext_x0, ext_y0, ext_z0, ext_dm, int_cc,
             glass_vec_x, glass_vec_y, glass_vec_z,
             mm_n1, mm_n2_0, mm_n3, mm_d0,
-            mmlut=mmlut,
+            has_mmlut, mmlut_origin_x, mmlut_origin_y, mmlut_origin_z,
+            mmlut_nr, mmlut_nz, mmlut_rw, mmlut_data,
         )
-        res_mv[i, 0] = x
-        res_mv[i, 1] = y
     return result
 
 

@@ -7,12 +7,14 @@ parameters using known 3D points and their 2D image projections.
 """
 from __future__ import annotations
 
+import math
 import cython
 
 import copy
 from pathlib import Path
 
 import numpy as np
+from .ray_tracing import _ray_tracing_core
 
 NPAR = 19
 IDT = 10
@@ -20,6 +22,65 @@ NUM_ITER = 80
 POS_INF = 1e20
 CONVERGENCE = 0.00001
 COORD_UNUSED = -1e10
+
+
+@cython.cfunc
+@cython.inline
+@cython.boundscheck(False)
+@cython.wraparound(False)
+def _skew_midpoint_core(
+    v1_0: cython.double, v1_1: cython.double, v1_2: cython.double,
+    d1_0: cython.double, d1_1: cython.double, d1_2: cython.double,
+    v2_0: cython.double, v2_1: cython.double, v2_2: cython.double,
+    d2_0: cython.double, d2_1: cython.double, d2_2: cython.double,
+    midpoint: cython.double[:],
+) -> cython.double:
+    sp_x: cython.double = v2_0 - v1_0
+    sp_y: cython.double = v2_1 - v1_1
+    sp_z: cython.double = v2_2 - v1_2
+
+    perp_x: cython.double = d1_1 * d2_2 - d1_2 * d2_1
+    perp_y: cython.double = d1_2 * d2_0 - d1_0 * d2_2
+    perp_z: cython.double = d1_0 * d2_1 - d1_1 * d2_0
+
+    scale: cython.double = perp_x * perp_x + perp_y * perp_y + perp_z * perp_z
+
+    if scale < 1e-20:
+        midpoint[0] = (v1_0 + v2_0) * 0.5
+        midpoint[1] = (v1_1 + v2_1) * 0.5
+        midpoint[2] = (v1_2 + v2_2) * 0.5
+        return math.sqrt(sp_x * sp_x + sp_y * sp_y + sp_z * sp_z)
+
+    t1_x: cython.double = sp_y * d2_2 - sp_z * d2_1
+    t1_y: cython.double = sp_z * d2_0 - sp_x * d2_2
+    t1_z: cython.double = sp_x * d2_1 - sp_y * d2_0
+
+    dot1: cython.double = perp_x * t1_x + perp_y * t1_y + perp_z * t1_z
+    factor1: cython.double = dot1 / scale
+    on1_x: cython.double = v1_0 + d1_0 * factor1
+    on1_y: cython.double = v1_1 + d1_1 * factor1
+    on1_z: cython.double = v1_2 + d1_2 * factor1
+
+    t2_x: cython.double = sp_y * d1_2 - sp_z * d1_1
+    t2_y: cython.double = sp_z * d1_0 - sp_x * d1_2
+    t2_z: cython.double = sp_x * d1_1 - sp_y * d1_0
+
+    dot2: cython.double = perp_x * t2_x + perp_y * t2_y + perp_z * t2_z
+    factor2: cython.double = dot2 / scale
+    on2_x: cython.double = v2_0 + d2_0 * factor2
+    on2_y: cython.double = v2_1 + d2_1 * factor2
+    on2_z: cython.double = v2_2 + d2_2 * factor2
+
+    diff_x: cython.double = on1_x - on2_x
+    diff_y: cython.double = on1_y - on2_y
+    diff_z: cython.double = on1_z - on2_z
+    dist: cython.double = math.sqrt(diff_x * diff_x + diff_y * diff_y + diff_z * diff_z)
+
+    midpoint[0] = (on1_x + on2_x) * 0.5
+    midpoint[1] = (on1_y + on2_y) * 0.5
+    midpoint[2] = (on1_z + on2_z) * 0.5
+
+    return dist
 
 
 @cython.ccall
@@ -30,22 +91,18 @@ def skew_midpoint(
     direct2: np.ndarray,
 ) -> tuple[float, np.ndarray]:
     """Find midpoint of shortest distance segment between two skew rays."""
-    sp_diff = vert2 - vert1
-    perp_both = np.cross(direct1, direct2)
-    scale = np.dot(perp_both, perp_both)
-
-    if scale < 1e-20:
-        return np.linalg.norm(sp_diff), (vert1 + vert2) / 2
-
-    temp = np.cross(sp_diff, direct2)
-    on1 = vert1 + direct1 * (np.dot(perp_both, temp) / scale)
-
-    temp = np.cross(sp_diff, direct1)
-    on2 = vert2 + direct2 * (np.dot(perp_both, temp) / scale)
-
-    dist = np.linalg.norm(on1 - on2)
-    midpoint = (on1 + on2) * 0.5
-
+    midpoint = np.empty(3, dtype=np.float64)
+    v1: cython.double[:] = vert1
+    v2: cython.double[:] = vert2
+    d1: cython.double[:] = direct1
+    d2: cython.double[:] = direct2
+    dist = _skew_midpoint_core(
+        v1[0], v1[1], v1[2],
+        d1[0], d1[1], d1[2],
+        v2[0], v2[1], v2[2],
+        d2[0], d2[1], d2[2],
+        midpoint
+    )
     return dist, midpoint
 
 
@@ -62,66 +119,17 @@ def point_position(targets, num_cams, mm, cals):
     Returns:
         (position, avg_ray_distance) tuple.
     """
-    from .ray_tracing import ray_tracing
-
-    vertices = []
-    directs = []
-
-    cam: cython.int
-    pair: cython.int
-    num_used_pairs: cython.int = 0
-    dtot: cython.double = 0.0
-    x: cython.double
-    y: cython.double
-
-    for cam in range(num_cams):
-        x, y = targets[cam, 0], targets[cam, 1]
-        if x == COORD_UNUSED:
-            vertices.append(None)
-            directs.append(None)
-            continue
-
-        cal = cals[cam]
-        pos, direction = ray_tracing(
-            x, y,
-            cal.ext_par.dm,
-            cal.ext_par.x0, cal.ext_par.y0, cal.ext_par.z0,
-            cal.int_par.cc,
-            cal.glass_par.vec_x, cal.glass_par.vec_y, cal.glass_par.vec_z,
-            mm.n1, mm.n2[0], mm.n3, mm.d[0],
-        )
-        vertices.append(pos)
-        directs.append(direction)
-
-    dtot = 0.0
-    num_used_pairs = 0
-    point_tot = np.zeros(3)
-
-    for cam in range(num_cams):
-        if vertices[cam] is None:
-            continue
-        for pair in range(cam + 1, num_cams):
-            if vertices[pair] is None:
-                continue
-            num_used_pairs += 1
-            d, point = skew_midpoint(
-                vertices[cam], directs[cam],
-                vertices[pair], directs[pair],
-            )
-            dtot += d
-            point_tot += point
-
-    if num_used_pairs == 0:
-        return np.zeros(3), 0.0
-
-    res = point_tot / num_used_pairs
-    return res, dtot / num_used_pairs
+    targets_mv: cython.double[:, :] = np.ascontiguousarray(targets, dtype=np.float64)
+    t_3d = np.empty((1, num_cams, 2), dtype=np.float64)
+    t_3d[0] = targets_mv
+    positions, distances = point_position_batch(t_3d, num_cams, mm, cals)
+    return positions[0], distances[0]
 
 
 @cython.ccall
 @cython.boundscheck(False)
 @cython.wraparound(False)
-def point_position_batch(targets, num_cams, mm, cals):
+def point_position_batch(targets, num_cams: cython.int, mm, cals):
     """Compute 3D positions from multiple camera rays for M targets.
 
     Args:
@@ -133,15 +141,92 @@ def point_position_batch(targets, num_cams, mm, cals):
     Returns:
         (positions, distances) — (M, 3) and (M,) float64 arrays.
     """
-    targets = np.ascontiguousarray(targets, dtype=np.float64)
-    num_pts: cython.Py_ssize_t = targets.shape[0]
+    targets_mv: cython.double[:, :, :] = np.ascontiguousarray(targets, dtype=np.float64)
+    num_pts: cython.Py_ssize_t = targets_mv.shape[0]
     positions = np.empty((num_pts, 3), dtype=np.float64)
     distances = np.empty(num_pts, dtype=np.float64)
+    pos_mv: cython.double[:, :] = positions
+    dist_mv: cython.double[:] = distances
+
+    # Preallocate scratch buffers once for the entire batch loop
+    vertices = np.empty((num_cams, 3), dtype=np.float64)
+    directs = np.empty((num_cams, 3), dtype=np.float64)
+    vertices_mv: cython.double[:, :] = vertices
+    directs_mv: cython.double[:, :] = directs
+    used = np.empty(num_cams, dtype=np.int32)
+    used_mv: cython.int[:] = used
+
+    midpoint = np.empty(3, dtype=np.float64)
+    midpoint_mv: cython.double[:] = midpoint
+
     i: cython.Py_ssize_t
+    cam: cython.int
+    pair: cython.int
+    num_used_pairs: cython.int
+    dtot: cython.double
+    pt_tot_x: cython.double
+    pt_tot_y: cython.double
+    pt_tot_z: cython.double
+    d: cython.double
+    x: cython.double
+    y: cython.double
+
     for i in range(num_pts):
-        pos, dist = point_position(targets[i], num_cams, mm, cals)
-        positions[i] = pos
-        distances[i] = dist
+        for cam in range(num_cams):
+            x = targets_mv[i, cam, 0]
+            y = targets_mv[i, cam, 1]
+            if x == COORD_UNUSED:
+                used_mv[cam] = 0
+                continue
+            used_mv[cam] = 1
+
+            cal = cals[cam]
+            _ray_tracing_core(
+                x, y,
+                cal.ext_par.dm,
+                cal.ext_par.x0, cal.ext_par.y0, cal.ext_par.z0,
+                cal.int_par.cc,
+                cal.glass_par.vec_x, cal.glass_par.vec_y, cal.glass_par.vec_z,
+                mm.n1, mm.n2[0], mm.n3, mm.d[0],
+                vertices_mv[cam, :], directs_mv[cam, :]
+            )
+
+        dtot = 0.0
+        num_used_pairs = 0
+        pt_tot_x = 0.0
+        pt_tot_y = 0.0
+        pt_tot_z = 0.0
+
+        for cam in range(num_cams):
+            if used_mv[cam] == 0:
+                continue
+            for pair in range(cam + 1, num_cams):
+                if used_mv[pair] == 0:
+                    continue
+                num_used_pairs += 1
+                d = _skew_midpoint_core(
+                    vertices_mv[cam, 0], vertices_mv[cam, 1], vertices_mv[cam, 2],
+                    directs_mv[cam, 0], directs_mv[cam, 1], directs_mv[cam, 2],
+                    vertices_mv[pair, 0], vertices_mv[pair, 1], vertices_mv[pair, 2],
+                    directs_mv[pair, 0], directs_mv[pair, 1], directs_mv[pair, 2],
+                    midpoint_mv
+                )
+                dtot += d
+                pt_tot_x += midpoint_mv[0]
+                pt_tot_y += midpoint_mv[1]
+                pt_tot_z += midpoint_mv[2]
+
+        if num_used_pairs == 0:
+            pos_mv[i, 0] = 0.0
+            pos_mv[i, 1] = 0.0
+            pos_mv[i, 2] = 0.0
+            dist_mv[i] = 0.0
+        else:
+            pos_mv[i, 0] = pt_tot_x / num_used_pairs
+            pos_mv[i, 1] = pt_tot_y / num_used_pairs
+            pos_mv[i, 2] = pt_tot_z / num_used_pairs
+            dist_mv[i] = dtot / num_used_pairs
+
     return positions, distances
 
 
