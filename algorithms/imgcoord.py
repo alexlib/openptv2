@@ -6,9 +6,19 @@ Projects 3D world positions to 2D image coordinates, with or without
 distortion modeling.
 """
 
-import math
 import cython
 import numpy as np
+
+if cython.compiled:
+    from cython.cimports.libc.math import (
+        sqrt as c_sqrt, tan as c_tan, asin as c_asin,
+        sin as c_sin, atan as c_atan, cos as c_cos,
+    )
+else:
+    from math import (
+        sqrt as c_sqrt, tan as c_tan, asin as c_asin,
+        sin as c_sin, atan as c_atan, cos as c_cos,
+    )
 from .trafo import flat_to_dist as _flat_to_dist
 from .multimed import multimed_nlay as _multimed_nlay, get_mmf_from_mmlut as _get_mmf_from_mmlut
 
@@ -35,7 +45,7 @@ def _flat_to_dist_core(
     x: cython.double = flat_x + xh
     y: cython.double = flat_y + yh
 
-    r: cython.double = math.sqrt(x * x + y * y)
+    r: cython.double = c_sqrt(x * x + y * y)
     if r < 1e-10:
         return 0.0, 0.0
 
@@ -47,8 +57,8 @@ def _flat_to_dist_core(
     x_dist: cython.double = x * radial_factor + p1 * (r2 + 2.0 * x * x) + 2.0 * p2 * x * y
     y_dist: cython.double = y * radial_factor + p2 * (r2 + 2.0 * y * y) + 2.0 * p1 * x * y
 
-    sin_she: cython.double = math.sin(she)
-    cos_she: cython.double = math.cos(she)
+    sin_she: cython.double = c_sin(she)
+    cos_she: cython.double = c_cos(she)
 
     x1: cython.double = scx * (x_dist - sin_she * y_dist)
     y1: cython.double = scx * cos_she * y_dist
@@ -79,7 +89,7 @@ def _get_mmf_from_mmlut_core(
     iz: cython.int = int(sz)
     sz -= iz
 
-    R: cython.double = math.sqrt(tx * tx + ty * ty)
+    R: cython.double = c_sqrt(tx * tx + ty * ty)
     sr: cython.double = R / mmlut_rw
     ir: cython.int = int(sr)
     sr -= ir
@@ -146,24 +156,24 @@ def _multimed_r_1lay_iterative(
     tol: cython.double = 0.001
 
     for it in range(n_iter):
-        beta1 = math.atan(rq / (ext_z0 - pos_z))
-        sin_beta1 = math.sin(beta1)
+        beta1 = c_atan(rq / (ext_z0 - pos_z))
+        sin_beta1 = c_sin(beta1)
 
         arg = sin_beta1 * mm_n1 / mm_n2_0
         if arg > 1.0:
             arg = 1.0
         elif arg < -1.0:
             arg = -1.0
-        beta2 = math.asin(arg)
+        beta2 = c_asin(arg)
 
         arg = sin_beta1 * mm_n1 / mm_n3
         if arg > 1.0:
             arg = 1.0
         elif arg < -1.0:
             arg = -1.0
-        beta3 = math.asin(arg)
+        beta3 = c_asin(arg)
 
-        rbeta = (ext_z0 - mm_d0) * math.tan(beta1) - pos_z * math.tan(beta3) + mm_d0 * math.tan(beta2)
+        rbeta = (ext_z0 - mm_d0) * c_tan(beta1) - pos_z * c_tan(beta3) + mm_d0 * c_tan(beta2)
         rdiff = r - rbeta
         rq += rdiff
 
@@ -241,7 +251,7 @@ def _flat_image_coord_core(
     gz: cython.double = glass_vec_z
 
     # === trans_cam_point (inlined) ===
-    dist_o_glas: cython.double = math.sqrt(gx * gx + gy * gy + gz * gz)
+    dist_o_glas: cython.double = c_sqrt(gx * gx + gy * gy + gz * gz)
     inv_dog: cython.double = 1.0 / dist_o_glas
 
     dot_cam: cython.double = ext_x0 * gx + ext_y0 * gy + ext_z0 * gz
@@ -270,7 +280,7 @@ def _flat_image_coord_core(
     tmp_y: cython.double = cp_y - ag_y
     tmp_z: cython.double = cp_z - ag_z
 
-    pos_t_0: cython.double = math.sqrt(tmp_x * tmp_x + tmp_y * tmp_y + tmp_z * tmp_z)
+    pos_t_0: cython.double = c_sqrt(tmp_x * tmp_x + tmp_y * tmp_y + tmp_z * tmp_z)
     pos_t_2: cython.double = dist_point_glas
 
     # === mmlut lookup ===
@@ -296,7 +306,7 @@ def _flat_image_coord_core(
 
     # ag_x/y/z already computed above (after_glass)
     # tmp_x/y/z = cross_p - after_glass (already computed)
-    n_ve: cython.double = math.sqrt(tmp_x * tmp_x + tmp_y * tmp_y + tmp_z * tmp_z)
+    n_ve: cython.double = c_sqrt(tmp_x * tmp_x + tmp_y * tmp_y + tmp_z * tmp_z)
 
     s_z: cython.double = -pos_t_2 * inv_ngl
     bx: cython.double = ag_x - gx * s_z
@@ -551,7 +561,7 @@ def _img_coord_batch_impl(positions: cython.double[:, :], cal, mm) -> np.ndarray
     gy: cython.double = glass_vec_y
     gz: cython.double = glass_vec_z
 
-    dist_o_glas: cython.double = math.sqrt(gx * gx + gy * gy + gz * gz)
+    dist_o_glas: cython.double = c_sqrt(gx * gx + gy * gy + gz * gz)
     inv_dog: cython.double = 1.0 / dist_o_glas
 
     dot_cam: cython.double = ext_x0 * gx + ext_y0 * gy + ext_z0 * gz
@@ -570,8 +580,8 @@ def _img_coord_batch_impl(positions: cython.double[:, :], cal, mm) -> np.ndarray
     ag_z: cython.double = cc_z - gz * s_d
 
     # Hoist point-independent calculations from flat_to_dist
-    sin_she: cython.double = math.sin(she)
-    cos_she: cython.double = math.cos(she)
+    sin_she: cython.double = c_sin(she)
+    cos_she: cython.double = c_cos(she)
 
     i: cython.int
     pos0: cython.double
@@ -643,7 +653,7 @@ def _img_coord_batch_impl(positions: cython.double[:, :], cal, mm) -> np.ndarray
         tmp_y = cp_y - ag_y
         tmp_z = cp_z - ag_z
 
-        pos_t_0 = math.sqrt(tmp_x * tmp_x + tmp_y * tmp_y + tmp_z * tmp_z)
+        pos_t_0 = c_sqrt(tmp_x * tmp_x + tmp_y * tmp_y + tmp_z * tmp_z)
         pos_t_2 = dist_point_glas
 
         # === mmlut lookup ===
@@ -669,24 +679,24 @@ def _img_coord_batch_impl(positions: cython.double[:, :], cal, mm) -> np.ndarray
                 rq = r_val
 
                 for it in range(40):
-                    beta1 = math.atan(rq / (ext_t_z0 - pos_t_2))
-                    sin_beta1 = math.sin(beta1)
+                    beta1 = c_atan(rq / (ext_t_z0 - pos_t_2))
+                    sin_beta1 = c_sin(beta1)
 
                     arg = sin_beta1 * mm_n1 / mm_n2_0
                     if arg > 1.0:
                         arg = 1.0
                     elif arg < -1.0:
                         arg = -1.0
-                    beta2 = math.asin(arg)
+                    beta2 = c_asin(arg)
 
                     arg = sin_beta1 * mm_n1 / mm_n3
                     if arg > 1.0:
                         arg = 1.0
                     elif arg < -1.0:
                         arg = -1.0
-                    beta3 = math.asin(arg)
+                    beta3 = c_asin(arg)
 
-                    rbeta = (ext_t_z0 - mm_d0) * math.tan(beta1) - pos_t_2 * math.tan(beta3) + mm_d0 * math.tan(beta2)
+                    rbeta = (ext_t_z0 - mm_d0) * c_tan(beta1) - pos_t_2 * c_tan(beta3) + mm_d0 * c_tan(beta2)
                     rdiff = r_val - rbeta
                     rq += rdiff
 
@@ -731,7 +741,7 @@ def _img_coord_batch_impl(positions: cython.double[:, :], cal, mm) -> np.ndarray
         x_pt = flat_x + int_xh
         y_pt = flat_y + int_yh
 
-        r_pt = math.sqrt(x_pt * x_pt + y_pt * y_pt)
+        r_pt = c_sqrt(x_pt * x_pt + y_pt * y_pt)
         if r_pt < 1e-10:
             res_mv[i, 0] = 0.0
             res_mv[i, 1] = 0.0
@@ -812,7 +822,7 @@ def _flat_image_coord_batch_impl(positions: cython.double[:, :], cal, mm) -> np.
     gy: cython.double = glass_vec_y
     gz: cython.double = glass_vec_z
 
-    dist_o_glas: cython.double = math.sqrt(gx * gx + gy * gy + gz * gz)
+    dist_o_glas: cython.double = c_sqrt(gx * gx + gy * gy + gz * gz)
     inv_dog: cython.double = 1.0 / dist_o_glas
 
     dot_cam: cython.double = ext_x0 * gx + ext_y0 * gy + ext_z0 * gz
@@ -888,7 +898,7 @@ def _flat_image_coord_batch_impl(positions: cython.double[:, :], cal, mm) -> np.
         tmp_y = cp_y - ag_y
         tmp_z = cp_z - ag_z
 
-        pos_t_0 = math.sqrt(tmp_x * tmp_x + tmp_y * tmp_y + tmp_z * tmp_z)
+        pos_t_0 = c_sqrt(tmp_x * tmp_x + tmp_y * tmp_y + tmp_z * tmp_z)
         pos_t_2 = dist_point_glas
 
         # === mmlut lookup ===
@@ -914,24 +924,24 @@ def _flat_image_coord_batch_impl(positions: cython.double[:, :], cal, mm) -> np.
                 rq = r_val
 
                 for it in range(40):
-                    beta1 = math.atan(rq / (ext_t_z0 - pos_t_2))
-                    sin_beta1 = math.sin(beta1)
+                    beta1 = c_atan(rq / (ext_t_z0 - pos_t_2))
+                    sin_beta1 = c_sin(beta1)
 
                     arg = sin_beta1 * mm_n1 / mm_n2_0
                     if arg > 1.0:
                         arg = 1.0
                     elif arg < -1.0:
                         arg = -1.0
-                    beta2 = math.asin(arg)
+                    beta2 = c_asin(arg)
 
                     arg = sin_beta1 * mm_n1 / mm_n3
                     if arg > 1.0:
                         arg = 1.0
                     elif arg < -1.0:
                         arg = -1.0
-                    beta3 = math.asin(arg)
+                    beta3 = c_asin(arg)
 
-                    rbeta = (ext_t_z0 - mm_d0) * math.tan(beta1) - pos_t_2 * math.tan(beta3) + mm_d0 * math.tan(beta2)
+                    rbeta = (ext_t_z0 - mm_d0) * c_tan(beta1) - pos_t_2 * c_tan(beta3) + mm_d0 * c_tan(beta2)
                     rdiff = r_val - rbeta
                     rq += rdiff
 
