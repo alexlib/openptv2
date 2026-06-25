@@ -297,11 +297,12 @@ def validate_point_positions(
     cals = [_load_openptv_calibration(i) for i in range(1, 5)]
     cpar = _build_openptv_control()
     rng = np.random.default_rng(42)
-    positions_3d = rng.uniform(-10, 10, (10, 3))
+    positions_3d = rng.uniform(-20, 20, (10, 3))
+    positions_3d[:, 2] = rng.uniform(60, 120, 10)
     
     targets = np.empty((10, 4, 2), dtype=np.float64)
     for cam in range(4):
-        targets[:, cam, :] = openptv2.image_coordinates(positions_3d, cals[cam], cpar.mm)
+        targets[:, cam, :] = openptv2.image_coordinates(positions_3d, cals[cam], cpar.get_multimedia_params())
 
     positions, rcm = openptv2.multi_cam_point_positions(targets, cpar, cals)
 
@@ -316,6 +317,9 @@ def validate_point_positions(
 
     legacy_cals = [_load_legacy_calibration(legacy, i) for i in range(1, 5)]
     legacy_cpar = _build_legacy_control(legacy)
+    legacy_cpar.get_multimedia_params().set_layers(
+        np.array([1.0, 1.0, 1.0]), np.array([0.0, 0.0, 0.0])
+    )
     legacy_positions, legacy_rcm = legacy["orientation"].multi_cam_point_positions(
         targets,
         legacy_cpar,
@@ -355,6 +359,9 @@ def benchmark_against_legacy(
 
     cpar = _build_openptv_control()
     legacy_cpar = _build_legacy_control(legacy)
+    legacy_cpar.get_multimedia_params().set_layers(
+        np.array([1.0, 1.0, 1.0]), np.array([0.0, 0.0, 0.0])
+    )
     pixels = np.random.default_rng(42).random((4096, 2), dtype=np.float64)
     pixels[:, 0] *= 1280.0
     pixels[:, 1] *= 1024.0
