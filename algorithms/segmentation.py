@@ -15,7 +15,6 @@ import cython
 
 import numpy as np
 from dataclasses import dataclass, field
-from collections import deque
 
 # Constant for no correspondence assigned
 CORRES_NONE = -1
@@ -202,6 +201,22 @@ def peak_fit(
     j: cython.Py_ssize_t
     gv: cython.int
 
+    # Pre-allocated typed arrays for BFS queue (maximally sized to image dimensions)
+    _qx = np.empty(imy * imx, dtype=np.int32)
+    _qy = np.empty(imy * imx, dtype=np.int32)
+    qx: cython.int[:] = _qx
+    qy: cython.int[:] = _qy
+    qhead: cython.int
+    qtail: cython.int
+    wx: cython.int
+    wy: cython.int
+    nx_pos: cython.int
+    ny_pos: cython.int
+    gvref: cython.int
+    neighbor_gv: cython.int
+    dx: cython.int
+    dy: cython.int
+
     # Label image
     label_img = np.zeros((imy, imx), dtype=np.int32)
     peaks: list[Peak] = []
@@ -235,16 +250,23 @@ def peak_fit(
             )
             peaks.append(peak)
 
-            # BFS region growing
-            waitlist: deque[tuple[int, int]] = deque([(j, i)])
+            # BFS region growing — typed array queue (faster than deque in compiled mode)
+            qhead = 0
+            qtail = 0
+            qx[qtail] = j
+            qy[qtail] = i
+            qtail += 1
             label_img[i, j] = n_peaks
 
-            while waitlist:
-                wx, wy = waitlist.popleft()
+            while qhead < qtail:
+                wx = qx[qhead]
+                wy = qy[qhead]
+                qhead += 1
                 gvref = int(img[wy, wx])
 
                 for dx, dy in [(0, -1), (0, 1), (-1, 0), (1, 0)]:
-                    nx_pos, ny_pos = wx + dx, wy + dy
+                    nx_pos = wx + dx
+                    ny_pos = wy + dy
                     if not (0 <= nx_pos < imx and 0 <= ny_pos < imy):
                         continue
                     if label_img[ny_pos, nx_pos] != 0:
@@ -263,7 +285,9 @@ def peak_fit(
                         and gvref + discont >= int(img[ny_pos, nx_pos + 1])
                     ):
                         label_img[ny_pos, nx_pos] = n_peaks
-                        waitlist.append((nx_pos, ny_pos))
+                        qx[qtail] = nx_pos
+                        qy[qtail] = ny_pos
+                        qtail += 1
 
     # ---- Pass 2: Collect data and detect touches ----
     for i in range(ymin, ymax):

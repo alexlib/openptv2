@@ -19,7 +19,7 @@ Translating the OpenPTV C library (`lib/src/**`) into pure Python with NumPy (`a
 | `epi` | ✅ Complete | Fully translated and tested. |
 | `orientation` | ✅ Complete | Fully translated and tested. |
 | `correspondences` | ✅ Complete | Fully translated and tested. |
-| `segmentation` | ⏳ In Progress | `targ_rec` done, `peak_fit` needs `check_touch`. |
+| `segmentation` | ✅ Complete | Fully translated and tested (including BFS typed array queue in peak_fit and check_touch). |
 | `sortgrid` | ✅ Complete | Bug fixed, parity with C/Cython verified, vectorized NN. |
 | `tracking_frame_buf`| ✅ Complete | Frame buffer, file I/O, SoA sync all working. |
 | `tracking_run` | ✅ Complete | `tr_new`, `volumedimension`, all parameters wired up. |

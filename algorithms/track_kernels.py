@@ -624,8 +624,8 @@ def sort_candidates_by_freq_fast(ftnr: cython.int[:], freq: cython.int[:],
 def sorted_candidates_fast(
     center: cython.double[:], center_proj_x: cython.double[:], center_proj_y: cython.double[:],
     num_cams: cython.int, max_cands: cython.int,
-    cal_arrays, mmlut_datas, mmlut_origins, mmlut_nrs, mmlut_nzs, mmlut_rws,
-    targ_x_tuple, targ_y_tuple, targ_tnr_tuple, num_targets,
+    cal_arrays: tuple, mmlut_datas: tuple, mmlut_origins: tuple, mmlut_nrs: tuple, mmlut_nzs: tuple, mmlut_rws: tuple,
+    targ_x_tuple: object, targ_y_tuple: object, targ_tnr_tuple: object, num_targets: cython.int[:],
     dvxmin: cython.double, dvxmax: cython.double, dvymin: cython.double, dvymax: cython.double,
     dvzmin: cython.double, dvzmax: cython.double,
     imx_half: cython.double, imy_half: cython.double,
@@ -1163,19 +1163,19 @@ def trackcorr_loop_fast(
     # Frame 1 (curr — read/write)
     path_x_1: cython.double[:, :], path_prev_1: cython.int[:], path_next_1: cython.int[:], path_inlist_1: cython.int[:],
     path_finaldecis_1: cython.double[:], path_decis_1: cython.double[:, :], path_linkdecis_1: cython.int[:, :],
-    corres_p_1: cython.int[:, :], targ_x_1, targ_y_1,
+    corres_p_1: cython.int[:, :], targ_x_1: object, targ_y_1: object,
     # Frame 2 (next — read/write)
     path_x_2: cython.double[:, :], path_prev_2: cython.int[:], path_next_2: cython.int[:], path_inlist_2: cython.int[:],
     path_prio_2: cython.int[:], path_finaldecis_2: cython.double[:], path_decis_2: cython.double[:, :], path_linkdecis_2: cython.int[:, :],
     corres_p_2: cython.int[:, :], corres_nr_2: cython.int[:],
-    targ_x_2, targ_y_2, targ_tnr_2, num_targets_2: cython.int[:], num_parts_2: cython.int[:],
+    targ_x_2: object, targ_y_2: object, targ_tnr_2: object, num_targets_2: cython.int[:], num_parts_2: cython.int[:],
     # Frame 3 (next-next — read/write)
     path_x_3: cython.double[:, :], path_prev_3: cython.int[:], path_next_3: cython.int[:], path_inlist_3: cython.int[:],
     path_prio_3: cython.int[:], path_finaldecis_3: cython.double[:], path_decis_3: cython.double[:, :], path_linkdecis_3: cython.int[:, :],
     corres_p_3: cython.int[:, :], corres_nr_3: cython.int[:],
-    targ_x_3, targ_y_3, targ_tnr_3, num_targets_3: cython.int[:], num_parts_3: cython.int[:],
+    targ_x_3: object, targ_y_3: object, targ_tnr_3: object, num_targets_3: cython.int[:], num_parts_3: cython.int[:],
     # Calibration
-    cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t,
+    cal_t: tuple, md_t: tuple, mo_t: tuple, mnr_t: tuple, mnz_t: tuple, mrw_t: tuple,
     # Tracking params
     dvxmin: cython.double, dvxmax: cython.double, dvymin: cython.double, dvymax: cython.double, dvzmin: cython.double, dvzmax: cython.double,
     dacc: cython.double, dangle: cython.double, add_flag: cython.int, lmax: cython.double,
@@ -1619,14 +1619,14 @@ def trackback_loop_fast(
     path_finaldecis_1: cython.double[:], path_decis_1: cython.double[:, :], path_linkdecis_1: cython.int[:, :],
     # Frame 2 (backward/prev in time — read/write)
     path_x_2: cython.double[:, :], path_prev_2: cython.int[:], path_next_2: cython.int[:], num_parts_2: cython.int[:],
-    targ_x_2, targ_y_2, targ_tnr_2, num_targets_2: cython.int[:],
+    targ_x_2: object, targ_y_2: object, targ_tnr_2: object, num_targets_2: cython.int[:],
     corres_p_2: cython.int[:, :], corres_nr_2: cython.int[:],
     path_inlist_2: cython.int[:], path_prio_2: cython.int[:], path_finaldecis_2: cython.double[:],
     path_decis_2: cython.double[:, :], path_linkdecis_2: cython.int[:, :],
     # Frame 3 (further backward — read only, for extra angle check)
     path_x_3: cython.double[:, :], path_prev_3: cython.int[:],
     # Calibration
-    cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t,
+    cal_t: tuple, md_t: tuple, mo_t: tuple, mnr_t: tuple, mnz_t: tuple, mrw_t: tuple,
     # Tracking params
     dvxmin: cython.double, dvxmax: cython.double, dvymin: cython.double, dvymax: cython.double, dvzmin: cython.double, dvzmax: cython.double,
     dacc: cython.double, dangle: cython.double, add_flag: cython.int, lmax: cython.double,

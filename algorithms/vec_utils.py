@@ -23,6 +23,7 @@ EMPTY_CELL = np.nan
 
 
 @cython.ccall
+@cython.inline
 def is_empty(x: cython.double) -> cython.bint:
     """Check if a value represents an empty cell (NaN)."""
     return c_isnan(x)
@@ -122,6 +123,7 @@ def vec_scalar_mul(vec: cython.double[:], scalar: cython.double) -> np.ndarray:
 
 
 @cython.ccall
+@cython.inline
 def vec_norm(vec: cython.double[:]) -> cython.double:
     """Compute the Euclidean norm of a 3D vector.
 
@@ -135,6 +137,7 @@ def vec_norm(vec: cython.double[:]) -> cython.double:
 
 
 @cython.ccall
+@cython.inline
 def vec_diff_norm(vec1: cython.double[:], vec2: cython.double[:]) -> cython.double:
     """Compute the norm of the difference between two vectors.
 
@@ -153,6 +156,7 @@ def vec_diff_norm(vec1: cython.double[:], vec2: cython.double[:]) -> cython.doub
 
 
 @cython.ccall
+@cython.inline
 def vec_dot(vec1: cython.double[:], vec2: cython.double[:]) -> cython.double:
     """Compute the dot product of two 3D vectors.
 
@@ -183,6 +187,7 @@ def vec_cross(vec1: cython.double[:], vec2: cython.double[:]) -> np.ndarray:
 
 
 @cython.ccall
+@cython.inline
 def vec_cmp(vec1: cython.double[:], vec2: cython.double[:]) -> cython.bint:
     """Check exact equality of two vectors.
 
@@ -196,6 +201,7 @@ def vec_cmp(vec1: cython.double[:], vec2: cython.double[:]) -> cython.bint:
 
 
 @cython.ccall
+@cython.inline
 def vec_approx_cmp(vec1: cython.double[:], vec2: cython.double[:], eps: cython.double = 1e-10) -> cython.bint:
     """Check approximate equality of two vectors.
 
