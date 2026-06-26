@@ -1250,7 +1250,7 @@ class MainGUI(HasTraits):
             ),
             # Removed message_window from view
         ),
-        title="pyPTV " + openptv_version,
+        title="OpenPTV2 GUI " + openptv_version,
         id="main_view",
         width=1.0,
         height=1.0,

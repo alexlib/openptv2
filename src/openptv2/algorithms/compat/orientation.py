@@ -16,6 +16,25 @@ from openptv2.algorithms.orientation import (
 )
 
 
+def _is_empty_targets(targets) -> bool:
+    """Check if the given targets structure represents an empty set of targets."""
+    if targets is None:
+        return True
+    if hasattr(targets, "shape"):
+        return targets.size == 0 or targets.shape[0] == 0
+    if len(targets) == 0:
+        return True
+    total_elements = 0
+    for t in targets:
+        if hasattr(t, "_targets"):
+            total_elements += len(t._targets)
+        elif hasattr(t, "__len__"):
+            total_elements += len(t)
+        else:
+            total_elements += 1
+    return total_elements == 0
+
+
 def external_calibration(cal, ref_pts, img_pts, cpar):
     """
     External calibration wrapper.
@@ -99,6 +118,9 @@ def multi_cam_point_positions(targets, cpar, cals):
     Returns:
         tuple: (positions ndarray[n,3], distances ndarray[n])
     """
+    if _is_empty_targets(targets):
+        return np.empty((0, 3), dtype=np.float64), np.empty(0, dtype=np.float64)
+
     # Unwrap targets if they're TargetArrays
     unwrapped_targets = []
     for cam_targets in targets:
@@ -126,6 +148,9 @@ def point_positions(targets, cpar, cals, vpar=None):
     Returns:
         tuple: (positions ndarray[n,3], distances ndarray[n])
     """
+    if _is_empty_targets(targets):
+        return np.empty((0, 3), dtype=np.float64), np.empty(0, dtype=np.float64)
+
     # Unwrap targets if they're TargetArrays
     unwrapped_targets = []
     for cam_targets in targets:
@@ -139,18 +164,6 @@ def point_positions(targets, cpar, cals, vpar=None):
 
     # Unwrap volume params
     unwrapped_vpar = vpar._vpar if vpar is not None else None
-
-    print(f"DEBUG point_positions:")
-    print(f"  type(targets): {type(targets)}")
-    if hasattr(targets, "shape"):
-        print(f"  targets.shape: {targets.shape}")
-    print(f"  len(unwrapped_targets): {len(unwrapped_targets)}")
-    if len(unwrapped_targets) > 0:
-        print(f"  type(unwrapped_targets[0]): {type(unwrapped_targets[0])}")
-        if hasattr(unwrapped_targets[0], "shape"):
-            print(f"  unwrapped_targets[0].shape: {unwrapped_targets[0].shape}")
-    print(f"  len(cals): {len(cals)}")
-    print(f"  len(unwrapped_cals): {len(unwrapped_cals)}")
 
     return _point_positions(unwrapped_targets, cpar._cpar, unwrapped_cals, unwrapped_vpar)
 
@@ -168,6 +181,9 @@ def single_cam_point_positions(targets, cpar, cals, vpar):
     Returns:
         tuple: (positions ndarray[n,3], distances ndarray[n])
     """
+    if _is_empty_targets(targets):
+        return np.empty((0, 3), dtype=np.float64), np.empty(0, dtype=np.float64)
+
     # Unwrap targets if they're TargetArrays
     unwrapped_targets = []
     for cam_targets in targets:

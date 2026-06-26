@@ -3,12 +3,12 @@
 /* BEGIN: Cython Metadata
 {
     "distutils": {
-        "name": "algorithms.tracking_run",
+        "name": "openptv2.algorithms.tracking_run",
         "sources": [
-            "algorithms/tracking_run.py"
+            "src/openptv2/algorithms/tracking_run.py"
         ]
     },
-    "module_name": "algorithms.tracking_run"
+    "module_name": "openptv2.algorithms.tracking_run"
 }
 END: Cython Metadata */
 
@@ -1126,8 +1126,8 @@ static int __Pyx_init_co_variables(void) {
   #endif
 #endif
 
-#define __PYX_HAVE__algorithms__tracking_run
-#define __PYX_HAVE_API__algorithms__tracking_run
+#define __PYX_HAVE__openptv2__algorithms__tracking_run
+#define __PYX_HAVE_API__openptv2__algorithms__tracking_run
 /* Early includes */
 #ifdef _OPENMP
 #include <omp.h>
@@ -1345,7 +1345,7 @@ static const char *__pyx_filename;
 /* #### Code section: filename_table ### */
 
 static const char* const __pyx_f[] = {
-  "algorithms/tracking_run.py",
+  "src/openptv2/algorithms/tracking_run.py",
 };
 /* #### Code section: utility_code_proto_before_types ### */
 /* Atomics.proto (used by UnpackUnboundCMethod) */
@@ -2312,21 +2312,21 @@ static int __Pyx_State_RemoveModule(void*);
 
 /* Module declarations from "cython" */
 
-/* Module declarations from "algorithms.tracking_run" */
-static PyObject *__pyx_f_10algorithms_12tracking_run_tr_new(PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+/* Module declarations from "openptv2.algorithms.tracking_run" */
+static PyObject *__pyx_f_8openptv2_10algorithms_12tracking_run_tr_new(PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
 /* #### Code section: typeinfo ### */
 /* #### Code section: before_global_var ### */
-#define __Pyx_MODULE_NAME "algorithms.tracking_run"
-extern int __pyx_module_is_main_algorithms__tracking_run;
-int __pyx_module_is_main_algorithms__tracking_run = 0;
+#define __Pyx_MODULE_NAME "openptv2.algorithms.tracking_run"
+extern int __pyx_module_is_main_openptv2__algorithms__tracking_run;
+int __pyx_module_is_main_openptv2__algorithms__tracking_run = 0;
 
-/* Implementation of "algorithms.tracking_run" */
+/* Implementation of "openptv2.algorithms.tracking_run" */
 /* #### Code section: global_var ### */
 /* #### Code section: string_decls ### */
 /* #### Code section: decls ### */
-static PyObject *__pyx_pf_10algorithms_12tracking_run_11TrackingRun___post_init__(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_10algorithms_12tracking_run_tr_new(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_seq_par, PyObject *__pyx_v_tpar, PyObject *__pyx_v_vpar, PyObject *__pyx_v_cpar, PyObject *__pyx_v_buf_len, PyObject *__pyx_v_max_targets, PyObject *__pyx_v_corres_file_base, PyObject *__pyx_v_linkage_file_base, PyObject *__pyx_v_prio_file_base, PyObject *__pyx_v_cal, PyObject *__pyx_v_flatten_tol); /* proto */
-static PyObject *__pyx_pf_10algorithms_12tracking_run_2is_compiled(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_12tracking_run_11TrackingRun___post_init__(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_12tracking_run_tr_new(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_seq_par, PyObject *__pyx_v_tpar, PyObject *__pyx_v_vpar, PyObject *__pyx_v_cpar, PyObject *__pyx_v_buf_len, PyObject *__pyx_v_max_targets, PyObject *__pyx_v_corres_file_base, PyObject *__pyx_v_linkage_file_base, PyObject *__pyx_v_prio_file_base, PyObject *__pyx_v_cal, PyObject *__pyx_v_flatten_tol); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_12tracking_run_2is_compiled(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
 /* #### Code section: late_includes ### */
 /* #### Code section: module_state ### */
 /* SmallCodeConfig */
@@ -2395,7 +2395,7 @@ static __pyx_mstatetype * const __pyx_mstate_global = &__pyx_mstate_global_stati
 /* #### Code section: constant_name_defines ### */
 #define __pyx_kp_u_ __pyx_string_tab[0]
 #define __pyx_kp_u__2 __pyx_string_tab[1]
-#define __pyx_kp_u_algorithms_tracking_run_py __pyx_string_tab[2]
+#define __pyx_kp_u_src_openptv2_algorithms_tracking __pyx_string_tab[2]
 #define __pyx_n_u_ControlPar __pyx_string_tab[3]
 #define __pyx_n_u_FrameBuf __pyx_string_tab[4]
 #define __pyx_n_u_Pyx_PyDict_NextRef __pyx_string_tab[5]
@@ -2407,59 +2407,59 @@ static __pyx_mstatetype * const __pyx_mstate_global = &__pyx_mstate_global_stati
 #define __pyx_n_u_X_lay __pyx_string_tab[11]
 #define __pyx_n_u_Zmax_lay __pyx_string_tab[12]
 #define __pyx_n_u_Zmin_lay __pyx_string_tab[13]
-#define __pyx_n_u_algorithms_multimed __pyx_string_tab[14]
-#define __pyx_n_u_algorithms_parameters __pyx_string_tab[15]
-#define __pyx_n_u_algorithms_tracking_frame_buf __pyx_string_tab[16]
-#define __pyx_n_u_algorithms_tracking_run __pyx_string_tab[17]
-#define __pyx_n_u_annotations __pyx_string_tab[18]
-#define __pyx_n_u_asyncio_coroutines __pyx_string_tab[19]
-#define __pyx_n_u_bool __pyx_string_tab[20]
-#define __pyx_n_u_buf_len __pyx_string_tab[21]
-#define __pyx_n_u_c __pyx_string_tab[22]
-#define __pyx_n_u_cal __pyx_string_tab[23]
-#define __pyx_n_u_cline_in_traceback __pyx_string_tab[24]
-#define __pyx_n_u_convert_track_par_to_tuple __pyx_string_tab[25]
-#define __pyx_n_u_corres_file_base __pyx_string_tab[26]
-#define __pyx_n_u_cpar __pyx_string_tab[27]
-#define __pyx_n_u_dataclass __pyx_string_tab[28]
-#define __pyx_n_u_dataclasses __pyx_string_tab[29]
-#define __pyx_n_u_doc __pyx_string_tab[30]
-#define __pyx_n_u_dvxmax __pyx_string_tab[31]
-#define __pyx_n_u_dvxmin __pyx_string_tab[32]
-#define __pyx_n_u_dvymax __pyx_string_tab[33]
-#define __pyx_n_u_dvymin __pyx_string_tab[34]
-#define __pyx_n_u_dvzmax __pyx_string_tab[35]
-#define __pyx_n_u_dvzmin __pyx_string_tab[36]
-#define __pyx_n_u_fb __pyx_string_tab[37]
-#define __pyx_n_u_field __pyx_string_tab[38]
-#define __pyx_n_u_flatten_tol __pyx_string_tab[39]
-#define __pyx_n_u_float __pyx_string_tab[40]
-#define __pyx_n_u_from_file __pyx_string_tab[41]
-#define __pyx_n_u_func __pyx_string_tab[42]
-#define __pyx_n_u_img_base_name __pyx_string_tab[43]
-#define __pyx_n_u_init __pyx_string_tab[44]
-#define __pyx_n_u_init_mmlut __pyx_string_tab[45]
-#define __pyx_n_u_int __pyx_string_tab[46]
-#define __pyx_n_u_is_compiled __pyx_string_tab[47]
-#define __pyx_n_u_is_coroutine __pyx_string_tab[48]
-#define __pyx_n_u_is_initialized __pyx_string_tab[49]
-#define __pyx_n_u_items __pyx_string_tab[50]
-#define __pyx_n_u_linalg __pyx_string_tab[51]
-#define __pyx_n_u_linkage_file_base __pyx_string_tab[52]
-#define __pyx_n_u_list __pyx_string_tab[53]
-#define __pyx_n_u_lmax __pyx_string_tab[54]
-#define __pyx_n_u_main __pyx_string_tab[55]
-#define __pyx_n_u_max_targets __pyx_string_tab[56]
-#define __pyx_n_u_metaclass __pyx_string_tab[57]
-#define __pyx_n_u_mmlut __pyx_string_tab[58]
-#define __pyx_n_u_module __pyx_string_tab[59]
-#define __pyx_n_u_name __pyx_string_tab[60]
-#define __pyx_n_u_nlinks __pyx_string_tab[61]
-#define __pyx_n_u_norm __pyx_string_tab[62]
-#define __pyx_n_u_np __pyx_string_tab[63]
-#define __pyx_n_u_npart __pyx_string_tab[64]
-#define __pyx_n_u_num_cams __pyx_string_tab[65]
-#define __pyx_n_u_numpy __pyx_string_tab[66]
+#define __pyx_n_u_annotations __pyx_string_tab[14]
+#define __pyx_n_u_asyncio_coroutines __pyx_string_tab[15]
+#define __pyx_n_u_bool __pyx_string_tab[16]
+#define __pyx_n_u_buf_len __pyx_string_tab[17]
+#define __pyx_n_u_c __pyx_string_tab[18]
+#define __pyx_n_u_cal __pyx_string_tab[19]
+#define __pyx_n_u_cline_in_traceback __pyx_string_tab[20]
+#define __pyx_n_u_convert_track_par_to_tuple __pyx_string_tab[21]
+#define __pyx_n_u_corres_file_base __pyx_string_tab[22]
+#define __pyx_n_u_cpar __pyx_string_tab[23]
+#define __pyx_n_u_dataclass __pyx_string_tab[24]
+#define __pyx_n_u_dataclasses __pyx_string_tab[25]
+#define __pyx_n_u_doc __pyx_string_tab[26]
+#define __pyx_n_u_dvxmax __pyx_string_tab[27]
+#define __pyx_n_u_dvxmin __pyx_string_tab[28]
+#define __pyx_n_u_dvymax __pyx_string_tab[29]
+#define __pyx_n_u_dvymin __pyx_string_tab[30]
+#define __pyx_n_u_dvzmax __pyx_string_tab[31]
+#define __pyx_n_u_dvzmin __pyx_string_tab[32]
+#define __pyx_n_u_fb __pyx_string_tab[33]
+#define __pyx_n_u_field __pyx_string_tab[34]
+#define __pyx_n_u_flatten_tol __pyx_string_tab[35]
+#define __pyx_n_u_float __pyx_string_tab[36]
+#define __pyx_n_u_from_file __pyx_string_tab[37]
+#define __pyx_n_u_func __pyx_string_tab[38]
+#define __pyx_n_u_img_base_name __pyx_string_tab[39]
+#define __pyx_n_u_init __pyx_string_tab[40]
+#define __pyx_n_u_init_mmlut __pyx_string_tab[41]
+#define __pyx_n_u_int __pyx_string_tab[42]
+#define __pyx_n_u_is_compiled __pyx_string_tab[43]
+#define __pyx_n_u_is_coroutine __pyx_string_tab[44]
+#define __pyx_n_u_is_initialized __pyx_string_tab[45]
+#define __pyx_n_u_items __pyx_string_tab[46]
+#define __pyx_n_u_linalg __pyx_string_tab[47]
+#define __pyx_n_u_linkage_file_base __pyx_string_tab[48]
+#define __pyx_n_u_list __pyx_string_tab[49]
+#define __pyx_n_u_lmax __pyx_string_tab[50]
+#define __pyx_n_u_main __pyx_string_tab[51]
+#define __pyx_n_u_max_targets __pyx_string_tab[52]
+#define __pyx_n_u_metaclass __pyx_string_tab[53]
+#define __pyx_n_u_mmlut __pyx_string_tab[54]
+#define __pyx_n_u_module __pyx_string_tab[55]
+#define __pyx_n_u_name __pyx_string_tab[56]
+#define __pyx_n_u_nlinks __pyx_string_tab[57]
+#define __pyx_n_u_norm __pyx_string_tab[58]
+#define __pyx_n_u_np __pyx_string_tab[59]
+#define __pyx_n_u_npart __pyx_string_tab[60]
+#define __pyx_n_u_num_cams __pyx_string_tab[61]
+#define __pyx_n_u_numpy __pyx_string_tab[62]
+#define __pyx_n_u_openptv2_algorithms_multimed __pyx_string_tab[63]
+#define __pyx_n_u_openptv2_algorithms_parameters __pyx_string_tab[64]
+#define __pyx_n_u_openptv2_algorithms_tracking_fra __pyx_string_tab[65]
+#define __pyx_n_u_openptv2_algorithms_tracking_run __pyx_string_tab[66]
 #define __pyx_n_u_pop __pyx_string_tab[67]
 #define __pyx_n_u_post_init __pyx_string_tab[68]
 #define __pyx_n_u_prepare __pyx_string_tab[69]
@@ -2542,7 +2542,7 @@ return 0;
 #endif
 /* #### Code section: module_code ### */
 
-/* "algorithms/tracking_run.py":28
+/* "openptv2/algorithms/tracking_run.py":28
  *     nlinks: int = 0
  * 
  *     def __post_init__(self):             # <<<<<<<<<<<<<<
@@ -2551,15 +2551,15 @@ return 0;
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_12tracking_run_11TrackingRun_1__post_init__(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_12tracking_run_11TrackingRun_1__post_init__(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_10algorithms_12tracking_run_11TrackingRun_1__post_init__ = {"__post_init__", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_12tracking_run_11TrackingRun_1__post_init__, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10algorithms_12tracking_run_11TrackingRun_1__post_init__(PyObject *__pyx_self, 
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_12tracking_run_11TrackingRun_1__post_init__ = {"__post_init__", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_12tracking_run_11TrackingRun_1__post_init__, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_8openptv2_10algorithms_12tracking_run_11TrackingRun_1__post_init__(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -2621,11 +2621,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.tracking_run.TrackingRun.__post_init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_run.TrackingRun.__post_init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_12tracking_run_11TrackingRun___post_init__(__pyx_self, __pyx_v_self);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_12tracking_run_11TrackingRun___post_init__(__pyx_self, __pyx_v_self);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -2635,7 +2635,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_12tracking_run_11TrackingRun___post_init__(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_12tracking_run_11TrackingRun___post_init__(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self) {
   PyObject *__pyx_v_volumedimension = NULL;
   PyObject *__pyx_v_init_mmlut = NULL;
   PyObject *__pyx_v_xmax = NULL;
@@ -2668,7 +2668,7 @@ static PyObject *__pyx_pf_10algorithms_12tracking_run_11TrackingRun___post_init_
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__post_init__", 0);
 
-  /* "algorithms/tracking_run.py":29
+  /* "openptv2/algorithms/tracking_run.py":29
  * 
  *     def __post_init__(self):
  *         self.fb = FrameBuf(             # <<<<<<<<<<<<<<
@@ -2679,7 +2679,7 @@ static PyObject *__pyx_pf_10algorithms_12tracking_run_11TrackingRun___post_init_
   __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_mstate_global->__pyx_n_u_FrameBuf); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 29, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
 
-  /* "algorithms/tracking_run.py":30
+  /* "openptv2/algorithms/tracking_run.py":30
  *     def __post_init__(self):
  *         self.fb = FrameBuf(
  *             self.buf_len, self.cpar.num_cams, self.max_targets,             # <<<<<<<<<<<<<<
@@ -2696,7 +2696,7 @@ static PyObject *__pyx_pf_10algorithms_12tracking_run_11TrackingRun___post_init_
   __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_max_targets); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 30, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
 
-  /* "algorithms/tracking_run.py":31
+  /* "openptv2/algorithms/tracking_run.py":31
  *         self.fb = FrameBuf(
  *             self.buf_len, self.cpar.num_cams, self.max_targets,
  *             self.corres_file_base, self.linkage_file_base,             # <<<<<<<<<<<<<<
@@ -2708,7 +2708,7 @@ static PyObject *__pyx_pf_10algorithms_12tracking_run_11TrackingRun___post_init_
   __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_linkage_file_base); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 31, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
 
-  /* "algorithms/tracking_run.py":32
+  /* "openptv2/algorithms/tracking_run.py":32
  *             self.buf_len, self.cpar.num_cams, self.max_targets,
  *             self.corres_file_base, self.linkage_file_base,
  *             self.prio_file_base, self.seq_par.img_base_name)             # <<<<<<<<<<<<<<
@@ -2750,7 +2750,7 @@ static PyObject *__pyx_pf_10algorithms_12tracking_run_11TrackingRun___post_init_
     __Pyx_GOTREF(__pyx_t_1);
   }
 
-  /* "algorithms/tracking_run.py":29
+  /* "openptv2/algorithms/tracking_run.py":29
  * 
  *     def __post_init__(self):
  *         self.fb = FrameBuf(             # <<<<<<<<<<<<<<
@@ -2760,7 +2760,7 @@ static PyObject *__pyx_pf_10algorithms_12tracking_run_11TrackingRun___post_init_
   if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_fb, __pyx_t_1) < (0)) __PYX_ERR(0, 29, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/tracking_run.py":34
+  /* "openptv2/algorithms/tracking_run.py":34
  *             self.prio_file_base, self.seq_par.img_base_name)
  * 
  *         self.lmax = np.linalg.norm([             # <<<<<<<<<<<<<<
@@ -2775,7 +2775,7 @@ static PyObject *__pyx_pf_10algorithms_12tracking_run_11TrackingRun___post_init_
   __pyx_t_3 = __pyx_t_9;
   __Pyx_INCREF(__pyx_t_3);
 
-  /* "algorithms/tracking_run.py":35
+  /* "openptv2/algorithms/tracking_run.py":35
  * 
  *         self.lmax = np.linalg.norm([
  *             self.tpar.dvxmin - self.tpar.dvxmax,             # <<<<<<<<<<<<<<
@@ -2797,7 +2797,7 @@ static PyObject *__pyx_pf_10algorithms_12tracking_run_11TrackingRun___post_init_
   __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
 
-  /* "algorithms/tracking_run.py":36
+  /* "openptv2/algorithms/tracking_run.py":36
  *         self.lmax = np.linalg.norm([
  *             self.tpar.dvxmin - self.tpar.dvxmax,
  *             self.tpar.dvymin - self.tpar.dvymax,             # <<<<<<<<<<<<<<
@@ -2819,7 +2819,7 @@ static PyObject *__pyx_pf_10algorithms_12tracking_run_11TrackingRun___post_init_
   __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "algorithms/tracking_run.py":37
+  /* "openptv2/algorithms/tracking_run.py":37
  *             self.tpar.dvxmin - self.tpar.dvxmax,
  *             self.tpar.dvymin - self.tpar.dvymax,
  *             self.tpar.dvzmin - self.tpar.dvzmax             # <<<<<<<<<<<<<<
@@ -2841,7 +2841,7 @@ static PyObject *__pyx_pf_10algorithms_12tracking_run_11TrackingRun___post_init_
   __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-  /* "algorithms/tracking_run.py":34
+  /* "openptv2/algorithms/tracking_run.py":34
  *             self.prio_file_base, self.seq_par.img_base_name)
  * 
  *         self.lmax = np.linalg.norm([             # <<<<<<<<<<<<<<
@@ -2872,16 +2872,16 @@ static PyObject *__pyx_pf_10algorithms_12tracking_run_11TrackingRun___post_init_
   if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_lmax, __pyx_t_1) < (0)) __PYX_ERR(0, 34, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/tracking_run.py":40
+  /* "openptv2/algorithms/tracking_run.py":40
  *         ])
  * 
- *         from algorithms.multimed import volumedimension, init_mmlut             # <<<<<<<<<<<<<<
+ *         from openptv2.algorithms.multimed import volumedimension, init_mmlut             # <<<<<<<<<<<<<<
  *         xmax, xmin, self.ymax, self.ymin, zmax, zmin = volumedimension(
  *             self.vpar, self.cpar, self.cal)
 */
   {
     PyObject* const __pyx_imported_names[] = {__pyx_mstate_global->__pyx_n_u_volumedimension,__pyx_mstate_global->__pyx_n_u_init_mmlut};
-    __pyx_t_13 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_algorithms_multimed, __pyx_imported_names, 2, NULL, 0); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 40, __pyx_L1_error)
+    __pyx_t_13 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_openptv2_algorithms_multimed, __pyx_imported_names, 2, NULL, 0); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 40, __pyx_L1_error)
   }
   __pyx_t_1 = __pyx_t_13;
   __Pyx_GOTREF(__pyx_t_1);
@@ -2906,9 +2906,9 @@ static PyObject *__pyx_pf_10algorithms_12tracking_run_11TrackingRun___post_init_
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/tracking_run.py":41
+  /* "openptv2/algorithms/tracking_run.py":41
  * 
- *         from algorithms.multimed import volumedimension, init_mmlut
+ *         from openptv2.algorithms.multimed import volumedimension, init_mmlut
  *         xmax, xmin, self.ymax, self.ymin, zmax, zmin = volumedimension(             # <<<<<<<<<<<<<<
  *             self.vpar, self.cpar, self.cal)
  *         self.vpar.X_lay[1] = xmax
@@ -2917,8 +2917,8 @@ static PyObject *__pyx_pf_10algorithms_12tracking_run_11TrackingRun___post_init_
   __Pyx_INCREF(__pyx_v_volumedimension);
   __pyx_t_6 = __pyx_v_volumedimension; 
 
-  /* "algorithms/tracking_run.py":42
- *         from algorithms.multimed import volumedimension, init_mmlut
+  /* "openptv2/algorithms/tracking_run.py":42
+ *         from openptv2.algorithms.multimed import volumedimension, init_mmlut
  *         xmax, xmin, self.ymax, self.ymin, zmax, zmin = volumedimension(
  *             self.vpar, self.cpar, self.cal)             # <<<<<<<<<<<<<<
  *         self.vpar.X_lay[1] = xmax
@@ -3031,9 +3031,9 @@ static PyObject *__pyx_pf_10algorithms_12tracking_run_11TrackingRun___post_init_
     __pyx_L4_unpacking_done:;
   }
 
-  /* "algorithms/tracking_run.py":41
+  /* "openptv2/algorithms/tracking_run.py":41
  * 
- *         from algorithms.multimed import volumedimension, init_mmlut
+ *         from openptv2.algorithms.multimed import volumedimension, init_mmlut
  *         xmax, xmin, self.ymax, self.ymin, zmax, zmin = volumedimension(             # <<<<<<<<<<<<<<
  *             self.vpar, self.cpar, self.cal)
  *         self.vpar.X_lay[1] = xmax
@@ -3051,7 +3051,7 @@ static PyObject *__pyx_pf_10algorithms_12tracking_run_11TrackingRun___post_init_
   __pyx_v_zmin = __pyx_t_11;
   __pyx_t_11 = 0;
 
-  /* "algorithms/tracking_run.py":43
+  /* "openptv2/algorithms/tracking_run.py":43
  *         xmax, xmin, self.ymax, self.ymin, zmax, zmin = volumedimension(
  *             self.vpar, self.cpar, self.cal)
  *         self.vpar.X_lay[1] = xmax             # <<<<<<<<<<<<<<
@@ -3066,7 +3066,7 @@ static PyObject *__pyx_pf_10algorithms_12tracking_run_11TrackingRun___post_init_
   if (unlikely((__Pyx_SetItemInt(__pyx_t_11, 1, __pyx_v_xmax, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_OwnStrongReference) < 0))) __PYX_ERR(0, 43, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
 
-  /* "algorithms/tracking_run.py":44
+  /* "openptv2/algorithms/tracking_run.py":44
  *             self.vpar, self.cpar, self.cal)
  *         self.vpar.X_lay[1] = xmax
  *         self.vpar.X_lay[0] = xmin             # <<<<<<<<<<<<<<
@@ -3081,7 +3081,7 @@ static PyObject *__pyx_pf_10algorithms_12tracking_run_11TrackingRun___post_init_
   if (unlikely((__Pyx_SetItemInt(__pyx_t_1, 0, __pyx_v_xmin, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_OwnStrongReference) < 0))) __PYX_ERR(0, 44, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/tracking_run.py":45
+  /* "openptv2/algorithms/tracking_run.py":45
  *         self.vpar.X_lay[1] = xmax
  *         self.vpar.X_lay[0] = xmin
  *         self.vpar.Zmax_lay[1] = zmax             # <<<<<<<<<<<<<<
@@ -3096,7 +3096,7 @@ static PyObject *__pyx_pf_10algorithms_12tracking_run_11TrackingRun___post_init_
   if (unlikely((__Pyx_SetItemInt(__pyx_t_11, 1, __pyx_v_zmax, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_OwnStrongReference) < 0))) __PYX_ERR(0, 45, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
 
-  /* "algorithms/tracking_run.py":46
+  /* "openptv2/algorithms/tracking_run.py":46
  *         self.vpar.X_lay[0] = xmin
  *         self.vpar.Zmax_lay[1] = zmax
  *         self.vpar.Zmin_lay[0] = zmin             # <<<<<<<<<<<<<<
@@ -3111,7 +3111,7 @@ static PyObject *__pyx_pf_10algorithms_12tracking_run_11TrackingRun___post_init_
   if (unlikely((__Pyx_SetItemInt(__pyx_t_1, 0, __pyx_v_zmin, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_OwnStrongReference) < 0))) __PYX_ERR(0, 46, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/tracking_run.py":48
+  /* "openptv2/algorithms/tracking_run.py":48
  *         self.vpar.Zmin_lay[0] = zmin
  * 
  *         for c in self.cal:             # <<<<<<<<<<<<<<
@@ -3173,7 +3173,7 @@ static PyObject *__pyx_pf_10algorithms_12tracking_run_11TrackingRun___post_init_
     __Pyx_XDECREF_SET(__pyx_v_c, __pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "algorithms/tracking_run.py":49
+    /* "openptv2/algorithms/tracking_run.py":49
  * 
  *         for c in self.cal:
  *             if not c.mmlut.is_initialized:             # <<<<<<<<<<<<<<
@@ -3190,7 +3190,7 @@ static PyObject *__pyx_pf_10algorithms_12tracking_run_11TrackingRun___post_init_
     __pyx_t_18 = (!__pyx_t_17);
     if (__pyx_t_18) {
 
-      /* "algorithms/tracking_run.py":50
+      /* "openptv2/algorithms/tracking_run.py":50
  *         for c in self.cal:
  *             if not c.mmlut.is_initialized:
  *                 init_mmlut(self.vpar, self.cpar, c)             # <<<<<<<<<<<<<<
@@ -3228,7 +3228,7 @@ static PyObject *__pyx_pf_10algorithms_12tracking_run_11TrackingRun___post_init_
       }
       __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
 
-      /* "algorithms/tracking_run.py":49
+      /* "openptv2/algorithms/tracking_run.py":49
  * 
  *         for c in self.cal:
  *             if not c.mmlut.is_initialized:             # <<<<<<<<<<<<<<
@@ -3237,7 +3237,7 @@ static PyObject *__pyx_pf_10algorithms_12tracking_run_11TrackingRun___post_init_
 */
     }
 
-    /* "algorithms/tracking_run.py":48
+    /* "openptv2/algorithms/tracking_run.py":48
  *         self.vpar.Zmin_lay[0] = zmin
  * 
  *         for c in self.cal:             # <<<<<<<<<<<<<<
@@ -3247,7 +3247,7 @@ static PyObject *__pyx_pf_10algorithms_12tracking_run_11TrackingRun___post_init_
   }
   __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
 
-  /* "algorithms/tracking_run.py":28
+  /* "openptv2/algorithms/tracking_run.py":28
  *     nlinks: int = 0
  * 
  *     def __post_init__(self):             # <<<<<<<<<<<<<<
@@ -3270,7 +3270,7 @@ static PyObject *__pyx_pf_10algorithms_12tracking_run_11TrackingRun___post_init_
   __Pyx_XDECREF(__pyx_t_9);
   __Pyx_XDECREF(__pyx_t_10);
   __Pyx_XDECREF(__pyx_t_11);
-  __Pyx_AddTraceback("algorithms.tracking_run.TrackingRun.__post_init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_run.TrackingRun.__post_init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_volumedimension);
@@ -3285,7 +3285,7 @@ static PyObject *__pyx_pf_10algorithms_12tracking_run_11TrackingRun___post_init_
   return __pyx_r;
 }
 
-/* "algorithms/tracking_run.py":53
+/* "openptv2/algorithms/tracking_run.py":53
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -3293,14 +3293,14 @@ static PyObject *__pyx_pf_10algorithms_12tracking_run_11TrackingRun___post_init_
  *            corres_file_base, linkage_file_base, prio_file_base, cal, flatten_tol):
 */
 
-static PyObject *__pyx_pw_10algorithms_12tracking_run_1tr_new(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_12tracking_run_1tr_new(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_12tracking_run_tr_new(PyObject *__pyx_v_seq_par, PyObject *__pyx_v_tpar, PyObject *__pyx_v_vpar, PyObject *__pyx_v_cpar, PyObject *__pyx_v_buf_len, PyObject *__pyx_v_max_targets, PyObject *__pyx_v_corres_file_base, PyObject *__pyx_v_linkage_file_base, PyObject *__pyx_v_prio_file_base, PyObject *__pyx_v_cal, PyObject *__pyx_v_flatten_tol, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_12tracking_run_tr_new(PyObject *__pyx_v_seq_par, PyObject *__pyx_v_tpar, PyObject *__pyx_v_vpar, PyObject *__pyx_v_cpar, PyObject *__pyx_v_buf_len, PyObject *__pyx_v_max_targets, PyObject *__pyx_v_corres_file_base, PyObject *__pyx_v_linkage_file_base, PyObject *__pyx_v_prio_file_base, PyObject *__pyx_v_cal, PyObject *__pyx_v_flatten_tol, CYTHON_UNUSED int __pyx_skip_dispatch) {
   PyObject *__pyx_v_SequencePar = NULL;
   PyObject *__pyx_v_TrackPar = NULL;
   PyObject *__pyx_v_VolumePar = NULL;
@@ -3324,16 +3324,16 @@ static PyObject *__pyx_f_10algorithms_12tracking_run_tr_new(PyObject *__pyx_v_se
   __Pyx_INCREF(__pyx_v_tpar);
   __Pyx_INCREF(__pyx_v_vpar);
 
-  /* "algorithms/tracking_run.py":61
+  /* "openptv2/algorithms/tracking_run.py":61
  *     passed, reads and constructs parameter objects automatically.
  *     """
- *     from algorithms.parameters import (             # <<<<<<<<<<<<<<
+ *     from openptv2.algorithms.parameters import (             # <<<<<<<<<<<<<<
  *         SequencePar, TrackPar, VolumePar, ControlPar,
  *         convert_track_par_to_tuple,
 */
   {
     PyObject* const __pyx_imported_names[] = {__pyx_mstate_global->__pyx_n_u_SequencePar,__pyx_mstate_global->__pyx_n_u_TrackPar,__pyx_mstate_global->__pyx_n_u_VolumePar,__pyx_mstate_global->__pyx_n_u_ControlPar,__pyx_mstate_global->__pyx_n_u_convert_track_par_to_tuple};
-    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_algorithms_parameters, __pyx_imported_names, 5, NULL, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 61, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_openptv2_algorithms_parameters, __pyx_imported_names, 5, NULL, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 61, __pyx_L1_error)
   }
   __pyx_t_1 = __pyx_t_2;
   __Pyx_GOTREF(__pyx_t_1);
@@ -3370,7 +3370,7 @@ static PyObject *__pyx_f_10algorithms_12tracking_run_tr_new(PyObject *__pyx_v_se
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/tracking_run.py":66
+  /* "openptv2/algorithms/tracking_run.py":66
  *     )
  * 
  *     if isinstance(cpar, str):             # <<<<<<<<<<<<<<
@@ -3380,7 +3380,7 @@ static PyObject *__pyx_f_10algorithms_12tracking_run_tr_new(PyObject *__pyx_v_se
   __pyx_t_5 = PyUnicode_Check(__pyx_v_cpar); 
   if (__pyx_t_5) {
 
-    /* "algorithms/tracking_run.py":67
+    /* "openptv2/algorithms/tracking_run.py":67
  * 
  *     if isinstance(cpar, str):
  *         cpar_obj = ControlPar.from_file(cpar)             # <<<<<<<<<<<<<<
@@ -3400,7 +3400,7 @@ static PyObject *__pyx_f_10algorithms_12tracking_run_tr_new(PyObject *__pyx_v_se
     __pyx_v_cpar_obj = __pyx_t_1;
     __pyx_t_1 = 0;
 
-    /* "algorithms/tracking_run.py":66
+    /* "openptv2/algorithms/tracking_run.py":66
  *     )
  * 
  *     if isinstance(cpar, str):             # <<<<<<<<<<<<<<
@@ -3410,7 +3410,7 @@ static PyObject *__pyx_f_10algorithms_12tracking_run_tr_new(PyObject *__pyx_v_se
     goto __pyx_L3;
   }
 
-  /* "algorithms/tracking_run.py":69
+  /* "openptv2/algorithms/tracking_run.py":69
  *         cpar_obj = ControlPar.from_file(cpar)
  *     else:
  *         cpar_obj = cpar             # <<<<<<<<<<<<<<
@@ -3423,7 +3423,7 @@ static PyObject *__pyx_f_10algorithms_12tracking_run_tr_new(PyObject *__pyx_v_se
   }
   __pyx_L3:;
 
-  /* "algorithms/tracking_run.py":71
+  /* "openptv2/algorithms/tracking_run.py":71
  *         cpar_obj = cpar
  * 
  *     if isinstance(seq_par, str):             # <<<<<<<<<<<<<<
@@ -3433,7 +3433,7 @@ static PyObject *__pyx_f_10algorithms_12tracking_run_tr_new(PyObject *__pyx_v_se
   __pyx_t_5 = PyUnicode_Check(__pyx_v_seq_par); 
   if (__pyx_t_5) {
 
-    /* "algorithms/tracking_run.py":72
+    /* "openptv2/algorithms/tracking_run.py":72
  * 
  *     if isinstance(seq_par, str):
  *         seq_par = SequencePar.from_file(seq_par, cpar_obj.num_cams)             # <<<<<<<<<<<<<<
@@ -3456,7 +3456,7 @@ static PyObject *__pyx_f_10algorithms_12tracking_run_tr_new(PyObject *__pyx_v_se
     __Pyx_DECREF_SET(__pyx_v_seq_par, __pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "algorithms/tracking_run.py":71
+    /* "openptv2/algorithms/tracking_run.py":71
  *         cpar_obj = cpar
  * 
  *     if isinstance(seq_par, str):             # <<<<<<<<<<<<<<
@@ -3465,7 +3465,7 @@ static PyObject *__pyx_f_10algorithms_12tracking_run_tr_new(PyObject *__pyx_v_se
 */
   }
 
-  /* "algorithms/tracking_run.py":74
+  /* "openptv2/algorithms/tracking_run.py":74
  *         seq_par = SequencePar.from_file(seq_par, cpar_obj.num_cams)
  * 
  *     if isinstance(tpar, str):             # <<<<<<<<<<<<<<
@@ -3475,7 +3475,7 @@ static PyObject *__pyx_f_10algorithms_12tracking_run_tr_new(PyObject *__pyx_v_se
   __pyx_t_5 = PyUnicode_Check(__pyx_v_tpar); 
   if (__pyx_t_5) {
 
-    /* "algorithms/tracking_run.py":75
+    /* "openptv2/algorithms/tracking_run.py":75
  * 
  *     if isinstance(tpar, str):
  *         tpar = TrackPar.from_file(tpar)             # <<<<<<<<<<<<<<
@@ -3495,7 +3495,7 @@ static PyObject *__pyx_f_10algorithms_12tracking_run_tr_new(PyObject *__pyx_v_se
     __Pyx_DECREF_SET(__pyx_v_tpar, __pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "algorithms/tracking_run.py":76
+    /* "openptv2/algorithms/tracking_run.py":76
  *     if isinstance(tpar, str):
  *         tpar = TrackPar.from_file(tpar)
  *         tpar = convert_track_par_to_tuple(tpar)             # <<<<<<<<<<<<<<
@@ -3528,7 +3528,7 @@ static PyObject *__pyx_f_10algorithms_12tracking_run_tr_new(PyObject *__pyx_v_se
     __Pyx_DECREF_SET(__pyx_v_tpar, __pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "algorithms/tracking_run.py":74
+    /* "openptv2/algorithms/tracking_run.py":74
  *         seq_par = SequencePar.from_file(seq_par, cpar_obj.num_cams)
  * 
  *     if isinstance(tpar, str):             # <<<<<<<<<<<<<<
@@ -3537,7 +3537,7 @@ static PyObject *__pyx_f_10algorithms_12tracking_run_tr_new(PyObject *__pyx_v_se
 */
   }
 
-  /* "algorithms/tracking_run.py":78
+  /* "openptv2/algorithms/tracking_run.py":78
  *         tpar = convert_track_par_to_tuple(tpar)
  * 
  *     if isinstance(vpar, str):             # <<<<<<<<<<<<<<
@@ -3547,7 +3547,7 @@ static PyObject *__pyx_f_10algorithms_12tracking_run_tr_new(PyObject *__pyx_v_se
   __pyx_t_5 = PyUnicode_Check(__pyx_v_vpar); 
   if (__pyx_t_5) {
 
-    /* "algorithms/tracking_run.py":79
+    /* "openptv2/algorithms/tracking_run.py":79
  * 
  *     if isinstance(vpar, str):
  *         vpar = VolumePar.from_file(vpar)             # <<<<<<<<<<<<<<
@@ -3567,7 +3567,7 @@ static PyObject *__pyx_f_10algorithms_12tracking_run_tr_new(PyObject *__pyx_v_se
     __Pyx_DECREF_SET(__pyx_v_vpar, __pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "algorithms/tracking_run.py":78
+    /* "openptv2/algorithms/tracking_run.py":78
  *         tpar = convert_track_par_to_tuple(tpar)
  * 
  *     if isinstance(vpar, str):             # <<<<<<<<<<<<<<
@@ -3576,7 +3576,7 @@ static PyObject *__pyx_f_10algorithms_12tracking_run_tr_new(PyObject *__pyx_v_se
 */
   }
 
-  /* "algorithms/tracking_run.py":81
+  /* "openptv2/algorithms/tracking_run.py":81
  *         vpar = VolumePar.from_file(vpar)
  * 
  *     return TrackingRun(seq_par, tpar, vpar, cpar_obj, buf_len, max_targets,             # <<<<<<<<<<<<<<
@@ -3588,7 +3588,7 @@ static PyObject *__pyx_f_10algorithms_12tracking_run_tr_new(PyObject *__pyx_v_se
   __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_mstate_global->__pyx_n_u_TrackingRun); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 81, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
 
-  /* "algorithms/tracking_run.py":82
+  /* "openptv2/algorithms/tracking_run.py":82
  * 
  *     return TrackingRun(seq_par, tpar, vpar, cpar_obj, buf_len, max_targets,
  *                        corres_file_base, linkage_file_base, prio_file_base, cal, flatten_tol)             # <<<<<<<<<<<<<<
@@ -3619,7 +3619,7 @@ static PyObject *__pyx_f_10algorithms_12tracking_run_tr_new(PyObject *__pyx_v_se
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/tracking_run.py":53
+  /* "openptv2/algorithms/tracking_run.py":53
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -3632,7 +3632,7 @@ static PyObject *__pyx_f_10algorithms_12tracking_run_tr_new(PyObject *__pyx_v_se
   __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_7);
-  __Pyx_AddTraceback("algorithms.tracking_run.tr_new", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_run.tr_new", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_SequencePar);
@@ -3650,16 +3650,16 @@ static PyObject *__pyx_f_10algorithms_12tracking_run_tr_new(PyObject *__pyx_v_se
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_12tracking_run_1tr_new(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_12tracking_run_1tr_new(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_12tracking_run_tr_new, "Python translation of C tr_new/tr_new_legacy.\n\n    Accepts either parameter objects or file paths. If file paths are\n    passed, reads and constructs parameter objects automatically.\n    ");
-static PyMethodDef __pyx_mdef_10algorithms_12tracking_run_1tr_new = {"tr_new", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_12tracking_run_1tr_new, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_12tracking_run_tr_new};
-static PyObject *__pyx_pw_10algorithms_12tracking_run_1tr_new(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_12tracking_run_tr_new, "Python translation of C tr_new/tr_new_legacy.\n\n    Accepts either parameter objects or file paths. If file paths are\n    passed, reads and constructs parameter objects automatically.\n    ");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_12tracking_run_1tr_new = {"tr_new", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_12tracking_run_1tr_new, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_12tracking_run_tr_new};
+static PyObject *__pyx_pw_8openptv2_10algorithms_12tracking_run_1tr_new(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -3801,11 +3801,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.tracking_run.tr_new", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_run.tr_new", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_12tracking_run_tr_new(__pyx_self, __pyx_v_seq_par, __pyx_v_tpar, __pyx_v_vpar, __pyx_v_cpar, __pyx_v_buf_len, __pyx_v_max_targets, __pyx_v_corres_file_base, __pyx_v_linkage_file_base, __pyx_v_prio_file_base, __pyx_v_cal, __pyx_v_flatten_tol);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_12tracking_run_tr_new(__pyx_self, __pyx_v_seq_par, __pyx_v_tpar, __pyx_v_vpar, __pyx_v_cpar, __pyx_v_buf_len, __pyx_v_max_targets, __pyx_v_corres_file_base, __pyx_v_linkage_file_base, __pyx_v_prio_file_base, __pyx_v_cal, __pyx_v_flatten_tol);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -3815,7 +3815,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_12tracking_run_tr_new(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_seq_par, PyObject *__pyx_v_tpar, PyObject *__pyx_v_vpar, PyObject *__pyx_v_cpar, PyObject *__pyx_v_buf_len, PyObject *__pyx_v_max_targets, PyObject *__pyx_v_corres_file_base, PyObject *__pyx_v_linkage_file_base, PyObject *__pyx_v_prio_file_base, PyObject *__pyx_v_cal, PyObject *__pyx_v_flatten_tol) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_12tracking_run_tr_new(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_seq_par, PyObject *__pyx_v_tpar, PyObject *__pyx_v_vpar, PyObject *__pyx_v_cpar, PyObject *__pyx_v_buf_len, PyObject *__pyx_v_max_targets, PyObject *__pyx_v_corres_file_base, PyObject *__pyx_v_linkage_file_base, PyObject *__pyx_v_prio_file_base, PyObject *__pyx_v_cal, PyObject *__pyx_v_flatten_tol) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -3824,7 +3824,7 @@ static PyObject *__pyx_pf_10algorithms_12tracking_run_tr_new(CYTHON_UNUSED PyObj
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("tr_new", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_12tracking_run_tr_new(__pyx_v_seq_par, __pyx_v_tpar, __pyx_v_vpar, __pyx_v_cpar, __pyx_v_buf_len, __pyx_v_max_targets, __pyx_v_corres_file_base, __pyx_v_linkage_file_base, __pyx_v_prio_file_base, __pyx_v_cal, __pyx_v_flatten_tol, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 53, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_12tracking_run_tr_new(__pyx_v_seq_par, __pyx_v_tpar, __pyx_v_vpar, __pyx_v_cpar, __pyx_v_buf_len, __pyx_v_max_targets, __pyx_v_corres_file_base, __pyx_v_linkage_file_base, __pyx_v_prio_file_base, __pyx_v_cal, __pyx_v_flatten_tol, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 53, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -3833,7 +3833,7 @@ static PyObject *__pyx_pf_10algorithms_12tracking_run_tr_new(CYTHON_UNUSED PyObj
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.tracking_run.tr_new", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_run.tr_new", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -3841,7 +3841,7 @@ static PyObject *__pyx_pf_10algorithms_12tracking_run_tr_new(CYTHON_UNUSED PyObj
   return __pyx_r;
 }
 
-/* "algorithms/tracking_run.py":85
+/* "openptv2/algorithms/tracking_run.py":85
  * 
  * 
  * def is_compiled() -> bool:             # <<<<<<<<<<<<<<
@@ -3850,28 +3850,28 @@ static PyObject *__pyx_pf_10algorithms_12tracking_run_tr_new(CYTHON_UNUSED PyObj
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_12tracking_run_3is_compiled(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_12tracking_run_2is_compiled, "Return whether this module is compiled to C.");
-static PyMethodDef __pyx_mdef_10algorithms_12tracking_run_3is_compiled = {"is_compiled", (PyCFunction)__pyx_pw_10algorithms_12tracking_run_3is_compiled, METH_NOARGS, __pyx_doc_10algorithms_12tracking_run_2is_compiled};
-static PyObject *__pyx_pw_10algorithms_12tracking_run_3is_compiled(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_8openptv2_10algorithms_12tracking_run_3is_compiled(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_12tracking_run_2is_compiled, "Return whether this module is compiled to C.");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_12tracking_run_3is_compiled = {"is_compiled", (PyCFunction)__pyx_pw_8openptv2_10algorithms_12tracking_run_3is_compiled, METH_NOARGS, __pyx_doc_8openptv2_10algorithms_12tracking_run_2is_compiled};
+static PyObject *__pyx_pw_8openptv2_10algorithms_12tracking_run_3is_compiled(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused) {
   CYTHON_UNUSED PyObject *const *__pyx_kwvalues;
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("is_compiled (wrapper)", 0);
   __pyx_kwvalues = __Pyx_KwValues_VARARGS(__pyx_args, __pyx_nargs);
-  __pyx_r = __pyx_pf_10algorithms_12tracking_run_2is_compiled(__pyx_self);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_12tracking_run_2is_compiled(__pyx_self);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_12tracking_run_2is_compiled(CYTHON_UNUSED PyObject *__pyx_self) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_12tracking_run_2is_compiled(CYTHON_UNUSED PyObject *__pyx_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("is_compiled", 0);
 
-  /* "algorithms/tracking_run.py":87
+  /* "openptv2/algorithms/tracking_run.py":87
  * def is_compiled() -> bool:
  *     """Return whether this module is compiled to C."""
  *     return cython.compiled             # <<<<<<<<<<<<<<
@@ -3881,7 +3881,7 @@ static PyObject *__pyx_pf_10algorithms_12tracking_run_2is_compiled(CYTHON_UNUSED
   __pyx_r = Py_True;
   goto __pyx_L0;
 
-  /* "algorithms/tracking_run.py":85
+  /* "openptv2/algorithms/tracking_run.py":85
  * 
  * 
  * def is_compiled() -> bool:             # <<<<<<<<<<<<<<
@@ -4226,13 +4226,13 @@ __Pyx_RefNannySetupContext("PyInit_tracking_run", 0);
   if (__Pyx_InitConstants(__pyx_mstate) < (0)) __PYX_ERR(0, 1, __pyx_L1_error)
   stringtab_initialized = 1;
   if (__Pyx_InitGlobals() < (0)) __PYX_ERR(0, 1, __pyx_L1_error)
-  if (__pyx_module_is_main_algorithms__tracking_run) {
+  if (__pyx_module_is_main_openptv2__algorithms__tracking_run) {
     if (PyObject_SetAttr(__pyx_m, __pyx_mstate_global->__pyx_n_u_name, __pyx_mstate_global->__pyx_n_u_main) < (0)) __PYX_ERR(0, 1, __pyx_L1_error)
   }
   {
     PyObject *modules = PyImport_GetModuleDict(); if (unlikely(!modules)) __PYX_ERR(0, 1, __pyx_L1_error)
-    if (!PyDict_GetItemString(modules, "algorithms.tracking_run")) {
-      if (unlikely((PyDict_SetItemString(modules, "algorithms.tracking_run", __pyx_m) < 0))) __PYX_ERR(0, 1, __pyx_L1_error)
+    if (!PyDict_GetItemString(modules, "openptv2.algorithms.tracking_run")) {
+      if (unlikely((PyDict_SetItemString(modules, "openptv2.algorithms.tracking_run", __pyx_m) < 0))) __PYX_ERR(0, 1, __pyx_L1_error)
     }
   }
   /*--- Builtin init code ---*/
@@ -4250,11 +4250,11 @@ __Pyx_RefNannySetupContext("PyInit_tracking_run", 0);
   (void)__Pyx_modinit_function_import_code(__pyx_mstate);
   /*--- Execution code ---*/
 
-  /* "algorithms/tracking_run.py":2
+  /* "openptv2/algorithms/tracking_run.py":2
  * import cython
  * import numpy as np             # <<<<<<<<<<<<<<
  * from dataclasses import dataclass, field
- * from algorithms.parameters import SequencePar, TrackPar, VolumePar, ControlPar
+ * from openptv2.algorithms.parameters import SequencePar, TrackPar, VolumePar, ControlPar
 */
   __pyx_t_1 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_numpy, 0, 0, NULL, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 2, __pyx_L1_error)
   __pyx_t_2 = __pyx_t_1;
@@ -4262,12 +4262,12 @@ __Pyx_RefNannySetupContext("PyInit_tracking_run", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_np, __pyx_t_2) < (0)) __PYX_ERR(0, 2, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/tracking_run.py":3
+  /* "openptv2/algorithms/tracking_run.py":3
  * import cython
  * import numpy as np
  * from dataclasses import dataclass, field             # <<<<<<<<<<<<<<
- * from algorithms.parameters import SequencePar, TrackPar, VolumePar, ControlPar
- * from algorithms.tracking_frame_buf import FrameBuf
+ * from openptv2.algorithms.parameters import SequencePar, TrackPar, VolumePar, ControlPar
+ * from openptv2.algorithms.tracking_frame_buf import FrameBuf
 */
   {
     PyObject* const __pyx_imported_names[] = {__pyx_mstate_global->__pyx_n_u_dataclass,__pyx_mstate_global->__pyx_n_u_field};
@@ -4286,16 +4286,16 @@ __Pyx_RefNannySetupContext("PyInit_tracking_run", 0);
   }
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/tracking_run.py":4
+  /* "openptv2/algorithms/tracking_run.py":4
  * import numpy as np
  * from dataclasses import dataclass, field
- * from algorithms.parameters import SequencePar, TrackPar, VolumePar, ControlPar             # <<<<<<<<<<<<<<
- * from algorithms.tracking_frame_buf import FrameBuf
+ * from openptv2.algorithms.parameters import SequencePar, TrackPar, VolumePar, ControlPar             # <<<<<<<<<<<<<<
+ * from openptv2.algorithms.tracking_frame_buf import FrameBuf
  * 
 */
   {
     PyObject* const __pyx_imported_names[] = {__pyx_mstate_global->__pyx_n_u_SequencePar,__pyx_mstate_global->__pyx_n_u_TrackPar,__pyx_mstate_global->__pyx_n_u_VolumePar,__pyx_mstate_global->__pyx_n_u_ControlPar};
-    __pyx_t_1 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_algorithms_parameters, __pyx_imported_names, 4, NULL, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_openptv2_algorithms_parameters, __pyx_imported_names, 4, NULL, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4, __pyx_L1_error)
   }
   __pyx_t_2 = __pyx_t_1;
   __Pyx_GOTREF(__pyx_t_2);
@@ -4310,16 +4310,16 @@ __Pyx_RefNannySetupContext("PyInit_tracking_run", 0);
   }
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/tracking_run.py":5
+  /* "openptv2/algorithms/tracking_run.py":5
  * from dataclasses import dataclass, field
- * from algorithms.parameters import SequencePar, TrackPar, VolumePar, ControlPar
- * from algorithms.tracking_frame_buf import FrameBuf             # <<<<<<<<<<<<<<
+ * from openptv2.algorithms.parameters import SequencePar, TrackPar, VolumePar, ControlPar
+ * from openptv2.algorithms.tracking_frame_buf import FrameBuf             # <<<<<<<<<<<<<<
  * 
  * 
 */
   {
     PyObject* const __pyx_imported_names[] = {__pyx_mstate_global->__pyx_n_u_FrameBuf};
-    __pyx_t_1 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_algorithms_tracking_frame_buf, __pyx_imported_names, 1, NULL, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 5, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_openptv2_algorithms_tracking_fra, __pyx_imported_names, 1, NULL, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 5, __pyx_L1_error)
   }
   __pyx_t_2 = __pyx_t_1;
   __Pyx_GOTREF(__pyx_t_2);
@@ -4334,14 +4334,14 @@ __Pyx_RefNannySetupContext("PyInit_tracking_run", 0);
   }
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/tracking_run.py":9
+  /* "openptv2/algorithms/tracking_run.py":9
  * 
  * @dataclass
  * class TrackingRun:             # <<<<<<<<<<<<<<
  *     seq_par: SequencePar
  *     tpar: TrackPar
 */
-  __pyx_t_2 = __Pyx_Py3MetaclassPrepare((PyObject *) NULL, __pyx_mstate_global->__pyx_empty_tuple, __pyx_mstate_global->__pyx_n_u_TrackingRun, __pyx_mstate_global->__pyx_n_u_TrackingRun, (PyObject *) NULL, __pyx_mstate_global->__pyx_n_u_algorithms_tracking_run, (PyObject *) NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 9, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_Py3MetaclassPrepare((PyObject *) NULL, __pyx_mstate_global->__pyx_empty_tuple, __pyx_mstate_global->__pyx_n_u_TrackingRun, __pyx_mstate_global->__pyx_n_u_TrackingRun, (PyObject *) NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_tracking_run, (PyObject *) NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 9, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_4 = __Pyx_PyDict_NewPresized(17); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 9, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
@@ -4365,7 +4365,7 @@ __Pyx_RefNannySetupContext("PyInit_tracking_run", 0);
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_annotations, __pyx_t_4) < (0)) __PYX_ERR(0, 9, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/tracking_run.py":21
+  /* "openptv2/algorithms/tracking_run.py":21
  *     cal: list
  *     flatten_tol: float
  *     fb: FrameBuf = field(init=False)             # <<<<<<<<<<<<<<
@@ -4391,7 +4391,7 @@ __Pyx_RefNannySetupContext("PyInit_tracking_run", 0);
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_fb, __pyx_t_4) < (0)) __PYX_ERR(0, 21, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/tracking_run.py":22
+  /* "openptv2/algorithms/tracking_run.py":22
  *     flatten_tol: float
  *     fb: FrameBuf = field(init=False)
  *     lmax: float = field(init=False)             # <<<<<<<<<<<<<<
@@ -4417,7 +4417,7 @@ __Pyx_RefNannySetupContext("PyInit_tracking_run", 0);
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_lmax, __pyx_t_4) < (0)) __PYX_ERR(0, 22, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/tracking_run.py":23
+  /* "openptv2/algorithms/tracking_run.py":23
  *     fb: FrameBuf = field(init=False)
  *     lmax: float = field(init=False)
  *     ymin: float = field(init=False)             # <<<<<<<<<<<<<<
@@ -4443,7 +4443,7 @@ __Pyx_RefNannySetupContext("PyInit_tracking_run", 0);
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_ymin, __pyx_t_4) < (0)) __PYX_ERR(0, 23, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/tracking_run.py":24
+  /* "openptv2/algorithms/tracking_run.py":24
  *     lmax: float = field(init=False)
  *     ymin: float = field(init=False)
  *     ymax: float = field(init=False)             # <<<<<<<<<<<<<<
@@ -4469,7 +4469,7 @@ __Pyx_RefNannySetupContext("PyInit_tracking_run", 0);
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_ymax, __pyx_t_4) < (0)) __PYX_ERR(0, 24, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/tracking_run.py":25
+  /* "openptv2/algorithms/tracking_run.py":25
  *     ymin: float = field(init=False)
  *     ymax: float = field(init=False)
  *     npart: int = 0             # <<<<<<<<<<<<<<
@@ -4478,7 +4478,7 @@ __Pyx_RefNannySetupContext("PyInit_tracking_run", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_npart, __pyx_mstate_global->__pyx_int_0) < (0)) __PYX_ERR(0, 25, __pyx_L1_error)
 
-  /* "algorithms/tracking_run.py":26
+  /* "openptv2/algorithms/tracking_run.py":26
  *     ymax: float = field(init=False)
  *     npart: int = 0
  *     nlinks: int = 0             # <<<<<<<<<<<<<<
@@ -4487,14 +4487,14 @@ __Pyx_RefNannySetupContext("PyInit_tracking_run", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_nlinks, __pyx_mstate_global->__pyx_int_0) < (0)) __PYX_ERR(0, 26, __pyx_L1_error)
 
-  /* "algorithms/tracking_run.py":28
+  /* "openptv2/algorithms/tracking_run.py":28
  *     nlinks: int = 0
  * 
  *     def __post_init__(self):             # <<<<<<<<<<<<<<
  *         self.fb = FrameBuf(
  *             self.buf_len, self.cpar.num_cams, self.max_targets,
 */
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_12tracking_run_11TrackingRun_1__post_init__, 0, __pyx_mstate_global->__pyx_n_u_TrackingRun___post_init, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_tracking_run, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[0])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 28, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_12tracking_run_11TrackingRun_1__post_init__, 0, __pyx_mstate_global->__pyx_n_u_TrackingRun___post_init, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_tracking_run, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[0])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 28, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
@@ -4502,7 +4502,7 @@ __Pyx_RefNannySetupContext("PyInit_tracking_run", 0);
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_post_init, __pyx_t_4) < (0)) __PYX_ERR(0, 28, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/tracking_run.py":8
+  /* "openptv2/algorithms/tracking_run.py":8
  * 
  * 
  * @dataclass             # <<<<<<<<<<<<<<
@@ -4513,7 +4513,7 @@ __Pyx_RefNannySetupContext("PyInit_tracking_run", 0);
   __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_mstate_global->__pyx_n_u_dataclass); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 8, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
 
-  /* "algorithms/tracking_run.py":9
+  /* "openptv2/algorithms/tracking_run.py":9
  * 
  * @dataclass
  * class TrackingRun:             # <<<<<<<<<<<<<<
@@ -4539,14 +4539,14 @@ __Pyx_RefNannySetupContext("PyInit_tracking_run", 0);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/tracking_run.py":53
+  /* "openptv2/algorithms/tracking_run.py":53
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def tr_new(seq_par, tpar, vpar, cpar, buf_len, max_targets,
  *            corres_file_base, linkage_file_base, prio_file_base, cal, flatten_tol):
 */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_12tracking_run_1tr_new, 0, __pyx_mstate_global->__pyx_n_u_tr_new, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_tracking_run, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[1])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 53, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_12tracking_run_1tr_new, 0, __pyx_mstate_global->__pyx_n_u_tr_new, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_tracking_run, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[1])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 53, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -4554,7 +4554,7 @@ __Pyx_RefNannySetupContext("PyInit_tracking_run", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_tr_new, __pyx_t_2) < (0)) __PYX_ERR(0, 53, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/tracking_run.py":85
+  /* "openptv2/algorithms/tracking_run.py":85
  * 
  * 
  * def is_compiled() -> bool:             # <<<<<<<<<<<<<<
@@ -4564,7 +4564,7 @@ __Pyx_RefNannySetupContext("PyInit_tracking_run", 0);
   __pyx_t_2 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 85, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   if (PyDict_SetItem(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_return, __pyx_mstate_global->__pyx_n_u_bool) < (0)) __PYX_ERR(0, 85, __pyx_L1_error)
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_12tracking_run_3is_compiled, 0, __pyx_mstate_global->__pyx_n_u_is_compiled, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_tracking_run, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[2])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 85, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_12tracking_run_3is_compiled, 0, __pyx_mstate_global->__pyx_n_u_is_compiled, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_tracking_run, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[2])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 85, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
@@ -4574,7 +4574,7 @@ __Pyx_RefNannySetupContext("PyInit_tracking_run", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_is_compiled, __pyx_t_4) < (0)) __PYX_ERR(0, 85, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/tracking_run.py":1
+  /* "openptv2/algorithms/tracking_run.py":1
  * import cython             # <<<<<<<<<<<<<<
  * import numpy as np
  * from dataclasses import dataclass, field
@@ -4595,7 +4595,7 @@ __Pyx_RefNannySetupContext("PyInit_tracking_run", 0);
   __Pyx_XDECREF(__pyx_t_8);
   if (__pyx_m) {
     if (__pyx_mstate->__pyx_d && stringtab_initialized) {
-      __Pyx_AddTraceback("init algorithms.tracking_run", __pyx_clineno, __pyx_lineno, __pyx_filename);
+      __Pyx_AddTraceback("init openptv2.algorithms.tracking_run", __pyx_clineno, __pyx_lineno, __pyx_filename);
     }
     #if !CYTHON_USE_MODULE_STATE
     Py_CLEAR(__pyx_m);
@@ -4609,7 +4609,7 @@ __Pyx_RefNannySetupContext("PyInit_tracking_run", 0);
     }
     #endif
   } else if (!PyErr_Occurred()) {
-    PyErr_SetString(PyExc_ImportError, "init algorithms.tracking_run");
+    PyErr_SetString(PyExc_ImportError, "init openptv2.algorithms.tracking_run");
   }
   __pyx_L0:;
   __Pyx_RefNannyFinishContext();
@@ -4648,25 +4648,25 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
 static int __Pyx_InitConstants(__pyx_mstatetype *__pyx_mstate) {
   CYTHON_UNUSED_VAR(__pyx_mstate);
   {
-    const struct { const unsigned int length: 8; } index[] = {{1},{1},{26},{10},{8},{20},{11},{8},{11},{25},{9},{5},{8},{8},{19},{21},{29},{23},{15},{18},{4},{7},{1},{3},{18},{26},{16},{4},{9},{11},{7},{6},{6},{6},{6},{6},{6},{2},{5},{11},{5},{9},{8},{13},{4},{10},{3},{11},{13},{14},{5},{6},{17},{4},{4},{8},{11},{13},{5},{10},{8},{6},{4},{2},{5},{8},{5},{3},{13},{11},{14},{12},{6},{4},{7},{12},{10},{3},{8},{4},{6},{6},{15},{4},{4},{4},{4},{4},{4},{4},{242},{10},{163}};
-    #if (CYTHON_COMPRESS_STRINGS) == 2 /* compression: bz2 (858 bytes) */
-const char* const cstring = "BZh91AY&SY\210\226\034,\000\000J\377\377\347\377\377\360-\351\246\274\277U\177P\277\357\377\370\300@@@@@@@@@@@@\000@\000@\002\334\355b\224+\020\321%=L\324\036$\365=M\006\232\017D\r\001\240yCOH\001\265\036\240\006\217)\262\236S\032\207\003@h4h\0314\000\032\000\014M\r4\r4\000\321\243@\003F\204M\251\2414)\351=A\204hh\323@\000\000\000\000\000\000\007\250h\003MM\004\320\320\2322$\364\032 \000\001\240\000\000\000\000\321\215\002h\332\216\377\204m\355\246p\3026\277\310\"7\021\343\204BH\326\357p\314P\022\200\221dh\265f\2320\0009\022\243\205\227\252T\346\206\242M\002\005TU\301\300hG\276\265QD\0301V\205\305\t\255\206\264\010\305!X\n@[\336\r\337\017\037R\006\244\212 `\314\215Fx\353\263\\Y\025\351z\316\224\034\362\023D\204\217\035\335\030T\204\322\n\320\n\t\357\307\000L\240V\211\245\204\205\t\234`\204\311\204\372\340\211\353\005 \206\211y\241\271\020\230\312\023\005Hf\217%\3165M\001!\nkF81\341\273;\022\225s\001\002f\245s\344b\nA\021.\213\014\322jm\024\n\223Wl.\263\005\236\374\373\233\262\212\022g\263\370\0064\026\024\300\006\242:\261\205\355\256\324\001\211\227G\207\2118\020\272\013>\013\025\203t\224@\345\310t\247\030\310\272\214\0234B\223\304\244\223fl6\030\203M,%\250\351\275\032\300l/\314\032\013t\256)J\nm\215\2236\341h\364r8\316F\266j\263\340Q\246\225\340Y[$\306ro\200\250\246Z\240\023N!64\320fYJ42,\005\301\232\210\032\024\330\340\256L\262[\314!\n\322\210 `^\234B\220\207Q\211\\Qj\236\354\240`/{\232J\234\372Q1\226'\034d\036R\222\304S\253\212\225\252\000\037\001\221J\000h\016s\234\000\234@b4O\276\202\272x\255\002A\244k\327\020\347\t=\003J\0043]\206\372\352\256x\256)\230\025\002\313$\323=\333\372\315\320\216\313\031\253VT\0269\0242\002\213E\357\265\365J\273\233tE\346w\305N\240\314\235\255\004\022\004\357\022\ng\314\324\305\212\205\\A-\232\n\222\017\020\006\244\026\266\0329\002\232X\260G\231\326!\261\326/HP'\241[\233#\205T\243\037Q\200\224\352\350B1\tW/ k\222\030\\\240\001O\3576C\014\r]j7\304X\304\351\252\025Y\361F\322<;\t\320\270:\360x!q\240%\266j\310&\264\216W\265.\322\350\252>""\203\n^\370c\321\204\306mp\023V\263\323\273E\223\356\265\322D\3671t\020St\t\010 \265\317\303A\361-H|\375<H\344\330\366\031\025)\300[b\316\265\273a\3729\317\375\026K\001\342\347\222\347\343\204\314V\243\014UV\365\n\262`\017\326\000\342i{\021,\027\\S3\312\276\262\316\352\346i\265,x7\251]\272\354\323,\333m\212\314\304\343U\356\013\363b &\342\022r\250{\264\310/c\203\336N2?\342\356H\247\n\022\021\022\303\205\200";
-    PyObject *data = __Pyx_DecompressString(cstring, 858, 2);
+    const struct { const unsigned int length: 8; } index[] = {{1},{1},{39},{10},{8},{20},{11},{8},{11},{25},{9},{5},{8},{8},{15},{18},{4},{7},{1},{3},{18},{26},{16},{4},{9},{11},{7},{6},{6},{6},{6},{6},{6},{2},{5},{11},{5},{9},{8},{13},{4},{10},{3},{11},{13},{14},{5},{6},{17},{4},{4},{8},{11},{13},{5},{10},{8},{6},{4},{2},{5},{8},{5},{28},{30},{38},{32},{3},{13},{11},{14},{12},{6},{4},{7},{12},{10},{3},{8},{4},{6},{6},{15},{4},{4},{4},{4},{4},{4},{4},{242},{10},{163}};
+    #if (CYTHON_COMPRESS_STRINGS) == 2 /* compression: bz2 (882 bytes) */
+const char* const cstring = "BZh91AY&SYF;U^\000\000I\377\377\347\377\377\360-\351\266\234\277U\177P\277\357\377\370\300@@@@@@@@@@@@\000@\000@\002\374Q\242\251XCE56\2212l\223\324\3042d=\020\031\0322=M\r\r2\003&M\001\240\362\231\242f\241\023 \214)\264S!\345=!\352h\000\000\000\320\000\000\000\006\200\001\300\320\032\r\032\006M\000\006\200\003\023CM\003M\0004h\320\000\321\240\323H\0044M\t\344\246\322=FC@\000\000\000\000\000\000\321\344\0026\263\271\340\031\363\246\200\244\177\267\220Hl\243\306\370\204\321\255\333\337\211@J\002F\tS\205\221\214\240\000r%g\022\334\304\255\315\rD\214\010\025\323^\346\355(\367\330\306\n`\243\035\210`(\336V\274\265\312\327\243A\254\352k/\233\363\324\003\365\375\014!\237%\2245g6\035\010\030\244\0223D\205\023S\212o\262\325q\205!\020\177\n\2109=Z\356\346:h\013\306\020\204\033\3178\025'\"\3124P\262K\260\205pp\226\342\201&(\255a\2462\264\302\246\207\273&\312\245d\266\200\313\nl\3044.f5\316\n\360\334\373\023\236\010\201\002cS6\262*\n\201\022.\222\230\315\251\240\240bF\3140\302\007\253ko\213C\320\223\t\354\001z\t\224\254\014\310\353\305\257m\326\240\n\223\325\305\231\200\020O\001\343l\222 \203\344D\306\005\036Q\225\241j,l\220\240 \027\024\316\021\030\350\305\200\310\032\252P\3049d\327\271K\267O.\365\205\260\026\210\352i\240\204\337\236\034\0266\206\305\260&\307\277>\265\361\005\274+\300\267\003\3316.\275\361\025\224\324\256\0013H'\3572\013\231\\\345J\311Ap\\\310\032\030mpc\223,\331q\204!bS\004\n\031\322\220a\010s*Y#\036&T\234\002AR\222\2403\3273R\230\305\316\002XH\007&\277\350\250\277\240\210\227\010\200\r\252^\253\010B\n\253@\200\306i\243q\005\225k5&\032G^\311\0078M\350\032P \303gN\321\353Y\202'\223\017Qd\0070\036\224\253\205I\373\254\211\227`\212\351\364\335\025\266\rS\005F\032!j\030.\031\037\244\374X`\203\035\316\022\031\n\240\241\322i\341\216\"v\262\240\230'l\220SF\223n#\036:\230\314!0\312,J\303\304\001\261\005\255\205:a\204\253\321\306L\210ln\306\225\210L\267\003\\tV\225 \370\214J`\300\0210\351a!(\003P\260!;\330\310\014D\242\374\245\324Q\027\263\022\016?\003\\\016p\216}Q""\304\311T\336\0172\323\225n\016\274\025A\273\013\2140L\261;4\023Q\016Z`\024y\024\220I\206kDJV\223-h'\005\260\025\213B\332\335\342\271\370Z\353\"\267`\254\220\205P\007\210(TN\344\333\243\024\3537\274\356\221\275G\324H\2353\354\251\n\373w\357\207$\315\271\364Z\014\213Ea\357\327j\224|\026\260\206g\305\311\032~(\001\346@\344i\212\330\027\0140&\031\350\345]~\215\251[\rc\302\234\222\377\271\350>\372\355\266\330\317\246\357\033T\334\031_\200\2405\224\210\252\020\022\256\231\203J\212\207\274\233\210\377\213\271\"\234(H#\035\252\257\000";
+    PyObject *data = __Pyx_DecompressString(cstring, 882, 2);
     if (unlikely(!data)) __PYX_ERR(0, 1, __pyx_L1_error)
     const char* const bytes = __Pyx_PyBytes_AsString(data);
     #if !CYTHON_ASSUME_SAFE_MACROS
     if (likely(bytes)); else { Py_DECREF(data); __PYX_ERR(0, 1, __pyx_L1_error) }
     #endif
-    #elif (CYTHON_COMPRESS_STRINGS) != 0 /* compression: zlib (781 bytes) */
-const char* const cstring = "x\332}R=o\0347\020\225\000\311:\311\212\245\213\355|u\207\030\216\004\003\027\010\260a$6`\304\261\205 \010\002\237\362\001A\315\200\332\345^\010q\311=r\366|{.\254\362J\226,Yny\245\312\224)\257\274\362~\202\177B\206{\266%\007F\n\222o\370f\206of\330}\302d_\033\201\177\345\366[4,9\023\252\017\246T\335\242\372Q+4Z\276`\346\320\260\234?-3\200\027\325\210\3263\221 \374\312Gx\304\263\337\370\240\344*\341\344\366{\214\177wR\236\243R]\201]\200B[\004\241\004\002\374\251e\231\307\240c\220\254:\311\331hy\n\025\317KQ\335\274\224(r\236^\271*X\324\203\334\330+\227\357\305g\221\204\3232\373\030I\225\0010\24542\024ZY2l\245\022\241\273\2116\272D\241\270=\325ZR8H*+a2\221tI\252!&\341\247\224(\321j\310\r6\027g@j\0005`YHNI\014\267\220\tI\n\230\345\t\221)C\226Hf\355{@\036\220\352\204\266\341\210\n\217\273P\351\260jp\325\340q\203\307\204\263\323Lp\231f\222!r\022\241e&5\303\314\350|\371\016d\245\242\\\"\3577O\202\242\362c\217\233>\347\271\214E\241\260\220\350\274 \377\024\032\374\266X\302\215/\223b\314S\201<\267T.u\216\3663\326\347\227\245HaQ\3061A\316\250\031\020!2\323\347H\325\3204\226\245\301\362E:tZFq\320\350\241=&\264J\233\\\025\212\272\202\252\314!a\271\245\263\250\n]|\360;\3100\234\274x\004B_\252\000\030\224L.S\032\216\245Q\244,\263|\320\214\001,\307\267\357\021Jy\306\350\363X$\0029\345\006\214\017\033P\374\345\220\311\222\333a\363\tS\372^\312\322o\030\022\035\007\022\307\021\207\021G\021\007\021\307p\376\303\274\265=9t{\2763\337\336u[\376\216\347\341Q\235N\2439\333\375:\334\017\203\006u\302\255p\\\367\026\344\375\223{\352\372\376\217\320\t\0071f\335\035\373#\217\341A\275\372\377\346\233k+\2337f\237\354\315\366\276\273h\317[7&\231{\3467\210{X\337\235nL_\377\315b\300\206C\3770\334\t,\n{\356>s\003\277\356{\0371\276\364\035\377 \254~`,\032\343\226\353\315\267w&\350\016\334!\325\265\373\025\221\367\375\313\220\326\337L\333\263\225\333\256\267Xk\273\366\371\352\233\335\225\365\255\ti\271\355N\374\253\2723om\222\310\365\326\371\330\265\335]O\271o\272\357\375I\030\324\224\371\246;X\254m4""\324\276?\230\267>u\367\032js\372\305E\373\035\323\004\355LFn\034\332\201\362\355\314v\366\353v\335\371\017_\371\255\330\276\305\332\365\311#\307\\\025\256\205\254\376y*.\006\363\317\367g\373\217g\217\177\371\347\371\254w\364/Bp\351\223";
-    PyObject *data = __Pyx_DecompressString(cstring, 781, 1);
+    #elif (CYTHON_COMPRESS_STRINGS) != 0 /* compression: zlib (796 bytes) */
+const char* const cstring = "x\332}R\317o\023G\024N\244\2048!\220\270@\201\336\254\"\332\250\222#W \244\202\204\010\020U\250\252p\372CQ.O\343\335Yw\224\371\261\236\2315^s G\037\3478\3079\356\321G\216\0349\372\350\243\377\004\376\204\276\331$\244T\021\007\317|o\337\233\357\275\357\371k?5:\331U9\225\271\035\376\274Kx_if\377\021f\327j\222\0343\331\007]\310v^>W\322j\305_\023\275\257\211\240{E\006\360\272\034\341\357\005K,\374NG\366\200f\177\320AAeB\261\354\317\370\376\374F\236\203B\376\007\266\001re,0\311,\300\337\212\027\">:\004N\312#AF\2477\223\361\006 R*K,S\322``J\2310\325N\224V\205e\222\232\236R\274\207\003ql\235\020\236p\374\210\314\020%\320\036\366L\224\034Rm\353\017\307\220\023\rV\201-rN\221DS\003\031\343\024z\304\320\004\223)\261$\341\304\230\317\000+ U\t\036\303\021\016\027O&\323aY\343\262\306\343\032\217\021g\275\214Q\236f\234XKq\010\3053\256\210\315\264\022\247} +$r1\321\257[\202\304}\306=\324\273\020\202GQ\226\031H\224\310\261>\205\032\237\211E\\\327\022\316\3064e\226\n\203r\361\177\303\363\230\364\351\205\024\316\214\345q\225 \010.\003\"\264D\367\251E5\202\236I\203\323\216x\251\264\210\303A=\017\236\221\320H\245\205\314%n\305\312B@B\204\301;/\317\035\323\276pL[\024\3342A\323\313rH\200\254\226jsY\366\263\327\262X\005\370_~\265\n\035\231\253\374\013\007a\240)6\241\0210u\261\005\200AA\370\251$Mm\241%n&3tP\333\000\014\265gz\021\2454#\250\301XLX\212\334`\243p\r\222\276\031\022^P3\254\215\232\242Ji\320\215CLGCD;D3D+D#D\033\234<\23376'\373\356G\337\232on\273\r\177\317\323\360\270J\2471\234m\177\037\036\204A\215Z\341f8\254\272\013\254\376\325\355\271\276\377+\264B'\276Yu\207\376\300\333\360\260Z\376z\370\351\312\322\372\365\331\265\316\254\263\367\2415o\\\237d\356\205_\303\334\243\352\376tm\372\356\003\211\017\326\234\365\217\302\275@\342`/\335\267n\340W}\367\222\340\256o\371\207a\371\213`Q\0077]w\276\2715\261\256\343\366Q\327\366w\230|\340\337\204\264\372a\332\234-\335r\335\305J\3235O\226?m/\255nL\232\363\306-w\344\337V8\324:\016\271\3328\031\273\246\273\357\221\373\206\373\305\037\205A\205""\3147\\g\261\262V\247v|g\336\370\306\375T\247\326\247w\3367\3173\365\243\255\311\310\215C3 \337\326lk\247jV\255\377\345K\277\021\327\267X\271:y\354\210+\303\225\220U\257\246\354\375`~{g\266\363d\366\344\267\217/g\335\203\177\001=\330\374Z";
+    PyObject *data = __Pyx_DecompressString(cstring, 796, 1);
     if (unlikely(!data)) __PYX_ERR(0, 1, __pyx_L1_error)
     const char* const bytes = __Pyx_PyBytes_AsString(data);
     #if !CYTHON_ASSUME_SAFE_MACROS
     if (likely(bytes)); else { Py_DECREF(data); __PYX_ERR(0, 1, __pyx_L1_error) }
     #endif
-    #else /* compression: none (1224 bytes) */
-const char* const bytes = ".?algorithms/tracking_run.pyControlParFrameBuf__Pyx_PyDict_NextRefSequenceParTrackParTrackingRunTrackingRun.__post_init__VolumeParX_layZmax_layZmin_layalgorithms.multimedalgorithms.parametersalgorithms.tracking_frame_bufalgorithms.tracking_run__annotations__asyncio.coroutinesboolbuf_lenccalcline_in_tracebackconvert_track_par_to_tuplecorres_file_basecpardataclassdataclasses__doc__dvxmaxdvxmindvymaxdvymindvzmaxdvzminfbfieldflatten_tolfloatfrom_file__func__img_base_nameinitinit_mmlutintis_compiled_is_coroutineis_initializeditemslinalglinkage_file_baselistlmax__main__max_targets__metaclass__mmlut__module____name__nlinksnormnpnpartnum_camsnumpypop__post_init____prepare__prio_file_base__qualname__returnselfseq_par__set_name__setdefaultstr__test__tpartr_newvaluesvolumedimensionvparxmaxxminymaxyminzmaxzmin\200A\330\010\014\210F\220(\230!\330\014\020\220\n\230$\230e\240;\250d\260!\330\014\020\320\020#\2404\240q\330\014\020\320\020!\240\024\240X\250Q\340\010\014\210H\220B\220g\230U\240!\2401\330\014\020\220\005\220X\230R\230t\2405\250\001\330\014\020\220\005\220X\230R\230t\2405\250\001\330\014\020\220\005\220X\230R\230t\2405\250\001\360\006\000\t\016\320\r(\320(9\270\021\330\010\016\210f\220D\230\007\230t\2407\250&\260\007\260\177\300a\330\014\020\220\007\220t\2307\240$\240a\330\010\014\210E\220\026\220q\230\005\230Q\330\010\014\210E\220\026\220q\230\005\230Q\330\010\014\210E\220\031\230!\2305\240\001\330\010\014\210E\220\031\230!\2305\240\001\340\010\014\210E\220\024\220Q\330\014\017\210t\2201\220F\230!\330\020\032\230!\2304\230w\240d\250'\260\021\320\000\025\220Q\340\004\021\220\021\200\001\360\020\000\005\n\210\021\330\010\025\220Z\230{\250!\330\010\t\360\006\000\005\010\200z\220\021\220&\230\001\330\010\023\220:\230Z\240q\250\001\340\010\023\2201\340\004\007\200z\220\021\220)\2301\330\010\022\220+\230Z\240q\250\t\260\030\270\021\340\004\007\200z\220\021\220&\230\001\330\010\017\210x\220z\240\021\240!\330\010\017\320\017)\250\021\250!\340\004\007\200z\220\021\220&\230\001""\330\010\017\210y\230\n\240!\2401\340\004\013\210;\220a\220y\240\006\240f\250J\260i\270q\330\027)\320)<\320<L\310E\320QR";
+    #else /* compression: none (1273 bytes) */
+const char* const bytes = ".?src/openptv2/algorithms/tracking_run.pyControlParFrameBuf__Pyx_PyDict_NextRefSequenceParTrackParTrackingRunTrackingRun.__post_init__VolumeParX_layZmax_layZmin_lay__annotations__asyncio.coroutinesboolbuf_lenccalcline_in_tracebackconvert_track_par_to_tuplecorres_file_basecpardataclassdataclasses__doc__dvxmaxdvxmindvymaxdvymindvzmaxdvzminfbfieldflatten_tolfloatfrom_file__func__img_base_nameinitinit_mmlutintis_compiled_is_coroutineis_initializeditemslinalglinkage_file_baselistlmax__main__max_targets__metaclass__mmlut__module____name__nlinksnormnpnpartnum_camsnumpyopenptv2.algorithms.multimedopenptv2.algorithms.parametersopenptv2.algorithms.tracking_frame_bufopenptv2.algorithms.tracking_runpop__post_init____prepare__prio_file_base__qualname__returnselfseq_par__set_name__setdefaultstr__test__tpartr_newvaluesvolumedimensionvparxmaxxminymaxyminzmaxzmin\200A\330\010\014\210F\220(\230!\330\014\020\220\n\230$\230e\240;\250d\260!\330\014\020\320\020#\2404\240q\330\014\020\320\020!\240\024\240X\250Q\340\010\014\210H\220B\220g\230U\240!\2401\330\014\020\220\005\220X\230R\230t\2405\250\001\330\014\020\220\005\220X\230R\230t\2405\250\001\330\014\020\220\005\220X\230R\230t\2405\250\001\360\006\000\t\016\320\r1\3201B\300!\330\010\016\210f\220D\230\007\230t\2407\250&\260\007\260\177\300a\330\014\020\220\007\220t\2307\240$\240a\330\010\014\210E\220\026\220q\230\005\230Q\330\010\014\210E\220\026\220q\230\005\230Q\330\010\014\210E\220\031\230!\2305\240\001\330\010\014\210E\220\031\230!\2305\240\001\340\010\014\210E\220\024\220Q\330\014\017\210t\2201\220F\230!\330\020\032\230!\2304\230w\240d\250'\260\021\320\000\025\220Q\340\004\021\220\021\200\001\360\020\000\005\n\210\021\330\010\025\220Z\230{\250!\330\010\t\360\006\000\005\010\200z\220\021\220&\230\001\330\010\023\220:\230Z\240q\250\001\340\010\023\2201\340\004\007\200z\220\021\220)\2301\330\010\022\220+\230Z\240q\250\t\260\030\270\021\340\004\007\200z\220\021\220&\230\001\330\010\017\210x\220z\240\021\240!\330\010\017\320\017)\250""\021\250!\340\004\007\200z\220\021\220&\230\001\330\010\017\210y\230\n\240!\2401\340\004\013\210;\220a\220y\240\006\240f\250J\260i\270q\330\027)\320)<\320<L\310E\320QR";
     PyObject *data = NULL;
     CYTHON_UNUSED_VAR(__Pyx_DecompressString);
     #endif
@@ -4784,17 +4784,17 @@ static int __Pyx_CreateCodeObjects(__pyx_mstatetype *__pyx_mstate) {
   {
     const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 8, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 28};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self, __pyx_mstate->__pyx_n_u_volumedimension, __pyx_mstate->__pyx_n_u_init_mmlut, __pyx_mstate->__pyx_n_u_xmax, __pyx_mstate->__pyx_n_u_xmin, __pyx_mstate->__pyx_n_u_zmax, __pyx_mstate->__pyx_n_u_zmin, __pyx_mstate->__pyx_n_u_c};
-    __pyx_mstate_global->__pyx_codeobj_tab[0] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_tracking_run_py, __pyx_mstate->__pyx_n_u_post_init, __pyx_mstate->__pyx_kp_b_iso88591_A_F_e_d_4q_XQ_HBgU_1_XRt5_XRt5_X, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[0])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[0] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_tracking, __pyx_mstate->__pyx_n_u_post_init, __pyx_mstate->__pyx_kp_b_iso88591_A_F_e_d_4q_XQ_HBgU_1_XRt5_XRt5_X, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[0])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {11, 0, 0, 11, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 53};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_seq_par, __pyx_mstate->__pyx_n_u_tpar, __pyx_mstate->__pyx_n_u_vpar, __pyx_mstate->__pyx_n_u_cpar, __pyx_mstate->__pyx_n_u_buf_len, __pyx_mstate->__pyx_n_u_max_targets, __pyx_mstate->__pyx_n_u_corres_file_base, __pyx_mstate->__pyx_n_u_linkage_file_base, __pyx_mstate->__pyx_n_u_prio_file_base, __pyx_mstate->__pyx_n_u_cal, __pyx_mstate->__pyx_n_u_flatten_tol};
-    __pyx_mstate_global->__pyx_codeobj_tab[1] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_tracking_run_py, __pyx_mstate->__pyx_n_u_tr_new, __pyx_mstate->__pyx_kp_b_iso88591_Z_z_Zq_1_z_1_Zq_z_xz_z_y_1_ay_f, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[1])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[1] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_tracking, __pyx_mstate->__pyx_n_u_tr_new, __pyx_mstate->__pyx_kp_b_iso88591_Z_z_Zq_1_z_1_Zq_z_xz_z_y_1_ay_f, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[1])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {0, 0, 0, 0, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 85};
     PyObject* const varnames[] = {0};
-    __pyx_mstate_global->__pyx_codeobj_tab[2] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_tracking_run_py, __pyx_mstate->__pyx_n_u_is_compiled, __pyx_mstate->__pyx_kp_b_iso88591_Q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[2])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[2] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_tracking, __pyx_mstate->__pyx_n_u_is_compiled, __pyx_mstate->__pyx_kp_b_iso88591_Q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[2])) goto bad;
   }
   Py_DECREF(tuple_dedup_map);
   return 0;

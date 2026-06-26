@@ -4,61 +4,48 @@
 
 ---
 
-## Quick Start
-
-### For Users (Pre-built Wheels — Coming Soon)
-
-```bash
-pip install openptv2
-```
+## 🚀 Quick Start
 
 ### For Developers (Build from Source)
 
-**Prerequisites:** Python 3.11+, C compiler (gcc/clang/MSVC), Cython, NumPy.
+**Prerequisites:** Python 3.11+, C/C++ compiler (`gcc`/`clang`/`MSVC`), Cython, NumPy.
 
 ```bash
 git clone https://github.com/openptv/openptv2.git
 cd openptv2
-uv sync --extra dev          # Installs deps + builds C + Cython + all packages
+uv sync --extra dev          # Installs dependencies and compiles the Cython extensions in-place
 ```
 
-That's it. Everything builds in one step.
+That's it. Everything builds automatically in one step.
 
 ---
 
-## How the Build Works
+## 🛠️ How the Build Works
 
-OpenPTV2 has **four components** that must be built together:
+OpenPTV2 compiles standard annotated Python algorithms into high-performance native machine code via **Cython 3 (Pure Python Mode)**.
 
 ```
-┌──────────────┐     ┌──────────────────┐     ┌──────────────┐     ┌─────────────┐
-│  lib/src/*.c │────▶│ Cython .pyx files│────▶│  .so modules │────▶│  Python pkg │
-│  (C library) │     │  (bindings/)     │     │  (optv.*)    │     │  (import)   │
-└──────────────┘     └──────────────────┘     └──────────────┘     └─────────────┘
-       │                      │                      │                      │
-       ▼                      ▼                      ▼                      ▼
-  tracking_frame_buf.c  tracking_framebuf.pyx  optv/tracking_framebuf.cpython  from optv.tracking_framebuf import Target
-  calibration.c         calibration.pyx        optv/calibration.cpython          from optv.calibration import Calibration
-  ...                   ...                    ...                               ...
+┌─────────────────────────────────┐     ┌────────────────────────────────┐     ┌───────────────────────────────┐
+│     src/openptv2/algorithms/    │────▶│       Cython Compilation       │────▶│       Shared Libraries        │
+│    (Annotated Python Sources)   │     │ (setup.py compiles to C/C++)   │     │      (High-Performance)       │
+└─────────────────────────────────┘     └────────────────────────────────┘     └───────────────────────────────┘
 ```
 
-**Build flow:**
-
-1. **C sources** (`lib/src/*.c`) are copied into `bindings/liboptv/src/`
-2. **Cython** compiles each `bindings/optv/*.pyx` → `.c` file
-3. **C compiler** links each Cython `.c` + all C library `.c` → `.so` extension module
-4. **setuptools** installs the `.so` files + all Python packages (`openptv2/`, `algorithms/`, `gui/`)
-
-All four steps happen automatically with `uv sync` or `pip install -e .`.
+**Build Flow:**
+1. During `uv sync` or `pip install -e .`, `setup.py` triggers `cythonize` on standard Python modules under `src/openptv2/algorithms/`.
+2. Cython compiles the annotated python files (`.py`) into intermediate C files (`.c`), using type hints and compiler directives.
+3. The host C compiler compiles and links these files into native binary shared libraries (`.so`/`.pyd` files) inside the package.
+4. Python imports are routed through these precompiled native libraries, running at native C-level speed.
 
 ---
 
-## Detailed Instructions
+## 📋 Detailed Instructions
 
 ### Step 1: System Dependencies
 
 **Linux (Debian/Ubuntu):**
 ```bash
+sudo apt-get update
 sudo apt-get install -y build-essential python3-dev
 ```
 
@@ -70,199 +57,102 @@ sudo dnf install -y gcc gcc-c++ python3-devel
 **macOS:**
 ```bash
 xcode-select --install   # Installs clang
-brew install cmake       # Optional, for standalone C builds
 ```
 
 **Windows:**
 - Install [Microsoft C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/)
 - Select "Desktop development with C++" workload
 
-### Step 2: Clone
+---
 
-```bash
-git clone https://github.com/openptv/openptv2.git
-cd openptv2
-```
+### Step 2: Build and Install
 
-### Step 3: Build and Install
-
-**Option A — Using uv (recommended):**
+**Option A — Using uv (Recommended):**
 ```bash
 uv sync --extra dev
 ```
 
-**Option B — Using pip:**
+**Option B — Using pip (Standard editable install):**
 ```bash
 python -m venv .venv
 source .venv/bin/activate  # Windows: .venv\Scripts\activate
 pip install -e ".[dev]"
 ```
 
-**Option C — Manual (for debugging the build):**
-```bash
-# Step 1: Prepare C sources + run Cython
-cd bindings && python setup.py prepare && cd ..
+---
 
-# Step 2: Build extensions in place
-python setup.py build_ext --inplace
-
-# Step 3: Install everything else
-pip install -e ".[dev]"
-```
-
-**Option D — Editable install using the default Cython 3 build:**
-
-```bash
-uv pip install -e .
-```
-
-### Step 4: Verify
+### Step 3: Verify the Installation
 
 > [!IMPORTANT]
-> Always ensure you run commands within the active virtual environment where `openptv2` is installed to avoid running global python/pytest versions, which can lead to `ModuleNotFoundError` or segmentation faults due to mismatched compiled library versions.
+> Always run your verification and testing commands with `uv run` or within the active virtual environment to ensure the correct precompiled binaries are targeted.
 
-Either activate your virtual environment first:
+**1. Test Imports and Compilation Status:**
 ```bash
-source .venv/bin/activate
-```
-
-Or run all verification commands with `uv run`:
-
-**1. Test Core Modules and Bindings:**
-```bash
-uv run python -c "from optv.tracking_framebuf import Target; print('optv bindings: OK')"
-uv run python -c "from algorithms.tracking_frame_buf import Target; print('algorithms engine: OK')"
-uv run python -c "from openptv2 import Tracker; print('openptv2 unified: OK')"
-uv run python -c "import gui.pyptv.pyptv_gui; print('pyptv GUI imports: OK')"
+# Verify that the core module imports and detects the compiled state
+uv run python -c "from openptv2.algorithms.trafo import img_coord; print('OpenPTV2 Algorithms: OK')"
 ```
 
 **2. Run the Test Suite:**
-To run the standard C library and Python algorithm tests:
+To run all tests including unit and parity validation:
 ```bash
-uv run python -m pytest algorithms/tests/ bindings/tests/ -v
-```
-
-To run all tests including the GUI:
-```bash
-uv run python -m pytest -v
+uv run pytest -v
 ```
 
 ---
 
-## GUI Installation
+## 🎨 GUI Launch and Setup
 
-The GUI requires additional dependencies (Qt, TraitsUI, etc.):
+The modern desktop interface is implemented in Python utilizing standard **Tkinter** and **ttkbootstrap** for responsive, high-performance styling.
+
+### Launch the GUI:
 
 ```bash
-uv sync --all-extras
+uv run pyptv_gui
 ```
 
-Launch (after activating virtual environment or using `uv run`):
+*Or via the explicit module path:*
 ```bash
-uv run openptv2-gui
-# or, if virtual environment is activated (source .venv/bin/activate):
-openptv2-gui
+uv run python -m openptv2.gui.pyptv.pyptv_gui
 ```
-
 
 ---
 
-## Binary Wheels (for Deployment)
+## 📦 Binary Wheels (Deployment)
 
-To build distributable wheels for Linux, Windows, and macOS:
-
-### Local Wheel Build
+To build redistributable precompiled wheels for distribution:
 
 ```bash
 pip install build
 python -m build --wheel
 ```
 
-This produces `dist/openptv2-1.0.0-cp311-cp311-linux_x86_64.whl` (platform-specific).
+This produces platform-specific precompiled binaries under `dist/`.
 
-### Multi-Platform Wheels (CI)
+---
 
-Use [cibuildwheel](https://cibuildwheel.pypa.io/) in GitHub Actions:
+## 🔍 Troubleshooting
 
-```yaml
-# .github/workflows/wheels.yml
-name: Build Wheels
-on: [push, pull_request]
-
-jobs:
-  build_wheels:
-    name: Build on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Build wheels
-        uses: pypa/cibuildwheel@v2.17
-        env:
-          CIBW_BUILD: "cp311-* cp312-* cp313-*"
-          CIBW_SKIP: "*-musllinux_*"
-          CIBW_BEFORE_BUILD: "pip install cython numpy"
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: wheels-${{ matrix.os }}
-          path: ./wheelhouse/*.whl
+### "Cython not found" or compilation fails
+Ensure that you are running within your virtual environment or prefixing your commands with `uv run`. To manually install pre-requisites:
+```bash
+pip install "cython>=3.0.0" "numpy>=2.0.0" setuptools
 ```
 
-### Publish to PyPI
-
+### Force Clean Rebuild
+If Cython fails to pick up changes or gets into a corrupted build state, clean the build directories:
 ```bash
-pip install twine
-twine upload dist/*
+# Delete build and compiled cache files
+rm -rf build/ dist/ src/openptv2/algorithms/*.c src/openptv2/algorithms/*.so src/openptv2/algorithms/*.pyd src/openptv2.egg-info/
+uv sync --extra dev
 ```
 
 ---
 
-## Troubleshooting
+## 📂 Architecture Summary
 
-### "Cython not found"
-```bash
-pip install cython>=3.0.0
-```
-
-### "NumPy not found"
-```bash
-pip install numpy>=2.0.0
-```
-
-### "C compiler error"
-- **Linux:** `sudo apt-get install build-essential`
-- **macOS:** `xcode-select --install`
-- **Windows:** Install MSVC Build Tools
-
-### "optv module not found" after `pip install -e .`
-The C extensions may not have built. Force rebuild:
-```bash
-rm -rf build/ bindings/liboptv/ bindings/optv/*.c
-pip install -e ".[dev]"
-```
-
-### "ImportError: undefined symbol"
-The C library wasn't linked into the extension. Clean and rebuild:
-```bash
-rm -rf build/ bindings/liboptv/ bindings/optv/*.c bindings/optv/*.so
-pip install -e ".[dev]"
-```
-
----
-
-## Architecture Summary
-
-| Component | Location | What it does |
-|-----------|----------|-------------|
-| C library | `lib/src/` | Core algorithms (calibration, tracking, correspondence) |
-| Cython bindings | `bindings/optv/*.pyx` | Python interface to C library |
-| Python engine | `algorithms/` | Pure Python/Numba fallback (same algorithms) |
-| Unified package | `openptv2/` | Single entry point, engine selector |
-| GUI | `gui/` | TraitsUI application |
-
-All components share the same test data in `test_data/` and are tested together.
+| Component | Path | What it does |
+|-----------|------|-------------|
+| **Core Algorithms** | `src/openptv2/algorithms/` | High-performance compiled single-source modules |
+| **Namespace Exports** | `src/openptv2/` | Backward compatibility layer and public module exports |
+| **Tkinter GUI** | `src/openptv2/gui/pyptv/` | ttkbootstrap-powered interactive user interface |
+| **Tests** | `tests/` | Integrated Unit, Parity, and GUI automated test suites |

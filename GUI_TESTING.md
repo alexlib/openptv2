@@ -1,237 +1,145 @@
 # GUI Testing Checklist
 
-Since I cannot see your screen, please follow this checklist to test the GUI with both engines.
+This checklist is designed to verify the stability, accuracy, and performance of the modern Tkinter-based GUI using the unified Cython 3+ compiled engine runtime.
 
-## Pre-Test Setup
+---
+
+## 🛠️ Pre-Test Setup
+
+Ensure you are in the repository root and have the correct virtual environment activated:
 
 ```bash
 cd /home/user/Documents/GitHub/openptv2
-git status  # Should be on python_integration_into_pyptv branch
+# Check git status to ensure you have a clean workspace
+git status
+```
+
+Verify that the application packages import successfully and point to the consolidated engine:
+
+```bash
+uv run python -c "import openptv2; print('OpenPTV2 unified engine: OK')"
 ```
 
 ---
 
-## Test 1: Launch GUI with Python Engine
+## 🚀 Step-by-Step GUI Workflow Verification
+
+Follow this checklist to verify that all major GUI workflows complete without any C-level crashes or segmentation faults.
+
+### Test 1: Launch the GUI
+
+Start the GUI using the standard execution command:
 
 ```bash
-export OPENPTV_ENGINE=python
-uv run python -m gui.pyptv.pyptv_gui
+uv run pyptv_gui
 ```
 
-**Expected:** GUI window opens successfully
-
-**If it crashes:** Copy the full error message and share it with me.
-
----
-
-## Test 2: Load Existing Project (Python Engine)
-
-With GUI open (Python engine):
-
-1. **File → Open Project**
-2. Navigate to: `test_data/synthetic/` or `test_data/burgers/`
-3. Select `parameters/` directory
-4. Click OK
-
-**Expected:** 
-- Project loads without errors
-- Status bar shows loaded parameters
-- Camera count shows correct number
-
-**If errors occur:** Note the error message and which step failed.
-
----
-
-## Test 3: Run Detection (Python Engine)
-
-1. **Segmentation → Detection**
-2. Set frame number (e.g., 10001)
-3. Click "Detect"
-
-**Expected:**
-- Progress bar appears
-- Targets detected and displayed
-- Target count shows in status bar
-
-**Check:**
-- [ ] Detection runs without errors
-- [ ] Targets are visible in image
-- [ ] Target count is reasonable (>0)
-
----
-
-## Test 4: Run Correspondences (Python Engine)
-
-1. **Tracking → Correspondences**
-2. Click "Find Correspondences"
-
-**Expected:**
-- Correspondences found
-- 3D positions calculated
-- Points displayed
-
-**Check:**
-- [ ] Correspondences run without errors
-- [ ] Some matches found (count > 0)
-
----
-
-## Test 5: Run Tracking (Python Engine)
-
-1. **Tracking → Track Forward**
-2. Set frame range (e.g., 10001-10003)
-3. Click "Start Tracking"
-
-**Expected:**
-- Tracking progress bar
-- Trajectories generated
-- Output files created in `res/`
-
-**Check:**
-- [ ] Tracking runs to completion
-- [ ] Files created: `res/ptv_is.*`, `res/rt_is.*`
-- [ ] Trajectory count > 0
-
----
-
-## Test 6: Restart with optv Engine
-
-Close the GUI, then:
-
+*Or via the explicit module path:*
 ```bash
-export OPENPTV_ENGINE=optv
-uv run python -m gui.pyptv.pyptv_gui
+uv run python -m openptv2.gui.pyptv.pyptv_gui
 ```
 
-**Expected:** GUI launches (optv engine)
-
-**Check:**
-- [ ] GUI opens successfully
-- [ ] Status bar or title shows current engine (if displayed)
+**Expected Results:**
+- [ ] The Tkinter GUI window opens successfully.
+- [ ] No module-import errors or startup tracebacks appear in the terminal.
 
 ---
 
-## Test 7: Repeat Workflow with optv Engine
+### Test 2: Load an Existing Project
 
-Repeat Tests 2-5 with optv engine.
+With the GUI window open:
 
-**Note:** Due to a pre-existing optv C extension bug, some operations may crash. If they do:
-1. Note which operation crashed
-2. We know Python engine works as fallback
-3. This is a known optv issue, not our code
+1. Go to **File** ➔ **Open Project**.
+2. Navigate to one of the following directories:
+   - `test_data/synthetic/`
+   - `test_data/burgers/`
+   - `test_data/test_cavity/`
+3. Select the `parameters/` directory and click **OK**.
+
+**Expected Results:**
+- [ ] The project loads without raising any validation exceptions.
+- [ ] The status bar successfully indicates loaded parameters.
+- [ ] The camera panels display the correct number of cameras configured in the parameters.
 
 ---
 
-## Test 8: Compare Results
+### Test 3: Run Particle Detection (Segmentation)
 
-After running both engines:
+1. Go to **Segmentation** ➔ **Detection**.
+2. Keep or set the target frame number (e.g., `10001` or `10000`).
+3. Click **Detect**.
+
+**Expected Results:**
+- [ ] Detection runs smoothly, showing a progress bar.
+- [ ] Detected targets are displayed and highlighted in the camera views.
+- [ ] The target counts are updated in the status bar and match expected targets.
+
+---
+
+### Test 4: Find Correspondences (3D Reconstruction)
+
+1. Go to **Tracking** ➔ **Correspondences**.
+2. Click **Find Correspondences**.
+
+**Expected Results:**
+- [ ] Correspondences are successfully calculated from the multi-camera inputs.
+- [ ] The 3D coordinates are plotted and visible.
+- [ ] No array transformation errors or C-level casting exceptions occur.
+
+---
+
+### Test 5: Run Track Forward (Sequence Tracking)
+
+1. Go to **Tracking** ➔ **Track Forward**.
+2. Verify the frame range is correct for the dataset (e.g., `10000` to `10002` or similar short sequence).
+3. Click **Start Tracking**.
+
+**Expected Results:**
+- [ ] The tracking sequence completes successfully without any crashes.
+- [ ] A progress bar monitors the tracking frames.
+- [ ] All trajectory and particle files are created inside the project's `res/` directory (e.g., `res/ptv_is.*`, `res/rt_is.*`).
+
+---
+
+## 📊 Verification of Outputs
+
+After finishing the sequence run, verify that the files are properly generated in the terminal:
 
 ```bash
-# Check output files
+# Check the generated result files (example for synthetic dataset)
 ls -lh test_data/synthetic/res/
 
-# Compare particle counts (should be similar)
+# Confirm files are not empty and have generated lines
 wc -l test_data/synthetic/res/rt_is.10001
 ```
 
-**Expected:**
-- Both engines produce output files
-- Particle/trajectory counts are similar (within 5%)
-- Files have reasonable size (not empty, not huge)
+**Expected Results:**
+- [ ] Directory `res/` is populated.
+- [ ] Result files have reasonable sizes and contain valid coordinate rows.
 
 ---
 
-## Test 9: Engine Switching
+## 📓 Notebook Verification (Optional)
 
-Test that environment variable controls engine:
-
-```bash
-# Python engine
-OPENPTV_ENGINE=python uv run python -c "import openptv2; print(openptv2.get_engine())"
-# Output: python
-
-# optv engine
-OPENPTV_ENGINE=optv uv run python -c "import openptv2; print(openptv2.get_engine())"
-# Output: optv
-
-# Auto-detect (defaults to optv if available)
-uv run python -c "import openptv2; print(openptv2.get_engine())"
-# Output: optv (or python if optv unavailable)
-```
-
----
-
-## Test 10: Notebooks (Optional)
-
-If you use Jupyter notebooks:
+If using interactive Marimo or Jupyter notebooks to inspect parameters and tracking sequences:
 
 ```bash
-export OPENPTV_ENGINE=python
-uv run jupyter notebook gui/notebooks/
+uv run jupyter notebook notebooks/
 ```
 
-Open any notebook and try importing:
+Open a notebook and confirm that imports and basic operations run directly from the consolidated namespace:
+
 ```python
 from openptv2 import Calibration, Tracker
 import openptv2
-print(openptv2.get_engine())  # Should show 'python'
+# Verify tracking calibration can be loaded directly
 ```
 
 ---
 
-## Reporting Issues
+## 🛠️ Reporting Issues
 
-If anything fails, please provide:
-
-1. **Which test failed** (Test 1, 2, 3, etc.)
-2. **Engine used** (python or optv)
-3. **Full error message** (copy entire traceback)
-4. **What you were doing** (clicked button X, loaded file Y)
-5. **Screenshot** if helpful (describe what you see)
-
----
-
-## Success Criteria
-
-- [x] Python engine: GUI launches
-- [ ] Python engine: Can load project
-- [ ] Python engine: Detection works
-- [ ] Python engine: Correspondences work
-- [ ] Python engine: Tracking works
-- [ ] optv engine: GUI launches
-- [ ] optv engine: Basic operations work (or known crash documented)
-- [ ] Output files created and non-empty
-- [ ] No import errors or missing modules
-
----
-
-## Quick Smoke Test (5 min)
-
-Minimum viable test:
-
-```bash
-# Test Python engine
-export OPENPTV_ENGINE=python
-uv run python -m gui.pyptv.pyptv_gui
-# → GUI opens, try loading a project and running detection
-# → Note any errors
-
-# Test optv engine
-export OPENPTV_ENGINE=optv
-uv run python -m gui.pyptv.pyptv_gui  
-# → GUI opens, try same project
-# → Note any errors
-```
-
-**Report back:** "Python engine works" / "optv engine works" / "Both crash with error: ..."
-
----
-
-## Notes
-
-- **Cannot see screen:** I can't see what's happening, so detailed error messages help
-- **Screenshots:** If you paste error text, that's better than screenshots (I can search/copy)
-- **Pre-existing bugs:** optv C extension has known issues, Python engine is our fallback
-- **Test data:** Use `test_data/synthetic/` or `test_data/burgers/` for testing
-
-Ready to test? Start with the Quick Smoke Test and let me know how it goes!
+If any step raises an error or crashes:
+1. **Identify the exact step** (Test 1, 2, 3, etc.) where the issue occurred.
+2. **Copy the full traceback** from the terminal.
+3. **Describe the action** (e.g., loaded specific file `Y` or clicked button `X`).
