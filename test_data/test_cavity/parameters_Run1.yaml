@@ -130,13 +130,14 @@ ptv:
   pix_y: 0.012
   tiff_flag: true
   splitter: false
+  negative: false
 sequence:
   base_name:
   - img/cam1.%d
   - img/cam2.%d
   - img/cam3.%d
   - img/cam4.%d
-  first: 10001
+  first: 10000
   last: 10004
 shaking:
   shaking_first_frame: 10000
@@ -170,7 +171,7 @@ track:
   dvzmax: 15.5
   dvzmin: -15.5
   flagNewParticles: true
-  track_mode: 1
+  track_mode: 0
 man_ori_coordinates:
   camera_0:
     point_1:

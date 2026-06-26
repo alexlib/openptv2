@@ -174,6 +174,8 @@ After those conditions are met:
   - [x] Connect step-by-step interactive 3D tracking loops into the GUI visualizers (`tracking_preview.py` / `tracking_viz_panel.py` / `pyptv_gui.py`).
   - [x] Expose CLI-driven 3D tracking in `pyptv_batch.py` via the `--track3d` flag.
   - [x] Assert 100% correctness and numerical stability with end-to-end unit and integration tests.
+  - [x] Update user-facing documentation (`docs/algorithms/tracking.md`) to guide users on selecting and activating 3D segment tracking.
+
 
 ### 📝 Post-Purge Architectural Refinement (Backward Compatibility Layer)
 - [x] **Restore Namespace Submodules (Forwarders):** Re-created the 11 lightweight forwarder files in `openptv2/` (e.g., `calibration.py`, `parameters.py`, `transforms.py`, etc.) to statically re-export classes and functions from the unified `algorithms` package. This preserves full backward compatibility for any third-party scripts, Jupyter Notebooks, and the Tkinter/ttkbootstrap GUI itself without requiring exhaustive import modifications across the entire ecosystem.

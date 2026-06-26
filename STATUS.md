@@ -175,10 +175,15 @@ We have successfully integrated the high-performance 3D segment tracking algorit
 - **GUI and Step-by-Step Previews**: Wired interactive step-by-step visualizers (`tracking_preview.py`, `tracking_viz_panel.py`, and `pyptv_gui.py`) to execute 3D tracking frames conditionally based on the user's active settings.
 - **CLI Batch Operations**: Added the `--track3d` CLI option inside `pyptv_batch.py` to route batch commands directly to `full_forward_3d()`.
 - **100% Test Coverage**: Added comprehensive integration coverage in `tests/unit/test_tracker_3d_compat.py`. All tests pass flawlessly with zero warnings/errors.
+- **User Documentation**: Documented how to choose and configure `track3d` vs standard tracking in the GUI, YAML/par files, and CLI inside `docs/algorithms/tracking.md`.
 
-### 🚀 Release Readiness & Next Steps
+### 🚀 Release Readiness & Next Steps (Tomorrow's Goals)
 
-1. **Production Packaging & CI Validation**: Validate that `cibuildwheel` successfully compiles the complete Cython 3 package and outputs native binary wheels across Linux, macOS, and Windows.
-2. **Performance Profile Analysis**: Profile compilation with `ccache` in the development environment to reduce compile/re-compile feedback cycles.
-3. **Ecosystem Integration**: Deploy the consolidated, single-engine pure-Python package to PyPI.
+1. **cibuildwheel Packaging Verification**:
+   - Verify that the `cibuildwheel` workflow successfully compiles native binary wheels with Cython 3 across Linux, macOS, and Windows.
+2. **ccache Integration & Compilation Timings**:
+   - Configure local `ccache` integration to optimize compilation/re-compilation feedback cycles inside the `uv` virtual environment and profile timings.
+3. **Merge Proposal**:
+   - Draft and submit a pull request/merge proposal to merge `feature/track3d-integration` back into `feature/cython3-pure-python` once validation is complete.
+
 
