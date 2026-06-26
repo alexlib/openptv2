@@ -52,6 +52,8 @@ ALGORITHMS_MODULES = [
 
 def _cythonize_all():
     """Run Cython on all Pure Python modules in algorithms/."""
+    import time
+    start_time = time.time()
     print("[OpenPTV2] Starting Cythonization of algorithms pure Python modules...")
     
     from Cython.Build import cythonize
@@ -67,6 +69,7 @@ def _cythonize_all():
     # Cythonize all modules in a single call in parallel
     if targets:
         nthreads = min(4, os.cpu_count() or 1)
+        print(f"[OpenPTV2] Running cythonize on {len(targets)} targets with {nthreads} threads...")
         cythonize(
             targets,
             nthreads=nthreads,
@@ -79,7 +82,7 @@ def _cythonize_all():
                 "initializedcheck": False,
             },
         )
-    print("[OpenPTV2] Cythonization of algorithms completed successfully.")
+    print(f"[OpenPTV2] Cythonization of algorithms completed successfully in {time.time() - start_time:.2f} seconds.")
 
 
 def _needs_rebuild():
@@ -163,11 +166,13 @@ class BuildExtWithPrepare(build_ext):
         self.parallel = min(4, os.cpu_count() or 1)
 
     def run(self):
+        import time
+        start_time = time.time()
         if _needs_rebuild():
             _cythonize_all()
-        print("[OpenPTV2] Compiling and linking Cython extensions...")
+        print(f"[OpenPTV2] Compiling and linking Cython extensions in parallel ({self.parallel} workers)...")
         super().run()
-        print("[OpenPTV2] Cython extensions built successfully!")
+        print(f"[OpenPTV2] Cython extensions built successfully in {time.time() - start_time:.2f} seconds!")
 
 
 class BuildPyWithExtensions(build_py):
