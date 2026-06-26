@@ -98,8 +98,9 @@ def _needs_rebuild():
 # ---------------------------------------------------------------------------
 # Prepare Cython files before setup() runs
 # ---------------------------------------------------------------------------
-if _needs_rebuild():
-    _cythonize_all()
+if __name__ == "__main__":
+    if _needs_rebuild():
+        _cythonize_all()
 
 
 def get_extensions():
