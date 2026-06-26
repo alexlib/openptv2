@@ -60,7 +60,7 @@ def _cythonize_all():
     # Collect all existing pure Python modules
     targets = []
     for mod in ALGORITHMS_MODULES:
-        py_file = ROOT / "algorithms" / f"{mod}.py"
+        py_file = ROOT / "src" / "openptv2" / "algorithms" / f"{mod}.py"
         if py_file.exists():
             targets.append(str(py_file.relative_to(ROOT)))
 
@@ -86,7 +86,7 @@ def _needs_rebuild():
     """Check if Pure Python modules changed since last build."""
     # Check if pure Python modules need rebuilding
     for mod in ALGORITHMS_MODULES:
-        py_file = ROOT / "algorithms" / f"{mod}.py"
+        py_file = ROOT / "src" / "openptv2" / "algorithms" / f"{mod}.py"
         if py_file.exists():
             py_c = py_file.with_suffix(".c")
             if not py_c.exists() or py_file.stat().st_mtime > py_c.stat().st_mtime:
@@ -109,7 +109,7 @@ def get_extensions():
     
     # Cython 3 Pure Python algorithms extensions only
     for mod in ALGORITHMS_MODULES:
-        py_file = ROOT / "algorithms" / f"{mod}.py"
+        py_file = ROOT / "src" / "openptv2" / "algorithms" / f"{mod}.py"
         if py_file.exists():
             c_file = py_file.with_suffix(".c")
             extra_compile_args = []
@@ -122,7 +122,7 @@ def get_extensions():
 
             extensions.append(
                 Extension(
-                    f"algorithms.{mod}",
+                    f"openptv2.algorithms.{mod}",
                     sources=[str(c_file.relative_to(ROOT))],
                     include_dirs=[numpy.get_include()],
                     extra_compile_args=extra_compile_args,
@@ -200,21 +200,13 @@ class InstallWithExtensions(install):
 if __name__ == "__main__":
     setup(
         packages=find_namespace_packages(
+            where="src",
             include=[
                 "openptv2",
                 "openptv2.*",
-                "algorithms",
-                "algorithms.*",
-                "gui.pyptv",
-                "gui.pyptv.*",
-                "gui.plugins",
-                "gui.plugins.*",
             ],
         ),
-        package_dir={
-            "gui.pyptv": "gui/pyptv",
-            "gui.plugins": "gui/plugins",
-        },
+        package_dir={"": "src"},
         ext_modules=get_extensions(),
         cmdclass={
             "build_ext": BuildExtWithPrepare,

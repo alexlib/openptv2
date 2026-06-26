@@ -96,32 +96,32 @@ docs = [
 
 [project.scripts]
 openptv = "openptv2.cli:main"
-openptv2-gui = "gui.pyptv.pyptv_gui:main"
-openptv2-batch = "gui.pyptv.pyptv_batch:main_cli"
+openptv2-gui = "openptv2.gui.pyptv.pyptv_gui:main"
+openptv2-batch = "openptv2.gui.pyptv.pyptv_batch:main_cli"
 openptv2-validate = "openptv2.validate:main"
-pyptv = "gui.pyptv.pyptv_gui:main"
-pyptv_gui = "gui.pyptv.pyptv_gui:main"
-pyptv_batch = "gui.pyptv.pyptv_batch:main_cli"
+pyptv = "openptv2.gui.pyptv.pyptv_gui:main"
+pyptv_gui = "openptv2.gui.pyptv.pyptv_gui:main"
+pyptv_batch = "openptv2.gui.pyptv.pyptv_batch:main_cli"
 
 [tool.setuptools]
 packages = [
     "openptv2",
-    "algorithms",
-    "gui.pyptv",
-    "gui.plugins",
+    "openptv2.algorithms",
+    "openptv2.algorithms.compat",
+    "openptv2.gui.pyptv",
+    "openptv2.gui.plugins",
 ]
 include-package-data = true
 zip-safe = false
 
 [tool.setuptools.package-dir]
-"gui.pyptv" = "gui/pyptv"
-"gui.plugins" = "gui/plugins"
+"" = "src"
 
 [tool.pytest.ini_options]
-testpaths = ["algorithms/tests", "gui/tests", "tests"]
+testpaths = ["tests"]
 python_files = ["test_*.py"]
 python_functions = ["test_*"]
-pythonpath = ["gui"]
+pythonpath = ["src"]
 addopts = "-v --tb=short --import-mode=importlib"
 markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",

@@ -4,11 +4,7 @@ include pyproject.toml
 include setup.py
 
 # Include Python packages
-recursive-include openptv2 *.py *.pxd
-recursive-include algorithms *.py
-recursive-include gui *.py *.toml
+recursive-include src/openptv2 *.py *.pxd *.json
 
 # Include tests
-recursive-include algorithms/tests *.py
-recursive-include gui/tests *.py
 recursive-include tests *.py

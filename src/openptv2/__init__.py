@@ -1,0 +1,136 @@
+"""Public OpenPTV2 API backed by the single Cython-backed algorithms runtime."""
+
+from .algorithms.track_kernels import is_compiled as _is_compiled
+
+from .algorithms.compat.calibration import Calibration
+from .algorithms.compat.correspondences import MatchedCoords, correspondences
+from .algorithms.compat.epipolar import epipolar_curve
+from .algorithms.compat.image_processing import preprocess_image
+from .algorithms.compat.imgcoord import flat_image_coordinates, image_coordinates
+from .algorithms.compat.orientation import (
+    dumbbell_target_func,
+    external_calibration,
+    full_calibration,
+    match_detection_to_ref,
+    multi_cam_point_positions,
+    point_positions,
+)
+from .algorithms.parameter_converters import (
+    convert_optv_calibrations,
+    get_all_params,
+    get_calibration_par,
+    get_control_par,
+    get_examine_par,
+    get_multimedia_par,
+    get_multiplanes_par,
+    get_orient_par,
+    get_pft_version_par,
+    get_sequence_par,
+    get_target_par,
+    get_track_par_tuple,
+    get_volume_par,
+)
+from .algorithms.parameters import (
+    TrackParTuple,
+    convert_track_par_to_tuple,
+)
+from .algorithms.compat.parameters import (
+    ControlParams,
+    MultimediaParams,
+    SequenceParams,
+    TargetParams,
+    TrackingParams,
+    VolumeParams,
+)
+from .algorithms.compat.segmentation import target_recognition
+from .algorithms.compat.tracker import Tracker, default_naming
+from .algorithms.compat.tracking_framebuf import Frame, Target, TargetArray, read_targets
+from .algorithms.compat.transforms import (
+    convert_arr_metric_to_pixel,
+    convert_arr_pixel_to_metric,
+    correct_arr_brown_affine,
+    distort_arr_brown_affine,
+    distorted_to_flat,
+)
+
+__version__ = "0.2.0"
+__author__ = "OpenPTV Community"
+__email__ = "openptv@googlegroups.com"
+
+
+def get_version():
+    """Return the version string."""
+    return __version__
+
+
+def is_compiled():
+    """Return whether the current runtime is using compiled Cython extensions."""
+    return _is_compiled()
+
+
+def get_runtime_info():
+    """Return runtime information for the single-engine runtime."""
+    return {
+        "engine": "cython3-pure-python",
+        "compiled": is_compiled(),
+        "package": "openptv2",
+    }
+
+
+def get_engine_info():
+    """Backward-compatible alias for runtime information."""
+    return get_runtime_info()
+
+
+__all__ = [
+    'get_version',
+    'is_compiled',
+    'get_runtime_info',
+    'get_engine_info',
+    'Calibration',
+    'ControlParams',
+    'VolumeParams',
+    'TrackingParams',
+    'SequenceParams',
+    'TargetParams',
+    'MultimediaParams',
+    'Target',
+    'TargetArray',
+    'Frame',
+    'Tracker',
+    'MatchedCoords',
+    'TrackParTuple',
+    'correspondences',
+    'preprocess_image',
+    'target_recognition',
+    'read_targets',
+    'default_naming',
+    'convert_arr_pixel_to_metric',
+    'convert_arr_metric_to_pixel',
+    'correct_arr_brown_affine',
+    'distort_arr_brown_affine',
+    'distorted_to_flat',
+    'image_coordinates',
+    'flat_image_coordinates',
+    'point_positions',
+    'external_calibration',
+    'full_calibration',
+    'match_detection_to_ref',
+    'multi_cam_point_positions',
+    'dumbbell_target_func',
+    'epipolar_curve',
+    'convert_track_par_to_tuple',
+    'convert_optv_calibrations',
+    'get_multimedia_par',
+    'get_control_par',
+    'get_sequence_par',
+    'get_volume_par',
+    'get_track_par_tuple',
+    'get_target_par',
+    'get_calibration_par',
+    'get_orient_par',
+    'get_multiplanes_par',
+    'get_examine_par',
+    'get_pft_version_par',
+    'get_all_params',
+]
