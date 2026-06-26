@@ -144,7 +144,7 @@ uv run python -c "import openptv2; print(f'openptv2 version: {openptv2.__version
 uv run python -c "from openptv2 import Tracker; print('Tracker imported successfully')"
 
 # Run core tests
-uv run python -m pytest algorithms/tests/ bindings/tests/ -v
+uv run pytest tests/unit/ -v
 ```
 
 ---

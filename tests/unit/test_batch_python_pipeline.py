@@ -11,7 +11,7 @@ Pipeline:
   4. Tracking → write ptv_is → log results
 
 Usage:
-    uv run pytest algorithms/tests/test_batch_python_pipeline.py -v -s
+    uv run pytest tests/unit/test_batch_python_pipeline.py -v -s
 """
 
 import math

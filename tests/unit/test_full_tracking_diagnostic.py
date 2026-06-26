@@ -6,7 +6,7 @@ Logs every stage with counts and parameters so we can see exactly where
 particles are lost.
 
 Usage:
-    uv run pytest algorithms/tests/test_full_tracking_diagnostic.py -v -s
+    uv run pytest tests/unit/test_full_tracking_diagnostic.py -v -s
 """
 
 import math

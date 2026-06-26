@@ -388,7 +388,7 @@ def run_installed_tests(
         python_path,
         "-m",
         "pytest",
-        "algorithms/tests/",
+        "tests/unit/",
         "-v",
         "-m",
         "not slow",
