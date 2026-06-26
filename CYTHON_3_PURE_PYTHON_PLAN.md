@@ -165,3 +165,9 @@ After those conditions are met:
   - [x] Delete legacy `bindings/` Cython bindings.
   - [x] Delete `openptv2/engine.py` and dispatch forwarders.
   - [x] Simplify `openptv2/__init__.py` namespace mapping.
+
+---
+
+### 📝 Post-Purge Architectural Refinement (Backward Compatibility Layer)
+- [x] **Restore Namespace Submodules (Forwarders):** Re-created the 11 lightweight forwarder files in `openptv2/` (e.g., `calibration.py`, `parameters.py`, `transforms.py`, etc.) to statically re-export classes and functions from the unified `algorithms` package. This preserves full backward compatibility for any third-party scripts, Jupyter Notebooks, and the Tkinter/ttkbootstrap GUI itself without requiring exhaustive import modifications across the entire ecosystem.
+
