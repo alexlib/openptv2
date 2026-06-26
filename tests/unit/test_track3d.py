@@ -113,7 +113,8 @@ def track3d_test_cavity():
     import os
     original = os.getcwd()
     try:
-        os.chdir("test_data/test_cavity")
+        test_dir = os.path.join(os.path.dirname(__file__), '../../test_data/test_cavity')
+        os.chdir(test_dir)
         if os.path.exists("res"): shutil.rmtree("res")
         if os.path.exists("img"): shutil.rmtree("img")
         shutil.copytree("res_orig", "res")
@@ -142,7 +143,8 @@ def track3d_test_burgers():
     import os
     original = os.getcwd()
     try:
-        os.chdir("test_data/burgers")
+        test_dir = os.path.join(os.path.dirname(__file__), '../../test_data/burgers')
+        os.chdir(test_dir)
         if os.path.exists("res"): shutil.rmtree("res")
         if os.path.exists("img"): shutil.rmtree("img")
         shutil.copytree("res_orig", "res")
@@ -203,7 +205,8 @@ def test_track3d_burgers_parity_with_cython():
     per-step linkage: prev/next pointers and x/y/z positions."""
     original = os.getcwd()
     try:
-        os.chdir("test_data/burgers")
+        test_dir = os.path.join(os.path.dirname(__file__), '../../test_data/burgers')
+        os.chdir(test_dir)
         first, last = 10001, 10005
 
         # --- C / Cython run ---

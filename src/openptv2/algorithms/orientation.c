@@ -4,12 +4,12 @@
 {
     "distutils": {
         "depends": [],
-        "name": "algorithms.orientation",
+        "name": "openptv2.algorithms.orientation",
         "sources": [
-            "algorithms/orientation.py"
+            "src/openptv2/algorithms/orientation.py"
         ]
     },
-    "module_name": "algorithms.orientation"
+    "module_name": "openptv2.algorithms.orientation"
 }
 END: Cython Metadata */
 
@@ -1127,8 +1127,8 @@ static int __Pyx_init_co_variables(void) {
   #endif
 #endif
 
-#define __PYX_HAVE__algorithms__orientation
-#define __PYX_HAVE_API__algorithms__orientation
+#define __PYX_HAVE__openptv2__algorithms__orientation
+#define __PYX_HAVE_API__openptv2__algorithms__orientation
 /* Early includes */
 #include <math.h>
 #include "pythread.h"
@@ -1350,7 +1350,7 @@ static const char *__pyx_filename;
 /* #### Code section: filename_table ### */
 
 static const char* const __pyx_f[] = {
-  "algorithms/orientation.py",
+  "src/openptv2/algorithms/orientation.py",
   "<stringsource>",
 };
 /* #### Code section: utility_code_proto_before_types ### */
@@ -1610,42 +1610,42 @@ struct __pyx_array_obj;
 struct __pyx_MemviewEnum_obj;
 struct __pyx_memoryview_obj;
 struct __pyx_memoryviewslice_obj;
-struct __pyx_opt_args_10algorithms_11orientation_full_calibration;
-struct __pyx_opt_args_10algorithms_11orientation_match_detection_to_ref;
-struct __pyx_opt_args_10algorithms_11orientation_point_positions;
+struct __pyx_opt_args_8openptv2_10algorithms_11orientation_full_calibration;
+struct __pyx_opt_args_8openptv2_10algorithms_11orientation_match_detection_to_ref;
+struct __pyx_opt_args_8openptv2_10algorithms_11orientation_point_positions;
 
-/* "algorithms/orientation.py":946
+/* "openptv2/algorithms/orientation.py":946
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def full_calibration(cal, ref_pts, img_pts, cpar, flags=None):
  *     """Full calibration adjusting exterior, interior, and distortion params.
 */
-struct __pyx_opt_args_10algorithms_11orientation_full_calibration {
+struct __pyx_opt_args_8openptv2_10algorithms_11orientation_full_calibration {
   int __pyx_n;
   PyObject *flags;
 };
 
-/* "algorithms/orientation.py":1015
+/* "openptv2/algorithms/orientation.py":1015
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def match_detection_to_ref(cal, ref_pts, img_pts, cpar, eps=25):
  *     """Match detected targets to reference 3D points via back-projection.
 */
-struct __pyx_opt_args_10algorithms_11orientation_match_detection_to_ref {
+struct __pyx_opt_args_8openptv2_10algorithms_11orientation_match_detection_to_ref {
   int __pyx_n;
   PyObject *eps;
 };
 
-/* "algorithms/orientation.py":1064
+/* "openptv2/algorithms/orientation.py":1064
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def point_positions(targets, cpar, cals, vpar=None):
  *     """Dispatch to single or multi-camera point position calculation.
 */
-struct __pyx_opt_args_10algorithms_11orientation_point_positions {
+struct __pyx_opt_args_8openptv2_10algorithms_11orientation_point_positions {
   int __pyx_n;
   PyObject *vpar;
 };
@@ -3065,7 +3065,7 @@ static PyObject *__pyx_memoryviewslice__get_base(struct __pyx_memoryviewslice_ob
 
 /* Module declarations from "libc.math" */
 
-/* Module declarations from "algorithms.orientation" */
+/* Module declarations from "openptv2.algorithms.orientation" */
 static PyObject *__pyx_collections_abc_Sequence = 0;
 static PyObject *generic = 0;
 static PyObject *strided = 0;
@@ -3074,22 +3074,22 @@ static PyObject *contiguous = 0;
 static PyObject *indirect_contiguous = 0;
 static int __pyx_memoryview_thread_locks_used;
 static PyThread_type_lock __pyx_memoryview_thread_locks[8];
-static CYTHON_INLINE double __pyx_f_10algorithms_11orientation__skew_midpoint_core(double, double, double, double, double, double, double, double, double, double, double, double, __Pyx_memviewslice); /*proto*/
-static PyObject *__pyx_f_10algorithms_11orientation_skew_midpoint(PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_11orientation_point_position(PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObject *, int, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_11orientation_weighted_dumbbell_precision(PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_11orientation_num_deriv_exterior(PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_11orientation_raw_orient(PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_11orientation_read_man_ori_fix(PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_11orientation_read_calblock(PyObject *, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_11orientation_external_calibration(PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_11orientation_full_calibration(PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch, struct __pyx_opt_args_10algorithms_11orientation_full_calibration *__pyx_optional_args); /*proto*/
-static PyObject *__pyx_f_10algorithms_11orientation_match_detection_to_ref(PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch, struct __pyx_opt_args_10algorithms_11orientation_match_detection_to_ref *__pyx_optional_args); /*proto*/
-static PyObject *__pyx_f_10algorithms_11orientation_multi_cam_point_positions(PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_11orientation_point_positions(PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch, struct __pyx_opt_args_10algorithms_11orientation_point_positions *__pyx_optional_args); /*proto*/
-static PyObject *__pyx_f_10algorithms_11orientation_single_cam_point_positions(PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static CYTHON_INLINE double __pyx_f_8openptv2_10algorithms_11orientation__skew_midpoint_core(double, double, double, double, double, double, double, double, double, double, double, double, __Pyx_memviewslice); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_11orientation_skew_midpoint(PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_11orientation_point_position(PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_11orientation_point_position_batch(PyObject *, int, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_11orientation_weighted_dumbbell_precision(PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_11orientation_num_deriv_exterior(PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_11orientation_raw_orient(PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_11orientation_orient(PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_11orientation_read_man_ori_fix(PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_11orientation_read_calblock(PyObject *, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_11orientation_external_calibration(PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_11orientation_full_calibration(PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch, struct __pyx_opt_args_8openptv2_10algorithms_11orientation_full_calibration *__pyx_optional_args); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_11orientation_match_detection_to_ref(PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch, struct __pyx_opt_args_8openptv2_10algorithms_11orientation_match_detection_to_ref *__pyx_optional_args); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_11orientation_multi_cam_point_positions(PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_11orientation_point_positions(PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch, struct __pyx_opt_args_8openptv2_10algorithms_11orientation_point_positions *__pyx_optional_args); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_11orientation_single_cam_point_positions(PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
 static int __pyx_array_allocate_buffer(struct __pyx_array_obj *); /*proto*/
 static struct __pyx_array_obj *__pyx_array_new(PyObject *, Py_ssize_t, char *, char const *, char *); /*proto*/
 static PyObject *__pyx_memoryview_new(PyObject *, int, int, __Pyx_TypeInfo const *); /*proto*/
@@ -3127,11 +3127,11 @@ static PyObject *__pyx_unpickle_Enum__set_state(struct __pyx_MemviewEnum_obj *, 
 static const __Pyx_TypeInfo __Pyx_TypeInfo_double = { "double", NULL, sizeof(double), { 0 }, 0, 'R', 0, 0 };
 static const __Pyx_TypeInfo __Pyx_TypeInfo_int = { "int", NULL, sizeof(int), { 0 }, 0, __PYX_IS_UNSIGNED(int) ? 'U' : 'I', __PYX_IS_UNSIGNED(int), 0 };
 /* #### Code section: before_global_var ### */
-#define __Pyx_MODULE_NAME "algorithms.orientation"
-extern int __pyx_module_is_main_algorithms__orientation;
-int __pyx_module_is_main_algorithms__orientation = 0;
+#define __Pyx_MODULE_NAME "openptv2.algorithms.orientation"
+extern int __pyx_module_is_main_openptv2__algorithms__orientation;
+int __pyx_module_is_main_openptv2__algorithms__orientation = 0;
 
-/* Implementation of "algorithms.orientation" */
+/* Implementation of "openptv2.algorithms.orientation" */
 /* #### Code section: global_var ### */
 static PyObject *__pyx_builtin___import__;
 static PyObject *__pyx_builtin_enumerate;
@@ -3184,22 +3184,22 @@ static void __pyx_memoryviewslice___pyx_pf_15View_dot_MemoryView_16_memoryviewsl
 static PyObject *__pyx_pf___pyx_memoryviewslice___reduce_cython__(CYTHON_UNUSED struct __pyx_memoryviewslice_obj *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf___pyx_memoryviewslice_2__setstate_cython__(CYTHON_UNUSED struct __pyx_memoryviewslice_obj *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state); /* proto */
 static PyObject *__pyx_pf_15View_dot_MemoryView___pyx_unpickle_Enum(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v___pyx_type, long __pyx_v___pyx_checksum, PyObject *__pyx_v___pyx_state); /* proto */
-static PyObject *__pyx_pf_10algorithms_11orientation_skew_midpoint(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_vert1, PyObject *__pyx_v_direct1, PyObject *__pyx_v_vert2, PyObject *__pyx_v_direct2); /* proto */
-static PyObject *__pyx_pf_10algorithms_11orientation_2point_position(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_targets, PyObject *__pyx_v_num_cams, PyObject *__pyx_v_mm, PyObject *__pyx_v_cals); /* proto */
-static PyObject *__pyx_pf_10algorithms_11orientation_4point_position_batch(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_targets, int __pyx_v_num_cams, PyObject *__pyx_v_mm, PyObject *__pyx_v_cals); /* proto */
-static PyObject *__pyx_pf_10algorithms_11orientation_6weighted_dumbbell_precision(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_targets, PyObject *__pyx_v_num_targs, PyObject *__pyx_v_num_cams, PyObject *__pyx_v_mm, PyObject *__pyx_v_cals, PyObject *__pyx_v_db_length, PyObject *__pyx_v_db_weight); /* proto */
-static PyObject *__pyx_pf_10algorithms_11orientation_8num_deriv_exterior(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cal, PyObject *__pyx_v_cpar, PyObject *__pyx_v_dpos, PyObject *__pyx_v_dang, PyObject *__pyx_v_pos); /* proto */
-static PyObject *__pyx_pf_10algorithms_11orientation_10raw_orient(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cal, PyObject *__pyx_v_cpar, PyObject *__pyx_v_nfix, PyObject *__pyx_v_fix, PyObject *__pyx_v_pix); /* proto */
-static PyObject *__pyx_pf_10algorithms_11orientation_12orient(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cal_in, PyObject *__pyx_v_cpar, PyObject *__pyx_v_nfix, PyObject *__pyx_v_fix, PyObject *__pyx_v_pix, PyObject *__pyx_v_flags, PyObject *__pyx_v_sigmabeta); /* proto */
-static PyObject *__pyx_pf_10algorithms_11orientation_14read_man_ori_fix(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_calblock_filename, PyObject *__pyx_v_man_ori_filename, PyObject *__pyx_v_cam); /* proto */
-static PyObject *__pyx_pf_10algorithms_11orientation_16read_calblock(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_filename); /* proto */
-static PyObject *__pyx_pf_10algorithms_11orientation_18external_calibration(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cal, PyObject *__pyx_v_ref_pts, PyObject *__pyx_v_img_pts, PyObject *__pyx_v_cpar); /* proto */
-static PyObject *__pyx_pf_10algorithms_11orientation_20full_calibration(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cal, PyObject *__pyx_v_ref_pts, PyObject *__pyx_v_img_pts, PyObject *__pyx_v_cpar, PyObject *__pyx_v_flags); /* proto */
-static PyObject *__pyx_pf_10algorithms_11orientation_22match_detection_to_ref(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cal, PyObject *__pyx_v_ref_pts, PyObject *__pyx_v_img_pts, PyObject *__pyx_v_cpar, PyObject *__pyx_v_eps); /* proto */
-static PyObject *__pyx_pf_10algorithms_11orientation_24multi_cam_point_positions(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_targets, PyObject *__pyx_v_cpar, PyObject *__pyx_v_cals); /* proto */
-static PyObject *__pyx_pf_10algorithms_11orientation_26point_positions(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_targets, PyObject *__pyx_v_cpar, PyObject *__pyx_v_cals, PyObject *__pyx_v_vpar); /* proto */
-static PyObject *__pyx_pf_10algorithms_11orientation_28single_cam_point_positions(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_targets, PyObject *__pyx_v_cpar, PyObject *__pyx_v_cals, PyObject *__pyx_v_vpar); /* proto */
-static PyObject *__pyx_pf_10algorithms_11orientation_30is_compiled(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_11orientation_skew_midpoint(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_vert1, PyObject *__pyx_v_direct1, PyObject *__pyx_v_vert2, PyObject *__pyx_v_direct2); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_11orientation_2point_position(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_targets, PyObject *__pyx_v_num_cams, PyObject *__pyx_v_mm, PyObject *__pyx_v_cals); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_11orientation_4point_position_batch(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_targets, int __pyx_v_num_cams, PyObject *__pyx_v_mm, PyObject *__pyx_v_cals); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_11orientation_6weighted_dumbbell_precision(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_targets, PyObject *__pyx_v_num_targs, PyObject *__pyx_v_num_cams, PyObject *__pyx_v_mm, PyObject *__pyx_v_cals, PyObject *__pyx_v_db_length, PyObject *__pyx_v_db_weight); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_11orientation_8num_deriv_exterior(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cal, PyObject *__pyx_v_cpar, PyObject *__pyx_v_dpos, PyObject *__pyx_v_dang, PyObject *__pyx_v_pos); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_11orientation_10raw_orient(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cal, PyObject *__pyx_v_cpar, PyObject *__pyx_v_nfix, PyObject *__pyx_v_fix, PyObject *__pyx_v_pix); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_11orientation_12orient(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cal_in, PyObject *__pyx_v_cpar, PyObject *__pyx_v_nfix, PyObject *__pyx_v_fix, PyObject *__pyx_v_pix, PyObject *__pyx_v_flags, PyObject *__pyx_v_sigmabeta); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_11orientation_14read_man_ori_fix(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_calblock_filename, PyObject *__pyx_v_man_ori_filename, PyObject *__pyx_v_cam); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_11orientation_16read_calblock(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_filename); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_11orientation_18external_calibration(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cal, PyObject *__pyx_v_ref_pts, PyObject *__pyx_v_img_pts, PyObject *__pyx_v_cpar); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_11orientation_20full_calibration(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cal, PyObject *__pyx_v_ref_pts, PyObject *__pyx_v_img_pts, PyObject *__pyx_v_cpar, PyObject *__pyx_v_flags); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_11orientation_22match_detection_to_ref(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cal, PyObject *__pyx_v_ref_pts, PyObject *__pyx_v_img_pts, PyObject *__pyx_v_cpar, PyObject *__pyx_v_eps); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_11orientation_24multi_cam_point_positions(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_targets, PyObject *__pyx_v_cpar, PyObject *__pyx_v_cals); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_11orientation_26point_positions(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_targets, PyObject *__pyx_v_cpar, PyObject *__pyx_v_cals, PyObject *__pyx_v_vpar); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_11orientation_28single_cam_point_positions(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_targets, PyObject *__pyx_v_cpar, PyObject *__pyx_v_cals, PyObject *__pyx_v_vpar); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_11orientation_30is_compiled(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
 static PyObject *__pyx_tp_new_array(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_tp_new_Enum(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_tp_new_memoryview(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
@@ -3303,31 +3303,31 @@ static __pyx_mstatetype * const __pyx_mstate_global = &__pyx_mstate_global_stati
 #define __pyx_kp_u__5 __pyx_string_tab[20]
 #define __pyx_kp_u__6 __pyx_string_tab[21]
 #define __pyx_kp_u_add_note __pyx_string_tab[22]
-#define __pyx_kp_u_algorithms_imgcoord __pyx_string_tab[23]
-#define __pyx_kp_u_algorithms_lsqadj __pyx_string_tab[24]
-#define __pyx_kp_u_algorithms_orientation_py __pyx_string_tab[25]
-#define __pyx_kp_u_algorithms_parameters __pyx_string_tab[26]
-#define __pyx_kp_u_algorithms_ray_tracing __pyx_string_tab[27]
-#define __pyx_kp_u_algorithms_sortgrid __pyx_string_tab[28]
-#define __pyx_kp_u_algorithms_tracking_frame_buf __pyx_string_tab[29]
-#define __pyx_kp_u_algorithms_trafo __pyx_string_tab[30]
-#define __pyx_kp_u_algorithms_vec_utils __pyx_string_tab[31]
-#define __pyx_kp_u_and __pyx_string_tab[32]
-#define __pyx_kp_u_at_0x __pyx_string_tab[33]
-#define __pyx_kp_u_collections_abc __pyx_string_tab[34]
-#define __pyx_kp_u_contiguous_and_direct __pyx_string_tab[35]
-#define __pyx_kp_u_contiguous_and_indirect __pyx_string_tab[36]
-#define __pyx_kp_u_cython_int __pyx_string_tab[37]
-#define __pyx_kp_u_disable __pyx_string_tab[38]
-#define __pyx_kp_u_enable __pyx_string_tab[39]
-#define __pyx_kp_u_gc __pyx_string_tab[40]
-#define __pyx_kp_u_got __pyx_string_tab[41]
-#define __pyx_kp_u_got_differing_extents_in_dimensi __pyx_string_tab[42]
-#define __pyx_kp_u_isenabled __pyx_string_tab[43]
-#define __pyx_kp_u_itemsize_0_for_cython_array __pyx_string_tab[44]
-#define __pyx_kp_u_no_default___reduce___due_to_non __pyx_string_tab[45]
-#define __pyx_kp_u_np_ndarray __pyx_string_tab[46]
-#define __pyx_kp_u_object __pyx_string_tab[47]
+#define __pyx_kp_u_and __pyx_string_tab[23]
+#define __pyx_kp_u_at_0x __pyx_string_tab[24]
+#define __pyx_kp_u_collections_abc __pyx_string_tab[25]
+#define __pyx_kp_u_contiguous_and_direct __pyx_string_tab[26]
+#define __pyx_kp_u_contiguous_and_indirect __pyx_string_tab[27]
+#define __pyx_kp_u_cython_int __pyx_string_tab[28]
+#define __pyx_kp_u_disable __pyx_string_tab[29]
+#define __pyx_kp_u_enable __pyx_string_tab[30]
+#define __pyx_kp_u_gc __pyx_string_tab[31]
+#define __pyx_kp_u_got __pyx_string_tab[32]
+#define __pyx_kp_u_got_differing_extents_in_dimensi __pyx_string_tab[33]
+#define __pyx_kp_u_isenabled __pyx_string_tab[34]
+#define __pyx_kp_u_itemsize_0_for_cython_array __pyx_string_tab[35]
+#define __pyx_kp_u_no_default___reduce___due_to_non __pyx_string_tab[36]
+#define __pyx_kp_u_np_ndarray __pyx_string_tab[37]
+#define __pyx_kp_u_object __pyx_string_tab[38]
+#define __pyx_kp_u_openptv2_algorithms_imgcoord __pyx_string_tab[39]
+#define __pyx_kp_u_openptv2_algorithms_lsqadj __pyx_string_tab[40]
+#define __pyx_kp_u_openptv2_algorithms_parameters __pyx_string_tab[41]
+#define __pyx_kp_u_openptv2_algorithms_ray_tracing __pyx_string_tab[42]
+#define __pyx_kp_u_openptv2_algorithms_sortgrid __pyx_string_tab[43]
+#define __pyx_kp_u_openptv2_algorithms_tracking_fra __pyx_string_tab[44]
+#define __pyx_kp_u_openptv2_algorithms_trafo __pyx_string_tab[45]
+#define __pyx_kp_u_openptv2_algorithms_vec_utils __pyx_string_tab[46]
+#define __pyx_kp_u_src_openptv2_algorithms_orientat __pyx_string_tab[47]
 #define __pyx_kp_u_strided_and_direct __pyx_string_tab[48]
 #define __pyx_kp_u_strided_and_direct_or_indirect __pyx_string_tab[49]
 #define __pyx_kp_u_strided_and_indirect __pyx_string_tab[50]
@@ -3350,115 +3350,115 @@ static __pyx_mstatetype * const __pyx_mstate_global = &__pyx_mstate_global_stati
 #define __pyx_n_u_View_MemoryView __pyx_string_tab[67]
 #define __pyx_n_u_abc __pyx_string_tab[68]
 #define __pyx_n_u_added_par __pyx_string_tab[69]
-#define __pyx_n_u_algorithms_orientation __pyx_string_tab[70]
-#define __pyx_n_u_allocate_buffer __pyx_string_tab[71]
-#define __pyx_n_u_array __pyx_string_tab[72]
-#define __pyx_n_u_asarray __pyx_string_tab[73]
-#define __pyx_n_u_ascontiguousarray __pyx_string_tab[74]
-#define __pyx_n_u_asyncio_coroutines __pyx_string_tab[75]
-#define __pyx_n_u_ata __pyx_string_tab[76]
-#define __pyx_n_u_atl __pyx_string_tab[77]
-#define __pyx_n_u_base __pyx_string_tab[78]
-#define __pyx_n_u_bool __pyx_string_tab[79]
-#define __pyx_n_u_c __pyx_string_tab[80]
-#define __pyx_n_u_cal __pyx_string_tab[81]
-#define __pyx_n_u_cal_2 __pyx_string_tab[82]
-#define __pyx_n_u_cal_in __pyx_string_tab[83]
-#define __pyx_n_u_calblock_filename __pyx_string_tab[84]
-#define __pyx_n_u_cals __pyx_string_tab[85]
-#define __pyx_n_u_cam __pyx_string_tab[86]
-#define __pyx_n_u_cc __pyx_string_tab[87]
-#define __pyx_n_u_ccflag __pyx_string_tab[88]
-#define __pyx_n_u_class __pyx_string_tab[89]
-#define __pyx_n_u_class_getitem __pyx_string_tab[90]
-#define __pyx_n_u_cline_in_traceback __pyx_string_tab[91]
-#define __pyx_n_u_compute_rotation_matrix __pyx_string_tab[92]
-#define __pyx_n_u_copy __pyx_string_tab[93]
-#define __pyx_n_u_correct_brown_affin __pyx_string_tab[94]
-#define __pyx_n_u_cos __pyx_string_tab[95]
-#define __pyx_n_u_count __pyx_string_tab[96]
-#define __pyx_n_u_cpar __pyx_string_tab[97]
-#define __pyx_n_u_d __pyx_string_tab[98]
-#define __pyx_n_u_dang __pyx_string_tab[99]
-#define __pyx_n_u_db_length __pyx_string_tab[100]
-#define __pyx_n_u_db_weight __pyx_string_tab[101]
-#define __pyx_n_u_deepcopy __pyx_string_tab[102]
-#define __pyx_n_u_dict __pyx_string_tab[103]
-#define __pyx_n_u_direct1 __pyx_string_tab[104]
-#define __pyx_n_u_direct2 __pyx_string_tab[105]
-#define __pyx_n_u_dm __pyx_string_tab[106]
-#define __pyx_n_u_dpos __pyx_string_tab[107]
-#define __pyx_n_u_dtype __pyx_string_tab[108]
-#define __pyx_n_u_dtype_is_object __pyx_string_tab[109]
-#define __pyx_n_u_empty __pyx_string_tab[110]
-#define __pyx_n_u_encode __pyx_string_tab[111]
-#define __pyx_n_u_enumerate __pyx_string_tab[112]
-#define __pyx_n_u_eps __pyx_string_tab[113]
-#define __pyx_n_u_error __pyx_string_tab[114]
-#define __pyx_n_u_exists __pyx_string_tab[115]
-#define __pyx_n_u_ext_par __pyx_string_tab[116]
-#define __pyx_n_u_external_calibration __pyx_string_tab[117]
-#define __pyx_n_u_filename __pyx_string_tab[118]
-#define __pyx_n_u_fix __pyx_string_tab[119]
-#define __pyx_n_u_flags __pyx_string_tab[120]
-#define __pyx_n_u_float64 __pyx_string_tab[121]
-#define __pyx_n_u_format __pyx_string_tab[122]
-#define __pyx_n_u_fortran __pyx_string_tab[123]
-#define __pyx_n_u_full_calibration __pyx_string_tab[124]
-#define __pyx_n_u_func __pyx_string_tab[125]
-#define __pyx_n_u_getstate __pyx_string_tab[126]
-#define __pyx_n_u_glass_par __pyx_string_tab[127]
-#define __pyx_n_u_id __pyx_string_tab[128]
-#define __pyx_n_u_img_coord __pyx_string_tab[129]
-#define __pyx_n_u_img_pts __pyx_string_tab[130]
-#define __pyx_n_u_imgcoord __pyx_string_tab[131]
-#define __pyx_n_u_import __pyx_string_tab[132]
-#define __pyx_n_u_index __pyx_string_tab[133]
-#define __pyx_n_u_int32 __pyx_string_tab[134]
-#define __pyx_n_u_int_par __pyx_string_tab[135]
-#define __pyx_n_u_interfflag __pyx_string_tab[136]
-#define __pyx_n_u_is_compiled __pyx_string_tab[137]
-#define __pyx_n_u_is_coroutine __pyx_string_tab[138]
-#define __pyx_n_u_items __pyx_string_tab[139]
-#define __pyx_n_u_itemsize __pyx_string_tab[140]
-#define __pyx_n_u_k1 __pyx_string_tab[141]
-#define __pyx_n_u_k1flag __pyx_string_tab[142]
-#define __pyx_n_u_k2 __pyx_string_tab[143]
-#define __pyx_n_u_k2flag __pyx_string_tab[144]
-#define __pyx_n_u_k3 __pyx_string_tab[145]
-#define __pyx_n_u_k3flag __pyx_string_tab[146]
-#define __pyx_n_u_kappa __pyx_string_tab[147]
-#define __pyx_n_u_linalg __pyx_string_tab[148]
-#define __pyx_n_u_lsqadj __pyx_string_tab[149]
-#define __pyx_n_u_main __pyx_string_tab[150]
-#define __pyx_n_u_man_ori_filename __pyx_string_tab[151]
-#define __pyx_n_u_match_detection_to_ref __pyx_string_tab[152]
-#define __pyx_n_u_matinv __pyx_string_tab[153]
-#define __pyx_n_u_matmul __pyx_string_tab[154]
-#define __pyx_n_u_memview __pyx_string_tab[155]
-#define __pyx_n_u_mm __pyx_string_tab[156]
-#define __pyx_n_u_mm_2 __pyx_string_tab[157]
-#define __pyx_n_u_mmlut __pyx_string_tab[158]
-#define __pyx_n_u_mode __pyx_string_tab[159]
-#define __pyx_n_u_module __pyx_string_tab[160]
-#define __pyx_n_u_multi_cam_point_positions __pyx_string_tab[161]
-#define __pyx_n_u_n1 __pyx_string_tab[162]
-#define __pyx_n_u_n2 __pyx_string_tab[163]
-#define __pyx_n_u_n3 __pyx_string_tab[164]
-#define __pyx_n_u_name __pyx_string_tab[165]
-#define __pyx_n_u_name_2 __pyx_string_tab[166]
-#define __pyx_n_u_ndim __pyx_string_tab[167]
-#define __pyx_n_u_new __pyx_string_tab[168]
-#define __pyx_n_u_nfix __pyx_string_tab[169]
-#define __pyx_n_u_norm __pyx_string_tab[170]
-#define __pyx_n_u_np __pyx_string_tab[171]
-#define __pyx_n_u_num_cams __pyx_string_tab[172]
-#define __pyx_n_u_num_deriv_exterior __pyx_string_tab[173]
-#define __pyx_n_u_num_targs __pyx_string_tab[174]
-#define __pyx_n_u_numpy __pyx_string_tab[175]
-#define __pyx_n_u_obj __pyx_string_tab[176]
-#define __pyx_n_u_omega __pyx_string_tab[177]
-#define __pyx_n_u_ones __pyx_string_tab[178]
+#define __pyx_n_u_allocate_buffer __pyx_string_tab[70]
+#define __pyx_n_u_array __pyx_string_tab[71]
+#define __pyx_n_u_asarray __pyx_string_tab[72]
+#define __pyx_n_u_ascontiguousarray __pyx_string_tab[73]
+#define __pyx_n_u_asyncio_coroutines __pyx_string_tab[74]
+#define __pyx_n_u_ata __pyx_string_tab[75]
+#define __pyx_n_u_atl __pyx_string_tab[76]
+#define __pyx_n_u_base __pyx_string_tab[77]
+#define __pyx_n_u_bool __pyx_string_tab[78]
+#define __pyx_n_u_c __pyx_string_tab[79]
+#define __pyx_n_u_cal __pyx_string_tab[80]
+#define __pyx_n_u_cal_2 __pyx_string_tab[81]
+#define __pyx_n_u_cal_in __pyx_string_tab[82]
+#define __pyx_n_u_calblock_filename __pyx_string_tab[83]
+#define __pyx_n_u_cals __pyx_string_tab[84]
+#define __pyx_n_u_cam __pyx_string_tab[85]
+#define __pyx_n_u_cc __pyx_string_tab[86]
+#define __pyx_n_u_ccflag __pyx_string_tab[87]
+#define __pyx_n_u_class __pyx_string_tab[88]
+#define __pyx_n_u_class_getitem __pyx_string_tab[89]
+#define __pyx_n_u_cline_in_traceback __pyx_string_tab[90]
+#define __pyx_n_u_compute_rotation_matrix __pyx_string_tab[91]
+#define __pyx_n_u_copy __pyx_string_tab[92]
+#define __pyx_n_u_correct_brown_affin __pyx_string_tab[93]
+#define __pyx_n_u_cos __pyx_string_tab[94]
+#define __pyx_n_u_count __pyx_string_tab[95]
+#define __pyx_n_u_cpar __pyx_string_tab[96]
+#define __pyx_n_u_d __pyx_string_tab[97]
+#define __pyx_n_u_dang __pyx_string_tab[98]
+#define __pyx_n_u_db_length __pyx_string_tab[99]
+#define __pyx_n_u_db_weight __pyx_string_tab[100]
+#define __pyx_n_u_deepcopy __pyx_string_tab[101]
+#define __pyx_n_u_dict __pyx_string_tab[102]
+#define __pyx_n_u_direct1 __pyx_string_tab[103]
+#define __pyx_n_u_direct2 __pyx_string_tab[104]
+#define __pyx_n_u_dm __pyx_string_tab[105]
+#define __pyx_n_u_dpos __pyx_string_tab[106]
+#define __pyx_n_u_dtype __pyx_string_tab[107]
+#define __pyx_n_u_dtype_is_object __pyx_string_tab[108]
+#define __pyx_n_u_empty __pyx_string_tab[109]
+#define __pyx_n_u_encode __pyx_string_tab[110]
+#define __pyx_n_u_enumerate __pyx_string_tab[111]
+#define __pyx_n_u_eps __pyx_string_tab[112]
+#define __pyx_n_u_error __pyx_string_tab[113]
+#define __pyx_n_u_exists __pyx_string_tab[114]
+#define __pyx_n_u_ext_par __pyx_string_tab[115]
+#define __pyx_n_u_external_calibration __pyx_string_tab[116]
+#define __pyx_n_u_filename __pyx_string_tab[117]
+#define __pyx_n_u_fix __pyx_string_tab[118]
+#define __pyx_n_u_flags __pyx_string_tab[119]
+#define __pyx_n_u_float64 __pyx_string_tab[120]
+#define __pyx_n_u_format __pyx_string_tab[121]
+#define __pyx_n_u_fortran __pyx_string_tab[122]
+#define __pyx_n_u_full_calibration __pyx_string_tab[123]
+#define __pyx_n_u_func __pyx_string_tab[124]
+#define __pyx_n_u_getstate __pyx_string_tab[125]
+#define __pyx_n_u_glass_par __pyx_string_tab[126]
+#define __pyx_n_u_id __pyx_string_tab[127]
+#define __pyx_n_u_img_coord __pyx_string_tab[128]
+#define __pyx_n_u_img_pts __pyx_string_tab[129]
+#define __pyx_n_u_imgcoord __pyx_string_tab[130]
+#define __pyx_n_u_import __pyx_string_tab[131]
+#define __pyx_n_u_index __pyx_string_tab[132]
+#define __pyx_n_u_int32 __pyx_string_tab[133]
+#define __pyx_n_u_int_par __pyx_string_tab[134]
+#define __pyx_n_u_interfflag __pyx_string_tab[135]
+#define __pyx_n_u_is_compiled __pyx_string_tab[136]
+#define __pyx_n_u_is_coroutine __pyx_string_tab[137]
+#define __pyx_n_u_items __pyx_string_tab[138]
+#define __pyx_n_u_itemsize __pyx_string_tab[139]
+#define __pyx_n_u_k1 __pyx_string_tab[140]
+#define __pyx_n_u_k1flag __pyx_string_tab[141]
+#define __pyx_n_u_k2 __pyx_string_tab[142]
+#define __pyx_n_u_k2flag __pyx_string_tab[143]
+#define __pyx_n_u_k3 __pyx_string_tab[144]
+#define __pyx_n_u_k3flag __pyx_string_tab[145]
+#define __pyx_n_u_kappa __pyx_string_tab[146]
+#define __pyx_n_u_linalg __pyx_string_tab[147]
+#define __pyx_n_u_lsqadj __pyx_string_tab[148]
+#define __pyx_n_u_main __pyx_string_tab[149]
+#define __pyx_n_u_man_ori_filename __pyx_string_tab[150]
+#define __pyx_n_u_match_detection_to_ref __pyx_string_tab[151]
+#define __pyx_n_u_matinv __pyx_string_tab[152]
+#define __pyx_n_u_matmul __pyx_string_tab[153]
+#define __pyx_n_u_memview __pyx_string_tab[154]
+#define __pyx_n_u_mm __pyx_string_tab[155]
+#define __pyx_n_u_mm_2 __pyx_string_tab[156]
+#define __pyx_n_u_mmlut __pyx_string_tab[157]
+#define __pyx_n_u_mode __pyx_string_tab[158]
+#define __pyx_n_u_module __pyx_string_tab[159]
+#define __pyx_n_u_multi_cam_point_positions __pyx_string_tab[160]
+#define __pyx_n_u_n1 __pyx_string_tab[161]
+#define __pyx_n_u_n2 __pyx_string_tab[162]
+#define __pyx_n_u_n3 __pyx_string_tab[163]
+#define __pyx_n_u_name __pyx_string_tab[164]
+#define __pyx_n_u_name_2 __pyx_string_tab[165]
+#define __pyx_n_u_ndim __pyx_string_tab[166]
+#define __pyx_n_u_new __pyx_string_tab[167]
+#define __pyx_n_u_nfix __pyx_string_tab[168]
+#define __pyx_n_u_norm __pyx_string_tab[169]
+#define __pyx_n_u_np __pyx_string_tab[170]
+#define __pyx_n_u_num_cams __pyx_string_tab[171]
+#define __pyx_n_u_num_deriv_exterior __pyx_string_tab[172]
+#define __pyx_n_u_num_targs __pyx_string_tab[173]
+#define __pyx_n_u_numpy __pyx_string_tab[174]
+#define __pyx_n_u_obj __pyx_string_tab[175]
+#define __pyx_n_u_omega __pyx_string_tab[176]
+#define __pyx_n_u_ones __pyx_string_tab[177]
+#define __pyx_n_u_openptv2_algorithms_orientation __pyx_string_tab[178]
 #define __pyx_n_u_orient __pyx_string_tab[179]
 #define __pyx_n_u_p1 __pyx_string_tab[180]
 #define __pyx_n_u_p1flag __pyx_string_tab[181]
@@ -16159,7 +16159,7 @@ static PyObject *__pyx_unpickle_Enum__set_state(struct __pyx_MemviewEnum_obj *__
   return __pyx_r;
 }
 
-/* "algorithms/orientation.py":31
+/* "openptv2/algorithms/orientation.py":31
  * 
  * 
  * @cython.cfunc             # <<<<<<<<<<<<<<
@@ -16167,7 +16167,7 @@ static PyObject *__pyx_unpickle_Enum__set_state(struct __pyx_MemviewEnum_obj *__
  * @cython.boundscheck(False)
 */
 
-static CYTHON_INLINE double __pyx_f_10algorithms_11orientation__skew_midpoint_core(double __pyx_v_v1_0, double __pyx_v_v1_1, double __pyx_v_v1_2, double __pyx_v_d1_0, double __pyx_v_d1_1, double __pyx_v_d1_2, double __pyx_v_v2_0, double __pyx_v_v2_1, double __pyx_v_v2_2, double __pyx_v_d2_0, double __pyx_v_d2_1, double __pyx_v_d2_2, __Pyx_memviewslice __pyx_v_midpoint) {
+static CYTHON_INLINE double __pyx_f_8openptv2_10algorithms_11orientation__skew_midpoint_core(double __pyx_v_v1_0, double __pyx_v_v1_1, double __pyx_v_v1_2, double __pyx_v_d1_0, double __pyx_v_d1_1, double __pyx_v_d1_2, double __pyx_v_v2_0, double __pyx_v_v2_1, double __pyx_v_v2_2, double __pyx_v_d2_0, double __pyx_v_d2_1, double __pyx_v_d2_2, __Pyx_memviewslice __pyx_v_midpoint) {
   double __pyx_v_sp_x;
   double __pyx_v_sp_y;
   double __pyx_v_sp_z;
@@ -16199,7 +16199,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_11orientation__skew_midpoint_co
   int __pyx_t_1;
   Py_ssize_t __pyx_t_2;
 
-  /* "algorithms/orientation.py":42
+  /* "openptv2/algorithms/orientation.py":42
  *     midpoint: cython.double[:],
  * ) -> cython.double:
  *     sp_x: cython.double = v2_0 - v1_0             # <<<<<<<<<<<<<<
@@ -16208,7 +16208,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_11orientation__skew_midpoint_co
 */
   __pyx_v_sp_x = (__pyx_v_v2_0 - __pyx_v_v1_0);
 
-  /* "algorithms/orientation.py":43
+  /* "openptv2/algorithms/orientation.py":43
  * ) -> cython.double:
  *     sp_x: cython.double = v2_0 - v1_0
  *     sp_y: cython.double = v2_1 - v1_1             # <<<<<<<<<<<<<<
@@ -16217,7 +16217,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_11orientation__skew_midpoint_co
 */
   __pyx_v_sp_y = (__pyx_v_v2_1 - __pyx_v_v1_1);
 
-  /* "algorithms/orientation.py":44
+  /* "openptv2/algorithms/orientation.py":44
  *     sp_x: cython.double = v2_0 - v1_0
  *     sp_y: cython.double = v2_1 - v1_1
  *     sp_z: cython.double = v2_2 - v1_2             # <<<<<<<<<<<<<<
@@ -16226,7 +16226,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_11orientation__skew_midpoint_co
 */
   __pyx_v_sp_z = (__pyx_v_v2_2 - __pyx_v_v1_2);
 
-  /* "algorithms/orientation.py":46
+  /* "openptv2/algorithms/orientation.py":46
  *     sp_z: cython.double = v2_2 - v1_2
  * 
  *     perp_x: cython.double = d1_1 * d2_2 - d1_2 * d2_1             # <<<<<<<<<<<<<<
@@ -16235,7 +16235,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_11orientation__skew_midpoint_co
 */
   __pyx_v_perp_x = ((__pyx_v_d1_1 * __pyx_v_d2_2) - (__pyx_v_d1_2 * __pyx_v_d2_1));
 
-  /* "algorithms/orientation.py":47
+  /* "openptv2/algorithms/orientation.py":47
  * 
  *     perp_x: cython.double = d1_1 * d2_2 - d1_2 * d2_1
  *     perp_y: cython.double = d1_2 * d2_0 - d1_0 * d2_2             # <<<<<<<<<<<<<<
@@ -16244,7 +16244,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_11orientation__skew_midpoint_co
 */
   __pyx_v_perp_y = ((__pyx_v_d1_2 * __pyx_v_d2_0) - (__pyx_v_d1_0 * __pyx_v_d2_2));
 
-  /* "algorithms/orientation.py":48
+  /* "openptv2/algorithms/orientation.py":48
  *     perp_x: cython.double = d1_1 * d2_2 - d1_2 * d2_1
  *     perp_y: cython.double = d1_2 * d2_0 - d1_0 * d2_2
  *     perp_z: cython.double = d1_0 * d2_1 - d1_1 * d2_0             # <<<<<<<<<<<<<<
@@ -16253,7 +16253,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_11orientation__skew_midpoint_co
 */
   __pyx_v_perp_z = ((__pyx_v_d1_0 * __pyx_v_d2_1) - (__pyx_v_d1_1 * __pyx_v_d2_0));
 
-  /* "algorithms/orientation.py":50
+  /* "openptv2/algorithms/orientation.py":50
  *     perp_z: cython.double = d1_0 * d2_1 - d1_1 * d2_0
  * 
  *     scale: cython.double = perp_x * perp_x + perp_y * perp_y + perp_z * perp_z             # <<<<<<<<<<<<<<
@@ -16262,7 +16262,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_11orientation__skew_midpoint_co
 */
   __pyx_v_scale = (((__pyx_v_perp_x * __pyx_v_perp_x) + (__pyx_v_perp_y * __pyx_v_perp_y)) + (__pyx_v_perp_z * __pyx_v_perp_z));
 
-  /* "algorithms/orientation.py":52
+  /* "openptv2/algorithms/orientation.py":52
  *     scale: cython.double = perp_x * perp_x + perp_y * perp_y + perp_z * perp_z
  * 
  *     if scale < 1e-20:             # <<<<<<<<<<<<<<
@@ -16272,7 +16272,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_11orientation__skew_midpoint_co
   __pyx_t_1 = (__pyx_v_scale < 1e-20);
   if (__pyx_t_1) {
 
-    /* "algorithms/orientation.py":53
+    /* "openptv2/algorithms/orientation.py":53
  * 
  *     if scale < 1e-20:
  *         midpoint[0] = (v1_0 + v2_0) * 0.5             # <<<<<<<<<<<<<<
@@ -16282,7 +16282,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_11orientation__skew_midpoint_co
     __pyx_t_2 = 0;
     *((double *) ( /* dim=0 */ (__pyx_v_midpoint.data + __pyx_t_2 * __pyx_v_midpoint.strides[0]) )) = ((__pyx_v_v1_0 + __pyx_v_v2_0) * 0.5);
 
-    /* "algorithms/orientation.py":54
+    /* "openptv2/algorithms/orientation.py":54
  *     if scale < 1e-20:
  *         midpoint[0] = (v1_0 + v2_0) * 0.5
  *         midpoint[1] = (v1_1 + v2_1) * 0.5             # <<<<<<<<<<<<<<
@@ -16292,7 +16292,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_11orientation__skew_midpoint_co
     __pyx_t_2 = 1;
     *((double *) ( /* dim=0 */ (__pyx_v_midpoint.data + __pyx_t_2 * __pyx_v_midpoint.strides[0]) )) = ((__pyx_v_v1_1 + __pyx_v_v2_1) * 0.5);
 
-    /* "algorithms/orientation.py":55
+    /* "openptv2/algorithms/orientation.py":55
  *         midpoint[0] = (v1_0 + v2_0) * 0.5
  *         midpoint[1] = (v1_1 + v2_1) * 0.5
  *         midpoint[2] = (v1_2 + v2_2) * 0.5             # <<<<<<<<<<<<<<
@@ -16302,7 +16302,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_11orientation__skew_midpoint_co
     __pyx_t_2 = 2;
     *((double *) ( /* dim=0 */ (__pyx_v_midpoint.data + __pyx_t_2 * __pyx_v_midpoint.strides[0]) )) = ((__pyx_v_v1_2 + __pyx_v_v2_2) * 0.5);
 
-    /* "algorithms/orientation.py":56
+    /* "openptv2/algorithms/orientation.py":56
  *         midpoint[1] = (v1_1 + v2_1) * 0.5
  *         midpoint[2] = (v1_2 + v2_2) * 0.5
  *         return c_sqrt(sp_x * sp_x + sp_y * sp_y + sp_z * sp_z)             # <<<<<<<<<<<<<<
@@ -16312,7 +16312,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_11orientation__skew_midpoint_co
     __pyx_r = sqrt((((__pyx_v_sp_x * __pyx_v_sp_x) + (__pyx_v_sp_y * __pyx_v_sp_y)) + (__pyx_v_sp_z * __pyx_v_sp_z)));
     goto __pyx_L0;
 
-    /* "algorithms/orientation.py":52
+    /* "openptv2/algorithms/orientation.py":52
  *     scale: cython.double = perp_x * perp_x + perp_y * perp_y + perp_z * perp_z
  * 
  *     if scale < 1e-20:             # <<<<<<<<<<<<<<
@@ -16321,7 +16321,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_11orientation__skew_midpoint_co
 */
   }
 
-  /* "algorithms/orientation.py":58
+  /* "openptv2/algorithms/orientation.py":58
  *         return c_sqrt(sp_x * sp_x + sp_y * sp_y + sp_z * sp_z)
  * 
  *     t1_x: cython.double = sp_y * d2_2 - sp_z * d2_1             # <<<<<<<<<<<<<<
@@ -16330,7 +16330,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_11orientation__skew_midpoint_co
 */
   __pyx_v_t1_x = ((__pyx_v_sp_y * __pyx_v_d2_2) - (__pyx_v_sp_z * __pyx_v_d2_1));
 
-  /* "algorithms/orientation.py":59
+  /* "openptv2/algorithms/orientation.py":59
  * 
  *     t1_x: cython.double = sp_y * d2_2 - sp_z * d2_1
  *     t1_y: cython.double = sp_z * d2_0 - sp_x * d2_2             # <<<<<<<<<<<<<<
@@ -16339,7 +16339,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_11orientation__skew_midpoint_co
 */
   __pyx_v_t1_y = ((__pyx_v_sp_z * __pyx_v_d2_0) - (__pyx_v_sp_x * __pyx_v_d2_2));
 
-  /* "algorithms/orientation.py":60
+  /* "openptv2/algorithms/orientation.py":60
  *     t1_x: cython.double = sp_y * d2_2 - sp_z * d2_1
  *     t1_y: cython.double = sp_z * d2_0 - sp_x * d2_2
  *     t1_z: cython.double = sp_x * d2_1 - sp_y * d2_0             # <<<<<<<<<<<<<<
@@ -16348,7 +16348,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_11orientation__skew_midpoint_co
 */
   __pyx_v_t1_z = ((__pyx_v_sp_x * __pyx_v_d2_1) - (__pyx_v_sp_y * __pyx_v_d2_0));
 
-  /* "algorithms/orientation.py":62
+  /* "openptv2/algorithms/orientation.py":62
  *     t1_z: cython.double = sp_x * d2_1 - sp_y * d2_0
  * 
  *     dot1: cython.double = perp_x * t1_x + perp_y * t1_y + perp_z * t1_z             # <<<<<<<<<<<<<<
@@ -16357,7 +16357,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_11orientation__skew_midpoint_co
 */
   __pyx_v_dot1 = (((__pyx_v_perp_x * __pyx_v_t1_x) + (__pyx_v_perp_y * __pyx_v_t1_y)) + (__pyx_v_perp_z * __pyx_v_t1_z));
 
-  /* "algorithms/orientation.py":63
+  /* "openptv2/algorithms/orientation.py":63
  * 
  *     dot1: cython.double = perp_x * t1_x + perp_y * t1_y + perp_z * t1_z
  *     factor1: cython.double = dot1 / scale             # <<<<<<<<<<<<<<
@@ -16366,7 +16366,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_11orientation__skew_midpoint_co
 */
   __pyx_v_factor1 = (__pyx_v_dot1 / __pyx_v_scale);
 
-  /* "algorithms/orientation.py":64
+  /* "openptv2/algorithms/orientation.py":64
  *     dot1: cython.double = perp_x * t1_x + perp_y * t1_y + perp_z * t1_z
  *     factor1: cython.double = dot1 / scale
  *     on1_x: cython.double = v1_0 + d1_0 * factor1             # <<<<<<<<<<<<<<
@@ -16375,7 +16375,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_11orientation__skew_midpoint_co
 */
   __pyx_v_on1_x = (__pyx_v_v1_0 + (__pyx_v_d1_0 * __pyx_v_factor1));
 
-  /* "algorithms/orientation.py":65
+  /* "openptv2/algorithms/orientation.py":65
  *     factor1: cython.double = dot1 / scale
  *     on1_x: cython.double = v1_0 + d1_0 * factor1
  *     on1_y: cython.double = v1_1 + d1_1 * factor1             # <<<<<<<<<<<<<<
@@ -16384,7 +16384,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_11orientation__skew_midpoint_co
 */
   __pyx_v_on1_y = (__pyx_v_v1_1 + (__pyx_v_d1_1 * __pyx_v_factor1));
 
-  /* "algorithms/orientation.py":66
+  /* "openptv2/algorithms/orientation.py":66
  *     on1_x: cython.double = v1_0 + d1_0 * factor1
  *     on1_y: cython.double = v1_1 + d1_1 * factor1
  *     on1_z: cython.double = v1_2 + d1_2 * factor1             # <<<<<<<<<<<<<<
@@ -16393,7 +16393,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_11orientation__skew_midpoint_co
 */
   __pyx_v_on1_z = (__pyx_v_v1_2 + (__pyx_v_d1_2 * __pyx_v_factor1));
 
-  /* "algorithms/orientation.py":68
+  /* "openptv2/algorithms/orientation.py":68
  *     on1_z: cython.double = v1_2 + d1_2 * factor1
  * 
  *     t2_x: cython.double = sp_y * d1_2 - sp_z * d1_1             # <<<<<<<<<<<<<<
@@ -16402,7 +16402,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_11orientation__skew_midpoint_co
 */
   __pyx_v_t2_x = ((__pyx_v_sp_y * __pyx_v_d1_2) - (__pyx_v_sp_z * __pyx_v_d1_1));
 
-  /* "algorithms/orientation.py":69
+  /* "openptv2/algorithms/orientation.py":69
  * 
  *     t2_x: cython.double = sp_y * d1_2 - sp_z * d1_1
  *     t2_y: cython.double = sp_z * d1_0 - sp_x * d1_2             # <<<<<<<<<<<<<<
@@ -16411,7 +16411,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_11orientation__skew_midpoint_co
 */
   __pyx_v_t2_y = ((__pyx_v_sp_z * __pyx_v_d1_0) - (__pyx_v_sp_x * __pyx_v_d1_2));
 
-  /* "algorithms/orientation.py":70
+  /* "openptv2/algorithms/orientation.py":70
  *     t2_x: cython.double = sp_y * d1_2 - sp_z * d1_1
  *     t2_y: cython.double = sp_z * d1_0 - sp_x * d1_2
  *     t2_z: cython.double = sp_x * d1_1 - sp_y * d1_0             # <<<<<<<<<<<<<<
@@ -16420,7 +16420,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_11orientation__skew_midpoint_co
 */
   __pyx_v_t2_z = ((__pyx_v_sp_x * __pyx_v_d1_1) - (__pyx_v_sp_y * __pyx_v_d1_0));
 
-  /* "algorithms/orientation.py":72
+  /* "openptv2/algorithms/orientation.py":72
  *     t2_z: cython.double = sp_x * d1_1 - sp_y * d1_0
  * 
  *     dot2: cython.double = perp_x * t2_x + perp_y * t2_y + perp_z * t2_z             # <<<<<<<<<<<<<<
@@ -16429,7 +16429,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_11orientation__skew_midpoint_co
 */
   __pyx_v_dot2 = (((__pyx_v_perp_x * __pyx_v_t2_x) + (__pyx_v_perp_y * __pyx_v_t2_y)) + (__pyx_v_perp_z * __pyx_v_t2_z));
 
-  /* "algorithms/orientation.py":73
+  /* "openptv2/algorithms/orientation.py":73
  * 
  *     dot2: cython.double = perp_x * t2_x + perp_y * t2_y + perp_z * t2_z
  *     factor2: cython.double = dot2 / scale             # <<<<<<<<<<<<<<
@@ -16438,7 +16438,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_11orientation__skew_midpoint_co
 */
   __pyx_v_factor2 = (__pyx_v_dot2 / __pyx_v_scale);
 
-  /* "algorithms/orientation.py":74
+  /* "openptv2/algorithms/orientation.py":74
  *     dot2: cython.double = perp_x * t2_x + perp_y * t2_y + perp_z * t2_z
  *     factor2: cython.double = dot2 / scale
  *     on2_x: cython.double = v2_0 + d2_0 * factor2             # <<<<<<<<<<<<<<
@@ -16447,7 +16447,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_11orientation__skew_midpoint_co
 */
   __pyx_v_on2_x = (__pyx_v_v2_0 + (__pyx_v_d2_0 * __pyx_v_factor2));
 
-  /* "algorithms/orientation.py":75
+  /* "openptv2/algorithms/orientation.py":75
  *     factor2: cython.double = dot2 / scale
  *     on2_x: cython.double = v2_0 + d2_0 * factor2
  *     on2_y: cython.double = v2_1 + d2_1 * factor2             # <<<<<<<<<<<<<<
@@ -16456,7 +16456,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_11orientation__skew_midpoint_co
 */
   __pyx_v_on2_y = (__pyx_v_v2_1 + (__pyx_v_d2_1 * __pyx_v_factor2));
 
-  /* "algorithms/orientation.py":76
+  /* "openptv2/algorithms/orientation.py":76
  *     on2_x: cython.double = v2_0 + d2_0 * factor2
  *     on2_y: cython.double = v2_1 + d2_1 * factor2
  *     on2_z: cython.double = v2_2 + d2_2 * factor2             # <<<<<<<<<<<<<<
@@ -16465,7 +16465,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_11orientation__skew_midpoint_co
 */
   __pyx_v_on2_z = (__pyx_v_v2_2 + (__pyx_v_d2_2 * __pyx_v_factor2));
 
-  /* "algorithms/orientation.py":78
+  /* "openptv2/algorithms/orientation.py":78
  *     on2_z: cython.double = v2_2 + d2_2 * factor2
  * 
  *     diff_x: cython.double = on1_x - on2_x             # <<<<<<<<<<<<<<
@@ -16474,7 +16474,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_11orientation__skew_midpoint_co
 */
   __pyx_v_diff_x = (__pyx_v_on1_x - __pyx_v_on2_x);
 
-  /* "algorithms/orientation.py":79
+  /* "openptv2/algorithms/orientation.py":79
  * 
  *     diff_x: cython.double = on1_x - on2_x
  *     diff_y: cython.double = on1_y - on2_y             # <<<<<<<<<<<<<<
@@ -16483,7 +16483,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_11orientation__skew_midpoint_co
 */
   __pyx_v_diff_y = (__pyx_v_on1_y - __pyx_v_on2_y);
 
-  /* "algorithms/orientation.py":80
+  /* "openptv2/algorithms/orientation.py":80
  *     diff_x: cython.double = on1_x - on2_x
  *     diff_y: cython.double = on1_y - on2_y
  *     diff_z: cython.double = on1_z - on2_z             # <<<<<<<<<<<<<<
@@ -16492,7 +16492,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_11orientation__skew_midpoint_co
 */
   __pyx_v_diff_z = (__pyx_v_on1_z - __pyx_v_on2_z);
 
-  /* "algorithms/orientation.py":81
+  /* "openptv2/algorithms/orientation.py":81
  *     diff_y: cython.double = on1_y - on2_y
  *     diff_z: cython.double = on1_z - on2_z
  *     dist: cython.double = c_sqrt(diff_x * diff_x + diff_y * diff_y + diff_z * diff_z)             # <<<<<<<<<<<<<<
@@ -16501,7 +16501,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_11orientation__skew_midpoint_co
 */
   __pyx_v_dist = sqrt((((__pyx_v_diff_x * __pyx_v_diff_x) + (__pyx_v_diff_y * __pyx_v_diff_y)) + (__pyx_v_diff_z * __pyx_v_diff_z)));
 
-  /* "algorithms/orientation.py":83
+  /* "openptv2/algorithms/orientation.py":83
  *     dist: cython.double = c_sqrt(diff_x * diff_x + diff_y * diff_y + diff_z * diff_z)
  * 
  *     midpoint[0] = (on1_x + on2_x) * 0.5             # <<<<<<<<<<<<<<
@@ -16511,7 +16511,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_11orientation__skew_midpoint_co
   __pyx_t_2 = 0;
   *((double *) ( /* dim=0 */ (__pyx_v_midpoint.data + __pyx_t_2 * __pyx_v_midpoint.strides[0]) )) = ((__pyx_v_on1_x + __pyx_v_on2_x) * 0.5);
 
-  /* "algorithms/orientation.py":84
+  /* "openptv2/algorithms/orientation.py":84
  * 
  *     midpoint[0] = (on1_x + on2_x) * 0.5
  *     midpoint[1] = (on1_y + on2_y) * 0.5             # <<<<<<<<<<<<<<
@@ -16521,7 +16521,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_11orientation__skew_midpoint_co
   __pyx_t_2 = 1;
   *((double *) ( /* dim=0 */ (__pyx_v_midpoint.data + __pyx_t_2 * __pyx_v_midpoint.strides[0]) )) = ((__pyx_v_on1_y + __pyx_v_on2_y) * 0.5);
 
-  /* "algorithms/orientation.py":85
+  /* "openptv2/algorithms/orientation.py":85
  *     midpoint[0] = (on1_x + on2_x) * 0.5
  *     midpoint[1] = (on1_y + on2_y) * 0.5
  *     midpoint[2] = (on1_z + on2_z) * 0.5             # <<<<<<<<<<<<<<
@@ -16531,7 +16531,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_11orientation__skew_midpoint_co
   __pyx_t_2 = 2;
   *((double *) ( /* dim=0 */ (__pyx_v_midpoint.data + __pyx_t_2 * __pyx_v_midpoint.strides[0]) )) = ((__pyx_v_on1_z + __pyx_v_on2_z) * 0.5);
 
-  /* "algorithms/orientation.py":87
+  /* "openptv2/algorithms/orientation.py":87
  *     midpoint[2] = (on1_z + on2_z) * 0.5
  * 
  *     return dist             # <<<<<<<<<<<<<<
@@ -16541,7 +16541,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_11orientation__skew_midpoint_co
   __pyx_r = __pyx_v_dist;
   goto __pyx_L0;
 
-  /* "algorithms/orientation.py":31
+  /* "openptv2/algorithms/orientation.py":31
  * 
  * 
  * @cython.cfunc             # <<<<<<<<<<<<<<
@@ -16554,7 +16554,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_11orientation__skew_midpoint_co
   return __pyx_r;
 }
 
-/* "algorithms/orientation.py":90
+/* "openptv2/algorithms/orientation.py":90
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -16562,14 +16562,14 @@ static CYTHON_INLINE double __pyx_f_10algorithms_11orientation__skew_midpoint_co
  *     vert1: np.ndarray,
 */
 
-static PyObject *__pyx_pw_10algorithms_11orientation_1skew_midpoint(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_11orientation_1skew_midpoint(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_11orientation_skew_midpoint(PyObject *__pyx_v_vert1, PyObject *__pyx_v_direct1, PyObject *__pyx_v_vert2, PyObject *__pyx_v_direct2, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_11orientation_skew_midpoint(PyObject *__pyx_v_vert1, PyObject *__pyx_v_direct1, PyObject *__pyx_v_vert2, PyObject *__pyx_v_direct2, CYTHON_UNUSED int __pyx_skip_dispatch) {
   PyObject *__pyx_v_midpoint = NULL;
   __Pyx_memviewslice __pyx_v_v1 = { 0, 0, { 0 }, { 0 }, { 0 } };
   __Pyx_memviewslice __pyx_v_v2 = { 0, 0, { 0 }, { 0 }, { 0 } };
@@ -16603,7 +16603,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_skew_midpoint(PyObject *__py
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("skew_midpoint", 0);
 
-  /* "algorithms/orientation.py":98
+  /* "openptv2/algorithms/orientation.py":98
  * ) -> tuple[float, np.ndarray]:
  *     """Find midpoint of shortest distance segment between two skew rays."""
  *     midpoint = np.empty(3, dtype=np.float64)             # <<<<<<<<<<<<<<
@@ -16649,7 +16649,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_skew_midpoint(PyObject *__py
   __pyx_v_midpoint = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":99
+  /* "openptv2/algorithms/orientation.py":99
  *     """Find midpoint of shortest distance segment between two skew rays."""
  *     midpoint = np.empty(3, dtype=np.float64)
  *     v1: cython.double[:] = vert1             # <<<<<<<<<<<<<<
@@ -16661,7 +16661,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_skew_midpoint(PyObject *__py
   __pyx_t_7.memview = NULL;
   __pyx_t_7.data = NULL;
 
-  /* "algorithms/orientation.py":100
+  /* "openptv2/algorithms/orientation.py":100
  *     midpoint = np.empty(3, dtype=np.float64)
  *     v1: cython.double[:] = vert1
  *     v2: cython.double[:] = vert2             # <<<<<<<<<<<<<<
@@ -16673,7 +16673,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_skew_midpoint(PyObject *__py
   __pyx_t_7.memview = NULL;
   __pyx_t_7.data = NULL;
 
-  /* "algorithms/orientation.py":101
+  /* "openptv2/algorithms/orientation.py":101
  *     v1: cython.double[:] = vert1
  *     v2: cython.double[:] = vert2
  *     d1: cython.double[:] = direct1             # <<<<<<<<<<<<<<
@@ -16685,7 +16685,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_skew_midpoint(PyObject *__py
   __pyx_t_7.memview = NULL;
   __pyx_t_7.data = NULL;
 
-  /* "algorithms/orientation.py":102
+  /* "openptv2/algorithms/orientation.py":102
  *     v2: cython.double[:] = vert2
  *     d1: cython.double[:] = direct1
  *     d2: cython.double[:] = direct2             # <<<<<<<<<<<<<<
@@ -16697,7 +16697,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_skew_midpoint(PyObject *__py
   __pyx_t_7.memview = NULL;
   __pyx_t_7.data = NULL;
 
-  /* "algorithms/orientation.py":104
+  /* "openptv2/algorithms/orientation.py":104
  *     d2: cython.double[:] = direct2
  *     dist = _skew_midpoint_core(
  *         v1[0], v1[1], v1[2],             # <<<<<<<<<<<<<<
@@ -16708,7 +16708,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_skew_midpoint(PyObject *__py
   __pyx_t_9 = 1;
   __pyx_t_10 = 2;
 
-  /* "algorithms/orientation.py":105
+  /* "openptv2/algorithms/orientation.py":105
  *     dist = _skew_midpoint_core(
  *         v1[0], v1[1], v1[2],
  *         d1[0], d1[1], d1[2],             # <<<<<<<<<<<<<<
@@ -16719,7 +16719,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_skew_midpoint(PyObject *__py
   __pyx_t_12 = 1;
   __pyx_t_13 = 2;
 
-  /* "algorithms/orientation.py":106
+  /* "openptv2/algorithms/orientation.py":106
  *         v1[0], v1[1], v1[2],
  *         d1[0], d1[1], d1[2],
  *         v2[0], v2[1], v2[2],             # <<<<<<<<<<<<<<
@@ -16730,7 +16730,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_skew_midpoint(PyObject *__py
   __pyx_t_15 = 1;
   __pyx_t_16 = 2;
 
-  /* "algorithms/orientation.py":107
+  /* "openptv2/algorithms/orientation.py":107
  *         d1[0], d1[1], d1[2],
  *         v2[0], v2[1], v2[2],
  *         d2[0], d2[1], d2[2],             # <<<<<<<<<<<<<<
@@ -16741,7 +16741,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_skew_midpoint(PyObject *__py
   __pyx_t_18 = 1;
   __pyx_t_19 = 2;
 
-  /* "algorithms/orientation.py":108
+  /* "openptv2/algorithms/orientation.py":108
  *         v2[0], v2[1], v2[2],
  *         d2[0], d2[1], d2[2],
  *         midpoint             # <<<<<<<<<<<<<<
@@ -16754,19 +16754,19 @@ static PyObject *__pyx_f_10algorithms_11orientation_skew_midpoint(PyObject *__py
     __PYX_ERR(0, 108, __pyx_L1_error)
   }
 
-  /* "algorithms/orientation.py":103
+  /* "openptv2/algorithms/orientation.py":103
  *     d1: cython.double[:] = direct1
  *     d2: cython.double[:] = direct2
  *     dist = _skew_midpoint_core(             # <<<<<<<<<<<<<<
  *         v1[0], v1[1], v1[2],
  *         d1[0], d1[1], d1[2],
 */
-  __pyx_t_20 = __pyx_f_10algorithms_11orientation__skew_midpoint_core((*((double *) ( /* dim=0 */ (__pyx_v_v1.data + __pyx_t_8 * __pyx_v_v1.strides[0]) ))), (*((double *) ( /* dim=0 */ (__pyx_v_v1.data + __pyx_t_9 * __pyx_v_v1.strides[0]) ))), (*((double *) ( /* dim=0 */ (__pyx_v_v1.data + __pyx_t_10 * __pyx_v_v1.strides[0]) ))), (*((double *) ( /* dim=0 */ (__pyx_v_d1.data + __pyx_t_11 * __pyx_v_d1.strides[0]) ))), (*((double *) ( /* dim=0 */ (__pyx_v_d1.data + __pyx_t_12 * __pyx_v_d1.strides[0]) ))), (*((double *) ( /* dim=0 */ (__pyx_v_d1.data + __pyx_t_13 * __pyx_v_d1.strides[0]) ))), (*((double *) ( /* dim=0 */ (__pyx_v_v2.data + __pyx_t_14 * __pyx_v_v2.strides[0]) ))), (*((double *) ( /* dim=0 */ (__pyx_v_v2.data + __pyx_t_15 * __pyx_v_v2.strides[0]) ))), (*((double *) ( /* dim=0 */ (__pyx_v_v2.data + __pyx_t_16 * __pyx_v_v2.strides[0]) ))), (*((double *) ( /* dim=0 */ (__pyx_v_d2.data + __pyx_t_17 * __pyx_v_d2.strides[0]) ))), (*((double *) ( /* dim=0 */ (__pyx_v_d2.data + __pyx_t_18 * __pyx_v_d2.strides[0]) ))), (*((double *) ( /* dim=0 */ (__pyx_v_d2.data + __pyx_t_19 * __pyx_v_d2.strides[0]) ))), __pyx_t_7); if (unlikely(__pyx_t_20 == ((double)-1) && PyErr_Occurred())) __PYX_ERR(0, 103, __pyx_L1_error)
+  __pyx_t_20 = __pyx_f_8openptv2_10algorithms_11orientation__skew_midpoint_core((*((double *) ( /* dim=0 */ (__pyx_v_v1.data + __pyx_t_8 * __pyx_v_v1.strides[0]) ))), (*((double *) ( /* dim=0 */ (__pyx_v_v1.data + __pyx_t_9 * __pyx_v_v1.strides[0]) ))), (*((double *) ( /* dim=0 */ (__pyx_v_v1.data + __pyx_t_10 * __pyx_v_v1.strides[0]) ))), (*((double *) ( /* dim=0 */ (__pyx_v_d1.data + __pyx_t_11 * __pyx_v_d1.strides[0]) ))), (*((double *) ( /* dim=0 */ (__pyx_v_d1.data + __pyx_t_12 * __pyx_v_d1.strides[0]) ))), (*((double *) ( /* dim=0 */ (__pyx_v_d1.data + __pyx_t_13 * __pyx_v_d1.strides[0]) ))), (*((double *) ( /* dim=0 */ (__pyx_v_v2.data + __pyx_t_14 * __pyx_v_v2.strides[0]) ))), (*((double *) ( /* dim=0 */ (__pyx_v_v2.data + __pyx_t_15 * __pyx_v_v2.strides[0]) ))), (*((double *) ( /* dim=0 */ (__pyx_v_v2.data + __pyx_t_16 * __pyx_v_v2.strides[0]) ))), (*((double *) ( /* dim=0 */ (__pyx_v_d2.data + __pyx_t_17 * __pyx_v_d2.strides[0]) ))), (*((double *) ( /* dim=0 */ (__pyx_v_d2.data + __pyx_t_18 * __pyx_v_d2.strides[0]) ))), (*((double *) ( /* dim=0 */ (__pyx_v_d2.data + __pyx_t_19 * __pyx_v_d2.strides[0]) ))), __pyx_t_7); if (unlikely(__pyx_t_20 == ((double)-1) && PyErr_Occurred())) __PYX_ERR(0, 103, __pyx_L1_error)
   __PYX_XCLEAR_MEMVIEW(&__pyx_t_7, 1);
   __pyx_t_7.memview = NULL; __pyx_t_7.data = NULL;
   __pyx_v_dist = __pyx_t_20;
 
-  /* "algorithms/orientation.py":110
+  /* "openptv2/algorithms/orientation.py":110
  *         midpoint
  *     )
  *     return dist, midpoint             # <<<<<<<<<<<<<<
@@ -16788,7 +16788,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_skew_midpoint(PyObject *__py
   __pyx_t_4 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/orientation.py":90
+  /* "openptv2/algorithms/orientation.py":90
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -16804,7 +16804,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_skew_midpoint(PyObject *__py
   __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_5);
   __PYX_XCLEAR_MEMVIEW(&__pyx_t_7, 1);
-  __Pyx_AddTraceback("algorithms.orientation.skew_midpoint", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.orientation.skew_midpoint", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_midpoint);
@@ -16818,16 +16818,16 @@ static PyObject *__pyx_f_10algorithms_11orientation_skew_midpoint(PyObject *__py
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_11orientation_1skew_midpoint(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_11orientation_1skew_midpoint(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_11orientation_skew_midpoint, "Find midpoint of shortest distance segment between two skew rays.");
-static PyMethodDef __pyx_mdef_10algorithms_11orientation_1skew_midpoint = {"skew_midpoint", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_11orientation_1skew_midpoint, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_11orientation_skew_midpoint};
-static PyObject *__pyx_pw_10algorithms_11orientation_1skew_midpoint(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_11orientation_skew_midpoint, "Find midpoint of shortest distance segment between two skew rays.");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_11orientation_1skew_midpoint = {"skew_midpoint", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_11orientation_1skew_midpoint, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_11orientation_skew_midpoint};
+static PyObject *__pyx_pw_8openptv2_10algorithms_11orientation_1skew_midpoint(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -16913,11 +16913,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.orientation.skew_midpoint", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.orientation.skew_midpoint", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_11orientation_skew_midpoint(__pyx_self, __pyx_v_vert1, __pyx_v_direct1, __pyx_v_vert2, __pyx_v_direct2);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_11orientation_skew_midpoint(__pyx_self, __pyx_v_vert1, __pyx_v_direct1, __pyx_v_vert2, __pyx_v_direct2);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -16927,7 +16927,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_11orientation_skew_midpoint(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_vert1, PyObject *__pyx_v_direct1, PyObject *__pyx_v_vert2, PyObject *__pyx_v_direct2) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_11orientation_skew_midpoint(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_vert1, PyObject *__pyx_v_direct1, PyObject *__pyx_v_vert2, PyObject *__pyx_v_direct2) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -16936,7 +16936,7 @@ static PyObject *__pyx_pf_10algorithms_11orientation_skew_midpoint(CYTHON_UNUSED
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("skew_midpoint", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_11orientation_skew_midpoint(__pyx_v_vert1, __pyx_v_direct1, __pyx_v_vert2, __pyx_v_direct2, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 90, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_11orientation_skew_midpoint(__pyx_v_vert1, __pyx_v_direct1, __pyx_v_vert2, __pyx_v_direct2, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 90, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -16945,7 +16945,7 @@ static PyObject *__pyx_pf_10algorithms_11orientation_skew_midpoint(CYTHON_UNUSED
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.orientation.skew_midpoint", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.orientation.skew_midpoint", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -16953,7 +16953,7 @@ static PyObject *__pyx_pf_10algorithms_11orientation_skew_midpoint(CYTHON_UNUSED
   return __pyx_r;
 }
 
-/* "algorithms/orientation.py":113
+/* "openptv2/algorithms/orientation.py":113
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -16961,14 +16961,14 @@ static PyObject *__pyx_pf_10algorithms_11orientation_skew_midpoint(CYTHON_UNUSED
  *     """Compute average 3D position from multiple camera rays.
 */
 
-static PyObject *__pyx_pw_10algorithms_11orientation_3point_position(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_11orientation_3point_position(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_11orientation_point_position(PyObject *__pyx_v_targets, PyObject *__pyx_v_num_cams, PyObject *__pyx_v_mm, PyObject *__pyx_v_cals, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_11orientation_point_position(PyObject *__pyx_v_targets, PyObject *__pyx_v_num_cams, PyObject *__pyx_v_mm, PyObject *__pyx_v_cals, CYTHON_UNUSED int __pyx_skip_dispatch) {
   __Pyx_memviewslice __pyx_v_targets_mv = { 0, 0, { 0 }, { 0 }, { 0 } };
   PyObject *__pyx_v_t_3d = NULL;
   PyObject *__pyx_v_positions = NULL;
@@ -16990,7 +16990,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position(PyObject *__p
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("point_position", 0);
 
-  /* "algorithms/orientation.py":126
+  /* "openptv2/algorithms/orientation.py":126
  *         (position, avg_ray_distance) tuple.
  *     """
  *     targets_mv: cython.double[:, :] = np.ascontiguousarray(targets, dtype=np.float64)             # <<<<<<<<<<<<<<
@@ -17039,7 +17039,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position(PyObject *__p
   __pyx_t_7.memview = NULL;
   __pyx_t_7.data = NULL;
 
-  /* "algorithms/orientation.py":127
+  /* "openptv2/algorithms/orientation.py":127
  *     """
  *     targets_mv: cython.double[:, :] = np.ascontiguousarray(targets, dtype=np.float64)
  *     t_3d = np.empty((1, num_cams, 2), dtype=np.float64)             # <<<<<<<<<<<<<<
@@ -17097,7 +17097,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position(PyObject *__p
   __pyx_v_t_3d = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":128
+  /* "openptv2/algorithms/orientation.py":128
  *     targets_mv: cython.double[:, :] = np.ascontiguousarray(targets, dtype=np.float64)
  *     t_3d = np.empty((1, num_cams, 2), dtype=np.float64)
  *     t_3d[0] = targets_mv             # <<<<<<<<<<<<<<
@@ -17109,7 +17109,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position(PyObject *__p
   if (unlikely((__Pyx_SetItemInt(__pyx_v_t_3d, 0, __pyx_t_1, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_OwnStrongReference) < 0))) __PYX_ERR(0, 128, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":129
+  /* "openptv2/algorithms/orientation.py":129
  *     t_3d = np.empty((1, num_cams, 2), dtype=np.float64)
  *     t_3d[0] = targets_mv
  *     positions, distances = point_position_batch(t_3d, num_cams, mm, cals)             # <<<<<<<<<<<<<<
@@ -17117,7 +17117,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position(PyObject *__p
  * 
 */
   __pyx_t_9 = __Pyx_PyLong_As_int(__pyx_v_num_cams); if (unlikely((__pyx_t_9 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 129, __pyx_L1_error)
-  __pyx_t_1 = __pyx_f_10algorithms_11orientation_point_position_batch(__pyx_v_t_3d, __pyx_t_9, __pyx_v_mm, __pyx_v_cals, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 129, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_11orientation_point_position_batch(__pyx_v_t_3d, __pyx_t_9, __pyx_v_mm, __pyx_v_cals, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 129, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   if ((likely(PyTuple_CheckExact(__pyx_t_1))) || (PyList_CheckExact(__pyx_t_1))) {
     PyObject* sequence = __pyx_t_1;
@@ -17174,7 +17174,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position(PyObject *__p
   __pyx_v_distances = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "algorithms/orientation.py":130
+  /* "openptv2/algorithms/orientation.py":130
  *     t_3d[0] = targets_mv
  *     positions, distances = point_position_batch(t_3d, num_cams, mm, cals)
  *     return positions[0], distances[0]             # <<<<<<<<<<<<<<
@@ -17198,7 +17198,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position(PyObject *__p
   __pyx_t_5 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/orientation.py":113
+  /* "openptv2/algorithms/orientation.py":113
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -17215,7 +17215,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position(PyObject *__p
   __Pyx_XDECREF(__pyx_t_5);
   __PYX_XCLEAR_MEMVIEW(&__pyx_t_7, 1);
   __Pyx_XDECREF(__pyx_t_8);
-  __Pyx_AddTraceback("algorithms.orientation.point_position", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.orientation.point_position", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __PYX_XCLEAR_MEMVIEW(&__pyx_v_targets_mv, 1);
@@ -17228,16 +17228,16 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position(PyObject *__p
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_11orientation_3point_position(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_11orientation_3point_position(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_11orientation_2point_position, "Compute average 3D position from multiple camera rays.\n\n    Args:\n        targets: (num_cams, 2) array of metric flat coordinates.\n        num_cams: number of cameras.\n        mm: MultimediaPar or MmNp with n1, n2, n3, d attributes.\n        cals: list of Calibration objects.\n\n    Returns:\n        (position, avg_ray_distance) tuple.\n    ");
-static PyMethodDef __pyx_mdef_10algorithms_11orientation_3point_position = {"point_position", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_11orientation_3point_position, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_11orientation_2point_position};
-static PyObject *__pyx_pw_10algorithms_11orientation_3point_position(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_11orientation_2point_position, "Compute average 3D position from multiple camera rays.\n\n    Args:\n        targets: (num_cams, 2) array of metric flat coordinates.\n        num_cams: number of cameras.\n        mm: MultimediaPar or MmNp with n1, n2, n3, d attributes.\n        cals: list of Calibration objects.\n\n    Returns:\n        (position, avg_ray_distance) tuple.\n    ");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_11orientation_3point_position = {"point_position", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_11orientation_3point_position, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_11orientation_2point_position};
+static PyObject *__pyx_pw_8openptv2_10algorithms_11orientation_3point_position(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -17323,11 +17323,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.orientation.point_position", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.orientation.point_position", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_11orientation_2point_position(__pyx_self, __pyx_v_targets, __pyx_v_num_cams, __pyx_v_mm, __pyx_v_cals);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_11orientation_2point_position(__pyx_self, __pyx_v_targets, __pyx_v_num_cams, __pyx_v_mm, __pyx_v_cals);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -17337,7 +17337,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_11orientation_2point_position(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_targets, PyObject *__pyx_v_num_cams, PyObject *__pyx_v_mm, PyObject *__pyx_v_cals) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_11orientation_2point_position(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_targets, PyObject *__pyx_v_num_cams, PyObject *__pyx_v_mm, PyObject *__pyx_v_cals) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -17346,7 +17346,7 @@ static PyObject *__pyx_pf_10algorithms_11orientation_2point_position(CYTHON_UNUS
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("point_position", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_11orientation_point_position(__pyx_v_targets, __pyx_v_num_cams, __pyx_v_mm, __pyx_v_cals, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 113, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_11orientation_point_position(__pyx_v_targets, __pyx_v_num_cams, __pyx_v_mm, __pyx_v_cals, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 113, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -17355,7 +17355,7 @@ static PyObject *__pyx_pf_10algorithms_11orientation_2point_position(CYTHON_UNUS
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.orientation.point_position", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.orientation.point_position", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -17363,7 +17363,7 @@ static PyObject *__pyx_pf_10algorithms_11orientation_2point_position(CYTHON_UNUS
   return __pyx_r;
 }
 
-/* "algorithms/orientation.py":133
+/* "openptv2/algorithms/orientation.py":133
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -17371,14 +17371,14 @@ static PyObject *__pyx_pf_10algorithms_11orientation_2point_position(CYTHON_UNUS
  * @cython.wraparound(False)
 */
 
-static PyObject *__pyx_pw_10algorithms_11orientation_5point_position_batch(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_11orientation_5point_position_batch(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObject *__pyx_v_targets, int __pyx_v_num_cams, PyObject *__pyx_v_mm, PyObject *__pyx_v_cals, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_11orientation_point_position_batch(PyObject *__pyx_v_targets, int __pyx_v_num_cams, PyObject *__pyx_v_mm, PyObject *__pyx_v_cals, CYTHON_UNUSED int __pyx_skip_dispatch) {
   __Pyx_memviewslice __pyx_v_targets_mv = { 0, 0, { 0 }, { 0 }, { 0 } };
   Py_ssize_t __pyx_v_num_pts;
   PyObject *__pyx_v_positions = NULL;
@@ -17523,7 +17523,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("point_position_batch", 0);
 
-  /* "algorithms/orientation.py":148
+  /* "openptv2/algorithms/orientation.py":148
  *         (positions, distances)  (M, 3) and (M,) float64 arrays.
  *     """
  *     targets_mv: cython.double[:, :, :] = np.ascontiguousarray(targets, dtype=np.float64)             # <<<<<<<<<<<<<<
@@ -17572,7 +17572,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
   __pyx_t_7.memview = NULL;
   __pyx_t_7.data = NULL;
 
-  /* "algorithms/orientation.py":149
+  /* "openptv2/algorithms/orientation.py":149
  *     """
  *     targets_mv: cython.double[:, :, :] = np.ascontiguousarray(targets, dtype=np.float64)
  *     num_pts: cython.Py_ssize_t = targets_mv.shape[0]             # <<<<<<<<<<<<<<
@@ -17581,7 +17581,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
 */
   __pyx_v_num_pts = (__pyx_v_targets_mv.shape[0]);
 
-  /* "algorithms/orientation.py":150
+  /* "openptv2/algorithms/orientation.py":150
  *     targets_mv: cython.double[:, :, :] = np.ascontiguousarray(targets, dtype=np.float64)
  *     num_pts: cython.Py_ssize_t = targets_mv.shape[0]
  *     positions = np.empty((num_pts, 3), dtype=np.float64)             # <<<<<<<<<<<<<<
@@ -17638,7 +17638,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
   __pyx_v_positions = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":151
+  /* "openptv2/algorithms/orientation.py":151
  *     num_pts: cython.Py_ssize_t = targets_mv.shape[0]
  *     positions = np.empty((num_pts, 3), dtype=np.float64)
  *     distances = np.empty(num_pts, dtype=np.float64)             # <<<<<<<<<<<<<<
@@ -17687,7 +17687,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
   __pyx_v_distances = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":152
+  /* "openptv2/algorithms/orientation.py":152
  *     positions = np.empty((num_pts, 3), dtype=np.float64)
  *     distances = np.empty(num_pts, dtype=np.float64)
  *     pos_mv: cython.double[:, :] = positions             # <<<<<<<<<<<<<<
@@ -17699,7 +17699,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
   __pyx_t_9.memview = NULL;
   __pyx_t_9.data = NULL;
 
-  /* "algorithms/orientation.py":153
+  /* "openptv2/algorithms/orientation.py":153
  *     distances = np.empty(num_pts, dtype=np.float64)
  *     pos_mv: cython.double[:, :] = positions
  *     dist_mv: cython.double[:] = distances             # <<<<<<<<<<<<<<
@@ -17711,7 +17711,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
   __pyx_t_10.memview = NULL;
   __pyx_t_10.data = NULL;
 
-  /* "algorithms/orientation.py":156
+  /* "openptv2/algorithms/orientation.py":156
  * 
  *     # Preallocate scratch buffers once for the entire batch loop
  *     vertices = np.empty((num_cams, 3), dtype=np.float64)             # <<<<<<<<<<<<<<
@@ -17768,7 +17768,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
   __pyx_v_vertices = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":157
+  /* "openptv2/algorithms/orientation.py":157
  *     # Preallocate scratch buffers once for the entire batch loop
  *     vertices = np.empty((num_cams, 3), dtype=np.float64)
  *     directs = np.empty((num_cams, 3), dtype=np.float64)             # <<<<<<<<<<<<<<
@@ -17825,7 +17825,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
   __pyx_v_directs = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":158
+  /* "openptv2/algorithms/orientation.py":158
  *     vertices = np.empty((num_cams, 3), dtype=np.float64)
  *     directs = np.empty((num_cams, 3), dtype=np.float64)
  *     vertices_mv: cython.double[:, :] = vertices             # <<<<<<<<<<<<<<
@@ -17837,7 +17837,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
   __pyx_t_9.memview = NULL;
   __pyx_t_9.data = NULL;
 
-  /* "algorithms/orientation.py":159
+  /* "openptv2/algorithms/orientation.py":159
  *     directs = np.empty((num_cams, 3), dtype=np.float64)
  *     vertices_mv: cython.double[:, :] = vertices
  *     directs_mv: cython.double[:, :] = directs             # <<<<<<<<<<<<<<
@@ -17849,7 +17849,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
   __pyx_t_9.memview = NULL;
   __pyx_t_9.data = NULL;
 
-  /* "algorithms/orientation.py":160
+  /* "openptv2/algorithms/orientation.py":160
  *     vertices_mv: cython.double[:, :] = vertices
  *     directs_mv: cython.double[:, :] = directs
  *     used = np.empty(num_cams, dtype=np.int32)             # <<<<<<<<<<<<<<
@@ -17898,7 +17898,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
   __pyx_v_used = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":161
+  /* "openptv2/algorithms/orientation.py":161
  *     directs_mv: cython.double[:, :] = directs
  *     used = np.empty(num_cams, dtype=np.int32)
  *     used_mv: cython.int[:] = used             # <<<<<<<<<<<<<<
@@ -17910,7 +17910,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
   __pyx_t_11.memview = NULL;
   __pyx_t_11.data = NULL;
 
-  /* "algorithms/orientation.py":163
+  /* "openptv2/algorithms/orientation.py":163
  *     used_mv: cython.int[:] = used
  * 
  *     midpoint = np.empty(3, dtype=np.float64)             # <<<<<<<<<<<<<<
@@ -17956,7 +17956,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
   __pyx_v_midpoint = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":164
+  /* "openptv2/algorithms/orientation.py":164
  * 
  *     midpoint = np.empty(3, dtype=np.float64)
  *     midpoint_mv: cython.double[:] = midpoint             # <<<<<<<<<<<<<<
@@ -17968,7 +17968,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
   __pyx_t_10.memview = NULL;
   __pyx_t_10.data = NULL;
 
-  /* "algorithms/orientation.py":180
+  /* "openptv2/algorithms/orientation.py":180
  *     # 1. Unpack multimedia params once
  *     # Handle wrapper layers if needed
  *     if hasattr(mm, '_mm'):             # <<<<<<<<<<<<<<
@@ -17978,7 +17978,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
   __pyx_t_12 = __Pyx_HasAttr(__pyx_v_mm, __pyx_mstate_global->__pyx_n_u_mm_2); if (unlikely(__pyx_t_12 == ((int)-1))) __PYX_ERR(0, 180, __pyx_L1_error)
   if (__pyx_t_12) {
 
-    /* "algorithms/orientation.py":181
+    /* "openptv2/algorithms/orientation.py":181
  *     # Handle wrapper layers if needed
  *     if hasattr(mm, '_mm'):
  *         mm_obj = mm._mm             # <<<<<<<<<<<<<<
@@ -17990,7 +17990,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
     __pyx_v_mm_obj = __pyx_t_1;
     __pyx_t_1 = 0;
 
-    /* "algorithms/orientation.py":180
+    /* "openptv2/algorithms/orientation.py":180
  *     # 1. Unpack multimedia params once
  *     # Handle wrapper layers if needed
  *     if hasattr(mm, '_mm'):             # <<<<<<<<<<<<<<
@@ -18000,7 +18000,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
     goto __pyx_L3;
   }
 
-  /* "algorithms/orientation.py":183
+  /* "openptv2/algorithms/orientation.py":183
  *         mm_obj = mm._mm
  *     else:
  *         mm_obj = mm             # <<<<<<<<<<<<<<
@@ -18013,7 +18013,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
   }
   __pyx_L3:;
 
-  /* "algorithms/orientation.py":184
+  /* "openptv2/algorithms/orientation.py":184
  *     else:
  *         mm_obj = mm
  *     mm_n1: cython.double = mm_obj.n1             # <<<<<<<<<<<<<<
@@ -18026,7 +18026,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_mm_n1 = __pyx_t_13;
 
-  /* "algorithms/orientation.py":185
+  /* "openptv2/algorithms/orientation.py":185
  *         mm_obj = mm
  *     mm_n1: cython.double = mm_obj.n1
  *     mm_n2_0: cython.double = mm_obj.n2[0]             # <<<<<<<<<<<<<<
@@ -18042,7 +18042,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __pyx_v_mm_n2_0 = __pyx_t_13;
 
-  /* "algorithms/orientation.py":186
+  /* "openptv2/algorithms/orientation.py":186
  *     mm_n1: cython.double = mm_obj.n1
  *     mm_n2_0: cython.double = mm_obj.n2[0]
  *     mm_n3: cython.double = mm_obj.n3             # <<<<<<<<<<<<<<
@@ -18055,7 +18055,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __pyx_v_mm_n3 = __pyx_t_13;
 
-  /* "algorithms/orientation.py":187
+  /* "openptv2/algorithms/orientation.py":187
  *     mm_n2_0: cython.double = mm_obj.n2[0]
  *     mm_n3: cython.double = mm_obj.n3
  *     mm_d0: cython.double = mm_obj.d[0]             # <<<<<<<<<<<<<<
@@ -18071,7 +18071,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_mm_d0 = __pyx_t_13;
 
-  /* "algorithms/orientation.py":190
+  /* "openptv2/algorithms/orientation.py":190
  * 
  *     # 2. Extract calibration attributes for all cams into typed memoryviews
  *     ext_dm_all = np.empty((num_cams, 3, 3), dtype=np.float64)             # <<<<<<<<<<<<<<
@@ -18131,7 +18131,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
   __pyx_v_ext_dm_all = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":191
+  /* "openptv2/algorithms/orientation.py":191
  *     # 2. Extract calibration attributes for all cams into typed memoryviews
  *     ext_dm_all = np.empty((num_cams, 3, 3), dtype=np.float64)
  *     ext_x0_all = np.empty(num_cams, dtype=np.float64)             # <<<<<<<<<<<<<<
@@ -18180,7 +18180,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
   __pyx_v_ext_x0_all = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":192
+  /* "openptv2/algorithms/orientation.py":192
  *     ext_dm_all = np.empty((num_cams, 3, 3), dtype=np.float64)
  *     ext_x0_all = np.empty(num_cams, dtype=np.float64)
  *     ext_y0_all = np.empty(num_cams, dtype=np.float64)             # <<<<<<<<<<<<<<
@@ -18229,7 +18229,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
   __pyx_v_ext_y0_all = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":193
+  /* "openptv2/algorithms/orientation.py":193
  *     ext_x0_all = np.empty(num_cams, dtype=np.float64)
  *     ext_y0_all = np.empty(num_cams, dtype=np.float64)
  *     ext_z0_all = np.empty(num_cams, dtype=np.float64)             # <<<<<<<<<<<<<<
@@ -18278,7 +18278,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
   __pyx_v_ext_z0_all = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":194
+  /* "openptv2/algorithms/orientation.py":194
  *     ext_y0_all = np.empty(num_cams, dtype=np.float64)
  *     ext_z0_all = np.empty(num_cams, dtype=np.float64)
  *     int_cc_all = np.empty(num_cams, dtype=np.float64)             # <<<<<<<<<<<<<<
@@ -18327,7 +18327,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
   __pyx_v_int_cc_all = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":196
+  /* "openptv2/algorithms/orientation.py":196
  *     int_cc_all = np.empty(num_cams, dtype=np.float64)
  * 
  *     glass_dir_x = np.empty(num_cams, dtype=np.float64)             # <<<<<<<<<<<<<<
@@ -18376,7 +18376,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
   __pyx_v_glass_dir_x = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":197
+  /* "openptv2/algorithms/orientation.py":197
  * 
  *     glass_dir_x = np.empty(num_cams, dtype=np.float64)
  *     glass_dir_y = np.empty(num_cams, dtype=np.float64)             # <<<<<<<<<<<<<<
@@ -18425,7 +18425,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
   __pyx_v_glass_dir_y = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":198
+  /* "openptv2/algorithms/orientation.py":198
  *     glass_dir_x = np.empty(num_cams, dtype=np.float64)
  *     glass_dir_y = np.empty(num_cams, dtype=np.float64)
  *     glass_dir_z = np.empty(num_cams, dtype=np.float64)             # <<<<<<<<<<<<<<
@@ -18474,7 +18474,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
   __pyx_v_glass_dir_z = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":199
+  /* "openptv2/algorithms/orientation.py":199
  *     glass_dir_y = np.empty(num_cams, dtype=np.float64)
  *     glass_dir_z = np.empty(num_cams, dtype=np.float64)
  *     dist_cam_glass = np.empty(num_cams, dtype=np.float64)             # <<<<<<<<<<<<<<
@@ -18523,7 +18523,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
   __pyx_v_dist_cam_glass = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":201
+  /* "openptv2/algorithms/orientation.py":201
  *     dist_cam_glass = np.empty(num_cams, dtype=np.float64)
  * 
  *     ext_dm_mv: cython.double[:, :, :] = ext_dm_all             # <<<<<<<<<<<<<<
@@ -18535,7 +18535,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
   __pyx_t_7.memview = NULL;
   __pyx_t_7.data = NULL;
 
-  /* "algorithms/orientation.py":202
+  /* "openptv2/algorithms/orientation.py":202
  * 
  *     ext_dm_mv: cython.double[:, :, :] = ext_dm_all
  *     ext_x0_mv: cython.double[:] = ext_x0_all             # <<<<<<<<<<<<<<
@@ -18547,7 +18547,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
   __pyx_t_10.memview = NULL;
   __pyx_t_10.data = NULL;
 
-  /* "algorithms/orientation.py":203
+  /* "openptv2/algorithms/orientation.py":203
  *     ext_dm_mv: cython.double[:, :, :] = ext_dm_all
  *     ext_x0_mv: cython.double[:] = ext_x0_all
  *     ext_y0_mv: cython.double[:] = ext_y0_all             # <<<<<<<<<<<<<<
@@ -18559,7 +18559,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
   __pyx_t_10.memview = NULL;
   __pyx_t_10.data = NULL;
 
-  /* "algorithms/orientation.py":204
+  /* "openptv2/algorithms/orientation.py":204
  *     ext_x0_mv: cython.double[:] = ext_x0_all
  *     ext_y0_mv: cython.double[:] = ext_y0_all
  *     ext_z0_mv: cython.double[:] = ext_z0_all             # <<<<<<<<<<<<<<
@@ -18571,7 +18571,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
   __pyx_t_10.memview = NULL;
   __pyx_t_10.data = NULL;
 
-  /* "algorithms/orientation.py":205
+  /* "openptv2/algorithms/orientation.py":205
  *     ext_y0_mv: cython.double[:] = ext_y0_all
  *     ext_z0_mv: cython.double[:] = ext_z0_all
  *     int_cc_mv: cython.double[:] = int_cc_all             # <<<<<<<<<<<<<<
@@ -18583,7 +18583,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
   __pyx_t_10.memview = NULL;
   __pyx_t_10.data = NULL;
 
-  /* "algorithms/orientation.py":207
+  /* "openptv2/algorithms/orientation.py":207
  *     int_cc_mv: cython.double[:] = int_cc_all
  * 
  *     glass_dir_x_mv: cython.double[:] = glass_dir_x             # <<<<<<<<<<<<<<
@@ -18595,7 +18595,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
   __pyx_t_10.memview = NULL;
   __pyx_t_10.data = NULL;
 
-  /* "algorithms/orientation.py":208
+  /* "openptv2/algorithms/orientation.py":208
  * 
  *     glass_dir_x_mv: cython.double[:] = glass_dir_x
  *     glass_dir_y_mv: cython.double[:] = glass_dir_y             # <<<<<<<<<<<<<<
@@ -18607,7 +18607,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
   __pyx_t_10.memview = NULL;
   __pyx_t_10.data = NULL;
 
-  /* "algorithms/orientation.py":209
+  /* "openptv2/algorithms/orientation.py":209
  *     glass_dir_x_mv: cython.double[:] = glass_dir_x
  *     glass_dir_y_mv: cython.double[:] = glass_dir_y
  *     glass_dir_z_mv: cython.double[:] = glass_dir_z             # <<<<<<<<<<<<<<
@@ -18619,7 +18619,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
   __pyx_t_10.memview = NULL;
   __pyx_t_10.data = NULL;
 
-  /* "algorithms/orientation.py":210
+  /* "openptv2/algorithms/orientation.py":210
  *     glass_dir_y_mv: cython.double[:] = glass_dir_y
  *     glass_dir_z_mv: cython.double[:] = glass_dir_z
  *     dist_cam_glass_mv: cython.double[:] = dist_cam_glass             # <<<<<<<<<<<<<<
@@ -18631,7 +18631,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
   __pyx_t_10.memview = NULL;
   __pyx_t_10.data = NULL;
 
-  /* "algorithms/orientation.py":212
+  /* "openptv2/algorithms/orientation.py":212
  *     dist_cam_glass_mv: cython.double[:] = dist_cam_glass
  * 
  *     for cam in range(num_cams):             # <<<<<<<<<<<<<<
@@ -18643,7 +18643,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
   for (__pyx_t_16 = 0; __pyx_t_16 < __pyx_t_15; __pyx_t_16+=1) {
     __pyx_v_cam = __pyx_t_16;
 
-    /* "algorithms/orientation.py":213
+    /* "openptv2/algorithms/orientation.py":213
  * 
  *     for cam in range(num_cams):
  *         cal = cals[cam]             # <<<<<<<<<<<<<<
@@ -18655,7 +18655,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
     __Pyx_XDECREF_SET(__pyx_v_cal, __pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "algorithms/orientation.py":214
+    /* "openptv2/algorithms/orientation.py":214
  *     for cam in range(num_cams):
  *         cal = cals[cam]
  *         if hasattr(cal, "_cal"):             # <<<<<<<<<<<<<<
@@ -18665,7 +18665,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
     __pyx_t_12 = __Pyx_HasAttr(__pyx_v_cal, __pyx_mstate_global->__pyx_n_u_cal); if (unlikely(__pyx_t_12 == ((int)-1))) __PYX_ERR(0, 214, __pyx_L1_error)
     if (__pyx_t_12) {
 
-      /* "algorithms/orientation.py":215
+      /* "openptv2/algorithms/orientation.py":215
  *         cal = cals[cam]
  *         if hasattr(cal, "_cal"):
  *             cal_obj = cal._cal             # <<<<<<<<<<<<<<
@@ -18677,7 +18677,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
       __Pyx_XDECREF_SET(__pyx_v_cal_obj, __pyx_t_1);
       __pyx_t_1 = 0;
 
-      /* "algorithms/orientation.py":214
+      /* "openptv2/algorithms/orientation.py":214
  *     for cam in range(num_cams):
  *         cal = cals[cam]
  *         if hasattr(cal, "_cal"):             # <<<<<<<<<<<<<<
@@ -18687,7 +18687,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
       goto __pyx_L6;
     }
 
-    /* "algorithms/orientation.py":217
+    /* "openptv2/algorithms/orientation.py":217
  *             cal_obj = cal._cal
  *         else:
  *             cal_obj = cal             # <<<<<<<<<<<<<<
@@ -18700,7 +18700,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
     }
     __pyx_L6:;
 
-    /* "algorithms/orientation.py":218
+    /* "openptv2/algorithms/orientation.py":218
  *         else:
  *             cal_obj = cal
  *         ext_dm_all[cam, :, :] = cal_obj.ext_par.dm             # <<<<<<<<<<<<<<
@@ -18729,7 +18729,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-    /* "algorithms/orientation.py":219
+    /* "openptv2/algorithms/orientation.py":219
  *             cal_obj = cal
  *         ext_dm_all[cam, :, :] = cal_obj.ext_par.dm
  *         ext_x0_mv[cam] = cal_obj.ext_par.x0             # <<<<<<<<<<<<<<
@@ -18746,7 +18746,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
     __pyx_t_17 = __pyx_v_cam;
     *((double *) ( /* dim=0 */ (__pyx_v_ext_x0_mv.data + __pyx_t_17 * __pyx_v_ext_x0_mv.strides[0]) )) = __pyx_t_13;
 
-    /* "algorithms/orientation.py":220
+    /* "openptv2/algorithms/orientation.py":220
  *         ext_dm_all[cam, :, :] = cal_obj.ext_par.dm
  *         ext_x0_mv[cam] = cal_obj.ext_par.x0
  *         ext_y0_mv[cam] = cal_obj.ext_par.y0             # <<<<<<<<<<<<<<
@@ -18763,7 +18763,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
     __pyx_t_17 = __pyx_v_cam;
     *((double *) ( /* dim=0 */ (__pyx_v_ext_y0_mv.data + __pyx_t_17 * __pyx_v_ext_y0_mv.strides[0]) )) = __pyx_t_13;
 
-    /* "algorithms/orientation.py":221
+    /* "openptv2/algorithms/orientation.py":221
  *         ext_x0_mv[cam] = cal_obj.ext_par.x0
  *         ext_y0_mv[cam] = cal_obj.ext_par.y0
  *         ext_z0_mv[cam] = cal_obj.ext_par.z0             # <<<<<<<<<<<<<<
@@ -18780,7 +18780,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
     __pyx_t_17 = __pyx_v_cam;
     *((double *) ( /* dim=0 */ (__pyx_v_ext_z0_mv.data + __pyx_t_17 * __pyx_v_ext_z0_mv.strides[0]) )) = __pyx_t_13;
 
-    /* "algorithms/orientation.py":222
+    /* "openptv2/algorithms/orientation.py":222
  *         ext_y0_mv[cam] = cal_obj.ext_par.y0
  *         ext_z0_mv[cam] = cal_obj.ext_par.z0
  *         int_cc_mv[cam] = cal_obj.int_par.cc             # <<<<<<<<<<<<<<
@@ -18797,7 +18797,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
     __pyx_t_17 = __pyx_v_cam;
     *((double *) ( /* dim=0 */ (__pyx_v_int_cc_mv.data + __pyx_t_17 * __pyx_v_int_cc_mv.strides[0]) )) = __pyx_t_13;
 
-    /* "algorithms/orientation.py":224
+    /* "openptv2/algorithms/orientation.py":224
  *         int_cc_mv[cam] = cal_obj.int_par.cc
  * 
  *         g_x: cython.double = cal_obj.glass_par.vec_x             # <<<<<<<<<<<<<<
@@ -18813,7 +18813,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __pyx_v_g_x = __pyx_t_13;
 
-    /* "algorithms/orientation.py":225
+    /* "openptv2/algorithms/orientation.py":225
  * 
  *         g_x: cython.double = cal_obj.glass_par.vec_x
  *         g_y: cython.double = cal_obj.glass_par.vec_y             # <<<<<<<<<<<<<<
@@ -18829,7 +18829,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __pyx_v_g_y = __pyx_t_13;
 
-    /* "algorithms/orientation.py":226
+    /* "openptv2/algorithms/orientation.py":226
  *         g_x: cython.double = cal_obj.glass_par.vec_x
  *         g_y: cython.double = cal_obj.glass_par.vec_y
  *         g_z: cython.double = cal_obj.glass_par.vec_z             # <<<<<<<<<<<<<<
@@ -18845,7 +18845,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __pyx_v_g_z = __pyx_t_13;
 
-    /* "algorithms/orientation.py":227
+    /* "openptv2/algorithms/orientation.py":227
  *         g_y: cython.double = cal_obj.glass_par.vec_y
  *         g_z: cython.double = cal_obj.glass_par.vec_z
  *         norm_g: cython.double = c_sqrt(g_x*g_x + g_y*g_y + g_z*g_z)             # <<<<<<<<<<<<<<
@@ -18854,7 +18854,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
 */
     __pyx_v_norm_g = sqrt((((__pyx_v_g_x * __pyx_v_g_x) + (__pyx_v_g_y * __pyx_v_g_y)) + (__pyx_v_g_z * __pyx_v_g_z)));
 
-    /* "algorithms/orientation.py":229
+    /* "openptv2/algorithms/orientation.py":229
  *         norm_g: cython.double = c_sqrt(g_x*g_x + g_y*g_y + g_z*g_z)
  * 
  *         glass_dir_x_mv[cam] = g_x / norm_g             # <<<<<<<<<<<<<<
@@ -18864,7 +18864,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
     __pyx_t_17 = __pyx_v_cam;
     *((double *) ( /* dim=0 */ (__pyx_v_glass_dir_x_mv.data + __pyx_t_17 * __pyx_v_glass_dir_x_mv.strides[0]) )) = (__pyx_v_g_x / __pyx_v_norm_g);
 
-    /* "algorithms/orientation.py":230
+    /* "openptv2/algorithms/orientation.py":230
  * 
  *         glass_dir_x_mv[cam] = g_x / norm_g
  *         glass_dir_y_mv[cam] = g_y / norm_g             # <<<<<<<<<<<<<<
@@ -18874,7 +18874,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
     __pyx_t_17 = __pyx_v_cam;
     *((double *) ( /* dim=0 */ (__pyx_v_glass_dir_y_mv.data + __pyx_t_17 * __pyx_v_glass_dir_y_mv.strides[0]) )) = (__pyx_v_g_y / __pyx_v_norm_g);
 
-    /* "algorithms/orientation.py":231
+    /* "openptv2/algorithms/orientation.py":231
  *         glass_dir_x_mv[cam] = g_x / norm_g
  *         glass_dir_y_mv[cam] = g_y / norm_g
  *         glass_dir_z_mv[cam] = g_z / norm_g             # <<<<<<<<<<<<<<
@@ -18884,7 +18884,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
     __pyx_t_17 = __pyx_v_cam;
     *((double *) ( /* dim=0 */ (__pyx_v_glass_dir_z_mv.data + __pyx_t_17 * __pyx_v_glass_dir_z_mv.strides[0]) )) = (__pyx_v_g_z / __pyx_v_norm_g);
 
-    /* "algorithms/orientation.py":233
+    /* "openptv2/algorithms/orientation.py":233
  *         glass_dir_z_mv[cam] = g_z / norm_g
  * 
  *         c: cython.double = norm_g + mm_d0             # <<<<<<<<<<<<<<
@@ -18893,7 +18893,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
 */
     __pyx_v_c = (__pyx_v_norm_g + __pyx_v_mm_d0);
 
-    /* "algorithms/orientation.py":234
+    /* "openptv2/algorithms/orientation.py":234
  * 
  *         c: cython.double = norm_g + mm_d0
  *         dist_cam_glass_mv[cam] = (glass_dir_x_mv[cam] * ext_x0_mv[cam] + glass_dir_y_mv[cam] * ext_y0_mv[cam] + glass_dir_z_mv[cam] * ext_z0_mv[cam]) - c             # <<<<<<<<<<<<<<
@@ -18910,7 +18910,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
     *((double *) ( /* dim=0 */ (__pyx_v_dist_cam_glass_mv.data + __pyx_t_23 * __pyx_v_dist_cam_glass_mv.strides[0]) )) = (((((*((double *) ( /* dim=0 */ (__pyx_v_glass_dir_x_mv.data + __pyx_t_17 * __pyx_v_glass_dir_x_mv.strides[0]) ))) * (*((double *) ( /* dim=0 */ (__pyx_v_ext_x0_mv.data + __pyx_t_18 * __pyx_v_ext_x0_mv.strides[0]) )))) + ((*((double *) ( /* dim=0 */ (__pyx_v_glass_dir_y_mv.data + __pyx_t_19 * __pyx_v_glass_dir_y_mv.strides[0]) ))) * (*((double *) ( /* dim=0 */ (__pyx_v_ext_y0_mv.data + __pyx_t_20 * __pyx_v_ext_y0_mv.strides[0]) ))))) + ((*((double *) ( /* dim=0 */ (__pyx_v_glass_dir_z_mv.data + __pyx_t_21 * __pyx_v_glass_dir_z_mv.strides[0]) ))) * (*((double *) ( /* dim=0 */ (__pyx_v_ext_z0_mv.data + __pyx_t_22 * __pyx_v_ext_z0_mv.strides[0]) ))))) - __pyx_v_c);
   }
 
-  /* "algorithms/orientation.py":273
+  /* "openptv2/algorithms/orientation.py":273
  *     g_dz: cython.double
  * 
  *     for i in range(num_pts):             # <<<<<<<<<<<<<<
@@ -18922,7 +18922,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
   for (__pyx_t_26 = 0; __pyx_t_26 < __pyx_t_25; __pyx_t_26+=1) {
     __pyx_v_i = __pyx_t_26;
 
-    /* "algorithms/orientation.py":274
+    /* "openptv2/algorithms/orientation.py":274
  * 
  *     for i in range(num_pts):
  *         for cam in range(num_cams):             # <<<<<<<<<<<<<<
@@ -18934,7 +18934,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
     for (__pyx_t_16 = 0; __pyx_t_16 < __pyx_t_15; __pyx_t_16+=1) {
       __pyx_v_cam = __pyx_t_16;
 
-      /* "algorithms/orientation.py":275
+      /* "openptv2/algorithms/orientation.py":275
  *     for i in range(num_pts):
  *         for cam in range(num_cams):
  *             x = targets_mv[i, cam, 0]             # <<<<<<<<<<<<<<
@@ -18946,7 +18946,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
       __pyx_t_20 = 0;
       __pyx_v_x = (*((double *) ( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_targets_mv.data + __pyx_t_22 * __pyx_v_targets_mv.strides[0]) ) + __pyx_t_21 * __pyx_v_targets_mv.strides[1]) ) + __pyx_t_20 * __pyx_v_targets_mv.strides[2]) )));
 
-      /* "algorithms/orientation.py":276
+      /* "openptv2/algorithms/orientation.py":276
  *         for cam in range(num_cams):
  *             x = targets_mv[i, cam, 0]
  *             y = targets_mv[i, cam, 1]             # <<<<<<<<<<<<<<
@@ -18958,7 +18958,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
       __pyx_t_22 = 1;
       __pyx_v_y = (*((double *) ( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_targets_mv.data + __pyx_t_20 * __pyx_v_targets_mv.strides[0]) ) + __pyx_t_21 * __pyx_v_targets_mv.strides[1]) ) + __pyx_t_22 * __pyx_v_targets_mv.strides[2]) )));
 
-      /* "algorithms/orientation.py":277
+      /* "openptv2/algorithms/orientation.py":277
  *             x = targets_mv[i, cam, 0]
  *             y = targets_mv[i, cam, 1]
  *             if x == COORD_UNUSED:             # <<<<<<<<<<<<<<
@@ -18976,7 +18976,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
       if (__pyx_t_12) {
 
-        /* "algorithms/orientation.py":278
+        /* "openptv2/algorithms/orientation.py":278
  *             y = targets_mv[i, cam, 1]
  *             if x == COORD_UNUSED:
  *                 used_mv[cam] = 0             # <<<<<<<<<<<<<<
@@ -18986,7 +18986,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
         __pyx_t_22 = __pyx_v_cam;
         *((int *) ( /* dim=0 */ (__pyx_v_used_mv.data + __pyx_t_22 * __pyx_v_used_mv.strides[0]) )) = 0;
 
-        /* "algorithms/orientation.py":279
+        /* "openptv2/algorithms/orientation.py":279
  *             if x == COORD_UNUSED:
  *                 used_mv[cam] = 0
  *                 continue             # <<<<<<<<<<<<<<
@@ -18995,7 +18995,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
 */
         goto __pyx_L9_continue;
 
-        /* "algorithms/orientation.py":277
+        /* "openptv2/algorithms/orientation.py":277
  *             x = targets_mv[i, cam, 0]
  *             y = targets_mv[i, cam, 1]
  *             if x == COORD_UNUSED:             # <<<<<<<<<<<<<<
@@ -19004,7 +19004,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
 */
       }
 
-      /* "algorithms/orientation.py":280
+      /* "openptv2/algorithms/orientation.py":280
  *                 used_mv[cam] = 0
  *                 continue
  *             used_mv[cam] = 1             # <<<<<<<<<<<<<<
@@ -19014,7 +19014,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
       __pyx_t_22 = __pyx_v_cam;
       *((int *) ( /* dim=0 */ (__pyx_v_used_mv.data + __pyx_t_22 * __pyx_v_used_mv.strides[0]) )) = 1;
 
-      /* "algorithms/orientation.py":282
+      /* "openptv2/algorithms/orientation.py":282
  *             used_mv[cam] = 1
  * 
  *             cc: cython.double = int_cc_mv[cam]             # <<<<<<<<<<<<<<
@@ -19024,7 +19024,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
       __pyx_t_22 = __pyx_v_cam;
       __pyx_v_cc = (*((double *) ( /* dim=0 */ (__pyx_v_int_cc_mv.data + __pyx_t_22 * __pyx_v_int_cc_mv.strides[0]) )));
 
-      /* "algorithms/orientation.py":283
+      /* "openptv2/algorithms/orientation.py":283
  * 
  *             cc: cython.double = int_cc_mv[cam]
  *             norm_tmp1 = c_sqrt(x * x + y * y + cc * cc)             # <<<<<<<<<<<<<<
@@ -19033,7 +19033,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
 */
       __pyx_v_norm_tmp1 = sqrt((((__pyx_v_x * __pyx_v_x) + (__pyx_v_y * __pyx_v_y)) + (__pyx_v_cc * __pyx_v_cc)));
 
-      /* "algorithms/orientation.py":284
+      /* "openptv2/algorithms/orientation.py":284
  *             cc: cython.double = int_cc_mv[cam]
  *             norm_tmp1 = c_sqrt(x * x + y * y + cc * cc)
  *             tx = x / norm_tmp1             # <<<<<<<<<<<<<<
@@ -19042,7 +19042,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
 */
       __pyx_v_tx = (__pyx_v_x / __pyx_v_norm_tmp1);
 
-      /* "algorithms/orientation.py":285
+      /* "openptv2/algorithms/orientation.py":285
  *             norm_tmp1 = c_sqrt(x * x + y * y + cc * cc)
  *             tx = x / norm_tmp1
  *             ty = y / norm_tmp1             # <<<<<<<<<<<<<<
@@ -19051,7 +19051,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
 */
       __pyx_v_ty = (__pyx_v_y / __pyx_v_norm_tmp1);
 
-      /* "algorithms/orientation.py":286
+      /* "openptv2/algorithms/orientation.py":286
  *             tx = x / norm_tmp1
  *             ty = y / norm_tmp1
  *             tz = -cc / norm_tmp1             # <<<<<<<<<<<<<<
@@ -19060,7 +19060,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
 */
       __pyx_v_tz = ((-__pyx_v_cc) / __pyx_v_norm_tmp1);
 
-      /* "algorithms/orientation.py":288
+      /* "openptv2/algorithms/orientation.py":288
  *             tz = -cc / norm_tmp1
  * 
  *             start_dir_x = ext_dm_mv[cam, 0, 0] * tx + ext_dm_mv[cam, 0, 1] * ty + ext_dm_mv[cam, 0, 2] * tz             # <<<<<<<<<<<<<<
@@ -19078,7 +19078,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
       __pyx_t_28 = 2;
       __pyx_v_start_dir_x = ((((*((double *) ( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_ext_dm_mv.data + __pyx_t_22 * __pyx_v_ext_dm_mv.strides[0]) ) + __pyx_t_21 * __pyx_v_ext_dm_mv.strides[1]) ) + __pyx_t_20 * __pyx_v_ext_dm_mv.strides[2]) ))) * __pyx_v_tx) + ((*((double *) ( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_ext_dm_mv.data + __pyx_t_19 * __pyx_v_ext_dm_mv.strides[0]) ) + __pyx_t_18 * __pyx_v_ext_dm_mv.strides[1]) ) + __pyx_t_17 * __pyx_v_ext_dm_mv.strides[2]) ))) * __pyx_v_ty)) + ((*((double *) ( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_ext_dm_mv.data + __pyx_t_23 * __pyx_v_ext_dm_mv.strides[0]) ) + __pyx_t_27 * __pyx_v_ext_dm_mv.strides[1]) ) + __pyx_t_28 * __pyx_v_ext_dm_mv.strides[2]) ))) * __pyx_v_tz));
 
-      /* "algorithms/orientation.py":289
+      /* "openptv2/algorithms/orientation.py":289
  * 
  *             start_dir_x = ext_dm_mv[cam, 0, 0] * tx + ext_dm_mv[cam, 0, 1] * ty + ext_dm_mv[cam, 0, 2] * tz
  *             start_dir_y = ext_dm_mv[cam, 1, 0] * tx + ext_dm_mv[cam, 1, 1] * ty + ext_dm_mv[cam, 1, 2] * tz             # <<<<<<<<<<<<<<
@@ -19096,7 +19096,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
       __pyx_t_22 = 2;
       __pyx_v_start_dir_y = ((((*((double *) ( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_ext_dm_mv.data + __pyx_t_28 * __pyx_v_ext_dm_mv.strides[0]) ) + __pyx_t_27 * __pyx_v_ext_dm_mv.strides[1]) ) + __pyx_t_23 * __pyx_v_ext_dm_mv.strides[2]) ))) * __pyx_v_tx) + ((*((double *) ( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_ext_dm_mv.data + __pyx_t_17 * __pyx_v_ext_dm_mv.strides[0]) ) + __pyx_t_18 * __pyx_v_ext_dm_mv.strides[1]) ) + __pyx_t_19 * __pyx_v_ext_dm_mv.strides[2]) ))) * __pyx_v_ty)) + ((*((double *) ( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_ext_dm_mv.data + __pyx_t_20 * __pyx_v_ext_dm_mv.strides[0]) ) + __pyx_t_21 * __pyx_v_ext_dm_mv.strides[1]) ) + __pyx_t_22 * __pyx_v_ext_dm_mv.strides[2]) ))) * __pyx_v_tz));
 
-      /* "algorithms/orientation.py":290
+      /* "openptv2/algorithms/orientation.py":290
  *             start_dir_x = ext_dm_mv[cam, 0, 0] * tx + ext_dm_mv[cam, 0, 1] * ty + ext_dm_mv[cam, 0, 2] * tz
  *             start_dir_y = ext_dm_mv[cam, 1, 0] * tx + ext_dm_mv[cam, 1, 1] * ty + ext_dm_mv[cam, 1, 2] * tz
  *             start_dir_z = ext_dm_mv[cam, 2, 0] * tx + ext_dm_mv[cam, 2, 1] * ty + ext_dm_mv[cam, 2, 2] * tz             # <<<<<<<<<<<<<<
@@ -19114,7 +19114,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
       __pyx_t_28 = 2;
       __pyx_v_start_dir_z = ((((*((double *) ( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_ext_dm_mv.data + __pyx_t_22 * __pyx_v_ext_dm_mv.strides[0]) ) + __pyx_t_21 * __pyx_v_ext_dm_mv.strides[1]) ) + __pyx_t_20 * __pyx_v_ext_dm_mv.strides[2]) ))) * __pyx_v_tx) + ((*((double *) ( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_ext_dm_mv.data + __pyx_t_19 * __pyx_v_ext_dm_mv.strides[0]) ) + __pyx_t_18 * __pyx_v_ext_dm_mv.strides[1]) ) + __pyx_t_17 * __pyx_v_ext_dm_mv.strides[2]) ))) * __pyx_v_ty)) + ((*((double *) ( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_ext_dm_mv.data + __pyx_t_23 * __pyx_v_ext_dm_mv.strides[0]) ) + __pyx_t_27 * __pyx_v_ext_dm_mv.strides[1]) ) + __pyx_t_28 * __pyx_v_ext_dm_mv.strides[2]) ))) * __pyx_v_tz));
 
-      /* "algorithms/orientation.py":292
+      /* "openptv2/algorithms/orientation.py":292
  *             start_dir_z = ext_dm_mv[cam, 2, 0] * tx + ext_dm_mv[cam, 2, 1] * ty + ext_dm_mv[cam, 2, 2] * tz
  * 
  *             g_dx = glass_dir_x_mv[cam]             # <<<<<<<<<<<<<<
@@ -19124,7 +19124,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
       __pyx_t_28 = __pyx_v_cam;
       __pyx_v_g_dx = (*((double *) ( /* dim=0 */ (__pyx_v_glass_dir_x_mv.data + __pyx_t_28 * __pyx_v_glass_dir_x_mv.strides[0]) )));
 
-      /* "algorithms/orientation.py":293
+      /* "openptv2/algorithms/orientation.py":293
  * 
  *             g_dx = glass_dir_x_mv[cam]
  *             g_dy = glass_dir_y_mv[cam]             # <<<<<<<<<<<<<<
@@ -19134,7 +19134,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
       __pyx_t_28 = __pyx_v_cam;
       __pyx_v_g_dy = (*((double *) ( /* dim=0 */ (__pyx_v_glass_dir_y_mv.data + __pyx_t_28 * __pyx_v_glass_dir_y_mv.strides[0]) )));
 
-      /* "algorithms/orientation.py":294
+      /* "openptv2/algorithms/orientation.py":294
  *             g_dx = glass_dir_x_mv[cam]
  *             g_dy = glass_dir_y_mv[cam]
  *             g_dz = glass_dir_z_mv[cam]             # <<<<<<<<<<<<<<
@@ -19144,7 +19144,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
       __pyx_t_28 = __pyx_v_cam;
       __pyx_v_g_dz = (*((double *) ( /* dim=0 */ (__pyx_v_glass_dir_z_mv.data + __pyx_t_28 * __pyx_v_glass_dir_z_mv.strides[0]) )));
 
-      /* "algorithms/orientation.py":296
+      /* "openptv2/algorithms/orientation.py":296
  *             g_dz = glass_dir_z_mv[cam]
  * 
  *             dot_glass_start = g_dx * start_dir_x + g_dy * start_dir_y + g_dz * start_dir_z             # <<<<<<<<<<<<<<
@@ -19153,7 +19153,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
 */
       __pyx_v_dot_glass_start = (((__pyx_v_g_dx * __pyx_v_start_dir_x) + (__pyx_v_g_dy * __pyx_v_start_dir_y)) + (__pyx_v_g_dz * __pyx_v_start_dir_z));
 
-      /* "algorithms/orientation.py":297
+      /* "openptv2/algorithms/orientation.py":297
  * 
  *             dot_glass_start = g_dx * start_dir_x + g_dy * start_dir_y + g_dz * start_dir_z
  *             d1 = -dist_cam_glass_mv[cam] / dot_glass_start             # <<<<<<<<<<<<<<
@@ -19163,7 +19163,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
       __pyx_t_28 = __pyx_v_cam;
       __pyx_v_d1 = ((-(*((double *) ( /* dim=0 */ (__pyx_v_dist_cam_glass_mv.data + __pyx_t_28 * __pyx_v_dist_cam_glass_mv.strides[0]) )))) / __pyx_v_dot_glass_start);
 
-      /* "algorithms/orientation.py":299
+      /* "openptv2/algorithms/orientation.py":299
  *             d1 = -dist_cam_glass_mv[cam] / dot_glass_start
  * 
  *             Xb_x = ext_x0_mv[cam] + start_dir_x * d1             # <<<<<<<<<<<<<<
@@ -19173,7 +19173,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
       __pyx_t_28 = __pyx_v_cam;
       __pyx_v_Xb_x = ((*((double *) ( /* dim=0 */ (__pyx_v_ext_x0_mv.data + __pyx_t_28 * __pyx_v_ext_x0_mv.strides[0]) ))) + (__pyx_v_start_dir_x * __pyx_v_d1));
 
-      /* "algorithms/orientation.py":300
+      /* "openptv2/algorithms/orientation.py":300
  * 
  *             Xb_x = ext_x0_mv[cam] + start_dir_x * d1
  *             Xb_y = ext_y0_mv[cam] + start_dir_y * d1             # <<<<<<<<<<<<<<
@@ -19183,7 +19183,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
       __pyx_t_28 = __pyx_v_cam;
       __pyx_v_Xb_y = ((*((double *) ( /* dim=0 */ (__pyx_v_ext_y0_mv.data + __pyx_t_28 * __pyx_v_ext_y0_mv.strides[0]) ))) + (__pyx_v_start_dir_y * __pyx_v_d1));
 
-      /* "algorithms/orientation.py":301
+      /* "openptv2/algorithms/orientation.py":301
  *             Xb_x = ext_x0_mv[cam] + start_dir_x * d1
  *             Xb_y = ext_y0_mv[cam] + start_dir_y * d1
  *             Xb_z = ext_z0_mv[cam] + start_dir_z * d1             # <<<<<<<<<<<<<<
@@ -19193,7 +19193,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
       __pyx_t_28 = __pyx_v_cam;
       __pyx_v_Xb_z = ((*((double *) ( /* dim=0 */ (__pyx_v_ext_z0_mv.data + __pyx_t_28 * __pyx_v_ext_z0_mv.strides[0]) ))) + (__pyx_v_start_dir_z * __pyx_v_d1));
 
-      /* "algorithms/orientation.py":303
+      /* "openptv2/algorithms/orientation.py":303
  *             Xb_z = ext_z0_mv[cam] + start_dir_z * d1
  * 
  *             n = start_dir_x * g_dx + start_dir_y * g_dy + start_dir_z * g_dz             # <<<<<<<<<<<<<<
@@ -19202,7 +19202,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
 */
       __pyx_v_n = (((__pyx_v_start_dir_x * __pyx_v_g_dx) + (__pyx_v_start_dir_y * __pyx_v_g_dy)) + (__pyx_v_start_dir_z * __pyx_v_g_dz));
 
-      /* "algorithms/orientation.py":304
+      /* "openptv2/algorithms/orientation.py":304
  * 
  *             n = start_dir_x * g_dx + start_dir_y * g_dy + start_dir_z * g_dz
  *             bp_x = start_dir_x - g_dx * n             # <<<<<<<<<<<<<<
@@ -19211,7 +19211,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
 */
       __pyx_v_bp_x = (__pyx_v_start_dir_x - (__pyx_v_g_dx * __pyx_v_n));
 
-      /* "algorithms/orientation.py":305
+      /* "openptv2/algorithms/orientation.py":305
  *             n = start_dir_x * g_dx + start_dir_y * g_dy + start_dir_z * g_dz
  *             bp_x = start_dir_x - g_dx * n
  *             bp_y = start_dir_y - g_dy * n             # <<<<<<<<<<<<<<
@@ -19220,7 +19220,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
 */
       __pyx_v_bp_y = (__pyx_v_start_dir_y - (__pyx_v_g_dy * __pyx_v_n));
 
-      /* "algorithms/orientation.py":306
+      /* "openptv2/algorithms/orientation.py":306
  *             bp_x = start_dir_x - g_dx * n
  *             bp_y = start_dir_y - g_dy * n
  *             bp_z = start_dir_z - g_dz * n             # <<<<<<<<<<<<<<
@@ -19229,7 +19229,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
 */
       __pyx_v_bp_z = (__pyx_v_start_dir_z - (__pyx_v_g_dz * __pyx_v_n));
 
-      /* "algorithms/orientation.py":307
+      /* "openptv2/algorithms/orientation.py":307
  *             bp_y = start_dir_y - g_dy * n
  *             bp_z = start_dir_z - g_dz * n
  *             norm_bp = c_sqrt(bp_x * bp_x + bp_y * bp_y + bp_z * bp_z)             # <<<<<<<<<<<<<<
@@ -19238,7 +19238,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
 */
       __pyx_v_norm_bp = sqrt((((__pyx_v_bp_x * __pyx_v_bp_x) + (__pyx_v_bp_y * __pyx_v_bp_y)) + (__pyx_v_bp_z * __pyx_v_bp_z)));
 
-      /* "algorithms/orientation.py":308
+      /* "openptv2/algorithms/orientation.py":308
  *             bp_z = start_dir_z - g_dz * n
  *             norm_bp = c_sqrt(bp_x * bp_x + bp_y * bp_y + bp_z * bp_z)
  *             if norm_bp > 0:             # <<<<<<<<<<<<<<
@@ -19248,7 +19248,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
       __pyx_t_12 = (__pyx_v_norm_bp > 0.0);
       if (__pyx_t_12) {
 
-        /* "algorithms/orientation.py":309
+        /* "openptv2/algorithms/orientation.py":309
  *             norm_bp = c_sqrt(bp_x * bp_x + bp_y * bp_y + bp_z * bp_z)
  *             if norm_bp > 0:
  *                 bp_x /= norm_bp             # <<<<<<<<<<<<<<
@@ -19257,7 +19257,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
 */
         __pyx_v_bp_x = (__pyx_v_bp_x / __pyx_v_norm_bp);
 
-        /* "algorithms/orientation.py":310
+        /* "openptv2/algorithms/orientation.py":310
  *             if norm_bp > 0:
  *                 bp_x /= norm_bp
  *                 bp_y /= norm_bp             # <<<<<<<<<<<<<<
@@ -19266,7 +19266,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
 */
         __pyx_v_bp_y = (__pyx_v_bp_y / __pyx_v_norm_bp);
 
-        /* "algorithms/orientation.py":311
+        /* "openptv2/algorithms/orientation.py":311
  *                 bp_x /= norm_bp
  *                 bp_y /= norm_bp
  *                 bp_z /= norm_bp             # <<<<<<<<<<<<<<
@@ -19275,7 +19275,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
 */
         __pyx_v_bp_z = (__pyx_v_bp_z / __pyx_v_norm_bp);
 
-        /* "algorithms/orientation.py":308
+        /* "openptv2/algorithms/orientation.py":308
  *             bp_z = start_dir_z - g_dz * n
  *             norm_bp = c_sqrt(bp_x * bp_x + bp_y * bp_y + bp_z * bp_z)
  *             if norm_bp > 0:             # <<<<<<<<<<<<<<
@@ -19284,7 +19284,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
 */
       }
 
-      /* "algorithms/orientation.py":313
+      /* "openptv2/algorithms/orientation.py":313
  *                 bp_z /= norm_bp
  * 
  *             p = c_sqrt(1.0 - n * n) * mm_n1 / mm_n2_0             # <<<<<<<<<<<<<<
@@ -19293,7 +19293,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
 */
       __pyx_v_p = ((sqrt((1.0 - (__pyx_v_n * __pyx_v_n))) * __pyx_v_mm_n1) / __pyx_v_mm_n2_0);
 
-      /* "algorithms/orientation.py":314
+      /* "openptv2/algorithms/orientation.py":314
  * 
  *             p = c_sqrt(1.0 - n * n) * mm_n1 / mm_n2_0
  *             n_glass = -c_sqrt(1.0 - p * p)             # <<<<<<<<<<<<<<
@@ -19302,7 +19302,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
 */
       __pyx_v_n_glass = (-sqrt((1.0 - (__pyx_v_p * __pyx_v_p))));
 
-      /* "algorithms/orientation.py":316
+      /* "openptv2/algorithms/orientation.py":316
  *             n_glass = -c_sqrt(1.0 - p * p)
  * 
  *             a2_x = bp_x * p + g_dx * n_glass             # <<<<<<<<<<<<<<
@@ -19311,7 +19311,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
 */
       __pyx_v_a2_x = ((__pyx_v_bp_x * __pyx_v_p) + (__pyx_v_g_dx * __pyx_v_n_glass));
 
-      /* "algorithms/orientation.py":317
+      /* "openptv2/algorithms/orientation.py":317
  * 
  *             a2_x = bp_x * p + g_dx * n_glass
  *             a2_y = bp_y * p + g_dy * n_glass             # <<<<<<<<<<<<<<
@@ -19320,7 +19320,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
 */
       __pyx_v_a2_y = ((__pyx_v_bp_y * __pyx_v_p) + (__pyx_v_g_dy * __pyx_v_n_glass));
 
-      /* "algorithms/orientation.py":318
+      /* "openptv2/algorithms/orientation.py":318
  *             a2_x = bp_x * p + g_dx * n_glass
  *             a2_y = bp_y * p + g_dy * n_glass
  *             a2_z = bp_z * p + g_dz * n_glass             # <<<<<<<<<<<<<<
@@ -19329,7 +19329,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
 */
       __pyx_v_a2_z = ((__pyx_v_bp_z * __pyx_v_p) + (__pyx_v_g_dz * __pyx_v_n_glass));
 
-      /* "algorithms/orientation.py":320
+      /* "openptv2/algorithms/orientation.py":320
  *             a2_z = bp_z * p + g_dz * n_glass
  * 
  *             dot_glass_a2 = g_dx * a2_x + g_dy * a2_y + g_dz * a2_z             # <<<<<<<<<<<<<<
@@ -19338,7 +19338,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
 */
       __pyx_v_dot_glass_a2 = (((__pyx_v_g_dx * __pyx_v_a2_x) + (__pyx_v_g_dy * __pyx_v_a2_y)) + (__pyx_v_g_dz * __pyx_v_a2_z));
 
-      /* "algorithms/orientation.py":321
+      /* "openptv2/algorithms/orientation.py":321
  * 
  *             dot_glass_a2 = g_dx * a2_x + g_dy * a2_y + g_dz * a2_z
  *             d2 = mm_d0 / abs(dot_glass_a2)             # <<<<<<<<<<<<<<
@@ -19348,7 +19348,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
       __pyx_t_13 = fabs(__pyx_v_dot_glass_a2); 
       __pyx_v_d2 = (__pyx_v_mm_d0 / __pyx_t_13);
 
-      /* "algorithms/orientation.py":323
+      /* "openptv2/algorithms/orientation.py":323
  *             d2 = mm_d0 / abs(dot_glass_a2)
  * 
  *             X_x = Xb_x + a2_x * d2             # <<<<<<<<<<<<<<
@@ -19357,7 +19357,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
 */
       __pyx_v_X_x = (__pyx_v_Xb_x + (__pyx_v_a2_x * __pyx_v_d2));
 
-      /* "algorithms/orientation.py":324
+      /* "openptv2/algorithms/orientation.py":324
  * 
  *             X_x = Xb_x + a2_x * d2
  *             X_y = Xb_y + a2_y * d2             # <<<<<<<<<<<<<<
@@ -19366,7 +19366,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
 */
       __pyx_v_X_y = (__pyx_v_Xb_y + (__pyx_v_a2_y * __pyx_v_d2));
 
-      /* "algorithms/orientation.py":325
+      /* "openptv2/algorithms/orientation.py":325
  *             X_x = Xb_x + a2_x * d2
  *             X_y = Xb_y + a2_y * d2
  *             X_z = Xb_z + a2_z * d2             # <<<<<<<<<<<<<<
@@ -19375,7 +19375,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
 */
       __pyx_v_X_z = (__pyx_v_Xb_z + (__pyx_v_a2_z * __pyx_v_d2));
 
-      /* "algorithms/orientation.py":327
+      /* "openptv2/algorithms/orientation.py":327
  *             X_z = Xb_z + a2_z * d2
  * 
  *             n_a2 = a2_x * g_dx + a2_y * g_dy + a2_z * g_dz             # <<<<<<<<<<<<<<
@@ -19384,7 +19384,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
 */
       __pyx_v_n_a2 = (((__pyx_v_a2_x * __pyx_v_g_dx) + (__pyx_v_a2_y * __pyx_v_g_dy)) + (__pyx_v_a2_z * __pyx_v_g_dz));
 
-      /* "algorithms/orientation.py":328
+      /* "openptv2/algorithms/orientation.py":328
  * 
  *             n_a2 = a2_x * g_dx + a2_y * g_dy + a2_z * g_dz
  *             bp_x = a2_x - g_dx * n_glass             # <<<<<<<<<<<<<<
@@ -19393,7 +19393,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
 */
       __pyx_v_bp_x = (__pyx_v_a2_x - (__pyx_v_g_dx * __pyx_v_n_glass));
 
-      /* "algorithms/orientation.py":329
+      /* "openptv2/algorithms/orientation.py":329
  *             n_a2 = a2_x * g_dx + a2_y * g_dy + a2_z * g_dz
  *             bp_x = a2_x - g_dx * n_glass
  *             bp_y = a2_y - g_dy * n_glass             # <<<<<<<<<<<<<<
@@ -19402,7 +19402,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
 */
       __pyx_v_bp_y = (__pyx_v_a2_y - (__pyx_v_g_dy * __pyx_v_n_glass));
 
-      /* "algorithms/orientation.py":330
+      /* "openptv2/algorithms/orientation.py":330
  *             bp_x = a2_x - g_dx * n_glass
  *             bp_y = a2_y - g_dy * n_glass
  *             bp_z = a2_z - g_dz * n_glass             # <<<<<<<<<<<<<<
@@ -19411,7 +19411,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
 */
       __pyx_v_bp_z = (__pyx_v_a2_z - (__pyx_v_g_dz * __pyx_v_n_glass));
 
-      /* "algorithms/orientation.py":331
+      /* "openptv2/algorithms/orientation.py":331
  *             bp_y = a2_y - g_dy * n_glass
  *             bp_z = a2_z - g_dz * n_glass
  *             norm_bp = c_sqrt(bp_x * bp_x + bp_y * bp_y + bp_z * bp_z)             # <<<<<<<<<<<<<<
@@ -19420,7 +19420,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
 */
       __pyx_v_norm_bp = sqrt((((__pyx_v_bp_x * __pyx_v_bp_x) + (__pyx_v_bp_y * __pyx_v_bp_y)) + (__pyx_v_bp_z * __pyx_v_bp_z)));
 
-      /* "algorithms/orientation.py":332
+      /* "openptv2/algorithms/orientation.py":332
  *             bp_z = a2_z - g_dz * n_glass
  *             norm_bp = c_sqrt(bp_x * bp_x + bp_y * bp_y + bp_z * bp_z)
  *             if norm_bp > 0:             # <<<<<<<<<<<<<<
@@ -19430,7 +19430,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
       __pyx_t_12 = (__pyx_v_norm_bp > 0.0);
       if (__pyx_t_12) {
 
-        /* "algorithms/orientation.py":333
+        /* "openptv2/algorithms/orientation.py":333
  *             norm_bp = c_sqrt(bp_x * bp_x + bp_y * bp_y + bp_z * bp_z)
  *             if norm_bp > 0:
  *                 bp_x /= norm_bp             # <<<<<<<<<<<<<<
@@ -19439,7 +19439,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
 */
         __pyx_v_bp_x = (__pyx_v_bp_x / __pyx_v_norm_bp);
 
-        /* "algorithms/orientation.py":334
+        /* "openptv2/algorithms/orientation.py":334
  *             if norm_bp > 0:
  *                 bp_x /= norm_bp
  *                 bp_y /= norm_bp             # <<<<<<<<<<<<<<
@@ -19448,7 +19448,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
 */
         __pyx_v_bp_y = (__pyx_v_bp_y / __pyx_v_norm_bp);
 
-        /* "algorithms/orientation.py":335
+        /* "openptv2/algorithms/orientation.py":335
  *                 bp_x /= norm_bp
  *                 bp_y /= norm_bp
  *                 bp_z /= norm_bp             # <<<<<<<<<<<<<<
@@ -19457,7 +19457,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
 */
         __pyx_v_bp_z = (__pyx_v_bp_z / __pyx_v_norm_bp);
 
-        /* "algorithms/orientation.py":332
+        /* "openptv2/algorithms/orientation.py":332
  *             bp_z = a2_z - g_dz * n_glass
  *             norm_bp = c_sqrt(bp_x * bp_x + bp_y * bp_y + bp_z * bp_z)
  *             if norm_bp > 0:             # <<<<<<<<<<<<<<
@@ -19466,7 +19466,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
 */
       }
 
-      /* "algorithms/orientation.py":337
+      /* "openptv2/algorithms/orientation.py":337
  *                 bp_z /= norm_bp
  * 
  *             p = c_sqrt(1.0 - n_a2 * n_a2)             # <<<<<<<<<<<<<<
@@ -19475,7 +19475,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
 */
       __pyx_v_p = sqrt((1.0 - (__pyx_v_n_a2 * __pyx_v_n_a2)));
 
-      /* "algorithms/orientation.py":338
+      /* "openptv2/algorithms/orientation.py":338
  * 
  *             p = c_sqrt(1.0 - n_a2 * n_a2)
  *             p = p * mm_n2_0 / mm_n3             # <<<<<<<<<<<<<<
@@ -19484,7 +19484,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
 */
       __pyx_v_p = ((__pyx_v_p * __pyx_v_mm_n2_0) / __pyx_v_mm_n3);
 
-      /* "algorithms/orientation.py":339
+      /* "openptv2/algorithms/orientation.py":339
  *             p = c_sqrt(1.0 - n_a2 * n_a2)
  *             p = p * mm_n2_0 / mm_n3
  *             n_final = -c_sqrt(1.0 - p * p)             # <<<<<<<<<<<<<<
@@ -19493,7 +19493,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
 */
       __pyx_v_n_final = (-sqrt((1.0 - (__pyx_v_p * __pyx_v_p))));
 
-      /* "algorithms/orientation.py":341
+      /* "openptv2/algorithms/orientation.py":341
  *             n_final = -c_sqrt(1.0 - p * p)
  * 
  *             out_x = bp_x * p + g_dx * n_final             # <<<<<<<<<<<<<<
@@ -19502,7 +19502,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
 */
       __pyx_v_out_x = ((__pyx_v_bp_x * __pyx_v_p) + (__pyx_v_g_dx * __pyx_v_n_final));
 
-      /* "algorithms/orientation.py":342
+      /* "openptv2/algorithms/orientation.py":342
  * 
  *             out_x = bp_x * p + g_dx * n_final
  *             out_y = bp_y * p + g_dy * n_final             # <<<<<<<<<<<<<<
@@ -19511,7 +19511,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
 */
       __pyx_v_out_y = ((__pyx_v_bp_y * __pyx_v_p) + (__pyx_v_g_dy * __pyx_v_n_final));
 
-      /* "algorithms/orientation.py":343
+      /* "openptv2/algorithms/orientation.py":343
  *             out_x = bp_x * p + g_dx * n_final
  *             out_y = bp_y * p + g_dy * n_final
  *             out_z = bp_z * p + g_dz * n_final             # <<<<<<<<<<<<<<
@@ -19520,7 +19520,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
 */
       __pyx_v_out_z = ((__pyx_v_bp_z * __pyx_v_p) + (__pyx_v_g_dz * __pyx_v_n_final));
 
-      /* "algorithms/orientation.py":345
+      /* "openptv2/algorithms/orientation.py":345
  *             out_z = bp_z * p + g_dz * n_final
  * 
  *             vertices_mv[cam, 0] = X_x             # <<<<<<<<<<<<<<
@@ -19531,7 +19531,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
       __pyx_t_27 = 0;
       *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_vertices_mv.data + __pyx_t_28 * __pyx_v_vertices_mv.strides[0]) ) + __pyx_t_27 * __pyx_v_vertices_mv.strides[1]) )) = __pyx_v_X_x;
 
-      /* "algorithms/orientation.py":346
+      /* "openptv2/algorithms/orientation.py":346
  * 
  *             vertices_mv[cam, 0] = X_x
  *             vertices_mv[cam, 1] = X_y             # <<<<<<<<<<<<<<
@@ -19542,7 +19542,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
       __pyx_t_28 = 1;
       *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_vertices_mv.data + __pyx_t_27 * __pyx_v_vertices_mv.strides[0]) ) + __pyx_t_28 * __pyx_v_vertices_mv.strides[1]) )) = __pyx_v_X_y;
 
-      /* "algorithms/orientation.py":347
+      /* "openptv2/algorithms/orientation.py":347
  *             vertices_mv[cam, 0] = X_x
  *             vertices_mv[cam, 1] = X_y
  *             vertices_mv[cam, 2] = X_z             # <<<<<<<<<<<<<<
@@ -19553,7 +19553,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
       __pyx_t_27 = 2;
       *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_vertices_mv.data + __pyx_t_28 * __pyx_v_vertices_mv.strides[0]) ) + __pyx_t_27 * __pyx_v_vertices_mv.strides[1]) )) = __pyx_v_X_z;
 
-      /* "algorithms/orientation.py":349
+      /* "openptv2/algorithms/orientation.py":349
  *             vertices_mv[cam, 2] = X_z
  * 
  *             directs_mv[cam, 0] = out_x             # <<<<<<<<<<<<<<
@@ -19564,7 +19564,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
       __pyx_t_28 = 0;
       *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_directs_mv.data + __pyx_t_27 * __pyx_v_directs_mv.strides[0]) ) + __pyx_t_28 * __pyx_v_directs_mv.strides[1]) )) = __pyx_v_out_x;
 
-      /* "algorithms/orientation.py":350
+      /* "openptv2/algorithms/orientation.py":350
  * 
  *             directs_mv[cam, 0] = out_x
  *             directs_mv[cam, 1] = out_y             # <<<<<<<<<<<<<<
@@ -19575,7 +19575,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
       __pyx_t_27 = 1;
       *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_directs_mv.data + __pyx_t_28 * __pyx_v_directs_mv.strides[0]) ) + __pyx_t_27 * __pyx_v_directs_mv.strides[1]) )) = __pyx_v_out_y;
 
-      /* "algorithms/orientation.py":351
+      /* "openptv2/algorithms/orientation.py":351
  *             directs_mv[cam, 0] = out_x
  *             directs_mv[cam, 1] = out_y
  *             directs_mv[cam, 2] = out_z             # <<<<<<<<<<<<<<
@@ -19588,7 +19588,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
       __pyx_L9_continue:;
     }
 
-    /* "algorithms/orientation.py":353
+    /* "openptv2/algorithms/orientation.py":353
  *             directs_mv[cam, 2] = out_z
  * 
  *         dtot = 0.0             # <<<<<<<<<<<<<<
@@ -19597,7 +19597,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
 */
     __pyx_v_dtot = 0.0;
 
-    /* "algorithms/orientation.py":354
+    /* "openptv2/algorithms/orientation.py":354
  * 
  *         dtot = 0.0
  *         num_used_pairs = 0             # <<<<<<<<<<<<<<
@@ -19606,7 +19606,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
 */
     __pyx_v_num_used_pairs = 0;
 
-    /* "algorithms/orientation.py":355
+    /* "openptv2/algorithms/orientation.py":355
  *         dtot = 0.0
  *         num_used_pairs = 0
  *         pt_tot_x = 0.0             # <<<<<<<<<<<<<<
@@ -19615,7 +19615,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
 */
     __pyx_v_pt_tot_x = 0.0;
 
-    /* "algorithms/orientation.py":356
+    /* "openptv2/algorithms/orientation.py":356
  *         num_used_pairs = 0
  *         pt_tot_x = 0.0
  *         pt_tot_y = 0.0             # <<<<<<<<<<<<<<
@@ -19624,7 +19624,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
 */
     __pyx_v_pt_tot_y = 0.0;
 
-    /* "algorithms/orientation.py":357
+    /* "openptv2/algorithms/orientation.py":357
  *         pt_tot_x = 0.0
  *         pt_tot_y = 0.0
  *         pt_tot_z = 0.0             # <<<<<<<<<<<<<<
@@ -19633,7 +19633,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
 */
     __pyx_v_pt_tot_z = 0.0;
 
-    /* "algorithms/orientation.py":359
+    /* "openptv2/algorithms/orientation.py":359
  *         pt_tot_z = 0.0
  * 
  *         for cam in range(num_cams):             # <<<<<<<<<<<<<<
@@ -19645,7 +19645,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
     for (__pyx_t_16 = 0; __pyx_t_16 < __pyx_t_15; __pyx_t_16+=1) {
       __pyx_v_cam = __pyx_t_16;
 
-      /* "algorithms/orientation.py":360
+      /* "openptv2/algorithms/orientation.py":360
  * 
  *         for cam in range(num_cams):
  *             if used_mv[cam] == 0:             # <<<<<<<<<<<<<<
@@ -19656,7 +19656,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
       __pyx_t_12 = ((*((int *) ( /* dim=0 */ (__pyx_v_used_mv.data + __pyx_t_28 * __pyx_v_used_mv.strides[0]) ))) == 0);
       if (__pyx_t_12) {
 
-        /* "algorithms/orientation.py":361
+        /* "openptv2/algorithms/orientation.py":361
  *         for cam in range(num_cams):
  *             if used_mv[cam] == 0:
  *                 continue             # <<<<<<<<<<<<<<
@@ -19665,7 +19665,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
 */
         goto __pyx_L14_continue;
 
-        /* "algorithms/orientation.py":360
+        /* "openptv2/algorithms/orientation.py":360
  * 
  *         for cam in range(num_cams):
  *             if used_mv[cam] == 0:             # <<<<<<<<<<<<<<
@@ -19674,7 +19674,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
 */
       }
 
-      /* "algorithms/orientation.py":362
+      /* "openptv2/algorithms/orientation.py":362
  *             if used_mv[cam] == 0:
  *                 continue
  *             for pair in range(cam + 1, num_cams):             # <<<<<<<<<<<<<<
@@ -19686,7 +19686,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
       for (__pyx_t_31 = (__pyx_v_cam + 1); __pyx_t_31 < __pyx_t_30; __pyx_t_31+=1) {
         __pyx_v_pair = __pyx_t_31;
 
-        /* "algorithms/orientation.py":363
+        /* "openptv2/algorithms/orientation.py":363
  *                 continue
  *             for pair in range(cam + 1, num_cams):
  *                 if used_mv[pair] == 0:             # <<<<<<<<<<<<<<
@@ -19697,7 +19697,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
         __pyx_t_12 = ((*((int *) ( /* dim=0 */ (__pyx_v_used_mv.data + __pyx_t_28 * __pyx_v_used_mv.strides[0]) ))) == 0);
         if (__pyx_t_12) {
 
-          /* "algorithms/orientation.py":364
+          /* "openptv2/algorithms/orientation.py":364
  *             for pair in range(cam + 1, num_cams):
  *                 if used_mv[pair] == 0:
  *                     continue             # <<<<<<<<<<<<<<
@@ -19706,7 +19706,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
 */
           goto __pyx_L17_continue;
 
-          /* "algorithms/orientation.py":363
+          /* "openptv2/algorithms/orientation.py":363
  *                 continue
  *             for pair in range(cam + 1, num_cams):
  *                 if used_mv[pair] == 0:             # <<<<<<<<<<<<<<
@@ -19715,7 +19715,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
 */
         }
 
-        /* "algorithms/orientation.py":365
+        /* "openptv2/algorithms/orientation.py":365
  *                 if used_mv[pair] == 0:
  *                     continue
  *                 num_used_pairs += 1             # <<<<<<<<<<<<<<
@@ -19724,7 +19724,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
 */
         __pyx_v_num_used_pairs = (__pyx_v_num_used_pairs + 1);
 
-        /* "algorithms/orientation.py":367
+        /* "openptv2/algorithms/orientation.py":367
  *                 num_used_pairs += 1
  *                 d = _skew_midpoint_core(
  *                     vertices_mv[cam, 0], vertices_mv[cam, 1], vertices_mv[cam, 2],             # <<<<<<<<<<<<<<
@@ -19738,7 +19738,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
         __pyx_t_18 = __pyx_v_cam;
         __pyx_t_19 = 2;
 
-        /* "algorithms/orientation.py":368
+        /* "openptv2/algorithms/orientation.py":368
  *                 d = _skew_midpoint_core(
  *                     vertices_mv[cam, 0], vertices_mv[cam, 1], vertices_mv[cam, 2],
  *                     directs_mv[cam, 0], directs_mv[cam, 1], directs_mv[cam, 2],             # <<<<<<<<<<<<<<
@@ -19752,7 +19752,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
         __pyx_t_33 = __pyx_v_cam;
         __pyx_t_34 = 2;
 
-        /* "algorithms/orientation.py":369
+        /* "openptv2/algorithms/orientation.py":369
  *                     vertices_mv[cam, 0], vertices_mv[cam, 1], vertices_mv[cam, 2],
  *                     directs_mv[cam, 0], directs_mv[cam, 1], directs_mv[cam, 2],
  *                     vertices_mv[pair, 0], vertices_mv[pair, 1], vertices_mv[pair, 2],             # <<<<<<<<<<<<<<
@@ -19766,7 +19766,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
         __pyx_t_39 = __pyx_v_pair;
         __pyx_t_40 = 2;
 
-        /* "algorithms/orientation.py":370
+        /* "openptv2/algorithms/orientation.py":370
  *                     directs_mv[cam, 0], directs_mv[cam, 1], directs_mv[cam, 2],
  *                     vertices_mv[pair, 0], vertices_mv[pair, 1], vertices_mv[pair, 2],
  *                     directs_mv[pair, 0], directs_mv[pair, 1], directs_mv[pair, 2],             # <<<<<<<<<<<<<<
@@ -19780,7 +19780,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
         __pyx_t_45 = __pyx_v_pair;
         __pyx_t_46 = 2;
 
-        /* "algorithms/orientation.py":371
+        /* "openptv2/algorithms/orientation.py":371
  *                     vertices_mv[pair, 0], vertices_mv[pair, 1], vertices_mv[pair, 2],
  *                     directs_mv[pair, 0], directs_mv[pair, 1], directs_mv[pair, 2],
  *                     midpoint_mv             # <<<<<<<<<<<<<<
@@ -19792,17 +19792,17 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
           __PYX_ERR(0, 371, __pyx_L1_error)
         }
 
-        /* "algorithms/orientation.py":366
+        /* "openptv2/algorithms/orientation.py":366
  *                     continue
  *                 num_used_pairs += 1
  *                 d = _skew_midpoint_core(             # <<<<<<<<<<<<<<
  *                     vertices_mv[cam, 0], vertices_mv[cam, 1], vertices_mv[cam, 2],
  *                     directs_mv[cam, 0], directs_mv[cam, 1], directs_mv[cam, 2],
 */
-        __pyx_t_13 = __pyx_f_10algorithms_11orientation__skew_midpoint_core((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_vertices_mv.data + __pyx_t_28 * __pyx_v_vertices_mv.strides[0]) ) + __pyx_t_27 * __pyx_v_vertices_mv.strides[1]) ))), (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_vertices_mv.data + __pyx_t_23 * __pyx_v_vertices_mv.strides[0]) ) + __pyx_t_17 * __pyx_v_vertices_mv.strides[1]) ))), (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_vertices_mv.data + __pyx_t_18 * __pyx_v_vertices_mv.strides[0]) ) + __pyx_t_19 * __pyx_v_vertices_mv.strides[1]) ))), (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_directs_mv.data + __pyx_t_20 * __pyx_v_directs_mv.strides[0]) ) + __pyx_t_21 * __pyx_v_directs_mv.strides[1]) ))), (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_directs_mv.data + __pyx_t_22 * __pyx_v_directs_mv.strides[0]) ) + __pyx_t_32 * __pyx_v_directs_mv.strides[1]) ))), (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_directs_mv.data + __pyx_t_33 * __pyx_v_directs_mv.strides[0]) ) + __pyx_t_34 * __pyx_v_directs_mv.strides[1]) ))), (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_vertices_mv.data + __pyx_t_35 * __pyx_v_vertices_mv.strides[0]) ) + __pyx_t_36 * __pyx_v_vertices_mv.strides[1]) ))), (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_vertices_mv.data + __pyx_t_37 * __pyx_v_vertices_mv.strides[0]) ) + __pyx_t_38 * __pyx_v_vertices_mv.strides[1]) ))), (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_vertices_mv.data + __pyx_t_39 * __pyx_v_vertices_mv.strides[0]) ) + __pyx_t_40 * __pyx_v_vertices_mv.strides[1]) ))), (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_directs_mv.data + __pyx_t_41 * __pyx_v_directs_mv.strides[0]) ) + __pyx_t_42 * __pyx_v_directs_mv.strides[1]) ))), (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_directs_mv.data + __pyx_t_43 * __pyx_v_directs_mv.strides[0]) ) + __pyx_t_44 * __pyx_v_directs_mv.strides[1]) ))), (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_directs_mv.data + __pyx_t_45 * __pyx_v_directs_mv.strides[0]) ) + __pyx_t_46 * __pyx_v_directs_mv.strides[1]) ))), __pyx_v_midpoint_mv); if (unlikely(__pyx_t_13 == ((double)-1) && PyErr_Occurred())) __PYX_ERR(0, 366, __pyx_L1_error)
+        __pyx_t_13 = __pyx_f_8openptv2_10algorithms_11orientation__skew_midpoint_core((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_vertices_mv.data + __pyx_t_28 * __pyx_v_vertices_mv.strides[0]) ) + __pyx_t_27 * __pyx_v_vertices_mv.strides[1]) ))), (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_vertices_mv.data + __pyx_t_23 * __pyx_v_vertices_mv.strides[0]) ) + __pyx_t_17 * __pyx_v_vertices_mv.strides[1]) ))), (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_vertices_mv.data + __pyx_t_18 * __pyx_v_vertices_mv.strides[0]) ) + __pyx_t_19 * __pyx_v_vertices_mv.strides[1]) ))), (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_directs_mv.data + __pyx_t_20 * __pyx_v_directs_mv.strides[0]) ) + __pyx_t_21 * __pyx_v_directs_mv.strides[1]) ))), (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_directs_mv.data + __pyx_t_22 * __pyx_v_directs_mv.strides[0]) ) + __pyx_t_32 * __pyx_v_directs_mv.strides[1]) ))), (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_directs_mv.data + __pyx_t_33 * __pyx_v_directs_mv.strides[0]) ) + __pyx_t_34 * __pyx_v_directs_mv.strides[1]) ))), (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_vertices_mv.data + __pyx_t_35 * __pyx_v_vertices_mv.strides[0]) ) + __pyx_t_36 * __pyx_v_vertices_mv.strides[1]) ))), (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_vertices_mv.data + __pyx_t_37 * __pyx_v_vertices_mv.strides[0]) ) + __pyx_t_38 * __pyx_v_vertices_mv.strides[1]) ))), (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_vertices_mv.data + __pyx_t_39 * __pyx_v_vertices_mv.strides[0]) ) + __pyx_t_40 * __pyx_v_vertices_mv.strides[1]) ))), (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_directs_mv.data + __pyx_t_41 * __pyx_v_directs_mv.strides[0]) ) + __pyx_t_42 * __pyx_v_directs_mv.strides[1]) ))), (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_directs_mv.data + __pyx_t_43 * __pyx_v_directs_mv.strides[0]) ) + __pyx_t_44 * __pyx_v_directs_mv.strides[1]) ))), (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_directs_mv.data + __pyx_t_45 * __pyx_v_directs_mv.strides[0]) ) + __pyx_t_46 * __pyx_v_directs_mv.strides[1]) ))), __pyx_v_midpoint_mv); if (unlikely(__pyx_t_13 == ((double)-1) && PyErr_Occurred())) __PYX_ERR(0, 366, __pyx_L1_error)
         __pyx_v_d = __pyx_t_13;
 
-        /* "algorithms/orientation.py":373
+        /* "openptv2/algorithms/orientation.py":373
  *                     midpoint_mv
  *                 )
  *                 dtot += d             # <<<<<<<<<<<<<<
@@ -19811,7 +19811,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
 */
         __pyx_v_dtot = (__pyx_v_dtot + __pyx_v_d);
 
-        /* "algorithms/orientation.py":374
+        /* "openptv2/algorithms/orientation.py":374
  *                 )
  *                 dtot += d
  *                 pt_tot_x += midpoint_mv[0]             # <<<<<<<<<<<<<<
@@ -19821,7 +19821,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
         __pyx_t_46 = 0;
         __pyx_v_pt_tot_x = (__pyx_v_pt_tot_x + (*((double *) ( /* dim=0 */ (__pyx_v_midpoint_mv.data + __pyx_t_46 * __pyx_v_midpoint_mv.strides[0]) ))));
 
-        /* "algorithms/orientation.py":375
+        /* "openptv2/algorithms/orientation.py":375
  *                 dtot += d
  *                 pt_tot_x += midpoint_mv[0]
  *                 pt_tot_y += midpoint_mv[1]             # <<<<<<<<<<<<<<
@@ -19831,7 +19831,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
         __pyx_t_46 = 1;
         __pyx_v_pt_tot_y = (__pyx_v_pt_tot_y + (*((double *) ( /* dim=0 */ (__pyx_v_midpoint_mv.data + __pyx_t_46 * __pyx_v_midpoint_mv.strides[0]) ))));
 
-        /* "algorithms/orientation.py":376
+        /* "openptv2/algorithms/orientation.py":376
  *                 pt_tot_x += midpoint_mv[0]
  *                 pt_tot_y += midpoint_mv[1]
  *                 pt_tot_z += midpoint_mv[2]             # <<<<<<<<<<<<<<
@@ -19845,7 +19845,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
       __pyx_L14_continue:;
     }
 
-    /* "algorithms/orientation.py":378
+    /* "openptv2/algorithms/orientation.py":378
  *                 pt_tot_z += midpoint_mv[2]
  * 
  *         if num_used_pairs == 0:             # <<<<<<<<<<<<<<
@@ -19855,7 +19855,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
     __pyx_t_12 = (__pyx_v_num_used_pairs == 0);
     if (__pyx_t_12) {
 
-      /* "algorithms/orientation.py":379
+      /* "openptv2/algorithms/orientation.py":379
  * 
  *         if num_used_pairs == 0:
  *             pos_mv[i, 0] = 0.0             # <<<<<<<<<<<<<<
@@ -19866,7 +19866,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
       __pyx_t_45 = 0;
       *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_pos_mv.data + __pyx_t_46 * __pyx_v_pos_mv.strides[0]) ) + __pyx_t_45 * __pyx_v_pos_mv.strides[1]) )) = 0.0;
 
-      /* "algorithms/orientation.py":380
+      /* "openptv2/algorithms/orientation.py":380
  *         if num_used_pairs == 0:
  *             pos_mv[i, 0] = 0.0
  *             pos_mv[i, 1] = 0.0             # <<<<<<<<<<<<<<
@@ -19877,7 +19877,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
       __pyx_t_46 = 1;
       *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_pos_mv.data + __pyx_t_45 * __pyx_v_pos_mv.strides[0]) ) + __pyx_t_46 * __pyx_v_pos_mv.strides[1]) )) = 0.0;
 
-      /* "algorithms/orientation.py":381
+      /* "openptv2/algorithms/orientation.py":381
  *             pos_mv[i, 0] = 0.0
  *             pos_mv[i, 1] = 0.0
  *             pos_mv[i, 2] = 0.0             # <<<<<<<<<<<<<<
@@ -19888,7 +19888,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
       __pyx_t_45 = 2;
       *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_pos_mv.data + __pyx_t_46 * __pyx_v_pos_mv.strides[0]) ) + __pyx_t_45 * __pyx_v_pos_mv.strides[1]) )) = 0.0;
 
-      /* "algorithms/orientation.py":382
+      /* "openptv2/algorithms/orientation.py":382
  *             pos_mv[i, 1] = 0.0
  *             pos_mv[i, 2] = 0.0
  *             dist_mv[i] = 0.0             # <<<<<<<<<<<<<<
@@ -19898,7 +19898,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
       __pyx_t_45 = __pyx_v_i;
       *((double *) ( /* dim=0 */ (__pyx_v_dist_mv.data + __pyx_t_45 * __pyx_v_dist_mv.strides[0]) )) = 0.0;
 
-      /* "algorithms/orientation.py":378
+      /* "openptv2/algorithms/orientation.py":378
  *                 pt_tot_z += midpoint_mv[2]
  * 
  *         if num_used_pairs == 0:             # <<<<<<<<<<<<<<
@@ -19908,7 +19908,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
       goto __pyx_L20;
     }
 
-    /* "algorithms/orientation.py":384
+    /* "openptv2/algorithms/orientation.py":384
  *             dist_mv[i] = 0.0
  *         else:
  *             pos_mv[i, 0] = pt_tot_x / num_used_pairs             # <<<<<<<<<<<<<<
@@ -19920,7 +19920,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
       __pyx_t_46 = 0;
       *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_pos_mv.data + __pyx_t_45 * __pyx_v_pos_mv.strides[0]) ) + __pyx_t_46 * __pyx_v_pos_mv.strides[1]) )) = (__pyx_v_pt_tot_x / ((double)__pyx_v_num_used_pairs));
 
-      /* "algorithms/orientation.py":385
+      /* "openptv2/algorithms/orientation.py":385
  *         else:
  *             pos_mv[i, 0] = pt_tot_x / num_used_pairs
  *             pos_mv[i, 1] = pt_tot_y / num_used_pairs             # <<<<<<<<<<<<<<
@@ -19931,7 +19931,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
       __pyx_t_45 = 1;
       *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_pos_mv.data + __pyx_t_46 * __pyx_v_pos_mv.strides[0]) ) + __pyx_t_45 * __pyx_v_pos_mv.strides[1]) )) = (__pyx_v_pt_tot_y / ((double)__pyx_v_num_used_pairs));
 
-      /* "algorithms/orientation.py":386
+      /* "openptv2/algorithms/orientation.py":386
  *             pos_mv[i, 0] = pt_tot_x / num_used_pairs
  *             pos_mv[i, 1] = pt_tot_y / num_used_pairs
  *             pos_mv[i, 2] = pt_tot_z / num_used_pairs             # <<<<<<<<<<<<<<
@@ -19942,7 +19942,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
       __pyx_t_46 = 2;
       *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_pos_mv.data + __pyx_t_45 * __pyx_v_pos_mv.strides[0]) ) + __pyx_t_46 * __pyx_v_pos_mv.strides[1]) )) = (__pyx_v_pt_tot_z / ((double)__pyx_v_num_used_pairs));
 
-      /* "algorithms/orientation.py":387
+      /* "openptv2/algorithms/orientation.py":387
  *             pos_mv[i, 1] = pt_tot_y / num_used_pairs
  *             pos_mv[i, 2] = pt_tot_z / num_used_pairs
  *             dist_mv[i] = dtot / num_used_pairs             # <<<<<<<<<<<<<<
@@ -19955,7 +19955,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
     __pyx_L20:;
   }
 
-  /* "algorithms/orientation.py":389
+  /* "openptv2/algorithms/orientation.py":389
  *             dist_mv[i] = dtot / num_used_pairs
  * 
  *     return positions, distances             # <<<<<<<<<<<<<<
@@ -19975,7 +19975,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/orientation.py":133
+  /* "openptv2/algorithms/orientation.py":133
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -19995,7 +19995,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
   __PYX_XCLEAR_MEMVIEW(&__pyx_t_9, 1);
   __PYX_XCLEAR_MEMVIEW(&__pyx_t_10, 1);
   __PYX_XCLEAR_MEMVIEW(&__pyx_t_11, 1);
-  __Pyx_AddTraceback("algorithms.orientation.point_position_batch", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.orientation.point_position_batch", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __PYX_XCLEAR_MEMVIEW(&__pyx_v_targets_mv, 1);
@@ -20038,16 +20038,16 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_position_batch(PyObjec
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_11orientation_5point_position_batch(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_11orientation_5point_position_batch(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_11orientation_4point_position_batch, "Compute 3D positions from multiple camera rays for M targets.\n\n    Args:\n        targets: (M, num_cams, 2) array of metric flat coordinates.\n        num_cams: number of cameras.\n        mm: MmNp multimedia parameters.\n        cals: list of Calibration objects.\n\n    Returns:\n        (positions, distances) \342\200\224 (M, 3) and (M,) float64 arrays.\n    ");
-static PyMethodDef __pyx_mdef_10algorithms_11orientation_5point_position_batch = {"point_position_batch", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_11orientation_5point_position_batch, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_11orientation_4point_position_batch};
-static PyObject *__pyx_pw_10algorithms_11orientation_5point_position_batch(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_11orientation_4point_position_batch, "Compute 3D positions from multiple camera rays for M targets.\n\n    Args:\n        targets: (M, num_cams, 2) array of metric flat coordinates.\n        num_cams: number of cameras.\n        mm: MmNp multimedia parameters.\n        cals: list of Calibration objects.\n\n    Returns:\n        (positions, distances) \342\200\224 (M, 3) and (M,) float64 arrays.\n    ");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_11orientation_5point_position_batch = {"point_position_batch", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_11orientation_5point_position_batch, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_11orientation_4point_position_batch};
+static PyObject *__pyx_pw_8openptv2_10algorithms_11orientation_5point_position_batch(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -20133,11 +20133,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.orientation.point_position_batch", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.orientation.point_position_batch", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_11orientation_4point_position_batch(__pyx_self, __pyx_v_targets, __pyx_v_num_cams, __pyx_v_mm, __pyx_v_cals);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_11orientation_4point_position_batch(__pyx_self, __pyx_v_targets, __pyx_v_num_cams, __pyx_v_mm, __pyx_v_cals);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -20147,7 +20147,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_11orientation_4point_position_batch(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_targets, int __pyx_v_num_cams, PyObject *__pyx_v_mm, PyObject *__pyx_v_cals) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_11orientation_4point_position_batch(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_targets, int __pyx_v_num_cams, PyObject *__pyx_v_mm, PyObject *__pyx_v_cals) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -20156,7 +20156,7 @@ static PyObject *__pyx_pf_10algorithms_11orientation_4point_position_batch(CYTHO
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("point_position_batch", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_11orientation_point_position_batch(__pyx_v_targets, __pyx_v_num_cams, __pyx_v_mm, __pyx_v_cals, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 133, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_11orientation_point_position_batch(__pyx_v_targets, __pyx_v_num_cams, __pyx_v_mm, __pyx_v_cals, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 133, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -20165,7 +20165,7 @@ static PyObject *__pyx_pf_10algorithms_11orientation_4point_position_batch(CYTHO
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.orientation.point_position_batch", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.orientation.point_position_batch", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -20173,7 +20173,7 @@ static PyObject *__pyx_pf_10algorithms_11orientation_4point_position_batch(CYTHO
   return __pyx_r;
 }
 
-/* "algorithms/orientation.py":392
+/* "openptv2/algorithms/orientation.py":392
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -20181,14 +20181,14 @@ static PyObject *__pyx_pf_10algorithms_11orientation_4point_position_batch(CYTHO
  *                                 db_length, db_weight):
 */
 
-static PyObject *__pyx_pw_10algorithms_11orientation_7weighted_dumbbell_precision(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_11orientation_7weighted_dumbbell_precision(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_11orientation_weighted_dumbbell_precision(PyObject *__pyx_v_targets, PyObject *__pyx_v_num_targs, PyObject *__pyx_v_num_cams, PyObject *__pyx_v_mm, PyObject *__pyx_v_cals, PyObject *__pyx_v_db_length, PyObject *__pyx_v_db_weight, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_11orientation_weighted_dumbbell_precision(PyObject *__pyx_v_targets, PyObject *__pyx_v_num_targs, PyObject *__pyx_v_num_cams, PyObject *__pyx_v_mm, PyObject *__pyx_v_cals, PyObject *__pyx_v_db_length, PyObject *__pyx_v_db_weight, CYTHON_UNUSED int __pyx_skip_dispatch) {
   PyObject *__pyx_v_dtot = NULL;
   PyObject *__pyx_v_len_err_tot = NULL;
   PyObject *__pyx_v_res = NULL;
@@ -20214,7 +20214,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_weighted_dumbbell_precision(
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("weighted_dumbbell_precision", 0);
 
-  /* "algorithms/orientation.py":409
+  /* "openptv2/algorithms/orientation.py":409
  *         Weighted precision measure (float).
  *     """
  *     dtot = 0.0             # <<<<<<<<<<<<<<
@@ -20224,7 +20224,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_weighted_dumbbell_precision(
   __Pyx_INCREF(__pyx_mstate_global->__pyx_float_0_0);
   __pyx_v_dtot = __pyx_mstate_global->__pyx_float_0_0;
 
-  /* "algorithms/orientation.py":410
+  /* "openptv2/algorithms/orientation.py":410
  *     """
  *     dtot = 0.0
  *     len_err_tot = 0.0             # <<<<<<<<<<<<<<
@@ -20234,7 +20234,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_weighted_dumbbell_precision(
   __Pyx_INCREF(__pyx_mstate_global->__pyx_float_0_0);
   __pyx_v_len_err_tot = __pyx_mstate_global->__pyx_float_0_0;
 
-  /* "algorithms/orientation.py":411
+  /* "openptv2/algorithms/orientation.py":411
  *     dtot = 0.0
  *     len_err_tot = 0.0
  *     res = [np.zeros(3), np.zeros(3)]             # <<<<<<<<<<<<<<
@@ -20304,7 +20304,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_weighted_dumbbell_precision(
   __pyx_v_res = ((PyObject*)__pyx_t_6);
   __pyx_t_6 = 0;
 
-  /* "algorithms/orientation.py":413
+  /* "openptv2/algorithms/orientation.py":413
  *     res = [np.zeros(3), np.zeros(3)]
  * 
  *     for pt in range(num_targs):             # <<<<<<<<<<<<<<
@@ -20340,7 +20340,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_weighted_dumbbell_precision(
     __Pyx_XDECREF_SET(__pyx_v_pt, __pyx_t_6);
     __pyx_t_6 = 0;
 
-    /* "algorithms/orientation.py":414
+    /* "openptv2/algorithms/orientation.py":414
  * 
  *     for pt in range(num_targs):
  *         targs_pt = targets[pt]             # <<<<<<<<<<<<<<
@@ -20352,14 +20352,14 @@ static PyObject *__pyx_f_10algorithms_11orientation_weighted_dumbbell_precision(
     __Pyx_XDECREF_SET(__pyx_v_targs_pt, __pyx_t_6);
     __pyx_t_6 = 0;
 
-    /* "algorithms/orientation.py":415
+    /* "openptv2/algorithms/orientation.py":415
  *     for pt in range(num_targs):
  *         targs_pt = targets[pt]
  *         r, d = point_position(targs_pt, num_cams, mm, cals)             # <<<<<<<<<<<<<<
  *         res[pt % 2] = r
  *         dtot += d
 */
-    __pyx_t_6 = __pyx_f_10algorithms_11orientation_point_position(__pyx_v_targs_pt, __pyx_v_num_cams, __pyx_v_mm, __pyx_v_cals, 0); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 415, __pyx_L1_error)
+    __pyx_t_6 = __pyx_f_8openptv2_10algorithms_11orientation_point_position(__pyx_v_targs_pt, __pyx_v_num_cams, __pyx_v_mm, __pyx_v_cals, 0); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 415, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     if ((likely(PyTuple_CheckExact(__pyx_t_6))) || (PyList_CheckExact(__pyx_t_6))) {
       PyObject* sequence = __pyx_t_6;
@@ -20416,7 +20416,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_weighted_dumbbell_precision(
     __Pyx_XDECREF_SET(__pyx_v_d, __pyx_t_2);
     __pyx_t_2 = 0;
 
-    /* "algorithms/orientation.py":416
+    /* "openptv2/algorithms/orientation.py":416
  *         targs_pt = targets[pt]
  *         r, d = point_position(targs_pt, num_cams, mm, cals)
  *         res[pt % 2] = r             # <<<<<<<<<<<<<<
@@ -20428,7 +20428,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_weighted_dumbbell_precision(
     if (unlikely((PyObject_SetItem(__pyx_v_res, __pyx_t_6, __pyx_v_r) < 0))) __PYX_ERR(0, 416, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-    /* "algorithms/orientation.py":417
+    /* "openptv2/algorithms/orientation.py":417
  *         r, d = point_position(targs_pt, num_cams, mm, cals)
  *         res[pt % 2] = r
  *         dtot += d             # <<<<<<<<<<<<<<
@@ -20440,7 +20440,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_weighted_dumbbell_precision(
     __Pyx_DECREF_SET(__pyx_v_dtot, __pyx_t_6);
     __pyx_t_6 = 0;
 
-    /* "algorithms/orientation.py":419
+    /* "openptv2/algorithms/orientation.py":419
  *         dtot += d
  * 
  *         if pt % 2 == 1:             # <<<<<<<<<<<<<<
@@ -20453,7 +20453,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_weighted_dumbbell_precision(
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     if (__pyx_t_9) {
 
-      /* "algorithms/orientation.py":420
+      /* "openptv2/algorithms/orientation.py":420
  * 
  *         if pt % 2 == 1:
  *             diff = res[0] - res[1]             # <<<<<<<<<<<<<<
@@ -20465,7 +20465,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_weighted_dumbbell_precision(
       __Pyx_XDECREF_SET(__pyx_v_diff, __pyx_t_6);
       __pyx_t_6 = 0;
 
-      /* "algorithms/orientation.py":421
+      /* "openptv2/algorithms/orientation.py":421
  *         if pt % 2 == 1:
  *             diff = res[0] - res[1]
  *             dist = np.linalg.norm(diff)             # <<<<<<<<<<<<<<
@@ -20491,7 +20491,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_weighted_dumbbell_precision(
       __Pyx_XDECREF_SET(__pyx_v_dist, __pyx_t_6);
       __pyx_t_6 = 0;
 
-      /* "algorithms/orientation.py":422
+      /* "openptv2/algorithms/orientation.py":422
  *             diff = res[0] - res[1]
  *             dist = np.linalg.norm(diff)
  *             if dist > db_length:             # <<<<<<<<<<<<<<
@@ -20503,7 +20503,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_weighted_dumbbell_precision(
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
       if (__pyx_t_9) {
 
-        /* "algorithms/orientation.py":423
+        /* "openptv2/algorithms/orientation.py":423
  *             dist = np.linalg.norm(diff)
  *             if dist > db_length:
  *                 len_err_tot += 1 - db_length / dist             # <<<<<<<<<<<<<<
@@ -20521,7 +20521,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_weighted_dumbbell_precision(
         __Pyx_DECREF_SET(__pyx_v_len_err_tot, __pyx_t_6);
         __pyx_t_6 = 0;
 
-        /* "algorithms/orientation.py":422
+        /* "openptv2/algorithms/orientation.py":422
  *             diff = res[0] - res[1]
  *             dist = np.linalg.norm(diff)
  *             if dist > db_length:             # <<<<<<<<<<<<<<
@@ -20531,7 +20531,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_weighted_dumbbell_precision(
         goto __pyx_L8;
       }
 
-      /* "algorithms/orientation.py":425
+      /* "openptv2/algorithms/orientation.py":425
  *                 len_err_tot += 1 - db_length / dist
  *             else:
  *                 len_err_tot += 1 - dist / db_length             # <<<<<<<<<<<<<<
@@ -20552,7 +20552,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_weighted_dumbbell_precision(
       }
       __pyx_L8:;
 
-      /* "algorithms/orientation.py":419
+      /* "openptv2/algorithms/orientation.py":419
  *         dtot += d
  * 
  *         if pt % 2 == 1:             # <<<<<<<<<<<<<<
@@ -20561,7 +20561,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_weighted_dumbbell_precision(
 */
     }
 
-    /* "algorithms/orientation.py":413
+    /* "openptv2/algorithms/orientation.py":413
  *     res = [np.zeros(3), np.zeros(3)]
  * 
  *     for pt in range(num_targs):             # <<<<<<<<<<<<<<
@@ -20571,7 +20571,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_weighted_dumbbell_precision(
   }
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/orientation.py":427
+  /* "openptv2/algorithms/orientation.py":427
  *                 len_err_tot += 1 - dist / db_length
  * 
  *     return dtot / num_targs + db_weight * len_err_tot / (0.5 * num_targs)             # <<<<<<<<<<<<<<
@@ -20597,7 +20597,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_weighted_dumbbell_precision(
   __pyx_t_3 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/orientation.py":392
+  /* "openptv2/algorithms/orientation.py":392
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -20612,7 +20612,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_weighted_dumbbell_precision(
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_6);
-  __Pyx_AddTraceback("algorithms.orientation.weighted_dumbbell_precision", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.orientation.weighted_dumbbell_precision", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_dtot);
@@ -20630,16 +20630,16 @@ static PyObject *__pyx_f_10algorithms_11orientation_weighted_dumbbell_precision(
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_11orientation_7weighted_dumbbell_precision(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_11orientation_7weighted_dumbbell_precision(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_11orientation_6weighted_dumbbell_precision, "Weighted sum of dumbbell precision measures.\n\n    Args:\n        targets: (num_targs, num_cams, 2) array.\n        num_targs: number of target points.\n        num_cams: number of cameras.\n        mm: multimedia parameters.\n        cals: list of Calibration objects.\n        db_length: expected dumbbell length.\n        db_weight: weight of length error vs ray convergence.\n\n    Returns:\n        Weighted precision measure (float).\n    ");
-static PyMethodDef __pyx_mdef_10algorithms_11orientation_7weighted_dumbbell_precision = {"weighted_dumbbell_precision", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_11orientation_7weighted_dumbbell_precision, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_11orientation_6weighted_dumbbell_precision};
-static PyObject *__pyx_pw_10algorithms_11orientation_7weighted_dumbbell_precision(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_11orientation_6weighted_dumbbell_precision, "Weighted sum of dumbbell precision measures.\n\n    Args:\n        targets: (num_targs, num_cams, 2) array.\n        num_targs: number of target points.\n        num_cams: number of cameras.\n        mm: multimedia parameters.\n        cals: list of Calibration objects.\n        db_length: expected dumbbell length.\n        db_weight: weight of length error vs ray convergence.\n\n    Returns:\n        Weighted precision measure (float).\n    ");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_11orientation_7weighted_dumbbell_precision = {"weighted_dumbbell_precision", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_11orientation_7weighted_dumbbell_precision, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_11orientation_6weighted_dumbbell_precision};
+static PyObject *__pyx_pw_8openptv2_10algorithms_11orientation_7weighted_dumbbell_precision(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -20749,11 +20749,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.orientation.weighted_dumbbell_precision", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.orientation.weighted_dumbbell_precision", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_11orientation_6weighted_dumbbell_precision(__pyx_self, __pyx_v_targets, __pyx_v_num_targs, __pyx_v_num_cams, __pyx_v_mm, __pyx_v_cals, __pyx_v_db_length, __pyx_v_db_weight);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_11orientation_6weighted_dumbbell_precision(__pyx_self, __pyx_v_targets, __pyx_v_num_targs, __pyx_v_num_cams, __pyx_v_mm, __pyx_v_cals, __pyx_v_db_length, __pyx_v_db_weight);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -20763,7 +20763,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_11orientation_6weighted_dumbbell_precision(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_targets, PyObject *__pyx_v_num_targs, PyObject *__pyx_v_num_cams, PyObject *__pyx_v_mm, PyObject *__pyx_v_cals, PyObject *__pyx_v_db_length, PyObject *__pyx_v_db_weight) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_11orientation_6weighted_dumbbell_precision(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_targets, PyObject *__pyx_v_num_targs, PyObject *__pyx_v_num_cams, PyObject *__pyx_v_mm, PyObject *__pyx_v_cals, PyObject *__pyx_v_db_length, PyObject *__pyx_v_db_weight) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -20772,7 +20772,7 @@ static PyObject *__pyx_pf_10algorithms_11orientation_6weighted_dumbbell_precisio
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("weighted_dumbbell_precision", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_11orientation_weighted_dumbbell_precision(__pyx_v_targets, __pyx_v_num_targs, __pyx_v_num_cams, __pyx_v_mm, __pyx_v_cals, __pyx_v_db_length, __pyx_v_db_weight, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 392, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_11orientation_weighted_dumbbell_precision(__pyx_v_targets, __pyx_v_num_targs, __pyx_v_num_cams, __pyx_v_mm, __pyx_v_cals, __pyx_v_db_length, __pyx_v_db_weight, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 392, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -20781,7 +20781,7 @@ static PyObject *__pyx_pf_10algorithms_11orientation_6weighted_dumbbell_precisio
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.orientation.weighted_dumbbell_precision", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.orientation.weighted_dumbbell_precision", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -20789,7 +20789,7 @@ static PyObject *__pyx_pf_10algorithms_11orientation_6weighted_dumbbell_precisio
   return __pyx_r;
 }
 
-/* "algorithms/orientation.py":430
+/* "openptv2/algorithms/orientation.py":430
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -20797,14 +20797,14 @@ static PyObject *__pyx_pf_10algorithms_11orientation_6weighted_dumbbell_precisio
  *     """Compute numerical derivatives of image coords w.r.t. exterior params.
 */
 
-static PyObject *__pyx_pw_10algorithms_11orientation_9num_deriv_exterior(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_11orientation_9num_deriv_exterior(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_11orientation_num_deriv_exterior(PyObject *__pyx_v_cal, PyObject *__pyx_v_cpar, PyObject *__pyx_v_dpos, PyObject *__pyx_v_dang, PyObject *__pyx_v_pos, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_11orientation_num_deriv_exterior(PyObject *__pyx_v_cal, PyObject *__pyx_v_cpar, PyObject *__pyx_v_dpos, PyObject *__pyx_v_dang, PyObject *__pyx_v_pos, CYTHON_UNUSED int __pyx_skip_dispatch) {
   PyObject *__pyx_v_img_coord = NULL;
   PyObject *__pyx_v_xs = NULL;
   PyObject *__pyx_v_ys = NULL;
@@ -20834,7 +20834,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_num_deriv_exterior(PyObject 
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("num_deriv_exterior", 0);
 
-  /* "algorithms/orientation.py":444
+  /* "openptv2/algorithms/orientation.py":444
  *         (x_ders, y_ders) each shape (6,).
  *     """
  *     from .imgcoord import img_coord             # <<<<<<<<<<<<<<
@@ -20843,7 +20843,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_num_deriv_exterior(PyObject 
 */
   {
     PyObject* const __pyx_imported_names[] = {__pyx_mstate_global->__pyx_n_u_img_coord};
-    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_imgcoord, __pyx_imported_names, 1, __pyx_mstate_global->__pyx_kp_u_algorithms_imgcoord, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 444, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_imgcoord, __pyx_imported_names, 1, __pyx_mstate_global->__pyx_kp_u_openptv2_algorithms_imgcoord, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 444, __pyx_L1_error)
   }
   __pyx_t_1 = __pyx_t_2;
   __Pyx_GOTREF(__pyx_t_1);
@@ -20864,7 +20864,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_num_deriv_exterior(PyObject 
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":446
+  /* "openptv2/algorithms/orientation.py":446
  *     from .imgcoord import img_coord
  * 
  *     cal.ext_par.compute_rotation_matrix()             # <<<<<<<<<<<<<<
@@ -20886,7 +20886,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_num_deriv_exterior(PyObject 
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":447
+  /* "openptv2/algorithms/orientation.py":447
  * 
  *     cal.ext_par.compute_rotation_matrix()
  *     xs, ys = img_coord(pos, cal, cpar.mm)             # <<<<<<<<<<<<<<
@@ -20974,7 +20974,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_num_deriv_exterior(PyObject 
   __pyx_v_ys = __pyx_t_7;
   __pyx_t_7 = 0;
 
-  /* "algorithms/orientation.py":449
+  /* "openptv2/algorithms/orientation.py":449
  *     xs, ys = img_coord(pos, cal, cpar.mm)
  * 
  *     x_ders = np.zeros(6)             # <<<<<<<<<<<<<<
@@ -21010,7 +21010,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_num_deriv_exterior(PyObject 
   __pyx_v_x_ders = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":450
+  /* "openptv2/algorithms/orientation.py":450
  * 
  *     x_ders = np.zeros(6)
  *     y_ders = np.zeros(6)             # <<<<<<<<<<<<<<
@@ -21046,7 +21046,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_num_deriv_exterior(PyObject 
   __pyx_v_y_ders = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":452
+  /* "openptv2/algorithms/orientation.py":452
  *     y_ders = np.zeros(6)
  * 
  *     var_names = ['x0', 'y0', 'z0', 'omega', 'phi', 'kappa']             # <<<<<<<<<<<<<<
@@ -21076,7 +21076,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_num_deriv_exterior(PyObject 
   __pyx_v_var_names = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":454
+  /* "openptv2/algorithms/orientation.py":454
  *     var_names = ['x0', 'y0', 'z0', 'omega', 'phi', 'kappa']
  * 
  *     for pd in range(6):             # <<<<<<<<<<<<<<
@@ -21086,7 +21086,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_num_deriv_exterior(PyObject 
   for (__pyx_t_9 = 0; __pyx_t_9 < 6; __pyx_t_9+=1) {
     __pyx_v_pd = __pyx_t_9;
 
-    /* "algorithms/orientation.py":455
+    /* "openptv2/algorithms/orientation.py":455
  * 
  *     for pd in range(6):
  *         step = dang if pd > 2 else dpos             # <<<<<<<<<<<<<<
@@ -21104,7 +21104,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_num_deriv_exterior(PyObject 
     __Pyx_XDECREF_SET(__pyx_v_step, __pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "algorithms/orientation.py":457
+    /* "openptv2/algorithms/orientation.py":457
  *         step = dang if pd > 2 else dpos
  * 
  *         orig = getattr(cal.ext_par, var_names[pd])             # <<<<<<<<<<<<<<
@@ -21122,7 +21122,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_num_deriv_exterior(PyObject 
     __Pyx_XDECREF_SET(__pyx_v_orig, __pyx_t_5);
     __pyx_t_5 = 0;
 
-    /* "algorithms/orientation.py":458
+    /* "openptv2/algorithms/orientation.py":458
  * 
  *         orig = getattr(cal.ext_par, var_names[pd])
  *         setattr(cal.ext_par, var_names[pd], orig + step)             # <<<<<<<<<<<<<<
@@ -21140,7 +21140,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_num_deriv_exterior(PyObject 
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "algorithms/orientation.py":460
+    /* "openptv2/algorithms/orientation.py":460
  *         setattr(cal.ext_par, var_names[pd], orig + step)
  * 
  *         if pd > 2:             # <<<<<<<<<<<<<<
@@ -21150,7 +21150,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_num_deriv_exterior(PyObject 
     __pyx_t_10 = (__pyx_v_pd > 2);
     if (__pyx_t_10) {
 
-      /* "algorithms/orientation.py":461
+      /* "openptv2/algorithms/orientation.py":461
  * 
  *         if pd > 2:
  *             cal.ext_par.compute_rotation_matrix()             # <<<<<<<<<<<<<<
@@ -21172,7 +21172,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_num_deriv_exterior(PyObject 
       }
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "algorithms/orientation.py":460
+      /* "openptv2/algorithms/orientation.py":460
  *         setattr(cal.ext_par, var_names[pd], orig + step)
  * 
  *         if pd > 2:             # <<<<<<<<<<<<<<
@@ -21181,7 +21181,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_num_deriv_exterior(PyObject 
 */
     }
 
-    /* "algorithms/orientation.py":463
+    /* "openptv2/algorithms/orientation.py":463
  *             cal.ext_par.compute_rotation_matrix()
  * 
  *         xpd, ypd = img_coord(pos, cal, cpar.mm)             # <<<<<<<<<<<<<<
@@ -21269,7 +21269,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_num_deriv_exterior(PyObject 
     __Pyx_XDECREF_SET(__pyx_v_ypd, __pyx_t_7);
     __pyx_t_7 = 0;
 
-    /* "algorithms/orientation.py":464
+    /* "openptv2/algorithms/orientation.py":464
  * 
  *         xpd, ypd = img_coord(pos, cal, cpar.mm)
  *         x_ders[pd] = (xpd - xs) / step             # <<<<<<<<<<<<<<
@@ -21284,7 +21284,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_num_deriv_exterior(PyObject 
     if (unlikely((__Pyx_SetItemInt(__pyx_v_x_ders, __pyx_v_pd, __pyx_t_7, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_OwnStrongReference) < 0))) __PYX_ERR(0, 464, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
 
-    /* "algorithms/orientation.py":465
+    /* "openptv2/algorithms/orientation.py":465
  *         xpd, ypd = img_coord(pos, cal, cpar.mm)
  *         x_ders[pd] = (xpd - xs) / step
  *         y_ders[pd] = (ypd - ys) / step             # <<<<<<<<<<<<<<
@@ -21299,7 +21299,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_num_deriv_exterior(PyObject 
     if (unlikely((__Pyx_SetItemInt(__pyx_v_y_ders, __pyx_v_pd, __pyx_t_1, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_OwnStrongReference) < 0))) __PYX_ERR(0, 465, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "algorithms/orientation.py":467
+    /* "openptv2/algorithms/orientation.py":467
  *         y_ders[pd] = (ypd - ys) / step
  * 
  *         setattr(cal.ext_par, var_names[pd], orig)             # <<<<<<<<<<<<<<
@@ -21315,7 +21315,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_num_deriv_exterior(PyObject 
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
   }
 
-  /* "algorithms/orientation.py":469
+  /* "openptv2/algorithms/orientation.py":469
  *         setattr(cal.ext_par, var_names[pd], orig)
  * 
  *     cal.ext_par.compute_rotation_matrix()             # <<<<<<<<<<<<<<
@@ -21337,7 +21337,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_num_deriv_exterior(PyObject 
   }
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
 
-  /* "algorithms/orientation.py":470
+  /* "openptv2/algorithms/orientation.py":470
  * 
  *     cal.ext_par.compute_rotation_matrix()
  *     return x_ders, y_ders             # <<<<<<<<<<<<<<
@@ -21357,7 +21357,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_num_deriv_exterior(PyObject 
   __pyx_t_7 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/orientation.py":430
+  /* "openptv2/algorithms/orientation.py":430
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -21371,7 +21371,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_num_deriv_exterior(PyObject 
   __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_5);
   __Pyx_XDECREF(__pyx_t_7);
-  __Pyx_AddTraceback("algorithms.orientation.num_deriv_exterior", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.orientation.num_deriv_exterior", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_img_coord);
@@ -21390,16 +21390,16 @@ static PyObject *__pyx_f_10algorithms_11orientation_num_deriv_exterior(PyObject 
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_11orientation_9num_deriv_exterior(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_11orientation_9num_deriv_exterior(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_11orientation_8num_deriv_exterior, "Compute numerical derivatives of image coords w.r.t. exterior params.\n\n    Args:\n        cal: Calibration object (temporarily modified, then restored).\n        cpar: ControlPar object.\n        dpos: position step.\n        dang: angle step.\n        pos: 3D world position.\n\n    Returns:\n        (x_ders, y_ders) each shape (6,).\n    ");
-static PyMethodDef __pyx_mdef_10algorithms_11orientation_9num_deriv_exterior = {"num_deriv_exterior", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_11orientation_9num_deriv_exterior, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_11orientation_8num_deriv_exterior};
-static PyObject *__pyx_pw_10algorithms_11orientation_9num_deriv_exterior(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_11orientation_8num_deriv_exterior, "Compute numerical derivatives of image coords w.r.t. exterior params.\n\n    Args:\n        cal: Calibration object (temporarily modified, then restored).\n        cpar: ControlPar object.\n        dpos: position step.\n        dang: angle step.\n        pos: 3D world position.\n\n    Returns:\n        (x_ders, y_ders) each shape (6,).\n    ");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_11orientation_9num_deriv_exterior = {"num_deriv_exterior", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_11orientation_9num_deriv_exterior, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_11orientation_8num_deriv_exterior};
+static PyObject *__pyx_pw_8openptv2_10algorithms_11orientation_9num_deriv_exterior(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -21493,11 +21493,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.orientation.num_deriv_exterior", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.orientation.num_deriv_exterior", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_11orientation_8num_deriv_exterior(__pyx_self, __pyx_v_cal, __pyx_v_cpar, __pyx_v_dpos, __pyx_v_dang, __pyx_v_pos);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_11orientation_8num_deriv_exterior(__pyx_self, __pyx_v_cal, __pyx_v_cpar, __pyx_v_dpos, __pyx_v_dang, __pyx_v_pos);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -21507,7 +21507,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_11orientation_8num_deriv_exterior(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cal, PyObject *__pyx_v_cpar, PyObject *__pyx_v_dpos, PyObject *__pyx_v_dang, PyObject *__pyx_v_pos) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_11orientation_8num_deriv_exterior(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cal, PyObject *__pyx_v_cpar, PyObject *__pyx_v_dpos, PyObject *__pyx_v_dang, PyObject *__pyx_v_pos) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -21516,7 +21516,7 @@ static PyObject *__pyx_pf_10algorithms_11orientation_8num_deriv_exterior(CYTHON_
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("num_deriv_exterior", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_11orientation_num_deriv_exterior(__pyx_v_cal, __pyx_v_cpar, __pyx_v_dpos, __pyx_v_dang, __pyx_v_pos, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 430, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_11orientation_num_deriv_exterior(__pyx_v_cal, __pyx_v_cpar, __pyx_v_dpos, __pyx_v_dang, __pyx_v_pos, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 430, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -21525,7 +21525,7 @@ static PyObject *__pyx_pf_10algorithms_11orientation_8num_deriv_exterior(CYTHON_
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.orientation.num_deriv_exterior", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.orientation.num_deriv_exterior", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -21533,7 +21533,7 @@ static PyObject *__pyx_pf_10algorithms_11orientation_8num_deriv_exterior(CYTHON_
   return __pyx_r;
 }
 
-/* "algorithms/orientation.py":473
+/* "openptv2/algorithms/orientation.py":473
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -21541,14 +21541,14 @@ static PyObject *__pyx_pf_10algorithms_11orientation_8num_deriv_exterior(CYTHON_
  *     """Simplified orientation using only 6 exterior parameters.
 */
 
-static PyObject *__pyx_pw_10algorithms_11orientation_11raw_orient(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_11orientation_11raw_orient(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_11orientation_raw_orient(PyObject *__pyx_v_cal, PyObject *__pyx_v_cpar, PyObject *__pyx_v_nfix, PyObject *__pyx_v_fix, PyObject *__pyx_v_pix, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_11orientation_raw_orient(PyObject *__pyx_v_cal, PyObject *__pyx_v_cpar, PyObject *__pyx_v_nfix, PyObject *__pyx_v_fix, PyObject *__pyx_v_pix, CYTHON_UNUSED int __pyx_skip_dispatch) {
   PyObject *__pyx_v_img_coord = NULL;
   PyObject *__pyx_v_pixel_to_metric = NULL;
   CYTHON_UNUSED PyObject *__pyx_v_correct_brown_affin = NULL;
@@ -21596,7 +21596,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_raw_orient(PyObject *__pyx_v
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("raw_orient", 0);
 
-  /* "algorithms/orientation.py":487
+  /* "openptv2/algorithms/orientation.py":487
  *         True on success, False on failure.
  *     """
  *     from .imgcoord import img_coord             # <<<<<<<<<<<<<<
@@ -21605,7 +21605,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_raw_orient(PyObject *__pyx_v
 */
   {
     PyObject* const __pyx_imported_names[] = {__pyx_mstate_global->__pyx_n_u_img_coord};
-    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_imgcoord, __pyx_imported_names, 1, __pyx_mstate_global->__pyx_kp_u_algorithms_imgcoord, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 487, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_imgcoord, __pyx_imported_names, 1, __pyx_mstate_global->__pyx_kp_u_openptv2_algorithms_imgcoord, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 487, __pyx_L1_error)
   }
   __pyx_t_1 = __pyx_t_2;
   __Pyx_GOTREF(__pyx_t_1);
@@ -21626,7 +21626,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_raw_orient(PyObject *__pyx_v
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":488
+  /* "openptv2/algorithms/orientation.py":488
  *     """
  *     from .imgcoord import img_coord
  *     from .trafo import pixel_to_metric, correct_brown_affin             # <<<<<<<<<<<<<<
@@ -21635,7 +21635,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_raw_orient(PyObject *__pyx_v
 */
   {
     PyObject* const __pyx_imported_names[] = {__pyx_mstate_global->__pyx_n_u_pixel_to_metric,__pyx_mstate_global->__pyx_n_u_correct_brown_affin};
-    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_trafo, __pyx_imported_names, 2, __pyx_mstate_global->__pyx_kp_u_algorithms_trafo, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 488, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_trafo, __pyx_imported_names, 2, __pyx_mstate_global->__pyx_kp_u_openptv2_algorithms_trafo, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 488, __pyx_L1_error)
   }
   __pyx_t_1 = __pyx_t_2;
   __Pyx_GOTREF(__pyx_t_1);
@@ -21660,7 +21660,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_raw_orient(PyObject *__pyx_v
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":489
+  /* "openptv2/algorithms/orientation.py":489
  *     from .imgcoord import img_coord
  *     from .trafo import pixel_to_metric, correct_brown_affin
  *     from .lsqadj import ata, atl, matinv, matmul             # <<<<<<<<<<<<<<
@@ -21669,7 +21669,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_raw_orient(PyObject *__pyx_v
 */
   {
     PyObject* const __pyx_imported_names[] = {__pyx_mstate_global->__pyx_n_u_ata,__pyx_mstate_global->__pyx_n_u_atl,__pyx_mstate_global->__pyx_n_u_matinv,__pyx_mstate_global->__pyx_n_u_matmul};
-    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_lsqadj, __pyx_imported_names, 4, __pyx_mstate_global->__pyx_kp_u_algorithms_lsqadj, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 489, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_lsqadj, __pyx_imported_names, 4, __pyx_mstate_global->__pyx_kp_u_openptv2_algorithms_lsqadj, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 489, __pyx_L1_error)
   }
   __pyx_t_1 = __pyx_t_2;
   __Pyx_GOTREF(__pyx_t_1);
@@ -21702,7 +21702,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_raw_orient(PyObject *__pyx_v
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":491
+  /* "openptv2/algorithms/orientation.py":491
  *     from .lsqadj import ata, atl, matinv, matmul
  * 
  *     dm: cython.double = 0.0001             # <<<<<<<<<<<<<<
@@ -21711,7 +21711,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_raw_orient(PyObject *__pyx_v
 */
   __pyx_v_dm = 0.0001;
 
-  /* "algorithms/orientation.py":492
+  /* "openptv2/algorithms/orientation.py":492
  * 
  *     dm: cython.double = 0.0001
  *     drad: cython.double = 0.0001             # <<<<<<<<<<<<<<
@@ -21720,7 +21720,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_raw_orient(PyObject *__pyx_v
 */
   __pyx_v_drad = 0.0001;
 
-  /* "algorithms/orientation.py":494
+  /* "openptv2/algorithms/orientation.py":494
  *     drad: cython.double = 0.0001
  * 
  *     cal.added_par.k1 = 0             # <<<<<<<<<<<<<<
@@ -21732,7 +21732,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_raw_orient(PyObject *__pyx_v
   if (__Pyx_PyObject_SetAttrStr(__pyx_t_1, __pyx_mstate_global->__pyx_n_u_k1, __pyx_mstate_global->__pyx_int_0) < (0)) __PYX_ERR(0, 494, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":495
+  /* "openptv2/algorithms/orientation.py":495
  * 
  *     cal.added_par.k1 = 0
  *     cal.added_par.k2 = 0             # <<<<<<<<<<<<<<
@@ -21744,7 +21744,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_raw_orient(PyObject *__pyx_v
   if (__Pyx_PyObject_SetAttrStr(__pyx_t_1, __pyx_mstate_global->__pyx_n_u_k2, __pyx_mstate_global->__pyx_int_0) < (0)) __PYX_ERR(0, 495, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":496
+  /* "openptv2/algorithms/orientation.py":496
  *     cal.added_par.k1 = 0
  *     cal.added_par.k2 = 0
  *     cal.added_par.k3 = 0             # <<<<<<<<<<<<<<
@@ -21756,7 +21756,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_raw_orient(PyObject *__pyx_v
   if (__Pyx_PyObject_SetAttrStr(__pyx_t_1, __pyx_mstate_global->__pyx_n_u_k3, __pyx_mstate_global->__pyx_int_0) < (0)) __PYX_ERR(0, 496, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":497
+  /* "openptv2/algorithms/orientation.py":497
  *     cal.added_par.k2 = 0
  *     cal.added_par.k3 = 0
  *     cal.added_par.p1 = 0             # <<<<<<<<<<<<<<
@@ -21768,7 +21768,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_raw_orient(PyObject *__pyx_v
   if (__Pyx_PyObject_SetAttrStr(__pyx_t_1, __pyx_mstate_global->__pyx_n_u_p1, __pyx_mstate_global->__pyx_int_0) < (0)) __PYX_ERR(0, 497, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":498
+  /* "openptv2/algorithms/orientation.py":498
  *     cal.added_par.k3 = 0
  *     cal.added_par.p1 = 0
  *     cal.added_par.p2 = 0             # <<<<<<<<<<<<<<
@@ -21780,7 +21780,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_raw_orient(PyObject *__pyx_v
   if (__Pyx_PyObject_SetAttrStr(__pyx_t_1, __pyx_mstate_global->__pyx_n_u_p2, __pyx_mstate_global->__pyx_int_0) < (0)) __PYX_ERR(0, 498, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":499
+  /* "openptv2/algorithms/orientation.py":499
  *     cal.added_par.p1 = 0
  *     cal.added_par.p2 = 0
  *     cal.added_par.scx = 1             # <<<<<<<<<<<<<<
@@ -21792,7 +21792,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_raw_orient(PyObject *__pyx_v
   if (__Pyx_PyObject_SetAttrStr(__pyx_t_1, __pyx_mstate_global->__pyx_n_u_scx, __pyx_mstate_global->__pyx_int_1) < (0)) __PYX_ERR(0, 499, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":500
+  /* "openptv2/algorithms/orientation.py":500
  *     cal.added_par.p2 = 0
  *     cal.added_par.scx = 1
  *     cal.added_par.she = 0             # <<<<<<<<<<<<<<
@@ -21804,7 +21804,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_raw_orient(PyObject *__pyx_v
   if (__Pyx_PyObject_SetAttrStr(__pyx_t_1, __pyx_mstate_global->__pyx_n_u_she, __pyx_mstate_global->__pyx_int_0) < (0)) __PYX_ERR(0, 500, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":502
+  /* "openptv2/algorithms/orientation.py":502
  *     cal.added_par.she = 0
  * 
  *     itnum: cython.int = 0             # <<<<<<<<<<<<<<
@@ -21813,7 +21813,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_raw_orient(PyObject *__pyx_v
 */
   __pyx_v_itnum = 0;
 
-  /* "algorithms/orientation.py":503
+  /* "openptv2/algorithms/orientation.py":503
  * 
  *     itnum: cython.int = 0
  *     stopflag: cython.int = 0             # <<<<<<<<<<<<<<
@@ -21822,7 +21822,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_raw_orient(PyObject *__pyx_v
 */
   __pyx_v_stopflag = 0;
 
-  /* "algorithms/orientation.py":507
+  /* "openptv2/algorithms/orientation.py":507
  *     n: cython.int
  * 
  *     while stopflag == 0 and itnum < 20:             # <<<<<<<<<<<<<<
@@ -21841,7 +21841,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_raw_orient(PyObject *__pyx_v
     __pyx_L5_bool_binop_done:;
     if (!__pyx_t_5) break;
 
-    /* "algorithms/orientation.py":508
+    /* "openptv2/algorithms/orientation.py":508
  * 
  *     while stopflag == 0 and itnum < 20:
  *         itnum += 1             # <<<<<<<<<<<<<<
@@ -21850,7 +21850,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_raw_orient(PyObject *__pyx_v
 */
     __pyx_v_itnum = (__pyx_v_itnum + 1);
 
-    /* "algorithms/orientation.py":510
+    /* "openptv2/algorithms/orientation.py":510
  *         itnum += 1
  * 
  *         X = np.zeros((2 * nfix, 6))             # <<<<<<<<<<<<<<
@@ -21897,7 +21897,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_raw_orient(PyObject *__pyx_v
     __Pyx_XDECREF_SET(__pyx_v_X, __pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "algorithms/orientation.py":511
+    /* "openptv2/algorithms/orientation.py":511
  * 
  *         X = np.zeros((2 * nfix, 6))
  *         y = np.zeros(2 * nfix)             # <<<<<<<<<<<<<<
@@ -21936,7 +21936,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_raw_orient(PyObject *__pyx_v
     __Pyx_XDECREF_SET(__pyx_v_y, __pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "algorithms/orientation.py":512
+    /* "openptv2/algorithms/orientation.py":512
  *         X = np.zeros((2 * nfix, 6))
  *         y = np.zeros(2 * nfix)
  *         n = 0             # <<<<<<<<<<<<<<
@@ -21945,7 +21945,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_raw_orient(PyObject *__pyx_v
 */
     __pyx_v_n = 0;
 
-    /* "algorithms/orientation.py":514
+    /* "openptv2/algorithms/orientation.py":514
  *         n = 0
  * 
  *         for i in range(nfix):             # <<<<<<<<<<<<<<
@@ -21957,7 +21957,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_raw_orient(PyObject *__pyx_v
     for (__pyx_t_12 = 0; __pyx_t_12 < __pyx_t_11; __pyx_t_12+=1) {
       __pyx_v_i = __pyx_t_12;
 
-      /* "algorithms/orientation.py":515
+      /* "openptv2/algorithms/orientation.py":515
  * 
  *         for i in range(nfix):
  *             xc, yc = pixel_to_metric(pix[i].x, pix[i].y, cpar)             # <<<<<<<<<<<<<<
@@ -22054,7 +22054,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_raw_orient(PyObject *__pyx_v
       __Pyx_XDECREF_SET(__pyx_v_yc, __pyx_t_13);
       __pyx_t_13 = 0;
 
-      /* "algorithms/orientation.py":517
+      /* "openptv2/algorithms/orientation.py":517
  *             xc, yc = pixel_to_metric(pix[i].x, pix[i].y, cpar)
  * 
  *             cal.ext_par.compute_rotation_matrix()             # <<<<<<<<<<<<<<
@@ -22076,7 +22076,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_raw_orient(PyObject *__pyx_v
       }
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "algorithms/orientation.py":518
+      /* "openptv2/algorithms/orientation.py":518
  * 
  *             cal.ext_par.compute_rotation_matrix()
  *             xp, yp = img_coord(np.asarray(fix[i]), cal, cpar.mm)             # <<<<<<<<<<<<<<
@@ -22194,7 +22194,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_raw_orient(PyObject *__pyx_v
       __Pyx_XDECREF_SET(__pyx_v_yp, __pyx_t_15);
       __pyx_t_15 = 0;
 
-      /* "algorithms/orientation.py":520
+      /* "openptv2/algorithms/orientation.py":520
  *             xp, yp = img_coord(np.asarray(fix[i]), cal, cpar.mm)
  * 
  *             x_ders, y_ders = num_deriv_exterior(cal, cpar, dm, drad,             # <<<<<<<<<<<<<<
@@ -22206,7 +22206,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_raw_orient(PyObject *__pyx_v
       __pyx_t_15 = PyFloat_FromDouble(__pyx_v_drad); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 520, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_15);
 
-      /* "algorithms/orientation.py":521
+      /* "openptv2/algorithms/orientation.py":521
  * 
  *             x_ders, y_ders = num_deriv_exterior(cal, cpar, dm, drad,
  *                                                 np.asarray(fix[i]))             # <<<<<<<<<<<<<<
@@ -22243,14 +22243,14 @@ static PyObject *__pyx_f_10algorithms_11orientation_raw_orient(PyObject *__pyx_v
         __Pyx_GOTREF(__pyx_t_13);
       }
 
-      /* "algorithms/orientation.py":520
+      /* "openptv2/algorithms/orientation.py":520
  *             xp, yp = img_coord(np.asarray(fix[i]), cal, cpar.mm)
  * 
  *             x_ders, y_ders = num_deriv_exterior(cal, cpar, dm, drad,             # <<<<<<<<<<<<<<
  *                                                 np.asarray(fix[i]))
  * 
 */
-      __pyx_t_8 = __pyx_f_10algorithms_11orientation_num_deriv_exterior(__pyx_v_cal, __pyx_v_cpar, __pyx_t_1, __pyx_t_15, __pyx_t_13, 0); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 520, __pyx_L1_error)
+      __pyx_t_8 = __pyx_f_8openptv2_10algorithms_11orientation_num_deriv_exterior(__pyx_v_cal, __pyx_v_cpar, __pyx_t_1, __pyx_t_15, __pyx_t_13, 0); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 520, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_8);
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
       __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
@@ -22310,7 +22310,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_raw_orient(PyObject *__pyx_v
       __Pyx_XDECREF_SET(__pyx_v_y_ders, __pyx_t_15);
       __pyx_t_15 = 0;
 
-      /* "algorithms/orientation.py":523
+      /* "openptv2/algorithms/orientation.py":523
  *                                                 np.asarray(fix[i]))
  * 
  *             X[n, :] = x_ders             # <<<<<<<<<<<<<<
@@ -22330,7 +22330,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_raw_orient(PyObject *__pyx_v
       if (unlikely((PyObject_SetItem(__pyx_v_X, __pyx_t_15, __pyx_v_x_ders) < 0))) __PYX_ERR(0, 523, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
 
-      /* "algorithms/orientation.py":524
+      /* "openptv2/algorithms/orientation.py":524
  * 
  *             X[n, :] = x_ders
  *             X[n + 1, :] = y_ders             # <<<<<<<<<<<<<<
@@ -22350,7 +22350,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_raw_orient(PyObject *__pyx_v
       if (unlikely((PyObject_SetItem(__pyx_v_X, __pyx_t_8, __pyx_v_y_ders) < 0))) __PYX_ERR(0, 524, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
 
-      /* "algorithms/orientation.py":526
+      /* "openptv2/algorithms/orientation.py":526
  *             X[n + 1, :] = y_ders
  * 
  *             y[n] = xc - xp             # <<<<<<<<<<<<<<
@@ -22362,7 +22362,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_raw_orient(PyObject *__pyx_v
       if (unlikely((__Pyx_SetItemInt(__pyx_v_y, __pyx_v_n, __pyx_t_8, int, 1, __Pyx_PyLong_From_int, 0, 0, 0, 1, __Pyx_ReferenceSharing_OwnStrongReference) < 0))) __PYX_ERR(0, 526, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
 
-      /* "algorithms/orientation.py":527
+      /* "openptv2/algorithms/orientation.py":527
  * 
  *             y[n] = xc - xp
  *             y[n + 1] = yc - yp             # <<<<<<<<<<<<<<
@@ -22375,7 +22375,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_raw_orient(PyObject *__pyx_v
       if (unlikely((__Pyx_SetItemInt(__pyx_v_y, __pyx_t_16, __pyx_t_8, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_OwnStrongReference) < 0))) __PYX_ERR(0, 527, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
 
-      /* "algorithms/orientation.py":529
+      /* "openptv2/algorithms/orientation.py":529
  *             y[n + 1] = yc - yp
  * 
  *             n += 2             # <<<<<<<<<<<<<<
@@ -22385,7 +22385,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_raw_orient(PyObject *__pyx_v
       __pyx_v_n = (__pyx_v_n + 2);
     }
 
-    /* "algorithms/orientation.py":531
+    /* "openptv2/algorithms/orientation.py":531
  *             n += 2
  * 
  *         XPX = ata(X[:n], n, 6)             # <<<<<<<<<<<<<<
@@ -22424,7 +22424,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_raw_orient(PyObject *__pyx_v
     __Pyx_XDECREF_SET(__pyx_v_XPX, __pyx_t_8);
     __pyx_t_8 = 0;
 
-    /* "algorithms/orientation.py":532
+    /* "openptv2/algorithms/orientation.py":532
  * 
  *         XPX = ata(X[:n], n, 6)
  *         XPX = matinv(XPX, 6)             # <<<<<<<<<<<<<<
@@ -22457,7 +22457,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_raw_orient(PyObject *__pyx_v
     __Pyx_DECREF_SET(__pyx_v_XPX, __pyx_t_8);
     __pyx_t_8 = 0;
 
-    /* "algorithms/orientation.py":533
+    /* "openptv2/algorithms/orientation.py":533
  *         XPX = ata(X[:n], n, 6)
  *         XPX = matinv(XPX, 6)
  *         XPy = atl(X[:n], y[:n], n, 6)             # <<<<<<<<<<<<<<
@@ -22499,7 +22499,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_raw_orient(PyObject *__pyx_v
     __Pyx_XDECREF_SET(__pyx_v_XPy, __pyx_t_8);
     __pyx_t_8 = 0;
 
-    /* "algorithms/orientation.py":534
+    /* "openptv2/algorithms/orientation.py":534
  *         XPX = matinv(XPX, 6)
  *         XPy = atl(X[:n], y[:n], n, 6)
  *         beta = matmul(XPX, XPy, 6, 6)             # <<<<<<<<<<<<<<
@@ -22532,7 +22532,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_raw_orient(PyObject *__pyx_v
     __Pyx_XDECREF_SET(__pyx_v_beta, __pyx_t_8);
     __pyx_t_8 = 0;
 
-    /* "algorithms/orientation.py":536
+    /* "openptv2/algorithms/orientation.py":536
  *         beta = matmul(XPX, XPy, 6, 6)
  * 
  *         stopflag = 1             # <<<<<<<<<<<<<<
@@ -22541,7 +22541,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_raw_orient(PyObject *__pyx_v
 */
     __pyx_v_stopflag = 1;
 
-    /* "algorithms/orientation.py":537
+    /* "openptv2/algorithms/orientation.py":537
  * 
  *         stopflag = 1
  *         for i in range(6):             # <<<<<<<<<<<<<<
@@ -22551,7 +22551,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_raw_orient(PyObject *__pyx_v
     for (__pyx_t_12 = 0; __pyx_t_12 < 6; __pyx_t_12+=1) {
       __pyx_v_i = __pyx_t_12;
 
-      /* "algorithms/orientation.py":538
+      /* "openptv2/algorithms/orientation.py":538
  *         stopflag = 1
  *         for i in range(6):
  *             if abs(beta[i]) > 0.1:             # <<<<<<<<<<<<<<
@@ -22569,7 +22569,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_raw_orient(PyObject *__pyx_v
       __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
       if (__pyx_t_5) {
 
-        /* "algorithms/orientation.py":539
+        /* "openptv2/algorithms/orientation.py":539
  *         for i in range(6):
  *             if abs(beta[i]) > 0.1:
  *                 stopflag = 0             # <<<<<<<<<<<<<<
@@ -22578,7 +22578,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_raw_orient(PyObject *__pyx_v
 */
         __pyx_v_stopflag = 0;
 
-        /* "algorithms/orientation.py":538
+        /* "openptv2/algorithms/orientation.py":538
  *         stopflag = 1
  *         for i in range(6):
  *             if abs(beta[i]) > 0.1:             # <<<<<<<<<<<<<<
@@ -22588,7 +22588,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_raw_orient(PyObject *__pyx_v
       }
     }
 
-    /* "algorithms/orientation.py":541
+    /* "openptv2/algorithms/orientation.py":541
  *                 stopflag = 0
  * 
  *         cal.ext_par.x0 += beta[0]             # <<<<<<<<<<<<<<
@@ -22612,7 +22612,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_raw_orient(PyObject *__pyx_v
     __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
 
-    /* "algorithms/orientation.py":542
+    /* "openptv2/algorithms/orientation.py":542
  * 
  *         cal.ext_par.x0 += beta[0]
  *         cal.ext_par.y0 += beta[1]             # <<<<<<<<<<<<<<
@@ -22636,7 +22636,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_raw_orient(PyObject *__pyx_v
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
 
-    /* "algorithms/orientation.py":543
+    /* "openptv2/algorithms/orientation.py":543
  *         cal.ext_par.x0 += beta[0]
  *         cal.ext_par.y0 += beta[1]
  *         cal.ext_par.z0 += beta[2]             # <<<<<<<<<<<<<<
@@ -22660,7 +22660,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_raw_orient(PyObject *__pyx_v
     __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
 
-    /* "algorithms/orientation.py":544
+    /* "openptv2/algorithms/orientation.py":544
  *         cal.ext_par.y0 += beta[1]
  *         cal.ext_par.z0 += beta[2]
  *         cal.ext_par.omega += beta[3]             # <<<<<<<<<<<<<<
@@ -22684,7 +22684,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_raw_orient(PyObject *__pyx_v
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
 
-    /* "algorithms/orientation.py":545
+    /* "openptv2/algorithms/orientation.py":545
  *         cal.ext_par.z0 += beta[2]
  *         cal.ext_par.omega += beta[3]
  *         cal.ext_par.phi += beta[4]             # <<<<<<<<<<<<<<
@@ -22708,7 +22708,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_raw_orient(PyObject *__pyx_v
     __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
 
-    /* "algorithms/orientation.py":546
+    /* "openptv2/algorithms/orientation.py":546
  *         cal.ext_par.omega += beta[3]
  *         cal.ext_par.phi += beta[4]
  *         cal.ext_par.kappa += beta[5]             # <<<<<<<<<<<<<<
@@ -22733,7 +22733,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_raw_orient(PyObject *__pyx_v
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
   }
 
-  /* "algorithms/orientation.py":548
+  /* "openptv2/algorithms/orientation.py":548
  *         cal.ext_par.kappa += beta[5]
  * 
  *     if stopflag:             # <<<<<<<<<<<<<<
@@ -22743,7 +22743,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_raw_orient(PyObject *__pyx_v
   __pyx_t_5 = (__pyx_v_stopflag != 0);
   if (__pyx_t_5) {
 
-    /* "algorithms/orientation.py":549
+    /* "openptv2/algorithms/orientation.py":549
  * 
  *     if stopflag:
  *         cal.ext_par.compute_rotation_matrix()             # <<<<<<<<<<<<<<
@@ -22765,7 +22765,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_raw_orient(PyObject *__pyx_v
     }
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
 
-    /* "algorithms/orientation.py":548
+    /* "openptv2/algorithms/orientation.py":548
  *         cal.ext_par.kappa += beta[5]
  * 
  *     if stopflag:             # <<<<<<<<<<<<<<
@@ -22774,7 +22774,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_raw_orient(PyObject *__pyx_v
 */
   }
 
-  /* "algorithms/orientation.py":551
+  /* "openptv2/algorithms/orientation.py":551
  *         cal.ext_par.compute_rotation_matrix()
  * 
  *     return bool(stopflag)             # <<<<<<<<<<<<<<
@@ -22788,7 +22788,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_raw_orient(PyObject *__pyx_v
   __pyx_t_8 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/orientation.py":473
+  /* "openptv2/algorithms/orientation.py":473
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -22805,7 +22805,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_raw_orient(PyObject *__pyx_v
   __Pyx_XDECREF(__pyx_t_9);
   __Pyx_XDECREF(__pyx_t_13);
   __Pyx_XDECREF(__pyx_t_15);
-  __Pyx_AddTraceback("algorithms.orientation.raw_orient", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.orientation.raw_orient", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_img_coord);
@@ -22832,16 +22832,16 @@ static PyObject *__pyx_f_10algorithms_11orientation_raw_orient(PyObject *__pyx_v
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_11orientation_11raw_orient(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_11orientation_11raw_orient(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_11orientation_10raw_orient, "Simplified orientation using only 6 exterior parameters.\n\n    Args:\n        cal: Calibration (modified in place on success).\n        cpar: ControlPar.\n        nfix: number of fix points.\n        fix: list/array of 3D positions, shape (nfix, 3).\n        pix: list of Target objects with .x, .y attributes.\n\n    Returns:\n        True on success, False on failure.\n    ");
-static PyMethodDef __pyx_mdef_10algorithms_11orientation_11raw_orient = {"raw_orient", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_11orientation_11raw_orient, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_11orientation_10raw_orient};
-static PyObject *__pyx_pw_10algorithms_11orientation_11raw_orient(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_11orientation_10raw_orient, "Simplified orientation using only 6 exterior parameters.\n\n    Args:\n        cal: Calibration (modified in place on success).\n        cpar: ControlPar.\n        nfix: number of fix points.\n        fix: list/array of 3D positions, shape (nfix, 3).\n        pix: list of Target objects with .x, .y attributes.\n\n    Returns:\n        True on success, False on failure.\n    ");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_11orientation_11raw_orient = {"raw_orient", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_11orientation_11raw_orient, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_11orientation_10raw_orient};
+static PyObject *__pyx_pw_8openptv2_10algorithms_11orientation_11raw_orient(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -22935,11 +22935,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.orientation.raw_orient", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.orientation.raw_orient", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_11orientation_10raw_orient(__pyx_self, __pyx_v_cal, __pyx_v_cpar, __pyx_v_nfix, __pyx_v_fix, __pyx_v_pix);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_11orientation_10raw_orient(__pyx_self, __pyx_v_cal, __pyx_v_cpar, __pyx_v_nfix, __pyx_v_fix, __pyx_v_pix);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -22949,7 +22949,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_11orientation_10raw_orient(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cal, PyObject *__pyx_v_cpar, PyObject *__pyx_v_nfix, PyObject *__pyx_v_fix, PyObject *__pyx_v_pix) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_11orientation_10raw_orient(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cal, PyObject *__pyx_v_cpar, PyObject *__pyx_v_nfix, PyObject *__pyx_v_fix, PyObject *__pyx_v_pix) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -22958,7 +22958,7 @@ static PyObject *__pyx_pf_10algorithms_11orientation_10raw_orient(CYTHON_UNUSED 
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("raw_orient", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_11orientation_raw_orient(__pyx_v_cal, __pyx_v_cpar, __pyx_v_nfix, __pyx_v_fix, __pyx_v_pix, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 473, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_11orientation_raw_orient(__pyx_v_cal, __pyx_v_cpar, __pyx_v_nfix, __pyx_v_fix, __pyx_v_pix, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 473, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -22967,7 +22967,7 @@ static PyObject *__pyx_pf_10algorithms_11orientation_10raw_orient(CYTHON_UNUSED 
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.orientation.raw_orient", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.orientation.raw_orient", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -22975,7 +22975,7 @@ static PyObject *__pyx_pf_10algorithms_11orientation_10raw_orient(CYTHON_UNUSED 
   return __pyx_r;
 }
 
-/* "algorithms/orientation.py":554
+/* "openptv2/algorithms/orientation.py":554
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -22983,14 +22983,14 @@ static PyObject *__pyx_pf_10algorithms_11orientation_10raw_orient(CYTHON_UNUSED 
  *     """Bundle adjustment using Gauss-Markov model.
 */
 
-static PyObject *__pyx_pw_10algorithms_11orientation_13orient(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_11orientation_13orient(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal_in, PyObject *__pyx_v_cpar, PyObject *__pyx_v_nfix, PyObject *__pyx_v_fix, PyObject *__pyx_v_pix, PyObject *__pyx_v_flags, PyObject *__pyx_v_sigmabeta, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_11orientation_orient(PyObject *__pyx_v_cal_in, PyObject *__pyx_v_cpar, PyObject *__pyx_v_nfix, PyObject *__pyx_v_fix, PyObject *__pyx_v_pix, PyObject *__pyx_v_flags, PyObject *__pyx_v_sigmabeta, CYTHON_UNUSED int __pyx_skip_dispatch) {
   PyObject *__pyx_v_img_coord = NULL;
   PyObject *__pyx_v_pixel_to_metric = NULL;
   PyObject *__pyx_v_correct_brown_affin = NULL;
@@ -23081,7 +23081,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("orient", 0);
 
-  /* "algorithms/orientation.py":570
+  /* "openptv2/algorithms/orientation.py":570
  *         Array of residuals on success, None on failure.
  *     """
  *     from .imgcoord import img_coord             # <<<<<<<<<<<<<<
@@ -23090,7 +23090,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
 */
   {
     PyObject* const __pyx_imported_names[] = {__pyx_mstate_global->__pyx_n_u_img_coord};
-    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_imgcoord, __pyx_imported_names, 1, __pyx_mstate_global->__pyx_kp_u_algorithms_imgcoord, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 570, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_imgcoord, __pyx_imported_names, 1, __pyx_mstate_global->__pyx_kp_u_openptv2_algorithms_imgcoord, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 570, __pyx_L1_error)
   }
   __pyx_t_1 = __pyx_t_2;
   __Pyx_GOTREF(__pyx_t_1);
@@ -23111,7 +23111,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":571
+  /* "openptv2/algorithms/orientation.py":571
  *     """
  *     from .imgcoord import img_coord
  *     from .trafo import pixel_to_metric, correct_brown_affin             # <<<<<<<<<<<<<<
@@ -23120,7 +23120,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
 */
   {
     PyObject* const __pyx_imported_names[] = {__pyx_mstate_global->__pyx_n_u_pixel_to_metric,__pyx_mstate_global->__pyx_n_u_correct_brown_affin};
-    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_trafo, __pyx_imported_names, 2, __pyx_mstate_global->__pyx_kp_u_algorithms_trafo, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 571, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_trafo, __pyx_imported_names, 2, __pyx_mstate_global->__pyx_kp_u_openptv2_algorithms_trafo, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 571, __pyx_L1_error)
   }
   __pyx_t_1 = __pyx_t_2;
   __Pyx_GOTREF(__pyx_t_1);
@@ -23145,7 +23145,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":572
+  /* "openptv2/algorithms/orientation.py":572
  *     from .imgcoord import img_coord
  *     from .trafo import pixel_to_metric, correct_brown_affin
  *     from .lsqadj import ata, atl, matinv, matmul             # <<<<<<<<<<<<<<
@@ -23154,7 +23154,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
 */
   {
     PyObject* const __pyx_imported_names[] = {__pyx_mstate_global->__pyx_n_u_ata,__pyx_mstate_global->__pyx_n_u_atl,__pyx_mstate_global->__pyx_n_u_matinv,__pyx_mstate_global->__pyx_n_u_matmul};
-    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_lsqadj, __pyx_imported_names, 4, __pyx_mstate_global->__pyx_kp_u_algorithms_lsqadj, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 572, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_lsqadj, __pyx_imported_names, 4, __pyx_mstate_global->__pyx_kp_u_openptv2_algorithms_lsqadj, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 572, __pyx_L1_error)
   }
   __pyx_t_1 = __pyx_t_2;
   __Pyx_GOTREF(__pyx_t_1);
@@ -23187,7 +23187,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":573
+  /* "openptv2/algorithms/orientation.py":573
  *     from .trafo import pixel_to_metric, correct_brown_affin
  *     from .lsqadj import ata, atl, matinv, matmul
  *     from .vec_utils import vec_set, unit_vector, vec_norm             # <<<<<<<<<<<<<<
@@ -23196,7 +23196,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
 */
   {
     PyObject* const __pyx_imported_names[] = {__pyx_mstate_global->__pyx_n_u_vec_set,__pyx_mstate_global->__pyx_n_u_unit_vector,__pyx_mstate_global->__pyx_n_u_vec_norm};
-    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_vec_utils, __pyx_imported_names, 3, __pyx_mstate_global->__pyx_kp_u_algorithms_vec_utils, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 573, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_vec_utils, __pyx_imported_names, 3, __pyx_mstate_global->__pyx_kp_u_openptv2_algorithms_vec_utils, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 573, __pyx_L1_error)
   }
   __pyx_t_1 = __pyx_t_2;
   __Pyx_GOTREF(__pyx_t_1);
@@ -23225,7 +23225,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":575
+  /* "openptv2/algorithms/orientation.py":575
  *     from .vec_utils import vec_set, unit_vector, vec_norm
  * 
  *     dm: cython.double = 0.00001             # <<<<<<<<<<<<<<
@@ -23234,7 +23234,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
 */
   __pyx_v_dm = 0.00001;
 
-  /* "algorithms/orientation.py":576
+  /* "openptv2/algorithms/orientation.py":576
  * 
  *     dm: cython.double = 0.00001
  *     drad: cython.double = 0.0000001             # <<<<<<<<<<<<<<
@@ -23243,7 +23243,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
 */
   __pyx_v_drad = 0.0000001;
 
-  /* "algorithms/orientation.py":578
+  /* "openptv2/algorithms/orientation.py":578
  *     drad: cython.double = 0.0000001
  * 
  *     cal = copy.deepcopy(cal_in)             # <<<<<<<<<<<<<<
@@ -23279,7 +23279,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
   __pyx_v_cal = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":580
+  /* "openptv2/algorithms/orientation.py":580
  *     cal = copy.deepcopy(cal_in)
  * 
  *     maxsize = nfix * 2 + IDT             # <<<<<<<<<<<<<<
@@ -23297,7 +23297,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
   __pyx_v_maxsize = __pyx_t_4;
   __pyx_t_4 = 0;
 
-  /* "algorithms/orientation.py":582
+  /* "openptv2/algorithms/orientation.py":582
  *     maxsize = nfix * 2 + IDT
  * 
  *     P = np.ones(maxsize)             # <<<<<<<<<<<<<<
@@ -23333,7 +23333,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
   __pyx_v_P = __pyx_t_4;
   __pyx_t_4 = 0;
 
-  /* "algorithms/orientation.py":583
+  /* "openptv2/algorithms/orientation.py":583
  * 
  *     P = np.ones(maxsize)
  *     y = np.zeros(maxsize)             # <<<<<<<<<<<<<<
@@ -23369,7 +23369,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
   __pyx_v_y = __pyx_t_4;
   __pyx_t_4 = 0;
 
-  /* "algorithms/orientation.py":584
+  /* "openptv2/algorithms/orientation.py":584
  *     P = np.ones(maxsize)
  *     y = np.zeros(maxsize)
  *     X = np.zeros((maxsize, NPAR))             # <<<<<<<<<<<<<<
@@ -23416,7 +23416,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
   __pyx_v_X = __pyx_t_4;
   __pyx_t_4 = 0;
 
-  /* "algorithms/orientation.py":586
+  /* "openptv2/algorithms/orientation.py":586
  *     X = np.zeros((maxsize, NPAR))
  * 
  *     for i in range(NPAR):             # <<<<<<<<<<<<<<
@@ -23455,7 +23455,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     __Pyx_XDECREF_SET(__pyx_v_i, __pyx_t_4);
     __pyx_t_4 = 0;
 
-    /* "algorithms/orientation.py":587
+    /* "openptv2/algorithms/orientation.py":587
  * 
  *     for i in range(NPAR):
  *         sigmabeta[i] = 0.0             # <<<<<<<<<<<<<<
@@ -23464,7 +23464,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
 */
     if (unlikely((PyObject_SetItem(__pyx_v_sigmabeta, __pyx_v_i, __pyx_mstate_global->__pyx_float_0_0) < 0))) __PYX_ERR(0, 587, __pyx_L1_error)
 
-    /* "algorithms/orientation.py":586
+    /* "openptv2/algorithms/orientation.py":586
  *     X = np.zeros((maxsize, NPAR))
  * 
  *     for i in range(NPAR):             # <<<<<<<<<<<<<<
@@ -23474,7 +23474,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
   }
   __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
 
-  /* "algorithms/orientation.py":589
+  /* "openptv2/algorithms/orientation.py":589
  *         sigmabeta[i] = 0.0
  * 
  *     numbers = 18 if flags.interfflag else 16             # <<<<<<<<<<<<<<
@@ -23495,7 +23495,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
   __pyx_v_numbers = __pyx_t_8;
   __pyx_t_8 = 0;
 
-  /* "algorithms/orientation.py":591
+  /* "openptv2/algorithms/orientation.py":591
  *     numbers = 18 if flags.interfflag else 16
  * 
  *     glass_dir = np.array([cal.glass_par.vec_x, cal.glass_par.vec_y,             # <<<<<<<<<<<<<<
@@ -23519,7 +23519,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
   __Pyx_GOTREF(__pyx_t_11);
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-  /* "algorithms/orientation.py":592
+  /* "openptv2/algorithms/orientation.py":592
  * 
  *     glass_dir = np.array([cal.glass_par.vec_x, cal.glass_par.vec_y,
  *                           cal.glass_par.vec_z])             # <<<<<<<<<<<<<<
@@ -23532,7 +23532,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
   __Pyx_GOTREF(__pyx_t_12);
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-  /* "algorithms/orientation.py":591
+  /* "openptv2/algorithms/orientation.py":591
  *     numbers = 18 if flags.interfflag else 16
  * 
  *     glass_dir = np.array([cal.glass_par.vec_x, cal.glass_par.vec_y,             # <<<<<<<<<<<<<<
@@ -23574,7 +23574,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
   __pyx_v_glass_dir = __pyx_t_8;
   __pyx_t_8 = 0;
 
-  /* "algorithms/orientation.py":593
+  /* "openptv2/algorithms/orientation.py":593
  *     glass_dir = np.array([cal.glass_par.vec_x, cal.glass_par.vec_y,
  *                           cal.glass_par.vec_z])
  *     nGl = vec_norm(glass_dir)             # <<<<<<<<<<<<<<
@@ -23607,7 +23607,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
   __pyx_v_nGl = __pyx_t_8;
   __pyx_t_8 = 0;
 
-  /* "algorithms/orientation.py":595
+  /* "openptv2/algorithms/orientation.py":595
  *     nGl = vec_norm(glass_dir)
  * 
  *     e1_x = 2 * cal.glass_par.vec_z - 3 * cal.glass_par.vec_x             # <<<<<<<<<<<<<<
@@ -23637,7 +23637,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
   __pyx_v_e1_x = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":596
+  /* "openptv2/algorithms/orientation.py":596
  * 
  *     e1_x = 2 * cal.glass_par.vec_z - 3 * cal.glass_par.vec_x
  *     e1_y = 3 * cal.glass_par.vec_x - 1 * cal.glass_par.vec_z             # <<<<<<<<<<<<<<
@@ -23667,7 +23667,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
   __pyx_v_e1_y = __pyx_t_8;
   __pyx_t_8 = 0;
 
-  /* "algorithms/orientation.py":597
+  /* "openptv2/algorithms/orientation.py":597
  *     e1_x = 2 * cal.glass_par.vec_z - 3 * cal.glass_par.vec_x
  *     e1_y = 3 * cal.glass_par.vec_x - 1 * cal.glass_par.vec_z
  *     e1_z = 1 * cal.glass_par.vec_y - 2 * cal.glass_par.vec_y             # <<<<<<<<<<<<<<
@@ -23697,7 +23697,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
   __pyx_v_e1_z = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":598
+  /* "openptv2/algorithms/orientation.py":598
  *     e1_y = 3 * cal.glass_par.vec_x - 1 * cal.glass_par.vec_z
  *     e1_z = 1 * cal.glass_par.vec_y - 2 * cal.glass_par.vec_y
  *     e1 = unit_vector(np.array([e1_x, e1_y, e1_z]))             # <<<<<<<<<<<<<<
@@ -23769,7 +23769,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
   __pyx_v_e1 = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":600
+  /* "openptv2/algorithms/orientation.py":600
  *     e1 = unit_vector(np.array([e1_x, e1_y, e1_z]))
  * 
  *     e2_x = e1[1] * cal.glass_par.vec_z - e1[2] * cal.glass_par.vec_x             # <<<<<<<<<<<<<<
@@ -23805,7 +23805,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
   __pyx_v_e2_x = __pyx_t_6;
   __pyx_t_6 = 0;
 
-  /* "algorithms/orientation.py":601
+  /* "openptv2/algorithms/orientation.py":601
  * 
  *     e2_x = e1[1] * cal.glass_par.vec_z - e1[2] * cal.glass_par.vec_x
  *     e2_y = e1[2] * cal.glass_par.vec_x - e1[0] * cal.glass_par.vec_z             # <<<<<<<<<<<<<<
@@ -23841,7 +23841,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
   __pyx_v_e2_y = __pyx_t_4;
   __pyx_t_4 = 0;
 
-  /* "algorithms/orientation.py":602
+  /* "openptv2/algorithms/orientation.py":602
  *     e2_x = e1[1] * cal.glass_par.vec_z - e1[2] * cal.glass_par.vec_x
  *     e2_y = e1[2] * cal.glass_par.vec_x - e1[0] * cal.glass_par.vec_z
  *     e2_z = e1[0] * cal.glass_par.vec_y - e1[1] * cal.glass_par.vec_y             # <<<<<<<<<<<<<<
@@ -23877,7 +23877,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
   __pyx_v_e2_z = __pyx_t_8;
   __pyx_t_8 = 0;
 
-  /* "algorithms/orientation.py":603
+  /* "openptv2/algorithms/orientation.py":603
  *     e2_y = e1[2] * cal.glass_par.vec_x - e1[0] * cal.glass_par.vec_z
  *     e2_z = e1[0] * cal.glass_par.vec_y - e1[1] * cal.glass_par.vec_y
  *     e2 = unit_vector(np.array([e2_x, e2_y, e2_z]))             # <<<<<<<<<<<<<<
@@ -23949,7 +23949,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
   __pyx_v_e2 = __pyx_t_8;
   __pyx_t_8 = 0;
 
-  /* "algorithms/orientation.py":605
+  /* "openptv2/algorithms/orientation.py":605
  *     e2 = unit_vector(np.array([e2_x, e2_y, e2_z]))
  * 
  *     al = 0.0             # <<<<<<<<<<<<<<
@@ -23958,7 +23958,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
 */
   __pyx_v_al = 0.0;
 
-  /* "algorithms/orientation.py":606
+  /* "openptv2/algorithms/orientation.py":606
  * 
  *     al = 0.0
  *     be = 0.0             # <<<<<<<<<<<<<<
@@ -23967,7 +23967,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
 */
   __pyx_v_be = 0.0;
 
-  /* "algorithms/orientation.py":607
+  /* "openptv2/algorithms/orientation.py":607
  *     al = 0.0
  *     be = 0.0
  *     ga = 0.0             # <<<<<<<<<<<<<<
@@ -23976,7 +23976,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
 */
   __pyx_v_ga = 0.0;
 
-  /* "algorithms/orientation.py":609
+  /* "openptv2/algorithms/orientation.py":609
  *     ga = 0.0
  * 
  *     ident = np.array([             # <<<<<<<<<<<<<<
@@ -23990,7 +23990,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":610
+  /* "openptv2/algorithms/orientation.py":610
  * 
  *     ident = np.array([
  *         cal.int_par.cc, cal.int_par.xh, cal.int_par.yh,             # <<<<<<<<<<<<<<
@@ -24013,7 +24013,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":611
+  /* "openptv2/algorithms/orientation.py":611
  *     ident = np.array([
  *         cal.int_par.cc, cal.int_par.xh, cal.int_par.yh,
  *         cal.added_par.k1, cal.added_par.k2, cal.added_par.k3,             # <<<<<<<<<<<<<<
@@ -24036,7 +24036,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
   __Pyx_GOTREF(__pyx_t_15);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":612
+  /* "openptv2/algorithms/orientation.py":612
  *         cal.int_par.cc, cal.int_par.xh, cal.int_par.yh,
  *         cal.added_par.k1, cal.added_par.k2, cal.added_par.k3,
  *         cal.added_par.p1, cal.added_par.p2,             # <<<<<<<<<<<<<<
@@ -24054,7 +24054,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
   __Pyx_GOTREF(__pyx_t_17);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":613
+  /* "openptv2/algorithms/orientation.py":613
  *         cal.added_par.k1, cal.added_par.k2, cal.added_par.k3,
  *         cal.added_par.p1, cal.added_par.p2,
  *         cal.added_par.scx, cal.added_par.she,             # <<<<<<<<<<<<<<
@@ -24072,7 +24072,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
   __Pyx_GOTREF(__pyx_t_19);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":609
+  /* "openptv2/algorithms/orientation.py":609
  *     ga = 0.0
  * 
  *     ident = np.array([             # <<<<<<<<<<<<<<
@@ -24135,7 +24135,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
   __pyx_v_ident = __pyx_t_8;
   __pyx_t_8 = 0;
 
-  /* "algorithms/orientation.py":616
+  /* "openptv2/algorithms/orientation.py":616
  *     ])
  * 
  *     safety_x = cal.glass_par.vec_x             # <<<<<<<<<<<<<<
@@ -24150,7 +24150,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
   __pyx_v_safety_x = __pyx_t_4;
   __pyx_t_4 = 0;
 
-  /* "algorithms/orientation.py":617
+  /* "openptv2/algorithms/orientation.py":617
  * 
  *     safety_x = cal.glass_par.vec_x
  *     safety_y = cal.glass_par.vec_y             # <<<<<<<<<<<<<<
@@ -24165,7 +24165,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
   __pyx_v_safety_y = __pyx_t_8;
   __pyx_t_8 = 0;
 
-  /* "algorithms/orientation.py":618
+  /* "openptv2/algorithms/orientation.py":618
  *     safety_x = cal.glass_par.vec_x
  *     safety_y = cal.glass_par.vec_y
  *     safety_z = cal.glass_par.vec_z             # <<<<<<<<<<<<<<
@@ -24180,7 +24180,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
   __pyx_v_safety_z = __pyx_t_4;
   __pyx_t_4 = 0;
 
-  /* "algorithms/orientation.py":620
+  /* "openptv2/algorithms/orientation.py":620
  *     safety_z = cal.glass_par.vec_z
  * 
  *     itnum: cython.int = 0             # <<<<<<<<<<<<<<
@@ -24189,7 +24189,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
 */
   __pyx_v_itnum = 0;
 
-  /* "algorithms/orientation.py":621
+  /* "openptv2/algorithms/orientation.py":621
  * 
  *     itnum: cython.int = 0
  *     stopflag: cython.int = 0             # <<<<<<<<<<<<<<
@@ -24198,7 +24198,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
 */
   __pyx_v_stopflag = 0;
 
-  /* "algorithms/orientation.py":627
+  /* "openptv2/algorithms/orientation.py":627
  *     pd: cython.int
  * 
  *     while stopflag == 0 and itnum < NUM_ITER:             # <<<<<<<<<<<<<<
@@ -24225,7 +24225,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     __pyx_L8_bool_binop_done:;
     if (!__pyx_t_10) break;
 
-    /* "algorithms/orientation.py":628
+    /* "openptv2/algorithms/orientation.py":628
  * 
  *     while stopflag == 0 and itnum < NUM_ITER:
  *         itnum += 1             # <<<<<<<<<<<<<<
@@ -24234,7 +24234,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
 */
     __pyx_v_itnum = (__pyx_v_itnum + 1);
 
-    /* "algorithms/orientation.py":630
+    /* "openptv2/algorithms/orientation.py":630
  *         itnum += 1
  * 
  *         X[:] = 0.0             # <<<<<<<<<<<<<<
@@ -24243,7 +24243,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
 */
     if (__Pyx_PyObject_SetSlice(__pyx_v_X, __pyx_mstate_global->__pyx_float_0_0, 0, 0, NULL, NULL, &__pyx_mstate_global->__pyx_slice[0], 0, 0, 0) < (0)) __PYX_ERR(0, 630, __pyx_L1_error)
 
-    /* "algorithms/orientation.py":631
+    /* "openptv2/algorithms/orientation.py":631
  * 
  *         X[:] = 0.0
  *         y[:] = 0.0             # <<<<<<<<<<<<<<
@@ -24252,7 +24252,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
 */
     if (__Pyx_PyObject_SetSlice(__pyx_v_y, __pyx_mstate_global->__pyx_float_0_0, 0, 0, NULL, NULL, &__pyx_mstate_global->__pyx_slice[0], 0, 0, 0) < (0)) __PYX_ERR(0, 631, __pyx_L1_error)
 
-    /* "algorithms/orientation.py":632
+    /* "openptv2/algorithms/orientation.py":632
  *         X[:] = 0.0
  *         y[:] = 0.0
  *         P[:] = 1.0             # <<<<<<<<<<<<<<
@@ -24261,7 +24261,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
 */
     if (__Pyx_PyObject_SetSlice(__pyx_v_P, __pyx_mstate_global->__pyx_float_1_0, 0, 0, NULL, NULL, &__pyx_mstate_global->__pyx_slice[0], 0, 0, 0) < (0)) __PYX_ERR(0, 632, __pyx_L1_error)
 
-    /* "algorithms/orientation.py":633
+    /* "openptv2/algorithms/orientation.py":633
  *         y[:] = 0.0
  *         P[:] = 1.0
  *         n = 0             # <<<<<<<<<<<<<<
@@ -24270,7 +24270,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
 */
     __pyx_v_n = 0;
 
-    /* "algorithms/orientation.py":635
+    /* "openptv2/algorithms/orientation.py":635
  *         n = 0
  * 
  *         for i in range(nfix):             # <<<<<<<<<<<<<<
@@ -24306,7 +24306,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_XDECREF_SET(__pyx_v_i, __pyx_t_1);
       __pyx_t_1 = 0;
 
-      /* "algorithms/orientation.py":636
+      /* "openptv2/algorithms/orientation.py":636
  * 
  *         for i in range(nfix):
  *             if pix[i].pnr != i:             # <<<<<<<<<<<<<<
@@ -24324,7 +24324,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
       if (__pyx_t_10) {
 
-        /* "algorithms/orientation.py":637
+        /* "openptv2/algorithms/orientation.py":637
  *         for i in range(nfix):
  *             if pix[i].pnr != i:
  *                 continue             # <<<<<<<<<<<<<<
@@ -24333,7 +24333,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
 */
         goto __pyx_L10_continue;
 
-        /* "algorithms/orientation.py":636
+        /* "openptv2/algorithms/orientation.py":636
  * 
  *         for i in range(nfix):
  *             if pix[i].pnr != i:             # <<<<<<<<<<<<<<
@@ -24342,7 +24342,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
 */
       }
 
-      /* "algorithms/orientation.py":639
+      /* "openptv2/algorithms/orientation.py":639
  *                 continue
  * 
  *             if flags.useflag == 1 and (i % 2) == 0:             # <<<<<<<<<<<<<<
@@ -24366,7 +24366,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __pyx_L14_bool_binop_done:;
       if (__pyx_t_10) {
 
-        /* "algorithms/orientation.py":640
+        /* "openptv2/algorithms/orientation.py":640
  * 
  *             if flags.useflag == 1 and (i % 2) == 0:
  *                 continue             # <<<<<<<<<<<<<<
@@ -24375,7 +24375,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
 */
         goto __pyx_L10_continue;
 
-        /* "algorithms/orientation.py":639
+        /* "openptv2/algorithms/orientation.py":639
  *                 continue
  * 
  *             if flags.useflag == 1 and (i % 2) == 0:             # <<<<<<<<<<<<<<
@@ -24384,7 +24384,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
 */
       }
 
-      /* "algorithms/orientation.py":641
+      /* "openptv2/algorithms/orientation.py":641
  *             if flags.useflag == 1 and (i % 2) == 0:
  *                 continue
  *             if flags.useflag == 2 and (i % 2) != 0:             # <<<<<<<<<<<<<<
@@ -24408,7 +24408,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __pyx_L17_bool_binop_done:;
       if (__pyx_t_10) {
 
-        /* "algorithms/orientation.py":642
+        /* "openptv2/algorithms/orientation.py":642
  *                 continue
  *             if flags.useflag == 2 and (i % 2) != 0:
  *                 continue             # <<<<<<<<<<<<<<
@@ -24417,7 +24417,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
 */
         goto __pyx_L10_continue;
 
-        /* "algorithms/orientation.py":641
+        /* "openptv2/algorithms/orientation.py":641
  *             if flags.useflag == 1 and (i % 2) == 0:
  *                 continue
  *             if flags.useflag == 2 and (i % 2) != 0:             # <<<<<<<<<<<<<<
@@ -24426,7 +24426,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
 */
       }
 
-      /* "algorithms/orientation.py":643
+      /* "openptv2/algorithms/orientation.py":643
  *             if flags.useflag == 2 and (i % 2) != 0:
  *                 continue
  *             if flags.useflag == 3 and (i % 3) == 0:             # <<<<<<<<<<<<<<
@@ -24450,7 +24450,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __pyx_L20_bool_binop_done:;
       if (__pyx_t_10) {
 
-        /* "algorithms/orientation.py":644
+        /* "openptv2/algorithms/orientation.py":644
  *                 continue
  *             if flags.useflag == 3 and (i % 3) == 0:
  *                 continue             # <<<<<<<<<<<<<<
@@ -24459,7 +24459,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
 */
         goto __pyx_L10_continue;
 
-        /* "algorithms/orientation.py":643
+        /* "openptv2/algorithms/orientation.py":643
  *             if flags.useflag == 2 and (i % 2) != 0:
  *                 continue
  *             if flags.useflag == 3 and (i % 3) == 0:             # <<<<<<<<<<<<<<
@@ -24468,7 +24468,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
 */
       }
 
-      /* "algorithms/orientation.py":646
+      /* "openptv2/algorithms/orientation.py":646
  *                 continue
  * 
  *             xc, yc = pixel_to_metric(pix[i].x, pix[i].y, cpar)             # <<<<<<<<<<<<<<
@@ -24565,7 +24565,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_XDECREF_SET(__pyx_v_yc, __pyx_t_17);
       __pyx_t_17 = 0;
 
-      /* "algorithms/orientation.py":647
+      /* "openptv2/algorithms/orientation.py":647
  * 
  *             xc, yc = pixel_to_metric(pix[i].x, pix[i].y, cpar)
  *             xc, yc = correct_brown_affin(             # <<<<<<<<<<<<<<
@@ -24576,7 +24576,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_INCREF(__pyx_v_correct_brown_affin);
       __pyx_t_6 = __pyx_v_correct_brown_affin; 
 
-      /* "algorithms/orientation.py":649
+      /* "openptv2/algorithms/orientation.py":649
  *             xc, yc = correct_brown_affin(
  *                 xc, yc,
  *                 cal.added_par.k1, cal.added_par.k2, cal.added_par.k3,             # <<<<<<<<<<<<<<
@@ -24599,7 +24599,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_GOTREF(__pyx_t_16);
       __Pyx_DECREF(__pyx_t_18); __pyx_t_18 = 0;
 
-      /* "algorithms/orientation.py":650
+      /* "openptv2/algorithms/orientation.py":650
  *                 xc, yc,
  *                 cal.added_par.k1, cal.added_par.k2, cal.added_par.k3,
  *                 cal.added_par.p1, cal.added_par.p2,             # <<<<<<<<<<<<<<
@@ -24617,7 +24617,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_GOTREF(__pyx_t_14);
       __Pyx_DECREF(__pyx_t_18); __pyx_t_18 = 0;
 
-      /* "algorithms/orientation.py":651
+      /* "openptv2/algorithms/orientation.py":651
  *                 cal.added_par.k1, cal.added_par.k2, cal.added_par.k3,
  *                 cal.added_par.p1, cal.added_par.p2,
  *                 cal.added_par.scx, cal.added_par.she,             # <<<<<<<<<<<<<<
@@ -24712,7 +24712,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
         __pyx_L25_unpacking_done:;
       }
 
-      /* "algorithms/orientation.py":647
+      /* "openptv2/algorithms/orientation.py":647
  * 
  *             xc, yc = pixel_to_metric(pix[i].x, pix[i].y, cpar)
  *             xc, yc = correct_brown_affin(             # <<<<<<<<<<<<<<
@@ -24724,7 +24724,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_DECREF_SET(__pyx_v_yc, __pyx_t_5);
       __pyx_t_5 = 0;
 
-      /* "algorithms/orientation.py":654
+      /* "openptv2/algorithms/orientation.py":654
  *             )
  * 
  *             cal.ext_par.compute_rotation_matrix()             # <<<<<<<<<<<<<<
@@ -24746,7 +24746,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       }
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "algorithms/orientation.py":655
+      /* "openptv2/algorithms/orientation.py":655
  * 
  *             cal.ext_par.compute_rotation_matrix()
  *             xp, yp = img_coord(np.asarray(fix[i]), cal, cpar.mm)             # <<<<<<<<<<<<<<
@@ -24864,7 +24864,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_XDECREF_SET(__pyx_v_yp, __pyx_t_16);
       __pyx_t_16 = 0;
 
-      /* "algorithms/orientation.py":657
+      /* "openptv2/algorithms/orientation.py":657
  *             xp, yp = img_coord(np.asarray(fix[i]), cal, cpar.mm)
  * 
  *             r = np.sqrt(xp * xp + yp * yp)             # <<<<<<<<<<<<<<
@@ -24909,7 +24909,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_XDECREF_SET(__pyx_v_r, __pyx_t_1);
       __pyx_t_1 = 0;
 
-      /* "algorithms/orientation.py":659
+      /* "openptv2/algorithms/orientation.py":659
  *             r = np.sqrt(xp * xp + yp * yp)
  * 
  *             X[n, 7] = cal.added_par.scx             # <<<<<<<<<<<<<<
@@ -24935,7 +24935,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
       __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
 
-      /* "algorithms/orientation.py":660
+      /* "openptv2/algorithms/orientation.py":660
  * 
  *             X[n, 7] = cal.added_par.scx
  *             X[n + 1, 7] = np.sin(cal.added_par.she)             # <<<<<<<<<<<<<<
@@ -24988,7 +24988,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
       __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
 
-      /* "algorithms/orientation.py":662
+      /* "openptv2/algorithms/orientation.py":662
  *             X[n + 1, 7] = np.sin(cal.added_par.she)
  * 
  *             X[n, 8] = 0             # <<<<<<<<<<<<<<
@@ -25008,7 +25008,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       if (unlikely((PyObject_SetItem(__pyx_v_X, __pyx_t_6, __pyx_mstate_global->__pyx_int_0) < 0))) __PYX_ERR(0, 662, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-      /* "algorithms/orientation.py":663
+      /* "openptv2/algorithms/orientation.py":663
  * 
  *             X[n, 8] = 0
  *             X[n + 1, 8] = 1             # <<<<<<<<<<<<<<
@@ -25028,7 +25028,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       if (unlikely((PyObject_SetItem(__pyx_v_X, __pyx_t_13, __pyx_mstate_global->__pyx_int_1) < 0))) __PYX_ERR(0, 663, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
 
-      /* "algorithms/orientation.py":665
+      /* "openptv2/algorithms/orientation.py":665
  *             X[n + 1, 8] = 1
  * 
  *             X[n, 9] = cal.added_par.scx * xp * r * r             # <<<<<<<<<<<<<<
@@ -25063,7 +25063,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
       __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
 
-      /* "algorithms/orientation.py":666
+      /* "openptv2/algorithms/orientation.py":666
  * 
  *             X[n, 9] = cal.added_par.scx * xp * r * r
  *             X[n + 1, 9] = yp * r * r             # <<<<<<<<<<<<<<
@@ -25089,7 +25089,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
       __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
 
-      /* "algorithms/orientation.py":668
+      /* "openptv2/algorithms/orientation.py":668
  *             X[n + 1, 9] = yp * r * r
  * 
  *             X[n, 10] = cal.added_par.scx * xp * r**4             # <<<<<<<<<<<<<<
@@ -25124,7 +25124,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
       __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
 
-      /* "algorithms/orientation.py":669
+      /* "openptv2/algorithms/orientation.py":669
  * 
  *             X[n, 10] = cal.added_par.scx * xp * r**4
  *             X[n + 1, 10] = yp * r**4             # <<<<<<<<<<<<<<
@@ -25150,7 +25150,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
       __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
 
-      /* "algorithms/orientation.py":671
+      /* "openptv2/algorithms/orientation.py":671
  *             X[n + 1, 10] = yp * r**4
  * 
  *             X[n, 11] = cal.added_par.scx * xp * r**6             # <<<<<<<<<<<<<<
@@ -25185,7 +25185,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
       __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
 
-      /* "algorithms/orientation.py":672
+      /* "openptv2/algorithms/orientation.py":672
  * 
  *             X[n, 11] = cal.added_par.scx * xp * r**6
  *             X[n + 1, 11] = yp * r**6             # <<<<<<<<<<<<<<
@@ -25211,7 +25211,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
       __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
 
-      /* "algorithms/orientation.py":674
+      /* "openptv2/algorithms/orientation.py":674
  *             X[n + 1, 11] = yp * r**6
  * 
  *             X[n, 12] = cal.added_par.scx * (2 * xp * xp + r * r)             # <<<<<<<<<<<<<<
@@ -25252,7 +25252,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
       __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
 
-      /* "algorithms/orientation.py":675
+      /* "openptv2/algorithms/orientation.py":675
  * 
  *             X[n, 12] = cal.added_par.scx * (2 * xp * xp + r * r)
  *             X[n + 1, 12] = 2 * xp * yp             # <<<<<<<<<<<<<<
@@ -25278,7 +25278,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-      /* "algorithms/orientation.py":677
+      /* "openptv2/algorithms/orientation.py":677
  *             X[n + 1, 12] = 2 * xp * yp
  * 
  *             X[n, 13] = 2 * cal.added_par.scx * xp * yp             # <<<<<<<<<<<<<<
@@ -25313,7 +25313,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-      /* "algorithms/orientation.py":678
+      /* "openptv2/algorithms/orientation.py":678
  * 
  *             X[n, 13] = 2 * cal.added_par.scx * xp * yp
  *             X[n + 1, 13] = 2 * yp * yp + r * r             # <<<<<<<<<<<<<<
@@ -25345,7 +25345,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
       __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
 
-      /* "algorithms/orientation.py":680
+      /* "openptv2/algorithms/orientation.py":680
  *             X[n + 1, 13] = 2 * yp * yp + r * r
  * 
  *             qq = cal.added_par.k1 * r * r             # <<<<<<<<<<<<<<
@@ -25366,7 +25366,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_XDECREF_SET(__pyx_v_qq, __pyx_t_16);
       __pyx_t_16 = 0;
 
-      /* "algorithms/orientation.py":681
+      /* "openptv2/algorithms/orientation.py":681
  * 
  *             qq = cal.added_par.k1 * r * r
  *             qq += cal.added_par.k2 * r**4             # <<<<<<<<<<<<<<
@@ -25390,7 +25390,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_DECREF_SET(__pyx_v_qq, __pyx_t_16);
       __pyx_t_16 = 0;
 
-      /* "algorithms/orientation.py":682
+      /* "openptv2/algorithms/orientation.py":682
  *             qq = cal.added_par.k1 * r * r
  *             qq += cal.added_par.k2 * r**4
  *             qq += cal.added_par.k3 * r**6             # <<<<<<<<<<<<<<
@@ -25414,7 +25414,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_DECREF_SET(__pyx_v_qq, __pyx_t_16);
       __pyx_t_16 = 0;
 
-      /* "algorithms/orientation.py":683
+      /* "openptv2/algorithms/orientation.py":683
  *             qq += cal.added_par.k2 * r**4
  *             qq += cal.added_par.k3 * r**6
  *             qq += 1             # <<<<<<<<<<<<<<
@@ -25426,7 +25426,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_DECREF_SET(__pyx_v_qq, __pyx_t_16);
       __pyx_t_16 = 0;
 
-      /* "algorithms/orientation.py":684
+      /* "openptv2/algorithms/orientation.py":684
  *             qq += cal.added_par.k3 * r**6
  *             qq += 1
  *             X[n, 14] = (xp * qq             # <<<<<<<<<<<<<<
@@ -25436,7 +25436,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __pyx_t_16 = PyNumber_Multiply(__pyx_v_xp, __pyx_v_qq); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 684, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_16);
 
-      /* "algorithms/orientation.py":685
+      /* "openptv2/algorithms/orientation.py":685
  *             qq += 1
  *             X[n, 14] = (xp * qq
  *                         + cal.added_par.p1 * (r * r + 2 * xp * xp)             # <<<<<<<<<<<<<<
@@ -25468,7 +25468,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "algorithms/orientation.py":686
+      /* "openptv2/algorithms/orientation.py":686
  *             X[n, 14] = (xp * qq
  *                         + cal.added_par.p1 * (r * r + 2 * xp * xp)
  *                         + 2 * cal.added_par.p2 * xp * yp)             # <<<<<<<<<<<<<<
@@ -25494,7 +25494,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "algorithms/orientation.py":684
+      /* "openptv2/algorithms/orientation.py":684
  *             qq += cal.added_par.k3 * r**6
  *             qq += 1
  *             X[n, 14] = (xp * qq             # <<<<<<<<<<<<<<
@@ -25515,7 +25515,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
       __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
 
-      /* "algorithms/orientation.py":687
+      /* "openptv2/algorithms/orientation.py":687
  *                         + cal.added_par.p1 * (r * r + 2 * xp * xp)
  *                         + 2 * cal.added_par.p2 * xp * yp)
  *             X[n + 1, 14] = 0             # <<<<<<<<<<<<<<
@@ -25535,7 +25535,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       if (unlikely((PyObject_SetItem(__pyx_v_X, __pyx_t_13, __pyx_mstate_global->__pyx_int_0) < 0))) __PYX_ERR(0, 687, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
 
-      /* "algorithms/orientation.py":689
+      /* "openptv2/algorithms/orientation.py":689
  *             X[n + 1, 14] = 0
  * 
  *             X[n, 15] = -np.cos(cal.added_par.she) * yp             # <<<<<<<<<<<<<<
@@ -25594,7 +25594,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
       __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
 
-      /* "algorithms/orientation.py":690
+      /* "openptv2/algorithms/orientation.py":690
  * 
  *             X[n, 15] = -np.cos(cal.added_par.she) * yp
  *             X[n + 1, 15] = -np.sin(cal.added_par.she) * yp             # <<<<<<<<<<<<<<
@@ -25653,7 +25653,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
       __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
 
-      /* "algorithms/orientation.py":692
+      /* "openptv2/algorithms/orientation.py":692
  *             X[n + 1, 15] = -np.sin(cal.added_par.she) * yp
  * 
  *             x_ders, y_ders = num_deriv_exterior(cal, cpar, dm, drad,             # <<<<<<<<<<<<<<
@@ -25665,7 +25665,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __pyx_t_1 = PyFloat_FromDouble(__pyx_v_drad); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 692, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
 
-      /* "algorithms/orientation.py":693
+      /* "openptv2/algorithms/orientation.py":693
  * 
  *             x_ders, y_ders = num_deriv_exterior(cal, cpar, dm, drad,
  *                                                 np.asarray(fix[i]))             # <<<<<<<<<<<<<<
@@ -25702,14 +25702,14 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
         __Pyx_GOTREF(__pyx_t_16);
       }
 
-      /* "algorithms/orientation.py":692
+      /* "openptv2/algorithms/orientation.py":692
  *             X[n + 1, 15] = -np.sin(cal.added_par.she) * yp
  * 
  *             x_ders, y_ders = num_deriv_exterior(cal, cpar, dm, drad,             # <<<<<<<<<<<<<<
  *                                                 np.asarray(fix[i]))
  *             X[n, 0:6] = x_ders
 */
-      __pyx_t_5 = __pyx_f_10algorithms_11orientation_num_deriv_exterior(__pyx_v_cal, __pyx_v_cpar, __pyx_t_13, __pyx_t_1, __pyx_t_16, 0); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 692, __pyx_L1_error)
+      __pyx_t_5 = __pyx_f_8openptv2_10algorithms_11orientation_num_deriv_exterior(__pyx_v_cal, __pyx_v_cpar, __pyx_t_13, __pyx_t_1, __pyx_t_16, 0); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 692, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_5);
       __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -25769,7 +25769,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_XDECREF_SET(__pyx_v_y_ders, __pyx_t_1);
       __pyx_t_1 = 0;
 
-      /* "algorithms/orientation.py":694
+      /* "openptv2/algorithms/orientation.py":694
  *             x_ders, y_ders = num_deriv_exterior(cal, cpar, dm, drad,
  *                                                 np.asarray(fix[i]))
  *             X[n, 0:6] = x_ders             # <<<<<<<<<<<<<<
@@ -25789,7 +25789,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       if (unlikely((PyObject_SetItem(__pyx_v_X, __pyx_t_1, __pyx_v_x_ders) < 0))) __PYX_ERR(0, 694, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "algorithms/orientation.py":695
+      /* "openptv2/algorithms/orientation.py":695
  *                                                 np.asarray(fix[i]))
  *             X[n, 0:6] = x_ders
  *             X[n + 1, 0:6] = y_ders             # <<<<<<<<<<<<<<
@@ -25809,7 +25809,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       if (unlikely((PyObject_SetItem(__pyx_v_X, __pyx_t_5, __pyx_v_y_ders) < 0))) __PYX_ERR(0, 695, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-      /* "algorithms/orientation.py":698
+      /* "openptv2/algorithms/orientation.py":698
  * 
  *             # cc derivative
  *             cal.int_par.cc += dm             # <<<<<<<<<<<<<<
@@ -25833,7 +25833,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-      /* "algorithms/orientation.py":699
+      /* "openptv2/algorithms/orientation.py":699
  *             # cc derivative
  *             cal.int_par.cc += dm
  *             cal.ext_par.compute_rotation_matrix()             # <<<<<<<<<<<<<<
@@ -25855,7 +25855,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       }
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-      /* "algorithms/orientation.py":700
+      /* "openptv2/algorithms/orientation.py":700
  *             cal.int_par.cc += dm
  *             cal.ext_par.compute_rotation_matrix()
  *             xpd, ypd = img_coord(np.asarray(fix[i]), cal, cpar.mm)             # <<<<<<<<<<<<<<
@@ -25973,7 +25973,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_XDECREF_SET(__pyx_v_ypd, __pyx_t_14);
       __pyx_t_14 = 0;
 
-      /* "algorithms/orientation.py":701
+      /* "openptv2/algorithms/orientation.py":701
  *             cal.ext_par.compute_rotation_matrix()
  *             xpd, ypd = img_coord(np.asarray(fix[i]), cal, cpar.mm)
  *             X[n, 6] = (xpd - xp) / dm             # <<<<<<<<<<<<<<
@@ -26002,7 +26002,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
       __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
 
-      /* "algorithms/orientation.py":702
+      /* "openptv2/algorithms/orientation.py":702
  *             xpd, ypd = img_coord(np.asarray(fix[i]), cal, cpar.mm)
  *             X[n, 6] = (xpd - xp) / dm
  *             X[n + 1, 6] = (ypd - yp) / dm             # <<<<<<<<<<<<<<
@@ -26031,7 +26031,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
       __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
 
-      /* "algorithms/orientation.py":703
+      /* "openptv2/algorithms/orientation.py":703
  *             X[n, 6] = (xpd - xp) / dm
  *             X[n + 1, 6] = (ypd - yp) / dm
  *             cal.int_par.cc -= dm             # <<<<<<<<<<<<<<
@@ -26055,7 +26055,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
       __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
 
-      /* "algorithms/orientation.py":706
+      /* "openptv2/algorithms/orientation.py":706
  * 
  *             # glass interface derivatives
  *             al += dm             # <<<<<<<<<<<<<<
@@ -26064,7 +26064,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
 */
       __pyx_v_al = (__pyx_v_al + __pyx_v_dm);
 
-      /* "algorithms/orientation.py":707
+      /* "openptv2/algorithms/orientation.py":707
  *             # glass interface derivatives
  *             al += dm
  *             cal.glass_par.vec_x += e1[0] * nGl * al             # <<<<<<<<<<<<<<
@@ -26097,7 +26097,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
       __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
 
-      /* "algorithms/orientation.py":708
+      /* "openptv2/algorithms/orientation.py":708
  *             al += dm
  *             cal.glass_par.vec_x += e1[0] * nGl * al
  *             cal.glass_par.vec_y += e1[1] * nGl * al             # <<<<<<<<<<<<<<
@@ -26130,7 +26130,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
       __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
 
-      /* "algorithms/orientation.py":709
+      /* "openptv2/algorithms/orientation.py":709
  *             cal.glass_par.vec_x += e1[0] * nGl * al
  *             cal.glass_par.vec_y += e1[1] * nGl * al
  *             cal.glass_par.vec_z += e1[2] * nGl * al             # <<<<<<<<<<<<<<
@@ -26163,7 +26163,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-      /* "algorithms/orientation.py":710
+      /* "openptv2/algorithms/orientation.py":710
  *             cal.glass_par.vec_y += e1[1] * nGl * al
  *             cal.glass_par.vec_z += e1[2] * nGl * al
  *             xpd, ypd = img_coord(np.asarray(fix[i]), cal, cpar.mm)             # <<<<<<<<<<<<<<
@@ -26281,7 +26281,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_DECREF_SET(__pyx_v_ypd, __pyx_t_6);
       __pyx_t_6 = 0;
 
-      /* "algorithms/orientation.py":711
+      /* "openptv2/algorithms/orientation.py":711
  *             cal.glass_par.vec_z += e1[2] * nGl * al
  *             xpd, ypd = img_coord(np.asarray(fix[i]), cal, cpar.mm)
  *             X[n, 16] = (xpd - xp) / dm             # <<<<<<<<<<<<<<
@@ -26310,7 +26310,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
       __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
 
-      /* "algorithms/orientation.py":712
+      /* "openptv2/algorithms/orientation.py":712
  *             xpd, ypd = img_coord(np.asarray(fix[i]), cal, cpar.mm)
  *             X[n, 16] = (xpd - xp) / dm
  *             X[n + 1, 16] = (ypd - yp) / dm             # <<<<<<<<<<<<<<
@@ -26339,7 +26339,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-      /* "algorithms/orientation.py":713
+      /* "openptv2/algorithms/orientation.py":713
  *             X[n, 16] = (xpd - xp) / dm
  *             X[n + 1, 16] = (ypd - yp) / dm
  *             al -= dm             # <<<<<<<<<<<<<<
@@ -26348,7 +26348,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
 */
       __pyx_v_al = (__pyx_v_al - __pyx_v_dm);
 
-      /* "algorithms/orientation.py":714
+      /* "openptv2/algorithms/orientation.py":714
  *             X[n + 1, 16] = (ypd - yp) / dm
  *             al -= dm
  *             cal.glass_par.vec_x = safety_x             # <<<<<<<<<<<<<<
@@ -26360,7 +26360,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       if (__Pyx_PyObject_SetAttrStr(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_vec_x, __pyx_v_safety_x) < (0)) __PYX_ERR(0, 714, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-      /* "algorithms/orientation.py":715
+      /* "openptv2/algorithms/orientation.py":715
  *             al -= dm
  *             cal.glass_par.vec_x = safety_x
  *             cal.glass_par.vec_y = safety_y             # <<<<<<<<<<<<<<
@@ -26372,7 +26372,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       if (__Pyx_PyObject_SetAttrStr(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_vec_y, __pyx_v_safety_y) < (0)) __PYX_ERR(0, 715, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-      /* "algorithms/orientation.py":716
+      /* "openptv2/algorithms/orientation.py":716
  *             cal.glass_par.vec_x = safety_x
  *             cal.glass_par.vec_y = safety_y
  *             cal.glass_par.vec_z = safety_z             # <<<<<<<<<<<<<<
@@ -26384,7 +26384,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       if (__Pyx_PyObject_SetAttrStr(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_vec_z, __pyx_v_safety_z) < (0)) __PYX_ERR(0, 716, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-      /* "algorithms/orientation.py":718
+      /* "openptv2/algorithms/orientation.py":718
  *             cal.glass_par.vec_z = safety_z
  * 
  *             be += dm             # <<<<<<<<<<<<<<
@@ -26393,7 +26393,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
 */
       __pyx_v_be = (__pyx_v_be + __pyx_v_dm);
 
-      /* "algorithms/orientation.py":719
+      /* "openptv2/algorithms/orientation.py":719
  * 
  *             be += dm
  *             cal.glass_par.vec_x += e2[0] * nGl * be             # <<<<<<<<<<<<<<
@@ -26426,7 +26426,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
       __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
 
-      /* "algorithms/orientation.py":720
+      /* "openptv2/algorithms/orientation.py":720
  *             be += dm
  *             cal.glass_par.vec_x += e2[0] * nGl * be
  *             cal.glass_par.vec_y += e2[1] * nGl * be             # <<<<<<<<<<<<<<
@@ -26459,7 +26459,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-      /* "algorithms/orientation.py":721
+      /* "openptv2/algorithms/orientation.py":721
  *             cal.glass_par.vec_x += e2[0] * nGl * be
  *             cal.glass_par.vec_y += e2[1] * nGl * be
  *             cal.glass_par.vec_z += e2[2] * nGl * be             # <<<<<<<<<<<<<<
@@ -26492,7 +26492,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
       __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
 
-      /* "algorithms/orientation.py":722
+      /* "openptv2/algorithms/orientation.py":722
  *             cal.glass_par.vec_y += e2[1] * nGl * be
  *             cal.glass_par.vec_z += e2[2] * nGl * be
  *             xpd, ypd = img_coord(np.asarray(fix[i]), cal, cpar.mm)             # <<<<<<<<<<<<<<
@@ -26610,7 +26610,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_DECREF_SET(__pyx_v_ypd, __pyx_t_1);
       __pyx_t_1 = 0;
 
-      /* "algorithms/orientation.py":723
+      /* "openptv2/algorithms/orientation.py":723
  *             cal.glass_par.vec_z += e2[2] * nGl * be
  *             xpd, ypd = img_coord(np.asarray(fix[i]), cal, cpar.mm)
  *             X[n, 17] = (xpd - xp) / dm             # <<<<<<<<<<<<<<
@@ -26639,7 +26639,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
       __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
 
-      /* "algorithms/orientation.py":724
+      /* "openptv2/algorithms/orientation.py":724
  *             xpd, ypd = img_coord(np.asarray(fix[i]), cal, cpar.mm)
  *             X[n, 17] = (xpd - xp) / dm
  *             X[n + 1, 17] = (ypd - yp) / dm             # <<<<<<<<<<<<<<
@@ -26668,7 +26668,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "algorithms/orientation.py":725
+      /* "openptv2/algorithms/orientation.py":725
  *             X[n, 17] = (xpd - xp) / dm
  *             X[n + 1, 17] = (ypd - yp) / dm
  *             be -= dm             # <<<<<<<<<<<<<<
@@ -26677,7 +26677,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
 */
       __pyx_v_be = (__pyx_v_be - __pyx_v_dm);
 
-      /* "algorithms/orientation.py":726
+      /* "openptv2/algorithms/orientation.py":726
  *             X[n + 1, 17] = (ypd - yp) / dm
  *             be -= dm
  *             cal.glass_par.vec_x = safety_x             # <<<<<<<<<<<<<<
@@ -26689,7 +26689,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       if (__Pyx_PyObject_SetAttrStr(__pyx_t_1, __pyx_mstate_global->__pyx_n_u_vec_x, __pyx_v_safety_x) < (0)) __PYX_ERR(0, 726, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "algorithms/orientation.py":727
+      /* "openptv2/algorithms/orientation.py":727
  *             be -= dm
  *             cal.glass_par.vec_x = safety_x
  *             cal.glass_par.vec_y = safety_y             # <<<<<<<<<<<<<<
@@ -26701,7 +26701,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       if (__Pyx_PyObject_SetAttrStr(__pyx_t_1, __pyx_mstate_global->__pyx_n_u_vec_y, __pyx_v_safety_y) < (0)) __PYX_ERR(0, 727, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "algorithms/orientation.py":728
+      /* "openptv2/algorithms/orientation.py":728
  *             cal.glass_par.vec_x = safety_x
  *             cal.glass_par.vec_y = safety_y
  *             cal.glass_par.vec_z = safety_z             # <<<<<<<<<<<<<<
@@ -26713,7 +26713,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       if (__Pyx_PyObject_SetAttrStr(__pyx_t_1, __pyx_mstate_global->__pyx_n_u_vec_z, __pyx_v_safety_z) < (0)) __PYX_ERR(0, 728, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "algorithms/orientation.py":730
+      /* "openptv2/algorithms/orientation.py":730
  *             cal.glass_par.vec_z = safety_z
  * 
  *             ga += dm             # <<<<<<<<<<<<<<
@@ -26722,7 +26722,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
 */
       __pyx_v_ga = (__pyx_v_ga + __pyx_v_dm);
 
-      /* "algorithms/orientation.py":731
+      /* "openptv2/algorithms/orientation.py":731
  * 
  *             ga += dm
  *             cal.glass_par.vec_x += cal.glass_par.vec_x * nGl * ga             # <<<<<<<<<<<<<<
@@ -26758,7 +26758,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-      /* "algorithms/orientation.py":732
+      /* "openptv2/algorithms/orientation.py":732
  *             ga += dm
  *             cal.glass_par.vec_x += cal.glass_par.vec_x * nGl * ga
  *             cal.glass_par.vec_y += cal.glass_par.vec_y * nGl * ga             # <<<<<<<<<<<<<<
@@ -26794,7 +26794,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "algorithms/orientation.py":733
+      /* "openptv2/algorithms/orientation.py":733
  *             cal.glass_par.vec_x += cal.glass_par.vec_x * nGl * ga
  *             cal.glass_par.vec_y += cal.glass_par.vec_y * nGl * ga
  *             cal.glass_par.vec_z += cal.glass_par.vec_z * nGl * ga             # <<<<<<<<<<<<<<
@@ -26830,7 +26830,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-      /* "algorithms/orientation.py":734
+      /* "openptv2/algorithms/orientation.py":734
  *             cal.glass_par.vec_y += cal.glass_par.vec_y * nGl * ga
  *             cal.glass_par.vec_z += cal.glass_par.vec_z * nGl * ga
  *             xpd, ypd = img_coord(np.asarray(fix[i]), cal, cpar.mm)             # <<<<<<<<<<<<<<
@@ -26948,7 +26948,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_DECREF_SET(__pyx_v_ypd, __pyx_t_16);
       __pyx_t_16 = 0;
 
-      /* "algorithms/orientation.py":735
+      /* "openptv2/algorithms/orientation.py":735
  *             cal.glass_par.vec_z += cal.glass_par.vec_z * nGl * ga
  *             xpd, ypd = img_coord(np.asarray(fix[i]), cal, cpar.mm)
  *             X[n, 18] = (xpd - xp) / dm             # <<<<<<<<<<<<<<
@@ -26977,7 +26977,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
       __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
 
-      /* "algorithms/orientation.py":736
+      /* "openptv2/algorithms/orientation.py":736
  *             xpd, ypd = img_coord(np.asarray(fix[i]), cal, cpar.mm)
  *             X[n, 18] = (xpd - xp) / dm
  *             X[n + 1, 18] = (ypd - yp) / dm             # <<<<<<<<<<<<<<
@@ -27006,7 +27006,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
       __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
 
-      /* "algorithms/orientation.py":737
+      /* "openptv2/algorithms/orientation.py":737
  *             X[n, 18] = (xpd - xp) / dm
  *             X[n + 1, 18] = (ypd - yp) / dm
  *             ga -= dm             # <<<<<<<<<<<<<<
@@ -27015,7 +27015,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
 */
       __pyx_v_ga = (__pyx_v_ga - __pyx_v_dm);
 
-      /* "algorithms/orientation.py":738
+      /* "openptv2/algorithms/orientation.py":738
  *             X[n + 1, 18] = (ypd - yp) / dm
  *             ga -= dm
  *             cal.glass_par.vec_x = safety_x             # <<<<<<<<<<<<<<
@@ -27027,7 +27027,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       if (__Pyx_PyObject_SetAttrStr(__pyx_t_16, __pyx_mstate_global->__pyx_n_u_vec_x, __pyx_v_safety_x) < (0)) __PYX_ERR(0, 738, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
 
-      /* "algorithms/orientation.py":739
+      /* "openptv2/algorithms/orientation.py":739
  *             ga -= dm
  *             cal.glass_par.vec_x = safety_x
  *             cal.glass_par.vec_y = safety_y             # <<<<<<<<<<<<<<
@@ -27039,7 +27039,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       if (__Pyx_PyObject_SetAttrStr(__pyx_t_16, __pyx_mstate_global->__pyx_n_u_vec_y, __pyx_v_safety_y) < (0)) __PYX_ERR(0, 739, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
 
-      /* "algorithms/orientation.py":740
+      /* "openptv2/algorithms/orientation.py":740
  *             cal.glass_par.vec_x = safety_x
  *             cal.glass_par.vec_y = safety_y
  *             cal.glass_par.vec_z = safety_z             # <<<<<<<<<<<<<<
@@ -27051,7 +27051,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       if (__Pyx_PyObject_SetAttrStr(__pyx_t_16, __pyx_mstate_global->__pyx_n_u_vec_z, __pyx_v_safety_z) < (0)) __PYX_ERR(0, 740, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
 
-      /* "algorithms/orientation.py":742
+      /* "openptv2/algorithms/orientation.py":742
  *             cal.glass_par.vec_z = safety_z
  * 
  *             y[n] = xc - xp             # <<<<<<<<<<<<<<
@@ -27063,7 +27063,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       if (unlikely((__Pyx_SetItemInt(__pyx_v_y, __pyx_v_n, __pyx_t_16, int, 1, __Pyx_PyLong_From_int, 0, 0, 0, 1, __Pyx_ReferenceSharing_OwnStrongReference) < 0))) __PYX_ERR(0, 742, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
 
-      /* "algorithms/orientation.py":743
+      /* "openptv2/algorithms/orientation.py":743
  * 
  *             y[n] = xc - xp
  *             y[n + 1] = yc - yp             # <<<<<<<<<<<<<<
@@ -27076,7 +27076,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       if (unlikely((__Pyx_SetItemInt(__pyx_v_y, __pyx_t_22, __pyx_t_16, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_OwnStrongReference) < 0))) __PYX_ERR(0, 743, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
 
-      /* "algorithms/orientation.py":745
+      /* "openptv2/algorithms/orientation.py":745
  *             y[n + 1] = yc - yp
  * 
  *             n += 2             # <<<<<<<<<<<<<<
@@ -27085,7 +27085,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
 */
       __pyx_v_n = (__pyx_v_n + 2);
 
-      /* "algorithms/orientation.py":635
+      /* "openptv2/algorithms/orientation.py":635
  *         n = 0
  * 
  *         for i in range(nfix):             # <<<<<<<<<<<<<<
@@ -27096,7 +27096,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     }
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
 
-    /* "algorithms/orientation.py":747
+    /* "openptv2/algorithms/orientation.py":747
  *             n += 2
  * 
  *         n_obs = n             # <<<<<<<<<<<<<<
@@ -27105,7 +27105,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
 */
     __pyx_v_n_obs = __pyx_v_n;
 
-    /* "algorithms/orientation.py":750
+    /* "openptv2/algorithms/orientation.py":750
  * 
  *         # identity constraints
  *         for i in range(IDT):             # <<<<<<<<<<<<<<
@@ -27144,7 +27144,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_XDECREF_SET(__pyx_v_i, __pyx_t_8);
       __pyx_t_8 = 0;
 
-      /* "algorithms/orientation.py":751
+      /* "openptv2/algorithms/orientation.py":751
  *         # identity constraints
  *         for i in range(IDT):
  *             X[n_obs + i, 6 + i] = 1             # <<<<<<<<<<<<<<
@@ -27169,7 +27169,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       if (unlikely((PyObject_SetItem(__pyx_v_X, __pyx_t_6, __pyx_mstate_global->__pyx_int_1) < 0))) __PYX_ERR(0, 751, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-      /* "algorithms/orientation.py":750
+      /* "openptv2/algorithms/orientation.py":750
  * 
  *         # identity constraints
  *         for i in range(IDT):             # <<<<<<<<<<<<<<
@@ -27179,7 +27179,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     }
     __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
 
-    /* "algorithms/orientation.py":753
+    /* "openptv2/algorithms/orientation.py":753
  *             X[n_obs + i, 6 + i] = 1
  * 
  *         y[n_obs + 0] = ident[0] - cal.int_par.cc             # <<<<<<<<<<<<<<
@@ -27201,7 +27201,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     if (unlikely((__Pyx_SetItemInt(__pyx_v_y, __pyx_t_22, __pyx_t_6, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_OwnStrongReference) < 0))) __PYX_ERR(0, 753, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-    /* "algorithms/orientation.py":754
+    /* "openptv2/algorithms/orientation.py":754
  * 
  *         y[n_obs + 0] = ident[0] - cal.int_par.cc
  *         y[n_obs + 1] = ident[1] - cal.int_par.xh             # <<<<<<<<<<<<<<
@@ -27223,7 +27223,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     if (unlikely((__Pyx_SetItemInt(__pyx_v_y, __pyx_t_22, __pyx_t_8, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_OwnStrongReference) < 0))) __PYX_ERR(0, 754, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
 
-    /* "algorithms/orientation.py":755
+    /* "openptv2/algorithms/orientation.py":755
  *         y[n_obs + 0] = ident[0] - cal.int_par.cc
  *         y[n_obs + 1] = ident[1] - cal.int_par.xh
  *         y[n_obs + 2] = ident[2] - cal.int_par.yh             # <<<<<<<<<<<<<<
@@ -27245,7 +27245,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     if (unlikely((__Pyx_SetItemInt(__pyx_v_y, __pyx_t_22, __pyx_t_14, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_OwnStrongReference) < 0))) __PYX_ERR(0, 755, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
 
-    /* "algorithms/orientation.py":756
+    /* "openptv2/algorithms/orientation.py":756
  *         y[n_obs + 1] = ident[1] - cal.int_par.xh
  *         y[n_obs + 2] = ident[2] - cal.int_par.yh
  *         y[n_obs + 3] = ident[3] - cal.added_par.k1             # <<<<<<<<<<<<<<
@@ -27267,7 +27267,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     if (unlikely((__Pyx_SetItemInt(__pyx_v_y, __pyx_t_22, __pyx_t_6, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_OwnStrongReference) < 0))) __PYX_ERR(0, 756, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-    /* "algorithms/orientation.py":757
+    /* "openptv2/algorithms/orientation.py":757
  *         y[n_obs + 2] = ident[2] - cal.int_par.yh
  *         y[n_obs + 3] = ident[3] - cal.added_par.k1
  *         y[n_obs + 4] = ident[4] - cal.added_par.k2             # <<<<<<<<<<<<<<
@@ -27289,7 +27289,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     if (unlikely((__Pyx_SetItemInt(__pyx_v_y, __pyx_t_22, __pyx_t_8, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_OwnStrongReference) < 0))) __PYX_ERR(0, 757, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
 
-    /* "algorithms/orientation.py":758
+    /* "openptv2/algorithms/orientation.py":758
  *         y[n_obs + 3] = ident[3] - cal.added_par.k1
  *         y[n_obs + 4] = ident[4] - cal.added_par.k2
  *         y[n_obs + 5] = ident[5] - cal.added_par.k3             # <<<<<<<<<<<<<<
@@ -27311,7 +27311,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     if (unlikely((__Pyx_SetItemInt(__pyx_v_y, __pyx_t_22, __pyx_t_14, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_OwnStrongReference) < 0))) __PYX_ERR(0, 758, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
 
-    /* "algorithms/orientation.py":759
+    /* "openptv2/algorithms/orientation.py":759
  *         y[n_obs + 4] = ident[4] - cal.added_par.k2
  *         y[n_obs + 5] = ident[5] - cal.added_par.k3
  *         y[n_obs + 6] = ident[6] - cal.added_par.p1             # <<<<<<<<<<<<<<
@@ -27333,7 +27333,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     if (unlikely((__Pyx_SetItemInt(__pyx_v_y, __pyx_t_22, __pyx_t_6, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_OwnStrongReference) < 0))) __PYX_ERR(0, 759, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-    /* "algorithms/orientation.py":760
+    /* "openptv2/algorithms/orientation.py":760
  *         y[n_obs + 5] = ident[5] - cal.added_par.k3
  *         y[n_obs + 6] = ident[6] - cal.added_par.p1
  *         y[n_obs + 7] = ident[7] - cal.added_par.p2             # <<<<<<<<<<<<<<
@@ -27355,7 +27355,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     if (unlikely((__Pyx_SetItemInt(__pyx_v_y, __pyx_t_22, __pyx_t_8, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_OwnStrongReference) < 0))) __PYX_ERR(0, 760, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
 
-    /* "algorithms/orientation.py":761
+    /* "openptv2/algorithms/orientation.py":761
  *         y[n_obs + 6] = ident[6] - cal.added_par.p1
  *         y[n_obs + 7] = ident[7] - cal.added_par.p2
  *         y[n_obs + 8] = ident[8] - cal.added_par.scx             # <<<<<<<<<<<<<<
@@ -27377,7 +27377,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     if (unlikely((__Pyx_SetItemInt(__pyx_v_y, __pyx_t_22, __pyx_t_14, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_OwnStrongReference) < 0))) __PYX_ERR(0, 761, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
 
-    /* "algorithms/orientation.py":762
+    /* "openptv2/algorithms/orientation.py":762
  *         y[n_obs + 7] = ident[7] - cal.added_par.p2
  *         y[n_obs + 8] = ident[8] - cal.added_par.scx
  *         y[n_obs + 9] = ident[9] - cal.added_par.she             # <<<<<<<<<<<<<<
@@ -27399,7 +27399,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     if (unlikely((__Pyx_SetItemInt(__pyx_v_y, __pyx_t_22, __pyx_t_6, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_OwnStrongReference) < 0))) __PYX_ERR(0, 762, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-    /* "algorithms/orientation.py":764
+    /* "openptv2/algorithms/orientation.py":764
  *         y[n_obs + 9] = ident[9] - cal.added_par.she
  * 
  *         P[n_obs + 0] = 1 if flags.ccflag else POS_INF             # <<<<<<<<<<<<<<
@@ -27423,7 +27423,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     if (unlikely((__Pyx_SetItemInt(__pyx_v_P, __pyx_t_22, __pyx_t_6, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_OwnStrongReference) < 0))) __PYX_ERR(0, 764, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-    /* "algorithms/orientation.py":765
+    /* "openptv2/algorithms/orientation.py":765
  * 
  *         P[n_obs + 0] = 1 if flags.ccflag else POS_INF
  *         P[n_obs + 1] = 1 if flags.xhflag else POS_INF             # <<<<<<<<<<<<<<
@@ -27447,7 +27447,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     if (unlikely((__Pyx_SetItemInt(__pyx_v_P, __pyx_t_22, __pyx_t_6, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_OwnStrongReference) < 0))) __PYX_ERR(0, 765, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-    /* "algorithms/orientation.py":766
+    /* "openptv2/algorithms/orientation.py":766
  *         P[n_obs + 0] = 1 if flags.ccflag else POS_INF
  *         P[n_obs + 1] = 1 if flags.xhflag else POS_INF
  *         P[n_obs + 2] = 1 if flags.yhflag else POS_INF             # <<<<<<<<<<<<<<
@@ -27471,7 +27471,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     if (unlikely((__Pyx_SetItemInt(__pyx_v_P, __pyx_t_22, __pyx_t_6, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_OwnStrongReference) < 0))) __PYX_ERR(0, 766, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-    /* "algorithms/orientation.py":767
+    /* "openptv2/algorithms/orientation.py":767
  *         P[n_obs + 1] = 1 if flags.xhflag else POS_INF
  *         P[n_obs + 2] = 1 if flags.yhflag else POS_INF
  *         P[n_obs + 3] = 1 if flags.k1flag else POS_INF             # <<<<<<<<<<<<<<
@@ -27495,7 +27495,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     if (unlikely((__Pyx_SetItemInt(__pyx_v_P, __pyx_t_22, __pyx_t_6, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_OwnStrongReference) < 0))) __PYX_ERR(0, 767, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-    /* "algorithms/orientation.py":768
+    /* "openptv2/algorithms/orientation.py":768
  *         P[n_obs + 2] = 1 if flags.yhflag else POS_INF
  *         P[n_obs + 3] = 1 if flags.k1flag else POS_INF
  *         P[n_obs + 4] = 1 if flags.k2flag else POS_INF             # <<<<<<<<<<<<<<
@@ -27519,7 +27519,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     if (unlikely((__Pyx_SetItemInt(__pyx_v_P, __pyx_t_22, __pyx_t_6, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_OwnStrongReference) < 0))) __PYX_ERR(0, 768, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-    /* "algorithms/orientation.py":769
+    /* "openptv2/algorithms/orientation.py":769
  *         P[n_obs + 3] = 1 if flags.k1flag else POS_INF
  *         P[n_obs + 4] = 1 if flags.k2flag else POS_INF
  *         P[n_obs + 5] = 1 if flags.k3flag else POS_INF             # <<<<<<<<<<<<<<
@@ -27543,7 +27543,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     if (unlikely((__Pyx_SetItemInt(__pyx_v_P, __pyx_t_22, __pyx_t_6, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_OwnStrongReference) < 0))) __PYX_ERR(0, 769, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-    /* "algorithms/orientation.py":770
+    /* "openptv2/algorithms/orientation.py":770
  *         P[n_obs + 4] = 1 if flags.k2flag else POS_INF
  *         P[n_obs + 5] = 1 if flags.k3flag else POS_INF
  *         P[n_obs + 6] = 1 if flags.p1flag else POS_INF             # <<<<<<<<<<<<<<
@@ -27567,7 +27567,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     if (unlikely((__Pyx_SetItemInt(__pyx_v_P, __pyx_t_22, __pyx_t_6, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_OwnStrongReference) < 0))) __PYX_ERR(0, 770, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-    /* "algorithms/orientation.py":771
+    /* "openptv2/algorithms/orientation.py":771
  *         P[n_obs + 5] = 1 if flags.k3flag else POS_INF
  *         P[n_obs + 6] = 1 if flags.p1flag else POS_INF
  *         P[n_obs + 7] = 1 if flags.p2flag else POS_INF             # <<<<<<<<<<<<<<
@@ -27591,7 +27591,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     if (unlikely((__Pyx_SetItemInt(__pyx_v_P, __pyx_t_22, __pyx_t_6, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_OwnStrongReference) < 0))) __PYX_ERR(0, 771, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-    /* "algorithms/orientation.py":772
+    /* "openptv2/algorithms/orientation.py":772
  *         P[n_obs + 6] = 1 if flags.p1flag else POS_INF
  *         P[n_obs + 7] = 1 if flags.p2flag else POS_INF
  *         P[n_obs + 8] = 1 if flags.scxflag else POS_INF             # <<<<<<<<<<<<<<
@@ -27615,7 +27615,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     if (unlikely((__Pyx_SetItemInt(__pyx_v_P, __pyx_t_22, __pyx_t_6, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_OwnStrongReference) < 0))) __PYX_ERR(0, 772, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-    /* "algorithms/orientation.py":773
+    /* "openptv2/algorithms/orientation.py":773
  *         P[n_obs + 7] = 1 if flags.p2flag else POS_INF
  *         P[n_obs + 8] = 1 if flags.scxflag else POS_INF
  *         P[n_obs + 9] = 1 if flags.sheflag else POS_INF             # <<<<<<<<<<<<<<
@@ -27639,7 +27639,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     if (unlikely((__Pyx_SetItemInt(__pyx_v_P, __pyx_t_22, __pyx_t_6, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_OwnStrongReference) < 0))) __PYX_ERR(0, 773, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-    /* "algorithms/orientation.py":775
+    /* "openptv2/algorithms/orientation.py":775
  *         P[n_obs + 9] = 1 if flags.sheflag else POS_INF
  * 
  *         n_obs += IDT             # <<<<<<<<<<<<<<
@@ -27658,7 +27658,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
     __pyx_v_n_obs = __pyx_t_23;
 
-    /* "algorithms/orientation.py":778
+    /* "openptv2/algorithms/orientation.py":778
  * 
  *         # homogenize
  *         Xh = np.zeros_like(X[:n_obs])             # <<<<<<<<<<<<<<
@@ -27697,7 +27697,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     __Pyx_XDECREF_SET(__pyx_v_Xh, __pyx_t_14);
     __pyx_t_14 = 0;
 
-    /* "algorithms/orientation.py":779
+    /* "openptv2/algorithms/orientation.py":779
  *         # homogenize
  *         Xh = np.zeros_like(X[:n_obs])
  *         yh = np.zeros(n_obs)             # <<<<<<<<<<<<<<
@@ -27736,7 +27736,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     __Pyx_XDECREF_SET(__pyx_v_yh, __pyx_t_14);
     __pyx_t_14 = 0;
 
-    /* "algorithms/orientation.py":780
+    /* "openptv2/algorithms/orientation.py":780
  *         Xh = np.zeros_like(X[:n_obs])
  *         yh = np.zeros(n_obs)
  *         for i in range(n_obs):             # <<<<<<<<<<<<<<
@@ -27775,7 +27775,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_XDECREF_SET(__pyx_v_i, __pyx_t_14);
       __pyx_t_14 = 0;
 
-      /* "algorithms/orientation.py":781
+      /* "openptv2/algorithms/orientation.py":781
  *         yh = np.zeros(n_obs)
  *         for i in range(n_obs):
  *             p = np.sqrt(P[i])             # <<<<<<<<<<<<<<
@@ -27814,7 +27814,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_XDECREF_SET(__pyx_v_p, __pyx_t_14);
       __pyx_t_14 = 0;
 
-      /* "algorithms/orientation.py":782
+      /* "openptv2/algorithms/orientation.py":782
  *         for i in range(n_obs):
  *             p = np.sqrt(P[i])
  *             Xh[i] = p * X[i]             # <<<<<<<<<<<<<<
@@ -27829,7 +27829,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       if (unlikely((PyObject_SetItem(__pyx_v_Xh, __pyx_v_i, __pyx_t_1) < 0))) __PYX_ERR(0, 782, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "algorithms/orientation.py":783
+      /* "openptv2/algorithms/orientation.py":783
  *             p = np.sqrt(P[i])
  *             Xh[i] = p * X[i]
  *             yh[i] = p * y[i]             # <<<<<<<<<<<<<<
@@ -27844,7 +27844,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       if (unlikely((PyObject_SetItem(__pyx_v_yh, __pyx_v_i, __pyx_t_14) < 0))) __PYX_ERR(0, 783, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
 
-      /* "algorithms/orientation.py":780
+      /* "openptv2/algorithms/orientation.py":780
  *         Xh = np.zeros_like(X[:n_obs])
  *         yh = np.zeros(n_obs)
  *         for i in range(n_obs):             # <<<<<<<<<<<<<<
@@ -27854,7 +27854,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     }
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-    /* "algorithms/orientation.py":785
+    /* "openptv2/algorithms/orientation.py":785
  *             yh[i] = p * y[i]
  * 
  *         XPX = ata(Xh, n_obs, numbers)             # <<<<<<<<<<<<<<
@@ -27890,7 +27890,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     __Pyx_XDECREF_SET(__pyx_v_XPX, __pyx_t_6);
     __pyx_t_6 = 0;
 
-    /* "algorithms/orientation.py":786
+    /* "openptv2/algorithms/orientation.py":786
  * 
  *         XPX = ata(Xh, n_obs, numbers)
  *         XPX = matinv(XPX, numbers)             # <<<<<<<<<<<<<<
@@ -27923,7 +27923,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     __Pyx_DECREF_SET(__pyx_v_XPX, __pyx_t_6);
     __pyx_t_6 = 0;
 
-    /* "algorithms/orientation.py":787
+    /* "openptv2/algorithms/orientation.py":787
  *         XPX = ata(Xh, n_obs, numbers)
  *         XPX = matinv(XPX, numbers)
  *         XPy = atl(Xh, yh, n_obs, numbers)             # <<<<<<<<<<<<<<
@@ -27959,7 +27959,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     __Pyx_XDECREF_SET(__pyx_v_XPy, __pyx_t_6);
     __pyx_t_6 = 0;
 
-    /* "algorithms/orientation.py":788
+    /* "openptv2/algorithms/orientation.py":788
  *         XPX = matinv(XPX, numbers)
  *         XPy = atl(Xh, yh, n_obs, numbers)
  *         beta = matmul(XPX, XPy, numbers, numbers)             # <<<<<<<<<<<<<<
@@ -27992,7 +27992,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     __Pyx_XDECREF_SET(__pyx_v_beta, __pyx_t_6);
     __pyx_t_6 = 0;
 
-    /* "algorithms/orientation.py":790
+    /* "openptv2/algorithms/orientation.py":790
  *         beta = matmul(XPX, XPy, numbers, numbers)
  * 
  *         stopflag = 1             # <<<<<<<<<<<<<<
@@ -28001,7 +28001,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
 */
     __pyx_v_stopflag = 1;
 
-    /* "algorithms/orientation.py":791
+    /* "openptv2/algorithms/orientation.py":791
  * 
  *         stopflag = 1
  *         for i in range(numbers):             # <<<<<<<<<<<<<<
@@ -28037,7 +28037,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_XDECREF_SET(__pyx_v_i, __pyx_t_6);
       __pyx_t_6 = 0;
 
-      /* "algorithms/orientation.py":792
+      /* "openptv2/algorithms/orientation.py":792
  *         stopflag = 1
  *         for i in range(numbers):
  *             if abs(beta[i]) > CONVERGENCE:             # <<<<<<<<<<<<<<
@@ -28058,7 +28058,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
       if (__pyx_t_10) {
 
-        /* "algorithms/orientation.py":793
+        /* "openptv2/algorithms/orientation.py":793
  *         for i in range(numbers):
  *             if abs(beta[i]) > CONVERGENCE:
  *                 stopflag = 0             # <<<<<<<<<<<<<<
@@ -28067,7 +28067,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
 */
         __pyx_v_stopflag = 0;
 
-        /* "algorithms/orientation.py":792
+        /* "openptv2/algorithms/orientation.py":792
  *         stopflag = 1
  *         for i in range(numbers):
  *             if abs(beta[i]) > CONVERGENCE:             # <<<<<<<<<<<<<<
@@ -28076,7 +28076,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
 */
       }
 
-      /* "algorithms/orientation.py":791
+      /* "openptv2/algorithms/orientation.py":791
  * 
  *         stopflag = 1
  *         for i in range(numbers):             # <<<<<<<<<<<<<<
@@ -28086,7 +28086,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     }
     __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
 
-    /* "algorithms/orientation.py":795
+    /* "openptv2/algorithms/orientation.py":795
  *                 stopflag = 0
  * 
  *         if not flags.ccflag:             # <<<<<<<<<<<<<<
@@ -28100,7 +28100,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     __pyx_t_20 = (!__pyx_t_10);
     if (__pyx_t_20) {
 
-      /* "algorithms/orientation.py":796
+      /* "openptv2/algorithms/orientation.py":796
  * 
  *         if not flags.ccflag:
  *             beta[6] = 0.0             # <<<<<<<<<<<<<<
@@ -28109,7 +28109,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
 */
       if (unlikely((__Pyx_SetItemInt(__pyx_v_beta, 6, __pyx_mstate_global->__pyx_float_0_0, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_OwnStrongReference) < 0))) __PYX_ERR(0, 796, __pyx_L1_error)
 
-      /* "algorithms/orientation.py":795
+      /* "openptv2/algorithms/orientation.py":795
  *                 stopflag = 0
  * 
  *         if not flags.ccflag:             # <<<<<<<<<<<<<<
@@ -28118,7 +28118,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
 */
     }
 
-    /* "algorithms/orientation.py":797
+    /* "openptv2/algorithms/orientation.py":797
  *         if not flags.ccflag:
  *             beta[6] = 0.0
  *         if not flags.xhflag:             # <<<<<<<<<<<<<<
@@ -28132,7 +28132,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     __pyx_t_10 = (!__pyx_t_20);
     if (__pyx_t_10) {
 
-      /* "algorithms/orientation.py":798
+      /* "openptv2/algorithms/orientation.py":798
  *             beta[6] = 0.0
  *         if not flags.xhflag:
  *             beta[7] = 0.0             # <<<<<<<<<<<<<<
@@ -28141,7 +28141,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
 */
       if (unlikely((__Pyx_SetItemInt(__pyx_v_beta, 7, __pyx_mstate_global->__pyx_float_0_0, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_OwnStrongReference) < 0))) __PYX_ERR(0, 798, __pyx_L1_error)
 
-      /* "algorithms/orientation.py":797
+      /* "openptv2/algorithms/orientation.py":797
  *         if not flags.ccflag:
  *             beta[6] = 0.0
  *         if not flags.xhflag:             # <<<<<<<<<<<<<<
@@ -28150,7 +28150,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
 */
     }
 
-    /* "algorithms/orientation.py":799
+    /* "openptv2/algorithms/orientation.py":799
  *         if not flags.xhflag:
  *             beta[7] = 0.0
  *         if not flags.yhflag:             # <<<<<<<<<<<<<<
@@ -28164,7 +28164,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     __pyx_t_20 = (!__pyx_t_10);
     if (__pyx_t_20) {
 
-      /* "algorithms/orientation.py":800
+      /* "openptv2/algorithms/orientation.py":800
  *             beta[7] = 0.0
  *         if not flags.yhflag:
  *             beta[8] = 0.0             # <<<<<<<<<<<<<<
@@ -28173,7 +28173,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
 */
       if (unlikely((__Pyx_SetItemInt(__pyx_v_beta, 8, __pyx_mstate_global->__pyx_float_0_0, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_OwnStrongReference) < 0))) __PYX_ERR(0, 800, __pyx_L1_error)
 
-      /* "algorithms/orientation.py":799
+      /* "openptv2/algorithms/orientation.py":799
  *         if not flags.xhflag:
  *             beta[7] = 0.0
  *         if not flags.yhflag:             # <<<<<<<<<<<<<<
@@ -28182,7 +28182,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
 */
     }
 
-    /* "algorithms/orientation.py":801
+    /* "openptv2/algorithms/orientation.py":801
  *         if not flags.yhflag:
  *             beta[8] = 0.0
  *         if not flags.k1flag:             # <<<<<<<<<<<<<<
@@ -28196,7 +28196,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     __pyx_t_10 = (!__pyx_t_20);
     if (__pyx_t_10) {
 
-      /* "algorithms/orientation.py":802
+      /* "openptv2/algorithms/orientation.py":802
  *             beta[8] = 0.0
  *         if not flags.k1flag:
  *             beta[9] = 0.0             # <<<<<<<<<<<<<<
@@ -28205,7 +28205,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
 */
       if (unlikely((__Pyx_SetItemInt(__pyx_v_beta, 9, __pyx_mstate_global->__pyx_float_0_0, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_OwnStrongReference) < 0))) __PYX_ERR(0, 802, __pyx_L1_error)
 
-      /* "algorithms/orientation.py":801
+      /* "openptv2/algorithms/orientation.py":801
  *         if not flags.yhflag:
  *             beta[8] = 0.0
  *         if not flags.k1flag:             # <<<<<<<<<<<<<<
@@ -28214,7 +28214,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
 */
     }
 
-    /* "algorithms/orientation.py":803
+    /* "openptv2/algorithms/orientation.py":803
  *         if not flags.k1flag:
  *             beta[9] = 0.0
  *         if not flags.k2flag:             # <<<<<<<<<<<<<<
@@ -28228,7 +28228,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     __pyx_t_20 = (!__pyx_t_10);
     if (__pyx_t_20) {
 
-      /* "algorithms/orientation.py":804
+      /* "openptv2/algorithms/orientation.py":804
  *             beta[9] = 0.0
  *         if not flags.k2flag:
  *             beta[10] = 0.0             # <<<<<<<<<<<<<<
@@ -28237,7 +28237,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
 */
       if (unlikely((__Pyx_SetItemInt(__pyx_v_beta, 10, __pyx_mstate_global->__pyx_float_0_0, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_OwnStrongReference) < 0))) __PYX_ERR(0, 804, __pyx_L1_error)
 
-      /* "algorithms/orientation.py":803
+      /* "openptv2/algorithms/orientation.py":803
  *         if not flags.k1flag:
  *             beta[9] = 0.0
  *         if not flags.k2flag:             # <<<<<<<<<<<<<<
@@ -28246,7 +28246,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
 */
     }
 
-    /* "algorithms/orientation.py":805
+    /* "openptv2/algorithms/orientation.py":805
  *         if not flags.k2flag:
  *             beta[10] = 0.0
  *         if not flags.k3flag:             # <<<<<<<<<<<<<<
@@ -28260,7 +28260,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     __pyx_t_10 = (!__pyx_t_20);
     if (__pyx_t_10) {
 
-      /* "algorithms/orientation.py":806
+      /* "openptv2/algorithms/orientation.py":806
  *             beta[10] = 0.0
  *         if not flags.k3flag:
  *             beta[11] = 0.0             # <<<<<<<<<<<<<<
@@ -28269,7 +28269,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
 */
       if (unlikely((__Pyx_SetItemInt(__pyx_v_beta, 11, __pyx_mstate_global->__pyx_float_0_0, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_OwnStrongReference) < 0))) __PYX_ERR(0, 806, __pyx_L1_error)
 
-      /* "algorithms/orientation.py":805
+      /* "openptv2/algorithms/orientation.py":805
  *         if not flags.k2flag:
  *             beta[10] = 0.0
  *         if not flags.k3flag:             # <<<<<<<<<<<<<<
@@ -28278,7 +28278,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
 */
     }
 
-    /* "algorithms/orientation.py":807
+    /* "openptv2/algorithms/orientation.py":807
  *         if not flags.k3flag:
  *             beta[11] = 0.0
  *         if not flags.p1flag:             # <<<<<<<<<<<<<<
@@ -28292,7 +28292,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     __pyx_t_20 = (!__pyx_t_10);
     if (__pyx_t_20) {
 
-      /* "algorithms/orientation.py":808
+      /* "openptv2/algorithms/orientation.py":808
  *             beta[11] = 0.0
  *         if not flags.p1flag:
  *             beta[12] = 0.0             # <<<<<<<<<<<<<<
@@ -28301,7 +28301,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
 */
       if (unlikely((__Pyx_SetItemInt(__pyx_v_beta, 12, __pyx_mstate_global->__pyx_float_0_0, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_OwnStrongReference) < 0))) __PYX_ERR(0, 808, __pyx_L1_error)
 
-      /* "algorithms/orientation.py":807
+      /* "openptv2/algorithms/orientation.py":807
  *         if not flags.k3flag:
  *             beta[11] = 0.0
  *         if not flags.p1flag:             # <<<<<<<<<<<<<<
@@ -28310,7 +28310,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
 */
     }
 
-    /* "algorithms/orientation.py":809
+    /* "openptv2/algorithms/orientation.py":809
  *         if not flags.p1flag:
  *             beta[12] = 0.0
  *         if not flags.p2flag:             # <<<<<<<<<<<<<<
@@ -28324,7 +28324,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     __pyx_t_10 = (!__pyx_t_20);
     if (__pyx_t_10) {
 
-      /* "algorithms/orientation.py":810
+      /* "openptv2/algorithms/orientation.py":810
  *             beta[12] = 0.0
  *         if not flags.p2flag:
  *             beta[13] = 0.0             # <<<<<<<<<<<<<<
@@ -28333,7 +28333,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
 */
       if (unlikely((__Pyx_SetItemInt(__pyx_v_beta, 13, __pyx_mstate_global->__pyx_float_0_0, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_OwnStrongReference) < 0))) __PYX_ERR(0, 810, __pyx_L1_error)
 
-      /* "algorithms/orientation.py":809
+      /* "openptv2/algorithms/orientation.py":809
  *         if not flags.p1flag:
  *             beta[12] = 0.0
  *         if not flags.p2flag:             # <<<<<<<<<<<<<<
@@ -28342,7 +28342,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
 */
     }
 
-    /* "algorithms/orientation.py":811
+    /* "openptv2/algorithms/orientation.py":811
  *         if not flags.p2flag:
  *             beta[13] = 0.0
  *         if not flags.scxflag:             # <<<<<<<<<<<<<<
@@ -28356,7 +28356,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     __pyx_t_20 = (!__pyx_t_10);
     if (__pyx_t_20) {
 
-      /* "algorithms/orientation.py":812
+      /* "openptv2/algorithms/orientation.py":812
  *             beta[13] = 0.0
  *         if not flags.scxflag:
  *             beta[14] = 0.0             # <<<<<<<<<<<<<<
@@ -28365,7 +28365,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
 */
       if (unlikely((__Pyx_SetItemInt(__pyx_v_beta, 14, __pyx_mstate_global->__pyx_float_0_0, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_OwnStrongReference) < 0))) __PYX_ERR(0, 812, __pyx_L1_error)
 
-      /* "algorithms/orientation.py":811
+      /* "openptv2/algorithms/orientation.py":811
  *         if not flags.p2flag:
  *             beta[13] = 0.0
  *         if not flags.scxflag:             # <<<<<<<<<<<<<<
@@ -28374,7 +28374,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
 */
     }
 
-    /* "algorithms/orientation.py":813
+    /* "openptv2/algorithms/orientation.py":813
  *         if not flags.scxflag:
  *             beta[14] = 0.0
  *         if not flags.sheflag:             # <<<<<<<<<<<<<<
@@ -28388,7 +28388,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     __pyx_t_10 = (!__pyx_t_20);
     if (__pyx_t_10) {
 
-      /* "algorithms/orientation.py":814
+      /* "openptv2/algorithms/orientation.py":814
  *             beta[14] = 0.0
  *         if not flags.sheflag:
  *             beta[15] = 0.0             # <<<<<<<<<<<<<<
@@ -28397,7 +28397,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
 */
       if (unlikely((__Pyx_SetItemInt(__pyx_v_beta, 15, __pyx_mstate_global->__pyx_float_0_0, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_OwnStrongReference) < 0))) __PYX_ERR(0, 814, __pyx_L1_error)
 
-      /* "algorithms/orientation.py":813
+      /* "openptv2/algorithms/orientation.py":813
  *         if not flags.scxflag:
  *             beta[14] = 0.0
  *         if not flags.sheflag:             # <<<<<<<<<<<<<<
@@ -28406,7 +28406,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
 */
     }
 
-    /* "algorithms/orientation.py":816
+    /* "openptv2/algorithms/orientation.py":816
  *             beta[15] = 0.0
  * 
  *         cal.ext_par.x0 += beta[0]             # <<<<<<<<<<<<<<
@@ -28430,7 +28430,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
 
-    /* "algorithms/orientation.py":817
+    /* "openptv2/algorithms/orientation.py":817
  * 
  *         cal.ext_par.x0 += beta[0]
  *         cal.ext_par.y0 += beta[1]             # <<<<<<<<<<<<<<
@@ -28454,7 +28454,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
     __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
 
-    /* "algorithms/orientation.py":818
+    /* "openptv2/algorithms/orientation.py":818
  *         cal.ext_par.x0 += beta[0]
  *         cal.ext_par.y0 += beta[1]
  *         cal.ext_par.z0 += beta[2]             # <<<<<<<<<<<<<<
@@ -28478,7 +28478,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
 
-    /* "algorithms/orientation.py":819
+    /* "openptv2/algorithms/orientation.py":819
  *         cal.ext_par.y0 += beta[1]
  *         cal.ext_par.z0 += beta[2]
  *         cal.ext_par.omega += beta[3]             # <<<<<<<<<<<<<<
@@ -28502,7 +28502,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
     __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
 
-    /* "algorithms/orientation.py":820
+    /* "openptv2/algorithms/orientation.py":820
  *         cal.ext_par.z0 += beta[2]
  *         cal.ext_par.omega += beta[3]
  *         cal.ext_par.phi += beta[4]             # <<<<<<<<<<<<<<
@@ -28526,7 +28526,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
 
-    /* "algorithms/orientation.py":821
+    /* "openptv2/algorithms/orientation.py":821
  *         cal.ext_par.omega += beta[3]
  *         cal.ext_par.phi += beta[4]
  *         cal.ext_par.kappa += beta[5]             # <<<<<<<<<<<<<<
@@ -28550,7 +28550,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
     __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
 
-    /* "algorithms/orientation.py":822
+    /* "openptv2/algorithms/orientation.py":822
  *         cal.ext_par.phi += beta[4]
  *         cal.ext_par.kappa += beta[5]
  *         cal.int_par.cc += beta[6]             # <<<<<<<<<<<<<<
@@ -28574,7 +28574,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
 
-    /* "algorithms/orientation.py":823
+    /* "openptv2/algorithms/orientation.py":823
  *         cal.ext_par.kappa += beta[5]
  *         cal.int_par.cc += beta[6]
  *         cal.int_par.xh += beta[7]             # <<<<<<<<<<<<<<
@@ -28598,7 +28598,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
     __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
 
-    /* "algorithms/orientation.py":824
+    /* "openptv2/algorithms/orientation.py":824
  *         cal.int_par.cc += beta[6]
  *         cal.int_par.xh += beta[7]
  *         cal.int_par.yh += beta[8]             # <<<<<<<<<<<<<<
@@ -28622,7 +28622,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
 
-    /* "algorithms/orientation.py":825
+    /* "openptv2/algorithms/orientation.py":825
  *         cal.int_par.xh += beta[7]
  *         cal.int_par.yh += beta[8]
  *         cal.added_par.k1 += beta[9]             # <<<<<<<<<<<<<<
@@ -28646,7 +28646,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
     __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
 
-    /* "algorithms/orientation.py":826
+    /* "openptv2/algorithms/orientation.py":826
  *         cal.int_par.yh += beta[8]
  *         cal.added_par.k1 += beta[9]
  *         cal.added_par.k2 += beta[10]             # <<<<<<<<<<<<<<
@@ -28670,7 +28670,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
 
-    /* "algorithms/orientation.py":827
+    /* "openptv2/algorithms/orientation.py":827
  *         cal.added_par.k1 += beta[9]
  *         cal.added_par.k2 += beta[10]
  *         cal.added_par.k3 += beta[11]             # <<<<<<<<<<<<<<
@@ -28694,7 +28694,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
     __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
 
-    /* "algorithms/orientation.py":828
+    /* "openptv2/algorithms/orientation.py":828
  *         cal.added_par.k2 += beta[10]
  *         cal.added_par.k3 += beta[11]
  *         cal.added_par.p1 += beta[12]             # <<<<<<<<<<<<<<
@@ -28718,7 +28718,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
 
-    /* "algorithms/orientation.py":829
+    /* "openptv2/algorithms/orientation.py":829
  *         cal.added_par.k3 += beta[11]
  *         cal.added_par.p1 += beta[12]
  *         cal.added_par.p2 += beta[13]             # <<<<<<<<<<<<<<
@@ -28742,7 +28742,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
     __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
 
-    /* "algorithms/orientation.py":830
+    /* "openptv2/algorithms/orientation.py":830
  *         cal.added_par.p1 += beta[12]
  *         cal.added_par.p2 += beta[13]
  *         cal.added_par.scx += beta[14]             # <<<<<<<<<<<<<<
@@ -28766,7 +28766,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
 
-    /* "algorithms/orientation.py":831
+    /* "openptv2/algorithms/orientation.py":831
  *         cal.added_par.p2 += beta[13]
  *         cal.added_par.scx += beta[14]
  *         cal.added_par.she += beta[15]             # <<<<<<<<<<<<<<
@@ -28790,7 +28790,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
     __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
 
-    /* "algorithms/orientation.py":833
+    /* "openptv2/algorithms/orientation.py":833
  *         cal.added_par.she += beta[15]
  * 
  *         if flags.interfflag:             # <<<<<<<<<<<<<<
@@ -28803,7 +28803,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
     if (__pyx_t_10) {
 
-      /* "algorithms/orientation.py":834
+      /* "openptv2/algorithms/orientation.py":834
  * 
  *         if flags.interfflag:
  *             cal.glass_par.vec_x += e1[0] * nGl * beta[16]             # <<<<<<<<<<<<<<
@@ -28836,7 +28836,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "algorithms/orientation.py":835
+      /* "openptv2/algorithms/orientation.py":835
  *         if flags.interfflag:
  *             cal.glass_par.vec_x += e1[0] * nGl * beta[16]
  *             cal.glass_par.vec_y += e1[1] * nGl * beta[16]             # <<<<<<<<<<<<<<
@@ -28869,7 +28869,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-      /* "algorithms/orientation.py":836
+      /* "openptv2/algorithms/orientation.py":836
  *             cal.glass_par.vec_x += e1[0] * nGl * beta[16]
  *             cal.glass_par.vec_y += e1[1] * nGl * beta[16]
  *             cal.glass_par.vec_z += e1[2] * nGl * beta[16]             # <<<<<<<<<<<<<<
@@ -28902,7 +28902,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
       __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
 
-      /* "algorithms/orientation.py":837
+      /* "openptv2/algorithms/orientation.py":837
  *             cal.glass_par.vec_y += e1[1] * nGl * beta[16]
  *             cal.glass_par.vec_z += e1[2] * nGl * beta[16]
  *             cal.glass_par.vec_x += e2[0] * nGl * beta[17]             # <<<<<<<<<<<<<<
@@ -28935,7 +28935,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
       __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
 
-      /* "algorithms/orientation.py":838
+      /* "openptv2/algorithms/orientation.py":838
  *             cal.glass_par.vec_z += e1[2] * nGl * beta[16]
  *             cal.glass_par.vec_x += e2[0] * nGl * beta[17]
  *             cal.glass_par.vec_y += e2[1] * nGl * beta[17]             # <<<<<<<<<<<<<<
@@ -28968,7 +28968,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "algorithms/orientation.py":839
+      /* "openptv2/algorithms/orientation.py":839
  *             cal.glass_par.vec_x += e2[0] * nGl * beta[17]
  *             cal.glass_par.vec_y += e2[1] * nGl * beta[17]
  *             cal.glass_par.vec_z += e2[2] * nGl * beta[17]             # <<<<<<<<<<<<<<
@@ -29001,7 +29001,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-      /* "algorithms/orientation.py":833
+      /* "openptv2/algorithms/orientation.py":833
  *         cal.added_par.she += beta[15]
  * 
  *         if flags.interfflag:             # <<<<<<<<<<<<<<
@@ -29011,7 +29011,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     }
   }
 
-  /* "algorithms/orientation.py":842
+  /* "openptv2/algorithms/orientation.py":842
  * 
  *     # compute residuals
  *     beta_full = np.zeros(NPAR)             # <<<<<<<<<<<<<<
@@ -29050,7 +29050,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
   __pyx_v_beta_full = __pyx_t_6;
   __pyx_t_6 = 0;
 
-  /* "algorithms/orientation.py":843
+  /* "openptv2/algorithms/orientation.py":843
  *     # compute residuals
  *     beta_full = np.zeros(NPAR)
  *     beta_full[:numbers] = beta[:numbers]             # <<<<<<<<<<<<<<
@@ -29063,7 +29063,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
   if (__Pyx_PyObject_SetSlice(__pyx_v_beta_full, __pyx_t_6, 0, 0, NULL, &__pyx_v_numbers, NULL, 0, 0, 0) < (0)) __PYX_ERR(0, 843, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-  /* "algorithms/orientation.py":844
+  /* "openptv2/algorithms/orientation.py":844
  *     beta_full = np.zeros(NPAR)
  *     beta_full[:numbers] = beta[:numbers]
  *     Xbeta = X[:n_obs] @ beta_full             # <<<<<<<<<<<<<<
@@ -29078,7 +29078,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
   __pyx_v_Xbeta = __pyx_t_16;
   __pyx_t_16 = 0;
 
-  /* "algorithms/orientation.py":845
+  /* "openptv2/algorithms/orientation.py":845
  *     beta_full[:numbers] = beta[:numbers]
  *     Xbeta = X[:n_obs] @ beta_full
  *     omega = 0.0             # <<<<<<<<<<<<<<
@@ -29088,7 +29088,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
   __Pyx_INCREF(__pyx_mstate_global->__pyx_float_0_0);
   __pyx_v_omega = __pyx_mstate_global->__pyx_float_0_0;
 
-  /* "algorithms/orientation.py":846
+  /* "openptv2/algorithms/orientation.py":846
  *     Xbeta = X[:n_obs] @ beta_full
  *     omega = 0.0
  *     resi = np.zeros(n_obs)             # <<<<<<<<<<<<<<
@@ -29127,7 +29127,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
   __pyx_v_resi = __pyx_t_16;
   __pyx_t_16 = 0;
 
-  /* "algorithms/orientation.py":847
+  /* "openptv2/algorithms/orientation.py":847
  *     omega = 0.0
  *     resi = np.zeros(n_obs)
  *     for i in range(n_obs):             # <<<<<<<<<<<<<<
@@ -29166,7 +29166,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     __Pyx_XDECREF_SET(__pyx_v_i, __pyx_t_16);
     __pyx_t_16 = 0;
 
-    /* "algorithms/orientation.py":848
+    /* "openptv2/algorithms/orientation.py":848
  *     resi = np.zeros(n_obs)
  *     for i in range(n_obs):
  *         resi[i] = Xbeta[i] - y[i]             # <<<<<<<<<<<<<<
@@ -29184,7 +29184,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     if (unlikely((PyObject_SetItem(__pyx_v_resi, __pyx_v_i, __pyx_t_6) < 0))) __PYX_ERR(0, 848, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-    /* "algorithms/orientation.py":849
+    /* "openptv2/algorithms/orientation.py":849
  *     for i in range(n_obs):
  *         resi[i] = Xbeta[i] - y[i]
  *         omega += resi[i] * P[i] * resi[i]             # <<<<<<<<<<<<<<
@@ -29211,7 +29211,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     __Pyx_DECREF_SET(__pyx_v_omega, __pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "algorithms/orientation.py":847
+    /* "openptv2/algorithms/orientation.py":847
  *     omega = 0.0
  *     resi = np.zeros(n_obs)
  *     for i in range(n_obs):             # <<<<<<<<<<<<<<
@@ -29221,7 +29221,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
   }
   __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
 
-  /* "algorithms/orientation.py":851
+  /* "openptv2/algorithms/orientation.py":851
  *         omega += resi[i] * P[i] * resi[i]
  * 
  *     sigmabeta[NPAR] = np.sqrt(omega / (n_obs - numbers))             # <<<<<<<<<<<<<<
@@ -29269,7 +29269,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
   __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
   __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
 
-  /* "algorithms/orientation.py":852
+  /* "openptv2/algorithms/orientation.py":852
  * 
  *     sigmabeta[NPAR] = np.sqrt(omega / (n_obs - numbers))
  *     for i in range(numbers):             # <<<<<<<<<<<<<<
@@ -29305,7 +29305,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     __Pyx_XDECREF_SET(__pyx_v_i, __pyx_t_14);
     __pyx_t_14 = 0;
 
-    /* "algorithms/orientation.py":853
+    /* "openptv2/algorithms/orientation.py":853
  *     sigmabeta[NPAR] = np.sqrt(omega / (n_obs - numbers))
  *     for i in range(numbers):
  *         sigmabeta[i] = sigmabeta[NPAR] * np.sqrt(XPX[i, i])             # <<<<<<<<<<<<<<
@@ -29363,7 +29363,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     if (unlikely((PyObject_SetItem(__pyx_v_sigmabeta, __pyx_v_i, __pyx_t_13) < 0))) __PYX_ERR(0, 853, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
 
-    /* "algorithms/orientation.py":852
+    /* "openptv2/algorithms/orientation.py":852
  * 
  *     sigmabeta[NPAR] = np.sqrt(omega / (n_obs - numbers))
  *     for i in range(numbers):             # <<<<<<<<<<<<<<
@@ -29373,7 +29373,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
   }
   __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
 
-  /* "algorithms/orientation.py":855
+  /* "openptv2/algorithms/orientation.py":855
  *         sigmabeta[i] = sigmabeta[NPAR] * np.sqrt(XPX[i, i])
  * 
  *     if stopflag:             # <<<<<<<<<<<<<<
@@ -29383,7 +29383,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
   __pyx_t_10 = (__pyx_v_stopflag != 0);
   if (__pyx_t_10) {
 
-    /* "algorithms/orientation.py":856
+    /* "openptv2/algorithms/orientation.py":856
  * 
  *     if stopflag:
  *         cal.ext_par.compute_rotation_matrix()             # <<<<<<<<<<<<<<
@@ -29405,7 +29405,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     }
     __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
 
-    /* "algorithms/orientation.py":857
+    /* "openptv2/algorithms/orientation.py":857
  *     if stopflag:
  *         cal.ext_par.compute_rotation_matrix()
  *         cal_in.ext_par = copy.deepcopy(cal.ext_par)             # <<<<<<<<<<<<<<
@@ -29444,7 +29444,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     if (__Pyx_PyObject_SetAttrStr(__pyx_v_cal_in, __pyx_mstate_global->__pyx_n_u_ext_par, __pyx_t_16) < (0)) __PYX_ERR(0, 857, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
 
-    /* "algorithms/orientation.py":858
+    /* "openptv2/algorithms/orientation.py":858
  *         cal.ext_par.compute_rotation_matrix()
  *         cal_in.ext_par = copy.deepcopy(cal.ext_par)
  *         cal_in.int_par = copy.deepcopy(cal.int_par)             # <<<<<<<<<<<<<<
@@ -29483,7 +29483,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     if (__Pyx_PyObject_SetAttrStr(__pyx_v_cal_in, __pyx_mstate_global->__pyx_n_u_int_par, __pyx_t_16) < (0)) __PYX_ERR(0, 858, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
 
-    /* "algorithms/orientation.py":859
+    /* "openptv2/algorithms/orientation.py":859
  *         cal_in.ext_par = copy.deepcopy(cal.ext_par)
  *         cal_in.int_par = copy.deepcopy(cal.int_par)
  *         cal_in.glass_par = copy.deepcopy(cal.glass_par)             # <<<<<<<<<<<<<<
@@ -29522,7 +29522,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     if (__Pyx_PyObject_SetAttrStr(__pyx_v_cal_in, __pyx_mstate_global->__pyx_n_u_glass_par, __pyx_t_16) < (0)) __PYX_ERR(0, 859, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
 
-    /* "algorithms/orientation.py":860
+    /* "openptv2/algorithms/orientation.py":860
  *         cal_in.int_par = copy.deepcopy(cal.int_par)
  *         cal_in.glass_par = copy.deepcopy(cal.glass_par)
  *         cal_in.added_par = copy.deepcopy(cal.added_par)             # <<<<<<<<<<<<<<
@@ -29561,7 +29561,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     if (__Pyx_PyObject_SetAttrStr(__pyx_v_cal_in, __pyx_mstate_global->__pyx_n_u_added_par, __pyx_t_16) < (0)) __PYX_ERR(0, 860, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
 
-    /* "algorithms/orientation.py":861
+    /* "openptv2/algorithms/orientation.py":861
  *         cal_in.glass_par = copy.deepcopy(cal.glass_par)
  *         cal_in.added_par = copy.deepcopy(cal.added_par)
  *         cal_in.mmlut = copy.deepcopy(cal.mmlut)             # <<<<<<<<<<<<<<
@@ -29600,7 +29600,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     if (__Pyx_PyObject_SetAttrStr(__pyx_v_cal_in, __pyx_mstate_global->__pyx_n_u_mmlut, __pyx_t_16) < (0)) __PYX_ERR(0, 861, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
 
-    /* "algorithms/orientation.py":862
+    /* "openptv2/algorithms/orientation.py":862
  *         cal_in.added_par = copy.deepcopy(cal.added_par)
  *         cal_in.mmlut = copy.deepcopy(cal.mmlut)
  *         return resi             # <<<<<<<<<<<<<<
@@ -29612,7 +29612,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     __pyx_r = __pyx_v_resi;
     goto __pyx_L0;
 
-    /* "algorithms/orientation.py":855
+    /* "openptv2/algorithms/orientation.py":855
  *         sigmabeta[i] = sigmabeta[NPAR] * np.sqrt(XPX[i, i])
  * 
  *     if stopflag:             # <<<<<<<<<<<<<<
@@ -29621,7 +29621,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
 */
   }
 
-  /* "algorithms/orientation.py":864
+  /* "openptv2/algorithms/orientation.py":864
  *         return resi
  *     else:
  *         return None             # <<<<<<<<<<<<<<
@@ -29634,7 +29634,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
     goto __pyx_L0;
   }
 
-  /* "algorithms/orientation.py":554
+  /* "openptv2/algorithms/orientation.py":554
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -29658,7 +29658,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
   __Pyx_XDECREF(__pyx_t_17);
   __Pyx_XDECREF(__pyx_t_18);
   __Pyx_XDECREF(__pyx_t_19);
-  __Pyx_AddTraceback("algorithms.orientation.orient", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.orientation.orient", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_img_coord);
@@ -29718,16 +29718,16 @@ static PyObject *__pyx_f_10algorithms_11orientation_orient(PyObject *__pyx_v_cal
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_11orientation_13orient(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_11orientation_13orient(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_11orientation_12orient, "Bundle adjustment using Gauss-Markov model.\n\n    Args:\n        cal_in: Calibration (modified in place on success).\n        cpar: ControlPar.\n        nfix: number of fix points.\n        fix: (nfix, 3) array of known 3D positions.\n        pix: list of Target objects with .x, .y, .pnr attributes.\n        flags: OrientPar with flags for which params to adjust.\n        sigmabeta: output array of size 20 for parameter deviations.\n\n    Returns:\n        Array of residuals on success, None on failure.\n    ");
-static PyMethodDef __pyx_mdef_10algorithms_11orientation_13orient = {"orient", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_11orientation_13orient, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_11orientation_12orient};
-static PyObject *__pyx_pw_10algorithms_11orientation_13orient(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_11orientation_12orient, "Bundle adjustment using Gauss-Markov model.\n\n    Args:\n        cal_in: Calibration (modified in place on success).\n        cpar: ControlPar.\n        nfix: number of fix points.\n        fix: (nfix, 3) array of known 3D positions.\n        pix: list of Target objects with .x, .y, .pnr attributes.\n        flags: OrientPar with flags for which params to adjust.\n        sigmabeta: output array of size 20 for parameter deviations.\n\n    Returns:\n        Array of residuals on success, None on failure.\n    ");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_11orientation_13orient = {"orient", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_11orientation_13orient, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_11orientation_12orient};
+static PyObject *__pyx_pw_8openptv2_10algorithms_11orientation_13orient(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -29837,11 +29837,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.orientation.orient", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.orientation.orient", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_11orientation_12orient(__pyx_self, __pyx_v_cal_in, __pyx_v_cpar, __pyx_v_nfix, __pyx_v_fix, __pyx_v_pix, __pyx_v_flags, __pyx_v_sigmabeta);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_11orientation_12orient(__pyx_self, __pyx_v_cal_in, __pyx_v_cpar, __pyx_v_nfix, __pyx_v_fix, __pyx_v_pix, __pyx_v_flags, __pyx_v_sigmabeta);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -29851,7 +29851,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_11orientation_12orient(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cal_in, PyObject *__pyx_v_cpar, PyObject *__pyx_v_nfix, PyObject *__pyx_v_fix, PyObject *__pyx_v_pix, PyObject *__pyx_v_flags, PyObject *__pyx_v_sigmabeta) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_11orientation_12orient(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cal_in, PyObject *__pyx_v_cpar, PyObject *__pyx_v_nfix, PyObject *__pyx_v_fix, PyObject *__pyx_v_pix, PyObject *__pyx_v_flags, PyObject *__pyx_v_sigmabeta) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -29860,7 +29860,7 @@ static PyObject *__pyx_pf_10algorithms_11orientation_12orient(CYTHON_UNUSED PyOb
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("orient", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_11orientation_orient(__pyx_v_cal_in, __pyx_v_cpar, __pyx_v_nfix, __pyx_v_fix, __pyx_v_pix, __pyx_v_flags, __pyx_v_sigmabeta, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 554, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_11orientation_orient(__pyx_v_cal_in, __pyx_v_cpar, __pyx_v_nfix, __pyx_v_fix, __pyx_v_pix, __pyx_v_flags, __pyx_v_sigmabeta, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 554, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -29869,7 +29869,7 @@ static PyObject *__pyx_pf_10algorithms_11orientation_12orient(CYTHON_UNUSED PyOb
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.orientation.orient", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.orientation.orient", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -29877,7 +29877,7 @@ static PyObject *__pyx_pf_10algorithms_11orientation_12orient(CYTHON_UNUSED PyOb
   return __pyx_r;
 }
 
-/* "algorithms/orientation.py":867
+/* "openptv2/algorithms/orientation.py":867
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -29885,14 +29885,14 @@ static PyObject *__pyx_pf_10algorithms_11orientation_12orient(CYTHON_UNUSED PyOb
  *     """Read manual orientation fix points.
 */
 
-static PyObject *__pyx_pw_10algorithms_11orientation_15read_man_ori_fix(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_11orientation_15read_man_ori_fix(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_11orientation_read_man_ori_fix(PyObject *__pyx_v_calblock_filename, PyObject *__pyx_v_man_ori_filename, PyObject *__pyx_v_cam, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_11orientation_read_man_ori_fix(PyObject *__pyx_v_calblock_filename, PyObject *__pyx_v_man_ori_filename, PyObject *__pyx_v_cam, CYTHON_UNUSED int __pyx_skip_dispatch) {
   PyObject *__pyx_v__read_calblock = NULL;
   PyObject *__pyx_v_man_path = NULL;
   PyObject *__pyx_v_tokens = NULL;
@@ -29923,7 +29923,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_read_man_ori_fix(PyObject *_
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("read_man_ori_fix", 0);
 
-  /* "algorithms/orientation.py":879
+  /* "openptv2/algorithms/orientation.py":879
  *         List of 4 vec3d arrays, or None on failure.
  *     """
  *     from .sortgrid import read_calblock as _read_calblock             # <<<<<<<<<<<<<<
@@ -29932,7 +29932,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_read_man_ori_fix(PyObject *_
 */
   {
     PyObject* const __pyx_imported_names[] = {__pyx_mstate_global->__pyx_n_u_read_calblock};
-    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_sortgrid, __pyx_imported_names, 1, __pyx_mstate_global->__pyx_kp_u_algorithms_sortgrid, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 879, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_sortgrid, __pyx_imported_names, 1, __pyx_mstate_global->__pyx_kp_u_openptv2_algorithms_sortgrid, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 879, __pyx_L1_error)
   }
   __pyx_t_1 = __pyx_t_2;
   __Pyx_GOTREF(__pyx_t_1);
@@ -29953,7 +29953,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_read_man_ori_fix(PyObject *_
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":881
+  /* "openptv2/algorithms/orientation.py":881
  *     from .sortgrid import read_calblock as _read_calblock
  * 
  *     man_path = Path(man_ori_filename)             # <<<<<<<<<<<<<<
@@ -29986,7 +29986,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_read_man_ori_fix(PyObject *_
   __pyx_v_man_path = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":882
+  /* "openptv2/algorithms/orientation.py":882
  * 
  *     man_path = Path(man_ori_filename)
  *     if not man_path.exists():             # <<<<<<<<<<<<<<
@@ -30008,7 +30008,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_read_man_ori_fix(PyObject *_
   __pyx_t_8 = (!__pyx_t_7);
   if (__pyx_t_8) {
 
-    /* "algorithms/orientation.py":883
+    /* "openptv2/algorithms/orientation.py":883
  *     man_path = Path(man_ori_filename)
  *     if not man_path.exists():
  *         return None             # <<<<<<<<<<<<<<
@@ -30019,7 +30019,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_read_man_ori_fix(PyObject *_
     __pyx_r = Py_None; __Pyx_INCREF(Py_None);
     goto __pyx_L0;
 
-    /* "algorithms/orientation.py":882
+    /* "openptv2/algorithms/orientation.py":882
  * 
  *     man_path = Path(man_ori_filename)
  *     if not man_path.exists():             # <<<<<<<<<<<<<<
@@ -30028,7 +30028,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_read_man_ori_fix(PyObject *_
 */
   }
 
-  /* "algorithms/orientation.py":885
+  /* "openptv2/algorithms/orientation.py":885
  *         return None
  * 
  *     tokens = man_path.read_text().split()             # <<<<<<<<<<<<<<
@@ -30059,7 +30059,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_read_man_ori_fix(PyObject *_
   __pyx_v_tokens = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":886
+  /* "openptv2/algorithms/orientation.py":886
  * 
  *     tokens = man_path.read_text().split()
  *     if len(tokens) < (cam + 1) * 4:             # <<<<<<<<<<<<<<
@@ -30081,7 +30081,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_read_man_ori_fix(PyObject *_
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   if (__pyx_t_8) {
 
-    /* "algorithms/orientation.py":887
+    /* "openptv2/algorithms/orientation.py":887
  *     tokens = man_path.read_text().split()
  *     if len(tokens) < (cam + 1) * 4:
  *         return None             # <<<<<<<<<<<<<<
@@ -30092,7 +30092,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_read_man_ori_fix(PyObject *_
     __pyx_r = Py_None; __Pyx_INCREF(Py_None);
     goto __pyx_L0;
 
-    /* "algorithms/orientation.py":886
+    /* "openptv2/algorithms/orientation.py":886
  * 
  *     tokens = man_path.read_text().split()
  *     if len(tokens) < (cam + 1) * 4:             # <<<<<<<<<<<<<<
@@ -30101,7 +30101,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_read_man_ori_fix(PyObject *_
 */
   }
 
-  /* "algorithms/orientation.py":889
+  /* "openptv2/algorithms/orientation.py":889
  *         return None
  * 
  *     nr = []             # <<<<<<<<<<<<<<
@@ -30113,7 +30113,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_read_man_ori_fix(PyObject *_
   __pyx_v_nr = ((PyObject*)__pyx_t_4);
   __pyx_t_4 = 0;
 
-  /* "algorithms/orientation.py":890
+  /* "openptv2/algorithms/orientation.py":890
  * 
  *     nr = []
  *     for i in range(4):             # <<<<<<<<<<<<<<
@@ -30126,7 +30126,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_read_man_ori_fix(PyObject *_
     __Pyx_XDECREF_SET(__pyx_v_i, __pyx_t_4);
     __pyx_t_4 = 0;
 
-    /* "algorithms/orientation.py":891
+    /* "openptv2/algorithms/orientation.py":891
  *     nr = []
  *     for i in range(4):
  *         try:             # <<<<<<<<<<<<<<
@@ -30142,7 +30142,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_read_man_ori_fix(PyObject *_
       __Pyx_XGOTREF(__pyx_t_11);
       /*try:*/ {
 
-        /* "algorithms/orientation.py":892
+        /* "openptv2/algorithms/orientation.py":892
  *     for i in range(4):
  *         try:
  *             nr.append(int(tokens[cam * 4 + i]))             # <<<<<<<<<<<<<<
@@ -30163,7 +30163,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_read_man_ori_fix(PyObject *_
         __pyx_t_12 = __Pyx_PyList_Append(__pyx_v_nr, __pyx_t_5); if (unlikely(__pyx_t_12 == ((int)-1))) __PYX_ERR(0, 892, __pyx_L7_error)
         __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-        /* "algorithms/orientation.py":891
+        /* "openptv2/algorithms/orientation.py":891
  *     nr = []
  *     for i in range(4):
  *         try:             # <<<<<<<<<<<<<<
@@ -30181,7 +30181,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_read_man_ori_fix(PyObject *_
       __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
       __Pyx_XDECREF(__pyx_t_9); __pyx_t_9 = 0;
 
-      /* "algorithms/orientation.py":893
+      /* "openptv2/algorithms/orientation.py":893
  *         try:
  *             nr.append(int(tokens[cam * 4 + i]))
  *         except (ValueError, IndexError):             # <<<<<<<<<<<<<<
@@ -30192,7 +30192,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_read_man_ori_fix(PyObject *_
       if (__pyx_t_13) {
         __Pyx_ErrRestore(0,0,0);
 
-        /* "algorithms/orientation.py":894
+        /* "openptv2/algorithms/orientation.py":894
  *             nr.append(int(tokens[cam * 4 + i]))
  *         except (ValueError, IndexError):
  *             return None             # <<<<<<<<<<<<<<
@@ -30205,7 +30205,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_read_man_ori_fix(PyObject *_
       }
       goto __pyx_L9_except_error;
 
-      /* "algorithms/orientation.py":891
+      /* "openptv2/algorithms/orientation.py":891
  *     nr = []
  *     for i in range(4):
  *         try:             # <<<<<<<<<<<<<<
@@ -30228,7 +30228,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_read_man_ori_fix(PyObject *_
     }
   }
 
-  /* "algorithms/orientation.py":896
+  /* "openptv2/algorithms/orientation.py":896
  *             return None
  * 
  *     fix, num_fix = _read_calblock(calblock_filename)             # <<<<<<<<<<<<<<
@@ -30313,7 +30313,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_read_man_ori_fix(PyObject *_
   __pyx_v_num_fix = __pyx_t_4;
   __pyx_t_4 = 0;
 
-  /* "algorithms/orientation.py":897
+  /* "openptv2/algorithms/orientation.py":897
  * 
  *     fix, num_fix = _read_calblock(calblock_filename)
  *     if num_fix < 4:             # <<<<<<<<<<<<<<
@@ -30325,7 +30325,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_read_man_ori_fix(PyObject *_
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   if (__pyx_t_8) {
 
-    /* "algorithms/orientation.py":898
+    /* "openptv2/algorithms/orientation.py":898
  *     fix, num_fix = _read_calblock(calblock_filename)
  *     if num_fix < 4:
  *         return None             # <<<<<<<<<<<<<<
@@ -30336,7 +30336,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_read_man_ori_fix(PyObject *_
     __pyx_r = Py_None; __Pyx_INCREF(Py_None);
     goto __pyx_L0;
 
-    /* "algorithms/orientation.py":897
+    /* "openptv2/algorithms/orientation.py":897
  * 
  *     fix, num_fix = _read_calblock(calblock_filename)
  *     if num_fix < 4:             # <<<<<<<<<<<<<<
@@ -30345,7 +30345,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_read_man_ori_fix(PyObject *_
 */
   }
 
-  /* "algorithms/orientation.py":900
+  /* "openptv2/algorithms/orientation.py":900
  *         return None
  * 
  *     fix4 = []             # <<<<<<<<<<<<<<
@@ -30357,7 +30357,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_read_man_ori_fix(PyObject *_
   __pyx_v_fix4 = ((PyObject*)__pyx_t_5);
   __pyx_t_5 = 0;
 
-  /* "algorithms/orientation.py":901
+  /* "openptv2/algorithms/orientation.py":901
  * 
  *     fix4 = []
  *     for i in range(4):             # <<<<<<<<<<<<<<
@@ -30370,7 +30370,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_read_man_ori_fix(PyObject *_
     __Pyx_XDECREF_SET(__pyx_v_i, __pyx_t_5);
     __pyx_t_5 = 0;
 
-    /* "algorithms/orientation.py":902
+    /* "openptv2/algorithms/orientation.py":902
  *     fix4 = []
  *     for i in range(4):
  *         pnr = nr[i] - 1             # <<<<<<<<<<<<<<
@@ -30385,7 +30385,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_read_man_ori_fix(PyObject *_
     __Pyx_XDECREF_SET(__pyx_v_pnr, __pyx_t_4);
     __pyx_t_4 = 0;
 
-    /* "algorithms/orientation.py":903
+    /* "openptv2/algorithms/orientation.py":903
  *     for i in range(4):
  *         pnr = nr[i] - 1
  *         if 0 <= pnr < num_fix:             # <<<<<<<<<<<<<<
@@ -30401,7 +30401,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_read_man_ori_fix(PyObject *_
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     if (__pyx_t_8) {
 
-      /* "algorithms/orientation.py":904
+      /* "openptv2/algorithms/orientation.py":904
  *         pnr = nr[i] - 1
  *         if 0 <= pnr < num_fix:
  *             fix4.append(fix[pnr].copy())             # <<<<<<<<<<<<<<
@@ -30424,7 +30424,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_read_man_ori_fix(PyObject *_
       __pyx_t_12 = __Pyx_PyList_Append(__pyx_v_fix4, __pyx_t_4); if (unlikely(__pyx_t_12 == ((int)-1))) __PYX_ERR(0, 904, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-      /* "algorithms/orientation.py":903
+      /* "openptv2/algorithms/orientation.py":903
  *     for i in range(4):
  *         pnr = nr[i] - 1
  *         if 0 <= pnr < num_fix:             # <<<<<<<<<<<<<<
@@ -30434,7 +30434,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_read_man_ori_fix(PyObject *_
       goto __pyx_L22;
     }
 
-    /* "algorithms/orientation.py":906
+    /* "openptv2/algorithms/orientation.py":906
  *             fix4.append(fix[pnr].copy())
  *         else:
  *             return None             # <<<<<<<<<<<<<<
@@ -30449,7 +30449,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_read_man_ori_fix(PyObject *_
     __pyx_L22:;
   }
 
-  /* "algorithms/orientation.py":908
+  /* "openptv2/algorithms/orientation.py":908
  *             return None
  * 
  *     return fix4             # <<<<<<<<<<<<<<
@@ -30461,7 +30461,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_read_man_ori_fix(PyObject *_
   __pyx_r = __pyx_v_fix4;
   goto __pyx_L0;
 
-  /* "algorithms/orientation.py":867
+  /* "openptv2/algorithms/orientation.py":867
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -30475,7 +30475,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_read_man_ori_fix(PyObject *_
   __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_5);
   __Pyx_XDECREF(__pyx_t_9);
-  __Pyx_AddTraceback("algorithms.orientation.read_man_ori_fix", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.orientation.read_man_ori_fix", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v__read_calblock);
@@ -30493,16 +30493,16 @@ static PyObject *__pyx_f_10algorithms_11orientation_read_man_ori_fix(PyObject *_
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_11orientation_15read_man_ori_fix(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_11orientation_15read_man_ori_fix(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_11orientation_14read_man_ori_fix, "Read manual orientation fix points.\n\n    Args:\n        calblock_filename: path to calibration target file.\n        man_ori_filename: path to manual orientation parameter file.\n        cam: camera index (0-based).\n\n    Returns:\n        List of 4 vec3d arrays, or None on failure.\n    ");
-static PyMethodDef __pyx_mdef_10algorithms_11orientation_15read_man_ori_fix = {"read_man_ori_fix", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_11orientation_15read_man_ori_fix, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_11orientation_14read_man_ori_fix};
-static PyObject *__pyx_pw_10algorithms_11orientation_15read_man_ori_fix(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_11orientation_14read_man_ori_fix, "Read manual orientation fix points.\n\n    Args:\n        calblock_filename: path to calibration target file.\n        man_ori_filename: path to manual orientation parameter file.\n        cam: camera index (0-based).\n\n    Returns:\n        List of 4 vec3d arrays, or None on failure.\n    ");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_11orientation_15read_man_ori_fix = {"read_man_ori_fix", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_11orientation_15read_man_ori_fix, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_11orientation_14read_man_ori_fix};
+static PyObject *__pyx_pw_8openptv2_10algorithms_11orientation_15read_man_ori_fix(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -30580,11 +30580,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.orientation.read_man_ori_fix", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.orientation.read_man_ori_fix", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_11orientation_14read_man_ori_fix(__pyx_self, __pyx_v_calblock_filename, __pyx_v_man_ori_filename, __pyx_v_cam);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_11orientation_14read_man_ori_fix(__pyx_self, __pyx_v_calblock_filename, __pyx_v_man_ori_filename, __pyx_v_cam);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -30594,7 +30594,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_11orientation_14read_man_ori_fix(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_calblock_filename, PyObject *__pyx_v_man_ori_filename, PyObject *__pyx_v_cam) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_11orientation_14read_man_ori_fix(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_calblock_filename, PyObject *__pyx_v_man_ori_filename, PyObject *__pyx_v_cam) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -30603,7 +30603,7 @@ static PyObject *__pyx_pf_10algorithms_11orientation_14read_man_ori_fix(CYTHON_U
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("read_man_ori_fix", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_11orientation_read_man_ori_fix(__pyx_v_calblock_filename, __pyx_v_man_ori_filename, __pyx_v_cam, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 867, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_11orientation_read_man_ori_fix(__pyx_v_calblock_filename, __pyx_v_man_ori_filename, __pyx_v_cam, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 867, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -30612,7 +30612,7 @@ static PyObject *__pyx_pf_10algorithms_11orientation_14read_man_ori_fix(CYTHON_U
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.orientation.read_man_ori_fix", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.orientation.read_man_ori_fix", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -30620,7 +30620,7 @@ static PyObject *__pyx_pf_10algorithms_11orientation_14read_man_ori_fix(CYTHON_U
   return __pyx_r;
 }
 
-/* "algorithms/orientation.py":911
+/* "openptv2/algorithms/orientation.py":911
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -30628,14 +30628,14 @@ static PyObject *__pyx_pf_10algorithms_11orientation_14read_man_ori_fix(CYTHON_U
  *     """Read calibration block file. Delegates to sortgrid.read_calblock."""
 */
 
-static PyObject *__pyx_pw_10algorithms_11orientation_17read_calblock(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_11orientation_17read_calblock(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_11orientation_read_calblock(PyObject *__pyx_v_filename, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_11orientation_read_calblock(PyObject *__pyx_v_filename, CYTHON_UNUSED int __pyx_skip_dispatch) {
   PyObject *__pyx_v__read_calblock = NULL;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
@@ -30650,7 +30650,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_read_calblock(PyObject *__py
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("read_calblock", 0);
 
-  /* "algorithms/orientation.py":914
+  /* "openptv2/algorithms/orientation.py":914
  * def read_calblock(filename):
  *     """Read calibration block file. Delegates to sortgrid.read_calblock."""
  *     from .sortgrid import read_calblock as _read_calblock             # <<<<<<<<<<<<<<
@@ -30659,7 +30659,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_read_calblock(PyObject *__py
 */
   {
     PyObject* const __pyx_imported_names[] = {__pyx_mstate_global->__pyx_n_u_read_calblock};
-    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_sortgrid, __pyx_imported_names, 1, __pyx_mstate_global->__pyx_kp_u_algorithms_sortgrid, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 914, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_sortgrid, __pyx_imported_names, 1, __pyx_mstate_global->__pyx_kp_u_openptv2_algorithms_sortgrid, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 914, __pyx_L1_error)
   }
   __pyx_t_1 = __pyx_t_2;
   __Pyx_GOTREF(__pyx_t_1);
@@ -30680,7 +30680,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_read_calblock(PyObject *__py
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":915
+  /* "openptv2/algorithms/orientation.py":915
  *     """Read calibration block file. Delegates to sortgrid.read_calblock."""
  *     from .sortgrid import read_calblock as _read_calblock
  *     return _read_calblock(filename)             # <<<<<<<<<<<<<<
@@ -30715,7 +30715,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_read_calblock(PyObject *__py
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/orientation.py":911
+  /* "openptv2/algorithms/orientation.py":911
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -30728,7 +30728,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_read_calblock(PyObject *__py
   __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_5);
-  __Pyx_AddTraceback("algorithms.orientation.read_calblock", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.orientation.read_calblock", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v__read_calblock);
@@ -30738,16 +30738,16 @@ static PyObject *__pyx_f_10algorithms_11orientation_read_calblock(PyObject *__py
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_11orientation_17read_calblock(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_11orientation_17read_calblock(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_11orientation_16read_calblock, "Read calibration block file. Delegates to sortgrid.read_calblock.");
-static PyMethodDef __pyx_mdef_10algorithms_11orientation_17read_calblock = {"read_calblock", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_11orientation_17read_calblock, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_11orientation_16read_calblock};
-static PyObject *__pyx_pw_10algorithms_11orientation_17read_calblock(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_11orientation_16read_calblock, "Read calibration block file. Delegates to sortgrid.read_calblock.");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_11orientation_17read_calblock = {"read_calblock", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_11orientation_17read_calblock, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_11orientation_16read_calblock};
+static PyObject *__pyx_pw_8openptv2_10algorithms_11orientation_17read_calblock(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -30809,11 +30809,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.orientation.read_calblock", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.orientation.read_calblock", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_11orientation_16read_calblock(__pyx_self, __pyx_v_filename);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_11orientation_16read_calblock(__pyx_self, __pyx_v_filename);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -30823,7 +30823,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_11orientation_16read_calblock(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_filename) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_11orientation_16read_calblock(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_filename) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -30832,7 +30832,7 @@ static PyObject *__pyx_pf_10algorithms_11orientation_16read_calblock(CYTHON_UNUS
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("read_calblock", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_11orientation_read_calblock(__pyx_v_filename, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 911, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_11orientation_read_calblock(__pyx_v_filename, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 911, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -30841,7 +30841,7 @@ static PyObject *__pyx_pf_10algorithms_11orientation_16read_calblock(CYTHON_UNUS
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.orientation.read_calblock", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.orientation.read_calblock", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -30849,7 +30849,7 @@ static PyObject *__pyx_pf_10algorithms_11orientation_16read_calblock(CYTHON_UNUS
   return __pyx_r;
 }
 
-/* "algorithms/orientation.py":918
+/* "openptv2/algorithms/orientation.py":918
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -30857,14 +30857,14 @@ static PyObject *__pyx_pf_10algorithms_11orientation_16read_calblock(CYTHON_UNUS
  *     """Update exterior calibration from known 3D-2D correspondences.
 */
 
-static PyObject *__pyx_pw_10algorithms_11orientation_19external_calibration(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_11orientation_19external_calibration(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_11orientation_external_calibration(PyObject *__pyx_v_cal, PyObject *__pyx_v_ref_pts, PyObject *__pyx_v_img_pts, PyObject *__pyx_v_cpar, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_11orientation_external_calibration(PyObject *__pyx_v_cal, PyObject *__pyx_v_ref_pts, PyObject *__pyx_v_img_pts, PyObject *__pyx_v_cpar, CYTHON_UNUSED int __pyx_skip_dispatch) {
   PyObject *__pyx_v_Target = NULL;
   PyObject *__pyx_v_targs = NULL;
   Py_ssize_t __pyx_v_i;
@@ -30890,7 +30890,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_external_calibration(PyObjec
   __Pyx_INCREF(__pyx_v_ref_pts);
   __Pyx_INCREF(__pyx_v_img_pts);
 
-  /* "algorithms/orientation.py":934
+  /* "openptv2/algorithms/orientation.py":934
  *         True if iteration converged, False otherwise.
  *     """
  *     from .tracking_frame_buf import Target             # <<<<<<<<<<<<<<
@@ -30899,7 +30899,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_external_calibration(PyObjec
 */
   {
     PyObject* const __pyx_imported_names[] = {__pyx_mstate_global->__pyx_n_u_Target};
-    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_tracking_frame_buf, __pyx_imported_names, 1, __pyx_mstate_global->__pyx_kp_u_algorithms_tracking_frame_buf, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 934, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_tracking_frame_buf, __pyx_imported_names, 1, __pyx_mstate_global->__pyx_kp_u_openptv2_algorithms_tracking_fra, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 934, __pyx_L1_error)
   }
   __pyx_t_1 = __pyx_t_2;
   __Pyx_GOTREF(__pyx_t_1);
@@ -30920,7 +30920,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_external_calibration(PyObjec
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":936
+  /* "openptv2/algorithms/orientation.py":936
  *     from .tracking_frame_buf import Target
  * 
  *     ref_pts = np.ascontiguousarray(ref_pts, dtype=np.float64)             # <<<<<<<<<<<<<<
@@ -30966,7 +30966,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_external_calibration(PyObjec
   __Pyx_DECREF_SET(__pyx_v_ref_pts, __pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":937
+  /* "openptv2/algorithms/orientation.py":937
  * 
  *     ref_pts = np.ascontiguousarray(ref_pts, dtype=np.float64)
  *     img_pts = np.ascontiguousarray(img_pts, dtype=np.float64)             # <<<<<<<<<<<<<<
@@ -31012,7 +31012,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_external_calibration(PyObjec
   __Pyx_DECREF_SET(__pyx_v_img_pts, __pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":939
+  /* "openptv2/algorithms/orientation.py":939
  *     img_pts = np.ascontiguousarray(img_pts, dtype=np.float64)
  * 
  *     targs = []             # <<<<<<<<<<<<<<
@@ -31024,7 +31024,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_external_calibration(PyObjec
   __pyx_v_targs = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":940
+  /* "openptv2/algorithms/orientation.py":940
  * 
  *     targs = []
  *     for i in range(len(img_pts)):             # <<<<<<<<<<<<<<
@@ -31036,7 +31036,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_external_calibration(PyObjec
   for (__pyx_t_10 = 0; __pyx_t_10 < __pyx_t_9; __pyx_t_10+=1) {
     __pyx_v_i = __pyx_t_10;
 
-    /* "algorithms/orientation.py":941
+    /* "openptv2/algorithms/orientation.py":941
  *     targs = []
  *     for i in range(len(img_pts)):
  *         targs.append(Target(pnr=i, x=img_pts[i, 0], y=img_pts[i, 1]))             # <<<<<<<<<<<<<<
@@ -31107,7 +31107,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_external_calibration(PyObjec
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   }
 
-  /* "algorithms/orientation.py":943
+  /* "openptv2/algorithms/orientation.py":943
  *         targs.append(Target(pnr=i, x=img_pts[i, 0], y=img_pts[i, 1]))
  * 
  *     return raw_orient(cal, cpar, len(ref_pts), ref_pts, targs)             # <<<<<<<<<<<<<<
@@ -31118,14 +31118,14 @@ static PyObject *__pyx_f_10algorithms_11orientation_external_calibration(PyObjec
   __pyx_t_3 = PyObject_Length(__pyx_v_ref_pts); if (unlikely(__pyx_t_3 == ((Py_ssize_t)-1))) __PYX_ERR(0, 943, __pyx_L1_error)
   __pyx_t_1 = PyLong_FromSsize_t(__pyx_t_3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 943, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_5 = __pyx_f_10algorithms_11orientation_raw_orient(__pyx_v_cal, __pyx_v_cpar, __pyx_t_1, __pyx_v_ref_pts, __pyx_v_targs, 0); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 943, __pyx_L1_error)
+  __pyx_t_5 = __pyx_f_8openptv2_10algorithms_11orientation_raw_orient(__pyx_v_cal, __pyx_v_cpar, __pyx_t_1, __pyx_v_ref_pts, __pyx_v_targs, 0); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 943, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_r = __pyx_t_5;
   __pyx_t_5 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/orientation.py":918
+  /* "openptv2/algorithms/orientation.py":918
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -31142,7 +31142,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_external_calibration(PyObjec
   __Pyx_XDECREF(__pyx_t_7);
   __Pyx_XDECREF(__pyx_t_11);
   __Pyx_XDECREF(__pyx_t_12);
-  __Pyx_AddTraceback("algorithms.orientation.external_calibration", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.orientation.external_calibration", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_Target);
@@ -31155,16 +31155,16 @@ static PyObject *__pyx_f_10algorithms_11orientation_external_calibration(PyObjec
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_11orientation_19external_calibration(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_11orientation_19external_calibration(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_11orientation_18external_calibration, "Update exterior calibration from known 3D-2D correspondences.\n\n    Thin wrapper around raw_orient(). Converts pixel-coordinate arrays\n    into Target objects and calls the iterative 6-parameter solver.\n\n    Args:\n        cal: Calibration object (modified in place on success).\n        ref_pts: (n, 3) array of known 3D positions.\n        img_pts: (n, 2) array of pixel coordinates.\n        cpar: ControlPar object.\n\n    Returns:\n        True if iteration converged, False otherwise.\n    ");
-static PyMethodDef __pyx_mdef_10algorithms_11orientation_19external_calibration = {"external_calibration", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_11orientation_19external_calibration, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_11orientation_18external_calibration};
-static PyObject *__pyx_pw_10algorithms_11orientation_19external_calibration(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_11orientation_18external_calibration, "Update exterior calibration from known 3D-2D correspondences.\n\n    Thin wrapper around raw_orient(). Converts pixel-coordinate arrays\n    into Target objects and calls the iterative 6-parameter solver.\n\n    Args:\n        cal: Calibration object (modified in place on success).\n        ref_pts: (n, 3) array of known 3D positions.\n        img_pts: (n, 2) array of pixel coordinates.\n        cpar: ControlPar object.\n\n    Returns:\n        True if iteration converged, False otherwise.\n    ");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_11orientation_19external_calibration = {"external_calibration", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_11orientation_19external_calibration, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_11orientation_18external_calibration};
+static PyObject *__pyx_pw_8openptv2_10algorithms_11orientation_19external_calibration(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -31250,11 +31250,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.orientation.external_calibration", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.orientation.external_calibration", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_11orientation_18external_calibration(__pyx_self, __pyx_v_cal, __pyx_v_ref_pts, __pyx_v_img_pts, __pyx_v_cpar);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_11orientation_18external_calibration(__pyx_self, __pyx_v_cal, __pyx_v_ref_pts, __pyx_v_img_pts, __pyx_v_cpar);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -31264,7 +31264,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_11orientation_18external_calibration(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cal, PyObject *__pyx_v_ref_pts, PyObject *__pyx_v_img_pts, PyObject *__pyx_v_cpar) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_11orientation_18external_calibration(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cal, PyObject *__pyx_v_ref_pts, PyObject *__pyx_v_img_pts, PyObject *__pyx_v_cpar) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -31273,7 +31273,7 @@ static PyObject *__pyx_pf_10algorithms_11orientation_18external_calibration(CYTH
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("external_calibration", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_11orientation_external_calibration(__pyx_v_cal, __pyx_v_ref_pts, __pyx_v_img_pts, __pyx_v_cpar, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 918, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_11orientation_external_calibration(__pyx_v_cal, __pyx_v_ref_pts, __pyx_v_img_pts, __pyx_v_cpar, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 918, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -31282,7 +31282,7 @@ static PyObject *__pyx_pf_10algorithms_11orientation_18external_calibration(CYTH
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.orientation.external_calibration", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.orientation.external_calibration", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -31290,7 +31290,7 @@ static PyObject *__pyx_pf_10algorithms_11orientation_18external_calibration(CYTH
   return __pyx_r;
 }
 
-/* "algorithms/orientation.py":946
+/* "openptv2/algorithms/orientation.py":946
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -31298,16 +31298,16 @@ static PyObject *__pyx_pf_10algorithms_11orientation_18external_calibration(CYTH
  *     """Full calibration adjusting exterior, interior, and distortion params.
 */
 
-static PyObject *__pyx_pw_10algorithms_11orientation_21full_calibration(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_11orientation_21full_calibration(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_11orientation_full_calibration(PyObject *__pyx_v_cal, PyObject *__pyx_v_ref_pts, PyObject *__pyx_v_img_pts, PyObject *__pyx_v_cpar, CYTHON_UNUSED int __pyx_skip_dispatch, struct __pyx_opt_args_10algorithms_11orientation_full_calibration *__pyx_optional_args) {
+static PyObject *__pyx_f_8openptv2_10algorithms_11orientation_full_calibration(PyObject *__pyx_v_cal, PyObject *__pyx_v_ref_pts, PyObject *__pyx_v_img_pts, PyObject *__pyx_v_cpar, CYTHON_UNUSED int __pyx_skip_dispatch, struct __pyx_opt_args_8openptv2_10algorithms_11orientation_full_calibration *__pyx_optional_args) {
 
-  /* "algorithms/orientation.py":947
+  /* "openptv2/algorithms/orientation.py":947
  * 
  * @cython.ccall
  * def full_calibration(cal, ref_pts, img_pts, cpar, flags=None):             # <<<<<<<<<<<<<<
@@ -31356,7 +31356,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_full_calibration(PyObject *_
   __Pyx_INCREF(__pyx_v_ref_pts);
   __Pyx_INCREF(__pyx_v_flags);
 
-  /* "algorithms/orientation.py":974
+  /* "openptv2/algorithms/orientation.py":974
  *         ValueError: if orient() iteration did not converge.
  *     """
  *     from .parameters import OrientPar             # <<<<<<<<<<<<<<
@@ -31365,7 +31365,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_full_calibration(PyObject *_
 */
   {
     PyObject* const __pyx_imported_names[] = {__pyx_mstate_global->__pyx_n_u_OrientPar};
-    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_parameters, __pyx_imported_names, 1, __pyx_mstate_global->__pyx_kp_u_algorithms_parameters, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 974, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_parameters, __pyx_imported_names, 1, __pyx_mstate_global->__pyx_kp_u_openptv2_algorithms_parameters, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 974, __pyx_L1_error)
   }
   __pyx_t_1 = __pyx_t_2;
   __Pyx_GOTREF(__pyx_t_1);
@@ -31386,7 +31386,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_full_calibration(PyObject *_
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":976
+  /* "openptv2/algorithms/orientation.py":976
  *     from .parameters import OrientPar
  * 
  *     if flags is None:             # <<<<<<<<<<<<<<
@@ -31396,7 +31396,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_full_calibration(PyObject *_
   __pyx_t_5 = (__pyx_v_flags == Py_None);
   if (__pyx_t_5) {
 
-    /* "algorithms/orientation.py":977
+    /* "openptv2/algorithms/orientation.py":977
  * 
  *     if flags is None:
  *         flags = []             # <<<<<<<<<<<<<<
@@ -31408,7 +31408,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_full_calibration(PyObject *_
     __Pyx_DECREF_SET(__pyx_v_flags, __pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "algorithms/orientation.py":976
+    /* "openptv2/algorithms/orientation.py":976
  *     from .parameters import OrientPar
  * 
  *     if flags is None:             # <<<<<<<<<<<<<<
@@ -31417,7 +31417,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_full_calibration(PyObject *_
 */
   }
 
-  /* "algorithms/orientation.py":979
+  /* "openptv2/algorithms/orientation.py":979
  *         flags = []
  * 
  *     orient_par = OrientPar(             # <<<<<<<<<<<<<<
@@ -31428,7 +31428,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_full_calibration(PyObject *_
   __Pyx_INCREF(__pyx_v_OrientPar);
   __pyx_t_6 = __pyx_v_OrientPar; 
 
-  /* "algorithms/orientation.py":981
+  /* "openptv2/algorithms/orientation.py":981
  *     orient_par = OrientPar(
  *         useflag=0,
  *         ccflag=1 if 'cc' in flags else 0,             # <<<<<<<<<<<<<<
@@ -31444,7 +31444,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_full_calibration(PyObject *_
     __pyx_t_7 = __pyx_mstate_global->__pyx_int_0;
   }
 
-  /* "algorithms/orientation.py":982
+  /* "openptv2/algorithms/orientation.py":982
  *         useflag=0,
  *         ccflag=1 if 'cc' in flags else 0,
  *         xhflag=1 if 'xh' in flags else 0,             # <<<<<<<<<<<<<<
@@ -31460,7 +31460,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_full_calibration(PyObject *_
     __pyx_t_8 = __pyx_mstate_global->__pyx_int_0;
   }
 
-  /* "algorithms/orientation.py":983
+  /* "openptv2/algorithms/orientation.py":983
  *         ccflag=1 if 'cc' in flags else 0,
  *         xhflag=1 if 'xh' in flags else 0,
  *         yhflag=1 if 'yh' in flags else 0,             # <<<<<<<<<<<<<<
@@ -31476,7 +31476,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_full_calibration(PyObject *_
     __pyx_t_9 = __pyx_mstate_global->__pyx_int_0;
   }
 
-  /* "algorithms/orientation.py":984
+  /* "openptv2/algorithms/orientation.py":984
  *         xhflag=1 if 'xh' in flags else 0,
  *         yhflag=1 if 'yh' in flags else 0,
  *         k1flag=1 if 'k1' in flags else 0,             # <<<<<<<<<<<<<<
@@ -31492,7 +31492,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_full_calibration(PyObject *_
     __pyx_t_10 = __pyx_mstate_global->__pyx_int_0;
   }
 
-  /* "algorithms/orientation.py":985
+  /* "openptv2/algorithms/orientation.py":985
  *         yhflag=1 if 'yh' in flags else 0,
  *         k1flag=1 if 'k1' in flags else 0,
  *         k2flag=1 if 'k2' in flags else 0,             # <<<<<<<<<<<<<<
@@ -31508,7 +31508,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_full_calibration(PyObject *_
     __pyx_t_11 = __pyx_mstate_global->__pyx_int_0;
   }
 
-  /* "algorithms/orientation.py":986
+  /* "openptv2/algorithms/orientation.py":986
  *         k1flag=1 if 'k1' in flags else 0,
  *         k2flag=1 if 'k2' in flags else 0,
  *         k3flag=1 if 'k3' in flags else 0,             # <<<<<<<<<<<<<<
@@ -31524,7 +31524,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_full_calibration(PyObject *_
     __pyx_t_12 = __pyx_mstate_global->__pyx_int_0;
   }
 
-  /* "algorithms/orientation.py":987
+  /* "openptv2/algorithms/orientation.py":987
  *         k2flag=1 if 'k2' in flags else 0,
  *         k3flag=1 if 'k3' in flags else 0,
  *         p1flag=1 if 'p1' in flags else 0,             # <<<<<<<<<<<<<<
@@ -31540,7 +31540,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_full_calibration(PyObject *_
     __pyx_t_13 = __pyx_mstate_global->__pyx_int_0;
   }
 
-  /* "algorithms/orientation.py":988
+  /* "openptv2/algorithms/orientation.py":988
  *         k3flag=1 if 'k3' in flags else 0,
  *         p1flag=1 if 'p1' in flags else 0,
  *         p2flag=1 if 'p2' in flags else 0,             # <<<<<<<<<<<<<<
@@ -31556,7 +31556,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_full_calibration(PyObject *_
     __pyx_t_14 = __pyx_mstate_global->__pyx_int_0;
   }
 
-  /* "algorithms/orientation.py":989
+  /* "openptv2/algorithms/orientation.py":989
  *         p1flag=1 if 'p1' in flags else 0,
  *         p2flag=1 if 'p2' in flags else 0,
  *         scxflag=1 if 'scale' in flags else 0,             # <<<<<<<<<<<<<<
@@ -31572,7 +31572,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_full_calibration(PyObject *_
     __pyx_t_15 = __pyx_mstate_global->__pyx_int_0;
   }
 
-  /* "algorithms/orientation.py":990
+  /* "openptv2/algorithms/orientation.py":990
  *         p2flag=1 if 'p2' in flags else 0,
  *         scxflag=1 if 'scale' in flags else 0,
  *         sheflag=1 if 'shear' in flags else 0,             # <<<<<<<<<<<<<<
@@ -31635,7 +31635,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_full_calibration(PyObject *_
   __pyx_v_orient_par = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":994
+  /* "openptv2/algorithms/orientation.py":994
  *     )
  * 
  *     ref_pts = np.ascontiguousarray(ref_pts, dtype=np.float64)             # <<<<<<<<<<<<<<
@@ -31681,7 +31681,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_full_calibration(PyObject *_
   __Pyx_DECREF_SET(__pyx_v_ref_pts, __pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":995
+  /* "openptv2/algorithms/orientation.py":995
  * 
  *     ref_pts = np.ascontiguousarray(ref_pts, dtype=np.float64)
  *     sigmabeta = np.zeros(NPAR + 1)             # <<<<<<<<<<<<<<
@@ -31723,7 +31723,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_full_calibration(PyObject *_
   __pyx_v_sigmabeta = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":997
+  /* "openptv2/algorithms/orientation.py":997
  *     sigmabeta = np.zeros(NPAR + 1)
  * 
  *     residuals = orient(cal, cpar, len(ref_pts), ref_pts, img_pts,             # <<<<<<<<<<<<<<
@@ -31734,20 +31734,20 @@ static PyObject *__pyx_f_10algorithms_11orientation_full_calibration(PyObject *_
   __pyx_t_1 = PyLong_FromSsize_t(__pyx_t_3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 997, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
 
-  /* "algorithms/orientation.py":998
+  /* "openptv2/algorithms/orientation.py":998
  * 
  *     residuals = orient(cal, cpar, len(ref_pts), ref_pts, img_pts,
  *                        orient_par, sigmabeta)             # <<<<<<<<<<<<<<
  * 
  *     if residuals is None:
 */
-  __pyx_t_15 = __pyx_f_10algorithms_11orientation_orient(__pyx_v_cal, __pyx_v_cpar, __pyx_t_1, __pyx_v_ref_pts, __pyx_v_img_pts, __pyx_v_orient_par, __pyx_v_sigmabeta, 0); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 997, __pyx_L1_error)
+  __pyx_t_15 = __pyx_f_8openptv2_10algorithms_11orientation_orient(__pyx_v_cal, __pyx_v_cpar, __pyx_t_1, __pyx_v_ref_pts, __pyx_v_img_pts, __pyx_v_orient_par, __pyx_v_sigmabeta, 0); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 997, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_15);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_residuals = __pyx_t_15;
   __pyx_t_15 = 0;
 
-  /* "algorithms/orientation.py":1000
+  /* "openptv2/algorithms/orientation.py":1000
  *                        orient_par, sigmabeta)
  * 
  *     if residuals is None:             # <<<<<<<<<<<<<<
@@ -31757,7 +31757,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_full_calibration(PyObject *_
   __pyx_t_5 = (__pyx_v_residuals == Py_None);
   if (unlikely(__pyx_t_5)) {
 
-    /* "algorithms/orientation.py":1001
+    /* "openptv2/algorithms/orientation.py":1001
  * 
  *     if residuals is None:
  *         raise ValueError("Orientation iteration failed, need better setup.")             # <<<<<<<<<<<<<<
@@ -31777,7 +31777,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_full_calibration(PyObject *_
     __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
     __PYX_ERR(0, 1001, __pyx_L1_error)
 
-    /* "algorithms/orientation.py":1000
+    /* "openptv2/algorithms/orientation.py":1000
  *                        orient_par, sigmabeta)
  * 
  *     if residuals is None:             # <<<<<<<<<<<<<<
@@ -31786,7 +31786,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_full_calibration(PyObject *_
 */
   }
 
-  /* "algorithms/orientation.py":1003
+  /* "openptv2/algorithms/orientation.py":1003
  *         raise ValueError("Orientation iteration failed, need better setup.")
  * 
  *     n = len(img_pts)             # <<<<<<<<<<<<<<
@@ -31796,7 +31796,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_full_calibration(PyObject *_
   __pyx_t_3 = PyObject_Length(__pyx_v_img_pts); if (unlikely(__pyx_t_3 == ((Py_ssize_t)-1))) __PYX_ERR(0, 1003, __pyx_L1_error)
   __pyx_v_n = __pyx_t_3;
 
-  /* "algorithms/orientation.py":1004
+  /* "openptv2/algorithms/orientation.py":1004
  * 
  *     n = len(img_pts)
  *     ret = np.empty((n, 2))             # <<<<<<<<<<<<<<
@@ -31843,7 +31843,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_full_calibration(PyObject *_
   __pyx_v_ret = __pyx_t_15;
   __pyx_t_15 = 0;
 
-  /* "algorithms/orientation.py":1005
+  /* "openptv2/algorithms/orientation.py":1005
  *     n = len(img_pts)
  *     ret = np.empty((n, 2))
  *     used = np.empty(n, dtype=np.int32)             # <<<<<<<<<<<<<<
@@ -31892,7 +31892,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_full_calibration(PyObject *_
   __pyx_v_used = __pyx_t_15;
   __pyx_t_15 = 0;
 
-  /* "algorithms/orientation.py":1007
+  /* "openptv2/algorithms/orientation.py":1007
  *     used = np.empty(n, dtype=np.int32)
  * 
  *     for i in range(n):             # <<<<<<<<<<<<<<
@@ -31931,7 +31931,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_full_calibration(PyObject *_
     __Pyx_XDECREF_SET(__pyx_v_i, __pyx_t_15);
     __pyx_t_15 = 0;
 
-    /* "algorithms/orientation.py":1008
+    /* "openptv2/algorithms/orientation.py":1008
  * 
  *     for i in range(n):
  *         ret[i, 0] = residuals[2 * i]             # <<<<<<<<<<<<<<
@@ -31955,7 +31955,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_full_calibration(PyObject *_
     __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "algorithms/orientation.py":1009
+    /* "openptv2/algorithms/orientation.py":1009
  *     for i in range(n):
  *         ret[i, 0] = residuals[2 * i]
  *         ret[i, 1] = residuals[2 * i + 1]             # <<<<<<<<<<<<<<
@@ -31982,7 +31982,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_full_calibration(PyObject *_
     __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "algorithms/orientation.py":1010
+    /* "openptv2/algorithms/orientation.py":1010
  *         ret[i, 0] = residuals[2 * i]
  *         ret[i, 1] = residuals[2 * i + 1]
  *         used[i] = img_pts[i].pnr             # <<<<<<<<<<<<<<
@@ -31997,7 +31997,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_full_calibration(PyObject *_
     if (unlikely((PyObject_SetItem(__pyx_v_used, __pyx_v_i, __pyx_t_15) < 0))) __PYX_ERR(0, 1010, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
 
-    /* "algorithms/orientation.py":1007
+    /* "openptv2/algorithms/orientation.py":1007
  *     used = np.empty(n, dtype=np.int32)
  * 
  *     for i in range(n):             # <<<<<<<<<<<<<<
@@ -32007,7 +32007,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_full_calibration(PyObject *_
   }
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-  /* "algorithms/orientation.py":1012
+  /* "openptv2/algorithms/orientation.py":1012
  *         used[i] = img_pts[i].pnr
  * 
  *     return ret, used, sigmabeta             # <<<<<<<<<<<<<<
@@ -32030,7 +32030,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_full_calibration(PyObject *_
   __pyx_t_6 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/orientation.py":946
+  /* "openptv2/algorithms/orientation.py":946
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -32054,7 +32054,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_full_calibration(PyObject *_
   __Pyx_XDECREF(__pyx_t_15);
   __Pyx_XDECREF(__pyx_t_16);
   __Pyx_XDECREF(__pyx_t_18);
-  __Pyx_AddTraceback("algorithms.orientation.full_calibration", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.orientation.full_calibration", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_OrientPar);
@@ -32072,16 +32072,16 @@ static PyObject *__pyx_f_10algorithms_11orientation_full_calibration(PyObject *_
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_11orientation_21full_calibration(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_11orientation_21full_calibration(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_11orientation_20full_calibration, "Full calibration adjusting exterior, interior, and distortion params.\n\n    Thin wrapper around orient(). Accepts either a list of Target objects\n    or a list of flag name strings, converts to OrientPar, and calls the\n    full bundle adjustment.\n\n    Args:\n        cal: Calibration object (modified in place on success).\n        ref_pts: (n, 3) array of known 3D positions.\n        img_pts: list of Target objects with .x, .y, .pnr attributes,\n            ordered by matching reference point (as done by\n            match_detection_to_ref).\n        cpar: ControlPar object.\n        flags: list of flag name strings to enable. Recognized:\n            'cc', 'xh', 'yh', 'k1', 'k2', 'k3', 'p1', 'p2',\n            'scale', 'shear'. If None, no flags enabled (raw-like).\n\n    Returns:\n        (residuals, used, err_est) tuple:\n            residuals: (n, 2) array of x/y residuals per point.\n            used: n-length array of target pnr values.\n            err_est: (NPAR+1,) array of error estimates per DOF.\n\n    Raises:\n        ValueError: if orient() iteration did not converge.\n    ");
-static PyMethodDef __pyx_mdef_10algorithms_11orientation_21full_calibration = {"full_calibration", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_11orientation_21full_calibration, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_11orientation_20full_calibration};
-static PyObject *__pyx_pw_10algorithms_11orientation_21full_calibration(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_11orientation_20full_calibration, "Full calibration adjusting exterior, interior, and distortion params.\n\n    Thin wrapper around orient(). Accepts either a list of Target objects\n    or a list of flag name strings, converts to OrientPar, and calls the\n    full bundle adjustment.\n\n    Args:\n        cal: Calibration object (modified in place on success).\n        ref_pts: (n, 3) array of known 3D positions.\n        img_pts: list of Target objects with .x, .y, .pnr attributes,\n            ordered by matching reference point (as done by\n            match_detection_to_ref).\n        cpar: ControlPar object.\n        flags: list of flag name strings to enable. Recognized:\n            'cc', 'xh', 'yh', 'k1', 'k2', 'k3', 'p1', 'p2',\n            'scale', 'shear'. If None, no flags enabled (raw-like).\n\n    Returns:\n        (residuals, used, err_est) tuple:\n            residuals: (n, 2) array of x/y residuals per point.\n            used: n-length array of target pnr values.\n            err_est: (NPAR+1,) array of error estimates per DOF.\n\n    Raises:\n        ValueError: if orient() iteration did not converge.\n    ");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_11orientation_21full_calibration = {"full_calibration", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_11orientation_21full_calibration, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_11orientation_20full_calibration};
+static PyObject *__pyx_pw_8openptv2_10algorithms_11orientation_21full_calibration(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -32144,7 +32144,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
       const Py_ssize_t kwd_pos_args = __pyx_nargs;
       if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "full_calibration", 0) < (0)) __PYX_ERR(0, 946, __pyx_L3_error)
 
-      /* "algorithms/orientation.py":947
+      /* "openptv2/algorithms/orientation.py":947
  * 
  * @cython.ccall
  * def full_calibration(cal, ref_pts, img_pts, cpar, flags=None):             # <<<<<<<<<<<<<<
@@ -32190,13 +32190,13 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.orientation.full_calibration", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.orientation.full_calibration", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_11orientation_20full_calibration(__pyx_self, __pyx_v_cal, __pyx_v_ref_pts, __pyx_v_img_pts, __pyx_v_cpar, __pyx_v_flags);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_11orientation_20full_calibration(__pyx_self, __pyx_v_cal, __pyx_v_ref_pts, __pyx_v_img_pts, __pyx_v_cpar, __pyx_v_flags);
 
-  /* "algorithms/orientation.py":946
+  /* "openptv2/algorithms/orientation.py":946
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -32212,11 +32212,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_11orientation_20full_calibration(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cal, PyObject *__pyx_v_ref_pts, PyObject *__pyx_v_img_pts, PyObject *__pyx_v_cpar, PyObject *__pyx_v_flags) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_11orientation_20full_calibration(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cal, PyObject *__pyx_v_ref_pts, PyObject *__pyx_v_img_pts, PyObject *__pyx_v_cpar, PyObject *__pyx_v_flags) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
-  struct __pyx_opt_args_10algorithms_11orientation_full_calibration __pyx_t_2;
+  struct __pyx_opt_args_8openptv2_10algorithms_11orientation_full_calibration __pyx_t_2;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -32224,7 +32224,7 @@ static PyObject *__pyx_pf_10algorithms_11orientation_20full_calibration(CYTHON_U
   __Pyx_XDECREF(__pyx_r);
   __pyx_t_2.__pyx_n = 1;
   __pyx_t_2.flags = __pyx_v_flags;
-  __pyx_t_1 = __pyx_f_10algorithms_11orientation_full_calibration(__pyx_v_cal, __pyx_v_ref_pts, __pyx_v_img_pts, __pyx_v_cpar, 1, &__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 946, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_11orientation_full_calibration(__pyx_v_cal, __pyx_v_ref_pts, __pyx_v_img_pts, __pyx_v_cpar, 1, &__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 946, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -32233,7 +32233,7 @@ static PyObject *__pyx_pf_10algorithms_11orientation_20full_calibration(CYTHON_U
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.orientation.full_calibration", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.orientation.full_calibration", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -32241,7 +32241,7 @@ static PyObject *__pyx_pf_10algorithms_11orientation_20full_calibration(CYTHON_U
   return __pyx_r;
 }
 
-/* "algorithms/orientation.py":1015
+/* "openptv2/algorithms/orientation.py":1015
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -32249,14 +32249,14 @@ static PyObject *__pyx_pf_10algorithms_11orientation_20full_calibration(CYTHON_U
  *     """Match detected targets to reference 3D points via back-projection.
 */
 
-static PyObject *__pyx_pw_10algorithms_11orientation_23match_detection_to_ref(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_11orientation_23match_detection_to_ref(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_11orientation_match_detection_to_ref(PyObject *__pyx_v_cal, PyObject *__pyx_v_ref_pts, PyObject *__pyx_v_img_pts, PyObject *__pyx_v_cpar, CYTHON_UNUSED int __pyx_skip_dispatch, struct __pyx_opt_args_10algorithms_11orientation_match_detection_to_ref *__pyx_optional_args) {
+static PyObject *__pyx_f_8openptv2_10algorithms_11orientation_match_detection_to_ref(PyObject *__pyx_v_cal, PyObject *__pyx_v_ref_pts, PyObject *__pyx_v_img_pts, PyObject *__pyx_v_cpar, CYTHON_UNUSED int __pyx_skip_dispatch, struct __pyx_opt_args_8openptv2_10algorithms_11orientation_match_detection_to_ref *__pyx_optional_args) {
   PyObject *__pyx_v_eps = ((PyObject *)__pyx_mstate_global->__pyx_int_25);
   PyObject *__pyx_v_sortgrid = NULL;
   PyObject *__pyx_r = NULL;
@@ -32280,7 +32280,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_match_detection_to_ref(PyObj
   }
   __Pyx_INCREF(__pyx_v_ref_pts);
 
-  /* "algorithms/orientation.py":1033
+  /* "openptv2/algorithms/orientation.py":1033
  *         Unmatched entries have pnr=-999.
  *     """
  *     from .sortgrid import sortgrid             # <<<<<<<<<<<<<<
@@ -32289,7 +32289,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_match_detection_to_ref(PyObj
 */
   {
     PyObject* const __pyx_imported_names[] = {__pyx_mstate_global->__pyx_n_u_sortgrid};
-    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_sortgrid, __pyx_imported_names, 1, __pyx_mstate_global->__pyx_kp_u_algorithms_sortgrid, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1033, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_sortgrid, __pyx_imported_names, 1, __pyx_mstate_global->__pyx_kp_u_openptv2_algorithms_sortgrid, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1033, __pyx_L1_error)
   }
   __pyx_t_1 = __pyx_t_2;
   __Pyx_GOTREF(__pyx_t_1);
@@ -32310,7 +32310,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_match_detection_to_ref(PyObj
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":1035
+  /* "openptv2/algorithms/orientation.py":1035
  *     from .sortgrid import sortgrid
  * 
  *     ref_pts = np.ascontiguousarray(ref_pts, dtype=np.float64)             # <<<<<<<<<<<<<<
@@ -32356,7 +32356,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_match_detection_to_ref(PyObj
   __Pyx_DECREF_SET(__pyx_v_ref_pts, __pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":1037
+  /* "openptv2/algorithms/orientation.py":1037
  *     ref_pts = np.ascontiguousarray(ref_pts, dtype=np.float64)
  * 
  *     return sortgrid(cal, cpar, len(ref_pts), ref_pts, len(img_pts),             # <<<<<<<<<<<<<<
@@ -32374,7 +32374,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_match_detection_to_ref(PyObj
   __pyx_t_4 = PyLong_FromSsize_t(__pyx_t_3); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 1037, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
 
-  /* "algorithms/orientation.py":1038
+  /* "openptv2/algorithms/orientation.py":1038
  * 
  *     return sortgrid(cal, cpar, len(ref_pts), ref_pts, len(img_pts),
  *                     eps, img_pts)             # <<<<<<<<<<<<<<
@@ -32407,7 +32407,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_match_detection_to_ref(PyObj
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/orientation.py":1015
+  /* "openptv2/algorithms/orientation.py":1015
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -32422,7 +32422,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_match_detection_to_ref(PyObj
   __Pyx_XDECREF(__pyx_t_5);
   __Pyx_XDECREF(__pyx_t_6);
   __Pyx_XDECREF(__pyx_t_7);
-  __Pyx_AddTraceback("algorithms.orientation.match_detection_to_ref", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.orientation.match_detection_to_ref", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_sortgrid);
@@ -32433,16 +32433,16 @@ static PyObject *__pyx_f_10algorithms_11orientation_match_detection_to_ref(PyObj
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_11orientation_23match_detection_to_ref(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_11orientation_23match_detection_to_ref(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_11orientation_22match_detection_to_ref, "Match detected targets to reference 3D points via back-projection.\n\n    Thin wrapper around sortgrid(). Projects reference points into the\n    image and matches each to the nearest detected target within eps pixels.\n\n    Args:\n        cal: Calibration object.\n        ref_pts: (n, 3) array of known 3D positions.\n        img_pts: list of Target objects (detected points).\n        cpar: ControlPar object.\n        eps: pixel search radius (default 25).\n\n    Returns:\n        List of Target objects sorted by reference point order.\n        Unmatched entries have pnr=-999.\n    ");
-static PyMethodDef __pyx_mdef_10algorithms_11orientation_23match_detection_to_ref = {"match_detection_to_ref", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_11orientation_23match_detection_to_ref, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_11orientation_22match_detection_to_ref};
-static PyObject *__pyx_pw_10algorithms_11orientation_23match_detection_to_ref(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_11orientation_22match_detection_to_ref, "Match detected targets to reference 3D points via back-projection.\n\n    Thin wrapper around sortgrid(). Projects reference points into the\n    image and matches each to the nearest detected target within eps pixels.\n\n    Args:\n        cal: Calibration object.\n        ref_pts: (n, 3) array of known 3D positions.\n        img_pts: list of Target objects (detected points).\n        cpar: ControlPar object.\n        eps: pixel search radius (default 25).\n\n    Returns:\n        List of Target objects sorted by reference point order.\n        Unmatched entries have pnr=-999.\n    ");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_11orientation_23match_detection_to_ref = {"match_detection_to_ref", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_11orientation_23match_detection_to_ref, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_11orientation_22match_detection_to_ref};
+static PyObject *__pyx_pw_8openptv2_10algorithms_11orientation_23match_detection_to_ref(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -32543,11 +32543,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.orientation.match_detection_to_ref", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.orientation.match_detection_to_ref", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_11orientation_22match_detection_to_ref(__pyx_self, __pyx_v_cal, __pyx_v_ref_pts, __pyx_v_img_pts, __pyx_v_cpar, __pyx_v_eps);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_11orientation_22match_detection_to_ref(__pyx_self, __pyx_v_cal, __pyx_v_ref_pts, __pyx_v_img_pts, __pyx_v_cpar, __pyx_v_eps);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -32557,11 +32557,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_11orientation_22match_detection_to_ref(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cal, PyObject *__pyx_v_ref_pts, PyObject *__pyx_v_img_pts, PyObject *__pyx_v_cpar, PyObject *__pyx_v_eps) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_11orientation_22match_detection_to_ref(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cal, PyObject *__pyx_v_ref_pts, PyObject *__pyx_v_img_pts, PyObject *__pyx_v_cpar, PyObject *__pyx_v_eps) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
-  struct __pyx_opt_args_10algorithms_11orientation_match_detection_to_ref __pyx_t_2;
+  struct __pyx_opt_args_8openptv2_10algorithms_11orientation_match_detection_to_ref __pyx_t_2;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -32569,7 +32569,7 @@ static PyObject *__pyx_pf_10algorithms_11orientation_22match_detection_to_ref(CY
   __Pyx_XDECREF(__pyx_r);
   __pyx_t_2.__pyx_n = 1;
   __pyx_t_2.eps = __pyx_v_eps;
-  __pyx_t_1 = __pyx_f_10algorithms_11orientation_match_detection_to_ref(__pyx_v_cal, __pyx_v_ref_pts, __pyx_v_img_pts, __pyx_v_cpar, 1, &__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1015, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_11orientation_match_detection_to_ref(__pyx_v_cal, __pyx_v_ref_pts, __pyx_v_img_pts, __pyx_v_cpar, 1, &__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1015, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -32578,7 +32578,7 @@ static PyObject *__pyx_pf_10algorithms_11orientation_22match_detection_to_ref(CY
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.orientation.match_detection_to_ref", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.orientation.match_detection_to_ref", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -32586,7 +32586,7 @@ static PyObject *__pyx_pf_10algorithms_11orientation_22match_detection_to_ref(CY
   return __pyx_r;
 }
 
-/* "algorithms/orientation.py":1041
+/* "openptv2/algorithms/orientation.py":1041
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -32594,14 +32594,14 @@ static PyObject *__pyx_pf_10algorithms_11orientation_22match_detection_to_ref(CY
  *     """Calculate 3D positions from multi-camera 2D projections.
 */
 
-static PyObject *__pyx_pw_10algorithms_11orientation_25multi_cam_point_positions(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_11orientation_25multi_cam_point_positions(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_11orientation_multi_cam_point_positions(PyObject *__pyx_v_targets, PyObject *__pyx_v_cpar, PyObject *__pyx_v_cals, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_11orientation_multi_cam_point_positions(PyObject *__pyx_v_targets, PyObject *__pyx_v_cpar, PyObject *__pyx_v_cals, CYTHON_UNUSED int __pyx_skip_dispatch) {
   int __pyx_v_num_cams;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
@@ -32618,7 +32618,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_multi_cam_point_positions(Py
   __Pyx_RefNannySetupContext("multi_cam_point_positions", 0);
   __Pyx_INCREF(__pyx_v_targets);
 
-  /* "algorithms/orientation.py":1058
+  /* "openptv2/algorithms/orientation.py":1058
  *             rcm: n-length array of ray convergence measures.
  *     """
  *     targets = np.ascontiguousarray(targets, dtype=np.float64)             # <<<<<<<<<<<<<<
@@ -32664,7 +32664,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_multi_cam_point_positions(Py
   __Pyx_DECREF_SET(__pyx_v_targets, __pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":1059
+  /* "openptv2/algorithms/orientation.py":1059
  *     """
  *     targets = np.ascontiguousarray(targets, dtype=np.float64)
  *     num_cams: cython.int = targets.shape[1]             # <<<<<<<<<<<<<<
@@ -32680,7 +32680,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_multi_cam_point_positions(Py
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __pyx_v_num_cams = __pyx_t_7;
 
-  /* "algorithms/orientation.py":1060
+  /* "openptv2/algorithms/orientation.py":1060
  *     targets = np.ascontiguousarray(targets, dtype=np.float64)
  *     num_cams: cython.int = targets.shape[1]
  *     return point_position_batch(targets, num_cams, cpar.mm, cals)             # <<<<<<<<<<<<<<
@@ -32690,14 +32690,14 @@ static PyObject *__pyx_f_10algorithms_11orientation_multi_cam_point_positions(Py
   __Pyx_XDECREF(__pyx_r);
   __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_cpar, __pyx_mstate_global->__pyx_n_u_mm); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 1060, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_1 = __pyx_f_10algorithms_11orientation_point_position_batch(__pyx_v_targets, __pyx_v_num_cams, __pyx_t_4, __pyx_v_cals, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1060, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_11orientation_point_position_batch(__pyx_v_targets, __pyx_v_num_cams, __pyx_t_4, __pyx_v_cals, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1060, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/orientation.py":1041
+  /* "openptv2/algorithms/orientation.py":1041
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -32712,7 +32712,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_multi_cam_point_positions(Py
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_5);
-  __Pyx_AddTraceback("algorithms.orientation.multi_cam_point_positions", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.orientation.multi_cam_point_positions", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_targets);
@@ -32722,16 +32722,16 @@ static PyObject *__pyx_f_10algorithms_11orientation_multi_cam_point_positions(Py
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_11orientation_25multi_cam_point_positions(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_11orientation_25multi_cam_point_positions(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_11orientation_24multi_cam_point_positions, "Calculate 3D positions from multi-camera 2D projections.\n\n    Convenience wrapper matching the Cython binding API signature.\n    Uses point_position_batch() directly for speed.\n\n    Args:\n        targets: (num_targets, num_cams, 2) array of metric flat coordinates.\n        cpar: ControlPar (used for multimedia parameters via cpar.mm).\n        cals: list of Calibration objects.\n\n    Returns:\n        (positions, rcm) tuple:\n            positions: (n, 3) array of 3D positions.\n            rcm: n-length array of ray convergence measures.\n    ");
-static PyMethodDef __pyx_mdef_10algorithms_11orientation_25multi_cam_point_positions = {"multi_cam_point_positions", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_11orientation_25multi_cam_point_positions, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_11orientation_24multi_cam_point_positions};
-static PyObject *__pyx_pw_10algorithms_11orientation_25multi_cam_point_positions(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_11orientation_24multi_cam_point_positions, "Calculate 3D positions from multi-camera 2D projections.\n\n    Convenience wrapper matching the Cython binding API signature.\n    Uses point_position_batch() directly for speed.\n\n    Args:\n        targets: (num_targets, num_cams, 2) array of metric flat coordinates.\n        cpar: ControlPar (used for multimedia parameters via cpar.mm).\n        cals: list of Calibration objects.\n\n    Returns:\n        (positions, rcm) tuple:\n            positions: (n, 3) array of 3D positions.\n            rcm: n-length array of ray convergence measures.\n    ");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_11orientation_25multi_cam_point_positions = {"multi_cam_point_positions", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_11orientation_25multi_cam_point_positions, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_11orientation_24multi_cam_point_positions};
+static PyObject *__pyx_pw_8openptv2_10algorithms_11orientation_25multi_cam_point_positions(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -32809,11 +32809,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.orientation.multi_cam_point_positions", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.orientation.multi_cam_point_positions", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_11orientation_24multi_cam_point_positions(__pyx_self, __pyx_v_targets, __pyx_v_cpar, __pyx_v_cals);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_11orientation_24multi_cam_point_positions(__pyx_self, __pyx_v_targets, __pyx_v_cpar, __pyx_v_cals);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -32823,7 +32823,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_11orientation_24multi_cam_point_positions(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_targets, PyObject *__pyx_v_cpar, PyObject *__pyx_v_cals) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_11orientation_24multi_cam_point_positions(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_targets, PyObject *__pyx_v_cpar, PyObject *__pyx_v_cals) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -32832,7 +32832,7 @@ static PyObject *__pyx_pf_10algorithms_11orientation_24multi_cam_point_positions
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("multi_cam_point_positions", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_11orientation_multi_cam_point_positions(__pyx_v_targets, __pyx_v_cpar, __pyx_v_cals, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1041, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_11orientation_multi_cam_point_positions(__pyx_v_targets, __pyx_v_cpar, __pyx_v_cals, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1041, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -32841,7 +32841,7 @@ static PyObject *__pyx_pf_10algorithms_11orientation_24multi_cam_point_positions
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.orientation.multi_cam_point_positions", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.orientation.multi_cam_point_positions", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -32849,7 +32849,7 @@ static PyObject *__pyx_pf_10algorithms_11orientation_24multi_cam_point_positions
   return __pyx_r;
 }
 
-/* "algorithms/orientation.py":1064
+/* "openptv2/algorithms/orientation.py":1064
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -32857,16 +32857,16 @@ static PyObject *__pyx_pf_10algorithms_11orientation_24multi_cam_point_positions
  *     """Dispatch to single or multi-camera point position calculation.
 */
 
-static PyObject *__pyx_pw_10algorithms_11orientation_27point_positions(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_11orientation_27point_positions(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_11orientation_point_positions(PyObject *__pyx_v_targets, PyObject *__pyx_v_cpar, PyObject *__pyx_v_cals, CYTHON_UNUSED int __pyx_skip_dispatch, struct __pyx_opt_args_10algorithms_11orientation_point_positions *__pyx_optional_args) {
+static PyObject *__pyx_f_8openptv2_10algorithms_11orientation_point_positions(PyObject *__pyx_v_targets, PyObject *__pyx_v_cpar, PyObject *__pyx_v_cals, CYTHON_UNUSED int __pyx_skip_dispatch, struct __pyx_opt_args_8openptv2_10algorithms_11orientation_point_positions *__pyx_optional_args) {
 
-  /* "algorithms/orientation.py":1065
+  /* "openptv2/algorithms/orientation.py":1065
  * 
  * @cython.ccall
  * def point_positions(targets, cpar, cals, vpar=None):             # <<<<<<<<<<<<<<
@@ -32891,7 +32891,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_positions(PyObject *__
     }
   }
 
-  /* "algorithms/orientation.py":1080
+  /* "openptv2/algorithms/orientation.py":1080
  *         (positions, rcm) tuple.
  *     """
  *     if len(cals) == 1:             # <<<<<<<<<<<<<<
@@ -32902,7 +32902,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_positions(PyObject *__
   __pyx_t_2 = (__pyx_t_1 == 1);
   if (__pyx_t_2) {
 
-    /* "algorithms/orientation.py":1081
+    /* "openptv2/algorithms/orientation.py":1081
  *     """
  *     if len(cals) == 1:
  *         return single_cam_point_positions(targets, cpar, cals, vpar)             # <<<<<<<<<<<<<<
@@ -32910,13 +32910,13 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_positions(PyObject *__
  *         return multi_cam_point_positions(targets, cpar, cals)
 */
     __Pyx_XDECREF(__pyx_r);
-    __pyx_t_3 = __pyx_f_10algorithms_11orientation_single_cam_point_positions(__pyx_v_targets, __pyx_v_cpar, __pyx_v_cals, __pyx_v_vpar, 0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 1081, __pyx_L1_error)
+    __pyx_t_3 = __pyx_f_8openptv2_10algorithms_11orientation_single_cam_point_positions(__pyx_v_targets, __pyx_v_cpar, __pyx_v_cals, __pyx_v_vpar, 0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 1081, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __pyx_r = __pyx_t_3;
     __pyx_t_3 = 0;
     goto __pyx_L0;
 
-    /* "algorithms/orientation.py":1080
+    /* "openptv2/algorithms/orientation.py":1080
  *         (positions, rcm) tuple.
  *     """
  *     if len(cals) == 1:             # <<<<<<<<<<<<<<
@@ -32925,7 +32925,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_positions(PyObject *__
 */
   }
 
-  /* "algorithms/orientation.py":1082
+  /* "openptv2/algorithms/orientation.py":1082
  *     if len(cals) == 1:
  *         return single_cam_point_positions(targets, cpar, cals, vpar)
  *     elif len(cals) > 1:             # <<<<<<<<<<<<<<
@@ -32936,7 +32936,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_positions(PyObject *__
   __pyx_t_2 = (__pyx_t_1 > 1);
   if (likely(__pyx_t_2)) {
 
-    /* "algorithms/orientation.py":1083
+    /* "openptv2/algorithms/orientation.py":1083
  *         return single_cam_point_positions(targets, cpar, cals, vpar)
  *     elif len(cals) > 1:
  *         return multi_cam_point_positions(targets, cpar, cals)             # <<<<<<<<<<<<<<
@@ -32944,13 +32944,13 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_positions(PyObject *__
  *         raise ValueError("wrong number of cameras in point_positions")
 */
     __Pyx_XDECREF(__pyx_r);
-    __pyx_t_3 = __pyx_f_10algorithms_11orientation_multi_cam_point_positions(__pyx_v_targets, __pyx_v_cpar, __pyx_v_cals, 0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 1083, __pyx_L1_error)
+    __pyx_t_3 = __pyx_f_8openptv2_10algorithms_11orientation_multi_cam_point_positions(__pyx_v_targets, __pyx_v_cpar, __pyx_v_cals, 0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 1083, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __pyx_r = __pyx_t_3;
     __pyx_t_3 = 0;
     goto __pyx_L0;
 
-    /* "algorithms/orientation.py":1082
+    /* "openptv2/algorithms/orientation.py":1082
  *     if len(cals) == 1:
  *         return single_cam_point_positions(targets, cpar, cals, vpar)
  *     elif len(cals) > 1:             # <<<<<<<<<<<<<<
@@ -32959,7 +32959,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_positions(PyObject *__
 */
   }
 
-  /* "algorithms/orientation.py":1085
+  /* "openptv2/algorithms/orientation.py":1085
  *         return multi_cam_point_positions(targets, cpar, cals)
  *     else:
  *         raise ValueError("wrong number of cameras in point_positions")             # <<<<<<<<<<<<<<
@@ -32981,7 +32981,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_positions(PyObject *__
     __PYX_ERR(0, 1085, __pyx_L1_error)
   }
 
-  /* "algorithms/orientation.py":1064
+  /* "openptv2/algorithms/orientation.py":1064
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -32993,7 +32993,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_positions(PyObject *__
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_4);
-  __Pyx_AddTraceback("algorithms.orientation.point_positions", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.orientation.point_positions", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -33002,16 +33002,16 @@ static PyObject *__pyx_f_10algorithms_11orientation_point_positions(PyObject *__
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_11orientation_27point_positions(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_11orientation_27point_positions(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_11orientation_26point_positions, "Dispatch to single or multi-camera point position calculation.\n\n    Matches the Cython binding API: selects single_cam or multi_cam\n    based on the number of calibrations provided.\n\n    Args:\n        targets: (num_targets, num_cams, 2) array of metric flat coords.\n        cpar: ControlPar (used for multimedia parameters).\n        cals: list of Calibration objects.\n        vpar: VolumePar (required for single camera case only).\n\n    Returns:\n        (positions, rcm) tuple.\n    ");
-static PyMethodDef __pyx_mdef_10algorithms_11orientation_27point_positions = {"point_positions", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_11orientation_27point_positions, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_11orientation_26point_positions};
-static PyObject *__pyx_pw_10algorithms_11orientation_27point_positions(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_11orientation_26point_positions, "Dispatch to single or multi-camera point position calculation.\n\n    Matches the Cython binding API: selects single_cam or multi_cam\n    based on the number of calibrations provided.\n\n    Args:\n        targets: (num_targets, num_cams, 2) array of metric flat coords.\n        cpar: ControlPar (used for multimedia parameters).\n        cals: list of Calibration objects.\n        vpar: VolumePar (required for single camera case only).\n\n    Returns:\n        (positions, rcm) tuple.\n    ");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_11orientation_27point_positions = {"point_positions", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_11orientation_27point_positions, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_11orientation_26point_positions};
+static PyObject *__pyx_pw_8openptv2_10algorithms_11orientation_27point_positions(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -33069,7 +33069,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
       const Py_ssize_t kwd_pos_args = __pyx_nargs;
       if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "point_positions", 0) < (0)) __PYX_ERR(0, 1064, __pyx_L3_error)
 
-      /* "algorithms/orientation.py":1065
+      /* "openptv2/algorithms/orientation.py":1065
  * 
  * @cython.ccall
  * def point_positions(targets, cpar, cals, vpar=None):             # <<<<<<<<<<<<<<
@@ -33112,13 +33112,13 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.orientation.point_positions", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.orientation.point_positions", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_11orientation_26point_positions(__pyx_self, __pyx_v_targets, __pyx_v_cpar, __pyx_v_cals, __pyx_v_vpar);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_11orientation_26point_positions(__pyx_self, __pyx_v_targets, __pyx_v_cpar, __pyx_v_cals, __pyx_v_vpar);
 
-  /* "algorithms/orientation.py":1064
+  /* "openptv2/algorithms/orientation.py":1064
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -33134,11 +33134,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_11orientation_26point_positions(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_targets, PyObject *__pyx_v_cpar, PyObject *__pyx_v_cals, PyObject *__pyx_v_vpar) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_11orientation_26point_positions(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_targets, PyObject *__pyx_v_cpar, PyObject *__pyx_v_cals, PyObject *__pyx_v_vpar) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
-  struct __pyx_opt_args_10algorithms_11orientation_point_positions __pyx_t_2;
+  struct __pyx_opt_args_8openptv2_10algorithms_11orientation_point_positions __pyx_t_2;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -33146,7 +33146,7 @@ static PyObject *__pyx_pf_10algorithms_11orientation_26point_positions(CYTHON_UN
   __Pyx_XDECREF(__pyx_r);
   __pyx_t_2.__pyx_n = 1;
   __pyx_t_2.vpar = __pyx_v_vpar;
-  __pyx_t_1 = __pyx_f_10algorithms_11orientation_point_positions(__pyx_v_targets, __pyx_v_cpar, __pyx_v_cals, 1, &__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1064, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_11orientation_point_positions(__pyx_v_targets, __pyx_v_cpar, __pyx_v_cals, 1, &__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1064, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -33155,7 +33155,7 @@ static PyObject *__pyx_pf_10algorithms_11orientation_26point_positions(CYTHON_UN
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.orientation.point_positions", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.orientation.point_positions", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -33163,7 +33163,7 @@ static PyObject *__pyx_pf_10algorithms_11orientation_26point_positions(CYTHON_UN
   return __pyx_r;
 }
 
-/* "algorithms/orientation.py":1088
+/* "openptv2/algorithms/orientation.py":1088
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -33171,14 +33171,14 @@ static PyObject *__pyx_pf_10algorithms_11orientation_26point_positions(CYTHON_UN
  *     """Calculate 3D positions from single-camera 2D projections.
 */
 
-static PyObject *__pyx_pw_10algorithms_11orientation_29single_cam_point_positions(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_11orientation_29single_cam_point_positions(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_11orientation_single_cam_point_positions(PyObject *__pyx_v_targets, PyObject *__pyx_v_cpar, PyObject *__pyx_v_cals, PyObject *__pyx_v_vpar, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_11orientation_single_cam_point_positions(PyObject *__pyx_v_targets, PyObject *__pyx_v_cpar, PyObject *__pyx_v_cals, PyObject *__pyx_v_vpar, CYTHON_UNUSED int __pyx_skip_dispatch) {
   PyObject *__pyx_v_ray_tracing = NULL;
   int __pyx_v_num_targets;
   PyObject *__pyx_v_res = NULL;
@@ -33228,7 +33228,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_single_cam_point_positions(P
   __Pyx_RefNannySetupContext("single_cam_point_positions", 0);
   __Pyx_INCREF(__pyx_v_targets);
 
-  /* "algorithms/orientation.py":1106
+  /* "openptv2/algorithms/orientation.py":1106
  *         measure for single camera).
  *     """
  *     from .ray_tracing import ray_tracing             # <<<<<<<<<<<<<<
@@ -33237,7 +33237,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_single_cam_point_positions(P
 */
   {
     PyObject* const __pyx_imported_names[] = {__pyx_mstate_global->__pyx_n_u_ray_tracing};
-    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_ray_tracing, __pyx_imported_names, 1, __pyx_mstate_global->__pyx_kp_u_algorithms_ray_tracing, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1106, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_ray_tracing, __pyx_imported_names, 1, __pyx_mstate_global->__pyx_kp_u_openptv2_algorithms_ray_tracing, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1106, __pyx_L1_error)
   }
   __pyx_t_1 = __pyx_t_2;
   __Pyx_GOTREF(__pyx_t_1);
@@ -33258,7 +33258,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_single_cam_point_positions(P
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":1108
+  /* "openptv2/algorithms/orientation.py":1108
  *     from .ray_tracing import ray_tracing
  * 
  *     targets = np.ascontiguousarray(targets, dtype=np.float64)             # <<<<<<<<<<<<<<
@@ -33304,7 +33304,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_single_cam_point_positions(P
   __Pyx_DECREF_SET(__pyx_v_targets, __pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "algorithms/orientation.py":1109
+  /* "openptv2/algorithms/orientation.py":1109
  * 
  *     targets = np.ascontiguousarray(targets, dtype=np.float64)
  *     num_targets: cython.int = targets.shape[0]             # <<<<<<<<<<<<<<
@@ -33320,7 +33320,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_single_cam_point_positions(P
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
   __pyx_v_num_targets = __pyx_t_9;
 
-  /* "algorithms/orientation.py":1111
+  /* "openptv2/algorithms/orientation.py":1111
  *     num_targets: cython.int = targets.shape[0]
  * 
  *     res = np.empty((num_targets, 3), dtype=np.float64)             # <<<<<<<<<<<<<<
@@ -33377,7 +33377,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_single_cam_point_positions(P
   __pyx_v_res = __pyx_t_6;
   __pyx_t_6 = 0;
 
-  /* "algorithms/orientation.py":1112
+  /* "openptv2/algorithms/orientation.py":1112
  * 
  *     res = np.empty((num_targets, 3), dtype=np.float64)
  *     rcm = np.zeros(num_targets, dtype=np.float64)             # <<<<<<<<<<<<<<
@@ -33426,7 +33426,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_single_cam_point_positions(P
   __pyx_v_rcm = __pyx_t_6;
   __pyx_t_6 = 0;
 
-  /* "algorithms/orientation.py":1114
+  /* "openptv2/algorithms/orientation.py":1114
  *     rcm = np.zeros(num_targets, dtype=np.float64)
  * 
  *     cal = cals[0]             # <<<<<<<<<<<<<<
@@ -33438,7 +33438,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_single_cam_point_positions(P
   __pyx_v_cal = __pyx_t_6;
   __pyx_t_6 = 0;
 
-  /* "algorithms/orientation.py":1115
+  /* "openptv2/algorithms/orientation.py":1115
  * 
  *     cal = cals[0]
  *     mm = cpar.mm             # <<<<<<<<<<<<<<
@@ -33450,7 +33450,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_single_cam_point_positions(P
   __pyx_v_mm = __pyx_t_6;
   __pyx_t_6 = 0;
 
-  /* "algorithms/orientation.py":1116
+  /* "openptv2/algorithms/orientation.py":1116
  *     cal = cals[0]
  *     mm = cpar.mm
  *     z_mid: cython.double = 0.5 * (vpar.z_min_lay[0] + vpar.z_max_lay[0])             # <<<<<<<<<<<<<<
@@ -33478,7 +33478,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_single_cam_point_positions(P
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __pyx_v_z_mid = __pyx_t_11;
 
-  /* "algorithms/orientation.py":1122
+  /* "openptv2/algorithms/orientation.py":1122
  *     y: cython.double
  *     t: cython.double
  *     for pt in range(num_targets):             # <<<<<<<<<<<<<<
@@ -33490,7 +33490,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_single_cam_point_positions(P
   for (__pyx_t_13 = 0; __pyx_t_13 < __pyx_t_12; __pyx_t_13+=1) {
     __pyx_v_pt = __pyx_t_13;
 
-    /* "algorithms/orientation.py":1123
+    /* "openptv2/algorithms/orientation.py":1123
  *     t: cython.double
  *     for pt in range(num_targets):
  *         x, y = targets[pt, 0, 0], targets[pt, 0, 1]             # <<<<<<<<<<<<<<
@@ -33536,7 +33536,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_single_cam_point_positions(P
     __pyx_v_x = __pyx_t_11;
     __pyx_v_y = __pyx_t_14;
 
-    /* "algorithms/orientation.py":1124
+    /* "openptv2/algorithms/orientation.py":1124
  *     for pt in range(num_targets):
  *         x, y = targets[pt, 0, 0], targets[pt, 0, 1]
  *         pos, direct = ray_tracing(             # <<<<<<<<<<<<<<
@@ -33547,7 +33547,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_single_cam_point_positions(P
     __Pyx_INCREF(__pyx_v_ray_tracing);
     __pyx_t_10 = __pyx_v_ray_tracing; 
 
-    /* "algorithms/orientation.py":1125
+    /* "openptv2/algorithms/orientation.py":1125
  *         x, y = targets[pt, 0, 0], targets[pt, 0, 1]
  *         pos, direct = ray_tracing(
  *             x, y,             # <<<<<<<<<<<<<<
@@ -33559,7 +33559,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_single_cam_point_positions(P
     __pyx_t_5 = PyFloat_FromDouble(__pyx_v_y); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 1125, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
 
-    /* "algorithms/orientation.py":1126
+    /* "openptv2/algorithms/orientation.py":1126
  *         pos, direct = ray_tracing(
  *             x, y,
  *             cal.ext_par.dm,             # <<<<<<<<<<<<<<
@@ -33572,7 +33572,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_single_cam_point_positions(P
     __Pyx_GOTREF(__pyx_t_15);
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
 
-    /* "algorithms/orientation.py":1127
+    /* "openptv2/algorithms/orientation.py":1127
  *             x, y,
  *             cal.ext_par.dm,
  *             cal.ext_par.x0, cal.ext_par.y0, cal.ext_par.z0,             # <<<<<<<<<<<<<<
@@ -33595,7 +33595,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_single_cam_point_positions(P
     __Pyx_GOTREF(__pyx_t_18);
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
 
-    /* "algorithms/orientation.py":1128
+    /* "openptv2/algorithms/orientation.py":1128
  *             cal.ext_par.dm,
  *             cal.ext_par.x0, cal.ext_par.y0, cal.ext_par.z0,
  *             cal.int_par.cc,             # <<<<<<<<<<<<<<
@@ -33608,7 +33608,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_single_cam_point_positions(P
     __Pyx_GOTREF(__pyx_t_19);
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
 
-    /* "algorithms/orientation.py":1129
+    /* "openptv2/algorithms/orientation.py":1129
  *             cal.ext_par.x0, cal.ext_par.y0, cal.ext_par.z0,
  *             cal.int_par.cc,
  *             cal.glass_par.vec_x, cal.glass_par.vec_y, cal.glass_par.vec_z,             # <<<<<<<<<<<<<<
@@ -33631,7 +33631,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_single_cam_point_positions(P
     __Pyx_GOTREF(__pyx_t_22);
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
 
-    /* "algorithms/orientation.py":1130
+    /* "openptv2/algorithms/orientation.py":1130
  *             cal.int_par.cc,
  *             cal.glass_par.vec_x, cal.glass_par.vec_y, cal.glass_par.vec_z,
  *             mm.n1, mm.n2[0], mm.n3, mm.d[0],             # <<<<<<<<<<<<<<
@@ -33737,7 +33737,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_single_cam_point_positions(P
       __pyx_L6_unpacking_done:;
     }
 
-    /* "algorithms/orientation.py":1124
+    /* "openptv2/algorithms/orientation.py":1124
  *     for pt in range(num_targets):
  *         x, y = targets[pt, 0, 0], targets[pt, 0, 1]
  *         pos, direct = ray_tracing(             # <<<<<<<<<<<<<<
@@ -33749,7 +33749,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_single_cam_point_positions(P
     __Pyx_XDECREF_SET(__pyx_v_direct, __pyx_t_26);
     __pyx_t_26 = 0;
 
-    /* "algorithms/orientation.py":1132
+    /* "openptv2/algorithms/orientation.py":1132
  *             mm.n1, mm.n2[0], mm.n3, mm.d[0],
  *         )
  *         if abs(direct[2]) > 1e-10:             # <<<<<<<<<<<<<<
@@ -33767,7 +33767,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_single_cam_point_positions(P
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     if (__pyx_t_28) {
 
-      /* "algorithms/orientation.py":1133
+      /* "openptv2/algorithms/orientation.py":1133
  *         )
  *         if abs(direct[2]) > 1e-10:
  *             t = (z_mid - pos[2]) / direct[2]             # <<<<<<<<<<<<<<
@@ -33792,7 +33792,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_single_cam_point_positions(P
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
       __pyx_v_t = __pyx_t_14;
 
-      /* "algorithms/orientation.py":1134
+      /* "openptv2/algorithms/orientation.py":1134
  *         if abs(direct[2]) > 1e-10:
  *             t = (z_mid - pos[2]) / direct[2]
  *             res[pt] = pos + t * direct             # <<<<<<<<<<<<<<
@@ -33810,7 +33810,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_single_cam_point_positions(P
       if (unlikely((__Pyx_SetItemInt(__pyx_v_res, __pyx_v_pt, __pyx_t_4, int, 1, __Pyx_PyLong_From_int, 0, 0, 0, 1, __Pyx_ReferenceSharing_OwnStrongReference) < 0))) __PYX_ERR(0, 1134, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-      /* "algorithms/orientation.py":1132
+      /* "openptv2/algorithms/orientation.py":1132
  *             mm.n1, mm.n2[0], mm.n3, mm.d[0],
  *         )
  *         if abs(direct[2]) > 1e-10:             # <<<<<<<<<<<<<<
@@ -33820,7 +33820,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_single_cam_point_positions(P
       goto __pyx_L7;
     }
 
-    /* "algorithms/orientation.py":1136
+    /* "openptv2/algorithms/orientation.py":1136
  *             res[pt] = pos + t * direct
  *         else:
  *             res[pt] = pos             # <<<<<<<<<<<<<<
@@ -33833,7 +33833,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_single_cam_point_positions(P
     __pyx_L7:;
   }
 
-  /* "algorithms/orientation.py":1138
+  /* "openptv2/algorithms/orientation.py":1138
  *             res[pt] = pos
  * 
  *     return res, rcm             # <<<<<<<<<<<<<<
@@ -33853,7 +33853,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_single_cam_point_positions(P
   __pyx_t_4 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/orientation.py":1088
+  /* "openptv2/algorithms/orientation.py":1088
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -33881,7 +33881,7 @@ static PyObject *__pyx_f_10algorithms_11orientation_single_cam_point_positions(P
   __Pyx_XDECREF(__pyx_t_24);
   __Pyx_XDECREF(__pyx_t_25);
   __Pyx_XDECREF(__pyx_t_26);
-  __Pyx_AddTraceback("algorithms.orientation.single_cam_point_positions", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.orientation.single_cam_point_positions", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_ray_tracing);
@@ -33898,16 +33898,16 @@ static PyObject *__pyx_f_10algorithms_11orientation_single_cam_point_positions(P
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_11orientation_29single_cam_point_positions(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_11orientation_29single_cam_point_positions(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_11orientation_28single_cam_point_positions, "Calculate 3D positions from single-camera 2D projections.\n\n    Uses ray tracing with z-plane intersection. For a single camera,\n    the depth (z) is estimated from the volume parameters and the ray\n    direction.\n\n    Args:\n        targets: (num_targets, 1, 2) array of metric flat coordinates.\n        cpar: ControlPar.\n        cals: list with one Calibration object.\n        vpar: VolumePar with z_min_lay, z_max_lay for depth limits.\n\n    Returns:\n        (positions, rcm) tuple where rcm is zeros (no ray convergence\n        measure for single camera).\n    ");
-static PyMethodDef __pyx_mdef_10algorithms_11orientation_29single_cam_point_positions = {"single_cam_point_positions", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_11orientation_29single_cam_point_positions, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_11orientation_28single_cam_point_positions};
-static PyObject *__pyx_pw_10algorithms_11orientation_29single_cam_point_positions(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_11orientation_28single_cam_point_positions, "Calculate 3D positions from single-camera 2D projections.\n\n    Uses ray tracing with z-plane intersection. For a single camera,\n    the depth (z) is estimated from the volume parameters and the ray\n    direction.\n\n    Args:\n        targets: (num_targets, 1, 2) array of metric flat coordinates.\n        cpar: ControlPar.\n        cals: list with one Calibration object.\n        vpar: VolumePar with z_min_lay, z_max_lay for depth limits.\n\n    Returns:\n        (positions, rcm) tuple where rcm is zeros (no ray convergence\n        measure for single camera).\n    ");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_11orientation_29single_cam_point_positions = {"single_cam_point_positions", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_11orientation_29single_cam_point_positions, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_11orientation_28single_cam_point_positions};
+static PyObject *__pyx_pw_8openptv2_10algorithms_11orientation_29single_cam_point_positions(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -33993,11 +33993,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.orientation.single_cam_point_positions", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.orientation.single_cam_point_positions", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_11orientation_28single_cam_point_positions(__pyx_self, __pyx_v_targets, __pyx_v_cpar, __pyx_v_cals, __pyx_v_vpar);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_11orientation_28single_cam_point_positions(__pyx_self, __pyx_v_targets, __pyx_v_cpar, __pyx_v_cals, __pyx_v_vpar);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -34007,7 +34007,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_11orientation_28single_cam_point_positions(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_targets, PyObject *__pyx_v_cpar, PyObject *__pyx_v_cals, PyObject *__pyx_v_vpar) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_11orientation_28single_cam_point_positions(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_targets, PyObject *__pyx_v_cpar, PyObject *__pyx_v_cals, PyObject *__pyx_v_vpar) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -34016,7 +34016,7 @@ static PyObject *__pyx_pf_10algorithms_11orientation_28single_cam_point_position
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("single_cam_point_positions", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_11orientation_single_cam_point_positions(__pyx_v_targets, __pyx_v_cpar, __pyx_v_cals, __pyx_v_vpar, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1088, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_11orientation_single_cam_point_positions(__pyx_v_targets, __pyx_v_cpar, __pyx_v_cals, __pyx_v_vpar, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1088, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -34025,7 +34025,7 @@ static PyObject *__pyx_pf_10algorithms_11orientation_28single_cam_point_position
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.orientation.single_cam_point_positions", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.orientation.single_cam_point_positions", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -34033,7 +34033,7 @@ static PyObject *__pyx_pf_10algorithms_11orientation_28single_cam_point_position
   return __pyx_r;
 }
 
-/* "algorithms/orientation.py":1141
+/* "openptv2/algorithms/orientation.py":1141
  * 
  * 
  * def is_compiled() -> bool:             # <<<<<<<<<<<<<<
@@ -34042,28 +34042,28 @@ static PyObject *__pyx_pf_10algorithms_11orientation_28single_cam_point_position
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_11orientation_31is_compiled(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_11orientation_30is_compiled, "Return whether this module is compiled to C.");
-static PyMethodDef __pyx_mdef_10algorithms_11orientation_31is_compiled = {"is_compiled", (PyCFunction)__pyx_pw_10algorithms_11orientation_31is_compiled, METH_NOARGS, __pyx_doc_10algorithms_11orientation_30is_compiled};
-static PyObject *__pyx_pw_10algorithms_11orientation_31is_compiled(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_8openptv2_10algorithms_11orientation_31is_compiled(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_11orientation_30is_compiled, "Return whether this module is compiled to C.");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_11orientation_31is_compiled = {"is_compiled", (PyCFunction)__pyx_pw_8openptv2_10algorithms_11orientation_31is_compiled, METH_NOARGS, __pyx_doc_8openptv2_10algorithms_11orientation_30is_compiled};
+static PyObject *__pyx_pw_8openptv2_10algorithms_11orientation_31is_compiled(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused) {
   CYTHON_UNUSED PyObject *const *__pyx_kwvalues;
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("is_compiled (wrapper)", 0);
   __pyx_kwvalues = __Pyx_KwValues_VARARGS(__pyx_args, __pyx_nargs);
-  __pyx_r = __pyx_pf_10algorithms_11orientation_30is_compiled(__pyx_self);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_11orientation_30is_compiled(__pyx_self);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_11orientation_30is_compiled(CYTHON_UNUSED PyObject *__pyx_self) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_11orientation_30is_compiled(CYTHON_UNUSED PyObject *__pyx_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("is_compiled", 0);
 
-  /* "algorithms/orientation.py":1143
+  /* "openptv2/algorithms/orientation.py":1143
  * def is_compiled() -> bool:
  *     """Return whether this module is compiled to C."""
  *     return cython.compiled             # <<<<<<<<<<<<<<
@@ -34073,7 +34073,7 @@ static PyObject *__pyx_pf_10algorithms_11orientation_30is_compiled(CYTHON_UNUSED
   __pyx_r = Py_True;
   goto __pyx_L0;
 
-  /* "algorithms/orientation.py":1141
+  /* "openptv2/algorithms/orientation.py":1141
  * 
  * 
  * def is_compiled() -> bool:             # <<<<<<<<<<<<<<
@@ -34214,7 +34214,7 @@ static PyType_Slot __pyx_type___pyx_array_slots[] = {
   {0, 0},
 };
 static PyType_Spec __pyx_type___pyx_array_spec = {
-  "algorithms.orientation.array",
+  "openptv2.algorithms.orientation.array",
   sizeof(struct __pyx_array_obj),
   0,
   Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_BASETYPE|Py_TPFLAGS_SEQUENCE,
@@ -34248,7 +34248,7 @@ static PyBufferProcs __pyx_tp_as_buffer_array = {
 
 static PyTypeObject __pyx_type___pyx_array = {
   PyVarObject_HEAD_INIT(0, 0)
-  "algorithms.orientation.""array", /*tp_name*/
+  "openptv2.algorithms.orientation.""array", /*tp_name*/
   sizeof(struct __pyx_array_obj), /*tp_basicsize*/
   0, /*tp_itemsize*/
   __pyx_tp_dealloc_array, /*tp_dealloc*/
@@ -34393,7 +34393,7 @@ static PyType_Slot __pyx_type___pyx_MemviewEnum_slots[] = {
   {0, 0},
 };
 static PyType_Spec __pyx_type___pyx_MemviewEnum_spec = {
-  "algorithms.orientation.Enum",
+  "openptv2.algorithms.orientation.Enum",
   sizeof(struct __pyx_MemviewEnum_obj),
   0,
   Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_BASETYPE|Py_TPFLAGS_HAVE_GC,
@@ -34403,7 +34403,7 @@ static PyType_Spec __pyx_type___pyx_MemviewEnum_spec = {
 
 static PyTypeObject __pyx_type___pyx_MemviewEnum = {
   PyVarObject_HEAD_INIT(0, 0)
-  "algorithms.orientation.""Enum", /*tp_name*/
+  "openptv2.algorithms.orientation.""Enum", /*tp_name*/
   sizeof(struct __pyx_MemviewEnum_obj), /*tp_basicsize*/
   0, /*tp_itemsize*/
   __pyx_tp_dealloc_Enum, /*tp_dealloc*/
@@ -34670,7 +34670,7 @@ static PyType_Slot __pyx_type___pyx_memoryview_slots[] = {
   {0, 0},
 };
 static PyType_Spec __pyx_type___pyx_memoryview_spec = {
-  "algorithms.orientation.memoryview",
+  "openptv2.algorithms.orientation.memoryview",
   sizeof(struct __pyx_memoryview_obj),
   0,
   Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_BASETYPE|Py_TPFLAGS_HAVE_GC,
@@ -34704,7 +34704,7 @@ static PyBufferProcs __pyx_tp_as_buffer_memoryview = {
 
 static PyTypeObject __pyx_type___pyx_memoryview = {
   PyVarObject_HEAD_INIT(0, 0)
-  "algorithms.orientation.""memoryview", /*tp_name*/
+  "openptv2.algorithms.orientation.""memoryview", /*tp_name*/
   sizeof(struct __pyx_memoryview_obj), /*tp_basicsize*/
   0, /*tp_itemsize*/
   __pyx_tp_dealloc_memoryview, /*tp_dealloc*/
@@ -34847,7 +34847,7 @@ static PyType_Slot __pyx_type___pyx_memoryviewslice_slots[] = {
   {0, 0},
 };
 static PyType_Spec __pyx_type___pyx_memoryviewslice_spec = {
-  "algorithms.orientation._memoryviewslice",
+  "openptv2.algorithms.orientation._memoryviewslice",
   sizeof(struct __pyx_memoryviewslice_obj),
   0,
   Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_BASETYPE|Py_TPFLAGS_HAVE_GC|Py_TPFLAGS_SEQUENCE,
@@ -34857,7 +34857,7 @@ static PyType_Spec __pyx_type___pyx_memoryviewslice_spec = {
 
 static PyTypeObject __pyx_type___pyx_memoryviewslice = {
   PyVarObject_HEAD_INIT(0, 0)
-  "algorithms.orientation.""_memoryviewslice", /*tp_name*/
+  "openptv2.algorithms.orientation.""_memoryviewslice", /*tp_name*/
   sizeof(struct __pyx_memoryviewslice_obj), /*tp_basicsize*/
   0, /*tp_itemsize*/
   __pyx_tp_dealloc__memoryviewslice, /*tp_dealloc*/
@@ -35406,13 +35406,13 @@ __Pyx_RefNannySetupContext("PyInit_orientation", 0);
   if (__Pyx_InitConstants(__pyx_mstate) < (0)) __PYX_ERR(0, 1, __pyx_L1_error)
   stringtab_initialized = 1;
   if (__Pyx_InitGlobals() < (0)) __PYX_ERR(0, 1, __pyx_L1_error)
-  if (__pyx_module_is_main_algorithms__orientation) {
+  if (__pyx_module_is_main_openptv2__algorithms__orientation) {
     if (PyObject_SetAttr(__pyx_m, __pyx_mstate_global->__pyx_n_u_name_2, __pyx_mstate_global->__pyx_n_u_main) < (0)) __PYX_ERR(0, 1, __pyx_L1_error)
   }
   {
     PyObject *modules = PyImport_GetModuleDict(); if (unlikely(!modules)) __PYX_ERR(0, 1, __pyx_L1_error)
-    if (!PyDict_GetItemString(modules, "algorithms.orientation")) {
-      if (unlikely((PyDict_SetItemString(modules, "algorithms.orientation", __pyx_m) < 0))) __PYX_ERR(0, 1, __pyx_L1_error)
+    if (!PyDict_GetItemString(modules, "openptv2.algorithms.orientation")) {
+      if (unlikely((PyDict_SetItemString(modules, "openptv2.algorithms.orientation", __pyx_m) < 0))) __PYX_ERR(0, 1, __pyx_L1_error)
     }
   }
   /*--- Builtin init code ---*/
@@ -35921,7 +35921,7 @@ __Pyx_RefNannySetupContext("PyInit_orientation", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_pyx_unpickle_Enum, __pyx_t_4) < (0)) __PYX_ERR(1, 4, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/orientation.py":17
+  /* "openptv2/algorithms/orientation.py":17
  *     from math import sqrt as c_sqrt
  * 
  * import copy             # <<<<<<<<<<<<<<
@@ -35934,7 +35934,7 @@ __Pyx_RefNannySetupContext("PyInit_orientation", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_copy, __pyx_t_4) < (0)) __PYX_ERR(0, 17, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/orientation.py":18
+  /* "openptv2/algorithms/orientation.py":18
  * 
  * import copy
  * from pathlib import Path             # <<<<<<<<<<<<<<
@@ -35958,7 +35958,7 @@ __Pyx_RefNannySetupContext("PyInit_orientation", 0);
   }
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/orientation.py":20
+  /* "openptv2/algorithms/orientation.py":20
  * from pathlib import Path
  * 
  * import numpy as np             # <<<<<<<<<<<<<<
@@ -35971,7 +35971,7 @@ __Pyx_RefNannySetupContext("PyInit_orientation", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_np, __pyx_t_4) < (0)) __PYX_ERR(0, 20, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/orientation.py":21
+  /* "openptv2/algorithms/orientation.py":21
  * 
  * import numpy as np
  * from .ray_tracing import _ray_tracing_core             # <<<<<<<<<<<<<<
@@ -35980,7 +35980,7 @@ __Pyx_RefNannySetupContext("PyInit_orientation", 0);
 */
   {
     PyObject* const __pyx_imported_names[] = {__pyx_mstate_global->__pyx_n_u_ray_tracing_core};
-    __pyx_t_1 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_ray_tracing, __pyx_imported_names, 1, __pyx_mstate_global->__pyx_kp_u_algorithms_ray_tracing, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 21, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_ray_tracing, __pyx_imported_names, 1, __pyx_mstate_global->__pyx_kp_u_openptv2_algorithms_ray_tracing, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 21, __pyx_L1_error)
   }
   __pyx_t_4 = __pyx_t_1;
   __Pyx_GOTREF(__pyx_t_4);
@@ -35995,7 +35995,7 @@ __Pyx_RefNannySetupContext("PyInit_orientation", 0);
   }
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/orientation.py":23
+  /* "openptv2/algorithms/orientation.py":23
  * from .ray_tracing import _ray_tracing_core
  * 
  * NPAR = 19             # <<<<<<<<<<<<<<
@@ -36004,7 +36004,7 @@ __Pyx_RefNannySetupContext("PyInit_orientation", 0);
 */
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_NPAR, __pyx_mstate_global->__pyx_int_19) < (0)) __PYX_ERR(0, 23, __pyx_L1_error)
 
-  /* "algorithms/orientation.py":24
+  /* "openptv2/algorithms/orientation.py":24
  * 
  * NPAR = 19
  * IDT = 10             # <<<<<<<<<<<<<<
@@ -36013,7 +36013,7 @@ __Pyx_RefNannySetupContext("PyInit_orientation", 0);
 */
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_IDT, __pyx_mstate_global->__pyx_int_10) < (0)) __PYX_ERR(0, 24, __pyx_L1_error)
 
-  /* "algorithms/orientation.py":25
+  /* "openptv2/algorithms/orientation.py":25
  * NPAR = 19
  * IDT = 10
  * NUM_ITER = 80             # <<<<<<<<<<<<<<
@@ -36022,7 +36022,7 @@ __Pyx_RefNannySetupContext("PyInit_orientation", 0);
 */
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_NUM_ITER, __pyx_mstate_global->__pyx_int_80) < (0)) __PYX_ERR(0, 25, __pyx_L1_error)
 
-  /* "algorithms/orientation.py":26
+  /* "openptv2/algorithms/orientation.py":26
  * IDT = 10
  * NUM_ITER = 80
  * POS_INF = 1e20             # <<<<<<<<<<<<<<
@@ -36031,7 +36031,7 @@ __Pyx_RefNannySetupContext("PyInit_orientation", 0);
 */
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_POS_INF, __pyx_mstate_global->__pyx_float_1e20) < (0)) __PYX_ERR(0, 26, __pyx_L1_error)
 
-  /* "algorithms/orientation.py":27
+  /* "openptv2/algorithms/orientation.py":27
  * NUM_ITER = 80
  * POS_INF = 1e20
  * CONVERGENCE = 0.00001             # <<<<<<<<<<<<<<
@@ -36040,7 +36040,7 @@ __Pyx_RefNannySetupContext("PyInit_orientation", 0);
 */
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_CONVERGENCE, __pyx_mstate_global->__pyx_float_0_00001) < (0)) __PYX_ERR(0, 27, __pyx_L1_error)
 
-  /* "algorithms/orientation.py":28
+  /* "openptv2/algorithms/orientation.py":28
  * POS_INF = 1e20
  * CONVERGENCE = 0.00001
  * COORD_UNUSED = -1e10             # <<<<<<<<<<<<<<
@@ -36049,7 +36049,7 @@ __Pyx_RefNannySetupContext("PyInit_orientation", 0);
 */
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_COORD_UNUSED, __pyx_mstate_global->__pyx_float_neg_1e10) < (0)) __PYX_ERR(0, 28, __pyx_L1_error)
 
-  /* "algorithms/orientation.py":90
+  /* "openptv2/algorithms/orientation.py":90
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -36062,7 +36062,7 @@ __Pyx_RefNannySetupContext("PyInit_orientation", 0);
   if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_direct1, __pyx_mstate_global->__pyx_kp_u_np_ndarray) < (0)) __PYX_ERR(0, 90, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_vert2, __pyx_mstate_global->__pyx_kp_u_np_ndarray) < (0)) __PYX_ERR(0, 90, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_direct2, __pyx_mstate_global->__pyx_kp_u_np_ndarray) < (0)) __PYX_ERR(0, 90, __pyx_L1_error)
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_11orientation_1skew_midpoint, 0, __pyx_mstate_global->__pyx_n_u_skew_midpoint, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_orientation, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[0])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 90, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_11orientation_1skew_midpoint, 0, __pyx_mstate_global->__pyx_n_u_skew_midpoint, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_orientation, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[0])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 90, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_5);
@@ -36072,14 +36072,14 @@ __Pyx_RefNannySetupContext("PyInit_orientation", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_skew_midpoint, __pyx_t_5) < (0)) __PYX_ERR(0, 90, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "algorithms/orientation.py":113
+  /* "openptv2/algorithms/orientation.py":113
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def point_position(targets, num_cams, mm, cals):
  *     """Compute average 3D position from multiple camera rays.
 */
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_11orientation_3point_position, 0, __pyx_mstate_global->__pyx_n_u_point_position, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_orientation, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[1])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 113, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_11orientation_3point_position, 0, __pyx_mstate_global->__pyx_n_u_point_position, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_orientation, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[1])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 113, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_5);
@@ -36087,7 +36087,7 @@ __Pyx_RefNannySetupContext("PyInit_orientation", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_point_position, __pyx_t_5) < (0)) __PYX_ERR(0, 113, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "algorithms/orientation.py":133
+  /* "openptv2/algorithms/orientation.py":133
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -36097,7 +36097,7 @@ __Pyx_RefNannySetupContext("PyInit_orientation", 0);
   __pyx_t_5 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 133, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   if (PyDict_SetItem(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_num_cams, __pyx_mstate_global->__pyx_kp_u_cython_int) < (0)) __PYX_ERR(0, 133, __pyx_L1_error)
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_11orientation_5point_position_batch, 0, __pyx_mstate_global->__pyx_n_u_point_position_batch, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_orientation, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[2])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 133, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_11orientation_5point_position_batch, 0, __pyx_mstate_global->__pyx_n_u_point_position_batch, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_orientation, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[2])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 133, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
@@ -36107,14 +36107,14 @@ __Pyx_RefNannySetupContext("PyInit_orientation", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_point_position_batch, __pyx_t_4) < (0)) __PYX_ERR(0, 133, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/orientation.py":392
+  /* "openptv2/algorithms/orientation.py":392
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def weighted_dumbbell_precision(targets, num_targs, num_cams, mm, cals,
  *                                 db_length, db_weight):
 */
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_11orientation_7weighted_dumbbell_precision, 0, __pyx_mstate_global->__pyx_n_u_weighted_dumbbell_precision, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_orientation, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[3])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 392, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_11orientation_7weighted_dumbbell_precision, 0, __pyx_mstate_global->__pyx_n_u_weighted_dumbbell_precision, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_orientation, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[3])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 392, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
@@ -36122,14 +36122,14 @@ __Pyx_RefNannySetupContext("PyInit_orientation", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_weighted_dumbbell_precision, __pyx_t_4) < (0)) __PYX_ERR(0, 392, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/orientation.py":430
+  /* "openptv2/algorithms/orientation.py":430
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def num_deriv_exterior(cal, cpar, dpos, dang, pos):
  *     """Compute numerical derivatives of image coords w.r.t. exterior params.
 */
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_11orientation_9num_deriv_exterior, 0, __pyx_mstate_global->__pyx_n_u_num_deriv_exterior, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_orientation, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[4])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 430, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_11orientation_9num_deriv_exterior, 0, __pyx_mstate_global->__pyx_n_u_num_deriv_exterior, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_orientation, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[4])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 430, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
@@ -36137,14 +36137,14 @@ __Pyx_RefNannySetupContext("PyInit_orientation", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_num_deriv_exterior, __pyx_t_4) < (0)) __PYX_ERR(0, 430, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/orientation.py":473
+  /* "openptv2/algorithms/orientation.py":473
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def raw_orient(cal, cpar, nfix, fix, pix):
  *     """Simplified orientation using only 6 exterior parameters.
 */
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_11orientation_11raw_orient, 0, __pyx_mstate_global->__pyx_n_u_raw_orient, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_orientation, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[5])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 473, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_11orientation_11raw_orient, 0, __pyx_mstate_global->__pyx_n_u_raw_orient, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_orientation, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[5])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 473, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
@@ -36152,14 +36152,14 @@ __Pyx_RefNannySetupContext("PyInit_orientation", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_raw_orient, __pyx_t_4) < (0)) __PYX_ERR(0, 473, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/orientation.py":554
+  /* "openptv2/algorithms/orientation.py":554
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def orient(cal_in, cpar, nfix, fix, pix, flags, sigmabeta):
  *     """Bundle adjustment using Gauss-Markov model.
 */
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_11orientation_13orient, 0, __pyx_mstate_global->__pyx_n_u_orient, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_orientation, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[6])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 554, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_11orientation_13orient, 0, __pyx_mstate_global->__pyx_n_u_orient, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_orientation, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[6])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 554, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
@@ -36167,14 +36167,14 @@ __Pyx_RefNannySetupContext("PyInit_orientation", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_orient, __pyx_t_4) < (0)) __PYX_ERR(0, 554, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/orientation.py":867
+  /* "openptv2/algorithms/orientation.py":867
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def read_man_ori_fix(calblock_filename, man_ori_filename, cam):
  *     """Read manual orientation fix points.
 */
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_11orientation_15read_man_ori_fix, 0, __pyx_mstate_global->__pyx_n_u_read_man_ori_fix, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_orientation, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[7])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 867, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_11orientation_15read_man_ori_fix, 0, __pyx_mstate_global->__pyx_n_u_read_man_ori_fix, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_orientation, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[7])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 867, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
@@ -36182,14 +36182,14 @@ __Pyx_RefNannySetupContext("PyInit_orientation", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_read_man_ori_fix, __pyx_t_4) < (0)) __PYX_ERR(0, 867, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/orientation.py":911
+  /* "openptv2/algorithms/orientation.py":911
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def read_calblock(filename):
  *     """Read calibration block file. Delegates to sortgrid.read_calblock."""
 */
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_11orientation_17read_calblock, 0, __pyx_mstate_global->__pyx_n_u_read_calblock, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_orientation, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[8])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 911, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_11orientation_17read_calblock, 0, __pyx_mstate_global->__pyx_n_u_read_calblock, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_orientation, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[8])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 911, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
@@ -36197,14 +36197,14 @@ __Pyx_RefNannySetupContext("PyInit_orientation", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_read_calblock, __pyx_t_4) < (0)) __PYX_ERR(0, 911, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/orientation.py":918
+  /* "openptv2/algorithms/orientation.py":918
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def external_calibration(cal, ref_pts, img_pts, cpar):
  *     """Update exterior calibration from known 3D-2D correspondences.
 */
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_11orientation_19external_calibration, 0, __pyx_mstate_global->__pyx_n_u_external_calibration, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_orientation, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[9])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 918, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_11orientation_19external_calibration, 0, __pyx_mstate_global->__pyx_n_u_external_calibration, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_orientation, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[9])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 918, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
@@ -36212,14 +36212,14 @@ __Pyx_RefNannySetupContext("PyInit_orientation", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_external_calibration, __pyx_t_4) < (0)) __PYX_ERR(0, 918, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/orientation.py":946
+  /* "openptv2/algorithms/orientation.py":946
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def full_calibration(cal, ref_pts, img_pts, cpar, flags=None):
  *     """Full calibration adjusting exterior, interior, and distortion params.
 */
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_11orientation_21full_calibration, 0, __pyx_mstate_global->__pyx_n_u_full_calibration, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_orientation, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[10])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 946, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_11orientation_21full_calibration, 0, __pyx_mstate_global->__pyx_n_u_full_calibration, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_orientation, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[10])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 946, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
@@ -36228,14 +36228,14 @@ __Pyx_RefNannySetupContext("PyInit_orientation", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_full_calibration, __pyx_t_4) < (0)) __PYX_ERR(0, 946, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/orientation.py":1015
+  /* "openptv2/algorithms/orientation.py":1015
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def match_detection_to_ref(cal, ref_pts, img_pts, cpar, eps=25):
  *     """Match detected targets to reference 3D points via back-projection.
 */
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_11orientation_23match_detection_to_ref, 0, __pyx_mstate_global->__pyx_n_u_match_detection_to_ref, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_orientation, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[11])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 1015, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_11orientation_23match_detection_to_ref, 0, __pyx_mstate_global->__pyx_n_u_match_detection_to_ref, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_orientation, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[11])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 1015, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
@@ -36244,14 +36244,14 @@ __Pyx_RefNannySetupContext("PyInit_orientation", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_match_detection_to_ref, __pyx_t_4) < (0)) __PYX_ERR(0, 1015, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/orientation.py":1041
+  /* "openptv2/algorithms/orientation.py":1041
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def multi_cam_point_positions(targets, cpar, cals):
  *     """Calculate 3D positions from multi-camera 2D projections.
 */
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_11orientation_25multi_cam_point_positions, 0, __pyx_mstate_global->__pyx_n_u_multi_cam_point_positions, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_orientation, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[12])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 1041, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_11orientation_25multi_cam_point_positions, 0, __pyx_mstate_global->__pyx_n_u_multi_cam_point_positions, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_orientation, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[12])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 1041, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
@@ -36259,14 +36259,14 @@ __Pyx_RefNannySetupContext("PyInit_orientation", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_multi_cam_point_positions, __pyx_t_4) < (0)) __PYX_ERR(0, 1041, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/orientation.py":1064
+  /* "openptv2/algorithms/orientation.py":1064
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def point_positions(targets, cpar, cals, vpar=None):
  *     """Dispatch to single or multi-camera point position calculation.
 */
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_11orientation_27point_positions, 0, __pyx_mstate_global->__pyx_n_u_point_positions, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_orientation, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[13])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 1064, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_11orientation_27point_positions, 0, __pyx_mstate_global->__pyx_n_u_point_positions, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_orientation, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[13])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 1064, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
@@ -36275,14 +36275,14 @@ __Pyx_RefNannySetupContext("PyInit_orientation", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_point_positions, __pyx_t_4) < (0)) __PYX_ERR(0, 1064, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/orientation.py":1088
+  /* "openptv2/algorithms/orientation.py":1088
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def single_cam_point_positions(targets, cpar, cals, vpar):
  *     """Calculate 3D positions from single-camera 2D projections.
 */
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_11orientation_29single_cam_point_positions, 0, __pyx_mstate_global->__pyx_n_u_single_cam_point_positions, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_orientation, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[14])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 1088, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_11orientation_29single_cam_point_positions, 0, __pyx_mstate_global->__pyx_n_u_single_cam_point_positions, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_orientation, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[14])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 1088, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
@@ -36290,7 +36290,7 @@ __Pyx_RefNannySetupContext("PyInit_orientation", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_single_cam_point_positions, __pyx_t_4) < (0)) __PYX_ERR(0, 1088, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/orientation.py":1141
+  /* "openptv2/algorithms/orientation.py":1141
  * 
  * 
  * def is_compiled() -> bool:             # <<<<<<<<<<<<<<
@@ -36300,7 +36300,7 @@ __Pyx_RefNannySetupContext("PyInit_orientation", 0);
   __pyx_t_4 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 1141, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_return, __pyx_mstate_global->__pyx_n_u_bool) < (0)) __PYX_ERR(0, 1141, __pyx_L1_error)
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_11orientation_31is_compiled, 0, __pyx_mstate_global->__pyx_n_u_is_compiled, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_orientation, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[15])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 1141, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_11orientation_31is_compiled, 0, __pyx_mstate_global->__pyx_n_u_is_compiled, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_orientation, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[15])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 1141, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_5);
@@ -36310,7 +36310,7 @@ __Pyx_RefNannySetupContext("PyInit_orientation", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_is_compiled, __pyx_t_5) < (0)) __PYX_ERR(0, 1141, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "algorithms/orientation.py":1
+  /* "openptv2/algorithms/orientation.py":1
  * """Camera orientation and bundle adjustment.             # <<<<<<<<<<<<<<
  * 
  * Translation of lib/src/orientation.c and lib/include/orientation.h.
@@ -36328,7 +36328,7 @@ __Pyx_RefNannySetupContext("PyInit_orientation", 0);
   __Pyx_XDECREF(__pyx_t_5);
   if (__pyx_m) {
     if (__pyx_mstate->__pyx_d && stringtab_initialized) {
-      __Pyx_AddTraceback("init algorithms.orientation", __pyx_clineno, __pyx_lineno, __pyx_filename);
+      __Pyx_AddTraceback("init openptv2.algorithms.orientation", __pyx_clineno, __pyx_lineno, __pyx_filename);
     }
     #if !CYTHON_USE_MODULE_STATE
     Py_CLEAR(__pyx_m);
@@ -36342,7 +36342,7 @@ __Pyx_RefNannySetupContext("PyInit_orientation", 0);
     }
     #endif
   } else if (!PyErr_Occurred()) {
-    PyErr_SetString(PyExc_ImportError, "init algorithms.orientation");
+    PyErr_SetString(PyExc_ImportError, "init openptv2.algorithms.orientation");
   }
   __pyx_L0:;
   __Pyx_RefNannyFinishContext();
@@ -36405,7 +36405,7 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
   __Pyx_GOTREF(__pyx_mstate_global->__pyx_slice[0]);
   __Pyx_GIVEREF(__pyx_mstate_global->__pyx_slice[0]);
 
-  /* "algorithms/orientation.py":694
+  /* "openptv2/algorithms/orientation.py":694
  *             x_ders, y_ders = num_deriv_exterior(cal, cpar, dm, drad,
  *                                                 np.asarray(fix[i]))
  *             X[n, 0:6] = x_ders             # <<<<<<<<<<<<<<
@@ -36416,7 +36416,7 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
   __Pyx_GOTREF(__pyx_mstate_global->__pyx_slice[1]);
   __Pyx_GIVEREF(__pyx_mstate_global->__pyx_slice[1]);
 
-  /* "algorithms/orientation.py":946
+  /* "openptv2/algorithms/orientation.py":946
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -36427,7 +36427,7 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
   __Pyx_GOTREF(__pyx_mstate_global->__pyx_tuple[1]);
   __Pyx_GIVEREF(__pyx_mstate_global->__pyx_tuple[1]);
 
-  /* "algorithms/orientation.py":1015
+  /* "openptv2/algorithms/orientation.py":1015
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -36494,25 +36494,25 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
 static int __Pyx_InitConstants(__pyx_mstatetype *__pyx_mstate) {
   CYTHON_UNUSED_VAR(__pyx_mstate);
   {
-    const struct { const unsigned int length: 12; } index[] = {{2},{35},{54},{37},{60},{24},{52},{26},{34},{33},{45},{22},{15},{179},{48},{37},{32},{1},{1},{1},{1},{1},{8},{19},{17},{25},{21},{22},{19},{29},{16},{20},{5},{6},{15},{23},{25},{10},{7},{6},{2},{6},{35},{9},{30},{50},{10},{8},{20},{32},{22},{30},{37},{42},{5},{11},{12},{8},{3},{4},{8},{9},{7},{4},{20},{8},{6},{15},{3},{9},{22},{15},{5},{7},{17},{18},{3},{3},{4},{4},{1},{4},{3},{6},{17},{4},{3},{2},{6},{9},{17},{18},{23},{4},{19},{3},{5},{4},{1},{4},{9},{9},{8},{8},{7},{7},{2},{4},{5},{15},{5},{6},{9},{3},{5},{6},{7},{20},{8},{3},{5},{7},{6},{7},{16},{8},{12},{9},{2},{9},{7},{8},{10},{5},{5},{7},{10},{11},{13},{5},{8},{2},{6},{2},{6},{2},{6},{5},{6},{6},{8},{16},{22},{6},{6},{7},{2},{3},{5},{4},{10},{25},{2},{2},{2},{4},{8},{4},{7},{4},{4},{2},{8},{18},{9},{5},{3},{5},{4},{6},{2},{6},{2},{6},{4},{10},{7},{3},{3},{15},{3},{14},{20},{15},{3},{3},{14},{11},{10},{19},{14},{12},{10},{11},{17},{13},{16},{9},{10},{17},{13},{7},{8},{6},{5},{3},{7},{12},{10},{12},{19},{5},{3},{5},{7},{9},{3},{26},{4},{13},{8},{5},{4},{5},{4},{4},{6},{7},{8},{18},{5},{11},{6},{6},{7},{6},{8},{7},{9},{5},{5},{5},{5},{5},{4},{27},{1},{2},{2},{6},{1},{2},{2},{6},{2},{9},{9},{5},{10},{193},{371},{124},{10},{318},{2116},{3550},{548},{21},{85},{51},{63},{147},{70},{222},{244},{1}};
-    #if (CYTHON_COMPRESS_STRINGS) == 2 /* compression: bz2 (4617 bytes) */
-const char* const cstring = "BZh91AY&SY\234\333\205\265\000\006\016\377\377\377\377\377\377\377\377\377\377\377\377\377\376\277\377\377\375\300@@@@@@@@@@@@\000@\000`\023\316\356\312P\0202\2669\261\267\330\341E/cW\261\225\000\326\213\273\200\034\246yU\025\000\036\200\003s\345{\225\357\271BI!\250hd\304&\3214\3655=Q\346\205\036S\323)\260\232\236\246\215\036\220h\323\311\032\0004\000\00044d\3654\036\240\t\"\000\232&\223&I\262\232bd\024=I\351\251\372\246\236\241\275S\010\311\200\232\000\032\000\030\200\001\241\240\031\007\2504\032\024\243\324\232i\240\000\000\321\240\000\032\000\000\000\014\200\000\000\000h\032\003@\t5\020TM\022~\244\364\237\2514=F\203\021\246F\232dh\375OSP\000\311\246\023F\004\0324i\203P4i\243\004\320z\2144\223T\000\000\r\000i\352=A\275A\251\266\250\000\000i\264@yF@\003@\000\000h\r\000$B\"T&\215\014\206M\032`@\r\006#lM\222\236'\243D\301\211S\322=@\036H\304\007\242bd\306\220\323\177\311U\222\031KPUi\262\343\334\322|/fFG\271\037\343H\227\271\3577\320\301\327\357\035\346B\375\300=\331'\372\223\375\303\253\377s\254\232\270UF\306\\\352\226Y15FQ@\243\370\224\320VZ\3060\2632\035\224\227x\222\020ry\330=n\277w\277x\227 \000\232$f\2223\014\305\240c\030\3061\366\363\314\315,\326y\352\276\023\341\031\230\031&EQc\006,\030\221\021E\006\n\242\n\304V,EF\"\n\261\004\204Qu&s\307:?\006\002\311\006B\242Y\025*\225\026S\364!U8\025\252\255OX\004\3479\206f\372\035\010\013\001B \310(\214\010\260F\")\025A`\212\222)\024\005\026#\005\004gjX\002\264\010\346H\361\004M\014\231I[dN\301\022pa\0260h_?\237\263\210\307\004dPb\204V(\220\021 \217\021\307\210\030:\303d\016\000\030\"\240\262,\005\222\002\212\"\n\",\005\"\"\221E\2020QF \261b\214\3066v\324P\2609\3778\331\3075\362\344\003f\321\026\354\251p`\325\025U'\317:\300\347\0270*\016X\306\200c\030)$\2528 \034H\013\242:\2336C{\n\224\024T\224\303\213\214z!\r\347:\"\304D\240i%fI\250N9\016\264\233\267n\337C\nu\205G\n:\036\257\026\203{\343\304%\010@x\241\325\242I\210\302\262\245X\223=j\325#\256\231\213M\034L\231\022\0054\256\222\272\022\310Y=\315\225W\006\030d\r\207L\230WE""\322.\212\240\270\215R\276\226\262-e`\250\260\023\255wia+\"\301\213\334\371%\226\021\242`\262B\265\212tl\320T[**\207\002f\300\222S\225\312\347\202\362H\331\226Z|\200\314c\320f\252 \314\261\256\226,\033\006Ue\243e\\\311\301\225G\2215\351\264\001W\203+m@\275\201\026\212OG\303\324\033\023\351\245\351\375d\364\237\023\226\330v\316!\262\333\004]*\252\364`N\302\342.[\r\205\227\030\266Z\031\311\245\026\"\362\277;\034\023\362\254oJ\246M\3127\316\356\350B\316\316\323f\320\215\177\353e\326o<^Y6[#H7\273\020\246p\270\317b\262\203< \202\242\240\335\275Yn,\336\347t\031\373\375\"&\234\000\214\000\215\022\001\177\250M2<\310\205\202\354\013(L%]\304\214\301An\\\226\250\225)G\010x\252\252\n@\036\201X\031\246$T*\221o]D\025K\352\375\212\211US\030**\244{1T\253\213\013\302\326\022V\n\"g\267I\211\023D\325\350S\267\342\375\256X\013\"\337\211\365\214\203\336\307\277SKZ\275%\276\305\215OM\213X-\323\004\240\004\221\362G\035\371x\310\352\223J\007\233\275(K\363\232\273\332\271\263[\376\037\\\360\\\346\201\2070s\330\214\273\355\301\330;\025\006\356I\206\330\233\233%\337\346v\235\320M3\003\301s\221\0021\001V\243\342Y\223E9CK\206\240\325\307\265L\314Ub\362+V^\026\225\027\203\025\312\377\302\370\204r\005A\024\005`\025\205\360\031,\325r2\272\270\005\322\270\256.\325\366\272\377:\250\n\225\025J\200gba0SSSSG\275\235\n\"\211R\224\224\201H\371]Q\004D\215\002\221Q\010\242)_?\2734\207\240x<\354\303\2066\331\331\n\353\347c\340uS\212\304A\357\273[[J\210A\350&\220:\320\353\271'c\223S\245x\330\232\211\253\272Sb\314\014\242\r`\222o\215\\w-3\211%\244q\017\347R\304T\222\244+\206\000`s{]\256\274\224k\236\024\262\251IBU()l\332\374\365$\261`J\304\327\275\237\272\216\306\016\357s\360\307\325\276)D\245IJ\202\374\030\260=@\236\236\017\003\006<wn\340\214\2160\260\352pg\\%\247u\325\2213\003\"\302\231a\264\221\n\356\344\321\257\016\255Sb\273c4\367>\253\2445V\220\246\233y\361\371\236\"\363}\335\205\255\330\222\016\010:\2228\244\271.Ir\034&\312d\3313Lq\230x<\016\336\236\217\360mC[\240\272VAd\256\0060\216\343\212\307^\237W""\006\014 0\030\301\252\302\362y|\377.\352\340\\\262\345\324\334\264\021@(\222\232%\347\340\323Jh&\254\225\016\276\277%(\202\212\221\214B\013\354\322\222$P7\306\n\010\254\"\272\2352q\312\235\3132S\352\362\317\303\025\366\023\370\334-m\250M\366\303\325\344\305i\357\330\203\357\306!?l\262\204Fk\307fQ\205h\3564\025\361\372g\337\216W\330\257\220\322%\254\213\307\376\376m\313\023\263qja\355\014l\374\025\2318\375\017\251\275\366\315ne\272\257k\025\214\342\324\030Y\354\370\226\023\262\306\307Xm\226|\255\231\305Fpj\030}`\273O\301\3253\333\273H]3ng\355\205\226:\204\350\345\223\230\245OX\272\205\202\\2X\023Y\316\257\23550\307N\204f2\213\306\177\261/\202n\242\032\014\235\306\355\374hn,\003\351\020\371\220\326\201\337\360lG\312\354\034\313.\333\360\037\252\224\227Q\346\214y\"\362m\017&1\272\370\3366\023\266e'\256\217\031\014\311\272\320\030\210\035'\024\002&;\343e&I\033\002\rt\270\026\3672\333\203q\206\"\255]\321 \026D *\345\202\242\231e\000\272\007xGQ\020\220\214\344\343\306F\333\353\313\323\304\352\207\246;\371\003\201R\321\222\260\343\r\265\010\324K4\215\202Z\213U\264\334PR\353\356\357\335\341\267jPxj\355\330\304\230}\257\275\\\351\351\267\000x\363\243A<\257X\256,\360y|\235\007\247\307\177\037\232l\325\267\022\356\243\236>7\256\335\2675Bq\2232(\210\204\342\214\245\010\250Ub\005PT\252\226\332\031\035\271\\\315\001\204l\256p\335\356\360\224e\257\036\257Mj\335\205\225\237\215\231\267\310l\217bx\301\224m\002\021\371\316A1ZK'v\033\031k9\370X\"\267f\232EH*pH\257\336\333\236\006\357\334\322\300\315\257\002\320\212\032u\331\351\\\030\276B\365R\233\315\274\231\276\302\017>\214\360\361I\303\214\263\270AaW\255\343H\307%\304\234\006\203R\201\202\021%\370\362\201\226X\214(\376\322\317\257\215\275XV_\2122plcfkw\241\346\035\202\254\323|\036\366 :\231\010j\321m\033Q\263c\202\363@\3413~\316\210\332=W\335o\006\330\331jE\232\014\321mZ\233\222\277\305r\335\315N\363\335^\304\017\212\276T\262\240\312\226\241\234\0349\344w\\bC\202l\266\344\241\237Z\0105\362E\2337Y\316\206\271Q}\326\245:\2734\303!""\024\367 \300\226\003\001\254\265\236\254\032.L\304\203\207gF\334z\212S\343'S\247\214\306\021\251\355\231\3201\225(\020[v\355\327\271Yx7\020`g3\232\235M:\"@?H{\355\031oV\234\315|-A\301+\241\031,,\223\316\2433\014\322\353:\013\207B\267\014x)\035\226\321\221o\303\327\312\024\276\330\341\262\233\260Bf\334\370\372\2060\315\307\303\324-\225{n\255`\314!\230fM/\034t\002\310\321O\226\244\243x\317\264\274\262\343[\307\343\223\021\001a\350\306\355\3434\2273\261{\373\027Fg\306[\032\207z\357G\241+\337\301z\355\317?\210\336Fmh\351fg~\336\0146[\220\250]\216G\032\036V8\364\207\231\273\355\215H\246W\250,\374\216\020l\351\225\351\217\241E\026\331E\203\0213\356\205\023G\327\332\261\347\315\311\320#A\355\252\237\233O\030\223)\332\300d\335\350\333\230BlR\000\306}\354\370\257T4K*\357\2042\342\"\013\025\255\343\310\254\356\354\300\316\321\350xE\034\374\336h\022m\254\3551\235\264>}\314J]\272oi\252\315\375l\367\003\223\223\3668m\344\023\213+\273\264\224\360:\304\3048w\331\360|B\305J6v\034\035\247cA\267\031\204\014\332\020d\231U\310\004\023\362\247\032\3478jV\254\335a\261\201\330\354\273`\232\210\0219\221\264\036\027\022\265\025\315\247\026\336\3251+\223\231\231\221y\253E\347\220\001D7\235\326]\016O\240l\324-\320\177\247.\020\356\021m\246\226Y\224$g\275(\342n\201\355a\230fN\337!\270\355\275y\005\023O\277\035\371\021\306\273}\031Ax\360\335\331\247G\2211\334\303\357\323\204e\306\226\316\207N4\344\336Zcq\010bB\331\216P\333\261\241\002\351\367\263\301\031.YZU\364\364\322\314%\254-e\256\224I\320\242\007D\3204\003q09(HQ \017 \206%\300\020M\010\001\265\r*B\310[\031\350C\220\305\r\007]ii\316\034_\0379\214:\357\220\003\362\204\251p\370\307G\245\034rXp\033zE{\271y\216\316i\026l\035C\036K\3456\306\0319\241\336\310\203\375\022!(\267\341@C\314t\375\257\276V\221\211\033\373.\224$\235\201\305\363\241\224\035\222\344#\310\221\315\001\314K\222\021\330\217w\016\243\331\3229\233\347\r\232\267\204\353\002>\010\035\235\332q\3338\020\203\273t\332\365\256Q\257d\235F3\257\226\347>\245\345w\323\313\005\014lh\322{0""\301\226Z\354\023\024\264\341hv\337.\212\033H\223\315(\274\026\214i\246\317ra\340\347sR\367\333\340sA\314\016h\346\271\242\205*\313\274`\206\376\270\307\014\344Y\267\316\t?)\300\226\330\333\256S\215\022\235F\365p\343j\260P\300\325\033\323'\202\213\013G\2164\244\314\021e\235\361\030\345\"V1Vk\224\037\245ra\340#\324-\271\006\243\261$I\263d\356\301\223\302-P21+@9\263xhRW\250\275\227x\336P\347\034\336\322M7,\304G\307`\357\317\231\315\034\316g_\237R\341\243C\207\202\377\226Q\341\337\300kp\010\231p\323Z\331n\207g\206\2079\254\264!Nl5\310J0$,\000\226\004`\014\246\231\247U\362wM\202\375\020e\313=\215\375x\371\303\325\227\353\327\313xW\222\274\257*0\240\321j\370\344!\326\3741\201a\023\337\265\333&\017\317\334x\267\252\023\230\321ff\223\213f\374`\r\333\214\370HC\035\226\033\023\257\027<h\240*rfL\371\347\307\024Y\317\027N\352(\215Y\254\212\254\030\021t\242\031.g\027\034\353W@\272\201W\321r\331i?\336\336\267\234\356\320\335\310t\257\032.\213\266~\306,\202\007Q\202\306\004\341I\372\341\3100\361\r\204\032\364D\037\354\207\356`{\344\2100\005\213\362P\002\341\320H\316\245C\372D\204\007\336M \355\302\205\340\373Q\261]\240,@7J_\263\227\003;?\213\203\270\200\203\371\r(@?e2\014\304\016 f0\225\271\365\300}om@\2509k\351~\372X\247\223\035\366[!v hfe\324\303vQ4\250%#\2573\375\373\331\360H\247\330\233HBI\214\260\"<\266\246j\345%\014\325\345\270z;\346\036`\242\244\355\233@\260C\370\375\355gY<rP^\301\227D\212lT\004\310Q!\035'\033G\247'\233=\350\240\367\377\\\213\3722\231\335S\264\222\312%m\253\224HS\013\240\243qg\251\334\376\217\251\023\234a\256\354(C4\024\363\234Q\242\2610\266zF\360MD\364\212\255I\213\205\024\021\233\240\251\336\014\311\375j~_%\376\007\371\243\324\346\232WD9l\205cb\312\312\200\202\251C\224Qj\256\242\321h^\306\311\262\275\376\243\231\210&B\245\224\340m\205,\031}2\304\352`\243\335\357\272|$~\265\211\313=\233\244uv\360\010r\365Z\316\320e\014r\022\313\336\370\273bE_\003\030T\232\300\230Y6\371-\267$\033\007p!\031Z2\2430\313\316b\207\nSeT\250\0332P\213M\230H\207#\035\357b\224\005""\275M\256\251\230a\230\254\324|\253{\201x\034#\n\202T\260\365mz.\325\231\n\215\016Wd\3062W\371\334\375\355z\377\3267m\234%\035i\202\023\317a\2476e\350\013v\212&b1\016\013\264\026\306\022W\215\337\375\237\230|\013ip\023\3630)\016\270tO\t\026\320\246n\313O\367\245wY\020a\3374K\306.\247\025 \363\357g:\335`\235\013D\226\321\005\316*1S0\344x\221<D_\266>\360k\0220\222q\2458\331pp\210\341\215\007\030wI\343\370\007,\303\017\213\335(\230P\265\336.\337:!4\356D\211\\ue\212\310\007_\224\356\014\343\037\247\247\224\277\272i\275P\265:H\310\264\232\223n\253\275!\270E\016L\223\222\026$\221\220:\35099\271\t\356\224==\r>\202\332B\235\310 */\351\322P\201D\261*\343\2369\277\244\346\204\r\205\202\334\344c\001\247\330\221\213#\n\345\346\211\010\014h\324\215]s\324\t\230\236b`\206\036\273\260\371\301Bk\246\033-n\354v\024v\002\257l\r|\341\246\010\036\263J:5k\203\001\324YaT2 \"G\0356\231\377P\210gN[\010\325\313\324\027\037^\003\222\001\273\t\235\005C\210\252S:\314\r-S\307\010\010\224Z\204Cl:J\200\233\343\204\226\351\357\264y\372T\034\272\243\224\266\253R\347.\n\352l\255&\223%\303&\021\252\021B\264G\252th\372(\037V\016h\3236\\\241\n\354\251\277)C\204\321\316\256R\303\210K\301g\006\210\211p\034KG\025\371 \275+\340\013\0107\274\016. \330\316\203=\223\216%x#\316\240Ub\317\024W\375[\370o\275\346\021@o\357\325\247\205:y\3260\242\311\343\035\230\213\360\030\327\201\2371\300y\241\035\225H't\2070pa\276C\302)\360\275\336\326\361\341~=\322\267C\322c\032\335\005DI\367\344\200\220\215\373\275\257\237\271\006\361\222]o\005\024\315\310\330\331\r\225\233\341\355\223bb\001\2054\033ya!\356ml\255\243onr\252\220i\252YO\314\317\t\253-{F\310kO2\313^\225<\325\3255\201\265\251K\33339\334\334\225r\373!\357,\313dZ\363R\221\315e\023e\304\300\243N\260\274\2477/\352\272\352\312\300\364\337\260L\250t\373\336R3\305\256\364\346\367\n\261`M\300z=\035\365\300(F\035\013\035}\"/\017\203qr6\356\361\024\007!\007Oh\354\364D;y\316\336e\006\373\227\030\272]\016\205\t\234\014\306\272\331\332\331C6\333\266\370\371\2768^\300\375\256""\262\343\tK\031v\320\337\250f\010\031x\320Y0:\344\022\243#\005\372\341\260\0304#\204<3 \326\260\020\035\237(\355j<\003' \220K \003 Z\003\213\r\342m\263\201f\024\n\214\\bj\305e\\\336\324\270\343\334\334Y\335\003\2375\351\247\330M\353\361lx\023\372^:\315\233\305\343\243\205h\231.\311d^S#\200\371\212\005s\034:\233\216%@\203\372\320\227MA8\241,\346\244\026aH\326T\257\212\350\240,\004~\235\364\273\300P\203\231\223f\304_C+\205\2018\020\\PX\000\226fW\252\221-2\216\255,\004\322l\240J\316\314\356\253xt\315\336\231\270\222\200e\354,\254\3241\r\340\326pD\335\no4T1{\3063\203\013\214^T\326\324\273\245\230\rB\221$\315,\315U\"\272@w4\350@%\027\323/\002\030+#,\274\273eQ\236\362\270/\022\356Q\2415U\211\014\005\342\027\203r\014-N\357%;Y\311EX\261\200\021\025z\262\2520)2I\031#\301{\307\362\220,Q\335\252\364\244\"@*Y\323\373\245J76\205^\320\254\006Su[\206\221\016\031\335\301\202\345R\341\342\351j\231\252\305v\230.\364\245\326\036]\335\226H\260\251,\346\003\227\210vr\252\354\315\020)\346!Q\203\304\210W#\002\221\200\344I\341\311\312u\255c\\\243\360\374\361^[\034\266O\223\274\032Y3\375\226N\254\260\337*`[\377\027rE8P\220\234\333\205\265";
-    PyObject *data = __Pyx_DecompressString(cstring, 4617, 2);
+    const struct { const unsigned int length: 12; } index[] = {{2},{35},{54},{37},{60},{24},{52},{26},{34},{33},{45},{22},{15},{179},{48},{37},{32},{1},{1},{1},{1},{1},{8},{5},{6},{15},{23},{25},{10},{7},{6},{2},{6},{35},{9},{30},{50},{10},{8},{28},{26},{30},{31},{28},{38},{25},{29},{38},{20},{32},{22},{30},{37},{42},{5},{11},{12},{8},{3},{4},{8},{9},{7},{4},{20},{8},{6},{15},{3},{9},{15},{5},{7},{17},{18},{3},{3},{4},{4},{1},{4},{3},{6},{17},{4},{3},{2},{6},{9},{17},{18},{23},{4},{19},{3},{5},{4},{1},{4},{9},{9},{8},{8},{7},{7},{2},{4},{5},{15},{5},{6},{9},{3},{5},{6},{7},{20},{8},{3},{5},{7},{6},{7},{16},{8},{12},{9},{2},{9},{7},{8},{10},{5},{5},{7},{10},{11},{13},{5},{8},{2},{6},{2},{6},{2},{6},{5},{6},{6},{8},{16},{22},{6},{6},{7},{2},{3},{5},{4},{10},{25},{2},{2},{2},{4},{8},{4},{7},{4},{4},{2},{8},{18},{9},{5},{3},{5},{4},{31},{6},{2},{6},{2},{6},{4},{10},{7},{3},{3},{15},{3},{14},{20},{15},{3},{3},{14},{11},{10},{19},{14},{12},{10},{11},{17},{13},{16},{9},{10},{17},{13},{7},{8},{6},{5},{3},{7},{12},{10},{12},{19},{5},{3},{5},{7},{9},{3},{26},{4},{13},{8},{5},{4},{5},{4},{4},{6},{7},{8},{18},{5},{11},{6},{6},{7},{6},{8},{7},{9},{5},{5},{5},{5},{5},{4},{27},{1},{2},{2},{6},{1},{2},{2},{6},{2},{9},{9},{5},{10},{193},{371},{124},{10},{318},{2116},{3550},{548},{21},{85},{51},{63},{147},{70},{222},{244},{1}};
+    #if (CYTHON_COMPRESS_STRINGS) == 2 /* compression: bz2 (4633 bytes) */
+const char* const cstring = "BZh91AY&SY:\216\200\261\000\006\031\177\377\377\377\377\377\377\377\377\377\377\377\377\376\277\377\377\375\300@@@@@@@@@@@@\000@\000`\023\354\334\245\001\003\245\261\235\214\333\021E;\267E\261\224\224\005Vm@E9\364\366j\330P\000\000g\007\003\247\270I\"4\230\215\014\215\000&\025<\t\222fM)\275Q\341\020\315M<\232z\232\217j\206\203F\214A\241\246\231\036\243=M\021\345\032\004\221\000M\010\231'\244\302=M\0324\250\361=S\365O&\231'\250\332&\001=OPh\323#@\007\251\223\023\02356\223\001\352\232mA\211\221)$\320\3204\000\003@\032\000\r4\003CF\200\000\032\003@h4\000\000\017P\022jHj\224\330S\365&@\000\000\320z\2156\243\311\342\246\206\200\000\364@\320\000\003L\200\310\000\000\020d\300\t\200LL\2310\000&\004\300LL\023\000\000\000\000&F\002`C\010\001\"\021\n\241\006\206@\320\000\000h\003G\346\214\224\361=\032&L\304\251\221\240\017#Q\240=@\323\324\033D\017\374\226\2151[,\277E\226\327\233\263\267\010\240\314\2150r?\353P\227\271\356\267\302\301\342\372O\245\220\276\240\000\376\t?\311?\321\033\177\345\345\214dU\024\302,\355\206\0300\345\013A\020\206\331\325\\Y[*Z\314\300\351H\335\344\004y>w\241\303\3668\236\376\350\356\000\000\350\221\232H\3143\026\201\214c\030\307\275\236fif\263\317b\370O\204f`d\231\025E\214\030\260bDE\024\030*\210+\021X\261\025\030\210*\304\022\021E\312Lq\3157\335\024\005\222\014\205D\262*U*,\247\343B\252p+UZ\236P\t\316s\014e\365\365\340,\005\010\203 \2420\"\301\030\210\244U\005\202*H\244P\024X\214\024\021\234\002\300\025\240G2G`\"hd\312J\332\304\357\010\223\203\010\261\203B\332\332\3275L5#\"\203\024\"\261D\200\211\004uL\330@\300\330.@\324\001\202*\013\"\300Y (\242 \242\"\300R\")\024X#\005\024b\013\026(\3140\271\332\321B\300\326\355\313\231\246]\224\200\\\272\"\332\305KA\203TUT\233&\300o\013L\005A\305\214h\0061\202\222J\243R\001\252\200\271\021\312\\\271\013\334*PQRS\r\\\303\276\010_\034r\"\304D\240i%c$\312\0234\206\364\233\267n\337C\nu\205G\n:\036\257\026\203y\307\210J\020\200\361C\253D\223\021\205eJ\261&z\325\252Gf\231\213M\034L\231\022\0054\256\222\272\022\310Y=\315j""\256\0140\310\033\016\2310\256\213\244]\025Aq\033\022\276\226\262-e`\250\260\023\255wia+\"\301\213\334\370\245\226\021\242`\262B\265\212rk\240\250\265\250\252\035\302f\241$\247+\225\317\005\344\221\256Yi\373\201\230\307\214\315TA\231cf\226,\032\214\252\313F\312\271\223\203*\217\"k\3118\022\\1O$e1\221\316H\276/\361\361\216\351\3728?/\226\021{o\351\366\235\375\347\207LV'\260:\314\031\233\352\300\237\305\264\256\376\373\225\267\242\271\017\010\306\214U7\362~\257_\372c\370\351\257\326\244\347\033\247\377\3150B\316\316\323f\320\215\177N\267Y\274\361yd\331k\032A\275\254B\231\302\343=\212\312\014\360\202$\216H\342\241\362X\237\315\nt\354\327\277\274\227\010\t\300G\266\203\177\211u\023\341\0026\216'\260,P\230%Z\321#0(,\342\342YQ*R\216\010v*\252\n@\0361X\031\246$T*\221o-D\025K\351{\265\022\252\2460TUH\364\361T\253\213\013\305k\t+\005\0213\325\322bD\3215z\024\343\373\177\355\321\200\262-\353\177\021\220y\261\347\251\245\255^R\336\355\215\207\222\305\254\026\345\202P\002\211\275\251\246\256\33796\2126\337\003\354wb+\244\337\364\267\367wm\177\250~\244\022\234OsD\303\2308\330\234\277\356X\325\037A\321\244=-u\r\350\325\347\327_\373\274\327\234\372\252`\200-\210z3\000t=NZF\306\nV\200\304\242\242\0252\272\244,\312\250\354$\251\210E\231\331E\340\307\376\210\2662\377G\316\021\300*\210\250+\200\256/d\302\321W#+\253\200]+\212\342\360\257{\253\371\252\200\251QT\250\006v&\023\0055554y\363\241DQ*R\222\220)\037\277\335\210\"$h\024\212\210D\210\222\232\327\222\t\020A\000\201\356\305\222f\323\306eiW\302\307\276\355\252\2054a\357;\207\207r\364A\004\024\244\024\205\374\013Td\026w\305 \304\023\020{\334\314H3(\2024\010U\003\0176L\013\005\267\2601l*\245\312\303\260\030I\204\031\205\000\241\364\376\017\301\364\364\335\346<\372\352\2655\rV\240\265\313\037\007>\226\260\225\266\362\377o\337\335\3650\364\374\377\3337\261X\255\211[I[A[\362a\202z\202\200@\0149\263^\275\206bi\202Wb\303\202\341o\0273\244E\326\006D\252\352\307e\"%\323\247j\304[\372.\344\275.\3557>+\304Z$\240\305\212\326Y\273\375\305\243""\311l\226\\\351 \255\006\024\214\t,\213\"Y\007\004\031@\233&i\2163\017\007\201\307\227\223\337m\201\262\350.\225\220Y+\201\214#\300pX\347\323\334\301\203\010\014\0060lX]\336\257\017\267up.Yts7F\202(\005\022SD\274=\306\232SA5d\250s\363\367iD\024T\214b\020_^\224\221\031 ^\211\351\350\220E\205Jd\343\312\235\345\272\225;\376Z{\221\326\302\207\211\302\340\343\210\366[\237\334\376~\214N\177\022\036\210\304'\352\313(Df\274u\3120\255\035\306\202\276>\241\350\216W\325_!\244Kd\213\307\370}\273\226'f\340\324\303\332\030\327\321Y\223\217\314\372[\337l\326\346[\252\366\261X\316-A\205\236\277\265a;,j\353\r\255\237+fpQ\234\032\206\037d\027\023\321\315\003\222\252\0372f\251\241\310\023\261\353\024\243\350\243\316bT\310^B\303o\035\022\211\251A\363@\3525\332e\375\222\366&\352\301!\223\270\334}\230fX\007\352\210{p\343@\353\3665G\265\3249\226[\257\324?M).\263\275\030\363\242\362m\017\0161\272\370\3366\023\266e'\263G\216\"\213\347X\351\214+c\304\261\r\351\327\034\031\031!\334\0206d\3238\177\324\332\266\332!z\331V@\331vDNPEL\244\004d7e\241vl\323\223q\313\227\223g!\330sC\311\035\375\000\340T\264d\254\343&\332\204l\022\315#Q+\202\270\256\225\022\n<zu`\275\262\232R{\237u\315\235\210\330u.\276\247+\256\\\000\350\364\321\240\236W\254W3<\036^\276\203\323\324~\317\222k\261\267\311\274\024\201\331\331z\355\333sb\023\214\231\221\272DO\233s\235\010\342.= \270\207\025\307\\\320\310\3705vh\034\343w\335\306\353wx\354\341\315\344\235[\274]Y\370Y\233|\206\310\364\323\306\014\243h\020\217\312q\351\211(\234\361EbS]\207I\215\202\026\254\342\304,@\261a\266\253\277\311P\366\364\034\326\336\313\255g\236\271\314\346\363\022PG\273\017(R\016\332\335\333\345\310\334\241{\\q;R\321\365\230L\312\257[\306\221\216K\2018\r\006\245\003\004\"K\343\312\006Yb0\243\372\305\237ge\273p\254\2760\311\301\261\215s[\274o\264E\003\274+Q7\261\346\316\003\251\220\206\326\213j\333F\321\216\342\357\300\316f\375y#h\363_u\274M\253e\260\2134\031\242\333\032\233\222\233\201\304\272ZMGn\304\257\204v5\245\255\006\264\267\214\001\334\312L""\306D_\013\272\355QSBG\277\213L{\273\276\313\235\025\203A[\254\321l\360u\261Gl\216\027\037\205,&\023\201pAJm93h8\374.\3349\212S\322N\247N\311\216\3426\036\254\316A\214\247@\202\333\267n\317\002\225ll\000\300\316g6-\355\312\243@Cl\204,\232\357\311I\273XY\177j\333\242\031,l\224\016\3633\014\321\343)&\nT\265\331\330\2433\313C\"^;\231\202I\256\305e\247\233\260Bf\334\370v\215\206\033\207\213\264Z\325\355\272\265\2030\206a\2314\2731\310\013#E>\215\204\243x\317\211ye\302\267\217\250LD\005\207\243\033\267\214\322]'yy\365T\332\352+l\351\rKR6\322\232m\213zl\266\267\333\0235\311\034\225\242\324\333U\260\323\324\205!v:\016\024:\230\341\334\016\373u\333\033\010\246W\250,\373\256\020l\351\225\351\217\233E\026\326\213\004\014\374\032\024M\037/\025\217\016nN\201\032\017m\212}\375;\"L\247\026\003&\353F\334\302\023b\220\0063\353g\305y\241\242YW|!\227\001\020X\255o\036\202\263\273\263\003;G\221\341\024t\367\373\360$\333Y\332c;h|\313\230\227\0357\264\225$\376V{\201\320\344\3757\n7pc93R\020d;\025i\305E\026\244<u\351\"30\345\016\354\356#\311\306\001\2679\004\014\332\020d\231U\310\004\023\364S\205s\2346\025\25378j\300\354n\251\263\222\010\332x\033\252a\252YK_\335s\023n\363\032:vf`\274\322G\341\036\202D6\275O\\\264_\264\332_\013}\273\265\314Q\001\240\237n\262\306m\360\300\213@\333U\203BF|\251G\023t\017k\014\3032v<\374\333\357^\220\2214\232\354\353\234\212\315\313\273\223\275m\327V\212)\312\230\324\330\2043\357\333\301\0240\330\232\211\n\355[\316\335\024\306\362\020\304\205\2566Cn\255\010\032\010\311o\210\361G\\\262^J\366\366\245\345\022\364\201\352\316\364\2335\010ui\246\027\001\001D\301\010\300\007\024]H\300\027&\205\201[\332\305\002\300\266S\320\267\005C4\032\314J\225\305\036\353p\212E\355@6\301\207'\243AVd\321V\360\252[\014f%\323\223A\237*D\315h\3041\213\3456\306\0319\242O\326|\342!(\267\232\002\036c\247\342\373\345i\030\221\277<\311>1\314\207\013\324|\357s%\220F$\214\250\014\242Y\020\214\350\355W\204\3361\207\3044\325\2743\244\010\370P;;\264\343\262p!\007v\255\251OR4\357I\324c:uX\351""\340\272\235\363\352\202\2069\3324\236\270`\313-\232\211\212Zp\264/\307'\344\241\264\215\232\231\245)B+F4\323_i0\360s\300\324\255\366\370\216\224\035 t\243\245t\242\205*\313\254`\207/<c\206r,\333\347\004\237\242p%\2666\356Jq\242S\250\335\275\316\026\253\005\014\rQ\274\222xE\206ai\034iI\030\"\313;\3421\312D\254b\254\327(?*\350a\340#\264[r\rGbH\223f\311\335\203'\204Z\240dbV\200t\263x\264)+\324_\022\357\033\312\0351\315\355$\323r\315\021\014\303\331\3169\331r\231Q\224\312c\327p\230(g\327\260\372\230\"\257UcKXF\313\321\305%\242\325N\312\031\3654\355\020b\335\307`\210\253\nB\302\taF\020\326n\033\226\204h\254\245\327p\327\007\353\327L\274\334Sj \247\207\025\215w\305}+\352\372\253\032\r\246\261\232\201\370\335]\233\"\302'\277k\266L\037\313\270\354n\330NcE\231\232N-w\343\000n\334t\304\210f\235\206\310\353\345\314\376\234\"\036\3414)\2474q\340\200\276\335\344U2\236Dh\224\302\213\305QQs\001q\316\263x\013\310\025\215\247.\263Q\365\3718<\016\371\006\371\242\333\276m:?!\3572fH@\345\260X\300\234\342Ov\035\000\303t\270A\257\220A\373P\370\230\034\352D\030\002\305\353P\002\320\327H\316]C\231\022\240\033)\244\035\350P\274\257\351\033\225\335\002\304\003t\245\377,\370\032Y\3528<\010\010;\343%@\037\262%\034R\206\250MJ\223\036?\245A\325\375\362\211\200g\256\357\346\245\212r#~\276\344-a\003!\230\313T\301\265\212&J\204\226\031\323~\277\247\007D\210\275Gl\n$\240\205\200Eo\021n`\204\3228\3554z\230n\017p \204\276{\226\004\203\017\333\307{^\306\321@N\000\313\242E6*\002d(\220\216\303\235\243\321\223\315\237\034P\177\237\307\"\375\214\206\276\264;\244\226(\225v\255(\220\246\026\240\242\361g+\203\354\356D\336\0305\264\0200\264\004?\031\324\027\"\2257'|\302\205t\316\371\021t\252Q\005\004e\350*m\214\304\346\324\364y\017\316~\324r\264\314\225\310\206{\02514\343,\300\005\t\r&D\027&\370\360\256\217\331\277\033\363\373o\223uA\260(\261J\207-\020\332\032\234\304\214\365h\203\327\335\315\220\236\364\214\373\213\3030\215\355\374\002\034\275\226\263\264\031\303\034\211e\357|]\261\"\257\201\214*M`L,\267""\372-\277$\033\207\200!\031\3323\243@\313\316\202\207\nSeT\250\0332\241\026\2330\221\016F;\336\305(\013zy\267\215\003\r\005h\243\332[\326\013\300\250\215J\014\264\007\026\362\014F\320\243\007\t3\303\033+j}\336\007\021\037\227\215\\\013\340\204\243\2650Bzl4\346\314\275\001n\351D\314F!\311v\202\330\302J\361\303\3774\367\007\310\263.B}\276\005!\327.\251\345\"\332\224\315\331i\375\364\256\353$\030y\r\022\361\213\251\305H=<ZN\327h'R\325%\265As\232\214T\3149\036$O1\027\357\017\306\032\304\214$\234iN6\\\234\2429cQ\316\036\"y\377\320\345\230a\354xJ&\024-\267\213\267\324\210M;\221\"W\035Yb\262\003\267\322x\006s\217\321\327\322_\302k\275P\266:H\311k6&\335W\216Cp\212\034\231NP\261$\214\203\266\203\243\271\320O\210\241\353\353i\365\226\326\024\356Aa\247\354\312\272\240\302\252*\234\232\316\257eu\010\215\273#\255EX\213\377\005ob\346\333\227\232$ 1\243b6v\317L&b{\204\301\014=Wa\365\002\204\327d6Z\336(\364\024z\001W\266\006\336\240\327\004\017i\255\035{6\301\200\352,\260\252\031\020\021#\216\313L\377hD3\263=\204l\351\373\242\347\355\300t@7a3\254\250q\025Jgi\201\255\252x\341\001\022\213P\210m\207aP\023|p\222\335\236F\257\263\255A\323\262:Kl\265.\242\340\256\246\312\322k2\270e\204l\204P\255\021\372N\275^\361\003\336\203\271\032\346\313\244!]\2257\351(p\232:\225\312Xs\tyL\344\325\021.\003\231j\346\277D\027\245|\001a\007\027\223\315\314\033\232Pi\262q\314\257\004}\212\005V,\361E\177\265\307\207\033\342a\024\007\037\035ZyS\247\245c\n,\2361\351D_\220\306\274\235:\016C\315\010\364\225 \236\022\034\301\311\207\031\017\010\247\312\370{\274G\227\365\370J\341\017=\214k\204\025\021'\323\222\002B8\356\363{\256\0108\214\245\327\020QL\340\215\315\320\335Z=~\3616& \030SA\277\236\022\037\006m\325\230\337\337\234\352\244\032j\226s\3573\313j\313nct6\247\241g\257>\236\212\3366\201\233b\227\276hs\301\301*\345\367C\373\255\013t[tR\221\315g\023e\304\300\202\356\364\271\3159\375\313W\371+\001\342>\0011P\342h\316Fq\253A\247\365*\302\204t\034|\3749\240\230\tX'\033\2601\332\321\336M\327op\306\306\351n/t{Y""\310V\345V\343-\314\345\316.\357/-I\234\014\307\022\353q\365\220\315\310\356N\177?\301\024\030!\307\341\\\347//c\331\343\360\3629\273\010n\277\277\337\3600\376\2729]\340=>N\271\320\035\206\366\036p\365[\3007\007\257\302q?\357\277\307\371\272\241\367\273\313\205np\203p\233\343\317C\340]\035\017\r\341\306\303\356\372\253\307\267\271\263Wk..~\317e`\345:\367o\335\247\252\233\333\365z\275J\177\017\250\267w{\234\365v\326\321\246\365\023\213\274\310\373G\357*\025\317X\352Z\351$\016\377\327\343%\345\310\261T\274^?2\347^o\321\261v\3272\365\367\003\247\343\375\274\274]\327#T\355\240\217r73\n\306w\027\030\320V\004\225T\236\265\203+0\265Y@f\216\205\000\205^\205\352\253Qb:x\216\212\006\200\010\275\000\305]\021\010\324\031p\0245A!\253\241DG\251.\010\224\216\322\031\244\203t\262\305hh\234\231\245\231\255h\246l74\314\002B\270\330\354]\005E\026\035\255#T/\266\255\216\026\315\014\010eT$@\034!\301\242B\002\342\305\265\025\332b\tb\306\200\025S%\231\006\204(0\302\014S=p\370\31120\210x\306\030M\022\030\231B\215\313a\203\363\034\343\031N25yo(\271lSlK\216#\264\357r\265\252\255lN\262\343zQ\253x\333\245\220l\212Jr\303\216\355\323\211:\252\273\032yv\215\007x-P\214j@r$\360\344\345:\326\261\256Q\370~X\257-\\\266O\223\274\032Y3\377[/\2577>[.i\377\370\273\222)\302\204\201\324t\005\210";
+    PyObject *data = __Pyx_DecompressString(cstring, 4633, 2);
     if (unlikely(!data)) __PYX_ERR(0, 1, __pyx_L1_error)
     const char* const bytes = __Pyx_PyBytes_AsString(data);
     #if !CYTHON_ASSUME_SAFE_MACROS
     if (likely(bytes)); else { Py_DECREF(data); __PYX_ERR(0, 1, __pyx_L1_error) }
     #endif
-    #elif (CYTHON_COMPRESS_STRINGS) != 0 /* compression: zlib (4849 bytes) */
-const char* const cstring = "x\332\325Y\313{\323X\226\307\306\t\t\t\020\347\301#T\321r\036\004\250\252\024v\002\005\031\212n'\004&\314\024\220\204\360\250\256\376\364\311\222l\213\330\222\255Gb3\363\365\260\324RK-\265\324RK/\263\314\322K/\375'\360'\314\357\\\311\261\363\200zvOO>G\272\367\352>\316=\217\3379\347\336%n\331\312\347e\235\333Q\344]N\322d\203S5\223\223k\025\315\2209\303\324\025I6V\004\225\323\324R\235\023uY0eN\340r\341 \263(\230\234bp\242\246\232J\301\322,\203ST\256,\2275\275>\217Q4\225`\030JA\345L\215\303`\351\0336O\330\203\226\214:E\023\357\352\212)\344Jr\324!$*\257k\345\317\215UTI\256q\273\212Y\344\314zE\346\346\242vS\027T\203m\243;$\354\206\021\212.\213&')eY5\024M5\036uJ\334\254D;\242\t\302N\253\345\212Y\347\214\242\200\251M\253\002\342\362\232\316\211u\263\250\251\363\202\256\013\365\265\343\323\261\361\206U\251h\272)Kk\352\216PR$\256\254I\362\327\304[t\226%nN\234\3430\325\034\346#Z\347\276\346\n\030\325\351\034\256\010v\n5\320\363\340\007\266\207W\264\007-\317=\323\300-\306\375\025F\010\221,\311%%'\353\340#\270D\222\303\"LD*\367b\365\3057\213\367\0269A\225\300\311wX\336\000u9\261\004\341@\342\2300g)%\023\213\021\007\215yn-\317\3255\213Se\220\t\311U\320\257w\200Y\224U\316\220M*ps\214\335\202\211}\363\030\256\250\205\271\210u\312\216L\243\037\013%C\236\177\256+\262\032v\343\024\223\350\244R^PJ\262\364u\270RN6\211dLlU\346\237[&#L\263T\t$\252\035\235\023DQ\00657\030[\266T\246.X\004*\270#\353&M]\246\272\226\243m\316?\234\273\371gA\222xP(\013\245\202\006\005+\226\215y\245\\\0205M\227z\232JFU\220\336u\033\276\325\272\004\317W\352==+\202.\224ePj\3644B\017xHQ\304\366{Z\r\210\266\000\033\352i\242N\333\350\305\347i\026\036\273:\3741\257\365\324wd\221\267L\245d0\321q\220\367\355\232\250\225J\304\\\250\331\274\220\023\037\364\030\037u\nY\377\360hsG\347\037F\232\253\250\246\244\030\304=\231\361\260 r7H\375\nL\361\211\323\240\021\272j\202\007\314\252\017\224\033\272\026\016\221\210\327\206\362^\346\036|\317\335>f\026\252\006\225\314\013V\311\344x^\227%K\224y\236\223,&.US\277\201\212\356(B\t_""\3015\305\344y\2652\257Jll$\276\207\017B\004\222\016\355\354x\033\231\321\301\006\017}?h\265\0164E(\2254\221\301\030[I\022La\376\204\257\241\375\321\034\021\n\316\357\352\032X\242ZeX\031\251\246\010\371\351\002cNE\003?y\200\215\302\344\222\335\\Y[[y\376\354\325\352\306\223\325g+\253+\317\237o<\342\267\236mm\256>Z-\225\224\212\241\030k\217^>{\221\335x\266\365\003\277\366ru#4\217\027\202\376\342\371&\277\366\354\361\013\301,\362\374\213z\r\377\217`\312\3743\310bC\316o\312UKVE\371\245\240\027d\223\360`\276\013\rP\007(\273,\361\244\242]-\352\321\344\316\366\370\320\232\030\013\004#zuU&j\250\253\242\242\315\213\232\256A\tU\331\000\253\004\263\224\023\0149\247i%\221\027\205R\370\343\025\025\317\034\346\336\346\363\260h\025\254A\203\001\026\211\370\313\227\204\002\244L\350\301\363\235\002\310'\005\242*\346\306\014\314~\344\034\314C\324\312\025\013D\352\035\\)\013\220\0014\277R\0071$O>\247k\273*/\344\363XY\003\345\226j\212\330\265$\tjA\312\361 \241`\026Q\330\225\225B\321\224d\271B\243y^\"^\362\241R\244\303WF*K\020\235D\330\307\036\274b\360\241\002\312\004\376`7\200[\206\340\031\272\312\025C\326uM\227\001@\246\001\251\020\267\311Ptp\227X\242\344Bp\3530\"\257\324\210\001F\276\244\t\346\335E\330\t\266\023\201~\336*\035\032\303\363yK\025\211I`\217a\222\244\370\002c\027\026Q`\203\005\236\001\027\025*\246\321\3011\236W\312\344k\360&o\010e\\\3100\215\304 \025\224\345\211\000\354\212\030K\200\313\263r$\326\320\214#[\336No\247\251\363vf;\303\336\013\333\013\354-T* \023[,\204H\311C(\220\031\236*\017\005;\020;\366&\026y\t\370(\206.A\203\361\347\321\252\250;x\226\255\022\372\220/.\227\3712\376J\226I~\021\023i\222U\2427\020C\001O\312\374\021\253R\323jF]\2405\000\025\341\023|\300S\336\305\003\\V\301Y\265\0029\321h\203\336\022`l\207g\302Q4\235ZL\330\r}\252\324!a\255,\027\004\r\212\035ZH%]a{\257d*l\357\025\250b\027\354+\260H\310\251RT*J\r?\271D{\3037x\332\212\252\037&\366p\215\317\021S\216l\247\242!<\200=T`\343bQ\026\267\r\220\307j\221\334\251\310\324\221\225,\265\242\210\333`\320\252\332""\351\267\303\202%R\226\252%\224B\226\350\302.\037\356\246\307#\361\275e\310]\246p\212\357X,\253t\305Xcu\223\024\373\000\266\017J!\300\3674\3105*\346I\031u\031*\006N\351\360\337\272\n\333/\311\206X\303/4\177\270\365Hl(E\236\201\225\243\355\366\224;\2530\0146\212\364\023t<\230\031)\205\262\200HA0\024\270#\265\000\006\234\240+\244\312\3066\024\243\254H\354S\307\023\033\225\222b\032U\235V\242\007\254\331\324\360\257[\242i2L\205HL\331\000i\307=5s\317\026\371*8fS\323!\023t\261*\360!\262e0\362\020\274Y\262A~\233\264\221\336\330\325\201\033\247B\215\036uz\274\247\210%M\217\314\016\364,\204*\030\247\004\027\223\223\001\014\025\300\223B>\267V\273]+\326\212\264@\275~\273^\254\263\342\373\333\357!\267\032_\022\352(\300\030\251 \353\232\301\036|I\331\226?\304>N\235\352\033\266\323\255\304\250\223j%\316\332);c\277r\322\316#7\356^\367b^\262\235\030\260\373m\031M\331\326\300\230\363\235\233r\323\255\201!{\321\376\273\273\356\276\363\317\0063\201@\ri{\305\326\235\t\007\225\021'\326F\313\202\235s\342\316\264\263\336\032\036s\026\034\3011\334)w\305\255z1j\3108\257\335U/\351\245Z\303\027l\313Y\306\300\221?\271\2727\352-\371\033~\265\035U\356\370q?\325N\014\331w0\327-w\031K\306\375\257\003\2611\336\330hT?\304Z\367\356\177\274{\252o\250y\366\0137\333N\234\371\260co:\261\220\206D\322\271\342\246X\2715@\213\254\272c\356\177x\325\177he\304\351s\336\270\233\336\220\237>R\031s\322\037\373O\365]\260s\315\221)/\345\335\367\037\007SA\266\225\030\301\326\256\2731w\302\315y\240z\304\351\007\263,\367\2617\355\255{\357\202\301F\262ui\332K\323\356\336;c$\210\363\366;\364g\3029\r\316gItS\366cg\312Yq\252-p+\224\342\212\263\343n\270U\352\326go9)'\335\221\224\345\254A|9/\016\376\037k\232\362\226=\210q\330\316b\320\234\233\204\330\262\241\010@\030t\206c\374\236\361\320x\376\330f\216\266\264\023\303D_\207\002\322\003p\351\234\375\332\311:\257\334\264\373\310;\355e\274\327~\326\337\014\022\301rPh\2547\304\275$\255\267\344\254;\262{\327\033\363\262\336\217~\275\021k\236\232p\326I\254IP1\303\250\370\322]?""\211\212kn\301{\345\247},\337\341\314\017\3368\2322\376z\207Y)\347{\257\337\313\3711\3523c\013687h\217\333\350p\325]t\ro\006\314\217\005c Jj\334\332\313\356\255\177\034>\3257\3305\007\262\202]\354\307t\027\\\311\233\363\223\376\214/\006I\332\335[g\333K\222fW\351Qs\242\227\005\375\257y\226\277\342\327\202\336/\357\335\313\330\345S\277\010\305\236\334K\267\206\317c\215\214\263\t!\217C\202\026\004\002:\375dhV\202\275\003\316H$\226\326p\322\271\350\350P\276\254\373\022\346r\027D0\213\252BV\324c\231\351T\324 \204R\214\201{\375\247\276\231\377x\371T\337-\177\264\371\325\367\340\271\262\267\263\277\261\017\026\244\274I\377n\220\014R\035\305\214\2737\275Eo\207\254\262\253\253W\274\353d\231\255\004\330\336Jp\036\315\3307\002\004 j&\273\375!\032,\234s\317\202\233y\177\331\027Z\2119\230I\342:4\354@O\237\272y\246r\t&\315\013l\226\252{\032\242\037\365\200M\3204\322\271\201\017\273\330\272IJ\234tF\235t\033\257$\311\352.X\215\241\257\274\005O\240\271\243\226\253\341x\014\006i\243\030q\327\035u\227\274M?\321\321\222$kL\272\267\274\307\376\224\377[\032\332\000\316)\3471Pq\251\243\\?\3370\341l\3000\t=\373\375\\\000\365\273\341\307\"F\036z\264CVu\037\267\010\n\007\3543\260\325,`\0250 u\214\372;\024\356\270@\326\213\216\010`\300\013\026<\312t\374\214W\203$\210Y0\346K\336\000\026\373e\225\366\300\227\356kh%f:^\340`;\202g\370)\177\321\327a$\331\340ec\264\261\320\020\032\325\366\000Vwva\023S\036\314\344S\225\366\300U\367\273\260\365\n8z\303\233\207\265M\004\271\306\340^rovO\337\277\326|\375\246\371\346o\315\277\361M\276\330,*MEm\252\225f\345\357\315\277\377\317\307S\247\376\022_\215\343\265\032\177B\257'\361\027\364z\021_\247\327z\3745\275^\307\337\322\353m\374\307\370\307g12\336\003\034\034\266\237\020\303\\X\351\210s\026\342Ype(\333\341\n\251\"\001\356\310%\350\343\031\267\332\032I\222\357J;O\334t{\230\363\006Cs\273\354\366\273\002sW\031o\303\323\375Q\310y\3037\230\222\r\223\306d\310\t\366\024\222p\213\033N\265=<\t\333J{\253\376\030 AgP\2434\252{}{\233\373\247\3673\373\233\315\027\033""\315\215\2776\377\372S\363'\241)HM\251\320,\200\r\357Z\377\364\201ml\373a\350\256\217\026\332\303\327\300\255\214\367S0\032\334i\304\033_\357\345\366\373\030\226\320N\233\243\323l\275Q?Ms\334\007PmA\350\377\031\304\0036\305\347\033\332\220\3070@\354\350\374,\204x\000\226O\0200~\256r\321\311G\023\022\rw0\351l\2407&\032\271\275X\010\300:T`\3442L\347\340A\213\3663\\\317\000|u \363r\204]dV\314t%\346$\311w`\265;\200\310\251\210H\026\354|\276\241=|\325\275\0037;\013M\231\000\000\364\005\033\201\325Xn\010\275`\216^\243\316,*,(h}\262\322Y\1776\332q\037\024\317\202P\205V\317\207\344\347*\277\223A[\314\202\207\311/L9\377\216=\236\314\245qDH\243\214\237\026\203\372\237mh\017\223\315\365a~h\305IE\206q\360\250\253\341&\216\027\333\003\344~\t[X\354\325}\264{\215\377\002s\341\344\230C\353\036q\0060\177H\373\n@w$\014zY\024\322\032\237hQ\234\321\032\031o\216\023\"\217\377\t\341l\237\367\322\277\n\374\333j\3144\266\367\223\373\263\320\374\361k\000\004\313{\204\3708\005\245M4\236\356\t{\326~6\034\321\357I\376W\301z\220o<\332\033\332O\357?nnl\206Cv0\327d\220\016\036c\256w\373\261\375\2134\327D;\344\374\027\024a\372'\024(,\370\263;\355\256\223jP\214%#H\377D\221\320k\225<D\247\355~\310\376\317W\303QQ\200:d\377[O\0348\351\262\314\341\233\346%\346\306\316\332\363L>7(88\333<{\025S\374\020 \236\243-$\3209\214\266\024\2101F\221\033\3059\033\244c\344\331\342\366,\002\225X\213\025\257;1\362\357a1\356\334\004\344\366\006\262\204\242\263\300P\314\221wV\233W\230s\354\204'Ip\343G\370=#\270\325\310\266&\277D\245J\264\335\240\261m\026xl\330\006\022\212'\021d\217\371O\203(\"\371u\037\006\355\253p\306\241C'\371!\352\014\347_\267E\000\376\202\363\016\016\230\\B:\002\334\247\215h\272\337\327\341\304u\007\355d\353\340A\221\3672x\303B\205!\373\0364\376\264{\017\031\325i\377^\300\202\206%g\213\361\211\002\322\367\3102z\232\252a\345\025<\341;?\n\356h\367\010\201.\034)D\242\275\352\246)>\036\262o\202\344\234\233@\376\302|;\344\324\036\030\264/\222-\036~!1 S\\\245\2541\214\203\r\210'\303(X\2071\266Yf\270\206""\374)\004\313Q\177\201\305\327#\311\326o\370B\240\325\347\360\310%6\021J\217\"l1`\233\031\204-\314\352\373\232\023\244\277#\343\344\356\307\234%\250\3604\262\016+X\t\336\357%{\233\252a\205\302M\344\007`\315\271\021\273\326\274\364->\260%\336\262X\3402B\203i\177\335\227\231\371g\333\014!gYX\233a\324MC\213\020\001\234cb\236@\3246I\021\007U\303\264y\013\036\343\021Rp\312\013\204n?\341p\237\324\341\031(]\236\206\013\320\341+\217\3146\315|\031\002\342\316\210\213H\310o1\320_\2400\364\350\010\022=\314\375\217\0311\006\367\231\013N\203\335\233\360\340S\241\267\353\035I\270o\260\250\360`\244\016w@\332\327\327\215\245N\032\261\022\005\\\360\230I\004kO\273^\207Pl\332\371\3215\311\353~\262!\325\212V\274\304D\263\336\272<\311,\300d\233\214c\341e\304\244\361\3064\0358\320Gr\344\"\222\244\305(~:\262\223\236\275W\341eg\240\r\206w+J9\016\367\304D\022\262V\322\243~\254\301\334\344Z\363Kh\022\202\202W\215E\254w;\023\334h\244\302\270\272C\350h\030\351w\247\332\200\377\312F\212\210\350Z`~;\322H\n)\352L(\367\030\200\320\324\344\251\204\326\001\231\344\306_\262T\353\020y\213P\227qR\3220\014\300\274\264\304\230\223\n3\326I\306D\221Y\222\036$\177M\343\317\322t\t\360\261\034\245\014=4\275\206A\304\221Hv%G\323_\361N(\264\273\337\377\037\021J\232p\006\321\027;\334\3725\215\377\024Bi\230\314\300\275G\373f\331\261^\226\214\0178?\342\020 \016\236\353\202:\365\313;\313@\247Q\026-\246\310\031$\231G\237%\265\215\260\360\r\022\343?\350\003!\364\277\344\207\303;_\365\276\244<\372_\260\351\332\321=\260&v\334B\302=\217@\350\277\350\034\230\005\373\003\347P\245\363(vbx \366\216\267\243P,E\347Y\002;\344\315}\242\241=p\036J\232tf\234\202\313\0166(l\331\242\303\333N\273\344\316!\272GH\277\303N\005\357P\356\335\016C\372c!\304\"\026N0\352F\020\225\264\331A\235\345\260,%\026\036Q\377\001-\027\235\352?\256\245\315\002\266\357\230\367\250\266~\246\262\004\364N\206\007\271\367\234{\300m:b?\376\345\027\315\266\304 !\346%\177{\345Mw\321\203\n\355\347\216\023;\tf\307\221\010\t\377\247\037(\272Mv\022\207V\342\034""\323\357\031\226j\323\3415\252\273\014\363\302\223\354\316\241e\317\241v\272sX\336\211\357\326Cv&\235q(+!_:\302\201\031:\241l'\010\024\213\230\223\022\315<\"\230\350\260\364XvC\220~\221\3057w\330It\026\341S\214\356\001B\3015\307\276\242\213\205\363\366\266;\356\276\r\217\343N\250\226\241\022u\304\274c~\366\204\252\002\377\177?\214\212\311\274\252,mFv\367\305\317dw\275\031\035]L\220\036\377\342\302%\032\032\025z\362\207\201O\345\017a&Cp\301\356\245Z\003\235\324\206\245\216\307S\211O\206\372\355\236\320\3503\301\372g\343\260\320\023\026{C\361\033\356/\363\217!\232Q\222\363\222\216yN@\272\360[\222\005\377\247\021\222\365 \036\252\277\034\361\3768\3648\242o\224\335.R\226\316n\021\016td\310~H@\216\306\311S}s^\256yc\t\374\272\277\367x\177j\377\300j\350J\243\347&`\300\216\331\023\266@\231\344\1777\257\022\273\373\203w{\211=\326\377>\370\362\222\002\017/\035\336S\036\2778\243\363\343\353t/\202\376\315!:Y\031\364'\203\305\300jd?\304Z\017\276\247Q!}\355\023\356\245h\213t\252q\021\361y\312[\362\337\006b#\331H\265\306\257\270\311\017\261\366\320p\353\334\371\026{v\3576zn%\300\347c\017Pq\215|\"]\244.b\0009.\346\341~G\323 Qz\227\256\274Z\363\337~\274F\367 \006z\335\ro\002/4/\334\204\362\336\014\3566.BM\007\t\207^\261cf\372\004\233\365\257\004\327\201\031\235+C\260\362r\227)\027\350:\205\220\354\314\007\223\351E*\204\000\000\324\033\344I:\300\207\031,-x\017\232-\261\033\\=t\304\325\350\274\241\007\265\006\311\261\027\030\346%\331\375\361xt\036\236\246\263\252,;G\242Q\223\321\0212\246\256\321n\243\351\206\350&\272g:\272<\212a\237\313\241\363\315\330\233t\354H\206{\206I\202n\017\373\350@u,<\324I\367\302\026\251m\255y\201]\234\320\234o\243s\301q\014Ht\203\226n\221N\217\310\371\356 \265\277\357?\t\322\207\356\276)\005\"K~BF\030\036\032Rj\273\006\324\020\030\371\316i\030\014\241\256\345\257Rf\334\271\002\217u\263\2616\202\245W\321\001\367,\022L\266E\001sI\314\334\331e\354\221\206\366\221\251\263\275\333b\032\374\374\177\0011i\034\242";
-    PyObject *data = __Pyx_DecompressString(cstring, 4849, 1);
+    #elif (CYTHON_COMPRESS_STRINGS) != 0 /* compression: zlib (4867 bytes) */
+const char* const cstring = "x\332\325Y\313{\323X\226\307\306\t\t\t\020\347\301#T\321r\036\004\250\252\024v\002\005\031\212n'\004&\314\024\220\204\360\250\256\376\364\311\222l\213\330\222\255G\3420\363\365\260\324RK-\265\324RK/\263\314\322K/\375'\360'\314\357\\\311\261\223\030\352\331==\371\034\351\336\253\3738\367<~\347\234{\227\270e+\237\227unG\221w9I\223\rN\325LN\256U4C\346\014SW$\331X\021TNSK{\234\250\313\202)s\002\227\013\007\231E\301\344\024\203\0235\325T\n\226f\031\234\242re\271\254\351{\363\030ES\t\206\241\024T\316\3248\014\226\276a\363\204=h\311\250S4\361\256\256\230B\256$G\035B\242\362\272V\376\334XE\225\344\032\267\253\230E\316\334\253\310\334\\\324n\352\202j\260mt\206\204\3350B\321e\321\344$\245,\253\206\242\251\306\243v\211\233\225hG4A\330i\265\\1\3678\243(`j\323\252\200\270\274\246s\342\236Y\324\324yA\327\205\275\265\223\323\261\361\206U\251h\272)Kk\352\216PR$\256\254I\362\327\304[t\226%nN\234\3430\325\034\346#Z\347\276\346\n\030\325\356\034\256\010v\n5\320\363\340\007\266\207W\264\007-\317=\323\300-\306\375\025F\010\221,\311%%'\353\340#\270D\222\303\"LD*\367b\365\3057\213\367\0269A\225\300\311wX\336\000u9\261\004\341@\342\2300g)%\023\213\021\007\215yn-\317\355i\026\247\312 \023\222\253\240_\367\000\263(\253\234!\233T\340\346\030\273\005\023\373\3461\\Q\013s\021\353\224\035\231F?\026J\206<\377\\Wd5\354\306)&\321I\245\274\240\224d\351\353p\245\234l\022\311\230\330\252\314?\267LF\230f\251\022HT\333:'\210\242\014jn0\266l\251L]\260\010TpG\326M\232\272Lu-G\333\234\1778w\363\317\202$\361*1\214\266\317\201g\267k\242V*\021\201\020\325\274\220\023\037t)0u\n\311\177x\274\271\2557\017#\351+\252))\006Q 3:\n\"w\203DX`\312C\324\202\031\220\267\211\2153\3138T\020\310+\034\"\021\275\206\362^\346\036|\317\335>\241Z\252\006\261\346\005\253dr<\257\313\222%\312<\317I\026\333\262\252\251\337@\314;\212P\302WQQ\025\223\347\325\312\274*\261\261\021\013\036j\025Y\255\230;\231y\241T\320``\305\2621\257\224\013\242\246\351R\257o%\243*H\357z}\251\010\272P\226!\"\243\327W,\311C\217AG\241\327g\003Z^\000\234""\364\372F\303\2661\216\317\323\002<$\375\211^y\255\327\207\035Y\344-S)\031\206.~\333\356\360m\247\303\267ZG\367\346+{\017BX\223\216\210\372d\033\331\346\241\304\217|?l\265\016\325O(\2254\221a#c\275$\230\302|\217\257\241Q\323\034\021\264\316\357\352\032tD\265\3120]\322w\021\014\320\005\246-\025\r\n\306\003\301\024\246\250\331\315\225\265\265\225\347\317^\255n<Y}\266\262\272\362\374\371\306#~\353\331\326\346\352\243\325RI\251\030\212\261\366\350\345\263\027\331\215g[?\360k/W7B\233{!\350/\236o\362k\317\036\277\020\314\"\317\277\330\253\341\377\021\360\201\177\006\345\334\220\363\233r\325\222UQ~)\350\005\331$\220\231\357\340\r\354\003\026$K<\211?\332\010\037\032#\333\254`D\257\216\265D\r{\252\250h\363\242\246k\220\216*\033`\212`\226r\202!\3474\255$\362\242P\n\177\274\242\342\231\303\334\333|\036\200\240\202\th0\300\014\021\177\371\222P\200\202\023\370\360|\273\000B\311v\250\212\2711\003S>9\007M\022\265r\305\002\221z\033\226\312\002\270\r\243\257\354\201\030\222\034\237\323\265]\225\027\362y\254\254\201rK5E\354O\222\004\265 \345x\220P0\213(\354\312J\241hJ\262\\\241\321</\021\327\370P\374\351\360\225\221\312\022\204$\021t\262\007\257\030|h{2\371\0160\026\270/C\304\014\234\345\212!\353\272\246\313\300/\323\000\377\211\257\204\021\272\nF`\327J.\304\3066#\362J\215\030`\344K\232`\336]\004D`;\221\317\310[\245#cx>o\251\"1\t\3541L\222\024_`\354\302\"\n\340\247\3003\273\247B\3054\3320\300\363J\231\\\025\336\344L\241v\013\031\246{\030\244\202\262<\021\200]\021c\t\257yV\216\304\032\"X\004c\333\351\3554u\336\316lg\330{a{\201\275\205J\005db\213\205\020_x\010\0052\303S\345a\236\207b\307\336\304\"/\001e\304\320\243h\300\275<Z\025u\007\317\262UB\037r\345\3452_\306_\3112\311\255b\"M\262J\364\006X*\340I\231?f?jZ\315\250\013\264\006P2|\202\017x\312\273x\200\313*8\253V '\032m\320[\002\202\357\360L8\212\246S\213\t\013\241O\225=HX+\313\005A\203b\367\002\245.\314\t\213\225t\205\261\246\222\2510\326T\240\251\035D\255\3004!\306JQ\251(5\374\344\022m\035\337\340\307+\252~t/Gk|\216xvl\267\025\r""\301\007\314\245\002c\027\213\262\270m\200zV\213\324\202\212L[Y\311R+\212\270\r\376\255\252\355~;,\024#]\252ZB)\344\230.\354\362\341n\272\320\236\357.C-d\n\326\370\266A\263JG\3125V7I\357\017\035\332a)t}]\rr\215\212y\322U]\206\006\202S:\242\003]\0054\224dC\254\341\027\242\003\202\206H\252(E>\223\225\243\355v\225\333\253006\212\364\023t<\230\225)\205\262\2008D0\0248j\265\000\006\364P%\322tc\033zSV$\366\251\355\334\214JI1\215\252N+\321\003\306nj\370\327-\3214\031\270B$\246l\200\264\223>\217\3717\213\2748\034\232\251\351\220\t\272X\0258\023\3312\030y\010\r-\331 \177G\312Jo\354\352\320\375Q\241F\217=z\274\247x(M\217\314\016\364,D2\330\256\004_\223\223\201\033\025\240\227B\321H\255v\273V\254\025i\201\275\275\333{\305=V|\177\373=\344V\343K\302\036\n\260U*\310\272f\260\007_R\266\345\017\261\217S\247\372\206\355t31\352\244\232\211\263v\312\316\330\257\234\264\363\310\215\273\327\275\230\227l%\006\354~[FS\26690\346|\347\246\334ts`\310^\264\377\356\256\273\357\374\263\301L PC\332^\261ug\302Ae\304\211\265\320\262`\347\234\2703\355\2547\207\307\234\005Gp\014w\312]q\253^\214\0322\316kw\325Kz\251\346\360\005\333r\2261p\344O\256\356\215zK\376\206_mE\225;~\334O\265\022C\366\035\314u\313]\306\222q\377\353@\254\217\3277\352\325\017\261\346\275\373\037\357\236\352\033j\234\375\302\315\266\022g>\354\330\233N,\244!\221t\256\270)Vn\016\320\"\253\356\230\373\037^\365\037Z\031q\372\2347\356\2467\344\247\217U\306\234\364\307\376S}\027\354\\cd\312Ky\367\375\307\301T\220m&F\260\265\353n\314\235ps\036\250\036q\372\301,\313}\354M{\353\336\273`\260\236l^\232\366\322\264\273\367\316\030\t\342\274\375\016\375\231pN\203\363Y\022\335\224\375\330\231rV\234j\023\334\n\245\270\342\354\270\033n\225\272\365\331[N\312I\267%e9k\020_\316\213\203\377'\232\246\274e\017b\034\266\263\0304\347&!\266l(\002\020\006\235\341\030\277g<4\236?\261\231\343-\255\3040\321\327\246\200\364\000\\:g\277v\262\316+7\355>\362N{\031\357\265\237\3657\203D\260\034\024\352\353uq?I\353-9\353\216\354\336\365\306\274\254\367\243\277W""\2175NM8\353$\326$\250\230aT|\351\256\367\242\342\232[\360^\371i\037\313\2679\363\2037\216\246\214\277\336fV\312\371\336\353\367r~\214\372\314\330\202\r\316\r\332\3436:\\u\027]\303\233\001\363c\301\030\210\222\352\267\366\263\373\353\037\207O\365\rv\314\201\254`\027\3731\335\005W\362\346\374\244?\343\213A\222v\367\326\331\366\222\244\331Uz\324\234\350eA\377k\236\345\257\370\265\240\373\313{\3672v\371\324/B\261'\367\323\315\341\363X#\343lB\310\343\220\240\005\201\200N?\031\232\225`\357\2003\022\211\2459\234t.::\224/\353\276\204\271\334\005\021\314\242\252\220\025\365Xf:\0255\010\241\024c\340^\377\251o\346?^>\325w\313\037m|\365=x\256\354\357\034l\034\200\005)o\322\277\033$\203T[1\343\356Mo\321\333!\253\354\350\352\025\357:Yf3\001\2667\023\234G3\366\215\000\001\210\232\311N\177\210\006\013\347\334\263\340f\336_\366\205fb\016f\222\270\016\r;\324\323\247n\236\251\\\202I\363\002\233\245\352\236\206\350G=`\0234\215tn\340\303.\266n\222\022'\235Q'\335\302+I\262\272\013Vc\350+o\301\023h\356\250\345j8\036\203A\332(F\334uG\335%o\323O\264\265$\311\032\223\356-\357\261?\345\377\226\206\026\200s\312y\014T\\j+\327\3177L8\0330LB\317~?\027@\375n\370\261\210\221G\036\255\220U\235\307-\202\302\001\373\014l5\013X\005\014Hm\243\376\016\205;.\220\365\242#\002\030\360\202\005\2172\035?\343\325 \tb\026\214\371\2227\200\305~Y\2455\360\245\373\032Z\211\231N\0268\330\216\340\031~\312_\364u\030I6xY\037\255/\324\205z\2655\200\325\235]\330\304\224\0073\371T\2455p\325\375.l\275\002\216\336\360\346am\023A\256>\270\237\334\237\335\327\017\2565^\277i\274\371[\343o|\203/6\212JCQ\033j\245Q\371{\343\357\377\363\361\324\251\277\304W\343x\255\306\237\320\353I\374\005\275^\304\327\351\265\036\177M\257\327\361\267\364z\033\3771\376\361Y\214\214\367\020\007\207\355'\3040\027V:\342\234\205x\026\\\031\312v\264B\252H\200;r\t\372x\306\2556G\222\344\273\322\316\0237\335\032\346\274\301\320\334.\273\375\256\300\334U\306\333\360t\177\024r\336\360\r\246d\303\2441\031r\202]\205$\334\342\206Sm\rO\302\266\322\336\252?""\006H\320\031\324(\365\352~\337\376\346\301\351\203\314\301f\343\305Fc\343\257\215\277\376\324\370Ih\010RC*4\n`\303\273\346?}`\013\333~\030\272\353\343\205\326\3605p+\343\375\024\214\006w\352\361\372\327\373\271\203>\206%\264\323\306\3504[o\324O\323\034\367\001T[\020\372\177\006\361\200M\361\371\206\026\3441\014\020;>?\013!\036\200\345\023\004\214\237\253\\t\362\321\204D\303\035L:\033\350\365\211zn?\026\002\260\016\025\030\271\014\3239|\320\242\375\014\3273\000_\035\310\274\034a\027\231\0253]\2119I\362\035X\355\016 r*\"\222\005;\237oh\r_u\357\300\315\316BS&\000\000}\301F`\325\227\353B7\230\243\327\2503\213\n\013\n\232\237\254\264\327\237\215v\334\007\305\263 T\241\331\365!\371\271\312\357d\320\026\263\340a\362\013S\316\277c\217\275\2714\216\010i\224\361\323bP\377\263\r\255a\262\271>\314\017\255\350Ud\030\007\217\272\032n\342d\2615@\356\227\260\205\305^\235G\253\333\370/0\027N\2169\264\356\021g\000\363\207\264\257\000tG\302\240\227E!\315\361\211&\305\031\315\221\361\3068!\362\370\237\020\316\366y/\375\253\300\277\255\372L}\373 y0\013\315\037\277\006@\260\274G\210\217SP\332D\375\351\276\260o\035d\303\021\375\236\344\177\025\254\007\371\372\243\375\241\203\364\301\343\306\306f8d\007sM\006\351\3401\346zw\020;\270HsM\264B\316\177A\021\246\337\243@a\301\237\335iw\235T\203b,\031A\372'\212\204^\253\344!\332m\367C\366\177\276\032\216\212\002\324!\373\337\272\342\300I\227e\016\3374.17v\326\236g\362\271A\301\301\331\306\331\253\230\342\207\000\361\034m!\201\316a\264\245@\2141\212\334(\316\331 \035#\317\026\267g\021\250\304\232\254x\335\211\221\177\017\213q\347& \267;\220%\024\235\005\206b\216\274\263\332\270\302\234c;<I\202\033?\302\357\031\301\255z\2669\371%*U\242\355\006\215m\261\300c\3036\220P<\211 {\314\177\032D\021\311\257\3730h_\2053\016\035:\311\017Qg8\377\272-\002\360\027\234wp\300\344\022\322\021\340>\255G\323\375\276\016=\327\035\264\223\315\303\007E\336\313\340\r\013\025\206\354{\320\370\323\356=dT\247\375{\001\013\032\226\234-\306'\nH\337#\313\350j\252\206\225W""\360\204\357\374(\270\243\335#\004\272p\254\020\211\366\252\233\246\370x\310\276\t\222sn\002\371\013\363\355\220Sk`\320\276H\266x\364\205\304\200Lq\225\262\3060\0166 \236\014\243`\035\306\330b\231\341\032\362\247\020,G\375\005\026_\217$\233\277\341\013\201V\237\303#\227\330D(=\212\260\305\200mf\020\2660\253\357kL\220\376\216\214\223\273\037s\226\240\302\323\310:\254`%x\277\237\354n\252\206\025\n7\221\037\2005\347F\354Z\343\322\267\370\300\226x\313b\201\313\010\r\246\375u_f\346\237m1\204\234eam\206Q7\r-B\004p\216\211y\002Q\333$E\034T\r\323\346-x\214GH\301)/\020:\375\204\243}RGg\240ty\032.@\207\257<6\3334\363e\010\210\333#.\"!\277\305@\177\201\302\320\343#H\3640\367?f\304\030\334g.8\rvo\302\203O\205\336\256{$\341\276\301\242\302\303\221:\334\001i__'\226\3525b%\n\270\3401\223\010\326\236v\274\016\241\330\264\363\243k\222\327\375dC\252\031\255x\211\211f\275yy\222Y\200\3116\031\307\302\313\210I\343\365i:p\240\217\344\310E$I\213Q\374tl']{\257\302\313\316@\033\014\357V\224r\034\355\211\211$d\255\244G\375X\203\271\311\265\306\227\320$\004\005\257\352\213X\357v&\270QO\205qu\233\320\3210\322\357L\265\001\377\225\215\024\021\321\265\300\374v\244\221\024R\3541\241\334c\000BS\223\247\022\232\207d\222\033\177\311R\255#\344-B]\306II\3030\000\363\322\022cN*\314X'\031\023EfIz\220\3745\215?K\323%\300\307r\2242t\321\364\032\006\021G\"\331\221\034M\177\305\353Qhu\276\377?\"\2244\341\014\242/v\270\365k\032\377)\204\3220\231\201{\227\366\315\262c\275,\031\037p~\304!@\034<\327\001u\352\227w\226\201N\243,ZL\2213H2\217>Kj\033a\341\033$\306\177\320\007B\350\177\311\017Gw\276\352}Iy\364\277`\323\265\343{`M\354\270\205\204{\036\201\320\177\32190\013\366\007\316\241J\347Q\354\304\360P\354moG\241X\212\316\263\004v\310\233\373DCk\340<\2244\351\3148\005\227\035lP\330\262E\207\267\355v\311\235Ct\217\220~\207\235\n\336\241\334\273\025\206\364'B\210E,\234`\324\215 *i\261\203:\313aYJ,<\242\376\003Z.:\325\177\\K\213\005l\3371\357Qm\376Le\t\350\235\014\017r\3579\367\200\333t\304~\362\313/\232m\211AB""\314K\376\366\312\233\316\242\207\025\332\317\035'\326\013f\307\221\010\t\377\247\037(\272M\266\023\207f\342\034\323\357\031\226j\323\3415\252\273\014\363\302\223\354\366\241e\327\241v\272}X\336\216\357\326Cv&\235q(+!_:\302\201\031:\241l%\010\024\213\230\223\022\315<\"\230\350\260\364DvC\220~\221\3057w\330It\026\341S\214\356\001B\3015\306\276\242\213\205\363\366\266;\356\276\r\217\343zT\313P\211=\304\274c~\266GU\201\377\277\037F\305d^U\2266#\273\373\342g\262\273\356\214\216.&H\217\177q\341\022\r\215\n]\371\303\300\247\362\2070\223!\270`\367R\315\201vj\303R\307\223\251\304'C\375VWh\364\231`\375\263qX\350\t\213\335\241\370\r\367\227\371\307\020\315(\311yI\307<=\220.\374\226d\301\377i\204d]\210\207\352/G\274?\016=\216\351\033e\267\213\224\245\263[\204C\035\031\262\037\022\220\243q\362T\337\234\227k\334X\002\277\356\357?>\230:8\264\032\272\322\350\272\t\030\260c\366\204-P&\371\337\215\253\304\356\376\340\335~b\237\365\277\017\276\274\244\300\303K\207\367\224'/\316\350\374\370:\335\213\240\177c\210NV\006\375\311`1\260\352\331\017\261\346\203\357iTH_\253\307\275\024m\221N5.\">OyK\376\333@\254'\353\251\346\370\0257\371!\326\032\032n\236;\337d\317\316\335F\327\255\004\370|\342\001*\256\221O\244\213\324E\014 \307\305<\334\357h\032$J\357\322\225Ws\376\333\217\327\350\036\304@\257\273\341M\340\205\306\205\233P\336\233\301\335\372E\250\351 \341\320+v\314L\237`\263\376\225\340:0\243}e\010V^\3560\345\002]\247\020\222\235\371`2\275H\205\020\000\200z\203<I\007\3700\203\245\005\357A\263%v\203\253\207\216\270\032\2357t\241\326 9\366\002\303\274$\273?\036\217\316\303\323tV\225e\347H4j2:B\306\3245\332m4\335\020\335DwMG\227G1\354s9t\276\031{\223\216\035\311p\3170I\320\355a\037\035\250\216\205\207:\351n\330\"\265\2555.\260\213\023\232\363mt.8\216\001\211N\320\322)\322\351\0219\337\035\244\366\367\375'A\372\310\3357\245@d\311O\310\010\303CCJm\327\200\032\002#\3379\r\203!\324\265\374U\312\214\333W\340\261N6\326B\260\364*:\340\236E\202\311\266(`.\211\231;\273\214=\326\320:6u\266{[L\203\237""\377/\216\311@R";
+    PyObject *data = __Pyx_DecompressString(cstring, 4867, 1);
     if (unlikely(!data)) __PYX_ERR(0, 1, __pyx_L1_error)
     const char* const bytes = __Pyx_PyBytes_AsString(data);
     #if !CYTHON_ASSUME_SAFE_MACROS
     if (likely(bytes)); else { Py_DECREF(data); __PYX_ERR(0, 1, __pyx_L1_error) }
     #endif
-    #else /* compression: none (11174 bytes) */
-const char* const bytes = ": Buffer view does not expose stridesCan only create a buffer that is contiguous in memory.Cannot assign to read-only memoryviewCannot create writable memory view from read-only memoryviewCannot index with type 'Cannot transpose memoryview with indirect dimensionsDimension %d is not directEmpty shape tuple for cython.arrayIndirect dimensions not supportedInvalid mode, expected 'c' or 'fortran', got Invalid shape in axis <MemoryView of Note that Cython is deliberately stricter than PEP-484 and rejects subclasses of builtin types. If you need to pass subclasses then set the 'annotation_typing' directive to False.Orientation iteration failed, need better setup.Out of bounds on buffer access (axis Unable to convert item to object.>')?add_notealgorithms.imgcoordalgorithms.lsqadjalgorithms/orientation.pyalgorithms.parametersalgorithms.ray_tracingalgorithms.sortgridalgorithms.tracking_frame_bufalgorithms.trafoalgorithms.vec_utils and  at 0xcollections.abc<contiguous and direct><contiguous and indirect>cython.intdisableenablegc (got got differing extents in dimension isenableditemsize <= 0 for cython.arrayno default __reduce__ due to non-trivial __cinit__np.ndarray object><strided and direct><strided and direct or indirect><strided and indirect>unable to allocate array data.unable to allocate shape and strides.wrong number of cameras in point_positionsASCIICONVERGENCECOORD_UNUSEDEllipsisIDTNPARNUM_ITEROrientParPOS_INFPath__Pyx_PyDict_NextRefSequenceTargetView.MemoryViewabcadded_paralgorithms.orientationallocate_bufferarrayasarrayascontiguousarrayasyncio.coroutinesataatlbaseboolc_calcalcal_incalblock_filenamecalscamccccflag__class____class_getitem__cline_in_tracebackcompute_rotation_matrixcopycorrect_brown_affincoscountcparddangdb_lengthdb_weightdeepcopy__dict__direct1direct2dmdposdtypedtype_is_objectemptyencodeenumerateepserrorexistsext_parexternal_calibrationfilenamefixflagsfloat64formatfortranfull_calibration__func____getstate__glass_paridimg_coordimg_ptsimgcoord__import_""_indexint32int_parinterfflagis_compiled_is_coroutineitemsitemsizek1k1flagk2k2flagk3k3flagkappalinalglsqadj__main__man_ori_filenamematch_detection_to_refmatinvmatmulmemviewmm_mmmmlutmode__module__multi_cam_point_positionsn1n2n3name__name__ndim__new__nfixnormnpnum_camsnum_deriv_exteriornum_targsnumpyobjomegaonesorientp1p1flagp2p2flagpackparameterspathlibphipixpixel_to_metricpnrpoint_positionpoint_position_batchpoint_positionspoppos__pyx_checksum__pyx_state__pyx_type__pyx_unpickle_Enum__pyx_vtable____qualname__raw_orientray_tracing_ray_tracing_coreread_calblockread_man_ori_fixread_text__reduce____reduce_cython____reduce_ex__ref_ptsregisterreturnscalescxscxflag__set_name__setdefault__setstate____setstate_cython__shapesheshearsheflagsigmabetasinsingle_cam_point_positionssizeskew_midpointsortgridsplitsqrtstartstepstopstructtargets__test__tracking_frame_buftrafounit_vectorunpackupdateuseflagvaluesvec_normvec_setvec_utilsvec_xvec_yvec_zvert1vert2vparweighted_dumbbell_precisionxx0xhxhflagyy0yhyhflagz0z_max_layz_min_layzeroszeros_like\200\001\360\"\000\005\014\2101\330\004\022\220!\330\004\n\210!\2102\210V\2201\220D\230\002\230&\240\001\240\021\340\004\010\210\006\210e\2201\220A\330\010\023\2207\230!\2301\330\010\013\2104\210~\230Q\230j\250\n\260$\260a\330\010\013\2101\210C\210r\220\025\220a\330\010\020\220\001\340\010\013\2103\210b\220\002\220#\220Q\330\014\023\2203\220a\220s\230\"\230C\230q\240\001\330\014\023\2202\220W\230E\240\021\240!\330\014\017\210u\220B\220a\330\020\037\230r\240\022\240:\250R\250q\340\020\037\230r\240\022\2405\250\002\250!\340\004\013\2105\220\002\220*\230B\230j\250\002\250,\260c\270\024\270R\270q\200\001\33089\3606\000\005\013\320\n\034\230A\340\004\007\200v\210S\220\001\330\010\020\220\001\340\004\021\220\031\230!\330\010\020\220\001\330\010\017\210u\220E\230\023\230K\240q\330\010\017\210u\220E\230\023\230K\240q\330\010\017\210u\220E\230\023\230K\240q\330\010\017\210u\220E\230\023\230K\240q\330\010\017\210u\220E\230\023\230K\240q\330\010\017\210u""\220E\230\023\230K\240q\330\010\017\210u\220E\230\023\230K\240q\330\010\017\210u\220E\230\023\230K\240q\330\010\020\220\005\220X\230S\240\013\2501\330\010\020\220\005\220X\230S\240\013\2501\330\010\023\2201\360\006\000\005\017\210b\320\020\"\240!\2409\250F\260\"\260A\330\004\020\220\002\220&\230\001\230\025\230b\240\001\340\004\020\220\006\220a\220u\230F\240#\240Q\240j\260\t\270\021\330\027#\2401\340\004\007\200z\220\023\220A\330\010\016\210j\230\001\230\021\340\004\010\210\003\2101\210A\330\004\n\210\"\210F\220\"\220C\220q\330\004\013\2102\210V\2201\220C\220v\230R\230q\340\004\010\210\005\210U\220!\2201\330\010\013\2101\210C\210u\220I\230Q\230b\240\002\240!\330\010\013\2101\210C\210u\220I\230Q\230b\240\002\240\"\240B\240a\330\010\014\210A\210U\220'\230\021\230\"\230A\340\004\013\2105\220\006\220a\200\001\360 \000\005\013\320\n$\240A\340\004\016\210b\320\020\"\240!\2409\250F\260\"\260A\330\004\016\210b\320\020\"\240!\2409\250F\260\"\260A\340\004\014\210A\330\004\010\210\005\210U\220!\2203\220a\220q\330\010\r\210W\220A\220V\2301\230D\240\003\2402\240W\250A\250S\260\004\260B\260g\270Q\270c\300\021\340\004\013\210:\220Q\220e\2306\240\023\240A\240Z\250y\270\001\320\000\025\220Q\340\004\021\220\021\200\001\360$\000\005\013\320\n\035\230Q\340\004\016\210b\320\020\"\240!\2409\250F\260\"\260A\330\004\036\230g\240V\2501\250A\340\004\n\210\"\210F\220\"\220M\240\024\240V\2502\250Q\330\004\n\210\"\210F\220!\220=\240\006\240b\250\001\340\004\n\210$\210a\210q\330\004\t\210\024\210Q\330\004\033\2304\230s\240$\240j\260\001\260\023\260B\260d\270*\300A\300Q\360\014\000\005\t\210\006\210e\2201\220A\330\010\013\2104\210w\220a\220t\2303\230d\240'\250\021\250$\250c\260\021\330\010\r\210Y\220k\240\021\330\014\017\210q\330\014\017\210x\220q\330\014\017\210x\220u\230C\230x\240u\250C\250x\260q\330\014\017\210x\220q\330\014\017\210z\230\030\240\023\240J\250h\260c\270\032\3001\330\014\016\210e\2202\220S\230\001\230\024\230R\230u\240B\240b\250\001\250\021\340\010\013\2103\210a\210v\220Q\220d""\230\"\230A\330\014\021\220\026\220r\230\023\230A\230T\240\022\2406\250\021\250!\330\014\017\210q\220\006\220d\230\"\230B\230b\240\001\340\014\017\210q\220\006\220a\340\004\013\2105\220\001\200\001\360\006\000-.\360\030\000\005*\250\022\320+=\270Q\270i\300v\310R\310q\330\004!\240\032\2506\260\021\260!\330\004\020\220\002\220&\230\002\230)\2404\240v\250R\250q\330\004\020\220\002\220&\230\001\230\031\240&\250\002\250!\330\004\"\240!\330\004 \240\001\360\006\000\005\020\210r\220\026\220r\230\032\2404\240v\250R\250q\330\004\016\210b\220\006\220b\230\n\240$\240f\250B\250a\330\004'\240q\330\004&\240a\330\004\013\2102\210V\2201\220J\230f\240B\240a\330\004\035\230Q\340\004\017\210r\220\026\220q\230\003\2306\240\022\2401\330\004$\240A\360 \000\005\010\200w\210a\210t\2201\330\010\021\220\022\2201\340\010\021\220\021\330\004\033\2306\240\021\330\004\035\230V\2403\240a\240q\330\004\033\2306\240\021\330\004\033\2306\240\022\2401\240A\360\006\000\005\022\220\022\2206\230\022\230:\240S\250\004\250F\260\"\260A\330\004\021\220\022\2206\230\021\230*\240F\250\"\250A\330\004\021\220\022\2206\230\021\230*\240F\250\"\250A\330\004\021\220\022\2206\230\021\230*\240F\250\"\250A\330\004\021\220\022\2206\230\021\230*\240F\250\"\250A\340\004\022\220\"\220F\230!\230:\240V\2502\250Q\330\004\022\220\"\220F\230!\230:\240V\2502\250Q\330\004\022\220\"\220F\230!\230:\240V\2502\250Q\330\004\025\220R\220v\230Q\230j\250\006\250b\260\001\340\004(\250\001\330\004\"\240!\330\004\"\240!\330\004\"\240!\330\004\"\240!\340\004'\240q\330\004'\240q\330\004'\240q\330\004*\250!\340\004\010\210\007\210u\220A\220Q\330\010\016\210d\220!\2201\330\010\013\2107\220!\2205\230\001\330\014\026\220c\230\021\340\014\026\220a\330\010\022\220!\220=\240\007\240x\250q\330\010\021\220\021\220'\230\027\240\010\250\001\330\010\021\220\021\220'\230\027\240\010\250\001\330\010\021\220\021\220'\230\027\240\010\250\001\330\010\021\220\021\220'\230\027\240\010\250\001\340\010\035\230W\240J\250a\330\010\035\230W\240J\250a\330\010\035""\230W\240J\250a\330\010 \240\006\240a\240s\250!\2504\250r\260\023\260A\260T\270\022\2703\270a\270q\340\010\026\220a\220w\230d\240\"\240A\330\010\026\220a\220w\230d\240\"\240A\330\010\026\220a\220w\230d\240\"\240A\340\010\033\2307\240\"\240A\330\010\031\230\021\230(\240.\260\001\260\025\260b\270\t\300\021\300%\300r\310\036\320WX\320X]\320]_\320_h\320hi\320in\320np\320p~\320~\177\360\000\000@\002E\002\360\000\000E\002G\002\360\000\000G\002P\002\360\000\000P\002Q\002\360\000\000Q\002W\002\360\000\000W\002Y\002\360\000\000Y\002Z\002\360N\001\000\005\t\210\005\210U\220!\2201\330\010\014\210G\2205\230\001\230\021\330\014\020\220\n\230!\2303\230e\2401\330\014\020\220\n\230!\2303\230e\2401\330\014\017\210r\220\023\220A\330\020\027\220q\230\007\230q\330\020\021\330\014\023\2201\220G\2301\340\014 \240\t\250\021\250!\330\014\030\230\006\230a\230r\240\022\2402\240R\240r\250\022\2502\250R\250s\260\"\260A\330\014\021\220\022\2202\220Q\330\014\021\220\022\2202\220Q\330\014\021\220\021\220#\220R\220q\340\014\032\230)\2401\240E\250\023\250C\250r\260\023\260B\260i\270q\300\005\300S\310\003\3102\310S\320PR\320R[\320[\\\320\\a\320ad\320dg\320gi\320ij\330\014\032\230)\2401\240E\250\023\250C\250r\260\023\260B\260i\270q\300\005\300S\310\003\3102\310S\320PR\320R[\320[\\\320\\a\320ad\320dg\320gi\320ij\330\014\032\230)\2401\240E\250\023\250C\250r\260\023\260B\260i\270q\300\005\300S\310\003\3102\310S\320PR\320R[\320[\\\320\\a\320ad\320dg\320gi\320ij\340\014\023\220>\240\021\240!\330\014\023\220>\240\021\240!\330\014\023\220>\240\021\240!\340\014\036\230e\2402\240\\\260\022\2605\270\002\270,\300b\310\005\310R\310q\330\014\021\220\021\320\022#\2401\240E\250\022\2501\340\014\023\2209\230A\230U\240\"\240L\260\002\260!\330\014\023\2209\230A\230U\240\"\240L\260\002\260!\330\014\023\2209\230A\230U\240\"\240L\260\002\260!\340\014\020\220\014\230B\230e\2402\240\\\260\022\2605\270\002\270,\300b\310\001\330\014\023\220<\230r\240\025\240b\250\001\330\014\023\220<\230r\240\025\240b\250\001\330\014\023""\220<\230r\240\025\240b\250\001\330\014\026\220f\230A\230U\240\"\240E\250\022\2505\260\002\260%\260r\270\025\270b\300\001\330\014\017\210x\220r\230\021\330\020\030\230\001\330\020\030\230\001\330\020\030\230\001\340\014\020\220\006\220a\220t\2302\230R\230r\240\023\240B\240f\250B\250a\330\014\026\220a\220v\230Q\230d\240\"\240B\240b\250\001\340\014\023\2205\230\002\230\"\230B\230e\2402\240Q\330\014\023\2205\230\002\230\"\230B\230e\2402\240Q\330\014\023\2205\230\002\230\"\230B\230e\2402\240Q\340\014\033\2305\240\002\240%\240r\250\025\250b\260\005\260R\260u\270B\270a\330\014\021\220\026\220r\230\023\230A\230Q\340\014\022\220%\220r\230\025\230b\240\001\330\014\022\220%\220r\230\025\230b\240\001\330\014\022\220%\220r\230\025\230b\240\001\340\014\023\2205\230\002\230%\230r\240\025\240b\250\005\250R\250u\260B\260a\330\014\023\2205\230\002\230%\230r\240\021\330\014\023\2205\230\002\230%\230r\240\021\330\014\023\2205\230\002\230%\230r\240\021\330\014\026\220f\230A\230U\240\"\240E\250\022\2505\260\002\260%\260r\270\025\270b\300\001\330\014\017\210x\220r\230\021\330\020\030\230\001\330\020\030\230\001\330\020\030\230\001\340\014\020\220\006\220a\220t\2302\230U\240\"\240A\330\014\020\220\002\220\"\220H\230B\230a\330\014\026\220a\220v\230Q\230d\240\"\240B\240b\250\001\340\014\024\220E\230\022\2302\230R\230u\240B\240a\330\014\024\220E\230\022\2302\230R\230u\240B\240a\330\014\024\220E\230\022\2302\230R\230u\240B\240a\340\014\027\220q\230\005\230U\240!\330\014\027\220q\230\005\230U\240!\330\014\027\220q\230\005\230U\240!\340\014\026\220a\220u\230E\240\021\330\014\026\220a\220u\230E\240\021\330\014\026\220a\220u\230E\240\021\340\010\017\210q\330\010\031\230\021\330\010\023\2201\330\010\023\2201\330\010\023\2201\340\010\014\210G\2205\230\001\230\021\330\014\017\210w\220a\220u\230C\230q\330\020\021\330\014\020\220\010\230\005\230Q\230d\240\"\240C\240q\330\020\023\2207\230!\2306\240\023\240A\330\024\025\330\020\"\240!\330\020\024\320\024'\240q\330\024\037\230q\240\005\240T\250\033\260A""\260U\270$\270k\310\021\310%\310q\330\024\036\230a\230u\240D\250\n\260!\2605\270\004\270J\300a\300u\310A\330\024\037\230q\240\006\240d\250+\260Q\260f\270D\300\013\3101\310F\320RS\330\024\036\230a\230v\240T\250\032\2601\260F\270$\270j\310\001\310\026\310q\330\024\025\340\020\030\230\001\330\020\034\230K\240q\250\001\330\020\034\230K\240q\250\001\330\020\034\230K\240q\250\001\340\010\013\210?\230#\230Q\330\014\022\220!\2203\220e\2301\330\014\022\220!\2203\220e\2301\330\014\022\220!\2203\220e\2301\330\014\023\2201\220E\230\021\340\014\022\220!\2203\220e\2309\240B\240a\330\014\022\220!\2203\220e\2309\240B\240a\330\014\022\220!\2203\220e\2309\240B\240a\330\014\023\2201\220E\230\025\230b\240\001\340\004\013\210;\220a\200\001\360 \000\005\013\320\n\032\230!\330\004\n\210-\320\027(\250\001\330\004\n\210.\230\005\230U\240(\250!\330\004\n\320\n\033\2309\240M\260\021\340\004\030\230\001\330\004\032\230!\340\004\n\210$\210i\220q\230\001\340\004\016\210e\2202\220R\220r\230\021\340\004\010\210\002\210%\210q\220\001\330\004\010\210\002\210&\220\001\220\021\330\004\010\210\002\210&\220\002\220)\2301\340\004\010\210\005\210U\220!\2201\330\010\021\220\021\220%\220q\340\004\016\210f\220E\320\031*\250!\340\004\020\220\002\220&\230\001\230\021\230#\230Z\240x\250s\260*\270A\330\032\035\230Z\240q\330\004\n\210(\220!\2201\340\004\013\2102\210R\210s\220*\230G\2402\240R\240r\250\023\250J\260a\330\004\013\2102\210R\210s\220*\230G\2402\240R\240r\250\023\250J\260a\330\004\013\2102\210R\210s\220*\230G\2402\240R\240r\250\023\250J\260a\330\004\t\210\033\220A\220R\220v\230Q\230a\230v\240V\2501\340\004\013\2102\210Q\210c\220\022\2203\220j\240\007\240r\250\022\2501\250C\250r\260\023\260J\270a\330\004\013\2102\210Q\210c\220\022\2203\220j\240\007\240r\250\022\2501\250C\250r\260\023\260J\270a\330\004\013\2102\210Q\210c\220\022\2203\220j\240\007\240r\250\022\2501\250C\250r\260\023\260J\270a\330\004\t\210\033\220A\220R\220v\230Q\230a\230v\240V\2501\340\004\t\210\021\330\004\t\210\021\330\004\t\210\021""\340\004\014\210B\210f\220A\220Q\330\010\013\2108\2205\230\003\2308\2405\250\003\2508\2601\330\010\013\210:\220U\230#\230Z\240u\250C\250z\270\021\330\010\013\210:\220U\230#\230Z\240q\330\010\013\210:\220V\2303\230j\250\001\360\006\000\005\020\210s\220*\230A\330\004\017\210s\220*\230A\330\004\017\210s\220*\230A\340\004\030\230\001\330\004\033\2301\360\014\000\005\013\210)\2203\220b\230\004\230F\240\"\240A\330\010\021\220\021\340\010\t\210\026\210q\330\010\t\210\026\210q\330\010\t\210\026\210q\330\010\014\210A\340\010\014\210E\220\025\220a\220q\330\014\017\210s\220!\2202\220U\230#\230Q\330\020\021\340\014\017\210u\220I\230S\240\002\240%\240r\250\022\2503\250c\260\021\330\020\021\330\014\017\210u\220I\230S\240\002\240%\240r\250\022\2503\250c\260\021\330\020\021\330\014\017\210u\220I\230S\240\002\240%\240r\250\022\2503\250c\260\021\330\020\021\340\014\020\220\005\220_\240A\240S\250\001\250\022\2504\250s\260!\2602\260T\270\021\330\014\020\220\005\320\025(\250\001\330\020\024\220A\330\020\023\220:\230U\240#\240Z\250u\260C\260z\300\021\330\020\023\220:\230U\240#\240Z\250q\330\020\023\220:\230V\2403\240j\260\001\360\006\000\r\020\210x\320\027/\250q\330\014\020\220\005\220Y\230a\230r\240\030\250\021\250#\250Q\250e\2605\270\004\270A\340\014\020\220\002\220%\220q\230\003\2302\230S\240\002\240#\240R\240q\340\014\r\210Q\210c\220\025\220c\230\032\2401\330\014\r\210Q\210b\220\002\220#\220U\230\"\230D\240\001\240\023\240J\250a\340\014\r\210Q\210c\220\025\220a\330\014\r\210Q\210b\220\002\220#\220U\230!\340\014\r\210Q\210c\220\025\220c\230\032\2405\250\002\250#\250R\250r\260\022\2601\330\014\r\210Q\210b\220\002\220#\220U\230#\230R\230r\240\022\2401\340\014\r\210Q\210c\220\026\220s\230*\240E\250\022\2503\250b\260\001\260\022\2601\330\014\r\210Q\210b\220\002\220#\220V\2303\230b\240\001\240\022\2401\340\014\r\210Q\210c\220\026\220s\230*\240E\250\022\2503\250b\260\001\260\022\2601\330\014\r\210Q\210b\220\002\220#\220V\2303\230b\240\001\240\022\2401\340\014\r\210Q\210c\220\026\220s\230*""\240E\250\023\250B\250b\260\003\2602\260S\270\002\270\"\270B\270a\330\014\r\210Q\210b\220\002\220#\220V\2302\230R\230s\240\"\240A\340\014\r\210Q\210c\220\026\220r\230\022\2303\230j\250\005\250R\250s\260\"\260A\330\014\r\210Q\210b\220\002\220#\220V\2302\230R\230s\240\"\240C\240r\250\022\2502\250Q\340\014\021\220\023\220J\230d\240\"\240B\240b\250\001\330\014\022\220#\220Z\230t\2402\240Q\240b\250\001\330\014\022\220#\220Z\230t\2402\240Q\240b\250\001\330\014\022\220!\330\014\r\210Q\210c\220\027\230\003\2302\230Q\330\030\032\230#\230Z\240t\2503\250b\260\002\260\"\260B\260b\270\002\270#\270R\270q\330\030\032\230\"\230B\230c\240\032\2504\250r\260\023\260B\260a\330\014\r\210Q\210b\220\002\220#\220V\2301\340\014\r\210Q\210c\220\026\220q\230\002\230$\230a\230s\240*\250F\260\"\260A\330\014\r\210Q\210b\220\002\220#\220V\2301\230B\230d\240!\2403\240j\260\006\260b\270\001\340\014\024\220I\320\035/\250q\260\005\260V\2704\270q\33002\260(\270!\2703\270a\270q\330\014\r\210Q\210c\220\022\2205\230\001\330\014\r\210Q\210b\220\002\220#\220R\220u\230A\360\006\000\r\020\210x\220w\230a\330\014\017\210x\320\027/\250q\330\014\021\220\026\220y\240\001\240\022\2408\2501\250C\250q\260\005\260U\270$\270a\330\014\r\210Q\210c\220\026\220t\2302\230T\240\022\2401\330\014\r\210Q\210b\220\002\220#\220V\2304\230r\240\024\240R\240q\330\014\017\210x\220w\230a\360\006\000\r\023\220!\330\014\017\210z\230\032\2402\240Q\240c\250\022\2504\250r\260\021\330\014\017\210z\230\032\2402\240Q\240c\250\022\2504\250r\260\021\330\014\017\210z\230\032\2402\240Q\240c\250\022\2504\250r\260\021\330\014\021\220\026\220y\240\001\240\022\2408\2501\250C\250q\260\005\260U\270$\270a\330\014\r\210Q\210c\220\027\230\004\230B\230d\240\"\240A\330\014\r\210Q\210b\220\002\220#\220W\230D\240\002\240$\240b\250\001\330\014\022\220!\330\014\017\210z\230\031\240!\330\014\017\210z\230\031\240!\330\014\017\210z\230\031\240!\340\014\022\220!\330\014\017\210z\230\032\2402\240Q\240c\250\022\2504\250r\260\021\330\014\017\210z\230\032\2402\240Q""\240c\250\022\2504\250r\260\021\330\014\017\210z\230\032\2402\240Q\240c\250\022\2504\250r\260\021\330\014\021\220\026\220y\240\001\240\022\2408\2501\250C\250q\260\005\260U\270$\270a\330\014\r\210Q\210c\220\027\230\004\230B\230d\240\"\240A\330\014\r\210Q\210b\220\002\220#\220W\230D\240\002\240$\240b\250\001\330\014\022\220!\330\014\017\210z\230\031\240!\330\014\017\210z\230\031\240!\330\014\017\210z\230\031\240!\340\014\022\220!\330\014\017\210z\230\032\2403\240j\260\007\260r\270\024\270R\270q\330\014\017\210z\230\032\2403\240j\260\007\260r\270\024\270R\270q\330\014\017\210z\230\032\2403\240j\260\007\260r\270\024\270R\270q\330\014\021\220\026\220y\240\001\240\022\2408\2501\250C\250q\260\005\260U\270$\270a\330\014\r\210Q\210c\220\027\230\004\230B\230d\240\"\240A\330\014\r\210Q\210b\220\002\220#\220W\230D\240\002\240$\240b\250\001\330\014\022\220!\330\014\017\210z\230\031\240!\330\014\017\210z\230\031\240!\330\014\017\210z\230\031\240!\340\014\r\210Q\210e\2203\220b\230\001\330\014\r\210Q\210b\220\002\220%\220s\230\"\230A\340\014\021\220\021\340\010\020\220\001\360\006\000\t\r\210E\220\025\220a\220q\330\014\r\210Q\210f\220B\220c\230\022\2302\230U\240!\340\010\t\210\021\210&\220\002\220%\220u\230A\230S\240\002\240#\240X\250Q\330\010\t\210\021\210&\220\002\220%\220u\230A\230S\240\002\240#\240X\250Q\330\010\t\210\021\210&\220\002\220%\220u\230A\230S\240\002\240#\240X\250Q\330\010\t\210\021\210&\220\002\220%\220u\230A\230S\240\002\240#\240Z\250q\330\010\t\210\021\210&\220\002\220%\220u\230A\230S\240\002\240#\240Z\250q\330\010\t\210\021\210&\220\002\220%\220u\230A\230S\240\002\240#\240Z\250q\330\010\t\210\021\210&\220\002\220%\220u\230A\230S\240\002\240#\240Z\250q\330\010\t\210\021\210&\220\002\220%\220u\230A\230S\240\002\240#\240Z\250q\330\010\t\210\021\210&\220\002\220%\220u\230A\230S\240\002\240#\240Z\250q\330\010\t\210\021\210&\220\002\220%\220u\230A\230S\240\002\240#\240Z\250q\340\010\t\210\021\210&\220\002\220%\220u\230E\240\035\250a\330\010\t\210\021\210&\220\002\220%""\220u\230E\240\035\250a\330\010\t\210\021\210&\220\002\220%\220u\230E\240\035\250a\330\010\t\210\021\210&\220\002\220%\220u\230E\240\035\250a\330\010\t\210\021\210&\220\002\220%\220u\230E\240\035\250a\330\010\t\210\021\210&\220\002\220%\220u\230E\240\035\250a\330\010\t\210\021\210&\220\002\220%\220u\230E\240\035\250a\330\010\t\210\021\210&\220\002\220%\220u\230E\240\035\250a\330\010\t\210\021\210&\220\002\220%\220u\230E\240\036\250q\330\010\t\210\021\210&\220\002\220%\220u\230E\240\036\250q\340\010\021\220\021\360\006\000\t\016\210R\210{\230!\2301\230B\230a\330\010\r\210R\210v\220Q\220a\330\010\014\210E\220\025\220a\220q\330\014\020\220\002\220%\220q\230\001\230\021\230!\330\014\016\210a\210u\220B\220b\230\001\230\021\230!\330\014\016\210a\210u\220B\220b\230\001\230\021\230!\340\010\016\210c\220\021\220$\220g\230Q\330\010\016\210f\220A\220U\230!\330\010\016\210c\220\021\220$\220d\230'\240\021\330\010\017\210v\220Q\220e\2305\240\t\250\021\340\010\023\2201\330\010\014\210E\220\025\220a\220q\330\014\017\210s\220!\2204\220q\230\004\230B\230a\330\020\033\2301\340\010\013\2104\210u\220A\330\014\020\220\001\220\025\220a\330\010\013\2104\210u\220A\330\014\020\220\001\220\025\220a\330\010\013\2104\210u\220A\330\014\020\220\001\220\025\220a\330\010\013\2104\210u\220A\330\014\020\220\001\220\025\220a\330\010\013\2104\210u\220A\330\014\020\220\001\220\026\220q\330\010\013\2104\210u\220A\330\014\020\220\001\220\026\220q\330\010\013\2104\210u\220A\330\014\020\220\001\220\026\220q\330\010\013\2104\210u\220A\330\014\020\220\001\220\026\220q\330\010\013\2104\210u\220A\330\014\020\220\001\220\026\220q\330\010\013\2104\210u\220A\330\014\020\220\001\220\026\220q\340\010\013\2108\2207\230$\230a\230q\330\010\013\2108\2207\230$\230a\230q\330\010\013\2108\2207\230$\230a\230q\330\010\013\2108\220:\230T\240\021\240!\330\010\013\2108\2208\2304\230q\240\001\330\010\013\2108\220:\230T\240\021\240!\330\010\013\2108\2207\230$\230a\230q\330\010\013\2108\2207\230$\230a\230q\330\010\013\2108\2207""\230$\230a\230q\330\010\013\210:\220W\230D\240\001\240\021\330\010\013\210:\220W\230D\240\001\240\021\330\010\013\210:\220W\230D\240\001\240\021\330\010\013\210:\220W\230D\240\001\240\021\330\010\013\210:\220W\230D\240\001\240\021\330\010\013\210:\220X\230T\240\021\240!\330\010\013\210:\220X\230T\240\021\240!\340\010\013\2105\220\001\330\014\017\210z\230\032\2402\240Q\240c\250\022\2504\250r\260\024\260Q\260a\330\014\017\210z\230\032\2402\240Q\240c\250\022\2504\250r\260\024\260Q\260a\330\014\017\210z\230\032\2402\240Q\240c\250\022\2504\250r\260\024\260Q\260a\330\014\017\210z\230\032\2402\240Q\240c\250\022\2504\250r\260\024\260Q\260a\330\014\017\210z\230\032\2402\240Q\240c\250\022\2504\250r\260\024\260Q\260a\330\014\017\210z\230\032\2402\240Q\240c\250\022\2504\250r\260\024\260Q\260a\360\006\000\005\021\220\002\220&\230\001\230\021\330\004\r\210R\210{\230$\230b\240\001\330\004\014\210A\210R\210w\220b\230\001\330\004\014\210A\330\004\013\2102\210V\2201\220A\330\004\010\210\005\210U\220!\2201\330\010\014\210A\210U\220%\220q\230\003\2302\230Q\230a\230q\330\010\021\220\024\220Q\220c\230\022\2301\230A\230S\240\002\240$\240a\240q\340\004\r\210Q\210h\220b\230\005\230Q\230f\240C\240v\250R\250q\330\004\010\210\005\210U\220!\2201\330\010\021\220\021\220%\220y\240\001\240\026\240r\250\022\2505\260\001\260\023\260A\260S\270\001\340\004\007\200q\330\010\013\2108\320\023+\2501\330\010\016\210k\230\024\230Y\240a\240s\250!\330\010\016\210k\230\024\230Y\240a\240s\250!\330\010\016\210m\2304\230y\250\001\250\023\250A\330\010\016\210m\2304\230y\250\001\250\023\250A\330\010\016\210i\220t\2309\240A\240S\250\001\330\010\017\210q\340\010\017\210q\200\001\360\034\000\005\013\320\n\032\230!\330\004\n\210-\320\027(\250\001\330\004\n\210.\230\005\230U\240(\250!\340\004\030\230\001\330\004\032\230!\340\004\007\200z\220\026\220q\330\004\007\200z\220\026\220q\330\004\007\200z\220\026\220q\330\004\007\200z\220\026\220q\330\004\007\200z\220\026\220q\330\004\007\200z\220\027\230\001\330\004\007\200z""\220\027\230\001\340\004\030\230\001\330\004\033\2301\360\010\000\005\013\210)\2203\220b\230\004\230F\240\"\240A\330\010\021\220\021\340\010\014\210B\210f\220B\220b\230\002\230&\240\001\330\010\014\210B\210f\220A\220R\220r\230\021\330\010\014\210A\340\010\014\210E\220\025\220a\220q\330\014\020\220\005\220_\240A\240S\250\001\250\022\2504\250s\260!\2602\260T\270\021\340\014\017\210x\320\027/\250q\330\014\020\220\005\220Y\230a\230r\240\030\250\021\250#\250Q\250e\2605\270\004\270A\340\014\024\220I\320\035/\250q\260\005\260V\2704\270q\33002\260(\270!\2703\270a\270q\340\014\r\210Q\210h\220a\330\014\r\210Q\210b\220\002\220(\230!\340\014\r\210Q\210e\2203\220b\230\001\330\014\r\210Q\210b\220\002\220%\220s\230\"\230A\340\014\021\220\021\340\010\016\210c\220\021\220!\2202\220T\230\023\230A\330\010\016\210f\220A\220U\230!\330\010\016\210c\220\021\220!\2202\220T\230\021\230\"\230D\240\003\2401\330\010\017\210v\220Q\220e\2305\240\003\2401\340\010\023\2201\330\010\014\210E\220\025\220a\220q\330\014\017\210s\220!\2204\220q\230\004\230B\230a\330\020\033\2301\340\010\013\2108\2207\230$\230a\230q\330\010\013\2108\2207\230$\230a\230q\330\010\013\2108\2207\230$\230a\230q\330\010\013\2108\220:\230T\240\021\240!\330\010\013\2108\2208\2304\230q\240\001\330\010\013\2108\220:\230T\240\021\240!\340\004\007\200q\330\010\013\2108\320\023+\2501\340\004\013\2104\210q\220\001\200\001\360\006\000\005\013\320\n\032\230!\330\004\013\210>\230\021\230!\200\001\360\032\000\005'\240b\320(:\270!\2709\300F\310\"\310A\330\004\013\2102\210V\2202\220S\230\n\240$\240f\250B\250a\330\004\010\210\001\210\025\210a\330\004\017\210|\320\033/\250q\260\006\260j\300\004\300A\330\004\013\2109\220A\220T\230\031\240!\2401\200\001\360\"\000\005\017\210b\320\020\"\240!\2409\250F\260\"\260A\330\004\033\2307\240&\250\001\250\021\330\004\013\320\013\037\230q\240\t\250\032\2604\260u\270A\200\001\330<=\360\"\000\005\013\320\n\032\230!\340\004\016\210b\320\020\"\240!\2409\250F\260\"\260A\340\004\013\2108\2201\220E\230\026\230s""\240!\240:\250Y\260c\270\021\270!\330\024\031\230\021\200\001\340\013\014\330\r\016\330\013\014\330\r\016\360\006\000\005\020\210r\220\026\220q\230\003\2306\240\022\2401\330\004\033\2301\330\004\033\2301\330\004\033\2301\330\004\033\2301\330\004\013\320\013\036\230a\330\010\n\210!\2104\210r\220\021\220$\220b\230\001\230\021\330\010\n\210!\2104\210r\220\021\220$\220b\230\001\230\021\330\010\n\210!\2104\210r\220\021\220$\220b\230\001\230\021\330\010\n\210!\2104\210r\220\021\220$\220b\230\001\230\021\330\010\t\340\004\013\2106\220\021\200\001\330./\360\036\000\005\010\200s\210!\2106\220\023\220A\330\010\017\320\017)\250\021\250)\2606\270\026\270q\330\t\014\210A\210V\2202\220Q\330\010\017\320\017(\250\001\250\031\260&\270\001\340\010\016\210j\230\001\230\021\200\001\360\030\000\005\013\320\n\032\230!\340\004\017\210t\2201\220A\330\004\007\200t\2108\2207\230!\330\010\017\210q\340\004\r\210X\220Z\230r\240\026\240q\330\004\007\200s\210!\2108\2203\220d\230\"\230C\230r\240\021\330\010\017\210q\340\004\t\210\021\330\004\010\210\005\210U\220!\2201\330\010\t\330\014\016\210g\220Q\220c\230\021\230&\240\001\240\024\240R\240r\250\022\2501\330\020\034\230A\330\014\023\2201\340\004\t\210\032\220>\240\021\240!\330\004\007\200x\210r\220\021\330\010\017\210q\340\004\013\2101\330\004\010\210\005\210U\220!\2201\330\010\016\210b\220\001\220\023\220B\220a\330\010\013\2102\210S\220\006\220a\330\014\020\220\007\220q\230\003\2301\230D\240\005\240Q\340\014\023\2201\340\004\013\2101\200\001\360\034\000\005\013\320\n\032\230!\340\004\007\200x\320\017'\240q\330\004\010\210\005\210Y\220a\220u\230E\240\024\240Q\340\004\r\210R\210v\220Q\220a\330\004\r\210R\210v\220Q\220a\340\004\020\220\001\220\026\220v\230V\2409\250G\2601\340\004\010\210\006\210e\2201\220A\330\010\017\210x\220s\230\"\230G\2401\340\010\017\210w\220a\220s\230*\240I\250Q\250a\330\010\017\210q\220\003\220:\230Y\240a\240u\250E\260\022\2601\340\010\013\2103\210b\220\001\330\014\017\210x\320\027/\250q\340\010\r\210V\2209\230A\230U\240%""\240t\2501\330\010\016\210a\210w\220d\230\"\230D\240\002\240!\330\010\016\210a\210w\220d\230\"\230D\240\002\240!\340\010\017\210q\220\003\220:\230Y\240a\240u\250A\340\004\007\200x\320\017'\240q\330\004\013\2108\2201O";
+    #else /* compression: none (11268 bytes) */
+const char* const bytes = ": Buffer view does not expose stridesCan only create a buffer that is contiguous in memory.Cannot assign to read-only memoryviewCannot create writable memory view from read-only memoryviewCannot index with type 'Cannot transpose memoryview with indirect dimensionsDimension %d is not directEmpty shape tuple for cython.arrayIndirect dimensions not supportedInvalid mode, expected 'c' or 'fortran', got Invalid shape in axis <MemoryView of Note that Cython is deliberately stricter than PEP-484 and rejects subclasses of builtin types. If you need to pass subclasses then set the 'annotation_typing' directive to False.Orientation iteration failed, need better setup.Out of bounds on buffer access (axis Unable to convert item to object.>')?add_note and  at 0xcollections.abc<contiguous and direct><contiguous and indirect>cython.intdisableenablegc (got got differing extents in dimension isenableditemsize <= 0 for cython.arrayno default __reduce__ due to non-trivial __cinit__np.ndarray object>openptv2.algorithms.imgcoordopenptv2.algorithms.lsqadjopenptv2.algorithms.parametersopenptv2.algorithms.ray_tracingopenptv2.algorithms.sortgridopenptv2.algorithms.tracking_frame_bufopenptv2.algorithms.trafoopenptv2.algorithms.vec_utilssrc/openptv2/algorithms/orientation.py<strided and direct><strided and direct or indirect><strided and indirect>unable to allocate array data.unable to allocate shape and strides.wrong number of cameras in point_positionsASCIICONVERGENCECOORD_UNUSEDEllipsisIDTNPARNUM_ITEROrientParPOS_INFPath__Pyx_PyDict_NextRefSequenceTargetView.MemoryViewabcadded_parallocate_bufferarrayasarrayascontiguousarrayasyncio.coroutinesataatlbaseboolc_calcalcal_incalblock_filenamecalscamccccflag__class____class_getitem__cline_in_tracebackcompute_rotation_matrixcopycorrect_brown_affincoscountcparddangdb_lengthdb_weightdeepcopy__dict__direct1direct2dmdposdtypedtype_is_objectemptyencodeenumerateepserrorexistsext_parexternal_calibrationfilenamefixflagsfloat64formatfortranfull_calibration_""_func____getstate__glass_paridimg_coordimg_ptsimgcoord__import__indexint32int_parinterfflagis_compiled_is_coroutineitemsitemsizek1k1flagk2k2flagk3k3flagkappalinalglsqadj__main__man_ori_filenamematch_detection_to_refmatinvmatmulmemviewmm_mmmmlutmode__module__multi_cam_point_positionsn1n2n3name__name__ndim__new__nfixnormnpnum_camsnum_deriv_exteriornum_targsnumpyobjomegaonesopenptv2.algorithms.orientationorientp1p1flagp2p2flagpackparameterspathlibphipixpixel_to_metricpnrpoint_positionpoint_position_batchpoint_positionspoppos__pyx_checksum__pyx_state__pyx_type__pyx_unpickle_Enum__pyx_vtable____qualname__raw_orientray_tracing_ray_tracing_coreread_calblockread_man_ori_fixread_text__reduce____reduce_cython____reduce_ex__ref_ptsregisterreturnscalescxscxflag__set_name__setdefault__setstate____setstate_cython__shapesheshearsheflagsigmabetasinsingle_cam_point_positionssizeskew_midpointsortgridsplitsqrtstartstepstopstructtargets__test__tracking_frame_buftrafounit_vectorunpackupdateuseflagvaluesvec_normvec_setvec_utilsvec_xvec_yvec_zvert1vert2vparweighted_dumbbell_precisionxx0xhxhflagyy0yhyhflagz0z_max_layz_min_layzeroszeros_like\200\001\360\"\000\005\014\2101\330\004\022\220!\330\004\n\210!\2102\210V\2201\220D\230\002\230&\240\001\240\021\340\004\010\210\006\210e\2201\220A\330\010\023\2207\230!\2301\330\010\013\2104\210~\230Q\230j\250\n\260$\260a\330\010\013\2101\210C\210r\220\025\220a\330\010\020\220\001\340\010\013\2103\210b\220\002\220#\220Q\330\014\023\2203\220a\220s\230\"\230C\230q\240\001\330\014\023\2202\220W\230E\240\021\240!\330\014\017\210u\220B\220a\330\020\037\230r\240\022\240:\250R\250q\340\020\037\230r\240\022\2405\250\002\250!\340\004\013\2105\220\002\220*\230B\230j\250\002\250,\260c\270\024\270R\270q\200\001\33089\3606\000\005\013\320\n\034\230A\340\004\007\200v\210S\220\001\330\010\020\220\001\340\004\021\220\031\230!\330\010\020\220\001\330\010\017\210u\220E\230\023\230K\240q\330\010\017\210u\220E\230\023\230K\240q\330\010\017\210u\220E\230\023\230K\240q\330""\010\017\210u\220E\230\023\230K\240q\330\010\017\210u\220E\230\023\230K\240q\330\010\017\210u\220E\230\023\230K\240q\330\010\017\210u\220E\230\023\230K\240q\330\010\017\210u\220E\230\023\230K\240q\330\010\020\220\005\220X\230S\240\013\2501\330\010\020\220\005\220X\230S\240\013\2501\330\010\023\2201\360\006\000\005\017\210b\320\020\"\240!\2409\250F\260\"\260A\330\004\020\220\002\220&\230\001\230\025\230b\240\001\340\004\020\220\006\220a\220u\230F\240#\240Q\240j\260\t\270\021\330\027#\2401\340\004\007\200z\220\023\220A\330\010\016\210j\230\001\230\021\340\004\010\210\003\2101\210A\330\004\n\210\"\210F\220\"\220C\220q\330\004\013\2102\210V\2201\220C\220v\230R\230q\340\004\010\210\005\210U\220!\2201\330\010\013\2101\210C\210u\220I\230Q\230b\240\002\240!\330\010\013\2101\210C\210u\220I\230Q\230b\240\002\240\"\240B\240a\330\010\014\210A\210U\220'\230\021\230\"\230A\340\004\013\2105\220\006\220a\200\001\360 \000\005\013\320\n$\240A\340\004\016\210b\320\020\"\240!\2409\250F\260\"\260A\330\004\016\210b\320\020\"\240!\2409\250F\260\"\260A\340\004\014\210A\330\004\010\210\005\210U\220!\2203\220a\220q\330\010\r\210W\220A\220V\2301\230D\240\003\2402\240W\250A\250S\260\004\260B\260g\270Q\270c\300\021\340\004\013\210:\220Q\220e\2306\240\023\240A\240Z\250y\270\001\320\000\025\220Q\340\004\021\220\021\200\001\360$\000\005\013\320\n\035\230Q\340\004\016\210b\320\020\"\240!\2409\250F\260\"\260A\330\004\036\230g\240V\2501\250A\340\004\n\210\"\210F\220\"\220M\240\024\240V\2502\250Q\330\004\n\210\"\210F\220!\220=\240\006\240b\250\001\340\004\n\210$\210a\210q\330\004\t\210\024\210Q\330\004\033\2304\230s\240$\240j\260\001\260\023\260B\260d\270*\300A\300Q\360\014\000\005\t\210\006\210e\2201\220A\330\010\013\2104\210w\220a\220t\2303\230d\240'\250\021\250$\250c\260\021\330\010\r\210Y\220k\240\021\330\014\017\210q\330\014\017\210x\220q\330\014\017\210x\220u\230C\230x\240u\250C\250x\260q\330\014\017\210x\220q\330\014\017\210z\230\030\240\023\240J\250h\260c\270\032\3001\330\014\016\210e\2202""\220S\230\001\230\024\230R\230u\240B\240b\250\001\250\021\340\010\013\2103\210a\210v\220Q\220d\230\"\230A\330\014\021\220\026\220r\230\023\230A\230T\240\022\2406\250\021\250!\330\014\017\210q\220\006\220d\230\"\230B\230b\240\001\340\014\017\210q\220\006\220a\340\004\013\2105\220\001\200\001\360\006\000-.\360\030\000\005*\250\022\320+=\270Q\270i\300v\310R\310q\330\004!\240\032\2506\260\021\260!\330\004\020\220\002\220&\230\002\230)\2404\240v\250R\250q\330\004\020\220\002\220&\230\001\230\031\240&\250\002\250!\330\004\"\240!\330\004 \240\001\360\006\000\005\020\210r\220\026\220r\230\032\2404\240v\250R\250q\330\004\016\210b\220\006\220b\230\n\240$\240f\250B\250a\330\004'\240q\330\004&\240a\330\004\013\2102\210V\2201\220J\230f\240B\240a\330\004\035\230Q\340\004\017\210r\220\026\220q\230\003\2306\240\022\2401\330\004$\240A\360 \000\005\010\200w\210a\210t\2201\330\010\021\220\022\2201\340\010\021\220\021\330\004\033\2306\240\021\330\004\035\230V\2403\240a\240q\330\004\033\2306\240\021\330\004\033\2306\240\022\2401\240A\360\006\000\005\022\220\022\2206\230\022\230:\240S\250\004\250F\260\"\260A\330\004\021\220\022\2206\230\021\230*\240F\250\"\250A\330\004\021\220\022\2206\230\021\230*\240F\250\"\250A\330\004\021\220\022\2206\230\021\230*\240F\250\"\250A\330\004\021\220\022\2206\230\021\230*\240F\250\"\250A\340\004\022\220\"\220F\230!\230:\240V\2502\250Q\330\004\022\220\"\220F\230!\230:\240V\2502\250Q\330\004\022\220\"\220F\230!\230:\240V\2502\250Q\330\004\025\220R\220v\230Q\230j\250\006\250b\260\001\340\004(\250\001\330\004\"\240!\330\004\"\240!\330\004\"\240!\330\004\"\240!\340\004'\240q\330\004'\240q\330\004'\240q\330\004*\250!\340\004\010\210\007\210u\220A\220Q\330\010\016\210d\220!\2201\330\010\013\2107\220!\2205\230\001\330\014\026\220c\230\021\340\014\026\220a\330\010\022\220!\220=\240\007\240x\250q\330\010\021\220\021\220'\230\027\240\010\250\001\330\010\021\220\021\220'\230\027\240\010\250\001\330\010\021\220\021\220'\230\027\240\010\250\001\330\010\021\220\021\220'""\230\027\240\010\250\001\340\010\035\230W\240J\250a\330\010\035\230W\240J\250a\330\010\035\230W\240J\250a\330\010 \240\006\240a\240s\250!\2504\250r\260\023\260A\260T\270\022\2703\270a\270q\340\010\026\220a\220w\230d\240\"\240A\330\010\026\220a\220w\230d\240\"\240A\330\010\026\220a\220w\230d\240\"\240A\340\010\033\2307\240\"\240A\330\010\031\230\021\230(\240.\260\001\260\025\260b\270\t\300\021\300%\300r\310\036\320WX\320X]\320]_\320_h\320hi\320in\320np\320p~\320~\177\360\000\000@\002E\002\360\000\000E\002G\002\360\000\000G\002P\002\360\000\000P\002Q\002\360\000\000Q\002W\002\360\000\000W\002Y\002\360\000\000Y\002Z\002\360N\001\000\005\t\210\005\210U\220!\2201\330\010\014\210G\2205\230\001\230\021\330\014\020\220\n\230!\2303\230e\2401\330\014\020\220\n\230!\2303\230e\2401\330\014\017\210r\220\023\220A\330\020\027\220q\230\007\230q\330\020\021\330\014\023\2201\220G\2301\340\014 \240\t\250\021\250!\330\014\030\230\006\230a\230r\240\022\2402\240R\240r\250\022\2502\250R\250s\260\"\260A\330\014\021\220\022\2202\220Q\330\014\021\220\022\2202\220Q\330\014\021\220\021\220#\220R\220q\340\014\032\230)\2401\240E\250\023\250C\250r\260\023\260B\260i\270q\300\005\300S\310\003\3102\310S\320PR\320R[\320[\\\320\\a\320ad\320dg\320gi\320ij\330\014\032\230)\2401\240E\250\023\250C\250r\260\023\260B\260i\270q\300\005\300S\310\003\3102\310S\320PR\320R[\320[\\\320\\a\320ad\320dg\320gi\320ij\330\014\032\230)\2401\240E\250\023\250C\250r\260\023\260B\260i\270q\300\005\300S\310\003\3102\310S\320PR\320R[\320[\\\320\\a\320ad\320dg\320gi\320ij\340\014\023\220>\240\021\240!\330\014\023\220>\240\021\240!\330\014\023\220>\240\021\240!\340\014\036\230e\2402\240\\\260\022\2605\270\002\270,\300b\310\005\310R\310q\330\014\021\220\021\320\022#\2401\240E\250\022\2501\340\014\023\2209\230A\230U\240\"\240L\260\002\260!\330\014\023\2209\230A\230U\240\"\240L\260\002\260!\330\014\023\2209\230A\230U\240\"\240L\260\002\260!\340\014\020\220\014\230B\230e\2402\240\\\260\022\2605\270\002\270,\300b\310\001\330\014""\023\220<\230r\240\025\240b\250\001\330\014\023\220<\230r\240\025\240b\250\001\330\014\023\220<\230r\240\025\240b\250\001\330\014\026\220f\230A\230U\240\"\240E\250\022\2505\260\002\260%\260r\270\025\270b\300\001\330\014\017\210x\220r\230\021\330\020\030\230\001\330\020\030\230\001\330\020\030\230\001\340\014\020\220\006\220a\220t\2302\230R\230r\240\023\240B\240f\250B\250a\330\014\026\220a\220v\230Q\230d\240\"\240B\240b\250\001\340\014\023\2205\230\002\230\"\230B\230e\2402\240Q\330\014\023\2205\230\002\230\"\230B\230e\2402\240Q\330\014\023\2205\230\002\230\"\230B\230e\2402\240Q\340\014\033\2305\240\002\240%\240r\250\025\250b\260\005\260R\260u\270B\270a\330\014\021\220\026\220r\230\023\230A\230Q\340\014\022\220%\220r\230\025\230b\240\001\330\014\022\220%\220r\230\025\230b\240\001\330\014\022\220%\220r\230\025\230b\240\001\340\014\023\2205\230\002\230%\230r\240\025\240b\250\005\250R\250u\260B\260a\330\014\023\2205\230\002\230%\230r\240\021\330\014\023\2205\230\002\230%\230r\240\021\330\014\023\2205\230\002\230%\230r\240\021\330\014\026\220f\230A\230U\240\"\240E\250\022\2505\260\002\260%\260r\270\025\270b\300\001\330\014\017\210x\220r\230\021\330\020\030\230\001\330\020\030\230\001\330\020\030\230\001\340\014\020\220\006\220a\220t\2302\230U\240\"\240A\330\014\020\220\002\220\"\220H\230B\230a\330\014\026\220a\220v\230Q\230d\240\"\240B\240b\250\001\340\014\024\220E\230\022\2302\230R\230u\240B\240a\330\014\024\220E\230\022\2302\230R\230u\240B\240a\330\014\024\220E\230\022\2302\230R\230u\240B\240a\340\014\027\220q\230\005\230U\240!\330\014\027\220q\230\005\230U\240!\330\014\027\220q\230\005\230U\240!\340\014\026\220a\220u\230E\240\021\330\014\026\220a\220u\230E\240\021\330\014\026\220a\220u\230E\240\021\340\010\017\210q\330\010\031\230\021\330\010\023\2201\330\010\023\2201\330\010\023\2201\340\010\014\210G\2205\230\001\230\021\330\014\017\210w\220a\220u\230C\230q\330\020\021\330\014\020\220\010\230\005\230Q\230d\240\"\240C\240q\330\020\023\2207\230!\2306\240\023\240A\330""\024\025\330\020\"\240!\330\020\024\320\024'\240q\330\024\037\230q\240\005\240T\250\033\260A\260U\270$\270k\310\021\310%\310q\330\024\036\230a\230u\240D\250\n\260!\2605\270\004\270J\300a\300u\310A\330\024\037\230q\240\006\240d\250+\260Q\260f\270D\300\013\3101\310F\320RS\330\024\036\230a\230v\240T\250\032\2601\260F\270$\270j\310\001\310\026\310q\330\024\025\340\020\030\230\001\330\020\034\230K\240q\250\001\330\020\034\230K\240q\250\001\330\020\034\230K\240q\250\001\340\010\013\210?\230#\230Q\330\014\022\220!\2203\220e\2301\330\014\022\220!\2203\220e\2301\330\014\022\220!\2203\220e\2301\330\014\023\2201\220E\230\021\340\014\022\220!\2203\220e\2309\240B\240a\330\014\022\220!\2203\220e\2309\240B\240a\330\014\022\220!\2203\220e\2309\240B\240a\330\014\023\2201\220E\230\025\230b\240\001\340\004\013\210;\220a\200\001\360 \000\005\013\320\n\032\230!\330\004\n\210-\320\027(\250\001\330\004\n\210.\230\005\230U\240(\250!\330\004\n\320\n\033\2309\240M\260\021\340\004\030\230\001\330\004\032\230!\340\004\n\210$\210i\220q\230\001\340\004\016\210e\2202\220R\220r\230\021\340\004\010\210\002\210%\210q\220\001\330\004\010\210\002\210&\220\001\220\021\330\004\010\210\002\210&\220\002\220)\2301\340\004\010\210\005\210U\220!\2201\330\010\021\220\021\220%\220q\340\004\016\210f\220E\320\031*\250!\340\004\020\220\002\220&\230\001\230\021\230#\230Z\240x\250s\260*\270A\330\032\035\230Z\240q\330\004\n\210(\220!\2201\340\004\013\2102\210R\210s\220*\230G\2402\240R\240r\250\023\250J\260a\330\004\013\2102\210R\210s\220*\230G\2402\240R\240r\250\023\250J\260a\330\004\013\2102\210R\210s\220*\230G\2402\240R\240r\250\023\250J\260a\330\004\t\210\033\220A\220R\220v\230Q\230a\230v\240V\2501\340\004\013\2102\210Q\210c\220\022\2203\220j\240\007\240r\250\022\2501\250C\250r\260\023\260J\270a\330\004\013\2102\210Q\210c\220\022\2203\220j\240\007\240r\250\022\2501\250C\250r\260\023\260J\270a\330\004\013\2102\210Q\210c\220\022\2203\220j\240\007\240r\250\022\2501\250C\250r\260\023\260J\270a\330\004\t\210\033\220A""\220R\220v\230Q\230a\230v\240V\2501\340\004\t\210\021\330\004\t\210\021\330\004\t\210\021\340\004\014\210B\210f\220A\220Q\330\010\013\2108\2205\230\003\2308\2405\250\003\2508\2601\330\010\013\210:\220U\230#\230Z\240u\250C\250z\270\021\330\010\013\210:\220U\230#\230Z\240q\330\010\013\210:\220V\2303\230j\250\001\360\006\000\005\020\210s\220*\230A\330\004\017\210s\220*\230A\330\004\017\210s\220*\230A\340\004\030\230\001\330\004\033\2301\360\014\000\005\013\210)\2203\220b\230\004\230F\240\"\240A\330\010\021\220\021\340\010\t\210\026\210q\330\010\t\210\026\210q\330\010\t\210\026\210q\330\010\014\210A\340\010\014\210E\220\025\220a\220q\330\014\017\210s\220!\2202\220U\230#\230Q\330\020\021\340\014\017\210u\220I\230S\240\002\240%\240r\250\022\2503\250c\260\021\330\020\021\330\014\017\210u\220I\230S\240\002\240%\240r\250\022\2503\250c\260\021\330\020\021\330\014\017\210u\220I\230S\240\002\240%\240r\250\022\2503\250c\260\021\330\020\021\340\014\020\220\005\220_\240A\240S\250\001\250\022\2504\250s\260!\2602\260T\270\021\330\014\020\220\005\320\025(\250\001\330\020\024\220A\330\020\023\220:\230U\240#\240Z\250u\260C\260z\300\021\330\020\023\220:\230U\240#\240Z\250q\330\020\023\220:\230V\2403\240j\260\001\360\006\000\r\020\210x\320\027/\250q\330\014\020\220\005\220Y\230a\230r\240\030\250\021\250#\250Q\250e\2605\270\004\270A\340\014\020\220\002\220%\220q\230\003\2302\230S\240\002\240#\240R\240q\340\014\r\210Q\210c\220\025\220c\230\032\2401\330\014\r\210Q\210b\220\002\220#\220U\230\"\230D\240\001\240\023\240J\250a\340\014\r\210Q\210c\220\025\220a\330\014\r\210Q\210b\220\002\220#\220U\230!\340\014\r\210Q\210c\220\025\220c\230\032\2405\250\002\250#\250R\250r\260\022\2601\330\014\r\210Q\210b\220\002\220#\220U\230#\230R\230r\240\022\2401\340\014\r\210Q\210c\220\026\220s\230*\240E\250\022\2503\250b\260\001\260\022\2601\330\014\r\210Q\210b\220\002\220#\220V\2303\230b\240\001\240\022\2401\340\014\r\210Q\210c\220\026\220s\230*\240E\250\022\2503\250b\260\001\260\022\2601\330\014\r\210Q\210b""\220\002\220#\220V\2303\230b\240\001\240\022\2401\340\014\r\210Q\210c\220\026\220s\230*\240E\250\023\250B\250b\260\003\2602\260S\270\002\270\"\270B\270a\330\014\r\210Q\210b\220\002\220#\220V\2302\230R\230s\240\"\240A\340\014\r\210Q\210c\220\026\220r\230\022\2303\230j\250\005\250R\250s\260\"\260A\330\014\r\210Q\210b\220\002\220#\220V\2302\230R\230s\240\"\240C\240r\250\022\2502\250Q\340\014\021\220\023\220J\230d\240\"\240B\240b\250\001\330\014\022\220#\220Z\230t\2402\240Q\240b\250\001\330\014\022\220#\220Z\230t\2402\240Q\240b\250\001\330\014\022\220!\330\014\r\210Q\210c\220\027\230\003\2302\230Q\330\030\032\230#\230Z\240t\2503\250b\260\002\260\"\260B\260b\270\002\270#\270R\270q\330\030\032\230\"\230B\230c\240\032\2504\250r\260\023\260B\260a\330\014\r\210Q\210b\220\002\220#\220V\2301\340\014\r\210Q\210c\220\026\220q\230\002\230$\230a\230s\240*\250F\260\"\260A\330\014\r\210Q\210b\220\002\220#\220V\2301\230B\230d\240!\2403\240j\260\006\260b\270\001\340\014\024\220I\320\035/\250q\260\005\260V\2704\270q\33002\260(\270!\2703\270a\270q\330\014\r\210Q\210c\220\022\2205\230\001\330\014\r\210Q\210b\220\002\220#\220R\220u\230A\360\006\000\r\020\210x\220w\230a\330\014\017\210x\320\027/\250q\330\014\021\220\026\220y\240\001\240\022\2408\2501\250C\250q\260\005\260U\270$\270a\330\014\r\210Q\210c\220\026\220t\2302\230T\240\022\2401\330\014\r\210Q\210b\220\002\220#\220V\2304\230r\240\024\240R\240q\330\014\017\210x\220w\230a\360\006\000\r\023\220!\330\014\017\210z\230\032\2402\240Q\240c\250\022\2504\250r\260\021\330\014\017\210z\230\032\2402\240Q\240c\250\022\2504\250r\260\021\330\014\017\210z\230\032\2402\240Q\240c\250\022\2504\250r\260\021\330\014\021\220\026\220y\240\001\240\022\2408\2501\250C\250q\260\005\260U\270$\270a\330\014\r\210Q\210c\220\027\230\004\230B\230d\240\"\240A\330\014\r\210Q\210b\220\002\220#\220W\230D\240\002\240$\240b\250\001\330\014\022\220!\330\014\017\210z\230\031\240!\330\014\017\210z\230\031\240!\330\014\017\210z\230\031\240!\340\014\022\220!\330\014\017\210z""\230\032\2402\240Q\240c\250\022\2504\250r\260\021\330\014\017\210z\230\032\2402\240Q\240c\250\022\2504\250r\260\021\330\014\017\210z\230\032\2402\240Q\240c\250\022\2504\250r\260\021\330\014\021\220\026\220y\240\001\240\022\2408\2501\250C\250q\260\005\260U\270$\270a\330\014\r\210Q\210c\220\027\230\004\230B\230d\240\"\240A\330\014\r\210Q\210b\220\002\220#\220W\230D\240\002\240$\240b\250\001\330\014\022\220!\330\014\017\210z\230\031\240!\330\014\017\210z\230\031\240!\330\014\017\210z\230\031\240!\340\014\022\220!\330\014\017\210z\230\032\2403\240j\260\007\260r\270\024\270R\270q\330\014\017\210z\230\032\2403\240j\260\007\260r\270\024\270R\270q\330\014\017\210z\230\032\2403\240j\260\007\260r\270\024\270R\270q\330\014\021\220\026\220y\240\001\240\022\2408\2501\250C\250q\260\005\260U\270$\270a\330\014\r\210Q\210c\220\027\230\004\230B\230d\240\"\240A\330\014\r\210Q\210b\220\002\220#\220W\230D\240\002\240$\240b\250\001\330\014\022\220!\330\014\017\210z\230\031\240!\330\014\017\210z\230\031\240!\330\014\017\210z\230\031\240!\340\014\r\210Q\210e\2203\220b\230\001\330\014\r\210Q\210b\220\002\220%\220s\230\"\230A\340\014\021\220\021\340\010\020\220\001\360\006\000\t\r\210E\220\025\220a\220q\330\014\r\210Q\210f\220B\220c\230\022\2302\230U\240!\340\010\t\210\021\210&\220\002\220%\220u\230A\230S\240\002\240#\240X\250Q\330\010\t\210\021\210&\220\002\220%\220u\230A\230S\240\002\240#\240X\250Q\330\010\t\210\021\210&\220\002\220%\220u\230A\230S\240\002\240#\240X\250Q\330\010\t\210\021\210&\220\002\220%\220u\230A\230S\240\002\240#\240Z\250q\330\010\t\210\021\210&\220\002\220%\220u\230A\230S\240\002\240#\240Z\250q\330\010\t\210\021\210&\220\002\220%\220u\230A\230S\240\002\240#\240Z\250q\330\010\t\210\021\210&\220\002\220%\220u\230A\230S\240\002\240#\240Z\250q\330\010\t\210\021\210&\220\002\220%\220u\230A\230S\240\002\240#\240Z\250q\330\010\t\210\021\210&\220\002\220%\220u\230A\230S\240\002\240#\240Z\250q\330\010\t\210\021\210&\220\002\220%\220u\230A\230S\240\002\240#\240Z\250q\340\010""\t\210\021\210&\220\002\220%\220u\230E\240\035\250a\330\010\t\210\021\210&\220\002\220%\220u\230E\240\035\250a\330\010\t\210\021\210&\220\002\220%\220u\230E\240\035\250a\330\010\t\210\021\210&\220\002\220%\220u\230E\240\035\250a\330\010\t\210\021\210&\220\002\220%\220u\230E\240\035\250a\330\010\t\210\021\210&\220\002\220%\220u\230E\240\035\250a\330\010\t\210\021\210&\220\002\220%\220u\230E\240\035\250a\330\010\t\210\021\210&\220\002\220%\220u\230E\240\035\250a\330\010\t\210\021\210&\220\002\220%\220u\230E\240\036\250q\330\010\t\210\021\210&\220\002\220%\220u\230E\240\036\250q\340\010\021\220\021\360\006\000\t\016\210R\210{\230!\2301\230B\230a\330\010\r\210R\210v\220Q\220a\330\010\014\210E\220\025\220a\220q\330\014\020\220\002\220%\220q\230\001\230\021\230!\330\014\016\210a\210u\220B\220b\230\001\230\021\230!\330\014\016\210a\210u\220B\220b\230\001\230\021\230!\340\010\016\210c\220\021\220$\220g\230Q\330\010\016\210f\220A\220U\230!\330\010\016\210c\220\021\220$\220d\230'\240\021\330\010\017\210v\220Q\220e\2305\240\t\250\021\340\010\023\2201\330\010\014\210E\220\025\220a\220q\330\014\017\210s\220!\2204\220q\230\004\230B\230a\330\020\033\2301\340\010\013\2104\210u\220A\330\014\020\220\001\220\025\220a\330\010\013\2104\210u\220A\330\014\020\220\001\220\025\220a\330\010\013\2104\210u\220A\330\014\020\220\001\220\025\220a\330\010\013\2104\210u\220A\330\014\020\220\001\220\025\220a\330\010\013\2104\210u\220A\330\014\020\220\001\220\026\220q\330\010\013\2104\210u\220A\330\014\020\220\001\220\026\220q\330\010\013\2104\210u\220A\330\014\020\220\001\220\026\220q\330\010\013\2104\210u\220A\330\014\020\220\001\220\026\220q\330\010\013\2104\210u\220A\330\014\020\220\001\220\026\220q\330\010\013\2104\210u\220A\330\014\020\220\001\220\026\220q\340\010\013\2108\2207\230$\230a\230q\330\010\013\2108\2207\230$\230a\230q\330\010\013\2108\2207\230$\230a\230q\330\010\013\2108\220:\230T\240\021\240!\330\010\013\2108\2208\2304\230q\240\001\330\010\013\2108\220:\230T\240\021\240!\330\010""\013\2108\2207\230$\230a\230q\330\010\013\2108\2207\230$\230a\230q\330\010\013\2108\2207\230$\230a\230q\330\010\013\210:\220W\230D\240\001\240\021\330\010\013\210:\220W\230D\240\001\240\021\330\010\013\210:\220W\230D\240\001\240\021\330\010\013\210:\220W\230D\240\001\240\021\330\010\013\210:\220W\230D\240\001\240\021\330\010\013\210:\220X\230T\240\021\240!\330\010\013\210:\220X\230T\240\021\240!\340\010\013\2105\220\001\330\014\017\210z\230\032\2402\240Q\240c\250\022\2504\250r\260\024\260Q\260a\330\014\017\210z\230\032\2402\240Q\240c\250\022\2504\250r\260\024\260Q\260a\330\014\017\210z\230\032\2402\240Q\240c\250\022\2504\250r\260\024\260Q\260a\330\014\017\210z\230\032\2402\240Q\240c\250\022\2504\250r\260\024\260Q\260a\330\014\017\210z\230\032\2402\240Q\240c\250\022\2504\250r\260\024\260Q\260a\330\014\017\210z\230\032\2402\240Q\240c\250\022\2504\250r\260\024\260Q\260a\360\006\000\005\021\220\002\220&\230\001\230\021\330\004\r\210R\210{\230$\230b\240\001\330\004\014\210A\210R\210w\220b\230\001\330\004\014\210A\330\004\013\2102\210V\2201\220A\330\004\010\210\005\210U\220!\2201\330\010\014\210A\210U\220%\220q\230\003\2302\230Q\230a\230q\330\010\021\220\024\220Q\220c\230\022\2301\230A\230S\240\002\240$\240a\240q\340\004\r\210Q\210h\220b\230\005\230Q\230f\240C\240v\250R\250q\330\004\010\210\005\210U\220!\2201\330\010\021\220\021\220%\220y\240\001\240\026\240r\250\022\2505\260\001\260\023\260A\260S\270\001\340\004\007\200q\330\010\013\2108\320\023+\2501\330\010\016\210k\230\024\230Y\240a\240s\250!\330\010\016\210k\230\024\230Y\240a\240s\250!\330\010\016\210m\2304\230y\250\001\250\023\250A\330\010\016\210m\2304\230y\250\001\250\023\250A\330\010\016\210i\220t\2309\240A\240S\250\001\330\010\017\210q\340\010\017\210q\200\001\360\034\000\005\013\320\n\032\230!\330\004\n\210-\320\027(\250\001\330\004\n\210.\230\005\230U\240(\250!\340\004\030\230\001\330\004\032\230!\340\004\007\200z\220\026\220q\330\004\007\200z\220\026\220q\330\004\007\200z\220\026\220q\330\004\007\200z\220""\026\220q\330\004\007\200z\220\026\220q\330\004\007\200z\220\027\230\001\330\004\007\200z\220\027\230\001\340\004\030\230\001\330\004\033\2301\360\010\000\005\013\210)\2203\220b\230\004\230F\240\"\240A\330\010\021\220\021\340\010\014\210B\210f\220B\220b\230\002\230&\240\001\330\010\014\210B\210f\220A\220R\220r\230\021\330\010\014\210A\340\010\014\210E\220\025\220a\220q\330\014\020\220\005\220_\240A\240S\250\001\250\022\2504\250s\260!\2602\260T\270\021\340\014\017\210x\320\027/\250q\330\014\020\220\005\220Y\230a\230r\240\030\250\021\250#\250Q\250e\2605\270\004\270A\340\014\024\220I\320\035/\250q\260\005\260V\2704\270q\33002\260(\270!\2703\270a\270q\340\014\r\210Q\210h\220a\330\014\r\210Q\210b\220\002\220(\230!\340\014\r\210Q\210e\2203\220b\230\001\330\014\r\210Q\210b\220\002\220%\220s\230\"\230A\340\014\021\220\021\340\010\016\210c\220\021\220!\2202\220T\230\023\230A\330\010\016\210f\220A\220U\230!\330\010\016\210c\220\021\220!\2202\220T\230\021\230\"\230D\240\003\2401\330\010\017\210v\220Q\220e\2305\240\003\2401\340\010\023\2201\330\010\014\210E\220\025\220a\220q\330\014\017\210s\220!\2204\220q\230\004\230B\230a\330\020\033\2301\340\010\013\2108\2207\230$\230a\230q\330\010\013\2108\2207\230$\230a\230q\330\010\013\2108\2207\230$\230a\230q\330\010\013\2108\220:\230T\240\021\240!\330\010\013\2108\2208\2304\230q\240\001\330\010\013\2108\220:\230T\240\021\240!\340\004\007\200q\330\010\013\2108\320\023+\2501\340\004\013\2104\210q\220\001\200\001\360\006\000\005\013\320\n\032\230!\330\004\013\210>\230\021\230!\200\001\360\032\000\005'\240b\320(:\270!\2709\300F\310\"\310A\330\004\013\2102\210V\2202\220S\230\n\240$\240f\250B\250a\330\004\010\210\001\210\025\210a\330\004\017\210|\320\033/\250q\260\006\260j\300\004\300A\330\004\013\2109\220A\220T\230\031\240!\2401\200\001\360\"\000\005\017\210b\320\020\"\240!\2409\250F\260\"\260A\330\004\033\2307\240&\250\001\250\021\330\004\013\320\013\037\230q\240\t\250\032\2604\260u\270A\200\001\330<=\360\"\000\005\013\320\n\032\230!\340""\004\016\210b\320\020\"\240!\2409\250F\260\"\260A\340\004\013\2108\2201\220E\230\026\230s\240!\240:\250Y\260c\270\021\270!\330\024\031\230\021\200\001\340\013\014\330\r\016\330\013\014\330\r\016\360\006\000\005\020\210r\220\026\220q\230\003\2306\240\022\2401\330\004\033\2301\330\004\033\2301\330\004\033\2301\330\004\033\2301\330\004\013\320\013\036\230a\330\010\n\210!\2104\210r\220\021\220$\220b\230\001\230\021\330\010\n\210!\2104\210r\220\021\220$\220b\230\001\230\021\330\010\n\210!\2104\210r\220\021\220$\220b\230\001\230\021\330\010\n\210!\2104\210r\220\021\220$\220b\230\001\230\021\330\010\t\340\004\013\2106\220\021\200\001\330./\360\036\000\005\010\200s\210!\2106\220\023\220A\330\010\017\320\017)\250\021\250)\2606\270\026\270q\330\t\014\210A\210V\2202\220Q\330\010\017\320\017(\250\001\250\031\260&\270\001\340\010\016\210j\230\001\230\021\200\001\360\030\000\005\013\320\n\032\230!\340\004\017\210t\2201\220A\330\004\007\200t\2108\2207\230!\330\010\017\210q\340\004\r\210X\220Z\230r\240\026\240q\330\004\007\200s\210!\2108\2203\220d\230\"\230C\230r\240\021\330\010\017\210q\340\004\t\210\021\330\004\010\210\005\210U\220!\2201\330\010\t\330\014\016\210g\220Q\220c\230\021\230&\240\001\240\024\240R\240r\250\022\2501\330\020\034\230A\330\014\023\2201\340\004\t\210\032\220>\240\021\240!\330\004\007\200x\210r\220\021\330\010\017\210q\340\004\013\2101\330\004\010\210\005\210U\220!\2201\330\010\016\210b\220\001\220\023\220B\220a\330\010\013\2102\210S\220\006\220a\330\014\020\220\007\220q\230\003\2301\230D\240\005\240Q\340\014\023\2201\340\004\013\2101\200\001\360\034\000\005\013\320\n\032\230!\340\004\007\200x\320\017'\240q\330\004\010\210\005\210Y\220a\220u\230E\240\024\240Q\340\004\r\210R\210v\220Q\220a\330\004\r\210R\210v\220Q\220a\340\004\020\220\001\220\026\220v\230V\2409\250G\2601\340\004\010\210\006\210e\2201\220A\330\010\017\210x\220s\230\"\230G\2401\340\010\017\210w\220a\220s\230*\240I\250Q\250a\330\010\017\210q\220\003\220:\230Y\240a\240u\250E\260\022\2601\340\010""\013\2103\210b\220\001\330\014\017\210x\320\027/\250q\340\010\r\210V\2209\230A\230U\240%\240t\2501\330\010\016\210a\210w\220d\230\"\230D\240\002\240!\330\010\016\210a\210w\220d\230\"\230D\240\002\240!\340\010\017\210q\220\003\220:\230Y\240a\240u\250A\340\004\007\200x\320\017'\240q\330\004\013\2108\2201O";
     PyObject *data = NULL;
     CYTHON_UNUSED_VAR(__Pyx_DecompressString);
     #endif
@@ -36639,82 +36639,82 @@ static int __Pyx_CreateCodeObjects(__pyx_mstatetype *__pyx_mstate) {
   {
     const __Pyx_PyCode_New_function_description descr = {4, 0, 0, 4, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 90};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_vert1, __pyx_mstate->__pyx_n_u_direct1, __pyx_mstate->__pyx_n_u_vert2, __pyx_mstate->__pyx_n_u_direct2};
-    __pyx_mstate_global->__pyx_codeobj_tab[0] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_orientation_py, __pyx_mstate->__pyx_n_u_skew_midpoint, __pyx_mstate->__pyx_kp_b_iso88591_r_q_6_1_1_1_1_1_a_4r_b_4r_b_4r, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[0])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[0] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_orientat, __pyx_mstate->__pyx_n_u_skew_midpoint, __pyx_mstate->__pyx_kp_b_iso88591_r_q_6_1_1_1_1_1_a_4r_b_4r_b_4r, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[0])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {4, 0, 0, 4, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 113};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_targets, __pyx_mstate->__pyx_n_u_num_cams, __pyx_mstate->__pyx_n_u_mm, __pyx_mstate->__pyx_n_u_cals};
-    __pyx_mstate_global->__pyx_codeobj_tab[1] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_orientation_py, __pyx_mstate->__pyx_n_u_point_position, __pyx_mstate->__pyx_kp_b_iso88591_b_9F_A_2V2S_fBa_a_q_j_A_9AT_1, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[1])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[1] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_orientat, __pyx_mstate->__pyx_n_u_point_position, __pyx_mstate->__pyx_kp_b_iso88591_b_9F_A_2V2S_fBa_a_q_j_A_9AT_1, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[1])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {4, 0, 0, 4, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 133};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_targets, __pyx_mstate->__pyx_n_u_num_cams, __pyx_mstate->__pyx_n_u_mm, __pyx_mstate->__pyx_n_u_cals};
-    __pyx_mstate_global->__pyx_codeobj_tab[2] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_orientation_py, __pyx_mstate->__pyx_n_u_point_position_batch, __pyx_mstate->__pyx_kp_b_iso88591_QivRq_6_4vRq_r_r_4vRq_b_b_fBa_q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[2])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[2] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_orientat, __pyx_mstate->__pyx_n_u_point_position_batch, __pyx_mstate->__pyx_kp_b_iso88591_QivRq_6_4vRq_r_r_4vRq_b_b_fBa_q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[2])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {7, 0, 0, 7, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 392};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_targets, __pyx_mstate->__pyx_n_u_num_targs, __pyx_mstate->__pyx_n_u_num_cams, __pyx_mstate->__pyx_n_u_mm, __pyx_mstate->__pyx_n_u_cals, __pyx_mstate->__pyx_n_u_db_length, __pyx_mstate->__pyx_n_u_db_weight};
-    __pyx_mstate_global->__pyx_codeobj_tab[3] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_orientation_py, __pyx_mstate->__pyx_n_u_weighted_dumbbell_precision, __pyx_mstate->__pyx_kp_b_iso88591_1_2V1D_e1A_7_1_4_Qj_a_1Cr_a_3b, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[3])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[3] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_orientat, __pyx_mstate->__pyx_n_u_weighted_dumbbell_precision, __pyx_mstate->__pyx_kp_b_iso88591_1_2V1D_e1A_7_1_4_Qj_a_1Cr_a_3b, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[3])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {5, 0, 0, 5, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 430};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_cal_2, __pyx_mstate->__pyx_n_u_cpar, __pyx_mstate->__pyx_n_u_dpos, __pyx_mstate->__pyx_n_u_dang, __pyx_mstate->__pyx_n_u_pos};
-    __pyx_mstate_global->__pyx_codeobj_tab[4] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_orientation_py, __pyx_mstate->__pyx_n_u_num_deriv_exterior, __pyx_mstate->__pyx_kp_b_iso88591_x_q_YauE_Q_RvQa_RvQa_vV9G1_e1A, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[4])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[4] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_orientat, __pyx_mstate->__pyx_n_u_num_deriv_exterior, __pyx_mstate->__pyx_kp_b_iso88591_x_q_YauE_Q_RvQa_RvQa_vV9G1_e1A, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[4])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {5, 0, 0, 5, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 473};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_cal_2, __pyx_mstate->__pyx_n_u_cpar, __pyx_mstate->__pyx_n_u_nfix, __pyx_mstate->__pyx_n_u_fix, __pyx_mstate->__pyx_n_u_pix};
-    __pyx_mstate_global->__pyx_codeobj_tab[5] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_orientation_py, __pyx_mstate->__pyx_n_u_raw_orient, __pyx_mstate->__pyx_kp_b_iso88591_U_z_q_z_q_z_q_z_q_z_q_z_z_1_3b, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[5])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[5] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_orientat, __pyx_mstate->__pyx_n_u_raw_orient, __pyx_mstate->__pyx_kp_b_iso88591_U_z_q_z_q_z_q_z_q_z_q_z_z_1_3b, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[5])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {7, 0, 0, 7, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 554};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_cal_in, __pyx_mstate->__pyx_n_u_cpar, __pyx_mstate->__pyx_n_u_nfix, __pyx_mstate->__pyx_n_u_fix, __pyx_mstate->__pyx_n_u_pix, __pyx_mstate->__pyx_n_u_flags, __pyx_mstate->__pyx_n_u_sigmabeta};
-    __pyx_mstate_global->__pyx_codeobj_tab[6] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_orientation_py, __pyx_mstate->__pyx_n_u_orient, __pyx_mstate->__pyx_kp_b_iso88591_U_9M_iq_e2Rr_q_1_U_1_q_fE_Zxs_A, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[6])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[6] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_orientat, __pyx_mstate->__pyx_n_u_orient, __pyx_mstate->__pyx_kp_b_iso88591_U_9M_iq_e2Rr_q_1_U_1_q_fE_Zxs_A, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[6])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {3, 0, 0, 3, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 867};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_calblock_filename, __pyx_mstate->__pyx_n_u_man_ori_filename, __pyx_mstate->__pyx_n_u_cam};
-    __pyx_mstate_global->__pyx_codeobj_tab[7] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_orientation_py, __pyx_mstate->__pyx_n_u_read_man_ori_fix, __pyx_mstate->__pyx_kp_b_iso88591_t1A_t87_q_XZr_q_s_83d_Cr_q_U_1, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[7])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[7] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_orientat, __pyx_mstate->__pyx_n_u_read_man_ori_fix, __pyx_mstate->__pyx_kp_b_iso88591_t1A_t87_q_XZr_q_s_83d_Cr_q_U_1, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[7])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 1, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 911};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_filename};
-    __pyx_mstate_global->__pyx_codeobj_tab[8] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_orientation_py, __pyx_mstate->__pyx_n_u_read_calblock, __pyx_mstate->__pyx_kp_b_iso88591__7, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[8])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[8] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_orientat, __pyx_mstate->__pyx_n_u_read_calblock, __pyx_mstate->__pyx_kp_b_iso88591__7, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[8])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {4, 0, 0, 4, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 918};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_cal_2, __pyx_mstate->__pyx_n_u_ref_pts, __pyx_mstate->__pyx_n_u_img_pts, __pyx_mstate->__pyx_n_u_cpar};
-    __pyx_mstate_global->__pyx_codeobj_tab[9] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_orientation_py, __pyx_mstate->__pyx_n_u_external_calibration, __pyx_mstate->__pyx_kp_b_iso88591_A_b_9F_A_b_9F_A_A_U_3aq_WAV1D_2, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[9])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[9] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_orientat, __pyx_mstate->__pyx_n_u_external_calibration, __pyx_mstate->__pyx_kp_b_iso88591_A_b_9F_A_b_9F_A_A_U_3aq_WAV1D_2, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[9])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {5, 0, 0, 5, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 946};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_cal_2, __pyx_mstate->__pyx_n_u_ref_pts, __pyx_mstate->__pyx_n_u_img_pts, __pyx_mstate->__pyx_n_u_cpar, __pyx_mstate->__pyx_n_u_flags};
-    __pyx_mstate_global->__pyx_codeobj_tab[10] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_orientation_py, __pyx_mstate->__pyx_n_u_full_calibration, __pyx_mstate->__pyx_kp_b_iso88591_896_A_vS_uE_Kq_uE_Kq_uE_Kq_uE_K, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[10])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[10] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_orientat, __pyx_mstate->__pyx_n_u_full_calibration, __pyx_mstate->__pyx_kp_b_iso88591_896_A_vS_uE_Kq_uE_Kq_uE_Kq_uE_K, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[10])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {5, 0, 0, 5, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 1015};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_cal_2, __pyx_mstate->__pyx_n_u_ref_pts, __pyx_mstate->__pyx_n_u_img_pts, __pyx_mstate->__pyx_n_u_cpar, __pyx_mstate->__pyx_n_u_eps};
-    __pyx_mstate_global->__pyx_codeobj_tab[11] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_orientation_py, __pyx_mstate->__pyx_n_u_match_detection_to_ref, __pyx_mstate->__pyx_kp_b_iso88591_b_9F_A_81E_s_Yc, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[11])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[11] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_orientat, __pyx_mstate->__pyx_n_u_match_detection_to_ref, __pyx_mstate->__pyx_kp_b_iso88591_b_9F_A_81E_s_Yc, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[11])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {3, 0, 0, 3, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 1041};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_targets, __pyx_mstate->__pyx_n_u_cpar, __pyx_mstate->__pyx_n_u_cals};
-    __pyx_mstate_global->__pyx_codeobj_tab[12] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_orientation_py, __pyx_mstate->__pyx_n_u_multi_cam_point_positions, __pyx_mstate->__pyx_kp_b_iso88591_b_9F_A_7_q_4uA, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[12])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[12] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_orientat, __pyx_mstate->__pyx_n_u_multi_cam_point_positions, __pyx_mstate->__pyx_kp_b_iso88591_b_9F_A_7_q_4uA, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[12])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {4, 0, 0, 4, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 1064};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_targets, __pyx_mstate->__pyx_n_u_cpar, __pyx_mstate->__pyx_n_u_cals, __pyx_mstate->__pyx_n_u_vpar};
-    __pyx_mstate_global->__pyx_codeobj_tab[13] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_orientation_py, __pyx_mstate->__pyx_n_u_point_positions, __pyx_mstate->__pyx_kp_b_iso88591_s_6_A_6_q_AV2Q_j, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[13])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[13] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_orientat, __pyx_mstate->__pyx_n_u_point_positions, __pyx_mstate->__pyx_kp_b_iso88591_s_6_A_6_q_AV2Q_j, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[13])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {4, 0, 0, 4, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 1088};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_targets, __pyx_mstate->__pyx_n_u_cpar, __pyx_mstate->__pyx_n_u_cals, __pyx_mstate->__pyx_n_u_vpar};
-    __pyx_mstate_global->__pyx_codeobj_tab[14] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_orientation_py, __pyx_mstate->__pyx_n_u_single_cam_point_positions, __pyx_mstate->__pyx_kp_b_iso88591_Q_b_9F_A_gV1A_F_M_V2Q_F_b_aq_Q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[14])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[14] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_orientat, __pyx_mstate->__pyx_n_u_single_cam_point_positions, __pyx_mstate->__pyx_kp_b_iso88591_Q_b_9F_A_gV1A_F_M_V2Q_F_b_aq_Q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[14])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {0, 0, 0, 0, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 1141};
     PyObject* const varnames[] = {0};
-    __pyx_mstate_global->__pyx_codeobj_tab[15] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_orientation_py, __pyx_mstate->__pyx_n_u_is_compiled, __pyx_mstate->__pyx_kp_b_iso88591_Q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[15])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[15] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_orientat, __pyx_mstate->__pyx_n_u_is_compiled, __pyx_mstate->__pyx_kp_b_iso88591_Q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[15])) goto bad;
   }
   Py_DECREF(tuple_dedup_map);
   return 0;

@@ -74,9 +74,13 @@ def run_tracking_preview(main_gui, num_frames: int = 5) -> Dict:
     frames_data = []
     statistics = []
 
+    # Check track_mode from parameters
+    track_mode = params.get("track", {}).get("track_mode", 0)
+
     # Track for the specified number of frames
     for frame_idx in range(num_frames):
-        if not tracker.step_forward():
+        step_success = tracker.step_forward_3d() if track_mode == 1 else tracker.step_forward()
+        if not step_success:
             break  # No more frames to process
 
         # Get current state from the tracker

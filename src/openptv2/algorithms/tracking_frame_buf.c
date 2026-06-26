@@ -3,12 +3,12 @@
 /* BEGIN: Cython Metadata
 {
     "distutils": {
-        "name": "algorithms.tracking_frame_buf",
+        "name": "openptv2.algorithms.tracking_frame_buf",
         "sources": [
-            "algorithms/tracking_frame_buf.py"
+            "src/openptv2/algorithms/tracking_frame_buf.py"
         ]
     },
-    "module_name": "algorithms.tracking_frame_buf"
+    "module_name": "openptv2.algorithms.tracking_frame_buf"
 }
 END: Cython Metadata */
 
@@ -1126,8 +1126,8 @@ static int __Pyx_init_co_variables(void) {
   #endif
 #endif
 
-#define __PYX_HAVE__algorithms__tracking_frame_buf
-#define __PYX_HAVE_API__algorithms__tracking_frame_buf
+#define __PYX_HAVE__openptv2__algorithms__tracking_frame_buf
+#define __PYX_HAVE_API__openptv2__algorithms__tracking_frame_buf
 /* Early includes */
 #ifdef _OPENMP
 #include <omp.h>
@@ -1345,7 +1345,7 @@ static const char *__pyx_filename;
 /* #### Code section: filename_table ### */
 
 static const char* const __pyx_f[] = {
-  "algorithms/tracking_frame_buf.py",
+  "src/openptv2/algorithms/tracking_frame_buf.py",
 };
 /* #### Code section: utility_code_proto_before_types ### */
 /* Atomics.proto (used by UnpackUnboundCMethod) */
@@ -1524,7 +1524,7 @@ static const char* const __pyx_f[] = {
 /*--- Type declarations ---*/
 struct __pyx_defaults;
 
-/* "algorithms/tracking_frame_buf.py":105
+/* "openptv2/algorithms/tracking_frame_buf.py":105
  *                  'linkdecis', 'inlist')
  * 
  *     def __init__(self, x=None, prev=PREV_NONE, next=NEXT_NONE,             # <<<<<<<<<<<<<<
@@ -2747,23 +2747,23 @@ static int __Pyx_State_RemoveModule(void*);
 
 /* Module declarations from "cython" */
 
-/* Module declarations from "algorithms.tracking_frame_buf" */
-static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_compare_targets(PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_targets(PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_targets(PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_compare_corres(PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_compare_path_info(PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_register_link_candidate(PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_reset_links(PyObject *, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+/* Module declarations from "openptv2.algorithms.tracking_frame_buf" */
+static PyObject *__pyx_f_8openptv2_10algorithms_18tracking_frame_buf_compare_targets(PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_18tracking_frame_buf_read_targets(PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_18tracking_frame_buf_write_targets(PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_18tracking_frame_buf_compare_corres(PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_18tracking_frame_buf_compare_path_info(PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_18tracking_frame_buf_register_link_candidate(PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_18tracking_frame_buf_reset_links(PyObject *, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_18tracking_frame_buf_read_path_frame(PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_18tracking_frame_buf_write_path_frame(PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
 /* #### Code section: typeinfo ### */
 /* #### Code section: before_global_var ### */
-#define __Pyx_MODULE_NAME "algorithms.tracking_frame_buf"
-extern int __pyx_module_is_main_algorithms__tracking_frame_buf;
-int __pyx_module_is_main_algorithms__tracking_frame_buf = 0;
+#define __Pyx_MODULE_NAME "openptv2.algorithms.tracking_frame_buf"
+extern int __pyx_module_is_main_openptv2__algorithms__tracking_frame_buf;
+int __pyx_module_is_main_openptv2__algorithms__tracking_frame_buf = 0;
 
-/* Implementation of "algorithms.tracking_frame_buf" */
+/* Implementation of "openptv2.algorithms.tracking_frame_buf" */
 /* #### Code section: global_var ### */
 static PyObject *__pyx_builtin_property;
 static PyObject *__pyx_builtin_open;
@@ -2771,33 +2771,33 @@ static PyObject *__pyx_builtin_enumerate;
 /* #### Code section: string_decls ### */
 static const char __pyx_k_Tracking_frame_buffer_data_struc[] = "Tracking frame buffer data structures and I/O.\n\nTranslation of lib/src/tracking_frame_buf.c and lib/include/tracking_frame_buf.h.\n";
 /* #### Code section: decls ### */
-static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_6Target___init__(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_pnr, PyObject *__pyx_v_x, PyObject *__pyx_v_y, PyObject *__pyx_v_n, PyObject *__pyx_v_nx, PyObject *__pyx_v_ny, PyObject *__pyx_v_sumg, PyObject *__pyx_v_tnr); /* proto */
-static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_compare_targets(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_t1, PyObject *__pyx_v_t2); /* proto */
-static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_2_resolve_file_base(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_file_base, PyObject *__pyx_v_frame_num); /* proto */
-static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_4read_targets(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_file_base, PyObject *__pyx_v_frame_num); /* proto */
-static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_6write_targets(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_tbuf, PyObject *__pyx_v_num_targets, PyObject *__pyx_v_file_base, PyObject *__pyx_v_frame_num); /* proto */
-static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_6Corres___init__(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_nr, PyObject *__pyx_v_p); /* proto */
-static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8compare_corres(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_c1, PyObject *__pyx_v_c2); /* proto */
-static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_22__defaults__(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
-static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8Pathinfo___init__(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_x, PyObject *__pyx_v_prev, PyObject *__pyx_v_next, PyObject *__pyx_v_prio, PyObject *__pyx_v_finaldecis, PyObject *__pyx_v_inlist, PyObject *__pyx_v_decis, PyObject *__pyx_v_linkdecis); /* proto */
-static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_10compare_path_info(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_p1, PyObject *__pyx_v_p2); /* proto */
-static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_12register_link_candidate(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_path, PyObject *__pyx_v_fitness, PyObject *__pyx_v_cand); /* proto */
-static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_14reset_links(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_path); /* proto */
-static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_16read_path_frame(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_corres_file_base, PyObject *__pyx_v_linkage_file_base, PyObject *__pyx_v_prio_file_base, PyObject *__pyx_v_frame_num); /* proto */
-static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_18write_path_frame(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cor_buf, PyObject *__pyx_v_path_buf, PyObject *__pyx_v_num_parts, PyObject *__pyx_v_corres_file_base, PyObject *__pyx_v_linkage_file_base, PyObject *__pyx_v_prio_file_base, PyObject *__pyx_v_frame_num); /* proto */
-static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame___init__(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_num_cams, PyObject *__pyx_v_max_targets); /* proto */
-static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_2_sync_path_to_soa(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_4_sync_soa_to_path(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_6read(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_corres_file_base, PyObject *__pyx_v_linkage_file_base, PyObject *__pyx_v_prio_file_base, PyObject *__pyx_v_target_file_base, PyObject *__pyx_v_frame_num); /* proto */
-static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_8write(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_corres_file_base, PyObject *__pyx_v_linkage_file_base, PyObject *__pyx_v_prio_file_base, PyObject *__pyx_v_target_file_base, PyObject *__pyx_v_frame_num); /* proto */
-static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf___init__(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_buf_len, PyObject *__pyx_v_num_cams, PyObject *__pyx_v_max_targets, PyObject *__pyx_v_corres_file_base, PyObject *__pyx_v_linkage_file_base, PyObject *__pyx_v_prio_file_base, PyObject *__pyx_v_target_file_base); /* proto */
-static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf_2_buf_start(CYTHON_UNUSED PyObject *__pyx_self, CYTHON_UNUSED PyObject *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf_4fb_next(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf_6fb_prev(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf_8read_frame_at_end(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_frame_num, PyObject *__pyx_v_read_links); /* proto */
-static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf_10write_frame_from_start(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_frame_num); /* proto */
-static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_20is_compiled(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
-static PyObject *__pyx_tp_new_10algorithms_18tracking_frame_buf___pyx_defaults(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
+static PyObject *__pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_6Target___init__(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_pnr, PyObject *__pyx_v_x, PyObject *__pyx_v_y, PyObject *__pyx_v_n, PyObject *__pyx_v_nx, PyObject *__pyx_v_ny, PyObject *__pyx_v_sumg, PyObject *__pyx_v_tnr); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_compare_targets(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_t1, PyObject *__pyx_v_t2); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_2_resolve_file_base(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_file_base, PyObject *__pyx_v_frame_num); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_4read_targets(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_file_base, PyObject *__pyx_v_frame_num); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_6write_targets(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_tbuf, PyObject *__pyx_v_num_targets, PyObject *__pyx_v_file_base, PyObject *__pyx_v_frame_num); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_6Corres___init__(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_nr, PyObject *__pyx_v_p); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_8compare_corres(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_c1, PyObject *__pyx_v_c2); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_22__defaults__(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_8Pathinfo___init__(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_x, PyObject *__pyx_v_prev, PyObject *__pyx_v_next, PyObject *__pyx_v_prio, PyObject *__pyx_v_finaldecis, PyObject *__pyx_v_inlist, PyObject *__pyx_v_decis, PyObject *__pyx_v_linkdecis); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_10compare_path_info(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_p1, PyObject *__pyx_v_p2); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_12register_link_candidate(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_path, PyObject *__pyx_v_fitness, PyObject *__pyx_v_cand); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_14reset_links(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_path); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_16read_path_frame(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_corres_file_base, PyObject *__pyx_v_linkage_file_base, PyObject *__pyx_v_prio_file_base, PyObject *__pyx_v_frame_num); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_18write_path_frame(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cor_buf, PyObject *__pyx_v_path_buf, PyObject *__pyx_v_num_parts, PyObject *__pyx_v_corres_file_base, PyObject *__pyx_v_linkage_file_base, PyObject *__pyx_v_prio_file_base, PyObject *__pyx_v_frame_num); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_5Frame___init__(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_num_cams, PyObject *__pyx_v_max_targets); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_5Frame_2_sync_path_to_soa(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_5Frame_4_sync_soa_to_path(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_5Frame_6read(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_corres_file_base, PyObject *__pyx_v_linkage_file_base, PyObject *__pyx_v_prio_file_base, PyObject *__pyx_v_target_file_base, PyObject *__pyx_v_frame_num); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_5Frame_8write(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_corres_file_base, PyObject *__pyx_v_linkage_file_base, PyObject *__pyx_v_prio_file_base, PyObject *__pyx_v_target_file_base, PyObject *__pyx_v_frame_num); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_8FrameBuf___init__(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_buf_len, PyObject *__pyx_v_num_cams, PyObject *__pyx_v_max_targets, PyObject *__pyx_v_corres_file_base, PyObject *__pyx_v_linkage_file_base, PyObject *__pyx_v_prio_file_base, PyObject *__pyx_v_target_file_base); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_8FrameBuf_2_buf_start(CYTHON_UNUSED PyObject *__pyx_self, CYTHON_UNUSED PyObject *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_8FrameBuf_4fb_next(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_8FrameBuf_6fb_prev(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_8FrameBuf_8read_frame_at_end(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_frame_num, PyObject *__pyx_v_read_links); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_8FrameBuf_10write_frame_from_start(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_frame_num); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_20is_compiled(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
+static PyObject *__pyx_tp_new_8openptv2_10algorithms_18tracking_frame_buf___pyx_defaults(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 /* #### Code section: late_includes ### */
 /* #### Code section: module_state ### */
 /* SmallCodeConfig */
@@ -2818,8 +2818,8 @@ typedef struct {
   PyObject *__pyx_empty_tuple;
   PyObject *__pyx_empty_bytes;
   PyObject *__pyx_empty_unicode;
-  PyObject *__pyx_type_10algorithms_18tracking_frame_buf___pyx_defaults;
-  PyTypeObject *__pyx_ptype_10algorithms_18tracking_frame_buf___pyx_defaults;
+  PyObject *__pyx_type_8openptv2_10algorithms_18tracking_frame_buf___pyx_defaults;
+  PyTypeObject *__pyx_ptype_8openptv2_10algorithms_18tracking_frame_buf___pyx_defaults;
   __Pyx_CachedCFunction __pyx_umethod_PyDict_Type_items;
   __Pyx_CachedCFunction __pyx_umethod_PyDict_Type_pop;
   __Pyx_CachedCFunction __pyx_umethod_PyDict_Type_values;
@@ -2880,13 +2880,13 @@ static __pyx_mstatetype * const __pyx_mstate_global = &__pyx_mstate_global_stati
 #define __pyx_kp_u__3 __pyx_string_tab[8]
 #define __pyx_kp_u__4 __pyx_string_tab[9]
 #define __pyx_kp_u__5 __pyx_string_tab[10]
-#define __pyx_kp_u_algorithms_constants __pyx_string_tab[11]
-#define __pyx_kp_u_algorithms_tracking_frame_buf_py __pyx_string_tab[12]
-#define __pyx_kp_u_d __pyx_string_tab[13]
-#define __pyx_kp_u_disable __pyx_string_tab[14]
-#define __pyx_kp_u_enable __pyx_string_tab[15]
-#define __pyx_kp_u_gc __pyx_string_tab[16]
-#define __pyx_kp_u_isenabled __pyx_string_tab[17]
+#define __pyx_kp_u_d __pyx_string_tab[11]
+#define __pyx_kp_u_disable __pyx_string_tab[12]
+#define __pyx_kp_u_enable __pyx_string_tab[13]
+#define __pyx_kp_u_gc __pyx_string_tab[14]
+#define __pyx_kp_u_isenabled __pyx_string_tab[15]
+#define __pyx_kp_u_openptv2_algorithms_constants __pyx_string_tab[16]
+#define __pyx_kp_u_src_openptv2_algorithms_tracking __pyx_string_tab[17]
 #define __pyx_n_u_CORRES_NONE __pyx_string_tab[18]
 #define __pyx_n_u_Corres __pyx_string_tab[19]
 #define __pyx_n_u_Corres___init __pyx_string_tab[20]
@@ -2915,85 +2915,85 @@ static __pyx_mstatetype * const __pyx_mstate_global = &__pyx_mstate_global_stati
 #define __pyx_n_u_Target __pyx_string_tab[43]
 #define __pyx_n_u_Target___init __pyx_string_tab[44]
 #define __pyx_n_u__7 __pyx_string_tab[45]
-#define __pyx_n_u_algorithms_tracking_frame_buf __pyx_string_tab[46]
-#define __pyx_n_u_allclose __pyx_string_tab[47]
-#define __pyx_n_u_append __pyx_string_tab[48]
-#define __pyx_n_u_array __pyx_string_tab[49]
-#define __pyx_n_u_asarray __pyx_string_tab[50]
-#define __pyx_n_u_asyncio_coroutines __pyx_string_tab[51]
-#define __pyx_n_u_bool __pyx_string_tab[52]
-#define __pyx_n_u_buf __pyx_string_tab[53]
-#define __pyx_n_u_buf_len __pyx_string_tab[54]
-#define __pyx_n_u_buf_start __pyx_string_tab[55]
-#define __pyx_n_u_c __pyx_string_tab[56]
-#define __pyx_n_u_c1 __pyx_string_tab[57]
-#define __pyx_n_u_c2 __pyx_string_tab[58]
-#define __pyx_n_u_cam __pyx_string_tab[59]
-#define __pyx_n_u_cand __pyx_string_tab[60]
-#define __pyx_n_u_class_getitem __pyx_string_tab[61]
-#define __pyx_n_u_cline_in_traceback __pyx_string_tab[62]
-#define __pyx_n_u_close __pyx_string_tab[63]
-#define __pyx_n_u_compare_corres __pyx_string_tab[64]
-#define __pyx_n_u_compare_path_info __pyx_string_tab[65]
-#define __pyx_n_u_compare_targets __pyx_string_tab[66]
-#define __pyx_n_u_constants __pyx_string_tab[67]
-#define __pyx_n_u_cor_buf __pyx_string_tab[68]
-#define __pyx_n_u_cor_list __pyx_string_tab[69]
-#define __pyx_n_u_corres_file_base __pyx_string_tab[70]
-#define __pyx_n_u_corres_nr __pyx_string_tab[71]
-#define __pyx_n_u_corres_p __pyx_string_tab[72]
-#define __pyx_n_u_correspond __pyx_string_tab[73]
-#define __pyx_n_u_d_2 __pyx_string_tab[74]
-#define __pyx_n_u_decis __pyx_string_tab[75]
-#define __pyx_n_u_doc __pyx_string_tab[76]
-#define __pyx_n_u_dtype __pyx_string_tab[77]
-#define __pyx_n_u_enter __pyx_string_tab[78]
-#define __pyx_n_u_enumerate __pyx_string_tab[79]
-#define __pyx_n_u_exists __pyx_string_tab[80]
-#define __pyx_n_u_exit __pyx_string_tab[81]
-#define __pyx_n_u_fb_next __pyx_string_tab[82]
-#define __pyx_n_u_fb_prev __pyx_string_tab[83]
-#define __pyx_n_u_file_base __pyx_string_tab[84]
-#define __pyx_n_u_finaldecis __pyx_string_tab[85]
-#define __pyx_n_u_fitness __pyx_string_tab[86]
-#define __pyx_n_u_float64 __pyx_string_tab[87]
-#define __pyx_n_u_fname __pyx_string_tab[88]
-#define __pyx_n_u_frame __pyx_string_tab[89]
-#define __pyx_n_u_frame_num __pyx_string_tab[90]
-#define __pyx_n_u_frames __pyx_string_tab[91]
-#define __pyx_n_u_full __pyx_string_tab[92]
-#define __pyx_n_u_func __pyx_string_tab[93]
-#define __pyx_n_u_i __pyx_string_tab[94]
-#define __pyx_n_u_init __pyx_string_tab[95]
-#define __pyx_n_u_inlist __pyx_string_tab[96]
-#define __pyx_n_u_insert __pyx_string_tab[97]
-#define __pyx_n_u_int32 __pyx_string_tab[98]
-#define __pyx_n_u_is_compiled __pyx_string_tab[99]
-#define __pyx_n_u_is_coroutine __pyx_string_tab[100]
-#define __pyx_n_u_items __pyx_string_tab[101]
-#define __pyx_n_u_j __pyx_string_tab[102]
-#define __pyx_n_u_k __pyx_string_tab[103]
-#define __pyx_n_u_linkage __pyx_string_tab[104]
-#define __pyx_n_u_linkage_file_base __pyx_string_tab[105]
-#define __pyx_n_u_linkdecis __pyx_string_tab[106]
-#define __pyx_n_u_main __pyx_string_tab[107]
-#define __pyx_n_u_max_targets __pyx_string_tab[108]
-#define __pyx_n_u_metaclass __pyx_string_tab[109]
-#define __pyx_n_u_module __pyx_string_tab[110]
-#define __pyx_n_u_n __pyx_string_tab[111]
-#define __pyx_n_u_name __pyx_string_tab[112]
-#define __pyx_n_u_ndarray __pyx_string_tab[113]
-#define __pyx_n_u_next __pyx_string_tab[114]
-#define __pyx_n_u_np __pyx_string_tab[115]
-#define __pyx_n_u_nr __pyx_string_tab[116]
-#define __pyx_n_u_num_cams __pyx_string_tab[117]
-#define __pyx_n_u_num_parts __pyx_string_tab[118]
-#define __pyx_n_u_num_targets __pyx_string_tab[119]
-#define __pyx_n_u_numpy __pyx_string_tab[120]
-#define __pyx_n_u_nx __pyx_string_tab[121]
-#define __pyx_n_u_ny __pyx_string_tab[122]
-#define __pyx_n_u_ok __pyx_string_tab[123]
-#define __pyx_n_u_open __pyx_string_tab[124]
+#define __pyx_n_u_allclose __pyx_string_tab[46]
+#define __pyx_n_u_append __pyx_string_tab[47]
+#define __pyx_n_u_array __pyx_string_tab[48]
+#define __pyx_n_u_asarray __pyx_string_tab[49]
+#define __pyx_n_u_asyncio_coroutines __pyx_string_tab[50]
+#define __pyx_n_u_bool __pyx_string_tab[51]
+#define __pyx_n_u_buf __pyx_string_tab[52]
+#define __pyx_n_u_buf_len __pyx_string_tab[53]
+#define __pyx_n_u_buf_start __pyx_string_tab[54]
+#define __pyx_n_u_c __pyx_string_tab[55]
+#define __pyx_n_u_c1 __pyx_string_tab[56]
+#define __pyx_n_u_c2 __pyx_string_tab[57]
+#define __pyx_n_u_cam __pyx_string_tab[58]
+#define __pyx_n_u_cand __pyx_string_tab[59]
+#define __pyx_n_u_class_getitem __pyx_string_tab[60]
+#define __pyx_n_u_cline_in_traceback __pyx_string_tab[61]
+#define __pyx_n_u_close __pyx_string_tab[62]
+#define __pyx_n_u_compare_corres __pyx_string_tab[63]
+#define __pyx_n_u_compare_path_info __pyx_string_tab[64]
+#define __pyx_n_u_compare_targets __pyx_string_tab[65]
+#define __pyx_n_u_constants __pyx_string_tab[66]
+#define __pyx_n_u_cor_buf __pyx_string_tab[67]
+#define __pyx_n_u_cor_list __pyx_string_tab[68]
+#define __pyx_n_u_corres_file_base __pyx_string_tab[69]
+#define __pyx_n_u_corres_nr __pyx_string_tab[70]
+#define __pyx_n_u_corres_p __pyx_string_tab[71]
+#define __pyx_n_u_correspond __pyx_string_tab[72]
+#define __pyx_n_u_d_2 __pyx_string_tab[73]
+#define __pyx_n_u_decis __pyx_string_tab[74]
+#define __pyx_n_u_doc __pyx_string_tab[75]
+#define __pyx_n_u_dtype __pyx_string_tab[76]
+#define __pyx_n_u_enter __pyx_string_tab[77]
+#define __pyx_n_u_enumerate __pyx_string_tab[78]
+#define __pyx_n_u_exists __pyx_string_tab[79]
+#define __pyx_n_u_exit __pyx_string_tab[80]
+#define __pyx_n_u_fb_next __pyx_string_tab[81]
+#define __pyx_n_u_fb_prev __pyx_string_tab[82]
+#define __pyx_n_u_file_base __pyx_string_tab[83]
+#define __pyx_n_u_finaldecis __pyx_string_tab[84]
+#define __pyx_n_u_fitness __pyx_string_tab[85]
+#define __pyx_n_u_float64 __pyx_string_tab[86]
+#define __pyx_n_u_fname __pyx_string_tab[87]
+#define __pyx_n_u_frame __pyx_string_tab[88]
+#define __pyx_n_u_frame_num __pyx_string_tab[89]
+#define __pyx_n_u_frames __pyx_string_tab[90]
+#define __pyx_n_u_full __pyx_string_tab[91]
+#define __pyx_n_u_func __pyx_string_tab[92]
+#define __pyx_n_u_i __pyx_string_tab[93]
+#define __pyx_n_u_init __pyx_string_tab[94]
+#define __pyx_n_u_inlist __pyx_string_tab[95]
+#define __pyx_n_u_insert __pyx_string_tab[96]
+#define __pyx_n_u_int32 __pyx_string_tab[97]
+#define __pyx_n_u_is_compiled __pyx_string_tab[98]
+#define __pyx_n_u_is_coroutine __pyx_string_tab[99]
+#define __pyx_n_u_items __pyx_string_tab[100]
+#define __pyx_n_u_j __pyx_string_tab[101]
+#define __pyx_n_u_k __pyx_string_tab[102]
+#define __pyx_n_u_linkage __pyx_string_tab[103]
+#define __pyx_n_u_linkage_file_base __pyx_string_tab[104]
+#define __pyx_n_u_linkdecis __pyx_string_tab[105]
+#define __pyx_n_u_main __pyx_string_tab[106]
+#define __pyx_n_u_max_targets __pyx_string_tab[107]
+#define __pyx_n_u_metaclass __pyx_string_tab[108]
+#define __pyx_n_u_module __pyx_string_tab[109]
+#define __pyx_n_u_n __pyx_string_tab[110]
+#define __pyx_n_u_name __pyx_string_tab[111]
+#define __pyx_n_u_ndarray __pyx_string_tab[112]
+#define __pyx_n_u_next __pyx_string_tab[113]
+#define __pyx_n_u_np __pyx_string_tab[114]
+#define __pyx_n_u_nr __pyx_string_tab[115]
+#define __pyx_n_u_num_cams __pyx_string_tab[116]
+#define __pyx_n_u_num_parts __pyx_string_tab[117]
+#define __pyx_n_u_num_targets __pyx_string_tab[118]
+#define __pyx_n_u_numpy __pyx_string_tab[119]
+#define __pyx_n_u_nx __pyx_string_tab[120]
+#define __pyx_n_u_ny __pyx_string_tab[121]
+#define __pyx_n_u_ok __pyx_string_tab[122]
+#define __pyx_n_u_open __pyx_string_tab[123]
+#define __pyx_n_u_openptv2_algorithms_tracking_fra __pyx_string_tab[124]
 #define __pyx_n_u_p __pyx_string_tab[125]
 #define __pyx_n_u_p1 __pyx_string_tab[126]
 #define __pyx_n_u_p2 __pyx_string_tab[127]
@@ -3109,8 +3109,8 @@ static CYTHON_SMALL_CODE int __pyx_m_clear(PyObject *m) {
   #if CYTHON_PEP489_MULTI_PHASE_INIT
   __Pyx_State_RemoveModule(NULL);
   #endif
-  Py_CLEAR(clear_module_state->__pyx_ptype_10algorithms_18tracking_frame_buf___pyx_defaults);
-  Py_CLEAR(clear_module_state->__pyx_type_10algorithms_18tracking_frame_buf___pyx_defaults);
+  Py_CLEAR(clear_module_state->__pyx_ptype_8openptv2_10algorithms_18tracking_frame_buf___pyx_defaults);
+  Py_CLEAR(clear_module_state->__pyx_type_8openptv2_10algorithms_18tracking_frame_buf___pyx_defaults);
   for (int i=0; i<1; ++i) { Py_CLEAR(clear_module_state->__pyx_slice[i]); }
   for (int i=0; i<9; ++i) { Py_CLEAR(clear_module_state->__pyx_tuple[i]); }
   for (int i=0; i<25; ++i) { Py_CLEAR(clear_module_state->__pyx_codeobj_tab[i]); }
@@ -3138,8 +3138,8 @@ static CYTHON_SMALL_CODE int __pyx_m_traverse(PyObject *m, visitproc visit, void
   __Pyx_VISIT_CONST(traverse_module_state->__pyx_empty_tuple);
   __Pyx_VISIT_CONST(traverse_module_state->__pyx_empty_bytes);
   __Pyx_VISIT_CONST(traverse_module_state->__pyx_empty_unicode);
-  Py_VISIT(traverse_module_state->__pyx_ptype_10algorithms_18tracking_frame_buf___pyx_defaults);
-  Py_VISIT(traverse_module_state->__pyx_type_10algorithms_18tracking_frame_buf___pyx_defaults);
+  Py_VISIT(traverse_module_state->__pyx_ptype_8openptv2_10algorithms_18tracking_frame_buf___pyx_defaults);
+  Py_VISIT(traverse_module_state->__pyx_type_8openptv2_10algorithms_18tracking_frame_buf___pyx_defaults);
   for (int i=0; i<1; ++i) { __Pyx_VISIT_CONST(traverse_module_state->__pyx_slice[i]); }
   for (int i=0; i<9; ++i) { __Pyx_VISIT_CONST(traverse_module_state->__pyx_tuple[i]); }
   for (int i=0; i<25; ++i) { __Pyx_VISIT_CONST(traverse_module_state->__pyx_codeobj_tab[i]); }
@@ -3158,7 +3158,7 @@ return 0;
 #endif
 /* #### Code section: module_code ### */
 
-/* "algorithms/tracking_frame_buf.py":17
+/* "openptv2/algorithms/tracking_frame_buf.py":17
  *     __slots__ = ('pnr', 'x', 'y', 'n', 'nx', 'ny', 'sumg', 'tnr')
  * 
  *     def __init__(self, pnr=0, x=0.0, y=0.0, n=0, nx=0, ny=0, sumg=0, tnr=0):             # <<<<<<<<<<<<<<
@@ -3167,15 +3167,15 @@ return 0;
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_18tracking_frame_buf_6Target_1__init__(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_6Target_1__init__(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_10algorithms_18tracking_frame_buf_6Target_1__init__ = {"__init__", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_18tracking_frame_buf_6Target_1__init__, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10algorithms_18tracking_frame_buf_6Target_1__init__(PyObject *__pyx_self, 
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_18tracking_frame_buf_6Target_1__init__ = {"__init__", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_6Target_1__init__, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_6Target_1__init__(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -3336,11 +3336,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.tracking_frame_buf.Target.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.Target.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_18tracking_frame_buf_6Target___init__(__pyx_self, __pyx_v_self, __pyx_v_pnr, __pyx_v_x, __pyx_v_y, __pyx_v_n, __pyx_v_nx, __pyx_v_ny, __pyx_v_sumg, __pyx_v_tnr);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_6Target___init__(__pyx_self, __pyx_v_self, __pyx_v_pnr, __pyx_v_x, __pyx_v_y, __pyx_v_n, __pyx_v_nx, __pyx_v_ny, __pyx_v_sumg, __pyx_v_tnr);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -3350,7 +3350,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_6Target___init__(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_pnr, PyObject *__pyx_v_x, PyObject *__pyx_v_y, PyObject *__pyx_v_n, PyObject *__pyx_v_nx, PyObject *__pyx_v_ny, PyObject *__pyx_v_sumg, PyObject *__pyx_v_tnr) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_6Target___init__(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_pnr, PyObject *__pyx_v_x, PyObject *__pyx_v_y, PyObject *__pyx_v_n, PyObject *__pyx_v_nx, PyObject *__pyx_v_ny, PyObject *__pyx_v_sumg, PyObject *__pyx_v_tnr) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   int __pyx_lineno = 0;
@@ -3358,7 +3358,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_6Target___init__(CYT
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__init__", 0);
 
-  /* "algorithms/tracking_frame_buf.py":18
+  /* "openptv2/algorithms/tracking_frame_buf.py":18
  * 
  *     def __init__(self, pnr=0, x=0.0, y=0.0, n=0, nx=0, ny=0, sumg=0, tnr=0):
  *         self.pnr = pnr             # <<<<<<<<<<<<<<
@@ -3367,7 +3367,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_6Target___init__(CYT
 */
   if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_pnr, __pyx_v_pnr) < (0)) __PYX_ERR(0, 18, __pyx_L1_error)
 
-  /* "algorithms/tracking_frame_buf.py":19
+  /* "openptv2/algorithms/tracking_frame_buf.py":19
  *     def __init__(self, pnr=0, x=0.0, y=0.0, n=0, nx=0, ny=0, sumg=0, tnr=0):
  *         self.pnr = pnr
  *         self.x = x             # <<<<<<<<<<<<<<
@@ -3376,7 +3376,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_6Target___init__(CYT
 */
   if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_x, __pyx_v_x) < (0)) __PYX_ERR(0, 19, __pyx_L1_error)
 
-  /* "algorithms/tracking_frame_buf.py":20
+  /* "openptv2/algorithms/tracking_frame_buf.py":20
  *         self.pnr = pnr
  *         self.x = x
  *         self.y = y             # <<<<<<<<<<<<<<
@@ -3385,7 +3385,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_6Target___init__(CYT
 */
   if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_y, __pyx_v_y) < (0)) __PYX_ERR(0, 20, __pyx_L1_error)
 
-  /* "algorithms/tracking_frame_buf.py":21
+  /* "openptv2/algorithms/tracking_frame_buf.py":21
  *         self.x = x
  *         self.y = y
  *         self.n = n             # <<<<<<<<<<<<<<
@@ -3394,7 +3394,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_6Target___init__(CYT
 */
   if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_n, __pyx_v_n) < (0)) __PYX_ERR(0, 21, __pyx_L1_error)
 
-  /* "algorithms/tracking_frame_buf.py":22
+  /* "openptv2/algorithms/tracking_frame_buf.py":22
  *         self.y = y
  *         self.n = n
  *         self.nx = nx             # <<<<<<<<<<<<<<
@@ -3403,7 +3403,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_6Target___init__(CYT
 */
   if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_nx, __pyx_v_nx) < (0)) __PYX_ERR(0, 22, __pyx_L1_error)
 
-  /* "algorithms/tracking_frame_buf.py":23
+  /* "openptv2/algorithms/tracking_frame_buf.py":23
  *         self.n = n
  *         self.nx = nx
  *         self.ny = ny             # <<<<<<<<<<<<<<
@@ -3412,7 +3412,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_6Target___init__(CYT
 */
   if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_ny, __pyx_v_ny) < (0)) __PYX_ERR(0, 23, __pyx_L1_error)
 
-  /* "algorithms/tracking_frame_buf.py":24
+  /* "openptv2/algorithms/tracking_frame_buf.py":24
  *         self.nx = nx
  *         self.ny = ny
  *         self.sumg = sumg             # <<<<<<<<<<<<<<
@@ -3421,7 +3421,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_6Target___init__(CYT
 */
   if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_sumg, __pyx_v_sumg) < (0)) __PYX_ERR(0, 24, __pyx_L1_error)
 
-  /* "algorithms/tracking_frame_buf.py":25
+  /* "openptv2/algorithms/tracking_frame_buf.py":25
  *         self.ny = ny
  *         self.sumg = sumg
  *         self.tnr = tnr             # <<<<<<<<<<<<<<
@@ -3430,7 +3430,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_6Target___init__(CYT
 */
   if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_tnr, __pyx_v_tnr) < (0)) __PYX_ERR(0, 25, __pyx_L1_error)
 
-  /* "algorithms/tracking_frame_buf.py":17
+  /* "openptv2/algorithms/tracking_frame_buf.py":17
  *     __slots__ = ('pnr', 'x', 'y', 'n', 'nx', 'ny', 'sumg', 'tnr')
  * 
  *     def __init__(self, pnr=0, x=0.0, y=0.0, n=0, nx=0, ny=0, sumg=0, tnr=0):             # <<<<<<<<<<<<<<
@@ -3442,7 +3442,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_6Target___init__(CYT
   __pyx_r = Py_None; __Pyx_INCREF(Py_None);
   goto __pyx_L0;
   __pyx_L1_error:;
-  __Pyx_AddTraceback("algorithms.tracking_frame_buf.Target.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.Target.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -3450,7 +3450,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_6Target___init__(CYT
   return __pyx_r;
 }
 
-/* "algorithms/tracking_frame_buf.py":28
+/* "openptv2/algorithms/tracking_frame_buf.py":28
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -3458,14 +3458,14 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_6Target___init__(CYT
  *     return (t1.pnr == t2.pnr and t1.x == t2.x and t1.y == t2.y and
 */
 
-static PyObject *__pyx_pw_10algorithms_18tracking_frame_buf_1compare_targets(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_1compare_targets(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_compare_targets(PyObject *__pyx_v_t1, PyObject *__pyx_v_t2, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_18tracking_frame_buf_compare_targets(PyObject *__pyx_v_t1, PyObject *__pyx_v_t2, CYTHON_UNUSED int __pyx_skip_dispatch) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -3478,7 +3478,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_compare_targets(PyObj
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("compare_targets", 0);
 
-  /* "algorithms/tracking_frame_buf.py":30
+  /* "openptv2/algorithms/tracking_frame_buf.py":30
  * @cython.ccall
  * def compare_targets(t1, t2):
  *     return (t1.pnr == t2.pnr and t1.x == t2.x and t1.y == t2.y and             # <<<<<<<<<<<<<<
@@ -3535,7 +3535,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_compare_targets(PyObj
     goto __pyx_L3_bool_binop_done;
   }
 
-  /* "algorithms/tracking_frame_buf.py":31
+  /* "openptv2/algorithms/tracking_frame_buf.py":31
  * def compare_targets(t1, t2):
  *     return (t1.pnr == t2.pnr and t1.x == t2.x and t1.y == t2.y and
  *             t1.n == t2.n and t1.nx == t2.nx and t1.ny == t2.ny and             # <<<<<<<<<<<<<<
@@ -3591,7 +3591,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_compare_targets(PyObj
     goto __pyx_L3_bool_binop_done;
   }
 
-  /* "algorithms/tracking_frame_buf.py":32
+  /* "openptv2/algorithms/tracking_frame_buf.py":32
  *     return (t1.pnr == t2.pnr and t1.x == t2.x and t1.y == t2.y and
  *             t1.n == t2.n and t1.nx == t2.nx and t1.ny == t2.ny and
  *             t1.sumg == t2.sumg and t1.tnr == t2.tnr)             # <<<<<<<<<<<<<<
@@ -3629,7 +3629,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_compare_targets(PyObj
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/tracking_frame_buf.py":28
+  /* "openptv2/algorithms/tracking_frame_buf.py":28
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -3643,7 +3643,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_compare_targets(PyObj
   __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_4);
-  __Pyx_AddTraceback("algorithms.tracking_frame_buf.compare_targets", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.compare_targets", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -3652,15 +3652,15 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_compare_targets(PyObj
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_18tracking_frame_buf_1compare_targets(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_1compare_targets(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_10algorithms_18tracking_frame_buf_1compare_targets = {"compare_targets", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_18tracking_frame_buf_1compare_targets, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10algorithms_18tracking_frame_buf_1compare_targets(PyObject *__pyx_self, 
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_18tracking_frame_buf_1compare_targets = {"compare_targets", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_1compare_targets, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_1compare_targets(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -3730,11 +3730,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.tracking_frame_buf.compare_targets", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.compare_targets", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_18tracking_frame_buf_compare_targets(__pyx_self, __pyx_v_t1, __pyx_v_t2);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_compare_targets(__pyx_self, __pyx_v_t1, __pyx_v_t2);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -3744,7 +3744,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_compare_targets(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_t1, PyObject *__pyx_v_t2) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_compare_targets(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_t1, PyObject *__pyx_v_t2) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -3753,7 +3753,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_compare_targets(CYTH
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("compare_targets", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_18tracking_frame_buf_compare_targets(__pyx_v_t1, __pyx_v_t2, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 28, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_18tracking_frame_buf_compare_targets(__pyx_v_t1, __pyx_v_t2, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 28, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -3762,7 +3762,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_compare_targets(CYTH
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.tracking_frame_buf.compare_targets", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.compare_targets", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -3770,7 +3770,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_compare_targets(CYTH
   return __pyx_r;
 }
 
-/* "algorithms/tracking_frame_buf.py":35
+/* "openptv2/algorithms/tracking_frame_buf.py":35
  * 
  * 
  * def _resolve_file_base(file_base, frame_num):             # <<<<<<<<<<<<<<
@@ -3779,15 +3779,15 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_compare_targets(CYTH
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_18tracking_frame_buf_3_resolve_file_base(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_3_resolve_file_base(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_10algorithms_18tracking_frame_buf_3_resolve_file_base = {"_resolve_file_base", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_18tracking_frame_buf_3_resolve_file_base, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10algorithms_18tracking_frame_buf_3_resolve_file_base(PyObject *__pyx_self, 
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_18tracking_frame_buf_3_resolve_file_base = {"_resolve_file_base", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_3_resolve_file_base, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_3_resolve_file_base(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -3857,11 +3857,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.tracking_frame_buf._resolve_file_base", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf._resolve_file_base", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_18tracking_frame_buf_2_resolve_file_base(__pyx_self, __pyx_v_file_base, __pyx_v_frame_num);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_2_resolve_file_base(__pyx_self, __pyx_v_file_base, __pyx_v_frame_num);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -3871,7 +3871,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_2_resolve_file_base(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_file_base, PyObject *__pyx_v_frame_num) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_2_resolve_file_base(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_file_base, PyObject *__pyx_v_frame_num) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   int __pyx_t_1;
@@ -3884,7 +3884,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_2_resolve_file_base(
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("_resolve_file_base", 0);
 
-  /* "algorithms/tracking_frame_buf.py":36
+  /* "openptv2/algorithms/tracking_frame_buf.py":36
  * 
  * def _resolve_file_base(file_base, frame_num):
  *     if '%d' in file_base:             # <<<<<<<<<<<<<<
@@ -3894,7 +3894,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_2_resolve_file_base(
   __pyx_t_1 = (__Pyx_PySequence_ContainsTF(__pyx_mstate_global->__pyx_kp_u_d, __pyx_v_file_base, Py_EQ)); if (unlikely((__pyx_t_1 < 0))) __PYX_ERR(0, 36, __pyx_L1_error)
   if (__pyx_t_1) {
 
-    /* "algorithms/tracking_frame_buf.py":37
+    /* "openptv2/algorithms/tracking_frame_buf.py":37
  * def _resolve_file_base(file_base, frame_num):
  *     if '%d' in file_base:
  *         return (file_base % frame_num) + "_targets"             # <<<<<<<<<<<<<<
@@ -3911,7 +3911,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_2_resolve_file_base(
     __pyx_t_3 = 0;
     goto __pyx_L0;
 
-    /* "algorithms/tracking_frame_buf.py":36
+    /* "openptv2/algorithms/tracking_frame_buf.py":36
  * 
  * def _resolve_file_base(file_base, frame_num):
  *     if '%d' in file_base:             # <<<<<<<<<<<<<<
@@ -3920,7 +3920,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_2_resolve_file_base(
 */
   }
 
-  /* "algorithms/tracking_frame_buf.py":38
+  /* "openptv2/algorithms/tracking_frame_buf.py":38
  *     if '%d' in file_base:
  *         return (file_base % frame_num) + "_targets"
  *     if frame_num > 0:             # <<<<<<<<<<<<<<
@@ -3932,7 +3932,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_2_resolve_file_base(
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   if (__pyx_t_1) {
 
-    /* "algorithms/tracking_frame_buf.py":39
+    /* "openptv2/algorithms/tracking_frame_buf.py":39
  *         return (file_base % frame_num) + "_targets"
  *     if frame_num > 0:
  *         return f"{file_base}{frame_num:04d}_targets"             # <<<<<<<<<<<<<<
@@ -3956,7 +3956,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_2_resolve_file_base(
     __pyx_t_5 = 0;
     goto __pyx_L0;
 
-    /* "algorithms/tracking_frame_buf.py":38
+    /* "openptv2/algorithms/tracking_frame_buf.py":38
  *     if '%d' in file_base:
  *         return (file_base % frame_num) + "_targets"
  *     if frame_num > 0:             # <<<<<<<<<<<<<<
@@ -3965,7 +3965,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_2_resolve_file_base(
 */
   }
 
-  /* "algorithms/tracking_frame_buf.py":40
+  /* "openptv2/algorithms/tracking_frame_buf.py":40
  *     if frame_num > 0:
  *         return f"{file_base}{frame_num:04d}_targets"
  *     return f"{file_base}_targets"             # <<<<<<<<<<<<<<
@@ -3982,7 +3982,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_2_resolve_file_base(
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/tracking_frame_buf.py":35
+  /* "openptv2/algorithms/tracking_frame_buf.py":35
  * 
  * 
  * def _resolve_file_base(file_base, frame_num):             # <<<<<<<<<<<<<<
@@ -3995,7 +3995,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_2_resolve_file_base(
   __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_5);
-  __Pyx_AddTraceback("algorithms.tracking_frame_buf._resolve_file_base", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf._resolve_file_base", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -4003,7 +4003,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_2_resolve_file_base(
   return __pyx_r;
 }
 
-/* "algorithms/tracking_frame_buf.py":43
+/* "openptv2/algorithms/tracking_frame_buf.py":43
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -4011,14 +4011,14 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_2_resolve_file_base(
  *     fname = _resolve_file_base(file_base, frame_num)
 */
 
-static PyObject *__pyx_pw_10algorithms_18tracking_frame_buf_5read_targets(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_5read_targets(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_targets(PyObject *__pyx_v_file_base, PyObject *__pyx_v_frame_num, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_18tracking_frame_buf_read_targets(PyObject *__pyx_v_file_base, PyObject *__pyx_v_frame_num, CYTHON_UNUSED int __pyx_skip_dispatch) {
   PyObject *__pyx_v_fname = NULL;
   PyObject *__pyx_v_f = NULL;
   PyObject *__pyx_v_num_targets = NULL;
@@ -4060,7 +4060,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_targets(PyObject
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("read_targets", 0);
 
-  /* "algorithms/tracking_frame_buf.py":45
+  /* "openptv2/algorithms/tracking_frame_buf.py":45
  * @cython.ccall
  * def read_targets(file_base, frame_num):
  *     fname = _resolve_file_base(file_base, frame_num)             # <<<<<<<<<<<<<<
@@ -4093,7 +4093,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_targets(PyObject
   __pyx_v_fname = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":47
+  /* "openptv2/algorithms/tracking_frame_buf.py":47
  *     fname = _resolve_file_base(file_base, frame_num)
  * 
  *     try:             # <<<<<<<<<<<<<<
@@ -4109,7 +4109,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_targets(PyObject
     __Pyx_XGOTREF(__pyx_t_7);
     /*try:*/ {
 
-      /* "algorithms/tracking_frame_buf.py":48
+      /* "openptv2/algorithms/tracking_frame_buf.py":48
  * 
  *     try:
  *         with open(fname, 'r') as f:             # <<<<<<<<<<<<<<
@@ -4166,7 +4166,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_targets(PyObject
               __pyx_v_f = __pyx_t_9;
               __pyx_t_9 = 0;
 
-              /* "algorithms/tracking_frame_buf.py":49
+              /* "openptv2/algorithms/tracking_frame_buf.py":49
  *     try:
  *         with open(fname, 'r') as f:
  *             num_targets = int(f.readline().strip())             # <<<<<<<<<<<<<<
@@ -4200,7 +4200,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_targets(PyObject
               __pyx_v_num_targets = ((PyObject*)__pyx_t_3);
               __pyx_t_3 = 0;
 
-              /* "algorithms/tracking_frame_buf.py":50
+              /* "openptv2/algorithms/tracking_frame_buf.py":50
  *         with open(fname, 'r') as f:
  *             num_targets = int(f.readline().strip())
  *             targets = []             # <<<<<<<<<<<<<<
@@ -4212,7 +4212,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_targets(PyObject
               __pyx_v_targets = ((PyObject*)__pyx_t_3);
               __pyx_t_3 = 0;
 
-              /* "algorithms/tracking_frame_buf.py":51
+              /* "openptv2/algorithms/tracking_frame_buf.py":51
  *             num_targets = int(f.readline().strip())
  *             targets = []
  *             for _ in range(num_targets):             # <<<<<<<<<<<<<<
@@ -4249,7 +4249,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_targets(PyObject
                 __Pyx_XDECREF_SET(__pyx_v__, ((PyObject*)__pyx_t_3));
                 __pyx_t_3 = 0;
 
-                /* "algorithms/tracking_frame_buf.py":52
+                /* "openptv2/algorithms/tracking_frame_buf.py":52
  *             targets = []
  *             for _ in range(num_targets):
  *                 parts = f.readline().split()             # <<<<<<<<<<<<<<
@@ -4280,7 +4280,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_targets(PyObject
                 __Pyx_XDECREF_SET(__pyx_v_parts, __pyx_t_3);
                 __pyx_t_3 = 0;
 
-                /* "algorithms/tracking_frame_buf.py":53
+                /* "openptv2/algorithms/tracking_frame_buf.py":53
  *             for _ in range(num_targets):
  *                 parts = f.readline().split()
  *                 if len(parts) < 8:             # <<<<<<<<<<<<<<
@@ -4291,7 +4291,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_targets(PyObject
                 __pyx_t_16 = (__pyx_t_15 < 8);
                 if (__pyx_t_16) {
 
-                  /* "algorithms/tracking_frame_buf.py":54
+                  /* "openptv2/algorithms/tracking_frame_buf.py":54
  *                 parts = f.readline().split()
  *                 if len(parts) < 8:
  *                     return []             # <<<<<<<<<<<<<<
@@ -4306,7 +4306,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_targets(PyObject
                   __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
                   goto __pyx_L17_try_return;
 
-                  /* "algorithms/tracking_frame_buf.py":53
+                  /* "openptv2/algorithms/tracking_frame_buf.py":53
  *             for _ in range(num_targets):
  *                 parts = f.readline().split()
  *                 if len(parts) < 8:             # <<<<<<<<<<<<<<
@@ -4315,7 +4315,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_targets(PyObject
 */
                 }
 
-                /* "algorithms/tracking_frame_buf.py":55
+                /* "openptv2/algorithms/tracking_frame_buf.py":55
  *                 if len(parts) < 8:
  *                     return []
  *                 targets.append(Target(             # <<<<<<<<<<<<<<
@@ -4326,7 +4326,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_targets(PyObject
                 __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_mstate_global->__pyx_n_u_Target); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 55, __pyx_L13_error)
                 __Pyx_GOTREF(__pyx_t_1);
 
-                /* "algorithms/tracking_frame_buf.py":56
+                /* "openptv2/algorithms/tracking_frame_buf.py":56
  *                     return []
  *                 targets.append(Target(
  *                     pnr=int(parts[0]),             # <<<<<<<<<<<<<<
@@ -4339,7 +4339,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_targets(PyObject
                 __Pyx_GOTREF(__pyx_t_17);
                 __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
 
-                /* "algorithms/tracking_frame_buf.py":57
+                /* "openptv2/algorithms/tracking_frame_buf.py":57
  *                 targets.append(Target(
  *                     pnr=int(parts[0]),
  *                     x=float(parts[1]),             # <<<<<<<<<<<<<<
@@ -4352,7 +4352,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_targets(PyObject
                 __Pyx_GOTREF(__pyx_t_18);
                 __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
 
-                /* "algorithms/tracking_frame_buf.py":58
+                /* "openptv2/algorithms/tracking_frame_buf.py":58
  *                     pnr=int(parts[0]),
  *                     x=float(parts[1]),
  *                     y=float(parts[2]),             # <<<<<<<<<<<<<<
@@ -4365,7 +4365,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_targets(PyObject
                 __Pyx_GOTREF(__pyx_t_19);
                 __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
 
-                /* "algorithms/tracking_frame_buf.py":59
+                /* "openptv2/algorithms/tracking_frame_buf.py":59
  *                     x=float(parts[1]),
  *                     y=float(parts[2]),
  *                     n=int(parts[3]),             # <<<<<<<<<<<<<<
@@ -4378,7 +4378,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_targets(PyObject
                 __Pyx_GOTREF(__pyx_t_20);
                 __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
 
-                /* "algorithms/tracking_frame_buf.py":60
+                /* "openptv2/algorithms/tracking_frame_buf.py":60
  *                     y=float(parts[2]),
  *                     n=int(parts[3]),
  *                     nx=int(parts[4]),             # <<<<<<<<<<<<<<
@@ -4391,7 +4391,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_targets(PyObject
                 __Pyx_GOTREF(__pyx_t_21);
                 __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
 
-                /* "algorithms/tracking_frame_buf.py":61
+                /* "openptv2/algorithms/tracking_frame_buf.py":61
  *                     n=int(parts[3]),
  *                     nx=int(parts[4]),
  *                     ny=int(parts[5]),             # <<<<<<<<<<<<<<
@@ -4404,7 +4404,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_targets(PyObject
                 __Pyx_GOTREF(__pyx_t_22);
                 __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
 
-                /* "algorithms/tracking_frame_buf.py":62
+                /* "openptv2/algorithms/tracking_frame_buf.py":62
  *                     nx=int(parts[4]),
  *                     ny=int(parts[5]),
  *                     sumg=int(parts[6]),             # <<<<<<<<<<<<<<
@@ -4417,7 +4417,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_targets(PyObject
                 __Pyx_GOTREF(__pyx_t_23);
                 __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
 
-                /* "algorithms/tracking_frame_buf.py":63
+                /* "openptv2/algorithms/tracking_frame_buf.py":63
  *                     ny=int(parts[5]),
  *                     sumg=int(parts[6]),
  *                     tnr=int(parts[7]),             # <<<<<<<<<<<<<<
@@ -4469,7 +4469,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_targets(PyObject
                   __Pyx_GOTREF(__pyx_t_3);
                 }
 
-                /* "algorithms/tracking_frame_buf.py":55
+                /* "openptv2/algorithms/tracking_frame_buf.py":55
  *                 if len(parts) < 8:
  *                     return []
  *                 targets.append(Target(             # <<<<<<<<<<<<<<
@@ -4479,7 +4479,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_targets(PyObject
                 __pyx_t_25 = __Pyx_PyList_Append(__pyx_v_targets, __pyx_t_3); if (unlikely(__pyx_t_25 == ((int)-1))) __PYX_ERR(0, 55, __pyx_L13_error)
                 __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-                /* "algorithms/tracking_frame_buf.py":51
+                /* "openptv2/algorithms/tracking_frame_buf.py":51
  *             num_targets = int(f.readline().strip())
  *             targets = []
  *             for _ in range(num_targets):             # <<<<<<<<<<<<<<
@@ -4489,7 +4489,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_targets(PyObject
               }
               __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
 
-              /* "algorithms/tracking_frame_buf.py":65
+              /* "openptv2/algorithms/tracking_frame_buf.py":65
  *                     tnr=int(parts[7]),
  *                 ))
  *             return targets             # <<<<<<<<<<<<<<
@@ -4501,7 +4501,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_targets(PyObject
               __pyx_r = __pyx_v_targets;
               goto __pyx_L17_try_return;
 
-              /* "algorithms/tracking_frame_buf.py":48
+              /* "openptv2/algorithms/tracking_frame_buf.py":48
  * 
  *     try:
  *         with open(fname, 'r') as f:             # <<<<<<<<<<<<<<
@@ -4524,7 +4524,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_targets(PyObject
             __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
             __Pyx_XDECREF(__pyx_t_9); __pyx_t_9 = 0;
             /*except:*/ {
-              __Pyx_AddTraceback("algorithms.tracking_frame_buf.read_targets", __pyx_clineno, __pyx_lineno, __pyx_filename);
+              __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.read_targets", __pyx_clineno, __pyx_lineno, __pyx_filename);
               if (__Pyx_GetException(&__pyx_t_9, &__pyx_t_3, &__pyx_t_1) < 0) __PYX_ERR(0, 48, __pyx_L15_except_error)
               __Pyx_XGOTREF(__pyx_t_9);
               __Pyx_XGOTREF(__pyx_t_3);
@@ -4606,7 +4606,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_targets(PyObject
         __pyx_L26:;
       }
 
-      /* "algorithms/tracking_frame_buf.py":47
+      /* "openptv2/algorithms/tracking_frame_buf.py":47
  *     fname = _resolve_file_base(file_base, frame_num)
  * 
  *     try:             # <<<<<<<<<<<<<<
@@ -4633,7 +4633,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_targets(PyObject
     __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_XDECREF(__pyx_t_9); __pyx_t_9 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":66
+    /* "openptv2/algorithms/tracking_frame_buf.py":66
  *                 ))
  *             return targets
  *     except FileNotFoundError:             # <<<<<<<<<<<<<<
@@ -4642,13 +4642,13 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_targets(PyObject
 */
     __pyx_t_28 = __Pyx_PyErr_ExceptionMatches(((PyObject *)(((PyTypeObject*)PyExc_FileNotFoundError))));
     if (__pyx_t_28) {
-      __Pyx_AddTraceback("algorithms.tracking_frame_buf.read_targets", __pyx_clineno, __pyx_lineno, __pyx_filename);
+      __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.read_targets", __pyx_clineno, __pyx_lineno, __pyx_filename);
       if (__Pyx_GetException(&__pyx_t_1, &__pyx_t_3, &__pyx_t_9) < 0) __PYX_ERR(0, 66, __pyx_L5_except_error)
       __Pyx_XGOTREF(__pyx_t_1);
       __Pyx_XGOTREF(__pyx_t_3);
       __Pyx_XGOTREF(__pyx_t_9);
 
-      /* "algorithms/tracking_frame_buf.py":67
+      /* "openptv2/algorithms/tracking_frame_buf.py":67
  *             return targets
  *     except FileNotFoundError:
  *         return []             # <<<<<<<<<<<<<<
@@ -4667,7 +4667,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_targets(PyObject
     }
     goto __pyx_L5_except_error;
 
-    /* "algorithms/tracking_frame_buf.py":47
+    /* "openptv2/algorithms/tracking_frame_buf.py":47
  *     fname = _resolve_file_base(file_base, frame_num)
  * 
  *     try:             # <<<<<<<<<<<<<<
@@ -4695,7 +4695,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_targets(PyObject
     __pyx_L8_try_end:;
   }
 
-  /* "algorithms/tracking_frame_buf.py":43
+  /* "openptv2/algorithms/tracking_frame_buf.py":43
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -4720,7 +4720,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_targets(PyObject
   __Pyx_XDECREF(__pyx_t_22);
   __Pyx_XDECREF(__pyx_t_23);
   __Pyx_XDECREF(__pyx_t_24);
-  __Pyx_AddTraceback("algorithms.tracking_frame_buf.read_targets", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.read_targets", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_fname);
@@ -4735,15 +4735,15 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_targets(PyObject
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_18tracking_frame_buf_5read_targets(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_5read_targets(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_10algorithms_18tracking_frame_buf_5read_targets = {"read_targets", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_18tracking_frame_buf_5read_targets, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10algorithms_18tracking_frame_buf_5read_targets(PyObject *__pyx_self, 
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_18tracking_frame_buf_5read_targets = {"read_targets", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_5read_targets, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_5read_targets(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -4813,11 +4813,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.tracking_frame_buf.read_targets", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.read_targets", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_18tracking_frame_buf_4read_targets(__pyx_self, __pyx_v_file_base, __pyx_v_frame_num);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_4read_targets(__pyx_self, __pyx_v_file_base, __pyx_v_frame_num);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -4827,7 +4827,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_4read_targets(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_file_base, PyObject *__pyx_v_frame_num) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_4read_targets(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_file_base, PyObject *__pyx_v_frame_num) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -4836,7 +4836,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_4read_targets(CYTHON
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("read_targets", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_18tracking_frame_buf_read_targets(__pyx_v_file_base, __pyx_v_frame_num, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 43, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_18tracking_frame_buf_read_targets(__pyx_v_file_base, __pyx_v_frame_num, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 43, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -4845,7 +4845,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_4read_targets(CYTHON
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.tracking_frame_buf.read_targets", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.read_targets", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -4853,7 +4853,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_4read_targets(CYTHON
   return __pyx_r;
 }
 
-/* "algorithms/tracking_frame_buf.py":70
+/* "openptv2/algorithms/tracking_frame_buf.py":70
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -4861,14 +4861,14 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_4read_targets(CYTHON
  *     fname = _resolve_file_base(file_base, frame_num)
 */
 
-static PyObject *__pyx_pw_10algorithms_18tracking_frame_buf_7write_targets(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_7write_targets(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_targets(PyObject *__pyx_v_tbuf, PyObject *__pyx_v_num_targets, PyObject *__pyx_v_file_base, PyObject *__pyx_v_frame_num, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_18tracking_frame_buf_write_targets(PyObject *__pyx_v_tbuf, PyObject *__pyx_v_num_targets, PyObject *__pyx_v_file_base, PyObject *__pyx_v_frame_num, CYTHON_UNUSED int __pyx_skip_dispatch) {
   PyObject *__pyx_v_fname = NULL;
   PyObject *__pyx_v_f = NULL;
   PyObject *__pyx_v_i = NULL;
@@ -4906,7 +4906,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_targets(PyObjec
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("write_targets", 0);
 
-  /* "algorithms/tracking_frame_buf.py":72
+  /* "openptv2/algorithms/tracking_frame_buf.py":72
  * @cython.ccall
  * def write_targets(tbuf, num_targets, file_base, frame_num):
  *     fname = _resolve_file_base(file_base, frame_num)             # <<<<<<<<<<<<<<
@@ -4939,7 +4939,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_targets(PyObjec
   __pyx_v_fname = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":74
+  /* "openptv2/algorithms/tracking_frame_buf.py":74
  *     fname = _resolve_file_base(file_base, frame_num)
  * 
  *     try:             # <<<<<<<<<<<<<<
@@ -4955,7 +4955,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_targets(PyObjec
     __Pyx_XGOTREF(__pyx_t_7);
     /*try:*/ {
 
-      /* "algorithms/tracking_frame_buf.py":75
+      /* "openptv2/algorithms/tracking_frame_buf.py":75
  * 
  *     try:
  *         with open(fname, 'w') as f:             # <<<<<<<<<<<<<<
@@ -5012,7 +5012,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_targets(PyObjec
               __pyx_v_f = __pyx_t_9;
               __pyx_t_9 = 0;
 
-              /* "algorithms/tracking_frame_buf.py":76
+              /* "openptv2/algorithms/tracking_frame_buf.py":76
  *     try:
  *         with open(fname, 'w') as f:
  *             f.write(f"{num_targets}\n")             # <<<<<<<<<<<<<<
@@ -5037,7 +5037,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_targets(PyObjec
               }
               __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
 
-              /* "algorithms/tracking_frame_buf.py":77
+              /* "openptv2/algorithms/tracking_frame_buf.py":77
  *         with open(fname, 'w') as f:
  *             f.write(f"{num_targets}\n")
  *             for i in range(num_targets):             # <<<<<<<<<<<<<<
@@ -5073,7 +5073,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_targets(PyObjec
                 __Pyx_XDECREF_SET(__pyx_v_i, __pyx_t_9);
                 __pyx_t_9 = 0;
 
-                /* "algorithms/tracking_frame_buf.py":78
+                /* "openptv2/algorithms/tracking_frame_buf.py":78
  *             f.write(f"{num_targets}\n")
  *             for i in range(num_targets):
  *                 t = tbuf[i]             # <<<<<<<<<<<<<<
@@ -5085,7 +5085,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_targets(PyObjec
                 __Pyx_XDECREF_SET(__pyx_v_t, __pyx_t_9);
                 __pyx_t_9 = 0;
 
-                /* "algorithms/tracking_frame_buf.py":79
+                /* "openptv2/algorithms/tracking_frame_buf.py":79
  *             for i in range(num_targets):
  *                 t = tbuf[i]
  *                 f.write(f"{t.pnr:4d} {t.x:9.4f} {t.y:9.4f} "             # <<<<<<<<<<<<<<
@@ -5110,7 +5110,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_targets(PyObjec
                 __Pyx_GOTREF(__pyx_t_16);
                 __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-                /* "algorithms/tracking_frame_buf.py":80
+                /* "openptv2/algorithms/tracking_frame_buf.py":80
  *                 t = tbuf[i]
  *                 f.write(f"{t.pnr:4d} {t.x:9.4f} {t.y:9.4f} "
  *                         f"{t.n:5d} {t.nx:5d} {t.ny:5d} {t.sumg:5d} {t.tnr:5d}\n")             # <<<<<<<<<<<<<<
@@ -5159,7 +5159,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_targets(PyObjec
                 __pyx_t_22[14] = __pyx_t_21;
                 __pyx_t_22[15] = __pyx_mstate_global->__pyx_kp_u_;
 
-                /* "algorithms/tracking_frame_buf.py":79
+                /* "openptv2/algorithms/tracking_frame_buf.py":79
  *             for i in range(num_targets):
  *                 t = tbuf[i]
  *                 f.write(f"{t.pnr:4d} {t.x:9.4f} {t.y:9.4f} "             # <<<<<<<<<<<<<<
@@ -5188,7 +5188,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_targets(PyObjec
                 }
                 __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
 
-                /* "algorithms/tracking_frame_buf.py":77
+                /* "openptv2/algorithms/tracking_frame_buf.py":77
  *         with open(fname, 'w') as f:
  *             f.write(f"{num_targets}\n")
  *             for i in range(num_targets):             # <<<<<<<<<<<<<<
@@ -5198,7 +5198,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_targets(PyObjec
               }
               __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-              /* "algorithms/tracking_frame_buf.py":75
+              /* "openptv2/algorithms/tracking_frame_buf.py":75
  * 
  *     try:
  *         with open(fname, 'w') as f:             # <<<<<<<<<<<<<<
@@ -5224,7 +5224,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_targets(PyObjec
             __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
             __Pyx_XDECREF(__pyx_t_9); __pyx_t_9 = 0;
             /*except:*/ {
-              __Pyx_AddTraceback("algorithms.tracking_frame_buf.write_targets", __pyx_clineno, __pyx_lineno, __pyx_filename);
+              __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.write_targets", __pyx_clineno, __pyx_lineno, __pyx_filename);
               if (__Pyx_GetException(&__pyx_t_2, &__pyx_t_9, &__pyx_t_3) < 0) __PYX_ERR(0, 75, __pyx_L15_except_error)
               __Pyx_XGOTREF(__pyx_t_2);
               __Pyx_XGOTREF(__pyx_t_9);
@@ -5287,7 +5287,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_targets(PyObjec
         __pyx_L25:;
       }
 
-      /* "algorithms/tracking_frame_buf.py":81
+      /* "openptv2/algorithms/tracking_frame_buf.py":81
  *                 f.write(f"{t.pnr:4d} {t.x:9.4f} {t.y:9.4f} "
  *                         f"{t.n:5d} {t.nx:5d} {t.ny:5d} {t.sumg:5d} {t.tnr:5d}\n")
  *         return True             # <<<<<<<<<<<<<<
@@ -5299,7 +5299,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_targets(PyObjec
       __pyx_r = Py_True;
       goto __pyx_L7_try_return;
 
-      /* "algorithms/tracking_frame_buf.py":74
+      /* "openptv2/algorithms/tracking_frame_buf.py":74
  *     fname = _resolve_file_base(file_base, frame_num)
  * 
  *     try:             # <<<<<<<<<<<<<<
@@ -5321,7 +5321,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_targets(PyObjec
     __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_XDECREF(__pyx_t_9); __pyx_t_9 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":82
+    /* "openptv2/algorithms/tracking_frame_buf.py":82
  *                         f"{t.n:5d} {t.nx:5d} {t.ny:5d} {t.sumg:5d} {t.tnr:5d}\n")
  *         return True
  *     except IOError:             # <<<<<<<<<<<<<<
@@ -5332,7 +5332,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_targets(PyObjec
     if (__pyx_t_26) {
       __Pyx_ErrRestore(0,0,0);
 
-      /* "algorithms/tracking_frame_buf.py":83
+      /* "openptv2/algorithms/tracking_frame_buf.py":83
  *         return True
  *     except IOError:
  *         return False             # <<<<<<<<<<<<<<
@@ -5346,7 +5346,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_targets(PyObjec
     }
     goto __pyx_L5_except_error;
 
-    /* "algorithms/tracking_frame_buf.py":74
+    /* "openptv2/algorithms/tracking_frame_buf.py":74
  *     fname = _resolve_file_base(file_base, frame_num)
  * 
  *     try:             # <<<<<<<<<<<<<<
@@ -5373,7 +5373,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_targets(PyObjec
     goto __pyx_L0;
   }
 
-  /* "algorithms/tracking_frame_buf.py":70
+  /* "openptv2/algorithms/tracking_frame_buf.py":70
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -5395,7 +5395,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_targets(PyObjec
   __Pyx_XDECREF(__pyx_t_19);
   __Pyx_XDECREF(__pyx_t_20);
   __Pyx_XDECREF(__pyx_t_21);
-  __Pyx_AddTraceback("algorithms.tracking_frame_buf.write_targets", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.write_targets", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_fname);
@@ -5408,15 +5408,15 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_targets(PyObjec
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_18tracking_frame_buf_7write_targets(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_7write_targets(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_10algorithms_18tracking_frame_buf_7write_targets = {"write_targets", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_18tracking_frame_buf_7write_targets, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10algorithms_18tracking_frame_buf_7write_targets(PyObject *__pyx_self, 
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_18tracking_frame_buf_7write_targets = {"write_targets", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_7write_targets, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_7write_targets(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -5502,11 +5502,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.tracking_frame_buf.write_targets", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.write_targets", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_18tracking_frame_buf_6write_targets(__pyx_self, __pyx_v_tbuf, __pyx_v_num_targets, __pyx_v_file_base, __pyx_v_frame_num);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_6write_targets(__pyx_self, __pyx_v_tbuf, __pyx_v_num_targets, __pyx_v_file_base, __pyx_v_frame_num);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -5516,7 +5516,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_6write_targets(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_tbuf, PyObject *__pyx_v_num_targets, PyObject *__pyx_v_file_base, PyObject *__pyx_v_frame_num) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_6write_targets(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_tbuf, PyObject *__pyx_v_num_targets, PyObject *__pyx_v_file_base, PyObject *__pyx_v_frame_num) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -5525,7 +5525,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_6write_targets(CYTHO
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("write_targets", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_18tracking_frame_buf_write_targets(__pyx_v_tbuf, __pyx_v_num_targets, __pyx_v_file_base, __pyx_v_frame_num, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 70, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_18tracking_frame_buf_write_targets(__pyx_v_tbuf, __pyx_v_num_targets, __pyx_v_file_base, __pyx_v_frame_num, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 70, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -5534,7 +5534,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_6write_targets(CYTHO
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.tracking_frame_buf.write_targets", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.write_targets", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -5542,7 +5542,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_6write_targets(CYTHO
   return __pyx_r;
 }
 
-/* "algorithms/tracking_frame_buf.py":89
+/* "openptv2/algorithms/tracking_frame_buf.py":89
  *     __slots__ = ('nr', 'p')
  * 
  *     def __init__(self, nr=0, p=None):             # <<<<<<<<<<<<<<
@@ -5551,15 +5551,15 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_6write_targets(CYTHO
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_18tracking_frame_buf_6Corres_1__init__(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_6Corres_1__init__(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_10algorithms_18tracking_frame_buf_6Corres_1__init__ = {"__init__", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_18tracking_frame_buf_6Corres_1__init__, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10algorithms_18tracking_frame_buf_6Corres_1__init__(PyObject *__pyx_self, 
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_18tracking_frame_buf_6Corres_1__init__ = {"__init__", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_6Corres_1__init__, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_6Corres_1__init__(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -5648,11 +5648,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.tracking_frame_buf.Corres.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.Corres.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_18tracking_frame_buf_6Corres___init__(__pyx_self, __pyx_v_self, __pyx_v_nr, __pyx_v_p);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_6Corres___init__(__pyx_self, __pyx_v_self, __pyx_v_nr, __pyx_v_p);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -5662,7 +5662,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_6Corres___init__(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_nr, PyObject *__pyx_v_p) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_6Corres___init__(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_nr, PyObject *__pyx_v_p) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -5679,7 +5679,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_6Corres___init__(CYT
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__init__", 0);
 
-  /* "algorithms/tracking_frame_buf.py":90
+  /* "openptv2/algorithms/tracking_frame_buf.py":90
  * 
  *     def __init__(self, nr=0, p=None):
  *         self.nr = nr             # <<<<<<<<<<<<<<
@@ -5688,7 +5688,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_6Corres___init__(CYT
 */
   if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_nr, __pyx_v_nr) < (0)) __PYX_ERR(0, 90, __pyx_L1_error)
 
-  /* "algorithms/tracking_frame_buf.py":91
+  /* "openptv2/algorithms/tracking_frame_buf.py":91
  *     def __init__(self, nr=0, p=None):
  *         self.nr = nr
  *         self.p = np.array([CORRES_NONE] * 4, dtype=np.int32) if p is None else np.asarray(p, dtype=np.int32)             # <<<<<<<<<<<<<<
@@ -5791,7 +5791,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_6Corres___init__(CYT
   if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_p, __pyx_t_1) < (0)) __PYX_ERR(0, 91, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":89
+  /* "openptv2/algorithms/tracking_frame_buf.py":89
  *     __slots__ = ('nr', 'p')
  * 
  *     def __init__(self, nr=0, p=None):             # <<<<<<<<<<<<<<
@@ -5810,7 +5810,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_6Corres___init__(CYT
   __Pyx_XDECREF(__pyx_t_6);
   __Pyx_XDECREF(__pyx_t_7);
   __Pyx_XDECREF(__pyx_t_8);
-  __Pyx_AddTraceback("algorithms.tracking_frame_buf.Corres.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.Corres.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -5818,7 +5818,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_6Corres___init__(CYT
   return __pyx_r;
 }
 
-/* "algorithms/tracking_frame_buf.py":94
+/* "openptv2/algorithms/tracking_frame_buf.py":94
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -5826,14 +5826,14 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_6Corres___init__(CYT
  *     return (c1.nr == c2.nr and
 */
 
-static PyObject *__pyx_pw_10algorithms_18tracking_frame_buf_9compare_corres(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_9compare_corres(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_compare_corres(PyObject *__pyx_v_c1, PyObject *__pyx_v_c2, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_18tracking_frame_buf_compare_corres(PyObject *__pyx_v_c1, PyObject *__pyx_v_c2, CYTHON_UNUSED int __pyx_skip_dispatch) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -5846,7 +5846,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_compare_corres(PyObje
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("compare_corres", 0);
 
-  /* "algorithms/tracking_frame_buf.py":96
+  /* "openptv2/algorithms/tracking_frame_buf.py":96
  * @cython.ccall
  * def compare_corres(c1, c2):
  *     return (c1.nr == c2.nr and             # <<<<<<<<<<<<<<
@@ -5871,7 +5871,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_compare_corres(PyObje
     goto __pyx_L3_bool_binop_done;
   }
 
-  /* "algorithms/tracking_frame_buf.py":97
+  /* "openptv2/algorithms/tracking_frame_buf.py":97
  * def compare_corres(c1, c2):
  *     return (c1.nr == c2.nr and
  *             c1.p[0] == c2.p[0] and c1.p[1] == c2.p[1] and             # <<<<<<<<<<<<<<
@@ -5923,7 +5923,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_compare_corres(PyObje
     goto __pyx_L3_bool_binop_done;
   }
 
-  /* "algorithms/tracking_frame_buf.py":98
+  /* "openptv2/algorithms/tracking_frame_buf.py":98
  *     return (c1.nr == c2.nr and
  *             c1.p[0] == c2.p[0] and c1.p[1] == c2.p[1] and
  *             c1.p[2] == c2.p[2] and c1.p[3] == c2.p[3])             # <<<<<<<<<<<<<<
@@ -5973,7 +5973,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_compare_corres(PyObje
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/tracking_frame_buf.py":94
+  /* "openptv2/algorithms/tracking_frame_buf.py":94
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -5987,7 +5987,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_compare_corres(PyObje
   __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_4);
-  __Pyx_AddTraceback("algorithms.tracking_frame_buf.compare_corres", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.compare_corres", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -5996,15 +5996,15 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_compare_corres(PyObje
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_18tracking_frame_buf_9compare_corres(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_9compare_corres(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_10algorithms_18tracking_frame_buf_9compare_corres = {"compare_corres", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_18tracking_frame_buf_9compare_corres, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10algorithms_18tracking_frame_buf_9compare_corres(PyObject *__pyx_self, 
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_18tracking_frame_buf_9compare_corres = {"compare_corres", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_9compare_corres, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_9compare_corres(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -6074,11 +6074,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.tracking_frame_buf.compare_corres", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.compare_corres", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_18tracking_frame_buf_8compare_corres(__pyx_self, __pyx_v_c1, __pyx_v_c2);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_8compare_corres(__pyx_self, __pyx_v_c1, __pyx_v_c2);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -6088,7 +6088,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8compare_corres(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_c1, PyObject *__pyx_v_c2) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_8compare_corres(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_c1, PyObject *__pyx_v_c2) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -6097,7 +6097,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8compare_corres(CYTH
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("compare_corres", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_18tracking_frame_buf_compare_corres(__pyx_v_c1, __pyx_v_c2, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 94, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_18tracking_frame_buf_compare_corres(__pyx_v_c1, __pyx_v_c2, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 94, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -6106,7 +6106,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8compare_corres(CYTH
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.tracking_frame_buf.compare_corres", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.compare_corres", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -6114,7 +6114,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8compare_corres(CYTH
   return __pyx_r;
 }
 
-/* "algorithms/tracking_frame_buf.py":105
+/* "openptv2/algorithms/tracking_frame_buf.py":105
  *                  'linkdecis', 'inlist')
  * 
  *     def __init__(self, x=None, prev=PREV_NONE, next=NEXT_NONE,             # <<<<<<<<<<<<<<
@@ -6122,7 +6122,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8compare_corres(CYTH
  *                  decis=None, linkdecis=None):
 */
 
-static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_22__defaults__(CYTHON_UNUSED PyObject *__pyx_self) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_22__defaults__(CYTHON_UNUSED PyObject *__pyx_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -6133,7 +6133,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_22__defaults__(CYTHO
   __Pyx_RefNannySetupContext("__defaults__", 0);
   __Pyx_XDECREF(__pyx_r);
 
-  /* "algorithms/tracking_frame_buf.py":107
+  /* "openptv2/algorithms/tracking_frame_buf.py":107
  *     def __init__(self, x=None, prev=PREV_NONE, next=NEXT_NONE,
  *                  prio=4, finaldecis=1000000.0, inlist=0,
  *                  decis=None, linkdecis=None):             # <<<<<<<<<<<<<<
@@ -6167,7 +6167,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_22__defaults__(CYTHO
   __Pyx_GIVEREF(Py_None);
   if (__Pyx_PyTuple_SET_ITEM(__pyx_t_1, 7, Py_None) != (0)) __PYX_ERR(0, 105, __pyx_L1_error);
 
-  /* "algorithms/tracking_frame_buf.py":105
+  /* "openptv2/algorithms/tracking_frame_buf.py":105
  *                  'linkdecis', 'inlist')
  * 
  *     def __init__(self, x=None, prev=PREV_NONE, next=NEXT_NONE,             # <<<<<<<<<<<<<<
@@ -6190,7 +6190,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_22__defaults__(CYTHO
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_2);
-  __Pyx_AddTraceback("algorithms.tracking_frame_buf.__defaults__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.__defaults__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -6199,15 +6199,15 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_22__defaults__(CYTHO
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_18tracking_frame_buf_8Pathinfo_1__init__(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_8Pathinfo_1__init__(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_10algorithms_18tracking_frame_buf_8Pathinfo_1__init__ = {"__init__", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_18tracking_frame_buf_8Pathinfo_1__init__, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10algorithms_18tracking_frame_buf_8Pathinfo_1__init__(PyObject *__pyx_self, 
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_18tracking_frame_buf_8Pathinfo_1__init__ = {"__init__", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_8Pathinfo_1__init__, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_8Pathinfo_1__init__(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -6297,7 +6297,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
       if (!values[5]) values[5] = __Pyx_NewRef(((PyObject *)((PyObject*)__pyx_mstate_global->__pyx_float_1000000_0)));
       if (!values[6]) values[6] = __Pyx_NewRef(((PyObject *)((PyObject*)__pyx_mstate_global->__pyx_int_0)));
 
-      /* "algorithms/tracking_frame_buf.py":107
+      /* "openptv2/algorithms/tracking_frame_buf.py":107
  *     def __init__(self, x=None, prev=PREV_NONE, next=NEXT_NONE,
  *                  prio=4, finaldecis=1000000.0, inlist=0,
  *                  decis=None, linkdecis=None):             # <<<<<<<<<<<<<<
@@ -6350,7 +6350,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
         default: goto __pyx_L5_argtuple_error;
       }
 
-      /* "algorithms/tracking_frame_buf.py":105
+      /* "openptv2/algorithms/tracking_frame_buf.py":105
  *                  'linkdecis', 'inlist')
  * 
  *     def __init__(self, x=None, prev=PREV_NONE, next=NEXT_NONE,             # <<<<<<<<<<<<<<
@@ -6364,7 +6364,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
       if (!values[5]) values[5] = __Pyx_NewRef(((PyObject *)((PyObject*)__pyx_mstate_global->__pyx_float_1000000_0)));
       if (!values[6]) values[6] = __Pyx_NewRef(((PyObject *)((PyObject*)__pyx_mstate_global->__pyx_int_0)));
 
-      /* "algorithms/tracking_frame_buf.py":107
+      /* "openptv2/algorithms/tracking_frame_buf.py":107
  *     def __init__(self, x=None, prev=PREV_NONE, next=NEXT_NONE,
  *                  prio=4, finaldecis=1000000.0, inlist=0,
  *                  decis=None, linkdecis=None):             # <<<<<<<<<<<<<<
@@ -6393,13 +6393,13 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.tracking_frame_buf.Pathinfo.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.Pathinfo.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_18tracking_frame_buf_8Pathinfo___init__(__pyx_self, __pyx_v_self, __pyx_v_x, __pyx_v_prev, __pyx_v_next, __pyx_v_prio, __pyx_v_finaldecis, __pyx_v_inlist, __pyx_v_decis, __pyx_v_linkdecis);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_8Pathinfo___init__(__pyx_self, __pyx_v_self, __pyx_v_x, __pyx_v_prev, __pyx_v_next, __pyx_v_prio, __pyx_v_finaldecis, __pyx_v_inlist, __pyx_v_decis, __pyx_v_linkdecis);
 
-  /* "algorithms/tracking_frame_buf.py":105
+  /* "openptv2/algorithms/tracking_frame_buf.py":105
  *                  'linkdecis', 'inlist')
  * 
  *     def __init__(self, x=None, prev=PREV_NONE, next=NEXT_NONE,             # <<<<<<<<<<<<<<
@@ -6415,7 +6415,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8Pathinfo___init__(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_x, PyObject *__pyx_v_prev, PyObject *__pyx_v_next, PyObject *__pyx_v_prio, PyObject *__pyx_v_finaldecis, PyObject *__pyx_v_inlist, PyObject *__pyx_v_decis, PyObject *__pyx_v_linkdecis) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_8Pathinfo___init__(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_x, PyObject *__pyx_v_prev, PyObject *__pyx_v_next, PyObject *__pyx_v_prio, PyObject *__pyx_v_finaldecis, PyObject *__pyx_v_inlist, PyObject *__pyx_v_decis, PyObject *__pyx_v_linkdecis) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -6431,7 +6431,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8Pathinfo___init__(C
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__init__", 0);
 
-  /* "algorithms/tracking_frame_buf.py":108
+  /* "openptv2/algorithms/tracking_frame_buf.py":108
  *                  prio=4, finaldecis=1000000.0, inlist=0,
  *                  decis=None, linkdecis=None):
  *         self.x = np.zeros(3, dtype=np.float64) if x is None else np.asarray(x, dtype=np.float64)             # <<<<<<<<<<<<<<
@@ -6521,7 +6521,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8Pathinfo___init__(C
   if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_x, __pyx_t_1) < (0)) __PYX_ERR(0, 108, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":109
+  /* "openptv2/algorithms/tracking_frame_buf.py":109
  *                  decis=None, linkdecis=None):
  *         self.x = np.zeros(3, dtype=np.float64) if x is None else np.asarray(x, dtype=np.float64)
  *         self.prev = prev             # <<<<<<<<<<<<<<
@@ -6530,7 +6530,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8Pathinfo___init__(C
 */
   if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_prev, __pyx_v_prev) < (0)) __PYX_ERR(0, 109, __pyx_L1_error)
 
-  /* "algorithms/tracking_frame_buf.py":110
+  /* "openptv2/algorithms/tracking_frame_buf.py":110
  *         self.x = np.zeros(3, dtype=np.float64) if x is None else np.asarray(x, dtype=np.float64)
  *         self.prev = prev
  *         self.next = next             # <<<<<<<<<<<<<<
@@ -6539,7 +6539,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8Pathinfo___init__(C
 */
   if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_next, __pyx_v_next) < (0)) __PYX_ERR(0, 110, __pyx_L1_error)
 
-  /* "algorithms/tracking_frame_buf.py":111
+  /* "openptv2/algorithms/tracking_frame_buf.py":111
  *         self.prev = prev
  *         self.next = next
  *         self.prio = prio             # <<<<<<<<<<<<<<
@@ -6548,7 +6548,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8Pathinfo___init__(C
 */
   if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_prio, __pyx_v_prio) < (0)) __PYX_ERR(0, 111, __pyx_L1_error)
 
-  /* "algorithms/tracking_frame_buf.py":112
+  /* "openptv2/algorithms/tracking_frame_buf.py":112
  *         self.next = next
  *         self.prio = prio
  *         self.finaldecis = finaldecis             # <<<<<<<<<<<<<<
@@ -6557,7 +6557,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8Pathinfo___init__(C
 */
   if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_finaldecis, __pyx_v_finaldecis) < (0)) __PYX_ERR(0, 112, __pyx_L1_error)
 
-  /* "algorithms/tracking_frame_buf.py":113
+  /* "openptv2/algorithms/tracking_frame_buf.py":113
  *         self.prio = prio
  *         self.finaldecis = finaldecis
  *         self.inlist = inlist             # <<<<<<<<<<<<<<
@@ -6566,7 +6566,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8Pathinfo___init__(C
 */
   if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_inlist, __pyx_v_inlist) < (0)) __PYX_ERR(0, 113, __pyx_L1_error)
 
-  /* "algorithms/tracking_frame_buf.py":114
+  /* "openptv2/algorithms/tracking_frame_buf.py":114
  *         self.finaldecis = finaldecis
  *         self.inlist = inlist
  *         self.decis = [0.0] * POSI if decis is None else list(decis)             # <<<<<<<<<<<<<<
@@ -6599,7 +6599,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8Pathinfo___init__(C
   if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_decis, __pyx_t_1) < (0)) __PYX_ERR(0, 114, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":115
+  /* "openptv2/algorithms/tracking_frame_buf.py":115
  *         self.inlist = inlist
  *         self.decis = [0.0] * POSI if decis is None else list(decis)
  *         self.linkdecis = [PT_UNUSED] * POSI if linkdecis is None else list(linkdecis)             # <<<<<<<<<<<<<<
@@ -6634,7 +6634,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8Pathinfo___init__(C
   if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_linkdecis, __pyx_t_1) < (0)) __PYX_ERR(0, 115, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":105
+  /* "openptv2/algorithms/tracking_frame_buf.py":105
  *                  'linkdecis', 'inlist')
  * 
  *     def __init__(self, x=None, prev=PREV_NONE, next=NEXT_NONE,             # <<<<<<<<<<<<<<
@@ -6652,7 +6652,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8Pathinfo___init__(C
   __Pyx_XDECREF(__pyx_t_5);
   __Pyx_XDECREF(__pyx_t_6);
   __Pyx_XDECREF(__pyx_t_7);
-  __Pyx_AddTraceback("algorithms.tracking_frame_buf.Pathinfo.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.Pathinfo.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -6660,7 +6660,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8Pathinfo___init__(C
   return __pyx_r;
 }
 
-/* "algorithms/tracking_frame_buf.py":118
+/* "openptv2/algorithms/tracking_frame_buf.py":118
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -6668,14 +6668,14 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8Pathinfo___init__(C
  * @cython.wraparound(False)
 */
 
-static PyObject *__pyx_pw_10algorithms_18tracking_frame_buf_11compare_path_info(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_11compare_path_info(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_compare_path_info(PyObject *__pyx_v_p1, PyObject *__pyx_v_p2, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_18tracking_frame_buf_compare_path_info(PyObject *__pyx_v_p1, PyObject *__pyx_v_p2, CYTHON_UNUSED int __pyx_skip_dispatch) {
   PyObject *__pyx_v_i = NULL;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
@@ -6693,7 +6693,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_compare_path_info(PyO
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("compare_path_info", 0);
 
-  /* "algorithms/tracking_frame_buf.py":122
+  /* "openptv2/algorithms/tracking_frame_buf.py":122
  * @cython.wraparound(False)
  * def compare_path_info(p1, p2):
  *     if not (p1.prev == p2.prev and p1.next == p2.next and             # <<<<<<<<<<<<<<
@@ -6729,7 +6729,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_compare_path_info(PyO
     goto __pyx_L4_bool_binop_done;
   }
 
-  /* "algorithms/tracking_frame_buf.py":123
+  /* "openptv2/algorithms/tracking_frame_buf.py":123
  * def compare_path_info(p1, p2):
  *     if not (p1.prev == p2.prev and p1.next == p2.next and
  *             p1.prio == p2.prio and p1.finaldecis == p2.finaldecis and             # <<<<<<<<<<<<<<
@@ -6765,7 +6765,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_compare_path_info(PyO
     goto __pyx_L4_bool_binop_done;
   }
 
-  /* "algorithms/tracking_frame_buf.py":124
+  /* "openptv2/algorithms/tracking_frame_buf.py":124
  *     if not (p1.prev == p2.prev and p1.next == p2.next and
  *             p1.prio == p2.prio and p1.finaldecis == p2.finaldecis and
  *             p1.inlist == p2.inlist and np.allclose(p1.x, p2.x)):             # <<<<<<<<<<<<<<
@@ -6823,7 +6823,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_compare_path_info(PyO
   __pyx_t_1 = __pyx_t_5;
   __pyx_L4_bool_binop_done:;
 
-  /* "algorithms/tracking_frame_buf.py":122
+  /* "openptv2/algorithms/tracking_frame_buf.py":122
  * @cython.wraparound(False)
  * def compare_path_info(p1, p2):
  *     if not (p1.prev == p2.prev and p1.next == p2.next and             # <<<<<<<<<<<<<<
@@ -6833,7 +6833,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_compare_path_info(PyO
   __pyx_t_5 = (!__pyx_t_1);
   if (__pyx_t_5) {
 
-    /* "algorithms/tracking_frame_buf.py":125
+    /* "openptv2/algorithms/tracking_frame_buf.py":125
  *             p1.prio == p2.prio and p1.finaldecis == p2.finaldecis and
  *             p1.inlist == p2.inlist and np.allclose(p1.x, p2.x)):
  *         return False             # <<<<<<<<<<<<<<
@@ -6845,7 +6845,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_compare_path_info(PyO
     __pyx_r = Py_False;
     goto __pyx_L0;
 
-    /* "algorithms/tracking_frame_buf.py":122
+    /* "openptv2/algorithms/tracking_frame_buf.py":122
  * @cython.wraparound(False)
  * def compare_path_info(p1, p2):
  *     if not (p1.prev == p2.prev and p1.next == p2.next and             # <<<<<<<<<<<<<<
@@ -6854,7 +6854,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_compare_path_info(PyO
 */
   }
 
-  /* "algorithms/tracking_frame_buf.py":126
+  /* "openptv2/algorithms/tracking_frame_buf.py":126
  *             p1.inlist == p2.inlist and np.allclose(p1.x, p2.x)):
  *         return False
  *     for i in range(POSI):             # <<<<<<<<<<<<<<
@@ -6893,7 +6893,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_compare_path_info(PyO
     __Pyx_XDECREF_SET(__pyx_v_i, __pyx_t_4);
     __pyx_t_4 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":127
+    /* "openptv2/algorithms/tracking_frame_buf.py":127
  *         return False
  *     for i in range(POSI):
  *         if p1.decis[i] != p2.decis[i]:             # <<<<<<<<<<<<<<
@@ -6917,7 +6917,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_compare_path_info(PyO
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     if (__pyx_t_5) {
 
-      /* "algorithms/tracking_frame_buf.py":128
+      /* "openptv2/algorithms/tracking_frame_buf.py":128
  *     for i in range(POSI):
  *         if p1.decis[i] != p2.decis[i]:
  *             return False             # <<<<<<<<<<<<<<
@@ -6930,7 +6930,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_compare_path_info(PyO
       __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
       goto __pyx_L0;
 
-      /* "algorithms/tracking_frame_buf.py":127
+      /* "openptv2/algorithms/tracking_frame_buf.py":127
  *         return False
  *     for i in range(POSI):
  *         if p1.decis[i] != p2.decis[i]:             # <<<<<<<<<<<<<<
@@ -6939,7 +6939,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_compare_path_info(PyO
 */
     }
 
-    /* "algorithms/tracking_frame_buf.py":129
+    /* "openptv2/algorithms/tracking_frame_buf.py":129
  *         if p1.decis[i] != p2.decis[i]:
  *             return False
  *         if p1.linkdecis[i] != p2.linkdecis[i]:             # <<<<<<<<<<<<<<
@@ -6963,7 +6963,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_compare_path_info(PyO
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     if (__pyx_t_5) {
 
-      /* "algorithms/tracking_frame_buf.py":130
+      /* "openptv2/algorithms/tracking_frame_buf.py":130
  *             return False
  *         if p1.linkdecis[i] != p2.linkdecis[i]:
  *             return False             # <<<<<<<<<<<<<<
@@ -6976,7 +6976,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_compare_path_info(PyO
       __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
       goto __pyx_L0;
 
-      /* "algorithms/tracking_frame_buf.py":129
+      /* "openptv2/algorithms/tracking_frame_buf.py":129
  *         if p1.decis[i] != p2.decis[i]:
  *             return False
  *         if p1.linkdecis[i] != p2.linkdecis[i]:             # <<<<<<<<<<<<<<
@@ -6985,7 +6985,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_compare_path_info(PyO
 */
     }
 
-    /* "algorithms/tracking_frame_buf.py":126
+    /* "openptv2/algorithms/tracking_frame_buf.py":126
  *             p1.inlist == p2.inlist and np.allclose(p1.x, p2.x)):
  *         return False
  *     for i in range(POSI):             # <<<<<<<<<<<<<<
@@ -6995,7 +6995,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_compare_path_info(PyO
   }
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":131
+  /* "openptv2/algorithms/tracking_frame_buf.py":131
  *         if p1.linkdecis[i] != p2.linkdecis[i]:
  *             return False
  *     return True             # <<<<<<<<<<<<<<
@@ -7007,7 +7007,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_compare_path_info(PyO
   __pyx_r = Py_True;
   goto __pyx_L0;
 
-  /* "algorithms/tracking_frame_buf.py":118
+  /* "openptv2/algorithms/tracking_frame_buf.py":118
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -7022,7 +7022,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_compare_path_info(PyO
   __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_6);
   __Pyx_XDECREF(__pyx_t_7);
-  __Pyx_AddTraceback("algorithms.tracking_frame_buf.compare_path_info", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.compare_path_info", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_i);
@@ -7032,15 +7032,15 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_compare_path_info(PyO
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_18tracking_frame_buf_11compare_path_info(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_11compare_path_info(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_10algorithms_18tracking_frame_buf_11compare_path_info = {"compare_path_info", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_18tracking_frame_buf_11compare_path_info, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10algorithms_18tracking_frame_buf_11compare_path_info(PyObject *__pyx_self, 
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_18tracking_frame_buf_11compare_path_info = {"compare_path_info", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_11compare_path_info, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_11compare_path_info(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -7110,11 +7110,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.tracking_frame_buf.compare_path_info", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.compare_path_info", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_18tracking_frame_buf_10compare_path_info(__pyx_self, __pyx_v_p1, __pyx_v_p2);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_10compare_path_info(__pyx_self, __pyx_v_p1, __pyx_v_p2);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -7124,7 +7124,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_10compare_path_info(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_p1, PyObject *__pyx_v_p2) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_10compare_path_info(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_p1, PyObject *__pyx_v_p2) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -7133,7 +7133,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_10compare_path_info(
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("compare_path_info", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_18tracking_frame_buf_compare_path_info(__pyx_v_p1, __pyx_v_p2, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 118, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_18tracking_frame_buf_compare_path_info(__pyx_v_p1, __pyx_v_p2, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 118, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -7142,7 +7142,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_10compare_path_info(
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.tracking_frame_buf.compare_path_info", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.compare_path_info", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -7150,7 +7150,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_10compare_path_info(
   return __pyx_r;
 }
 
-/* "algorithms/tracking_frame_buf.py":134
+/* "openptv2/algorithms/tracking_frame_buf.py":134
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -7158,14 +7158,14 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_10compare_path_info(
  *     path.decis[path.inlist] = fitness
 */
 
-static PyObject *__pyx_pw_10algorithms_18tracking_frame_buf_13register_link_candidate(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_13register_link_candidate(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_register_link_candidate(PyObject *__pyx_v_path, PyObject *__pyx_v_fitness, PyObject *__pyx_v_cand, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_18tracking_frame_buf_register_link_candidate(PyObject *__pyx_v_path, PyObject *__pyx_v_fitness, PyObject *__pyx_v_cand, CYTHON_UNUSED int __pyx_skip_dispatch) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -7175,7 +7175,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_register_link_candida
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("register_link_candidate", 0);
 
-  /* "algorithms/tracking_frame_buf.py":136
+  /* "openptv2/algorithms/tracking_frame_buf.py":136
  * @cython.ccall
  * def register_link_candidate(path, fitness, cand):
  *     path.decis[path.inlist] = fitness             # <<<<<<<<<<<<<<
@@ -7190,7 +7190,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_register_link_candida
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":137
+  /* "openptv2/algorithms/tracking_frame_buf.py":137
  * def register_link_candidate(path, fitness, cand):
  *     path.decis[path.inlist] = fitness
  *     path.linkdecis[path.inlist] = cand             # <<<<<<<<<<<<<<
@@ -7205,7 +7205,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_register_link_candida
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":138
+  /* "openptv2/algorithms/tracking_frame_buf.py":138
  *     path.decis[path.inlist] = fitness
  *     path.linkdecis[path.inlist] = cand
  *     path.inlist += 1             # <<<<<<<<<<<<<<
@@ -7220,7 +7220,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_register_link_candida
   if (__Pyx_PyObject_SetAttrStr(__pyx_v_path, __pyx_mstate_global->__pyx_n_u_inlist, __pyx_t_2) < (0)) __PYX_ERR(0, 138, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":134
+  /* "openptv2/algorithms/tracking_frame_buf.py":134
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -7234,7 +7234,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_register_link_candida
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_2);
-  __Pyx_AddTraceback("algorithms.tracking_frame_buf.register_link_candidate", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.register_link_candidate", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -7243,15 +7243,15 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_register_link_candida
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_18tracking_frame_buf_13register_link_candidate(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_13register_link_candidate(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_10algorithms_18tracking_frame_buf_13register_link_candidate = {"register_link_candidate", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_18tracking_frame_buf_13register_link_candidate, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10algorithms_18tracking_frame_buf_13register_link_candidate(PyObject *__pyx_self, 
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_18tracking_frame_buf_13register_link_candidate = {"register_link_candidate", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_13register_link_candidate, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_13register_link_candidate(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -7329,11 +7329,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.tracking_frame_buf.register_link_candidate", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.register_link_candidate", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_18tracking_frame_buf_12register_link_candidate(__pyx_self, __pyx_v_path, __pyx_v_fitness, __pyx_v_cand);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_12register_link_candidate(__pyx_self, __pyx_v_path, __pyx_v_fitness, __pyx_v_cand);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -7343,7 +7343,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_12register_link_candidate(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_path, PyObject *__pyx_v_fitness, PyObject *__pyx_v_cand) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_12register_link_candidate(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_path, PyObject *__pyx_v_fitness, PyObject *__pyx_v_cand) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -7352,7 +7352,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_12register_link_cand
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("register_link_candidate", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_18tracking_frame_buf_register_link_candidate(__pyx_v_path, __pyx_v_fitness, __pyx_v_cand, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 134, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_18tracking_frame_buf_register_link_candidate(__pyx_v_path, __pyx_v_fitness, __pyx_v_cand, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 134, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -7361,7 +7361,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_12register_link_cand
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.tracking_frame_buf.register_link_candidate", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.register_link_candidate", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -7369,7 +7369,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_12register_link_cand
   return __pyx_r;
 }
 
-/* "algorithms/tracking_frame_buf.py":141
+/* "openptv2/algorithms/tracking_frame_buf.py":141
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -7377,14 +7377,14 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_12register_link_cand
  *     path.prev = PREV_NONE
 */
 
-static PyObject *__pyx_pw_10algorithms_18tracking_frame_buf_15reset_links(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_15reset_links(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_reset_links(PyObject *__pyx_v_path, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_18tracking_frame_buf_reset_links(PyObject *__pyx_v_path, CYTHON_UNUSED int __pyx_skip_dispatch) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -7393,7 +7393,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_reset_links(PyObject 
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("reset_links", 0);
 
-  /* "algorithms/tracking_frame_buf.py":143
+  /* "openptv2/algorithms/tracking_frame_buf.py":143
  * @cython.ccall
  * def reset_links(path):
  *     path.prev = PREV_NONE             # <<<<<<<<<<<<<<
@@ -7405,7 +7405,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_reset_links(PyObject 
   if (__Pyx_PyObject_SetAttrStr(__pyx_v_path, __pyx_mstate_global->__pyx_n_u_prev, __pyx_t_1) < (0)) __PYX_ERR(0, 143, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":144
+  /* "openptv2/algorithms/tracking_frame_buf.py":144
  * def reset_links(path):
  *     path.prev = PREV_NONE
  *     path.next = NEXT_NONE             # <<<<<<<<<<<<<<
@@ -7417,7 +7417,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_reset_links(PyObject 
   if (__Pyx_PyObject_SetAttrStr(__pyx_v_path, __pyx_mstate_global->__pyx_n_u_next, __pyx_t_1) < (0)) __PYX_ERR(0, 144, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":145
+  /* "openptv2/algorithms/tracking_frame_buf.py":145
  *     path.prev = PREV_NONE
  *     path.next = NEXT_NONE
  *     path.prio = 2  # PRIO_DEFAULT             # <<<<<<<<<<<<<<
@@ -7426,7 +7426,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_reset_links(PyObject 
 */
   if (__Pyx_PyObject_SetAttrStr(__pyx_v_path, __pyx_mstate_global->__pyx_n_u_prio, __pyx_mstate_global->__pyx_int_2) < (0)) __PYX_ERR(0, 145, __pyx_L1_error)
 
-  /* "algorithms/tracking_frame_buf.py":141
+  /* "openptv2/algorithms/tracking_frame_buf.py":141
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -7439,7 +7439,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_reset_links(PyObject 
   goto __pyx_L0;
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.tracking_frame_buf.reset_links", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.reset_links", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -7448,15 +7448,15 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_reset_links(PyObject 
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_18tracking_frame_buf_15reset_links(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_15reset_links(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_10algorithms_18tracking_frame_buf_15reset_links = {"reset_links", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_18tracking_frame_buf_15reset_links, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10algorithms_18tracking_frame_buf_15reset_links(PyObject *__pyx_self, 
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_18tracking_frame_buf_15reset_links = {"reset_links", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_15reset_links, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_15reset_links(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -7518,11 +7518,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.tracking_frame_buf.reset_links", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.reset_links", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_18tracking_frame_buf_14reset_links(__pyx_self, __pyx_v_path);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_14reset_links(__pyx_self, __pyx_v_path);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -7532,7 +7532,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_14reset_links(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_path) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_14reset_links(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_path) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -7541,7 +7541,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_14reset_links(CYTHON
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("reset_links", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_18tracking_frame_buf_reset_links(__pyx_v_path, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 141, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_18tracking_frame_buf_reset_links(__pyx_v_path, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 141, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -7550,7 +7550,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_14reset_links(CYTHON
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.tracking_frame_buf.reset_links", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.reset_links", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -7558,7 +7558,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_14reset_links(CYTHON
   return __pyx_r;
 }
 
-/* "algorithms/tracking_frame_buf.py":148
+/* "openptv2/algorithms/tracking_frame_buf.py":148
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -7566,14 +7566,14 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_14reset_links(CYTHON
  *                     frame_num):
 */
 
-static PyObject *__pyx_pw_10algorithms_18tracking_frame_buf_17read_path_frame(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_17read_path_frame(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObject *__pyx_v_corres_file_base, PyObject *__pyx_v_linkage_file_base, PyObject *__pyx_v_prio_file_base, PyObject *__pyx_v_frame_num, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_18tracking_frame_buf_read_path_frame(PyObject *__pyx_v_corres_file_base, PyObject *__pyx_v_linkage_file_base, PyObject *__pyx_v_prio_file_base, PyObject *__pyx_v_frame_num, CYTHON_UNUSED int __pyx_skip_dispatch) {
   PyObject *__pyx_v_fname = NULL;
   PyObject *__pyx_v_corres_file = NULL;
   CYTHON_UNUSED PyObject *__pyx_v_header = NULL;
@@ -7626,7 +7626,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("read_path_frame", 0);
 
-  /* "algorithms/tracking_frame_buf.py":151
+  /* "openptv2/algorithms/tracking_frame_buf.py":151
  * def read_path_frame(corres_file_base, linkage_file_base, prio_file_base,
  *                     frame_num):
  *     fname = f"{corres_file_base}.{frame_num}"             # <<<<<<<<<<<<<<
@@ -7648,7 +7648,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
   __pyx_v_fname = ((PyObject*)__pyx_t_4);
   __pyx_t_4 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":152
+  /* "openptv2/algorithms/tracking_frame_buf.py":152
  *                     frame_num):
  *     fname = f"{corres_file_base}.{frame_num}"
  *     try:             # <<<<<<<<<<<<<<
@@ -7664,7 +7664,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
     __Pyx_XGOTREF(__pyx_t_7);
     /*try:*/ {
 
-      /* "algorithms/tracking_frame_buf.py":153
+      /* "openptv2/algorithms/tracking_frame_buf.py":153
  *     fname = f"{corres_file_base}.{frame_num}"
  *     try:
  *         corres_file = open(fname, 'r')             # <<<<<<<<<<<<<<
@@ -7683,7 +7683,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
       __pyx_v_corres_file = __pyx_t_4;
       __pyx_t_4 = 0;
 
-      /* "algorithms/tracking_frame_buf.py":152
+      /* "openptv2/algorithms/tracking_frame_buf.py":152
  *                     frame_num):
  *     fname = f"{corres_file_base}.{frame_num}"
  *     try:             # <<<<<<<<<<<<<<
@@ -7700,7 +7700,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
     __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
     __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":154
+    /* "openptv2/algorithms/tracking_frame_buf.py":154
  *     try:
  *         corres_file = open(fname, 'r')
  *     except FileNotFoundError:             # <<<<<<<<<<<<<<
@@ -7709,13 +7709,13 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
 */
     __pyx_t_9 = __Pyx_PyErr_ExceptionMatches(((PyObject *)(((PyTypeObject*)PyExc_FileNotFoundError))));
     if (__pyx_t_9) {
-      __Pyx_AddTraceback("algorithms.tracking_frame_buf.read_path_frame", __pyx_clineno, __pyx_lineno, __pyx_filename);
+      __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.read_path_frame", __pyx_clineno, __pyx_lineno, __pyx_filename);
       if (__Pyx_GetException(&__pyx_t_4, &__pyx_t_2, &__pyx_t_1) < 0) __PYX_ERR(0, 154, __pyx_L5_except_error)
       __Pyx_XGOTREF(__pyx_t_4);
       __Pyx_XGOTREF(__pyx_t_2);
       __Pyx_XGOTREF(__pyx_t_1);
 
-      /* "algorithms/tracking_frame_buf.py":155
+      /* "openptv2/algorithms/tracking_frame_buf.py":155
  *         corres_file = open(fname, 'r')
  *     except FileNotFoundError:
  *         return [], []             # <<<<<<<<<<<<<<
@@ -7744,7 +7744,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
     }
     goto __pyx_L5_except_error;
 
-    /* "algorithms/tracking_frame_buf.py":152
+    /* "openptv2/algorithms/tracking_frame_buf.py":152
  *                     frame_num):
  *     fname = f"{corres_file_base}.{frame_num}"
  *     try:             # <<<<<<<<<<<<<<
@@ -7766,7 +7766,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
     __pyx_L8_try_end:;
   }
 
-  /* "algorithms/tracking_frame_buf.py":157
+  /* "openptv2/algorithms/tracking_frame_buf.py":157
  *         return [], []
  * 
  *     header = corres_file.readline()  # number of points (read but use EOF)             # <<<<<<<<<<<<<<
@@ -7786,7 +7786,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
   __pyx_v_header = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":159
+  /* "openptv2/algorithms/tracking_frame_buf.py":159
  *     header = corres_file.readline()  # number of points (read but use EOF)
  * 
  *     linkage_file = None             # <<<<<<<<<<<<<<
@@ -7796,7 +7796,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
   __Pyx_INCREF(Py_None);
   __pyx_v_linkage_file = Py_None;
 
-  /* "algorithms/tracking_frame_buf.py":160
+  /* "openptv2/algorithms/tracking_frame_buf.py":160
  * 
  *     linkage_file = None
  *     if linkage_file_base:             # <<<<<<<<<<<<<<
@@ -7806,7 +7806,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
   __pyx_t_13 = __Pyx_PyObject_IsTrue(__pyx_v_linkage_file_base); if (unlikely((__pyx_t_13 < 0))) __PYX_ERR(0, 160, __pyx_L1_error)
   if (__pyx_t_13) {
 
-    /* "algorithms/tracking_frame_buf.py":161
+    /* "openptv2/algorithms/tracking_frame_buf.py":161
  *     linkage_file = None
  *     if linkage_file_base:
  *         lfname = f"{linkage_file_base}.{frame_num}"             # <<<<<<<<<<<<<<
@@ -7828,7 +7828,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
     __pyx_v_lfname = ((PyObject*)__pyx_t_4);
     __pyx_t_4 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":162
+    /* "openptv2/algorithms/tracking_frame_buf.py":162
  *     if linkage_file_base:
  *         lfname = f"{linkage_file_base}.{frame_num}"
  *         try:             # <<<<<<<<<<<<<<
@@ -7844,7 +7844,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
       __Pyx_XGOTREF(__pyx_t_5);
       /*try:*/ {
 
-        /* "algorithms/tracking_frame_buf.py":163
+        /* "openptv2/algorithms/tracking_frame_buf.py":163
  *         lfname = f"{linkage_file_base}.{frame_num}"
  *         try:
  *             linkage_file = open(lfname, 'r')             # <<<<<<<<<<<<<<
@@ -7863,7 +7863,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
         __Pyx_DECREF_SET(__pyx_v_linkage_file, __pyx_t_4);
         __pyx_t_4 = 0;
 
-        /* "algorithms/tracking_frame_buf.py":164
+        /* "openptv2/algorithms/tracking_frame_buf.py":164
  *         try:
  *             linkage_file = open(lfname, 'r')
  *             linkage_file.readline()  # skip header             # <<<<<<<<<<<<<<
@@ -7882,7 +7882,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
         }
         __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-        /* "algorithms/tracking_frame_buf.py":162
+        /* "openptv2/algorithms/tracking_frame_buf.py":162
  *     if linkage_file_base:
  *         lfname = f"{linkage_file_base}.{frame_num}"
  *         try:             # <<<<<<<<<<<<<<
@@ -7902,7 +7902,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
       __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
       __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-      /* "algorithms/tracking_frame_buf.py":165
+      /* "openptv2/algorithms/tracking_frame_buf.py":165
  *             linkage_file = open(lfname, 'r')
  *             linkage_file.readline()  # skip header
  *         except FileNotFoundError:             # <<<<<<<<<<<<<<
@@ -7913,7 +7913,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
       if (__pyx_t_9) {
         __Pyx_ErrRestore(0,0,0);
 
-        /* "algorithms/tracking_frame_buf.py":166
+        /* "openptv2/algorithms/tracking_frame_buf.py":166
  *             linkage_file.readline()  # skip header
  *         except FileNotFoundError:
  *             linkage_file = None             # <<<<<<<<<<<<<<
@@ -7926,7 +7926,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
       }
       goto __pyx_L14_except_error;
 
-      /* "algorithms/tracking_frame_buf.py":162
+      /* "openptv2/algorithms/tracking_frame_buf.py":162
  *     if linkage_file_base:
  *         lfname = f"{linkage_file_base}.{frame_num}"
  *         try:             # <<<<<<<<<<<<<<
@@ -7947,7 +7947,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
       __pyx_L17_try_end:;
     }
 
-    /* "algorithms/tracking_frame_buf.py":160
+    /* "openptv2/algorithms/tracking_frame_buf.py":160
  * 
  *     linkage_file = None
  *     if linkage_file_base:             # <<<<<<<<<<<<<<
@@ -7956,7 +7956,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
 */
   }
 
-  /* "algorithms/tracking_frame_buf.py":168
+  /* "openptv2/algorithms/tracking_frame_buf.py":168
  *             linkage_file = None
  * 
  *     prio_file = None             # <<<<<<<<<<<<<<
@@ -7966,7 +7966,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
   __Pyx_INCREF(Py_None);
   __pyx_v_prio_file = Py_None;
 
-  /* "algorithms/tracking_frame_buf.py":169
+  /* "openptv2/algorithms/tracking_frame_buf.py":169
  * 
  *     prio_file = None
  *     if prio_file_base:             # <<<<<<<<<<<<<<
@@ -7976,7 +7976,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
   __pyx_t_13 = __Pyx_PyObject_IsTrue(__pyx_v_prio_file_base); if (unlikely((__pyx_t_13 < 0))) __PYX_ERR(0, 169, __pyx_L1_error)
   if (__pyx_t_13) {
 
-    /* "algorithms/tracking_frame_buf.py":170
+    /* "openptv2/algorithms/tracking_frame_buf.py":170
  *     prio_file = None
  *     if prio_file_base:
  *         pfname = f"{prio_file_base}.{frame_num}"             # <<<<<<<<<<<<<<
@@ -7998,7 +7998,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
     __pyx_v_pfname = ((PyObject*)__pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":171
+    /* "openptv2/algorithms/tracking_frame_buf.py":171
  *     if prio_file_base:
  *         pfname = f"{prio_file_base}.{frame_num}"
  *         try:             # <<<<<<<<<<<<<<
@@ -8014,7 +8014,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
       __Pyx_XGOTREF(__pyx_t_7);
       /*try:*/ {
 
-        /* "algorithms/tracking_frame_buf.py":172
+        /* "openptv2/algorithms/tracking_frame_buf.py":172
  *         pfname = f"{prio_file_base}.{frame_num}"
  *         try:
  *             prio_file = open(pfname, 'r')             # <<<<<<<<<<<<<<
@@ -8033,7 +8033,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
         __Pyx_DECREF_SET(__pyx_v_prio_file, __pyx_t_1);
         __pyx_t_1 = 0;
 
-        /* "algorithms/tracking_frame_buf.py":173
+        /* "openptv2/algorithms/tracking_frame_buf.py":173
  *         try:
  *             prio_file = open(pfname, 'r')
  *             prio_file.readline()  # skip header             # <<<<<<<<<<<<<<
@@ -8052,7 +8052,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
         }
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-        /* "algorithms/tracking_frame_buf.py":171
+        /* "openptv2/algorithms/tracking_frame_buf.py":171
  *     if prio_file_base:
  *         pfname = f"{prio_file_base}.{frame_num}"
  *         try:             # <<<<<<<<<<<<<<
@@ -8072,7 +8072,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
       __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
       __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-      /* "algorithms/tracking_frame_buf.py":174
+      /* "openptv2/algorithms/tracking_frame_buf.py":174
  *             prio_file = open(pfname, 'r')
  *             prio_file.readline()  # skip header
  *         except FileNotFoundError:             # <<<<<<<<<<<<<<
@@ -8083,7 +8083,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
       if (__pyx_t_9) {
         __Pyx_ErrRestore(0,0,0);
 
-        /* "algorithms/tracking_frame_buf.py":175
+        /* "openptv2/algorithms/tracking_frame_buf.py":175
  *             prio_file.readline()  # skip header
  *         except FileNotFoundError:
  *             prio_file = None             # <<<<<<<<<<<<<<
@@ -8096,7 +8096,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
       }
       goto __pyx_L23_except_error;
 
-      /* "algorithms/tracking_frame_buf.py":171
+      /* "openptv2/algorithms/tracking_frame_buf.py":171
  *     if prio_file_base:
  *         pfname = f"{prio_file_base}.{frame_num}"
  *         try:             # <<<<<<<<<<<<<<
@@ -8117,7 +8117,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
       __pyx_L26_try_end:;
     }
 
-    /* "algorithms/tracking_frame_buf.py":169
+    /* "openptv2/algorithms/tracking_frame_buf.py":169
  * 
  *     prio_file = None
  *     if prio_file_base:             # <<<<<<<<<<<<<<
@@ -8126,7 +8126,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
 */
   }
 
-  /* "algorithms/tracking_frame_buf.py":177
+  /* "openptv2/algorithms/tracking_frame_buf.py":177
  *             prio_file = None
  * 
  *     cor_buf = []             # <<<<<<<<<<<<<<
@@ -8138,7 +8138,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
   __pyx_v_cor_buf = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":178
+  /* "openptv2/algorithms/tracking_frame_buf.py":178
  * 
  *     cor_buf = []
  *     path_buf = []             # <<<<<<<<<<<<<<
@@ -8150,7 +8150,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
   __pyx_v_path_buf = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":179
+  /* "openptv2/algorithms/tracking_frame_buf.py":179
  *     cor_buf = []
  *     path_buf = []
  *     targets = 0             # <<<<<<<<<<<<<<
@@ -8160,7 +8160,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
   __Pyx_INCREF(__pyx_mstate_global->__pyx_int_0);
   __pyx_v_targets = __pyx_mstate_global->__pyx_int_0;
 
-  /* "algorithms/tracking_frame_buf.py":181
+  /* "openptv2/algorithms/tracking_frame_buf.py":181
  *     targets = 0
  * 
  *     for line in corres_file:             # <<<<<<<<<<<<<<
@@ -8219,7 +8219,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
     __Pyx_XDECREF_SET(__pyx_v_line, __pyx_t_2);
     __pyx_t_2 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":182
+    /* "openptv2/algorithms/tracking_frame_buf.py":182
  * 
  *     for line in corres_file:
  *         line = line.strip()             # <<<<<<<<<<<<<<
@@ -8239,7 +8239,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
     __Pyx_DECREF_SET(__pyx_v_line, __pyx_t_2);
     __pyx_t_2 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":183
+    /* "openptv2/algorithms/tracking_frame_buf.py":183
  *     for line in corres_file:
  *         line = line.strip()
  *         if not line:             # <<<<<<<<<<<<<<
@@ -8250,7 +8250,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
     __pyx_t_16 = (!__pyx_t_13);
     if (__pyx_t_16) {
 
-      /* "algorithms/tracking_frame_buf.py":184
+      /* "openptv2/algorithms/tracking_frame_buf.py":184
  *         line = line.strip()
  *         if not line:
  *             continue             # <<<<<<<<<<<<<<
@@ -8259,7 +8259,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
 */
       goto __pyx_L29_continue;
 
-      /* "algorithms/tracking_frame_buf.py":183
+      /* "openptv2/algorithms/tracking_frame_buf.py":183
  *     for line in corres_file:
  *         line = line.strip()
  *         if not line:             # <<<<<<<<<<<<<<
@@ -8268,7 +8268,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
 */
     }
 
-    /* "algorithms/tracking_frame_buf.py":187
+    /* "openptv2/algorithms/tracking_frame_buf.py":187
  * 
  *         # Read linkage data if available
  *         if linkage_file is not None:             # <<<<<<<<<<<<<<
@@ -8278,7 +8278,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
     __pyx_t_16 = (__pyx_v_linkage_file != Py_None);
     if (__pyx_t_16) {
 
-      /* "algorithms/tracking_frame_buf.py":188
+      /* "openptv2/algorithms/tracking_frame_buf.py":188
  *         # Read linkage data if available
  *         if linkage_file is not None:
  *             link_line = linkage_file.readline().strip()             # <<<<<<<<<<<<<<
@@ -8309,7 +8309,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
       __Pyx_XDECREF_SET(__pyx_v_link_line, __pyx_t_2);
       __pyx_t_2 = 0;
 
-      /* "algorithms/tracking_frame_buf.py":189
+      /* "openptv2/algorithms/tracking_frame_buf.py":189
  *         if linkage_file is not None:
  *             link_line = linkage_file.readline().strip()
  *             if link_line:             # <<<<<<<<<<<<<<
@@ -8319,7 +8319,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
       __pyx_t_16 = __Pyx_PyObject_IsTrue(__pyx_v_link_line); if (unlikely((__pyx_t_16 < 0))) __PYX_ERR(0, 189, __pyx_L1_error)
       if (__pyx_t_16) {
 
-        /* "algorithms/tracking_frame_buf.py":190
+        /* "openptv2/algorithms/tracking_frame_buf.py":190
  *             link_line = linkage_file.readline().strip()
  *             if link_line:
  *                 link_parts = link_line.split()             # <<<<<<<<<<<<<<
@@ -8339,7 +8339,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
         __Pyx_XDECREF_SET(__pyx_v_link_parts, __pyx_t_2);
         __pyx_t_2 = 0;
 
-        /* "algorithms/tracking_frame_buf.py":191
+        /* "openptv2/algorithms/tracking_frame_buf.py":191
  *             if link_line:
  *                 link_parts = link_line.split()
  *                 prev_val = int(link_parts[0])             # <<<<<<<<<<<<<<
@@ -8354,7 +8354,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
         __Pyx_XDECREF_SET(__pyx_v_prev_val, __pyx_t_12);
         __pyx_t_12 = 0;
 
-        /* "algorithms/tracking_frame_buf.py":192
+        /* "openptv2/algorithms/tracking_frame_buf.py":192
  *                 link_parts = link_line.split()
  *                 prev_val = int(link_parts[0])
  *                 next_val = int(link_parts[1])             # <<<<<<<<<<<<<<
@@ -8369,7 +8369,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
         __Pyx_XDECREF_SET(__pyx_v_next_val, __pyx_t_2);
         __pyx_t_2 = 0;
 
-        /* "algorithms/tracking_frame_buf.py":189
+        /* "openptv2/algorithms/tracking_frame_buf.py":189
  *         if linkage_file is not None:
  *             link_line = linkage_file.readline().strip()
  *             if link_line:             # <<<<<<<<<<<<<<
@@ -8379,7 +8379,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
         goto __pyx_L33;
       }
 
-      /* "algorithms/tracking_frame_buf.py":194
+      /* "openptv2/algorithms/tracking_frame_buf.py":194
  *                 next_val = int(link_parts[1])
  *             else:
  *                 prev_val = PREV_NONE             # <<<<<<<<<<<<<<
@@ -8392,7 +8392,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
         __Pyx_XDECREF_SET(__pyx_v_prev_val, __pyx_t_2);
         __pyx_t_2 = 0;
 
-        /* "algorithms/tracking_frame_buf.py":195
+        /* "openptv2/algorithms/tracking_frame_buf.py":195
  *             else:
  *                 prev_val = PREV_NONE
  *                 next_val = NEXT_NONE             # <<<<<<<<<<<<<<
@@ -8406,7 +8406,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
       }
       __pyx_L33:;
 
-      /* "algorithms/tracking_frame_buf.py":187
+      /* "openptv2/algorithms/tracking_frame_buf.py":187
  * 
  *         # Read linkage data if available
  *         if linkage_file is not None:             # <<<<<<<<<<<<<<
@@ -8416,7 +8416,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
       goto __pyx_L32;
     }
 
-    /* "algorithms/tracking_frame_buf.py":197
+    /* "openptv2/algorithms/tracking_frame_buf.py":197
  *                 next_val = NEXT_NONE
  *         else:
  *             prev_val = PREV_NONE             # <<<<<<<<<<<<<<
@@ -8429,7 +8429,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
       __Pyx_XDECREF_SET(__pyx_v_prev_val, __pyx_t_2);
       __pyx_t_2 = 0;
 
-      /* "algorithms/tracking_frame_buf.py":198
+      /* "openptv2/algorithms/tracking_frame_buf.py":198
  *         else:
  *             prev_val = PREV_NONE
  *             next_val = NEXT_NONE             # <<<<<<<<<<<<<<
@@ -8443,7 +8443,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
     }
     __pyx_L32:;
 
-    /* "algorithms/tracking_frame_buf.py":201
+    /* "openptv2/algorithms/tracking_frame_buf.py":201
  * 
  *         # Read prio data if available
  *         if prio_file is not None:             # <<<<<<<<<<<<<<
@@ -8453,7 +8453,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
     __pyx_t_16 = (__pyx_v_prio_file != Py_None);
     if (__pyx_t_16) {
 
-      /* "algorithms/tracking_frame_buf.py":202
+      /* "openptv2/algorithms/tracking_frame_buf.py":202
  *         # Read prio data if available
  *         if prio_file is not None:
  *             prio_line = prio_file.readline().strip()             # <<<<<<<<<<<<<<
@@ -8484,7 +8484,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
       __Pyx_XDECREF_SET(__pyx_v_prio_line, __pyx_t_2);
       __pyx_t_2 = 0;
 
-      /* "algorithms/tracking_frame_buf.py":203
+      /* "openptv2/algorithms/tracking_frame_buf.py":203
  *         if prio_file is not None:
  *             prio_line = prio_file.readline().strip()
  *             if prio_line:             # <<<<<<<<<<<<<<
@@ -8494,7 +8494,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
       __pyx_t_16 = __Pyx_PyObject_IsTrue(__pyx_v_prio_line); if (unlikely((__pyx_t_16 < 0))) __PYX_ERR(0, 203, __pyx_L1_error)
       if (__pyx_t_16) {
 
-        /* "algorithms/tracking_frame_buf.py":204
+        /* "openptv2/algorithms/tracking_frame_buf.py":204
  *             prio_line = prio_file.readline().strip()
  *             if prio_line:
  *                 prio_parts = prio_line.split()             # <<<<<<<<<<<<<<
@@ -8514,7 +8514,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
         __Pyx_XDECREF_SET(__pyx_v_prio_parts, __pyx_t_2);
         __pyx_t_2 = 0;
 
-        /* "algorithms/tracking_frame_buf.py":205
+        /* "openptv2/algorithms/tracking_frame_buf.py":205
  *             if prio_line:
  *                 prio_parts = prio_line.split()
  *                 prio_val = int(prio_parts[5])             # <<<<<<<<<<<<<<
@@ -8529,7 +8529,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
         __Pyx_XDECREF_SET(__pyx_v_prio_val, ((PyObject*)__pyx_t_4));
         __pyx_t_4 = 0;
 
-        /* "algorithms/tracking_frame_buf.py":203
+        /* "openptv2/algorithms/tracking_frame_buf.py":203
  *         if prio_file is not None:
  *             prio_line = prio_file.readline().strip()
  *             if prio_line:             # <<<<<<<<<<<<<<
@@ -8539,7 +8539,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
         goto __pyx_L35;
       }
 
-      /* "algorithms/tracking_frame_buf.py":207
+      /* "openptv2/algorithms/tracking_frame_buf.py":207
  *                 prio_val = int(prio_parts[5])
  *             else:
  *                 prio_val = 4             # <<<<<<<<<<<<<<
@@ -8552,7 +8552,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
       }
       __pyx_L35:;
 
-      /* "algorithms/tracking_frame_buf.py":201
+      /* "openptv2/algorithms/tracking_frame_buf.py":201
  * 
  *         # Read prio data if available
  *         if prio_file is not None:             # <<<<<<<<<<<<<<
@@ -8562,7 +8562,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
       goto __pyx_L34;
     }
 
-    /* "algorithms/tracking_frame_buf.py":209
+    /* "openptv2/algorithms/tracking_frame_buf.py":209
  *                 prio_val = 4
  *         else:
  *             prio_val = 4             # <<<<<<<<<<<<<<
@@ -8575,7 +8575,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
     }
     __pyx_L34:;
 
-    /* "algorithms/tracking_frame_buf.py":212
+    /* "openptv2/algorithms/tracking_frame_buf.py":212
  * 
  *         # Parse corres line: nr x y z p[0] p[1] p[2] p[3]
  *         parts = line.split()             # <<<<<<<<<<<<<<
@@ -8595,7 +8595,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
     __Pyx_XDECREF_SET(__pyx_v_parts, __pyx_t_4);
     __pyx_t_4 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":213
+    /* "openptv2/algorithms/tracking_frame_buf.py":213
  *         # Parse corres line: nr x y z p[0] p[1] p[2] p[3]
  *         parts = line.split()
  *         if len(parts) < 8:             # <<<<<<<<<<<<<<
@@ -8606,7 +8606,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
     __pyx_t_16 = (__pyx_t_17 < 8);
     if (__pyx_t_16) {
 
-      /* "algorithms/tracking_frame_buf.py":214
+      /* "openptv2/algorithms/tracking_frame_buf.py":214
  *         parts = line.split()
  *         if len(parts) < 8:
  *             break             # <<<<<<<<<<<<<<
@@ -8615,7 +8615,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
 */
       goto __pyx_L30_break;
 
-      /* "algorithms/tracking_frame_buf.py":213
+      /* "openptv2/algorithms/tracking_frame_buf.py":213
  *         # Parse corres line: nr x y z p[0] p[1] p[2] p[3]
  *         parts = line.split()
  *         if len(parts) < 8:             # <<<<<<<<<<<<<<
@@ -8624,7 +8624,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
 */
     }
 
-    /* "algorithms/tracking_frame_buf.py":216
+    /* "openptv2/algorithms/tracking_frame_buf.py":216
  *             break
  * 
  *         path = Pathinfo(             # <<<<<<<<<<<<<<
@@ -8635,7 +8635,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
     __Pyx_GetModuleGlobalName(__pyx_t_12, __pyx_mstate_global->__pyx_n_u_Pathinfo); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 216, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_12);
 
-    /* "algorithms/tracking_frame_buf.py":217
+    /* "openptv2/algorithms/tracking_frame_buf.py":217
  * 
  *         path = Pathinfo(
  *             x=np.array([float(parts[1]), float(parts[2]), float(parts[3])]),             # <<<<<<<<<<<<<<
@@ -8696,7 +8696,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
       __Pyx_GOTREF(__pyx_t_11);
     }
 
-    /* "algorithms/tracking_frame_buf.py":220
+    /* "openptv2/algorithms/tracking_frame_buf.py":220
  *             prev=prev_val,
  *             next=next_val,
  *             prio=prio_val,             # <<<<<<<<<<<<<<
@@ -8736,7 +8736,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
     __Pyx_XDECREF_SET(__pyx_v_path, __pyx_t_4);
     __pyx_t_4 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":225
+    /* "openptv2/algorithms/tracking_frame_buf.py":225
  *         )
  * 
  *         targets += 1             # <<<<<<<<<<<<<<
@@ -8748,7 +8748,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
     __Pyx_DECREF_SET(__pyx_v_targets, __pyx_t_4);
     __pyx_t_4 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":226
+    /* "openptv2/algorithms/tracking_frame_buf.py":226
  * 
  *         targets += 1
  *         cor = Corres(             # <<<<<<<<<<<<<<
@@ -8759,7 +8759,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
     __Pyx_GetModuleGlobalName(__pyx_t_19, __pyx_mstate_global->__pyx_n_u_Corres); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 226, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_19);
 
-    /* "algorithms/tracking_frame_buf.py":228
+    /* "openptv2/algorithms/tracking_frame_buf.py":228
  *         cor = Corres(
  *             nr=targets,
  *             p=np.array([int(parts[4]), int(parts[5]),             # <<<<<<<<<<<<<<
@@ -8783,7 +8783,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
     __Pyx_GOTREF(__pyx_t_21);
     __Pyx_DECREF(__pyx_t_18); __pyx_t_18 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":229
+    /* "openptv2/algorithms/tracking_frame_buf.py":229
  *             nr=targets,
  *             p=np.array([int(parts[4]), int(parts[5]),
  *                          int(parts[6]), int(parts[7])], dtype=np.int32)             # <<<<<<<<<<<<<<
@@ -8801,7 +8801,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
     __Pyx_GOTREF(__pyx_t_23);
     __Pyx_DECREF(__pyx_t_18); __pyx_t_18 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":228
+    /* "openptv2/algorithms/tracking_frame_buf.py":228
  *         cor = Corres(
  *             nr=targets,
  *             p=np.array([int(parts[4]), int(parts[5]),             # <<<<<<<<<<<<<<
@@ -8823,7 +8823,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
     __pyx_t_20 = 0;
     __pyx_t_23 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":229
+    /* "openptv2/algorithms/tracking_frame_buf.py":229
  *             nr=targets,
  *             p=np.array([int(parts[4]), int(parts[5]),
  *                          int(parts[6]), int(parts[7])], dtype=np.int32)             # <<<<<<<<<<<<<<
@@ -8890,7 +8890,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
     __Pyx_XDECREF_SET(__pyx_v_cor, __pyx_t_4);
     __pyx_t_4 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":232
+    /* "openptv2/algorithms/tracking_frame_buf.py":232
  *         )
  * 
  *         cor_buf.append(cor)             # <<<<<<<<<<<<<<
@@ -8899,7 +8899,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
 */
     __pyx_t_24 = __Pyx_PyList_Append(__pyx_v_cor_buf, __pyx_v_cor); if (unlikely(__pyx_t_24 == ((int)-1))) __PYX_ERR(0, 232, __pyx_L1_error)
 
-    /* "algorithms/tracking_frame_buf.py":233
+    /* "openptv2/algorithms/tracking_frame_buf.py":233
  * 
  *         cor_buf.append(cor)
  *         path_buf.append(path)             # <<<<<<<<<<<<<<
@@ -8908,7 +8908,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
 */
     __pyx_t_24 = __Pyx_PyList_Append(__pyx_v_path_buf, __pyx_v_path); if (unlikely(__pyx_t_24 == ((int)-1))) __PYX_ERR(0, 233, __pyx_L1_error)
 
-    /* "algorithms/tracking_frame_buf.py":181
+    /* "openptv2/algorithms/tracking_frame_buf.py":181
  *     targets = 0
  * 
  *     for line in corres_file:             # <<<<<<<<<<<<<<
@@ -8924,7 +8924,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
   goto __pyx_L37_for_end;
   __pyx_L37_for_end:;
 
-  /* "algorithms/tracking_frame_buf.py":235
+  /* "openptv2/algorithms/tracking_frame_buf.py":235
  *         path_buf.append(path)
  * 
  *     corres_file.close()             # <<<<<<<<<<<<<<
@@ -8943,7 +8943,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":236
+  /* "openptv2/algorithms/tracking_frame_buf.py":236
  * 
  *     corres_file.close()
  *     if linkage_file is not None:             # <<<<<<<<<<<<<<
@@ -8953,7 +8953,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
   __pyx_t_16 = (__pyx_v_linkage_file != Py_None);
   if (__pyx_t_16) {
 
-    /* "algorithms/tracking_frame_buf.py":237
+    /* "openptv2/algorithms/tracking_frame_buf.py":237
  *     corres_file.close()
  *     if linkage_file is not None:
  *         linkage_file.close()             # <<<<<<<<<<<<<<
@@ -8972,7 +8972,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
     }
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":236
+    /* "openptv2/algorithms/tracking_frame_buf.py":236
  * 
  *     corres_file.close()
  *     if linkage_file is not None:             # <<<<<<<<<<<<<<
@@ -8981,7 +8981,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
 */
   }
 
-  /* "algorithms/tracking_frame_buf.py":238
+  /* "openptv2/algorithms/tracking_frame_buf.py":238
  *     if linkage_file is not None:
  *         linkage_file.close()
  *     if prio_file is not None:             # <<<<<<<<<<<<<<
@@ -8991,7 +8991,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
   __pyx_t_16 = (__pyx_v_prio_file != Py_None);
   if (__pyx_t_16) {
 
-    /* "algorithms/tracking_frame_buf.py":239
+    /* "openptv2/algorithms/tracking_frame_buf.py":239
  *         linkage_file.close()
  *     if prio_file is not None:
  *         prio_file.close()             # <<<<<<<<<<<<<<
@@ -9010,7 +9010,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
     }
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":238
+    /* "openptv2/algorithms/tracking_frame_buf.py":238
  *     if linkage_file is not None:
  *         linkage_file.close()
  *     if prio_file is not None:             # <<<<<<<<<<<<<<
@@ -9019,7 +9019,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
 */
   }
 
-  /* "algorithms/tracking_frame_buf.py":241
+  /* "openptv2/algorithms/tracking_frame_buf.py":241
  *         prio_file.close()
  * 
  *     return cor_buf, path_buf             # <<<<<<<<<<<<<<
@@ -9039,7 +9039,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/tracking_frame_buf.py":148
+  /* "openptv2/algorithms/tracking_frame_buf.py":148
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -9061,7 +9061,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
   __Pyx_XDECREF(__pyx_t_21);
   __Pyx_XDECREF(__pyx_t_22);
   __Pyx_XDECREF(__pyx_t_23);
-  __Pyx_AddTraceback("algorithms.tracking_frame_buf.read_path_frame", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.read_path_frame", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_fname);
@@ -9091,15 +9091,15 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(PyObj
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_18tracking_frame_buf_17read_path_frame(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_17read_path_frame(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_10algorithms_18tracking_frame_buf_17read_path_frame = {"read_path_frame", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_18tracking_frame_buf_17read_path_frame, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10algorithms_18tracking_frame_buf_17read_path_frame(PyObject *__pyx_self, 
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_18tracking_frame_buf_17read_path_frame = {"read_path_frame", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_17read_path_frame, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_17read_path_frame(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -9185,11 +9185,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.tracking_frame_buf.read_path_frame", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.read_path_frame", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_18tracking_frame_buf_16read_path_frame(__pyx_self, __pyx_v_corres_file_base, __pyx_v_linkage_file_base, __pyx_v_prio_file_base, __pyx_v_frame_num);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_16read_path_frame(__pyx_self, __pyx_v_corres_file_base, __pyx_v_linkage_file_base, __pyx_v_prio_file_base, __pyx_v_frame_num);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -9199,7 +9199,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_16read_path_frame(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_corres_file_base, PyObject *__pyx_v_linkage_file_base, PyObject *__pyx_v_prio_file_base, PyObject *__pyx_v_frame_num) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_16read_path_frame(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_corres_file_base, PyObject *__pyx_v_linkage_file_base, PyObject *__pyx_v_prio_file_base, PyObject *__pyx_v_frame_num) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -9208,7 +9208,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_16read_path_frame(CY
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("read_path_frame", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(__pyx_v_corres_file_base, __pyx_v_linkage_file_base, __pyx_v_prio_file_base, __pyx_v_frame_num, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 148, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_18tracking_frame_buf_read_path_frame(__pyx_v_corres_file_base, __pyx_v_linkage_file_base, __pyx_v_prio_file_base, __pyx_v_frame_num, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 148, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -9217,7 +9217,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_16read_path_frame(CY
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.tracking_frame_buf.read_path_frame", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.read_path_frame", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -9225,7 +9225,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_16read_path_frame(CY
   return __pyx_r;
 }
 
-/* "algorithms/tracking_frame_buf.py":244
+/* "openptv2/algorithms/tracking_frame_buf.py":244
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -9233,14 +9233,14 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_16read_path_frame(CY
  *                      linkage_file_base, prio_file_base, frame_num):
 */
 
-static PyObject *__pyx_pw_10algorithms_18tracking_frame_buf_19write_path_frame(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_19write_path_frame(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyObject *__pyx_v_cor_buf, PyObject *__pyx_v_path_buf, PyObject *__pyx_v_num_parts, PyObject *__pyx_v_corres_file_base, PyObject *__pyx_v_linkage_file_base, PyObject *__pyx_v_prio_file_base, PyObject *__pyx_v_frame_num, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_18tracking_frame_buf_write_path_frame(PyObject *__pyx_v_cor_buf, PyObject *__pyx_v_path_buf, PyObject *__pyx_v_num_parts, PyObject *__pyx_v_corres_file_base, PyObject *__pyx_v_linkage_file_base, PyObject *__pyx_v_prio_file_base, PyObject *__pyx_v_frame_num, CYTHON_UNUSED int __pyx_skip_dispatch) {
   PyObject *__pyx_v_corres_fname = NULL;
   PyObject *__pyx_v_linkage_fname = NULL;
   PyObject *__pyx_v_corres_file = NULL;
@@ -9284,7 +9284,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("write_path_frame", 0);
 
-  /* "algorithms/tracking_frame_buf.py":247
+  /* "openptv2/algorithms/tracking_frame_buf.py":247
  * def write_path_frame(cor_buf, path_buf, num_parts, corres_file_base,
  *                      linkage_file_base, prio_file_base, frame_num):
  *     corres_fname = f"{corres_file_base}.{frame_num}"             # <<<<<<<<<<<<<<
@@ -9306,7 +9306,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
   __pyx_v_corres_fname = ((PyObject*)__pyx_t_4);
   __pyx_t_4 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":248
+  /* "openptv2/algorithms/tracking_frame_buf.py":248
  *                      linkage_file_base, prio_file_base, frame_num):
  *     corres_fname = f"{corres_file_base}.{frame_num}"
  *     linkage_fname = f"{linkage_file_base}.{frame_num}" if linkage_file_base else None             # <<<<<<<<<<<<<<
@@ -9336,7 +9336,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
   __pyx_v_linkage_fname = __pyx_t_4;
   __pyx_t_4 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":250
+  /* "openptv2/algorithms/tracking_frame_buf.py":250
  *     linkage_fname = f"{linkage_file_base}.{frame_num}" if linkage_file_base else None
  * 
  *     try:             # <<<<<<<<<<<<<<
@@ -9352,7 +9352,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
     __Pyx_XGOTREF(__pyx_t_9);
     /*try:*/ {
 
-      /* "algorithms/tracking_frame_buf.py":251
+      /* "openptv2/algorithms/tracking_frame_buf.py":251
  * 
  *     try:
  *         corres_file = open(corres_fname, 'w')             # <<<<<<<<<<<<<<
@@ -9371,7 +9371,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
       __pyx_v_corres_file = __pyx_t_4;
       __pyx_t_4 = 0;
 
-      /* "algorithms/tracking_frame_buf.py":250
+      /* "openptv2/algorithms/tracking_frame_buf.py":250
  *     linkage_fname = f"{linkage_file_base}.{frame_num}" if linkage_file_base else None
  * 
  *     try:             # <<<<<<<<<<<<<<
@@ -9389,7 +9389,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
     __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":252
+    /* "openptv2/algorithms/tracking_frame_buf.py":252
  *     try:
  *         corres_file = open(corres_fname, 'w')
  *     except IOError:             # <<<<<<<<<<<<<<
@@ -9400,7 +9400,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
     if (__pyx_t_11) {
       __Pyx_ErrRestore(0,0,0);
 
-      /* "algorithms/tracking_frame_buf.py":253
+      /* "openptv2/algorithms/tracking_frame_buf.py":253
  *         corres_file = open(corres_fname, 'w')
  *     except IOError:
  *         return False             # <<<<<<<<<<<<<<
@@ -9414,7 +9414,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
     }
     goto __pyx_L5_except_error;
 
-    /* "algorithms/tracking_frame_buf.py":250
+    /* "openptv2/algorithms/tracking_frame_buf.py":250
  *     linkage_fname = f"{linkage_file_base}.{frame_num}" if linkage_file_base else None
  * 
  *     try:             # <<<<<<<<<<<<<<
@@ -9436,7 +9436,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
     __pyx_L8_try_end:;
   }
 
-  /* "algorithms/tracking_frame_buf.py":255
+  /* "openptv2/algorithms/tracking_frame_buf.py":255
  *         return False
  * 
  *     linkage_file = None             # <<<<<<<<<<<<<<
@@ -9446,7 +9446,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
   __Pyx_INCREF(Py_None);
   __pyx_v_linkage_file = Py_None;
 
-  /* "algorithms/tracking_frame_buf.py":256
+  /* "openptv2/algorithms/tracking_frame_buf.py":256
  * 
  *     linkage_file = None
  *     if linkage_fname:             # <<<<<<<<<<<<<<
@@ -9456,7 +9456,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
   __pyx_t_5 = __Pyx_PyObject_IsTrue(__pyx_v_linkage_fname); if (unlikely((__pyx_t_5 < 0))) __PYX_ERR(0, 256, __pyx_L1_error)
   if (__pyx_t_5) {
 
-    /* "algorithms/tracking_frame_buf.py":257
+    /* "openptv2/algorithms/tracking_frame_buf.py":257
  *     linkage_file = None
  *     if linkage_fname:
  *         try:             # <<<<<<<<<<<<<<
@@ -9472,7 +9472,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
       __Pyx_XGOTREF(__pyx_t_7);
       /*try:*/ {
 
-        /* "algorithms/tracking_frame_buf.py":258
+        /* "openptv2/algorithms/tracking_frame_buf.py":258
  *     if linkage_fname:
  *         try:
  *             linkage_file = open(linkage_fname, 'w')             # <<<<<<<<<<<<<<
@@ -9491,7 +9491,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
         __Pyx_DECREF_SET(__pyx_v_linkage_file, __pyx_t_4);
         __pyx_t_4 = 0;
 
-        /* "algorithms/tracking_frame_buf.py":257
+        /* "openptv2/algorithms/tracking_frame_buf.py":257
  *     linkage_file = None
  *     if linkage_fname:
  *         try:             # <<<<<<<<<<<<<<
@@ -9509,7 +9509,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
       __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
       __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-      /* "algorithms/tracking_frame_buf.py":259
+      /* "openptv2/algorithms/tracking_frame_buf.py":259
  *         try:
  *             linkage_file = open(linkage_fname, 'w')
  *         except IOError:             # <<<<<<<<<<<<<<
@@ -9518,13 +9518,13 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
 */
       __pyx_t_11 = __Pyx_PyErr_ExceptionMatches(((PyObject *)(((PyTypeObject*)PyExc_IOError))));
       if (__pyx_t_11) {
-        __Pyx_AddTraceback("algorithms.tracking_frame_buf.write_path_frame", __pyx_clineno, __pyx_lineno, __pyx_filename);
+        __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.write_path_frame", __pyx_clineno, __pyx_lineno, __pyx_filename);
         if (__Pyx_GetException(&__pyx_t_4, &__pyx_t_6, &__pyx_t_1) < 0) __PYX_ERR(0, 259, __pyx_L14_except_error)
         __Pyx_XGOTREF(__pyx_t_4);
         __Pyx_XGOTREF(__pyx_t_6);
         __Pyx_XGOTREF(__pyx_t_1);
 
-        /* "algorithms/tracking_frame_buf.py":260
+        /* "openptv2/algorithms/tracking_frame_buf.py":260
  *             linkage_file = open(linkage_fname, 'w')
  *         except IOError:
  *             corres_file.close()             # <<<<<<<<<<<<<<
@@ -9543,7 +9543,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
         }
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-        /* "algorithms/tracking_frame_buf.py":261
+        /* "openptv2/algorithms/tracking_frame_buf.py":261
  *         except IOError:
  *             corres_file.close()
  *             return False             # <<<<<<<<<<<<<<
@@ -9560,7 +9560,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
       }
       goto __pyx_L14_except_error;
 
-      /* "algorithms/tracking_frame_buf.py":257
+      /* "openptv2/algorithms/tracking_frame_buf.py":257
  *     linkage_file = None
  *     if linkage_fname:
  *         try:             # <<<<<<<<<<<<<<
@@ -9582,7 +9582,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
       __pyx_L17_try_end:;
     }
 
-    /* "algorithms/tracking_frame_buf.py":256
+    /* "openptv2/algorithms/tracking_frame_buf.py":256
  * 
  *     linkage_file = None
  *     if linkage_fname:             # <<<<<<<<<<<<<<
@@ -9591,7 +9591,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
 */
   }
 
-  /* "algorithms/tracking_frame_buf.py":263
+  /* "openptv2/algorithms/tracking_frame_buf.py":263
  *             return False
  * 
  *     prio_file = None             # <<<<<<<<<<<<<<
@@ -9601,7 +9601,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
   __Pyx_INCREF(Py_None);
   __pyx_v_prio_file = Py_None;
 
-  /* "algorithms/tracking_frame_buf.py":264
+  /* "openptv2/algorithms/tracking_frame_buf.py":264
  * 
  *     prio_file = None
  *     if prio_file_base:             # <<<<<<<<<<<<<<
@@ -9611,7 +9611,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
   __pyx_t_5 = __Pyx_PyObject_IsTrue(__pyx_v_prio_file_base); if (unlikely((__pyx_t_5 < 0))) __PYX_ERR(0, 264, __pyx_L1_error)
   if (__pyx_t_5) {
 
-    /* "algorithms/tracking_frame_buf.py":265
+    /* "openptv2/algorithms/tracking_frame_buf.py":265
  *     prio_file = None
  *     if prio_file_base:
  *         prio_fname = f"{prio_file_base}.{frame_num}"             # <<<<<<<<<<<<<<
@@ -9633,7 +9633,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
     __pyx_v_prio_fname = ((PyObject*)__pyx_t_4);
     __pyx_t_4 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":266
+    /* "openptv2/algorithms/tracking_frame_buf.py":266
  *     if prio_file_base:
  *         prio_fname = f"{prio_file_base}.{frame_num}"
  *         try:             # <<<<<<<<<<<<<<
@@ -9649,7 +9649,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
       __Pyx_XGOTREF(__pyx_t_9);
       /*try:*/ {
 
-        /* "algorithms/tracking_frame_buf.py":267
+        /* "openptv2/algorithms/tracking_frame_buf.py":267
  *         prio_fname = f"{prio_file_base}.{frame_num}"
  *         try:
  *             prio_file = open(prio_fname, 'w')             # <<<<<<<<<<<<<<
@@ -9668,7 +9668,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
         __Pyx_DECREF_SET(__pyx_v_prio_file, __pyx_t_4);
         __pyx_t_4 = 0;
 
-        /* "algorithms/tracking_frame_buf.py":266
+        /* "openptv2/algorithms/tracking_frame_buf.py":266
  *     if prio_file_base:
  *         prio_fname = f"{prio_file_base}.{frame_num}"
  *         try:             # <<<<<<<<<<<<<<
@@ -9687,7 +9687,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
       __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
       __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-      /* "algorithms/tracking_frame_buf.py":268
+      /* "openptv2/algorithms/tracking_frame_buf.py":268
  *         try:
  *             prio_file = open(prio_fname, 'w')
  *         except IOError:             # <<<<<<<<<<<<<<
@@ -9696,13 +9696,13 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
 */
       __pyx_t_11 = __Pyx_PyErr_ExceptionMatches(((PyObject *)(((PyTypeObject*)PyExc_IOError))));
       if (__pyx_t_11) {
-        __Pyx_AddTraceback("algorithms.tracking_frame_buf.write_path_frame", __pyx_clineno, __pyx_lineno, __pyx_filename);
+        __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.write_path_frame", __pyx_clineno, __pyx_lineno, __pyx_filename);
         if (__Pyx_GetException(&__pyx_t_4, &__pyx_t_6, &__pyx_t_1) < 0) __PYX_ERR(0, 268, __pyx_L23_except_error)
         __Pyx_XGOTREF(__pyx_t_4);
         __Pyx_XGOTREF(__pyx_t_6);
         __Pyx_XGOTREF(__pyx_t_1);
 
-        /* "algorithms/tracking_frame_buf.py":269
+        /* "openptv2/algorithms/tracking_frame_buf.py":269
  *             prio_file = open(prio_fname, 'w')
  *         except IOError:
  *             corres_file.close()             # <<<<<<<<<<<<<<
@@ -9721,7 +9721,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
         }
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-        /* "algorithms/tracking_frame_buf.py":270
+        /* "openptv2/algorithms/tracking_frame_buf.py":270
  *         except IOError:
  *             corres_file.close()
  *             if linkage_file:             # <<<<<<<<<<<<<<
@@ -9731,7 +9731,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
         __pyx_t_5 = __Pyx_PyObject_IsTrue(__pyx_v_linkage_file); if (unlikely((__pyx_t_5 < 0))) __PYX_ERR(0, 270, __pyx_L23_except_error)
         if (__pyx_t_5) {
 
-          /* "algorithms/tracking_frame_buf.py":271
+          /* "openptv2/algorithms/tracking_frame_buf.py":271
  *             corres_file.close()
  *             if linkage_file:
  *                 linkage_file.close()             # <<<<<<<<<<<<<<
@@ -9750,7 +9750,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
           }
           __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-          /* "algorithms/tracking_frame_buf.py":270
+          /* "openptv2/algorithms/tracking_frame_buf.py":270
  *         except IOError:
  *             corres_file.close()
  *             if linkage_file:             # <<<<<<<<<<<<<<
@@ -9759,7 +9759,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
 */
         }
 
-        /* "algorithms/tracking_frame_buf.py":272
+        /* "openptv2/algorithms/tracking_frame_buf.py":272
  *             if linkage_file:
  *                 linkage_file.close()
  *             return False             # <<<<<<<<<<<<<<
@@ -9776,7 +9776,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
       }
       goto __pyx_L23_except_error;
 
-      /* "algorithms/tracking_frame_buf.py":266
+      /* "openptv2/algorithms/tracking_frame_buf.py":266
  *     if prio_file_base:
  *         prio_fname = f"{prio_file_base}.{frame_num}"
  *         try:             # <<<<<<<<<<<<<<
@@ -9798,7 +9798,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
       __pyx_L26_try_end:;
     }
 
-    /* "algorithms/tracking_frame_buf.py":264
+    /* "openptv2/algorithms/tracking_frame_buf.py":264
  * 
  *     prio_file = None
  *     if prio_file_base:             # <<<<<<<<<<<<<<
@@ -9807,7 +9807,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
 */
   }
 
-  /* "algorithms/tracking_frame_buf.py":274
+  /* "openptv2/algorithms/tracking_frame_buf.py":274
  *             return False
  * 
  *     corres_file.write(f"{num_parts}\n")             # <<<<<<<<<<<<<<
@@ -9832,7 +9832,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":275
+  /* "openptv2/algorithms/tracking_frame_buf.py":275
  * 
  *     corres_file.write(f"{num_parts}\n")
  *     if linkage_file:             # <<<<<<<<<<<<<<
@@ -9842,7 +9842,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
   __pyx_t_5 = __Pyx_PyObject_IsTrue(__pyx_v_linkage_file); if (unlikely((__pyx_t_5 < 0))) __PYX_ERR(0, 275, __pyx_L1_error)
   if (__pyx_t_5) {
 
-    /* "algorithms/tracking_frame_buf.py":276
+    /* "openptv2/algorithms/tracking_frame_buf.py":276
  *     corres_file.write(f"{num_parts}\n")
  *     if linkage_file:
  *         linkage_file.write(f"{num_parts}\n")             # <<<<<<<<<<<<<<
@@ -9867,7 +9867,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
     }
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":275
+    /* "openptv2/algorithms/tracking_frame_buf.py":275
  * 
  *     corres_file.write(f"{num_parts}\n")
  *     if linkage_file:             # <<<<<<<<<<<<<<
@@ -9876,7 +9876,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
 */
   }
 
-  /* "algorithms/tracking_frame_buf.py":277
+  /* "openptv2/algorithms/tracking_frame_buf.py":277
  *     if linkage_file:
  *         linkage_file.write(f"{num_parts}\n")
  *     if prio_file:             # <<<<<<<<<<<<<<
@@ -9886,7 +9886,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
   __pyx_t_5 = __Pyx_PyObject_IsTrue(__pyx_v_prio_file); if (unlikely((__pyx_t_5 < 0))) __PYX_ERR(0, 277, __pyx_L1_error)
   if (__pyx_t_5) {
 
-    /* "algorithms/tracking_frame_buf.py":278
+    /* "openptv2/algorithms/tracking_frame_buf.py":278
  *         linkage_file.write(f"{num_parts}\n")
  *     if prio_file:
  *         prio_file.write(f"{num_parts}\n")             # <<<<<<<<<<<<<<
@@ -9911,7 +9911,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
     }
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":277
+    /* "openptv2/algorithms/tracking_frame_buf.py":277
  *     if linkage_file:
  *         linkage_file.write(f"{num_parts}\n")
  *     if prio_file:             # <<<<<<<<<<<<<<
@@ -9920,7 +9920,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
 */
   }
 
-  /* "algorithms/tracking_frame_buf.py":280
+  /* "openptv2/algorithms/tracking_frame_buf.py":280
  *         prio_file.write(f"{num_parts}\n")
  * 
  *     for pix in range(num_parts):             # <<<<<<<<<<<<<<
@@ -9956,7 +9956,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
     __Pyx_XDECREF_SET(__pyx_v_pix, __pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":281
+    /* "openptv2/algorithms/tracking_frame_buf.py":281
  * 
  *     for pix in range(num_parts):
  *         p = path_buf[pix]             # <<<<<<<<<<<<<<
@@ -9968,7 +9968,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
     __Pyx_XDECREF_SET(__pyx_v_p, __pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":284
+    /* "openptv2/algorithms/tracking_frame_buf.py":284
  * 
  *         # Handle cor_buf: can be list of Corres objects, or (nr_array, p_array) tuple
  *         if isinstance(cor_buf, (list, tuple)) and len(cor_buf) == 2 and isinstance(cor_buf[0], np.ndarray):             # <<<<<<<<<<<<<<
@@ -10010,7 +10010,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
     __pyx_L35_bool_binop_done:;
     if (__pyx_t_5) {
 
-      /* "algorithms/tracking_frame_buf.py":285
+      /* "openptv2/algorithms/tracking_frame_buf.py":285
  *         # Handle cor_buf: can be list of Corres objects, or (nr_array, p_array) tuple
  *         if isinstance(cor_buf, (list, tuple)) and len(cor_buf) == 2 and isinstance(cor_buf[0], np.ndarray):
  *             c_nr = int(cor_buf[0][pix])             # <<<<<<<<<<<<<<
@@ -10028,7 +10028,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
       __Pyx_XDECREF_SET(__pyx_v_c_nr, ((PyObject*)__pyx_t_2));
       __pyx_t_2 = 0;
 
-      /* "algorithms/tracking_frame_buf.py":286
+      /* "openptv2/algorithms/tracking_frame_buf.py":286
  *         if isinstance(cor_buf, (list, tuple)) and len(cor_buf) == 2 and isinstance(cor_buf[0], np.ndarray):
  *             c_nr = int(cor_buf[0][pix])
  *             c_p = cor_buf[1][pix]             # <<<<<<<<<<<<<<
@@ -10043,7 +10043,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
       __Pyx_XDECREF_SET(__pyx_v_c_p, __pyx_t_1);
       __pyx_t_1 = 0;
 
-      /* "algorithms/tracking_frame_buf.py":284
+      /* "openptv2/algorithms/tracking_frame_buf.py":284
  * 
  *         # Handle cor_buf: can be list of Corres objects, or (nr_array, p_array) tuple
  *         if isinstance(cor_buf, (list, tuple)) and len(cor_buf) == 2 and isinstance(cor_buf[0], np.ndarray):             # <<<<<<<<<<<<<<
@@ -10053,7 +10053,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
       goto __pyx_L34;
     }
 
-    /* "algorithms/tracking_frame_buf.py":287
+    /* "openptv2/algorithms/tracking_frame_buf.py":287
  *             c_nr = int(cor_buf[0][pix])
  *             c_p = cor_buf[1][pix]
  *         elif isinstance(cor_buf, list) and isinstance(cor_buf[0], Corres):             # <<<<<<<<<<<<<<
@@ -10077,7 +10077,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
     __pyx_L40_bool_binop_done:;
     if (__pyx_t_5) {
 
-      /* "algorithms/tracking_frame_buf.py":288
+      /* "openptv2/algorithms/tracking_frame_buf.py":288
  *             c_p = cor_buf[1][pix]
  *         elif isinstance(cor_buf, list) and isinstance(cor_buf[0], Corres):
  *             c_p = cor_buf[pix].p             # <<<<<<<<<<<<<<
@@ -10092,7 +10092,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
       __Pyx_XDECREF_SET(__pyx_v_c_p, __pyx_t_1);
       __pyx_t_1 = 0;
 
-      /* "algorithms/tracking_frame_buf.py":287
+      /* "openptv2/algorithms/tracking_frame_buf.py":287
  *             c_nr = int(cor_buf[0][pix])
  *             c_p = cor_buf[1][pix]
  *         elif isinstance(cor_buf, list) and isinstance(cor_buf[0], Corres):             # <<<<<<<<<<<<<<
@@ -10102,7 +10102,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
       goto __pyx_L34;
     }
 
-    /* "algorithms/tracking_frame_buf.py":290
+    /* "openptv2/algorithms/tracking_frame_buf.py":290
  *             c_p = cor_buf[pix].p
  *         else:
  *             c_p = cor_buf[pix].p if hasattr(cor_buf[pix], 'p') else np.zeros(4, dtype=np.int32)             # <<<<<<<<<<<<<<
@@ -10167,7 +10167,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
     }
     __pyx_L34:;
 
-    /* "algorithms/tracking_frame_buf.py":292
+    /* "openptv2/algorithms/tracking_frame_buf.py":292
  *             c_p = cor_buf[pix].p if hasattr(cor_buf[pix], 'p') else np.zeros(4, dtype=np.int32)
  * 
  *         if linkage_file:             # <<<<<<<<<<<<<<
@@ -10177,7 +10177,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
     __pyx_t_5 = __Pyx_PyObject_IsTrue(__pyx_v_linkage_file); if (unlikely((__pyx_t_5 < 0))) __PYX_ERR(0, 292, __pyx_L1_error)
     if (__pyx_t_5) {
 
-      /* "algorithms/tracking_frame_buf.py":293
+      /* "openptv2/algorithms/tracking_frame_buf.py":293
  * 
  *         if linkage_file:
  *             linkage_file.write(             # <<<<<<<<<<<<<<
@@ -10187,7 +10187,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
       __pyx_t_4 = __pyx_v_linkage_file;
       __Pyx_INCREF(__pyx_t_4);
 
-      /* "algorithms/tracking_frame_buf.py":294
+      /* "openptv2/algorithms/tracking_frame_buf.py":294
  *         if linkage_file:
  *             linkage_file.write(
  *                 f"{p.prev:4d} {p.next:4d} {p.x[0]:10.3f} {p.x[1]:10.3f} {p.x[2]:10.3f}\n"             # <<<<<<<<<<<<<<
@@ -10257,7 +10257,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
       }
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "algorithms/tracking_frame_buf.py":292
+      /* "openptv2/algorithms/tracking_frame_buf.py":292
  *             c_p = cor_buf[pix].p if hasattr(cor_buf[pix], 'p') else np.zeros(4, dtype=np.int32)
  * 
  *         if linkage_file:             # <<<<<<<<<<<<<<
@@ -10266,7 +10266,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
 */
     }
 
-    /* "algorithms/tracking_frame_buf.py":297
+    /* "openptv2/algorithms/tracking_frame_buf.py":297
  *             )
  * 
  *         corres_file.write(             # <<<<<<<<<<<<<<
@@ -10276,7 +10276,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
     __pyx_t_20 = __pyx_v_corres_file;
     __Pyx_INCREF(__pyx_t_20);
 
-    /* "algorithms/tracking_frame_buf.py":298
+    /* "openptv2/algorithms/tracking_frame_buf.py":298
  * 
  *         corres_file.write(
  *             f"{pix + 1:4d} {p.x[0]:9.3f} {p.x[1]:9.3f} {p.x[2]:9.3f} "             # <<<<<<<<<<<<<<
@@ -10313,7 +10313,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
     __Pyx_GOTREF(__pyx_t_17);
     __Pyx_DECREF(__pyx_t_18); __pyx_t_18 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":299
+    /* "openptv2/algorithms/tracking_frame_buf.py":299
  *         corres_file.write(
  *             f"{pix + 1:4d} {p.x[0]:9.3f} {p.x[1]:9.3f} {p.x[2]:9.3f} "
  *             f"{c_p[0]:4d} {c_p[1]:4d} {c_p[2]:4d} {c_p[3]:4d}\n"             # <<<<<<<<<<<<<<
@@ -10357,7 +10357,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
     __pyx_t_25[14] = __pyx_t_24;
     __pyx_t_25[15] = __pyx_mstate_global->__pyx_kp_u_;
 
-    /* "algorithms/tracking_frame_buf.py":298
+    /* "openptv2/algorithms/tracking_frame_buf.py":298
  * 
  *         corres_file.write(
  *             f"{pix + 1:4d} {p.x[0]:9.3f} {p.x[1]:9.3f} {p.x[2]:9.3f} "             # <<<<<<<<<<<<<<
@@ -10386,7 +10386,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
     }
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":302
+    /* "openptv2/algorithms/tracking_frame_buf.py":302
  *         )
  * 
  *         if prio_file:             # <<<<<<<<<<<<<<
@@ -10396,7 +10396,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
     __pyx_t_5 = __Pyx_PyObject_IsTrue(__pyx_v_prio_file); if (unlikely((__pyx_t_5 < 0))) __PYX_ERR(0, 302, __pyx_L1_error)
     if (__pyx_t_5) {
 
-      /* "algorithms/tracking_frame_buf.py":303
+      /* "openptv2/algorithms/tracking_frame_buf.py":303
  * 
  *         if prio_file:
  *             prio_file.write(             # <<<<<<<<<<<<<<
@@ -10406,7 +10406,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
       __pyx_t_18 = __pyx_v_prio_file;
       __Pyx_INCREF(__pyx_t_18);
 
-      /* "algorithms/tracking_frame_buf.py":304
+      /* "openptv2/algorithms/tracking_frame_buf.py":304
  *         if prio_file:
  *             prio_file.write(
  *                 f"{p.prev:4d} {p.next:4d} {p.x[0]:10.3f} {p.x[1]:10.3f} {p.x[2]:10.3f} {p.prio:d}\n"             # <<<<<<<<<<<<<<
@@ -10484,7 +10484,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
       }
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "algorithms/tracking_frame_buf.py":302
+      /* "openptv2/algorithms/tracking_frame_buf.py":302
  *         )
  * 
  *         if prio_file:             # <<<<<<<<<<<<<<
@@ -10493,7 +10493,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
 */
     }
 
-    /* "algorithms/tracking_frame_buf.py":280
+    /* "openptv2/algorithms/tracking_frame_buf.py":280
  *         prio_file.write(f"{num_parts}\n")
  * 
  *     for pix in range(num_parts):             # <<<<<<<<<<<<<<
@@ -10503,7 +10503,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
   }
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":307
+  /* "openptv2/algorithms/tracking_frame_buf.py":307
  *             )
  * 
  *     corres_file.close()             # <<<<<<<<<<<<<<
@@ -10522,7 +10522,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
   }
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":308
+  /* "openptv2/algorithms/tracking_frame_buf.py":308
  * 
  *     corres_file.close()
  *     if linkage_file:             # <<<<<<<<<<<<<<
@@ -10532,7 +10532,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
   __pyx_t_5 = __Pyx_PyObject_IsTrue(__pyx_v_linkage_file); if (unlikely((__pyx_t_5 < 0))) __PYX_ERR(0, 308, __pyx_L1_error)
   if (__pyx_t_5) {
 
-    /* "algorithms/tracking_frame_buf.py":309
+    /* "openptv2/algorithms/tracking_frame_buf.py":309
  *     corres_file.close()
  *     if linkage_file:
  *         linkage_file.close()             # <<<<<<<<<<<<<<
@@ -10551,7 +10551,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
     }
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":308
+    /* "openptv2/algorithms/tracking_frame_buf.py":308
  * 
  *     corres_file.close()
  *     if linkage_file:             # <<<<<<<<<<<<<<
@@ -10560,7 +10560,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
 */
   }
 
-  /* "algorithms/tracking_frame_buf.py":310
+  /* "openptv2/algorithms/tracking_frame_buf.py":310
  *     if linkage_file:
  *         linkage_file.close()
  *     if prio_file:             # <<<<<<<<<<<<<<
@@ -10570,7 +10570,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
   __pyx_t_5 = __Pyx_PyObject_IsTrue(__pyx_v_prio_file); if (unlikely((__pyx_t_5 < 0))) __PYX_ERR(0, 310, __pyx_L1_error)
   if (__pyx_t_5) {
 
-    /* "algorithms/tracking_frame_buf.py":311
+    /* "openptv2/algorithms/tracking_frame_buf.py":311
  *         linkage_file.close()
  *     if prio_file:
  *         prio_file.close()             # <<<<<<<<<<<<<<
@@ -10589,7 +10589,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
     }
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":310
+    /* "openptv2/algorithms/tracking_frame_buf.py":310
  *     if linkage_file:
  *         linkage_file.close()
  *     if prio_file:             # <<<<<<<<<<<<<<
@@ -10598,7 +10598,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
 */
   }
 
-  /* "algorithms/tracking_frame_buf.py":313
+  /* "openptv2/algorithms/tracking_frame_buf.py":313
  *         prio_file.close()
  * 
  *     return True             # <<<<<<<<<<<<<<
@@ -10610,7 +10610,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
   __pyx_r = Py_True;
   goto __pyx_L0;
 
-  /* "algorithms/tracking_frame_buf.py":244
+  /* "openptv2/algorithms/tracking_frame_buf.py":244
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -10632,7 +10632,7 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
   __Pyx_XDECREF(__pyx_t_22);
   __Pyx_XDECREF(__pyx_t_23);
   __Pyx_XDECREF(__pyx_t_24);
-  __Pyx_AddTraceback("algorithms.tracking_frame_buf.write_path_frame", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.write_path_frame", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_corres_fname);
@@ -10651,15 +10651,15 @@ static PyObject *__pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(PyOb
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_18tracking_frame_buf_19write_path_frame(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_19write_path_frame(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_10algorithms_18tracking_frame_buf_19write_path_frame = {"write_path_frame", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_18tracking_frame_buf_19write_path_frame, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10algorithms_18tracking_frame_buf_19write_path_frame(PyObject *__pyx_self, 
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_18tracking_frame_buf_19write_path_frame = {"write_path_frame", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_19write_path_frame, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_19write_path_frame(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -10769,11 +10769,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.tracking_frame_buf.write_path_frame", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.write_path_frame", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_18tracking_frame_buf_18write_path_frame(__pyx_self, __pyx_v_cor_buf, __pyx_v_path_buf, __pyx_v_num_parts, __pyx_v_corres_file_base, __pyx_v_linkage_file_base, __pyx_v_prio_file_base, __pyx_v_frame_num);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_18write_path_frame(__pyx_self, __pyx_v_cor_buf, __pyx_v_path_buf, __pyx_v_num_parts, __pyx_v_corres_file_base, __pyx_v_linkage_file_base, __pyx_v_prio_file_base, __pyx_v_frame_num);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -10783,7 +10783,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_18write_path_frame(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cor_buf, PyObject *__pyx_v_path_buf, PyObject *__pyx_v_num_parts, PyObject *__pyx_v_corres_file_base, PyObject *__pyx_v_linkage_file_base, PyObject *__pyx_v_prio_file_base, PyObject *__pyx_v_frame_num) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_18write_path_frame(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cor_buf, PyObject *__pyx_v_path_buf, PyObject *__pyx_v_num_parts, PyObject *__pyx_v_corres_file_base, PyObject *__pyx_v_linkage_file_base, PyObject *__pyx_v_prio_file_base, PyObject *__pyx_v_frame_num) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -10792,7 +10792,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_18write_path_frame(C
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("write_path_frame", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(__pyx_v_cor_buf, __pyx_v_path_buf, __pyx_v_num_parts, __pyx_v_corres_file_base, __pyx_v_linkage_file_base, __pyx_v_prio_file_base, __pyx_v_frame_num, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 244, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_18tracking_frame_buf_write_path_frame(__pyx_v_cor_buf, __pyx_v_path_buf, __pyx_v_num_parts, __pyx_v_corres_file_base, __pyx_v_linkage_file_base, __pyx_v_prio_file_base, __pyx_v_frame_num, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 244, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -10801,7 +10801,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_18write_path_frame(C
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.tracking_frame_buf.write_path_frame", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.write_path_frame", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -10809,7 +10809,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_18write_path_frame(C
   return __pyx_r;
 }
 
-/* "algorithms/tracking_frame_buf.py":317
+/* "openptv2/algorithms/tracking_frame_buf.py":317
  * 
  * class Frame:
  *     def __init__(self, num_cams=4, max_targets=100):             # <<<<<<<<<<<<<<
@@ -10818,15 +10818,15 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_18write_path_frame(C
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_18tracking_frame_buf_5Frame_1__init__(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_5Frame_1__init__(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_10algorithms_18tracking_frame_buf_5Frame_1__init__ = {"__init__", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_18tracking_frame_buf_5Frame_1__init__, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10algorithms_18tracking_frame_buf_5Frame_1__init__(PyObject *__pyx_self, 
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_18tracking_frame_buf_5Frame_1__init__ = {"__init__", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_5Frame_1__init__, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_5Frame_1__init__(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -10915,11 +10915,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.tracking_frame_buf.Frame.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.Frame.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_18tracking_frame_buf_5Frame___init__(__pyx_self, __pyx_v_self, __pyx_v_num_cams, __pyx_v_max_targets);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_5Frame___init__(__pyx_self, __pyx_v_self, __pyx_v_num_cams, __pyx_v_max_targets);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -10929,7 +10929,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame___init__(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_num_cams, PyObject *__pyx_v_max_targets) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_5Frame___init__(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_num_cams, PyObject *__pyx_v_max_targets) {
   CYTHON_UNUSED PyObject *__pyx_7genexpr__pyx_v__ = NULL;
   CYTHON_UNUSED PyObject *__pyx_8genexpr1__pyx_v__ = NULL;
   CYTHON_UNUSED PyObject *__pyx_8genexpr2__pyx_v__ = NULL;
@@ -10955,7 +10955,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame___init__(CYTH
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__init__", 0);
 
-  /* "algorithms/tracking_frame_buf.py":318
+  /* "openptv2/algorithms/tracking_frame_buf.py":318
  * class Frame:
  *     def __init__(self, num_cams=4, max_targets=100):
  *         self.num_cams = num_cams             # <<<<<<<<<<<<<<
@@ -10964,7 +10964,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame___init__(CYTH
 */
   if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_num_cams, __pyx_v_num_cams) < (0)) __PYX_ERR(0, 318, __pyx_L1_error)
 
-  /* "algorithms/tracking_frame_buf.py":319
+  /* "openptv2/algorithms/tracking_frame_buf.py":319
  *     def __init__(self, num_cams=4, max_targets=100):
  *         self.num_cams = num_cams
  *         self.max_targets = max_targets             # <<<<<<<<<<<<<<
@@ -10973,7 +10973,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame___init__(CYTH
 */
   if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_max_targets, __pyx_v_max_targets) < (0)) __PYX_ERR(0, 319, __pyx_L1_error)
 
-  /* "algorithms/tracking_frame_buf.py":320
+  /* "openptv2/algorithms/tracking_frame_buf.py":320
  *         self.num_cams = num_cams
  *         self.max_targets = max_targets
  *         self.targets = [[Target() for _ in range(max_targets)] for _ in range(num_cams)]             # <<<<<<<<<<<<<<
@@ -11090,7 +11090,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame___init__(CYTH
   if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_targets_2, __pyx_t_1) < (0)) __PYX_ERR(0, 320, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":321
+  /* "openptv2/algorithms/tracking_frame_buf.py":321
  *         self.max_targets = max_targets
  *         self.targets = [[Target() for _ in range(max_targets)] for _ in range(num_cams)]
  *         self.correspond = [Corres() for _ in range(max_targets)]             # <<<<<<<<<<<<<<
@@ -11165,7 +11165,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame___init__(CYTH
   if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_correspond, __pyx_t_1) < (0)) __PYX_ERR(0, 321, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":322
+  /* "openptv2/algorithms/tracking_frame_buf.py":322
  *         self.targets = [[Target() for _ in range(max_targets)] for _ in range(num_cams)]
  *         self.correspond = [Corres() for _ in range(max_targets)]
  *         self.path_info = [Pathinfo() for _ in range(max_targets)]             # <<<<<<<<<<<<<<
@@ -11240,7 +11240,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame___init__(CYTH
   if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_path_info, __pyx_t_1) < (0)) __PYX_ERR(0, 322, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":323
+  /* "openptv2/algorithms/tracking_frame_buf.py":323
  *         self.correspond = [Corres() for _ in range(max_targets)]
  *         self.path_info = [Pathinfo() for _ in range(max_targets)]
  *         self.num_targets = [0] * num_cams             # <<<<<<<<<<<<<<
@@ -11260,7 +11260,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame___init__(CYTH
   if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_num_targets, __pyx_t_1) < (0)) __PYX_ERR(0, 323, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":324
+  /* "openptv2/algorithms/tracking_frame_buf.py":324
  *         self.path_info = [Pathinfo() for _ in range(max_targets)]
  *         self.num_targets = [0] * num_cams
  *         self.num_parts = 0             # <<<<<<<<<<<<<<
@@ -11269,7 +11269,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame___init__(CYTH
 */
   if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_num_parts, __pyx_mstate_global->__pyx_int_0) < (0)) __PYX_ERR(0, 324, __pyx_L1_error)
 
-  /* "algorithms/tracking_frame_buf.py":327
+  /* "openptv2/algorithms/tracking_frame_buf.py":327
  * 
  *         # SoA for targets (per camera)
  *         self.targ_x = [np.zeros(max_targets, dtype=np.float64) for _ in range(num_cams)]             # <<<<<<<<<<<<<<
@@ -11357,7 +11357,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame___init__(CYTH
   if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_targ_x, __pyx_t_1) < (0)) __PYX_ERR(0, 327, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":328
+  /* "openptv2/algorithms/tracking_frame_buf.py":328
  *         # SoA for targets (per camera)
  *         self.targ_x = [np.zeros(max_targets, dtype=np.float64) for _ in range(num_cams)]
  *         self.targ_y = [np.zeros(max_targets, dtype=np.float64) for _ in range(num_cams)]             # <<<<<<<<<<<<<<
@@ -11445,7 +11445,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame___init__(CYTH
   if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_targ_y, __pyx_t_1) < (0)) __PYX_ERR(0, 328, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":329
+  /* "openptv2/algorithms/tracking_frame_buf.py":329
  *         self.targ_x = [np.zeros(max_targets, dtype=np.float64) for _ in range(num_cams)]
  *         self.targ_y = [np.zeros(max_targets, dtype=np.float64) for _ in range(num_cams)]
  *         self.targ_tnr = [np.full(max_targets, PT_UNUSED, dtype=np.int32) for _ in range(num_cams)]             # <<<<<<<<<<<<<<
@@ -11536,7 +11536,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame___init__(CYTH
   if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_targ_tnr, __pyx_t_1) < (0)) __PYX_ERR(0, 329, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":332
+  /* "openptv2/algorithms/tracking_frame_buf.py":332
  * 
  *         # SoA for Pathinfo
  *         self.path_x = np.zeros((max_targets, 3), dtype=np.float64)             # <<<<<<<<<<<<<<
@@ -11591,7 +11591,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame___init__(CYTH
   if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_path_x, __pyx_t_1) < (0)) __PYX_ERR(0, 332, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":333
+  /* "openptv2/algorithms/tracking_frame_buf.py":333
  *         # SoA for Pathinfo
  *         self.path_x = np.zeros((max_targets, 3), dtype=np.float64)
  *         self.path_prev = np.full(max_targets, PREV_NONE, dtype=np.int32)             # <<<<<<<<<<<<<<
@@ -11640,7 +11640,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame___init__(CYTH
   if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_path_prev, __pyx_t_1) < (0)) __PYX_ERR(0, 333, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":334
+  /* "openptv2/algorithms/tracking_frame_buf.py":334
  *         self.path_x = np.zeros((max_targets, 3), dtype=np.float64)
  *         self.path_prev = np.full(max_targets, PREV_NONE, dtype=np.int32)
  *         self.path_next = np.full(max_targets, NEXT_NONE, dtype=np.int32)             # <<<<<<<<<<<<<<
@@ -11689,7 +11689,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame___init__(CYTH
   if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_path_next, __pyx_t_1) < (0)) __PYX_ERR(0, 334, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":335
+  /* "openptv2/algorithms/tracking_frame_buf.py":335
  *         self.path_prev = np.full(max_targets, PREV_NONE, dtype=np.int32)
  *         self.path_next = np.full(max_targets, NEXT_NONE, dtype=np.int32)
  *         self.path_prio = np.full(max_targets, 4, dtype=np.int32)             # <<<<<<<<<<<<<<
@@ -11735,7 +11735,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame___init__(CYTH
   if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_path_prio, __pyx_t_1) < (0)) __PYX_ERR(0, 335, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":336
+  /* "openptv2/algorithms/tracking_frame_buf.py":336
  *         self.path_next = np.full(max_targets, NEXT_NONE, dtype=np.int32)
  *         self.path_prio = np.full(max_targets, 4, dtype=np.int32)
  *         self.path_inlist = np.zeros(max_targets, dtype=np.int32)             # <<<<<<<<<<<<<<
@@ -11781,7 +11781,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame___init__(CYTH
   if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_path_inlist, __pyx_t_1) < (0)) __PYX_ERR(0, 336, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":337
+  /* "openptv2/algorithms/tracking_frame_buf.py":337
  *         self.path_prio = np.full(max_targets, 4, dtype=np.int32)
  *         self.path_inlist = np.zeros(max_targets, dtype=np.int32)
  *         self.path_finaldecis = np.full(max_targets, 1000000.0, dtype=np.float64)             # <<<<<<<<<<<<<<
@@ -11827,7 +11827,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame___init__(CYTH
   if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_path_finaldecis, __pyx_t_1) < (0)) __PYX_ERR(0, 337, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":338
+  /* "openptv2/algorithms/tracking_frame_buf.py":338
  *         self.path_inlist = np.zeros(max_targets, dtype=np.int32)
  *         self.path_finaldecis = np.full(max_targets, 1000000.0, dtype=np.float64)
  *         self.path_decis = np.zeros((max_targets, POSI), dtype=np.float64)             # <<<<<<<<<<<<<<
@@ -11884,7 +11884,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame___init__(CYTH
   if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_path_decis, __pyx_t_1) < (0)) __PYX_ERR(0, 338, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":339
+  /* "openptv2/algorithms/tracking_frame_buf.py":339
  *         self.path_finaldecis = np.full(max_targets, 1000000.0, dtype=np.float64)
  *         self.path_decis = np.zeros((max_targets, POSI), dtype=np.float64)
  *         self.path_linkdecis = np.full((max_targets, POSI), PT_UNUSED, dtype=np.int32)             # <<<<<<<<<<<<<<
@@ -11944,7 +11944,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame___init__(CYTH
   if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_path_linkdecis, __pyx_t_1) < (0)) __PYX_ERR(0, 339, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":342
+  /* "openptv2/algorithms/tracking_frame_buf.py":342
  * 
  *         # SoA for Corres
  *         self.corres_nr = np.zeros(max_targets, dtype=np.int32)             # <<<<<<<<<<<<<<
@@ -11990,7 +11990,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame___init__(CYTH
   if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_corres_nr, __pyx_t_1) < (0)) __PYX_ERR(0, 342, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":343
+  /* "openptv2/algorithms/tracking_frame_buf.py":343
  *         # SoA for Corres
  *         self.corres_nr = np.zeros(max_targets, dtype=np.int32)
  *         self.corres_p = np.full((max_targets, 4), CORRES_NONE, dtype=np.int32)             # <<<<<<<<<<<<<<
@@ -12048,7 +12048,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame___init__(CYTH
   if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_corres_p, __pyx_t_1) < (0)) __PYX_ERR(0, 343, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":317
+  /* "openptv2/algorithms/tracking_frame_buf.py":317
  * 
  * class Frame:
  *     def __init__(self, num_cams=4, max_targets=100):             # <<<<<<<<<<<<<<
@@ -12068,7 +12068,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame___init__(CYTH
   __Pyx_XDECREF(__pyx_t_9);
   __Pyx_XDECREF(__pyx_t_10);
   __Pyx_XDECREF(__pyx_t_11);
-  __Pyx_AddTraceback("algorithms.tracking_frame_buf.Frame.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.Frame.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_7genexpr__pyx_v__);
@@ -12083,7 +12083,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame___init__(CYTH
   return __pyx_r;
 }
 
-/* "algorithms/tracking_frame_buf.py":345
+/* "openptv2/algorithms/tracking_frame_buf.py":345
  *         self.corres_p = np.full((max_targets, 4), CORRES_NONE, dtype=np.int32)
  * 
  *     def _sync_path_to_soa(self):             # <<<<<<<<<<<<<<
@@ -12092,16 +12092,16 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame___init__(CYTH
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_18tracking_frame_buf_5Frame_3_sync_path_to_soa(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_5Frame_3_sync_path_to_soa(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_18tracking_frame_buf_5Frame_2_sync_path_to_soa, "Copy AoS path_info/correspond into SoA arrays.");
-static PyMethodDef __pyx_mdef_10algorithms_18tracking_frame_buf_5Frame_3_sync_path_to_soa = {"_sync_path_to_soa", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_18tracking_frame_buf_5Frame_3_sync_path_to_soa, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_18tracking_frame_buf_5Frame_2_sync_path_to_soa};
-static PyObject *__pyx_pw_10algorithms_18tracking_frame_buf_5Frame_3_sync_path_to_soa(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_18tracking_frame_buf_5Frame_2_sync_path_to_soa, "Copy AoS path_info/correspond into SoA arrays.");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_18tracking_frame_buf_5Frame_3_sync_path_to_soa = {"_sync_path_to_soa", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_5Frame_3_sync_path_to_soa, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_18tracking_frame_buf_5Frame_2_sync_path_to_soa};
+static PyObject *__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_5Frame_3_sync_path_to_soa(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -12163,11 +12163,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.tracking_frame_buf.Frame._sync_path_to_soa", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.Frame._sync_path_to_soa", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_18tracking_frame_buf_5Frame_2_sync_path_to_soa(__pyx_self, __pyx_v_self);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_5Frame_2_sync_path_to_soa(__pyx_self, __pyx_v_self);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -12177,7 +12177,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_2_sync_path_to_soa(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_5Frame_2_sync_path_to_soa(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self) {
   PyObject *__pyx_v_i = NULL;
   PyObject *__pyx_v_p = NULL;
   Py_ssize_t __pyx_v_k;
@@ -12199,7 +12199,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_2_sync_path_t
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("_sync_path_to_soa", 0);
 
-  /* "algorithms/tracking_frame_buf.py":347
+  /* "openptv2/algorithms/tracking_frame_buf.py":347
  *     def _sync_path_to_soa(self):
  *         """Copy AoS path_info/correspond into SoA arrays."""
  *         for i in range(self.num_parts):             # <<<<<<<<<<<<<<
@@ -12238,7 +12238,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_2_sync_path_t
     __Pyx_XDECREF_SET(__pyx_v_i, __pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":348
+    /* "openptv2/algorithms/tracking_frame_buf.py":348
  *         """Copy AoS path_info/correspond into SoA arrays."""
  *         for i in range(self.num_parts):
  *             p = self.path_info[i]             # <<<<<<<<<<<<<<
@@ -12253,7 +12253,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_2_sync_path_t
     __Pyx_XDECREF_SET(__pyx_v_p, __pyx_t_2);
     __pyx_t_2 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":349
+    /* "openptv2/algorithms/tracking_frame_buf.py":349
  *         for i in range(self.num_parts):
  *             p = self.path_info[i]
  *             self.path_x[i] = p.x             # <<<<<<<<<<<<<<
@@ -12268,7 +12268,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_2_sync_path_t
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":350
+    /* "openptv2/algorithms/tracking_frame_buf.py":350
  *             p = self.path_info[i]
  *             self.path_x[i] = p.x
  *             self.path_prev[i] = p.prev             # <<<<<<<<<<<<<<
@@ -12283,7 +12283,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_2_sync_path_t
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":351
+    /* "openptv2/algorithms/tracking_frame_buf.py":351
  *             self.path_x[i] = p.x
  *             self.path_prev[i] = p.prev
  *             self.path_next[i] = p.next             # <<<<<<<<<<<<<<
@@ -12298,7 +12298,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_2_sync_path_t
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":352
+    /* "openptv2/algorithms/tracking_frame_buf.py":352
  *             self.path_prev[i] = p.prev
  *             self.path_next[i] = p.next
  *             self.path_prio[i] = p.prio             # <<<<<<<<<<<<<<
@@ -12313,7 +12313,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_2_sync_path_t
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":353
+    /* "openptv2/algorithms/tracking_frame_buf.py":353
  *             self.path_next[i] = p.next
  *             self.path_prio[i] = p.prio
  *             self.path_inlist[i] = p.inlist             # <<<<<<<<<<<<<<
@@ -12328,7 +12328,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_2_sync_path_t
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":354
+    /* "openptv2/algorithms/tracking_frame_buf.py":354
  *             self.path_prio[i] = p.prio
  *             self.path_inlist[i] = p.inlist
  *             self.path_finaldecis[i] = p.finaldecis             # <<<<<<<<<<<<<<
@@ -12343,7 +12343,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_2_sync_path_t
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":355
+    /* "openptv2/algorithms/tracking_frame_buf.py":355
  *             self.path_inlist[i] = p.inlist
  *             self.path_finaldecis[i] = p.finaldecis
  *             for k in range(len(p.decis)):             # <<<<<<<<<<<<<<
@@ -12358,7 +12358,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_2_sync_path_t
     for (__pyx_t_8 = 0; __pyx_t_8 < __pyx_t_7; __pyx_t_8+=1) {
       __pyx_v_k = __pyx_t_8;
 
-      /* "algorithms/tracking_frame_buf.py":356
+      /* "openptv2/algorithms/tracking_frame_buf.py":356
  *             self.path_finaldecis[i] = p.finaldecis
  *             for k in range(len(p.decis)):
  *                 self.path_decis[i, k] = p.decis[k]             # <<<<<<<<<<<<<<
@@ -12387,7 +12387,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_2_sync_path_t
       __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "algorithms/tracking_frame_buf.py":357
+      /* "openptv2/algorithms/tracking_frame_buf.py":357
  *             for k in range(len(p.decis)):
  *                 self.path_decis[i, k] = p.decis[k]
  *                 self.path_linkdecis[i, k] = p.linkdecis[k]             # <<<<<<<<<<<<<<
@@ -12417,7 +12417,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_2_sync_path_t
       __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
     }
 
-    /* "algorithms/tracking_frame_buf.py":359
+    /* "openptv2/algorithms/tracking_frame_buf.py":359
  *                 self.path_linkdecis[i, k] = p.linkdecis[k]
  * 
  *             c = self.correspond[i]             # <<<<<<<<<<<<<<
@@ -12432,7 +12432,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_2_sync_path_t
     __Pyx_XDECREF_SET(__pyx_v_c, __pyx_t_9);
     __pyx_t_9 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":360
+    /* "openptv2/algorithms/tracking_frame_buf.py":360
  * 
  *             c = self.correspond[i]
  *             self.corres_nr[i] = c.nr             # <<<<<<<<<<<<<<
@@ -12447,7 +12447,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_2_sync_path_t
     __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
     __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":361
+    /* "openptv2/algorithms/tracking_frame_buf.py":361
  *             c = self.correspond[i]
  *             self.corres_nr[i] = c.nr
  *             self.corres_p[i] = c.p             # <<<<<<<<<<<<<<
@@ -12462,7 +12462,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_2_sync_path_t
     __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
     __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":347
+    /* "openptv2/algorithms/tracking_frame_buf.py":347
  *     def _sync_path_to_soa(self):
  *         """Copy AoS path_info/correspond into SoA arrays."""
  *         for i in range(self.num_parts):             # <<<<<<<<<<<<<<
@@ -12472,7 +12472,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_2_sync_path_t
   }
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":345
+  /* "openptv2/algorithms/tracking_frame_buf.py":345
  *         self.corres_p = np.full((max_targets, 4), CORRES_NONE, dtype=np.int32)
  * 
  *     def _sync_path_to_soa(self):             # <<<<<<<<<<<<<<
@@ -12489,7 +12489,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_2_sync_path_t
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_9);
   __Pyx_XDECREF(__pyx_t_10);
-  __Pyx_AddTraceback("algorithms.tracking_frame_buf.Frame._sync_path_to_soa", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.Frame._sync_path_to_soa", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_i);
@@ -12500,7 +12500,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_2_sync_path_t
   return __pyx_r;
 }
 
-/* "algorithms/tracking_frame_buf.py":363
+/* "openptv2/algorithms/tracking_frame_buf.py":363
  *             self.corres_p[i] = c.p
  * 
  *     def _sync_soa_to_path(self):             # <<<<<<<<<<<<<<
@@ -12509,16 +12509,16 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_2_sync_path_t
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_18tracking_frame_buf_5Frame_5_sync_soa_to_path(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_5Frame_5_sync_soa_to_path(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_18tracking_frame_buf_5Frame_4_sync_soa_to_path, "Copy SoA arrays back into AoS path_info/correspond.");
-static PyMethodDef __pyx_mdef_10algorithms_18tracking_frame_buf_5Frame_5_sync_soa_to_path = {"_sync_soa_to_path", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_18tracking_frame_buf_5Frame_5_sync_soa_to_path, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_18tracking_frame_buf_5Frame_4_sync_soa_to_path};
-static PyObject *__pyx_pw_10algorithms_18tracking_frame_buf_5Frame_5_sync_soa_to_path(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_18tracking_frame_buf_5Frame_4_sync_soa_to_path, "Copy SoA arrays back into AoS path_info/correspond.");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_18tracking_frame_buf_5Frame_5_sync_soa_to_path = {"_sync_soa_to_path", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_5Frame_5_sync_soa_to_path, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_18tracking_frame_buf_5Frame_4_sync_soa_to_path};
+static PyObject *__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_5Frame_5_sync_soa_to_path(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -12580,11 +12580,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.tracking_frame_buf.Frame._sync_soa_to_path", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.Frame._sync_soa_to_path", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_18tracking_frame_buf_5Frame_4_sync_soa_to_path(__pyx_self, __pyx_v_self);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_5Frame_4_sync_soa_to_path(__pyx_self, __pyx_v_self);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -12594,7 +12594,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_4_sync_soa_to_path(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_5Frame_4_sync_soa_to_path(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self) {
   PyObject *__pyx_v_i = NULL;
   PyObject *__pyx_v_p = NULL;
   PyObject *__pyx_v_k = NULL;
@@ -12614,7 +12614,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_4_sync_soa_to
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("_sync_soa_to_path", 0);
 
-  /* "algorithms/tracking_frame_buf.py":365
+  /* "openptv2/algorithms/tracking_frame_buf.py":365
  *     def _sync_soa_to_path(self):
  *         """Copy SoA arrays back into AoS path_info/correspond."""
  *         for i in range(self.num_parts):             # <<<<<<<<<<<<<<
@@ -12653,7 +12653,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_4_sync_soa_to
     __Pyx_XDECREF_SET(__pyx_v_i, __pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":366
+    /* "openptv2/algorithms/tracking_frame_buf.py":366
  *         """Copy SoA arrays back into AoS path_info/correspond."""
  *         for i in range(self.num_parts):
  *             p = self.path_info[i]             # <<<<<<<<<<<<<<
@@ -12668,7 +12668,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_4_sync_soa_to
     __Pyx_XDECREF_SET(__pyx_v_p, __pyx_t_2);
     __pyx_t_2 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":367
+    /* "openptv2/algorithms/tracking_frame_buf.py":367
  *         for i in range(self.num_parts):
  *             p = self.path_info[i]
  *             p.x[:] = self.path_x[i]             # <<<<<<<<<<<<<<
@@ -12686,7 +12686,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_4_sync_soa_to
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":368
+    /* "openptv2/algorithms/tracking_frame_buf.py":368
  *             p = self.path_info[i]
  *             p.x[:] = self.path_x[i]
  *             p.prev = int(self.path_prev[i])             # <<<<<<<<<<<<<<
@@ -12704,7 +12704,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_4_sync_soa_to
     if (__Pyx_PyObject_SetAttrStr(__pyx_v_p, __pyx_mstate_global->__pyx_n_u_prev, __pyx_t_1) < (0)) __PYX_ERR(0, 368, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":369
+    /* "openptv2/algorithms/tracking_frame_buf.py":369
  *             p.x[:] = self.path_x[i]
  *             p.prev = int(self.path_prev[i])
  *             p.next = int(self.path_next[i])             # <<<<<<<<<<<<<<
@@ -12722,7 +12722,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_4_sync_soa_to
     if (__Pyx_PyObject_SetAttrStr(__pyx_v_p, __pyx_mstate_global->__pyx_n_u_next, __pyx_t_1) < (0)) __PYX_ERR(0, 369, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":370
+    /* "openptv2/algorithms/tracking_frame_buf.py":370
  *             p.prev = int(self.path_prev[i])
  *             p.next = int(self.path_next[i])
  *             p.prio = int(self.path_prio[i])             # <<<<<<<<<<<<<<
@@ -12740,7 +12740,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_4_sync_soa_to
     if (__Pyx_PyObject_SetAttrStr(__pyx_v_p, __pyx_mstate_global->__pyx_n_u_prio, __pyx_t_1) < (0)) __PYX_ERR(0, 370, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":371
+    /* "openptv2/algorithms/tracking_frame_buf.py":371
  *             p.next = int(self.path_next[i])
  *             p.prio = int(self.path_prio[i])
  *             p.inlist = int(self.path_inlist[i])             # <<<<<<<<<<<<<<
@@ -12758,7 +12758,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_4_sync_soa_to
     if (__Pyx_PyObject_SetAttrStr(__pyx_v_p, __pyx_mstate_global->__pyx_n_u_inlist, __pyx_t_1) < (0)) __PYX_ERR(0, 371, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":372
+    /* "openptv2/algorithms/tracking_frame_buf.py":372
  *             p.prio = int(self.path_prio[i])
  *             p.inlist = int(self.path_inlist[i])
  *             p.finaldecis = float(self.path_finaldecis[i])             # <<<<<<<<<<<<<<
@@ -12776,7 +12776,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_4_sync_soa_to
     if (__Pyx_PyObject_SetAttrStr(__pyx_v_p, __pyx_mstate_global->__pyx_n_u_finaldecis, __pyx_t_1) < (0)) __PYX_ERR(0, 372, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":373
+    /* "openptv2/algorithms/tracking_frame_buf.py":373
  *             p.inlist = int(self.path_inlist[i])
  *             p.finaldecis = float(self.path_finaldecis[i])
  *             for k in range(POSI):             # <<<<<<<<<<<<<<
@@ -12815,7 +12815,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_4_sync_soa_to
       __Pyx_XDECREF_SET(__pyx_v_k, __pyx_t_1);
       __pyx_t_1 = 0;
 
-      /* "algorithms/tracking_frame_buf.py":374
+      /* "openptv2/algorithms/tracking_frame_buf.py":374
  *             p.finaldecis = float(self.path_finaldecis[i])
  *             for k in range(POSI):
  *                 p.decis[k] = float(self.path_decis[i, k])             # <<<<<<<<<<<<<<
@@ -12845,7 +12845,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_4_sync_soa_to
       __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-      /* "algorithms/tracking_frame_buf.py":375
+      /* "openptv2/algorithms/tracking_frame_buf.py":375
  *             for k in range(POSI):
  *                 p.decis[k] = float(self.path_decis[i, k])
  *                 p.linkdecis[k] = int(self.path_linkdecis[i, k])             # <<<<<<<<<<<<<<
@@ -12875,7 +12875,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_4_sync_soa_to
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
       __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
 
-      /* "algorithms/tracking_frame_buf.py":373
+      /* "openptv2/algorithms/tracking_frame_buf.py":373
  *             p.inlist = int(self.path_inlist[i])
  *             p.finaldecis = float(self.path_finaldecis[i])
  *             for k in range(POSI):             # <<<<<<<<<<<<<<
@@ -12885,7 +12885,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_4_sync_soa_to
     }
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":377
+    /* "openptv2/algorithms/tracking_frame_buf.py":377
  *                 p.linkdecis[k] = int(self.path_linkdecis[i, k])
  * 
  *             c = self.correspond[i]             # <<<<<<<<<<<<<<
@@ -12900,7 +12900,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_4_sync_soa_to
     __Pyx_XDECREF_SET(__pyx_v_c, __pyx_t_8);
     __pyx_t_8 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":378
+    /* "openptv2/algorithms/tracking_frame_buf.py":378
  * 
  *             c = self.correspond[i]
  *             c.nr = int(self.corres_nr[i])             # <<<<<<<<<<<<<<
@@ -12918,7 +12918,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_4_sync_soa_to
     if (__Pyx_PyObject_SetAttrStr(__pyx_v_c, __pyx_mstate_global->__pyx_n_u_nr, __pyx_t_8) < (0)) __PYX_ERR(0, 378, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":379
+    /* "openptv2/algorithms/tracking_frame_buf.py":379
  *             c = self.correspond[i]
  *             c.nr = int(self.corres_nr[i])
  *             c.p[:] = self.corres_p[i]             # <<<<<<<<<<<<<<
@@ -12936,7 +12936,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_4_sync_soa_to
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":365
+    /* "openptv2/algorithms/tracking_frame_buf.py":365
  *     def _sync_soa_to_path(self):
  *         """Copy SoA arrays back into AoS path_info/correspond."""
  *         for i in range(self.num_parts):             # <<<<<<<<<<<<<<
@@ -12946,7 +12946,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_4_sync_soa_to
   }
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":363
+  /* "openptv2/algorithms/tracking_frame_buf.py":363
  *             self.corres_p[i] = c.p
  * 
  *     def _sync_soa_to_path(self):             # <<<<<<<<<<<<<<
@@ -12963,7 +12963,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_4_sync_soa_to
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_6);
   __Pyx_XDECREF(__pyx_t_8);
-  __Pyx_AddTraceback("algorithms.tracking_frame_buf.Frame._sync_soa_to_path", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.Frame._sync_soa_to_path", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_i);
@@ -12975,7 +12975,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_4_sync_soa_to
   return __pyx_r;
 }
 
-/* "algorithms/tracking_frame_buf.py":381
+/* "openptv2/algorithms/tracking_frame_buf.py":381
  *             c.p[:] = self.corres_p[i]
  * 
  *     def read(self, corres_file_base, linkage_file_base, prio_file_base,             # <<<<<<<<<<<<<<
@@ -12984,15 +12984,15 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_4_sync_soa_to
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_18tracking_frame_buf_5Frame_7read(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_5Frame_7read(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_10algorithms_18tracking_frame_buf_5Frame_7read = {"read", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_18tracking_frame_buf_5Frame_7read, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10algorithms_18tracking_frame_buf_5Frame_7read(PyObject *__pyx_self, 
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_18tracking_frame_buf_5Frame_7read = {"read", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_5Frame_7read, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_5Frame_7read(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -13094,11 +13094,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.tracking_frame_buf.Frame.read", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.Frame.read", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_18tracking_frame_buf_5Frame_6read(__pyx_self, __pyx_v_self, __pyx_v_corres_file_base, __pyx_v_linkage_file_base, __pyx_v_prio_file_base, __pyx_v_target_file_base, __pyx_v_frame_num);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_5Frame_6read(__pyx_self, __pyx_v_self, __pyx_v_corres_file_base, __pyx_v_linkage_file_base, __pyx_v_prio_file_base, __pyx_v_target_file_base, __pyx_v_frame_num);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -13108,7 +13108,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_6read(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_corres_file_base, PyObject *__pyx_v_linkage_file_base, PyObject *__pyx_v_prio_file_base, PyObject *__pyx_v_target_file_base, PyObject *__pyx_v_frame_num) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_5Frame_6read(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_corres_file_base, PyObject *__pyx_v_linkage_file_base, PyObject *__pyx_v_prio_file_base, PyObject *__pyx_v_target_file_base, PyObject *__pyx_v_frame_num) {
   PyObject *__pyx_v_fname = NULL;
   PyObject *__pyx_v_cor_list = NULL;
   PyObject *__pyx_v_path_list = NULL;
@@ -13140,7 +13140,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_6read(CYTHON_
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("read", 0);
 
-  /* "algorithms/tracking_frame_buf.py":383
+  /* "openptv2/algorithms/tracking_frame_buf.py":383
  *     def read(self, corres_file_base, linkage_file_base, prio_file_base,
  *              target_file_base, frame_num):
  *         fname = f"{corres_file_base}.{frame_num}"             # <<<<<<<<<<<<<<
@@ -13162,7 +13162,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_6read(CYTHON_
   __pyx_v_fname = ((PyObject*)__pyx_t_4);
   __pyx_t_4 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":384
+  /* "openptv2/algorithms/tracking_frame_buf.py":384
  *              target_file_base, frame_num):
  *         fname = f"{corres_file_base}.{frame_num}"
  *         if not Path(fname).exists():             # <<<<<<<<<<<<<<
@@ -13208,7 +13208,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_6read(CYTHON_
   __pyx_t_9 = (!__pyx_t_8);
   if (__pyx_t_9) {
 
-    /* "algorithms/tracking_frame_buf.py":385
+    /* "openptv2/algorithms/tracking_frame_buf.py":385
  *         fname = f"{corres_file_base}.{frame_num}"
  *         if not Path(fname).exists():
  *             return False             # <<<<<<<<<<<<<<
@@ -13220,7 +13220,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_6read(CYTHON_
     __pyx_r = Py_False;
     goto __pyx_L0;
 
-    /* "algorithms/tracking_frame_buf.py":384
+    /* "openptv2/algorithms/tracking_frame_buf.py":384
  *              target_file_base, frame_num):
  *         fname = f"{corres_file_base}.{frame_num}"
  *         if not Path(fname).exists():             # <<<<<<<<<<<<<<
@@ -13229,7 +13229,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_6read(CYTHON_
 */
   }
 
-  /* "algorithms/tracking_frame_buf.py":389
+  /* "openptv2/algorithms/tracking_frame_buf.py":389
  *         cor_list, path_list = read_path_frame(
  *             corres_file_base,
  *             linkage_file_base if linkage_file_base else "",             # <<<<<<<<<<<<<<
@@ -13245,7 +13245,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_6read(CYTHON_
     __pyx_t_4 = __pyx_mstate_global->__pyx_kp_u__4;
   }
 
-  /* "algorithms/tracking_frame_buf.py":390
+  /* "openptv2/algorithms/tracking_frame_buf.py":390
  *             corres_file_base,
  *             linkage_file_base if linkage_file_base else "",
  *             prio_file_base if prio_file_base else "",             # <<<<<<<<<<<<<<
@@ -13261,14 +13261,14 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_6read(CYTHON_
     __pyx_t_1 = __pyx_mstate_global->__pyx_kp_u__4;
   }
 
-  /* "algorithms/tracking_frame_buf.py":387
+  /* "openptv2/algorithms/tracking_frame_buf.py":387
  *             return False
  * 
  *         cor_list, path_list = read_path_frame(             # <<<<<<<<<<<<<<
  *             corres_file_base,
  *             linkage_file_base if linkage_file_base else "",
 */
-  __pyx_t_2 = __pyx_f_10algorithms_18tracking_frame_buf_read_path_frame(__pyx_v_corres_file_base, __pyx_t_4, __pyx_t_1, __pyx_v_frame_num, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 387, __pyx_L1_error)
+  __pyx_t_2 = __pyx_f_8openptv2_10algorithms_18tracking_frame_buf_read_path_frame(__pyx_v_corres_file_base, __pyx_t_4, __pyx_t_1, __pyx_v_frame_num, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 387, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -13327,7 +13327,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_6read(CYTHON_
   __pyx_v_path_list = __pyx_t_4;
   __pyx_t_4 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":394
+  /* "openptv2/algorithms/tracking_frame_buf.py":394
  *         )
  * 
  *         self.num_parts = len(cor_list)             # <<<<<<<<<<<<<<
@@ -13340,7 +13340,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_6read(CYTHON_
   if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_num_parts, __pyx_t_2) < (0)) __PYX_ERR(0, 394, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":395
+  /* "openptv2/algorithms/tracking_frame_buf.py":395
  * 
  *         self.num_parts = len(cor_list)
  *         for i in range(self.num_parts):             # <<<<<<<<<<<<<<
@@ -13379,7 +13379,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_6read(CYTHON_
     __Pyx_XDECREF_SET(__pyx_v_i, __pyx_t_2);
     __pyx_t_2 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":396
+    /* "openptv2/algorithms/tracking_frame_buf.py":396
  *         self.num_parts = len(cor_list)
  *         for i in range(self.num_parts):
  *             self.correspond[i] = cor_list[i]             # <<<<<<<<<<<<<<
@@ -13394,7 +13394,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_6read(CYTHON_
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":397
+    /* "openptv2/algorithms/tracking_frame_buf.py":397
  *         for i in range(self.num_parts):
  *             self.correspond[i] = cor_list[i]
  *             self.path_info[i] = path_list[i]             # <<<<<<<<<<<<<<
@@ -13409,7 +13409,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_6read(CYTHON_
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":395
+    /* "openptv2/algorithms/tracking_frame_buf.py":395
  * 
  *         self.num_parts = len(cor_list)
  *         for i in range(self.num_parts):             # <<<<<<<<<<<<<<
@@ -13419,7 +13419,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_6read(CYTHON_
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":399
+  /* "openptv2/algorithms/tracking_frame_buf.py":399
  *             self.path_info[i] = path_list[i]
  * 
  *         self._sync_path_to_soa()             # <<<<<<<<<<<<<<
@@ -13438,7 +13438,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_6read(CYTHON_
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":401
+  /* "openptv2/algorithms/tracking_frame_buf.py":401
  *         self._sync_path_to_soa()
  * 
  *         for cam in range(self.num_cams):             # <<<<<<<<<<<<<<
@@ -13477,7 +13477,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_6read(CYTHON_
     __Pyx_XDECREF_SET(__pyx_v_cam, __pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":402
+    /* "openptv2/algorithms/tracking_frame_buf.py":402
  * 
  *         for cam in range(self.num_cams):
  *             targets = read_targets(target_file_base[cam], frame_num)             # <<<<<<<<<<<<<<
@@ -13486,13 +13486,13 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_6read(CYTHON_
 */
     __pyx_t_1 = __Pyx_PyObject_GetItem(__pyx_v_target_file_base, __pyx_v_cam); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 402, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_2 = __pyx_f_10algorithms_18tracking_frame_buf_read_targets(__pyx_t_1, __pyx_v_frame_num, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 402, __pyx_L1_error)
+    __pyx_t_2 = __pyx_f_8openptv2_10algorithms_18tracking_frame_buf_read_targets(__pyx_t_1, __pyx_v_frame_num, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 402, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __Pyx_XDECREF_SET(__pyx_v_targets, __pyx_t_2);
     __pyx_t_2 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":403
+    /* "openptv2/algorithms/tracking_frame_buf.py":403
  *         for cam in range(self.num_cams):
  *             targets = read_targets(target_file_base[cam], frame_num)
  *             self.num_targets[cam] = len(targets)             # <<<<<<<<<<<<<<
@@ -13508,7 +13508,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_6read(CYTHON_
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":404
+    /* "openptv2/algorithms/tracking_frame_buf.py":404
  *             targets = read_targets(target_file_base[cam], frame_num)
  *             self.num_targets[cam] = len(targets)
  *             tx = self.targ_x[cam]             # <<<<<<<<<<<<<<
@@ -13523,7 +13523,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_6read(CYTHON_
     __Pyx_XDECREF_SET(__pyx_v_tx, __pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":405
+    /* "openptv2/algorithms/tracking_frame_buf.py":405
  *             self.num_targets[cam] = len(targets)
  *             tx = self.targ_x[cam]
  *             ty = self.targ_y[cam]             # <<<<<<<<<<<<<<
@@ -13538,7 +13538,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_6read(CYTHON_
     __Pyx_XDECREF_SET(__pyx_v_ty, __pyx_t_2);
     __pyx_t_2 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":406
+    /* "openptv2/algorithms/tracking_frame_buf.py":406
  *             tx = self.targ_x[cam]
  *             ty = self.targ_y[cam]
  *             ttnr = self.targ_tnr[cam]             # <<<<<<<<<<<<<<
@@ -13553,7 +13553,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_6read(CYTHON_
     __Pyx_XDECREF_SET(__pyx_v_ttnr, __pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":407
+    /* "openptv2/algorithms/tracking_frame_buf.py":407
  *             ty = self.targ_y[cam]
  *             ttnr = self.targ_tnr[cam]
  *             for j, t in enumerate(targets):             # <<<<<<<<<<<<<<
@@ -13621,7 +13621,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_6read(CYTHON_
       __pyx_t_1 = __pyx_t_6;
       __pyx_t_6 = 0;
 
-      /* "algorithms/tracking_frame_buf.py":408
+      /* "openptv2/algorithms/tracking_frame_buf.py":408
  *             ttnr = self.targ_tnr[cam]
  *             for j, t in enumerate(targets):
  *                 self.targets[cam][j] = t             # <<<<<<<<<<<<<<
@@ -13636,7 +13636,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_6read(CYTHON_
       if (unlikely((PyObject_SetItem(__pyx_t_5, __pyx_v_j, __pyx_v_t) < 0))) __PYX_ERR(0, 408, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-      /* "algorithms/tracking_frame_buf.py":409
+      /* "openptv2/algorithms/tracking_frame_buf.py":409
  *             for j, t in enumerate(targets):
  *                 self.targets[cam][j] = t
  *                 tx[j] = t.x             # <<<<<<<<<<<<<<
@@ -13648,7 +13648,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_6read(CYTHON_
       if (unlikely((PyObject_SetItem(__pyx_v_tx, __pyx_v_j, __pyx_t_5) < 0))) __PYX_ERR(0, 409, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-      /* "algorithms/tracking_frame_buf.py":410
+      /* "openptv2/algorithms/tracking_frame_buf.py":410
  *                 self.targets[cam][j] = t
  *                 tx[j] = t.x
  *                 ty[j] = t.y             # <<<<<<<<<<<<<<
@@ -13660,7 +13660,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_6read(CYTHON_
       if (unlikely((PyObject_SetItem(__pyx_v_ty, __pyx_v_j, __pyx_t_5) < 0))) __PYX_ERR(0, 410, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-      /* "algorithms/tracking_frame_buf.py":411
+      /* "openptv2/algorithms/tracking_frame_buf.py":411
  *                 tx[j] = t.x
  *                 ty[j] = t.y
  *                 ttnr[j] = t.tnr             # <<<<<<<<<<<<<<
@@ -13672,7 +13672,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_6read(CYTHON_
       if (unlikely((PyObject_SetItem(__pyx_v_ttnr, __pyx_v_j, __pyx_t_5) < 0))) __PYX_ERR(0, 411, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-      /* "algorithms/tracking_frame_buf.py":407
+      /* "openptv2/algorithms/tracking_frame_buf.py":407
  *             ty = self.targ_y[cam]
  *             ttnr = self.targ_tnr[cam]
  *             for j, t in enumerate(targets):             # <<<<<<<<<<<<<<
@@ -13683,7 +13683,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_6read(CYTHON_
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":401
+    /* "openptv2/algorithms/tracking_frame_buf.py":401
  *         self._sync_path_to_soa()
  * 
  *         for cam in range(self.num_cams):             # <<<<<<<<<<<<<<
@@ -13693,7 +13693,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_6read(CYTHON_
   }
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":413
+  /* "openptv2/algorithms/tracking_frame_buf.py":413
  *                 ttnr[j] = t.tnr
  * 
  *         return True             # <<<<<<<<<<<<<<
@@ -13705,7 +13705,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_6read(CYTHON_
   __pyx_r = Py_True;
   goto __pyx_L0;
 
-  /* "algorithms/tracking_frame_buf.py":381
+  /* "openptv2/algorithms/tracking_frame_buf.py":381
  *             c.p[:] = self.corres_p[i]
  * 
  *     def read(self, corres_file_base, linkage_file_base, prio_file_base,             # <<<<<<<<<<<<<<
@@ -13720,7 +13720,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_6read(CYTHON_
   __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_5);
   __Pyx_XDECREF(__pyx_t_6);
-  __Pyx_AddTraceback("algorithms.tracking_frame_buf.Frame.read", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.Frame.read", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_fname);
@@ -13739,7 +13739,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_6read(CYTHON_
   return __pyx_r;
 }
 
-/* "algorithms/tracking_frame_buf.py":415
+/* "openptv2/algorithms/tracking_frame_buf.py":415
  *         return True
  * 
  *     def write(self, corres_file_base, linkage_file_base, prio_file_base,             # <<<<<<<<<<<<<<
@@ -13748,15 +13748,15 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_6read(CYTHON_
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_18tracking_frame_buf_5Frame_9write(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_5Frame_9write(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_10algorithms_18tracking_frame_buf_5Frame_9write = {"write", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_18tracking_frame_buf_5Frame_9write, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10algorithms_18tracking_frame_buf_5Frame_9write(PyObject *__pyx_self, 
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_18tracking_frame_buf_5Frame_9write = {"write", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_5Frame_9write, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_5Frame_9write(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -13858,11 +13858,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.tracking_frame_buf.Frame.write", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.Frame.write", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_18tracking_frame_buf_5Frame_8write(__pyx_self, __pyx_v_self, __pyx_v_corres_file_base, __pyx_v_linkage_file_base, __pyx_v_prio_file_base, __pyx_v_target_file_base, __pyx_v_frame_num);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_5Frame_8write(__pyx_self, __pyx_v_self, __pyx_v_corres_file_base, __pyx_v_linkage_file_base, __pyx_v_prio_file_base, __pyx_v_target_file_base, __pyx_v_frame_num);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -13872,7 +13872,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_8write(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_corres_file_base, PyObject *__pyx_v_linkage_file_base, PyObject *__pyx_v_prio_file_base, PyObject *__pyx_v_target_file_base, PyObject *__pyx_v_frame_num) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_5Frame_8write(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_corres_file_base, PyObject *__pyx_v_linkage_file_base, PyObject *__pyx_v_prio_file_base, PyObject *__pyx_v_target_file_base, PyObject *__pyx_v_frame_num) {
   PyObject *__pyx_v_ok = NULL;
   PyObject *__pyx_v_cam = NULL;
   PyObject *__pyx_r = NULL;
@@ -13891,7 +13891,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_8write(CYTHON
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("write", 0);
 
-  /* "algorithms/tracking_frame_buf.py":418
+  /* "openptv2/algorithms/tracking_frame_buf.py":418
  *               target_file_base, frame_num):
  *         ok = write_path_frame(
  *             self.correspond, self.path_info, self.num_parts,             # <<<<<<<<<<<<<<
@@ -13905,7 +13905,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_8write(CYTHON
   __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_num_parts); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 418, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
 
-  /* "algorithms/tracking_frame_buf.py":420
+  /* "openptv2/algorithms/tracking_frame_buf.py":420
  *             self.correspond, self.path_info, self.num_parts,
  *             corres_file_base, linkage_file_base,
  *             prio_file_base if prio_file_base else None,             # <<<<<<<<<<<<<<
@@ -13921,14 +13921,14 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_8write(CYTHON
     __pyx_t_4 = Py_None;
   }
 
-  /* "algorithms/tracking_frame_buf.py":417
+  /* "openptv2/algorithms/tracking_frame_buf.py":417
  *     def write(self, corres_file_base, linkage_file_base, prio_file_base,
  *               target_file_base, frame_num):
  *         ok = write_path_frame(             # <<<<<<<<<<<<<<
  *             self.correspond, self.path_info, self.num_parts,
  *             corres_file_base, linkage_file_base,
 */
-  __pyx_t_6 = __pyx_f_10algorithms_18tracking_frame_buf_write_path_frame(__pyx_t_1, __pyx_t_2, __pyx_t_3, __pyx_v_corres_file_base, __pyx_v_linkage_file_base, __pyx_t_4, __pyx_v_frame_num, 0); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 417, __pyx_L1_error)
+  __pyx_t_6 = __pyx_f_8openptv2_10algorithms_18tracking_frame_buf_write_path_frame(__pyx_t_1, __pyx_t_2, __pyx_t_3, __pyx_v_corres_file_base, __pyx_v_linkage_file_base, __pyx_t_4, __pyx_v_frame_num, 0); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 417, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
@@ -13937,7 +13937,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_8write(CYTHON
   __pyx_v_ok = __pyx_t_6;
   __pyx_t_6 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":423
+  /* "openptv2/algorithms/tracking_frame_buf.py":423
  *             frame_num
  *         )
  *         if not ok:             # <<<<<<<<<<<<<<
@@ -13948,7 +13948,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_8write(CYTHON
   __pyx_t_7 = (!__pyx_t_5);
   if (__pyx_t_7) {
 
-    /* "algorithms/tracking_frame_buf.py":424
+    /* "openptv2/algorithms/tracking_frame_buf.py":424
  *         )
  *         if not ok:
  *             return False             # <<<<<<<<<<<<<<
@@ -13960,7 +13960,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_8write(CYTHON
     __pyx_r = Py_False;
     goto __pyx_L0;
 
-    /* "algorithms/tracking_frame_buf.py":423
+    /* "openptv2/algorithms/tracking_frame_buf.py":423
  *             frame_num
  *         )
  *         if not ok:             # <<<<<<<<<<<<<<
@@ -13969,7 +13969,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_8write(CYTHON
 */
   }
 
-  /* "algorithms/tracking_frame_buf.py":426
+  /* "openptv2/algorithms/tracking_frame_buf.py":426
  *             return False
  * 
  *         for cam in range(self.num_cams):             # <<<<<<<<<<<<<<
@@ -14008,7 +14008,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_8write(CYTHON
     __Pyx_XDECREF_SET(__pyx_v_cam, __pyx_t_6);
     __pyx_t_6 = 0;
 
-    /* "algorithms/tracking_frame_buf.py":427
+    /* "openptv2/algorithms/tracking_frame_buf.py":427
  * 
  *         for cam in range(self.num_cams):
  *             if self.num_targets[cam] > 0:             # <<<<<<<<<<<<<<
@@ -14026,7 +14026,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_8write(CYTHON
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     if (__pyx_t_7) {
 
-      /* "algorithms/tracking_frame_buf.py":429
+      /* "openptv2/algorithms/tracking_frame_buf.py":429
  *             if self.num_targets[cam] > 0:
  *                 ok = write_targets(
  *                     self.targets[cam], self.num_targets[cam],             # <<<<<<<<<<<<<<
@@ -14044,7 +14044,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_8write(CYTHON
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-      /* "algorithms/tracking_frame_buf.py":430
+      /* "openptv2/algorithms/tracking_frame_buf.py":430
  *                 ok = write_targets(
  *                     self.targets[cam], self.num_targets[cam],
  *                     target_file_base[cam], frame_num             # <<<<<<<<<<<<<<
@@ -14054,14 +14054,14 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_8write(CYTHON
       __pyx_t_6 = __Pyx_PyObject_GetItem(__pyx_v_target_file_base, __pyx_v_cam); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 430, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_6);
 
-      /* "algorithms/tracking_frame_buf.py":428
+      /* "openptv2/algorithms/tracking_frame_buf.py":428
  *         for cam in range(self.num_cams):
  *             if self.num_targets[cam] > 0:
  *                 ok = write_targets(             # <<<<<<<<<<<<<<
  *                     self.targets[cam], self.num_targets[cam],
  *                     target_file_base[cam], frame_num
 */
-      __pyx_t_1 = __pyx_f_10algorithms_18tracking_frame_buf_write_targets(__pyx_t_4, __pyx_t_2, __pyx_t_6, __pyx_v_frame_num, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 428, __pyx_L1_error)
+      __pyx_t_1 = __pyx_f_8openptv2_10algorithms_18tracking_frame_buf_write_targets(__pyx_t_4, __pyx_t_2, __pyx_t_6, __pyx_v_frame_num, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 428, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
@@ -14069,7 +14069,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_8write(CYTHON
       __Pyx_DECREF_SET(__pyx_v_ok, __pyx_t_1);
       __pyx_t_1 = 0;
 
-      /* "algorithms/tracking_frame_buf.py":432
+      /* "openptv2/algorithms/tracking_frame_buf.py":432
  *                     target_file_base[cam], frame_num
  *                 )
  *                 if not ok:             # <<<<<<<<<<<<<<
@@ -14080,7 +14080,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_8write(CYTHON
       __pyx_t_5 = (!__pyx_t_7);
       if (__pyx_t_5) {
 
-        /* "algorithms/tracking_frame_buf.py":433
+        /* "openptv2/algorithms/tracking_frame_buf.py":433
  *                 )
  *                 if not ok:
  *                     return False             # <<<<<<<<<<<<<<
@@ -14093,7 +14093,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_8write(CYTHON
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
         goto __pyx_L0;
 
-        /* "algorithms/tracking_frame_buf.py":432
+        /* "openptv2/algorithms/tracking_frame_buf.py":432
  *                     target_file_base[cam], frame_num
  *                 )
  *                 if not ok:             # <<<<<<<<<<<<<<
@@ -14102,7 +14102,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_8write(CYTHON
 */
       }
 
-      /* "algorithms/tracking_frame_buf.py":427
+      /* "openptv2/algorithms/tracking_frame_buf.py":427
  * 
  *         for cam in range(self.num_cams):
  *             if self.num_targets[cam] > 0:             # <<<<<<<<<<<<<<
@@ -14111,7 +14111,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_8write(CYTHON
 */
     }
 
-    /* "algorithms/tracking_frame_buf.py":426
+    /* "openptv2/algorithms/tracking_frame_buf.py":426
  *             return False
  * 
  *         for cam in range(self.num_cams):             # <<<<<<<<<<<<<<
@@ -14121,7 +14121,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_8write(CYTHON
   }
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":435
+  /* "openptv2/algorithms/tracking_frame_buf.py":435
  *                     return False
  * 
  *         return True             # <<<<<<<<<<<<<<
@@ -14133,7 +14133,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_8write(CYTHON
   __pyx_r = Py_True;
   goto __pyx_L0;
 
-  /* "algorithms/tracking_frame_buf.py":415
+  /* "openptv2/algorithms/tracking_frame_buf.py":415
  *         return True
  * 
  *     def write(self, corres_file_base, linkage_file_base, prio_file_base,             # <<<<<<<<<<<<<<
@@ -14148,7 +14148,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_8write(CYTHON
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_6);
-  __Pyx_AddTraceback("algorithms.tracking_frame_buf.Frame.write", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.Frame.write", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_ok);
@@ -14158,7 +14158,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_8write(CYTHON
   return __pyx_r;
 }
 
-/* "algorithms/tracking_frame_buf.py":439
+/* "openptv2/algorithms/tracking_frame_buf.py":439
  * 
  * class FrameBuf:
  *     def __init__(self, buf_len, num_cams, max_targets,             # <<<<<<<<<<<<<<
@@ -14167,15 +14167,15 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_5Frame_8write(CYTHON
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_18tracking_frame_buf_8FrameBuf_1__init__(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_8FrameBuf_1__init__(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_10algorithms_18tracking_frame_buf_8FrameBuf_1__init__ = {"__init__", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_18tracking_frame_buf_8FrameBuf_1__init__, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10algorithms_18tracking_frame_buf_8FrameBuf_1__init__(PyObject *__pyx_self, 
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_18tracking_frame_buf_8FrameBuf_1__init__ = {"__init__", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_8FrameBuf_1__init__, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_8FrameBuf_1__init__(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -14293,11 +14293,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.tracking_frame_buf.FrameBuf.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.FrameBuf.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf___init__(__pyx_self, __pyx_v_self, __pyx_v_buf_len, __pyx_v_num_cams, __pyx_v_max_targets, __pyx_v_corres_file_base, __pyx_v_linkage_file_base, __pyx_v_prio_file_base, __pyx_v_target_file_base);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_8FrameBuf___init__(__pyx_self, __pyx_v_self, __pyx_v_buf_len, __pyx_v_num_cams, __pyx_v_max_targets, __pyx_v_corres_file_base, __pyx_v_linkage_file_base, __pyx_v_prio_file_base, __pyx_v_target_file_base);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -14307,7 +14307,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf___init__(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_buf_len, PyObject *__pyx_v_num_cams, PyObject *__pyx_v_max_targets, PyObject *__pyx_v_corres_file_base, PyObject *__pyx_v_linkage_file_base, PyObject *__pyx_v_prio_file_base, PyObject *__pyx_v_target_file_base) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_8FrameBuf___init__(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_buf_len, PyObject *__pyx_v_num_cams, PyObject *__pyx_v_max_targets, PyObject *__pyx_v_corres_file_base, PyObject *__pyx_v_linkage_file_base, PyObject *__pyx_v_prio_file_base, PyObject *__pyx_v_target_file_base) {
   CYTHON_UNUSED PyObject *__pyx_8genexpr7__pyx_v__ = NULL;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
@@ -14323,7 +14323,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf___init__(C
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__init__", 0);
 
-  /* "algorithms/tracking_frame_buf.py":442
+  /* "openptv2/algorithms/tracking_frame_buf.py":442
  *                  corres_file_base, linkage_file_base, prio_file_base,
  *                  target_file_base):
  *         self.buf_len = buf_len             # <<<<<<<<<<<<<<
@@ -14332,7 +14332,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf___init__(C
 */
   if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_buf_len, __pyx_v_buf_len) < (0)) __PYX_ERR(0, 442, __pyx_L1_error)
 
-  /* "algorithms/tracking_frame_buf.py":443
+  /* "openptv2/algorithms/tracking_frame_buf.py":443
  *                  target_file_base):
  *         self.buf_len = buf_len
  *         self.num_cams = num_cams             # <<<<<<<<<<<<<<
@@ -14341,7 +14341,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf___init__(C
 */
   if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_num_cams, __pyx_v_num_cams) < (0)) __PYX_ERR(0, 443, __pyx_L1_error)
 
-  /* "algorithms/tracking_frame_buf.py":444
+  /* "openptv2/algorithms/tracking_frame_buf.py":444
  *         self.buf_len = buf_len
  *         self.num_cams = num_cams
  *         self._frames = [Frame(num_cams, max_targets) for _ in range(buf_len)]             # <<<<<<<<<<<<<<
@@ -14416,7 +14416,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf___init__(C
   if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_frames, __pyx_t_1) < (0)) __PYX_ERR(0, 444, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":445
+  /* "openptv2/algorithms/tracking_frame_buf.py":445
  *         self.num_cams = num_cams
  *         self._frames = [Frame(num_cams, max_targets) for _ in range(buf_len)]
  *         self.buf = list(self._frames)             # <<<<<<<<<<<<<<
@@ -14431,7 +14431,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf___init__(C
   if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_buf, __pyx_t_3) < (0)) __PYX_ERR(0, 445, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":447
+  /* "openptv2/algorithms/tracking_frame_buf.py":447
  *         self.buf = list(self._frames)
  * 
  *         self.corres_file_base = corres_file_base             # <<<<<<<<<<<<<<
@@ -14440,7 +14440,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf___init__(C
 */
   if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_corres_file_base, __pyx_v_corres_file_base) < (0)) __PYX_ERR(0, 447, __pyx_L1_error)
 
-  /* "algorithms/tracking_frame_buf.py":448
+  /* "openptv2/algorithms/tracking_frame_buf.py":448
  * 
  *         self.corres_file_base = corres_file_base
  *         self.linkage_file_base = linkage_file_base             # <<<<<<<<<<<<<<
@@ -14449,7 +14449,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf___init__(C
 */
   if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_linkage_file_base, __pyx_v_linkage_file_base) < (0)) __PYX_ERR(0, 448, __pyx_L1_error)
 
-  /* "algorithms/tracking_frame_buf.py":449
+  /* "openptv2/algorithms/tracking_frame_buf.py":449
  *         self.corres_file_base = corres_file_base
  *         self.linkage_file_base = linkage_file_base
  *         self.prio_file_base = prio_file_base             # <<<<<<<<<<<<<<
@@ -14458,7 +14458,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf___init__(C
 */
   if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_prio_file_base, __pyx_v_prio_file_base) < (0)) __PYX_ERR(0, 449, __pyx_L1_error)
 
-  /* "algorithms/tracking_frame_buf.py":450
+  /* "openptv2/algorithms/tracking_frame_buf.py":450
  *         self.linkage_file_base = linkage_file_base
  *         self.prio_file_base = prio_file_base
  *         self.target_file_base = target_file_base             # <<<<<<<<<<<<<<
@@ -14467,7 +14467,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf___init__(C
 */
   if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_target_file_base, __pyx_v_target_file_base) < (0)) __PYX_ERR(0, 450, __pyx_L1_error)
 
-  /* "algorithms/tracking_frame_buf.py":439
+  /* "openptv2/algorithms/tracking_frame_buf.py":439
  * 
  * class FrameBuf:
  *     def __init__(self, buf_len, num_cams, max_targets,             # <<<<<<<<<<<<<<
@@ -14484,7 +14484,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf___init__(C
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_6);
   __Pyx_XDECREF(__pyx_t_7);
-  __Pyx_AddTraceback("algorithms.tracking_frame_buf.FrameBuf.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.FrameBuf.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_8genexpr7__pyx_v__);
@@ -14493,7 +14493,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf___init__(C
   return __pyx_r;
 }
 
-/* "algorithms/tracking_frame_buf.py":452
+/* "openptv2/algorithms/tracking_frame_buf.py":452
  *         self.target_file_base = target_file_base
  * 
  *     @property             # <<<<<<<<<<<<<<
@@ -14502,15 +14502,15 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf___init__(C
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_18tracking_frame_buf_8FrameBuf_3_buf_start(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_8FrameBuf_3_buf_start(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_10algorithms_18tracking_frame_buf_8FrameBuf_3_buf_start = {"_buf_start", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_18tracking_frame_buf_8FrameBuf_3_buf_start, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10algorithms_18tracking_frame_buf_8FrameBuf_3_buf_start(PyObject *__pyx_self, 
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_18tracking_frame_buf_8FrameBuf_3_buf_start = {"_buf_start", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_8FrameBuf_3_buf_start, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_8FrameBuf_3_buf_start(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -14572,11 +14572,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.tracking_frame_buf.FrameBuf._buf_start", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.FrameBuf._buf_start", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf_2_buf_start(__pyx_self, __pyx_v_self);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_8FrameBuf_2_buf_start(__pyx_self, __pyx_v_self);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -14586,12 +14586,12 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf_2_buf_start(CYTHON_UNUSED PyObject *__pyx_self, CYTHON_UNUSED PyObject *__pyx_v_self) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_8FrameBuf_2_buf_start(CYTHON_UNUSED PyObject *__pyx_self, CYTHON_UNUSED PyObject *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("_buf_start", 0);
 
-  /* "algorithms/tracking_frame_buf.py":454
+  /* "openptv2/algorithms/tracking_frame_buf.py":454
  *     @property
  *     def _buf_start(self):
  *         return 0             # <<<<<<<<<<<<<<
@@ -14603,7 +14603,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf_2_buf_star
   __pyx_r = __pyx_mstate_global->__pyx_int_0;
   goto __pyx_L0;
 
-  /* "algorithms/tracking_frame_buf.py":452
+  /* "openptv2/algorithms/tracking_frame_buf.py":452
  *         self.target_file_base = target_file_base
  * 
  *     @property             # <<<<<<<<<<<<<<
@@ -14618,7 +14618,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf_2_buf_star
   return __pyx_r;
 }
 
-/* "algorithms/tracking_frame_buf.py":456
+/* "openptv2/algorithms/tracking_frame_buf.py":456
  *         return 0
  * 
  *     def fb_next(self):             # <<<<<<<<<<<<<<
@@ -14627,15 +14627,15 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf_2_buf_star
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_18tracking_frame_buf_8FrameBuf_5fb_next(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_8FrameBuf_5fb_next(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_10algorithms_18tracking_frame_buf_8FrameBuf_5fb_next = {"fb_next", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_18tracking_frame_buf_8FrameBuf_5fb_next, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10algorithms_18tracking_frame_buf_8FrameBuf_5fb_next(PyObject *__pyx_self, 
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_18tracking_frame_buf_8FrameBuf_5fb_next = {"fb_next", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_8FrameBuf_5fb_next, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_8FrameBuf_5fb_next(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -14697,11 +14697,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.tracking_frame_buf.FrameBuf.fb_next", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.FrameBuf.fb_next", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf_4fb_next(__pyx_self, __pyx_v_self);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_8FrameBuf_4fb_next(__pyx_self, __pyx_v_self);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -14711,7 +14711,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf_4fb_next(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_8FrameBuf_4fb_next(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -14723,7 +14723,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf_4fb_next(C
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("fb_next", 0);
 
-  /* "algorithms/tracking_frame_buf.py":457
+  /* "openptv2/algorithms/tracking_frame_buf.py":457
  * 
  *     def fb_next(self):
  *         self.buf.append(self.buf.pop(0))             # <<<<<<<<<<<<<<
@@ -14741,7 +14741,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf_4fb_next(C
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":456
+  /* "openptv2/algorithms/tracking_frame_buf.py":456
  *         return 0
  * 
  *     def fb_next(self):             # <<<<<<<<<<<<<<
@@ -14756,7 +14756,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf_4fb_next(C
   __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3);
-  __Pyx_AddTraceback("algorithms.tracking_frame_buf.FrameBuf.fb_next", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.FrameBuf.fb_next", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -14764,7 +14764,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf_4fb_next(C
   return __pyx_r;
 }
 
-/* "algorithms/tracking_frame_buf.py":459
+/* "openptv2/algorithms/tracking_frame_buf.py":459
  *         self.buf.append(self.buf.pop(0))
  * 
  *     def fb_prev(self):             # <<<<<<<<<<<<<<
@@ -14773,15 +14773,15 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf_4fb_next(C
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_18tracking_frame_buf_8FrameBuf_7fb_prev(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_8FrameBuf_7fb_prev(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_10algorithms_18tracking_frame_buf_8FrameBuf_7fb_prev = {"fb_prev", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_18tracking_frame_buf_8FrameBuf_7fb_prev, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10algorithms_18tracking_frame_buf_8FrameBuf_7fb_prev(PyObject *__pyx_self, 
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_18tracking_frame_buf_8FrameBuf_7fb_prev = {"fb_prev", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_8FrameBuf_7fb_prev, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_8FrameBuf_7fb_prev(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -14843,11 +14843,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.tracking_frame_buf.FrameBuf.fb_prev", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.FrameBuf.fb_prev", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf_6fb_prev(__pyx_self, __pyx_v_self);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_8FrameBuf_6fb_prev(__pyx_self, __pyx_v_self);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -14857,7 +14857,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf_6fb_prev(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_8FrameBuf_6fb_prev(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -14871,7 +14871,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf_6fb_prev(C
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("fb_prev", 0);
 
-  /* "algorithms/tracking_frame_buf.py":460
+  /* "openptv2/algorithms/tracking_frame_buf.py":460
  * 
  *     def fb_prev(self):
  *         self.buf.insert(0, self.buf.pop())             # <<<<<<<<<<<<<<
@@ -14899,7 +14899,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf_6fb_prev(C
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":459
+  /* "openptv2/algorithms/tracking_frame_buf.py":459
  *         self.buf.append(self.buf.pop(0))
  * 
  *     def fb_prev(self):             # <<<<<<<<<<<<<<
@@ -14916,7 +14916,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf_6fb_prev(C
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_5);
-  __Pyx_AddTraceback("algorithms.tracking_frame_buf.FrameBuf.fb_prev", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.FrameBuf.fb_prev", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -14924,7 +14924,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf_6fb_prev(C
   return __pyx_r;
 }
 
-/* "algorithms/tracking_frame_buf.py":462
+/* "openptv2/algorithms/tracking_frame_buf.py":462
  *         self.buf.insert(0, self.buf.pop())
  * 
  *     def read_frame_at_end(self, frame_num, read_links=True):             # <<<<<<<<<<<<<<
@@ -14933,15 +14933,15 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf_6fb_prev(C
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_18tracking_frame_buf_8FrameBuf_9read_frame_at_end(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_8FrameBuf_9read_frame_at_end(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_10algorithms_18tracking_frame_buf_8FrameBuf_9read_frame_at_end = {"read_frame_at_end", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_18tracking_frame_buf_8FrameBuf_9read_frame_at_end, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10algorithms_18tracking_frame_buf_8FrameBuf_9read_frame_at_end(PyObject *__pyx_self, 
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_18tracking_frame_buf_8FrameBuf_9read_frame_at_end = {"read_frame_at_end", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_8FrameBuf_9read_frame_at_end, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_8FrameBuf_9read_frame_at_end(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -15026,11 +15026,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.tracking_frame_buf.FrameBuf.read_frame_at_end", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.FrameBuf.read_frame_at_end", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf_8read_frame_at_end(__pyx_self, __pyx_v_self, __pyx_v_frame_num, __pyx_v_read_links);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_8FrameBuf_8read_frame_at_end(__pyx_self, __pyx_v_self, __pyx_v_frame_num, __pyx_v_read_links);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -15040,7 +15040,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf_8read_frame_at_end(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_frame_num, PyObject *__pyx_v_read_links) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_8FrameBuf_8read_frame_at_end(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_frame_num, PyObject *__pyx_v_read_links) {
   PyObject *__pyx_v_frame = NULL;
   PyObject *__pyx_v_linkage = NULL;
   PyObject *__pyx_v_prio = NULL;
@@ -15057,7 +15057,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf_8read_fram
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("read_frame_at_end", 0);
 
-  /* "algorithms/tracking_frame_buf.py":463
+  /* "openptv2/algorithms/tracking_frame_buf.py":463
  * 
  *     def read_frame_at_end(self, frame_num, read_links=True):
  *         frame = self.buf[self.buf_len - 1]             # <<<<<<<<<<<<<<
@@ -15078,7 +15078,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf_8read_fram
   __pyx_v_frame = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":464
+  /* "openptv2/algorithms/tracking_frame_buf.py":464
  *     def read_frame_at_end(self, frame_num, read_links=True):
  *         frame = self.buf[self.buf_len - 1]
  *         linkage = self.linkage_file_base if read_links else ""             # <<<<<<<<<<<<<<
@@ -15098,7 +15098,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf_8read_fram
   __pyx_v_linkage = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":465
+  /* "openptv2/algorithms/tracking_frame_buf.py":465
  *         frame = self.buf[self.buf_len - 1]
  *         linkage = self.linkage_file_base if read_links else ""
  *         prio = self.prio_file_base if read_links else ""             # <<<<<<<<<<<<<<
@@ -15118,7 +15118,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf_8read_fram
   __pyx_v_prio = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":466
+  /* "openptv2/algorithms/tracking_frame_buf.py":466
  *         linkage = self.linkage_file_base if read_links else ""
  *         prio = self.prio_file_base if read_links else ""
  *         return frame.read(self.corres_file_base, linkage, prio,             # <<<<<<<<<<<<<<
@@ -15131,7 +15131,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf_8read_fram
   __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_corres_file_base); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 466, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
 
-  /* "algorithms/tracking_frame_buf.py":467
+  /* "openptv2/algorithms/tracking_frame_buf.py":467
  *         prio = self.prio_file_base if read_links else ""
  *         return frame.read(self.corres_file_base, linkage, prio,
  *                           self.target_file_base, frame_num)             # <<<<<<<<<<<<<<
@@ -15154,7 +15154,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf_8read_fram
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/tracking_frame_buf.py":462
+  /* "openptv2/algorithms/tracking_frame_buf.py":462
  *         self.buf.insert(0, self.buf.pop())
  * 
  *     def read_frame_at_end(self, frame_num, read_links=True):             # <<<<<<<<<<<<<<
@@ -15168,7 +15168,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf_8read_fram
   __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_5);
-  __Pyx_AddTraceback("algorithms.tracking_frame_buf.FrameBuf.read_frame_at_end", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.FrameBuf.read_frame_at_end", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_frame);
@@ -15179,7 +15179,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf_8read_fram
   return __pyx_r;
 }
 
-/* "algorithms/tracking_frame_buf.py":469
+/* "openptv2/algorithms/tracking_frame_buf.py":469
  *                           self.target_file_base, frame_num)
  * 
  *     def write_frame_from_start(self, frame_num):             # <<<<<<<<<<<<<<
@@ -15188,15 +15188,15 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf_8read_fram
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_18tracking_frame_buf_8FrameBuf_11write_frame_from_start(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_8FrameBuf_11write_frame_from_start(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_10algorithms_18tracking_frame_buf_8FrameBuf_11write_frame_from_start = {"write_frame_from_start", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_18tracking_frame_buf_8FrameBuf_11write_frame_from_start, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10algorithms_18tracking_frame_buf_8FrameBuf_11write_frame_from_start(PyObject *__pyx_self, 
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_18tracking_frame_buf_8FrameBuf_11write_frame_from_start = {"write_frame_from_start", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_8FrameBuf_11write_frame_from_start, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_8FrameBuf_11write_frame_from_start(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -15266,11 +15266,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.tracking_frame_buf.FrameBuf.write_frame_from_start", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.FrameBuf.write_frame_from_start", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf_10write_frame_from_start(__pyx_self, __pyx_v_self, __pyx_v_frame_num);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_8FrameBuf_10write_frame_from_start(__pyx_self, __pyx_v_self, __pyx_v_frame_num);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -15280,7 +15280,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf_10write_frame_from_start(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_frame_num) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_8FrameBuf_10write_frame_from_start(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_frame_num) {
   PyObject *__pyx_v_frame = NULL;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
@@ -15296,7 +15296,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf_10write_fr
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("write_frame_from_start", 0);
 
-  /* "algorithms/tracking_frame_buf.py":470
+  /* "openptv2/algorithms/tracking_frame_buf.py":470
  * 
  *     def write_frame_from_start(self, frame_num):
  *         frame = self.buf[0]             # <<<<<<<<<<<<<<
@@ -15311,7 +15311,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf_10write_fr
   __pyx_v_frame = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":471
+  /* "openptv2/algorithms/tracking_frame_buf.py":471
  *     def write_frame_from_start(self, frame_num):
  *         frame = self.buf[0]
  *         return frame.write(self.corres_file_base, self.linkage_file_base,             # <<<<<<<<<<<<<<
@@ -15326,7 +15326,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf_10write_fr
   __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_linkage_file_base); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 471, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
 
-  /* "algorithms/tracking_frame_buf.py":472
+  /* "openptv2/algorithms/tracking_frame_buf.py":472
  *         frame = self.buf[0]
  *         return frame.write(self.corres_file_base, self.linkage_file_base,
  *                            self.prio_file_base, self.target_file_base,             # <<<<<<<<<<<<<<
@@ -15338,7 +15338,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf_10write_fr
   __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_target_file_base); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 472, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
 
-  /* "algorithms/tracking_frame_buf.py":473
+  /* "openptv2/algorithms/tracking_frame_buf.py":473
  *         return frame.write(self.corres_file_base, self.linkage_file_base,
  *                            self.prio_file_base, self.target_file_base,
  *                            frame_num)             # <<<<<<<<<<<<<<
@@ -15361,7 +15361,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf_10write_fr
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/tracking_frame_buf.py":469
+  /* "openptv2/algorithms/tracking_frame_buf.py":469
  *                           self.target_file_base, frame_num)
  * 
  *     def write_frame_from_start(self, frame_num):             # <<<<<<<<<<<<<<
@@ -15377,7 +15377,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf_10write_fr
   __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_5);
   __Pyx_XDECREF(__pyx_t_6);
-  __Pyx_AddTraceback("algorithms.tracking_frame_buf.FrameBuf.write_frame_from_start", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.tracking_frame_buf.FrameBuf.write_frame_from_start", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_frame);
@@ -15386,7 +15386,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf_10write_fr
   return __pyx_r;
 }
 
-/* "algorithms/tracking_frame_buf.py":479
+/* "openptv2/algorithms/tracking_frame_buf.py":479
  * 
  * 
  * def is_compiled() -> bool:             # <<<<<<<<<<<<<<
@@ -15395,28 +15395,28 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_8FrameBuf_10write_fr
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_18tracking_frame_buf_21is_compiled(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_18tracking_frame_buf_20is_compiled, "Return whether this module is compiled to C.");
-static PyMethodDef __pyx_mdef_10algorithms_18tracking_frame_buf_21is_compiled = {"is_compiled", (PyCFunction)__pyx_pw_10algorithms_18tracking_frame_buf_21is_compiled, METH_NOARGS, __pyx_doc_10algorithms_18tracking_frame_buf_20is_compiled};
-static PyObject *__pyx_pw_10algorithms_18tracking_frame_buf_21is_compiled(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_21is_compiled(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_18tracking_frame_buf_20is_compiled, "Return whether this module is compiled to C.");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_18tracking_frame_buf_21is_compiled = {"is_compiled", (PyCFunction)__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_21is_compiled, METH_NOARGS, __pyx_doc_8openptv2_10algorithms_18tracking_frame_buf_20is_compiled};
+static PyObject *__pyx_pw_8openptv2_10algorithms_18tracking_frame_buf_21is_compiled(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused) {
   CYTHON_UNUSED PyObject *const *__pyx_kwvalues;
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("is_compiled (wrapper)", 0);
   __pyx_kwvalues = __Pyx_KwValues_VARARGS(__pyx_args, __pyx_nargs);
-  __pyx_r = __pyx_pf_10algorithms_18tracking_frame_buf_20is_compiled(__pyx_self);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_20is_compiled(__pyx_self);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_20is_compiled(CYTHON_UNUSED PyObject *__pyx_self) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_20is_compiled(CYTHON_UNUSED PyObject *__pyx_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("is_compiled", 0);
 
-  /* "algorithms/tracking_frame_buf.py":481
+  /* "openptv2/algorithms/tracking_frame_buf.py":481
  * def is_compiled() -> bool:
  *     """Return whether this module is compiled to C."""
  *     return cython.compiled             # <<<<<<<<<<<<<<
@@ -15426,7 +15426,7 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_20is_compiled(CYTHON
   __pyx_r = Py_True;
   goto __pyx_L0;
 
-  /* "algorithms/tracking_frame_buf.py":479
+  /* "openptv2/algorithms/tracking_frame_buf.py":479
  * 
  * 
  * def is_compiled() -> bool:             # <<<<<<<<<<<<<<
@@ -15442,18 +15442,18 @@ static PyObject *__pyx_pf_10algorithms_18tracking_frame_buf_20is_compiled(CYTHON
 }
 /* #### Code section: module_exttypes ### */
 
-static PyObject *__pyx_tp_new_10algorithms_18tracking_frame_buf___pyx_defaults(PyTypeObject *t, CYTHON_UNUSED PyObject *a, CYTHON_UNUSED PyObject *k) {
+static PyObject *__pyx_tp_new_8openptv2_10algorithms_18tracking_frame_buf___pyx_defaults(PyTypeObject *t, CYTHON_UNUSED PyObject *a, CYTHON_UNUSED PyObject *k) {
   PyObject *o;
   o = __Pyx_AllocateExtensionType(t, 1);
   if (unlikely(!o)) return 0;
   return o;
 }
 
-static void __pyx_tp_dealloc_10algorithms_18tracking_frame_buf___pyx_defaults(PyObject *o) {
+static void __pyx_tp_dealloc_8openptv2_10algorithms_18tracking_frame_buf___pyx_defaults(PyObject *o) {
   struct __pyx_defaults *p = (struct __pyx_defaults *)o;
   #if CYTHON_USE_TP_FINALIZE
   if (unlikely(__Pyx_PyObject_GetSlot(o, tp_finalize, destructor)) && !__Pyx_PyObject_GC_IsFinalized(o)) {
-    if (__Pyx_PyObject_GetSlot(o, tp_dealloc, destructor) == __pyx_tp_dealloc_10algorithms_18tracking_frame_buf___pyx_defaults) {
+    if (__Pyx_PyObject_GetSlot(o, tp_dealloc, destructor) == __pyx_tp_dealloc_8openptv2_10algorithms_18tracking_frame_buf___pyx_defaults) {
       if (PyObject_CallFinalizerFromDealloc(o)) return;
     }
   }
@@ -15475,7 +15475,7 @@ static void __pyx_tp_dealloc_10algorithms_18tracking_frame_buf___pyx_defaults(Py
   #endif
 }
 
-static int __pyx_tp_traverse_10algorithms_18tracking_frame_buf___pyx_defaults(PyObject *o, visitproc v, void *a) {
+static int __pyx_tp_traverse_8openptv2_10algorithms_18tracking_frame_buf___pyx_defaults(PyObject *o, visitproc v, void *a) {
   int e;
   struct __pyx_defaults *p = (struct __pyx_defaults *)o;
   {
@@ -15491,7 +15491,7 @@ static int __pyx_tp_traverse_10algorithms_18tracking_frame_buf___pyx_defaults(Py
   return 0;
 }
 
-static int __pyx_tp_clear_10algorithms_18tracking_frame_buf___pyx_defaults(PyObject *o) {
+static int __pyx_tp_clear_8openptv2_10algorithms_18tracking_frame_buf___pyx_defaults(PyObject *o) {
   PyObject* tmp;
   struct __pyx_defaults *p = (struct __pyx_defaults *)o;
   tmp = ((PyObject*)p->arg0);
@@ -15503,28 +15503,28 @@ static int __pyx_tp_clear_10algorithms_18tracking_frame_buf___pyx_defaults(PyObj
   return 0;
 }
 #if CYTHON_USE_TYPE_SPECS
-static PyType_Slot __pyx_type_10algorithms_18tracking_frame_buf___pyx_defaults_slots[] = {
-  {Py_tp_dealloc, (void *)__pyx_tp_dealloc_10algorithms_18tracking_frame_buf___pyx_defaults},
-  {Py_tp_traverse, (void *)__pyx_tp_traverse_10algorithms_18tracking_frame_buf___pyx_defaults},
-  {Py_tp_clear, (void *)__pyx_tp_clear_10algorithms_18tracking_frame_buf___pyx_defaults},
-  {Py_tp_new, (void *)__pyx_tp_new_10algorithms_18tracking_frame_buf___pyx_defaults},
+static PyType_Slot __pyx_type_8openptv2_10algorithms_18tracking_frame_buf___pyx_defaults_slots[] = {
+  {Py_tp_dealloc, (void *)__pyx_tp_dealloc_8openptv2_10algorithms_18tracking_frame_buf___pyx_defaults},
+  {Py_tp_traverse, (void *)__pyx_tp_traverse_8openptv2_10algorithms_18tracking_frame_buf___pyx_defaults},
+  {Py_tp_clear, (void *)__pyx_tp_clear_8openptv2_10algorithms_18tracking_frame_buf___pyx_defaults},
+  {Py_tp_new, (void *)__pyx_tp_new_8openptv2_10algorithms_18tracking_frame_buf___pyx_defaults},
   {0, 0},
 };
-static PyType_Spec __pyx_type_10algorithms_18tracking_frame_buf___pyx_defaults_spec = {
-  "algorithms.tracking_frame_buf.__pyx_defaults",
+static PyType_Spec __pyx_type_8openptv2_10algorithms_18tracking_frame_buf___pyx_defaults_spec = {
+  "openptv2.algorithms.tracking_frame_buf.__pyx_defaults",
   sizeof(struct __pyx_defaults),
   0,
   Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_HAVE_GC,
-  __pyx_type_10algorithms_18tracking_frame_buf___pyx_defaults_slots,
+  __pyx_type_8openptv2_10algorithms_18tracking_frame_buf___pyx_defaults_slots,
 };
 #else
 
-static PyTypeObject __pyx_type_10algorithms_18tracking_frame_buf___pyx_defaults = {
+static PyTypeObject __pyx_type_8openptv2_10algorithms_18tracking_frame_buf___pyx_defaults = {
   PyVarObject_HEAD_INIT(0, 0)
-  "algorithms.tracking_frame_buf.""__pyx_defaults", /*tp_name*/
+  "openptv2.algorithms.tracking_frame_buf.""__pyx_defaults", /*tp_name*/
   sizeof(struct __pyx_defaults), /*tp_basicsize*/
   0, /*tp_itemsize*/
-  __pyx_tp_dealloc_10algorithms_18tracking_frame_buf___pyx_defaults, /*tp_dealloc*/
+  __pyx_tp_dealloc_8openptv2_10algorithms_18tracking_frame_buf___pyx_defaults, /*tp_dealloc*/
   0, /*tp_vectorcall_offset*/
   0, /*tp_getattr*/
   0, /*tp_setattr*/
@@ -15541,8 +15541,8 @@ static PyTypeObject __pyx_type_10algorithms_18tracking_frame_buf___pyx_defaults 
   0, /*tp_as_buffer*/
   Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_HAVE_GC, /*tp_flags*/
   0, /*tp_doc*/
-  __pyx_tp_traverse_10algorithms_18tracking_frame_buf___pyx_defaults, /*tp_traverse*/
-  __pyx_tp_clear_10algorithms_18tracking_frame_buf___pyx_defaults, /*tp_clear*/
+  __pyx_tp_traverse_8openptv2_10algorithms_18tracking_frame_buf___pyx_defaults, /*tp_traverse*/
+  __pyx_tp_clear_8openptv2_10algorithms_18tracking_frame_buf___pyx_defaults, /*tp_clear*/
   0, /*tp_richcompare*/
   0, /*tp_weaklistoffset*/
   0, /*tp_iter*/
@@ -15559,7 +15559,7 @@ static PyTypeObject __pyx_type_10algorithms_18tracking_frame_buf___pyx_defaults 
   #endif
   0, /*tp_init*/
   0, /*tp_alloc*/
-  __pyx_tp_new_10algorithms_18tracking_frame_buf___pyx_defaults, /*tp_new*/
+  __pyx_tp_new_8openptv2_10algorithms_18tracking_frame_buf___pyx_defaults, /*tp_new*/
   0, /*tp_free*/
   0, /*tp_is_gc*/
   0, /*tp_bases*/
@@ -15646,22 +15646,22 @@ static int __Pyx_modinit_type_init_code(__pyx_mstatetype *__pyx_mstate) {
   __Pyx_RefNannySetupContext("__Pyx_modinit_type_init_code", 0);
   /*--- Type init code ---*/
   #if CYTHON_USE_TYPE_SPECS
-  __pyx_mstate->__pyx_ptype_10algorithms_18tracking_frame_buf___pyx_defaults = (PyTypeObject *) __Pyx_PyType_FromModuleAndSpec(__pyx_m, &__pyx_type_10algorithms_18tracking_frame_buf___pyx_defaults_spec, NULL); if (unlikely(!__pyx_mstate->__pyx_ptype_10algorithms_18tracking_frame_buf___pyx_defaults)) __PYX_ERR(0, 105, __pyx_L1_error)
-  if (__Pyx_fix_up_extension_type_from_spec(&__pyx_type_10algorithms_18tracking_frame_buf___pyx_defaults_spec, __pyx_mstate->__pyx_ptype_10algorithms_18tracking_frame_buf___pyx_defaults) < (0)) __PYX_ERR(0, 105, __pyx_L1_error)
+  __pyx_mstate->__pyx_ptype_8openptv2_10algorithms_18tracking_frame_buf___pyx_defaults = (PyTypeObject *) __Pyx_PyType_FromModuleAndSpec(__pyx_m, &__pyx_type_8openptv2_10algorithms_18tracking_frame_buf___pyx_defaults_spec, NULL); if (unlikely(!__pyx_mstate->__pyx_ptype_8openptv2_10algorithms_18tracking_frame_buf___pyx_defaults)) __PYX_ERR(0, 105, __pyx_L1_error)
+  if (__Pyx_fix_up_extension_type_from_spec(&__pyx_type_8openptv2_10algorithms_18tracking_frame_buf___pyx_defaults_spec, __pyx_mstate->__pyx_ptype_8openptv2_10algorithms_18tracking_frame_buf___pyx_defaults) < (0)) __PYX_ERR(0, 105, __pyx_L1_error)
   #else
-  __pyx_mstate->__pyx_ptype_10algorithms_18tracking_frame_buf___pyx_defaults = &__pyx_type_10algorithms_18tracking_frame_buf___pyx_defaults;
+  __pyx_mstate->__pyx_ptype_8openptv2_10algorithms_18tracking_frame_buf___pyx_defaults = &__pyx_type_8openptv2_10algorithms_18tracking_frame_buf___pyx_defaults;
   #endif
   #if !CYTHON_COMPILING_IN_LIMITED_API
   #endif
   #if !CYTHON_USE_TYPE_SPECS
-  if (__Pyx_PyType_Ready(__pyx_mstate->__pyx_ptype_10algorithms_18tracking_frame_buf___pyx_defaults) < (0)) __PYX_ERR(0, 105, __pyx_L1_error)
+  if (__Pyx_PyType_Ready(__pyx_mstate->__pyx_ptype_8openptv2_10algorithms_18tracking_frame_buf___pyx_defaults) < (0)) __PYX_ERR(0, 105, __pyx_L1_error)
   #endif
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
-  PyUnstable_Object_EnableDeferredRefcount((PyObject*)__pyx_mstate->__pyx_ptype_10algorithms_18tracking_frame_buf___pyx_defaults);
+  PyUnstable_Object_EnableDeferredRefcount((PyObject*)__pyx_mstate->__pyx_ptype_8openptv2_10algorithms_18tracking_frame_buf___pyx_defaults);
   #endif
   #if !CYTHON_COMPILING_IN_LIMITED_API
-  if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_mstate->__pyx_ptype_10algorithms_18tracking_frame_buf___pyx_defaults->tp_dictoffset && __pyx_mstate->__pyx_ptype_10algorithms_18tracking_frame_buf___pyx_defaults->tp_getattro == PyObject_GenericGetAttr)) {
-    __pyx_mstate->__pyx_ptype_10algorithms_18tracking_frame_buf___pyx_defaults->tp_getattro = PyObject_GenericGetAttr;
+  if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_mstate->__pyx_ptype_8openptv2_10algorithms_18tracking_frame_buf___pyx_defaults->tp_dictoffset && __pyx_mstate->__pyx_ptype_8openptv2_10algorithms_18tracking_frame_buf___pyx_defaults->tp_getattro == PyObject_GenericGetAttr)) {
+    __pyx_mstate->__pyx_ptype_8openptv2_10algorithms_18tracking_frame_buf___pyx_defaults->tp_getattro = PyObject_GenericGetAttr;
   }
   #endif
   __Pyx_RefNannyFinishContext();
@@ -15947,13 +15947,13 @@ __Pyx_RefNannySetupContext("PyInit_tracking_frame_buf", 0);
   if (__Pyx_InitConstants(__pyx_mstate) < (0)) __PYX_ERR(0, 1, __pyx_L1_error)
   stringtab_initialized = 1;
   if (__Pyx_InitGlobals() < (0)) __PYX_ERR(0, 1, __pyx_L1_error)
-  if (__pyx_module_is_main_algorithms__tracking_frame_buf) {
+  if (__pyx_module_is_main_openptv2__algorithms__tracking_frame_buf) {
     if (PyObject_SetAttr(__pyx_m, __pyx_mstate_global->__pyx_n_u_name, __pyx_mstate_global->__pyx_n_u_main) < (0)) __PYX_ERR(0, 1, __pyx_L1_error)
   }
   {
     PyObject *modules = PyImport_GetModuleDict(); if (unlikely(!modules)) __PYX_ERR(0, 1, __pyx_L1_error)
-    if (!PyDict_GetItemString(modules, "algorithms.tracking_frame_buf")) {
-      if (unlikely((PyDict_SetItemString(modules, "algorithms.tracking_frame_buf", __pyx_m) < 0))) __PYX_ERR(0, 1, __pyx_L1_error)
+    if (!PyDict_GetItemString(modules, "openptv2.algorithms.tracking_frame_buf")) {
+      if (unlikely((PyDict_SetItemString(modules, "openptv2.algorithms.tracking_frame_buf", __pyx_m) < 0))) __PYX_ERR(0, 1, __pyx_L1_error)
     }
   }
   /*--- Builtin init code ---*/
@@ -15971,7 +15971,7 @@ __Pyx_RefNannySetupContext("PyInit_tracking_frame_buf", 0);
   (void)__Pyx_modinit_function_import_code(__pyx_mstate);
   /*--- Execution code ---*/
 
-  /* "algorithms/tracking_frame_buf.py":8
+  /* "openptv2/algorithms/tracking_frame_buf.py":8
  * 
  * 
  * import numpy as np             # <<<<<<<<<<<<<<
@@ -15984,7 +15984,7 @@ __Pyx_RefNannySetupContext("PyInit_tracking_frame_buf", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_np, __pyx_t_2) < (0)) __PYX_ERR(0, 8, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":9
+  /* "openptv2/algorithms/tracking_frame_buf.py":9
  * 
  * import numpy as np
  * from pathlib import Path             # <<<<<<<<<<<<<<
@@ -16008,7 +16008,7 @@ __Pyx_RefNannySetupContext("PyInit_tracking_frame_buf", 0);
   }
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":11
+  /* "openptv2/algorithms/tracking_frame_buf.py":11
  * from pathlib import Path
  * 
  * from .constants import POSI, PT_UNUSED, CORRES_NONE, PREV_NONE, NEXT_NONE             # <<<<<<<<<<<<<<
@@ -16017,7 +16017,7 @@ __Pyx_RefNannySetupContext("PyInit_tracking_frame_buf", 0);
 */
   {
     PyObject* const __pyx_imported_names[] = {__pyx_mstate_global->__pyx_n_u_POSI,__pyx_mstate_global->__pyx_n_u_PT_UNUSED,__pyx_mstate_global->__pyx_n_u_CORRES_NONE,__pyx_mstate_global->__pyx_n_u_PREV_NONE,__pyx_mstate_global->__pyx_n_u_NEXT_NONE};
-    __pyx_t_1 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_constants, __pyx_imported_names, 5, __pyx_mstate_global->__pyx_kp_u_algorithms_constants, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 11, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_constants, __pyx_imported_names, 5, __pyx_mstate_global->__pyx_kp_u_openptv2_algorithms_constants, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 11, __pyx_L1_error)
   }
   __pyx_t_2 = __pyx_t_1;
   __Pyx_GOTREF(__pyx_t_2);
@@ -16032,17 +16032,17 @@ __Pyx_RefNannySetupContext("PyInit_tracking_frame_buf", 0);
   }
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":14
+  /* "openptv2/algorithms/tracking_frame_buf.py":14
  * 
  * 
  * class Target:             # <<<<<<<<<<<<<<
  *     __slots__ = ('pnr', 'x', 'y', 'n', 'nx', 'ny', 'sumg', 'tnr')
  * 
 */
-  __pyx_t_2 = __Pyx_Py3MetaclassPrepare((PyObject *) NULL, __pyx_mstate_global->__pyx_empty_tuple, __pyx_mstate_global->__pyx_n_u_Target, __pyx_mstate_global->__pyx_n_u_Target, (PyObject *) NULL, __pyx_mstate_global->__pyx_n_u_algorithms_tracking_frame_buf, (PyObject *) NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 14, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_Py3MetaclassPrepare((PyObject *) NULL, __pyx_mstate_global->__pyx_empty_tuple, __pyx_mstate_global->__pyx_n_u_Target, __pyx_mstate_global->__pyx_n_u_Target, (PyObject *) NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_tracking_fra, (PyObject *) NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 14, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
 
-  /* "algorithms/tracking_frame_buf.py":15
+  /* "openptv2/algorithms/tracking_frame_buf.py":15
  * 
  * class Target:
  *     __slots__ = ('pnr', 'x', 'y', 'n', 'nx', 'ny', 'sumg', 'tnr')             # <<<<<<<<<<<<<<
@@ -16051,14 +16051,14 @@ __Pyx_RefNannySetupContext("PyInit_tracking_frame_buf", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_slots, __pyx_mstate_global->__pyx_tuple[1]) < (0)) __PYX_ERR(0, 15, __pyx_L1_error)
 
-  /* "algorithms/tracking_frame_buf.py":17
+  /* "openptv2/algorithms/tracking_frame_buf.py":17
  *     __slots__ = ('pnr', 'x', 'y', 'n', 'nx', 'ny', 'sumg', 'tnr')
  * 
  *     def __init__(self, pnr=0, x=0.0, y=0.0, n=0, nx=0, ny=0, sumg=0, tnr=0):             # <<<<<<<<<<<<<<
  *         self.pnr = pnr
  *         self.x = x
 */
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_18tracking_frame_buf_6Target_1__init__, 0, __pyx_mstate_global->__pyx_n_u_Target___init, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_tracking_frame_buf, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[0])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 17, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_18tracking_frame_buf_6Target_1__init__, 0, __pyx_mstate_global->__pyx_n_u_Target___init, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_tracking_fra, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[0])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 17, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
@@ -16067,7 +16067,7 @@ __Pyx_RefNannySetupContext("PyInit_tracking_frame_buf", 0);
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_init, __pyx_t_4) < (0)) __PYX_ERR(0, 17, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":14
+  /* "openptv2/algorithms/tracking_frame_buf.py":14
  * 
  * 
  * class Target:             # <<<<<<<<<<<<<<
@@ -16083,14 +16083,14 @@ __Pyx_RefNannySetupContext("PyInit_tracking_frame_buf", 0);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":28
+  /* "openptv2/algorithms/tracking_frame_buf.py":28
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def compare_targets(t1, t2):
  *     return (t1.pnr == t2.pnr and t1.x == t2.x and t1.y == t2.y and
 */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_18tracking_frame_buf_1compare_targets, 0, __pyx_mstate_global->__pyx_n_u_compare_targets, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_tracking_frame_buf, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[1])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 28, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_18tracking_frame_buf_1compare_targets, 0, __pyx_mstate_global->__pyx_n_u_compare_targets, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_tracking_fra, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[1])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 28, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -16098,14 +16098,14 @@ __Pyx_RefNannySetupContext("PyInit_tracking_frame_buf", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_compare_targets, __pyx_t_2) < (0)) __PYX_ERR(0, 28, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":35
+  /* "openptv2/algorithms/tracking_frame_buf.py":35
  * 
  * 
  * def _resolve_file_base(file_base, frame_num):             # <<<<<<<<<<<<<<
  *     if '%d' in file_base:
  *         return (file_base % frame_num) + "_targets"
 */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_18tracking_frame_buf_3_resolve_file_base, 0, __pyx_mstate_global->__pyx_n_u_resolve_file_base, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_tracking_frame_buf, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[2])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 35, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_18tracking_frame_buf_3_resolve_file_base, 0, __pyx_mstate_global->__pyx_n_u_resolve_file_base, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_tracking_fra, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[2])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 35, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -16113,14 +16113,14 @@ __Pyx_RefNannySetupContext("PyInit_tracking_frame_buf", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_resolve_file_base, __pyx_t_2) < (0)) __PYX_ERR(0, 35, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":43
+  /* "openptv2/algorithms/tracking_frame_buf.py":43
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def read_targets(file_base, frame_num):
  *     fname = _resolve_file_base(file_base, frame_num)
 */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_18tracking_frame_buf_5read_targets, 0, __pyx_mstate_global->__pyx_n_u_read_targets, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_tracking_frame_buf, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[3])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 43, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_18tracking_frame_buf_5read_targets, 0, __pyx_mstate_global->__pyx_n_u_read_targets, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_tracking_fra, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[3])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 43, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -16128,14 +16128,14 @@ __Pyx_RefNannySetupContext("PyInit_tracking_frame_buf", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_read_targets, __pyx_t_2) < (0)) __PYX_ERR(0, 43, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":70
+  /* "openptv2/algorithms/tracking_frame_buf.py":70
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def write_targets(tbuf, num_targets, file_base, frame_num):
  *     fname = _resolve_file_base(file_base, frame_num)
 */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_18tracking_frame_buf_7write_targets, 0, __pyx_mstate_global->__pyx_n_u_write_targets, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_tracking_frame_buf, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[4])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 70, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_18tracking_frame_buf_7write_targets, 0, __pyx_mstate_global->__pyx_n_u_write_targets, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_tracking_fra, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[4])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 70, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -16143,17 +16143,17 @@ __Pyx_RefNannySetupContext("PyInit_tracking_frame_buf", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_write_targets, __pyx_t_2) < (0)) __PYX_ERR(0, 70, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":86
+  /* "openptv2/algorithms/tracking_frame_buf.py":86
  * 
  * 
  * class Corres:             # <<<<<<<<<<<<<<
  *     __slots__ = ('nr', 'p')
  * 
 */
-  __pyx_t_2 = __Pyx_Py3MetaclassPrepare((PyObject *) NULL, __pyx_mstate_global->__pyx_empty_tuple, __pyx_mstate_global->__pyx_n_u_Corres, __pyx_mstate_global->__pyx_n_u_Corres, (PyObject *) NULL, __pyx_mstate_global->__pyx_n_u_algorithms_tracking_frame_buf, (PyObject *) NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 86, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_Py3MetaclassPrepare((PyObject *) NULL, __pyx_mstate_global->__pyx_empty_tuple, __pyx_mstate_global->__pyx_n_u_Corres, __pyx_mstate_global->__pyx_n_u_Corres, (PyObject *) NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_tracking_fra, (PyObject *) NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 86, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
 
-  /* "algorithms/tracking_frame_buf.py":87
+  /* "openptv2/algorithms/tracking_frame_buf.py":87
  * 
  * class Corres:
  *     __slots__ = ('nr', 'p')             # <<<<<<<<<<<<<<
@@ -16162,14 +16162,14 @@ __Pyx_RefNannySetupContext("PyInit_tracking_frame_buf", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_slots, __pyx_mstate_global->__pyx_tuple[3]) < (0)) __PYX_ERR(0, 87, __pyx_L1_error)
 
-  /* "algorithms/tracking_frame_buf.py":89
+  /* "openptv2/algorithms/tracking_frame_buf.py":89
  *     __slots__ = ('nr', 'p')
  * 
  *     def __init__(self, nr=0, p=None):             # <<<<<<<<<<<<<<
  *         self.nr = nr
  *         self.p = np.array([CORRES_NONE] * 4, dtype=np.int32) if p is None else np.asarray(p, dtype=np.int32)
 */
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_18tracking_frame_buf_6Corres_1__init__, 0, __pyx_mstate_global->__pyx_n_u_Corres___init, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_tracking_frame_buf, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[5])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 89, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_18tracking_frame_buf_6Corres_1__init__, 0, __pyx_mstate_global->__pyx_n_u_Corres___init, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_tracking_fra, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[5])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 89, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
@@ -16178,7 +16178,7 @@ __Pyx_RefNannySetupContext("PyInit_tracking_frame_buf", 0);
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_init, __pyx_t_4) < (0)) __PYX_ERR(0, 89, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":86
+  /* "openptv2/algorithms/tracking_frame_buf.py":86
  * 
  * 
  * class Corres:             # <<<<<<<<<<<<<<
@@ -16194,14 +16194,14 @@ __Pyx_RefNannySetupContext("PyInit_tracking_frame_buf", 0);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":94
+  /* "openptv2/algorithms/tracking_frame_buf.py":94
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def compare_corres(c1, c2):
  *     return (c1.nr == c2.nr and
 */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_18tracking_frame_buf_9compare_corres, 0, __pyx_mstate_global->__pyx_n_u_compare_corres, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_tracking_frame_buf, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[6])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 94, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_18tracking_frame_buf_9compare_corres, 0, __pyx_mstate_global->__pyx_n_u_compare_corres, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_tracking_fra, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[6])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 94, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -16209,17 +16209,17 @@ __Pyx_RefNannySetupContext("PyInit_tracking_frame_buf", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_compare_corres, __pyx_t_2) < (0)) __PYX_ERR(0, 94, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":101
+  /* "openptv2/algorithms/tracking_frame_buf.py":101
  * 
  * 
  * class Pathinfo:             # <<<<<<<<<<<<<<
  *     __slots__ = ('x', 'prev', 'next', 'prio', 'decis', 'finaldecis',
  *                  'linkdecis', 'inlist')
 */
-  __pyx_t_2 = __Pyx_Py3MetaclassPrepare((PyObject *) NULL, __pyx_mstate_global->__pyx_empty_tuple, __pyx_mstate_global->__pyx_n_u_Pathinfo, __pyx_mstate_global->__pyx_n_u_Pathinfo, (PyObject *) NULL, __pyx_mstate_global->__pyx_n_u_algorithms_tracking_frame_buf, (PyObject *) NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 101, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_Py3MetaclassPrepare((PyObject *) NULL, __pyx_mstate_global->__pyx_empty_tuple, __pyx_mstate_global->__pyx_n_u_Pathinfo, __pyx_mstate_global->__pyx_n_u_Pathinfo, (PyObject *) NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_tracking_fra, (PyObject *) NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 101, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
 
-  /* "algorithms/tracking_frame_buf.py":102
+  /* "openptv2/algorithms/tracking_frame_buf.py":102
  * 
  * class Pathinfo:
  *     __slots__ = ('x', 'prev', 'next', 'prio', 'decis', 'finaldecis',             # <<<<<<<<<<<<<<
@@ -16228,19 +16228,19 @@ __Pyx_RefNannySetupContext("PyInit_tracking_frame_buf", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_slots, __pyx_mstate_global->__pyx_tuple[5]) < (0)) __PYX_ERR(0, 102, __pyx_L1_error)
 
-  /* "algorithms/tracking_frame_buf.py":105
+  /* "openptv2/algorithms/tracking_frame_buf.py":105
  *                  'linkdecis', 'inlist')
  * 
  *     def __init__(self, x=None, prev=PREV_NONE, next=NEXT_NONE,             # <<<<<<<<<<<<<<
  *                  prio=4, finaldecis=1000000.0, inlist=0,
  *                  decis=None, linkdecis=None):
 */
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_18tracking_frame_buf_8Pathinfo_1__init__, 0, __pyx_mstate_global->__pyx_n_u_Pathinfo___init, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_tracking_frame_buf, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[7])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 105, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_18tracking_frame_buf_8Pathinfo_1__init__, 0, __pyx_mstate_global->__pyx_n_u_Pathinfo___init, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_tracking_fra, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[7])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 105, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
   #endif
-  if (!__Pyx_CyFunction_InitDefaults(__pyx_t_4, __pyx_mstate_global->__pyx_ptype_10algorithms_18tracking_frame_buf___pyx_defaults)) __PYX_ERR(0, 105, __pyx_L1_error)
+  if (!__Pyx_CyFunction_InitDefaults(__pyx_t_4, __pyx_mstate_global->__pyx_ptype_8openptv2_10algorithms_18tracking_frame_buf___pyx_defaults)) __PYX_ERR(0, 105, __pyx_L1_error)
   __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_PREV_NONE); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 105, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_CyFunction_Defaults(struct __pyx_defaults, __pyx_t_4)->arg0 = __pyx_t_5;
@@ -16251,11 +16251,11 @@ __Pyx_RefNannySetupContext("PyInit_tracking_frame_buf", 0);
   __Pyx_CyFunction_Defaults(struct __pyx_defaults, __pyx_t_4)->arg1 = __pyx_t_5;
   __Pyx_GIVEREF(__pyx_t_5);
   __pyx_t_5 = 0;
-  __Pyx_CyFunction_SetDefaultsGetter(__pyx_t_4, __pyx_pf_10algorithms_18tracking_frame_buf_22__defaults__);
+  __Pyx_CyFunction_SetDefaultsGetter(__pyx_t_4, __pyx_pf_8openptv2_10algorithms_18tracking_frame_buf_22__defaults__);
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_init, __pyx_t_4) < (0)) __PYX_ERR(0, 105, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":101
+  /* "openptv2/algorithms/tracking_frame_buf.py":101
  * 
  * 
  * class Pathinfo:             # <<<<<<<<<<<<<<
@@ -16271,14 +16271,14 @@ __Pyx_RefNannySetupContext("PyInit_tracking_frame_buf", 0);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":118
+  /* "openptv2/algorithms/tracking_frame_buf.py":118
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * @cython.boundscheck(False)
  * @cython.wraparound(False)
 */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_18tracking_frame_buf_11compare_path_info, 0, __pyx_mstate_global->__pyx_n_u_compare_path_info, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_tracking_frame_buf, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[8])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 118, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_18tracking_frame_buf_11compare_path_info, 0, __pyx_mstate_global->__pyx_n_u_compare_path_info, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_tracking_fra, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[8])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 118, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -16286,14 +16286,14 @@ __Pyx_RefNannySetupContext("PyInit_tracking_frame_buf", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_compare_path_info, __pyx_t_2) < (0)) __PYX_ERR(0, 118, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":134
+  /* "openptv2/algorithms/tracking_frame_buf.py":134
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def register_link_candidate(path, fitness, cand):
  *     path.decis[path.inlist] = fitness
 */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_18tracking_frame_buf_13register_link_candidate, 0, __pyx_mstate_global->__pyx_n_u_register_link_candidate, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_tracking_frame_buf, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[9])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 134, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_18tracking_frame_buf_13register_link_candidate, 0, __pyx_mstate_global->__pyx_n_u_register_link_candidate, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_tracking_fra, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[9])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 134, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -16301,14 +16301,14 @@ __Pyx_RefNannySetupContext("PyInit_tracking_frame_buf", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_register_link_candidate, __pyx_t_2) < (0)) __PYX_ERR(0, 134, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":141
+  /* "openptv2/algorithms/tracking_frame_buf.py":141
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def reset_links(path):
  *     path.prev = PREV_NONE
 */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_18tracking_frame_buf_15reset_links, 0, __pyx_mstate_global->__pyx_n_u_reset_links, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_tracking_frame_buf, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[10])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 141, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_18tracking_frame_buf_15reset_links, 0, __pyx_mstate_global->__pyx_n_u_reset_links, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_tracking_fra, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[10])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 141, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -16316,14 +16316,14 @@ __Pyx_RefNannySetupContext("PyInit_tracking_frame_buf", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_reset_links, __pyx_t_2) < (0)) __PYX_ERR(0, 141, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":148
+  /* "openptv2/algorithms/tracking_frame_buf.py":148
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def read_path_frame(corres_file_base, linkage_file_base, prio_file_base,
  *                     frame_num):
 */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_18tracking_frame_buf_17read_path_frame, 0, __pyx_mstate_global->__pyx_n_u_read_path_frame, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_tracking_frame_buf, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[11])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 148, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_18tracking_frame_buf_17read_path_frame, 0, __pyx_mstate_global->__pyx_n_u_read_path_frame, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_tracking_fra, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[11])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 148, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -16331,14 +16331,14 @@ __Pyx_RefNannySetupContext("PyInit_tracking_frame_buf", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_read_path_frame, __pyx_t_2) < (0)) __PYX_ERR(0, 148, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":244
+  /* "openptv2/algorithms/tracking_frame_buf.py":244
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def write_path_frame(cor_buf, path_buf, num_parts, corres_file_base,
  *                      linkage_file_base, prio_file_base, frame_num):
 */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_18tracking_frame_buf_19write_path_frame, 0, __pyx_mstate_global->__pyx_n_u_write_path_frame, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_tracking_frame_buf, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[12])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 244, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_18tracking_frame_buf_19write_path_frame, 0, __pyx_mstate_global->__pyx_n_u_write_path_frame, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_tracking_fra, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[12])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 244, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -16346,24 +16346,24 @@ __Pyx_RefNannySetupContext("PyInit_tracking_frame_buf", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_write_path_frame, __pyx_t_2) < (0)) __PYX_ERR(0, 244, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":316
+  /* "openptv2/algorithms/tracking_frame_buf.py":316
  * 
  * 
  * class Frame:             # <<<<<<<<<<<<<<
  *     def __init__(self, num_cams=4, max_targets=100):
  *         self.num_cams = num_cams
 */
-  __pyx_t_2 = __Pyx_Py3MetaclassPrepare((PyObject *) NULL, __pyx_mstate_global->__pyx_empty_tuple, __pyx_mstate_global->__pyx_n_u_Frame, __pyx_mstate_global->__pyx_n_u_Frame, (PyObject *) NULL, __pyx_mstate_global->__pyx_n_u_algorithms_tracking_frame_buf, (PyObject *) NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 316, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_Py3MetaclassPrepare((PyObject *) NULL, __pyx_mstate_global->__pyx_empty_tuple, __pyx_mstate_global->__pyx_n_u_Frame, __pyx_mstate_global->__pyx_n_u_Frame, (PyObject *) NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_tracking_fra, (PyObject *) NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 316, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
 
-  /* "algorithms/tracking_frame_buf.py":317
+  /* "openptv2/algorithms/tracking_frame_buf.py":317
  * 
  * class Frame:
  *     def __init__(self, num_cams=4, max_targets=100):             # <<<<<<<<<<<<<<
  *         self.num_cams = num_cams
  *         self.max_targets = max_targets
 */
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_18tracking_frame_buf_5Frame_1__init__, 0, __pyx_mstate_global->__pyx_n_u_Frame___init, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_tracking_frame_buf, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[13])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 317, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_18tracking_frame_buf_5Frame_1__init__, 0, __pyx_mstate_global->__pyx_n_u_Frame___init, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_tracking_fra, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[13])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 317, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
@@ -16372,14 +16372,14 @@ __Pyx_RefNannySetupContext("PyInit_tracking_frame_buf", 0);
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_init, __pyx_t_4) < (0)) __PYX_ERR(0, 317, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":345
+  /* "openptv2/algorithms/tracking_frame_buf.py":345
  *         self.corres_p = np.full((max_targets, 4), CORRES_NONE, dtype=np.int32)
  * 
  *     def _sync_path_to_soa(self):             # <<<<<<<<<<<<<<
  *         """Copy AoS path_info/correspond into SoA arrays."""
  *         for i in range(self.num_parts):
 */
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_18tracking_frame_buf_5Frame_3_sync_path_to_soa, 0, __pyx_mstate_global->__pyx_n_u_Frame__sync_path_to_soa, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_tracking_frame_buf, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[14])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 345, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_18tracking_frame_buf_5Frame_3_sync_path_to_soa, 0, __pyx_mstate_global->__pyx_n_u_Frame__sync_path_to_soa, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_tracking_fra, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[14])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 345, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
@@ -16387,14 +16387,14 @@ __Pyx_RefNannySetupContext("PyInit_tracking_frame_buf", 0);
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_sync_path_to_soa, __pyx_t_4) < (0)) __PYX_ERR(0, 345, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":363
+  /* "openptv2/algorithms/tracking_frame_buf.py":363
  *             self.corres_p[i] = c.p
  * 
  *     def _sync_soa_to_path(self):             # <<<<<<<<<<<<<<
  *         """Copy SoA arrays back into AoS path_info/correspond."""
  *         for i in range(self.num_parts):
 */
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_18tracking_frame_buf_5Frame_5_sync_soa_to_path, 0, __pyx_mstate_global->__pyx_n_u_Frame__sync_soa_to_path, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_tracking_frame_buf, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[15])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 363, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_18tracking_frame_buf_5Frame_5_sync_soa_to_path, 0, __pyx_mstate_global->__pyx_n_u_Frame__sync_soa_to_path, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_tracking_fra, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[15])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 363, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
@@ -16402,14 +16402,14 @@ __Pyx_RefNannySetupContext("PyInit_tracking_frame_buf", 0);
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_sync_soa_to_path, __pyx_t_4) < (0)) __PYX_ERR(0, 363, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":381
+  /* "openptv2/algorithms/tracking_frame_buf.py":381
  *             c.p[:] = self.corres_p[i]
  * 
  *     def read(self, corres_file_base, linkage_file_base, prio_file_base,             # <<<<<<<<<<<<<<
  *              target_file_base, frame_num):
  *         fname = f"{corres_file_base}.{frame_num}"
 */
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_18tracking_frame_buf_5Frame_7read, 0, __pyx_mstate_global->__pyx_n_u_Frame_read, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_tracking_frame_buf, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[16])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 381, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_18tracking_frame_buf_5Frame_7read, 0, __pyx_mstate_global->__pyx_n_u_Frame_read, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_tracking_fra, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[16])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 381, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
@@ -16417,14 +16417,14 @@ __Pyx_RefNannySetupContext("PyInit_tracking_frame_buf", 0);
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_read, __pyx_t_4) < (0)) __PYX_ERR(0, 381, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":415
+  /* "openptv2/algorithms/tracking_frame_buf.py":415
  *         return True
  * 
  *     def write(self, corres_file_base, linkage_file_base, prio_file_base,             # <<<<<<<<<<<<<<
  *               target_file_base, frame_num):
  *         ok = write_path_frame(
 */
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_18tracking_frame_buf_5Frame_9write, 0, __pyx_mstate_global->__pyx_n_u_Frame_write, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_tracking_frame_buf, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[17])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 415, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_18tracking_frame_buf_5Frame_9write, 0, __pyx_mstate_global->__pyx_n_u_Frame_write, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_tracking_fra, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[17])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 415, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
@@ -16432,7 +16432,7 @@ __Pyx_RefNannySetupContext("PyInit_tracking_frame_buf", 0);
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_write, __pyx_t_4) < (0)) __PYX_ERR(0, 415, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":316
+  /* "openptv2/algorithms/tracking_frame_buf.py":316
  * 
  * 
  * class Frame:             # <<<<<<<<<<<<<<
@@ -16448,24 +16448,24 @@ __Pyx_RefNannySetupContext("PyInit_tracking_frame_buf", 0);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":438
+  /* "openptv2/algorithms/tracking_frame_buf.py":438
  * 
  * 
  * class FrameBuf:             # <<<<<<<<<<<<<<
  *     def __init__(self, buf_len, num_cams, max_targets,
  *                  corres_file_base, linkage_file_base, prio_file_base,
 */
-  __pyx_t_2 = __Pyx_Py3MetaclassPrepare((PyObject *) NULL, __pyx_mstate_global->__pyx_empty_tuple, __pyx_mstate_global->__pyx_n_u_FrameBuf, __pyx_mstate_global->__pyx_n_u_FrameBuf, (PyObject *) NULL, __pyx_mstate_global->__pyx_n_u_algorithms_tracking_frame_buf, (PyObject *) NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 438, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_Py3MetaclassPrepare((PyObject *) NULL, __pyx_mstate_global->__pyx_empty_tuple, __pyx_mstate_global->__pyx_n_u_FrameBuf, __pyx_mstate_global->__pyx_n_u_FrameBuf, (PyObject *) NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_tracking_fra, (PyObject *) NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 438, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
 
-  /* "algorithms/tracking_frame_buf.py":439
+  /* "openptv2/algorithms/tracking_frame_buf.py":439
  * 
  * class FrameBuf:
  *     def __init__(self, buf_len, num_cams, max_targets,             # <<<<<<<<<<<<<<
  *                  corres_file_base, linkage_file_base, prio_file_base,
  *                  target_file_base):
 */
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_18tracking_frame_buf_8FrameBuf_1__init__, 0, __pyx_mstate_global->__pyx_n_u_FrameBuf___init, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_tracking_frame_buf, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[18])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 439, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_18tracking_frame_buf_8FrameBuf_1__init__, 0, __pyx_mstate_global->__pyx_n_u_FrameBuf___init, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_tracking_fra, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[18])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 439, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
@@ -16473,7 +16473,7 @@ __Pyx_RefNannySetupContext("PyInit_tracking_frame_buf", 0);
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_init, __pyx_t_4) < (0)) __PYX_ERR(0, 439, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":452
+  /* "openptv2/algorithms/tracking_frame_buf.py":452
  *         self.target_file_base = target_file_base
  * 
  *     @property             # <<<<<<<<<<<<<<
@@ -16481,7 +16481,7 @@ __Pyx_RefNannySetupContext("PyInit_tracking_frame_buf", 0);
  *         return 0
 */
   __pyx_t_5 = NULL;
-  __pyx_t_6 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_18tracking_frame_buf_8FrameBuf_3_buf_start, 0, __pyx_mstate_global->__pyx_n_u_FrameBuf__buf_start, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_tracking_frame_buf, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[19])); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 452, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_18tracking_frame_buf_8FrameBuf_3_buf_start, 0, __pyx_mstate_global->__pyx_n_u_FrameBuf__buf_start, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_tracking_fra, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[19])); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 452, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_6);
@@ -16498,14 +16498,14 @@ __Pyx_RefNannySetupContext("PyInit_tracking_frame_buf", 0);
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_buf_start, __pyx_t_4) < (0)) __PYX_ERR(0, 452, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":456
+  /* "openptv2/algorithms/tracking_frame_buf.py":456
  *         return 0
  * 
  *     def fb_next(self):             # <<<<<<<<<<<<<<
  *         self.buf.append(self.buf.pop(0))
  * 
 */
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_18tracking_frame_buf_8FrameBuf_5fb_next, 0, __pyx_mstate_global->__pyx_n_u_FrameBuf_fb_next, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_tracking_frame_buf, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[20])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 456, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_18tracking_frame_buf_8FrameBuf_5fb_next, 0, __pyx_mstate_global->__pyx_n_u_FrameBuf_fb_next, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_tracking_fra, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[20])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 456, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
@@ -16513,14 +16513,14 @@ __Pyx_RefNannySetupContext("PyInit_tracking_frame_buf", 0);
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_fb_next, __pyx_t_4) < (0)) __PYX_ERR(0, 456, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":459
+  /* "openptv2/algorithms/tracking_frame_buf.py":459
  *         self.buf.append(self.buf.pop(0))
  * 
  *     def fb_prev(self):             # <<<<<<<<<<<<<<
  *         self.buf.insert(0, self.buf.pop())
  * 
 */
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_18tracking_frame_buf_8FrameBuf_7fb_prev, 0, __pyx_mstate_global->__pyx_n_u_FrameBuf_fb_prev, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_tracking_frame_buf, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[21])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 459, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_18tracking_frame_buf_8FrameBuf_7fb_prev, 0, __pyx_mstate_global->__pyx_n_u_FrameBuf_fb_prev, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_tracking_fra, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[21])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 459, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
@@ -16528,14 +16528,14 @@ __Pyx_RefNannySetupContext("PyInit_tracking_frame_buf", 0);
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_fb_prev, __pyx_t_4) < (0)) __PYX_ERR(0, 459, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":462
+  /* "openptv2/algorithms/tracking_frame_buf.py":462
  *         self.buf.insert(0, self.buf.pop())
  * 
  *     def read_frame_at_end(self, frame_num, read_links=True):             # <<<<<<<<<<<<<<
  *         frame = self.buf[self.buf_len - 1]
  *         linkage = self.linkage_file_base if read_links else ""
 */
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_18tracking_frame_buf_8FrameBuf_9read_frame_at_end, 0, __pyx_mstate_global->__pyx_n_u_FrameBuf_read_frame_at_end, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_tracking_frame_buf, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[22])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 462, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_18tracking_frame_buf_8FrameBuf_9read_frame_at_end, 0, __pyx_mstate_global->__pyx_n_u_FrameBuf_read_frame_at_end, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_tracking_fra, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[22])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 462, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
@@ -16544,14 +16544,14 @@ __Pyx_RefNannySetupContext("PyInit_tracking_frame_buf", 0);
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_read_frame_at_end, __pyx_t_4) < (0)) __PYX_ERR(0, 462, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":469
+  /* "openptv2/algorithms/tracking_frame_buf.py":469
  *                           self.target_file_base, frame_num)
  * 
  *     def write_frame_from_start(self, frame_num):             # <<<<<<<<<<<<<<
  *         frame = self.buf[0]
  *         return frame.write(self.corres_file_base, self.linkage_file_base,
 */
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_18tracking_frame_buf_8FrameBuf_11write_frame_from_start, 0, __pyx_mstate_global->__pyx_n_u_FrameBuf_write_frame_from_start, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_tracking_frame_buf, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[23])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 469, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_18tracking_frame_buf_8FrameBuf_11write_frame_from_start, 0, __pyx_mstate_global->__pyx_n_u_FrameBuf_write_frame_from_start, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_tracking_fra, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[23])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 469, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
@@ -16559,7 +16559,7 @@ __Pyx_RefNannySetupContext("PyInit_tracking_frame_buf", 0);
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_write_frame_from_start, __pyx_t_4) < (0)) __PYX_ERR(0, 469, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":438
+  /* "openptv2/algorithms/tracking_frame_buf.py":438
  * 
  * 
  * class FrameBuf:             # <<<<<<<<<<<<<<
@@ -16575,7 +16575,7 @@ __Pyx_RefNannySetupContext("PyInit_tracking_frame_buf", 0);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":476
+  /* "openptv2/algorithms/tracking_frame_buf.py":476
  * 
  * 
  * Corres_dtype = np.dtype([('nr', np.int32), ('p', np.int32, (4,))])             # <<<<<<<<<<<<<<
@@ -16621,7 +16621,7 @@ __Pyx_RefNannySetupContext("PyInit_tracking_frame_buf", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_Corres_dtype, __pyx_t_2) < (0)) __PYX_ERR(0, 476, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":479
+  /* "openptv2/algorithms/tracking_frame_buf.py":479
  * 
  * 
  * def is_compiled() -> bool:             # <<<<<<<<<<<<<<
@@ -16631,7 +16631,7 @@ __Pyx_RefNannySetupContext("PyInit_tracking_frame_buf", 0);
   __pyx_t_2 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 479, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   if (PyDict_SetItem(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_return, __pyx_mstate_global->__pyx_n_u_bool) < (0)) __PYX_ERR(0, 479, __pyx_L1_error)
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_18tracking_frame_buf_21is_compiled, 0, __pyx_mstate_global->__pyx_n_u_is_compiled, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_tracking_frame_buf, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[24])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 479, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_18tracking_frame_buf_21is_compiled, 0, __pyx_mstate_global->__pyx_n_u_is_compiled, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_tracking_fra, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[24])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 479, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_5);
@@ -16641,7 +16641,7 @@ __Pyx_RefNannySetupContext("PyInit_tracking_frame_buf", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_is_compiled, __pyx_t_5) < (0)) __PYX_ERR(0, 479, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "algorithms/tracking_frame_buf.py":1
+  /* "openptv2/algorithms/tracking_frame_buf.py":1
  * """Tracking frame buffer data structures and I/O.             # <<<<<<<<<<<<<<
  * 
  * Translation of lib/src/tracking_frame_buf.c and lib/include/tracking_frame_buf.h.
@@ -16663,7 +16663,7 @@ __Pyx_RefNannySetupContext("PyInit_tracking_frame_buf", 0);
   __Pyx_XDECREF(__pyx_t_9);
   if (__pyx_m) {
     if (__pyx_mstate->__pyx_d && stringtab_initialized) {
-      __Pyx_AddTraceback("init algorithms.tracking_frame_buf", __pyx_clineno, __pyx_lineno, __pyx_filename);
+      __Pyx_AddTraceback("init openptv2.algorithms.tracking_frame_buf", __pyx_clineno, __pyx_lineno, __pyx_filename);
     }
     #if !CYTHON_USE_MODULE_STATE
     Py_CLEAR(__pyx_m);
@@ -16677,7 +16677,7 @@ __Pyx_RefNannySetupContext("PyInit_tracking_frame_buf", 0);
     }
     #endif
   } else if (!PyErr_Occurred()) {
-    PyErr_SetString(PyExc_ImportError, "init algorithms.tracking_frame_buf");
+    PyErr_SetString(PyExc_ImportError, "init openptv2.algorithms.tracking_frame_buf");
   }
   __pyx_L0:;
   __Pyx_RefNannyFinishContext();
@@ -16716,7 +16716,7 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
   CYTHON_UNUSED_VAR(__pyx_mstate);
   __Pyx_RefNannySetupContext("__Pyx_InitCachedConstants", 0);
 
-  /* "algorithms/tracking_frame_buf.py":48
+  /* "openptv2/algorithms/tracking_frame_buf.py":48
  * 
  *     try:
  *         with open(fname, 'r') as f:             # <<<<<<<<<<<<<<
@@ -16727,7 +16727,7 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
   __Pyx_GOTREF(__pyx_mstate_global->__pyx_tuple[0]);
   __Pyx_GIVEREF(__pyx_mstate_global->__pyx_tuple[0]);
 
-  /* "algorithms/tracking_frame_buf.py":367
+  /* "openptv2/algorithms/tracking_frame_buf.py":367
  *         for i in range(self.num_parts):
  *             p = self.path_info[i]
  *             p.x[:] = self.path_x[i]             # <<<<<<<<<<<<<<
@@ -16738,7 +16738,7 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
   __Pyx_GOTREF(__pyx_mstate_global->__pyx_slice[0]);
   __Pyx_GIVEREF(__pyx_mstate_global->__pyx_slice[0]);
 
-  /* "algorithms/tracking_frame_buf.py":15
+  /* "openptv2/algorithms/tracking_frame_buf.py":15
  * 
  * class Target:
  *     __slots__ = ('pnr', 'x', 'y', 'n', 'nx', 'ny', 'sumg', 'tnr')             # <<<<<<<<<<<<<<
@@ -16749,7 +16749,7 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
   __Pyx_GOTREF(__pyx_mstate_global->__pyx_tuple[1]);
   __Pyx_GIVEREF(__pyx_mstate_global->__pyx_tuple[1]);
 
-  /* "algorithms/tracking_frame_buf.py":17
+  /* "openptv2/algorithms/tracking_frame_buf.py":17
  *     __slots__ = ('pnr', 'x', 'y', 'n', 'nx', 'ny', 'sumg', 'tnr')
  * 
  *     def __init__(self, pnr=0, x=0.0, y=0.0, n=0, nx=0, ny=0, sumg=0, tnr=0):             # <<<<<<<<<<<<<<
@@ -16760,7 +16760,7 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
   __Pyx_GOTREF(__pyx_mstate_global->__pyx_tuple[2]);
   __Pyx_GIVEREF(__pyx_mstate_global->__pyx_tuple[2]);
 
-  /* "algorithms/tracking_frame_buf.py":87
+  /* "openptv2/algorithms/tracking_frame_buf.py":87
  * 
  * class Corres:
  *     __slots__ = ('nr', 'p')             # <<<<<<<<<<<<<<
@@ -16771,7 +16771,7 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
   __Pyx_GOTREF(__pyx_mstate_global->__pyx_tuple[3]);
   __Pyx_GIVEREF(__pyx_mstate_global->__pyx_tuple[3]);
 
-  /* "algorithms/tracking_frame_buf.py":89
+  /* "openptv2/algorithms/tracking_frame_buf.py":89
  *     __slots__ = ('nr', 'p')
  * 
  *     def __init__(self, nr=0, p=None):             # <<<<<<<<<<<<<<
@@ -16782,7 +16782,7 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
   __Pyx_GOTREF(__pyx_mstate_global->__pyx_tuple[4]);
   __Pyx_GIVEREF(__pyx_mstate_global->__pyx_tuple[4]);
 
-  /* "algorithms/tracking_frame_buf.py":102
+  /* "openptv2/algorithms/tracking_frame_buf.py":102
  * 
  * class Pathinfo:
  *     __slots__ = ('x', 'prev', 'next', 'prio', 'decis', 'finaldecis',             # <<<<<<<<<<<<<<
@@ -16793,7 +16793,7 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
   __Pyx_GOTREF(__pyx_mstate_global->__pyx_tuple[5]);
   __Pyx_GIVEREF(__pyx_mstate_global->__pyx_tuple[5]);
 
-  /* "algorithms/tracking_frame_buf.py":317
+  /* "openptv2/algorithms/tracking_frame_buf.py":317
  * 
  * class Frame:
  *     def __init__(self, num_cams=4, max_targets=100):             # <<<<<<<<<<<<<<
@@ -16804,7 +16804,7 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
   __Pyx_GOTREF(__pyx_mstate_global->__pyx_tuple[6]);
   __Pyx_GIVEREF(__pyx_mstate_global->__pyx_tuple[6]);
 
-  /* "algorithms/tracking_frame_buf.py":462
+  /* "openptv2/algorithms/tracking_frame_buf.py":462
  *         self.buf.insert(0, self.buf.pop())
  * 
  *     def read_frame_at_end(self, frame_num, read_links=True):             # <<<<<<<<<<<<<<
@@ -16815,7 +16815,7 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
   __Pyx_GOTREF(__pyx_mstate_global->__pyx_tuple[7]);
   __Pyx_GIVEREF(__pyx_mstate_global->__pyx_tuple[7]);
 
-  /* "algorithms/tracking_frame_buf.py":476
+  /* "openptv2/algorithms/tracking_frame_buf.py":476
  * 
  * 
  * Corres_dtype = np.dtype([('nr', np.int32), ('p', np.int32, (4,))])             # <<<<<<<<<<<<<<
@@ -16882,25 +16882,25 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
 static int __Pyx_InitConstants(__pyx_mstatetype *__pyx_mstate) {
   CYTHON_UNUSED_VAR(__pyx_mstate);
   {
-    const struct { const unsigned int length: 10; } index[] = {{1},{3},{5},{2},{2},{4},{4},{1},{1},{0},{1},{20},{32},{2},{7},{6},{2},{9},{11},{6},{15},{12},{5},{8},{17},{19},{16},{16},{26},{31},{14},{23},{23},{10},{11},{9},{4},{9},{9},{4},{8},{17},{20},{6},{15},{1},{29},{8},{6},{5},{7},{18},{4},{3},{7},{10},{1},{2},{2},{3},{4},{17},{18},{5},{14},{17},{15},{9},{7},{8},{16},{9},{8},{10},{1},{5},{7},{5},{9},{9},{6},{8},{7},{7},{9},{10},{7},{7},{5},{5},{9},{7},{4},{8},{1},{8},{6},{6},{5},{11},{13},{5},{1},{1},{7},{17},{9},{8},{11},{13},{10},{1},{8},{7},{4},{2},{2},{8},{9},{11},{5},{2},{2},{2},{4},{1},{2},{2},{4},{8},{10},{15},{9},{11},{14},{9},{9},{9},{9},{6},{7},{3},{3},{11},{4},{4},{14},{8},{12},{1},{4},{17},{10},{15},{12},{8},{23},{11},{18},{6},{4},{12},{10},{9},{5},{5},{4},{17},{17},{1},{2},{2},{8},{6},{6},{16},{8},{7},{4},{8},{3},{4},{2},{2},{6},{1},{5},{22},{16},{13},{1},{1},{5},{74},{432},{673},{145},{21},{21},{44},{227},{197},{88},{129},{274},{7},{586},{97},{101},{10},{23},{220},{150},{35},{158},{57},{63},{75}};
-    #if (CYTHON_COMPRESS_STRINGS) == 2 /* compression: bz2 (2824 bytes) */
-const char* const cstring = "BZh91AY&SYz\270\253\360\000\000\312\177\377\377\377\377\377\377\337\377\377\277\377\377\377\277\377\377\376@@@@@@@@@@@@@\000@\000`\n\377\rQ*\356\335.\205\231D\224\005U\027\256\324\007\250\001\264\2744\"%\006\2032\232h\033F\223OSM6\246\364\236S\023\023\304i\0312\006\246\324\320\362\236Q\221\201\032\003@i\243A\246\202I\002b\002\032d&\243T\374\024\324\006 \032\001\210\r\000\000\000\000\320z\217\324\215\000h4\000\320\032\222\032\241\240\364\215\000\006@h\032h4\320\000\000\000\000\000z\200\000\003\324z\232\000\323B\nS@\000\000\000\032h\r\031\000y3S\324\032@\000\032\006@\323\321\031=C@2\032 \300\023\t\2010\230M0LF\000\230\00242`\023\000\000\000#\0010\000\000$H\010D\325?\"\236\243i\017)\243\320\230\206@4\000\320\000\000\000\001\240\000\000\007\244\323\324\321{\000o\373G\363\2743xJ\022\\\345\375\256z\337*s\331K\033\367\234\247&\242\"\356\362\223\"\302\241\020Y\332j\226\262\255(\212Q\177\275\004\320\230\3064\333I\215'\231\025J\241Z\337\035\001\320\260Y\026E\214\263\255\200\377\200/r\345\362\310\260*\324+Kg\rf\r\200\306\223\032Bm6\332i\2200\302\031\205\244\320L,\255\306\010V\301\020\334\037\002\310\212\030\332\025,\330\235k0\0030\322Cc`\233m\013Jlc\007\300\t\026\002D\213^=.\200\222\263\031\243\230\0265/Y\326\tDd9\225\003\t\nn`\301\265\003\255\000\314\300m\261W\034lZ\354`6\223h\333\013\031V\275AUa\233\220\330\352\264\010\316#X['Hk\221I\247U]\222\304;R\263!\242\243n\323\211\246I\326W\0141N\350\230\022\235\212\273\013\312 \250\324T([C\024\2123c\261\253k`\231ZZ\2267i,\013,V\022Y\030\027\226v\320a\323D\3052y\005\0256\314(`\342\347,\262\307\0358\332\370\r6\254f\261\252\367\265J\341n\025\270\270\346\221\206i\304\"\016?\032YS'\217F\001`\256\366\016\0366\025\357|\3328%\222H\343\013ED\255\026f\263\255K\215\3118\251\260\357y\315\311\266\022\205\014\240A\024S\245\314or\367\025P\310\313\003\"\2219\014\232\222\r\243e\346\244\024\261Sj\3633\254\265\201\\\032Ukw\303\030\227}\367\334\037\224PZ\324J5\"$^\333R\372;\373\3747X\327l\305\206\204\"\020$\003\260Bhd\272\270\005\360\300\0140\264\254""\360\2440\244\235I\n\034\306\3066N3x\371\363\335QX\230\246^cp\\S\320+P\250\252U\036m\027F\264\371uU\n\205W\237{\367\321\020\n\206s\231\262\272*\205O\001\234\312a\243?\t\225\313\014\356<ZSK\235\002\020\264\"Z\367\315\264\271e\344\325):\316\360QL\223T{\211d\026T\261k_\r\033\236\277\274\266\321Z\260--\254\375\214\311\251\223\276\377\303\350\261\350\2150&\246\224\346q\307\323\376\033\270\302E\350\277\025\245a+J\353\266%\004\304D \213\346\225\001\305\266FJ\027\001$\\T\275x\332+j\373\377\241\352\336\037\225\272\177\027\227\302\337>&U\250mC\326\363r\315s\360\253>\333\026ME\362\234&\310\223\r\023\303\273\205\347<\t\023&\025+q\201\372x\335v\226\252\331\217~Yt\330d\246dde\277\243\035\324\025\002\212\2051\263)\251\314\232\232\302\305\025\030\345\266\222TR3\357\357b%b\032oP&Aa\221\273\247\322\262\310\376\311\355\215\316\203\345f\210\247\262\373\003!\344:(]:\266\232\354m0\257=?\023\206\203\357\023\371Z\231q\227\\\270*K\266N\005\266\2268F~6\216u\314\212\322Rx\214\034O\220\351\250\336$K\007\005\354\342D$\353\255\224\261\234\245DM\357\022\275\360\313\t\032\344\251{\227\206\344\302e\010\276C\321\235\275\256\267F\367\023\261\244\\lh\037\327\373\340\021\305\263\335\265\215\327\201\231\225\207\247\225s\365}\316\267!M0\014\311\312\342\356 \345\314`5\265\234\240\334\266\013\230\354\362.\234\374\246\000cZu\350\272\220\352\301n\211n\207\0248\224)\232\245f\347\311S\254\372\330T\237\257a\354\3268\262\340\326\242\354Z\371\017\341'-X\250^\026\206&A\220]\313\341\360\346\217\035\332\266S\353\226gs\004\002F\336\310it}k\315\036\373\245\321\016|x\361\\8t\177\217\326w\335\236\203\016d\342\326\352\363\233Mv3\267J3\223=\306\273v\233\027\207\253\232\026\2276\017\325\202\004\310\340\360\352L\326qC\246\210\00275\n\014\025;I\316\306\335o\2052x\024\216\227cY\266^u10\211o\273TTeY\025\3532V*\340\n\242\223\307\033\366\314\264\321w\035\\8\032t\354K\320\032\375\356C\2731m\220\036re\026\336S`J\002\210\310\213l\014\262:\tL\317z\177\200r\243$\374\226\372\366l\020\257\276\226{\357\007p\271\341Y\025\301\276I3\2041M&""L\332\322\014\342O)\"\273mr\266P\335\321\207F\340\276[\270i\247MU\3541\352\367<\202\244H;y\317\304/%\230\337\262+\2054\214x3\202\361\270\333C:\033\241\014wglT\006\251!\t\3149\235\357\340\016\305J;,{\230a\333Z\373<\244J\306\215\036\371\207\010\222g\241\017\203\362\036\270FcJd,\310\203S\215\323f\250D/\337\036\231\337+\214\303\0265t\356\326N\221\320\230\363S#\002,\307:y7\356\311fk\216\307\246\226nc\266\0044\351y\241|Ki\340\325\333\037\306\210\261\256\313^\353c\330\273{\\u\tp\022z]}a\342tdy\316\214\335\010$\323a\366\r8A\343\247\002\t\320Nc\313\303&nK\372!sH\206\213M\0033\264\341&\223\2719(\331\210\220Y\t\254\267\305\235p\363g+z\023\272\306@A'7\r\306\235)f\214\326g\000\321i>)\263\345\2330\303\307\261\344>\030\300p\354\2062h\260\350\351'ya7r\002TQ\030N\344\213\222\240:\241\275T\224\302\272\265\006\255F\335\273v[o^7ju\022\355\332\227n\226\021\007\035\223\237f\364E\231\020iQ\023b\330J\263\274\220\210L\340\224\275\351[\032\314*J?\r\271\226\323\232\0360\030\275\331C^\260\267\220\271#\222\\\216\n\037\357_P<L\230\n\365\360\330\215\314\375s;\213\226\0359\364b\345\024n[\244t\346vr'\203v\355\264\264/\335#w\201\3032\244\347\262\356\277q*\226!\241X\025it_\273\r\343\226y\305\346.t^?\263\237\335\365\036\377\314\303\206\370=\357\204\006\361\201\315`\320|\247\272\3205\315g\034`(ccb\030\305\310\203\344p@%-\014\216v\232\345\321\010 \221\214\211xy\344\224\033\245U$\2159LsT+\313W(\231\t\207\001\201!\367\203\005%\330\371\212\021\337\301\313\332&I4M\375g3\017\262\343\321\272Lg\002\210\267t|\241\324\033\t\027\021\324\334\207\225@\257&\006\332\214!\030eLNdc\360\177.@\255t\327\010\310\336\2671`\312C6\2030\004a]b\342\253\013\274\265_\017i l\222T\233\002\246\030\203\203\261\274!1Q\337\315\2633\021\310,\n\205\013\372\305aw\346k\302\032\020\265z\317Aq(\205\034\320\340\245F\0137\001\220\222b\010\275\275\036\021\236B\371\322\256T\004\244\316\216\241P\202\201\212\256r\314\343AFFi#\241o\247\374\025bIE\254\n)s\226\301\210\022\020\nS\325P\026\267V\272\023X\212\353\\\005\007\036\300\261\004e\202\302n\022qQ""}}j\260V\027\311:#b\300\022\240\333$\222P\300\205I\220T\001\356\270\001I\006J(\311\037Z0:\320\353\255?s3 \t\000N$S^\302}\257\351\024\2631b\t~\312\2051\222\217i\214\301E\242\221~)cB\247\314.r\251\314\303_\224\226O\207(\305m\346Y\024\256\003g\270\301\262\n\216\241\262sjE\301J\222\212!\340\247\241\261X\211v\320\004`\r\023\025\301\241\217\221\260\240\204\325=\014\340*\036\202\330\321\252\n\262r\230\031\316n& \256\260g)g\016\374\246M?\354\365\201\0034\311\277}W\030\207U\211\202p\264\034\252\020Q\347\037\032\363\3177#6\252TR\216\236\275e*\2056\356+\313Z\250d.\251\240R\033\025PT|\306j\003\314\020\320fM\223l\236t;\021 T#[\341\2366!3\212'M\234`<\372\324\027q\367\357\037\330x\303\256\217\367%\270 a\220\220\013S\335\036\004|\351\003*0\277PP\2362\354\362*\003\013\t\001\252\225 \233oP\006)\035*(\364\376\n\033v\2552\312\006)j\2120@Ii6\321jBz\177\253\205\320\024\376\356\253\243\370\363\301\337\352\tR\357\345+)2\267\0319\242\024)-\270i+\010K\227\271\252kfs\013\222\336\024\305\014\2222r\356\236C\226\020,o\010\326$\330\021\033m\n\356\311\327q5\002\tV\353\334\260\334\262\311\324C\310\270vLW\227/L4\003N8\232F\256\"\220$\270\323\212\316\035\340mH\353H\306\220\221\307\217\023\027\017\020G*\">\023Xe\305\210<\364,\2747\273\210;C\014\365\247F\237<i\024h\242\306\005k\227\342,\353\375\234\035\231\202\340|\252\266\033\311\276l5\225\020X\035;\322\210[Q\n\035\344|T\354\345\363z\027X:\344\004\014\373\241\306\204:\024Y\272\235!f(I\346\014\333\327\366\274\232\334\374{\224W\335\317\324\2641\313\320#\t\232{\277n\275i\227\321Z6\037\006\376C;\350\240L\026\205%LH0uB\034E\021\232\035U\257\234\020\346\246\233\023)\200\362\201\213\202]c\275\005\325KB\020XD$\001\nnAXTj9UJX.X\225\244\000\321J\006RD\225P\364v\006Y\213\304\t\211\022\025\214\256;\312\225\231\302N\360&\314\222CY:\212\305\231\250\260\262\301]\353WY\207d\270r\310J\243\302Qvx\030\263\254\256XBE\344\024\006$\2216\236\266\324\224\350\364\362\016sR1\202a\373\232u\255\037Z\326\026J\254\357\376.\344\212p\241 \365qW\340";
-    PyObject *data = __Pyx_DecompressString(cstring, 2824, 2);
+    const struct { const unsigned int length: 10; } index[] = {{1},{3},{5},{2},{2},{4},{4},{1},{1},{0},{1},{2},{7},{6},{2},{9},{29},{45},{11},{6},{15},{12},{5},{8},{17},{19},{16},{16},{26},{31},{14},{23},{23},{10},{11},{9},{4},{9},{9},{4},{8},{17},{20},{6},{15},{1},{8},{6},{5},{7},{18},{4},{3},{7},{10},{1},{2},{2},{3},{4},{17},{18},{5},{14},{17},{15},{9},{7},{8},{16},{9},{8},{10},{1},{5},{7},{5},{9},{9},{6},{8},{7},{7},{9},{10},{7},{7},{5},{5},{9},{7},{4},{8},{1},{8},{6},{6},{5},{11},{13},{5},{1},{1},{7},{17},{9},{8},{11},{13},{10},{1},{8},{7},{4},{2},{2},{8},{9},{11},{5},{2},{2},{2},{4},{38},{1},{2},{2},{4},{8},{10},{15},{9},{11},{14},{9},{9},{9},{9},{6},{7},{3},{3},{11},{4},{4},{14},{8},{12},{1},{4},{17},{10},{15},{12},{8},{23},{11},{18},{6},{4},{12},{10},{9},{5},{5},{4},{17},{17},{1},{2},{2},{8},{6},{6},{16},{8},{7},{4},{8},{3},{4},{2},{2},{6},{1},{5},{22},{16},{13},{1},{1},{5},{74},{432},{673},{145},{21},{21},{44},{227},{197},{88},{129},{274},{7},{586},{97},{101},{10},{23},{220},{150},{35},{158},{57},{63},{75}};
+    #if (CYTHON_COMPRESS_STRINGS) == 2 /* compression: bz2 (2860 bytes) */
+const char* const cstring = "BZh91AY&SY7\235\231\022\000\000\312\177\377\377\377\377\377\377\337\377\377\277\377\377\377\277\377\377\376@@@@@@@@@@@@@\000@\000`\013\037zt\332\204\365\235t.nCM4ckd\336\250\247\260\0010xh$D\200i\220\003#&\232i\243\324x\3124b\236\310\3122d\310M\251\241\265=\252\003'\2444\320\032\032\006M1\004\222LL@\010\310\246LL\322SL\201\243M\r\r\0326\240h\000\000\031\032\017H\037\2524\000\000\001\2414I\023\365\0324e6\200\236D\364\003S\324h`\023L'\251\351\036\210`\002d\304\315F\206\000\230L\2314\300Jh\021\"\21550\214\200\001\246M\000\006\206\203Cjz\203@\000\000\006\200\000\000\311\240\020`\t\204\300\230L&\230&#\000L\001\032\0310\t\200\000\000\021\200\230\000\000\022(LT\332&\251\376\252?\3252lT\017S\312~\250\304b\001\2204\000\000\032\000\320\303D\365\036\241\246@\017MG\251\372\246\232\264\000\321\3147w\206o\tA%\375\257\361o\255\004\315\366YCEe\031E\250B\025Y\210C\340j\035\314,KV0\327T\305S\177\237\353&\031\010Bd\222Li<(\232S\t\316\2701\207^\201DQ\024-\304\257\017\374\002\265*V\333J\002\234\302vS\020i\260l\0064\230\322\023i\266\323L\201\206\020\314-d\202A]-/B\261\350~\201\360+\200\237\205\201B\215\211\316r\0000\215$66\t\266\320\256M\214`\365\202e\001\"e\261\"\226P\232\246:\2430\024zX\225\370$\225\203D\032\322\r iR\010\022g\025\320\033\204\002I\rz\265`\306P\200L\2232:B\262\310\307\240\212\254c\251\314\303E`\"\341\027\213ScA\320\226V\327\316\230\035b\256GLX\222\304\274\262!\\d4\324\313,H\021\225j\231\027\023AA\246\246L\262f\t\023f\303&\245\215zeabX[\254o+\255VEb^\\W\312c\016\222$)\022\304&\247\234\202e\356-r\262\312S*W)\214\231\225e\265\231\312U\304\214\353\353\257\310\245\265\023\265\356r\034y^MVO\032\212\221xV+|\247\025\r};\252\223B\364\261I\034_`\246\225\202\334m+\263\"P\311\354\336\254\346eBH!\331\321@\343\323Md\325\234\231\311\234]\033\262\350\304\327%\333\207e\353\275QYc\032e\370\234\365u\332\370\033\211\274g_\201\266v\277\276\3557/B0K\rj\222\233\021\027ycY[]B\337{\371A&\023\274T\250B\031\002@*\310^\013n\203\2463\246\200i\246#\013Jt\025\n\310\031\324\211\010H\227\3466\347\307""\330\276j*D\3052\363\033\202\342~\221J\005\005B\210\370S]\3763\371\224T\n\005\027\243uZ\301\016\005\002\343\305\262\306!\023\3421\342\204\360\273\223\021\262w3\275(C&|\002\010X\321\036\322\270r\257\034\254Z\262\311NU\201b\221\026\254z\351Z\024VP\245r\237\372\353\373>}\226\n\305yae%I\022R%m\276\257\215\217\030\322\002JIJG\030<<qb\253D\205\210\037'\301>O\277\0144\203UUH-\0224\300`\206\204\204\363\230\n\007\215N\345\371\232\0135\352~J\225\234?\023t\372\276_\013=\030\030\322\201\232*[\315\026\345\317\320\253\373\214W%\n\243'\311\221\026\032\007F\234.9\357\"H\220P\245\245\347\345\343m\272\330\251^\035\330\343\323Y\212\221\211\211\216\376l4\230\246\023S'\205x\311JD\224\225\365\250(C\034\347\0255\023wws\020)\000\327zy!\352\374M:\177Mu\303\365K8Z\347\324\347\242\020\236\336\242\213\326\306\206\021\203\2604\361\364-\305\177S\036\376\266I\016uoI\300C\2739G \334\350}\2117\311\233V\233\236\034\356\271\2315\223Q\013P\201<\361\025n\316Y\004h\234\316\023\300\354\312\3665\306\251\210\246%r\310\316t\327\244\033\302+92\351B\t(yX6\0277\270\332\330\\\342U\264KL\231\347\363\376\327\2040m\332f\306\227\001\270\306\2633r\355\377\027V\324*&\003j\n\322\335`\202\31405npRy.\026b\027\3430\326\274V\000\306\263_b\356C`\026\310\226\310w\201\236\302\3143''.2\224\337\354\334\240\377%\212\231\253q]\241\265\005\311m\341\253\204\\l\312\201pX\030\030\206!n]\357\027\016t|[\266l\247\331\035\347\205\201\341\023NO\332\330;\223mUV\307'\363\361\343\305p\341\315\375\377A\335\273Q\213\3318\261\274\036\203k\266L\355#\tFn}F\331\346d\272<\034\350Z\334\330U\263\003\204\303\271\2741\036^\316\201\316\347\000\356\255\004\342j\036k\337Y\323\031N\265\255\n}\366\367a Ff\315F\217\037\332\305\215H\264=\360\265\266\013N\004Q\007\322\222\367l\265\325v\236\016\034\rzrK\343\215v\367\003\2730l\236Tw\231A\267\223\310\"<P\031\020l\203\034Nb27oUw\307)\262Ub\267\323\263!\n\354ZT\362{]\221f\323\234I\3517\306$k\214RI\2222\\\014\317+b\211\366\355q\365C4\221=\356\013\243\247\ru\351\242\271\206?\317mC\324\340=\333\316\177`\227\264[\362""\202\341=a\016\014\340\270n6L\3353G\277\r7Y\004\361\250DBs\016gy\357\007n\232\353\234\304:\020\373\265\271\307`\305\341V\221\031\r\375\026\241\206&SF\311\r\277\204\206\214\207\327\210\366\237\033d\315@\200]\276\0352\2726\233\203\0066t\255\332\315\274\271\302g:c\340\246F$\031\216\375\276\327\035\372-N9\356\2514us\035\257\037\303\252\243\211t\021d\365\342\354\256\357Q\022k\261\332\213\303ly.\336\327\035b\\\004\252K\263\260<\207B'\240\353+\tI'VF\203\254\245\022\025\221%\t(3\217\216\346\362\257\345\013\200\221-E\253~\250p\r\202Ss\206H%\rHB!D&\255\320,K>\034D\353a*\254\021\002\004\\\234\033\205\327%z/W\234\020\324Z\225\326N\374\227\2662$Y\2368\340\241\366Dl\252C\3278NcIY\034\"\231\336\264\254\222\353#\330,!\2338T\360\216y\206y\231\347\236VY\327\205\273\036\002<\263K\226\372\310\003\216\311K\263{\024\223\022\257F2\215s\0279\206\030vG@VsW\203a\005\220\374\036\222E.xp@\2030=\231C\"\202\356\0149E\225\031R\312k)h\340\356\206v\230\024\353\343\23275\\7\235\245\252\376\250-\374\3709E\032-+:\267\035\234\304\254nY\330X\027i\023N\207\014\312r\226V\363y\261\241Z\031\364yF\2175\332_\274r\335\272\025\0309\320\250\217u\233\351\335\214v\331\001\371\2758\312C\373\200\332`\320m\237S@\326\3238c\001A\215\215\210c\027\022\007\326\340\301\265\367\233\236F>$\222c\0336\222\361\237\031$\307P\356\351#e7\302\270\343\314n\373\"Gd\034\004\004\013\276\02044\273\004\204(\240\310\347\206\005# \303\330\031\362-\250\367<ST\010\304\177\274\013\003\302%4.\022\253\345LRaE\\\235\326\034\226s\352\311\234\243\340\341\362\345\007\203\327\306\266\206\216T\253\200\250aW\201T\003\025\244E\022(w\344g\251\0210:M\033m\335\010\350\034\031r\367\003\013\031\242>^\342\352g\223nZ\020\271\275\273\235\267\271\035\312\"\253\347\342\304\355)1c\235\331\"m |\310C$\225\210\342\361O\\\376\220\376\353q\376\2321\210\226\227\035\220\230\204\357\315|\257~\234\371\177D\216\367\360\360?\263\217i&\177\004L\352W\331\004 \301C\246\271t\rvh\302Ft\214B\220\200\200\365r\206SD\250\3225\035\200\243\266\202\0105\351\004Q\003gj\371\034\200\306""\322\374\022I&T\207l\2418\0376\260t\205\2076\276\203\365\332\361|\312\363_o\367YX\004\200\315\243o\303\3447\355\342m\233q\020\241\tO\236\343\253\303\237\203t\000d\222\346\017h\230\303\226\205\373\t\376D=\371\251\304\362<\263^s\223\207\203\024LLFu\250\253\\\032\014\343\256\177{\246\330\014\256\2436D{T\353\352V\"e\264\001\032\002\301\215\000hcd\332P\205&\235|\300*\035v5b\250*\311\035A\307\217\035\2028i\030\215+\014\253\346\3232\330\251\277\272\215\030\033G\031w3\330,\035\345\212\247[\201\205P\202\236a\35734\362\345\345\325J\212\247O\317YV\2157\"_%j\241\260\312\246\201P\332\252\202\243\3462\320\036P\274A\2256U\262z\200\241z\220,cc\341\275\346\2437\212'M\234`<\373\0242'\337\344\277\250\361\212\024\006\377\005\270 i\260\220\013S\350\016\372>p\203*Q\267`\243<wt\370\026\003\014\t\001\2540\204\270\365\020b\023\206\222=?\361F\345\253M\266\201\250t\205( $\264\227\021\212\204\364\377o\352\200\n\377\257J\200\335y\341C\374\203\036e\366:\344\246N\263g4F\215)\307M1\360D\311\232\332F\306\3474\311N`\344(\306#'n\351\313v\312\006\rq\201fU\221z\343\210Wzg\240\352h\204\030\366\364\"\262\344\302\306\321C\227\021\351\230\320\2313<I\002K\256\246q\256\331H\022\235\222\352\346\016\33092:\022;R\023\014x\2611p\261\006\031R\030x2p\213o\020z(\351\2745\373\010:\303\010\374\323\260'\317\031\305\201~,\364\353E|/\347_j\3655r\004A\362\252\340s\033\232\340\223\223z,\216g,\257Ju)RB\257\263J\353\357\004\027\343j\220\030N\335\244\216\360\203\202\347\357$\251\214\0174\370\227\023\327;GR\206V\226\n\332M\310\320\022\213\352#\213\237\216\317-O\276\346\232\263\312md\210\215\010\306FP\325r)\271\306\345hr\273\255&\t\303;\314$\3730Y\027\230\314%\214\204\342\225\310\224\275\365b\227u\025T\365cP\207\\A=i\030\213I\261\245\305\275\332\304\203\3160:\273*\322#\020\345\323\275\304\311SE\t\356\227\032)Z\252\340\267\274]\352\253\273\037U\360\267\006\252\315\271\251\305\021\270P\371&\033\\\250d\235\246\261s\023J\342_\034H+\np8BI\031\214\363\332\365\027\235!\240\227u\245T\262#x\263\252\223\252\224\243\353\215\031\337\374]""\311\024\341B@\336vdH";
+    PyObject *data = __Pyx_DecompressString(cstring, 2860, 2);
     if (unlikely(!data)) __PYX_ERR(0, 1, __pyx_L1_error)
     const char* const bytes = __Pyx_PyBytes_AsString(data);
     #if !CYTHON_ASSUME_SAFE_MACROS
     if (likely(bytes)); else { Py_DECREF(data); __PYX_ERR(0, 1, __pyx_L1_error) }
     #endif
-    #elif (CYTHON_COMPRESS_STRINGS) != 0 /* compression: zlib (2918 bytes) */
-const char* const cstring = "x\332\235WIs\032g\032\0162\222\261\r6 \204$\257A\213\235\312$J\000\311\2238\231I\241\315I<\261\rZ,\313q\272\032hdl\304\322\335\310\302I\252t\344\370\035\373\330\307>\366\261\217\0349\366\221#?!?!\317\373}\315\2428\223I\215\252\324\337\376\256\317\273p\371\363\325b\362\363\225ti\265\270V\374\022\343\227+\253\245\017W\276\221+G5\265\254\277:\326V\n\265\252\246\313U]\033\355}\246\253r\341M\271z$\225T\371X\221\362\315\322J\275\265\\,\22659_Q\224*}\217\neM\314\212\033Or\271\255\035\351\361\223\307[\0335UU4\361]\221\244r\265\254K\222XJE\275UW\266\211\"\377\2547K\203qxs\264\001\236\022\344R\365\341V)/U\225\323s\353\272\252\234\014\327\252\"\027=\201e]R\252\305\341\311[\250\245xG%\265v<F\370<\347\025IkU\013R]\326_IzM\322j\362\3706\226\264K\247b\2338\212\031\347\360x\353`\227\033\341\351\223\235\357\236\346\266\366\305bW\332{\274\267\263\265\371\024\357\350\277\\-\325\006\343\220\275$=m\235\342\177\263\\\320\245\307P3\247\224ve\365H\321\305wtq\314u\357\273I\256T\n\225\232\246\310\365:\014 \253\252\334\2225o\200\n\345\032\334\255\326\232z\271\252h\371Z\255\202'd\350\212R\035\031\274PH\026R\005\371\270 W\213\222T\250\310\232&A\002(xLK<\205(\022\361V\362\340\317\371\025j\307uYU\244\002\367\364`\305\355Hj\0166t\256\2136\204\034\256\023_\032*eM\027\257\245R\271\002ed\242\312\327U\325\233\324\305X\257U\213\305\242\002\374IR\261V\220\004\260$\270\\WT\032\232\307\212*\353\212r\n\232\270\203\021\206\363\340\343\241f\310\243T\256\312\025N\254T\326a\025\255T\251\311\372\375\325R\025&\345v\025\306\005Qaf\255\324\254T@\256\tDH\345\201[\312UR\240\\\325\024\025_=\235\202p\2445\330\024%>\367\314Nf\324^\277\201\031\337\310G\2127\214T\246\rO\265c\031f\306\367t`6,\024]\026\016\301\337q\255\330\304+\t\227HV|\205\303I\313j\275\252\222\304p\243F#\254\257\363\211G\n\323z\253zZm\325\336\324\200\224z=YO\221\267\270\307\340\021>r9\370ld\244\241K\275\ti\315\247C\301\275\225\267M\302\360\t\031\335\233\224\305\343S\372V\312y\210Z\257\325%\272\301A\"\256\322-\374\217,SW!\251\252\267$\251\321\224+Bc\225""\"\360\275\270\347\033$\217\306gB\003:\347K\317\0024',\253\312\021dUT\376@\"\314\227\213\300\016`\246\350\202\210\204y\255r2\346$U\321\233*\\])I\022]\023\302`VTJr\263\0028h\225\032\371K\253W\312\272\246\253\345\272\326<>z/\271\274\227Vt=\251\247H@I\257\252|<\345\337\226\020z$\301@\213\301@\301+\351\212\006\326\364\222\376O\365\326\211\\i*\332[\236\234\376<\007\212\335\221\205\304\332\243z\332z\247\2505\315\365\377\303J\366\002a\346g\233\206\317\210\031\317\315\274\345\353\005\242l\311\215\177\342~\362\265\223\351\005\256\265uw\372\256{\367\276-\323\242\311\266\214\210\261\344\336N\332\363N\242w\3756\315\"\256\177\226\375b\202V\260\375\037\303G\303\023\203\257\036\261\006(\307\r\315\\2\025k\315\366\331\267\035\275\263\326\235\354f\2732]xl$\214\373\346\264\271iMZ{v\302\346\257~\000\213\217\314Es\327\232\261\024;ig<\212\306\206\241\232\021\357\306oS\037\\\n\265\277g2S\301\240a\206\254};e\037\236'\377?\216!\254\0215\326L\237y\313z\343\304\035\2653\327\215u\367\334\3343\367\331\201{\360|\300#oL\031y\220\330\265\343\266\352x\022\234\177\370w6\013\243\347O\214\224\261o&\315\037\206[n\360\016\264\2331e\363W\373\221s\322\311u\032\302@\013\306\266\271\200\213\263\316\224\223\357\370\370\325\333\020g\322\314\341\352C\347\253N\251\273\336\225\205\254\304\354\276\0311?\265N\354\234\335\020JN\030\313 }\313*\332\237\n\302g>\334\236\214\261\024\313\272\361\217,\237\025\351\371cl\235\311\356\354\307V\302\372\306}\220u\263\271\276\177\262\027\210\263\"\\\364o\334\270\022$\0004\372\376i\226\354\371/\236\201\370\245^\360\206\261\n\353^\263\032\275k\341^p\226\235\030\331^\0207\372\3760\363y\327fX\2165\3349\301\210\036\315\031~#c\374\210\325\330#\320\356\205oB\331\204G\340Z\373\204ea{\237\021\361\010\305\3306\204I\031YC\366v\",\016\210M`\027\017\002\355\213\000h\206eI\355oiBF\t\266\037\200\314ks\312|\005\013,\332Y\273\354h\235\205\316f\367\262\233\333qw\016\335\303\027\356\013\311\225dW\316\023\3534@\363\326\220\tk$K\224\335\003\036\027 p\266\027\232\005\267Kf\334\324\255\007 t\344d\235b""gxg\311\220\373\303i\311|h%\255\207\200\357\266\363qg\035N\312tw\334\247\373\356>!\253\037\270\322N\222!\246\240J8\312\022,\211\310\232\001\327\006\034\273\007'$\255uK\266T{\316\2118\t'\005N\371N\240\353\353F\272\013\240\224\3536H\267\030\273\017\343\004\257\266\345\266N\336d\n\242$c\344@e\302\274gE@'ee\255\274}\321n8>'\352$\235uG\026\01740M\261=\230.\315\225%\350i\374\001\005b\332\226\t\230\302\200\220t\206\355#\244\377/IOE0\271\317\177r\177\222\010xar\354\270K\307\235\331\367\3032\224P~u\227V\021\372\221yw\3763\300+r\313\340~\335bQR\332XD\374\244\314\227\366\202\275a\277\353D;_t\223\335\215\356\211\273G\261\353\001\340\375\001\371\306\313\0134|\007\213\035\031\007\346\276\225\266^;~'\343d\007\371\347S\363\324z\347L;\337w\212\335D7y\306_o\262\213\360\377\005@^7W\315\306\370\246\337\3304\375f\306\314\322\346 \245FD\312$\320\256\272wR\366\022\222\350\215;\356\235\317m?4\273q\363,\323\347\032\315\000q:\314\033\244\207\337\223i{\301P;\0073\355\032\263H\035\021Z\036\260\035\236\245\017\315\006\262\364\337\3328d\032\2616~\201\2172\264\361\023\317D1wy\r\350\225\211\337$G\000<+\"i\322\3303\023\320\355g\001\001\332\276\016Hm!Eg\220\217\357\000D\323N\246\317\005}\004\004p6\373<dt\343\201\2315\345\221\344\363\240\224\374+\025\303\334r\223<\234\261\270\014A\326\204\266\177\265\010\002\340$$\321r\303\037b\233\220\333\030)\223\346\330\364\365\3021.\342\005s\r\211'n5l\276\365\004Yw\303lZ\031\353\220b\342\234*\177\340t\t8X\246\223\263\214\310\256(gc5\356\221'\374k+d\357:3\216\322Iv8\"\036\262U\216\010R\335\rBB\236\263\023f\304\313\335r\317\333'\343\204\334\020!\033\354B\306\256y\0235\006\274\351N\020\2655e#\271\204(Y\254\";\362\264\310\351\257q?\363\244\251\263\257y$\346`\202\360\014{\211\224\025\2333\002\320\201\262\324\327\244c/\266\004\357\355[\311~x\232D\353\305n ]R2'\001\302l\202%\334\351e\356<\316IG\210o\033\367\310\010\234c\224}b\324,p\013\365\202\t7\361\005(\216\204\033\324\235i\236 \377\350\353+\034<s\224\211F\346\275D\313\276g\213?(\024g\0253\341.\246y\336L\014\374\375""\014.\343\230\216\260\030{\3069\215OI\253\326\300k\027@\354\022O\335\360\366\267\270\260\213\3052Y\207\222\327\032\017\313\361i\014\205\202\307\300\320\"4\360\n\031j\257\267e\367Z\202S\033U\303\177b%\252\241Nu*\324~A\014\307\013c\004I*\351\306\356q\241Ge2@*\314\321e^\370\310\013ce\322{D\276\312\216\225\311\003\254\220~\237\003\022\364h\316\360\365\375\310\337=?\025L\232Q\341\013\200\n\227\207\352\301\000.!\221\275\377e\\\244h\2333\202\346wV\016\215\301\240\330\336B\307WBb\010\337\3401\363\216{i|\321\307\"I;\311>\252t\203JucPRaz\241\313\274\265`m\023\024\376+\315\376\220\002=\216 \336(\347C\3124\312\320[\252\360\034\344\327\332\247\304\343j;\317\246\200 \021\\\n\302u\013}\240l5\355\214\275\347,;\215\316d'\333\221\t\000\221\361\017\027\020.\020u\021\215\344\325v\tI\237\2135F\364\002G$!\202\212\035\265\244\221\336\374M/\247\254Y\027\220*\267\354\210}Wt[D,\014\031e\212|\221\257|^gB^\373\225=\244FwX\304\336\261Y\312\r\303B\366%\313\234\341~\0208*\262E\264A<,H\030\037\233f\033\350M\243\274\255\325Q\312\020\300\340\236F\261\236\360\222\357\337\272\230\0340P\220\205\363\260\331\256\0315\323f\301\212\342J\221\227G\315Yp6\034n\205\002\250\255\263\002b-\007Zi4\374~k\023t\226\354\002\272\203Uq\251\304\031\3069\263=k\021\230i\270\037\314\260l\337\017C\023;\201\267s\003\227\202\007\264\3613<\216`\t\3412z\2419\212\312\353(\327\310\362F\313\232\260\356\"\017#\314\317W\037\240\032\365b\301\334&\004\016Z\260<2g\214#p\2267d'\210\004\344\266\201\007\221\350\342\274\341\371\363Ea\220\275{\261Y^\007E^?\277\230\347yK\224\223q\322}B\322\240\345\375k\335\250\376%\251yf\215s*\305\274\026 <\326\243\242I\230\244<k\252\326,!\017\356\311\364\346\256\363\243u\216\365\214\271\203\237BY\340]\263\227y\323\346\025\226\316n\227\267\023\215q\251\002\355)\336\372}E\rq\240}\031Ym\225\375L\311*\320\276\302\000\215\337\002\037L\006\316\232\200\307\270S\3679z\246\004\304\306\017~\264\247\355u\273B-\355\325\366+\2300j|\201n@\265\346\201\264\024\252\034:H!\004\030L\266\367\250\033\244@Nq\033l\300\262\364k""\205\327\346\351\301\311!\017\2724\274y\231\232EqBM\336\031O|\315\366F\233\307\326e\274}\004V\021\021HQ\3069\2510\364\307p\321s\024'?\221\313\"#\373\305O\006T\216m\226\030o\n\023\3067\300+\375\322{\321\231\350,v\016\273\252\233E\347\211\036\377\245\373\262\340\026\024W)\321\363\267\306\221\371\014\201\036\267O\234\203NVT\355\244 \025y\177\360\330x\203\327K\342\301\357\326\356\203\035";
-    PyObject *data = __Pyx_DecompressString(cstring, 2918, 1);
+    #elif (CYTHON_COMPRESS_STRINGS) != 0 /* compression: zlib (2934 bytes) */
+const char* const cstring = "x\332\235WIs\032g\032\0162\222\261\r6 \204$\257A\213\235\312$r\000\311\2238\231I\241\315I<\261\rZ,\313q\272\032hdl\304\322\335\310\302\231T\351\310\361;\366\261\217}\354c\0379r\354#G~B~\302<\357\3675\213\342L&5\252R\177\373\273>\357\302\345/V\213\311/V\322\245\325\342Z\361+\214_\255\254\226>^\371v\271X,kr\276\242(U\372\036\025\312\232\230\025ku\245Z\327OR+r\345\250\246\226\365\327\307\332J\241V\325t\271\252k\232Z\270?\270p\177t\341\276\256\312\205\267\345\352\221TR\345cE\3127K+\365\326\306\323\\nkGz\362\364\311\326FMU\025M|W$\251\\-\353\222$\226RQo\325\225mz\307?\353\315\322`\034\336\034m\200\262\004QT}\270U\312KU\345\364\334\272\256*'\303\265\252\310EO,Y\227\224jqx\362\016\302+\336QI\255\035\217\021>\317yE\322Z\325\202T\227\365\327\222^\223\264\232<\276\215%\355\322\251\330&\216b\3069<\331:\330\345Fx\366t\347\373g\271\255}\261\330\225\366\236\354\355lm>\303;\372/WK\265\3018d/I\317Z\247\370\337,\027t\351\t\324\314)\245]Y=Rt\361\035]\224+\225B\245\246)r\035\356)\312\252*\267d\315\033 e\271\006'\252\265\246^\256*Z\276V\253\300\220d\313\212R\035\331\264PH\026R\005\371\270 W\213\222T\250\310\232&\201\tt8\246%\236\202\233D\276V\362\3607\347W\250\035\327eU\221\n\334\231\203\0257\025i2\330\320\271\270\332\020H\270N|i\250\2245]\274\226J\345\n\300#\023U\276\256\252\336\244.\306z\255Z,\026\025\200U\222\212\265\202$\260#\301\253\272\242\322\320<VTYW\224S\320\304\035\214\260\215\207\020\017\030C\036\245rU\256pb\245\262\016\253h\245JM\326\037\254\226\252p\035G\205\200\006\210\n\220h\245f\245\002rM8]*\017,_\256\222\002\345\252\246\250\370\352\351\024\204#\255\301\246(\361\271gv2\243\366\346-\314\370V>R\274a\2442mx\252\035\31303\276\247\003\263a\241\350\262p\010\376\216k\305&^I\270D\262\342+\034NZV\353U\225$\206\0335\032a}\235O<R\230\326[\325\323j\253\366\226\002\371\217\242\375\303`\256\327\223\365\024\371\224\373\2256h\344\322\362\331\310\224C\307{\023\262\r\237\016\325\363V\3366\211\314'\344\032oR\026\217O\351[)\347\241P\275V\227\350\006\207\222\270J\267\360?\262_]\205.\252""\336\222\244FS\256\010\273\250\024\212\037$\000\276A\362h|&4\240s\276\364\354DsB\274\252\034AVE\345\017$\212\214r\021\010\003\030\025]\020\2210\257UN\306\\\251*zS\005 *%I\242kB\030\314\212JInV\000\032\255R#\257j\365JY\327t\265\\\327\232\307G\037d\231\017\362\213\256'\365\024\t(\351U\225\217\247\374\333\022B\217$\030h1\030(\304%]\321\300\232^\322\377\251\336:\221+ME{\307\263\324\037'C\261;\262\220X{TO[\357\025\265\246\271\376\277Y\311^ \314\374l\323\360\0311\343\205\231\267|\275@\224-\271\361\317\334\317\276q2\275\300\265\266\356N\337u\357>\260eZ4\331\226\0211\226\334\333I{\336I\364\256\337\246Y\304\365\317\262\177\233\240\025l\377\313\360\321\360\324\340\253\307\254\001\312qC3\227L\305Z\263}\366mG\357\254u'\273\331\256L\027\236\030\t\343\2019mnZ\223\326\236\235\260\371\253\037\301\342\023s\321\334\265f,\305N\332\031\217\242\261a\250f\304\273\361\333\324G\227B\355\037\230\314T0h\230!k\337N\331\207\347\311\377\217c\010kD\2155\323g\336\262\336:qG\355\314uc\335=7\367\334}~\340\036\274\030\360\310\033SF\036$v\355\270\255:\236\004\347\037\376\225\315\302\350\371S#e\354\233I\363\307\341\226\033\274\003\355fL\331\374\325~\354\234tr\235\2060\320\202\261m.\340\342\2543\345\344;>~\3656\304\2314s\270\372\310\371\272S\352\256we!+1{`F\314\317\255\023;g7\204\222\023\3062H\337\262\212\366\347\202\360\231\017\267'c,\305\262n\374\023\313gEz\376\030[g\262;\373\251\225\260\276u\037f\335l\256\357\237\354\005\342\254\010\027\375\0237\256\004\t\000\215\276\177\232%{\376\213g ~\251\027\274a\254\302\272\327\254F\357Z\270\027\234e'F\266\027\304\215\276?\314|\336\265\031\226c\rwN0\242Gs\206\337\310\030?a5\366\010\264{\341\233P6\341\021\270\326>aY\330\336gD<B1\266\raRF\326\220\275\235\010\213\003b\023\330\305\203@\373\"\000\232aYR\373;\232\220Q\202\355\207 \363\306\2342_\303\002\213v\326.;Zg\241\263\331\275\354\346v\334\235C\367\360\245\373Rr%\331\225\363\304:\r\320\2743d\302\032\311\022e\367\200\307\005\010\234\355\205f\301\355\222\0317u\353!\010\0359Y\247\330\031\336Y2\344\376pZ2\037YI\353""\021\340\273\355|\332Y\207\2232\335\035\367\331\276\273O\310\352\007\256\264\223d\210)\250\022\216\262\004K\"\262f\300\265\001\307\356\301\tIk\335\222-\325\236s\"N\302I\201S\276\023\350\372\272\221\356\002(\345\272\r\322-\306\036\3008\301\253m\271\255\2237\231\202(\311\0309P\2310\357Y\021\320IYY+o_\264\033\216\317\211:Ig\335\221\305\003\rLSl\017\246Kse\tz\032\177@\201\230\266e\002\2460 $\235a\373\010\351\377K\322S\021L\356\213\237\335\237%\002^\230\034;\356\322qg\366\375\260\014%\224_\335\245U\204~d\336\235\277\017xEn\031\334\257[,JJ\033\213\210\237\224\371\312^\2607\354\367\235h\347\313n\262\273\321=q\367(v=\000|8 \337xy\201\206\357a\261#\343\300\334\267\322\326\033\307\357d\234\354 \377|n\236Z\357\235i\347\207N\261\233\350&\317\370\353Mv\021\376\277\000\310\353\346\252\331\030\337\364\033\233\246\337\314\230Y\332\034\244\324\210H\231\004\332U\367N\312^B\022\275q\307\275\363\205\355\207f7n\236e\372\\\243\031 N\207y\203\364\360\0072m/\030j\347`\246]c\026\251#B\313\003\266\303\263\364\241\331@\226\376K\033\207L#\326\306\277\341\243\014m\374\3143Q\314]^\003ze\3427\311\021\000\317\212H\2324\366\314\004t\373E@\200\266\257\003R[H\321\031\344\343;\000\321\264\223\351sA\037\003\001\234\315>\017\031\335xhfMy$\371<(%\377L\3050\267\334$\017g,.C\2205\241\355\237-\202\0008\tI\264\334\360\307\330&\3446F\312\24496}\275p\214\213x\301\\C\342\211[\r\233o=E\326\3350\233V\306:\244\2308\247\312\3578]\002\016\226\351\344,#\262+\312\331X\215{\354\t\377\306\n\331\273\316\214\243t\222\035\216\210Gl\225#\202Tw\203\220\220\347\354\204\031\361r\267\334\363\366\3118!7D\310\006\273\220\261k\336D\215\001o\272\023DmM\331H.!J\026\253\310\216<-r\372k\334\317<i\352\354\033\036\2119\230 <\303^!e\305\346\214\000t\240,\365\r\351\330\213-\301{\373V\262\037\236&\321z\261\033H\227\224\314I\2000\233`\twz\231;\217s\322\021\342\333\306=2\002\347\030e\237\0315\013\334B\275`\302M|\t\212#\341\006ug\232'\310\337\373\372\n\007\317\034e\242\221y/\321\262\357\331\342w\n\305Y\305L\270\213i\2367\023\003\177?\207\3138""\246#,\306\236sN\343S\322\2525\360\332\005\020\273\304S7\274\375\035.\354b\261L\326\241\344\265\306\303r|\032C\241\34010\264\010\r\274B\206\332\353m\331\275\226\340\324F\325\360\357X\211j\250S\235\n\265_\022\303\361\302\030A\222J\272\261{\\\350Q\231\014\220\nst\231\027>\362\302X\231\364\036\221\257\262ce\362\000+\244\337\027\200\004=\2323|}?\362w\317O\005\223fT\370\002\240\302\345\241z0\200KHd\357\177\030\027)\332\346\214\240\371\275\225Cc0(\266\267\320\361\225\220\030\3027x\314\274\347^\032_\364\261H\322N\262\217*\335\240R\335\030\224T\230^\3502o-X\333\004\205\377J\263?\244@\217#\2107\312\371\2202\2152\364\216*<\007\371\265\366)\361\270\332\316\263) H\004\227\202p\335B\037([M;c\3579\313N\2433\331\311vd\002@d\374\303\005\204\013D]D#y\265]B\322\347b\215\021\275\300\021I\210\240bG-i\2447\177\323\313)k\326\005\244\312-;b\337\025\335\026\021\013CF\231\"_\344+\237\327\231\220\327~e\217\250\321\035\026\261\367l\226r\303\260\220}\3052g\270\037\004\216\212l\021m\020\017\013\022\306\307\246\331\006z\323(oku\2242\0040\270\247Q\254'\274\344\373\227.&\007\014\024d\341<l\266kF\315\264Y\260\242\270R\344\345Qs\026\234\r\207[\241\000j\353\254\200X\313\201V\032\r\277\337\332\004\235%\273\200\356`U\\*q\206q\316l\317Z\004f\032\356G3,\333\367\303\320\304N\340\355\334\300\245\340\001m\374\002\217#XB\270\214^h\216\242\362:\3125\262\274\321\262&\254\273\310\303\010\363\363\325\007\250F\275X0\267\t\201\203\026,\217\314\031\343\010\234\345\r\331\t\"\001\271m\340A$\2728ox\376xQ\030d\357^l\226\327A\221\327\317/\346y\336\022\345d\234t\237\2204hy\377\\7\252\177Ij\236Y\343\234J1\257\005\010\217\365\250h\022&)\317\232\2525K\310\203{2\275\271\353\374h\235c=c\356\340\247P\026x\327\354e\336\264y\205\245\263\333\345\355Dc\\\252@{\212\267~_SC\034h_FV[e\277P\262\n\264\2570@\343\267\300G\223\201\263&\3401\356\324}\216\236)\001\261\361\203\237\354i{\335\256PK{\265\375\032&\214\032_\242\033P\255y -\205*\207\016R\010\001\006\223\355=\352\006)\220S\334\006\033\260,\375Z\341\265yzpr\310\203.\ro^\246fQ\234P""\223w\306\023_\263\275\321\346\261u\031o\037\203UD\004R\224qN*\014\375)\\\364\002\305\311O\344\262\310\310~\361\223\001\225c\233%\306\233\302\204\361-\360J\277\364^v&:\213\235\303\256\352f\321y\242\307\177\345\276*\270\005\305UJ\364\374\235qd>G\240\307\355\023\347\240\223\025U;)HE>\034<6\336\340\365\222x\360\037\340Q\216\331";
+    PyObject *data = __Pyx_DecompressString(cstring, 2934, 1);
     if (unlikely(!data)) __PYX_ERR(0, 1, __pyx_L1_error)
     const char* const bytes = __Pyx_PyBytes_AsString(data);
     #if !CYTHON_ASSUME_SAFE_MACROS
     if (likely(bytes)); else { Py_DECREF(data); __PYX_ERR(0, 1, __pyx_L1_error) }
     #endif
-    #else /* compression: none (5511 bytes) */
-const char* const bytes = "\n04d10.3f4d5d9.3f9.4f .?algorithms.constantsalgorithms/tracking_frame_buf.py%ddisableenablegcisenabledCORRES_NONECorresCorres.__init__Corres_dtypeFrameFrameBufFrameBuf.__init__FrameBuf._buf_startFrameBuf.fb_nextFrameBuf.fb_prevFrameBuf.read_frame_at_endFrameBuf.write_frame_from_startFrame.__init__Frame._sync_path_to_soaFrame._sync_soa_to_pathFrame.readFrame.writeNEXT_NONEPOSIPREV_NONEPT_UNUSEDPathPathinfoPathinfo.__init____Pyx_PyDict_NextRefTargetTarget.__init___algorithms.tracking_frame_bufallcloseappendarrayasarrayasyncio.coroutinesboolbufbuf_len_buf_startcc1c2camcand__class_getitem__cline_in_tracebackclosecompare_correscompare_path_infocompare_targetsconstantscor_bufcor_listcorres_file_basecorres_nrcorres_pcorrespondddecis__doc__dtype__enter__enumerateexists__exit__fb_nextfb_prevfile_basefinaldecisfitnessfloat64fnameframeframe_num_framesfull__func__i__init__inlistinsertint32is_compiled_is_coroutineitemsjklinkagelinkage_file_baselinkdecis__main__max_targets__metaclass____module__n__name__ndarraynextnpnrnum_camsnum_partsnum_targetsnumpynxnyokopenpp1p2pathpath_bufpath_decispath_finaldecispath_infopath_inlistpath_linkdecispath_listpath_nextpath_prevpath_priopath_xpathlibpnrpop__prepare__prevprioprio_file_baseproperty__qualname__rreadread_frame_at_endread_linksread_path_frameread_targetsreadlineregister_link_candidatereset_links_resolve_file_basereturnself__set_name__setdefault__slots__splitstripsumg_sync_path_to_soa_sync_soa_to_pathtt1t2targ_tnrtarg_xtarg_ytarget_file_base_targetstargetstbuf__test__tnrttnrtxtyvalueswwritewrite_frame_from_startwrite_path_framewrite_targetsxyzeros\320\004+\2501\330\010\020\220\004\220D\230\001\230\024\230Y\240b\250\001\330\010\022\220$\320\026,\320,<\270A\330\010\017\210t\320\023&\320&6\260a\330\010\017\210u\220E\230\021\230$\320\0361\260\031\270!\330\032\036\320\0361\260\021\320\004\027\220|\2401\330\010\014\210L\230\001\330\010\014\210O\2301\330\010\014\210K\220q\230\001\230\026\230s\240$\240e\2505\260\001\260\036\270t\3005\310\005""\310Q\310a\330\010\014\210N\230!\2306\240\023\240D\250\005\250U\260!\2601\330\010\014\210M\230\021\230(\240#\240T\250\025\250e\2601\260A\330\010\014\210O\2301\230C\230r\240\021\330\010\014\210M\230\021\360\006\000\t\r\210J\220a\220r\230\026\230q\240\r\250V\2602\260Z\270t\3005\310\005\310Q\310a\330\010\014\210J\220a\220r\230\026\230q\240\r\250V\2602\260Z\270t\3005\310\005\310Q\310a\330\010\014\210L\230\001\230\022\2305\240\001\240\035\250k\270\026\270r\300\030\310\024\310U\320RW\320WX\320XY\360\006\000\t\r\210J\220b\230\006\230b\240\r\250T\260\026\260r\270\021\330\010\014\210M\230\022\2305\240\001\240\035\250k\270\026\270r\300\021\330\010\014\210M\230\022\2305\240\001\240\035\250k\270\026\270r\300\021\330\010\014\210M\230\022\2305\240\001\240\035\250c\260\026\260r\270\021\330\010\014\210O\2302\230V\2401\240M\260\026\260r\270\021\330\010\014\320\014\037\230r\240\025\240a\240}\260K\270v\300R\300q\330\010\014\210N\230\"\230F\240\"\240M\260\027\270\006\270b\300\001\330\010\014\320\014\036\230b\240\005\240R\240}\260G\270;\300f\310B\310a\360\006\000\t\r\210M\230\022\2306\240\021\240-\250v\260R\260q\330\010\014\210L\230\002\230%\230r\240\035\250d\260-\270v\300R\300q\200\001\360\006\000\005\024\2202\220Q\320\026(\250\001\250\021\330\004\024\220B\220a\320\027*\250!\250?\320:Q\320QR\340\004\005\330\010\026\220d\230!\230>\250\021\330\013\014\330\010\017\210q\340\004\023\2201\330\004\007\200q\330\010\t\330\014\033\2304\230q\240\017\250q\330\017\020\330\014\027\220v\230Q\330\014\023\2201\340\004\020\220\001\330\004\007\200q\330\010\025\220R\220q\320\030(\250\001\250\021\330\010\t\330\014\030\230\004\230A\230\\\250\021\330\017\020\330\014\027\220v\230Q\330\014\017\210q\330\020\034\230F\240!\330\014\023\2201\340\004\017\210v\220Q\220b\230\001\230\021\330\004\007\200q\330\010\024\220F\230!\2302\230Q\230a\330\004\007\200q\330\010\021\220\026\220q\230\002\230!\2301\340\004\010\210\007\210u\220A\220Q\330\010\014\210H\220A\220Q\360\006\000\t\014\210:\220Q\220j\240\006\240h\250d\260#""\260Q\260i\270s\300\"\300D\310\n\320RS\320SZ\320Z[\320[_\320_a\320ab\330\014\023\2203\220a\220w\230a\230r\240\021\240!\330\014\022\220'\230\021\230\"\230A\230Q\330\r\027\220q\230\t\240\026\240t\250:\260Q\260g\270Q\270d\300!\330\014\022\220'\230\021\230$\230a\340\014\022\220'\230\021\230$\230f\240G\2501\250G\2601\260F\270*\300B\300f\310A\310S\320PV\320VX\320XY\340\010\013\2101\330\014\030\230\006\230a\330\020\022\220!\2201\220E\230\025\230a\230q\240\005\240U\250!\2501\250B\250a\250r\260\030\270\021\270!\2702\270Q\270b\300\010\310\001\310\021\310\"\310A\310R\310q\360\006\000\t\024\2206\230\021\330\014\016\210a\210t\2202\220Q\220e\2301\230A\230R\230q\240\002\240'\250\021\250!\2502\250Q\250b\260\007\260q\270\001\270\022\2701\270B\270a\330\014\016\210a\210s\220!\2202\220U\230!\2303\230a\230r\240\025\240a\240s\250!\2502\250U\260!\2603\260a\260r\270\021\360\006\000\t\014\2101\330\014\025\220V\2301\330\020\022\220!\2201\220E\230\025\230a\230q\240\005\240U\250!\2501\250B\250a\250r\260\030\270\021\270!\2702\270Q\270b\300\010\310\001\310\021\310\"\310A\310R\310x\320WX\320XY\320Y^\320^_\360\006\000\005\020\210v\220Q\330\004\007\200q\330\010\024\220F\230!\330\004\007\200q\330\010\021\220\026\220q\340\004\013\2101\320\004\027\220}\320$4\260A\330\021\031\320\031/\250q\330\021\035\230Q\330\010\014\210E\220\022\2206\230\021\230#\230V\2402\240]\260\"\260C\260z\300\022\3008\3101\310C\310v\320UW\320WX\330\010\014\210H\220A\330\010\014\210H\220A\330\010\014\210H\220A\330\010\014\210N\230!\330\010\014\210J\220a\330\010\014\210I\220Q\220g\230X\240V\2503\250j\270\004\270A\270Q\330\010\014\210M\230\021\230-\240x\250z\270\023\270J\300d\310!\3101\200A\330\010\014\210D\220\007\220q\230\003\2304\230t\2404\240q\200A\330\010\014\210D\220\007\220q\230\004\230D\240\004\240A\240Q\200A\330\010\020\220\004\220D\230\001\230\021\330\010\017\210u\220F\230!\2304\320\0372\260$\260a\330\033\037\320\0370\260\004\260A\330\033\034\200A\340\010\014\210E\220\025\220a\220t\2301\330\014\020\220\004\220J\230a\230q""\330\014\r\210R\210v\220T\230\027\240\001\240\021\330\014\r\210X\220S\230\001\230\024\230Z\240q\250\001\330\014\r\210X\220S\230\001\230\024\230Z\240q\250\001\330\014\r\210X\220S\230\001\230\024\230Z\240q\250\001\330\014\r\210Z\220s\230!\2304\230|\2501\250A\330\014\r\210^\2305\240\001\240\024\320%5\260Q\260a\330\014\020\220\005\220U\230!\2301\330\020\021\220\026\220q\230\005\230U\240!\2404\240{\260!\2603\260a\330\020\021\220\032\2301\230E\240\023\240A\240T\250\037\270\001\270\023\270A\340\014\020\220\004\220K\230q\240\001\330\014\r\210V\2203\220a\220t\230:\240Q\240a\330\014\r\210R\210v\220T\230\031\240!\2401\200A\340\010\014\210E\220\025\220a\220t\2301\330\014\020\220\004\220J\230a\230q\330\014\020\220\007\220q\230\005\230Q\230a\330\014\020\220\n\230!\2305\240\001\240\021\330\014\020\220\n\230!\2305\240\001\240\021\330\014\020\220\n\230!\2305\240\001\240\021\330\014\020\220\014\230A\230U\240!\2401\330\014\020\320\020 \240\001\240\025\240a\240q\330\014\020\220\005\220U\230!\2303\230a\230q\240\001\330\020\024\220K\230q\240\003\2405\250\001\250\026\250q\260\001\330\020\024\220O\2401\240C\240u\250A\250Z\260q\270\001\340\014\020\220\004\220K\230q\240\001\330\014\020\220\n\230!\2305\240\001\240\021\330\014\020\220\t\230\021\230%\230q\240\001\200A\360\006\000\t\r\210K\220q\330\010\014\210L\230\001\330\010\014\210K\220q\230\005\230Q\230j\250\r\260T\270\025\270e\3001\300A\330\010\014\210G\2204\220q\230\004\230A\340\010\014\320\014 \240\001\330\010\014\320\014!\240\021\330\010\014\320\014\036\230a\330\010\014\320\014 \240\001\200A\340\010\r\320\r\035\230Q\330\014\020\220\r\230T\240\034\250T\260\021\330\014\036\230a\330\014\036\320\0362\260!\330\014\r\340\010\013\2104\210q\330\014\023\2201\340\010\014\210G\2205\230\001\230\024\230Q\330\014\017\210t\220<\230q\240\005\240R\240q\330\020\025\220]\240!\330\024\030\230\010\240\001\240\026\240t\250<\260q\270\001\330\024$\240A\240V\2501\340\020\023\2204\220q\330\024\033\2301\340\010\017\210q\200A\340\010\020\220\002\220!\320\023%\240Q""\240a\330\010\013\2104\210t\2201\220F\230'\240\021\330\014\023\2201\340\010\022\220,\230o\250Q\330\014\r\330\014!\320!8\270\001\330\014\036\320\0362\260!\330\014\r\360\006\000\t\r\210M\230\023\230A\230Q\330\010\014\210E\220\025\220a\220t\2301\330\014\020\220\013\2301\230E\240\030\250\021\250!\330\014\020\220\n\230!\2305\240\t\250\021\250!\340\010\014\320\014\036\230a\340\010\014\210G\2205\230\001\230\024\230Q\330\014\026\220l\240!\320#3\2601\260F\270!\330\014\020\220\014\230A\230W\240C\240q\250\001\330\014\021\220\024\220W\230A\230Q\330\014\021\220\024\220W\230A\230Q\330\014\023\2204\220y\240\001\240\021\330\014\020\220\003\2205\230\t\240\021\240!\330\020\024\220H\230A\230T\240\021\240%\240q\330\020\022\220!\2205\230\001\230\021\330\020\022\220!\2205\230\001\230\021\330\020\024\220A\220U\230!\2301\340\010\017\210q\200A\340\010\017\210q\200\001\360\006\000\005\r\210B\210a\320\017!\240\021\240!\330\004\005\330\010\026\220d\230!\2307\240!\330\013\014\330\010\017\210t\2201\340\004\r\210[\230\t\240\021\340\004\023\2201\330\004\007\200q\330\010\021\220\022\2201\320\024'\240q\250\001\330\010\t\330\014\033\2304\230q\240\010\250\001\330\014\030\230\t\240\021\330\017\020\330\014\033\2301\340\004\020\220\001\330\004\007\200q\330\010\021\220\022\2201\320\024$\240A\240Q\330\010\t\330\014\030\230\004\230A\230X\240Q\330\014\025\220Y\230a\330\017\020\330\014\030\230\001\340\004\016\210a\330\004\017\210q\330\004\016\210a\340\004\010\210\010\220\001\330\010\017\210t\2206\230\021\330\010\013\2104\210q\330\014\r\360\006\000\t\014\210=\230\007\230q\330\014\030\230\014\240I\250R\250v\260Q\330\014\017\210q\330\020\035\230Y\240f\250A\330\020\033\2303\230a\230z\250\021\250!\330\020\033\2303\230a\230z\250\021\250!\340\020\033\2301\330\020\033\2301\340\014\027\220q\330\014\027\220q\360\006\000\t\014\210:\220W\230A\330\014\030\230\t\240\031\250\"\250F\260!\330\014\017\210q\330\020\035\230Y\240f\250A\330\020\033\2303\230a\230z\250\021\250!\340\020\033\2301\340\014\027\220q\360\006\000\t\021""\220\004\220F\230!\330\010\013\2103\210a\210w\220b\230\001\330\014\r\340\010\017\210x\220q\330\014\016\210b\220\006\220a\220q\230\005\230Q\230e\2401\240E\250\025\250a\250u\260A\260U\270%\270q\300\005\300Q\300a\330\014\021\220\021\330\014\021\220\021\330\014\021\220\021\330\014\027\220q\330\014\023\2201\360\006\000\t\024\2201\330\010\016\210f\220A\330\014\017\210q\330\014\016\210b\220\006\220a\220q\230\003\2301\230E\240\021\240%\240s\250!\2505\260\001\260\021\330\031\034\230A\230U\240!\2405\250\003\2501\250E\260\021\260&\270\006\270b\300\001\360\006\000\t\020\210w\220a\220q\330\010\020\220\007\220q\230\001\340\004\017\210v\220Q\330\004\007\200}\220G\2301\330\010\024\220F\230!\330\004\007\200z\220\027\230\001\330\010\021\220\026\220q\340\004\013\2109\220A\200\001\340\004\014\210B\210d\220#\220R\220t\2301\330\014\016\210b\220\001\220\023\220C\220r\230\022\2301\230C\230t\2402\240R\240q\250\003\2503\250b\260\002\260!\2603\260a\330\014\016\210b\220\001\220\023\220C\220r\230\022\2301\230C\230t\2402\240R\240q\250\003\2503\250b\260\002\260!\2601\200\001\340\004\014\210B\210e\2203\220b\230\005\230T\240\022\2403\240c\250\022\2503\250d\260\"\260C\260s\270\"\270C\270q\330\014\016\210c\220\023\220B\220c\230\024\230R\230t\2403\240b\250\004\250D\260\002\260$\260c\270\022\2704\270q\330\014\016\210f\220C\220r\230\026\230t\2402\240U\250#\250R\250q\320\000\025\220Q\340\004\021\220\021\200\001\340\004\010\210\010\220\001\330\004\010\210\010\220\001\330\004\010\210\010\220\001\200\001\340\004\014\320\014\036\230a\230{\250!\340\004\005\330\r\021\220\021\220'\230\030\240\021\330\014\032\230#\230Q\230a\230y\250\002\250&\260\001\330\014\026\220a\330\014\020\220\005\220U\230!\2301\330\020\030\230\001\230\031\240\"\240F\250!\330\020\023\2203\220a\220w\230b\240\001\330\024\033\2301\330\020\027\220w\230a\230v\240Q\330\024\030\230\003\2301\230E\240\021\240!\330\024\026\220e\2301\230E\240\021\240!\330\024\026\220e\2301\230E\240\021\240!\330\024\026\220c\230\021\230%\230q\240\001\330\024\027\220s""\230!\2305\240\001\240\021\330\024\027\220s\230!\2305\240\001\240\021\330\024\031\230\023\230A\230U\240!\2401\330\024\030\230\003\2301\230E\240\021\240!\340\014\023\2201\330\013\014\330\010\017\210q\200\001\340\004\014\320\014\036\230a\230{\250!\340\004\005\330\r\021\220\021\220'\230\030\240\021\330\014\r\210V\2201\220B\220a\220q\330\014\020\220\005\220U\230!\2301\330\020\024\220D\230\001\230\021\330\020\021\220\026\220q\230\002\230!\2301\230D\240\005\240Q\240a\240r\250\027\260\001\260\021\260\"\260A\330\030\032\230!\2301\230B\230e\2401\240A\240S\250\005\250Q\250a\250s\260%\260q\270\001\270\025\270e\3001\300A\300T\310\021\330\010\017\210q\330\013\014\330\010\017\210q\200\001\340\004\010\210\006\210a\210t\220;\230a\330\004\010\210\n\220!\2204\220{\240!\330\004\010\210\013\2201\200\001\360\010\000\005\010\200u\210B\210f\220C\220r\230\026\230t\2402\240V\2503\250b\260\006\260a\330\014\016\210f\220C\220r\230\026\230t\2402\240\\\260\023\260B\260l\300!\330\014\016\210h\220c\230\022\2308\2404\240r\250\031\260!\2602\260T\270\022\2701\330\010\017\210q\330\004\010\210\005\210U\220!\2201\330\010\013\2102\210V\2201\220C\220s\230\"\230F\240!\2401\330\014\023\2201\330\010\013\2102\210Z\220q\230\003\2303\230b\240\n\250!\2501\330\014\023\2201\330\004\013\2101\200\001\330\004\007\200u\210C\210q\330\010\020\220\n\230\"\230K\240r\250\021\330\004\007\200z\220\022\2201\330\010\017\210r\220\021\220*\230A\230Y\240a\330\004\013\2102\210Q\210a\320\004\027\220v\230Q\330\010\014\210F\220!\330\010\014\210E\220\022\2206\230\021\230!\230?\250#\250V\2602\260[\300\002\300#\300Z\310r\320QY\320YZ\320Z]\320]c\320ce\320ef\320\004\027\220w\230g\240W\250E\260\026\260v\270X\300Q\330\010\014\210G\2201\330\010\014\210E\220\021\330\010\014\210E\220\021\330\010\014\210E\220\021\330\010\014\210F\220!\330\010\014\210F\220!\330\010\014\210H\220A\330\010\014\210G\2201";
+    #else /* compression: none (5542 bytes) */
+const char* const bytes = "\n04d10.3f4d5d9.3f9.4f .?%ddisableenablegcisenabledopenptv2.algorithms.constantssrc/openptv2/algorithms/tracking_frame_buf.pyCORRES_NONECorresCorres.__init__Corres_dtypeFrameFrameBufFrameBuf.__init__FrameBuf._buf_startFrameBuf.fb_nextFrameBuf.fb_prevFrameBuf.read_frame_at_endFrameBuf.write_frame_from_startFrame.__init__Frame._sync_path_to_soaFrame._sync_soa_to_pathFrame.readFrame.writeNEXT_NONEPOSIPREV_NONEPT_UNUSEDPathPathinfoPathinfo.__init____Pyx_PyDict_NextRefTargetTarget.__init___allcloseappendarrayasarrayasyncio.coroutinesboolbufbuf_len_buf_startcc1c2camcand__class_getitem__cline_in_tracebackclosecompare_correscompare_path_infocompare_targetsconstantscor_bufcor_listcorres_file_basecorres_nrcorres_pcorrespondddecis__doc__dtype__enter__enumerateexists__exit__fb_nextfb_prevfile_basefinaldecisfitnessfloat64fnameframeframe_num_framesfull__func__i__init__inlistinsertint32is_compiled_is_coroutineitemsjklinkagelinkage_file_baselinkdecis__main__max_targets__metaclass____module__n__name__ndarraynextnpnrnum_camsnum_partsnum_targetsnumpynxnyokopenopenptv2.algorithms.tracking_frame_bufpp1p2pathpath_bufpath_decispath_finaldecispath_infopath_inlistpath_linkdecispath_listpath_nextpath_prevpath_priopath_xpathlibpnrpop__prepare__prevprioprio_file_baseproperty__qualname__rreadread_frame_at_endread_linksread_path_frameread_targetsreadlineregister_link_candidatereset_links_resolve_file_basereturnself__set_name__setdefault__slots__splitstripsumg_sync_path_to_soa_sync_soa_to_pathtt1t2targ_tnrtarg_xtarg_ytarget_file_base_targetstargetstbuf__test__tnrttnrtxtyvalueswwritewrite_frame_from_startwrite_path_framewrite_targetsxyzeros\320\004+\2501\330\010\020\220\004\220D\230\001\230\024\230Y\240b\250\001\330\010\022\220$\320\026,\320,<\270A\330\010\017\210t\320\023&\320&6\260a\330\010\017\210u\220E\230\021\230$\320\0361\260\031\270!\330\032\036\320\0361\260\021\320\004\027\220|\2401\330\010\014\210L\230\001\330\010\014\210O\2301\330\010\014\210K\220q\230\001\230\026\230s\240$\240e\2505""\260\001\260\036\270t\3005\310\005\310Q\310a\330\010\014\210N\230!\2306\240\023\240D\250\005\250U\260!\2601\330\010\014\210M\230\021\230(\240#\240T\250\025\250e\2601\260A\330\010\014\210O\2301\230C\230r\240\021\330\010\014\210M\230\021\360\006\000\t\r\210J\220a\220r\230\026\230q\240\r\250V\2602\260Z\270t\3005\310\005\310Q\310a\330\010\014\210J\220a\220r\230\026\230q\240\r\250V\2602\260Z\270t\3005\310\005\310Q\310a\330\010\014\210L\230\001\230\022\2305\240\001\240\035\250k\270\026\270r\300\030\310\024\310U\320RW\320WX\320XY\360\006\000\t\r\210J\220b\230\006\230b\240\r\250T\260\026\260r\270\021\330\010\014\210M\230\022\2305\240\001\240\035\250k\270\026\270r\300\021\330\010\014\210M\230\022\2305\240\001\240\035\250k\270\026\270r\300\021\330\010\014\210M\230\022\2305\240\001\240\035\250c\260\026\260r\270\021\330\010\014\210O\2302\230V\2401\240M\260\026\260r\270\021\330\010\014\320\014\037\230r\240\025\240a\240}\260K\270v\300R\300q\330\010\014\210N\230\"\230F\240\"\240M\260\027\270\006\270b\300\001\330\010\014\320\014\036\230b\240\005\240R\240}\260G\270;\300f\310B\310a\360\006\000\t\r\210M\230\022\2306\240\021\240-\250v\260R\260q\330\010\014\210L\230\002\230%\230r\240\035\250d\260-\270v\300R\300q\200\001\360\006\000\005\024\2202\220Q\320\026(\250\001\250\021\330\004\024\220B\220a\320\027*\250!\250?\320:Q\320QR\340\004\005\330\010\026\220d\230!\230>\250\021\330\013\014\330\010\017\210q\340\004\023\2201\330\004\007\200q\330\010\t\330\014\033\2304\230q\240\017\250q\330\017\020\330\014\027\220v\230Q\330\014\023\2201\340\004\020\220\001\330\004\007\200q\330\010\025\220R\220q\320\030(\250\001\250\021\330\010\t\330\014\030\230\004\230A\230\\\250\021\330\017\020\330\014\027\220v\230Q\330\014\017\210q\330\020\034\230F\240!\330\014\023\2201\340\004\017\210v\220Q\220b\230\001\230\021\330\004\007\200q\330\010\024\220F\230!\2302\230Q\230a\330\004\007\200q\330\010\021\220\026\220q\230\002\230!\2301\340\004\010\210\007\210u\220A\220Q\330\010\014\210H\220A\220Q\360\006\000\t\014\210:""\220Q\220j\240\006\240h\250d\260#\260Q\260i\270s\300\"\300D\310\n\320RS\320SZ\320Z[\320[_\320_a\320ab\330\014\023\2203\220a\220w\230a\230r\240\021\240!\330\014\022\220'\230\021\230\"\230A\230Q\330\r\027\220q\230\t\240\026\240t\250:\260Q\260g\270Q\270d\300!\330\014\022\220'\230\021\230$\230a\340\014\022\220'\230\021\230$\230f\240G\2501\250G\2601\260F\270*\300B\300f\310A\310S\320PV\320VX\320XY\340\010\013\2101\330\014\030\230\006\230a\330\020\022\220!\2201\220E\230\025\230a\230q\240\005\240U\250!\2501\250B\250a\250r\260\030\270\021\270!\2702\270Q\270b\300\010\310\001\310\021\310\"\310A\310R\310q\360\006\000\t\024\2206\230\021\330\014\016\210a\210t\2202\220Q\220e\2301\230A\230R\230q\240\002\240'\250\021\250!\2502\250Q\250b\260\007\260q\270\001\270\022\2701\270B\270a\330\014\016\210a\210s\220!\2202\220U\230!\2303\230a\230r\240\025\240a\240s\250!\2502\250U\260!\2603\260a\260r\270\021\360\006\000\t\014\2101\330\014\025\220V\2301\330\020\022\220!\2201\220E\230\025\230a\230q\240\005\240U\250!\2501\250B\250a\250r\260\030\270\021\270!\2702\270Q\270b\300\010\310\001\310\021\310\"\310A\310R\310x\320WX\320XY\320Y^\320^_\360\006\000\005\020\210v\220Q\330\004\007\200q\330\010\024\220F\230!\330\004\007\200q\330\010\021\220\026\220q\340\004\013\2101\320\004\027\220}\320$4\260A\330\021\031\320\031/\250q\330\021\035\230Q\330\010\014\210E\220\022\2206\230\021\230#\230V\2402\240]\260\"\260C\260z\300\022\3008\3101\310C\310v\320UW\320WX\330\010\014\210H\220A\330\010\014\210H\220A\330\010\014\210H\220A\330\010\014\210N\230!\330\010\014\210J\220a\330\010\014\210I\220Q\220g\230X\240V\2503\250j\270\004\270A\270Q\330\010\014\210M\230\021\230-\240x\250z\270\023\270J\300d\310!\3101\200A\330\010\014\210D\220\007\220q\230\003\2304\230t\2404\240q\200A\330\010\014\210D\220\007\220q\230\004\230D\240\004\240A\240Q\200A\330\010\020\220\004\220D\230\001\230\021\330\010\017\210u\220F\230!\2304\320\0372\260$\260a\330\033\037\320\0370\260\004\260A\330\033\034\200A\340\010\014\210E\220\025\220a\220t\2301""\330\014\020\220\004\220J\230a\230q\330\014\r\210R\210v\220T\230\027\240\001\240\021\330\014\r\210X\220S\230\001\230\024\230Z\240q\250\001\330\014\r\210X\220S\230\001\230\024\230Z\240q\250\001\330\014\r\210X\220S\230\001\230\024\230Z\240q\250\001\330\014\r\210Z\220s\230!\2304\230|\2501\250A\330\014\r\210^\2305\240\001\240\024\320%5\260Q\260a\330\014\020\220\005\220U\230!\2301\330\020\021\220\026\220q\230\005\230U\240!\2404\240{\260!\2603\260a\330\020\021\220\032\2301\230E\240\023\240A\240T\250\037\270\001\270\023\270A\340\014\020\220\004\220K\230q\240\001\330\014\r\210V\2203\220a\220t\230:\240Q\240a\330\014\r\210R\210v\220T\230\031\240!\2401\200A\340\010\014\210E\220\025\220a\220t\2301\330\014\020\220\004\220J\230a\230q\330\014\020\220\007\220q\230\005\230Q\230a\330\014\020\220\n\230!\2305\240\001\240\021\330\014\020\220\n\230!\2305\240\001\240\021\330\014\020\220\n\230!\2305\240\001\240\021\330\014\020\220\014\230A\230U\240!\2401\330\014\020\320\020 \240\001\240\025\240a\240q\330\014\020\220\005\220U\230!\2303\230a\230q\240\001\330\020\024\220K\230q\240\003\2405\250\001\250\026\250q\260\001\330\020\024\220O\2401\240C\240u\250A\250Z\260q\270\001\340\014\020\220\004\220K\230q\240\001\330\014\020\220\n\230!\2305\240\001\240\021\330\014\020\220\t\230\021\230%\230q\240\001\200A\360\006\000\t\r\210K\220q\330\010\014\210L\230\001\330\010\014\210K\220q\230\005\230Q\230j\250\r\260T\270\025\270e\3001\300A\330\010\014\210G\2204\220q\230\004\230A\340\010\014\320\014 \240\001\330\010\014\320\014!\240\021\330\010\014\320\014\036\230a\330\010\014\320\014 \240\001\200A\340\010\r\320\r\035\230Q\330\014\020\220\r\230T\240\034\250T\260\021\330\014\036\230a\330\014\036\320\0362\260!\330\014\r\340\010\013\2104\210q\330\014\023\2201\340\010\014\210G\2205\230\001\230\024\230Q\330\014\017\210t\220<\230q\240\005\240R\240q\330\020\025\220]\240!\330\024\030\230\010\240\001\240\026\240t\250<\260q\270\001\330\024$\240A\240V\2501\340\020\023\2204\220q\330\024\033\2301\340\010\017\210q\200A\340""\010\020\220\002\220!\320\023%\240Q\240a\330\010\013\2104\210t\2201\220F\230'\240\021\330\014\023\2201\340\010\022\220,\230o\250Q\330\014\r\330\014!\320!8\270\001\330\014\036\320\0362\260!\330\014\r\360\006\000\t\r\210M\230\023\230A\230Q\330\010\014\210E\220\025\220a\220t\2301\330\014\020\220\013\2301\230E\240\030\250\021\250!\330\014\020\220\n\230!\2305\240\t\250\021\250!\340\010\014\320\014\036\230a\340\010\014\210G\2205\230\001\230\024\230Q\330\014\026\220l\240!\320#3\2601\260F\270!\330\014\020\220\014\230A\230W\240C\240q\250\001\330\014\021\220\024\220W\230A\230Q\330\014\021\220\024\220W\230A\230Q\330\014\023\2204\220y\240\001\240\021\330\014\020\220\003\2205\230\t\240\021\240!\330\020\024\220H\230A\230T\240\021\240%\240q\330\020\022\220!\2205\230\001\230\021\330\020\022\220!\2205\230\001\230\021\330\020\024\220A\220U\230!\2301\340\010\017\210q\200A\340\010\017\210q\200\001\360\006\000\005\r\210B\210a\320\017!\240\021\240!\330\004\005\330\010\026\220d\230!\2307\240!\330\013\014\330\010\017\210t\2201\340\004\r\210[\230\t\240\021\340\004\023\2201\330\004\007\200q\330\010\021\220\022\2201\320\024'\240q\250\001\330\010\t\330\014\033\2304\230q\240\010\250\001\330\014\030\230\t\240\021\330\017\020\330\014\033\2301\340\004\020\220\001\330\004\007\200q\330\010\021\220\022\2201\320\024$\240A\240Q\330\010\t\330\014\030\230\004\230A\230X\240Q\330\014\025\220Y\230a\330\017\020\330\014\030\230\001\340\004\016\210a\330\004\017\210q\330\004\016\210a\340\004\010\210\010\220\001\330\010\017\210t\2206\230\021\330\010\013\2104\210q\330\014\r\360\006\000\t\014\210=\230\007\230q\330\014\030\230\014\240I\250R\250v\260Q\330\014\017\210q\330\020\035\230Y\240f\250A\330\020\033\2303\230a\230z\250\021\250!\330\020\033\2303\230a\230z\250\021\250!\340\020\033\2301\330\020\033\2301\340\014\027\220q\330\014\027\220q\360\006\000\t\014\210:\220W\230A\330\014\030\230\t\240\031\250\"\250F\260!\330\014\017\210q\330\020\035\230Y\240f\250A\330\020\033\2303\230a\230z\250\021\250!\340\020\033\2301""\340\014\027\220q\360\006\000\t\021\220\004\220F\230!\330\010\013\2103\210a\210w\220b\230\001\330\014\r\340\010\017\210x\220q\330\014\016\210b\220\006\220a\220q\230\005\230Q\230e\2401\240E\250\025\250a\250u\260A\260U\270%\270q\300\005\300Q\300a\330\014\021\220\021\330\014\021\220\021\330\014\021\220\021\330\014\027\220q\330\014\023\2201\360\006\000\t\024\2201\330\010\016\210f\220A\330\014\017\210q\330\014\016\210b\220\006\220a\220q\230\003\2301\230E\240\021\240%\240s\250!\2505\260\001\260\021\330\031\034\230A\230U\240!\2405\250\003\2501\250E\260\021\260&\270\006\270b\300\001\360\006\000\t\020\210w\220a\220q\330\010\020\220\007\220q\230\001\340\004\017\210v\220Q\330\004\007\200}\220G\2301\330\010\024\220F\230!\330\004\007\200z\220\027\230\001\330\010\021\220\026\220q\340\004\013\2109\220A\200\001\340\004\014\210B\210d\220#\220R\220t\2301\330\014\016\210b\220\001\220\023\220C\220r\230\022\2301\230C\230t\2402\240R\240q\250\003\2503\250b\260\002\260!\2603\260a\330\014\016\210b\220\001\220\023\220C\220r\230\022\2301\230C\230t\2402\240R\240q\250\003\2503\250b\260\002\260!\2601\200\001\340\004\014\210B\210e\2203\220b\230\005\230T\240\022\2403\240c\250\022\2503\250d\260\"\260C\260s\270\"\270C\270q\330\014\016\210c\220\023\220B\220c\230\024\230R\230t\2403\240b\250\004\250D\260\002\260$\260c\270\022\2704\270q\330\014\016\210f\220C\220r\230\026\230t\2402\240U\250#\250R\250q\320\000\025\220Q\340\004\021\220\021\200\001\340\004\010\210\010\220\001\330\004\010\210\010\220\001\330\004\010\210\010\220\001\200\001\340\004\014\320\014\036\230a\230{\250!\340\004\005\330\r\021\220\021\220'\230\030\240\021\330\014\032\230#\230Q\230a\230y\250\002\250&\260\001\330\014\026\220a\330\014\020\220\005\220U\230!\2301\330\020\030\230\001\230\031\240\"\240F\250!\330\020\023\2203\220a\220w\230b\240\001\330\024\033\2301\330\020\027\220w\230a\230v\240Q\330\024\030\230\003\2301\230E\240\021\240!\330\024\026\220e\2301\230E\240\021\240!\330\024\026\220e\2301\230E\240\021\240!\330\024\026\220c\230\021""\230%\230q\240\001\330\024\027\220s\230!\2305\240\001\240\021\330\024\027\220s\230!\2305\240\001\240\021\330\024\031\230\023\230A\230U\240!\2401\330\024\030\230\003\2301\230E\240\021\240!\340\014\023\2201\330\013\014\330\010\017\210q\200\001\340\004\014\320\014\036\230a\230{\250!\340\004\005\330\r\021\220\021\220'\230\030\240\021\330\014\r\210V\2201\220B\220a\220q\330\014\020\220\005\220U\230!\2301\330\020\024\220D\230\001\230\021\330\020\021\220\026\220q\230\002\230!\2301\230D\240\005\240Q\240a\240r\250\027\260\001\260\021\260\"\260A\330\030\032\230!\2301\230B\230e\2401\240A\240S\250\005\250Q\250a\250s\260%\260q\270\001\270\025\270e\3001\300A\300T\310\021\330\010\017\210q\330\013\014\330\010\017\210q\200\001\340\004\010\210\006\210a\210t\220;\230a\330\004\010\210\n\220!\2204\220{\240!\330\004\010\210\013\2201\200\001\360\010\000\005\010\200u\210B\210f\220C\220r\230\026\230t\2402\240V\2503\250b\260\006\260a\330\014\016\210f\220C\220r\230\026\230t\2402\240\\\260\023\260B\260l\300!\330\014\016\210h\220c\230\022\2308\2404\240r\250\031\260!\2602\260T\270\022\2701\330\010\017\210q\330\004\010\210\005\210U\220!\2201\330\010\013\2102\210V\2201\220C\220s\230\"\230F\240!\2401\330\014\023\2201\330\010\013\2102\210Z\220q\230\003\2303\230b\240\n\250!\2501\330\014\023\2201\330\004\013\2101\200\001\330\004\007\200u\210C\210q\330\010\020\220\n\230\"\230K\240r\250\021\330\004\007\200z\220\022\2201\330\010\017\210r\220\021\220*\230A\230Y\240a\330\004\013\2102\210Q\210a\320\004\027\220v\230Q\330\010\014\210F\220!\330\010\014\210E\220\022\2206\230\021\230!\230?\250#\250V\2602\260[\300\002\300#\300Z\310r\320QY\320YZ\320Z]\320]c\320ce\320ef\320\004\027\220w\230g\240W\250E\260\026\260v\270X\300Q\330\010\014\210G\2201\330\010\014\210E\220\021\330\010\014\210E\220\021\330\010\014\210E\220\021\330\010\014\210F\220!\330\010\014\210F\220!\330\010\014\210H\220A\330\010\014\210G\2201";
     PyObject *data = NULL;
     CYTHON_UNUSED_VAR(__Pyx_DecompressString);
     #endif
@@ -17026,127 +17026,127 @@ static int __Pyx_CreateCodeObjects(__pyx_mstatetype *__pyx_mstate) {
   {
     const __Pyx_PyCode_New_function_description descr = {9, 0, 0, 9, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 17};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self, __pyx_mstate->__pyx_n_u_pnr, __pyx_mstate->__pyx_n_u_x, __pyx_mstate->__pyx_n_u_y, __pyx_mstate->__pyx_n_u_n, __pyx_mstate->__pyx_n_u_nx, __pyx_mstate->__pyx_n_u_ny, __pyx_mstate->__pyx_n_u_sumg, __pyx_mstate->__pyx_n_u_tnr};
-    __pyx_mstate_global->__pyx_codeobj_tab[0] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_tracking_frame_buf_py, __pyx_mstate->__pyx_n_u_init, __pyx_mstate->__pyx_kp_b_iso88591_wgWE_vXQ_G1_E_E_E_F_F_HA_G1, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[0])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[0] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_tracking, __pyx_mstate->__pyx_n_u_init, __pyx_mstate->__pyx_kp_b_iso88591_wgWE_vXQ_G1_E_E_E_F_F_HA_G1, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[0])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {2, 0, 0, 2, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 28};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_t1, __pyx_mstate->__pyx_n_u_t2};
-    __pyx_mstate_global->__pyx_codeobj_tab[1] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_tracking_frame_buf_py, __pyx_mstate->__pyx_n_u_compare_targets, __pyx_mstate->__pyx_kp_b_iso88591_Be3b_T_3c_3d_Cs_Cq_c_Bc_Rt3b_D, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[1])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[1] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_tracking, __pyx_mstate->__pyx_n_u_compare_targets, __pyx_mstate->__pyx_kp_b_iso88591_Be3b_T_3c_3d_Cs_Cq_c_Bc_Rt3b_D, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[1])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {2, 0, 0, 2, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 35};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_file_base, __pyx_mstate->__pyx_n_u_frame_num};
-    __pyx_mstate_global->__pyx_codeobj_tab[2] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_tracking_frame_buf_py, __pyx_mstate->__pyx_n_u_resolve_file_base, __pyx_mstate->__pyx_kp_b_iso88591_uCq_Kr_z_1_r_AYa_2Qa, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[2])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[2] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_tracking, __pyx_mstate->__pyx_n_u_resolve_file_base, __pyx_mstate->__pyx_kp_b_iso88591_uCq_Kr_z_1_r_AYa_2Qa, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[2])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {2, 0, 0, 2, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 43};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_file_base, __pyx_mstate->__pyx_n_u_frame_num};
-    __pyx_mstate_global->__pyx_codeobj_tab[3] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_tracking_frame_buf_py, __pyx_mstate->__pyx_n_u_read_targets, __pyx_mstate->__pyx_kp_b_iso88591_a_Qay_a_U_1_F_3awb_1_wavQ_1E_e1, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[3])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[3] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_tracking, __pyx_mstate->__pyx_n_u_read_targets, __pyx_mstate->__pyx_kp_b_iso88591_a_Qay_a_U_1_F_3awb_1_wavQ_1E_e1, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[3])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {4, 0, 0, 4, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 70};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_tbuf, __pyx_mstate->__pyx_n_u_num_targets, __pyx_mstate->__pyx_n_u_file_base, __pyx_mstate->__pyx_n_u_frame_num};
-    __pyx_mstate_global->__pyx_codeobj_tab[4] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_tracking_frame_buf_py, __pyx_mstate->__pyx_n_u_write_targets, __pyx_mstate->__pyx_kp_b_iso88591_a_V1Baq_U_1_D_q_1D_Qar_A_1Be1AS, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[4])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[4] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_tracking, __pyx_mstate->__pyx_n_u_write_targets, __pyx_mstate->__pyx_kp_b_iso88591_a_V1Baq_U_1_D_q_1D_Qar_A_1Be1AS, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[4])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {3, 0, 0, 3, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 89};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self, __pyx_mstate->__pyx_n_u_nr, __pyx_mstate->__pyx_n_u_p};
-    __pyx_mstate_global->__pyx_codeobj_tab[5] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_tracking_frame_buf_py, __pyx_mstate->__pyx_n_u_init, __pyx_mstate->__pyx_kp_b_iso88591_vQ_F_E_6_V2_ZrQYYZZ_cceef, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[5])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[5] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_tracking, __pyx_mstate->__pyx_n_u_init, __pyx_mstate->__pyx_kp_b_iso88591_vQ_F_E_6_V2_ZrQYYZZ_cceef, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[5])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {2, 0, 0, 2, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 94};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_c1, __pyx_mstate->__pyx_n_u_c2};
-    __pyx_mstate_global->__pyx_codeobj_tab[6] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_tracking_frame_buf_py, __pyx_mstate->__pyx_n_u_compare_corres, __pyx_mstate->__pyx_kp_b_iso88591_Bd_Rt1_b_Cr_1Ct2Rq_3b_3a_b_Cr_1, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[6])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[6] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_tracking, __pyx_mstate->__pyx_n_u_compare_corres, __pyx_mstate->__pyx_kp_b_iso88591_Bd_Rt1_b_Cr_1Ct2Rq_3b_3a_b_Cr_1, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[6])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {9, 0, 0, 9, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 105};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self, __pyx_mstate->__pyx_n_u_x, __pyx_mstate->__pyx_n_u_prev, __pyx_mstate->__pyx_n_u_next, __pyx_mstate->__pyx_n_u_prio, __pyx_mstate->__pyx_n_u_finaldecis, __pyx_mstate->__pyx_n_u_inlist, __pyx_mstate->__pyx_n_u_decis, __pyx_mstate->__pyx_n_u_linkdecis};
-    __pyx_mstate_global->__pyx_codeobj_tab[7] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_tracking_frame_buf_py, __pyx_mstate->__pyx_n_u_init, __pyx_mstate->__pyx_kp_b_iso88591_4A_q_Q_E_6_V2_Cz_81CvUWWX_HA_HA, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[7])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[7] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_tracking, __pyx_mstate->__pyx_n_u_init, __pyx_mstate->__pyx_kp_b_iso88591_4A_q_Q_E_6_V2_Cz_81CvUWWX_HA_HA, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[7])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {2, 0, 0, 2, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 118};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_p1, __pyx_mstate->__pyx_n_u_p2};
-    __pyx_mstate_global->__pyx_codeobj_tab[8] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_tracking_frame_buf_py, __pyx_mstate->__pyx_n_u_compare_path_info, __pyx_mstate->__pyx_kp_b_iso88591_uBfCr_t2V3b_a_fCr_t2_Bl_hc_84r, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[8])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[8] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_tracking, __pyx_mstate->__pyx_n_u_compare_path_info, __pyx_mstate->__pyx_kp_b_iso88591_uBfCr_t2V3b_a_fCr_t2_Bl_hc_84r, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[8])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {3, 0, 0, 3, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 134};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_path, __pyx_mstate->__pyx_n_u_fitness, __pyx_mstate->__pyx_n_u_cand};
-    __pyx_mstate_global->__pyx_codeobj_tab[9] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_tracking_frame_buf_py, __pyx_mstate->__pyx_n_u_register_link_candidate, __pyx_mstate->__pyx_kp_b_iso88591_at_a_4_1, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[9])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[9] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_tracking, __pyx_mstate->__pyx_n_u_register_link_candidate, __pyx_mstate->__pyx_kp_b_iso88591_at_a_4_1, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[9])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 1, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 141};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_path};
-    __pyx_mstate_global->__pyx_codeobj_tab[10] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_tracking_frame_buf_py, __pyx_mstate->__pyx_n_u_reset_links, __pyx_mstate->__pyx_kp_b_iso88591__6, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[10])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[10] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_tracking, __pyx_mstate->__pyx_n_u_reset_links, __pyx_mstate->__pyx_kp_b_iso88591__6, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[10])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {4, 0, 0, 4, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 148};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_corres_file_base, __pyx_mstate->__pyx_n_u_linkage_file_base, __pyx_mstate->__pyx_n_u_prio_file_base, __pyx_mstate->__pyx_n_u_frame_num};
-    __pyx_mstate_global->__pyx_codeobj_tab[11] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_tracking_frame_buf_py, __pyx_mstate->__pyx_n_u_read_path_frame, __pyx_mstate->__pyx_kp_b_iso88591_Ba_d_7_t1_1_q_1_q_4q_1_q_1_AQ_A, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[11])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[11] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_tracking, __pyx_mstate->__pyx_n_u_read_path_frame, __pyx_mstate->__pyx_kp_b_iso88591_Ba_d_7_t1_1_q_1_q_4q_1_q_1_AQ_A, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[11])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {7, 0, 0, 7, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 244};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_cor_buf, __pyx_mstate->__pyx_n_u_path_buf, __pyx_mstate->__pyx_n_u_num_parts, __pyx_mstate->__pyx_n_u_corres_file_base, __pyx_mstate->__pyx_n_u_linkage_file_base, __pyx_mstate->__pyx_n_u_prio_file_base, __pyx_mstate->__pyx_n_u_frame_num};
-    __pyx_mstate_global->__pyx_codeobj_tab[12] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_tracking_frame_buf_py, __pyx_mstate->__pyx_n_u_write_path_frame, __pyx_mstate->__pyx_kp_b_iso88591_2Q_Ba_QQR_d_q_1_q_4q_q_vQ_1_q_R, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[12])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[12] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_tracking, __pyx_mstate->__pyx_n_u_write_path_frame, __pyx_mstate->__pyx_kp_b_iso88591_2Q_Ba_QQR_d_q_1_q_4q_q_vQ_1_q_R, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[12])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {3, 0, 0, 10, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 317};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self, __pyx_mstate->__pyx_n_u_num_cams, __pyx_mstate->__pyx_n_u_max_targets, __pyx_mstate->__pyx_n_u__7, __pyx_mstate->__pyx_n_u__7, __pyx_mstate->__pyx_n_u__7, __pyx_mstate->__pyx_n_u__7, __pyx_mstate->__pyx_n_u__7, __pyx_mstate->__pyx_n_u__7, __pyx_mstate->__pyx_n_u__7};
-    __pyx_mstate_global->__pyx_codeobj_tab[13] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_tracking_frame_buf_py, __pyx_mstate->__pyx_n_u_init, __pyx_mstate->__pyx_kp_b_iso88591_1_L_O1_Kq_s_e5_t5_Qa_N_6_D_U_1, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[13])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[13] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_tracking, __pyx_mstate->__pyx_n_u_init, __pyx_mstate->__pyx_kp_b_iso88591_1_L_O1_Kq_s_e5_t5_Qa_N_6_D_U_1, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[13])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 5, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 345};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self, __pyx_mstate->__pyx_n_u_i, __pyx_mstate->__pyx_n_u_p, __pyx_mstate->__pyx_n_u_k, __pyx_mstate->__pyx_n_u_c};
-    __pyx_mstate_global->__pyx_codeobj_tab[14] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_tracking_frame_buf_py, __pyx_mstate->__pyx_n_u_sync_path_to_soa, __pyx_mstate->__pyx_kp_b_iso88591_A_E_at1_Jaq_q_Qa_5_5_5_AU_1_aq_U, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[14])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[14] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_tracking, __pyx_mstate->__pyx_n_u_sync_path_to_soa, __pyx_mstate->__pyx_kp_b_iso88591_A_E_at1_Jaq_q_Qa_5_5_5_AU_1_aq_U, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[14])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 5, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 363};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self, __pyx_mstate->__pyx_n_u_i, __pyx_mstate->__pyx_n_u_p, __pyx_mstate->__pyx_n_u_k, __pyx_mstate->__pyx_n_u_c};
-    __pyx_mstate_global->__pyx_codeobj_tab[15] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_tracking_frame_buf_py, __pyx_mstate->__pyx_n_u_sync_soa_to_path, __pyx_mstate->__pyx_kp_b_iso88591_A_E_at1_Jaq_RvT_XS_Zq_XS_Zq_XS_Z, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[15])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[15] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_tracking, __pyx_mstate->__pyx_n_u_sync_soa_to_path, __pyx_mstate->__pyx_kp_b_iso88591_A_E_at1_Jaq_RvT_XS_Zq_XS_Zq_XS_Z, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[15])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {6, 0, 0, 17, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 381};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self, __pyx_mstate->__pyx_n_u_corres_file_base, __pyx_mstate->__pyx_n_u_linkage_file_base, __pyx_mstate->__pyx_n_u_prio_file_base, __pyx_mstate->__pyx_n_u_target_file_base, __pyx_mstate->__pyx_n_u_frame_num, __pyx_mstate->__pyx_n_u_fname, __pyx_mstate->__pyx_n_u_cor_list, __pyx_mstate->__pyx_n_u_path_list, __pyx_mstate->__pyx_n_u_i, __pyx_mstate->__pyx_n_u_cam, __pyx_mstate->__pyx_n_u_targets_2, __pyx_mstate->__pyx_n_u_tx, __pyx_mstate->__pyx_n_u_ty, __pyx_mstate->__pyx_n_u_ttnr, __pyx_mstate->__pyx_n_u_j, __pyx_mstate->__pyx_n_u_t};
-    __pyx_mstate_global->__pyx_codeobj_tab[16] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_tracking_frame_buf_py, __pyx_mstate->__pyx_n_u_read, __pyx_mstate->__pyx_kp_b_iso88591_A_Qa_4t1F_1_oQ_8_2_M_AQ_E_at1_1E, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[16])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[16] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_tracking, __pyx_mstate->__pyx_n_u_read, __pyx_mstate->__pyx_kp_b_iso88591_A_Qa_4t1F_1_oQ_8_2_M_AQ_E_at1_1E, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[16])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {6, 0, 0, 8, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 415};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self, __pyx_mstate->__pyx_n_u_corres_file_base, __pyx_mstate->__pyx_n_u_linkage_file_base, __pyx_mstate->__pyx_n_u_prio_file_base, __pyx_mstate->__pyx_n_u_target_file_base, __pyx_mstate->__pyx_n_u_frame_num, __pyx_mstate->__pyx_n_u_ok, __pyx_mstate->__pyx_n_u_cam};
-    __pyx_mstate_global->__pyx_codeobj_tab[17] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_tracking_frame_buf_py, __pyx_mstate->__pyx_n_u_write, __pyx_mstate->__pyx_kp_b_iso88591_A_Q_T_T_a_2_4q_1_G5_Q_t_q_Rq_t_q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[17])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[17] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_tracking, __pyx_mstate->__pyx_n_u_write, __pyx_mstate->__pyx_kp_b_iso88591_A_Q_T_T_a_2_4q_1_G5_Q_t_q_Rq_t_q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[17])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {8, 0, 0, 9, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 439};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self, __pyx_mstate->__pyx_n_u_buf_len, __pyx_mstate->__pyx_n_u_num_cams, __pyx_mstate->__pyx_n_u_max_targets, __pyx_mstate->__pyx_n_u_corres_file_base, __pyx_mstate->__pyx_n_u_linkage_file_base, __pyx_mstate->__pyx_n_u_prio_file_base, __pyx_mstate->__pyx_n_u_target_file_base, __pyx_mstate->__pyx_n_u__7};
-    __pyx_mstate_global->__pyx_codeobj_tab[18] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_tracking_frame_buf_py, __pyx_mstate->__pyx_n_u_init, __pyx_mstate->__pyx_kp_b_iso88591_A_Kq_L_Kq_Qj_T_e1A_G4q_A_a, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[18])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[18] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_tracking, __pyx_mstate->__pyx_n_u_init, __pyx_mstate->__pyx_kp_b_iso88591_A_Kq_L_Kq_Qj_T_e1A_G4q_A_a, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[18])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 1, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 452};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self};
-    __pyx_mstate_global->__pyx_codeobj_tab[19] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_tracking_frame_buf_py, __pyx_mstate->__pyx_n_u_buf_start, __pyx_mstate->__pyx_kp_b_iso88591_A_q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[19])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[19] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_tracking, __pyx_mstate->__pyx_n_u_buf_start, __pyx_mstate->__pyx_kp_b_iso88591_A_q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[19])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 1, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 456};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self};
-    __pyx_mstate_global->__pyx_codeobj_tab[20] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_tracking_frame_buf_py, __pyx_mstate->__pyx_n_u_fb_next, __pyx_mstate->__pyx_kp_b_iso88591_A_D_q_D_AQ, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[20])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[20] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_tracking, __pyx_mstate->__pyx_n_u_fb_next, __pyx_mstate->__pyx_kp_b_iso88591_A_D_q_D_AQ, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[20])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 1, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 459};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self};
-    __pyx_mstate_global->__pyx_codeobj_tab[21] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_tracking_frame_buf_py, __pyx_mstate->__pyx_n_u_fb_prev, __pyx_mstate->__pyx_kp_b_iso88591_A_D_q_4t4q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[21])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[21] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_tracking, __pyx_mstate->__pyx_n_u_fb_prev, __pyx_mstate->__pyx_kp_b_iso88591_A_D_q_4t4q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[21])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {3, 0, 0, 6, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 462};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self, __pyx_mstate->__pyx_n_u_frame_num, __pyx_mstate->__pyx_n_u_read_links, __pyx_mstate->__pyx_n_u_frame, __pyx_mstate->__pyx_n_u_linkage, __pyx_mstate->__pyx_n_u_prio};
-    __pyx_mstate_global->__pyx_codeobj_tab[22] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_tracking_frame_buf_py, __pyx_mstate->__pyx_n_u_read_frame_at_end, __pyx_mstate->__pyx_kp_b_iso88591_1_D_Yb_A_t_6a_uE_1_1, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[22])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[22] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_tracking, __pyx_mstate->__pyx_n_u_read_frame_at_end, __pyx_mstate->__pyx_kp_b_iso88591_1_D_Yb_A_t_6a_uE_1_1, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[22])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {2, 0, 0, 3, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 469};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self, __pyx_mstate->__pyx_n_u_frame_num, __pyx_mstate->__pyx_n_u_frame};
-    __pyx_mstate_global->__pyx_codeobj_tab[23] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_tracking_frame_buf_py, __pyx_mstate->__pyx_n_u_write_frame_from_start, __pyx_mstate->__pyx_kp_b_iso88591_A_D_uF_4_2_a_0_A, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[23])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[23] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_tracking, __pyx_mstate->__pyx_n_u_write_frame_from_start, __pyx_mstate->__pyx_kp_b_iso88591_A_D_uF_4_2_a_0_A, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[23])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {0, 0, 0, 0, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 479};
     PyObject* const varnames[] = {0};
-    __pyx_mstate_global->__pyx_codeobj_tab[24] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_tracking_frame_buf_py, __pyx_mstate->__pyx_n_u_is_compiled, __pyx_mstate->__pyx_kp_b_iso88591_Q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[24])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[24] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_tracking, __pyx_mstate->__pyx_n_u_is_compiled, __pyx_mstate->__pyx_kp_b_iso88591_Q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[24])) goto bad;
   }
   Py_DECREF(tuple_dedup_map);
   return 0;

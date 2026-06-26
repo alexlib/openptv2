@@ -3,12 +3,12 @@
 /* BEGIN: Cython Metadata
 {
     "distutils": {
-        "name": "algorithms.segmentation",
+        "name": "openptv2.algorithms.segmentation",
         "sources": [
-            "algorithms/segmentation.py"
+            "src/openptv2/algorithms/segmentation.py"
         ]
     },
-    "module_name": "algorithms.segmentation"
+    "module_name": "openptv2.algorithms.segmentation"
 }
 END: Cython Metadata */
 
@@ -1126,8 +1126,8 @@ static int __Pyx_init_co_variables(void) {
   #endif
 #endif
 
-#define __PYX_HAVE__algorithms__segmentation
-#define __PYX_HAVE_API__algorithms__segmentation
+#define __PYX_HAVE__openptv2__algorithms__segmentation
+#define __PYX_HAVE_API__openptv2__algorithms__segmentation
 /* Early includes */
 #include "pythread.h"
 #include <string.h>
@@ -1348,7 +1348,7 @@ static const char *__pyx_filename;
 /* #### Code section: filename_table ### */
 
 static const char* const __pyx_f[] = {
-  "algorithms/segmentation.py",
+  "src/openptv2/algorithms/segmentation.py",
   "<stringsource>",
 };
 /* #### Code section: utility_code_proto_before_types ### */
@@ -1608,17 +1608,17 @@ struct __pyx_array_obj;
 struct __pyx_MemviewEnum_obj;
 struct __pyx_memoryview_obj;
 struct __pyx_memoryviewslice_obj;
-struct __pyx_opt_args_10algorithms_12segmentation_targ_rec;
-struct __pyx_opt_args_10algorithms_12segmentation_peak_fit;
+struct __pyx_opt_args_8openptv2_10algorithms_12segmentation_targ_rec;
+struct __pyx_opt_args_8openptv2_10algorithms_12segmentation_peak_fit;
 
-/* "algorithms/segmentation.py":106
+/* "openptv2/algorithms/segmentation.py":106
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def targ_rec(
  *     img: np.ndarray,
 */
-struct __pyx_opt_args_10algorithms_12segmentation_targ_rec {
+struct __pyx_opt_args_8openptv2_10algorithms_12segmentation_targ_rec {
   int __pyx_n;
   PyObject *xmin;
   PyObject *xmax;
@@ -1626,14 +1626,14 @@ struct __pyx_opt_args_10algorithms_12segmentation_targ_rec {
   PyObject *ymax;
 };
 
-/* "algorithms/segmentation.py":174
+/* "openptv2/algorithms/segmentation.py":174
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * @cython.boundscheck(False)
  * @cython.wraparound(False)
 */
-struct __pyx_opt_args_10algorithms_12segmentation_peak_fit {
+struct __pyx_opt_args_8openptv2_10algorithms_12segmentation_peak_fit {
   int __pyx_n;
   PyObject *xmin;
   PyObject *xmax;
@@ -3170,7 +3170,7 @@ static PyObject *__pyx_memoryviewslice__get_base(struct __pyx_memoryviewslice_ob
 
 /* Module declarations from "cython" */
 
-/* Module declarations from "algorithms.segmentation" */
+/* Module declarations from "openptv2.algorithms.segmentation" */
 static PyObject *__pyx_collections_abc_Sequence = 0;
 static PyObject *generic = 0;
 static PyObject *strided = 0;
@@ -3179,9 +3179,9 @@ static PyObject *contiguous = 0;
 static PyObject *indirect_contiguous = 0;
 static int __pyx_memoryview_thread_locks_used;
 static PyThread_type_lock __pyx_memoryview_thread_locks[8];
-static PyObject *__pyx_f_10algorithms_12segmentation_check_touch(PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_12segmentation_targ_rec(PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch, struct __pyx_opt_args_10algorithms_12segmentation_targ_rec *__pyx_optional_args); /*proto*/
-static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch, struct __pyx_opt_args_10algorithms_12segmentation_peak_fit *__pyx_optional_args); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_12segmentation_check_touch(PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_12segmentation_targ_rec(PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch, struct __pyx_opt_args_8openptv2_10algorithms_12segmentation_targ_rec *__pyx_optional_args); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_12segmentation_peak_fit(PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch, struct __pyx_opt_args_8openptv2_10algorithms_12segmentation_peak_fit *__pyx_optional_args); /*proto*/
 static int __pyx_array_allocate_buffer(struct __pyx_array_obj *); /*proto*/
 static struct __pyx_array_obj *__pyx_array_new(PyObject *, Py_ssize_t, char *, char const *, char *); /*proto*/
 static PyObject *__pyx_memoryview_new(PyObject *, int, int, __Pyx_TypeInfo const *); /*proto*/
@@ -3218,11 +3218,11 @@ static PyObject *__pyx_unpickle_Enum__set_state(struct __pyx_MemviewEnum_obj *, 
 /* #### Code section: typeinfo ### */
 static const __Pyx_TypeInfo __Pyx_TypeInfo_int = { "int", NULL, sizeof(int), { 0 }, 0, __PYX_IS_UNSIGNED(int) ? 'U' : 'I', __PYX_IS_UNSIGNED(int), 0 };
 /* #### Code section: before_global_var ### */
-#define __Pyx_MODULE_NAME "algorithms.segmentation"
-extern int __pyx_module_is_main_algorithms__segmentation;
-int __pyx_module_is_main_algorithms__segmentation = 0;
+#define __Pyx_MODULE_NAME "openptv2.algorithms.segmentation"
+extern int __pyx_module_is_main_openptv2__algorithms__segmentation;
+int __pyx_module_is_main_openptv2__algorithms__segmentation = 0;
 
-/* Implementation of "algorithms.segmentation" */
+/* Implementation of "openptv2.algorithms.segmentation" */
 /* #### Code section: global_var ### */
 static PyObject *__pyx_builtin_enumerate;
 static PyObject *__pyx_builtin___import__;
@@ -3275,12 +3275,12 @@ static void __pyx_memoryviewslice___pyx_pf_15View_dot_MemoryView_16_memoryviewsl
 static PyObject *__pyx_pf___pyx_memoryviewslice___reduce_cython__(CYTHON_UNUSED struct __pyx_memoryviewslice_obj *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf___pyx_memoryviewslice_2__setstate_cython__(CYTHON_UNUSED struct __pyx_memoryviewslice_obj *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state); /* proto */
 static PyObject *__pyx_pf_15View_dot_MemoryView___pyx_unpickle_Enum(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v___pyx_type, long __pyx_v___pyx_checksum, PyObject *__pyx_v___pyx_state); /* proto */
-static PyObject *__pyx_lambda_funcdef_10algorithms_12segmentation_4Peak_lambda(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
-static PyObject *__pyx_pf_10algorithms_12segmentation_check_touch(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_tpeak, PyObject *__pyx_v_p1, PyObject *__pyx_v_p2); /* proto */
-static PyObject *__pyx_pf_10algorithms_12segmentation_2_is_local_maximum(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_img, int __pyx_v_i, int __pyx_v_j, CYTHON_UNUSED int __pyx_v_imx, CYTHON_UNUSED int __pyx_v_imy); /* proto */
-static PyObject *__pyx_pf_10algorithms_12segmentation_4targ_rec(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_img, PyObject *__pyx_v_gvthres, PyObject *__pyx_v_discont, PyObject *__pyx_v_nnmin, PyObject *__pyx_v_nnmax, PyObject *__pyx_v_nxmin, PyObject *__pyx_v_nxmax, PyObject *__pyx_v_nymin, PyObject *__pyx_v_nymax, PyObject *__pyx_v_sumg_min, PyObject *__pyx_v_xmin, PyObject *__pyx_v_xmax, PyObject *__pyx_v_ymin, PyObject *__pyx_v_ymax); /* proto */
-static PyObject *__pyx_pf_10algorithms_12segmentation_6peak_fit(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_img, PyObject *__pyx_v_gvthres, PyObject *__pyx_v_discont, PyObject *__pyx_v_nnmin, PyObject *__pyx_v_nnmax, PyObject *__pyx_v_nxmin, PyObject *__pyx_v_nxmax, PyObject *__pyx_v_nymin, PyObject *__pyx_v_nymax, PyObject *__pyx_v_sumg_min, PyObject *__pyx_v_xmin, PyObject *__pyx_v_xmax, PyObject *__pyx_v_ymin, PyObject *__pyx_v_ymax); /* proto */
-static PyObject *__pyx_pf_10algorithms_12segmentation_8is_compiled(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
+static PyObject *__pyx_lambda_funcdef_8openptv2_10algorithms_12segmentation_4Peak_lambda(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_12segmentation_check_touch(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_tpeak, PyObject *__pyx_v_p1, PyObject *__pyx_v_p2); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_12segmentation_2_is_local_maximum(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_img, int __pyx_v_i, int __pyx_v_j, CYTHON_UNUSED int __pyx_v_imx, CYTHON_UNUSED int __pyx_v_imy); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_12segmentation_4targ_rec(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_img, PyObject *__pyx_v_gvthres, PyObject *__pyx_v_discont, PyObject *__pyx_v_nnmin, PyObject *__pyx_v_nnmax, PyObject *__pyx_v_nxmin, PyObject *__pyx_v_nxmax, PyObject *__pyx_v_nymin, PyObject *__pyx_v_nymax, PyObject *__pyx_v_sumg_min, PyObject *__pyx_v_xmin, PyObject *__pyx_v_xmax, PyObject *__pyx_v_ymin, PyObject *__pyx_v_ymax); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_12segmentation_6peak_fit(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_img, PyObject *__pyx_v_gvthres, PyObject *__pyx_v_discont, PyObject *__pyx_v_nnmin, PyObject *__pyx_v_nnmax, PyObject *__pyx_v_nxmin, PyObject *__pyx_v_nxmax, PyObject *__pyx_v_nymin, PyObject *__pyx_v_nymax, PyObject *__pyx_v_sumg_min, PyObject *__pyx_v_xmin, PyObject *__pyx_v_xmax, PyObject *__pyx_v_ymin, PyObject *__pyx_v_ymax); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_12segmentation_8is_compiled(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
 static PyObject *__pyx_tp_new_array(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_tp_new_Enum(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_tp_new_memoryview(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
@@ -3385,25 +3385,25 @@ static __pyx_mstatetype * const __pyx_mstate_global = &__pyx_mstate_global_stati
 #define __pyx_kp_u__5 __pyx_string_tab[21]
 #define __pyx_kp_u__6 __pyx_string_tab[22]
 #define __pyx_kp_u_add_note __pyx_string_tab[23]
-#define __pyx_kp_u_algorithms_segmentation_py __pyx_string_tab[24]
-#define __pyx_kp_u_algorithms_track_kernels __pyx_string_tab[25]
-#define __pyx_kp_u_and __pyx_string_tab[26]
-#define __pyx_kp_u_at_0x __pyx_string_tab[27]
-#define __pyx_kp_u_collections_abc __pyx_string_tab[28]
-#define __pyx_kp_u_contiguous_and_direct __pyx_string_tab[29]
-#define __pyx_kp_u_contiguous_and_indirect __pyx_string_tab[30]
-#define __pyx_kp_u_cython_int __pyx_string_tab[31]
-#define __pyx_kp_u_disable __pyx_string_tab[32]
-#define __pyx_kp_u_enable __pyx_string_tab[33]
-#define __pyx_kp_u_gc __pyx_string_tab[34]
-#define __pyx_kp_u_got __pyx_string_tab[35]
-#define __pyx_kp_u_got_differing_extents_in_dimensi __pyx_string_tab[36]
-#define __pyx_kp_u_isenabled __pyx_string_tab[37]
-#define __pyx_kp_u_itemsize_0_for_cython_array __pyx_string_tab[38]
-#define __pyx_kp_u_list_int __pyx_string_tab[39]
-#define __pyx_kp_u_no_default___reduce___due_to_non __pyx_string_tab[40]
-#define __pyx_kp_u_np_ndarray __pyx_string_tab[41]
-#define __pyx_kp_u_object __pyx_string_tab[42]
+#define __pyx_kp_u_and __pyx_string_tab[24]
+#define __pyx_kp_u_at_0x __pyx_string_tab[25]
+#define __pyx_kp_u_collections_abc __pyx_string_tab[26]
+#define __pyx_kp_u_contiguous_and_direct __pyx_string_tab[27]
+#define __pyx_kp_u_contiguous_and_indirect __pyx_string_tab[28]
+#define __pyx_kp_u_cython_int __pyx_string_tab[29]
+#define __pyx_kp_u_disable __pyx_string_tab[30]
+#define __pyx_kp_u_enable __pyx_string_tab[31]
+#define __pyx_kp_u_gc __pyx_string_tab[32]
+#define __pyx_kp_u_got __pyx_string_tab[33]
+#define __pyx_kp_u_got_differing_extents_in_dimensi __pyx_string_tab[34]
+#define __pyx_kp_u_isenabled __pyx_string_tab[35]
+#define __pyx_kp_u_itemsize_0_for_cython_array __pyx_string_tab[36]
+#define __pyx_kp_u_list_int __pyx_string_tab[37]
+#define __pyx_kp_u_no_default___reduce___due_to_non __pyx_string_tab[38]
+#define __pyx_kp_u_np_ndarray __pyx_string_tab[39]
+#define __pyx_kp_u_object __pyx_string_tab[40]
+#define __pyx_kp_u_openptv2_algorithms_track_kernel __pyx_string_tab[41]
+#define __pyx_kp_u_src_openptv2_algorithms_segmenta __pyx_string_tab[42]
 #define __pyx_kp_u_strided_and_direct __pyx_string_tab[43]
 #define __pyx_kp_u_strided_and_direct_or_indirect __pyx_string_tab[44]
 #define __pyx_kp_u_strided_and_indirect __pyx_string_tab[45]
@@ -3419,81 +3419,81 @@ static __pyx_mstatetype * const __pyx_mstate_global = &__pyx_mstate_global_stati
 #define __pyx_n_u_Target __pyx_string_tab[55]
 #define __pyx_n_u_View_MemoryView __pyx_string_tab[56]
 #define __pyx_n_u_abc __pyx_string_tab[57]
-#define __pyx_n_u_algorithms_segmentation __pyx_string_tab[58]
-#define __pyx_n_u_allocate_buffer __pyx_string_tab[59]
-#define __pyx_n_u_annotations __pyx_string_tab[60]
-#define __pyx_n_u_asarray __pyx_string_tab[61]
-#define __pyx_n_u_asyncio_coroutines __pyx_string_tab[62]
-#define __pyx_n_u_base __pyx_string_tab[63]
-#define __pyx_n_u_bool __pyx_string_tab[64]
-#define __pyx_n_u_c __pyx_string_tab[65]
-#define __pyx_n_u_check_touch __pyx_string_tab[66]
-#define __pyx_n_u_class __pyx_string_tab[67]
-#define __pyx_n_u_class_getitem __pyx_string_tab[68]
-#define __pyx_n_u_cline_in_traceback __pyx_string_tab[69]
-#define __pyx_n_u_copy __pyx_string_tab[70]
-#define __pyx_n_u_count __pyx_string_tab[71]
-#define __pyx_n_u_dataclass __pyx_string_tab[72]
-#define __pyx_n_u_dataclasses __pyx_string_tab[73]
-#define __pyx_n_u_default_factory __pyx_string_tab[74]
-#define __pyx_n_u_dict __pyx_string_tab[75]
-#define __pyx_n_u_discont __pyx_string_tab[76]
-#define __pyx_n_u_doc __pyx_string_tab[77]
-#define __pyx_n_u_dtype __pyx_string_tab[78]
-#define __pyx_n_u_dtype_is_object __pyx_string_tab[79]
-#define __pyx_n_u_empty __pyx_string_tab[80]
-#define __pyx_n_u_encode __pyx_string_tab[81]
-#define __pyx_n_u_enumerate __pyx_string_tab[82]
-#define __pyx_n_u_error __pyx_string_tab[83]
-#define __pyx_n_u_field __pyx_string_tab[84]
-#define __pyx_n_u_flags __pyx_string_tab[85]
-#define __pyx_n_u_flat __pyx_string_tab[86]
-#define __pyx_n_u_float __pyx_string_tab[87]
-#define __pyx_n_u_format __pyx_string_tab[88]
-#define __pyx_n_u_fortran __pyx_string_tab[89]
-#define __pyx_n_u_func __pyx_string_tab[90]
-#define __pyx_n_u_getstate __pyx_string_tab[91]
-#define __pyx_n_u_gv __pyx_string_tab[92]
-#define __pyx_n_u_gvthres __pyx_string_tab[93]
-#define __pyx_n_u_i __pyx_string_tab[94]
-#define __pyx_n_u_id __pyx_string_tab[95]
-#define __pyx_n_u_img __pyx_string_tab[96]
-#define __pyx_n_u_import __pyx_string_tab[97]
-#define __pyx_n_u_imx __pyx_string_tab[98]
-#define __pyx_n_u_imy __pyx_string_tab[99]
-#define __pyx_n_u_index __pyx_string_tab[100]
-#define __pyx_n_u_int __pyx_string_tab[101]
-#define __pyx_n_u_int32 __pyx_string_tab[102]
-#define __pyx_n_u_int64 __pyx_string_tab[103]
-#define __pyx_n_u_is_compiled __pyx_string_tab[104]
-#define __pyx_n_u_is_coroutine __pyx_string_tab[105]
-#define __pyx_n_u_is_local_maximum __pyx_string_tab[106]
-#define __pyx_n_u_items __pyx_string_tab[107]
-#define __pyx_n_u_itemsize __pyx_string_tab[108]
-#define __pyx_n_u_j __pyx_string_tab[109]
-#define __pyx_n_u_lambda __pyx_string_tab[110]
-#define __pyx_n_u_main __pyx_string_tab[111]
-#define __pyx_n_u_memview __pyx_string_tab[112]
-#define __pyx_n_u_metaclass __pyx_string_tab[113]
-#define __pyx_n_u_mode __pyx_string_tab[114]
-#define __pyx_n_u_module __pyx_string_tab[115]
-#define __pyx_n_u_n __pyx_string_tab[116]
-#define __pyx_n_u_n_touch __pyx_string_tab[117]
-#define __pyx_n_u_name __pyx_string_tab[118]
-#define __pyx_n_u_name_2 __pyx_string_tab[119]
-#define __pyx_n_u_ndim __pyx_string_tab[120]
-#define __pyx_n_u_new __pyx_string_tab[121]
-#define __pyx_n_u_nnmax __pyx_string_tab[122]
-#define __pyx_n_u_nnmin __pyx_string_tab[123]
-#define __pyx_n_u_np __pyx_string_tab[124]
-#define __pyx_n_u_numpy __pyx_string_tab[125]
-#define __pyx_n_u_nx __pyx_string_tab[126]
-#define __pyx_n_u_nxmax __pyx_string_tab[127]
-#define __pyx_n_u_nxmin __pyx_string_tab[128]
-#define __pyx_n_u_ny __pyx_string_tab[129]
-#define __pyx_n_u_nymax __pyx_string_tab[130]
-#define __pyx_n_u_nymin __pyx_string_tab[131]
-#define __pyx_n_u_obj __pyx_string_tab[132]
+#define __pyx_n_u_allocate_buffer __pyx_string_tab[58]
+#define __pyx_n_u_annotations __pyx_string_tab[59]
+#define __pyx_n_u_asarray __pyx_string_tab[60]
+#define __pyx_n_u_asyncio_coroutines __pyx_string_tab[61]
+#define __pyx_n_u_base __pyx_string_tab[62]
+#define __pyx_n_u_bool __pyx_string_tab[63]
+#define __pyx_n_u_c __pyx_string_tab[64]
+#define __pyx_n_u_check_touch __pyx_string_tab[65]
+#define __pyx_n_u_class __pyx_string_tab[66]
+#define __pyx_n_u_class_getitem __pyx_string_tab[67]
+#define __pyx_n_u_cline_in_traceback __pyx_string_tab[68]
+#define __pyx_n_u_copy __pyx_string_tab[69]
+#define __pyx_n_u_count __pyx_string_tab[70]
+#define __pyx_n_u_dataclass __pyx_string_tab[71]
+#define __pyx_n_u_dataclasses __pyx_string_tab[72]
+#define __pyx_n_u_default_factory __pyx_string_tab[73]
+#define __pyx_n_u_dict __pyx_string_tab[74]
+#define __pyx_n_u_discont __pyx_string_tab[75]
+#define __pyx_n_u_doc __pyx_string_tab[76]
+#define __pyx_n_u_dtype __pyx_string_tab[77]
+#define __pyx_n_u_dtype_is_object __pyx_string_tab[78]
+#define __pyx_n_u_empty __pyx_string_tab[79]
+#define __pyx_n_u_encode __pyx_string_tab[80]
+#define __pyx_n_u_enumerate __pyx_string_tab[81]
+#define __pyx_n_u_error __pyx_string_tab[82]
+#define __pyx_n_u_field __pyx_string_tab[83]
+#define __pyx_n_u_flags __pyx_string_tab[84]
+#define __pyx_n_u_flat __pyx_string_tab[85]
+#define __pyx_n_u_float __pyx_string_tab[86]
+#define __pyx_n_u_format __pyx_string_tab[87]
+#define __pyx_n_u_fortran __pyx_string_tab[88]
+#define __pyx_n_u_func __pyx_string_tab[89]
+#define __pyx_n_u_getstate __pyx_string_tab[90]
+#define __pyx_n_u_gv __pyx_string_tab[91]
+#define __pyx_n_u_gvthres __pyx_string_tab[92]
+#define __pyx_n_u_i __pyx_string_tab[93]
+#define __pyx_n_u_id __pyx_string_tab[94]
+#define __pyx_n_u_img __pyx_string_tab[95]
+#define __pyx_n_u_import __pyx_string_tab[96]
+#define __pyx_n_u_imx __pyx_string_tab[97]
+#define __pyx_n_u_imy __pyx_string_tab[98]
+#define __pyx_n_u_index __pyx_string_tab[99]
+#define __pyx_n_u_int __pyx_string_tab[100]
+#define __pyx_n_u_int32 __pyx_string_tab[101]
+#define __pyx_n_u_int64 __pyx_string_tab[102]
+#define __pyx_n_u_is_compiled __pyx_string_tab[103]
+#define __pyx_n_u_is_coroutine __pyx_string_tab[104]
+#define __pyx_n_u_is_local_maximum __pyx_string_tab[105]
+#define __pyx_n_u_items __pyx_string_tab[106]
+#define __pyx_n_u_itemsize __pyx_string_tab[107]
+#define __pyx_n_u_j __pyx_string_tab[108]
+#define __pyx_n_u_lambda __pyx_string_tab[109]
+#define __pyx_n_u_main __pyx_string_tab[110]
+#define __pyx_n_u_memview __pyx_string_tab[111]
+#define __pyx_n_u_metaclass __pyx_string_tab[112]
+#define __pyx_n_u_mode __pyx_string_tab[113]
+#define __pyx_n_u_module __pyx_string_tab[114]
+#define __pyx_n_u_n __pyx_string_tab[115]
+#define __pyx_n_u_n_touch __pyx_string_tab[116]
+#define __pyx_n_u_name __pyx_string_tab[117]
+#define __pyx_n_u_name_2 __pyx_string_tab[118]
+#define __pyx_n_u_ndim __pyx_string_tab[119]
+#define __pyx_n_u_new __pyx_string_tab[120]
+#define __pyx_n_u_nnmax __pyx_string_tab[121]
+#define __pyx_n_u_nnmin __pyx_string_tab[122]
+#define __pyx_n_u_np __pyx_string_tab[123]
+#define __pyx_n_u_numpy __pyx_string_tab[124]
+#define __pyx_n_u_nx __pyx_string_tab[125]
+#define __pyx_n_u_nxmax __pyx_string_tab[126]
+#define __pyx_n_u_nxmin __pyx_string_tab[127]
+#define __pyx_n_u_ny __pyx_string_tab[128]
+#define __pyx_n_u_nymax __pyx_string_tab[129]
+#define __pyx_n_u_nymin __pyx_string_tab[130]
+#define __pyx_n_u_obj __pyx_string_tab[131]
+#define __pyx_n_u_openptv2_algorithms_segmentation __pyx_string_tab[132]
 #define __pyx_n_u_p1 __pyx_string_tab[133]
 #define __pyx_n_u_p2 __pyx_string_tab[134]
 #define __pyx_n_u_pack __pyx_string_tab[135]
@@ -16126,7 +16126,7 @@ static PyObject *__pyx_unpickle_Enum__set_state(struct __pyx_MemviewEnum_obj *__
   return __pyx_r;
 }
 
-/* "algorithms/segmentation.py":61
+/* "openptv2/algorithms/segmentation.py":61
  *     y: float = 0.0
  *     unr: int = 0
  *     touch: list[int] = field(default_factory=lambda: [0, 0, 0, 0])             # <<<<<<<<<<<<<<
@@ -16135,22 +16135,22 @@ static PyObject *__pyx_unpickle_Enum__set_state(struct __pyx_MemviewEnum_obj *__
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_12segmentation_4Peak_lambda(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static PyMethodDef __pyx_mdef_10algorithms_12segmentation_4Peak_lambda = {"lambda", (PyCFunction)__pyx_pw_10algorithms_12segmentation_4Peak_lambda, METH_NOARGS, 0};
-static PyObject *__pyx_pw_10algorithms_12segmentation_4Peak_lambda(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_8openptv2_10algorithms_12segmentation_4Peak_lambda(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_12segmentation_4Peak_lambda = {"lambda", (PyCFunction)__pyx_pw_8openptv2_10algorithms_12segmentation_4Peak_lambda, METH_NOARGS, 0};
+static PyObject *__pyx_pw_8openptv2_10algorithms_12segmentation_4Peak_lambda(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused) {
   CYTHON_UNUSED PyObject *const *__pyx_kwvalues;
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("lambda (wrapper)", 0);
   __pyx_kwvalues = __Pyx_KwValues_VARARGS(__pyx_args, __pyx_nargs);
-  __pyx_r = __pyx_lambda_funcdef_10algorithms_12segmentation_4Peak_lambda(__pyx_self);
+  __pyx_r = __pyx_lambda_funcdef_8openptv2_10algorithms_12segmentation_4Peak_lambda(__pyx_self);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_lambda_funcdef_10algorithms_12segmentation_4Peak_lambda(CYTHON_UNUSED PyObject *__pyx_self) {
+static PyObject *__pyx_lambda_funcdef_8openptv2_10algorithms_12segmentation_4Peak_lambda(CYTHON_UNUSED PyObject *__pyx_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -16180,7 +16180,7 @@ static PyObject *__pyx_lambda_funcdef_10algorithms_12segmentation_4Peak_lambda(C
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.segmentation.Peak.lambda", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.segmentation.Peak.lambda", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -16188,7 +16188,7 @@ static PyObject *__pyx_lambda_funcdef_10algorithms_12segmentation_4Peak_lambda(C
   return __pyx_r;
 }
 
-/* "algorithms/segmentation.py":65
+/* "openptv2/algorithms/segmentation.py":65
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -16196,14 +16196,14 @@ static PyObject *__pyx_lambda_funcdef_10algorithms_12segmentation_4Peak_lambda(C
  *     """Check whether p1, p2 are already marked as touching and mark them otherwise.
 */
 
-static PyObject *__pyx_pw_10algorithms_12segmentation_1check_touch(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_12segmentation_1check_touch(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_12segmentation_check_touch(PyObject *__pyx_v_tpeak, PyObject *__pyx_v_p1, PyObject *__pyx_v_p2, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_12segmentation_check_touch(PyObject *__pyx_v_tpeak, PyObject *__pyx_v_p1, PyObject *__pyx_v_p2, CYTHON_UNUSED int __pyx_skip_dispatch) {
   int __pyx_v_m;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
@@ -16218,7 +16218,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_check_touch(PyObject *__pyx
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("check_touch", 0);
 
-  /* "algorithms/segmentation.py":71
+  /* "openptv2/algorithms/segmentation.py":71
  *     Matches C implementation exactly, including the cap on touches.
  *     """
  *     if p2 == 0:             # <<<<<<<<<<<<<<
@@ -16228,7 +16228,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_check_touch(PyObject *__pyx
   __pyx_t_1 = (__Pyx_PyLong_BoolEqObjC(__pyx_v_p2, __pyx_mstate_global->__pyx_int_0, 0, 0)); if (unlikely((__pyx_t_1 < 0))) __PYX_ERR(0, 71, __pyx_L1_error)
   if (__pyx_t_1) {
 
-    /* "algorithms/segmentation.py":72
+    /* "openptv2/algorithms/segmentation.py":72
  *     """
  *     if p2 == 0:
  *         return             # <<<<<<<<<<<<<<
@@ -16239,7 +16239,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_check_touch(PyObject *__pyx
     __pyx_r = Py_None; __Pyx_INCREF(Py_None);
     goto __pyx_L0;
 
-    /* "algorithms/segmentation.py":71
+    /* "openptv2/algorithms/segmentation.py":71
  *     Matches C implementation exactly, including the cap on touches.
  *     """
  *     if p2 == 0:             # <<<<<<<<<<<<<<
@@ -16248,7 +16248,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_check_touch(PyObject *__pyx
 */
   }
 
-  /* "algorithms/segmentation.py":73
+  /* "openptv2/algorithms/segmentation.py":73
  *     if p2 == 0:
  *         return
  *     if p2 == p1:             # <<<<<<<<<<<<<<
@@ -16260,7 +16260,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_check_touch(PyObject *__pyx
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   if (__pyx_t_1) {
 
-    /* "algorithms/segmentation.py":74
+    /* "openptv2/algorithms/segmentation.py":74
  *         return
  *     if p2 == p1:
  *         return             # <<<<<<<<<<<<<<
@@ -16271,7 +16271,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_check_touch(PyObject *__pyx
     __pyx_r = Py_None; __Pyx_INCREF(Py_None);
     goto __pyx_L0;
 
-    /* "algorithms/segmentation.py":73
+    /* "openptv2/algorithms/segmentation.py":73
  *     if p2 == 0:
  *         return
  *     if p2 == p1:             # <<<<<<<<<<<<<<
@@ -16280,7 +16280,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_check_touch(PyObject *__pyx
 */
   }
 
-  /* "algorithms/segmentation.py":78
+  /* "openptv2/algorithms/segmentation.py":78
  *     m: cython.int
  *     # check whether p1, p2 are already marked as touching
  *     for m in range(tpeak.n_touch):             # <<<<<<<<<<<<<<
@@ -16295,7 +16295,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_check_touch(PyObject *__pyx
   for (__pyx_t_5 = 0; __pyx_t_5 < __pyx_t_4; __pyx_t_5+=1) {
     __pyx_v_m = __pyx_t_5;
 
-    /* "algorithms/segmentation.py":79
+    /* "openptv2/algorithms/segmentation.py":79
  *     # check whether p1, p2 are already marked as touching
  *     for m in range(tpeak.n_touch):
  *         if tpeak.touch[m] == p2:             # <<<<<<<<<<<<<<
@@ -16313,7 +16313,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_check_touch(PyObject *__pyx
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     if (__pyx_t_1) {
 
-      /* "algorithms/segmentation.py":80
+      /* "openptv2/algorithms/segmentation.py":80
  *     for m in range(tpeak.n_touch):
  *         if tpeak.touch[m] == p2:
  *             return             # <<<<<<<<<<<<<<
@@ -16324,7 +16324,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_check_touch(PyObject *__pyx
       __pyx_r = Py_None; __Pyx_INCREF(Py_None);
       goto __pyx_L0;
 
-      /* "algorithms/segmentation.py":79
+      /* "openptv2/algorithms/segmentation.py":79
  *     # check whether p1, p2 are already marked as touching
  *     for m in range(tpeak.n_touch):
  *         if tpeak.touch[m] == p2:             # <<<<<<<<<<<<<<
@@ -16334,7 +16334,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_check_touch(PyObject *__pyx
     }
   }
 
-  /* "algorithms/segmentation.py":83
+  /* "openptv2/algorithms/segmentation.py":83
  * 
  *     # mark touch event
  *     tpeak.touch[tpeak.n_touch] = p2             # <<<<<<<<<<<<<<
@@ -16349,7 +16349,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_check_touch(PyObject *__pyx
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-  /* "algorithms/segmentation.py":84
+  /* "openptv2/algorithms/segmentation.py":84
  *     # mark touch event
  *     tpeak.touch[tpeak.n_touch] = p2
  *     tpeak.n_touch += 1             # <<<<<<<<<<<<<<
@@ -16364,7 +16364,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_check_touch(PyObject *__pyx
   if (__Pyx_PyObject_SetAttrStr(__pyx_v_tpeak, __pyx_mstate_global->__pyx_n_u_n_touch, __pyx_t_2) < (0)) __PYX_ERR(0, 84, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/segmentation.py":87
+  /* "openptv2/algorithms/segmentation.py":87
  * 
  *     # don't allow for more than 4 touches (C caps at 3, meaning index 3 is max)
  *     if tpeak.n_touch > 3:             # <<<<<<<<<<<<<<
@@ -16379,7 +16379,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_check_touch(PyObject *__pyx
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
   if (__pyx_t_1) {
 
-    /* "algorithms/segmentation.py":88
+    /* "openptv2/algorithms/segmentation.py":88
  *     # don't allow for more than 4 touches (C caps at 3, meaning index 3 is max)
  *     if tpeak.n_touch > 3:
  *         tpeak.n_touch = 3             # <<<<<<<<<<<<<<
@@ -16388,7 +16388,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_check_touch(PyObject *__pyx
 */
     if (__Pyx_PyObject_SetAttrStr(__pyx_v_tpeak, __pyx_mstate_global->__pyx_n_u_n_touch, __pyx_mstate_global->__pyx_int_3) < (0)) __PYX_ERR(0, 88, __pyx_L1_error)
 
-    /* "algorithms/segmentation.py":87
+    /* "openptv2/algorithms/segmentation.py":87
  * 
  *     # don't allow for more than 4 touches (C caps at 3, meaning index 3 is max)
  *     if tpeak.n_touch > 3:             # <<<<<<<<<<<<<<
@@ -16397,7 +16397,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_check_touch(PyObject *__pyx
 */
   }
 
-  /* "algorithms/segmentation.py":65
+  /* "openptv2/algorithms/segmentation.py":65
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -16411,7 +16411,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_check_touch(PyObject *__pyx
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_6);
-  __Pyx_AddTraceback("algorithms.segmentation.check_touch", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.segmentation.check_touch", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -16420,16 +16420,16 @@ static PyObject *__pyx_f_10algorithms_12segmentation_check_touch(PyObject *__pyx
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_12segmentation_1check_touch(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_12segmentation_1check_touch(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_12segmentation_check_touch, "Check whether p1, p2 are already marked as touching and mark them otherwise.\n\n    Matches C implementation exactly, including the cap on touches.\n    ");
-static PyMethodDef __pyx_mdef_10algorithms_12segmentation_1check_touch = {"check_touch", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_12segmentation_1check_touch, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_12segmentation_check_touch};
-static PyObject *__pyx_pw_10algorithms_12segmentation_1check_touch(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_12segmentation_check_touch, "Check whether p1, p2 are already marked as touching and mark them otherwise.\n\n    Matches C implementation exactly, including the cap on touches.\n    ");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_12segmentation_1check_touch = {"check_touch", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_12segmentation_1check_touch, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_12segmentation_check_touch};
+static PyObject *__pyx_pw_8openptv2_10algorithms_12segmentation_1check_touch(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -16509,13 +16509,13 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.segmentation.check_touch", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.segmentation.check_touch", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
   if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_p1), (&PyLong_Type), 0, "p1", 2))) __PYX_ERR(0, 66, __pyx_L1_error)
   if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_p2), (&PyLong_Type), 0, "p2", 2))) __PYX_ERR(0, 66, __pyx_L1_error)
-  __pyx_r = __pyx_pf_10algorithms_12segmentation_check_touch(__pyx_self, __pyx_v_tpeak, __pyx_v_p1, __pyx_v_p2);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_12segmentation_check_touch(__pyx_self, __pyx_v_tpeak, __pyx_v_p1, __pyx_v_p2);
 
   /* function exit code */
   goto __pyx_L0;
@@ -16534,7 +16534,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_12segmentation_check_touch(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_tpeak, PyObject *__pyx_v_p1, PyObject *__pyx_v_p2) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_12segmentation_check_touch(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_tpeak, PyObject *__pyx_v_p1, PyObject *__pyx_v_p2) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -16551,7 +16551,7 @@ static PyObject *__pyx_pf_10algorithms_12segmentation_check_touch(CYTHON_UNUSED 
     PyErr_SetString(PyExc_TypeError, "cannot pass None into a C function argument that is declared 'not None'");
     __PYX_ERR(0, 65, __pyx_L1_error)
   }
-  __pyx_t_1 = __pyx_f_10algorithms_12segmentation_check_touch(__pyx_v_tpeak, __pyx_v_p1, __pyx_v_p2, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 65, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_12segmentation_check_touch(__pyx_v_tpeak, __pyx_v_p1, __pyx_v_p2, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 65, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -16560,7 +16560,7 @@ static PyObject *__pyx_pf_10algorithms_12segmentation_check_touch(CYTHON_UNUSED 
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.segmentation.check_touch", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.segmentation.check_touch", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -16568,7 +16568,7 @@ static PyObject *__pyx_pf_10algorithms_12segmentation_check_touch(CYTHON_UNUSED 
   return __pyx_r;
 }
 
-/* "algorithms/segmentation.py":91
+/* "openptv2/algorithms/segmentation.py":91
  * 
  * 
  * def _is_local_maximum(img: np.ndarray, i: cython.int, j: cython.int, imx: cython.int, imy: cython.int) -> bool:             # <<<<<<<<<<<<<<
@@ -16577,16 +16577,16 @@ static PyObject *__pyx_pf_10algorithms_12segmentation_check_touch(CYTHON_UNUSED 
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_12segmentation_3_is_local_maximum(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_12segmentation_3_is_local_maximum(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_12segmentation_2_is_local_maximum, "Check if pixel at (i, j) is an 8-neighbor local maximum.");
-static PyMethodDef __pyx_mdef_10algorithms_12segmentation_3_is_local_maximum = {"_is_local_maximum", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_12segmentation_3_is_local_maximum, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_12segmentation_2_is_local_maximum};
-static PyObject *__pyx_pw_10algorithms_12segmentation_3_is_local_maximum(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_12segmentation_2_is_local_maximum, "Check if pixel at (i, j) is an 8-neighbor local maximum.");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_12segmentation_3_is_local_maximum = {"_is_local_maximum", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_12segmentation_3_is_local_maximum, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_12segmentation_2_is_local_maximum};
+static PyObject *__pyx_pw_8openptv2_10algorithms_12segmentation_3_is_local_maximum(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -16680,11 +16680,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.segmentation._is_local_maximum", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.segmentation._is_local_maximum", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_12segmentation_2_is_local_maximum(__pyx_self, __pyx_v_img, __pyx_v_i, __pyx_v_j, __pyx_v_imx, __pyx_v_imy);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_12segmentation_2_is_local_maximum(__pyx_self, __pyx_v_img, __pyx_v_i, __pyx_v_j, __pyx_v_imx, __pyx_v_imy);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -16694,7 +16694,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_12segmentation_2_is_local_maximum(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_img, int __pyx_v_i, int __pyx_v_j, CYTHON_UNUSED int __pyx_v_imx, CYTHON_UNUSED int __pyx_v_imy) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_12segmentation_2_is_local_maximum(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_img, int __pyx_v_i, int __pyx_v_j, CYTHON_UNUSED int __pyx_v_imx, CYTHON_UNUSED int __pyx_v_imy) {
   PyObject *__pyx_v_gv = NULL;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
@@ -16708,7 +16708,7 @@ static PyObject *__pyx_pf_10algorithms_12segmentation_2_is_local_maximum(CYTHON_
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("_is_local_maximum", 0);
 
-  /* "algorithms/segmentation.py":93
+  /* "openptv2/algorithms/segmentation.py":93
  * def _is_local_maximum(img: np.ndarray, i: cython.int, j: cython.int, imx: cython.int, imy: cython.int) -> bool:
  *     """Check if pixel at (i, j) is an 8-neighbor local maximum."""
  *     gv = img[i, j]             # <<<<<<<<<<<<<<
@@ -16733,7 +16733,7 @@ static PyObject *__pyx_pf_10algorithms_12segmentation_2_is_local_maximum(CYTHON_
   __pyx_v_gv = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "algorithms/segmentation.py":94
+  /* "openptv2/algorithms/segmentation.py":94
  *     """Check if pixel at (i, j) is an 8-neighbor local maximum."""
  *     gv = img[i, j]
  *     return (             # <<<<<<<<<<<<<<
@@ -16742,7 +16742,7 @@ static PyObject *__pyx_pf_10algorithms_12segmentation_2_is_local_maximum(CYTHON_
 */
   __Pyx_XDECREF(__pyx_r);
 
-  /* "algorithms/segmentation.py":95
+  /* "openptv2/algorithms/segmentation.py":95
  *     gv = img[i, j]
  *     return (
  *         gv >= img[i, j - 1]             # <<<<<<<<<<<<<<
@@ -16776,7 +16776,7 @@ static PyObject *__pyx_pf_10algorithms_12segmentation_2_is_local_maximum(CYTHON_
     goto __pyx_L3_bool_binop_done;
   }
 
-  /* "algorithms/segmentation.py":96
+  /* "openptv2/algorithms/segmentation.py":96
  *     return (
  *         gv >= img[i, j - 1]
  *         and gv >= img[i, j + 1]             # <<<<<<<<<<<<<<
@@ -16810,7 +16810,7 @@ static PyObject *__pyx_pf_10algorithms_12segmentation_2_is_local_maximum(CYTHON_
     goto __pyx_L3_bool_binop_done;
   }
 
-  /* "algorithms/segmentation.py":97
+  /* "openptv2/algorithms/segmentation.py":97
  *         gv >= img[i, j - 1]
  *         and gv >= img[i, j + 1]
  *         and gv >= img[i - 1, j]             # <<<<<<<<<<<<<<
@@ -16844,7 +16844,7 @@ static PyObject *__pyx_pf_10algorithms_12segmentation_2_is_local_maximum(CYTHON_
     goto __pyx_L3_bool_binop_done;
   }
 
-  /* "algorithms/segmentation.py":98
+  /* "openptv2/algorithms/segmentation.py":98
  *         and gv >= img[i, j + 1]
  *         and gv >= img[i - 1, j]
  *         and gv >= img[i + 1, j]             # <<<<<<<<<<<<<<
@@ -16878,7 +16878,7 @@ static PyObject *__pyx_pf_10algorithms_12segmentation_2_is_local_maximum(CYTHON_
     goto __pyx_L3_bool_binop_done;
   }
 
-  /* "algorithms/segmentation.py":99
+  /* "openptv2/algorithms/segmentation.py":99
  *         and gv >= img[i - 1, j]
  *         and gv >= img[i + 1, j]
  *         and gv >= img[i - 1, j - 1]             # <<<<<<<<<<<<<<
@@ -16912,7 +16912,7 @@ static PyObject *__pyx_pf_10algorithms_12segmentation_2_is_local_maximum(CYTHON_
     goto __pyx_L3_bool_binop_done;
   }
 
-  /* "algorithms/segmentation.py":100
+  /* "openptv2/algorithms/segmentation.py":100
  *         and gv >= img[i + 1, j]
  *         and gv >= img[i - 1, j - 1]
  *         and gv >= img[i + 1, j - 1]             # <<<<<<<<<<<<<<
@@ -16946,7 +16946,7 @@ static PyObject *__pyx_pf_10algorithms_12segmentation_2_is_local_maximum(CYTHON_
     goto __pyx_L3_bool_binop_done;
   }
 
-  /* "algorithms/segmentation.py":101
+  /* "openptv2/algorithms/segmentation.py":101
  *         and gv >= img[i - 1, j - 1]
  *         and gv >= img[i + 1, j - 1]
  *         and gv >= img[i - 1, j + 1]             # <<<<<<<<<<<<<<
@@ -16980,7 +16980,7 @@ static PyObject *__pyx_pf_10algorithms_12segmentation_2_is_local_maximum(CYTHON_
     goto __pyx_L3_bool_binop_done;
   }
 
-  /* "algorithms/segmentation.py":102
+  /* "openptv2/algorithms/segmentation.py":102
  *         and gv >= img[i + 1, j - 1]
  *         and gv >= img[i - 1, j + 1]
  *         and gv >= img[i + 1, j + 1]             # <<<<<<<<<<<<<<
@@ -17012,7 +17012,7 @@ static PyObject *__pyx_pf_10algorithms_12segmentation_2_is_local_maximum(CYTHON_
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/segmentation.py":91
+  /* "openptv2/algorithms/segmentation.py":91
  * 
  * 
  * def _is_local_maximum(img: np.ndarray, i: cython.int, j: cython.int, imx: cython.int, imy: cython.int) -> bool:             # <<<<<<<<<<<<<<
@@ -17026,7 +17026,7 @@ static PyObject *__pyx_pf_10algorithms_12segmentation_2_is_local_maximum(CYTHON_
   __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_4);
-  __Pyx_AddTraceback("algorithms.segmentation._is_local_maximum", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.segmentation._is_local_maximum", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_gv);
@@ -17035,7 +17035,7 @@ static PyObject *__pyx_pf_10algorithms_12segmentation_2_is_local_maximum(CYTHON_
   return __pyx_r;
 }
 
-/* "algorithms/segmentation.py":106
+/* "openptv2/algorithms/segmentation.py":106
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -17043,14 +17043,14 @@ static PyObject *__pyx_pf_10algorithms_12segmentation_2_is_local_maximum(CYTHON_
  *     img: np.ndarray,
 */
 
-static PyObject *__pyx_pw_10algorithms_12segmentation_5targ_rec(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_12segmentation_5targ_rec(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_12segmentation_targ_rec(PyObject *__pyx_v_img, PyObject *__pyx_v_gvthres, PyObject *__pyx_v_discont, PyObject *__pyx_v_nnmin, PyObject *__pyx_v_nnmax, PyObject *__pyx_v_nxmin, PyObject *__pyx_v_nxmax, PyObject *__pyx_v_nymin, PyObject *__pyx_v_nymax, PyObject *__pyx_v_sumg_min, CYTHON_UNUSED int __pyx_skip_dispatch, struct __pyx_opt_args_10algorithms_12segmentation_targ_rec *__pyx_optional_args) {
+static PyObject *__pyx_f_8openptv2_10algorithms_12segmentation_targ_rec(PyObject *__pyx_v_img, PyObject *__pyx_v_gvthres, PyObject *__pyx_v_discont, PyObject *__pyx_v_nnmin, PyObject *__pyx_v_nnmax, PyObject *__pyx_v_nxmin, PyObject *__pyx_v_nxmax, PyObject *__pyx_v_nymin, PyObject *__pyx_v_nymax, PyObject *__pyx_v_sumg_min, CYTHON_UNUSED int __pyx_skip_dispatch, struct __pyx_opt_args_8openptv2_10algorithms_12segmentation_targ_rec *__pyx_optional_args) {
   PyObject *__pyx_v_xmin = ((PyObject*)__pyx_mstate_global->__pyx_int_1);
   PyObject *__pyx_v_xmax = ((PyObject*)__pyx_mstate_global->__pyx_int_neg_1);
   PyObject *__pyx_v_ymin = ((PyObject*)__pyx_mstate_global->__pyx_int_1);
@@ -17119,7 +17119,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_targ_rec(PyObject *__pyx_v_
   __Pyx_INCREF(__pyx_v_ymin);
   __Pyx_INCREF(__pyx_v_ymax);
 
-  /* "algorithms/segmentation.py":138
+  /* "openptv2/algorithms/segmentation.py":138
  *         List of detected targets (structure-of-arrays, like C target pix[]).
  *     """
  *     imy, imx = img.shape             # <<<<<<<<<<<<<<
@@ -17183,7 +17183,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_targ_rec(PyObject *__pyx_v_
   __pyx_v_imx = __pyx_t_3;
   __pyx_t_3 = 0;
 
-  /* "algorithms/segmentation.py":139
+  /* "openptv2/algorithms/segmentation.py":139
  *     """
  *     imy, imx = img.shape
  *     if xmax < 0:             # <<<<<<<<<<<<<<
@@ -17195,7 +17195,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_targ_rec(PyObject *__pyx_v_
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   if (__pyx_t_6) {
 
-    /* "algorithms/segmentation.py":140
+    /* "openptv2/algorithms/segmentation.py":140
  *     imy, imx = img.shape
  *     if xmax < 0:
  *         xmax = imx - 1             # <<<<<<<<<<<<<<
@@ -17208,7 +17208,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_targ_rec(PyObject *__pyx_v_
     __Pyx_DECREF_SET(__pyx_v_xmax, ((PyObject*)__pyx_t_1));
     __pyx_t_1 = 0;
 
-    /* "algorithms/segmentation.py":139
+    /* "openptv2/algorithms/segmentation.py":139
  *     """
  *     imy, imx = img.shape
  *     if xmax < 0:             # <<<<<<<<<<<<<<
@@ -17217,7 +17217,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_targ_rec(PyObject *__pyx_v_
 */
   }
 
-  /* "algorithms/segmentation.py":141
+  /* "openptv2/algorithms/segmentation.py":141
  *     if xmax < 0:
  *         xmax = imx - 1
  *     if ymax < 0:             # <<<<<<<<<<<<<<
@@ -17229,7 +17229,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_targ_rec(PyObject *__pyx_v_
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   if (__pyx_t_6) {
 
-    /* "algorithms/segmentation.py":142
+    /* "openptv2/algorithms/segmentation.py":142
  *         xmax = imx - 1
  *     if ymax < 0:
  *         ymax = imy - 1             # <<<<<<<<<<<<<<
@@ -17242,7 +17242,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_targ_rec(PyObject *__pyx_v_
     __Pyx_DECREF_SET(__pyx_v_ymax, ((PyObject*)__pyx_t_1));
     __pyx_t_1 = 0;
 
-    /* "algorithms/segmentation.py":141
+    /* "openptv2/algorithms/segmentation.py":141
  *     if xmax < 0:
  *         xmax = imx - 1
  *     if ymax < 0:             # <<<<<<<<<<<<<<
@@ -17251,7 +17251,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_targ_rec(PyObject *__pyx_v_
 */
   }
 
-  /* "algorithms/segmentation.py":144
+  /* "openptv2/algorithms/segmentation.py":144
  *         ymax = imy - 1
  * 
  *     xmin = max(xmin, 1)             # <<<<<<<<<<<<<<
@@ -17284,7 +17284,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_targ_rec(PyObject *__pyx_v_
   __Pyx_DECREF_SET(__pyx_v_xmin, ((PyObject*)__pyx_t_2));
   __pyx_t_2 = 0;
 
-  /* "algorithms/segmentation.py":145
+  /* "openptv2/algorithms/segmentation.py":145
  * 
  *     xmin = max(xmin, 1)
  *     ymin = max(ymin, 1)             # <<<<<<<<<<<<<<
@@ -17317,7 +17317,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_targ_rec(PyObject *__pyx_v_
   __Pyx_DECREF_SET(__pyx_v_ymin, ((PyObject*)__pyx_t_3));
   __pyx_t_3 = 0;
 
-  /* "algorithms/segmentation.py":146
+  /* "openptv2/algorithms/segmentation.py":146
  *     xmin = max(xmin, 1)
  *     ymin = max(ymin, 1)
  *     xmax = min(xmax, imx - 1)             # <<<<<<<<<<<<<<
@@ -17347,7 +17347,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_targ_rec(PyObject *__pyx_v_
   __Pyx_DECREF_SET(__pyx_v_xmax, ((PyObject*)__pyx_t_3));
   __pyx_t_3 = 0;
 
-  /* "algorithms/segmentation.py":147
+  /* "openptv2/algorithms/segmentation.py":147
  *     ymin = max(ymin, 1)
  *     xmax = min(xmax, imx - 1)
  *     ymax = min(ymax, imy - 1)             # <<<<<<<<<<<<<<
@@ -17377,7 +17377,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_targ_rec(PyObject *__pyx_v_
   __Pyx_DECREF_SET(__pyx_v_ymax, ((PyObject*)__pyx_t_3));
   __pyx_t_3 = 0;
 
-  /* "algorithms/segmentation.py":149
+  /* "openptv2/algorithms/segmentation.py":149
  *     ymax = min(ymax, imy - 1)
  * 
  *     img_u8 = np.asarray(img, dtype=np.uint8)             # <<<<<<<<<<<<<<
@@ -17423,7 +17423,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_targ_rec(PyObject *__pyx_v_
   __pyx_v_img_u8 = __pyx_t_3;
   __pyx_t_3 = 0;
 
-  /* "algorithms/segmentation.py":151
+  /* "openptv2/algorithms/segmentation.py":151
  *     img_u8 = np.asarray(img, dtype=np.uint8)
  * 
  *     img0 = img_u8.copy()             # <<<<<<<<<<<<<<
@@ -17443,7 +17443,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_targ_rec(PyObject *__pyx_v_
   __pyx_v_img0 = __pyx_t_3;
   __pyx_t_3 = 0;
 
-  /* "algorithms/segmentation.py":152
+  /* "openptv2/algorithms/segmentation.py":152
  * 
  *     img0 = img_u8.copy()
  *     max_targets = (xmax - xmin) * (ymax - ymin)             # <<<<<<<<<<<<<<
@@ -17461,7 +17461,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_targ_rec(PyObject *__pyx_v_
   __pyx_v_max_targets = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "algorithms/segmentation.py":153
+  /* "openptv2/algorithms/segmentation.py":153
  *     img0 = img_u8.copy()
  *     max_targets = (xmax - xmin) * (ymax - ymin)
  *     n_found, ox, oy, on, onx, ony, osumg = _targ_rec_fast(             # <<<<<<<<<<<<<<
@@ -17472,7 +17472,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_targ_rec(PyObject *__pyx_v_
   __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_mstate_global->__pyx_n_u_targ_rec_fast); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 153, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
 
-  /* "algorithms/segmentation.py":155
+  /* "openptv2/algorithms/segmentation.py":155
  *     n_found, ox, oy, on, onx, ony, osumg = _targ_rec_fast(
  *         img_u8, img0,
  *         np.int64(gvthres), np.int64(discont),             # <<<<<<<<<<<<<<
@@ -17532,7 +17532,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_targ_rec(PyObject *__pyx_v_
     __Pyx_GOTREF(__pyx_t_12);
   }
 
-  /* "algorithms/segmentation.py":156
+  /* "openptv2/algorithms/segmentation.py":156
  *         img_u8, img0,
  *         np.int64(gvthres), np.int64(discont),
  *         np.int64(nnmin), np.int64(nnmax),             # <<<<<<<<<<<<<<
@@ -17592,7 +17592,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_targ_rec(PyObject *__pyx_v_
     __Pyx_GOTREF(__pyx_t_14);
   }
 
-  /* "algorithms/segmentation.py":157
+  /* "openptv2/algorithms/segmentation.py":157
  *         np.int64(gvthres), np.int64(discont),
  *         np.int64(nnmin), np.int64(nnmax),
  *         np.int64(nxmin), np.int64(nxmax),             # <<<<<<<<<<<<<<
@@ -17652,7 +17652,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_targ_rec(PyObject *__pyx_v_
     __Pyx_GOTREF(__pyx_t_16);
   }
 
-  /* "algorithms/segmentation.py":158
+  /* "openptv2/algorithms/segmentation.py":158
  *         np.int64(nnmin), np.int64(nnmax),
  *         np.int64(nxmin), np.int64(nxmax),
  *         np.int64(nymin), np.int64(nymax),             # <<<<<<<<<<<<<<
@@ -17712,7 +17712,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_targ_rec(PyObject *__pyx_v_
     __Pyx_GOTREF(__pyx_t_18);
   }
 
-  /* "algorithms/segmentation.py":159
+  /* "openptv2/algorithms/segmentation.py":159
  *         np.int64(nxmin), np.int64(nxmax),
  *         np.int64(nymin), np.int64(nymax),
  *         np.int64(sumg_min),             # <<<<<<<<<<<<<<
@@ -17746,7 +17746,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_targ_rec(PyObject *__pyx_v_
     __Pyx_GOTREF(__pyx_t_19);
   }
 
-  /* "algorithms/segmentation.py":160
+  /* "openptv2/algorithms/segmentation.py":160
  *         np.int64(nymin), np.int64(nymax),
  *         np.int64(sumg_min),
  *         np.int32(xmin), np.int32(ymin),             # <<<<<<<<<<<<<<
@@ -17806,7 +17806,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_targ_rec(PyObject *__pyx_v_
     __Pyx_GOTREF(__pyx_t_21);
   }
 
-  /* "algorithms/segmentation.py":161
+  /* "openptv2/algorithms/segmentation.py":161
  *         np.int64(sumg_min),
  *         np.int32(xmin), np.int32(ymin),
  *         np.int32(xmax), np.int32(ymax),             # <<<<<<<<<<<<<<
@@ -17866,7 +17866,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_targ_rec(PyObject *__pyx_v_
     __Pyx_GOTREF(__pyx_t_23);
   }
 
-  /* "algorithms/segmentation.py":162
+  /* "openptv2/algorithms/segmentation.py":162
  *         np.int32(xmin), np.int32(ymin),
  *         np.int32(xmax), np.int32(ymax),
  *         np.int64(max_targets),             # <<<<<<<<<<<<<<
@@ -18016,7 +18016,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_targ_rec(PyObject *__pyx_v_
     __pyx_L8_unpacking_done:;
   }
 
-  /* "algorithms/segmentation.py":153
+  /* "openptv2/algorithms/segmentation.py":153
  *     img0 = img_u8.copy()
  *     max_targets = (xmax - xmin) * (ymax - ymin)
  *     n_found, ox, oy, on, onx, ony, osumg = _targ_rec_fast(             # <<<<<<<<<<<<<<
@@ -18038,7 +18038,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_targ_rec(PyObject *__pyx_v_
   __pyx_v_osumg = __pyx_t_19;
   __pyx_t_19 = 0;
 
-  /* "algorithms/segmentation.py":164
+  /* "openptv2/algorithms/segmentation.py":164
  *         np.int64(max_targets),
  *     )
  *     if n_found == 0:             # <<<<<<<<<<<<<<
@@ -18048,7 +18048,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_targ_rec(PyObject *__pyx_v_
   __pyx_t_6 = (__Pyx_PyLong_BoolEqObjC(__pyx_v_n_found, __pyx_mstate_global->__pyx_int_0, 0, 0)); if (unlikely((__pyx_t_6 < 0))) __PYX_ERR(0, 164, __pyx_L1_error)
   if (__pyx_t_6) {
 
-    /* "algorithms/segmentation.py":165
+    /* "openptv2/algorithms/segmentation.py":165
  *     )
  *     if n_found == 0:
  *         return [Target(pnr=1, x=1, y=1, n=1, nx=1, ny=1, sumg=1, tnr=CORRES_NONE)]             # <<<<<<<<<<<<<<
@@ -18102,7 +18102,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_targ_rec(PyObject *__pyx_v_
     __pyx_t_20 = 0;
     goto __pyx_L0;
 
-    /* "algorithms/segmentation.py":164
+    /* "openptv2/algorithms/segmentation.py":164
  *         np.int64(max_targets),
  *     )
  *     if n_found == 0:             # <<<<<<<<<<<<<<
@@ -18111,7 +18111,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_targ_rec(PyObject *__pyx_v_
 */
   }
 
-  /* "algorithms/segmentation.py":166
+  /* "openptv2/algorithms/segmentation.py":166
  *     if n_found == 0:
  *         return [Target(pnr=1, x=1, y=1, n=1, nx=1, ny=1, sumg=1, tnr=CORRES_NONE)]
  *     return [             # <<<<<<<<<<<<<<
@@ -18123,7 +18123,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_targ_rec(PyObject *__pyx_v_
     __pyx_t_20 = PyList_New(0); if (unlikely(!__pyx_t_20)) __PYX_ERR(0, 166, __pyx_L12_error)
     __Pyx_GOTREF(__pyx_t_20);
 
-    /* "algorithms/segmentation.py":170
+    /* "openptv2/algorithms/segmentation.py":170
  *                n=int(on[k]), nx=int(onx[k]), ny=int(ony[k]),
  *                sumg=int(osumg[k]), tnr=CORRES_NONE)
  *         for k in range(n_found)             # <<<<<<<<<<<<<<
@@ -18159,7 +18159,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_targ_rec(PyObject *__pyx_v_
       __Pyx_XDECREF_SET(__pyx_7genexpr__pyx_v_k, __pyx_t_1);
       __pyx_t_1 = 0;
 
-      /* "algorithms/segmentation.py":167
+      /* "openptv2/algorithms/segmentation.py":167
  *         return [Target(pnr=1, x=1, y=1, n=1, nx=1, ny=1, sumg=1, tnr=CORRES_NONE)]
  *     return [
  *         Target(pnr=k, x=float(ox[k]), y=float(oy[k]),             # <<<<<<<<<<<<<<
@@ -18180,7 +18180,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_targ_rec(PyObject *__pyx_v_
       __Pyx_GOTREF(__pyx_t_3);
       __Pyx_DECREF(__pyx_t_23); __pyx_t_23 = 0;
 
-      /* "algorithms/segmentation.py":168
+      /* "openptv2/algorithms/segmentation.py":168
  *     return [
  *         Target(pnr=k, x=float(ox[k]), y=float(oy[k]),
  *                n=int(on[k]), nx=int(onx[k]), ny=int(ony[k]),             # <<<<<<<<<<<<<<
@@ -18203,7 +18203,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_targ_rec(PyObject *__pyx_v_
       __Pyx_GOTREF(__pyx_t_16);
       __Pyx_DECREF(__pyx_t_23); __pyx_t_23 = 0;
 
-      /* "algorithms/segmentation.py":169
+      /* "openptv2/algorithms/segmentation.py":169
  *         Target(pnr=k, x=float(ox[k]), y=float(oy[k]),
  *                n=int(on[k]), nx=int(onx[k]), ny=int(ony[k]),
  *                sumg=int(osumg[k]), tnr=CORRES_NONE)             # <<<<<<<<<<<<<<
@@ -18258,7 +18258,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_targ_rec(PyObject *__pyx_v_
       if (unlikely(__Pyx_ListComp_Append(__pyx_t_20, (PyObject*)__pyx_t_1))) __PYX_ERR(0, 166, __pyx_L12_error)
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "algorithms/segmentation.py":170
+      /* "openptv2/algorithms/segmentation.py":170
  *                n=int(on[k]), nx=int(onx[k]), ny=int(ony[k]),
  *                sumg=int(osumg[k]), tnr=CORRES_NONE)
  *         for k in range(n_found)             # <<<<<<<<<<<<<<
@@ -18278,7 +18278,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_targ_rec(PyObject *__pyx_v_
   __pyx_t_20 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/segmentation.py":106
+  /* "openptv2/algorithms/segmentation.py":106
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -18309,7 +18309,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_targ_rec(PyObject *__pyx_v_
   __Pyx_XDECREF(__pyx_t_23);
   __Pyx_XDECREF(__pyx_t_24);
   __Pyx_XDECREF(__pyx_t_25);
-  __Pyx_AddTraceback("algorithms.segmentation.targ_rec", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.segmentation.targ_rec", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_imy);
@@ -18335,16 +18335,16 @@ static PyObject *__pyx_f_10algorithms_12segmentation_targ_rec(PyObject *__pyx_v_
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_12segmentation_5targ_rec(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_12segmentation_5targ_rec(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_12segmentation_4targ_rec, "Thresholding and center-of-gravity with peak fitting (C targ_rec translation).\n\n    Args:\n        img: input image (2D uint8, shape (imy, imx)).\n        gvthres: grey value threshold for binarization.\n        discont: maximum discontinuity for peak growth.\n        nnmin, nnmax: min/max number of pixels per target.\n        nxmin, nxmax: min/max extent in x.\n        nymin, nymax: min/max extent in y.\n        sumg_min: minimum sum of grey values.\n        xmin, xmax, ymin, ymax: search area (defaults to image bounds).\n\n    Returns:\n        List of detected targets (structure-of-arrays, like C target pix[]).\n    ");
-static PyMethodDef __pyx_mdef_10algorithms_12segmentation_5targ_rec = {"targ_rec", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_12segmentation_5targ_rec, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_12segmentation_4targ_rec};
-static PyObject *__pyx_pw_10algorithms_12segmentation_5targ_rec(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_12segmentation_4targ_rec, "Thresholding and center-of-gravity with peak fitting (C targ_rec translation).\n\n    Args:\n        img: input image (2D uint8, shape (imy, imx)).\n        gvthres: grey value threshold for binarization.\n        discont: maximum discontinuity for peak growth.\n        nnmin, nnmax: min/max number of pixels per target.\n        nxmin, nxmax: min/max extent in x.\n        nymin, nymax: min/max extent in y.\n        sumg_min: minimum sum of grey values.\n        xmin, xmax, ymin, ymax: search area (defaults to image bounds).\n\n    Returns:\n        List of detected targets (structure-of-arrays, like C target pix[]).\n    ");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_12segmentation_5targ_rec = {"targ_rec", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_12segmentation_5targ_rec, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_12segmentation_4targ_rec};
+static PyObject *__pyx_pw_8openptv2_10algorithms_12segmentation_5targ_rec(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -18542,7 +18542,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.segmentation.targ_rec", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.segmentation.targ_rec", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
@@ -18559,7 +18559,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_xmax), (&PyLong_Type), 0, "xmax", 2))) __PYX_ERR(0, 119, __pyx_L1_error)
   if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ymin), (&PyLong_Type), 0, "ymin", 2))) __PYX_ERR(0, 120, __pyx_L1_error)
   if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ymax), (&PyLong_Type), 0, "ymax", 2))) __PYX_ERR(0, 121, __pyx_L1_error)
-  __pyx_r = __pyx_pf_10algorithms_12segmentation_4targ_rec(__pyx_self, __pyx_v_img, __pyx_v_gvthres, __pyx_v_discont, __pyx_v_nnmin, __pyx_v_nnmax, __pyx_v_nxmin, __pyx_v_nxmax, __pyx_v_nymin, __pyx_v_nymax, __pyx_v_sumg_min, __pyx_v_xmin, __pyx_v_xmax, __pyx_v_ymin, __pyx_v_ymax);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_12segmentation_4targ_rec(__pyx_self, __pyx_v_img, __pyx_v_gvthres, __pyx_v_discont, __pyx_v_nnmin, __pyx_v_nnmax, __pyx_v_nxmin, __pyx_v_nxmax, __pyx_v_nymin, __pyx_v_nymax, __pyx_v_sumg_min, __pyx_v_xmin, __pyx_v_xmax, __pyx_v_ymin, __pyx_v_ymax);
 
   /* function exit code */
   goto __pyx_L0;
@@ -18578,11 +18578,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_12segmentation_4targ_rec(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_img, PyObject *__pyx_v_gvthres, PyObject *__pyx_v_discont, PyObject *__pyx_v_nnmin, PyObject *__pyx_v_nnmax, PyObject *__pyx_v_nxmin, PyObject *__pyx_v_nxmax, PyObject *__pyx_v_nymin, PyObject *__pyx_v_nymax, PyObject *__pyx_v_sumg_min, PyObject *__pyx_v_xmin, PyObject *__pyx_v_xmax, PyObject *__pyx_v_ymin, PyObject *__pyx_v_ymax) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_12segmentation_4targ_rec(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_img, PyObject *__pyx_v_gvthres, PyObject *__pyx_v_discont, PyObject *__pyx_v_nnmin, PyObject *__pyx_v_nnmax, PyObject *__pyx_v_nxmin, PyObject *__pyx_v_nxmax, PyObject *__pyx_v_nymin, PyObject *__pyx_v_nymax, PyObject *__pyx_v_sumg_min, PyObject *__pyx_v_xmin, PyObject *__pyx_v_xmax, PyObject *__pyx_v_ymin, PyObject *__pyx_v_ymax) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
-  struct __pyx_opt_args_10algorithms_12segmentation_targ_rec __pyx_t_2;
+  struct __pyx_opt_args_8openptv2_10algorithms_12segmentation_targ_rec __pyx_t_2;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -18645,7 +18645,7 @@ static PyObject *__pyx_pf_10algorithms_12segmentation_4targ_rec(CYTHON_UNUSED Py
   __pyx_t_2.xmax = __pyx_v_xmax;
   __pyx_t_2.ymin = __pyx_v_ymin;
   __pyx_t_2.ymax = __pyx_v_ymax;
-  __pyx_t_1 = __pyx_f_10algorithms_12segmentation_targ_rec(__pyx_v_img, __pyx_v_gvthres, __pyx_v_discont, __pyx_v_nnmin, __pyx_v_nnmax, __pyx_v_nxmin, __pyx_v_nxmax, __pyx_v_nymin, __pyx_v_nymax, __pyx_v_sumg_min, 1, &__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 106, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_12segmentation_targ_rec(__pyx_v_img, __pyx_v_gvthres, __pyx_v_discont, __pyx_v_nnmin, __pyx_v_nnmax, __pyx_v_nxmin, __pyx_v_nxmax, __pyx_v_nymin, __pyx_v_nymax, __pyx_v_sumg_min, 1, &__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 106, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -18654,7 +18654,7 @@ static PyObject *__pyx_pf_10algorithms_12segmentation_4targ_rec(CYTHON_UNUSED Py
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.segmentation.targ_rec", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.segmentation.targ_rec", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -18662,7 +18662,7 @@ static PyObject *__pyx_pf_10algorithms_12segmentation_4targ_rec(CYTHON_UNUSED Py
   return __pyx_r;
 }
 
-/* "algorithms/segmentation.py":174
+/* "openptv2/algorithms/segmentation.py":174
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -18670,14 +18670,14 @@ static PyObject *__pyx_pf_10algorithms_12segmentation_4targ_rec(CYTHON_UNUSED Py
  * @cython.wraparound(False)
 */
 
-static PyObject *__pyx_pw_10algorithms_12segmentation_7peak_fit(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_12segmentation_7peak_fit(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_img, PyObject *__pyx_v_gvthres, PyObject *__pyx_v_discont, PyObject *__pyx_v_nnmin, PyObject *__pyx_v_nnmax, PyObject *__pyx_v_nxmin, PyObject *__pyx_v_nxmax, PyObject *__pyx_v_nymin, PyObject *__pyx_v_nymax, PyObject *__pyx_v_sumg_min, CYTHON_UNUSED int __pyx_skip_dispatch, struct __pyx_opt_args_10algorithms_12segmentation_peak_fit *__pyx_optional_args) {
+static PyObject *__pyx_f_8openptv2_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_img, PyObject *__pyx_v_gvthres, PyObject *__pyx_v_discont, PyObject *__pyx_v_nnmin, PyObject *__pyx_v_nnmax, PyObject *__pyx_v_nxmin, PyObject *__pyx_v_nxmax, PyObject *__pyx_v_nymin, PyObject *__pyx_v_nymax, PyObject *__pyx_v_sumg_min, CYTHON_UNUSED int __pyx_skip_dispatch, struct __pyx_opt_args_8openptv2_10algorithms_12segmentation_peak_fit *__pyx_optional_args) {
   PyObject *__pyx_v_xmin = ((PyObject*)__pyx_mstate_global->__pyx_int_1);
   PyObject *__pyx_v_xmax = ((PyObject*)__pyx_mstate_global->__pyx_int_neg_1);
   PyObject *__pyx_v_ymin = ((PyObject*)__pyx_mstate_global->__pyx_int_1);
@@ -18786,7 +18786,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
   __Pyx_INCREF(__pyx_v_xmax);
   __Pyx_INCREF(__pyx_v_ymax);
 
-  /* "algorithms/segmentation.py":194
+  /* "openptv2/algorithms/segmentation.py":194
  * ) -> list[Target]:
  *     """Two-pass component labeling with peak fitting and reunification."""
  *     imy, imx = img.shape             # <<<<<<<<<<<<<<
@@ -18850,7 +18850,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
   __pyx_v_imx = __pyx_t_3;
   __pyx_t_3 = 0;
 
-  /* "algorithms/segmentation.py":195
+  /* "openptv2/algorithms/segmentation.py":195
  *     """Two-pass component labeling with peak fitting and reunification."""
  *     imy, imx = img.shape
  *     if xmax < 0:             # <<<<<<<<<<<<<<
@@ -18862,7 +18862,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   if (__pyx_t_6) {
 
-    /* "algorithms/segmentation.py":196
+    /* "openptv2/algorithms/segmentation.py":196
  *     imy, imx = img.shape
  *     if xmax < 0:
  *         xmax = imx             # <<<<<<<<<<<<<<
@@ -18875,7 +18875,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
     __Pyx_DECREF_SET(__pyx_v_xmax, ((PyObject*)__pyx_t_1));
     __pyx_t_1 = 0;
 
-    /* "algorithms/segmentation.py":195
+    /* "openptv2/algorithms/segmentation.py":195
  *     """Two-pass component labeling with peak fitting and reunification."""
  *     imy, imx = img.shape
  *     if xmax < 0:             # <<<<<<<<<<<<<<
@@ -18884,7 +18884,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
 */
   }
 
-  /* "algorithms/segmentation.py":197
+  /* "openptv2/algorithms/segmentation.py":197
  *     if xmax < 0:
  *         xmax = imx
  *     if ymax < 0:             # <<<<<<<<<<<<<<
@@ -18896,7 +18896,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   if (__pyx_t_6) {
 
-    /* "algorithms/segmentation.py":198
+    /* "openptv2/algorithms/segmentation.py":198
  *         xmax = imx
  *     if ymax < 0:
  *         ymax = imy             # <<<<<<<<<<<<<<
@@ -18909,7 +18909,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
     __Pyx_DECREF_SET(__pyx_v_ymax, ((PyObject*)__pyx_t_1));
     __pyx_t_1 = 0;
 
-    /* "algorithms/segmentation.py":197
+    /* "openptv2/algorithms/segmentation.py":197
  *     if xmax < 0:
  *         xmax = imx
  *     if ymax < 0:             # <<<<<<<<<<<<<<
@@ -18918,7 +18918,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
 */
   }
 
-  /* "algorithms/segmentation.py":205
+  /* "openptv2/algorithms/segmentation.py":205
  * 
  *     # Pre-allocated typed arrays for BFS queue (maximally sized to image dimensions)
  *     _qx = np.empty(imy * imx, dtype=np.int32)             # <<<<<<<<<<<<<<
@@ -18967,7 +18967,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
   __pyx_v__qx = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/segmentation.py":206
+  /* "openptv2/algorithms/segmentation.py":206
  *     # Pre-allocated typed arrays for BFS queue (maximally sized to image dimensions)
  *     _qx = np.empty(imy * imx, dtype=np.int32)
  *     _qy = np.empty(imy * imx, dtype=np.int32)             # <<<<<<<<<<<<<<
@@ -19016,7 +19016,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
   __pyx_v__qy = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/segmentation.py":207
+  /* "openptv2/algorithms/segmentation.py":207
  *     _qx = np.empty(imy * imx, dtype=np.int32)
  *     _qy = np.empty(imy * imx, dtype=np.int32)
  *     qx: cython.int[:] = _qx             # <<<<<<<<<<<<<<
@@ -19028,7 +19028,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
   __pyx_t_10.memview = NULL;
   __pyx_t_10.data = NULL;
 
-  /* "algorithms/segmentation.py":208
+  /* "openptv2/algorithms/segmentation.py":208
  *     _qy = np.empty(imy * imx, dtype=np.int32)
  *     qx: cython.int[:] = _qx
  *     qy: cython.int[:] = _qy             # <<<<<<<<<<<<<<
@@ -19040,7 +19040,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
   __pyx_t_10.memview = NULL;
   __pyx_t_10.data = NULL;
 
-  /* "algorithms/segmentation.py":221
+  /* "openptv2/algorithms/segmentation.py":221
  * 
  *     # Label image
  *     label_img = np.zeros((imy, imx), dtype=np.int32)             # <<<<<<<<<<<<<<
@@ -19095,7 +19095,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
   __pyx_v_label_img = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/segmentation.py":222
+  /* "openptv2/algorithms/segmentation.py":222
  *     # Label image
  *     label_img = np.zeros((imy, imx), dtype=np.int32)
  *     peaks: list[Peak] = []             # <<<<<<<<<<<<<<
@@ -19107,7 +19107,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
   __pyx_v_peaks = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "algorithms/segmentation.py":225
+  /* "openptv2/algorithms/segmentation.py":225
  * 
  *     # ---- Pass 1: Connectivity analysis with peak search ----
  *     for i in range(ymin, ymax - 1):             # <<<<<<<<<<<<<<
@@ -19123,7 +19123,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
   for (__pyx_t_14 = __pyx_t_12; __pyx_t_14 < __pyx_t_13; __pyx_t_14+=1) {
     __pyx_v_i = __pyx_t_14;
 
-    /* "algorithms/segmentation.py":226
+    /* "openptv2/algorithms/segmentation.py":226
  *     # ---- Pass 1: Connectivity analysis with peak search ----
  *     for i in range(ymin, ymax - 1):
  *         for j in range(xmin, xmax):             # <<<<<<<<<<<<<<
@@ -19136,7 +19136,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
     for (__pyx_t_18 = __pyx_t_16; __pyx_t_18 < __pyx_t_17; __pyx_t_18+=1) {
       __pyx_v_j = __pyx_t_18;
 
-      /* "algorithms/segmentation.py":227
+      /* "openptv2/algorithms/segmentation.py":227
  *     for i in range(ymin, ymax - 1):
  *         for j in range(xmin, xmax):
  *             n = i * imx + j             # <<<<<<<<<<<<<<
@@ -19157,7 +19157,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       __Pyx_XDECREF_SET(__pyx_v_n, __pyx_t_7);
       __pyx_t_7 = 0;
 
-      /* "algorithms/segmentation.py":228
+      /* "openptv2/algorithms/segmentation.py":228
  *         for j in range(xmin, xmax):
  *             n = i * imx + j
  *             gv = img[i, j]             # <<<<<<<<<<<<<<
@@ -19183,7 +19183,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
       __pyx_v_gv = __pyx_t_19;
 
-      /* "algorithms/segmentation.py":230
+      /* "openptv2/algorithms/segmentation.py":230
  *             gv = img[i, j]
  * 
  *             if gv <= gvthres:             # <<<<<<<<<<<<<<
@@ -19198,7 +19198,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
       if (__pyx_t_6) {
 
-        /* "algorithms/segmentation.py":231
+        /* "openptv2/algorithms/segmentation.py":231
  * 
  *             if gv <= gvthres:
  *                 continue             # <<<<<<<<<<<<<<
@@ -19207,7 +19207,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
 */
         goto __pyx_L9_continue;
 
-        /* "algorithms/segmentation.py":230
+        /* "openptv2/algorithms/segmentation.py":230
  *             gv = img[i, j]
  * 
  *             if gv <= gvthres:             # <<<<<<<<<<<<<<
@@ -19216,7 +19216,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
 */
       }
 
-      /* "algorithms/segmentation.py":232
+      /* "openptv2/algorithms/segmentation.py":232
  *             if gv <= gvthres:
  *                 continue
  *             if label_img[i, j] != 0:             # <<<<<<<<<<<<<<
@@ -19242,7 +19242,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
       if (__pyx_t_6) {
 
-        /* "algorithms/segmentation.py":233
+        /* "openptv2/algorithms/segmentation.py":233
  *                 continue
  *             if label_img[i, j] != 0:
  *                 continue             # <<<<<<<<<<<<<<
@@ -19251,7 +19251,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
 */
         goto __pyx_L9_continue;
 
-        /* "algorithms/segmentation.py":232
+        /* "openptv2/algorithms/segmentation.py":232
  *             if gv <= gvthres:
  *                 continue
  *             if label_img[i, j] != 0:             # <<<<<<<<<<<<<<
@@ -19260,7 +19260,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
 */
       }
 
-      /* "algorithms/segmentation.py":236
+      /* "openptv2/algorithms/segmentation.py":236
  * 
  *             # Check local maximum
  *             if not _is_local_maximum(img, i, j, imx, imy):             # <<<<<<<<<<<<<<
@@ -19301,7 +19301,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       __pyx_t_20 = (!__pyx_t_6);
       if (__pyx_t_20) {
 
-        /* "algorithms/segmentation.py":237
+        /* "openptv2/algorithms/segmentation.py":237
  *             # Check local maximum
  *             if not _is_local_maximum(img, i, j, imx, imy):
  *                 continue             # <<<<<<<<<<<<<<
@@ -19310,7 +19310,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
 */
         goto __pyx_L9_continue;
 
-        /* "algorithms/segmentation.py":236
+        /* "openptv2/algorithms/segmentation.py":236
  * 
  *             # Check local maximum
  *             if not _is_local_maximum(img, i, j, imx, imy):             # <<<<<<<<<<<<<<
@@ -19319,7 +19319,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
 */
       }
 
-      /* "algorithms/segmentation.py":240
+      /* "openptv2/algorithms/segmentation.py":240
  * 
  *             # New peak
  *             n_peaks = len(peaks) + 1             # <<<<<<<<<<<<<<
@@ -19329,7 +19329,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       __pyx_t_21 = __Pyx_PyList_GET_SIZE(__pyx_v_peaks); if (unlikely(__pyx_t_21 == ((Py_ssize_t)-1))) __PYX_ERR(0, 240, __pyx_L1_error)
       __pyx_v_n_peaks = (__pyx_t_21 + 1);
 
-      /* "algorithms/segmentation.py":241
+      /* "openptv2/algorithms/segmentation.py":241
  *             # New peak
  *             n_peaks = len(peaks) + 1
  *             label_img[i, j] = n_peaks             # <<<<<<<<<<<<<<
@@ -19354,7 +19354,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "algorithms/segmentation.py":243
+      /* "openptv2/algorithms/segmentation.py":243
  *             label_img[i, j] = n_peaks
  * 
  *             peak = Peak(             # <<<<<<<<<<<<<<
@@ -19365,7 +19365,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_Peak); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 243, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
 
-      /* "algorithms/segmentation.py":246
+      /* "openptv2/algorithms/segmentation.py":246
  *                 pos=n,
  *                 status=1,
  *                 xmin=j,             # <<<<<<<<<<<<<<
@@ -19375,7 +19375,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       __pyx_t_3 = PyLong_FromSsize_t(__pyx_v_j); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 246, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_3);
 
-      /* "algorithms/segmentation.py":247
+      /* "openptv2/algorithms/segmentation.py":247
  *                 status=1,
  *                 xmin=j,
  *                 xmax=j,             # <<<<<<<<<<<<<<
@@ -19385,7 +19385,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       __pyx_t_7 = PyLong_FromSsize_t(__pyx_v_j); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 247, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_7);
 
-      /* "algorithms/segmentation.py":248
+      /* "openptv2/algorithms/segmentation.py":248
  *                 xmin=j,
  *                 xmax=j,
  *                 ymin=i,             # <<<<<<<<<<<<<<
@@ -19395,7 +19395,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       __pyx_t_8 = PyLong_FromSsize_t(__pyx_v_i); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 248, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_8);
 
-      /* "algorithms/segmentation.py":249
+      /* "openptv2/algorithms/segmentation.py":249
  *                 xmax=j,
  *                 ymin=i,
  *                 ymax=i,             # <<<<<<<<<<<<<<
@@ -19440,7 +19440,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       __Pyx_XDECREF_SET(__pyx_v_peak, __pyx_t_1);
       __pyx_t_1 = 0;
 
-      /* "algorithms/segmentation.py":251
+      /* "openptv2/algorithms/segmentation.py":251
  *                 ymax=i,
  *             )
  *             peaks.append(peak)             # <<<<<<<<<<<<<<
@@ -19449,7 +19449,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
 */
       __pyx_t_24 = __Pyx_PyList_Append(__pyx_v_peaks, __pyx_v_peak); if (unlikely(__pyx_t_24 == ((int)-1))) __PYX_ERR(0, 251, __pyx_L1_error)
 
-      /* "algorithms/segmentation.py":254
+      /* "openptv2/algorithms/segmentation.py":254
  * 
  *             # BFS region growing  typed array queue (faster than deque in compiled mode)
  *             qhead = 0             # <<<<<<<<<<<<<<
@@ -19458,7 +19458,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
 */
       __pyx_v_qhead = 0;
 
-      /* "algorithms/segmentation.py":255
+      /* "openptv2/algorithms/segmentation.py":255
  *             # BFS region growing  typed array queue (faster than deque in compiled mode)
  *             qhead = 0
  *             qtail = 0             # <<<<<<<<<<<<<<
@@ -19467,7 +19467,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
 */
       __pyx_v_qtail = 0;
 
-      /* "algorithms/segmentation.py":256
+      /* "openptv2/algorithms/segmentation.py":256
  *             qhead = 0
  *             qtail = 0
  *             qx[qtail] = j             # <<<<<<<<<<<<<<
@@ -19477,7 +19477,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       __pyx_t_25 = __pyx_v_qtail;
       *((int *) ( /* dim=0 */ (__pyx_v_qx.data + __pyx_t_25 * __pyx_v_qx.strides[0]) )) = __pyx_v_j;
 
-      /* "algorithms/segmentation.py":257
+      /* "openptv2/algorithms/segmentation.py":257
  *             qtail = 0
  *             qx[qtail] = j
  *             qy[qtail] = i             # <<<<<<<<<<<<<<
@@ -19487,7 +19487,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       __pyx_t_25 = __pyx_v_qtail;
       *((int *) ( /* dim=0 */ (__pyx_v_qy.data + __pyx_t_25 * __pyx_v_qy.strides[0]) )) = __pyx_v_i;
 
-      /* "algorithms/segmentation.py":258
+      /* "openptv2/algorithms/segmentation.py":258
  *             qx[qtail] = j
  *             qy[qtail] = i
  *             qtail += 1             # <<<<<<<<<<<<<<
@@ -19496,7 +19496,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
 */
       __pyx_v_qtail = (__pyx_v_qtail + 1);
 
-      /* "algorithms/segmentation.py":259
+      /* "openptv2/algorithms/segmentation.py":259
  *             qy[qtail] = i
  *             qtail += 1
  *             label_img[i, j] = n_peaks             # <<<<<<<<<<<<<<
@@ -19521,7 +19521,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       __Pyx_DECREF(__pyx_t_22); __pyx_t_22 = 0;
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "algorithms/segmentation.py":261
+      /* "openptv2/algorithms/segmentation.py":261
  *             label_img[i, j] = n_peaks
  * 
  *             while qhead < qtail:             # <<<<<<<<<<<<<<
@@ -19532,7 +19532,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
         __pyx_t_20 = (__pyx_v_qhead < __pyx_v_qtail);
         if (!__pyx_t_20) break;
 
-        /* "algorithms/segmentation.py":262
+        /* "openptv2/algorithms/segmentation.py":262
  * 
  *             while qhead < qtail:
  *                 wx = qx[qhead]             # <<<<<<<<<<<<<<
@@ -19542,7 +19542,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
         __pyx_t_25 = __pyx_v_qhead;
         __pyx_v_wx = (*((int *) ( /* dim=0 */ (__pyx_v_qx.data + __pyx_t_25 * __pyx_v_qx.strides[0]) )));
 
-        /* "algorithms/segmentation.py":263
+        /* "openptv2/algorithms/segmentation.py":263
  *             while qhead < qtail:
  *                 wx = qx[qhead]
  *                 wy = qy[qhead]             # <<<<<<<<<<<<<<
@@ -19552,7 +19552,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
         __pyx_t_25 = __pyx_v_qhead;
         __pyx_v_wy = (*((int *) ( /* dim=0 */ (__pyx_v_qy.data + __pyx_t_25 * __pyx_v_qy.strides[0]) )));
 
-        /* "algorithms/segmentation.py":264
+        /* "openptv2/algorithms/segmentation.py":264
  *                 wx = qx[qhead]
  *                 wy = qy[qhead]
  *                 qhead += 1             # <<<<<<<<<<<<<<
@@ -19561,7 +19561,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
 */
         __pyx_v_qhead = (__pyx_v_qhead + 1);
 
-        /* "algorithms/segmentation.py":265
+        /* "openptv2/algorithms/segmentation.py":265
  *                 wy = qy[qhead]
  *                 qhead += 1
  *                 gvref = int(img[wy, wx])             # <<<<<<<<<<<<<<
@@ -19590,7 +19590,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
         __Pyx_DECREF(__pyx_t_23); __pyx_t_23 = 0;
         __pyx_v_gvref = __pyx_t_19;
 
-        /* "algorithms/segmentation.py":267
+        /* "openptv2/algorithms/segmentation.py":267
  *                 gvref = int(img[wy, wx])
  * 
  *                 for dx, dy in [(0, -1), (0, 1), (-1, 0), (1, 0)]:             # <<<<<<<<<<<<<<
@@ -19639,7 +19639,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
           __pyx_v_dx = __pyx_t_19;
           __pyx_v_dy = __pyx_t_26;
 
-          /* "algorithms/segmentation.py":268
+          /* "openptv2/algorithms/segmentation.py":268
  * 
  *                 for dx, dy in [(0, -1), (0, 1), (-1, 0), (1, 0)]:
  *                     nx_pos = wx + dx             # <<<<<<<<<<<<<<
@@ -19648,7 +19648,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
 */
           __pyx_v_nx_pos = (__pyx_v_wx + __pyx_v_dx);
 
-          /* "algorithms/segmentation.py":269
+          /* "openptv2/algorithms/segmentation.py":269
  *                 for dx, dy in [(0, -1), (0, 1), (-1, 0), (1, 0)]:
  *                     nx_pos = wx + dx
  *                     ny_pos = wy + dy             # <<<<<<<<<<<<<<
@@ -19657,7 +19657,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
 */
           __pyx_v_ny_pos = (__pyx_v_wy + __pyx_v_dy);
 
-          /* "algorithms/segmentation.py":270
+          /* "openptv2/algorithms/segmentation.py":270
  *                     nx_pos = wx + dx
  *                     ny_pos = wy + dy
  *                     if not (0 <= nx_pos < imx and 0 <= ny_pos < imy):             # <<<<<<<<<<<<<<
@@ -19694,7 +19694,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
           __pyx_t_6 = (!__pyx_t_20);
           if (__pyx_t_6) {
 
-            /* "algorithms/segmentation.py":271
+            /* "openptv2/algorithms/segmentation.py":271
  *                     ny_pos = wy + dy
  *                     if not (0 <= nx_pos < imx and 0 <= ny_pos < imy):
  *                         continue             # <<<<<<<<<<<<<<
@@ -19703,7 +19703,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
 */
             goto __pyx_L16_continue;
 
-            /* "algorithms/segmentation.py":270
+            /* "openptv2/algorithms/segmentation.py":270
  *                     nx_pos = wx + dx
  *                     ny_pos = wy + dy
  *                     if not (0 <= nx_pos < imx and 0 <= ny_pos < imy):             # <<<<<<<<<<<<<<
@@ -19712,7 +19712,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
 */
           }
 
-          /* "algorithms/segmentation.py":272
+          /* "openptv2/algorithms/segmentation.py":272
  *                     if not (0 <= nx_pos < imx and 0 <= ny_pos < imy):
  *                         continue
  *                     if label_img[ny_pos, nx_pos] != 0:             # <<<<<<<<<<<<<<
@@ -19738,7 +19738,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
           __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
           if (__pyx_t_6) {
 
-            /* "algorithms/segmentation.py":273
+            /* "openptv2/algorithms/segmentation.py":273
  *                         continue
  *                     if label_img[ny_pos, nx_pos] != 0:
  *                         continue             # <<<<<<<<<<<<<<
@@ -19747,7 +19747,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
 */
             goto __pyx_L16_continue;
 
-            /* "algorithms/segmentation.py":272
+            /* "openptv2/algorithms/segmentation.py":272
  *                     if not (0 <= nx_pos < imx and 0 <= ny_pos < imy):
  *                         continue
  *                     if label_img[ny_pos, nx_pos] != 0:             # <<<<<<<<<<<<<<
@@ -19756,7 +19756,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
 */
           }
 
-          /* "algorithms/segmentation.py":275
+          /* "openptv2/algorithms/segmentation.py":275
  *                         continue
  * 
  *                     neighbor_gv = int(img[ny_pos, nx_pos])             # <<<<<<<<<<<<<<
@@ -19785,7 +19785,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
           __Pyx_DECREF(__pyx_t_22); __pyx_t_22 = 0;
           __pyx_v_neighbor_gv = __pyx_t_26;
 
-          /* "algorithms/segmentation.py":278
+          /* "openptv2/algorithms/segmentation.py":278
  * 
  *                     if (
  *                         neighbor_gv > gvthres             # <<<<<<<<<<<<<<
@@ -19804,7 +19804,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
             goto __pyx_L23_bool_binop_done;
           }
 
-          /* "algorithms/segmentation.py":279
+          /* "openptv2/algorithms/segmentation.py":279
  *                     if (
  *                         neighbor_gv > gvthres
  *                         and xmin <= nx_pos < xmax             # <<<<<<<<<<<<<<
@@ -19827,7 +19827,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
             goto __pyx_L23_bool_binop_done;
           }
 
-          /* "algorithms/segmentation.py":280
+          /* "openptv2/algorithms/segmentation.py":280
  *                         neighbor_gv > gvthres
  *                         and xmin <= nx_pos < xmax
  *                         and ymin <= ny_pos < ymax - 1             # <<<<<<<<<<<<<<
@@ -19853,7 +19853,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
             goto __pyx_L23_bool_binop_done;
           }
 
-          /* "algorithms/segmentation.py":281
+          /* "openptv2/algorithms/segmentation.py":281
  *                         and xmin <= nx_pos < xmax
  *                         and ymin <= ny_pos < ymax - 1
  *                         and neighbor_gv <= gvref + discont             # <<<<<<<<<<<<<<
@@ -19878,7 +19878,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
             goto __pyx_L23_bool_binop_done;
           }
 
-          /* "algorithms/segmentation.py":282
+          /* "openptv2/algorithms/segmentation.py":282
  *                         and ymin <= ny_pos < ymax - 1
  *                         and neighbor_gv <= gvref + discont
  *                         and gvref + discont >= int(img[ny_pos - 1, nx_pos])             # <<<<<<<<<<<<<<
@@ -19919,7 +19919,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
             goto __pyx_L23_bool_binop_done;
           }
 
-          /* "algorithms/segmentation.py":283
+          /* "openptv2/algorithms/segmentation.py":283
  *                         and neighbor_gv <= gvref + discont
  *                         and gvref + discont >= int(img[ny_pos - 1, nx_pos])
  *                         and gvref + discont >= int(img[ny_pos + 1, nx_pos])             # <<<<<<<<<<<<<<
@@ -19960,7 +19960,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
             goto __pyx_L23_bool_binop_done;
           }
 
-          /* "algorithms/segmentation.py":284
+          /* "openptv2/algorithms/segmentation.py":284
  *                         and gvref + discont >= int(img[ny_pos - 1, nx_pos])
  *                         and gvref + discont >= int(img[ny_pos + 1, nx_pos])
  *                         and gvref + discont >= int(img[ny_pos, nx_pos - 1])             # <<<<<<<<<<<<<<
@@ -20001,7 +20001,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
             goto __pyx_L23_bool_binop_done;
           }
 
-          /* "algorithms/segmentation.py":285
+          /* "openptv2/algorithms/segmentation.py":285
  *                         and gvref + discont >= int(img[ny_pos + 1, nx_pos])
  *                         and gvref + discont >= int(img[ny_pos, nx_pos - 1])
  *                         and gvref + discont >= int(img[ny_pos, nx_pos + 1])             # <<<<<<<<<<<<<<
@@ -20039,7 +20039,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
           __pyx_t_6 = __pyx_t_20;
           __pyx_L23_bool_binop_done:;
 
-          /* "algorithms/segmentation.py":277
+          /* "openptv2/algorithms/segmentation.py":277
  *                     neighbor_gv = int(img[ny_pos, nx_pos])
  * 
  *                     if (             # <<<<<<<<<<<<<<
@@ -20048,7 +20048,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
 */
           if (__pyx_t_6) {
 
-            /* "algorithms/segmentation.py":287
+            /* "openptv2/algorithms/segmentation.py":287
  *                         and gvref + discont >= int(img[ny_pos, nx_pos + 1])
  *                     ):
  *                         label_img[ny_pos, nx_pos] = n_peaks             # <<<<<<<<<<<<<<
@@ -20073,7 +20073,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
             __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
             __Pyx_DECREF(__pyx_t_22); __pyx_t_22 = 0;
 
-            /* "algorithms/segmentation.py":288
+            /* "openptv2/algorithms/segmentation.py":288
  *                     ):
  *                         label_img[ny_pos, nx_pos] = n_peaks
  *                         qx[qtail] = nx_pos             # <<<<<<<<<<<<<<
@@ -20083,7 +20083,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
             __pyx_t_25 = __pyx_v_qtail;
             *((int *) ( /* dim=0 */ (__pyx_v_qx.data + __pyx_t_25 * __pyx_v_qx.strides[0]) )) = __pyx_v_nx_pos;
 
-            /* "algorithms/segmentation.py":289
+            /* "openptv2/algorithms/segmentation.py":289
  *                         label_img[ny_pos, nx_pos] = n_peaks
  *                         qx[qtail] = nx_pos
  *                         qy[qtail] = ny_pos             # <<<<<<<<<<<<<<
@@ -20093,7 +20093,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
             __pyx_t_25 = __pyx_v_qtail;
             *((int *) ( /* dim=0 */ (__pyx_v_qy.data + __pyx_t_25 * __pyx_v_qy.strides[0]) )) = __pyx_v_ny_pos;
 
-            /* "algorithms/segmentation.py":290
+            /* "openptv2/algorithms/segmentation.py":290
  *                         qx[qtail] = nx_pos
  *                         qy[qtail] = ny_pos
  *                         qtail += 1             # <<<<<<<<<<<<<<
@@ -20102,7 +20102,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
 */
             __pyx_v_qtail = (__pyx_v_qtail + 1);
 
-            /* "algorithms/segmentation.py":277
+            /* "openptv2/algorithms/segmentation.py":277
  *                     neighbor_gv = int(img[ny_pos, nx_pos])
  * 
  *                     if (             # <<<<<<<<<<<<<<
@@ -20111,7 +20111,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
 */
           }
 
-          /* "algorithms/segmentation.py":267
+          /* "openptv2/algorithms/segmentation.py":267
  *                 gvref = int(img[wy, wx])
  * 
  *                 for dx, dy in [(0, -1), (0, 1), (-1, 0), (1, 0)]:             # <<<<<<<<<<<<<<
@@ -20126,7 +20126,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
     }
   }
 
-  /* "algorithms/segmentation.py":293
+  /* "openptv2/algorithms/segmentation.py":293
  * 
  *     # ---- Pass 2: Collect data and detect touches ----
  *     for i in range(ymin, ymax):             # <<<<<<<<<<<<<<
@@ -20139,7 +20139,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
   for (__pyx_t_14 = __pyx_t_13; __pyx_t_14 < __pyx_t_12; __pyx_t_14+=1) {
     __pyx_v_i = __pyx_t_14;
 
-    /* "algorithms/segmentation.py":294
+    /* "openptv2/algorithms/segmentation.py":294
  *     # ---- Pass 2: Collect data and detect touches ----
  *     for i in range(ymin, ymax):
  *         for j in range(xmin, xmax):             # <<<<<<<<<<<<<<
@@ -20152,7 +20152,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
     for (__pyx_t_18 = __pyx_t_17; __pyx_t_18 < __pyx_t_16; __pyx_t_18+=1) {
       __pyx_v_j = __pyx_t_18;
 
-      /* "algorithms/segmentation.py":295
+      /* "openptv2/algorithms/segmentation.py":295
  *     for i in range(ymin, ymax):
  *         for j in range(xmin, xmax):
  *             n = i * imx + j             # <<<<<<<<<<<<<<
@@ -20173,7 +20173,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       __Pyx_XDECREF_SET(__pyx_v_n, __pyx_t_8);
       __pyx_t_8 = 0;
 
-      /* "algorithms/segmentation.py":296
+      /* "openptv2/algorithms/segmentation.py":296
  *         for j in range(xmin, xmax):
  *             n = i * imx + j
  *             label = label_img[i, j]             # <<<<<<<<<<<<<<
@@ -20198,7 +20198,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       __Pyx_XDECREF_SET(__pyx_v_label, __pyx_t_23);
       __pyx_t_23 = 0;
 
-      /* "algorithms/segmentation.py":298
+      /* "openptv2/algorithms/segmentation.py":298
  *             label = label_img[i, j]
  * 
  *             if label <= 0:             # <<<<<<<<<<<<<<
@@ -20210,7 +20210,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       __Pyx_DECREF(__pyx_t_23); __pyx_t_23 = 0;
       if (__pyx_t_6) {
 
-        /* "algorithms/segmentation.py":299
+        /* "openptv2/algorithms/segmentation.py":299
  * 
  *             if label <= 0:
  *                 continue             # <<<<<<<<<<<<<<
@@ -20219,7 +20219,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
 */
         goto __pyx_L34_continue;
 
-        /* "algorithms/segmentation.py":298
+        /* "openptv2/algorithms/segmentation.py":298
  *             label = label_img[i, j]
  * 
  *             if label <= 0:             # <<<<<<<<<<<<<<
@@ -20228,7 +20228,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
 */
       }
 
-      /* "algorithms/segmentation.py":301
+      /* "openptv2/algorithms/segmentation.py":301
  *                 continue
  * 
  *             pnr = label - 1             # <<<<<<<<<<<<<<
@@ -20240,7 +20240,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       __Pyx_XDECREF_SET(__pyx_v_pnr, __pyx_t_23);
       __pyx_t_23 = 0;
 
-      /* "algorithms/segmentation.py":302
+      /* "openptv2/algorithms/segmentation.py":302
  * 
  *             pnr = label - 1
  *             peak = peaks[pnr]             # <<<<<<<<<<<<<<
@@ -20252,7 +20252,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       __Pyx_XDECREF_SET(__pyx_v_peak, __pyx_t_23);
       __pyx_t_23 = 0;
 
-      /* "algorithms/segmentation.py":303
+      /* "openptv2/algorithms/segmentation.py":303
  *             pnr = label - 1
  *             peak = peaks[pnr]
  *             gv = img[i, j]             # <<<<<<<<<<<<<<
@@ -20278,7 +20278,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       __Pyx_DECREF(__pyx_t_22); __pyx_t_22 = 0;
       __pyx_v_gv = __pyx_t_26;
 
-      /* "algorithms/segmentation.py":305
+      /* "openptv2/algorithms/segmentation.py":305
  *             gv = img[i, j]
  * 
  *             peak.n += 1             # <<<<<<<<<<<<<<
@@ -20293,7 +20293,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       if (__Pyx_PyObject_SetAttrStr(__pyx_v_peak, __pyx_mstate_global->__pyx_n_u_n, __pyx_t_8) < (0)) __PYX_ERR(0, 305, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
 
-      /* "algorithms/segmentation.py":306
+      /* "openptv2/algorithms/segmentation.py":306
  * 
  *             peak.n += 1
  *             peak.sumg += int(gv)             # <<<<<<<<<<<<<<
@@ -20321,7 +20321,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       if (__Pyx_PyObject_SetAttrStr(__pyx_v_peak, __pyx_mstate_global->__pyx_n_u_sumg, __pyx_t_1) < (0)) __PYX_ERR(0, 306, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "algorithms/segmentation.py":307
+      /* "openptv2/algorithms/segmentation.py":307
  *             peak.n += 1
  *             peak.sumg += int(gv)
  *             peak.x += float(j) * gv             # <<<<<<<<<<<<<<
@@ -20339,7 +20339,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       if (__Pyx_PyObject_SetAttrStr(__pyx_v_peak, __pyx_mstate_global->__pyx_n_u_x, __pyx_t_8) < (0)) __PYX_ERR(0, 307, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
 
-      /* "algorithms/segmentation.py":308
+      /* "openptv2/algorithms/segmentation.py":308
  *             peak.sumg += int(gv)
  *             peak.x += float(j) * gv
  *             peak.y += float(i) * gv             # <<<<<<<<<<<<<<
@@ -20357,7 +20357,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       if (__Pyx_PyObject_SetAttrStr(__pyx_v_peak, __pyx_mstate_global->__pyx_n_u_y, __pyx_t_1) < (0)) __PYX_ERR(0, 308, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "algorithms/segmentation.py":310
+      /* "openptv2/algorithms/segmentation.py":310
  *             peak.y += float(i) * gv
  * 
  *             peak.xmin = min(peak.xmin, j)             # <<<<<<<<<<<<<<
@@ -20389,7 +20389,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       if (__Pyx_PyObject_SetAttrStr(__pyx_v_peak, __pyx_mstate_global->__pyx_n_u_xmin, __pyx_t_1) < (0)) __PYX_ERR(0, 310, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "algorithms/segmentation.py":311
+      /* "openptv2/algorithms/segmentation.py":311
  * 
  *             peak.xmin = min(peak.xmin, j)
  *             peak.xmax = max(peak.xmax, j)             # <<<<<<<<<<<<<<
@@ -20421,7 +20421,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       if (__Pyx_PyObject_SetAttrStr(__pyx_v_peak, __pyx_mstate_global->__pyx_n_u_xmax, __pyx_t_1) < (0)) __PYX_ERR(0, 311, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "algorithms/segmentation.py":312
+      /* "openptv2/algorithms/segmentation.py":312
  *             peak.xmin = min(peak.xmin, j)
  *             peak.xmax = max(peak.xmax, j)
  *             peak.ymin = min(peak.ymin, i)             # <<<<<<<<<<<<<<
@@ -20453,7 +20453,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       if (__Pyx_PyObject_SetAttrStr(__pyx_v_peak, __pyx_mstate_global->__pyx_n_u_ymin, __pyx_t_1) < (0)) __PYX_ERR(0, 312, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "algorithms/segmentation.py":313
+      /* "openptv2/algorithms/segmentation.py":313
  *             peak.xmax = max(peak.xmax, j)
  *             peak.ymin = min(peak.ymin, i)
  *             peak.ymax = max(peak.ymax, i)             # <<<<<<<<<<<<<<
@@ -20485,7 +20485,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       if (__Pyx_PyObject_SetAttrStr(__pyx_v_peak, __pyx_mstate_global->__pyx_n_u_ymax, __pyx_t_1) < (0)) __PYX_ERR(0, 313, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "algorithms/segmentation.py":316
+      /* "openptv2/algorithms/segmentation.py":316
  * 
  *             # Check 8-neighbors for touches
  *             for di, dj in [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]:             # <<<<<<<<<<<<<<
@@ -20532,7 +20532,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
         __Pyx_XDECREF_SET(__pyx_v_dj, __pyx_t_23);
         __pyx_t_23 = 0;
 
-        /* "algorithms/segmentation.py":317
+        /* "openptv2/algorithms/segmentation.py":317
  *             # Check 8-neighbors for touches
  *             for di, dj in [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]:
  *                 ni, nj = i + di, j + dj             # <<<<<<<<<<<<<<
@@ -20554,7 +20554,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
         __Pyx_XDECREF_SET(__pyx_v_nj, __pyx_t_8);
         __pyx_t_8 = 0;
 
-        /* "algorithms/segmentation.py":318
+        /* "openptv2/algorithms/segmentation.py":318
  *             for di, dj in [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]:
  *                 ni, nj = i + di, j + dj
  *                 if 0 <= ni < imy and 0 <= nj < imx:             # <<<<<<<<<<<<<<
@@ -20584,7 +20584,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
         __pyx_L40_bool_binop_done:;
         if (__pyx_t_6) {
 
-          /* "algorithms/segmentation.py":319
+          /* "openptv2/algorithms/segmentation.py":319
  *                 ni, nj = i + di, j + dj
  *                 if 0 <= ni < imy and 0 <= nj < imx:
  *                     neighbor_label = label_img[ni, nj]             # <<<<<<<<<<<<<<
@@ -20605,7 +20605,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
           __Pyx_XDECREF_SET(__pyx_v_neighbor_label, __pyx_t_23);
           __pyx_t_23 = 0;
 
-          /* "algorithms/segmentation.py":320
+          /* "openptv2/algorithms/segmentation.py":320
  *                 if 0 <= ni < imy and 0 <= nj < imx:
  *                     neighbor_label = label_img[ni, nj]
  *                     check_touch(peak, label, neighbor_label)             # <<<<<<<<<<<<<<
@@ -20626,13 +20626,13 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
             PyErr_SetString(PyExc_TypeError, "cannot pass None into a C function argument that is declared 'not None'");
             __PYX_ERR(0, 320, __pyx_L1_error)
           }
-          __pyx_t_22 = __pyx_f_10algorithms_12segmentation_check_touch(__pyx_v_peak, ((PyObject*)__pyx_t_23), ((PyObject*)__pyx_t_8), 0); if (unlikely(!__pyx_t_22)) __PYX_ERR(0, 320, __pyx_L1_error)
+          __pyx_t_22 = __pyx_f_8openptv2_10algorithms_12segmentation_check_touch(__pyx_v_peak, ((PyObject*)__pyx_t_23), ((PyObject*)__pyx_t_8), 0); if (unlikely(!__pyx_t_22)) __PYX_ERR(0, 320, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_22);
           __Pyx_DECREF(__pyx_t_23); __pyx_t_23 = 0;
           __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
           __Pyx_DECREF(__pyx_t_22); __pyx_t_22 = 0;
 
-          /* "algorithms/segmentation.py":318
+          /* "openptv2/algorithms/segmentation.py":318
  *             for di, dj in [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]:
  *                 ni, nj = i + di, j + dj
  *                 if 0 <= ni < imy and 0 <= nj < imx:             # <<<<<<<<<<<<<<
@@ -20641,7 +20641,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
 */
         }
 
-        /* "algorithms/segmentation.py":316
+        /* "openptv2/algorithms/segmentation.py":316
  * 
  *             # Check 8-neighbors for touches
  *             for di, dj in [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]:             # <<<<<<<<<<<<<<
@@ -20654,7 +20654,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
     }
   }
 
-  /* "algorithms/segmentation.py":323
+  /* "openptv2/algorithms/segmentation.py":323
  * 
  *     # ---- Pass 3: Reunification test ----
  *     for i, peak_i in enumerate(peaks):             # <<<<<<<<<<<<<<
@@ -20681,7 +20681,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
     __pyx_v_i = __pyx_t_11;
     __pyx_t_11 = (__pyx_t_11 + 1);
 
-    /* "algorithms/segmentation.py":324
+    /* "openptv2/algorithms/segmentation.py":324
  *     # ---- Pass 3: Reunification test ----
  *     for i, peak_i in enumerate(peaks):
  *         if peak_i.n_touch == 0 or peak_i.unr != 0:             # <<<<<<<<<<<<<<
@@ -20705,7 +20705,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
     __pyx_L46_bool_binop_done:;
     if (__pyx_t_6) {
 
-      /* "algorithms/segmentation.py":325
+      /* "openptv2/algorithms/segmentation.py":325
  *     for i, peak_i in enumerate(peaks):
  *         if peak_i.n_touch == 0 or peak_i.unr != 0:
  *             continue             # <<<<<<<<<<<<<<
@@ -20714,7 +20714,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
 */
       goto __pyx_L43_continue;
 
-      /* "algorithms/segmentation.py":324
+      /* "openptv2/algorithms/segmentation.py":324
  *     # ---- Pass 3: Reunification test ----
  *     for i, peak_i in enumerate(peaks):
  *         if peak_i.n_touch == 0 or peak_i.unr != 0:             # <<<<<<<<<<<<<<
@@ -20723,7 +20723,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
 */
     }
 
-    /* "algorithms/segmentation.py":327
+    /* "openptv2/algorithms/segmentation.py":327
  *             continue
  * 
  *         x1 = peak_i.x / peak_i.sumg             # <<<<<<<<<<<<<<
@@ -20741,7 +20741,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
     __Pyx_XDECREF_SET(__pyx_v_x1, __pyx_t_23);
     __pyx_t_23 = 0;
 
-    /* "algorithms/segmentation.py":328
+    /* "openptv2/algorithms/segmentation.py":328
  * 
  *         x1 = peak_i.x / peak_i.sumg
  *         y1 = peak_i.y / peak_i.sumg             # <<<<<<<<<<<<<<
@@ -20759,7 +20759,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
     __Pyx_XDECREF_SET(__pyx_v_y1, __pyx_t_22);
     __pyx_t_22 = 0;
 
-    /* "algorithms/segmentation.py":329
+    /* "openptv2/algorithms/segmentation.py":329
  *         x1 = peak_i.x / peak_i.sumg
  *         y1 = peak_i.y / peak_i.sumg
  *         gv1 = img.flat[peak_i.pos]             # <<<<<<<<<<<<<<
@@ -20777,7 +20777,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
     __Pyx_XDECREF_SET(__pyx_v_gv1, __pyx_t_23);
     __pyx_t_23 = 0;
 
-    /* "algorithms/segmentation.py":331
+    /* "openptv2/algorithms/segmentation.py":331
  *         gv1 = img.flat[peak_i.pos]
  * 
  *         for j_idx in peak_i.touch:             # <<<<<<<<<<<<<<
@@ -20839,7 +20839,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       __Pyx_XDECREF_SET(__pyx_v_j_idx, __pyx_t_23);
       __pyx_t_23 = 0;
 
-      /* "algorithms/segmentation.py":332
+      /* "openptv2/algorithms/segmentation.py":332
  * 
  *         for j_idx in peak_i.touch:
  *             p2 = j_idx - 1             # <<<<<<<<<<<<<<
@@ -20851,7 +20851,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       __Pyx_XDECREF_SET(__pyx_v_p2, __pyx_t_23);
       __pyx_t_23 = 0;
 
-      /* "algorithms/segmentation.py":333
+      /* "openptv2/algorithms/segmentation.py":333
  *         for j_idx in peak_i.touch:
  *             p2 = j_idx - 1
  *             if p2 < 0 or p2 >= len(peaks) or peaks[p2].unr != 0:             # <<<<<<<<<<<<<<
@@ -20889,7 +20889,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       __pyx_L51_bool_binop_done:;
       if (__pyx_t_6) {
 
-        /* "algorithms/segmentation.py":334
+        /* "openptv2/algorithms/segmentation.py":334
  *             p2 = j_idx - 1
  *             if p2 < 0 or p2 >= len(peaks) or peaks[p2].unr != 0:
  *                 continue             # <<<<<<<<<<<<<<
@@ -20898,7 +20898,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
 */
         goto __pyx_L48_continue;
 
-        /* "algorithms/segmentation.py":333
+        /* "openptv2/algorithms/segmentation.py":333
  *         for j_idx in peak_i.touch:
  *             p2 = j_idx - 1
  *             if p2 < 0 or p2 >= len(peaks) or peaks[p2].unr != 0:             # <<<<<<<<<<<<<<
@@ -20907,7 +20907,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
 */
       }
 
-      /* "algorithms/segmentation.py":336
+      /* "openptv2/algorithms/segmentation.py":336
  *                 continue
  * 
  *             peak_j = peaks[p2]             # <<<<<<<<<<<<<<
@@ -20919,7 +20919,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       __Pyx_XDECREF_SET(__pyx_v_peak_j, __pyx_t_23);
       __pyx_t_23 = 0;
 
-      /* "algorithms/segmentation.py":337
+      /* "openptv2/algorithms/segmentation.py":337
  * 
  *             peak_j = peaks[p2]
  *             x2 = peak_j.x / peak_j.sumg             # <<<<<<<<<<<<<<
@@ -20937,7 +20937,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       __Pyx_XDECREF_SET(__pyx_v_x2, __pyx_t_2);
       __pyx_t_2 = 0;
 
-      /* "algorithms/segmentation.py":338
+      /* "openptv2/algorithms/segmentation.py":338
  *             peak_j = peaks[p2]
  *             x2 = peak_j.x / peak_j.sumg
  *             y2 = peak_j.y / peak_j.sumg             # <<<<<<<<<<<<<<
@@ -20955,7 +20955,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       __Pyx_XDECREF_SET(__pyx_v_y2, __pyx_t_23);
       __pyx_t_23 = 0;
 
-      /* "algorithms/segmentation.py":339
+      /* "openptv2/algorithms/segmentation.py":339
  *             x2 = peak_j.x / peak_j.sumg
  *             y2 = peak_j.y / peak_j.sumg
  *             gv2 = img.flat[peak_j.pos]             # <<<<<<<<<<<<<<
@@ -20973,7 +20973,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       __Pyx_XDECREF_SET(__pyx_v_gv2, __pyx_t_2);
       __pyx_t_2 = 0;
 
-      /* "algorithms/segmentation.py":341
+      /* "openptv2/algorithms/segmentation.py":341
  *             gv2 = img.flat[peak_j.pos]
  * 
  *             s12 = np.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)             # <<<<<<<<<<<<<<
@@ -21024,7 +21024,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       __Pyx_XDECREF_SET(__pyx_v_s12, __pyx_t_2);
       __pyx_t_2 = 0;
 
-      /* "algorithms/segmentation.py":344
+      /* "openptv2/algorithms/segmentation.py":344
  * 
  *             # Profile criterion
  *             unify = s12 < 2.0             # <<<<<<<<<<<<<<
@@ -21035,7 +21035,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       __Pyx_XDECREF_SET(__pyx_v_unify, __pyx_t_2);
       __pyx_t_2 = 0;
 
-      /* "algorithms/segmentation.py":345
+      /* "openptv2/algorithms/segmentation.py":345
  *             # Profile criterion
  *             unify = s12 < 2.0
  *             if not unify:             # <<<<<<<<<<<<<<
@@ -21046,7 +21046,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       __pyx_t_20 = (!__pyx_t_6);
       if (__pyx_t_20) {
 
-        /* "algorithms/segmentation.py":346
+        /* "openptv2/algorithms/segmentation.py":346
  *             unify = s12 < 2.0
  *             if not unify:
  *                 unify = True             # <<<<<<<<<<<<<<
@@ -21056,7 +21056,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
         __Pyx_INCREF(Py_True);
         __Pyx_DECREF_SET(__pyx_v_unify, Py_True);
 
-        /* "algorithms/segmentation.py":347
+        /* "openptv2/algorithms/segmentation.py":347
  *             if not unify:
  *                 unify = True
  *                 for l in range(1, int(s12)):             # <<<<<<<<<<<<<<
@@ -21096,7 +21096,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
           __Pyx_XDECREF_SET(__pyx_v_l, ((PyObject*)__pyx_t_2));
           __pyx_t_2 = 0;
 
-          /* "algorithms/segmentation.py":348
+          /* "openptv2/algorithms/segmentation.py":348
  *                 unify = True
  *                 for l in range(1, int(s12)):
  *                     intx1 = int(x1 + l * (x2 - x1) / s12)             # <<<<<<<<<<<<<<
@@ -21120,7 +21120,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
           __Pyx_XDECREF_SET(__pyx_v_intx1, ((PyObject*)__pyx_t_2));
           __pyx_t_2 = 0;
 
-          /* "algorithms/segmentation.py":349
+          /* "openptv2/algorithms/segmentation.py":349
  *                 for l in range(1, int(s12)):
  *                     intx1 = int(x1 + l * (x2 - x1) / s12)
  *                     inty1 = int(y1 + l * (y2 - y1) / s12)             # <<<<<<<<<<<<<<
@@ -21144,7 +21144,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
           __Pyx_XDECREF_SET(__pyx_v_inty1, ((PyObject*)__pyx_t_2));
           __pyx_t_2 = 0;
 
-          /* "algorithms/segmentation.py":352
+          /* "openptv2/algorithms/segmentation.py":352
  * 
  *                     # Ensure indices are within bounds
  *                     if 0 <= inty1 < imy and 0 <= intx1 < imx:             # <<<<<<<<<<<<<<
@@ -21174,7 +21174,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
           __pyx_L58_bool_binop_done:;
           if (__pyx_t_20) {
 
-            /* "algorithms/segmentation.py":353
+            /* "openptv2/algorithms/segmentation.py":353
  *                     # Ensure indices are within bounds
  *                     if 0 <= inty1 < imy and 0 <= intx1 < imx:
  *                         gv = int(img[inty1, intx1]) + discont             # <<<<<<<<<<<<<<
@@ -21202,7 +21202,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
             __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
             __pyx_v_gv = __pyx_t_26;
 
-            /* "algorithms/segmentation.py":355
+            /* "openptv2/algorithms/segmentation.py":355
  *                         gv = int(img[inty1, intx1]) + discont
  *                         if (
  *                             gv < gv1 + l * (gv2 - gv1) / s12             # <<<<<<<<<<<<<<
@@ -21233,7 +21233,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
               goto __pyx_L61_bool_binop_done;
             }
 
-            /* "algorithms/segmentation.py":356
+            /* "openptv2/algorithms/segmentation.py":356
  *                         if (
  *                             gv < gv1 + l * (gv2 - gv1) / s12
  *                             or gv < gv1             # <<<<<<<<<<<<<<
@@ -21252,7 +21252,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
               goto __pyx_L61_bool_binop_done;
             }
 
-            /* "algorithms/segmentation.py":357
+            /* "openptv2/algorithms/segmentation.py":357
  *                             gv < gv1 + l * (gv2 - gv1) / s12
  *                             or gv < gv1
  *                             or gv < gv2             # <<<<<<<<<<<<<<
@@ -21268,7 +21268,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
             __pyx_t_20 = __pyx_t_6;
             __pyx_L61_bool_binop_done:;
 
-            /* "algorithms/segmentation.py":354
+            /* "openptv2/algorithms/segmentation.py":354
  *                     if 0 <= inty1 < imy and 0 <= intx1 < imx:
  *                         gv = int(img[inty1, intx1]) + discont
  *                         if (             # <<<<<<<<<<<<<<
@@ -21277,7 +21277,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
 */
             if (__pyx_t_20) {
 
-              /* "algorithms/segmentation.py":359
+              /* "openptv2/algorithms/segmentation.py":359
  *                             or gv < gv2
  *                         ):
  *                             unify = False             # <<<<<<<<<<<<<<
@@ -21287,7 +21287,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
               __Pyx_INCREF(Py_False);
               __Pyx_DECREF_SET(__pyx_v_unify, Py_False);
 
-              /* "algorithms/segmentation.py":360
+              /* "openptv2/algorithms/segmentation.py":360
  *                         ):
  *                             unify = False
  *                             break             # <<<<<<<<<<<<<<
@@ -21296,7 +21296,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
 */
               goto __pyx_L56_break;
 
-              /* "algorithms/segmentation.py":354
+              /* "openptv2/algorithms/segmentation.py":354
  *                     if 0 <= inty1 < imy and 0 <= intx1 < imx:
  *                         gv = int(img[inty1, intx1]) + discont
  *                         if (             # <<<<<<<<<<<<<<
@@ -21305,7 +21305,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
 */
             }
 
-            /* "algorithms/segmentation.py":352
+            /* "openptv2/algorithms/segmentation.py":352
  * 
  *                     # Ensure indices are within bounds
  *                     if 0 <= inty1 < imy and 0 <= intx1 < imx:             # <<<<<<<<<<<<<<
@@ -21315,7 +21315,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
             goto __pyx_L57;
           }
 
-          /* "algorithms/segmentation.py":362
+          /* "openptv2/algorithms/segmentation.py":362
  *                             break
  *                     else:
  *                         unify = False             # <<<<<<<<<<<<<<
@@ -21326,7 +21326,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
             __Pyx_INCREF(Py_False);
             __Pyx_DECREF_SET(__pyx_v_unify, Py_False);
 
-            /* "algorithms/segmentation.py":363
+            /* "openptv2/algorithms/segmentation.py":363
  *                     else:
  *                         unify = False
  *                         break             # <<<<<<<<<<<<<<
@@ -21337,7 +21337,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
           }
           __pyx_L57:;
 
-          /* "algorithms/segmentation.py":347
+          /* "openptv2/algorithms/segmentation.py":347
  *             if not unify:
  *                 unify = True
  *                 for l in range(1, int(s12)):             # <<<<<<<<<<<<<<
@@ -21352,7 +21352,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
         goto __pyx_L64_for_end;
         __pyx_L64_for_end:;
 
-        /* "algorithms/segmentation.py":345
+        /* "openptv2/algorithms/segmentation.py":345
  *             # Profile criterion
  *             unify = s12 < 2.0
  *             if not unify:             # <<<<<<<<<<<<<<
@@ -21361,7 +21361,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
 */
       }
 
-      /* "algorithms/segmentation.py":365
+      /* "openptv2/algorithms/segmentation.py":365
  *                         break
  * 
  *             if not unify:             # <<<<<<<<<<<<<<
@@ -21372,7 +21372,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       __pyx_t_6 = (!__pyx_t_20);
       if (__pyx_t_6) {
 
-        /* "algorithms/segmentation.py":366
+        /* "openptv2/algorithms/segmentation.py":366
  * 
  *             if not unify:
  *                 continue             # <<<<<<<<<<<<<<
@@ -21381,7 +21381,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
 */
         goto __pyx_L48_continue;
 
-        /* "algorithms/segmentation.py":365
+        /* "openptv2/algorithms/segmentation.py":365
  *                         break
  * 
  *             if not unify:             # <<<<<<<<<<<<<<
@@ -21390,7 +21390,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
 */
       }
 
-      /* "algorithms/segmentation.py":369
+      /* "openptv2/algorithms/segmentation.py":369
  * 
  *             # Unify targets
  *             peak_i.unr = p2 + 1  # 1-indexed             # <<<<<<<<<<<<<<
@@ -21402,7 +21402,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       if (__Pyx_PyObject_SetAttrStr(__pyx_v_peak_i, __pyx_mstate_global->__pyx_n_u_unr, __pyx_t_23) < (0)) __PYX_ERR(0, 369, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_23); __pyx_t_23 = 0;
 
-      /* "algorithms/segmentation.py":370
+      /* "openptv2/algorithms/segmentation.py":370
  *             # Unify targets
  *             peak_i.unr = p2 + 1  # 1-indexed
  *             peak_j.x += peak_i.x             # <<<<<<<<<<<<<<
@@ -21420,7 +21420,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       if (__Pyx_PyObject_SetAttrStr(__pyx_v_peak_j, __pyx_mstate_global->__pyx_n_u_x, __pyx_t_22) < (0)) __PYX_ERR(0, 370, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_22); __pyx_t_22 = 0;
 
-      /* "algorithms/segmentation.py":371
+      /* "openptv2/algorithms/segmentation.py":371
  *             peak_i.unr = p2 + 1  # 1-indexed
  *             peak_j.x += peak_i.x
  *             peak_j.y += peak_i.y             # <<<<<<<<<<<<<<
@@ -21438,7 +21438,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       if (__Pyx_PyObject_SetAttrStr(__pyx_v_peak_j, __pyx_mstate_global->__pyx_n_u_y, __pyx_t_23) < (0)) __PYX_ERR(0, 371, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_23); __pyx_t_23 = 0;
 
-      /* "algorithms/segmentation.py":372
+      /* "openptv2/algorithms/segmentation.py":372
  *             peak_j.x += peak_i.x
  *             peak_j.y += peak_i.y
  *             peak_j.sumg += peak_i.sumg             # <<<<<<<<<<<<<<
@@ -21456,7 +21456,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       if (__Pyx_PyObject_SetAttrStr(__pyx_v_peak_j, __pyx_mstate_global->__pyx_n_u_sumg, __pyx_t_22) < (0)) __PYX_ERR(0, 372, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_22); __pyx_t_22 = 0;
 
-      /* "algorithms/segmentation.py":373
+      /* "openptv2/algorithms/segmentation.py":373
  *             peak_j.y += peak_i.y
  *             peak_j.sumg += peak_i.sumg
  *             peak_j.n += peak_i.n             # <<<<<<<<<<<<<<
@@ -21474,7 +21474,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       if (__Pyx_PyObject_SetAttrStr(__pyx_v_peak_j, __pyx_mstate_global->__pyx_n_u_n, __pyx_t_23) < (0)) __PYX_ERR(0, 373, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_23); __pyx_t_23 = 0;
 
-      /* "algorithms/segmentation.py":374
+      /* "openptv2/algorithms/segmentation.py":374
  *             peak_j.sumg += peak_i.sumg
  *             peak_j.n += peak_i.n
  *             peak_j.xmin = min(peak_j.xmin, peak_i.xmin)             # <<<<<<<<<<<<<<
@@ -21503,7 +21503,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       if (__Pyx_PyObject_SetAttrStr(__pyx_v_peak_j, __pyx_mstate_global->__pyx_n_u_xmin, __pyx_t_23) < (0)) __PYX_ERR(0, 374, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_23); __pyx_t_23 = 0;
 
-      /* "algorithms/segmentation.py":375
+      /* "openptv2/algorithms/segmentation.py":375
  *             peak_j.n += peak_i.n
  *             peak_j.xmin = min(peak_j.xmin, peak_i.xmin)
  *             peak_j.ymin = min(peak_j.ymin, peak_i.ymin)             # <<<<<<<<<<<<<<
@@ -21532,7 +21532,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       if (__Pyx_PyObject_SetAttrStr(__pyx_v_peak_j, __pyx_mstate_global->__pyx_n_u_ymin, __pyx_t_23) < (0)) __PYX_ERR(0, 375, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_23); __pyx_t_23 = 0;
 
-      /* "algorithms/segmentation.py":376
+      /* "openptv2/algorithms/segmentation.py":376
  *             peak_j.xmin = min(peak_j.xmin, peak_i.xmin)
  *             peak_j.ymin = min(peak_j.ymin, peak_i.ymin)
  *             peak_j.xmax = max(peak_j.xmax, peak_i.xmax)             # <<<<<<<<<<<<<<
@@ -21561,7 +21561,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       if (__Pyx_PyObject_SetAttrStr(__pyx_v_peak_j, __pyx_mstate_global->__pyx_n_u_xmax, __pyx_t_23) < (0)) __PYX_ERR(0, 376, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_23); __pyx_t_23 = 0;
 
-      /* "algorithms/segmentation.py":377
+      /* "openptv2/algorithms/segmentation.py":377
  *             peak_j.ymin = min(peak_j.ymin, peak_i.ymin)
  *             peak_j.xmax = max(peak_j.xmax, peak_i.xmax)
  *             peak_j.ymax = max(peak_j.ymax, peak_i.ymax)             # <<<<<<<<<<<<<<
@@ -21590,7 +21590,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       if (__Pyx_PyObject_SetAttrStr(__pyx_v_peak_j, __pyx_mstate_global->__pyx_n_u_ymax, __pyx_t_23) < (0)) __PYX_ERR(0, 377, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_23); __pyx_t_23 = 0;
 
-      /* "algorithms/segmentation.py":331
+      /* "openptv2/algorithms/segmentation.py":331
  *         gv1 = img.flat[peak_i.pos]
  * 
  *         for j_idx in peak_i.touch:             # <<<<<<<<<<<<<<
@@ -21601,7 +21601,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
     }
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
 
-    /* "algorithms/segmentation.py":323
+    /* "openptv2/algorithms/segmentation.py":323
  * 
  *     # ---- Pass 3: Reunification test ----
  *     for i, peak_i in enumerate(peaks):             # <<<<<<<<<<<<<<
@@ -21612,7 +21612,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/segmentation.py":380
+  /* "openptv2/algorithms/segmentation.py":380
  * 
  *     # ---- Pass 4: Output targets ----
  *     targets = []             # <<<<<<<<<<<<<<
@@ -21624,7 +21624,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
   __pyx_v_targets = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "algorithms/segmentation.py":381
+  /* "openptv2/algorithms/segmentation.py":381
  *     # ---- Pass 4: Output targets ----
  *     targets = []
  *     for i, peak in enumerate(peaks):             # <<<<<<<<<<<<<<
@@ -21651,7 +21651,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
     __pyx_v_i = __pyx_t_11;
     __pyx_t_11 = (__pyx_t_11 + 1);
 
-    /* "algorithms/segmentation.py":383
+    /* "openptv2/algorithms/segmentation.py":383
  *     for i, peak in enumerate(peaks):
  *         # Skip if unified into another
  *         if peak.unr != 0:             # <<<<<<<<<<<<<<
@@ -21664,7 +21664,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
     if (__pyx_t_6) {
 
-      /* "algorithms/segmentation.py":384
+      /* "openptv2/algorithms/segmentation.py":384
  *         # Skip if unified into another
  *         if peak.unr != 0:
  *             continue             # <<<<<<<<<<<<<<
@@ -21673,7 +21673,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
 */
       goto __pyx_L68_continue;
 
-      /* "algorithms/segmentation.py":383
+      /* "openptv2/algorithms/segmentation.py":383
  *     for i, peak in enumerate(peaks):
  *         # Skip if unified into another
  *         if peak.unr != 0:             # <<<<<<<<<<<<<<
@@ -21682,7 +21682,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
 */
     }
 
-    /* "algorithms/segmentation.py":387
+    /* "openptv2/algorithms/segmentation.py":387
  * 
  *         # Check border touching
  *         width = xmax - xmin             # <<<<<<<<<<<<<<
@@ -21694,7 +21694,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
     __Pyx_XDECREF_SET(__pyx_v_width, ((PyObject*)__pyx_t_8));
     __pyx_t_8 = 0;
 
-    /* "algorithms/segmentation.py":388
+    /* "openptv2/algorithms/segmentation.py":388
  *         # Check border touching
  *         width = xmax - xmin
  *         if width > 32:             # <<<<<<<<<<<<<<
@@ -21706,7 +21706,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
     if (__pyx_t_6) {
 
-      /* "algorithms/segmentation.py":389
+      /* "openptv2/algorithms/segmentation.py":389
  *         width = xmax - xmin
  *         if width > 32:
  *             if peak.xmin == xmin or peak.ymin == ymin:             # <<<<<<<<<<<<<<
@@ -21734,7 +21734,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       __pyx_L73_bool_binop_done:;
       if (__pyx_t_6) {
 
-        /* "algorithms/segmentation.py":390
+        /* "openptv2/algorithms/segmentation.py":390
  *         if width > 32:
  *             if peak.xmin == xmin or peak.ymin == ymin:
  *                 continue             # <<<<<<<<<<<<<<
@@ -21743,7 +21743,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
 */
         goto __pyx_L68_continue;
 
-        /* "algorithms/segmentation.py":389
+        /* "openptv2/algorithms/segmentation.py":389
  *         width = xmax - xmin
  *         if width > 32:
  *             if peak.xmin == xmin or peak.ymin == ymin:             # <<<<<<<<<<<<<<
@@ -21752,7 +21752,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
 */
       }
 
-      /* "algorithms/segmentation.py":391
+      /* "openptv2/algorithms/segmentation.py":391
  *             if peak.xmin == xmin or peak.ymin == ymin:
  *                 continue
  *             if peak.xmax == xmax - 1 or peak.ymax == ymax - 1:             # <<<<<<<<<<<<<<
@@ -21786,7 +21786,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       __pyx_L76_bool_binop_done:;
       if (__pyx_t_6) {
 
-        /* "algorithms/segmentation.py":392
+        /* "openptv2/algorithms/segmentation.py":392
  *                 continue
  *             if peak.xmax == xmax - 1 or peak.ymax == ymax - 1:
  *                 continue             # <<<<<<<<<<<<<<
@@ -21795,7 +21795,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
 */
         goto __pyx_L68_continue;
 
-        /* "algorithms/segmentation.py":391
+        /* "openptv2/algorithms/segmentation.py":391
  *             if peak.xmin == xmin or peak.ymin == ymin:
  *                 continue
  *             if peak.xmax == xmax - 1 or peak.ymax == ymax - 1:             # <<<<<<<<<<<<<<
@@ -21804,7 +21804,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
 */
       }
 
-      /* "algorithms/segmentation.py":388
+      /* "openptv2/algorithms/segmentation.py":388
  *         # Check border touching
  *         width = xmax - xmin
  *         if width > 32:             # <<<<<<<<<<<<<<
@@ -21813,7 +21813,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
 */
     }
 
-    /* "algorithms/segmentation.py":395
+    /* "openptv2/algorithms/segmentation.py":395
  * 
  *         # Acceptance criteria
  *         nx = peak.xmax - peak.xmin + 1             # <<<<<<<<<<<<<<
@@ -21834,7 +21834,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
     __Pyx_XDECREF_SET(__pyx_v_nx, __pyx_t_23);
     __pyx_t_23 = 0;
 
-    /* "algorithms/segmentation.py":396
+    /* "openptv2/algorithms/segmentation.py":396
  *         # Acceptance criteria
  *         nx = peak.xmax - peak.xmin + 1
  *         ny = peak.ymax - peak.ymin + 1             # <<<<<<<<<<<<<<
@@ -21855,7 +21855,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
     __Pyx_XDECREF_SET(__pyx_v_ny, __pyx_t_2);
     __pyx_t_2 = 0;
 
-    /* "algorithms/segmentation.py":399
+    /* "openptv2/algorithms/segmentation.py":399
  * 
  *         if (
  *             peak.sumg > sumg_min             # <<<<<<<<<<<<<<
@@ -21874,7 +21874,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       goto __pyx_L79_bool_binop_done;
     }
 
-    /* "algorithms/segmentation.py":400
+    /* "openptv2/algorithms/segmentation.py":400
  *         if (
  *             peak.sumg > sumg_min
  *             and nxmin <= nx <= nxmax             # <<<<<<<<<<<<<<
@@ -21894,7 +21894,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       goto __pyx_L79_bool_binop_done;
     }
 
-    /* "algorithms/segmentation.py":401
+    /* "openptv2/algorithms/segmentation.py":401
  *             peak.sumg > sumg_min
  *             and nxmin <= nx <= nxmax
  *             and nymin <= ny <= nymax             # <<<<<<<<<<<<<<
@@ -21914,7 +21914,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       goto __pyx_L79_bool_binop_done;
     }
 
-    /* "algorithms/segmentation.py":402
+    /* "openptv2/algorithms/segmentation.py":402
  *             and nxmin <= nx <= nxmax
  *             and nymin <= ny <= nymax
  *             and nnmin <= peak.n <= nnmax             # <<<<<<<<<<<<<<
@@ -21934,7 +21934,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
     __pyx_t_6 = __pyx_t_20;
     __pyx_L79_bool_binop_done:;
 
-    /* "algorithms/segmentation.py":398
+    /* "openptv2/algorithms/segmentation.py":398
  *         ny = peak.ymax - peak.ymin + 1
  * 
  *         if (             # <<<<<<<<<<<<<<
@@ -21943,7 +21943,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
 */
     if (__pyx_t_6) {
 
-      /* "algorithms/segmentation.py":404
+      /* "openptv2/algorithms/segmentation.py":404
  *             and nnmin <= peak.n <= nnmax
  *         ):
  *             x_final = 0.5 + peak.x / peak.sumg             # <<<<<<<<<<<<<<
@@ -21964,7 +21964,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       __Pyx_XDECREF_SET(__pyx_v_x_final, __pyx_t_8);
       __pyx_t_8 = 0;
 
-      /* "algorithms/segmentation.py":405
+      /* "openptv2/algorithms/segmentation.py":405
  *         ):
  *             x_final = 0.5 + peak.x / peak.sumg
  *             y_final = 0.5 + peak.y / peak.sumg             # <<<<<<<<<<<<<<
@@ -21985,7 +21985,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       __Pyx_XDECREF_SET(__pyx_v_y_final, __pyx_t_23);
       __pyx_t_23 = 0;
 
-      /* "algorithms/segmentation.py":408
+      /* "openptv2/algorithms/segmentation.py":408
  * 
  *             targets.append(
  *                 Target(             # <<<<<<<<<<<<<<
@@ -21996,7 +21996,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_mstate_global->__pyx_n_u_Target); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 408, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_8);
 
-      /* "algorithms/segmentation.py":409
+      /* "openptv2/algorithms/segmentation.py":409
  *             targets.append(
  *                 Target(
  *                     pnr=len(targets),             # <<<<<<<<<<<<<<
@@ -22007,7 +22007,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       __pyx_t_22 = PyLong_FromSsize_t(__pyx_t_13); if (unlikely(!__pyx_t_22)) __PYX_ERR(0, 409, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_22);
 
-      /* "algorithms/segmentation.py":412
+      /* "openptv2/algorithms/segmentation.py":412
  *                     x=x_final,
  *                     y=y_final,
  *                     n=peak.n,             # <<<<<<<<<<<<<<
@@ -22017,7 +22017,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_v_peak, __pyx_mstate_global->__pyx_n_u_n); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 412, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_7);
 
-      /* "algorithms/segmentation.py":415
+      /* "openptv2/algorithms/segmentation.py":415
  *                     nx=nx,
  *                     ny=ny,
  *                     sumg=peak.sumg,             # <<<<<<<<<<<<<<
@@ -22027,7 +22027,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_peak, __pyx_mstate_global->__pyx_n_u_sumg); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 415, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_4);
 
-      /* "algorithms/segmentation.py":416
+      /* "openptv2/algorithms/segmentation.py":416
  *                     ny=ny,
  *                     sumg=peak.sumg,
  *                     tnr=CORRES_NONE,             # <<<<<<<<<<<<<<
@@ -22072,7 +22072,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
         __Pyx_GOTREF(__pyx_t_23);
       }
 
-      /* "algorithms/segmentation.py":407
+      /* "openptv2/algorithms/segmentation.py":407
  *             y_final = 0.5 + peak.y / peak.sumg
  * 
  *             targets.append(             # <<<<<<<<<<<<<<
@@ -22082,7 +22082,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
       __pyx_t_24 = __Pyx_PyList_Append(__pyx_v_targets, __pyx_t_23); if (unlikely(__pyx_t_24 == ((int)-1))) __PYX_ERR(0, 407, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_23); __pyx_t_23 = 0;
 
-      /* "algorithms/segmentation.py":398
+      /* "openptv2/algorithms/segmentation.py":398
  *         ny = peak.ymax - peak.ymin + 1
  * 
  *         if (             # <<<<<<<<<<<<<<
@@ -22091,7 +22091,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
 */
     }
 
-    /* "algorithms/segmentation.py":381
+    /* "openptv2/algorithms/segmentation.py":381
  *     # ---- Pass 4: Output targets ----
  *     targets = []
  *     for i, peak in enumerate(peaks):             # <<<<<<<<<<<<<<
@@ -22102,7 +22102,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/segmentation.py":420
+  /* "openptv2/algorithms/segmentation.py":420
  *             )
  * 
  *     return targets             # <<<<<<<<<<<<<<
@@ -22114,7 +22114,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
   __pyx_r = __pyx_v_targets;
   goto __pyx_L0;
 
-  /* "algorithms/segmentation.py":174
+  /* "openptv2/algorithms/segmentation.py":174
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -22134,7 +22134,7 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
   __Pyx_XDECREF(__pyx_t_22);
   __Pyx_XDECREF(__pyx_t_23);
   __Pyx_XDECREF(__pyx_t_29);
-  __Pyx_AddTraceback("algorithms.segmentation.peak_fit", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.segmentation.peak_fit", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_imy);
@@ -22183,16 +22183,16 @@ static PyObject *__pyx_f_10algorithms_12segmentation_peak_fit(PyObject *__pyx_v_
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_12segmentation_7peak_fit(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_12segmentation_7peak_fit(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_12segmentation_6peak_fit, "Two-pass component labeling with peak fitting and reunification.");
-static PyMethodDef __pyx_mdef_10algorithms_12segmentation_7peak_fit = {"peak_fit", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_12segmentation_7peak_fit, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_12segmentation_6peak_fit};
-static PyObject *__pyx_pw_10algorithms_12segmentation_7peak_fit(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_12segmentation_6peak_fit, "Two-pass component labeling with peak fitting and reunification.");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_12segmentation_7peak_fit = {"peak_fit", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_12segmentation_7peak_fit, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_12segmentation_6peak_fit};
+static PyObject *__pyx_pw_8openptv2_10algorithms_12segmentation_7peak_fit(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -22390,7 +22390,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.segmentation.peak_fit", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.segmentation.peak_fit", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
@@ -22407,7 +22407,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_xmax), (&PyLong_Type), 0, "xmax", 2))) __PYX_ERR(0, 189, __pyx_L1_error)
   if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ymin), (&PyLong_Type), 0, "ymin", 2))) __PYX_ERR(0, 190, __pyx_L1_error)
   if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_ymax), (&PyLong_Type), 0, "ymax", 2))) __PYX_ERR(0, 191, __pyx_L1_error)
-  __pyx_r = __pyx_pf_10algorithms_12segmentation_6peak_fit(__pyx_self, __pyx_v_img, __pyx_v_gvthres, __pyx_v_discont, __pyx_v_nnmin, __pyx_v_nnmax, __pyx_v_nxmin, __pyx_v_nxmax, __pyx_v_nymin, __pyx_v_nymax, __pyx_v_sumg_min, __pyx_v_xmin, __pyx_v_xmax, __pyx_v_ymin, __pyx_v_ymax);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_12segmentation_6peak_fit(__pyx_self, __pyx_v_img, __pyx_v_gvthres, __pyx_v_discont, __pyx_v_nnmin, __pyx_v_nnmax, __pyx_v_nxmin, __pyx_v_nxmax, __pyx_v_nymin, __pyx_v_nymax, __pyx_v_sumg_min, __pyx_v_xmin, __pyx_v_xmax, __pyx_v_ymin, __pyx_v_ymax);
 
   /* function exit code */
   goto __pyx_L0;
@@ -22426,11 +22426,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_12segmentation_6peak_fit(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_img, PyObject *__pyx_v_gvthres, PyObject *__pyx_v_discont, PyObject *__pyx_v_nnmin, PyObject *__pyx_v_nnmax, PyObject *__pyx_v_nxmin, PyObject *__pyx_v_nxmax, PyObject *__pyx_v_nymin, PyObject *__pyx_v_nymax, PyObject *__pyx_v_sumg_min, PyObject *__pyx_v_xmin, PyObject *__pyx_v_xmax, PyObject *__pyx_v_ymin, PyObject *__pyx_v_ymax) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_12segmentation_6peak_fit(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_img, PyObject *__pyx_v_gvthres, PyObject *__pyx_v_discont, PyObject *__pyx_v_nnmin, PyObject *__pyx_v_nnmax, PyObject *__pyx_v_nxmin, PyObject *__pyx_v_nxmax, PyObject *__pyx_v_nymin, PyObject *__pyx_v_nymax, PyObject *__pyx_v_sumg_min, PyObject *__pyx_v_xmin, PyObject *__pyx_v_xmax, PyObject *__pyx_v_ymin, PyObject *__pyx_v_ymax) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
-  struct __pyx_opt_args_10algorithms_12segmentation_peak_fit __pyx_t_2;
+  struct __pyx_opt_args_8openptv2_10algorithms_12segmentation_peak_fit __pyx_t_2;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -22493,7 +22493,7 @@ static PyObject *__pyx_pf_10algorithms_12segmentation_6peak_fit(CYTHON_UNUSED Py
   __pyx_t_2.xmax = __pyx_v_xmax;
   __pyx_t_2.ymin = __pyx_v_ymin;
   __pyx_t_2.ymax = __pyx_v_ymax;
-  __pyx_t_1 = __pyx_f_10algorithms_12segmentation_peak_fit(__pyx_v_img, __pyx_v_gvthres, __pyx_v_discont, __pyx_v_nnmin, __pyx_v_nnmax, __pyx_v_nxmin, __pyx_v_nxmax, __pyx_v_nymin, __pyx_v_nymax, __pyx_v_sumg_min, 1, &__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 174, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_12segmentation_peak_fit(__pyx_v_img, __pyx_v_gvthres, __pyx_v_discont, __pyx_v_nnmin, __pyx_v_nnmax, __pyx_v_nxmin, __pyx_v_nxmax, __pyx_v_nymin, __pyx_v_nymax, __pyx_v_sumg_min, 1, &__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 174, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -22502,7 +22502,7 @@ static PyObject *__pyx_pf_10algorithms_12segmentation_6peak_fit(CYTHON_UNUSED Py
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.segmentation.peak_fit", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.segmentation.peak_fit", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -22510,7 +22510,7 @@ static PyObject *__pyx_pf_10algorithms_12segmentation_6peak_fit(CYTHON_UNUSED Py
   return __pyx_r;
 }
 
-/* "algorithms/segmentation.py":423
+/* "openptv2/algorithms/segmentation.py":423
  * 
  * 
  * def is_compiled() -> bool:             # <<<<<<<<<<<<<<
@@ -22519,28 +22519,28 @@ static PyObject *__pyx_pf_10algorithms_12segmentation_6peak_fit(CYTHON_UNUSED Py
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_12segmentation_9is_compiled(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_12segmentation_8is_compiled, "Return whether this module is compiled to C.");
-static PyMethodDef __pyx_mdef_10algorithms_12segmentation_9is_compiled = {"is_compiled", (PyCFunction)__pyx_pw_10algorithms_12segmentation_9is_compiled, METH_NOARGS, __pyx_doc_10algorithms_12segmentation_8is_compiled};
-static PyObject *__pyx_pw_10algorithms_12segmentation_9is_compiled(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_8openptv2_10algorithms_12segmentation_9is_compiled(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_12segmentation_8is_compiled, "Return whether this module is compiled to C.");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_12segmentation_9is_compiled = {"is_compiled", (PyCFunction)__pyx_pw_8openptv2_10algorithms_12segmentation_9is_compiled, METH_NOARGS, __pyx_doc_8openptv2_10algorithms_12segmentation_8is_compiled};
+static PyObject *__pyx_pw_8openptv2_10algorithms_12segmentation_9is_compiled(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused) {
   CYTHON_UNUSED PyObject *const *__pyx_kwvalues;
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("is_compiled (wrapper)", 0);
   __pyx_kwvalues = __Pyx_KwValues_VARARGS(__pyx_args, __pyx_nargs);
-  __pyx_r = __pyx_pf_10algorithms_12segmentation_8is_compiled(__pyx_self);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_12segmentation_8is_compiled(__pyx_self);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_12segmentation_8is_compiled(CYTHON_UNUSED PyObject *__pyx_self) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_12segmentation_8is_compiled(CYTHON_UNUSED PyObject *__pyx_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("is_compiled", 0);
 
-  /* "algorithms/segmentation.py":425
+  /* "openptv2/algorithms/segmentation.py":425
  * def is_compiled() -> bool:
  *     """Return whether this module is compiled to C."""
  *     return cython.compiled             # <<<<<<<<<<<<<<
@@ -22550,7 +22550,7 @@ static PyObject *__pyx_pf_10algorithms_12segmentation_8is_compiled(CYTHON_UNUSED
   __pyx_r = Py_True;
   goto __pyx_L0;
 
-  /* "algorithms/segmentation.py":423
+  /* "openptv2/algorithms/segmentation.py":423
  * 
  * 
  * def is_compiled() -> bool:             # <<<<<<<<<<<<<<
@@ -22691,7 +22691,7 @@ static PyType_Slot __pyx_type___pyx_array_slots[] = {
   {0, 0},
 };
 static PyType_Spec __pyx_type___pyx_array_spec = {
-  "algorithms.segmentation.array",
+  "openptv2.algorithms.segmentation.array",
   sizeof(struct __pyx_array_obj),
   0,
   Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_BASETYPE|Py_TPFLAGS_SEQUENCE,
@@ -22725,7 +22725,7 @@ static PyBufferProcs __pyx_tp_as_buffer_array = {
 
 static PyTypeObject __pyx_type___pyx_array = {
   PyVarObject_HEAD_INIT(0, 0)
-  "algorithms.segmentation.""array", /*tp_name*/
+  "openptv2.algorithms.segmentation.""array", /*tp_name*/
   sizeof(struct __pyx_array_obj), /*tp_basicsize*/
   0, /*tp_itemsize*/
   __pyx_tp_dealloc_array, /*tp_dealloc*/
@@ -22870,7 +22870,7 @@ static PyType_Slot __pyx_type___pyx_MemviewEnum_slots[] = {
   {0, 0},
 };
 static PyType_Spec __pyx_type___pyx_MemviewEnum_spec = {
-  "algorithms.segmentation.Enum",
+  "openptv2.algorithms.segmentation.Enum",
   sizeof(struct __pyx_MemviewEnum_obj),
   0,
   Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_BASETYPE|Py_TPFLAGS_HAVE_GC,
@@ -22880,7 +22880,7 @@ static PyType_Spec __pyx_type___pyx_MemviewEnum_spec = {
 
 static PyTypeObject __pyx_type___pyx_MemviewEnum = {
   PyVarObject_HEAD_INIT(0, 0)
-  "algorithms.segmentation.""Enum", /*tp_name*/
+  "openptv2.algorithms.segmentation.""Enum", /*tp_name*/
   sizeof(struct __pyx_MemviewEnum_obj), /*tp_basicsize*/
   0, /*tp_itemsize*/
   __pyx_tp_dealloc_Enum, /*tp_dealloc*/
@@ -23147,7 +23147,7 @@ static PyType_Slot __pyx_type___pyx_memoryview_slots[] = {
   {0, 0},
 };
 static PyType_Spec __pyx_type___pyx_memoryview_spec = {
-  "algorithms.segmentation.memoryview",
+  "openptv2.algorithms.segmentation.memoryview",
   sizeof(struct __pyx_memoryview_obj),
   0,
   Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_BASETYPE|Py_TPFLAGS_HAVE_GC,
@@ -23181,7 +23181,7 @@ static PyBufferProcs __pyx_tp_as_buffer_memoryview = {
 
 static PyTypeObject __pyx_type___pyx_memoryview = {
   PyVarObject_HEAD_INIT(0, 0)
-  "algorithms.segmentation.""memoryview", /*tp_name*/
+  "openptv2.algorithms.segmentation.""memoryview", /*tp_name*/
   sizeof(struct __pyx_memoryview_obj), /*tp_basicsize*/
   0, /*tp_itemsize*/
   __pyx_tp_dealloc_memoryview, /*tp_dealloc*/
@@ -23324,7 +23324,7 @@ static PyType_Slot __pyx_type___pyx_memoryviewslice_slots[] = {
   {0, 0},
 };
 static PyType_Spec __pyx_type___pyx_memoryviewslice_spec = {
-  "algorithms.segmentation._memoryviewslice",
+  "openptv2.algorithms.segmentation._memoryviewslice",
   sizeof(struct __pyx_memoryviewslice_obj),
   0,
   Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_BASETYPE|Py_TPFLAGS_HAVE_GC|Py_TPFLAGS_SEQUENCE,
@@ -23334,7 +23334,7 @@ static PyType_Spec __pyx_type___pyx_memoryviewslice_spec = {
 
 static PyTypeObject __pyx_type___pyx_memoryviewslice = {
   PyVarObject_HEAD_INIT(0, 0)
-  "algorithms.segmentation.""_memoryviewslice", /*tp_name*/
+  "openptv2.algorithms.segmentation.""_memoryviewslice", /*tp_name*/
   sizeof(struct __pyx_memoryviewslice_obj), /*tp_basicsize*/
   0, /*tp_itemsize*/
   __pyx_tp_dealloc__memoryviewslice, /*tp_dealloc*/
@@ -23887,13 +23887,13 @@ __Pyx_RefNannySetupContext("PyInit_segmentation", 0);
   if (__Pyx_InitConstants(__pyx_mstate) < (0)) __PYX_ERR(0, 1, __pyx_L1_error)
   stringtab_initialized = 1;
   if (__Pyx_InitGlobals() < (0)) __PYX_ERR(0, 1, __pyx_L1_error)
-  if (__pyx_module_is_main_algorithms__segmentation) {
+  if (__pyx_module_is_main_openptv2__algorithms__segmentation) {
     if (PyObject_SetAttr(__pyx_m, __pyx_mstate_global->__pyx_n_u_name_2, __pyx_mstate_global->__pyx_n_u_main) < (0)) __PYX_ERR(0, 1, __pyx_L1_error)
   }
   {
     PyObject *modules = PyImport_GetModuleDict(); if (unlikely(!modules)) __PYX_ERR(0, 1, __pyx_L1_error)
-    if (!PyDict_GetItemString(modules, "algorithms.segmentation")) {
-      if (unlikely((PyDict_SetItemString(modules, "algorithms.segmentation", __pyx_m) < 0))) __PYX_ERR(0, 1, __pyx_L1_error)
+    if (!PyDict_GetItemString(modules, "openptv2.algorithms.segmentation")) {
+      if (unlikely((PyDict_SetItemString(modules, "openptv2.algorithms.segmentation", __pyx_m) < 0))) __PYX_ERR(0, 1, __pyx_L1_error)
     }
   }
   /*--- Builtin init code ---*/
@@ -24402,7 +24402,7 @@ __Pyx_RefNannySetupContext("PyInit_segmentation", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_pyx_unpickle_Enum, __pyx_t_4) < (0)) __PYX_ERR(1, 4, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/segmentation.py":16
+  /* "openptv2/algorithms/segmentation.py":16
  * 
  * 
  * import numpy as np             # <<<<<<<<<<<<<<
@@ -24415,7 +24415,7 @@ __Pyx_RefNannySetupContext("PyInit_segmentation", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_np, __pyx_t_4) < (0)) __PYX_ERR(0, 16, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/segmentation.py":17
+  /* "openptv2/algorithms/segmentation.py":17
  * 
  * import numpy as np
  * from dataclasses import dataclass, field             # <<<<<<<<<<<<<<
@@ -24439,7 +24439,7 @@ __Pyx_RefNannySetupContext("PyInit_segmentation", 0);
   }
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/segmentation.py":20
+  /* "openptv2/algorithms/segmentation.py":20
  * 
  * # Constant for no correspondence assigned
  * CORRES_NONE = -1             # <<<<<<<<<<<<<<
@@ -24448,7 +24448,7 @@ __Pyx_RefNannySetupContext("PyInit_segmentation", 0);
 */
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_CORRES_NONE, __pyx_mstate_global->__pyx_int_neg_1) < (0)) __PYX_ERR(0, 20, __pyx_L1_error)
 
-  /* "algorithms/segmentation.py":22
+  /* "openptv2/algorithms/segmentation.py":22
  * CORRES_NONE = -1
  * 
  * from .track_kernels import targ_rec_fast as _targ_rec_fast             # <<<<<<<<<<<<<<
@@ -24457,7 +24457,7 @@ __Pyx_RefNannySetupContext("PyInit_segmentation", 0);
 */
   {
     PyObject* const __pyx_imported_names[] = {__pyx_mstate_global->__pyx_n_u_targ_rec_fast_2};
-    __pyx_t_1 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_track_kernels, __pyx_imported_names, 1, __pyx_mstate_global->__pyx_kp_u_algorithms_track_kernels, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 22, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_track_kernels, __pyx_imported_names, 1, __pyx_mstate_global->__pyx_kp_u_openptv2_algorithms_track_kernel, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 22, __pyx_L1_error)
   }
   __pyx_t_4 = __pyx_t_1;
   __Pyx_GOTREF(__pyx_t_4);
@@ -24477,14 +24477,14 @@ __Pyx_RefNannySetupContext("PyInit_segmentation", 0);
   }
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/segmentation.py":28
+  /* "openptv2/algorithms/segmentation.py":28
  * 
  * @dataclass
  * class Target:             # <<<<<<<<<<<<<<
  *     """Detected particle target.
  *     pnr: particle number (index)
 */
-  __pyx_t_4 = __Pyx_Py3MetaclassPrepare((PyObject *) NULL, __pyx_mstate_global->__pyx_empty_tuple, __pyx_mstate_global->__pyx_n_u_Target, __pyx_mstate_global->__pyx_n_u_Target, (PyObject *) NULL, __pyx_mstate_global->__pyx_n_u_algorithms_segmentation, __pyx_mstate_global->__pyx_kp_u_Detected_particle_target_pnr_par); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 28, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_Py3MetaclassPrepare((PyObject *) NULL, __pyx_mstate_global->__pyx_empty_tuple, __pyx_mstate_global->__pyx_n_u_Target, __pyx_mstate_global->__pyx_n_u_Target, (PyObject *) NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_segmentation, __pyx_mstate_global->__pyx_kp_u_Detected_particle_target_pnr_par); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 28, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __pyx_t_5 = __Pyx_PyDict_NewPresized(8); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 28, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
@@ -24499,7 +24499,7 @@ __Pyx_RefNannySetupContext("PyInit_segmentation", 0);
   if (__Pyx_SetNameInClass(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_annotations, __pyx_t_5) < (0)) __PYX_ERR(0, 28, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "algorithms/segmentation.py":37
+  /* "openptv2/algorithms/segmentation.py":37
  *     tnr: correspondence number (-1 = unassigned)
  *     """
  *     pnr: int = 0             # <<<<<<<<<<<<<<
@@ -24508,7 +24508,7 @@ __Pyx_RefNannySetupContext("PyInit_segmentation", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_pnr, __pyx_mstate_global->__pyx_int_0) < (0)) __PYX_ERR(0, 37, __pyx_L1_error)
 
-  /* "algorithms/segmentation.py":38
+  /* "openptv2/algorithms/segmentation.py":38
  *     """
  *     pnr: int = 0
  *     x: float = 0.0             # <<<<<<<<<<<<<<
@@ -24517,7 +24517,7 @@ __Pyx_RefNannySetupContext("PyInit_segmentation", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_x, __pyx_mstate_global->__pyx_float_0_0) < (0)) __PYX_ERR(0, 38, __pyx_L1_error)
 
-  /* "algorithms/segmentation.py":39
+  /* "openptv2/algorithms/segmentation.py":39
  *     pnr: int = 0
  *     x: float = 0.0
  *     y: float = 0.0             # <<<<<<<<<<<<<<
@@ -24526,7 +24526,7 @@ __Pyx_RefNannySetupContext("PyInit_segmentation", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_y, __pyx_mstate_global->__pyx_float_0_0) < (0)) __PYX_ERR(0, 39, __pyx_L1_error)
 
-  /* "algorithms/segmentation.py":40
+  /* "openptv2/algorithms/segmentation.py":40
  *     x: float = 0.0
  *     y: float = 0.0
  *     n: int = 0             # <<<<<<<<<<<<<<
@@ -24535,7 +24535,7 @@ __Pyx_RefNannySetupContext("PyInit_segmentation", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_n, __pyx_mstate_global->__pyx_int_0) < (0)) __PYX_ERR(0, 40, __pyx_L1_error)
 
-  /* "algorithms/segmentation.py":41
+  /* "openptv2/algorithms/segmentation.py":41
  *     y: float = 0.0
  *     n: int = 0
  *     nx: int = 0             # <<<<<<<<<<<<<<
@@ -24544,7 +24544,7 @@ __Pyx_RefNannySetupContext("PyInit_segmentation", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_nx, __pyx_mstate_global->__pyx_int_0) < (0)) __PYX_ERR(0, 41, __pyx_L1_error)
 
-  /* "algorithms/segmentation.py":42
+  /* "openptv2/algorithms/segmentation.py":42
  *     n: int = 0
  *     nx: int = 0
  *     ny: int = 0             # <<<<<<<<<<<<<<
@@ -24553,7 +24553,7 @@ __Pyx_RefNannySetupContext("PyInit_segmentation", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_ny, __pyx_mstate_global->__pyx_int_0) < (0)) __PYX_ERR(0, 42, __pyx_L1_error)
 
-  /* "algorithms/segmentation.py":43
+  /* "openptv2/algorithms/segmentation.py":43
  *     nx: int = 0
  *     ny: int = 0
  *     sumg: int = 0             # <<<<<<<<<<<<<<
@@ -24562,7 +24562,7 @@ __Pyx_RefNannySetupContext("PyInit_segmentation", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_sumg, __pyx_mstate_global->__pyx_int_0) < (0)) __PYX_ERR(0, 43, __pyx_L1_error)
 
-  /* "algorithms/segmentation.py":44
+  /* "openptv2/algorithms/segmentation.py":44
  *     ny: int = 0
  *     sumg: int = 0
  *     tnr: int = CORRES_NONE             # <<<<<<<<<<<<<<
@@ -24574,7 +24574,7 @@ __Pyx_RefNannySetupContext("PyInit_segmentation", 0);
   if (__Pyx_SetNameInClass(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_tnr, __pyx_t_5) < (0)) __PYX_ERR(0, 44, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "algorithms/segmentation.py":27
+  /* "openptv2/algorithms/segmentation.py":27
  * 
  * 
  * @dataclass             # <<<<<<<<<<<<<<
@@ -24585,7 +24585,7 @@ __Pyx_RefNannySetupContext("PyInit_segmentation", 0);
   __Pyx_GetModuleGlobalName(__pyx_t_11, __pyx_mstate_global->__pyx_n_u_dataclass); if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 27, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_11);
 
-  /* "algorithms/segmentation.py":28
+  /* "openptv2/algorithms/segmentation.py":28
  * 
  * @dataclass
  * class Target:             # <<<<<<<<<<<<<<
@@ -24611,14 +24611,14 @@ __Pyx_RefNannySetupContext("PyInit_segmentation", 0);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/segmentation.py":48
+  /* "openptv2/algorithms/segmentation.py":48
  * 
  * @dataclass
  * class Peak:             # <<<<<<<<<<<<<<
  *     """Detected peak for connectivity analysis."""
  *     pos: int = 0
 */
-  __pyx_t_4 = __Pyx_Py3MetaclassPrepare((PyObject *) NULL, __pyx_mstate_global->__pyx_empty_tuple, __pyx_mstate_global->__pyx_n_u_Peak, __pyx_mstate_global->__pyx_n_u_Peak, (PyObject *) NULL, __pyx_mstate_global->__pyx_n_u_algorithms_segmentation, __pyx_mstate_global->__pyx_kp_u_Detected_peak_for_connectivity_a); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 48, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_Py3MetaclassPrepare((PyObject *) NULL, __pyx_mstate_global->__pyx_empty_tuple, __pyx_mstate_global->__pyx_n_u_Peak, __pyx_mstate_global->__pyx_n_u_Peak, (PyObject *) NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_segmentation, __pyx_mstate_global->__pyx_kp_u_Detected_peak_for_connectivity_a); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 48, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __pyx_t_5 = __Pyx_PyDict_NewPresized(13); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 48, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
@@ -24638,7 +24638,7 @@ __Pyx_RefNannySetupContext("PyInit_segmentation", 0);
   if (__Pyx_SetNameInClass(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_annotations, __pyx_t_5) < (0)) __PYX_ERR(0, 48, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "algorithms/segmentation.py":50
+  /* "openptv2/algorithms/segmentation.py":50
  * class Peak:
  *     """Detected peak for connectivity analysis."""
  *     pos: int = 0             # <<<<<<<<<<<<<<
@@ -24647,7 +24647,7 @@ __Pyx_RefNannySetupContext("PyInit_segmentation", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_pos, __pyx_mstate_global->__pyx_int_0) < (0)) __PYX_ERR(0, 50, __pyx_L1_error)
 
-  /* "algorithms/segmentation.py":51
+  /* "openptv2/algorithms/segmentation.py":51
  *     """Detected peak for connectivity analysis."""
  *     pos: int = 0
  *     status: int = 0             # <<<<<<<<<<<<<<
@@ -24656,7 +24656,7 @@ __Pyx_RefNannySetupContext("PyInit_segmentation", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_status, __pyx_mstate_global->__pyx_int_0) < (0)) __PYX_ERR(0, 51, __pyx_L1_error)
 
-  /* "algorithms/segmentation.py":52
+  /* "openptv2/algorithms/segmentation.py":52
  *     pos: int = 0
  *     status: int = 0
  *     xmin: int = 0             # <<<<<<<<<<<<<<
@@ -24665,7 +24665,7 @@ __Pyx_RefNannySetupContext("PyInit_segmentation", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_xmin, __pyx_mstate_global->__pyx_int_0) < (0)) __PYX_ERR(0, 52, __pyx_L1_error)
 
-  /* "algorithms/segmentation.py":53
+  /* "openptv2/algorithms/segmentation.py":53
  *     status: int = 0
  *     xmin: int = 0
  *     xmax: int = 0             # <<<<<<<<<<<<<<
@@ -24674,7 +24674,7 @@ __Pyx_RefNannySetupContext("PyInit_segmentation", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_xmax, __pyx_mstate_global->__pyx_int_0) < (0)) __PYX_ERR(0, 53, __pyx_L1_error)
 
-  /* "algorithms/segmentation.py":54
+  /* "openptv2/algorithms/segmentation.py":54
  *     xmin: int = 0
  *     xmax: int = 0
  *     ymin: int = 0             # <<<<<<<<<<<<<<
@@ -24683,7 +24683,7 @@ __Pyx_RefNannySetupContext("PyInit_segmentation", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_ymin, __pyx_mstate_global->__pyx_int_0) < (0)) __PYX_ERR(0, 54, __pyx_L1_error)
 
-  /* "algorithms/segmentation.py":55
+  /* "openptv2/algorithms/segmentation.py":55
  *     xmax: int = 0
  *     ymin: int = 0
  *     ymax: int = 0             # <<<<<<<<<<<<<<
@@ -24692,7 +24692,7 @@ __Pyx_RefNannySetupContext("PyInit_segmentation", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_ymax, __pyx_mstate_global->__pyx_int_0) < (0)) __PYX_ERR(0, 55, __pyx_L1_error)
 
-  /* "algorithms/segmentation.py":56
+  /* "openptv2/algorithms/segmentation.py":56
  *     ymin: int = 0
  *     ymax: int = 0
  *     n: int = 0             # <<<<<<<<<<<<<<
@@ -24701,7 +24701,7 @@ __Pyx_RefNannySetupContext("PyInit_segmentation", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_n, __pyx_mstate_global->__pyx_int_0) < (0)) __PYX_ERR(0, 56, __pyx_L1_error)
 
-  /* "algorithms/segmentation.py":57
+  /* "openptv2/algorithms/segmentation.py":57
  *     ymax: int = 0
  *     n: int = 0
  *     sumg: int = 0             # <<<<<<<<<<<<<<
@@ -24710,7 +24710,7 @@ __Pyx_RefNannySetupContext("PyInit_segmentation", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_sumg, __pyx_mstate_global->__pyx_int_0) < (0)) __PYX_ERR(0, 57, __pyx_L1_error)
 
-  /* "algorithms/segmentation.py":58
+  /* "openptv2/algorithms/segmentation.py":58
  *     n: int = 0
  *     sumg: int = 0
  *     x: float = 0.0             # <<<<<<<<<<<<<<
@@ -24719,7 +24719,7 @@ __Pyx_RefNannySetupContext("PyInit_segmentation", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_x, __pyx_mstate_global->__pyx_float_0_0) < (0)) __PYX_ERR(0, 58, __pyx_L1_error)
 
-  /* "algorithms/segmentation.py":59
+  /* "openptv2/algorithms/segmentation.py":59
  *     sumg: int = 0
  *     x: float = 0.0
  *     y: float = 0.0             # <<<<<<<<<<<<<<
@@ -24728,7 +24728,7 @@ __Pyx_RefNannySetupContext("PyInit_segmentation", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_y, __pyx_mstate_global->__pyx_float_0_0) < (0)) __PYX_ERR(0, 59, __pyx_L1_error)
 
-  /* "algorithms/segmentation.py":60
+  /* "openptv2/algorithms/segmentation.py":60
  *     x: float = 0.0
  *     y: float = 0.0
  *     unr: int = 0             # <<<<<<<<<<<<<<
@@ -24737,7 +24737,7 @@ __Pyx_RefNannySetupContext("PyInit_segmentation", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_unr, __pyx_mstate_global->__pyx_int_0) < (0)) __PYX_ERR(0, 60, __pyx_L1_error)
 
-  /* "algorithms/segmentation.py":61
+  /* "openptv2/algorithms/segmentation.py":61
  *     y: float = 0.0
  *     unr: int = 0
  *     touch: list[int] = field(default_factory=lambda: [0, 0, 0, 0])             # <<<<<<<<<<<<<<
@@ -24747,7 +24747,7 @@ __Pyx_RefNannySetupContext("PyInit_segmentation", 0);
   __pyx_t_11 = NULL;
   __Pyx_GetModuleGlobalName(__pyx_t_12, __pyx_mstate_global->__pyx_n_u_field); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 61, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_12);
-  __pyx_t_10 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_12segmentation_4Peak_lambda, 0, __pyx_mstate_global->__pyx_n_u_Peak_lambda, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_segmentation, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[0])); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 61, __pyx_L1_error)
+  __pyx_t_10 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_12segmentation_4Peak_lambda, 0, __pyx_mstate_global->__pyx_n_u_Peak_lambda, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_segmentation, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[0])); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 61, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_10);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_10);
@@ -24769,7 +24769,7 @@ __Pyx_RefNannySetupContext("PyInit_segmentation", 0);
   if (__Pyx_SetNameInClass(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_touch, __pyx_t_5) < (0)) __PYX_ERR(0, 61, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "algorithms/segmentation.py":62
+  /* "openptv2/algorithms/segmentation.py":62
  *     unr: int = 0
  *     touch: list[int] = field(default_factory=lambda: [0, 0, 0, 0])
  *     n_touch: int = 0             # <<<<<<<<<<<<<<
@@ -24778,7 +24778,7 @@ __Pyx_RefNannySetupContext("PyInit_segmentation", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_n_touch, __pyx_mstate_global->__pyx_int_0) < (0)) __PYX_ERR(0, 62, __pyx_L1_error)
 
-  /* "algorithms/segmentation.py":47
+  /* "openptv2/algorithms/segmentation.py":47
  * 
  * 
  * @dataclass             # <<<<<<<<<<<<<<
@@ -24789,7 +24789,7 @@ __Pyx_RefNannySetupContext("PyInit_segmentation", 0);
   __Pyx_GetModuleGlobalName(__pyx_t_13, __pyx_mstate_global->__pyx_n_u_dataclass); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 47, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_13);
 
-  /* "algorithms/segmentation.py":48
+  /* "openptv2/algorithms/segmentation.py":48
  * 
  * @dataclass
  * class Peak:             # <<<<<<<<<<<<<<
@@ -24815,7 +24815,7 @@ __Pyx_RefNannySetupContext("PyInit_segmentation", 0);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/segmentation.py":65
+  /* "openptv2/algorithms/segmentation.py":65
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -24827,7 +24827,7 @@ __Pyx_RefNannySetupContext("PyInit_segmentation", 0);
   if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_tpeak, __pyx_mstate_global->__pyx_n_u_Peak) < (0)) __PYX_ERR(0, 65, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_p1, __pyx_mstate_global->__pyx_n_u_int) < (0)) __PYX_ERR(0, 65, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_p2, __pyx_mstate_global->__pyx_n_u_int) < (0)) __PYX_ERR(0, 65, __pyx_L1_error)
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_12segmentation_1check_touch, 0, __pyx_mstate_global->__pyx_n_u_check_touch, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_segmentation, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[1])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 65, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_12segmentation_1check_touch, 0, __pyx_mstate_global->__pyx_n_u_check_touch, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_segmentation, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[1])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 65, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_5);
@@ -24837,7 +24837,7 @@ __Pyx_RefNannySetupContext("PyInit_segmentation", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_check_touch, __pyx_t_5) < (0)) __PYX_ERR(0, 65, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "algorithms/segmentation.py":91
+  /* "openptv2/algorithms/segmentation.py":91
  * 
  * 
  * def _is_local_maximum(img: np.ndarray, i: cython.int, j: cython.int, imx: cython.int, imy: cython.int) -> bool:             # <<<<<<<<<<<<<<
@@ -24852,7 +24852,7 @@ __Pyx_RefNannySetupContext("PyInit_segmentation", 0);
   if (PyDict_SetItem(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_imx, __pyx_mstate_global->__pyx_kp_u_cython_int) < (0)) __PYX_ERR(0, 91, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_imy, __pyx_mstate_global->__pyx_kp_u_cython_int) < (0)) __PYX_ERR(0, 91, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_return, __pyx_mstate_global->__pyx_n_u_bool) < (0)) __PYX_ERR(0, 91, __pyx_L1_error)
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_12segmentation_3_is_local_maximum, 0, __pyx_mstate_global->__pyx_n_u_is_local_maximum, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_segmentation, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[2])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 91, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_12segmentation_3_is_local_maximum, 0, __pyx_mstate_global->__pyx_n_u_is_local_maximum, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_segmentation, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[2])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 91, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
@@ -24862,7 +24862,7 @@ __Pyx_RefNannySetupContext("PyInit_segmentation", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_is_local_maximum, __pyx_t_4) < (0)) __PYX_ERR(0, 91, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/segmentation.py":106
+  /* "openptv2/algorithms/segmentation.py":106
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -24885,7 +24885,7 @@ __Pyx_RefNannySetupContext("PyInit_segmentation", 0);
   if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_xmax, __pyx_mstate_global->__pyx_n_u_int) < (0)) __PYX_ERR(0, 106, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_ymin, __pyx_mstate_global->__pyx_n_u_int) < (0)) __PYX_ERR(0, 106, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_ymax, __pyx_mstate_global->__pyx_n_u_int) < (0)) __PYX_ERR(0, 106, __pyx_L1_error)
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_12segmentation_5targ_rec, 0, __pyx_mstate_global->__pyx_n_u_targ_rec, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_segmentation, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[3])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 106, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_12segmentation_5targ_rec, 0, __pyx_mstate_global->__pyx_n_u_targ_rec, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_segmentation, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[3])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 106, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_5);
@@ -24896,7 +24896,7 @@ __Pyx_RefNannySetupContext("PyInit_segmentation", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_targ_rec, __pyx_t_5) < (0)) __PYX_ERR(0, 106, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "algorithms/segmentation.py":174
+  /* "openptv2/algorithms/segmentation.py":174
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -24919,7 +24919,7 @@ __Pyx_RefNannySetupContext("PyInit_segmentation", 0);
   if (PyDict_SetItem(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_xmax, __pyx_mstate_global->__pyx_n_u_int) < (0)) __PYX_ERR(0, 174, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_ymin, __pyx_mstate_global->__pyx_n_u_int) < (0)) __PYX_ERR(0, 174, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_ymax, __pyx_mstate_global->__pyx_n_u_int) < (0)) __PYX_ERR(0, 174, __pyx_L1_error)
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_12segmentation_7peak_fit, 0, __pyx_mstate_global->__pyx_n_u_peak_fit, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_segmentation, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[4])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 174, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_12segmentation_7peak_fit, 0, __pyx_mstate_global->__pyx_n_u_peak_fit, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_segmentation, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[4])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 174, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
@@ -24930,7 +24930,7 @@ __Pyx_RefNannySetupContext("PyInit_segmentation", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_peak_fit, __pyx_t_4) < (0)) __PYX_ERR(0, 174, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/segmentation.py":423
+  /* "openptv2/algorithms/segmentation.py":423
  * 
  * 
  * def is_compiled() -> bool:             # <<<<<<<<<<<<<<
@@ -24940,7 +24940,7 @@ __Pyx_RefNannySetupContext("PyInit_segmentation", 0);
   __pyx_t_4 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 423, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_return, __pyx_mstate_global->__pyx_n_u_bool) < (0)) __PYX_ERR(0, 423, __pyx_L1_error)
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_12segmentation_9is_compiled, 0, __pyx_mstate_global->__pyx_n_u_is_compiled, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_segmentation, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[5])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 423, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_12segmentation_9is_compiled, 0, __pyx_mstate_global->__pyx_n_u_is_compiled, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_segmentation, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[5])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 423, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_5);
@@ -24950,7 +24950,7 @@ __Pyx_RefNannySetupContext("PyInit_segmentation", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_is_compiled, __pyx_t_5) < (0)) __PYX_ERR(0, 423, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "algorithms/segmentation.py":1
+  /* "openptv2/algorithms/segmentation.py":1
  * """Particle detection via thresholding and peak fitting.             # <<<<<<<<<<<<<<
  * 
  * Translation of lib/src/segmentation.c and lib/include/segmentation.h.
@@ -24972,7 +24972,7 @@ __Pyx_RefNannySetupContext("PyInit_segmentation", 0);
   __Pyx_XDECREF(__pyx_t_13);
   if (__pyx_m) {
     if (__pyx_mstate->__pyx_d && stringtab_initialized) {
-      __Pyx_AddTraceback("init algorithms.segmentation", __pyx_clineno, __pyx_lineno, __pyx_filename);
+      __Pyx_AddTraceback("init openptv2.algorithms.segmentation", __pyx_clineno, __pyx_lineno, __pyx_filename);
     }
     #if !CYTHON_USE_MODULE_STATE
     Py_CLEAR(__pyx_m);
@@ -24986,7 +24986,7 @@ __Pyx_RefNannySetupContext("PyInit_segmentation", 0);
     }
     #endif
   } else if (!PyErr_Occurred()) {
-    PyErr_SetString(PyExc_ImportError, "init algorithms.segmentation");
+    PyErr_SetString(PyExc_ImportError, "init openptv2.algorithms.segmentation");
   }
   __pyx_L0:;
   __Pyx_RefNannyFinishContext();
@@ -25049,7 +25049,7 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
   __Pyx_GOTREF(__pyx_mstate_global->__pyx_slice[0]);
   __Pyx_GIVEREF(__pyx_mstate_global->__pyx_slice[0]);
 
-  /* "algorithms/segmentation.py":267
+  /* "openptv2/algorithms/segmentation.py":267
  *                 gvref = int(img[wy, wx])
  * 
  *                 for dx, dy in [(0, -1), (0, 1), (-1, 0), (1, 0)]:             # <<<<<<<<<<<<<<
@@ -25072,7 +25072,7 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
   __Pyx_GOTREF(__pyx_mstate_global->__pyx_tuple[5]);
   __Pyx_GIVEREF(__pyx_mstate_global->__pyx_tuple[5]);
 
-  /* "algorithms/segmentation.py":316
+  /* "openptv2/algorithms/segmentation.py":316
  * 
  *             # Check 8-neighbors for touches
  *             for di, dj in [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]:             # <<<<<<<<<<<<<<
@@ -25095,7 +25095,7 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
   __Pyx_GOTREF(__pyx_mstate_global->__pyx_tuple[10]);
   __Pyx_GIVEREF(__pyx_mstate_global->__pyx_tuple[10]);
 
-  /* "algorithms/segmentation.py":106
+  /* "openptv2/algorithms/segmentation.py":106
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -25162,25 +25162,25 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
 static int __Pyx_InitConstants(__pyx_mstatetype *__pyx_mstate) {
   CYTHON_UNUSED_VAR(__pyx_mstate);
   {
-    const struct { const unsigned int length: 11; } index[] = {{2},{35},{54},{37},{60},{24},{52},{236},{40},{26},{34},{33},{45},{22},{15},{179},{37},{32},{1},{1},{1},{1},{1},{8},{26},{24},{5},{6},{15},{23},{25},{10},{7},{6},{2},{6},{35},{9},{30},{9},{50},{10},{8},{20},{32},{22},{30},{37},{5},{11},{8},{4},{13},{20},{8},{6},{15},{3},{23},{15},{15},{7},{18},{4},{4},{1},{11},{9},{17},{18},{4},{5},{9},{11},{15},{8},{7},{7},{5},{15},{5},{6},{9},{5},{5},{5},{4},{5},{6},{7},{8},{12},{2},{7},{1},{2},{3},{10},{3},{3},{5},{3},{5},{5},{11},{13},{17},{5},{8},{1},{8},{8},{7},{13},{4},{10},{1},{7},{4},{8},{4},{7},{5},{5},{2},{5},{2},{5},{5},{2},{5},{5},{3},{2},{2},{4},{8},{3},{3},{3},{11},{14},{11},{10},{19},{14},{12},{10},{17},{13},{8},{6},{12},{10},{12},{19},{5},{4},{4},{5},{6},{4},{4},{6},{4},{8},{8},{14},{13},{8},{3},{5},{5},{13},{5},{6},{3},{6},{6},{1},{4},{4},{1},{4},{4},{5},{199},{10},{12},{110},{1868},{483},{1}};
-    #if (CYTHON_COMPRESS_STRINGS) == 2 /* compression: bz2 (2754 bytes) */
-const char* const cstring = "BZh91AY&SY\037q\227B\000\002\202\177\377\377\377\377\376\377\377\377\367\277\367\377\377\277\377\377\360@@@@@@@@@@@@@\000@\000`\n\234\371K\232&\275rn\267N\014\002\t\253ih\363\2173@`%\010\241F\2322\r\032\000\307\220\r\021\244\317ShSM\036H\r\003M\000\003F\231442i\243!\210\031\020\004\310&\211\211\242\236\002i=2 \320\032i\240\r\0004\000\000\000\0004\032hd\r4\2324B\246\2002\000z\206\207\251\351?T\365\014\200\320\032\000\000\000\006\200hhh\000\000\022\232\020\204\t4\365\032\236\247\352d\332)\352z\236P\320\000cP\000\000\003@\000\000\323 \r\r= \203\000\004\300\000L\023\000\000\000\000\004\300&\002\030\000\0020\000\000\022Hi\006\224\304\364\233I\246\224?T\362e<H\332\231\007\224\000\006\200\000\000\320\000\003F\200\320\r\030X\275\006\234\321\032\020\351\233\210\323\357\t\220\311\272\235@\023\177,\177q\tC\204CuP\177_\345x\242GTP\254\311\231\250q\027q\022K4\313^u\206\377RL\3033&`\256je\271\220\255NZ\207V\350\377\200\035\003\212\311\270\240\016\255\243\010fBff\021\244x\320\210D\263aT\365\001\311\374\177=\377Z2\242\305\200\033w\203L\310%\2146h6Q2L\2232@!!\000\231\231\0144\335#t\024C\020\253$\034\305\221\312I\301\310o\003\226EH\030`\324HE\031\nopLJ\251Yc\206\374\305\213\014\301\204s\304 \232Mx\037x\227Tj\242*V\215Z\247\212\303UE\201\224\001F\246\326\214\261\210\252H\310\231\0013;61\304\222\211+.B\266X\005\202r\3553\334\"dX\205dD\211\220\2573\002\202\t\001\002 -\233\336\003\213A7\004\034y\036\217DW\233\257\327\223\273\234a\264\304u\350\027d\254\230\014t\031\226\352\021\262\227O\253\370\020\376\215\336\242\3659owO\322o\365\314_\326\220\3536VDr>\324DOA\375\224\216K(\235U\272\266V\215\254\336\025\317l\220@\247O\263\317\363\233g\361\327\303\251\030B\367T\260u\260\2642\345Ez\246\001\275\214\222.\027\321\260\254\341\376Qi\213\247Y\245\313&B\253@\2131\031=\266\"1\314\"0{\233s5NM\213=S\263&=[\310\347\004\016\217\0175\016vqP\231\001\206d\304\245\315\340&\023G\005B\250\347\314\230\211\200\345h\231?\037\212\347\346WH\225\320\n\t\32578z[\024\013Y\302\330g\344\351\264\240\326\211=^\215\214""\\\275=\213\276\312\331\304\365;\005\304\240\337Z\232\247\265=\234\300f4B8@\224\t\035\321){UMIHE\265\027\33152B\325\322\273\335\251\322\245TW\243#\001D\025 Y[)C}\027\036\274+\247D\267)\241\027.m\277j\2311l\340m\214e\350\344zk\250\254\252\006\206\216\004\231\221I\203\271%d\372\237gaM\303\202\353\221\240\2414\024\"\202\266tt\326@H\031\t~<\277\317\354\315\320\274\314\314\t\316\356\034\220\020\200/\200\n\200.o\256\030q\254\204\2427\276\2136so\340'\330\317s\363;\233\257\021q\002\204\3342\351\226\014G)56\t\023\214\024c\236n\3439\002/\242\374\332-\250U\242\300\260\372\265\371j\250*\n\212\202\356\326jjje2\272rU\225\236V=\274mY]\021ad\026\277\214\325\363%\006\373~pP\014\356\034w\014\2005\325\000io0\026\233[\013\201\301\301\260R\224\2778\347\231\212\255z\212\314\310\261e\264\325\321\224\211v\261\003\202\234F\344\32158\020\301\233\210F\001I\220\034\304\240d!)E\023\2501\"\272Pa\340BHMfW\257\363\224\232\335\327:w\345\212?\334\246\021\353\032\306/#\362\221\033F\r\256u\345b \035\316\324\234\0068\221\326\216\235:\021\341\362\320\313I\215\272\006VTP\345\314\022\205R\361'O\302\320\362.P\247\205\004X\215\364\267\205\304p\361v\200\361vr!\030\007>\nN\322/\321\336\032\213\221\330\336\022\002y\026\226\270E\250\246<GlvZ\272\375\254Z\311\242\313\026\207/\010\343\321\013\214\342\245\013\326\252u+\301X\205Bk\274\370r{\341\333~w#m\031\031\214\004\t6%\226N\013\215\203@\032\r\032\r\203\225\237\030ev>\367\202\035:Y\204nk\023\251\271\255\273v\301\203*\326\257j\t\2663\314&\235\270!\223\"\324\310\242b\020E\371\333W&\357\375\204,\216\262\355<\303\276\373\266\212\316z\332\253\214\373\261R\260LZ\036\211j\223as\204R\n^\355\220M\302\204\202\265#\t\276'\023#\217/R\326\t\212\273\272R\307L^\272\316\216\372H\336:\301\n\200\227N\330\344\335x\020A\221_U\355\366\007\0321L\030\274\241\221\321\320\264\325p\317x\305\2275'|\245\305\004\tz~\341\212\211\027\347\000X\224\033I\264<\004\020\333\034\241\301\211\035-i\224:\010\304\n\315\325\276\373Jr\"\272\320p\031L\215P\273\221\206\203p\310s\223\206N1\330\342\264jL\000B""\241\000D%\033f\313F\306\\4<)\024\317!\327DB\220\240\231K46\210\005\334\010\230\201\024\305\256f]\345\003\010\014)\216b\336\255\335\206\366\327\250\206A\022\210\211e\300\207\212\227\017\033\002\340\327\357l\340\331\322\023\357C\316\2350bey\331\341)\320\\\332\340f\003\020\205S\221Ey\341\244\256\334\3517\004<I\253F\343\r\206( \356\322}'\001K\236b\032\226\033\0305\313U\262`s\0043$6h\211yVA\241\212\334\034\242\220\241\027]u\035\346\322`\315\212\354\261^\325\235\245\"\230\335\322\023\303\343DK\033\251\343,e\207\274\341\274\213jb\310Z\345c2\263\006\233\352\326\337p\271\030\363q\263\023d\3275Hu\253\210j\034\345u\204$\232\246\003\354\353\2120\014\301\202\274!9/\014\240\344`\317vb\274\214\246\255\223\344\300\310\016\201\363\324\315M2\033f\272\212\261\237%\035_:\317{\263\241\032\223\344\225\220LhT\312\357\324R\3134\226\270\300(\264\010\241a{\352\021\002!\034\324\306\006\223\320b\037\265\351\360\263_\003\0136\n\006m\327]\241\321\310\310GT_\277tr\206Y\035m\215\027\262#mV\257\003\2356C\223\224tq\207\037'A\335\336\004\010(\003\302WV\230\0302\215\260&6\021,\372\303``r\202\023\002\215\317\273!\2679\203@i\310\322\304\322\320\315\330\261\302\370\220\254(@\214\017\0265J@fK\004\263\030g\264\321\201\277\220\201t#\027\271\267\347TS\276\332\207\211u\226\007M\232\217\017%\364\375\266mf\327\353\333F\2744I\213\030mr\2634\222\214\200\214\224V`f\202n\225\234e\002\305F\t\273}\363m!\361\215\300\016\243\250\035@j\003^\353\207\312\233H\233\222\247gZ\223d\236\254\231\267#ZdV\326\302\202\256\023\333\304\034}{\363\227\260\371\022w\262\263J\031A\215\261\311\210\204\331\013\241N\010(`\302m@\326B\206\333\202\304\330\225Q\236\224\000U\254\023\336\265\233:\356\021\210<UT\233\250R\022\234\265\251\266J\355D!\245-:\0246w.+\010\254P\226\007\t\325b\247\306\240^\206;\253\321\317\207*\3373\035,\33797*\215)\323Q\300F\266\213\305\272\2652\212\321\272r\262\367H\211\036\t\202$yc\210+\0057\252\304#\326\256\275\316Q\016\024ET\014#2\214\227\332+\233i\350\021V9\303\247\322\203N\362\244mc\360K\256\203'\020i\342\360\021CX""\221\033\316|1\rX*\350\347\351\240\252\271\350yQt\032\370P3\334\211\246x\353\003\304>\0036\261\241\234\272K\244\212\214\211\245\216\036gj=\024\201\260\021\025\t\252h\366\0349L\326c\\\014\331h\232\211\313\376\024\003o\316\322\022>4\336\347\242\324\231\2215\030\205\356\236\243m\207H\351\270\026v\204\332P\335\310:\350\017\372\211%\002\177\0317\317\322[\313z \201.\222\336f\223\327\364\307\204\320\217\255\034\034\035\n\332K9u\251^\215\323\323\020-\366]Q\273F\350\2772\\DP\215\205\321x\342\020\270\224H?\250\206\0048\211C\336\274\271\017\005\352\033Z\320\241S$_&A\014\304\342\031\303\225\022G\267\"\323o\274\337\021\332\213\023y\342iPR\214\242j\037\275x\343\024\326+!\263\344\215H\307\212\241v\241\035\2430\311\t$\256\311\277\221\203\350\364\327\261\365\261\226\353VG#\207\214\0148p\240\313\215\032\354\205\231\022\311j\322\263\220\330KUQ\352B\353p\363Nzg9\353\204\210\225,\203\236\335No8\341\t%\010\230\351FI^\322\367\334\226GY%\271\302\270#H1\367d\030\037\220\315*\304\226&*Kp\342T\310\361\222\270\321\2120-%\177><V\025FFR5\272m\254<LQ\333\353\213\354\035)\377\331\215(%\203\214B\250TQT0\353,4\342\"Vj\221\\\356\003D\225\026\334[t\232*\225\037:\201D\245r\226U!\255\333{\310\276\332\365v\302\256e\031\364\201F\334\350P\312\366\304<Tu\347F|\3725\251\224\020\241@\233:\025&\256\024\211^{\023g;\010&\300\275y/\350A\325\260\245\200r\254;\231\023\344m\331\263\311'\226\302\031\314A\014 \33088\377\034\014\014\003\232d\361/\352\360\257uK7\275\342\3452\227\003\234]\362.\211d\267CB\r]\253\343k;c\361\211\340\247\202\260\301x\254\345(\270i\212>R)\226\327L\304\204\220\225\202\301\332k2\004{ \207\003\264;\201\002\322\225\302T5\031\013\034J\r[#\301\302\206\020 \242\314\312/\032\207c\273`h\227Z\252\252\250\212\377\316\260H\300\312ShLE\317\026l\305X\315\234D\272,b\214\323:\323H)\314w(;\363\017%,E\001\022\235o\326\233L<(\250M\204@\266z\002\221X\377\305\334\221N\024$\007\334e\320\200";
-    PyObject *data = __Pyx_DecompressString(cstring, 2754, 2);
+    const struct { const unsigned int length: 11; } index[] = {{2},{35},{54},{37},{60},{24},{52},{236},{40},{26},{34},{33},{45},{22},{15},{179},{37},{32},{1},{1},{1},{1},{1},{8},{5},{6},{15},{23},{25},{10},{7},{6},{2},{6},{35},{9},{30},{9},{50},{10},{8},{33},{39},{20},{32},{22},{30},{37},{5},{11},{8},{4},{13},{20},{8},{6},{15},{3},{15},{15},{7},{18},{4},{4},{1},{11},{9},{17},{18},{4},{5},{9},{11},{15},{8},{7},{7},{5},{15},{5},{6},{9},{5},{5},{5},{4},{5},{6},{7},{8},{12},{2},{7},{1},{2},{3},{10},{3},{3},{5},{3},{5},{5},{11},{13},{17},{5},{8},{1},{8},{8},{7},{13},{4},{10},{1},{7},{4},{8},{4},{7},{5},{5},{2},{5},{2},{5},{5},{2},{5},{5},{3},{32},{2},{2},{4},{8},{3},{3},{3},{11},{14},{11},{10},{19},{14},{12},{10},{17},{13},{8},{6},{12},{10},{12},{19},{5},{4},{4},{5},{6},{4},{4},{6},{4},{8},{8},{14},{13},{8},{3},{5},{5},{13},{5},{6},{3},{6},{6},{1},{4},{4},{1},{4},{4},{5},{199},{10},{12},{110},{1868},{483},{1}};
+    #if (CYTHON_COMPRESS_STRINGS) == 2 /* compression: bz2 (2783 bytes) */
+const char* const cstring = "BZh91AY&SY\371|T\224\000\002\205\377\377\377\377\377\376\377\377\377\367\277\367\377\377\277\377\377\360@@@@@@@@@@@@@\000@\000`\n\274\371K\255\215\253\010\367n\254\245@Bj\226\302\274\303\333T\023!(\205\0244\r\000\320\031\243\304\311\246I\224<\247\264\"h\362\200h\032h\000\000z\201\221\243\324\320\365\014@\310\200&A\004\300)\246\022z\236\223\324\310h\003F\200h\000\000\000\320\000\000\r\003 j\236\215&!M\000\000\000\000\031\006\200\000\000\000\000\000\000\000\000\000%4!\010\nbOSO)\350\312=4z(\3652\r\030\321\006\215\000\000h\000\000\032h\000\007\250\020`\000\230\000\t\202`\000\000\000\000\230\004\300C\000\000F\000\000\002I\r\010\324\251\355O\021\2655=P==I\352\036\220\365<\241\223\312\001\220\000\000\000\320d4\032d\320\006\201\3520\261z\r\234\321\032\310t\315\302l\373Bd2o\333\366\0017\356\307\363\020\2248D7\364\203\370\376\353\303\022:\242\205fL\315C\204\273\204\222Y\246Z\363\374\033\375I3\014\314\231\202\263S/\330B\2759z\035_\243\376\000t\016+\246\342\200:\276\314!\231\t\231\230F\221\343b!\022\355uG\240\034\316\277\363\342\361FVX\260\003j\360i\231\004\261\206\305\006\312&I\222fH\004$ \0233!\206\233\244j\005\020\326\025I\007%q\234\264\234\034\207l\016]\025 a\203\265$\"\314\2057\304\023\022\244\256\271\303nb\326\317\260\031\343\204B\t\244\343@\373\204\272\243U\021R\264j\325<V\032\252,\014\240\n59\032\331c\021T\221\2212\002fvk\307\214\222\211+.B\266X\005\202r\333\232\341\023\"\304/{\027\263^d\335\3422,\254Y\213\031p\255B\215#6a\033\332UUI\352\330\262\344\223\273\233\241\307b9,\030\270\325&\003\033\354\313R\021\262\227S\367\374\010\177F\256\262\372<OwO\320o\363\315_\316\220\352\266VDr2\330\"'\234\316\272G\025\224O\321n\255\225\243k7\205s\333$\020)\323\353\364<\306\331\373\377Xz1\204/uK\007W\013C.TW\252`\033\326\305\"\341}\033\n\316\037\345\026\230\335:\315.Y2\025Z\004Y\210\311\355\261\021\216a\021\203\334\333\231\252rYum[\363\346\344m\261\334\203\235^^\353\0247\241\236\243\210I\2213\273\312*\025c\270\240\250oL\230\211\200\345Q2~^\346'\344\326\321+`,'V\344w?\036\275\202\326p""\266\032\235\226\315\245\006\254I\350\365\354b\343\354\362]\366\026\306'\353\0266\327\n\223E;(\313\256{\265\321\200\030\034xGf\004\240H\341%.%\360V\211\323\210\265M\213\346\246H;\336\365}\330@\315T\254$\322\320$D\310W\366\217{:N\200\373\265vI\241x%\2703\360v\375e\222u\036\353\316\320\207\037\221{\251\201a\306ThFn\006\242\021c\300s\203L\237\371}\233\266p\016:P\232\n\023AB(+g\201\222\262\002@\310K\360\343\374\276\274\275\033\314\314\300\234\356\342\305\001\010\002\370\000\250\002\345\372\241\207f\262\022\210\337\371\354\331\227\203\001>\276k\237\225\334\3751\027\0201%\214\327\323,\354G156\t\023\214\024c\204\335\306r\004_F]\215\027\320UE\301q\366\344\341\245\002\201B\201\213~jjje\263:rU*z8\373\034mR\266E\305\321\205\277J\302\235i\306]\177\357\004\0316\337\202H%\271\0004\367R\r\326\335\226\3177\235\204\001\255l3\200\353\037u\306\222]30O\302Y\272\202\020\202M\016,$ \0027\305\t\25154\"I\236\2522\246\271\005\225\023\022\310k\357r\354\tH\305}\347',U3Y\247\225\177\276\t5\253!\325\313\232(\342\315\214\352x\206\261/?\362\221\222\303\006\235\334\305\302\024\016\347K\\\006L\204uc\243\014\350\360\371ge\244\306\334\343k*(se\tB\251x\223\257\346\350\2321([\235\004\\\216\335-\261r\215\316Wx\017\027g\"\021\200o\301I\332C\026\216\370n\212\021\275\210\006\200\037y\324\224\004L\213.\264t\007\026\356=\272n\264\243\020\335\242\206\230F}hZN*P\275i\247R\272\013\020\250MyO\206\257~;h\236\3326\221\221\230\300@\223bYd\335\270\3305\300\3275\365\315\203\265\324\306\031]\217\261\340\207N\222\340\203\1770m\373\371\270c\260L\243\336\365\203\202\035\231\032\304-\332\300\302\205\004\035Tcb\020E\372\215\245\223o\376\300\205\221\326^C\314;\362\335\265\253:\225\265W\021\366\342\245`\230\264=\022\322&\302\340\020\344\336\355\220M\323@\221K\210\302o\211\304\310\323\227\251\010\000\326=\335\302\226:b\365\334w\004\204\215\343\252\020\250\tt\355\216-\353\314\000\212\014Kl\257\315\3277\224;Z\037\222i\322\356\315\362kg2\3474\3434\2543\337~\213!g_\241\016\224_\230\001bPr\223\224:(!\2729\203\207\031\035-\311\2249""\310\306\005f\352\337}\2459\021]h8\014\206F\250]\310\303A\3132\034\344\354$\343\035|v\215I\200\010T \010\204\243l\330\321\257&\031\336\024\212f\220\376\221\020\244(&R\314\355\242\001w\n&0\"\230\332\346d\337P0\200\302\230\362\226\364\356\3537\237z\210b\021(\210\226\\\010x\251p\361p.\r~\376\314\033:B}\330y\321\242\014L\217;;\002\235\362\345\322\006P1\204*\234\212+\320\r%wgI\270!\343MY\371l6\030\240\203\266\317\244\340)s\314Z\202\303c\006\222\325l\230\034\301\014\251\r\224D\220y@5\020\370\201\2549\210\304\021\214\\\252\3304L\233#k\037\310\316\322\221Ln\351\t\341\361\242%\215\264\361\2262\303\336t\357-\237\026B\267*\231\225\2306p\253[\226\341r1\346\342f&\311\256j\220\353K\020\3248\025\326\020\222j\226\300\214\215\261\306\024\320$0W\204'%\341\224\034\\\031\356\314W\213\224\322\262|\230\031\001\320>\245L\324\331\220\3328\312*\306\246J:\276u^\367gB\317=R\262B\021\2516\367]\030\340\351m)m\272\313\\`\024`\004P\260\275\367\204@\210\017?r\006\351\3521\020\036\237b\272\357/\236\322\201\233\324\326\334e\037,L\214\266I\374\313\243\2202\221\246\3357\306\365q\310\214;\n\006\365\243^\016\021\321\274\033\334\035\373\273\274\010\020P\007\204\261U0 \026\204\310\n\014\204U\331\267\006\241\201\310\010LE\033\233\202c\2259\203Pk\316ibh\221\035\252\305\314\225D\"\230\201\030\036Ti)\001\235,\022\316a\263y\206s\030\305\213\304\307Q8\237\006\027;Yb\261\252\226\260*\033\234\254V\211;\207l ti:\2640\261\242\312\001\273\256\342\320\324rT\021n*\261\270\033\020A\323\247!@\261Q4\336\276\371\266\224\371\315\240ZV\221i\r!\242\265!\254\313he\235\245\331\340\362\2434&\231-Q\302R+j\341AW\t\346D\032|k\365\013\330|\211;\331ZP\220\320clpb!\rDX\215\232\000\3412\020\352\006\262\0246\334\026&\304\252\214\324\240\002\255`\236\375\254\331\245\3021\007\233UI\272\205\025\257mu\232 m7B\256\242uh+\237z\202 0\332\255\334\034C\370A\007\\Tb!\016\362\363sa\314\267\312\307\241\234\007\027.\250\322\2355\034$ngq\274[\253S(\255\033\307#/t\310\231\341\230\"G\210q\205`\246\375X\204z\265\323s\224\266\342N\350\2068\256i\347\312d""\323\343\325\t\336\355R\230mt\356\243(\273,W\210\263f\264N \323\303\341\"\206\261\"7\234\330c\rN\016w\315\324\372HDN\241\036\321O\221r\204\000u\030\211\357;\325\201\302\036\341\214\372\236\275\025\276\267\321Q\210\227\353\207\205\272NE\036e\004EB\005=\2756\215SA\2140\001\241=\023I1\377\n\320H\235\220\242\251\346T\357\365Rs\234\341Z\214B\366OA\266\203\260}\256\005\235\2416\312\033\232\016\272\303\376BI@\237\304M\361\366\026\342\334\210 K\260\267\031\244\364\374\361\3414#\347F\215\035j\332K9u\251^\275\323\366\210\027-\227\3646\363u\337\271\227\021FG+A\274\273\204?q{E\276\264H\213\024L\275\335\347\352Z\037\324[\363\2768\355\360\034\304\2522\270\272\204\330\262r\255m\376\246\372\337\357(aQ\004\016[o\233\255\ri\2401\000\332a\"\274w\210\216\017mX\244\"\203\004@@\241b\341\236f\204\323Ybm\346`i\2710Z\371\332\3476\345\261\250\321\303\001\203F\212\016\273\336r\375\303\243\317n\211\301\300\236\030\375\032\325Tz\220\277\316\227@\340L\347\002\351\021\022\245\024.'\346\325\2630\0349E\034\335;\004\326n/i\251lm\262{Z+B\302=_c\2368O~\357N\207?\241d\325\202\n[\235\336\267\200?8C\202\335S\336s\273\267\022\035\230\245\205\304f\034\272\274q\273[\313\347\0339\337\335\223'\004\360iT\250\022\250\252\031u\225\372r\022+\031,\227\272\340\311\022U\273&\264l\222Y]F\"\221\035\350\363\243\031v\353\234I\364\301SX*g\322\2060Q\232\371\221gzd\034*7s\313\206\032U\251\221!\024D\024_R\005\312\231,\302\302\n-\312\010\036^\224\330\321=\320\264\245\240j\253\372\374\250ff\304\020\223B]\007\350\260y\367\301\23195\376\024(P1\314\335\3565M\336.\241o\027\262^\246G\270\3106\334,By=\257\304\366\246\035\361\207GWV\257n\236\322\333\355\363'\204h\201\354\211\243#\306\235\n\342\245Y'\207\213M\317r\n{\002,\036\311\355\214=\367\342\212\336\260U1\330\254N)kE\207$\204&{\225ie<56`\006\242Z\036y\347\224\037\376Z\022\342\222N\272\303K\002\226X,3$\0310\326\024Kq\nS\206l*\"jP]\253Y86\330\026\352\010\3104\020u\217\257I\206\300\264\265\014\2264B\235(/\243\323\377\027rE8P\220\371|T\224";
+    PyObject *data = __Pyx_DecompressString(cstring, 2783, 2);
     if (unlikely(!data)) __PYX_ERR(0, 1, __pyx_L1_error)
     const char* const bytes = __Pyx_PyBytes_AsString(data);
     #if !CYTHON_ASSUME_SAFE_MACROS
     if (likely(bytes)); else { Py_DECREF(data); __PYX_ERR(0, 1, __pyx_L1_error) }
     #endif
-    #elif (CYTHON_COMPRESS_STRINGS) != 0 /* compression: zlib (2697 bytes) */
-const char* const cstring = "x\332\255V\315w\023G\022\267l\311\261\215\301\026\226\301d\311\313\330\006Lv\203\022\233\217\020\036!\317\037b\343\274]@6f7a\263\363F3-y`\324#\315\207\221r\3428\3079\316q\216s\234\243\216>r\364q\216\372\023\370\023\366W=#\313\006\222\007\357\255\237\324\256\256\356\256\256\372\325\257\252uO\332p\353ufI\007:{%i&\263%n:\022\353\264L\233I\266c\351\032\2637\025.\231\334\350J\252\305\024\207I\212TK\0179\373\212#\351\266\244\232\334\321\033\256\351\332\222\316\245&k\232V\267\214SdJ\261m\275\301%\307\224pX\273!\354\244;\350\312lSf\370\225\245;J\315`\331\206\324\251\272e6\377\354\254\3165\326\221^\351\316\276\344t[LZ\311\364\216\245p[\2041<\222n\303\t\335b\252#iz\223q[7\271\275\305\034(\230&\265\024\313\321U\270\340(V\2039\345)\t\177-n\335\033\256p\267YC\360\327\305\305_\211\r\235\257\245\356=Ie\334\261L]\003\036\246\245\351\034!\331b\231\337\033\0342\353RK\3570C\000\225^\221\356\200\005\016\023\254\343\300\010-v$\205kRW\254\332n\263q\217F:\337\260\030\220Q\01473\356\220s\252iY\014\321\302%\256\016]\274\261*\375 \271<\315\001\323Rg\207\2612\345\245T7-\312\037\207J?\320\235.\256U\214\256\255\333\345\255\001:\322U\215\262L\240\246\300U\232-l\264\367\025\300\355\270-`\"\254t\235}\223\227\025\313R\272\333\357C,\316\333n\253eZ\270|\233#\004@\32545\3665\361-uiE]\221`j\005\366(\177+_K\r\234\032lNo\0048J\007\376\334\377\247\310\3533\312+pyd\202A\202\221\233\302\021rYc\206\016 \220\0100\207\330\214K\004m\271\364\244\362\344\306\255\273\267\004\312\026{\201\353mxWS\r\200\205*\200\301\232\253\033\016\245\t\254\262\313\322v]\352\232\256\304\031\334\004\233[\330w\362\200\263\317\270d3\207\004iEPPq\020\267\214\343:o\254d\320\351\007\214N?T\014\233\225\037\273\216\270\310t\271\206+\371\240\256\024Ue\260~]\204\271\307EI\340\020\322t\300,\260\303aM\232\2335r\273\374`\345\253\037\025M\223q#S\214\206\211\"\332o\332\337\330\254\001\350S'\312\255\356p\245\014d\325\227\362Kfq\"\"\001 \001\265o;\252i\030\344\"\222UVj\352\375\023eM\233\322\000\036\274\253\036T\323\203,\377:w4\335&\237\231\360\274""\241J\327)\211\rA\037\212\017pdD\027epL\021d,=\242Q\204\266\376;\223\356\377 }\373\036\271\014\335v\236\343\232\337\270\211\014\327\025\327p$Y\266\230\346\252L\226%\315\025hq\223\337@\306\017t\305\300\252\252s\335\221e\336*sM\030\311\320{p?mr\332\251\020\337\327\021+\217#=\265~\254u\217\023\245\030\206\251\212N)n\322\024G)\177`5\2453\331\310\032my}ws{{\363\361\316NeW~\364\370Q\245b\030z\013\265\370\004\225J\337\362}Ci\3264\345\201,?\351v\360\335\002\243\345G\000s\207\325wY\333\245\352\177*\332\n\225EyX!\310\347\t\006\234\344\306\300\0359%\237,\017\271kcb\213\030\024\273\313U\335,\243\317\230.\212\202\3315\305f5\3234Tu\237\201M\216\351\252\373\200\231\252A\226\007\002\374\240T\322\024gd\035\325\000\356\261\032\370\247\232\255\256\n\342;\204\216\330},0;\313\252\\WT\007\001\310\262Fqb\264\211|\020L\025\003\025\246\030d\335\226\323t2\352L\000\001]\205\241\t\212\322g\226eZu\235\031Z\335P\0326\006\247n\230\030L\253)F\3524\262\\w\271J\236\303g\333!<\344\306A\343\300\331G_\325up\264!\313z\223\232\027\375\357\350\315\256\350\377\240!>7\3270\334\271\0057T\263\331\322\301`Y\310\031X4!\220\r\271\211\222n\272\315\224\337\031\311_\014\223\332T\000\221\214\367\212\036+\0222D \"\"1\272\006\376s\236\002\316\225&\315\322\021>b\244s\234\343\036\014:\347-\240\320\352\362\016\357\220\252C\252.\357\222\334\205\014\320Z\253\255\265\026\362A\217\201\\\327\035\274u-\023M\032w\266,\206G\217\021(-\260M$\032\217P:\3130\"Q\244@H.o\351\352KxX\341\203}\007\342E'\033mW1RW\207\305z,\245\365}B\301:$6P\352\310\037s\\\013\213h\257Y\260\220\006\034!9s\346\204<\260'j\214P\266\333\026-\211\301qm\230m\331\216\211\257\345\242\365\343\201\245\257\014L\350U\306\315\252|,\324\025\33395\221e\274\3544rK\244\301!\360NuU\027v\356\002\r\250\\n\271-p\233\245ov\207\022Ay\350R\026(\t\2773\313\264\217F\376\022\374\030}s\364\375\317G\077\077?z\376\342\350\305\313~~\322\233\363\326\275]?\227\344\013\311\304\031\357\246\247\372E\177\331\337\361\255\240\230LL{\233\236\215i\325W\203\363\301ZP=\251\252\005\243\301\362G\252v""\002+,\376_\324G#\363~\265\237/\372\305\350\337q5V{s\275\315^\373u.\271\270\030^\212\026\337N\215\024&^\333\336\262\007/&\223\374g\307\362\333\211\221\302\244W\360\366\374E\377v\220\243ho\373\343\276\342\333\302\345\351\263o\307G\nS\336\005\257\355\027\374\377\340~\200s\331\257\222v\342\265\353m\003\223v2q\326{\036\344^\347`l\352Lr\366\034}\316L\277\37397\223L\315\002\323)x9\224\006\366m\177\221\374r\275\rOI&f\274\366\351\331\333s#\2053\336\222\367\020~\336B\032\346\203z\270\021*I~\352C\312\005DB\303\333\317G\nE\177\324\277\006\244\256\006\007\341\263h-\252\246+\343\303\270\357\340`-\314\021\264\025\177\036\261\037P\344\2638\267\344o\341\344b2]\364\347\374u\1777\310\365\247gR\364\223\331b\002\271\033\344\202\271`3\260\303Eh`\365\354\254\347\034\315]\t\327\303\275h9\332\215\013q5[\270\010\272\024\203\225\360|\270\232L\317\013\366\314\007J\177z\016\276\267\223\331\222\277\236\314^$i\236\254\237\032\372p\340\"n\022v\346\261q\232vO\237\363\024r\340\204@\007N\332>/B_$#H\024v\014\205K\240\362\354B0\026\254\302\375v\230\017\327\373\360a+\030\007\026\371\260\022\315E\225\270\030/\307{\275\345^5)}\021\354\206\243\010r(\\\364\335`#P\301\257+\221\026/\305\233q\3670\227,\\\242\225n\230\013\027\242\205x.^\207\246_Z\n\227\303j\250F\305\350z\274\330/\315'\013WD\246\026.\007\225p.\334FV\216\305=\330Z\247\351?\242\261\350N|>^\245\311\303p)\374)\332\214\354x1\276\031+\361\253^\355p\354\360S\227:\275W\207\2657\271?Y\352/,\206\305\360z\364W\362\341\363`1\370><)`\3614u\212\177F\233\222\277\035T\001Q\221hs@\374\001\027\206YA\352oSVO\361k\226\312\217\354L\202X\353\251\311q\237\2114Q\0038=\245\375g0\331\n?\013\333\311\307M\210DE?\357?\014\226p\301\323p>TB;\272\032\265\343\261\370v/\337\253\034\316\035V\336\224\336\354\035\355\354\035\355\375z\364\353oG\277\375\227\010Z\021\355\356)\030\274\026\202\230s\376\032\\.@Q\nwR\013I\351j\370K\244D\016\222V\372\022\264\032\017\033Q5El\314\273\347\377\022(A\233\232\314\035\377\222\350]vx-*\240L\300\335\263}\364\221g\376M\364\265\361@INO\316\241\005g""\030\367\001\370\266\377,X%\330.\210\226,\212r\311\337\000\355\263b\014\277C\365\355\211\324\262\336\315\236\"p\237\367\367\220\307\354\234\215\350\037\206\213\357L\316\243\266i\323\235P\344iI\304|S\224\304fh\241(6#+.\305\273\275\\Z\212Y\242g<\307_\245r\312\2458\241\370\340\005q^IJ\227E\201\215\0014Bi9\332\001<kh\013\177\264\000\313\363\013\210k.\370)\334\212\362\321F\244\306\013\275b\262@\245\227C\215\254\207\377\212~\2127b\205\252\355\362\227\340\001%\200\274\333\212G\343\253\261\205\315P\333`\370\372\261\320\277|\205f_\364\027\244\220\312\264?pZ4\2259\177\005\367m\000j\301\316\361w\204\257\010\220S\232\277\201\330\365\360\357(\320\342'M\211\0133h\352\371\t\020\342\256\377=Q\274\017B\334\362\\\177\023\335O\2748\223E\2746\342e!\246\234\207\227\302\331;p\221z\304V4\016H\212Y\013\036\350\211\225\273\200\353\241hZK\275\3654\264\311s\336SA\223R\360L\360\026\304:\245\350\343E\024EU\243\016J\202\032\\\010\332\037\020\351\300j\177\372\202\257\201.[\"qO#\370\360\216\202Z\372w\324t/\240\220Ki\213]OJb\226\rZ \032h;\033.\301t\225\266\322\023Z\230\366V_\347\372\223S\237\372\222.}\370%uP\246\325\3675\375<\275\032\007\264\364\216\360\024\224_=5\351\347\317z;^\007\017G!\303,O\211AA&y\352a\243\3015\004\177;\032\215p5\301[\302\271\371\200\205w\243\007\340\342\004\27181\345]\363s\376\347\350 @\021T\314\024\013\270\000\344B\361}\264\2428\020.\212\233s\341\037+\212}\004\336\021\230\320\317\010\361\323\306\021\005=&\3502*\036\3511\264\t\2657\337S\017K\207\200\341\214\267J\035G\001P\324\200\n`/~\037\240O\326\320\253\252Q-\316\201|3i\317\336\021\240\354\302\334*:D[4\263\261x\025\257a\273\227KfJDja\201\205\267\320\207\217\037\213\366\343\377\001,u\251\331";
-    PyObject *data = __Pyx_DecompressString(cstring, 2697, 1);
+    #elif (CYTHON_COMPRESS_STRINGS) != 0 /* compression: zlib (2712 bytes) */
+const char* const cstring = "x\332\255VKs\333F\022\026-R\221d\331\022-\312\226\263N\005\222l\313\331\215\351H~\304q9N\351\345\215R\273\266)Y\336M\274Y\024\010\014)\330\340\000\304C&s\362\021G\034q\304\021G\034y\3241G\035q\344O\360O\330\257\007\240(\331N*\251Z\0259\352\351\231\351\351\376\372\353\036>\220\326\275F\203\331\322\201\316\336H\232\311\034\211\233\256\304:\226\3510\311qm]c\316\206\302%\223\033]I\265\231\3422I\221\352\331!w_q%\335\221T\223\273z\3233=G\322\271\324b-\323\356Vq\212L)\216\2437\271\344\232\022\016k7\205\235l\007]\231o\312\r\277\261uW\251\033,\337\2209\325\260\315\326\357\235\325\271\306:\322\033\335\335\227\334\256\305\244\345\\\357\332\nwD\030\303#\3316\234\320m\246\272\222\246\267\030wt\223;\233\314\205\202i\222\245\330\256\256\302\005W\261\233\314\255NJ\370\263\270\375`\270\302\275V\035\301\337\020\027\177!6t\276\224\272\017$\225q\3276u\rx\230\266\246s\204\344\210e\376`p\310lH\226\336a\206\000*\273\"\333\001\013\034&X\307\205\021Z\354H\n\327\244\256Xu\274V\363\001\215t\276i3 \243\030^n\334%\347T\323\266\031\242\205K\\\035\272xsE\372V\362x\226\003\246e\316\016ce\312k\251a\332\224?\016\225~\240\273]\\\253\030]Gw\252\233\003t\244k\032e\231@\315\200\333jY\330\350\354+\200\333\365,`\"\254t\335}\223W\025\333V\272\333\037B,\316;\236e\2316.\337\346\010\001P\265L\215}I|\313\\ZV\227%\230Z\206=\312\337\362\227R\023\247\006\233\263\033\001\216\322\201?\017\377)\362\372\202\362\n\\\236\230`\220`\344\206p\204\\\326\230\241\003\010$\002\314!6\343\022A[.=\333zv\363\316\375;\002e\233\275\302\365\016\274\253\253\006\300B\025\300`\335\323\r\227\322\004V9Ui\273!uMO\342\014n\202\315\026\366\235<\340\3563.9\314%AZ\026\024T\\\304-\343\270\316\233\3139t\372\001\243\323\217\025\303a\325\247\236+.2=\256\341J>\250+EU\031\254\337\020a\356qQ\0228\2044\0350\033\354pY\213\346f\235\334\256>Z\376\342;E\323dN\000P8\0220\370\252\243\232\206A\027\002\372\252RW\037\236(R\332\224\271\363\350}\365\2406\036\345\331\324\271\253\351\016y\300\204\037MU\272A)i\n2\220\267\010.\247\255 \365q\302\201\177vD#\177\035""\375\027&=\374V\372\352\003\252\030\272\343\276\3045?s\023\371j(\236\341J\262l3\315S\231,K\232'b\347&\277\211\374\035\350\212\201UU\347\272+\313\334\252rM\030\311\261xdZ\214[\356\301jU1\232&\272\311~\313\251\202H\352k\3715\2639\352\316\261\325[\203M\267\206\233n9\254\t\277\263\224U\255\356\303\254\365i\247\240\372PG\\=F\354\324\372\261\326;N\237b\030\246*\372\247\360XS\\\245\372\221\325\214\344d#o\277\325\265\335\215\355\355\215\247;;[\273\362\223\247O\266\266\014C\267P\241\317P\277\364\255>4\224V]S\036\311\362\263n\007\337M\360\\~\202\244\354\260\306.k{\324\023\236\213fC\305R\035\326\rx1\270W\316\270'\313C\352:\2308\302Y\305\351rU7\253h3\246\207\232`N]qX\3354\rU\335g@\3275=u\037y\241b\220\345\201\200\013)\3674\305\031YG1 \027\254\216|\250\246\325U\301{\227`\020\273\217\005\346\3444\220\033\212\352\302SY\326( \214\016\261\025\202\251b\240\272\024\203\254;r\226\177F\215\t\321\242\2510\364@Q\371\314\266M\273\2413Ck\030J\323\301\3406\014\023\203i\267\304H\215F\226\033\036W\311s\370\354\270\204\207\334<h\036\270\373h\253\272\016R7eYoQ\357\242\377\035\275\325\025\355\037\274\305\347\366*\206{w\340\206j\266,\035\224\227\205\234\203E\023\002\331\220[\250\350\226\327\312\n\"\257\212W\303\354\265\024@$\343\271\242\267\212\204\034\021\210\210H\214\236\201\377\234g\200s\245E\263l\204\217\030\351\034\347\270\007\203\316\271\005\024\254.\357\360\016\251:\244\352\362.\311]\310\000\355c\005s\262\026\254\025k\325B\276\350\255\220\033\272\213\247\3202\321\303\341\223e3\274\211\214@\263@;A\004\274Q\331,\307\220D\221\"!y\334\322\325\327\210`\213\017\366\035\210\007\237l\264=\305\310B\031V\377\261\2245\214\023\n\326!\261\211\336\201\3742\327\263\261\210\356\233\203\001i\300!\222sgN\310\003{\242\330(\013N\333\246%1\270\236\003\263\226\343\232\370\332\036^\006\274\277\364\225\201\031=\332\270Y\225\217\205\206\342\270\247&\262\214\207\237Fn\2134\271\004\336\251.\344\301\316}\240\001\225\307m\317\002\367Y\366\244w(Q\224\247.e\211\222\364\013\263M\347h\344/\341w\361\255\243o~8\372\341\345""\321\313WG\257^\367\213\023\376\254\277\346\357\006\205\264XJ\307\317\372\267}5(\007K\301N`\207\345t|\312\337\360\035Lk\201\032^\010W\303\332IU=<\023.\375A\325NhG\345\377\213\372hd.\250\365\213\345\240\034\377;\251%jo\266\267\321k\277-\244\227\026\242\313\361\302\273\311\221\322\370[\307_\362\341\305DZ\374\344X~7>R\232\360K\376^\260\020\334\r\013\024\355\335`,P\002G\270<u\356\335\330Hi\322\277\350\267\203R\360\037\334\017p\256\0045\322\216\277\365\374m`\322N\307\317\371/\303\302\333\002\214M\236M\317\235\247\317\331\251\367?\347\247\323\311\031`:\t/\207\322\300\276\023,\220_\236\277\356+\351\370\264\337>={w~\244t\326_\364\037\303\317;H\303\\\330\210\326#%-N~L9\217Hhx\367\351H\251\034\234\t\256\003\251k\341A\364\"^\215k\331\312\3300\356{8X\217\n\004\355V0\207\330\017(\362\031\234[\0146qr!\235*\007\263\301Z\260\033\026\372S\323\031\372\351L9\205\334\r\013\341l\270\021:\321\0024\260zn\306w\217f\257Fk\321^\274\024\357&\245\244\226/\\\002]\312\341rt!ZI\247\346\004{\346B\245?5\013\337\333\351L%XKg.\2214G\326O\r}8p\t7\t;s\3308E\273\247\316\373\n9pB\240\003'm_\020\241/\220\021$\n;\206\302ePyf>\034\rW\340~;*Fk}\370\260\031\216\001\213b\264\025\317\306[I9YJ\366zK\275ZZ\371,\334\215\316 \310\241p)\360\302\365P\005\277\256\306Z\262\230l$\335\303B:\177\231V\272Q!\232\217\347\223\331d\r\232~e1Z\212j\221\032\227\343\033\311B\2772\227\316_\025\231\232\277\022nE\263\3216\262r,\356\301\326\032M\377\021\217\306\367\222\013\311\nM\036G\213\321\367\361F\354$\013\311\355DI\336\364\352\207\243\207\177v\251\323{sX\377\265\360;K\375\371\205\250\034\335\210\377J>|\032.\204\337D'\005,\236\246N\371\367hS\t\266\303\032 *\023m\016\210?\340\3020+H\375]\312\352)~\315P\371\221\235\t\020k-39\0260\221&j\000\247\247\264\377,&\233\321'Q;\375c\023\"Q9(\006\217\303E\\\360<\232\213\224\310\211\257\305\355d4\271\333+\366\266\016g\017\267~\255\374\272w\264\263w\264\367\323\321O?\037\375\374_\"\350\226hw\317\301\340\325\010\304\234\rV\341r\t\212J\264\223YH+\327\242\037c%v\221\264\312\347\240\325X\324\214k""\031b\243\376\203\340\307P\t\333\324d\356\005\227E\357r\242\353q\te\002\356\236\353\243\217\274\010n\243\257\215\205Jzzr\036-8\307\270\017\300\267\203\027\341\n\301vQ\264dQ\224\213\301:h\237\027c\3645\252oO\244\226\365n\367\024\201\373\\\260\207<\346\347\034D\3778Zxor\001\265M\233\356E\"O\213\"\346\333\242$6\"\033E\261\021\333I%\331\355\025\262R\314\023=\355\273\301\n\225S!\303\t\305\007/\210\363JZ\271\"\nl\024\240\021JK\361\016\340YE[\370\255\005X\236\233G\\\263\341\367\321f\\\214\327c5\231\357\225\323y*\275\002jd-\372W\374}\262\236(TmW>\007\017(\001\344\335fr&\271\226\330\330\014\265\003\206\257\035\013\375+Wi\366Y\177^\212\250L\373\003\247ES\231\r\226q\337:\240\026\354\034{O\370\202\0009\245\371\033\210\335\210\376\216\002-\377\251)qa\032M\2758\016B\334\017\276!\212\367A\210;\276\027l\240\373\211\027g\242\214\327F\274,\304\224\013\360R8{\017.R\217\330\214\307\000I9o\301\003=\261r\027p=\026Mk\261\267\226\2056q\336\177.hR\t_\010\336\202X\247\024}\274\210\242\250\352\324AIP\303\213a\373#\"\035X\351O]\0144\320eS$\356y\014\037\336SPK\377\232\232\356E\024r%k\261kiE\314\362A\013E\003m\347\303e\230\256\321VzBKS\376\312\333B\177b\362\317\276\244\213\037\177I]\224i\355CM\277H\257\306\001-\275'<\007\345WNM\372\305s\376\216\337\301\303Q\3121+RbP\220i\221z\330\231\360:\202\277\033\237\211q5\301[\301\271\271\220E\367\343G\340\3428\2718>\351_\017\n\301\247\350 @\021T\314\025\363\270\000\344B\361\375aEy \\\0227\027\242\337V\224\373\010\274#0\241\237\021\342\247\215+\nzT\320\345\214x\244G\321&\324\336\\O=\254\034\002\206\263\376\nu\034\005@Q\003*\201\275\370}\200>YG\257\252\305\365\244\000\362Mg={G\200\262\013s+\350\020m\321\314F\223\025\274\206\355^!\235\256\020\251\205\005\026\335A\037>~,\332O\377\007FG\265\225";
+    PyObject *data = __Pyx_DecompressString(cstring, 2712, 1);
     if (unlikely(!data)) __PYX_ERR(0, 1, __pyx_L1_error)
     const char* const bytes = __Pyx_PyBytes_AsString(data);
     #if !CYTHON_ASSUME_SAFE_MACROS
     if (likely(bytes)); else { Py_DECREF(data); __PYX_ERR(0, 1, __pyx_L1_error) }
     #endif
-    #else /* compression: none (5124 bytes) */
-const char* const bytes = ": Buffer view does not expose stridesCan only create a buffer that is contiguous in memory.Cannot assign to read-only memoryviewCannot create writable memory view from read-only memoryviewCannot index with type 'Cannot transpose memoryview with indirect dimensionsDetected particle target.\n    pnr: particle number (index)\n    x, y: centroid coordinates\n    n: number of pixels in target\n    nx, ny: extent in x and y\n    sumg: sum of grey values\n    tnr: correspondence number (-1 = unassigned)\n    Detected peak for connectivity analysis.Dimension %d is not directEmpty shape tuple for cython.arrayIndirect dimensions not supportedInvalid mode, expected 'c' or 'fortran', got Invalid shape in axis <MemoryView of Note that Cython is deliberately stricter than PEP-484 and rejects subclasses of builtin types. If you need to pass subclasses then set the 'annotation_typing' directive to False.Out of bounds on buffer access (axis Unable to convert item to object.>')?add_notealgorithms/segmentation.pyalgorithms.track_kernels and  at 0xcollections.abc<contiguous and direct><contiguous and indirect>cython.intdisableenablegc (got got differing extents in dimension isenableditemsize <= 0 for cython.arraylist[int]no default __reduce__ due to non-trivial __cinit__np.ndarray object><strided and direct><strided and direct or indirect><strided and indirect>unable to allocate array data.unable to allocate shape and strides.ASCIICORRES_NONEEllipsisPeakPeak.<lambda>__Pyx_PyDict_NextRefSequenceTargetView.MemoryViewabcalgorithms.segmentationallocate_buffer__annotations__asarrayasyncio.coroutinesbaseboolccheck_touch__class____class_getitem__cline_in_tracebackcopycountdataclassdataclassesdefault_factory__dict__discont__doc__dtypedtype_is_objectemptyencodeenumerateerrorfieldflagsflatfloatformatfortran__func____getstate__gvgvthresiidimg__import__imximyindexintint32int64is_compiled_is_coroutine_is_local_maximumitemsitemsizej<lambda>__main__memview__metaclass__mode__module__nn_touchname__name""__ndim__new__nnmaxnnminnpnumpynxnxmaxnxminnynymaxnyminobjp1p2packpeak_fitpnrpoppos__prepare____pyx_checksum__pyx_state__pyx_type__pyx_unpickle_Enum__pyx_vtable____qualname____reduce____reduce_cython____reduce_ex__registerreturn__set_name__setdefault__setstate____setstate_cython__shapesizesqrtstartstatusstepstopstructsumgsumg_mintarg_rec_targ_rec_fasttarg_rec_fast__test__tnrtouchtpeaktrack_kernelsuint8unpackunrupdatevaluesxxmaxxminyymaxyminzeros\320\000\033\230?\250/\3209J\320J[\320[j\320jk\340\004\t\210\023\210A\210S\220\001\330\004\005\330\010\013\2103\210c\220\021\220#\220R\220r\230\021\330\010\014\210C\210s\220#\220Q\220c\230\022\2302\230Q\330\010\014\210C\210s\220#\220Q\220b\230\002\230#\230Q\330\010\014\210C\210s\220#\220Q\220b\230\002\230#\230Q\330\010\014\210C\210s\220#\220Q\220b\230\002\230#\230R\230r\240\021\330\010\014\210C\210s\220#\220Q\220b\230\002\230#\230R\230r\240\021\330\010\014\210C\210s\220#\220Q\220b\230\002\230#\230R\230r\240\021\330\010\014\210C\210s\220#\220Q\220b\230\002\230#\230R\230r\240\021\320\000\025\220Q\340\004\021\220\021\250X\260Q\260c\270\023\270C\270q\200\001\330\027!\240\031\250!\360\n\000\005\010\200s\210#\210Q\330\010\t\330\004\007\200s\210#\210Q\330\010\t\360\010\000\005\t\210\005\210U\220!\2205\230\001\330\010\013\2105\220\006\220a\220s\230#\230Q\330\014\r\360\006\000\005\n\210\026\210q\220\005\220\\\240\021\330\004\t\210\034\220Q\360\006\000\005\010\200u\210I\220R\220q\330\010\r\210[\230\001\200\001\360\010\000\n\013\330\r\016\330\r\016\330\013\014\330\013\014\330\013\014\330\013\014\330\013\014\330\013\014\330\016\017\330\n\020\220\001\330\n\021\220\021\330\n\020\220\001\330\n\021\220\021\360\006\000\005\n\210\026\210s\220!\330\004\007\200u\210B\210a\330\010\017\210q\330\004\007\200u\210B\210a\330\010\017\210q\360\016\000\005\013\210\"\210F\220!\2204\220r\230\025\230f\240B\240a\330\004\n\210\"\210F\220!\2204\220r\230\025\230f\240B\240a\330\004\030\230\001\330\004\030\230\001\360\032\000\005\021\220\002\220&\230\002\230%\230v""\240V\2502\250Q\330\004\030\230\001\360\006\000\005\t\210\005\210U\220!\2206\230\025\230b\240\001\330\010\014\210E\220\025\220a\220v\230Q\330\014\020\220\002\220\"\220D\230\002\230!\330\014\021\220\023\220A\220S\230\001\340\014\017\210s\220#\220Q\330\020\021\330\014\017\210y\230\001\230\023\230C\230s\240!\330\020\021\360\006\000\r\020\210t\320\023$\240A\240U\250#\250S\260\005\260Q\330\020\021\360\006\000\r\027\220c\230\021\230'\240\022\2401\330\014\025\220Q\220c\230\025\230a\340\014\023\2204\220q\330\020\024\220A\330\020\027\220q\330\020\025\220Q\330\020\025\220Q\330\020\025\220Q\330\020\025\220Q\340\014\021\220\027\230\001\230\021\360\006\000\r\025\220A\330\014\024\220A\330\014\016\210a\210y\230\001\330\014\016\210a\210y\230\001\330\014\025\220Q\330\014\025\220Q\220c\230\025\230a\340\014\022\220&\230\002\230!\330\020\025\220R\220q\230\001\330\020\025\220R\220q\230\001\330\020\031\230\021\330\020\030\230\003\2301\230C\230q\240\004\240A\340\020\024\220D\230\006\230b\240\004\240E\250\023\250E\260\021\260#\260U\270#\270Q\330\024\035\230S\240\002\240!\330\024\035\230S\240\002\240!\330\024\027\220u\230B\230c\240\031\250$\250d\260\"\260C\260y\300\001\330\030\031\330\024\027\220y\240\001\240\030\250\030\260\023\260A\330\030\031\340\024\"\240#\240Q\240c\250\021\250(\260!\340\024\025\330\030$\240B\240a\330\030\034\230E\240\023\240I\250Q\330\030\034\230E\240\023\240I\250U\260\"\260A\330\030\034\230L\250\003\2506\260\022\2601\330\030\034\230F\240\"\240H\250C\250s\260!\2603\260a\260w\270b\300\003\3001\330\030\034\230F\240\"\240H\250C\250s\260!\2603\260a\260w\270b\300\003\3001\330\030\034\230F\240\"\240H\250C\250s\260!\2603\260a\260x\270w\300b\310\001\330\030\034\230F\240\"\240H\250C\250s\260!\2603\260a\260x\270w\300b\310\001\340\030!\240\021\240(\250*\260A\330\030\032\230!\2309\240A\330\030\032\230!\2309\240A\330\030!\240\021\360\006\000\005\t\210\005\210U\220!\2206\230\021\330\010\014\210E\220\025\220a\220v\230Q\330\014\020\220\002\220\"\220D\230\002\230!\330\014\024\220I\230Q""\230c\240\021\340\014\017\210v\220S\230\001\330\020\021\340\014\022\220&\230\002\230!\330\014\023\2205\230\001\230\021\330\014\021\220\023\220A\220S\230\001\340\014\020\220\006\220a\330\014\020\220\t\230\023\230A\230Q\330\014\020\220\006\220e\2301\230C\230r\240\021\330\014\020\220\006\220e\2301\230C\230r\240\021\340\014\020\220\013\2301\230D\240\007\240q\330\014\020\220\013\2301\230D\240\007\240q\330\014\020\220\013\2301\230D\240\007\240q\330\014\020\220\013\2301\230D\240\007\240q\360\006\000\r\021\220\004\220F\230\"\230A\230T\240\025\240a\240s\250%\250q\260\003\2605\270\004\270E\300\023\300E\310\024\310U\320RU\320UZ\320Z]\320]^\330\020\024\220E\230\022\2302\230T\240\022\2402\240Q\330\020\023\2202\220S\230\005\230T\240\024\240R\240s\250%\250q\330\024%\240Y\250a\250t\2601\330\024\037\230q\240\006\240g\250Q\360\006\000\005\t\210\003\210:\220Y\230a\230q\330\010\013\2106\220\031\230#\230R\230s\240&\250\005\250S\260\001\330\014\r\340\010\r\210V\2203\220b\230\006\230a\330\010\r\210V\2203\220b\230\006\230a\330\010\016\210c\220\025\220a\220v\230Q\340\010\014\210I\220V\2301\330\014\021\220\026\220r\230\021\330\014\017\210s\220\"\220B\220c\230\023\230C\230s\240!\2407\250#\250U\260!\2603\260e\2703\270a\330\020\021\340\014\025\220U\230!\2301\330\014\021\220\026\220s\230\"\230F\240!\330\014\021\220\026\220s\230\"\230F\240!\330\014\022\220#\220U\230!\2306\240\021\340\014\022\220\"\220E\230\022\2303\230b\240\004\240C\240r\250\023\250C\250r\260\024\260S\270\001\360\006\000\r\025\220D\230\002\230!\330\014\017\210t\2201\330\020\030\230\001\330\020\024\220E\230\025\230a\230s\240#\240Q\240a\330\024\034\230C\230q\240\003\2402\240R\240s\250#\250R\250t\2602\260Q\330\024\034\230C\230q\240\003\2402\240R\240s\250#\250R\250t\2602\260Q\360\006\000\025\030\220r\230\023\230H\240D\250\004\250B\250c\260\030\270\021\330\030\035\230S\240\001\240\023\240A\240W\250H\260B\260a\330\030\031\330\034\037\230r\240\024\240R\240r\250\023\250D\260\002\260%\260r\270\021\330\034\037\230s\240\"\240A\330\034\037""\230s\240\"\240A\340\034$\240A\330\034\035\340\030 \240\001\330\030\031\340\014\017\210t\2201\330\020\021\360\006\000\r\023\220'\230\023\230B\230a\330\014\022\220&\230\006\230a\330\014\022\220&\230\006\230a\330\014\022\220)\2306\240\021\330\014\022\220&\230\006\230a\330\014\022\220+\230Q\230f\240G\2506\260\021\330\014\022\220+\230Q\230f\240G\2506\260\021\330\014\022\220+\230Q\230f\240G\2506\260\021\330\014\022\220+\230Q\230f\240G\2506\260\021\360\006\000\005\017\210a\330\004\010\210\003\2108\2209\230A\230Q\340\010\013\2104\210u\220C\220q\330\014\r\360\006\000\t\021\220\005\220R\220q\330\010\013\2106\220\022\2201\330\014\017\210t\2206\230\023\230E\240\023\240D\250\006\250c\260\021\330\020\021\330\014\017\210t\2206\230\023\230E\240\022\2402\240S\250\004\250F\260#\260U\270\"\270A\330\020\021\360\006\000\t\016\210T\220\026\220r\230\024\230V\2402\240Q\330\010\r\210T\220\026\220r\230\024\230V\2402\240Q\340\010\t\330\014\020\220\006\220b\230\001\330\014\020\220\006\220c\230\026\230q\330\014\020\220\006\220c\230\026\230q\330\014\020\220\006\220c\230\024\230V\2401\340\014\026\220d\230\"\230D\240\003\2402\240T\250\021\330\014\026\220d\230\"\230D\240\003\2402\240T\250\021\340\014\023\2207\230!\330\020\026\220a\330\024\030\230\003\2301\230A\330\024\026\220a\330\024\026\220a\330\024\026\220d\230!\330\024\027\220q\330\024\027\220q\330\024\031\230\024\230Q\330\024\030\230\001\360\010\000\005\014\2101\200\001\340\t\n\330\r\016\330\r\016\330\013\014\330\013\014\330\013\014\330\013\014\330\013\014\330\013\014\330\016\017\330\n\020\220\001\330\n\021\220\021\330\n\020\220\001\330\n\021\220\021\360\"\000\005\n\210\026\210s\220!\330\004\007\200u\210B\210a\330\010\017\210t\2202\220Q\330\004\007\200u\210B\210a\330\010\017\210t\2202\220Q\340\004\016\210a\210v\220Q\330\004\016\210a\210v\220Q\330\004\016\210a\210v\220T\230\022\2301\330\004\016\210a\210v\220T\230\022\2301\340\004\r\210R\210x\220q\230\005\230V\2402\240Q\340\004\013\2106\220\025\220a\330\004\023\2205\230\002\230&\240\003\2405""\250\002\250!\330\004\r\210T\220\024\220T\230\025\230e\2408\250>\270\021\330\010\020\220\001\330\010\n\210&\220\001\220\032\2302\230V\2401\240A\330\010\n\210&\220\001\220\030\230\022\2306\240\021\240!\330\010\n\210&\220\001\220\030\230\022\2306\240\021\240!\330\010\n\210&\220\001\220\030\230\022\2306\240\021\240!\330\010\n\210&\220\001\220\021\330\010\n\210&\220\001\220\027\230\002\230&\240\001\240\021\330\010\n\210&\220\001\220\027\230\002\230&\240\001\240\021\330\010\n\210&\220\001\220\021\340\004\007\200x\210s\220!\330\010\017\210q\220\006\220a\220t\2303\230b\240\003\2402\240S\250\002\250#\250S\260\003\2603\260c\270\025\270c\300\024\300Q\330\004\013\2101\330\010\016\210a\210t\2203\220b\230\005\230Q\230b\240\001\240\025\240b\250\005\250Q\250b\260\001\260\021\330\017\021\220\023\220A\220R\220q\230\005\230S\240\003\2401\240C\240q\250\005\250S\260\003\2601\260C\260q\270\001\330\017\024\220C\220q\230\005\230Q\230e\2404\240q\330\010\014\210E\220\025\220a\220qO";
+    #else /* compression: none (5155 bytes) */
+const char* const bytes = ": Buffer view does not expose stridesCan only create a buffer that is contiguous in memory.Cannot assign to read-only memoryviewCannot create writable memory view from read-only memoryviewCannot index with type 'Cannot transpose memoryview with indirect dimensionsDetected particle target.\n    pnr: particle number (index)\n    x, y: centroid coordinates\n    n: number of pixels in target\n    nx, ny: extent in x and y\n    sumg: sum of grey values\n    tnr: correspondence number (-1 = unassigned)\n    Detected peak for connectivity analysis.Dimension %d is not directEmpty shape tuple for cython.arrayIndirect dimensions not supportedInvalid mode, expected 'c' or 'fortran', got Invalid shape in axis <MemoryView of Note that Cython is deliberately stricter than PEP-484 and rejects subclasses of builtin types. If you need to pass subclasses then set the 'annotation_typing' directive to False.Out of bounds on buffer access (axis Unable to convert item to object.>')?add_note and  at 0xcollections.abc<contiguous and direct><contiguous and indirect>cython.intdisableenablegc (got got differing extents in dimension isenableditemsize <= 0 for cython.arraylist[int]no default __reduce__ due to non-trivial __cinit__np.ndarray object>openptv2.algorithms.track_kernelssrc/openptv2/algorithms/segmentation.py<strided and direct><strided and direct or indirect><strided and indirect>unable to allocate array data.unable to allocate shape and strides.ASCIICORRES_NONEEllipsisPeakPeak.<lambda>__Pyx_PyDict_NextRefSequenceTargetView.MemoryViewabcallocate_buffer__annotations__asarrayasyncio.coroutinesbaseboolccheck_touch__class____class_getitem__cline_in_tracebackcopycountdataclassdataclassesdefault_factory__dict__discont__doc__dtypedtype_is_objectemptyencodeenumerateerrorfieldflagsflatfloatformatfortran__func____getstate__gvgvthresiidimg__import__imximyindexintint32int64is_compiled_is_coroutine_is_local_maximumitemsitemsizej<lambda>__main__memview__metaclass__mode__module__nn_touchname__name_""_ndim__new__nnmaxnnminnpnumpynxnxmaxnxminnynymaxnyminobjopenptv2.algorithms.segmentationp1p2packpeak_fitpnrpoppos__prepare____pyx_checksum__pyx_state__pyx_type__pyx_unpickle_Enum__pyx_vtable____qualname____reduce____reduce_cython____reduce_ex__registerreturn__set_name__setdefault__setstate____setstate_cython__shapesizesqrtstartstatusstepstopstructsumgsumg_mintarg_rec_targ_rec_fasttarg_rec_fast__test__tnrtouchtpeaktrack_kernelsuint8unpackunrupdatevaluesxxmaxxminyymaxyminzeros\320\000\033\230?\250/\3209J\320J[\320[j\320jk\340\004\t\210\023\210A\210S\220\001\330\004\005\330\010\013\2103\210c\220\021\220#\220R\220r\230\021\330\010\014\210C\210s\220#\220Q\220c\230\022\2302\230Q\330\010\014\210C\210s\220#\220Q\220b\230\002\230#\230Q\330\010\014\210C\210s\220#\220Q\220b\230\002\230#\230Q\330\010\014\210C\210s\220#\220Q\220b\230\002\230#\230R\230r\240\021\330\010\014\210C\210s\220#\220Q\220b\230\002\230#\230R\230r\240\021\330\010\014\210C\210s\220#\220Q\220b\230\002\230#\230R\230r\240\021\330\010\014\210C\210s\220#\220Q\220b\230\002\230#\230R\230r\240\021\320\000\025\220Q\340\004\021\220\021\250X\260Q\260c\270\023\270C\270q\200\001\330\027!\240\031\250!\360\n\000\005\010\200s\210#\210Q\330\010\t\330\004\007\200s\210#\210Q\330\010\t\360\010\000\005\t\210\005\210U\220!\2205\230\001\330\010\013\2105\220\006\220a\220s\230#\230Q\330\014\r\360\006\000\005\n\210\026\210q\220\005\220\\\240\021\330\004\t\210\034\220Q\360\006\000\005\010\200u\210I\220R\220q\330\010\r\210[\230\001\200\001\360\010\000\n\013\330\r\016\330\r\016\330\013\014\330\013\014\330\013\014\330\013\014\330\013\014\330\013\014\330\016\017\330\n\020\220\001\330\n\021\220\021\330\n\020\220\001\330\n\021\220\021\360\006\000\005\n\210\026\210s\220!\330\004\007\200u\210B\210a\330\010\017\210q\330\004\007\200u\210B\210a\330\010\017\210q\360\016\000\005\013\210\"\210F\220!\2204\220r\230\025\230f\240B\240a\330\004\n\210\"\210F\220!\2204\220r\230\025\230f\240B\240a\330\004\030\230\001\330\004\030\230\001\360\032\000\005""\021\220\002\220&\230\002\230%\230v\240V\2502\250Q\330\004\030\230\001\360\006\000\005\t\210\005\210U\220!\2206\230\025\230b\240\001\330\010\014\210E\220\025\220a\220v\230Q\330\014\020\220\002\220\"\220D\230\002\230!\330\014\021\220\023\220A\220S\230\001\340\014\017\210s\220#\220Q\330\020\021\330\014\017\210y\230\001\230\023\230C\230s\240!\330\020\021\360\006\000\r\020\210t\320\023$\240A\240U\250#\250S\260\005\260Q\330\020\021\360\006\000\r\027\220c\230\021\230'\240\022\2401\330\014\025\220Q\220c\230\025\230a\340\014\023\2204\220q\330\020\024\220A\330\020\027\220q\330\020\025\220Q\330\020\025\220Q\330\020\025\220Q\330\020\025\220Q\340\014\021\220\027\230\001\230\021\360\006\000\r\025\220A\330\014\024\220A\330\014\016\210a\210y\230\001\330\014\016\210a\210y\230\001\330\014\025\220Q\330\014\025\220Q\220c\230\025\230a\340\014\022\220&\230\002\230!\330\020\025\220R\220q\230\001\330\020\025\220R\220q\230\001\330\020\031\230\021\330\020\030\230\003\2301\230C\230q\240\004\240A\340\020\024\220D\230\006\230b\240\004\240E\250\023\250E\260\021\260#\260U\270#\270Q\330\024\035\230S\240\002\240!\330\024\035\230S\240\002\240!\330\024\027\220u\230B\230c\240\031\250$\250d\260\"\260C\260y\300\001\330\030\031\330\024\027\220y\240\001\240\030\250\030\260\023\260A\330\030\031\340\024\"\240#\240Q\240c\250\021\250(\260!\340\024\025\330\030$\240B\240a\330\030\034\230E\240\023\240I\250Q\330\030\034\230E\240\023\240I\250U\260\"\260A\330\030\034\230L\250\003\2506\260\022\2601\330\030\034\230F\240\"\240H\250C\250s\260!\2603\260a\260w\270b\300\003\3001\330\030\034\230F\240\"\240H\250C\250s\260!\2603\260a\260w\270b\300\003\3001\330\030\034\230F\240\"\240H\250C\250s\260!\2603\260a\260x\270w\300b\310\001\330\030\034\230F\240\"\240H\250C\250s\260!\2603\260a\260x\270w\300b\310\001\340\030!\240\021\240(\250*\260A\330\030\032\230!\2309\240A\330\030\032\230!\2309\240A\330\030!\240\021\360\006\000\005\t\210\005\210U\220!\2206\230\021\330\010\014\210E\220\025\220a\220v\230Q\330\014\020\220\002\220\"\220D""\230\002\230!\330\014\024\220I\230Q\230c\240\021\340\014\017\210v\220S\230\001\330\020\021\340\014\022\220&\230\002\230!\330\014\023\2205\230\001\230\021\330\014\021\220\023\220A\220S\230\001\340\014\020\220\006\220a\330\014\020\220\t\230\023\230A\230Q\330\014\020\220\006\220e\2301\230C\230r\240\021\330\014\020\220\006\220e\2301\230C\230r\240\021\340\014\020\220\013\2301\230D\240\007\240q\330\014\020\220\013\2301\230D\240\007\240q\330\014\020\220\013\2301\230D\240\007\240q\330\014\020\220\013\2301\230D\240\007\240q\360\006\000\r\021\220\004\220F\230\"\230A\230T\240\025\240a\240s\250%\250q\260\003\2605\270\004\270E\300\023\300E\310\024\310U\320RU\320UZ\320Z]\320]^\330\020\024\220E\230\022\2302\230T\240\022\2402\240Q\330\020\023\2202\220S\230\005\230T\240\024\240R\240s\250%\250q\330\024%\240Y\250a\250t\2601\330\024\037\230q\240\006\240g\250Q\360\006\000\005\t\210\003\210:\220Y\230a\230q\330\010\013\2106\220\031\230#\230R\230s\240&\250\005\250S\260\001\330\014\r\340\010\r\210V\2203\220b\230\006\230a\330\010\r\210V\2203\220b\230\006\230a\330\010\016\210c\220\025\220a\220v\230Q\340\010\014\210I\220V\2301\330\014\021\220\026\220r\230\021\330\014\017\210s\220\"\220B\220c\230\023\230C\230s\240!\2407\250#\250U\260!\2603\260e\2703\270a\330\020\021\340\014\025\220U\230!\2301\330\014\021\220\026\220s\230\"\230F\240!\330\014\021\220\026\220s\230\"\230F\240!\330\014\022\220#\220U\230!\2306\240\021\340\014\022\220\"\220E\230\022\2303\230b\240\004\240C\240r\250\023\250C\250r\260\024\260S\270\001\360\006\000\r\025\220D\230\002\230!\330\014\017\210t\2201\330\020\030\230\001\330\020\024\220E\230\025\230a\230s\240#\240Q\240a\330\024\034\230C\230q\240\003\2402\240R\240s\250#\250R\250t\2602\260Q\330\024\034\230C\230q\240\003\2402\240R\240s\250#\250R\250t\2602\260Q\360\006\000\025\030\220r\230\023\230H\240D\250\004\250B\250c\260\030\270\021\330\030\035\230S\240\001\240\023\240A\240W\250H\260B\260a\330\030\031\330\034\037\230r\240\024\240R\240r\250\023\250D\260\002\260%\260r\270\021\330""\034\037\230s\240\"\240A\330\034\037\230s\240\"\240A\340\034$\240A\330\034\035\340\030 \240\001\330\030\031\340\014\017\210t\2201\330\020\021\360\006\000\r\023\220'\230\023\230B\230a\330\014\022\220&\230\006\230a\330\014\022\220&\230\006\230a\330\014\022\220)\2306\240\021\330\014\022\220&\230\006\230a\330\014\022\220+\230Q\230f\240G\2506\260\021\330\014\022\220+\230Q\230f\240G\2506\260\021\330\014\022\220+\230Q\230f\240G\2506\260\021\330\014\022\220+\230Q\230f\240G\2506\260\021\360\006\000\005\017\210a\330\004\010\210\003\2108\2209\230A\230Q\340\010\013\2104\210u\220C\220q\330\014\r\360\006\000\t\021\220\005\220R\220q\330\010\013\2106\220\022\2201\330\014\017\210t\2206\230\023\230E\240\023\240D\250\006\250c\260\021\330\020\021\330\014\017\210t\2206\230\023\230E\240\022\2402\240S\250\004\250F\260#\260U\270\"\270A\330\020\021\360\006\000\t\016\210T\220\026\220r\230\024\230V\2402\240Q\330\010\r\210T\220\026\220r\230\024\230V\2402\240Q\340\010\t\330\014\020\220\006\220b\230\001\330\014\020\220\006\220c\230\026\230q\330\014\020\220\006\220c\230\026\230q\330\014\020\220\006\220c\230\024\230V\2401\340\014\026\220d\230\"\230D\240\003\2402\240T\250\021\330\014\026\220d\230\"\230D\240\003\2402\240T\250\021\340\014\023\2207\230!\330\020\026\220a\330\024\030\230\003\2301\230A\330\024\026\220a\330\024\026\220a\330\024\026\220d\230!\330\024\027\220q\330\024\027\220q\330\024\031\230\024\230Q\330\024\030\230\001\360\010\000\005\014\2101\200\001\340\t\n\330\r\016\330\r\016\330\013\014\330\013\014\330\013\014\330\013\014\330\013\014\330\013\014\330\016\017\330\n\020\220\001\330\n\021\220\021\330\n\020\220\001\330\n\021\220\021\360\"\000\005\n\210\026\210s\220!\330\004\007\200u\210B\210a\330\010\017\210t\2202\220Q\330\004\007\200u\210B\210a\330\010\017\210t\2202\220Q\340\004\016\210a\210v\220Q\330\004\016\210a\210v\220Q\330\004\016\210a\210v\220T\230\022\2301\330\004\016\210a\210v\220T\230\022\2301\340\004\r\210R\210x\220q\230\005\230V\2402\240Q\340\004\013\2106\220\025\220a\330\004""\023\2205\230\002\230&\240\003\2405\250\002\250!\330\004\r\210T\220\024\220T\230\025\230e\2408\250>\270\021\330\010\020\220\001\330\010\n\210&\220\001\220\032\2302\230V\2401\240A\330\010\n\210&\220\001\220\030\230\022\2306\240\021\240!\330\010\n\210&\220\001\220\030\230\022\2306\240\021\240!\330\010\n\210&\220\001\220\030\230\022\2306\240\021\240!\330\010\n\210&\220\001\220\021\330\010\n\210&\220\001\220\027\230\002\230&\240\001\240\021\330\010\n\210&\220\001\220\027\230\002\230&\240\001\240\021\330\010\n\210&\220\001\220\021\340\004\007\200x\210s\220!\330\010\017\210q\220\006\220a\220t\2303\230b\240\003\2402\240S\250\002\250#\250S\260\003\2603\260c\270\025\270c\300\024\300Q\330\004\013\2101\330\010\016\210a\210t\2203\220b\230\005\230Q\230b\240\001\240\025\240b\250\005\250Q\250b\260\001\260\021\330\017\021\220\023\220A\220R\220q\230\005\230S\240\003\2401\240C\240q\250\005\250S\260\003\2601\260C\260q\270\001\330\017\024\220C\220q\230\005\230Q\230e\2404\240q\330\010\014\210E\220\025\220a\220qO";
     PyObject *data = NULL;
     CYTHON_UNUSED_VAR(__Pyx_DecompressString);
     #endif
@@ -25307,32 +25307,32 @@ static int __Pyx_CreateCodeObjects(__pyx_mstatetype *__pyx_mstate) {
   {
     const __Pyx_PyCode_New_function_description descr = {0, 0, 0, 0, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 61};
     PyObject* const varnames[] = {0};
-    __pyx_mstate_global->__pyx_codeobj_tab[0] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_segmentation_py, __pyx_mstate->__pyx_n_u_lambda, __pyx_mstate->__pyx_kp_b_iso88591_XQc_Cq, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[0])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[0] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_segmenta, __pyx_mstate->__pyx_n_u_lambda, __pyx_mstate->__pyx_kp_b_iso88591_XQc_Cq, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[0])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {3, 0, 0, 3, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 65};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_tpeak, __pyx_mstate->__pyx_n_u_p1, __pyx_mstate->__pyx_n_u_p2};
-    __pyx_mstate_global->__pyx_codeobj_tab[1] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_segmentation_py, __pyx_mstate->__pyx_n_u_check_touch, __pyx_mstate->__pyx_kp_b_iso88591_s_Q_s_Q_U_5_5_as_Q_q_Q_uIRq, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[1])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[1] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_segmenta, __pyx_mstate->__pyx_n_u_check_touch, __pyx_mstate->__pyx_kp_b_iso88591_s_Q_s_Q_U_5_5_as_Q_q_Q_uIRq, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[1])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {5, 0, 0, 6, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 91};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_img, __pyx_mstate->__pyx_n_u_i, __pyx_mstate->__pyx_n_u_j, __pyx_mstate->__pyx_n_u_imx, __pyx_mstate->__pyx_n_u_imy, __pyx_mstate->__pyx_n_u_gv};
-    __pyx_mstate_global->__pyx_codeobj_tab[2] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_segmentation_py, __pyx_mstate->__pyx_n_u_is_local_maximum, __pyx_mstate->__pyx_kp_b_iso88591_9JJ_jjk_AS_3c_Rr_Cs_Qc_2Q_Cs_Qb, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[2])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[2] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_segmenta, __pyx_mstate->__pyx_n_u_is_local_maximum, __pyx_mstate->__pyx_kp_b_iso88591_9JJ_jjk_AS_3c_Rr_Cs_Qc_2Q_Cs_Qb, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[2])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {14, 0, 0, 14, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 106};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_img, __pyx_mstate->__pyx_n_u_gvthres, __pyx_mstate->__pyx_n_u_discont, __pyx_mstate->__pyx_n_u_nnmin, __pyx_mstate->__pyx_n_u_nnmax, __pyx_mstate->__pyx_n_u_nxmin, __pyx_mstate->__pyx_n_u_nxmax, __pyx_mstate->__pyx_n_u_nymin, __pyx_mstate->__pyx_n_u_nymax, __pyx_mstate->__pyx_n_u_sumg_min, __pyx_mstate->__pyx_n_u_xmin, __pyx_mstate->__pyx_n_u_xmax, __pyx_mstate->__pyx_n_u_ymin, __pyx_mstate->__pyx_n_u_ymax};
-    __pyx_mstate_global->__pyx_codeobj_tab[3] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_segmentation_py, __pyx_mstate->__pyx_n_u_targ_rec, __pyx_mstate->__pyx_kp_b_iso88591_s_uBa_t2Q_uBa_t2Q_avQ_avQ_avT_1, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[3])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[3] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_segmenta, __pyx_mstate->__pyx_n_u_targ_rec, __pyx_mstate->__pyx_kp_b_iso88591_s_uBa_t2Q_uBa_t2Q_avQ_avQ_avT_1, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[3])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {14, 0, 0, 14, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 174};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_img, __pyx_mstate->__pyx_n_u_gvthres, __pyx_mstate->__pyx_n_u_discont, __pyx_mstate->__pyx_n_u_nnmin, __pyx_mstate->__pyx_n_u_nnmax, __pyx_mstate->__pyx_n_u_nxmin, __pyx_mstate->__pyx_n_u_nxmax, __pyx_mstate->__pyx_n_u_nymin, __pyx_mstate->__pyx_n_u_nymax, __pyx_mstate->__pyx_n_u_sumg_min, __pyx_mstate->__pyx_n_u_xmin, __pyx_mstate->__pyx_n_u_xmax, __pyx_mstate->__pyx_n_u_ymin, __pyx_mstate->__pyx_n_u_ymax};
-    __pyx_mstate_global->__pyx_codeobj_tab[4] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_segmentation_py, __pyx_mstate->__pyx_n_u_peak_fit, __pyx_mstate->__pyx_kp_b_iso88591_s_uBa_q_uBa_q_F_4r_fBa_F_4r_fBa, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[4])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[4] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_segmenta, __pyx_mstate->__pyx_n_u_peak_fit, __pyx_mstate->__pyx_kp_b_iso88591_s_uBa_q_uBa_q_F_4r_fBa_F_4r_fBa, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[4])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {0, 0, 0, 0, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 423};
     PyObject* const varnames[] = {0};
-    __pyx_mstate_global->__pyx_codeobj_tab[5] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_segmentation_py, __pyx_mstate->__pyx_n_u_is_compiled, __pyx_mstate->__pyx_kp_b_iso88591_Q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[5])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[5] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_segmenta, __pyx_mstate->__pyx_n_u_is_compiled, __pyx_mstate->__pyx_kp_b_iso88591_Q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[5])) goto bad;
   }
   Py_DECREF(tuple_dedup_map);
   return 0;

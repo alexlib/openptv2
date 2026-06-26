@@ -319,6 +319,13 @@ class TrackingParams:
     def set_add(self, val):
         self._tpar.add = int(val)
 
+    def get_track_mode(self):
+        return getattr(self._tpar, "track_mode", 0)
+
+    def set_track_mode(self, val):
+        self._tpar.track_mode = int(val)
+
+
     def get_dsumg(self):
         return self._tpar.dsumg
 

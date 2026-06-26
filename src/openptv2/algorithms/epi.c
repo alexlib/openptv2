@@ -4,12 +4,12 @@
 {
     "distutils": {
         "depends": [],
-        "name": "algorithms.epi",
+        "name": "openptv2.algorithms.epi",
         "sources": [
-            "algorithms/epi.py"
+            "src/openptv2/algorithms/epi.py"
         ]
     },
-    "module_name": "algorithms.epi"
+    "module_name": "openptv2.algorithms.epi"
 }
 END: Cython Metadata */
 
@@ -1127,8 +1127,8 @@ static int __Pyx_init_co_variables(void) {
   #endif
 #endif
 
-#define __PYX_HAVE__algorithms__epi
-#define __PYX_HAVE_API__algorithms__epi
+#define __PYX_HAVE__openptv2__algorithms__epi
+#define __PYX_HAVE_API__openptv2__algorithms__epi
 /* Early includes */
 #include <math.h>
 #ifdef _OPENMP
@@ -1347,7 +1347,7 @@ static const char *__pyx_filename;
 /* #### Code section: filename_table ### */
 
 static const char* const __pyx_f[] = {
-  "algorithms/epi.py",
+  "src/openptv2/algorithms/epi.py",
 };
 /* #### Code section: utility_code_proto_before_types ### */
 /* Atomics.proto (used by UnpackUnboundCMethod) */
@@ -2538,30 +2538,30 @@ static int __Pyx_State_RemoveModule(void*);
 
 /* Module declarations from "libc.math" */
 
-/* Module declarations from "algorithms.epi" */
-static PyObject *__pyx_f_10algorithms_3epi_epipolar_curve(PyObject *, PyObject *, PyObject *, int, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_3epi_epi_mm(double, double, PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_3epi_epi_mm_2d(double, double, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
-static double __pyx_f_10algorithms_3epi__quality_ratio(double, double, int __pyx_skip_dispatch); /*proto*/
-static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *, PyObject *, int, double, double, double, double, int, int, int, int, PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+/* Module declarations from "openptv2.algorithms.epi" */
+static PyObject *__pyx_f_8openptv2_10algorithms_3epi_epipolar_curve(PyObject *, PyObject *, PyObject *, int, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_3epi_epi_mm(double, double, PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_3epi_epi_mm_2d(double, double, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static double __pyx_f_8openptv2_10algorithms_3epi__quality_ratio(double, double, int __pyx_skip_dispatch); /*proto*/
+static int __pyx_f_8openptv2_10algorithms_3epi_find_candidate(PyObject *, PyObject *, int, double, double, double, double, int, int, int, int, PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
 /* #### Code section: typeinfo ### */
 /* #### Code section: before_global_var ### */
-#define __Pyx_MODULE_NAME "algorithms.epi"
-extern int __pyx_module_is_main_algorithms__epi;
-int __pyx_module_is_main_algorithms__epi = 0;
+#define __Pyx_MODULE_NAME "openptv2.algorithms.epi"
+extern int __pyx_module_is_main_openptv2__algorithms__epi;
+int __pyx_module_is_main_openptv2__algorithms__epi = 0;
 
-/* Implementation of "algorithms.epi" */
+/* Implementation of "openptv2.algorithms.epi" */
 /* #### Code section: global_var ### */
 static PyObject *__pyx_builtin_enumerate;
 /* #### Code section: string_decls ### */
 static const char __pyx_k_Epipolar_geometry_for_multi_came[] = "Epipolar geometry for multi-camera correspondence matching.\n\nTranslation of lib/src/epi.c and lib/include/epi.h.\n\nComputes epipolar lines and candidate matching between cameras.\n";
 /* #### Code section: decls ### */
-static PyObject *__pyx_pf_10algorithms_3epi_epipolar_curve(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_image_point, PyObject *__pyx_v_origin_cal, PyObject *__pyx_v_project_cal, int __pyx_v_num_points, PyObject *__pyx_v_cpar, PyObject *__pyx_v_vpar); /* proto */
-static PyObject *__pyx_pf_10algorithms_3epi_2epi_mm(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_xl, double __pyx_v_yl, PyObject *__pyx_v_cal1, PyObject *__pyx_v_cal2, PyObject *__pyx_v_mmp, PyObject *__pyx_v_vpar); /* proto */
-static PyObject *__pyx_pf_10algorithms_3epi_4epi_mm_2d(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_xl, double __pyx_v_yl, PyObject *__pyx_v_cal, PyObject *__pyx_v_mmp, PyObject *__pyx_v_vpar); /* proto */
-static PyObject *__pyx_pf_10algorithms_3epi_6_quality_ratio(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_a, double __pyx_v_b); /* proto */
-static PyObject *__pyx_pf_10algorithms_3epi_8find_candidate(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_crd, PyObject *__pyx_v_pix, int __pyx_v_num, double __pyx_v_xa, double __pyx_v_ya, double __pyx_v_xb, double __pyx_v_yb, int __pyx_v_n, int __pyx_v_nx, int __pyx_v_ny, int __pyx_v_sumg, PyObject *__pyx_v_cand_out, PyObject *__pyx_v_vpar, PyObject *__pyx_v_cpar, PyObject *__pyx_v_cal); /* proto */
-static PyObject *__pyx_pf_10algorithms_3epi_10is_compiled(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_3epi_epipolar_curve(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_image_point, PyObject *__pyx_v_origin_cal, PyObject *__pyx_v_project_cal, int __pyx_v_num_points, PyObject *__pyx_v_cpar, PyObject *__pyx_v_vpar); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_3epi_2epi_mm(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_xl, double __pyx_v_yl, PyObject *__pyx_v_cal1, PyObject *__pyx_v_cal2, PyObject *__pyx_v_mmp, PyObject *__pyx_v_vpar); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_3epi_4epi_mm_2d(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_xl, double __pyx_v_yl, PyObject *__pyx_v_cal, PyObject *__pyx_v_mmp, PyObject *__pyx_v_vpar); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_3epi_6_quality_ratio(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_a, double __pyx_v_b); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_3epi_8find_candidate(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_crd, PyObject *__pyx_v_pix, int __pyx_v_num, double __pyx_v_xa, double __pyx_v_ya, double __pyx_v_xb, double __pyx_v_yb, int __pyx_v_n, int __pyx_v_nx, int __pyx_v_ny, int __pyx_v_sumg, PyObject *__pyx_v_cand_out, PyObject *__pyx_v_vpar, PyObject *__pyx_v_cpar, PyObject *__pyx_v_cal); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_3epi_10is_compiled(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
 /* #### Code section: late_includes ### */
 /* #### Code section: module_state ### */
 /* SmallCodeConfig */
@@ -2630,13 +2630,13 @@ static __pyx_mstatetype * const __pyx_mstate_global = &__pyx_mstate_global_stati
 /* #### Code section: constant_name_defines ### */
 #define __pyx_kp_u_ __pyx_string_tab[0]
 #define __pyx_kp_u__2 __pyx_string_tab[1]
-#define __pyx_kp_u_algorithms_epi_py __pyx_string_tab[2]
-#define __pyx_kp_u_algorithms_imgcoord __pyx_string_tab[3]
-#define __pyx_kp_u_algorithms_multimed __pyx_string_tab[4]
-#define __pyx_kp_u_algorithms_ray_tracing __pyx_string_tab[5]
-#define __pyx_kp_u_algorithms_trafo __pyx_string_tab[6]
-#define __pyx_kp_u_cython_double __pyx_string_tab[7]
-#define __pyx_kp_u_cython_int __pyx_string_tab[8]
+#define __pyx_kp_u_cython_double __pyx_string_tab[2]
+#define __pyx_kp_u_cython_int __pyx_string_tab[3]
+#define __pyx_kp_u_openptv2_algorithms_imgcoord __pyx_string_tab[4]
+#define __pyx_kp_u_openptv2_algorithms_multimed __pyx_string_tab[5]
+#define __pyx_kp_u_openptv2_algorithms_ray_tracing __pyx_string_tab[6]
+#define __pyx_kp_u_openptv2_algorithms_trafo __pyx_string_tab[7]
+#define __pyx_kp_u_src_openptv2_algorithms_epi_py __pyx_string_tab[8]
 #define __pyx_n_u_Candidate __pyx_string_tab[9]
 #define __pyx_n_u_Coord2d __pyx_string_tab[10]
 #define __pyx_n_u_MAXCAND __pyx_string_tab[11]
@@ -2649,83 +2649,83 @@ static __pyx_mstatetype * const __pyx_mstate_global = &__pyx_mstate_global_stati
 #define __pyx_n_u_Zmin_lay __pyx_string_tab[18]
 #define __pyx_n_u_a __pyx_string_tab[19]
 #define __pyx_n_u_added_par __pyx_string_tab[20]
-#define __pyx_n_u_algorithms_epi __pyx_string_tab[21]
-#define __pyx_n_u_annotations __pyx_string_tab[22]
-#define __pyx_n_u_append __pyx_string_tab[23]
-#define __pyx_n_u_asyncio_coroutines __pyx_string_tab[24]
-#define __pyx_n_u_b __pyx_string_tab[25]
-#define __pyx_n_u_bool __pyx_string_tab[26]
-#define __pyx_n_u_cal __pyx_string_tab[27]
-#define __pyx_n_u_cal1 __pyx_string_tab[28]
-#define __pyx_n_u_cal2 __pyx_string_tab[29]
-#define __pyx_n_u_cand_out __pyx_string_tab[30]
-#define __pyx_n_u_cc __pyx_string_tab[31]
-#define __pyx_n_u_cline_in_traceback __pyx_string_tab[32]
-#define __pyx_n_u_cn __pyx_string_tab[33]
-#define __pyx_n_u_cnx __pyx_string_tab[34]
-#define __pyx_n_u_cny __pyx_string_tab[35]
-#define __pyx_n_u_corr __pyx_string_tab[36]
-#define __pyx_n_u_correct_brown_affin __pyx_string_tab[37]
-#define __pyx_n_u_count __pyx_string_tab[38]
-#define __pyx_n_u_cpar __pyx_string_tab[39]
-#define __pyx_n_u_crd __pyx_string_tab[40]
-#define __pyx_n_u_csumg __pyx_string_tab[41]
-#define __pyx_n_u_d __pyx_string_tab[42]
-#define __pyx_n_u_dataclass __pyx_string_tab[43]
-#define __pyx_n_u_dataclasses __pyx_string_tab[44]
-#define __pyx_n_u_dist_to_flat __pyx_string_tab[45]
-#define __pyx_n_u_dj __pyx_string_tab[46]
-#define __pyx_n_u_dm __pyx_string_tab[47]
-#define __pyx_n_u_doc __pyx_string_tab[48]
-#define __pyx_n_u_empty __pyx_string_tab[49]
-#define __pyx_n_u_enumerate __pyx_string_tab[50]
-#define __pyx_n_u_epi_mm __pyx_string_tab[51]
-#define __pyx_n_u_epi_mm_2d __pyx_string_tab[52]
-#define __pyx_n_u_epipolar_curve __pyx_string_tab[53]
-#define __pyx_n_u_eps0 __pyx_string_tab[54]
-#define __pyx_n_u_ext_par __pyx_string_tab[55]
-#define __pyx_n_u_find_candidate __pyx_string_tab[56]
-#define __pyx_n_u_flat_image_coord __pyx_string_tab[57]
-#define __pyx_n_u_float __pyx_string_tab[58]
-#define __pyx_n_u_func __pyx_string_tab[59]
-#define __pyx_n_u_glass_par __pyx_string_tab[60]
-#define __pyx_n_u_i __pyx_string_tab[61]
-#define __pyx_n_u_image_point __pyx_string_tab[62]
-#define __pyx_n_u_img_coord __pyx_string_tab[63]
-#define __pyx_n_u_imgcoord __pyx_string_tab[64]
-#define __pyx_n_u_imx __pyx_string_tab[65]
-#define __pyx_n_u_imy __pyx_string_tab[66]
-#define __pyx_n_u_int __pyx_string_tab[67]
-#define __pyx_n_u_int_par __pyx_string_tab[68]
-#define __pyx_n_u_is_compiled __pyx_string_tab[69]
-#define __pyx_n_u_is_coroutine __pyx_string_tab[70]
-#define __pyx_n_u_items __pyx_string_tab[71]
-#define __pyx_n_u_j __pyx_string_tab[72]
-#define __pyx_n_u_j0 __pyx_string_tab[73]
-#define __pyx_n_u_k1 __pyx_string_tab[74]
-#define __pyx_n_u_k2 __pyx_string_tab[75]
-#define __pyx_n_u_k3 __pyx_string_tab[76]
-#define __pyx_n_u_linspace __pyx_string_tab[77]
-#define __pyx_n_u_m __pyx_string_tab[78]
-#define __pyx_n_u_main __pyx_string_tab[79]
-#define __pyx_n_u_metaclass __pyx_string_tab[80]
-#define __pyx_n_u_metric_to_pixel __pyx_string_tab[81]
-#define __pyx_n_u_mm __pyx_string_tab[82]
-#define __pyx_n_u_mmp __pyx_string_tab[83]
-#define __pyx_n_u_module __pyx_string_tab[84]
-#define __pyx_n_u_move_along_ray __pyx_string_tab[85]
-#define __pyx_n_u_multimed __pyx_string_tab[86]
-#define __pyx_n_u_n __pyx_string_tab[87]
-#define __pyx_n_u_n1 __pyx_string_tab[88]
-#define __pyx_n_u_n2 __pyx_string_tab[89]
-#define __pyx_n_u_n3 __pyx_string_tab[90]
-#define __pyx_n_u_name __pyx_string_tab[91]
-#define __pyx_n_u_np __pyx_string_tab[92]
-#define __pyx_n_u_num __pyx_string_tab[93]
-#define __pyx_n_u_num_points __pyx_string_tab[94]
-#define __pyx_n_u_numpy __pyx_string_tab[95]
-#define __pyx_n_u_nx __pyx_string_tab[96]
-#define __pyx_n_u_ny __pyx_string_tab[97]
+#define __pyx_n_u_annotations __pyx_string_tab[21]
+#define __pyx_n_u_append __pyx_string_tab[22]
+#define __pyx_n_u_asyncio_coroutines __pyx_string_tab[23]
+#define __pyx_n_u_b __pyx_string_tab[24]
+#define __pyx_n_u_bool __pyx_string_tab[25]
+#define __pyx_n_u_cal __pyx_string_tab[26]
+#define __pyx_n_u_cal1 __pyx_string_tab[27]
+#define __pyx_n_u_cal2 __pyx_string_tab[28]
+#define __pyx_n_u_cand_out __pyx_string_tab[29]
+#define __pyx_n_u_cc __pyx_string_tab[30]
+#define __pyx_n_u_cline_in_traceback __pyx_string_tab[31]
+#define __pyx_n_u_cn __pyx_string_tab[32]
+#define __pyx_n_u_cnx __pyx_string_tab[33]
+#define __pyx_n_u_cny __pyx_string_tab[34]
+#define __pyx_n_u_corr __pyx_string_tab[35]
+#define __pyx_n_u_correct_brown_affin __pyx_string_tab[36]
+#define __pyx_n_u_count __pyx_string_tab[37]
+#define __pyx_n_u_cpar __pyx_string_tab[38]
+#define __pyx_n_u_crd __pyx_string_tab[39]
+#define __pyx_n_u_csumg __pyx_string_tab[40]
+#define __pyx_n_u_d __pyx_string_tab[41]
+#define __pyx_n_u_dataclass __pyx_string_tab[42]
+#define __pyx_n_u_dataclasses __pyx_string_tab[43]
+#define __pyx_n_u_dist_to_flat __pyx_string_tab[44]
+#define __pyx_n_u_dj __pyx_string_tab[45]
+#define __pyx_n_u_dm __pyx_string_tab[46]
+#define __pyx_n_u_doc __pyx_string_tab[47]
+#define __pyx_n_u_empty __pyx_string_tab[48]
+#define __pyx_n_u_enumerate __pyx_string_tab[49]
+#define __pyx_n_u_epi_mm __pyx_string_tab[50]
+#define __pyx_n_u_epi_mm_2d __pyx_string_tab[51]
+#define __pyx_n_u_epipolar_curve __pyx_string_tab[52]
+#define __pyx_n_u_eps0 __pyx_string_tab[53]
+#define __pyx_n_u_ext_par __pyx_string_tab[54]
+#define __pyx_n_u_find_candidate __pyx_string_tab[55]
+#define __pyx_n_u_flat_image_coord __pyx_string_tab[56]
+#define __pyx_n_u_float __pyx_string_tab[57]
+#define __pyx_n_u_func __pyx_string_tab[58]
+#define __pyx_n_u_glass_par __pyx_string_tab[59]
+#define __pyx_n_u_i __pyx_string_tab[60]
+#define __pyx_n_u_image_point __pyx_string_tab[61]
+#define __pyx_n_u_img_coord __pyx_string_tab[62]
+#define __pyx_n_u_imgcoord __pyx_string_tab[63]
+#define __pyx_n_u_imx __pyx_string_tab[64]
+#define __pyx_n_u_imy __pyx_string_tab[65]
+#define __pyx_n_u_int __pyx_string_tab[66]
+#define __pyx_n_u_int_par __pyx_string_tab[67]
+#define __pyx_n_u_is_compiled __pyx_string_tab[68]
+#define __pyx_n_u_is_coroutine __pyx_string_tab[69]
+#define __pyx_n_u_items __pyx_string_tab[70]
+#define __pyx_n_u_j __pyx_string_tab[71]
+#define __pyx_n_u_j0 __pyx_string_tab[72]
+#define __pyx_n_u_k1 __pyx_string_tab[73]
+#define __pyx_n_u_k2 __pyx_string_tab[74]
+#define __pyx_n_u_k3 __pyx_string_tab[75]
+#define __pyx_n_u_linspace __pyx_string_tab[76]
+#define __pyx_n_u_m __pyx_string_tab[77]
+#define __pyx_n_u_main __pyx_string_tab[78]
+#define __pyx_n_u_metaclass __pyx_string_tab[79]
+#define __pyx_n_u_metric_to_pixel __pyx_string_tab[80]
+#define __pyx_n_u_mm __pyx_string_tab[81]
+#define __pyx_n_u_mmp __pyx_string_tab[82]
+#define __pyx_n_u_module __pyx_string_tab[83]
+#define __pyx_n_u_move_along_ray __pyx_string_tab[84]
+#define __pyx_n_u_multimed __pyx_string_tab[85]
+#define __pyx_n_u_n __pyx_string_tab[86]
+#define __pyx_n_u_n1 __pyx_string_tab[87]
+#define __pyx_n_u_n2 __pyx_string_tab[88]
+#define __pyx_n_u_n3 __pyx_string_tab[89]
+#define __pyx_n_u_name __pyx_string_tab[90]
+#define __pyx_n_u_np __pyx_string_tab[91]
+#define __pyx_n_u_num __pyx_string_tab[92]
+#define __pyx_n_u_num_points __pyx_string_tab[93]
+#define __pyx_n_u_numpy __pyx_string_tab[94]
+#define __pyx_n_u_nx __pyx_string_tab[95]
+#define __pyx_n_u_ny __pyx_string_tab[96]
+#define __pyx_n_u_openptv2_algorithms_epi __pyx_string_tab[97]
 #define __pyx_n_u_origin_cal __pyx_string_tab[98]
 #define __pyx_n_u_p1 __pyx_string_tab[99]
 #define __pyx_n_u_p2 __pyx_string_tab[100]
@@ -2848,7 +2848,7 @@ return 0;
 #endif
 /* #### Code section: module_code ### */
 
-/* "algorithms/epi.py":34
+/* "openptv2/algorithms/epi.py":34
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -2856,14 +2856,14 @@ return 0;
  *     xp=cython.double, yp=cython.double,
 */
 
-static PyObject *__pyx_pw_10algorithms_3epi_1epipolar_curve(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_3epi_1epipolar_curve(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_3epi_epipolar_curve(PyObject *__pyx_v_image_point, PyObject *__pyx_v_origin_cal, PyObject *__pyx_v_project_cal, int __pyx_v_num_points, PyObject *__pyx_v_cpar, PyObject *__pyx_v_vpar, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_3epi_epipolar_curve(PyObject *__pyx_v_image_point, PyObject *__pyx_v_origin_cal, PyObject *__pyx_v_project_cal, int __pyx_v_num_points, PyObject *__pyx_v_cpar, PyObject *__pyx_v_vpar, CYTHON_UNUSED int __pyx_skip_dispatch) {
   double __pyx_v_xp;
   double __pyx_v_yp;
   double __pyx_v_xf;
@@ -2916,7 +2916,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epipolar_curve(PyObject *__pyx_v_imag
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("epipolar_curve", 0);
 
-  /* "algorithms/epi.py":59
+  /* "openptv2/algorithms/epi.py":59
  *         (num_points, 2) array of pixel coordinates in the projection camera.
  *     """
  *     from .trafo import pixel_to_metric, metric_to_pixel, dist_to_flat             # <<<<<<<<<<<<<<
@@ -2925,7 +2925,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epipolar_curve(PyObject *__pyx_v_imag
 */
   {
     PyObject* const __pyx_imported_names[] = {__pyx_mstate_global->__pyx_n_u_pixel_to_metric,__pyx_mstate_global->__pyx_n_u_metric_to_pixel,__pyx_mstate_global->__pyx_n_u_dist_to_flat};
-    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_trafo, __pyx_imported_names, 3, __pyx_mstate_global->__pyx_kp_u_algorithms_trafo, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 59, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_trafo, __pyx_imported_names, 3, __pyx_mstate_global->__pyx_kp_u_openptv2_algorithms_trafo, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 59, __pyx_L1_error)
   }
   __pyx_t_1 = __pyx_t_2;
   __Pyx_GOTREF(__pyx_t_1);
@@ -2954,7 +2954,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epipolar_curve(PyObject *__pyx_v_imag
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/epi.py":60
+  /* "openptv2/algorithms/epi.py":60
  *     """
  *     from .trafo import pixel_to_metric, metric_to_pixel, dist_to_flat
  *     from .ray_tracing import ray_tracing             # <<<<<<<<<<<<<<
@@ -2963,7 +2963,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epipolar_curve(PyObject *__pyx_v_imag
 */
   {
     PyObject* const __pyx_imported_names[] = {__pyx_mstate_global->__pyx_n_u_ray_tracing};
-    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_ray_tracing, __pyx_imported_names, 1, __pyx_mstate_global->__pyx_kp_u_algorithms_ray_tracing, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 60, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_ray_tracing, __pyx_imported_names, 1, __pyx_mstate_global->__pyx_kp_u_openptv2_algorithms_ray_tracing, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 60, __pyx_L1_error)
   }
   __pyx_t_1 = __pyx_t_2;
   __Pyx_GOTREF(__pyx_t_1);
@@ -2984,7 +2984,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epipolar_curve(PyObject *__pyx_v_imag
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/epi.py":61
+  /* "openptv2/algorithms/epi.py":61
  *     from .trafo import pixel_to_metric, metric_to_pixel, dist_to_flat
  *     from .ray_tracing import ray_tracing
  *     from .multimed import move_along_ray             # <<<<<<<<<<<<<<
@@ -2993,7 +2993,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epipolar_curve(PyObject *__pyx_v_imag
 */
   {
     PyObject* const __pyx_imported_names[] = {__pyx_mstate_global->__pyx_n_u_move_along_ray};
-    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_multimed, __pyx_imported_names, 1, __pyx_mstate_global->__pyx_kp_u_algorithms_multimed, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 61, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_multimed, __pyx_imported_names, 1, __pyx_mstate_global->__pyx_kp_u_openptv2_algorithms_multimed, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 61, __pyx_L1_error)
   }
   __pyx_t_1 = __pyx_t_2;
   __Pyx_GOTREF(__pyx_t_1);
@@ -3014,7 +3014,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epipolar_curve(PyObject *__pyx_v_imag
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/epi.py":62
+  /* "openptv2/algorithms/epi.py":62
  *     from .ray_tracing import ray_tracing
  *     from .multimed import move_along_ray
  *     from .imgcoord import img_coord             # <<<<<<<<<<<<<<
@@ -3023,7 +3023,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epipolar_curve(PyObject *__pyx_v_imag
 */
   {
     PyObject* const __pyx_imported_names[] = {__pyx_mstate_global->__pyx_n_u_img_coord};
-    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_imgcoord, __pyx_imported_names, 1, __pyx_mstate_global->__pyx_kp_u_algorithms_imgcoord, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 62, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_imgcoord, __pyx_imported_names, 1, __pyx_mstate_global->__pyx_kp_u_openptv2_algorithms_imgcoord, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 62, __pyx_L1_error)
   }
   __pyx_t_1 = __pyx_t_2;
   __Pyx_GOTREF(__pyx_t_1);
@@ -3044,7 +3044,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epipolar_curve(PyObject *__pyx_v_imag
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/epi.py":64
+  /* "openptv2/algorithms/epi.py":64
  *     from .imgcoord import img_coord
  * 
  *     xp, yp = pixel_to_metric(image_point[0], image_point[1], cpar)             # <<<<<<<<<<<<<<
@@ -3137,7 +3137,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epipolar_curve(PyObject *__pyx_v_imag
   __pyx_v_xp = __pyx_t_10;
   __pyx_v_yp = __pyx_t_11;
 
-  /* "algorithms/epi.py":66
+  /* "openptv2/algorithms/epi.py":66
  *     xp, yp = pixel_to_metric(image_point[0], image_point[1], cpar)
  * 
  *     ap = origin_cal.added_par             # <<<<<<<<<<<<<<
@@ -3149,7 +3149,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epipolar_curve(PyObject *__pyx_v_imag
   __pyx_v_ap = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/epi.py":67
+  /* "openptv2/algorithms/epi.py":67
  * 
  *     ap = origin_cal.added_par
  *     xf, yf = dist_to_flat(             # <<<<<<<<<<<<<<
@@ -3160,7 +3160,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epipolar_curve(PyObject *__pyx_v_imag
   __Pyx_INCREF(__pyx_v_dist_to_flat);
   __pyx_t_5 = __pyx_v_dist_to_flat; 
 
-  /* "algorithms/epi.py":68
+  /* "openptv2/algorithms/epi.py":68
  *     ap = origin_cal.added_par
  *     xf, yf = dist_to_flat(
  *         xp, yp,             # <<<<<<<<<<<<<<
@@ -3172,7 +3172,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epipolar_curve(PyObject *__pyx_v_imag
   __pyx_t_4 = PyFloat_FromDouble(__pyx_v_yp); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 68, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
 
-  /* "algorithms/epi.py":69
+  /* "openptv2/algorithms/epi.py":69
  *     xf, yf = dist_to_flat(
  *         xp, yp,
  *         origin_cal.int_par.xh, origin_cal.int_par.yh,             # <<<<<<<<<<<<<<
@@ -3190,7 +3190,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epipolar_curve(PyObject *__pyx_v_imag
   __Pyx_GOTREF(__pyx_t_14);
   __Pyx_DECREF(__pyx_t_12); __pyx_t_12 = 0;
 
-  /* "algorithms/epi.py":70
+  /* "openptv2/algorithms/epi.py":70
  *         xp, yp,
  *         origin_cal.int_par.xh, origin_cal.int_par.yh,
  *         ap.k1, ap.k2, ap.k3, ap.p1, ap.p2, ap.scx, ap.she,             # <<<<<<<<<<<<<<
@@ -3293,7 +3293,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epipolar_curve(PyObject *__pyx_v_imag
     __pyx_L6_unpacking_done:;
   }
 
-  /* "algorithms/epi.py":67
+  /* "openptv2/algorithms/epi.py":67
  * 
  *     ap = origin_cal.added_par
  *     xf, yf = dist_to_flat(             # <<<<<<<<<<<<<<
@@ -3307,7 +3307,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epipolar_curve(PyObject *__pyx_v_imag
   __pyx_v_xf = __pyx_t_11;
   __pyx_v_yf = __pyx_t_10;
 
-  /* "algorithms/epi.py":73
+  /* "openptv2/algorithms/epi.py":73
  *     )
  * 
  *     pos, direct = ray_tracing(             # <<<<<<<<<<<<<<
@@ -3318,7 +3318,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epipolar_curve(PyObject *__pyx_v_imag
   __Pyx_INCREF(__pyx_v_ray_tracing);
   __pyx_t_5 = __pyx_v_ray_tracing; 
 
-  /* "algorithms/epi.py":74
+  /* "openptv2/algorithms/epi.py":74
  * 
  *     pos, direct = ray_tracing(
  *         xf, yf,             # <<<<<<<<<<<<<<
@@ -3330,7 +3330,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epipolar_curve(PyObject *__pyx_v_imag
   __pyx_t_18 = PyFloat_FromDouble(__pyx_v_yf); if (unlikely(!__pyx_t_18)) __PYX_ERR(0, 74, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_18);
 
-  /* "algorithms/epi.py":75
+  /* "openptv2/algorithms/epi.py":75
  *     pos, direct = ray_tracing(
  *         xf, yf,
  *         origin_cal.ext_par.dm,             # <<<<<<<<<<<<<<
@@ -3343,7 +3343,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epipolar_curve(PyObject *__pyx_v_imag
   __Pyx_GOTREF(__pyx_t_16);
   __Pyx_DECREF(__pyx_t_17); __pyx_t_17 = 0;
 
-  /* "algorithms/epi.py":76
+  /* "openptv2/algorithms/epi.py":76
  *         xf, yf,
  *         origin_cal.ext_par.dm,
  *         origin_cal.ext_par.x0, origin_cal.ext_par.y0, origin_cal.ext_par.z0,             # <<<<<<<<<<<<<<
@@ -3366,7 +3366,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epipolar_curve(PyObject *__pyx_v_imag
   __Pyx_GOTREF(__pyx_t_14);
   __Pyx_DECREF(__pyx_t_17); __pyx_t_17 = 0;
 
-  /* "algorithms/epi.py":77
+  /* "openptv2/algorithms/epi.py":77
  *         origin_cal.ext_par.dm,
  *         origin_cal.ext_par.x0, origin_cal.ext_par.y0, origin_cal.ext_par.z0,
  *         origin_cal.int_par.cc,             # <<<<<<<<<<<<<<
@@ -3379,7 +3379,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epipolar_curve(PyObject *__pyx_v_imag
   __Pyx_GOTREF(__pyx_t_13);
   __Pyx_DECREF(__pyx_t_17); __pyx_t_17 = 0;
 
-  /* "algorithms/epi.py":78
+  /* "openptv2/algorithms/epi.py":78
  *         origin_cal.ext_par.x0, origin_cal.ext_par.y0, origin_cal.ext_par.z0,
  *         origin_cal.int_par.cc,
  *         origin_cal.glass_par.vec_x, origin_cal.glass_par.vec_y,             # <<<<<<<<<<<<<<
@@ -3397,7 +3397,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epipolar_curve(PyObject *__pyx_v_imag
   __Pyx_GOTREF(__pyx_t_6);
   __Pyx_DECREF(__pyx_t_17); __pyx_t_17 = 0;
 
-  /* "algorithms/epi.py":79
+  /* "openptv2/algorithms/epi.py":79
  *         origin_cal.int_par.cc,
  *         origin_cal.glass_par.vec_x, origin_cal.glass_par.vec_y,
  *         origin_cal.glass_par.vec_z,             # <<<<<<<<<<<<<<
@@ -3410,7 +3410,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epipolar_curve(PyObject *__pyx_v_imag
   __Pyx_GOTREF(__pyx_t_7);
   __Pyx_DECREF(__pyx_t_17); __pyx_t_17 = 0;
 
-  /* "algorithms/epi.py":80
+  /* "openptv2/algorithms/epi.py":80
  *         origin_cal.glass_par.vec_x, origin_cal.glass_par.vec_y,
  *         origin_cal.glass_par.vec_z,
  *         cpar.mm.n1, cpar.mm.n2[0], cpar.mm.n3, cpar.mm.d[0],             # <<<<<<<<<<<<<<
@@ -3528,7 +3528,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epipolar_curve(PyObject *__pyx_v_imag
     __pyx_L8_unpacking_done:;
   }
 
-  /* "algorithms/epi.py":73
+  /* "openptv2/algorithms/epi.py":73
  *     )
  * 
  *     pos, direct = ray_tracing(             # <<<<<<<<<<<<<<
@@ -3540,7 +3540,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epipolar_curve(PyObject *__pyx_v_imag
   __pyx_v_direct = __pyx_t_22;
   __pyx_t_22 = 0;
 
-  /* "algorithms/epi.py":83
+  /* "openptv2/algorithms/epi.py":83
  *     )
  * 
  *     line_points = np.empty((num_points, 2))             # <<<<<<<<<<<<<<
@@ -3587,7 +3587,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epipolar_curve(PyObject *__pyx_v_imag
   __pyx_v_line_points = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/epi.py":84
+  /* "openptv2/algorithms/epi.py":84
  * 
  *     line_points = np.empty((num_points, 2))
  *     for i, Z in enumerate(np.linspace(vpar.Zmin_lay[0], vpar.Zmax_lay[0],             # <<<<<<<<<<<<<<
@@ -3612,7 +3612,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epipolar_curve(PyObject *__pyx_v_imag
   __Pyx_GOTREF(__pyx_t_21);
   __Pyx_DECREF(__pyx_t_17); __pyx_t_17 = 0;
 
-  /* "algorithms/epi.py":85
+  /* "openptv2/algorithms/epi.py":85
  *     line_points = np.empty((num_points, 2))
  *     for i, Z in enumerate(np.linspace(vpar.Zmin_lay[0], vpar.Zmax_lay[0],
  *                                       num_points)):             # <<<<<<<<<<<<<<
@@ -3645,7 +3645,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epipolar_curve(PyObject *__pyx_v_imag
     __Pyx_GOTREF(__pyx_t_1);
   }
 
-  /* "algorithms/epi.py":84
+  /* "openptv2/algorithms/epi.py":84
  * 
  *     line_points = np.empty((num_points, 2))
  *     for i, Z in enumerate(np.linspace(vpar.Zmin_lay[0], vpar.Zmax_lay[0],             # <<<<<<<<<<<<<<
@@ -3708,7 +3708,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epipolar_curve(PyObject *__pyx_v_imag
     __pyx_v_i = __pyx_t_25;
     __pyx_t_25 = (__pyx_t_25 + 1);
 
-    /* "algorithms/epi.py":86
+    /* "openptv2/algorithms/epi.py":86
  *     for i, Z in enumerate(np.linspace(vpar.Zmin_lay[0], vpar.Zmax_lay[0],
  *                                       num_points)):
  *         pt3d = move_along_ray(Z, pos, direct)             # <<<<<<<<<<<<<<
@@ -3744,7 +3744,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epipolar_curve(PyObject *__pyx_v_imag
     __Pyx_XDECREF_SET(__pyx_v_pt3d, __pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "algorithms/epi.py":87
+    /* "openptv2/algorithms/epi.py":87
  *                                       num_points)):
  *         pt3d = move_along_ray(Z, pos, direct)
  *         xm, ym = img_coord(pt3d, project_cal, cpar.mm)             # <<<<<<<<<<<<<<
@@ -3834,7 +3834,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epipolar_curve(PyObject *__pyx_v_imag
     __pyx_v_xm = __pyx_t_10;
     __pyx_v_ym = __pyx_t_11;
 
-    /* "algorithms/epi.py":88
+    /* "openptv2/algorithms/epi.py":88
  *         pt3d = move_along_ray(Z, pos, direct)
  *         xm, ym = img_coord(pt3d, project_cal, cpar.mm)
  *         line_points[i, 0], line_points[i, 1] = metric_to_pixel(xm, ym, cpar)             # <<<<<<<<<<<<<<
@@ -3947,7 +3947,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epipolar_curve(PyObject *__pyx_v_imag
     __Pyx_DECREF(__pyx_t_21); __pyx_t_21 = 0;
     __Pyx_DECREF(__pyx_t_23); __pyx_t_23 = 0;
 
-    /* "algorithms/epi.py":84
+    /* "openptv2/algorithms/epi.py":84
  * 
  *     line_points = np.empty((num_points, 2))
  *     for i, Z in enumerate(np.linspace(vpar.Zmin_lay[0], vpar.Zmax_lay[0],             # <<<<<<<<<<<<<<
@@ -3957,7 +3957,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epipolar_curve(PyObject *__pyx_v_imag
   }
   __Pyx_DECREF(__pyx_t_22); __pyx_t_22 = 0;
 
-  /* "algorithms/epi.py":90
+  /* "openptv2/algorithms/epi.py":90
  *         line_points[i, 0], line_points[i, 1] = metric_to_pixel(xm, ym, cpar)
  * 
  *     return line_points             # <<<<<<<<<<<<<<
@@ -3969,7 +3969,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epipolar_curve(PyObject *__pyx_v_imag
   __pyx_r = __pyx_v_line_points;
   goto __pyx_L0;
 
-  /* "algorithms/epi.py":34
+  /* "openptv2/algorithms/epi.py":34
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -3997,7 +3997,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epipolar_curve(PyObject *__pyx_v_imag
   __Pyx_XDECREF(__pyx_t_22);
   __Pyx_XDECREF(__pyx_t_23);
   __Pyx_XDECREF(__pyx_t_24);
-  __Pyx_AddTraceback("algorithms.epi.epipolar_curve", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.epi.epipolar_curve", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_pixel_to_metric);
@@ -4017,16 +4017,16 @@ static PyObject *__pyx_f_10algorithms_3epi_epipolar_curve(PyObject *__pyx_v_imag
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_3epi_1epipolar_curve(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_3epi_1epipolar_curve(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_3epi_epipolar_curve, "Generate points along the epipolar line projected into a second camera.\n\n    Takes a distorted pixel coordinate in one camera and produces the\n    epipolar curve as seen in a second camera, sampled at num_points\n    evenly-spaced Z values between the observed volume's Zmin and Zmax.\n\n    Args:\n        image_point: (2,) array, distorted pixel coordinates in origin camera.\n        origin_cal: Calibration of the camera seeing the point.\n        project_cal: Calibration of the camera onto which the line is projected.\n        num_points: number of samples along the line (minimum 2 for endpoints).\n        cpar: ControlPar with image size and multimedia parameters.\n        vpar: VolumePar with observed volume Z limits.\n\n    Returns:\n        (num_points, 2) array of pixel coordinates in the projection camera.\n    ");
-static PyMethodDef __pyx_mdef_10algorithms_3epi_1epipolar_curve = {"epipolar_curve", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_3epi_1epipolar_curve, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_3epi_epipolar_curve};
-static PyObject *__pyx_pw_10algorithms_3epi_1epipolar_curve(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_3epi_epipolar_curve, "Generate points along the epipolar line projected into a second camera.\n\n    Takes a distorted pixel coordinate in one camera and produces the\n    epipolar curve as seen in a second camera, sampled at num_points\n    evenly-spaced Z values between the observed volume's Zmin and Zmax.\n\n    Args:\n        image_point: (2,) array, distorted pixel coordinates in origin camera.\n        origin_cal: Calibration of the camera seeing the point.\n        project_cal: Calibration of the camera onto which the line is projected.\n        num_points: number of samples along the line (minimum 2 for endpoints).\n        cpar: ControlPar with image size and multimedia parameters.\n        vpar: VolumePar with observed volume Z limits.\n\n    Returns:\n        (num_points, 2) array of pixel coordinates in the projection camera.\n    ");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_3epi_1epipolar_curve = {"epipolar_curve", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_3epi_1epipolar_curve, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_3epi_epipolar_curve};
+static PyObject *__pyx_pw_8openptv2_10algorithms_3epi_1epipolar_curve(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -4128,11 +4128,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.epi.epipolar_curve", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.epi.epipolar_curve", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_3epi_epipolar_curve(__pyx_self, __pyx_v_image_point, __pyx_v_origin_cal, __pyx_v_project_cal, __pyx_v_num_points, __pyx_v_cpar, __pyx_v_vpar);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_3epi_epipolar_curve(__pyx_self, __pyx_v_image_point, __pyx_v_origin_cal, __pyx_v_project_cal, __pyx_v_num_points, __pyx_v_cpar, __pyx_v_vpar);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -4142,7 +4142,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_3epi_epipolar_curve(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_image_point, PyObject *__pyx_v_origin_cal, PyObject *__pyx_v_project_cal, int __pyx_v_num_points, PyObject *__pyx_v_cpar, PyObject *__pyx_v_vpar) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_3epi_epipolar_curve(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_image_point, PyObject *__pyx_v_origin_cal, PyObject *__pyx_v_project_cal, int __pyx_v_num_points, PyObject *__pyx_v_cpar, PyObject *__pyx_v_vpar) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -4151,7 +4151,7 @@ static PyObject *__pyx_pf_10algorithms_3epi_epipolar_curve(CYTHON_UNUSED PyObjec
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("epipolar_curve", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_3epi_epipolar_curve(__pyx_v_image_point, __pyx_v_origin_cal, __pyx_v_project_cal, __pyx_v_num_points, __pyx_v_cpar, __pyx_v_vpar, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 34, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_3epi_epipolar_curve(__pyx_v_image_point, __pyx_v_origin_cal, __pyx_v_project_cal, __pyx_v_num_points, __pyx_v_cpar, __pyx_v_vpar, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 34, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -4160,7 +4160,7 @@ static PyObject *__pyx_pf_10algorithms_3epi_epipolar_curve(CYTHON_UNUSED PyObjec
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.epi.epipolar_curve", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.epi.epipolar_curve", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -4168,7 +4168,7 @@ static PyObject *__pyx_pf_10algorithms_3epi_epipolar_curve(CYTHON_UNUSED PyObjec
   return __pyx_r;
 }
 
-/* "algorithms/epi.py":93
+/* "openptv2/algorithms/epi.py":93
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -4176,14 +4176,14 @@ static PyObject *__pyx_pf_10algorithms_3epi_epipolar_curve(CYTHON_UNUSED PyObjec
  *     xl=cython.double, yl=cython.double,
 */
 
-static PyObject *__pyx_pw_10algorithms_3epi_3epi_mm(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_3epi_3epi_mm(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_3epi_epi_mm(double __pyx_v_xl, double __pyx_v_yl, PyObject *__pyx_v_cal1, PyObject *__pyx_v_cal2, PyObject *__pyx_v_mmp, PyObject *__pyx_v_vpar, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_3epi_epi_mm(double __pyx_v_xl, double __pyx_v_yl, PyObject *__pyx_v_cal1, PyObject *__pyx_v_cal2, PyObject *__pyx_v_mmp, PyObject *__pyx_v_vpar, CYTHON_UNUSED int __pyx_skip_dispatch) {
   double __pyx_v_Zmin;
   double __pyx_v_Zmax;
   double __pyx_v_xmin;
@@ -4228,7 +4228,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm(double __pyx_v_xl, double __py
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("epi_mm", 0);
 
-  /* "algorithms/epi.py":113
+  /* "openptv2/algorithms/epi.py":113
  *         (xmin, ymin, xmax, ymax) endpoints of epipolar line in second camera.
  *     """
  *     from .ray_tracing import ray_tracing             # <<<<<<<<<<<<<<
@@ -4237,7 +4237,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm(double __pyx_v_xl, double __py
 */
   {
     PyObject* const __pyx_imported_names[] = {__pyx_mstate_global->__pyx_n_u_ray_tracing};
-    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_ray_tracing, __pyx_imported_names, 1, __pyx_mstate_global->__pyx_kp_u_algorithms_ray_tracing, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 113, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_ray_tracing, __pyx_imported_names, 1, __pyx_mstate_global->__pyx_kp_u_openptv2_algorithms_ray_tracing, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 113, __pyx_L1_error)
   }
   __pyx_t_1 = __pyx_t_2;
   __Pyx_GOTREF(__pyx_t_1);
@@ -4258,7 +4258,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm(double __pyx_v_xl, double __py
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/epi.py":114
+  /* "openptv2/algorithms/epi.py":114
  *     """
  *     from .ray_tracing import ray_tracing
  *     from .multimed import move_along_ray             # <<<<<<<<<<<<<<
@@ -4267,7 +4267,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm(double __pyx_v_xl, double __py
 */
   {
     PyObject* const __pyx_imported_names[] = {__pyx_mstate_global->__pyx_n_u_move_along_ray};
-    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_multimed, __pyx_imported_names, 1, __pyx_mstate_global->__pyx_kp_u_algorithms_multimed, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 114, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_multimed, __pyx_imported_names, 1, __pyx_mstate_global->__pyx_kp_u_openptv2_algorithms_multimed, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 114, __pyx_L1_error)
   }
   __pyx_t_1 = __pyx_t_2;
   __Pyx_GOTREF(__pyx_t_1);
@@ -4288,7 +4288,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm(double __pyx_v_xl, double __py
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/epi.py":115
+  /* "openptv2/algorithms/epi.py":115
  *     from .ray_tracing import ray_tracing
  *     from .multimed import move_along_ray
  *     from .imgcoord import flat_image_coord             # <<<<<<<<<<<<<<
@@ -4297,7 +4297,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm(double __pyx_v_xl, double __py
 */
   {
     PyObject* const __pyx_imported_names[] = {__pyx_mstate_global->__pyx_n_u_flat_image_coord};
-    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_imgcoord, __pyx_imported_names, 1, __pyx_mstate_global->__pyx_kp_u_algorithms_imgcoord, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 115, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_imgcoord, __pyx_imported_names, 1, __pyx_mstate_global->__pyx_kp_u_openptv2_algorithms_imgcoord, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 115, __pyx_L1_error)
   }
   __pyx_t_1 = __pyx_t_2;
   __Pyx_GOTREF(__pyx_t_1);
@@ -4318,7 +4318,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm(double __pyx_v_xl, double __py
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/epi.py":117
+  /* "openptv2/algorithms/epi.py":117
  *     from .imgcoord import flat_image_coord
  * 
  *     pos, v = ray_tracing(             # <<<<<<<<<<<<<<
@@ -4329,7 +4329,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm(double __pyx_v_xl, double __py
   __Pyx_INCREF(__pyx_v_ray_tracing);
   __pyx_t_5 = __pyx_v_ray_tracing; 
 
-  /* "algorithms/epi.py":118
+  /* "openptv2/algorithms/epi.py":118
  * 
  *     pos, v = ray_tracing(
  *         xl, yl,             # <<<<<<<<<<<<<<
@@ -4341,7 +4341,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm(double __pyx_v_xl, double __py
   __pyx_t_7 = PyFloat_FromDouble(__pyx_v_yl); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 118, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
 
-  /* "algorithms/epi.py":119
+  /* "openptv2/algorithms/epi.py":119
  *     pos, v = ray_tracing(
  *         xl, yl,
  *         cal1.ext_par.dm, cal1.ext_par.x0, cal1.ext_par.y0, cal1.ext_par.z0,             # <<<<<<<<<<<<<<
@@ -4369,7 +4369,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm(double __pyx_v_xl, double __py
   __Pyx_GOTREF(__pyx_t_12);
   __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
 
-  /* "algorithms/epi.py":120
+  /* "openptv2/algorithms/epi.py":120
  *         xl, yl,
  *         cal1.ext_par.dm, cal1.ext_par.x0, cal1.ext_par.y0, cal1.ext_par.z0,
  *         cal1.int_par.cc,             # <<<<<<<<<<<<<<
@@ -4382,7 +4382,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm(double __pyx_v_xl, double __py
   __Pyx_GOTREF(__pyx_t_13);
   __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
 
-  /* "algorithms/epi.py":121
+  /* "openptv2/algorithms/epi.py":121
  *         cal1.ext_par.dm, cal1.ext_par.x0, cal1.ext_par.y0, cal1.ext_par.z0,
  *         cal1.int_par.cc,
  *         cal1.glass_par.vec_x, cal1.glass_par.vec_y, cal1.glass_par.vec_z,             # <<<<<<<<<<<<<<
@@ -4405,7 +4405,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm(double __pyx_v_xl, double __py
   __Pyx_GOTREF(__pyx_t_16);
   __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
 
-  /* "algorithms/epi.py":122
+  /* "openptv2/algorithms/epi.py":122
  *         cal1.int_par.cc,
  *         cal1.glass_par.vec_x, cal1.glass_par.vec_y, cal1.glass_par.vec_z,
  *         mmp.n1, mmp.n2[0], mmp.n3, mmp.d[0],             # <<<<<<<<<<<<<<
@@ -4511,7 +4511,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm(double __pyx_v_xl, double __py
     __pyx_L4_unpacking_done:;
   }
 
-  /* "algorithms/epi.py":117
+  /* "openptv2/algorithms/epi.py":117
  *     from .imgcoord import flat_image_coord
  * 
  *     pos, v = ray_tracing(             # <<<<<<<<<<<<<<
@@ -4523,7 +4523,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm(double __pyx_v_xl, double __py
   __pyx_v_v = __pyx_t_20;
   __pyx_t_20 = 0;
 
-  /* "algorithms/epi.py":125
+  /* "openptv2/algorithms/epi.py":125
  *     )
  * 
  *     Zmin = (vpar.Zmin_lay[0]             # <<<<<<<<<<<<<<
@@ -4536,7 +4536,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm(double __pyx_v_xl, double __py
   __Pyx_GOTREF(__pyx_t_20);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/epi.py":126
+  /* "openptv2/algorithms/epi.py":126
  * 
  *     Zmin = (vpar.Zmin_lay[0]
  *         + (pos[0] - vpar.X_lay[0])             # <<<<<<<<<<<<<<
@@ -4555,7 +4555,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm(double __pyx_v_xl, double __py
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_DECREF(__pyx_t_17); __pyx_t_17 = 0;
 
-  /* "algorithms/epi.py":127
+  /* "openptv2/algorithms/epi.py":127
  *     Zmin = (vpar.Zmin_lay[0]
  *         + (pos[0] - vpar.X_lay[0])
  *         * (vpar.Zmin_lay[1] - vpar.Zmin_lay[0])             # <<<<<<<<<<<<<<
@@ -4581,7 +4581,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm(double __pyx_v_xl, double __py
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   __Pyx_DECREF(__pyx_t_17); __pyx_t_17 = 0;
 
-  /* "algorithms/epi.py":128
+  /* "openptv2/algorithms/epi.py":128
  *         + (pos[0] - vpar.X_lay[0])
  *         * (vpar.Zmin_lay[1] - vpar.Zmin_lay[0])
  *         / (vpar.X_lay[1] - vpar.X_lay[0]))             # <<<<<<<<<<<<<<
@@ -4607,7 +4607,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm(double __pyx_v_xl, double __py
   __Pyx_DECREF(__pyx_t_18); __pyx_t_18 = 0;
   __Pyx_DECREF(__pyx_t_17); __pyx_t_17 = 0;
 
-  /* "algorithms/epi.py":126
+  /* "openptv2/algorithms/epi.py":126
  * 
  *     Zmin = (vpar.Zmin_lay[0]
  *         + (pos[0] - vpar.X_lay[0])             # <<<<<<<<<<<<<<
@@ -4622,7 +4622,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm(double __pyx_v_xl, double __py
   __Pyx_DECREF(__pyx_t_17); __pyx_t_17 = 0;
   __pyx_v_Zmin = __pyx_t_23;
 
-  /* "algorithms/epi.py":130
+  /* "openptv2/algorithms/epi.py":130
  *         / (vpar.X_lay[1] - vpar.X_lay[0]))
  * 
  *     Zmax = (vpar.Zmax_lay[0]             # <<<<<<<<<<<<<<
@@ -4635,7 +4635,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm(double __pyx_v_xl, double __py
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_17); __pyx_t_17 = 0;
 
-  /* "algorithms/epi.py":131
+  /* "openptv2/algorithms/epi.py":131
  * 
  *     Zmax = (vpar.Zmax_lay[0]
  *         + (pos[0] - vpar.X_lay[0])             # <<<<<<<<<<<<<<
@@ -4654,7 +4654,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm(double __pyx_v_xl, double __py
   __Pyx_DECREF(__pyx_t_17); __pyx_t_17 = 0;
   __Pyx_DECREF(__pyx_t_18); __pyx_t_18 = 0;
 
-  /* "algorithms/epi.py":132
+  /* "openptv2/algorithms/epi.py":132
  *     Zmax = (vpar.Zmax_lay[0]
  *         + (pos[0] - vpar.X_lay[0])
  *         * (vpar.Zmax_lay[1] - vpar.Zmax_lay[0])             # <<<<<<<<<<<<<<
@@ -4680,7 +4680,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm(double __pyx_v_xl, double __py
   __Pyx_DECREF(__pyx_t_20); __pyx_t_20 = 0;
   __Pyx_DECREF(__pyx_t_18); __pyx_t_18 = 0;
 
-  /* "algorithms/epi.py":133
+  /* "openptv2/algorithms/epi.py":133
  *         + (pos[0] - vpar.X_lay[0])
  *         * (vpar.Zmax_lay[1] - vpar.Zmax_lay[0])
  *         / (vpar.X_lay[1] - vpar.X_lay[0]))             # <<<<<<<<<<<<<<
@@ -4706,7 +4706,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm(double __pyx_v_xl, double __py
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   __Pyx_DECREF(__pyx_t_18); __pyx_t_18 = 0;
 
-  /* "algorithms/epi.py":131
+  /* "openptv2/algorithms/epi.py":131
  * 
  *     Zmax = (vpar.Zmax_lay[0]
  *         + (pos[0] - vpar.X_lay[0])             # <<<<<<<<<<<<<<
@@ -4721,7 +4721,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm(double __pyx_v_xl, double __py
   __Pyx_DECREF(__pyx_t_18); __pyx_t_18 = 0;
   __pyx_v_Zmax = __pyx_t_23;
 
-  /* "algorithms/epi.py":135
+  /* "openptv2/algorithms/epi.py":135
  *         / (vpar.X_lay[1] - vpar.X_lay[0]))
  * 
  *     X_at_Zmin = move_along_ray(Zmin, pos, v)             # <<<<<<<<<<<<<<
@@ -4757,7 +4757,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm(double __pyx_v_xl, double __py
   __pyx_v_X_at_Zmin = __pyx_t_18;
   __pyx_t_18 = 0;
 
-  /* "algorithms/epi.py":136
+  /* "openptv2/algorithms/epi.py":136
  * 
  *     X_at_Zmin = move_along_ray(Zmin, pos, v)
  *     xmin, ymin = flat_image_coord(             # <<<<<<<<<<<<<<
@@ -4768,7 +4768,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm(double __pyx_v_xl, double __py
   __Pyx_INCREF(__pyx_v_flat_image_coord);
   __pyx_t_5 = __pyx_v_flat_image_coord; 
 
-  /* "algorithms/epi.py":138
+  /* "openptv2/algorithms/epi.py":138
  *     xmin, ymin = flat_image_coord(
  *         X_at_Zmin,
  *         cal2.ext_par.x0, cal2.ext_par.y0, cal2.ext_par.z0,             # <<<<<<<<<<<<<<
@@ -4791,7 +4791,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm(double __pyx_v_xl, double __py
   __Pyx_GOTREF(__pyx_t_16);
   __Pyx_DECREF(__pyx_t_17); __pyx_t_17 = 0;
 
-  /* "algorithms/epi.py":139
+  /* "openptv2/algorithms/epi.py":139
  *         X_at_Zmin,
  *         cal2.ext_par.x0, cal2.ext_par.y0, cal2.ext_par.z0,
  *         cal2.ext_par.dm, cal2.int_par.cc,             # <<<<<<<<<<<<<<
@@ -4809,7 +4809,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm(double __pyx_v_xl, double __py
   __Pyx_GOTREF(__pyx_t_14);
   __Pyx_DECREF(__pyx_t_17); __pyx_t_17 = 0;
 
-  /* "algorithms/epi.py":140
+  /* "openptv2/algorithms/epi.py":140
  *         cal2.ext_par.x0, cal2.ext_par.y0, cal2.ext_par.z0,
  *         cal2.ext_par.dm, cal2.int_par.cc,
  *         cal2.glass_par.vec_x, cal2.glass_par.vec_y, cal2.glass_par.vec_z,             # <<<<<<<<<<<<<<
@@ -4832,7 +4832,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm(double __pyx_v_xl, double __py
   __Pyx_GOTREF(__pyx_t_11);
   __Pyx_DECREF(__pyx_t_17); __pyx_t_17 = 0;
 
-  /* "algorithms/epi.py":141
+  /* "openptv2/algorithms/epi.py":141
  *         cal2.ext_par.dm, cal2.int_par.cc,
  *         cal2.glass_par.vec_x, cal2.glass_par.vec_y, cal2.glass_par.vec_z,
  *         mmp.n1, mmp.n2[0], mmp.n3, mmp.d[0],             # <<<<<<<<<<<<<<
@@ -4936,7 +4936,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm(double __pyx_v_xl, double __py
     __pyx_L6_unpacking_done:;
   }
 
-  /* "algorithms/epi.py":136
+  /* "openptv2/algorithms/epi.py":136
  * 
  *     X_at_Zmin = move_along_ray(Zmin, pos, v)
  *     xmin, ymin = flat_image_coord(             # <<<<<<<<<<<<<<
@@ -4950,7 +4950,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm(double __pyx_v_xl, double __py
   __pyx_v_xmin = __pyx_t_23;
   __pyx_v_ymin = __pyx_t_24;
 
-  /* "algorithms/epi.py":144
+  /* "openptv2/algorithms/epi.py":144
  *     )
  * 
  *     X_at_Zmax = move_along_ray(Zmax, pos, v)             # <<<<<<<<<<<<<<
@@ -4986,7 +4986,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm(double __pyx_v_xl, double __py
   __pyx_v_X_at_Zmax = __pyx_t_18;
   __pyx_t_18 = 0;
 
-  /* "algorithms/epi.py":145
+  /* "openptv2/algorithms/epi.py":145
  * 
  *     X_at_Zmax = move_along_ray(Zmax, pos, v)
  *     xmax, ymax = flat_image_coord(             # <<<<<<<<<<<<<<
@@ -4997,7 +4997,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm(double __pyx_v_xl, double __py
   __Pyx_INCREF(__pyx_v_flat_image_coord);
   __pyx_t_10 = __pyx_v_flat_image_coord; 
 
-  /* "algorithms/epi.py":147
+  /* "openptv2/algorithms/epi.py":147
  *     xmax, ymax = flat_image_coord(
  *         X_at_Zmax,
  *         cal2.ext_par.x0, cal2.ext_par.y0, cal2.ext_par.z0,             # <<<<<<<<<<<<<<
@@ -5020,7 +5020,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm(double __pyx_v_xl, double __py
   __Pyx_GOTREF(__pyx_t_11);
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-  /* "algorithms/epi.py":148
+  /* "openptv2/algorithms/epi.py":148
  *         X_at_Zmax,
  *         cal2.ext_par.x0, cal2.ext_par.y0, cal2.ext_par.z0,
  *         cal2.ext_par.dm, cal2.int_par.cc,             # <<<<<<<<<<<<<<
@@ -5038,7 +5038,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm(double __pyx_v_xl, double __py
   __Pyx_GOTREF(__pyx_t_13);
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-  /* "algorithms/epi.py":149
+  /* "openptv2/algorithms/epi.py":149
  *         cal2.ext_par.x0, cal2.ext_par.y0, cal2.ext_par.z0,
  *         cal2.ext_par.dm, cal2.int_par.cc,
  *         cal2.glass_par.vec_x, cal2.glass_par.vec_y, cal2.glass_par.vec_z,             # <<<<<<<<<<<<<<
@@ -5061,7 +5061,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm(double __pyx_v_xl, double __py
   __Pyx_GOTREF(__pyx_t_16);
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-  /* "algorithms/epi.py":150
+  /* "openptv2/algorithms/epi.py":150
  *         cal2.ext_par.dm, cal2.int_par.cc,
  *         cal2.glass_par.vec_x, cal2.glass_par.vec_y, cal2.glass_par.vec_z,
  *         mmp.n1, mmp.n2[0], mmp.n3, mmp.d[0],             # <<<<<<<<<<<<<<
@@ -5165,7 +5165,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm(double __pyx_v_xl, double __py
     __pyx_L8_unpacking_done:;
   }
 
-  /* "algorithms/epi.py":145
+  /* "openptv2/algorithms/epi.py":145
  * 
  *     X_at_Zmax = move_along_ray(Zmax, pos, v)
  *     xmax, ymax = flat_image_coord(             # <<<<<<<<<<<<<<
@@ -5179,7 +5179,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm(double __pyx_v_xl, double __py
   __pyx_v_xmax = __pyx_t_24;
   __pyx_v_ymax = __pyx_t_23;
 
-  /* "algorithms/epi.py":153
+  /* "openptv2/algorithms/epi.py":153
  *     )
  * 
  *     return xmin, ymin, xmax, ymax             # <<<<<<<<<<<<<<
@@ -5213,7 +5213,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm(double __pyx_v_xl, double __py
   __pyx_t_20 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/epi.py":93
+  /* "openptv2/algorithms/epi.py":93
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -5241,7 +5241,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm(double __pyx_v_xl, double __py
   __Pyx_XDECREF(__pyx_t_18);
   __Pyx_XDECREF(__pyx_t_19);
   __Pyx_XDECREF(__pyx_t_20);
-  __Pyx_AddTraceback("algorithms.epi.epi_mm", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.epi.epi_mm", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_ray_tracing);
@@ -5257,16 +5257,16 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm(double __pyx_v_xl, double __py
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_3epi_3epi_mm(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_3epi_3epi_mm(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_3epi_2epi_mm, "Compute epipolar line endpoints in second camera.\n\n    Args:\n        xl, yl: point position in origin camera's image space [mm].\n        cal1: origin camera Calibration object.\n        cal2: target camera Calibration object.\n        mmp: MmNp multimedia parameters (n1, n2, d, n3).\n        vpar: VolumePar volume parameters (X_lay, Zmin_lay, Zmax_lay).\n\n    Returns:\n        (xmin, ymin, xmax, ymax) endpoints of epipolar line in second camera.\n    ");
-static PyMethodDef __pyx_mdef_10algorithms_3epi_3epi_mm = {"epi_mm", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_3epi_3epi_mm, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_3epi_2epi_mm};
-static PyObject *__pyx_pw_10algorithms_3epi_3epi_mm(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_3epi_2epi_mm, "Compute epipolar line endpoints in second camera.\n\n    Args:\n        xl, yl: point position in origin camera's image space [mm].\n        cal1: origin camera Calibration object.\n        cal2: target camera Calibration object.\n        mmp: MmNp multimedia parameters (n1, n2, d, n3).\n        vpar: VolumePar volume parameters (X_lay, Zmin_lay, Zmax_lay).\n\n    Returns:\n        (xmin, ymin, xmax, ymax) endpoints of epipolar line in second camera.\n    ");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_3epi_3epi_mm = {"epi_mm", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_3epi_3epi_mm, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_3epi_2epi_mm};
+static PyObject *__pyx_pw_8openptv2_10algorithms_3epi_3epi_mm(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -5368,11 +5368,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.epi.epi_mm", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.epi.epi_mm", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_3epi_2epi_mm(__pyx_self, __pyx_v_xl, __pyx_v_yl, __pyx_v_cal1, __pyx_v_cal2, __pyx_v_mmp, __pyx_v_vpar);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_3epi_2epi_mm(__pyx_self, __pyx_v_xl, __pyx_v_yl, __pyx_v_cal1, __pyx_v_cal2, __pyx_v_mmp, __pyx_v_vpar);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -5382,7 +5382,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_3epi_2epi_mm(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_xl, double __pyx_v_yl, PyObject *__pyx_v_cal1, PyObject *__pyx_v_cal2, PyObject *__pyx_v_mmp, PyObject *__pyx_v_vpar) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_3epi_2epi_mm(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_xl, double __pyx_v_yl, PyObject *__pyx_v_cal1, PyObject *__pyx_v_cal2, PyObject *__pyx_v_mmp, PyObject *__pyx_v_vpar) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -5391,7 +5391,7 @@ static PyObject *__pyx_pf_10algorithms_3epi_2epi_mm(CYTHON_UNUSED PyObject *__py
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("epi_mm", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_3epi_epi_mm(__pyx_v_xl, __pyx_v_yl, __pyx_v_cal1, __pyx_v_cal2, __pyx_v_mmp, __pyx_v_vpar, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 93, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_3epi_epi_mm(__pyx_v_xl, __pyx_v_yl, __pyx_v_cal1, __pyx_v_cal2, __pyx_v_mmp, __pyx_v_vpar, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 93, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -5400,7 +5400,7 @@ static PyObject *__pyx_pf_10algorithms_3epi_2epi_mm(CYTHON_UNUSED PyObject *__py
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.epi.epi_mm", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.epi.epi_mm", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -5408,7 +5408,7 @@ static PyObject *__pyx_pf_10algorithms_3epi_2epi_mm(CYTHON_UNUSED PyObject *__py
   return __pyx_r;
 }
 
-/* "algorithms/epi.py":156
+/* "openptv2/algorithms/epi.py":156
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -5416,14 +5416,14 @@ static PyObject *__pyx_pf_10algorithms_3epi_2epi_mm(CYTHON_UNUSED PyObject *__py
  *     xl=cython.double, yl=cython.double,
 */
 
-static PyObject *__pyx_pw_10algorithms_3epi_5epi_mm_2d(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_3epi_5epi_mm_2d(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_3epi_epi_mm_2d(double __pyx_v_xl, double __pyx_v_yl, PyObject *__pyx_v_cal, PyObject *__pyx_v_mmp, PyObject *__pyx_v_vpar, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_3epi_epi_mm_2d(double __pyx_v_xl, double __pyx_v_yl, PyObject *__pyx_v_cal, PyObject *__pyx_v_mmp, PyObject *__pyx_v_vpar, CYTHON_UNUSED int __pyx_skip_dispatch) {
   double __pyx_v_Zmin;
   double __pyx_v_Zmax;
   PyObject *__pyx_v_ray_tracing = NULL;
@@ -5460,7 +5460,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm_2d(double __pyx_v_xl, double _
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("epi_mm_2d", 0);
 
-  /* "algorithms/epi.py":163
+  /* "openptv2/algorithms/epi.py":163
  * def epi_mm_2d(xl: cython.double, yl: cython.double, cal, mmp, vpar) -> np.ndarray:
  *     """Compute 3D position for single-camera multimedia case."""
  *     from .ray_tracing import ray_tracing             # <<<<<<<<<<<<<<
@@ -5469,7 +5469,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm_2d(double __pyx_v_xl, double _
 */
   {
     PyObject* const __pyx_imported_names[] = {__pyx_mstate_global->__pyx_n_u_ray_tracing};
-    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_ray_tracing, __pyx_imported_names, 1, __pyx_mstate_global->__pyx_kp_u_algorithms_ray_tracing, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 163, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_ray_tracing, __pyx_imported_names, 1, __pyx_mstate_global->__pyx_kp_u_openptv2_algorithms_ray_tracing, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 163, __pyx_L1_error)
   }
   __pyx_t_1 = __pyx_t_2;
   __Pyx_GOTREF(__pyx_t_1);
@@ -5490,7 +5490,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm_2d(double __pyx_v_xl, double _
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/epi.py":164
+  /* "openptv2/algorithms/epi.py":164
  *     """Compute 3D position for single-camera multimedia case."""
  *     from .ray_tracing import ray_tracing
  *     from .multimed import move_along_ray             # <<<<<<<<<<<<<<
@@ -5499,7 +5499,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm_2d(double __pyx_v_xl, double _
 */
   {
     PyObject* const __pyx_imported_names[] = {__pyx_mstate_global->__pyx_n_u_move_along_ray};
-    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_multimed, __pyx_imported_names, 1, __pyx_mstate_global->__pyx_kp_u_algorithms_multimed, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 164, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_multimed, __pyx_imported_names, 1, __pyx_mstate_global->__pyx_kp_u_openptv2_algorithms_multimed, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 164, __pyx_L1_error)
   }
   __pyx_t_1 = __pyx_t_2;
   __Pyx_GOTREF(__pyx_t_1);
@@ -5520,7 +5520,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm_2d(double __pyx_v_xl, double _
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/epi.py":166
+  /* "openptv2/algorithms/epi.py":166
  *     from .multimed import move_along_ray
  * 
  *     pos, v = ray_tracing(             # <<<<<<<<<<<<<<
@@ -5531,7 +5531,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm_2d(double __pyx_v_xl, double _
   __Pyx_INCREF(__pyx_v_ray_tracing);
   __pyx_t_5 = __pyx_v_ray_tracing; 
 
-  /* "algorithms/epi.py":167
+  /* "openptv2/algorithms/epi.py":167
  * 
  *     pos, v = ray_tracing(
  *         xl, yl,             # <<<<<<<<<<<<<<
@@ -5543,7 +5543,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm_2d(double __pyx_v_xl, double _
   __pyx_t_7 = PyFloat_FromDouble(__pyx_v_yl); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 167, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
 
-  /* "algorithms/epi.py":168
+  /* "openptv2/algorithms/epi.py":168
  *     pos, v = ray_tracing(
  *         xl, yl,
  *         cal.ext_par.dm, cal.ext_par.x0, cal.ext_par.y0, cal.ext_par.z0,             # <<<<<<<<<<<<<<
@@ -5571,7 +5571,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm_2d(double __pyx_v_xl, double _
   __Pyx_GOTREF(__pyx_t_12);
   __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
 
-  /* "algorithms/epi.py":169
+  /* "openptv2/algorithms/epi.py":169
  *         xl, yl,
  *         cal.ext_par.dm, cal.ext_par.x0, cal.ext_par.y0, cal.ext_par.z0,
  *         cal.int_par.cc,             # <<<<<<<<<<<<<<
@@ -5584,7 +5584,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm_2d(double __pyx_v_xl, double _
   __Pyx_GOTREF(__pyx_t_13);
   __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
 
-  /* "algorithms/epi.py":170
+  /* "openptv2/algorithms/epi.py":170
  *         cal.ext_par.dm, cal.ext_par.x0, cal.ext_par.y0, cal.ext_par.z0,
  *         cal.int_par.cc,
  *         cal.glass_par.vec_x, cal.glass_par.vec_y, cal.glass_par.vec_z,             # <<<<<<<<<<<<<<
@@ -5607,7 +5607,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm_2d(double __pyx_v_xl, double _
   __Pyx_GOTREF(__pyx_t_16);
   __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
 
-  /* "algorithms/epi.py":171
+  /* "openptv2/algorithms/epi.py":171
  *         cal.int_par.cc,
  *         cal.glass_par.vec_x, cal.glass_par.vec_y, cal.glass_par.vec_z,
  *         mmp.n1, mmp.n2[0], mmp.n3, mmp.d[0],             # <<<<<<<<<<<<<<
@@ -5713,7 +5713,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm_2d(double __pyx_v_xl, double _
     __pyx_L4_unpacking_done:;
   }
 
-  /* "algorithms/epi.py":166
+  /* "openptv2/algorithms/epi.py":166
  *     from .multimed import move_along_ray
  * 
  *     pos, v = ray_tracing(             # <<<<<<<<<<<<<<
@@ -5725,7 +5725,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm_2d(double __pyx_v_xl, double _
   __pyx_v_v = __pyx_t_20;
   __pyx_t_20 = 0;
 
-  /* "algorithms/epi.py":174
+  /* "openptv2/algorithms/epi.py":174
  *     )
  * 
  *     Zmin = (vpar.Zmin_lay[0]             # <<<<<<<<<<<<<<
@@ -5738,7 +5738,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm_2d(double __pyx_v_xl, double _
   __Pyx_GOTREF(__pyx_t_20);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/epi.py":175
+  /* "openptv2/algorithms/epi.py":175
  * 
  *     Zmin = (vpar.Zmin_lay[0]
  *         + (pos[0] - vpar.X_lay[0])             # <<<<<<<<<<<<<<
@@ -5757,7 +5757,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm_2d(double __pyx_v_xl, double _
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_DECREF(__pyx_t_17); __pyx_t_17 = 0;
 
-  /* "algorithms/epi.py":176
+  /* "openptv2/algorithms/epi.py":176
  *     Zmin = (vpar.Zmin_lay[0]
  *         + (pos[0] - vpar.X_lay[0])
  *         * (vpar.Zmin_lay[1] - vpar.Zmin_lay[0])             # <<<<<<<<<<<<<<
@@ -5783,7 +5783,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm_2d(double __pyx_v_xl, double _
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   __Pyx_DECREF(__pyx_t_17); __pyx_t_17 = 0;
 
-  /* "algorithms/epi.py":177
+  /* "openptv2/algorithms/epi.py":177
  *         + (pos[0] - vpar.X_lay[0])
  *         * (vpar.Zmin_lay[1] - vpar.Zmin_lay[0])
  *         / (vpar.X_lay[1] - vpar.X_lay[0]))             # <<<<<<<<<<<<<<
@@ -5809,7 +5809,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm_2d(double __pyx_v_xl, double _
   __Pyx_DECREF(__pyx_t_18); __pyx_t_18 = 0;
   __Pyx_DECREF(__pyx_t_17); __pyx_t_17 = 0;
 
-  /* "algorithms/epi.py":175
+  /* "openptv2/algorithms/epi.py":175
  * 
  *     Zmin = (vpar.Zmin_lay[0]
  *         + (pos[0] - vpar.X_lay[0])             # <<<<<<<<<<<<<<
@@ -5824,7 +5824,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm_2d(double __pyx_v_xl, double _
   __Pyx_DECREF(__pyx_t_17); __pyx_t_17 = 0;
   __pyx_v_Zmin = __pyx_t_23;
 
-  /* "algorithms/epi.py":179
+  /* "openptv2/algorithms/epi.py":179
  *         / (vpar.X_lay[1] - vpar.X_lay[0]))
  * 
  *     Zmax = (vpar.Zmax_lay[0]             # <<<<<<<<<<<<<<
@@ -5837,7 +5837,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm_2d(double __pyx_v_xl, double _
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_17); __pyx_t_17 = 0;
 
-  /* "algorithms/epi.py":180
+  /* "openptv2/algorithms/epi.py":180
  * 
  *     Zmax = (vpar.Zmax_lay[0]
  *         + (pos[0] - vpar.X_lay[0])             # <<<<<<<<<<<<<<
@@ -5856,7 +5856,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm_2d(double __pyx_v_xl, double _
   __Pyx_DECREF(__pyx_t_17); __pyx_t_17 = 0;
   __Pyx_DECREF(__pyx_t_18); __pyx_t_18 = 0;
 
-  /* "algorithms/epi.py":181
+  /* "openptv2/algorithms/epi.py":181
  *     Zmax = (vpar.Zmax_lay[0]
  *         + (pos[0] - vpar.X_lay[0])
  *         * (vpar.Zmax_lay[1] - vpar.Zmax_lay[0])             # <<<<<<<<<<<<<<
@@ -5882,7 +5882,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm_2d(double __pyx_v_xl, double _
   __Pyx_DECREF(__pyx_t_20); __pyx_t_20 = 0;
   __Pyx_DECREF(__pyx_t_18); __pyx_t_18 = 0;
 
-  /* "algorithms/epi.py":182
+  /* "openptv2/algorithms/epi.py":182
  *         + (pos[0] - vpar.X_lay[0])
  *         * (vpar.Zmax_lay[1] - vpar.Zmax_lay[0])
  *         / (vpar.X_lay[1] - vpar.X_lay[0]))             # <<<<<<<<<<<<<<
@@ -5908,7 +5908,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm_2d(double __pyx_v_xl, double _
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   __Pyx_DECREF(__pyx_t_18); __pyx_t_18 = 0;
 
-  /* "algorithms/epi.py":180
+  /* "openptv2/algorithms/epi.py":180
  * 
  *     Zmax = (vpar.Zmax_lay[0]
  *         + (pos[0] - vpar.X_lay[0])             # <<<<<<<<<<<<<<
@@ -5923,7 +5923,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm_2d(double __pyx_v_xl, double _
   __Pyx_DECREF(__pyx_t_18); __pyx_t_18 = 0;
   __pyx_v_Zmax = __pyx_t_23;
 
-  /* "algorithms/epi.py":184
+  /* "openptv2/algorithms/epi.py":184
  *         / (vpar.X_lay[1] - vpar.X_lay[0]))
  * 
  *     return move_along_ray(0.5 * (Zmin + Zmax), pos, v)             # <<<<<<<<<<<<<<
@@ -5961,7 +5961,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm_2d(double __pyx_v_xl, double _
   __pyx_t_18 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/epi.py":156
+  /* "openptv2/algorithms/epi.py":156
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -5989,7 +5989,7 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm_2d(double __pyx_v_xl, double _
   __Pyx_XDECREF(__pyx_t_18);
   __Pyx_XDECREF(__pyx_t_19);
   __Pyx_XDECREF(__pyx_t_20);
-  __Pyx_AddTraceback("algorithms.epi.epi_mm_2d", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.epi.epi_mm_2d", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_ray_tracing);
@@ -6002,16 +6002,16 @@ static PyObject *__pyx_f_10algorithms_3epi_epi_mm_2d(double __pyx_v_xl, double _
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_3epi_5epi_mm_2d(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_3epi_5epi_mm_2d(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_3epi_4epi_mm_2d, "Compute 3D position for single-camera multimedia case.");
-static PyMethodDef __pyx_mdef_10algorithms_3epi_5epi_mm_2d = {"epi_mm_2d", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_3epi_5epi_mm_2d, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_3epi_4epi_mm_2d};
-static PyObject *__pyx_pw_10algorithms_3epi_5epi_mm_2d(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_3epi_4epi_mm_2d, "Compute 3D position for single-camera multimedia case.");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_3epi_5epi_mm_2d = {"epi_mm_2d", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_3epi_5epi_mm_2d, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_3epi_4epi_mm_2d};
+static PyObject *__pyx_pw_8openptv2_10algorithms_3epi_5epi_mm_2d(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -6105,11 +6105,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.epi.epi_mm_2d", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.epi.epi_mm_2d", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_3epi_4epi_mm_2d(__pyx_self, __pyx_v_xl, __pyx_v_yl, __pyx_v_cal, __pyx_v_mmp, __pyx_v_vpar);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_3epi_4epi_mm_2d(__pyx_self, __pyx_v_xl, __pyx_v_yl, __pyx_v_cal, __pyx_v_mmp, __pyx_v_vpar);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -6119,7 +6119,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_3epi_4epi_mm_2d(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_xl, double __pyx_v_yl, PyObject *__pyx_v_cal, PyObject *__pyx_v_mmp, PyObject *__pyx_v_vpar) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_3epi_4epi_mm_2d(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_xl, double __pyx_v_yl, PyObject *__pyx_v_cal, PyObject *__pyx_v_mmp, PyObject *__pyx_v_vpar) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -6128,7 +6128,7 @@ static PyObject *__pyx_pf_10algorithms_3epi_4epi_mm_2d(CYTHON_UNUSED PyObject *_
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("epi_mm_2d", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_3epi_epi_mm_2d(__pyx_v_xl, __pyx_v_yl, __pyx_v_cal, __pyx_v_mmp, __pyx_v_vpar, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 156, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_3epi_epi_mm_2d(__pyx_v_xl, __pyx_v_yl, __pyx_v_cal, __pyx_v_mmp, __pyx_v_vpar, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 156, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -6137,7 +6137,7 @@ static PyObject *__pyx_pf_10algorithms_3epi_4epi_mm_2d(CYTHON_UNUSED PyObject *_
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.epi.epi_mm_2d", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.epi.epi_mm_2d", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -6145,7 +6145,7 @@ static PyObject *__pyx_pf_10algorithms_3epi_4epi_mm_2d(CYTHON_UNUSED PyObject *_
   return __pyx_r;
 }
 
-/* "algorithms/epi.py":187
+/* "openptv2/algorithms/epi.py":187
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -6153,18 +6153,18 @@ static PyObject *__pyx_pf_10algorithms_3epi_4epi_mm_2d(CYTHON_UNUSED PyObject *_
  *     if a < b:
 */
 
-static PyObject *__pyx_pw_10algorithms_3epi_7_quality_ratio(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_3epi_7_quality_ratio(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static double __pyx_f_10algorithms_3epi__quality_ratio(double __pyx_v_a, double __pyx_v_b, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static double __pyx_f_8openptv2_10algorithms_3epi__quality_ratio(double __pyx_v_a, double __pyx_v_b, CYTHON_UNUSED int __pyx_skip_dispatch) {
   double __pyx_r;
   int __pyx_t_1;
 
-  /* "algorithms/epi.py":189
+  /* "openptv2/algorithms/epi.py":189
  * @cython.ccall
  * def _quality_ratio(a: cython.double, b: cython.double) -> cython.double:
  *     if a < b:             # <<<<<<<<<<<<<<
@@ -6174,7 +6174,7 @@ static double __pyx_f_10algorithms_3epi__quality_ratio(double __pyx_v_a, double 
   __pyx_t_1 = (__pyx_v_a < __pyx_v_b);
   if (__pyx_t_1) {
 
-    /* "algorithms/epi.py":190
+    /* "openptv2/algorithms/epi.py":190
  * def _quality_ratio(a: cython.double, b: cython.double) -> cython.double:
  *     if a < b:
  *         return a / b             # <<<<<<<<<<<<<<
@@ -6184,7 +6184,7 @@ static double __pyx_f_10algorithms_3epi__quality_ratio(double __pyx_v_a, double 
     __pyx_r = (__pyx_v_a / __pyx_v_b);
     goto __pyx_L0;
 
-    /* "algorithms/epi.py":189
+    /* "openptv2/algorithms/epi.py":189
  * @cython.ccall
  * def _quality_ratio(a: cython.double, b: cython.double) -> cython.double:
  *     if a < b:             # <<<<<<<<<<<<<<
@@ -6193,7 +6193,7 @@ static double __pyx_f_10algorithms_3epi__quality_ratio(double __pyx_v_a, double 
 */
   }
 
-  /* "algorithms/epi.py":191
+  /* "openptv2/algorithms/epi.py":191
  *     if a < b:
  *         return a / b
  *     return b / a             # <<<<<<<<<<<<<<
@@ -6203,7 +6203,7 @@ static double __pyx_f_10algorithms_3epi__quality_ratio(double __pyx_v_a, double 
   __pyx_r = (__pyx_v_b / __pyx_v_a);
   goto __pyx_L0;
 
-  /* "algorithms/epi.py":187
+  /* "openptv2/algorithms/epi.py":187
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -6217,15 +6217,15 @@ static double __pyx_f_10algorithms_3epi__quality_ratio(double __pyx_v_a, double 
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_3epi_7_quality_ratio(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_3epi_7_quality_ratio(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_10algorithms_3epi_7_quality_ratio = {"_quality_ratio", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_3epi_7_quality_ratio, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10algorithms_3epi_7_quality_ratio(PyObject *__pyx_self, 
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_3epi_7_quality_ratio = {"_quality_ratio", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_3epi_7_quality_ratio, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_8openptv2_10algorithms_3epi_7_quality_ratio(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -6295,11 +6295,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.epi._quality_ratio", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.epi._quality_ratio", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_3epi_6_quality_ratio(__pyx_self, __pyx_v_a, __pyx_v_b);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_3epi_6_quality_ratio(__pyx_self, __pyx_v_a, __pyx_v_b);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -6309,7 +6309,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_3epi_6_quality_ratio(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_a, double __pyx_v_b) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_3epi_6_quality_ratio(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_a, double __pyx_v_b) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   double __pyx_t_1;
@@ -6319,7 +6319,7 @@ static PyObject *__pyx_pf_10algorithms_3epi_6_quality_ratio(CYTHON_UNUSED PyObje
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("_quality_ratio", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_3epi__quality_ratio(__pyx_v_a, __pyx_v_b, 1); if (unlikely(__pyx_t_1 == ((double)-1) && PyErr_Occurred())) __PYX_ERR(0, 187, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_3epi__quality_ratio(__pyx_v_a, __pyx_v_b, 1); if (unlikely(__pyx_t_1 == ((double)-1) && PyErr_Occurred())) __PYX_ERR(0, 187, __pyx_L1_error)
   __pyx_t_2 = PyFloat_FromDouble(__pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 187, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_r = __pyx_t_2;
@@ -6329,7 +6329,7 @@ static PyObject *__pyx_pf_10algorithms_3epi_6_quality_ratio(CYTHON_UNUSED PyObje
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_2);
-  __Pyx_AddTraceback("algorithms.epi._quality_ratio", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.epi._quality_ratio", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -6337,7 +6337,7 @@ static PyObject *__pyx_pf_10algorithms_3epi_6_quality_ratio(CYTHON_UNUSED PyObje
   return __pyx_r;
 }
 
-/* "algorithms/epi.py":194
+/* "openptv2/algorithms/epi.py":194
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -6345,14 +6345,14 @@ static PyObject *__pyx_pf_10algorithms_3epi_6_quality_ratio(CYTHON_UNUSED PyObje
  *     num=cython.int, xa=cython.double, ya=cython.double, xb=cython.double, yb=cython.double,
 */
 
-static PyObject *__pyx_pw_10algorithms_3epi_9find_candidate(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_3epi_9find_candidate(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObject *__pyx_v_pix, int __pyx_v_num, double __pyx_v_xa, double __pyx_v_ya, double __pyx_v_xb, double __pyx_v_yb, int __pyx_v_n, int __pyx_v_nx, int __pyx_v_ny, int __pyx_v_sumg, PyObject *__pyx_v_cand_out, PyObject *__pyx_v_vpar, PyObject *__pyx_v_cpar, PyObject *__pyx_v_cal, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static int __pyx_f_8openptv2_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObject *__pyx_v_pix, int __pyx_v_num, double __pyx_v_xa, double __pyx_v_ya, double __pyx_v_xb, double __pyx_v_yb, int __pyx_v_n, int __pyx_v_nx, int __pyx_v_ny, int __pyx_v_sumg, PyObject *__pyx_v_cand_out, PyObject *__pyx_v_vpar, PyObject *__pyx_v_cpar, PyObject *__pyx_v_cal, CYTHON_UNUSED int __pyx_skip_dispatch) {
   double __pyx_v_tol_band_width;
   int __pyx_v_count;
   double __pyx_v_xmin;
@@ -6405,7 +6405,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("find_candidate", 0);
 
-  /* "algorithms/epi.py":227
+  /* "openptv2/algorithms/epi.py":227
  *         is outside sensor array.
  *     """
  *     from .trafo import correct_brown_affin             # <<<<<<<<<<<<<<
@@ -6414,7 +6414,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
 */
   {
     PyObject* const __pyx_imported_names[] = {__pyx_mstate_global->__pyx_n_u_correct_brown_affin};
-    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_trafo, __pyx_imported_names, 1, __pyx_mstate_global->__pyx_kp_u_algorithms_trafo, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 227, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_trafo, __pyx_imported_names, 1, __pyx_mstate_global->__pyx_kp_u_openptv2_algorithms_trafo, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 227, __pyx_L1_error)
   }
   __pyx_t_1 = __pyx_t_2;
   __Pyx_GOTREF(__pyx_t_1);
@@ -6435,7 +6435,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/epi.py":229
+  /* "openptv2/algorithms/epi.py":229
  *     from .trafo import correct_brown_affin
  * 
  *     tol_band_width = vpar.eps0             # <<<<<<<<<<<<<<
@@ -6448,7 +6448,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_tol_band_width = __pyx_t_5;
 
-  /* "algorithms/epi.py":230
+  /* "openptv2/algorithms/epi.py":230
  * 
  *     tol_band_width = vpar.eps0
  *     count = 0             # <<<<<<<<<<<<<<
@@ -6457,7 +6457,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
 */
   __pyx_v_count = 0;
 
-  /* "algorithms/epi.py":232
+  /* "openptv2/algorithms/epi.py":232
  *     count = 0
  * 
  *     xmin = -cpar.pix_x * cpar.imx / 2             # <<<<<<<<<<<<<<
@@ -6482,7 +6482,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_xmin = __pyx_t_5;
 
-  /* "algorithms/epi.py":233
+  /* "openptv2/algorithms/epi.py":233
  * 
  *     xmin = -cpar.pix_x * cpar.imx / 2
  *     xmax = cpar.pix_x * cpar.imx / 2             # <<<<<<<<<<<<<<
@@ -6504,7 +6504,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
   __pyx_v_xmax = __pyx_t_5;
 
-  /* "algorithms/epi.py":234
+  /* "openptv2/algorithms/epi.py":234
  *     xmin = -cpar.pix_x * cpar.imx / 2
  *     xmax = cpar.pix_x * cpar.imx / 2
  *     ymin = -cpar.pix_y * cpar.imy / 2             # <<<<<<<<<<<<<<
@@ -6529,7 +6529,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
   __pyx_v_ymin = __pyx_t_5;
 
-  /* "algorithms/epi.py":235
+  /* "openptv2/algorithms/epi.py":235
  *     xmax = cpar.pix_x * cpar.imx / 2
  *     ymin = -cpar.pix_y * cpar.imy / 2
  *     ymax = cpar.pix_y * cpar.imy / 2             # <<<<<<<<<<<<<<
@@ -6551,7 +6551,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_ymax = __pyx_t_5;
 
-  /* "algorithms/epi.py":236
+  /* "openptv2/algorithms/epi.py":236
  *     ymin = -cpar.pix_y * cpar.imy / 2
  *     ymax = cpar.pix_y * cpar.imy / 2
  *     xmin -= cal.int_par.xh             # <<<<<<<<<<<<<<
@@ -6573,7 +6573,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __pyx_v_xmin = __pyx_t_5;
 
-  /* "algorithms/epi.py":237
+  /* "openptv2/algorithms/epi.py":237
  *     ymax = cpar.pix_y * cpar.imy / 2
  *     xmin -= cal.int_par.xh
  *     ymin -= cal.int_par.yh             # <<<<<<<<<<<<<<
@@ -6595,7 +6595,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
   __pyx_v_ymin = __pyx_t_5;
 
-  /* "algorithms/epi.py":238
+  /* "openptv2/algorithms/epi.py":238
  *     xmin -= cal.int_par.xh
  *     ymin -= cal.int_par.yh
  *     xmax -= cal.int_par.xh             # <<<<<<<<<<<<<<
@@ -6617,7 +6617,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_xmax = __pyx_t_5;
 
-  /* "algorithms/epi.py":239
+  /* "openptv2/algorithms/epi.py":239
  *     ymin -= cal.int_par.yh
  *     xmax -= cal.int_par.xh
  *     ymax -= cal.int_par.yh             # <<<<<<<<<<<<<<
@@ -6639,7 +6639,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __pyx_v_ymax = __pyx_t_5;
 
-  /* "algorithms/epi.py":241
+  /* "openptv2/algorithms/epi.py":241
  *     ymax -= cal.int_par.yh
  * 
  *     ap = cal.added_par             # <<<<<<<<<<<<<<
@@ -6651,7 +6651,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
   __pyx_v_ap = __pyx_t_4;
   __pyx_t_4 = 0;
 
-  /* "algorithms/epi.py":242
+  /* "openptv2/algorithms/epi.py":242
  * 
  *     ap = cal.added_par
  *     xmin, ymin = correct_brown_affin(xmin, ymin, ap.k1, ap.k2, ap.k3,             # <<<<<<<<<<<<<<
@@ -6672,7 +6672,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
   __pyx_t_11 = __Pyx_PyObject_GetAttrStr(__pyx_v_ap, __pyx_mstate_global->__pyx_n_u_k3); if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 242, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_11);
 
-  /* "algorithms/epi.py":243
+  /* "openptv2/algorithms/epi.py":243
  *     ap = cal.added_par
  *     xmin, ymin = correct_brown_affin(xmin, ymin, ap.k1, ap.k2, ap.k3,
  *                                      ap.p1, ap.p2, ap.scx, ap.she)             # <<<<<<<<<<<<<<
@@ -6767,7 +6767,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
     __pyx_L4_unpacking_done:;
   }
 
-  /* "algorithms/epi.py":242
+  /* "openptv2/algorithms/epi.py":242
  * 
  *     ap = cal.added_par
  *     xmin, ymin = correct_brown_affin(xmin, ymin, ap.k1, ap.k2, ap.k3,             # <<<<<<<<<<<<<<
@@ -6781,7 +6781,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
   __pyx_v_xmin = __pyx_t_5;
   __pyx_v_ymin = __pyx_t_18;
 
-  /* "algorithms/epi.py":244
+  /* "openptv2/algorithms/epi.py":244
  *     xmin, ymin = correct_brown_affin(xmin, ymin, ap.k1, ap.k2, ap.k3,
  *                                      ap.p1, ap.p2, ap.scx, ap.she)
  *     xmax, ymax = correct_brown_affin(xmax, ymax, ap.k1, ap.k2, ap.k3,             # <<<<<<<<<<<<<<
@@ -6802,7 +6802,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
   __pyx_t_10 = __Pyx_PyObject_GetAttrStr(__pyx_v_ap, __pyx_mstate_global->__pyx_n_u_k3); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 244, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_10);
 
-  /* "algorithms/epi.py":245
+  /* "openptv2/algorithms/epi.py":245
  *                                      ap.p1, ap.p2, ap.scx, ap.she)
  *     xmax, ymax = correct_brown_affin(xmax, ymax, ap.k1, ap.k2, ap.k3,
  *                                      ap.p1, ap.p2, ap.scx, ap.she)             # <<<<<<<<<<<<<<
@@ -6897,7 +6897,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
     __pyx_L6_unpacking_done:;
   }
 
-  /* "algorithms/epi.py":244
+  /* "openptv2/algorithms/epi.py":244
  *     xmin, ymin = correct_brown_affin(xmin, ymin, ap.k1, ap.k2, ap.k3,
  *                                      ap.p1, ap.p2, ap.scx, ap.she)
  *     xmax, ymax = correct_brown_affin(xmax, ymax, ap.k1, ap.k2, ap.k3,             # <<<<<<<<<<<<<<
@@ -6911,7 +6911,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
   __pyx_v_xmax = __pyx_t_18;
   __pyx_v_ymax = __pyx_t_5;
 
-  /* "algorithms/epi.py":247
+  /* "openptv2/algorithms/epi.py":247
  *                                      ap.p1, ap.p2, ap.scx, ap.she)
  * 
  *     if xa == xb:             # <<<<<<<<<<<<<<
@@ -6921,7 +6921,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
   __pyx_t_19 = (__pyx_v_xa == __pyx_v_xb);
   if (__pyx_t_19) {
 
-    /* "algorithms/epi.py":248
+    /* "openptv2/algorithms/epi.py":248
  * 
  *     if xa == xb:
  *         xb += 1e-10             # <<<<<<<<<<<<<<
@@ -6930,7 +6930,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
 */
     __pyx_v_xb = (__pyx_v_xb + 1e-10);
 
-    /* "algorithms/epi.py":247
+    /* "openptv2/algorithms/epi.py":247
  *                                      ap.p1, ap.p2, ap.scx, ap.she)
  * 
  *     if xa == xb:             # <<<<<<<<<<<<<<
@@ -6939,7 +6939,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
 */
   }
 
-  /* "algorithms/epi.py":250
+  /* "openptv2/algorithms/epi.py":250
  *         xb += 1e-10
  * 
  *     m = (yb - ya) / (xb - xa)             # <<<<<<<<<<<<<<
@@ -6948,7 +6948,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
 */
   __pyx_v_m = ((__pyx_v_yb - __pyx_v_ya) / (__pyx_v_xb - __pyx_v_xa));
 
-  /* "algorithms/epi.py":251
+  /* "openptv2/algorithms/epi.py":251
  * 
  *     m = (yb - ya) / (xb - xa)
  *     b = ya - m * xa             # <<<<<<<<<<<<<<
@@ -6957,7 +6957,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
 */
   __pyx_v_b = (__pyx_v_ya - (__pyx_v_m * __pyx_v_xa));
 
-  /* "algorithms/epi.py":253
+  /* "openptv2/algorithms/epi.py":253
  *     b = ya - m * xa
  * 
  *     if xa > xb:             # <<<<<<<<<<<<<<
@@ -6967,7 +6967,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
   __pyx_t_19 = (__pyx_v_xa > __pyx_v_xb);
   if (__pyx_t_19) {
 
-    /* "algorithms/epi.py":254
+    /* "openptv2/algorithms/epi.py":254
  * 
  *     if xa > xb:
  *         xa, xb = xb, xa             # <<<<<<<<<<<<<<
@@ -6979,7 +6979,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
     __pyx_v_xa = __pyx_t_5;
     __pyx_v_xb = __pyx_t_18;
 
-    /* "algorithms/epi.py":253
+    /* "openptv2/algorithms/epi.py":253
  *     b = ya - m * xa
  * 
  *     if xa > xb:             # <<<<<<<<<<<<<<
@@ -6988,7 +6988,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
 */
   }
 
-  /* "algorithms/epi.py":255
+  /* "openptv2/algorithms/epi.py":255
  *     if xa > xb:
  *         xa, xb = xb, xa
  *     if ya > yb:             # <<<<<<<<<<<<<<
@@ -6998,7 +6998,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
   __pyx_t_19 = (__pyx_v_ya > __pyx_v_yb);
   if (__pyx_t_19) {
 
-    /* "algorithms/epi.py":256
+    /* "openptv2/algorithms/epi.py":256
  *         xa, xb = xb, xa
  *     if ya > yb:
  *         ya, yb = yb, ya             # <<<<<<<<<<<<<<
@@ -7010,7 +7010,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
     __pyx_v_ya = __pyx_t_18;
     __pyx_v_yb = __pyx_t_5;
 
-    /* "algorithms/epi.py":255
+    /* "openptv2/algorithms/epi.py":255
  *     if xa > xb:
  *         xa, xb = xb, xa
  *     if ya > yb:             # <<<<<<<<<<<<<<
@@ -7019,7 +7019,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
 */
   }
 
-  /* "algorithms/epi.py":258
+  /* "openptv2/algorithms/epi.py":258
  *         ya, yb = yb, ya
  * 
  *     if xb <= xmin or xa >= xmax or yb <= ymin or ya >= ymax:             # <<<<<<<<<<<<<<
@@ -7049,7 +7049,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
   __pyx_L11_bool_binop_done:;
   if (__pyx_t_19) {
 
-    /* "algorithms/epi.py":259
+    /* "openptv2/algorithms/epi.py":259
  * 
  *     if xb <= xmin or xa >= xmax or yb <= ymin or ya >= ymax:
  *         return -1             # <<<<<<<<<<<<<<
@@ -7059,7 +7059,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
     __pyx_r = -1;
     goto __pyx_L0;
 
-    /* "algorithms/epi.py":258
+    /* "openptv2/algorithms/epi.py":258
  *         ya, yb = yb, ya
  * 
  *     if xb <= xmin or xa >= xmax or yb <= ymin or ya >= ymax:             # <<<<<<<<<<<<<<
@@ -7068,7 +7068,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
 */
   }
 
-  /* "algorithms/epi.py":261
+  /* "openptv2/algorithms/epi.py":261
  *         return -1
  * 
  *     j0 = num // 2             # <<<<<<<<<<<<<<
@@ -7077,7 +7077,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
 */
   __pyx_v_j0 = (__pyx_v_num / 2);
 
-  /* "algorithms/epi.py":262
+  /* "openptv2/algorithms/epi.py":262
  * 
  *     j0 = num // 2
  *     dj = num // 4             # <<<<<<<<<<<<<<
@@ -7086,7 +7086,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
 */
   __pyx_v_dj = (__pyx_v_num / 4);
 
-  /* "algorithms/epi.py":263
+  /* "openptv2/algorithms/epi.py":263
  *     j0 = num // 2
  *     dj = num // 4
  *     while dj > 1:             # <<<<<<<<<<<<<<
@@ -7097,7 +7097,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
     __pyx_t_19 = (__pyx_v_dj > 1);
     if (!__pyx_t_19) break;
 
-    /* "algorithms/epi.py":264
+    /* "openptv2/algorithms/epi.py":264
  *     dj = num // 4
  *     while dj > 1:
  *         if crd[j0].x < (xa - tol_band_width):             # <<<<<<<<<<<<<<
@@ -7118,7 +7118,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     if (__pyx_t_19) {
 
-      /* "algorithms/epi.py":265
+      /* "openptv2/algorithms/epi.py":265
  *     while dj > 1:
  *         if crd[j0].x < (xa - tol_band_width):
  *             j0 += dj             # <<<<<<<<<<<<<<
@@ -7127,7 +7127,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
 */
       __pyx_v_j0 = (__pyx_v_j0 + __pyx_v_dj);
 
-      /* "algorithms/epi.py":264
+      /* "openptv2/algorithms/epi.py":264
  *     dj = num // 4
  *     while dj > 1:
  *         if crd[j0].x < (xa - tol_band_width):             # <<<<<<<<<<<<<<
@@ -7137,7 +7137,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
       goto __pyx_L17;
     }
 
-    /* "algorithms/epi.py":267
+    /* "openptv2/algorithms/epi.py":267
  *             j0 += dj
  *         else:
  *             j0 -= dj             # <<<<<<<<<<<<<<
@@ -7149,7 +7149,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
     }
     __pyx_L17:;
 
-    /* "algorithms/epi.py":268
+    /* "openptv2/algorithms/epi.py":268
  *         else:
  *             j0 -= dj
  *         dj //= 2             # <<<<<<<<<<<<<<
@@ -7159,7 +7159,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
     __pyx_v_dj = (__pyx_v_dj / 2);
   }
 
-  /* "algorithms/epi.py":270
+  /* "openptv2/algorithms/epi.py":270
  *         dj //= 2
  * 
  *     j0 -= 12             # <<<<<<<<<<<<<<
@@ -7168,7 +7168,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
 */
   __pyx_v_j0 = (__pyx_v_j0 - 12);
 
-  /* "algorithms/epi.py":271
+  /* "openptv2/algorithms/epi.py":271
  * 
  *     j0 -= 12
  *     if j0 < 0:             # <<<<<<<<<<<<<<
@@ -7178,7 +7178,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
   __pyx_t_19 = (__pyx_v_j0 < 0);
   if (__pyx_t_19) {
 
-    /* "algorithms/epi.py":272
+    /* "openptv2/algorithms/epi.py":272
  *     j0 -= 12
  *     if j0 < 0:
  *         j0 = 0             # <<<<<<<<<<<<<<
@@ -7187,7 +7187,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
 */
     __pyx_v_j0 = 0;
 
-    /* "algorithms/epi.py":271
+    /* "openptv2/algorithms/epi.py":271
  * 
  *     j0 -= 12
  *     if j0 < 0:             # <<<<<<<<<<<<<<
@@ -7196,7 +7196,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
 */
   }
 
-  /* "algorithms/epi.py":274
+  /* "openptv2/algorithms/epi.py":274
  *         j0 = 0
  * 
  *     for j in range(j0, num):             # <<<<<<<<<<<<<<
@@ -7208,7 +7208,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
   for (__pyx_t_23 = __pyx_v_j0; __pyx_t_23 < __pyx_t_22; __pyx_t_23+=1) {
     __pyx_v_j = __pyx_t_23;
 
-    /* "algorithms/epi.py":275
+    /* "openptv2/algorithms/epi.py":275
  * 
  *     for j in range(j0, num):
  *         if crd[j].x > xb + tol_band_width:             # <<<<<<<<<<<<<<
@@ -7229,7 +7229,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     if (__pyx_t_19) {
 
-      /* "algorithms/epi.py":276
+      /* "openptv2/algorithms/epi.py":276
  *     for j in range(j0, num):
  *         if crd[j].x > xb + tol_band_width:
  *             return count             # <<<<<<<<<<<<<<
@@ -7239,7 +7239,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
       __pyx_r = __pyx_v_count;
       goto __pyx_L0;
 
-      /* "algorithms/epi.py":275
+      /* "openptv2/algorithms/epi.py":275
  * 
  *     for j in range(j0, num):
  *         if crd[j].x > xb + tol_band_width:             # <<<<<<<<<<<<<<
@@ -7248,7 +7248,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
 */
     }
 
-    /* "algorithms/epi.py":278
+    /* "openptv2/algorithms/epi.py":278
  *             return count
  * 
  *         if crd[j].y <= ya - tol_band_width or crd[j].y >= yb + tol_band_width:             # <<<<<<<<<<<<<<
@@ -7288,7 +7288,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
     __pyx_L23_bool_binop_done:;
     if (__pyx_t_19) {
 
-      /* "algorithms/epi.py":279
+      /* "openptv2/algorithms/epi.py":279
  * 
  *         if crd[j].y <= ya - tol_band_width or crd[j].y >= yb + tol_band_width:
  *             continue             # <<<<<<<<<<<<<<
@@ -7297,7 +7297,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
 */
       goto __pyx_L19_continue;
 
-      /* "algorithms/epi.py":278
+      /* "openptv2/algorithms/epi.py":278
  *             return count
  * 
  *         if crd[j].y <= ya - tol_band_width or crd[j].y >= yb + tol_band_width:             # <<<<<<<<<<<<<<
@@ -7306,7 +7306,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
 */
     }
 
-    /* "algorithms/epi.py":280
+    /* "openptv2/algorithms/epi.py":280
  *         if crd[j].y <= ya - tol_band_width or crd[j].y >= yb + tol_band_width:
  *             continue
  *         if crd[j].x <= xa - tol_band_width or crd[j].x >= xb + tol_band_width:             # <<<<<<<<<<<<<<
@@ -7346,7 +7346,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
     __pyx_L26_bool_binop_done:;
     if (__pyx_t_19) {
 
-      /* "algorithms/epi.py":281
+      /* "openptv2/algorithms/epi.py":281
  *             continue
  *         if crd[j].x <= xa - tol_band_width or crd[j].x >= xb + tol_band_width:
  *             continue             # <<<<<<<<<<<<<<
@@ -7355,7 +7355,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
 */
       goto __pyx_L19_continue;
 
-      /* "algorithms/epi.py":280
+      /* "openptv2/algorithms/epi.py":280
  *         if crd[j].y <= ya - tol_band_width or crd[j].y >= yb + tol_band_width:
  *             continue
  *         if crd[j].x <= xa - tol_band_width or crd[j].x >= xb + tol_band_width:             # <<<<<<<<<<<<<<
@@ -7364,7 +7364,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
 */
     }
 
-    /* "algorithms/epi.py":283
+    /* "openptv2/algorithms/epi.py":283
  *             continue
  * 
  *         d = abs((crd[j].y - m * crd[j].x - b) / c_sqrt(m * m + 1))             # <<<<<<<<<<<<<<
@@ -7410,7 +7410,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __pyx_v_d = __pyx_t_5;
 
-    /* "algorithms/epi.py":284
+    /* "openptv2/algorithms/epi.py":284
  * 
  *         d = abs((crd[j].y - m * crd[j].x - b) / c_sqrt(m * m + 1))
  *         if d >= tol_band_width:             # <<<<<<<<<<<<<<
@@ -7420,7 +7420,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
     __pyx_t_19 = (__pyx_v_d >= __pyx_v_tol_band_width);
     if (__pyx_t_19) {
 
-      /* "algorithms/epi.py":285
+      /* "openptv2/algorithms/epi.py":285
  *         d = abs((crd[j].y - m * crd[j].x - b) / c_sqrt(m * m + 1))
  *         if d >= tol_band_width:
  *             continue             # <<<<<<<<<<<<<<
@@ -7429,7 +7429,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
 */
       goto __pyx_L19_continue;
 
-      /* "algorithms/epi.py":284
+      /* "openptv2/algorithms/epi.py":284
  * 
  *         d = abs((crd[j].y - m * crd[j].x - b) / c_sqrt(m * m + 1))
  *         if d >= tol_band_width:             # <<<<<<<<<<<<<<
@@ -7438,7 +7438,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
 */
     }
 
-    /* "algorithms/epi.py":287
+    /* "openptv2/algorithms/epi.py":287
  *             continue
  * 
  *         p2 = crd[j].pnr             # <<<<<<<<<<<<<<
@@ -7454,7 +7454,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
     __pyx_v_p2 = __pyx_t_24;
 
-    /* "algorithms/epi.py":288
+    /* "openptv2/algorithms/epi.py":288
  * 
  *         p2 = crd[j].pnr
  *         if p2 >= num:             # <<<<<<<<<<<<<<
@@ -7464,7 +7464,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
     __pyx_t_19 = (__pyx_v_p2 >= __pyx_v_num);
     if (__pyx_t_19) {
 
-      /* "algorithms/epi.py":289
+      /* "openptv2/algorithms/epi.py":289
  *         p2 = crd[j].pnr
  *         if p2 >= num:
  *             return -1             # <<<<<<<<<<<<<<
@@ -7474,7 +7474,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
       __pyx_r = -1;
       goto __pyx_L0;
 
-      /* "algorithms/epi.py":288
+      /* "openptv2/algorithms/epi.py":288
  * 
  *         p2 = crd[j].pnr
  *         if p2 >= num:             # <<<<<<<<<<<<<<
@@ -7483,7 +7483,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
 */
     }
 
-    /* "algorithms/epi.py":291
+    /* "openptv2/algorithms/epi.py":291
  *             return -1
  * 
  *         qn = _quality_ratio(n, pix[p2].n)             # <<<<<<<<<<<<<<
@@ -7497,10 +7497,10 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
     __pyx_t_5 = __Pyx_PyFloat_AsDouble(__pyx_t_1); if (unlikely((__pyx_t_5 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 291, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_18 = __pyx_f_10algorithms_3epi__quality_ratio(__pyx_v_n, __pyx_t_5, 0); if (unlikely(__pyx_t_18 == ((double)-1) && PyErr_Occurred())) __PYX_ERR(0, 291, __pyx_L1_error)
+    __pyx_t_18 = __pyx_f_8openptv2_10algorithms_3epi__quality_ratio(__pyx_v_n, __pyx_t_5, 0); if (unlikely(__pyx_t_18 == ((double)-1) && PyErr_Occurred())) __PYX_ERR(0, 291, __pyx_L1_error)
     __pyx_v_qn = __pyx_t_18;
 
-    /* "algorithms/epi.py":292
+    /* "openptv2/algorithms/epi.py":292
  * 
  *         qn = _quality_ratio(n, pix[p2].n)
  *         qnx = _quality_ratio(nx, pix[p2].nx)             # <<<<<<<<<<<<<<
@@ -7514,10 +7514,10 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __pyx_t_18 = __Pyx_PyFloat_AsDouble(__pyx_t_7); if (unlikely((__pyx_t_18 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 292, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    __pyx_t_5 = __pyx_f_10algorithms_3epi__quality_ratio(__pyx_v_nx, __pyx_t_18, 0); if (unlikely(__pyx_t_5 == ((double)-1) && PyErr_Occurred())) __PYX_ERR(0, 292, __pyx_L1_error)
+    __pyx_t_5 = __pyx_f_8openptv2_10algorithms_3epi__quality_ratio(__pyx_v_nx, __pyx_t_18, 0); if (unlikely(__pyx_t_5 == ((double)-1) && PyErr_Occurred())) __PYX_ERR(0, 292, __pyx_L1_error)
     __pyx_v_qnx = __pyx_t_5;
 
-    /* "algorithms/epi.py":293
+    /* "openptv2/algorithms/epi.py":293
  *         qn = _quality_ratio(n, pix[p2].n)
  *         qnx = _quality_ratio(nx, pix[p2].nx)
  *         qny = _quality_ratio(ny, pix[p2].ny)             # <<<<<<<<<<<<<<
@@ -7531,10 +7531,10 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
     __pyx_t_5 = __Pyx_PyFloat_AsDouble(__pyx_t_1); if (unlikely((__pyx_t_5 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 293, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_18 = __pyx_f_10algorithms_3epi__quality_ratio(__pyx_v_ny, __pyx_t_5, 0); if (unlikely(__pyx_t_18 == ((double)-1) && PyErr_Occurred())) __PYX_ERR(0, 293, __pyx_L1_error)
+    __pyx_t_18 = __pyx_f_8openptv2_10algorithms_3epi__quality_ratio(__pyx_v_ny, __pyx_t_5, 0); if (unlikely(__pyx_t_18 == ((double)-1) && PyErr_Occurred())) __PYX_ERR(0, 293, __pyx_L1_error)
     __pyx_v_qny = __pyx_t_18;
 
-    /* "algorithms/epi.py":294
+    /* "openptv2/algorithms/epi.py":294
  *         qnx = _quality_ratio(nx, pix[p2].nx)
  *         qny = _quality_ratio(ny, pix[p2].ny)
  *         qsumg = _quality_ratio(sumg, pix[p2].sumg)             # <<<<<<<<<<<<<<
@@ -7548,10 +7548,10 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __pyx_t_18 = __Pyx_PyFloat_AsDouble(__pyx_t_7); if (unlikely((__pyx_t_18 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 294, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    __pyx_t_5 = __pyx_f_10algorithms_3epi__quality_ratio(__pyx_v_sumg, __pyx_t_18, 0); if (unlikely(__pyx_t_5 == ((double)-1) && PyErr_Occurred())) __PYX_ERR(0, 294, __pyx_L1_error)
+    __pyx_t_5 = __pyx_f_8openptv2_10algorithms_3epi__quality_ratio(__pyx_v_sumg, __pyx_t_18, 0); if (unlikely(__pyx_t_5 == ((double)-1) && PyErr_Occurred())) __PYX_ERR(0, 294, __pyx_L1_error)
     __pyx_v_qsumg = __pyx_t_5;
 
-    /* "algorithms/epi.py":296
+    /* "openptv2/algorithms/epi.py":296
  *         qsumg = _quality_ratio(sumg, pix[p2].sumg)
  * 
  *         if qn < vpar.cn or qnx < vpar.cnx or qny < vpar.cny or qsumg <= vpar.csumg:             # <<<<<<<<<<<<<<
@@ -7613,7 +7613,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
     __pyx_L31_bool_binop_done:;
     if (__pyx_t_19) {
 
-      /* "algorithms/epi.py":297
+      /* "openptv2/algorithms/epi.py":297
  * 
  *         if qn < vpar.cn or qnx < vpar.cnx or qny < vpar.cny or qsumg <= vpar.csumg:
  *             continue             # <<<<<<<<<<<<<<
@@ -7622,7 +7622,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
 */
       goto __pyx_L19_continue;
 
-      /* "algorithms/epi.py":296
+      /* "openptv2/algorithms/epi.py":296
  *         qsumg = _quality_ratio(sumg, pix[p2].sumg)
  * 
  *         if qn < vpar.cn or qnx < vpar.cnx or qny < vpar.cny or qsumg <= vpar.csumg:             # <<<<<<<<<<<<<<
@@ -7631,7 +7631,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
 */
     }
 
-    /* "algorithms/epi.py":298
+    /* "openptv2/algorithms/epi.py":298
  *         if qn < vpar.cn or qnx < vpar.cnx or qny < vpar.cny or qsumg <= vpar.csumg:
  *             continue
  *         if count >= MAXCAND:             # <<<<<<<<<<<<<<
@@ -7649,7 +7649,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     if (__pyx_t_19) {
 
-      /* "algorithms/epi.py":299
+      /* "openptv2/algorithms/epi.py":299
  *             continue
  *         if count >= MAXCAND:
  *             return count             # <<<<<<<<<<<<<<
@@ -7659,7 +7659,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
       __pyx_r = __pyx_v_count;
       goto __pyx_L0;
 
-      /* "algorithms/epi.py":298
+      /* "openptv2/algorithms/epi.py":298
  *         if qn < vpar.cn or qnx < vpar.cnx or qny < vpar.cny or qsumg <= vpar.csumg:
  *             continue
  *         if count >= MAXCAND:             # <<<<<<<<<<<<<<
@@ -7668,7 +7668,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
 */
     }
 
-    /* "algorithms/epi.py":301
+    /* "openptv2/algorithms/epi.py":301
  *             return count
  * 
  *         corr = (4 * qsumg + 2 * qn + qnx + qny)             # <<<<<<<<<<<<<<
@@ -7677,7 +7677,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
 */
     __pyx_v_corr = ((((4.0 * __pyx_v_qsumg) + (2.0 * __pyx_v_qn)) + __pyx_v_qnx) + __pyx_v_qny);
 
-    /* "algorithms/epi.py":302
+    /* "openptv2/algorithms/epi.py":302
  * 
  *         corr = (4 * qsumg + 2 * qn + qnx + qny)
  *         corr *= float(sumg + pix[p2].sumg)             # <<<<<<<<<<<<<<
@@ -7699,7 +7699,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __pyx_v_corr = (__pyx_v_corr * __pyx_t_5);
 
-    /* "algorithms/epi.py":304
+    /* "openptv2/algorithms/epi.py":304
  *         corr *= float(sumg + pix[p2].sumg)
  * 
  *         cand_out.append(Candidate(pnr=j, tol=d, corr=corr))             # <<<<<<<<<<<<<<
@@ -7747,7 +7747,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
     __pyx_t_25 = __Pyx_PyObject_Append(__pyx_v_cand_out, __pyx_t_1); if (unlikely(__pyx_t_25 == ((int)-1))) __PYX_ERR(0, 304, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "algorithms/epi.py":305
+    /* "openptv2/algorithms/epi.py":305
  * 
  *         cand_out.append(Candidate(pnr=j, tol=d, corr=corr))
  *         count += 1             # <<<<<<<<<<<<<<
@@ -7758,7 +7758,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
     __pyx_L19_continue:;
   }
 
-  /* "algorithms/epi.py":307
+  /* "openptv2/algorithms/epi.py":307
  *         count += 1
  * 
  *     return count             # <<<<<<<<<<<<<<
@@ -7768,7 +7768,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
   __pyx_r = __pyx_v_count;
   goto __pyx_L0;
 
-  /* "algorithms/epi.py":194
+  /* "openptv2/algorithms/epi.py":194
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -7790,7 +7790,7 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
   __Pyx_XDECREF(__pyx_t_13);
   __Pyx_XDECREF(__pyx_t_14);
   __Pyx_XDECREF(__pyx_t_15);
-  __Pyx_AddTraceback("algorithms.epi.find_candidate", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.epi.find_candidate", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = -1;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_correct_brown_affin);
@@ -7800,16 +7800,16 @@ static int __pyx_f_10algorithms_3epi_find_candidate(PyObject *__pyx_v_crd, PyObj
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_3epi_9find_candidate(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_3epi_9find_candidate(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_3epi_8find_candidate, "Find candidates along epipolar line.\n\n    Matches C find_candidate exactly.\n\n    Args:\n        crd: x-sorted Coord2d array of detected points (flat-image coords).\n        pix: Target array indexed by pnr.\n        num: number of particles in image.\n        xa, ya, xb, yb: endpoints of epipolar line [mm].\n        n, nx, ny, sumg: typical target properties.\n        cand_out: output list of Candidate (appended to).\n        vpar: VolumePar.\n        cpar: ControlPar.\n        cal: Calibration of the camera seeing candidates.\n\n    Returns:\n        int count - number of candidates found. Negative if epipolar line\n        is outside sensor array.\n    ");
-static PyMethodDef __pyx_mdef_10algorithms_3epi_9find_candidate = {"find_candidate", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_3epi_9find_candidate, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_3epi_8find_candidate};
-static PyObject *__pyx_pw_10algorithms_3epi_9find_candidate(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_3epi_8find_candidate, "Find candidates along epipolar line.\n\n    Matches C find_candidate exactly.\n\n    Args:\n        crd: x-sorted Coord2d array of detected points (flat-image coords).\n        pix: Target array indexed by pnr.\n        num: number of particles in image.\n        xa, ya, xb, yb: endpoints of epipolar line [mm].\n        n, nx, ny, sumg: typical target properties.\n        cand_out: output list of Candidate (appended to).\n        vpar: VolumePar.\n        cpar: ControlPar.\n        cal: Calibration of the camera seeing candidates.\n\n    Returns:\n        int count - number of candidates found. Negative if epipolar line\n        is outside sensor array.\n    ");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_3epi_9find_candidate = {"find_candidate", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_3epi_9find_candidate, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_3epi_8find_candidate};
+static PyObject *__pyx_pw_8openptv2_10algorithms_3epi_9find_candidate(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -7983,11 +7983,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.epi.find_candidate", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.epi.find_candidate", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_3epi_8find_candidate(__pyx_self, __pyx_v_crd, __pyx_v_pix, __pyx_v_num, __pyx_v_xa, __pyx_v_ya, __pyx_v_xb, __pyx_v_yb, __pyx_v_n, __pyx_v_nx, __pyx_v_ny, __pyx_v_sumg, __pyx_v_cand_out, __pyx_v_vpar, __pyx_v_cpar, __pyx_v_cal);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_3epi_8find_candidate(__pyx_self, __pyx_v_crd, __pyx_v_pix, __pyx_v_num, __pyx_v_xa, __pyx_v_ya, __pyx_v_xb, __pyx_v_yb, __pyx_v_n, __pyx_v_nx, __pyx_v_ny, __pyx_v_sumg, __pyx_v_cand_out, __pyx_v_vpar, __pyx_v_cpar, __pyx_v_cal);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -7997,7 +7997,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_3epi_8find_candidate(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_crd, PyObject *__pyx_v_pix, int __pyx_v_num, double __pyx_v_xa, double __pyx_v_ya, double __pyx_v_xb, double __pyx_v_yb, int __pyx_v_n, int __pyx_v_nx, int __pyx_v_ny, int __pyx_v_sumg, PyObject *__pyx_v_cand_out, PyObject *__pyx_v_vpar, PyObject *__pyx_v_cpar, PyObject *__pyx_v_cal) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_3epi_8find_candidate(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_crd, PyObject *__pyx_v_pix, int __pyx_v_num, double __pyx_v_xa, double __pyx_v_ya, double __pyx_v_xb, double __pyx_v_yb, int __pyx_v_n, int __pyx_v_nx, int __pyx_v_ny, int __pyx_v_sumg, PyObject *__pyx_v_cand_out, PyObject *__pyx_v_vpar, PyObject *__pyx_v_cpar, PyObject *__pyx_v_cal) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   int __pyx_t_1;
@@ -8007,7 +8007,7 @@ static PyObject *__pyx_pf_10algorithms_3epi_8find_candidate(CYTHON_UNUSED PyObje
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("find_candidate", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_3epi_find_candidate(__pyx_v_crd, __pyx_v_pix, __pyx_v_num, __pyx_v_xa, __pyx_v_ya, __pyx_v_xb, __pyx_v_yb, __pyx_v_n, __pyx_v_nx, __pyx_v_ny, __pyx_v_sumg, __pyx_v_cand_out, __pyx_v_vpar, __pyx_v_cpar, __pyx_v_cal, 1); if (unlikely(__pyx_t_1 == ((int)-1) && PyErr_Occurred())) __PYX_ERR(0, 194, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_3epi_find_candidate(__pyx_v_crd, __pyx_v_pix, __pyx_v_num, __pyx_v_xa, __pyx_v_ya, __pyx_v_xb, __pyx_v_yb, __pyx_v_n, __pyx_v_nx, __pyx_v_ny, __pyx_v_sumg, __pyx_v_cand_out, __pyx_v_vpar, __pyx_v_cpar, __pyx_v_cal, 1); if (unlikely(__pyx_t_1 == ((int)-1) && PyErr_Occurred())) __PYX_ERR(0, 194, __pyx_L1_error)
   __pyx_t_2 = __Pyx_PyLong_From_int(__pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 194, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_r = __pyx_t_2;
@@ -8017,7 +8017,7 @@ static PyObject *__pyx_pf_10algorithms_3epi_8find_candidate(CYTHON_UNUSED PyObje
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_2);
-  __Pyx_AddTraceback("algorithms.epi.find_candidate", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.epi.find_candidate", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -8025,7 +8025,7 @@ static PyObject *__pyx_pf_10algorithms_3epi_8find_candidate(CYTHON_UNUSED PyObje
   return __pyx_r;
 }
 
-/* "algorithms/epi.py":310
+/* "openptv2/algorithms/epi.py":310
  * 
  * 
  * def is_compiled() -> bool:             # <<<<<<<<<<<<<<
@@ -8034,28 +8034,28 @@ static PyObject *__pyx_pf_10algorithms_3epi_8find_candidate(CYTHON_UNUSED PyObje
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_3epi_11is_compiled(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_3epi_10is_compiled, "Return whether this module is compiled to C.");
-static PyMethodDef __pyx_mdef_10algorithms_3epi_11is_compiled = {"is_compiled", (PyCFunction)__pyx_pw_10algorithms_3epi_11is_compiled, METH_NOARGS, __pyx_doc_10algorithms_3epi_10is_compiled};
-static PyObject *__pyx_pw_10algorithms_3epi_11is_compiled(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_8openptv2_10algorithms_3epi_11is_compiled(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_3epi_10is_compiled, "Return whether this module is compiled to C.");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_3epi_11is_compiled = {"is_compiled", (PyCFunction)__pyx_pw_8openptv2_10algorithms_3epi_11is_compiled, METH_NOARGS, __pyx_doc_8openptv2_10algorithms_3epi_10is_compiled};
+static PyObject *__pyx_pw_8openptv2_10algorithms_3epi_11is_compiled(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused) {
   CYTHON_UNUSED PyObject *const *__pyx_kwvalues;
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("is_compiled (wrapper)", 0);
   __pyx_kwvalues = __Pyx_KwValues_VARARGS(__pyx_args, __pyx_nargs);
-  __pyx_r = __pyx_pf_10algorithms_3epi_10is_compiled(__pyx_self);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_3epi_10is_compiled(__pyx_self);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_3epi_10is_compiled(CYTHON_UNUSED PyObject *__pyx_self) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_3epi_10is_compiled(CYTHON_UNUSED PyObject *__pyx_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("is_compiled", 0);
 
-  /* "algorithms/epi.py":312
+  /* "openptv2/algorithms/epi.py":312
  * def is_compiled() -> bool:
  *     """Return whether this module is compiled to C."""
  *     return cython.compiled             # <<<<<<<<<<<<<<
@@ -8065,7 +8065,7 @@ static PyObject *__pyx_pf_10algorithms_3epi_10is_compiled(CYTHON_UNUSED PyObject
   __pyx_r = Py_True;
   goto __pyx_L0;
 
-  /* "algorithms/epi.py":310
+  /* "openptv2/algorithms/epi.py":310
  * 
  * 
  * def is_compiled() -> bool:             # <<<<<<<<<<<<<<
@@ -8410,13 +8410,13 @@ __Pyx_RefNannySetupContext("PyInit_epi", 0);
   if (__Pyx_InitConstants(__pyx_mstate) < (0)) __PYX_ERR(0, 1, __pyx_L1_error)
   stringtab_initialized = 1;
   if (__Pyx_InitGlobals() < (0)) __PYX_ERR(0, 1, __pyx_L1_error)
-  if (__pyx_module_is_main_algorithms__epi) {
+  if (__pyx_module_is_main_openptv2__algorithms__epi) {
     if (PyObject_SetAttr(__pyx_m, __pyx_mstate_global->__pyx_n_u_name, __pyx_mstate_global->__pyx_n_u_main) < (0)) __PYX_ERR(0, 1, __pyx_L1_error)
   }
   {
     PyObject *modules = PyImport_GetModuleDict(); if (unlikely(!modules)) __PYX_ERR(0, 1, __pyx_L1_error)
-    if (!PyDict_GetItemString(modules, "algorithms.epi")) {
-      if (unlikely((PyDict_SetItemString(modules, "algorithms.epi", __pyx_m) < 0))) __PYX_ERR(0, 1, __pyx_L1_error)
+    if (!PyDict_GetItemString(modules, "openptv2.algorithms.epi")) {
+      if (unlikely((PyDict_SetItemString(modules, "openptv2.algorithms.epi", __pyx_m) < 0))) __PYX_ERR(0, 1, __pyx_L1_error)
     }
   }
   /*--- Builtin init code ---*/
@@ -8434,7 +8434,7 @@ __Pyx_RefNannySetupContext("PyInit_epi", 0);
   (void)__Pyx_modinit_function_import_code(__pyx_mstate);
   /*--- Execution code ---*/
 
-  /* "algorithms/epi.py":9
+  /* "openptv2/algorithms/epi.py":9
  * 
  * import cython
  * import numpy as np             # <<<<<<<<<<<<<<
@@ -8447,7 +8447,7 @@ __Pyx_RefNannySetupContext("PyInit_epi", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_np, __pyx_t_2) < (0)) __PYX_ERR(0, 9, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/epi.py":15
+  /* "openptv2/algorithms/epi.py":15
  * else:
  *     from math import sqrt as c_sqrt
  * from dataclasses import dataclass             # <<<<<<<<<<<<<<
@@ -8471,7 +8471,7 @@ __Pyx_RefNannySetupContext("PyInit_epi", 0);
   }
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/epi.py":17
+  /* "openptv2/algorithms/epi.py":17
  * from dataclasses import dataclass
  * 
  * MAXCAND: cython.int = 200             # <<<<<<<<<<<<<<
@@ -8480,14 +8480,14 @@ __Pyx_RefNannySetupContext("PyInit_epi", 0);
 */
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_MAXCAND, __pyx_mstate_global->__pyx_int_200) < (0)) __PYX_ERR(0, 17, __pyx_L1_error)
 
-  /* "algorithms/epi.py":21
+  /* "openptv2/algorithms/epi.py":21
  * 
  * @dataclass
  * class Candidate:             # <<<<<<<<<<<<<<
  *     pnr: int
  *     tol: float
 */
-  __pyx_t_2 = __Pyx_Py3MetaclassPrepare((PyObject *) NULL, __pyx_mstate_global->__pyx_empty_tuple, __pyx_mstate_global->__pyx_n_u_Candidate, __pyx_mstate_global->__pyx_n_u_Candidate, (PyObject *) NULL, __pyx_mstate_global->__pyx_n_u_algorithms_epi, (PyObject *) NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 21, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_Py3MetaclassPrepare((PyObject *) NULL, __pyx_mstate_global->__pyx_empty_tuple, __pyx_mstate_global->__pyx_n_u_Candidate, __pyx_mstate_global->__pyx_n_u_Candidate, (PyObject *) NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_epi, (PyObject *) NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 21, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_4 = __Pyx_PyDict_NewPresized(3); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 21, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
@@ -8497,7 +8497,7 @@ __Pyx_RefNannySetupContext("PyInit_epi", 0);
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_annotations, __pyx_t_4) < (0)) __PYX_ERR(0, 21, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/epi.py":20
+  /* "openptv2/algorithms/epi.py":20
  * 
  * 
  * @dataclass             # <<<<<<<<<<<<<<
@@ -8508,7 +8508,7 @@ __Pyx_RefNannySetupContext("PyInit_epi", 0);
   __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_dataclass); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 20, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
 
-  /* "algorithms/epi.py":21
+  /* "openptv2/algorithms/epi.py":21
  * 
  * @dataclass
  * class Candidate:             # <<<<<<<<<<<<<<
@@ -8534,14 +8534,14 @@ __Pyx_RefNannySetupContext("PyInit_epi", 0);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/epi.py":28
+  /* "openptv2/algorithms/epi.py":28
  * 
  * @dataclass
  * class Coord2d:             # <<<<<<<<<<<<<<
  *     pnr: int
  *     x: float
 */
-  __pyx_t_2 = __Pyx_Py3MetaclassPrepare((PyObject *) NULL, __pyx_mstate_global->__pyx_empty_tuple, __pyx_mstate_global->__pyx_n_u_Coord2d, __pyx_mstate_global->__pyx_n_u_Coord2d, (PyObject *) NULL, __pyx_mstate_global->__pyx_n_u_algorithms_epi, (PyObject *) NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 28, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_Py3MetaclassPrepare((PyObject *) NULL, __pyx_mstate_global->__pyx_empty_tuple, __pyx_mstate_global->__pyx_n_u_Coord2d, __pyx_mstate_global->__pyx_n_u_Coord2d, (PyObject *) NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_epi, (PyObject *) NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 28, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_4 = __Pyx_PyDict_NewPresized(3); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 28, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
@@ -8551,7 +8551,7 @@ __Pyx_RefNannySetupContext("PyInit_epi", 0);
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_annotations, __pyx_t_4) < (0)) __PYX_ERR(0, 28, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/epi.py":27
+  /* "openptv2/algorithms/epi.py":27
  * 
  * 
  * @dataclass             # <<<<<<<<<<<<<<
@@ -8562,7 +8562,7 @@ __Pyx_RefNannySetupContext("PyInit_epi", 0);
   __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_mstate_global->__pyx_n_u_dataclass); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 27, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
 
-  /* "algorithms/epi.py":28
+  /* "openptv2/algorithms/epi.py":28
  * 
  * @dataclass
  * class Coord2d:             # <<<<<<<<<<<<<<
@@ -8588,7 +8588,7 @@ __Pyx_RefNannySetupContext("PyInit_epi", 0);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/epi.py":34
+  /* "openptv2/algorithms/epi.py":34
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -8598,7 +8598,7 @@ __Pyx_RefNannySetupContext("PyInit_epi", 0);
   __pyx_t_2 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 34, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   if (PyDict_SetItem(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_num_points, __pyx_mstate_global->__pyx_kp_u_cython_int) < (0)) __PYX_ERR(0, 34, __pyx_L1_error)
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_3epi_1epipolar_curve, 0, __pyx_mstate_global->__pyx_n_u_epipolar_curve, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_epi, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[0])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 34, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_3epi_1epipolar_curve, 0, __pyx_mstate_global->__pyx_n_u_epipolar_curve, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_epi, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[0])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 34, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
@@ -8608,7 +8608,7 @@ __Pyx_RefNannySetupContext("PyInit_epi", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_epipolar_curve, __pyx_t_4) < (0)) __PYX_ERR(0, 34, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/epi.py":93
+  /* "openptv2/algorithms/epi.py":93
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -8619,7 +8619,7 @@ __Pyx_RefNannySetupContext("PyInit_epi", 0);
   __Pyx_GOTREF(__pyx_t_4);
   if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_xl, __pyx_mstate_global->__pyx_kp_u_cython_double) < (0)) __PYX_ERR(0, 93, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_yl, __pyx_mstate_global->__pyx_kp_u_cython_double) < (0)) __PYX_ERR(0, 93, __pyx_L1_error)
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_3epi_3epi_mm, 0, __pyx_mstate_global->__pyx_n_u_epi_mm, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_epi, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[1])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 93, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_3epi_3epi_mm, 0, __pyx_mstate_global->__pyx_n_u_epi_mm, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_epi, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[1])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 93, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -8629,7 +8629,7 @@ __Pyx_RefNannySetupContext("PyInit_epi", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_epi_mm, __pyx_t_2) < (0)) __PYX_ERR(0, 93, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/epi.py":156
+  /* "openptv2/algorithms/epi.py":156
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -8640,7 +8640,7 @@ __Pyx_RefNannySetupContext("PyInit_epi", 0);
   __Pyx_GOTREF(__pyx_t_2);
   if (PyDict_SetItem(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_xl, __pyx_mstate_global->__pyx_kp_u_cython_double) < (0)) __PYX_ERR(0, 156, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_yl, __pyx_mstate_global->__pyx_kp_u_cython_double) < (0)) __PYX_ERR(0, 156, __pyx_L1_error)
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_3epi_5epi_mm_2d, 0, __pyx_mstate_global->__pyx_n_u_epi_mm_2d, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_epi, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[2])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 156, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_3epi_5epi_mm_2d, 0, __pyx_mstate_global->__pyx_n_u_epi_mm_2d, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_epi, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[2])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 156, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
@@ -8650,7 +8650,7 @@ __Pyx_RefNannySetupContext("PyInit_epi", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_epi_mm_2d, __pyx_t_4) < (0)) __PYX_ERR(0, 156, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/epi.py":187
+  /* "openptv2/algorithms/epi.py":187
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -8661,7 +8661,7 @@ __Pyx_RefNannySetupContext("PyInit_epi", 0);
   __Pyx_GOTREF(__pyx_t_4);
   if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_a, __pyx_mstate_global->__pyx_kp_u_cython_double) < (0)) __PYX_ERR(0, 187, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_b, __pyx_mstate_global->__pyx_kp_u_cython_double) < (0)) __PYX_ERR(0, 187, __pyx_L1_error)
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_3epi_7_quality_ratio, 0, __pyx_mstate_global->__pyx_n_u_quality_ratio, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_epi, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[3])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 187, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_3epi_7_quality_ratio, 0, __pyx_mstate_global->__pyx_n_u_quality_ratio, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_epi, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[3])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 187, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -8671,7 +8671,7 @@ __Pyx_RefNannySetupContext("PyInit_epi", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_quality_ratio, __pyx_t_2) < (0)) __PYX_ERR(0, 187, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/epi.py":194
+  /* "openptv2/algorithms/epi.py":194
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -8689,7 +8689,7 @@ __Pyx_RefNannySetupContext("PyInit_epi", 0);
   if (PyDict_SetItem(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_nx, __pyx_mstate_global->__pyx_kp_u_cython_int) < (0)) __PYX_ERR(0, 194, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_ny, __pyx_mstate_global->__pyx_kp_u_cython_int) < (0)) __PYX_ERR(0, 194, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_sumg, __pyx_mstate_global->__pyx_kp_u_cython_int) < (0)) __PYX_ERR(0, 194, __pyx_L1_error)
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_3epi_9find_candidate, 0, __pyx_mstate_global->__pyx_n_u_find_candidate, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_epi, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[4])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 194, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_3epi_9find_candidate, 0, __pyx_mstate_global->__pyx_n_u_find_candidate, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_epi, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[4])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 194, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
@@ -8699,7 +8699,7 @@ __Pyx_RefNannySetupContext("PyInit_epi", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_find_candidate, __pyx_t_4) < (0)) __PYX_ERR(0, 194, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/epi.py":310
+  /* "openptv2/algorithms/epi.py":310
  * 
  * 
  * def is_compiled() -> bool:             # <<<<<<<<<<<<<<
@@ -8709,7 +8709,7 @@ __Pyx_RefNannySetupContext("PyInit_epi", 0);
   __pyx_t_4 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 310, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_return, __pyx_mstate_global->__pyx_n_u_bool) < (0)) __PYX_ERR(0, 310, __pyx_L1_error)
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_3epi_11is_compiled, 0, __pyx_mstate_global->__pyx_n_u_is_compiled, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_epi, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[5])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 310, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_3epi_11is_compiled, 0, __pyx_mstate_global->__pyx_n_u_is_compiled, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_epi, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[5])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 310, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -8719,7 +8719,7 @@ __Pyx_RefNannySetupContext("PyInit_epi", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_is_compiled, __pyx_t_2) < (0)) __PYX_ERR(0, 310, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/epi.py":1
+  /* "openptv2/algorithms/epi.py":1
  * """Epipolar geometry for multi-camera correspondence matching.             # <<<<<<<<<<<<<<
  * 
  * Translation of lib/src/epi.c and lib/include/epi.h.
@@ -8740,7 +8740,7 @@ __Pyx_RefNannySetupContext("PyInit_epi", 0);
   __Pyx_XDECREF(__pyx_t_7);
   if (__pyx_m) {
     if (__pyx_mstate->__pyx_d && stringtab_initialized) {
-      __Pyx_AddTraceback("init algorithms.epi", __pyx_clineno, __pyx_lineno, __pyx_filename);
+      __Pyx_AddTraceback("init openptv2.algorithms.epi", __pyx_clineno, __pyx_lineno, __pyx_filename);
     }
     #if !CYTHON_USE_MODULE_STATE
     Py_CLEAR(__pyx_m);
@@ -8754,7 +8754,7 @@ __Pyx_RefNannySetupContext("PyInit_epi", 0);
     }
     #endif
   } else if (!PyErr_Occurred()) {
-    PyErr_SetString(PyExc_ImportError, "init algorithms.epi");
+    PyErr_SetString(PyExc_ImportError, "init openptv2.algorithms.epi");
   }
   __pyx_L0:;
   __Pyx_RefNannyFinishContext();
@@ -8796,25 +8796,25 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
 static int __Pyx_InitConstants(__pyx_mstatetype *__pyx_mstate) {
   CYTHON_UNUSED_VAR(__pyx_mstate);
   {
-    const struct { const unsigned int length: 10; } index[] = {{1},{1},{17},{19},{19},{22},{16},{13},{10},{9},{7},{7},{20},{5},{1},{4},{8},{4},{8},{1},{9},{14},{15},{6},{18},{1},{4},{3},{4},{4},{8},{2},{18},{2},{3},{3},{4},{19},{5},{4},{3},{5},{1},{9},{11},{12},{2},{2},{7},{5},{9},{6},{9},{14},{4},{7},{14},{16},{5},{8},{9},{1},{11},{9},{8},{3},{3},{3},{7},{11},{13},{5},{1},{2},{2},{2},{2},{8},{1},{8},{13},{15},{2},{3},{10},{14},{8},{1},{2},{2},{2},{8},{2},{3},{10},{5},{2},{2},{10},{2},{2},{3},{5},{5},{15},{3},{3},{11},{11},{2},{3},{3},{5},{14},{12},{11},{6},{3},{12},{10},{3},{4},{4},{8},{3},{14},{5},{6},{5},{5},{5},{4},{1},{2},{2},{2},{2},{2},{2},{2},{4},{4},{2},{1},{2},{2},{2},{2},{2},{2},{2},{4},{4},{2},{2},{854},{349},{10},{490},{282},{34}};
-    #if (CYTHON_COMPRESS_STRINGS) == 2 /* compression: bz2 (1716 bytes) */
-const char* const cstring = "BZh91AY&SYT\366k\022\000\0012\177\377\377\377\377\362?\373\377}\277\367\377]\277\377\377\361\300@@@@@@@@@@@@\000@\000`\006N\033\235\263\243\000\240\014p\003\201(\210\224\3654dh\007\243\0051=\036C$\331 \320OSF\320\215\r\032h\032\006F@\321\206C\"\006\204#\t\223@M2\t\242\023\323I\352\000\000\000\000\000\000h\000\001\240\321\240\032\004\30554i \036\220\000d\032\032\000\000\000\000\000\000\000\0004h\001\"DQ\232\210\365\r4=A\240\r4\003\010i\246\200\003 2mF\214\201\200@4\003M\016\000\000\000\000\000\000\000\006\200\000\000\000\000\000\000\000\016\000\000\000\000\000\000\000\006\200\000\000\000\000\000\000\000$a\317\226\324/\357\256\3407_\351c\212\320[\343\023\224Q\301\301\205\327\034\344U\r6Hp\345\032\022E\272\267\243_\374\3061\266\r\203Hi\266\233CE4\223\257v\202\262\242\215}\201@F\360SUT\212\230\233B\033\022cI\266\320M\033\r*\021m\277+]\201yI6\026,(JcD\322L`\234W\n\230D\302lb`\240k\204\025\210U&\2544SPN\332S\270\025\306\314EJ\nJd\014V\005\0079\007\002`\244\203\205\001\304\330\270T\347\207\220x\017*\326@w\016D\356+[^\202\226`\272\227 \240\265\250\230\200\022\326\344\005\242\3000X\304\350/\031#\271 %\004\241\205\372\025\013\"ip\266\313\302\256W\305h\024@g\242$\004w\227\367\3016\362\002\364\030\353\243Q\306I8x8-\n\277\325\r\373\227y\255\333\223\307\323H\353\235\240h\306,\314\367\032\231B\205\360\353u#\030\274\234*\204KiR\332A\010\200\322\r\005%<W\004\035\310=,\271\310;\273\223\005\220\201\0222\331\260\362\027\227\335\362V\331+@\203\026\200\212d\306YHh\313EJ\002P\303\335\233\367\200PQaa\364h\334\023\205@B\204Ryy21(\025\027)\327\222\331K\323\275\315\337Lc\256\207J,\312\264\301\205\230\025\350\364GW\316P\226\034\224\005%\016V\3130f\240P\240\005\221\\\310r\030\337-Zj&\360z\240\273\177\206\305\036S\263'&3$\321u\332N\341\241\354N\323Y\252\336\032\366c\307\253\376\0236E\343\020\361\252\266\256#\010B\223\200\225:Ys\213O@hd\3701\226\332\004\"\3031r\347a\216\274\013\257\005\211\023\211\033\001/\253\373\r\244v&I\036d`\266dF\004/D\006r3\263}\202\363\024\006\003\265/\000o\003h\003\206""\376D@|\224 \032[\263^\245NM\211D<\207\010\341\257uewT\3449O-8\200q\200\235\272\256\243\201\203>|4\241\365\253rL7;U\226D2\031\026E\014$\3233R$a\020\3130d\334\306\203\r_r\373.\252\333l\"\262\307\352\335#\034w\330z\324L\262\221{C\250\353-O\326\036\253\217\2178\365q\216\252\215*\311\375\216\na\230\177k\363o\314\014\363\034r\034]'\253\033X\023,k\027\203&\016*6\002c.\304\200s\255)\226\260+\035J\307\370\240\271W\002\316\221T\254\342F\336.p\332\021\352\343\270\332(X\225o\226*\005\006\020\340\307\343\206Ztz\025\340\033#V\0060\026\025\014\337\322\326\260Q\262J\235\206P$\323\037\026!\236\227\274/\345\t\233\n\202\310\313\220\312`\304\211\230pz\350P}F\256\200$\332\330<\322\221\303\034X7\231U\023\213\260`\264H\302\025F.T]\337\356\247{J\243+\341F\350\312\207\252\345+\246\020p+m\3165\n\350I\245Y\007?g;\000kHOp%\201\215i\214\204\346\222\317mL\305\256\324\205\3155\001A\344,\243clP\302z(9\373N\020\316\350-m\035\0209\316\236P\025\317\321@\306-%\274\201\326\352\314Mz\205\306H\2546)\301\210\014\027\006 \337z\005\263\320\231\025b\353\256\032\201U\r5\203\301H\207x\262\223d\200\242\236<\024\0272\023!2\2370\260C7\272h\022\013c\024\261}\354Z\300\306w\030,\307\r\201\256\006\321I,\300\323\222\001t#\365\336B\376]5\213_=\004\342/#\034\224\354\311\013Ih+\321\201\372g\273\300x\030@\213\r\036\300\353_Zd:iz\207\026\030\3547\353\246\231 \330\022\370\n\300\262\177\262\306f[mH.\333l\264\355\246\334\240\373\014^\022K\260\003V$\254\340}\373\\}\277\230X\310\263\224.\373{Pm\242\320\262\337\235\240M\370\230c\307\264m\250b\271\036X\320\273\321\201\016=DdNDM\342\001i\237(;\006cx\274E\220\321\032\"`\302\177\200\264i\2072\016\340\245\034\006\357\257!\370^\243_A\304~\247\230A\267:\303]tM\307v\332o4\240\037\206\267\205p\225(i\355<\022\020S\312\024$\237x\237Fo\276\036\201\264k!i+w\321\365\337i\r2\000]\273!p\250B,5\021\241\255]\013\\\267cB \210\252\204\025a#\r\301\211\026\363\212\301\216\034\321\307\254\276pV\202\344+|\206\246\354FPed\2168\031\034\374I\307\243]wk\231\210\213\302\025\354\246Y\227\304\300\330GB\260W""\310fKA\211\246V\214\254\310\260\212eR\245Lr\314\036\r\022\245\224Jp\013{\0102\0330\023J# \263f\000\270\371\300\327\312L):\216\0274\236\244\n\014\245~\327\032\363\334\203\301\215\241^\353JN\274\027(\276\325U\3321\204|\327zH=\214\274\3078\375\000\305\3053S\016\n\014\236\230Y\235\323\r<\325\265Vt\331g4\350\306\267\0063\022f\004\302)\251\026\014\270\211\261&t\324\235\235\232OY\371\260\251R\\?\310ST9\361\363V\241\250L0fC/\305\334!YG\373C}Jd\251R\273}\202\262bw\254hX\316\327\274\331\217\265\237F\364M\225\260\033\025s\351\333\305\352\351\014\351(\303E\304b\256K\243\203\023\260HF;\364\001\032\200 \nf\031\230\340D1i\244\3078-\014\314\325\354\233\245\031\341\r\320\305\024\325\250\32622\2114(\206u\014\307GW\001\222\032\240\320\342\220B@SO\370\273\222)\302\204\202\247\263X\220";
-    PyObject *data = __Pyx_DecompressString(cstring, 1716, 2);
+    const struct { const unsigned int length: 10; } index[] = {{1},{1},{13},{10},{28},{28},{31},{25},{30},{9},{7},{7},{20},{5},{1},{4},{8},{4},{8},{1},{9},{15},{6},{18},{1},{4},{3},{4},{4},{8},{2},{18},{2},{3},{3},{4},{19},{5},{4},{3},{5},{1},{9},{11},{12},{2},{2},{7},{5},{9},{6},{9},{14},{4},{7},{14},{16},{5},{8},{9},{1},{11},{9},{8},{3},{3},{3},{7},{11},{13},{5},{1},{2},{2},{2},{2},{8},{1},{8},{13},{15},{2},{3},{10},{14},{8},{1},{2},{2},{2},{8},{2},{3},{10},{5},{2},{2},{23},{10},{2},{2},{3},{5},{5},{15},{3},{3},{11},{11},{2},{3},{3},{5},{14},{12},{11},{6},{3},{12},{10},{3},{4},{4},{8},{3},{14},{5},{6},{5},{5},{5},{4},{1},{2},{2},{2},{2},{2},{2},{2},{4},{4},{2},{1},{2},{2},{2},{2},{2},{2},{2},{4},{4},{2},{2},{854},{349},{10},{490},{282},{34}};
+    #if (CYTHON_COMPRESS_STRINGS) == 2 /* compression: bz2 (1739 bytes) */
+const char* const cstring = "BZh91AY&SY\361>bT\000\0012\177\377\377\377\377\362?\373\377}\277\367\377]\277\377\377\361\300@@@@@@@@@@@@\000@\000`\006N\034n\300\200P\003\234\000\270%\021\"\232h\310\320\017F\t\242z<\206H\362A\246\221\246\215\241\031\0324\000\014\214\231\032l\215\006$\r\t4i\221\243F\211\204\032\232j\236\246\323Q\352\0002\000\001\240\000\000\000\000\032h\323\324\003@\020\246\202@= \000\3204\000\000\000\000\000\000\000\000\000\000$J\236\2223Hj\032i\220a4\320\032hh\001\200\230\004\006\214\217M@\323@\003M\r2`p\000\000\000\000\000\000\0004\000\000\000\000\000\000\000\000p\000\000\000\000\000\000\0004\000\000\000\000\000\000\000\001\037\022l\226\241\201\177s\005\273?}\016;A\311\312'8\243\203\203\013\2169\314\252\032\214\216\341\3164(\"\305X\315\271\272\3061\266\r\203Hi\266\233CE\032$\251\333 \244\246\233sxP\021\307\024\224\363\242v&\320\206\304\230\322m\264\022F\363JdX]\224\255\200\272\242I\205Z\252\022\220\321$\223\030'\024\302v\021 \223\030\230(\032\275\nD)\323UZ(\316\022\260\241*\202\251h/\252\205I\300\014a\002\017\026\001PN$\205D\n\225/\324][\013\020\260\026+Z\200D\010\"\210\026\265\320\341\353\203\013\341@\342\346t\306\000\243]\224\025\326A\202\310(Ax\311\"\t\001(%\014/\2719eQ\360\213\253xZ\n\370\263\205\022\031\330H\341\025\356\005\370K\275|\276\006F\2145\034e\341\305\341B\315\233B\257\n\216.\372\330\267r\357c\260\337\345\345VvD\r\213\\\206g\241\251r\250t\002\325G_\235\357{\211\242\232\036Z\024\314\230\020\300\005\010P\025\n\234h\004\"\010C\327\024\020\210\210&\013@\201\022v\314\330\271+\314\356\371-u\n\340$\305\300\"\2311\226\311\r\031]Q\301(a\356\307\365\220RSR\305\347\230\005\000\234\004$!\003I\226\243|\340\236\342;)_^\356\203\301\241``\354@\340\2065\253\000\302\270\026\036\035!c\364\344\263\004\240)(\202\272\214\301\231\302\205\000-\005\276\363\0042>Z\204\322R\360\213 \303\277\305U\036S\257\353Y:\332\032.\253A\3344<\263\270\326\226[\303X\314y6\217\312`\240\274bbt\267Z\004\354\002\025\016BX\336\270`\\y\303C)_\005Q(u+3\026\311\\\014v\\]\227H\036S\227H\207\303\320%\220w5\222;\231""\026)\260\301\030\026\\\210\014\336g^\225\210\230\224,\035\251\020\006\200m\000o\323\202 >\022\240\032\354\331\216\245V\366RT\206\220\337MWc\272\262\267\344:\207)\341\236\200N`'t\250\312[\301\357\276\271[R\266\245a\231}\252\307\022\030\214K\022u\317a\231\212]H\226\027.\271\326\300a\222w\255\202\322\3321\262\004P\203\260\334\343\034q\201\344\242\\&\021`\236_\336E7 \325D\370\310\263\247\264\243V\252\021T`\336\215\352Y\230oq\363\356\310\014\262\034o\032v\255U\366,&\027\324\"d\261\244\262k\004k\266\362\002y\354*\313\022\250sT?\305\t\037S\212\\\216\207\303DdE\263\215\201\023}\264#\004\253\017\0255\367\250\023\226C\211m\276\3543\344\341U\301\2175\\b\341\220P\372<\254l\nu\351c\251\224\212\032d\344\343\031\252E\341\177,R\225'\025\235\235\003)\203\014\014d\322\203\306U\006\320j\340\t&\330\346\232\246\034W\336\261\270\312\212N\231\356X\260<\302\025\006-U3\312\013\251\265\233\247\024\030\021\232]\264\276V\252\325+\224 \342+,\241\301\353J\221\332\203'\327\316\260\031S(\033zT\020j\2010\r\272\246V\252\302\340\225\347\266\205\352d\370!t\355\230\024\2051\214Df\331<\024-\257Z\204\353\004\335\246\347gl\262H\301\310\0079\315\312\002\271\371\020-r#\306\302\025OQ\215P\226\350\230\010\253\365\251\241h\014\026\365\240\322\344\022/\255\002*\304c\021\200*\035\014A\334\244C\210\204\306\272\352\002fq\334\241$\010@\204\n\034\302\301\224\354\202\004l\217Z\244\017\212\344\220\013\353\264\301d8\265\206N\r\202b\220\324e\237\007\005\2551\004\343\211\010\362\347\210\261\265\346+\244D\214q\315\257\004,\337\230\2539\201J\033\236[z\256\002\352\010\256\315\253\023\330\332\323\001\323H\250iu\372\315\270\3153\320k\t\027\n\200\205z\372\353\030\031XnU\226B\303\262k0\241\2601\020\217\222\000\032\257\n\313\274\376<\276[\275\240]b\031{b\316o\202\r\264i\212\263\363\264\t\277\013\r\010\366\215\265\014VC\2544,\330\352\303\212\344h\312\201\022x@i\263\361\006A\351o\022\371h\264G\304L\030K\220=\246\360@\303LF\263\rU\351\214]u\337T\260+\031\3154\234\033s4\033\0320\233\221\266\332p4\236\033\315o\022\316T\237\251\264""\350GAMp\237x~\241y\031a\340\365\r\241Q\013IS\302\217-\206\220R\037\005\333\256\026\312d\002\301M\032\033\025P\265\317r$!\010L\224\037\311\200\2107\006$<\016+\0068]\212-\205\364\002\264\027)[\3465wa3\0033,q\300\312\350\343N]*\253\273T\316D^ \253]3L\3366\007\261#\005@\253\224\314\266\203\023P\251\021Q\220\316)\031%:y\005w\374ZE:\350\224\237\026\372\000d\025\337%\224\006?^\273\341m\342\313^(\260\243\031\034-\351\273D\024\031G\001\2565\327y\207C\037F\255\306\224c:\026\350<\325U\3321\304x\331v\360\035\307[\247@\364\360\306\306+&#\363\3315'ga\230\211\347\251\254\263%\311.\314\210kp\2421e`\312!\226\220\341I\204\227\ng\313I\231\365\211\2536\264\nS\223\007\014\t\254\035\031\025\226\231\252J0\245A'\311\336 Y\007\373F\312\224\211\022$w{ED\305\357\350h\350g\354\336\374\242\356x(_\n\273\306\r,\034N\217\367\231W0\211\331\006T\2247\331\230\221\021\346P\231^`\211L\010\002\231\206f9\023,Z*\030\346\005s35\212\323\r\021\242P\341\014:\232\263\265Y\031E\r\ne\241C1\274,\000\311-`hr\362B\200)\247\374]\311\024\341BC\304\371\211P";
+    PyObject *data = __Pyx_DecompressString(cstring, 1739, 2);
     if (unlikely(!data)) __PYX_ERR(0, 1, __pyx_L1_error)
     const char* const bytes = __Pyx_PyBytes_AsString(data);
     #if !CYTHON_ASSUME_SAFE_MACROS
     if (likely(bytes)); else { Py_DECREF(data); __PYX_ERR(0, 1, __pyx_L1_error) }
     #endif
-    #elif (CYTHON_COMPRESS_STRINGS) != 0 /* compression: zlib (1615 bytes) */
-const char* const cstring = "x\332\325U\315o\333F\026\267b9\266e%\215$;i\003\364 \1774N\212z\255\017\007\351n\261\013YN\233\024mwe'A\220\024;\030\221#\233\0169\244HJ!s\330\315q\216s\234\343\034y\344\221G\035s\364\221G\377\t\376\023\372\206\224\023\265\373\201\026X,P\201\037\303\367f\346\367\336\357\375\336h\347/\330<\266]\303?\261\274?\020\307\330q\302\017\206\035\303:\326l\333\325gL\326\310\364\r\213\314\232\\\034\"\337\305\232A\217g\254`\031\330Z\350\237\330tG\267G}\223L?\014\352w1\325\r\035\373\244\253vo\352\337w\236w;?\034 \364\2670\200\373\300\320|\364\003\t\374C2x\216L\034\276xa\341@\335\331\207ePu\2531\306\272Nt\344`w\006\031\322@\010Sj\373\3307l\352\301\207\343\020\252c/\244\232a\357h\266k\217|\203\022\257\337\267mS\303\352j\300\335\324 .\004>M\323L\360#\000Q\211\221>\326^iT\243\201FCX\355\252\233@\214}\327~M\021\036\014\014\252\331#\352k\020\210\346\352\2327\262\216u\310\017k&\366\274\367\003\342\351\206\347#\337F\003\023\373\372\251n!\244\333\032B\304r\374\220\320\221E\\ E\305oY\371\0235u\0308\266\211]\244\215\33418\275]`F\245\014\250:\322.\251T[\"\303\302\307\004e5\033\2306\030\320`D\001\340X\301\2535F>\303\261\241\nP\335|\352e\231\r+0\254Pyh\006`x\340\267\034\303\004\212\263\361\2247\303'\226wz\272\373\252\361\252\371\252\005Ly\016\220\004\311X\030\030\203\237E\246\031gC\327\320T\316\216\021\020\323\202\237\003V[\037\231D\275\307\004a\323\246\307\010Tt\251-J\033\264I[\010Ql\301$\352\0003p\345Q{0rB\032\320\020\352}\014xP8\247\3414a{\270P\366\0103,\005\232\303;\324ul\200u\\\002i\0215\260OU\001a\355\220\016i0\244\341P\025\r\rG\3304\374\020\242\001\351\240\3543\017bF\344.\361G.\365\264\000!\217\370\323 a\244\223\001\206\014\274\023\242\266\002\216\000\321'Pp\010\304\204\013\365\225\274^\033\272\177\2225\307\030\233#\342\215\211\206\002\365\010\325\343\315\030\002\014\202\335\000\007\375`\020\234\004f`\005 \374\000\004\0378a\270\033\342\260\037\016\302\223\320\014\255\020\034!8B\347\315\356\333\302\305\315\271\215\326Y\363\341\244\227\336\272wv\357\253\263\257\276{\327Io\335\215*\027""\333s\013+\354\013></\256\361'\242\222\026\313\254s^\\a\rv\300\027\271+V\305S\271.;)\230\332\3545\357\213\242x(\253\262\221\376\2529e\326e\001\037\376\227\301yq\231\325\030\254-\261;g\225M\331\221\317\242\373q5\336K\256$[\211;\251\244[w\344(\332\217H\334\214\237%\315\244\367\033\246\236\027\027\337zl\203\365\322\245\353\014\347P\373L\347\033\374H\\\021\365\264\270\304\346Y\223\0352\227W\362\271\353\020\312R\231=\344\253\034\200~i\271\334\357i\266\303\274\330\223\363\262%\265h-\322\342Z\334\215\207\351\322\r^P8\253\354\210\027\322\017\203\022\254:d\340_a-\206\2317\335\240)zi\271\312\353\347\352\221.}\304\200\217\022\253\317 _c\200\272\304\026\000\263\316\333\374\375\016.\257\361}\256\211\252h\244\345\032o\234\317\330\273\334\023\353\342\257Q\013\302\252\304\353\020\230\227l$\207\3110-_K\177\345\274\363%U 5\253\303\017\263y\373\242\017\3516\344>$\\\2055\375\370j\214c7\251\002\323j\rl\334\314\222U\213\257\251\021\257\362F\216\247\361JZ^\345\035\345\370\273h\210\256\360d\035\250\303\2520Tt\304\023Y\203z\036E\205\177c\270\301\257\013,\306\352#\252E\235<\323>/\362\003`\260-\\\271*\237F\033\321\023\220B;\036%\335d<9zW\004\201\347\331\336W9L9\272\301\257\360u\376\365\373l\232\362\t\344\322P\030\013\274\307\t\024\344H\026\024\264\232\273\310\207bYV\344&d\274\032\035\305\0131\010\251\242\244\002\332\207\256\272>\367u\341\233\302\305f\326Bg\267\266\317\266\277L\240\203Jg\245OE/{\337V\"\313\337y\025\021\244\366\022\362X\215^&\205dUIt\231\335\006\2322\357\217\320\200\300;\224\275\312\267\305\226x\023}\034\203\245\304\266\240\022k\320X\013\342P\214\240\002$jF\317@\345\275\213\253s\013%\366\t\377\034\000?\254\254\317n\260\026\237N\226\336\025f<\367\304#\371mt\232\024\362\217L\337]6\312\370l\001\325\276lK/\332\212\374\270\025\367!\314\212B\251M\211\373\016J\222\365\315\036_\026\0250<\226=\251Gw\343F|\220\024\223\307\223\336\004\247\237\335Qb\376\207\350\tM\256\251*\253\006\372D\324\305}\371i\244\307\020\005\224\003\364\347\213?I\234a\3753\301\211?iO\206\031\271gsk\252\333\200\353""\214\346\033\033\262~q\033h\376\017\314\2526{)\nS\006\312\354\021\177\010\207\322s\220\305ft\022\223\244\235\004\223a\356\310\374\337\362\023\241\313{\321#\010\2714\251+\225\354\361y\336\342\030\"j\t\002\312\354C\221\262\274\257\301!\247\022\255\177\350\335u`\352*\360\224i\276\315BQ\0205\020\224.\357F\215\250\223\033\307 '\325\235m\020nO\302\331S\376\037\355s\331\rO\243\372\364$\254K\320\310\362\277\346\215gM\275\337\232w\345\377\204S\206\006\275\311\307\242\007\225.\315\325>\223P\367\237w\320/\353\273\302\036\360=\220\352\003\271\027\315G\017\340\374\237O\036L\032\271#{\375\221?\207>.E\333\361F\374\"?\232~7\365]a\177\206]6\263\306\351G\213\321(\356\274-\2447\267U\333-\276uY\2255To\271\331\341Z\\\311\376\276\206?\001\266{\233\222";
-    PyObject *data = __Pyx_DecompressString(cstring, 1615, 1);
+    #elif (CYTHON_COMPRESS_STRINGS) != 0 /* compression: zlib (1630 bytes) */
+const char* const cstring = "x\332\325U\315o\333F\026\267b9\266e%\215$;\331\006\350A\376h\234,\326\261>\034d\333\242\205,\247M\212nwe'A\220,v0\"G6\035rH\221\224B\346\260\233\343\034\3478\3079\362\310#\217:\346\350#\217\376\023\374'\364\r)'\336\326]\264\300b\201\025\370\3618of\336\373\375\336\357\215\266\276\321B\377\310\246[\272=\352\233d\372aP\337v\010u\374qs\013\233\207\266k\370G\226\267eX\207\232m\273\372e>kd\372\206E.\365\2718D\276\2135\203\036^\346\006\327\300\366\\\355\376\271\363\376G\347}\342\030[N\330\305T7t\354\223\256\212\337\324\377\322y\321\355\374\270\207\320\337\302\000\356=C\363\321\217$\360\367\311\340\0052q\370\362\245\205\003ug\037\226A\325\255l\214u\235\350\310\301.B\230R\333\307\276aS\017>\034\010\256c/\244\232aoi\266k\217|\203\022\257\337\267mS\303\352j\300\335\324 \023\004>M\323L\360#\330VA#}\254\275\326\250F\003\215\206\260\332U7\201\254\372\256\375\206\"<\030\030T\263G\324\327 \264\346\352\2327\262\016u@\2045\023{\336\007\203x\272\341\371\310\267\321\300\304\276~\254[\010\351\266\206\020\261\034?$td\021\027h\000V\220e\345O\324\324\301pl\0230i#w\014No\033\270P !\252\216\264s\362\324\226\310\260\360!AY\035\007\246\r\003h0\242\020\340P\205Wk\214|\206c\203\n\240\342\371\324\363\322\033V`X\241\362\320,\200\341\201\337r\014\023H\315\354)o\206O,\357\370x\373u\343u\363u\013\230\362\034 \t\300X\030\030\203\237E\246\2103\32354\205\3311\002bZ\360s`\324\326G&Q\3571A\330\264\351!\002\035\235\313\214\322\006m\322\026B\024[0\211:\300\014\\y\326\036XNH\003\032^&7 \013\314CH\003\352\3514\234&D\205\013e\2170KA\345\222g\345P\327\261!\033\307%\200\226(\303>Vu\205\265C:\244\301\220\206CUK4\034a\323\360CH\022\024\205\262\317<\267\013\352w\211?r\251\247\005\010y\304\237\346\016\226N\006\030\200yGDm\005\324AD\237\200\016 \021\023.\324W\252{c\350\376Q\326,cl\216\2107&\032\n\324#T\217\267cH0\010\266\003\034\364\203Ap\024\230\201\025@\007\004\240\374\300\t\303\355\020\207\375p\020\036\205fh\205\340\010\301\021:o\267\337\025\316n\316\254\265N\232\217&\275\364\326\275\223{_\235|\365\303\373Nz\353nT""9\333\234\231[b\177\342\303\323\342\n\177**i\261\314:\247\305%\326`{|\236\273bY<\223\253\262\223\302P\233\275\341}Q\024\217dU6\322\3374\247\314\272,\340\303\377`\234\026\027Y\215\301\332\022\273sRY\227\035\371<z\020W\343\235\344J\262\221\270\223J\272qG\216\242\335\210\304\315\370y\322Lz\277c\352iq\376\235\307\326X/]\270\316p\036j\227\351|\215\037\210+\242\236\026\027\330,k\262}\346\362J>w\025RY(\263G|\231C\240\237\217\234\357\367,\333aV\354\310Y\331\222Z\264\022iq-\356\306\303t\341\006/\2508\313\354\200\027\322\217F\tV\3553\360/\261\026\303\314\233n\320\024\275\264\\\345\365S\365H\027>a\300G\211\325/D\276\306 \352\002\233\203\230u\336\346\037vpy\215\357rMTE#-\327x\343\364\302x\227{bU\3745jAZ\225x\025\022\363\222\265d?\031\246\345k\351o\234w\272\240\n\244fu\370~6oW\364\001nC\356\002\340*\254\351\307Wc\034\273I\025\230Vk`\343f\006V-\276\246,^\345\215<\236\306+iy\231w\224\343\037\242!\272\302\223u\240\016\253\302P\321\021Oe\r\352y\020\025.\031\270\301\257\013,\306\352#\252E\235\034i\237\027\371\0360\330\026\256\\\226\317\242\265\350)H\241\035\217\222n2\236\034\274/\202\300s\264\017\024\206)G7\370\025\276\312\277\375\200\246)\237\002\226\206\2121\307{\234@A\016dA\205Vs\347\371P,\312\212\\\007\304\313\321A<\027\203\220*J*\240}\350\252\3533\337\026\276+\234\255g-trk\363d\363\317\ttP\351\244\364\231\350e\357\333Jd\371;\257\"\002h\257\000\307r\364*)$\313J\242\213\3546\320\224y\377\016\r\010\274C\331\253|Sl\210\267\321\037b\030)\261\r\250\304\n4\326\234\330\027#\250\000\211\232\321sPy\357\354\352\314\\\211}\312\377\010\001?\256\254_\334`%>\236,\274/\\\360\334\023\217\345\367\321qR\310?2}w\331(\343\263\005T\373\262-\275h#\362\343V\334\2074+*JmJ\334\017P\222\254ov\370\242\250\300\300\023\331\223zt7n\304{I1y2\351Mp\372\371\035%\346\177\212\236\320\344\212\252\262j\240OE]<\220\237Ez\014Y@9@\177\276\370R\342,\326\277\022\234\370\223\366d\230\221{2\263\242\272\r\270\316h\276\261&\353g\267\201\346_aV\265\331+Q\2302Pf\217\371#8\224^\200,\326\243\243\230$\355$\230\014sG\346\377\236""\037\t]\336\213\036C\312\245I]\251d\207\317\362\026\307\220QK\020Pf\037\212\224\341\276\006\207\234\002Z\377\330\273\253\300\324U\340)\323|\233\205\242 j (]\336\215\032Q'\037\034\203\234Tw\266A\270=\tgO\371\277\264\317y7<\213\352\323\223\260.A#\213\277\304\215/\016\365~/\356\312\377(N\031\032\364&\037\213\036T\2724S\373\\B\335\377\275\203~^\337%\366\220\357\200T\037\312\235h6z\010\347\377l\362p\322\310\035\331\353\013\376\002\372\270\024m\306k\361\313\374h\372\277\251\357\022\373\032vY\317\032\247\037\315G\243\270\363\256\220\336\334Tm7\377\316eU\326P\275\345f\207kq)\373\373\032\376\004+\265\261\222";
+    PyObject *data = __Pyx_DecompressString(cstring, 1630, 1);
     if (unlikely(!data)) __PYX_ERR(0, 1, __pyx_L1_error)
     const char* const bytes = __Pyx_PyBytes_AsString(data);
     #if !CYTHON_ASSUME_SAFE_MACROS
     if (likely(bytes)); else { Py_DECREF(data); __PYX_ERR(0, 1, __pyx_L1_error) }
     #endif
-    #else /* compression: none (2988 bytes) */
-const char* const bytes = ".?algorithms/epi.pyalgorithms.imgcoordalgorithms.multimedalgorithms.ray_tracingalgorithms.trafocython.doublecython.intCandidateCoord2dMAXCAND__Pyx_PyDict_NextRefX_layZZmaxZmax_layZminZmin_layaadded_paralgorithms.epi__annotations__appendasyncio.coroutinesbboolcalcal1cal2cand_outcccline_in_tracebackcncnxcnycorrcorrect_brown_affincountcparcrdcsumgddataclassdataclassesdist_to_flatdjdm__doc__emptyenumerateepi_mmepi_mm_2depipolar_curveeps0ext_parfind_candidateflat_image_coordfloat__func__glass_pariimage_pointimg_coordimgcoordimximyintint_paris_compiled_is_coroutineitemsjj0k1k2k3linspacem__main____metaclass__metric_to_pixelmmmmp__module__move_along_raymultimednn1n2n3__name__npnumnum_pointsnumpynxnyorigin_calp1p2pixpix_xpix_ypixel_to_metricpnrpop__prepare__project_calqnqnxqnyqsumg_quality_ratio__qualname__ray_tracingreturnscx__set_name__setdefaultshesumgtemp__test__toltol_band_widthtrafovaluesvec_xvec_yvec_zvparxx0xaxbxfxhxlxmxmaxxminxpyy0yaybyfyhylymymaxyminypz0\200\001\360\026\000#3\3202E\300Q\330\027*\320*<\320<L\310A\330\027)\250\021\360(\000\005\013\210-\220q\340\004\025\220T\230\021\330\004\014\210A\340\004\013\2101\210D\220\007\220r\230\024\230U\240\"\240A\330\004\013\2104\210w\220b\230\004\230E\240\022\2401\330\004\013\2101\210D\220\007\220r\230\024\230U\240\"\240A\330\004\013\2104\210w\220b\230\004\230E\240\022\2401\330\004\014\210C\210x\220q\330\004\014\210C\210x\220q\330\004\014\210C\210x\220q\330\004\014\210C\210x\220q\340\004\t\210\023\210A\330\004\n\210'\320\021$\240A\240V\2506\260\022\2605\270\002\270%\270r\300\021\330%'\240u\250B\250e\2602\260V\2702\270Q\330\004\n\210'\320\021$\240A\240V\2506\260\022\2605\270\002\270%\270r\300\021\330%'\240u\250B\250e\2602\260V\2702\270Q\340\004\007\200s\210#\210Q\330\010\016\210a\340\004\t\210\023\210B\210d\220#\220S\230\002\230!\330\004\010\210\003\2102\210R\210r\220\021\340\004\007\200s\210\"\210A\330\010\014\210E\220\024\220Q\330\004\007\200s\210\"\210A\330\010\014\210E\220\024\220Q\340\004\007\200s\210#\210U\220#\220S""\230\003\2305\240\003\2403\240c\250\025\250c\260\023\260C\260q\330\010\020\220\001\340\004\t\210\024\210S\220\001\330\004\t\210\024\210S\220\001\330\004\n\210#\210R\210q\330\010\013\2103\210a\210s\220#\220S\230\003\2302\230Q\330\014\022\220!\340\014\022\220!\330\010\017\210q\340\004\n\210!\330\004\007\200s\210\"\210A\330\010\r\210Q\340\004\010\210\005\210U\220!\2204\220q\330\010\013\2103\210a\210r\220\023\220B\220c\230\022\2301\330\014\023\2201\340\010\013\2103\210a\210r\220\023\220C\220s\230\"\230O\2503\250c\260\021\260\"\260C\260s\270#\270R\270q\330\014\r\330\010\013\2103\210a\210r\220\023\220C\220s\230\"\230O\2503\250c\260\021\260\"\260C\260s\270#\270R\270q\330\014\r\340\010\014\210C\210r\220\023\220A\220R\220s\230\"\230B\230b\240\003\2401\240B\240c\250\022\2503\250b\260\006\260a\260r\270\022\2702\270R\270q\330\010\013\2102\210S\220\001\330\014\r\340\010\r\210S\220\001\220\022\2201\330\010\013\2103\210c\220\021\330\014\024\220A\340\010\r\210^\2301\230C\230s\240!\2403\240a\330\010\016\210n\230A\230T\240\023\240A\240S\250\001\330\010\016\210n\230A\230T\240\023\240A\240S\250\001\330\010\020\220\016\230a\230v\240S\250\001\250\023\250A\340\010\013\2103\210b\220\004\220D\230\003\2304\230r\240\024\240U\250#\250T\260\022\2604\260u\270C\270v\300S\310\004\310A\330\014\r\330\010\013\2106\220\023\220A\330\014\023\2201\340\010\020\220\002\220\"\220F\230\"\230B\230b\240\003\2402\240T\250\022\2501\330\010\020\220\005\220Q\220e\2302\230S\240\001\240\023\240A\340\010\020\220\007\220q\230\t\240\021\240$\240c\250\024\250S\260\005\260Q\330\010\021\220\021\340\004\013\2101\200\001\360\016\000F\001G\001\360$\000\005\013\210-\320\027(\320(9\270\021\330\004\n\320\n\035\230Q\330\004\n\320\n\032\230!\330\004\n\320\n\032\230!\340\004\010\210\005\210_\230A\230[\250\001\250\024\250[\270\001\270\024\270Q\340\004\t\210\032\2201\330\004\010\210\005\210\\\230\021\330\010\014\210A\330\010\022\220(\230%\230z\250\030\260\021\330\010\n\210%\210r\220\025\220b\230\005\230R\230u\240B\240e\2502\250V""\2602\260Q\360\006\000\005\n\210\031\220+\230Q\330\010\014\210A\330\010\022\220(\230!\330\010\022\220(\230%\230z\250\030\260\025\260j\300\010\310\001\330\010\022\220(\230!\330\010\022\220*\230H\240J\250j\270\001\330\010\022\220*\230A\330\010\014\210C\210u\220D\230\003\2303\230a\230t\2404\240s\250%\250t\2603\260b\270\001\270\021\360\006\000\005\023\220\"\220F\230\"\230L\250\001\330\004\010\210\003\2105\220\t\230\021\230\"\230I\240Q\240d\250)\2601\260D\270\004\270I\300Q\300a\330&'\330\010\017\210~\230Q\230c\240\025\240a\330\010\014\210E\220\031\230!\2306\240\035\250d\260!\330\010\023\2201\220C\220t\230;\240a\240s\250%\250\177\270a\270t\3004\300q\340\004\013\2101\320\000\025\220Q\340\004\021\220\021\200\001\360\016\000\020#\240!\360\032\000\005\013\320\n\035\230Q\330\004\n\320\n\032\230!\330\004\n\320\n\032\230!\340\004\t\210\024\210[\230\001\330\010\014\210A\330\010\014\210H\220E\230\024\230X\240U\250$\250h\260e\2704\270x\300q\330\010\014\210H\220A\330\010\014\210J\220h\230d\240*\250H\260D\270\n\300!\330\010\013\2105\220\003\2203\220a\220t\2303\230e\2403\240b\250\001\250\021\360\006\000\005\r\210D\220\t\230\021\230!\330\010\013\2103\210a\210s\220\"\220D\230\006\230a\230q\330\010\013\2104\210y\230\001\230\023\230B\230d\240)\2501\250A\330\010\013\2104\210v\220Q\220c\230\022\2304\230v\240Q\240a\340\004\014\210D\220\t\230\021\230!\330\010\013\2103\210a\210s\220\"\220D\230\006\230a\230q\330\010\013\2104\210y\230\001\230\023\230B\230d\240)\2501\250A\330\010\013\2104\210v\220Q\220c\230\022\2304\230v\240Q\240a\340\004\020\220\016\230a\230v\240U\250!\330\004\n\210'\320\021!\240\021\330\010\t\330\010\014\210H\220E\230\024\230X\240U\250$\250h\260a\330\010\014\210H\220E\230\024\230X\240Q\330\010\014\210J\220h\230d\240*\250H\260D\270\n\300!\330\010\013\2105\220\003\2203\220a\220t\2303\230e\2403\240b\250\001\250\021\360\006\000\005\021\220\016\230a\230v\240U\250!\330\004\n\210'\320\021!\240\021\330\010\t\330\010\014\210H\220E\230\024\230X\240U\250$\250h\260a\330\010\014\210H\220E""\230\024\230X\240Q\330\010\014\210J\220h\230d\240*\250H\260D\270\n\300!\330\010\013\2105\220\003\2203\220a\220t\2303\230e\2403\240b\250\001\250\021\360\006\000\005\014\2106\220\026\220v\230Q\200\001\360\n\000\023&\240Q\340\004\n\320\n\035\230Q\330\004\n\320\n\032\230!\340\004\t\210\024\210[\230\001\330\010\014\210A\330\010\013\2108\2205\230\003\2308\2405\250\003\2508\2605\270\003\2708\3001\330\010\013\2108\2201\330\010\013\210:\220X\230S\240\n\250(\260#\260Z\270q\330\010\013\2105\220\003\2203\220a\220t\2303\230e\2403\240b\250\001\250\021\360\006\000\005\r\210D\220\t\230\021\230!\330\010\013\2103\210a\210s\220\"\220D\230\006\230a\230q\330\010\013\2104\210y\230\001\230\023\230B\230d\240)\2501\250A\330\010\013\2104\210v\220Q\220c\230\022\2304\230v\240Q\240a\340\004\014\210D\220\t\230\021\230!\330\010\013\2103\210a\210s\220\"\220D\230\006\230a\230q\330\010\013\2104\210y\230\001\230\023\230B\230d\240)\2501\250A\330\010\013\2104\210v\220Q\220c\230\022\2304\230v\240Q\240a\340\004\013\210>\230\021\230$\230c\240\025\240b\250\007\250u\260A\200\001\330\026(\250\001\330\004\007\200r\210\022\2101\330\010\017\210r\220\022\2201\330\004\013\2102\210R\210q";
+    #else /* compression: none (3046 bytes) */
+const char* const bytes = ".?cython.doublecython.intopenptv2.algorithms.imgcoordopenptv2.algorithms.multimedopenptv2.algorithms.ray_tracingopenptv2.algorithms.trafosrc/openptv2/algorithms/epi.pyCandidateCoord2dMAXCAND__Pyx_PyDict_NextRefX_layZZmaxZmax_layZminZmin_layaadded_par__annotations__appendasyncio.coroutinesbboolcalcal1cal2cand_outcccline_in_tracebackcncnxcnycorrcorrect_brown_affincountcparcrdcsumgddataclassdataclassesdist_to_flatdjdm__doc__emptyenumerateepi_mmepi_mm_2depipolar_curveeps0ext_parfind_candidateflat_image_coordfloat__func__glass_pariimage_pointimg_coordimgcoordimximyintint_paris_compiled_is_coroutineitemsjj0k1k2k3linspacem__main____metaclass__metric_to_pixelmmmmp__module__move_along_raymultimednn1n2n3__name__npnumnum_pointsnumpynxnyopenptv2.algorithms.epiorigin_calp1p2pixpix_xpix_ypixel_to_metricpnrpop__prepare__project_calqnqnxqnyqsumg_quality_ratio__qualname__ray_tracingreturnscx__set_name__setdefaultshesumgtemp__test__toltol_band_widthtrafovaluesvec_xvec_yvec_zvparxx0xaxbxfxhxlxmxmaxxminxpyy0yaybyfyhylymymaxyminypz0\200\001\360\026\000#3\3202E\300Q\330\027*\320*<\320<L\310A\330\027)\250\021\360(\000\005\013\210-\220q\340\004\025\220T\230\021\330\004\014\210A\340\004\013\2101\210D\220\007\220r\230\024\230U\240\"\240A\330\004\013\2104\210w\220b\230\004\230E\240\022\2401\330\004\013\2101\210D\220\007\220r\230\024\230U\240\"\240A\330\004\013\2104\210w\220b\230\004\230E\240\022\2401\330\004\014\210C\210x\220q\330\004\014\210C\210x\220q\330\004\014\210C\210x\220q\330\004\014\210C\210x\220q\340\004\t\210\023\210A\330\004\n\210'\320\021$\240A\240V\2506\260\022\2605\270\002\270%\270r\300\021\330%'\240u\250B\250e\2602\260V\2702\270Q\330\004\n\210'\320\021$\240A\240V\2506\260\022\2605\270\002\270%\270r\300\021\330%'\240u\250B\250e\2602\260V\2702\270Q\340\004\007\200s\210#\210Q\330\010\016\210a\340\004\t\210\023\210B\210d\220#\220S\230\002\230!\330\004\010\210\003\2102\210R\210r\220\021\340\004\007\200s\210\"\210A\330\010\014\210E\220\024\220Q\330\004\007\200s\210\"\210A\330\010""\014\210E\220\024\220Q\340\004\007\200s\210#\210U\220#\220S\230\003\2305\240\003\2403\240c\250\025\250c\260\023\260C\260q\330\010\020\220\001\340\004\t\210\024\210S\220\001\330\004\t\210\024\210S\220\001\330\004\n\210#\210R\210q\330\010\013\2103\210a\210s\220#\220S\230\003\2302\230Q\330\014\022\220!\340\014\022\220!\330\010\017\210q\340\004\n\210!\330\004\007\200s\210\"\210A\330\010\r\210Q\340\004\010\210\005\210U\220!\2204\220q\330\010\013\2103\210a\210r\220\023\220B\220c\230\022\2301\330\014\023\2201\340\010\013\2103\210a\210r\220\023\220C\220s\230\"\230O\2503\250c\260\021\260\"\260C\260s\270#\270R\270q\330\014\r\330\010\013\2103\210a\210r\220\023\220C\220s\230\"\230O\2503\250c\260\021\260\"\260C\260s\270#\270R\270q\330\014\r\340\010\014\210C\210r\220\023\220A\220R\220s\230\"\230B\230b\240\003\2401\240B\240c\250\022\2503\250b\260\006\260a\260r\270\022\2702\270R\270q\330\010\013\2102\210S\220\001\330\014\r\340\010\r\210S\220\001\220\022\2201\330\010\013\2103\210c\220\021\330\014\024\220A\340\010\r\210^\2301\230C\230s\240!\2403\240a\330\010\016\210n\230A\230T\240\023\240A\240S\250\001\330\010\016\210n\230A\230T\240\023\240A\240S\250\001\330\010\020\220\016\230a\230v\240S\250\001\250\023\250A\340\010\013\2103\210b\220\004\220D\230\003\2304\230r\240\024\240U\250#\250T\260\022\2604\260u\270C\270v\300S\310\004\310A\330\014\r\330\010\013\2106\220\023\220A\330\014\023\2201\340\010\020\220\002\220\"\220F\230\"\230B\230b\240\003\2402\240T\250\022\2501\330\010\020\220\005\220Q\220e\2302\230S\240\001\240\023\240A\340\010\020\220\007\220q\230\t\240\021\240$\240c\250\024\250S\260\005\260Q\330\010\021\220\021\340\004\013\2101\200\001\360\016\000F\001G\001\360$\000\005\013\210-\320\027(\320(9\270\021\330\004\n\320\n\035\230Q\330\004\n\320\n\032\230!\330\004\n\320\n\032\230!\340\004\010\210\005\210_\230A\230[\250\001\250\024\250[\270\001\270\024\270Q\340\004\t\210\032\2201\330\004\010\210\005\210\\\230\021\330\010\014\210A\330\010\022\220(\230%\230z\250\030\260\021\330\010\n\210%""\210r\220\025\220b\230\005\230R\230u\240B\240e\2502\250V\2602\260Q\360\006\000\005\n\210\031\220+\230Q\330\010\014\210A\330\010\022\220(\230!\330\010\022\220(\230%\230z\250\030\260\025\260j\300\010\310\001\330\010\022\220(\230!\330\010\022\220*\230H\240J\250j\270\001\330\010\022\220*\230A\330\010\014\210C\210u\220D\230\003\2303\230a\230t\2404\240s\250%\250t\2603\260b\270\001\270\021\360\006\000\005\023\220\"\220F\230\"\230L\250\001\330\004\010\210\003\2105\220\t\230\021\230\"\230I\240Q\240d\250)\2601\260D\270\004\270I\300Q\300a\330&'\330\010\017\210~\230Q\230c\240\025\240a\330\010\014\210E\220\031\230!\2306\240\035\250d\260!\330\010\023\2201\220C\220t\230;\240a\240s\250%\250\177\270a\270t\3004\300q\340\004\013\2101\320\000\025\220Q\340\004\021\220\021\200\001\360\016\000\020#\240!\360\032\000\005\013\320\n\035\230Q\330\004\n\320\n\032\230!\330\004\n\320\n\032\230!\340\004\t\210\024\210[\230\001\330\010\014\210A\330\010\014\210H\220E\230\024\230X\240U\250$\250h\260e\2704\270x\300q\330\010\014\210H\220A\330\010\014\210J\220h\230d\240*\250H\260D\270\n\300!\330\010\013\2105\220\003\2203\220a\220t\2303\230e\2403\240b\250\001\250\021\360\006\000\005\r\210D\220\t\230\021\230!\330\010\013\2103\210a\210s\220\"\220D\230\006\230a\230q\330\010\013\2104\210y\230\001\230\023\230B\230d\240)\2501\250A\330\010\013\2104\210v\220Q\220c\230\022\2304\230v\240Q\240a\340\004\014\210D\220\t\230\021\230!\330\010\013\2103\210a\210s\220\"\220D\230\006\230a\230q\330\010\013\2104\210y\230\001\230\023\230B\230d\240)\2501\250A\330\010\013\2104\210v\220Q\220c\230\022\2304\230v\240Q\240a\340\004\020\220\016\230a\230v\240U\250!\330\004\n\210'\320\021!\240\021\330\010\t\330\010\014\210H\220E\230\024\230X\240U\250$\250h\260a\330\010\014\210H\220E\230\024\230X\240Q\330\010\014\210J\220h\230d\240*\250H\260D\270\n\300!\330\010\013\2105\220\003\2203\220a\220t\2303\230e\2403\240b\250\001\250\021\360\006\000\005\021\220\016\230a\230v\240U\250!\330\004\n\210'\320\021!\240\021\330\010\t\330\010\014\210H\220E""\230\024\230X\240U\250$\250h\260a\330\010\014\210H\220E\230\024\230X\240Q\330\010\014\210J\220h\230d\240*\250H\260D\270\n\300!\330\010\013\2105\220\003\2203\220a\220t\2303\230e\2403\240b\250\001\250\021\360\006\000\005\014\2106\220\026\220v\230Q\200\001\360\n\000\023&\240Q\340\004\n\320\n\035\230Q\330\004\n\320\n\032\230!\340\004\t\210\024\210[\230\001\330\010\014\210A\330\010\013\2108\2205\230\003\2308\2405\250\003\2508\2605\270\003\2708\3001\330\010\013\2108\2201\330\010\013\210:\220X\230S\240\n\250(\260#\260Z\270q\330\010\013\2105\220\003\2203\220a\220t\2303\230e\2403\240b\250\001\250\021\360\006\000\005\r\210D\220\t\230\021\230!\330\010\013\2103\210a\210s\220\"\220D\230\006\230a\230q\330\010\013\2104\210y\230\001\230\023\230B\230d\240)\2501\250A\330\010\013\2104\210v\220Q\220c\230\022\2304\230v\240Q\240a\340\004\014\210D\220\t\230\021\230!\330\010\013\2103\210a\210s\220\"\220D\230\006\230a\230q\330\010\013\2104\210y\230\001\230\023\230B\230d\240)\2501\250A\330\010\013\2104\210v\220Q\220c\230\022\2304\230v\240Q\240a\340\004\013\210>\230\021\230$\230c\240\025\240b\250\007\250u\260A\200\001\330\026(\250\001\330\004\007\200r\210\022\2101\330\010\017\210r\220\022\2201\330\004\013\2102\210R\210q";
     PyObject *data = NULL;
     CYTHON_UNUSED_VAR(__Pyx_DecompressString);
     #endif
@@ -8933,32 +8933,32 @@ static int __Pyx_CreateCodeObjects(__pyx_mstatetype *__pyx_mstate) {
   {
     const __Pyx_PyCode_New_function_description descr = {6, 0, 0, 14, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 34};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_image_point, __pyx_mstate->__pyx_n_u_origin_cal, __pyx_mstate->__pyx_n_u_project_cal, __pyx_mstate->__pyx_n_u_num_points, __pyx_mstate->__pyx_n_u_cpar, __pyx_mstate->__pyx_n_u_vpar, __pyx_mstate->__pyx_n_u_xp, __pyx_mstate->__pyx_n_u_yp, __pyx_mstate->__pyx_n_u_xf, __pyx_mstate->__pyx_n_u_yf, __pyx_mstate->__pyx_n_u_i, __pyx_mstate->__pyx_n_u_Z, __pyx_mstate->__pyx_n_u_xm, __pyx_mstate->__pyx_n_u_ym};
-    __pyx_mstate_global->__pyx_codeobj_tab[0] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_epi_py, __pyx_mstate->__pyx_n_u_epipolar_curve, __pyx_mstate->__pyx_kp_b_iso88591_F_G_9_Q__A_Q_1_A_z_r_b_RuBe2V2Q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[0])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[0] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_epi_py, __pyx_mstate->__pyx_n_u_epipolar_curve, __pyx_mstate->__pyx_kp_b_iso88591_F_G_9_Q__A_Q_1_A_z_r_b_RuBe2V2Q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[0])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {6, 0, 0, 12, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 93};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_xl, __pyx_mstate->__pyx_n_u_yl, __pyx_mstate->__pyx_n_u_cal1, __pyx_mstate->__pyx_n_u_cal2, __pyx_mstate->__pyx_n_u_mmp, __pyx_mstate->__pyx_n_u_vpar, __pyx_mstate->__pyx_n_u_Zmin, __pyx_mstate->__pyx_n_u_Zmax, __pyx_mstate->__pyx_n_u_xmin, __pyx_mstate->__pyx_n_u_ymin, __pyx_mstate->__pyx_n_u_xmax, __pyx_mstate->__pyx_n_u_ymax};
-    __pyx_mstate_global->__pyx_codeobj_tab[1] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_epi_py, __pyx_mstate->__pyx_n_u_epi_mm, __pyx_mstate->__pyx_kp_b_iso88591_Q_A_HE_XU_he4xq_HA_Jhd_HD_5_3at, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[1])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[1] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_epi_py, __pyx_mstate->__pyx_n_u_epi_mm, __pyx_mstate->__pyx_kp_b_iso88591_Q_A_HE_XU_he4xq_HA_Jhd_HD_5_3at, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[1])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {5, 0, 0, 7, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 156};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_xl, __pyx_mstate->__pyx_n_u_yl, __pyx_mstate->__pyx_n_u_cal, __pyx_mstate->__pyx_n_u_mmp, __pyx_mstate->__pyx_n_u_vpar, __pyx_mstate->__pyx_n_u_Zmin, __pyx_mstate->__pyx_n_u_Zmax};
-    __pyx_mstate_global->__pyx_codeobj_tab[2] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_epi_py, __pyx_mstate->__pyx_n_u_epi_mm_2d, __pyx_mstate->__pyx_kp_b_iso88591_Q_Q_A_85_85_85_81_81_XS_Zq_5_3a, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[2])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[2] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_epi_py, __pyx_mstate->__pyx_n_u_epi_mm_2d, __pyx_mstate->__pyx_kp_b_iso88591_Q_Q_A_85_85_85_81_81_XS_Zq_5_3a, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[2])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {2, 0, 0, 2, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 187};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_a, __pyx_mstate->__pyx_n_u_b};
-    __pyx_mstate_global->__pyx_codeobj_tab[3] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_epi_py, __pyx_mstate->__pyx_n_u_quality_ratio, __pyx_mstate->__pyx_kp_b_iso88591_r_1_r_1_2Rq, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[3])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[3] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_epi_py, __pyx_mstate->__pyx_n_u_quality_ratio, __pyx_mstate->__pyx_kp_b_iso88591_r_1_r_1_2Rq, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[3])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {15, 0, 0, 34, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 194};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_crd, __pyx_mstate->__pyx_n_u_pix, __pyx_mstate->__pyx_n_u_num, __pyx_mstate->__pyx_n_u_xa, __pyx_mstate->__pyx_n_u_ya, __pyx_mstate->__pyx_n_u_xb, __pyx_mstate->__pyx_n_u_yb, __pyx_mstate->__pyx_n_u_n, __pyx_mstate->__pyx_n_u_nx, __pyx_mstate->__pyx_n_u_ny, __pyx_mstate->__pyx_n_u_sumg, __pyx_mstate->__pyx_n_u_cand_out, __pyx_mstate->__pyx_n_u_vpar, __pyx_mstate->__pyx_n_u_cpar, __pyx_mstate->__pyx_n_u_cal, __pyx_mstate->__pyx_n_u_tol_band_width, __pyx_mstate->__pyx_n_u_count, __pyx_mstate->__pyx_n_u_xmin, __pyx_mstate->__pyx_n_u_xmax, __pyx_mstate->__pyx_n_u_ymin, __pyx_mstate->__pyx_n_u_ymax, __pyx_mstate->__pyx_n_u_m, __pyx_mstate->__pyx_n_u_b, __pyx_mstate->__pyx_n_u_temp, __pyx_mstate->__pyx_n_u_j0, __pyx_mstate->__pyx_n_u_dj, __pyx_mstate->__pyx_n_u_j, __pyx_mstate->__pyx_n_u_p2, __pyx_mstate->__pyx_n_u_d, __pyx_mstate->__pyx_n_u_qn, __pyx_mstate->__pyx_n_u_qnx, __pyx_mstate->__pyx_n_u_qny, __pyx_mstate->__pyx_n_u_qsumg, __pyx_mstate->__pyx_n_u_corr};
-    __pyx_mstate_global->__pyx_codeobj_tab[4] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_epi_py, __pyx_mstate->__pyx_n_u_find_candidate, __pyx_mstate->__pyx_kp_b_iso88591_32EQ_LA_q_T_A_1D_r_U_A_4wb_E_1, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[4])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[4] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_epi_py, __pyx_mstate->__pyx_n_u_find_candidate, __pyx_mstate->__pyx_kp_b_iso88591_32EQ_LA_q_T_A_1D_r_U_A_4wb_E_1, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[4])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {0, 0, 0, 0, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 310};
     PyObject* const varnames[] = {0};
-    __pyx_mstate_global->__pyx_codeobj_tab[5] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_epi_py, __pyx_mstate->__pyx_n_u_is_compiled, __pyx_mstate->__pyx_kp_b_iso88591_Q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[5])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[5] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_epi_py, __pyx_mstate->__pyx_n_u_is_compiled, __pyx_mstate->__pyx_kp_b_iso88591_Q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[5])) goto bad;
   }
   Py_DECREF(tuple_dedup_map);
   return 0;

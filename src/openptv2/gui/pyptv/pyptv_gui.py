@@ -772,7 +772,13 @@ class TreeMenuHandler(Handler):
         else:
             print("Using default liboptv tracker")
             mainGui.tracker = ptv.py_trackcorr_init(mainGui)
-            mainGui.tracker.full_forward()
+            track_mode = mainGui.exp1.pm.parameters.get('track', {}).get('track_mode', 0)
+            if track_mode == 1:
+                print("Running 3D Segment Tracking...")
+                mainGui.tracker.full_forward_3d()
+            else:
+                print("Running Standard Epipolar Tracking...")
+                mainGui.tracker.full_forward()
             print("tracking without display finished")
 
     def track_disp_action(self, info):

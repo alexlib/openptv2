@@ -447,8 +447,12 @@ class TrackingDebugPanel(HasTraits):
             self.tracker = Tracker(cpar, vpar, tpar, spar, cals)
             self.tracker.restart()
 
+            track_params = self.main_gui.get_parameter("track") or {}
+            track_mode = track_params.get("track_mode", 0)
+
             for _ in range(self.num_frames):
-                if not self.tracker.step_forward():
+                step_success = self.tracker.step_forward_3d() if track_mode == 1 else self.tracker.step_forward()
+                if not step_success:
                     break
 
             self.status_text = f"Loaded {self.num_frames} frames. Click on a particle in the main GUI camera views."

@@ -3,12 +3,12 @@
 /* BEGIN: Cython Metadata
 {
     "distutils": {
-        "name": "algorithms.lsqadj",
+        "name": "openptv2.algorithms.lsqadj",
         "sources": [
-            "algorithms/lsqadj.py"
+            "src/openptv2/algorithms/lsqadj.py"
         ]
     },
-    "module_name": "algorithms.lsqadj"
+    "module_name": "openptv2.algorithms.lsqadj"
 }
 END: Cython Metadata */
 
@@ -1126,8 +1126,8 @@ static int __Pyx_init_co_variables(void) {
   #endif
 #endif
 
-#define __PYX_HAVE__algorithms__lsqadj
-#define __PYX_HAVE_API__algorithms__lsqadj
+#define __PYX_HAVE__openptv2__algorithms__lsqadj
+#define __PYX_HAVE_API__openptv2__algorithms__lsqadj
 /* Early includes */
 #ifdef _OPENMP
 #include <omp.h>
@@ -1345,7 +1345,7 @@ static const char *__pyx_filename;
 /* #### Code section: filename_table ### */
 
 static const char* const __pyx_f[] = {
-  "algorithms/lsqadj.py",
+  "src/openptv2/algorithms/lsqadj.py",
 };
 /* #### Code section: utility_code_proto_before_types ### */
 /* Atomics.proto (used by UnpackUnboundCMethod) */
@@ -2291,29 +2291,29 @@ static int __Pyx_State_RemoveModule(void*);
 
 /* Module declarations from "cython" */
 
-/* Module declarations from "algorithms.lsqadj" */
-static PyObject *__pyx_f_10algorithms_6lsqadj_ata(PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_6lsqadj_atl(PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_6lsqadj_matinv(PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_6lsqadj_matmul(PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_6lsqadj_norm_cross(PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+/* Module declarations from "openptv2.algorithms.lsqadj" */
+static PyObject *__pyx_f_8openptv2_10algorithms_6lsqadj_ata(PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_6lsqadj_atl(PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_6lsqadj_matinv(PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_6lsqadj_matmul(PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_6lsqadj_norm_cross(PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
 /* #### Code section: typeinfo ### */
 /* #### Code section: before_global_var ### */
-#define __Pyx_MODULE_NAME "algorithms.lsqadj"
-extern int __pyx_module_is_main_algorithms__lsqadj;
-int __pyx_module_is_main_algorithms__lsqadj = 0;
+#define __Pyx_MODULE_NAME "openptv2.algorithms.lsqadj"
+extern int __pyx_module_is_main_openptv2__algorithms__lsqadj;
+int __pyx_module_is_main_openptv2__algorithms__lsqadj = 0;
 
-/* Implementation of "algorithms.lsqadj" */
+/* Implementation of "openptv2.algorithms.lsqadj" */
 /* #### Code section: global_var ### */
 /* #### Code section: string_decls ### */
 static const char __pyx_k_Matrix_operations_for_least_squa[] = "Matrix operations for least-squares adjustment.\n\nTranslation of lib/src/lsqadj.c and lib/include/lsqadj.h.\n\nThese are the core matrix operations used in Gauss-Markov models:\n- ata: A^T @ A (normal equations matrix)\n- atl: A^T @ l (normal equations RHS)\n- matinv: matrix inversion via np.linalg.inv (LAPACK)\n- matmul: matrix-vector multiplication\n- norm_cross: normalized cross product of two 3-vectors\n\nAll functions operate on row-major (C-order) flat arrays to match\nthe C implementation's memory layout.\n";
 /* #### Code section: decls ### */
-static PyObject *__pyx_pf_10algorithms_6lsqadj_ata(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_a, PyObject *__pyx_v_m, PyObject *__pyx_v_n); /* proto */
-static PyObject *__pyx_pf_10algorithms_6lsqadj_2atl(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_a, PyObject *__pyx_v_l, PyObject *__pyx_v_m, PyObject *__pyx_v_n); /* proto */
-static PyObject *__pyx_pf_10algorithms_6lsqadj_4matinv(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_a, PyObject *__pyx_v_n); /* proto */
-static PyObject *__pyx_pf_10algorithms_6lsqadj_6matmul(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_b, PyObject *__pyx_v_c, PyObject *__pyx_v_m, PyObject *__pyx_v_n); /* proto */
-static PyObject *__pyx_pf_10algorithms_6lsqadj_8norm_cross(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_a, PyObject *__pyx_v_b); /* proto */
-static PyObject *__pyx_pf_10algorithms_6lsqadj_10is_compiled(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_6lsqadj_ata(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_a, PyObject *__pyx_v_m, PyObject *__pyx_v_n); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_6lsqadj_2atl(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_a, PyObject *__pyx_v_l, PyObject *__pyx_v_m, PyObject *__pyx_v_n); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_6lsqadj_4matinv(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_a, PyObject *__pyx_v_n); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_6lsqadj_6matmul(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_b, PyObject *__pyx_v_c, PyObject *__pyx_v_m, PyObject *__pyx_v_n); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_6lsqadj_8norm_cross(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_a, PyObject *__pyx_v_b); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_6lsqadj_10is_compiled(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
 /* #### Code section: late_includes ### */
 /* #### Code section: module_state ### */
 /* SmallCodeConfig */
@@ -2385,42 +2385,42 @@ static __pyx_mstatetype * const __pyx_mstate_global = &__pyx_mstate_global_stati
 #define __pyx_kp_u_Note_that_Cython_is_deliberately __pyx_string_tab[1]
 #define __pyx_kp_u__2 __pyx_string_tab[2]
 #define __pyx_kp_u_add_note __pyx_string_tab[3]
-#define __pyx_kp_u_algorithms_lsqadj_py __pyx_string_tab[4]
-#define __pyx_kp_u_algorithms_vec_utils __pyx_string_tab[5]
-#define __pyx_kp_u_np_ndarray __pyx_string_tab[6]
+#define __pyx_kp_u_np_ndarray __pyx_string_tab[4]
+#define __pyx_kp_u_openptv2_algorithms_vec_utils __pyx_string_tab[5]
+#define __pyx_kp_u_src_openptv2_algorithms_lsqadj_p __pyx_string_tab[6]
 #define __pyx_n_u_Pyx_PyDict_NextRef __pyx_string_tab[7]
 #define __pyx_n_u_T __pyx_string_tab[8]
 #define __pyx_n_u_a __pyx_string_tab[9]
-#define __pyx_n_u_algorithms_lsqadj __pyx_string_tab[10]
-#define __pyx_n_u_asarray __pyx_string_tab[11]
-#define __pyx_n_u_asyncio_coroutines __pyx_string_tab[12]
-#define __pyx_n_u_ata __pyx_string_tab[13]
-#define __pyx_n_u_atl __pyx_string_tab[14]
-#define __pyx_n_u_b __pyx_string_tab[15]
-#define __pyx_n_u_bool __pyx_string_tab[16]
-#define __pyx_n_u_c __pyx_string_tab[17]
-#define __pyx_n_u_class_getitem __pyx_string_tab[18]
-#define __pyx_n_u_cline_in_traceback __pyx_string_tab[19]
-#define __pyx_n_u_dtype __pyx_string_tab[20]
-#define __pyx_n_u_float64 __pyx_string_tab[21]
-#define __pyx_n_u_func __pyx_string_tab[22]
-#define __pyx_n_u_int __pyx_string_tab[23]
-#define __pyx_n_u_inv __pyx_string_tab[24]
-#define __pyx_n_u_is_compiled __pyx_string_tab[25]
-#define __pyx_n_u_is_coroutine __pyx_string_tab[26]
-#define __pyx_n_u_items __pyx_string_tab[27]
-#define __pyx_n_u_l __pyx_string_tab[28]
-#define __pyx_n_u_linalg __pyx_string_tab[29]
-#define __pyx_n_u_m __pyx_string_tab[30]
-#define __pyx_n_u_main __pyx_string_tab[31]
-#define __pyx_n_u_matinv __pyx_string_tab[32]
-#define __pyx_n_u_matmul __pyx_string_tab[33]
-#define __pyx_n_u_module __pyx_string_tab[34]
-#define __pyx_n_u_n __pyx_string_tab[35]
-#define __pyx_n_u_name __pyx_string_tab[36]
-#define __pyx_n_u_norm_cross __pyx_string_tab[37]
-#define __pyx_n_u_np __pyx_string_tab[38]
-#define __pyx_n_u_numpy __pyx_string_tab[39]
+#define __pyx_n_u_asarray __pyx_string_tab[10]
+#define __pyx_n_u_asyncio_coroutines __pyx_string_tab[11]
+#define __pyx_n_u_ata __pyx_string_tab[12]
+#define __pyx_n_u_atl __pyx_string_tab[13]
+#define __pyx_n_u_b __pyx_string_tab[14]
+#define __pyx_n_u_bool __pyx_string_tab[15]
+#define __pyx_n_u_c __pyx_string_tab[16]
+#define __pyx_n_u_class_getitem __pyx_string_tab[17]
+#define __pyx_n_u_cline_in_traceback __pyx_string_tab[18]
+#define __pyx_n_u_dtype __pyx_string_tab[19]
+#define __pyx_n_u_float64 __pyx_string_tab[20]
+#define __pyx_n_u_func __pyx_string_tab[21]
+#define __pyx_n_u_int __pyx_string_tab[22]
+#define __pyx_n_u_inv __pyx_string_tab[23]
+#define __pyx_n_u_is_compiled __pyx_string_tab[24]
+#define __pyx_n_u_is_coroutine __pyx_string_tab[25]
+#define __pyx_n_u_items __pyx_string_tab[26]
+#define __pyx_n_u_l __pyx_string_tab[27]
+#define __pyx_n_u_linalg __pyx_string_tab[28]
+#define __pyx_n_u_m __pyx_string_tab[29]
+#define __pyx_n_u_main __pyx_string_tab[30]
+#define __pyx_n_u_matinv __pyx_string_tab[31]
+#define __pyx_n_u_matmul __pyx_string_tab[32]
+#define __pyx_n_u_module __pyx_string_tab[33]
+#define __pyx_n_u_n __pyx_string_tab[34]
+#define __pyx_n_u_name __pyx_string_tab[35]
+#define __pyx_n_u_norm_cross __pyx_string_tab[36]
+#define __pyx_n_u_np __pyx_string_tab[37]
+#define __pyx_n_u_numpy __pyx_string_tab[38]
+#define __pyx_n_u_openptv2_algorithms_lsqadj __pyx_string_tab[39]
 #define __pyx_n_u_pop __pyx_string_tab[40]
 #define __pyx_n_u_qualname __pyx_string_tab[41]
 #define __pyx_n_u_ravel __pyx_string_tab[42]
@@ -2497,7 +2497,7 @@ return 0;
 #endif
 /* #### Code section: module_code ### */
 
-/* "algorithms/lsqadj.py":21
+/* "openptv2/algorithms/lsqadj.py":21
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -2505,14 +2505,14 @@ return 0;
  *     """Compute A^T @ A for a submatrix of A.
 */
 
-static PyObject *__pyx_pw_10algorithms_6lsqadj_1ata(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_6lsqadj_1ata(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_6lsqadj_ata(PyObject *__pyx_v_a, PyObject *__pyx_v_m, PyObject *__pyx_v_n, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_6lsqadj_ata(PyObject *__pyx_v_a, PyObject *__pyx_v_m, PyObject *__pyx_v_n, CYTHON_UNUSED int __pyx_skip_dispatch) {
   PyObject *__pyx_v_sub = NULL;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
@@ -2530,7 +2530,7 @@ static PyObject *__pyx_f_10algorithms_6lsqadj_ata(PyObject *__pyx_v_a, PyObject 
   __Pyx_RefNannySetupContext("ata", 0);
   __Pyx_INCREF(__pyx_v_a);
 
-  /* "algorithms/lsqadj.py":36
+  /* "openptv2/algorithms/lsqadj.py":36
  *         ndarray of shape (n, n) = A[:, :n]^T @ A[:, :n].
  *     """
  *     a = np.asarray(a, dtype=np.float64).reshape(m, -1)             # <<<<<<<<<<<<<<
@@ -2587,7 +2587,7 @@ static PyObject *__pyx_f_10algorithms_6lsqadj_ata(PyObject *__pyx_v_a, PyObject 
   __Pyx_DECREF_SET(__pyx_v_a, __pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "algorithms/lsqadj.py":37
+  /* "openptv2/algorithms/lsqadj.py":37
  *     """
  *     a = np.asarray(a, dtype=np.float64).reshape(m, -1)
  *     sub = a[:, :n]             # <<<<<<<<<<<<<<
@@ -2610,7 +2610,7 @@ static PyObject *__pyx_f_10algorithms_6lsqadj_ata(PyObject *__pyx_v_a, PyObject 
   __pyx_v_sub = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/lsqadj.py":38
+  /* "openptv2/algorithms/lsqadj.py":38
  *     a = np.asarray(a, dtype=np.float64).reshape(m, -1)
  *     sub = a[:, :n]
  *     return sub.T @ sub             # <<<<<<<<<<<<<<
@@ -2627,7 +2627,7 @@ static PyObject *__pyx_f_10algorithms_6lsqadj_ata(PyObject *__pyx_v_a, PyObject 
   __pyx_t_3 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/lsqadj.py":21
+  /* "openptv2/algorithms/lsqadj.py":21
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -2644,7 +2644,7 @@ static PyObject *__pyx_f_10algorithms_6lsqadj_ata(PyObject *__pyx_v_a, PyObject 
   __Pyx_XDECREF(__pyx_t_5);
   __Pyx_XDECREF(__pyx_t_6);
   __Pyx_XDECREF(__pyx_t_7);
-  __Pyx_AddTraceback("algorithms.lsqadj.ata", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.lsqadj.ata", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_sub);
@@ -2655,16 +2655,16 @@ static PyObject *__pyx_f_10algorithms_6lsqadj_ata(PyObject *__pyx_v_a, PyObject 
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_6lsqadj_1ata(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_6lsqadj_1ata(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_6lsqadj_ata, "Compute A^T @ A for a submatrix of A.\n\n    Matches the C `ata()` function. Computes the product of the transpose\n    of matrix A with A itself, for the first n columns.\n\n    Args:\n        a: matrix of shape (m, n_large) stored as flat array or 2D array.\n        m: number of rows in A.\n        n: number of columns to use (size of output matrix).\n\n    Returns:\n        ndarray of shape (n, n) = A[:, :n]^T @ A[:, :n].\n    ");
-static PyMethodDef __pyx_mdef_10algorithms_6lsqadj_1ata = {"ata", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_6lsqadj_1ata, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_6lsqadj_ata};
-static PyObject *__pyx_pw_10algorithms_6lsqadj_1ata(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_6lsqadj_ata, "Compute A^T @ A for a submatrix of A.\n\n    Matches the C `ata()` function. Computes the product of the transpose\n    of matrix A with A itself, for the first n columns.\n\n    Args:\n        a: matrix of shape (m, n_large) stored as flat array or 2D array.\n        m: number of rows in A.\n        n: number of columns to use (size of output matrix).\n\n    Returns:\n        ndarray of shape (n, n) = A[:, :n]^T @ A[:, :n].\n    ");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_6lsqadj_1ata = {"ata", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_6lsqadj_1ata, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_6lsqadj_ata};
+static PyObject *__pyx_pw_8openptv2_10algorithms_6lsqadj_1ata(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -2744,13 +2744,13 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.lsqadj.ata", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.lsqadj.ata", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
   if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_m), (&PyLong_Type), 0, "m", 2))) __PYX_ERR(0, 22, __pyx_L1_error)
   if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_n), (&PyLong_Type), 0, "n", 2))) __PYX_ERR(0, 22, __pyx_L1_error)
-  __pyx_r = __pyx_pf_10algorithms_6lsqadj_ata(__pyx_self, __pyx_v_a, __pyx_v_m, __pyx_v_n);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_6lsqadj_ata(__pyx_self, __pyx_v_a, __pyx_v_m, __pyx_v_n);
 
   /* function exit code */
   goto __pyx_L0;
@@ -2769,7 +2769,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_6lsqadj_ata(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_a, PyObject *__pyx_v_m, PyObject *__pyx_v_n) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_6lsqadj_ata(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_a, PyObject *__pyx_v_m, PyObject *__pyx_v_n) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -2786,7 +2786,7 @@ static PyObject *__pyx_pf_10algorithms_6lsqadj_ata(CYTHON_UNUSED PyObject *__pyx
     PyErr_SetString(PyExc_TypeError, "cannot pass None into a C function argument that is declared 'not None'");
     __PYX_ERR(0, 21, __pyx_L1_error)
   }
-  __pyx_t_1 = __pyx_f_10algorithms_6lsqadj_ata(__pyx_v_a, __pyx_v_m, __pyx_v_n, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 21, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_6lsqadj_ata(__pyx_v_a, __pyx_v_m, __pyx_v_n, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 21, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -2795,7 +2795,7 @@ static PyObject *__pyx_pf_10algorithms_6lsqadj_ata(CYTHON_UNUSED PyObject *__pyx
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.lsqadj.ata", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.lsqadj.ata", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -2803,7 +2803,7 @@ static PyObject *__pyx_pf_10algorithms_6lsqadj_ata(CYTHON_UNUSED PyObject *__pyx
   return __pyx_r;
 }
 
-/* "algorithms/lsqadj.py":41
+/* "openptv2/algorithms/lsqadj.py":41
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -2811,14 +2811,14 @@ static PyObject *__pyx_pf_10algorithms_6lsqadj_ata(CYTHON_UNUSED PyObject *__pyx
  *     """Compute A^T @ l for a submatrix of A.
 */
 
-static PyObject *__pyx_pw_10algorithms_6lsqadj_3atl(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_6lsqadj_3atl(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_6lsqadj_atl(PyObject *__pyx_v_a, PyObject *__pyx_v_l, PyObject *__pyx_v_m, PyObject *__pyx_v_n, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_6lsqadj_atl(PyObject *__pyx_v_a, PyObject *__pyx_v_l, PyObject *__pyx_v_m, PyObject *__pyx_v_n, CYTHON_UNUSED int __pyx_skip_dispatch) {
   PyObject *__pyx_v_sub = NULL;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
@@ -2837,7 +2837,7 @@ static PyObject *__pyx_f_10algorithms_6lsqadj_atl(PyObject *__pyx_v_a, PyObject 
   __Pyx_INCREF(__pyx_v_a);
   __Pyx_INCREF(__pyx_v_l);
 
-  /* "algorithms/lsqadj.py":56
+  /* "openptv2/algorithms/lsqadj.py":56
  *         ndarray of shape (n,) = A[:, :n]^T @ l.
  *     """
  *     a = np.asarray(a, dtype=np.float64).reshape(m, -1)             # <<<<<<<<<<<<<<
@@ -2894,7 +2894,7 @@ static PyObject *__pyx_f_10algorithms_6lsqadj_atl(PyObject *__pyx_v_a, PyObject 
   __Pyx_DECREF_SET(__pyx_v_a, __pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "algorithms/lsqadj.py":57
+  /* "openptv2/algorithms/lsqadj.py":57
  *     """
  *     a = np.asarray(a, dtype=np.float64).reshape(m, -1)
  *     l = np.asarray(l, dtype=np.float64).ravel()             # <<<<<<<<<<<<<<
@@ -2951,7 +2951,7 @@ static PyObject *__pyx_f_10algorithms_6lsqadj_atl(PyObject *__pyx_v_a, PyObject 
   __Pyx_DECREF_SET(__pyx_v_l, __pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "algorithms/lsqadj.py":58
+  /* "openptv2/algorithms/lsqadj.py":58
  *     a = np.asarray(a, dtype=np.float64).reshape(m, -1)
  *     l = np.asarray(l, dtype=np.float64).ravel()
  *     sub = a[:, :n]             # <<<<<<<<<<<<<<
@@ -2974,7 +2974,7 @@ static PyObject *__pyx_f_10algorithms_6lsqadj_atl(PyObject *__pyx_v_a, PyObject 
   __pyx_v_sub = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/lsqadj.py":59
+  /* "openptv2/algorithms/lsqadj.py":59
  *     l = np.asarray(l, dtype=np.float64).ravel()
  *     sub = a[:, :n]
  *     return sub.T @ l             # <<<<<<<<<<<<<<
@@ -2991,7 +2991,7 @@ static PyObject *__pyx_f_10algorithms_6lsqadj_atl(PyObject *__pyx_v_a, PyObject 
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/lsqadj.py":41
+  /* "openptv2/algorithms/lsqadj.py":41
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -3008,7 +3008,7 @@ static PyObject *__pyx_f_10algorithms_6lsqadj_atl(PyObject *__pyx_v_a, PyObject 
   __Pyx_XDECREF(__pyx_t_5);
   __Pyx_XDECREF(__pyx_t_6);
   __Pyx_XDECREF(__pyx_t_7);
-  __Pyx_AddTraceback("algorithms.lsqadj.atl", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.lsqadj.atl", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_sub);
@@ -3020,16 +3020,16 @@ static PyObject *__pyx_f_10algorithms_6lsqadj_atl(PyObject *__pyx_v_a, PyObject 
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_6lsqadj_3atl(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_6lsqadj_3atl(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_6lsqadj_2atl, "Compute A^T @ l for a submatrix of A.\n\n    Matches the C `atl()` function.\n\n    Args:\n        a: matrix of shape (m, n_large).\n        l: vector of shape (m,).\n        m: number of rows in A.\n        n: number of columns to use (length of output).\n\n    Returns:\n        ndarray of shape (n,) = A[:, :n]^T @ l.\n    ");
-static PyMethodDef __pyx_mdef_10algorithms_6lsqadj_3atl = {"atl", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_6lsqadj_3atl, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_6lsqadj_2atl};
-static PyObject *__pyx_pw_10algorithms_6lsqadj_3atl(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_6lsqadj_2atl, "Compute A^T @ l for a submatrix of A.\n\n    Matches the C `atl()` function.\n\n    Args:\n        a: matrix of shape (m, n_large).\n        l: vector of shape (m,).\n        m: number of rows in A.\n        n: number of columns to use (length of output).\n\n    Returns:\n        ndarray of shape (n,) = A[:, :n]^T @ l.\n    ");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_6lsqadj_3atl = {"atl", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_6lsqadj_3atl, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_6lsqadj_2atl};
+static PyObject *__pyx_pw_8openptv2_10algorithms_6lsqadj_3atl(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -3117,13 +3117,13 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.lsqadj.atl", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.lsqadj.atl", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
   if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_m), (&PyLong_Type), 0, "m", 2))) __PYX_ERR(0, 42, __pyx_L1_error)
   if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_n), (&PyLong_Type), 0, "n", 2))) __PYX_ERR(0, 42, __pyx_L1_error)
-  __pyx_r = __pyx_pf_10algorithms_6lsqadj_2atl(__pyx_self, __pyx_v_a, __pyx_v_l, __pyx_v_m, __pyx_v_n);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_6lsqadj_2atl(__pyx_self, __pyx_v_a, __pyx_v_l, __pyx_v_m, __pyx_v_n);
 
   /* function exit code */
   goto __pyx_L0;
@@ -3142,7 +3142,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_6lsqadj_2atl(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_a, PyObject *__pyx_v_l, PyObject *__pyx_v_m, PyObject *__pyx_v_n) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_6lsqadj_2atl(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_a, PyObject *__pyx_v_l, PyObject *__pyx_v_m, PyObject *__pyx_v_n) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -3159,7 +3159,7 @@ static PyObject *__pyx_pf_10algorithms_6lsqadj_2atl(CYTHON_UNUSED PyObject *__py
     PyErr_SetString(PyExc_TypeError, "cannot pass None into a C function argument that is declared 'not None'");
     __PYX_ERR(0, 41, __pyx_L1_error)
   }
-  __pyx_t_1 = __pyx_f_10algorithms_6lsqadj_atl(__pyx_v_a, __pyx_v_l, __pyx_v_m, __pyx_v_n, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 41, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_6lsqadj_atl(__pyx_v_a, __pyx_v_l, __pyx_v_m, __pyx_v_n, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 41, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -3168,7 +3168,7 @@ static PyObject *__pyx_pf_10algorithms_6lsqadj_2atl(CYTHON_UNUSED PyObject *__py
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.lsqadj.atl", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.lsqadj.atl", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -3176,7 +3176,7 @@ static PyObject *__pyx_pf_10algorithms_6lsqadj_2atl(CYTHON_UNUSED PyObject *__py
   return __pyx_r;
 }
 
-/* "algorithms/lsqadj.py":62
+/* "openptv2/algorithms/lsqadj.py":62
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -3184,14 +3184,14 @@ static PyObject *__pyx_pf_10algorithms_6lsqadj_2atl(CYTHON_UNUSED PyObject *__py
  *     """Invert a square matrix.
 */
 
-static PyObject *__pyx_pw_10algorithms_6lsqadj_5matinv(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_6lsqadj_5matinv(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_6lsqadj_matinv(PyObject *__pyx_v_a, PyObject *__pyx_v_n, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_6lsqadj_matinv(PyObject *__pyx_v_a, PyObject *__pyx_v_n, CYTHON_UNUSED int __pyx_skip_dispatch) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -3210,7 +3210,7 @@ static PyObject *__pyx_f_10algorithms_6lsqadj_matinv(PyObject *__pyx_v_a, PyObje
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("matinv", 0);
 
-  /* "algorithms/lsqadj.py":76
+  /* "openptv2/algorithms/lsqadj.py":76
  *         np.linalg.LinAlgError: if a is singular.
  *     """
  *     return np.linalg.inv(np.asarray(a, dtype=np.float64).reshape(-1, n)[:n, :n])             # <<<<<<<<<<<<<<
@@ -3302,7 +3302,7 @@ static PyObject *__pyx_f_10algorithms_6lsqadj_matinv(PyObject *__pyx_v_a, PyObje
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/lsqadj.py":62
+  /* "openptv2/algorithms/lsqadj.py":62
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -3322,7 +3322,7 @@ static PyObject *__pyx_f_10algorithms_6lsqadj_matinv(PyObject *__pyx_v_a, PyObje
   __Pyx_XDECREF(__pyx_t_8);
   __Pyx_XDECREF(__pyx_t_9);
   __Pyx_XDECREF(__pyx_t_10);
-  __Pyx_AddTraceback("algorithms.lsqadj.matinv", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.lsqadj.matinv", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -3331,16 +3331,16 @@ static PyObject *__pyx_f_10algorithms_6lsqadj_matinv(PyObject *__pyx_v_a, PyObje
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_6lsqadj_5matinv(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_6lsqadj_5matinv(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_6lsqadj_4matinv, "Invert a square matrix.\n\n    Args:\n        a: matrix of shape (n, n) or (n_large, n_large).\n        n: size of the sub-matrix to invert.\n\n    Returns:\n        Inverse of a[:n, :n] as ndarray of shape (n, n).\n\n    Raises:\n        np.linalg.LinAlgError: if a is singular.\n    ");
-static PyMethodDef __pyx_mdef_10algorithms_6lsqadj_5matinv = {"matinv", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_6lsqadj_5matinv, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_6lsqadj_4matinv};
-static PyObject *__pyx_pw_10algorithms_6lsqadj_5matinv(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_6lsqadj_4matinv, "Invert a square matrix.\n\n    Args:\n        a: matrix of shape (n, n) or (n_large, n_large).\n        n: size of the sub-matrix to invert.\n\n    Returns:\n        Inverse of a[:n, :n] as ndarray of shape (n, n).\n\n    Raises:\n        np.linalg.LinAlgError: if a is singular.\n    ");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_6lsqadj_5matinv = {"matinv", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_6lsqadj_5matinv, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_6lsqadj_4matinv};
+static PyObject *__pyx_pw_8openptv2_10algorithms_6lsqadj_5matinv(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -3411,12 +3411,12 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.lsqadj.matinv", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.lsqadj.matinv", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
   if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_n), (&PyLong_Type), 0, "n", 2))) __PYX_ERR(0, 63, __pyx_L1_error)
-  __pyx_r = __pyx_pf_10algorithms_6lsqadj_4matinv(__pyx_self, __pyx_v_a, __pyx_v_n);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_6lsqadj_4matinv(__pyx_self, __pyx_v_a, __pyx_v_n);
 
   /* function exit code */
   goto __pyx_L0;
@@ -3435,7 +3435,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_6lsqadj_4matinv(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_a, PyObject *__pyx_v_n) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_6lsqadj_4matinv(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_a, PyObject *__pyx_v_n) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -3448,7 +3448,7 @@ static PyObject *__pyx_pf_10algorithms_6lsqadj_4matinv(CYTHON_UNUSED PyObject *_
     PyErr_SetString(PyExc_TypeError, "cannot pass None into a C function argument that is declared 'not None'");
     __PYX_ERR(0, 62, __pyx_L1_error)
   }
-  __pyx_t_1 = __pyx_f_10algorithms_6lsqadj_matinv(__pyx_v_a, __pyx_v_n, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 62, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_6lsqadj_matinv(__pyx_v_a, __pyx_v_n, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 62, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -3457,7 +3457,7 @@ static PyObject *__pyx_pf_10algorithms_6lsqadj_4matinv(CYTHON_UNUSED PyObject *_
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.lsqadj.matinv", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.lsqadj.matinv", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -3465,7 +3465,7 @@ static PyObject *__pyx_pf_10algorithms_6lsqadj_4matinv(CYTHON_UNUSED PyObject *_
   return __pyx_r;
 }
 
-/* "algorithms/lsqadj.py":79
+/* "openptv2/algorithms/lsqadj.py":79
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -3473,14 +3473,14 @@ static PyObject *__pyx_pf_10algorithms_6lsqadj_4matinv(CYTHON_UNUSED PyObject *_
  *     """Compute b @ c for submatrix b and sub-vector c.
 */
 
-static PyObject *__pyx_pw_10algorithms_6lsqadj_7matmul(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_6lsqadj_7matmul(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_6lsqadj_matmul(PyObject *__pyx_v_b, PyObject *__pyx_v_c, PyObject *__pyx_v_m, PyObject *__pyx_v_n, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_6lsqadj_matmul(PyObject *__pyx_v_b, PyObject *__pyx_v_c, PyObject *__pyx_v_m, PyObject *__pyx_v_n, CYTHON_UNUSED int __pyx_skip_dispatch) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -3498,7 +3498,7 @@ static PyObject *__pyx_f_10algorithms_6lsqadj_matmul(PyObject *__pyx_v_b, PyObje
   __Pyx_INCREF(__pyx_v_b);
   __Pyx_INCREF(__pyx_v_c);
 
-  /* "algorithms/lsqadj.py":94
+  /* "openptv2/algorithms/lsqadj.py":94
  *         ndarray of shape (m,) = b[:m, :n] @ c[:n].
  *     """
  *     b = np.asarray(b, dtype=np.float64).reshape(-1, n)             # <<<<<<<<<<<<<<
@@ -3555,7 +3555,7 @@ static PyObject *__pyx_f_10algorithms_6lsqadj_matmul(PyObject *__pyx_v_b, PyObje
   __Pyx_DECREF_SET(__pyx_v_b, __pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "algorithms/lsqadj.py":95
+  /* "openptv2/algorithms/lsqadj.py":95
  *     """
  *     b = np.asarray(b, dtype=np.float64).reshape(-1, n)
  *     c = np.asarray(c, dtype=np.float64).ravel()             # <<<<<<<<<<<<<<
@@ -3612,7 +3612,7 @@ static PyObject *__pyx_f_10algorithms_6lsqadj_matmul(PyObject *__pyx_v_b, PyObje
   __Pyx_DECREF_SET(__pyx_v_c, __pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "algorithms/lsqadj.py":96
+  /* "openptv2/algorithms/lsqadj.py":96
  *     b = np.asarray(b, dtype=np.float64).reshape(-1, n)
  *     c = np.asarray(c, dtype=np.float64).ravel()
  *     return b[:m, :n] @ c[:n]             # <<<<<<<<<<<<<<
@@ -3645,7 +3645,7 @@ static PyObject *__pyx_f_10algorithms_6lsqadj_matmul(PyObject *__pyx_v_b, PyObje
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/lsqadj.py":79
+  /* "openptv2/algorithms/lsqadj.py":79
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -3662,7 +3662,7 @@ static PyObject *__pyx_f_10algorithms_6lsqadj_matmul(PyObject *__pyx_v_b, PyObje
   __Pyx_XDECREF(__pyx_t_5);
   __Pyx_XDECREF(__pyx_t_6);
   __Pyx_XDECREF(__pyx_t_7);
-  __Pyx_AddTraceback("algorithms.lsqadj.matmul", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.lsqadj.matmul", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_b);
@@ -3673,16 +3673,16 @@ static PyObject *__pyx_f_10algorithms_6lsqadj_matmul(PyObject *__pyx_v_b, PyObje
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_6lsqadj_7matmul(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_6lsqadj_7matmul(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_6lsqadj_6matmul, "Compute b @ c for submatrix b and sub-vector c.\n\n    Matches the C `matmul()` function.\n\n    Args:\n        b: matrix of shape (m, n).\n        c: vector of shape (n,).\n        m: number of rows in output.\n        n: number of columns.\n\n    Returns:\n        ndarray of shape (m,) = b[:m, :n] @ c[:n].\n    ");
-static PyMethodDef __pyx_mdef_10algorithms_6lsqadj_7matmul = {"matmul", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_6lsqadj_7matmul, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_6lsqadj_6matmul};
-static PyObject *__pyx_pw_10algorithms_6lsqadj_7matmul(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_6lsqadj_6matmul, "Compute b @ c for submatrix b and sub-vector c.\n\n    Matches the C `matmul()` function.\n\n    Args:\n        b: matrix of shape (m, n).\n        c: vector of shape (n,).\n        m: number of rows in output.\n        n: number of columns.\n\n    Returns:\n        ndarray of shape (m,) = b[:m, :n] @ c[:n].\n    ");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_6lsqadj_7matmul = {"matmul", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_6lsqadj_7matmul, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_6lsqadj_6matmul};
+static PyObject *__pyx_pw_8openptv2_10algorithms_6lsqadj_7matmul(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -3770,13 +3770,13 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.lsqadj.matmul", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.lsqadj.matmul", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
   if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_m), (&PyLong_Type), 0, "m", 2))) __PYX_ERR(0, 80, __pyx_L1_error)
   if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_n), (&PyLong_Type), 0, "n", 2))) __PYX_ERR(0, 80, __pyx_L1_error)
-  __pyx_r = __pyx_pf_10algorithms_6lsqadj_6matmul(__pyx_self, __pyx_v_b, __pyx_v_c, __pyx_v_m, __pyx_v_n);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_6lsqadj_6matmul(__pyx_self, __pyx_v_b, __pyx_v_c, __pyx_v_m, __pyx_v_n);
 
   /* function exit code */
   goto __pyx_L0;
@@ -3795,7 +3795,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_6lsqadj_6matmul(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_b, PyObject *__pyx_v_c, PyObject *__pyx_v_m, PyObject *__pyx_v_n) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_6lsqadj_6matmul(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_b, PyObject *__pyx_v_c, PyObject *__pyx_v_m, PyObject *__pyx_v_n) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -3812,7 +3812,7 @@ static PyObject *__pyx_pf_10algorithms_6lsqadj_6matmul(CYTHON_UNUSED PyObject *_
     PyErr_SetString(PyExc_TypeError, "cannot pass None into a C function argument that is declared 'not None'");
     __PYX_ERR(0, 79, __pyx_L1_error)
   }
-  __pyx_t_1 = __pyx_f_10algorithms_6lsqadj_matmul(__pyx_v_b, __pyx_v_c, __pyx_v_m, __pyx_v_n, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 79, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_6lsqadj_matmul(__pyx_v_b, __pyx_v_c, __pyx_v_m, __pyx_v_n, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 79, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -3821,7 +3821,7 @@ static PyObject *__pyx_pf_10algorithms_6lsqadj_6matmul(CYTHON_UNUSED PyObject *_
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.lsqadj.matmul", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.lsqadj.matmul", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -3829,7 +3829,7 @@ static PyObject *__pyx_pf_10algorithms_6lsqadj_6matmul(CYTHON_UNUSED PyObject *_
   return __pyx_r;
 }
 
-/* "algorithms/lsqadj.py":99
+/* "openptv2/algorithms/lsqadj.py":99
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -3837,14 +3837,14 @@ static PyObject *__pyx_pf_10algorithms_6lsqadj_6matmul(CYTHON_UNUSED PyObject *_
  *     """Compute the normalized cross product of two 3-vectors.
 */
 
-static PyObject *__pyx_pw_10algorithms_6lsqadj_9norm_cross(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_6lsqadj_9norm_cross(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_6lsqadj_norm_cross(PyObject *__pyx_v_a, PyObject *__pyx_v_b, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_6lsqadj_norm_cross(PyObject *__pyx_v_a, PyObject *__pyx_v_b, CYTHON_UNUSED int __pyx_skip_dispatch) {
   PyObject *__pyx_v_vec_cross = NULL;
   PyObject *__pyx_v_unit_vector = NULL;
   PyObject *__pyx_v_cross = NULL;
@@ -3861,7 +3861,7 @@ static PyObject *__pyx_f_10algorithms_6lsqadj_norm_cross(PyObject *__pyx_v_a, Py
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("norm_cross", 0);
 
-  /* "algorithms/lsqadj.py":110
+  /* "openptv2/algorithms/lsqadj.py":110
  *         Unit vector in direction of a x b.
  *     """
  *     from .vec_utils import vec_cross, unit_vector             # <<<<<<<<<<<<<<
@@ -3870,7 +3870,7 @@ static PyObject *__pyx_f_10algorithms_6lsqadj_norm_cross(PyObject *__pyx_v_a, Py
 */
   {
     PyObject* const __pyx_imported_names[] = {__pyx_mstate_global->__pyx_n_u_vec_cross,__pyx_mstate_global->__pyx_n_u_unit_vector};
-    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_vec_utils, __pyx_imported_names, 2, __pyx_mstate_global->__pyx_kp_u_algorithms_vec_utils, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 110, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_vec_utils, __pyx_imported_names, 2, __pyx_mstate_global->__pyx_kp_u_openptv2_algorithms_vec_utils, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 110, __pyx_L1_error)
   }
   __pyx_t_1 = __pyx_t_2;
   __Pyx_GOTREF(__pyx_t_1);
@@ -3895,7 +3895,7 @@ static PyObject *__pyx_f_10algorithms_6lsqadj_norm_cross(PyObject *__pyx_v_a, Py
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/lsqadj.py":112
+  /* "openptv2/algorithms/lsqadj.py":112
  *     from .vec_utils import vec_cross, unit_vector
  * 
  *     cross = vec_cross(a, b)             # <<<<<<<<<<<<<<
@@ -3928,7 +3928,7 @@ static PyObject *__pyx_f_10algorithms_6lsqadj_norm_cross(PyObject *__pyx_v_a, Py
   __pyx_v_cross = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/lsqadj.py":113
+  /* "openptv2/algorithms/lsqadj.py":113
  * 
  *     cross = vec_cross(a, b)
  *     return unit_vector(cross)             # <<<<<<<<<<<<<<
@@ -3963,7 +3963,7 @@ static PyObject *__pyx_f_10algorithms_6lsqadj_norm_cross(PyObject *__pyx_v_a, Py
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/lsqadj.py":99
+  /* "openptv2/algorithms/lsqadj.py":99
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -3976,7 +3976,7 @@ static PyObject *__pyx_f_10algorithms_6lsqadj_norm_cross(PyObject *__pyx_v_a, Py
   __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_5);
-  __Pyx_AddTraceback("algorithms.lsqadj.norm_cross", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.lsqadj.norm_cross", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_vec_cross);
@@ -3988,16 +3988,16 @@ static PyObject *__pyx_f_10algorithms_6lsqadj_norm_cross(PyObject *__pyx_v_a, Py
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_6lsqadj_9norm_cross(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_6lsqadj_9norm_cross(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_6lsqadj_8norm_cross, "Compute the normalized cross product of two 3-vectors.\n\n    Args:\n        a: first 3-vector.\n        b: second 3-vector.\n\n    Returns:\n        Unit vector in direction of a x b.\n    ");
-static PyMethodDef __pyx_mdef_10algorithms_6lsqadj_9norm_cross = {"norm_cross", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_6lsqadj_9norm_cross, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_6lsqadj_8norm_cross};
-static PyObject *__pyx_pw_10algorithms_6lsqadj_9norm_cross(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_6lsqadj_8norm_cross, "Compute the normalized cross product of two 3-vectors.\n\n    Args:\n        a: first 3-vector.\n        b: second 3-vector.\n\n    Returns:\n        Unit vector in direction of a x b.\n    ");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_6lsqadj_9norm_cross = {"norm_cross", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_6lsqadj_9norm_cross, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_6lsqadj_8norm_cross};
+static PyObject *__pyx_pw_8openptv2_10algorithms_6lsqadj_9norm_cross(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -4067,11 +4067,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.lsqadj.norm_cross", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.lsqadj.norm_cross", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_6lsqadj_8norm_cross(__pyx_self, __pyx_v_a, __pyx_v_b);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_6lsqadj_8norm_cross(__pyx_self, __pyx_v_a, __pyx_v_b);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -4081,7 +4081,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_6lsqadj_8norm_cross(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_a, PyObject *__pyx_v_b) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_6lsqadj_8norm_cross(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_a, PyObject *__pyx_v_b) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -4090,7 +4090,7 @@ static PyObject *__pyx_pf_10algorithms_6lsqadj_8norm_cross(CYTHON_UNUSED PyObjec
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("norm_cross", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_6lsqadj_norm_cross(__pyx_v_a, __pyx_v_b, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 99, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_6lsqadj_norm_cross(__pyx_v_a, __pyx_v_b, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 99, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -4099,7 +4099,7 @@ static PyObject *__pyx_pf_10algorithms_6lsqadj_8norm_cross(CYTHON_UNUSED PyObjec
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.lsqadj.norm_cross", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.lsqadj.norm_cross", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -4107,7 +4107,7 @@ static PyObject *__pyx_pf_10algorithms_6lsqadj_8norm_cross(CYTHON_UNUSED PyObjec
   return __pyx_r;
 }
 
-/* "algorithms/lsqadj.py":116
+/* "openptv2/algorithms/lsqadj.py":116
  * 
  * 
  * def is_compiled() -> bool:             # <<<<<<<<<<<<<<
@@ -4116,28 +4116,28 @@ static PyObject *__pyx_pf_10algorithms_6lsqadj_8norm_cross(CYTHON_UNUSED PyObjec
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_6lsqadj_11is_compiled(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_6lsqadj_10is_compiled, "Return whether this module is compiled to C.");
-static PyMethodDef __pyx_mdef_10algorithms_6lsqadj_11is_compiled = {"is_compiled", (PyCFunction)__pyx_pw_10algorithms_6lsqadj_11is_compiled, METH_NOARGS, __pyx_doc_10algorithms_6lsqadj_10is_compiled};
-static PyObject *__pyx_pw_10algorithms_6lsqadj_11is_compiled(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_8openptv2_10algorithms_6lsqadj_11is_compiled(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_6lsqadj_10is_compiled, "Return whether this module is compiled to C.");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_6lsqadj_11is_compiled = {"is_compiled", (PyCFunction)__pyx_pw_8openptv2_10algorithms_6lsqadj_11is_compiled, METH_NOARGS, __pyx_doc_8openptv2_10algorithms_6lsqadj_10is_compiled};
+static PyObject *__pyx_pw_8openptv2_10algorithms_6lsqadj_11is_compiled(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused) {
   CYTHON_UNUSED PyObject *const *__pyx_kwvalues;
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("is_compiled (wrapper)", 0);
   __pyx_kwvalues = __Pyx_KwValues_VARARGS(__pyx_args, __pyx_nargs);
-  __pyx_r = __pyx_pf_10algorithms_6lsqadj_10is_compiled(__pyx_self);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_6lsqadj_10is_compiled(__pyx_self);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_6lsqadj_10is_compiled(CYTHON_UNUSED PyObject *__pyx_self) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_6lsqadj_10is_compiled(CYTHON_UNUSED PyObject *__pyx_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("is_compiled", 0);
 
-  /* "algorithms/lsqadj.py":118
+  /* "openptv2/algorithms/lsqadj.py":118
  * def is_compiled() -> bool:
  *     """Return whether this module is compiled to C."""
  *     return cython.compiled             # <<<<<<<<<<<<<<
@@ -4147,7 +4147,7 @@ static PyObject *__pyx_pf_10algorithms_6lsqadj_10is_compiled(CYTHON_UNUSED PyObj
   __pyx_r = Py_True;
   goto __pyx_L0;
 
-  /* "algorithms/lsqadj.py":116
+  /* "openptv2/algorithms/lsqadj.py":116
  * 
  * 
  * def is_compiled() -> bool:             # <<<<<<<<<<<<<<
@@ -4487,13 +4487,13 @@ __Pyx_RefNannySetupContext("PyInit_lsqadj", 0);
   if (__Pyx_InitConstants(__pyx_mstate) < (0)) __PYX_ERR(0, 1, __pyx_L1_error)
   stringtab_initialized = 1;
   if (__Pyx_InitGlobals() < (0)) __PYX_ERR(0, 1, __pyx_L1_error)
-  if (__pyx_module_is_main_algorithms__lsqadj) {
+  if (__pyx_module_is_main_openptv2__algorithms__lsqadj) {
     if (PyObject_SetAttr(__pyx_m, __pyx_mstate_global->__pyx_n_u_name, __pyx_mstate_global->__pyx_n_u_main) < (0)) __PYX_ERR(0, 1, __pyx_L1_error)
   }
   {
     PyObject *modules = PyImport_GetModuleDict(); if (unlikely(!modules)) __PYX_ERR(0, 1, __pyx_L1_error)
-    if (!PyDict_GetItemString(modules, "algorithms.lsqadj")) {
-      if (unlikely((PyDict_SetItemString(modules, "algorithms.lsqadj", __pyx_m) < 0))) __PYX_ERR(0, 1, __pyx_L1_error)
+    if (!PyDict_GetItemString(modules, "openptv2.algorithms.lsqadj")) {
+      if (unlikely((PyDict_SetItemString(modules, "openptv2.algorithms.lsqadj", __pyx_m) < 0))) __PYX_ERR(0, 1, __pyx_L1_error)
     }
   }
   /*--- Builtin init code ---*/
@@ -4511,7 +4511,7 @@ __Pyx_RefNannySetupContext("PyInit_lsqadj", 0);
   (void)__Pyx_modinit_function_import_code(__pyx_mstate);
   /*--- Execution code ---*/
 
-  /* "algorithms/lsqadj.py":18
+  /* "openptv2/algorithms/lsqadj.py":18
  * 
  * 
  * import numpy as np             # <<<<<<<<<<<<<<
@@ -4524,7 +4524,7 @@ __Pyx_RefNannySetupContext("PyInit_lsqadj", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_np, __pyx_t_2) < (0)) __PYX_ERR(0, 18, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/lsqadj.py":21
+  /* "openptv2/algorithms/lsqadj.py":21
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -4536,7 +4536,7 @@ __Pyx_RefNannySetupContext("PyInit_lsqadj", 0);
   if (PyDict_SetItem(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_a, __pyx_mstate_global->__pyx_kp_u_np_ndarray) < (0)) __PYX_ERR(0, 21, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_m, __pyx_mstate_global->__pyx_n_u_int) < (0)) __PYX_ERR(0, 21, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_n, __pyx_mstate_global->__pyx_n_u_int) < (0)) __PYX_ERR(0, 21, __pyx_L1_error)
-  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_6lsqadj_1ata, 0, __pyx_mstate_global->__pyx_n_u_ata, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_lsqadj, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[0])); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 21, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_6lsqadj_1ata, 0, __pyx_mstate_global->__pyx_n_u_ata, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_lsqadj, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[0])); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 21, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_3);
@@ -4546,7 +4546,7 @@ __Pyx_RefNannySetupContext("PyInit_lsqadj", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_ata, __pyx_t_3) < (0)) __PYX_ERR(0, 21, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-  /* "algorithms/lsqadj.py":41
+  /* "openptv2/algorithms/lsqadj.py":41
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -4559,7 +4559,7 @@ __Pyx_RefNannySetupContext("PyInit_lsqadj", 0);
   if (PyDict_SetItem(__pyx_t_3, __pyx_mstate_global->__pyx_n_u_l, __pyx_mstate_global->__pyx_kp_u_np_ndarray) < (0)) __PYX_ERR(0, 41, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_3, __pyx_mstate_global->__pyx_n_u_m, __pyx_mstate_global->__pyx_n_u_int) < (0)) __PYX_ERR(0, 41, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_3, __pyx_mstate_global->__pyx_n_u_n, __pyx_mstate_global->__pyx_n_u_int) < (0)) __PYX_ERR(0, 41, __pyx_L1_error)
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_6lsqadj_3atl, 0, __pyx_mstate_global->__pyx_n_u_atl, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_lsqadj, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[1])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 41, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_6lsqadj_3atl, 0, __pyx_mstate_global->__pyx_n_u_atl, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_lsqadj, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[1])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 41, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -4569,7 +4569,7 @@ __Pyx_RefNannySetupContext("PyInit_lsqadj", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_atl, __pyx_t_2) < (0)) __PYX_ERR(0, 41, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/lsqadj.py":62
+  /* "openptv2/algorithms/lsqadj.py":62
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -4580,7 +4580,7 @@ __Pyx_RefNannySetupContext("PyInit_lsqadj", 0);
   __Pyx_GOTREF(__pyx_t_2);
   if (PyDict_SetItem(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_a, __pyx_mstate_global->__pyx_kp_u_np_ndarray) < (0)) __PYX_ERR(0, 62, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_n, __pyx_mstate_global->__pyx_n_u_int) < (0)) __PYX_ERR(0, 62, __pyx_L1_error)
-  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_6lsqadj_5matinv, 0, __pyx_mstate_global->__pyx_n_u_matinv, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_lsqadj, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[2])); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 62, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_6lsqadj_5matinv, 0, __pyx_mstate_global->__pyx_n_u_matinv, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_lsqadj, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[2])); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 62, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_3);
@@ -4590,7 +4590,7 @@ __Pyx_RefNannySetupContext("PyInit_lsqadj", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_matinv, __pyx_t_3) < (0)) __PYX_ERR(0, 62, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-  /* "algorithms/lsqadj.py":79
+  /* "openptv2/algorithms/lsqadj.py":79
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -4603,7 +4603,7 @@ __Pyx_RefNannySetupContext("PyInit_lsqadj", 0);
   if (PyDict_SetItem(__pyx_t_3, __pyx_mstate_global->__pyx_n_u_c, __pyx_mstate_global->__pyx_kp_u_np_ndarray) < (0)) __PYX_ERR(0, 79, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_3, __pyx_mstate_global->__pyx_n_u_m, __pyx_mstate_global->__pyx_n_u_int) < (0)) __PYX_ERR(0, 79, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_3, __pyx_mstate_global->__pyx_n_u_n, __pyx_mstate_global->__pyx_n_u_int) < (0)) __PYX_ERR(0, 79, __pyx_L1_error)
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_6lsqadj_7matmul, 0, __pyx_mstate_global->__pyx_n_u_matmul, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_lsqadj, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[3])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 79, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_6lsqadj_7matmul, 0, __pyx_mstate_global->__pyx_n_u_matmul, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_lsqadj, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[3])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 79, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -4613,7 +4613,7 @@ __Pyx_RefNannySetupContext("PyInit_lsqadj", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_matmul, __pyx_t_2) < (0)) __PYX_ERR(0, 79, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/lsqadj.py":99
+  /* "openptv2/algorithms/lsqadj.py":99
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -4624,7 +4624,7 @@ __Pyx_RefNannySetupContext("PyInit_lsqadj", 0);
   __Pyx_GOTREF(__pyx_t_2);
   if (PyDict_SetItem(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_a, __pyx_mstate_global->__pyx_kp_u_np_ndarray) < (0)) __PYX_ERR(0, 99, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_b, __pyx_mstate_global->__pyx_kp_u_np_ndarray) < (0)) __PYX_ERR(0, 99, __pyx_L1_error)
-  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_6lsqadj_9norm_cross, 0, __pyx_mstate_global->__pyx_n_u_norm_cross, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_lsqadj, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[4])); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 99, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_6lsqadj_9norm_cross, 0, __pyx_mstate_global->__pyx_n_u_norm_cross, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_lsqadj, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[4])); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 99, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_3);
@@ -4634,7 +4634,7 @@ __Pyx_RefNannySetupContext("PyInit_lsqadj", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_norm_cross, __pyx_t_3) < (0)) __PYX_ERR(0, 99, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-  /* "algorithms/lsqadj.py":116
+  /* "openptv2/algorithms/lsqadj.py":116
  * 
  * 
  * def is_compiled() -> bool:             # <<<<<<<<<<<<<<
@@ -4644,7 +4644,7 @@ __Pyx_RefNannySetupContext("PyInit_lsqadj", 0);
   __pyx_t_3 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 116, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   if (PyDict_SetItem(__pyx_t_3, __pyx_mstate_global->__pyx_n_u_return, __pyx_mstate_global->__pyx_n_u_bool) < (0)) __PYX_ERR(0, 116, __pyx_L1_error)
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_6lsqadj_11is_compiled, 0, __pyx_mstate_global->__pyx_n_u_is_compiled, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_lsqadj, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[5])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 116, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_6lsqadj_11is_compiled, 0, __pyx_mstate_global->__pyx_n_u_is_compiled, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_lsqadj, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[5])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 116, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -4654,7 +4654,7 @@ __Pyx_RefNannySetupContext("PyInit_lsqadj", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_is_compiled, __pyx_t_2) < (0)) __PYX_ERR(0, 116, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/lsqadj.py":1
+  /* "openptv2/algorithms/lsqadj.py":1
  * """Matrix operations for least-squares adjustment.             # <<<<<<<<<<<<<<
  * 
  * Translation of lib/src/lsqadj.c and lib/include/lsqadj.h.
@@ -4672,7 +4672,7 @@ __Pyx_RefNannySetupContext("PyInit_lsqadj", 0);
   __Pyx_XDECREF(__pyx_t_3);
   if (__pyx_m) {
     if (__pyx_mstate->__pyx_d && stringtab_initialized) {
-      __Pyx_AddTraceback("init algorithms.lsqadj", __pyx_clineno, __pyx_lineno, __pyx_filename);
+      __Pyx_AddTraceback("init openptv2.algorithms.lsqadj", __pyx_clineno, __pyx_lineno, __pyx_filename);
     }
     #if !CYTHON_USE_MODULE_STATE
     Py_CLEAR(__pyx_m);
@@ -4686,7 +4686,7 @@ __Pyx_RefNannySetupContext("PyInit_lsqadj", 0);
     }
     #endif
   } else if (!PyErr_Occurred()) {
-    PyErr_SetString(PyExc_ImportError, "init algorithms.lsqadj");
+    PyErr_SetString(PyExc_ImportError, "init openptv2.algorithms.lsqadj");
   }
   __pyx_L0:;
   __Pyx_RefNannyFinishContext();
@@ -4718,7 +4718,7 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
   CYTHON_UNUSED_VAR(__pyx_mstate);
   __Pyx_RefNannySetupContext("__Pyx_InitCachedConstants", 0);
 
-  /* "algorithms/lsqadj.py":37
+  /* "openptv2/algorithms/lsqadj.py":37
  *     """
  *     a = np.asarray(a, dtype=np.float64).reshape(m, -1)
  *     sub = a[:, :n]             # <<<<<<<<<<<<<<
@@ -4762,25 +4762,25 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
 static int __Pyx_InitConstants(__pyx_mstatetype *__pyx_mstate) {
   CYTHON_UNUSED_VAR(__pyx_mstate);
   {
-    const struct { const unsigned int length: 8; } index[] = {{1},{179},{1},{8},{20},{20},{10},{20},{1},{1},{17},{7},{18},{3},{3},{1},{4},{1},{17},{18},{5},{7},{8},{3},{3},{11},{13},{5},{1},{6},{1},{8},{6},{6},{10},{1},{8},{10},{2},{5},{3},{12},{5},{7},{6},{12},{10},{8},{11},{6},{9},{9},{79},{56},{78},{10},{48},{39}};
-    #if (CYTHON_COMPRESS_STRINGS) == 2 /* compression: bz2 (675 bytes) */
-const char* const cstring = "BZh91AY&SY:\327AK\000\000A\177\377\366}>^h\303\277H\277at\200\277\377\377`@@@@@@@@@@@@@\000@\000@\002\0355\000\201\242#I\241\241=O@\3214\311\210\0312\r\r\r\r\000\304\017S\023\315S\365A\251\221\240\2314\230\236\222z\t\246\241\352\017P\000\001\240\000\000\003i\016h\321\241\246\020\r0&\232\000\310hb\000\321\210\320\301\031\000\032\221\250\003\324h\000\032\000\000\000\000\000\000\036\240zA\331\024t\203\234w 9\001~,\000\372\020\014@\240Y\311\014P\304$\001BI\203&\321\014\333l4\2262c\023TUAV\036\321\351\277\247\227\336<\rH\227>ZcAsf\245\nT\275\261L\207\rHSf.G\010+3\317-\364\257\365\001\311\241\327\214\220C/^V\205\030e$\353[\001) \374\310e{6\023\276\365{\330\261\265\356\005\031\232\361\321\024\345\204\377{\3573\327\277\204\313I\031T 4\007=)m\026\214\202\215\006A\300j\r?\251\026\343\321l=.7\347oD\305\022\354^D\024w\351\324'\225\322n[iq\352b\270\266\322T\033\361\312\3125R2\324\320J\332A\341\252\330$\365\214\307\013d\014r\345\205\033\237\013pTS\211\252\300\263\344{\267\333\241o[\352Ue\231\323\004\367\247\002+\252\316K\3712+>*\021;\200\224IJ?\364f\3012\305\356\013\010\263\030\026\\\364J\322\311(\366\250<2\025\222\222\345\351\260\006\330\353Y\255\r\277mg\002b\016\013-\027\"\216o\316\247\344j.\240\350\033\ty\n\033\037[hJF6\205pL\010L\024xj\256\226\267L2\252\266\210\334\027\244\257X8\311\226\224\311\n\365\350\270^{\206\023&V/\256\210\333\000\302\340b\320Q\335S\3373\026)\201odV%0\307\"\020h\021\010\345\0221\te\272\266\"T\327\254\201\2546\250\000\265]`\250\205\357\025@\303\301\302&\232Q%\320p\2169\037\031j\252\342\021\024\272Y\215\267]\027J\007\320T8\225\\\335\202y5\"\241\374s:?\263\014\345\3303\220\355\320b r\223\253X\\a\353\2422\026\374D\322\014\305\252E\322\234B\306<x'\353\251\244P\223\t\005\212\204 \245\242\276\316\021t\313&\034\205\322T\250\205\342\211f\316{\360\332\227)t\2570\\3\2628\014\205\304\244\315M\377\213\271\"\234(H\035k\240\245\200";
-    PyObject *data = __Pyx_DecompressString(cstring, 675, 2);
+    const struct { const unsigned int length: 8; } index[] = {{1},{179},{1},{8},{10},{29},{33},{20},{1},{1},{7},{18},{3},{3},{1},{4},{1},{17},{18},{5},{7},{8},{3},{3},{11},{13},{5},{1},{6},{1},{8},{6},{6},{10},{1},{8},{10},{2},{5},{26},{3},{12},{5},{7},{6},{12},{10},{8},{11},{6},{9},{9},{79},{56},{78},{10},{48},{39}};
+    #if (CYTHON_COMPRESS_STRINGS) == 2 /* compression: bz2 (700 bytes) */
+const char* const cstring = "BZh91AY&SY\213=u\233\000\000A\177\377\366}>^h\303\277H\277at\200\277\377\377`@@@@@@@@@@@@@\000@\000@\002=54\014\303H!2dC\032\236\20144\365\001\246\324\r\r\017Pz\203G\244\036\247\246\247\232\232\203B\006\221\240L\322&\231\250\3244\036\243@\000\000\000\001\2406\241\315\03244\302\001\246\004\323@\031\r\014@\0321\032\030# \003DMS\324\314\246\324\331\003(\323\t\350\230\230F\200\323F\000\231\0034C\3123\204\323p\301\000\330B\002\t\375\210\001\374!\014\220hE$\231H\\\030\t\006\200\312#\303\031e\202QM5iE\261l\345tf\236\\R\363g\237\032hC\037I\245!M\266\203\256\273X\006\271\016\027\256#fNV\010/\356\343\212\354\026\022\257\343\244\332\031\254*\327\322G$\020\212\030\222\036\276\312\r\261\272\002\030Br\327,[\3168rQ\361k\007E`\016\232\321\232\262\245\333\243^;\257D\331\273\205\017#C\2402/\006*!\013\037\t\210.c\230\203\000\313\204\353Lw\350\316\370q\253\2437\004\217\254J\301\210\366\254\377\263\350-/\351\303\013\247\024\311\245\263\213\\\260\034\272oWa\002\222\036P\006[\306\"\036[\005J\301\212F\352\202\r\330Fo\336\306\354J\236\027\026\007\307l\037\313v\373\025\213\"\250\336G\235+\006\252\251\312+\213D\344\\d\363\244\030C`2\301\221\"\026$,$\033\274+\204\205%\002a\312zZ\270\235d\2119\344\025\247\032\214\235\231\232\254\002\026B\346\36099\274\n\"mp\321e\3033\211+]$\266\275\314\240B(\323e\247\035\213S\346d\346\276gNc'\342b\260r\312\232\347s\365F\3419\225\252*\3003Q\301\201%SP\257K\r\331\031b\335S\030\246\321\236\303ma\363\263;\341h\032/\0103\003\226\332\025iAa41[K\004\253\r\203\\\r\340R\303t\010\334\347\033\017mMs\250z\260\321\201\037D@ia`\240\305\361\024E\002\204\215(\355\005\255\357\253\240\242[\367,\252\312\213\314R\020\261\276Z\r\361\210\342)\336\205o\036\020\212&\025\227\365\372y\0263\351\370\021\227p\214\207~s\017\320j\210\206`\251\303\217\211\310a\2106B\234\232(S\265\210_\313\227\035y\236\224jQ\001\005\007\210Yv;\326 \017\230\273`\204\272\211\333A]\022(\324\344\305si\252\212w\247\374>gDW2\017\245&|\n\336.\344\212p\241!\026z\3536";
+    PyObject *data = __Pyx_DecompressString(cstring, 700, 2);
     if (unlikely(!data)) __PYX_ERR(0, 1, __pyx_L1_error)
     const char* const bytes = __Pyx_PyBytes_AsString(data);
     #if !CYTHON_ASSUME_SAFE_MACROS
     if (likely(bytes)); else { Py_DECREF(data); __PYX_ERR(0, 1, __pyx_L1_error) }
     #endif
-    #elif (CYTHON_COMPRESS_STRINGS) != 0 /* compression: zlib (586 bytes) */
-const char* const cstring = "x\332}\220=O\033A\020\206\r2\022\301(\222\t\221\"\222HkQ\220&\207\010$B\242\210\370H\024\032\204\255H)W\343\2739\274do\367\274;gq]\312+\267\274\322\245K\227)]RR\272\344'\360\023\262g\243\004E$\305\215fo\336\347\235\217\340L\0232\352\001\261\343\234zZ1aY\204Rt\321\000\241\314\231%#BBS\211\024;\377t\376vo\177\217\201\212\230\301K\014\3112\233uC\t\326\242e:f\335LH\022\212Q\236\242\r\330i\314r\2351\205\0301\322,\365\272\207\000\365P1\213T%l\013\224\322\004$\264\342\036\027\352b\213E\302\370&b\200\025\375\031\244\305\340#D\021\367B\004y\241\215\240^b\267\245\355Ct\031\244\371\237\177\301\000C\236\221\220V\245\201\212\300\030\3109?\317\257\374w\342W\342gxE\035\214\277\302\003f\356\003v\246\006\233\253P\350 \324F{#\205\026\010\200d\267\253\265\0149\237-\301/\220\004aR=\275\204\013?\273\201\020\273\020~\217\252#\304R\003}\330\343<\316\224\207\204\362N\003ay\250\223TH\214\370,\277\357P9Y\351\215\374L\3362\001o\347c\205\370\230d\322\277t\224I\344\334\027\024$U\242M\302C\243\255_TeI\232\247:\345\274\237\201\234\327\r\014P\032\264=H\321 e\306\223\376\344\367\264\317\"\214!\223\3049\241\3651S\202\270?\036i3\000\231\241\255\0169\363\377}\321\037\013\323\306F\271=z1n\336\275\252-=)\026\2137\256\345v]\\\036\225bx5\352\217\353\343\303i}\371\257\302`\324\236\326W\212V\361\336-L\353\215b\267\010\335\232\333\231\333\275\031\266\376k\366(\367\364u\311G_\306\207\217\223f\374\354\237c4\212\235\342\250\210\334\246\353\270~\271X\266nj\317]\373\266\336t\315\271o\373n\243\266\264Z\274+\276\271\223r\241\\+\367\207;\303c\017wF\371\317\345\311\342ds\322\231\230\353\365\353\266\327\257\265\206\315\273\365\332R\343f\345ey0\204\333\372jq\352\332.,\233U\253\003\007\256\377\013\2131T\260";
-    PyObject *data = __Pyx_DecompressString(cstring, 586, 1);
+    #elif (CYTHON_COMPRESS_STRINGS) != 0 /* compression: zlib (600 bytes) */
+const char* const cstring = "x\332}\221=O\033A\020\206\r2\022\301(\222\t\221\"\222HkQ@\223\263\370H\204D\021\361\221(4\010[\221R\256\306wc\274do\367\274;gq]\312+\267\274\322\245K\227)]RR\272\344'\360\023\262g\223\017E$\305\216f\264\357\373\314\316lp\256\t\031\365\200\330IF=\255\230\260,B):h\200Pf\314\222\021!\241)E\212]|\270x\263\177\260\317@E\314\340\025\206d\231M;\241\004k\3212\335e\235TH\022\212Q\226\240\r\330Y\227e:e\n1b\244Y\342u\177\032\250\207\212Y\2442a[\240\224& \241\025\367v\241.\267X$\214o\"\006X\272?\202\264\030\274\207(\342^\210*\tT\004\306@\246\023_\320`7\000y\251\215\240^l\203\001\206<%!\2555a\363\247\240\371[\320\224\266\017\321U\220d\234_d\327\376\234\372A\3719^S\033\273\237\001\354\014\r6S\241\320A\250\215\3668\205\026\010\200d\247\243\265\0149\237M\302/\221\004a\\\226^\302\205\037\300@\210\035\010\277F\345&\272R\003\275\333\347\274\233*o\022\312\223\006\302\362P\307\211\220\030\361Y\376\320\241$Y\351A\376\261\036\031\203\307\371XZ|\214S\351+\035\245\0229\367\027\n\3422\321&\346\241\321\326\252D\245q\362\350J\346\023':\341\274\237\202\234;\r\014P\032\264=H\320 \245\3063\375\217<p}\026a\027RI\234\023Z\037S%\210\373\345\2226\003\220)\332r\321\263\316\2776\376maZ\333(\232\243\027\343\372\375\253\312\322\223|1\337v\r\267\347\272\305q!\206\327\243\376\270:>\232V\227\377\272\030\214Z\323\352J\336\310\337\272\205i\265\226\357\345\241[s;s\334\366\260\361_\330\243\276\247\257\013>\3724>z\334i\306\317\376\371\214Z\276\223\037\347\221\333tm\327/\026\213\306m\345\271k\335U\353\256>\347\266\3567*K\253\371n\376\305\235\026\013\305Zq0\334\031\236xs{\224}_\236,N6'\355\211\271Y\277iy\375ZcX\277_\257,\325nW^\026\207C\270\253\256\346g\256\345\302\242^\266:t\340\372?\000\210\264`l";
+    PyObject *data = __Pyx_DecompressString(cstring, 600, 1);
     if (unlikely(!data)) __PYX_ERR(0, 1, __pyx_L1_error)
     const char* const bytes = __Pyx_PyBytes_AsString(data);
     #if !CYTHON_ASSUME_SAFE_MACROS
     if (likely(bytes)); else { Py_DECREF(data); __PYX_ERR(0, 1, __pyx_L1_error) }
     #endif
-    #else /* compression: none (877 bytes) */
-const char* const bytes = ".Note that Cython is deliberately stricter than PEP-484 and rejects subclasses of builtin types. If you need to pass subclasses then set the 'annotation_typing' directive to False.?add_notealgorithms/lsqadj.pyalgorithms.vec_utilsnp.ndarray__Pyx_PyDict_NextRefTaalgorithms.lsqadjasarrayasyncio.coroutinesataatlbboolc__class_getitem__cline_in_tracebackdtypefloat64__func__intinvis_compiled_is_coroutineitemsllinalgm__main__matinvmatmul__module__n__name__norm_crossnpnumpypop__qualname__ravelreshapereturn__set_name__setdefault__test__unit_vectorvaluesvec_crossvec_utils\200\001\330\013\032\230/\250\030\260\021\360\034\000\005\t\210\002\210(\220!\2203\220f\230B\230i\240x\250q\260\004\260A\330\004\010\210\002\210(\220!\2203\220f\230B\230i\240v\250Q\330\004\n\210!\2105\220\001\330\004\013\2103\210c\220\022\2201\200\001\330\013\032\230(\240!\360\034\000\005\t\210\002\210(\220!\2203\220f\230B\230i\240x\250q\260\004\260A\330\004\n\210!\2105\220\001\330\004\013\2103\210c\220\022\2201\200\001\330\016\035\230_\250H\260A\360\034\000\005\t\210\002\210(\220!\2203\220f\230B\230i\240x\250r\260\023\260A\330\004\010\210\002\210(\220!\2203\220f\230B\230i\240v\250Q\330\004\013\2101\210B\210d\220#\220R\220q\230\002\230!\320\000\025\220Q\340\004\021\220\021\200\001\330\016\035\230Q\360\032\000\005\014\2102\210W\220D\230\001\230\022\2308\2401\240C\240v\250R\250y\270\010\300\002\300#\300R\300r\310\024\310Q\200\001\330\022!\240\021\360\024\000\005\013\320\n\033\230;\240a\340\004\014\210I\220Q\220c\230\021\330\004\013\210;\220a\220q";
+    #else /* compression: none (908 bytes) */
+const char* const bytes = ".Note that Cython is deliberately stricter than PEP-484 and rejects subclasses of builtin types. If you need to pass subclasses then set the 'annotation_typing' directive to False.?add_notenp.ndarrayopenptv2.algorithms.vec_utilssrc/openptv2/algorithms/lsqadj.py__Pyx_PyDict_NextRefTaasarrayasyncio.coroutinesataatlbboolc__class_getitem__cline_in_tracebackdtypefloat64__func__intinvis_compiled_is_coroutineitemsllinalgm__main__matinvmatmul__module__n__name__norm_crossnpnumpyopenptv2.algorithms.lsqadjpop__qualname__ravelreshapereturn__set_name__setdefault__test__unit_vectorvaluesvec_crossvec_utils\200\001\330\013\032\230/\250\030\260\021\360\034\000\005\t\210\002\210(\220!\2203\220f\230B\230i\240x\250q\260\004\260A\330\004\010\210\002\210(\220!\2203\220f\230B\230i\240v\250Q\330\004\n\210!\2105\220\001\330\004\013\2103\210c\220\022\2201\200\001\330\013\032\230(\240!\360\034\000\005\t\210\002\210(\220!\2203\220f\230B\230i\240x\250q\260\004\260A\330\004\n\210!\2105\220\001\330\004\013\2103\210c\220\022\2201\200\001\330\016\035\230_\250H\260A\360\034\000\005\t\210\002\210(\220!\2203\220f\230B\230i\240x\250r\260\023\260A\330\004\010\210\002\210(\220!\2203\220f\230B\230i\240v\250Q\330\004\013\2101\210B\210d\220#\220R\220q\230\002\230!\320\000\025\220Q\340\004\021\220\021\200\001\330\016\035\230Q\360\032\000\005\014\2102\210W\220D\230\001\230\022\2308\2401\240C\240v\250R\250y\270\010\300\002\300#\300R\300r\310\024\310Q\200\001\330\022!\240\021\360\024\000\005\013\320\n\033\230;\240a\340\004\014\210I\220Q\220c\230\021\330\004\013\210;\220a\220q";
     PyObject *data = NULL;
     CYTHON_UNUSED_VAR(__Pyx_DecompressString);
     #endif
@@ -4898,32 +4898,32 @@ static int __Pyx_CreateCodeObjects(__pyx_mstatetype *__pyx_mstate) {
   {
     const __Pyx_PyCode_New_function_description descr = {3, 0, 0, 3, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 21};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_a, __pyx_mstate->__pyx_n_u_m, __pyx_mstate->__pyx_n_u_n};
-    __pyx_mstate_global->__pyx_codeobj_tab[0] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_lsqadj_py, __pyx_mstate->__pyx_n_u_ata, __pyx_mstate->__pyx_kp_b_iso88591_3fBixq_A_5_3c_1, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[0])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[0] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_lsqadj_p, __pyx_mstate->__pyx_n_u_ata, __pyx_mstate->__pyx_kp_b_iso88591_3fBixq_A_5_3c_1, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[0])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {4, 0, 0, 4, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 41};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_a, __pyx_mstate->__pyx_n_u_l, __pyx_mstate->__pyx_n_u_m, __pyx_mstate->__pyx_n_u_n};
-    __pyx_mstate_global->__pyx_codeobj_tab[1] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_lsqadj_py, __pyx_mstate->__pyx_n_u_atl, __pyx_mstate->__pyx_kp_b_iso88591_3fBixq_A_3fBivQ_5_3c_1, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[1])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[1] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_lsqadj_p, __pyx_mstate->__pyx_n_u_atl, __pyx_mstate->__pyx_kp_b_iso88591_3fBixq_A_3fBivQ_5_3c_1, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[1])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {2, 0, 0, 2, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 62};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_a, __pyx_mstate->__pyx_n_u_n};
-    __pyx_mstate_global->__pyx_codeobj_tab[2] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_lsqadj_py, __pyx_mstate->__pyx_n_u_matinv, __pyx_mstate->__pyx_kp_b_iso88591_Q_2WD_81CvRy_Rr_Q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[2])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[2] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_lsqadj_p, __pyx_mstate->__pyx_n_u_matinv, __pyx_mstate->__pyx_kp_b_iso88591_Q_2WD_81CvRy_Rr_Q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[2])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {4, 0, 0, 4, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 79};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_b, __pyx_mstate->__pyx_n_u_c, __pyx_mstate->__pyx_n_u_m, __pyx_mstate->__pyx_n_u_n};
-    __pyx_mstate_global->__pyx_codeobj_tab[3] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_lsqadj_py, __pyx_mstate->__pyx_n_u_matmul, __pyx_mstate->__pyx_kp_b_iso88591_HA_3fBixr_A_3fBivQ_1Bd_Rq, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[3])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[3] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_lsqadj_p, __pyx_mstate->__pyx_n_u_matmul, __pyx_mstate->__pyx_kp_b_iso88591_HA_3fBixr_A_3fBivQ_1Bd_Rq, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[3])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {2, 0, 0, 2, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 99};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_a, __pyx_mstate->__pyx_n_u_b};
-    __pyx_mstate_global->__pyx_codeobj_tab[4] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_lsqadj_py, __pyx_mstate->__pyx_n_u_norm_cross, __pyx_mstate->__pyx_kp_b_iso88591_a_IQc_aq, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[4])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[4] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_lsqadj_p, __pyx_mstate->__pyx_n_u_norm_cross, __pyx_mstate->__pyx_kp_b_iso88591_a_IQc_aq, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[4])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {0, 0, 0, 0, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 116};
     PyObject* const varnames[] = {0};
-    __pyx_mstate_global->__pyx_codeobj_tab[5] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_lsqadj_py, __pyx_mstate->__pyx_n_u_is_compiled, __pyx_mstate->__pyx_kp_b_iso88591_Q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[5])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[5] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_lsqadj_p, __pyx_mstate->__pyx_n_u_is_compiled, __pyx_mstate->__pyx_kp_b_iso88591_Q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[5])) goto bad;
   }
   Py_DECREF(tuple_dedup_map);
   return 0;

@@ -4,12 +4,12 @@
 {
     "distutils": {
         "depends": [],
-        "name": "algorithms.imgcoord",
+        "name": "openptv2.algorithms.imgcoord",
         "sources": [
-            "algorithms/imgcoord.py"
+            "src/openptv2/algorithms/imgcoord.py"
         ]
     },
-    "module_name": "algorithms.imgcoord"
+    "module_name": "openptv2.algorithms.imgcoord"
 }
 END: Cython Metadata */
 
@@ -1127,8 +1127,8 @@ static int __Pyx_init_co_variables(void) {
   #endif
 #endif
 
-#define __PYX_HAVE__algorithms__imgcoord
-#define __PYX_HAVE_API__algorithms__imgcoord
+#define __PYX_HAVE__openptv2__algorithms__imgcoord
+#define __PYX_HAVE_API__openptv2__algorithms__imgcoord
 /* Early includes */
 #include <math.h>
 #include "pythread.h"
@@ -1350,7 +1350,7 @@ static const char *__pyx_filename;
 /* #### Code section: filename_table ### */
 
 static const char* const __pyx_f[] = {
-  "algorithms/imgcoord.py",
+  "src/openptv2/algorithms/imgcoord.py",
   "<stringsource>",
 };
 /* #### Code section: utility_code_proto_before_types ### */
@@ -1610,24 +1610,24 @@ struct __pyx_array_obj;
 struct __pyx_MemviewEnum_obj;
 struct __pyx_memoryview_obj;
 struct __pyx_memoryviewslice_obj;
-struct __pyx_opt_args_10algorithms_8imgcoord_flat_image_coord;
+struct __pyx_opt_args_8openptv2_10algorithms_8imgcoord_flat_image_coord;
 struct __pyx_ctuple_double__and_double;
 typedef struct __pyx_ctuple_double__and_double __pyx_ctuple_double__and_double;
-struct __pyx_opt_args_10algorithms_8imgcoord__img_coord_params;
+struct __pyx_opt_args_8openptv2_10algorithms_8imgcoord__img_coord_params;
 
-/* "algorithms/imgcoord.py":336
+/* "openptv2/algorithms/imgcoord.py":336
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def flat_image_coord(
  *     pos: cython.double[:],
 */
-struct __pyx_opt_args_10algorithms_8imgcoord_flat_image_coord {
+struct __pyx_opt_args_8openptv2_10algorithms_8imgcoord_flat_image_coord {
   int __pyx_n;
   PyObject *mmlut;
 };
 
-/* "algorithms/imgcoord.py":406
+/* "openptv2/algorithms/imgcoord.py":406
  *     scx=None,
  *     she=None,
  * ) -> tuple[float, float]:             # <<<<<<<<<<<<<<
@@ -1639,14 +1639,14 @@ struct __pyx_ctuple_double__and_double {
   double f1;
 };
 
-/* "algorithms/imgcoord.py":435
+/* "openptv2/algorithms/imgcoord.py":435
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def _img_coord_params(
  *     pos: cython.double[:],
 */
-struct __pyx_opt_args_10algorithms_8imgcoord__img_coord_params {
+struct __pyx_opt_args_8openptv2_10algorithms_8imgcoord__img_coord_params {
   int __pyx_n;
   PyObject *mmlut;
 };
@@ -2911,7 +2911,7 @@ static PyObject *__pyx_memoryviewslice__get_base(struct __pyx_memoryviewslice_ob
 
 /* Module declarations from "libc.math" */
 
-/* Module declarations from "algorithms.imgcoord" */
+/* Module declarations from "openptv2.algorithms.imgcoord" */
 static PyObject *__pyx_collections_abc_Sequence = 0;
 static PyObject *generic = 0;
 static PyObject *strided = 0;
@@ -2920,15 +2920,15 @@ static PyObject *contiguous = 0;
 static PyObject *indirect_contiguous = 0;
 static int __pyx_memoryview_thread_locks_used;
 static PyThread_type_lock __pyx_memoryview_thread_locks[8];
-static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_to_dist_core(double, double, double, double, double, double, double, double, double, double, double); /*proto*/
-static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__get_mmf_from_mmlut_core(double, double, double, double, double, double, int, int, double, __Pyx_memviewslice); /*proto*/
-static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__multimed_r_1lay_iterative(double, double, double, double, double, double, double); /*proto*/
-static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__multimed_nlay_core(double, double, double, double, double, double, double, double); /*proto*/
-static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_core(double, double, double, double, double, double, __Pyx_memviewslice, double, double, double, double, double, double, double, double, int, double, double, double, int, int, double, __Pyx_memviewslice); /*proto*/
-static PyObject *__pyx_f_10algorithms_8imgcoord_flat_image_coord(__Pyx_memviewslice, double, double, double, __Pyx_memviewslice, double, double, double, double, double, double, double, double, int __pyx_skip_dispatch, struct __pyx_opt_args_10algorithms_8imgcoord_flat_image_coord *__pyx_optional_args); /*proto*/
-static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_params(__Pyx_memviewslice, double, double, double, __Pyx_memviewslice, double, double, double, double, double, double, double, double, double, double, double, double, double, double, double, double, double, int __pyx_skip_dispatch, struct __pyx_opt_args_10algorithms_8imgcoord__img_coord_params *__pyx_optional_args); /*proto*/
-static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memviewslice, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__Pyx_memviewslice, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static CYTHON_INLINE PyObject *__pyx_f_8openptv2_10algorithms_8imgcoord__flat_to_dist_core(double, double, double, double, double, double, double, double, double, double, double); /*proto*/
+static CYTHON_INLINE double __pyx_f_8openptv2_10algorithms_8imgcoord__get_mmf_from_mmlut_core(double, double, double, double, double, double, int, int, double, __Pyx_memviewslice); /*proto*/
+static CYTHON_INLINE double __pyx_f_8openptv2_10algorithms_8imgcoord__multimed_r_1lay_iterative(double, double, double, double, double, double, double); /*proto*/
+static CYTHON_INLINE PyObject *__pyx_f_8openptv2_10algorithms_8imgcoord__multimed_nlay_core(double, double, double, double, double, double, double, double); /*proto*/
+static CYTHON_INLINE PyObject *__pyx_f_8openptv2_10algorithms_8imgcoord__flat_image_coord_core(double, double, double, double, double, double, __Pyx_memviewslice, double, double, double, double, double, double, double, double, int, double, double, double, int, int, double, __Pyx_memviewslice); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_8imgcoord_flat_image_coord(__Pyx_memviewslice, double, double, double, __Pyx_memviewslice, double, double, double, double, double, double, double, double, int __pyx_skip_dispatch, struct __pyx_opt_args_8openptv2_10algorithms_8imgcoord_flat_image_coord *__pyx_optional_args); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_8imgcoord__img_coord_params(__Pyx_memviewslice, double, double, double, __Pyx_memviewslice, double, double, double, double, double, double, double, double, double, double, double, double, double, double, double, double, double, int __pyx_skip_dispatch, struct __pyx_opt_args_8openptv2_10algorithms_8imgcoord__img_coord_params *__pyx_optional_args); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memviewslice, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_8imgcoord__flat_image_coord_batch_impl(__Pyx_memviewslice, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
 static int __pyx_array_allocate_buffer(struct __pyx_array_obj *); /*proto*/
 static struct __pyx_array_obj *__pyx_array_new(PyObject *, Py_ssize_t, char *, char const *, char *); /*proto*/
 static PyObject *__pyx_memoryview_new(PyObject *, int, int, __Pyx_TypeInfo const *); /*proto*/
@@ -2965,11 +2965,11 @@ static PyObject *__pyx_unpickle_Enum__set_state(struct __pyx_MemviewEnum_obj *, 
 /* #### Code section: typeinfo ### */
 static const __Pyx_TypeInfo __Pyx_TypeInfo_double = { "double", NULL, sizeof(double), { 0 }, 0, 'R', 0, 0 };
 /* #### Code section: before_global_var ### */
-#define __Pyx_MODULE_NAME "algorithms.imgcoord"
-extern int __pyx_module_is_main_algorithms__imgcoord;
-int __pyx_module_is_main_algorithms__imgcoord = 0;
+#define __Pyx_MODULE_NAME "openptv2.algorithms.imgcoord"
+extern int __pyx_module_is_main_openptv2__algorithms__imgcoord;
+int __pyx_module_is_main_openptv2__algorithms__imgcoord = 0;
 
-/* Implementation of "algorithms.imgcoord" */
+/* Implementation of "openptv2.algorithms.imgcoord" */
 /* #### Code section: global_var ### */
 static PyObject *__pyx_builtin___import__;
 static PyObject *__pyx_builtin_enumerate;
@@ -3022,14 +3022,14 @@ static void __pyx_memoryviewslice___pyx_pf_15View_dot_MemoryView_16_memoryviewsl
 static PyObject *__pyx_pf___pyx_memoryviewslice___reduce_cython__(CYTHON_UNUSED struct __pyx_memoryviewslice_obj *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf___pyx_memoryviewslice_2__setstate_cython__(CYTHON_UNUSED struct __pyx_memoryviewslice_obj *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state); /* proto */
 static PyObject *__pyx_pf_15View_dot_MemoryView___pyx_unpickle_Enum(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v___pyx_type, long __pyx_v___pyx_checksum, PyObject *__pyx_v___pyx_state); /* proto */
-static PyObject *__pyx_pf_10algorithms_8imgcoord_flat_image_coord(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_pos, double __pyx_v_ext_x0, double __pyx_v_ext_y0, double __pyx_v_ext_z0, __Pyx_memviewslice __pyx_v_ext_dm, double __pyx_v_int_cc, double __pyx_v_glass_vec_x, double __pyx_v_glass_vec_y, double __pyx_v_glass_vec_z, double __pyx_v_mm_n1, double __pyx_v_mm_n2_0, double __pyx_v_mm_n3, double __pyx_v_mm_d0, PyObject *__pyx_v_mmlut); /* proto */
-static PyObject *__pyx_pf_10algorithms_8imgcoord_2img_coord(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_pos, PyObject *__pyx_v_ext_x0_or_cal, PyObject *__pyx_v_ext_y0_or_mm, PyObject *__pyx_v_ext_z0, PyObject *__pyx_v_ext_dm, PyObject *__pyx_v_int_cc, PyObject *__pyx_v_int_xh, PyObject *__pyx_v_int_yh, PyObject *__pyx_v_glass_vec_x, PyObject *__pyx_v_glass_vec_y, PyObject *__pyx_v_glass_vec_z, PyObject *__pyx_v_mm_n1, PyObject *__pyx_v_mm_n2_0, PyObject *__pyx_v_mm_n3, PyObject *__pyx_v_mm_d0, PyObject *__pyx_v_k1, PyObject *__pyx_v_k2, PyObject *__pyx_v_k3, PyObject *__pyx_v_p1, PyObject *__pyx_v_p2, PyObject *__pyx_v_scx, PyObject *__pyx_v_she); /* proto */
-static PyObject *__pyx_pf_10algorithms_8imgcoord_4_img_coord_params(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_pos, double __pyx_v_ext_x0, double __pyx_v_ext_y0, double __pyx_v_ext_z0, __Pyx_memviewslice __pyx_v_ext_dm, double __pyx_v_int_cc, double __pyx_v_int_xh, double __pyx_v_int_yh, double __pyx_v_glass_vec_x, double __pyx_v_glass_vec_y, double __pyx_v_glass_vec_z, double __pyx_v_mm_n1, double __pyx_v_mm_n2_0, double __pyx_v_mm_n3, double __pyx_v_mm_d0, double __pyx_v_k1, double __pyx_v_k2, double __pyx_v_k3, double __pyx_v_p1, double __pyx_v_p2, double __pyx_v_scx, double __pyx_v_she, PyObject *__pyx_v_mmlut); /* proto */
-static PyObject *__pyx_pf_10algorithms_8imgcoord_6img_coord_batch(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_positions, PyObject *__pyx_v_cal, PyObject *__pyx_v_mm); /* proto */
-static PyObject *__pyx_pf_10algorithms_8imgcoord_8_img_coord_batch_impl(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_positions, PyObject *__pyx_v_cal, PyObject *__pyx_v_mm); /* proto */
-static PyObject *__pyx_pf_10algorithms_8imgcoord_10flat_image_coord_batch(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_positions, PyObject *__pyx_v_cal, PyObject *__pyx_v_mm); /* proto */
-static PyObject *__pyx_pf_10algorithms_8imgcoord_12_flat_image_coord_batch_impl(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_positions, PyObject *__pyx_v_cal, PyObject *__pyx_v_mm); /* proto */
-static PyObject *__pyx_pf_10algorithms_8imgcoord_14is_compiled(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_8imgcoord_flat_image_coord(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_pos, double __pyx_v_ext_x0, double __pyx_v_ext_y0, double __pyx_v_ext_z0, __Pyx_memviewslice __pyx_v_ext_dm, double __pyx_v_int_cc, double __pyx_v_glass_vec_x, double __pyx_v_glass_vec_y, double __pyx_v_glass_vec_z, double __pyx_v_mm_n1, double __pyx_v_mm_n2_0, double __pyx_v_mm_n3, double __pyx_v_mm_d0, PyObject *__pyx_v_mmlut); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_8imgcoord_2img_coord(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_pos, PyObject *__pyx_v_ext_x0_or_cal, PyObject *__pyx_v_ext_y0_or_mm, PyObject *__pyx_v_ext_z0, PyObject *__pyx_v_ext_dm, PyObject *__pyx_v_int_cc, PyObject *__pyx_v_int_xh, PyObject *__pyx_v_int_yh, PyObject *__pyx_v_glass_vec_x, PyObject *__pyx_v_glass_vec_y, PyObject *__pyx_v_glass_vec_z, PyObject *__pyx_v_mm_n1, PyObject *__pyx_v_mm_n2_0, PyObject *__pyx_v_mm_n3, PyObject *__pyx_v_mm_d0, PyObject *__pyx_v_k1, PyObject *__pyx_v_k2, PyObject *__pyx_v_k3, PyObject *__pyx_v_p1, PyObject *__pyx_v_p2, PyObject *__pyx_v_scx, PyObject *__pyx_v_she); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_8imgcoord_4_img_coord_params(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_pos, double __pyx_v_ext_x0, double __pyx_v_ext_y0, double __pyx_v_ext_z0, __Pyx_memviewslice __pyx_v_ext_dm, double __pyx_v_int_cc, double __pyx_v_int_xh, double __pyx_v_int_yh, double __pyx_v_glass_vec_x, double __pyx_v_glass_vec_y, double __pyx_v_glass_vec_z, double __pyx_v_mm_n1, double __pyx_v_mm_n2_0, double __pyx_v_mm_n3, double __pyx_v_mm_d0, double __pyx_v_k1, double __pyx_v_k2, double __pyx_v_k3, double __pyx_v_p1, double __pyx_v_p2, double __pyx_v_scx, double __pyx_v_she, PyObject *__pyx_v_mmlut); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_8imgcoord_6img_coord_batch(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_positions, PyObject *__pyx_v_cal, PyObject *__pyx_v_mm); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_8imgcoord_8_img_coord_batch_impl(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_positions, PyObject *__pyx_v_cal, PyObject *__pyx_v_mm); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_8imgcoord_10flat_image_coord_batch(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_positions, PyObject *__pyx_v_cal, PyObject *__pyx_v_mm); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_8imgcoord_12_flat_image_coord_batch_impl(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_positions, PyObject *__pyx_v_cal, PyObject *__pyx_v_mm); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_8imgcoord_14is_compiled(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
 static PyObject *__pyx_tp_new_array(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_tp_new_Enum(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_tp_new_memoryview(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
@@ -3132,26 +3132,26 @@ static __pyx_mstatetype * const __pyx_mstate_global = &__pyx_mstate_global_stati
 #define __pyx_kp_u__5 __pyx_string_tab[19]
 #define __pyx_kp_u__6 __pyx_string_tab[20]
 #define __pyx_kp_u_add_note __pyx_string_tab[21]
-#define __pyx_kp_u_algorithms_imgcoord_py __pyx_string_tab[22]
-#define __pyx_kp_u_algorithms_multimed __pyx_string_tab[23]
-#define __pyx_kp_u_algorithms_trafo __pyx_string_tab[24]
-#define __pyx_kp_u_and __pyx_string_tab[25]
-#define __pyx_kp_u_at_0x __pyx_string_tab[26]
-#define __pyx_kp_u_collections_abc __pyx_string_tab[27]
-#define __pyx_kp_u_contiguous_and_direct __pyx_string_tab[28]
-#define __pyx_kp_u_contiguous_and_indirect __pyx_string_tab[29]
-#define __pyx_kp_u_cython_double __pyx_string_tab[30]
-#define __pyx_kp_u_cython_double_2 __pyx_string_tab[31]
-#define __pyx_kp_u_cython_double_3 __pyx_string_tab[32]
-#define __pyx_kp_u_disable __pyx_string_tab[33]
-#define __pyx_kp_u_enable __pyx_string_tab[34]
-#define __pyx_kp_u_gc __pyx_string_tab[35]
-#define __pyx_kp_u_got __pyx_string_tab[36]
-#define __pyx_kp_u_got_differing_extents_in_dimensi __pyx_string_tab[37]
-#define __pyx_kp_u_isenabled __pyx_string_tab[38]
-#define __pyx_kp_u_itemsize_0_for_cython_array __pyx_string_tab[39]
-#define __pyx_kp_u_no_default___reduce___due_to_non __pyx_string_tab[40]
-#define __pyx_kp_u_object __pyx_string_tab[41]
+#define __pyx_kp_u_and __pyx_string_tab[22]
+#define __pyx_kp_u_at_0x __pyx_string_tab[23]
+#define __pyx_kp_u_collections_abc __pyx_string_tab[24]
+#define __pyx_kp_u_contiguous_and_direct __pyx_string_tab[25]
+#define __pyx_kp_u_contiguous_and_indirect __pyx_string_tab[26]
+#define __pyx_kp_u_cython_double __pyx_string_tab[27]
+#define __pyx_kp_u_cython_double_2 __pyx_string_tab[28]
+#define __pyx_kp_u_cython_double_3 __pyx_string_tab[29]
+#define __pyx_kp_u_disable __pyx_string_tab[30]
+#define __pyx_kp_u_enable __pyx_string_tab[31]
+#define __pyx_kp_u_gc __pyx_string_tab[32]
+#define __pyx_kp_u_got __pyx_string_tab[33]
+#define __pyx_kp_u_got_differing_extents_in_dimensi __pyx_string_tab[34]
+#define __pyx_kp_u_isenabled __pyx_string_tab[35]
+#define __pyx_kp_u_itemsize_0_for_cython_array __pyx_string_tab[36]
+#define __pyx_kp_u_no_default___reduce___due_to_non __pyx_string_tab[37]
+#define __pyx_kp_u_object __pyx_string_tab[38]
+#define __pyx_kp_u_openptv2_algorithms_multimed __pyx_string_tab[39]
+#define __pyx_kp_u_openptv2_algorithms_trafo __pyx_string_tab[40]
+#define __pyx_kp_u_src_openptv2_algorithms_imgcoord __pyx_string_tab[41]
 #define __pyx_kp_u_strided_and_direct __pyx_string_tab[42]
 #define __pyx_kp_u_strided_and_direct_or_indirect __pyx_string_tab[43]
 #define __pyx_kp_u_strided_and_indirect __pyx_string_tab[44]
@@ -3166,97 +3166,97 @@ static __pyx_mstatetype * const __pyx_mstate_global = &__pyx_mstate_global_stati
 #define __pyx_n_u_View_MemoryView __pyx_string_tab[53]
 #define __pyx_n_u_abc __pyx_string_tab[54]
 #define __pyx_n_u_added_par __pyx_string_tab[55]
-#define __pyx_n_u_algorithms_imgcoord __pyx_string_tab[56]
-#define __pyx_n_u_allocate_buffer __pyx_string_tab[57]
-#define __pyx_n_u_ascontiguousarray __pyx_string_tab[58]
-#define __pyx_n_u_asyncio_coroutines __pyx_string_tab[59]
-#define __pyx_n_u_base __pyx_string_tab[60]
-#define __pyx_n_u_bool __pyx_string_tab[61]
-#define __pyx_n_u_c __pyx_string_tab[62]
-#define __pyx_n_u_cal __pyx_string_tab[63]
-#define __pyx_n_u_cc __pyx_string_tab[64]
-#define __pyx_n_u_class __pyx_string_tab[65]
-#define __pyx_n_u_class_getitem __pyx_string_tab[66]
-#define __pyx_n_u_cline_in_traceback __pyx_string_tab[67]
-#define __pyx_n_u_count __pyx_string_tab[68]
-#define __pyx_n_u_d __pyx_string_tab[69]
-#define __pyx_n_u_data __pyx_string_tab[70]
-#define __pyx_n_u_dict __pyx_string_tab[71]
-#define __pyx_n_u_dm __pyx_string_tab[72]
-#define __pyx_n_u_dtype __pyx_string_tab[73]
-#define __pyx_n_u_dtype_is_object __pyx_string_tab[74]
-#define __pyx_n_u_empty __pyx_string_tab[75]
-#define __pyx_n_u_encode __pyx_string_tab[76]
-#define __pyx_n_u_enumerate __pyx_string_tab[77]
-#define __pyx_n_u_error __pyx_string_tab[78]
-#define __pyx_n_u_ext_dm __pyx_string_tab[79]
-#define __pyx_n_u_ext_par __pyx_string_tab[80]
-#define __pyx_n_u_ext_x0 __pyx_string_tab[81]
-#define __pyx_n_u_ext_x0_or_cal __pyx_string_tab[82]
-#define __pyx_n_u_ext_y0 __pyx_string_tab[83]
-#define __pyx_n_u_ext_y0_or_mm __pyx_string_tab[84]
-#define __pyx_n_u_ext_z0 __pyx_string_tab[85]
-#define __pyx_n_u_flags __pyx_string_tab[86]
-#define __pyx_n_u_flat_image_coord __pyx_string_tab[87]
-#define __pyx_n_u_flat_image_coord_batch __pyx_string_tab[88]
-#define __pyx_n_u_flat_image_coord_batch_impl __pyx_string_tab[89]
-#define __pyx_n_u_flat_to_dist __pyx_string_tab[90]
-#define __pyx_n_u_flat_to_dist_2 __pyx_string_tab[91]
-#define __pyx_n_u_float64 __pyx_string_tab[92]
-#define __pyx_n_u_format __pyx_string_tab[93]
-#define __pyx_n_u_fortran __pyx_string_tab[94]
-#define __pyx_n_u_func __pyx_string_tab[95]
-#define __pyx_n_u_get_mmf_from_mmlut __pyx_string_tab[96]
-#define __pyx_n_u_get_mmf_from_mmlut_2 __pyx_string_tab[97]
-#define __pyx_n_u_getstate __pyx_string_tab[98]
-#define __pyx_n_u_glass_par __pyx_string_tab[99]
-#define __pyx_n_u_glass_vec_x __pyx_string_tab[100]
-#define __pyx_n_u_glass_vec_y __pyx_string_tab[101]
-#define __pyx_n_u_glass_vec_z __pyx_string_tab[102]
-#define __pyx_n_u_id __pyx_string_tab[103]
-#define __pyx_n_u_img_coord __pyx_string_tab[104]
-#define __pyx_n_u_img_coord_batch __pyx_string_tab[105]
-#define __pyx_n_u_img_coord_batch_impl __pyx_string_tab[106]
-#define __pyx_n_u_img_coord_params __pyx_string_tab[107]
-#define __pyx_n_u_import __pyx_string_tab[108]
-#define __pyx_n_u_index __pyx_string_tab[109]
-#define __pyx_n_u_int_cc __pyx_string_tab[110]
-#define __pyx_n_u_int_par __pyx_string_tab[111]
-#define __pyx_n_u_int_xh __pyx_string_tab[112]
-#define __pyx_n_u_int_yh __pyx_string_tab[113]
-#define __pyx_n_u_is_compiled __pyx_string_tab[114]
-#define __pyx_n_u_is_coroutine __pyx_string_tab[115]
-#define __pyx_n_u_is_initialized __pyx_string_tab[116]
-#define __pyx_n_u_items __pyx_string_tab[117]
-#define __pyx_n_u_itemsize __pyx_string_tab[118]
-#define __pyx_n_u_k1 __pyx_string_tab[119]
-#define __pyx_n_u_k2 __pyx_string_tab[120]
-#define __pyx_n_u_k3 __pyx_string_tab[121]
-#define __pyx_n_u_main __pyx_string_tab[122]
-#define __pyx_n_u_memview __pyx_string_tab[123]
-#define __pyx_n_u_mm __pyx_string_tab[124]
-#define __pyx_n_u_mm_d0 __pyx_string_tab[125]
-#define __pyx_n_u_mm_n1 __pyx_string_tab[126]
-#define __pyx_n_u_mm_n2_0 __pyx_string_tab[127]
-#define __pyx_n_u_mm_n3 __pyx_string_tab[128]
-#define __pyx_n_u_mmlut __pyx_string_tab[129]
-#define __pyx_n_u_mode __pyx_string_tab[130]
-#define __pyx_n_u_module __pyx_string_tab[131]
-#define __pyx_n_u_multimed __pyx_string_tab[132]
-#define __pyx_n_u_multimed_nlay __pyx_string_tab[133]
-#define __pyx_n_u_multimed_nlay_2 __pyx_string_tab[134]
-#define __pyx_n_u_n1 __pyx_string_tab[135]
-#define __pyx_n_u_n2 __pyx_string_tab[136]
-#define __pyx_n_u_n3 __pyx_string_tab[137]
-#define __pyx_n_u_name __pyx_string_tab[138]
-#define __pyx_n_u_name_2 __pyx_string_tab[139]
-#define __pyx_n_u_ndim __pyx_string_tab[140]
-#define __pyx_n_u_new __pyx_string_tab[141]
-#define __pyx_n_u_np __pyx_string_tab[142]
-#define __pyx_n_u_nr __pyx_string_tab[143]
-#define __pyx_n_u_numpy __pyx_string_tab[144]
-#define __pyx_n_u_nz __pyx_string_tab[145]
-#define __pyx_n_u_obj __pyx_string_tab[146]
+#define __pyx_n_u_allocate_buffer __pyx_string_tab[56]
+#define __pyx_n_u_ascontiguousarray __pyx_string_tab[57]
+#define __pyx_n_u_asyncio_coroutines __pyx_string_tab[58]
+#define __pyx_n_u_base __pyx_string_tab[59]
+#define __pyx_n_u_bool __pyx_string_tab[60]
+#define __pyx_n_u_c __pyx_string_tab[61]
+#define __pyx_n_u_cal __pyx_string_tab[62]
+#define __pyx_n_u_cc __pyx_string_tab[63]
+#define __pyx_n_u_class __pyx_string_tab[64]
+#define __pyx_n_u_class_getitem __pyx_string_tab[65]
+#define __pyx_n_u_cline_in_traceback __pyx_string_tab[66]
+#define __pyx_n_u_count __pyx_string_tab[67]
+#define __pyx_n_u_d __pyx_string_tab[68]
+#define __pyx_n_u_data __pyx_string_tab[69]
+#define __pyx_n_u_dict __pyx_string_tab[70]
+#define __pyx_n_u_dm __pyx_string_tab[71]
+#define __pyx_n_u_dtype __pyx_string_tab[72]
+#define __pyx_n_u_dtype_is_object __pyx_string_tab[73]
+#define __pyx_n_u_empty __pyx_string_tab[74]
+#define __pyx_n_u_encode __pyx_string_tab[75]
+#define __pyx_n_u_enumerate __pyx_string_tab[76]
+#define __pyx_n_u_error __pyx_string_tab[77]
+#define __pyx_n_u_ext_dm __pyx_string_tab[78]
+#define __pyx_n_u_ext_par __pyx_string_tab[79]
+#define __pyx_n_u_ext_x0 __pyx_string_tab[80]
+#define __pyx_n_u_ext_x0_or_cal __pyx_string_tab[81]
+#define __pyx_n_u_ext_y0 __pyx_string_tab[82]
+#define __pyx_n_u_ext_y0_or_mm __pyx_string_tab[83]
+#define __pyx_n_u_ext_z0 __pyx_string_tab[84]
+#define __pyx_n_u_flags __pyx_string_tab[85]
+#define __pyx_n_u_flat_image_coord __pyx_string_tab[86]
+#define __pyx_n_u_flat_image_coord_batch __pyx_string_tab[87]
+#define __pyx_n_u_flat_image_coord_batch_impl __pyx_string_tab[88]
+#define __pyx_n_u_flat_to_dist __pyx_string_tab[89]
+#define __pyx_n_u_flat_to_dist_2 __pyx_string_tab[90]
+#define __pyx_n_u_float64 __pyx_string_tab[91]
+#define __pyx_n_u_format __pyx_string_tab[92]
+#define __pyx_n_u_fortran __pyx_string_tab[93]
+#define __pyx_n_u_func __pyx_string_tab[94]
+#define __pyx_n_u_get_mmf_from_mmlut __pyx_string_tab[95]
+#define __pyx_n_u_get_mmf_from_mmlut_2 __pyx_string_tab[96]
+#define __pyx_n_u_getstate __pyx_string_tab[97]
+#define __pyx_n_u_glass_par __pyx_string_tab[98]
+#define __pyx_n_u_glass_vec_x __pyx_string_tab[99]
+#define __pyx_n_u_glass_vec_y __pyx_string_tab[100]
+#define __pyx_n_u_glass_vec_z __pyx_string_tab[101]
+#define __pyx_n_u_id __pyx_string_tab[102]
+#define __pyx_n_u_img_coord __pyx_string_tab[103]
+#define __pyx_n_u_img_coord_batch __pyx_string_tab[104]
+#define __pyx_n_u_img_coord_batch_impl __pyx_string_tab[105]
+#define __pyx_n_u_img_coord_params __pyx_string_tab[106]
+#define __pyx_n_u_import __pyx_string_tab[107]
+#define __pyx_n_u_index __pyx_string_tab[108]
+#define __pyx_n_u_int_cc __pyx_string_tab[109]
+#define __pyx_n_u_int_par __pyx_string_tab[110]
+#define __pyx_n_u_int_xh __pyx_string_tab[111]
+#define __pyx_n_u_int_yh __pyx_string_tab[112]
+#define __pyx_n_u_is_compiled __pyx_string_tab[113]
+#define __pyx_n_u_is_coroutine __pyx_string_tab[114]
+#define __pyx_n_u_is_initialized __pyx_string_tab[115]
+#define __pyx_n_u_items __pyx_string_tab[116]
+#define __pyx_n_u_itemsize __pyx_string_tab[117]
+#define __pyx_n_u_k1 __pyx_string_tab[118]
+#define __pyx_n_u_k2 __pyx_string_tab[119]
+#define __pyx_n_u_k3 __pyx_string_tab[120]
+#define __pyx_n_u_main __pyx_string_tab[121]
+#define __pyx_n_u_memview __pyx_string_tab[122]
+#define __pyx_n_u_mm __pyx_string_tab[123]
+#define __pyx_n_u_mm_d0 __pyx_string_tab[124]
+#define __pyx_n_u_mm_n1 __pyx_string_tab[125]
+#define __pyx_n_u_mm_n2_0 __pyx_string_tab[126]
+#define __pyx_n_u_mm_n3 __pyx_string_tab[127]
+#define __pyx_n_u_mmlut __pyx_string_tab[128]
+#define __pyx_n_u_mode __pyx_string_tab[129]
+#define __pyx_n_u_module __pyx_string_tab[130]
+#define __pyx_n_u_multimed __pyx_string_tab[131]
+#define __pyx_n_u_multimed_nlay __pyx_string_tab[132]
+#define __pyx_n_u_multimed_nlay_2 __pyx_string_tab[133]
+#define __pyx_n_u_n1 __pyx_string_tab[134]
+#define __pyx_n_u_n2 __pyx_string_tab[135]
+#define __pyx_n_u_n3 __pyx_string_tab[136]
+#define __pyx_n_u_name __pyx_string_tab[137]
+#define __pyx_n_u_name_2 __pyx_string_tab[138]
+#define __pyx_n_u_ndim __pyx_string_tab[139]
+#define __pyx_n_u_new __pyx_string_tab[140]
+#define __pyx_n_u_np __pyx_string_tab[141]
+#define __pyx_n_u_nr __pyx_string_tab[142]
+#define __pyx_n_u_numpy __pyx_string_tab[143]
+#define __pyx_n_u_nz __pyx_string_tab[144]
+#define __pyx_n_u_obj __pyx_string_tab[145]
+#define __pyx_n_u_openptv2_algorithms_imgcoord __pyx_string_tab[146]
 #define __pyx_n_u_origin __pyx_string_tab[147]
 #define __pyx_n_u_p1 __pyx_string_tab[148]
 #define __pyx_n_u_p2 __pyx_string_tab[149]
@@ -15880,7 +15880,7 @@ static PyObject *__pyx_unpickle_Enum__set_state(struct __pyx_MemviewEnum_obj *__
   return __pyx_r;
 }
 
-/* "algorithms/imgcoord.py":28
+/* "openptv2/algorithms/imgcoord.py":28
  * 
  * 
  * @cython.cfunc             # <<<<<<<<<<<<<<
@@ -15888,7 +15888,7 @@ static PyObject *__pyx_unpickle_Enum__set_state(struct __pyx_MemviewEnum_obj *__
  * @cython.boundscheck(False)
 */
 
-static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_to_dist_core(double __pyx_v_flat_x, double __pyx_v_flat_y, double __pyx_v_xh, double __pyx_v_yh, double __pyx_v_k1, double __pyx_v_k2, double __pyx_v_k3, double __pyx_v_p1, double __pyx_v_p2, double __pyx_v_scx, double __pyx_v_she) {
+static CYTHON_INLINE PyObject *__pyx_f_8openptv2_10algorithms_8imgcoord__flat_to_dist_core(double __pyx_v_flat_x, double __pyx_v_flat_y, double __pyx_v_xh, double __pyx_v_yh, double __pyx_v_k1, double __pyx_v_k2, double __pyx_v_k3, double __pyx_v_p1, double __pyx_v_p2, double __pyx_v_scx, double __pyx_v_she) {
   double __pyx_v_x;
   double __pyx_v_y;
   double __pyx_v_r;
@@ -15913,7 +15913,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_to_dist_core
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("_flat_to_dist_core", 0);
 
-  /* "algorithms/imgcoord.py":45
+  /* "openptv2/algorithms/imgcoord.py":45
  *     she: cython.double,
  * ) -> tuple:
  *     x: cython.double = flat_x + xh             # <<<<<<<<<<<<<<
@@ -15922,7 +15922,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_to_dist_core
 */
   __pyx_v_x = (__pyx_v_flat_x + __pyx_v_xh);
 
-  /* "algorithms/imgcoord.py":46
+  /* "openptv2/algorithms/imgcoord.py":46
  * ) -> tuple:
  *     x: cython.double = flat_x + xh
  *     y: cython.double = flat_y + yh             # <<<<<<<<<<<<<<
@@ -15931,7 +15931,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_to_dist_core
 */
   __pyx_v_y = (__pyx_v_flat_y + __pyx_v_yh);
 
-  /* "algorithms/imgcoord.py":48
+  /* "openptv2/algorithms/imgcoord.py":48
  *     y: cython.double = flat_y + yh
  * 
  *     r: cython.double = c_sqrt(x * x + y * y)             # <<<<<<<<<<<<<<
@@ -15940,7 +15940,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_to_dist_core
 */
   __pyx_v_r = sqrt(((__pyx_v_x * __pyx_v_x) + (__pyx_v_y * __pyx_v_y)));
 
-  /* "algorithms/imgcoord.py":49
+  /* "openptv2/algorithms/imgcoord.py":49
  * 
  *     r: cython.double = c_sqrt(x * x + y * y)
  *     if r < 1e-10:             # <<<<<<<<<<<<<<
@@ -15950,7 +15950,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_to_dist_core
   __pyx_t_1 = (__pyx_v_r < 1e-10);
   if (__pyx_t_1) {
 
-    /* "algorithms/imgcoord.py":50
+    /* "openptv2/algorithms/imgcoord.py":50
  *     r: cython.double = c_sqrt(x * x + y * y)
  *     if r < 1e-10:
  *         return 0.0, 0.0             # <<<<<<<<<<<<<<
@@ -15962,7 +15962,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_to_dist_core
     __pyx_r = __pyx_mstate_global->__pyx_tuple[1];
     goto __pyx_L0;
 
-    /* "algorithms/imgcoord.py":49
+    /* "openptv2/algorithms/imgcoord.py":49
  * 
  *     r: cython.double = c_sqrt(x * x + y * y)
  *     if r < 1e-10:             # <<<<<<<<<<<<<<
@@ -15971,7 +15971,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_to_dist_core
 */
   }
 
-  /* "algorithms/imgcoord.py":52
+  /* "openptv2/algorithms/imgcoord.py":52
  *         return 0.0, 0.0
  * 
  *     r2: cython.double = r * r             # <<<<<<<<<<<<<<
@@ -15980,7 +15980,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_to_dist_core
 */
   __pyx_v_r2 = (__pyx_v_r * __pyx_v_r);
 
-  /* "algorithms/imgcoord.py":53
+  /* "openptv2/algorithms/imgcoord.py":53
  * 
  *     r2: cython.double = r * r
  *     r4: cython.double = r2 * r2             # <<<<<<<<<<<<<<
@@ -15989,7 +15989,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_to_dist_core
 */
   __pyx_v_r4 = (__pyx_v_r2 * __pyx_v_r2);
 
-  /* "algorithms/imgcoord.py":54
+  /* "openptv2/algorithms/imgcoord.py":54
  *     r2: cython.double = r * r
  *     r4: cython.double = r2 * r2
  *     r6: cython.double = r4 * r2             # <<<<<<<<<<<<<<
@@ -15998,7 +15998,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_to_dist_core
 */
   __pyx_v_r6 = (__pyx_v_r4 * __pyx_v_r2);
 
-  /* "algorithms/imgcoord.py":55
+  /* "openptv2/algorithms/imgcoord.py":55
  *     r4: cython.double = r2 * r2
  *     r6: cython.double = r4 * r2
  *     radial_factor: cython.double = 1.0 + k1 * r2 + k2 * r4 + k3 * r6             # <<<<<<<<<<<<<<
@@ -16007,7 +16007,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_to_dist_core
 */
   __pyx_v_radial_factor = (((1.0 + (__pyx_v_k1 * __pyx_v_r2)) + (__pyx_v_k2 * __pyx_v_r4)) + (__pyx_v_k3 * __pyx_v_r6));
 
-  /* "algorithms/imgcoord.py":57
+  /* "openptv2/algorithms/imgcoord.py":57
  *     radial_factor: cython.double = 1.0 + k1 * r2 + k2 * r4 + k3 * r6
  * 
  *     x_dist: cython.double = x * radial_factor + p1 * (r2 + 2.0 * x * x) + 2.0 * p2 * x * y             # <<<<<<<<<<<<<<
@@ -16016,7 +16016,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_to_dist_core
 */
   __pyx_v_x_dist = (((__pyx_v_x * __pyx_v_radial_factor) + (__pyx_v_p1 * (__pyx_v_r2 + ((2.0 * __pyx_v_x) * __pyx_v_x)))) + (((2.0 * __pyx_v_p2) * __pyx_v_x) * __pyx_v_y));
 
-  /* "algorithms/imgcoord.py":58
+  /* "openptv2/algorithms/imgcoord.py":58
  * 
  *     x_dist: cython.double = x * radial_factor + p1 * (r2 + 2.0 * x * x) + 2.0 * p2 * x * y
  *     y_dist: cython.double = y * radial_factor + p2 * (r2 + 2.0 * y * y) + 2.0 * p1 * x * y             # <<<<<<<<<<<<<<
@@ -16025,7 +16025,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_to_dist_core
 */
   __pyx_v_y_dist = (((__pyx_v_y * __pyx_v_radial_factor) + (__pyx_v_p2 * (__pyx_v_r2 + ((2.0 * __pyx_v_y) * __pyx_v_y)))) + (((2.0 * __pyx_v_p1) * __pyx_v_x) * __pyx_v_y));
 
-  /* "algorithms/imgcoord.py":60
+  /* "openptv2/algorithms/imgcoord.py":60
  *     y_dist: cython.double = y * radial_factor + p2 * (r2 + 2.0 * y * y) + 2.0 * p1 * x * y
  * 
  *     sin_she: cython.double = c_sin(she)             # <<<<<<<<<<<<<<
@@ -16034,7 +16034,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_to_dist_core
 */
   __pyx_v_sin_she = sin(__pyx_v_she);
 
-  /* "algorithms/imgcoord.py":61
+  /* "openptv2/algorithms/imgcoord.py":61
  * 
  *     sin_she: cython.double = c_sin(she)
  *     cos_she: cython.double = c_cos(she)             # <<<<<<<<<<<<<<
@@ -16043,7 +16043,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_to_dist_core
 */
   __pyx_v_cos_she = cos(__pyx_v_she);
 
-  /* "algorithms/imgcoord.py":63
+  /* "openptv2/algorithms/imgcoord.py":63
  *     cos_she: cython.double = c_cos(she)
  * 
  *     x1: cython.double = scx * (x_dist - sin_she * y_dist)             # <<<<<<<<<<<<<<
@@ -16052,7 +16052,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_to_dist_core
 */
   __pyx_v_x1 = (__pyx_v_scx * (__pyx_v_x_dist - (__pyx_v_sin_she * __pyx_v_y_dist)));
 
-  /* "algorithms/imgcoord.py":64
+  /* "openptv2/algorithms/imgcoord.py":64
  * 
  *     x1: cython.double = scx * (x_dist - sin_she * y_dist)
  *     y1: cython.double = scx * cos_she * y_dist             # <<<<<<<<<<<<<<
@@ -16061,7 +16061,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_to_dist_core
 */
   __pyx_v_y1 = ((__pyx_v_scx * __pyx_v_cos_she) * __pyx_v_y_dist);
 
-  /* "algorithms/imgcoord.py":66
+  /* "openptv2/algorithms/imgcoord.py":66
  *     y1: cython.double = scx * cos_she * y_dist
  * 
  *     return x1, y1             # <<<<<<<<<<<<<<
@@ -16085,7 +16085,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_to_dist_core
   __pyx_t_4 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/imgcoord.py":28
+  /* "openptv2/algorithms/imgcoord.py":28
  * 
  * 
  * @cython.cfunc             # <<<<<<<<<<<<<<
@@ -16098,7 +16098,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_to_dist_core
   __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_4);
-  __Pyx_AddTraceback("algorithms.imgcoord._flat_to_dist_core", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.imgcoord._flat_to_dist_core", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -16106,7 +16106,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_to_dist_core
   return __pyx_r;
 }
 
-/* "algorithms/imgcoord.py":69
+/* "openptv2/algorithms/imgcoord.py":69
  * 
  * 
  * @cython.cfunc             # <<<<<<<<<<<<<<
@@ -16114,7 +16114,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_to_dist_core
  * @cython.boundscheck(False)
 */
 
-static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__get_mmf_from_mmlut_core(double __pyx_v_pos_x, double __pyx_v_pos_y, double __pyx_v_pos_z, double __pyx_v_mmlut_origin_x, double __pyx_v_mmlut_origin_y, double __pyx_v_mmlut_origin_z, int __pyx_v_mmlut_nr, int __pyx_v_mmlut_nz, double __pyx_v_mmlut_rw, __Pyx_memviewslice __pyx_v_mmlut_data) {
+static CYTHON_INLINE double __pyx_f_8openptv2_10algorithms_8imgcoord__get_mmf_from_mmlut_core(double __pyx_v_pos_x, double __pyx_v_pos_y, double __pyx_v_pos_z, double __pyx_v_mmlut_origin_x, double __pyx_v_mmlut_origin_y, double __pyx_v_mmlut_origin_z, int __pyx_v_mmlut_nr, int __pyx_v_mmlut_nz, double __pyx_v_mmlut_rw, __Pyx_memviewslice __pyx_v_mmlut_data) {
   double __pyx_v_tx;
   double __pyx_v_ty;
   double __pyx_v_tz;
@@ -16137,7 +16137,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__get_mmf_from_mmlut_c
   Py_ssize_t __pyx_t_5;
   Py_ssize_t __pyx_t_6;
 
-  /* "algorithms/imgcoord.py":85
+  /* "openptv2/algorithms/imgcoord.py":85
  *     mmlut_data: cython.double[:],
  * ) -> cython.double:
  *     tx: cython.double = pos_x - mmlut_origin_x             # <<<<<<<<<<<<<<
@@ -16146,7 +16146,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__get_mmf_from_mmlut_c
 */
   __pyx_v_tx = (__pyx_v_pos_x - __pyx_v_mmlut_origin_x);
 
-  /* "algorithms/imgcoord.py":86
+  /* "openptv2/algorithms/imgcoord.py":86
  * ) -> cython.double:
  *     tx: cython.double = pos_x - mmlut_origin_x
  *     ty: cython.double = pos_y - mmlut_origin_y             # <<<<<<<<<<<<<<
@@ -16155,7 +16155,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__get_mmf_from_mmlut_c
 */
   __pyx_v_ty = (__pyx_v_pos_y - __pyx_v_mmlut_origin_y);
 
-  /* "algorithms/imgcoord.py":87
+  /* "openptv2/algorithms/imgcoord.py":87
  *     tx: cython.double = pos_x - mmlut_origin_x
  *     ty: cython.double = pos_y - mmlut_origin_y
  *     tz: cython.double = pos_z - mmlut_origin_z             # <<<<<<<<<<<<<<
@@ -16164,7 +16164,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__get_mmf_from_mmlut_c
 */
   __pyx_v_tz = (__pyx_v_pos_z - __pyx_v_mmlut_origin_z);
 
-  /* "algorithms/imgcoord.py":88
+  /* "openptv2/algorithms/imgcoord.py":88
  *     ty: cython.double = pos_y - mmlut_origin_y
  *     tz: cython.double = pos_z - mmlut_origin_z
  *     sz: cython.double = tz / mmlut_rw             # <<<<<<<<<<<<<<
@@ -16173,7 +16173,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__get_mmf_from_mmlut_c
 */
   __pyx_v_sz = (__pyx_v_tz / __pyx_v_mmlut_rw);
 
-  /* "algorithms/imgcoord.py":89
+  /* "openptv2/algorithms/imgcoord.py":89
  *     tz: cython.double = pos_z - mmlut_origin_z
  *     sz: cython.double = tz / mmlut_rw
  *     iz: cython.int = int(sz)             # <<<<<<<<<<<<<<
@@ -16182,7 +16182,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__get_mmf_from_mmlut_c
 */
   __pyx_v_iz = ((int)__pyx_v_sz);
 
-  /* "algorithms/imgcoord.py":90
+  /* "openptv2/algorithms/imgcoord.py":90
  *     sz: cython.double = tz / mmlut_rw
  *     iz: cython.int = int(sz)
  *     sz -= iz             # <<<<<<<<<<<<<<
@@ -16191,7 +16191,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__get_mmf_from_mmlut_c
 */
   __pyx_v_sz = (__pyx_v_sz - __pyx_v_iz);
 
-  /* "algorithms/imgcoord.py":92
+  /* "openptv2/algorithms/imgcoord.py":92
  *     sz -= iz
  * 
  *     R: cython.double = c_sqrt(tx * tx + ty * ty)             # <<<<<<<<<<<<<<
@@ -16200,7 +16200,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__get_mmf_from_mmlut_c
 */
   __pyx_v_R = sqrt(((__pyx_v_tx * __pyx_v_tx) + (__pyx_v_ty * __pyx_v_ty)));
 
-  /* "algorithms/imgcoord.py":93
+  /* "openptv2/algorithms/imgcoord.py":93
  * 
  *     R: cython.double = c_sqrt(tx * tx + ty * ty)
  *     sr: cython.double = R / mmlut_rw             # <<<<<<<<<<<<<<
@@ -16209,7 +16209,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__get_mmf_from_mmlut_c
 */
   __pyx_v_sr = (__pyx_v_R / __pyx_v_mmlut_rw);
 
-  /* "algorithms/imgcoord.py":94
+  /* "openptv2/algorithms/imgcoord.py":94
  *     R: cython.double = c_sqrt(tx * tx + ty * ty)
  *     sr: cython.double = R / mmlut_rw
  *     ir: cython.int = int(sr)             # <<<<<<<<<<<<<<
@@ -16218,7 +16218,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__get_mmf_from_mmlut_c
 */
   __pyx_v_ir = ((int)__pyx_v_sr);
 
-  /* "algorithms/imgcoord.py":95
+  /* "openptv2/algorithms/imgcoord.py":95
  *     sr: cython.double = R / mmlut_rw
  *     ir: cython.int = int(sr)
  *     sr -= ir             # <<<<<<<<<<<<<<
@@ -16227,7 +16227,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__get_mmf_from_mmlut_c
 */
   __pyx_v_sr = (__pyx_v_sr - __pyx_v_ir);
 
-  /* "algorithms/imgcoord.py":98
+  /* "openptv2/algorithms/imgcoord.py":98
  * 
  *     # Check if point is inside LUT bounds
  *     if ir > mmlut_nr:             # <<<<<<<<<<<<<<
@@ -16237,7 +16237,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__get_mmf_from_mmlut_c
   __pyx_t_1 = (__pyx_v_ir > __pyx_v_mmlut_nr);
   if (__pyx_t_1) {
 
-    /* "algorithms/imgcoord.py":99
+    /* "openptv2/algorithms/imgcoord.py":99
  *     # Check if point is inside LUT bounds
  *     if ir > mmlut_nr:
  *         return 0.0             # <<<<<<<<<<<<<<
@@ -16247,7 +16247,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__get_mmf_from_mmlut_c
     __pyx_r = 0.0;
     goto __pyx_L0;
 
-    /* "algorithms/imgcoord.py":98
+    /* "openptv2/algorithms/imgcoord.py":98
  * 
  *     # Check if point is inside LUT bounds
  *     if ir > mmlut_nr:             # <<<<<<<<<<<<<<
@@ -16256,7 +16256,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__get_mmf_from_mmlut_c
 */
   }
 
-  /* "algorithms/imgcoord.py":100
+  /* "openptv2/algorithms/imgcoord.py":100
  *     if ir > mmlut_nr:
  *         return 0.0
  *     if iz < 0 or iz > mmlut_nz:             # <<<<<<<<<<<<<<
@@ -16274,7 +16274,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__get_mmf_from_mmlut_c
   __pyx_L5_bool_binop_done:;
   if (__pyx_t_1) {
 
-    /* "algorithms/imgcoord.py":101
+    /* "openptv2/algorithms/imgcoord.py":101
  *         return 0.0
  *     if iz < 0 or iz > mmlut_nz:
  *         return 0.0             # <<<<<<<<<<<<<<
@@ -16284,7 +16284,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__get_mmf_from_mmlut_c
     __pyx_r = 0.0;
     goto __pyx_L0;
 
-    /* "algorithms/imgcoord.py":100
+    /* "openptv2/algorithms/imgcoord.py":100
  *     if ir > mmlut_nr:
  *         return 0.0
  *     if iz < 0 or iz > mmlut_nz:             # <<<<<<<<<<<<<<
@@ -16293,7 +16293,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__get_mmf_from_mmlut_c
 */
   }
 
-  /* "algorithms/imgcoord.py":104
+  /* "openptv2/algorithms/imgcoord.py":104
  * 
  *     # Get vertices of box for bilinear interpolation
  *     v4_0: cython.int = ir * mmlut_nz + iz             # <<<<<<<<<<<<<<
@@ -16302,7 +16302,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__get_mmf_from_mmlut_c
 */
   __pyx_v_v4_0 = ((__pyx_v_ir * __pyx_v_mmlut_nz) + __pyx_v_iz);
 
-  /* "algorithms/imgcoord.py":105
+  /* "openptv2/algorithms/imgcoord.py":105
  *     # Get vertices of box for bilinear interpolation
  *     v4_0: cython.int = ir * mmlut_nz + iz
  *     v4_1: cython.int = ir * mmlut_nz + (iz + 1)             # <<<<<<<<<<<<<<
@@ -16311,7 +16311,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__get_mmf_from_mmlut_c
 */
   __pyx_v_v4_1 = ((__pyx_v_ir * __pyx_v_mmlut_nz) + (__pyx_v_iz + 1));
 
-  /* "algorithms/imgcoord.py":106
+  /* "openptv2/algorithms/imgcoord.py":106
  *     v4_0: cython.int = ir * mmlut_nz + iz
  *     v4_1: cython.int = ir * mmlut_nz + (iz + 1)
  *     v4_2: cython.int = (ir + 1) * mmlut_nz + iz             # <<<<<<<<<<<<<<
@@ -16320,7 +16320,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__get_mmf_from_mmlut_c
 */
   __pyx_v_v4_2 = (((__pyx_v_ir + 1) * __pyx_v_mmlut_nz) + __pyx_v_iz);
 
-  /* "algorithms/imgcoord.py":107
+  /* "openptv2/algorithms/imgcoord.py":107
  *     v4_1: cython.int = ir * mmlut_nz + (iz + 1)
  *     v4_2: cython.int = (ir + 1) * mmlut_nz + iz
  *     v4_3: cython.int = (ir + 1) * mmlut_nz + (iz + 1)             # <<<<<<<<<<<<<<
@@ -16329,7 +16329,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__get_mmf_from_mmlut_c
 */
   __pyx_v_v4_3 = (((__pyx_v_ir + 1) * __pyx_v_mmlut_nz) + (__pyx_v_iz + 1));
 
-  /* "algorithms/imgcoord.py":109
+  /* "openptv2/algorithms/imgcoord.py":109
  *     v4_3: cython.int = (ir + 1) * mmlut_nz + (iz + 1)
  * 
  *     max_v: cython.int = mmlut_nr * mmlut_nz             # <<<<<<<<<<<<<<
@@ -16338,7 +16338,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__get_mmf_from_mmlut_c
 */
   __pyx_v_max_v = (__pyx_v_mmlut_nr * __pyx_v_mmlut_nz);
 
-  /* "algorithms/imgcoord.py":110
+  /* "openptv2/algorithms/imgcoord.py":110
  * 
  *     max_v: cython.int = mmlut_nr * mmlut_nz
  *     if v4_0 < 0 or v4_0 > max_v: return 0.0             # <<<<<<<<<<<<<<
@@ -16359,7 +16359,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__get_mmf_from_mmlut_c
     goto __pyx_L0;
   }
 
-  /* "algorithms/imgcoord.py":111
+  /* "openptv2/algorithms/imgcoord.py":111
  *     max_v: cython.int = mmlut_nr * mmlut_nz
  *     if v4_0 < 0 or v4_0 > max_v: return 0.0
  *     if v4_1 < 0 or v4_1 > max_v: return 0.0             # <<<<<<<<<<<<<<
@@ -16380,7 +16380,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__get_mmf_from_mmlut_c
     goto __pyx_L0;
   }
 
-  /* "algorithms/imgcoord.py":112
+  /* "openptv2/algorithms/imgcoord.py":112
  *     if v4_0 < 0 or v4_0 > max_v: return 0.0
  *     if v4_1 < 0 or v4_1 > max_v: return 0.0
  *     if v4_2 < 0 or v4_2 > max_v: return 0.0             # <<<<<<<<<<<<<<
@@ -16401,7 +16401,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__get_mmf_from_mmlut_c
     goto __pyx_L0;
   }
 
-  /* "algorithms/imgcoord.py":113
+  /* "openptv2/algorithms/imgcoord.py":113
  *     if v4_1 < 0 or v4_1 > max_v: return 0.0
  *     if v4_2 < 0 or v4_2 > max_v: return 0.0
  *     if v4_3 < 0 or v4_3 > max_v: return 0.0             # <<<<<<<<<<<<<<
@@ -16422,7 +16422,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__get_mmf_from_mmlut_c
     goto __pyx_L0;
   }
 
-  /* "algorithms/imgcoord.py":117
+  /* "openptv2/algorithms/imgcoord.py":117
  *     # Bilinear interpolation
  *     mmf: cython.double = (
  *         mmlut_data[v4_0] * (1.0 - sr) * (1.0 - sz)             # <<<<<<<<<<<<<<
@@ -16431,7 +16431,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__get_mmf_from_mmlut_c
 */
   __pyx_t_3 = __pyx_v_v4_0;
 
-  /* "algorithms/imgcoord.py":118
+  /* "openptv2/algorithms/imgcoord.py":118
  *     mmf: cython.double = (
  *         mmlut_data[v4_0] * (1.0 - sr) * (1.0 - sz)
  *         + mmlut_data[v4_1] * (1.0 - sr) * sz             # <<<<<<<<<<<<<<
@@ -16440,7 +16440,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__get_mmf_from_mmlut_c
 */
   __pyx_t_4 = __pyx_v_v4_1;
 
-  /* "algorithms/imgcoord.py":119
+  /* "openptv2/algorithms/imgcoord.py":119
  *         mmlut_data[v4_0] * (1.0 - sr) * (1.0 - sz)
  *         + mmlut_data[v4_1] * (1.0 - sr) * sz
  *         + mmlut_data[v4_2] * sr * (1.0 - sz)             # <<<<<<<<<<<<<<
@@ -16449,7 +16449,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__get_mmf_from_mmlut_c
 */
   __pyx_t_5 = __pyx_v_v4_2;
 
-  /* "algorithms/imgcoord.py":120
+  /* "openptv2/algorithms/imgcoord.py":120
  *         + mmlut_data[v4_1] * (1.0 - sr) * sz
  *         + mmlut_data[v4_2] * sr * (1.0 - sz)
  *         + mmlut_data[v4_3] * sr * sz             # <<<<<<<<<<<<<<
@@ -16459,7 +16459,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__get_mmf_from_mmlut_c
   __pyx_t_6 = __pyx_v_v4_3;
   __pyx_v_mmf = ((((((*((double *) ( /* dim=0 */ (__pyx_v_mmlut_data.data + __pyx_t_3 * __pyx_v_mmlut_data.strides[0]) ))) * (1.0 - __pyx_v_sr)) * (1.0 - __pyx_v_sz)) + (((*((double *) ( /* dim=0 */ (__pyx_v_mmlut_data.data + __pyx_t_4 * __pyx_v_mmlut_data.strides[0]) ))) * (1.0 - __pyx_v_sr)) * __pyx_v_sz)) + (((*((double *) ( /* dim=0 */ (__pyx_v_mmlut_data.data + __pyx_t_5 * __pyx_v_mmlut_data.strides[0]) ))) * __pyx_v_sr) * (1.0 - __pyx_v_sz))) + (((*((double *) ( /* dim=0 */ (__pyx_v_mmlut_data.data + __pyx_t_6 * __pyx_v_mmlut_data.strides[0]) ))) * __pyx_v_sr) * __pyx_v_sz));
 
-  /* "algorithms/imgcoord.py":123
+  /* "openptv2/algorithms/imgcoord.py":123
  *     )
  * 
  *     return mmf             # <<<<<<<<<<<<<<
@@ -16469,7 +16469,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__get_mmf_from_mmlut_c
   __pyx_r = __pyx_v_mmf;
   goto __pyx_L0;
 
-  /* "algorithms/imgcoord.py":69
+  /* "openptv2/algorithms/imgcoord.py":69
  * 
  * 
  * @cython.cfunc             # <<<<<<<<<<<<<<
@@ -16482,7 +16482,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__get_mmf_from_mmlut_c
   return __pyx_r;
 }
 
-/* "algorithms/imgcoord.py":126
+/* "openptv2/algorithms/imgcoord.py":126
  * 
  * 
  * @cython.cfunc             # <<<<<<<<<<<<<<
@@ -16490,7 +16490,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__get_mmf_from_mmlut_c
  * @cython.boundscheck(False)
 */
 
-static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__multimed_r_1lay_iterative(double __pyx_v_pos_x, double __pyx_v_pos_z, double __pyx_v_ext_z0, double __pyx_v_mm_n1, double __pyx_v_mm_n2_0, double __pyx_v_mm_n3, double __pyx_v_mm_d0) {
+static CYTHON_INLINE double __pyx_f_8openptv2_10algorithms_8imgcoord__multimed_r_1lay_iterative(double __pyx_v_pos_x, double __pyx_v_pos_z, double __pyx_v_ext_z0, double __pyx_v_mm_n1, double __pyx_v_mm_n2_0, double __pyx_v_mm_n3, double __pyx_v_mm_d0) {
   double __pyx_v_r;
   double __pyx_v_rq;
   CYTHON_UNUSED int __pyx_v_it;
@@ -16511,7 +16511,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__multimed_r_1lay_iter
   int __pyx_t_5;
   double __pyx_t_6;
 
-  /* "algorithms/imgcoord.py":139
+  /* "openptv2/algorithms/imgcoord.py":139
  *     mm_d0: cython.double,
  * ) -> cython.double:
  *     if mm_n1 == 1.0 and mm_n2_0 == 1.0 and mm_n3 == 1.0:             # <<<<<<<<<<<<<<
@@ -16535,7 +16535,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__multimed_r_1lay_iter
   __pyx_L4_bool_binop_done:;
   if (__pyx_t_1) {
 
-    /* "algorithms/imgcoord.py":140
+    /* "openptv2/algorithms/imgcoord.py":140
  * ) -> cython.double:
  *     if mm_n1 == 1.0 and mm_n2_0 == 1.0 and mm_n3 == 1.0:
  *         return 1.0             # <<<<<<<<<<<<<<
@@ -16545,7 +16545,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__multimed_r_1lay_iter
     __pyx_r = 1.0;
     goto __pyx_L0;
 
-    /* "algorithms/imgcoord.py":139
+    /* "openptv2/algorithms/imgcoord.py":139
  *     mm_d0: cython.double,
  * ) -> cython.double:
  *     if mm_n1 == 1.0 and mm_n2_0 == 1.0 and mm_n3 == 1.0:             # <<<<<<<<<<<<<<
@@ -16554,7 +16554,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__multimed_r_1lay_iter
 */
   }
 
-  /* "algorithms/imgcoord.py":142
+  /* "openptv2/algorithms/imgcoord.py":142
  *         return 1.0
  * 
  *     r: cython.double = pos_x             # <<<<<<<<<<<<<<
@@ -16563,7 +16563,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__multimed_r_1lay_iter
 */
   __pyx_v_r = __pyx_v_pos_x;
 
-  /* "algorithms/imgcoord.py":143
+  /* "openptv2/algorithms/imgcoord.py":143
  * 
  *     r: cython.double = pos_x
  *     rq: cython.double = r             # <<<<<<<<<<<<<<
@@ -16572,7 +16572,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__multimed_r_1lay_iter
 */
   __pyx_v_rq = __pyx_v_r;
 
-  /* "algorithms/imgcoord.py":155
+  /* "openptv2/algorithms/imgcoord.py":155
  * 
  *     # Constants for iteration
  *     n_iter: cython.int = 40             # <<<<<<<<<<<<<<
@@ -16581,7 +16581,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__multimed_r_1lay_iter
 */
   __pyx_v_n_iter = 40;
 
-  /* "algorithms/imgcoord.py":156
+  /* "openptv2/algorithms/imgcoord.py":156
  *     # Constants for iteration
  *     n_iter: cython.int = 40
  *     tol: cython.double = 0.001             # <<<<<<<<<<<<<<
@@ -16590,7 +16590,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__multimed_r_1lay_iter
 */
   __pyx_v_tol = 0.001;
 
-  /* "algorithms/imgcoord.py":158
+  /* "openptv2/algorithms/imgcoord.py":158
  *     tol: cython.double = 0.001
  * 
  *     for it in range(n_iter):             # <<<<<<<<<<<<<<
@@ -16602,7 +16602,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__multimed_r_1lay_iter
   for (__pyx_t_5 = 0; __pyx_t_5 < __pyx_t_4; __pyx_t_5+=1) {
     __pyx_v_it = __pyx_t_5;
 
-    /* "algorithms/imgcoord.py":159
+    /* "openptv2/algorithms/imgcoord.py":159
  * 
  *     for it in range(n_iter):
  *         beta1 = c_atan(rq / (ext_z0 - pos_z))             # <<<<<<<<<<<<<<
@@ -16611,7 +16611,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__multimed_r_1lay_iter
 */
     __pyx_v_beta1 = atan((__pyx_v_rq / (__pyx_v_ext_z0 - __pyx_v_pos_z)));
 
-    /* "algorithms/imgcoord.py":160
+    /* "openptv2/algorithms/imgcoord.py":160
  *     for it in range(n_iter):
  *         beta1 = c_atan(rq / (ext_z0 - pos_z))
  *         sin_beta1 = c_sin(beta1)             # <<<<<<<<<<<<<<
@@ -16620,7 +16620,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__multimed_r_1lay_iter
 */
     __pyx_v_sin_beta1 = sin(__pyx_v_beta1);
 
-    /* "algorithms/imgcoord.py":162
+    /* "openptv2/algorithms/imgcoord.py":162
  *         sin_beta1 = c_sin(beta1)
  * 
  *         arg = sin_beta1 * mm_n1 / mm_n2_0             # <<<<<<<<<<<<<<
@@ -16629,7 +16629,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__multimed_r_1lay_iter
 */
     __pyx_v_arg = ((__pyx_v_sin_beta1 * __pyx_v_mm_n1) / __pyx_v_mm_n2_0);
 
-    /* "algorithms/imgcoord.py":163
+    /* "openptv2/algorithms/imgcoord.py":163
  * 
  *         arg = sin_beta1 * mm_n1 / mm_n2_0
  *         if arg > 1.0:             # <<<<<<<<<<<<<<
@@ -16639,7 +16639,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__multimed_r_1lay_iter
     __pyx_t_1 = (__pyx_v_arg > 1.0);
     if (__pyx_t_1) {
 
-      /* "algorithms/imgcoord.py":164
+      /* "openptv2/algorithms/imgcoord.py":164
  *         arg = sin_beta1 * mm_n1 / mm_n2_0
  *         if arg > 1.0:
  *             arg = 1.0             # <<<<<<<<<<<<<<
@@ -16648,7 +16648,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__multimed_r_1lay_iter
 */
       __pyx_v_arg = 1.0;
 
-      /* "algorithms/imgcoord.py":163
+      /* "openptv2/algorithms/imgcoord.py":163
  * 
  *         arg = sin_beta1 * mm_n1 / mm_n2_0
  *         if arg > 1.0:             # <<<<<<<<<<<<<<
@@ -16658,7 +16658,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__multimed_r_1lay_iter
       goto __pyx_L9;
     }
 
-    /* "algorithms/imgcoord.py":165
+    /* "openptv2/algorithms/imgcoord.py":165
  *         if arg > 1.0:
  *             arg = 1.0
  *         elif arg < -1.0:             # <<<<<<<<<<<<<<
@@ -16668,7 +16668,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__multimed_r_1lay_iter
     __pyx_t_1 = (__pyx_v_arg < -1.0);
     if (__pyx_t_1) {
 
-      /* "algorithms/imgcoord.py":166
+      /* "openptv2/algorithms/imgcoord.py":166
  *             arg = 1.0
  *         elif arg < -1.0:
  *             arg = -1.0             # <<<<<<<<<<<<<<
@@ -16677,7 +16677,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__multimed_r_1lay_iter
 */
       __pyx_v_arg = -1.0;
 
-      /* "algorithms/imgcoord.py":165
+      /* "openptv2/algorithms/imgcoord.py":165
  *         if arg > 1.0:
  *             arg = 1.0
  *         elif arg < -1.0:             # <<<<<<<<<<<<<<
@@ -16687,7 +16687,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__multimed_r_1lay_iter
     }
     __pyx_L9:;
 
-    /* "algorithms/imgcoord.py":167
+    /* "openptv2/algorithms/imgcoord.py":167
  *         elif arg < -1.0:
  *             arg = -1.0
  *         beta2 = c_asin(arg)             # <<<<<<<<<<<<<<
@@ -16696,7 +16696,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__multimed_r_1lay_iter
 */
     __pyx_v_beta2 = asin(__pyx_v_arg);
 
-    /* "algorithms/imgcoord.py":169
+    /* "openptv2/algorithms/imgcoord.py":169
  *         beta2 = c_asin(arg)
  * 
  *         arg = sin_beta1 * mm_n1 / mm_n3             # <<<<<<<<<<<<<<
@@ -16705,7 +16705,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__multimed_r_1lay_iter
 */
     __pyx_v_arg = ((__pyx_v_sin_beta1 * __pyx_v_mm_n1) / __pyx_v_mm_n3);
 
-    /* "algorithms/imgcoord.py":170
+    /* "openptv2/algorithms/imgcoord.py":170
  * 
  *         arg = sin_beta1 * mm_n1 / mm_n3
  *         if arg > 1.0:             # <<<<<<<<<<<<<<
@@ -16715,7 +16715,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__multimed_r_1lay_iter
     __pyx_t_1 = (__pyx_v_arg > 1.0);
     if (__pyx_t_1) {
 
-      /* "algorithms/imgcoord.py":171
+      /* "openptv2/algorithms/imgcoord.py":171
  *         arg = sin_beta1 * mm_n1 / mm_n3
  *         if arg > 1.0:
  *             arg = 1.0             # <<<<<<<<<<<<<<
@@ -16724,7 +16724,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__multimed_r_1lay_iter
 */
       __pyx_v_arg = 1.0;
 
-      /* "algorithms/imgcoord.py":170
+      /* "openptv2/algorithms/imgcoord.py":170
  * 
  *         arg = sin_beta1 * mm_n1 / mm_n3
  *         if arg > 1.0:             # <<<<<<<<<<<<<<
@@ -16734,7 +16734,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__multimed_r_1lay_iter
       goto __pyx_L10;
     }
 
-    /* "algorithms/imgcoord.py":172
+    /* "openptv2/algorithms/imgcoord.py":172
  *         if arg > 1.0:
  *             arg = 1.0
  *         elif arg < -1.0:             # <<<<<<<<<<<<<<
@@ -16744,7 +16744,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__multimed_r_1lay_iter
     __pyx_t_1 = (__pyx_v_arg < -1.0);
     if (__pyx_t_1) {
 
-      /* "algorithms/imgcoord.py":173
+      /* "openptv2/algorithms/imgcoord.py":173
  *             arg = 1.0
  *         elif arg < -1.0:
  *             arg = -1.0             # <<<<<<<<<<<<<<
@@ -16753,7 +16753,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__multimed_r_1lay_iter
 */
       __pyx_v_arg = -1.0;
 
-      /* "algorithms/imgcoord.py":172
+      /* "openptv2/algorithms/imgcoord.py":172
  *         if arg > 1.0:
  *             arg = 1.0
  *         elif arg < -1.0:             # <<<<<<<<<<<<<<
@@ -16763,7 +16763,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__multimed_r_1lay_iter
     }
     __pyx_L10:;
 
-    /* "algorithms/imgcoord.py":174
+    /* "openptv2/algorithms/imgcoord.py":174
  *         elif arg < -1.0:
  *             arg = -1.0
  *         beta3 = c_asin(arg)             # <<<<<<<<<<<<<<
@@ -16772,7 +16772,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__multimed_r_1lay_iter
 */
     __pyx_v_beta3 = asin(__pyx_v_arg);
 
-    /* "algorithms/imgcoord.py":176
+    /* "openptv2/algorithms/imgcoord.py":176
  *         beta3 = c_asin(arg)
  * 
  *         rbeta = (ext_z0 - mm_d0) * c_tan(beta1) - pos_z * c_tan(beta3) + mm_d0 * c_tan(beta2)             # <<<<<<<<<<<<<<
@@ -16781,7 +16781,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__multimed_r_1lay_iter
 */
     __pyx_v_rbeta = ((((__pyx_v_ext_z0 - __pyx_v_mm_d0) * tan(__pyx_v_beta1)) - (__pyx_v_pos_z * tan(__pyx_v_beta3))) + (__pyx_v_mm_d0 * tan(__pyx_v_beta2)));
 
-    /* "algorithms/imgcoord.py":177
+    /* "openptv2/algorithms/imgcoord.py":177
  * 
  *         rbeta = (ext_z0 - mm_d0) * c_tan(beta1) - pos_z * c_tan(beta3) + mm_d0 * c_tan(beta2)
  *         rdiff = r - rbeta             # <<<<<<<<<<<<<<
@@ -16790,7 +16790,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__multimed_r_1lay_iter
 */
     __pyx_v_rdiff = (__pyx_v_r - __pyx_v_rbeta);
 
-    /* "algorithms/imgcoord.py":178
+    /* "openptv2/algorithms/imgcoord.py":178
  *         rbeta = (ext_z0 - mm_d0) * c_tan(beta1) - pos_z * c_tan(beta3) + mm_d0 * c_tan(beta2)
  *         rdiff = r - rbeta
  *         rq += rdiff             # <<<<<<<<<<<<<<
@@ -16799,7 +16799,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__multimed_r_1lay_iter
 */
     __pyx_v_rq = (__pyx_v_rq + __pyx_v_rdiff);
 
-    /* "algorithms/imgcoord.py":180
+    /* "openptv2/algorithms/imgcoord.py":180
  *         rq += rdiff
  * 
  *         if abs(rdiff) < tol:             # <<<<<<<<<<<<<<
@@ -16810,7 +16810,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__multimed_r_1lay_iter
     __pyx_t_1 = (__pyx_t_6 < __pyx_v_tol);
     if (__pyx_t_1) {
 
-      /* "algorithms/imgcoord.py":181
+      /* "openptv2/algorithms/imgcoord.py":181
  * 
  *         if abs(rdiff) < tol:
  *             break             # <<<<<<<<<<<<<<
@@ -16819,7 +16819,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__multimed_r_1lay_iter
 */
       goto __pyx_L8_break;
 
-      /* "algorithms/imgcoord.py":180
+      /* "openptv2/algorithms/imgcoord.py":180
  *         rq += rdiff
  * 
  *         if abs(rdiff) < tol:             # <<<<<<<<<<<<<<
@@ -16830,7 +16830,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__multimed_r_1lay_iter
   }
   /*else*/ {
 
-    /* "algorithms/imgcoord.py":183
+    /* "openptv2/algorithms/imgcoord.py":183
  *             break
  *     else:
  *         return 1.0             # <<<<<<<<<<<<<<
@@ -16842,7 +16842,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__multimed_r_1lay_iter
   }
   __pyx_L8_break:;
 
-  /* "algorithms/imgcoord.py":185
+  /* "openptv2/algorithms/imgcoord.py":185
  *         return 1.0
  * 
  *     if r != 0.0:             # <<<<<<<<<<<<<<
@@ -16852,7 +16852,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__multimed_r_1lay_iter
   __pyx_t_1 = (__pyx_v_r != 0.0);
   if (__pyx_t_1) {
 
-    /* "algorithms/imgcoord.py":186
+    /* "openptv2/algorithms/imgcoord.py":186
  * 
  *     if r != 0.0:
  *         return rq / r             # <<<<<<<<<<<<<<
@@ -16862,7 +16862,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__multimed_r_1lay_iter
     __pyx_r = (__pyx_v_rq / __pyx_v_r);
     goto __pyx_L0;
 
-    /* "algorithms/imgcoord.py":185
+    /* "openptv2/algorithms/imgcoord.py":185
  *         return 1.0
  * 
  *     if r != 0.0:             # <<<<<<<<<<<<<<
@@ -16871,7 +16871,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__multimed_r_1lay_iter
 */
   }
 
-  /* "algorithms/imgcoord.py":188
+  /* "openptv2/algorithms/imgcoord.py":188
  *         return rq / r
  *     else:
  *         return 1.0             # <<<<<<<<<<<<<<
@@ -16883,7 +16883,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__multimed_r_1lay_iter
     goto __pyx_L0;
   }
 
-  /* "algorithms/imgcoord.py":126
+  /* "openptv2/algorithms/imgcoord.py":126
  * 
  * 
  * @cython.cfunc             # <<<<<<<<<<<<<<
@@ -16896,7 +16896,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__multimed_r_1lay_iter
   return __pyx_r;
 }
 
-/* "algorithms/imgcoord.py":191
+/* "openptv2/algorithms/imgcoord.py":191
  * 
  * 
  * @cython.cfunc             # <<<<<<<<<<<<<<
@@ -16904,7 +16904,7 @@ static CYTHON_INLINE double __pyx_f_10algorithms_8imgcoord__multimed_r_1lay_iter
  * @cython.boundscheck(False)
 */
 
-static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__multimed_nlay_core(double __pyx_v_pos_x, double __pyx_v_pos_z, double __pyx_v_ext_z0, double __pyx_v_mm_n1, double __pyx_v_mm_n2_0, double __pyx_v_mm_n3, double __pyx_v_mm_d0, double __pyx_v_mmf) {
+static CYTHON_INLINE PyObject *__pyx_f_8openptv2_10algorithms_8imgcoord__multimed_nlay_core(double __pyx_v_pos_x, double __pyx_v_pos_z, double __pyx_v_ext_z0, double __pyx_v_mm_n1, double __pyx_v_mm_n2_0, double __pyx_v_mm_n3, double __pyx_v_mm_d0, double __pyx_v_mmf) {
   double __pyx_v_radial_shift;
   double __pyx_v_Xq;
   double __pyx_v_Yq;
@@ -16921,7 +16921,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__multimed_nlay_cor
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("_multimed_nlay_core", 0);
 
-  /* "algorithms/imgcoord.py":205
+  /* "openptv2/algorithms/imgcoord.py":205
  *     mmf: cython.double,
  * ) -> tuple:
  *     radial_shift: cython.double = 1.0             # <<<<<<<<<<<<<<
@@ -16930,7 +16930,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__multimed_nlay_cor
 */
   __pyx_v_radial_shift = 1.0;
 
-  /* "algorithms/imgcoord.py":206
+  /* "openptv2/algorithms/imgcoord.py":206
  * ) -> tuple:
  *     radial_shift: cython.double = 1.0
  *     if mmf > 0.0 and mmf != 1.0:             # <<<<<<<<<<<<<<
@@ -16948,7 +16948,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__multimed_nlay_cor
   __pyx_L4_bool_binop_done:;
   if (__pyx_t_1) {
 
-    /* "algorithms/imgcoord.py":207
+    /* "openptv2/algorithms/imgcoord.py":207
  *     radial_shift: cython.double = 1.0
  *     if mmf > 0.0 and mmf != 1.0:
  *         radial_shift = mmf             # <<<<<<<<<<<<<<
@@ -16957,7 +16957,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__multimed_nlay_cor
 */
     __pyx_v_radial_shift = __pyx_v_mmf;
 
-    /* "algorithms/imgcoord.py":206
+    /* "openptv2/algorithms/imgcoord.py":206
  * ) -> tuple:
  *     radial_shift: cython.double = 1.0
  *     if mmf > 0.0 and mmf != 1.0:             # <<<<<<<<<<<<<<
@@ -16967,7 +16967,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__multimed_nlay_cor
     goto __pyx_L3;
   }
 
-  /* "algorithms/imgcoord.py":209
+  /* "openptv2/algorithms/imgcoord.py":209
  *         radial_shift = mmf
  *     else:
  *         radial_shift = _multimed_r_1lay_iterative(             # <<<<<<<<<<<<<<
@@ -16976,19 +16976,19 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__multimed_nlay_cor
 */
   /*else*/ {
 
-    /* "algorithms/imgcoord.py":211
+    /* "openptv2/algorithms/imgcoord.py":211
  *         radial_shift = _multimed_r_1lay_iterative(
  *             pos_x, pos_z, ext_z0,
  *             mm_n1, mm_n2_0, mm_n3, mm_d0,             # <<<<<<<<<<<<<<
  *         )
  * 
 */
-    __pyx_t_3 = __pyx_f_10algorithms_8imgcoord__multimed_r_1lay_iterative(__pyx_v_pos_x, __pyx_v_pos_z, __pyx_v_ext_z0, __pyx_v_mm_n1, __pyx_v_mm_n2_0, __pyx_v_mm_n3, __pyx_v_mm_d0); if (unlikely(__pyx_t_3 == ((double)-1) && PyErr_Occurred())) __PYX_ERR(0, 209, __pyx_L1_error)
+    __pyx_t_3 = __pyx_f_8openptv2_10algorithms_8imgcoord__multimed_r_1lay_iterative(__pyx_v_pos_x, __pyx_v_pos_z, __pyx_v_ext_z0, __pyx_v_mm_n1, __pyx_v_mm_n2_0, __pyx_v_mm_n3, __pyx_v_mm_d0); if (unlikely(__pyx_t_3 == ((double)-1) && PyErr_Occurred())) __PYX_ERR(0, 209, __pyx_L1_error)
     __pyx_v_radial_shift = __pyx_t_3;
   }
   __pyx_L3:;
 
-  /* "algorithms/imgcoord.py":214
+  /* "openptv2/algorithms/imgcoord.py":214
  *         )
  * 
  *     Xq: cython.double = pos_x * radial_shift             # <<<<<<<<<<<<<<
@@ -16997,7 +16997,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__multimed_nlay_cor
 */
   __pyx_v_Xq = (__pyx_v_pos_x * __pyx_v_radial_shift);
 
-  /* "algorithms/imgcoord.py":215
+  /* "openptv2/algorithms/imgcoord.py":215
  * 
  *     Xq: cython.double = pos_x * radial_shift
  *     Yq: cython.double = 0.0             # <<<<<<<<<<<<<<
@@ -17006,7 +17006,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__multimed_nlay_cor
 */
   __pyx_v_Yq = 0.0;
 
-  /* "algorithms/imgcoord.py":217
+  /* "openptv2/algorithms/imgcoord.py":217
  *     Yq: cython.double = 0.0
  * 
  *     return Xq, Yq             # <<<<<<<<<<<<<<
@@ -17030,7 +17030,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__multimed_nlay_cor
   __pyx_t_6 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/imgcoord.py":191
+  /* "openptv2/algorithms/imgcoord.py":191
  * 
  * 
  * @cython.cfunc             # <<<<<<<<<<<<<<
@@ -17043,7 +17043,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__multimed_nlay_cor
   __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_5);
   __Pyx_XDECREF(__pyx_t_6);
-  __Pyx_AddTraceback("algorithms.imgcoord._multimed_nlay_core", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.imgcoord._multimed_nlay_core", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -17051,7 +17051,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__multimed_nlay_cor
   return __pyx_r;
 }
 
-/* "algorithms/imgcoord.py":220
+/* "openptv2/algorithms/imgcoord.py":220
  * 
  * 
  * @cython.cfunc             # <<<<<<<<<<<<<<
@@ -17059,7 +17059,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__multimed_nlay_cor
  * @cython.boundscheck(False)
 */
 
-static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_core(double __pyx_v_pos0, double __pyx_v_pos1, double __pyx_v_pos2, double __pyx_v_ext_x0, double __pyx_v_ext_y0, double __pyx_v_ext_z0, __Pyx_memviewslice __pyx_v_ext_dm, double __pyx_v_int_cc, double __pyx_v_glass_vec_x, double __pyx_v_glass_vec_y, double __pyx_v_glass_vec_z, double __pyx_v_mm_n1, double __pyx_v_mm_n2_0, double __pyx_v_mm_n3, double __pyx_v_mm_d0, int __pyx_v_has_mmlut, double __pyx_v_mmlut_origin_x, double __pyx_v_mmlut_origin_y, double __pyx_v_mmlut_origin_z, int __pyx_v_mmlut_nr, int __pyx_v_mmlut_nz, double __pyx_v_mmlut_rw, __Pyx_memviewslice __pyx_v_mmlut_data) {
+static CYTHON_INLINE PyObject *__pyx_f_8openptv2_10algorithms_8imgcoord__flat_image_coord_core(double __pyx_v_pos0, double __pyx_v_pos1, double __pyx_v_pos2, double __pyx_v_ext_x0, double __pyx_v_ext_y0, double __pyx_v_ext_z0, __Pyx_memviewslice __pyx_v_ext_dm, double __pyx_v_int_cc, double __pyx_v_glass_vec_x, double __pyx_v_glass_vec_y, double __pyx_v_glass_vec_z, double __pyx_v_mm_n1, double __pyx_v_mm_n2_0, double __pyx_v_mm_n3, double __pyx_v_mm_d0, int __pyx_v_has_mmlut, double __pyx_v_mmlut_origin_x, double __pyx_v_mmlut_origin_y, double __pyx_v_mmlut_origin_z, int __pyx_v_mmlut_nr, int __pyx_v_mmlut_nz, double __pyx_v_mmlut_rw, __Pyx_memviewslice __pyx_v_mmlut_data) {
   double __pyx_v_gx;
   double __pyx_v_gy;
   double __pyx_v_gz;
@@ -17122,7 +17122,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("_flat_image_coord_core", 0);
 
-  /* "algorithms/imgcoord.py":249
+  /* "openptv2/algorithms/imgcoord.py":249
  *     mmlut_data: cython.double[:],
  * ) -> tuple:
  *     gx: cython.double = glass_vec_x             # <<<<<<<<<<<<<<
@@ -17131,7 +17131,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_
 */
   __pyx_v_gx = __pyx_v_glass_vec_x;
 
-  /* "algorithms/imgcoord.py":250
+  /* "openptv2/algorithms/imgcoord.py":250
  * ) -> tuple:
  *     gx: cython.double = glass_vec_x
  *     gy: cython.double = glass_vec_y             # <<<<<<<<<<<<<<
@@ -17140,7 +17140,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_
 */
   __pyx_v_gy = __pyx_v_glass_vec_y;
 
-  /* "algorithms/imgcoord.py":251
+  /* "openptv2/algorithms/imgcoord.py":251
  *     gx: cython.double = glass_vec_x
  *     gy: cython.double = glass_vec_y
  *     gz: cython.double = glass_vec_z             # <<<<<<<<<<<<<<
@@ -17149,7 +17149,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_
 */
   __pyx_v_gz = __pyx_v_glass_vec_z;
 
-  /* "algorithms/imgcoord.py":254
+  /* "openptv2/algorithms/imgcoord.py":254
  * 
  *     # === trans_cam_point (inlined) ===
  *     dist_o_glas: cython.double = c_sqrt(gx * gx + gy * gy + gz * gz)             # <<<<<<<<<<<<<<
@@ -17158,7 +17158,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_
 */
   __pyx_v_dist_o_glas = sqrt((((__pyx_v_gx * __pyx_v_gx) + (__pyx_v_gy * __pyx_v_gy)) + (__pyx_v_gz * __pyx_v_gz)));
 
-  /* "algorithms/imgcoord.py":255
+  /* "openptv2/algorithms/imgcoord.py":255
  *     # === trans_cam_point (inlined) ===
  *     dist_o_glas: cython.double = c_sqrt(gx * gx + gy * gy + gz * gz)
  *     inv_dog: cython.double = 1.0 / dist_o_glas             # <<<<<<<<<<<<<<
@@ -17167,7 +17167,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_
 */
   __pyx_v_inv_dog = (1.0 / __pyx_v_dist_o_glas);
 
-  /* "algorithms/imgcoord.py":257
+  /* "openptv2/algorithms/imgcoord.py":257
  *     inv_dog: cython.double = 1.0 / dist_o_glas
  * 
  *     dot_cam: cython.double = ext_x0 * gx + ext_y0 * gy + ext_z0 * gz             # <<<<<<<<<<<<<<
@@ -17176,7 +17176,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_
 */
   __pyx_v_dot_cam = (((__pyx_v_ext_x0 * __pyx_v_gx) + (__pyx_v_ext_y0 * __pyx_v_gy)) + (__pyx_v_ext_z0 * __pyx_v_gz));
 
-  /* "algorithms/imgcoord.py":258
+  /* "openptv2/algorithms/imgcoord.py":258
  * 
  *     dot_cam: cython.double = ext_x0 * gx + ext_y0 * gy + ext_z0 * gz
  *     dist_cam_glas: cython.double = dot_cam * inv_dog - dist_o_glas - mm_d0             # <<<<<<<<<<<<<<
@@ -17185,7 +17185,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_
 */
   __pyx_v_dist_cam_glas = (((__pyx_v_dot_cam * __pyx_v_inv_dog) - __pyx_v_dist_o_glas) - __pyx_v_mm_d0);
 
-  /* "algorithms/imgcoord.py":260
+  /* "openptv2/algorithms/imgcoord.py":260
  *     dist_cam_glas: cython.double = dot_cam * inv_dog - dist_o_glas - mm_d0
  * 
  *     dot_pos: cython.double = pos0 * gx + pos1 * gy + pos2 * gz             # <<<<<<<<<<<<<<
@@ -17194,7 +17194,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_
 */
   __pyx_v_dot_pos = (((__pyx_v_pos0 * __pyx_v_gx) + (__pyx_v_pos1 * __pyx_v_gy)) + (__pyx_v_pos2 * __pyx_v_gz));
 
-  /* "algorithms/imgcoord.py":261
+  /* "openptv2/algorithms/imgcoord.py":261
  * 
  *     dot_pos: cython.double = pos0 * gx + pos1 * gy + pos2 * gz
  *     dist_point_glas: cython.double = dot_pos * inv_dog - dist_o_glas             # <<<<<<<<<<<<<<
@@ -17203,7 +17203,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_
 */
   __pyx_v_dist_point_glas = ((__pyx_v_dot_pos * __pyx_v_inv_dog) - __pyx_v_dist_o_glas);
 
-  /* "algorithms/imgcoord.py":263
+  /* "openptv2/algorithms/imgcoord.py":263
  *     dist_point_glas: cython.double = dot_pos * inv_dog - dist_o_glas
  * 
  *     s_cam: cython.double = dist_cam_glas * inv_dog             # <<<<<<<<<<<<<<
@@ -17212,7 +17212,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_
 */
   __pyx_v_s_cam = (__pyx_v_dist_cam_glas * __pyx_v_inv_dog);
 
-  /* "algorithms/imgcoord.py":264
+  /* "openptv2/algorithms/imgcoord.py":264
  * 
  *     s_cam: cython.double = dist_cam_glas * inv_dog
  *     cc_x: cython.double = ext_x0 - gx * s_cam             # <<<<<<<<<<<<<<
@@ -17221,7 +17221,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_
 */
   __pyx_v_cc_x = (__pyx_v_ext_x0 - (__pyx_v_gx * __pyx_v_s_cam));
 
-  /* "algorithms/imgcoord.py":265
+  /* "openptv2/algorithms/imgcoord.py":265
  *     s_cam: cython.double = dist_cam_glas * inv_dog
  *     cc_x: cython.double = ext_x0 - gx * s_cam
  *     cc_y: cython.double = ext_y0 - gy * s_cam             # <<<<<<<<<<<<<<
@@ -17230,7 +17230,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_
 */
   __pyx_v_cc_y = (__pyx_v_ext_y0 - (__pyx_v_gy * __pyx_v_s_cam));
 
-  /* "algorithms/imgcoord.py":266
+  /* "openptv2/algorithms/imgcoord.py":266
  *     cc_x: cython.double = ext_x0 - gx * s_cam
  *     cc_y: cython.double = ext_y0 - gy * s_cam
  *     cc_z: cython.double = ext_z0 - gz * s_cam             # <<<<<<<<<<<<<<
@@ -17239,7 +17239,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_
 */
   __pyx_v_cc_z = (__pyx_v_ext_z0 - (__pyx_v_gz * __pyx_v_s_cam));
 
-  /* "algorithms/imgcoord.py":268
+  /* "openptv2/algorithms/imgcoord.py":268
  *     cc_z: cython.double = ext_z0 - gz * s_cam
  * 
  *     s_pt: cython.double = dist_point_glas * inv_dog             # <<<<<<<<<<<<<<
@@ -17248,7 +17248,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_
 */
   __pyx_v_s_pt = (__pyx_v_dist_point_glas * __pyx_v_inv_dog);
 
-  /* "algorithms/imgcoord.py":269
+  /* "openptv2/algorithms/imgcoord.py":269
  * 
  *     s_pt: cython.double = dist_point_glas * inv_dog
  *     cp_x: cython.double = pos0 - gx * s_pt             # <<<<<<<<<<<<<<
@@ -17257,7 +17257,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_
 */
   __pyx_v_cp_x = (__pyx_v_pos0 - (__pyx_v_gx * __pyx_v_s_pt));
 
-  /* "algorithms/imgcoord.py":270
+  /* "openptv2/algorithms/imgcoord.py":270
  *     s_pt: cython.double = dist_point_glas * inv_dog
  *     cp_x: cython.double = pos0 - gx * s_pt
  *     cp_y: cython.double = pos1 - gy * s_pt             # <<<<<<<<<<<<<<
@@ -17266,7 +17266,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_
 */
   __pyx_v_cp_y = (__pyx_v_pos1 - (__pyx_v_gy * __pyx_v_s_pt));
 
-  /* "algorithms/imgcoord.py":271
+  /* "openptv2/algorithms/imgcoord.py":271
  *     cp_x: cython.double = pos0 - gx * s_pt
  *     cp_y: cython.double = pos1 - gy * s_pt
  *     cp_z: cython.double = pos2 - gz * s_pt             # <<<<<<<<<<<<<<
@@ -17275,7 +17275,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_
 */
   __pyx_v_cp_z = (__pyx_v_pos2 - (__pyx_v_gz * __pyx_v_s_pt));
 
-  /* "algorithms/imgcoord.py":273
+  /* "openptv2/algorithms/imgcoord.py":273
  *     cp_z: cython.double = pos2 - gz * s_pt
  * 
  *     ext_t_z0: cython.double = dist_cam_glas + mm_d0             # <<<<<<<<<<<<<<
@@ -17284,7 +17284,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_
 */
   __pyx_v_ext_t_z0 = (__pyx_v_dist_cam_glas + __pyx_v_mm_d0);
 
-  /* "algorithms/imgcoord.py":275
+  /* "openptv2/algorithms/imgcoord.py":275
  *     ext_t_z0: cython.double = dist_cam_glas + mm_d0
  * 
  *     s_d: cython.double = mm_d0 * inv_dog             # <<<<<<<<<<<<<<
@@ -17293,7 +17293,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_
 */
   __pyx_v_s_d = (__pyx_v_mm_d0 * __pyx_v_inv_dog);
 
-  /* "algorithms/imgcoord.py":276
+  /* "openptv2/algorithms/imgcoord.py":276
  * 
  *     s_d: cython.double = mm_d0 * inv_dog
  *     ag_x: cython.double = cc_x - gx * s_d             # <<<<<<<<<<<<<<
@@ -17302,7 +17302,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_
 */
   __pyx_v_ag_x = (__pyx_v_cc_x - (__pyx_v_gx * __pyx_v_s_d));
 
-  /* "algorithms/imgcoord.py":277
+  /* "openptv2/algorithms/imgcoord.py":277
  *     s_d: cython.double = mm_d0 * inv_dog
  *     ag_x: cython.double = cc_x - gx * s_d
  *     ag_y: cython.double = cc_y - gy * s_d             # <<<<<<<<<<<<<<
@@ -17311,7 +17311,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_
 */
   __pyx_v_ag_y = (__pyx_v_cc_y - (__pyx_v_gy * __pyx_v_s_d));
 
-  /* "algorithms/imgcoord.py":278
+  /* "openptv2/algorithms/imgcoord.py":278
  *     ag_x: cython.double = cc_x - gx * s_d
  *     ag_y: cython.double = cc_y - gy * s_d
  *     ag_z: cython.double = cc_z - gz * s_d             # <<<<<<<<<<<<<<
@@ -17320,7 +17320,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_
 */
   __pyx_v_ag_z = (__pyx_v_cc_z - (__pyx_v_gz * __pyx_v_s_d));
 
-  /* "algorithms/imgcoord.py":279
+  /* "openptv2/algorithms/imgcoord.py":279
  *     ag_y: cython.double = cc_y - gy * s_d
  *     ag_z: cython.double = cc_z - gz * s_d
  *     tmp_x: cython.double = cp_x - ag_x             # <<<<<<<<<<<<<<
@@ -17329,7 +17329,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_
 */
   __pyx_v_tmp_x = (__pyx_v_cp_x - __pyx_v_ag_x);
 
-  /* "algorithms/imgcoord.py":280
+  /* "openptv2/algorithms/imgcoord.py":280
  *     ag_z: cython.double = cc_z - gz * s_d
  *     tmp_x: cython.double = cp_x - ag_x
  *     tmp_y: cython.double = cp_y - ag_y             # <<<<<<<<<<<<<<
@@ -17338,7 +17338,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_
 */
   __pyx_v_tmp_y = (__pyx_v_cp_y - __pyx_v_ag_y);
 
-  /* "algorithms/imgcoord.py":281
+  /* "openptv2/algorithms/imgcoord.py":281
  *     tmp_x: cython.double = cp_x - ag_x
  *     tmp_y: cython.double = cp_y - ag_y
  *     tmp_z: cython.double = cp_z - ag_z             # <<<<<<<<<<<<<<
@@ -17347,7 +17347,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_
 */
   __pyx_v_tmp_z = (__pyx_v_cp_z - __pyx_v_ag_z);
 
-  /* "algorithms/imgcoord.py":283
+  /* "openptv2/algorithms/imgcoord.py":283
  *     tmp_z: cython.double = cp_z - ag_z
  * 
  *     pos_t_0: cython.double = c_sqrt(tmp_x * tmp_x + tmp_y * tmp_y + tmp_z * tmp_z)             # <<<<<<<<<<<<<<
@@ -17356,7 +17356,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_
 */
   __pyx_v_pos_t_0 = sqrt((((__pyx_v_tmp_x * __pyx_v_tmp_x) + (__pyx_v_tmp_y * __pyx_v_tmp_y)) + (__pyx_v_tmp_z * __pyx_v_tmp_z)));
 
-  /* "algorithms/imgcoord.py":284
+  /* "openptv2/algorithms/imgcoord.py":284
  * 
  *     pos_t_0: cython.double = c_sqrt(tmp_x * tmp_x + tmp_y * tmp_y + tmp_z * tmp_z)
  *     pos_t_2: cython.double = dist_point_glas             # <<<<<<<<<<<<<<
@@ -17365,7 +17365,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_
 */
   __pyx_v_pos_t_2 = __pyx_v_dist_point_glas;
 
-  /* "algorithms/imgcoord.py":287
+  /* "openptv2/algorithms/imgcoord.py":287
  * 
  *     # === mmlut lookup ===
  *     mmf: cython.double = 1.0             # <<<<<<<<<<<<<<
@@ -17374,7 +17374,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_
 */
   __pyx_v_mmf = 1.0;
 
-  /* "algorithms/imgcoord.py":288
+  /* "openptv2/algorithms/imgcoord.py":288
  *     # === mmlut lookup ===
  *     mmf: cython.double = 1.0
  *     if has_mmlut:             # <<<<<<<<<<<<<<
@@ -17383,17 +17383,17 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_
 */
   if (__pyx_v_has_mmlut) {
 
-    /* "algorithms/imgcoord.py":289
+    /* "openptv2/algorithms/imgcoord.py":289
  *     mmf: cython.double = 1.0
  *     if has_mmlut:
  *         mmf = _get_mmf_from_mmlut_core(             # <<<<<<<<<<<<<<
  *             pos_t_0, 0.0, pos_t_2,
  *             mmlut_origin_x, mmlut_origin_y, mmlut_origin_z,
 */
-    __pyx_t_1 = __pyx_f_10algorithms_8imgcoord__get_mmf_from_mmlut_core(__pyx_v_pos_t_0, 0.0, __pyx_v_pos_t_2, __pyx_v_mmlut_origin_x, __pyx_v_mmlut_origin_y, __pyx_v_mmlut_origin_z, __pyx_v_mmlut_nr, __pyx_v_mmlut_nz, __pyx_v_mmlut_rw, __pyx_v_mmlut_data); if (unlikely(__pyx_t_1 == ((double)-1) && PyErr_Occurred())) __PYX_ERR(0, 289, __pyx_L1_error)
+    __pyx_t_1 = __pyx_f_8openptv2_10algorithms_8imgcoord__get_mmf_from_mmlut_core(__pyx_v_pos_t_0, 0.0, __pyx_v_pos_t_2, __pyx_v_mmlut_origin_x, __pyx_v_mmlut_origin_y, __pyx_v_mmlut_origin_z, __pyx_v_mmlut_nr, __pyx_v_mmlut_nz, __pyx_v_mmlut_rw, __pyx_v_mmlut_data); if (unlikely(__pyx_t_1 == ((double)-1) && PyErr_Occurred())) __PYX_ERR(0, 289, __pyx_L1_error)
     __pyx_v_mmf = __pyx_t_1;
 
-    /* "algorithms/imgcoord.py":294
+    /* "openptv2/algorithms/imgcoord.py":294
  *             mmlut_nr, mmlut_nz, mmlut_rw, mmlut_data,
  *         )
  *         if mmf <= 0.0:             # <<<<<<<<<<<<<<
@@ -17403,7 +17403,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_
     __pyx_t_2 = (__pyx_v_mmf <= 0.0);
     if (__pyx_t_2) {
 
-      /* "algorithms/imgcoord.py":295
+      /* "openptv2/algorithms/imgcoord.py":295
  *         )
  *         if mmf <= 0.0:
  *             mmf = 1.0             # <<<<<<<<<<<<<<
@@ -17412,7 +17412,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_
 */
       __pyx_v_mmf = 1.0;
 
-      /* "algorithms/imgcoord.py":294
+      /* "openptv2/algorithms/imgcoord.py":294
  *             mmlut_nr, mmlut_nz, mmlut_rw, mmlut_data,
  *         )
  *         if mmf <= 0.0:             # <<<<<<<<<<<<<<
@@ -17421,7 +17421,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_
 */
     }
 
-    /* "algorithms/imgcoord.py":288
+    /* "openptv2/algorithms/imgcoord.py":288
  *     # === mmlut lookup ===
  *     mmf: cython.double = 1.0
  *     if has_mmlut:             # <<<<<<<<<<<<<<
@@ -17430,14 +17430,14 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_
 */
   }
 
-  /* "algorithms/imgcoord.py":297
+  /* "openptv2/algorithms/imgcoord.py":297
  *             mmf = 1.0
  * 
  *     X_t_val, Y_t_val = _multimed_nlay_core(             # <<<<<<<<<<<<<<
  *         pos_t_0, pos_t_2, ext_t_z0,
  *         mm_n1, mm_n2_0, mm_n3, mm_d0,
 */
-  __pyx_t_3 = __pyx_f_10algorithms_8imgcoord__multimed_nlay_core(__pyx_v_pos_t_0, __pyx_v_pos_t_2, __pyx_v_ext_t_z0, __pyx_v_mm_n1, __pyx_v_mm_n2_0, __pyx_v_mm_n3, __pyx_v_mm_d0, __pyx_v_mmf); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 297, __pyx_L1_error)
+  __pyx_t_3 = __pyx_f_8openptv2_10algorithms_8imgcoord__multimed_nlay_core(__pyx_v_pos_t_0, __pyx_v_pos_t_2, __pyx_v_ext_t_z0, __pyx_v_mm_n1, __pyx_v_mm_n2_0, __pyx_v_mm_n3, __pyx_v_mm_d0, __pyx_v_mmf); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 297, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   if (likely(__pyx_t_3 != Py_None)) {
     PyObject* sequence = __pyx_t_3;
@@ -17467,7 +17467,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_
   __pyx_v_Y_t_val = __pyx_t_5;
   __pyx_t_5 = 0;
 
-  /* "algorithms/imgcoord.py":302
+  /* "openptv2/algorithms/imgcoord.py":302
  *         mmf,
  *     )
  *     X_t: cython.double = X_t_val             # <<<<<<<<<<<<<<
@@ -17477,7 +17477,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_
   __pyx_t_1 = __Pyx_PyFloat_AsDouble(__pyx_v_X_t_val); if (unlikely((__pyx_t_1 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 302, __pyx_L1_error)
   __pyx_v_X_t = __pyx_t_1;
 
-  /* "algorithms/imgcoord.py":305
+  /* "openptv2/algorithms/imgcoord.py":305
  * 
  *     # === back_trans_point (inlined) ===
  *     inv_ngl: cython.double = inv_dog             # <<<<<<<<<<<<<<
@@ -17486,7 +17486,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_
 */
   __pyx_v_inv_ngl = __pyx_v_inv_dog;
 
-  /* "algorithms/imgcoord.py":309
+  /* "openptv2/algorithms/imgcoord.py":309
  *     # ag_x/y/z already computed above (after_glass)
  *     # tmp_x/y/z = cross_p - after_glass (already computed)
  *     n_ve: cython.double = c_sqrt(tmp_x * tmp_x + tmp_y * tmp_y + tmp_z * tmp_z)             # <<<<<<<<<<<<<<
@@ -17495,7 +17495,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_
 */
   __pyx_v_n_ve = sqrt((((__pyx_v_tmp_x * __pyx_v_tmp_x) + (__pyx_v_tmp_y * __pyx_v_tmp_y)) + (__pyx_v_tmp_z * __pyx_v_tmp_z)));
 
-  /* "algorithms/imgcoord.py":311
+  /* "openptv2/algorithms/imgcoord.py":311
  *     n_ve: cython.double = c_sqrt(tmp_x * tmp_x + tmp_y * tmp_y + tmp_z * tmp_z)
  * 
  *     s_z: cython.double = -pos_t_2 * inv_ngl             # <<<<<<<<<<<<<<
@@ -17504,7 +17504,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_
 */
   __pyx_v_s_z = ((-__pyx_v_pos_t_2) * __pyx_v_inv_ngl);
 
-  /* "algorithms/imgcoord.py":312
+  /* "openptv2/algorithms/imgcoord.py":312
  * 
  *     s_z: cython.double = -pos_t_2 * inv_ngl
  *     bx: cython.double = ag_x - gx * s_z             # <<<<<<<<<<<<<<
@@ -17513,7 +17513,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_
 */
   __pyx_v_bx = (__pyx_v_ag_x - (__pyx_v_gx * __pyx_v_s_z));
 
-  /* "algorithms/imgcoord.py":313
+  /* "openptv2/algorithms/imgcoord.py":313
  *     s_z: cython.double = -pos_t_2 * inv_ngl
  *     bx: cython.double = ag_x - gx * s_z
  *     by: cython.double = ag_y - gy * s_z             # <<<<<<<<<<<<<<
@@ -17522,7 +17522,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_
 */
   __pyx_v_by = (__pyx_v_ag_y - (__pyx_v_gy * __pyx_v_s_z));
 
-  /* "algorithms/imgcoord.py":314
+  /* "openptv2/algorithms/imgcoord.py":314
  *     bx: cython.double = ag_x - gx * s_z
  *     by: cython.double = ag_y - gy * s_z
  *     bz: cython.double = ag_z - gz * s_z             # <<<<<<<<<<<<<<
@@ -17531,7 +17531,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_
 */
   __pyx_v_bz = (__pyx_v_ag_z - (__pyx_v_gz * __pyx_v_s_z));
 
-  /* "algorithms/imgcoord.py":317
+  /* "openptv2/algorithms/imgcoord.py":317
  * 
  *     s_x: cython.double
  *     if n_ve > 0:             # <<<<<<<<<<<<<<
@@ -17541,7 +17541,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_
   __pyx_t_2 = (__pyx_v_n_ve > 0.0);
   if (__pyx_t_2) {
 
-    /* "algorithms/imgcoord.py":318
+    /* "openptv2/algorithms/imgcoord.py":318
  *     s_x: cython.double
  *     if n_ve > 0:
  *         s_x = -X_t / n_ve             # <<<<<<<<<<<<<<
@@ -17550,7 +17550,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_
 */
     __pyx_v_s_x = ((-__pyx_v_X_t) / __pyx_v_n_ve);
 
-    /* "algorithms/imgcoord.py":319
+    /* "openptv2/algorithms/imgcoord.py":319
  *     if n_ve > 0:
  *         s_x = -X_t / n_ve
  *         bx -= tmp_x * s_x             # <<<<<<<<<<<<<<
@@ -17559,7 +17559,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_
 */
     __pyx_v_bx = (__pyx_v_bx - (__pyx_v_tmp_x * __pyx_v_s_x));
 
-    /* "algorithms/imgcoord.py":320
+    /* "openptv2/algorithms/imgcoord.py":320
  *         s_x = -X_t / n_ve
  *         bx -= tmp_x * s_x
  *         by -= tmp_y * s_x             # <<<<<<<<<<<<<<
@@ -17568,7 +17568,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_
 */
     __pyx_v_by = (__pyx_v_by - (__pyx_v_tmp_y * __pyx_v_s_x));
 
-    /* "algorithms/imgcoord.py":321
+    /* "openptv2/algorithms/imgcoord.py":321
  *         bx -= tmp_x * s_x
  *         by -= tmp_y * s_x
  *         bz -= tmp_z * s_x             # <<<<<<<<<<<<<<
@@ -17577,7 +17577,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_
 */
     __pyx_v_bz = (__pyx_v_bz - (__pyx_v_tmp_z * __pyx_v_s_x));
 
-    /* "algorithms/imgcoord.py":317
+    /* "openptv2/algorithms/imgcoord.py":317
  * 
  *     s_x: cython.double
  *     if n_ve > 0:             # <<<<<<<<<<<<<<
@@ -17586,7 +17586,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_
 */
   }
 
-  /* "algorithms/imgcoord.py":324
+  /* "openptv2/algorithms/imgcoord.py":324
  * 
  *     # === perspective projection ===
  *     dx: cython.double = bx - ext_x0             # <<<<<<<<<<<<<<
@@ -17595,7 +17595,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_
 */
   __pyx_v_dx = (__pyx_v_bx - __pyx_v_ext_x0);
 
-  /* "algorithms/imgcoord.py":325
+  /* "openptv2/algorithms/imgcoord.py":325
  *     # === perspective projection ===
  *     dx: cython.double = bx - ext_x0
  *     dy: cython.double = by - ext_y0             # <<<<<<<<<<<<<<
@@ -17604,7 +17604,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_
 */
   __pyx_v_dy = (__pyx_v_by - __pyx_v_ext_y0);
 
-  /* "algorithms/imgcoord.py":326
+  /* "openptv2/algorithms/imgcoord.py":326
  *     dx: cython.double = bx - ext_x0
  *     dy: cython.double = by - ext_y0
  *     dz: cython.double = bz - ext_z0             # <<<<<<<<<<<<<<
@@ -17613,7 +17613,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_
 */
   __pyx_v_dz = (__pyx_v_bz - __pyx_v_ext_z0);
 
-  /* "algorithms/imgcoord.py":328
+  /* "openptv2/algorithms/imgcoord.py":328
  *     dz: cython.double = bz - ext_z0
  * 
  *     deno: cython.double = ext_dm[0, 2] * dx + ext_dm[1, 2] * dy + ext_dm[2, 2] * dz             # <<<<<<<<<<<<<<
@@ -17628,7 +17628,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_
   __pyx_t_11 = 2;
   __pyx_v_deno = ((((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_ext_dm.data + __pyx_t_6 * __pyx_v_ext_dm.strides[0]) ) + __pyx_t_7 * __pyx_v_ext_dm.strides[1]) ))) * __pyx_v_dx) + ((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_ext_dm.data + __pyx_t_8 * __pyx_v_ext_dm.strides[0]) ) + __pyx_t_9 * __pyx_v_ext_dm.strides[1]) ))) * __pyx_v_dy)) + ((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_ext_dm.data + __pyx_t_10 * __pyx_v_ext_dm.strides[0]) ) + __pyx_t_11 * __pyx_v_ext_dm.strides[1]) ))) * __pyx_v_dz));
 
-  /* "algorithms/imgcoord.py":330
+  /* "openptv2/algorithms/imgcoord.py":330
  *     deno: cython.double = ext_dm[0, 2] * dx + ext_dm[1, 2] * dy + ext_dm[2, 2] * dz
  * 
  *     x: cython.double = -int_cc * (ext_dm[0, 0] * dx + ext_dm[1, 0] * dy + ext_dm[2, 0] * dz) / deno             # <<<<<<<<<<<<<<
@@ -17643,7 +17643,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_
   __pyx_t_6 = 0;
   __pyx_v_x = (((-__pyx_v_int_cc) * ((((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_ext_dm.data + __pyx_t_11 * __pyx_v_ext_dm.strides[0]) ) + __pyx_t_10 * __pyx_v_ext_dm.strides[1]) ))) * __pyx_v_dx) + ((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_ext_dm.data + __pyx_t_9 * __pyx_v_ext_dm.strides[0]) ) + __pyx_t_8 * __pyx_v_ext_dm.strides[1]) ))) * __pyx_v_dy)) + ((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_ext_dm.data + __pyx_t_7 * __pyx_v_ext_dm.strides[0]) ) + __pyx_t_6 * __pyx_v_ext_dm.strides[1]) ))) * __pyx_v_dz))) / __pyx_v_deno);
 
-  /* "algorithms/imgcoord.py":331
+  /* "openptv2/algorithms/imgcoord.py":331
  * 
  *     x: cython.double = -int_cc * (ext_dm[0, 0] * dx + ext_dm[1, 0] * dy + ext_dm[2, 0] * dz) / deno
  *     y: cython.double = -int_cc * (ext_dm[0, 1] * dx + ext_dm[1, 1] * dy + ext_dm[2, 1] * dz) / deno             # <<<<<<<<<<<<<<
@@ -17658,7 +17658,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_
   __pyx_t_11 = 1;
   __pyx_v_y = (((-__pyx_v_int_cc) * ((((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_ext_dm.data + __pyx_t_6 * __pyx_v_ext_dm.strides[0]) ) + __pyx_t_7 * __pyx_v_ext_dm.strides[1]) ))) * __pyx_v_dx) + ((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_ext_dm.data + __pyx_t_8 * __pyx_v_ext_dm.strides[0]) ) + __pyx_t_9 * __pyx_v_ext_dm.strides[1]) ))) * __pyx_v_dy)) + ((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_ext_dm.data + __pyx_t_10 * __pyx_v_ext_dm.strides[0]) ) + __pyx_t_11 * __pyx_v_ext_dm.strides[1]) ))) * __pyx_v_dz))) / __pyx_v_deno);
 
-  /* "algorithms/imgcoord.py":333
+  /* "openptv2/algorithms/imgcoord.py":333
  *     y: cython.double = -int_cc * (ext_dm[0, 1] * dx + ext_dm[1, 1] * dy + ext_dm[2, 1] * dz) / deno
  * 
  *     return x, y             # <<<<<<<<<<<<<<
@@ -17682,7 +17682,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_
   __pyx_t_4 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/imgcoord.py":220
+  /* "openptv2/algorithms/imgcoord.py":220
  * 
  * 
  * @cython.cfunc             # <<<<<<<<<<<<<<
@@ -17695,7 +17695,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_5);
-  __Pyx_AddTraceback("algorithms.imgcoord._flat_image_coord_core", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.imgcoord._flat_image_coord_core", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_X_t_val);
@@ -17705,7 +17705,7 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_
   return __pyx_r;
 }
 
-/* "algorithms/imgcoord.py":336
+/* "openptv2/algorithms/imgcoord.py":336
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -17713,16 +17713,16 @@ static CYTHON_INLINE PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_
  *     pos: cython.double[:],
 */
 
-static PyObject *__pyx_pw_10algorithms_8imgcoord_1flat_image_coord(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_8imgcoord_1flat_image_coord(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_8imgcoord_flat_image_coord(__Pyx_memviewslice __pyx_v_pos, double __pyx_v_ext_x0, double __pyx_v_ext_y0, double __pyx_v_ext_z0, __Pyx_memviewslice __pyx_v_ext_dm, double __pyx_v_int_cc, double __pyx_v_glass_vec_x, double __pyx_v_glass_vec_y, double __pyx_v_glass_vec_z, double __pyx_v_mm_n1, double __pyx_v_mm_n2_0, double __pyx_v_mm_n3, double __pyx_v_mm_d0, CYTHON_UNUSED int __pyx_skip_dispatch, struct __pyx_opt_args_10algorithms_8imgcoord_flat_image_coord *__pyx_optional_args) {
+static PyObject *__pyx_f_8openptv2_10algorithms_8imgcoord_flat_image_coord(__Pyx_memviewslice __pyx_v_pos, double __pyx_v_ext_x0, double __pyx_v_ext_y0, double __pyx_v_ext_z0, __Pyx_memviewslice __pyx_v_ext_dm, double __pyx_v_int_cc, double __pyx_v_glass_vec_x, double __pyx_v_glass_vec_y, double __pyx_v_glass_vec_z, double __pyx_v_mm_n1, double __pyx_v_mm_n2_0, double __pyx_v_mm_n3, double __pyx_v_mm_d0, CYTHON_UNUSED int __pyx_skip_dispatch, struct __pyx_opt_args_8openptv2_10algorithms_8imgcoord_flat_image_coord *__pyx_optional_args) {
 
-  /* "algorithms/imgcoord.py":351
+  /* "openptv2/algorithms/imgcoord.py":351
  *     mm_n3: cython.double,
  *     mm_d0: cython.double,
  *     mmlut=None,             # <<<<<<<<<<<<<<
@@ -17760,7 +17760,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord_flat_image_coord(__Pyx_memviewsl
     }
   }
 
-  /* "algorithms/imgcoord.py":354
+  /* "openptv2/algorithms/imgcoord.py":354
  * ) -> tuple:
  *     """Project 3D position to undistorted metric image coordinates."""
  *     has_mmlut: cython.bint = False             # <<<<<<<<<<<<<<
@@ -17769,7 +17769,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord_flat_image_coord(__Pyx_memviewsl
 */
   __pyx_v_has_mmlut = 0;
 
-  /* "algorithms/imgcoord.py":355
+  /* "openptv2/algorithms/imgcoord.py":355
  *     """Project 3D position to undistorted metric image coordinates."""
  *     has_mmlut: cython.bint = False
  *     mmlut_origin_x: cython.double = 0.0             # <<<<<<<<<<<<<<
@@ -17778,7 +17778,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord_flat_image_coord(__Pyx_memviewsl
 */
   __pyx_v_mmlut_origin_x = 0.0;
 
-  /* "algorithms/imgcoord.py":356
+  /* "openptv2/algorithms/imgcoord.py":356
  *     has_mmlut: cython.bint = False
  *     mmlut_origin_x: cython.double = 0.0
  *     mmlut_origin_y: cython.double = 0.0             # <<<<<<<<<<<<<<
@@ -17787,7 +17787,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord_flat_image_coord(__Pyx_memviewsl
 */
   __pyx_v_mmlut_origin_y = 0.0;
 
-  /* "algorithms/imgcoord.py":357
+  /* "openptv2/algorithms/imgcoord.py":357
  *     mmlut_origin_x: cython.double = 0.0
  *     mmlut_origin_y: cython.double = 0.0
  *     mmlut_origin_z: cython.double = 0.0             # <<<<<<<<<<<<<<
@@ -17796,7 +17796,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord_flat_image_coord(__Pyx_memviewsl
 */
   __pyx_v_mmlut_origin_z = 0.0;
 
-  /* "algorithms/imgcoord.py":358
+  /* "openptv2/algorithms/imgcoord.py":358
  *     mmlut_origin_y: cython.double = 0.0
  *     mmlut_origin_z: cython.double = 0.0
  *     mmlut_nr: cython.int = 0             # <<<<<<<<<<<<<<
@@ -17805,7 +17805,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord_flat_image_coord(__Pyx_memviewsl
 */
   __pyx_v_mmlut_nr = 0;
 
-  /* "algorithms/imgcoord.py":359
+  /* "openptv2/algorithms/imgcoord.py":359
  *     mmlut_origin_z: cython.double = 0.0
  *     mmlut_nr: cython.int = 0
  *     mmlut_nz: cython.int = 0             # <<<<<<<<<<<<<<
@@ -17814,7 +17814,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord_flat_image_coord(__Pyx_memviewsl
 */
   __pyx_v_mmlut_nz = 0;
 
-  /* "algorithms/imgcoord.py":360
+  /* "openptv2/algorithms/imgcoord.py":360
  *     mmlut_nr: cython.int = 0
  *     mmlut_nz: cython.int = 0
  *     mmlut_rw: cython.double = 0.0             # <<<<<<<<<<<<<<
@@ -17823,7 +17823,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord_flat_image_coord(__Pyx_memviewsl
 */
   __pyx_v_mmlut_rw = 0.0;
 
-  /* "algorithms/imgcoord.py":361
+  /* "openptv2/algorithms/imgcoord.py":361
  *     mmlut_nz: cython.int = 0
  *     mmlut_rw: cython.double = 0.0
  *     mmlut_data: cython.double[:] = _DUMMY_MMLUT_DATA             # <<<<<<<<<<<<<<
@@ -17838,7 +17838,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord_flat_image_coord(__Pyx_memviewsl
   __pyx_t_2.memview = NULL;
   __pyx_t_2.data = NULL;
 
-  /* "algorithms/imgcoord.py":363
+  /* "openptv2/algorithms/imgcoord.py":363
  *     mmlut_data: cython.double[:] = _DUMMY_MMLUT_DATA
  * 
  *     if mmlut is not None and mmlut.data is not None:             # <<<<<<<<<<<<<<
@@ -17859,7 +17859,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord_flat_image_coord(__Pyx_memviewsl
   __pyx_L4_bool_binop_done:;
   if (__pyx_t_3) {
 
-    /* "algorithms/imgcoord.py":364
+    /* "openptv2/algorithms/imgcoord.py":364
  * 
  *     if mmlut is not None and mmlut.data is not None:
  *         has_mmlut = True             # <<<<<<<<<<<<<<
@@ -17868,7 +17868,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord_flat_image_coord(__Pyx_memviewsl
 */
     __pyx_v_has_mmlut = 1;
 
-    /* "algorithms/imgcoord.py":365
+    /* "openptv2/algorithms/imgcoord.py":365
  *     if mmlut is not None and mmlut.data is not None:
  *         has_mmlut = True
  *         mmlut_origin_x = mmlut.origin[0]             # <<<<<<<<<<<<<<
@@ -17884,7 +17884,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord_flat_image_coord(__Pyx_memviewsl
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __pyx_v_mmlut_origin_x = __pyx_t_6;
 
-    /* "algorithms/imgcoord.py":366
+    /* "openptv2/algorithms/imgcoord.py":366
  *         has_mmlut = True
  *         mmlut_origin_x = mmlut.origin[0]
  *         mmlut_origin_y = mmlut.origin[1]             # <<<<<<<<<<<<<<
@@ -17900,7 +17900,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord_flat_image_coord(__Pyx_memviewsl
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __pyx_v_mmlut_origin_y = __pyx_t_6;
 
-    /* "algorithms/imgcoord.py":367
+    /* "openptv2/algorithms/imgcoord.py":367
  *         mmlut_origin_x = mmlut.origin[0]
  *         mmlut_origin_y = mmlut.origin[1]
  *         mmlut_origin_z = mmlut.origin[2]             # <<<<<<<<<<<<<<
@@ -17916,7 +17916,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord_flat_image_coord(__Pyx_memviewsl
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __pyx_v_mmlut_origin_z = __pyx_t_6;
 
-    /* "algorithms/imgcoord.py":368
+    /* "openptv2/algorithms/imgcoord.py":368
  *         mmlut_origin_y = mmlut.origin[1]
  *         mmlut_origin_z = mmlut.origin[2]
  *         mmlut_nr = mmlut.nr             # <<<<<<<<<<<<<<
@@ -17929,7 +17929,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord_flat_image_coord(__Pyx_memviewsl
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __pyx_v_mmlut_nr = __pyx_t_7;
 
-    /* "algorithms/imgcoord.py":369
+    /* "openptv2/algorithms/imgcoord.py":369
  *         mmlut_origin_z = mmlut.origin[2]
  *         mmlut_nr = mmlut.nr
  *         mmlut_nz = mmlut.nz             # <<<<<<<<<<<<<<
@@ -17942,7 +17942,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord_flat_image_coord(__Pyx_memviewsl
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __pyx_v_mmlut_nz = __pyx_t_7;
 
-    /* "algorithms/imgcoord.py":370
+    /* "openptv2/algorithms/imgcoord.py":370
  *         mmlut_nr = mmlut.nr
  *         mmlut_nz = mmlut.nz
  *         mmlut_rw = mmlut.rw             # <<<<<<<<<<<<<<
@@ -17955,7 +17955,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord_flat_image_coord(__Pyx_memviewsl
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __pyx_v_mmlut_rw = __pyx_t_6;
 
-    /* "algorithms/imgcoord.py":371
+    /* "openptv2/algorithms/imgcoord.py":371
  *         mmlut_nz = mmlut.nz
  *         mmlut_rw = mmlut.rw
  *         mmlut_data = mmlut.data             # <<<<<<<<<<<<<<
@@ -17971,7 +17971,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord_flat_image_coord(__Pyx_memviewsl
     __pyx_t_2.memview = NULL;
     __pyx_t_2.data = NULL;
 
-    /* "algorithms/imgcoord.py":363
+    /* "openptv2/algorithms/imgcoord.py":363
  *     mmlut_data: cython.double[:] = _DUMMY_MMLUT_DATA
  * 
  *     if mmlut is not None and mmlut.data is not None:             # <<<<<<<<<<<<<<
@@ -17980,7 +17980,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord_flat_image_coord(__Pyx_memviewsl
 */
   }
 
-  /* "algorithms/imgcoord.py":373
+  /* "openptv2/algorithms/imgcoord.py":373
  *         mmlut_data = mmlut.data
  * 
  *     return _flat_image_coord_core(             # <<<<<<<<<<<<<<
@@ -17989,7 +17989,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord_flat_image_coord(__Pyx_memviewsl
 */
   __Pyx_XDECREF(__pyx_r);
 
-  /* "algorithms/imgcoord.py":374
+  /* "openptv2/algorithms/imgcoord.py":374
  * 
  *     return _flat_image_coord_core(
  *         pos[0], pos[1], pos[2],             # <<<<<<<<<<<<<<
@@ -18000,7 +18000,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord_flat_image_coord(__Pyx_memviewsl
   __pyx_t_9 = 1;
   __pyx_t_10 = 2;
 
-  /* "algorithms/imgcoord.py":379
+  /* "openptv2/algorithms/imgcoord.py":379
  *         mm_n1, mm_n2_0, mm_n3, mm_d0,
  *         has_mmlut, mmlut_origin_x, mmlut_origin_y, mmlut_origin_z,
  *         mmlut_nr, mmlut_nz, mmlut_rw, mmlut_data,             # <<<<<<<<<<<<<<
@@ -18012,20 +18012,20 @@ static PyObject *__pyx_f_10algorithms_8imgcoord_flat_image_coord(__Pyx_memviewsl
     __PYX_ERR(0, 379, __pyx_L1_error)
   }
 
-  /* "algorithms/imgcoord.py":373
+  /* "openptv2/algorithms/imgcoord.py":373
  *         mmlut_data = mmlut.data
  * 
  *     return _flat_image_coord_core(             # <<<<<<<<<<<<<<
  *         pos[0], pos[1], pos[2],
  *         ext_x0, ext_y0, ext_z0, ext_dm, int_cc,
 */
-  __pyx_t_5 = __pyx_f_10algorithms_8imgcoord__flat_image_coord_core((*((double *) ( /* dim=0 */ (__pyx_v_pos.data + __pyx_t_8 * __pyx_v_pos.strides[0]) ))), (*((double *) ( /* dim=0 */ (__pyx_v_pos.data + __pyx_t_9 * __pyx_v_pos.strides[0]) ))), (*((double *) ( /* dim=0 */ (__pyx_v_pos.data + __pyx_t_10 * __pyx_v_pos.strides[0]) ))), __pyx_v_ext_x0, __pyx_v_ext_y0, __pyx_v_ext_z0, __pyx_v_ext_dm, __pyx_v_int_cc, __pyx_v_glass_vec_x, __pyx_v_glass_vec_y, __pyx_v_glass_vec_z, __pyx_v_mm_n1, __pyx_v_mm_n2_0, __pyx_v_mm_n3, __pyx_v_mm_d0, __pyx_v_has_mmlut, __pyx_v_mmlut_origin_x, __pyx_v_mmlut_origin_y, __pyx_v_mmlut_origin_z, __pyx_v_mmlut_nr, __pyx_v_mmlut_nz, __pyx_v_mmlut_rw, __pyx_v_mmlut_data); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 373, __pyx_L1_error)
+  __pyx_t_5 = __pyx_f_8openptv2_10algorithms_8imgcoord__flat_image_coord_core((*((double *) ( /* dim=0 */ (__pyx_v_pos.data + __pyx_t_8 * __pyx_v_pos.strides[0]) ))), (*((double *) ( /* dim=0 */ (__pyx_v_pos.data + __pyx_t_9 * __pyx_v_pos.strides[0]) ))), (*((double *) ( /* dim=0 */ (__pyx_v_pos.data + __pyx_t_10 * __pyx_v_pos.strides[0]) ))), __pyx_v_ext_x0, __pyx_v_ext_y0, __pyx_v_ext_z0, __pyx_v_ext_dm, __pyx_v_int_cc, __pyx_v_glass_vec_x, __pyx_v_glass_vec_y, __pyx_v_glass_vec_z, __pyx_v_mm_n1, __pyx_v_mm_n2_0, __pyx_v_mm_n3, __pyx_v_mm_d0, __pyx_v_has_mmlut, __pyx_v_mmlut_origin_x, __pyx_v_mmlut_origin_y, __pyx_v_mmlut_origin_z, __pyx_v_mmlut_nr, __pyx_v_mmlut_nz, __pyx_v_mmlut_rw, __pyx_v_mmlut_data); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 373, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __pyx_r = ((PyObject*)__pyx_t_5);
   __pyx_t_5 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/imgcoord.py":336
+  /* "openptv2/algorithms/imgcoord.py":336
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -18038,7 +18038,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord_flat_image_coord(__Pyx_memviewsl
   __Pyx_XDECREF(__pyx_t_1);
   __PYX_XCLEAR_MEMVIEW(&__pyx_t_2, 1);
   __Pyx_XDECREF(__pyx_t_5);
-  __Pyx_AddTraceback("algorithms.imgcoord.flat_image_coord", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.imgcoord.flat_image_coord", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __PYX_XCLEAR_MEMVIEW(&__pyx_v_mmlut_data, 1);
@@ -18048,16 +18048,16 @@ static PyObject *__pyx_f_10algorithms_8imgcoord_flat_image_coord(__Pyx_memviewsl
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_8imgcoord_1flat_image_coord(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_8imgcoord_1flat_image_coord(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_8imgcoord_flat_image_coord, "Project 3D position to undistorted metric image coordinates.");
-static PyMethodDef __pyx_mdef_10algorithms_8imgcoord_1flat_image_coord = {"flat_image_coord", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_8imgcoord_1flat_image_coord, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_8imgcoord_flat_image_coord};
-static PyObject *__pyx_pw_10algorithms_8imgcoord_1flat_image_coord(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_8imgcoord_flat_image_coord, "Project 3D position to undistorted metric image coordinates.");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_8imgcoord_1flat_image_coord = {"flat_image_coord", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_8imgcoord_1flat_image_coord, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_8imgcoord_flat_image_coord};
+static PyObject *__pyx_pw_8openptv2_10algorithms_8imgcoord_1flat_image_coord(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -18165,7 +18165,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
       const Py_ssize_t kwd_pos_args = __pyx_nargs;
       if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "flat_image_coord", 0) < (0)) __PYX_ERR(0, 336, __pyx_L3_error)
 
-      /* "algorithms/imgcoord.py":351
+      /* "openptv2/algorithms/imgcoord.py":351
  *     mm_n3: cython.double,
  *     mm_d0: cython.double,
  *     mmlut=None,             # <<<<<<<<<<<<<<
@@ -18240,7 +18240,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   }
   __PYX_XCLEAR_MEMVIEW(&__pyx_v_pos, 1);
   __PYX_XCLEAR_MEMVIEW(&__pyx_v_ext_dm, 1);
-  __Pyx_AddTraceback("algorithms.imgcoord.flat_image_coord", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.imgcoord.flat_image_coord", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
@@ -18250,9 +18250,9 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   if (unlikely(((PyObject *)__pyx_v_ext_dm.memview) == Py_None)) {
     PyErr_Format(PyExc_TypeError, "Argument '%.200s' must not be None", "ext_dm"); __PYX_ERR(0, 342, __pyx_L1_error)
   }
-  __pyx_r = __pyx_pf_10algorithms_8imgcoord_flat_image_coord(__pyx_self, __pyx_v_pos, __pyx_v_ext_x0, __pyx_v_ext_y0, __pyx_v_ext_z0, __pyx_v_ext_dm, __pyx_v_int_cc, __pyx_v_glass_vec_x, __pyx_v_glass_vec_y, __pyx_v_glass_vec_z, __pyx_v_mm_n1, __pyx_v_mm_n2_0, __pyx_v_mm_n3, __pyx_v_mm_d0, __pyx_v_mmlut);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_8imgcoord_flat_image_coord(__pyx_self, __pyx_v_pos, __pyx_v_ext_x0, __pyx_v_ext_y0, __pyx_v_ext_z0, __pyx_v_ext_dm, __pyx_v_int_cc, __pyx_v_glass_vec_x, __pyx_v_glass_vec_y, __pyx_v_glass_vec_z, __pyx_v_mm_n1, __pyx_v_mm_n2_0, __pyx_v_mm_n3, __pyx_v_mm_d0, __pyx_v_mmlut);
 
-  /* "algorithms/imgcoord.py":336
+  /* "openptv2/algorithms/imgcoord.py":336
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -18279,11 +18279,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_8imgcoord_flat_image_coord(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_pos, double __pyx_v_ext_x0, double __pyx_v_ext_y0, double __pyx_v_ext_z0, __Pyx_memviewslice __pyx_v_ext_dm, double __pyx_v_int_cc, double __pyx_v_glass_vec_x, double __pyx_v_glass_vec_y, double __pyx_v_glass_vec_z, double __pyx_v_mm_n1, double __pyx_v_mm_n2_0, double __pyx_v_mm_n3, double __pyx_v_mm_d0, PyObject *__pyx_v_mmlut) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_8imgcoord_flat_image_coord(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_pos, double __pyx_v_ext_x0, double __pyx_v_ext_y0, double __pyx_v_ext_z0, __Pyx_memviewslice __pyx_v_ext_dm, double __pyx_v_int_cc, double __pyx_v_glass_vec_x, double __pyx_v_glass_vec_y, double __pyx_v_glass_vec_z, double __pyx_v_mm_n1, double __pyx_v_mm_n2_0, double __pyx_v_mm_n3, double __pyx_v_mm_d0, PyObject *__pyx_v_mmlut) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
-  struct __pyx_opt_args_10algorithms_8imgcoord_flat_image_coord __pyx_t_2;
+  struct __pyx_opt_args_8openptv2_10algorithms_8imgcoord_flat_image_coord __pyx_t_2;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -18299,7 +18299,7 @@ static PyObject *__pyx_pf_10algorithms_8imgcoord_flat_image_coord(CYTHON_UNUSED 
   }
   __pyx_t_2.__pyx_n = 1;
   __pyx_t_2.mmlut = __pyx_v_mmlut;
-  __pyx_t_1 = __pyx_f_10algorithms_8imgcoord_flat_image_coord(__pyx_v_pos, __pyx_v_ext_x0, __pyx_v_ext_y0, __pyx_v_ext_z0, __pyx_v_ext_dm, __pyx_v_int_cc, __pyx_v_glass_vec_x, __pyx_v_glass_vec_y, __pyx_v_glass_vec_z, __pyx_v_mm_n1, __pyx_v_mm_n2_0, __pyx_v_mm_n3, __pyx_v_mm_d0, 1, &__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 336, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_8imgcoord_flat_image_coord(__pyx_v_pos, __pyx_v_ext_x0, __pyx_v_ext_y0, __pyx_v_ext_z0, __pyx_v_ext_dm, __pyx_v_int_cc, __pyx_v_glass_vec_x, __pyx_v_glass_vec_y, __pyx_v_glass_vec_z, __pyx_v_mm_n1, __pyx_v_mm_n2_0, __pyx_v_mm_n3, __pyx_v_mm_d0, 1, &__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 336, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -18308,7 +18308,7 @@ static PyObject *__pyx_pf_10algorithms_8imgcoord_flat_image_coord(CYTHON_UNUSED 
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.imgcoord.flat_image_coord", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.imgcoord.flat_image_coord", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -18316,7 +18316,7 @@ static PyObject *__pyx_pf_10algorithms_8imgcoord_flat_image_coord(CYTHON_UNUSED 
   return __pyx_r;
 }
 
-/* "algorithms/imgcoord.py":383
+/* "openptv2/algorithms/imgcoord.py":383
  * 
  * 
  * def img_coord(             # <<<<<<<<<<<<<<
@@ -18325,16 +18325,16 @@ static PyObject *__pyx_pf_10algorithms_8imgcoord_flat_image_coord(CYTHON_UNUSED 
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_8imgcoord_3img_coord(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_8imgcoord_3img_coord(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_8imgcoord_2img_coord, "Project 3D position to distorted metric image coordinates.\n\n    Accepts either (pos, Calibration, mm_params) or all individual parameters.\n    ");
-static PyMethodDef __pyx_mdef_10algorithms_8imgcoord_3img_coord = {"img_coord", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_8imgcoord_3img_coord, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_8imgcoord_2img_coord};
-static PyObject *__pyx_pw_10algorithms_8imgcoord_3img_coord(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_8imgcoord_2img_coord, "Project 3D position to distorted metric image coordinates.\n\n    Accepts either (pos, Calibration, mm_params) or all individual parameters.\n    ");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_8imgcoord_3img_coord = {"img_coord", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_8imgcoord_3img_coord, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_8imgcoord_2img_coord};
+static PyObject *__pyx_pw_8openptv2_10algorithms_8imgcoord_3img_coord(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -18482,7 +18482,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
       const Py_ssize_t kwd_pos_args = __pyx_nargs;
       if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "img_coord", 0) < (0)) __PYX_ERR(0, 383, __pyx_L3_error)
 
-      /* "algorithms/imgcoord.py":385
+      /* "openptv2/algorithms/imgcoord.py":385
  * def img_coord(
  *     pos,
  *     ext_x0_or_cal=None,             # <<<<<<<<<<<<<<
@@ -18491,7 +18491,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 */
       if (!values[1]) values[1] = __Pyx_NewRef(((PyObject *)Py_None));
 
-      /* "algorithms/imgcoord.py":386
+      /* "openptv2/algorithms/imgcoord.py":386
  *     pos,
  *     ext_x0_or_cal=None,
  *     ext_y0_or_mm=None,             # <<<<<<<<<<<<<<
@@ -18500,7 +18500,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 */
       if (!values[2]) values[2] = __Pyx_NewRef(((PyObject *)Py_None));
 
-      /* "algorithms/imgcoord.py":387
+      /* "openptv2/algorithms/imgcoord.py":387
  *     ext_x0_or_cal=None,
  *     ext_y0_or_mm=None,
  *     ext_z0=None,             # <<<<<<<<<<<<<<
@@ -18509,7 +18509,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 */
       if (!values[3]) values[3] = __Pyx_NewRef(((PyObject *)Py_None));
 
-      /* "algorithms/imgcoord.py":388
+      /* "openptv2/algorithms/imgcoord.py":388
  *     ext_y0_or_mm=None,
  *     ext_z0=None,
  *     ext_dm=None,             # <<<<<<<<<<<<<<
@@ -18518,7 +18518,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 */
       if (!values[4]) values[4] = __Pyx_NewRef(((PyObject *)Py_None));
 
-      /* "algorithms/imgcoord.py":389
+      /* "openptv2/algorithms/imgcoord.py":389
  *     ext_z0=None,
  *     ext_dm=None,
  *     int_cc=None,             # <<<<<<<<<<<<<<
@@ -18527,7 +18527,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 */
       if (!values[5]) values[5] = __Pyx_NewRef(((PyObject *)Py_None));
 
-      /* "algorithms/imgcoord.py":390
+      /* "openptv2/algorithms/imgcoord.py":390
  *     ext_dm=None,
  *     int_cc=None,
  *     int_xh=None,             # <<<<<<<<<<<<<<
@@ -18536,7 +18536,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 */
       if (!values[6]) values[6] = __Pyx_NewRef(((PyObject *)Py_None));
 
-      /* "algorithms/imgcoord.py":391
+      /* "openptv2/algorithms/imgcoord.py":391
  *     int_cc=None,
  *     int_xh=None,
  *     int_yh=None,             # <<<<<<<<<<<<<<
@@ -18545,7 +18545,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 */
       if (!values[7]) values[7] = __Pyx_NewRef(((PyObject *)Py_None));
 
-      /* "algorithms/imgcoord.py":392
+      /* "openptv2/algorithms/imgcoord.py":392
  *     int_xh=None,
  *     int_yh=None,
  *     glass_vec_x=None,             # <<<<<<<<<<<<<<
@@ -18554,7 +18554,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 */
       if (!values[8]) values[8] = __Pyx_NewRef(((PyObject *)Py_None));
 
-      /* "algorithms/imgcoord.py":393
+      /* "openptv2/algorithms/imgcoord.py":393
  *     int_yh=None,
  *     glass_vec_x=None,
  *     glass_vec_y=None,             # <<<<<<<<<<<<<<
@@ -18563,7 +18563,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 */
       if (!values[9]) values[9] = __Pyx_NewRef(((PyObject *)Py_None));
 
-      /* "algorithms/imgcoord.py":394
+      /* "openptv2/algorithms/imgcoord.py":394
  *     glass_vec_x=None,
  *     glass_vec_y=None,
  *     glass_vec_z=None,             # <<<<<<<<<<<<<<
@@ -18572,7 +18572,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 */
       if (!values[10]) values[10] = __Pyx_NewRef(((PyObject *)Py_None));
 
-      /* "algorithms/imgcoord.py":395
+      /* "openptv2/algorithms/imgcoord.py":395
  *     glass_vec_y=None,
  *     glass_vec_z=None,
  *     mm_n1=None,             # <<<<<<<<<<<<<<
@@ -18581,7 +18581,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 */
       if (!values[11]) values[11] = __Pyx_NewRef(((PyObject *)Py_None));
 
-      /* "algorithms/imgcoord.py":396
+      /* "openptv2/algorithms/imgcoord.py":396
  *     glass_vec_z=None,
  *     mm_n1=None,
  *     mm_n2_0=None,             # <<<<<<<<<<<<<<
@@ -18590,7 +18590,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 */
       if (!values[12]) values[12] = __Pyx_NewRef(((PyObject *)Py_None));
 
-      /* "algorithms/imgcoord.py":397
+      /* "openptv2/algorithms/imgcoord.py":397
  *     mm_n1=None,
  *     mm_n2_0=None,
  *     mm_n3=None,             # <<<<<<<<<<<<<<
@@ -18599,7 +18599,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 */
       if (!values[13]) values[13] = __Pyx_NewRef(((PyObject *)Py_None));
 
-      /* "algorithms/imgcoord.py":398
+      /* "openptv2/algorithms/imgcoord.py":398
  *     mm_n2_0=None,
  *     mm_n3=None,
  *     mm_d0=None,             # <<<<<<<<<<<<<<
@@ -18608,7 +18608,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 */
       if (!values[14]) values[14] = __Pyx_NewRef(((PyObject *)Py_None));
 
-      /* "algorithms/imgcoord.py":399
+      /* "openptv2/algorithms/imgcoord.py":399
  *     mm_n3=None,
  *     mm_d0=None,
  *     k1=None,             # <<<<<<<<<<<<<<
@@ -18617,7 +18617,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 */
       if (!values[15]) values[15] = __Pyx_NewRef(((PyObject *)Py_None));
 
-      /* "algorithms/imgcoord.py":400
+      /* "openptv2/algorithms/imgcoord.py":400
  *     mm_d0=None,
  *     k1=None,
  *     k2=None,             # <<<<<<<<<<<<<<
@@ -18626,7 +18626,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 */
       if (!values[16]) values[16] = __Pyx_NewRef(((PyObject *)Py_None));
 
-      /* "algorithms/imgcoord.py":401
+      /* "openptv2/algorithms/imgcoord.py":401
  *     k1=None,
  *     k2=None,
  *     k3=None,             # <<<<<<<<<<<<<<
@@ -18635,7 +18635,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 */
       if (!values[17]) values[17] = __Pyx_NewRef(((PyObject *)Py_None));
 
-      /* "algorithms/imgcoord.py":402
+      /* "openptv2/algorithms/imgcoord.py":402
  *     k2=None,
  *     k3=None,
  *     p1=None,             # <<<<<<<<<<<<<<
@@ -18644,7 +18644,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 */
       if (!values[18]) values[18] = __Pyx_NewRef(((PyObject *)Py_None));
 
-      /* "algorithms/imgcoord.py":403
+      /* "openptv2/algorithms/imgcoord.py":403
  *     k3=None,
  *     p1=None,
  *     p2=None,             # <<<<<<<<<<<<<<
@@ -18653,7 +18653,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 */
       if (!values[19]) values[19] = __Pyx_NewRef(((PyObject *)Py_None));
 
-      /* "algorithms/imgcoord.py":404
+      /* "openptv2/algorithms/imgcoord.py":404
  *     p1=None,
  *     p2=None,
  *     scx=None,             # <<<<<<<<<<<<<<
@@ -18662,7 +18662,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 */
       if (!values[20]) values[20] = __Pyx_NewRef(((PyObject *)Py_None));
 
-      /* "algorithms/imgcoord.py":405
+      /* "openptv2/algorithms/imgcoord.py":405
  *     p2=None,
  *     scx=None,
  *     she=None,             # <<<<<<<<<<<<<<
@@ -18766,7 +18766,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
         default: goto __pyx_L5_argtuple_error;
       }
 
-      /* "algorithms/imgcoord.py":385
+      /* "openptv2/algorithms/imgcoord.py":385
  * def img_coord(
  *     pos,
  *     ext_x0_or_cal=None,             # <<<<<<<<<<<<<<
@@ -18775,7 +18775,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 */
       if (!values[1]) values[1] = __Pyx_NewRef(((PyObject *)Py_None));
 
-      /* "algorithms/imgcoord.py":386
+      /* "openptv2/algorithms/imgcoord.py":386
  *     pos,
  *     ext_x0_or_cal=None,
  *     ext_y0_or_mm=None,             # <<<<<<<<<<<<<<
@@ -18784,7 +18784,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 */
       if (!values[2]) values[2] = __Pyx_NewRef(((PyObject *)Py_None));
 
-      /* "algorithms/imgcoord.py":387
+      /* "openptv2/algorithms/imgcoord.py":387
  *     ext_x0_or_cal=None,
  *     ext_y0_or_mm=None,
  *     ext_z0=None,             # <<<<<<<<<<<<<<
@@ -18793,7 +18793,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 */
       if (!values[3]) values[3] = __Pyx_NewRef(((PyObject *)Py_None));
 
-      /* "algorithms/imgcoord.py":388
+      /* "openptv2/algorithms/imgcoord.py":388
  *     ext_y0_or_mm=None,
  *     ext_z0=None,
  *     ext_dm=None,             # <<<<<<<<<<<<<<
@@ -18802,7 +18802,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 */
       if (!values[4]) values[4] = __Pyx_NewRef(((PyObject *)Py_None));
 
-      /* "algorithms/imgcoord.py":389
+      /* "openptv2/algorithms/imgcoord.py":389
  *     ext_z0=None,
  *     ext_dm=None,
  *     int_cc=None,             # <<<<<<<<<<<<<<
@@ -18811,7 +18811,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 */
       if (!values[5]) values[5] = __Pyx_NewRef(((PyObject *)Py_None));
 
-      /* "algorithms/imgcoord.py":390
+      /* "openptv2/algorithms/imgcoord.py":390
  *     ext_dm=None,
  *     int_cc=None,
  *     int_xh=None,             # <<<<<<<<<<<<<<
@@ -18820,7 +18820,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 */
       if (!values[6]) values[6] = __Pyx_NewRef(((PyObject *)Py_None));
 
-      /* "algorithms/imgcoord.py":391
+      /* "openptv2/algorithms/imgcoord.py":391
  *     int_cc=None,
  *     int_xh=None,
  *     int_yh=None,             # <<<<<<<<<<<<<<
@@ -18829,7 +18829,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 */
       if (!values[7]) values[7] = __Pyx_NewRef(((PyObject *)Py_None));
 
-      /* "algorithms/imgcoord.py":392
+      /* "openptv2/algorithms/imgcoord.py":392
  *     int_xh=None,
  *     int_yh=None,
  *     glass_vec_x=None,             # <<<<<<<<<<<<<<
@@ -18838,7 +18838,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 */
       if (!values[8]) values[8] = __Pyx_NewRef(((PyObject *)Py_None));
 
-      /* "algorithms/imgcoord.py":393
+      /* "openptv2/algorithms/imgcoord.py":393
  *     int_yh=None,
  *     glass_vec_x=None,
  *     glass_vec_y=None,             # <<<<<<<<<<<<<<
@@ -18847,7 +18847,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 */
       if (!values[9]) values[9] = __Pyx_NewRef(((PyObject *)Py_None));
 
-      /* "algorithms/imgcoord.py":394
+      /* "openptv2/algorithms/imgcoord.py":394
  *     glass_vec_x=None,
  *     glass_vec_y=None,
  *     glass_vec_z=None,             # <<<<<<<<<<<<<<
@@ -18856,7 +18856,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 */
       if (!values[10]) values[10] = __Pyx_NewRef(((PyObject *)Py_None));
 
-      /* "algorithms/imgcoord.py":395
+      /* "openptv2/algorithms/imgcoord.py":395
  *     glass_vec_y=None,
  *     glass_vec_z=None,
  *     mm_n1=None,             # <<<<<<<<<<<<<<
@@ -18865,7 +18865,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 */
       if (!values[11]) values[11] = __Pyx_NewRef(((PyObject *)Py_None));
 
-      /* "algorithms/imgcoord.py":396
+      /* "openptv2/algorithms/imgcoord.py":396
  *     glass_vec_z=None,
  *     mm_n1=None,
  *     mm_n2_0=None,             # <<<<<<<<<<<<<<
@@ -18874,7 +18874,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 */
       if (!values[12]) values[12] = __Pyx_NewRef(((PyObject *)Py_None));
 
-      /* "algorithms/imgcoord.py":397
+      /* "openptv2/algorithms/imgcoord.py":397
  *     mm_n1=None,
  *     mm_n2_0=None,
  *     mm_n3=None,             # <<<<<<<<<<<<<<
@@ -18883,7 +18883,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 */
       if (!values[13]) values[13] = __Pyx_NewRef(((PyObject *)Py_None));
 
-      /* "algorithms/imgcoord.py":398
+      /* "openptv2/algorithms/imgcoord.py":398
  *     mm_n2_0=None,
  *     mm_n3=None,
  *     mm_d0=None,             # <<<<<<<<<<<<<<
@@ -18892,7 +18892,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 */
       if (!values[14]) values[14] = __Pyx_NewRef(((PyObject *)Py_None));
 
-      /* "algorithms/imgcoord.py":399
+      /* "openptv2/algorithms/imgcoord.py":399
  *     mm_n3=None,
  *     mm_d0=None,
  *     k1=None,             # <<<<<<<<<<<<<<
@@ -18901,7 +18901,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 */
       if (!values[15]) values[15] = __Pyx_NewRef(((PyObject *)Py_None));
 
-      /* "algorithms/imgcoord.py":400
+      /* "openptv2/algorithms/imgcoord.py":400
  *     mm_d0=None,
  *     k1=None,
  *     k2=None,             # <<<<<<<<<<<<<<
@@ -18910,7 +18910,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 */
       if (!values[16]) values[16] = __Pyx_NewRef(((PyObject *)Py_None));
 
-      /* "algorithms/imgcoord.py":401
+      /* "openptv2/algorithms/imgcoord.py":401
  *     k1=None,
  *     k2=None,
  *     k3=None,             # <<<<<<<<<<<<<<
@@ -18919,7 +18919,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 */
       if (!values[17]) values[17] = __Pyx_NewRef(((PyObject *)Py_None));
 
-      /* "algorithms/imgcoord.py":402
+      /* "openptv2/algorithms/imgcoord.py":402
  *     k2=None,
  *     k3=None,
  *     p1=None,             # <<<<<<<<<<<<<<
@@ -18928,7 +18928,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 */
       if (!values[18]) values[18] = __Pyx_NewRef(((PyObject *)Py_None));
 
-      /* "algorithms/imgcoord.py":403
+      /* "openptv2/algorithms/imgcoord.py":403
  *     k3=None,
  *     p1=None,
  *     p2=None,             # <<<<<<<<<<<<<<
@@ -18937,7 +18937,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 */
       if (!values[19]) values[19] = __Pyx_NewRef(((PyObject *)Py_None));
 
-      /* "algorithms/imgcoord.py":404
+      /* "openptv2/algorithms/imgcoord.py":404
  *     p1=None,
  *     p2=None,
  *     scx=None,             # <<<<<<<<<<<<<<
@@ -18946,7 +18946,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 */
       if (!values[20]) values[20] = __Pyx_NewRef(((PyObject *)Py_None));
 
-      /* "algorithms/imgcoord.py":405
+      /* "openptv2/algorithms/imgcoord.py":405
  *     p2=None,
  *     scx=None,
  *     she=None,             # <<<<<<<<<<<<<<
@@ -18987,13 +18987,13 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.imgcoord.img_coord", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.imgcoord.img_coord", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_8imgcoord_2img_coord(__pyx_self, __pyx_v_pos, __pyx_v_ext_x0_or_cal, __pyx_v_ext_y0_or_mm, __pyx_v_ext_z0, __pyx_v_ext_dm, __pyx_v_int_cc, __pyx_v_int_xh, __pyx_v_int_yh, __pyx_v_glass_vec_x, __pyx_v_glass_vec_y, __pyx_v_glass_vec_z, __pyx_v_mm_n1, __pyx_v_mm_n2_0, __pyx_v_mm_n3, __pyx_v_mm_d0, __pyx_v_k1, __pyx_v_k2, __pyx_v_k3, __pyx_v_p1, __pyx_v_p2, __pyx_v_scx, __pyx_v_she);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_8imgcoord_2img_coord(__pyx_self, __pyx_v_pos, __pyx_v_ext_x0_or_cal, __pyx_v_ext_y0_or_mm, __pyx_v_ext_z0, __pyx_v_ext_dm, __pyx_v_int_cc, __pyx_v_int_xh, __pyx_v_int_yh, __pyx_v_glass_vec_x, __pyx_v_glass_vec_y, __pyx_v_glass_vec_z, __pyx_v_mm_n1, __pyx_v_mm_n2_0, __pyx_v_mm_n3, __pyx_v_mm_d0, __pyx_v_k1, __pyx_v_k2, __pyx_v_k3, __pyx_v_p1, __pyx_v_p2, __pyx_v_scx, __pyx_v_she);
 
-  /* "algorithms/imgcoord.py":383
+  /* "openptv2/algorithms/imgcoord.py":383
  * 
  * 
  * def img_coord(             # <<<<<<<<<<<<<<
@@ -19009,7 +19009,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_8imgcoord_2img_coord(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_pos, PyObject *__pyx_v_ext_x0_or_cal, PyObject *__pyx_v_ext_y0_or_mm, PyObject *__pyx_v_ext_z0, PyObject *__pyx_v_ext_dm, PyObject *__pyx_v_int_cc, PyObject *__pyx_v_int_xh, PyObject *__pyx_v_int_yh, PyObject *__pyx_v_glass_vec_x, PyObject *__pyx_v_glass_vec_y, PyObject *__pyx_v_glass_vec_z, PyObject *__pyx_v_mm_n1, PyObject *__pyx_v_mm_n2_0, PyObject *__pyx_v_mm_n3, PyObject *__pyx_v_mm_d0, PyObject *__pyx_v_k1, PyObject *__pyx_v_k2, PyObject *__pyx_v_k3, PyObject *__pyx_v_p1, PyObject *__pyx_v_p2, PyObject *__pyx_v_scx, PyObject *__pyx_v_she) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_8imgcoord_2img_coord(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_pos, PyObject *__pyx_v_ext_x0_or_cal, PyObject *__pyx_v_ext_y0_or_mm, PyObject *__pyx_v_ext_z0, PyObject *__pyx_v_ext_dm, PyObject *__pyx_v_int_cc, PyObject *__pyx_v_int_xh, PyObject *__pyx_v_int_yh, PyObject *__pyx_v_glass_vec_x, PyObject *__pyx_v_glass_vec_y, PyObject *__pyx_v_glass_vec_z, PyObject *__pyx_v_mm_n1, PyObject *__pyx_v_mm_n2_0, PyObject *__pyx_v_mm_n3, PyObject *__pyx_v_mm_d0, PyObject *__pyx_v_k1, PyObject *__pyx_v_k2, PyObject *__pyx_v_k3, PyObject *__pyx_v_p1, PyObject *__pyx_v_p2, PyObject *__pyx_v_scx, PyObject *__pyx_v_she) {
   PyObject *__pyx_v_cal = NULL;
   PyObject *__pyx_v_mm = NULL;
   PyObject *__pyx_v_mmlut = NULL;
@@ -19045,14 +19045,14 @@ static PyObject *__pyx_pf_10algorithms_8imgcoord_2img_coord(CYTHON_UNUSED PyObje
   double __pyx_t_28;
   double __pyx_t_29;
   double __pyx_t_30;
-  struct __pyx_opt_args_10algorithms_8imgcoord__img_coord_params __pyx_t_31;
+  struct __pyx_opt_args_8openptv2_10algorithms_8imgcoord__img_coord_params __pyx_t_31;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("img_coord", 0);
   __Pyx_INCREF(__pyx_v_pos);
 
-  /* "algorithms/imgcoord.py":411
+  /* "openptv2/algorithms/imgcoord.py":411
  *     Accepts either (pos, Calibration, mm_params) or all individual parameters.
  *     """
  *     pos = np.ascontiguousarray(pos, dtype=np.float64)             # <<<<<<<<<<<<<<
@@ -19098,7 +19098,7 @@ static PyObject *__pyx_pf_10algorithms_8imgcoord_2img_coord(CYTHON_UNUSED PyObje
   __Pyx_DECREF_SET(__pyx_v_pos, __pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "algorithms/imgcoord.py":412
+  /* "openptv2/algorithms/imgcoord.py":412
  *     """
  *     pos = np.ascontiguousarray(pos, dtype=np.float64)
  *     if ext_z0 is None and hasattr(ext_x0_or_cal, 'ext_par'):             # <<<<<<<<<<<<<<
@@ -19116,7 +19116,7 @@ static PyObject *__pyx_pf_10algorithms_8imgcoord_2img_coord(CYTHON_UNUSED PyObje
   __pyx_L4_bool_binop_done:;
   if (__pyx_t_7) {
 
-    /* "algorithms/imgcoord.py":413
+    /* "openptv2/algorithms/imgcoord.py":413
  *     pos = np.ascontiguousarray(pos, dtype=np.float64)
  *     if ext_z0 is None and hasattr(ext_x0_or_cal, 'ext_par'):
  *         cal = ext_x0_or_cal             # <<<<<<<<<<<<<<
@@ -19126,7 +19126,7 @@ static PyObject *__pyx_pf_10algorithms_8imgcoord_2img_coord(CYTHON_UNUSED PyObje
     __Pyx_INCREF(__pyx_v_ext_x0_or_cal);
     __pyx_v_cal = __pyx_v_ext_x0_or_cal;
 
-    /* "algorithms/imgcoord.py":414
+    /* "openptv2/algorithms/imgcoord.py":414
  *     if ext_z0 is None and hasattr(ext_x0_or_cal, 'ext_par'):
  *         cal = ext_x0_or_cal
  *         mm = ext_y0_or_mm             # <<<<<<<<<<<<<<
@@ -19136,7 +19136,7 @@ static PyObject *__pyx_pf_10algorithms_8imgcoord_2img_coord(CYTHON_UNUSED PyObje
     __Pyx_INCREF(__pyx_v_ext_y0_or_mm);
     __pyx_v_mm = __pyx_v_ext_y0_or_mm;
 
-    /* "algorithms/imgcoord.py":415
+    /* "openptv2/algorithms/imgcoord.py":415
  *         cal = ext_x0_or_cal
  *         mm = ext_y0_or_mm
  *         mmlut = cal.mmlut if cal.mmlut.is_initialized else None             # <<<<<<<<<<<<<<
@@ -19162,7 +19162,7 @@ static PyObject *__pyx_pf_10algorithms_8imgcoord_2img_coord(CYTHON_UNUSED PyObje
     __pyx_v_mmlut = __pyx_t_1;
     __pyx_t_1 = 0;
 
-    /* "algorithms/imgcoord.py":416
+    /* "openptv2/algorithms/imgcoord.py":416
  *         mm = ext_y0_or_mm
  *         mmlut = cal.mmlut if cal.mmlut.is_initialized else None
  *         return _img_coord_params(             # <<<<<<<<<<<<<<
@@ -19171,7 +19171,7 @@ static PyObject *__pyx_pf_10algorithms_8imgcoord_2img_coord(CYTHON_UNUSED PyObje
 */
     __Pyx_XDECREF(__pyx_r);
 
-    /* "algorithms/imgcoord.py":417
+    /* "openptv2/algorithms/imgcoord.py":417
  *         mmlut = cal.mmlut if cal.mmlut.is_initialized else None
  *         return _img_coord_params(
  *             pos,             # <<<<<<<<<<<<<<
@@ -19184,7 +19184,7 @@ static PyObject *__pyx_pf_10algorithms_8imgcoord_2img_coord(CYTHON_UNUSED PyObje
       __PYX_ERR(0, 417, __pyx_L1_error)
     }
 
-    /* "algorithms/imgcoord.py":418
+    /* "openptv2/algorithms/imgcoord.py":418
  *         return _img_coord_params(
  *             pos,
  *             cal.ext_par.x0, cal.ext_par.y0, cal.ext_par.z0,             # <<<<<<<<<<<<<<
@@ -19213,7 +19213,7 @@ static PyObject *__pyx_pf_10algorithms_8imgcoord_2img_coord(CYTHON_UNUSED PyObje
     __pyx_t_12 = __Pyx_PyFloat_AsDouble(__pyx_t_3); if (unlikely((__pyx_t_12 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 418, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-    /* "algorithms/imgcoord.py":419
+    /* "openptv2/algorithms/imgcoord.py":419
  *             pos,
  *             cal.ext_par.x0, cal.ext_par.y0, cal.ext_par.z0,
  *             cal.ext_par.dm, cal.int_par.cc,             # <<<<<<<<<<<<<<
@@ -19239,7 +19239,7 @@ static PyObject *__pyx_pf_10algorithms_8imgcoord_2img_coord(CYTHON_UNUSED PyObje
     __pyx_t_14 = __Pyx_PyFloat_AsDouble(__pyx_t_3); if (unlikely((__pyx_t_14 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 419, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-    /* "algorithms/imgcoord.py":420
+    /* "openptv2/algorithms/imgcoord.py":420
  *             cal.ext_par.x0, cal.ext_par.y0, cal.ext_par.z0,
  *             cal.ext_par.dm, cal.int_par.cc,
  *             cal.int_par.xh, cal.int_par.yh,             # <<<<<<<<<<<<<<
@@ -19261,7 +19261,7 @@ static PyObject *__pyx_pf_10algorithms_8imgcoord_2img_coord(CYTHON_UNUSED PyObje
     __pyx_t_16 = __Pyx_PyFloat_AsDouble(__pyx_t_3); if (unlikely((__pyx_t_16 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 420, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-    /* "algorithms/imgcoord.py":421
+    /* "openptv2/algorithms/imgcoord.py":421
  *             cal.ext_par.dm, cal.int_par.cc,
  *             cal.int_par.xh, cal.int_par.yh,
  *             cal.glass_par.vec_x, cal.glass_par.vec_y, cal.glass_par.vec_z,             # <<<<<<<<<<<<<<
@@ -19290,7 +19290,7 @@ static PyObject *__pyx_pf_10algorithms_8imgcoord_2img_coord(CYTHON_UNUSED PyObje
     __pyx_t_19 = __Pyx_PyFloat_AsDouble(__pyx_t_1); if (unlikely((__pyx_t_19 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 421, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "algorithms/imgcoord.py":422
+    /* "openptv2/algorithms/imgcoord.py":422
  *             cal.int_par.xh, cal.int_par.yh,
  *             cal.glass_par.vec_x, cal.glass_par.vec_y, cal.glass_par.vec_z,
  *             mm.n1, mm.n2[0], mm.n3, mm.d[0],             # <<<<<<<<<<<<<<
@@ -19320,7 +19320,7 @@ static PyObject *__pyx_pf_10algorithms_8imgcoord_2img_coord(CYTHON_UNUSED PyObje
     __pyx_t_23 = __Pyx_PyFloat_AsDouble(__pyx_t_1); if (unlikely((__pyx_t_23 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 422, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "algorithms/imgcoord.py":423
+    /* "openptv2/algorithms/imgcoord.py":423
  *             cal.glass_par.vec_x, cal.glass_par.vec_y, cal.glass_par.vec_z,
  *             mm.n1, mm.n2[0], mm.n3, mm.d[0],
  *             cal.added_par.k1, cal.added_par.k2, cal.added_par.k3,             # <<<<<<<<<<<<<<
@@ -19349,7 +19349,7 @@ static PyObject *__pyx_pf_10algorithms_8imgcoord_2img_coord(CYTHON_UNUSED PyObje
     __pyx_t_26 = __Pyx_PyFloat_AsDouble(__pyx_t_3); if (unlikely((__pyx_t_26 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 423, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-    /* "algorithms/imgcoord.py":424
+    /* "openptv2/algorithms/imgcoord.py":424
  *             mm.n1, mm.n2[0], mm.n3, mm.d[0],
  *             cal.added_par.k1, cal.added_par.k2, cal.added_par.k3,
  *             cal.added_par.p1, cal.added_par.p2,             # <<<<<<<<<<<<<<
@@ -19371,7 +19371,7 @@ static PyObject *__pyx_pf_10algorithms_8imgcoord_2img_coord(CYTHON_UNUSED PyObje
     __pyx_t_28 = __Pyx_PyFloat_AsDouble(__pyx_t_3); if (unlikely((__pyx_t_28 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 424, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-    /* "algorithms/imgcoord.py":425
+    /* "openptv2/algorithms/imgcoord.py":425
  *             cal.added_par.k1, cal.added_par.k2, cal.added_par.k3,
  *             cal.added_par.p1, cal.added_par.p2,
  *             cal.added_par.scx, cal.added_par.she,             # <<<<<<<<<<<<<<
@@ -19393,7 +19393,7 @@ static PyObject *__pyx_pf_10algorithms_8imgcoord_2img_coord(CYTHON_UNUSED PyObje
     __pyx_t_30 = __Pyx_PyFloat_AsDouble(__pyx_t_3); if (unlikely((__pyx_t_30 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 425, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-    /* "algorithms/imgcoord.py":416
+    /* "openptv2/algorithms/imgcoord.py":416
  *         mm = ext_y0_or_mm
  *         mmlut = cal.mmlut if cal.mmlut.is_initialized else None
  *         return _img_coord_params(             # <<<<<<<<<<<<<<
@@ -19402,7 +19402,7 @@ static PyObject *__pyx_pf_10algorithms_8imgcoord_2img_coord(CYTHON_UNUSED PyObje
 */
     __pyx_t_31.__pyx_n = 1;
     __pyx_t_31.mmlut = __pyx_v_mmlut;
-    __pyx_t_3 = __pyx_f_10algorithms_8imgcoord__img_coord_params(__pyx_t_9, __pyx_t_10, __pyx_t_11, __pyx_t_12, __pyx_t_13, __pyx_t_14, __pyx_t_15, __pyx_t_16, __pyx_t_17, __pyx_t_18, __pyx_t_19, __pyx_t_20, __pyx_t_21, __pyx_t_22, __pyx_t_23, __pyx_t_24, __pyx_t_25, __pyx_t_26, __pyx_t_27, __pyx_t_28, __pyx_t_29, __pyx_t_30, 0, &__pyx_t_31); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 416, __pyx_L1_error)
+    __pyx_t_3 = __pyx_f_8openptv2_10algorithms_8imgcoord__img_coord_params(__pyx_t_9, __pyx_t_10, __pyx_t_11, __pyx_t_12, __pyx_t_13, __pyx_t_14, __pyx_t_15, __pyx_t_16, __pyx_t_17, __pyx_t_18, __pyx_t_19, __pyx_t_20, __pyx_t_21, __pyx_t_22, __pyx_t_23, __pyx_t_24, __pyx_t_25, __pyx_t_26, __pyx_t_27, __pyx_t_28, __pyx_t_29, __pyx_t_30, 0, &__pyx_t_31); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 416, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __PYX_XCLEAR_MEMVIEW(&__pyx_t_9, 1);
     __pyx_t_9.memview = NULL; __pyx_t_9.data = NULL;
@@ -19412,7 +19412,7 @@ static PyObject *__pyx_pf_10algorithms_8imgcoord_2img_coord(CYTHON_UNUSED PyObje
     __pyx_t_3 = 0;
     goto __pyx_L0;
 
-    /* "algorithms/imgcoord.py":412
+    /* "openptv2/algorithms/imgcoord.py":412
  *     """
  *     pos = np.ascontiguousarray(pos, dtype=np.float64)
  *     if ext_z0 is None and hasattr(ext_x0_or_cal, 'ext_par'):             # <<<<<<<<<<<<<<
@@ -19421,7 +19421,7 @@ static PyObject *__pyx_pf_10algorithms_8imgcoord_2img_coord(CYTHON_UNUSED PyObje
 */
   }
 
-  /* "algorithms/imgcoord.py":428
+  /* "openptv2/algorithms/imgcoord.py":428
  *             mmlut=mmlut,
  *         )
  *     return _img_coord_params(             # <<<<<<<<<<<<<<
@@ -19430,7 +19430,7 @@ static PyObject *__pyx_pf_10algorithms_8imgcoord_2img_coord(CYTHON_UNUSED PyObje
 */
   __Pyx_XDECREF(__pyx_r);
 
-  /* "algorithms/imgcoord.py":429
+  /* "openptv2/algorithms/imgcoord.py":429
  *         )
  *     return _img_coord_params(
  *         pos, ext_x0_or_cal, ext_y0_or_mm, ext_z0, ext_dm, int_cc,             # <<<<<<<<<<<<<<
@@ -19452,7 +19452,7 @@ static PyObject *__pyx_pf_10algorithms_8imgcoord_2img_coord(CYTHON_UNUSED PyObje
   }
   __pyx_t_27 = __Pyx_PyFloat_AsDouble(__pyx_v_int_cc); if (unlikely((__pyx_t_27 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 429, __pyx_L1_error)
 
-  /* "algorithms/imgcoord.py":430
+  /* "openptv2/algorithms/imgcoord.py":430
  *     return _img_coord_params(
  *         pos, ext_x0_or_cal, ext_y0_or_mm, ext_z0, ext_dm, int_cc,
  *         int_xh, int_yh, glass_vec_x, glass_vec_y, glass_vec_z,             # <<<<<<<<<<<<<<
@@ -19465,7 +19465,7 @@ static PyObject *__pyx_pf_10algorithms_8imgcoord_2img_coord(CYTHON_UNUSED PyObje
   __pyx_t_23 = __Pyx_PyFloat_AsDouble(__pyx_v_glass_vec_y); if (unlikely((__pyx_t_23 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 430, __pyx_L1_error)
   __pyx_t_22 = __Pyx_PyFloat_AsDouble(__pyx_v_glass_vec_z); if (unlikely((__pyx_t_22 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 430, __pyx_L1_error)
 
-  /* "algorithms/imgcoord.py":431
+  /* "openptv2/algorithms/imgcoord.py":431
  *         pos, ext_x0_or_cal, ext_y0_or_mm, ext_z0, ext_dm, int_cc,
  *         int_xh, int_yh, glass_vec_x, glass_vec_y, glass_vec_z,
  *         mm_n1, mm_n2_0, mm_n3, mm_d0, k1, k2, k3, p1, p2, scx, she,             # <<<<<<<<<<<<<<
@@ -19484,14 +19484,14 @@ static PyObject *__pyx_pf_10algorithms_8imgcoord_2img_coord(CYTHON_UNUSED PyObje
   __pyx_t_11 = __Pyx_PyFloat_AsDouble(__pyx_v_scx); if (unlikely((__pyx_t_11 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 431, __pyx_L1_error)
   __pyx_t_10 = __Pyx_PyFloat_AsDouble(__pyx_v_she); if (unlikely((__pyx_t_10 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 431, __pyx_L1_error)
 
-  /* "algorithms/imgcoord.py":428
+  /* "openptv2/algorithms/imgcoord.py":428
  *             mmlut=mmlut,
  *         )
  *     return _img_coord_params(             # <<<<<<<<<<<<<<
  *         pos, ext_x0_or_cal, ext_y0_or_mm, ext_z0, ext_dm, int_cc,
  *         int_xh, int_yh, glass_vec_x, glass_vec_y, glass_vec_z,
 */
-  __pyx_t_3 = __pyx_f_10algorithms_8imgcoord__img_coord_params(__pyx_t_9, __pyx_t_30, __pyx_t_29, __pyx_t_28, __pyx_t_13, __pyx_t_27, __pyx_t_26, __pyx_t_25, __pyx_t_24, __pyx_t_23, __pyx_t_22, __pyx_t_21, __pyx_t_20, __pyx_t_19, __pyx_t_18, __pyx_t_17, __pyx_t_16, __pyx_t_15, __pyx_t_14, __pyx_t_12, __pyx_t_11, __pyx_t_10, 0, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 428, __pyx_L1_error)
+  __pyx_t_3 = __pyx_f_8openptv2_10algorithms_8imgcoord__img_coord_params(__pyx_t_9, __pyx_t_30, __pyx_t_29, __pyx_t_28, __pyx_t_13, __pyx_t_27, __pyx_t_26, __pyx_t_25, __pyx_t_24, __pyx_t_23, __pyx_t_22, __pyx_t_21, __pyx_t_20, __pyx_t_19, __pyx_t_18, __pyx_t_17, __pyx_t_16, __pyx_t_15, __pyx_t_14, __pyx_t_12, __pyx_t_11, __pyx_t_10, 0, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 428, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __PYX_XCLEAR_MEMVIEW(&__pyx_t_9, 1);
   __pyx_t_9.memview = NULL; __pyx_t_9.data = NULL;
@@ -19501,7 +19501,7 @@ static PyObject *__pyx_pf_10algorithms_8imgcoord_2img_coord(CYTHON_UNUSED PyObje
   __pyx_t_3 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/imgcoord.py":383
+  /* "openptv2/algorithms/imgcoord.py":383
  * 
  * 
  * def img_coord(             # <<<<<<<<<<<<<<
@@ -19518,7 +19518,7 @@ static PyObject *__pyx_pf_10algorithms_8imgcoord_2img_coord(CYTHON_UNUSED PyObje
   __Pyx_XDECREF(__pyx_t_5);
   __PYX_XCLEAR_MEMVIEW(&__pyx_t_9, 1);
   __PYX_XCLEAR_MEMVIEW(&__pyx_t_13, 1);
-  __Pyx_AddTraceback("algorithms.imgcoord.img_coord", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.imgcoord.img_coord", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_cal);
@@ -19530,7 +19530,7 @@ static PyObject *__pyx_pf_10algorithms_8imgcoord_2img_coord(CYTHON_UNUSED PyObje
   return __pyx_r;
 }
 
-/* "algorithms/imgcoord.py":435
+/* "openptv2/algorithms/imgcoord.py":435
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -19538,16 +19538,16 @@ static PyObject *__pyx_pf_10algorithms_8imgcoord_2img_coord(CYTHON_UNUSED PyObje
  *     pos: cython.double[:],
 */
 
-static PyObject *__pyx_pw_10algorithms_8imgcoord_5_img_coord_params(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_8imgcoord_5_img_coord_params(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_params(__Pyx_memviewslice __pyx_v_pos, double __pyx_v_ext_x0, double __pyx_v_ext_y0, double __pyx_v_ext_z0, __Pyx_memviewslice __pyx_v_ext_dm, double __pyx_v_int_cc, double __pyx_v_int_xh, double __pyx_v_int_yh, double __pyx_v_glass_vec_x, double __pyx_v_glass_vec_y, double __pyx_v_glass_vec_z, double __pyx_v_mm_n1, double __pyx_v_mm_n2_0, double __pyx_v_mm_n3, double __pyx_v_mm_d0, double __pyx_v_k1, double __pyx_v_k2, double __pyx_v_k3, double __pyx_v_p1, double __pyx_v_p2, double __pyx_v_scx, double __pyx_v_she, CYTHON_UNUSED int __pyx_skip_dispatch, struct __pyx_opt_args_10algorithms_8imgcoord__img_coord_params *__pyx_optional_args) {
+static PyObject *__pyx_f_8openptv2_10algorithms_8imgcoord__img_coord_params(__Pyx_memviewslice __pyx_v_pos, double __pyx_v_ext_x0, double __pyx_v_ext_y0, double __pyx_v_ext_z0, __Pyx_memviewslice __pyx_v_ext_dm, double __pyx_v_int_cc, double __pyx_v_int_xh, double __pyx_v_int_yh, double __pyx_v_glass_vec_x, double __pyx_v_glass_vec_y, double __pyx_v_glass_vec_z, double __pyx_v_mm_n1, double __pyx_v_mm_n2_0, double __pyx_v_mm_n3, double __pyx_v_mm_d0, double __pyx_v_k1, double __pyx_v_k2, double __pyx_v_k3, double __pyx_v_p1, double __pyx_v_p2, double __pyx_v_scx, double __pyx_v_she, CYTHON_UNUSED int __pyx_skip_dispatch, struct __pyx_opt_args_8openptv2_10algorithms_8imgcoord__img_coord_params *__pyx_optional_args) {
 
-  /* "algorithms/imgcoord.py":459
+  /* "openptv2/algorithms/imgcoord.py":459
  *     scx: cython.double,
  *     she: cython.double,
  *     mmlut=None,             # <<<<<<<<<<<<<<
@@ -19589,7 +19589,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_params(__Pyx_memviews
     }
   }
 
-  /* "algorithms/imgcoord.py":461
+  /* "openptv2/algorithms/imgcoord.py":461
  *     mmlut=None,
  * ) -> tuple:
  *     has_mmlut: cython.bint = False             # <<<<<<<<<<<<<<
@@ -19598,7 +19598,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_params(__Pyx_memviews
 */
   __pyx_v_has_mmlut = 0;
 
-  /* "algorithms/imgcoord.py":462
+  /* "openptv2/algorithms/imgcoord.py":462
  * ) -> tuple:
  *     has_mmlut: cython.bint = False
  *     mmlut_origin_x: cython.double = 0.0             # <<<<<<<<<<<<<<
@@ -19607,7 +19607,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_params(__Pyx_memviews
 */
   __pyx_v_mmlut_origin_x = 0.0;
 
-  /* "algorithms/imgcoord.py":463
+  /* "openptv2/algorithms/imgcoord.py":463
  *     has_mmlut: cython.bint = False
  *     mmlut_origin_x: cython.double = 0.0
  *     mmlut_origin_y: cython.double = 0.0             # <<<<<<<<<<<<<<
@@ -19616,7 +19616,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_params(__Pyx_memviews
 */
   __pyx_v_mmlut_origin_y = 0.0;
 
-  /* "algorithms/imgcoord.py":464
+  /* "openptv2/algorithms/imgcoord.py":464
  *     mmlut_origin_x: cython.double = 0.0
  *     mmlut_origin_y: cython.double = 0.0
  *     mmlut_origin_z: cython.double = 0.0             # <<<<<<<<<<<<<<
@@ -19625,7 +19625,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_params(__Pyx_memviews
 */
   __pyx_v_mmlut_origin_z = 0.0;
 
-  /* "algorithms/imgcoord.py":465
+  /* "openptv2/algorithms/imgcoord.py":465
  *     mmlut_origin_y: cython.double = 0.0
  *     mmlut_origin_z: cython.double = 0.0
  *     mmlut_nr: cython.int = 0             # <<<<<<<<<<<<<<
@@ -19634,7 +19634,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_params(__Pyx_memviews
 */
   __pyx_v_mmlut_nr = 0;
 
-  /* "algorithms/imgcoord.py":466
+  /* "openptv2/algorithms/imgcoord.py":466
  *     mmlut_origin_z: cython.double = 0.0
  *     mmlut_nr: cython.int = 0
  *     mmlut_nz: cython.int = 0             # <<<<<<<<<<<<<<
@@ -19643,7 +19643,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_params(__Pyx_memviews
 */
   __pyx_v_mmlut_nz = 0;
 
-  /* "algorithms/imgcoord.py":467
+  /* "openptv2/algorithms/imgcoord.py":467
  *     mmlut_nr: cython.int = 0
  *     mmlut_nz: cython.int = 0
  *     mmlut_rw: cython.double = 0.0             # <<<<<<<<<<<<<<
@@ -19652,7 +19652,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_params(__Pyx_memviews
 */
   __pyx_v_mmlut_rw = 0.0;
 
-  /* "algorithms/imgcoord.py":468
+  /* "openptv2/algorithms/imgcoord.py":468
  *     mmlut_nz: cython.int = 0
  *     mmlut_rw: cython.double = 0.0
  *     mmlut_data: cython.double[:] = _DUMMY_MMLUT_DATA             # <<<<<<<<<<<<<<
@@ -19667,7 +19667,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_params(__Pyx_memviews
   __pyx_t_2.memview = NULL;
   __pyx_t_2.data = NULL;
 
-  /* "algorithms/imgcoord.py":470
+  /* "openptv2/algorithms/imgcoord.py":470
  *     mmlut_data: cython.double[:] = _DUMMY_MMLUT_DATA
  * 
  *     if mmlut is not None and mmlut.data is not None:             # <<<<<<<<<<<<<<
@@ -19688,7 +19688,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_params(__Pyx_memviews
   __pyx_L4_bool_binop_done:;
   if (__pyx_t_3) {
 
-    /* "algorithms/imgcoord.py":471
+    /* "openptv2/algorithms/imgcoord.py":471
  * 
  *     if mmlut is not None and mmlut.data is not None:
  *         has_mmlut = True             # <<<<<<<<<<<<<<
@@ -19697,7 +19697,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_params(__Pyx_memviews
 */
     __pyx_v_has_mmlut = 1;
 
-    /* "algorithms/imgcoord.py":472
+    /* "openptv2/algorithms/imgcoord.py":472
  *     if mmlut is not None and mmlut.data is not None:
  *         has_mmlut = True
  *         mmlut_origin_x = mmlut.origin[0]             # <<<<<<<<<<<<<<
@@ -19713,7 +19713,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_params(__Pyx_memviews
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __pyx_v_mmlut_origin_x = __pyx_t_6;
 
-    /* "algorithms/imgcoord.py":473
+    /* "openptv2/algorithms/imgcoord.py":473
  *         has_mmlut = True
  *         mmlut_origin_x = mmlut.origin[0]
  *         mmlut_origin_y = mmlut.origin[1]             # <<<<<<<<<<<<<<
@@ -19729,7 +19729,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_params(__Pyx_memviews
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __pyx_v_mmlut_origin_y = __pyx_t_6;
 
-    /* "algorithms/imgcoord.py":474
+    /* "openptv2/algorithms/imgcoord.py":474
  *         mmlut_origin_x = mmlut.origin[0]
  *         mmlut_origin_y = mmlut.origin[1]
  *         mmlut_origin_z = mmlut.origin[2]             # <<<<<<<<<<<<<<
@@ -19745,7 +19745,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_params(__Pyx_memviews
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __pyx_v_mmlut_origin_z = __pyx_t_6;
 
-    /* "algorithms/imgcoord.py":475
+    /* "openptv2/algorithms/imgcoord.py":475
  *         mmlut_origin_y = mmlut.origin[1]
  *         mmlut_origin_z = mmlut.origin[2]
  *         mmlut_nr = mmlut.nr             # <<<<<<<<<<<<<<
@@ -19758,7 +19758,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_params(__Pyx_memviews
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __pyx_v_mmlut_nr = __pyx_t_7;
 
-    /* "algorithms/imgcoord.py":476
+    /* "openptv2/algorithms/imgcoord.py":476
  *         mmlut_origin_z = mmlut.origin[2]
  *         mmlut_nr = mmlut.nr
  *         mmlut_nz = mmlut.nz             # <<<<<<<<<<<<<<
@@ -19771,7 +19771,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_params(__Pyx_memviews
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __pyx_v_mmlut_nz = __pyx_t_7;
 
-    /* "algorithms/imgcoord.py":477
+    /* "openptv2/algorithms/imgcoord.py":477
  *         mmlut_nr = mmlut.nr
  *         mmlut_nz = mmlut.nz
  *         mmlut_rw = mmlut.rw             # <<<<<<<<<<<<<<
@@ -19784,7 +19784,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_params(__Pyx_memviews
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __pyx_v_mmlut_rw = __pyx_t_6;
 
-    /* "algorithms/imgcoord.py":478
+    /* "openptv2/algorithms/imgcoord.py":478
  *         mmlut_nz = mmlut.nz
  *         mmlut_rw = mmlut.rw
  *         mmlut_data = mmlut.data             # <<<<<<<<<<<<<<
@@ -19800,7 +19800,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_params(__Pyx_memviews
     __pyx_t_2.memview = NULL;
     __pyx_t_2.data = NULL;
 
-    /* "algorithms/imgcoord.py":470
+    /* "openptv2/algorithms/imgcoord.py":470
  *     mmlut_data: cython.double[:] = _DUMMY_MMLUT_DATA
  * 
  *     if mmlut is not None and mmlut.data is not None:             # <<<<<<<<<<<<<<
@@ -19809,7 +19809,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_params(__Pyx_memviews
 */
   }
 
-  /* "algorithms/imgcoord.py":483
+  /* "openptv2/algorithms/imgcoord.py":483
  *     y: cython.double
  *     x, y = _flat_image_coord_core(
  *         pos[0], pos[1], pos[2],             # <<<<<<<<<<<<<<
@@ -19820,7 +19820,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_params(__Pyx_memviews
   __pyx_t_9 = 1;
   __pyx_t_10 = 2;
 
-  /* "algorithms/imgcoord.py":488
+  /* "openptv2/algorithms/imgcoord.py":488
  *         mm_n1, mm_n2_0, mm_n3, mm_d0,
  *         has_mmlut, mmlut_origin_x, mmlut_origin_y, mmlut_origin_z,
  *         mmlut_nr, mmlut_nz, mmlut_rw, mmlut_data,             # <<<<<<<<<<<<<<
@@ -19832,14 +19832,14 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_params(__Pyx_memviews
     __PYX_ERR(0, 488, __pyx_L1_error)
   }
 
-  /* "algorithms/imgcoord.py":482
+  /* "openptv2/algorithms/imgcoord.py":482
  *     x: cython.double
  *     y: cython.double
  *     x, y = _flat_image_coord_core(             # <<<<<<<<<<<<<<
  *         pos[0], pos[1], pos[2],
  *         ext_x0, ext_y0, ext_z0, ext_dm, int_cc,
 */
-  __pyx_t_5 = __pyx_f_10algorithms_8imgcoord__flat_image_coord_core((*((double *) ( /* dim=0 */ (__pyx_v_pos.data + __pyx_t_8 * __pyx_v_pos.strides[0]) ))), (*((double *) ( /* dim=0 */ (__pyx_v_pos.data + __pyx_t_9 * __pyx_v_pos.strides[0]) ))), (*((double *) ( /* dim=0 */ (__pyx_v_pos.data + __pyx_t_10 * __pyx_v_pos.strides[0]) ))), __pyx_v_ext_x0, __pyx_v_ext_y0, __pyx_v_ext_z0, __pyx_v_ext_dm, __pyx_v_int_cc, __pyx_v_glass_vec_x, __pyx_v_glass_vec_y, __pyx_v_glass_vec_z, __pyx_v_mm_n1, __pyx_v_mm_n2_0, __pyx_v_mm_n3, __pyx_v_mm_d0, __pyx_v_has_mmlut, __pyx_v_mmlut_origin_x, __pyx_v_mmlut_origin_y, __pyx_v_mmlut_origin_z, __pyx_v_mmlut_nr, __pyx_v_mmlut_nz, __pyx_v_mmlut_rw, __pyx_v_mmlut_data); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 482, __pyx_L1_error)
+  __pyx_t_5 = __pyx_f_8openptv2_10algorithms_8imgcoord__flat_image_coord_core((*((double *) ( /* dim=0 */ (__pyx_v_pos.data + __pyx_t_8 * __pyx_v_pos.strides[0]) ))), (*((double *) ( /* dim=0 */ (__pyx_v_pos.data + __pyx_t_9 * __pyx_v_pos.strides[0]) ))), (*((double *) ( /* dim=0 */ (__pyx_v_pos.data + __pyx_t_10 * __pyx_v_pos.strides[0]) ))), __pyx_v_ext_x0, __pyx_v_ext_y0, __pyx_v_ext_z0, __pyx_v_ext_dm, __pyx_v_int_cc, __pyx_v_glass_vec_x, __pyx_v_glass_vec_y, __pyx_v_glass_vec_z, __pyx_v_mm_n1, __pyx_v_mm_n2_0, __pyx_v_mm_n3, __pyx_v_mm_d0, __pyx_v_has_mmlut, __pyx_v_mmlut_origin_x, __pyx_v_mmlut_origin_y, __pyx_v_mmlut_origin_z, __pyx_v_mmlut_nr, __pyx_v_mmlut_nz, __pyx_v_mmlut_rw, __pyx_v_mmlut_data); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 482, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   if (likely(__pyx_t_5 != Py_None)) {
     PyObject* sequence = __pyx_t_5;
@@ -19871,7 +19871,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_params(__Pyx_memviews
   __pyx_v_x = __pyx_t_6;
   __pyx_v_y = __pyx_t_12;
 
-  /* "algorithms/imgcoord.py":490
+  /* "openptv2/algorithms/imgcoord.py":490
  *         mmlut_nr, mmlut_nz, mmlut_rw, mmlut_data,
  *     )
  *     return _flat_to_dist_core(x, y, int_xh, int_yh, k1, k2, k3, p1, p2, scx, she)             # <<<<<<<<<<<<<<
@@ -19879,13 +19879,13 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_params(__Pyx_memviews
  * 
 */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_5 = __pyx_f_10algorithms_8imgcoord__flat_to_dist_core(__pyx_v_x, __pyx_v_y, __pyx_v_int_xh, __pyx_v_int_yh, __pyx_v_k1, __pyx_v_k2, __pyx_v_k3, __pyx_v_p1, __pyx_v_p2, __pyx_v_scx, __pyx_v_she); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 490, __pyx_L1_error)
+  __pyx_t_5 = __pyx_f_8openptv2_10algorithms_8imgcoord__flat_to_dist_core(__pyx_v_x, __pyx_v_y, __pyx_v_int_xh, __pyx_v_int_yh, __pyx_v_k1, __pyx_v_k2, __pyx_v_k3, __pyx_v_p1, __pyx_v_p2, __pyx_v_scx, __pyx_v_she); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 490, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __pyx_r = ((PyObject*)__pyx_t_5);
   __pyx_t_5 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/imgcoord.py":435
+  /* "openptv2/algorithms/imgcoord.py":435
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -19899,7 +19899,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_params(__Pyx_memviews
   __PYX_XCLEAR_MEMVIEW(&__pyx_t_2, 1);
   __Pyx_XDECREF(__pyx_t_5);
   __Pyx_XDECREF(__pyx_t_11);
-  __Pyx_AddTraceback("algorithms.imgcoord._img_coord_params", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.imgcoord._img_coord_params", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __PYX_XCLEAR_MEMVIEW(&__pyx_v_mmlut_data, 1);
@@ -19909,15 +19909,15 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_params(__Pyx_memviews
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_8imgcoord_5_img_coord_params(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_8imgcoord_5_img_coord_params(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_10algorithms_8imgcoord_5_img_coord_params = {"_img_coord_params", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_8imgcoord_5_img_coord_params, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10algorithms_8imgcoord_5_img_coord_params(PyObject *__pyx_self, 
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_8imgcoord_5_img_coord_params = {"_img_coord_params", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_8imgcoord_5_img_coord_params, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_8openptv2_10algorithms_8imgcoord_5_img_coord_params(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -20070,7 +20070,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
       const Py_ssize_t kwd_pos_args = __pyx_nargs;
       if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "_img_coord_params", 0) < (0)) __PYX_ERR(0, 435, __pyx_L3_error)
 
-      /* "algorithms/imgcoord.py":459
+      /* "openptv2/algorithms/imgcoord.py":459
  *     scx: cython.double,
  *     she: cython.double,
  *     mmlut=None,             # <<<<<<<<<<<<<<
@@ -20172,7 +20172,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   }
   __PYX_XCLEAR_MEMVIEW(&__pyx_v_pos, 1);
   __PYX_XCLEAR_MEMVIEW(&__pyx_v_ext_dm, 1);
-  __Pyx_AddTraceback("algorithms.imgcoord._img_coord_params", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.imgcoord._img_coord_params", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
@@ -20182,9 +20182,9 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   if (unlikely(((PyObject *)__pyx_v_ext_dm.memview) == Py_None)) {
     PyErr_Format(PyExc_TypeError, "Argument '%.200s' must not be None", "ext_dm"); __PYX_ERR(0, 441, __pyx_L1_error)
   }
-  __pyx_r = __pyx_pf_10algorithms_8imgcoord_4_img_coord_params(__pyx_self, __pyx_v_pos, __pyx_v_ext_x0, __pyx_v_ext_y0, __pyx_v_ext_z0, __pyx_v_ext_dm, __pyx_v_int_cc, __pyx_v_int_xh, __pyx_v_int_yh, __pyx_v_glass_vec_x, __pyx_v_glass_vec_y, __pyx_v_glass_vec_z, __pyx_v_mm_n1, __pyx_v_mm_n2_0, __pyx_v_mm_n3, __pyx_v_mm_d0, __pyx_v_k1, __pyx_v_k2, __pyx_v_k3, __pyx_v_p1, __pyx_v_p2, __pyx_v_scx, __pyx_v_she, __pyx_v_mmlut);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_8imgcoord_4_img_coord_params(__pyx_self, __pyx_v_pos, __pyx_v_ext_x0, __pyx_v_ext_y0, __pyx_v_ext_z0, __pyx_v_ext_dm, __pyx_v_int_cc, __pyx_v_int_xh, __pyx_v_int_yh, __pyx_v_glass_vec_x, __pyx_v_glass_vec_y, __pyx_v_glass_vec_z, __pyx_v_mm_n1, __pyx_v_mm_n2_0, __pyx_v_mm_n3, __pyx_v_mm_d0, __pyx_v_k1, __pyx_v_k2, __pyx_v_k3, __pyx_v_p1, __pyx_v_p2, __pyx_v_scx, __pyx_v_she, __pyx_v_mmlut);
 
-  /* "algorithms/imgcoord.py":435
+  /* "openptv2/algorithms/imgcoord.py":435
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -20211,11 +20211,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_8imgcoord_4_img_coord_params(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_pos, double __pyx_v_ext_x0, double __pyx_v_ext_y0, double __pyx_v_ext_z0, __Pyx_memviewslice __pyx_v_ext_dm, double __pyx_v_int_cc, double __pyx_v_int_xh, double __pyx_v_int_yh, double __pyx_v_glass_vec_x, double __pyx_v_glass_vec_y, double __pyx_v_glass_vec_z, double __pyx_v_mm_n1, double __pyx_v_mm_n2_0, double __pyx_v_mm_n3, double __pyx_v_mm_d0, double __pyx_v_k1, double __pyx_v_k2, double __pyx_v_k3, double __pyx_v_p1, double __pyx_v_p2, double __pyx_v_scx, double __pyx_v_she, PyObject *__pyx_v_mmlut) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_8imgcoord_4_img_coord_params(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_pos, double __pyx_v_ext_x0, double __pyx_v_ext_y0, double __pyx_v_ext_z0, __Pyx_memviewslice __pyx_v_ext_dm, double __pyx_v_int_cc, double __pyx_v_int_xh, double __pyx_v_int_yh, double __pyx_v_glass_vec_x, double __pyx_v_glass_vec_y, double __pyx_v_glass_vec_z, double __pyx_v_mm_n1, double __pyx_v_mm_n2_0, double __pyx_v_mm_n3, double __pyx_v_mm_d0, double __pyx_v_k1, double __pyx_v_k2, double __pyx_v_k3, double __pyx_v_p1, double __pyx_v_p2, double __pyx_v_scx, double __pyx_v_she, PyObject *__pyx_v_mmlut) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
-  struct __pyx_opt_args_10algorithms_8imgcoord__img_coord_params __pyx_t_2;
+  struct __pyx_opt_args_8openptv2_10algorithms_8imgcoord__img_coord_params __pyx_t_2;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -20231,7 +20231,7 @@ static PyObject *__pyx_pf_10algorithms_8imgcoord_4_img_coord_params(CYTHON_UNUSE
   }
   __pyx_t_2.__pyx_n = 1;
   __pyx_t_2.mmlut = __pyx_v_mmlut;
-  __pyx_t_1 = __pyx_f_10algorithms_8imgcoord__img_coord_params(__pyx_v_pos, __pyx_v_ext_x0, __pyx_v_ext_y0, __pyx_v_ext_z0, __pyx_v_ext_dm, __pyx_v_int_cc, __pyx_v_int_xh, __pyx_v_int_yh, __pyx_v_glass_vec_x, __pyx_v_glass_vec_y, __pyx_v_glass_vec_z, __pyx_v_mm_n1, __pyx_v_mm_n2_0, __pyx_v_mm_n3, __pyx_v_mm_d0, __pyx_v_k1, __pyx_v_k2, __pyx_v_k3, __pyx_v_p1, __pyx_v_p2, __pyx_v_scx, __pyx_v_she, 1, &__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 435, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_8imgcoord__img_coord_params(__pyx_v_pos, __pyx_v_ext_x0, __pyx_v_ext_y0, __pyx_v_ext_z0, __pyx_v_ext_dm, __pyx_v_int_cc, __pyx_v_int_xh, __pyx_v_int_yh, __pyx_v_glass_vec_x, __pyx_v_glass_vec_y, __pyx_v_glass_vec_z, __pyx_v_mm_n1, __pyx_v_mm_n2_0, __pyx_v_mm_n3, __pyx_v_mm_d0, __pyx_v_k1, __pyx_v_k2, __pyx_v_k3, __pyx_v_p1, __pyx_v_p2, __pyx_v_scx, __pyx_v_she, 1, &__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 435, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -20240,7 +20240,7 @@ static PyObject *__pyx_pf_10algorithms_8imgcoord_4_img_coord_params(CYTHON_UNUSE
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.imgcoord._img_coord_params", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.imgcoord._img_coord_params", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -20248,7 +20248,7 @@ static PyObject *__pyx_pf_10algorithms_8imgcoord_4_img_coord_params(CYTHON_UNUSE
   return __pyx_r;
 }
 
-/* "algorithms/imgcoord.py":493
+/* "openptv2/algorithms/imgcoord.py":493
  * 
  * 
  * def img_coord_batch(positions, cal, mm):             # <<<<<<<<<<<<<<
@@ -20257,16 +20257,16 @@ static PyObject *__pyx_pf_10algorithms_8imgcoord_4_img_coord_params(CYTHON_UNUSE
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_8imgcoord_7img_coord_batch(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_8imgcoord_7img_coord_batch(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_8imgcoord_6img_coord_batch, "Project N 3D positions to distorted metric image coordinates.\n\n    Args:\n        positions: (N, 3) array of 3D positions.\n        cal: Calibration object.\n        mm: MmNp multimedia parameters.\n\n    Returns:\n        (N, 2) array of distorted metric coordinates.\n    ");
-static PyMethodDef __pyx_mdef_10algorithms_8imgcoord_7img_coord_batch = {"img_coord_batch", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_8imgcoord_7img_coord_batch, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_8imgcoord_6img_coord_batch};
-static PyObject *__pyx_pw_10algorithms_8imgcoord_7img_coord_batch(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_8imgcoord_6img_coord_batch, "Project N 3D positions to distorted metric image coordinates.\n\n    Args:\n        positions: (N, 3) array of 3D positions.\n        cal: Calibration object.\n        mm: MmNp multimedia parameters.\n\n    Returns:\n        (N, 2) array of distorted metric coordinates.\n    ");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_8imgcoord_7img_coord_batch = {"img_coord_batch", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_8imgcoord_7img_coord_batch, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_8imgcoord_6img_coord_batch};
+static PyObject *__pyx_pw_8openptv2_10algorithms_8imgcoord_7img_coord_batch(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -20344,11 +20344,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.imgcoord.img_coord_batch", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.imgcoord.img_coord_batch", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_8imgcoord_6img_coord_batch(__pyx_self, __pyx_v_positions, __pyx_v_cal, __pyx_v_mm);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_8imgcoord_6img_coord_batch(__pyx_self, __pyx_v_positions, __pyx_v_cal, __pyx_v_mm);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -20358,7 +20358,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_8imgcoord_6img_coord_batch(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_positions, PyObject *__pyx_v_cal, PyObject *__pyx_v_mm) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_8imgcoord_6img_coord_batch(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_positions, PyObject *__pyx_v_cal, PyObject *__pyx_v_mm) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -20374,7 +20374,7 @@ static PyObject *__pyx_pf_10algorithms_8imgcoord_6img_coord_batch(CYTHON_UNUSED 
   __Pyx_RefNannySetupContext("img_coord_batch", 0);
   __Pyx_INCREF(__pyx_v_positions);
 
-  /* "algorithms/imgcoord.py":504
+  /* "openptv2/algorithms/imgcoord.py":504
  *         (N, 2) array of distorted metric coordinates.
  *     """
  *     positions = np.ascontiguousarray(positions, dtype=np.float64)             # <<<<<<<<<<<<<<
@@ -20420,7 +20420,7 @@ static PyObject *__pyx_pf_10algorithms_8imgcoord_6img_coord_batch(CYTHON_UNUSED 
   __Pyx_DECREF_SET(__pyx_v_positions, __pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "algorithms/imgcoord.py":505
+  /* "openptv2/algorithms/imgcoord.py":505
  *     """
  *     positions = np.ascontiguousarray(positions, dtype=np.float64)
  *     return _img_coord_batch_impl(positions, cal, mm)             # <<<<<<<<<<<<<<
@@ -20433,7 +20433,7 @@ static PyObject *__pyx_pf_10algorithms_8imgcoord_6img_coord_batch(CYTHON_UNUSED 
     PyErr_SetString(PyExc_TypeError, "cannot pass None into a C function argument that is declared 'not None'");
     __PYX_ERR(0, 505, __pyx_L1_error)
   }
-  __pyx_t_1 = __pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__pyx_t_7, __pyx_v_cal, __pyx_v_mm, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 505, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_8imgcoord__img_coord_batch_impl(__pyx_t_7, __pyx_v_cal, __pyx_v_mm, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 505, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __PYX_XCLEAR_MEMVIEW(&__pyx_t_7, 1);
   __pyx_t_7.memview = NULL; __pyx_t_7.data = NULL;
@@ -20441,7 +20441,7 @@ static PyObject *__pyx_pf_10algorithms_8imgcoord_6img_coord_batch(CYTHON_UNUSED 
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/imgcoord.py":493
+  /* "openptv2/algorithms/imgcoord.py":493
  * 
  * 
  * def img_coord_batch(positions, cal, mm):             # <<<<<<<<<<<<<<
@@ -20457,7 +20457,7 @@ static PyObject *__pyx_pf_10algorithms_8imgcoord_6img_coord_batch(CYTHON_UNUSED 
   __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_5);
   __PYX_XCLEAR_MEMVIEW(&__pyx_t_7, 1);
-  __Pyx_AddTraceback("algorithms.imgcoord.img_coord_batch", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.imgcoord.img_coord_batch", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_positions);
@@ -20466,7 +20466,7 @@ static PyObject *__pyx_pf_10algorithms_8imgcoord_6img_coord_batch(CYTHON_UNUSED 
   return __pyx_r;
 }
 
-/* "algorithms/imgcoord.py":508
+/* "openptv2/algorithms/imgcoord.py":508
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -20474,14 +20474,14 @@ static PyObject *__pyx_pf_10algorithms_8imgcoord_6img_coord_batch(CYTHON_UNUSED 
  * @cython.wraparound(False)
 */
 
-static PyObject *__pyx_pw_10algorithms_8imgcoord_9_img_coord_batch_impl(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_8imgcoord_9_img_coord_batch_impl(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memviewslice __pyx_v_positions, PyObject *__pyx_v_cal, PyObject *__pyx_v_mm, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memviewslice __pyx_v_positions, PyObject *__pyx_v_cal, PyObject *__pyx_v_mm, CYTHON_UNUSED int __pyx_skip_dispatch) {
   int __pyx_v_n;
   PyObject *__pyx_v_result = NULL;
   __Pyx_memviewslice __pyx_v_res_mv = { 0, 0, { 0 }, { 0 }, { 0 } };
@@ -20612,7 +20612,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("_img_coord_batch_impl", 0);
 
-  /* "algorithms/imgcoord.py":512
+  /* "openptv2/algorithms/imgcoord.py":512
  * @cython.wraparound(False)
  * def _img_coord_batch_impl(positions: cython.double[:, :], cal, mm) -> np.ndarray:
  *     n: cython.int = positions.shape[0]             # <<<<<<<<<<<<<<
@@ -20621,7 +20621,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
   __pyx_v_n = (__pyx_v_positions.shape[0]);
 
-  /* "algorithms/imgcoord.py":513
+  /* "openptv2/algorithms/imgcoord.py":513
  * def _img_coord_batch_impl(positions: cython.double[:, :], cal, mm) -> np.ndarray:
  *     n: cython.int = positions.shape[0]
  *     result = np.empty((n, 2), dtype=np.float64)             # <<<<<<<<<<<<<<
@@ -20678,7 +20678,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
   __pyx_v_result = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/imgcoord.py":514
+  /* "openptv2/algorithms/imgcoord.py":514
  *     n: cython.int = positions.shape[0]
  *     result = np.empty((n, 2), dtype=np.float64)
  *     res_mv: cython.double[:, :] = result             # <<<<<<<<<<<<<<
@@ -20690,7 +20690,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
   __pyx_t_8.memview = NULL;
   __pyx_t_8.data = NULL;
 
-  /* "algorithms/imgcoord.py":517
+  /* "openptv2/algorithms/imgcoord.py":517
  * 
  *     # Extract params once
  *     ext_x0: cython.double = cal.ext_par.x0             # <<<<<<<<<<<<<<
@@ -20706,7 +20706,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __pyx_v_ext_x0 = __pyx_t_9;
 
-  /* "algorithms/imgcoord.py":518
+  /* "openptv2/algorithms/imgcoord.py":518
  *     # Extract params once
  *     ext_x0: cython.double = cal.ext_par.x0
  *     ext_y0: cython.double = cal.ext_par.y0             # <<<<<<<<<<<<<<
@@ -20722,7 +20722,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_ext_y0 = __pyx_t_9;
 
-  /* "algorithms/imgcoord.py":519
+  /* "openptv2/algorithms/imgcoord.py":519
  *     ext_x0: cython.double = cal.ext_par.x0
  *     ext_y0: cython.double = cal.ext_par.y0
  *     ext_z0: cython.double = cal.ext_par.z0             # <<<<<<<<<<<<<<
@@ -20738,7 +20738,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __pyx_v_ext_z0 = __pyx_t_9;
 
-  /* "algorithms/imgcoord.py":520
+  /* "openptv2/algorithms/imgcoord.py":520
  *     ext_y0: cython.double = cal.ext_par.y0
  *     ext_z0: cython.double = cal.ext_par.z0
  *     ext_dm: cython.double[:, :] = cal.ext_par.dm             # <<<<<<<<<<<<<<
@@ -20756,7 +20756,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
   __pyx_t_8.memview = NULL;
   __pyx_t_8.data = NULL;
 
-  /* "algorithms/imgcoord.py":521
+  /* "openptv2/algorithms/imgcoord.py":521
  *     ext_z0: cython.double = cal.ext_par.z0
  *     ext_dm: cython.double[:, :] = cal.ext_par.dm
  *     int_cc: cython.double = cal.int_par.cc             # <<<<<<<<<<<<<<
@@ -20772,7 +20772,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __pyx_v_int_cc = __pyx_t_9;
 
-  /* "algorithms/imgcoord.py":522
+  /* "openptv2/algorithms/imgcoord.py":522
  *     ext_dm: cython.double[:, :] = cal.ext_par.dm
  *     int_cc: cython.double = cal.int_par.cc
  *     int_xh: cython.double = cal.int_par.xh             # <<<<<<<<<<<<<<
@@ -20788,7 +20788,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_int_xh = __pyx_t_9;
 
-  /* "algorithms/imgcoord.py":523
+  /* "openptv2/algorithms/imgcoord.py":523
  *     int_cc: cython.double = cal.int_par.cc
  *     int_xh: cython.double = cal.int_par.xh
  *     int_yh: cython.double = cal.int_par.yh             # <<<<<<<<<<<<<<
@@ -20804,7 +20804,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __pyx_v_int_yh = __pyx_t_9;
 
-  /* "algorithms/imgcoord.py":524
+  /* "openptv2/algorithms/imgcoord.py":524
  *     int_xh: cython.double = cal.int_par.xh
  *     int_yh: cython.double = cal.int_par.yh
  *     glass_vec_x: cython.double = cal.glass_par.vec_x             # <<<<<<<<<<<<<<
@@ -20820,7 +20820,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_glass_vec_x = __pyx_t_9;
 
-  /* "algorithms/imgcoord.py":525
+  /* "openptv2/algorithms/imgcoord.py":525
  *     int_yh: cython.double = cal.int_par.yh
  *     glass_vec_x: cython.double = cal.glass_par.vec_x
  *     glass_vec_y: cython.double = cal.glass_par.vec_y             # <<<<<<<<<<<<<<
@@ -20836,7 +20836,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __pyx_v_glass_vec_y = __pyx_t_9;
 
-  /* "algorithms/imgcoord.py":526
+  /* "openptv2/algorithms/imgcoord.py":526
  *     glass_vec_x: cython.double = cal.glass_par.vec_x
  *     glass_vec_y: cython.double = cal.glass_par.vec_y
  *     glass_vec_z: cython.double = cal.glass_par.vec_z             # <<<<<<<<<<<<<<
@@ -20852,7 +20852,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_glass_vec_z = __pyx_t_9;
 
-  /* "algorithms/imgcoord.py":527
+  /* "openptv2/algorithms/imgcoord.py":527
  *     glass_vec_y: cython.double = cal.glass_par.vec_y
  *     glass_vec_z: cython.double = cal.glass_par.vec_z
  *     mm_n1: cython.double = mm.n1             # <<<<<<<<<<<<<<
@@ -20865,7 +20865,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_mm_n1 = __pyx_t_9;
 
-  /* "algorithms/imgcoord.py":528
+  /* "openptv2/algorithms/imgcoord.py":528
  *     glass_vec_z: cython.double = cal.glass_par.vec_z
  *     mm_n1: cython.double = mm.n1
  *     mm_n2_0: cython.double = mm.n2[0]             # <<<<<<<<<<<<<<
@@ -20881,7 +20881,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __pyx_v_mm_n2_0 = __pyx_t_9;
 
-  /* "algorithms/imgcoord.py":529
+  /* "openptv2/algorithms/imgcoord.py":529
  *     mm_n1: cython.double = mm.n1
  *     mm_n2_0: cython.double = mm.n2[0]
  *     mm_n3: cython.double = mm.n3             # <<<<<<<<<<<<<<
@@ -20894,7 +20894,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __pyx_v_mm_n3 = __pyx_t_9;
 
-  /* "algorithms/imgcoord.py":530
+  /* "openptv2/algorithms/imgcoord.py":530
  *     mm_n2_0: cython.double = mm.n2[0]
  *     mm_n3: cython.double = mm.n3
  *     mm_d0: cython.double = mm.d[0]             # <<<<<<<<<<<<<<
@@ -20910,7 +20910,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_mm_d0 = __pyx_t_9;
 
-  /* "algorithms/imgcoord.py":531
+  /* "openptv2/algorithms/imgcoord.py":531
  *     mm_n3: cython.double = mm.n3
  *     mm_d0: cython.double = mm.d[0]
  *     k1: cython.double = cal.added_par.k1             # <<<<<<<<<<<<<<
@@ -20926,7 +20926,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __pyx_v_k1 = __pyx_t_9;
 
-  /* "algorithms/imgcoord.py":532
+  /* "openptv2/algorithms/imgcoord.py":532
  *     mm_d0: cython.double = mm.d[0]
  *     k1: cython.double = cal.added_par.k1
  *     k2: cython.double = cal.added_par.k2             # <<<<<<<<<<<<<<
@@ -20942,7 +20942,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_k2 = __pyx_t_9;
 
-  /* "algorithms/imgcoord.py":533
+  /* "openptv2/algorithms/imgcoord.py":533
  *     k1: cython.double = cal.added_par.k1
  *     k2: cython.double = cal.added_par.k2
  *     k3: cython.double = cal.added_par.k3             # <<<<<<<<<<<<<<
@@ -20958,7 +20958,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __pyx_v_k3 = __pyx_t_9;
 
-  /* "algorithms/imgcoord.py":534
+  /* "openptv2/algorithms/imgcoord.py":534
  *     k2: cython.double = cal.added_par.k2
  *     k3: cython.double = cal.added_par.k3
  *     p1: cython.double = cal.added_par.p1             # <<<<<<<<<<<<<<
@@ -20974,7 +20974,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_p1 = __pyx_t_9;
 
-  /* "algorithms/imgcoord.py":535
+  /* "openptv2/algorithms/imgcoord.py":535
  *     k3: cython.double = cal.added_par.k3
  *     p1: cython.double = cal.added_par.p1
  *     p2: cython.double = cal.added_par.p2             # <<<<<<<<<<<<<<
@@ -20990,7 +20990,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __pyx_v_p2 = __pyx_t_9;
 
-  /* "algorithms/imgcoord.py":536
+  /* "openptv2/algorithms/imgcoord.py":536
  *     p1: cython.double = cal.added_par.p1
  *     p2: cython.double = cal.added_par.p2
  *     scx: cython.double = cal.added_par.scx             # <<<<<<<<<<<<<<
@@ -21006,7 +21006,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_scx = __pyx_t_9;
 
-  /* "algorithms/imgcoord.py":537
+  /* "openptv2/algorithms/imgcoord.py":537
  *     p2: cython.double = cal.added_par.p2
  *     scx: cython.double = cal.added_par.scx
  *     she: cython.double = cal.added_par.she             # <<<<<<<<<<<<<<
@@ -21022,7 +21022,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __pyx_v_she = __pyx_t_9;
 
-  /* "algorithms/imgcoord.py":538
+  /* "openptv2/algorithms/imgcoord.py":538
  *     scx: cython.double = cal.added_par.scx
  *     she: cython.double = cal.added_par.she
  *     mmlut = cal.mmlut if cal.mmlut.is_initialized else None             # <<<<<<<<<<<<<<
@@ -21048,7 +21048,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
   __pyx_v_mmlut = __pyx_t_4;
   __pyx_t_4 = 0;
 
-  /* "algorithms/imgcoord.py":540
+  /* "openptv2/algorithms/imgcoord.py":540
  *     mmlut = cal.mmlut if cal.mmlut.is_initialized else None
  * 
  *     has_mmlut: cython.bint = False             # <<<<<<<<<<<<<<
@@ -21057,7 +21057,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
   __pyx_v_has_mmlut = 0;
 
-  /* "algorithms/imgcoord.py":541
+  /* "openptv2/algorithms/imgcoord.py":541
  * 
  *     has_mmlut: cython.bint = False
  *     mmlut_origin_x: cython.double = 0.0             # <<<<<<<<<<<<<<
@@ -21066,7 +21066,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
   __pyx_v_mmlut_origin_x = 0.0;
 
-  /* "algorithms/imgcoord.py":542
+  /* "openptv2/algorithms/imgcoord.py":542
  *     has_mmlut: cython.bint = False
  *     mmlut_origin_x: cython.double = 0.0
  *     mmlut_origin_y: cython.double = 0.0             # <<<<<<<<<<<<<<
@@ -21075,7 +21075,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
   __pyx_v_mmlut_origin_y = 0.0;
 
-  /* "algorithms/imgcoord.py":543
+  /* "openptv2/algorithms/imgcoord.py":543
  *     mmlut_origin_x: cython.double = 0.0
  *     mmlut_origin_y: cython.double = 0.0
  *     mmlut_origin_z: cython.double = 0.0             # <<<<<<<<<<<<<<
@@ -21084,7 +21084,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
   __pyx_v_mmlut_origin_z = 0.0;
 
-  /* "algorithms/imgcoord.py":544
+  /* "openptv2/algorithms/imgcoord.py":544
  *     mmlut_origin_y: cython.double = 0.0
  *     mmlut_origin_z: cython.double = 0.0
  *     mmlut_nr: cython.int = 0             # <<<<<<<<<<<<<<
@@ -21093,7 +21093,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
   __pyx_v_mmlut_nr = 0;
 
-  /* "algorithms/imgcoord.py":545
+  /* "openptv2/algorithms/imgcoord.py":545
  *     mmlut_origin_z: cython.double = 0.0
  *     mmlut_nr: cython.int = 0
  *     mmlut_nz: cython.int = 0             # <<<<<<<<<<<<<<
@@ -21102,7 +21102,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
   __pyx_v_mmlut_nz = 0;
 
-  /* "algorithms/imgcoord.py":546
+  /* "openptv2/algorithms/imgcoord.py":546
  *     mmlut_nr: cython.int = 0
  *     mmlut_nz: cython.int = 0
  *     mmlut_rw: cython.double = 0.0             # <<<<<<<<<<<<<<
@@ -21111,7 +21111,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
   __pyx_v_mmlut_rw = 0.0;
 
-  /* "algorithms/imgcoord.py":547
+  /* "openptv2/algorithms/imgcoord.py":547
  *     mmlut_nz: cython.int = 0
  *     mmlut_rw: cython.double = 0.0
  *     mmlut_data: cython.double[:] = _DUMMY_MMLUT_DATA             # <<<<<<<<<<<<<<
@@ -21126,7 +21126,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
   __pyx_t_11.memview = NULL;
   __pyx_t_11.data = NULL;
 
-  /* "algorithms/imgcoord.py":549
+  /* "openptv2/algorithms/imgcoord.py":549
  *     mmlut_data: cython.double[:] = _DUMMY_MMLUT_DATA
  * 
  *     if mmlut is not None and mmlut.data is not None:             # <<<<<<<<<<<<<<
@@ -21147,7 +21147,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
   __pyx_L4_bool_binop_done:;
   if (__pyx_t_10) {
 
-    /* "algorithms/imgcoord.py":550
+    /* "openptv2/algorithms/imgcoord.py":550
  * 
  *     if mmlut is not None and mmlut.data is not None:
  *         has_mmlut = True             # <<<<<<<<<<<<<<
@@ -21156,7 +21156,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
     __pyx_v_has_mmlut = 1;
 
-    /* "algorithms/imgcoord.py":551
+    /* "openptv2/algorithms/imgcoord.py":551
  *     if mmlut is not None and mmlut.data is not None:
  *         has_mmlut = True
  *         mmlut_origin_x = mmlut.origin[0]             # <<<<<<<<<<<<<<
@@ -21172,7 +21172,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __pyx_v_mmlut_origin_x = __pyx_t_9;
 
-    /* "algorithms/imgcoord.py":552
+    /* "openptv2/algorithms/imgcoord.py":552
  *         has_mmlut = True
  *         mmlut_origin_x = mmlut.origin[0]
  *         mmlut_origin_y = mmlut.origin[1]             # <<<<<<<<<<<<<<
@@ -21188,7 +21188,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __pyx_v_mmlut_origin_y = __pyx_t_9;
 
-    /* "algorithms/imgcoord.py":553
+    /* "openptv2/algorithms/imgcoord.py":553
  *         mmlut_origin_x = mmlut.origin[0]
  *         mmlut_origin_y = mmlut.origin[1]
  *         mmlut_origin_z = mmlut.origin[2]             # <<<<<<<<<<<<<<
@@ -21204,7 +21204,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __pyx_v_mmlut_origin_z = __pyx_t_9;
 
-    /* "algorithms/imgcoord.py":554
+    /* "openptv2/algorithms/imgcoord.py":554
  *         mmlut_origin_y = mmlut.origin[1]
  *         mmlut_origin_z = mmlut.origin[2]
  *         mmlut_nr = mmlut.nr             # <<<<<<<<<<<<<<
@@ -21217,7 +21217,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __pyx_v_mmlut_nr = __pyx_t_13;
 
-    /* "algorithms/imgcoord.py":555
+    /* "openptv2/algorithms/imgcoord.py":555
  *         mmlut_origin_z = mmlut.origin[2]
  *         mmlut_nr = mmlut.nr
  *         mmlut_nz = mmlut.nz             # <<<<<<<<<<<<<<
@@ -21230,7 +21230,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __pyx_v_mmlut_nz = __pyx_t_13;
 
-    /* "algorithms/imgcoord.py":556
+    /* "openptv2/algorithms/imgcoord.py":556
  *         mmlut_nr = mmlut.nr
  *         mmlut_nz = mmlut.nz
  *         mmlut_rw = mmlut.rw             # <<<<<<<<<<<<<<
@@ -21243,7 +21243,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __pyx_v_mmlut_rw = __pyx_t_9;
 
-    /* "algorithms/imgcoord.py":557
+    /* "openptv2/algorithms/imgcoord.py":557
  *         mmlut_nz = mmlut.nz
  *         mmlut_rw = mmlut.rw
  *         mmlut_data = mmlut.data             # <<<<<<<<<<<<<<
@@ -21259,7 +21259,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
     __pyx_t_11.memview = NULL;
     __pyx_t_11.data = NULL;
 
-    /* "algorithms/imgcoord.py":549
+    /* "openptv2/algorithms/imgcoord.py":549
  *     mmlut_data: cython.double[:] = _DUMMY_MMLUT_DATA
  * 
  *     if mmlut is not None and mmlut.data is not None:             # <<<<<<<<<<<<<<
@@ -21268,7 +21268,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
   }
 
-  /* "algorithms/imgcoord.py":560
+  /* "openptv2/algorithms/imgcoord.py":560
  * 
  *     # Hoist point-independent calculations from flat_image_coord
  *     gx: cython.double = glass_vec_x             # <<<<<<<<<<<<<<
@@ -21277,7 +21277,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
   __pyx_v_gx = __pyx_v_glass_vec_x;
 
-  /* "algorithms/imgcoord.py":561
+  /* "openptv2/algorithms/imgcoord.py":561
  *     # Hoist point-independent calculations from flat_image_coord
  *     gx: cython.double = glass_vec_x
  *     gy: cython.double = glass_vec_y             # <<<<<<<<<<<<<<
@@ -21286,7 +21286,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
   __pyx_v_gy = __pyx_v_glass_vec_y;
 
-  /* "algorithms/imgcoord.py":562
+  /* "openptv2/algorithms/imgcoord.py":562
  *     gx: cython.double = glass_vec_x
  *     gy: cython.double = glass_vec_y
  *     gz: cython.double = glass_vec_z             # <<<<<<<<<<<<<<
@@ -21295,7 +21295,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
   __pyx_v_gz = __pyx_v_glass_vec_z;
 
-  /* "algorithms/imgcoord.py":564
+  /* "openptv2/algorithms/imgcoord.py":564
  *     gz: cython.double = glass_vec_z
  * 
  *     dist_o_glas: cython.double = c_sqrt(gx * gx + gy * gy + gz * gz)             # <<<<<<<<<<<<<<
@@ -21304,7 +21304,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
   __pyx_v_dist_o_glas = sqrt((((__pyx_v_gx * __pyx_v_gx) + (__pyx_v_gy * __pyx_v_gy)) + (__pyx_v_gz * __pyx_v_gz)));
 
-  /* "algorithms/imgcoord.py":565
+  /* "openptv2/algorithms/imgcoord.py":565
  * 
  *     dist_o_glas: cython.double = c_sqrt(gx * gx + gy * gy + gz * gz)
  *     inv_dog: cython.double = 1.0 / dist_o_glas             # <<<<<<<<<<<<<<
@@ -21313,7 +21313,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
   __pyx_v_inv_dog = (1.0 / __pyx_v_dist_o_glas);
 
-  /* "algorithms/imgcoord.py":567
+  /* "openptv2/algorithms/imgcoord.py":567
  *     inv_dog: cython.double = 1.0 / dist_o_glas
  * 
  *     dot_cam: cython.double = ext_x0 * gx + ext_y0 * gy + ext_z0 * gz             # <<<<<<<<<<<<<<
@@ -21322,7 +21322,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
   __pyx_v_dot_cam = (((__pyx_v_ext_x0 * __pyx_v_gx) + (__pyx_v_ext_y0 * __pyx_v_gy)) + (__pyx_v_ext_z0 * __pyx_v_gz));
 
-  /* "algorithms/imgcoord.py":568
+  /* "openptv2/algorithms/imgcoord.py":568
  * 
  *     dot_cam: cython.double = ext_x0 * gx + ext_y0 * gy + ext_z0 * gz
  *     dist_cam_glas: cython.double = dot_cam * inv_dog - dist_o_glas - mm_d0             # <<<<<<<<<<<<<<
@@ -21331,7 +21331,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
   __pyx_v_dist_cam_glas = (((__pyx_v_dot_cam * __pyx_v_inv_dog) - __pyx_v_dist_o_glas) - __pyx_v_mm_d0);
 
-  /* "algorithms/imgcoord.py":570
+  /* "openptv2/algorithms/imgcoord.py":570
  *     dist_cam_glas: cython.double = dot_cam * inv_dog - dist_o_glas - mm_d0
  * 
  *     s_cam: cython.double = dist_cam_glas * inv_dog             # <<<<<<<<<<<<<<
@@ -21340,7 +21340,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
   __pyx_v_s_cam = (__pyx_v_dist_cam_glas * __pyx_v_inv_dog);
 
-  /* "algorithms/imgcoord.py":571
+  /* "openptv2/algorithms/imgcoord.py":571
  * 
  *     s_cam: cython.double = dist_cam_glas * inv_dog
  *     cc_x: cython.double = ext_x0 - gx * s_cam             # <<<<<<<<<<<<<<
@@ -21349,7 +21349,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
   __pyx_v_cc_x = (__pyx_v_ext_x0 - (__pyx_v_gx * __pyx_v_s_cam));
 
-  /* "algorithms/imgcoord.py":572
+  /* "openptv2/algorithms/imgcoord.py":572
  *     s_cam: cython.double = dist_cam_glas * inv_dog
  *     cc_x: cython.double = ext_x0 - gx * s_cam
  *     cc_y: cython.double = ext_y0 - gy * s_cam             # <<<<<<<<<<<<<<
@@ -21358,7 +21358,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
   __pyx_v_cc_y = (__pyx_v_ext_y0 - (__pyx_v_gy * __pyx_v_s_cam));
 
-  /* "algorithms/imgcoord.py":573
+  /* "openptv2/algorithms/imgcoord.py":573
  *     cc_x: cython.double = ext_x0 - gx * s_cam
  *     cc_y: cython.double = ext_y0 - gy * s_cam
  *     cc_z: cython.double = ext_z0 - gz * s_cam             # <<<<<<<<<<<<<<
@@ -21367,7 +21367,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
   __pyx_v_cc_z = (__pyx_v_ext_z0 - (__pyx_v_gz * __pyx_v_s_cam));
 
-  /* "algorithms/imgcoord.py":575
+  /* "openptv2/algorithms/imgcoord.py":575
  *     cc_z: cython.double = ext_z0 - gz * s_cam
  * 
  *     ext_t_z0: cython.double = dist_cam_glas + mm_d0             # <<<<<<<<<<<<<<
@@ -21376,7 +21376,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
   __pyx_v_ext_t_z0 = (__pyx_v_dist_cam_glas + __pyx_v_mm_d0);
 
-  /* "algorithms/imgcoord.py":577
+  /* "openptv2/algorithms/imgcoord.py":577
  *     ext_t_z0: cython.double = dist_cam_glas + mm_d0
  * 
  *     s_d: cython.double = mm_d0 * inv_dog             # <<<<<<<<<<<<<<
@@ -21385,7 +21385,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
   __pyx_v_s_d = (__pyx_v_mm_d0 * __pyx_v_inv_dog);
 
-  /* "algorithms/imgcoord.py":578
+  /* "openptv2/algorithms/imgcoord.py":578
  * 
  *     s_d: cython.double = mm_d0 * inv_dog
  *     ag_x: cython.double = cc_x - gx * s_d             # <<<<<<<<<<<<<<
@@ -21394,7 +21394,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
   __pyx_v_ag_x = (__pyx_v_cc_x - (__pyx_v_gx * __pyx_v_s_d));
 
-  /* "algorithms/imgcoord.py":579
+  /* "openptv2/algorithms/imgcoord.py":579
  *     s_d: cython.double = mm_d0 * inv_dog
  *     ag_x: cython.double = cc_x - gx * s_d
  *     ag_y: cython.double = cc_y - gy * s_d             # <<<<<<<<<<<<<<
@@ -21403,7 +21403,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
   __pyx_v_ag_y = (__pyx_v_cc_y - (__pyx_v_gy * __pyx_v_s_d));
 
-  /* "algorithms/imgcoord.py":580
+  /* "openptv2/algorithms/imgcoord.py":580
  *     ag_x: cython.double = cc_x - gx * s_d
  *     ag_y: cython.double = cc_y - gy * s_d
  *     ag_z: cython.double = cc_z - gz * s_d             # <<<<<<<<<<<<<<
@@ -21412,7 +21412,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
   __pyx_v_ag_z = (__pyx_v_cc_z - (__pyx_v_gz * __pyx_v_s_d));
 
-  /* "algorithms/imgcoord.py":583
+  /* "openptv2/algorithms/imgcoord.py":583
  * 
  *     # Hoist point-independent calculations from flat_to_dist
  *     sin_she: cython.double = c_sin(she)             # <<<<<<<<<<<<<<
@@ -21421,7 +21421,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
   __pyx_v_sin_she = sin(__pyx_v_she);
 
-  /* "algorithms/imgcoord.py":584
+  /* "openptv2/algorithms/imgcoord.py":584
  *     # Hoist point-independent calculations from flat_to_dist
  *     sin_she: cython.double = c_sin(she)
  *     cos_she: cython.double = c_cos(she)             # <<<<<<<<<<<<<<
@@ -21430,7 +21430,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
   __pyx_v_cos_she = cos(__pyx_v_she);
 
-  /* "algorithms/imgcoord.py":639
+  /* "openptv2/algorithms/imgcoord.py":639
  *     rq: cython.double
  * 
  *     for i in range(n):             # <<<<<<<<<<<<<<
@@ -21442,7 +21442,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
   for (__pyx_t_15 = 0; __pyx_t_15 < __pyx_t_14; __pyx_t_15+=1) {
     __pyx_v_i = __pyx_t_15;
 
-    /* "algorithms/imgcoord.py":640
+    /* "openptv2/algorithms/imgcoord.py":640
  * 
  *     for i in range(n):
  *         pos0 = positions[i, 0]             # <<<<<<<<<<<<<<
@@ -21453,7 +21453,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
     __pyx_t_17 = 0;
     __pyx_v_pos0 = (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_positions.data + __pyx_t_16 * __pyx_v_positions.strides[0]) ) + __pyx_t_17 * __pyx_v_positions.strides[1]) )));
 
-    /* "algorithms/imgcoord.py":641
+    /* "openptv2/algorithms/imgcoord.py":641
  *     for i in range(n):
  *         pos0 = positions[i, 0]
  *         pos1 = positions[i, 1]             # <<<<<<<<<<<<<<
@@ -21464,7 +21464,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
     __pyx_t_16 = 1;
     __pyx_v_pos1 = (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_positions.data + __pyx_t_17 * __pyx_v_positions.strides[0]) ) + __pyx_t_16 * __pyx_v_positions.strides[1]) )));
 
-    /* "algorithms/imgcoord.py":642
+    /* "openptv2/algorithms/imgcoord.py":642
  *         pos0 = positions[i, 0]
  *         pos1 = positions[i, 1]
  *         pos2 = positions[i, 2]             # <<<<<<<<<<<<<<
@@ -21475,7 +21475,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
     __pyx_t_17 = 2;
     __pyx_v_pos2 = (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_positions.data + __pyx_t_16 * __pyx_v_positions.strides[0]) ) + __pyx_t_17 * __pyx_v_positions.strides[1]) )));
 
-    /* "algorithms/imgcoord.py":644
+    /* "openptv2/algorithms/imgcoord.py":644
  *         pos2 = positions[i, 2]
  * 
  *         dot_pos = pos0 * gx + pos1 * gy + pos2 * gz             # <<<<<<<<<<<<<<
@@ -21484,7 +21484,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
     __pyx_v_dot_pos = (((__pyx_v_pos0 * __pyx_v_gx) + (__pyx_v_pos1 * __pyx_v_gy)) + (__pyx_v_pos2 * __pyx_v_gz));
 
-    /* "algorithms/imgcoord.py":645
+    /* "openptv2/algorithms/imgcoord.py":645
  * 
  *         dot_pos = pos0 * gx + pos1 * gy + pos2 * gz
  *         dist_point_glas = dot_pos * inv_dog - dist_o_glas             # <<<<<<<<<<<<<<
@@ -21493,7 +21493,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
     __pyx_v_dist_point_glas = ((__pyx_v_dot_pos * __pyx_v_inv_dog) - __pyx_v_dist_o_glas);
 
-    /* "algorithms/imgcoord.py":647
+    /* "openptv2/algorithms/imgcoord.py":647
  *         dist_point_glas = dot_pos * inv_dog - dist_o_glas
  * 
  *         s_pt = dist_point_glas * inv_dog             # <<<<<<<<<<<<<<
@@ -21502,7 +21502,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
     __pyx_v_s_pt = (__pyx_v_dist_point_glas * __pyx_v_inv_dog);
 
-    /* "algorithms/imgcoord.py":648
+    /* "openptv2/algorithms/imgcoord.py":648
  * 
  *         s_pt = dist_point_glas * inv_dog
  *         cp_x = pos0 - gx * s_pt             # <<<<<<<<<<<<<<
@@ -21511,7 +21511,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
     __pyx_v_cp_x = (__pyx_v_pos0 - (__pyx_v_gx * __pyx_v_s_pt));
 
-    /* "algorithms/imgcoord.py":649
+    /* "openptv2/algorithms/imgcoord.py":649
  *         s_pt = dist_point_glas * inv_dog
  *         cp_x = pos0 - gx * s_pt
  *         cp_y = pos1 - gy * s_pt             # <<<<<<<<<<<<<<
@@ -21520,7 +21520,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
     __pyx_v_cp_y = (__pyx_v_pos1 - (__pyx_v_gy * __pyx_v_s_pt));
 
-    /* "algorithms/imgcoord.py":650
+    /* "openptv2/algorithms/imgcoord.py":650
  *         cp_x = pos0 - gx * s_pt
  *         cp_y = pos1 - gy * s_pt
  *         cp_z = pos2 - gz * s_pt             # <<<<<<<<<<<<<<
@@ -21529,7 +21529,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
     __pyx_v_cp_z = (__pyx_v_pos2 - (__pyx_v_gz * __pyx_v_s_pt));
 
-    /* "algorithms/imgcoord.py":652
+    /* "openptv2/algorithms/imgcoord.py":652
  *         cp_z = pos2 - gz * s_pt
  * 
  *         tmp_x = cp_x - ag_x             # <<<<<<<<<<<<<<
@@ -21538,7 +21538,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
     __pyx_v_tmp_x = (__pyx_v_cp_x - __pyx_v_ag_x);
 
-    /* "algorithms/imgcoord.py":653
+    /* "openptv2/algorithms/imgcoord.py":653
  * 
  *         tmp_x = cp_x - ag_x
  *         tmp_y = cp_y - ag_y             # <<<<<<<<<<<<<<
@@ -21547,7 +21547,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
     __pyx_v_tmp_y = (__pyx_v_cp_y - __pyx_v_ag_y);
 
-    /* "algorithms/imgcoord.py":654
+    /* "openptv2/algorithms/imgcoord.py":654
  *         tmp_x = cp_x - ag_x
  *         tmp_y = cp_y - ag_y
  *         tmp_z = cp_z - ag_z             # <<<<<<<<<<<<<<
@@ -21556,7 +21556,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
     __pyx_v_tmp_z = (__pyx_v_cp_z - __pyx_v_ag_z);
 
-    /* "algorithms/imgcoord.py":656
+    /* "openptv2/algorithms/imgcoord.py":656
  *         tmp_z = cp_z - ag_z
  * 
  *         pos_t_0 = c_sqrt(tmp_x * tmp_x + tmp_y * tmp_y + tmp_z * tmp_z)             # <<<<<<<<<<<<<<
@@ -21565,7 +21565,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
     __pyx_v_pos_t_0 = sqrt((((__pyx_v_tmp_x * __pyx_v_tmp_x) + (__pyx_v_tmp_y * __pyx_v_tmp_y)) + (__pyx_v_tmp_z * __pyx_v_tmp_z)));
 
-    /* "algorithms/imgcoord.py":657
+    /* "openptv2/algorithms/imgcoord.py":657
  * 
  *         pos_t_0 = c_sqrt(tmp_x * tmp_x + tmp_y * tmp_y + tmp_z * tmp_z)
  *         pos_t_2 = dist_point_glas             # <<<<<<<<<<<<<<
@@ -21574,7 +21574,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
     __pyx_v_pos_t_2 = __pyx_v_dist_point_glas;
 
-    /* "algorithms/imgcoord.py":660
+    /* "openptv2/algorithms/imgcoord.py":660
  * 
  *         # === mmlut lookup ===
  *         mmf = 1.0             # <<<<<<<<<<<<<<
@@ -21583,7 +21583,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
     __pyx_v_mmf = 1.0;
 
-    /* "algorithms/imgcoord.py":661
+    /* "openptv2/algorithms/imgcoord.py":661
  *         # === mmlut lookup ===
  *         mmf = 1.0
  *         if has_mmlut:             # <<<<<<<<<<<<<<
@@ -21592,7 +21592,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
     if (__pyx_v_has_mmlut) {
 
-      /* "algorithms/imgcoord.py":665
+      /* "openptv2/algorithms/imgcoord.py":665
  *                 pos_t_0, 0.0, pos_t_2,
  *                 mmlut_origin_x, mmlut_origin_y, mmlut_origin_z,
  *                 mmlut_nr, mmlut_nz, mmlut_rw, mmlut_data,             # <<<<<<<<<<<<<<
@@ -21604,17 +21604,17 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
         __PYX_ERR(0, 665, __pyx_L1_error)
       }
 
-      /* "algorithms/imgcoord.py":662
+      /* "openptv2/algorithms/imgcoord.py":662
  *         mmf = 1.0
  *         if has_mmlut:
  *             mmf = _get_mmf_from_mmlut_core(             # <<<<<<<<<<<<<<
  *                 pos_t_0, 0.0, pos_t_2,
  *                 mmlut_origin_x, mmlut_origin_y, mmlut_origin_z,
 */
-      __pyx_t_9 = __pyx_f_10algorithms_8imgcoord__get_mmf_from_mmlut_core(__pyx_v_pos_t_0, 0.0, __pyx_v_pos_t_2, __pyx_v_mmlut_origin_x, __pyx_v_mmlut_origin_y, __pyx_v_mmlut_origin_z, __pyx_v_mmlut_nr, __pyx_v_mmlut_nz, __pyx_v_mmlut_rw, __pyx_v_mmlut_data); if (unlikely(__pyx_t_9 == ((double)-1) && PyErr_Occurred())) __PYX_ERR(0, 662, __pyx_L1_error)
+      __pyx_t_9 = __pyx_f_8openptv2_10algorithms_8imgcoord__get_mmf_from_mmlut_core(__pyx_v_pos_t_0, 0.0, __pyx_v_pos_t_2, __pyx_v_mmlut_origin_x, __pyx_v_mmlut_origin_y, __pyx_v_mmlut_origin_z, __pyx_v_mmlut_nr, __pyx_v_mmlut_nz, __pyx_v_mmlut_rw, __pyx_v_mmlut_data); if (unlikely(__pyx_t_9 == ((double)-1) && PyErr_Occurred())) __PYX_ERR(0, 662, __pyx_L1_error)
       __pyx_v_mmf = __pyx_t_9;
 
-      /* "algorithms/imgcoord.py":667
+      /* "openptv2/algorithms/imgcoord.py":667
  *                 mmlut_nr, mmlut_nz, mmlut_rw, mmlut_data,
  *             )
  *             if mmf <= 0.0:             # <<<<<<<<<<<<<<
@@ -21624,7 +21624,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
       __pyx_t_10 = (__pyx_v_mmf <= 0.0);
       if (__pyx_t_10) {
 
-        /* "algorithms/imgcoord.py":668
+        /* "openptv2/algorithms/imgcoord.py":668
  *             )
  *             if mmf <= 0.0:
  *                 mmf = 1.0             # <<<<<<<<<<<<<<
@@ -21633,7 +21633,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
         __pyx_v_mmf = 1.0;
 
-        /* "algorithms/imgcoord.py":667
+        /* "openptv2/algorithms/imgcoord.py":667
  *                 mmlut_nr, mmlut_nz, mmlut_rw, mmlut_data,
  *             )
  *             if mmf <= 0.0:             # <<<<<<<<<<<<<<
@@ -21642,7 +21642,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
       }
 
-      /* "algorithms/imgcoord.py":661
+      /* "openptv2/algorithms/imgcoord.py":661
  *         # === mmlut lookup ===
  *         mmf = 1.0
  *         if has_mmlut:             # <<<<<<<<<<<<<<
@@ -21651,7 +21651,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
     }
 
-    /* "algorithms/imgcoord.py":671
+    /* "openptv2/algorithms/imgcoord.py":671
  * 
  *         # === multimedia nlay ===
  *         radial_shift = 1.0             # <<<<<<<<<<<<<<
@@ -21660,7 +21660,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
     __pyx_v_radial_shift = 1.0;
 
-    /* "algorithms/imgcoord.py":672
+    /* "openptv2/algorithms/imgcoord.py":672
  *         # === multimedia nlay ===
  *         radial_shift = 1.0
  *         if mmf > 0.0 and mmf != 1.0:             # <<<<<<<<<<<<<<
@@ -21678,7 +21678,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
     __pyx_L11_bool_binop_done:;
     if (__pyx_t_10) {
 
-      /* "algorithms/imgcoord.py":673
+      /* "openptv2/algorithms/imgcoord.py":673
  *         radial_shift = 1.0
  *         if mmf > 0.0 and mmf != 1.0:
  *             radial_shift = mmf             # <<<<<<<<<<<<<<
@@ -21687,7 +21687,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
       __pyx_v_radial_shift = __pyx_v_mmf;
 
-      /* "algorithms/imgcoord.py":672
+      /* "openptv2/algorithms/imgcoord.py":672
  *         # === multimedia nlay ===
  *         radial_shift = 1.0
  *         if mmf > 0.0 and mmf != 1.0:             # <<<<<<<<<<<<<<
@@ -21697,7 +21697,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
       goto __pyx_L10;
     }
 
-    /* "algorithms/imgcoord.py":675
+    /* "openptv2/algorithms/imgcoord.py":675
  *             radial_shift = mmf
  *         else:
  *             if mm_n1 == 1.0 and mm_n2_0 == 1.0 and mm_n3 == 1.0:             # <<<<<<<<<<<<<<
@@ -21722,7 +21722,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
       __pyx_L14_bool_binop_done:;
       if (__pyx_t_10) {
 
-        /* "algorithms/imgcoord.py":676
+        /* "openptv2/algorithms/imgcoord.py":676
  *         else:
  *             if mm_n1 == 1.0 and mm_n2_0 == 1.0 and mm_n3 == 1.0:
  *                 radial_shift = 1.0             # <<<<<<<<<<<<<<
@@ -21731,7 +21731,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
         __pyx_v_radial_shift = 1.0;
 
-        /* "algorithms/imgcoord.py":675
+        /* "openptv2/algorithms/imgcoord.py":675
  *             radial_shift = mmf
  *         else:
  *             if mm_n1 == 1.0 and mm_n2_0 == 1.0 and mm_n3 == 1.0:             # <<<<<<<<<<<<<<
@@ -21741,7 +21741,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
         goto __pyx_L13;
       }
 
-      /* "algorithms/imgcoord.py":678
+      /* "openptv2/algorithms/imgcoord.py":678
  *                 radial_shift = 1.0
  *             else:
  *                 r_val = pos_t_0             # <<<<<<<<<<<<<<
@@ -21751,7 +21751,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
       /*else*/ {
         __pyx_v_r_val = __pyx_v_pos_t_0;
 
-        /* "algorithms/imgcoord.py":679
+        /* "openptv2/algorithms/imgcoord.py":679
  *             else:
  *                 r_val = pos_t_0
  *                 rq = r_val             # <<<<<<<<<<<<<<
@@ -21760,7 +21760,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
         __pyx_v_rq = __pyx_v_r_val;
 
-        /* "algorithms/imgcoord.py":681
+        /* "openptv2/algorithms/imgcoord.py":681
  *                 rq = r_val
  * 
  *                 for it in range(40):             # <<<<<<<<<<<<<<
@@ -21770,7 +21770,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
         for (__pyx_t_18 = 0; __pyx_t_18 < 40; __pyx_t_18+=1) {
           __pyx_v_it = __pyx_t_18;
 
-          /* "algorithms/imgcoord.py":682
+          /* "openptv2/algorithms/imgcoord.py":682
  * 
  *                 for it in range(40):
  *                     beta1 = c_atan(rq / (ext_t_z0 - pos_t_2))             # <<<<<<<<<<<<<<
@@ -21779,7 +21779,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
           __pyx_v_beta1 = atan((__pyx_v_rq / (__pyx_v_ext_t_z0 - __pyx_v_pos_t_2)));
 
-          /* "algorithms/imgcoord.py":683
+          /* "openptv2/algorithms/imgcoord.py":683
  *                 for it in range(40):
  *                     beta1 = c_atan(rq / (ext_t_z0 - pos_t_2))
  *                     sin_beta1 = c_sin(beta1)             # <<<<<<<<<<<<<<
@@ -21788,7 +21788,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
           __pyx_v_sin_beta1 = sin(__pyx_v_beta1);
 
-          /* "algorithms/imgcoord.py":685
+          /* "openptv2/algorithms/imgcoord.py":685
  *                     sin_beta1 = c_sin(beta1)
  * 
  *                     arg = sin_beta1 * mm_n1 / mm_n2_0             # <<<<<<<<<<<<<<
@@ -21797,7 +21797,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
           __pyx_v_arg = ((__pyx_v_sin_beta1 * __pyx_v_mm_n1) / __pyx_v_mm_n2_0);
 
-          /* "algorithms/imgcoord.py":686
+          /* "openptv2/algorithms/imgcoord.py":686
  * 
  *                     arg = sin_beta1 * mm_n1 / mm_n2_0
  *                     if arg > 1.0:             # <<<<<<<<<<<<<<
@@ -21807,7 +21807,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
           __pyx_t_10 = (__pyx_v_arg > 1.0);
           if (__pyx_t_10) {
 
-            /* "algorithms/imgcoord.py":687
+            /* "openptv2/algorithms/imgcoord.py":687
  *                     arg = sin_beta1 * mm_n1 / mm_n2_0
  *                     if arg > 1.0:
  *                         arg = 1.0             # <<<<<<<<<<<<<<
@@ -21816,7 +21816,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
             __pyx_v_arg = 1.0;
 
-            /* "algorithms/imgcoord.py":686
+            /* "openptv2/algorithms/imgcoord.py":686
  * 
  *                     arg = sin_beta1 * mm_n1 / mm_n2_0
  *                     if arg > 1.0:             # <<<<<<<<<<<<<<
@@ -21826,7 +21826,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
             goto __pyx_L19;
           }
 
-          /* "algorithms/imgcoord.py":688
+          /* "openptv2/algorithms/imgcoord.py":688
  *                     if arg > 1.0:
  *                         arg = 1.0
  *                     elif arg < -1.0:             # <<<<<<<<<<<<<<
@@ -21836,7 +21836,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
           __pyx_t_10 = (__pyx_v_arg < -1.0);
           if (__pyx_t_10) {
 
-            /* "algorithms/imgcoord.py":689
+            /* "openptv2/algorithms/imgcoord.py":689
  *                         arg = 1.0
  *                     elif arg < -1.0:
  *                         arg = -1.0             # <<<<<<<<<<<<<<
@@ -21845,7 +21845,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
             __pyx_v_arg = -1.0;
 
-            /* "algorithms/imgcoord.py":688
+            /* "openptv2/algorithms/imgcoord.py":688
  *                     if arg > 1.0:
  *                         arg = 1.0
  *                     elif arg < -1.0:             # <<<<<<<<<<<<<<
@@ -21855,7 +21855,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
           }
           __pyx_L19:;
 
-          /* "algorithms/imgcoord.py":690
+          /* "openptv2/algorithms/imgcoord.py":690
  *                     elif arg < -1.0:
  *                         arg = -1.0
  *                     beta2 = c_asin(arg)             # <<<<<<<<<<<<<<
@@ -21864,7 +21864,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
           __pyx_v_beta2 = asin(__pyx_v_arg);
 
-          /* "algorithms/imgcoord.py":692
+          /* "openptv2/algorithms/imgcoord.py":692
  *                     beta2 = c_asin(arg)
  * 
  *                     arg = sin_beta1 * mm_n1 / mm_n3             # <<<<<<<<<<<<<<
@@ -21873,7 +21873,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
           __pyx_v_arg = ((__pyx_v_sin_beta1 * __pyx_v_mm_n1) / __pyx_v_mm_n3);
 
-          /* "algorithms/imgcoord.py":693
+          /* "openptv2/algorithms/imgcoord.py":693
  * 
  *                     arg = sin_beta1 * mm_n1 / mm_n3
  *                     if arg > 1.0:             # <<<<<<<<<<<<<<
@@ -21883,7 +21883,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
           __pyx_t_10 = (__pyx_v_arg > 1.0);
           if (__pyx_t_10) {
 
-            /* "algorithms/imgcoord.py":694
+            /* "openptv2/algorithms/imgcoord.py":694
  *                     arg = sin_beta1 * mm_n1 / mm_n3
  *                     if arg > 1.0:
  *                         arg = 1.0             # <<<<<<<<<<<<<<
@@ -21892,7 +21892,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
             __pyx_v_arg = 1.0;
 
-            /* "algorithms/imgcoord.py":693
+            /* "openptv2/algorithms/imgcoord.py":693
  * 
  *                     arg = sin_beta1 * mm_n1 / mm_n3
  *                     if arg > 1.0:             # <<<<<<<<<<<<<<
@@ -21902,7 +21902,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
             goto __pyx_L20;
           }
 
-          /* "algorithms/imgcoord.py":695
+          /* "openptv2/algorithms/imgcoord.py":695
  *                     if arg > 1.0:
  *                         arg = 1.0
  *                     elif arg < -1.0:             # <<<<<<<<<<<<<<
@@ -21912,7 +21912,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
           __pyx_t_10 = (__pyx_v_arg < -1.0);
           if (__pyx_t_10) {
 
-            /* "algorithms/imgcoord.py":696
+            /* "openptv2/algorithms/imgcoord.py":696
  *                         arg = 1.0
  *                     elif arg < -1.0:
  *                         arg = -1.0             # <<<<<<<<<<<<<<
@@ -21921,7 +21921,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
             __pyx_v_arg = -1.0;
 
-            /* "algorithms/imgcoord.py":695
+            /* "openptv2/algorithms/imgcoord.py":695
  *                     if arg > 1.0:
  *                         arg = 1.0
  *                     elif arg < -1.0:             # <<<<<<<<<<<<<<
@@ -21931,7 +21931,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
           }
           __pyx_L20:;
 
-          /* "algorithms/imgcoord.py":697
+          /* "openptv2/algorithms/imgcoord.py":697
  *                     elif arg < -1.0:
  *                         arg = -1.0
  *                     beta3 = c_asin(arg)             # <<<<<<<<<<<<<<
@@ -21940,7 +21940,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
           __pyx_v_beta3 = asin(__pyx_v_arg);
 
-          /* "algorithms/imgcoord.py":699
+          /* "openptv2/algorithms/imgcoord.py":699
  *                     beta3 = c_asin(arg)
  * 
  *                     rbeta = (ext_t_z0 - mm_d0) * c_tan(beta1) - pos_t_2 * c_tan(beta3) + mm_d0 * c_tan(beta2)             # <<<<<<<<<<<<<<
@@ -21949,7 +21949,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
           __pyx_v_rbeta = ((((__pyx_v_ext_t_z0 - __pyx_v_mm_d0) * tan(__pyx_v_beta1)) - (__pyx_v_pos_t_2 * tan(__pyx_v_beta3))) + (__pyx_v_mm_d0 * tan(__pyx_v_beta2)));
 
-          /* "algorithms/imgcoord.py":700
+          /* "openptv2/algorithms/imgcoord.py":700
  * 
  *                     rbeta = (ext_t_z0 - mm_d0) * c_tan(beta1) - pos_t_2 * c_tan(beta3) + mm_d0 * c_tan(beta2)
  *                     rdiff = r_val - rbeta             # <<<<<<<<<<<<<<
@@ -21958,7 +21958,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
           __pyx_v_rdiff = (__pyx_v_r_val - __pyx_v_rbeta);
 
-          /* "algorithms/imgcoord.py":701
+          /* "openptv2/algorithms/imgcoord.py":701
  *                     rbeta = (ext_t_z0 - mm_d0) * c_tan(beta1) - pos_t_2 * c_tan(beta3) + mm_d0 * c_tan(beta2)
  *                     rdiff = r_val - rbeta
  *                     rq += rdiff             # <<<<<<<<<<<<<<
@@ -21967,7 +21967,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
           __pyx_v_rq = (__pyx_v_rq + __pyx_v_rdiff);
 
-          /* "algorithms/imgcoord.py":703
+          /* "openptv2/algorithms/imgcoord.py":703
  *                     rq += rdiff
  * 
  *                     if abs(rdiff) < 0.001:             # <<<<<<<<<<<<<<
@@ -21978,7 +21978,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
           __pyx_t_10 = (__pyx_t_9 < 0.001);
           if (__pyx_t_10) {
 
-            /* "algorithms/imgcoord.py":704
+            /* "openptv2/algorithms/imgcoord.py":704
  * 
  *                     if abs(rdiff) < 0.001:
  *                         break             # <<<<<<<<<<<<<<
@@ -21987,7 +21987,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
             goto __pyx_L18_break;
 
-            /* "algorithms/imgcoord.py":703
+            /* "openptv2/algorithms/imgcoord.py":703
  *                     rq += rdiff
  * 
  *                     if abs(rdiff) < 0.001:             # <<<<<<<<<<<<<<
@@ -21998,7 +21998,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
         }
         /*else*/ {
 
-          /* "algorithms/imgcoord.py":706
+          /* "openptv2/algorithms/imgcoord.py":706
  *                         break
  *                 else:
  *                     rq = r_val             # <<<<<<<<<<<<<<
@@ -22009,7 +22009,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
         }
         __pyx_L18_break:;
 
-        /* "algorithms/imgcoord.py":708
+        /* "openptv2/algorithms/imgcoord.py":708
  *                     rq = r_val
  * 
  *                 if r_val != 0.0:             # <<<<<<<<<<<<<<
@@ -22019,7 +22019,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
         __pyx_t_10 = (__pyx_v_r_val != 0.0);
         if (__pyx_t_10) {
 
-          /* "algorithms/imgcoord.py":709
+          /* "openptv2/algorithms/imgcoord.py":709
  * 
  *                 if r_val != 0.0:
  *                     radial_shift = rq / r_val             # <<<<<<<<<<<<<<
@@ -22028,7 +22028,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
           __pyx_v_radial_shift = (__pyx_v_rq / __pyx_v_r_val);
 
-          /* "algorithms/imgcoord.py":708
+          /* "openptv2/algorithms/imgcoord.py":708
  *                     rq = r_val
  * 
  *                 if r_val != 0.0:             # <<<<<<<<<<<<<<
@@ -22038,7 +22038,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
           goto __pyx_L22;
         }
 
-        /* "algorithms/imgcoord.py":711
+        /* "openptv2/algorithms/imgcoord.py":711
  *                     radial_shift = rq / r_val
  *                 else:
  *                     radial_shift = 1.0             # <<<<<<<<<<<<<<
@@ -22054,7 +22054,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
     }
     __pyx_L10:;
 
-    /* "algorithms/imgcoord.py":713
+    /* "openptv2/algorithms/imgcoord.py":713
  *                     radial_shift = 1.0
  * 
  *         X_t = pos_t_0 * radial_shift             # <<<<<<<<<<<<<<
@@ -22063,7 +22063,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
     __pyx_v_X_t = (__pyx_v_pos_t_0 * __pyx_v_radial_shift);
 
-    /* "algorithms/imgcoord.py":716
+    /* "openptv2/algorithms/imgcoord.py":716
  * 
  *         # === back_trans_point ===
  *         inv_ngl = inv_dog             # <<<<<<<<<<<<<<
@@ -22072,7 +22072,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
     __pyx_v_inv_ngl = __pyx_v_inv_dog;
 
-    /* "algorithms/imgcoord.py":717
+    /* "openptv2/algorithms/imgcoord.py":717
  *         # === back_trans_point ===
  *         inv_ngl = inv_dog
  *         n_ve = pos_t_0             # <<<<<<<<<<<<<<
@@ -22081,7 +22081,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
     __pyx_v_n_ve = __pyx_v_pos_t_0;
 
-    /* "algorithms/imgcoord.py":719
+    /* "openptv2/algorithms/imgcoord.py":719
  *         n_ve = pos_t_0
  * 
  *         s_z = -pos_t_2 * inv_ngl             # <<<<<<<<<<<<<<
@@ -22090,7 +22090,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
     __pyx_v_s_z = ((-__pyx_v_pos_t_2) * __pyx_v_inv_ngl);
 
-    /* "algorithms/imgcoord.py":720
+    /* "openptv2/algorithms/imgcoord.py":720
  * 
  *         s_z = -pos_t_2 * inv_ngl
  *         bx = ag_x - gx * s_z             # <<<<<<<<<<<<<<
@@ -22099,7 +22099,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
     __pyx_v_bx = (__pyx_v_ag_x - (__pyx_v_gx * __pyx_v_s_z));
 
-    /* "algorithms/imgcoord.py":721
+    /* "openptv2/algorithms/imgcoord.py":721
  *         s_z = -pos_t_2 * inv_ngl
  *         bx = ag_x - gx * s_z
  *         by = ag_y - gy * s_z             # <<<<<<<<<<<<<<
@@ -22108,7 +22108,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
     __pyx_v_by = (__pyx_v_ag_y - (__pyx_v_gy * __pyx_v_s_z));
 
-    /* "algorithms/imgcoord.py":722
+    /* "openptv2/algorithms/imgcoord.py":722
  *         bx = ag_x - gx * s_z
  *         by = ag_y - gy * s_z
  *         bz = ag_z - gz * s_z             # <<<<<<<<<<<<<<
@@ -22117,7 +22117,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
     __pyx_v_bz = (__pyx_v_ag_z - (__pyx_v_gz * __pyx_v_s_z));
 
-    /* "algorithms/imgcoord.py":724
+    /* "openptv2/algorithms/imgcoord.py":724
  *         bz = ag_z - gz * s_z
  * 
  *         if n_ve > 0:             # <<<<<<<<<<<<<<
@@ -22127,7 +22127,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
     __pyx_t_10 = (__pyx_v_n_ve > 0.0);
     if (__pyx_t_10) {
 
-      /* "algorithms/imgcoord.py":725
+      /* "openptv2/algorithms/imgcoord.py":725
  * 
  *         if n_ve > 0:
  *             s_x = -X_t / n_ve             # <<<<<<<<<<<<<<
@@ -22136,7 +22136,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
       __pyx_v_s_x = ((-__pyx_v_X_t) / __pyx_v_n_ve);
 
-      /* "algorithms/imgcoord.py":726
+      /* "openptv2/algorithms/imgcoord.py":726
  *         if n_ve > 0:
  *             s_x = -X_t / n_ve
  *             bx -= tmp_x * s_x             # <<<<<<<<<<<<<<
@@ -22145,7 +22145,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
       __pyx_v_bx = (__pyx_v_bx - (__pyx_v_tmp_x * __pyx_v_s_x));
 
-      /* "algorithms/imgcoord.py":727
+      /* "openptv2/algorithms/imgcoord.py":727
  *             s_x = -X_t / n_ve
  *             bx -= tmp_x * s_x
  *             by -= tmp_y * s_x             # <<<<<<<<<<<<<<
@@ -22154,7 +22154,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
       __pyx_v_by = (__pyx_v_by - (__pyx_v_tmp_y * __pyx_v_s_x));
 
-      /* "algorithms/imgcoord.py":728
+      /* "openptv2/algorithms/imgcoord.py":728
  *             bx -= tmp_x * s_x
  *             by -= tmp_y * s_x
  *             bz -= tmp_z * s_x             # <<<<<<<<<<<<<<
@@ -22163,7 +22163,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
       __pyx_v_bz = (__pyx_v_bz - (__pyx_v_tmp_z * __pyx_v_s_x));
 
-      /* "algorithms/imgcoord.py":724
+      /* "openptv2/algorithms/imgcoord.py":724
  *         bz = ag_z - gz * s_z
  * 
  *         if n_ve > 0:             # <<<<<<<<<<<<<<
@@ -22172,7 +22172,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
     }
 
-    /* "algorithms/imgcoord.py":731
+    /* "openptv2/algorithms/imgcoord.py":731
  * 
  *         # === perspective projection ===
  *         dx = bx - ext_x0             # <<<<<<<<<<<<<<
@@ -22181,7 +22181,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
     __pyx_v_dx = (__pyx_v_bx - __pyx_v_ext_x0);
 
-    /* "algorithms/imgcoord.py":732
+    /* "openptv2/algorithms/imgcoord.py":732
  *         # === perspective projection ===
  *         dx = bx - ext_x0
  *         dy = by - ext_y0             # <<<<<<<<<<<<<<
@@ -22190,7 +22190,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
     __pyx_v_dy = (__pyx_v_by - __pyx_v_ext_y0);
 
-    /* "algorithms/imgcoord.py":733
+    /* "openptv2/algorithms/imgcoord.py":733
  *         dx = bx - ext_x0
  *         dy = by - ext_y0
  *         dz = bz - ext_z0             # <<<<<<<<<<<<<<
@@ -22199,7 +22199,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
     __pyx_v_dz = (__pyx_v_bz - __pyx_v_ext_z0);
 
-    /* "algorithms/imgcoord.py":735
+    /* "openptv2/algorithms/imgcoord.py":735
  *         dz = bz - ext_z0
  * 
  *         deno = ext_dm[0, 2] * dx + ext_dm[1, 2] * dy + ext_dm[2, 2] * dz             # <<<<<<<<<<<<<<
@@ -22214,7 +22214,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
     __pyx_t_22 = 2;
     __pyx_v_deno = ((((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_ext_dm.data + __pyx_t_17 * __pyx_v_ext_dm.strides[0]) ) + __pyx_t_16 * __pyx_v_ext_dm.strides[1]) ))) * __pyx_v_dx) + ((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_ext_dm.data + __pyx_t_19 * __pyx_v_ext_dm.strides[0]) ) + __pyx_t_20 * __pyx_v_ext_dm.strides[1]) ))) * __pyx_v_dy)) + ((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_ext_dm.data + __pyx_t_21 * __pyx_v_ext_dm.strides[0]) ) + __pyx_t_22 * __pyx_v_ext_dm.strides[1]) ))) * __pyx_v_dz));
 
-    /* "algorithms/imgcoord.py":737
+    /* "openptv2/algorithms/imgcoord.py":737
  *         deno = ext_dm[0, 2] * dx + ext_dm[1, 2] * dy + ext_dm[2, 2] * dz
  * 
  *         flat_x = -int_cc * (ext_dm[0, 0] * dx + ext_dm[1, 0] * dy + ext_dm[2, 0] * dz) / deno             # <<<<<<<<<<<<<<
@@ -22229,7 +22229,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
     __pyx_t_17 = 0;
     __pyx_v_flat_x = (((-__pyx_v_int_cc) * ((((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_ext_dm.data + __pyx_t_22 * __pyx_v_ext_dm.strides[0]) ) + __pyx_t_21 * __pyx_v_ext_dm.strides[1]) ))) * __pyx_v_dx) + ((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_ext_dm.data + __pyx_t_20 * __pyx_v_ext_dm.strides[0]) ) + __pyx_t_19 * __pyx_v_ext_dm.strides[1]) ))) * __pyx_v_dy)) + ((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_ext_dm.data + __pyx_t_16 * __pyx_v_ext_dm.strides[0]) ) + __pyx_t_17 * __pyx_v_ext_dm.strides[1]) ))) * __pyx_v_dz))) / __pyx_v_deno);
 
-    /* "algorithms/imgcoord.py":738
+    /* "openptv2/algorithms/imgcoord.py":738
  * 
  *         flat_x = -int_cc * (ext_dm[0, 0] * dx + ext_dm[1, 0] * dy + ext_dm[2, 0] * dz) / deno
  *         flat_y = -int_cc * (ext_dm[0, 1] * dx + ext_dm[1, 1] * dy + ext_dm[2, 1] * dz) / deno             # <<<<<<<<<<<<<<
@@ -22244,7 +22244,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
     __pyx_t_22 = 1;
     __pyx_v_flat_y = (((-__pyx_v_int_cc) * ((((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_ext_dm.data + __pyx_t_17 * __pyx_v_ext_dm.strides[0]) ) + __pyx_t_16 * __pyx_v_ext_dm.strides[1]) ))) * __pyx_v_dx) + ((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_ext_dm.data + __pyx_t_19 * __pyx_v_ext_dm.strides[0]) ) + __pyx_t_20 * __pyx_v_ext_dm.strides[1]) ))) * __pyx_v_dy)) + ((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_ext_dm.data + __pyx_t_21 * __pyx_v_ext_dm.strides[0]) ) + __pyx_t_22 * __pyx_v_ext_dm.strides[1]) ))) * __pyx_v_dz))) / __pyx_v_deno);
 
-    /* "algorithms/imgcoord.py":741
+    /* "openptv2/algorithms/imgcoord.py":741
  * 
  *         # === flat to dist ===
  *         x_pt = flat_x + int_xh             # <<<<<<<<<<<<<<
@@ -22253,7 +22253,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
     __pyx_v_x_pt = (__pyx_v_flat_x + __pyx_v_int_xh);
 
-    /* "algorithms/imgcoord.py":742
+    /* "openptv2/algorithms/imgcoord.py":742
  *         # === flat to dist ===
  *         x_pt = flat_x + int_xh
  *         y_pt = flat_y + int_yh             # <<<<<<<<<<<<<<
@@ -22262,7 +22262,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
     __pyx_v_y_pt = (__pyx_v_flat_y + __pyx_v_int_yh);
 
-    /* "algorithms/imgcoord.py":744
+    /* "openptv2/algorithms/imgcoord.py":744
  *         y_pt = flat_y + int_yh
  * 
  *         r_pt = c_sqrt(x_pt * x_pt + y_pt * y_pt)             # <<<<<<<<<<<<<<
@@ -22271,7 +22271,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
     __pyx_v_r_pt = sqrt(((__pyx_v_x_pt * __pyx_v_x_pt) + (__pyx_v_y_pt * __pyx_v_y_pt)));
 
-    /* "algorithms/imgcoord.py":745
+    /* "openptv2/algorithms/imgcoord.py":745
  * 
  *         r_pt = c_sqrt(x_pt * x_pt + y_pt * y_pt)
  *         if r_pt < 1e-10:             # <<<<<<<<<<<<<<
@@ -22281,7 +22281,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
     __pyx_t_10 = (__pyx_v_r_pt < 1e-10);
     if (__pyx_t_10) {
 
-      /* "algorithms/imgcoord.py":746
+      /* "openptv2/algorithms/imgcoord.py":746
  *         r_pt = c_sqrt(x_pt * x_pt + y_pt * y_pt)
  *         if r_pt < 1e-10:
  *             res_mv[i, 0] = 0.0             # <<<<<<<<<<<<<<
@@ -22292,7 +22292,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
       __pyx_t_21 = 0;
       *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_res_mv.data + __pyx_t_22 * __pyx_v_res_mv.strides[0]) ) + __pyx_t_21 * __pyx_v_res_mv.strides[1]) )) = 0.0;
 
-      /* "algorithms/imgcoord.py":747
+      /* "openptv2/algorithms/imgcoord.py":747
  *         if r_pt < 1e-10:
  *             res_mv[i, 0] = 0.0
  *             res_mv[i, 1] = 0.0             # <<<<<<<<<<<<<<
@@ -22303,7 +22303,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
       __pyx_t_22 = 1;
       *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_res_mv.data + __pyx_t_21 * __pyx_v_res_mv.strides[0]) ) + __pyx_t_22 * __pyx_v_res_mv.strides[1]) )) = 0.0;
 
-      /* "algorithms/imgcoord.py":745
+      /* "openptv2/algorithms/imgcoord.py":745
  * 
  *         r_pt = c_sqrt(x_pt * x_pt + y_pt * y_pt)
  *         if r_pt < 1e-10:             # <<<<<<<<<<<<<<
@@ -22313,7 +22313,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
       goto __pyx_L24;
     }
 
-    /* "algorithms/imgcoord.py":749
+    /* "openptv2/algorithms/imgcoord.py":749
  *             res_mv[i, 1] = 0.0
  *         else:
  *             r2 = r_pt * r_pt             # <<<<<<<<<<<<<<
@@ -22323,7 +22323,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
     /*else*/ {
       __pyx_v_r2 = (__pyx_v_r_pt * __pyx_v_r_pt);
 
-      /* "algorithms/imgcoord.py":750
+      /* "openptv2/algorithms/imgcoord.py":750
  *         else:
  *             r2 = r_pt * r_pt
  *             r4 = r2 * r2             # <<<<<<<<<<<<<<
@@ -22332,7 +22332,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
       __pyx_v_r4 = (__pyx_v_r2 * __pyx_v_r2);
 
-      /* "algorithms/imgcoord.py":751
+      /* "openptv2/algorithms/imgcoord.py":751
  *             r2 = r_pt * r_pt
  *             r4 = r2 * r2
  *             r6 = r4 * r2             # <<<<<<<<<<<<<<
@@ -22341,7 +22341,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
       __pyx_v_r6 = (__pyx_v_r4 * __pyx_v_r2);
 
-      /* "algorithms/imgcoord.py":752
+      /* "openptv2/algorithms/imgcoord.py":752
  *             r4 = r2 * r2
  *             r6 = r4 * r2
  *             radial_factor = 1.0 + k1 * r2 + k2 * r4 + k3 * r6             # <<<<<<<<<<<<<<
@@ -22350,7 +22350,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
       __pyx_v_radial_factor = (((1.0 + (__pyx_v_k1 * __pyx_v_r2)) + (__pyx_v_k2 * __pyx_v_r4)) + (__pyx_v_k3 * __pyx_v_r6));
 
-      /* "algorithms/imgcoord.py":754
+      /* "openptv2/algorithms/imgcoord.py":754
  *             radial_factor = 1.0 + k1 * r2 + k2 * r4 + k3 * r6
  * 
  *             x_dist = x_pt * radial_factor + p1 * (r2 + 2.0 * x_pt * x_pt) + 2.0 * p2 * x_pt * y_pt             # <<<<<<<<<<<<<<
@@ -22359,7 +22359,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
       __pyx_v_x_dist = (((__pyx_v_x_pt * __pyx_v_radial_factor) + (__pyx_v_p1 * (__pyx_v_r2 + ((2.0 * __pyx_v_x_pt) * __pyx_v_x_pt)))) + (((2.0 * __pyx_v_p2) * __pyx_v_x_pt) * __pyx_v_y_pt));
 
-      /* "algorithms/imgcoord.py":755
+      /* "openptv2/algorithms/imgcoord.py":755
  * 
  *             x_dist = x_pt * radial_factor + p1 * (r2 + 2.0 * x_pt * x_pt) + 2.0 * p2 * x_pt * y_pt
  *             y_dist = y_pt * radial_factor + p2 * (r2 + 2.0 * y_pt * y_pt) + 2.0 * p1 * x_pt * y_pt             # <<<<<<<<<<<<<<
@@ -22368,7 +22368,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 */
       __pyx_v_y_dist = (((__pyx_v_y_pt * __pyx_v_radial_factor) + (__pyx_v_p2 * (__pyx_v_r2 + ((2.0 * __pyx_v_y_pt) * __pyx_v_y_pt)))) + (((2.0 * __pyx_v_p1) * __pyx_v_x_pt) * __pyx_v_y_pt));
 
-      /* "algorithms/imgcoord.py":757
+      /* "openptv2/algorithms/imgcoord.py":757
  *             y_dist = y_pt * radial_factor + p2 * (r2 + 2.0 * y_pt * y_pt) + 2.0 * p1 * x_pt * y_pt
  * 
  *             res_mv[i, 0] = scx * (x_dist - sin_she * y_dist)             # <<<<<<<<<<<<<<
@@ -22379,7 +22379,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
       __pyx_t_21 = 0;
       *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_res_mv.data + __pyx_t_22 * __pyx_v_res_mv.strides[0]) ) + __pyx_t_21 * __pyx_v_res_mv.strides[1]) )) = (__pyx_v_scx * (__pyx_v_x_dist - (__pyx_v_sin_she * __pyx_v_y_dist)));
 
-      /* "algorithms/imgcoord.py":758
+      /* "openptv2/algorithms/imgcoord.py":758
  * 
  *             res_mv[i, 0] = scx * (x_dist - sin_she * y_dist)
  *             res_mv[i, 1] = scx * cos_she * y_dist             # <<<<<<<<<<<<<<
@@ -22393,7 +22393,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
     __pyx_L24:;
   }
 
-  /* "algorithms/imgcoord.py":760
+  /* "openptv2/algorithms/imgcoord.py":760
  *             res_mv[i, 1] = scx * cos_she * y_dist
  * 
  *     return result             # <<<<<<<<<<<<<<
@@ -22405,7 +22405,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
   __pyx_r = __pyx_v_result;
   goto __pyx_L0;
 
-  /* "algorithms/imgcoord.py":508
+  /* "openptv2/algorithms/imgcoord.py":508
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -22423,7 +22423,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
   __Pyx_XDECREF(__pyx_t_6);
   __PYX_XCLEAR_MEMVIEW(&__pyx_t_8, 1);
   __PYX_XCLEAR_MEMVIEW(&__pyx_t_11, 1);
-  __Pyx_AddTraceback("algorithms.imgcoord._img_coord_batch_impl", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.imgcoord._img_coord_batch_impl", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_result);
@@ -22437,15 +22437,15 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__Pyx_memv
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_8imgcoord_9_img_coord_batch_impl(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_8imgcoord_9_img_coord_batch_impl(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_10algorithms_8imgcoord_9_img_coord_batch_impl = {"_img_coord_batch_impl", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_8imgcoord_9_img_coord_batch_impl, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10algorithms_8imgcoord_9_img_coord_batch_impl(PyObject *__pyx_self, 
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_8imgcoord_9_img_coord_batch_impl = {"_img_coord_batch_impl", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_8imgcoord_9_img_coord_batch_impl, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_8openptv2_10algorithms_8imgcoord_9_img_coord_batch_impl(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -22524,14 +22524,14 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
     Py_XDECREF(values[__pyx_temp]);
   }
   __PYX_XCLEAR_MEMVIEW(&__pyx_v_positions, 1);
-  __Pyx_AddTraceback("algorithms.imgcoord._img_coord_batch_impl", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.imgcoord._img_coord_batch_impl", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
   if (unlikely(((PyObject *)__pyx_v_positions.memview) == Py_None)) {
     PyErr_Format(PyExc_TypeError, "Argument '%.200s' must not be None", "positions"); __PYX_ERR(0, 511, __pyx_L1_error)
   }
-  __pyx_r = __pyx_pf_10algorithms_8imgcoord_8_img_coord_batch_impl(__pyx_self, __pyx_v_positions, __pyx_v_cal, __pyx_v_mm);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_8imgcoord_8_img_coord_batch_impl(__pyx_self, __pyx_v_positions, __pyx_v_cal, __pyx_v_mm);
 
   /* function exit code */
   goto __pyx_L0;
@@ -22551,7 +22551,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_8imgcoord_8_img_coord_batch_impl(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_positions, PyObject *__pyx_v_cal, PyObject *__pyx_v_mm) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_8imgcoord_8_img_coord_batch_impl(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_positions, PyObject *__pyx_v_cal, PyObject *__pyx_v_mm) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -22564,7 +22564,7 @@ static PyObject *__pyx_pf_10algorithms_8imgcoord_8_img_coord_batch_impl(CYTHON_U
     PyErr_SetString(PyExc_TypeError, "cannot pass None into a C function argument that is declared 'not None'");
     __PYX_ERR(0, 508, __pyx_L1_error)
   }
-  __pyx_t_1 = __pyx_f_10algorithms_8imgcoord__img_coord_batch_impl(__pyx_v_positions, __pyx_v_cal, __pyx_v_mm, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 508, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_8imgcoord__img_coord_batch_impl(__pyx_v_positions, __pyx_v_cal, __pyx_v_mm, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 508, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -22573,7 +22573,7 @@ static PyObject *__pyx_pf_10algorithms_8imgcoord_8_img_coord_batch_impl(CYTHON_U
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.imgcoord._img_coord_batch_impl", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.imgcoord._img_coord_batch_impl", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -22581,7 +22581,7 @@ static PyObject *__pyx_pf_10algorithms_8imgcoord_8_img_coord_batch_impl(CYTHON_U
   return __pyx_r;
 }
 
-/* "algorithms/imgcoord.py":763
+/* "openptv2/algorithms/imgcoord.py":763
  * 
  * 
  * def flat_image_coord_batch(positions, cal, mm):             # <<<<<<<<<<<<<<
@@ -22590,16 +22590,16 @@ static PyObject *__pyx_pf_10algorithms_8imgcoord_8_img_coord_batch_impl(CYTHON_U
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_8imgcoord_11flat_image_coord_batch(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_8imgcoord_11flat_image_coord_batch(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_8imgcoord_10flat_image_coord_batch, "Project N 3D positions to flat metric image coordinates.\n\n    Args:\n        positions: (N, 3) array of 3D positions.\n        cal: Calibration object.\n        mm: MmNp multimedia parameters.\n\n    Returns:\n        (N, 2) array of flat (undistorted) metric coordinates.\n    ");
-static PyMethodDef __pyx_mdef_10algorithms_8imgcoord_11flat_image_coord_batch = {"flat_image_coord_batch", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_8imgcoord_11flat_image_coord_batch, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_8imgcoord_10flat_image_coord_batch};
-static PyObject *__pyx_pw_10algorithms_8imgcoord_11flat_image_coord_batch(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_8imgcoord_10flat_image_coord_batch, "Project N 3D positions to flat metric image coordinates.\n\n    Args:\n        positions: (N, 3) array of 3D positions.\n        cal: Calibration object.\n        mm: MmNp multimedia parameters.\n\n    Returns:\n        (N, 2) array of flat (undistorted) metric coordinates.\n    ");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_8imgcoord_11flat_image_coord_batch = {"flat_image_coord_batch", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_8imgcoord_11flat_image_coord_batch, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_8imgcoord_10flat_image_coord_batch};
+static PyObject *__pyx_pw_8openptv2_10algorithms_8imgcoord_11flat_image_coord_batch(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -22677,11 +22677,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.imgcoord.flat_image_coord_batch", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.imgcoord.flat_image_coord_batch", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_8imgcoord_10flat_image_coord_batch(__pyx_self, __pyx_v_positions, __pyx_v_cal, __pyx_v_mm);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_8imgcoord_10flat_image_coord_batch(__pyx_self, __pyx_v_positions, __pyx_v_cal, __pyx_v_mm);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -22691,7 +22691,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_8imgcoord_10flat_image_coord_batch(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_positions, PyObject *__pyx_v_cal, PyObject *__pyx_v_mm) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_8imgcoord_10flat_image_coord_batch(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_positions, PyObject *__pyx_v_cal, PyObject *__pyx_v_mm) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -22707,7 +22707,7 @@ static PyObject *__pyx_pf_10algorithms_8imgcoord_10flat_image_coord_batch(CYTHON
   __Pyx_RefNannySetupContext("flat_image_coord_batch", 0);
   __Pyx_INCREF(__pyx_v_positions);
 
-  /* "algorithms/imgcoord.py":774
+  /* "openptv2/algorithms/imgcoord.py":774
  *         (N, 2) array of flat (undistorted) metric coordinates.
  *     """
  *     positions = np.ascontiguousarray(positions, dtype=np.float64)             # <<<<<<<<<<<<<<
@@ -22753,7 +22753,7 @@ static PyObject *__pyx_pf_10algorithms_8imgcoord_10flat_image_coord_batch(CYTHON
   __Pyx_DECREF_SET(__pyx_v_positions, __pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "algorithms/imgcoord.py":775
+  /* "openptv2/algorithms/imgcoord.py":775
  *     """
  *     positions = np.ascontiguousarray(positions, dtype=np.float64)
  *     return _flat_image_coord_batch_impl(positions, cal, mm)             # <<<<<<<<<<<<<<
@@ -22766,7 +22766,7 @@ static PyObject *__pyx_pf_10algorithms_8imgcoord_10flat_image_coord_batch(CYTHON
     PyErr_SetString(PyExc_TypeError, "cannot pass None into a C function argument that is declared 'not None'");
     __PYX_ERR(0, 775, __pyx_L1_error)
   }
-  __pyx_t_1 = __pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__pyx_t_7, __pyx_v_cal, __pyx_v_mm, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 775, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_8imgcoord__flat_image_coord_batch_impl(__pyx_t_7, __pyx_v_cal, __pyx_v_mm, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 775, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __PYX_XCLEAR_MEMVIEW(&__pyx_t_7, 1);
   __pyx_t_7.memview = NULL; __pyx_t_7.data = NULL;
@@ -22774,7 +22774,7 @@ static PyObject *__pyx_pf_10algorithms_8imgcoord_10flat_image_coord_batch(CYTHON
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/imgcoord.py":763
+  /* "openptv2/algorithms/imgcoord.py":763
  * 
  * 
  * def flat_image_coord_batch(positions, cal, mm):             # <<<<<<<<<<<<<<
@@ -22790,7 +22790,7 @@ static PyObject *__pyx_pf_10algorithms_8imgcoord_10flat_image_coord_batch(CYTHON
   __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_5);
   __PYX_XCLEAR_MEMVIEW(&__pyx_t_7, 1);
-  __Pyx_AddTraceback("algorithms.imgcoord.flat_image_coord_batch", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.imgcoord.flat_image_coord_batch", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_positions);
@@ -22799,7 +22799,7 @@ static PyObject *__pyx_pf_10algorithms_8imgcoord_10flat_image_coord_batch(CYTHON
   return __pyx_r;
 }
 
-/* "algorithms/imgcoord.py":778
+/* "openptv2/algorithms/imgcoord.py":778
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -22807,14 +22807,14 @@ static PyObject *__pyx_pf_10algorithms_8imgcoord_10flat_image_coord_batch(CYTHON
  * @cython.wraparound(False)
 */
 
-static PyObject *__pyx_pw_10algorithms_8imgcoord_13_flat_image_coord_batch_impl(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_8imgcoord_13_flat_image_coord_batch_impl(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__Pyx_memviewslice __pyx_v_positions, PyObject *__pyx_v_cal, PyObject *__pyx_v_mm, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_8imgcoord__flat_image_coord_batch_impl(__Pyx_memviewslice __pyx_v_positions, PyObject *__pyx_v_cal, PyObject *__pyx_v_mm, CYTHON_UNUSED int __pyx_skip_dispatch) {
   int __pyx_v_n;
   PyObject *__pyx_v_result = NULL;
   __Pyx_memviewslice __pyx_v_res_mv = { 0, 0, { 0 }, { 0 }, { 0 } };
@@ -22925,7 +22925,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("_flat_image_coord_batch_impl", 0);
 
-  /* "algorithms/imgcoord.py":782
+  /* "openptv2/algorithms/imgcoord.py":782
  * @cython.wraparound(False)
  * def _flat_image_coord_batch_impl(positions: cython.double[:, :], cal, mm) -> np.ndarray:
  *     n: cython.int = positions.shape[0]             # <<<<<<<<<<<<<<
@@ -22934,7 +22934,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
   __pyx_v_n = (__pyx_v_positions.shape[0]);
 
-  /* "algorithms/imgcoord.py":783
+  /* "openptv2/algorithms/imgcoord.py":783
  * def _flat_image_coord_batch_impl(positions: cython.double[:, :], cal, mm) -> np.ndarray:
  *     n: cython.int = positions.shape[0]
  *     result = np.empty((n, 2), dtype=np.float64)             # <<<<<<<<<<<<<<
@@ -22991,7 +22991,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
   __pyx_v_result = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/imgcoord.py":784
+  /* "openptv2/algorithms/imgcoord.py":784
  *     n: cython.int = positions.shape[0]
  *     result = np.empty((n, 2), dtype=np.float64)
  *     res_mv: cython.double[:, :] = result             # <<<<<<<<<<<<<<
@@ -23003,7 +23003,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
   __pyx_t_8.memview = NULL;
   __pyx_t_8.data = NULL;
 
-  /* "algorithms/imgcoord.py":787
+  /* "openptv2/algorithms/imgcoord.py":787
  * 
  *     # Extract params once
  *     ext_x0: cython.double = cal.ext_par.x0             # <<<<<<<<<<<<<<
@@ -23019,7 +23019,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __pyx_v_ext_x0 = __pyx_t_9;
 
-  /* "algorithms/imgcoord.py":788
+  /* "openptv2/algorithms/imgcoord.py":788
  *     # Extract params once
  *     ext_x0: cython.double = cal.ext_par.x0
  *     ext_y0: cython.double = cal.ext_par.y0             # <<<<<<<<<<<<<<
@@ -23035,7 +23035,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_ext_y0 = __pyx_t_9;
 
-  /* "algorithms/imgcoord.py":789
+  /* "openptv2/algorithms/imgcoord.py":789
  *     ext_x0: cython.double = cal.ext_par.x0
  *     ext_y0: cython.double = cal.ext_par.y0
  *     ext_z0: cython.double = cal.ext_par.z0             # <<<<<<<<<<<<<<
@@ -23051,7 +23051,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __pyx_v_ext_z0 = __pyx_t_9;
 
-  /* "algorithms/imgcoord.py":790
+  /* "openptv2/algorithms/imgcoord.py":790
  *     ext_y0: cython.double = cal.ext_par.y0
  *     ext_z0: cython.double = cal.ext_par.z0
  *     ext_dm: cython.double[:, :] = cal.ext_par.dm             # <<<<<<<<<<<<<<
@@ -23069,7 +23069,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
   __pyx_t_8.memview = NULL;
   __pyx_t_8.data = NULL;
 
-  /* "algorithms/imgcoord.py":791
+  /* "openptv2/algorithms/imgcoord.py":791
  *     ext_z0: cython.double = cal.ext_par.z0
  *     ext_dm: cython.double[:, :] = cal.ext_par.dm
  *     int_cc: cython.double = cal.int_par.cc             # <<<<<<<<<<<<<<
@@ -23085,7 +23085,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __pyx_v_int_cc = __pyx_t_9;
 
-  /* "algorithms/imgcoord.py":792
+  /* "openptv2/algorithms/imgcoord.py":792
  *     ext_dm: cython.double[:, :] = cal.ext_par.dm
  *     int_cc: cython.double = cal.int_par.cc
  *     glass_vec_x: cython.double = cal.glass_par.vec_x             # <<<<<<<<<<<<<<
@@ -23101,7 +23101,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_glass_vec_x = __pyx_t_9;
 
-  /* "algorithms/imgcoord.py":793
+  /* "openptv2/algorithms/imgcoord.py":793
  *     int_cc: cython.double = cal.int_par.cc
  *     glass_vec_x: cython.double = cal.glass_par.vec_x
  *     glass_vec_y: cython.double = cal.glass_par.vec_y             # <<<<<<<<<<<<<<
@@ -23117,7 +23117,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __pyx_v_glass_vec_y = __pyx_t_9;
 
-  /* "algorithms/imgcoord.py":794
+  /* "openptv2/algorithms/imgcoord.py":794
  *     glass_vec_x: cython.double = cal.glass_par.vec_x
  *     glass_vec_y: cython.double = cal.glass_par.vec_y
  *     glass_vec_z: cython.double = cal.glass_par.vec_z             # <<<<<<<<<<<<<<
@@ -23133,7 +23133,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_glass_vec_z = __pyx_t_9;
 
-  /* "algorithms/imgcoord.py":795
+  /* "openptv2/algorithms/imgcoord.py":795
  *     glass_vec_y: cython.double = cal.glass_par.vec_y
  *     glass_vec_z: cython.double = cal.glass_par.vec_z
  *     mm_n1: cython.double = mm.n1             # <<<<<<<<<<<<<<
@@ -23146,7 +23146,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_mm_n1 = __pyx_t_9;
 
-  /* "algorithms/imgcoord.py":796
+  /* "openptv2/algorithms/imgcoord.py":796
  *     glass_vec_z: cython.double = cal.glass_par.vec_z
  *     mm_n1: cython.double = mm.n1
  *     mm_n2_0: cython.double = mm.n2[0]             # <<<<<<<<<<<<<<
@@ -23162,7 +23162,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __pyx_v_mm_n2_0 = __pyx_t_9;
 
-  /* "algorithms/imgcoord.py":797
+  /* "openptv2/algorithms/imgcoord.py":797
  *     mm_n1: cython.double = mm.n1
  *     mm_n2_0: cython.double = mm.n2[0]
  *     mm_n3: cython.double = mm.n3             # <<<<<<<<<<<<<<
@@ -23175,7 +23175,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __pyx_v_mm_n3 = __pyx_t_9;
 
-  /* "algorithms/imgcoord.py":798
+  /* "openptv2/algorithms/imgcoord.py":798
  *     mm_n2_0: cython.double = mm.n2[0]
  *     mm_n3: cython.double = mm.n3
  *     mm_d0: cython.double = mm.d[0]             # <<<<<<<<<<<<<<
@@ -23191,7 +23191,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_mm_d0 = __pyx_t_9;
 
-  /* "algorithms/imgcoord.py":799
+  /* "openptv2/algorithms/imgcoord.py":799
  *     mm_n3: cython.double = mm.n3
  *     mm_d0: cython.double = mm.d[0]
  *     mmlut = cal.mmlut if cal.mmlut.is_initialized else None             # <<<<<<<<<<<<<<
@@ -23217,7 +23217,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
   __pyx_v_mmlut = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/imgcoord.py":801
+  /* "openptv2/algorithms/imgcoord.py":801
  *     mmlut = cal.mmlut if cal.mmlut.is_initialized else None
  * 
  *     has_mmlut: cython.bint = False             # <<<<<<<<<<<<<<
@@ -23226,7 +23226,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
   __pyx_v_has_mmlut = 0;
 
-  /* "algorithms/imgcoord.py":802
+  /* "openptv2/algorithms/imgcoord.py":802
  * 
  *     has_mmlut: cython.bint = False
  *     mmlut_origin_x: cython.double = 0.0             # <<<<<<<<<<<<<<
@@ -23235,7 +23235,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
   __pyx_v_mmlut_origin_x = 0.0;
 
-  /* "algorithms/imgcoord.py":803
+  /* "openptv2/algorithms/imgcoord.py":803
  *     has_mmlut: cython.bint = False
  *     mmlut_origin_x: cython.double = 0.0
  *     mmlut_origin_y: cython.double = 0.0             # <<<<<<<<<<<<<<
@@ -23244,7 +23244,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
   __pyx_v_mmlut_origin_y = 0.0;
 
-  /* "algorithms/imgcoord.py":804
+  /* "openptv2/algorithms/imgcoord.py":804
  *     mmlut_origin_x: cython.double = 0.0
  *     mmlut_origin_y: cython.double = 0.0
  *     mmlut_origin_z: cython.double = 0.0             # <<<<<<<<<<<<<<
@@ -23253,7 +23253,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
   __pyx_v_mmlut_origin_z = 0.0;
 
-  /* "algorithms/imgcoord.py":805
+  /* "openptv2/algorithms/imgcoord.py":805
  *     mmlut_origin_y: cython.double = 0.0
  *     mmlut_origin_z: cython.double = 0.0
  *     mmlut_nr: cython.int = 0             # <<<<<<<<<<<<<<
@@ -23262,7 +23262,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
   __pyx_v_mmlut_nr = 0;
 
-  /* "algorithms/imgcoord.py":806
+  /* "openptv2/algorithms/imgcoord.py":806
  *     mmlut_origin_z: cython.double = 0.0
  *     mmlut_nr: cython.int = 0
  *     mmlut_nz: cython.int = 0             # <<<<<<<<<<<<<<
@@ -23271,7 +23271,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
   __pyx_v_mmlut_nz = 0;
 
-  /* "algorithms/imgcoord.py":807
+  /* "openptv2/algorithms/imgcoord.py":807
  *     mmlut_nr: cython.int = 0
  *     mmlut_nz: cython.int = 0
  *     mmlut_rw: cython.double = 0.0             # <<<<<<<<<<<<<<
@@ -23280,7 +23280,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
   __pyx_v_mmlut_rw = 0.0;
 
-  /* "algorithms/imgcoord.py":808
+  /* "openptv2/algorithms/imgcoord.py":808
  *     mmlut_nz: cython.int = 0
  *     mmlut_rw: cython.double = 0.0
  *     mmlut_data: cython.double[:] = _DUMMY_MMLUT_DATA             # <<<<<<<<<<<<<<
@@ -23295,7 +23295,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
   __pyx_t_11.memview = NULL;
   __pyx_t_11.data = NULL;
 
-  /* "algorithms/imgcoord.py":810
+  /* "openptv2/algorithms/imgcoord.py":810
  *     mmlut_data: cython.double[:] = _DUMMY_MMLUT_DATA
  * 
  *     if mmlut is not None and mmlut.data is not None:             # <<<<<<<<<<<<<<
@@ -23316,7 +23316,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
   __pyx_L4_bool_binop_done:;
   if (__pyx_t_10) {
 
-    /* "algorithms/imgcoord.py":811
+    /* "openptv2/algorithms/imgcoord.py":811
  * 
  *     if mmlut is not None and mmlut.data is not None:
  *         has_mmlut = True             # <<<<<<<<<<<<<<
@@ -23325,7 +23325,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
     __pyx_v_has_mmlut = 1;
 
-    /* "algorithms/imgcoord.py":812
+    /* "openptv2/algorithms/imgcoord.py":812
  *     if mmlut is not None and mmlut.data is not None:
  *         has_mmlut = True
  *         mmlut_origin_x = mmlut.origin[0]             # <<<<<<<<<<<<<<
@@ -23341,7 +23341,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __pyx_v_mmlut_origin_x = __pyx_t_9;
 
-    /* "algorithms/imgcoord.py":813
+    /* "openptv2/algorithms/imgcoord.py":813
  *         has_mmlut = True
  *         mmlut_origin_x = mmlut.origin[0]
  *         mmlut_origin_y = mmlut.origin[1]             # <<<<<<<<<<<<<<
@@ -23357,7 +23357,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __pyx_v_mmlut_origin_y = __pyx_t_9;
 
-    /* "algorithms/imgcoord.py":814
+    /* "openptv2/algorithms/imgcoord.py":814
  *         mmlut_origin_x = mmlut.origin[0]
  *         mmlut_origin_y = mmlut.origin[1]
  *         mmlut_origin_z = mmlut.origin[2]             # <<<<<<<<<<<<<<
@@ -23373,7 +23373,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __pyx_v_mmlut_origin_z = __pyx_t_9;
 
-    /* "algorithms/imgcoord.py":815
+    /* "openptv2/algorithms/imgcoord.py":815
  *         mmlut_origin_y = mmlut.origin[1]
  *         mmlut_origin_z = mmlut.origin[2]
  *         mmlut_nr = mmlut.nr             # <<<<<<<<<<<<<<
@@ -23386,7 +23386,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __pyx_v_mmlut_nr = __pyx_t_13;
 
-    /* "algorithms/imgcoord.py":816
+    /* "openptv2/algorithms/imgcoord.py":816
  *         mmlut_origin_z = mmlut.origin[2]
  *         mmlut_nr = mmlut.nr
  *         mmlut_nz = mmlut.nz             # <<<<<<<<<<<<<<
@@ -23399,7 +23399,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __pyx_v_mmlut_nz = __pyx_t_13;
 
-    /* "algorithms/imgcoord.py":817
+    /* "openptv2/algorithms/imgcoord.py":817
  *         mmlut_nr = mmlut.nr
  *         mmlut_nz = mmlut.nz
  *         mmlut_rw = mmlut.rw             # <<<<<<<<<<<<<<
@@ -23412,7 +23412,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __pyx_v_mmlut_rw = __pyx_t_9;
 
-    /* "algorithms/imgcoord.py":818
+    /* "openptv2/algorithms/imgcoord.py":818
  *         mmlut_nz = mmlut.nz
  *         mmlut_rw = mmlut.rw
  *         mmlut_data = mmlut.data             # <<<<<<<<<<<<<<
@@ -23428,7 +23428,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
     __pyx_t_11.memview = NULL;
     __pyx_t_11.data = NULL;
 
-    /* "algorithms/imgcoord.py":810
+    /* "openptv2/algorithms/imgcoord.py":810
  *     mmlut_data: cython.double[:] = _DUMMY_MMLUT_DATA
  * 
  *     if mmlut is not None and mmlut.data is not None:             # <<<<<<<<<<<<<<
@@ -23437,7 +23437,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
   }
 
-  /* "algorithms/imgcoord.py":821
+  /* "openptv2/algorithms/imgcoord.py":821
  * 
  *     # Hoist point-independent calculations from flat_image_coord
  *     gx: cython.double = glass_vec_x             # <<<<<<<<<<<<<<
@@ -23446,7 +23446,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
   __pyx_v_gx = __pyx_v_glass_vec_x;
 
-  /* "algorithms/imgcoord.py":822
+  /* "openptv2/algorithms/imgcoord.py":822
  *     # Hoist point-independent calculations from flat_image_coord
  *     gx: cython.double = glass_vec_x
  *     gy: cython.double = glass_vec_y             # <<<<<<<<<<<<<<
@@ -23455,7 +23455,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
   __pyx_v_gy = __pyx_v_glass_vec_y;
 
-  /* "algorithms/imgcoord.py":823
+  /* "openptv2/algorithms/imgcoord.py":823
  *     gx: cython.double = glass_vec_x
  *     gy: cython.double = glass_vec_y
  *     gz: cython.double = glass_vec_z             # <<<<<<<<<<<<<<
@@ -23464,7 +23464,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
   __pyx_v_gz = __pyx_v_glass_vec_z;
 
-  /* "algorithms/imgcoord.py":825
+  /* "openptv2/algorithms/imgcoord.py":825
  *     gz: cython.double = glass_vec_z
  * 
  *     dist_o_glas: cython.double = c_sqrt(gx * gx + gy * gy + gz * gz)             # <<<<<<<<<<<<<<
@@ -23473,7 +23473,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
   __pyx_v_dist_o_glas = sqrt((((__pyx_v_gx * __pyx_v_gx) + (__pyx_v_gy * __pyx_v_gy)) + (__pyx_v_gz * __pyx_v_gz)));
 
-  /* "algorithms/imgcoord.py":826
+  /* "openptv2/algorithms/imgcoord.py":826
  * 
  *     dist_o_glas: cython.double = c_sqrt(gx * gx + gy * gy + gz * gz)
  *     inv_dog: cython.double = 1.0 / dist_o_glas             # <<<<<<<<<<<<<<
@@ -23482,7 +23482,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
   __pyx_v_inv_dog = (1.0 / __pyx_v_dist_o_glas);
 
-  /* "algorithms/imgcoord.py":828
+  /* "openptv2/algorithms/imgcoord.py":828
  *     inv_dog: cython.double = 1.0 / dist_o_glas
  * 
  *     dot_cam: cython.double = ext_x0 * gx + ext_y0 * gy + ext_z0 * gz             # <<<<<<<<<<<<<<
@@ -23491,7 +23491,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
   __pyx_v_dot_cam = (((__pyx_v_ext_x0 * __pyx_v_gx) + (__pyx_v_ext_y0 * __pyx_v_gy)) + (__pyx_v_ext_z0 * __pyx_v_gz));
 
-  /* "algorithms/imgcoord.py":829
+  /* "openptv2/algorithms/imgcoord.py":829
  * 
  *     dot_cam: cython.double = ext_x0 * gx + ext_y0 * gy + ext_z0 * gz
  *     dist_cam_glas: cython.double = dot_cam * inv_dog - dist_o_glas - mm_d0             # <<<<<<<<<<<<<<
@@ -23500,7 +23500,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
   __pyx_v_dist_cam_glas = (((__pyx_v_dot_cam * __pyx_v_inv_dog) - __pyx_v_dist_o_glas) - __pyx_v_mm_d0);
 
-  /* "algorithms/imgcoord.py":831
+  /* "openptv2/algorithms/imgcoord.py":831
  *     dist_cam_glas: cython.double = dot_cam * inv_dog - dist_o_glas - mm_d0
  * 
  *     s_cam: cython.double = dist_cam_glas * inv_dog             # <<<<<<<<<<<<<<
@@ -23509,7 +23509,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
   __pyx_v_s_cam = (__pyx_v_dist_cam_glas * __pyx_v_inv_dog);
 
-  /* "algorithms/imgcoord.py":832
+  /* "openptv2/algorithms/imgcoord.py":832
  * 
  *     s_cam: cython.double = dist_cam_glas * inv_dog
  *     cc_x: cython.double = ext_x0 - gx * s_cam             # <<<<<<<<<<<<<<
@@ -23518,7 +23518,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
   __pyx_v_cc_x = (__pyx_v_ext_x0 - (__pyx_v_gx * __pyx_v_s_cam));
 
-  /* "algorithms/imgcoord.py":833
+  /* "openptv2/algorithms/imgcoord.py":833
  *     s_cam: cython.double = dist_cam_glas * inv_dog
  *     cc_x: cython.double = ext_x0 - gx * s_cam
  *     cc_y: cython.double = ext_y0 - gy * s_cam             # <<<<<<<<<<<<<<
@@ -23527,7 +23527,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
   __pyx_v_cc_y = (__pyx_v_ext_y0 - (__pyx_v_gy * __pyx_v_s_cam));
 
-  /* "algorithms/imgcoord.py":834
+  /* "openptv2/algorithms/imgcoord.py":834
  *     cc_x: cython.double = ext_x0 - gx * s_cam
  *     cc_y: cython.double = ext_y0 - gy * s_cam
  *     cc_z: cython.double = ext_z0 - gz * s_cam             # <<<<<<<<<<<<<<
@@ -23536,7 +23536,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
   __pyx_v_cc_z = (__pyx_v_ext_z0 - (__pyx_v_gz * __pyx_v_s_cam));
 
-  /* "algorithms/imgcoord.py":836
+  /* "openptv2/algorithms/imgcoord.py":836
  *     cc_z: cython.double = ext_z0 - gz * s_cam
  * 
  *     ext_t_z0: cython.double = dist_cam_glas + mm_d0             # <<<<<<<<<<<<<<
@@ -23545,7 +23545,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
   __pyx_v_ext_t_z0 = (__pyx_v_dist_cam_glas + __pyx_v_mm_d0);
 
-  /* "algorithms/imgcoord.py":838
+  /* "openptv2/algorithms/imgcoord.py":838
  *     ext_t_z0: cython.double = dist_cam_glas + mm_d0
  * 
  *     s_d: cython.double = mm_d0 * inv_dog             # <<<<<<<<<<<<<<
@@ -23554,7 +23554,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
   __pyx_v_s_d = (__pyx_v_mm_d0 * __pyx_v_inv_dog);
 
-  /* "algorithms/imgcoord.py":839
+  /* "openptv2/algorithms/imgcoord.py":839
  * 
  *     s_d: cython.double = mm_d0 * inv_dog
  *     ag_x: cython.double = cc_x - gx * s_d             # <<<<<<<<<<<<<<
@@ -23563,7 +23563,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
   __pyx_v_ag_x = (__pyx_v_cc_x - (__pyx_v_gx * __pyx_v_s_d));
 
-  /* "algorithms/imgcoord.py":840
+  /* "openptv2/algorithms/imgcoord.py":840
  *     s_d: cython.double = mm_d0 * inv_dog
  *     ag_x: cython.double = cc_x - gx * s_d
  *     ag_y: cython.double = cc_y - gy * s_d             # <<<<<<<<<<<<<<
@@ -23572,7 +23572,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
   __pyx_v_ag_y = (__pyx_v_cc_y - (__pyx_v_gy * __pyx_v_s_d));
 
-  /* "algorithms/imgcoord.py":841
+  /* "openptv2/algorithms/imgcoord.py":841
  *     ag_x: cython.double = cc_x - gx * s_d
  *     ag_y: cython.double = cc_y - gy * s_d
  *     ag_z: cython.double = cc_z - gz * s_d             # <<<<<<<<<<<<<<
@@ -23581,7 +23581,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
   __pyx_v_ag_z = (__pyx_v_cc_z - (__pyx_v_gz * __pyx_v_s_d));
 
-  /* "algorithms/imgcoord.py":884
+  /* "openptv2/algorithms/imgcoord.py":884
  *     rq: cython.double
  * 
  *     for i in range(n):             # <<<<<<<<<<<<<<
@@ -23593,7 +23593,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
   for (__pyx_t_15 = 0; __pyx_t_15 < __pyx_t_14; __pyx_t_15+=1) {
     __pyx_v_i = __pyx_t_15;
 
-    /* "algorithms/imgcoord.py":885
+    /* "openptv2/algorithms/imgcoord.py":885
  * 
  *     for i in range(n):
  *         pos0 = positions[i, 0]             # <<<<<<<<<<<<<<
@@ -23604,7 +23604,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
     __pyx_t_17 = 0;
     __pyx_v_pos0 = (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_positions.data + __pyx_t_16 * __pyx_v_positions.strides[0]) ) + __pyx_t_17 * __pyx_v_positions.strides[1]) )));
 
-    /* "algorithms/imgcoord.py":886
+    /* "openptv2/algorithms/imgcoord.py":886
  *     for i in range(n):
  *         pos0 = positions[i, 0]
  *         pos1 = positions[i, 1]             # <<<<<<<<<<<<<<
@@ -23615,7 +23615,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
     __pyx_t_16 = 1;
     __pyx_v_pos1 = (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_positions.data + __pyx_t_17 * __pyx_v_positions.strides[0]) ) + __pyx_t_16 * __pyx_v_positions.strides[1]) )));
 
-    /* "algorithms/imgcoord.py":887
+    /* "openptv2/algorithms/imgcoord.py":887
  *         pos0 = positions[i, 0]
  *         pos1 = positions[i, 1]
  *         pos2 = positions[i, 2]             # <<<<<<<<<<<<<<
@@ -23626,7 +23626,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
     __pyx_t_17 = 2;
     __pyx_v_pos2 = (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_positions.data + __pyx_t_16 * __pyx_v_positions.strides[0]) ) + __pyx_t_17 * __pyx_v_positions.strides[1]) )));
 
-    /* "algorithms/imgcoord.py":889
+    /* "openptv2/algorithms/imgcoord.py":889
  *         pos2 = positions[i, 2]
  * 
  *         dot_pos = pos0 * gx + pos1 * gy + pos2 * gz             # <<<<<<<<<<<<<<
@@ -23635,7 +23635,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
     __pyx_v_dot_pos = (((__pyx_v_pos0 * __pyx_v_gx) + (__pyx_v_pos1 * __pyx_v_gy)) + (__pyx_v_pos2 * __pyx_v_gz));
 
-    /* "algorithms/imgcoord.py":890
+    /* "openptv2/algorithms/imgcoord.py":890
  * 
  *         dot_pos = pos0 * gx + pos1 * gy + pos2 * gz
  *         dist_point_glas = dot_pos * inv_dog - dist_o_glas             # <<<<<<<<<<<<<<
@@ -23644,7 +23644,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
     __pyx_v_dist_point_glas = ((__pyx_v_dot_pos * __pyx_v_inv_dog) - __pyx_v_dist_o_glas);
 
-    /* "algorithms/imgcoord.py":892
+    /* "openptv2/algorithms/imgcoord.py":892
  *         dist_point_glas = dot_pos * inv_dog - dist_o_glas
  * 
  *         s_pt = dist_point_glas * inv_dog             # <<<<<<<<<<<<<<
@@ -23653,7 +23653,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
     __pyx_v_s_pt = (__pyx_v_dist_point_glas * __pyx_v_inv_dog);
 
-    /* "algorithms/imgcoord.py":893
+    /* "openptv2/algorithms/imgcoord.py":893
  * 
  *         s_pt = dist_point_glas * inv_dog
  *         cp_x = pos0 - gx * s_pt             # <<<<<<<<<<<<<<
@@ -23662,7 +23662,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
     __pyx_v_cp_x = (__pyx_v_pos0 - (__pyx_v_gx * __pyx_v_s_pt));
 
-    /* "algorithms/imgcoord.py":894
+    /* "openptv2/algorithms/imgcoord.py":894
  *         s_pt = dist_point_glas * inv_dog
  *         cp_x = pos0 - gx * s_pt
  *         cp_y = pos1 - gy * s_pt             # <<<<<<<<<<<<<<
@@ -23671,7 +23671,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
     __pyx_v_cp_y = (__pyx_v_pos1 - (__pyx_v_gy * __pyx_v_s_pt));
 
-    /* "algorithms/imgcoord.py":895
+    /* "openptv2/algorithms/imgcoord.py":895
  *         cp_x = pos0 - gx * s_pt
  *         cp_y = pos1 - gy * s_pt
  *         cp_z = pos2 - gz * s_pt             # <<<<<<<<<<<<<<
@@ -23680,7 +23680,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
     __pyx_v_cp_z = (__pyx_v_pos2 - (__pyx_v_gz * __pyx_v_s_pt));
 
-    /* "algorithms/imgcoord.py":897
+    /* "openptv2/algorithms/imgcoord.py":897
  *         cp_z = pos2 - gz * s_pt
  * 
  *         tmp_x = cp_x - ag_x             # <<<<<<<<<<<<<<
@@ -23689,7 +23689,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
     __pyx_v_tmp_x = (__pyx_v_cp_x - __pyx_v_ag_x);
 
-    /* "algorithms/imgcoord.py":898
+    /* "openptv2/algorithms/imgcoord.py":898
  * 
  *         tmp_x = cp_x - ag_x
  *         tmp_y = cp_y - ag_y             # <<<<<<<<<<<<<<
@@ -23698,7 +23698,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
     __pyx_v_tmp_y = (__pyx_v_cp_y - __pyx_v_ag_y);
 
-    /* "algorithms/imgcoord.py":899
+    /* "openptv2/algorithms/imgcoord.py":899
  *         tmp_x = cp_x - ag_x
  *         tmp_y = cp_y - ag_y
  *         tmp_z = cp_z - ag_z             # <<<<<<<<<<<<<<
@@ -23707,7 +23707,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
     __pyx_v_tmp_z = (__pyx_v_cp_z - __pyx_v_ag_z);
 
-    /* "algorithms/imgcoord.py":901
+    /* "openptv2/algorithms/imgcoord.py":901
  *         tmp_z = cp_z - ag_z
  * 
  *         pos_t_0 = c_sqrt(tmp_x * tmp_x + tmp_y * tmp_y + tmp_z * tmp_z)             # <<<<<<<<<<<<<<
@@ -23716,7 +23716,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
     __pyx_v_pos_t_0 = sqrt((((__pyx_v_tmp_x * __pyx_v_tmp_x) + (__pyx_v_tmp_y * __pyx_v_tmp_y)) + (__pyx_v_tmp_z * __pyx_v_tmp_z)));
 
-    /* "algorithms/imgcoord.py":902
+    /* "openptv2/algorithms/imgcoord.py":902
  * 
  *         pos_t_0 = c_sqrt(tmp_x * tmp_x + tmp_y * tmp_y + tmp_z * tmp_z)
  *         pos_t_2 = dist_point_glas             # <<<<<<<<<<<<<<
@@ -23725,7 +23725,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
     __pyx_v_pos_t_2 = __pyx_v_dist_point_glas;
 
-    /* "algorithms/imgcoord.py":905
+    /* "openptv2/algorithms/imgcoord.py":905
  * 
  *         # === mmlut lookup ===
  *         mmf = 1.0             # <<<<<<<<<<<<<<
@@ -23734,7 +23734,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
     __pyx_v_mmf = 1.0;
 
-    /* "algorithms/imgcoord.py":906
+    /* "openptv2/algorithms/imgcoord.py":906
  *         # === mmlut lookup ===
  *         mmf = 1.0
  *         if has_mmlut:             # <<<<<<<<<<<<<<
@@ -23743,7 +23743,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
     if (__pyx_v_has_mmlut) {
 
-      /* "algorithms/imgcoord.py":910
+      /* "openptv2/algorithms/imgcoord.py":910
  *                 pos_t_0, 0.0, pos_t_2,
  *                 mmlut_origin_x, mmlut_origin_y, mmlut_origin_z,
  *                 mmlut_nr, mmlut_nz, mmlut_rw, mmlut_data,             # <<<<<<<<<<<<<<
@@ -23755,17 +23755,17 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
         __PYX_ERR(0, 910, __pyx_L1_error)
       }
 
-      /* "algorithms/imgcoord.py":907
+      /* "openptv2/algorithms/imgcoord.py":907
  *         mmf = 1.0
  *         if has_mmlut:
  *             mmf = _get_mmf_from_mmlut_core(             # <<<<<<<<<<<<<<
  *                 pos_t_0, 0.0, pos_t_2,
  *                 mmlut_origin_x, mmlut_origin_y, mmlut_origin_z,
 */
-      __pyx_t_9 = __pyx_f_10algorithms_8imgcoord__get_mmf_from_mmlut_core(__pyx_v_pos_t_0, 0.0, __pyx_v_pos_t_2, __pyx_v_mmlut_origin_x, __pyx_v_mmlut_origin_y, __pyx_v_mmlut_origin_z, __pyx_v_mmlut_nr, __pyx_v_mmlut_nz, __pyx_v_mmlut_rw, __pyx_v_mmlut_data); if (unlikely(__pyx_t_9 == ((double)-1) && PyErr_Occurred())) __PYX_ERR(0, 907, __pyx_L1_error)
+      __pyx_t_9 = __pyx_f_8openptv2_10algorithms_8imgcoord__get_mmf_from_mmlut_core(__pyx_v_pos_t_0, 0.0, __pyx_v_pos_t_2, __pyx_v_mmlut_origin_x, __pyx_v_mmlut_origin_y, __pyx_v_mmlut_origin_z, __pyx_v_mmlut_nr, __pyx_v_mmlut_nz, __pyx_v_mmlut_rw, __pyx_v_mmlut_data); if (unlikely(__pyx_t_9 == ((double)-1) && PyErr_Occurred())) __PYX_ERR(0, 907, __pyx_L1_error)
       __pyx_v_mmf = __pyx_t_9;
 
-      /* "algorithms/imgcoord.py":912
+      /* "openptv2/algorithms/imgcoord.py":912
  *                 mmlut_nr, mmlut_nz, mmlut_rw, mmlut_data,
  *             )
  *             if mmf <= 0.0:             # <<<<<<<<<<<<<<
@@ -23775,7 +23775,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
       __pyx_t_10 = (__pyx_v_mmf <= 0.0);
       if (__pyx_t_10) {
 
-        /* "algorithms/imgcoord.py":913
+        /* "openptv2/algorithms/imgcoord.py":913
  *             )
  *             if mmf <= 0.0:
  *                 mmf = 1.0             # <<<<<<<<<<<<<<
@@ -23784,7 +23784,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
         __pyx_v_mmf = 1.0;
 
-        /* "algorithms/imgcoord.py":912
+        /* "openptv2/algorithms/imgcoord.py":912
  *                 mmlut_nr, mmlut_nz, mmlut_rw, mmlut_data,
  *             )
  *             if mmf <= 0.0:             # <<<<<<<<<<<<<<
@@ -23793,7 +23793,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
       }
 
-      /* "algorithms/imgcoord.py":906
+      /* "openptv2/algorithms/imgcoord.py":906
  *         # === mmlut lookup ===
  *         mmf = 1.0
  *         if has_mmlut:             # <<<<<<<<<<<<<<
@@ -23802,7 +23802,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
     }
 
-    /* "algorithms/imgcoord.py":916
+    /* "openptv2/algorithms/imgcoord.py":916
  * 
  *         # === multimedia nlay ===
  *         radial_shift = 1.0             # <<<<<<<<<<<<<<
@@ -23811,7 +23811,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
     __pyx_v_radial_shift = 1.0;
 
-    /* "algorithms/imgcoord.py":917
+    /* "openptv2/algorithms/imgcoord.py":917
  *         # === multimedia nlay ===
  *         radial_shift = 1.0
  *         if mmf > 0.0 and mmf != 1.0:             # <<<<<<<<<<<<<<
@@ -23829,7 +23829,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
     __pyx_L11_bool_binop_done:;
     if (__pyx_t_10) {
 
-      /* "algorithms/imgcoord.py":918
+      /* "openptv2/algorithms/imgcoord.py":918
  *         radial_shift = 1.0
  *         if mmf > 0.0 and mmf != 1.0:
  *             radial_shift = mmf             # <<<<<<<<<<<<<<
@@ -23838,7 +23838,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
       __pyx_v_radial_shift = __pyx_v_mmf;
 
-      /* "algorithms/imgcoord.py":917
+      /* "openptv2/algorithms/imgcoord.py":917
  *         # === multimedia nlay ===
  *         radial_shift = 1.0
  *         if mmf > 0.0 and mmf != 1.0:             # <<<<<<<<<<<<<<
@@ -23848,7 +23848,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
       goto __pyx_L10;
     }
 
-    /* "algorithms/imgcoord.py":920
+    /* "openptv2/algorithms/imgcoord.py":920
  *             radial_shift = mmf
  *         else:
  *             if mm_n1 == 1.0 and mm_n2_0 == 1.0 and mm_n3 == 1.0:             # <<<<<<<<<<<<<<
@@ -23873,7 +23873,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
       __pyx_L14_bool_binop_done:;
       if (__pyx_t_10) {
 
-        /* "algorithms/imgcoord.py":921
+        /* "openptv2/algorithms/imgcoord.py":921
  *         else:
  *             if mm_n1 == 1.0 and mm_n2_0 == 1.0 and mm_n3 == 1.0:
  *                 radial_shift = 1.0             # <<<<<<<<<<<<<<
@@ -23882,7 +23882,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
         __pyx_v_radial_shift = 1.0;
 
-        /* "algorithms/imgcoord.py":920
+        /* "openptv2/algorithms/imgcoord.py":920
  *             radial_shift = mmf
  *         else:
  *             if mm_n1 == 1.0 and mm_n2_0 == 1.0 and mm_n3 == 1.0:             # <<<<<<<<<<<<<<
@@ -23892,7 +23892,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
         goto __pyx_L13;
       }
 
-      /* "algorithms/imgcoord.py":923
+      /* "openptv2/algorithms/imgcoord.py":923
  *                 radial_shift = 1.0
  *             else:
  *                 r_val = pos_t_0             # <<<<<<<<<<<<<<
@@ -23902,7 +23902,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
       /*else*/ {
         __pyx_v_r_val = __pyx_v_pos_t_0;
 
-        /* "algorithms/imgcoord.py":924
+        /* "openptv2/algorithms/imgcoord.py":924
  *             else:
  *                 r_val = pos_t_0
  *                 rq = r_val             # <<<<<<<<<<<<<<
@@ -23911,7 +23911,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
         __pyx_v_rq = __pyx_v_r_val;
 
-        /* "algorithms/imgcoord.py":926
+        /* "openptv2/algorithms/imgcoord.py":926
  *                 rq = r_val
  * 
  *                 for it in range(40):             # <<<<<<<<<<<<<<
@@ -23921,7 +23921,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
         for (__pyx_t_18 = 0; __pyx_t_18 < 40; __pyx_t_18+=1) {
           __pyx_v_it = __pyx_t_18;
 
-          /* "algorithms/imgcoord.py":927
+          /* "openptv2/algorithms/imgcoord.py":927
  * 
  *                 for it in range(40):
  *                     beta1 = c_atan(rq / (ext_t_z0 - pos_t_2))             # <<<<<<<<<<<<<<
@@ -23930,7 +23930,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
           __pyx_v_beta1 = atan((__pyx_v_rq / (__pyx_v_ext_t_z0 - __pyx_v_pos_t_2)));
 
-          /* "algorithms/imgcoord.py":928
+          /* "openptv2/algorithms/imgcoord.py":928
  *                 for it in range(40):
  *                     beta1 = c_atan(rq / (ext_t_z0 - pos_t_2))
  *                     sin_beta1 = c_sin(beta1)             # <<<<<<<<<<<<<<
@@ -23939,7 +23939,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
           __pyx_v_sin_beta1 = sin(__pyx_v_beta1);
 
-          /* "algorithms/imgcoord.py":930
+          /* "openptv2/algorithms/imgcoord.py":930
  *                     sin_beta1 = c_sin(beta1)
  * 
  *                     arg = sin_beta1 * mm_n1 / mm_n2_0             # <<<<<<<<<<<<<<
@@ -23948,7 +23948,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
           __pyx_v_arg = ((__pyx_v_sin_beta1 * __pyx_v_mm_n1) / __pyx_v_mm_n2_0);
 
-          /* "algorithms/imgcoord.py":931
+          /* "openptv2/algorithms/imgcoord.py":931
  * 
  *                     arg = sin_beta1 * mm_n1 / mm_n2_0
  *                     if arg > 1.0:             # <<<<<<<<<<<<<<
@@ -23958,7 +23958,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
           __pyx_t_10 = (__pyx_v_arg > 1.0);
           if (__pyx_t_10) {
 
-            /* "algorithms/imgcoord.py":932
+            /* "openptv2/algorithms/imgcoord.py":932
  *                     arg = sin_beta1 * mm_n1 / mm_n2_0
  *                     if arg > 1.0:
  *                         arg = 1.0             # <<<<<<<<<<<<<<
@@ -23967,7 +23967,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
             __pyx_v_arg = 1.0;
 
-            /* "algorithms/imgcoord.py":931
+            /* "openptv2/algorithms/imgcoord.py":931
  * 
  *                     arg = sin_beta1 * mm_n1 / mm_n2_0
  *                     if arg > 1.0:             # <<<<<<<<<<<<<<
@@ -23977,7 +23977,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
             goto __pyx_L19;
           }
 
-          /* "algorithms/imgcoord.py":933
+          /* "openptv2/algorithms/imgcoord.py":933
  *                     if arg > 1.0:
  *                         arg = 1.0
  *                     elif arg < -1.0:             # <<<<<<<<<<<<<<
@@ -23987,7 +23987,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
           __pyx_t_10 = (__pyx_v_arg < -1.0);
           if (__pyx_t_10) {
 
-            /* "algorithms/imgcoord.py":934
+            /* "openptv2/algorithms/imgcoord.py":934
  *                         arg = 1.0
  *                     elif arg < -1.0:
  *                         arg = -1.0             # <<<<<<<<<<<<<<
@@ -23996,7 +23996,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
             __pyx_v_arg = -1.0;
 
-            /* "algorithms/imgcoord.py":933
+            /* "openptv2/algorithms/imgcoord.py":933
  *                     if arg > 1.0:
  *                         arg = 1.0
  *                     elif arg < -1.0:             # <<<<<<<<<<<<<<
@@ -24006,7 +24006,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
           }
           __pyx_L19:;
 
-          /* "algorithms/imgcoord.py":935
+          /* "openptv2/algorithms/imgcoord.py":935
  *                     elif arg < -1.0:
  *                         arg = -1.0
  *                     beta2 = c_asin(arg)             # <<<<<<<<<<<<<<
@@ -24015,7 +24015,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
           __pyx_v_beta2 = asin(__pyx_v_arg);
 
-          /* "algorithms/imgcoord.py":937
+          /* "openptv2/algorithms/imgcoord.py":937
  *                     beta2 = c_asin(arg)
  * 
  *                     arg = sin_beta1 * mm_n1 / mm_n3             # <<<<<<<<<<<<<<
@@ -24024,7 +24024,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
           __pyx_v_arg = ((__pyx_v_sin_beta1 * __pyx_v_mm_n1) / __pyx_v_mm_n3);
 
-          /* "algorithms/imgcoord.py":938
+          /* "openptv2/algorithms/imgcoord.py":938
  * 
  *                     arg = sin_beta1 * mm_n1 / mm_n3
  *                     if arg > 1.0:             # <<<<<<<<<<<<<<
@@ -24034,7 +24034,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
           __pyx_t_10 = (__pyx_v_arg > 1.0);
           if (__pyx_t_10) {
 
-            /* "algorithms/imgcoord.py":939
+            /* "openptv2/algorithms/imgcoord.py":939
  *                     arg = sin_beta1 * mm_n1 / mm_n3
  *                     if arg > 1.0:
  *                         arg = 1.0             # <<<<<<<<<<<<<<
@@ -24043,7 +24043,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
             __pyx_v_arg = 1.0;
 
-            /* "algorithms/imgcoord.py":938
+            /* "openptv2/algorithms/imgcoord.py":938
  * 
  *                     arg = sin_beta1 * mm_n1 / mm_n3
  *                     if arg > 1.0:             # <<<<<<<<<<<<<<
@@ -24053,7 +24053,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
             goto __pyx_L20;
           }
 
-          /* "algorithms/imgcoord.py":940
+          /* "openptv2/algorithms/imgcoord.py":940
  *                     if arg > 1.0:
  *                         arg = 1.0
  *                     elif arg < -1.0:             # <<<<<<<<<<<<<<
@@ -24063,7 +24063,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
           __pyx_t_10 = (__pyx_v_arg < -1.0);
           if (__pyx_t_10) {
 
-            /* "algorithms/imgcoord.py":941
+            /* "openptv2/algorithms/imgcoord.py":941
  *                         arg = 1.0
  *                     elif arg < -1.0:
  *                         arg = -1.0             # <<<<<<<<<<<<<<
@@ -24072,7 +24072,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
             __pyx_v_arg = -1.0;
 
-            /* "algorithms/imgcoord.py":940
+            /* "openptv2/algorithms/imgcoord.py":940
  *                     if arg > 1.0:
  *                         arg = 1.0
  *                     elif arg < -1.0:             # <<<<<<<<<<<<<<
@@ -24082,7 +24082,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
           }
           __pyx_L20:;
 
-          /* "algorithms/imgcoord.py":942
+          /* "openptv2/algorithms/imgcoord.py":942
  *                     elif arg < -1.0:
  *                         arg = -1.0
  *                     beta3 = c_asin(arg)             # <<<<<<<<<<<<<<
@@ -24091,7 +24091,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
           __pyx_v_beta3 = asin(__pyx_v_arg);
 
-          /* "algorithms/imgcoord.py":944
+          /* "openptv2/algorithms/imgcoord.py":944
  *                     beta3 = c_asin(arg)
  * 
  *                     rbeta = (ext_t_z0 - mm_d0) * c_tan(beta1) - pos_t_2 * c_tan(beta3) + mm_d0 * c_tan(beta2)             # <<<<<<<<<<<<<<
@@ -24100,7 +24100,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
           __pyx_v_rbeta = ((((__pyx_v_ext_t_z0 - __pyx_v_mm_d0) * tan(__pyx_v_beta1)) - (__pyx_v_pos_t_2 * tan(__pyx_v_beta3))) + (__pyx_v_mm_d0 * tan(__pyx_v_beta2)));
 
-          /* "algorithms/imgcoord.py":945
+          /* "openptv2/algorithms/imgcoord.py":945
  * 
  *                     rbeta = (ext_t_z0 - mm_d0) * c_tan(beta1) - pos_t_2 * c_tan(beta3) + mm_d0 * c_tan(beta2)
  *                     rdiff = r_val - rbeta             # <<<<<<<<<<<<<<
@@ -24109,7 +24109,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
           __pyx_v_rdiff = (__pyx_v_r_val - __pyx_v_rbeta);
 
-          /* "algorithms/imgcoord.py":946
+          /* "openptv2/algorithms/imgcoord.py":946
  *                     rbeta = (ext_t_z0 - mm_d0) * c_tan(beta1) - pos_t_2 * c_tan(beta3) + mm_d0 * c_tan(beta2)
  *                     rdiff = r_val - rbeta
  *                     rq += rdiff             # <<<<<<<<<<<<<<
@@ -24118,7 +24118,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
           __pyx_v_rq = (__pyx_v_rq + __pyx_v_rdiff);
 
-          /* "algorithms/imgcoord.py":948
+          /* "openptv2/algorithms/imgcoord.py":948
  *                     rq += rdiff
  * 
  *                     if abs(rdiff) < 0.001:             # <<<<<<<<<<<<<<
@@ -24129,7 +24129,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
           __pyx_t_10 = (__pyx_t_9 < 0.001);
           if (__pyx_t_10) {
 
-            /* "algorithms/imgcoord.py":949
+            /* "openptv2/algorithms/imgcoord.py":949
  * 
  *                     if abs(rdiff) < 0.001:
  *                         break             # <<<<<<<<<<<<<<
@@ -24138,7 +24138,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
             goto __pyx_L18_break;
 
-            /* "algorithms/imgcoord.py":948
+            /* "openptv2/algorithms/imgcoord.py":948
  *                     rq += rdiff
  * 
  *                     if abs(rdiff) < 0.001:             # <<<<<<<<<<<<<<
@@ -24149,7 +24149,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
         }
         /*else*/ {
 
-          /* "algorithms/imgcoord.py":951
+          /* "openptv2/algorithms/imgcoord.py":951
  *                         break
  *                 else:
  *                     rq = r_val             # <<<<<<<<<<<<<<
@@ -24160,7 +24160,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
         }
         __pyx_L18_break:;
 
-        /* "algorithms/imgcoord.py":953
+        /* "openptv2/algorithms/imgcoord.py":953
  *                     rq = r_val
  * 
  *                 if r_val != 0.0:             # <<<<<<<<<<<<<<
@@ -24170,7 +24170,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
         __pyx_t_10 = (__pyx_v_r_val != 0.0);
         if (__pyx_t_10) {
 
-          /* "algorithms/imgcoord.py":954
+          /* "openptv2/algorithms/imgcoord.py":954
  * 
  *                 if r_val != 0.0:
  *                     radial_shift = rq / r_val             # <<<<<<<<<<<<<<
@@ -24179,7 +24179,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
           __pyx_v_radial_shift = (__pyx_v_rq / __pyx_v_r_val);
 
-          /* "algorithms/imgcoord.py":953
+          /* "openptv2/algorithms/imgcoord.py":953
  *                     rq = r_val
  * 
  *                 if r_val != 0.0:             # <<<<<<<<<<<<<<
@@ -24189,7 +24189,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
           goto __pyx_L22;
         }
 
-        /* "algorithms/imgcoord.py":956
+        /* "openptv2/algorithms/imgcoord.py":956
  *                     radial_shift = rq / r_val
  *                 else:
  *                     radial_shift = 1.0             # <<<<<<<<<<<<<<
@@ -24205,7 +24205,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
     }
     __pyx_L10:;
 
-    /* "algorithms/imgcoord.py":958
+    /* "openptv2/algorithms/imgcoord.py":958
  *                     radial_shift = 1.0
  * 
  *         X_t = pos_t_0 * radial_shift             # <<<<<<<<<<<<<<
@@ -24214,7 +24214,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
     __pyx_v_X_t = (__pyx_v_pos_t_0 * __pyx_v_radial_shift);
 
-    /* "algorithms/imgcoord.py":961
+    /* "openptv2/algorithms/imgcoord.py":961
  * 
  *         # === back_trans_point ===
  *         inv_ngl = inv_dog             # <<<<<<<<<<<<<<
@@ -24223,7 +24223,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
     __pyx_v_inv_ngl = __pyx_v_inv_dog;
 
-    /* "algorithms/imgcoord.py":962
+    /* "openptv2/algorithms/imgcoord.py":962
  *         # === back_trans_point ===
  *         inv_ngl = inv_dog
  *         n_ve = pos_t_0             # <<<<<<<<<<<<<<
@@ -24232,7 +24232,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
     __pyx_v_n_ve = __pyx_v_pos_t_0;
 
-    /* "algorithms/imgcoord.py":964
+    /* "openptv2/algorithms/imgcoord.py":964
  *         n_ve = pos_t_0
  * 
  *         s_z = -pos_t_2 * inv_ngl             # <<<<<<<<<<<<<<
@@ -24241,7 +24241,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
     __pyx_v_s_z = ((-__pyx_v_pos_t_2) * __pyx_v_inv_ngl);
 
-    /* "algorithms/imgcoord.py":965
+    /* "openptv2/algorithms/imgcoord.py":965
  * 
  *         s_z = -pos_t_2 * inv_ngl
  *         bx = ag_x - gx * s_z             # <<<<<<<<<<<<<<
@@ -24250,7 +24250,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
     __pyx_v_bx = (__pyx_v_ag_x - (__pyx_v_gx * __pyx_v_s_z));
 
-    /* "algorithms/imgcoord.py":966
+    /* "openptv2/algorithms/imgcoord.py":966
  *         s_z = -pos_t_2 * inv_ngl
  *         bx = ag_x - gx * s_z
  *         by = ag_y - gy * s_z             # <<<<<<<<<<<<<<
@@ -24259,7 +24259,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
     __pyx_v_by = (__pyx_v_ag_y - (__pyx_v_gy * __pyx_v_s_z));
 
-    /* "algorithms/imgcoord.py":967
+    /* "openptv2/algorithms/imgcoord.py":967
  *         bx = ag_x - gx * s_z
  *         by = ag_y - gy * s_z
  *         bz = ag_z - gz * s_z             # <<<<<<<<<<<<<<
@@ -24268,7 +24268,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
     __pyx_v_bz = (__pyx_v_ag_z - (__pyx_v_gz * __pyx_v_s_z));
 
-    /* "algorithms/imgcoord.py":969
+    /* "openptv2/algorithms/imgcoord.py":969
  *         bz = ag_z - gz * s_z
  * 
  *         if n_ve > 0:             # <<<<<<<<<<<<<<
@@ -24278,7 +24278,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
     __pyx_t_10 = (__pyx_v_n_ve > 0.0);
     if (__pyx_t_10) {
 
-      /* "algorithms/imgcoord.py":970
+      /* "openptv2/algorithms/imgcoord.py":970
  * 
  *         if n_ve > 0:
  *             s_x = -X_t / n_ve             # <<<<<<<<<<<<<<
@@ -24287,7 +24287,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
       __pyx_v_s_x = ((-__pyx_v_X_t) / __pyx_v_n_ve);
 
-      /* "algorithms/imgcoord.py":971
+      /* "openptv2/algorithms/imgcoord.py":971
  *         if n_ve > 0:
  *             s_x = -X_t / n_ve
  *             bx -= tmp_x * s_x             # <<<<<<<<<<<<<<
@@ -24296,7 +24296,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
       __pyx_v_bx = (__pyx_v_bx - (__pyx_v_tmp_x * __pyx_v_s_x));
 
-      /* "algorithms/imgcoord.py":972
+      /* "openptv2/algorithms/imgcoord.py":972
  *             s_x = -X_t / n_ve
  *             bx -= tmp_x * s_x
  *             by -= tmp_y * s_x             # <<<<<<<<<<<<<<
@@ -24305,7 +24305,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
       __pyx_v_by = (__pyx_v_by - (__pyx_v_tmp_y * __pyx_v_s_x));
 
-      /* "algorithms/imgcoord.py":973
+      /* "openptv2/algorithms/imgcoord.py":973
  *             bx -= tmp_x * s_x
  *             by -= tmp_y * s_x
  *             bz -= tmp_z * s_x             # <<<<<<<<<<<<<<
@@ -24314,7 +24314,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
       __pyx_v_bz = (__pyx_v_bz - (__pyx_v_tmp_z * __pyx_v_s_x));
 
-      /* "algorithms/imgcoord.py":969
+      /* "openptv2/algorithms/imgcoord.py":969
  *         bz = ag_z - gz * s_z
  * 
  *         if n_ve > 0:             # <<<<<<<<<<<<<<
@@ -24323,7 +24323,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
     }
 
-    /* "algorithms/imgcoord.py":976
+    /* "openptv2/algorithms/imgcoord.py":976
  * 
  *         # === perspective projection ===
  *         dx = bx - ext_x0             # <<<<<<<<<<<<<<
@@ -24332,7 +24332,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
     __pyx_v_dx = (__pyx_v_bx - __pyx_v_ext_x0);
 
-    /* "algorithms/imgcoord.py":977
+    /* "openptv2/algorithms/imgcoord.py":977
  *         # === perspective projection ===
  *         dx = bx - ext_x0
  *         dy = by - ext_y0             # <<<<<<<<<<<<<<
@@ -24341,7 +24341,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
     __pyx_v_dy = (__pyx_v_by - __pyx_v_ext_y0);
 
-    /* "algorithms/imgcoord.py":978
+    /* "openptv2/algorithms/imgcoord.py":978
  *         dx = bx - ext_x0
  *         dy = by - ext_y0
  *         dz = bz - ext_z0             # <<<<<<<<<<<<<<
@@ -24350,7 +24350,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 */
     __pyx_v_dz = (__pyx_v_bz - __pyx_v_ext_z0);
 
-    /* "algorithms/imgcoord.py":980
+    /* "openptv2/algorithms/imgcoord.py":980
  *         dz = bz - ext_z0
  * 
  *         deno = ext_dm[0, 2] * dx + ext_dm[1, 2] * dy + ext_dm[2, 2] * dz             # <<<<<<<<<<<<<<
@@ -24365,7 +24365,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
     __pyx_t_22 = 2;
     __pyx_v_deno = ((((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_ext_dm.data + __pyx_t_17 * __pyx_v_ext_dm.strides[0]) ) + __pyx_t_16 * __pyx_v_ext_dm.strides[1]) ))) * __pyx_v_dx) + ((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_ext_dm.data + __pyx_t_19 * __pyx_v_ext_dm.strides[0]) ) + __pyx_t_20 * __pyx_v_ext_dm.strides[1]) ))) * __pyx_v_dy)) + ((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_ext_dm.data + __pyx_t_21 * __pyx_v_ext_dm.strides[0]) ) + __pyx_t_22 * __pyx_v_ext_dm.strides[1]) ))) * __pyx_v_dz));
 
-    /* "algorithms/imgcoord.py":982
+    /* "openptv2/algorithms/imgcoord.py":982
  *         deno = ext_dm[0, 2] * dx + ext_dm[1, 2] * dy + ext_dm[2, 2] * dz
  * 
  *         res_mv[i, 0] = -int_cc * (ext_dm[0, 0] * dx + ext_dm[1, 0] * dy + ext_dm[2, 0] * dz) / deno             # <<<<<<<<<<<<<<
@@ -24382,7 +24382,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
     __pyx_t_24 = 0;
     *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_res_mv.data + __pyx_t_23 * __pyx_v_res_mv.strides[0]) ) + __pyx_t_24 * __pyx_v_res_mv.strides[1]) )) = (((-__pyx_v_int_cc) * ((((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_ext_dm.data + __pyx_t_22 * __pyx_v_ext_dm.strides[0]) ) + __pyx_t_21 * __pyx_v_ext_dm.strides[1]) ))) * __pyx_v_dx) + ((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_ext_dm.data + __pyx_t_20 * __pyx_v_ext_dm.strides[0]) ) + __pyx_t_19 * __pyx_v_ext_dm.strides[1]) ))) * __pyx_v_dy)) + ((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_ext_dm.data + __pyx_t_16 * __pyx_v_ext_dm.strides[0]) ) + __pyx_t_17 * __pyx_v_ext_dm.strides[1]) ))) * __pyx_v_dz))) / __pyx_v_deno);
 
-    /* "algorithms/imgcoord.py":983
+    /* "openptv2/algorithms/imgcoord.py":983
  * 
  *         res_mv[i, 0] = -int_cc * (ext_dm[0, 0] * dx + ext_dm[1, 0] * dy + ext_dm[2, 0] * dz) / deno
  *         res_mv[i, 1] = -int_cc * (ext_dm[0, 1] * dx + ext_dm[1, 1] * dy + ext_dm[2, 1] * dz) / deno             # <<<<<<<<<<<<<<
@@ -24400,7 +24400,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
     *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_res_mv.data + __pyx_t_24 * __pyx_v_res_mv.strides[0]) ) + __pyx_t_23 * __pyx_v_res_mv.strides[1]) )) = (((-__pyx_v_int_cc) * ((((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_ext_dm.data + __pyx_t_17 * __pyx_v_ext_dm.strides[0]) ) + __pyx_t_16 * __pyx_v_ext_dm.strides[1]) ))) * __pyx_v_dx) + ((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_ext_dm.data + __pyx_t_19 * __pyx_v_ext_dm.strides[0]) ) + __pyx_t_20 * __pyx_v_ext_dm.strides[1]) ))) * __pyx_v_dy)) + ((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_ext_dm.data + __pyx_t_21 * __pyx_v_ext_dm.strides[0]) ) + __pyx_t_22 * __pyx_v_ext_dm.strides[1]) ))) * __pyx_v_dz))) / __pyx_v_deno);
   }
 
-  /* "algorithms/imgcoord.py":985
+  /* "openptv2/algorithms/imgcoord.py":985
  *         res_mv[i, 1] = -int_cc * (ext_dm[0, 1] * dx + ext_dm[1, 1] * dy + ext_dm[2, 1] * dz) / deno
  * 
  *     return result             # <<<<<<<<<<<<<<
@@ -24412,7 +24412,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
   __pyx_r = __pyx_v_result;
   goto __pyx_L0;
 
-  /* "algorithms/imgcoord.py":778
+  /* "openptv2/algorithms/imgcoord.py":778
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -24430,7 +24430,7 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
   __Pyx_XDECREF(__pyx_t_6);
   __PYX_XCLEAR_MEMVIEW(&__pyx_t_8, 1);
   __PYX_XCLEAR_MEMVIEW(&__pyx_t_11, 1);
-  __Pyx_AddTraceback("algorithms.imgcoord._flat_image_coord_batch_impl", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.imgcoord._flat_image_coord_batch_impl", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_result);
@@ -24444,15 +24444,15 @@ static PyObject *__pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__P
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_8imgcoord_13_flat_image_coord_batch_impl(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_8imgcoord_13_flat_image_coord_batch_impl(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_10algorithms_8imgcoord_13_flat_image_coord_batch_impl = {"_flat_image_coord_batch_impl", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_8imgcoord_13_flat_image_coord_batch_impl, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10algorithms_8imgcoord_13_flat_image_coord_batch_impl(PyObject *__pyx_self, 
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_8imgcoord_13_flat_image_coord_batch_impl = {"_flat_image_coord_batch_impl", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_8imgcoord_13_flat_image_coord_batch_impl, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_8openptv2_10algorithms_8imgcoord_13_flat_image_coord_batch_impl(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -24531,14 +24531,14 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
     Py_XDECREF(values[__pyx_temp]);
   }
   __PYX_XCLEAR_MEMVIEW(&__pyx_v_positions, 1);
-  __Pyx_AddTraceback("algorithms.imgcoord._flat_image_coord_batch_impl", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.imgcoord._flat_image_coord_batch_impl", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
   if (unlikely(((PyObject *)__pyx_v_positions.memview) == Py_None)) {
     PyErr_Format(PyExc_TypeError, "Argument '%.200s' must not be None", "positions"); __PYX_ERR(0, 781, __pyx_L1_error)
   }
-  __pyx_r = __pyx_pf_10algorithms_8imgcoord_12_flat_image_coord_batch_impl(__pyx_self, __pyx_v_positions, __pyx_v_cal, __pyx_v_mm);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_8imgcoord_12_flat_image_coord_batch_impl(__pyx_self, __pyx_v_positions, __pyx_v_cal, __pyx_v_mm);
 
   /* function exit code */
   goto __pyx_L0;
@@ -24558,7 +24558,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_8imgcoord_12_flat_image_coord_batch_impl(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_positions, PyObject *__pyx_v_cal, PyObject *__pyx_v_mm) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_8imgcoord_12_flat_image_coord_batch_impl(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_positions, PyObject *__pyx_v_cal, PyObject *__pyx_v_mm) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -24571,7 +24571,7 @@ static PyObject *__pyx_pf_10algorithms_8imgcoord_12_flat_image_coord_batch_impl(
     PyErr_SetString(PyExc_TypeError, "cannot pass None into a C function argument that is declared 'not None'");
     __PYX_ERR(0, 778, __pyx_L1_error)
   }
-  __pyx_t_1 = __pyx_f_10algorithms_8imgcoord__flat_image_coord_batch_impl(__pyx_v_positions, __pyx_v_cal, __pyx_v_mm, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 778, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_8imgcoord__flat_image_coord_batch_impl(__pyx_v_positions, __pyx_v_cal, __pyx_v_mm, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 778, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -24580,7 +24580,7 @@ static PyObject *__pyx_pf_10algorithms_8imgcoord_12_flat_image_coord_batch_impl(
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.imgcoord._flat_image_coord_batch_impl", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.imgcoord._flat_image_coord_batch_impl", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -24588,7 +24588,7 @@ static PyObject *__pyx_pf_10algorithms_8imgcoord_12_flat_image_coord_batch_impl(
   return __pyx_r;
 }
 
-/* "algorithms/imgcoord.py":988
+/* "openptv2/algorithms/imgcoord.py":988
  * 
  * 
  * def is_compiled() -> bool:             # <<<<<<<<<<<<<<
@@ -24597,28 +24597,28 @@ static PyObject *__pyx_pf_10algorithms_8imgcoord_12_flat_image_coord_batch_impl(
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_8imgcoord_15is_compiled(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_8imgcoord_14is_compiled, "Return whether this module is compiled to C.");
-static PyMethodDef __pyx_mdef_10algorithms_8imgcoord_15is_compiled = {"is_compiled", (PyCFunction)__pyx_pw_10algorithms_8imgcoord_15is_compiled, METH_NOARGS, __pyx_doc_10algorithms_8imgcoord_14is_compiled};
-static PyObject *__pyx_pw_10algorithms_8imgcoord_15is_compiled(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_8openptv2_10algorithms_8imgcoord_15is_compiled(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_8imgcoord_14is_compiled, "Return whether this module is compiled to C.");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_8imgcoord_15is_compiled = {"is_compiled", (PyCFunction)__pyx_pw_8openptv2_10algorithms_8imgcoord_15is_compiled, METH_NOARGS, __pyx_doc_8openptv2_10algorithms_8imgcoord_14is_compiled};
+static PyObject *__pyx_pw_8openptv2_10algorithms_8imgcoord_15is_compiled(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused) {
   CYTHON_UNUSED PyObject *const *__pyx_kwvalues;
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("is_compiled (wrapper)", 0);
   __pyx_kwvalues = __Pyx_KwValues_VARARGS(__pyx_args, __pyx_nargs);
-  __pyx_r = __pyx_pf_10algorithms_8imgcoord_14is_compiled(__pyx_self);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_8imgcoord_14is_compiled(__pyx_self);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_8imgcoord_14is_compiled(CYTHON_UNUSED PyObject *__pyx_self) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_8imgcoord_14is_compiled(CYTHON_UNUSED PyObject *__pyx_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("is_compiled", 0);
 
-  /* "algorithms/imgcoord.py":990
+  /* "openptv2/algorithms/imgcoord.py":990
  * def is_compiled() -> bool:
  *     """Return whether this module is compiled to C."""
  *     return cython.compiled             # <<<<<<<<<<<<<<
@@ -24628,7 +24628,7 @@ static PyObject *__pyx_pf_10algorithms_8imgcoord_14is_compiled(CYTHON_UNUSED PyO
   __pyx_r = Py_True;
   goto __pyx_L0;
 
-  /* "algorithms/imgcoord.py":988
+  /* "openptv2/algorithms/imgcoord.py":988
  * 
  * 
  * def is_compiled() -> bool:             # <<<<<<<<<<<<<<
@@ -24769,7 +24769,7 @@ static PyType_Slot __pyx_type___pyx_array_slots[] = {
   {0, 0},
 };
 static PyType_Spec __pyx_type___pyx_array_spec = {
-  "algorithms.imgcoord.array",
+  "openptv2.algorithms.imgcoord.array",
   sizeof(struct __pyx_array_obj),
   0,
   Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_BASETYPE|Py_TPFLAGS_SEQUENCE,
@@ -24803,7 +24803,7 @@ static PyBufferProcs __pyx_tp_as_buffer_array = {
 
 static PyTypeObject __pyx_type___pyx_array = {
   PyVarObject_HEAD_INIT(0, 0)
-  "algorithms.imgcoord.""array", /*tp_name*/
+  "openptv2.algorithms.imgcoord.""array", /*tp_name*/
   sizeof(struct __pyx_array_obj), /*tp_basicsize*/
   0, /*tp_itemsize*/
   __pyx_tp_dealloc_array, /*tp_dealloc*/
@@ -24948,7 +24948,7 @@ static PyType_Slot __pyx_type___pyx_MemviewEnum_slots[] = {
   {0, 0},
 };
 static PyType_Spec __pyx_type___pyx_MemviewEnum_spec = {
-  "algorithms.imgcoord.Enum",
+  "openptv2.algorithms.imgcoord.Enum",
   sizeof(struct __pyx_MemviewEnum_obj),
   0,
   Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_BASETYPE|Py_TPFLAGS_HAVE_GC,
@@ -24958,7 +24958,7 @@ static PyType_Spec __pyx_type___pyx_MemviewEnum_spec = {
 
 static PyTypeObject __pyx_type___pyx_MemviewEnum = {
   PyVarObject_HEAD_INIT(0, 0)
-  "algorithms.imgcoord.""Enum", /*tp_name*/
+  "openptv2.algorithms.imgcoord.""Enum", /*tp_name*/
   sizeof(struct __pyx_MemviewEnum_obj), /*tp_basicsize*/
   0, /*tp_itemsize*/
   __pyx_tp_dealloc_Enum, /*tp_dealloc*/
@@ -25225,7 +25225,7 @@ static PyType_Slot __pyx_type___pyx_memoryview_slots[] = {
   {0, 0},
 };
 static PyType_Spec __pyx_type___pyx_memoryview_spec = {
-  "algorithms.imgcoord.memoryview",
+  "openptv2.algorithms.imgcoord.memoryview",
   sizeof(struct __pyx_memoryview_obj),
   0,
   Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_BASETYPE|Py_TPFLAGS_HAVE_GC,
@@ -25259,7 +25259,7 @@ static PyBufferProcs __pyx_tp_as_buffer_memoryview = {
 
 static PyTypeObject __pyx_type___pyx_memoryview = {
   PyVarObject_HEAD_INIT(0, 0)
-  "algorithms.imgcoord.""memoryview", /*tp_name*/
+  "openptv2.algorithms.imgcoord.""memoryview", /*tp_name*/
   sizeof(struct __pyx_memoryview_obj), /*tp_basicsize*/
   0, /*tp_itemsize*/
   __pyx_tp_dealloc_memoryview, /*tp_dealloc*/
@@ -25402,7 +25402,7 @@ static PyType_Slot __pyx_type___pyx_memoryviewslice_slots[] = {
   {0, 0},
 };
 static PyType_Spec __pyx_type___pyx_memoryviewslice_spec = {
-  "algorithms.imgcoord._memoryviewslice",
+  "openptv2.algorithms.imgcoord._memoryviewslice",
   sizeof(struct __pyx_memoryviewslice_obj),
   0,
   Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_BASETYPE|Py_TPFLAGS_HAVE_GC|Py_TPFLAGS_SEQUENCE,
@@ -25412,7 +25412,7 @@ static PyType_Spec __pyx_type___pyx_memoryviewslice_spec = {
 
 static PyTypeObject __pyx_type___pyx_memoryviewslice = {
   PyVarObject_HEAD_INIT(0, 0)
-  "algorithms.imgcoord.""_memoryviewslice", /*tp_name*/
+  "openptv2.algorithms.imgcoord.""_memoryviewslice", /*tp_name*/
   sizeof(struct __pyx_memoryviewslice_obj), /*tp_basicsize*/
   0, /*tp_itemsize*/
   __pyx_tp_dealloc__memoryviewslice, /*tp_dealloc*/
@@ -25964,13 +25964,13 @@ __Pyx_RefNannySetupContext("PyInit_imgcoord", 0);
   if (__Pyx_InitConstants(__pyx_mstate) < (0)) __PYX_ERR(0, 1, __pyx_L1_error)
   stringtab_initialized = 1;
   if (__Pyx_InitGlobals() < (0)) __PYX_ERR(0, 1, __pyx_L1_error)
-  if (__pyx_module_is_main_algorithms__imgcoord) {
+  if (__pyx_module_is_main_openptv2__algorithms__imgcoord) {
     if (PyObject_SetAttr(__pyx_m, __pyx_mstate_global->__pyx_n_u_name_2, __pyx_mstate_global->__pyx_n_u_main) < (0)) __PYX_ERR(0, 1, __pyx_L1_error)
   }
   {
     PyObject *modules = PyImport_GetModuleDict(); if (unlikely(!modules)) __PYX_ERR(0, 1, __pyx_L1_error)
-    if (!PyDict_GetItemString(modules, "algorithms.imgcoord")) {
-      if (unlikely((PyDict_SetItemString(modules, "algorithms.imgcoord", __pyx_m) < 0))) __PYX_ERR(0, 1, __pyx_L1_error)
+    if (!PyDict_GetItemString(modules, "openptv2.algorithms.imgcoord")) {
+      if (unlikely((PyDict_SetItemString(modules, "openptv2.algorithms.imgcoord", __pyx_m) < 0))) __PYX_ERR(0, 1, __pyx_L1_error)
     }
   }
   /*--- Builtin init code ---*/
@@ -26479,7 +26479,7 @@ __Pyx_RefNannySetupContext("PyInit_imgcoord", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_pyx_unpickle_Enum, __pyx_t_4) < (0)) __PYX_ERR(1, 4, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/imgcoord.py":10
+  /* "openptv2/algorithms/imgcoord.py":10
  * 
  * import cython
  * import numpy as np             # <<<<<<<<<<<<<<
@@ -26492,7 +26492,7 @@ __Pyx_RefNannySetupContext("PyInit_imgcoord", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_np, __pyx_t_4) < (0)) __PYX_ERR(0, 10, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/imgcoord.py":22
+  /* "openptv2/algorithms/imgcoord.py":22
  *         sin as c_sin, atan as c_atan, cos as c_cos,
  *     )
  * from .trafo import flat_to_dist as _flat_to_dist             # <<<<<<<<<<<<<<
@@ -26501,7 +26501,7 @@ __Pyx_RefNannySetupContext("PyInit_imgcoord", 0);
 */
   {
     PyObject* const __pyx_imported_names[] = {__pyx_mstate_global->__pyx_n_u_flat_to_dist};
-    __pyx_t_1 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_trafo, __pyx_imported_names, 1, __pyx_mstate_global->__pyx_kp_u_algorithms_trafo, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 22, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_trafo, __pyx_imported_names, 1, __pyx_mstate_global->__pyx_kp_u_openptv2_algorithms_trafo, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 22, __pyx_L1_error)
   }
   __pyx_t_4 = __pyx_t_1;
   __Pyx_GOTREF(__pyx_t_4);
@@ -26521,7 +26521,7 @@ __Pyx_RefNannySetupContext("PyInit_imgcoord", 0);
   }
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/imgcoord.py":23
+  /* "openptv2/algorithms/imgcoord.py":23
  *     )
  * from .trafo import flat_to_dist as _flat_to_dist
  * from .multimed import multimed_nlay as _multimed_nlay, get_mmf_from_mmlut as _get_mmf_from_mmlut             # <<<<<<<<<<<<<<
@@ -26530,7 +26530,7 @@ __Pyx_RefNannySetupContext("PyInit_imgcoord", 0);
 */
   {
     PyObject* const __pyx_imported_names[] = {__pyx_mstate_global->__pyx_n_u_multimed_nlay,__pyx_mstate_global->__pyx_n_u_get_mmf_from_mmlut};
-    __pyx_t_1 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_multimed, __pyx_imported_names, 2, __pyx_mstate_global->__pyx_kp_u_algorithms_multimed, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 23, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_multimed, __pyx_imported_names, 2, __pyx_mstate_global->__pyx_kp_u_openptv2_algorithms_multimed, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 23, __pyx_L1_error)
   }
   __pyx_t_4 = __pyx_t_1;
   __Pyx_GOTREF(__pyx_t_4);
@@ -26553,7 +26553,7 @@ __Pyx_RefNannySetupContext("PyInit_imgcoord", 0);
   }
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/imgcoord.py":25
+  /* "openptv2/algorithms/imgcoord.py":25
  * from .multimed import multimed_nlay as _multimed_nlay, get_mmf_from_mmlut as _get_mmf_from_mmlut
  * 
  * _DUMMY_MMLUT_DATA = np.zeros(1, dtype=np.float64)             # <<<<<<<<<<<<<<
@@ -26588,7 +26588,7 @@ __Pyx_RefNannySetupContext("PyInit_imgcoord", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_DUMMY_MMLUT_DATA, __pyx_t_4) < (0)) __PYX_ERR(0, 25, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/imgcoord.py":336
+  /* "openptv2/algorithms/imgcoord.py":336
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -26610,7 +26610,7 @@ __Pyx_RefNannySetupContext("PyInit_imgcoord", 0);
   if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_mm_n2_0, __pyx_mstate_global->__pyx_kp_u_cython_double_2) < (0)) __PYX_ERR(0, 336, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_mm_n3, __pyx_mstate_global->__pyx_kp_u_cython_double_2) < (0)) __PYX_ERR(0, 336, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_mm_d0, __pyx_mstate_global->__pyx_kp_u_cython_double_2) < (0)) __PYX_ERR(0, 336, __pyx_L1_error)
-  __pyx_t_11 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_8imgcoord_1flat_image_coord, 0, __pyx_mstate_global->__pyx_n_u_flat_image_coord, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_imgcoord, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[0])); if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 336, __pyx_L1_error)
+  __pyx_t_11 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_8imgcoord_1flat_image_coord, 0, __pyx_mstate_global->__pyx_n_u_flat_image_coord, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_imgcoord, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[0])); if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 336, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_11);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_11);
@@ -26621,7 +26621,7 @@ __Pyx_RefNannySetupContext("PyInit_imgcoord", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_flat_image_coord, __pyx_t_11) < (0)) __PYX_ERR(0, 336, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
 
-  /* "algorithms/imgcoord.py":383
+  /* "openptv2/algorithms/imgcoord.py":383
  * 
  * 
  * def img_coord(             # <<<<<<<<<<<<<<
@@ -26631,7 +26631,7 @@ __Pyx_RefNannySetupContext("PyInit_imgcoord", 0);
   __pyx_t_11 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 383, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_11);
   if (PyDict_SetItem(__pyx_t_11, __pyx_mstate_global->__pyx_n_u_return, __pyx_mstate_global->__pyx_kp_u_tuple_float_float) < (0)) __PYX_ERR(0, 383, __pyx_L1_error)
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_8imgcoord_3img_coord, 0, __pyx_mstate_global->__pyx_n_u_img_coord, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_imgcoord, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[1])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 383, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_8imgcoord_3img_coord, 0, __pyx_mstate_global->__pyx_n_u_img_coord, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_imgcoord, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[1])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 383, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
@@ -26642,7 +26642,7 @@ __Pyx_RefNannySetupContext("PyInit_imgcoord", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_img_coord, __pyx_t_4) < (0)) __PYX_ERR(0, 383, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/imgcoord.py":435
+  /* "openptv2/algorithms/imgcoord.py":435
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -26673,7 +26673,7 @@ __Pyx_RefNannySetupContext("PyInit_imgcoord", 0);
   if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_p2, __pyx_mstate_global->__pyx_kp_u_cython_double_2) < (0)) __PYX_ERR(0, 435, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_scx, __pyx_mstate_global->__pyx_kp_u_cython_double_2) < (0)) __PYX_ERR(0, 435, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_she, __pyx_mstate_global->__pyx_kp_u_cython_double_2) < (0)) __PYX_ERR(0, 435, __pyx_L1_error)
-  __pyx_t_11 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_8imgcoord_5_img_coord_params, 0, __pyx_mstate_global->__pyx_n_u_img_coord_params, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_imgcoord, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[2])); if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 435, __pyx_L1_error)
+  __pyx_t_11 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_8imgcoord_5_img_coord_params, 0, __pyx_mstate_global->__pyx_n_u_img_coord_params, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_imgcoord, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[2])); if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 435, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_11);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_11);
@@ -26684,14 +26684,14 @@ __Pyx_RefNannySetupContext("PyInit_imgcoord", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_img_coord_params, __pyx_t_11) < (0)) __PYX_ERR(0, 435, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
 
-  /* "algorithms/imgcoord.py":493
+  /* "openptv2/algorithms/imgcoord.py":493
  * 
  * 
  * def img_coord_batch(positions, cal, mm):             # <<<<<<<<<<<<<<
  *     """Project N 3D positions to distorted metric image coordinates.
  * 
 */
-  __pyx_t_11 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_8imgcoord_7img_coord_batch, 0, __pyx_mstate_global->__pyx_n_u_img_coord_batch, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_imgcoord, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[3])); if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 493, __pyx_L1_error)
+  __pyx_t_11 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_8imgcoord_7img_coord_batch, 0, __pyx_mstate_global->__pyx_n_u_img_coord_batch, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_imgcoord, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[3])); if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 493, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_11);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_11);
@@ -26699,7 +26699,7 @@ __Pyx_RefNannySetupContext("PyInit_imgcoord", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_img_coord_batch, __pyx_t_11) < (0)) __PYX_ERR(0, 493, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
 
-  /* "algorithms/imgcoord.py":508
+  /* "openptv2/algorithms/imgcoord.py":508
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -26709,7 +26709,7 @@ __Pyx_RefNannySetupContext("PyInit_imgcoord", 0);
   __pyx_t_11 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 508, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_11);
   if (PyDict_SetItem(__pyx_t_11, __pyx_mstate_global->__pyx_n_u_positions, __pyx_mstate_global->__pyx_kp_u_cython_double_3) < (0)) __PYX_ERR(0, 508, __pyx_L1_error)
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_8imgcoord_9_img_coord_batch_impl, 0, __pyx_mstate_global->__pyx_n_u_img_coord_batch_impl, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_imgcoord, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[4])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 508, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_8imgcoord_9_img_coord_batch_impl, 0, __pyx_mstate_global->__pyx_n_u_img_coord_batch_impl, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_imgcoord, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[4])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 508, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
@@ -26719,14 +26719,14 @@ __Pyx_RefNannySetupContext("PyInit_imgcoord", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_img_coord_batch_impl, __pyx_t_4) < (0)) __PYX_ERR(0, 508, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/imgcoord.py":763
+  /* "openptv2/algorithms/imgcoord.py":763
  * 
  * 
  * def flat_image_coord_batch(positions, cal, mm):             # <<<<<<<<<<<<<<
  *     """Project N 3D positions to flat metric image coordinates.
  * 
 */
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_8imgcoord_11flat_image_coord_batch, 0, __pyx_mstate_global->__pyx_n_u_flat_image_coord_batch, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_imgcoord, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[5])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 763, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_8imgcoord_11flat_image_coord_batch, 0, __pyx_mstate_global->__pyx_n_u_flat_image_coord_batch, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_imgcoord, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[5])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 763, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
@@ -26734,7 +26734,7 @@ __Pyx_RefNannySetupContext("PyInit_imgcoord", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_flat_image_coord_batch, __pyx_t_4) < (0)) __PYX_ERR(0, 763, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/imgcoord.py":778
+  /* "openptv2/algorithms/imgcoord.py":778
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -26744,7 +26744,7 @@ __Pyx_RefNannySetupContext("PyInit_imgcoord", 0);
   __pyx_t_4 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 778, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_positions, __pyx_mstate_global->__pyx_kp_u_cython_double_3) < (0)) __PYX_ERR(0, 778, __pyx_L1_error)
-  __pyx_t_11 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_8imgcoord_13_flat_image_coord_batch_impl, 0, __pyx_mstate_global->__pyx_n_u_flat_image_coord_batch_impl, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_imgcoord, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[6])); if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 778, __pyx_L1_error)
+  __pyx_t_11 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_8imgcoord_13_flat_image_coord_batch_impl, 0, __pyx_mstate_global->__pyx_n_u_flat_image_coord_batch_impl, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_imgcoord, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[6])); if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 778, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_11);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_11);
@@ -26754,7 +26754,7 @@ __Pyx_RefNannySetupContext("PyInit_imgcoord", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_flat_image_coord_batch_impl, __pyx_t_11) < (0)) __PYX_ERR(0, 778, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
 
-  /* "algorithms/imgcoord.py":988
+  /* "openptv2/algorithms/imgcoord.py":988
  * 
  * 
  * def is_compiled() -> bool:             # <<<<<<<<<<<<<<
@@ -26764,7 +26764,7 @@ __Pyx_RefNannySetupContext("PyInit_imgcoord", 0);
   __pyx_t_11 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 988, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_11);
   if (PyDict_SetItem(__pyx_t_11, __pyx_mstate_global->__pyx_n_u_return, __pyx_mstate_global->__pyx_n_u_bool) < (0)) __PYX_ERR(0, 988, __pyx_L1_error)
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_8imgcoord_15is_compiled, 0, __pyx_mstate_global->__pyx_n_u_is_compiled, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_imgcoord, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[7])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 988, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_8imgcoord_15is_compiled, 0, __pyx_mstate_global->__pyx_n_u_is_compiled, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_imgcoord, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[7])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 988, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
@@ -26774,7 +26774,7 @@ __Pyx_RefNannySetupContext("PyInit_imgcoord", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_is_compiled, __pyx_t_4) < (0)) __PYX_ERR(0, 988, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/imgcoord.py":1
+  /* "openptv2/algorithms/imgcoord.py":1
  * """Image coordinate projection from 3D world positions.             # <<<<<<<<<<<<<<
  * 
  * Translation of lib/src/imgcoord.c and lib/include/imgcoord.h.
@@ -26795,7 +26795,7 @@ __Pyx_RefNannySetupContext("PyInit_imgcoord", 0);
   __Pyx_XDECREF(__pyx_t_12);
   if (__pyx_m) {
     if (__pyx_mstate->__pyx_d && stringtab_initialized) {
-      __Pyx_AddTraceback("init algorithms.imgcoord", __pyx_clineno, __pyx_lineno, __pyx_filename);
+      __Pyx_AddTraceback("init openptv2.algorithms.imgcoord", __pyx_clineno, __pyx_lineno, __pyx_filename);
     }
     #if !CYTHON_USE_MODULE_STATE
     Py_CLEAR(__pyx_m);
@@ -26809,7 +26809,7 @@ __Pyx_RefNannySetupContext("PyInit_imgcoord", 0);
     }
     #endif
   } else if (!PyErr_Occurred()) {
-    PyErr_SetString(PyExc_ImportError, "init algorithms.imgcoord");
+    PyErr_SetString(PyExc_ImportError, "init openptv2.algorithms.imgcoord");
   }
   __pyx_L0:;
   __Pyx_RefNannyFinishContext();
@@ -26872,7 +26872,7 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
   __Pyx_GOTREF(__pyx_mstate_global->__pyx_slice[0]);
   __Pyx_GIVEREF(__pyx_mstate_global->__pyx_slice[0]);
 
-  /* "algorithms/imgcoord.py":50
+  /* "openptv2/algorithms/imgcoord.py":50
  *     r: cython.double = c_sqrt(x * x + y * y)
  *     if r < 1e-10:
  *         return 0.0, 0.0             # <<<<<<<<<<<<<<
@@ -26883,7 +26883,7 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
   __Pyx_GOTREF(__pyx_mstate_global->__pyx_tuple[1]);
   __Pyx_GIVEREF(__pyx_mstate_global->__pyx_tuple[1]);
 
-  /* "algorithms/imgcoord.py":336
+  /* "openptv2/algorithms/imgcoord.py":336
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -26894,7 +26894,7 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
   __Pyx_GOTREF(__pyx_mstate_global->__pyx_tuple[2]);
   __Pyx_GIVEREF(__pyx_mstate_global->__pyx_tuple[2]);
 
-  /* "algorithms/imgcoord.py":383
+  /* "openptv2/algorithms/imgcoord.py":383
  * 
  * 
  * def img_coord(             # <<<<<<<<<<<<<<
@@ -26961,25 +26961,25 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
 static int __Pyx_InitConstants(__pyx_mstatetype *__pyx_mstate) {
   CYTHON_UNUSED_VAR(__pyx_mstate);
   {
-    const struct { const unsigned int length: 11; } index[] = {{2},{35},{54},{37},{60},{24},{52},{26},{34},{33},{45},{22},{15},{179},{37},{32},{1},{1},{1},{1},{1},{8},{22},{19},{16},{5},{6},{15},{23},{25},{16},{13},{19},{7},{6},{2},{6},{35},{9},{30},{50},{8},{20},{32},{22},{19},{30},{37},{5},{17},{8},{20},{8},{15},{3},{9},{19},{15},{17},{18},{4},{4},{1},{3},{2},{9},{17},{18},{5},{1},{4},{8},{2},{5},{15},{5},{6},{9},{5},{6},{7},{6},{13},{6},{12},{6},{5},{16},{22},{28},{12},{13},{7},{6},{7},{8},{18},{19},{12},{9},{11},{11},{11},{2},{9},{15},{21},{17},{10},{5},{6},{7},{6},{6},{11},{13},{14},{5},{8},{2},{2},{2},{8},{7},{2},{5},{5},{7},{5},{5},{4},{10},{8},{13},{14},{2},{2},{2},{4},{8},{4},{7},{2},{2},{5},{2},{3},{6},{2},{2},{4},{3},{3},{9},{14},{11},{10},{19},{14},{12},{10},{17},{13},{8},{6},{2},{3},{12},{10},{12},{19},{5},{3},{4},{5},{4},{4},{6},{8},{5},{6},{6},{6},{5},{5},{5},{1},{2},{2},{2},{2},{2},{5},{36},{36},{1738},{1383},{10},{245},{304},{336},{1}};
-    #if (CYTHON_COMPRESS_STRINGS) == 2 /* compression: bz2 (2923 bytes) */
-const char* const cstring = "BZh91AY&SY\342\264\227\207\000\003e\377\377\377\377\377\377\377\367\377\337\277w\377\377\377\377\377\364@@@@@@@@@@@@@\000@\000`\0147\307\265\206\273\230\333;Lc%\005PR\2332\227f\347@\0045\203\241(\224\364F\251\231\023&#\036\232\236&SSd\207\244\r\006\232zOQ\243\324\365\r\352\200\365\000\000\0006\246\201\352\014\200I BO& \323\024\325=\023Ce6\2202\000b\000hh\000\017P0\217MA\220\000\323\322h\020i\211\211\211\200\230\t\200\000\000\000L\000\0010\000\t\200\000\000\000\232\004\246\210!\244\010\310\312f\215$\375&\244\375)\344\322z\217SL\324=&C#!\240\000\000\000\310\036\223\023C\322hA\246&&&\002`&\000\000\000\0010\000\004\300\000&\000\000\000\002h\n\242\020!5\r\032(zO)\236%\033j<\032\"\217)\352\003L\365L\233Dh\032\r=Fi\014\203\365Ci\244\365=#G\224\235\306K\212\022]\246:\273\302\3678;=\204\037\327\nx\347\203<\034\204\303\234\303\035\225\037-\226\212(\242\207\374\202\210\265\227\0373\376\227\302\370\213\213\256y<\204$\231&f\0230\211J\021)\023\023\tI)D\245\020\271\232\325\330#\310\311\031\331\376|!\345\201\240\267N\320\321\r(\2778\331D\014\222\022\020\t\220\302\020\204\314\223 @1L\032\204\341Q\022EH&0E\021;`aj\024j\220\314\225NF\004\204\262\002`I\222\030H+#\230h+\002f2\363\260\326!\207F\342\346\222\253&\tL\304\301$\306F$\244Z\250Q\034\355},\3671\213\232\374\304\265\322\322\214\250\252\213Y\031\265\214Q\222%\022\2621B\3706.m#\006\226$m5\231\220fDfh\214\355f-\276s\230JRH\224\245*\231\334\326\206\210\216\215\227\034\344\256\\\032\035\025\347\242\260\254\211Y\266&*\021i\224\240d\250\242!\240\234\211\"\240N6\035u\312\221e\013\230\263\3349\211\025\351PV\361\231kF\3410\215\032986\300(\361T\367\301\360\031\177\361\257\323\374\300Z\240\354\316_\346\263b\213\267\333B\215\004\244\352K\353L\247\212\374\027\215\356\277\376\326\303\304\245TY\227\253\360w\370%\356\276ob\2219`?\275\226\304b\351\350\353)/&k\331e\306\371\027\346\212\036u\363\263\330Oq\\a<C\025\235g-j\341\216\177\375~\276\327\321\331u[\243qs\316\037L\216\303R\364U\275\271X\304\364SD\227%D\365\224E\031\026\210\270\300\301\211\223""\263\231\211\254K(\311\2222}\266w\033\002/\277oIx\263\035g\026\265\343B,\333\364=\3173A<\301D\334=\254\340\322\226\025J\003D\304(g\345C?\027\333\031\207#\253\024ONp\225Q\204\365\255\326|\272zl\227\303w\\\3479\301\344\261\360t\266\263Y\211\035\202\002\031\003\240\221\331\344;S\273\006\005d\254/\2442\3159\263_\020\271\201\233\026c,\230\243\0020{M\227{c\366s\030\264\261V*E4\364\352\316\252\365\317\310\342\271^_\023c,a\226\335\215\315\300\351\370\325\212s{\363\207\005\206\262\327\tL\225a\002\020+\"8c,\200pC3L\t\267)\343\337o,\355\333a\210\330\260\326\032\306C\244\337\215\305\305\315Z\345\342\034\216\255\324\320\031\362\326\362\221\020\310\016\034\243\365\365\246\267\220\352\t\302t\037\201\261\372;]\360\236e\376C\257\017\020R\0304\322\247\244J\342\341\310y\234a_\033\336\023\\1\220\351`\250\272\014\260\030\263>vN\346H\3122\214\232\014\232\037\0336gG&K\235_\005\356~\260\301\030Dgx^\317\231\331\233\231\014J6[M\2075\320t\030\235Ib\371\021\342kF\013\226K\266\351\363\327`\271\343u\007/7oF\031\273XDZ\277R\006P\337%rw}O\r\324\223\322\257\375' \257\231G\201_b.\2524\007p%\352J\231[\t\372BI;\236\214\275\021V^\253\374RN\252\207iz\350\212)\343\020cS9\035)\331B(\312\276\271\004\241I\230\314\234\320\360\352L\244jI\t$\216\327\37208J\rS\036\016\016\2453R\321\267\373\364\r\007\355dMf\225{v\242F\375T\177\244\252!\355v#`Q\257\232\342p\034\034\347\3003\":\264\265\322\272Z\000\2333PqT\021i0p\351\025\231\325\211\352\215\305\274t0Iu\356\016\357\2049\311\r\346\214\211\004\331\301\273\241\004\201\001\016xP\220\355!h\327pv\316sw\030@@\222jZ\244\324\"\204\214\206S\3057v\261\307\213H\236\372kW\025\276k\001\362\300\":0\314\330)\366\354=:\337\304j\342Z$\302M\331\365\244b\314d3\270\351\256\220\376\227r\363o \033X\345\033\220\344<F\233\002c\307\231\322\215f\354\220\340\233zt\264GU6\256s\006\233\322jF\005\330J\023D\240\206L\216\031\226\020\243[N:PK\r<=\235:;_SD/)\327$%\327\r\266r\342\246\372\002Z\036d\345\"(\357\271\250\353\206z\311\"W\330l\222o\205\t\005^\320\357v-\251\343!%\232\036\353\203$\251_\232""\344Nj\350INy\003'\003S\226\233y1\tA\271\275\343\231C\273u0\226|v\014\365\226\272\2754d\262~!\t%\303>vl\021ne\264\362WO\201\326\310\237V\346:\215M\347k\250\215\214i\0139eV[\242\307s\364\346\333c\324\360!\010Ig6\303\216D\304\320\032\030z\230-3E\370w\267\317\2002\235\374$\031\201\265\232\r\300\270\2013\247\265\240\031\337i\3617\033\351\233\177\247\267\206Bc}O\326\222\022\234\262\336\027\364O\215\244\026\200\201{\275\310m\215Mq\t\006i\030\333U4j\211\371o\234\271$\257\3121R\315:\341\310\2515e\315\214\255\"\377<\230R'\017\212:\332\311{\336,\354ppm\2038!\330\310O\256\230\014\274\017\263+\364&\255\020eE\250\367\375'\014ZL\370\r\203\364\266F\301\357rt \223Cq\360\361^\020\rH\213\202x\314\236&\r\335-$yP\302\214#\225,\271\026g\325\210V\365]\334\252>\216\024\301\322\023\313\261\021!\251\322\270W,\247GK!\36405\352\274\234\254\257\002\362~c\205\026\224I\002,\324b\351\354\020\222'J\217\313\330\274,\030T&\200B\346\225$)\334/Z\333+\006\303\026\253\0138\357Z\315\246\331\222\252\025\246\311\rn\245\331\236=\201\302lnL\034y\251\234Y\314X1\360m\n^^9\235\231\302\223\314$$\035\365\253\201\263_\206\300\274\25773\347cE-\312\310\351C\323D)\2127\276\276\3363K\366:]J`\331\2350\355w/\343y\247\014v\322\205QV\361\252\312\224p\021\036U;&Lq\226\241\223\326\310A\006\006\2638\213lM\tJ\202\201:\207\362^\020m8\355)\347\211898\0354\236\225\205\200\254B\314gA\2344\206\315&q\030\273\345\310\267N\220\322\326\016\364\224\242\010B\005Y\347\341\320v\242\2255q7\037\225\r\030O\020\345\313\212'({\014+,\305\350\202\354>[!\321\316\253u\373\014\003\001a\201\200`NOs-c\003\366q\204*h\275\231.#\235\235\2454\357\277U\317K\233\006\224\340q\320\223\227\371\265b\322\nU\332\020\312\373Aq\t\257\272\026\271\272\231\245\204\035\000+\006V2\224\276y\036W\001\201\202\350Y\tHn\245L\364)K\230\374G\321\333\216v&!yy\277\253\241`\345\2202\264.\3348X\205\347\030\036\306M=\316m\023\025d\010\344\036V\204\330c\005\310\023!$$\3022\341\245\202\261\254n\271L\234\332\247\312\031\031\266\226`\250\226\331\314\313B\2251\302:\035\217\2211K\220L""\304w\260c\006\033\243UQ\255f.;\336\265$-\352\2642G\032\236\232\r\351\3603]{aV30B\235J\246}\355\021\\z\325\375_g/;\372\235do\233\300\272\204\307\002\353\214\033\343\013\302&\247}=\251\212=W5H\207u.\374\325$uRwO\034K\236\365X!Hy\251\363\271\036\3529O}0\242\250\351\250\205\351\177g\211\275\327Q\031\010\215\364\203\013ByD|\360\203\200\372^H\004aqF\215\003\226L^\"j\360.F\342\327\251/\322\376\215\244}v\321\326J\347\304\271%\321\334F\337\361r\263?\007\236D\320\230\262<\365a{\007\256\235Q\327C3\256\216#\341J\213=\307\335^\273\337~\202\253%\021e\033\255\363\177\300\225\023\025{\313#\332\224F\353\343\032\215R\242\222j%H\324\272\025xx\216\024\212|\211\210\343\211\376\351,\222^9Oe\351a\330<T\212\"Q\330\217\353E\246\326=\325KC\211#\215\307U\0365\010\263\205\251\351\250x\335\264\254\212>\255\227)Z\375\313}hG\261\302\235J8\352\256\245[\374\r\224\270\025G\n\250\233#\216U\212\2707[\333\304\311\372\333*>U\276\006\253\230,K\322\370\032\321\3418\222\2445*\212\252QF\313\201$f7N\362\\>\243\200\272\262\264ES\336#\221\303\014\374)x\036\277\315\034\010\341\"\222\244r\017\211*%\353P\337u\276\371\024pS\223\221'\242\223u\276\252\305\225\365\033\235\367&\376\361\246\346\372\256\243{s\341z\r]\351:\262j\2570\372\214\030Nbn\360+\205\323dmqL\376sv\212\345qL\341%\001J\245\206r\002\311\246\214+\014,\213\334+\006\266qx\253\257*\005\231\215B\241\232).\2469/jb\254Dh\2440f\t\t\262\\\024\217\257Q\206\2161\021\t\3049\342\202\212C\to\177\242B\014\313\200)\355X|\337\017\217\235[\245\252e\2430\262r\215\014\223(\311.\235\371\216\311\210bn\230\235\003\307\377\215\323\002\374\003HwG\236XY\316\014\241\352\223\234\376Q\272.h\004j\357m\036$1\t\212$e\213f\334\266>T\"1\311\210\016\220\035\001/\273\217\364\366\316\303\201\370\237H\206\377ut\321\354r\326\032\345\323\354\250l\254`Q\025]\035\030\231\211^\264,Y)I\326^/3w\277i\223\006,\251\221de\345\245R\270\317+\213E3\342Yo.\013\331\030\214\021(\240\300\271\233\312\321\036\363m_m2\214\245\237:\232sZ\327h\323k\350\275%[\027\257\320\242\213\224iU\240\316\255IIg\246\2524""\032\013\211\331\215\035R\265\034EN\335K\2031I\222*ND\013\002d\210$\331\225L\227\261z\314\027\230\254f\265\016\205\225J\275j+\177\377\027rE8P\220\342\264\227\207";
-    PyObject *data = __Pyx_DecompressString(cstring, 2923, 2);
+    const struct { const unsigned int length: 11; } index[] = {{2},{35},{54},{37},{60},{24},{52},{26},{34},{33},{45},{22},{15},{179},{37},{32},{1},{1},{1},{1},{1},{8},{5},{6},{15},{23},{25},{16},{13},{19},{7},{6},{2},{6},{35},{9},{30},{50},{8},{28},{25},{35},{20},{32},{22},{19},{30},{37},{5},{17},{8},{20},{8},{15},{3},{9},{15},{17},{18},{4},{4},{1},{3},{2},{9},{17},{18},{5},{1},{4},{8},{2},{5},{15},{5},{6},{9},{5},{6},{7},{6},{13},{6},{12},{6},{5},{16},{22},{28},{12},{13},{7},{6},{7},{8},{18},{19},{12},{9},{11},{11},{11},{2},{9},{15},{21},{17},{10},{5},{6},{7},{6},{6},{11},{13},{14},{5},{8},{2},{2},{2},{8},{7},{2},{5},{5},{7},{5},{5},{4},{10},{8},{13},{14},{2},{2},{2},{4},{8},{4},{7},{2},{2},{5},{2},{3},{28},{6},{2},{2},{4},{3},{3},{9},{14},{11},{10},{19},{14},{12},{10},{17},{13},{8},{6},{2},{3},{12},{10},{12},{19},{5},{3},{4},{5},{4},{4},{6},{8},{5},{6},{6},{6},{5},{5},{5},{1},{2},{2},{2},{2},{2},{5},{36},{36},{1738},{1383},{10},{245},{304},{336},{1}};
+    #if (CYTHON_COMPRESS_STRINGS) == 2 /* compression: bz2 (2949 bytes) */
+const char* const cstring = "BZh91AY&SYM!v\226\000\003j\177\377\377\377\377\377\377\367\377\337\277w\377\377\377\377\377\364@@@@@@@@@@@@@\000@\000`\014W\300\003y\211:\241\215\213hf\303[\033f\255l\240\000pT\016\022\241\021OS\031F\230#\365\036\232i4\323\3257\224l\250`\231\007\3514\236\215&\207\352@\3650\004\310\321\200L\201\372\240\362\200I!\014\224\364b4\311\2444\325\032lQ\210\017Pi\240\000\000h\000\000\003M\001\243@<\246\201\006\230\230\230\230\t\200\230\000\000\000\004\300\000\023\000\000\230\000\000\000\t\240i\2414\232\004\t\243M\nf\000L\240h\323F#\324\320\036\220\323@\000\000\000\000\r42hA\246&&&\002`&\000\000\000\0010\000\004\300\000&\000\000\000\002h\n\242\010&\204\231M\223J\237\232'\251\351\242\246\362\233\030\205'\251\232\236\246\217D\361=B2\001\3524\362\217jL\321\033)\350\364\203\322\215\037\245\"\342\233\311$\272\314}^\350\275^\227'\362\203\372\343O\034\360g\203\220\230s\230c\221G\321e\242\212(\241\377\220Q\026\262\347\357\177\351\2040\210\271{\275>\222\022L\2233\t\230D\245\010\224\211\211\204\244\224\242R\210]\252\325\337#\322\315\0324\352\302\037L\re\272\326\206\270mF\032\021\265$L\312e\"bP\224\2451\0231$\210a\2520dl]\203d\030\272\260\316\356\"Q\324E\366`\231\210\331HuX\"5\023\004\314L\2412cga\025cT\3046\366a\032+\nK\325e\026Ud\301)\230\230$\230\314\310\224\213U\n#w{kK\262\213\267\267\022\336Kj3\242\252-dj\330d\214\321(\225\221\222\030A\277wi\030\266\262#\264\330\324\203R#S\\h\330\311\313\272\334%)$JR\225M\035&\266\270\216\013.n\245u\303[\201\202\260\3347\027n;\210\226\3047[Y\246#<\356t\331.\301\260\2124wWT\213(]\223K\215\304\212\365(+\200\324\265\243\274L!qrB\301h\002N\230\341\306\327 \250\377\034\332_\226\212\222\244\305\"<\345tK\223\032\362\245\312\0252\t=f\021\307J\317\350\265S\375\235\201Y\336dX\207\223\265\315\306\377\302\340\364!\244\365\205\353\337`kT\254)\274?g\005\020\337m\034S\003@\347\322V-\200\255Bv\261Vd\023\224\345m\225\307-?\373\r\356\327\027#\262\357\216\362\357Xw\010\362:\030\"\257\007z\261\221\353\246\211.\225\023\333Q\024fZ\"\346&,\214\337[S#a,\3436h\315\366Z<lH""\303\016]\246\002\314\266<[0\032\321g/\325\374]}a1j&\205:\322\016/\301\265Pp\230\305\\Z\232\363\311\366l\214;pv6(\336\272@\335(\302\243\303\352\303i\341\321\334\270\236\335|\311JRa\331\270v\267\0238\316-\r\252\030\006B\002\220\034rq;\227\276,J\311XaHzMZN\232c\020\301\221\246m\014\363d\214H\305\375\216W\303\303\360t\2316\262V*E6\366*\321V\013\277\271\344\272\277/\356_(\242\\07{#m\276n\205\202\221\357\365a\365\332n\231\234%BV\004\010@\260\230r[\230\n\025\210\213\213\307\023\317\313\247u\353\351\374\rh\327\010\321\0326;m\375q\"EQF]\343\233\322\276\251\006|\265\274\250D)\007\016St\376\372-\346:DB(|\315>zu\370m\2261\351\267\313oa\030$\337\327\031kDp8\024\205^\242Q\303~\032\230\360%\251\324\305Qx3\304d\324\341\315\355f\214\3438\315\254\315\255\363\265jpf\315wg\317\203\324\3301F1\032?[\360u\375\211\2731\221G#\264\337t\2357M\221\330\226O\330\217\334\331\030\256\262^\313\255\352/\212\357\241\330\037_\245\313\256u\364&\210\355\274\301\013'\200u;\236N\225P\353\023_\306N\004\373\250V\006\226\006\252db\003\210\007\344x\275+\227\216\t%Tt\337\246\014\337\250\274!\324\314\205G\352\220\320ek0\266c\010m\262\250X\210C>\250`\354]\020`*1+)t.2\222C33\033\374f'!#\n\016,]Rf\251\246\267\255\344\027\037\265\223\033\206\205\245\277\311\212\327W\336[c?\303\350\277H\267\027\265F\"\207\362\326\306\364/\257\247;\370o\341\2741\354\316n8\264;,N\035\364\351\024\235\027\340\257\033O>\rS3\336\343<\036\311\352\254\216tJ\305\342\204x\n\254H\255\036\314\246T\213'w\207#\352\273/W\250T<fe=\252v\222$\221I\224\347\234\335y\265j\331\220O~K\025\345\217\242\320|\370\201 \262|\206\263.\033\002\3071|Q\243\244q\272!;\036s\213Q\005\303\n\205)S\205\366\373\371\273\035q\330\207\022:\356\273\354\272z\023\017>\345&k\302\342\331Z\023\035\251\246\355{\221\254yB\264\222\304\213\212\305U\273\024g`\310P\214\222\026\002\013\030\314\220\333d\tW\241\223cC\026\347\237\2101\331S\250\304\3602kI\364cj\000'\022\310I\3344*\362\322\024\344\226P\032\226\004\271\323\266@$B\330\312\264\2652\253\\\037\0030\252\240.x\237\032\206\224\215O""\tP\350\202\212\001\266\373qp\336\004\0019\037\023\211J>\372\334\361\223=\242\272\313]^\211Sdo\030ff\3176\362T\261\265\255\267O\356\213\273\2676/\233\203b8\r\013\237\246\201\214QpY\304d\262\333\254w\231\2432\363\273g\366$'Y\316\000\337&5\027\005\314=bn\267\257^\257\207\265}\343k\243U\215\3028[\257T\236\002b\223M4\251\024\246\260\337\345\215\250\301\265\344kdpPmL|\304\220L\236\372\001Myi#\201c\000\300\363\370\2314\32233\022\006\007\026\331\2261eio.\021Q$\322\360\202b\304\224\353\3241#a\356-{\034S\302\022\002\032L\266\221\300\226\023\327\343\302\203\036=f\030@!P\\%\301\025\204<\345\323\275u\312N\010\027\221d-:\212\005\250\350\265\204\255v\322\344\255h\242P\030\202z\303=\362\010\006\010\231\301\031\250O\023\0073CN\217\n\030\313\031\262\245\226\225\231\256\316\006\006L\025\rV\362\253\212\324\220U\363\2638I\355\234\207U\345\nM\303\311\254f\313E\355\244\3463_\301C\t\351\312\322KH\302\031_\252\224\314\257\206*fnj\244\036\024\320\024@!{OQ\n\270M!\221\202\226,U\225\357\275m\232\333T\352\250eML6\335S\222s\372#\202dld\035\327Ck\177\034\324\362\206\316X\202\310\357\004\365\022\034fI\300\351\346\3143\014\310\342\302J\332)\333\t\021\331\261\325\242\311\366\265\246\033\247\030\005\247\215\214\002\333\213\223v\205b\232|\265\240\025\r\263z\016\207J|\341\262\0075:\"P\252*\360\236+*Q\316\272\255\271LLK\216:\211\212\307X\337\274\030\233\206\201\031\255M\n'\244\244N\245\375\233\302\r\206\032\324c1\020rp:\211\336\225\245\240\255B\316\\\202\340\2744\\X1S\235\227#l\232w\250i\007:xA\2301\004\0039a\311\210o4Le\321M-\226F\256V\201\253}\244I\330-\201\001\261\253$\303\310\323\337\246\034\306\363Q\031bb\030\213\034LC\022$oe\2700?S;\275\306LJ')W!\211\324\331\264\252X\251+G\223\005\nA*)\336\315\005\216a\215+)\224g\245\031+1\236U\236\033\322n\351\302N1:\033a\265\024\225\312\365\000+\025\235spw\t\276m\252\211\021\274\331\30255\302\256q\234\014\3030\372p\363\354\034\251\014\255\013\370N6!\244\353\302Z\027\203\247\203!\235\271a\312\345\222h\007F\301\311\352#\251\034\256\\M\307_\217n\271\344\236L/\330V""7\357\3276\304q4\203\024\317\025\356\334\301\206-z\253\307Hy.\233u\223\020\2576\250j\204q\360c.\234\3562sryq\270\305\023\231\037\203Qt\342\361\263%\031*hEh!V\013#?KL+\317B\277\243\247\334g\257\233\364C\362?\310\2173\027\307\037\"O\310\224x\311\251\346O\361\314Q\357:JD>\362^i\252H\354\244\373\307\242%\352=\346(R\034i\365\275\327\373#\344?\032aEQ\326Q\014\022\371_\265\340\356\250\214\321\026\374\245\036\332<\310\342|%\316(\371\243\262\212<\262\262\303\355?\003\346z\326\236e\321\336[\005%\357\277\345\332G\330v\216\332W~\225\322^=\224r\376W\310\324\362\375B&\204\305\221\365\025\206\014_u=\021\335CS\272\217\021\371\222\242\317\304\376v\013\3767\276Ud\242,\243\276\360\236\037\324\225\023\025|K#\360\312#\276\363\216\203\242TRN\202T\216\205\341W\317\3429\322)\372\323\021\343\211\377\244\226I/D\247\353=\274|\207\355\244Q\022\217$~\212-6\261\361*Z\036$\217\033\307U\036\205\010\263\235\320\373j\036\207\327J\310\243\370\254\272\225\257\363[\330\204}\376t\364(\361\325^\205^\036g\"\\\312\243\235TM\221\343\225b\256n\373\301\340&O\363r(\372\026\370\335\027b\261/o\343l\217\234\361%Ht*\212\252QG#\231$j;\347\300\227?\3649\213\326V\210\252~\002=\307<4\347K\365>\357\357\216ds\221IR=\301\372R\242_r\207\205\333\367H\243\232\236\347\270\223\327I\337xUX\\Z\250\356\351\234\375 \231 |X\232Rw|x\253HY\324UO\210\372\212\024,\244vm^\n\345\201w\204\230y\353\331\036\036\022a\010\242\002G\010\025\337\010O\002\024:(\204N\250\350y\260\217\220\347%\024\0041\024\312\006\010\222\215;\262\216\234C\223\313\364$m\251\302\033,\0361%\377\252\202\214\213\242x\331\222h\t\004\211\033l\255\333\310\033\005_4\023l\300\310\370\310\311\350\256T\232T'\020\231\207i\202\364`\256>1z0\014\016\214\032'w\374:v\034=S|\345}\247I\322\366\215\247\225\223\335\347u^^s\222p\367\3437+y\375M\216B\n\305\271Xd\240O.\310\206\217(\032\"#;\304g\2601\210\r\"p \177\310^h\373\377%a\274^\177\245C\221c\022\210\252\361\301\0231,\026\205\213%);l\006\006\257\203\3413b\311\2353,\214\376\232U+\232J\345\242\232dYo\247\026\014\314\206(\224Pb]\253""\351k\217\211\312\257\370&Q\234\264\321M\272\255k\353\333l(\301%[\3700\326\242\213\250\332\253Y\242\265%%\237mTk5\227/\2447{\226\323\n%\213\275\213#q\205\326b\275\225N\245\326Uh\334\234Y\260d\373\214X\031,j\265\003A\303\002\033qCG\376.\344\212p\241 \232B\355,";
+    PyObject *data = __Pyx_DecompressString(cstring, 2949, 2);
     if (unlikely(!data)) __PYX_ERR(0, 1, __pyx_L1_error)
     const char* const bytes = __Pyx_PyBytes_AsString(data);
     #if !CYTHON_ASSUME_SAFE_MACROS
     if (likely(bytes)); else { Py_DECREF(data); __PYX_ERR(0, 1, __pyx_L1_error) }
     #endif
-    #elif (CYTHON_COMPRESS_STRINGS) != 0 /* compression: zlib (2597 bytes) */
-const char* const cstring = "x\332\355W\315w\323V\026'!\001C\022\022\307!%\024Z\331\001\314p \215\223@{\030\2069\371\342\224\236\241\305\t)e\332T#K\317\266\006[\262\365\221\3309\263`\351\245\226Zj\251\245\226Zz\231\245\226^\372O\340O\230\337}r\034\207\000g:\235\236.\2469\312\323}\037\367\275{\177\367w\357\223\037\nkv\261\310\014aOe\373\202\2423S\320tK`\215\232n2\301\264\014Ua\346\272\244\t\272Vi\n\262\301$\213\t\222P\210\225\254\262d\t\252)\310\272f\251%[\267MA\325\204*\253\352Fs\001Z\264\225d\232jI\023,]\200\262r\217\357\023\257\240#{\213z\033\357\033\252%\025*\254\267 6\252h\350\325\217\351\252\232\302\032\302\276j\225\005\253YcB\2667n\031\222fr7\216U\342e\320P\r&[\202\242V\231f\252\272fn\034I\302M\205<\242\r\342E\233\325\232\325\024\314\262\204\255-\273\006\343\212\272!\310M\253\254k\013\222aH\315\247\247\267\343\372\246]\253\351\206\305\224\247\332\236TQ\025\241\252+\354.a\213\305L\021\262rV\300VY\354G\266f\357\n%h\035-\216O\004\234R\003\366<z\306}\370\236|\320\213\302\267:\320\342\350\257sC\310d\205U\324\0023\200#P\242\310\341\020\036\"Mx\276\371\374\336\312W+\202\244)@\362\2378\336\204u\005\271\202\340 \342\330\260`\253\025\013\207\021\202\346\202\360\264(4u[\320\030\314D\344jX7\250`\225\231&\230\314\"A\310r\270%\013~\213PW\265R\266\007\235\272\307H\373\211T1\331\302w\266\305\017\322mM\301\221\332\021\207$Yf\330\3756wsG\343\341\207\022(\265\307\014D\327bU\352\353\0052{\341q\366O\177\225\024E\304\211L\252\224t\020\246\\5\277P\253%Y\327\re\241\326<\036]\250\332\360\251\312\224\201!\000]\3249\016\002\300[l\310z\245B\226\"f\013RA~4\300dZ\024\373\361\370\335\341#\002=\356\321@\321m\230\375\343\303\335\023\375w&\357\n\017w\025\325$\007\031w\263$\013\267)\342%\3165\002\003\330\201\036\026\323,\236H}>!\274\261\212Bp\230\352\001\023\036\375EX<\305DM\007\013\212\022\334\026D\321`\212-3Q\024\024\233#\252\351\332=\260bO\225*\230\225UM\2650\031\343\372\370Q\234\352\312\t\257O\217\021_\373\316\237\230\357\217\362\034\371\261X\321%\353\256\300_\273v?\252R\245\242\313\274\204\220\271\202\"Y\322\302{fc""\356\323\266\275\n\264\260\272\275\376\364\251\270\261\363\354\331+\361\331\263\277\355\274\0207V_\254nV*j\315TMQ|\336l\340\177\003\234\027\277\005\202[\254\270\315\3526\323dF)\263p\234=\0102\370\303\024\261&\031\003\2748\"\320\221\tb\314N\311<\216<7Y2\233\232\254\352\013\262n\3506\022\206\231\005\311d\005]\257\310\262\204\177\000K9\"\212GB\211Y\0243\352b\265\250\"G\014If\005I~-#\025,\2050\020E\205,\027\225\252B\t\310\033\021n\305\301aT\201\340\n\252\007\323\354*Oqf\030\272\001G\241B-\234\241Wc1nE\335\020a\016u\232\213qKCU\276\366`\261X\221J&\032KT\253R\211\211\334\363w\373bA\262\344\262\370\201a\265Z\253\360)K\207\355\246%\016vx\324\037\254\200\235U\311\352U7Q,\332\032\340\001\036\260\243(RU\207P\261\255\367\r\321\230iQ\034\304\022\207\021\016\306\302\036\223\305\306\261\330<\026\017T\344K)\266\262/\364\315-\2352\177`\220\270PE\3200\014k\361\246+E\325,Q\226\251\3054\275\032ej\233e\004F\326\2535\025\351(r\271G\005\310\224T\310/$h/S{\351\372:\367z\351\365\262(V%\020@\304}D\227Q\025\177\242\262\210F\313Q\263$ry\231C@w\005V\352\212]\241w\257\222\035\275E\255\"5\305\023=-\247-i\313\232T\305\362^\013\030\320\262}45\315\000ujM\355\000\234\002\351K\252V\313\325\226j\240aM\3075E\027\245\312\313\240(\326\220Kr\231\311\257M\273\032\367z\241 \221S\223K\266VS\345\327\260nS;Z\267\307oo\"\177\335\226*\261\025\307\205\250/\305%k`\2005H,\201:\3405\263lC3\366M\031\203\270cz\316@\352\2256.\367,\032\220\2176\345\265\303,3\202\0353\006\246Y\315\264t\374\0336%\231\205aQ\344\027\001\\\000\000v\r9\310p\353\332\314\344\364\342\304\342\224j4\026\033\345\346b\263|\260x\300\014\335|3\364v\366\314h\322\031\216\246ox\253\336\217\301\271\240\020\016uF\306\2421\301\033\362>\3657\203\344G\326d\275\272?\026\334\017\207\260\346\334\231[\331\316\310\214\363\324\375\336\313y\253\235\221\211\326Vk\317\331rL\367\206[\364\326<\2513\222\361\322X7z\335]w\033^\2753r\355\224\220\361\346\275\037\374\374\373\246\372B\332Ky\337\370\322\373\204O\335%\027\312\327\335-\327\364\322^\256?B\257-\267\356\301\356+\356Y""\367\241\227\377\317\20497\345~C\246\367\205\361\326z\353\000\235'Q\346\313\240\336\305YXv\203\034>n>us\275\3463\027*\363^\256;r\376\315^\353\245\263\351\316\270;\336-\377\274_\357$f\234\325Nb\316\275\354\226\274<\266\376\200\230r\356\273C\357\276.;;.\307r\316\345.\305M\027H\314\"&g\375%\177;\030\016\346\203\255\300\0143\341zh\264\223\004\313\013o\232l\271\356\276D@d\177\332\3772\310\004\353\201\021~\322\036n\247\311\322\257\240\372\003\324\376\325^j\347\273p\3421V\301\221\253n\026\272\313^\301\037\372p\247\013\1775\177\315\227\272\300k\3265\274$M\337\204\220\212\t\360\241\016y\362\031\200\341!\273\036\013o\265\2413\243\027Z\243\255\035'\355\344:\211\311V\323\035\002\360\253\357\027\273\211i\347\246c@\\s\231\267\344m\373\303\376M\337\010\222\235\304U\367\266\227\361\276\346\206%&\243\311\317\271eP\265\2355Gv\247\335\334\207;\335\304\2243\n\026#\\\357\nt\342-\034N\216\316z\206?\213\323f\201\345,G\033\223\024\240\013\223-\304p\254\225\353\214OG\323w\374tg\212b+u\246\204HX\014\206:SW\335;D\336\356\370d\313r\226\035\314\314:\004\310\205+t\326Xk\245e83\316\013\020g\033\364\035\007\255h\351\236\263\355\216\270\033^\002\301^\361\255\340A\230\nW;S\237\273\365\356\024\321a\352\262\223\357N\3158O\0002\321~\346\232\373\004\250.#\352s\210\371jgF\360F\211`\335\0312`\315+\022<\235\231O\034\213g\314\025b\356\034%R=\226{\033\344~\371\372\353\356+\220\343<\320\271\034H\301~Xh'\016\207\017o\036\326\243\347/\243\227\257\242Wb$J\221T\214\212\245\250T\216\0253H#\034\224\356\342\000\323M\273_\362\221+s\335\23197\331\235J9\017x\370g\346{\304\233\241\034K\\j\225\235\202K\265\350B\312IS\034\3534(\265\032 \006B2\001.e\234\365\217w\272\300\374\2763\014\375q\204\320Y\341\013\306)\324\303n\372\264@\207]jms\005lsR\000\335\020\251<\250D\264\224\221'\017\374\244?\337O\316\2750\037\312\355T{\255\rf&\235\244\223\245\312\322\213\323\264\277\354\027Pm%\344\360|\270\025\232\355L\373\311a\372p\371P\216\362\333\321v\014\336\337;\377\255\"Y>\325\332'\304\010*.\034\031\314\020\324\035`\276\311\263\377$""\"\313\230\315\r\210\335\361\244s\231\357\002!\205\304\221\006\204k\340\3500\212\372\226g\372\031\177\035$H\005k\201\034N\207\320\243*\226q\277\345\023&\007\304\n\227\302\035nn\346p#z\276\025m\355D;\260\367\247\350\247\237\243\237\305\316/W\351\366\r]\301\235\220\205?_\005KA\27630lxW\310\315\356\010\322\224\337d\367\026~\213\233\354W\336[\177\\<\277\305\305\363\375\037\227\314\037\227\314\377\321%C\206\232\340p\335=\217Rs\313\037\362S\375\252\\\014W\303\355\366Y$\3406\260\273\025=\317G\371\027\321\213\030\277\335h\027\020\376\243\363\253w\340e6:C\324\031\301\315\365f\250{\341bg|\342\304\223\234\356=c\343\235\211K\324\342\2718\026\177&\376ne\257K\277y\322\224\325\360\240\265\341\234ur\316\006~)\344\250FL9\t7\201L\341\213w\275t\\5\316\203\251\211T\224\232\217\346\227\203\034\345\353\035\372\031\361^\247?\342z\342\302\211\007\272x.\216\375\276\227@\342\314h\342\215\365?B\204c\013o\300\337\024\252\350\327\301F8\022n\264G\332\033\207\243\207y\34052\332\3715\317\350\271\267\027\317\214\216\2652\3218Pqm\357\t>!\000\326\3717\373-\031\237/\n.\223\244\367\005U\362KTL'Zy\362\340\254\363\020\025\361\\t\353\317!\225\354hR\240\362\210@M\"\335m~\263\333`\177#\250\017\016\235\356\034\270W\370]_\306\247\317\3256\352\364\245\026s\226P^\207\020\222-\230\263F\025\306O\306k/\003\205\253\376\375\340l\3600\314\017\016\345\342\316,\022\357\016\254\237Nq\330\256\021\332\023-\021\237E\267\203\333a:\206~\302\333\r\372\230\357{\212\177\303W\202\033\201\022\336\014\353\337\375\033\254\235\326\342";
-    PyObject *data = __Pyx_DecompressString(cstring, 2597, 1);
+    #elif (CYTHON_COMPRESS_STRINGS) != 0 /* compression: zlib (2612 bytes) */
+const char* const cstring = "x\332\355W\315w\323V\026'!\001C\022\022\307!%\024Z9\001\314p\300\304I\240=\014\303\234|qJ\317\320\342\204@\031\232jd\351\331\326`K\266>\022;g\026,\275\324RK-\265\324RK/\263\324\322K\377\t\375\023\346w\237\034'!\2013\235NO\027\323\034\345\351\276\217\373\336\275\277\373\273\367\311\217\204\025\273Xd\206\260\243\262]A\321\231)h\272%\260FM7\231`Z\206\2520sU\322\004]\2534\005\331`\222\305\004I(\304JVY\262\004\325\024d]\263\324\222\255\333\246\240jB\225Uu\243\231\205\026m%\231\246Z\322\004K\027\240\254\334\343\373\304+\350\310\336\242\336\306\273\206jI\205\n\353-\210\215*\032z\365S\272\252\246\260\206\260\253Ze\301j\326\230\220\351\215[\206\244\231\334\215C\225x\0314T\203\311\226\240\250U\246\231\252\256\231k\007\222pS!\217h\203x\321z\265f5\005\263,ak\313\256\301\270\242n\010r\323*\353ZV2\014\251\371\354\344v\\\337\264k5\335\260\230\362L\333\221*\252\"Tu\205\335%l\261\230)BF\316\010\330*\203\375\310\326\314]\241\004\255\203\305\361\211\200Sj\300\236\307\317\271\017\257\310\007\275(|\247\003-\216\376*7\204LVXE-0\0038\002%\212\034\016\341!\322\204\027\353/\356-}\275$H\232\002$\377\211\343MXW\220+\010\016\"\216\r\013\266Z\261p\030!hf\205gE\241\251\333\202\306`&\"W\303\272\243\nV\231i\202\311,\022\204\014\207[\262\340\267\010uU+ez\320\251;\214\264\237J\025\223e\277\267-~\220nk\n\216\324\0168$\3112\303\356\267\271\233[\032\017?\224@\251\035f \272\026\253R_/\220\331\331'\231?\375UR\024Q#\000\310\035\001\030\3147d\275R\241\003\001}V*\310\217\217\020\222\026\305\346<\371p\370\200\007Oz\321Tt\033\247\277}\264}\254\377\301\344]\341\321\266\242\232d'\343\326\226d\3416\005\256\304)C>\001\002D\331b\232\305\363\241O\013D)VQ\310+S\335c\302\343\277\010\363'\010\245\351\010fQ\262+\226 \212\006Sl\231\211\242\240\330\034\030M\327\356!\270;\252T\301\254\254j\252\205\311\030\236'z\215i5kg!+UJ:\222\251\\5\263U\354\003\013\224\323\346\300\273\242n\032\362\375\203\311\373\207\223\367\325jI\326uC\311\326\232\217\343J\240\034C\363\344\030\321\271\017\352\261\371\376(O\241\267\305\212.Yw\005\376""\332\266\373A\227*\025]\346\025\206`\020\024\311\222\262\247\314\306\251A\333\366\nTvys\365\3313qm\353\371\3637\342\363\347\177\333z)\256-\277\\^\257T\324\232\251\232\242\370\242\331\300\377\032RB\374\016\221\331`\305MV\267\231&3\312\250\354ar\201<\240\027S\304\232d\034\234'\306L\225\314C\372p\373$\263\251\311\252\236\225uC\267\221<\314,H&+\350zE\226%\374#:\224/\242x \224\230E\201\247.V\213*\362\305\220dV\220\344w2\322\302R\310aQT\310LQ\251*\224\214\274\021\341C\034aF\325\010v\243\2220\315\256\362tg\206\241\033\360\n*\324\302rz5\346\343V\324\r\021\346P\2479\037\2674T\345k\367\346\213\025\251d\242\261D\265*\225\230\310#\376a_,H\226\\\026?2\254Vk\025>e\351\260\335\264\304\243\035\036\342\207K\240xU\262z\225N\024\213\266\006x\200\007\354(\212T\341!Tl\353\264!\0323-\212\203X\3420\302\301X\330a\262\3308\024\233\207\342\236\212\244+\305V\366\205\276\271\245\023\346\037\031\244\300W\0214\014\303Z\274\351zQ5K\224ej1M\257F\231\332f\031\201\221\365jMEN\213\\\356Q\0012e&\222\024Y\336K\367^\316\277\313\275[x\267(\212U\t\004\020q7\321\305T\305\237\250\314\243\321r\324,\210\\^\344\020\320\275\201\225\272bW\350\335\313\347\203\267\250U\244\246x\254\247\345\264\005mQ\223\252X\336k\001\003Z\266\213\246\246\031\240N\255\251\355\201S\247U\205\203\304G\277\244j\265\\m\241\006\212\326t\\gt\241\252\274\316\212b\rI%\227\231\374\316\264\253q\257\027&\0229m\271dk5U~\007\313\327\265\203u;\374\226\247\304\250\333R%\266\360\260\322\365\245\270&\036\031`\r\022K\240\0258\317,\333\320\214]S\306 \356\242\236\243\220z\265\223\313=\213\216\310\007\233\362\"b\226\031\205\0043\006\246Y\315\264t\374\0336%\240\205aQ\344\025\022.\000\000\273\206\374d\270\235mfr\352q\322q\2725\032\363\215rs\276Y\336\233\337c\206n\276\037\370y\372\314p\322\031\214&ox\313\336\333\340\\P\010\007:C#\321\210\340\rx\237\373\353A\362\023k2^\335\037\t\036\204\003Xs\356\314\255Lgh\312y\346\276\362r\336rgh\254\265\321\332q6\034\323\275\341\026\275\025O\352\014\315zi\254\033\276\356\256\272\r\257\336\031\272vB\230\365\346\274\037""\374\374iS}!\355\245\274o}\3514\341sw\301\205\362uw\3035\275\264\227\353\217\320k\303\255{\260\373\212{\326}\344\345\3773a\306M\271\337\222\351}a\264\265\332\332C\347i4\373UP\357\342,,\273A\016\0376\237\273\271^\363\205\013\2259/\327\035:\377~\247\365\332Yw\247\334-\357\226\177\336\257w\022S\316r'1\343^vK^\036[\177DL9\017\334\201\017_\227\235-\227c9\343r\227\342\246\013$\246\021\223\263\376\202\277\031\014\006s\301F`\206\263\341jh\264\223\004\313Ko\222l\271\356\276F@d\177\322\377*\230\rV\003#\374\254=\330N\223\245_C\365\007\250\375\253\275\320\316w\341\304\023\254\202#W\335\014t\027\275\202?\360\361N\027\376j\376\212/u\201\327\264kxI\232\276\t!\025\023\340c\035\362\344\013\000\303Cv=\026~\326\006\316\014_h\r\267\266\234\264\223\353$\306[Mw\000\300/\237.v\023\223\316M\307\200\270\3422o\301\333\364\007\375\233\276\021$;\211\253\356mo\326\373\206\033\226\030\217\306\277\344\226A\325vV\034\331\235ts\037\357t\023\023\3160X\214p}(\320\211\267p89:\355\031\3764N\233\006\226\323\034mLR\200.\214\267\020\303\221V\2563:\031M\336\361\323\235\t\212\255\324\231\020\"a>\030\350L\\u\357\020y\273\243\343-\313Yt03\355\020 \027\256\320Y#\255\245\226\341L9/A\234M\320w\024\264\242\245;\316\246;\344\256y\t\004{\311\267\202\207a*\\\356L|\351\326\273\023D\207\211\313N\276;1\345<\005\310D\373\251k\356S\240\272\210\250\317 \346\313\235)\301\033&\202u\247\310\200\025\257H\360t\246>s,\2361W\210\2713\224H\365X\356m\220\373\345\353\257\273o@\216\363@\347r \005\273a\241\235\330\037\334\277\271_\217^\274\216^\277\211\336\210\221(ER1*\226\242R9V\234E\032\341\240t\027\007\230n\332\375\212\217\\\231\351N\315\270\311\356D\312y\310\303?5\327#\336\024\345X\342R\253\354\024\\\252E\027RN\232\342X\247A\251\325\0001\020\2221pi\326Y\375t\247\013\314\0378\203\320\037E\010\235%\276`\224B=\350\246O\nt\330\245\326&W\3006\307\005\320\r\221\312\203JDK\031y\362\320O\372s\375\344\334\t\363\241\334N\265W\332`f\322I:\031\252,\2758M\372\213~\001\325VB\016\317\205\033\241\331\236m?\335O\357/\356\313Q~3\332\214\301\373{""\347\277U$\313'Z\273\204\030A\305\205\003\203\031\202\272\005\314\327y\366\037Gd\021\263\271#bw4\351\\\346\273@H!q\244#\3025pt\020E}\3033\375Y\177\025$H\005+\201\034N\206\320\243*6\353~\307'L\016\210\025.\204[\334\334\331\375\265\350\305F\264\261\025m\301\336\037\243\037\177\212~\022;\277\\\245\3337t\twB\006\376|\035,\004\371\316\221a\303\273Bnv\207\220\246\374&\273\227\375-n\262_yo\375q\361\374\026\027\317\253?.\231?.\231\377\243K\206\0145\301\341\272{\036\245\346\226?\340\247\372U\271\030.\207\233\355\263H\300M`w+z\221\217\362/\243\2271~\333\3216 \374G\347W\357\300\313lt\206\2503\204\233\353\375@\367\302\305\316\350\330\261'9\331{FF;c\227\250\305sq$\376L\374\335\312^\227~\363\244)\253\341Ak\3159\353\344\2345\374R\310Q\215\230p\022n\002\231\302\027o{\351\270j\234\007S\023\251(5\027\315-\0069\312\327;\3643\342T\247?\341z\342\302\261\007\272x.\216\374\276\227@\342\314p\342\275\365?B\204c\013o\300\337\024\252\3507\301Z8\024\256\265\207\332k\373\303\373y\34054\334\3715\317\360\271\237/\236\031\036i\315F\243@\305\265\275\247\370\204\000X\347\337\357\266d|\276(\270L\222\336}\252\344\227\250\230\216\265\362\344\301Y\347\021*\342\271\350\326\237C*\331\321\270@\345\021\201\032G\272\333\374f\267\301\376FP?:t\262\263\347^\341w}\031\237>W\333\250\323\227Z\314Y@y\035@H6`\316\nU\030?\031\257\275\014\024\256\372\017\202\263\301\2430\177t(\027w\246\221xw`\375d\212\303v\215\320\036k\211\370,\272\035\334\016\3231\364c\336v\320\307|\327S\374\033\276\022\334\010\224\360fX\377\376\337\212\004\346\n";
+    PyObject *data = __Pyx_DecompressString(cstring, 2612, 1);
     if (unlikely(!data)) __PYX_ERR(0, 1, __pyx_L1_error)
     const char* const bytes = __Pyx_PyBytes_AsString(data);
     #if !CYTHON_ASSUME_SAFE_MACROS
     if (likely(bytes)); else { Py_DECREF(data); __PYX_ERR(0, 1, __pyx_L1_error) }
     #endif
-    #else /* compression: none (6440 bytes) */
-const char* const bytes = ": Buffer view does not expose stridesCan only create a buffer that is contiguous in memory.Cannot assign to read-only memoryviewCannot create writable memory view from read-only memoryviewCannot index with type 'Cannot transpose memoryview with indirect dimensionsDimension %d is not directEmpty shape tuple for cython.arrayIndirect dimensions not supportedInvalid mode, expected 'c' or 'fortran', got Invalid shape in axis <MemoryView of Note that Cython is deliberately stricter than PEP-484 and rejects subclasses of builtin types. If you need to pass subclasses then set the 'annotation_typing' directive to False.Out of bounds on buffer access (axis Unable to convert item to object.>')?add_notealgorithms/imgcoord.pyalgorithms.multimedalgorithms.trafo and  at 0xcollections.abc<contiguous and direct><contiguous and indirect>cython.double[:]cython.doublecython.double[:, :]disableenablegc (got got differing extents in dimension isenableditemsize <= 0 for cython.arrayno default __reduce__ due to non-trivial __cinit__ object><strided and direct><strided and direct or indirect><strided and indirect>tuple[float, float]unable to allocate array data.unable to allocate shape and strides.ASCII_DUMMY_MMLUT_DATAEllipsis__Pyx_PyDict_NextRefSequenceView.MemoryViewabcadded_paralgorithms.imgcoordallocate_bufferascontiguousarrayasyncio.coroutinesbaseboolccalcc__class____class_getitem__cline_in_tracebackcountddata__dict__dmdtypedtype_is_objectemptyencodeenumerateerrorext_dmext_parext_x0ext_x0_or_calext_y0ext_y0_or_mmext_z0flagsflat_image_coordflat_image_coord_batch_flat_image_coord_batch_implflat_to_dist_flat_to_distfloat64formatfortran__func__get_mmf_from_mmlut_get_mmf_from_mmlut__getstate__glass_parglass_vec_xglass_vec_yglass_vec_zidimg_coordimg_coord_batch_img_coord_batch_impl_img_coord_params__import__indexint_ccint_parint_xhint_yhis_compiled_is_coroutineis_initializeditemsitemsizek1k2k3__main__memviewmmmm_d0mm_n1mm_n2_0mm_n3mmlutmode__module__multimedmultimed_nlay_multimed_nlayn1n2n3""name__name__ndim__new__npnrnumpynzobjoriginp1p2packpoppospositions__pyx_checksum__pyx_state__pyx_type__pyx_unpickle_Enum__pyx_vtable____qualname____reduce____reduce_cython____reduce_ex__registerreturnrwscx__set_name__setdefault__setstate____setstate_cython__shapeshesizestartstepstopstruct__test__trafounpackupdatevaluesvec_xvec_yvec_zxx0xhy0yhz0zeros\200\001\360\026\000\005\021\220\002\320\022$\240A\240[\260\006\260b\270\001\330\004\013\320\013 \240\001\240\033\250E\260\021\200\001\360\026\000\005\021\220\002\320\022$\240A\240[\260\006\260b\270\001\330\004\013\320\013'\240q\250\013\2605\270\001\200\001\360\006\000&'\330\004\024\220I\230V\2401\240A\330\004\r\210R\210v\220R\220s\230$\230f\240B\240a\330\004\"\240!\360\006\000\005\035\230C\230x\240q\330\004\034\230C\230x\240q\330\004\034\230C\230x\240q\330\004\"\240#\240X\250Q\330\004\034\230C\230x\240q\330\004\034\230C\230x\240q\330\004\034\230C\230x\240q\330\004!\240\023\240J\250a\330\004!\240\023\240J\250a\330\004!\240\023\240J\250a\330\004\033\2302\230Q\330\004\035\230R\230s\240!\2401\330\004\033\2302\230Q\330\004\033\2302\230R\230q\240\001\330\004\030\230\003\230:\240Q\330\004\030\230\003\230:\240Q\330\004\030\230\003\230:\240Q\330\004\030\230\003\230:\240Q\330\004\030\230\003\230:\240Q\330\004\031\230\023\230J\240a\330\004\031\230\023\230J\240a\330\004\014\210C\210z\230\023\230F\320\"7\260q\340\004\035\230Q\330\004$\240A\330\004$\240A\330\004$\240A\330\004\033\2301\330\004\033\2301\330\004\036\230a\330\004#\2401\340\004\007\200v\210W\220E\230\024\230U\240&\250\007\250q\330\010\024\220A\330\010\031\230\025\230g\240Q\240a\330\010\031\230\025\230g\240Q\240a\330\010\031\230\025\230g\240Q\240a\330\010\023\2205\230\001\330\010\023\2205\230\001\330\010\023\2205\230\001\330\010\025\220U\230!\360\006\000\005\031\230\001\330\004\030\230\001\330\004\030\230\001\340\004!\240\026\240q\250\003\2502\250S\260\002\260#\260R\260s\270\"\270C\270r\300\021\330\004\035\230T\240\022\2401\340\004\035\230W\240B\240c\250\022\2507\260\"\260C""\260r\270\027\300\002\300!\330\004#\2408\2502\250X\260R\260|\3002\300Q\340\004\033\230>\250\022\2501\330\004\032\230'\240\022\2403\240b\250\001\330\004\032\230'\240\022\2403\240b\250\001\330\004\032\230'\240\022\2403\240b\250\001\340\004\036\230n\250B\250a\340\004\031\230\026\230r\240\021\330\004\032\230%\230r\240\023\240B\240a\330\004\032\230%\230r\240\023\240B\240a\330\004\032\230%\230r\240\023\240B\240a\360\006\000\005\036\230U\240!\2401\330\004\035\230U\240!\2401\360n\001\000\005\t\210\005\210U\220!\2201\330\010\017\210y\230\001\230\023\230A\330\010\017\210y\230\001\230\023\230A\330\010\017\210y\230\001\230\023\230A\340\010\022\220%\220r\230\023\230B\230e\2402\240S\250\002\250%\250r\260\021\330\010\032\230(\240\"\240H\250B\250a\340\010\017\320\017\037\230r\240\021\330\010\017\210u\220B\220c\230\022\2301\330\010\017\210u\220B\220c\230\022\2301\330\010\017\210u\220B\220c\230\022\2301\340\010\020\220\005\220R\220q\330\010\020\220\005\220R\220q\330\010\020\220\005\220R\220q\340\010\022\220&\230\001\230\026\230r\240\026\240r\250\026\250r\260\026\260r\270\026\270r\300\021\330\010\022\220!\360\006\000\t\017\210a\330\010\013\2101\330\014\022\320\022*\250!\330\020\031\230\025\230a\330\020 \320 0\260\001\330\020\032\230*\240J\250a\340\014\017\210t\2203\220a\330\020\026\220a\360\006\000\t\030\220q\330\010\013\2104\210r\220\024\220T\230\024\230S\240\001\330\014\033\2301\340\014\017\210v\220S\230\004\230D\240\010\250\003\2504\250t\2606\270\023\270A\330\020\037\230q\340\020\030\230\001\330\020\025\220Q\340\020\024\220F\230%\230q\240\001\330\024\034\230F\240!\2403\240c\250\031\260\"\260A\330\024 \240\005\240Q\240a\340\024\032\230*\240B\240f\250B\250a\330\024\027\220t\2302\230Q\330\030\036\230a\330\031\035\230R\230q\330\030\036\230a\330\024\034\230F\240!\2401\340\024\032\230*\240B\240f\250B\250a\330\024\027\220t\2302\230Q\330\030\036\230a\330\031\035\230R\230q\330\030\036\230a\330\024\034\230F\240!\2401\340\024\035\230Y\240b\250\007\250r\260\025\260a\260w\270b\300\010\310\002""\310%\310q\320PW\320WY\320Y_\320_a\320af\320fg\320gh\330\024\034\230F\240\"\240A\330\024\032\230!\340\024\027\220s\230!\2307\240\"\240A\330\030\031\340\024\031\230\021\340\020\023\2206\230\023\230A\330\024#\2403\240b\250\001\340\024#\2401\340\010\016\210h\220b\230\001\360\006\000\t\023\220!\330\010\017\210q\340\010\016\210a\210x\220r\230\021\330\010\r\210U\220\"\220C\220r\230\021\330\010\r\210U\220\"\220C\220r\230\021\330\010\r\210U\220\"\220C\220r\230\021\340\010\013\2105\220\002\220!\330\014\022\220!\2204\220r\230\021\330\014\022\220&\230\002\230!\330\014\022\220&\230\002\230!\330\014\022\220&\230\002\230!\360\006\000\t\016\210S\220\002\220!\330\010\r\210S\220\002\220!\330\010\r\210S\220\002\220!\340\010\017\210v\220Q\220c\230\023\230B\230c\240\022\2406\250\021\250#\250S\260\002\260#\260R\260v\270Q\270c\300\023\300B\300a\340\010\021\220\021\220'\230\023\230F\240!\2403\240c\250\022\2503\250b\260\006\260a\260s\270#\270R\270s\300\"\300F\310!\3103\310c\320QS\320SW\320WY\320YZ\330\010\021\220\021\220'\230\023\230F\240!\2403\240c\250\022\2503\250b\260\006\260a\260s\270#\270R\270s\300\"\300F\310!\3103\310c\320QS\320SW\320WY\320YZ\360\006\000\t\020\210w\220b\230\001\330\010\017\210w\220b\230\001\340\010\017\210v\220Q\220e\2302\230U\240\"\240E\250\022\2501\330\010\013\2105\220\002\220!\330\014\022\220!\2203\220e\2301\330\014\022\220!\2203\220e\2301\340\014\021\220\025\220b\230\001\330\014\021\220\023\220B\220a\330\014\021\220\023\220B\220a\330\014\034\230D\240\002\240#\240R\240s\250\"\250C\250r\260\023\260B\260c\270\022\2701\340\014\025\220U\230\"\230N\250\"\250C\250s\260#\260R\260t\2702\270U\300\"\300F\310\"\310D\320PR\320RU\320UW\320W\\\320\\^\320^_\330\014\025\220U\230\"\230N\250\"\250C\250s\260#\260R\260t\2702\270U\300\"\300F\310\"\310D\320PR\320RU\320UW\320W\\\320\\^\320^_\340\014\022\220!\2203\220e\2304\230s\240'\250\022\2508\2602\260Q\330\014\022\220!\2203\220e\2304\230r\240\030\250\022\2501\340\004\013\2101\200\001\360\006\000-.\330\004\024\220I\230V\2401\240A\330""\004\r\210R\210v\220R\220s\230$\230f\240B\240a\330\004\"\240!\360\006\000\005\035\230C\230x\240q\330\004\034\230C\230x\240q\330\004\034\230C\230x\240q\330\004\"\240#\240X\250Q\330\004\034\230C\230x\240q\330\004!\240\023\240J\250a\330\004!\240\023\240J\250a\330\004!\240\023\240J\250a\330\004\033\2302\230Q\330\004\035\230R\230s\240!\2401\330\004\033\2302\230Q\330\004\033\2302\230R\230q\240\001\330\004\014\210C\210z\230\023\230F\320\"7\260q\340\004\035\230Q\330\004$\240A\330\004$\240A\330\004$\240A\330\004\033\2301\330\004\033\2301\330\004\036\230a\330\004#\2401\340\004\007\200v\210W\220E\230\024\230U\240&\250\007\250q\330\010\024\220A\330\010\031\230\025\230g\240Q\240a\330\010\031\230\025\230g\240Q\240a\330\010\031\230\025\230g\240Q\240a\330\010\023\2205\230\001\330\010\023\2205\230\001\330\010\023\2205\230\001\330\010\025\220U\230!\360\006\000\005\031\230\001\330\004\030\230\001\330\004\030\230\001\340\004!\240\026\240q\250\003\2502\250S\260\002\260#\260R\260s\270\"\270C\270r\300\021\330\004\035\230T\240\022\2401\340\004\035\230W\240B\240c\250\022\2507\260\"\260C\260r\270\027\300\002\300!\330\004#\2408\2502\250X\260R\260|\3002\300Q\340\004\033\230>\250\022\2501\330\004\032\230'\240\022\2403\240b\250\001\330\004\032\230'\240\022\2403\240b\250\001\330\004\032\230'\240\022\2403\240b\250\001\340\004\036\230n\250B\250a\340\004\031\230\026\230r\240\021\330\004\032\230%\230r\240\023\240B\240a\330\004\032\230%\230r\240\023\240B\240a\330\004\032\230%\230r\240\023\240B\240a\360V\001\000\005\t\210\005\210U\220!\2201\330\010\017\210y\230\001\230\023\230A\330\010\017\210y\230\001\230\023\230A\330\010\017\210y\230\001\230\023\230A\340\010\022\220%\220r\230\023\230B\230e\2402\240S\250\002\250%\250r\260\021\330\010\032\230(\240\"\240H\250B\250a\340\010\017\320\017\037\230r\240\021\330\010\017\210u\220B\220c\230\022\2301\330\010\017\210u\220B\220c\230\022\2301\330\010\017\210u\220B\220c\230\022\2301\340\010\020\220\005\220R\220q\330\010\020\220\005\220R\220q\330\010\020\220\005\220R""\220q\340\010\022\220&\230\001\230\026\230r\240\026\240r\250\026\250r\260\026\260r\270\026\270r\300\021\330\010\022\220!\360\006\000\t\017\210a\330\010\013\2101\330\014\022\320\022*\250!\330\020\031\230\025\230a\330\020 \320 0\260\001\330\020\032\230*\240J\250a\340\014\017\210t\2203\220a\330\020\026\220a\360\006\000\t\030\220q\330\010\013\2104\210r\220\024\220T\230\024\230S\240\001\330\014\033\2301\340\014\017\210v\220S\230\004\230D\240\010\250\003\2504\250t\2606\270\023\270A\330\020\037\230q\340\020\030\230\001\330\020\025\220Q\340\020\024\220F\230%\230q\240\001\330\024\034\230F\240!\2403\240c\250\031\260\"\260A\330\024 \240\005\240Q\240a\340\024\032\230*\240B\240f\250B\250a\330\024\027\220t\2302\230Q\330\030\036\230a\330\031\035\230R\230q\330\030\036\230a\330\024\034\230F\240!\2401\340\024\032\230*\240B\240f\250B\250a\330\024\027\220t\2302\230Q\330\030\036\230a\330\031\035\230R\230q\330\030\036\230a\330\024\034\230F\240!\2401\340\024\035\230Y\240b\250\007\250r\260\025\260a\260w\270b\300\010\310\002\310%\310q\320PW\320WY\320Y_\320_a\320af\320fg\320gh\330\024\034\230F\240\"\240A\330\024\032\230!\340\024\027\220s\230!\2307\240\"\240A\330\030\031\340\024\031\230\021\340\020\023\2206\230\023\230A\330\024#\2403\240b\250\001\340\024#\2401\340\010\016\210h\220b\230\001\360\006\000\t\023\220!\330\010\017\210q\340\010\016\210a\210x\220r\230\021\330\010\r\210U\220\"\220C\220r\230\021\330\010\r\210U\220\"\220C\220r\230\021\330\010\r\210U\220\"\220C\220r\230\021\340\010\013\2105\220\002\220!\330\014\022\220!\2204\220r\230\021\330\014\022\220&\230\002\230!\330\014\022\220&\230\002\230!\330\014\022\220&\230\002\230!\360\006\000\t\016\210S\220\002\220!\330\010\r\210S\220\002\220!\330\010\r\210S\220\002\220!\340\010\017\210v\220Q\220c\230\023\230B\230c\240\022\2406\250\021\250#\250S\260\002\260#\260R\260v\270Q\270c\300\023\300B\300a\340\010\016\210a\210s\220%\220q\230\007\230s\240&\250\001\250\023\250C\250r\260\023\260B\260f\270A\270S\300\003\3002\300S\310\002\310&\320PQ\320QT""\320TW\320WY\320Y]\320]_\320_`\330\010\016\210a\210s\220%\220q\230\007\230s\240&\250\001\250\023\250C\250r\260\023\260B\260f\270A\270S\300\003\3002\300S\310\002\310&\320PQ\320QT\320TW\320WY\320Y]\320]_\320_`\340\004\013\2101\320\000\025\220Q\340\004\021\220\021\200\001\340\t\n\330\014\r\330\014\r\330\014\r\330\014\r\330\014\r\330\021\022\330\021\022\330\021\022\330\013\014\330\r\016\330\013\014\330\013\014\330\n\013\360\006\000\005\036\230Q\330\004$\240A\330\004$\240A\330\004$\240A\330\004\033\2301\330\004\033\2301\330\004\036\230a\330\004#\2401\340\004\007\200v\210W\220E\230\024\230U\240&\250\007\250q\330\010\024\220A\330\010\031\230\025\230g\240Q\240a\330\010\031\230\025\230g\240Q\240a\330\010\031\230\025\230g\240Q\240a\330\010\023\2205\230\001\330\010\023\2205\230\001\330\010\023\2205\230\001\330\010\025\220U\230!\340\004\013\320\013!\240\021\330\010\013\2101\210D\220\003\2201\220D\230\003\2301\230A\330\010\020\220\010\230\010\240\010\250\001\330\010\025\220]\240!\330\010\017\210y\230\007\230q\330\010\023\320\023#\320#3\2601\330\010\022\220*\230J\240a\200\001\340\t\n\330\014\r\330\014\r\330\014\r\330\014\r\330\014\r\330\014\r\330\014\r\330\021\022\330\021\022\330\021\022\330\013\014\330\r\016\330\013\014\330\013\014\330\010\t\330\010\t\330\010\t\330\010\t\330\010\t\330\t\n\330\t\n\330\n\013\340\004\035\230Q\330\004$\240A\330\004$\240A\330\004$\240A\330\004\033\2301\330\004\033\2301\330\004\036\230a\330\004#\2401\340\004\007\200v\210W\220E\230\024\230U\240&\250\007\250q\330\010\024\220A\330\010\031\230\025\230g\240Q\240a\330\010\031\230\025\230g\240Q\240a\330\010\031\230\025\230g\240Q\240a\330\010\023\2205\230\001\330\010\023\2205\230\001\330\010\023\2205\230\001\330\010\025\220U\230!\360\010\000\005\010\200t\320\013!\240\021\330\010\013\2101\210D\220\003\2201\220D\230\003\2301\230A\330\010\020\220\010\230\010\240\010\250\001\330\010\025\220]\240!\330\010\017\210y\230\007\230q\330\010\023\320\023#\320#3\2601\330\010\022\220*\230J\240a\340\004\013\320\013\035\230Q""\230c\240\023\240H\250H\260D\270\004\270D\300\004\300D\310\005\310Q\200\001\340\004\005\330\004\005\330\004\005\330\004\005\330\004\005\330\004\005\330\004\005\330\004\005\330\004\005\330\004\005\330\004\005\330\004\005\330\004\005\330\004\005\330\004\005\330\004\005\330\004\005\330\004\005\330\004\005\330\004\005\330\004\005\330\005\006\360\n\000\005\013\210\"\320\014\036\230a\230u\240F\250\"\250A\330\004\007\200w\210c\220\025\220d\230'\240\021\240/\260\021\330\010\016\210a\330\010\r\210Q\330\010\020\220\003\220:\230S\240\006\320&;\2701\330\010\017\320\017 \240\001\330\014\r\330\014\017\210x\220u\230C\230x\240u\250C\250x\260q\330\014\017\210x\220u\230C\230x\240q\330\014\017\210x\220u\230C\230x\240q\330\014\017\210z\230\030\240\023\240J\250h\260c\270\032\3001\330\014\016\210e\2202\220S\230\001\230\024\230R\230u\240B\240b\250\001\250\021\330\014\017\210z\230\025\230c\240\032\2505\260\003\260:\270Q\330\014\017\210z\230\025\230c\240\032\2501\330\014\017\210z\230\026\230s\240*\250A\330\022\023\340\004\013\320\013\034\230A\330\010\r\210_\230N\250(\260(\270!\330\010\020\220\010\230\r\240]\260!\330\010\017\210y\230\007\230w\240d\250$\250d\260$\260d\270%\270qO";
+    #else /* compression: none (6480 bytes) */
+const char* const bytes = ": Buffer view does not expose stridesCan only create a buffer that is contiguous in memory.Cannot assign to read-only memoryviewCannot create writable memory view from read-only memoryviewCannot index with type 'Cannot transpose memoryview with indirect dimensionsDimension %d is not directEmpty shape tuple for cython.arrayIndirect dimensions not supportedInvalid mode, expected 'c' or 'fortran', got Invalid shape in axis <MemoryView of Note that Cython is deliberately stricter than PEP-484 and rejects subclasses of builtin types. If you need to pass subclasses then set the 'annotation_typing' directive to False.Out of bounds on buffer access (axis Unable to convert item to object.>')?add_note and  at 0xcollections.abc<contiguous and direct><contiguous and indirect>cython.double[:]cython.doublecython.double[:, :]disableenablegc (got got differing extents in dimension isenableditemsize <= 0 for cython.arrayno default __reduce__ due to non-trivial __cinit__ object>openptv2.algorithms.multimedopenptv2.algorithms.trafosrc/openptv2/algorithms/imgcoord.py<strided and direct><strided and direct or indirect><strided and indirect>tuple[float, float]unable to allocate array data.unable to allocate shape and strides.ASCII_DUMMY_MMLUT_DATAEllipsis__Pyx_PyDict_NextRefSequenceView.MemoryViewabcadded_parallocate_bufferascontiguousarrayasyncio.coroutinesbaseboolccalcc__class____class_getitem__cline_in_tracebackcountddata__dict__dmdtypedtype_is_objectemptyencodeenumerateerrorext_dmext_parext_x0ext_x0_or_calext_y0ext_y0_or_mmext_z0flagsflat_image_coordflat_image_coord_batch_flat_image_coord_batch_implflat_to_dist_flat_to_distfloat64formatfortran__func__get_mmf_from_mmlut_get_mmf_from_mmlut__getstate__glass_parglass_vec_xglass_vec_yglass_vec_zidimg_coordimg_coord_batch_img_coord_batch_impl_img_coord_params__import__indexint_ccint_parint_xhint_yhis_compiled_is_coroutineis_initializeditemsitemsizek1k2k3__main__memviewmmmm_d0mm_n1mm_n2_0mm_n3mmlutmode__module__multimedmultimed_nlay_multime""d_nlayn1n2n3name__name__ndim__new__npnrnumpynzobjopenptv2.algorithms.imgcoordoriginp1p2packpoppospositions__pyx_checksum__pyx_state__pyx_type__pyx_unpickle_Enum__pyx_vtable____qualname____reduce____reduce_cython____reduce_ex__registerreturnrwscx__set_name__setdefault__setstate____setstate_cython__shapeshesizestartstepstopstruct__test__trafounpackupdatevaluesvec_xvec_yvec_zxx0xhy0yhz0zeros\200\001\360\026\000\005\021\220\002\320\022$\240A\240[\260\006\260b\270\001\330\004\013\320\013 \240\001\240\033\250E\260\021\200\001\360\026\000\005\021\220\002\320\022$\240A\240[\260\006\260b\270\001\330\004\013\320\013'\240q\250\013\2605\270\001\200\001\360\006\000&'\330\004\024\220I\230V\2401\240A\330\004\r\210R\210v\220R\220s\230$\230f\240B\240a\330\004\"\240!\360\006\000\005\035\230C\230x\240q\330\004\034\230C\230x\240q\330\004\034\230C\230x\240q\330\004\"\240#\240X\250Q\330\004\034\230C\230x\240q\330\004\034\230C\230x\240q\330\004\034\230C\230x\240q\330\004!\240\023\240J\250a\330\004!\240\023\240J\250a\330\004!\240\023\240J\250a\330\004\033\2302\230Q\330\004\035\230R\230s\240!\2401\330\004\033\2302\230Q\330\004\033\2302\230R\230q\240\001\330\004\030\230\003\230:\240Q\330\004\030\230\003\230:\240Q\330\004\030\230\003\230:\240Q\330\004\030\230\003\230:\240Q\330\004\030\230\003\230:\240Q\330\004\031\230\023\230J\240a\330\004\031\230\023\230J\240a\330\004\014\210C\210z\230\023\230F\320\"7\260q\340\004\035\230Q\330\004$\240A\330\004$\240A\330\004$\240A\330\004\033\2301\330\004\033\2301\330\004\036\230a\330\004#\2401\340\004\007\200v\210W\220E\230\024\230U\240&\250\007\250q\330\010\024\220A\330\010\031\230\025\230g\240Q\240a\330\010\031\230\025\230g\240Q\240a\330\010\031\230\025\230g\240Q\240a\330\010\023\2205\230\001\330\010\023\2205\230\001\330\010\023\2205\230\001\330\010\025\220U\230!\360\006\000\005\031\230\001\330\004\030\230\001\330\004\030\230\001\340\004!\240\026\240q\250\003\2502\250S\260\002\260#\260R\260s\270\"\270C\270r\300\021\330\004\035\230T\240\022\2401\340\004""\035\230W\240B\240c\250\022\2507\260\"\260C\260r\270\027\300\002\300!\330\004#\2408\2502\250X\260R\260|\3002\300Q\340\004\033\230>\250\022\2501\330\004\032\230'\240\022\2403\240b\250\001\330\004\032\230'\240\022\2403\240b\250\001\330\004\032\230'\240\022\2403\240b\250\001\340\004\036\230n\250B\250a\340\004\031\230\026\230r\240\021\330\004\032\230%\230r\240\023\240B\240a\330\004\032\230%\230r\240\023\240B\240a\330\004\032\230%\230r\240\023\240B\240a\360\006\000\005\036\230U\240!\2401\330\004\035\230U\240!\2401\360n\001\000\005\t\210\005\210U\220!\2201\330\010\017\210y\230\001\230\023\230A\330\010\017\210y\230\001\230\023\230A\330\010\017\210y\230\001\230\023\230A\340\010\022\220%\220r\230\023\230B\230e\2402\240S\250\002\250%\250r\260\021\330\010\032\230(\240\"\240H\250B\250a\340\010\017\320\017\037\230r\240\021\330\010\017\210u\220B\220c\230\022\2301\330\010\017\210u\220B\220c\230\022\2301\330\010\017\210u\220B\220c\230\022\2301\340\010\020\220\005\220R\220q\330\010\020\220\005\220R\220q\330\010\020\220\005\220R\220q\340\010\022\220&\230\001\230\026\230r\240\026\240r\250\026\250r\260\026\260r\270\026\270r\300\021\330\010\022\220!\360\006\000\t\017\210a\330\010\013\2101\330\014\022\320\022*\250!\330\020\031\230\025\230a\330\020 \320 0\260\001\330\020\032\230*\240J\250a\340\014\017\210t\2203\220a\330\020\026\220a\360\006\000\t\030\220q\330\010\013\2104\210r\220\024\220T\230\024\230S\240\001\330\014\033\2301\340\014\017\210v\220S\230\004\230D\240\010\250\003\2504\250t\2606\270\023\270A\330\020\037\230q\340\020\030\230\001\330\020\025\220Q\340\020\024\220F\230%\230q\240\001\330\024\034\230F\240!\2403\240c\250\031\260\"\260A\330\024 \240\005\240Q\240a\340\024\032\230*\240B\240f\250B\250a\330\024\027\220t\2302\230Q\330\030\036\230a\330\031\035\230R\230q\330\030\036\230a\330\024\034\230F\240!\2401\340\024\032\230*\240B\240f\250B\250a\330\024\027\220t\2302\230Q\330\030\036\230a\330\031\035\230R\230q\330\030\036\230a\330\024\034\230F\240!\2401\340\024\035\230Y\240b\250\007""\250r\260\025\260a\260w\270b\300\010\310\002\310%\310q\320PW\320WY\320Y_\320_a\320af\320fg\320gh\330\024\034\230F\240\"\240A\330\024\032\230!\340\024\027\220s\230!\2307\240\"\240A\330\030\031\340\024\031\230\021\340\020\023\2206\230\023\230A\330\024#\2403\240b\250\001\340\024#\2401\340\010\016\210h\220b\230\001\360\006\000\t\023\220!\330\010\017\210q\340\010\016\210a\210x\220r\230\021\330\010\r\210U\220\"\220C\220r\230\021\330\010\r\210U\220\"\220C\220r\230\021\330\010\r\210U\220\"\220C\220r\230\021\340\010\013\2105\220\002\220!\330\014\022\220!\2204\220r\230\021\330\014\022\220&\230\002\230!\330\014\022\220&\230\002\230!\330\014\022\220&\230\002\230!\360\006\000\t\016\210S\220\002\220!\330\010\r\210S\220\002\220!\330\010\r\210S\220\002\220!\340\010\017\210v\220Q\220c\230\023\230B\230c\240\022\2406\250\021\250#\250S\260\002\260#\260R\260v\270Q\270c\300\023\300B\300a\340\010\021\220\021\220'\230\023\230F\240!\2403\240c\250\022\2503\250b\260\006\260a\260s\270#\270R\270s\300\"\300F\310!\3103\310c\320QS\320SW\320WY\320YZ\330\010\021\220\021\220'\230\023\230F\240!\2403\240c\250\022\2503\250b\260\006\260a\260s\270#\270R\270s\300\"\300F\310!\3103\310c\320QS\320SW\320WY\320YZ\360\006\000\t\020\210w\220b\230\001\330\010\017\210w\220b\230\001\340\010\017\210v\220Q\220e\2302\230U\240\"\240E\250\022\2501\330\010\013\2105\220\002\220!\330\014\022\220!\2203\220e\2301\330\014\022\220!\2203\220e\2301\340\014\021\220\025\220b\230\001\330\014\021\220\023\220B\220a\330\014\021\220\023\220B\220a\330\014\034\230D\240\002\240#\240R\240s\250\"\250C\250r\260\023\260B\260c\270\022\2701\340\014\025\220U\230\"\230N\250\"\250C\250s\260#\260R\260t\2702\270U\300\"\300F\310\"\310D\320PR\320RU\320UW\320W\\\320\\^\320^_\330\014\025\220U\230\"\230N\250\"\250C\250s\260#\260R\260t\2702\270U\300\"\300F\310\"\310D\320PR\320RU\320UW\320W\\\320\\^\320^_\340\014\022\220!\2203\220e\2304\230s\240'\250\022\2508\2602\260Q\330\014\022\220!\2203\220e\2304\230r\240\030\250\022\2501\340\004\013\2101\200\001\360""\006\000-.\330\004\024\220I\230V\2401\240A\330\004\r\210R\210v\220R\220s\230$\230f\240B\240a\330\004\"\240!\360\006\000\005\035\230C\230x\240q\330\004\034\230C\230x\240q\330\004\034\230C\230x\240q\330\004\"\240#\240X\250Q\330\004\034\230C\230x\240q\330\004!\240\023\240J\250a\330\004!\240\023\240J\250a\330\004!\240\023\240J\250a\330\004\033\2302\230Q\330\004\035\230R\230s\240!\2401\330\004\033\2302\230Q\330\004\033\2302\230R\230q\240\001\330\004\014\210C\210z\230\023\230F\320\"7\260q\340\004\035\230Q\330\004$\240A\330\004$\240A\330\004$\240A\330\004\033\2301\330\004\033\2301\330\004\036\230a\330\004#\2401\340\004\007\200v\210W\220E\230\024\230U\240&\250\007\250q\330\010\024\220A\330\010\031\230\025\230g\240Q\240a\330\010\031\230\025\230g\240Q\240a\330\010\031\230\025\230g\240Q\240a\330\010\023\2205\230\001\330\010\023\2205\230\001\330\010\023\2205\230\001\330\010\025\220U\230!\360\006\000\005\031\230\001\330\004\030\230\001\330\004\030\230\001\340\004!\240\026\240q\250\003\2502\250S\260\002\260#\260R\260s\270\"\270C\270r\300\021\330\004\035\230T\240\022\2401\340\004\035\230W\240B\240c\250\022\2507\260\"\260C\260r\270\027\300\002\300!\330\004#\2408\2502\250X\260R\260|\3002\300Q\340\004\033\230>\250\022\2501\330\004\032\230'\240\022\2403\240b\250\001\330\004\032\230'\240\022\2403\240b\250\001\330\004\032\230'\240\022\2403\240b\250\001\340\004\036\230n\250B\250a\340\004\031\230\026\230r\240\021\330\004\032\230%\230r\240\023\240B\240a\330\004\032\230%\230r\240\023\240B\240a\330\004\032\230%\230r\240\023\240B\240a\360V\001\000\005\t\210\005\210U\220!\2201\330\010\017\210y\230\001\230\023\230A\330\010\017\210y\230\001\230\023\230A\330\010\017\210y\230\001\230\023\230A\340\010\022\220%\220r\230\023\230B\230e\2402\240S\250\002\250%\250r\260\021\330\010\032\230(\240\"\240H\250B\250a\340\010\017\320\017\037\230r\240\021\330\010\017\210u\220B\220c\230\022\2301\330\010\017\210u\220B\220c\230\022\2301\330\010\017\210u\220B\220c\230\022\2301\340\010\020\220\005\220R\220q\330\010""\020\220\005\220R\220q\330\010\020\220\005\220R\220q\340\010\022\220&\230\001\230\026\230r\240\026\240r\250\026\250r\260\026\260r\270\026\270r\300\021\330\010\022\220!\360\006\000\t\017\210a\330\010\013\2101\330\014\022\320\022*\250!\330\020\031\230\025\230a\330\020 \320 0\260\001\330\020\032\230*\240J\250a\340\014\017\210t\2203\220a\330\020\026\220a\360\006\000\t\030\220q\330\010\013\2104\210r\220\024\220T\230\024\230S\240\001\330\014\033\2301\340\014\017\210v\220S\230\004\230D\240\010\250\003\2504\250t\2606\270\023\270A\330\020\037\230q\340\020\030\230\001\330\020\025\220Q\340\020\024\220F\230%\230q\240\001\330\024\034\230F\240!\2403\240c\250\031\260\"\260A\330\024 \240\005\240Q\240a\340\024\032\230*\240B\240f\250B\250a\330\024\027\220t\2302\230Q\330\030\036\230a\330\031\035\230R\230q\330\030\036\230a\330\024\034\230F\240!\2401\340\024\032\230*\240B\240f\250B\250a\330\024\027\220t\2302\230Q\330\030\036\230a\330\031\035\230R\230q\330\030\036\230a\330\024\034\230F\240!\2401\340\024\035\230Y\240b\250\007\250r\260\025\260a\260w\270b\300\010\310\002\310%\310q\320PW\320WY\320Y_\320_a\320af\320fg\320gh\330\024\034\230F\240\"\240A\330\024\032\230!\340\024\027\220s\230!\2307\240\"\240A\330\030\031\340\024\031\230\021\340\020\023\2206\230\023\230A\330\024#\2403\240b\250\001\340\024#\2401\340\010\016\210h\220b\230\001\360\006\000\t\023\220!\330\010\017\210q\340\010\016\210a\210x\220r\230\021\330\010\r\210U\220\"\220C\220r\230\021\330\010\r\210U\220\"\220C\220r\230\021\330\010\r\210U\220\"\220C\220r\230\021\340\010\013\2105\220\002\220!\330\014\022\220!\2204\220r\230\021\330\014\022\220&\230\002\230!\330\014\022\220&\230\002\230!\330\014\022\220&\230\002\230!\360\006\000\t\016\210S\220\002\220!\330\010\r\210S\220\002\220!\330\010\r\210S\220\002\220!\340\010\017\210v\220Q\220c\230\023\230B\230c\240\022\2406\250\021\250#\250S\260\002\260#\260R\260v\270Q\270c\300\023\300B\300a\340\010\016\210a\210s\220%\220q\230\007\230s\240&\250\001\250\023\250C\250r\260\023\260B\260f\270A\270S""\300\003\3002\300S\310\002\310&\320PQ\320QT\320TW\320WY\320Y]\320]_\320_`\330\010\016\210a\210s\220%\220q\230\007\230s\240&\250\001\250\023\250C\250r\260\023\260B\260f\270A\270S\300\003\3002\300S\310\002\310&\320PQ\320QT\320TW\320WY\320Y]\320]_\320_`\340\004\013\2101\320\000\025\220Q\340\004\021\220\021\200\001\340\t\n\330\014\r\330\014\r\330\014\r\330\014\r\330\014\r\330\021\022\330\021\022\330\021\022\330\013\014\330\r\016\330\013\014\330\013\014\330\n\013\360\006\000\005\036\230Q\330\004$\240A\330\004$\240A\330\004$\240A\330\004\033\2301\330\004\033\2301\330\004\036\230a\330\004#\2401\340\004\007\200v\210W\220E\230\024\230U\240&\250\007\250q\330\010\024\220A\330\010\031\230\025\230g\240Q\240a\330\010\031\230\025\230g\240Q\240a\330\010\031\230\025\230g\240Q\240a\330\010\023\2205\230\001\330\010\023\2205\230\001\330\010\023\2205\230\001\330\010\025\220U\230!\340\004\013\320\013!\240\021\330\010\013\2101\210D\220\003\2201\220D\230\003\2301\230A\330\010\020\220\010\230\010\240\010\250\001\330\010\025\220]\240!\330\010\017\210y\230\007\230q\330\010\023\320\023#\320#3\2601\330\010\022\220*\230J\240a\200\001\340\t\n\330\014\r\330\014\r\330\014\r\330\014\r\330\014\r\330\014\r\330\014\r\330\021\022\330\021\022\330\021\022\330\013\014\330\r\016\330\013\014\330\013\014\330\010\t\330\010\t\330\010\t\330\010\t\330\010\t\330\t\n\330\t\n\330\n\013\340\004\035\230Q\330\004$\240A\330\004$\240A\330\004$\240A\330\004\033\2301\330\004\033\2301\330\004\036\230a\330\004#\2401\340\004\007\200v\210W\220E\230\024\230U\240&\250\007\250q\330\010\024\220A\330\010\031\230\025\230g\240Q\240a\330\010\031\230\025\230g\240Q\240a\330\010\031\230\025\230g\240Q\240a\330\010\023\2205\230\001\330\010\023\2205\230\001\330\010\023\2205\230\001\330\010\025\220U\230!\360\010\000\005\010\200t\320\013!\240\021\330\010\013\2101\210D\220\003\2201\220D\230\003\2301\230A\330\010\020\220\010\230\010\240\010\250\001\330\010\025\220]\240!\330\010\017\210y\230\007\230q\330\010\023\320\023#\320#3\2601\330\010\022""\220*\230J\240a\340\004\013\320\013\035\230Q\230c\240\023\240H\250H\260D\270\004\270D\300\004\300D\310\005\310Q\200\001\340\004\005\330\004\005\330\004\005\330\004\005\330\004\005\330\004\005\330\004\005\330\004\005\330\004\005\330\004\005\330\004\005\330\004\005\330\004\005\330\004\005\330\004\005\330\004\005\330\004\005\330\004\005\330\004\005\330\004\005\330\004\005\330\005\006\360\n\000\005\013\210\"\320\014\036\230a\230u\240F\250\"\250A\330\004\007\200w\210c\220\025\220d\230'\240\021\240/\260\021\330\010\016\210a\330\010\r\210Q\330\010\020\220\003\220:\230S\240\006\320&;\2701\330\010\017\320\017 \240\001\330\014\r\330\014\017\210x\220u\230C\230x\240u\250C\250x\260q\330\014\017\210x\220u\230C\230x\240q\330\014\017\210x\220u\230C\230x\240q\330\014\017\210z\230\030\240\023\240J\250h\260c\270\032\3001\330\014\016\210e\2202\220S\230\001\230\024\230R\230u\240B\240b\250\001\250\021\330\014\017\210z\230\025\230c\240\032\2505\260\003\260:\270Q\330\014\017\210z\230\025\230c\240\032\2501\330\014\017\210z\230\026\230s\240*\250A\330\022\023\340\004\013\320\013\034\230A\330\010\r\210_\230N\250(\260(\270!\330\010\020\220\010\230\r\240]\260!\330\010\017\210y\230\007\230w\240d\250$\250d\260$\260d\270%\270qO";
     PyObject *data = NULL;
     CYTHON_UNUSED_VAR(__Pyx_DecompressString);
     #endif
@@ -27106,42 +27106,42 @@ static int __Pyx_CreateCodeObjects(__pyx_mstatetype *__pyx_mstate) {
   {
     const __Pyx_PyCode_New_function_description descr = {14, 0, 0, 14, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 336};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_pos, __pyx_mstate->__pyx_n_u_ext_x0, __pyx_mstate->__pyx_n_u_ext_y0, __pyx_mstate->__pyx_n_u_ext_z0, __pyx_mstate->__pyx_n_u_ext_dm, __pyx_mstate->__pyx_n_u_int_cc, __pyx_mstate->__pyx_n_u_glass_vec_x, __pyx_mstate->__pyx_n_u_glass_vec_y, __pyx_mstate->__pyx_n_u_glass_vec_z, __pyx_mstate->__pyx_n_u_mm_n1, __pyx_mstate->__pyx_n_u_mm_n2_0, __pyx_mstate->__pyx_n_u_mm_n3, __pyx_mstate->__pyx_n_u_mm_d0, __pyx_mstate->__pyx_n_u_mmlut};
-    __pyx_mstate_global->__pyx_codeobj_tab[0] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_imgcoord_py, __pyx_mstate->__pyx_n_u_flat_image_coord, __pyx_mstate->__pyx_kp_b_iso88591_Q_A_A_A_1_1_a_1_vWE_U_q_A_gQa_g, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[0])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[0] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_imgcoord, __pyx_mstate->__pyx_n_u_flat_image_coord, __pyx_mstate->__pyx_kp_b_iso88591_Q_A_A_A_1_1_a_1_vWE_U_q_A_gQa_g, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[0])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {22, 0, 0, 25, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 383};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_pos, __pyx_mstate->__pyx_n_u_ext_x0_or_cal, __pyx_mstate->__pyx_n_u_ext_y0_or_mm, __pyx_mstate->__pyx_n_u_ext_z0, __pyx_mstate->__pyx_n_u_ext_dm, __pyx_mstate->__pyx_n_u_int_cc, __pyx_mstate->__pyx_n_u_int_xh, __pyx_mstate->__pyx_n_u_int_yh, __pyx_mstate->__pyx_n_u_glass_vec_x, __pyx_mstate->__pyx_n_u_glass_vec_y, __pyx_mstate->__pyx_n_u_glass_vec_z, __pyx_mstate->__pyx_n_u_mm_n1, __pyx_mstate->__pyx_n_u_mm_n2_0, __pyx_mstate->__pyx_n_u_mm_n3, __pyx_mstate->__pyx_n_u_mm_d0, __pyx_mstate->__pyx_n_u_k1, __pyx_mstate->__pyx_n_u_k2, __pyx_mstate->__pyx_n_u_k3, __pyx_mstate->__pyx_n_u_p1, __pyx_mstate->__pyx_n_u_p2, __pyx_mstate->__pyx_n_u_scx, __pyx_mstate->__pyx_n_u_she, __pyx_mstate->__pyx_n_u_cal, __pyx_mstate->__pyx_n_u_mm, __pyx_mstate->__pyx_n_u_mmlut};
-    __pyx_mstate_global->__pyx_codeobj_tab[1] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_imgcoord_py, __pyx_mstate->__pyx_n_u_img_coord, __pyx_mstate->__pyx_kp_b_iso88591_auF_A_wc_d_a_Q_S_1_xuCxuCxq_xuC, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[1])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[1] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_imgcoord, __pyx_mstate->__pyx_n_u_img_coord, __pyx_mstate->__pyx_kp_b_iso88591_auF_A_wc_d_a_Q_S_1_xuCxuCxq_xuC, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[1])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {23, 0, 0, 23, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 435};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_pos, __pyx_mstate->__pyx_n_u_ext_x0, __pyx_mstate->__pyx_n_u_ext_y0, __pyx_mstate->__pyx_n_u_ext_z0, __pyx_mstate->__pyx_n_u_ext_dm, __pyx_mstate->__pyx_n_u_int_cc, __pyx_mstate->__pyx_n_u_int_xh, __pyx_mstate->__pyx_n_u_int_yh, __pyx_mstate->__pyx_n_u_glass_vec_x, __pyx_mstate->__pyx_n_u_glass_vec_y, __pyx_mstate->__pyx_n_u_glass_vec_z, __pyx_mstate->__pyx_n_u_mm_n1, __pyx_mstate->__pyx_n_u_mm_n2_0, __pyx_mstate->__pyx_n_u_mm_n3, __pyx_mstate->__pyx_n_u_mm_d0, __pyx_mstate->__pyx_n_u_k1, __pyx_mstate->__pyx_n_u_k2, __pyx_mstate->__pyx_n_u_k3, __pyx_mstate->__pyx_n_u_p1, __pyx_mstate->__pyx_n_u_p2, __pyx_mstate->__pyx_n_u_scx, __pyx_mstate->__pyx_n_u_she, __pyx_mstate->__pyx_n_u_mmlut};
-    __pyx_mstate_global->__pyx_codeobj_tab[2] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_imgcoord_py, __pyx_mstate->__pyx_n_u_img_coord_params, __pyx_mstate->__pyx_kp_b_iso88591_Q_A_A_A_1_1_a_1_vWE_U_q_A_gQa_g_2, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[2])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[2] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_imgcoord, __pyx_mstate->__pyx_n_u_img_coord_params, __pyx_mstate->__pyx_kp_b_iso88591_Q_A_A_A_1_1_a_1_vWE_U_q_A_gQa_g_2, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[2])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {3, 0, 0, 3, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 493};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_positions, __pyx_mstate->__pyx_n_u_cal, __pyx_mstate->__pyx_n_u_mm};
-    __pyx_mstate_global->__pyx_codeobj_tab[3] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_imgcoord_py, __pyx_mstate->__pyx_n_u_img_coord_batch, __pyx_mstate->__pyx_kp_b_iso88591_A_b_E, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[3])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[3] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_imgcoord, __pyx_mstate->__pyx_n_u_img_coord_batch, __pyx_mstate->__pyx_kp_b_iso88591_A_b_E, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[3])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {3, 0, 0, 3, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 508};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_positions, __pyx_mstate->__pyx_n_u_cal, __pyx_mstate->__pyx_n_u_mm};
-    __pyx_mstate_global->__pyx_codeobj_tab[4] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_imgcoord_py, __pyx_mstate->__pyx_n_u_img_coord_batch_impl, __pyx_mstate->__pyx_kp_b_iso88591_IV1A_RvRs_fBa_Cxq_Cxq_Cxq_XQ_Cx, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[4])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[4] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_imgcoord, __pyx_mstate->__pyx_n_u_img_coord_batch_impl, __pyx_mstate->__pyx_kp_b_iso88591_IV1A_RvRs_fBa_Cxq_Cxq_Cxq_XQ_Cx, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[4])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {3, 0, 0, 3, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 763};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_positions, __pyx_mstate->__pyx_n_u_cal, __pyx_mstate->__pyx_n_u_mm};
-    __pyx_mstate_global->__pyx_codeobj_tab[5] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_imgcoord_py, __pyx_mstate->__pyx_n_u_flat_image_coord_batch, __pyx_mstate->__pyx_kp_b_iso88591_A_b_q_5, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[5])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[5] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_imgcoord, __pyx_mstate->__pyx_n_u_flat_image_coord_batch, __pyx_mstate->__pyx_kp_b_iso88591_A_b_q_5, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[5])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {3, 0, 0, 3, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 778};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_positions, __pyx_mstate->__pyx_n_u_cal, __pyx_mstate->__pyx_n_u_mm};
-    __pyx_mstate_global->__pyx_codeobj_tab[6] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_imgcoord_py, __pyx_mstate->__pyx_n_u_flat_image_coord_batch_impl, __pyx_mstate->__pyx_kp_b_iso88591_IV1A_RvRs_fBa_Cxq_Cxq_Cxq_XQ_Cx_2, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[6])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[6] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_imgcoord, __pyx_mstate->__pyx_n_u_flat_image_coord_batch_impl, __pyx_mstate->__pyx_kp_b_iso88591_IV1A_RvRs_fBa_Cxq_Cxq_Cxq_XQ_Cx_2, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[6])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {0, 0, 0, 0, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 988};
     PyObject* const varnames[] = {0};
-    __pyx_mstate_global->__pyx_codeobj_tab[7] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_imgcoord_py, __pyx_mstate->__pyx_n_u_is_compiled, __pyx_mstate->__pyx_kp_b_iso88591_Q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[7])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[7] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_imgcoord, __pyx_mstate->__pyx_n_u_is_compiled, __pyx_mstate->__pyx_kp_b_iso88591_Q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[7])) goto bad;
   }
   Py_DECREF(tuple_dedup_map);
   return 0;

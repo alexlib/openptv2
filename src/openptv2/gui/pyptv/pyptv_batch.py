@@ -82,7 +82,7 @@ def validate_experiment_setup(yaml_file: Path) -> Path:
 
 
 def run_batch(
-    yaml_file: Path, seq_first: int, seq_last: int, mode: str = "both"
+    yaml_file: Path, seq_first: int, seq_last: int, mode: str = "both", track3d: bool = False
 ) -> None:
     """Run batch processing for a sequence of frames.
 
@@ -90,6 +90,7 @@ def run_batch(
         seq_first: First frame number in the sequence
         seq_last: Last frame number in the sequence
         yaml_file: Path to the YAML parameter file
+        track3d: Whether to use 3D segment tracking
 
     Raises:
         ProcessingError: If processing fails
@@ -156,22 +157,34 @@ def run_batch(
         seq_loop = py_sequence_loop
         print("[ENGINE] Using single Cython 3 sequence loop")
 
+        # Determine if we should use 3D segment tracking
+        yaml_track_mode = experiment.pm.parameters.get("track", {}).get("track_mode", 0)
+        use_3d = track3d or (yaml_track_mode == 1)
+
         # Run processing according to mode
         if mode == "both":
             print("Running sequence loop...")
             seq_loop(proc_exp)
             print("Initializing tracker...")
             tracker = py_trackcorr_init(proc_exp)
-            print("Running tracking...")
-            tracker.full_forward()
+            if use_3d:
+                print("Running 3D Segment Tracking...")
+                tracker.full_forward_3d()
+            else:
+                print("Running Standard Epipolar Tracking...")
+                tracker.full_forward()
         elif mode == "sequence":
             print("Running sequence loop only...")
             seq_loop(proc_exp)
         elif mode == "tracking":
             print("Initializing tracker only (skipping sequence)...")
             tracker = py_trackcorr_init(proc_exp)
-            print("Running tracking only...")
-            tracker.full_forward()
+            if use_3d:
+                print("Running 3D Segment Tracking only...")
+                tracker.full_forward_3d()
+            else:
+                print("Running Standard Epipolar Tracking only...")
+                tracker.full_forward()
         else:
             raise ProcessingError(
                 f"Unknown mode: {mode}. Use 'both', 'sequence', or 'tracking'."
@@ -194,6 +207,7 @@ def main(
     last: Union[str, int],
     repetitions: int = 1,
     mode: str = "both",
+    track3d: bool = False,
 ) -> None:
     """Run PyPTV batch processing.
 
@@ -202,6 +216,8 @@ def main(
         first: First frame number in the sequence
         last: Last frame number in the sequence
         repetitions: Number of times to repeat the processing (default: 1)
+        mode: Which steps to run: both (default), sequence, or tracking
+        track3d: Whether to use 3D segment tracking
 
     Raises:
         ProcessingError: If processing fails
@@ -245,7 +261,7 @@ def main(
         for i in range(repetitions):
             if repetitions > 1:
                 print(f"Starting repetition {i + 1} of {repetitions}")
-            run_batch(yaml_file, seq_first, seq_last, mode=mode)
+            run_batch(yaml_file, seq_first, seq_last, mode=mode, track3d=track3d)
         elapsed_time = time.time() - start_time
         print(f"Total processing time: {elapsed_time:.2f} seconds")
 
@@ -302,6 +318,11 @@ def parse_command_line_args(args_list=None) -> tuple[Path, int, int, str]:
         help="Which steps to run: both (default), sequence, or tracking",
     )
     parser.add_argument(
+        "--track3d",
+        action="store_true",
+        help="Use 3D segment tracking instead of standard tracking",
+    )
+    parser.add_argument(
         "--debug-mode",
         action="store_true",
         help="Deprecated compatibility flag. Ignored in the single-engine runtime.",
@@ -356,8 +377,9 @@ def parse_command_line_args(args_list=None) -> tuple[Path, int, int, str]:
             last_frame = seq.get("last")
 
     mode = args.mode
+    track3d = args.track3d
 
-    return yaml_file, first_frame, last_frame, mode
+    return yaml_file, first_frame, last_frame, mode, track3d
 
 
 def main_cli() -> None:
@@ -366,8 +388,8 @@ def main_cli() -> None:
         print("Starting batch processing")
         print(f"Command line arguments: {sys.argv}")
 
-        yaml_file, first_frame, last_frame, mode = parse_command_line_args()
-        main(yaml_file, first_frame, last_frame, mode=mode)
+        yaml_file, first_frame, last_frame, mode, track3d = parse_command_line_args()
+        main(yaml_file, first_frame, last_frame, mode=mode, track3d=track3d)
 
         print("Batch processing completed successfully")
 

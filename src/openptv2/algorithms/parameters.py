@@ -37,7 +37,7 @@ class SequencePar:
         return SequencePar(num_cams, img_base_name, first, last)
 
 class TrackPar:
-    def __init__(self, dvxmin=0.0, dvxmax=0.0, dvymin=0.0, dvymax=0.0, dvzmin=0.0, dvzmax=0.0, dangle=0.0, dacc=0.0, add=0):
+    def __init__(self, dvxmin=0.0, dvxmax=0.0, dvymin=0.0, dvymax=0.0, dvzmin=0.0, dvzmax=0.0, dangle=0.0, dacc=0.0, add=0, track_mode=0):
         self.dvxmin = dvxmin
         self.dvxmax = dvxmax
         self.dvymin = dvymin
@@ -47,6 +47,7 @@ class TrackPar:
         self.dangle = dangle
         self.dacc = dacc
         self.add = add
+        self.track_mode = track_mode
         self.dsumg = 0
         self.dn = 0
         self.dnx = 0
@@ -57,10 +58,18 @@ class TrackPar:
         lines = path.read_text().strip().splitlines()
         if len(lines) < 9:
             raise ValueError(f"Expected 9 lines, got {len(lines)}")
+        track_mode = 0
+        if len(lines) >= 10:
+            try:
+                track_mode = int(lines[9].strip())
+            except (ValueError, IndexError):
+                track_mode = 0
         return TrackPar(
             float(lines[0]), float(lines[1]), float(lines[2]), float(lines[3]),
-            float(lines[4]), float(lines[5]), float(lines[6]), float(lines[7]), int(lines[8])
+            float(lines[4]), float(lines[5]), float(lines[6]), float(lines[7]), int(lines[8]),
+            track_mode
         )
+
 
 class VolumePar:
     def __init__(self, X_lay=None, Zmin_lay=None, Zmax_lay=None, cnx=0.0, cny=0.0, cn=0.0, csumg=0.0, corrmin=0.0, eps0=0.0):

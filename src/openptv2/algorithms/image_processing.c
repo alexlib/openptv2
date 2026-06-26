@@ -3,12 +3,12 @@
 /* BEGIN: Cython Metadata
 {
     "distutils": {
-        "name": "algorithms.image_processing",
+        "name": "openptv2.algorithms.image_processing",
         "sources": [
-            "algorithms/image_processing.py"
+            "src/openptv2/algorithms/image_processing.py"
         ]
     },
-    "module_name": "algorithms.image_processing"
+    "module_name": "openptv2.algorithms.image_processing"
 }
 END: Cython Metadata */
 
@@ -1126,8 +1126,8 @@ static int __Pyx_init_co_variables(void) {
   #endif
 #endif
 
-#define __PYX_HAVE__algorithms__image_processing
-#define __PYX_HAVE_API__algorithms__image_processing
+#define __PYX_HAVE__openptv2__algorithms__image_processing
+#define __PYX_HAVE_API__openptv2__algorithms__image_processing
 /* Early includes */
 #include "pythread.h"
 #include <string.h>
@@ -1348,7 +1348,7 @@ static const char *__pyx_filename;
 /* #### Code section: filename_table ### */
 
 static const char* const __pyx_f[] = {
-  "algorithms/image_processing.py",
+  "src/openptv2/algorithms/image_processing.py",
   "<stringsource>",
 };
 /* #### Code section: utility_code_proto_before_types ### */
@@ -1608,44 +1608,44 @@ struct __pyx_array_obj;
 struct __pyx_MemviewEnum_obj;
 struct __pyx_memoryview_obj;
 struct __pyx_memoryviewslice_obj;
-struct __pyx_opt_args_10algorithms_16image_processing_filter_3;
-struct __pyx_opt_args_10algorithms_16image_processing_prepare_image;
-struct __pyx_opt_args_10algorithms_16image_processing_copy_images;
+struct __pyx_opt_args_8openptv2_10algorithms_16image_processing_filter_3;
+struct __pyx_opt_args_8openptv2_10algorithms_16image_processing_prepare_image;
+struct __pyx_opt_args_8openptv2_10algorithms_16image_processing_copy_images;
 
-/* "algorithms/image_processing.py":20
+/* "openptv2/algorithms/image_processing.py":20
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * @cython.boundscheck(False)
  * @cython.wraparound(False)
 */
-struct __pyx_opt_args_10algorithms_16image_processing_filter_3 {
+struct __pyx_opt_args_8openptv2_10algorithms_16image_processing_filter_3 {
   int __pyx_n;
   int min_brightness;
 };
 
-/* "algorithms/image_processing.py":284
+/* "openptv2/algorithms/image_processing.py":284
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def prepare_image(
  *     img: np.ndarray,
 */
-struct __pyx_opt_args_10algorithms_16image_processing_prepare_image {
+struct __pyx_opt_args_8openptv2_10algorithms_16image_processing_prepare_image {
   int __pyx_n;
   int filter_hp;
   PyObject *filter_file;
   int chfield;
 };
 
-/* "algorithms/image_processing.py":337
+/* "openptv2/algorithms/image_processing.py":337
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def copy_images(src, dest=None, imx=None, imy=None):
  *     """Copy image data from src to dest, matching C's copy_images semantics.
 */
-struct __pyx_opt_args_10algorithms_16image_processing_copy_images {
+struct __pyx_opt_args_8openptv2_10algorithms_16image_processing_copy_images {
   int __pyx_n;
   PyObject *dest;
   PyObject *imx;
@@ -3111,7 +3111,7 @@ static PyObject *__pyx_memoryviewslice__get_base(struct __pyx_memoryviewslice_ob
 
 /* Module declarations from "cython" */
 
-/* Module declarations from "algorithms.image_processing" */
+/* Module declarations from "openptv2.algorithms.image_processing" */
 static PyObject *__pyx_collections_abc_Sequence = 0;
 static PyObject *generic = 0;
 static PyObject *strided = 0;
@@ -3120,14 +3120,14 @@ static PyObject *contiguous = 0;
 static PyObject *indirect_contiguous = 0;
 static int __pyx_memoryview_thread_locks_used;
 static PyThread_type_lock __pyx_memoryview_thread_locks[8];
-static PyObject *__pyx_f_10algorithms_16image_processing_filter_3(PyObject *, PyObject *, int, int, int __pyx_skip_dispatch, struct __pyx_opt_args_10algorithms_16image_processing_filter_3 *__pyx_optional_args); /*proto*/
-static PyObject *__pyx_f_10algorithms_16image_processing_lowpass_3(PyObject *, int, int, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject *, int, int, int, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_16image_processing_split(PyObject *, int, int, int, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_16image_processing_subtract_img(PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_16image_processing_subtract_mask(PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_16image_processing_prepare_image(PyObject *, int, int, int, int __pyx_skip_dispatch, struct __pyx_opt_args_10algorithms_16image_processing_prepare_image *__pyx_optional_args); /*proto*/
-static PyObject *__pyx_f_10algorithms_16image_processing_copy_images(PyObject *, int __pyx_skip_dispatch, struct __pyx_opt_args_10algorithms_16image_processing_copy_images *__pyx_optional_args); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_16image_processing_filter_3(PyObject *, PyObject *, int, int, int __pyx_skip_dispatch, struct __pyx_opt_args_8openptv2_10algorithms_16image_processing_filter_3 *__pyx_optional_args); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_16image_processing_lowpass_3(PyObject *, int, int, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_16image_processing_fast_box_blur(PyObject *, int, int, int, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_16image_processing_split(PyObject *, int, int, int, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_16image_processing_subtract_img(PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_16image_processing_subtract_mask(PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_16image_processing_prepare_image(PyObject *, int, int, int, int __pyx_skip_dispatch, struct __pyx_opt_args_8openptv2_10algorithms_16image_processing_prepare_image *__pyx_optional_args); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_16image_processing_copy_images(PyObject *, int __pyx_skip_dispatch, struct __pyx_opt_args_8openptv2_10algorithms_16image_processing_copy_images *__pyx_optional_args); /*proto*/
 static int __pyx_array_allocate_buffer(struct __pyx_array_obj *); /*proto*/
 static struct __pyx_array_obj *__pyx_array_new(PyObject *, Py_ssize_t, char *, char const *, char *); /*proto*/
 static PyObject *__pyx_memoryview_new(PyObject *, int, int, __Pyx_TypeInfo const *); /*proto*/
@@ -3166,11 +3166,11 @@ static const __Pyx_TypeInfo __Pyx_TypeInfo_double = { "double", NULL, sizeof(dou
 static const __Pyx_TypeInfo __Pyx_TypeInfo_unsigned_char = { "unsigned char", NULL, sizeof(unsigned char), { 0 }, 0, __PYX_IS_UNSIGNED(unsigned char) ? 'U' : 'I', __PYX_IS_UNSIGNED(unsigned char), 0 };
 static const __Pyx_TypeInfo __Pyx_TypeInfo_PY_LONG_LONG = { "long long", NULL, sizeof(PY_LONG_LONG), { 0 }, 0, __PYX_IS_UNSIGNED(PY_LONG_LONG) ? 'U' : 'I', __PYX_IS_UNSIGNED(PY_LONG_LONG), 0 };
 /* #### Code section: before_global_var ### */
-#define __Pyx_MODULE_NAME "algorithms.image_processing"
-extern int __pyx_module_is_main_algorithms__image_processing;
-int __pyx_module_is_main_algorithms__image_processing = 0;
+#define __Pyx_MODULE_NAME "openptv2.algorithms.image_processing"
+extern int __pyx_module_is_main_openptv2__algorithms__image_processing;
+int __pyx_module_is_main_openptv2__algorithms__image_processing = 0;
 
-/* Implementation of "algorithms.image_processing" */
+/* Implementation of "openptv2.algorithms.image_processing" */
 /* #### Code section: global_var ### */
 static PyObject *__pyx_builtin___import__;
 static PyObject *__pyx_builtin_enumerate;
@@ -3223,15 +3223,15 @@ static void __pyx_memoryviewslice___pyx_pf_15View_dot_MemoryView_16_memoryviewsl
 static PyObject *__pyx_pf___pyx_memoryviewslice___reduce_cython__(CYTHON_UNUSED struct __pyx_memoryviewslice_obj *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf___pyx_memoryviewslice_2__setstate_cython__(CYTHON_UNUSED struct __pyx_memoryviewslice_obj *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state); /* proto */
 static PyObject *__pyx_pf_15View_dot_MemoryView___pyx_unpickle_Enum(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v___pyx_type, long __pyx_v___pyx_checksum, PyObject *__pyx_v___pyx_state); /* proto */
-static PyObject *__pyx_pf_10algorithms_16image_processing_filter_3(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_img, PyObject *__pyx_v_filt, int __pyx_v_imx, int __pyx_v_imy, int __pyx_v_min_brightness); /* proto */
-static PyObject *__pyx_pf_10algorithms_16image_processing_2lowpass_3(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_img, int __pyx_v_imx, int __pyx_v_imy); /* proto */
-static PyObject *__pyx_pf_10algorithms_16image_processing_4fast_box_blur(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_img, int __pyx_v_filt_span, int __pyx_v_imx, int __pyx_v_imy); /* proto */
-static PyObject *__pyx_pf_10algorithms_16image_processing_6split(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_img, int __pyx_v_half_selector, int __pyx_v_imx, int __pyx_v_imy); /* proto */
-static PyObject *__pyx_pf_10algorithms_16image_processing_8subtract_img(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_img1, PyObject *__pyx_v_img2); /* proto */
-static PyObject *__pyx_pf_10algorithms_16image_processing_10subtract_mask(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_img, PyObject *__pyx_v_mask); /* proto */
-static PyObject *__pyx_pf_10algorithms_16image_processing_12prepare_image(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_img, int __pyx_v_dim_lp, int __pyx_v_imx, int __pyx_v_imy, int __pyx_v_filter_hp, PyObject *__pyx_v_filter_file, int __pyx_v_chfield); /* proto */
-static PyObject *__pyx_pf_10algorithms_16image_processing_14copy_images(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_src, PyObject *__pyx_v_dest, PyObject *__pyx_v_imx, PyObject *__pyx_v_imy); /* proto */
-static PyObject *__pyx_pf_10algorithms_16image_processing_16is_compiled(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_16image_processing_filter_3(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_img, PyObject *__pyx_v_filt, int __pyx_v_imx, int __pyx_v_imy, int __pyx_v_min_brightness); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_16image_processing_2lowpass_3(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_img, int __pyx_v_imx, int __pyx_v_imy); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_16image_processing_4fast_box_blur(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_img, int __pyx_v_filt_span, int __pyx_v_imx, int __pyx_v_imy); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_16image_processing_6split(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_img, int __pyx_v_half_selector, int __pyx_v_imx, int __pyx_v_imy); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_16image_processing_8subtract_img(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_img1, PyObject *__pyx_v_img2); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_16image_processing_10subtract_mask(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_img, PyObject *__pyx_v_mask); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_16image_processing_12prepare_image(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_img, int __pyx_v_dim_lp, int __pyx_v_imx, int __pyx_v_imy, int __pyx_v_filter_hp, PyObject *__pyx_v_filter_file, int __pyx_v_chfield); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_16image_processing_14copy_images(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_src, PyObject *__pyx_v_dest, PyObject *__pyx_v_imx, PyObject *__pyx_v_imy); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_16image_processing_16is_compiled(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
 static PyObject *__pyx_tp_new_array(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_tp_new_Enum(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_tp_new_memoryview(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
@@ -3335,24 +3335,24 @@ static __pyx_mstatetype * const __pyx_mstate_global = &__pyx_mstate_global_stati
 #define __pyx_kp_u__5 __pyx_string_tab[20]
 #define __pyx_kp_u__6 __pyx_string_tab[21]
 #define __pyx_kp_u_add_note __pyx_string_tab[22]
-#define __pyx_kp_u_algorithms_image_processing_py __pyx_string_tab[23]
-#define __pyx_kp_u_and __pyx_string_tab[24]
-#define __pyx_kp_u_at_0x __pyx_string_tab[25]
-#define __pyx_kp_u_collections_abc __pyx_string_tab[26]
-#define __pyx_kp_u_contiguous_and_direct __pyx_string_tab[27]
-#define __pyx_kp_u_contiguous_and_indirect __pyx_string_tab[28]
-#define __pyx_kp_u_cython_int __pyx_string_tab[29]
-#define __pyx_kp_u_disable __pyx_string_tab[30]
-#define __pyx_kp_u_enable __pyx_string_tab[31]
-#define __pyx_kp_u_filter_file_required_when_filter __pyx_string_tab[32]
-#define __pyx_kp_u_gc __pyx_string_tab[33]
-#define __pyx_kp_u_got __pyx_string_tab[34]
-#define __pyx_kp_u_got_differing_extents_in_dimensi __pyx_string_tab[35]
-#define __pyx_kp_u_isenabled __pyx_string_tab[36]
-#define __pyx_kp_u_itemsize_0_for_cython_array __pyx_string_tab[37]
-#define __pyx_kp_u_no_default___reduce___due_to_non __pyx_string_tab[38]
-#define __pyx_kp_u_np_ndarray __pyx_string_tab[39]
-#define __pyx_kp_u_object __pyx_string_tab[40]
+#define __pyx_kp_u_and __pyx_string_tab[23]
+#define __pyx_kp_u_at_0x __pyx_string_tab[24]
+#define __pyx_kp_u_collections_abc __pyx_string_tab[25]
+#define __pyx_kp_u_contiguous_and_direct __pyx_string_tab[26]
+#define __pyx_kp_u_contiguous_and_indirect __pyx_string_tab[27]
+#define __pyx_kp_u_cython_int __pyx_string_tab[28]
+#define __pyx_kp_u_disable __pyx_string_tab[29]
+#define __pyx_kp_u_enable __pyx_string_tab[30]
+#define __pyx_kp_u_filter_file_required_when_filter __pyx_string_tab[31]
+#define __pyx_kp_u_gc __pyx_string_tab[32]
+#define __pyx_kp_u_got __pyx_string_tab[33]
+#define __pyx_kp_u_got_differing_extents_in_dimensi __pyx_string_tab[34]
+#define __pyx_kp_u_isenabled __pyx_string_tab[35]
+#define __pyx_kp_u_itemsize_0_for_cython_array __pyx_string_tab[36]
+#define __pyx_kp_u_no_default___reduce___due_to_non __pyx_string_tab[37]
+#define __pyx_kp_u_np_ndarray __pyx_string_tab[38]
+#define __pyx_kp_u_object __pyx_string_tab[39]
+#define __pyx_kp_u_src_openptv2_algorithms_image_pr __pyx_string_tab[40]
 #define __pyx_kp_u_str_Path_None __pyx_string_tab[41]
 #define __pyx_kp_u_strided_and_direct __pyx_string_tab[42]
 #define __pyx_kp_u_strided_and_direct_or_indirect __pyx_string_tab[43]
@@ -3367,87 +3367,87 @@ static __pyx_mstatetype * const __pyx_mstate_global = &__pyx_mstate_global_stati
 #define __pyx_n_u_View_MemoryView __pyx_string_tab[52]
 #define __pyx_n_u_abc __pyx_string_tab[53]
 #define __pyx_n_u_accum __pyx_string_tab[54]
-#define __pyx_n_u_algorithms_image_processing __pyx_string_tab[55]
-#define __pyx_n_u_allocate_buffer __pyx_string_tab[56]
-#define __pyx_n_u_asarray __pyx_string_tab[57]
-#define __pyx_n_u_astype __pyx_string_tab[58]
-#define __pyx_n_u_asyncio_coroutines __pyx_string_tab[59]
-#define __pyx_n_u_base __pyx_string_tab[60]
-#define __pyx_n_u_bool __pyx_string_tab[61]
-#define __pyx_n_u_buf __pyx_string_tab[62]
-#define __pyx_n_u_c __pyx_string_tab[63]
-#define __pyx_n_u_chfield __pyx_string_tab[64]
-#define __pyx_n_u_class __pyx_string_tab[65]
-#define __pyx_n_u_class_getitem __pyx_string_tab[66]
-#define __pyx_n_u_cline_in_traceback __pyx_string_tab[67]
-#define __pyx_n_u_clip __pyx_string_tab[68]
-#define __pyx_n_u_col __pyx_string_tab[69]
-#define __pyx_n_u_col_accum_mv __pyx_string_tab[70]
-#define __pyx_n_u_copy __pyx_string_tab[71]
-#define __pyx_n_u_copy_images __pyx_string_tab[72]
-#define __pyx_n_u_copyto __pyx_string_tab[73]
-#define __pyx_n_u_count __pyx_string_tab[74]
-#define __pyx_n_u_dest __pyx_string_tab[75]
-#define __pyx_n_u_dest_mv __pyx_string_tab[76]
-#define __pyx_n_u_dict __pyx_string_tab[77]
-#define __pyx_n_u_dim_lp __pyx_string_tab[78]
-#define __pyx_n_u_dtype __pyx_string_tab[79]
-#define __pyx_n_u_dtype_is_object __pyx_string_tab[80]
-#define __pyx_n_u_encode __pyx_string_tab[81]
-#define __pyx_n_u_end __pyx_string_tab[82]
-#define __pyx_n_u_enumerate __pyx_string_tab[83]
-#define __pyx_n_u_error __pyx_string_tab[84]
-#define __pyx_n_u_fast_box_blur __pyx_string_tab[85]
-#define __pyx_n_u_filt __pyx_string_tab[86]
-#define __pyx_n_u_filt_mv __pyx_string_tab[87]
-#define __pyx_n_u_filt_span __pyx_string_tab[88]
-#define __pyx_n_u_filt_sum __pyx_string_tab[89]
-#define __pyx_n_u_filter_3 __pyx_string_tab[90]
-#define __pyx_n_u_filter_file __pyx_string_tab[91]
-#define __pyx_n_u_filter_hp __pyx_string_tab[92]
-#define __pyx_n_u_flags __pyx_string_tab[93]
-#define __pyx_n_u_float64 __pyx_string_tab[94]
-#define __pyx_n_u_format __pyx_string_tab[95]
-#define __pyx_n_u_fortran __pyx_string_tab[96]
-#define __pyx_n_u_func __pyx_string_tab[97]
-#define __pyx_n_u_getstate __pyx_string_tab[98]
-#define __pyx_n_u_half_selector __pyx_string_tab[99]
-#define __pyx_n_u_id __pyx_string_tab[100]
-#define __pyx_n_u_idx __pyx_string_tab[101]
-#define __pyx_n_u_image_size __pyx_string_tab[102]
-#define __pyx_n_u_img __pyx_string_tab[103]
-#define __pyx_n_u_img1 __pyx_string_tab[104]
-#define __pyx_n_u_img2 __pyx_string_tab[105]
-#define __pyx_n_u_import __pyx_string_tab[106]
-#define __pyx_n_u_imx __pyx_string_tab[107]
-#define __pyx_n_u_imy __pyx_string_tab[108]
-#define __pyx_n_u_index __pyx_string_tab[109]
-#define __pyx_n_u_int16 __pyx_string_tab[110]
-#define __pyx_n_u_int64 __pyx_string_tab[111]
-#define __pyx_n_u_is_compiled __pyx_string_tab[112]
-#define __pyx_n_u_is_coroutine __pyx_string_tab[113]
-#define __pyx_n_u_items __pyx_string_tab[114]
-#define __pyx_n_u_itemsize __pyx_string_tab[115]
-#define __pyx_n_u_left_idx __pyx_string_tab[116]
-#define __pyx_n_u_left_ptr __pyx_string_tab[117]
-#define __pyx_n_u_loadtxt __pyx_string_tab[118]
-#define __pyx_n_u_lowpass_3 __pyx_string_tab[119]
-#define __pyx_n_u_m __pyx_string_tab[120]
-#define __pyx_n_u_main __pyx_string_tab[121]
-#define __pyx_n_u_mask __pyx_string_tab[122]
-#define __pyx_n_u_memview __pyx_string_tab[123]
-#define __pyx_n_u_min_brightness __pyx_string_tab[124]
-#define __pyx_n_u_mode __pyx_string_tab[125]
-#define __pyx_n_u_module __pyx_string_tab[126]
-#define __pyx_n_u_n __pyx_string_tab[127]
-#define __pyx_n_u_name __pyx_string_tab[128]
-#define __pyx_n_u_name_2 __pyx_string_tab[129]
-#define __pyx_n_u_ndim __pyx_string_tab[130]
-#define __pyx_n_u_new __pyx_string_tab[131]
-#define __pyx_n_u_np __pyx_string_tab[132]
-#define __pyx_n_u_nq __pyx_string_tab[133]
-#define __pyx_n_u_numpy __pyx_string_tab[134]
-#define __pyx_n_u_obj __pyx_string_tab[135]
+#define __pyx_n_u_allocate_buffer __pyx_string_tab[55]
+#define __pyx_n_u_asarray __pyx_string_tab[56]
+#define __pyx_n_u_astype __pyx_string_tab[57]
+#define __pyx_n_u_asyncio_coroutines __pyx_string_tab[58]
+#define __pyx_n_u_base __pyx_string_tab[59]
+#define __pyx_n_u_bool __pyx_string_tab[60]
+#define __pyx_n_u_buf __pyx_string_tab[61]
+#define __pyx_n_u_c __pyx_string_tab[62]
+#define __pyx_n_u_chfield __pyx_string_tab[63]
+#define __pyx_n_u_class __pyx_string_tab[64]
+#define __pyx_n_u_class_getitem __pyx_string_tab[65]
+#define __pyx_n_u_cline_in_traceback __pyx_string_tab[66]
+#define __pyx_n_u_clip __pyx_string_tab[67]
+#define __pyx_n_u_col __pyx_string_tab[68]
+#define __pyx_n_u_col_accum_mv __pyx_string_tab[69]
+#define __pyx_n_u_copy __pyx_string_tab[70]
+#define __pyx_n_u_copy_images __pyx_string_tab[71]
+#define __pyx_n_u_copyto __pyx_string_tab[72]
+#define __pyx_n_u_count __pyx_string_tab[73]
+#define __pyx_n_u_dest __pyx_string_tab[74]
+#define __pyx_n_u_dest_mv __pyx_string_tab[75]
+#define __pyx_n_u_dict __pyx_string_tab[76]
+#define __pyx_n_u_dim_lp __pyx_string_tab[77]
+#define __pyx_n_u_dtype __pyx_string_tab[78]
+#define __pyx_n_u_dtype_is_object __pyx_string_tab[79]
+#define __pyx_n_u_encode __pyx_string_tab[80]
+#define __pyx_n_u_end __pyx_string_tab[81]
+#define __pyx_n_u_enumerate __pyx_string_tab[82]
+#define __pyx_n_u_error __pyx_string_tab[83]
+#define __pyx_n_u_fast_box_blur __pyx_string_tab[84]
+#define __pyx_n_u_filt __pyx_string_tab[85]
+#define __pyx_n_u_filt_mv __pyx_string_tab[86]
+#define __pyx_n_u_filt_span __pyx_string_tab[87]
+#define __pyx_n_u_filt_sum __pyx_string_tab[88]
+#define __pyx_n_u_filter_3 __pyx_string_tab[89]
+#define __pyx_n_u_filter_file __pyx_string_tab[90]
+#define __pyx_n_u_filter_hp __pyx_string_tab[91]
+#define __pyx_n_u_flags __pyx_string_tab[92]
+#define __pyx_n_u_float64 __pyx_string_tab[93]
+#define __pyx_n_u_format __pyx_string_tab[94]
+#define __pyx_n_u_fortran __pyx_string_tab[95]
+#define __pyx_n_u_func __pyx_string_tab[96]
+#define __pyx_n_u_getstate __pyx_string_tab[97]
+#define __pyx_n_u_half_selector __pyx_string_tab[98]
+#define __pyx_n_u_id __pyx_string_tab[99]
+#define __pyx_n_u_idx __pyx_string_tab[100]
+#define __pyx_n_u_image_size __pyx_string_tab[101]
+#define __pyx_n_u_img __pyx_string_tab[102]
+#define __pyx_n_u_img1 __pyx_string_tab[103]
+#define __pyx_n_u_img2 __pyx_string_tab[104]
+#define __pyx_n_u_import __pyx_string_tab[105]
+#define __pyx_n_u_imx __pyx_string_tab[106]
+#define __pyx_n_u_imy __pyx_string_tab[107]
+#define __pyx_n_u_index __pyx_string_tab[108]
+#define __pyx_n_u_int16 __pyx_string_tab[109]
+#define __pyx_n_u_int64 __pyx_string_tab[110]
+#define __pyx_n_u_is_compiled __pyx_string_tab[111]
+#define __pyx_n_u_is_coroutine __pyx_string_tab[112]
+#define __pyx_n_u_items __pyx_string_tab[113]
+#define __pyx_n_u_itemsize __pyx_string_tab[114]
+#define __pyx_n_u_left_idx __pyx_string_tab[115]
+#define __pyx_n_u_left_ptr __pyx_string_tab[116]
+#define __pyx_n_u_loadtxt __pyx_string_tab[117]
+#define __pyx_n_u_lowpass_3 __pyx_string_tab[118]
+#define __pyx_n_u_m __pyx_string_tab[119]
+#define __pyx_n_u_main __pyx_string_tab[120]
+#define __pyx_n_u_mask __pyx_string_tab[121]
+#define __pyx_n_u_memview __pyx_string_tab[122]
+#define __pyx_n_u_min_brightness __pyx_string_tab[123]
+#define __pyx_n_u_mode __pyx_string_tab[124]
+#define __pyx_n_u_module __pyx_string_tab[125]
+#define __pyx_n_u_n __pyx_string_tab[126]
+#define __pyx_n_u_name __pyx_string_tab[127]
+#define __pyx_n_u_name_2 __pyx_string_tab[128]
+#define __pyx_n_u_ndim __pyx_string_tab[129]
+#define __pyx_n_u_new __pyx_string_tab[130]
+#define __pyx_n_u_np __pyx_string_tab[131]
+#define __pyx_n_u_nq __pyx_string_tab[132]
+#define __pyx_n_u_numpy __pyx_string_tab[133]
+#define __pyx_n_u_obj __pyx_string_tab[134]
+#define __pyx_n_u_openptv2_algorithms_image_proces __pyx_string_tab[135]
 #define __pyx_n_u_out __pyx_string_tab[136]
 #define __pyx_n_u_pack __pyx_string_tab[137]
 #define __pyx_n_u_pathlib __pyx_string_tab[138]
@@ -16077,7 +16077,7 @@ static PyObject *__pyx_unpickle_Enum__set_state(struct __pyx_MemviewEnum_obj *__
   return __pyx_r;
 }
 
-/* "algorithms/image_processing.py":20
+/* "openptv2/algorithms/image_processing.py":20
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -16085,14 +16085,14 @@ static PyObject *__pyx_unpickle_Enum__set_state(struct __pyx_MemviewEnum_obj *__
  * @cython.wraparound(False)
 */
 
-static PyObject *__pyx_pw_10algorithms_16image_processing_1filter_3(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_16image_processing_1filter_3(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_16image_processing_filter_3(PyObject *__pyx_v_img, PyObject *__pyx_v_filt, int __pyx_v_imx, int __pyx_v_imy, CYTHON_UNUSED int __pyx_skip_dispatch, struct __pyx_opt_args_10algorithms_16image_processing_filter_3 *__pyx_optional_args) {
+static PyObject *__pyx_f_8openptv2_10algorithms_16image_processing_filter_3(PyObject *__pyx_v_img, PyObject *__pyx_v_filt, int __pyx_v_imx, int __pyx_v_imy, CYTHON_UNUSED int __pyx_skip_dispatch, struct __pyx_opt_args_8openptv2_10algorithms_16image_processing_filter_3 *__pyx_optional_args) {
   int __pyx_v_min_brightness = ((int)8);
   double __pyx_v_filt_sum;
   int __pyx_v_image_size;
@@ -16163,7 +16163,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_filter_3(PyObject *__py
     }
   }
 
-  /* "algorithms/image_processing.py":43
+  /* "openptv2/algorithms/image_processing.py":43
  * ) -> np.ndarray:
  *     """Apply the C 3x3 filter kernel with matching integer semantics."""
  *     filt_arr = np.asarray(filt, dtype=np.float64).reshape(3, 3)             # <<<<<<<<<<<<<<
@@ -16215,7 +16215,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_filter_3(PyObject *__py
   __pyx_v_filt_arr = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/image_processing.py":44
+  /* "openptv2/algorithms/image_processing.py":44
  *     """Apply the C 3x3 filter kernel with matching integer semantics."""
  *     filt_arr = np.asarray(filt, dtype=np.float64).reshape(3, 3)
  *     filt_mv = filt_arr             # <<<<<<<<<<<<<<
@@ -16227,7 +16227,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_filter_3(PyObject *__py
   __pyx_t_7.memview = NULL;
   __pyx_t_7.data = NULL;
 
-  /* "algorithms/image_processing.py":45
+  /* "openptv2/algorithms/image_processing.py":45
  *     filt_arr = np.asarray(filt, dtype=np.float64).reshape(3, 3)
  *     filt_mv = filt_arr
  *     filt_sum = float(filt_arr.sum())             # <<<<<<<<<<<<<<
@@ -16248,7 +16248,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_filter_3(PyObject *__py
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_filt_sum = __pyx_t_8;
 
-  /* "algorithms/image_processing.py":46
+  /* "openptv2/algorithms/image_processing.py":46
  *     filt_mv = filt_arr
  *     filt_sum = float(filt_arr.sum())
  *     if filt_sum == 0:             # <<<<<<<<<<<<<<
@@ -16258,7 +16258,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_filter_3(PyObject *__py
   __pyx_t_9 = (__pyx_v_filt_sum == 0.0);
   if (unlikely(__pyx_t_9)) {
 
-    /* "algorithms/image_processing.py":47
+    /* "openptv2/algorithms/image_processing.py":47
  *     filt_sum = float(filt_arr.sum())
  *     if filt_sum == 0:
  *         raise ValueError("Filter kernel sum is zero")             # <<<<<<<<<<<<<<
@@ -16278,7 +16278,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_filter_3(PyObject *__py
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __PYX_ERR(0, 47, __pyx_L1_error)
 
-    /* "algorithms/image_processing.py":46
+    /* "openptv2/algorithms/image_processing.py":46
  *     filt_mv = filt_arr
  *     filt_sum = float(filt_arr.sum())
  *     if filt_sum == 0:             # <<<<<<<<<<<<<<
@@ -16287,7 +16287,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_filter_3(PyObject *__py
 */
   }
 
-  /* "algorithms/image_processing.py":49
+  /* "openptv2/algorithms/image_processing.py":49
  *         raise ValueError("Filter kernel sum is zero")
  * 
  *     src_arr = np.asarray(img, dtype=np.uint8).reshape(imy, imx).ravel()             # <<<<<<<<<<<<<<
@@ -16361,7 +16361,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_filter_3(PyObject *__py
   __pyx_v_src_arr = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/image_processing.py":50
+  /* "openptv2/algorithms/image_processing.py":50
  * 
  *     src_arr = np.asarray(img, dtype=np.uint8).reshape(imy, imx).ravel()
  *     src_mv = src_arr             # <<<<<<<<<<<<<<
@@ -16373,7 +16373,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_filter_3(PyObject *__py
   __pyx_t_14.memview = NULL;
   __pyx_t_14.data = NULL;
 
-  /* "algorithms/image_processing.py":51
+  /* "openptv2/algorithms/image_processing.py":51
  *     src_arr = np.asarray(img, dtype=np.uint8).reshape(imy, imx).ravel()
  *     src_mv = src_arr
  *     image_size = imx * imy             # <<<<<<<<<<<<<<
@@ -16382,7 +16382,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_filter_3(PyObject *__py
 */
   __pyx_v_image_size = (__pyx_v_imx * __pyx_v_imy);
 
-  /* "algorithms/image_processing.py":52
+  /* "openptv2/algorithms/image_processing.py":52
  *     src_mv = src_arr
  *     image_size = imx * imy
  *     result_arr = np.zeros(image_size, dtype=np.uint8)             # <<<<<<<<<<<<<<
@@ -16431,7 +16431,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_filter_3(PyObject *__py
   __pyx_v_result_arr = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/image_processing.py":53
+  /* "openptv2/algorithms/image_processing.py":53
  *     image_size = imx * imy
  *     result_arr = np.zeros(image_size, dtype=np.uint8)
  *     result_mv = result_arr             # <<<<<<<<<<<<<<
@@ -16443,7 +16443,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_filter_3(PyObject *__py
   __pyx_t_14.memview = NULL;
   __pyx_t_14.data = NULL;
 
-  /* "algorithms/image_processing.py":55
+  /* "openptv2/algorithms/image_processing.py":55
  *     result_mv = result_arr
  * 
  *     start = imx + 1             # <<<<<<<<<<<<<<
@@ -16452,7 +16452,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_filter_3(PyObject *__py
 */
   __pyx_v_start = (__pyx_v_imx + 1);
 
-  /* "algorithms/image_processing.py":56
+  /* "openptv2/algorithms/image_processing.py":56
  * 
  *     start = imx + 1
  *     end = image_size - imx - 1             # <<<<<<<<<<<<<<
@@ -16461,7 +16461,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_filter_3(PyObject *__py
 */
   __pyx_v_end = ((__pyx_v_image_size - __pyx_v_imx) - 1);
 
-  /* "algorithms/image_processing.py":57
+  /* "openptv2/algorithms/image_processing.py":57
  *     start = imx + 1
  *     end = image_size - imx - 1
  *     for idx in range(start, end):             # <<<<<<<<<<<<<<
@@ -16473,7 +16473,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_filter_3(PyObject *__py
   for (__pyx_t_17 = __pyx_v_start; __pyx_t_17 < __pyx_t_16; __pyx_t_17+=1) {
     __pyx_v_idx = __pyx_t_17;
 
-    /* "algorithms/image_processing.py":59
+    /* "openptv2/algorithms/image_processing.py":59
  *     for idx in range(start, end):
  *         total = (
  *             filt_mv[0, 0] * src_mv[idx - imx - 1]             # <<<<<<<<<<<<<<
@@ -16484,7 +16484,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_filter_3(PyObject *__py
     __pyx_t_19 = 0;
     __pyx_t_20 = ((__pyx_v_idx - __pyx_v_imx) - 1);
 
-    /* "algorithms/image_processing.py":60
+    /* "openptv2/algorithms/image_processing.py":60
  *         total = (
  *             filt_mv[0, 0] * src_mv[idx - imx - 1]
  *             + filt_mv[0, 1] * src_mv[idx - imx]             # <<<<<<<<<<<<<<
@@ -16495,7 +16495,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_filter_3(PyObject *__py
     __pyx_t_22 = 1;
     __pyx_t_23 = (__pyx_v_idx - __pyx_v_imx);
 
-    /* "algorithms/image_processing.py":61
+    /* "openptv2/algorithms/image_processing.py":61
  *             filt_mv[0, 0] * src_mv[idx - imx - 1]
  *             + filt_mv[0, 1] * src_mv[idx - imx]
  *             + filt_mv[0, 2] * src_mv[idx - imx + 1]             # <<<<<<<<<<<<<<
@@ -16506,7 +16506,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_filter_3(PyObject *__py
     __pyx_t_25 = 2;
     __pyx_t_26 = ((__pyx_v_idx - __pyx_v_imx) + 1);
 
-    /* "algorithms/image_processing.py":62
+    /* "openptv2/algorithms/image_processing.py":62
  *             + filt_mv[0, 1] * src_mv[idx - imx]
  *             + filt_mv[0, 2] * src_mv[idx - imx + 1]
  *             + filt_mv[1, 0] * src_mv[idx - 1]             # <<<<<<<<<<<<<<
@@ -16517,7 +16517,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_filter_3(PyObject *__py
     __pyx_t_28 = 0;
     __pyx_t_29 = (__pyx_v_idx - 1);
 
-    /* "algorithms/image_processing.py":63
+    /* "openptv2/algorithms/image_processing.py":63
  *             + filt_mv[0, 2] * src_mv[idx - imx + 1]
  *             + filt_mv[1, 0] * src_mv[idx - 1]
  *             + filt_mv[1, 1] * src_mv[idx]             # <<<<<<<<<<<<<<
@@ -16528,7 +16528,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_filter_3(PyObject *__py
     __pyx_t_31 = 1;
     __pyx_t_32 = __pyx_v_idx;
 
-    /* "algorithms/image_processing.py":64
+    /* "openptv2/algorithms/image_processing.py":64
  *             + filt_mv[1, 0] * src_mv[idx - 1]
  *             + filt_mv[1, 1] * src_mv[idx]
  *             + filt_mv[1, 2] * src_mv[idx + 1]             # <<<<<<<<<<<<<<
@@ -16539,7 +16539,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_filter_3(PyObject *__py
     __pyx_t_34 = 2;
     __pyx_t_35 = (__pyx_v_idx + 1);
 
-    /* "algorithms/image_processing.py":65
+    /* "openptv2/algorithms/image_processing.py":65
  *             + filt_mv[1, 1] * src_mv[idx]
  *             + filt_mv[1, 2] * src_mv[idx + 1]
  *             + filt_mv[2, 0] * src_mv[idx + imx - 1]             # <<<<<<<<<<<<<<
@@ -16550,7 +16550,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_filter_3(PyObject *__py
     __pyx_t_37 = 0;
     __pyx_t_38 = ((__pyx_v_idx + __pyx_v_imx) - 1);
 
-    /* "algorithms/image_processing.py":66
+    /* "openptv2/algorithms/image_processing.py":66
  *             + filt_mv[1, 2] * src_mv[idx + 1]
  *             + filt_mv[2, 0] * src_mv[idx + imx - 1]
  *             + filt_mv[2, 1] * src_mv[idx + imx]             # <<<<<<<<<<<<<<
@@ -16561,7 +16561,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_filter_3(PyObject *__py
     __pyx_t_40 = 1;
     __pyx_t_41 = (__pyx_v_idx + __pyx_v_imx);
 
-    /* "algorithms/image_processing.py":67
+    /* "openptv2/algorithms/image_processing.py":67
  *             + filt_mv[2, 0] * src_mv[idx + imx - 1]
  *             + filt_mv[2, 1] * src_mv[idx + imx]
  *             + filt_mv[2, 2] * src_mv[idx + imx + 1]             # <<<<<<<<<<<<<<
@@ -16573,7 +16573,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_filter_3(PyObject *__py
     __pyx_t_44 = ((__pyx_v_idx + __pyx_v_imx) + 1);
     __pyx_v_total = ((((((((((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_filt_mv.data + __pyx_t_18 * __pyx_v_filt_mv.strides[0]) ) + __pyx_t_19 * __pyx_v_filt_mv.strides[1]) ))) * (*((unsigned char *) ( /* dim=0 */ (__pyx_v_src_mv.data + __pyx_t_20 * __pyx_v_src_mv.strides[0]) )))) + ((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_filt_mv.data + __pyx_t_21 * __pyx_v_filt_mv.strides[0]) ) + __pyx_t_22 * __pyx_v_filt_mv.strides[1]) ))) * (*((unsigned char *) ( /* dim=0 */ (__pyx_v_src_mv.data + __pyx_t_23 * __pyx_v_src_mv.strides[0]) ))))) + ((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_filt_mv.data + __pyx_t_24 * __pyx_v_filt_mv.strides[0]) ) + __pyx_t_25 * __pyx_v_filt_mv.strides[1]) ))) * (*((unsigned char *) ( /* dim=0 */ (__pyx_v_src_mv.data + __pyx_t_26 * __pyx_v_src_mv.strides[0]) ))))) + ((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_filt_mv.data + __pyx_t_27 * __pyx_v_filt_mv.strides[0]) ) + __pyx_t_28 * __pyx_v_filt_mv.strides[1]) ))) * (*((unsigned char *) ( /* dim=0 */ (__pyx_v_src_mv.data + __pyx_t_29 * __pyx_v_src_mv.strides[0]) ))))) + ((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_filt_mv.data + __pyx_t_30 * __pyx_v_filt_mv.strides[0]) ) + __pyx_t_31 * __pyx_v_filt_mv.strides[1]) ))) * (*((unsigned char *) ( /* dim=0 */ (__pyx_v_src_mv.data + __pyx_t_32 * __pyx_v_src_mv.strides[0]) ))))) + ((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_filt_mv.data + __pyx_t_33 * __pyx_v_filt_mv.strides[0]) ) + __pyx_t_34 * __pyx_v_filt_mv.strides[1]) ))) * (*((unsigned char *) ( /* dim=0 */ (__pyx_v_src_mv.data + __pyx_t_35 * __pyx_v_src_mv.strides[0]) ))))) + ((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_filt_mv.data + __pyx_t_36 * __pyx_v_filt_mv.strides[0]) ) + __pyx_t_37 * __pyx_v_filt_mv.strides[1]) ))) * (*((unsigned char *) ( /* dim=0 */ (__pyx_v_src_mv.data + __pyx_t_38 * __pyx_v_src_mv.strides[0]) ))))) + ((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_filt_mv.data + __pyx_t_39 * __pyx_v_filt_mv.strides[0]) ) + __pyx_t_40 * __pyx_v_filt_mv.strides[1]) ))) * (*((unsigned char *) ( /* dim=0 */ (__pyx_v_src_mv.data + __pyx_t_41 * __pyx_v_src_mv.strides[0]) ))))) + ((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_filt_mv.data + __pyx_t_42 * __pyx_v_filt_mv.strides[0]) ) + __pyx_t_43 * __pyx_v_filt_mv.strides[1]) ))) * (*((unsigned char *) ( /* dim=0 */ (__pyx_v_src_mv.data + __pyx_t_44 * __pyx_v_src_mv.strides[0]) )))));
 
-    /* "algorithms/image_processing.py":69
+    /* "openptv2/algorithms/image_processing.py":69
  *             + filt_mv[2, 2] * src_mv[idx + imx + 1]
  *         )
  *         buf = int(total / filt_sum)             # <<<<<<<<<<<<<<
@@ -16582,7 +16582,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_filter_3(PyObject *__py
 */
     __pyx_v_buf = ((int)(__pyx_v_total / __pyx_v_filt_sum));
 
-    /* "algorithms/image_processing.py":70
+    /* "openptv2/algorithms/image_processing.py":70
  *         )
  *         buf = int(total / filt_sum)
  *         if buf > 255:             # <<<<<<<<<<<<<<
@@ -16592,7 +16592,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_filter_3(PyObject *__py
     __pyx_t_9 = (__pyx_v_buf > 0xFF);
     if (__pyx_t_9) {
 
-      /* "algorithms/image_processing.py":71
+      /* "openptv2/algorithms/image_processing.py":71
  *         buf = int(total / filt_sum)
  *         if buf > 255:
  *             buf = 255             # <<<<<<<<<<<<<<
@@ -16601,7 +16601,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_filter_3(PyObject *__py
 */
       __pyx_v_buf = 0xFF;
 
-      /* "algorithms/image_processing.py":70
+      /* "openptv2/algorithms/image_processing.py":70
  *         )
  *         buf = int(total / filt_sum)
  *         if buf > 255:             # <<<<<<<<<<<<<<
@@ -16610,7 +16610,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_filter_3(PyObject *__py
 */
     }
 
-    /* "algorithms/image_processing.py":72
+    /* "openptv2/algorithms/image_processing.py":72
  *         if buf > 255:
  *             buf = 255
  *         if buf < min_brightness:             # <<<<<<<<<<<<<<
@@ -16620,7 +16620,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_filter_3(PyObject *__py
     __pyx_t_9 = (__pyx_v_buf < __pyx_v_min_brightness);
     if (__pyx_t_9) {
 
-      /* "algorithms/image_processing.py":73
+      /* "openptv2/algorithms/image_processing.py":73
  *             buf = 255
  *         if buf < min_brightness:
  *             buf = min_brightness             # <<<<<<<<<<<<<<
@@ -16629,7 +16629,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_filter_3(PyObject *__py
 */
       __pyx_v_buf = __pyx_v_min_brightness;
 
-      /* "algorithms/image_processing.py":72
+      /* "openptv2/algorithms/image_processing.py":72
  *         if buf > 255:
  *             buf = 255
  *         if buf < min_brightness:             # <<<<<<<<<<<<<<
@@ -16638,7 +16638,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_filter_3(PyObject *__py
 */
     }
 
-    /* "algorithms/image_processing.py":74
+    /* "openptv2/algorithms/image_processing.py":74
  *         if buf < min_brightness:
  *             buf = min_brightness
  *         result_mv[idx] = buf             # <<<<<<<<<<<<<<
@@ -16649,7 +16649,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_filter_3(PyObject *__py
     *((unsigned char *) ( /* dim=0 */ (__pyx_v_result_mv.data + __pyx_t_44 * __pyx_v_result_mv.strides[0]) )) = __pyx_v_buf;
   }
 
-  /* "algorithms/image_processing.py":76
+  /* "openptv2/algorithms/image_processing.py":76
  *         result_mv[idx] = buf
  * 
  *     return result_arr.reshape(imy, imx)             # <<<<<<<<<<<<<<
@@ -16677,7 +16677,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_filter_3(PyObject *__py
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/image_processing.py":20
+  /* "openptv2/algorithms/image_processing.py":20
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -16698,7 +16698,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_filter_3(PyObject *__py
   __Pyx_XDECREF(__pyx_t_12);
   __Pyx_XDECREF(__pyx_t_13);
   __PYX_XCLEAR_MEMVIEW(&__pyx_t_14, 1);
-  __Pyx_AddTraceback("algorithms.image_processing.filter_3", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.image_processing.filter_3", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __PYX_XCLEAR_MEMVIEW(&__pyx_v_filt_mv, 1);
@@ -16713,16 +16713,16 @@ static PyObject *__pyx_f_10algorithms_16image_processing_filter_3(PyObject *__py
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_16image_processing_1filter_3(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_16image_processing_1filter_3(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_16image_processing_filter_3, "Apply the C 3x3 filter kernel with matching integer semantics.");
-static PyMethodDef __pyx_mdef_10algorithms_16image_processing_1filter_3 = {"filter_3", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_16image_processing_1filter_3, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_16image_processing_filter_3};
-static PyObject *__pyx_pw_10algorithms_16image_processing_1filter_3(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_16image_processing_filter_3, "Apply the C 3x3 filter kernel with matching integer semantics.");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_16image_processing_1filter_3 = {"filter_3", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_16image_processing_1filter_3, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_16image_processing_filter_3};
+static PyObject *__pyx_pw_8openptv2_10algorithms_16image_processing_1filter_3(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -16825,11 +16825,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.image_processing.filter_3", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.image_processing.filter_3", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_16image_processing_filter_3(__pyx_self, __pyx_v_img, __pyx_v_filt, __pyx_v_imx, __pyx_v_imy, __pyx_v_min_brightness);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_16image_processing_filter_3(__pyx_self, __pyx_v_img, __pyx_v_filt, __pyx_v_imx, __pyx_v_imy, __pyx_v_min_brightness);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -16839,11 +16839,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_16image_processing_filter_3(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_img, PyObject *__pyx_v_filt, int __pyx_v_imx, int __pyx_v_imy, int __pyx_v_min_brightness) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_16image_processing_filter_3(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_img, PyObject *__pyx_v_filt, int __pyx_v_imx, int __pyx_v_imy, int __pyx_v_min_brightness) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
-  struct __pyx_opt_args_10algorithms_16image_processing_filter_3 __pyx_t_2;
+  struct __pyx_opt_args_8openptv2_10algorithms_16image_processing_filter_3 __pyx_t_2;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -16851,7 +16851,7 @@ static PyObject *__pyx_pf_10algorithms_16image_processing_filter_3(CYTHON_UNUSED
   __Pyx_XDECREF(__pyx_r);
   __pyx_t_2.__pyx_n = 1;
   __pyx_t_2.min_brightness = __pyx_v_min_brightness;
-  __pyx_t_1 = __pyx_f_10algorithms_16image_processing_filter_3(__pyx_v_img, __pyx_v_filt, __pyx_v_imx, __pyx_v_imy, 1, &__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 20, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_16image_processing_filter_3(__pyx_v_img, __pyx_v_filt, __pyx_v_imx, __pyx_v_imy, 1, &__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 20, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -16860,7 +16860,7 @@ static PyObject *__pyx_pf_10algorithms_16image_processing_filter_3(CYTHON_UNUSED
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.image_processing.filter_3", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.image_processing.filter_3", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -16868,7 +16868,7 @@ static PyObject *__pyx_pf_10algorithms_16image_processing_filter_3(CYTHON_UNUSED
   return __pyx_r;
 }
 
-/* "algorithms/image_processing.py":79
+/* "openptv2/algorithms/image_processing.py":79
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -16876,14 +16876,14 @@ static PyObject *__pyx_pf_10algorithms_16image_processing_filter_3(CYTHON_UNUSED
  * @cython.wraparound(False)
 */
 
-static PyObject *__pyx_pw_10algorithms_16image_processing_3lowpass_3(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_16image_processing_3lowpass_3(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_16image_processing_lowpass_3(PyObject *__pyx_v_img, int __pyx_v_imx, int __pyx_v_imy, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_16image_processing_lowpass_3(PyObject *__pyx_v_img, int __pyx_v_imx, int __pyx_v_imy, CYTHON_UNUSED int __pyx_skip_dispatch) {
   int __pyx_v_image_size;
   int __pyx_v_start;
   int __pyx_v_end;
@@ -16916,7 +16916,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_lowpass_3(PyObject *__p
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("lowpass_3", 0);
 
-  /* "algorithms/image_processing.py":93
+  /* "openptv2/algorithms/image_processing.py":93
  * def lowpass_3(img: np.ndarray, imx: cython.int, imy: cython.int) -> np.ndarray:
  *     """Apply the C 3x3 low-pass filter with integer division."""
  *     src_arr = np.asarray(img, dtype=np.uint8).reshape(imy, imx).ravel()             # <<<<<<<<<<<<<<
@@ -16990,7 +16990,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_lowpass_3(PyObject *__p
   __pyx_v_src_arr = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/image_processing.py":94
+  /* "openptv2/algorithms/image_processing.py":94
  *     """Apply the C 3x3 low-pass filter with integer division."""
  *     src_arr = np.asarray(img, dtype=np.uint8).reshape(imy, imx).ravel()
  *     src_mv = src_arr             # <<<<<<<<<<<<<<
@@ -17002,7 +17002,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_lowpass_3(PyObject *__p
   __pyx_t_11.memview = NULL;
   __pyx_t_11.data = NULL;
 
-  /* "algorithms/image_processing.py":95
+  /* "openptv2/algorithms/image_processing.py":95
  *     src_arr = np.asarray(img, dtype=np.uint8).reshape(imy, imx).ravel()
  *     src_mv = src_arr
  *     image_size = imx * imy             # <<<<<<<<<<<<<<
@@ -17011,7 +17011,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_lowpass_3(PyObject *__p
 */
   __pyx_v_image_size = (__pyx_v_imx * __pyx_v_imy);
 
-  /* "algorithms/image_processing.py":96
+  /* "openptv2/algorithms/image_processing.py":96
  *     src_mv = src_arr
  *     image_size = imx * imy
  *     result_arr = np.zeros(image_size, dtype=np.uint8)             # <<<<<<<<<<<<<<
@@ -17060,7 +17060,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_lowpass_3(PyObject *__p
   __pyx_v_result_arr = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/image_processing.py":97
+  /* "openptv2/algorithms/image_processing.py":97
  *     image_size = imx * imy
  *     result_arr = np.zeros(image_size, dtype=np.uint8)
  *     result_mv = result_arr             # <<<<<<<<<<<<<<
@@ -17072,7 +17072,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_lowpass_3(PyObject *__p
   __pyx_t_11.memview = NULL;
   __pyx_t_11.data = NULL;
 
-  /* "algorithms/image_processing.py":99
+  /* "openptv2/algorithms/image_processing.py":99
  *     result_mv = result_arr
  * 
  *     start = imx + 1             # <<<<<<<<<<<<<<
@@ -17081,7 +17081,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_lowpass_3(PyObject *__p
 */
   __pyx_v_start = (__pyx_v_imx + 1);
 
-  /* "algorithms/image_processing.py":100
+  /* "openptv2/algorithms/image_processing.py":100
  * 
  *     start = imx + 1
  *     end = image_size - imx - 1             # <<<<<<<<<<<<<<
@@ -17090,7 +17090,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_lowpass_3(PyObject *__p
 */
   __pyx_v_end = ((__pyx_v_image_size - __pyx_v_imx) - 1);
 
-  /* "algorithms/image_processing.py":101
+  /* "openptv2/algorithms/image_processing.py":101
  *     start = imx + 1
  *     end = image_size - imx - 1
  *     for idx in range(start, end):             # <<<<<<<<<<<<<<
@@ -17102,7 +17102,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_lowpass_3(PyObject *__p
   for (__pyx_t_14 = __pyx_v_start; __pyx_t_14 < __pyx_t_13; __pyx_t_14+=1) {
     __pyx_v_idx = __pyx_t_14;
 
-    /* "algorithms/image_processing.py":103
+    /* "openptv2/algorithms/image_processing.py":103
  *     for idx in range(start, end):
  *         total = (
  *             int(src_mv[idx])             # <<<<<<<<<<<<<<
@@ -17123,7 +17123,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_lowpass_3(PyObject *__p
       __Pyx_GOTREF(__pyx_t_1);
     }
 
-    /* "algorithms/image_processing.py":104
+    /* "openptv2/algorithms/image_processing.py":104
  *         total = (
  *             int(src_mv[idx])
  *             + int(src_mv[idx - imx - 1])             # <<<<<<<<<<<<<<
@@ -17148,7 +17148,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_lowpass_3(PyObject *__p
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
 
-    /* "algorithms/image_processing.py":105
+    /* "openptv2/algorithms/image_processing.py":105
  *             int(src_mv[idx])
  *             + int(src_mv[idx - imx - 1])
  *             + int(src_mv[idx - imx])             # <<<<<<<<<<<<<<
@@ -17173,7 +17173,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_lowpass_3(PyObject *__p
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
 
-    /* "algorithms/image_processing.py":106
+    /* "openptv2/algorithms/image_processing.py":106
  *             + int(src_mv[idx - imx - 1])
  *             + int(src_mv[idx - imx])
  *             + int(src_mv[idx - imx + 1])             # <<<<<<<<<<<<<<
@@ -17198,7 +17198,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_lowpass_3(PyObject *__p
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
 
-    /* "algorithms/image_processing.py":107
+    /* "openptv2/algorithms/image_processing.py":107
  *             + int(src_mv[idx - imx])
  *             + int(src_mv[idx - imx + 1])
  *             + int(src_mv[idx - 1])             # <<<<<<<<<<<<<<
@@ -17223,7 +17223,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_lowpass_3(PyObject *__p
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
 
-    /* "algorithms/image_processing.py":108
+    /* "openptv2/algorithms/image_processing.py":108
  *             + int(src_mv[idx - imx + 1])
  *             + int(src_mv[idx - 1])
  *             + int(src_mv[idx + 1])             # <<<<<<<<<<<<<<
@@ -17248,7 +17248,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_lowpass_3(PyObject *__p
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
 
-    /* "algorithms/image_processing.py":109
+    /* "openptv2/algorithms/image_processing.py":109
  *             + int(src_mv[idx - 1])
  *             + int(src_mv[idx + 1])
  *             + int(src_mv[idx + imx - 1])             # <<<<<<<<<<<<<<
@@ -17273,7 +17273,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_lowpass_3(PyObject *__p
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
 
-    /* "algorithms/image_processing.py":110
+    /* "openptv2/algorithms/image_processing.py":110
  *             + int(src_mv[idx + 1])
  *             + int(src_mv[idx + imx - 1])
  *             + int(src_mv[idx + imx])             # <<<<<<<<<<<<<<
@@ -17298,7 +17298,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_lowpass_3(PyObject *__p
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
 
-    /* "algorithms/image_processing.py":111
+    /* "openptv2/algorithms/image_processing.py":111
  *             + int(src_mv[idx + imx - 1])
  *             + int(src_mv[idx + imx])
  *             + int(src_mv[idx + imx + 1])             # <<<<<<<<<<<<<<
@@ -17326,7 +17326,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_lowpass_3(PyObject *__p
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __pyx_v_total = __pyx_t_16;
 
-    /* "algorithms/image_processing.py":113
+    /* "openptv2/algorithms/image_processing.py":113
  *             + int(src_mv[idx + imx + 1])
  *         )
  *         result_mv[idx] = total // 9             # <<<<<<<<<<<<<<
@@ -17337,7 +17337,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_lowpass_3(PyObject *__p
     *((unsigned char *) ( /* dim=0 */ (__pyx_v_result_mv.data + __pyx_t_15 * __pyx_v_result_mv.strides[0]) )) = (__pyx_v_total / 9);
   }
 
-  /* "algorithms/image_processing.py":115
+  /* "openptv2/algorithms/image_processing.py":115
  *         result_mv[idx] = total // 9
  * 
  *     return result_arr.reshape(imy, imx)             # <<<<<<<<<<<<<<
@@ -17365,7 +17365,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_lowpass_3(PyObject *__p
   __pyx_t_5 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/image_processing.py":79
+  /* "openptv2/algorithms/image_processing.py":79
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -17385,7 +17385,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_lowpass_3(PyObject *__p
   __Pyx_XDECREF(__pyx_t_8);
   __Pyx_XDECREF(__pyx_t_9);
   __PYX_XCLEAR_MEMVIEW(&__pyx_t_11, 1);
-  __Pyx_AddTraceback("algorithms.image_processing.lowpass_3", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.image_processing.lowpass_3", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __PYX_XCLEAR_MEMVIEW(&__pyx_v_src_mv, 1);
@@ -17398,16 +17398,16 @@ static PyObject *__pyx_f_10algorithms_16image_processing_lowpass_3(PyObject *__p
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_16image_processing_3lowpass_3(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_16image_processing_3lowpass_3(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_16image_processing_2lowpass_3, "Apply the C 3x3 low-pass filter with integer division.");
-static PyMethodDef __pyx_mdef_10algorithms_16image_processing_3lowpass_3 = {"lowpass_3", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_16image_processing_3lowpass_3, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_16image_processing_2lowpass_3};
-static PyObject *__pyx_pw_10algorithms_16image_processing_3lowpass_3(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_16image_processing_2lowpass_3, "Apply the C 3x3 low-pass filter with integer division.");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_16image_processing_3lowpass_3 = {"lowpass_3", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_16image_processing_3lowpass_3, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_16image_processing_2lowpass_3};
+static PyObject *__pyx_pw_8openptv2_10algorithms_16image_processing_3lowpass_3(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -17485,11 +17485,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.image_processing.lowpass_3", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.image_processing.lowpass_3", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_16image_processing_2lowpass_3(__pyx_self, __pyx_v_img, __pyx_v_imx, __pyx_v_imy);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_16image_processing_2lowpass_3(__pyx_self, __pyx_v_img, __pyx_v_imx, __pyx_v_imy);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -17499,7 +17499,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_16image_processing_2lowpass_3(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_img, int __pyx_v_imx, int __pyx_v_imy) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_16image_processing_2lowpass_3(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_img, int __pyx_v_imx, int __pyx_v_imy) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -17508,7 +17508,7 @@ static PyObject *__pyx_pf_10algorithms_16image_processing_2lowpass_3(CYTHON_UNUS
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("lowpass_3", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_16image_processing_lowpass_3(__pyx_v_img, __pyx_v_imx, __pyx_v_imy, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 79, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_16image_processing_lowpass_3(__pyx_v_img, __pyx_v_imx, __pyx_v_imy, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 79, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -17517,7 +17517,7 @@ static PyObject *__pyx_pf_10algorithms_16image_processing_2lowpass_3(CYTHON_UNUS
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.image_processing.lowpass_3", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.image_processing.lowpass_3", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -17525,7 +17525,7 @@ static PyObject *__pyx_pf_10algorithms_16image_processing_2lowpass_3(CYTHON_UNUS
   return __pyx_r;
 }
 
-/* "algorithms/image_processing.py":118
+/* "openptv2/algorithms/image_processing.py":118
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -17533,14 +17533,14 @@ static PyObject *__pyx_pf_10algorithms_16image_processing_2lowpass_3(CYTHON_UNUS
  * @cython.wraparound(False)
 */
 
-static PyObject *__pyx_pw_10algorithms_16image_processing_5fast_box_blur(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_16image_processing_5fast_box_blur(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject *__pyx_v_img, int __pyx_v_filt_span, int __pyx_v_imx, int __pyx_v_imy, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_16image_processing_fast_box_blur(PyObject *__pyx_v_img, int __pyx_v_filt_span, int __pyx_v_imx, int __pyx_v_imy, CYTHON_UNUSED int __pyx_skip_dispatch) {
   int __pyx_v_n;
   int __pyx_v_nq;
   int __pyx_v_image_size;
@@ -17594,7 +17594,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("fast_box_blur", 0);
 
-  /* "algorithms/image_processing.py":151
+  /* "openptv2/algorithms/image_processing.py":151
  * ) -> np.ndarray:
  *     """Perform the C box blur with matching integer rounding."""
  *     src_arr = np.asarray(img, dtype=np.uint8).reshape(imy, imx).ravel()             # <<<<<<<<<<<<<<
@@ -17668,7 +17668,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
   __pyx_v_src_arr = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/image_processing.py":152
+  /* "openptv2/algorithms/image_processing.py":152
  *     """Perform the C box blur with matching integer rounding."""
  *     src_arr = np.asarray(img, dtype=np.uint8).reshape(imy, imx).ravel()
  *     src_mv = src_arr             # <<<<<<<<<<<<<<
@@ -17680,7 +17680,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
   __pyx_t_11.memview = NULL;
   __pyx_t_11.data = NULL;
 
-  /* "algorithms/image_processing.py":153
+  /* "openptv2/algorithms/image_processing.py":153
  *     src_arr = np.asarray(img, dtype=np.uint8).reshape(imy, imx).ravel()
  *     src_mv = src_arr
  *     n = 2 * filt_span + 1             # <<<<<<<<<<<<<<
@@ -17689,7 +17689,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
 */
   __pyx_v_n = ((2 * __pyx_v_filt_span) + 1);
 
-  /* "algorithms/image_processing.py":154
+  /* "openptv2/algorithms/image_processing.py":154
  *     src_mv = src_arr
  *     n = 2 * filt_span + 1
  *     nq = n * n             # <<<<<<<<<<<<<<
@@ -17698,7 +17698,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
 */
   __pyx_v_nq = (__pyx_v_n * __pyx_v_n);
 
-  /* "algorithms/image_processing.py":155
+  /* "openptv2/algorithms/image_processing.py":155
  *     n = 2 * filt_span + 1
  *     nq = n * n
  *     image_size = imx * imy             # <<<<<<<<<<<<<<
@@ -17707,7 +17707,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
 */
   __pyx_v_image_size = (__pyx_v_imx * __pyx_v_imy);
 
-  /* "algorithms/image_processing.py":156
+  /* "openptv2/algorithms/image_processing.py":156
  *     nq = n * n
  *     image_size = imx * imy
  *     row_accum_arr = np.zeros(image_size, dtype=np.int64)             # <<<<<<<<<<<<<<
@@ -17756,7 +17756,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
   __pyx_v_row_accum_arr = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/image_processing.py":157
+  /* "openptv2/algorithms/image_processing.py":157
  *     image_size = imx * imy
  *     row_accum_arr = np.zeros(image_size, dtype=np.int64)
  *     row_accum_mv = row_accum_arr             # <<<<<<<<<<<<<<
@@ -17768,7 +17768,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
   __pyx_t_12.memview = NULL;
   __pyx_t_12.data = NULL;
 
-  /* "algorithms/image_processing.py":158
+  /* "openptv2/algorithms/image_processing.py":158
  *     row_accum_arr = np.zeros(image_size, dtype=np.int64)
  *     row_accum_mv = row_accum_arr
  *     col_accum_arr = np.zeros(imx, dtype=np.int64)             # <<<<<<<<<<<<<<
@@ -17817,7 +17817,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
   __pyx_v_col_accum_arr = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/image_processing.py":159
+  /* "openptv2/algorithms/image_processing.py":159
  *     row_accum_mv = row_accum_arr
  *     col_accum_arr = np.zeros(imx, dtype=np.int64)
  *     col_accum_mv = col_accum_arr             # <<<<<<<<<<<<<<
@@ -17829,7 +17829,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
   __pyx_t_12.memview = NULL;
   __pyx_t_12.data = NULL;
 
-  /* "algorithms/image_processing.py":160
+  /* "openptv2/algorithms/image_processing.py":160
  *     col_accum_arr = np.zeros(imx, dtype=np.int64)
  *     col_accum_mv = col_accum_arr
  *     dest_arr = np.zeros(image_size, dtype=np.uint8)             # <<<<<<<<<<<<<<
@@ -17878,7 +17878,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
   __pyx_v_dest_arr = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/image_processing.py":161
+  /* "openptv2/algorithms/image_processing.py":161
  *     col_accum_mv = col_accum_arr
  *     dest_arr = np.zeros(image_size, dtype=np.uint8)
  *     dest_mv = dest_arr             # <<<<<<<<<<<<<<
@@ -17890,7 +17890,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
   __pyx_t_11.memview = NULL;
   __pyx_t_11.data = NULL;
 
-  /* "algorithms/image_processing.py":163
+  /* "openptv2/algorithms/image_processing.py":163
  *     dest_mv = dest_arr
  * 
  *     for row in range(imy):             # <<<<<<<<<<<<<<
@@ -17902,7 +17902,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
   for (__pyx_t_15 = 0; __pyx_t_15 < __pyx_t_14; __pyx_t_15+=1) {
     __pyx_v_row = __pyx_t_15;
 
-    /* "algorithms/image_processing.py":164
+    /* "openptv2/algorithms/image_processing.py":164
  * 
  *     for row in range(imy):
  *         row_start = row * imx             # <<<<<<<<<<<<<<
@@ -17911,7 +17911,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
 */
     __pyx_v_row_start = (__pyx_v_row * __pyx_v_imx);
 
-    /* "algorithms/image_processing.py":165
+    /* "openptv2/algorithms/image_processing.py":165
  *     for row in range(imy):
  *         row_start = row * imx
  *         accum = src_mv[row_start]             # <<<<<<<<<<<<<<
@@ -17921,7 +17921,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
     __pyx_t_16 = __pyx_v_row_start;
     __pyx_v_accum = (*((unsigned char *) ( /* dim=0 */ (__pyx_v_src_mv.data + __pyx_t_16 * __pyx_v_src_mv.strides[0]) )));
 
-    /* "algorithms/image_processing.py":166
+    /* "openptv2/algorithms/image_processing.py":166
  *         row_start = row * imx
  *         accum = src_mv[row_start]
  *         row_accum_mv[row_start] = accum * n             # <<<<<<<<<<<<<<
@@ -17931,7 +17931,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
     __pyx_t_16 = __pyx_v_row_start;
     *((PY_LONG_LONG *) ( /* dim=0 */ (__pyx_v_row_accum_mv.data + __pyx_t_16 * __pyx_v_row_accum_mv.strides[0]) )) = (__pyx_v_accum * __pyx_v_n);
 
-    /* "algorithms/image_processing.py":168
+    /* "openptv2/algorithms/image_processing.py":168
  *         row_accum_mv[row_start] = accum * n
  * 
  *         for col in range(1, min(filt_span + 1, imx)):             # <<<<<<<<<<<<<<
@@ -17951,7 +17951,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
     for (__pyx_t_17 = 1; __pyx_t_17 < __pyx_t_19; __pyx_t_17+=1) {
       __pyx_v_col = __pyx_t_17;
 
-      /* "algorithms/image_processing.py":169
+      /* "openptv2/algorithms/image_processing.py":169
  * 
  *         for col in range(1, min(filt_span + 1, imx)):
  *             left_idx = row_start + 2 * col - 1             # <<<<<<<<<<<<<<
@@ -17960,7 +17960,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
 */
       __pyx_v_left_idx = ((__pyx_v_row_start + (2 * __pyx_v_col)) - 1);
 
-      /* "algorithms/image_processing.py":170
+      /* "openptv2/algorithms/image_processing.py":170
  *         for col in range(1, min(filt_span + 1, imx)):
  *             left_idx = row_start + 2 * col - 1
  *             right_idx = row_start + 2 * col             # <<<<<<<<<<<<<<
@@ -17969,7 +17969,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
 */
       __pyx_v_right_idx = (__pyx_v_row_start + (2 * __pyx_v_col));
 
-      /* "algorithms/image_processing.py":171
+      /* "openptv2/algorithms/image_processing.py":171
  *             left_idx = row_start + 2 * col - 1
  *             right_idx = row_start + 2 * col
  *             accum += src_mv[left_idx] + src_mv[right_idx]             # <<<<<<<<<<<<<<
@@ -17980,7 +17980,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
       __pyx_t_21 = __pyx_v_right_idx;
       __pyx_v_accum = (__pyx_v_accum + ((*((unsigned char *) ( /* dim=0 */ (__pyx_v_src_mv.data + __pyx_t_16 * __pyx_v_src_mv.strides[0]) ))) + (*((unsigned char *) ( /* dim=0 */ (__pyx_v_src_mv.data + __pyx_t_21 * __pyx_v_src_mv.strides[0]) )))));
 
-      /* "algorithms/image_processing.py":172
+      /* "openptv2/algorithms/image_processing.py":172
  *             right_idx = row_start + 2 * col
  *             accum += src_mv[left_idx] + src_mv[right_idx]
  *             m = 2 * col + 1             # <<<<<<<<<<<<<<
@@ -17989,7 +17989,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
 */
       __pyx_v_m = ((2 * __pyx_v_col) + 1);
 
-      /* "algorithms/image_processing.py":173
+      /* "openptv2/algorithms/image_processing.py":173
  *             accum += src_mv[left_idx] + src_mv[right_idx]
  *             m = 2 * col + 1
  *             row_accum_mv[row_start + col] = accum * n // m             # <<<<<<<<<<<<<<
@@ -18000,7 +18000,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
       *((PY_LONG_LONG *) ( /* dim=0 */ (__pyx_v_row_accum_mv.data + __pyx_t_21 * __pyx_v_row_accum_mv.strides[0]) )) = ((__pyx_v_accum * __pyx_v_n) / __pyx_v_m);
     }
 
-    /* "algorithms/image_processing.py":175
+    /* "openptv2/algorithms/image_processing.py":175
  *             row_accum_mv[row_start + col] = accum * n // m
  * 
  *         for col in range(filt_span + 1, imx - filt_span):             # <<<<<<<<<<<<<<
@@ -18012,7 +18012,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
     for (__pyx_t_23 = (__pyx_v_filt_span + 1); __pyx_t_23 < __pyx_t_22; __pyx_t_23+=1) {
       __pyx_v_col = __pyx_t_23;
 
-      /* "algorithms/image_processing.py":176
+      /* "openptv2/algorithms/image_processing.py":176
  * 
  *         for col in range(filt_span + 1, imx - filt_span):
  *             accum += src_mv[row_start + col + filt_span] - src_mv[row_start + col - filt_span - 1]             # <<<<<<<<<<<<<<
@@ -18023,7 +18023,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
       __pyx_t_16 = (((__pyx_v_row_start + __pyx_v_col) - __pyx_v_filt_span) - 1);
       __pyx_v_accum = (__pyx_v_accum + ((*((unsigned char *) ( /* dim=0 */ (__pyx_v_src_mv.data + __pyx_t_21 * __pyx_v_src_mv.strides[0]) ))) - (*((unsigned char *) ( /* dim=0 */ (__pyx_v_src_mv.data + __pyx_t_16 * __pyx_v_src_mv.strides[0]) )))));
 
-      /* "algorithms/image_processing.py":177
+      /* "openptv2/algorithms/image_processing.py":177
  *         for col in range(filt_span + 1, imx - filt_span):
  *             accum += src_mv[row_start + col + filt_span] - src_mv[row_start + col - filt_span - 1]
  *             row_accum_mv[row_start + col] = accum             # <<<<<<<<<<<<<<
@@ -18034,7 +18034,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
       *((PY_LONG_LONG *) ( /* dim=0 */ (__pyx_v_row_accum_mv.data + __pyx_t_16 * __pyx_v_row_accum_mv.strides[0]) )) = __pyx_v_accum;
     }
 
-    /* "algorithms/image_processing.py":179
+    /* "openptv2/algorithms/image_processing.py":179
  *             row_accum_mv[row_start + col] = accum
  * 
  *         left_ptr = row_start + imx - n             # <<<<<<<<<<<<<<
@@ -18043,7 +18043,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
 */
     __pyx_v_left_ptr = ((__pyx_v_row_start + __pyx_v_imx) - __pyx_v_n);
 
-    /* "algorithms/image_processing.py":180
+    /* "openptv2/algorithms/image_processing.py":180
  * 
  *         left_ptr = row_start + imx - n
  *         m = n - 2             # <<<<<<<<<<<<<<
@@ -18052,7 +18052,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
 */
     __pyx_v_m = (__pyx_v_n - 2);
 
-    /* "algorithms/image_processing.py":181
+    /* "openptv2/algorithms/image_processing.py":181
  *         left_ptr = row_start + imx - n
  *         m = n - 2
  *         for col in range(max(imx - filt_span, filt_span + 1), imx):             # <<<<<<<<<<<<<<
@@ -18072,7 +18072,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
     for (__pyx_t_23 = __pyx_t_19; __pyx_t_23 < __pyx_t_22; __pyx_t_23+=1) {
       __pyx_v_col = __pyx_t_23;
 
-      /* "algorithms/image_processing.py":182
+      /* "openptv2/algorithms/image_processing.py":182
  *         m = n - 2
  *         for col in range(max(imx - filt_span, filt_span + 1), imx):
  *             accum -= src_mv[left_ptr] + src_mv[left_ptr + 1]             # <<<<<<<<<<<<<<
@@ -18083,7 +18083,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
       __pyx_t_21 = (__pyx_v_left_ptr + 1);
       __pyx_v_accum = (__pyx_v_accum - ((*((unsigned char *) ( /* dim=0 */ (__pyx_v_src_mv.data + __pyx_t_16 * __pyx_v_src_mv.strides[0]) ))) + (*((unsigned char *) ( /* dim=0 */ (__pyx_v_src_mv.data + __pyx_t_21 * __pyx_v_src_mv.strides[0]) )))));
 
-      /* "algorithms/image_processing.py":183
+      /* "openptv2/algorithms/image_processing.py":183
  *         for col in range(max(imx - filt_span, filt_span + 1), imx):
  *             accum -= src_mv[left_ptr] + src_mv[left_ptr + 1]
  *             row_accum_mv[row_start + col] = accum * n // m             # <<<<<<<<<<<<<<
@@ -18093,7 +18093,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
       __pyx_t_21 = (__pyx_v_row_start + __pyx_v_col);
       *((PY_LONG_LONG *) ( /* dim=0 */ (__pyx_v_row_accum_mv.data + __pyx_t_21 * __pyx_v_row_accum_mv.strides[0]) )) = ((__pyx_v_accum * __pyx_v_n) / __pyx_v_m);
 
-      /* "algorithms/image_processing.py":184
+      /* "openptv2/algorithms/image_processing.py":184
  *             accum -= src_mv[left_ptr] + src_mv[left_ptr + 1]
  *             row_accum_mv[row_start + col] = accum * n // m
  *             left_ptr += 2             # <<<<<<<<<<<<<<
@@ -18102,7 +18102,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
 */
       __pyx_v_left_ptr = (__pyx_v_left_ptr + 2);
 
-      /* "algorithms/image_processing.py":185
+      /* "openptv2/algorithms/image_processing.py":185
  *             row_accum_mv[row_start + col] = accum * n // m
  *             left_ptr += 2
  *             m -= 2             # <<<<<<<<<<<<<<
@@ -18113,7 +18113,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
     }
   }
 
-  /* "algorithms/image_processing.py":187
+  /* "openptv2/algorithms/image_processing.py":187
  *             m -= 2
  * 
  *     for col in range(imx):             # <<<<<<<<<<<<<<
@@ -18125,7 +18125,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
   for (__pyx_t_15 = 0; __pyx_t_15 < __pyx_t_14; __pyx_t_15+=1) {
     __pyx_v_col = __pyx_t_15;
 
-    /* "algorithms/image_processing.py":188
+    /* "openptv2/algorithms/image_processing.py":188
  * 
  *     for col in range(imx):
  *         col_accum_mv[col] = row_accum_mv[col]             # <<<<<<<<<<<<<<
@@ -18136,7 +18136,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
     __pyx_t_16 = __pyx_v_col;
     *((PY_LONG_LONG *) ( /* dim=0 */ (__pyx_v_col_accum_mv.data + __pyx_t_16 * __pyx_v_col_accum_mv.strides[0]) )) = (*((PY_LONG_LONG *) ( /* dim=0 */ (__pyx_v_row_accum_mv.data + __pyx_t_21 * __pyx_v_row_accum_mv.strides[0]) )));
 
-    /* "algorithms/image_processing.py":189
+    /* "openptv2/algorithms/image_processing.py":189
  *     for col in range(imx):
  *         col_accum_mv[col] = row_accum_mv[col]
  *         dest_mv[col] = col_accum_mv[col] // n             # <<<<<<<<<<<<<<
@@ -18148,7 +18148,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
     *((unsigned char *) ( /* dim=0 */ (__pyx_v_dest_mv.data + __pyx_t_16 * __pyx_v_dest_mv.strides[0]) )) = ((*((PY_LONG_LONG *) ( /* dim=0 */ (__pyx_v_col_accum_mv.data + __pyx_t_21 * __pyx_v_col_accum_mv.strides[0]) ))) / __pyx_v_n);
   }
 
-  /* "algorithms/image_processing.py":191
+  /* "openptv2/algorithms/image_processing.py":191
  *         dest_mv[col] = col_accum_mv[col] // n
  * 
  *     for row in range(1, min(filt_span + 1, imy)):             # <<<<<<<<<<<<<<
@@ -18168,7 +18168,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
   for (__pyx_t_13 = 1; __pyx_t_13 < __pyx_t_18; __pyx_t_13+=1) {
     __pyx_v_row = __pyx_t_13;
 
-    /* "algorithms/image_processing.py":192
+    /* "openptv2/algorithms/image_processing.py":192
  * 
  *     for row in range(1, min(filt_span + 1, imy)):
  *         ptr1 = (2 * row - 1) * imx             # <<<<<<<<<<<<<<
@@ -18177,7 +18177,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
 */
     __pyx_v_ptr1 = (((2 * __pyx_v_row) - 1) * __pyx_v_imx);
 
-    /* "algorithms/image_processing.py":193
+    /* "openptv2/algorithms/image_processing.py":193
  *     for row in range(1, min(filt_span + 1, imy)):
  *         ptr1 = (2 * row - 1) * imx
  *         ptr2 = ptr1 + imx             # <<<<<<<<<<<<<<
@@ -18186,7 +18186,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
 */
     __pyx_v_ptr2 = (__pyx_v_ptr1 + __pyx_v_imx);
 
-    /* "algorithms/image_processing.py":194
+    /* "openptv2/algorithms/image_processing.py":194
  *         ptr1 = (2 * row - 1) * imx
  *         ptr2 = ptr1 + imx
  *         out = row * imx             # <<<<<<<<<<<<<<
@@ -18195,7 +18195,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
 */
     __pyx_v_out = (__pyx_v_row * __pyx_v_imx);
 
-    /* "algorithms/image_processing.py":195
+    /* "openptv2/algorithms/image_processing.py":195
  *         ptr2 = ptr1 + imx
  *         out = row * imx
  *         for col in range(imx):             # <<<<<<<<<<<<<<
@@ -18207,7 +18207,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
     for (__pyx_t_17 = 0; __pyx_t_17 < __pyx_t_15; __pyx_t_17+=1) {
       __pyx_v_col = __pyx_t_17;
 
-      /* "algorithms/image_processing.py":196
+      /* "openptv2/algorithms/image_processing.py":196
  *         out = row * imx
  *         for col in range(imx):
  *             col_accum_mv[col] += row_accum_mv[ptr1 + col] + row_accum_mv[ptr2 + col]             # <<<<<<<<<<<<<<
@@ -18219,7 +18219,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
       __pyx_t_24 = __pyx_v_col;
       *((PY_LONG_LONG *) ( /* dim=0 */ (__pyx_v_col_accum_mv.data + __pyx_t_24 * __pyx_v_col_accum_mv.strides[0]) )) += ((*((PY_LONG_LONG *) ( /* dim=0 */ (__pyx_v_row_accum_mv.data + __pyx_t_21 * __pyx_v_row_accum_mv.strides[0]) ))) + (*((PY_LONG_LONG *) ( /* dim=0 */ (__pyx_v_row_accum_mv.data + __pyx_t_16 * __pyx_v_row_accum_mv.strides[0]) ))));
 
-      /* "algorithms/image_processing.py":197
+      /* "openptv2/algorithms/image_processing.py":197
  *         for col in range(imx):
  *             col_accum_mv[col] += row_accum_mv[ptr1 + col] + row_accum_mv[ptr2 + col]
  *             dest_mv[out + col] = (n * col_accum_mv[col]) // nq // (2 * row + 1)             # <<<<<<<<<<<<<<
@@ -18232,7 +18232,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
     }
   }
 
-  /* "algorithms/image_processing.py":199
+  /* "openptv2/algorithms/image_processing.py":199
  *             dest_mv[out + col] = (n * col_accum_mv[col]) // nq // (2 * row + 1)
  * 
  *     ptr1 = 0             # <<<<<<<<<<<<<<
@@ -18241,7 +18241,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
 */
   __pyx_v_ptr1 = 0;
 
-  /* "algorithms/image_processing.py":200
+  /* "openptv2/algorithms/image_processing.py":200
  * 
  *     ptr1 = 0
  *     ptr2 = imx * n             # <<<<<<<<<<<<<<
@@ -18250,7 +18250,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
 */
   __pyx_v_ptr2 = (__pyx_v_imx * __pyx_v_n);
 
-  /* "algorithms/image_processing.py":201
+  /* "openptv2/algorithms/image_processing.py":201
  *     ptr1 = 0
  *     ptr2 = imx * n
  *     for row in range(filt_span + 1, imy - filt_span):             # <<<<<<<<<<<<<<
@@ -18262,7 +18262,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
   for (__pyx_t_15 = (__pyx_v_filt_span + 1); __pyx_t_15 < __pyx_t_14; __pyx_t_15+=1) {
     __pyx_v_row = __pyx_t_15;
 
-    /* "algorithms/image_processing.py":202
+    /* "openptv2/algorithms/image_processing.py":202
  *     ptr2 = imx * n
  *     for row in range(filt_span + 1, imy - filt_span):
  *         out = row * imx             # <<<<<<<<<<<<<<
@@ -18271,7 +18271,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
 */
     __pyx_v_out = (__pyx_v_row * __pyx_v_imx);
 
-    /* "algorithms/image_processing.py":203
+    /* "openptv2/algorithms/image_processing.py":203
  *     for row in range(filt_span + 1, imy - filt_span):
  *         out = row * imx
  *         for col in range(imx):             # <<<<<<<<<<<<<<
@@ -18283,7 +18283,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
     for (__pyx_t_23 = 0; __pyx_t_23 < __pyx_t_22; __pyx_t_23+=1) {
       __pyx_v_col = __pyx_t_23;
 
-      /* "algorithms/image_processing.py":204
+      /* "openptv2/algorithms/image_processing.py":204
  *         out = row * imx
  *         for col in range(imx):
  *             col_accum_mv[col] += row_accum_mv[ptr2 + col] - row_accum_mv[ptr1 + col]             # <<<<<<<<<<<<<<
@@ -18295,7 +18295,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
       __pyx_t_24 = __pyx_v_col;
       *((PY_LONG_LONG *) ( /* dim=0 */ (__pyx_v_col_accum_mv.data + __pyx_t_24 * __pyx_v_col_accum_mv.strides[0]) )) += ((*((PY_LONG_LONG *) ( /* dim=0 */ (__pyx_v_row_accum_mv.data + __pyx_t_16 * __pyx_v_row_accum_mv.strides[0]) ))) - (*((PY_LONG_LONG *) ( /* dim=0 */ (__pyx_v_row_accum_mv.data + __pyx_t_21 * __pyx_v_row_accum_mv.strides[0]) ))));
 
-      /* "algorithms/image_processing.py":205
+      /* "openptv2/algorithms/image_processing.py":205
  *         for col in range(imx):
  *             col_accum_mv[col] += row_accum_mv[ptr2 + col] - row_accum_mv[ptr1 + col]
  *             dest_mv[out + col] = col_accum_mv[col] // nq             # <<<<<<<<<<<<<<
@@ -18307,7 +18307,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
       *((unsigned char *) ( /* dim=0 */ (__pyx_v_dest_mv.data + __pyx_t_16 * __pyx_v_dest_mv.strides[0]) )) = ((*((PY_LONG_LONG *) ( /* dim=0 */ (__pyx_v_col_accum_mv.data + __pyx_t_21 * __pyx_v_col_accum_mv.strides[0]) ))) / __pyx_v_nq);
     }
 
-    /* "algorithms/image_processing.py":206
+    /* "openptv2/algorithms/image_processing.py":206
  *             col_accum_mv[col] += row_accum_mv[ptr2 + col] - row_accum_mv[ptr1 + col]
  *             dest_mv[out + col] = col_accum_mv[col] // nq
  *         ptr1 += imx             # <<<<<<<<<<<<<<
@@ -18316,7 +18316,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
 */
     __pyx_v_ptr1 = (__pyx_v_ptr1 + __pyx_v_imx);
 
-    /* "algorithms/image_processing.py":207
+    /* "openptv2/algorithms/image_processing.py":207
  *             dest_mv[out + col] = col_accum_mv[col] // nq
  *         ptr1 += imx
  *         ptr2 += imx             # <<<<<<<<<<<<<<
@@ -18326,7 +18326,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
     __pyx_v_ptr2 = (__pyx_v_ptr2 + __pyx_v_imx);
   }
 
-  /* "algorithms/image_processing.py":209
+  /* "openptv2/algorithms/image_processing.py":209
  *         ptr2 += imx
  * 
  *     for row in range(filt_span, 0, -1):             # <<<<<<<<<<<<<<
@@ -18336,7 +18336,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
   for (__pyx_t_13 = __pyx_v_filt_span; __pyx_t_13 > 0; __pyx_t_13-=1) {
     __pyx_v_row = __pyx_t_13;
 
-    /* "algorithms/image_processing.py":210
+    /* "openptv2/algorithms/image_processing.py":210
  * 
  *     for row in range(filt_span, 0, -1):
  *         ptr1 = (imy - 2 * row - 1) * imx             # <<<<<<<<<<<<<<
@@ -18345,7 +18345,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
 */
     __pyx_v_ptr1 = (((__pyx_v_imy - (2 * __pyx_v_row)) - 1) * __pyx_v_imx);
 
-    /* "algorithms/image_processing.py":211
+    /* "openptv2/algorithms/image_processing.py":211
  *     for row in range(filt_span, 0, -1):
  *         ptr1 = (imy - 2 * row - 1) * imx
  *         ptr2 = ptr1 + imx             # <<<<<<<<<<<<<<
@@ -18354,7 +18354,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
 */
     __pyx_v_ptr2 = (__pyx_v_ptr1 + __pyx_v_imx);
 
-    /* "algorithms/image_processing.py":212
+    /* "openptv2/algorithms/image_processing.py":212
  *         ptr1 = (imy - 2 * row - 1) * imx
  *         ptr2 = ptr1 + imx
  *         out = (imy - row) * imx             # <<<<<<<<<<<<<<
@@ -18363,7 +18363,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
 */
     __pyx_v_out = ((__pyx_v_imy - __pyx_v_row) * __pyx_v_imx);
 
-    /* "algorithms/image_processing.py":213
+    /* "openptv2/algorithms/image_processing.py":213
  *         ptr2 = ptr1 + imx
  *         out = (imy - row) * imx
  *         for col in range(imx):             # <<<<<<<<<<<<<<
@@ -18375,7 +18375,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
     for (__pyx_t_17 = 0; __pyx_t_17 < __pyx_t_15; __pyx_t_17+=1) {
       __pyx_v_col = __pyx_t_17;
 
-      /* "algorithms/image_processing.py":214
+      /* "openptv2/algorithms/image_processing.py":214
  *         out = (imy - row) * imx
  *         for col in range(imx):
  *             col_accum_mv[col] -= row_accum_mv[ptr1 + col] + row_accum_mv[ptr2 + col]             # <<<<<<<<<<<<<<
@@ -18387,7 +18387,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
       __pyx_t_24 = __pyx_v_col;
       *((PY_LONG_LONG *) ( /* dim=0 */ (__pyx_v_col_accum_mv.data + __pyx_t_24 * __pyx_v_col_accum_mv.strides[0]) )) -= ((*((PY_LONG_LONG *) ( /* dim=0 */ (__pyx_v_row_accum_mv.data + __pyx_t_21 * __pyx_v_row_accum_mv.strides[0]) ))) + (*((PY_LONG_LONG *) ( /* dim=0 */ (__pyx_v_row_accum_mv.data + __pyx_t_16 * __pyx_v_row_accum_mv.strides[0]) ))));
 
-      /* "algorithms/image_processing.py":215
+      /* "openptv2/algorithms/image_processing.py":215
  *         for col in range(imx):
  *             col_accum_mv[col] -= row_accum_mv[ptr1 + col] + row_accum_mv[ptr2 + col]
  *             dest_mv[out + col] = (n * col_accum_mv[col]) // nq // (2 * row + 1)             # <<<<<<<<<<<<<<
@@ -18400,7 +18400,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
     }
   }
 
-  /* "algorithms/image_processing.py":217
+  /* "openptv2/algorithms/image_processing.py":217
  *             dest_mv[out + col] = (n * col_accum_mv[col]) // nq // (2 * row + 1)
  * 
  *     return dest_arr.reshape(imy, imx)             # <<<<<<<<<<<<<<
@@ -18428,7 +18428,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/image_processing.py":118
+  /* "openptv2/algorithms/image_processing.py":118
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -18449,7 +18449,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
   __Pyx_XDECREF(__pyx_t_9);
   __PYX_XCLEAR_MEMVIEW(&__pyx_t_11, 1);
   __PYX_XCLEAR_MEMVIEW(&__pyx_t_12, 1);
-  __Pyx_AddTraceback("algorithms.image_processing.fast_box_blur", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.image_processing.fast_box_blur", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __PYX_XCLEAR_MEMVIEW(&__pyx_v_src_mv, 1);
@@ -18466,16 +18466,16 @@ static PyObject *__pyx_f_10algorithms_16image_processing_fast_box_blur(PyObject 
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_16image_processing_5fast_box_blur(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_16image_processing_5fast_box_blur(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_16image_processing_4fast_box_blur, "Perform the C box blur with matching integer rounding.");
-static PyMethodDef __pyx_mdef_10algorithms_16image_processing_5fast_box_blur = {"fast_box_blur", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_16image_processing_5fast_box_blur, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_16image_processing_4fast_box_blur};
-static PyObject *__pyx_pw_10algorithms_16image_processing_5fast_box_blur(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_16image_processing_4fast_box_blur, "Perform the C box blur with matching integer rounding.");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_16image_processing_5fast_box_blur = {"fast_box_blur", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_16image_processing_5fast_box_blur, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_16image_processing_4fast_box_blur};
+static PyObject *__pyx_pw_8openptv2_10algorithms_16image_processing_5fast_box_blur(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -18561,11 +18561,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.image_processing.fast_box_blur", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.image_processing.fast_box_blur", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_16image_processing_4fast_box_blur(__pyx_self, __pyx_v_img, __pyx_v_filt_span, __pyx_v_imx, __pyx_v_imy);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_16image_processing_4fast_box_blur(__pyx_self, __pyx_v_img, __pyx_v_filt_span, __pyx_v_imx, __pyx_v_imy);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -18575,7 +18575,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_16image_processing_4fast_box_blur(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_img, int __pyx_v_filt_span, int __pyx_v_imx, int __pyx_v_imy) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_16image_processing_4fast_box_blur(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_img, int __pyx_v_filt_span, int __pyx_v_imx, int __pyx_v_imy) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -18584,7 +18584,7 @@ static PyObject *__pyx_pf_10algorithms_16image_processing_4fast_box_blur(CYTHON_
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("fast_box_blur", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_16image_processing_fast_box_blur(__pyx_v_img, __pyx_v_filt_span, __pyx_v_imx, __pyx_v_imy, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 118, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_16image_processing_fast_box_blur(__pyx_v_img, __pyx_v_filt_span, __pyx_v_imx, __pyx_v_imy, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 118, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -18593,7 +18593,7 @@ static PyObject *__pyx_pf_10algorithms_16image_processing_4fast_box_blur(CYTHON_
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.image_processing.fast_box_blur", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.image_processing.fast_box_blur", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -18601,7 +18601,7 @@ static PyObject *__pyx_pf_10algorithms_16image_processing_4fast_box_blur(CYTHON_
   return __pyx_r;
 }
 
-/* "algorithms/image_processing.py":220
+/* "openptv2/algorithms/image_processing.py":220
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -18609,14 +18609,14 @@ static PyObject *__pyx_pf_10algorithms_16image_processing_4fast_box_blur(CYTHON_
  * @cython.wraparound(False)
 */
 
-static PyObject *__pyx_pw_10algorithms_16image_processing_7split(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_16image_processing_7split(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_16image_processing_split(PyObject *__pyx_v_img, int __pyx_v_half_selector, int __pyx_v_imx, int __pyx_v_imy, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_16image_processing_split(PyObject *__pyx_v_img, int __pyx_v_half_selector, int __pyx_v_imx, int __pyx_v_imy, CYTHON_UNUSED int __pyx_skip_dispatch) {
   long __pyx_v_cond_offs;
   PyObject *__pyx_v_row = NULL;
   PyObject *__pyx_r = NULL;
@@ -18638,7 +18638,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_split(PyObject *__pyx_v
   __Pyx_RefNannySetupContext("split", 0);
   __Pyx_INCREF(__pyx_v_img);
 
-  /* "algorithms/image_processing.py":237
+  /* "openptv2/algorithms/image_processing.py":237
  *         lower half filled with 2.
  *     """
  *     img = np.asarray(img, dtype=np.uint8).copy()             # <<<<<<<<<<<<<<
@@ -18695,7 +18695,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_split(PyObject *__pyx_v
   __Pyx_DECREF_SET(__pyx_v_img, __pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "algorithms/image_processing.py":239
+  /* "openptv2/algorithms/image_processing.py":239
  *     img = np.asarray(img, dtype=np.uint8).copy()
  * 
  *     if half_selector == 0:             # <<<<<<<<<<<<<<
@@ -18705,7 +18705,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_split(PyObject *__pyx_v
   __pyx_t_9 = (__pyx_v_half_selector == 0);
   if (__pyx_t_9) {
 
-    /* "algorithms/image_processing.py":240
+    /* "openptv2/algorithms/image_processing.py":240
  * 
  *     if half_selector == 0:
  *         return img             # <<<<<<<<<<<<<<
@@ -18717,7 +18717,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_split(PyObject *__pyx_v
     __pyx_r = __pyx_v_img;
     goto __pyx_L0;
 
-    /* "algorithms/image_processing.py":239
+    /* "openptv2/algorithms/image_processing.py":239
  *     img = np.asarray(img, dtype=np.uint8).copy()
  * 
  *     if half_selector == 0:             # <<<<<<<<<<<<<<
@@ -18726,7 +18726,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_split(PyObject *__pyx_v
 */
   }
 
-  /* "algorithms/image_processing.py":242
+  /* "openptv2/algorithms/image_processing.py":242
  *         return img
  * 
  *     cond_offs = imx if half_selector % 2 else 0             # <<<<<<<<<<<<<<
@@ -18741,7 +18741,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_split(PyObject *__pyx_v
   }
   __pyx_v_cond_offs = __pyx_t_10;
 
-  /* "algorithms/image_processing.py":244
+  /* "openptv2/algorithms/image_processing.py":244
  *     cond_offs = imx if half_selector % 2 else 0
  * 
  *     for row in range(imy // 2):             # <<<<<<<<<<<<<<
@@ -18780,7 +18780,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_split(PyObject *__pyx_v
     __Pyx_XDECREF_SET(__pyx_v_row, __pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "algorithms/image_processing.py":245
+    /* "openptv2/algorithms/image_processing.py":245
  * 
  *     for row in range(imy // 2):
  *         img[row, :] = img[2 * row + (1 if cond_offs else 0), :]             # <<<<<<<<<<<<<<
@@ -18824,7 +18824,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_split(PyObject *__pyx_v
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-    /* "algorithms/image_processing.py":244
+    /* "openptv2/algorithms/image_processing.py":244
  *     cond_offs = imx if half_selector % 2 else 0
  * 
  *     for row in range(imy // 2):             # <<<<<<<<<<<<<<
@@ -18834,7 +18834,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_split(PyObject *__pyx_v
   }
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/image_processing.py":248
+  /* "openptv2/algorithms/image_processing.py":248
  * 
  *     # Erase lower half with magic value 2
  *     img[imy // 2 :, :] = 2             # <<<<<<<<<<<<<<
@@ -18857,7 +18857,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_split(PyObject *__pyx_v
   if (unlikely((PyObject_SetItem(__pyx_v_img, __pyx_t_2, __pyx_mstate_global->__pyx_int_2) < 0))) __PYX_ERR(0, 248, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/image_processing.py":250
+  /* "openptv2/algorithms/image_processing.py":250
  *     img[imy // 2 :, :] = 2
  * 
  *     return img             # <<<<<<<<<<<<<<
@@ -18869,7 +18869,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_split(PyObject *__pyx_v
   __pyx_r = __pyx_v_img;
   goto __pyx_L0;
 
-  /* "algorithms/image_processing.py":220
+  /* "openptv2/algorithms/image_processing.py":220
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -18886,7 +18886,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_split(PyObject *__pyx_v
   __Pyx_XDECREF(__pyx_t_5);
   __Pyx_XDECREF(__pyx_t_6);
   __Pyx_XDECREF(__pyx_t_7);
-  __Pyx_AddTraceback("algorithms.image_processing.split", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.image_processing.split", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_row);
@@ -18897,16 +18897,16 @@ static PyObject *__pyx_f_10algorithms_16image_processing_split(PyObject *__pyx_v
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_16image_processing_7split(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_16image_processing_7split(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_16image_processing_6split, "Extract even or odd lines into first half of image.\n\n    Used with interlaced cameras.\n\n    Args:\n        img: input image as 2D uint8 array (imy, imx).\n        half_selector: 0=unchanged, 1=odd rows, 2=even rows.\n        imx, imy: image dimensions.\n\n    Returns:\n        Modified image with selected lines crammed into first half,\n        lower half filled with 2.\n    ");
-static PyMethodDef __pyx_mdef_10algorithms_16image_processing_7split = {"split", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_16image_processing_7split, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_16image_processing_6split};
-static PyObject *__pyx_pw_10algorithms_16image_processing_7split(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_16image_processing_6split, "Extract even or odd lines into first half of image.\n\n    Used with interlaced cameras.\n\n    Args:\n        img: input image as 2D uint8 array (imy, imx).\n        half_selector: 0=unchanged, 1=odd rows, 2=even rows.\n        imx, imy: image dimensions.\n\n    Returns:\n        Modified image with selected lines crammed into first half,\n        lower half filled with 2.\n    ");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_16image_processing_7split = {"split", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_16image_processing_7split, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_16image_processing_6split};
+static PyObject *__pyx_pw_8openptv2_10algorithms_16image_processing_7split(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -18992,11 +18992,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.image_processing.split", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.image_processing.split", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_16image_processing_6split(__pyx_self, __pyx_v_img, __pyx_v_half_selector, __pyx_v_imx, __pyx_v_imy);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_16image_processing_6split(__pyx_self, __pyx_v_img, __pyx_v_half_selector, __pyx_v_imx, __pyx_v_imy);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -19006,7 +19006,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_16image_processing_6split(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_img, int __pyx_v_half_selector, int __pyx_v_imx, int __pyx_v_imy) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_16image_processing_6split(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_img, int __pyx_v_half_selector, int __pyx_v_imx, int __pyx_v_imy) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -19015,7 +19015,7 @@ static PyObject *__pyx_pf_10algorithms_16image_processing_6split(CYTHON_UNUSED P
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("split", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_16image_processing_split(__pyx_v_img, __pyx_v_half_selector, __pyx_v_imx, __pyx_v_imy, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 220, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_16image_processing_split(__pyx_v_img, __pyx_v_half_selector, __pyx_v_imx, __pyx_v_imy, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 220, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -19024,7 +19024,7 @@ static PyObject *__pyx_pf_10algorithms_16image_processing_6split(CYTHON_UNUSED P
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.image_processing.split", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.image_processing.split", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -19032,7 +19032,7 @@ static PyObject *__pyx_pf_10algorithms_16image_processing_6split(CYTHON_UNUSED P
   return __pyx_r;
 }
 
-/* "algorithms/image_processing.py":253
+/* "openptv2/algorithms/image_processing.py":253
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -19040,14 +19040,14 @@ static PyObject *__pyx_pf_10algorithms_16image_processing_6split(CYTHON_UNUSED P
  *     """Subtract img2 from img1, clamping to zero.
 */
 
-static PyObject *__pyx_pw_10algorithms_16image_processing_9subtract_img(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_16image_processing_9subtract_img(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_16image_processing_subtract_img(PyObject *__pyx_v_img1, PyObject *__pyx_v_img2, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_16image_processing_subtract_img(PyObject *__pyx_v_img1, PyObject *__pyx_v_img2, CYTHON_UNUSED int __pyx_skip_dispatch) {
   PyObject *__pyx_v_result = NULL;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
@@ -19063,7 +19063,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_subtract_img(PyObject *
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("subtract_img", 0);
 
-  /* "algorithms/image_processing.py":264
+  /* "openptv2/algorithms/image_processing.py":264
  *         img1 - img2 clamped to [0, 255].
  *     """
  *     result = np.asarray(img1, dtype=np.int16) - np.asarray(img2, dtype=np.int16)             # <<<<<<<<<<<<<<
@@ -19149,7 +19149,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_subtract_img(PyObject *
   __pyx_v_result = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "algorithms/image_processing.py":265
+  /* "openptv2/algorithms/image_processing.py":265
  *     """
  *     result = np.asarray(img1, dtype=np.int16) - np.asarray(img2, dtype=np.int16)
  *     return np.clip(result, 0, 255).astype(np.uint8)             # <<<<<<<<<<<<<<
@@ -19204,7 +19204,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_subtract_img(PyObject *
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/image_processing.py":253
+  /* "openptv2/algorithms/image_processing.py":253
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -19220,7 +19220,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_subtract_img(PyObject *
   __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_5);
   __Pyx_XDECREF(__pyx_t_7);
-  __Pyx_AddTraceback("algorithms.image_processing.subtract_img", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.image_processing.subtract_img", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_result);
@@ -19230,16 +19230,16 @@ static PyObject *__pyx_f_10algorithms_16image_processing_subtract_img(PyObject *
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_16image_processing_9subtract_img(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_16image_processing_9subtract_img(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_16image_processing_8subtract_img, "Subtract img2 from img1, clamping to zero.\n\n    Args:\n        img1: minuend image (2D uint8).\n        img2: subtrahend image (2D uint8).\n\n    Returns:\n        img1 - img2 clamped to [0, 255].\n    ");
-static PyMethodDef __pyx_mdef_10algorithms_16image_processing_9subtract_img = {"subtract_img", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_16image_processing_9subtract_img, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_16image_processing_8subtract_img};
-static PyObject *__pyx_pw_10algorithms_16image_processing_9subtract_img(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_16image_processing_8subtract_img, "Subtract img2 from img1, clamping to zero.\n\n    Args:\n        img1: minuend image (2D uint8).\n        img2: subtrahend image (2D uint8).\n\n    Returns:\n        img1 - img2 clamped to [0, 255].\n    ");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_16image_processing_9subtract_img = {"subtract_img", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_16image_processing_9subtract_img, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_16image_processing_8subtract_img};
+static PyObject *__pyx_pw_8openptv2_10algorithms_16image_processing_9subtract_img(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -19309,11 +19309,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.image_processing.subtract_img", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.image_processing.subtract_img", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_16image_processing_8subtract_img(__pyx_self, __pyx_v_img1, __pyx_v_img2);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_16image_processing_8subtract_img(__pyx_self, __pyx_v_img1, __pyx_v_img2);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -19323,7 +19323,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_16image_processing_8subtract_img(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_img1, PyObject *__pyx_v_img2) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_16image_processing_8subtract_img(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_img1, PyObject *__pyx_v_img2) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -19332,7 +19332,7 @@ static PyObject *__pyx_pf_10algorithms_16image_processing_8subtract_img(CYTHON_U
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("subtract_img", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_16image_processing_subtract_img(__pyx_v_img1, __pyx_v_img2, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 253, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_16image_processing_subtract_img(__pyx_v_img1, __pyx_v_img2, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 253, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -19341,7 +19341,7 @@ static PyObject *__pyx_pf_10algorithms_16image_processing_8subtract_img(CYTHON_U
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.image_processing.subtract_img", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.image_processing.subtract_img", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -19349,7 +19349,7 @@ static PyObject *__pyx_pf_10algorithms_16image_processing_8subtract_img(CYTHON_U
   return __pyx_r;
 }
 
-/* "algorithms/image_processing.py":268
+/* "openptv2/algorithms/image_processing.py":268
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -19357,14 +19357,14 @@ static PyObject *__pyx_pf_10algorithms_16image_processing_8subtract_img(CYTHON_U
  *     """Apply mask to image: zero pixels where mask is zero.
 */
 
-static PyObject *__pyx_pw_10algorithms_16image_processing_11subtract_mask(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_16image_processing_11subtract_mask(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_16image_processing_subtract_mask(PyObject *__pyx_v_img, PyObject *__pyx_v_mask, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_16image_processing_subtract_mask(PyObject *__pyx_v_img, PyObject *__pyx_v_mask, CYTHON_UNUSED int __pyx_skip_dispatch) {
   PyObject *__pyx_v_result = NULL;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
@@ -19381,7 +19381,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_subtract_mask(PyObject 
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("subtract_mask", 0);
 
-  /* "algorithms/image_processing.py":279
+  /* "openptv2/algorithms/image_processing.py":279
  *         Masked image.
  *     """
  *     result = np.asarray(img, dtype=np.uint8).copy()             # <<<<<<<<<<<<<<
@@ -19438,7 +19438,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_subtract_mask(PyObject 
   __pyx_v_result = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/image_processing.py":280
+  /* "openptv2/algorithms/image_processing.py":280
  *     """
  *     result = np.asarray(img, dtype=np.uint8).copy()
  *     result[np.asarray(mask, dtype=np.uint8) == 0] = 0             # <<<<<<<<<<<<<<
@@ -19487,7 +19487,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_subtract_mask(PyObject 
   if (unlikely((PyObject_SetItem(__pyx_v_result, __pyx_t_6, __pyx_mstate_global->__pyx_int_0) < 0))) __PYX_ERR(0, 280, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-  /* "algorithms/image_processing.py":281
+  /* "openptv2/algorithms/image_processing.py":281
  *     result = np.asarray(img, dtype=np.uint8).copy()
  *     result[np.asarray(mask, dtype=np.uint8) == 0] = 0
  *     return result             # <<<<<<<<<<<<<<
@@ -19499,7 +19499,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_subtract_mask(PyObject 
   __pyx_r = __pyx_v_result;
   goto __pyx_L0;
 
-  /* "algorithms/image_processing.py":268
+  /* "openptv2/algorithms/image_processing.py":268
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -19516,7 +19516,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_subtract_mask(PyObject 
   __Pyx_XDECREF(__pyx_t_5);
   __Pyx_XDECREF(__pyx_t_6);
   __Pyx_XDECREF(__pyx_t_7);
-  __Pyx_AddTraceback("algorithms.image_processing.subtract_mask", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.image_processing.subtract_mask", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_result);
@@ -19526,16 +19526,16 @@ static PyObject *__pyx_f_10algorithms_16image_processing_subtract_mask(PyObject 
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_16image_processing_11subtract_mask(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_16image_processing_11subtract_mask(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_16image_processing_10subtract_mask, "Apply mask to image: zero pixels where mask is zero.\n\n    Args:\n        img: input image (2D uint8).\n        mask: mask image (2D uint8), zero means clear.\n\n    Returns:\n        Masked image.\n    ");
-static PyMethodDef __pyx_mdef_10algorithms_16image_processing_11subtract_mask = {"subtract_mask", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_16image_processing_11subtract_mask, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_16image_processing_10subtract_mask};
-static PyObject *__pyx_pw_10algorithms_16image_processing_11subtract_mask(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_16image_processing_10subtract_mask, "Apply mask to image: zero pixels where mask is zero.\n\n    Args:\n        img: input image (2D uint8).\n        mask: mask image (2D uint8), zero means clear.\n\n    Returns:\n        Masked image.\n    ");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_16image_processing_11subtract_mask = {"subtract_mask", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_16image_processing_11subtract_mask, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_16image_processing_10subtract_mask};
+static PyObject *__pyx_pw_8openptv2_10algorithms_16image_processing_11subtract_mask(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -19605,11 +19605,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.image_processing.subtract_mask", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.image_processing.subtract_mask", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_16image_processing_10subtract_mask(__pyx_self, __pyx_v_img, __pyx_v_mask);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_16image_processing_10subtract_mask(__pyx_self, __pyx_v_img, __pyx_v_mask);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -19619,7 +19619,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_16image_processing_10subtract_mask(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_img, PyObject *__pyx_v_mask) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_16image_processing_10subtract_mask(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_img, PyObject *__pyx_v_mask) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -19628,7 +19628,7 @@ static PyObject *__pyx_pf_10algorithms_16image_processing_10subtract_mask(CYTHON
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("subtract_mask", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_16image_processing_subtract_mask(__pyx_v_img, __pyx_v_mask, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 268, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_16image_processing_subtract_mask(__pyx_v_img, __pyx_v_mask, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 268, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -19637,7 +19637,7 @@ static PyObject *__pyx_pf_10algorithms_16image_processing_10subtract_mask(CYTHON
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.image_processing.subtract_mask", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.image_processing.subtract_mask", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -19645,7 +19645,7 @@ static PyObject *__pyx_pf_10algorithms_16image_processing_10subtract_mask(CYTHON
   return __pyx_r;
 }
 
-/* "algorithms/image_processing.py":284
+/* "openptv2/algorithms/image_processing.py":284
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -19653,17 +19653,17 @@ static PyObject *__pyx_pf_10algorithms_16image_processing_10subtract_mask(CYTHON
  *     img: np.ndarray,
 */
 
-static PyObject *__pyx_pw_10algorithms_16image_processing_13prepare_image(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_16image_processing_13prepare_image(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_16image_processing_prepare_image(PyObject *__pyx_v_img, int __pyx_v_dim_lp, int __pyx_v_imx, int __pyx_v_imy, CYTHON_UNUSED int __pyx_skip_dispatch, struct __pyx_opt_args_10algorithms_16image_processing_prepare_image *__pyx_optional_args) {
+static PyObject *__pyx_f_8openptv2_10algorithms_16image_processing_prepare_image(PyObject *__pyx_v_img, int __pyx_v_dim_lp, int __pyx_v_imx, int __pyx_v_imy, CYTHON_UNUSED int __pyx_skip_dispatch, struct __pyx_opt_args_8openptv2_10algorithms_16image_processing_prepare_image *__pyx_optional_args) {
   int __pyx_v_filter_hp = ((int)0);
 
-  /* "algorithms/image_processing.py":291
+  /* "openptv2/algorithms/image_processing.py":291
  *     imy: cython.int,
  *     filter_hp: cython.int = 0,
  *     filter_file: str | Path | None = None,             # <<<<<<<<<<<<<<
@@ -19701,7 +19701,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_prepare_image(PyObject 
   }
   __Pyx_INCREF(__pyx_v_img);
 
-  /* "algorithms/image_processing.py":313
+  /* "openptv2/algorithms/image_processing.py":313
  *         Prepared image.
  *     """
  *     img = np.asarray(img, dtype=np.uint8)             # <<<<<<<<<<<<<<
@@ -19747,31 +19747,31 @@ static PyObject *__pyx_f_10algorithms_16image_processing_prepare_image(PyObject 
   __Pyx_DECREF_SET(__pyx_v_img, __pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "algorithms/image_processing.py":316
+  /* "openptv2/algorithms/image_processing.py":316
  * 
  *     # Step 1: Low-pass blur
  *     img_lp = fast_box_blur(img, dim_lp, imx, imy)             # <<<<<<<<<<<<<<
  * 
  *     # Step 2: Subtract (high-pass)
 */
-  __pyx_t_1 = __pyx_f_10algorithms_16image_processing_fast_box_blur(__pyx_v_img, __pyx_v_dim_lp, __pyx_v_imx, __pyx_v_imy, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 316, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_16image_processing_fast_box_blur(__pyx_v_img, __pyx_v_dim_lp, __pyx_v_imx, __pyx_v_imy, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 316, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_v_img_lp = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/image_processing.py":319
+  /* "openptv2/algorithms/image_processing.py":319
  * 
  *     # Step 2: Subtract (high-pass)
  *     img_hp = subtract_img(img, img_lp)             # <<<<<<<<<<<<<<
  * 
  *     # Step 3: Handle interlaced
 */
-  __pyx_t_1 = __pyx_f_10algorithms_16image_processing_subtract_img(__pyx_v_img, __pyx_v_img_lp, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 319, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_16image_processing_subtract_img(__pyx_v_img, __pyx_v_img_lp, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 319, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_v_img_hp = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/image_processing.py":322
+  /* "openptv2/algorithms/image_processing.py":322
  * 
  *     # Step 3: Handle interlaced
  *     if chfield in (1, 2):             # <<<<<<<<<<<<<<
@@ -19782,19 +19782,19 @@ static PyObject *__pyx_f_10algorithms_16image_processing_prepare_image(PyObject 
     case 1:
     case 2:
 
-    /* "algorithms/image_processing.py":323
+    /* "openptv2/algorithms/image_processing.py":323
  *     # Step 3: Handle interlaced
  *     if chfield in (1, 2):
  *         img_hp = split(img_hp, chfield, imx, imy)             # <<<<<<<<<<<<<<
  * 
  *     # Step 4: Additional filtering
 */
-    __pyx_t_1 = __pyx_f_10algorithms_16image_processing_split(__pyx_v_img_hp, __pyx_v_chfield, __pyx_v_imx, __pyx_v_imy, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 323, __pyx_L1_error)
+    __pyx_t_1 = __pyx_f_8openptv2_10algorithms_16image_processing_split(__pyx_v_img_hp, __pyx_v_chfield, __pyx_v_imx, __pyx_v_imy, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 323, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF_SET(__pyx_v_img_hp, __pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "algorithms/image_processing.py":322
+    /* "openptv2/algorithms/image_processing.py":322
  * 
  *     # Step 3: Handle interlaced
  *     if chfield in (1, 2):             # <<<<<<<<<<<<<<
@@ -19805,7 +19805,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_prepare_image(PyObject 
     default: break;
   }
 
-  /* "algorithms/image_processing.py":326
+  /* "openptv2/algorithms/image_processing.py":326
  * 
  *     # Step 4: Additional filtering
  *     if filter_hp == 1:             # <<<<<<<<<<<<<<
@@ -19815,19 +19815,19 @@ static PyObject *__pyx_f_10algorithms_16image_processing_prepare_image(PyObject 
   switch (__pyx_v_filter_hp) {
     case 1:
 
-    /* "algorithms/image_processing.py":327
+    /* "openptv2/algorithms/image_processing.py":327
  *     # Step 4: Additional filtering
  *     if filter_hp == 1:
  *         img_hp = lowpass_3(img_hp, imx, imy)             # <<<<<<<<<<<<<<
  *     elif filter_hp == 2:
  *         if filter_file is None:
 */
-    __pyx_t_1 = __pyx_f_10algorithms_16image_processing_lowpass_3(__pyx_v_img_hp, __pyx_v_imx, __pyx_v_imy, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 327, __pyx_L1_error)
+    __pyx_t_1 = __pyx_f_8openptv2_10algorithms_16image_processing_lowpass_3(__pyx_v_img_hp, __pyx_v_imx, __pyx_v_imy, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 327, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF_SET(__pyx_v_img_hp, __pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "algorithms/image_processing.py":326
+    /* "openptv2/algorithms/image_processing.py":326
  * 
  *     # Step 4: Additional filtering
  *     if filter_hp == 1:             # <<<<<<<<<<<<<<
@@ -19837,7 +19837,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_prepare_image(PyObject 
     break;
     case 2:
 
-    /* "algorithms/image_processing.py":329
+    /* "openptv2/algorithms/image_processing.py":329
  *         img_hp = lowpass_3(img_hp, imx, imy)
  *     elif filter_hp == 2:
  *         if filter_file is None:             # <<<<<<<<<<<<<<
@@ -19847,7 +19847,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_prepare_image(PyObject 
     __pyx_t_7 = (__pyx_v_filter_file == Py_None);
     if (unlikely(__pyx_t_7)) {
 
-      /* "algorithms/image_processing.py":330
+      /* "openptv2/algorithms/image_processing.py":330
  *     elif filter_hp == 2:
  *         if filter_file is None:
  *             raise ValueError("filter_file required when filter_hp=2")             # <<<<<<<<<<<<<<
@@ -19867,7 +19867,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_prepare_image(PyObject 
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
       __PYX_ERR(0, 330, __pyx_L1_error)
 
-      /* "algorithms/image_processing.py":329
+      /* "openptv2/algorithms/image_processing.py":329
  *         img_hp = lowpass_3(img_hp, imx, imy)
  *     elif filter_hp == 2:
  *         if filter_file is None:             # <<<<<<<<<<<<<<
@@ -19876,7 +19876,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_prepare_image(PyObject 
 */
     }
 
-    /* "algorithms/image_processing.py":331
+    /* "openptv2/algorithms/image_processing.py":331
  *         if filter_file is None:
  *             raise ValueError("filter_file required when filter_hp=2")
  *         filt = np.loadtxt(filter_file).reshape(3, 3)             # <<<<<<<<<<<<<<
@@ -19918,19 +19918,19 @@ static PyObject *__pyx_f_10algorithms_16image_processing_prepare_image(PyObject 
     __pyx_v_filt = __pyx_t_1;
     __pyx_t_1 = 0;
 
-    /* "algorithms/image_processing.py":332
+    /* "openptv2/algorithms/image_processing.py":332
  *             raise ValueError("filter_file required when filter_hp=2")
  *         filt = np.loadtxt(filter_file).reshape(3, 3)
  *         img_hp = filter_3(img_hp, filt, imx, imy)             # <<<<<<<<<<<<<<
  * 
  *     return img_hp
 */
-    __pyx_t_1 = __pyx_f_10algorithms_16image_processing_filter_3(__pyx_v_img_hp, __pyx_v_filt, __pyx_v_imx, __pyx_v_imy, 0, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 332, __pyx_L1_error)
+    __pyx_t_1 = __pyx_f_8openptv2_10algorithms_16image_processing_filter_3(__pyx_v_img_hp, __pyx_v_filt, __pyx_v_imx, __pyx_v_imy, 0, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 332, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF_SET(__pyx_v_img_hp, __pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "algorithms/image_processing.py":328
+    /* "openptv2/algorithms/image_processing.py":328
  *     if filter_hp == 1:
  *         img_hp = lowpass_3(img_hp, imx, imy)
  *     elif filter_hp == 2:             # <<<<<<<<<<<<<<
@@ -19941,7 +19941,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_prepare_image(PyObject 
     default: break;
   }
 
-  /* "algorithms/image_processing.py":334
+  /* "openptv2/algorithms/image_processing.py":334
  *         img_hp = filter_3(img_hp, filt, imx, imy)
  * 
  *     return img_hp             # <<<<<<<<<<<<<<
@@ -19953,7 +19953,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_prepare_image(PyObject 
   __pyx_r = __pyx_v_img_hp;
   goto __pyx_L0;
 
-  /* "algorithms/image_processing.py":284
+  /* "openptv2/algorithms/image_processing.py":284
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -19968,7 +19968,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_prepare_image(PyObject 
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_5);
-  __Pyx_AddTraceback("algorithms.image_processing.prepare_image", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.image_processing.prepare_image", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_img_lp);
@@ -19981,16 +19981,16 @@ static PyObject *__pyx_f_10algorithms_16image_processing_prepare_image(PyObject 
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_16image_processing_13prepare_image(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_16image_processing_13prepare_image(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_16image_processing_12prepare_image, "Prepare image for particle detection: smoothing + optional filtering.\n\n    Steps:\n    1. Low-pass blur (box filter)\n    2. Subtract from original (high-pass result)\n    3. Optionally split for interlaced\n    4. Optionally apply additional filter\n\n    Args:\n        img: input image (2D uint8, shape (imy, imx)).\n        dim_lp: half-width of low-pass blur.\n        imx, imy: image dimensions.\n        filter_hp: 0=none, 1=lowpass, 2=custom 3x3 from file.\n        filter_file: path to filter matrix file (if filter_hp=2).\n        chfield: 0=whole, 1=upper half, 2=lower half.\n\n    Returns:\n        Prepared image.\n    ");
-static PyMethodDef __pyx_mdef_10algorithms_16image_processing_13prepare_image = {"prepare_image", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_16image_processing_13prepare_image, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_16image_processing_12prepare_image};
-static PyObject *__pyx_pw_10algorithms_16image_processing_13prepare_image(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_16image_processing_12prepare_image, "Prepare image for particle detection: smoothing + optional filtering.\n\n    Steps:\n    1. Low-pass blur (box filter)\n    2. Subtract from original (high-pass result)\n    3. Optionally split for interlaced\n    4. Optionally apply additional filter\n\n    Args:\n        img: input image (2D uint8, shape (imy, imx)).\n        dim_lp: half-width of low-pass blur.\n        imx, imy: image dimensions.\n        filter_hp: 0=none, 1=lowpass, 2=custom 3x3 from file.\n        filter_file: path to filter matrix file (if filter_hp=2).\n        chfield: 0=whole, 1=upper half, 2=lower half.\n\n    Returns:\n        Prepared image.\n    ");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_16image_processing_13prepare_image = {"prepare_image", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_16image_processing_13prepare_image, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_16image_processing_12prepare_image};
+static PyObject *__pyx_pw_8openptv2_10algorithms_16image_processing_13prepare_image(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -20063,7 +20063,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
       const Py_ssize_t kwd_pos_args = __pyx_nargs;
       if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "prepare_image", 0) < (0)) __PYX_ERR(0, 284, __pyx_L3_error)
 
-      /* "algorithms/image_processing.py":291
+      /* "openptv2/algorithms/image_processing.py":291
  *     imy: cython.int,
  *     filter_hp: cython.int = 0,
  *     filter_file: str | Path | None = None,             # <<<<<<<<<<<<<<
@@ -20127,13 +20127,13 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.image_processing.prepare_image", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.image_processing.prepare_image", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_16image_processing_12prepare_image(__pyx_self, __pyx_v_img, __pyx_v_dim_lp, __pyx_v_imx, __pyx_v_imy, __pyx_v_filter_hp, __pyx_v_filter_file, __pyx_v_chfield);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_16image_processing_12prepare_image(__pyx_self, __pyx_v_img, __pyx_v_dim_lp, __pyx_v_imx, __pyx_v_imy, __pyx_v_filter_hp, __pyx_v_filter_file, __pyx_v_chfield);
 
-  /* "algorithms/image_processing.py":284
+  /* "openptv2/algorithms/image_processing.py":284
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -20149,11 +20149,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_16image_processing_12prepare_image(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_img, int __pyx_v_dim_lp, int __pyx_v_imx, int __pyx_v_imy, int __pyx_v_filter_hp, PyObject *__pyx_v_filter_file, int __pyx_v_chfield) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_16image_processing_12prepare_image(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_img, int __pyx_v_dim_lp, int __pyx_v_imx, int __pyx_v_imy, int __pyx_v_filter_hp, PyObject *__pyx_v_filter_file, int __pyx_v_chfield) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
-  struct __pyx_opt_args_10algorithms_16image_processing_prepare_image __pyx_t_2;
+  struct __pyx_opt_args_8openptv2_10algorithms_16image_processing_prepare_image __pyx_t_2;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -20163,7 +20163,7 @@ static PyObject *__pyx_pf_10algorithms_16image_processing_12prepare_image(CYTHON
   __pyx_t_2.filter_hp = __pyx_v_filter_hp;
   __pyx_t_2.filter_file = __pyx_v_filter_file;
   __pyx_t_2.chfield = __pyx_v_chfield;
-  __pyx_t_1 = __pyx_f_10algorithms_16image_processing_prepare_image(__pyx_v_img, __pyx_v_dim_lp, __pyx_v_imx, __pyx_v_imy, 1, &__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 284, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_16image_processing_prepare_image(__pyx_v_img, __pyx_v_dim_lp, __pyx_v_imx, __pyx_v_imy, 1, &__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 284, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -20172,7 +20172,7 @@ static PyObject *__pyx_pf_10algorithms_16image_processing_12prepare_image(CYTHON
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.image_processing.prepare_image", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.image_processing.prepare_image", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -20180,7 +20180,7 @@ static PyObject *__pyx_pf_10algorithms_16image_processing_12prepare_image(CYTHON
   return __pyx_r;
 }
 
-/* "algorithms/image_processing.py":337
+/* "openptv2/algorithms/image_processing.py":337
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -20188,16 +20188,16 @@ static PyObject *__pyx_pf_10algorithms_16image_processing_12prepare_image(CYTHON
  *     """Copy image data from src to dest, matching C's copy_images semantics.
 */
 
-static PyObject *__pyx_pw_10algorithms_16image_processing_15copy_images(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_16image_processing_15copy_images(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_16image_processing_copy_images(PyObject *__pyx_v_src, CYTHON_UNUSED int __pyx_skip_dispatch, struct __pyx_opt_args_10algorithms_16image_processing_copy_images *__pyx_optional_args) {
+static PyObject *__pyx_f_8openptv2_10algorithms_16image_processing_copy_images(PyObject *__pyx_v_src, CYTHON_UNUSED int __pyx_skip_dispatch, struct __pyx_opt_args_8openptv2_10algorithms_16image_processing_copy_images *__pyx_optional_args) {
 
-  /* "algorithms/image_processing.py":338
+  /* "openptv2/algorithms/image_processing.py":338
  * 
  * @cython.ccall
  * def copy_images(src, dest=None, imx=None, imy=None):             # <<<<<<<<<<<<<<
@@ -20228,7 +20228,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_copy_images(PyObject *_
     }
   }
 
-  /* "algorithms/image_processing.py":344
+  /* "openptv2/algorithms/image_processing.py":344
  *     If only src is provided (a list of images), returns copies (legacy API).
  *     """
  *     if isinstance(src, list):             # <<<<<<<<<<<<<<
@@ -20238,7 +20238,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_copy_images(PyObject *_
   __pyx_t_1 = PyList_Check(__pyx_v_src); 
   if (__pyx_t_1) {
 
-    /* "algorithms/image_processing.py":345
+    /* "openptv2/algorithms/image_processing.py":345
  *     """
  *     if isinstance(src, list):
  *         return [np.copy(img) for img in src]             # <<<<<<<<<<<<<<
@@ -20341,7 +20341,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_copy_images(PyObject *_
     __pyx_t_2 = 0;
     goto __pyx_L0;
 
-    /* "algorithms/image_processing.py":344
+    /* "openptv2/algorithms/image_processing.py":344
  *     If only src is provided (a list of images), returns copies (legacy API).
  *     """
  *     if isinstance(src, list):             # <<<<<<<<<<<<<<
@@ -20350,7 +20350,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_copy_images(PyObject *_
 */
   }
 
-  /* "algorithms/image_processing.py":346
+  /* "openptv2/algorithms/image_processing.py":346
  *     if isinstance(src, list):
  *         return [np.copy(img) for img in src]
  *     if dest is not None:             # <<<<<<<<<<<<<<
@@ -20360,7 +20360,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_copy_images(PyObject *_
   __pyx_t_1 = (__pyx_v_dest != Py_None);
   if (__pyx_t_1) {
 
-    /* "algorithms/image_processing.py":347
+    /* "openptv2/algorithms/image_processing.py":347
  *         return [np.copy(img) for img in src]
  *     if dest is not None:
  *         np.copyto(dest, src)             # <<<<<<<<<<<<<<
@@ -20395,7 +20395,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_copy_images(PyObject *_
     }
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "algorithms/image_processing.py":348
+    /* "openptv2/algorithms/image_processing.py":348
  *     if dest is not None:
  *         np.copyto(dest, src)
  *         return dest             # <<<<<<<<<<<<<<
@@ -20407,7 +20407,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_copy_images(PyObject *_
     __pyx_r = __pyx_v_dest;
     goto __pyx_L0;
 
-    /* "algorithms/image_processing.py":346
+    /* "openptv2/algorithms/image_processing.py":346
  *     if isinstance(src, list):
  *         return [np.copy(img) for img in src]
  *     if dest is not None:             # <<<<<<<<<<<<<<
@@ -20416,7 +20416,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_copy_images(PyObject *_
 */
   }
 
-  /* "algorithms/image_processing.py":349
+  /* "openptv2/algorithms/image_processing.py":349
  *         np.copyto(dest, src)
  *         return dest
  *     return src.copy()             # <<<<<<<<<<<<<<
@@ -20438,7 +20438,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_copy_images(PyObject *_
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/image_processing.py":337
+  /* "openptv2/algorithms/image_processing.py":337
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -20454,7 +20454,7 @@ static PyObject *__pyx_f_10algorithms_16image_processing_copy_images(PyObject *_
   __Pyx_XDECREF(__pyx_t_7);
   __Pyx_XDECREF(__pyx_t_8);
   __Pyx_XDECREF(__pyx_t_9);
-  __Pyx_AddTraceback("algorithms.image_processing.copy_images", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.image_processing.copy_images", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_7genexpr__pyx_v_img);
@@ -20464,16 +20464,16 @@ static PyObject *__pyx_f_10algorithms_16image_processing_copy_images(PyObject *_
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_16image_processing_15copy_images(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_16image_processing_15copy_images(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_16image_processing_14copy_images, "Copy image data from src to dest, matching C's copy_images semantics.\n\n    If dest is provided, copies src into dest in-place and returns dest.\n    If only src is provided (a list of images), returns copies (legacy API).\n    ");
-static PyMethodDef __pyx_mdef_10algorithms_16image_processing_15copy_images = {"copy_images", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_16image_processing_15copy_images, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_16image_processing_14copy_images};
-static PyObject *__pyx_pw_10algorithms_16image_processing_15copy_images(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_16image_processing_14copy_images, "Copy image data from src to dest, matching C's copy_images semantics.\n\n    If dest is provided, copies src into dest in-place and returns dest.\n    If only src is provided (a list of images), returns copies (legacy API).\n    ");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_16image_processing_15copy_images = {"copy_images", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_16image_processing_15copy_images, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_16image_processing_14copy_images};
+static PyObject *__pyx_pw_8openptv2_10algorithms_16image_processing_15copy_images(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -20531,7 +20531,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
       const Py_ssize_t kwd_pos_args = __pyx_nargs;
       if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "copy_images", 0) < (0)) __PYX_ERR(0, 337, __pyx_L3_error)
 
-      /* "algorithms/image_processing.py":338
+      /* "openptv2/algorithms/image_processing.py":338
  * 
  * @cython.ccall
  * def copy_images(src, dest=None, imx=None, imy=None):             # <<<<<<<<<<<<<<
@@ -20582,13 +20582,13 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.image_processing.copy_images", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.image_processing.copy_images", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_16image_processing_14copy_images(__pyx_self, __pyx_v_src, __pyx_v_dest, __pyx_v_imx, __pyx_v_imy);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_16image_processing_14copy_images(__pyx_self, __pyx_v_src, __pyx_v_dest, __pyx_v_imx, __pyx_v_imy);
 
-  /* "algorithms/image_processing.py":337
+  /* "openptv2/algorithms/image_processing.py":337
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -20604,11 +20604,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_16image_processing_14copy_images(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_src, PyObject *__pyx_v_dest, PyObject *__pyx_v_imx, PyObject *__pyx_v_imy) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_16image_processing_14copy_images(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_src, PyObject *__pyx_v_dest, PyObject *__pyx_v_imx, PyObject *__pyx_v_imy) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
-  struct __pyx_opt_args_10algorithms_16image_processing_copy_images __pyx_t_2;
+  struct __pyx_opt_args_8openptv2_10algorithms_16image_processing_copy_images __pyx_t_2;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -20618,7 +20618,7 @@ static PyObject *__pyx_pf_10algorithms_16image_processing_14copy_images(CYTHON_U
   __pyx_t_2.dest = __pyx_v_dest;
   __pyx_t_2.imx = __pyx_v_imx;
   __pyx_t_2.imy = __pyx_v_imy;
-  __pyx_t_1 = __pyx_f_10algorithms_16image_processing_copy_images(__pyx_v_src, 1, &__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 337, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_16image_processing_copy_images(__pyx_v_src, 1, &__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 337, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -20627,7 +20627,7 @@ static PyObject *__pyx_pf_10algorithms_16image_processing_14copy_images(CYTHON_U
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.image_processing.copy_images", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.image_processing.copy_images", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -20635,7 +20635,7 @@ static PyObject *__pyx_pf_10algorithms_16image_processing_14copy_images(CYTHON_U
   return __pyx_r;
 }
 
-/* "algorithms/image_processing.py":352
+/* "openptv2/algorithms/image_processing.py":352
  * 
  * 
  * def is_compiled() -> bool:             # <<<<<<<<<<<<<<
@@ -20644,28 +20644,28 @@ static PyObject *__pyx_pf_10algorithms_16image_processing_14copy_images(CYTHON_U
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_16image_processing_17is_compiled(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_16image_processing_16is_compiled, "Return whether this module is compiled to C.");
-static PyMethodDef __pyx_mdef_10algorithms_16image_processing_17is_compiled = {"is_compiled", (PyCFunction)__pyx_pw_10algorithms_16image_processing_17is_compiled, METH_NOARGS, __pyx_doc_10algorithms_16image_processing_16is_compiled};
-static PyObject *__pyx_pw_10algorithms_16image_processing_17is_compiled(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_8openptv2_10algorithms_16image_processing_17is_compiled(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_16image_processing_16is_compiled, "Return whether this module is compiled to C.");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_16image_processing_17is_compiled = {"is_compiled", (PyCFunction)__pyx_pw_8openptv2_10algorithms_16image_processing_17is_compiled, METH_NOARGS, __pyx_doc_8openptv2_10algorithms_16image_processing_16is_compiled};
+static PyObject *__pyx_pw_8openptv2_10algorithms_16image_processing_17is_compiled(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused) {
   CYTHON_UNUSED PyObject *const *__pyx_kwvalues;
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("is_compiled (wrapper)", 0);
   __pyx_kwvalues = __Pyx_KwValues_VARARGS(__pyx_args, __pyx_nargs);
-  __pyx_r = __pyx_pf_10algorithms_16image_processing_16is_compiled(__pyx_self);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_16image_processing_16is_compiled(__pyx_self);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_16image_processing_16is_compiled(CYTHON_UNUSED PyObject *__pyx_self) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_16image_processing_16is_compiled(CYTHON_UNUSED PyObject *__pyx_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("is_compiled", 0);
 
-  /* "algorithms/image_processing.py":354
+  /* "openptv2/algorithms/image_processing.py":354
  * def is_compiled() -> bool:
  *     """Return whether this module is compiled to C."""
  *     return cython.compiled             # <<<<<<<<<<<<<<
@@ -20675,7 +20675,7 @@ static PyObject *__pyx_pf_10algorithms_16image_processing_16is_compiled(CYTHON_U
   __pyx_r = Py_True;
   goto __pyx_L0;
 
-  /* "algorithms/image_processing.py":352
+  /* "openptv2/algorithms/image_processing.py":352
  * 
  * 
  * def is_compiled() -> bool:             # <<<<<<<<<<<<<<
@@ -20816,7 +20816,7 @@ static PyType_Slot __pyx_type___pyx_array_slots[] = {
   {0, 0},
 };
 static PyType_Spec __pyx_type___pyx_array_spec = {
-  "algorithms.image_processing.array",
+  "openptv2.algorithms.image_processing.array",
   sizeof(struct __pyx_array_obj),
   0,
   Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_BASETYPE|Py_TPFLAGS_SEQUENCE,
@@ -20850,7 +20850,7 @@ static PyBufferProcs __pyx_tp_as_buffer_array = {
 
 static PyTypeObject __pyx_type___pyx_array = {
   PyVarObject_HEAD_INIT(0, 0)
-  "algorithms.image_processing.""array", /*tp_name*/
+  "openptv2.algorithms.image_processing.""array", /*tp_name*/
   sizeof(struct __pyx_array_obj), /*tp_basicsize*/
   0, /*tp_itemsize*/
   __pyx_tp_dealloc_array, /*tp_dealloc*/
@@ -20995,7 +20995,7 @@ static PyType_Slot __pyx_type___pyx_MemviewEnum_slots[] = {
   {0, 0},
 };
 static PyType_Spec __pyx_type___pyx_MemviewEnum_spec = {
-  "algorithms.image_processing.Enum",
+  "openptv2.algorithms.image_processing.Enum",
   sizeof(struct __pyx_MemviewEnum_obj),
   0,
   Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_BASETYPE|Py_TPFLAGS_HAVE_GC,
@@ -21005,7 +21005,7 @@ static PyType_Spec __pyx_type___pyx_MemviewEnum_spec = {
 
 static PyTypeObject __pyx_type___pyx_MemviewEnum = {
   PyVarObject_HEAD_INIT(0, 0)
-  "algorithms.image_processing.""Enum", /*tp_name*/
+  "openptv2.algorithms.image_processing.""Enum", /*tp_name*/
   sizeof(struct __pyx_MemviewEnum_obj), /*tp_basicsize*/
   0, /*tp_itemsize*/
   __pyx_tp_dealloc_Enum, /*tp_dealloc*/
@@ -21272,7 +21272,7 @@ static PyType_Slot __pyx_type___pyx_memoryview_slots[] = {
   {0, 0},
 };
 static PyType_Spec __pyx_type___pyx_memoryview_spec = {
-  "algorithms.image_processing.memoryview",
+  "openptv2.algorithms.image_processing.memoryview",
   sizeof(struct __pyx_memoryview_obj),
   0,
   Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_BASETYPE|Py_TPFLAGS_HAVE_GC,
@@ -21306,7 +21306,7 @@ static PyBufferProcs __pyx_tp_as_buffer_memoryview = {
 
 static PyTypeObject __pyx_type___pyx_memoryview = {
   PyVarObject_HEAD_INIT(0, 0)
-  "algorithms.image_processing.""memoryview", /*tp_name*/
+  "openptv2.algorithms.image_processing.""memoryview", /*tp_name*/
   sizeof(struct __pyx_memoryview_obj), /*tp_basicsize*/
   0, /*tp_itemsize*/
   __pyx_tp_dealloc_memoryview, /*tp_dealloc*/
@@ -21449,7 +21449,7 @@ static PyType_Slot __pyx_type___pyx_memoryviewslice_slots[] = {
   {0, 0},
 };
 static PyType_Spec __pyx_type___pyx_memoryviewslice_spec = {
-  "algorithms.image_processing._memoryviewslice",
+  "openptv2.algorithms.image_processing._memoryviewslice",
   sizeof(struct __pyx_memoryviewslice_obj),
   0,
   Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_BASETYPE|Py_TPFLAGS_HAVE_GC|Py_TPFLAGS_SEQUENCE,
@@ -21459,7 +21459,7 @@ static PyType_Spec __pyx_type___pyx_memoryviewslice_spec = {
 
 static PyTypeObject __pyx_type___pyx_memoryviewslice = {
   PyVarObject_HEAD_INIT(0, 0)
-  "algorithms.image_processing.""_memoryviewslice", /*tp_name*/
+  "openptv2.algorithms.image_processing.""_memoryviewslice", /*tp_name*/
   sizeof(struct __pyx_memoryviewslice_obj), /*tp_basicsize*/
   0, /*tp_itemsize*/
   __pyx_tp_dealloc__memoryviewslice, /*tp_dealloc*/
@@ -22008,13 +22008,13 @@ __Pyx_RefNannySetupContext("PyInit_image_processing", 0);
   if (__Pyx_InitConstants(__pyx_mstate) < (0)) __PYX_ERR(0, 1, __pyx_L1_error)
   stringtab_initialized = 1;
   if (__Pyx_InitGlobals() < (0)) __PYX_ERR(0, 1, __pyx_L1_error)
-  if (__pyx_module_is_main_algorithms__image_processing) {
+  if (__pyx_module_is_main_openptv2__algorithms__image_processing) {
     if (PyObject_SetAttr(__pyx_m, __pyx_mstate_global->__pyx_n_u_name_2, __pyx_mstate_global->__pyx_n_u_main) < (0)) __PYX_ERR(0, 1, __pyx_L1_error)
   }
   {
     PyObject *modules = PyImport_GetModuleDict(); if (unlikely(!modules)) __PYX_ERR(0, 1, __pyx_L1_error)
-    if (!PyDict_GetItemString(modules, "algorithms.image_processing")) {
-      if (unlikely((PyDict_SetItemString(modules, "algorithms.image_processing", __pyx_m) < 0))) __PYX_ERR(0, 1, __pyx_L1_error)
+    if (!PyDict_GetItemString(modules, "openptv2.algorithms.image_processing")) {
+      if (unlikely((PyDict_SetItemString(modules, "openptv2.algorithms.image_processing", __pyx_m) < 0))) __PYX_ERR(0, 1, __pyx_L1_error)
     }
   }
   /*--- Builtin init code ---*/
@@ -22523,7 +22523,7 @@ __Pyx_RefNannySetupContext("PyInit_image_processing", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_pyx_unpickle_Enum, __pyx_t_4) < (0)) __PYX_ERR(1, 4, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/image_processing.py":15
+  /* "openptv2/algorithms/image_processing.py":15
  * 
  * 
  * import numpy as np             # <<<<<<<<<<<<<<
@@ -22536,7 +22536,7 @@ __Pyx_RefNannySetupContext("PyInit_image_processing", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_np, __pyx_t_4) < (0)) __PYX_ERR(0, 15, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/image_processing.py":16
+  /* "openptv2/algorithms/image_processing.py":16
  * 
  * import numpy as np
  * from pathlib import Path             # <<<<<<<<<<<<<<
@@ -22560,7 +22560,7 @@ __Pyx_RefNannySetupContext("PyInit_image_processing", 0);
   }
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/image_processing.py":20
+  /* "openptv2/algorithms/image_processing.py":20
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -22574,7 +22574,7 @@ __Pyx_RefNannySetupContext("PyInit_image_processing", 0);
   if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_imx, __pyx_mstate_global->__pyx_kp_u_cython_int) < (0)) __PYX_ERR(0, 20, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_imy, __pyx_mstate_global->__pyx_kp_u_cython_int) < (0)) __PYX_ERR(0, 20, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_min_brightness, __pyx_mstate_global->__pyx_kp_u_cython_int) < (0)) __PYX_ERR(0, 20, __pyx_L1_error)
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_16image_processing_1filter_3, 0, __pyx_mstate_global->__pyx_n_u_filter_3, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_image_processing, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[0])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 20, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_16image_processing_1filter_3, 0, __pyx_mstate_global->__pyx_n_u_filter_3, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_image_proces, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[0])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 20, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_5);
@@ -22585,7 +22585,7 @@ __Pyx_RefNannySetupContext("PyInit_image_processing", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_filter_3, __pyx_t_5) < (0)) __PYX_ERR(0, 20, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "algorithms/image_processing.py":79
+  /* "openptv2/algorithms/image_processing.py":79
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -22597,7 +22597,7 @@ __Pyx_RefNannySetupContext("PyInit_image_processing", 0);
   if (PyDict_SetItem(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_img, __pyx_mstate_global->__pyx_kp_u_np_ndarray) < (0)) __PYX_ERR(0, 79, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_imx, __pyx_mstate_global->__pyx_kp_u_cython_int) < (0)) __PYX_ERR(0, 79, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_imy, __pyx_mstate_global->__pyx_kp_u_cython_int) < (0)) __PYX_ERR(0, 79, __pyx_L1_error)
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_16image_processing_3lowpass_3, 0, __pyx_mstate_global->__pyx_n_u_lowpass_3, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_image_processing, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[1])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 79, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_16image_processing_3lowpass_3, 0, __pyx_mstate_global->__pyx_n_u_lowpass_3, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_image_proces, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[1])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 79, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
@@ -22607,7 +22607,7 @@ __Pyx_RefNannySetupContext("PyInit_image_processing", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_lowpass_3, __pyx_t_4) < (0)) __PYX_ERR(0, 79, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/image_processing.py":118
+  /* "openptv2/algorithms/image_processing.py":118
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -22620,7 +22620,7 @@ __Pyx_RefNannySetupContext("PyInit_image_processing", 0);
   if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_filt_span, __pyx_mstate_global->__pyx_kp_u_cython_int) < (0)) __PYX_ERR(0, 118, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_imx, __pyx_mstate_global->__pyx_kp_u_cython_int) < (0)) __PYX_ERR(0, 118, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_imy, __pyx_mstate_global->__pyx_kp_u_cython_int) < (0)) __PYX_ERR(0, 118, __pyx_L1_error)
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_16image_processing_5fast_box_blur, 0, __pyx_mstate_global->__pyx_n_u_fast_box_blur, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_image_processing, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[2])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 118, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_16image_processing_5fast_box_blur, 0, __pyx_mstate_global->__pyx_n_u_fast_box_blur, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_image_proces, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[2])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 118, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_5);
@@ -22630,7 +22630,7 @@ __Pyx_RefNannySetupContext("PyInit_image_processing", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_fast_box_blur, __pyx_t_5) < (0)) __PYX_ERR(0, 118, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "algorithms/image_processing.py":220
+  /* "openptv2/algorithms/image_processing.py":220
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -22643,7 +22643,7 @@ __Pyx_RefNannySetupContext("PyInit_image_processing", 0);
   if (PyDict_SetItem(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_half_selector, __pyx_mstate_global->__pyx_kp_u_cython_int) < (0)) __PYX_ERR(0, 220, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_imx, __pyx_mstate_global->__pyx_kp_u_cython_int) < (0)) __PYX_ERR(0, 220, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_imy, __pyx_mstate_global->__pyx_kp_u_cython_int) < (0)) __PYX_ERR(0, 220, __pyx_L1_error)
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_16image_processing_7split, 0, __pyx_mstate_global->__pyx_n_u_split, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_image_processing, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[3])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 220, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_16image_processing_7split, 0, __pyx_mstate_global->__pyx_n_u_split, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_image_proces, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[3])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 220, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
@@ -22653,7 +22653,7 @@ __Pyx_RefNannySetupContext("PyInit_image_processing", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_split, __pyx_t_4) < (0)) __PYX_ERR(0, 220, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/image_processing.py":253
+  /* "openptv2/algorithms/image_processing.py":253
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -22664,7 +22664,7 @@ __Pyx_RefNannySetupContext("PyInit_image_processing", 0);
   __Pyx_GOTREF(__pyx_t_4);
   if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_img1, __pyx_mstate_global->__pyx_kp_u_np_ndarray) < (0)) __PYX_ERR(0, 253, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_img2, __pyx_mstate_global->__pyx_kp_u_np_ndarray) < (0)) __PYX_ERR(0, 253, __pyx_L1_error)
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_16image_processing_9subtract_img, 0, __pyx_mstate_global->__pyx_n_u_subtract_img, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_image_processing, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[4])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 253, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_16image_processing_9subtract_img, 0, __pyx_mstate_global->__pyx_n_u_subtract_img, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_image_proces, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[4])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 253, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_5);
@@ -22674,7 +22674,7 @@ __Pyx_RefNannySetupContext("PyInit_image_processing", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_subtract_img, __pyx_t_5) < (0)) __PYX_ERR(0, 253, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "algorithms/image_processing.py":268
+  /* "openptv2/algorithms/image_processing.py":268
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -22685,7 +22685,7 @@ __Pyx_RefNannySetupContext("PyInit_image_processing", 0);
   __Pyx_GOTREF(__pyx_t_5);
   if (PyDict_SetItem(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_img, __pyx_mstate_global->__pyx_kp_u_np_ndarray) < (0)) __PYX_ERR(0, 268, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_mask, __pyx_mstate_global->__pyx_kp_u_np_ndarray) < (0)) __PYX_ERR(0, 268, __pyx_L1_error)
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_16image_processing_11subtract_mask, 0, __pyx_mstate_global->__pyx_n_u_subtract_mask, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_image_processing, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[5])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 268, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_16image_processing_11subtract_mask, 0, __pyx_mstate_global->__pyx_n_u_subtract_mask, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_image_proces, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[5])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 268, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
@@ -22695,7 +22695,7 @@ __Pyx_RefNannySetupContext("PyInit_image_processing", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_subtract_mask, __pyx_t_4) < (0)) __PYX_ERR(0, 268, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/image_processing.py":284
+  /* "openptv2/algorithms/image_processing.py":284
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -22711,7 +22711,7 @@ __Pyx_RefNannySetupContext("PyInit_image_processing", 0);
   if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_filter_hp, __pyx_mstate_global->__pyx_kp_u_cython_int) < (0)) __PYX_ERR(0, 284, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_filter_file, __pyx_mstate_global->__pyx_kp_u_str_Path_None) < (0)) __PYX_ERR(0, 284, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_chfield, __pyx_mstate_global->__pyx_kp_u_cython_int) < (0)) __PYX_ERR(0, 284, __pyx_L1_error)
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_16image_processing_13prepare_image, 0, __pyx_mstate_global->__pyx_n_u_prepare_image, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_image_processing, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[6])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 284, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_16image_processing_13prepare_image, 0, __pyx_mstate_global->__pyx_n_u_prepare_image, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_image_proces, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[6])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 284, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_5);
@@ -22722,14 +22722,14 @@ __Pyx_RefNannySetupContext("PyInit_image_processing", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_prepare_image, __pyx_t_5) < (0)) __PYX_ERR(0, 284, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "algorithms/image_processing.py":337
+  /* "openptv2/algorithms/image_processing.py":337
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def copy_images(src, dest=None, imx=None, imy=None):
  *     """Copy image data from src to dest, matching C's copy_images semantics.
 */
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_16image_processing_15copy_images, 0, __pyx_mstate_global->__pyx_n_u_copy_images, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_image_processing, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[7])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 337, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_16image_processing_15copy_images, 0, __pyx_mstate_global->__pyx_n_u_copy_images, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_image_proces, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[7])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 337, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_5);
@@ -22738,7 +22738,7 @@ __Pyx_RefNannySetupContext("PyInit_image_processing", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_copy_images, __pyx_t_5) < (0)) __PYX_ERR(0, 337, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "algorithms/image_processing.py":352
+  /* "openptv2/algorithms/image_processing.py":352
  * 
  * 
  * def is_compiled() -> bool:             # <<<<<<<<<<<<<<
@@ -22748,7 +22748,7 @@ __Pyx_RefNannySetupContext("PyInit_image_processing", 0);
   __pyx_t_5 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 352, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   if (PyDict_SetItem(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_return, __pyx_mstate_global->__pyx_n_u_bool) < (0)) __PYX_ERR(0, 352, __pyx_L1_error)
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_16image_processing_17is_compiled, 0, __pyx_mstate_global->__pyx_n_u_is_compiled, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_image_processing, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[8])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 352, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_16image_processing_17is_compiled, 0, __pyx_mstate_global->__pyx_n_u_is_compiled, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_image_proces, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[8])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 352, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
@@ -22758,7 +22758,7 @@ __Pyx_RefNannySetupContext("PyInit_image_processing", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_is_compiled, __pyx_t_4) < (0)) __PYX_ERR(0, 352, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/image_processing.py":1
+  /* "openptv2/algorithms/image_processing.py":1
  * """Image processing operations using NumPy vectorized operations.             # <<<<<<<<<<<<<<
  * 
  * Translation of lib/src/image_processing.c and lib/include/image_processing.h.
@@ -22776,7 +22776,7 @@ __Pyx_RefNannySetupContext("PyInit_image_processing", 0);
   __Pyx_XDECREF(__pyx_t_5);
   if (__pyx_m) {
     if (__pyx_mstate->__pyx_d && stringtab_initialized) {
-      __Pyx_AddTraceback("init algorithms.image_processing", __pyx_clineno, __pyx_lineno, __pyx_filename);
+      __Pyx_AddTraceback("init openptv2.algorithms.image_processing", __pyx_clineno, __pyx_lineno, __pyx_filename);
     }
     #if !CYTHON_USE_MODULE_STATE
     Py_CLEAR(__pyx_m);
@@ -22790,7 +22790,7 @@ __Pyx_RefNannySetupContext("PyInit_image_processing", 0);
     }
     #endif
   } else if (!PyErr_Occurred()) {
-    PyErr_SetString(PyExc_ImportError, "init algorithms.image_processing");
+    PyErr_SetString(PyExc_ImportError, "init openptv2.algorithms.image_processing");
   }
   __pyx_L0:;
   __Pyx_RefNannyFinishContext();
@@ -22853,7 +22853,7 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
   __Pyx_GOTREF(__pyx_mstate_global->__pyx_slice[0]);
   __Pyx_GIVEREF(__pyx_mstate_global->__pyx_slice[0]);
 
-  /* "algorithms/image_processing.py":43
+  /* "openptv2/algorithms/image_processing.py":43
  * ) -> np.ndarray:
  *     """Apply the C 3x3 filter kernel with matching integer semantics."""
  *     filt_arr = np.asarray(filt, dtype=np.float64).reshape(3, 3)             # <<<<<<<<<<<<<<
@@ -22864,7 +22864,7 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
   __Pyx_GOTREF(__pyx_mstate_global->__pyx_tuple[1]);
   __Pyx_GIVEREF(__pyx_mstate_global->__pyx_tuple[1]);
 
-  /* "algorithms/image_processing.py":20
+  /* "openptv2/algorithms/image_processing.py":20
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -22875,7 +22875,7 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
   __Pyx_GOTREF(__pyx_mstate_global->__pyx_tuple[2]);
   __Pyx_GIVEREF(__pyx_mstate_global->__pyx_tuple[2]);
 
-  /* "algorithms/image_processing.py":284
+  /* "openptv2/algorithms/image_processing.py":284
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -22886,7 +22886,7 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
   __Pyx_GOTREF(__pyx_mstate_global->__pyx_tuple[3]);
   __Pyx_GIVEREF(__pyx_mstate_global->__pyx_tuple[3]);
 
-  /* "algorithms/image_processing.py":337
+  /* "openptv2/algorithms/image_processing.py":337
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -22953,25 +22953,25 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
 static int __Pyx_InitConstants(__pyx_mstatetype *__pyx_mstate) {
   CYTHON_UNUSED_VAR(__pyx_mstate);
   {
-    const struct { const unsigned int length: 10; } index[] = {{2},{35},{54},{37},{60},{24},{52},{26},{34},{25},{33},{45},{22},{15},{179},{37},{32},{1},{1},{1},{1},{1},{8},{30},{5},{6},{15},{23},{25},{10},{7},{6},{37},{2},{6},{35},{9},{30},{50},{10},{8},{17},{20},{32},{22},{30},{37},{5},{8},{4},{20},{8},{15},{3},{5},{27},{15},{7},{6},{18},{4},{4},{3},{1},{7},{9},{17},{18},{4},{3},{12},{4},{11},{6},{5},{4},{7},{8},{6},{5},{15},{6},{3},{9},{5},{13},{4},{7},{9},{8},{8},{11},{9},{5},{7},{6},{7},{8},{12},{13},{2},{3},{10},{3},{4},{4},{10},{3},{3},{5},{5},{5},{11},{13},{5},{8},{8},{8},{7},{9},{1},{8},{4},{7},{14},{4},{10},{1},{4},{8},{4},{7},{2},{2},{5},{3},{3},{4},{7},{3},{13},{4},{4},{14},{11},{10},{19},{14},{12},{5},{10},{17},{13},{8},{7},{9},{6},{9},{3},{12},{9},{12},{10},{12},{19},{5},{4},{5},{3},{6},{5},{4},{4},{6},{12},{13},{3},{8},{5},{5},{6},{6},{6},{1},{5},{304},{901},{194},{75},{125},{10},{60},{65},{467},{1}};
-    #if (CYTHON_COMPRESS_STRINGS) == 2 /* compression: bz2 (2453 bytes) */
-const char* const cstring = "BZh91AY&SY2\rT~\000\001\344\377\377\377\377\377\364\177\377\377_\277\367\377\337\377\377\377\365@@@@@@@@@@@@@\000@\000`\t<\371{\320]\025\235\2353\231\335\207A\327A\355\256\340\001\340I\021$\202f\243<\242m\023\311<\312z\231\215OS\320$\020\366\232FS\362\211\342j\017P\300\206\200m\r\014\243aO(%\020# LA\244a4\247\3524\3056\246F@\310\014\215\000\000\320\006\215\006\201\240\000\000\0324\021\032AS\364\232\2310\230\236\246\232`\214h\000M\006\214\023L\230\002\003C\023\000Lj\014\236\243\tM\021\nOj\236\223\365\t\3450&\2314\320\000\000\000\000\000\000\000\006\200\0002\006\204\032b`\000\000\000\000\000\000\000\000\000\000\010\3020\000\000\000$\220\0214\215&OS\365G\224\362\232hb\031\r\000\3104\000\000\000\000\r\000\000\000\002\202\265\250\304\270@b\354\337\023\371\330\033\360\314\306w\361\223\347!;\254\326\206Lg;\022\003\362M\277_\262r\227\364\317I\220\222L&L\230L!\002\023\005S\234\313`\251N_\340\">0.)\201\022\204\212Ff@3&et\"\202\npQ`\204\357\017\250\203\330\261;\351X E\220\303&\324,\nRA\022\020\325D6\035 \340\340M\220\nD\236\023I\t\032\t9\004\235\216\204\343\301\340I@Q\320%\310\230\262\377\365\214\332\205\225\014(\224%\013,\300\316\262Pp\344G\270(.\246i O<\345\245v\316HX\244@\235\364#\234\216\255\032\326\311p\227\302\314\000\242:d3\240\340O\265P\017\357\374w\301\322\376|<\337\352_\230\332_A\377\274\270\032iE\330\\4\361\321Uy\322)\266\266\013\3465\276\372X\026w\242\213\"\362?\335\257-\375\024\311\316\244\313\336\017\247\036\001\256?\331g\243.A>\274\267\242\276\0278\256V\221k\257\2257\0055\031\365\301\324\273 \254\326\037\023R\351\303N\231\326\272\273\215\r\210\337lvCq\003i$\222\345\326!M\022@(\300:H\224w:-\3656\276\241\376[0@\311T\367~\016\306\252\3402TV\243\206%zz\307\r\263\362H\352g\236I\364i,\334\326\272\365\305\2577\330\317\353\016c\265f(\302\032\3572A\316\0140{\307\205\010\224\262\342\2432`\247qVl\315qE\005\022\354t\363\311*\250M\251\021\"\357Kz\343\257\002\242s\234\372\036K\351h\336\342\236\256\007\007\001\274\263\373\332\3725\211\327fZ\320LIX\027\271\250\341\\\3064\335""\262\227\240\364\010\"@&&\355\354\227(\341\246\232d`pE\343\304\253\207\265v\375\317\242\232\0349\304\220\031?fn.6@\234&[\023\261\237\035t\032\227\350?\0255\271\026\320Ta\205\305i\346J\264\365\205\006\230\301Z\241\315t\2460\201V\021\036\204D B\203\263\321\203\342\311\221\250\235\273d\364{\351M\335\365z=A\341\002\230\221Au7\370\363\221>,\373f\340B#p\010H\331\270\321\\\332\376\016\235\246\177F\207t*\3338w\n\265\342c\243\255d\305e\242[\022b\014\010\\\200\262\221!\365%\303c[A$\235\n\366!4\321U\004\241\203\t\004Ev\236Ep\221\177\233\242\243\"\247\245\225hW\304\253\027\361\315\030Vv\270oC\"\3779\331\014\345G\203\343}N\276\340\217%\204@\304\320\3479\3509\3720\314\262&\311i9xGF\234m\250\313[\260\026\244b\324:\236\"\247\322J\257\033\221\214\265\213V\303\226C;+\362\350\261\205^y|\305\266\017\003\032V\235\026\221\246\200\365\220Tp\361\tW\"m\336\327\277\225\227%\330*>\320f\247\226\261^\353\327\032\273\317\220\317\356l\272x\337\336\031\315\274\032\037\313\272\006KQ\013\213\206\014P\307\215 w\3625 j@\330d\210&=\026\235(+\025\305\227*\356\321aS)e*$@\345\270\224C\263\211\223\"W\217\024\305H%UMl\3101\351\324\347\327\n\365\326\221C\254\030k\263\225\365\026]\245%1\033@\355F\006\025}\312F\2020\206\".\304\311\246\240*\2107\262\232Y3\341\240K\001f\230\321!\200\214\262W.\243\024R\344\312=\001P\242\344\023\2174\030\000\323\003\233\244\336[\205\025\005\207*\366\362\254!E\273\226\023\326_en\226d}\023\020\266)\025Uk\361\242L\244\332WA\371\256\235'\010lK\223\247\223M\214.\301\005\0134b.\302\375\330\375\227\262\235\314\3167\371U>e\234uX,\263\005`\215\271\310D\366\0322V\035Yd\314\242QW\200\262\255\005\245|\302m6\335\3350H\310(0m\227~Y8R\020\317Q\215I\232\222\022\224\313t\244$\241\337(\233\323\037w?\241Qc\322\337\027u\351\r\324\257sq\356\350(e\201\216\374f\024u\261\336\347\223\252\254K\204!9@?md\035~\313\033E\360\216\202\005Pc\203\221&]\\v\320\260QU\271\2468\264<\03074\266*r.lP{\221Y\232\204g\023\n\t\245G\214\360\272\270%\370>\302\265Q\006\026fK6\220\251\247\034\356EQP\213\024\252A\225\014r\004""\205\003T\372\232\336\211i\315\\\361\t(\252\220&\304\253\220Y\265l\316\201IQf?h\026\317\215^\355k\02052D9\254\t\250f%\275sM&\241\004kP\242j\205\025Tq\021s\312t\244#$\231\\\216\271\177\332\307V\024\250M,Eev5\034C|\320\273\323\243hR\013'ee,A\234\347y\203R\001\253-MHk\026\207n\016y\001\205\210\214 \372\205QU&ZV\332%\231';\325/W\315l\231\243\013t\352\307U6hEM\212\305Z\251\310\351\252u\217\310\350\303\007n\025Z\345\345\272:\3361Z\205<\331\216\307-9\340\314\031\214\3031\222\236\352d\311\202\342d0\231X\272\214B\273\245\343\021\"E\202\273\032\317\036Jr\324#/\302\032\\<V\301dl\223^M-\313Pz=\212\213&#`\r\201\252\270\034k\267\013\004^;\332\277YS\242&\211\341\216\361!\t\026\344[1\343\007\300\301\251\237kR.zH3\3229_\"\016l7kl\021\024\025_\231\303\025\253T\272T\364\321F\305\204+\235\273I1\260\273Y\237\007\016\310\251h\240\33589\321Vc\202\214D\320\244\330\3269M[`5\305\017a)\360\246a\026fRA\034\242,hi:\r\246i5Pe\320j\300R\344\025\206\321(G\342\037\032\226\214R\0024\276\230\2670\335\205\204\357\023\202\014\2628\253I\333;uN\332\033\025kv\030\030!\263\3037\3148\250\n\002\305oJ\212\3670\360\2161\210\2515\024\356\3315q\371\235\372O\222\262r\271X\257\"\302\313/\031\"\245_\204\310||\tDiL\226\200\263\025\252\002\261P\311\335cE*\035\216\266\025\344\353!\304\213/\355\264\331\277\222*,\314\336:\216`\366-2km\235\023\253\255\007N\221b\025m\317\202K\230\307\226Y1B\352k\304\254\345\277w1$%\226\200\360x\275&c\263\261\353_\004\007\223\312\215\253\013\334\260<K\217\352\030`\333\3509\013\204\310\034\216\032n\353\027\364\202s\014t\014}\324\203\351\030\306\231\307\032+\037[0\rV\201Y2\213\003\214\315\203 \307'\035E\n\023\355\013s\323<\032\002\220\372*I\224\267F^vML\214\016\264J\215 \352\360\033\366\r\272\013t\343\216c\022&\017@\301\266B\265q\275\356\333\3408\336k\006\355u\013\306\304\261!\265\234o-\235\340;j\033\251\231gG\364\203\334Qe%\265#Y\342\201\345\033\336\256]\177F \016\221\006\003\217~\351\334m\316\327f1\036\003:`\267\373\256\300\367Og\204\377\216\305\336\006p3\336I \232\351h\263\303\236\027""\030$\340$f\377m\\\2668\027V|\350\267\305v\010\317\230\233\215\346\271\265c\253+\351\264\3137\325^\266\277\254\216\014\331\343\n\030\016\031\260\260`\266Zb\215\250\314\006\244\356\014Y\263\340\205{(\227-\3156\202V\234%\323\txH&e\257)\307\231Z[\027\331\364\231\365\373\260U\364x\t\222\263<\235\332\312\376t\363\330\353\205\206T\312\267\262\314\302:\321W\302\246\202\321\325U}-U^\333\255%\360\340\241[W[\271\232\241\006\253N\230~\036r\376QS@>c\354\3100\253X\353\r#\242\247\360jk\033\233[\006\036vr\262\364T\324\246)-\r/\224\311\\\303\227d\366.\221S\254^T\373k\020\206\306!*\310\324\323\331\226\302\372\2647\367\261h\365\323;|\206\007\331\346\320\010\275\245\022*\205\t# \253\211\226J;\304\322\005!\311h\245\003\251\211_\307\362\3749\t{\030\022\252\005\366,Y7\357G\026yL!fP\3100.\273\005\252RT;K\250Z0f\251v\006!\241\304Q\342\204\032,/\260]\311\024\341B@\3105Q\370";
-    PyObject *data = __Pyx_DecompressString(cstring, 2453, 2);
+    const struct { const unsigned int length: 10; } index[] = {{2},{35},{54},{37},{60},{24},{52},{26},{34},{25},{33},{45},{22},{15},{179},{37},{32},{1},{1},{1},{1},{1},{8},{5},{6},{15},{23},{25},{10},{7},{6},{37},{2},{6},{35},{9},{30},{50},{10},{8},{43},{17},{20},{32},{22},{30},{37},{5},{8},{4},{20},{8},{15},{3},{5},{15},{7},{6},{18},{4},{4},{3},{1},{7},{9},{17},{18},{4},{3},{12},{4},{11},{6},{5},{4},{7},{8},{6},{5},{15},{6},{3},{9},{5},{13},{4},{7},{9},{8},{8},{11},{9},{5},{7},{6},{7},{8},{12},{13},{2},{3},{10},{3},{4},{4},{10},{3},{3},{5},{5},{5},{11},{13},{5},{8},{8},{8},{7},{9},{1},{8},{4},{7},{14},{4},{10},{1},{4},{8},{4},{7},{2},{2},{5},{3},{36},{3},{4},{7},{3},{13},{4},{4},{14},{11},{10},{19},{14},{12},{5},{10},{17},{13},{8},{7},{9},{6},{9},{3},{12},{9},{12},{10},{12},{19},{5},{4},{5},{3},{6},{5},{4},{4},{6},{12},{13},{3},{8},{5},{5},{6},{6},{6},{1},{5},{304},{901},{194},{75},{125},{10},{60},{65},{467},{1}};
+    #if (CYTHON_COMPRESS_STRINGS) == 2 /* compression: bz2 (2456 bytes) */
+const char* const cstring = "BZh91AY&SY\0030cC\000\001\347\177\377\377\377\377\364\177\377\377_\277\367\377\337\377\377\377\365@@@@@@@@@@@@@\000@\000`\t<\372{\320n\341\307gV0\323I\024D\217u@\036\004\222\"\210\032\003 \014\206\312a\215OM\002#C\321\241\244\332\206\010\r\001\243#A\202h\310f\223 \224@\232h\023\010h\231&\312\231\223M\032\231\036\243@\030\200\000\000\320\000\001\243@\320\000\006\200B\010\202h\320\032i\241\243F\200\311\243@\006\203@\000\000\000\000h\032\001\240%4B\002#\324&\323*{OQO$\364\3226\243@\000\r\000\000\000\000\006\200\000<\243\010A\246&\000\000\000\000\000\000\000\000\000\000\000\214#\000\000\000\002H\243&\250\236\243\324z\236MM\250\336\250z\236\232Fj\001\240\323M\000\000\000\006@\000\000zF\201\240\322\205\353\262\333\331 4\366\357\267\325\366\306\376\331\230\345\352\262~T'u\310\320\311\216Wb@\177\204\333\375\352\023\224\272\307]&BI0\2312a0\204\010L\025\316s,\002\300N\264\200\2014'-*\000\201$\214\001\231\220\014\311\231kB\014\022j\244\323A*\264\221q(E\265n3ZH\232a\t\226-\222\306f\010\220\206\256!\273\n\201\301\300\233 \024\211<&\222\022-\223\220I\3311\"\345\214\342\020\202\023\020*\021[y\376\233\337h\216\014(\221I\020\221N\034_\326R\0349\021\356\n\013\251\232H\021\214KJ\355\211!gI\300\213\350G9\035Z5\253v\202\032\312\324\001\"b\272\221\210\300E\354\300OO\313\326\023?\355\355\346}\341\271k\237\306O\356u\211,\367\245\224\tl\031\2375DcUY\347$\351\241*\302+4\214VG\231\374\306\315o\244\256\363\245\020\325\004\372\334\260-\023\360\212\322S\272#\367yQ\033YF\023\274X\025\322\2504\2404\230\300\235\214h\312Bq7kVT\2134%\177]'\217\211\2067Xz\341\216\343c\010\210\214\214n\346\222(\001\t@b\201\004\314\233\225\344.\024\303p\353PAJe\252\327\366\260h\005\331\211\314\220\355\227O\226qa_\035\247K=v\267\333\244\324\321\212\307\033#\332\241\277\017\324\317\305I\350\3079\223E{\266\0133\273\205p\232b`\222?\245\024m\342\243\"@\245\210\255\031%\342R%\034\356\337T\202QBo\244\342N\357O\266\274\353\300\250\211\334>\207\222\3544n\375>>\203O\t\265c\357l\351\326']\231\253A2%`^\346\243\205s\030\323r\312^""\203\320 \211\000\230\233\263\266\\\007\0254\323#\023\206w\217\022\256/\246\355\267>\212hp\347\022@d~I\271\375\006@\210L\266'\303\243\n\342lo\314\335\344\\\2602\240P\\\032R\306\234\324\261\251\221\3130\241\235\"\305\334\024van\r\003\220\240!\002+\036L\250z$\211H\275\367\2659;\330Z}a\2719\200\340B\025\244a\030\322\257\205\371\026\323\002\273\354\267\"\\\264\004\370\2542N\373\013{\221\\FJ\2731!\256+\263\0039\357\256I\216p\2178W\205\264\255\n\020\035\320\212h 6\221\030\214\252\350$\223\241jD&\232+\241(`\320\202\"\373\236E\360\221\257\311\253M\261d\310\253B\276r\254\237\307@aY\364p\336\206U\376t[\363\351,!\326\354;\013\302~<\204\340Z\320\350\271\3509\372\253\316\262&\313a\022\340\237V\274\355\250\315[\261\026\244b\324:\236q\247\205B:oK\242\332\305W\030u\214\317{E\340\306\246\317\020\244\330X\t\200\267\032\257\006\211\241\303VAQ\303\316\022\2564\352oa\312\332\306\\\227b\250\373A\233\257-b\275\327\256\n\357?\004\177\345\030X\227\241\222a\2271\265\320\273Z%\215REb\260\343\260W\256\242e`\224\240\245\006\361\314\260\023\035;\235(/\026\312\341\225\371\251\201[)sU$@\346X\224C\263\211\223\"V<U\025\240\225u\266S\2617j\347u\357!j:\332P\353<6i\313Z\230f\251%2|D\242\250\036ig\252{\355\003\242Vd\206\353 H\233\333\t\354\2712\275\257 \320\241\260\177#\006\203\362A\213\223\n\2374\351\220\355\n\214E\260\205w=\226\020\006\306\246]\3407}\302\212\202\303\231\026\363,!E\272l#Y}\225\272Y\321\364LB\331\322uUk\360D\231I\265\256\243\363]z\316\020\330\227'\203\227]\214.\305\005\0135d.\306\375\311\3737\262\2359\334u\271\3646b\235\364\316\t\320+J\316\367\201\t\270\360\037&g):R\236h&\260**\241Q\253!\226\307|\356\310'-\2210\352\226o\354\255N0\236E4\037\206e\025\\\362\272R\022P\351\250\233\323\035\347K\222\242\307\245\275MOHjJ\364\351{\271\0243@\302\374\014h\3620\275\317\"\252\263\227\010B%\000\376]d\035~\355\215\242\370O\250\201T\030\340\343j\226\347g\205\312\210J3Ts\366\346\016Fkw\223q\254\332\264\234\231>k\231\371\356PM*:\257\013\253\202_\213\354+U\020aft\263\226B\246\234Qr*\212\204\354R\251\006d0""\200@P\305\331\343$J!tr\217H\"\252<\205\014b\271\203\032\3351\022a;\241TrP\302\275\2059b\254\003q\355)\320p\252\347\325Z\3535V\303\024h\206.\253 \204\221\"\301\\g\272\306\200\262\326\251I\245\254\272\371Ie\013\320M,\205ev5\034Ci\251w\242\215\241H,\235\231\224\261\006t]\345\215H\006\357w\315\306\307\244v\013S\265\016y\001\205\250\214 \373\005QU&R\273\352\226\204\211\0250W\306\3513^\214\233\274\254\265Sf\264T\332\272\006\261k\253+\243[\262?+\245\t;p\252\327/\003\250$\361n\274\230\227B\243\344\341n\210$\035\024\204\216&\207\262\211\220hd\302\0315\273\210^\231\367\re\350\204\013\005v\013\031\370\351\315P\214\277\030kp\361[\005\221\275&\274\232ZmA\350\366*,\230\211\200\230s\263\007\215\2371h\244\354e\027\256\373\340\327\250\375C\030\327\n*\225\270\254\336n/\201\213SF\326\244\356zH4R9_\"\016l;\375V:\246d\tSjC\250Yn\336\311\340\262\"\307)\251\\p\026\274S_t\321\236D\266S` \215\314\362\225\211\371\224C\263iE[\n\314\306<\024\"E\323r\332\366\257\250eS\336RHHk.r\266\"\372\255\204\303\353R\025\004k0\234\332\032\346\236\251;2-\031$\004\364\276\231\333\234n\302\302/\023\233\006Y>J\322-\213f7U\2646ukv\030\230\241\263\3026\230\361P\024\005\212\335\030'iF5\332I\223*\340\214b\355\340\335\253\316\312\315\251\267~\335G\233y\351\270\2643\034\331\234:\246/\273\261(\214M\366\200\303KV\006AQ\223\272\334\212\224;\036\316\213'y\016$d\327\303\003{b\264*>'JNo\272\276\330\214+f\177#\026\036\266\261\330\311\301\237i\255\347<\3140\230\241z\374bXy\317\360t\322B\\(\017v\217\320\324rr>\315\260\300|t\230\242\302\331V\332K\301\2520\301OM\310X\354\201\310\345&\360\261N\020\235\206:\305\334\270\2078b\326\341\307\032uOS\034\016\233Ld&P08fk\027E\311 \345\002\023\344\326\026\336\274\217g\212\023\277.\033\265\2702\323d\327\t\346.\316b\264\007\\P4v\245\370\257\261\245>;\020L\036\361\202\3716E\341\277.m\340\0346\214\343rj~!\237\024\003\365\247\233\253Ct\0144\375\304\314\247\301\244\367SP2\206\222\205\250p<\321\033\372\251\324v\255\250\016H{\001\303\275P\307m\276\347n\010\007<g&\nZ\213\010uCk\326\177\214*\226Y""\300`\272\030^\232\241D\241\277\202\024\330!\262B\315\374\243N\220\340*,\031\021K\202\243\321\203\031\037\013\243\247\257;\257\023\253\264k\003bl\314\335\222\014\254\t }\246Q\277\035\206\014\252E\026-\350\301\030\03128\030\241C9\363h\"+\347\025\331\351QpE\\\"\337\036\231\226lG\r\374\310\247Vgc3\263r\036\246\342\331#J\204\220\344LU\247\311$\353\320\234\312Qy\211|_\220f@\253\004\272\253\027-^k\265\342\304\374L\206\260Y\264\231\227\231\217\200\236\366\274\225(44\312\327d\272\241\335<\267E\205F\345X\270:\nL\354\234\303\365\255\236X\346\317T\035n\243\270\214\270Uq\273\007e[\034z\006\322\351\022\373F\"\225\206\255G\347\332\221+\254\232\376\210\247/\035]\355\336U\275\352g\036\244f\247b\344\000\311\220L\030\242\035\240!\260\210R\2233\304\234I\331\021^R\014h\360}\377\007{0\252Tq\006`UZ*)e4\230V\320V9\304\022@G\024\245\2072\224\030e\2060rP\2534e\010\356\256\301\344\317$\t#s\377\213\271\"\234(H\001\2301\241\200";
+    PyObject *data = __Pyx_DecompressString(cstring, 2456, 2);
     if (unlikely(!data)) __PYX_ERR(0, 1, __pyx_L1_error)
     const char* const bytes = __Pyx_PyBytes_AsString(data);
     #if !CYTHON_ASSUME_SAFE_MACROS
     if (likely(bytes)); else { Py_DECREF(data); __PYX_ERR(0, 1, __pyx_L1_error) }
     #endif
-    #elif (CYTHON_COMPRESS_STRINGS) != 0 /* compression: zlib (2302 bytes) */
-const char* const cstring = "x\332\275UKs\323X\026\216\203\t&\004\022\347\001\014\305B\016\017\3234\270;\017R\024\320L9!\231\206b\272q 45\323\335\352k\351\332\026\221%E\272Jl\212\352\312R\313\273\324RK-\275\3642\313,\263\3642?!?a\276{%;!P3S\323\325S\245\307\325\325y~\347;\347>R\226\375Z\215\272\312\266Aw\024\335\246\236b\331L\241-\307\366\250\3421\327\320\251\267B,\305\266\314\266\242\271\2240\252\020\245\232(\261\006a\212\341)\232m1\243\356\333\276\247\030\226\322\244M\333m\227\240%L\021\3173\352\226\302l\005\312\372}i'\221\020.S\241\324\360\216k0R5i*\220\004Us\355\346\277\3235,\235\266\224\035\2035\024\326v\250RL\367\231K,O\246q\254\222\210A\303p\251\306\024\335hR\3133l\313{\326_)\267t\221\2210\220\010\2556\035\326V\274\006\201i\346;\010\256f\273\212\326f\r\333*\021\327%\3555\303d\000c\223\272\0265\025\317o\n\003\037\250k?\377\334\2174\354\371\216c\273\214\352\317\255mb\032\272\322\264uzO\200\016a\252+E\255\250\300G\021\216D\022\305{J\035Z}\341$\024\340LZ\360\363\344\3572\271\267\"9\273\246\374`\003FY\226\025\031\241\010E\247\246Q\245.\000\006|\242\244\032Kjg)\257V_\335_|\270\250\020K\007\304\357\341\336CtU\315D\325@\005\030\254\372\310\016\316\004\264^Iy^S\332\266\257X\024a\242\244\016\344N*\260\006\265\024\2172\261P\212\262\016\204!o\025\352\206U/\246\230\032\333Th\257\021\323\243\245\037}&\035\331\276\245\303\245\325'\027\3214\n\353wd\232\033\226\344\005\224\300\265m\352\242\354\2146\305\267]\025a\227\236\026\277\372+\321u\025\036)1\3536\230\324hz\337\030MR\247\252\343\332\302\026\"(9m\231\254\002\204\276mi\266i\212pP\230\022\251jON\360X\010%\301>=\275\335\247\317\323\224\004\206\305t\303\023\361Q\031eM\362A\305\213\002\324-\037\302\272\262#\220I\3774\234\357\346\353\232rGT\265.\211&\022Ft\240\000\243\026\223]4\340\014J\230\330\325E\312\236\361\201*O\276S\276\375\214\206\226\215J\327\210o2EU\341\322\327\250\252*\272/Q\263l\353>*\277m\020\023\1775\3032\230\252ZN\311\322\245n\212\342S\260C\371\250\274\"h\222\217\340\222E\237$#@\377\004\217\317\367\004]\007\260|\362\177\260\353\017*HL\323""\326\344\034\221\256u\302H\351\013\177\023\236\013\033\351\030*\225_\257<\177\276j\232\206\343\031\236\010RU_\265[\270\237\201\322\352\017\000o\235\326^\003qjiTtD\351\2709P^\020\312o\036s\243t\232\033}\317jB@\342\311\370\210'\250O\274\266\245\031vI\263]\333G?P\257J<Z\265m\023\302\232\326\250\031\324\324\001\254\350\003U\355/\352\224\211\232\211O\250\250\006\372\300%\032\255\022m\023;\016\350\207K\225q\251\315m\315v\332\342Ve`\236X2[C[0$/o\010\251\252.\222\305\263\251\232\216.b\223\017\325\360\324\244\210H\036\343\204b*Z~S\266=u]\333\255!\021\265j\267\324\252\351\273\202\210\342\206A\371\362\034b%\013\277\231\222t\341\004\215\007\274\255\231\244\356\325L\233\260\245E\360\257IX:\243T\265\346[\232\310\0349{L\240\2506\210YS=*:\014\220\353\206\336J\020\027\0246\232u\\s\270\347U\344+\306\241xC\242-\3479zjn\t\217\245E\344\245\331M\007Q\350\252\\\247\005H\232!\355\010\204\310T8\220o\207\271\210Pg-f\332;bB\251\013(A\223\000~<\275M\034\007\342,h\342\273\352\032\365\006C5=1\202\361\333\326}\023o\313\"M\361J\236\002k\325\242;\242c\254-\240\352\264\0015\302pPH\007<\304|ul\307q\251C\\\232\224\017A\314\341Fv\016(\2525\250\266\tl\223\257\024\037\261\224\245\223+\337r\014m\023\316W\255\276\334\266<\014\005\250[>1\223`\\\262M\315\343\376\036\254\222Ipb\203\266\304\262nx\250\234Ke3\341\345\313\232\273\224\371\256%s\027\250\271\366\016\256\001\017\305\032!\212\212`\224\247 `\225N\027\271NS8\261\356\007 =\211\232x\216i0\317\325p\301\2504\210X\034\217\331\270]\037G\215_\025\355\200\020\232\365\301Z\024H\002\305\004\337U\206\003\304\364A\204\207\300\007h\373\016\306\005\305A\350S\257%\316Xo7stuh\372\326\301\315\007\235\312a\366RP\345\2710\023\316\204\265h9\252\307\357:\225\016\355.v\267\367*\275\354\305\000\217<\237\346\353|K,&\371R\230\017\357E\265x9&\275\354\004\317\034f\307\202g|\230\027z\331\321\340k\310\261p>\204R.8\027\370\274\314\177\n\313\275\334\371\336\330x\260\305G8\201\231\261K\201\306\363\3746|N\207\353!\213\346\243\312\351\315\377Q\352\217\030?\314\345\261U\014/\207^T8\314^""\010\036\361wa%\244\321\034\360Z\032\032\275\320\033\237\350\235\037\305u42tv\374?\242\226\013\206\203\331\340\005\257\206\231^\366|0\031\314\177\202\3454_\346\265\260\034\376\034_\216\335N\276\227\235\342s\307\273\033\321\355x8.\244\273\343\201\313/\363\255p,Z\213g\343r\0175#\207\003\204+\275\3344\177\026\016\207\205^n\"\305\030;e\376Kb\34407\026\374\215?@\260W\242Q\350\257\304\000\340\n\377\020M\"\355\365\210\305\3631 \272\032\216F\263H\245\032gzc3\374m8\027\276\300\307HL\204\370\004*<\233:\201h&\274\006\335\237\342\265\316lg\271\243u\363\307>\304\217\327qV\362\343\204\035\261\261\331\235\354.\355\345\367\356\356/\357\353\007\353o\016\336\374z\360\353o\007\277\221\223&\313\207\271)\376hP:\330]\006\324\231^\352\340l\370\006q?\216\337w\207\2737\273\344t\250ml\1779B\271\331\033C\215O!'(\3722\316\304\371^Np\364\034\377\030\315E\253\361\024\"9Ab\341\340L<'\020\356#qCR\tJ>\212Fz\271K\201\216?\345\336\000\212\304gx5\272\036Wb\332\231\357ltg\273/\3673\3733\373\325\203W\300\034\305\225\226\356H\344\315N\241\263\324\235\352\256t\331\336\374\336\372\036\333\237\337\257\010\"\202\001\027\202Ep \177\334V\377\010\335h*z&I\362\007<\027S\211\205\016\021\251e\344\3438\357\177F\331\250,\366\262H\261\n\371\233a5:\223\024f\220\367x\300\370<\337\010g\303?!\367\207\374!\312\273\032\345w3\207h\276\261\213I\013\366\306\257\303[\376\026\002\271x-,\034\335\035:{\001\335\366=b\336\010oG\303QA4\351\245\340\227\260\020>\210r\361\331\270\222l\374\214\361u+\334\022\037\271\335\026\"_\020)\344\371\014\332\246\025\266\373\202\271\335\017|J \232\347\177\201\211\207\321\003\264\305\371\251D\372B\360\204{\242\021&\371]\364\252\304\302\345W\345`l\200\204^\247 \024\305\306\035\264 L\312*\356fz\327nF/br4\2268\310\363[|+a\335\260XJr_\201\243\354\271]\0378\202m\243A1\231SRL\360`!\240\\L\244\221\241\211\257\017\356>>x\374r\277|t\375t\372\305x&\306\2108\267\373;\177\235*\037bZ\237\343\277\243\343w\342\023\323\343M8%\352\206\3700\2534\204<\033.\207zt#\332\210\277\351\346\023,\266\202l\260\022|\010\3632\217""\203\241\031\216\214\320I\310\350\312Wq\376hZ \273\036\264d\noe\337\255\212\2216\032\0240\365\336\361\nf\332\032\352\374=f\217\337)\367R4N\353\216\310Y\332\210\253\235\341\316\235n\001\263\342\362\236\273\237\027\342\363\301\006/\200\n\013\010\255\030\347\305\024\004\006\212\230\312\270\022JL\027\"\031\357DZ\214\333\321\010\232\366|\347j7\337\275\321\255\310\251)f\251\310\372\035\220\316\013\234\333\374\214\300\371R\360^\220\366\377v\032\n\366\257\200D\263\300\245\020-Fn<\035\257\307\362`\252\003.\rEYF\004\345\350M<\211\251\363\305\355Eyn\374\267\032\225?\321\366@\3430\327?X\345i\324\237Zh\224\317\276\222\3036\377\311A\373\343\277\000\341\337\302\021";
-    PyObject *data = __Pyx_DecompressString(cstring, 2302, 1);
+    #elif (CYTHON_COMPRESS_STRINGS) != 0 /* compression: zlib (2316 bytes) */
+const char* const cstring = "x\332\275UKs\323X\026N\202\001\023\322$\316\003\030\212\205\034\036\246i0\235\007)\nh\246\222\020\246\241\230n\022\010M\315t\267\372Z\272\266EdI\221\256\022\233\242\272\262\324RK-\265\324\322K/\263\3142K/\363\023\362\023\346;W\262\023\002535]=Uz\\]\235\347w\276s\356Ce\311\257V\271\253l\031|[\321m\356)\226-\024\336tl\217+\236p\r\235{\313\314Rl\313l)\232\313\231\340\nS*\251\222\2503\241\030\236\242\331\2260j\276\355{\212a)\r\336\260\335V\031Zd\212y\236Q\263\024a+P\326\357J;\251\004\271\314\2042\303\333\256!X\305\344\231@\032T\325\265\033\377N\327\260t\336T\266\rQWD\313\341J)\333\027.\263<\231\306\221J*\006\r\303\345\232Pt\243\301-\317\260-\357io\245\334\320)#2\220\n\2554\034\321R\274:\203i\341;\010\256j\273\212\326\022u\333*3\327e\255g\206)\000\306\006w-n*\236\337 \003\037\270k?\377\334\2174\354\371\216c\273\202\353\317\255-f\032\272\322\260u~\207@\2070\327\225\222VR\340\243\004G\224D\351\216R\203VO8\r\0058\263&\374<\376\273L\356-%gW\225\037l\300(\313\262,#\244Ptn\032\025\356\002`\300G%\325DZ;Ky\265\362\352\356\374\203y\205Y: ~\017\367\036\242\253h&\252\006*\300`\305GvpF\320ze\345yUi\331\276bq\204\211\222:\220;\256 \352\334R<.h\241\224d\035\230@\336*\324\r\253V\31205\2668i?c\246\307\313?\372B:\262}K\207K\253G.\246i\034\326o\3114\327-\311\013(\201k[\334E\331\005o\320\267]\241\260\313OJ_\377\225\351\272j\021\000\224\216\002\014\276mj\266i\222C@_f\025\355\3611\246\222P\032\316\223\223\333=\202<\311\312lXB7<\212\200\3138\252\262\342*^\034\260m\372\020\326\225m\312=\373Sw\276\233\255i\312-\252[MR\211R\002\002(\262\340\226\220}\322g\005\212\224\332\325))\317\370\300\225\307\337)\337~F4\313F-\253\3147\205\242\252p\351k\\U\025\335\227\270X\266u\027\265\3352\230\211\277\232a\031BU-\247l\351R7\303\351\211\347j\367l\207[\216\330\232\275\307\314\232\215\226\2537\274{F\203\325\270\352\2706\201\216@\313N\013TQ>*\257\030:\346#\210e\361\307\351<\320?\201\356\363=\342n\037\301O\376\367w\375~9\231i\332\232\034*2J\235\tV\376\302\337\224\364d#\233I\345\305\327\313\317\237\257\230\246""\341x\206GA\252\352\253V\023\367S\360[\375\0018\257\361\352k\024\207[\032\247\366(\037u\n\230\000v\371\215\236y5\245\034\363d\020\314#\2623\257ei\206]\326l\327\366\321\001\334\2530\217Wl\333\204\260\246\325\253\0067u\000M\314W\325\336\242\306\005\325\220>\241\242\032`\276\3134^a\332\006v\034\320\021\227*\235\253\215-\315vZt\253\022}\217\226\302\326\320\010\002\031\312\033B\252\252SFx6T\323\321)6\371P\rOM\213\212\0141@8\346\240\3457d\243s\327\265\335*\022Q+vS\255\230\276K\304\244\033\006\345\313s\230\225.\374FF\332\271c\264\356\363\270j\262\232W5m&\026\346\301\307\006\023\331TR\325\252oi\2249r\366\004\241\250\326\231YU=N\035\007^\351\206\336LiE\2246\0325\\3\270gU\344K\003\220\336\220h\311\t\216\036\233Y\300ca\036yiv\303A\024\272*\327Y\001\322\346\310:\004!\n\025\016\344\333\021.\"\324ES\230\3666\315$u\016%h0\300\217\247\267\201\003\200\246\177\003\337\025\327\250\325\005\252\351\321\320\305o[\367M\274-\2135\350\225>\tk\325\342\333\324A\326&PuZ\200\272\3277\345\243\276)\237\354\033\204\352\240\330\016\010\211\251\353\330\216\343r\207\271<-1\002\235\301\r\004\034pU\253sm\003\370\247_\031\206\264\224\345\225+\337r\014m\003\001\256X=\271-yD\022\360\233>3\323\200]\266\305\315\243\231\320_\245\323\343\330\006o\322\262fx\250\256\313eW\341\345K^\270\\\370\256%\361!d]{\033W\237\253\264F\210T5\014\370\014(\254\262\211$\327Y\n\307\326\275\000\244'\252\233\347\230\206\300\020\302\005\243\322 bq<a\343v}\034@~\205Z\006!4j\3755\025Q\002%\250'T\201c\305\364A\226\007\300\007h\373\016\346\006\307\361\350s\257I'\257\2673xxy`\362\306\376\365\373\355\325\203\334\205\240\022\346\243\301h*\252\306Kq-y\327^m\363\316|gkw\265\233\373*\300\243\020N\206k\341&-\306\303\205\250\020\335\211\253\311R\302\272\271\261p\360 7\022<\r\207\302b77\034|\0039\021\315FP\312\007g\003?\\\014\177\212\026\273\371s\335\221\321`3<\0232\230\031\271\020ha!\274\t\237\223\321Z$\342\331x\365\344\346\377(\365G\214\037\344\013\330*E\027#/.\036\344\316\007\017\303w\321j\304\343\031\340\26500|\276;:\326=7\214\353\360\314""\300\351\321\377\210Z>\030\n\246\203\027a%\032\354\346\316\005\343\301\354'XN\206Ka5Z\214~N.&n\273\320\315M\2043G\273\353\361\315d()f\273\243\201\033^\0147\243\221\370Y2\235,vQ3v\320Gx\265\233\237\014\237FCQ\261\233\037\3130\306\316b\370Kj\344 ?\022\374-\274\217`/\305\303\320_N\000\300\245\360C<\216\264\327b\221\314&\200\350r4\034O#\225J2\330\035\231\n\337F3\321\013|\234I\030\211\217\241\302\323\231\023\210\016FW\240\373S\362\254=\335^jk\235\302\221\017\372\361:\311I~\034\263C\033\033\235\361\316\302na\367\366\336\322\236\276\277\366f\377\315\257\373\277\376\266\377\033;nr\361 ?\021>\354\227\016v\227\000\365`7sp:z\203\270\037%\357;C\235\353\035v2\324\026\266\277\034\241\334\354\216\240\306'\220#\212\276L\006\223B7O\034=\033~\214g\342\225d\002\221\034#198\225\314\020\302=$\256I*A\311G\321X7\177!\320\361g\261\333\207\"\365\031]\216\257&\253\to\317\266\327;\323\235\227{\203{S{\225\375W\300\034\305\225\226nI\344\315v\261\275\320\231\350,w\304\356\354\356\332\256\330\233\335[%\"\202\001\347\203yp\240p\324V\377\210\334x\"~*I\362\007<\2272\211\2716\243\324\006\345\343(\357\177\306\271x\221\366rH\261\002\371\353Q%>\225\026\246\237\367h \302\331p=\232\216\376\204\334\037\204\017P\336\225\270\2603x\200\346\033\371*m\301\356\350Ux+\334@ _]\211\212\207\267\007N\237G\267}\217\230\327\243\233\361P\\\244&\275\020\374\022\025\243\373q>9\235\254\246\033?c|\335\2106\351#\277\323D\344s\224B!\234B\3334\243VO0\277\363!\234 D\013\341_`\342A|\037mqn\"\225>\037<\016=j\204\361\3606zUb\341\206\227\345`\254\203\204^\273H\212\264q\013-\010\223\262\212;\203\335+\327\343\027\t;\034I\035\024\302\033\341f\312\272!ZJr_\202\243\334\331\035\0378\202m\303A)\235SR\214x0\027\360\220&\322\231\201\261o\366o?\332\177\364ro\361\360\352\311\364K\311T\202\021qv\347\367\360u\246|\200i}6\374\035\035\277\235\034\233\036o\242\t\252\033\342\303\254\322\020\362t\264\024\351\361\265x=\271\327)\244Xl\006\271`9\370\020\025d\036\373\003S!2B'!\243K_'\205\303IBv-h\312\024\336\312\276[\241\2216\034\0241\365\336\205\253""\230i\317P\347\3571{\374\366b7C\343\244\356\0319K\353I\245=\324\276\325)bV\\\334u\367\n$>\033\254\207EPa\016\241\225\222\002MA`\240\320T\306\225Rb\262\030\313x\307\262b\334\214\317\240i\317\265/w\n\235k\235U95i\226R\326\357\200t\201pn\205\247\010\347\013\301{\"\355\377\3554$\366/\203D\323\300\245\030\317\307n2\231\254%\362`\252\001.\rEYB\004\213\361\233d\034S\347\213\333\363\362\334\370o5V\377D\333}\215\203|\357`\225\247Qoj\241Q>\373J\017\333\302'\007\355\217\377\002\232\310\312a";
+    PyObject *data = __Pyx_DecompressString(cstring, 2316, 1);
     if (unlikely(!data)) __PYX_ERR(0, 1, __pyx_L1_error)
     const char* const bytes = __Pyx_PyBytes_AsString(data);
     #if !CYTHON_ASSUME_SAFE_MACROS
     if (likely(bytes)); else { Py_DECREF(data); __PYX_ERR(0, 1, __pyx_L1_error) }
     #endif
-    #else /* compression: none (4444 bytes) */
-const char* const bytes = ": Buffer view does not expose stridesCan only create a buffer that is contiguous in memory.Cannot assign to read-only memoryviewCannot create writable memory view from read-only memoryviewCannot index with type 'Cannot transpose memoryview with indirect dimensionsDimension %d is not directEmpty shape tuple for cython.arrayFilter kernel sum is zeroIndirect dimensions not supportedInvalid mode, expected 'c' or 'fortran', got Invalid shape in axis <MemoryView of Note that Cython is deliberately stricter than PEP-484 and rejects subclasses of builtin types. If you need to pass subclasses then set the 'annotation_typing' directive to False.Out of bounds on buffer access (axis Unable to convert item to object.>')?add_notealgorithms/image_processing.py and  at 0xcollections.abc<contiguous and direct><contiguous and indirect>cython.intdisableenablefilter_file required when filter_hp=2gc (got got differing extents in dimension isenableditemsize <= 0 for cython.arrayno default __reduce__ due to non-trivial __cinit__np.ndarray object>str | Path | None<strided and direct><strided and direct or indirect><strided and indirect>unable to allocate array data.unable to allocate shape and strides.ASCIIEllipsisPath__Pyx_PyDict_NextRefSequenceView.MemoryViewabcaccumalgorithms.image_processingallocate_bufferasarrayastypeasyncio.coroutinesbaseboolbufcchfield__class____class_getitem__cline_in_tracebackclipcolcol_accum_mvcopycopy_imagescopytocountdestdest_mv__dict__dim_lpdtypedtype_is_objectencodeendenumerateerrorfast_box_blurfiltfilt_mvfilt_spanfilt_sumfilter_3filter_filefilter_hpflagsfloat64formatfortran__func____getstate__half_selectorididximage_sizeimgimg1img2__import__imximyindexint16int64is_compiled_is_coroutineitemsitemsizeleft_idxleft_ptrloadtxtlowpass_3m__main__maskmemviewmin_brightnessmode__module__nname__name__ndim__new__npnqnumpyobjoutpackpathlibpopprepare_imageptr1ptr2__pyx_checksum__pyx_state__pyx_type__pyx_unpickle_Enum__pyx_vtable____qualname__ravel__reduce____reduce_cython_""___reduce_ex__registerreshaperesult_mvreturnright_idxrowrow_accum_mvrow_start__set_name__setdefault__setstate____setstate_cython__shapesizesplitsrcsrc_mvstartstepstopstructsubtract_imgsubtract_masksum__test__totaluint8unpackupdatevaluesxzeros\200\001\360\030\000\024%\320$5\260Q\340\004\016\210b\220\010\230\001\230\025\230f\240B\240g\250X\260Q\260e\2704\270v\300Q\330\004\r\210Q\330\004\021\220\024\220R\220q\330\004\021\220\022\2206\230\021\230,\240f\250B\250a\330\004\020\220\001\340\004\014\210D\220\002\220!\330\004\n\210+\220R\220t\2302\230Q\330\004\010\210\007\210u\220A\220W\230A\330\010\t\330\014\017\210q\220\006\220a\220q\330\014\016\210c\220\021\220&\230\001\230\024\230R\230t\2402\240Q\330\014\016\210c\220\021\220&\230\001\230\024\230R\230q\330\014\016\210c\220\021\220&\230\001\230\024\230R\230t\2402\240Q\330\014\016\210c\220\021\220&\230\001\230\024\230R\230q\330\014\016\210c\220\021\220&\230\001\230\024\230R\230q\330\014\016\210c\220\021\220&\230\001\230\024\230R\230t\2402\240Q\330\014\016\210c\220\021\220&\230\001\230\024\230R\230q\330\014\016\210c\220\021\220&\230\001\230\024\230R\230t\2402\240Q\340\010\021\220\021\220'\230\026\230s\240!\340\004\013\210:\220X\230Q\230e\2401\200\001\3606\000\n\013\330\017\020\330\t\n\330\t\n\360\006\000\005\017\210b\220\010\230\001\230\025\230f\240B\240g\250X\260Q\260e\2704\270v\300Q\330\004\r\210Q\330\004\010\210\002\210\"\210J\220b\230\001\330\004\t\210\022\2102\210Q\330\004\021\220\024\220R\220q\330\004\024\220B\220f\230A\230\\\250\026\250r\260\021\330\004\023\2201\330\004\024\220B\220f\230A\230U\240&\250\002\250!\330\004\023\2201\330\004\017\210r\220\026\220q\230\014\240F\250\"\250A\330\004\016\210a\340\004\010\210\007\210u\220A\220Q\330\010\024\220D\230\002\230!\330\010\020\220\006\220a\220q\330\010\024\220A\220]\240&\250\002\250!\340\010\014\210G\2205\230\001\230\027\240\n\250\"\250C\250q\330\014\027\220z\240\022\2402\240R\240t\2502\250Q\330\014\030\230\n\240\"\240B\240b\250\001\330\014\025\220V\2301\230J\240b\250\006""\250a\250q\330\014\020\220\002\220\"\220D\230\002\230!\330\014\030\230\001\230\032\2402\240W\250F\260\"\260B\260c\270\021\340\010\014\210G\2205\230\001\230\032\2402\240S\250\004\250B\250a\330\014\025\220V\2301\230J\240b\250\004\250B\250k\270\022\2706\300\021\300*\310B\310d\320RT\320T^\320^`\320`a\330\014\030\230\001\230\032\2402\240W\250A\340\010\023\220:\230R\230t\2402\240Q\330\010\014\210B\210b\220\001\330\010\014\210G\2205\230\005\230T\240\022\240;\250j\270\002\270$\270a\330\014\025\220V\2301\230J\240b\250\006\250a\250y\270\002\270!\330\014\030\230\001\230\032\2402\240W\250F\260\"\260B\260c\270\021\330\014\030\230\001\330\014\021\220\021\340\004\010\210\007\210u\220A\220Q\330\010\024\220A\220W\230L\250\001\250\021\330\010\017\210q\220\007\220|\2401\240E\250\023\250A\340\004\010\210\007\210u\220A\220W\230J\240b\250\003\2501\330\010\020\220\002\220\"\220D\230\002\230#\230R\230q\330\010\017\210u\220B\220a\330\010\016\210d\220\"\220A\330\010\014\210G\2205\230\001\230\021\330\014\030\230\001\230\030\240\034\250Q\250e\2602\260U\270\"\270L\310\001\310\025\310b\320PQ\330\014\023\2201\220D\230\002\230(\240\"\240B\240l\260!\2606\270\023\270C\270t\3002\300R\300t\3102\310Q\340\004\013\2101\330\004\013\2104\210r\220\021\330\004\010\210\007\210u\220A\220Z\230r\240\023\240D\250\002\250!\330\010\016\210d\220\"\220A\330\010\014\210G\2205\230\001\230\021\330\014\030\230\001\230\030\240\034\250Q\250e\2602\260U\270\"\270L\310\001\310\025\310b\320PQ\330\014\023\2201\220D\230\002\230'\240\034\250Q\250e\2603\260a\330\010\020\220\001\330\010\020\220\001\340\004\010\210\007\210u\220A\220[\240\004\240A\330\010\020\220\004\220B\220b\230\002\230$\230b\240\003\2402\240Q\330\010\017\210u\220B\220a\330\010\017\210t\2202\220U\230\"\230A\330\010\014\210G\2205\230\001\230\021\330\014\030\230\001\230\030\240\034\250Q\250e\2602\260U\270\"\270L\310\001\310\025\310b\320PQ\330\014\023\2201\220D\230\002\230(\240\"\240B\240l\260!\2606\270\023\270C\270t\3002\300R\300t\3102\310Q\340\004\013\2108\2208\2301""\230E\240\021\200\001\340\t\n\330\014\r\330\t\n\330\t\n\330\017\034\230A\330\021%\240Q\330\r\032\230!\360*\000\005\013\210\"\210H\220A\220U\230&\240\002\240!\360\006\000\005\016\210]\230!\2305\240\010\250\005\250Q\360\006\000\005\016\210\\\230\021\230%\230q\360\006\000\005\010\200x\210t\2203\220a\330\010\021\220\025\220a\220x\230y\250\005\250Q\360\006\000\005\010\200z\220\023\220A\330\010\021\220\031\230!\2308\2405\250\001\330\t\023\2203\220a\330\010\013\210<\220s\230!\330\014\022\220*\230A\230Q\330\010\017\210r\220\030\230\021\230,\240h\250a\250s\260!\330\010\021\220\030\230\021\230(\240&\250\005\250Q\340\004\013\2101\200\001\330\032$\240J\250a\360\014\000\005\010\200z\220\021\220%\220q\330\010\017\210q\220\002\220%\220q\230\005\230T\240\027\250\001\330\004\007\200u\210G\2201\330\010\n\210'\220\021\220&\230\001\330\010\017\210q\330\004\013\2103\210e\2201\200\001\360\006\000\020+\320*;\320;L\310A\360\034\000\005\013\210\"\210H\220A\220U\230&\240\002\240'\250\025\250a\340\004\007\200~\220S\230\001\330\010\017\210q\340\004\020\220\007\220~\240R\240w\250a\340\004\010\210\007\210u\220A\220T\230\023\230A\330\010\013\2101\210J\220c\230\021\230\"\230B\230d\240#\240U\250/\270\021\360\006\000\005\010\200q\210\004\210C\210z\230\021\340\004\013\2101\320\000\025\220Q\340\004\021\220\021\200\001\330\027)\250\021\360\024\000\005\016\210R\210x\220q\230\005\230V\2402\240W\250E\260\021\330\004\n\210!\2102\210X\220Q\220f\230F\240\"\240H\250C\250u\260A\330\004\013\2101\200\001\330\027)\250\021\360\024\000\005\016\210R\210x\220q\230\006\230f\240B\240h\250b\260\002\260(\270!\2706\300\026\300r\310\021\330\004\013\2102\210U\220!\2208\2303\230d\240'\250\021\250\"\250A\200\001\360 \000\n\013\330\n\013\330\t\n\330\t\n\330\024!\240\021\360\006\000\005\020\210r\220\030\230\021\230&\240\006\240b\250\t\260\030\270\021\270#\270Q\330\004\016\210a\330\004\017\210u\220A\220X\230T\240\021\330\004\007\200y\220\003\2201\330\010\016\210j\230\001\230\021\340\004\016\210b\220\010\230\001\230\025\230f\240B""\240g\250X\260Q\260e\2704\270v\300Q\330\004\r\210Q\330\004\021\220\024\220R\220q\330\004\021\220\022\2206\230\021\230,\240f\250B\250a\330\004\020\220\001\340\004\014\210D\220\002\220!\330\004\n\210+\220R\220t\2302\230Q\330\004\010\210\007\210u\220A\220W\230A\330\010\t\330\014\023\2201\220C\220s\230\"\230F\240!\2404\240r\250\024\250R\250q\330\014\016\210g\220Q\220c\230\023\230B\230f\240A\240T\250\022\2501\330\014\016\210g\220Q\220c\230\023\230B\230f\240A\240T\250\022\2504\250r\260\021\330\014\016\210g\220Q\220c\230\023\230B\230f\240A\240T\250\022\2501\330\014\016\210g\220Q\220c\230\023\230B\230f\240A\240Q\330\014\016\210g\220Q\220c\230\023\230B\230f\240A\240T\250\022\2501\330\014\016\210g\220Q\220c\230\023\230B\230f\240A\240T\250\022\2504\250r\260\021\330\014\016\210g\220Q\220c\230\023\230B\230f\240A\240T\250\022\2501\330\014\016\210g\220Q\220c\230\023\230B\230f\240A\240T\250\022\2504\250r\260\021\340\010\016\210c\220\021\220&\230\002\230!\330\010\013\2104\210r\220\021\330\014\022\220!\330\010\013\2104\210r\220\021\330\014\022\220!\330\010\021\220\021\220'\230\021\340\004\013\210:\220X\230Q\230e\2401O";
+    #else /* compression: none (4466 bytes) */
+const char* const bytes = ": Buffer view does not expose stridesCan only create a buffer that is contiguous in memory.Cannot assign to read-only memoryviewCannot create writable memory view from read-only memoryviewCannot index with type 'Cannot transpose memoryview with indirect dimensionsDimension %d is not directEmpty shape tuple for cython.arrayFilter kernel sum is zeroIndirect dimensions not supportedInvalid mode, expected 'c' or 'fortran', got Invalid shape in axis <MemoryView of Note that Cython is deliberately stricter than PEP-484 and rejects subclasses of builtin types. If you need to pass subclasses then set the 'annotation_typing' directive to False.Out of bounds on buffer access (axis Unable to convert item to object.>')?add_note and  at 0xcollections.abc<contiguous and direct><contiguous and indirect>cython.intdisableenablefilter_file required when filter_hp=2gc (got got differing extents in dimension isenableditemsize <= 0 for cython.arrayno default __reduce__ due to non-trivial __cinit__np.ndarray object>src/openptv2/algorithms/image_processing.pystr | Path | None<strided and direct><strided and direct or indirect><strided and indirect>unable to allocate array data.unable to allocate shape and strides.ASCIIEllipsisPath__Pyx_PyDict_NextRefSequenceView.MemoryViewabcaccumallocate_bufferasarrayastypeasyncio.coroutinesbaseboolbufcchfield__class____class_getitem__cline_in_tracebackclipcolcol_accum_mvcopycopy_imagescopytocountdestdest_mv__dict__dim_lpdtypedtype_is_objectencodeendenumerateerrorfast_box_blurfiltfilt_mvfilt_spanfilt_sumfilter_3filter_filefilter_hpflagsfloat64formatfortran__func____getstate__half_selectorididximage_sizeimgimg1img2__import__imximyindexint16int64is_compiled_is_coroutineitemsitemsizeleft_idxleft_ptrloadtxtlowpass_3m__main__maskmemviewmin_brightnessmode__module__nname__name__ndim__new__npnqnumpyobjopenptv2.algorithms.image_processingoutpackpathlibpopprepare_imageptr1ptr2__pyx_checksum__pyx_state__pyx_type__pyx_unpickle_Enum__pyx_vtable____qualname__ravel__re""duce____reduce_cython____reduce_ex__registerreshaperesult_mvreturnright_idxrowrow_accum_mvrow_start__set_name__setdefault__setstate____setstate_cython__shapesizesplitsrcsrc_mvstartstepstopstructsubtract_imgsubtract_masksum__test__totaluint8unpackupdatevaluesxzeros\200\001\360\030\000\024%\320$5\260Q\340\004\016\210b\220\010\230\001\230\025\230f\240B\240g\250X\260Q\260e\2704\270v\300Q\330\004\r\210Q\330\004\021\220\024\220R\220q\330\004\021\220\022\2206\230\021\230,\240f\250B\250a\330\004\020\220\001\340\004\014\210D\220\002\220!\330\004\n\210+\220R\220t\2302\230Q\330\004\010\210\007\210u\220A\220W\230A\330\010\t\330\014\017\210q\220\006\220a\220q\330\014\016\210c\220\021\220&\230\001\230\024\230R\230t\2402\240Q\330\014\016\210c\220\021\220&\230\001\230\024\230R\230q\330\014\016\210c\220\021\220&\230\001\230\024\230R\230t\2402\240Q\330\014\016\210c\220\021\220&\230\001\230\024\230R\230q\330\014\016\210c\220\021\220&\230\001\230\024\230R\230q\330\014\016\210c\220\021\220&\230\001\230\024\230R\230t\2402\240Q\330\014\016\210c\220\021\220&\230\001\230\024\230R\230q\330\014\016\210c\220\021\220&\230\001\230\024\230R\230t\2402\240Q\340\010\021\220\021\220'\230\026\230s\240!\340\004\013\210:\220X\230Q\230e\2401\200\001\3606\000\n\013\330\017\020\330\t\n\330\t\n\360\006\000\005\017\210b\220\010\230\001\230\025\230f\240B\240g\250X\260Q\260e\2704\270v\300Q\330\004\r\210Q\330\004\010\210\002\210\"\210J\220b\230\001\330\004\t\210\022\2102\210Q\330\004\021\220\024\220R\220q\330\004\024\220B\220f\230A\230\\\250\026\250r\260\021\330\004\023\2201\330\004\024\220B\220f\230A\230U\240&\250\002\250!\330\004\023\2201\330\004\017\210r\220\026\220q\230\014\240F\250\"\250A\330\004\016\210a\340\004\010\210\007\210u\220A\220Q\330\010\024\220D\230\002\230!\330\010\020\220\006\220a\220q\330\010\024\220A\220]\240&\250\002\250!\340\010\014\210G\2205\230\001\230\027\240\n\250\"\250C\250q\330\014\027\220z\240\022\2402\240R\240t\2502\250Q\330\014\030\230\n\240\"\240B\240b\250\001\330\014\025\220V""\2301\230J\240b\250\006\250a\250q\330\014\020\220\002\220\"\220D\230\002\230!\330\014\030\230\001\230\032\2402\240W\250F\260\"\260B\260c\270\021\340\010\014\210G\2205\230\001\230\032\2402\240S\250\004\250B\250a\330\014\025\220V\2301\230J\240b\250\004\250B\250k\270\022\2706\300\021\300*\310B\310d\320RT\320T^\320^`\320`a\330\014\030\230\001\230\032\2402\240W\250A\340\010\023\220:\230R\230t\2402\240Q\330\010\014\210B\210b\220\001\330\010\014\210G\2205\230\005\230T\240\022\240;\250j\270\002\270$\270a\330\014\025\220V\2301\230J\240b\250\006\250a\250y\270\002\270!\330\014\030\230\001\230\032\2402\240W\250F\260\"\260B\260c\270\021\330\014\030\230\001\330\014\021\220\021\340\004\010\210\007\210u\220A\220Q\330\010\024\220A\220W\230L\250\001\250\021\330\010\017\210q\220\007\220|\2401\240E\250\023\250A\340\004\010\210\007\210u\220A\220W\230J\240b\250\003\2501\330\010\020\220\002\220\"\220D\230\002\230#\230R\230q\330\010\017\210u\220B\220a\330\010\016\210d\220\"\220A\330\010\014\210G\2205\230\001\230\021\330\014\030\230\001\230\030\240\034\250Q\250e\2602\260U\270\"\270L\310\001\310\025\310b\320PQ\330\014\023\2201\220D\230\002\230(\240\"\240B\240l\260!\2606\270\023\270C\270t\3002\300R\300t\3102\310Q\340\004\013\2101\330\004\013\2104\210r\220\021\330\004\010\210\007\210u\220A\220Z\230r\240\023\240D\250\002\250!\330\010\016\210d\220\"\220A\330\010\014\210G\2205\230\001\230\021\330\014\030\230\001\230\030\240\034\250Q\250e\2602\260U\270\"\270L\310\001\310\025\310b\320PQ\330\014\023\2201\220D\230\002\230'\240\034\250Q\250e\2603\260a\330\010\020\220\001\330\010\020\220\001\340\004\010\210\007\210u\220A\220[\240\004\240A\330\010\020\220\004\220B\220b\230\002\230$\230b\240\003\2402\240Q\330\010\017\210u\220B\220a\330\010\017\210t\2202\220U\230\"\230A\330\010\014\210G\2205\230\001\230\021\330\014\030\230\001\230\030\240\034\250Q\250e\2602\260U\270\"\270L\310\001\310\025\310b\320PQ\330\014\023\2201\220D\230\002\230(\240\"\240B\240l\260!\2606\270\023\270C\270t\3002\300R\300t\3102\310Q""\340\004\013\2108\2208\2301\230E\240\021\200\001\340\t\n\330\014\r\330\t\n\330\t\n\330\017\034\230A\330\021%\240Q\330\r\032\230!\360*\000\005\013\210\"\210H\220A\220U\230&\240\002\240!\360\006\000\005\016\210]\230!\2305\240\010\250\005\250Q\360\006\000\005\016\210\\\230\021\230%\230q\360\006\000\005\010\200x\210t\2203\220a\330\010\021\220\025\220a\220x\230y\250\005\250Q\360\006\000\005\010\200z\220\023\220A\330\010\021\220\031\230!\2308\2405\250\001\330\t\023\2203\220a\330\010\013\210<\220s\230!\330\014\022\220*\230A\230Q\330\010\017\210r\220\030\230\021\230,\240h\250a\250s\260!\330\010\021\220\030\230\021\230(\240&\250\005\250Q\340\004\013\2101\200\001\330\032$\240J\250a\360\014\000\005\010\200z\220\021\220%\220q\330\010\017\210q\220\002\220%\220q\230\005\230T\240\027\250\001\330\004\007\200u\210G\2201\330\010\n\210'\220\021\220&\230\001\330\010\017\210q\330\004\013\2103\210e\2201\200\001\360\006\000\020+\320*;\320;L\310A\360\034\000\005\013\210\"\210H\220A\220U\230&\240\002\240'\250\025\250a\340\004\007\200~\220S\230\001\330\010\017\210q\340\004\020\220\007\220~\240R\240w\250a\340\004\010\210\007\210u\220A\220T\230\023\230A\330\010\013\2101\210J\220c\230\021\230\"\230B\230d\240#\240U\250/\270\021\360\006\000\005\010\200q\210\004\210C\210z\230\021\340\004\013\2101\320\000\025\220Q\340\004\021\220\021\200\001\330\027)\250\021\360\024\000\005\016\210R\210x\220q\230\005\230V\2402\240W\250E\260\021\330\004\n\210!\2102\210X\220Q\220f\230F\240\"\240H\250C\250u\260A\330\004\013\2101\200\001\330\027)\250\021\360\024\000\005\016\210R\210x\220q\230\006\230f\240B\240h\250b\260\002\260(\270!\2706\300\026\300r\310\021\330\004\013\2102\210U\220!\2208\2303\230d\240'\250\021\250\"\250A\200\001\360 \000\n\013\330\n\013\330\t\n\330\t\n\330\024!\240\021\360\006\000\005\020\210r\220\030\230\021\230&\240\006\240b\250\t\260\030\270\021\270#\270Q\330\004\016\210a\330\004\017\210u\220A\220X\230T\240\021\330\004\007\200y\220\003\2201\330\010\016\210j\230\001\230\021\340\004\016\210b\220""\010\230\001\230\025\230f\240B\240g\250X\260Q\260e\2704\270v\300Q\330\004\r\210Q\330\004\021\220\024\220R\220q\330\004\021\220\022\2206\230\021\230,\240f\250B\250a\330\004\020\220\001\340\004\014\210D\220\002\220!\330\004\n\210+\220R\220t\2302\230Q\330\004\010\210\007\210u\220A\220W\230A\330\010\t\330\014\023\2201\220C\220s\230\"\230F\240!\2404\240r\250\024\250R\250q\330\014\016\210g\220Q\220c\230\023\230B\230f\240A\240T\250\022\2501\330\014\016\210g\220Q\220c\230\023\230B\230f\240A\240T\250\022\2504\250r\260\021\330\014\016\210g\220Q\220c\230\023\230B\230f\240A\240T\250\022\2501\330\014\016\210g\220Q\220c\230\023\230B\230f\240A\240Q\330\014\016\210g\220Q\220c\230\023\230B\230f\240A\240T\250\022\2501\330\014\016\210g\220Q\220c\230\023\230B\230f\240A\240T\250\022\2504\250r\260\021\330\014\016\210g\220Q\220c\230\023\230B\230f\240A\240T\250\022\2501\330\014\016\210g\220Q\220c\230\023\230B\230f\240A\240T\250\022\2504\250r\260\021\340\010\016\210c\220\021\220&\230\002\230!\330\010\013\2104\210r\220\021\330\014\022\220!\330\010\013\2104\210r\220\021\330\014\022\220!\330\010\021\220\021\220'\230\021\340\004\013\210:\220X\230Q\230e\2401O";
     PyObject *data = NULL;
     CYTHON_UNUSED_VAR(__Pyx_DecompressString);
     #endif
@@ -23091,47 +23091,47 @@ static int __Pyx_CreateCodeObjects(__pyx_mstatetype *__pyx_mstate) {
   {
     const __Pyx_PyCode_New_function_description descr = {5, 0, 0, 15, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 20};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_img, __pyx_mstate->__pyx_n_u_filt, __pyx_mstate->__pyx_n_u_imx, __pyx_mstate->__pyx_n_u_imy, __pyx_mstate->__pyx_n_u_min_brightness, __pyx_mstate->__pyx_n_u_filt_sum, __pyx_mstate->__pyx_n_u_image_size, __pyx_mstate->__pyx_n_u_start, __pyx_mstate->__pyx_n_u_end, __pyx_mstate->__pyx_n_u_idx, __pyx_mstate->__pyx_n_u_total, __pyx_mstate->__pyx_n_u_buf, __pyx_mstate->__pyx_n_u_filt_mv, __pyx_mstate->__pyx_n_u_src_mv, __pyx_mstate->__pyx_n_u_result_mv};
-    __pyx_mstate_global->__pyx_codeobj_tab[0] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_image_processing_py, __pyx_mstate->__pyx_n_u_filter_3, __pyx_mstate->__pyx_kp_b_iso88591_r_b_Q_a_uAXT_y_1_j_b_fBgXQe4vQ, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[0])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[0] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_image_pr, __pyx_mstate->__pyx_n_u_filter_3, __pyx_mstate->__pyx_kp_b_iso88591_r_b_Q_a_uAXT_y_1_j_b_fBgXQe4vQ, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[0])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {3, 0, 0, 10, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 79};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_img, __pyx_mstate->__pyx_n_u_imx, __pyx_mstate->__pyx_n_u_imy, __pyx_mstate->__pyx_n_u_image_size, __pyx_mstate->__pyx_n_u_start, __pyx_mstate->__pyx_n_u_end, __pyx_mstate->__pyx_n_u_idx, __pyx_mstate->__pyx_n_u_total, __pyx_mstate->__pyx_n_u_src_mv, __pyx_mstate->__pyx_n_u_result_mv};
-    __pyx_mstate_global->__pyx_codeobj_tab[1] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_image_processing_py, __pyx_mstate->__pyx_n_u_lowpass_3, __pyx_mstate->__pyx_kp_b_iso88591_5Q_b_fBgXQe4vQ_Q_Rq_6_fBa_D_Rt2, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[1])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[1] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_image_pr, __pyx_mstate->__pyx_n_u_lowpass_3, __pyx_mstate->__pyx_kp_b_iso88591_5Q_b_fBgXQe4vQ_Q_Rq_6_fBa_D_Rt2, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[1])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {4, 0, 0, 22, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 118};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_img, __pyx_mstate->__pyx_n_u_filt_span, __pyx_mstate->__pyx_n_u_imx, __pyx_mstate->__pyx_n_u_imy, __pyx_mstate->__pyx_n_u_n, __pyx_mstate->__pyx_n_u_nq, __pyx_mstate->__pyx_n_u_image_size, __pyx_mstate->__pyx_n_u_row, __pyx_mstate->__pyx_n_u_col, __pyx_mstate->__pyx_n_u_row_start, __pyx_mstate->__pyx_n_u_accum, __pyx_mstate->__pyx_n_u_left_idx, __pyx_mstate->__pyx_n_u_right_idx, __pyx_mstate->__pyx_n_u_m, __pyx_mstate->__pyx_n_u_left_ptr, __pyx_mstate->__pyx_n_u_ptr1, __pyx_mstate->__pyx_n_u_ptr2, __pyx_mstate->__pyx_n_u_out, __pyx_mstate->__pyx_n_u_src_mv, __pyx_mstate->__pyx_n_u_row_accum_mv, __pyx_mstate->__pyx_n_u_col_accum_mv, __pyx_mstate->__pyx_n_u_dest_mv};
-    __pyx_mstate_global->__pyx_codeobj_tab[2] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_image_processing_py, __pyx_mstate->__pyx_n_u_fast_box_blur, __pyx_mstate->__pyx_kp_b_iso88591_6_b_fBgXQe4vQ_Q_Jb_2Q_Rq_BfA_r, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[2])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[2] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_image_pr, __pyx_mstate->__pyx_n_u_fast_box_blur, __pyx_mstate->__pyx_kp_b_iso88591_6_b_fBgXQe4vQ_Q_Jb_2Q_Rq_BfA_r, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[2])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {4, 0, 0, 4, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 220};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_img, __pyx_mstate->__pyx_n_u_half_selector, __pyx_mstate->__pyx_n_u_imx, __pyx_mstate->__pyx_n_u_imy};
-    __pyx_mstate_global->__pyx_codeobj_tab[3] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_image_processing_py, __pyx_mstate->__pyx_n_u_split, __pyx_mstate->__pyx_kp_b_iso88591_LA_HAU_a_S_q_Rwa_uAT_A_1Jc_Bd_U, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[3])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[3] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_image_pr, __pyx_mstate->__pyx_n_u_split, __pyx_mstate->__pyx_kp_b_iso88591_LA_HAU_a_S_q_Rwa_uAT_A_1Jc_Bd_U, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[3])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {2, 0, 0, 2, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 253};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_img1, __pyx_mstate->__pyx_n_u_img2};
-    __pyx_mstate_global->__pyx_codeobj_tab[4] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_image_processing_py, __pyx_mstate->__pyx_n_u_subtract_img, __pyx_mstate->__pyx_kp_b_iso88591_Rxq_fBhb_6_r_2U_83d_A, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[4])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[4] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_image_pr, __pyx_mstate->__pyx_n_u_subtract_img, __pyx_mstate->__pyx_kp_b_iso88591_Rxq_fBhb_6_r_2U_83d_A, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[4])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {2, 0, 0, 2, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 268};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_img, __pyx_mstate->__pyx_n_u_mask};
-    __pyx_mstate_global->__pyx_codeobj_tab[5] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_image_processing_py, __pyx_mstate->__pyx_n_u_subtract_mask, __pyx_mstate->__pyx_kp_b_iso88591_Rxq_V2WE_2XQfF_HCuA_1, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[5])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[5] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_image_pr, __pyx_mstate->__pyx_n_u_subtract_mask, __pyx_mstate->__pyx_kp_b_iso88591_Rxq_V2WE_2XQfF_HCuA_1, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[5])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {7, 0, 0, 7, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 284};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_img, __pyx_mstate->__pyx_n_u_dim_lp, __pyx_mstate->__pyx_n_u_imx, __pyx_mstate->__pyx_n_u_imy, __pyx_mstate->__pyx_n_u_filter_hp, __pyx_mstate->__pyx_n_u_filter_file, __pyx_mstate->__pyx_n_u_chfield};
-    __pyx_mstate_global->__pyx_codeobj_tab[6] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_image_processing_py, __pyx_mstate->__pyx_n_u_prepare_image, __pyx_mstate->__pyx_kp_b_iso88591_A_Q_HAU_5_Q_q_xt3a_axy_Q_z_A_85, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[6])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[6] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_image_pr, __pyx_mstate->__pyx_n_u_prepare_image, __pyx_mstate->__pyx_kp_b_iso88591_A_Q_HAU_5_Q_q_xt3a_axy_Q_z_A_85, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[6])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {4, 0, 0, 4, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 337};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_src, __pyx_mstate->__pyx_n_u_dest, __pyx_mstate->__pyx_n_u_imx, __pyx_mstate->__pyx_n_u_imy};
-    __pyx_mstate_global->__pyx_codeobj_tab[7] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_image_processing_py, __pyx_mstate->__pyx_n_u_copy_images, __pyx_mstate->__pyx_kp_b_iso88591_Ja_z_q_q_q_T_uG1_q_3e1, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[7])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[7] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_image_pr, __pyx_mstate->__pyx_n_u_copy_images, __pyx_mstate->__pyx_kp_b_iso88591_Ja_z_q_q_q_T_uG1_q_3e1, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[7])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {0, 0, 0, 0, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 352};
     PyObject* const varnames[] = {0};
-    __pyx_mstate_global->__pyx_codeobj_tab[8] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_image_processing_py, __pyx_mstate->__pyx_n_u_is_compiled, __pyx_mstate->__pyx_kp_b_iso88591_Q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[8])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[8] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_image_pr, __pyx_mstate->__pyx_n_u_is_compiled, __pyx_mstate->__pyx_kp_b_iso88591_Q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[8])) goto bad;
   }
   Py_DECREF(tuple_dedup_map);
   return 0;

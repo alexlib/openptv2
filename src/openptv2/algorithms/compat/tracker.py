@@ -9,7 +9,9 @@ from openptv2.algorithms.track import (
     trackcorr_c_finish,
     trackback_c,
 )
+from openptv2.algorithms.track3d import track3d_loop
 from openptv2.algorithms.parameters import convert_track_par_to_tuple
+
 
 
 # Default file naming (matches optv)
@@ -151,20 +153,34 @@ class Tracker:
         """
         Process one frame of 3D tracking.
 
-        Not implemented - would need track3d_loop integration.
-
         Returns:
-            bool: False (not implemented)
+            bool: True if more frames remain, False if done
         """
-        raise NotImplementedError("3D tracking not yet wrapped in compat layer")
+        if not self._is_initialized:
+            raise RuntimeError("Tracker not initialized. Call restart() first.")
+
+        # Check if we've reached the end of 3D tracking range (needs lookahead)
+        if self._current_step > self._spar.get_last() - 2:
+            return False
+
+        # Process current frame
+        track3d_loop(self._run, self._current_step)
+
+        # Advance to next frame
+        self._current_step += 1
+
+        return self._current_step <= self._spar.get_last() - 2
 
     def full_forward_3d(self):
         """
         Run complete 3D forward tracking.
-
-        Not implemented - would need track3d integration.
         """
-        raise NotImplementedError("3D tracking not yet wrapped in compat layer")
+        self.restart()
+
+        # Process all frames
+        while self.step_forward_3d():
+            pass
+
 
     def current_step(self):
         """

@@ -4,12 +4,12 @@
 {
     "distutils": {
         "depends": [],
-        "name": "algorithms.track",
+        "name": "openptv2.algorithms.track",
         "sources": [
-            "algorithms/track.py"
+            "src/openptv2/algorithms/track.py"
         ]
     },
-    "module_name": "algorithms.track"
+    "module_name": "openptv2.algorithms.track"
 }
 END: Cython Metadata */
 
@@ -1127,8 +1127,8 @@ static int __Pyx_init_co_variables(void) {
   #endif
 #endif
 
-#define __PYX_HAVE__algorithms__track
-#define __PYX_HAVE_API__algorithms__track
+#define __PYX_HAVE__openptv2__algorithms__track
+#define __PYX_HAVE_API__openptv2__algorithms__track
 /* Early includes */
 #include <math.h>
 #ifdef _OPENMP
@@ -1347,7 +1347,7 @@ static const char *__pyx_filename;
 /* #### Code section: filename_table ### */
 
 static const char* const __pyx_f[] = {
-  "algorithms/track.py",
+  "src/openptv2/algorithms/track.py",
 };
 /* #### Code section: utility_code_proto_before_types ### */
 /* Atomics.proto (used by UnpackUnboundCMethod) */
@@ -1524,80 +1524,80 @@ static const char* const __pyx_f[] = {
 /* #### Code section: type_declarations ### */
 
 /*--- Type declarations ---*/
-struct __pyx_obj_10algorithms_5track___pyx_scope_struct__genexpr;
-struct __pyx_obj_10algorithms_5track___pyx_scope_struct_1_genexpr;
-struct __pyx_obj_10algorithms_5track___pyx_scope_struct_2_genexpr;
-struct __pyx_obj_10algorithms_5track___pyx_scope_struct_3_genexpr;
-struct __pyx_obj_10algorithms_5track___pyx_scope_struct_4_genexpr;
-struct __pyx_opt_args_10algorithms_5track_searchquader;
-struct __pyx_opt_args_10algorithms_5track_register_closest_neighbs;
-struct __pyx_opt_args_10algorithms_5track_sorted_candidates_in_volume;
-struct __pyx_opt_args_10algorithms_5track_assess_new_position;
+struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr;
+struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr;
+struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr;
+struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr;
+struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr;
+struct __pyx_opt_args_8openptv2_10algorithms_5track_searchquader;
+struct __pyx_opt_args_8openptv2_10algorithms_5track_register_closest_neighbs;
+struct __pyx_opt_args_8openptv2_10algorithms_5track_sorted_candidates_in_volume;
+struct __pyx_opt_args_8openptv2_10algorithms_5track_assess_new_position;
 
-/* "algorithms/track.py":549
+/* "openptv2/algorithms/track.py":549
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def searchquader(point, tpar, cpar, calib, _packed_cals=None, _pix_info=None,
  *                  _fast_tuples=None):
 */
-struct __pyx_opt_args_10algorithms_5track_searchquader {
+struct __pyx_opt_args_8openptv2_10algorithms_5track_searchquader {
   int __pyx_n;
   PyObject *_packed_cals;
   PyObject *_pix_info;
   PyObject *_fast_tuples;
 };
 
-/* "algorithms/track.py":616
+/* "openptv2/algorithms/track.py":616
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * @cython.boundscheck(False)
  * @cython.wraparound(False)
 */
-struct __pyx_opt_args_10algorithms_5track_register_closest_neighbs {
+struct __pyx_opt_args_8openptv2_10algorithms_5track_register_closest_neighbs {
   int __pyx_n;
   PyObject *_targ_x;
   PyObject *_targ_y;
   PyObject *_targ_tnr;
 };
 
-/* "algorithms/track.py":636
+/* "openptv2/algorithms/track.py":636
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def sorted_candidates_in_volume(center, center_proj, frm, run,
  *                                 _packed_cals=None, _pix_info=None,
 */
-struct __pyx_opt_args_10algorithms_5track_sorted_candidates_in_volume {
+struct __pyx_opt_args_8openptv2_10algorithms_5track_sorted_candidates_in_volume {
   int __pyx_n;
   PyObject *_packed_cals;
   PyObject *_pix_info;
   PyObject *_fast_tuples;
 };
 
-/* "algorithms/track.py":676
+/* "openptv2/algorithms/track.py":676
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def assess_new_position(pos, targ_pos, cand_inds, frm, run,
  *                         _fast_cals=None, _fast_mmluts=None, _pix_info=None):
 */
-struct __pyx_opt_args_10algorithms_5track_assess_new_position {
+struct __pyx_opt_args_8openptv2_10algorithms_5track_assess_new_position {
   int __pyx_n;
   PyObject *_fast_cals;
   PyObject *_fast_mmluts;
   PyObject *_pix_info;
 };
 
-/* "algorithms/track.py":62
+/* "openptv2/algorithms/track.py":62
  *     return (
  *         tuple(fast_cals),
  *         tuple(m[0] for m in fast_mmluts),             # <<<<<<<<<<<<<<
  *         tuple(m[1] for m in fast_mmluts),
  *         tuple(m[2] for m in fast_mmluts),
 */
-struct __pyx_obj_10algorithms_5track___pyx_scope_struct__genexpr {
+struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr {
   PyObject_HEAD
   PyObject *__pyx_genexpr_arg_0;
   PyObject *__pyx_v_m;
@@ -1607,14 +1607,14 @@ struct __pyx_obj_10algorithms_5track___pyx_scope_struct__genexpr {
 };
 
 
-/* "algorithms/track.py":63
+/* "openptv2/algorithms/track.py":63
  *         tuple(fast_cals),
  *         tuple(m[0] for m in fast_mmluts),
  *         tuple(m[1] for m in fast_mmluts),             # <<<<<<<<<<<<<<
  *         tuple(m[2] for m in fast_mmluts),
  *         tuple(m[3] for m in fast_mmluts),
 */
-struct __pyx_obj_10algorithms_5track___pyx_scope_struct_1_genexpr {
+struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr {
   PyObject_HEAD
   PyObject *__pyx_genexpr_arg_0;
   PyObject *__pyx_v_m;
@@ -1624,14 +1624,14 @@ struct __pyx_obj_10algorithms_5track___pyx_scope_struct_1_genexpr {
 };
 
 
-/* "algorithms/track.py":64
+/* "openptv2/algorithms/track.py":64
  *         tuple(m[0] for m in fast_mmluts),
  *         tuple(m[1] for m in fast_mmluts),
  *         tuple(m[2] for m in fast_mmluts),             # <<<<<<<<<<<<<<
  *         tuple(m[3] for m in fast_mmluts),
  *         tuple(m[4] for m in fast_mmluts),
 */
-struct __pyx_obj_10algorithms_5track___pyx_scope_struct_2_genexpr {
+struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr {
   PyObject_HEAD
   PyObject *__pyx_genexpr_arg_0;
   PyObject *__pyx_v_m;
@@ -1641,14 +1641,14 @@ struct __pyx_obj_10algorithms_5track___pyx_scope_struct_2_genexpr {
 };
 
 
-/* "algorithms/track.py":65
+/* "openptv2/algorithms/track.py":65
  *         tuple(m[1] for m in fast_mmluts),
  *         tuple(m[2] for m in fast_mmluts),
  *         tuple(m[3] for m in fast_mmluts),             # <<<<<<<<<<<<<<
  *         tuple(m[4] for m in fast_mmluts),
  *     )
 */
-struct __pyx_obj_10algorithms_5track___pyx_scope_struct_3_genexpr {
+struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr {
   PyObject_HEAD
   PyObject *__pyx_genexpr_arg_0;
   PyObject *__pyx_v_m;
@@ -1658,14 +1658,14 @@ struct __pyx_obj_10algorithms_5track___pyx_scope_struct_3_genexpr {
 };
 
 
-/* "algorithms/track.py":66
+/* "openptv2/algorithms/track.py":66
  *         tuple(m[2] for m in fast_mmluts),
  *         tuple(m[3] for m in fast_mmluts),
  *         tuple(m[4] for m in fast_mmluts),             # <<<<<<<<<<<<<<
  *     )
  * 
 */
-struct __pyx_obj_10algorithms_5track___pyx_scope_struct_4_genexpr {
+struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr {
   PyObject_HEAD
   PyObject *__pyx_genexpr_arg_0;
   PyObject *__pyx_v_m;
@@ -3004,80 +3004,80 @@ static int __Pyx_State_RemoveModule(void*);
 
 /* Module declarations from "libc.math" */
 
-/* Module declarations from "algorithms.track" */
-static PyObject *__pyx_f_10algorithms_5track_predict(PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_5track_search_volume_center_moving(PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_5track_pos3d_in_bounds(PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_5track_angle_acc(PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix_rest(PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_5track_reset_foundpix_array(PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_5track_copy_foundpix_array(PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_5track_sort_candidates_by_freq(PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_5track_sort(PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_5track_point_to_pixel(PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_5track_searchquader(PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch, struct __pyx_opt_args_10algorithms_5track_searchquader *__pyx_optional_args); /*proto*/
-static PyObject *__pyx_f_10algorithms_5track_register_closest_neighbs(PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch, struct __pyx_opt_args_10algorithms_5track_register_closest_neighbs *__pyx_optional_args); /*proto*/
-static PyObject *__pyx_f_10algorithms_5track_sorted_candidates_in_volume(PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch, struct __pyx_opt_args_10algorithms_5track_sorted_candidates_in_volume *__pyx_optional_args); /*proto*/
-static PyObject *__pyx_f_10algorithms_5track_assess_new_position(PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch, struct __pyx_opt_args_10algorithms_5track_assess_new_position *__pyx_optional_args); /*proto*/
-static PyObject *__pyx_f_10algorithms_5track_add_particle(PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_5track_track_forward_start(PyObject *, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_finish(PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *, int __pyx_skip_dispatch); /*proto*/
+/* Module declarations from "openptv2.algorithms.track" */
+static PyObject *__pyx_f_8openptv2_10algorithms_5track_predict(PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_5track_search_volume_center_moving(PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_5track_pos3d_in_bounds(PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_5track_angle_acc(PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_5track_candsearch_in_pix(PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_5track_candsearch_in_pix_rest(PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_5track_reset_foundpix_array(PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_5track_copy_foundpix_array(PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_5track_sort_candidates_by_freq(PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_5track_sort(PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_5track_point_to_pixel(PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_5track_searchquader(PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch, struct __pyx_opt_args_8openptv2_10algorithms_5track_searchquader *__pyx_optional_args); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_5track_register_closest_neighbs(PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch, struct __pyx_opt_args_8openptv2_10algorithms_5track_register_closest_neighbs *__pyx_optional_args); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_5track_sorted_candidates_in_volume(PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch, struct __pyx_opt_args_8openptv2_10algorithms_5track_sorted_candidates_in_volume *__pyx_optional_args); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_5track_assess_new_position(PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch, struct __pyx_opt_args_8openptv2_10algorithms_5track_assess_new_position *__pyx_optional_args); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_5track_add_particle(PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_5track_track_forward_start(PyObject *, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_5track_trackcorr_c_loop(PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_5track_trackcorr_c_finish(PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_5track_trackback_c(PyObject *, int __pyx_skip_dispatch); /*proto*/
 /* #### Code section: typeinfo ### */
 /* #### Code section: before_global_var ### */
-#define __Pyx_MODULE_NAME "algorithms.track"
-extern int __pyx_module_is_main_algorithms__track;
-int __pyx_module_is_main_algorithms__track = 0;
+#define __Pyx_MODULE_NAME "openptv2.algorithms.track"
+extern int __pyx_module_is_main_openptv2__algorithms__track;
+int __pyx_module_is_main_openptv2__algorithms__track = 0;
 
-/* Implementation of "algorithms.track" */
+/* Implementation of "openptv2.algorithms.track" */
 /* #### Code section: global_var ### */
 static PyObject *__pyx_builtin_print;
 /* #### Code section: string_decls ### */
 static const char __pyx_k_Tracking_algorithms_Python_trans[] = "Tracking algorithms \342\200\224 Python translation of lib/src/track.c.";
 /* #### Code section: decls ### */
-static PyObject *__pyx_pf_10algorithms_5track__vec3_dist(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_a, PyObject *__pyx_v_b); /* proto */
-static PyObject *__pyx_pf_10algorithms_5track_2_pack_cams_fast(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cals, PyObject *__pyx_v_mm); /* proto */
-static PyObject *__pyx_pf_10algorithms_5track_22_pack_cams_fast_tuples_genexpr(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_genexpr_arg_0); /* proto */
-static PyObject *__pyx_pf_10algorithms_5track_22_pack_cams_fast_tuples_3genexpr(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_genexpr_arg_0); /* proto */
-static PyObject *__pyx_pf_10algorithms_5track_22_pack_cams_fast_tuples_6genexpr(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_genexpr_arg_0); /* proto */
-static PyObject *__pyx_pf_10algorithms_5track_22_pack_cams_fast_tuples_9genexpr(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_genexpr_arg_0); /* proto */
-static PyObject *__pyx_pf_10algorithms_5track_22_pack_cams_fast_tuples_12genexpr(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_genexpr_arg_0); /* proto */
-static PyObject *__pyx_pf_10algorithms_5track_4_pack_cams_fast_tuples(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_fast_cals, PyObject *__pyx_v_fast_mmluts); /* proto */
-static PyObject *__pyx_pf_10algorithms_5track_6_ptp_fast(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_pos, PyObject *__pyx_v_cal_arr, PyObject *__pyx_v_mmlut_tup, PyObject *__pyx_v_imx_half, PyObject *__pyx_v_imy_half, PyObject *__pyx_v_inv_pix_x, PyObject *__pyx_v_inv_pix_y, PyObject *__pyx_v_chfield); /* proto */
-static PyObject *__pyx_pf_10algorithms_5track_8_pack_cal(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cal, PyObject *__pyx_v_mm); /* proto */
-static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_pos, PyObject *__pyx_v_pc, PyObject *__pyx_v_imx_half, PyObject *__pyx_v_imy_half, PyObject *__pyx_v_inv_pix_x, PyObject *__pyx_v_inv_pix_y, PyObject *__pyx_v_chfield); /* proto */
-static PyObject *__pyx_pf_10algorithms_5track_12_point_to_pixel_fast(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_pos, PyObject *__pyx_v_cal, PyObject *__pyx_v_imx, PyObject *__pyx_v_imy, PyObject *__pyx_v_pix_x, PyObject *__pyx_v_pix_y, PyObject *__pyx_v_chfield, PyObject *__pyx_v_mm); /* proto */
-static PyObject *__pyx_pf_10algorithms_5track_14predict(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_prev_pos, PyObject *__pyx_v_curr_pos, PyObject *__pyx_v_c); /* proto */
-static PyObject *__pyx_pf_10algorithms_5track_16search_volume_center_moving(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_prev_pos, PyObject *__pyx_v_curr_pos); /* proto */
-static PyObject *__pyx_pf_10algorithms_5track_18pos3d_in_bounds(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_pos, PyObject *__pyx_v_bounds); /* proto */
-static PyObject *__pyx_pf_10algorithms_5track_20angle_acc(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_start, PyObject *__pyx_v_pred, PyObject *__pyx_v_cand); /* proto */
-static PyObject *__pyx_pf_10algorithms_5track_22candsearch_in_pix(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_next_targets, PyObject *__pyx_v_num_targets, PyObject *__pyx_v_cent_x, PyObject *__pyx_v_cent_y, PyObject *__pyx_v_dl, PyObject *__pyx_v_dr, PyObject *__pyx_v_du, PyObject *__pyx_v_dd, PyObject *__pyx_v_cpar); /* proto */
-static PyObject *__pyx_pf_10algorithms_5track_24candsearch_in_pix_rest(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_next_targets, PyObject *__pyx_v_num_targets, PyObject *__pyx_v_cent_x, PyObject *__pyx_v_cent_y, PyObject *__pyx_v_dl, PyObject *__pyx_v_dr, PyObject *__pyx_v_du, PyObject *__pyx_v_dd, PyObject *__pyx_v_p, PyObject *__pyx_v_cpar); /* proto */
-static PyObject *__pyx_pf_10algorithms_5track_26reset_foundpix_array(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_arr, PyObject *__pyx_v_n, PyObject *__pyx_v_num_cams); /* proto */
-static PyObject *__pyx_pf_10algorithms_5track_28copy_foundpix_array(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_dest, PyObject *__pyx_v_src, PyObject *__pyx_v_n, PyObject *__pyx_v_num_cams); /* proto */
-static PyObject *__pyx_pf_10algorithms_5track_30_make_foundpix(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_num_cams); /* proto */
-static PyObject *__pyx_pf_10algorithms_5track_32_make_foundpix_array(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_n, PyObject *__pyx_v_num_cams); /* proto */
-static PyObject *__pyx_pf_10algorithms_5track_34sort_candidates_by_freq(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_items, PyObject *__pyx_v_num_cams); /* proto */
-static PyObject *__pyx_pf_10algorithms_5track_36sort(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_n, PyObject *__pyx_v_a, PyObject *__pyx_v_b); /* proto */
-static PyObject *__pyx_pf_10algorithms_5track_38point_to_pixel(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_point, PyObject *__pyx_v_cal, PyObject *__pyx_v_cpar); /* proto */
-static PyObject *__pyx_pf_10algorithms_5track_40searchquader(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_point, PyObject *__pyx_v_tpar, PyObject *__pyx_v_cpar, PyObject *__pyx_v_calib, PyObject *__pyx_v__packed_cals, PyObject *__pyx_v__pix_info, PyObject *__pyx_v__fast_tuples); /* proto */
-static PyObject *__pyx_pf_10algorithms_5track_42register_closest_neighbs(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_targets, PyObject *__pyx_v_num_targets, PyObject *__pyx_v_cam, PyObject *__pyx_v_cent_x, PyObject *__pyx_v_cent_y, PyObject *__pyx_v_dl, PyObject *__pyx_v_dr, PyObject *__pyx_v_du, PyObject *__pyx_v_dd, PyObject *__pyx_v_reg, PyObject *__pyx_v_cpar, PyObject *__pyx_v__targ_x, PyObject *__pyx_v__targ_y, PyObject *__pyx_v__targ_tnr); /* proto */
-static PyObject *__pyx_pf_10algorithms_5track_44sorted_candidates_in_volume(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_center, PyObject *__pyx_v_center_proj, PyObject *__pyx_v_frm, PyObject *__pyx_v_run, PyObject *__pyx_v__packed_cals, PyObject *__pyx_v__pix_info, PyObject *__pyx_v__fast_tuples); /* proto */
-static PyObject *__pyx_pf_10algorithms_5track_46assess_new_position(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_pos, PyObject *__pyx_v_targ_pos, PyObject *__pyx_v_cand_inds, PyObject *__pyx_v_frm, PyObject *__pyx_v_run, PyObject *__pyx_v__fast_cals, PyObject *__pyx_v__fast_mmluts, PyObject *__pyx_v__pix_info); /* proto */
-static PyObject *__pyx_pf_10algorithms_5track_48add_particle(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_frm, PyObject *__pyx_v_pos, PyObject *__pyx_v_cand_inds); /* proto */
-static PyObject *__pyx_pf_10algorithms_5track_50track_forward_start(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_run); /* proto */
-static PyObject *__pyx_pf_10algorithms_5track_52_sync_soa_to_aos(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_frm); /* proto */
-static PyObject *__pyx_pf_10algorithms_5track_54trackcorr_c_loop(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_run_info, PyObject *__pyx_v_step); /* proto */
-static PyObject *__pyx_pf_10algorithms_5track_56trackcorr_c_finish(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_run_info, PyObject *__pyx_v_step); /* proto */
-static PyObject *__pyx_pf_10algorithms_5track_58trackback_c(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_run_info); /* proto */
-static PyObject *__pyx_pf_10algorithms_5track_60is_compiled(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
-static PyObject *__pyx_tp_new_10algorithms_5track___pyx_scope_struct__genexpr(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
-static PyObject *__pyx_tp_new_10algorithms_5track___pyx_scope_struct_1_genexpr(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
-static PyObject *__pyx_tp_new_10algorithms_5track___pyx_scope_struct_2_genexpr(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
-static PyObject *__pyx_tp_new_10algorithms_5track___pyx_scope_struct_3_genexpr(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
-static PyObject *__pyx_tp_new_10algorithms_5track___pyx_scope_struct_4_genexpr(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track__vec3_dist(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_a, PyObject *__pyx_v_b); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_2_pack_cams_fast(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cals, PyObject *__pyx_v_mm); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_22_pack_cams_fast_tuples_genexpr(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_genexpr_arg_0); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_22_pack_cams_fast_tuples_3genexpr(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_genexpr_arg_0); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_22_pack_cams_fast_tuples_6genexpr(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_genexpr_arg_0); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_22_pack_cams_fast_tuples_9genexpr(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_genexpr_arg_0); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_22_pack_cams_fast_tuples_12genexpr(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_genexpr_arg_0); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_4_pack_cams_fast_tuples(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_fast_cals, PyObject *__pyx_v_fast_mmluts); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_6_ptp_fast(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_pos, PyObject *__pyx_v_cal_arr, PyObject *__pyx_v_mmlut_tup, PyObject *__pyx_v_imx_half, PyObject *__pyx_v_imy_half, PyObject *__pyx_v_inv_pix_x, PyObject *__pyx_v_inv_pix_y, PyObject *__pyx_v_chfield); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_8_pack_cal(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cal, PyObject *__pyx_v_mm); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_pos, PyObject *__pyx_v_pc, PyObject *__pyx_v_imx_half, PyObject *__pyx_v_imy_half, PyObject *__pyx_v_inv_pix_x, PyObject *__pyx_v_inv_pix_y, PyObject *__pyx_v_chfield); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_12_point_to_pixel_fast(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_pos, PyObject *__pyx_v_cal, PyObject *__pyx_v_imx, PyObject *__pyx_v_imy, PyObject *__pyx_v_pix_x, PyObject *__pyx_v_pix_y, PyObject *__pyx_v_chfield, PyObject *__pyx_v_mm); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_14predict(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_prev_pos, PyObject *__pyx_v_curr_pos, PyObject *__pyx_v_c); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_16search_volume_center_moving(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_prev_pos, PyObject *__pyx_v_curr_pos); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_18pos3d_in_bounds(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_pos, PyObject *__pyx_v_bounds); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_20angle_acc(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_start, PyObject *__pyx_v_pred, PyObject *__pyx_v_cand); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_22candsearch_in_pix(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_next_targets, PyObject *__pyx_v_num_targets, PyObject *__pyx_v_cent_x, PyObject *__pyx_v_cent_y, PyObject *__pyx_v_dl, PyObject *__pyx_v_dr, PyObject *__pyx_v_du, PyObject *__pyx_v_dd, PyObject *__pyx_v_cpar); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_24candsearch_in_pix_rest(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_next_targets, PyObject *__pyx_v_num_targets, PyObject *__pyx_v_cent_x, PyObject *__pyx_v_cent_y, PyObject *__pyx_v_dl, PyObject *__pyx_v_dr, PyObject *__pyx_v_du, PyObject *__pyx_v_dd, PyObject *__pyx_v_p, PyObject *__pyx_v_cpar); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_26reset_foundpix_array(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_arr, PyObject *__pyx_v_n, PyObject *__pyx_v_num_cams); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_28copy_foundpix_array(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_dest, PyObject *__pyx_v_src, PyObject *__pyx_v_n, PyObject *__pyx_v_num_cams); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_30_make_foundpix(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_num_cams); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_32_make_foundpix_array(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_n, PyObject *__pyx_v_num_cams); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_34sort_candidates_by_freq(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_items, PyObject *__pyx_v_num_cams); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_36sort(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_n, PyObject *__pyx_v_a, PyObject *__pyx_v_b); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_38point_to_pixel(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_point, PyObject *__pyx_v_cal, PyObject *__pyx_v_cpar); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_40searchquader(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_point, PyObject *__pyx_v_tpar, PyObject *__pyx_v_cpar, PyObject *__pyx_v_calib, PyObject *__pyx_v__packed_cals, PyObject *__pyx_v__pix_info, PyObject *__pyx_v__fast_tuples); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_42register_closest_neighbs(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_targets, PyObject *__pyx_v_num_targets, PyObject *__pyx_v_cam, PyObject *__pyx_v_cent_x, PyObject *__pyx_v_cent_y, PyObject *__pyx_v_dl, PyObject *__pyx_v_dr, PyObject *__pyx_v_du, PyObject *__pyx_v_dd, PyObject *__pyx_v_reg, PyObject *__pyx_v_cpar, PyObject *__pyx_v__targ_x, PyObject *__pyx_v__targ_y, PyObject *__pyx_v__targ_tnr); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_44sorted_candidates_in_volume(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_center, PyObject *__pyx_v_center_proj, PyObject *__pyx_v_frm, PyObject *__pyx_v_run, PyObject *__pyx_v__packed_cals, PyObject *__pyx_v__pix_info, PyObject *__pyx_v__fast_tuples); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_46assess_new_position(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_pos, PyObject *__pyx_v_targ_pos, PyObject *__pyx_v_cand_inds, PyObject *__pyx_v_frm, PyObject *__pyx_v_run, PyObject *__pyx_v__fast_cals, PyObject *__pyx_v__fast_mmluts, PyObject *__pyx_v__pix_info); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_48add_particle(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_frm, PyObject *__pyx_v_pos, PyObject *__pyx_v_cand_inds); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_50track_forward_start(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_run); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_52_sync_soa_to_aos(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_frm); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_54trackcorr_c_loop(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_run_info, PyObject *__pyx_v_step); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_56trackcorr_c_finish(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_run_info, PyObject *__pyx_v_step); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_58trackback_c(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_run_info); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_60is_compiled(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
+static PyObject *__pyx_tp_new_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
+static PyObject *__pyx_tp_new_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
+static PyObject *__pyx_tp_new_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
+static PyObject *__pyx_tp_new_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
+static PyObject *__pyx_tp_new_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 /* #### Code section: late_includes ### */
 /* #### Code section: module_state ### */
 /* SmallCodeConfig */
@@ -3098,16 +3098,16 @@ typedef struct {
   PyObject *__pyx_empty_tuple;
   PyObject *__pyx_empty_bytes;
   PyObject *__pyx_empty_unicode;
-  PyObject *__pyx_type_10algorithms_5track___pyx_scope_struct__genexpr;
-  PyObject *__pyx_type_10algorithms_5track___pyx_scope_struct_1_genexpr;
-  PyObject *__pyx_type_10algorithms_5track___pyx_scope_struct_2_genexpr;
-  PyObject *__pyx_type_10algorithms_5track___pyx_scope_struct_3_genexpr;
-  PyObject *__pyx_type_10algorithms_5track___pyx_scope_struct_4_genexpr;
-  PyTypeObject *__pyx_ptype_10algorithms_5track___pyx_scope_struct__genexpr;
-  PyTypeObject *__pyx_ptype_10algorithms_5track___pyx_scope_struct_1_genexpr;
-  PyTypeObject *__pyx_ptype_10algorithms_5track___pyx_scope_struct_2_genexpr;
-  PyTypeObject *__pyx_ptype_10algorithms_5track___pyx_scope_struct_3_genexpr;
-  PyTypeObject *__pyx_ptype_10algorithms_5track___pyx_scope_struct_4_genexpr;
+  PyObject *__pyx_type_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr;
+  PyObject *__pyx_type_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr;
+  PyObject *__pyx_type_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr;
+  PyObject *__pyx_type_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr;
+  PyObject *__pyx_type_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr;
+  PyTypeObject *__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr;
+  PyTypeObject *__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr;
+  PyTypeObject *__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr;
+  PyTypeObject *__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr;
+  PyTypeObject *__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr;
   __Pyx_CachedCFunction __pyx_umethod_PyDict_Type_items;
   __Pyx_CachedCFunction __pyx_umethod_PyDict_Type_pop;
   __Pyx_CachedCFunction __pyx_umethod_PyDict_Type_values;
@@ -3119,28 +3119,28 @@ typedef struct {
 /* #### Code section: module_state_contents ### */
 
 #if CYTHON_USE_FREELISTS
-struct __pyx_obj_10algorithms_5track___pyx_scope_struct__genexpr *__pyx_freelist_10algorithms_5track___pyx_scope_struct__genexpr[8];
-int __pyx_freecount_10algorithms_5track___pyx_scope_struct__genexpr;
+struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr *__pyx_freelist_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr[8];
+int __pyx_freecount_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr;
 #endif
 
 #if CYTHON_USE_FREELISTS
-struct __pyx_obj_10algorithms_5track___pyx_scope_struct_1_genexpr *__pyx_freelist_10algorithms_5track___pyx_scope_struct_1_genexpr[8];
-int __pyx_freecount_10algorithms_5track___pyx_scope_struct_1_genexpr;
+struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr *__pyx_freelist_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr[8];
+int __pyx_freecount_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr;
 #endif
 
 #if CYTHON_USE_FREELISTS
-struct __pyx_obj_10algorithms_5track___pyx_scope_struct_2_genexpr *__pyx_freelist_10algorithms_5track___pyx_scope_struct_2_genexpr[8];
-int __pyx_freecount_10algorithms_5track___pyx_scope_struct_2_genexpr;
+struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr *__pyx_freelist_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr[8];
+int __pyx_freecount_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr;
 #endif
 
 #if CYTHON_USE_FREELISTS
-struct __pyx_obj_10algorithms_5track___pyx_scope_struct_3_genexpr *__pyx_freelist_10algorithms_5track___pyx_scope_struct_3_genexpr[8];
-int __pyx_freecount_10algorithms_5track___pyx_scope_struct_3_genexpr;
+struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr *__pyx_freelist_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr[8];
+int __pyx_freecount_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr;
 #endif
 
 #if CYTHON_USE_FREELISTS
-struct __pyx_obj_10algorithms_5track___pyx_scope_struct_4_genexpr *__pyx_freelist_10algorithms_5track___pyx_scope_struct_4_genexpr[8];
-int __pyx_freecount_10algorithms_5track___pyx_scope_struct_4_genexpr;
+struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr *__pyx_freelist_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr[8];
+int __pyx_freecount_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr;
 #endif
 /* CommonTypesMetaclass.module_state_decls */
 PyTypeObject *__pyx_CommonTypesMetaclassType;
@@ -3194,21 +3194,21 @@ static __pyx_mstatetype * const __pyx_mstate_global = &__pyx_mstate_global_stati
 #define __pyx_kp_u_Average_over_sequence_particles __pyx_string_tab[2]
 #define __pyx_kp_u__2 __pyx_string_tab[3]
 #define __pyx_kp_u_add_2 __pyx_string_tab[4]
-#define __pyx_kp_u_algorithms_constants __pyx_string_tab[5]
-#define __pyx_kp_u_algorithms_multimed __pyx_string_tab[6]
-#define __pyx_kp_u_algorithms_orientation __pyx_string_tab[7]
-#define __pyx_kp_u_algorithms_track_kernels __pyx_string_tab[8]
-#define __pyx_kp_u_algorithms_track_py __pyx_string_tab[9]
-#define __pyx_kp_u_algorithms_tracking_frame_buf __pyx_string_tab[10]
-#define __pyx_kp_u_algorithms_trafo __pyx_string_tab[11]
-#define __pyx_kp_u_curr __pyx_string_tab[12]
-#define __pyx_kp_u_disable __pyx_string_tab[13]
-#define __pyx_kp_u_enable __pyx_string_tab[14]
-#define __pyx_kp_u_gc __pyx_string_tab[15]
-#define __pyx_kp_u_isenabled __pyx_string_tab[16]
-#define __pyx_kp_u_links __pyx_string_tab[17]
-#define __pyx_kp_u_lost __pyx_string_tab[18]
-#define __pyx_kp_u_next_2 __pyx_string_tab[19]
+#define __pyx_kp_u_curr __pyx_string_tab[5]
+#define __pyx_kp_u_disable __pyx_string_tab[6]
+#define __pyx_kp_u_enable __pyx_string_tab[7]
+#define __pyx_kp_u_gc __pyx_string_tab[8]
+#define __pyx_kp_u_isenabled __pyx_string_tab[9]
+#define __pyx_kp_u_links __pyx_string_tab[10]
+#define __pyx_kp_u_lost __pyx_string_tab[11]
+#define __pyx_kp_u_next_2 __pyx_string_tab[12]
+#define __pyx_kp_u_openptv2_algorithms_constants __pyx_string_tab[13]
+#define __pyx_kp_u_openptv2_algorithms_multimed __pyx_string_tab[14]
+#define __pyx_kp_u_openptv2_algorithms_orientation __pyx_string_tab[15]
+#define __pyx_kp_u_openptv2_algorithms_track_kernel __pyx_string_tab[16]
+#define __pyx_kp_u_openptv2_algorithms_tracking_fra __pyx_string_tab[17]
+#define __pyx_kp_u_openptv2_algorithms_trafo __pyx_string_tab[18]
+#define __pyx_kp_u_src_openptv2_algorithms_track_py __pyx_string_tab[19]
 #define __pyx_kp_u_step __pyx_string_tab[20]
 #define __pyx_n_u_ADD_PART __pyx_string_tab[21]
 #define __pyx_n_u_COORD_UNUSED __pyx_string_tab[22]
@@ -3236,187 +3236,187 @@ static __pyx_mstatetype * const __pyx_mstate_global = &__pyx_mstate_global_stati
 #define __pyx_n_u_ag_x __pyx_string_tab[44]
 #define __pyx_n_u_ag_y __pyx_string_tab[45]
 #define __pyx_n_u_ag_z __pyx_string_tab[46]
-#define __pyx_n_u_algorithms_track __pyx_string_tab[47]
-#define __pyx_n_u_angle_acc __pyx_string_tab[48]
-#define __pyx_n_u_ap __pyx_string_tab[49]
-#define __pyx_n_u_arr __pyx_string_tab[50]
-#define __pyx_n_u_array __pyx_string_tab[51]
-#define __pyx_n_u_asarray __pyx_string_tab[52]
-#define __pyx_n_u_assess_new_position __pyx_string_tab[53]
-#define __pyx_n_u_asyncio_coroutines __pyx_string_tab[54]
-#define __pyx_n_u_b __pyx_string_tab[55]
-#define __pyx_n_u_bool __pyx_string_tab[56]
-#define __pyx_n_u_bounds __pyx_string_tab[57]
-#define __pyx_n_u_buf __pyx_string_tab[58]
-#define __pyx_n_u_buf_len __pyx_string_tab[59]
-#define __pyx_n_u_bx __pyx_string_tab[60]
-#define __pyx_n_u_by __pyx_string_tab[61]
-#define __pyx_n_u_bz __pyx_string_tab[62]
-#define __pyx_n_u_c __pyx_string_tab[63]
-#define __pyx_n_u_cal __pyx_string_tab[64]
-#define __pyx_n_u_cal_arr __pyx_string_tab[65]
-#define __pyx_n_u_cal_arrays __pyx_string_tab[66]
-#define __pyx_n_u_calib __pyx_string_tab[67]
-#define __pyx_n_u_cals __pyx_string_tab[68]
-#define __pyx_n_u_cam __pyx_string_tab[69]
-#define __pyx_n_u_cand __pyx_string_tab[70]
-#define __pyx_n_u_cand_inds __pyx_string_tab[71]
-#define __pyx_n_u_candsearch_in_pix __pyx_string_tab[72]
-#define __pyx_n_u_candsearch_in_pix_fast __pyx_string_tab[73]
-#define __pyx_n_u_candsearch_in_pix_fast_2 __pyx_string_tab[74]
-#define __pyx_n_u_candsearch_in_pix_rest __pyx_string_tab[75]
-#define __pyx_n_u_candsearch_in_pix_rest_fast __pyx_string_tab[76]
-#define __pyx_n_u_candsearch_in_pix_rest_fast_2 __pyx_string_tab[77]
-#define __pyx_n_u_cc __pyx_string_tab[78]
-#define __pyx_n_u_cc_x __pyx_string_tab[79]
-#define __pyx_n_u_cc_y __pyx_string_tab[80]
-#define __pyx_n_u_cc_z __pyx_string_tab[81]
-#define __pyx_n_u_cent_x __pyx_string_tab[82]
-#define __pyx_n_u_cent_y __pyx_string_tab[83]
-#define __pyx_n_u_center __pyx_string_tab[84]
-#define __pyx_n_u_center_proj __pyx_string_tab[85]
-#define __pyx_n_u_chfield __pyx_string_tab[86]
-#define __pyx_n_u_class_getitem __pyx_string_tab[87]
-#define __pyx_n_u_cline_in_traceback __pyx_string_tab[88]
-#define __pyx_n_u_close __pyx_string_tab[89]
-#define __pyx_n_u_constants __pyx_string_tab[90]
-#define __pyx_n_u_copy_foundpix_array __pyx_string_tab[91]
-#define __pyx_n_u_corres_nr __pyx_string_tab[92]
-#define __pyx_n_u_corres_p __pyx_string_tab[93]
-#define __pyx_n_u_correspond __pyx_string_tab[94]
-#define __pyx_n_u_cos_she __pyx_string_tab[95]
-#define __pyx_n_u_cp_x __pyx_string_tab[96]
-#define __pyx_n_u_cp_y __pyx_string_tab[97]
-#define __pyx_n_u_cp_z __pyx_string_tab[98]
-#define __pyx_n_u_cpar __pyx_string_tab[99]
-#define __pyx_n_u_curr_pos __pyx_string_tab[100]
-#define __pyx_n_u_d __pyx_string_tab[101]
-#define __pyx_n_u_dacc __pyx_string_tab[102]
-#define __pyx_n_u_dangle __pyx_string_tab[103]
-#define __pyx_n_u_data __pyx_string_tab[104]
-#define __pyx_n_u_dd __pyx_string_tab[105]
-#define __pyx_n_u_deno __pyx_string_tab[106]
-#define __pyx_n_u_dest __pyx_string_tab[107]
-#define __pyx_n_u_dist_cam_glas __pyx_string_tab[108]
-#define __pyx_n_u_dist_o_glas __pyx_string_tab[109]
-#define __pyx_n_u_dist_point_glas __pyx_string_tab[110]
-#define __pyx_n_u_dist_to_flat __pyx_string_tab[111]
-#define __pyx_n_u_dl __pyx_string_tab[112]
-#define __pyx_n_u_dm __pyx_string_tab[113]
-#define __pyx_n_u_dm00 __pyx_string_tab[114]
-#define __pyx_n_u_dm01 __pyx_string_tab[115]
-#define __pyx_n_u_dm02 __pyx_string_tab[116]
-#define __pyx_n_u_dm10 __pyx_string_tab[117]
-#define __pyx_n_u_dm11 __pyx_string_tab[118]
-#define __pyx_n_u_dm12 __pyx_string_tab[119]
-#define __pyx_n_u_dm20 __pyx_string_tab[120]
-#define __pyx_n_u_dm21 __pyx_string_tab[121]
-#define __pyx_n_u_dm22 __pyx_string_tab[122]
-#define __pyx_n_u_dot_cam __pyx_string_tab[123]
-#define __pyx_n_u_dot_pos __pyx_string_tab[124]
-#define __pyx_n_u_dr __pyx_string_tab[125]
-#define __pyx_n_u_dtype __pyx_string_tab[126]
-#define __pyx_n_u_du __pyx_string_tab[127]
-#define __pyx_n_u_dvxmax __pyx_string_tab[128]
-#define __pyx_n_u_dvxmin __pyx_string_tab[129]
-#define __pyx_n_u_dvymax __pyx_string_tab[130]
-#define __pyx_n_u_dvymin __pyx_string_tab[131]
-#define __pyx_n_u_dvzmax __pyx_string_tab[132]
-#define __pyx_n_u_dvzmin __pyx_string_tab[133]
-#define __pyx_n_u_dx __pyx_string_tab[134]
-#define __pyx_n_u_dy __pyx_string_tab[135]
-#define __pyx_n_u_dz __pyx_string_tab[136]
-#define __pyx_n_u_empty __pyx_string_tab[137]
-#define __pyx_n_u_ext __pyx_string_tab[138]
-#define __pyx_n_u_ext_par __pyx_string_tab[139]
-#define __pyx_n_u_ext_t_z0 __pyx_string_tab[140]
-#define __pyx_n_u_ext_x0 __pyx_string_tab[141]
-#define __pyx_n_u_ext_y0 __pyx_string_tab[142]
-#define __pyx_n_u_ext_z0 __pyx_string_tab[143]
-#define __pyx_n_u_fast_cals __pyx_string_tab[144]
-#define __pyx_n_u_fast_cals_2 __pyx_string_tab[145]
-#define __pyx_n_u_fast_mmluts __pyx_string_tab[146]
-#define __pyx_n_u_fast_mmluts_2 __pyx_string_tab[147]
-#define __pyx_n_u_fast_tuples __pyx_string_tab[148]
-#define __pyx_n_u_fb __pyx_string_tab[149]
-#define __pyx_n_u_fb_next __pyx_string_tab[150]
-#define __pyx_n_u_fb_prev __pyx_string_tab[151]
-#define __pyx_n_u_first __pyx_string_tab[152]
-#define __pyx_n_u_flatten_tol __pyx_string_tab[153]
-#define __pyx_n_u_float64 __pyx_string_tab[154]
-#define __pyx_n_u_freq __pyx_string_tab[155]
-#define __pyx_n_u_frm __pyx_string_tab[156]
-#define __pyx_n_u_ftnr __pyx_string_tab[157]
-#define __pyx_n_u_func __pyx_string_tab[158]
-#define __pyx_n_u_genexpr __pyx_string_tab[159]
-#define __pyx_n_u_glass_par __pyx_string_tab[160]
-#define __pyx_n_u_gp __pyx_string_tab[161]
-#define __pyx_n_u_gx __pyx_string_tab[162]
-#define __pyx_n_u_gy __pyx_string_tab[163]
-#define __pyx_n_u_gz __pyx_string_tab[164]
-#define __pyx_n_u_i __pyx_string_tab[165]
-#define __pyx_n_u_imx __pyx_string_tab[166]
-#define __pyx_n_u_imx_half __pyx_string_tab[167]
-#define __pyx_n_u_imy __pyx_string_tab[168]
-#define __pyx_n_u_imy_half __pyx_string_tab[169]
-#define __pyx_n_u_int32 __pyx_string_tab[170]
-#define __pyx_n_u_int_cc __pyx_string_tab[171]
-#define __pyx_n_u_int_par __pyx_string_tab[172]
-#define __pyx_n_u_inv_dog __pyx_string_tab[173]
-#define __pyx_n_u_inv_pix_x __pyx_string_tab[174]
-#define __pyx_n_u_inv_pix_y __pyx_string_tab[175]
-#define __pyx_n_u_ip __pyx_string_tab[176]
-#define __pyx_n_u_ir __pyx_string_tab[177]
-#define __pyx_n_u_is_compiled __pyx_string_tab[178]
-#define __pyx_n_u_is_coroutine __pyx_string_tab[179]
-#define __pyx_n_u_items __pyx_string_tab[180]
-#define __pyx_n_u_iz __pyx_string_tab[181]
-#define __pyx_n_u_j __pyx_string_tab[182]
-#define __pyx_n_u_k1 __pyx_string_tab[183]
-#define __pyx_n_u_k2 __pyx_string_tab[184]
-#define __pyx_n_u_k3 __pyx_string_tab[185]
-#define __pyx_n_u_last __pyx_string_tab[186]
-#define __pyx_n_u_lmax __pyx_string_tab[187]
-#define __pyx_n_u_m __pyx_string_tab[188]
-#define __pyx_n_u_main __pyx_string_tab[189]
-#define __pyx_n_u_make_foundpix __pyx_string_tab[190]
-#define __pyx_n_u_make_foundpix_array __pyx_string_tab[191]
-#define __pyx_n_u_mm __pyx_string_tab[192]
-#define __pyx_n_u_mm_d0 __pyx_string_tab[193]
-#define __pyx_n_u_mm_n1 __pyx_string_tab[194]
-#define __pyx_n_u_mm_n2_0 __pyx_string_tab[195]
-#define __pyx_n_u_mm_n3 __pyx_string_tab[196]
-#define __pyx_n_u_mmf __pyx_string_tab[197]
-#define __pyx_n_u_mmlut __pyx_string_tab[198]
-#define __pyx_n_u_mmlut_data __pyx_string_tab[199]
-#define __pyx_n_u_mmlut_nr __pyx_string_tab[200]
-#define __pyx_n_u_mmlut_nz __pyx_string_tab[201]
-#define __pyx_n_u_mmlut_origin __pyx_string_tab[202]
-#define __pyx_n_u_mmlut_rw __pyx_string_tab[203]
-#define __pyx_n_u_mmlut_tup __pyx_string_tab[204]
-#define __pyx_n_u_mmlut_tuples __pyx_string_tab[205]
-#define __pyx_n_u_module __pyx_string_tab[206]
-#define __pyx_n_u_multimed __pyx_string_tab[207]
-#define __pyx_n_u_multimed_nlay __pyx_string_tab[208]
-#define __pyx_n_u_multimed_nlay_2 __pyx_string_tab[209]
-#define __pyx_n_u_multimed_r_nlay_iterative __pyx_string_tab[210]
-#define __pyx_n_u_multimed_r_nlay_iterative_2 __pyx_string_tab[211]
-#define __pyx_n_u_n __pyx_string_tab[212]
-#define __pyx_n_u_n1 __pyx_string_tab[213]
-#define __pyx_n_u_n2 __pyx_string_tab[214]
-#define __pyx_n_u_n3 __pyx_string_tab[215]
-#define __pyx_n_u_name __pyx_string_tab[216]
-#define __pyx_n_u_next __pyx_string_tab[217]
-#define __pyx_n_u_next_targets __pyx_string_tab[218]
-#define __pyx_n_u_nlinks __pyx_string_tab[219]
-#define __pyx_n_u_np __pyx_string_tab[220]
-#define __pyx_n_u_npart __pyx_string_tab[221]
-#define __pyx_n_u_nr __pyx_string_tab[222]
-#define __pyx_n_u_num_cams __pyx_string_tab[223]
-#define __pyx_n_u_num_parts __pyx_string_tab[224]
-#define __pyx_n_u_num_targets __pyx_string_tab[225]
-#define __pyx_n_u_numpy __pyx_string_tab[226]
-#define __pyx_n_u_nz __pyx_string_tab[227]
+#define __pyx_n_u_angle_acc __pyx_string_tab[47]
+#define __pyx_n_u_ap __pyx_string_tab[48]
+#define __pyx_n_u_arr __pyx_string_tab[49]
+#define __pyx_n_u_array __pyx_string_tab[50]
+#define __pyx_n_u_asarray __pyx_string_tab[51]
+#define __pyx_n_u_assess_new_position __pyx_string_tab[52]
+#define __pyx_n_u_asyncio_coroutines __pyx_string_tab[53]
+#define __pyx_n_u_b __pyx_string_tab[54]
+#define __pyx_n_u_bool __pyx_string_tab[55]
+#define __pyx_n_u_bounds __pyx_string_tab[56]
+#define __pyx_n_u_buf __pyx_string_tab[57]
+#define __pyx_n_u_buf_len __pyx_string_tab[58]
+#define __pyx_n_u_bx __pyx_string_tab[59]
+#define __pyx_n_u_by __pyx_string_tab[60]
+#define __pyx_n_u_bz __pyx_string_tab[61]
+#define __pyx_n_u_c __pyx_string_tab[62]
+#define __pyx_n_u_cal __pyx_string_tab[63]
+#define __pyx_n_u_cal_arr __pyx_string_tab[64]
+#define __pyx_n_u_cal_arrays __pyx_string_tab[65]
+#define __pyx_n_u_calib __pyx_string_tab[66]
+#define __pyx_n_u_cals __pyx_string_tab[67]
+#define __pyx_n_u_cam __pyx_string_tab[68]
+#define __pyx_n_u_cand __pyx_string_tab[69]
+#define __pyx_n_u_cand_inds __pyx_string_tab[70]
+#define __pyx_n_u_candsearch_in_pix __pyx_string_tab[71]
+#define __pyx_n_u_candsearch_in_pix_fast __pyx_string_tab[72]
+#define __pyx_n_u_candsearch_in_pix_fast_2 __pyx_string_tab[73]
+#define __pyx_n_u_candsearch_in_pix_rest __pyx_string_tab[74]
+#define __pyx_n_u_candsearch_in_pix_rest_fast __pyx_string_tab[75]
+#define __pyx_n_u_candsearch_in_pix_rest_fast_2 __pyx_string_tab[76]
+#define __pyx_n_u_cc __pyx_string_tab[77]
+#define __pyx_n_u_cc_x __pyx_string_tab[78]
+#define __pyx_n_u_cc_y __pyx_string_tab[79]
+#define __pyx_n_u_cc_z __pyx_string_tab[80]
+#define __pyx_n_u_cent_x __pyx_string_tab[81]
+#define __pyx_n_u_cent_y __pyx_string_tab[82]
+#define __pyx_n_u_center __pyx_string_tab[83]
+#define __pyx_n_u_center_proj __pyx_string_tab[84]
+#define __pyx_n_u_chfield __pyx_string_tab[85]
+#define __pyx_n_u_class_getitem __pyx_string_tab[86]
+#define __pyx_n_u_cline_in_traceback __pyx_string_tab[87]
+#define __pyx_n_u_close __pyx_string_tab[88]
+#define __pyx_n_u_constants __pyx_string_tab[89]
+#define __pyx_n_u_copy_foundpix_array __pyx_string_tab[90]
+#define __pyx_n_u_corres_nr __pyx_string_tab[91]
+#define __pyx_n_u_corres_p __pyx_string_tab[92]
+#define __pyx_n_u_correspond __pyx_string_tab[93]
+#define __pyx_n_u_cos_she __pyx_string_tab[94]
+#define __pyx_n_u_cp_x __pyx_string_tab[95]
+#define __pyx_n_u_cp_y __pyx_string_tab[96]
+#define __pyx_n_u_cp_z __pyx_string_tab[97]
+#define __pyx_n_u_cpar __pyx_string_tab[98]
+#define __pyx_n_u_curr_pos __pyx_string_tab[99]
+#define __pyx_n_u_d __pyx_string_tab[100]
+#define __pyx_n_u_dacc __pyx_string_tab[101]
+#define __pyx_n_u_dangle __pyx_string_tab[102]
+#define __pyx_n_u_data __pyx_string_tab[103]
+#define __pyx_n_u_dd __pyx_string_tab[104]
+#define __pyx_n_u_deno __pyx_string_tab[105]
+#define __pyx_n_u_dest __pyx_string_tab[106]
+#define __pyx_n_u_dist_cam_glas __pyx_string_tab[107]
+#define __pyx_n_u_dist_o_glas __pyx_string_tab[108]
+#define __pyx_n_u_dist_point_glas __pyx_string_tab[109]
+#define __pyx_n_u_dist_to_flat __pyx_string_tab[110]
+#define __pyx_n_u_dl __pyx_string_tab[111]
+#define __pyx_n_u_dm __pyx_string_tab[112]
+#define __pyx_n_u_dm00 __pyx_string_tab[113]
+#define __pyx_n_u_dm01 __pyx_string_tab[114]
+#define __pyx_n_u_dm02 __pyx_string_tab[115]
+#define __pyx_n_u_dm10 __pyx_string_tab[116]
+#define __pyx_n_u_dm11 __pyx_string_tab[117]
+#define __pyx_n_u_dm12 __pyx_string_tab[118]
+#define __pyx_n_u_dm20 __pyx_string_tab[119]
+#define __pyx_n_u_dm21 __pyx_string_tab[120]
+#define __pyx_n_u_dm22 __pyx_string_tab[121]
+#define __pyx_n_u_dot_cam __pyx_string_tab[122]
+#define __pyx_n_u_dot_pos __pyx_string_tab[123]
+#define __pyx_n_u_dr __pyx_string_tab[124]
+#define __pyx_n_u_dtype __pyx_string_tab[125]
+#define __pyx_n_u_du __pyx_string_tab[126]
+#define __pyx_n_u_dvxmax __pyx_string_tab[127]
+#define __pyx_n_u_dvxmin __pyx_string_tab[128]
+#define __pyx_n_u_dvymax __pyx_string_tab[129]
+#define __pyx_n_u_dvymin __pyx_string_tab[130]
+#define __pyx_n_u_dvzmax __pyx_string_tab[131]
+#define __pyx_n_u_dvzmin __pyx_string_tab[132]
+#define __pyx_n_u_dx __pyx_string_tab[133]
+#define __pyx_n_u_dy __pyx_string_tab[134]
+#define __pyx_n_u_dz __pyx_string_tab[135]
+#define __pyx_n_u_empty __pyx_string_tab[136]
+#define __pyx_n_u_ext __pyx_string_tab[137]
+#define __pyx_n_u_ext_par __pyx_string_tab[138]
+#define __pyx_n_u_ext_t_z0 __pyx_string_tab[139]
+#define __pyx_n_u_ext_x0 __pyx_string_tab[140]
+#define __pyx_n_u_ext_y0 __pyx_string_tab[141]
+#define __pyx_n_u_ext_z0 __pyx_string_tab[142]
+#define __pyx_n_u_fast_cals __pyx_string_tab[143]
+#define __pyx_n_u_fast_cals_2 __pyx_string_tab[144]
+#define __pyx_n_u_fast_mmluts __pyx_string_tab[145]
+#define __pyx_n_u_fast_mmluts_2 __pyx_string_tab[146]
+#define __pyx_n_u_fast_tuples __pyx_string_tab[147]
+#define __pyx_n_u_fb __pyx_string_tab[148]
+#define __pyx_n_u_fb_next __pyx_string_tab[149]
+#define __pyx_n_u_fb_prev __pyx_string_tab[150]
+#define __pyx_n_u_first __pyx_string_tab[151]
+#define __pyx_n_u_flatten_tol __pyx_string_tab[152]
+#define __pyx_n_u_float64 __pyx_string_tab[153]
+#define __pyx_n_u_freq __pyx_string_tab[154]
+#define __pyx_n_u_frm __pyx_string_tab[155]
+#define __pyx_n_u_ftnr __pyx_string_tab[156]
+#define __pyx_n_u_func __pyx_string_tab[157]
+#define __pyx_n_u_genexpr __pyx_string_tab[158]
+#define __pyx_n_u_glass_par __pyx_string_tab[159]
+#define __pyx_n_u_gp __pyx_string_tab[160]
+#define __pyx_n_u_gx __pyx_string_tab[161]
+#define __pyx_n_u_gy __pyx_string_tab[162]
+#define __pyx_n_u_gz __pyx_string_tab[163]
+#define __pyx_n_u_i __pyx_string_tab[164]
+#define __pyx_n_u_imx __pyx_string_tab[165]
+#define __pyx_n_u_imx_half __pyx_string_tab[166]
+#define __pyx_n_u_imy __pyx_string_tab[167]
+#define __pyx_n_u_imy_half __pyx_string_tab[168]
+#define __pyx_n_u_int32 __pyx_string_tab[169]
+#define __pyx_n_u_int_cc __pyx_string_tab[170]
+#define __pyx_n_u_int_par __pyx_string_tab[171]
+#define __pyx_n_u_inv_dog __pyx_string_tab[172]
+#define __pyx_n_u_inv_pix_x __pyx_string_tab[173]
+#define __pyx_n_u_inv_pix_y __pyx_string_tab[174]
+#define __pyx_n_u_ip __pyx_string_tab[175]
+#define __pyx_n_u_ir __pyx_string_tab[176]
+#define __pyx_n_u_is_compiled __pyx_string_tab[177]
+#define __pyx_n_u_is_coroutine __pyx_string_tab[178]
+#define __pyx_n_u_items __pyx_string_tab[179]
+#define __pyx_n_u_iz __pyx_string_tab[180]
+#define __pyx_n_u_j __pyx_string_tab[181]
+#define __pyx_n_u_k1 __pyx_string_tab[182]
+#define __pyx_n_u_k2 __pyx_string_tab[183]
+#define __pyx_n_u_k3 __pyx_string_tab[184]
+#define __pyx_n_u_last __pyx_string_tab[185]
+#define __pyx_n_u_lmax __pyx_string_tab[186]
+#define __pyx_n_u_m __pyx_string_tab[187]
+#define __pyx_n_u_main __pyx_string_tab[188]
+#define __pyx_n_u_make_foundpix __pyx_string_tab[189]
+#define __pyx_n_u_make_foundpix_array __pyx_string_tab[190]
+#define __pyx_n_u_mm __pyx_string_tab[191]
+#define __pyx_n_u_mm_d0 __pyx_string_tab[192]
+#define __pyx_n_u_mm_n1 __pyx_string_tab[193]
+#define __pyx_n_u_mm_n2_0 __pyx_string_tab[194]
+#define __pyx_n_u_mm_n3 __pyx_string_tab[195]
+#define __pyx_n_u_mmf __pyx_string_tab[196]
+#define __pyx_n_u_mmlut __pyx_string_tab[197]
+#define __pyx_n_u_mmlut_data __pyx_string_tab[198]
+#define __pyx_n_u_mmlut_nr __pyx_string_tab[199]
+#define __pyx_n_u_mmlut_nz __pyx_string_tab[200]
+#define __pyx_n_u_mmlut_origin __pyx_string_tab[201]
+#define __pyx_n_u_mmlut_rw __pyx_string_tab[202]
+#define __pyx_n_u_mmlut_tup __pyx_string_tab[203]
+#define __pyx_n_u_mmlut_tuples __pyx_string_tab[204]
+#define __pyx_n_u_module __pyx_string_tab[205]
+#define __pyx_n_u_multimed __pyx_string_tab[206]
+#define __pyx_n_u_multimed_nlay __pyx_string_tab[207]
+#define __pyx_n_u_multimed_nlay_2 __pyx_string_tab[208]
+#define __pyx_n_u_multimed_r_nlay_iterative __pyx_string_tab[209]
+#define __pyx_n_u_multimed_r_nlay_iterative_2 __pyx_string_tab[210]
+#define __pyx_n_u_n __pyx_string_tab[211]
+#define __pyx_n_u_n1 __pyx_string_tab[212]
+#define __pyx_n_u_n2 __pyx_string_tab[213]
+#define __pyx_n_u_n3 __pyx_string_tab[214]
+#define __pyx_n_u_name __pyx_string_tab[215]
+#define __pyx_n_u_next __pyx_string_tab[216]
+#define __pyx_n_u_next_targets __pyx_string_tab[217]
+#define __pyx_n_u_nlinks __pyx_string_tab[218]
+#define __pyx_n_u_np __pyx_string_tab[219]
+#define __pyx_n_u_npart __pyx_string_tab[220]
+#define __pyx_n_u_nr __pyx_string_tab[221]
+#define __pyx_n_u_num_cams __pyx_string_tab[222]
+#define __pyx_n_u_num_parts __pyx_string_tab[223]
+#define __pyx_n_u_num_targets __pyx_string_tab[224]
+#define __pyx_n_u_numpy __pyx_string_tab[225]
+#define __pyx_n_u_nz __pyx_string_tab[226]
+#define __pyx_n_u_openptv2_algorithms_track __pyx_string_tab[227]
 #define __pyx_n_u_orientation __pyx_string_tab[228]
 #define __pyx_n_u_origin __pyx_string_tab[229]
 #define __pyx_n_u_p __pyx_string_tab[230]
@@ -3629,16 +3629,16 @@ static CYTHON_SMALL_CODE int __pyx_m_clear(PyObject *m) {
   #if CYTHON_PEP489_MULTI_PHASE_INIT
   __Pyx_State_RemoveModule(NULL);
   #endif
-  Py_CLEAR(clear_module_state->__pyx_ptype_10algorithms_5track___pyx_scope_struct__genexpr);
-  Py_CLEAR(clear_module_state->__pyx_type_10algorithms_5track___pyx_scope_struct__genexpr);
-  Py_CLEAR(clear_module_state->__pyx_ptype_10algorithms_5track___pyx_scope_struct_1_genexpr);
-  Py_CLEAR(clear_module_state->__pyx_type_10algorithms_5track___pyx_scope_struct_1_genexpr);
-  Py_CLEAR(clear_module_state->__pyx_ptype_10algorithms_5track___pyx_scope_struct_2_genexpr);
-  Py_CLEAR(clear_module_state->__pyx_type_10algorithms_5track___pyx_scope_struct_2_genexpr);
-  Py_CLEAR(clear_module_state->__pyx_ptype_10algorithms_5track___pyx_scope_struct_3_genexpr);
-  Py_CLEAR(clear_module_state->__pyx_type_10algorithms_5track___pyx_scope_struct_3_genexpr);
-  Py_CLEAR(clear_module_state->__pyx_ptype_10algorithms_5track___pyx_scope_struct_4_genexpr);
-  Py_CLEAR(clear_module_state->__pyx_type_10algorithms_5track___pyx_scope_struct_4_genexpr);
+  Py_CLEAR(clear_module_state->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr);
+  Py_CLEAR(clear_module_state->__pyx_type_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr);
+  Py_CLEAR(clear_module_state->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr);
+  Py_CLEAR(clear_module_state->__pyx_type_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr);
+  Py_CLEAR(clear_module_state->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr);
+  Py_CLEAR(clear_module_state->__pyx_type_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr);
+  Py_CLEAR(clear_module_state->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr);
+  Py_CLEAR(clear_module_state->__pyx_type_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr);
+  Py_CLEAR(clear_module_state->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr);
+  Py_CLEAR(clear_module_state->__pyx_type_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr);
   for (int i=0; i<1; ++i) { Py_CLEAR(clear_module_state->__pyx_slice[i]); }
   for (int i=0; i<12; ++i) { Py_CLEAR(clear_module_state->__pyx_tuple[i]); }
   for (int i=0; i<36; ++i) { Py_CLEAR(clear_module_state->__pyx_codeobj_tab[i]); }
@@ -3669,16 +3669,16 @@ static CYTHON_SMALL_CODE int __pyx_m_traverse(PyObject *m, visitproc visit, void
   __Pyx_VISIT_CONST(traverse_module_state->__pyx_empty_tuple);
   __Pyx_VISIT_CONST(traverse_module_state->__pyx_empty_bytes);
   __Pyx_VISIT_CONST(traverse_module_state->__pyx_empty_unicode);
-  Py_VISIT(traverse_module_state->__pyx_ptype_10algorithms_5track___pyx_scope_struct__genexpr);
-  Py_VISIT(traverse_module_state->__pyx_type_10algorithms_5track___pyx_scope_struct__genexpr);
-  Py_VISIT(traverse_module_state->__pyx_ptype_10algorithms_5track___pyx_scope_struct_1_genexpr);
-  Py_VISIT(traverse_module_state->__pyx_type_10algorithms_5track___pyx_scope_struct_1_genexpr);
-  Py_VISIT(traverse_module_state->__pyx_ptype_10algorithms_5track___pyx_scope_struct_2_genexpr);
-  Py_VISIT(traverse_module_state->__pyx_type_10algorithms_5track___pyx_scope_struct_2_genexpr);
-  Py_VISIT(traverse_module_state->__pyx_ptype_10algorithms_5track___pyx_scope_struct_3_genexpr);
-  Py_VISIT(traverse_module_state->__pyx_type_10algorithms_5track___pyx_scope_struct_3_genexpr);
-  Py_VISIT(traverse_module_state->__pyx_ptype_10algorithms_5track___pyx_scope_struct_4_genexpr);
-  Py_VISIT(traverse_module_state->__pyx_type_10algorithms_5track___pyx_scope_struct_4_genexpr);
+  Py_VISIT(traverse_module_state->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr);
+  Py_VISIT(traverse_module_state->__pyx_type_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr);
+  Py_VISIT(traverse_module_state->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr);
+  Py_VISIT(traverse_module_state->__pyx_type_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr);
+  Py_VISIT(traverse_module_state->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr);
+  Py_VISIT(traverse_module_state->__pyx_type_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr);
+  Py_VISIT(traverse_module_state->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr);
+  Py_VISIT(traverse_module_state->__pyx_type_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr);
+  Py_VISIT(traverse_module_state->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr);
+  Py_VISIT(traverse_module_state->__pyx_type_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr);
   for (int i=0; i<1; ++i) { __Pyx_VISIT_CONST(traverse_module_state->__pyx_slice[i]); }
   for (int i=0; i<12; ++i) { __Pyx_VISIT_CONST(traverse_module_state->__pyx_tuple[i]); }
   for (int i=0; i<36; ++i) { __Pyx_VISIT_CONST(traverse_module_state->__pyx_codeobj_tab[i]); }
@@ -3700,7 +3700,7 @@ return 0;
 #endif
 /* #### Code section: module_code ### */
 
-/* "algorithms/track.py":44
+/* "openptv2/algorithms/track.py":44
  * 
  * 
  * def _vec3_dist(a, b):             # <<<<<<<<<<<<<<
@@ -3709,15 +3709,15 @@ return 0;
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_5track_1_vec3_dist(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_1_vec3_dist(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_10algorithms_5track_1_vec3_dist = {"_vec3_dist", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_5track_1_vec3_dist, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10algorithms_5track_1_vec3_dist(PyObject *__pyx_self, 
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_5track_1_vec3_dist = {"_vec3_dist", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_5track_1_vec3_dist, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_1_vec3_dist(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -3787,11 +3787,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.track._vec3_dist", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track._vec3_dist", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_5track__vec3_dist(__pyx_self, __pyx_v_a, __pyx_v_b);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_5track__vec3_dist(__pyx_self, __pyx_v_a, __pyx_v_b);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -3801,7 +3801,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_5track__vec3_dist(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_a, PyObject *__pyx_v_b) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track__vec3_dist(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_a, PyObject *__pyx_v_b) {
   PyObject *__pyx_v_dx = NULL;
   PyObject *__pyx_v_dy = NULL;
   PyObject *__pyx_v_dz = NULL;
@@ -3816,7 +3816,7 @@ static PyObject *__pyx_pf_10algorithms_5track__vec3_dist(CYTHON_UNUSED PyObject 
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("_vec3_dist", 0);
 
-  /* "algorithms/track.py":45
+  /* "openptv2/algorithms/track.py":45
  * 
  * def _vec3_dist(a, b):
  *     dx = a[0] - b[0]             # <<<<<<<<<<<<<<
@@ -3834,7 +3834,7 @@ static PyObject *__pyx_pf_10algorithms_5track__vec3_dist(CYTHON_UNUSED PyObject 
   __pyx_v_dx = __pyx_t_3;
   __pyx_t_3 = 0;
 
-  /* "algorithms/track.py":46
+  /* "openptv2/algorithms/track.py":46
  * def _vec3_dist(a, b):
  *     dx = a[0] - b[0]
  *     dy = a[1] - b[1]             # <<<<<<<<<<<<<<
@@ -3852,7 +3852,7 @@ static PyObject *__pyx_pf_10algorithms_5track__vec3_dist(CYTHON_UNUSED PyObject 
   __pyx_v_dy = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/track.py":47
+  /* "openptv2/algorithms/track.py":47
  *     dx = a[0] - b[0]
  *     dy = a[1] - b[1]
  *     dz = a[2] - b[2]             # <<<<<<<<<<<<<<
@@ -3870,7 +3870,7 @@ static PyObject *__pyx_pf_10algorithms_5track__vec3_dist(CYTHON_UNUSED PyObject 
   __pyx_v_dz = __pyx_t_3;
   __pyx_t_3 = 0;
 
-  /* "algorithms/track.py":48
+  /* "openptv2/algorithms/track.py":48
  *     dy = a[1] - b[1]
  *     dz = a[2] - b[2]
  *     return c_sqrt(dx * dx + dy * dy + dz * dz)             # <<<<<<<<<<<<<<
@@ -3900,7 +3900,7 @@ static PyObject *__pyx_pf_10algorithms_5track__vec3_dist(CYTHON_UNUSED PyObject 
   __pyx_t_3 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/track.py":44
+  /* "openptv2/algorithms/track.py":44
  * 
  * 
  * def _vec3_dist(a, b):             # <<<<<<<<<<<<<<
@@ -3913,7 +3913,7 @@ static PyObject *__pyx_pf_10algorithms_5track__vec3_dist(CYTHON_UNUSED PyObject 
   __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3);
-  __Pyx_AddTraceback("algorithms.track._vec3_dist", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track._vec3_dist", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_dx);
@@ -3924,7 +3924,7 @@ static PyObject *__pyx_pf_10algorithms_5track__vec3_dist(CYTHON_UNUSED PyObject 
   return __pyx_r;
 }
 
-/* "algorithms/track.py":51
+/* "openptv2/algorithms/track.py":51
  * 
  * 
  * def _pack_cams_fast(cals, mm):             # <<<<<<<<<<<<<<
@@ -3933,16 +3933,16 @@ static PyObject *__pyx_pf_10algorithms_5track__vec3_dist(CYTHON_UNUSED PyObject 
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_5track_3_pack_cams_fast(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_3_pack_cams_fast(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_5track_2_pack_cams_fast, "Pack all cameras for compiled: returns (cal_arrays, mmlut_tuples).");
-static PyMethodDef __pyx_mdef_10algorithms_5track_3_pack_cams_fast = {"_pack_cams_fast", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_5track_3_pack_cams_fast, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_5track_2_pack_cams_fast};
-static PyObject *__pyx_pw_10algorithms_5track_3_pack_cams_fast(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_5track_2_pack_cams_fast, "Pack all cameras for compiled: returns (cal_arrays, mmlut_tuples).");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_5track_3_pack_cams_fast = {"_pack_cams_fast", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_5track_3_pack_cams_fast, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_5track_2_pack_cams_fast};
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_3_pack_cams_fast(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -4012,11 +4012,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.track._pack_cams_fast", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track._pack_cams_fast", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_5track_2_pack_cams_fast(__pyx_self, __pyx_v_cals, __pyx_v_mm);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_5track_2_pack_cams_fast(__pyx_self, __pyx_v_cals, __pyx_v_mm);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -4026,7 +4026,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_5track_2_pack_cams_fast(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cals, PyObject *__pyx_v_mm) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_2_pack_cams_fast(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cals, PyObject *__pyx_v_mm) {
   PyObject *__pyx_v_cal_arrays = NULL;
   PyObject *__pyx_v_mmlut_tuples = NULL;
   PyObject *__pyx_7genexpr__pyx_v_c = NULL;
@@ -4046,7 +4046,7 @@ static PyObject *__pyx_pf_10algorithms_5track_2_pack_cams_fast(CYTHON_UNUSED PyO
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("_pack_cams_fast", 0);
 
-  /* "algorithms/track.py":53
+  /* "openptv2/algorithms/track.py":53
  * def _pack_cams_fast(cals, mm):
  *     """Pack all cameras for compiled: returns (cal_arrays, mmlut_tuples)."""
  *     cal_arrays = [_pack_cal_array(c, mm) for c in cals]             # <<<<<<<<<<<<<<
@@ -4144,7 +4144,7 @@ static PyObject *__pyx_pf_10algorithms_5track_2_pack_cams_fast(CYTHON_UNUSED PyO
   __pyx_v_cal_arrays = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "algorithms/track.py":54
+  /* "openptv2/algorithms/track.py":54
  *     """Pack all cameras for compiled: returns (cal_arrays, mmlut_tuples)."""
  *     cal_arrays = [_pack_cal_array(c, mm) for c in cals]
  *     mmlut_tuples = [_pack_mmlut(c) for c in cals]             # <<<<<<<<<<<<<<
@@ -4242,7 +4242,7 @@ static PyObject *__pyx_pf_10algorithms_5track_2_pack_cams_fast(CYTHON_UNUSED PyO
   __pyx_v_mmlut_tuples = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "algorithms/track.py":55
+  /* "openptv2/algorithms/track.py":55
  *     cal_arrays = [_pack_cal_array(c, mm) for c in cals]
  *     mmlut_tuples = [_pack_mmlut(c) for c in cals]
  *     return cal_arrays, mmlut_tuples             # <<<<<<<<<<<<<<
@@ -4262,7 +4262,7 @@ static PyObject *__pyx_pf_10algorithms_5track_2_pack_cams_fast(CYTHON_UNUSED PyO
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/track.py":51
+  /* "openptv2/algorithms/track.py":51
  * 
  * 
  * def _pack_cams_fast(cals, mm):             # <<<<<<<<<<<<<<
@@ -4277,7 +4277,7 @@ static PyObject *__pyx_pf_10algorithms_5track_2_pack_cams_fast(CYTHON_UNUSED PyO
   __Pyx_XDECREF(__pyx_t_5);
   __Pyx_XDECREF(__pyx_t_6);
   __Pyx_XDECREF(__pyx_t_7);
-  __Pyx_AddTraceback("algorithms.track._pack_cams_fast", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track._pack_cams_fast", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_cal_arrays);
@@ -4289,7 +4289,7 @@ static PyObject *__pyx_pf_10algorithms_5track_2_pack_cams_fast(CYTHON_UNUSED PyO
   return __pyx_r;
 }
 
-/* "algorithms/track.py":58
+/* "openptv2/algorithms/track.py":58
  * 
  * 
  * def _pack_cams_fast_tuples(fast_cals, fast_mmluts):             # <<<<<<<<<<<<<<
@@ -4298,16 +4298,16 @@ static PyObject *__pyx_pf_10algorithms_5track_2_pack_cams_fast(CYTHON_UNUSED PyO
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_5track_5_pack_cams_fast_tuples(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_5_pack_cams_fast_tuples(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_5track_4_pack_cams_fast_tuples, "Convert lists to tuples for searchquader_fast.");
-static PyMethodDef __pyx_mdef_10algorithms_5track_5_pack_cams_fast_tuples = {"_pack_cams_fast_tuples", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_5track_5_pack_cams_fast_tuples, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_5track_4_pack_cams_fast_tuples};
-static PyObject *__pyx_pw_10algorithms_5track_5_pack_cams_fast_tuples(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_5track_4_pack_cams_fast_tuples, "Convert lists to tuples for searchquader_fast.");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_5track_5_pack_cams_fast_tuples = {"_pack_cams_fast_tuples", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_5track_5_pack_cams_fast_tuples, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_5track_4_pack_cams_fast_tuples};
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_5_pack_cams_fast_tuples(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -4377,11 +4377,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.track._pack_cams_fast_tuples", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track._pack_cams_fast_tuples", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_5track_4_pack_cams_fast_tuples(__pyx_self, __pyx_v_fast_cals, __pyx_v_fast_mmluts);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_5track_4_pack_cams_fast_tuples(__pyx_self, __pyx_v_fast_cals, __pyx_v_fast_mmluts);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -4390,9 +4390,9 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
-static PyObject *__pyx_gb_10algorithms_5track_22_pack_cams_fast_tuples_2generator(__pyx_CoroutineObject *__pyx_generator, CYTHON_UNUSED PyThreadState *__pyx_tstate, PyObject *__pyx_sent_value); /* proto */
+static PyObject *__pyx_gb_8openptv2_10algorithms_5track_22_pack_cams_fast_tuples_2generator(__pyx_CoroutineObject *__pyx_generator, CYTHON_UNUSED PyThreadState *__pyx_tstate, PyObject *__pyx_sent_value); /* proto */
 
-/* "algorithms/track.py":62
+/* "openptv2/algorithms/track.py":62
  *     return (
  *         tuple(fast_cals),
  *         tuple(m[0] for m in fast_mmluts),             # <<<<<<<<<<<<<<
@@ -4400,17 +4400,17 @@ static PyObject *__pyx_gb_10algorithms_5track_22_pack_cams_fast_tuples_2generato
  *         tuple(m[2] for m in fast_mmluts),
 */
 
-static PyObject *__pyx_pf_10algorithms_5track_22_pack_cams_fast_tuples_genexpr(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_genexpr_arg_0) {
-  struct __pyx_obj_10algorithms_5track___pyx_scope_struct__genexpr *__pyx_cur_scope;
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_22_pack_cams_fast_tuples_genexpr(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_genexpr_arg_0) {
+  struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr *__pyx_cur_scope;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("genexpr", 0);
-  __pyx_cur_scope = (struct __pyx_obj_10algorithms_5track___pyx_scope_struct__genexpr *)__pyx_tp_new_10algorithms_5track___pyx_scope_struct__genexpr(__pyx_mstate_global->__pyx_ptype_10algorithms_5track___pyx_scope_struct__genexpr, __pyx_mstate_global->__pyx_empty_tuple, NULL);
+  __pyx_cur_scope = (struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr *)__pyx_tp_new_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr(__pyx_mstate_global->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr, __pyx_mstate_global->__pyx_empty_tuple, NULL);
   if (unlikely(!__pyx_cur_scope)) {
-    __pyx_cur_scope = ((struct __pyx_obj_10algorithms_5track___pyx_scope_struct__genexpr *)Py_None);
+    __pyx_cur_scope = ((struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr *)Py_None);
     __Pyx_INCREF(Py_None);
     __PYX_ERR(0, 62, __pyx_L1_error)
   } else {
@@ -4420,7 +4420,7 @@ static PyObject *__pyx_pf_10algorithms_5track_22_pack_cams_fast_tuples_genexpr(C
   __Pyx_INCREF(__pyx_cur_scope->__pyx_genexpr_arg_0);
   __Pyx_GIVEREF(__pyx_cur_scope->__pyx_genexpr_arg_0);
   {
-    __pyx_CoroutineObject *gen = __Pyx_Generator_New((__pyx_coroutine_body_t) __pyx_gb_10algorithms_5track_22_pack_cams_fast_tuples_2generator, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[0]), (PyObject *) __pyx_cur_scope, __pyx_mstate_global->__pyx_n_u_genexpr, __pyx_mstate_global->__pyx_n_u_pack_cams_fast_tuples_locals_ge, __pyx_mstate_global->__pyx_n_u_algorithms_track); if (unlikely(!gen)) __PYX_ERR(0, 62, __pyx_L1_error)
+    __pyx_CoroutineObject *gen = __Pyx_Generator_New((__pyx_coroutine_body_t) __pyx_gb_8openptv2_10algorithms_5track_22_pack_cams_fast_tuples_2generator, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[0]), (PyObject *) __pyx_cur_scope, __pyx_mstate_global->__pyx_n_u_genexpr, __pyx_mstate_global->__pyx_n_u_pack_cams_fast_tuples_locals_ge, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_track); if (unlikely(!gen)) __PYX_ERR(0, 62, __pyx_L1_error)
     __Pyx_DECREF(__pyx_cur_scope);
     __Pyx_RefNannyFinishContext();
     return (PyObject *) gen;
@@ -4428,7 +4428,7 @@ static PyObject *__pyx_pf_10algorithms_5track_22_pack_cams_fast_tuples_genexpr(C
 
   /* function exit code */
   __pyx_L1_error:;
-  __Pyx_AddTraceback("algorithms.track._pack_cams_fast_tuples.genexpr", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track._pack_cams_fast_tuples.genexpr", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __Pyx_DECREF((PyObject *)__pyx_cur_scope);
   __Pyx_XGIVEREF(__pyx_r);
@@ -4436,9 +4436,9 @@ static PyObject *__pyx_pf_10algorithms_5track_22_pack_cams_fast_tuples_genexpr(C
   return __pyx_r;
 }
 
-static PyObject *__pyx_gb_10algorithms_5track_22_pack_cams_fast_tuples_2generator(__pyx_CoroutineObject *__pyx_generator, CYTHON_UNUSED PyThreadState *__pyx_tstate, PyObject *__pyx_sent_value) /* generator body */
+static PyObject *__pyx_gb_8openptv2_10algorithms_5track_22_pack_cams_fast_tuples_2generator(__pyx_CoroutineObject *__pyx_generator, CYTHON_UNUSED PyThreadState *__pyx_tstate, PyObject *__pyx_sent_value) /* generator body */
 {
-  struct __pyx_obj_10algorithms_5track___pyx_scope_struct__genexpr *__pyx_cur_scope = ((struct __pyx_obj_10algorithms_5track___pyx_scope_struct__genexpr *)__pyx_generator->closure);
+  struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr *__pyx_cur_scope = ((struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr *)__pyx_generator->closure);
   PyObject *__pyx_r = NULL;
   PyObject *__pyx_t_1 = NULL;
   Py_ssize_t __pyx_t_2;
@@ -4560,9 +4560,9 @@ static PyObject *__pyx_gb_10algorithms_5track_22_pack_cams_fast_tuples_2generato
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
-static PyObject *__pyx_gb_10algorithms_5track_22_pack_cams_fast_tuples_5generator1(__pyx_CoroutineObject *__pyx_generator, CYTHON_UNUSED PyThreadState *__pyx_tstate, PyObject *__pyx_sent_value); /* proto */
+static PyObject *__pyx_gb_8openptv2_10algorithms_5track_22_pack_cams_fast_tuples_5generator1(__pyx_CoroutineObject *__pyx_generator, CYTHON_UNUSED PyThreadState *__pyx_tstate, PyObject *__pyx_sent_value); /* proto */
 
-/* "algorithms/track.py":63
+/* "openptv2/algorithms/track.py":63
  *         tuple(fast_cals),
  *         tuple(m[0] for m in fast_mmluts),
  *         tuple(m[1] for m in fast_mmluts),             # <<<<<<<<<<<<<<
@@ -4570,17 +4570,17 @@ static PyObject *__pyx_gb_10algorithms_5track_22_pack_cams_fast_tuples_5generato
  *         tuple(m[3] for m in fast_mmluts),
 */
 
-static PyObject *__pyx_pf_10algorithms_5track_22_pack_cams_fast_tuples_3genexpr(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_genexpr_arg_0) {
-  struct __pyx_obj_10algorithms_5track___pyx_scope_struct_1_genexpr *__pyx_cur_scope;
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_22_pack_cams_fast_tuples_3genexpr(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_genexpr_arg_0) {
+  struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr *__pyx_cur_scope;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("genexpr", 0);
-  __pyx_cur_scope = (struct __pyx_obj_10algorithms_5track___pyx_scope_struct_1_genexpr *)__pyx_tp_new_10algorithms_5track___pyx_scope_struct_1_genexpr(__pyx_mstate_global->__pyx_ptype_10algorithms_5track___pyx_scope_struct_1_genexpr, __pyx_mstate_global->__pyx_empty_tuple, NULL);
+  __pyx_cur_scope = (struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr *)__pyx_tp_new_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr(__pyx_mstate_global->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr, __pyx_mstate_global->__pyx_empty_tuple, NULL);
   if (unlikely(!__pyx_cur_scope)) {
-    __pyx_cur_scope = ((struct __pyx_obj_10algorithms_5track___pyx_scope_struct_1_genexpr *)Py_None);
+    __pyx_cur_scope = ((struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr *)Py_None);
     __Pyx_INCREF(Py_None);
     __PYX_ERR(0, 63, __pyx_L1_error)
   } else {
@@ -4590,7 +4590,7 @@ static PyObject *__pyx_pf_10algorithms_5track_22_pack_cams_fast_tuples_3genexpr(
   __Pyx_INCREF(__pyx_cur_scope->__pyx_genexpr_arg_0);
   __Pyx_GIVEREF(__pyx_cur_scope->__pyx_genexpr_arg_0);
   {
-    __pyx_CoroutineObject *gen = __Pyx_Generator_New((__pyx_coroutine_body_t) __pyx_gb_10algorithms_5track_22_pack_cams_fast_tuples_5generator1, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[1]), (PyObject *) __pyx_cur_scope, __pyx_mstate_global->__pyx_n_u_genexpr, __pyx_mstate_global->__pyx_n_u_pack_cams_fast_tuples_locals_ge, __pyx_mstate_global->__pyx_n_u_algorithms_track); if (unlikely(!gen)) __PYX_ERR(0, 63, __pyx_L1_error)
+    __pyx_CoroutineObject *gen = __Pyx_Generator_New((__pyx_coroutine_body_t) __pyx_gb_8openptv2_10algorithms_5track_22_pack_cams_fast_tuples_5generator1, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[1]), (PyObject *) __pyx_cur_scope, __pyx_mstate_global->__pyx_n_u_genexpr, __pyx_mstate_global->__pyx_n_u_pack_cams_fast_tuples_locals_ge, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_track); if (unlikely(!gen)) __PYX_ERR(0, 63, __pyx_L1_error)
     __Pyx_DECREF(__pyx_cur_scope);
     __Pyx_RefNannyFinishContext();
     return (PyObject *) gen;
@@ -4598,7 +4598,7 @@ static PyObject *__pyx_pf_10algorithms_5track_22_pack_cams_fast_tuples_3genexpr(
 
   /* function exit code */
   __pyx_L1_error:;
-  __Pyx_AddTraceback("algorithms.track._pack_cams_fast_tuples.genexpr", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track._pack_cams_fast_tuples.genexpr", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __Pyx_DECREF((PyObject *)__pyx_cur_scope);
   __Pyx_XGIVEREF(__pyx_r);
@@ -4606,9 +4606,9 @@ static PyObject *__pyx_pf_10algorithms_5track_22_pack_cams_fast_tuples_3genexpr(
   return __pyx_r;
 }
 
-static PyObject *__pyx_gb_10algorithms_5track_22_pack_cams_fast_tuples_5generator1(__pyx_CoroutineObject *__pyx_generator, CYTHON_UNUSED PyThreadState *__pyx_tstate, PyObject *__pyx_sent_value) /* generator body */
+static PyObject *__pyx_gb_8openptv2_10algorithms_5track_22_pack_cams_fast_tuples_5generator1(__pyx_CoroutineObject *__pyx_generator, CYTHON_UNUSED PyThreadState *__pyx_tstate, PyObject *__pyx_sent_value) /* generator body */
 {
-  struct __pyx_obj_10algorithms_5track___pyx_scope_struct_1_genexpr *__pyx_cur_scope = ((struct __pyx_obj_10algorithms_5track___pyx_scope_struct_1_genexpr *)__pyx_generator->closure);
+  struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr *__pyx_cur_scope = ((struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr *)__pyx_generator->closure);
   PyObject *__pyx_r = NULL;
   PyObject *__pyx_t_1 = NULL;
   Py_ssize_t __pyx_t_2;
@@ -4730,9 +4730,9 @@ static PyObject *__pyx_gb_10algorithms_5track_22_pack_cams_fast_tuples_5generato
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
-static PyObject *__pyx_gb_10algorithms_5track_22_pack_cams_fast_tuples_8generator2(__pyx_CoroutineObject *__pyx_generator, CYTHON_UNUSED PyThreadState *__pyx_tstate, PyObject *__pyx_sent_value); /* proto */
+static PyObject *__pyx_gb_8openptv2_10algorithms_5track_22_pack_cams_fast_tuples_8generator2(__pyx_CoroutineObject *__pyx_generator, CYTHON_UNUSED PyThreadState *__pyx_tstate, PyObject *__pyx_sent_value); /* proto */
 
-/* "algorithms/track.py":64
+/* "openptv2/algorithms/track.py":64
  *         tuple(m[0] for m in fast_mmluts),
  *         tuple(m[1] for m in fast_mmluts),
  *         tuple(m[2] for m in fast_mmluts),             # <<<<<<<<<<<<<<
@@ -4740,17 +4740,17 @@ static PyObject *__pyx_gb_10algorithms_5track_22_pack_cams_fast_tuples_8generato
  *         tuple(m[4] for m in fast_mmluts),
 */
 
-static PyObject *__pyx_pf_10algorithms_5track_22_pack_cams_fast_tuples_6genexpr(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_genexpr_arg_0) {
-  struct __pyx_obj_10algorithms_5track___pyx_scope_struct_2_genexpr *__pyx_cur_scope;
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_22_pack_cams_fast_tuples_6genexpr(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_genexpr_arg_0) {
+  struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr *__pyx_cur_scope;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("genexpr", 0);
-  __pyx_cur_scope = (struct __pyx_obj_10algorithms_5track___pyx_scope_struct_2_genexpr *)__pyx_tp_new_10algorithms_5track___pyx_scope_struct_2_genexpr(__pyx_mstate_global->__pyx_ptype_10algorithms_5track___pyx_scope_struct_2_genexpr, __pyx_mstate_global->__pyx_empty_tuple, NULL);
+  __pyx_cur_scope = (struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr *)__pyx_tp_new_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr(__pyx_mstate_global->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr, __pyx_mstate_global->__pyx_empty_tuple, NULL);
   if (unlikely(!__pyx_cur_scope)) {
-    __pyx_cur_scope = ((struct __pyx_obj_10algorithms_5track___pyx_scope_struct_2_genexpr *)Py_None);
+    __pyx_cur_scope = ((struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr *)Py_None);
     __Pyx_INCREF(Py_None);
     __PYX_ERR(0, 64, __pyx_L1_error)
   } else {
@@ -4760,7 +4760,7 @@ static PyObject *__pyx_pf_10algorithms_5track_22_pack_cams_fast_tuples_6genexpr(
   __Pyx_INCREF(__pyx_cur_scope->__pyx_genexpr_arg_0);
   __Pyx_GIVEREF(__pyx_cur_scope->__pyx_genexpr_arg_0);
   {
-    __pyx_CoroutineObject *gen = __Pyx_Generator_New((__pyx_coroutine_body_t) __pyx_gb_10algorithms_5track_22_pack_cams_fast_tuples_8generator2, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[2]), (PyObject *) __pyx_cur_scope, __pyx_mstate_global->__pyx_n_u_genexpr, __pyx_mstate_global->__pyx_n_u_pack_cams_fast_tuples_locals_ge, __pyx_mstate_global->__pyx_n_u_algorithms_track); if (unlikely(!gen)) __PYX_ERR(0, 64, __pyx_L1_error)
+    __pyx_CoroutineObject *gen = __Pyx_Generator_New((__pyx_coroutine_body_t) __pyx_gb_8openptv2_10algorithms_5track_22_pack_cams_fast_tuples_8generator2, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[2]), (PyObject *) __pyx_cur_scope, __pyx_mstate_global->__pyx_n_u_genexpr, __pyx_mstate_global->__pyx_n_u_pack_cams_fast_tuples_locals_ge, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_track); if (unlikely(!gen)) __PYX_ERR(0, 64, __pyx_L1_error)
     __Pyx_DECREF(__pyx_cur_scope);
     __Pyx_RefNannyFinishContext();
     return (PyObject *) gen;
@@ -4768,7 +4768,7 @@ static PyObject *__pyx_pf_10algorithms_5track_22_pack_cams_fast_tuples_6genexpr(
 
   /* function exit code */
   __pyx_L1_error:;
-  __Pyx_AddTraceback("algorithms.track._pack_cams_fast_tuples.genexpr", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track._pack_cams_fast_tuples.genexpr", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __Pyx_DECREF((PyObject *)__pyx_cur_scope);
   __Pyx_XGIVEREF(__pyx_r);
@@ -4776,9 +4776,9 @@ static PyObject *__pyx_pf_10algorithms_5track_22_pack_cams_fast_tuples_6genexpr(
   return __pyx_r;
 }
 
-static PyObject *__pyx_gb_10algorithms_5track_22_pack_cams_fast_tuples_8generator2(__pyx_CoroutineObject *__pyx_generator, CYTHON_UNUSED PyThreadState *__pyx_tstate, PyObject *__pyx_sent_value) /* generator body */
+static PyObject *__pyx_gb_8openptv2_10algorithms_5track_22_pack_cams_fast_tuples_8generator2(__pyx_CoroutineObject *__pyx_generator, CYTHON_UNUSED PyThreadState *__pyx_tstate, PyObject *__pyx_sent_value) /* generator body */
 {
-  struct __pyx_obj_10algorithms_5track___pyx_scope_struct_2_genexpr *__pyx_cur_scope = ((struct __pyx_obj_10algorithms_5track___pyx_scope_struct_2_genexpr *)__pyx_generator->closure);
+  struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr *__pyx_cur_scope = ((struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr *)__pyx_generator->closure);
   PyObject *__pyx_r = NULL;
   PyObject *__pyx_t_1 = NULL;
   Py_ssize_t __pyx_t_2;
@@ -4900,9 +4900,9 @@ static PyObject *__pyx_gb_10algorithms_5track_22_pack_cams_fast_tuples_8generato
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
-static PyObject *__pyx_gb_10algorithms_5track_22_pack_cams_fast_tuples_11generator3(__pyx_CoroutineObject *__pyx_generator, CYTHON_UNUSED PyThreadState *__pyx_tstate, PyObject *__pyx_sent_value); /* proto */
+static PyObject *__pyx_gb_8openptv2_10algorithms_5track_22_pack_cams_fast_tuples_11generator3(__pyx_CoroutineObject *__pyx_generator, CYTHON_UNUSED PyThreadState *__pyx_tstate, PyObject *__pyx_sent_value); /* proto */
 
-/* "algorithms/track.py":65
+/* "openptv2/algorithms/track.py":65
  *         tuple(m[1] for m in fast_mmluts),
  *         tuple(m[2] for m in fast_mmluts),
  *         tuple(m[3] for m in fast_mmluts),             # <<<<<<<<<<<<<<
@@ -4910,17 +4910,17 @@ static PyObject *__pyx_gb_10algorithms_5track_22_pack_cams_fast_tuples_11generat
  *     )
 */
 
-static PyObject *__pyx_pf_10algorithms_5track_22_pack_cams_fast_tuples_9genexpr(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_genexpr_arg_0) {
-  struct __pyx_obj_10algorithms_5track___pyx_scope_struct_3_genexpr *__pyx_cur_scope;
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_22_pack_cams_fast_tuples_9genexpr(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_genexpr_arg_0) {
+  struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr *__pyx_cur_scope;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("genexpr", 0);
-  __pyx_cur_scope = (struct __pyx_obj_10algorithms_5track___pyx_scope_struct_3_genexpr *)__pyx_tp_new_10algorithms_5track___pyx_scope_struct_3_genexpr(__pyx_mstate_global->__pyx_ptype_10algorithms_5track___pyx_scope_struct_3_genexpr, __pyx_mstate_global->__pyx_empty_tuple, NULL);
+  __pyx_cur_scope = (struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr *)__pyx_tp_new_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr(__pyx_mstate_global->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr, __pyx_mstate_global->__pyx_empty_tuple, NULL);
   if (unlikely(!__pyx_cur_scope)) {
-    __pyx_cur_scope = ((struct __pyx_obj_10algorithms_5track___pyx_scope_struct_3_genexpr *)Py_None);
+    __pyx_cur_scope = ((struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr *)Py_None);
     __Pyx_INCREF(Py_None);
     __PYX_ERR(0, 65, __pyx_L1_error)
   } else {
@@ -4930,7 +4930,7 @@ static PyObject *__pyx_pf_10algorithms_5track_22_pack_cams_fast_tuples_9genexpr(
   __Pyx_INCREF(__pyx_cur_scope->__pyx_genexpr_arg_0);
   __Pyx_GIVEREF(__pyx_cur_scope->__pyx_genexpr_arg_0);
   {
-    __pyx_CoroutineObject *gen = __Pyx_Generator_New((__pyx_coroutine_body_t) __pyx_gb_10algorithms_5track_22_pack_cams_fast_tuples_11generator3, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[3]), (PyObject *) __pyx_cur_scope, __pyx_mstate_global->__pyx_n_u_genexpr, __pyx_mstate_global->__pyx_n_u_pack_cams_fast_tuples_locals_ge, __pyx_mstate_global->__pyx_n_u_algorithms_track); if (unlikely(!gen)) __PYX_ERR(0, 65, __pyx_L1_error)
+    __pyx_CoroutineObject *gen = __Pyx_Generator_New((__pyx_coroutine_body_t) __pyx_gb_8openptv2_10algorithms_5track_22_pack_cams_fast_tuples_11generator3, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[3]), (PyObject *) __pyx_cur_scope, __pyx_mstate_global->__pyx_n_u_genexpr, __pyx_mstate_global->__pyx_n_u_pack_cams_fast_tuples_locals_ge, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_track); if (unlikely(!gen)) __PYX_ERR(0, 65, __pyx_L1_error)
     __Pyx_DECREF(__pyx_cur_scope);
     __Pyx_RefNannyFinishContext();
     return (PyObject *) gen;
@@ -4938,7 +4938,7 @@ static PyObject *__pyx_pf_10algorithms_5track_22_pack_cams_fast_tuples_9genexpr(
 
   /* function exit code */
   __pyx_L1_error:;
-  __Pyx_AddTraceback("algorithms.track._pack_cams_fast_tuples.genexpr", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track._pack_cams_fast_tuples.genexpr", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __Pyx_DECREF((PyObject *)__pyx_cur_scope);
   __Pyx_XGIVEREF(__pyx_r);
@@ -4946,9 +4946,9 @@ static PyObject *__pyx_pf_10algorithms_5track_22_pack_cams_fast_tuples_9genexpr(
   return __pyx_r;
 }
 
-static PyObject *__pyx_gb_10algorithms_5track_22_pack_cams_fast_tuples_11generator3(__pyx_CoroutineObject *__pyx_generator, CYTHON_UNUSED PyThreadState *__pyx_tstate, PyObject *__pyx_sent_value) /* generator body */
+static PyObject *__pyx_gb_8openptv2_10algorithms_5track_22_pack_cams_fast_tuples_11generator3(__pyx_CoroutineObject *__pyx_generator, CYTHON_UNUSED PyThreadState *__pyx_tstate, PyObject *__pyx_sent_value) /* generator body */
 {
-  struct __pyx_obj_10algorithms_5track___pyx_scope_struct_3_genexpr *__pyx_cur_scope = ((struct __pyx_obj_10algorithms_5track___pyx_scope_struct_3_genexpr *)__pyx_generator->closure);
+  struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr *__pyx_cur_scope = ((struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr *)__pyx_generator->closure);
   PyObject *__pyx_r = NULL;
   PyObject *__pyx_t_1 = NULL;
   Py_ssize_t __pyx_t_2;
@@ -5070,9 +5070,9 @@ static PyObject *__pyx_gb_10algorithms_5track_22_pack_cams_fast_tuples_11generat
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
-static PyObject *__pyx_gb_10algorithms_5track_22_pack_cams_fast_tuples_14generator4(__pyx_CoroutineObject *__pyx_generator, CYTHON_UNUSED PyThreadState *__pyx_tstate, PyObject *__pyx_sent_value); /* proto */
+static PyObject *__pyx_gb_8openptv2_10algorithms_5track_22_pack_cams_fast_tuples_14generator4(__pyx_CoroutineObject *__pyx_generator, CYTHON_UNUSED PyThreadState *__pyx_tstate, PyObject *__pyx_sent_value); /* proto */
 
-/* "algorithms/track.py":66
+/* "openptv2/algorithms/track.py":66
  *         tuple(m[2] for m in fast_mmluts),
  *         tuple(m[3] for m in fast_mmluts),
  *         tuple(m[4] for m in fast_mmluts),             # <<<<<<<<<<<<<<
@@ -5080,17 +5080,17 @@ static PyObject *__pyx_gb_10algorithms_5track_22_pack_cams_fast_tuples_14generat
  * 
 */
 
-static PyObject *__pyx_pf_10algorithms_5track_22_pack_cams_fast_tuples_12genexpr(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_genexpr_arg_0) {
-  struct __pyx_obj_10algorithms_5track___pyx_scope_struct_4_genexpr *__pyx_cur_scope;
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_22_pack_cams_fast_tuples_12genexpr(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_genexpr_arg_0) {
+  struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr *__pyx_cur_scope;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("genexpr", 0);
-  __pyx_cur_scope = (struct __pyx_obj_10algorithms_5track___pyx_scope_struct_4_genexpr *)__pyx_tp_new_10algorithms_5track___pyx_scope_struct_4_genexpr(__pyx_mstate_global->__pyx_ptype_10algorithms_5track___pyx_scope_struct_4_genexpr, __pyx_mstate_global->__pyx_empty_tuple, NULL);
+  __pyx_cur_scope = (struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr *)__pyx_tp_new_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr(__pyx_mstate_global->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr, __pyx_mstate_global->__pyx_empty_tuple, NULL);
   if (unlikely(!__pyx_cur_scope)) {
-    __pyx_cur_scope = ((struct __pyx_obj_10algorithms_5track___pyx_scope_struct_4_genexpr *)Py_None);
+    __pyx_cur_scope = ((struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr *)Py_None);
     __Pyx_INCREF(Py_None);
     __PYX_ERR(0, 66, __pyx_L1_error)
   } else {
@@ -5100,7 +5100,7 @@ static PyObject *__pyx_pf_10algorithms_5track_22_pack_cams_fast_tuples_12genexpr
   __Pyx_INCREF(__pyx_cur_scope->__pyx_genexpr_arg_0);
   __Pyx_GIVEREF(__pyx_cur_scope->__pyx_genexpr_arg_0);
   {
-    __pyx_CoroutineObject *gen = __Pyx_Generator_New((__pyx_coroutine_body_t) __pyx_gb_10algorithms_5track_22_pack_cams_fast_tuples_14generator4, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[4]), (PyObject *) __pyx_cur_scope, __pyx_mstate_global->__pyx_n_u_genexpr, __pyx_mstate_global->__pyx_n_u_pack_cams_fast_tuples_locals_ge, __pyx_mstate_global->__pyx_n_u_algorithms_track); if (unlikely(!gen)) __PYX_ERR(0, 66, __pyx_L1_error)
+    __pyx_CoroutineObject *gen = __Pyx_Generator_New((__pyx_coroutine_body_t) __pyx_gb_8openptv2_10algorithms_5track_22_pack_cams_fast_tuples_14generator4, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[4]), (PyObject *) __pyx_cur_scope, __pyx_mstate_global->__pyx_n_u_genexpr, __pyx_mstate_global->__pyx_n_u_pack_cams_fast_tuples_locals_ge, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_track); if (unlikely(!gen)) __PYX_ERR(0, 66, __pyx_L1_error)
     __Pyx_DECREF(__pyx_cur_scope);
     __Pyx_RefNannyFinishContext();
     return (PyObject *) gen;
@@ -5108,7 +5108,7 @@ static PyObject *__pyx_pf_10algorithms_5track_22_pack_cams_fast_tuples_12genexpr
 
   /* function exit code */
   __pyx_L1_error:;
-  __Pyx_AddTraceback("algorithms.track._pack_cams_fast_tuples.genexpr", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track._pack_cams_fast_tuples.genexpr", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __Pyx_DECREF((PyObject *)__pyx_cur_scope);
   __Pyx_XGIVEREF(__pyx_r);
@@ -5116,9 +5116,9 @@ static PyObject *__pyx_pf_10algorithms_5track_22_pack_cams_fast_tuples_12genexpr
   return __pyx_r;
 }
 
-static PyObject *__pyx_gb_10algorithms_5track_22_pack_cams_fast_tuples_14generator4(__pyx_CoroutineObject *__pyx_generator, CYTHON_UNUSED PyThreadState *__pyx_tstate, PyObject *__pyx_sent_value) /* generator body */
+static PyObject *__pyx_gb_8openptv2_10algorithms_5track_22_pack_cams_fast_tuples_14generator4(__pyx_CoroutineObject *__pyx_generator, CYTHON_UNUSED PyThreadState *__pyx_tstate, PyObject *__pyx_sent_value) /* generator body */
 {
-  struct __pyx_obj_10algorithms_5track___pyx_scope_struct_4_genexpr *__pyx_cur_scope = ((struct __pyx_obj_10algorithms_5track___pyx_scope_struct_4_genexpr *)__pyx_generator->closure);
+  struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr *__pyx_cur_scope = ((struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr *)__pyx_generator->closure);
   PyObject *__pyx_r = NULL;
   PyObject *__pyx_t_1 = NULL;
   Py_ssize_t __pyx_t_2;
@@ -5241,7 +5241,7 @@ static PyObject *__pyx_gb_10algorithms_5track_22_pack_cams_fast_tuples_14generat
   return __pyx_r;
 }
 
-/* "algorithms/track.py":58
+/* "openptv2/algorithms/track.py":58
  * 
  * 
  * def _pack_cams_fast_tuples(fast_cals, fast_mmluts):             # <<<<<<<<<<<<<<
@@ -5249,12 +5249,12 @@ static PyObject *__pyx_gb_10algorithms_5track_22_pack_cams_fast_tuples_14generat
  *     return (
 */
 
-static PyObject *__pyx_pf_10algorithms_5track_4_pack_cams_fast_tuples(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_fast_cals, PyObject *__pyx_v_fast_mmluts) {
-  PyObject *__pyx_gb_10algorithms_5track_22_pack_cams_fast_tuples_2generator = 0;
-  PyObject *__pyx_gb_10algorithms_5track_22_pack_cams_fast_tuples_5generator1 = 0;
-  PyObject *__pyx_gb_10algorithms_5track_22_pack_cams_fast_tuples_8generator2 = 0;
-  PyObject *__pyx_gb_10algorithms_5track_22_pack_cams_fast_tuples_11generator3 = 0;
-  PyObject *__pyx_gb_10algorithms_5track_22_pack_cams_fast_tuples_14generator4 = 0;
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_4_pack_cams_fast_tuples(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_fast_cals, PyObject *__pyx_v_fast_mmluts) {
+  PyObject *__pyx_gb_8openptv2_10algorithms_5track_22_pack_cams_fast_tuples_2generator = 0;
+  PyObject *__pyx_gb_8openptv2_10algorithms_5track_22_pack_cams_fast_tuples_5generator1 = 0;
+  PyObject *__pyx_gb_8openptv2_10algorithms_5track_22_pack_cams_fast_tuples_8generator2 = 0;
+  PyObject *__pyx_gb_8openptv2_10algorithms_5track_22_pack_cams_fast_tuples_11generator3 = 0;
+  PyObject *__pyx_gb_8openptv2_10algorithms_5track_22_pack_cams_fast_tuples_14generator4 = 0;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -5269,7 +5269,7 @@ static PyObject *__pyx_pf_10algorithms_5track_4_pack_cams_fast_tuples(CYTHON_UNU
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("_pack_cams_fast_tuples", 0);
 
-  /* "algorithms/track.py":60
+  /* "openptv2/algorithms/track.py":60
  * def _pack_cams_fast_tuples(fast_cals, fast_mmluts):
  *     """Convert lists to tuples for searchquader_fast."""
  *     return (             # <<<<<<<<<<<<<<
@@ -5278,7 +5278,7 @@ static PyObject *__pyx_pf_10algorithms_5track_4_pack_cams_fast_tuples(CYTHON_UNU
 */
   __Pyx_XDECREF(__pyx_r);
 
-  /* "algorithms/track.py":61
+  /* "openptv2/algorithms/track.py":61
  *     """Convert lists to tuples for searchquader_fast."""
  *     return (
  *         tuple(fast_cals),             # <<<<<<<<<<<<<<
@@ -5288,72 +5288,72 @@ static PyObject *__pyx_pf_10algorithms_5track_4_pack_cams_fast_tuples(CYTHON_UNU
   __pyx_t_1 = __Pyx_PySequence_Tuple(__pyx_v_fast_cals); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 61, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
 
-  /* "algorithms/track.py":62
+  /* "openptv2/algorithms/track.py":62
  *     return (
  *         tuple(fast_cals),
  *         tuple(m[0] for m in fast_mmluts),             # <<<<<<<<<<<<<<
  *         tuple(m[1] for m in fast_mmluts),
  *         tuple(m[2] for m in fast_mmluts),
 */
-  __pyx_t_2 = __pyx_pf_10algorithms_5track_22_pack_cams_fast_tuples_genexpr(NULL, __pyx_v_fast_mmluts); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 62, __pyx_L1_error)
+  __pyx_t_2 = __pyx_pf_8openptv2_10algorithms_5track_22_pack_cams_fast_tuples_genexpr(NULL, __pyx_v_fast_mmluts); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 62, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_3 = __Pyx_PySequence_Tuple(__pyx_t_2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 62, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/track.py":63
+  /* "openptv2/algorithms/track.py":63
  *         tuple(fast_cals),
  *         tuple(m[0] for m in fast_mmluts),
  *         tuple(m[1] for m in fast_mmluts),             # <<<<<<<<<<<<<<
  *         tuple(m[2] for m in fast_mmluts),
  *         tuple(m[3] for m in fast_mmluts),
 */
-  __pyx_t_2 = __pyx_pf_10algorithms_5track_22_pack_cams_fast_tuples_3genexpr(NULL, __pyx_v_fast_mmluts); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 63, __pyx_L1_error)
+  __pyx_t_2 = __pyx_pf_8openptv2_10algorithms_5track_22_pack_cams_fast_tuples_3genexpr(NULL, __pyx_v_fast_mmluts); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 63, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_4 = __Pyx_PySequence_Tuple(__pyx_t_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 63, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/track.py":64
+  /* "openptv2/algorithms/track.py":64
  *         tuple(m[0] for m in fast_mmluts),
  *         tuple(m[1] for m in fast_mmluts),
  *         tuple(m[2] for m in fast_mmluts),             # <<<<<<<<<<<<<<
  *         tuple(m[3] for m in fast_mmluts),
  *         tuple(m[4] for m in fast_mmluts),
 */
-  __pyx_t_2 = __pyx_pf_10algorithms_5track_22_pack_cams_fast_tuples_6genexpr(NULL, __pyx_v_fast_mmluts); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 64, __pyx_L1_error)
+  __pyx_t_2 = __pyx_pf_8openptv2_10algorithms_5track_22_pack_cams_fast_tuples_6genexpr(NULL, __pyx_v_fast_mmluts); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 64, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_5 = __Pyx_PySequence_Tuple(__pyx_t_2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 64, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/track.py":65
+  /* "openptv2/algorithms/track.py":65
  *         tuple(m[1] for m in fast_mmluts),
  *         tuple(m[2] for m in fast_mmluts),
  *         tuple(m[3] for m in fast_mmluts),             # <<<<<<<<<<<<<<
  *         tuple(m[4] for m in fast_mmluts),
  *     )
 */
-  __pyx_t_2 = __pyx_pf_10algorithms_5track_22_pack_cams_fast_tuples_9genexpr(NULL, __pyx_v_fast_mmluts); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 65, __pyx_L1_error)
+  __pyx_t_2 = __pyx_pf_8openptv2_10algorithms_5track_22_pack_cams_fast_tuples_9genexpr(NULL, __pyx_v_fast_mmluts); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 65, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_6 = __Pyx_PySequence_Tuple(__pyx_t_2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 65, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/track.py":66
+  /* "openptv2/algorithms/track.py":66
  *         tuple(m[2] for m in fast_mmluts),
  *         tuple(m[3] for m in fast_mmluts),
  *         tuple(m[4] for m in fast_mmluts),             # <<<<<<<<<<<<<<
  *     )
  * 
 */
-  __pyx_t_2 = __pyx_pf_10algorithms_5track_22_pack_cams_fast_tuples_12genexpr(NULL, __pyx_v_fast_mmluts); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 66, __pyx_L1_error)
+  __pyx_t_2 = __pyx_pf_8openptv2_10algorithms_5track_22_pack_cams_fast_tuples_12genexpr(NULL, __pyx_v_fast_mmluts); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 66, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_7 = __Pyx_PySequence_Tuple(__pyx_t_2); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 66, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/track.py":61
+  /* "openptv2/algorithms/track.py":61
  *     """Convert lists to tuples for searchquader_fast."""
  *     return (
  *         tuple(fast_cals),             # <<<<<<<<<<<<<<
@@ -5384,7 +5384,7 @@ static PyObject *__pyx_pf_10algorithms_5track_4_pack_cams_fast_tuples(CYTHON_UNU
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/track.py":58
+  /* "openptv2/algorithms/track.py":58
  * 
  * 
  * def _pack_cams_fast_tuples(fast_cals, fast_mmluts):             # <<<<<<<<<<<<<<
@@ -5401,20 +5401,20 @@ static PyObject *__pyx_pf_10algorithms_5track_4_pack_cams_fast_tuples(CYTHON_UNU
   __Pyx_XDECREF(__pyx_t_5);
   __Pyx_XDECREF(__pyx_t_6);
   __Pyx_XDECREF(__pyx_t_7);
-  __Pyx_AddTraceback("algorithms.track._pack_cams_fast_tuples", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track._pack_cams_fast_tuples", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
-  __Pyx_XDECREF(__pyx_gb_10algorithms_5track_22_pack_cams_fast_tuples_2generator);
-  __Pyx_XDECREF(__pyx_gb_10algorithms_5track_22_pack_cams_fast_tuples_5generator1);
-  __Pyx_XDECREF(__pyx_gb_10algorithms_5track_22_pack_cams_fast_tuples_8generator2);
-  __Pyx_XDECREF(__pyx_gb_10algorithms_5track_22_pack_cams_fast_tuples_11generator3);
-  __Pyx_XDECREF(__pyx_gb_10algorithms_5track_22_pack_cams_fast_tuples_14generator4);
+  __Pyx_XDECREF(__pyx_gb_8openptv2_10algorithms_5track_22_pack_cams_fast_tuples_2generator);
+  __Pyx_XDECREF(__pyx_gb_8openptv2_10algorithms_5track_22_pack_cams_fast_tuples_5generator1);
+  __Pyx_XDECREF(__pyx_gb_8openptv2_10algorithms_5track_22_pack_cams_fast_tuples_8generator2);
+  __Pyx_XDECREF(__pyx_gb_8openptv2_10algorithms_5track_22_pack_cams_fast_tuples_11generator3);
+  __Pyx_XDECREF(__pyx_gb_8openptv2_10algorithms_5track_22_pack_cams_fast_tuples_14generator4);
   __Pyx_XGIVEREF(__pyx_r);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-/* "algorithms/track.py":70
+/* "openptv2/algorithms/track.py":70
  * 
  * 
  * def _ptp_fast(pos, cal_arr, mmlut_tup, imx_half, imy_half, inv_pix_x, inv_pix_y, chfield):             # <<<<<<<<<<<<<<
@@ -5423,16 +5423,16 @@ static PyObject *__pyx_pf_10algorithms_5track_4_pack_cams_fast_tuples(CYTHON_UNU
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_5track_7_ptp_fast(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_7_ptp_fast(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_5track_6_ptp_fast, "Call the compiled kernel with pre-packed arrays.");
-static PyMethodDef __pyx_mdef_10algorithms_5track_7_ptp_fast = {"_ptp_fast", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_5track_7_ptp_fast, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_5track_6_ptp_fast};
-static PyObject *__pyx_pw_10algorithms_5track_7_ptp_fast(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_5track_6_ptp_fast, "Call the compiled kernel with pre-packed arrays.");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_5track_7_ptp_fast = {"_ptp_fast", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_5track_7_ptp_fast, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_5track_6_ptp_fast};
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_7_ptp_fast(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -5550,11 +5550,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.track._ptp_fast", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track._ptp_fast", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_5track_6_ptp_fast(__pyx_self, __pyx_v_pos, __pyx_v_cal_arr, __pyx_v_mmlut_tup, __pyx_v_imx_half, __pyx_v_imy_half, __pyx_v_inv_pix_x, __pyx_v_inv_pix_y, __pyx_v_chfield);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_5track_6_ptp_fast(__pyx_self, __pyx_v_pos, __pyx_v_cal_arr, __pyx_v_mmlut_tup, __pyx_v_imx_half, __pyx_v_imy_half, __pyx_v_inv_pix_x, __pyx_v_inv_pix_y, __pyx_v_chfield);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -5564,7 +5564,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_5track_6_ptp_fast(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_pos, PyObject *__pyx_v_cal_arr, PyObject *__pyx_v_mmlut_tup, PyObject *__pyx_v_imx_half, PyObject *__pyx_v_imy_half, PyObject *__pyx_v_inv_pix_x, PyObject *__pyx_v_inv_pix_y, PyObject *__pyx_v_chfield) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_6_ptp_fast(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_pos, PyObject *__pyx_v_cal_arr, PyObject *__pyx_v_mmlut_tup, PyObject *__pyx_v_imx_half, PyObject *__pyx_v_imy_half, PyObject *__pyx_v_inv_pix_x, PyObject *__pyx_v_inv_pix_y, PyObject *__pyx_v_chfield) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -5581,7 +5581,7 @@ static PyObject *__pyx_pf_10algorithms_5track_6_ptp_fast(CYTHON_UNUSED PyObject 
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("_ptp_fast", 0);
 
-  /* "algorithms/track.py":72
+  /* "openptv2/algorithms/track.py":72
  * def _ptp_fast(pos, cal_arr, mmlut_tup, imx_half, imy_half, inv_pix_x, inv_pix_y, chfield):
  *     """Call the compiled kernel with pre-packed arrays."""
  *     return _point_to_pixel_fast(             # <<<<<<<<<<<<<<
@@ -5593,7 +5593,7 @@ static PyObject *__pyx_pf_10algorithms_5track_6_ptp_fast(CYTHON_UNUSED PyObject 
   __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_mstate_global->__pyx_n_u_point_to_pixel_fast); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 72, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
 
-  /* "algorithms/track.py":73
+  /* "openptv2/algorithms/track.py":73
  *     """Call the compiled kernel with pre-packed arrays."""
  *     return _point_to_pixel_fast(
  *         pos, cal_arr, mmlut_tup[0], mmlut_tup[1],             # <<<<<<<<<<<<<<
@@ -5605,7 +5605,7 @@ static PyObject *__pyx_pf_10algorithms_5track_6_ptp_fast(CYTHON_UNUSED PyObject 
   __pyx_t_5 = __Pyx_GetItemInt(__pyx_v_mmlut_tup, 1, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_FunctionArgument); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 73, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
 
-  /* "algorithms/track.py":74
+  /* "openptv2/algorithms/track.py":74
  *     return _point_to_pixel_fast(
  *         pos, cal_arr, mmlut_tup[0], mmlut_tup[1],
  *         mmlut_tup[2], mmlut_tup[3], mmlut_tup[4],             # <<<<<<<<<<<<<<
@@ -5619,7 +5619,7 @@ static PyObject *__pyx_pf_10algorithms_5track_6_ptp_fast(CYTHON_UNUSED PyObject 
   __pyx_t_8 = __Pyx_GetItemInt(__pyx_v_mmlut_tup, 4, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_FunctionArgument); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 74, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
 
-  /* "algorithms/track.py":75
+  /* "openptv2/algorithms/track.py":75
  *         pos, cal_arr, mmlut_tup[0], mmlut_tup[1],
  *         mmlut_tup[2], mmlut_tup[3], mmlut_tup[4],
  *         imx_half, imy_half, inv_pix_x, inv_pix_y, chfield,             # <<<<<<<<<<<<<<
@@ -5655,7 +5655,7 @@ static PyObject *__pyx_pf_10algorithms_5track_6_ptp_fast(CYTHON_UNUSED PyObject 
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/track.py":70
+  /* "openptv2/algorithms/track.py":70
  * 
  * 
  * def _ptp_fast(pos, cal_arr, mmlut_tup, imx_half, imy_half, inv_pix_x, inv_pix_y, chfield):             # <<<<<<<<<<<<<<
@@ -5673,7 +5673,7 @@ static PyObject *__pyx_pf_10algorithms_5track_6_ptp_fast(CYTHON_UNUSED PyObject 
   __Pyx_XDECREF(__pyx_t_6);
   __Pyx_XDECREF(__pyx_t_7);
   __Pyx_XDECREF(__pyx_t_8);
-  __Pyx_AddTraceback("algorithms.track._ptp_fast", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track._ptp_fast", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -5681,7 +5681,7 @@ static PyObject *__pyx_pf_10algorithms_5track_6_ptp_fast(CYTHON_UNUSED PyObject 
   return __pyx_r;
 }
 
-/* "algorithms/track.py":79
+/* "openptv2/algorithms/track.py":79
  * 
  * 
  * def _pack_cal(cal, mm):             # <<<<<<<<<<<<<<
@@ -5690,16 +5690,16 @@ static PyObject *__pyx_pf_10algorithms_5track_6_ptp_fast(CYTHON_UNUSED PyObject 
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_5track_9_pack_cal(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_9_pack_cal(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_5track_8_pack_cal, "Pre-extract calibration fields into a tuple for fast access.");
-static PyMethodDef __pyx_mdef_10algorithms_5track_9_pack_cal = {"_pack_cal", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_5track_9_pack_cal, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_5track_8_pack_cal};
-static PyObject *__pyx_pw_10algorithms_5track_9_pack_cal(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_5track_8_pack_cal, "Pre-extract calibration fields into a tuple for fast access.");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_5track_9_pack_cal = {"_pack_cal", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_5track_9_pack_cal, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_5track_8_pack_cal};
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_9_pack_cal(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -5769,11 +5769,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.track._pack_cal", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track._pack_cal", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_5track_8_pack_cal(__pyx_self, __pyx_v_cal, __pyx_v_mm);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_5track_8_pack_cal(__pyx_self, __pyx_v_cal, __pyx_v_mm);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -5783,7 +5783,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_5track_8_pack_cal(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cal, PyObject *__pyx_v_mm) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_8_pack_cal(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cal, PyObject *__pyx_v_mm) {
   PyObject *__pyx_v_ext = NULL;
   PyObject *__pyx_v_ip = NULL;
   PyObject *__pyx_v_gp = NULL;
@@ -5837,7 +5837,7 @@ static PyObject *__pyx_pf_10algorithms_5track_8_pack_cal(CYTHON_UNUSED PyObject 
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("_pack_cal", 0);
 
-  /* "algorithms/track.py":81
+  /* "openptv2/algorithms/track.py":81
  * def _pack_cal(cal, mm):
  *     """Pre-extract calibration fields into a tuple for fast access."""
  *     ext = cal.ext_par; ip = cal.int_par; gp = cal.glass_par; ap = cal.added_par             # <<<<<<<<<<<<<<
@@ -5861,7 +5861,7 @@ static PyObject *__pyx_pf_10algorithms_5track_8_pack_cal(CYTHON_UNUSED PyObject 
   __pyx_v_ap = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/track.py":82
+  /* "openptv2/algorithms/track.py":82
  *     """Pre-extract calibration fields into a tuple for fast access."""
  *     ext = cal.ext_par; ip = cal.int_par; gp = cal.glass_par; ap = cal.added_par
  *     gx = gp.vec_x; gy = gp.vec_y; gz = gp.vec_z             # <<<<<<<<<<<<<<
@@ -5881,7 +5881,7 @@ static PyObject *__pyx_pf_10algorithms_5track_8_pack_cal(CYTHON_UNUSED PyObject 
   __pyx_v_gz = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/track.py":83
+  /* "openptv2/algorithms/track.py":83
  *     ext = cal.ext_par; ip = cal.int_par; gp = cal.glass_par; ap = cal.added_par
  *     gx = gp.vec_x; gy = gp.vec_y; gz = gp.vec_z
  *     dist_o_glas = c_sqrt(gx * gx + gy * gy + gz * gz)             # <<<<<<<<<<<<<<
@@ -5906,7 +5906,7 @@ static PyObject *__pyx_pf_10algorithms_5track_8_pack_cal(CYTHON_UNUSED PyObject 
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_dist_o_glas = sqrt(__pyx_t_4);
 
-  /* "algorithms/track.py":84
+  /* "openptv2/algorithms/track.py":84
  *     gx = gp.vec_x; gy = gp.vec_y; gz = gp.vec_z
  *     dist_o_glas = c_sqrt(gx * gx + gy * gy + gz * gz)
  *     inv_dog = 1.0 / dist_o_glas             # <<<<<<<<<<<<<<
@@ -5915,7 +5915,7 @@ static PyObject *__pyx_pf_10algorithms_5track_8_pack_cal(CYTHON_UNUSED PyObject 
 */
   __pyx_v_inv_dog = (1.0 / __pyx_v_dist_o_glas);
 
-  /* "algorithms/track.py":85
+  /* "openptv2/algorithms/track.py":85
  *     dist_o_glas = c_sqrt(gx * gx + gy * gy + gz * gz)
  *     inv_dog = 1.0 / dist_o_glas
  *     mmlut = cal.mmlut             # <<<<<<<<<<<<<<
@@ -5927,7 +5927,7 @@ static PyObject *__pyx_pf_10algorithms_5track_8_pack_cal(CYTHON_UNUSED PyObject 
   __pyx_v_mmlut = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/track.py":86
+  /* "openptv2/algorithms/track.py":86
  *     inv_dog = 1.0 / dist_o_glas
  *     mmlut = cal.mmlut
  *     mmlut_data = mmlut.data             # <<<<<<<<<<<<<<
@@ -5939,7 +5939,7 @@ static PyObject *__pyx_pf_10algorithms_5track_8_pack_cal(CYTHON_UNUSED PyObject 
   __pyx_v_mmlut_data = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/track.py":87
+  /* "openptv2/algorithms/track.py":87
  *     mmlut = cal.mmlut
  *     mmlut_data = mmlut.data
  *     return (             # <<<<<<<<<<<<<<
@@ -5948,7 +5948,7 @@ static PyObject *__pyx_pf_10algorithms_5track_8_pack_cal(CYTHON_UNUSED PyObject 
 */
   __Pyx_XDECREF(__pyx_r);
 
-  /* "algorithms/track.py":88
+  /* "openptv2/algorithms/track.py":88
  *     mmlut_data = mmlut.data
  *     return (
  *         ext.x0, ext.y0, ext.z0,             # <<<<<<<<<<<<<<
@@ -5962,7 +5962,7 @@ static PyObject *__pyx_pf_10algorithms_5track_8_pack_cal(CYTHON_UNUSED PyObject 
   __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_ext, __pyx_mstate_global->__pyx_n_u_z0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 88, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
 
-  /* "algorithms/track.py":89
+  /* "openptv2/algorithms/track.py":89
  *     return (
  *         ext.x0, ext.y0, ext.z0,
  *         ext.dm[0, 0], ext.dm[1, 0], ext.dm[2, 0],             # <<<<<<<<<<<<<<
@@ -5985,7 +5985,7 @@ static PyObject *__pyx_pf_10algorithms_5track_8_pack_cal(CYTHON_UNUSED PyObject 
   __Pyx_GOTREF(__pyx_t_8);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "algorithms/track.py":90
+  /* "openptv2/algorithms/track.py":90
  *         ext.x0, ext.y0, ext.z0,
  *         ext.dm[0, 0], ext.dm[1, 0], ext.dm[2, 0],
  *         ext.dm[0, 1], ext.dm[1, 1], ext.dm[2, 1],             # <<<<<<<<<<<<<<
@@ -6008,7 +6008,7 @@ static PyObject *__pyx_pf_10algorithms_5track_8_pack_cal(CYTHON_UNUSED PyObject 
   __Pyx_GOTREF(__pyx_t_11);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "algorithms/track.py":91
+  /* "openptv2/algorithms/track.py":91
  *         ext.dm[0, 0], ext.dm[1, 0], ext.dm[2, 0],
  *         ext.dm[0, 1], ext.dm[1, 1], ext.dm[2, 1],
  *         ext.dm[0, 2], ext.dm[1, 2], ext.dm[2, 2],             # <<<<<<<<<<<<<<
@@ -6031,7 +6031,7 @@ static PyObject *__pyx_pf_10algorithms_5track_8_pack_cal(CYTHON_UNUSED PyObject 
   __Pyx_GOTREF(__pyx_t_14);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "algorithms/track.py":92
+  /* "openptv2/algorithms/track.py":92
  *         ext.dm[0, 1], ext.dm[1, 1], ext.dm[2, 1],
  *         ext.dm[0, 2], ext.dm[1, 2], ext.dm[2, 2],
  *         ip.cc, ip.xh, ip.yh,             # <<<<<<<<<<<<<<
@@ -6045,7 +6045,7 @@ static PyObject *__pyx_pf_10algorithms_5track_8_pack_cal(CYTHON_UNUSED PyObject 
   __pyx_t_16 = __Pyx_PyObject_GetAttrStr(__pyx_v_ip, __pyx_mstate_global->__pyx_n_u_yh); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 92, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_16);
 
-  /* "algorithms/track.py":93
+  /* "openptv2/algorithms/track.py":93
  *         ext.dm[0, 2], ext.dm[1, 2], ext.dm[2, 2],
  *         ip.cc, ip.xh, ip.yh,
  *         gx, gy, gz, dist_o_glas, inv_dog,             # <<<<<<<<<<<<<<
@@ -6057,7 +6057,7 @@ static PyObject *__pyx_pf_10algorithms_5track_8_pack_cal(CYTHON_UNUSED PyObject 
   __pyx_t_18 = PyFloat_FromDouble(__pyx_v_inv_dog); if (unlikely(!__pyx_t_18)) __PYX_ERR(0, 93, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_18);
 
-  /* "algorithms/track.py":94
+  /* "openptv2/algorithms/track.py":94
  *         ip.cc, ip.xh, ip.yh,
  *         gx, gy, gz, dist_o_glas, inv_dog,
  *         mm.n1, mm.n2[0], mm.n3, mm.d[0],             # <<<<<<<<<<<<<<
@@ -6079,7 +6079,7 @@ static PyObject *__pyx_pf_10algorithms_5track_8_pack_cal(CYTHON_UNUSED PyObject 
   __Pyx_GOTREF(__pyx_t_23);
   __Pyx_DECREF(__pyx_t_22); __pyx_t_22 = 0;
 
-  /* "algorithms/track.py":95
+  /* "openptv2/algorithms/track.py":95
  *         gx, gy, gz, dist_o_glas, inv_dog,
  *         mm.n1, mm.n2[0], mm.n3, mm.d[0],
  *         ap.k1, ap.k2, ap.k3, ap.p1, ap.p2, ap.scx, ap.she,             # <<<<<<<<<<<<<<
@@ -6101,7 +6101,7 @@ static PyObject *__pyx_pf_10algorithms_5track_8_pack_cal(CYTHON_UNUSED PyObject 
   __pyx_t_29 = __Pyx_PyObject_GetAttrStr(__pyx_v_ap, __pyx_mstate_global->__pyx_n_u_she); if (unlikely(!__pyx_t_29)) __PYX_ERR(0, 95, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_29);
 
-  /* "algorithms/track.py":97
+  /* "openptv2/algorithms/track.py":97
  *         ap.k1, ap.k2, ap.k3, ap.p1, ap.p2, ap.scx, ap.she,
  *         mmlut_data,
  *         mmlut.origin if mmlut_data is not None else None,             # <<<<<<<<<<<<<<
@@ -6119,7 +6119,7 @@ static PyObject *__pyx_pf_10algorithms_5track_8_pack_cal(CYTHON_UNUSED PyObject 
     __pyx_t_30 = Py_None;
   }
 
-  /* "algorithms/track.py":98
+  /* "openptv2/algorithms/track.py":98
  *         mmlut_data,
  *         mmlut.origin if mmlut_data is not None else None,
  *         mmlut.nr if mmlut_data is not None else 0,             # <<<<<<<<<<<<<<
@@ -6137,7 +6137,7 @@ static PyObject *__pyx_pf_10algorithms_5track_8_pack_cal(CYTHON_UNUSED PyObject 
     __pyx_t_32 = __pyx_mstate_global->__pyx_int_0;
   }
 
-  /* "algorithms/track.py":99
+  /* "openptv2/algorithms/track.py":99
  *         mmlut.origin if mmlut_data is not None else None,
  *         mmlut.nr if mmlut_data is not None else 0,
  *         mmlut.nz if mmlut_data is not None else 0,             # <<<<<<<<<<<<<<
@@ -6155,7 +6155,7 @@ static PyObject *__pyx_pf_10algorithms_5track_8_pack_cal(CYTHON_UNUSED PyObject 
     __pyx_t_33 = __pyx_mstate_global->__pyx_int_0;
   }
 
-  /* "algorithms/track.py":100
+  /* "openptv2/algorithms/track.py":100
  *         mmlut.nr if mmlut_data is not None else 0,
  *         mmlut.nz if mmlut_data is not None else 0,
  *         mmlut.rw if mmlut_data is not None else 0,             # <<<<<<<<<<<<<<
@@ -6173,7 +6173,7 @@ static PyObject *__pyx_pf_10algorithms_5track_8_pack_cal(CYTHON_UNUSED PyObject 
     __pyx_t_34 = __pyx_mstate_global->__pyx_int_0;
   }
 
-  /* "algorithms/track.py":88
+  /* "openptv2/algorithms/track.py":88
  *     mmlut_data = mmlut.data
  *     return (
  *         ext.x0, ext.y0, ext.z0,             # <<<<<<<<<<<<<<
@@ -6294,7 +6294,7 @@ static PyObject *__pyx_pf_10algorithms_5track_8_pack_cal(CYTHON_UNUSED PyObject 
   __pyx_t_35 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/track.py":79
+  /* "openptv2/algorithms/track.py":79
  * 
  * 
  * def _pack_cal(cal, mm):             # <<<<<<<<<<<<<<
@@ -6337,7 +6337,7 @@ static PyObject *__pyx_pf_10algorithms_5track_8_pack_cal(CYTHON_UNUSED PyObject 
   __Pyx_XDECREF(__pyx_t_33);
   __Pyx_XDECREF(__pyx_t_34);
   __Pyx_XDECREF(__pyx_t_35);
-  __Pyx_AddTraceback("algorithms.track._pack_cal", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track._pack_cal", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_ext);
@@ -6354,7 +6354,7 @@ static PyObject *__pyx_pf_10algorithms_5track_8_pack_cal(CYTHON_UNUSED PyObject 
   return __pyx_r;
 }
 
-/* "algorithms/track.py":104
+/* "openptv2/algorithms/track.py":104
  * 
  * 
  * def _point_to_pixel_packed(pos, pc, imx_half, imy_half, inv_pix_x, inv_pix_y, chfield):             # <<<<<<<<<<<<<<
@@ -6363,16 +6363,16 @@ static PyObject *__pyx_pf_10algorithms_5track_8_pack_cal(CYTHON_UNUSED PyObject 
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_5track_11_point_to_pixel_packed(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_11_point_to_pixel_packed(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_5track_10_point_to_pixel_packed, "Project 3D position to pixel coordinates using pre-packed calibration.");
-static PyMethodDef __pyx_mdef_10algorithms_5track_11_point_to_pixel_packed = {"_point_to_pixel_packed", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_5track_11_point_to_pixel_packed, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_5track_10_point_to_pixel_packed};
-static PyObject *__pyx_pw_10algorithms_5track_11_point_to_pixel_packed(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_5track_10_point_to_pixel_packed, "Project 3D position to pixel coordinates using pre-packed calibration.");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_5track_11_point_to_pixel_packed = {"_point_to_pixel_packed", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_5track_11_point_to_pixel_packed, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_5track_10_point_to_pixel_packed};
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_11_point_to_pixel_packed(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -6482,11 +6482,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.track._point_to_pixel_packed", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track._point_to_pixel_packed", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_5track_10_point_to_pixel_packed(__pyx_self, __pyx_v_pos, __pyx_v_pc, __pyx_v_imx_half, __pyx_v_imy_half, __pyx_v_inv_pix_x, __pyx_v_inv_pix_y, __pyx_v_chfield);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_5track_10_point_to_pixel_packed(__pyx_self, __pyx_v_pos, __pyx_v_pc, __pyx_v_imx_half, __pyx_v_imy_half, __pyx_v_inv_pix_x, __pyx_v_inv_pix_y, __pyx_v_chfield);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -6496,7 +6496,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_pos, PyObject *__pyx_v_pc, PyObject *__pyx_v_imx_half, PyObject *__pyx_v_imy_half, PyObject *__pyx_v_inv_pix_x, PyObject *__pyx_v_inv_pix_y, PyObject *__pyx_v_chfield) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_pos, PyObject *__pyx_v_pc, PyObject *__pyx_v_imx_half, PyObject *__pyx_v_imy_half, PyObject *__pyx_v_inv_pix_x, PyObject *__pyx_v_inv_pix_y, PyObject *__pyx_v_chfield) {
   double __pyx_v_pos0;
   double __pyx_v_pos1;
   double __pyx_v_pos2;
@@ -6643,7 +6643,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("_point_to_pixel_packed", 0);
 
-  /* "algorithms/track.py":106
+  /* "openptv2/algorithms/track.py":106
  * def _point_to_pixel_packed(pos, pc, imx_half, imy_half, inv_pix_x, inv_pix_y, chfield):
  *     """Project 3D position to pixel coordinates using pre-packed calibration."""
  *     pos0 = float(pos[0]); pos1 = float(pos[1]); pos2 = float(pos[2])             # <<<<<<<<<<<<<<
@@ -6666,7 +6666,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_pos2 = __pyx_t_2;
 
-  /* "algorithms/track.py":114
+  /* "openptv2/algorithms/track.py":114
  *      mm_n1, mm_n2_0, mm_n3, mm_d0,
  *      k1, k2, k3, p1, p2, scx, she,
  *      mmlut_data, mmlut_origin, mmlut_nr, mmlut_nz, mmlut_rw) = pc             # <<<<<<<<<<<<<<
@@ -6899,7 +6899,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
     __pyx_L4_unpacking_done:;
   }
 
-  /* "algorithms/track.py":108
+  /* "openptv2/algorithms/track.py":108
  *     pos0 = float(pos[0]); pos1 = float(pos[1]); pos2 = float(pos[2])
  * 
  *     (ext_x0, ext_y0, ext_z0,             # <<<<<<<<<<<<<<
@@ -6979,7 +6979,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
   __pyx_v_mmlut_rw = __pyx_t_37;
   __pyx_t_37 = 0;
 
-  /* "algorithms/track.py":116
+  /* "openptv2/algorithms/track.py":116
  *      mmlut_data, mmlut_origin, mmlut_nr, mmlut_nz, mmlut_rw) = pc
  * 
  *     dot_cam = ext_x0 * gx + ext_y0 * gy + ext_z0 * gz             # <<<<<<<<<<<<<<
@@ -7003,7 +7003,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
   __pyx_v_dot_cam = __pyx_t_37;
   __pyx_t_37 = 0;
 
-  /* "algorithms/track.py":117
+  /* "openptv2/algorithms/track.py":117
  * 
  *     dot_cam = ext_x0 * gx + ext_y0 * gy + ext_z0 * gz
  *     dist_cam_glas = dot_cam * inv_dog - dist_o_glas - mm_d0             # <<<<<<<<<<<<<<
@@ -7021,7 +7021,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
   __pyx_v_dist_cam_glas = __pyx_t_37;
   __pyx_t_37 = 0;
 
-  /* "algorithms/track.py":119
+  /* "openptv2/algorithms/track.py":119
  *     dist_cam_glas = dot_cam * inv_dog - dist_o_glas - mm_d0
  * 
  *     dot_pos = pos0 * gx + pos1 * gy + pos2 * gz             # <<<<<<<<<<<<<<
@@ -7054,7 +7054,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
   __pyx_v_dot_pos = __pyx_t_35;
   __pyx_t_35 = 0;
 
-  /* "algorithms/track.py":120
+  /* "openptv2/algorithms/track.py":120
  * 
  *     dot_pos = pos0 * gx + pos1 * gy + pos2 * gz
  *     dist_point_glas = dot_pos * inv_dog - dist_o_glas             # <<<<<<<<<<<<<<
@@ -7069,7 +7069,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
   __pyx_v_dist_point_glas = __pyx_t_36;
   __pyx_t_36 = 0;
 
-  /* "algorithms/track.py":122
+  /* "openptv2/algorithms/track.py":122
  *     dist_point_glas = dot_pos * inv_dog - dist_o_glas
  * 
  *     s_cam = dist_cam_glas * inv_dog             # <<<<<<<<<<<<<<
@@ -7081,7 +7081,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
   __pyx_v_s_cam = __pyx_t_36;
   __pyx_t_36 = 0;
 
-  /* "algorithms/track.py":123
+  /* "openptv2/algorithms/track.py":123
  * 
  *     s_cam = dist_cam_glas * inv_dog
  *     cc_x = ext_x0 - gx * s_cam             # <<<<<<<<<<<<<<
@@ -7096,7 +7096,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
   __pyx_v_cc_x = __pyx_t_35;
   __pyx_t_35 = 0;
 
-  /* "algorithms/track.py":124
+  /* "openptv2/algorithms/track.py":124
  *     s_cam = dist_cam_glas * inv_dog
  *     cc_x = ext_x0 - gx * s_cam
  *     cc_y = ext_y0 - gy * s_cam             # <<<<<<<<<<<<<<
@@ -7111,7 +7111,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
   __pyx_v_cc_y = __pyx_t_36;
   __pyx_t_36 = 0;
 
-  /* "algorithms/track.py":125
+  /* "openptv2/algorithms/track.py":125
  *     cc_x = ext_x0 - gx * s_cam
  *     cc_y = ext_y0 - gy * s_cam
  *     cc_z = ext_z0 - gz * s_cam             # <<<<<<<<<<<<<<
@@ -7126,7 +7126,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
   __pyx_v_cc_z = __pyx_t_35;
   __pyx_t_35 = 0;
 
-  /* "algorithms/track.py":127
+  /* "openptv2/algorithms/track.py":127
  *     cc_z = ext_z0 - gz * s_cam
  * 
  *     s_pt = dist_point_glas * inv_dog             # <<<<<<<<<<<<<<
@@ -7138,7 +7138,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
   __pyx_v_s_pt = __pyx_t_35;
   __pyx_t_35 = 0;
 
-  /* "algorithms/track.py":128
+  /* "openptv2/algorithms/track.py":128
  * 
  *     s_pt = dist_point_glas * inv_dog
  *     cp_x = pos0 - gx * s_pt             # <<<<<<<<<<<<<<
@@ -7156,7 +7156,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
   __pyx_v_cp_x = __pyx_t_37;
   __pyx_t_37 = 0;
 
-  /* "algorithms/track.py":129
+  /* "openptv2/algorithms/track.py":129
  *     s_pt = dist_point_glas * inv_dog
  *     cp_x = pos0 - gx * s_pt
  *     cp_y = pos1 - gy * s_pt             # <<<<<<<<<<<<<<
@@ -7174,7 +7174,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
   __pyx_v_cp_y = __pyx_t_35;
   __pyx_t_35 = 0;
 
-  /* "algorithms/track.py":130
+  /* "openptv2/algorithms/track.py":130
  *     cp_x = pos0 - gx * s_pt
  *     cp_y = pos1 - gy * s_pt
  *     cp_z = pos2 - gz * s_pt             # <<<<<<<<<<<<<<
@@ -7192,7 +7192,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
   __pyx_v_cp_z = __pyx_t_37;
   __pyx_t_37 = 0;
 
-  /* "algorithms/track.py":132
+  /* "openptv2/algorithms/track.py":132
  *     cp_z = pos2 - gz * s_pt
  * 
  *     ext_t_z0 = dist_cam_glas + mm_d0             # <<<<<<<<<<<<<<
@@ -7204,7 +7204,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
   __pyx_v_ext_t_z0 = __pyx_t_37;
   __pyx_t_37 = 0;
 
-  /* "algorithms/track.py":134
+  /* "openptv2/algorithms/track.py":134
  *     ext_t_z0 = dist_cam_glas + mm_d0
  * 
  *     s_d = mm_d0 * inv_dog             # <<<<<<<<<<<<<<
@@ -7216,7 +7216,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
   __pyx_v_s_d = __pyx_t_37;
   __pyx_t_37 = 0;
 
-  /* "algorithms/track.py":135
+  /* "openptv2/algorithms/track.py":135
  * 
  *     s_d = mm_d0 * inv_dog
  *     ag_x = cc_x - gx * s_d             # <<<<<<<<<<<<<<
@@ -7231,7 +7231,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
   __pyx_v_ag_x = __pyx_t_36;
   __pyx_t_36 = 0;
 
-  /* "algorithms/track.py":136
+  /* "openptv2/algorithms/track.py":136
  *     s_d = mm_d0 * inv_dog
  *     ag_x = cc_x - gx * s_d
  *     ag_y = cc_y - gy * s_d             # <<<<<<<<<<<<<<
@@ -7246,7 +7246,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
   __pyx_v_ag_y = __pyx_t_37;
   __pyx_t_37 = 0;
 
-  /* "algorithms/track.py":137
+  /* "openptv2/algorithms/track.py":137
  *     ag_x = cc_x - gx * s_d
  *     ag_y = cc_y - gy * s_d
  *     ag_z = cc_z - gz * s_d             # <<<<<<<<<<<<<<
@@ -7261,7 +7261,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
   __pyx_v_ag_z = __pyx_t_36;
   __pyx_t_36 = 0;
 
-  /* "algorithms/track.py":138
+  /* "openptv2/algorithms/track.py":138
  *     ag_y = cc_y - gy * s_d
  *     ag_z = cc_z - gz * s_d
  *     tmp_x = cp_x - ag_x             # <<<<<<<<<<<<<<
@@ -7273,7 +7273,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
   __pyx_v_tmp_x = __pyx_t_36;
   __pyx_t_36 = 0;
 
-  /* "algorithms/track.py":139
+  /* "openptv2/algorithms/track.py":139
  *     ag_z = cc_z - gz * s_d
  *     tmp_x = cp_x - ag_x
  *     tmp_y = cp_y - ag_y             # <<<<<<<<<<<<<<
@@ -7285,7 +7285,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
   __pyx_v_tmp_y = __pyx_t_36;
   __pyx_t_36 = 0;
 
-  /* "algorithms/track.py":140
+  /* "openptv2/algorithms/track.py":140
  *     tmp_x = cp_x - ag_x
  *     tmp_y = cp_y - ag_y
  *     tmp_z = cp_z - ag_z             # <<<<<<<<<<<<<<
@@ -7297,7 +7297,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
   __pyx_v_tmp_z = __pyx_t_36;
   __pyx_t_36 = 0;
 
-  /* "algorithms/track.py":142
+  /* "openptv2/algorithms/track.py":142
  *     tmp_z = cp_z - ag_z
  * 
  *     pos_t_0 = c_sqrt(tmp_x * tmp_x + tmp_y * tmp_y + tmp_z * tmp_z)             # <<<<<<<<<<<<<<
@@ -7322,7 +7322,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
   __Pyx_DECREF(__pyx_t_36); __pyx_t_36 = 0;
   __pyx_v_pos_t_0 = sqrt(__pyx_t_2);
 
-  /* "algorithms/track.py":143
+  /* "openptv2/algorithms/track.py":143
  * 
  *     pos_t_0 = c_sqrt(tmp_x * tmp_x + tmp_y * tmp_y + tmp_z * tmp_z)
  *     pos_t_2 = dist_point_glas             # <<<<<<<<<<<<<<
@@ -7332,7 +7332,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
   __Pyx_INCREF(__pyx_v_dist_point_glas);
   __pyx_v_pos_t_2 = __pyx_v_dist_point_glas;
 
-  /* "algorithms/track.py":146
+  /* "openptv2/algorithms/track.py":146
  * 
  *     # === mmlut lookup + multimed_nlay (inlined) ===
  *     radial_shift = 1.0             # <<<<<<<<<<<<<<
@@ -7342,7 +7342,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
   __Pyx_INCREF(__pyx_mstate_global->__pyx_float_1_0);
   __pyx_v_radial_shift = __pyx_mstate_global->__pyx_float_1_0;
 
-  /* "algorithms/track.py":147
+  /* "openptv2/algorithms/track.py":147
  *     # === mmlut lookup + multimed_nlay (inlined) ===
  *     radial_shift = 1.0
  *     if mmlut_data is not None:             # <<<<<<<<<<<<<<
@@ -7352,7 +7352,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
   __pyx_t_40 = (__pyx_v_mmlut_data != Py_None);
   if (__pyx_t_40) {
 
-    /* "algorithms/track.py":148
+    /* "openptv2/algorithms/track.py":148
  *     radial_shift = 1.0
  *     if mmlut_data is not None:
  *         tx = pos_t_0 - mmlut_origin[0]             # <<<<<<<<<<<<<<
@@ -7370,7 +7370,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
     __pyx_v_tx = __pyx_t_35;
     __pyx_t_35 = 0;
 
-    /* "algorithms/track.py":149
+    /* "openptv2/algorithms/track.py":149
  *     if mmlut_data is not None:
  *         tx = pos_t_0 - mmlut_origin[0]
  *         ty = -mmlut_origin[1]             # <<<<<<<<<<<<<<
@@ -7385,7 +7385,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
     __pyx_v_ty = __pyx_t_37;
     __pyx_t_37 = 0;
 
-    /* "algorithms/track.py":150
+    /* "openptv2/algorithms/track.py":150
  *         tx = pos_t_0 - mmlut_origin[0]
  *         ty = -mmlut_origin[1]
  *         tz = pos_t_2 - mmlut_origin[2]             # <<<<<<<<<<<<<<
@@ -7400,7 +7400,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
     __pyx_v_tz = __pyx_t_35;
     __pyx_t_35 = 0;
 
-    /* "algorithms/track.py":151
+    /* "openptv2/algorithms/track.py":151
  *         ty = -mmlut_origin[1]
  *         tz = pos_t_2 - mmlut_origin[2]
  *         sz = tz / mmlut_rw             # <<<<<<<<<<<<<<
@@ -7412,7 +7412,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
     __pyx_v_sz = __pyx_t_35;
     __pyx_t_35 = 0;
 
-    /* "algorithms/track.py":152
+    /* "openptv2/algorithms/track.py":152
  *         tz = pos_t_2 - mmlut_origin[2]
  *         sz = tz / mmlut_rw
  *         iz = int(sz)             # <<<<<<<<<<<<<<
@@ -7424,7 +7424,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
     __pyx_v_iz = ((PyObject*)__pyx_t_35);
     __pyx_t_35 = 0;
 
-    /* "algorithms/track.py":153
+    /* "openptv2/algorithms/track.py":153
  *         sz = tz / mmlut_rw
  *         iz = int(sz)
  *         sz -= iz             # <<<<<<<<<<<<<<
@@ -7436,7 +7436,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
     __Pyx_DECREF_SET(__pyx_v_sz, __pyx_t_35);
     __pyx_t_35 = 0;
 
-    /* "algorithms/track.py":154
+    /* "openptv2/algorithms/track.py":154
  *         iz = int(sz)
  *         sz -= iz
  *         R = c_sqrt(tx * tx + ty * ty)             # <<<<<<<<<<<<<<
@@ -7455,7 +7455,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
     __Pyx_DECREF(__pyx_t_36); __pyx_t_36 = 0;
     __pyx_v_R = sqrt(__pyx_t_2);
 
-    /* "algorithms/track.py":155
+    /* "openptv2/algorithms/track.py":155
  *         sz -= iz
  *         R = c_sqrt(tx * tx + ty * ty)
  *         sr = R / mmlut_rw             # <<<<<<<<<<<<<<
@@ -7470,7 +7470,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
     __pyx_v_sr = __pyx_t_37;
     __pyx_t_37 = 0;
 
-    /* "algorithms/track.py":156
+    /* "openptv2/algorithms/track.py":156
  *         R = c_sqrt(tx * tx + ty * ty)
  *         sr = R / mmlut_rw
  *         ir = int(sr)             # <<<<<<<<<<<<<<
@@ -7482,7 +7482,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
     __pyx_v_ir = ((PyObject*)__pyx_t_37);
     __pyx_t_37 = 0;
 
-    /* "algorithms/track.py":157
+    /* "openptv2/algorithms/track.py":157
  *         sr = R / mmlut_rw
  *         ir = int(sr)
  *         sr -= ir             # <<<<<<<<<<<<<<
@@ -7494,7 +7494,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
     __Pyx_DECREF_SET(__pyx_v_sr, __pyx_t_37);
     __pyx_t_37 = 0;
 
-    /* "algorithms/track.py":158
+    /* "openptv2/algorithms/track.py":158
  *         ir = int(sr)
  *         sr -= ir
  *         if ir <= mmlut_nr and iz >= 0 and iz <= mmlut_nz:             # <<<<<<<<<<<<<<
@@ -7524,7 +7524,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
     __pyx_L7_bool_binop_done:;
     if (__pyx_t_40) {
 
-      /* "algorithms/track.py":159
+      /* "openptv2/algorithms/track.py":159
  *         sr -= ir
  *         if ir <= mmlut_nr and iz >= 0 and iz <= mmlut_nz:
  *             v0 = ir * mmlut_nz + iz             # <<<<<<<<<<<<<<
@@ -7539,7 +7539,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
       __pyx_v_v0 = __pyx_t_36;
       __pyx_t_36 = 0;
 
-      /* "algorithms/track.py":160
+      /* "openptv2/algorithms/track.py":160
  *         if ir <= mmlut_nr and iz >= 0 and iz <= mmlut_nz:
  *             v0 = ir * mmlut_nz + iz
  *             v3 = v0 + mmlut_nz + 1             # <<<<<<<<<<<<<<
@@ -7554,7 +7554,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
       __pyx_v_v3 = __pyx_t_37;
       __pyx_t_37 = 0;
 
-      /* "algorithms/track.py":161
+      /* "openptv2/algorithms/track.py":161
  *             v0 = ir * mmlut_nz + iz
  *             v3 = v0 + mmlut_nz + 1
  *             if v0 >= 0 and v3 <= mmlut_nr * mmlut_nz:             # <<<<<<<<<<<<<<
@@ -7579,7 +7579,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
       __pyx_L11_bool_binop_done:;
       if (__pyx_t_40) {
 
-        /* "algorithms/track.py":163
+        /* "openptv2/algorithms/track.py":163
  *             if v0 >= 0 and v3 <= mmlut_nr * mmlut_nz:
  *                 mmf = (
  *                     mmlut_data[v0] * (1 - sr) * (1 - sz)             # <<<<<<<<<<<<<<
@@ -7601,7 +7601,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
         __Pyx_DECREF(__pyx_t_35); __pyx_t_35 = 0;
         __Pyx_DECREF(__pyx_t_37); __pyx_t_37 = 0;
 
-        /* "algorithms/track.py":164
+        /* "openptv2/algorithms/track.py":164
  *                 mmf = (
  *                     mmlut_data[v0] * (1 - sr) * (1 - sz)
  *                     + mmlut_data[v0 + 1] * (1 - sr) * sz             # <<<<<<<<<<<<<<
@@ -7627,7 +7627,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
         __Pyx_DECREF(__pyx_t_36); __pyx_t_36 = 0;
         __Pyx_DECREF(__pyx_t_37); __pyx_t_37 = 0;
 
-        /* "algorithms/track.py":165
+        /* "openptv2/algorithms/track.py":165
  *                     mmlut_data[v0] * (1 - sr) * (1 - sz)
  *                     + mmlut_data[v0 + 1] * (1 - sr) * sz
  *                     + mmlut_data[v0 + mmlut_nz] * sr * (1 - sz)             # <<<<<<<<<<<<<<
@@ -7653,7 +7653,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
         __Pyx_DECREF(__pyx_t_34); __pyx_t_34 = 0;
         __Pyx_DECREF(__pyx_t_35); __pyx_t_35 = 0;
 
-        /* "algorithms/track.py":166
+        /* "openptv2/algorithms/track.py":166
  *                     + mmlut_data[v0 + 1] * (1 - sr) * sz
  *                     + mmlut_data[v0 + mmlut_nz] * sr * (1 - sz)
  *                     + mmlut_data[v3] * sr * sz             # <<<<<<<<<<<<<<
@@ -7675,7 +7675,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
         __pyx_v_mmf = __pyx_t_34;
         __pyx_t_34 = 0;
 
-        /* "algorithms/track.py":168
+        /* "openptv2/algorithms/track.py":168
  *                     + mmlut_data[v3] * sr * sz
  *                 )
  *                 if mmf > 0:             # <<<<<<<<<<<<<<
@@ -7687,7 +7687,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
         __Pyx_DECREF(__pyx_t_34); __pyx_t_34 = 0;
         if (__pyx_t_40) {
 
-          /* "algorithms/track.py":169
+          /* "openptv2/algorithms/track.py":169
  *                 )
  *                 if mmf > 0:
  *                     radial_shift = mmf             # <<<<<<<<<<<<<<
@@ -7697,7 +7697,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
           __Pyx_INCREF(__pyx_v_mmf);
           __Pyx_DECREF_SET(__pyx_v_radial_shift, __pyx_v_mmf);
 
-          /* "algorithms/track.py":168
+          /* "openptv2/algorithms/track.py":168
  *                     + mmlut_data[v3] * sr * sz
  *                 )
  *                 if mmf > 0:             # <<<<<<<<<<<<<<
@@ -7706,7 +7706,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
 */
         }
 
-        /* "algorithms/track.py":161
+        /* "openptv2/algorithms/track.py":161
  *             v0 = ir * mmlut_nz + iz
  *             v3 = v0 + mmlut_nz + 1
  *             if v0 >= 0 and v3 <= mmlut_nr * mmlut_nz:             # <<<<<<<<<<<<<<
@@ -7715,7 +7715,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
 */
       }
 
-      /* "algorithms/track.py":158
+      /* "openptv2/algorithms/track.py":158
  *         ir = int(sr)
  *         sr -= ir
  *         if ir <= mmlut_nr and iz >= 0 and iz <= mmlut_nz:             # <<<<<<<<<<<<<<
@@ -7724,7 +7724,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
 */
     }
 
-    /* "algorithms/track.py":147
+    /* "openptv2/algorithms/track.py":147
  *     # === mmlut lookup + multimed_nlay (inlined) ===
  *     radial_shift = 1.0
  *     if mmlut_data is not None:             # <<<<<<<<<<<<<<
@@ -7733,7 +7733,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
 */
   }
 
-  /* "algorithms/track.py":170
+  /* "openptv2/algorithms/track.py":170
  *                 if mmf > 0:
  *                     radial_shift = mmf
  *     if radial_shift == 1.0:             # <<<<<<<<<<<<<<
@@ -7743,7 +7743,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
   __pyx_t_40 = (__Pyx_PyFloat_BoolEqObjC(__pyx_v_radial_shift, __pyx_mstate_global->__pyx_float_1_0, 1.0, 0, 0)); if (unlikely((__pyx_t_40 < 0))) __PYX_ERR(0, 170, __pyx_L1_error)
   if (__pyx_t_40) {
 
-    /* "algorithms/track.py":171
+    /* "openptv2/algorithms/track.py":171
  *                     radial_shift = mmf
  *     if radial_shift == 1.0:
  *         radial_shift = _multimed_r_nlay_iterative(             # <<<<<<<<<<<<<<
@@ -7754,7 +7754,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
     __Pyx_GetModuleGlobalName(__pyx_t_36, __pyx_mstate_global->__pyx_n_u_multimed_r_nlay_iterative); if (unlikely(!__pyx_t_36)) __PYX_ERR(0, 171, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_36);
 
-    /* "algorithms/track.py":172
+    /* "openptv2/algorithms/track.py":172
  *     if radial_shift == 1.0:
  *         radial_shift = _multimed_r_nlay_iterative(
  *             pos_t_0, 0.0, pos_t_2, 0.0, 0.0, ext_t_z0,             # <<<<<<<<<<<<<<
@@ -7764,7 +7764,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
     __pyx_t_37 = PyFloat_FromDouble(__pyx_v_pos_t_0); if (unlikely(!__pyx_t_37)) __PYX_ERR(0, 172, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_37);
 
-    /* "algorithms/track.py":173
+    /* "openptv2/algorithms/track.py":173
  *         radial_shift = _multimed_r_nlay_iterative(
  *             pos_t_0, 0.0, pos_t_2, 0.0, 0.0, ext_t_z0,
  *             mm_n1, mm_n2_0, mm_n3, mm_d0,             # <<<<<<<<<<<<<<
@@ -7795,7 +7795,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
     __Pyx_DECREF_SET(__pyx_v_radial_shift, __pyx_t_34);
     __pyx_t_34 = 0;
 
-    /* "algorithms/track.py":170
+    /* "openptv2/algorithms/track.py":170
  *                 if mmf > 0:
  *                     radial_shift = mmf
  *     if radial_shift == 1.0:             # <<<<<<<<<<<<<<
@@ -7804,7 +7804,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
 */
   }
 
-  /* "algorithms/track.py":175
+  /* "openptv2/algorithms/track.py":175
  *             mm_n1, mm_n2_0, mm_n3, mm_d0,
  *         )
  *     X_t = pos_t_0 * radial_shift             # <<<<<<<<<<<<<<
@@ -7819,7 +7819,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
   __pyx_v_X_t = __pyx_t_36;
   __pyx_t_36 = 0;
 
-  /* "algorithms/track.py":178
+  /* "openptv2/algorithms/track.py":178
  * 
  *     # === back_trans_point (inlined) ===
  *     s_z = -pos_t_2 * inv_dog             # <<<<<<<<<<<<<<
@@ -7834,7 +7834,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
   __pyx_v_s_z = __pyx_t_34;
   __pyx_t_34 = 0;
 
-  /* "algorithms/track.py":179
+  /* "openptv2/algorithms/track.py":179
  *     # === back_trans_point (inlined) ===
  *     s_z = -pos_t_2 * inv_dog
  *     bx = ag_x - gx * s_z             # <<<<<<<<<<<<<<
@@ -7849,7 +7849,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
   __pyx_v_bx = __pyx_t_36;
   __pyx_t_36 = 0;
 
-  /* "algorithms/track.py":180
+  /* "openptv2/algorithms/track.py":180
  *     s_z = -pos_t_2 * inv_dog
  *     bx = ag_x - gx * s_z
  *     by = ag_y - gy * s_z             # <<<<<<<<<<<<<<
@@ -7864,7 +7864,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
   __pyx_v_by = __pyx_t_34;
   __pyx_t_34 = 0;
 
-  /* "algorithms/track.py":181
+  /* "openptv2/algorithms/track.py":181
  *     bx = ag_x - gx * s_z
  *     by = ag_y - gy * s_z
  *     bz = ag_z - gz * s_z             # <<<<<<<<<<<<<<
@@ -7879,7 +7879,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
   __pyx_v_bz = __pyx_t_36;
   __pyx_t_36 = 0;
 
-  /* "algorithms/track.py":183
+  /* "openptv2/algorithms/track.py":183
  *     bz = ag_z - gz * s_z
  * 
  *     if pos_t_0 > 0:             # <<<<<<<<<<<<<<
@@ -7889,7 +7889,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
   __pyx_t_40 = (__pyx_v_pos_t_0 > 0.0);
   if (__pyx_t_40) {
 
-    /* "algorithms/track.py":184
+    /* "openptv2/algorithms/track.py":184
  * 
  *     if pos_t_0 > 0:
  *         s_x = -X_t / pos_t_0             # <<<<<<<<<<<<<<
@@ -7907,7 +7907,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
     __pyx_v_s_x = __pyx_t_37;
     __pyx_t_37 = 0;
 
-    /* "algorithms/track.py":185
+    /* "openptv2/algorithms/track.py":185
  *     if pos_t_0 > 0:
  *         s_x = -X_t / pos_t_0
  *         bx -= tmp_x * s_x             # <<<<<<<<<<<<<<
@@ -7922,7 +7922,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
     __Pyx_DECREF_SET(__pyx_v_bx, __pyx_t_34);
     __pyx_t_34 = 0;
 
-    /* "algorithms/track.py":186
+    /* "openptv2/algorithms/track.py":186
  *         s_x = -X_t / pos_t_0
  *         bx -= tmp_x * s_x
  *         by -= tmp_y * s_x             # <<<<<<<<<<<<<<
@@ -7937,7 +7937,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
     __Pyx_DECREF_SET(__pyx_v_by, __pyx_t_37);
     __pyx_t_37 = 0;
 
-    /* "algorithms/track.py":187
+    /* "openptv2/algorithms/track.py":187
  *         bx -= tmp_x * s_x
  *         by -= tmp_y * s_x
  *         bz -= tmp_z * s_x             # <<<<<<<<<<<<<<
@@ -7952,7 +7952,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
     __Pyx_DECREF_SET(__pyx_v_bz, __pyx_t_34);
     __pyx_t_34 = 0;
 
-    /* "algorithms/track.py":183
+    /* "openptv2/algorithms/track.py":183
  *     bz = ag_z - gz * s_z
  * 
  *     if pos_t_0 > 0:             # <<<<<<<<<<<<<<
@@ -7961,7 +7961,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
 */
   }
 
-  /* "algorithms/track.py":190
+  /* "openptv2/algorithms/track.py":190
  * 
  *     # === perspective projection ===
  *     dx = bx - ext_x0             # <<<<<<<<<<<<<<
@@ -7973,7 +7973,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
   __pyx_v_dx = __pyx_t_34;
   __pyx_t_34 = 0;
 
-  /* "algorithms/track.py":191
+  /* "openptv2/algorithms/track.py":191
  *     # === perspective projection ===
  *     dx = bx - ext_x0
  *     dy = by - ext_y0             # <<<<<<<<<<<<<<
@@ -7985,7 +7985,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
   __pyx_v_dy = __pyx_t_34;
   __pyx_t_34 = 0;
 
-  /* "algorithms/track.py":192
+  /* "openptv2/algorithms/track.py":192
  *     dx = bx - ext_x0
  *     dy = by - ext_y0
  *     dz = bz - ext_z0             # <<<<<<<<<<<<<<
@@ -7997,7 +7997,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
   __pyx_v_dz = __pyx_t_34;
   __pyx_t_34 = 0;
 
-  /* "algorithms/track.py":194
+  /* "openptv2/algorithms/track.py":194
  *     dz = bz - ext_z0
  * 
  *     deno = dm02 * dx + dm12 * dy + dm22 * dz             # <<<<<<<<<<<<<<
@@ -8021,7 +8021,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
   __pyx_v_deno = __pyx_t_34;
   __pyx_t_34 = 0;
 
-  /* "algorithms/track.py":195
+  /* "openptv2/algorithms/track.py":195
  * 
  *     deno = dm02 * dx + dm12 * dy + dm22 * dz
  *     x = -int_cc * (dm00 * dx + dm10 * dy + dm20 * dz) / deno             # <<<<<<<<<<<<<<
@@ -8054,7 +8054,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
   __pyx_v_x = __pyx_t_37;
   __pyx_t_37 = 0;
 
-  /* "algorithms/track.py":196
+  /* "openptv2/algorithms/track.py":196
  *     deno = dm02 * dx + dm12 * dy + dm22 * dz
  *     x = -int_cc * (dm00 * dx + dm10 * dy + dm20 * dz) / deno
  *     y = -int_cc * (dm01 * dx + dm11 * dy + dm21 * dz) / deno             # <<<<<<<<<<<<<<
@@ -8087,7 +8087,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
   __pyx_v_y = __pyx_t_36;
   __pyx_t_36 = 0;
 
-  /* "algorithms/track.py":199
+  /* "openptv2/algorithms/track.py":199
  * 
  *     # === flat_to_dist + distort_brown_affin (inlined) ===
  *     x += xh             # <<<<<<<<<<<<<<
@@ -8099,7 +8099,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
   __Pyx_DECREF_SET(__pyx_v_x, __pyx_t_36);
   __pyx_t_36 = 0;
 
-  /* "algorithms/track.py":200
+  /* "openptv2/algorithms/track.py":200
  *     # === flat_to_dist + distort_brown_affin (inlined) ===
  *     x += xh
  *     y += yh             # <<<<<<<<<<<<<<
@@ -8111,7 +8111,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
   __Pyx_DECREF_SET(__pyx_v_y, __pyx_t_36);
   __pyx_t_36 = 0;
 
-  /* "algorithms/track.py":201
+  /* "openptv2/algorithms/track.py":201
  *     x += xh
  *     y += yh
  *     r = c_sqrt(x * x + y * y)             # <<<<<<<<<<<<<<
@@ -8130,7 +8130,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
   __Pyx_DECREF(__pyx_t_37); __pyx_t_37 = 0;
   __pyx_v_r = sqrt(__pyx_t_2);
 
-  /* "algorithms/track.py":202
+  /* "openptv2/algorithms/track.py":202
  *     y += yh
  *     r = c_sqrt(x * x + y * y)
  *     if r < 1e-10:             # <<<<<<<<<<<<<<
@@ -8140,7 +8140,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
   __pyx_t_40 = (__pyx_v_r < 1e-10);
   if (__pyx_t_40) {
 
-    /* "algorithms/track.py":203
+    /* "openptv2/algorithms/track.py":203
  *     r = c_sqrt(x * x + y * y)
  *     if r < 1e-10:
  *         x_dist = 0.0             # <<<<<<<<<<<<<<
@@ -8150,7 +8150,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
     __Pyx_INCREF(__pyx_mstate_global->__pyx_float_0_0);
     __pyx_v_x_dist = __pyx_mstate_global->__pyx_float_0_0;
 
-    /* "algorithms/track.py":204
+    /* "openptv2/algorithms/track.py":204
  *     if r < 1e-10:
  *         x_dist = 0.0
  *         y_dist = 0.0             # <<<<<<<<<<<<<<
@@ -8160,7 +8160,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
     __Pyx_INCREF(__pyx_mstate_global->__pyx_float_0_0);
     __pyx_v_y_dist = __pyx_mstate_global->__pyx_float_0_0;
 
-    /* "algorithms/track.py":202
+    /* "openptv2/algorithms/track.py":202
  *     y += yh
  *     r = c_sqrt(x * x + y * y)
  *     if r < 1e-10:             # <<<<<<<<<<<<<<
@@ -8170,7 +8170,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
     goto __pyx_L16;
   }
 
-  /* "algorithms/track.py":206
+  /* "openptv2/algorithms/track.py":206
  *         y_dist = 0.0
  *     else:
  *         r2 = r * r             # <<<<<<<<<<<<<<
@@ -8180,7 +8180,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
   /*else*/ {
     __pyx_v_r2 = (__pyx_v_r * __pyx_v_r);
 
-    /* "algorithms/track.py":207
+    /* "openptv2/algorithms/track.py":207
  *     else:
  *         r2 = r * r
  *         r4 = r2 * r2             # <<<<<<<<<<<<<<
@@ -8189,7 +8189,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
 */
     __pyx_v_r4 = (__pyx_v_r2 * __pyx_v_r2);
 
-    /* "algorithms/track.py":208
+    /* "openptv2/algorithms/track.py":208
  *         r2 = r * r
  *         r4 = r2 * r2
  *         radial_factor = 1.0 + k1 * r2 + k2 * r4 + k3 * r4 * r2             # <<<<<<<<<<<<<<
@@ -8231,7 +8231,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
     __pyx_v_radial_factor = __pyx_t_36;
     __pyx_t_36 = 0;
 
-    /* "algorithms/track.py":209
+    /* "openptv2/algorithms/track.py":209
  *         r4 = r2 * r2
  *         radial_factor = 1.0 + k1 * r2 + k2 * r4 + k3 * r4 * r2
  *         xd = x * radial_factor + p1 * (r2 + 2 * x * x) + 2 * p2 * x * y             # <<<<<<<<<<<<<<
@@ -8273,7 +8273,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
     __pyx_v_xd = __pyx_t_36;
     __pyx_t_36 = 0;
 
-    /* "algorithms/track.py":210
+    /* "openptv2/algorithms/track.py":210
  *         radial_factor = 1.0 + k1 * r2 + k2 * r4 + k3 * r4 * r2
  *         xd = x * radial_factor + p1 * (r2 + 2 * x * x) + 2 * p2 * x * y
  *         yd = y * radial_factor + p2 * (r2 + 2 * y * y) + 2 * p1 * x * y             # <<<<<<<<<<<<<<
@@ -8315,7 +8315,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
     __pyx_v_yd = __pyx_t_36;
     __pyx_t_36 = 0;
 
-    /* "algorithms/track.py":211
+    /* "openptv2/algorithms/track.py":211
  *         xd = x * radial_factor + p1 * (r2 + 2 * x * x) + 2 * p2 * x * y
  *         yd = y * radial_factor + p2 * (r2 + 2 * y * y) + 2 * p1 * x * y
  *         sin_she = c_sin(she)             # <<<<<<<<<<<<<<
@@ -8325,7 +8325,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
     __pyx_t_2 = __Pyx_PyFloat_AsDouble(__pyx_v_she); if (unlikely((__pyx_t_2 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 211, __pyx_L1_error)
     __pyx_v_sin_she = sin(__pyx_t_2);
 
-    /* "algorithms/track.py":212
+    /* "openptv2/algorithms/track.py":212
  *         yd = y * radial_factor + p2 * (r2 + 2 * y * y) + 2 * p1 * x * y
  *         sin_she = c_sin(she)
  *         cos_she = c_cos(she)             # <<<<<<<<<<<<<<
@@ -8335,7 +8335,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
     __pyx_t_2 = __Pyx_PyFloat_AsDouble(__pyx_v_she); if (unlikely((__pyx_t_2 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 212, __pyx_L1_error)
     __pyx_v_cos_she = cos(__pyx_t_2);
 
-    /* "algorithms/track.py":213
+    /* "openptv2/algorithms/track.py":213
  *         sin_she = c_sin(she)
  *         cos_she = c_cos(she)
  *         x_dist = scx * (xd - sin_she * yd)             # <<<<<<<<<<<<<<
@@ -8356,7 +8356,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
     __pyx_v_x_dist = __pyx_t_35;
     __pyx_t_35 = 0;
 
-    /* "algorithms/track.py":214
+    /* "openptv2/algorithms/track.py":214
  *         cos_she = c_cos(she)
  *         x_dist = scx * (xd - sin_she * yd)
  *         y_dist = scx * cos_she * yd             # <<<<<<<<<<<<<<
@@ -8376,7 +8376,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
   }
   __pyx_L16:;
 
-  /* "algorithms/track.py":217
+  /* "openptv2/algorithms/track.py":217
  * 
  *     # === metric_to_pixel (inlined) ===
  *     x_pixel = x_dist * inv_pix_x + imx_half             # <<<<<<<<<<<<<<
@@ -8391,7 +8391,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
   __pyx_v_x_pixel = __pyx_t_36;
   __pyx_t_36 = 0;
 
-  /* "algorithms/track.py":218
+  /* "openptv2/algorithms/track.py":218
  *     # === metric_to_pixel (inlined) ===
  *     x_pixel = x_dist * inv_pix_x + imx_half
  *     y_pixel = imy_half - y_dist * inv_pix_y             # <<<<<<<<<<<<<<
@@ -8406,7 +8406,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
   __pyx_v_y_pixel = __pyx_t_35;
   __pyx_t_35 = 0;
 
-  /* "algorithms/track.py":220
+  /* "openptv2/algorithms/track.py":220
  *     y_pixel = imy_half - y_dist * inv_pix_y
  * 
  *     if chfield == 1:             # <<<<<<<<<<<<<<
@@ -8416,7 +8416,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
   __pyx_t_40 = (__Pyx_PyLong_BoolEqObjC(__pyx_v_chfield, __pyx_mstate_global->__pyx_int_1, 1, 0)); if (unlikely((__pyx_t_40 < 0))) __PYX_ERR(0, 220, __pyx_L1_error)
   if (__pyx_t_40) {
 
-    /* "algorithms/track.py":221
+    /* "openptv2/algorithms/track.py":221
  * 
  *     if chfield == 1:
  *         y_pixel = (y_pixel - 1.0) * 0.5             # <<<<<<<<<<<<<<
@@ -8431,7 +8431,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
     __Pyx_DECREF_SET(__pyx_v_y_pixel, __pyx_t_36);
     __pyx_t_36 = 0;
 
-    /* "algorithms/track.py":220
+    /* "openptv2/algorithms/track.py":220
  *     y_pixel = imy_half - y_dist * inv_pix_y
  * 
  *     if chfield == 1:             # <<<<<<<<<<<<<<
@@ -8441,7 +8441,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
     goto __pyx_L17;
   }
 
-  /* "algorithms/track.py":222
+  /* "openptv2/algorithms/track.py":222
  *     if chfield == 1:
  *         y_pixel = (y_pixel - 1.0) * 0.5
  *     elif chfield == 2:             # <<<<<<<<<<<<<<
@@ -8451,7 +8451,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
   __pyx_t_40 = (__Pyx_PyLong_BoolEqObjC(__pyx_v_chfield, __pyx_mstate_global->__pyx_int_2, 2, 0)); if (unlikely((__pyx_t_40 < 0))) __PYX_ERR(0, 222, __pyx_L1_error)
   if (__pyx_t_40) {
 
-    /* "algorithms/track.py":223
+    /* "openptv2/algorithms/track.py":223
  *         y_pixel = (y_pixel - 1.0) * 0.5
  *     elif chfield == 2:
  *         y_pixel = y_pixel * 0.5             # <<<<<<<<<<<<<<
@@ -8463,7 +8463,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
     __Pyx_DECREF_SET(__pyx_v_y_pixel, __pyx_t_36);
     __pyx_t_36 = 0;
 
-    /* "algorithms/track.py":222
+    /* "openptv2/algorithms/track.py":222
  *     if chfield == 1:
  *         y_pixel = (y_pixel - 1.0) * 0.5
  *     elif chfield == 2:             # <<<<<<<<<<<<<<
@@ -8473,7 +8473,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
   }
   __pyx_L17:;
 
-  /* "algorithms/track.py":225
+  /* "openptv2/algorithms/track.py":225
  *         y_pixel = y_pixel * 0.5
  * 
  *     return x_pixel, y_pixel             # <<<<<<<<<<<<<<
@@ -8493,7 +8493,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
   __pyx_t_36 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/track.py":104
+  /* "openptv2/algorithms/track.py":104
  * 
  * 
  * def _point_to_pixel_packed(pos, pc, imx_half, imy_half, inv_pix_x, inv_pix_y, chfield):             # <<<<<<<<<<<<<<
@@ -8540,7 +8540,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
   __Pyx_XDECREF(__pyx_t_36);
   __Pyx_XDECREF(__pyx_t_37);
   __Pyx_XDECREF(__pyx_t_38);
-  __Pyx_AddTraceback("algorithms.track._point_to_pixel_packed", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track._point_to_pixel_packed", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_ext_x0);
@@ -8635,7 +8635,7 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
   return __pyx_r;
 }
 
-/* "algorithms/track.py":228
+/* "openptv2/algorithms/track.py":228
  * 
  * 
  * def _point_to_pixel_fast(pos, cal, imx, imy, pix_x, pix_y, chfield, mm):             # <<<<<<<<<<<<<<
@@ -8644,16 +8644,16 @@ static PyObject *__pyx_pf_10algorithms_5track_10_point_to_pixel_packed(CYTHON_UN
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_5track_13_point_to_pixel_fast(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_13_point_to_pixel_fast(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_5track_12_point_to_pixel_fast, "Project 3D position to pixel coordinates \342\200\224 convenience wrapper.");
-static PyMethodDef __pyx_mdef_10algorithms_5track_13_point_to_pixel_fast = {"_point_to_pixel_fast", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_5track_13_point_to_pixel_fast, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_5track_12_point_to_pixel_fast};
-static PyObject *__pyx_pw_10algorithms_5track_13_point_to_pixel_fast(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_5track_12_point_to_pixel_fast, "Project 3D position to pixel coordinates \342\200\224 convenience wrapper.");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_5track_13_point_to_pixel_fast = {"_point_to_pixel_fast", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_5track_13_point_to_pixel_fast, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_5track_12_point_to_pixel_fast};
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_13_point_to_pixel_fast(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -8771,11 +8771,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.track._point_to_pixel_fast", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track._point_to_pixel_fast", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_5track_12_point_to_pixel_fast(__pyx_self, __pyx_v_pos, __pyx_v_cal, __pyx_v_imx, __pyx_v_imy, __pyx_v_pix_x, __pyx_v_pix_y, __pyx_v_chfield, __pyx_v_mm);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_5track_12_point_to_pixel_fast(__pyx_self, __pyx_v_pos, __pyx_v_cal, __pyx_v_imx, __pyx_v_imy, __pyx_v_pix_x, __pyx_v_pix_y, __pyx_v_chfield, __pyx_v_mm);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -8785,7 +8785,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_5track_12_point_to_pixel_fast(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_pos, PyObject *__pyx_v_cal, PyObject *__pyx_v_imx, PyObject *__pyx_v_imy, PyObject *__pyx_v_pix_x, PyObject *__pyx_v_pix_y, PyObject *__pyx_v_chfield, PyObject *__pyx_v_mm) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_12_point_to_pixel_fast(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_pos, PyObject *__pyx_v_cal, PyObject *__pyx_v_imx, PyObject *__pyx_v_imy, PyObject *__pyx_v_pix_x, PyObject *__pyx_v_pix_y, PyObject *__pyx_v_chfield, PyObject *__pyx_v_mm) {
   PyObject *__pyx_v_pc = NULL;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
@@ -8802,7 +8802,7 @@ static PyObject *__pyx_pf_10algorithms_5track_12_point_to_pixel_fast(CYTHON_UNUS
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("_point_to_pixel_fast", 0);
 
-  /* "algorithms/track.py":230
+  /* "openptv2/algorithms/track.py":230
  * def _point_to_pixel_fast(pos, cal, imx, imy, pix_x, pix_y, chfield, mm):
  *     """Project 3D position to pixel coordinates  convenience wrapper."""
  *     pc = _pack_cal(cal, mm)             # <<<<<<<<<<<<<<
@@ -8835,7 +8835,7 @@ static PyObject *__pyx_pf_10algorithms_5track_12_point_to_pixel_fast(CYTHON_UNUS
   __pyx_v_pc = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/track.py":231
+  /* "openptv2/algorithms/track.py":231
  *     """Project 3D position to pixel coordinates  convenience wrapper."""
  *     pc = _pack_cal(cal, mm)
  *     return _point_to_pixel_packed(pos, pc, imx * 0.5, imy * 0.5, 1.0 / pix_x, 1.0 / pix_y, chfield)             # <<<<<<<<<<<<<<
@@ -8882,7 +8882,7 @@ static PyObject *__pyx_pf_10algorithms_5track_12_point_to_pixel_fast(CYTHON_UNUS
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/track.py":228
+  /* "openptv2/algorithms/track.py":228
  * 
  * 
  * def _point_to_pixel_fast(pos, cal, imx, imy, pix_x, pix_y, chfield, mm):             # <<<<<<<<<<<<<<
@@ -8899,7 +8899,7 @@ static PyObject *__pyx_pf_10algorithms_5track_12_point_to_pixel_fast(CYTHON_UNUS
   __Pyx_XDECREF(__pyx_t_6);
   __Pyx_XDECREF(__pyx_t_7);
   __Pyx_XDECREF(__pyx_t_8);
-  __Pyx_AddTraceback("algorithms.track._point_to_pixel_fast", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track._point_to_pixel_fast", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_pc);
@@ -8908,7 +8908,7 @@ static PyObject *__pyx_pf_10algorithms_5track_12_point_to_pixel_fast(CYTHON_UNUS
   return __pyx_r;
 }
 
-/* "algorithms/track.py":234
+/* "openptv2/algorithms/track.py":234
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -8916,14 +8916,14 @@ static PyObject *__pyx_pf_10algorithms_5track_12_point_to_pixel_fast(CYTHON_UNUS
  *     prev_pos = np.asarray(prev_pos)
 */
 
-static PyObject *__pyx_pw_10algorithms_5track_15predict(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_15predict(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_5track_predict(PyObject *__pyx_v_prev_pos, PyObject *__pyx_v_curr_pos, PyObject *__pyx_v_c, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_5track_predict(PyObject *__pyx_v_prev_pos, PyObject *__pyx_v_curr_pos, PyObject *__pyx_v_c, CYTHON_UNUSED int __pyx_skip_dispatch) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -8938,7 +8938,7 @@ static PyObject *__pyx_f_10algorithms_5track_predict(PyObject *__pyx_v_prev_pos,
   __Pyx_INCREF(__pyx_v_prev_pos);
   __Pyx_INCREF(__pyx_v_curr_pos);
 
-  /* "algorithms/track.py":236
+  /* "openptv2/algorithms/track.py":236
  * @cython.ccall
  * def predict(prev_pos, curr_pos, c):
  *     prev_pos = np.asarray(prev_pos)             # <<<<<<<<<<<<<<
@@ -8974,7 +8974,7 @@ static PyObject *__pyx_f_10algorithms_5track_predict(PyObject *__pyx_v_prev_pos,
   __Pyx_DECREF_SET(__pyx_v_prev_pos, __pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "algorithms/track.py":237
+  /* "openptv2/algorithms/track.py":237
  * def predict(prev_pos, curr_pos, c):
  *     prev_pos = np.asarray(prev_pos)
  *     curr_pos = np.asarray(curr_pos)             # <<<<<<<<<<<<<<
@@ -9010,7 +9010,7 @@ static PyObject *__pyx_f_10algorithms_5track_predict(PyObject *__pyx_v_prev_pos,
   __Pyx_DECREF_SET(__pyx_v_curr_pos, __pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "algorithms/track.py":238
+  /* "openptv2/algorithms/track.py":238
  *     prev_pos = np.asarray(prev_pos)
  *     curr_pos = np.asarray(curr_pos)
  *     c[:] = curr_pos + (curr_pos - prev_pos)             # <<<<<<<<<<<<<<
@@ -9025,7 +9025,7 @@ static PyObject *__pyx_f_10algorithms_5track_predict(PyObject *__pyx_v_prev_pos,
   if (__Pyx_PyObject_SetSlice(__pyx_v_c, __pyx_t_3, 0, 0, NULL, NULL, &__pyx_mstate_global->__pyx_slice[0], 0, 0, 0) < (0)) __PYX_ERR(0, 238, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-  /* "algorithms/track.py":234
+  /* "openptv2/algorithms/track.py":234
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -9041,7 +9041,7 @@ static PyObject *__pyx_f_10algorithms_5track_predict(PyObject *__pyx_v_prev_pos,
   __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_4);
-  __Pyx_AddTraceback("algorithms.track.predict", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.predict", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_prev_pos);
@@ -9052,15 +9052,15 @@ static PyObject *__pyx_f_10algorithms_5track_predict(PyObject *__pyx_v_prev_pos,
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_5track_15predict(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_15predict(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_10algorithms_5track_15predict = {"predict", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_5track_15predict, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10algorithms_5track_15predict(PyObject *__pyx_self, 
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_5track_15predict = {"predict", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_5track_15predict, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_15predict(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -9138,11 +9138,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.track.predict", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.predict", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_5track_14predict(__pyx_self, __pyx_v_prev_pos, __pyx_v_curr_pos, __pyx_v_c);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_5track_14predict(__pyx_self, __pyx_v_prev_pos, __pyx_v_curr_pos, __pyx_v_c);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -9152,7 +9152,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_5track_14predict(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_prev_pos, PyObject *__pyx_v_curr_pos, PyObject *__pyx_v_c) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_14predict(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_prev_pos, PyObject *__pyx_v_curr_pos, PyObject *__pyx_v_c) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -9161,7 +9161,7 @@ static PyObject *__pyx_pf_10algorithms_5track_14predict(CYTHON_UNUSED PyObject *
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("predict", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_5track_predict(__pyx_v_prev_pos, __pyx_v_curr_pos, __pyx_v_c, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 234, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_5track_predict(__pyx_v_prev_pos, __pyx_v_curr_pos, __pyx_v_c, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 234, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -9170,7 +9170,7 @@ static PyObject *__pyx_pf_10algorithms_5track_14predict(CYTHON_UNUSED PyObject *
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.track.predict", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.predict", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -9178,7 +9178,7 @@ static PyObject *__pyx_pf_10algorithms_5track_14predict(CYTHON_UNUSED PyObject *
   return __pyx_r;
 }
 
-/* "algorithms/track.py":241
+/* "openptv2/algorithms/track.py":241
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -9186,14 +9186,14 @@ static PyObject *__pyx_pf_10algorithms_5track_14predict(CYTHON_UNUSED PyObject *
  *     prev_pos = np.asarray(prev_pos)
 */
 
-static PyObject *__pyx_pw_10algorithms_5track_17search_volume_center_moving(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_17search_volume_center_moving(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_5track_search_volume_center_moving(PyObject *__pyx_v_prev_pos, PyObject *__pyx_v_curr_pos, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_5track_search_volume_center_moving(PyObject *__pyx_v_prev_pos, PyObject *__pyx_v_curr_pos, CYTHON_UNUSED int __pyx_skip_dispatch) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -9208,7 +9208,7 @@ static PyObject *__pyx_f_10algorithms_5track_search_volume_center_moving(PyObjec
   __Pyx_INCREF(__pyx_v_prev_pos);
   __Pyx_INCREF(__pyx_v_curr_pos);
 
-  /* "algorithms/track.py":243
+  /* "openptv2/algorithms/track.py":243
  * @cython.ccall
  * def search_volume_center_moving(prev_pos, curr_pos):
  *     prev_pos = np.asarray(prev_pos)             # <<<<<<<<<<<<<<
@@ -9244,7 +9244,7 @@ static PyObject *__pyx_f_10algorithms_5track_search_volume_center_moving(PyObjec
   __Pyx_DECREF_SET(__pyx_v_prev_pos, __pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "algorithms/track.py":244
+  /* "openptv2/algorithms/track.py":244
  * def search_volume_center_moving(prev_pos, curr_pos):
  *     prev_pos = np.asarray(prev_pos)
  *     curr_pos = np.asarray(curr_pos)             # <<<<<<<<<<<<<<
@@ -9280,7 +9280,7 @@ static PyObject *__pyx_f_10algorithms_5track_search_volume_center_moving(PyObjec
   __Pyx_DECREF_SET(__pyx_v_curr_pos, __pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "algorithms/track.py":245
+  /* "openptv2/algorithms/track.py":245
  *     prev_pos = np.asarray(prev_pos)
  *     curr_pos = np.asarray(curr_pos)
  *     return curr_pos + (curr_pos - prev_pos)             # <<<<<<<<<<<<<<
@@ -9297,7 +9297,7 @@ static PyObject *__pyx_f_10algorithms_5track_search_volume_center_moving(PyObjec
   __pyx_t_3 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/track.py":241
+  /* "openptv2/algorithms/track.py":241
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -9311,7 +9311,7 @@ static PyObject *__pyx_f_10algorithms_5track_search_volume_center_moving(PyObjec
   __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_4);
-  __Pyx_AddTraceback("algorithms.track.search_volume_center_moving", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.search_volume_center_moving", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_prev_pos);
@@ -9322,15 +9322,15 @@ static PyObject *__pyx_f_10algorithms_5track_search_volume_center_moving(PyObjec
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_5track_17search_volume_center_moving(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_17search_volume_center_moving(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_10algorithms_5track_17search_volume_center_moving = {"search_volume_center_moving", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_5track_17search_volume_center_moving, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10algorithms_5track_17search_volume_center_moving(PyObject *__pyx_self, 
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_5track_17search_volume_center_moving = {"search_volume_center_moving", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_5track_17search_volume_center_moving, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_17search_volume_center_moving(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -9400,11 +9400,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.track.search_volume_center_moving", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.search_volume_center_moving", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_5track_16search_volume_center_moving(__pyx_self, __pyx_v_prev_pos, __pyx_v_curr_pos);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_5track_16search_volume_center_moving(__pyx_self, __pyx_v_prev_pos, __pyx_v_curr_pos);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -9414,7 +9414,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_5track_16search_volume_center_moving(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_prev_pos, PyObject *__pyx_v_curr_pos) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_16search_volume_center_moving(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_prev_pos, PyObject *__pyx_v_curr_pos) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -9423,7 +9423,7 @@ static PyObject *__pyx_pf_10algorithms_5track_16search_volume_center_moving(CYTH
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("search_volume_center_moving", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_5track_search_volume_center_moving(__pyx_v_prev_pos, __pyx_v_curr_pos, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 241, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_5track_search_volume_center_moving(__pyx_v_prev_pos, __pyx_v_curr_pos, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 241, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -9432,7 +9432,7 @@ static PyObject *__pyx_pf_10algorithms_5track_16search_volume_center_moving(CYTH
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.track.search_volume_center_moving", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.search_volume_center_moving", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -9440,7 +9440,7 @@ static PyObject *__pyx_pf_10algorithms_5track_16search_volume_center_moving(CYTH
   return __pyx_r;
 }
 
-/* "algorithms/track.py":248
+/* "openptv2/algorithms/track.py":248
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -9448,14 +9448,14 @@ static PyObject *__pyx_pf_10algorithms_5track_16search_volume_center_moving(CYTH
  *     x, y, z = pos
 */
 
-static PyObject *__pyx_pw_10algorithms_5track_19pos3d_in_bounds(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_19pos3d_in_bounds(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_5track_pos3d_in_bounds(PyObject *__pyx_v_pos, PyObject *__pyx_v_bounds, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_5track_pos3d_in_bounds(PyObject *__pyx_v_pos, PyObject *__pyx_v_bounds, CYTHON_UNUSED int __pyx_skip_dispatch) {
   PyObject *__pyx_v_x = NULL;
   PyObject *__pyx_v_y = NULL;
   PyObject *__pyx_v_z = NULL;
@@ -9473,7 +9473,7 @@ static PyObject *__pyx_f_10algorithms_5track_pos3d_in_bounds(PyObject *__pyx_v_p
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("pos3d_in_bounds", 0);
 
-  /* "algorithms/track.py":250
+  /* "openptv2/algorithms/track.py":250
  * @cython.ccall
  * def pos3d_in_bounds(pos, bounds):
  *     x, y, z = pos             # <<<<<<<<<<<<<<
@@ -9544,7 +9544,7 @@ static PyObject *__pyx_f_10algorithms_5track_pos3d_in_bounds(PyObject *__pyx_v_p
   __pyx_v_z = __pyx_t_3;
   __pyx_t_3 = 0;
 
-  /* "algorithms/track.py":251
+  /* "openptv2/algorithms/track.py":251
  * def pos3d_in_bounds(pos, bounds):
  *     x, y, z = pos
  *     return bool(             # <<<<<<<<<<<<<<
@@ -9553,7 +9553,7 @@ static PyObject *__pyx_f_10algorithms_5track_pos3d_in_bounds(PyObject *__pyx_v_p
 */
   __Pyx_XDECREF(__pyx_r);
 
-  /* "algorithms/track.py":252
+  /* "openptv2/algorithms/track.py":252
  *     x, y, z = pos
  *     return bool(
  *         bounds.dvxmin < x < bounds.dvxmax and             # <<<<<<<<<<<<<<
@@ -9579,7 +9579,7 @@ static PyObject *__pyx_f_10algorithms_5track_pos3d_in_bounds(PyObject *__pyx_v_p
     goto __pyx_L5_bool_binop_done;
   }
 
-  /* "algorithms/track.py":253
+  /* "openptv2/algorithms/track.py":253
  *     return bool(
  *         bounds.dvxmin < x < bounds.dvxmax and
  *         bounds.dvymin < y < bounds.dvymax and             # <<<<<<<<<<<<<<
@@ -9605,7 +9605,7 @@ static PyObject *__pyx_f_10algorithms_5track_pos3d_in_bounds(PyObject *__pyx_v_p
     goto __pyx_L5_bool_binop_done;
   }
 
-  /* "algorithms/track.py":254
+  /* "openptv2/algorithms/track.py":254
  *         bounds.dvxmin < x < bounds.dvxmax and
  *         bounds.dvymin < y < bounds.dvymax and
  *         bounds.dvzmin < z < bounds.dvzmax             # <<<<<<<<<<<<<<
@@ -9628,7 +9628,7 @@ static PyObject *__pyx_f_10algorithms_5track_pos3d_in_bounds(PyObject *__pyx_v_p
   __pyx_t_6 = __pyx_t_7;
   __pyx_L5_bool_binop_done:;
 
-  /* "algorithms/track.py":251
+  /* "openptv2/algorithms/track.py":251
  * def pos3d_in_bounds(pos, bounds):
  *     x, y, z = pos
  *     return bool(             # <<<<<<<<<<<<<<
@@ -9641,7 +9641,7 @@ static PyObject *__pyx_f_10algorithms_5track_pos3d_in_bounds(PyObject *__pyx_v_p
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/track.py":248
+  /* "openptv2/algorithms/track.py":248
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -9655,7 +9655,7 @@ static PyObject *__pyx_f_10algorithms_5track_pos3d_in_bounds(PyObject *__pyx_v_p
   __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_4);
-  __Pyx_AddTraceback("algorithms.track.pos3d_in_bounds", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.pos3d_in_bounds", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_x);
@@ -9667,15 +9667,15 @@ static PyObject *__pyx_f_10algorithms_5track_pos3d_in_bounds(PyObject *__pyx_v_p
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_5track_19pos3d_in_bounds(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_19pos3d_in_bounds(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_10algorithms_5track_19pos3d_in_bounds = {"pos3d_in_bounds", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_5track_19pos3d_in_bounds, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10algorithms_5track_19pos3d_in_bounds(PyObject *__pyx_self, 
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_5track_19pos3d_in_bounds = {"pos3d_in_bounds", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_5track_19pos3d_in_bounds, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_19pos3d_in_bounds(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -9745,11 +9745,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.track.pos3d_in_bounds", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.pos3d_in_bounds", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_5track_18pos3d_in_bounds(__pyx_self, __pyx_v_pos, __pyx_v_bounds);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_5track_18pos3d_in_bounds(__pyx_self, __pyx_v_pos, __pyx_v_bounds);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -9759,7 +9759,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_5track_18pos3d_in_bounds(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_pos, PyObject *__pyx_v_bounds) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_18pos3d_in_bounds(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_pos, PyObject *__pyx_v_bounds) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -9768,7 +9768,7 @@ static PyObject *__pyx_pf_10algorithms_5track_18pos3d_in_bounds(CYTHON_UNUSED Py
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("pos3d_in_bounds", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_5track_pos3d_in_bounds(__pyx_v_pos, __pyx_v_bounds, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 248, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_5track_pos3d_in_bounds(__pyx_v_pos, __pyx_v_bounds, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 248, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -9777,7 +9777,7 @@ static PyObject *__pyx_pf_10algorithms_5track_18pos3d_in_bounds(CYTHON_UNUSED Py
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.track.pos3d_in_bounds", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.pos3d_in_bounds", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -9785,7 +9785,7 @@ static PyObject *__pyx_pf_10algorithms_5track_18pos3d_in_bounds(CYTHON_UNUSED Py
   return __pyx_r;
 }
 
-/* "algorithms/track.py":258
+/* "openptv2/algorithms/track.py":258
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -9793,14 +9793,14 @@ static PyObject *__pyx_pf_10algorithms_5track_18pos3d_in_bounds(CYTHON_UNUSED Py
  *     v0x: cython.double = pred[0] - start[0]
 */
 
-static PyObject *__pyx_pw_10algorithms_5track_21angle_acc(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_21angle_acc(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_5track_angle_acc(PyObject *__pyx_v_start, PyObject *__pyx_v_pred, PyObject *__pyx_v_cand, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_5track_angle_acc(PyObject *__pyx_v_start, PyObject *__pyx_v_pred, PyObject *__pyx_v_cand, CYTHON_UNUSED int __pyx_skip_dispatch) {
   double __pyx_v_v0x;
   double __pyx_v_v0y;
   double __pyx_v_v0z;
@@ -9828,7 +9828,7 @@ static PyObject *__pyx_f_10algorithms_5track_angle_acc(PyObject *__pyx_v_start, 
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("angle_acc", 0);
 
-  /* "algorithms/track.py":260
+  /* "openptv2/algorithms/track.py":260
  * @cython.ccall
  * def angle_acc(start, pred, cand):
  *     v0x: cython.double = pred[0] - start[0]             # <<<<<<<<<<<<<<
@@ -9847,7 +9847,7 @@ static PyObject *__pyx_f_10algorithms_5track_angle_acc(PyObject *__pyx_v_start, 
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_v_v0x = __pyx_t_4;
 
-  /* "algorithms/track.py":261
+  /* "openptv2/algorithms/track.py":261
  * def angle_acc(start, pred, cand):
  *     v0x: cython.double = pred[0] - start[0]
  *     v0y: cython.double = pred[1] - start[1]             # <<<<<<<<<<<<<<
@@ -9866,7 +9866,7 @@ static PyObject *__pyx_f_10algorithms_5track_angle_acc(PyObject *__pyx_v_start, 
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_v0y = __pyx_t_4;
 
-  /* "algorithms/track.py":262
+  /* "openptv2/algorithms/track.py":262
  *     v0x: cython.double = pred[0] - start[0]
  *     v0y: cython.double = pred[1] - start[1]
  *     v0z: cython.double = pred[2] - start[2]             # <<<<<<<<<<<<<<
@@ -9885,7 +9885,7 @@ static PyObject *__pyx_f_10algorithms_5track_angle_acc(PyObject *__pyx_v_start, 
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_v_v0z = __pyx_t_4;
 
-  /* "algorithms/track.py":263
+  /* "openptv2/algorithms/track.py":263
  *     v0y: cython.double = pred[1] - start[1]
  *     v0z: cython.double = pred[2] - start[2]
  *     v1x: cython.double = cand[0] - start[0]             # <<<<<<<<<<<<<<
@@ -9904,7 +9904,7 @@ static PyObject *__pyx_f_10algorithms_5track_angle_acc(PyObject *__pyx_v_start, 
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_v1x = __pyx_t_4;
 
-  /* "algorithms/track.py":264
+  /* "openptv2/algorithms/track.py":264
  *     v0z: cython.double = pred[2] - start[2]
  *     v1x: cython.double = cand[0] - start[0]
  *     v1y: cython.double = cand[1] - start[1]             # <<<<<<<<<<<<<<
@@ -9923,7 +9923,7 @@ static PyObject *__pyx_f_10algorithms_5track_angle_acc(PyObject *__pyx_v_start, 
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_v_v1y = __pyx_t_4;
 
-  /* "algorithms/track.py":265
+  /* "openptv2/algorithms/track.py":265
  *     v1x: cython.double = cand[0] - start[0]
  *     v1y: cython.double = cand[1] - start[1]
  *     v1z: cython.double = cand[2] - start[2]             # <<<<<<<<<<<<<<
@@ -9942,7 +9942,7 @@ static PyObject *__pyx_f_10algorithms_5track_angle_acc(PyObject *__pyx_v_start, 
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_v1z = __pyx_t_4;
 
-  /* "algorithms/track.py":275
+  /* "openptv2/algorithms/track.py":275
  *     acc: cython.double
  * 
  *     if v0x == -v1x and v0y == -v1y and v0z == -v1z:             # <<<<<<<<<<<<<<
@@ -9966,7 +9966,7 @@ static PyObject *__pyx_f_10algorithms_5track_angle_acc(PyObject *__pyx_v_start, 
   __pyx_L4_bool_binop_done:;
   if (__pyx_t_5) {
 
-    /* "algorithms/track.py":276
+    /* "openptv2/algorithms/track.py":276
  * 
  *     if v0x == -v1x and v0y == -v1y and v0z == -v1z:
  *         angle = 200.0             # <<<<<<<<<<<<<<
@@ -9975,7 +9975,7 @@ static PyObject *__pyx_f_10algorithms_5track_angle_acc(PyObject *__pyx_v_start, 
 */
     __pyx_v_angle = 200.0;
 
-    /* "algorithms/track.py":275
+    /* "openptv2/algorithms/track.py":275
  *     acc: cython.double
  * 
  *     if v0x == -v1x and v0y == -v1y and v0z == -v1z:             # <<<<<<<<<<<<<<
@@ -9985,7 +9985,7 @@ static PyObject *__pyx_f_10algorithms_5track_angle_acc(PyObject *__pyx_v_start, 
     goto __pyx_L3;
   }
 
-  /* "algorithms/track.py":277
+  /* "openptv2/algorithms/track.py":277
  *     if v0x == -v1x and v0y == -v1y and v0z == -v1z:
  *         angle = 200.0
  *     elif v0x == v1x and v0y == v1y and v0z == v1z:             # <<<<<<<<<<<<<<
@@ -10009,7 +10009,7 @@ static PyObject *__pyx_f_10algorithms_5track_angle_acc(PyObject *__pyx_v_start, 
   __pyx_L7_bool_binop_done:;
   if (__pyx_t_5) {
 
-    /* "algorithms/track.py":278
+    /* "openptv2/algorithms/track.py":278
  *         angle = 200.0
  *     elif v0x == v1x and v0y == v1y and v0z == v1z:
  *         angle = 0.0             # <<<<<<<<<<<<<<
@@ -10018,7 +10018,7 @@ static PyObject *__pyx_f_10algorithms_5track_angle_acc(PyObject *__pyx_v_start, 
 */
     __pyx_v_angle = 0.0;
 
-    /* "algorithms/track.py":277
+    /* "openptv2/algorithms/track.py":277
  *     if v0x == -v1x and v0y == -v1y and v0z == -v1z:
  *         angle = 200.0
  *     elif v0x == v1x and v0y == v1y and v0z == v1z:             # <<<<<<<<<<<<<<
@@ -10028,7 +10028,7 @@ static PyObject *__pyx_f_10algorithms_5track_angle_acc(PyObject *__pyx_v_start, 
     goto __pyx_L3;
   }
 
-  /* "algorithms/track.py":280
+  /* "openptv2/algorithms/track.py":280
  *         angle = 0.0
  *     else:
  *         norm0 = c_sqrt(v0x * v0x + v0y * v0y + v0z * v0z)             # <<<<<<<<<<<<<<
@@ -10038,7 +10038,7 @@ static PyObject *__pyx_f_10algorithms_5track_angle_acc(PyObject *__pyx_v_start, 
   /*else*/ {
     __pyx_v_norm0 = sqrt((((__pyx_v_v0x * __pyx_v_v0x) + (__pyx_v_v0y * __pyx_v_v0y)) + (__pyx_v_v0z * __pyx_v_v0z)));
 
-    /* "algorithms/track.py":281
+    /* "openptv2/algorithms/track.py":281
  *     else:
  *         norm0 = c_sqrt(v0x * v0x + v0y * v0y + v0z * v0z)
  *         norm1 = c_sqrt(v1x * v1x + v1y * v1y + v1z * v1z)             # <<<<<<<<<<<<<<
@@ -10047,7 +10047,7 @@ static PyObject *__pyx_f_10algorithms_5track_angle_acc(PyObject *__pyx_v_start, 
 */
     __pyx_v_norm1 = sqrt((((__pyx_v_v1x * __pyx_v_v1x) + (__pyx_v_v1y * __pyx_v_v1y)) + (__pyx_v_v1z * __pyx_v_v1z)));
 
-    /* "algorithms/track.py":282
+    /* "openptv2/algorithms/track.py":282
  *         norm0 = c_sqrt(v0x * v0x + v0y * v0y + v0z * v0z)
  *         norm1 = c_sqrt(v1x * v1x + v1y * v1y + v1z * v1z)
  *         if norm0 == 0 or norm1 == 0:             # <<<<<<<<<<<<<<
@@ -10065,7 +10065,7 @@ static PyObject *__pyx_f_10algorithms_5track_angle_acc(PyObject *__pyx_v_start, 
     __pyx_L11_bool_binop_done:;
     if (__pyx_t_5) {
 
-      /* "algorithms/track.py":283
+      /* "openptv2/algorithms/track.py":283
  *         norm1 = c_sqrt(v1x * v1x + v1y * v1y + v1z * v1z)
  *         if norm0 == 0 or norm1 == 0:
  *             angle = 0.0             # <<<<<<<<<<<<<<
@@ -10074,7 +10074,7 @@ static PyObject *__pyx_f_10algorithms_5track_angle_acc(PyObject *__pyx_v_start, 
 */
       __pyx_v_angle = 0.0;
 
-      /* "algorithms/track.py":282
+      /* "openptv2/algorithms/track.py":282
  *         norm0 = c_sqrt(v0x * v0x + v0y * v0y + v0z * v0z)
  *         norm1 = c_sqrt(v1x * v1x + v1y * v1y + v1z * v1z)
  *         if norm0 == 0 or norm1 == 0:             # <<<<<<<<<<<<<<
@@ -10084,7 +10084,7 @@ static PyObject *__pyx_f_10algorithms_5track_angle_acc(PyObject *__pyx_v_start, 
       goto __pyx_L10;
     }
 
-    /* "algorithms/track.py":285
+    /* "openptv2/algorithms/track.py":285
  *             angle = 0.0
  *         else:
  *             dot = (v0x * v1x + v0y * v1y + v0z * v1z) / (norm0 * norm1)             # <<<<<<<<<<<<<<
@@ -10094,7 +10094,7 @@ static PyObject *__pyx_f_10algorithms_5track_angle_acc(PyObject *__pyx_v_start, 
     /*else*/ {
       __pyx_v_dot = ((((__pyx_v_v0x * __pyx_v_v1x) + (__pyx_v_v0y * __pyx_v_v1y)) + (__pyx_v_v0z * __pyx_v_v1z)) / (__pyx_v_norm0 * __pyx_v_norm1));
 
-      /* "algorithms/track.py":286
+      /* "openptv2/algorithms/track.py":286
  *         else:
  *             dot = (v0x * v1x + v0y * v1y + v0z * v1z) / (norm0 * norm1)
  *             if dot > 1.0:             # <<<<<<<<<<<<<<
@@ -10104,7 +10104,7 @@ static PyObject *__pyx_f_10algorithms_5track_angle_acc(PyObject *__pyx_v_start, 
       __pyx_t_5 = (__pyx_v_dot > 1.0);
       if (__pyx_t_5) {
 
-        /* "algorithms/track.py":287
+        /* "openptv2/algorithms/track.py":287
  *             dot = (v0x * v1x + v0y * v1y + v0z * v1z) / (norm0 * norm1)
  *             if dot > 1.0:
  *                 dot = 1.0             # <<<<<<<<<<<<<<
@@ -10113,7 +10113,7 @@ static PyObject *__pyx_f_10algorithms_5track_angle_acc(PyObject *__pyx_v_start, 
 */
         __pyx_v_dot = 1.0;
 
-        /* "algorithms/track.py":286
+        /* "openptv2/algorithms/track.py":286
  *         else:
  *             dot = (v0x * v1x + v0y * v1y + v0z * v1z) / (norm0 * norm1)
  *             if dot > 1.0:             # <<<<<<<<<<<<<<
@@ -10123,7 +10123,7 @@ static PyObject *__pyx_f_10algorithms_5track_angle_acc(PyObject *__pyx_v_start, 
         goto __pyx_L13;
       }
 
-      /* "algorithms/track.py":288
+      /* "openptv2/algorithms/track.py":288
  *             if dot > 1.0:
  *                 dot = 1.0
  *             elif dot < -1.0:             # <<<<<<<<<<<<<<
@@ -10133,7 +10133,7 @@ static PyObject *__pyx_f_10algorithms_5track_angle_acc(PyObject *__pyx_v_start, 
       __pyx_t_5 = (__pyx_v_dot < -1.0);
       if (__pyx_t_5) {
 
-        /* "algorithms/track.py":289
+        /* "openptv2/algorithms/track.py":289
  *                 dot = 1.0
  *             elif dot < -1.0:
  *                 dot = -1.0             # <<<<<<<<<<<<<<
@@ -10142,7 +10142,7 @@ static PyObject *__pyx_f_10algorithms_5track_angle_acc(PyObject *__pyx_v_start, 
 */
         __pyx_v_dot = -1.0;
 
-        /* "algorithms/track.py":288
+        /* "openptv2/algorithms/track.py":288
  *             if dot > 1.0:
  *                 dot = 1.0
  *             elif dot < -1.0:             # <<<<<<<<<<<<<<
@@ -10152,7 +10152,7 @@ static PyObject *__pyx_f_10algorithms_5track_angle_acc(PyObject *__pyx_v_start, 
       }
       __pyx_L13:;
 
-      /* "algorithms/track.py":290
+      /* "openptv2/algorithms/track.py":290
  *             elif dot < -1.0:
  *                 dot = -1.0
  *             angle = c_acos(dot) * 200.0 / _M_PI             # <<<<<<<<<<<<<<
@@ -10175,7 +10175,7 @@ static PyObject *__pyx_f_10algorithms_5track_angle_acc(PyObject *__pyx_v_start, 
   }
   __pyx_L3:;
 
-  /* "algorithms/track.py":292
+  /* "openptv2/algorithms/track.py":292
  *             angle = c_acos(dot) * 200.0 / _M_PI
  * 
  *     dx = v1x - v0x             # <<<<<<<<<<<<<<
@@ -10184,7 +10184,7 @@ static PyObject *__pyx_f_10algorithms_5track_angle_acc(PyObject *__pyx_v_start, 
 */
   __pyx_v_dx = (__pyx_v_v1x - __pyx_v_v0x);
 
-  /* "algorithms/track.py":293
+  /* "openptv2/algorithms/track.py":293
  * 
  *     dx = v1x - v0x
  *     dy = v1y - v0y             # <<<<<<<<<<<<<<
@@ -10193,7 +10193,7 @@ static PyObject *__pyx_f_10algorithms_5track_angle_acc(PyObject *__pyx_v_start, 
 */
   __pyx_v_dy = (__pyx_v_v1y - __pyx_v_v0y);
 
-  /* "algorithms/track.py":294
+  /* "openptv2/algorithms/track.py":294
  *     dx = v1x - v0x
  *     dy = v1y - v0y
  *     dz = v1z - v0z             # <<<<<<<<<<<<<<
@@ -10202,7 +10202,7 @@ static PyObject *__pyx_f_10algorithms_5track_angle_acc(PyObject *__pyx_v_start, 
 */
   __pyx_v_dz = (__pyx_v_v1z - __pyx_v_v0z);
 
-  /* "algorithms/track.py":295
+  /* "openptv2/algorithms/track.py":295
  *     dy = v1y - v0y
  *     dz = v1z - v0z
  *     acc = c_sqrt(dx * dx + dy * dy + dz * dz)             # <<<<<<<<<<<<<<
@@ -10211,7 +10211,7 @@ static PyObject *__pyx_f_10algorithms_5track_angle_acc(PyObject *__pyx_v_start, 
 */
   __pyx_v_acc = sqrt((((__pyx_v_dx * __pyx_v_dx) + (__pyx_v_dy * __pyx_v_dy)) + (__pyx_v_dz * __pyx_v_dz)));
 
-  /* "algorithms/track.py":296
+  /* "openptv2/algorithms/track.py":296
  *     dz = v1z - v0z
  *     acc = c_sqrt(dx * dx + dy * dy + dz * dz)
  *     return angle, acc             # <<<<<<<<<<<<<<
@@ -10235,7 +10235,7 @@ static PyObject *__pyx_f_10algorithms_5track_angle_acc(PyObject *__pyx_v_start, 
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/track.py":258
+  /* "openptv2/algorithms/track.py":258
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -10248,7 +10248,7 @@ static PyObject *__pyx_f_10algorithms_5track_angle_acc(PyObject *__pyx_v_start, 
   __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3);
-  __Pyx_AddTraceback("algorithms.track.angle_acc", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.angle_acc", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -10257,15 +10257,15 @@ static PyObject *__pyx_f_10algorithms_5track_angle_acc(PyObject *__pyx_v_start, 
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_5track_21angle_acc(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_21angle_acc(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_10algorithms_5track_21angle_acc = {"angle_acc", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_5track_21angle_acc, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10algorithms_5track_21angle_acc(PyObject *__pyx_self, 
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_5track_21angle_acc = {"angle_acc", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_5track_21angle_acc, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_21angle_acc(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -10343,11 +10343,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.track.angle_acc", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.angle_acc", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_5track_20angle_acc(__pyx_self, __pyx_v_start, __pyx_v_pred, __pyx_v_cand);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_5track_20angle_acc(__pyx_self, __pyx_v_start, __pyx_v_pred, __pyx_v_cand);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -10357,7 +10357,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_5track_20angle_acc(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_start, PyObject *__pyx_v_pred, PyObject *__pyx_v_cand) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_20angle_acc(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_start, PyObject *__pyx_v_pred, PyObject *__pyx_v_cand) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -10366,7 +10366,7 @@ static PyObject *__pyx_pf_10algorithms_5track_20angle_acc(CYTHON_UNUSED PyObject
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("angle_acc", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_5track_angle_acc(__pyx_v_start, __pyx_v_pred, __pyx_v_cand, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 258, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_5track_angle_acc(__pyx_v_start, __pyx_v_pred, __pyx_v_cand, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 258, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -10375,7 +10375,7 @@ static PyObject *__pyx_pf_10algorithms_5track_20angle_acc(CYTHON_UNUSED PyObject
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.track.angle_acc", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.angle_acc", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -10383,7 +10383,7 @@ static PyObject *__pyx_pf_10algorithms_5track_20angle_acc(CYTHON_UNUSED PyObject
   return __pyx_r;
 }
 
-/* "algorithms/track.py":299
+/* "openptv2/algorithms/track.py":299
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -10391,14 +10391,14 @@ static PyObject *__pyx_pf_10algorithms_5track_20angle_acc(CYTHON_UNUSED PyObject
  * @cython.wraparound(False)
 */
 
-static PyObject *__pyx_pw_10algorithms_5track_23candsearch_in_pix(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_23candsearch_in_pix(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v_next_targets, PyObject *__pyx_v_num_targets, PyObject *__pyx_v_cent_x, PyObject *__pyx_v_cent_y, PyObject *__pyx_v_dl, PyObject *__pyx_v_dr, PyObject *__pyx_v_du, PyObject *__pyx_v_dd, PyObject *__pyx_v_cpar, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v_next_targets, PyObject *__pyx_v_num_targets, PyObject *__pyx_v_cent_x, PyObject *__pyx_v_cent_y, PyObject *__pyx_v_dl, PyObject *__pyx_v_dr, PyObject *__pyx_v_du, PyObject *__pyx_v_dd, PyObject *__pyx_v_cpar, CYTHON_UNUSED int __pyx_skip_dispatch) {
   PyObject *__pyx_v_p = NULL;
   double __pyx_v_xmin;
   double __pyx_v_xmax;
@@ -10442,7 +10442,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("candsearch_in_pix", 0);
 
-  /* "algorithms/track.py":304
+  /* "openptv2/algorithms/track.py":304
  * def candsearch_in_pix(next_targets, num_targets, cent_x, cent_y,
  *                       dl, dr, du, dd, cpar):
  *     p = [PT_UNUSED] * 4             # <<<<<<<<<<<<<<
@@ -10464,7 +10464,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
   __pyx_v_p = ((PyObject*)__pyx_t_2);
   __pyx_t_2 = 0;
 
-  /* "algorithms/track.py":305
+  /* "openptv2/algorithms/track.py":305
  *                       dl, dr, du, dd, cpar):
  *     p = [PT_UNUSED] * 4
  *     xmin: cython.double = cent_x - dl             # <<<<<<<<<<<<<<
@@ -10477,7 +10477,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_v_xmin = __pyx_t_3;
 
-  /* "algorithms/track.py":306
+  /* "openptv2/algorithms/track.py":306
  *     p = [PT_UNUSED] * 4
  *     xmin: cython.double = cent_x - dl
  *     xmax: cython.double = cent_x + dr             # <<<<<<<<<<<<<<
@@ -10490,7 +10490,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_v_xmax = __pyx_t_3;
 
-  /* "algorithms/track.py":307
+  /* "openptv2/algorithms/track.py":307
  *     xmin: cython.double = cent_x - dl
  *     xmax: cython.double = cent_x + dr
  *     ymin: cython.double = cent_y - du             # <<<<<<<<<<<<<<
@@ -10503,7 +10503,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_v_ymin = __pyx_t_3;
 
-  /* "algorithms/track.py":308
+  /* "openptv2/algorithms/track.py":308
  *     xmax: cython.double = cent_x + dr
  *     ymin: cython.double = cent_y - du
  *     ymax: cython.double = cent_y + dd             # <<<<<<<<<<<<<<
@@ -10516,7 +10516,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_v_ymax = __pyx_t_3;
 
-  /* "algorithms/track.py":323
+  /* "openptv2/algorithms/track.py":323
  *     d4: cython.double
  * 
  *     if xmin < 0.0:             # <<<<<<<<<<<<<<
@@ -10526,7 +10526,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
   __pyx_t_4 = (__pyx_v_xmin < 0.0);
   if (__pyx_t_4) {
 
-    /* "algorithms/track.py":324
+    /* "openptv2/algorithms/track.py":324
  * 
  *     if xmin < 0.0:
  *         xmin = 0.0             # <<<<<<<<<<<<<<
@@ -10535,7 +10535,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
 */
     __pyx_v_xmin = 0.0;
 
-    /* "algorithms/track.py":323
+    /* "openptv2/algorithms/track.py":323
  *     d4: cython.double
  * 
  *     if xmin < 0.0:             # <<<<<<<<<<<<<<
@@ -10544,7 +10544,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
 */
   }
 
-  /* "algorithms/track.py":325
+  /* "openptv2/algorithms/track.py":325
  *     if xmin < 0.0:
  *         xmin = 0.0
  *     if xmax > cpar.imx:             # <<<<<<<<<<<<<<
@@ -10562,7 +10562,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   if (__pyx_t_4) {
 
-    /* "algorithms/track.py":326
+    /* "openptv2/algorithms/track.py":326
  *         xmin = 0.0
  *     if xmax > cpar.imx:
  *         xmax = cpar.imx             # <<<<<<<<<<<<<<
@@ -10575,7 +10575,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __pyx_v_xmax = __pyx_t_3;
 
-    /* "algorithms/track.py":325
+    /* "openptv2/algorithms/track.py":325
  *     if xmin < 0.0:
  *         xmin = 0.0
  *     if xmax > cpar.imx:             # <<<<<<<<<<<<<<
@@ -10584,7 +10584,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
 */
   }
 
-  /* "algorithms/track.py":327
+  /* "openptv2/algorithms/track.py":327
  *     if xmax > cpar.imx:
  *         xmax = cpar.imx
  *     if ymin < 0.0:             # <<<<<<<<<<<<<<
@@ -10594,7 +10594,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
   __pyx_t_4 = (__pyx_v_ymin < 0.0);
   if (__pyx_t_4) {
 
-    /* "algorithms/track.py":328
+    /* "openptv2/algorithms/track.py":328
  *         xmax = cpar.imx
  *     if ymin < 0.0:
  *         ymin = 0.0             # <<<<<<<<<<<<<<
@@ -10603,7 +10603,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
 */
     __pyx_v_ymin = 0.0;
 
-    /* "algorithms/track.py":327
+    /* "openptv2/algorithms/track.py":327
  *     if xmax > cpar.imx:
  *         xmax = cpar.imx
  *     if ymin < 0.0:             # <<<<<<<<<<<<<<
@@ -10612,7 +10612,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
 */
   }
 
-  /* "algorithms/track.py":329
+  /* "openptv2/algorithms/track.py":329
  *     if ymin < 0.0:
  *         ymin = 0.0
  *     if ymax > cpar.imy:             # <<<<<<<<<<<<<<
@@ -10630,7 +10630,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   if (__pyx_t_4) {
 
-    /* "algorithms/track.py":330
+    /* "openptv2/algorithms/track.py":330
  *         ymin = 0.0
  *     if ymax > cpar.imy:
  *         ymax = cpar.imy             # <<<<<<<<<<<<<<
@@ -10643,7 +10643,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __pyx_v_ymax = __pyx_t_3;
 
-    /* "algorithms/track.py":329
+    /* "openptv2/algorithms/track.py":329
  *     if ymin < 0.0:
  *         ymin = 0.0
  *     if ymax > cpar.imy:             # <<<<<<<<<<<<<<
@@ -10652,7 +10652,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
 */
   }
 
-  /* "algorithms/track.py":332
+  /* "openptv2/algorithms/track.py":332
  *         ymax = cpar.imy
  * 
  *     p1 = p2 = p3 = p4 = PT_UNUSED             # <<<<<<<<<<<<<<
@@ -10668,7 +10668,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
   __pyx_v_p3 = __pyx_t_6;
   __pyx_v_p4 = __pyx_t_6;
 
-  /* "algorithms/track.py":333
+  /* "openptv2/algorithms/track.py":333
  * 
  *     p1 = p2 = p3 = p4 = PT_UNUSED
  *     dmin = 1e20             # <<<<<<<<<<<<<<
@@ -10677,7 +10677,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
 */
   __pyx_v_dmin = 1e20;
 
-  /* "algorithms/track.py":334
+  /* "openptv2/algorithms/track.py":334
  *     p1 = p2 = p3 = p4 = PT_UNUSED
  *     dmin = 1e20
  *     d1 = d2 = d3 = d4 = dmin             # <<<<<<<<<<<<<<
@@ -10689,7 +10689,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
   __pyx_v_d3 = __pyx_v_dmin;
   __pyx_v_d4 = __pyx_v_dmin;
 
-  /* "algorithms/track.py":336
+  /* "openptv2/algorithms/track.py":336
  *     d1 = d2 = d3 = d4 = dmin
  * 
  *     if not (0.0 <= cent_x <= cpar.imx and 0.0 <= cent_y <= cpar.imy):             # <<<<<<<<<<<<<<
@@ -10726,7 +10726,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
   __pyx_t_7 = (!__pyx_t_4);
   if (__pyx_t_7) {
 
-    /* "algorithms/track.py":337
+    /* "openptv2/algorithms/track.py":337
  * 
  *     if not (0.0 <= cent_x <= cpar.imx and 0.0 <= cent_y <= cpar.imy):
  *         return p             # <<<<<<<<<<<<<<
@@ -10738,7 +10738,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
     __pyx_r = __pyx_v_p;
     goto __pyx_L0;
 
-    /* "algorithms/track.py":336
+    /* "openptv2/algorithms/track.py":336
  *     d1 = d2 = d3 = d4 = dmin
  * 
  *     if not (0.0 <= cent_x <= cpar.imx and 0.0 <= cent_y <= cpar.imy):             # <<<<<<<<<<<<<<
@@ -10747,7 +10747,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
 */
   }
 
-  /* "algorithms/track.py":339
+  /* "openptv2/algorithms/track.py":339
  *         return p
  * 
  *     j0 = num_targets // 2             # <<<<<<<<<<<<<<
@@ -10760,7 +10760,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_v_j0 = __pyx_t_6;
 
-  /* "algorithms/track.py":340
+  /* "openptv2/algorithms/track.py":340
  * 
  *     j0 = num_targets // 2
  *     dj = num_targets // 4             # <<<<<<<<<<<<<<
@@ -10773,7 +10773,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_v_dj = __pyx_t_6;
 
-  /* "algorithms/track.py":341
+  /* "openptv2/algorithms/track.py":341
  *     j0 = num_targets // 2
  *     dj = num_targets // 4
  *     while dj > 1:             # <<<<<<<<<<<<<<
@@ -10784,7 +10784,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
     __pyx_t_7 = (__pyx_v_dj > 1);
     if (!__pyx_t_7) break;
 
-    /* "algorithms/track.py":342
+    /* "openptv2/algorithms/track.py":342
  *     dj = num_targets // 4
  *     while dj > 1:
  *         if next_targets[j0].y < ymin:             # <<<<<<<<<<<<<<
@@ -10805,7 +10805,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     if (__pyx_t_7) {
 
-      /* "algorithms/track.py":343
+      /* "openptv2/algorithms/track.py":343
  *     while dj > 1:
  *         if next_targets[j0].y < ymin:
  *             j0 += dj             # <<<<<<<<<<<<<<
@@ -10814,7 +10814,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
 */
       __pyx_v_j0 = (__pyx_v_j0 + __pyx_v_dj);
 
-      /* "algorithms/track.py":342
+      /* "openptv2/algorithms/track.py":342
  *     dj = num_targets // 4
  *     while dj > 1:
  *         if next_targets[j0].y < ymin:             # <<<<<<<<<<<<<<
@@ -10824,7 +10824,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
       goto __pyx_L12;
     }
 
-    /* "algorithms/track.py":345
+    /* "openptv2/algorithms/track.py":345
  *             j0 += dj
  *         else:
  *             j0 -= dj             # <<<<<<<<<<<<<<
@@ -10836,7 +10836,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
     }
     __pyx_L12:;
 
-    /* "algorithms/track.py":346
+    /* "openptv2/algorithms/track.py":346
  *         else:
  *             j0 -= dj
  *         dj //= 2             # <<<<<<<<<<<<<<
@@ -10846,7 +10846,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
     __pyx_v_dj = (__pyx_v_dj / 2);
   }
 
-  /* "algorithms/track.py":348
+  /* "openptv2/algorithms/track.py":348
  *         dj //= 2
  * 
  *     j0 -= 12             # <<<<<<<<<<<<<<
@@ -10855,7 +10855,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
 */
   __pyx_v_j0 = (__pyx_v_j0 - 12);
 
-  /* "algorithms/track.py":349
+  /* "openptv2/algorithms/track.py":349
  * 
  *     j0 -= 12
  *     if j0 < 0:             # <<<<<<<<<<<<<<
@@ -10865,7 +10865,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
   __pyx_t_7 = (__pyx_v_j0 < 0);
   if (__pyx_t_7) {
 
-    /* "algorithms/track.py":350
+    /* "openptv2/algorithms/track.py":350
  *     j0 -= 12
  *     if j0 < 0:
  *         j0 = 0             # <<<<<<<<<<<<<<
@@ -10874,7 +10874,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
 */
     __pyx_v_j0 = 0;
 
-    /* "algorithms/track.py":349
+    /* "openptv2/algorithms/track.py":349
  * 
  *     j0 -= 12
  *     if j0 < 0:             # <<<<<<<<<<<<<<
@@ -10883,7 +10883,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
 */
   }
 
-  /* "algorithms/track.py":352
+  /* "openptv2/algorithms/track.py":352
  *         j0 = 0
  * 
  *     for j in range(j0, num_targets):             # <<<<<<<<<<<<<<
@@ -10895,7 +10895,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
   for (__pyx_t_10 = __pyx_v_j0; __pyx_t_10 < __pyx_t_9; __pyx_t_10+=1) {
     __pyx_v_j = __pyx_t_10;
 
-    /* "algorithms/track.py":353
+    /* "openptv2/algorithms/track.py":353
  * 
  *     for j in range(j0, num_targets):
  *         t = next_targets[j]             # <<<<<<<<<<<<<<
@@ -10907,7 +10907,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
     __Pyx_XDECREF_SET(__pyx_v_t, __pyx_t_5);
     __pyx_t_5 = 0;
 
-    /* "algorithms/track.py":354
+    /* "openptv2/algorithms/track.py":354
  *     for j in range(j0, num_targets):
  *         t = next_targets[j]
  *         if t.tnr != TR_UNUSED:             # <<<<<<<<<<<<<<
@@ -10925,7 +10925,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     if (__pyx_t_7) {
 
-      /* "algorithms/track.py":355
+      /* "openptv2/algorithms/track.py":355
  *         t = next_targets[j]
  *         if t.tnr != TR_UNUSED:
  *             if t.y > ymax:             # <<<<<<<<<<<<<<
@@ -10943,7 +10943,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
       if (__pyx_t_7) {
 
-        /* "algorithms/track.py":356
+        /* "openptv2/algorithms/track.py":356
  *         if t.tnr != TR_UNUSED:
  *             if t.y > ymax:
  *                 break             # <<<<<<<<<<<<<<
@@ -10952,7 +10952,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
 */
         goto __pyx_L15_break;
 
-        /* "algorithms/track.py":355
+        /* "openptv2/algorithms/track.py":355
  *         t = next_targets[j]
  *         if t.tnr != TR_UNUSED:
  *             if t.y > ymax:             # <<<<<<<<<<<<<<
@@ -10961,7 +10961,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
 */
       }
 
-      /* "algorithms/track.py":357
+      /* "openptv2/algorithms/track.py":357
  *             if t.y > ymax:
  *                 break
  *             if t.x > xmin and t.x < xmax and t.y > ymin and t.y < ymax:             # <<<<<<<<<<<<<<
@@ -11023,7 +11023,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
       __pyx_L19_bool_binop_done:;
       if (__pyx_t_7) {
 
-        /* "algorithms/track.py":358
+        /* "openptv2/algorithms/track.py":358
  *                 break
  *             if t.x > xmin and t.x < xmax and t.y > ymin and t.y < ymax:
  *                 d = c_sqrt((cent_x - t.x) ** 2 + (cent_y - t.y) ** 2)             # <<<<<<<<<<<<<<
@@ -11054,7 +11054,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
         __pyx_v_d = sqrt(__pyx_t_3);
 
-        /* "algorithms/track.py":360
+        /* "openptv2/algorithms/track.py":360
  *                 d = c_sqrt((cent_x - t.x) ** 2 + (cent_y - t.y) ** 2)
  * 
  *                 if d < dmin:             # <<<<<<<<<<<<<<
@@ -11064,7 +11064,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
         __pyx_t_7 = (__pyx_v_d < __pyx_v_dmin);
         if (__pyx_t_7) {
 
-          /* "algorithms/track.py":361
+          /* "openptv2/algorithms/track.py":361
  * 
  *                 if d < dmin:
  *                     dmin = d             # <<<<<<<<<<<<<<
@@ -11073,7 +11073,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
 */
           __pyx_v_dmin = __pyx_v_d;
 
-          /* "algorithms/track.py":360
+          /* "openptv2/algorithms/track.py":360
  *                 d = c_sqrt((cent_x - t.x) ** 2 + (cent_y - t.y) ** 2)
  * 
  *                 if d < dmin:             # <<<<<<<<<<<<<<
@@ -11082,7 +11082,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
 */
         }
 
-        /* "algorithms/track.py":363
+        /* "openptv2/algorithms/track.py":363
  *                     dmin = d
  * 
  *                 if d < d1:             # <<<<<<<<<<<<<<
@@ -11092,7 +11092,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
         __pyx_t_7 = (__pyx_v_d < __pyx_v_d1);
         if (__pyx_t_7) {
 
-          /* "algorithms/track.py":364
+          /* "openptv2/algorithms/track.py":364
  * 
  *                 if d < d1:
  *                     p4, p3, p2, p1 = p3, p2, p1, j             # <<<<<<<<<<<<<<
@@ -11108,7 +11108,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
           __pyx_v_p2 = __pyx_t_12;
           __pyx_v_p1 = __pyx_t_13;
 
-          /* "algorithms/track.py":365
+          /* "openptv2/algorithms/track.py":365
  *                 if d < d1:
  *                     p4, p3, p2, p1 = p3, p2, p1, j
  *                     d4, d3, d2, d1 = d3, d2, d1, d             # <<<<<<<<<<<<<<
@@ -11124,7 +11124,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
           __pyx_v_d2 = __pyx_t_15;
           __pyx_v_d1 = __pyx_t_16;
 
-          /* "algorithms/track.py":363
+          /* "openptv2/algorithms/track.py":363
  *                     dmin = d
  * 
  *                 if d < d1:             # <<<<<<<<<<<<<<
@@ -11134,7 +11134,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
           goto __pyx_L24;
         }
 
-        /* "algorithms/track.py":366
+        /* "openptv2/algorithms/track.py":366
  *                     p4, p3, p2, p1 = p3, p2, p1, j
  *                     d4, d3, d2, d1 = d3, d2, d1, d
  *                 elif d1 < d < d2:             # <<<<<<<<<<<<<<
@@ -11147,7 +11147,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
         }
         if (__pyx_t_7) {
 
-          /* "algorithms/track.py":367
+          /* "openptv2/algorithms/track.py":367
  *                     d4, d3, d2, d1 = d3, d2, d1, d
  *                 elif d1 < d < d2:
  *                     p4, p3, p2 = p3, p2, j             # <<<<<<<<<<<<<<
@@ -11161,7 +11161,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
           __pyx_v_p3 = __pyx_t_11;
           __pyx_v_p2 = __pyx_t_13;
 
-          /* "algorithms/track.py":368
+          /* "openptv2/algorithms/track.py":368
  *                 elif d1 < d < d2:
  *                     p4, p3, p2 = p3, p2, j
  *                     d4, d3, d2 = d3, d2, d             # <<<<<<<<<<<<<<
@@ -11175,7 +11175,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
           __pyx_v_d3 = __pyx_t_15;
           __pyx_v_d2 = __pyx_t_14;
 
-          /* "algorithms/track.py":366
+          /* "openptv2/algorithms/track.py":366
  *                     p4, p3, p2, p1 = p3, p2, p1, j
  *                     d4, d3, d2, d1 = d3, d2, d1, d
  *                 elif d1 < d < d2:             # <<<<<<<<<<<<<<
@@ -11185,7 +11185,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
           goto __pyx_L24;
         }
 
-        /* "algorithms/track.py":369
+        /* "openptv2/algorithms/track.py":369
  *                     p4, p3, p2 = p3, p2, j
  *                     d4, d3, d2 = d3, d2, d
  *                 elif d2 < d < d3:             # <<<<<<<<<<<<<<
@@ -11198,7 +11198,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
         }
         if (__pyx_t_7) {
 
-          /* "algorithms/track.py":370
+          /* "openptv2/algorithms/track.py":370
  *                     d4, d3, d2 = d3, d2, d
  *                 elif d2 < d < d3:
  *                     p4, p3 = p3, j             # <<<<<<<<<<<<<<
@@ -11210,7 +11210,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
           __pyx_v_p4 = __pyx_t_11;
           __pyx_v_p3 = __pyx_t_13;
 
-          /* "algorithms/track.py":371
+          /* "openptv2/algorithms/track.py":371
  *                 elif d2 < d < d3:
  *                     p4, p3 = p3, j
  *                     d4, d3 = d3, d             # <<<<<<<<<<<<<<
@@ -11222,7 +11222,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
           __pyx_v_d4 = __pyx_t_14;
           __pyx_v_d3 = __pyx_t_15;
 
-          /* "algorithms/track.py":369
+          /* "openptv2/algorithms/track.py":369
  *                     p4, p3, p2 = p3, p2, j
  *                     d4, d3, d2 = d3, d2, d
  *                 elif d2 < d < d3:             # <<<<<<<<<<<<<<
@@ -11232,7 +11232,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
           goto __pyx_L24;
         }
 
-        /* "algorithms/track.py":372
+        /* "openptv2/algorithms/track.py":372
  *                     p4, p3 = p3, j
  *                     d4, d3 = d3, d
  *                 elif d3 < d < d4:             # <<<<<<<<<<<<<<
@@ -11245,7 +11245,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
         }
         if (__pyx_t_7) {
 
-          /* "algorithms/track.py":373
+          /* "openptv2/algorithms/track.py":373
  *                     d4, d3 = d3, d
  *                 elif d3 < d < d4:
  *                     p4 = j             # <<<<<<<<<<<<<<
@@ -11254,7 +11254,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
 */
           __pyx_v_p4 = __pyx_v_j;
 
-          /* "algorithms/track.py":374
+          /* "openptv2/algorithms/track.py":374
  *                 elif d3 < d < d4:
  *                     p4 = j
  *                     d4 = d             # <<<<<<<<<<<<<<
@@ -11263,7 +11263,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
 */
           __pyx_v_d4 = __pyx_v_d;
 
-          /* "algorithms/track.py":372
+          /* "openptv2/algorithms/track.py":372
  *                     p4, p3 = p3, j
  *                     d4, d3 = d3, d
  *                 elif d3 < d < d4:             # <<<<<<<<<<<<<<
@@ -11273,7 +11273,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
         }
         __pyx_L24:;
 
-        /* "algorithms/track.py":357
+        /* "openptv2/algorithms/track.py":357
  *             if t.y > ymax:
  *                 break
  *             if t.x > xmin and t.x < xmax and t.y > ymin and t.y < ymax:             # <<<<<<<<<<<<<<
@@ -11282,7 +11282,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
 */
       }
 
-      /* "algorithms/track.py":354
+      /* "openptv2/algorithms/track.py":354
  *     for j in range(j0, num_targets):
  *         t = next_targets[j]
  *         if t.tnr != TR_UNUSED:             # <<<<<<<<<<<<<<
@@ -11293,7 +11293,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
   }
   __pyx_L15_break:;
 
-  /* "algorithms/track.py":376
+  /* "openptv2/algorithms/track.py":376
  *                     d4 = d
  * 
  *     p[0], p[1], p[2], p[3] = p1, p2, p3, p4             # <<<<<<<<<<<<<<
@@ -11317,7 +11317,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
   if (unlikely((__Pyx_SetItemInt(__pyx_v_p, 3, __pyx_t_17, long, 1, __Pyx_PyLong_From_long, 1, 0, 0, 1, __Pyx_ReferenceSharing_OwnStrongReference) < 0))) __PYX_ERR(0, 376, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_17); __pyx_t_17 = 0;
 
-  /* "algorithms/track.py":377
+  /* "openptv2/algorithms/track.py":377
  * 
  *     p[0], p[1], p[2], p[3] = p1, p2, p3, p4
  *     return p             # <<<<<<<<<<<<<<
@@ -11329,7 +11329,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
   __pyx_r = __pyx_v_p;
   goto __pyx_L0;
 
-  /* "algorithms/track.py":299
+  /* "openptv2/algorithms/track.py":299
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -11343,7 +11343,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
   __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_5);
   __Pyx_XDECREF(__pyx_t_17);
-  __Pyx_AddTraceback("algorithms.track.candsearch_in_pix", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.candsearch_in_pix", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_p);
@@ -11354,15 +11354,15 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix(PyObject *__pyx_v
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_5track_23candsearch_in_pix(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_23candsearch_in_pix(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_10algorithms_5track_23candsearch_in_pix = {"candsearch_in_pix", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_5track_23candsearch_in_pix, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10algorithms_5track_23candsearch_in_pix(PyObject *__pyx_self, 
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_5track_23candsearch_in_pix = {"candsearch_in_pix", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_5track_23candsearch_in_pix, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_23candsearch_in_pix(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -11488,11 +11488,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.track.candsearch_in_pix", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.candsearch_in_pix", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_5track_22candsearch_in_pix(__pyx_self, __pyx_v_next_targets, __pyx_v_num_targets, __pyx_v_cent_x, __pyx_v_cent_y, __pyx_v_dl, __pyx_v_dr, __pyx_v_du, __pyx_v_dd, __pyx_v_cpar);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_5track_22candsearch_in_pix(__pyx_self, __pyx_v_next_targets, __pyx_v_num_targets, __pyx_v_cent_x, __pyx_v_cent_y, __pyx_v_dl, __pyx_v_dr, __pyx_v_du, __pyx_v_dd, __pyx_v_cpar);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -11502,7 +11502,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_5track_22candsearch_in_pix(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_next_targets, PyObject *__pyx_v_num_targets, PyObject *__pyx_v_cent_x, PyObject *__pyx_v_cent_y, PyObject *__pyx_v_dl, PyObject *__pyx_v_dr, PyObject *__pyx_v_du, PyObject *__pyx_v_dd, PyObject *__pyx_v_cpar) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_22candsearch_in_pix(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_next_targets, PyObject *__pyx_v_num_targets, PyObject *__pyx_v_cent_x, PyObject *__pyx_v_cent_y, PyObject *__pyx_v_dl, PyObject *__pyx_v_dr, PyObject *__pyx_v_du, PyObject *__pyx_v_dd, PyObject *__pyx_v_cpar) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -11511,7 +11511,7 @@ static PyObject *__pyx_pf_10algorithms_5track_22candsearch_in_pix(CYTHON_UNUSED 
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("candsearch_in_pix", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_5track_candsearch_in_pix(__pyx_v_next_targets, __pyx_v_num_targets, __pyx_v_cent_x, __pyx_v_cent_y, __pyx_v_dl, __pyx_v_dr, __pyx_v_du, __pyx_v_dd, __pyx_v_cpar, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 299, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_5track_candsearch_in_pix(__pyx_v_next_targets, __pyx_v_num_targets, __pyx_v_cent_x, __pyx_v_cent_y, __pyx_v_dl, __pyx_v_dr, __pyx_v_du, __pyx_v_dd, __pyx_v_cpar, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 299, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -11520,7 +11520,7 @@ static PyObject *__pyx_pf_10algorithms_5track_22candsearch_in_pix(CYTHON_UNUSED 
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.track.candsearch_in_pix", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.candsearch_in_pix", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -11528,7 +11528,7 @@ static PyObject *__pyx_pf_10algorithms_5track_22candsearch_in_pix(CYTHON_UNUSED 
   return __pyx_r;
 }
 
-/* "algorithms/track.py":380
+/* "openptv2/algorithms/track.py":380
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -11536,14 +11536,14 @@ static PyObject *__pyx_pf_10algorithms_5track_22candsearch_in_pix(CYTHON_UNUSED 
  * @cython.wraparound(False)
 */
 
-static PyObject *__pyx_pw_10algorithms_5track_25candsearch_in_pix_rest(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_25candsearch_in_pix_rest(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix_rest(PyObject *__pyx_v_next_targets, PyObject *__pyx_v_num_targets, PyObject *__pyx_v_cent_x, PyObject *__pyx_v_cent_y, PyObject *__pyx_v_dl, PyObject *__pyx_v_dr, PyObject *__pyx_v_du, PyObject *__pyx_v_dd, PyObject *__pyx_v_p, PyObject *__pyx_v_cpar, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_5track_candsearch_in_pix_rest(PyObject *__pyx_v_next_targets, PyObject *__pyx_v_num_targets, PyObject *__pyx_v_cent_x, PyObject *__pyx_v_cent_y, PyObject *__pyx_v_dl, PyObject *__pyx_v_dr, PyObject *__pyx_v_du, PyObject *__pyx_v_dd, PyObject *__pyx_v_p, PyObject *__pyx_v_cpar, CYTHON_UNUSED int __pyx_skip_dispatch) {
   double __pyx_v_xmin;
   double __pyx_v_xmax;
   double __pyx_v_ymin;
@@ -11572,7 +11572,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix_rest(PyObject *__
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("candsearch_in_pix_rest", 0);
 
-  /* "algorithms/track.py":385
+  /* "openptv2/algorithms/track.py":385
  * def candsearch_in_pix_rest(next_targets, num_targets, cent_x, cent_y,
  *                            dl, dr, du, dd, p, cpar):
  *     xmin: cython.double = cent_x - dl             # <<<<<<<<<<<<<<
@@ -11585,7 +11585,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix_rest(PyObject *__
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_xmin = __pyx_t_2;
 
-  /* "algorithms/track.py":386
+  /* "openptv2/algorithms/track.py":386
  *                            dl, dr, du, dd, p, cpar):
  *     xmin: cython.double = cent_x - dl
  *     xmax: cython.double = cent_x + dr             # <<<<<<<<<<<<<<
@@ -11598,7 +11598,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix_rest(PyObject *__
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_xmax = __pyx_t_2;
 
-  /* "algorithms/track.py":387
+  /* "openptv2/algorithms/track.py":387
  *     xmin: cython.double = cent_x - dl
  *     xmax: cython.double = cent_x + dr
  *     ymin: cython.double = cent_y - du             # <<<<<<<<<<<<<<
@@ -11611,7 +11611,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix_rest(PyObject *__
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_ymin = __pyx_t_2;
 
-  /* "algorithms/track.py":388
+  /* "openptv2/algorithms/track.py":388
  *     xmax: cython.double = cent_x + dr
  *     ymin: cython.double = cent_y - du
  *     ymax: cython.double = cent_y + dd             # <<<<<<<<<<<<<<
@@ -11624,7 +11624,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix_rest(PyObject *__
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_ymax = __pyx_t_2;
 
-  /* "algorithms/track.py":396
+  /* "openptv2/algorithms/track.py":396
  *     d: cython.double
  * 
  *     if xmin < 0.0:             # <<<<<<<<<<<<<<
@@ -11634,7 +11634,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix_rest(PyObject *__
   __pyx_t_3 = (__pyx_v_xmin < 0.0);
   if (__pyx_t_3) {
 
-    /* "algorithms/track.py":397
+    /* "openptv2/algorithms/track.py":397
  * 
  *     if xmin < 0.0:
  *         xmin = 0.0             # <<<<<<<<<<<<<<
@@ -11643,7 +11643,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix_rest(PyObject *__
 */
     __pyx_v_xmin = 0.0;
 
-    /* "algorithms/track.py":396
+    /* "openptv2/algorithms/track.py":396
  *     d: cython.double
  * 
  *     if xmin < 0.0:             # <<<<<<<<<<<<<<
@@ -11652,7 +11652,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix_rest(PyObject *__
 */
   }
 
-  /* "algorithms/track.py":398
+  /* "openptv2/algorithms/track.py":398
  *     if xmin < 0.0:
  *         xmin = 0.0
  *     if xmax > cpar.imx:             # <<<<<<<<<<<<<<
@@ -11670,7 +11670,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix_rest(PyObject *__
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   if (__pyx_t_3) {
 
-    /* "algorithms/track.py":399
+    /* "openptv2/algorithms/track.py":399
  *         xmin = 0.0
  *     if xmax > cpar.imx:
  *         xmax = cpar.imx             # <<<<<<<<<<<<<<
@@ -11683,7 +11683,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix_rest(PyObject *__
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __pyx_v_xmax = __pyx_t_2;
 
-    /* "algorithms/track.py":398
+    /* "openptv2/algorithms/track.py":398
  *     if xmin < 0.0:
  *         xmin = 0.0
  *     if xmax > cpar.imx:             # <<<<<<<<<<<<<<
@@ -11692,7 +11692,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix_rest(PyObject *__
 */
   }
 
-  /* "algorithms/track.py":400
+  /* "openptv2/algorithms/track.py":400
  *     if xmax > cpar.imx:
  *         xmax = cpar.imx
  *     if ymin < 0.0:             # <<<<<<<<<<<<<<
@@ -11702,7 +11702,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix_rest(PyObject *__
   __pyx_t_3 = (__pyx_v_ymin < 0.0);
   if (__pyx_t_3) {
 
-    /* "algorithms/track.py":401
+    /* "openptv2/algorithms/track.py":401
  *         xmax = cpar.imx
  *     if ymin < 0.0:
  *         ymin = 0.0             # <<<<<<<<<<<<<<
@@ -11711,7 +11711,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix_rest(PyObject *__
 */
     __pyx_v_ymin = 0.0;
 
-    /* "algorithms/track.py":400
+    /* "openptv2/algorithms/track.py":400
  *     if xmax > cpar.imx:
  *         xmax = cpar.imx
  *     if ymin < 0.0:             # <<<<<<<<<<<<<<
@@ -11720,7 +11720,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix_rest(PyObject *__
 */
   }
 
-  /* "algorithms/track.py":402
+  /* "openptv2/algorithms/track.py":402
  *     if ymin < 0.0:
  *         ymin = 0.0
  *     if ymax > cpar.imy:             # <<<<<<<<<<<<<<
@@ -11738,7 +11738,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix_rest(PyObject *__
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   if (__pyx_t_3) {
 
-    /* "algorithms/track.py":403
+    /* "openptv2/algorithms/track.py":403
  *         ymin = 0.0
  *     if ymax > cpar.imy:
  *         ymax = cpar.imy             # <<<<<<<<<<<<<<
@@ -11751,7 +11751,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix_rest(PyObject *__
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __pyx_v_ymax = __pyx_t_2;
 
-    /* "algorithms/track.py":402
+    /* "openptv2/algorithms/track.py":402
  *     if ymin < 0.0:
  *         ymin = 0.0
  *     if ymax > cpar.imy:             # <<<<<<<<<<<<<<
@@ -11760,7 +11760,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix_rest(PyObject *__
 */
   }
 
-  /* "algorithms/track.py":405
+  /* "openptv2/algorithms/track.py":405
  *         ymax = cpar.imy
  * 
  *     p[0] = PT_UNUSED             # <<<<<<<<<<<<<<
@@ -11772,7 +11772,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix_rest(PyObject *__
   if (unlikely((__Pyx_SetItemInt(__pyx_v_p, 0, __pyx_t_1, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_FunctionArgument) < 0))) __PYX_ERR(0, 405, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/track.py":406
+  /* "openptv2/algorithms/track.py":406
  * 
  *     p[0] = PT_UNUSED
  *     counter = 0             # <<<<<<<<<<<<<<
@@ -11781,7 +11781,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix_rest(PyObject *__
 */
   __pyx_v_counter = 0;
 
-  /* "algorithms/track.py":407
+  /* "openptv2/algorithms/track.py":407
  *     p[0] = PT_UNUSED
  *     counter = 0
  *     dmin = 1e20             # <<<<<<<<<<<<<<
@@ -11790,7 +11790,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix_rest(PyObject *__
 */
   __pyx_v_dmin = 1e20;
 
-  /* "algorithms/track.py":409
+  /* "openptv2/algorithms/track.py":409
  *     dmin = 1e20
  * 
  *     if not (0.0 <= cent_x <= cpar.imx and 0.0 <= cent_y <= cpar.imy):             # <<<<<<<<<<<<<<
@@ -11827,7 +11827,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix_rest(PyObject *__
   __pyx_t_6 = (!__pyx_t_3);
   if (__pyx_t_6) {
 
-    /* "algorithms/track.py":410
+    /* "openptv2/algorithms/track.py":410
  * 
  *     if not (0.0 <= cent_x <= cpar.imx and 0.0 <= cent_y <= cpar.imy):
  *         return 0             # <<<<<<<<<<<<<<
@@ -11839,7 +11839,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix_rest(PyObject *__
     __pyx_r = __pyx_mstate_global->__pyx_int_0;
     goto __pyx_L0;
 
-    /* "algorithms/track.py":409
+    /* "openptv2/algorithms/track.py":409
  *     dmin = 1e20
  * 
  *     if not (0.0 <= cent_x <= cpar.imx and 0.0 <= cent_y <= cpar.imy):             # <<<<<<<<<<<<<<
@@ -11848,7 +11848,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix_rest(PyObject *__
 */
   }
 
-  /* "algorithms/track.py":412
+  /* "openptv2/algorithms/track.py":412
  *         return 0
  * 
  *     j0 = num_targets // 2             # <<<<<<<<<<<<<<
@@ -11861,7 +11861,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix_rest(PyObject *__
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_j0 = __pyx_t_7;
 
-  /* "algorithms/track.py":413
+  /* "openptv2/algorithms/track.py":413
  * 
  *     j0 = num_targets // 2
  *     dj = num_targets // 4             # <<<<<<<<<<<<<<
@@ -11874,7 +11874,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix_rest(PyObject *__
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_dj = __pyx_t_7;
 
-  /* "algorithms/track.py":414
+  /* "openptv2/algorithms/track.py":414
  *     j0 = num_targets // 2
  *     dj = num_targets // 4
  *     while dj > 1:             # <<<<<<<<<<<<<<
@@ -11885,7 +11885,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix_rest(PyObject *__
     __pyx_t_6 = (__pyx_v_dj > 1);
     if (!__pyx_t_6) break;
 
-    /* "algorithms/track.py":415
+    /* "openptv2/algorithms/track.py":415
  *     dj = num_targets // 4
  *     while dj > 1:
  *         if next_targets[j0].y < ymin:             # <<<<<<<<<<<<<<
@@ -11906,7 +11906,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix_rest(PyObject *__
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     if (__pyx_t_6) {
 
-      /* "algorithms/track.py":416
+      /* "openptv2/algorithms/track.py":416
  *     while dj > 1:
  *         if next_targets[j0].y < ymin:
  *             j0 += dj             # <<<<<<<<<<<<<<
@@ -11915,7 +11915,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix_rest(PyObject *__
 */
       __pyx_v_j0 = (__pyx_v_j0 + __pyx_v_dj);
 
-      /* "algorithms/track.py":415
+      /* "openptv2/algorithms/track.py":415
  *     dj = num_targets // 4
  *     while dj > 1:
  *         if next_targets[j0].y < ymin:             # <<<<<<<<<<<<<<
@@ -11925,7 +11925,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix_rest(PyObject *__
       goto __pyx_L12;
     }
 
-    /* "algorithms/track.py":418
+    /* "openptv2/algorithms/track.py":418
  *             j0 += dj
  *         else:
  *             j0 -= dj             # <<<<<<<<<<<<<<
@@ -11937,7 +11937,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix_rest(PyObject *__
     }
     __pyx_L12:;
 
-    /* "algorithms/track.py":419
+    /* "openptv2/algorithms/track.py":419
  *         else:
  *             j0 -= dj
  *         dj //= 2             # <<<<<<<<<<<<<<
@@ -11947,7 +11947,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix_rest(PyObject *__
     __pyx_v_dj = (__pyx_v_dj / 2);
   }
 
-  /* "algorithms/track.py":421
+  /* "openptv2/algorithms/track.py":421
  *         dj //= 2
  * 
  *     j0 -= 12             # <<<<<<<<<<<<<<
@@ -11956,7 +11956,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix_rest(PyObject *__
 */
   __pyx_v_j0 = (__pyx_v_j0 - 12);
 
-  /* "algorithms/track.py":422
+  /* "openptv2/algorithms/track.py":422
  * 
  *     j0 -= 12
  *     if j0 < 0:             # <<<<<<<<<<<<<<
@@ -11966,7 +11966,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix_rest(PyObject *__
   __pyx_t_6 = (__pyx_v_j0 < 0);
   if (__pyx_t_6) {
 
-    /* "algorithms/track.py":423
+    /* "openptv2/algorithms/track.py":423
  *     j0 -= 12
  *     if j0 < 0:
  *         j0 = 0             # <<<<<<<<<<<<<<
@@ -11975,7 +11975,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix_rest(PyObject *__
 */
     __pyx_v_j0 = 0;
 
-    /* "algorithms/track.py":422
+    /* "openptv2/algorithms/track.py":422
  * 
  *     j0 -= 12
  *     if j0 < 0:             # <<<<<<<<<<<<<<
@@ -11984,7 +11984,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix_rest(PyObject *__
 */
   }
 
-  /* "algorithms/track.py":425
+  /* "openptv2/algorithms/track.py":425
  *         j0 = 0
  * 
  *     for j in range(j0, num_targets):             # <<<<<<<<<<<<<<
@@ -11996,7 +11996,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix_rest(PyObject *__
   for (__pyx_t_10 = __pyx_v_j0; __pyx_t_10 < __pyx_t_9; __pyx_t_10+=1) {
     __pyx_v_j = __pyx_t_10;
 
-    /* "algorithms/track.py":426
+    /* "openptv2/algorithms/track.py":426
  * 
  *     for j in range(j0, num_targets):
  *         t = next_targets[j]             # <<<<<<<<<<<<<<
@@ -12008,7 +12008,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix_rest(PyObject *__
     __Pyx_XDECREF_SET(__pyx_v_t, __pyx_t_5);
     __pyx_t_5 = 0;
 
-    /* "algorithms/track.py":427
+    /* "openptv2/algorithms/track.py":427
  *     for j in range(j0, num_targets):
  *         t = next_targets[j]
  *         if t.tnr == TR_UNUSED:             # <<<<<<<<<<<<<<
@@ -12026,7 +12026,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix_rest(PyObject *__
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     if (__pyx_t_6) {
 
-      /* "algorithms/track.py":428
+      /* "openptv2/algorithms/track.py":428
  *         t = next_targets[j]
  *         if t.tnr == TR_UNUSED:
  *             if t.y > ymax:             # <<<<<<<<<<<<<<
@@ -12044,7 +12044,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix_rest(PyObject *__
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
       if (__pyx_t_6) {
 
-        /* "algorithms/track.py":429
+        /* "openptv2/algorithms/track.py":429
  *         if t.tnr == TR_UNUSED:
  *             if t.y > ymax:
  *                 break             # <<<<<<<<<<<<<<
@@ -12053,7 +12053,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix_rest(PyObject *__
 */
         goto __pyx_L15_break;
 
-        /* "algorithms/track.py":428
+        /* "openptv2/algorithms/track.py":428
  *         t = next_targets[j]
  *         if t.tnr == TR_UNUSED:
  *             if t.y > ymax:             # <<<<<<<<<<<<<<
@@ -12062,7 +12062,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix_rest(PyObject *__
 */
       }
 
-      /* "algorithms/track.py":430
+      /* "openptv2/algorithms/track.py":430
  *             if t.y > ymax:
  *                 break
  *             if t.x > xmin and t.x < xmax and t.y > ymin and t.y < ymax:             # <<<<<<<<<<<<<<
@@ -12124,7 +12124,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix_rest(PyObject *__
       __pyx_L19_bool_binop_done:;
       if (__pyx_t_6) {
 
-        /* "algorithms/track.py":431
+        /* "openptv2/algorithms/track.py":431
  *                 break
  *             if t.x > xmin and t.x < xmax and t.y > ymin and t.y < ymax:
  *                 d = c_sqrt((cent_x - t.x) ** 2 + (cent_y - t.y) ** 2)             # <<<<<<<<<<<<<<
@@ -12155,7 +12155,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix_rest(PyObject *__
         __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
         __pyx_v_d = sqrt(__pyx_t_2);
 
-        /* "algorithms/track.py":432
+        /* "openptv2/algorithms/track.py":432
  *             if t.x > xmin and t.x < xmax and t.y > ymin and t.y < ymax:
  *                 d = c_sqrt((cent_x - t.x) ** 2 + (cent_y - t.y) ** 2)
  *                 if d < dmin:             # <<<<<<<<<<<<<<
@@ -12165,7 +12165,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix_rest(PyObject *__
         __pyx_t_6 = (__pyx_v_d < __pyx_v_dmin);
         if (__pyx_t_6) {
 
-          /* "algorithms/track.py":433
+          /* "openptv2/algorithms/track.py":433
  *                 d = c_sqrt((cent_x - t.x) ** 2 + (cent_y - t.y) ** 2)
  *                 if d < dmin:
  *                     dmin = d             # <<<<<<<<<<<<<<
@@ -12174,7 +12174,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix_rest(PyObject *__
 */
           __pyx_v_dmin = __pyx_v_d;
 
-          /* "algorithms/track.py":434
+          /* "openptv2/algorithms/track.py":434
  *                 if d < dmin:
  *                     dmin = d
  *                     p[0] = j             # <<<<<<<<<<<<<<
@@ -12186,7 +12186,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix_rest(PyObject *__
           if (unlikely((__Pyx_SetItemInt(__pyx_v_p, 0, __pyx_t_4, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_FunctionArgument) < 0))) __PYX_ERR(0, 434, __pyx_L1_error)
           __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-          /* "algorithms/track.py":435
+          /* "openptv2/algorithms/track.py":435
  *                     dmin = d
  *                     p[0] = j
  *                     counter = 1             # <<<<<<<<<<<<<<
@@ -12195,7 +12195,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix_rest(PyObject *__
 */
           __pyx_v_counter = 1;
 
-          /* "algorithms/track.py":432
+          /* "openptv2/algorithms/track.py":432
  *             if t.x > xmin and t.x < xmax and t.y > ymin and t.y < ymax:
  *                 d = c_sqrt((cent_x - t.x) ** 2 + (cent_y - t.y) ** 2)
  *                 if d < dmin:             # <<<<<<<<<<<<<<
@@ -12204,7 +12204,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix_rest(PyObject *__
 */
         }
 
-        /* "algorithms/track.py":430
+        /* "openptv2/algorithms/track.py":430
  *             if t.y > ymax:
  *                 break
  *             if t.x > xmin and t.x < xmax and t.y > ymin and t.y < ymax:             # <<<<<<<<<<<<<<
@@ -12213,7 +12213,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix_rest(PyObject *__
 */
       }
 
-      /* "algorithms/track.py":427
+      /* "openptv2/algorithms/track.py":427
  *     for j in range(j0, num_targets):
  *         t = next_targets[j]
  *         if t.tnr == TR_UNUSED:             # <<<<<<<<<<<<<<
@@ -12224,7 +12224,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix_rest(PyObject *__
   }
   __pyx_L15_break:;
 
-  /* "algorithms/track.py":437
+  /* "openptv2/algorithms/track.py":437
  *                     counter = 1
  * 
  *     return counter             # <<<<<<<<<<<<<<
@@ -12238,7 +12238,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix_rest(PyObject *__
   __pyx_t_4 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/track.py":380
+  /* "openptv2/algorithms/track.py":380
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -12251,7 +12251,7 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix_rest(PyObject *__
   __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_5);
-  __Pyx_AddTraceback("algorithms.track.candsearch_in_pix_rest", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.candsearch_in_pix_rest", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_t);
@@ -12261,15 +12261,15 @@ static PyObject *__pyx_f_10algorithms_5track_candsearch_in_pix_rest(PyObject *__
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_5track_25candsearch_in_pix_rest(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_25candsearch_in_pix_rest(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_10algorithms_5track_25candsearch_in_pix_rest = {"candsearch_in_pix_rest", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_5track_25candsearch_in_pix_rest, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10algorithms_5track_25candsearch_in_pix_rest(PyObject *__pyx_self, 
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_5track_25candsearch_in_pix_rest = {"candsearch_in_pix_rest", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_5track_25candsearch_in_pix_rest, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_25candsearch_in_pix_rest(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -12403,11 +12403,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.track.candsearch_in_pix_rest", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.candsearch_in_pix_rest", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_5track_24candsearch_in_pix_rest(__pyx_self, __pyx_v_next_targets, __pyx_v_num_targets, __pyx_v_cent_x, __pyx_v_cent_y, __pyx_v_dl, __pyx_v_dr, __pyx_v_du, __pyx_v_dd, __pyx_v_p, __pyx_v_cpar);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_5track_24candsearch_in_pix_rest(__pyx_self, __pyx_v_next_targets, __pyx_v_num_targets, __pyx_v_cent_x, __pyx_v_cent_y, __pyx_v_dl, __pyx_v_dr, __pyx_v_du, __pyx_v_dd, __pyx_v_p, __pyx_v_cpar);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -12417,7 +12417,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_5track_24candsearch_in_pix_rest(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_next_targets, PyObject *__pyx_v_num_targets, PyObject *__pyx_v_cent_x, PyObject *__pyx_v_cent_y, PyObject *__pyx_v_dl, PyObject *__pyx_v_dr, PyObject *__pyx_v_du, PyObject *__pyx_v_dd, PyObject *__pyx_v_p, PyObject *__pyx_v_cpar) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_24candsearch_in_pix_rest(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_next_targets, PyObject *__pyx_v_num_targets, PyObject *__pyx_v_cent_x, PyObject *__pyx_v_cent_y, PyObject *__pyx_v_dl, PyObject *__pyx_v_dr, PyObject *__pyx_v_du, PyObject *__pyx_v_dd, PyObject *__pyx_v_p, PyObject *__pyx_v_cpar) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -12426,7 +12426,7 @@ static PyObject *__pyx_pf_10algorithms_5track_24candsearch_in_pix_rest(CYTHON_UN
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("candsearch_in_pix_rest", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_5track_candsearch_in_pix_rest(__pyx_v_next_targets, __pyx_v_num_targets, __pyx_v_cent_x, __pyx_v_cent_y, __pyx_v_dl, __pyx_v_dr, __pyx_v_du, __pyx_v_dd, __pyx_v_p, __pyx_v_cpar, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 380, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_5track_candsearch_in_pix_rest(__pyx_v_next_targets, __pyx_v_num_targets, __pyx_v_cent_x, __pyx_v_cent_y, __pyx_v_dl, __pyx_v_dr, __pyx_v_du, __pyx_v_dd, __pyx_v_p, __pyx_v_cpar, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 380, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -12435,7 +12435,7 @@ static PyObject *__pyx_pf_10algorithms_5track_24candsearch_in_pix_rest(CYTHON_UN
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.track.candsearch_in_pix_rest", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.candsearch_in_pix_rest", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -12443,7 +12443,7 @@ static PyObject *__pyx_pf_10algorithms_5track_24candsearch_in_pix_rest(CYTHON_UN
   return __pyx_r;
 }
 
-/* "algorithms/track.py":440
+/* "openptv2/algorithms/track.py":440
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -12451,14 +12451,14 @@ static PyObject *__pyx_pf_10algorithms_5track_24candsearch_in_pix_rest(CYTHON_UN
  * @cython.wraparound(False)
 */
 
-static PyObject *__pyx_pw_10algorithms_5track_27reset_foundpix_array(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_27reset_foundpix_array(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_5track_reset_foundpix_array(PyObject *__pyx_v_arr, PyObject *__pyx_v_n, PyObject *__pyx_v_num_cams, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_5track_reset_foundpix_array(PyObject *__pyx_v_arr, PyObject *__pyx_v_n, PyObject *__pyx_v_num_cams, CYTHON_UNUSED int __pyx_skip_dispatch) {
   Py_ssize_t __pyx_v_i;
   Py_ssize_t __pyx_v_j;
   PyObject *__pyx_r = NULL;
@@ -12476,7 +12476,7 @@ static PyObject *__pyx_f_10algorithms_5track_reset_foundpix_array(PyObject *__py
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("reset_foundpix_array", 0);
 
-  /* "algorithms/track.py":446
+  /* "openptv2/algorithms/track.py":446
  *     i: cython.Py_ssize_t
  *     j: cython.Py_ssize_t
  *     for i in range(n):             # <<<<<<<<<<<<<<
@@ -12488,7 +12488,7 @@ static PyObject *__pyx_f_10algorithms_5track_reset_foundpix_array(PyObject *__py
   for (__pyx_t_3 = 0; __pyx_t_3 < __pyx_t_2; __pyx_t_3+=1) {
     __pyx_v_i = __pyx_t_3;
 
-    /* "algorithms/track.py":447
+    /* "openptv2/algorithms/track.py":447
  *     j: cython.Py_ssize_t
  *     for i in range(n):
  *         arr[i][0] = TR_UNUSED  # ftnr             # <<<<<<<<<<<<<<
@@ -12503,7 +12503,7 @@ static PyObject *__pyx_f_10algorithms_5track_reset_foundpix_array(PyObject *__py
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-    /* "algorithms/track.py":448
+    /* "openptv2/algorithms/track.py":448
  *     for i in range(n):
  *         arr[i][0] = TR_UNUSED  # ftnr
  *         arr[i][1] = 0          # freq             # <<<<<<<<<<<<<<
@@ -12515,7 +12515,7 @@ static PyObject *__pyx_f_10algorithms_5track_reset_foundpix_array(PyObject *__py
     if (unlikely((__Pyx_SetItemInt(__pyx_t_4, 1, __pyx_mstate_global->__pyx_int_0, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_OwnStrongReference) < 0))) __PYX_ERR(0, 448, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-    /* "algorithms/track.py":449
+    /* "openptv2/algorithms/track.py":449
  *         arr[i][0] = TR_UNUSED  # ftnr
  *         arr[i][1] = 0          # freq
  *         for j in range(num_cams):             # <<<<<<<<<<<<<<
@@ -12527,7 +12527,7 @@ static PyObject *__pyx_f_10algorithms_5track_reset_foundpix_array(PyObject *__py
     for (__pyx_t_8 = 0; __pyx_t_8 < __pyx_t_7; __pyx_t_8+=1) {
       __pyx_v_j = __pyx_t_8;
 
-      /* "algorithms/track.py":450
+      /* "openptv2/algorithms/track.py":450
  *         arr[i][1] = 0          # freq
  *         for j in range(num_cams):
  *             arr[i][2][j] = 0   # whichcam             # <<<<<<<<<<<<<<
@@ -12544,7 +12544,7 @@ static PyObject *__pyx_f_10algorithms_5track_reset_foundpix_array(PyObject *__py
     }
   }
 
-  /* "algorithms/track.py":440
+  /* "openptv2/algorithms/track.py":440
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -12558,7 +12558,7 @@ static PyObject *__pyx_f_10algorithms_5track_reset_foundpix_array(PyObject *__py
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_5);
-  __Pyx_AddTraceback("algorithms.track.reset_foundpix_array", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.reset_foundpix_array", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -12567,15 +12567,15 @@ static PyObject *__pyx_f_10algorithms_5track_reset_foundpix_array(PyObject *__py
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_5track_27reset_foundpix_array(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_27reset_foundpix_array(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_10algorithms_5track_27reset_foundpix_array = {"reset_foundpix_array", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_5track_27reset_foundpix_array, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10algorithms_5track_27reset_foundpix_array(PyObject *__pyx_self, 
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_5track_27reset_foundpix_array = {"reset_foundpix_array", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_5track_27reset_foundpix_array, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_27reset_foundpix_array(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -12653,11 +12653,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.track.reset_foundpix_array", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.reset_foundpix_array", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_5track_26reset_foundpix_array(__pyx_self, __pyx_v_arr, __pyx_v_n, __pyx_v_num_cams);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_5track_26reset_foundpix_array(__pyx_self, __pyx_v_arr, __pyx_v_n, __pyx_v_num_cams);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -12667,7 +12667,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_5track_26reset_foundpix_array(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_arr, PyObject *__pyx_v_n, PyObject *__pyx_v_num_cams) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_26reset_foundpix_array(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_arr, PyObject *__pyx_v_n, PyObject *__pyx_v_num_cams) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -12676,7 +12676,7 @@ static PyObject *__pyx_pf_10algorithms_5track_26reset_foundpix_array(CYTHON_UNUS
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("reset_foundpix_array", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_5track_reset_foundpix_array(__pyx_v_arr, __pyx_v_n, __pyx_v_num_cams, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 440, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_5track_reset_foundpix_array(__pyx_v_arr, __pyx_v_n, __pyx_v_num_cams, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 440, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -12685,7 +12685,7 @@ static PyObject *__pyx_pf_10algorithms_5track_26reset_foundpix_array(CYTHON_UNUS
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.track.reset_foundpix_array", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.reset_foundpix_array", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -12693,7 +12693,7 @@ static PyObject *__pyx_pf_10algorithms_5track_26reset_foundpix_array(CYTHON_UNUS
   return __pyx_r;
 }
 
-/* "algorithms/track.py":453
+/* "openptv2/algorithms/track.py":453
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -12701,14 +12701,14 @@ static PyObject *__pyx_pf_10algorithms_5track_26reset_foundpix_array(CYTHON_UNUS
  * @cython.wraparound(False)
 */
 
-static PyObject *__pyx_pw_10algorithms_5track_29copy_foundpix_array(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_29copy_foundpix_array(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_5track_copy_foundpix_array(PyObject *__pyx_v_dest, PyObject *__pyx_v_src, PyObject *__pyx_v_n, PyObject *__pyx_v_num_cams, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_5track_copy_foundpix_array(PyObject *__pyx_v_dest, PyObject *__pyx_v_src, PyObject *__pyx_v_n, PyObject *__pyx_v_num_cams, CYTHON_UNUSED int __pyx_skip_dispatch) {
   Py_ssize_t __pyx_v_i;
   Py_ssize_t __pyx_v_j;
   PyObject *__pyx_r = NULL;
@@ -12727,7 +12727,7 @@ static PyObject *__pyx_f_10algorithms_5track_copy_foundpix_array(PyObject *__pyx
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("copy_foundpix_array", 0);
 
-  /* "algorithms/track.py":459
+  /* "openptv2/algorithms/track.py":459
  *     i: cython.Py_ssize_t
  *     j: cython.Py_ssize_t
  *     for i in range(n):             # <<<<<<<<<<<<<<
@@ -12739,7 +12739,7 @@ static PyObject *__pyx_f_10algorithms_5track_copy_foundpix_array(PyObject *__pyx
   for (__pyx_t_3 = 0; __pyx_t_3 < __pyx_t_2; __pyx_t_3+=1) {
     __pyx_v_i = __pyx_t_3;
 
-    /* "algorithms/track.py":460
+    /* "openptv2/algorithms/track.py":460
  *     j: cython.Py_ssize_t
  *     for i in range(n):
  *         dest[i][0] = src[i][0]             # <<<<<<<<<<<<<<
@@ -12757,7 +12757,7 @@ static PyObject *__pyx_f_10algorithms_5track_copy_foundpix_array(PyObject *__pyx
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-    /* "algorithms/track.py":461
+    /* "openptv2/algorithms/track.py":461
  *     for i in range(n):
  *         dest[i][0] = src[i][0]
  *         dest[i][1] = src[i][1]             # <<<<<<<<<<<<<<
@@ -12775,7 +12775,7 @@ static PyObject *__pyx_f_10algorithms_5track_copy_foundpix_array(PyObject *__pyx
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-    /* "algorithms/track.py":462
+    /* "openptv2/algorithms/track.py":462
  *         dest[i][0] = src[i][0]
  *         dest[i][1] = src[i][1]
  *         for j in range(num_cams):             # <<<<<<<<<<<<<<
@@ -12787,7 +12787,7 @@ static PyObject *__pyx_f_10algorithms_5track_copy_foundpix_array(PyObject *__pyx
     for (__pyx_t_8 = 0; __pyx_t_8 < __pyx_t_7; __pyx_t_8+=1) {
       __pyx_v_j = __pyx_t_8;
 
-      /* "algorithms/track.py":463
+      /* "openptv2/algorithms/track.py":463
  *         dest[i][1] = src[i][1]
  *         for j in range(num_cams):
  *             dest[i][2][j] = src[i][2][j]             # <<<<<<<<<<<<<<
@@ -12813,7 +12813,7 @@ static PyObject *__pyx_f_10algorithms_5track_copy_foundpix_array(PyObject *__pyx
     }
   }
 
-  /* "algorithms/track.py":453
+  /* "openptv2/algorithms/track.py":453
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -12828,7 +12828,7 @@ static PyObject *__pyx_f_10algorithms_5track_copy_foundpix_array(PyObject *__pyx
   __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_5);
   __Pyx_XDECREF(__pyx_t_9);
-  __Pyx_AddTraceback("algorithms.track.copy_foundpix_array", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.copy_foundpix_array", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -12837,15 +12837,15 @@ static PyObject *__pyx_f_10algorithms_5track_copy_foundpix_array(PyObject *__pyx
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_5track_29copy_foundpix_array(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_29copy_foundpix_array(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_10algorithms_5track_29copy_foundpix_array = {"copy_foundpix_array", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_5track_29copy_foundpix_array, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10algorithms_5track_29copy_foundpix_array(PyObject *__pyx_self, 
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_5track_29copy_foundpix_array = {"copy_foundpix_array", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_5track_29copy_foundpix_array, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_29copy_foundpix_array(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -12931,11 +12931,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.track.copy_foundpix_array", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.copy_foundpix_array", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_5track_28copy_foundpix_array(__pyx_self, __pyx_v_dest, __pyx_v_src, __pyx_v_n, __pyx_v_num_cams);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_5track_28copy_foundpix_array(__pyx_self, __pyx_v_dest, __pyx_v_src, __pyx_v_n, __pyx_v_num_cams);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -12945,7 +12945,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_5track_28copy_foundpix_array(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_dest, PyObject *__pyx_v_src, PyObject *__pyx_v_n, PyObject *__pyx_v_num_cams) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_28copy_foundpix_array(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_dest, PyObject *__pyx_v_src, PyObject *__pyx_v_n, PyObject *__pyx_v_num_cams) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -12954,7 +12954,7 @@ static PyObject *__pyx_pf_10algorithms_5track_28copy_foundpix_array(CYTHON_UNUSE
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("copy_foundpix_array", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_5track_copy_foundpix_array(__pyx_v_dest, __pyx_v_src, __pyx_v_n, __pyx_v_num_cams, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 453, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_5track_copy_foundpix_array(__pyx_v_dest, __pyx_v_src, __pyx_v_n, __pyx_v_num_cams, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 453, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -12963,7 +12963,7 @@ static PyObject *__pyx_pf_10algorithms_5track_28copy_foundpix_array(CYTHON_UNUSE
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.track.copy_foundpix_array", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.copy_foundpix_array", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -12971,7 +12971,7 @@ static PyObject *__pyx_pf_10algorithms_5track_28copy_foundpix_array(CYTHON_UNUSE
   return __pyx_r;
 }
 
-/* "algorithms/track.py":466
+/* "openptv2/algorithms/track.py":466
  * 
  * 
  * def _make_foundpix(num_cams):             # <<<<<<<<<<<<<<
@@ -12980,16 +12980,16 @@ static PyObject *__pyx_pf_10algorithms_5track_28copy_foundpix_array(CYTHON_UNUSE
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_5track_31_make_foundpix(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_31_make_foundpix(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_5track_30_make_foundpix, "Create a single foundpix entry as [ftnr, freq, whichcam_list].");
-static PyMethodDef __pyx_mdef_10algorithms_5track_31_make_foundpix = {"_make_foundpix", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_5track_31_make_foundpix, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_5track_30_make_foundpix};
-static PyObject *__pyx_pw_10algorithms_5track_31_make_foundpix(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_5track_30_make_foundpix, "Create a single foundpix entry as [ftnr, freq, whichcam_list].");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_5track_31_make_foundpix = {"_make_foundpix", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_5track_31_make_foundpix, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_5track_30_make_foundpix};
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_31_make_foundpix(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -13051,11 +13051,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.track._make_foundpix", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track._make_foundpix", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_5track_30_make_foundpix(__pyx_self, __pyx_v_num_cams);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_5track_30_make_foundpix(__pyx_self, __pyx_v_num_cams);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -13065,7 +13065,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_5track_30_make_foundpix(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_num_cams) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_30_make_foundpix(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_num_cams) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -13076,7 +13076,7 @@ static PyObject *__pyx_pf_10algorithms_5track_30_make_foundpix(CYTHON_UNUSED PyO
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("_make_foundpix", 0);
 
-  /* "algorithms/track.py":468
+  /* "openptv2/algorithms/track.py":468
  * def _make_foundpix(num_cams):
  *     """Create a single foundpix entry as [ftnr, freq, whichcam_list]."""
  *     return [TR_UNUSED, 0, [0] * num_cams]             # <<<<<<<<<<<<<<
@@ -13111,7 +13111,7 @@ static PyObject *__pyx_pf_10algorithms_5track_30_make_foundpix(CYTHON_UNUSED PyO
   __pyx_t_3 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/track.py":466
+  /* "openptv2/algorithms/track.py":466
  * 
  * 
  * def _make_foundpix(num_cams):             # <<<<<<<<<<<<<<
@@ -13124,7 +13124,7 @@ static PyObject *__pyx_pf_10algorithms_5track_30_make_foundpix(CYTHON_UNUSED PyO
   __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3);
-  __Pyx_AddTraceback("algorithms.track._make_foundpix", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track._make_foundpix", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -13132,7 +13132,7 @@ static PyObject *__pyx_pf_10algorithms_5track_30_make_foundpix(CYTHON_UNUSED PyO
   return __pyx_r;
 }
 
-/* "algorithms/track.py":471
+/* "openptv2/algorithms/track.py":471
  * 
  * 
  * def _make_foundpix_array(n, num_cams):             # <<<<<<<<<<<<<<
@@ -13141,16 +13141,16 @@ static PyObject *__pyx_pf_10algorithms_5track_30_make_foundpix(CYTHON_UNUSED PyO
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_5track_33_make_foundpix_array(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_33_make_foundpix_array(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_5track_32_make_foundpix_array, "Create array of n foundpix entries as plain Python lists.");
-static PyMethodDef __pyx_mdef_10algorithms_5track_33_make_foundpix_array = {"_make_foundpix_array", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_5track_33_make_foundpix_array, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_5track_32_make_foundpix_array};
-static PyObject *__pyx_pw_10algorithms_5track_33_make_foundpix_array(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_5track_32_make_foundpix_array, "Create array of n foundpix entries as plain Python lists.");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_5track_33_make_foundpix_array = {"_make_foundpix_array", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_5track_33_make_foundpix_array, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_5track_32_make_foundpix_array};
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_33_make_foundpix_array(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -13220,11 +13220,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.track._make_foundpix_array", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track._make_foundpix_array", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_5track_32_make_foundpix_array(__pyx_self, __pyx_v_n, __pyx_v_num_cams);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_5track_32_make_foundpix_array(__pyx_self, __pyx_v_n, __pyx_v_num_cams);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -13234,7 +13234,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_5track_32_make_foundpix_array(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_n, PyObject *__pyx_v_num_cams) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_32_make_foundpix_array(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_n, PyObject *__pyx_v_num_cams) {
   CYTHON_UNUSED PyObject *__pyx_8genexpr7__pyx_v__ = NULL;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
@@ -13250,7 +13250,7 @@ static PyObject *__pyx_pf_10algorithms_5track_32_make_foundpix_array(CYTHON_UNUS
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("_make_foundpix_array", 0);
 
-  /* "algorithms/track.py":473
+  /* "openptv2/algorithms/track.py":473
  * def _make_foundpix_array(n, num_cams):
  *     """Create array of n foundpix entries as plain Python lists."""
  *     return [_make_foundpix(num_cams) for _ in range(n)]             # <<<<<<<<<<<<<<
@@ -13327,7 +13327,7 @@ static PyObject *__pyx_pf_10algorithms_5track_32_make_foundpix_array(CYTHON_UNUS
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/track.py":471
+  /* "openptv2/algorithms/track.py":471
  * 
  * 
  * def _make_foundpix_array(n, num_cams):             # <<<<<<<<<<<<<<
@@ -13342,7 +13342,7 @@ static PyObject *__pyx_pf_10algorithms_5track_32_make_foundpix_array(CYTHON_UNUS
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_6);
   __Pyx_XDECREF(__pyx_t_7);
-  __Pyx_AddTraceback("algorithms.track._make_foundpix_array", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track._make_foundpix_array", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_8genexpr7__pyx_v__);
@@ -13351,7 +13351,7 @@ static PyObject *__pyx_pf_10algorithms_5track_32_make_foundpix_array(CYTHON_UNUS
   return __pyx_r;
 }
 
-/* "algorithms/track.py":476
+/* "openptv2/algorithms/track.py":476
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -13359,14 +13359,14 @@ static PyObject *__pyx_pf_10algorithms_5track_32_make_foundpix_array(CYTHON_UNUS
  * @cython.wraparound(False)
 */
 
-static PyObject *__pyx_pw_10algorithms_5track_35sort_candidates_by_freq(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_35sort_candidates_by_freq(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_5track_sort_candidates_by_freq(PyObject *__pyx_v_items, PyObject *__pyx_v_num_cams, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_5track_sort_candidates_by_freq(PyObject *__pyx_v_items, PyObject *__pyx_v_num_cams, CYTHON_UNUSED int __pyx_skip_dispatch) {
   int __pyx_v_n;
   Py_ssize_t __pyx_v_i;
   Py_ssize_t __pyx_v_j;
@@ -13398,7 +13398,7 @@ static PyObject *__pyx_f_10algorithms_5track_sort_candidates_by_freq(PyObject *_
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("sort_candidates_by_freq", 0);
 
-  /* "algorithms/track.py":480
+  /* "openptv2/algorithms/track.py":480
  * @cython.wraparound(False)
  * def sort_candidates_by_freq(items, num_cams):
  *     n: cython.int = num_cams * MAX_CANDS             # <<<<<<<<<<<<<<
@@ -13414,7 +13414,7 @@ static PyObject *__pyx_f_10algorithms_5track_sort_candidates_by_freq(PyObject *_
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_v_n = __pyx_t_3;
 
-  /* "algorithms/track.py":487
+  /* "openptv2/algorithms/track.py":487
  *     different: cython.int
  * 
  *     for i in range(n):             # <<<<<<<<<<<<<<
@@ -13426,7 +13426,7 @@ static PyObject *__pyx_f_10algorithms_5track_sort_candidates_by_freq(PyObject *_
   for (__pyx_t_5 = 0; __pyx_t_5 < __pyx_t_4; __pyx_t_5+=1) {
     __pyx_v_i = __pyx_t_5;
 
-    /* "algorithms/track.py":488
+    /* "openptv2/algorithms/track.py":488
  * 
  *     for i in range(n):
  *         ftnr_i = items[i][0]             # <<<<<<<<<<<<<<
@@ -13442,7 +13442,7 @@ static PyObject *__pyx_f_10algorithms_5track_sort_candidates_by_freq(PyObject *_
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __pyx_v_ftnr_i = __pyx_t_6;
 
-    /* "algorithms/track.py":489
+    /* "openptv2/algorithms/track.py":489
  *     for i in range(n):
  *         ftnr_i = items[i][0]
  *         for j in range(num_cams):             # <<<<<<<<<<<<<<
@@ -13454,7 +13454,7 @@ static PyObject *__pyx_f_10algorithms_5track_sort_candidates_by_freq(PyObject *_
     for (__pyx_t_9 = 0; __pyx_t_9 < __pyx_t_8; __pyx_t_9+=1) {
       __pyx_v_j = __pyx_t_9;
 
-      /* "algorithms/track.py":490
+      /* "openptv2/algorithms/track.py":490
  *         ftnr_i = items[i][0]
  *         for j in range(num_cams):
  *             for m in range(MAX_CANDS):             # <<<<<<<<<<<<<<
@@ -13469,7 +13469,7 @@ static PyObject *__pyx_f_10algorithms_5track_sort_candidates_by_freq(PyObject *_
       for (__pyx_t_12 = 0; __pyx_t_12 < __pyx_t_11; __pyx_t_12+=1) {
         __pyx_v_m = __pyx_t_12;
 
-        /* "algorithms/track.py":491
+        /* "openptv2/algorithms/track.py":491
  *         for j in range(num_cams):
  *             for m in range(MAX_CANDS):
  *                 if ftnr_i == items[4 * j + m][0]:             # <<<<<<<<<<<<<<
@@ -13491,7 +13491,7 @@ static PyObject *__pyx_f_10algorithms_5track_sort_candidates_by_freq(PyObject *_
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
         if (__pyx_t_15) {
 
-          /* "algorithms/track.py":492
+          /* "openptv2/algorithms/track.py":492
  *             for m in range(MAX_CANDS):
  *                 if ftnr_i == items[4 * j + m][0]:
  *                     items[i][2][j] = 1             # <<<<<<<<<<<<<<
@@ -13506,7 +13506,7 @@ static PyObject *__pyx_f_10algorithms_5track_sort_candidates_by_freq(PyObject *_
           if (unlikely((__Pyx_SetItemInt(__pyx_t_14, __pyx_v_j, __pyx_mstate_global->__pyx_int_1, Py_ssize_t, 1, PyLong_FromSsize_t, 0, 0, 0, 1, __Pyx_ReferenceSharing_OwnStrongReference) < 0))) __PYX_ERR(0, 492, __pyx_L1_error)
           __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
 
-          /* "algorithms/track.py":491
+          /* "openptv2/algorithms/track.py":491
  *         for j in range(num_cams):
  *             for m in range(MAX_CANDS):
  *                 if ftnr_i == items[4 * j + m][0]:             # <<<<<<<<<<<<<<
@@ -13518,7 +13518,7 @@ static PyObject *__pyx_f_10algorithms_5track_sort_candidates_by_freq(PyObject *_
     }
   }
 
-  /* "algorithms/track.py":494
+  /* "openptv2/algorithms/track.py":494
  *                     items[i][2][j] = 1
  * 
  *     for i in range(n):             # <<<<<<<<<<<<<<
@@ -13530,7 +13530,7 @@ static PyObject *__pyx_f_10algorithms_5track_sort_candidates_by_freq(PyObject *_
   for (__pyx_t_5 = 0; __pyx_t_5 < __pyx_t_4; __pyx_t_5+=1) {
     __pyx_v_i = __pyx_t_5;
 
-    /* "algorithms/track.py":495
+    /* "openptv2/algorithms/track.py":495
  * 
  *     for i in range(n):
  *         ftnr_i = items[i][0]             # <<<<<<<<<<<<<<
@@ -13546,7 +13546,7 @@ static PyObject *__pyx_f_10algorithms_5track_sort_candidates_by_freq(PyObject *_
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __pyx_v_ftnr_i = __pyx_t_6;
 
-    /* "algorithms/track.py":496
+    /* "openptv2/algorithms/track.py":496
  *     for i in range(n):
  *         ftnr_i = items[i][0]
  *         if ftnr_i != TR_UNUSED:             # <<<<<<<<<<<<<<
@@ -13564,7 +13564,7 @@ static PyObject *__pyx_f_10algorithms_5track_sort_candidates_by_freq(PyObject *_
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     if (__pyx_t_15) {
 
-      /* "algorithms/track.py":497
+      /* "openptv2/algorithms/track.py":497
  *         ftnr_i = items[i][0]
  *         if ftnr_i != TR_UNUSED:
  *             wc = items[i][2]             # <<<<<<<<<<<<<<
@@ -13579,7 +13579,7 @@ static PyObject *__pyx_f_10algorithms_5track_sort_candidates_by_freq(PyObject *_
       __Pyx_XDECREF_SET(__pyx_v_wc, __pyx_t_14);
       __pyx_t_14 = 0;
 
-      /* "algorithms/track.py":498
+      /* "openptv2/algorithms/track.py":498
  *         if ftnr_i != TR_UNUSED:
  *             wc = items[i][2]
  *             for j in range(num_cams):             # <<<<<<<<<<<<<<
@@ -13591,7 +13591,7 @@ static PyObject *__pyx_f_10algorithms_5track_sort_candidates_by_freq(PyObject *_
       for (__pyx_t_9 = 0; __pyx_t_9 < __pyx_t_8; __pyx_t_9+=1) {
         __pyx_v_j = __pyx_t_9;
 
-        /* "algorithms/track.py":499
+        /* "openptv2/algorithms/track.py":499
  *             wc = items[i][2]
  *             for j in range(num_cams):
  *                 if wc[j] == 1:             # <<<<<<<<<<<<<<
@@ -13604,7 +13604,7 @@ static PyObject *__pyx_f_10algorithms_5track_sort_candidates_by_freq(PyObject *_
         __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
         if (__pyx_t_15) {
 
-          /* "algorithms/track.py":500
+          /* "openptv2/algorithms/track.py":500
  *             for j in range(num_cams):
  *                 if wc[j] == 1:
  *                     items[i][1] += 1             # <<<<<<<<<<<<<<
@@ -13623,7 +13623,7 @@ static PyObject *__pyx_f_10algorithms_5track_sort_candidates_by_freq(PyObject *_
           __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
           __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
 
-          /* "algorithms/track.py":499
+          /* "openptv2/algorithms/track.py":499
  *             wc = items[i][2]
  *             for j in range(num_cams):
  *                 if wc[j] == 1:             # <<<<<<<<<<<<<<
@@ -13633,7 +13633,7 @@ static PyObject *__pyx_f_10algorithms_5track_sort_candidates_by_freq(PyObject *_
         }
       }
 
-      /* "algorithms/track.py":496
+      /* "openptv2/algorithms/track.py":496
  *     for i in range(n):
  *         ftnr_i = items[i][0]
  *         if ftnr_i != TR_UNUSED:             # <<<<<<<<<<<<<<
@@ -13643,7 +13643,7 @@ static PyObject *__pyx_f_10algorithms_5track_sort_candidates_by_freq(PyObject *_
     }
   }
 
-  /* "algorithms/track.py":502
+  /* "openptv2/algorithms/track.py":502
  *                     items[i][1] += 1
  * 
  *     for i in range(1, n):             # <<<<<<<<<<<<<<
@@ -13655,7 +13655,7 @@ static PyObject *__pyx_f_10algorithms_5track_sort_candidates_by_freq(PyObject *_
   for (__pyx_t_5 = 1; __pyx_t_5 < __pyx_t_4; __pyx_t_5+=1) {
     __pyx_v_i = __pyx_t_5;
 
-    /* "algorithms/track.py":503
+    /* "openptv2/algorithms/track.py":503
  * 
  *     for i in range(1, n):
  *         for j in range(n - 1, i - 1, -1):             # <<<<<<<<<<<<<<
@@ -13667,7 +13667,7 @@ static PyObject *__pyx_f_10algorithms_5track_sort_candidates_by_freq(PyObject *_
     for (__pyx_t_9 = (__pyx_v_n - 1); __pyx_t_9 > __pyx_t_8; __pyx_t_9-=1) {
       __pyx_v_j = __pyx_t_9;
 
-      /* "algorithms/track.py":504
+      /* "openptv2/algorithms/track.py":504
  *     for i in range(1, n):
  *         for j in range(n - 1, i - 1, -1):
  *             if items[j - 1][1] < items[j][1]:             # <<<<<<<<<<<<<<
@@ -13692,7 +13692,7 @@ static PyObject *__pyx_f_10algorithms_5track_sort_candidates_by_freq(PyObject *_
       __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
       if (__pyx_t_15) {
 
-        /* "algorithms/track.py":505
+        /* "openptv2/algorithms/track.py":505
  *         for j in range(n - 1, i - 1, -1):
  *             if items[j - 1][1] < items[j][1]:
  *                 items[j - 1], items[j] = items[j], items[j - 1]             # <<<<<<<<<<<<<<
@@ -13710,7 +13710,7 @@ static PyObject *__pyx_f_10algorithms_5track_sort_candidates_by_freq(PyObject *_
         if (unlikely((__Pyx_SetItemInt(__pyx_v_items, __pyx_v_j, __pyx_t_1, Py_ssize_t, 1, PyLong_FromSsize_t, 0, 0, 0, 1, __Pyx_ReferenceSharing_FunctionArgument) < 0))) __PYX_ERR(0, 505, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-        /* "algorithms/track.py":504
+        /* "openptv2/algorithms/track.py":504
  *     for i in range(1, n):
  *         for j in range(n - 1, i - 1, -1):
  *             if items[j - 1][1] < items[j][1]:             # <<<<<<<<<<<<<<
@@ -13721,7 +13721,7 @@ static PyObject *__pyx_f_10algorithms_5track_sort_candidates_by_freq(PyObject *_
     }
   }
 
-  /* "algorithms/track.py":507
+  /* "openptv2/algorithms/track.py":507
  *                 items[j - 1], items[j] = items[j], items[j - 1]
  * 
  *     for i in range(n):             # <<<<<<<<<<<<<<
@@ -13733,7 +13733,7 @@ static PyObject *__pyx_f_10algorithms_5track_sort_candidates_by_freq(PyObject *_
   for (__pyx_t_5 = 0; __pyx_t_5 < __pyx_t_4; __pyx_t_5+=1) {
     __pyx_v_i = __pyx_t_5;
 
-    /* "algorithms/track.py":508
+    /* "openptv2/algorithms/track.py":508
  * 
  *     for i in range(n):
  *         ftnr_i = items[i][0]             # <<<<<<<<<<<<<<
@@ -13749,7 +13749,7 @@ static PyObject *__pyx_f_10algorithms_5track_sort_candidates_by_freq(PyObject *_
     __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
     __pyx_v_ftnr_i = __pyx_t_6;
 
-    /* "algorithms/track.py":509
+    /* "openptv2/algorithms/track.py":509
  *     for i in range(n):
  *         ftnr_i = items[i][0]
  *         for j in range(i + 1, n):             # <<<<<<<<<<<<<<
@@ -13761,7 +13761,7 @@ static PyObject *__pyx_f_10algorithms_5track_sort_candidates_by_freq(PyObject *_
     for (__pyx_t_7 = (__pyx_v_i + 1); __pyx_t_7 < __pyx_t_16; __pyx_t_7+=1) {
       __pyx_v_j = __pyx_t_7;
 
-      /* "algorithms/track.py":510
+      /* "openptv2/algorithms/track.py":510
  *         ftnr_i = items[i][0]
  *         for j in range(i + 1, n):
  *             if items[j][0] == ftnr_i or items[j][1] < 2:             # <<<<<<<<<<<<<<
@@ -13798,7 +13798,7 @@ static PyObject *__pyx_f_10algorithms_5track_sort_candidates_by_freq(PyObject *_
       __pyx_L26_bool_binop_done:;
       if (__pyx_t_15) {
 
-        /* "algorithms/track.py":511
+        /* "openptv2/algorithms/track.py":511
  *         for j in range(i + 1, n):
  *             if items[j][0] == ftnr_i or items[j][1] < 2:
  *                 items[j][1] = 0             # <<<<<<<<<<<<<<
@@ -13810,7 +13810,7 @@ static PyObject *__pyx_f_10algorithms_5track_sort_candidates_by_freq(PyObject *_
         if (unlikely((__Pyx_SetItemInt(__pyx_t_2, 1, __pyx_mstate_global->__pyx_int_0, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_OwnStrongReference) < 0))) __PYX_ERR(0, 511, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-        /* "algorithms/track.py":512
+        /* "openptv2/algorithms/track.py":512
  *             if items[j][0] == ftnr_i or items[j][1] < 2:
  *                 items[j][1] = 0
  *                 items[j][0] = TR_UNUSED             # <<<<<<<<<<<<<<
@@ -13825,7 +13825,7 @@ static PyObject *__pyx_f_10algorithms_5track_sort_candidates_by_freq(PyObject *_
         __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-        /* "algorithms/track.py":510
+        /* "openptv2/algorithms/track.py":510
  *         ftnr_i = items[i][0]
  *         for j in range(i + 1, n):
  *             if items[j][0] == ftnr_i or items[j][1] < 2:             # <<<<<<<<<<<<<<
@@ -13836,7 +13836,7 @@ static PyObject *__pyx_f_10algorithms_5track_sort_candidates_by_freq(PyObject *_
     }
   }
 
-  /* "algorithms/track.py":514
+  /* "openptv2/algorithms/track.py":514
  *                 items[j][0] = TR_UNUSED
  * 
  *     for i in range(1, n):             # <<<<<<<<<<<<<<
@@ -13848,7 +13848,7 @@ static PyObject *__pyx_f_10algorithms_5track_sort_candidates_by_freq(PyObject *_
   for (__pyx_t_5 = 1; __pyx_t_5 < __pyx_t_4; __pyx_t_5+=1) {
     __pyx_v_i = __pyx_t_5;
 
-    /* "algorithms/track.py":515
+    /* "openptv2/algorithms/track.py":515
  * 
  *     for i in range(1, n):
  *         for j in range(n - 1, i - 1, -1):             # <<<<<<<<<<<<<<
@@ -13860,7 +13860,7 @@ static PyObject *__pyx_f_10algorithms_5track_sort_candidates_by_freq(PyObject *_
     for (__pyx_t_9 = (__pyx_v_n - 1); __pyx_t_9 > __pyx_t_8; __pyx_t_9-=1) {
       __pyx_v_j = __pyx_t_9;
 
-      /* "algorithms/track.py":516
+      /* "openptv2/algorithms/track.py":516
  *     for i in range(1, n):
  *         for j in range(n - 1, i - 1, -1):
  *             if items[j - 1][1] < items[j][1]:             # <<<<<<<<<<<<<<
@@ -13885,7 +13885,7 @@ static PyObject *__pyx_f_10algorithms_5track_sort_candidates_by_freq(PyObject *_
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
       if (__pyx_t_15) {
 
-        /* "algorithms/track.py":517
+        /* "openptv2/algorithms/track.py":517
  *         for j in range(n - 1, i - 1, -1):
  *             if items[j - 1][1] < items[j][1]:
  *                 items[j - 1], items[j] = items[j], items[j - 1]             # <<<<<<<<<<<<<<
@@ -13903,7 +13903,7 @@ static PyObject *__pyx_f_10algorithms_5track_sort_candidates_by_freq(PyObject *_
         if (unlikely((__Pyx_SetItemInt(__pyx_v_items, __pyx_v_j, __pyx_t_1, Py_ssize_t, 1, PyLong_FromSsize_t, 0, 0, 0, 1, __Pyx_ReferenceSharing_FunctionArgument) < 0))) __PYX_ERR(0, 517, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-        /* "algorithms/track.py":516
+        /* "openptv2/algorithms/track.py":516
  *     for i in range(1, n):
  *         for j in range(n - 1, i - 1, -1):
  *             if items[j - 1][1] < items[j][1]:             # <<<<<<<<<<<<<<
@@ -13914,7 +13914,7 @@ static PyObject *__pyx_f_10algorithms_5track_sort_candidates_by_freq(PyObject *_
     }
   }
 
-  /* "algorithms/track.py":519
+  /* "openptv2/algorithms/track.py":519
  *                 items[j - 1], items[j] = items[j], items[j - 1]
  * 
  *     different = 0             # <<<<<<<<<<<<<<
@@ -13923,7 +13923,7 @@ static PyObject *__pyx_f_10algorithms_5track_sort_candidates_by_freq(PyObject *_
 */
   __pyx_v_different = 0;
 
-  /* "algorithms/track.py":520
+  /* "openptv2/algorithms/track.py":520
  * 
  *     different = 0
  *     for i in range(n):             # <<<<<<<<<<<<<<
@@ -13935,7 +13935,7 @@ static PyObject *__pyx_f_10algorithms_5track_sort_candidates_by_freq(PyObject *_
   for (__pyx_t_5 = 0; __pyx_t_5 < __pyx_t_4; __pyx_t_5+=1) {
     __pyx_v_i = __pyx_t_5;
 
-    /* "algorithms/track.py":521
+    /* "openptv2/algorithms/track.py":521
  *     different = 0
  *     for i in range(n):
  *         if items[i][1] != 0:             # <<<<<<<<<<<<<<
@@ -13951,7 +13951,7 @@ static PyObject *__pyx_f_10algorithms_5track_sort_candidates_by_freq(PyObject *_
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     if (__pyx_t_15) {
 
-      /* "algorithms/track.py":522
+      /* "openptv2/algorithms/track.py":522
  *     for i in range(n):
  *         if items[i][1] != 0:
  *             different += 1             # <<<<<<<<<<<<<<
@@ -13960,7 +13960,7 @@ static PyObject *__pyx_f_10algorithms_5track_sort_candidates_by_freq(PyObject *_
 */
       __pyx_v_different = (__pyx_v_different + 1);
 
-      /* "algorithms/track.py":521
+      /* "openptv2/algorithms/track.py":521
  *     different = 0
  *     for i in range(n):
  *         if items[i][1] != 0:             # <<<<<<<<<<<<<<
@@ -13970,7 +13970,7 @@ static PyObject *__pyx_f_10algorithms_5track_sort_candidates_by_freq(PyObject *_
     }
   }
 
-  /* "algorithms/track.py":523
+  /* "openptv2/algorithms/track.py":523
  *         if items[i][1] != 0:
  *             different += 1
  *     return different             # <<<<<<<<<<<<<<
@@ -13984,7 +13984,7 @@ static PyObject *__pyx_f_10algorithms_5track_sort_candidates_by_freq(PyObject *_
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/track.py":476
+  /* "openptv2/algorithms/track.py":476
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -13997,7 +13997,7 @@ static PyObject *__pyx_f_10algorithms_5track_sort_candidates_by_freq(PyObject *_
   __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_14);
-  __Pyx_AddTraceback("algorithms.track.sort_candidates_by_freq", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.sort_candidates_by_freq", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_wc);
@@ -14007,15 +14007,15 @@ static PyObject *__pyx_f_10algorithms_5track_sort_candidates_by_freq(PyObject *_
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_5track_35sort_candidates_by_freq(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_35sort_candidates_by_freq(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_10algorithms_5track_35sort_candidates_by_freq = {"sort_candidates_by_freq", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_5track_35sort_candidates_by_freq, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10algorithms_5track_35sort_candidates_by_freq(PyObject *__pyx_self, 
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_5track_35sort_candidates_by_freq = {"sort_candidates_by_freq", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_5track_35sort_candidates_by_freq, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_35sort_candidates_by_freq(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -14085,11 +14085,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.track.sort_candidates_by_freq", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.sort_candidates_by_freq", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_5track_34sort_candidates_by_freq(__pyx_self, __pyx_v_items, __pyx_v_num_cams);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_5track_34sort_candidates_by_freq(__pyx_self, __pyx_v_items, __pyx_v_num_cams);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -14099,7 +14099,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_5track_34sort_candidates_by_freq(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_items, PyObject *__pyx_v_num_cams) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_34sort_candidates_by_freq(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_items, PyObject *__pyx_v_num_cams) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -14108,7 +14108,7 @@ static PyObject *__pyx_pf_10algorithms_5track_34sort_candidates_by_freq(CYTHON_U
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("sort_candidates_by_freq", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_5track_sort_candidates_by_freq(__pyx_v_items, __pyx_v_num_cams, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 476, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_5track_sort_candidates_by_freq(__pyx_v_items, __pyx_v_num_cams, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 476, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -14117,7 +14117,7 @@ static PyObject *__pyx_pf_10algorithms_5track_34sort_candidates_by_freq(CYTHON_U
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.track.sort_candidates_by_freq", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.sort_candidates_by_freq", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -14125,7 +14125,7 @@ static PyObject *__pyx_pf_10algorithms_5track_34sort_candidates_by_freq(CYTHON_U
   return __pyx_r;
 }
 
-/* "algorithms/track.py":526
+/* "openptv2/algorithms/track.py":526
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -14133,14 +14133,14 @@ static PyObject *__pyx_pf_10algorithms_5track_34sort_candidates_by_freq(CYTHON_U
  * @cython.wraparound(False)
 */
 
-static PyObject *__pyx_pw_10algorithms_5track_37sort(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_37sort(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_5track_sort(PyObject *__pyx_v_n, PyObject *__pyx_v_a, PyObject *__pyx_v_b, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_5track_sort(PyObject *__pyx_v_n, PyObject *__pyx_v_a, PyObject *__pyx_v_b, CYTHON_UNUSED int __pyx_skip_dispatch) {
   Py_ssize_t __pyx_v_i;
   int __pyx_v_flag;
   PyObject *__pyx_r = NULL;
@@ -14158,7 +14158,7 @@ static PyObject *__pyx_f_10algorithms_5track_sort(PyObject *__pyx_v_n, PyObject 
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("sort", 0);
 
-  /* "algorithms/track.py":532
+  /* "openptv2/algorithms/track.py":532
  *     """Bubble sort arrays a and b by ascending a values, in-place (matches C)."""
  *     i: cython.Py_ssize_t
  *     flag = True             # <<<<<<<<<<<<<<
@@ -14167,7 +14167,7 @@ static PyObject *__pyx_f_10algorithms_5track_sort(PyObject *__pyx_v_n, PyObject 
 */
   __pyx_v_flag = 1;
 
-  /* "algorithms/track.py":533
+  /* "openptv2/algorithms/track.py":533
  *     i: cython.Py_ssize_t
  *     flag = True
  *     while flag:             # <<<<<<<<<<<<<<
@@ -14177,7 +14177,7 @@ static PyObject *__pyx_f_10algorithms_5track_sort(PyObject *__pyx_v_n, PyObject 
   while (1) {
     if (!__pyx_v_flag) break;
 
-    /* "algorithms/track.py":534
+    /* "openptv2/algorithms/track.py":534
  *     flag = True
  *     while flag:
  *         flag = False             # <<<<<<<<<<<<<<
@@ -14186,7 +14186,7 @@ static PyObject *__pyx_f_10algorithms_5track_sort(PyObject *__pyx_v_n, PyObject 
 */
     __pyx_v_flag = 0;
 
-    /* "algorithms/track.py":535
+    /* "openptv2/algorithms/track.py":535
  *     while flag:
  *         flag = False
  *         for i in range(n - 1):             # <<<<<<<<<<<<<<
@@ -14201,7 +14201,7 @@ static PyObject *__pyx_f_10algorithms_5track_sort(PyObject *__pyx_v_n, PyObject 
     for (__pyx_t_4 = 0; __pyx_t_4 < __pyx_t_3; __pyx_t_4+=1) {
       __pyx_v_i = __pyx_t_4;
 
-      /* "algorithms/track.py":536
+      /* "openptv2/algorithms/track.py":536
  *         flag = False
  *         for i in range(n - 1):
  *             if a[i] > a[i + 1]:             # <<<<<<<<<<<<<<
@@ -14220,7 +14220,7 @@ static PyObject *__pyx_f_10algorithms_5track_sort(PyObject *__pyx_v_n, PyObject 
       __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
       if (__pyx_t_8) {
 
-        /* "algorithms/track.py":537
+        /* "openptv2/algorithms/track.py":537
  *         for i in range(n - 1):
  *             if a[i] > a[i + 1]:
  *                 a[i], a[i + 1] = a[i + 1], a[i]             # <<<<<<<<<<<<<<
@@ -14238,7 +14238,7 @@ static PyObject *__pyx_f_10algorithms_5track_sort(PyObject *__pyx_v_n, PyObject 
         if (unlikely((__Pyx_SetItemInt(__pyx_v_a, __pyx_t_5, __pyx_t_6, Py_ssize_t, 1, PyLong_FromSsize_t, 0, 0, 0, 1, __Pyx_ReferenceSharing_FunctionArgument) < 0))) __PYX_ERR(0, 537, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-        /* "algorithms/track.py":538
+        /* "openptv2/algorithms/track.py":538
  *             if a[i] > a[i + 1]:
  *                 a[i], a[i + 1] = a[i + 1], a[i]
  *                 b[i], b[i + 1] = b[i + 1], b[i]             # <<<<<<<<<<<<<<
@@ -14256,7 +14256,7 @@ static PyObject *__pyx_f_10algorithms_5track_sort(PyObject *__pyx_v_n, PyObject 
         if (unlikely((__Pyx_SetItemInt(__pyx_v_b, __pyx_t_5, __pyx_t_7, Py_ssize_t, 1, PyLong_FromSsize_t, 0, 0, 0, 1, __Pyx_ReferenceSharing_FunctionArgument) < 0))) __PYX_ERR(0, 538, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
 
-        /* "algorithms/track.py":539
+        /* "openptv2/algorithms/track.py":539
  *                 a[i], a[i + 1] = a[i + 1], a[i]
  *                 b[i], b[i + 1] = b[i + 1], b[i]
  *                 flag = True             # <<<<<<<<<<<<<<
@@ -14265,7 +14265,7 @@ static PyObject *__pyx_f_10algorithms_5track_sort(PyObject *__pyx_v_n, PyObject 
 */
         __pyx_v_flag = 1;
 
-        /* "algorithms/track.py":536
+        /* "openptv2/algorithms/track.py":536
  *         flag = False
  *         for i in range(n - 1):
  *             if a[i] > a[i + 1]:             # <<<<<<<<<<<<<<
@@ -14276,7 +14276,7 @@ static PyObject *__pyx_f_10algorithms_5track_sort(PyObject *__pyx_v_n, PyObject 
     }
   }
 
-  /* "algorithms/track.py":526
+  /* "openptv2/algorithms/track.py":526
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -14291,7 +14291,7 @@ static PyObject *__pyx_f_10algorithms_5track_sort(PyObject *__pyx_v_n, PyObject 
   __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_6);
   __Pyx_XDECREF(__pyx_t_7);
-  __Pyx_AddTraceback("algorithms.track.sort", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.sort", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -14300,16 +14300,16 @@ static PyObject *__pyx_f_10algorithms_5track_sort(PyObject *__pyx_v_n, PyObject 
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_5track_37sort(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_37sort(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_5track_36sort, "Bubble sort arrays a and b by ascending a values, in-place (matches C).");
-static PyMethodDef __pyx_mdef_10algorithms_5track_37sort = {"sort", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_5track_37sort, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_5track_36sort};
-static PyObject *__pyx_pw_10algorithms_5track_37sort(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_5track_36sort, "Bubble sort arrays a and b by ascending a values, in-place (matches C).");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_5track_37sort = {"sort", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_5track_37sort, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_5track_36sort};
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_37sort(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -14387,11 +14387,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.track.sort", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.sort", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_5track_36sort(__pyx_self, __pyx_v_n, __pyx_v_a, __pyx_v_b);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_5track_36sort(__pyx_self, __pyx_v_n, __pyx_v_a, __pyx_v_b);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -14401,7 +14401,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_5track_36sort(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_n, PyObject *__pyx_v_a, PyObject *__pyx_v_b) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_36sort(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_n, PyObject *__pyx_v_a, PyObject *__pyx_v_b) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -14410,7 +14410,7 @@ static PyObject *__pyx_pf_10algorithms_5track_36sort(CYTHON_UNUSED PyObject *__p
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("sort", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_5track_sort(__pyx_v_n, __pyx_v_a, __pyx_v_b, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 526, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_5track_sort(__pyx_v_n, __pyx_v_a, __pyx_v_b, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 526, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -14419,7 +14419,7 @@ static PyObject *__pyx_pf_10algorithms_5track_36sort(CYTHON_UNUSED PyObject *__p
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.track.sort", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.sort", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -14427,7 +14427,7 @@ static PyObject *__pyx_pf_10algorithms_5track_36sort(CYTHON_UNUSED PyObject *__p
   return __pyx_r;
 }
 
-/* "algorithms/track.py":542
+/* "openptv2/algorithms/track.py":542
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -14435,14 +14435,14 @@ static PyObject *__pyx_pf_10algorithms_5track_36sort(CYTHON_UNUSED PyObject *__p
  *     return _point_to_pixel_fast(
 */
 
-static PyObject *__pyx_pw_10algorithms_5track_39point_to_pixel(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_39point_to_pixel(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_5track_point_to_pixel(PyObject *__pyx_v_point, PyObject *__pyx_v_cal, PyObject *__pyx_v_cpar, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_5track_point_to_pixel(PyObject *__pyx_v_point, PyObject *__pyx_v_cal, PyObject *__pyx_v_cpar, CYTHON_UNUSED int __pyx_skip_dispatch) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -14460,7 +14460,7 @@ static PyObject *__pyx_f_10algorithms_5track_point_to_pixel(PyObject *__pyx_v_po
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("point_to_pixel", 0);
 
-  /* "algorithms/track.py":544
+  /* "openptv2/algorithms/track.py":544
  * @cython.ccall
  * def point_to_pixel(point, cal, cpar):
  *     return _point_to_pixel_fast(             # <<<<<<<<<<<<<<
@@ -14472,7 +14472,7 @@ static PyObject *__pyx_f_10algorithms_5track_point_to_pixel(PyObject *__pyx_v_po
   __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_mstate_global->__pyx_n_u_point_to_pixel_fast); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 544, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
 
-  /* "algorithms/track.py":545
+  /* "openptv2/algorithms/track.py":545
  * def point_to_pixel(point, cal, cpar):
  *     return _point_to_pixel_fast(
  *         point, cal, cpar.imx, cpar.imy, cpar.pix_x, cpar.pix_y, cpar.chfield, cpar.mm,             # <<<<<<<<<<<<<<
@@ -14521,7 +14521,7 @@ static PyObject *__pyx_f_10algorithms_5track_point_to_pixel(PyObject *__pyx_v_po
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/track.py":542
+  /* "openptv2/algorithms/track.py":542
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -14540,7 +14540,7 @@ static PyObject *__pyx_f_10algorithms_5track_point_to_pixel(PyObject *__pyx_v_po
   __Pyx_XDECREF(__pyx_t_7);
   __Pyx_XDECREF(__pyx_t_8);
   __Pyx_XDECREF(__pyx_t_9);
-  __Pyx_AddTraceback("algorithms.track.point_to_pixel", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.point_to_pixel", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -14549,15 +14549,15 @@ static PyObject *__pyx_f_10algorithms_5track_point_to_pixel(PyObject *__pyx_v_po
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_5track_39point_to_pixel(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_39point_to_pixel(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_10algorithms_5track_39point_to_pixel = {"point_to_pixel", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_5track_39point_to_pixel, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10algorithms_5track_39point_to_pixel(PyObject *__pyx_self, 
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_5track_39point_to_pixel = {"point_to_pixel", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_5track_39point_to_pixel, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_39point_to_pixel(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -14635,11 +14635,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.track.point_to_pixel", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.point_to_pixel", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_5track_38point_to_pixel(__pyx_self, __pyx_v_point, __pyx_v_cal, __pyx_v_cpar);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_5track_38point_to_pixel(__pyx_self, __pyx_v_point, __pyx_v_cal, __pyx_v_cpar);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -14649,7 +14649,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_5track_38point_to_pixel(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_point, PyObject *__pyx_v_cal, PyObject *__pyx_v_cpar) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_38point_to_pixel(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_point, PyObject *__pyx_v_cal, PyObject *__pyx_v_cpar) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -14658,7 +14658,7 @@ static PyObject *__pyx_pf_10algorithms_5track_38point_to_pixel(CYTHON_UNUSED PyO
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("point_to_pixel", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_5track_point_to_pixel(__pyx_v_point, __pyx_v_cal, __pyx_v_cpar, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 542, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_5track_point_to_pixel(__pyx_v_point, __pyx_v_cal, __pyx_v_cpar, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 542, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -14667,7 +14667,7 @@ static PyObject *__pyx_pf_10algorithms_5track_38point_to_pixel(CYTHON_UNUSED PyO
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.track.point_to_pixel", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.point_to_pixel", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -14675,7 +14675,7 @@ static PyObject *__pyx_pf_10algorithms_5track_38point_to_pixel(CYTHON_UNUSED PyO
   return __pyx_r;
 }
 
-/* "algorithms/track.py":549
+/* "openptv2/algorithms/track.py":549
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -14683,16 +14683,16 @@ static PyObject *__pyx_pf_10algorithms_5track_38point_to_pixel(CYTHON_UNUSED PyO
  *                  _fast_tuples=None):
 */
 
-static PyObject *__pyx_pw_10algorithms_5track_41searchquader(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_41searchquader(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_5track_searchquader(PyObject *__pyx_v_point, PyObject *__pyx_v_tpar, PyObject *__pyx_v_cpar, PyObject *__pyx_v_calib, CYTHON_UNUSED int __pyx_skip_dispatch, struct __pyx_opt_args_10algorithms_5track_searchquader *__pyx_optional_args) {
+static PyObject *__pyx_f_8openptv2_10algorithms_5track_searchquader(PyObject *__pyx_v_point, PyObject *__pyx_v_tpar, PyObject *__pyx_v_cpar, PyObject *__pyx_v_calib, CYTHON_UNUSED int __pyx_skip_dispatch, struct __pyx_opt_args_8openptv2_10algorithms_5track_searchquader *__pyx_optional_args) {
 
-  /* "algorithms/track.py":550
+  /* "openptv2/algorithms/track.py":550
  * 
  * @cython.ccall
  * def searchquader(point, tpar, cpar, calib, _packed_cals=None, _pix_info=None,             # <<<<<<<<<<<<<<
@@ -14702,7 +14702,7 @@ static PyObject *__pyx_f_10algorithms_5track_searchquader(PyObject *__pyx_v_poin
   PyObject *__pyx_v__packed_cals = ((PyObject *)Py_None);
   PyObject *__pyx_v__pix_info = ((PyObject *)Py_None);
 
-  /* "algorithms/track.py":551
+  /* "openptv2/algorithms/track.py":551
  * @cython.ccall
  * def searchquader(point, tpar, cpar, calib, _packed_cals=None, _pix_info=None,
  *                  _fast_tuples=None):             # <<<<<<<<<<<<<<
@@ -14784,7 +14784,7 @@ static PyObject *__pyx_f_10algorithms_5track_searchquader(PyObject *__pyx_v_poin
   }
   __Pyx_INCREF(__pyx_v__packed_cals);
 
-  /* "algorithms/track.py":552
+  /* "openptv2/algorithms/track.py":552
  * def searchquader(point, tpar, cpar, calib, _packed_cals=None, _pix_info=None,
  *                  _fast_tuples=None):
  *     num_cams = cpar.num_cams             # <<<<<<<<<<<<<<
@@ -14796,7 +14796,7 @@ static PyObject *__pyx_f_10algorithms_5track_searchquader(PyObject *__pyx_v_poin
   __pyx_v_num_cams = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/track.py":554
+  /* "openptv2/algorithms/track.py":554
  *     num_cams = cpar.num_cams
  * 
  *     px, py, pz = point[0], point[1], point[2]             # <<<<<<<<<<<<<<
@@ -14816,7 +14816,7 @@ static PyObject *__pyx_f_10algorithms_5track_searchquader(PyObject *__pyx_v_poin
   __pyx_v_pz = __pyx_t_3;
   __pyx_t_3 = 0;
 
-  /* "algorithms/track.py":555
+  /* "openptv2/algorithms/track.py":555
  * 
  *     px, py, pz = point[0], point[1], point[2]
  *     dxmin, dymin, dzmin = tpar.dvxmin, tpar.dvymin, tpar.dvzmin             # <<<<<<<<<<<<<<
@@ -14836,7 +14836,7 @@ static PyObject *__pyx_f_10algorithms_5track_searchquader(PyObject *__pyx_v_poin
   __pyx_v_dzmin = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/track.py":556
+  /* "openptv2/algorithms/track.py":556
  *     px, py, pz = point[0], point[1], point[2]
  *     dxmin, dymin, dzmin = tpar.dvxmin, tpar.dvymin, tpar.dvzmin
  *     dxmax, dymax, dzmax = tpar.dvxmax, tpar.dvymax, tpar.dvzmax             # <<<<<<<<<<<<<<
@@ -14856,7 +14856,7 @@ static PyObject *__pyx_f_10algorithms_5track_searchquader(PyObject *__pyx_v_poin
   __pyx_v_dzmax = __pyx_t_3;
   __pyx_t_3 = 0;
 
-  /* "algorithms/track.py":558
+  /* "openptv2/algorithms/track.py":558
  *     dxmax, dymax, dzmax = tpar.dvxmax, tpar.dvymax, tpar.dvzmax
  * 
  *     quader = np.empty((8, 3))             # <<<<<<<<<<<<<<
@@ -14892,7 +14892,7 @@ static PyObject *__pyx_f_10algorithms_5track_searchquader(PyObject *__pyx_v_poin
   __pyx_v_quader = __pyx_t_3;
   __pyx_t_3 = 0;
 
-  /* "algorithms/track.py":559
+  /* "openptv2/algorithms/track.py":559
  * 
  *     quader = np.empty((8, 3))
  *     for pt in range(8):             # <<<<<<<<<<<<<<
@@ -14902,7 +14902,7 @@ static PyObject *__pyx_f_10algorithms_5track_searchquader(PyObject *__pyx_v_poin
   for (__pyx_t_6 = 0; __pyx_t_6 < 8; __pyx_t_6+=1) {
     __pyx_v_pt = __pyx_t_6;
 
-    /* "algorithms/track.py":560
+    /* "openptv2/algorithms/track.py":560
  *     quader = np.empty((8, 3))
  *     for pt in range(8):
  *         quader[pt, 0] = px + (dxmax if pt & 1 else dxmin)             # <<<<<<<<<<<<<<
@@ -14934,7 +14934,7 @@ static PyObject *__pyx_f_10algorithms_5track_searchquader(PyObject *__pyx_v_poin
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-    /* "algorithms/track.py":561
+    /* "openptv2/algorithms/track.py":561
  *     for pt in range(8):
  *         quader[pt, 0] = px + (dxmax if pt & 1 else dxmin)
  *         quader[pt, 1] = py + (dymax if pt & 2 else dymin)             # <<<<<<<<<<<<<<
@@ -14966,7 +14966,7 @@ static PyObject *__pyx_f_10algorithms_5track_searchquader(PyObject *__pyx_v_poin
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "algorithms/track.py":562
+    /* "openptv2/algorithms/track.py":562
  *         quader[pt, 0] = px + (dxmax if pt & 1 else dxmin)
  *         quader[pt, 1] = py + (dymax if pt & 2 else dymin)
  *         quader[pt, 2] = pz + (dzmax if pt & 4 else dzmin)             # <<<<<<<<<<<<<<
@@ -14999,7 +14999,7 @@ static PyObject *__pyx_f_10algorithms_5track_searchquader(PyObject *__pyx_v_poin
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   }
 
-  /* "algorithms/track.py":564
+  /* "openptv2/algorithms/track.py":564
  *         quader[pt, 2] = pz + (dzmax if pt & 4 else dzmin)
  * 
  *     if _pix_info is not None:             # <<<<<<<<<<<<<<
@@ -15009,7 +15009,7 @@ static PyObject *__pyx_f_10algorithms_5track_searchquader(PyObject *__pyx_v_poin
   __pyx_t_7 = (__pyx_v__pix_info != Py_None);
   if (__pyx_t_7) {
 
-    /* "algorithms/track.py":565
+    /* "openptv2/algorithms/track.py":565
  * 
  *     if _pix_info is not None:
  *         c_imx, c_imy, imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield = _pix_info             # <<<<<<<<<<<<<<
@@ -15111,7 +15111,7 @@ static PyObject *__pyx_f_10algorithms_5track_searchquader(PyObject *__pyx_v_poin
     __pyx_v_c_chfield = __pyx_t_10;
     __pyx_t_10 = 0;
 
-    /* "algorithms/track.py":564
+    /* "openptv2/algorithms/track.py":564
  *         quader[pt, 2] = pz + (dzmax if pt & 4 else dzmin)
  * 
  *     if _pix_info is not None:             # <<<<<<<<<<<<<<
@@ -15121,7 +15121,7 @@ static PyObject *__pyx_f_10algorithms_5track_searchquader(PyObject *__pyx_v_poin
     goto __pyx_L5;
   }
 
-  /* "algorithms/track.py":567
+  /* "openptv2/algorithms/track.py":567
  *         c_imx, c_imy, imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield = _pix_info
  *     else:
  *         c_imx = cpar.imx; c_imy = cpar.imy             # <<<<<<<<<<<<<<
@@ -15138,7 +15138,7 @@ static PyObject *__pyx_f_10algorithms_5track_searchquader(PyObject *__pyx_v_poin
     __pyx_v_c_imy = __pyx_t_10;
     __pyx_t_10 = 0;
 
-    /* "algorithms/track.py":568
+    /* "openptv2/algorithms/track.py":568
  *     else:
  *         c_imx = cpar.imx; c_imy = cpar.imy
  *         imx_half = c_imx * 0.5; imy_half = c_imy * 0.5             # <<<<<<<<<<<<<<
@@ -15154,7 +15154,7 @@ static PyObject *__pyx_f_10algorithms_5track_searchquader(PyObject *__pyx_v_poin
     __pyx_v_imy_half = __pyx_t_10;
     __pyx_t_10 = 0;
 
-    /* "algorithms/track.py":569
+    /* "openptv2/algorithms/track.py":569
  *         c_imx = cpar.imx; c_imy = cpar.imy
  *         imx_half = c_imx * 0.5; imy_half = c_imy * 0.5
  *         inv_pix_x = 1.0 / cpar.pix_x; inv_pix_y = 1.0 / cpar.pix_y             # <<<<<<<<<<<<<<
@@ -15176,7 +15176,7 @@ static PyObject *__pyx_f_10algorithms_5track_searchquader(PyObject *__pyx_v_poin
     __pyx_v_inv_pix_y = __pyx_t_10;
     __pyx_t_10 = 0;
 
-    /* "algorithms/track.py":570
+    /* "openptv2/algorithms/track.py":570
  *         imx_half = c_imx * 0.5; imy_half = c_imy * 0.5
  *         inv_pix_x = 1.0 / cpar.pix_x; inv_pix_y = 1.0 / cpar.pix_y
  *         c_chfield = cpar.chfield             # <<<<<<<<<<<<<<
@@ -15190,7 +15190,7 @@ static PyObject *__pyx_f_10algorithms_5track_searchquader(PyObject *__pyx_v_poin
   }
   __pyx_L5:;
 
-  /* "algorithms/track.py":572
+  /* "openptv2/algorithms/track.py":572
  *         c_chfield = cpar.chfield
  * 
  *     if _fast_tuples is not None:             # <<<<<<<<<<<<<<
@@ -15200,7 +15200,7 @@ static PyObject *__pyx_f_10algorithms_5track_searchquader(PyObject *__pyx_v_poin
   __pyx_t_7 = (__pyx_v__fast_tuples != Py_None);
   if (__pyx_t_7) {
 
-    /* "algorithms/track.py":573
+    /* "openptv2/algorithms/track.py":573
  * 
  *     if _fast_tuples is not None:
  *         cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t = _fast_tuples             # <<<<<<<<<<<<<<
@@ -15295,7 +15295,7 @@ static PyObject *__pyx_f_10algorithms_5track_searchquader(PyObject *__pyx_v_poin
     __pyx_v_mrw_t = __pyx_t_4;
     __pyx_t_4 = 0;
 
-    /* "algorithms/track.py":574
+    /* "openptv2/algorithms/track.py":574
  *     if _fast_tuples is not None:
  *         cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t = _fast_tuples
  *         pos_arr = np.asarray(point, dtype=np.float64)             # <<<<<<<<<<<<<<
@@ -15341,7 +15341,7 @@ static PyObject *__pyx_f_10algorithms_5track_searchquader(PyObject *__pyx_v_poin
     __pyx_v_pos_arr = __pyx_t_4;
     __pyx_t_4 = 0;
 
-    /* "algorithms/track.py":575
+    /* "openptv2/algorithms/track.py":575
  *         cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t = _fast_tuples
  *         pos_arr = np.asarray(point, dtype=np.float64)
  *         return _searchquader_fast(             # <<<<<<<<<<<<<<
@@ -15353,7 +15353,7 @@ static PyObject *__pyx_f_10algorithms_5track_searchquader(PyObject *__pyx_v_poin
     __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_mstate_global->__pyx_n_u_searchquader_fast); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 575, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
 
-    /* "algorithms/track.py":577
+    /* "openptv2/algorithms/track.py":577
  *         return _searchquader_fast(
  *             pos_arr, quader, num_cams, cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t,
  *             imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield, c_imx, c_imy)             # <<<<<<<<<<<<<<
@@ -15384,7 +15384,7 @@ static PyObject *__pyx_f_10algorithms_5track_searchquader(PyObject *__pyx_v_poin
     __pyx_t_4 = 0;
     goto __pyx_L0;
 
-    /* "algorithms/track.py":572
+    /* "openptv2/algorithms/track.py":572
  *         c_chfield = cpar.chfield
  * 
  *     if _fast_tuples is not None:             # <<<<<<<<<<<<<<
@@ -15393,7 +15393,7 @@ static PyObject *__pyx_f_10algorithms_5track_searchquader(PyObject *__pyx_v_poin
 */
   }
 
-  /* "algorithms/track.py":579
+  /* "openptv2/algorithms/track.py":579
  *             imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield, c_imx, c_imy)
  * 
  *     if _packed_cals is None:             # <<<<<<<<<<<<<<
@@ -15403,7 +15403,7 @@ static PyObject *__pyx_f_10algorithms_5track_searchquader(PyObject *__pyx_v_poin
   __pyx_t_7 = (__pyx_v__packed_cals == Py_None);
   if (__pyx_t_7) {
 
-    /* "algorithms/track.py":580
+    /* "openptv2/algorithms/track.py":580
  * 
  *     if _packed_cals is None:
  *         c_mm = cpar.mm             # <<<<<<<<<<<<<<
@@ -15415,7 +15415,7 @@ static PyObject *__pyx_f_10algorithms_5track_searchquader(PyObject *__pyx_v_poin
     __pyx_v_c_mm = __pyx_t_4;
     __pyx_t_4 = 0;
 
-    /* "algorithms/track.py":581
+    /* "openptv2/algorithms/track.py":581
  *     if _packed_cals is None:
  *         c_mm = cpar.mm
  *         _packed_cals = [_pack_cal(calib[i], c_mm) for i in range(num_cams)]             # <<<<<<<<<<<<<<
@@ -15493,7 +15493,7 @@ static PyObject *__pyx_f_10algorithms_5track_searchquader(PyObject *__pyx_v_poin
     __Pyx_DECREF_SET(__pyx_v__packed_cals, __pyx_t_4);
     __pyx_t_4 = 0;
 
-    /* "algorithms/track.py":579
+    /* "openptv2/algorithms/track.py":579
  *             imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield, c_imx, c_imy)
  * 
  *     if _packed_cals is None:             # <<<<<<<<<<<<<<
@@ -15502,7 +15502,7 @@ static PyObject *__pyx_f_10algorithms_5track_searchquader(PyObject *__pyx_v_poin
 */
   }
 
-  /* "algorithms/track.py":583
+  /* "openptv2/algorithms/track.py":583
  *         _packed_cals = [_pack_cal(calib[i], c_mm) for i in range(num_cams)]
  * 
  *     xr = np.zeros(num_cams)             # <<<<<<<<<<<<<<
@@ -15538,7 +15538,7 @@ static PyObject *__pyx_f_10algorithms_5track_searchquader(PyObject *__pyx_v_poin
   __pyx_v_xr = __pyx_t_4;
   __pyx_t_4 = 0;
 
-  /* "algorithms/track.py":584
+  /* "openptv2/algorithms/track.py":584
  * 
  *     xr = np.zeros(num_cams)
  *     xl = np.zeros(num_cams)             # <<<<<<<<<<<<<<
@@ -15574,7 +15574,7 @@ static PyObject *__pyx_f_10algorithms_5track_searchquader(PyObject *__pyx_v_poin
   __pyx_v_xl = __pyx_t_4;
   __pyx_t_4 = 0;
 
-  /* "algorithms/track.py":585
+  /* "openptv2/algorithms/track.py":585
  *     xr = np.zeros(num_cams)
  *     xl = np.zeros(num_cams)
  *     yd = np.zeros(num_cams)             # <<<<<<<<<<<<<<
@@ -15610,7 +15610,7 @@ static PyObject *__pyx_f_10algorithms_5track_searchquader(PyObject *__pyx_v_poin
   __pyx_v_yd = __pyx_t_4;
   __pyx_t_4 = 0;
 
-  /* "algorithms/track.py":586
+  /* "openptv2/algorithms/track.py":586
  *     xl = np.zeros(num_cams)
  *     yd = np.zeros(num_cams)
  *     yu = np.zeros(num_cams)             # <<<<<<<<<<<<<<
@@ -15646,7 +15646,7 @@ static PyObject *__pyx_f_10algorithms_5track_searchquader(PyObject *__pyx_v_poin
   __pyx_v_yu = __pyx_t_4;
   __pyx_t_4 = 0;
 
-  /* "algorithms/track.py":588
+  /* "openptv2/algorithms/track.py":588
  *     yu = np.zeros(num_cams)
  * 
  *     for i in range(num_cams):             # <<<<<<<<<<<<<<
@@ -15682,7 +15682,7 @@ static PyObject *__pyx_f_10algorithms_5track_searchquader(PyObject *__pyx_v_poin
     __Pyx_XDECREF_SET(__pyx_v_i, __pyx_t_4);
     __pyx_t_4 = 0;
 
-    /* "algorithms/track.py":589
+    /* "openptv2/algorithms/track.py":589
  * 
  *     for i in range(num_cams):
  *         pc = _packed_cals[i]             # <<<<<<<<<<<<<<
@@ -15694,7 +15694,7 @@ static PyObject *__pyx_f_10algorithms_5track_searchquader(PyObject *__pyx_v_poin
     __Pyx_XDECREF_SET(__pyx_v_pc, __pyx_t_4);
     __pyx_t_4 = 0;
 
-    /* "algorithms/track.py":590
+    /* "openptv2/algorithms/track.py":590
  *     for i in range(num_cams):
  *         pc = _packed_cals[i]
  *         xr_i = 0.0             # <<<<<<<<<<<<<<
@@ -15704,7 +15704,7 @@ static PyObject *__pyx_f_10algorithms_5track_searchquader(PyObject *__pyx_v_poin
     __Pyx_INCREF(__pyx_mstate_global->__pyx_float_0_0);
     __Pyx_XDECREF_SET(__pyx_v_xr_i, __pyx_mstate_global->__pyx_float_0_0);
 
-    /* "algorithms/track.py":591
+    /* "openptv2/algorithms/track.py":591
  *         pc = _packed_cals[i]
  *         xr_i = 0.0
  *         xl_i = float(c_imx)             # <<<<<<<<<<<<<<
@@ -15716,7 +15716,7 @@ static PyObject *__pyx_f_10algorithms_5track_searchquader(PyObject *__pyx_v_poin
     __Pyx_XDECREF_SET(__pyx_v_xl_i, __pyx_t_4);
     __pyx_t_4 = 0;
 
-    /* "algorithms/track.py":592
+    /* "openptv2/algorithms/track.py":592
  *         xr_i = 0.0
  *         xl_i = float(c_imx)
  *         yd_i = 0.0             # <<<<<<<<<<<<<<
@@ -15726,7 +15726,7 @@ static PyObject *__pyx_f_10algorithms_5track_searchquader(PyObject *__pyx_v_poin
     __Pyx_INCREF(__pyx_mstate_global->__pyx_float_0_0);
     __Pyx_XDECREF_SET(__pyx_v_yd_i, __pyx_mstate_global->__pyx_float_0_0);
 
-    /* "algorithms/track.py":593
+    /* "openptv2/algorithms/track.py":593
  *         xl_i = float(c_imx)
  *         yd_i = 0.0
  *         yu_i = float(c_imy)             # <<<<<<<<<<<<<<
@@ -15738,7 +15738,7 @@ static PyObject *__pyx_f_10algorithms_5track_searchquader(PyObject *__pyx_v_poin
     __Pyx_XDECREF_SET(__pyx_v_yu_i, __pyx_t_4);
     __pyx_t_4 = 0;
 
-    /* "algorithms/track.py":595
+    /* "openptv2/algorithms/track.py":595
  *         yu_i = float(c_imy)
  * 
  *         cx, cy = _point_to_pixel_packed(point, pc, imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield)             # <<<<<<<<<<<<<<
@@ -15823,7 +15823,7 @@ static PyObject *__pyx_f_10algorithms_5track_searchquader(PyObject *__pyx_v_poin
     __Pyx_XDECREF_SET(__pyx_v_cy, __pyx_t_8);
     __pyx_t_8 = 0;
 
-    /* "algorithms/track.py":596
+    /* "openptv2/algorithms/track.py":596
  * 
  *         cx, cy = _point_to_pixel_packed(point, pc, imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield)
  *         for pt in range(8):             # <<<<<<<<<<<<<<
@@ -15833,7 +15833,7 @@ static PyObject *__pyx_f_10algorithms_5track_searchquader(PyObject *__pyx_v_poin
     for (__pyx_t_6 = 0; __pyx_t_6 < 8; __pyx_t_6+=1) {
       __pyx_v_pt = __pyx_t_6;
 
-      /* "algorithms/track.py":597
+      /* "openptv2/algorithms/track.py":597
  *         cx, cy = _point_to_pixel_packed(point, pc, imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield)
  *         for pt in range(8):
  *             corner_x, corner_y = _point_to_pixel_packed(quader[pt], pc, imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield)             # <<<<<<<<<<<<<<
@@ -15921,7 +15921,7 @@ static PyObject *__pyx_f_10algorithms_5track_searchquader(PyObject *__pyx_v_poin
       __Pyx_XDECREF_SET(__pyx_v_corner_y, __pyx_t_10);
       __pyx_t_10 = 0;
 
-      /* "algorithms/track.py":598
+      /* "openptv2/algorithms/track.py":598
  *         for pt in range(8):
  *             corner_x, corner_y = _point_to_pixel_packed(quader[pt], pc, imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield)
  *             if corner_x < xl_i: xl_i = corner_x             # <<<<<<<<<<<<<<
@@ -15936,7 +15936,7 @@ static PyObject *__pyx_f_10algorithms_5track_searchquader(PyObject *__pyx_v_poin
         __Pyx_DECREF_SET(__pyx_v_xl_i, __pyx_v_corner_x);
       }
 
-      /* "algorithms/track.py":599
+      /* "openptv2/algorithms/track.py":599
  *             corner_x, corner_y = _point_to_pixel_packed(quader[pt], pc, imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield)
  *             if corner_x < xl_i: xl_i = corner_x
  *             if corner_y < yu_i: yu_i = corner_y             # <<<<<<<<<<<<<<
@@ -15951,7 +15951,7 @@ static PyObject *__pyx_f_10algorithms_5track_searchquader(PyObject *__pyx_v_poin
         __Pyx_DECREF_SET(__pyx_v_yu_i, __pyx_v_corner_y);
       }
 
-      /* "algorithms/track.py":600
+      /* "openptv2/algorithms/track.py":600
  *             if corner_x < xl_i: xl_i = corner_x
  *             if corner_y < yu_i: yu_i = corner_y
  *             if corner_x > xr_i: xr_i = corner_x             # <<<<<<<<<<<<<<
@@ -15966,7 +15966,7 @@ static PyObject *__pyx_f_10algorithms_5track_searchquader(PyObject *__pyx_v_poin
         __Pyx_DECREF_SET(__pyx_v_xr_i, __pyx_v_corner_x);
       }
 
-      /* "algorithms/track.py":601
+      /* "openptv2/algorithms/track.py":601
  *             if corner_y < yu_i: yu_i = corner_y
  *             if corner_x > xr_i: xr_i = corner_x
  *             if corner_y > yd_i: yd_i = corner_y             # <<<<<<<<<<<<<<
@@ -15982,7 +15982,7 @@ static PyObject *__pyx_f_10algorithms_5track_searchquader(PyObject *__pyx_v_poin
       }
     }
 
-    /* "algorithms/track.py":603
+    /* "openptv2/algorithms/track.py":603
  *             if corner_y > yd_i: yd_i = corner_y
  * 
  *         if xl_i < 0: xl_i = 0             # <<<<<<<<<<<<<<
@@ -15997,7 +15997,7 @@ static PyObject *__pyx_f_10algorithms_5track_searchquader(PyObject *__pyx_v_poin
       __Pyx_DECREF_SET(__pyx_v_xl_i, __pyx_mstate_global->__pyx_int_0);
     }
 
-    /* "algorithms/track.py":604
+    /* "openptv2/algorithms/track.py":604
  * 
  *         if xl_i < 0: xl_i = 0
  *         if yu_i < 0: yu_i = 0             # <<<<<<<<<<<<<<
@@ -16012,7 +16012,7 @@ static PyObject *__pyx_f_10algorithms_5track_searchquader(PyObject *__pyx_v_poin
       __Pyx_DECREF_SET(__pyx_v_yu_i, __pyx_mstate_global->__pyx_int_0);
     }
 
-    /* "algorithms/track.py":605
+    /* "openptv2/algorithms/track.py":605
  *         if xl_i < 0: xl_i = 0
  *         if yu_i < 0: yu_i = 0
  *         if xr_i > c_imx: xr_i = c_imx             # <<<<<<<<<<<<<<
@@ -16027,7 +16027,7 @@ static PyObject *__pyx_f_10algorithms_5track_searchquader(PyObject *__pyx_v_poin
       __Pyx_DECREF_SET(__pyx_v_xr_i, __pyx_v_c_imx);
     }
 
-    /* "algorithms/track.py":606
+    /* "openptv2/algorithms/track.py":606
  *         if yu_i < 0: yu_i = 0
  *         if xr_i > c_imx: xr_i = c_imx
  *         if yd_i > c_imy: yd_i = c_imy             # <<<<<<<<<<<<<<
@@ -16042,7 +16042,7 @@ static PyObject *__pyx_f_10algorithms_5track_searchquader(PyObject *__pyx_v_poin
       __Pyx_DECREF_SET(__pyx_v_yd_i, __pyx_v_c_imy);
     }
 
-    /* "algorithms/track.py":608
+    /* "openptv2/algorithms/track.py":608
  *         if yd_i > c_imy: yd_i = c_imy
  * 
  *         xr[i] = xr_i - cx             # <<<<<<<<<<<<<<
@@ -16054,7 +16054,7 @@ static PyObject *__pyx_f_10algorithms_5track_searchquader(PyObject *__pyx_v_poin
     if (unlikely((PyObject_SetItem(__pyx_v_xr, __pyx_v_i, __pyx_t_4) < 0))) __PYX_ERR(0, 608, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-    /* "algorithms/track.py":609
+    /* "openptv2/algorithms/track.py":609
  * 
  *         xr[i] = xr_i - cx
  *         xl[i] = cx - xl_i             # <<<<<<<<<<<<<<
@@ -16066,7 +16066,7 @@ static PyObject *__pyx_f_10algorithms_5track_searchquader(PyObject *__pyx_v_poin
     if (unlikely((PyObject_SetItem(__pyx_v_xl, __pyx_v_i, __pyx_t_4) < 0))) __PYX_ERR(0, 609, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-    /* "algorithms/track.py":610
+    /* "openptv2/algorithms/track.py":610
  *         xr[i] = xr_i - cx
  *         xl[i] = cx - xl_i
  *         yd[i] = yd_i - cy             # <<<<<<<<<<<<<<
@@ -16078,7 +16078,7 @@ static PyObject *__pyx_f_10algorithms_5track_searchquader(PyObject *__pyx_v_poin
     if (unlikely((PyObject_SetItem(__pyx_v_yd, __pyx_v_i, __pyx_t_4) < 0))) __PYX_ERR(0, 610, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-    /* "algorithms/track.py":611
+    /* "openptv2/algorithms/track.py":611
  *         xl[i] = cx - xl_i
  *         yd[i] = yd_i - cy
  *         yu[i] = cy - yu_i             # <<<<<<<<<<<<<<
@@ -16090,7 +16090,7 @@ static PyObject *__pyx_f_10algorithms_5track_searchquader(PyObject *__pyx_v_poin
     if (unlikely((PyObject_SetItem(__pyx_v_yu, __pyx_v_i, __pyx_t_4) < 0))) __PYX_ERR(0, 611, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-    /* "algorithms/track.py":588
+    /* "openptv2/algorithms/track.py":588
  *     yu = np.zeros(num_cams)
  * 
  *     for i in range(num_cams):             # <<<<<<<<<<<<<<
@@ -16100,7 +16100,7 @@ static PyObject *__pyx_f_10algorithms_5track_searchquader(PyObject *__pyx_v_poin
   }
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/track.py":613
+  /* "openptv2/algorithms/track.py":613
  *         yu[i] = cy - yu_i
  * 
  *     return xr, xl, yd, yu             # <<<<<<<<<<<<<<
@@ -16126,7 +16126,7 @@ static PyObject *__pyx_f_10algorithms_5track_searchquader(PyObject *__pyx_v_poin
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/track.py":549
+  /* "openptv2/algorithms/track.py":549
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -16144,7 +16144,7 @@ static PyObject *__pyx_f_10algorithms_5track_searchquader(PyObject *__pyx_v_poin
   __Pyx_XDECREF(__pyx_t_9);
   __Pyx_XDECREF(__pyx_t_10);
   __Pyx_XDECREF(__pyx_t_11);
-  __Pyx_AddTraceback("algorithms.track.searchquader", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.searchquader", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_num_cams);
@@ -16195,15 +16195,15 @@ static PyObject *__pyx_f_10algorithms_5track_searchquader(PyObject *__pyx_v_poin
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_5track_41searchquader(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_41searchquader(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_10algorithms_5track_41searchquader = {"searchquader", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_5track_41searchquader, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10algorithms_5track_41searchquader(PyObject *__pyx_self, 
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_5track_41searchquader = {"searchquader", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_5track_41searchquader, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_41searchquader(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -16276,7 +16276,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
       const Py_ssize_t kwd_pos_args = __pyx_nargs;
       if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "searchquader", 0) < (0)) __PYX_ERR(0, 549, __pyx_L3_error)
 
-      /* "algorithms/track.py":550
+      /* "openptv2/algorithms/track.py":550
  * 
  * @cython.ccall
  * def searchquader(point, tpar, cpar, calib, _packed_cals=None, _pix_info=None,             # <<<<<<<<<<<<<<
@@ -16286,7 +16286,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
       if (!values[4]) values[4] = __Pyx_NewRef(((PyObject *)Py_None));
       if (!values[5]) values[5] = __Pyx_NewRef(((PyObject *)Py_None));
 
-      /* "algorithms/track.py":551
+      /* "openptv2/algorithms/track.py":551
  * @cython.ccall
  * def searchquader(point, tpar, cpar, calib, _packed_cals=None, _pix_info=None,
  *                  _fast_tuples=None):             # <<<<<<<<<<<<<<
@@ -16324,7 +16324,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
         default: goto __pyx_L5_argtuple_error;
       }
 
-      /* "algorithms/track.py":550
+      /* "openptv2/algorithms/track.py":550
  * 
  * @cython.ccall
  * def searchquader(point, tpar, cpar, calib, _packed_cals=None, _pix_info=None,             # <<<<<<<<<<<<<<
@@ -16334,7 +16334,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
       if (!values[4]) values[4] = __Pyx_NewRef(((PyObject *)Py_None));
       if (!values[5]) values[5] = __Pyx_NewRef(((PyObject *)Py_None));
 
-      /* "algorithms/track.py":551
+      /* "openptv2/algorithms/track.py":551
  * @cython.ccall
  * def searchquader(point, tpar, cpar, calib, _packed_cals=None, _pix_info=None,
  *                  _fast_tuples=None):             # <<<<<<<<<<<<<<
@@ -16360,13 +16360,13 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.track.searchquader", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.searchquader", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_5track_40searchquader(__pyx_self, __pyx_v_point, __pyx_v_tpar, __pyx_v_cpar, __pyx_v_calib, __pyx_v__packed_cals, __pyx_v__pix_info, __pyx_v__fast_tuples);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_5track_40searchquader(__pyx_self, __pyx_v_point, __pyx_v_tpar, __pyx_v_cpar, __pyx_v_calib, __pyx_v__packed_cals, __pyx_v__pix_info, __pyx_v__fast_tuples);
 
-  /* "algorithms/track.py":549
+  /* "openptv2/algorithms/track.py":549
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -16382,11 +16382,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_5track_40searchquader(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_point, PyObject *__pyx_v_tpar, PyObject *__pyx_v_cpar, PyObject *__pyx_v_calib, PyObject *__pyx_v__packed_cals, PyObject *__pyx_v__pix_info, PyObject *__pyx_v__fast_tuples) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_40searchquader(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_point, PyObject *__pyx_v_tpar, PyObject *__pyx_v_cpar, PyObject *__pyx_v_calib, PyObject *__pyx_v__packed_cals, PyObject *__pyx_v__pix_info, PyObject *__pyx_v__fast_tuples) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
-  struct __pyx_opt_args_10algorithms_5track_searchquader __pyx_t_2;
+  struct __pyx_opt_args_8openptv2_10algorithms_5track_searchquader __pyx_t_2;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -16396,7 +16396,7 @@ static PyObject *__pyx_pf_10algorithms_5track_40searchquader(CYTHON_UNUSED PyObj
   __pyx_t_2._packed_cals = __pyx_v__packed_cals;
   __pyx_t_2._pix_info = __pyx_v__pix_info;
   __pyx_t_2._fast_tuples = __pyx_v__fast_tuples;
-  __pyx_t_1 = __pyx_f_10algorithms_5track_searchquader(__pyx_v_point, __pyx_v_tpar, __pyx_v_cpar, __pyx_v_calib, 1, &__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 549, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_5track_searchquader(__pyx_v_point, __pyx_v_tpar, __pyx_v_cpar, __pyx_v_calib, 1, &__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 549, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -16405,7 +16405,7 @@ static PyObject *__pyx_pf_10algorithms_5track_40searchquader(CYTHON_UNUSED PyObj
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.track.searchquader", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.searchquader", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -16413,7 +16413,7 @@ static PyObject *__pyx_pf_10algorithms_5track_40searchquader(CYTHON_UNUSED PyObj
   return __pyx_r;
 }
 
-/* "algorithms/track.py":616
+/* "openptv2/algorithms/track.py":616
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -16421,16 +16421,16 @@ static PyObject *__pyx_pf_10algorithms_5track_40searchquader(CYTHON_UNUSED PyObj
  * @cython.wraparound(False)
 */
 
-static PyObject *__pyx_pw_10algorithms_5track_43register_closest_neighbs(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_43register_closest_neighbs(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_5track_register_closest_neighbs(CYTHON_UNUSED PyObject *__pyx_v_targets, PyObject *__pyx_v_num_targets, PyObject *__pyx_v_cam, PyObject *__pyx_v_cent_x, PyObject *__pyx_v_cent_y, PyObject *__pyx_v_dl, PyObject *__pyx_v_dr, PyObject *__pyx_v_du, PyObject *__pyx_v_dd, PyObject *__pyx_v_reg, PyObject *__pyx_v_cpar, CYTHON_UNUSED int __pyx_skip_dispatch, struct __pyx_opt_args_10algorithms_5track_register_closest_neighbs *__pyx_optional_args) {
+static PyObject *__pyx_f_8openptv2_10algorithms_5track_register_closest_neighbs(CYTHON_UNUSED PyObject *__pyx_v_targets, PyObject *__pyx_v_num_targets, PyObject *__pyx_v_cam, PyObject *__pyx_v_cent_x, PyObject *__pyx_v_cent_y, PyObject *__pyx_v_dl, PyObject *__pyx_v_dr, PyObject *__pyx_v_du, PyObject *__pyx_v_dd, PyObject *__pyx_v_reg, PyObject *__pyx_v_cpar, CYTHON_UNUSED int __pyx_skip_dispatch, struct __pyx_opt_args_8openptv2_10algorithms_5track_register_closest_neighbs *__pyx_optional_args) {
 
-  /* "algorithms/track.py":621
+  /* "openptv2/algorithms/track.py":621
  * def register_closest_neighbs(targets, num_targets, cam, cent_x, cent_y,
  *                              dl, dr, du, dd, reg, cpar,
  *                              _targ_x=None, _targ_y=None, _targ_tnr=None):             # <<<<<<<<<<<<<<
@@ -16476,7 +16476,7 @@ static PyObject *__pyx_f_10algorithms_5track_register_closest_neighbs(CYTHON_UNU
     }
   }
 
-  /* "algorithms/track.py":622
+  /* "openptv2/algorithms/track.py":622
  *                              dl, dr, du, dd, reg, cpar,
  *                              _targ_x=None, _targ_y=None, _targ_tnr=None):
  *     p0, p1, p2, p3 = _candsearch_in_pix_fast(             # <<<<<<<<<<<<<<
@@ -16487,7 +16487,7 @@ static PyObject *__pyx_f_10algorithms_5track_register_closest_neighbs(CYTHON_UNU
   __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_mstate_global->__pyx_n_u_candsearch_in_pix_fast); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 622, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
 
-  /* "algorithms/track.py":625
+  /* "openptv2/algorithms/track.py":625
  *         _targ_x, _targ_y, _targ_tnr, num_targets,
  *         cent_x, cent_y, dl, dr, du, dd,
  *         cpar.imx, cpar.imy, TR_UNUSED)             # <<<<<<<<<<<<<<
@@ -16591,7 +16591,7 @@ static PyObject *__pyx_f_10algorithms_5track_register_closest_neighbs(CYTHON_UNU
     __pyx_L4_unpacking_done:;
   }
 
-  /* "algorithms/track.py":622
+  /* "openptv2/algorithms/track.py":622
  *                              dl, dr, du, dd, reg, cpar,
  *                              _targ_x=None, _targ_y=None, _targ_tnr=None):
  *     p0, p1, p2, p3 = _candsearch_in_pix_fast(             # <<<<<<<<<<<<<<
@@ -16607,7 +16607,7 @@ static PyObject *__pyx_f_10algorithms_5track_register_closest_neighbs(CYTHON_UNU
   __pyx_v_p3 = __pyx_t_4;
   __pyx_t_4 = 0;
 
-  /* "algorithms/track.py":626
+  /* "openptv2/algorithms/track.py":626
  *         cent_x, cent_y, dl, dr, du, dd,
  *         cpar.imx, cpar.imy, TR_UNUSED)
  *     all_cands = [p0, p1, p2, p3]             # <<<<<<<<<<<<<<
@@ -16631,7 +16631,7 @@ static PyObject *__pyx_f_10algorithms_5track_register_closest_neighbs(CYTHON_UNU
   __pyx_v_all_cands = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "algorithms/track.py":628
+  /* "openptv2/algorithms/track.py":628
  *     all_cands = [p0, p1, p2, p3]
  *     cand: cython.Py_ssize_t
  *     for cand in range(MAX_CANDS):             # <<<<<<<<<<<<<<
@@ -16646,7 +16646,7 @@ static PyObject *__pyx_f_10algorithms_5track_register_closest_neighbs(CYTHON_UNU
   for (__pyx_t_11 = 0; __pyx_t_11 < __pyx_t_10; __pyx_t_11+=1) {
     __pyx_v_cand = __pyx_t_11;
 
-    /* "algorithms/track.py":629
+    /* "openptv2/algorithms/track.py":629
  *     cand: cython.Py_ssize_t
  *     for cand in range(MAX_CANDS):
  *         if all_cands[cand] == PT_UNUSED:             # <<<<<<<<<<<<<<
@@ -16661,7 +16661,7 @@ static PyObject *__pyx_f_10algorithms_5track_register_closest_neighbs(CYTHON_UNU
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     if (__pyx_t_12) {
 
-      /* "algorithms/track.py":630
+      /* "openptv2/algorithms/track.py":630
  *     for cand in range(MAX_CANDS):
  *         if all_cands[cand] == PT_UNUSED:
  *             reg[cand][0] = TR_UNUSED             # <<<<<<<<<<<<<<
@@ -16676,7 +16676,7 @@ static PyObject *__pyx_f_10algorithms_5track_register_closest_neighbs(CYTHON_UNU
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-      /* "algorithms/track.py":629
+      /* "openptv2/algorithms/track.py":629
  *     cand: cython.Py_ssize_t
  *     for cand in range(MAX_CANDS):
  *         if all_cands[cand] == PT_UNUSED:             # <<<<<<<<<<<<<<
@@ -16686,7 +16686,7 @@ static PyObject *__pyx_f_10algorithms_5track_register_closest_neighbs(CYTHON_UNU
       goto __pyx_L7;
     }
 
-    /* "algorithms/track.py":632
+    /* "openptv2/algorithms/track.py":632
  *             reg[cand][0] = TR_UNUSED
  *         else:
  *             reg[cand][2][cam] = 1             # <<<<<<<<<<<<<<
@@ -16702,7 +16702,7 @@ static PyObject *__pyx_f_10algorithms_5track_register_closest_neighbs(CYTHON_UNU
       if (unlikely((PyObject_SetItem(__pyx_t_1, __pyx_v_cam, __pyx_mstate_global->__pyx_int_1) < 0))) __PYX_ERR(0, 632, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "algorithms/track.py":633
+      /* "openptv2/algorithms/track.py":633
  *         else:
  *             reg[cand][2][cam] = 1
  *             reg[cand][0] = int(_targ_tnr[all_cands[cand]])             # <<<<<<<<<<<<<<
@@ -16723,7 +16723,7 @@ static PyObject *__pyx_f_10algorithms_5track_register_closest_neighbs(CYTHON_UNU
     __pyx_L7:;
   }
 
-  /* "algorithms/track.py":616
+  /* "openptv2/algorithms/track.py":616
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -16741,7 +16741,7 @@ static PyObject *__pyx_f_10algorithms_5track_register_closest_neighbs(CYTHON_UNU
   __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_5);
   __Pyx_XDECREF(__pyx_t_6);
-  __Pyx_AddTraceback("algorithms.track.register_closest_neighbs", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.register_closest_neighbs", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_p0);
@@ -16755,15 +16755,15 @@ static PyObject *__pyx_f_10algorithms_5track_register_closest_neighbs(CYTHON_UNU
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_5track_43register_closest_neighbs(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_43register_closest_neighbs(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_10algorithms_5track_43register_closest_neighbs = {"register_closest_neighbs", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_5track_43register_closest_neighbs, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10algorithms_5track_43register_closest_neighbs(PyObject *__pyx_self, 
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_5track_43register_closest_neighbs = {"register_closest_neighbs", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_5track_43register_closest_neighbs, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_43register_closest_neighbs(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -16871,7 +16871,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
       const Py_ssize_t kwd_pos_args = __pyx_nargs;
       if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "register_closest_neighbs", 0) < (0)) __PYX_ERR(0, 616, __pyx_L3_error)
 
-      /* "algorithms/track.py":621
+      /* "openptv2/algorithms/track.py":621
  * def register_closest_neighbs(targets, num_targets, cam, cent_x, cent_y,
  *                              dl, dr, du, dd, reg, cpar,
  *                              _targ_x=None, _targ_y=None, _targ_tnr=None):             # <<<<<<<<<<<<<<
@@ -16952,13 +16952,13 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.track.register_closest_neighbs", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.register_closest_neighbs", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_5track_42register_closest_neighbs(__pyx_self, __pyx_v_targets, __pyx_v_num_targets, __pyx_v_cam, __pyx_v_cent_x, __pyx_v_cent_y, __pyx_v_dl, __pyx_v_dr, __pyx_v_du, __pyx_v_dd, __pyx_v_reg, __pyx_v_cpar, __pyx_v__targ_x, __pyx_v__targ_y, __pyx_v__targ_tnr);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_5track_42register_closest_neighbs(__pyx_self, __pyx_v_targets, __pyx_v_num_targets, __pyx_v_cam, __pyx_v_cent_x, __pyx_v_cent_y, __pyx_v_dl, __pyx_v_dr, __pyx_v_du, __pyx_v_dd, __pyx_v_reg, __pyx_v_cpar, __pyx_v__targ_x, __pyx_v__targ_y, __pyx_v__targ_tnr);
 
-  /* "algorithms/track.py":616
+  /* "openptv2/algorithms/track.py":616
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -16974,11 +16974,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_5track_42register_closest_neighbs(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_targets, PyObject *__pyx_v_num_targets, PyObject *__pyx_v_cam, PyObject *__pyx_v_cent_x, PyObject *__pyx_v_cent_y, PyObject *__pyx_v_dl, PyObject *__pyx_v_dr, PyObject *__pyx_v_du, PyObject *__pyx_v_dd, PyObject *__pyx_v_reg, PyObject *__pyx_v_cpar, PyObject *__pyx_v__targ_x, PyObject *__pyx_v__targ_y, PyObject *__pyx_v__targ_tnr) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_42register_closest_neighbs(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_targets, PyObject *__pyx_v_num_targets, PyObject *__pyx_v_cam, PyObject *__pyx_v_cent_x, PyObject *__pyx_v_cent_y, PyObject *__pyx_v_dl, PyObject *__pyx_v_dr, PyObject *__pyx_v_du, PyObject *__pyx_v_dd, PyObject *__pyx_v_reg, PyObject *__pyx_v_cpar, PyObject *__pyx_v__targ_x, PyObject *__pyx_v__targ_y, PyObject *__pyx_v__targ_tnr) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
-  struct __pyx_opt_args_10algorithms_5track_register_closest_neighbs __pyx_t_2;
+  struct __pyx_opt_args_8openptv2_10algorithms_5track_register_closest_neighbs __pyx_t_2;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -16988,7 +16988,7 @@ static PyObject *__pyx_pf_10algorithms_5track_42register_closest_neighbs(CYTHON_
   __pyx_t_2._targ_x = __pyx_v__targ_x;
   __pyx_t_2._targ_y = __pyx_v__targ_y;
   __pyx_t_2._targ_tnr = __pyx_v__targ_tnr;
-  __pyx_t_1 = __pyx_f_10algorithms_5track_register_closest_neighbs(__pyx_v_targets, __pyx_v_num_targets, __pyx_v_cam, __pyx_v_cent_x, __pyx_v_cent_y, __pyx_v_dl, __pyx_v_dr, __pyx_v_du, __pyx_v_dd, __pyx_v_reg, __pyx_v_cpar, 1, &__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 616, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_5track_register_closest_neighbs(__pyx_v_targets, __pyx_v_num_targets, __pyx_v_cam, __pyx_v_cent_x, __pyx_v_cent_y, __pyx_v_dl, __pyx_v_dr, __pyx_v_du, __pyx_v_dd, __pyx_v_reg, __pyx_v_cpar, 1, &__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 616, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -16997,7 +16997,7 @@ static PyObject *__pyx_pf_10algorithms_5track_42register_closest_neighbs(CYTHON_
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.track.register_closest_neighbs", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.register_closest_neighbs", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -17005,7 +17005,7 @@ static PyObject *__pyx_pf_10algorithms_5track_42register_closest_neighbs(CYTHON_
   return __pyx_r;
 }
 
-/* "algorithms/track.py":636
+/* "openptv2/algorithms/track.py":636
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -17013,16 +17013,16 @@ static PyObject *__pyx_pf_10algorithms_5track_42register_closest_neighbs(CYTHON_
  *                                 _packed_cals=None, _pix_info=None,
 */
 
-static PyObject *__pyx_pw_10algorithms_5track_45sorted_candidates_in_volume(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_45sorted_candidates_in_volume(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_5track_sorted_candidates_in_volume(PyObject *__pyx_v_center, PyObject *__pyx_v_center_proj, PyObject *__pyx_v_frm, PyObject *__pyx_v_run, CYTHON_UNUSED int __pyx_skip_dispatch, struct __pyx_opt_args_10algorithms_5track_sorted_candidates_in_volume *__pyx_optional_args) {
+static PyObject *__pyx_f_8openptv2_10algorithms_5track_sorted_candidates_in_volume(PyObject *__pyx_v_center, PyObject *__pyx_v_center_proj, PyObject *__pyx_v_frm, PyObject *__pyx_v_run, CYTHON_UNUSED int __pyx_skip_dispatch, struct __pyx_opt_args_8openptv2_10algorithms_5track_sorted_candidates_in_volume *__pyx_optional_args) {
 
-  /* "algorithms/track.py":638
+  /* "openptv2/algorithms/track.py":638
  * @cython.ccall
  * def sorted_candidates_in_volume(center, center_proj, frm, run,
  *                                 _packed_cals=None, _pix_info=None,             # <<<<<<<<<<<<<<
@@ -17031,7 +17031,7 @@ static PyObject *__pyx_f_10algorithms_5track_sorted_candidates_in_volume(PyObjec
 */
   PyObject *__pyx_v__pix_info = ((PyObject *)Py_None);
 
-  /* "algorithms/track.py":639
+  /* "openptv2/algorithms/track.py":639
  * def sorted_candidates_in_volume(center, center_proj, frm, run,
  *                                 _packed_cals=None, _pix_info=None,
  *                                 _fast_tuples=None):             # <<<<<<<<<<<<<<
@@ -17099,7 +17099,7 @@ static PyObject *__pyx_f_10algorithms_5track_sorted_candidates_in_volume(PyObjec
     }
   }
 
-  /* "algorithms/track.py":640
+  /* "openptv2/algorithms/track.py":640
  *                                 _packed_cals=None, _pix_info=None,
  *                                 _fast_tuples=None):
  *     num_cams = frm.num_cams             # <<<<<<<<<<<<<<
@@ -17111,7 +17111,7 @@ static PyObject *__pyx_f_10algorithms_5track_sorted_candidates_in_volume(PyObjec
   __pyx_v_num_cams = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/track.py":642
+  /* "openptv2/algorithms/track.py":642
  *     num_cams = frm.num_cams
  * 
  *     cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t = _fast_tuples             # <<<<<<<<<<<<<<
@@ -17206,7 +17206,7 @@ static PyObject *__pyx_f_10algorithms_5track_sorted_candidates_in_volume(PyObjec
   __pyx_v_mrw_t = __pyx_t_6;
   __pyx_t_6 = 0;
 
-  /* "algorithms/track.py":643
+  /* "openptv2/algorithms/track.py":643
  * 
  *     cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t = _fast_tuples
  *     if _pix_info is not None:             # <<<<<<<<<<<<<<
@@ -17216,7 +17216,7 @@ static PyObject *__pyx_f_10algorithms_5track_sorted_candidates_in_volume(PyObjec
   __pyx_t_9 = (__pyx_v__pix_info != Py_None);
   if (__pyx_t_9) {
 
-    /* "algorithms/track.py":644
+    /* "openptv2/algorithms/track.py":644
  *     cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t = _fast_tuples
  *     if _pix_info is not None:
  *         c_imx, c_imy, imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield = _pix_info             # <<<<<<<<<<<<<<
@@ -17318,7 +17318,7 @@ static PyObject *__pyx_f_10algorithms_5track_sorted_candidates_in_volume(PyObjec
     __pyx_v_c_chfield = __pyx_t_7;
     __pyx_t_7 = 0;
 
-    /* "algorithms/track.py":643
+    /* "openptv2/algorithms/track.py":643
  * 
  *     cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t = _fast_tuples
  *     if _pix_info is not None:             # <<<<<<<<<<<<<<
@@ -17328,7 +17328,7 @@ static PyObject *__pyx_f_10algorithms_5track_sorted_candidates_in_volume(PyObjec
     goto __pyx_L5;
   }
 
-  /* "algorithms/track.py":646
+  /* "openptv2/algorithms/track.py":646
  *         c_imx, c_imy, imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield = _pix_info
  *     else:
  *         c_imx = run.cpar.imx; c_imy = run.cpar.imy             # <<<<<<<<<<<<<<
@@ -17351,7 +17351,7 @@ static PyObject *__pyx_f_10algorithms_5track_sorted_candidates_in_volume(PyObjec
     __pyx_v_c_imy = __pyx_t_7;
     __pyx_t_7 = 0;
 
-    /* "algorithms/track.py":647
+    /* "openptv2/algorithms/track.py":647
  *     else:
  *         c_imx = run.cpar.imx; c_imy = run.cpar.imy
  *         imx_half = c_imx * 0.5; imy_half = c_imy * 0.5             # <<<<<<<<<<<<<<
@@ -17367,7 +17367,7 @@ static PyObject *__pyx_f_10algorithms_5track_sorted_candidates_in_volume(PyObjec
     __pyx_v_imy_half = __pyx_t_7;
     __pyx_t_7 = 0;
 
-    /* "algorithms/track.py":648
+    /* "openptv2/algorithms/track.py":648
  *         c_imx = run.cpar.imx; c_imy = run.cpar.imy
  *         imx_half = c_imx * 0.5; imy_half = c_imy * 0.5
  *         inv_pix_x = 1.0 / run.cpar.pix_x; inv_pix_y = 1.0 / run.cpar.pix_y             # <<<<<<<<<<<<<<
@@ -17395,7 +17395,7 @@ static PyObject *__pyx_f_10algorithms_5track_sorted_candidates_in_volume(PyObjec
     __pyx_v_inv_pix_y = __pyx_t_7;
     __pyx_t_7 = 0;
 
-    /* "algorithms/track.py":649
+    /* "openptv2/algorithms/track.py":649
  *         imx_half = c_imx * 0.5; imy_half = c_imy * 0.5
  *         inv_pix_x = 1.0 / run.cpar.pix_x; inv_pix_y = 1.0 / run.cpar.pix_y
  *         c_chfield = run.cpar.chfield             # <<<<<<<<<<<<<<
@@ -17412,7 +17412,7 @@ static PyObject *__pyx_f_10algorithms_5track_sorted_candidates_in_volume(PyObjec
   }
   __pyx_L5:;
 
-  /* "algorithms/track.py":651
+  /* "openptv2/algorithms/track.py":651
  *         c_chfield = run.cpar.chfield
  * 
  *     center_arr = np.asarray(center, dtype=np.float64)             # <<<<<<<<<<<<<<
@@ -17458,7 +17458,7 @@ static PyObject *__pyx_f_10algorithms_5track_sorted_candidates_in_volume(PyObjec
   __pyx_v_center_arr = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/track.py":652
+  /* "openptv2/algorithms/track.py":652
  * 
  *     center_arr = np.asarray(center, dtype=np.float64)
  *     cpx = np.array([center_proj[j][0] for j in range(num_cams)], dtype=np.float64)             # <<<<<<<<<<<<<<
@@ -17552,7 +17552,7 @@ static PyObject *__pyx_f_10algorithms_5track_sorted_candidates_in_volume(PyObjec
   __pyx_v_cpx = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/track.py":653
+  /* "openptv2/algorithms/track.py":653
  *     center_arr = np.asarray(center, dtype=np.float64)
  *     cpx = np.array([center_proj[j][0] for j in range(num_cams)], dtype=np.float64)
  *     cpy = np.array([center_proj[j][1] for j in range(num_cams)], dtype=np.float64)             # <<<<<<<<<<<<<<
@@ -17646,7 +17646,7 @@ static PyObject *__pyx_f_10algorithms_5track_sorted_candidates_in_volume(PyObjec
   __pyx_v_cpy = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/track.py":654
+  /* "openptv2/algorithms/track.py":654
  *     cpx = np.array([center_proj[j][0] for j in range(num_cams)], dtype=np.float64)
  *     cpy = np.array([center_proj[j][1] for j in range(num_cams)], dtype=np.float64)
  *     nt = np.array(frm.num_targets[:num_cams], dtype=np.int32)             # <<<<<<<<<<<<<<
@@ -17698,7 +17698,7 @@ static PyObject *__pyx_f_10algorithms_5track_sorted_candidates_in_volume(PyObjec
   __pyx_v_nt = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/track.py":656
+  /* "openptv2/algorithms/track.py":656
  *     nt = np.array(frm.num_targets[:num_cams], dtype=np.int32)
  * 
  *     ftnr, freq, whichcam, num_cands = _sorted_candidates_fast(             # <<<<<<<<<<<<<<
@@ -17709,7 +17709,7 @@ static PyObject *__pyx_f_10algorithms_5track_sorted_candidates_in_volume(PyObjec
   __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_mstate_global->__pyx_n_u_sorted_candidates_fast); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 656, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
 
-  /* "algorithms/track.py":657
+  /* "openptv2/algorithms/track.py":657
  * 
  *     ftnr, freq, whichcam, num_cands = _sorted_candidates_fast(
  *         center_arr, cpx, cpy, num_cams, MAX_CANDS,             # <<<<<<<<<<<<<<
@@ -17719,7 +17719,7 @@ static PyObject *__pyx_f_10algorithms_5track_sorted_candidates_in_volume(PyObjec
   __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_MAX_CANDS); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 657, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
 
-  /* "algorithms/track.py":659
+  /* "openptv2/algorithms/track.py":659
  *         center_arr, cpx, cpy, num_cams, MAX_CANDS,
  *         cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t,
  *         tuple(frm.targ_x[:num_cams]), tuple(frm.targ_y[:num_cams]),             # <<<<<<<<<<<<<<
@@ -17743,7 +17743,7 @@ static PyObject *__pyx_f_10algorithms_5track_sorted_candidates_in_volume(PyObjec
   __Pyx_GOTREF(__pyx_t_6);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/track.py":660
+  /* "openptv2/algorithms/track.py":660
  *         cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t,
  *         tuple(frm.targ_x[:num_cams]), tuple(frm.targ_y[:num_cams]),
  *         tuple(frm.targ_tnr[:num_cams]), nt,             # <<<<<<<<<<<<<<
@@ -17759,7 +17759,7 @@ static PyObject *__pyx_f_10algorithms_5track_sorted_candidates_in_volume(PyObjec
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
 
-  /* "algorithms/track.py":661
+  /* "openptv2/algorithms/track.py":661
  *         tuple(frm.targ_x[:num_cams]), tuple(frm.targ_y[:num_cams]),
  *         tuple(frm.targ_tnr[:num_cams]), nt,
  *         run.tpar.dvxmin, run.tpar.dvxmax, run.tpar.dvymin,             # <<<<<<<<<<<<<<
@@ -17782,7 +17782,7 @@ static PyObject *__pyx_f_10algorithms_5track_sorted_candidates_in_volume(PyObjec
   __Pyx_GOTREF(__pyx_t_15);
   __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
 
-  /* "algorithms/track.py":662
+  /* "openptv2/algorithms/track.py":662
  *         tuple(frm.targ_tnr[:num_cams]), nt,
  *         run.tpar.dvxmin, run.tpar.dvxmax, run.tpar.dvymin,
  *         run.tpar.dvymax, run.tpar.dvzmin, run.tpar.dvzmax,             # <<<<<<<<<<<<<<
@@ -17805,7 +17805,7 @@ static PyObject *__pyx_f_10algorithms_5track_sorted_candidates_in_volume(PyObjec
   __Pyx_GOTREF(__pyx_t_18);
   __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
 
-  /* "algorithms/track.py":664
+  /* "openptv2/algorithms/track.py":664
  *         run.tpar.dvymax, run.tpar.dvzmin, run.tpar.dvzmax,
  *         imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield,
  *         c_imx, c_imy, TR_UNUSED,             # <<<<<<<<<<<<<<
@@ -17913,7 +17913,7 @@ static PyObject *__pyx_f_10algorithms_5track_sorted_candidates_in_volume(PyObjec
     __pyx_L23_unpacking_done:;
   }
 
-  /* "algorithms/track.py":656
+  /* "openptv2/algorithms/track.py":656
  *     nt = np.array(frm.num_targets[:num_cams], dtype=np.int32)
  * 
  *     ftnr, freq, whichcam, num_cands = _sorted_candidates_fast(             # <<<<<<<<<<<<<<
@@ -17929,7 +17929,7 @@ static PyObject *__pyx_f_10algorithms_5track_sorted_candidates_in_volume(PyObjec
   __pyx_v_num_cands = __pyx_t_17;
   __pyx_t_17 = 0;
 
-  /* "algorithms/track.py":666
+  /* "openptv2/algorithms/track.py":666
  *         c_imx, c_imy, TR_UNUSED,
  *     )
  *     if num_cands > 0:             # <<<<<<<<<<<<<<
@@ -17941,7 +17941,7 @@ static PyObject *__pyx_f_10algorithms_5track_sorted_candidates_in_volume(PyObjec
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   if (__pyx_t_9) {
 
-    /* "algorithms/track.py":667
+    /* "openptv2/algorithms/track.py":667
  *     )
  *     if num_cands > 0:
  *         result = []             # <<<<<<<<<<<<<<
@@ -17953,7 +17953,7 @@ static PyObject *__pyx_f_10algorithms_5track_sorted_candidates_in_volume(PyObjec
     __pyx_v_result = ((PyObject*)__pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "algorithms/track.py":668
+    /* "openptv2/algorithms/track.py":668
  *     if num_cands > 0:
  *         result = []
  *         for i in range(num_cands):             # <<<<<<<<<<<<<<
@@ -17989,7 +17989,7 @@ static PyObject *__pyx_f_10algorithms_5track_sorted_candidates_in_volume(PyObjec
       __Pyx_XDECREF_SET(__pyx_v_i, __pyx_t_1);
       __pyx_t_1 = 0;
 
-      /* "algorithms/track.py":669
+      /* "openptv2/algorithms/track.py":669
  *         result = []
  *         for i in range(num_cands):
  *             result.append({'ftnr': int(ftnr[i]), 'freq': int(freq[i]),             # <<<<<<<<<<<<<<
@@ -18013,7 +18013,7 @@ static PyObject *__pyx_f_10algorithms_5track_sorted_candidates_in_volume(PyObjec
       if (PyDict_SetItem(__pyx_t_1, __pyx_mstate_global->__pyx_n_u_freq, __pyx_t_18) < (0)) __PYX_ERR(0, 669, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_18); __pyx_t_18 = 0;
 
-      /* "algorithms/track.py":670
+      /* "openptv2/algorithms/track.py":670
  *         for i in range(num_cands):
  *             result.append({'ftnr': int(ftnr[i]), 'freq': int(freq[i]),
  *                            'whichcam': list(whichcam[i])})             # <<<<<<<<<<<<<<
@@ -18028,7 +18028,7 @@ static PyObject *__pyx_f_10algorithms_5track_sorted_candidates_in_volume(PyObjec
       if (PyDict_SetItem(__pyx_t_1, __pyx_mstate_global->__pyx_n_u_whichcam, __pyx_t_10) < (0)) __PYX_ERR(0, 669, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
 
-      /* "algorithms/track.py":669
+      /* "openptv2/algorithms/track.py":669
  *         result = []
  *         for i in range(num_cands):
  *             result.append({'ftnr': int(ftnr[i]), 'freq': int(freq[i]),             # <<<<<<<<<<<<<<
@@ -18038,7 +18038,7 @@ static PyObject *__pyx_f_10algorithms_5track_sorted_candidates_in_volume(PyObjec
       __pyx_t_19 = __Pyx_PyList_Append(__pyx_v_result, __pyx_t_1); if (unlikely(__pyx_t_19 == ((int)-1))) __PYX_ERR(0, 669, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "algorithms/track.py":668
+      /* "openptv2/algorithms/track.py":668
  *     if num_cands > 0:
  *         result = []
  *         for i in range(num_cands):             # <<<<<<<<<<<<<<
@@ -18048,7 +18048,7 @@ static PyObject *__pyx_f_10algorithms_5track_sorted_candidates_in_volume(PyObjec
     }
     __Pyx_DECREF(__pyx_t_17); __pyx_t_17 = 0;
 
-    /* "algorithms/track.py":671
+    /* "openptv2/algorithms/track.py":671
  *             result.append({'ftnr': int(ftnr[i]), 'freq': int(freq[i]),
  *                            'whichcam': list(whichcam[i])})
  *         result.append({'ftnr': TR_UNUSED, 'freq': 0, 'whichcam': [0]*num_cams})             # <<<<<<<<<<<<<<
@@ -18077,7 +18077,7 @@ static PyObject *__pyx_f_10algorithms_5track_sorted_candidates_in_volume(PyObjec
     __pyx_t_19 = __Pyx_PyList_Append(__pyx_v_result, __pyx_t_17); if (unlikely(__pyx_t_19 == ((int)-1))) __PYX_ERR(0, 671, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_17); __pyx_t_17 = 0;
 
-    /* "algorithms/track.py":672
+    /* "openptv2/algorithms/track.py":672
  *                            'whichcam': list(whichcam[i])})
  *         result.append({'ftnr': TR_UNUSED, 'freq': 0, 'whichcam': [0]*num_cams})
  *         return result             # <<<<<<<<<<<<<<
@@ -18089,7 +18089,7 @@ static PyObject *__pyx_f_10algorithms_5track_sorted_candidates_in_volume(PyObjec
     __pyx_r = __pyx_v_result;
     goto __pyx_L0;
 
-    /* "algorithms/track.py":666
+    /* "openptv2/algorithms/track.py":666
  *         c_imx, c_imy, TR_UNUSED,
  *     )
  *     if num_cands > 0:             # <<<<<<<<<<<<<<
@@ -18098,7 +18098,7 @@ static PyObject *__pyx_f_10algorithms_5track_sorted_candidates_in_volume(PyObjec
 */
   }
 
-  /* "algorithms/track.py":673
+  /* "openptv2/algorithms/track.py":673
  *         result.append({'ftnr': TR_UNUSED, 'freq': 0, 'whichcam': [0]*num_cams})
  *         return result
  *     return None             # <<<<<<<<<<<<<<
@@ -18109,7 +18109,7 @@ static PyObject *__pyx_f_10algorithms_5track_sorted_candidates_in_volume(PyObjec
   __pyx_r = Py_None; __Pyx_INCREF(Py_None);
   goto __pyx_L0;
 
-  /* "algorithms/track.py":636
+  /* "openptv2/algorithms/track.py":636
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -18133,7 +18133,7 @@ static PyObject *__pyx_f_10algorithms_5track_sorted_candidates_in_volume(PyObjec
   __Pyx_XDECREF(__pyx_t_16);
   __Pyx_XDECREF(__pyx_t_17);
   __Pyx_XDECREF(__pyx_t_18);
-  __Pyx_AddTraceback("algorithms.track.sorted_candidates_in_volume", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.sorted_candidates_in_volume", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_num_cams);
@@ -18168,15 +18168,15 @@ static PyObject *__pyx_f_10algorithms_5track_sorted_candidates_in_volume(PyObjec
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_5track_45sorted_candidates_in_volume(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_45sorted_candidates_in_volume(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_10algorithms_5track_45sorted_candidates_in_volume = {"sorted_candidates_in_volume", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_5track_45sorted_candidates_in_volume, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10algorithms_5track_45sorted_candidates_in_volume(PyObject *__pyx_self, 
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_5track_45sorted_candidates_in_volume = {"sorted_candidates_in_volume", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_5track_45sorted_candidates_in_volume, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_45sorted_candidates_in_volume(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -18249,7 +18249,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
       const Py_ssize_t kwd_pos_args = __pyx_nargs;
       if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "sorted_candidates_in_volume", 0) < (0)) __PYX_ERR(0, 636, __pyx_L3_error)
 
-      /* "algorithms/track.py":638
+      /* "openptv2/algorithms/track.py":638
  * @cython.ccall
  * def sorted_candidates_in_volume(center, center_proj, frm, run,
  *                                 _packed_cals=None, _pix_info=None,             # <<<<<<<<<<<<<<
@@ -18259,7 +18259,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
       if (!values[4]) values[4] = __Pyx_NewRef(((PyObject *)Py_None));
       if (!values[5]) values[5] = __Pyx_NewRef(((PyObject *)Py_None));
 
-      /* "algorithms/track.py":639
+      /* "openptv2/algorithms/track.py":639
  * def sorted_candidates_in_volume(center, center_proj, frm, run,
  *                                 _packed_cals=None, _pix_info=None,
  *                                 _fast_tuples=None):             # <<<<<<<<<<<<<<
@@ -18297,7 +18297,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
         default: goto __pyx_L5_argtuple_error;
       }
 
-      /* "algorithms/track.py":638
+      /* "openptv2/algorithms/track.py":638
  * @cython.ccall
  * def sorted_candidates_in_volume(center, center_proj, frm, run,
  *                                 _packed_cals=None, _pix_info=None,             # <<<<<<<<<<<<<<
@@ -18307,7 +18307,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
       if (!values[4]) values[4] = __Pyx_NewRef(((PyObject *)Py_None));
       if (!values[5]) values[5] = __Pyx_NewRef(((PyObject *)Py_None));
 
-      /* "algorithms/track.py":639
+      /* "openptv2/algorithms/track.py":639
  * def sorted_candidates_in_volume(center, center_proj, frm, run,
  *                                 _packed_cals=None, _pix_info=None,
  *                                 _fast_tuples=None):             # <<<<<<<<<<<<<<
@@ -18333,13 +18333,13 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.track.sorted_candidates_in_volume", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.sorted_candidates_in_volume", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_5track_44sorted_candidates_in_volume(__pyx_self, __pyx_v_center, __pyx_v_center_proj, __pyx_v_frm, __pyx_v_run, __pyx_v__packed_cals, __pyx_v__pix_info, __pyx_v__fast_tuples);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_5track_44sorted_candidates_in_volume(__pyx_self, __pyx_v_center, __pyx_v_center_proj, __pyx_v_frm, __pyx_v_run, __pyx_v__packed_cals, __pyx_v__pix_info, __pyx_v__fast_tuples);
 
-  /* "algorithms/track.py":636
+  /* "openptv2/algorithms/track.py":636
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -18355,11 +18355,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_5track_44sorted_candidates_in_volume(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_center, PyObject *__pyx_v_center_proj, PyObject *__pyx_v_frm, PyObject *__pyx_v_run, PyObject *__pyx_v__packed_cals, PyObject *__pyx_v__pix_info, PyObject *__pyx_v__fast_tuples) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_44sorted_candidates_in_volume(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_center, PyObject *__pyx_v_center_proj, PyObject *__pyx_v_frm, PyObject *__pyx_v_run, PyObject *__pyx_v__packed_cals, PyObject *__pyx_v__pix_info, PyObject *__pyx_v__fast_tuples) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
-  struct __pyx_opt_args_10algorithms_5track_sorted_candidates_in_volume __pyx_t_2;
+  struct __pyx_opt_args_8openptv2_10algorithms_5track_sorted_candidates_in_volume __pyx_t_2;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -18369,7 +18369,7 @@ static PyObject *__pyx_pf_10algorithms_5track_44sorted_candidates_in_volume(CYTH
   __pyx_t_2._packed_cals = __pyx_v__packed_cals;
   __pyx_t_2._pix_info = __pyx_v__pix_info;
   __pyx_t_2._fast_tuples = __pyx_v__fast_tuples;
-  __pyx_t_1 = __pyx_f_10algorithms_5track_sorted_candidates_in_volume(__pyx_v_center, __pyx_v_center_proj, __pyx_v_frm, __pyx_v_run, 1, &__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 636, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_5track_sorted_candidates_in_volume(__pyx_v_center, __pyx_v_center_proj, __pyx_v_frm, __pyx_v_run, 1, &__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 636, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -18378,7 +18378,7 @@ static PyObject *__pyx_pf_10algorithms_5track_44sorted_candidates_in_volume(CYTH
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.track.sorted_candidates_in_volume", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.sorted_candidates_in_volume", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -18386,7 +18386,7 @@ static PyObject *__pyx_pf_10algorithms_5track_44sorted_candidates_in_volume(CYTH
   return __pyx_r;
 }
 
-/* "algorithms/track.py":676
+/* "openptv2/algorithms/track.py":676
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -18394,16 +18394,16 @@ static PyObject *__pyx_pf_10algorithms_5track_44sorted_candidates_in_volume(CYTH
  *                         _fast_cals=None, _fast_mmluts=None, _pix_info=None):
 */
 
-static PyObject *__pyx_pw_10algorithms_5track_47assess_new_position(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_47assess_new_position(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_5track_assess_new_position(PyObject *__pyx_v_pos, PyObject *__pyx_v_targ_pos, PyObject *__pyx_v_cand_inds, PyObject *__pyx_v_frm, PyObject *__pyx_v_run, CYTHON_UNUSED int __pyx_skip_dispatch, struct __pyx_opt_args_10algorithms_5track_assess_new_position *__pyx_optional_args) {
+static PyObject *__pyx_f_8openptv2_10algorithms_5track_assess_new_position(PyObject *__pyx_v_pos, PyObject *__pyx_v_targ_pos, PyObject *__pyx_v_cand_inds, PyObject *__pyx_v_frm, PyObject *__pyx_v_run, CYTHON_UNUSED int __pyx_skip_dispatch, struct __pyx_opt_args_8openptv2_10algorithms_5track_assess_new_position *__pyx_optional_args) {
 
-  /* "algorithms/track.py":678
+  /* "openptv2/algorithms/track.py":678
  * @cython.ccall
  * def assess_new_position(pos, targ_pos, cand_inds, frm, run,
  *                         _fast_cals=None, _fast_mmluts=None, _pix_info=None):             # <<<<<<<<<<<<<<
@@ -18481,7 +18481,7 @@ static PyObject *__pyx_f_10algorithms_5track_assess_new_position(PyObject *__pyx
     }
   }
 
-  /* "algorithms/track.py":679
+  /* "openptv2/algorithms/track.py":679
  * def assess_new_position(pos, targ_pos, cand_inds, frm, run,
  *                         _fast_cals=None, _fast_mmluts=None, _pix_info=None):
  *     from .trafo import pixel_to_metric, dist_to_flat             # <<<<<<<<<<<<<<
@@ -18490,7 +18490,7 @@ static PyObject *__pyx_f_10algorithms_5track_assess_new_position(PyObject *__pyx
 */
   {
     PyObject* const __pyx_imported_names[] = {__pyx_mstate_global->__pyx_n_u_pixel_to_metric,__pyx_mstate_global->__pyx_n_u_dist_to_flat};
-    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_trafo, __pyx_imported_names, 2, __pyx_mstate_global->__pyx_kp_u_algorithms_trafo, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 679, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_trafo, __pyx_imported_names, 2, __pyx_mstate_global->__pyx_kp_u_openptv2_algorithms_trafo, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 679, __pyx_L1_error)
   }
   __pyx_t_1 = __pyx_t_2;
   __Pyx_GOTREF(__pyx_t_1);
@@ -18515,7 +18515,7 @@ static PyObject *__pyx_f_10algorithms_5track_assess_new_position(PyObject *__pyx
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/track.py":681
+  /* "openptv2/algorithms/track.py":681
  *     from .trafo import pixel_to_metric, dist_to_flat
  * 
  *     left: cython.double = ADD_PART             # <<<<<<<<<<<<<<
@@ -18528,7 +18528,7 @@ static PyObject *__pyx_f_10algorithms_5track_assess_new_position(PyObject *__pyx
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_left = __pyx_t_5;
 
-  /* "algorithms/track.py":682
+  /* "openptv2/algorithms/track.py":682
  * 
  *     left: cython.double = ADD_PART
  *     right: cython.double = ADD_PART             # <<<<<<<<<<<<<<
@@ -18541,7 +18541,7 @@ static PyObject *__pyx_f_10algorithms_5track_assess_new_position(PyObject *__pyx
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_right = __pyx_t_5;
 
-  /* "algorithms/track.py":683
+  /* "openptv2/algorithms/track.py":683
  *     left: cython.double = ADD_PART
  *     right: cython.double = ADD_PART
  *     up: cython.double = ADD_PART             # <<<<<<<<<<<<<<
@@ -18554,7 +18554,7 @@ static PyObject *__pyx_f_10algorithms_5track_assess_new_position(PyObject *__pyx
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_up = __pyx_t_5;
 
-  /* "algorithms/track.py":684
+  /* "openptv2/algorithms/track.py":684
  *     right: cython.double = ADD_PART
  *     up: cython.double = ADD_PART
  *     down: cython.double = ADD_PART             # <<<<<<<<<<<<<<
@@ -18567,7 +18567,7 @@ static PyObject *__pyx_f_10algorithms_5track_assess_new_position(PyObject *__pyx
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_down = __pyx_t_5;
 
-  /* "algorithms/track.py":690
+  /* "openptv2/algorithms/track.py":690
  *     num_cands: cython.int
  * 
  *     for cam in range(TR_MAX_CAMS):             # <<<<<<<<<<<<<<
@@ -18582,7 +18582,7 @@ static PyObject *__pyx_f_10algorithms_5track_assess_new_position(PyObject *__pyx
   for (__pyx_t_7 = 0; __pyx_t_7 < __pyx_t_6; __pyx_t_7+=1) {
     __pyx_v_cam = __pyx_t_7;
 
-    /* "algorithms/track.py":691
+    /* "openptv2/algorithms/track.py":691
  * 
  *     for cam in range(TR_MAX_CAMS):
  *         targ_pos[cam][0] = targ_pos[cam][1] = COORD_UNUSED             # <<<<<<<<<<<<<<
@@ -18602,7 +18602,7 @@ static PyObject *__pyx_f_10algorithms_5track_assess_new_position(PyObject *__pyx
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   }
 
-  /* "algorithms/track.py":693
+  /* "openptv2/algorithms/track.py":693
  *         targ_pos[cam][0] = targ_pos[cam][1] = COORD_UNUSED
  * 
  *     c_imx = run.cpar.imx; c_imy = run.cpar.imy             # <<<<<<<<<<<<<<
@@ -18624,7 +18624,7 @@ static PyObject *__pyx_f_10algorithms_5track_assess_new_position(PyObject *__pyx
   __pyx_v_c_imy = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/track.py":695
+  /* "openptv2/algorithms/track.py":695
  *     c_imx = run.cpar.imx; c_imy = run.cpar.imy
  * 
  *     if _pix_info is not None:             # <<<<<<<<<<<<<<
@@ -18634,7 +18634,7 @@ static PyObject *__pyx_f_10algorithms_5track_assess_new_position(PyObject *__pyx
   __pyx_t_8 = (__pyx_v__pix_info != Py_None);
   if (__pyx_t_8) {
 
-    /* "algorithms/track.py":696
+    /* "openptv2/algorithms/track.py":696
  * 
  *     if _pix_info is not None:
  *         _, _, imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield = _pix_info             # <<<<<<<<<<<<<<
@@ -18736,7 +18736,7 @@ static PyObject *__pyx_f_10algorithms_5track_assess_new_position(PyObject *__pyx
     __pyx_v_c_chfield = __pyx_t_13;
     __pyx_t_13 = 0;
 
-    /* "algorithms/track.py":695
+    /* "openptv2/algorithms/track.py":695
  *     c_imx = run.cpar.imx; c_imy = run.cpar.imy
  * 
  *     if _pix_info is not None:             # <<<<<<<<<<<<<<
@@ -18746,7 +18746,7 @@ static PyObject *__pyx_f_10algorithms_5track_assess_new_position(PyObject *__pyx
     goto __pyx_L5;
   }
 
-  /* "algorithms/track.py":698
+  /* "openptv2/algorithms/track.py":698
  *         _, _, imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield = _pix_info
  *     else:
  *         imx_half = c_imx * 0.5; imy_half = c_imy * 0.5             # <<<<<<<<<<<<<<
@@ -18763,7 +18763,7 @@ static PyObject *__pyx_f_10algorithms_5track_assess_new_position(PyObject *__pyx
     __pyx_v_imy_half = __pyx_t_13;
     __pyx_t_13 = 0;
 
-    /* "algorithms/track.py":699
+    /* "openptv2/algorithms/track.py":699
  *     else:
  *         imx_half = c_imx * 0.5; imy_half = c_imy * 0.5
  *         inv_pix_x = 1.0 / run.cpar.pix_x; inv_pix_y = 1.0 / run.cpar.pix_y             # <<<<<<<<<<<<<<
@@ -18791,7 +18791,7 @@ static PyObject *__pyx_f_10algorithms_5track_assess_new_position(PyObject *__pyx
     __pyx_v_inv_pix_y = __pyx_t_13;
     __pyx_t_13 = 0;
 
-    /* "algorithms/track.py":700
+    /* "openptv2/algorithms/track.py":700
  *         imx_half = c_imx * 0.5; imy_half = c_imy * 0.5
  *         inv_pix_x = 1.0 / run.cpar.pix_x; inv_pix_y = 1.0 / run.cpar.pix_y
  *         c_chfield = run.cpar.chfield             # <<<<<<<<<<<<<<
@@ -18808,7 +18808,7 @@ static PyObject *__pyx_f_10algorithms_5track_assess_new_position(PyObject *__pyx
   }
   __pyx_L5:;
 
-  /* "algorithms/track.py":702
+  /* "openptv2/algorithms/track.py":702
  *         c_chfield = run.cpar.chfield
  * 
  *     for cam in range(run.cpar.num_cams):             # <<<<<<<<<<<<<<
@@ -18826,7 +18826,7 @@ static PyObject *__pyx_f_10algorithms_5track_assess_new_position(PyObject *__pyx
   for (__pyx_t_7 = 0; __pyx_t_7 < __pyx_t_6; __pyx_t_7+=1) {
     __pyx_v_cam = __pyx_t_7;
 
-    /* "algorithms/track.py":703
+    /* "openptv2/algorithms/track.py":703
  * 
  *     for cam in range(run.cpar.num_cams):
  *         px, py = _ptp_fast(pos, _fast_cals[cam], _fast_mmluts[cam],             # <<<<<<<<<<<<<<
@@ -18841,7 +18841,7 @@ static PyObject *__pyx_f_10algorithms_5track_assess_new_position(PyObject *__pyx
     __pyx_t_9 = __Pyx_GetItemInt(__pyx_v__fast_mmluts, __pyx_v_cam, Py_ssize_t, 1, PyLong_FromSsize_t, 0, 0, 0, 1, __Pyx_ReferenceSharing_FunctionArgument); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 703, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_9);
 
-    /* "algorithms/track.py":704
+    /* "openptv2/algorithms/track.py":704
  *     for cam in range(run.cpar.num_cams):
  *         px, py = _ptp_fast(pos, _fast_cals[cam], _fast_mmluts[cam],
  *                           imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield)             # <<<<<<<<<<<<<<
@@ -18921,7 +18921,7 @@ static PyObject *__pyx_f_10algorithms_5track_assess_new_position(PyObject *__pyx
       __pyx_L11_unpacking_done:;
     }
 
-    /* "algorithms/track.py":703
+    /* "openptv2/algorithms/track.py":703
  * 
  *     for cam in range(run.cpar.num_cams):
  *         px, py = _ptp_fast(pos, _fast_cals[cam], _fast_mmluts[cam],             # <<<<<<<<<<<<<<
@@ -18933,7 +18933,7 @@ static PyObject *__pyx_f_10algorithms_5track_assess_new_position(PyObject *__pyx
     __Pyx_XDECREF_SET(__pyx_v_py, __pyx_t_9);
     __pyx_t_9 = 0;
 
-    /* "algorithms/track.py":706
+    /* "openptv2/algorithms/track.py":706
  *                           imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield)
  * 
  *         best, num_cands = _candsearch_in_pix_rest_fast(             # <<<<<<<<<<<<<<
@@ -18944,7 +18944,7 @@ static PyObject *__pyx_f_10algorithms_5track_assess_new_position(PyObject *__pyx
     __Pyx_GetModuleGlobalName(__pyx_t_11, __pyx_mstate_global->__pyx_n_u_candsearch_in_pix_rest_fast); if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 706, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_11);
 
-    /* "algorithms/track.py":707
+    /* "openptv2/algorithms/track.py":707
  * 
  *         best, num_cands = _candsearch_in_pix_rest_fast(
  *             frm.targ_x[cam], frm.targ_y[cam], frm.targ_tnr[cam],             # <<<<<<<<<<<<<<
@@ -18967,7 +18967,7 @@ static PyObject *__pyx_f_10algorithms_5track_assess_new_position(PyObject *__pyx
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
 
-    /* "algorithms/track.py":708
+    /* "openptv2/algorithms/track.py":708
  *         best, num_cands = _candsearch_in_pix_rest_fast(
  *             frm.targ_x[cam], frm.targ_y[cam], frm.targ_tnr[cam],
  *             frm.num_targets[cam], px, py, left, right, up, down,             # <<<<<<<<<<<<<<
@@ -18988,7 +18988,7 @@ static PyObject *__pyx_f_10algorithms_5track_assess_new_position(PyObject *__pyx
     __pyx_t_19 = PyFloat_FromDouble(__pyx_v_down); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 708, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_19);
 
-    /* "algorithms/track.py":709
+    /* "openptv2/algorithms/track.py":709
  *             frm.targ_x[cam], frm.targ_y[cam], frm.targ_tnr[cam],
  *             frm.num_targets[cam], px, py, left, right, up, down,
  *             c_imx, c_imy, TR_UNUSED)             # <<<<<<<<<<<<<<
@@ -19077,7 +19077,7 @@ static PyObject *__pyx_f_10algorithms_5track_assess_new_position(PyObject *__pyx
       __pyx_L13_unpacking_done:;
     }
 
-    /* "algorithms/track.py":706
+    /* "openptv2/algorithms/track.py":706
  *                           imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield)
  * 
  *         best, num_cands = _candsearch_in_pix_rest_fast(             # <<<<<<<<<<<<<<
@@ -19091,7 +19091,7 @@ static PyObject *__pyx_f_10algorithms_5track_assess_new_position(PyObject *__pyx
     __pyx_v_best = __pyx_t_21;
     __pyx_v_num_cands = __pyx_t_22;
 
-    /* "algorithms/track.py":710
+    /* "openptv2/algorithms/track.py":710
  *             frm.num_targets[cam], px, py, left, right, up, down,
  *             c_imx, c_imy, TR_UNUSED)
  *         if num_cands > 0:             # <<<<<<<<<<<<<<
@@ -19101,7 +19101,7 @@ static PyObject *__pyx_f_10algorithms_5track_assess_new_position(PyObject *__pyx
     __pyx_t_8 = (__pyx_v_num_cands > 0);
     if (__pyx_t_8) {
 
-      /* "algorithms/track.py":711
+      /* "openptv2/algorithms/track.py":711
  *             c_imx, c_imy, TR_UNUSED)
  *         if num_cands > 0:
  *             cand_inds[cam][0] = best             # <<<<<<<<<<<<<<
@@ -19116,7 +19116,7 @@ static PyObject *__pyx_f_10algorithms_5track_assess_new_position(PyObject *__pyx
       __Pyx_DECREF(__pyx_t_20); __pyx_t_20 = 0;
       __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
 
-      /* "algorithms/track.py":710
+      /* "openptv2/algorithms/track.py":710
  *             frm.num_targets[cam], px, py, left, right, up, down,
  *             c_imx, c_imy, TR_UNUSED)
  *         if num_cands > 0:             # <<<<<<<<<<<<<<
@@ -19125,7 +19125,7 @@ static PyObject *__pyx_f_10algorithms_5track_assess_new_position(PyObject *__pyx
 */
     }
 
-    /* "algorithms/track.py":713
+    /* "openptv2/algorithms/track.py":713
  *             cand_inds[cam][0] = best
  * 
  *         if num_cands > 0:             # <<<<<<<<<<<<<<
@@ -19135,7 +19135,7 @@ static PyObject *__pyx_f_10algorithms_5track_assess_new_position(PyObject *__pyx
     __pyx_t_8 = (__pyx_v_num_cands > 0);
     if (__pyx_t_8) {
 
-      /* "algorithms/track.py":714
+      /* "openptv2/algorithms/track.py":714
  * 
  *         if num_cands > 0:
  *             _ix = cand_inds[cam][0]             # <<<<<<<<<<<<<<
@@ -19150,7 +19150,7 @@ static PyObject *__pyx_f_10algorithms_5track_assess_new_position(PyObject *__pyx
       __Pyx_XDECREF_SET(__pyx_v__ix, __pyx_t_20);
       __pyx_t_20 = 0;
 
-      /* "algorithms/track.py":715
+      /* "openptv2/algorithms/track.py":715
  *         if num_cands > 0:
  *             _ix = cand_inds[cam][0]
  *             targ_pos[cam][0] = frm.targ_x[cam][_ix]             # <<<<<<<<<<<<<<
@@ -19171,7 +19171,7 @@ static PyObject *__pyx_f_10algorithms_5track_assess_new_position(PyObject *__pyx
       __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
       __Pyx_DECREF(__pyx_t_20); __pyx_t_20 = 0;
 
-      /* "algorithms/track.py":716
+      /* "openptv2/algorithms/track.py":716
  *             _ix = cand_inds[cam][0]
  *             targ_pos[cam][0] = frm.targ_x[cam][_ix]
  *             targ_pos[cam][1] = frm.targ_y[cam][_ix]             # <<<<<<<<<<<<<<
@@ -19192,7 +19192,7 @@ static PyObject *__pyx_f_10algorithms_5track_assess_new_position(PyObject *__pyx
       __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
       __Pyx_DECREF(__pyx_t_20); __pyx_t_20 = 0;
 
-      /* "algorithms/track.py":713
+      /* "openptv2/algorithms/track.py":713
  *             cand_inds[cam][0] = best
  * 
  *         if num_cands > 0:             # <<<<<<<<<<<<<<
@@ -19202,7 +19202,7 @@ static PyObject *__pyx_f_10algorithms_5track_assess_new_position(PyObject *__pyx
     }
   }
 
-  /* "algorithms/track.py":718
+  /* "openptv2/algorithms/track.py":718
  *             targ_pos[cam][1] = frm.targ_y[cam][_ix]
  * 
  *     valid_cams = 0             # <<<<<<<<<<<<<<
@@ -19211,7 +19211,7 @@ static PyObject *__pyx_f_10algorithms_5track_assess_new_position(PyObject *__pyx
 */
   __pyx_v_valid_cams = 0;
 
-  /* "algorithms/track.py":719
+  /* "openptv2/algorithms/track.py":719
  * 
  *     valid_cams = 0
  *     for cam in range(run.cpar.num_cams):             # <<<<<<<<<<<<<<
@@ -19229,7 +19229,7 @@ static PyObject *__pyx_f_10algorithms_5track_assess_new_position(PyObject *__pyx
   for (__pyx_t_7 = 0; __pyx_t_7 < __pyx_t_6; __pyx_t_7+=1) {
     __pyx_v_cam = __pyx_t_7;
 
-    /* "algorithms/track.py":720
+    /* "openptv2/algorithms/track.py":720
  *     valid_cams = 0
  *     for cam in range(run.cpar.num_cams):
  *         if (targ_pos[cam][0] != COORD_UNUSED and             # <<<<<<<<<<<<<<
@@ -19254,7 +19254,7 @@ static PyObject *__pyx_f_10algorithms_5track_assess_new_position(PyObject *__pyx
       goto __pyx_L19_bool_binop_done;
     }
 
-    /* "algorithms/track.py":721
+    /* "openptv2/algorithms/track.py":721
  *     for cam in range(run.cpar.num_cams):
  *         if (targ_pos[cam][0] != COORD_UNUSED and
  *                 targ_pos[cam][1] != COORD_UNUSED):             # <<<<<<<<<<<<<<
@@ -19276,7 +19276,7 @@ static PyObject *__pyx_f_10algorithms_5track_assess_new_position(PyObject *__pyx
     __pyx_t_8 = __pyx_t_23;
     __pyx_L19_bool_binop_done:;
 
-    /* "algorithms/track.py":720
+    /* "openptv2/algorithms/track.py":720
  *     valid_cams = 0
  *     for cam in range(run.cpar.num_cams):
  *         if (targ_pos[cam][0] != COORD_UNUSED and             # <<<<<<<<<<<<<<
@@ -19285,7 +19285,7 @@ static PyObject *__pyx_f_10algorithms_5track_assess_new_position(PyObject *__pyx
 */
     if (__pyx_t_8) {
 
-      /* "algorithms/track.py":722
+      /* "openptv2/algorithms/track.py":722
  *         if (targ_pos[cam][0] != COORD_UNUSED and
  *                 targ_pos[cam][1] != COORD_UNUSED):
  *             mx, my = pixel_to_metric(targ_pos[cam][0], targ_pos[cam][1], run.cpar)             # <<<<<<<<<<<<<<
@@ -19385,7 +19385,7 @@ static PyObject *__pyx_f_10algorithms_5track_assess_new_position(PyObject *__pyx
       __Pyx_XDECREF_SET(__pyx_v_my, __pyx_t_19);
       __pyx_t_19 = 0;
 
-      /* "algorithms/track.py":723
+      /* "openptv2/algorithms/track.py":723
  *                 targ_pos[cam][1] != COORD_UNUSED):
  *             mx, my = pixel_to_metric(targ_pos[cam][0], targ_pos[cam][1], run.cpar)
  *             cal = run.cal[cam]             # <<<<<<<<<<<<<<
@@ -19400,7 +19400,7 @@ static PyObject *__pyx_f_10algorithms_5track_assess_new_position(PyObject *__pyx
       __Pyx_XDECREF_SET(__pyx_v_cal, __pyx_t_19);
       __pyx_t_19 = 0;
 
-      /* "algorithms/track.py":724
+      /* "openptv2/algorithms/track.py":724
  *             mx, my = pixel_to_metric(targ_pos[cam][0], targ_pos[cam][1], run.cpar)
  *             cal = run.cal[cam]
  *             fx, fy = dist_to_flat(             # <<<<<<<<<<<<<<
@@ -19411,7 +19411,7 @@ static PyObject *__pyx_f_10algorithms_5track_assess_new_position(PyObject *__pyx
       __Pyx_INCREF(__pyx_v_dist_to_flat);
       __pyx_t_13 = __pyx_v_dist_to_flat; 
 
-      /* "algorithms/track.py":726
+      /* "openptv2/algorithms/track.py":726
  *             fx, fy = dist_to_flat(
  *                 mx, my,
  *                 cal.int_par.xh, cal.int_par.yh,             # <<<<<<<<<<<<<<
@@ -19429,7 +19429,7 @@ static PyObject *__pyx_f_10algorithms_5track_assess_new_position(PyObject *__pyx
       __Pyx_GOTREF(__pyx_t_11);
       __Pyx_DECREF(__pyx_t_17); __pyx_t_17 = 0;
 
-      /* "algorithms/track.py":727
+      /* "openptv2/algorithms/track.py":727
  *                 mx, my,
  *                 cal.int_par.xh, cal.int_par.yh,
  *                 cal.added_par.k1, cal.added_par.k2, cal.added_par.k3,             # <<<<<<<<<<<<<<
@@ -19452,7 +19452,7 @@ static PyObject *__pyx_f_10algorithms_5track_assess_new_position(PyObject *__pyx
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_17); __pyx_t_17 = 0;
 
-      /* "algorithms/track.py":728
+      /* "openptv2/algorithms/track.py":728
  *                 cal.int_par.xh, cal.int_par.yh,
  *                 cal.added_par.k1, cal.added_par.k2, cal.added_par.k3,
  *                 cal.added_par.p1, cal.added_par.p2,             # <<<<<<<<<<<<<<
@@ -19470,7 +19470,7 @@ static PyObject *__pyx_f_10algorithms_5track_assess_new_position(PyObject *__pyx
       __Pyx_GOTREF(__pyx_t_12);
       __Pyx_DECREF(__pyx_t_17); __pyx_t_17 = 0;
 
-      /* "algorithms/track.py":729
+      /* "openptv2/algorithms/track.py":729
  *                 cal.added_par.k1, cal.added_par.k2, cal.added_par.k3,
  *                 cal.added_par.p1, cal.added_par.p2,
  *                 cal.added_par.scx, cal.added_par.she,             # <<<<<<<<<<<<<<
@@ -19488,7 +19488,7 @@ static PyObject *__pyx_f_10algorithms_5track_assess_new_position(PyObject *__pyx
       __Pyx_GOTREF(__pyx_t_24);
       __Pyx_DECREF(__pyx_t_17); __pyx_t_17 = 0;
 
-      /* "algorithms/track.py":730
+      /* "openptv2/algorithms/track.py":730
  *                 cal.added_par.p1, cal.added_par.p2,
  *                 cal.added_par.scx, cal.added_par.she,
  *                 run.flatten_tol)             # <<<<<<<<<<<<<<
@@ -19578,7 +19578,7 @@ static PyObject *__pyx_f_10algorithms_5track_assess_new_position(PyObject *__pyx
         __pyx_L24_unpacking_done:;
       }
 
-      /* "algorithms/track.py":724
+      /* "openptv2/algorithms/track.py":724
  *             mx, my = pixel_to_metric(targ_pos[cam][0], targ_pos[cam][1], run.cpar)
  *             cal = run.cal[cam]
  *             fx, fy = dist_to_flat(             # <<<<<<<<<<<<<<
@@ -19590,7 +19590,7 @@ static PyObject *__pyx_f_10algorithms_5track_assess_new_position(PyObject *__pyx
       __Pyx_XDECREF_SET(__pyx_v_fy, __pyx_t_17);
       __pyx_t_17 = 0;
 
-      /* "algorithms/track.py":731
+      /* "openptv2/algorithms/track.py":731
  *                 cal.added_par.scx, cal.added_par.she,
  *                 run.flatten_tol)
  *             targ_pos[cam][0] = fx             # <<<<<<<<<<<<<<
@@ -19602,7 +19602,7 @@ static PyObject *__pyx_f_10algorithms_5track_assess_new_position(PyObject *__pyx
       if (unlikely((__Pyx_SetItemInt(__pyx_t_19, 0, __pyx_v_fx, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_OwnStrongReference) < 0))) __PYX_ERR(0, 731, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_19); __pyx_t_19 = 0;
 
-      /* "algorithms/track.py":732
+      /* "openptv2/algorithms/track.py":732
  *                 run.flatten_tol)
  *             targ_pos[cam][0] = fx
  *             targ_pos[cam][1] = fy             # <<<<<<<<<<<<<<
@@ -19614,7 +19614,7 @@ static PyObject *__pyx_f_10algorithms_5track_assess_new_position(PyObject *__pyx
       if (unlikely((__Pyx_SetItemInt(__pyx_t_19, 1, __pyx_v_fy, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_OwnStrongReference) < 0))) __PYX_ERR(0, 732, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_19); __pyx_t_19 = 0;
 
-      /* "algorithms/track.py":733
+      /* "openptv2/algorithms/track.py":733
  *             targ_pos[cam][0] = fx
  *             targ_pos[cam][1] = fy
  *             valid_cams += 1             # <<<<<<<<<<<<<<
@@ -19623,7 +19623,7 @@ static PyObject *__pyx_f_10algorithms_5track_assess_new_position(PyObject *__pyx
 */
       __pyx_v_valid_cams = (__pyx_v_valid_cams + 1);
 
-      /* "algorithms/track.py":720
+      /* "openptv2/algorithms/track.py":720
  *     valid_cams = 0
  *     for cam in range(run.cpar.num_cams):
  *         if (targ_pos[cam][0] != COORD_UNUSED and             # <<<<<<<<<<<<<<
@@ -19633,7 +19633,7 @@ static PyObject *__pyx_f_10algorithms_5track_assess_new_position(PyObject *__pyx
     }
   }
 
-  /* "algorithms/track.py":734
+  /* "openptv2/algorithms/track.py":734
  *             targ_pos[cam][1] = fy
  *             valid_cams += 1
  *     return valid_cams             # <<<<<<<<<<<<<<
@@ -19647,7 +19647,7 @@ static PyObject *__pyx_f_10algorithms_5track_assess_new_position(PyObject *__pyx
   __pyx_t_19 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/track.py":676
+  /* "openptv2/algorithms/track.py":676
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -19670,7 +19670,7 @@ static PyObject *__pyx_f_10algorithms_5track_assess_new_position(PyObject *__pyx
   __Pyx_XDECREF(__pyx_t_19);
   __Pyx_XDECREF(__pyx_t_20);
   __Pyx_XDECREF(__pyx_t_24);
-  __Pyx_AddTraceback("algorithms.track.assess_new_position", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.assess_new_position", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_pixel_to_metric);
@@ -19697,15 +19697,15 @@ static PyObject *__pyx_f_10algorithms_5track_assess_new_position(PyObject *__pyx
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_5track_47assess_new_position(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_47assess_new_position(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_10algorithms_5track_47assess_new_position = {"assess_new_position", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_5track_47assess_new_position, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10algorithms_5track_47assess_new_position(PyObject *__pyx_self, 
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_5track_47assess_new_position = {"assess_new_position", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_5track_47assess_new_position, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_47assess_new_position(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -19783,7 +19783,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
       const Py_ssize_t kwd_pos_args = __pyx_nargs;
       if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "assess_new_position", 0) < (0)) __PYX_ERR(0, 676, __pyx_L3_error)
 
-      /* "algorithms/track.py":678
+      /* "openptv2/algorithms/track.py":678
  * @cython.ccall
  * def assess_new_position(pos, targ_pos, cand_inds, frm, run,
  *                         _fast_cals=None, _fast_mmluts=None, _pix_info=None):             # <<<<<<<<<<<<<<
@@ -19846,13 +19846,13 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.track.assess_new_position", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.assess_new_position", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_5track_46assess_new_position(__pyx_self, __pyx_v_pos, __pyx_v_targ_pos, __pyx_v_cand_inds, __pyx_v_frm, __pyx_v_run, __pyx_v__fast_cals, __pyx_v__fast_mmluts, __pyx_v__pix_info);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_5track_46assess_new_position(__pyx_self, __pyx_v_pos, __pyx_v_targ_pos, __pyx_v_cand_inds, __pyx_v_frm, __pyx_v_run, __pyx_v__fast_cals, __pyx_v__fast_mmluts, __pyx_v__pix_info);
 
-  /* "algorithms/track.py":676
+  /* "openptv2/algorithms/track.py":676
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -19868,11 +19868,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_5track_46assess_new_position(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_pos, PyObject *__pyx_v_targ_pos, PyObject *__pyx_v_cand_inds, PyObject *__pyx_v_frm, PyObject *__pyx_v_run, PyObject *__pyx_v__fast_cals, PyObject *__pyx_v__fast_mmluts, PyObject *__pyx_v__pix_info) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_46assess_new_position(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_pos, PyObject *__pyx_v_targ_pos, PyObject *__pyx_v_cand_inds, PyObject *__pyx_v_frm, PyObject *__pyx_v_run, PyObject *__pyx_v__fast_cals, PyObject *__pyx_v__fast_mmluts, PyObject *__pyx_v__pix_info) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
-  struct __pyx_opt_args_10algorithms_5track_assess_new_position __pyx_t_2;
+  struct __pyx_opt_args_8openptv2_10algorithms_5track_assess_new_position __pyx_t_2;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -19882,7 +19882,7 @@ static PyObject *__pyx_pf_10algorithms_5track_46assess_new_position(CYTHON_UNUSE
   __pyx_t_2._fast_cals = __pyx_v__fast_cals;
   __pyx_t_2._fast_mmluts = __pyx_v__fast_mmluts;
   __pyx_t_2._pix_info = __pyx_v__pix_info;
-  __pyx_t_1 = __pyx_f_10algorithms_5track_assess_new_position(__pyx_v_pos, __pyx_v_targ_pos, __pyx_v_cand_inds, __pyx_v_frm, __pyx_v_run, 1, &__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 676, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_5track_assess_new_position(__pyx_v_pos, __pyx_v_targ_pos, __pyx_v_cand_inds, __pyx_v_frm, __pyx_v_run, 1, &__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 676, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -19891,7 +19891,7 @@ static PyObject *__pyx_pf_10algorithms_5track_46assess_new_position(CYTHON_UNUSE
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.track.assess_new_position", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.assess_new_position", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -19899,7 +19899,7 @@ static PyObject *__pyx_pf_10algorithms_5track_46assess_new_position(CYTHON_UNUSE
   return __pyx_r;
 }
 
-/* "algorithms/track.py":737
+/* "openptv2/algorithms/track.py":737
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -19907,14 +19907,14 @@ static PyObject *__pyx_pf_10algorithms_5track_46assess_new_position(CYTHON_UNUSE
  *     num_parts = frm.num_parts
 */
 
-static PyObject *__pyx_pw_10algorithms_5track_49add_particle(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_49add_particle(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_5track_add_particle(PyObject *__pyx_v_frm, PyObject *__pyx_v_pos, PyObject *__pyx_v_cand_inds, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_5track_add_particle(PyObject *__pyx_v_frm, PyObject *__pyx_v_pos, PyObject *__pyx_v_cand_inds, CYTHON_UNUSED int __pyx_skip_dispatch) {
   PyObject *__pyx_v_num_parts = NULL;
   PyObject *__pyx_v_ref_path_inf = NULL;
   PyObject *__pyx_v_ref_corres = NULL;
@@ -19934,7 +19934,7 @@ static PyObject *__pyx_f_10algorithms_5track_add_particle(PyObject *__pyx_v_frm,
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("add_particle", 0);
 
-  /* "algorithms/track.py":739
+  /* "openptv2/algorithms/track.py":739
  * @cython.ccall
  * def add_particle(frm, pos, cand_inds):
  *     num_parts = frm.num_parts             # <<<<<<<<<<<<<<
@@ -19946,7 +19946,7 @@ static PyObject *__pyx_f_10algorithms_5track_add_particle(PyObject *__pyx_v_frm,
   __pyx_v_num_parts = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/track.py":740
+  /* "openptv2/algorithms/track.py":740
  * def add_particle(frm, pos, cand_inds):
  *     num_parts = frm.num_parts
  *     ref_path_inf = frm.path_info[num_parts]             # <<<<<<<<<<<<<<
@@ -19961,7 +19961,7 @@ static PyObject *__pyx_f_10algorithms_5track_add_particle(PyObject *__pyx_v_frm,
   __pyx_v_ref_path_inf = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "algorithms/track.py":741
+  /* "openptv2/algorithms/track.py":741
  *     num_parts = frm.num_parts
  *     ref_path_inf = frm.path_info[num_parts]
  *     ref_path_inf.x[:] = pos             # <<<<<<<<<<<<<<
@@ -19973,7 +19973,7 @@ static PyObject *__pyx_f_10algorithms_5track_add_particle(PyObject *__pyx_v_frm,
   if (__Pyx_PyObject_SetSlice(__pyx_t_2, __pyx_v_pos, 0, 0, NULL, NULL, &__pyx_mstate_global->__pyx_slice[0], 0, 0, 0) < (0)) __PYX_ERR(0, 741, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/track.py":742
+  /* "openptv2/algorithms/track.py":742
  *     ref_path_inf = frm.path_info[num_parts]
  *     ref_path_inf.x[:] = pos
  *     reset_links(ref_path_inf)             # <<<<<<<<<<<<<<
@@ -20005,7 +20005,7 @@ static PyObject *__pyx_f_10algorithms_5track_add_particle(PyObject *__pyx_v_frm,
   }
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/track.py":744
+  /* "openptv2/algorithms/track.py":744
  *     reset_links(ref_path_inf)
  * 
  *     ref_corres = frm.correspond[num_parts]             # <<<<<<<<<<<<<<
@@ -20020,7 +20020,7 @@ static PyObject *__pyx_f_10algorithms_5track_add_particle(PyObject *__pyx_v_frm,
   __pyx_v_ref_corres = __pyx_t_3;
   __pyx_t_3 = 0;
 
-  /* "algorithms/track.py":745
+  /* "openptv2/algorithms/track.py":745
  * 
  *     ref_corres = frm.correspond[num_parts]
  *     for cam in range(frm.num_cams):             # <<<<<<<<<<<<<<
@@ -20059,7 +20059,7 @@ static PyObject *__pyx_f_10algorithms_5track_add_particle(PyObject *__pyx_v_frm,
     __Pyx_XDECREF_SET(__pyx_v_cam, __pyx_t_3);
     __pyx_t_3 = 0;
 
-    /* "algorithms/track.py":746
+    /* "openptv2/algorithms/track.py":746
  *     ref_corres = frm.correspond[num_parts]
  *     for cam in range(frm.num_cams):
  *         ref_corres.p[cam] = CORRES_NONE             # <<<<<<<<<<<<<<
@@ -20074,7 +20074,7 @@ static PyObject *__pyx_f_10algorithms_5track_add_particle(PyObject *__pyx_v_frm,
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-    /* "algorithms/track.py":747
+    /* "openptv2/algorithms/track.py":747
  *     for cam in range(frm.num_cams):
  *         ref_corres.p[cam] = CORRES_NONE
  *         if cand_inds[cam][0] != PT_UNUSED:             # <<<<<<<<<<<<<<
@@ -20095,7 +20095,7 @@ static PyObject *__pyx_f_10algorithms_5track_add_particle(PyObject *__pyx_v_frm,
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     if (__pyx_t_7) {
 
-      /* "algorithms/track.py":748
+      /* "openptv2/algorithms/track.py":748
  *         ref_corres.p[cam] = CORRES_NONE
  *         if cand_inds[cam][0] != PT_UNUSED:
  *             _ix = cand_inds[cam][0]             # <<<<<<<<<<<<<<
@@ -20110,7 +20110,7 @@ static PyObject *__pyx_f_10algorithms_5track_add_particle(PyObject *__pyx_v_frm,
       __Pyx_XDECREF_SET(__pyx_v__ix, __pyx_t_3);
       __pyx_t_3 = 0;
 
-      /* "algorithms/track.py":749
+      /* "openptv2/algorithms/track.py":749
  *         if cand_inds[cam][0] != PT_UNUSED:
  *             _ix = cand_inds[cam][0]
  *             frm.targets[cam][_ix].tnr = num_parts             # <<<<<<<<<<<<<<
@@ -20128,7 +20128,7 @@ static PyObject *__pyx_f_10algorithms_5track_add_particle(PyObject *__pyx_v_frm,
       if (__Pyx_PyObject_SetAttrStr(__pyx_t_3, __pyx_mstate_global->__pyx_n_u_tnr, __pyx_v_num_parts) < (0)) __PYX_ERR(0, 749, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-      /* "algorithms/track.py":750
+      /* "openptv2/algorithms/track.py":750
  *             _ix = cand_inds[cam][0]
  *             frm.targets[cam][_ix].tnr = num_parts
  *             frm.targ_tnr[cam][_ix] = num_parts             # <<<<<<<<<<<<<<
@@ -20143,7 +20143,7 @@ static PyObject *__pyx_f_10algorithms_5track_add_particle(PyObject *__pyx_v_frm,
       if (unlikely((PyObject_SetItem(__pyx_t_6, __pyx_v__ix, __pyx_v_num_parts) < 0))) __PYX_ERR(0, 750, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-      /* "algorithms/track.py":751
+      /* "openptv2/algorithms/track.py":751
  *             frm.targets[cam][_ix].tnr = num_parts
  *             frm.targ_tnr[cam][_ix] = num_parts
  *             ref_corres.p[cam] = _ix             # <<<<<<<<<<<<<<
@@ -20155,7 +20155,7 @@ static PyObject *__pyx_f_10algorithms_5track_add_particle(PyObject *__pyx_v_frm,
       if (unlikely((PyObject_SetItem(__pyx_t_6, __pyx_v_cam, __pyx_v__ix) < 0))) __PYX_ERR(0, 751, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-      /* "algorithms/track.py":752
+      /* "openptv2/algorithms/track.py":752
  *             frm.targ_tnr[cam][_ix] = num_parts
  *             ref_corres.p[cam] = _ix
  *             ref_corres.nr = num_parts             # <<<<<<<<<<<<<<
@@ -20164,7 +20164,7 @@ static PyObject *__pyx_f_10algorithms_5track_add_particle(PyObject *__pyx_v_frm,
 */
       if (__Pyx_PyObject_SetAttrStr(__pyx_v_ref_corres, __pyx_mstate_global->__pyx_n_u_nr, __pyx_v_num_parts) < (0)) __PYX_ERR(0, 752, __pyx_L1_error)
 
-      /* "algorithms/track.py":747
+      /* "openptv2/algorithms/track.py":747
  *     for cam in range(frm.num_cams):
  *         ref_corres.p[cam] = CORRES_NONE
  *         if cand_inds[cam][0] != PT_UNUSED:             # <<<<<<<<<<<<<<
@@ -20173,7 +20173,7 @@ static PyObject *__pyx_f_10algorithms_5track_add_particle(PyObject *__pyx_v_frm,
 */
     }
 
-    /* "algorithms/track.py":745
+    /* "openptv2/algorithms/track.py":745
  * 
  *     ref_corres = frm.correspond[num_parts]
  *     for cam in range(frm.num_cams):             # <<<<<<<<<<<<<<
@@ -20183,7 +20183,7 @@ static PyObject *__pyx_f_10algorithms_5track_add_particle(PyObject *__pyx_v_frm,
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/track.py":753
+  /* "openptv2/algorithms/track.py":753
  *             ref_corres.p[cam] = _ix
  *             ref_corres.nr = num_parts
  *     frm.num_parts += 1             # <<<<<<<<<<<<<<
@@ -20198,7 +20198,7 @@ static PyObject *__pyx_f_10algorithms_5track_add_particle(PyObject *__pyx_v_frm,
   if (__Pyx_PyObject_SetAttrStr(__pyx_v_frm, __pyx_mstate_global->__pyx_n_u_num_parts, __pyx_t_6) < (0)) __PYX_ERR(0, 753, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-  /* "algorithms/track.py":737
+  /* "openptv2/algorithms/track.py":737
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -20214,7 +20214,7 @@ static PyObject *__pyx_f_10algorithms_5track_add_particle(PyObject *__pyx_v_frm,
   __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_6);
-  __Pyx_AddTraceback("algorithms.track.add_particle", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.add_particle", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_num_parts);
@@ -20228,15 +20228,15 @@ static PyObject *__pyx_f_10algorithms_5track_add_particle(PyObject *__pyx_v_frm,
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_5track_49add_particle(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_49add_particle(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_10algorithms_5track_49add_particle = {"add_particle", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_5track_49add_particle, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10algorithms_5track_49add_particle(PyObject *__pyx_self, 
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_5track_49add_particle = {"add_particle", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_5track_49add_particle, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_49add_particle(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -20314,11 +20314,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.track.add_particle", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.add_particle", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_5track_48add_particle(__pyx_self, __pyx_v_frm, __pyx_v_pos, __pyx_v_cand_inds);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_5track_48add_particle(__pyx_self, __pyx_v_frm, __pyx_v_pos, __pyx_v_cand_inds);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -20328,7 +20328,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_5track_48add_particle(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_frm, PyObject *__pyx_v_pos, PyObject *__pyx_v_cand_inds) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_48add_particle(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_frm, PyObject *__pyx_v_pos, PyObject *__pyx_v_cand_inds) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -20337,7 +20337,7 @@ static PyObject *__pyx_pf_10algorithms_5track_48add_particle(CYTHON_UNUSED PyObj
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("add_particle", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_5track_add_particle(__pyx_v_frm, __pyx_v_pos, __pyx_v_cand_inds, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 737, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_5track_add_particle(__pyx_v_frm, __pyx_v_pos, __pyx_v_cand_inds, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 737, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -20346,7 +20346,7 @@ static PyObject *__pyx_pf_10algorithms_5track_48add_particle(CYTHON_UNUSED PyObj
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.track.add_particle", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.add_particle", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -20354,7 +20354,7 @@ static PyObject *__pyx_pf_10algorithms_5track_48add_particle(CYTHON_UNUSED PyObj
   return __pyx_r;
 }
 
-/* "algorithms/track.py":756
+/* "openptv2/algorithms/track.py":756
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -20362,14 +20362,14 @@ static PyObject *__pyx_pf_10algorithms_5track_48add_particle(CYTHON_UNUSED PyObj
  *     for step in range(run.seq_par.first, run.seq_par.first + TR_BUFSPACE - 1):
 */
 
-static PyObject *__pyx_pw_10algorithms_5track_51track_forward_start(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_51track_forward_start(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_5track_track_forward_start(PyObject *__pyx_v_run, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_5track_track_forward_start(PyObject *__pyx_v_run, CYTHON_UNUSED int __pyx_skip_dispatch) {
   PyObject *__pyx_v_step = NULL;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
@@ -20386,7 +20386,7 @@ static PyObject *__pyx_f_10algorithms_5track_track_forward_start(PyObject *__pyx
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("track_forward_start", 0);
 
-  /* "algorithms/track.py":758
+  /* "openptv2/algorithms/track.py":758
  * @cython.ccall
  * def track_forward_start(run):
  *     for step in range(run.seq_par.first, run.seq_par.first + TR_BUFSPACE - 1):             # <<<<<<<<<<<<<<
@@ -20443,7 +20443,7 @@ static PyObject *__pyx_f_10algorithms_5track_track_forward_start(PyObject *__pyx
     __Pyx_XDECREF_SET(__pyx_v_step, __pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "algorithms/track.py":759
+    /* "openptv2/algorithms/track.py":759
  * def track_forward_start(run):
  *     for step in range(run.seq_par.first, run.seq_par.first + TR_BUFSPACE - 1):
  *         run.fb.read_frame_at_end(step, read_links=False)             # <<<<<<<<<<<<<<
@@ -20469,7 +20469,7 @@ static PyObject *__pyx_f_10algorithms_5track_track_forward_start(PyObject *__pyx
     }
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "algorithms/track.py":760
+    /* "openptv2/algorithms/track.py":760
  *     for step in range(run.seq_par.first, run.seq_par.first + TR_BUFSPACE - 1):
  *         run.fb.read_frame_at_end(step, read_links=False)
  *         run.fb.fb_next()             # <<<<<<<<<<<<<<
@@ -20491,7 +20491,7 @@ static PyObject *__pyx_f_10algorithms_5track_track_forward_start(PyObject *__pyx
     }
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "algorithms/track.py":758
+    /* "openptv2/algorithms/track.py":758
  * @cython.ccall
  * def track_forward_start(run):
  *     for step in range(run.seq_par.first, run.seq_par.first + TR_BUFSPACE - 1):             # <<<<<<<<<<<<<<
@@ -20501,7 +20501,7 @@ static PyObject *__pyx_f_10algorithms_5track_track_forward_start(PyObject *__pyx
   }
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-  /* "algorithms/track.py":761
+  /* "openptv2/algorithms/track.py":761
  *         run.fb.read_frame_at_end(step, read_links=False)
  *         run.fb.fb_next()
  *     run.fb.fb_prev()             # <<<<<<<<<<<<<<
@@ -20523,7 +20523,7 @@ static PyObject *__pyx_f_10algorithms_5track_track_forward_start(PyObject *__pyx
   }
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-  /* "algorithms/track.py":756
+  /* "openptv2/algorithms/track.py":756
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -20541,7 +20541,7 @@ static PyObject *__pyx_f_10algorithms_5track_track_forward_start(PyObject *__pyx
   __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_5);
   __Pyx_XDECREF(__pyx_t_6);
-  __Pyx_AddTraceback("algorithms.track.track_forward_start", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.track_forward_start", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_step);
@@ -20551,15 +20551,15 @@ static PyObject *__pyx_f_10algorithms_5track_track_forward_start(PyObject *__pyx
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_5track_51track_forward_start(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_51track_forward_start(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_10algorithms_5track_51track_forward_start = {"track_forward_start", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_5track_51track_forward_start, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10algorithms_5track_51track_forward_start(PyObject *__pyx_self, 
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_5track_51track_forward_start = {"track_forward_start", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_5track_51track_forward_start, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_51track_forward_start(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -20621,11 +20621,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.track.track_forward_start", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.track_forward_start", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_5track_50track_forward_start(__pyx_self, __pyx_v_run);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_5track_50track_forward_start(__pyx_self, __pyx_v_run);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -20635,7 +20635,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_5track_50track_forward_start(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_run) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_50track_forward_start(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_run) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -20644,7 +20644,7 @@ static PyObject *__pyx_pf_10algorithms_5track_50track_forward_start(CYTHON_UNUSE
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("track_forward_start", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_5track_track_forward_start(__pyx_v_run, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 756, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_5track_track_forward_start(__pyx_v_run, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 756, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -20653,7 +20653,7 @@ static PyObject *__pyx_pf_10algorithms_5track_50track_forward_start(CYTHON_UNUSE
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.track.track_forward_start", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.track_forward_start", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -20661,7 +20661,7 @@ static PyObject *__pyx_pf_10algorithms_5track_50track_forward_start(CYTHON_UNUSE
   return __pyx_r;
 }
 
-/* "algorithms/track.py":764
+/* "openptv2/algorithms/track.py":764
  * 
  * 
  * def _sync_soa_to_aos(frm):             # <<<<<<<<<<<<<<
@@ -20670,16 +20670,16 @@ static PyObject *__pyx_pf_10algorithms_5track_50track_forward_start(CYTHON_UNUSE
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_5track_53_sync_soa_to_aos(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_53_sync_soa_to_aos(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_5track_52_sync_soa_to_aos, "Fast SoA->AoS sync \342\200\224 only copies fields needed for file I/O.");
-static PyMethodDef __pyx_mdef_10algorithms_5track_53_sync_soa_to_aos = {"_sync_soa_to_aos", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_5track_53_sync_soa_to_aos, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_5track_52_sync_soa_to_aos};
-static PyObject *__pyx_pw_10algorithms_5track_53_sync_soa_to_aos(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_5track_52_sync_soa_to_aos, "Fast SoA->AoS sync \342\200\224 only copies fields needed for file I/O.");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_5track_53_sync_soa_to_aos = {"_sync_soa_to_aos", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_5track_53_sync_soa_to_aos, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_5track_52_sync_soa_to_aos};
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_53_sync_soa_to_aos(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -20741,11 +20741,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.track._sync_soa_to_aos", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track._sync_soa_to_aos", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_5track_52_sync_soa_to_aos(__pyx_self, __pyx_v_frm);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_5track_52_sync_soa_to_aos(__pyx_self, __pyx_v_frm);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -20755,7 +20755,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_5track_52_sync_soa_to_aos(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_frm) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_52_sync_soa_to_aos(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_frm) {
   PyObject *__pyx_v_i = NULL;
   PyObject *__pyx_v_p = NULL;
   PyObject *__pyx_v_c = NULL;
@@ -20777,7 +20777,7 @@ static PyObject *__pyx_pf_10algorithms_5track_52_sync_soa_to_aos(CYTHON_UNUSED P
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("_sync_soa_to_aos", 0);
 
-  /* "algorithms/track.py":766
+  /* "openptv2/algorithms/track.py":766
  * def _sync_soa_to_aos(frm):
  *     """Fast SoA->AoS sync  only copies fields needed for file I/O."""
  *     for i in range(frm.num_parts):             # <<<<<<<<<<<<<<
@@ -20816,7 +20816,7 @@ static PyObject *__pyx_pf_10algorithms_5track_52_sync_soa_to_aos(CYTHON_UNUSED P
     __Pyx_XDECREF_SET(__pyx_v_i, __pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "algorithms/track.py":767
+    /* "openptv2/algorithms/track.py":767
  *     """Fast SoA->AoS sync  only copies fields needed for file I/O."""
  *     for i in range(frm.num_parts):
  *         p = frm.path_info[i]             # <<<<<<<<<<<<<<
@@ -20831,7 +20831,7 @@ static PyObject *__pyx_pf_10algorithms_5track_52_sync_soa_to_aos(CYTHON_UNUSED P
     __Pyx_XDECREF_SET(__pyx_v_p, __pyx_t_2);
     __pyx_t_2 = 0;
 
-    /* "algorithms/track.py":768
+    /* "openptv2/algorithms/track.py":768
  *     for i in range(frm.num_parts):
  *         p = frm.path_info[i]
  *         p.x[:] = frm.path_x[i]             # <<<<<<<<<<<<<<
@@ -20849,7 +20849,7 @@ static PyObject *__pyx_pf_10algorithms_5track_52_sync_soa_to_aos(CYTHON_UNUSED P
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "algorithms/track.py":769
+    /* "openptv2/algorithms/track.py":769
  *         p = frm.path_info[i]
  *         p.x[:] = frm.path_x[i]
  *         p.prev = int(frm.path_prev[i])             # <<<<<<<<<<<<<<
@@ -20867,7 +20867,7 @@ static PyObject *__pyx_pf_10algorithms_5track_52_sync_soa_to_aos(CYTHON_UNUSED P
     if (__Pyx_PyObject_SetAttrStr(__pyx_v_p, __pyx_mstate_global->__pyx_n_u_prev, __pyx_t_1) < (0)) __PYX_ERR(0, 769, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "algorithms/track.py":770
+    /* "openptv2/algorithms/track.py":770
  *         p.x[:] = frm.path_x[i]
  *         p.prev = int(frm.path_prev[i])
  *         p.next = int(frm.path_next[i])             # <<<<<<<<<<<<<<
@@ -20885,7 +20885,7 @@ static PyObject *__pyx_pf_10algorithms_5track_52_sync_soa_to_aos(CYTHON_UNUSED P
     if (__Pyx_PyObject_SetAttrStr(__pyx_v_p, __pyx_mstate_global->__pyx_n_u_next, __pyx_t_1) < (0)) __PYX_ERR(0, 770, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "algorithms/track.py":771
+    /* "openptv2/algorithms/track.py":771
  *         p.prev = int(frm.path_prev[i])
  *         p.next = int(frm.path_next[i])
  *         p.prio = int(frm.path_prio[i])             # <<<<<<<<<<<<<<
@@ -20903,7 +20903,7 @@ static PyObject *__pyx_pf_10algorithms_5track_52_sync_soa_to_aos(CYTHON_UNUSED P
     if (__Pyx_PyObject_SetAttrStr(__pyx_v_p, __pyx_mstate_global->__pyx_n_u_prio, __pyx_t_1) < (0)) __PYX_ERR(0, 771, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "algorithms/track.py":773
+    /* "openptv2/algorithms/track.py":773
  *         p.prio = int(frm.path_prio[i])
  * 
  *         c = frm.correspond[i]             # <<<<<<<<<<<<<<
@@ -20918,7 +20918,7 @@ static PyObject *__pyx_pf_10algorithms_5track_52_sync_soa_to_aos(CYTHON_UNUSED P
     __Pyx_XDECREF_SET(__pyx_v_c, __pyx_t_2);
     __pyx_t_2 = 0;
 
-    /* "algorithms/track.py":774
+    /* "openptv2/algorithms/track.py":774
  * 
  *         c = frm.correspond[i]
  *         c.nr = int(frm.corres_nr[i])             # <<<<<<<<<<<<<<
@@ -20936,7 +20936,7 @@ static PyObject *__pyx_pf_10algorithms_5track_52_sync_soa_to_aos(CYTHON_UNUSED P
     if (__Pyx_PyObject_SetAttrStr(__pyx_v_c, __pyx_mstate_global->__pyx_n_u_nr, __pyx_t_2) < (0)) __PYX_ERR(0, 774, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "algorithms/track.py":775
+    /* "openptv2/algorithms/track.py":775
  *         c = frm.correspond[i]
  *         c.nr = int(frm.corres_nr[i])
  *         c.p[:] = frm.corres_p[i]             # <<<<<<<<<<<<<<
@@ -20954,7 +20954,7 @@ static PyObject *__pyx_pf_10algorithms_5track_52_sync_soa_to_aos(CYTHON_UNUSED P
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "algorithms/track.py":766
+    /* "openptv2/algorithms/track.py":766
  * def _sync_soa_to_aos(frm):
  *     """Fast SoA->AoS sync  only copies fields needed for file I/O."""
  *     for i in range(frm.num_parts):             # <<<<<<<<<<<<<<
@@ -20964,7 +20964,7 @@ static PyObject *__pyx_pf_10algorithms_5track_52_sync_soa_to_aos(CYTHON_UNUSED P
   }
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-  /* "algorithms/track.py":777
+  /* "openptv2/algorithms/track.py":777
  *         c.p[:] = frm.corres_p[i]
  * 
  *     for cam in range(frm.num_cams):             # <<<<<<<<<<<<<<
@@ -21003,7 +21003,7 @@ static PyObject *__pyx_pf_10algorithms_5track_52_sync_soa_to_aos(CYTHON_UNUSED P
     __Pyx_XDECREF_SET(__pyx_v_cam, __pyx_t_3);
     __pyx_t_3 = 0;
 
-    /* "algorithms/track.py":778
+    /* "openptv2/algorithms/track.py":778
  * 
  *     for cam in range(frm.num_cams):
  *         tnr_arr = frm.targ_tnr[cam]             # <<<<<<<<<<<<<<
@@ -21018,7 +21018,7 @@ static PyObject *__pyx_pf_10algorithms_5track_52_sync_soa_to_aos(CYTHON_UNUSED P
     __Pyx_XDECREF_SET(__pyx_v_tnr_arr, __pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "algorithms/track.py":779
+    /* "openptv2/algorithms/track.py":779
  *     for cam in range(frm.num_cams):
  *         tnr_arr = frm.targ_tnr[cam]
  *         for j in range(frm.num_targets[cam]):             # <<<<<<<<<<<<<<
@@ -21060,7 +21060,7 @@ static PyObject *__pyx_pf_10algorithms_5track_52_sync_soa_to_aos(CYTHON_UNUSED P
       __Pyx_XDECREF_SET(__pyx_v_j, __pyx_t_1);
       __pyx_t_1 = 0;
 
-      /* "algorithms/track.py":780
+      /* "openptv2/algorithms/track.py":780
  *         tnr_arr = frm.targ_tnr[cam]
  *         for j in range(frm.num_targets[cam]):
  *             frm.targets[cam][j].tnr = int(tnr_arr[j])             # <<<<<<<<<<<<<<
@@ -21084,7 +21084,7 @@ static PyObject *__pyx_pf_10algorithms_5track_52_sync_soa_to_aos(CYTHON_UNUSED P
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "algorithms/track.py":779
+      /* "openptv2/algorithms/track.py":779
  *     for cam in range(frm.num_cams):
  *         tnr_arr = frm.targ_tnr[cam]
  *         for j in range(frm.num_targets[cam]):             # <<<<<<<<<<<<<<
@@ -21094,7 +21094,7 @@ static PyObject *__pyx_pf_10algorithms_5track_52_sync_soa_to_aos(CYTHON_UNUSED P
     }
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
 
-    /* "algorithms/track.py":777
+    /* "openptv2/algorithms/track.py":777
  *         c.p[:] = frm.corres_p[i]
  * 
  *     for cam in range(frm.num_cams):             # <<<<<<<<<<<<<<
@@ -21104,7 +21104,7 @@ static PyObject *__pyx_pf_10algorithms_5track_52_sync_soa_to_aos(CYTHON_UNUSED P
   }
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/track.py":764
+  /* "openptv2/algorithms/track.py":764
  * 
  * 
  * def _sync_soa_to_aos(frm):             # <<<<<<<<<<<<<<
@@ -21121,7 +21121,7 @@ static PyObject *__pyx_pf_10algorithms_5track_52_sync_soa_to_aos(CYTHON_UNUSED P
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_6);
   __Pyx_XDECREF(__pyx_t_7);
-  __Pyx_AddTraceback("algorithms.track._sync_soa_to_aos", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track._sync_soa_to_aos", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_i);
@@ -21135,7 +21135,7 @@ static PyObject *__pyx_pf_10algorithms_5track_52_sync_soa_to_aos(CYTHON_UNUSED P
   return __pyx_r;
 }
 
-/* "algorithms/track.py":783
+/* "openptv2/algorithms/track.py":783
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -21143,14 +21143,14 @@ static PyObject *__pyx_pf_10algorithms_5track_52_sync_soa_to_aos(CYTHON_UNUSED P
  *     from .orientation import point_position
 */
 
-static PyObject *__pyx_pw_10algorithms_5track_55trackcorr_c_loop(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_55trackcorr_c_loop(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_run_info, PyObject *__pyx_v_step, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_run_info, PyObject *__pyx_v_step, CYTHON_UNUSED int __pyx_skip_dispatch) {
   CYTHON_UNUSED PyObject *__pyx_v_point_position = NULL;
   PyObject *__pyx_v_fb = NULL;
   PyObject *__pyx_v_cal = NULL;
@@ -21256,7 +21256,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("trackcorr_c_loop", 0);
 
-  /* "algorithms/track.py":785
+  /* "openptv2/algorithms/track.py":785
  * @cython.ccall
  * def trackcorr_c_loop(run_info, step):
  *     from .orientation import point_position             # <<<<<<<<<<<<<<
@@ -21265,7 +21265,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
 */
   {
     PyObject* const __pyx_imported_names[] = {__pyx_mstate_global->__pyx_n_u_point_position};
-    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_orientation, __pyx_imported_names, 1, __pyx_mstate_global->__pyx_kp_u_algorithms_orientation, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 785, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_orientation, __pyx_imported_names, 1, __pyx_mstate_global->__pyx_kp_u_openptv2_algorithms_orientation, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 785, __pyx_L1_error)
   }
   __pyx_t_1 = __pyx_t_2;
   __Pyx_GOTREF(__pyx_t_1);
@@ -21286,7 +21286,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/track.py":787
+  /* "openptv2/algorithms/track.py":787
  *     from .orientation import point_position
  * 
  *     fb = run_info.fb             # <<<<<<<<<<<<<<
@@ -21298,7 +21298,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   __pyx_v_fb = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/track.py":788
+  /* "openptv2/algorithms/track.py":788
  * 
  *     fb = run_info.fb
  *     cal = run_info.cal             # <<<<<<<<<<<<<<
@@ -21310,7 +21310,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   __pyx_v_cal = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/track.py":789
+  /* "openptv2/algorithms/track.py":789
  *     fb = run_info.fb
  *     cal = run_info.cal
  *     tpar = run_info.tpar             # <<<<<<<<<<<<<<
@@ -21322,7 +21322,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   __pyx_v_tpar = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/track.py":790
+  /* "openptv2/algorithms/track.py":790
  *     cal = run_info.cal
  *     tpar = run_info.tpar
  *     vpar = run_info.vpar             # <<<<<<<<<<<<<<
@@ -21334,7 +21334,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   __pyx_v_vpar = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/track.py":791
+  /* "openptv2/algorithms/track.py":791
  *     tpar = run_info.tpar
  *     vpar = run_info.vpar
  *     cpar = run_info.cpar             # <<<<<<<<<<<<<<
@@ -21346,7 +21346,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   __pyx_v_cpar = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/track.py":793
+  /* "openptv2/algorithms/track.py":793
  *     cpar = run_info.cpar
  * 
  *     c_imx = cpar.imx; c_imy = cpar.imy             # <<<<<<<<<<<<<<
@@ -21362,7 +21362,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   __pyx_v_c_imy = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/track.py":794
+  /* "openptv2/algorithms/track.py":794
  * 
  *     c_imx = cpar.imx; c_imy = cpar.imy
  *     imx_half = c_imx * 0.5; imy_half = c_imy * 0.5             # <<<<<<<<<<<<<<
@@ -21378,7 +21378,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   __pyx_v_imy_half = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/track.py":795
+  /* "openptv2/algorithms/track.py":795
  *     c_imx = cpar.imx; c_imy = cpar.imy
  *     imx_half = c_imx * 0.5; imy_half = c_imy * 0.5
  *     inv_pix_x = 1.0 / cpar.pix_x; inv_pix_y = 1.0 / cpar.pix_y             # <<<<<<<<<<<<<<
@@ -21400,7 +21400,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   __pyx_v_inv_pix_y = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/track.py":796
+  /* "openptv2/algorithms/track.py":796
  *     imx_half = c_imx * 0.5; imy_half = c_imy * 0.5
  *     inv_pix_x = 1.0 / cpar.pix_x; inv_pix_y = 1.0 / cpar.pix_y
  *     c_chfield = cpar.chfield; c_mm = cpar.mm             # <<<<<<<<<<<<<<
@@ -21416,7 +21416,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   __pyx_v_c_mm = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/track.py":798
+  /* "openptv2/algorithms/track.py":798
  *     c_chfield = cpar.chfield; c_mm = cpar.mm
  * 
  *     fast_cals, fast_mmluts = _pack_cams_fast(cal, c_mm)             # <<<<<<<<<<<<<<
@@ -21501,7 +21501,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   __pyx_v_fast_mmluts = __pyx_t_4;
   __pyx_t_4 = 0;
 
-  /* "algorithms/track.py":799
+  /* "openptv2/algorithms/track.py":799
  * 
  *     fast_cals, fast_mmluts = _pack_cams_fast(cal, c_mm)
  *     _jt = _pack_cams_fast_tuples(fast_cals, fast_mmluts)             # <<<<<<<<<<<<<<
@@ -21534,7 +21534,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   __pyx_v__jt = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/track.py":800
+  /* "openptv2/algorithms/track.py":800
  *     fast_cals, fast_mmluts = _pack_cams_fast(cal, c_mm)
  *     _jt = _pack_cams_fast_tuples(fast_cals, fast_mmluts)
  *     cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t = _jt             # <<<<<<<<<<<<<<
@@ -21629,7 +21629,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   __pyx_v_mrw_t = __pyx_t_10;
   __pyx_t_10 = 0;
 
-  /* "algorithms/track.py":802
+  /* "openptv2/algorithms/track.py":802
  *     cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t = _jt
  * 
  *     nc = fb.num_cams             # <<<<<<<<<<<<<<
@@ -21641,7 +21641,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   __pyx_v_nc = __pyx_t_10;
   __pyx_t_10 = 0;
 
-  /* "algorithms/track.py":803
+  /* "openptv2/algorithms/track.py":803
  * 
  *     nc = fb.num_cams
  *     orig_parts = fb.buf[1].num_parts             # <<<<<<<<<<<<<<
@@ -21659,7 +21659,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   __pyx_v_orig_parts = __pyx_t_10;
   __pyx_t_10 = 0;
 
-  /* "algorithms/track.py":805
+  /* "openptv2/algorithms/track.py":805
  *     orig_parts = fb.buf[1].num_parts
  * 
  *     fb.buf[0]._sync_path_to_soa()             # <<<<<<<<<<<<<<
@@ -21684,7 +21684,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   }
   __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
 
-  /* "algorithms/track.py":806
+  /* "openptv2/algorithms/track.py":806
  * 
  *     fb.buf[0]._sync_path_to_soa()
  *     fb.buf[1]._sync_path_to_soa()             # <<<<<<<<<<<<<<
@@ -21709,7 +21709,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   }
   __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
 
-  /* "algorithms/track.py":807
+  /* "openptv2/algorithms/track.py":807
  *     fb.buf[0]._sync_path_to_soa()
  *     fb.buf[1]._sync_path_to_soa()
  *     fb.buf[2]._sync_path_to_soa()             # <<<<<<<<<<<<<<
@@ -21734,7 +21734,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   }
   __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
 
-  /* "algorithms/track.py":808
+  /* "openptv2/algorithms/track.py":808
  *     fb.buf[1]._sync_path_to_soa()
  *     fb.buf[2]._sync_path_to_soa()
  *     fb.buf[3]._sync_path_to_soa()             # <<<<<<<<<<<<<<
@@ -21759,7 +21759,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   }
   __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
 
-  /* "algorithms/track.py":810
+  /* "openptv2/algorithms/track.py":810
  *     fb.buf[3]._sync_path_to_soa()
  * 
  *     np2 = np.array([fb.buf[2].num_parts], dtype=np.int32)             # <<<<<<<<<<<<<<
@@ -21819,7 +21819,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   __pyx_v_np2 = __pyx_t_10;
   __pyx_t_10 = 0;
 
-  /* "algorithms/track.py":811
+  /* "openptv2/algorithms/track.py":811
  * 
  *     np2 = np.array([fb.buf[2].num_parts], dtype=np.int32)
  *     np3 = np.array([fb.buf[3].num_parts], dtype=np.int32)             # <<<<<<<<<<<<<<
@@ -21879,7 +21879,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   __pyx_v_np3 = __pyx_t_10;
   __pyx_t_10 = 0;
 
-  /* "algorithms/track.py":812
+  /* "openptv2/algorithms/track.py":812
  *     np2 = np.array([fb.buf[2].num_parts], dtype=np.int32)
  *     np3 = np.array([fb.buf[3].num_parts], dtype=np.int32)
  *     nt2 = np.array(fb.buf[2].num_targets[:nc], dtype=np.int32)             # <<<<<<<<<<<<<<
@@ -21937,7 +21937,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   __pyx_v_nt2 = __pyx_t_10;
   __pyx_t_10 = 0;
 
-  /* "algorithms/track.py":813
+  /* "openptv2/algorithms/track.py":813
  *     np3 = np.array([fb.buf[3].num_parts], dtype=np.int32)
  *     nt2 = np.array(fb.buf[2].num_targets[:nc], dtype=np.int32)
  *     nt3 = np.array(fb.buf[3].num_targets[:nc], dtype=np.int32)             # <<<<<<<<<<<<<<
@@ -21995,7 +21995,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   __pyx_v_nt3 = __pyx_t_10;
   __pyx_t_10 = 0;
 
-  /* "algorithms/track.py":815
+  /* "openptv2/algorithms/track.py":815
  *     nt3 = np.array(fb.buf[3].num_targets[:nc], dtype=np.int32)
  * 
  *     count1, num_added = _trackcorr_loop_fast(             # <<<<<<<<<<<<<<
@@ -22006,7 +22006,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   __Pyx_GetModuleGlobalName(__pyx_t_9, __pyx_mstate_global->__pyx_n_u_trackcorr_loop_fast); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 815, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
 
-  /* "algorithms/track.py":817
+  /* "openptv2/algorithms/track.py":817
  *     count1, num_added = _trackcorr_loop_fast(
  *         orig_parts,
  *         fb.buf[0].path_x,             # <<<<<<<<<<<<<<
@@ -22022,7 +22022,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "algorithms/track.py":818
+  /* "openptv2/algorithms/track.py":818
  *         orig_parts,
  *         fb.buf[0].path_x,
  *         fb.buf[1].path_x, fb.buf[1].path_prev, fb.buf[1].path_next,             # <<<<<<<<<<<<<<
@@ -22054,7 +22054,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   __Pyx_GOTREF(__pyx_t_11);
   __Pyx_DECREF(__pyx_t_12); __pyx_t_12 = 0;
 
-  /* "algorithms/track.py":819
+  /* "openptv2/algorithms/track.py":819
  *         fb.buf[0].path_x,
  *         fb.buf[1].path_x, fb.buf[1].path_prev, fb.buf[1].path_next,
  *         fb.buf[1].path_inlist, fb.buf[1].path_finaldecis,             # <<<<<<<<<<<<<<
@@ -22078,7 +22078,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   __Pyx_GOTREF(__pyx_t_13);
   __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
 
-  /* "algorithms/track.py":820
+  /* "openptv2/algorithms/track.py":820
  *         fb.buf[1].path_x, fb.buf[1].path_prev, fb.buf[1].path_next,
  *         fb.buf[1].path_inlist, fb.buf[1].path_finaldecis,
  *         fb.buf[1].path_decis, fb.buf[1].path_linkdecis,             # <<<<<<<<<<<<<<
@@ -22102,7 +22102,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   __Pyx_GOTREF(__pyx_t_15);
   __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
 
-  /* "algorithms/track.py":821
+  /* "openptv2/algorithms/track.py":821
  *         fb.buf[1].path_inlist, fb.buf[1].path_finaldecis,
  *         fb.buf[1].path_decis, fb.buf[1].path_linkdecis,
  *         fb.buf[1].corres_p,             # <<<<<<<<<<<<<<
@@ -22118,7 +22118,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   __Pyx_GOTREF(__pyx_t_16);
   __Pyx_DECREF(__pyx_t_17); __pyx_t_17 = 0;
 
-  /* "algorithms/track.py":822
+  /* "openptv2/algorithms/track.py":822
  *         fb.buf[1].path_decis, fb.buf[1].path_linkdecis,
  *         fb.buf[1].corres_p,
  *         tuple(fb.buf[1].targ_x[:nc]), tuple(fb.buf[1].targ_y[:nc]),             # <<<<<<<<<<<<<<
@@ -22154,7 +22154,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   __Pyx_GOTREF(__pyx_t_18);
   __Pyx_DECREF(__pyx_t_19); __pyx_t_19 = 0;
 
-  /* "algorithms/track.py":823
+  /* "openptv2/algorithms/track.py":823
  *         fb.buf[1].corres_p,
  *         tuple(fb.buf[1].targ_x[:nc]), tuple(fb.buf[1].targ_y[:nc]),
  *         fb.buf[2].path_x, fb.buf[2].path_prev, fb.buf[2].path_next,             # <<<<<<<<<<<<<<
@@ -22186,7 +22186,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   __Pyx_GOTREF(__pyx_t_21);
   __Pyx_DECREF(__pyx_t_22); __pyx_t_22 = 0;
 
-  /* "algorithms/track.py":824
+  /* "openptv2/algorithms/track.py":824
  *         tuple(fb.buf[1].targ_x[:nc]), tuple(fb.buf[1].targ_y[:nc]),
  *         fb.buf[2].path_x, fb.buf[2].path_prev, fb.buf[2].path_next,
  *         fb.buf[2].path_inlist, fb.buf[2].path_prio,             # <<<<<<<<<<<<<<
@@ -22210,7 +22210,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   __Pyx_GOTREF(__pyx_t_23);
   __Pyx_DECREF(__pyx_t_24); __pyx_t_24 = 0;
 
-  /* "algorithms/track.py":825
+  /* "openptv2/algorithms/track.py":825
  *         fb.buf[2].path_x, fb.buf[2].path_prev, fb.buf[2].path_next,
  *         fb.buf[2].path_inlist, fb.buf[2].path_prio,
  *         fb.buf[2].path_finaldecis, fb.buf[2].path_decis,             # <<<<<<<<<<<<<<
@@ -22234,7 +22234,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   __Pyx_GOTREF(__pyx_t_25);
   __Pyx_DECREF(__pyx_t_26); __pyx_t_26 = 0;
 
-  /* "algorithms/track.py":826
+  /* "openptv2/algorithms/track.py":826
  *         fb.buf[2].path_inlist, fb.buf[2].path_prio,
  *         fb.buf[2].path_finaldecis, fb.buf[2].path_decis,
  *         fb.buf[2].path_linkdecis, fb.buf[2].corres_p,             # <<<<<<<<<<<<<<
@@ -22258,7 +22258,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   __Pyx_GOTREF(__pyx_t_27);
   __Pyx_DECREF(__pyx_t_28); __pyx_t_28 = 0;
 
-  /* "algorithms/track.py":827
+  /* "openptv2/algorithms/track.py":827
  *         fb.buf[2].path_finaldecis, fb.buf[2].path_decis,
  *         fb.buf[2].path_linkdecis, fb.buf[2].corres_p,
  *         fb.buf[2].corres_nr,             # <<<<<<<<<<<<<<
@@ -22274,7 +22274,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   __Pyx_GOTREF(__pyx_t_28);
   __Pyx_DECREF(__pyx_t_29); __pyx_t_29 = 0;
 
-  /* "algorithms/track.py":828
+  /* "openptv2/algorithms/track.py":828
  *         fb.buf[2].path_linkdecis, fb.buf[2].corres_p,
  *         fb.buf[2].corres_nr,
  *         tuple(fb.buf[2].targ_x[:nc]), tuple(fb.buf[2].targ_y[:nc]),             # <<<<<<<<<<<<<<
@@ -22310,7 +22310,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   __Pyx_GOTREF(__pyx_t_30);
   __Pyx_DECREF(__pyx_t_31); __pyx_t_31 = 0;
 
-  /* "algorithms/track.py":829
+  /* "openptv2/algorithms/track.py":829
  *         fb.buf[2].corres_nr,
  *         tuple(fb.buf[2].targ_x[:nc]), tuple(fb.buf[2].targ_y[:nc]),
  *         tuple(fb.buf[2].targ_tnr[:nc]), nt2, np2,             # <<<<<<<<<<<<<<
@@ -22332,7 +22332,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   __Pyx_GOTREF(__pyx_t_31);
   __Pyx_DECREF(__pyx_t_32); __pyx_t_32 = 0;
 
-  /* "algorithms/track.py":830
+  /* "openptv2/algorithms/track.py":830
  *         tuple(fb.buf[2].targ_x[:nc]), tuple(fb.buf[2].targ_y[:nc]),
  *         tuple(fb.buf[2].targ_tnr[:nc]), nt2, np2,
  *         fb.buf[3].path_x, fb.buf[3].path_prev, fb.buf[3].path_next,             # <<<<<<<<<<<<<<
@@ -22364,7 +22364,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   __Pyx_GOTREF(__pyx_t_34);
   __Pyx_DECREF(__pyx_t_35); __pyx_t_35 = 0;
 
-  /* "algorithms/track.py":831
+  /* "openptv2/algorithms/track.py":831
  *         tuple(fb.buf[2].targ_tnr[:nc]), nt2, np2,
  *         fb.buf[3].path_x, fb.buf[3].path_prev, fb.buf[3].path_next,
  *         fb.buf[3].path_inlist, fb.buf[3].path_prio,             # <<<<<<<<<<<<<<
@@ -22388,7 +22388,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   __Pyx_GOTREF(__pyx_t_36);
   __Pyx_DECREF(__pyx_t_37); __pyx_t_37 = 0;
 
-  /* "algorithms/track.py":832
+  /* "openptv2/algorithms/track.py":832
  *         fb.buf[3].path_x, fb.buf[3].path_prev, fb.buf[3].path_next,
  *         fb.buf[3].path_inlist, fb.buf[3].path_prio,
  *         fb.buf[3].path_finaldecis, fb.buf[3].path_decis,             # <<<<<<<<<<<<<<
@@ -22412,7 +22412,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   __Pyx_GOTREF(__pyx_t_38);
   __Pyx_DECREF(__pyx_t_39); __pyx_t_39 = 0;
 
-  /* "algorithms/track.py":833
+  /* "openptv2/algorithms/track.py":833
  *         fb.buf[3].path_inlist, fb.buf[3].path_prio,
  *         fb.buf[3].path_finaldecis, fb.buf[3].path_decis,
  *         fb.buf[3].path_linkdecis, fb.buf[3].corres_p,             # <<<<<<<<<<<<<<
@@ -22436,7 +22436,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   __Pyx_GOTREF(__pyx_t_40);
   __Pyx_DECREF(__pyx_t_41); __pyx_t_41 = 0;
 
-  /* "algorithms/track.py":834
+  /* "openptv2/algorithms/track.py":834
  *         fb.buf[3].path_finaldecis, fb.buf[3].path_decis,
  *         fb.buf[3].path_linkdecis, fb.buf[3].corres_p,
  *         fb.buf[3].corres_nr,             # <<<<<<<<<<<<<<
@@ -22452,7 +22452,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   __Pyx_GOTREF(__pyx_t_41);
   __Pyx_DECREF(__pyx_t_42); __pyx_t_42 = 0;
 
-  /* "algorithms/track.py":835
+  /* "openptv2/algorithms/track.py":835
  *         fb.buf[3].path_linkdecis, fb.buf[3].corres_p,
  *         fb.buf[3].corres_nr,
  *         tuple(fb.buf[3].targ_x[:nc]), tuple(fb.buf[3].targ_y[:nc]),             # <<<<<<<<<<<<<<
@@ -22488,7 +22488,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   __Pyx_GOTREF(__pyx_t_43);
   __Pyx_DECREF(__pyx_t_44); __pyx_t_44 = 0;
 
-  /* "algorithms/track.py":836
+  /* "openptv2/algorithms/track.py":836
  *         fb.buf[3].corres_nr,
  *         tuple(fb.buf[3].targ_x[:nc]), tuple(fb.buf[3].targ_y[:nc]),
  *         tuple(fb.buf[3].targ_tnr[:nc]), nt3, np3,             # <<<<<<<<<<<<<<
@@ -22510,7 +22510,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   __Pyx_GOTREF(__pyx_t_44);
   __Pyx_DECREF(__pyx_t_45); __pyx_t_45 = 0;
 
-  /* "algorithms/track.py":838
+  /* "openptv2/algorithms/track.py":838
  *         tuple(fb.buf[3].targ_tnr[:nc]), nt3, np3,
  *         cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t,
  *         tpar.dvxmin, tpar.dvxmax, tpar.dvymin, tpar.dvymax,             # <<<<<<<<<<<<<<
@@ -22526,7 +22526,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   __pyx_t_48 = __Pyx_PyObject_GetAttrStr(__pyx_v_tpar, __pyx_mstate_global->__pyx_n_u_dvymax); if (unlikely(!__pyx_t_48)) __PYX_ERR(0, 838, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_48);
 
-  /* "algorithms/track.py":839
+  /* "openptv2/algorithms/track.py":839
  *         cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t,
  *         tpar.dvxmin, tpar.dvxmax, tpar.dvymin, tpar.dvymax,
  *         tpar.dvzmin, tpar.dvzmax, tpar.dacc, tpar.dangle,             # <<<<<<<<<<<<<<
@@ -22542,7 +22542,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   __pyx_t_52 = __Pyx_PyObject_GetAttrStr(__pyx_v_tpar, __pyx_mstate_global->__pyx_n_u_dangle); if (unlikely(!__pyx_t_52)) __PYX_ERR(0, 839, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_52);
 
-  /* "algorithms/track.py":840
+  /* "openptv2/algorithms/track.py":840
  *         tpar.dvxmin, tpar.dvxmax, tpar.dvymin, tpar.dvymax,
  *         tpar.dvzmin, tpar.dvzmax, tpar.dacc, tpar.dangle,
  *         int(tpar.add), run_info.lmax,             # <<<<<<<<<<<<<<
@@ -22557,7 +22557,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   __pyx_t_53 = __Pyx_PyObject_GetAttrStr(__pyx_v_run_info, __pyx_mstate_global->__pyx_n_u_lmax); if (unlikely(!__pyx_t_53)) __PYX_ERR(0, 840, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_53);
 
-  /* "algorithms/track.py":841
+  /* "openptv2/algorithms/track.py":841
  *         tpar.dvzmin, tpar.dvzmax, tpar.dacc, tpar.dangle,
  *         int(tpar.add), run_info.lmax,
  *         vpar.X_lay[0], vpar.X_lay[1], run_info.ymin, run_info.ymax,             # <<<<<<<<<<<<<<
@@ -22579,7 +22579,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   __pyx_t_58 = __Pyx_PyObject_GetAttrStr(__pyx_v_run_info, __pyx_mstate_global->__pyx_n_u_ymax); if (unlikely(!__pyx_t_58)) __PYX_ERR(0, 841, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_58);
 
-  /* "algorithms/track.py":842
+  /* "openptv2/algorithms/track.py":842
  *         int(tpar.add), run_info.lmax,
  *         vpar.X_lay[0], vpar.X_lay[1], run_info.ymin, run_info.ymax,
  *         vpar.Zmin_lay[0], vpar.Zmax_lay[1],             # <<<<<<<<<<<<<<
@@ -22597,7 +22597,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   __Pyx_GOTREF(__pyx_t_61);
   __Pyx_DECREF(__pyx_t_59); __pyx_t_59 = 0;
 
-  /* "algorithms/track.py":844
+  /* "openptv2/algorithms/track.py":844
  *         vpar.Zmin_lay[0], vpar.Zmax_lay[1],
  *         nc, imx_half, imy_half, inv_pix_x, inv_pix_y,
  *         c_chfield, float(c_imx), float(c_imy),             # <<<<<<<<<<<<<<
@@ -22609,7 +22609,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   __pyx_t_62 = __Pyx_PyNumber_Float(__pyx_v_c_imy); if (unlikely(!__pyx_t_62)) __PYX_ERR(0, 844, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_62);
 
-  /* "algorithms/track.py":845
+  /* "openptv2/algorithms/track.py":845
  *         nc, imx_half, imy_half, inv_pix_x, inv_pix_y,
  *         c_chfield, float(c_imx), float(c_imy),
  *         cpar.pix_x, cpar.pix_y, run_info.flatten_tol,             # <<<<<<<<<<<<<<
@@ -22751,7 +22751,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
     __pyx_L8_unpacking_done:;
   }
 
-  /* "algorithms/track.py":815
+  /* "openptv2/algorithms/track.py":815
  *     nt3 = np.array(fb.buf[3].num_targets[:nc], dtype=np.int32)
  * 
  *     count1, num_added = _trackcorr_loop_fast(             # <<<<<<<<<<<<<<
@@ -22763,7 +22763,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   __pyx_v_num_added = __pyx_t_65;
   __pyx_t_65 = 0;
 
-  /* "algorithms/track.py":848
+  /* "openptv2/algorithms/track.py":848
  *     )
  * 
  *     fb.buf[2].num_parts = int(np2[0])             # <<<<<<<<<<<<<<
@@ -22784,7 +22784,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   __Pyx_DECREF(__pyx_t_65); __pyx_t_65 = 0;
   __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
 
-  /* "algorithms/track.py":849
+  /* "openptv2/algorithms/track.py":849
  * 
  *     fb.buf[2].num_parts = int(np2[0])
  *     fb.buf[3].num_parts = int(np3[0])             # <<<<<<<<<<<<<<
@@ -22805,7 +22805,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   __Pyx_DECREF(__pyx_t_65); __pyx_t_65 = 0;
   __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
 
-  /* "algorithms/track.py":851
+  /* "openptv2/algorithms/track.py":851
  *     fb.buf[3].num_parts = int(np3[0])
  * 
  *     _sync_soa_to_aos(fb.buf[1])             # <<<<<<<<<<<<<<
@@ -22843,7 +22843,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   }
   __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
 
-  /* "algorithms/track.py":852
+  /* "openptv2/algorithms/track.py":852
  * 
  *     _sync_soa_to_aos(fb.buf[1])
  *     _sync_soa_to_aos(fb.buf[2])             # <<<<<<<<<<<<<<
@@ -22881,7 +22881,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   }
   __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
 
-  /* "algorithms/track.py":853
+  /* "openptv2/algorithms/track.py":853
  *     _sync_soa_to_aos(fb.buf[1])
  *     _sync_soa_to_aos(fb.buf[2])
  *     _sync_soa_to_aos(fb.buf[3])             # <<<<<<<<<<<<<<
@@ -22919,7 +22919,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   }
   __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
 
-  /* "algorithms/track.py":855
+  /* "openptv2/algorithms/track.py":855
  *     _sync_soa_to_aos(fb.buf[3])
  * 
  *     print(f"step: {step}, curr: {fb.buf[1].num_parts}, "             # <<<<<<<<<<<<<<
@@ -22941,7 +22941,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   __Pyx_GOTREF(__pyx_t_9);
   __Pyx_DECREF(__pyx_t_63); __pyx_t_63 = 0;
 
-  /* "algorithms/track.py":856
+  /* "openptv2/algorithms/track.py":856
  * 
  *     print(f"step: {step}, curr: {fb.buf[1].num_parts}, "
  *           f"next: {fb.buf[2].num_parts}, links: {count1}, "             # <<<<<<<<<<<<<<
@@ -22962,7 +22962,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   __pyx_t_63 = __Pyx_PyObject_FormatSimple(__pyx_v_count1, __pyx_mstate_global->__pyx_empty_unicode); if (unlikely(!__pyx_t_63)) __PYX_ERR(0, 856, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_63);
 
-  /* "algorithms/track.py":857
+  /* "openptv2/algorithms/track.py":857
  *     print(f"step: {step}, curr: {fb.buf[1].num_parts}, "
  *           f"next: {fb.buf[2].num_parts}, links: {count1}, "
  *           f"lost: {fb.buf[1].num_parts - count1}, add: {num_added}")             # <<<<<<<<<<<<<<
@@ -22998,7 +22998,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   __pyx_t_66[10] = __pyx_mstate_global->__pyx_kp_u_add_2;
   __pyx_t_66[11] = __pyx_t_61;
 
-  /* "algorithms/track.py":855
+  /* "openptv2/algorithms/track.py":855
  *     _sync_soa_to_aos(fb.buf[3])
  * 
  *     print(f"step: {step}, curr: {fb.buf[1].num_parts}, "             # <<<<<<<<<<<<<<
@@ -23025,7 +23025,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   }
   __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
 
-  /* "algorithms/track.py":859
+  /* "openptv2/algorithms/track.py":859
  *           f"lost: {fb.buf[1].num_parts - count1}, add: {num_added}")
  * 
  *     run_info.npart = run_info.npart + fb.buf[1].num_parts             # <<<<<<<<<<<<<<
@@ -23049,7 +23049,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   if (__Pyx_PyObject_SetAttrStr(__pyx_v_run_info, __pyx_mstate_global->__pyx_n_u_npart, __pyx_t_64) < (0)) __PYX_ERR(0, 859, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_64); __pyx_t_64 = 0;
 
-  /* "algorithms/track.py":860
+  /* "openptv2/algorithms/track.py":860
  * 
  *     run_info.npart = run_info.npart + fb.buf[1].num_parts
  *     run_info.nlinks = run_info.nlinks + count1             # <<<<<<<<<<<<<<
@@ -23064,7 +23064,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   if (__Pyx_PyObject_SetAttrStr(__pyx_v_run_info, __pyx_mstate_global->__pyx_n_u_nlinks, __pyx_t_60) < (0)) __PYX_ERR(0, 860, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_60); __pyx_t_60 = 0;
 
-  /* "algorithms/track.py":862
+  /* "openptv2/algorithms/track.py":862
  *     run_info.nlinks = run_info.nlinks + count1
  * 
  *     fb.fb_next()             # <<<<<<<<<<<<<<
@@ -23083,7 +23083,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   }
   __Pyx_DECREF(__pyx_t_60); __pyx_t_60 = 0;
 
-  /* "algorithms/track.py":863
+  /* "openptv2/algorithms/track.py":863
  * 
  *     fb.fb_next()
  *     fb.write_frame_from_start(step)             # <<<<<<<<<<<<<<
@@ -23102,7 +23102,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   }
   __Pyx_DECREF(__pyx_t_60); __pyx_t_60 = 0;
 
-  /* "algorithms/track.py":864
+  /* "openptv2/algorithms/track.py":864
  *     fb.fb_next()
  *     fb.write_frame_from_start(step)
  *     if step < run_info.seq_par.last - 2:             # <<<<<<<<<<<<<<
@@ -23123,7 +23123,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   __Pyx_DECREF(__pyx_t_64); __pyx_t_64 = 0;
   if (__pyx_t_67) {
 
-    /* "algorithms/track.py":865
+    /* "openptv2/algorithms/track.py":865
  *     fb.write_frame_from_start(step)
  *     if step < run_info.seq_par.last - 2:
  *         fb.read_frame_at_end(step + 3, read_links=False)             # <<<<<<<<<<<<<<
@@ -23149,7 +23149,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
     }
     __Pyx_DECREF(__pyx_t_64); __pyx_t_64 = 0;
 
-    /* "algorithms/track.py":864
+    /* "openptv2/algorithms/track.py":864
  *     fb.fb_next()
  *     fb.write_frame_from_start(step)
  *     if step < run_info.seq_par.last - 2:             # <<<<<<<<<<<<<<
@@ -23159,7 +23159,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
     goto __pyx_L9;
   }
 
-  /* "algorithms/track.py":867
+  /* "openptv2/algorithms/track.py":867
  *         fb.read_frame_at_end(step + 3, read_links=False)
  *     else:
  *         fb.buf[fb.buf_len - 1].num_parts = 0             # <<<<<<<<<<<<<<
@@ -23183,7 +23183,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   }
   __pyx_L9:;
 
-  /* "algorithms/track.py":783
+  /* "openptv2/algorithms/track.py":783
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -23256,7 +23256,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
   __Pyx_XDECREF(__pyx_t_63);
   __Pyx_XDECREF(__pyx_t_64);
   __Pyx_XDECREF(__pyx_t_65);
-  __Pyx_AddTraceback("algorithms.track.trackcorr_c_loop", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.trackcorr_c_loop", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_point_position);
@@ -23296,15 +23296,15 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_loop(PyObject *__pyx_v_
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_5track_55trackcorr_c_loop(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_55trackcorr_c_loop(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_10algorithms_5track_55trackcorr_c_loop = {"trackcorr_c_loop", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_5track_55trackcorr_c_loop, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10algorithms_5track_55trackcorr_c_loop(PyObject *__pyx_self, 
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_5track_55trackcorr_c_loop = {"trackcorr_c_loop", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_5track_55trackcorr_c_loop, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_55trackcorr_c_loop(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -23374,11 +23374,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.track.trackcorr_c_loop", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.trackcorr_c_loop", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_5track_54trackcorr_c_loop(__pyx_self, __pyx_v_run_info, __pyx_v_step);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_5track_54trackcorr_c_loop(__pyx_self, __pyx_v_run_info, __pyx_v_step);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -23388,7 +23388,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_5track_54trackcorr_c_loop(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_run_info, PyObject *__pyx_v_step) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_54trackcorr_c_loop(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_run_info, PyObject *__pyx_v_step) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -23397,7 +23397,7 @@ static PyObject *__pyx_pf_10algorithms_5track_54trackcorr_c_loop(CYTHON_UNUSED P
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("trackcorr_c_loop", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_5track_trackcorr_c_loop(__pyx_v_run_info, __pyx_v_step, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 783, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_5track_trackcorr_c_loop(__pyx_v_run_info, __pyx_v_step, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 783, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -23406,7 +23406,7 @@ static PyObject *__pyx_pf_10algorithms_5track_54trackcorr_c_loop(CYTHON_UNUSED P
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.track.trackcorr_c_loop", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.trackcorr_c_loop", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -23414,7 +23414,7 @@ static PyObject *__pyx_pf_10algorithms_5track_54trackcorr_c_loop(CYTHON_UNUSED P
   return __pyx_r;
 }
 
-/* "algorithms/track.py":870
+/* "openptv2/algorithms/track.py":870
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -23422,14 +23422,14 @@ static PyObject *__pyx_pf_10algorithms_5track_54trackcorr_c_loop(CYTHON_UNUSED P
  *     range_val = run_info.seq_par.last - run_info.seq_par.first
 */
 
-static PyObject *__pyx_pw_10algorithms_5track_57trackcorr_c_finish(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_57trackcorr_c_finish(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_finish(PyObject *__pyx_v_run_info, PyObject *__pyx_v_step, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_5track_trackcorr_c_finish(PyObject *__pyx_v_run_info, PyObject *__pyx_v_step, CYTHON_UNUSED int __pyx_skip_dispatch) {
   PyObject *__pyx_v_range_val = NULL;
   PyObject *__pyx_v_npart = NULL;
   PyObject *__pyx_v_nlinks = NULL;
@@ -23448,7 +23448,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_finish(PyObject *__pyx_
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("trackcorr_c_finish", 0);
 
-  /* "algorithms/track.py":872
+  /* "openptv2/algorithms/track.py":872
  * @cython.ccall
  * def trackcorr_c_finish(run_info, step):
  *     range_val = run_info.seq_par.last - run_info.seq_par.first             # <<<<<<<<<<<<<<
@@ -23472,7 +23472,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_finish(PyObject *__pyx_
   __pyx_v_range_val = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/track.py":873
+  /* "openptv2/algorithms/track.py":873
  * def trackcorr_c_finish(run_info, step):
  *     range_val = run_info.seq_par.last - run_info.seq_par.first
  *     npart = run_info.npart / range_val             # <<<<<<<<<<<<<<
@@ -23487,7 +23487,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_finish(PyObject *__pyx_
   __pyx_v_npart = __pyx_t_3;
   __pyx_t_3 = 0;
 
-  /* "algorithms/track.py":874
+  /* "openptv2/algorithms/track.py":874
  *     range_val = run_info.seq_par.last - run_info.seq_par.first
  *     npart = run_info.npart / range_val
  *     nlinks = run_info.nlinks / range_val             # <<<<<<<<<<<<<<
@@ -23502,7 +23502,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_finish(PyObject *__pyx_
   __pyx_v_nlinks = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/track.py":875
+  /* "openptv2/algorithms/track.py":875
  *     npart = run_info.npart / range_val
  *     nlinks = run_info.nlinks / range_val
  *     print(f"Average over sequence, particles: {npart:5.1f}, "             # <<<<<<<<<<<<<<
@@ -23513,7 +23513,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_finish(PyObject *__pyx_
   __pyx_t_2 = __Pyx_PyObject_Format(__pyx_v_npart, __pyx_mstate_global->__pyx_kp_u_5_1f); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 875, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
 
-  /* "algorithms/track.py":876
+  /* "openptv2/algorithms/track.py":876
  *     nlinks = run_info.nlinks / range_val
  *     print(f"Average over sequence, particles: {npart:5.1f}, "
  *           f"links: {nlinks:5.1f}, lost: {npart - nlinks:5.1f}")             # <<<<<<<<<<<<<<
@@ -23534,7 +23534,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_finish(PyObject *__pyx_
   __pyx_t_7[4] = __pyx_mstate_global->__pyx_kp_u_lost;
   __pyx_t_7[5] = __pyx_t_6;
 
-  /* "algorithms/track.py":875
+  /* "openptv2/algorithms/track.py":875
  *     npart = run_info.npart / range_val
  *     nlinks = run_info.nlinks / range_val
  *     print(f"Average over sequence, particles: {npart:5.1f}, "             # <<<<<<<<<<<<<<
@@ -23558,7 +23558,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_finish(PyObject *__pyx_
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/track.py":878
+  /* "openptv2/algorithms/track.py":878
  *           f"links: {nlinks:5.1f}, lost: {npart - nlinks:5.1f}")
  * 
  *     run_info.fb.fb_next()             # <<<<<<<<<<<<<<
@@ -23580,7 +23580,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_finish(PyObject *__pyx_
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/track.py":879
+  /* "openptv2/algorithms/track.py":879
  * 
  *     run_info.fb.fb_next()
  *     run_info.fb.write_frame_from_start(step)             # <<<<<<<<<<<<<<
@@ -23602,7 +23602,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_finish(PyObject *__pyx_
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/track.py":870
+  /* "openptv2/algorithms/track.py":870
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -23620,7 +23620,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_finish(PyObject *__pyx_
   __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_5);
   __Pyx_XDECREF(__pyx_t_6);
-  __Pyx_AddTraceback("algorithms.track.trackcorr_c_finish", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.trackcorr_c_finish", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_range_val);
@@ -23632,15 +23632,15 @@ static PyObject *__pyx_f_10algorithms_5track_trackcorr_c_finish(PyObject *__pyx_
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_5track_57trackcorr_c_finish(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_57trackcorr_c_finish(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_10algorithms_5track_57trackcorr_c_finish = {"trackcorr_c_finish", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_5track_57trackcorr_c_finish, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10algorithms_5track_57trackcorr_c_finish(PyObject *__pyx_self, 
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_5track_57trackcorr_c_finish = {"trackcorr_c_finish", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_5track_57trackcorr_c_finish, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_57trackcorr_c_finish(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -23710,11 +23710,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.track.trackcorr_c_finish", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.trackcorr_c_finish", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_5track_56trackcorr_c_finish(__pyx_self, __pyx_v_run_info, __pyx_v_step);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_5track_56trackcorr_c_finish(__pyx_self, __pyx_v_run_info, __pyx_v_step);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -23724,7 +23724,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_5track_56trackcorr_c_finish(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_run_info, PyObject *__pyx_v_step) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_56trackcorr_c_finish(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_run_info, PyObject *__pyx_v_step) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -23733,7 +23733,7 @@ static PyObject *__pyx_pf_10algorithms_5track_56trackcorr_c_finish(CYTHON_UNUSED
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("trackcorr_c_finish", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_5track_trackcorr_c_finish(__pyx_v_run_info, __pyx_v_step, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 870, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_5track_trackcorr_c_finish(__pyx_v_run_info, __pyx_v_step, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 870, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -23742,7 +23742,7 @@ static PyObject *__pyx_pf_10algorithms_5track_56trackcorr_c_finish(CYTHON_UNUSED
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.track.trackcorr_c_finish", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.trackcorr_c_finish", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -23750,7 +23750,7 @@ static PyObject *__pyx_pf_10algorithms_5track_56trackcorr_c_finish(CYTHON_UNUSED
   return __pyx_r;
 }
 
-/* "algorithms/track.py":882
+/* "openptv2/algorithms/track.py":882
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -23758,14 +23758,14 @@ static PyObject *__pyx_pf_10algorithms_5track_56trackcorr_c_finish(CYTHON_UNUSED
  *     from .orientation import point_position
 */
 
-static PyObject *__pyx_pw_10algorithms_5track_59trackback_c(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_59trackback_c(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_info, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_info, CYTHON_UNUSED int __pyx_skip_dispatch) {
   CYTHON_UNUSED PyObject *__pyx_v_point_position = NULL;
   PyObject *__pyx_v_cal = NULL;
   PyObject *__pyx_v_seq_par = NULL;
@@ -23862,7 +23862,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("trackback_c", 0);
 
-  /* "algorithms/track.py":884
+  /* "openptv2/algorithms/track.py":884
  * @cython.ccall
  * def trackback_c(run_info):
  *     from .orientation import point_position             # <<<<<<<<<<<<<<
@@ -23871,7 +23871,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
 */
   {
     PyObject* const __pyx_imported_names[] = {__pyx_mstate_global->__pyx_n_u_point_position};
-    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_orientation, __pyx_imported_names, 1, __pyx_mstate_global->__pyx_kp_u_algorithms_orientation, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 884, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_orientation, __pyx_imported_names, 1, __pyx_mstate_global->__pyx_kp_u_openptv2_algorithms_orientation, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 884, __pyx_L1_error)
   }
   __pyx_t_1 = __pyx_t_2;
   __Pyx_GOTREF(__pyx_t_1);
@@ -23892,7 +23892,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/track.py":886
+  /* "openptv2/algorithms/track.py":886
  *     from .orientation import point_position
  * 
  *     cal = run_info.cal             # <<<<<<<<<<<<<<
@@ -23904,7 +23904,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
   __pyx_v_cal = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/track.py":887
+  /* "openptv2/algorithms/track.py":887
  * 
  *     cal = run_info.cal
  *     seq_par = run_info.seq_par             # <<<<<<<<<<<<<<
@@ -23916,7 +23916,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
   __pyx_v_seq_par = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/track.py":888
+  /* "openptv2/algorithms/track.py":888
  *     cal = run_info.cal
  *     seq_par = run_info.seq_par
  *     tpar = run_info.tpar             # <<<<<<<<<<<<<<
@@ -23928,7 +23928,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
   __pyx_v_tpar = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/track.py":889
+  /* "openptv2/algorithms/track.py":889
  *     seq_par = run_info.seq_par
  *     tpar = run_info.tpar
  *     vpar = run_info.vpar             # <<<<<<<<<<<<<<
@@ -23940,7 +23940,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
   __pyx_v_vpar = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/track.py":890
+  /* "openptv2/algorithms/track.py":890
  *     tpar = run_info.tpar
  *     vpar = run_info.vpar
  *     cpar = run_info.cpar             # <<<<<<<<<<<<<<
@@ -23952,7 +23952,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
   __pyx_v_cpar = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/track.py":891
+  /* "openptv2/algorithms/track.py":891
  *     vpar = run_info.vpar
  *     cpar = run_info.cpar
  *     fb = run_info.fb             # <<<<<<<<<<<<<<
@@ -23964,7 +23964,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
   __pyx_v_fb = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/track.py":893
+  /* "openptv2/algorithms/track.py":893
  *     fb = run_info.fb
  * 
  *     c_imx = cpar.imx; c_imy = cpar.imy             # <<<<<<<<<<<<<<
@@ -23980,7 +23980,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
   __pyx_v_c_imy = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/track.py":894
+  /* "openptv2/algorithms/track.py":894
  * 
  *     c_imx = cpar.imx; c_imy = cpar.imy
  *     imx_half = c_imx * 0.5; imy_half = c_imy * 0.5             # <<<<<<<<<<<<<<
@@ -23996,7 +23996,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
   __pyx_v_imy_half = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/track.py":895
+  /* "openptv2/algorithms/track.py":895
  *     c_imx = cpar.imx; c_imy = cpar.imy
  *     imx_half = c_imx * 0.5; imy_half = c_imy * 0.5
  *     inv_pix_x = 1.0 / cpar.pix_x; inv_pix_y = 1.0 / cpar.pix_y             # <<<<<<<<<<<<<<
@@ -24018,7 +24018,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
   __pyx_v_inv_pix_y = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/track.py":896
+  /* "openptv2/algorithms/track.py":896
  *     imx_half = c_imx * 0.5; imy_half = c_imy * 0.5
  *     inv_pix_x = 1.0 / cpar.pix_x; inv_pix_y = 1.0 / cpar.pix_y
  *     c_chfield = cpar.chfield; c_mm = cpar.mm             # <<<<<<<<<<<<<<
@@ -24034,7 +24034,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
   __pyx_v_c_mm = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/track.py":897
+  /* "openptv2/algorithms/track.py":897
  *     inv_pix_x = 1.0 / cpar.pix_x; inv_pix_y = 1.0 / cpar.pix_y
  *     c_chfield = cpar.chfield; c_mm = cpar.mm
  *     fast_cals, fast_mmluts = _pack_cams_fast(cal, c_mm)             # <<<<<<<<<<<<<<
@@ -24119,7 +24119,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
   __pyx_v_fast_mmluts = __pyx_t_4;
   __pyx_t_4 = 0;
 
-  /* "algorithms/track.py":898
+  /* "openptv2/algorithms/track.py":898
  *     c_chfield = cpar.chfield; c_mm = cpar.mm
  *     fast_cals, fast_mmluts = _pack_cams_fast(cal, c_mm)
  *     _jt = _pack_cams_fast_tuples(fast_cals, fast_mmluts)             # <<<<<<<<<<<<<<
@@ -24152,7 +24152,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
   __pyx_v__jt = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/track.py":900
+  /* "openptv2/algorithms/track.py":900
  *     _jt = _pack_cams_fast_tuples(fast_cals, fast_mmluts)
  * 
  *     Ymin = 0.0             # <<<<<<<<<<<<<<
@@ -24161,7 +24161,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
 */
   __pyx_v_Ymin = 0.0;
 
-  /* "algorithms/track.py":901
+  /* "openptv2/algorithms/track.py":901
  * 
  *     Ymin = 0.0
  *     Ymax = 0.0             # <<<<<<<<<<<<<<
@@ -24170,7 +24170,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
 */
   __pyx_v_Ymax = 0.0;
 
-  /* "algorithms/track.py":902
+  /* "openptv2/algorithms/track.py":902
  *     Ymin = 0.0
  *     Ymax = 0.0
  *     npart = 0.0             # <<<<<<<<<<<<<<
@@ -24180,7 +24180,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
   __Pyx_INCREF(__pyx_mstate_global->__pyx_float_0_0);
   __pyx_v_npart = __pyx_mstate_global->__pyx_float_0_0;
 
-  /* "algorithms/track.py":903
+  /* "openptv2/algorithms/track.py":903
  *     Ymax = 0.0
  *     npart = 0.0
  *     nlinks = 0.0             # <<<<<<<<<<<<<<
@@ -24190,7 +24190,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
   __Pyx_INCREF(__pyx_mstate_global->__pyx_float_0_0);
   __pyx_v_nlinks = __pyx_mstate_global->__pyx_float_0_0;
 
-  /* "algorithms/track.py":905
+  /* "openptv2/algorithms/track.py":905
  *     nlinks = 0.0
  * 
  *     for step in range(seq_par.last, seq_par.last - 4, -1):             # <<<<<<<<<<<<<<
@@ -24235,7 +24235,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
     __Pyx_XDECREF_SET(__pyx_v_step, __pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "algorithms/track.py":906
+    /* "openptv2/algorithms/track.py":906
  * 
  *     for step in range(seq_par.last, seq_par.last - 4, -1):
  *         fb.read_frame_at_end(step, read_links=True)             # <<<<<<<<<<<<<<
@@ -24258,7 +24258,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
     }
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "algorithms/track.py":907
+    /* "openptv2/algorithms/track.py":907
  *     for step in range(seq_par.last, seq_par.last - 4, -1):
  *         fb.read_frame_at_end(step, read_links=True)
  *         fb.fb_next()             # <<<<<<<<<<<<<<
@@ -24277,7 +24277,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
     }
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "algorithms/track.py":905
+    /* "openptv2/algorithms/track.py":905
  *     nlinks = 0.0
  * 
  *     for step in range(seq_par.last, seq_par.last - 4, -1):             # <<<<<<<<<<<<<<
@@ -24287,7 +24287,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
   }
   __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
 
-  /* "algorithms/track.py":908
+  /* "openptv2/algorithms/track.py":908
  *         fb.read_frame_at_end(step, read_links=True)
  *         fb.fb_next()
  *     fb.fb_prev()             # <<<<<<<<<<<<<<
@@ -24306,7 +24306,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
   }
   __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
 
-  /* "algorithms/track.py":910
+  /* "openptv2/algorithms/track.py":910
  *     fb.fb_prev()
  * 
  *     nc = fb.num_cams             # <<<<<<<<<<<<<<
@@ -24318,7 +24318,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
   __pyx_v_nc = __pyx_t_9;
   __pyx_t_9 = 0;
 
-  /* "algorithms/track.py":912
+  /* "openptv2/algorithms/track.py":912
  *     nc = fb.num_cams
  * 
  *     for step in range(seq_par.last - 1, seq_par.first, -1):             # <<<<<<<<<<<<<<
@@ -24363,7 +24363,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
     __Pyx_XDECREF_SET(__pyx_v_step, __pyx_t_9);
     __pyx_t_9 = 0;
 
-    /* "algorithms/track.py":914
+    /* "openptv2/algorithms/track.py":914
  *     for step in range(seq_par.last - 1, seq_par.first, -1):
  * 
  *         fb.buf[0]._sync_path_to_soa()             # <<<<<<<<<<<<<<
@@ -24388,7 +24388,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
     }
     __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
 
-    /* "algorithms/track.py":915
+    /* "openptv2/algorithms/track.py":915
  * 
  *         fb.buf[0]._sync_path_to_soa()
  *         fb.buf[1]._sync_path_to_soa()             # <<<<<<<<<<<<<<
@@ -24413,7 +24413,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
     }
     __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
 
-    /* "algorithms/track.py":916
+    /* "openptv2/algorithms/track.py":916
  *         fb.buf[0]._sync_path_to_soa()
  *         fb.buf[1]._sync_path_to_soa()
  *         fb.buf[2]._sync_path_to_soa()             # <<<<<<<<<<<<<<
@@ -24438,7 +24438,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
     }
     __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
 
-    /* "algorithms/track.py":917
+    /* "openptv2/algorithms/track.py":917
  *         fb.buf[1]._sync_path_to_soa()
  *         fb.buf[2]._sync_path_to_soa()
  *         fb.buf[3]._sync_path_to_soa()             # <<<<<<<<<<<<<<
@@ -24463,7 +24463,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
     }
     __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
 
-    /* "algorithms/track.py":919
+    /* "openptv2/algorithms/track.py":919
  *         fb.buf[3]._sync_path_to_soa()
  * 
  *         cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t = _jt             # <<<<<<<<<<<<<<
@@ -24558,7 +24558,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
     __Pyx_XDECREF_SET(__pyx_v_mrw_t, __pyx_t_12);
     __pyx_t_12 = 0;
 
-    /* "algorithms/track.py":920
+    /* "openptv2/algorithms/track.py":920
  * 
  *         cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t = _jt
  *         num_parts_2 = np.array([fb.buf[2].num_parts], dtype=np.int32)             # <<<<<<<<<<<<<<
@@ -24618,7 +24618,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
     __Pyx_XDECREF_SET(__pyx_v_num_parts_2, __pyx_t_12);
     __pyx_t_12 = 0;
 
-    /* "algorithms/track.py":921
+    /* "openptv2/algorithms/track.py":921
  *         cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t = _jt
  *         num_parts_2 = np.array([fb.buf[2].num_parts], dtype=np.int32)
  *         nt2 = np.array(fb.buf[2].num_targets[:nc], dtype=np.int32)             # <<<<<<<<<<<<<<
@@ -24676,7 +24676,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
     __Pyx_XDECREF_SET(__pyx_v_nt2, __pyx_t_12);
     __pyx_t_12 = 0;
 
-    /* "algorithms/track.py":923
+    /* "openptv2/algorithms/track.py":923
  *         nt2 = np.array(fb.buf[2].num_targets[:nc], dtype=np.int32)
  * 
  *         count1, num_added = _trackback_loop_fast(             # <<<<<<<<<<<<<<
@@ -24687,7 +24687,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
     __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_mstate_global->__pyx_n_u_trackback_loop_fast); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 923, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
 
-    /* "algorithms/track.py":924
+    /* "openptv2/algorithms/track.py":924
  * 
  *         count1, num_added = _trackback_loop_fast(
  *             fb.buf[1].num_parts,             # <<<<<<<<<<<<<<
@@ -24703,7 +24703,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
     __Pyx_GOTREF(__pyx_t_11);
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
 
-    /* "algorithms/track.py":925
+    /* "openptv2/algorithms/track.py":925
  *         count1, num_added = _trackback_loop_fast(
  *             fb.buf[1].num_parts,
  *             fb.buf[0].path_x,             # <<<<<<<<<<<<<<
@@ -24719,7 +24719,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
     __Pyx_GOTREF(__pyx_t_7);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-    /* "algorithms/track.py":926
+    /* "openptv2/algorithms/track.py":926
  *             fb.buf[1].num_parts,
  *             fb.buf[0].path_x,
  *             fb.buf[1].path_x, fb.buf[1].path_prev, fb.buf[1].path_next,             # <<<<<<<<<<<<<<
@@ -24751,7 +24751,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
     __Pyx_GOTREF(__pyx_t_14);
     __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
 
-    /* "algorithms/track.py":927
+    /* "openptv2/algorithms/track.py":927
  *             fb.buf[0].path_x,
  *             fb.buf[1].path_x, fb.buf[1].path_prev, fb.buf[1].path_next,
  *             fb.buf[1].path_inlist,             # <<<<<<<<<<<<<<
@@ -24767,7 +24767,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
     __Pyx_GOTREF(__pyx_t_15);
     __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
 
-    /* "algorithms/track.py":928
+    /* "openptv2/algorithms/track.py":928
  *             fb.buf[1].path_x, fb.buf[1].path_prev, fb.buf[1].path_next,
  *             fb.buf[1].path_inlist,
  *             fb.buf[1].path_finaldecis, fb.buf[1].path_decis,             # <<<<<<<<<<<<<<
@@ -24791,7 +24791,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
     __Pyx_GOTREF(__pyx_t_17);
     __Pyx_DECREF(__pyx_t_18); __pyx_t_18 = 0;
 
-    /* "algorithms/track.py":929
+    /* "openptv2/algorithms/track.py":929
  *             fb.buf[1].path_inlist,
  *             fb.buf[1].path_finaldecis, fb.buf[1].path_decis,
  *             fb.buf[1].path_linkdecis,             # <<<<<<<<<<<<<<
@@ -24807,7 +24807,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
     __Pyx_GOTREF(__pyx_t_18);
     __Pyx_DECREF(__pyx_t_19); __pyx_t_19 = 0;
 
-    /* "algorithms/track.py":930
+    /* "openptv2/algorithms/track.py":930
  *             fb.buf[1].path_finaldecis, fb.buf[1].path_decis,
  *             fb.buf[1].path_linkdecis,
  *             fb.buf[2].path_x, fb.buf[2].path_prev, fb.buf[2].path_next,             # <<<<<<<<<<<<<<
@@ -24839,7 +24839,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
     __Pyx_GOTREF(__pyx_t_21);
     __Pyx_DECREF(__pyx_t_22); __pyx_t_22 = 0;
 
-    /* "algorithms/track.py":932
+    /* "openptv2/algorithms/track.py":932
  *             fb.buf[2].path_x, fb.buf[2].path_prev, fb.buf[2].path_next,
  *             num_parts_2,
  *             fb.buf[2].targ_x, fb.buf[2].targ_y, fb.buf[2].targ_tnr,             # <<<<<<<<<<<<<<
@@ -24871,7 +24871,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
     __Pyx_GOTREF(__pyx_t_24);
     __Pyx_DECREF(__pyx_t_25); __pyx_t_25 = 0;
 
-    /* "algorithms/track.py":934
+    /* "openptv2/algorithms/track.py":934
  *             fb.buf[2].targ_x, fb.buf[2].targ_y, fb.buf[2].targ_tnr,
  *             nt2,
  *             fb.buf[2].corres_p, fb.buf[2].corres_nr,             # <<<<<<<<<<<<<<
@@ -24895,7 +24895,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
     __Pyx_GOTREF(__pyx_t_26);
     __Pyx_DECREF(__pyx_t_27); __pyx_t_27 = 0;
 
-    /* "algorithms/track.py":935
+    /* "openptv2/algorithms/track.py":935
  *             nt2,
  *             fb.buf[2].corres_p, fb.buf[2].corres_nr,
  *             fb.buf[2].path_inlist, fb.buf[2].path_prio,             # <<<<<<<<<<<<<<
@@ -24919,7 +24919,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
     __Pyx_GOTREF(__pyx_t_28);
     __Pyx_DECREF(__pyx_t_29); __pyx_t_29 = 0;
 
-    /* "algorithms/track.py":936
+    /* "openptv2/algorithms/track.py":936
  *             fb.buf[2].corres_p, fb.buf[2].corres_nr,
  *             fb.buf[2].path_inlist, fb.buf[2].path_prio,
  *             fb.buf[2].path_finaldecis,             # <<<<<<<<<<<<<<
@@ -24935,7 +24935,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
     __Pyx_GOTREF(__pyx_t_29);
     __Pyx_DECREF(__pyx_t_30); __pyx_t_30 = 0;
 
-    /* "algorithms/track.py":937
+    /* "openptv2/algorithms/track.py":937
  *             fb.buf[2].path_inlist, fb.buf[2].path_prio,
  *             fb.buf[2].path_finaldecis,
  *             fb.buf[2].path_decis, fb.buf[2].path_linkdecis,             # <<<<<<<<<<<<<<
@@ -24959,7 +24959,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
     __Pyx_GOTREF(__pyx_t_31);
     __Pyx_DECREF(__pyx_t_32); __pyx_t_32 = 0;
 
-    /* "algorithms/track.py":938
+    /* "openptv2/algorithms/track.py":938
  *             fb.buf[2].path_finaldecis,
  *             fb.buf[2].path_decis, fb.buf[2].path_linkdecis,
  *             fb.buf[3].path_x, fb.buf[3].path_prev,             # <<<<<<<<<<<<<<
@@ -24983,7 +24983,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
     __Pyx_GOTREF(__pyx_t_33);
     __Pyx_DECREF(__pyx_t_34); __pyx_t_34 = 0;
 
-    /* "algorithms/track.py":940
+    /* "openptv2/algorithms/track.py":940
  *             fb.buf[3].path_x, fb.buf[3].path_prev,
  *             cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t,
  *             tpar.dvxmin, tpar.dvxmax, tpar.dvymin, tpar.dvymax,             # <<<<<<<<<<<<<<
@@ -24999,7 +24999,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
     __pyx_t_37 = __Pyx_PyObject_GetAttrStr(__pyx_v_tpar, __pyx_mstate_global->__pyx_n_u_dvymax); if (unlikely(!__pyx_t_37)) __PYX_ERR(0, 940, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_37);
 
-    /* "algorithms/track.py":941
+    /* "openptv2/algorithms/track.py":941
  *             cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t,
  *             tpar.dvxmin, tpar.dvxmax, tpar.dvymin, tpar.dvymax,
  *             tpar.dvzmin, tpar.dvzmax,             # <<<<<<<<<<<<<<
@@ -25011,7 +25011,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
     __pyx_t_39 = __Pyx_PyObject_GetAttrStr(__pyx_v_tpar, __pyx_mstate_global->__pyx_n_u_dvzmax); if (unlikely(!__pyx_t_39)) __PYX_ERR(0, 941, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_39);
 
-    /* "algorithms/track.py":942
+    /* "openptv2/algorithms/track.py":942
  *             tpar.dvxmin, tpar.dvxmax, tpar.dvymin, tpar.dvymax,
  *             tpar.dvzmin, tpar.dvzmax,
  *             tpar.dacc, tpar.dangle, tpar.add, run_info.lmax,             # <<<<<<<<<<<<<<
@@ -25027,7 +25027,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
     __pyx_t_43 = __Pyx_PyObject_GetAttrStr(__pyx_v_run_info, __pyx_mstate_global->__pyx_n_u_lmax); if (unlikely(!__pyx_t_43)) __PYX_ERR(0, 942, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_43);
 
-    /* "algorithms/track.py":943
+    /* "openptv2/algorithms/track.py":943
  *             tpar.dvzmin, tpar.dvzmax,
  *             tpar.dacc, tpar.dangle, tpar.add, run_info.lmax,
  *             vpar.X_lay[0], vpar.X_lay[1], Ymin, Ymax,             # <<<<<<<<<<<<<<
@@ -25049,7 +25049,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
     __pyx_t_47 = PyFloat_FromDouble(__pyx_v_Ymax); if (unlikely(!__pyx_t_47)) __PYX_ERR(0, 943, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_47);
 
-    /* "algorithms/track.py":944
+    /* "openptv2/algorithms/track.py":944
  *             tpar.dacc, tpar.dangle, tpar.add, run_info.lmax,
  *             vpar.X_lay[0], vpar.X_lay[1], Ymin, Ymax,
  *             vpar.Zmin_lay[0], vpar.Zmax_lay[1],             # <<<<<<<<<<<<<<
@@ -25067,7 +25067,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
     __Pyx_GOTREF(__pyx_t_50);
     __Pyx_DECREF(__pyx_t_48); __pyx_t_48 = 0;
 
-    /* "algorithms/track.py":946
+    /* "openptv2/algorithms/track.py":946
  *             vpar.Zmin_lay[0], vpar.Zmax_lay[1],
  *             nc, imx_half, imy_half, inv_pix_x, inv_pix_y,
  *             c_chfield, c_imx, c_imy, cpar.pix_x, cpar.pix_y,             # <<<<<<<<<<<<<<
@@ -25079,7 +25079,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
     __pyx_t_51 = __Pyx_PyObject_GetAttrStr(__pyx_v_cpar, __pyx_mstate_global->__pyx_n_u_pix_y); if (unlikely(!__pyx_t_51)) __PYX_ERR(0, 946, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_51);
 
-    /* "algorithms/track.py":947
+    /* "openptv2/algorithms/track.py":947
  *             nc, imx_half, imy_half, inv_pix_x, inv_pix_y,
  *             c_chfield, c_imx, c_imy, cpar.pix_x, cpar.pix_y,
  *             run_info.flatten_tol,             # <<<<<<<<<<<<<<
@@ -25202,7 +25202,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
       __pyx_L13_unpacking_done:;
     }
 
-    /* "algorithms/track.py":923
+    /* "openptv2/algorithms/track.py":923
  *         nt2 = np.array(fb.buf[2].num_targets[:nc], dtype=np.int32)
  * 
  *         count1, num_added = _trackback_loop_fast(             # <<<<<<<<<<<<<<
@@ -25214,7 +25214,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
     __Pyx_XDECREF_SET(__pyx_v_num_added, __pyx_t_52);
     __pyx_t_52 = 0;
 
-    /* "algorithms/track.py":950
+    /* "openptv2/algorithms/track.py":950
  *         )
  * 
  *         fb.buf[2].num_parts = int(num_parts_2[0])             # <<<<<<<<<<<<<<
@@ -25235,7 +25235,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
     __Pyx_DECREF(__pyx_t_52); __pyx_t_52 = 0;
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "algorithms/track.py":952
+    /* "openptv2/algorithms/track.py":952
  *         fb.buf[2].num_parts = int(num_parts_2[0])
  * 
  *         _sync_soa_to_aos(fb.buf[1])             # <<<<<<<<<<<<<<
@@ -25273,7 +25273,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
     }
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "algorithms/track.py":953
+    /* "openptv2/algorithms/track.py":953
  * 
  *         _sync_soa_to_aos(fb.buf[1])
  *         _sync_soa_to_aos(fb.buf[2])             # <<<<<<<<<<<<<<
@@ -25311,7 +25311,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
     }
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "algorithms/track.py":955
+    /* "openptv2/algorithms/track.py":955
  *         _sync_soa_to_aos(fb.buf[2])
  * 
  *         print(f"step: {step}, curr: {fb.buf[1].num_parts}, "             # <<<<<<<<<<<<<<
@@ -25333,7 +25333,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
     __Pyx_GOTREF(__pyx_t_52);
     __Pyx_DECREF(__pyx_t_12); __pyx_t_12 = 0;
 
-    /* "algorithms/track.py":956
+    /* "openptv2/algorithms/track.py":956
  * 
  *         print(f"step: {step}, curr: {fb.buf[1].num_parts}, "
  *               f"next: {fb.buf[2].num_parts}, links: {count1}, "             # <<<<<<<<<<<<<<
@@ -25354,7 +25354,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
     __pyx_t_12 = __Pyx_PyObject_FormatSimple(__pyx_v_count1, __pyx_mstate_global->__pyx_empty_unicode); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 956, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_12);
 
-    /* "algorithms/track.py":957
+    /* "openptv2/algorithms/track.py":957
  *         print(f"step: {step}, curr: {fb.buf[1].num_parts}, "
  *               f"next: {fb.buf[2].num_parts}, links: {count1}, "
  *               f"lost: {fb.buf[1].num_parts - count1}, add: {num_added}")             # <<<<<<<<<<<<<<
@@ -25390,7 +25390,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
     __pyx_t_53[10] = __pyx_mstate_global->__pyx_kp_u_add_2;
     __pyx_t_53[11] = __pyx_t_47;
 
-    /* "algorithms/track.py":955
+    /* "openptv2/algorithms/track.py":955
  *         _sync_soa_to_aos(fb.buf[2])
  * 
  *         print(f"step: {step}, curr: {fb.buf[1].num_parts}, "             # <<<<<<<<<<<<<<
@@ -25417,7 +25417,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
     }
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "algorithms/track.py":959
+    /* "openptv2/algorithms/track.py":959
  *               f"lost: {fb.buf[1].num_parts - count1}, add: {num_added}")
  * 
  *         npart = npart + fb.buf[1].num_parts             # <<<<<<<<<<<<<<
@@ -25438,7 +25438,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
     __Pyx_DECREF_SET(__pyx_v_npart, __pyx_t_44);
     __pyx_t_44 = 0;
 
-    /* "algorithms/track.py":960
+    /* "openptv2/algorithms/track.py":960
  * 
  *         npart = npart + fb.buf[1].num_parts
  *         nlinks = nlinks + count1             # <<<<<<<<<<<<<<
@@ -25450,7 +25450,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
     __Pyx_DECREF_SET(__pyx_v_nlinks, __pyx_t_44);
     __pyx_t_44 = 0;
 
-    /* "algorithms/track.py":962
+    /* "openptv2/algorithms/track.py":962
  *         nlinks = nlinks + count1
  * 
  *         fb.fb_next()             # <<<<<<<<<<<<<<
@@ -25469,7 +25469,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
     }
     __Pyx_DECREF(__pyx_t_44); __pyx_t_44 = 0;
 
-    /* "algorithms/track.py":963
+    /* "openptv2/algorithms/track.py":963
  * 
  *         fb.fb_next()
  *         fb.write_frame_from_start(step)             # <<<<<<<<<<<<<<
@@ -25488,7 +25488,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
     }
     __Pyx_DECREF(__pyx_t_44); __pyx_t_44 = 0;
 
-    /* "algorithms/track.py":964
+    /* "openptv2/algorithms/track.py":964
  *         fb.fb_next()
  *         fb.write_frame_from_start(step)
  *         if step > seq_par.first + 2:             # <<<<<<<<<<<<<<
@@ -25506,7 +25506,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
     __Pyx_DECREF(__pyx_t_44); __pyx_t_44 = 0;
     if (__pyx_t_54) {
 
-      /* "algorithms/track.py":965
+      /* "openptv2/algorithms/track.py":965
  *         fb.write_frame_from_start(step)
  *         if step > seq_par.first + 2:
  *             fb.read_frame_at_end(step - 3, read_links=True)             # <<<<<<<<<<<<<<
@@ -25532,7 +25532,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
       }
       __Pyx_DECREF(__pyx_t_44); __pyx_t_44 = 0;
 
-      /* "algorithms/track.py":964
+      /* "openptv2/algorithms/track.py":964
  *         fb.fb_next()
  *         fb.write_frame_from_start(step)
  *         if step > seq_par.first + 2:             # <<<<<<<<<<<<<<
@@ -25541,7 +25541,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
 */
     }
 
-    /* "algorithms/track.py":912
+    /* "openptv2/algorithms/track.py":912
  *     nc = fb.num_cams
  * 
  *     for step in range(seq_par.last - 1, seq_par.first, -1):             # <<<<<<<<<<<<<<
@@ -25551,7 +25551,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
   }
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "algorithms/track.py":967
+  /* "openptv2/algorithms/track.py":967
  *             fb.read_frame_at_end(step - 3, read_links=True)
  * 
  *     npart /= (seq_par.last - seq_par.first - 1)             # <<<<<<<<<<<<<<
@@ -25575,7 +25575,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
   __Pyx_DECREF_SET(__pyx_v_npart, __pyx_t_47);
   __pyx_t_47 = 0;
 
-  /* "algorithms/track.py":968
+  /* "openptv2/algorithms/track.py":968
  * 
  *     npart /= (seq_par.last - seq_par.first - 1)
  *     nlinks /= (seq_par.last - seq_par.first - 1)             # <<<<<<<<<<<<<<
@@ -25599,7 +25599,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
   __Pyx_DECREF_SET(__pyx_v_nlinks, __pyx_t_5);
   __pyx_t_5 = 0;
 
-  /* "algorithms/track.py":970
+  /* "openptv2/algorithms/track.py":970
  *     nlinks /= (seq_par.last - seq_par.first - 1)
  * 
  *     print(f"Average over sequence, particles: {npart:5.1f}, "             # <<<<<<<<<<<<<<
@@ -25610,7 +25610,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
   __pyx_t_47 = __Pyx_PyObject_Format(__pyx_v_npart, __pyx_mstate_global->__pyx_kp_u_5_1f); if (unlikely(!__pyx_t_47)) __PYX_ERR(0, 970, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_47);
 
-  /* "algorithms/track.py":971
+  /* "openptv2/algorithms/track.py":971
  * 
  *     print(f"Average over sequence, particles: {npart:5.1f}, "
  *           f"links: {nlinks:5.1f}, lost: {npart - nlinks:5.1f}")             # <<<<<<<<<<<<<<
@@ -25631,7 +25631,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
   __pyx_t_55[4] = __pyx_mstate_global->__pyx_kp_u_lost;
   __pyx_t_55[5] = __pyx_t_49;
 
-  /* "algorithms/track.py":970
+  /* "openptv2/algorithms/track.py":970
  *     nlinks /= (seq_par.last - seq_par.first - 1)
  * 
  *     print(f"Average over sequence, particles: {npart:5.1f}, "             # <<<<<<<<<<<<<<
@@ -25655,7 +25655,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
   }
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "algorithms/track.py":973
+  /* "openptv2/algorithms/track.py":973
  *           f"links: {nlinks:5.1f}, lost: {npart - nlinks:5.1f}")
  * 
  *     fb.fb_next()             # <<<<<<<<<<<<<<
@@ -25674,7 +25674,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
   }
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "algorithms/track.py":974
+  /* "openptv2/algorithms/track.py":974
  * 
  *     fb.fb_next()
  *     fb.write_frame_from_start(seq_par.first)             # <<<<<<<<<<<<<<
@@ -25696,7 +25696,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
   }
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "algorithms/track.py":976
+  /* "openptv2/algorithms/track.py":976
  *     fb.write_frame_from_start(seq_par.first)
  * 
  *     return nlinks             # <<<<<<<<<<<<<<
@@ -25708,7 +25708,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
   __pyx_r = __pyx_v_nlinks;
   goto __pyx_L0;
 
-  /* "algorithms/track.py":882
+  /* "openptv2/algorithms/track.py":882
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -25765,7 +25765,7 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
   __Pyx_XDECREF(__pyx_t_50);
   __Pyx_XDECREF(__pyx_t_51);
   __Pyx_XDECREF(__pyx_t_52);
-  __Pyx_AddTraceback("algorithms.track.trackback_c", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.trackback_c", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_point_position);
@@ -25806,15 +25806,15 @@ static PyObject *__pyx_f_10algorithms_5track_trackback_c(PyObject *__pyx_v_run_i
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_5track_59trackback_c(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_59trackback_c(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_10algorithms_5track_59trackback_c = {"trackback_c", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_5track_59trackback_c, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10algorithms_5track_59trackback_c(PyObject *__pyx_self, 
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_5track_59trackback_c = {"trackback_c", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_5track_59trackback_c, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_59trackback_c(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -25876,11 +25876,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.track.trackback_c", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.trackback_c", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_5track_58trackback_c(__pyx_self, __pyx_v_run_info);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_5track_58trackback_c(__pyx_self, __pyx_v_run_info);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -25890,7 +25890,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_5track_58trackback_c(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_run_info) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_58trackback_c(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_run_info) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -25899,7 +25899,7 @@ static PyObject *__pyx_pf_10algorithms_5track_58trackback_c(CYTHON_UNUSED PyObje
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("trackback_c", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_5track_trackback_c(__pyx_v_run_info, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 882, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_5track_trackback_c(__pyx_v_run_info, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 882, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -25908,7 +25908,7 @@ static PyObject *__pyx_pf_10algorithms_5track_58trackback_c(CYTHON_UNUSED PyObje
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.track.trackback_c", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.track.trackback_c", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -25916,7 +25916,7 @@ static PyObject *__pyx_pf_10algorithms_5track_58trackback_c(CYTHON_UNUSED PyObje
   return __pyx_r;
 }
 
-/* "algorithms/track.py":979
+/* "openptv2/algorithms/track.py":979
  * 
  * 
  * def is_compiled() -> bool:             # <<<<<<<<<<<<<<
@@ -25925,28 +25925,28 @@ static PyObject *__pyx_pf_10algorithms_5track_58trackback_c(CYTHON_UNUSED PyObje
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_5track_61is_compiled(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_5track_60is_compiled, "Return whether this module is compiled to C.");
-static PyMethodDef __pyx_mdef_10algorithms_5track_61is_compiled = {"is_compiled", (PyCFunction)__pyx_pw_10algorithms_5track_61is_compiled, METH_NOARGS, __pyx_doc_10algorithms_5track_60is_compiled};
-static PyObject *__pyx_pw_10algorithms_5track_61is_compiled(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_61is_compiled(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_5track_60is_compiled, "Return whether this module is compiled to C.");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_5track_61is_compiled = {"is_compiled", (PyCFunction)__pyx_pw_8openptv2_10algorithms_5track_61is_compiled, METH_NOARGS, __pyx_doc_8openptv2_10algorithms_5track_60is_compiled};
+static PyObject *__pyx_pw_8openptv2_10algorithms_5track_61is_compiled(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused) {
   CYTHON_UNUSED PyObject *const *__pyx_kwvalues;
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("is_compiled (wrapper)", 0);
   __pyx_kwvalues = __Pyx_KwValues_VARARGS(__pyx_args, __pyx_nargs);
-  __pyx_r = __pyx_pf_10algorithms_5track_60is_compiled(__pyx_self);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_5track_60is_compiled(__pyx_self);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_5track_60is_compiled(CYTHON_UNUSED PyObject *__pyx_self) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_5track_60is_compiled(CYTHON_UNUSED PyObject *__pyx_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("is_compiled", 0);
 
-  /* "algorithms/track.py":981
+  /* "openptv2/algorithms/track.py":981
  * def is_compiled() -> bool:
  *     """Return whether this module is compiled to C."""
  *     return cython.compiled             # <<<<<<<<<<<<<<
@@ -25956,7 +25956,7 @@ static PyObject *__pyx_pf_10algorithms_5track_60is_compiled(CYTHON_UNUSED PyObje
   __pyx_r = Py_True;
   goto __pyx_L0;
 
-  /* "algorithms/track.py":979
+  /* "openptv2/algorithms/track.py":979
  * 
  * 
  * def is_compiled() -> bool:             # <<<<<<<<<<<<<<
@@ -25972,16 +25972,16 @@ static PyObject *__pyx_pf_10algorithms_5track_60is_compiled(CYTHON_UNUSED PyObje
 }
 /* #### Code section: module_exttypes ### */
 
-static PyObject *__pyx_tp_new_10algorithms_5track___pyx_scope_struct__genexpr(PyTypeObject *t, CYTHON_UNUSED PyObject *a, CYTHON_UNUSED PyObject *k) {
+static PyObject *__pyx_tp_new_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr(PyTypeObject *t, CYTHON_UNUSED PyObject *a, CYTHON_UNUSED PyObject *k) {
   PyObject *o;
   #if CYTHON_USE_FREELISTS
-  if (likely((int)(__pyx_mstate_global->__pyx_freecount_10algorithms_5track___pyx_scope_struct__genexpr > 0) & __PYX_CHECK_FINAL_TYPE_FOR_FREELISTS(t, __pyx_mstate_global->__pyx_ptype_10algorithms_5track___pyx_scope_struct__genexpr, sizeof(struct __pyx_obj_10algorithms_5track___pyx_scope_struct__genexpr))))
+  if (likely((int)(__pyx_mstate_global->__pyx_freecount_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr > 0) & __PYX_CHECK_FINAL_TYPE_FOR_FREELISTS(t, __pyx_mstate_global->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr, sizeof(struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr))))
   {
-    o = (PyObject*)__pyx_mstate_global->__pyx_freelist_10algorithms_5track___pyx_scope_struct__genexpr[--__pyx_mstate_global->__pyx_freecount_10algorithms_5track___pyx_scope_struct__genexpr];
+    o = (PyObject*)__pyx_mstate_global->__pyx_freelist_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr[--__pyx_mstate_global->__pyx_freecount_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr];
     #if CYTHON_USE_TYPE_SPECS
     Py_DECREF(Py_TYPE(o));
     #endif
-    memset(o, 0, sizeof(struct __pyx_obj_10algorithms_5track___pyx_scope_struct__genexpr));
+    memset(o, 0, sizeof(struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr));
     #if CYTHON_COMPILING_IN_LIMITED_API
     (void) PyObject_Init(o, t);
     #else
@@ -25997,11 +25997,11 @@ static PyObject *__pyx_tp_new_10algorithms_5track___pyx_scope_struct__genexpr(Py
   return o;
 }
 
-static void __pyx_tp_dealloc_10algorithms_5track___pyx_scope_struct__genexpr(PyObject *o) {
-  struct __pyx_obj_10algorithms_5track___pyx_scope_struct__genexpr *p = (struct __pyx_obj_10algorithms_5track___pyx_scope_struct__genexpr *)o;
+static void __pyx_tp_dealloc_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr(PyObject *o) {
+  struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr *p = (struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr *)o;
   #if CYTHON_USE_TP_FINALIZE
   if (unlikely(__Pyx_PyObject_GetSlot(o, tp_finalize, destructor)) && !__Pyx_PyObject_GC_IsFinalized(o)) {
-    if (__Pyx_PyObject_GetSlot(o, tp_dealloc, destructor) == __pyx_tp_dealloc_10algorithms_5track___pyx_scope_struct__genexpr) {
+    if (__Pyx_PyObject_GetSlot(o, tp_dealloc, destructor) == __pyx_tp_dealloc_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr) {
       if (PyObject_CallFinalizerFromDealloc(o)) return;
     }
   }
@@ -26011,9 +26011,9 @@ static void __pyx_tp_dealloc_10algorithms_5track___pyx_scope_struct__genexpr(PyO
   Py_CLEAR(p->__pyx_v_m);
   Py_CLEAR(p->__pyx_t_0);
   #if CYTHON_USE_FREELISTS
-  if (likely((int)(__pyx_mstate_global->__pyx_freecount_10algorithms_5track___pyx_scope_struct__genexpr < 8) & __PYX_CHECK_FINAL_TYPE_FOR_FREELISTS(Py_TYPE(o), __pyx_mstate_global->__pyx_ptype_10algorithms_5track___pyx_scope_struct__genexpr, sizeof(struct __pyx_obj_10algorithms_5track___pyx_scope_struct__genexpr))))
+  if (likely((int)(__pyx_mstate_global->__pyx_freecount_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr < 8) & __PYX_CHECK_FINAL_TYPE_FOR_FREELISTS(Py_TYPE(o), __pyx_mstate_global->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr, sizeof(struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr))))
   {
-    __pyx_mstate_global->__pyx_freelist_10algorithms_5track___pyx_scope_struct__genexpr[__pyx_mstate_global->__pyx_freecount_10algorithms_5track___pyx_scope_struct__genexpr++] = ((struct __pyx_obj_10algorithms_5track___pyx_scope_struct__genexpr *)o);
+    __pyx_mstate_global->__pyx_freelist_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr[__pyx_mstate_global->__pyx_freecount_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr++] = ((struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr *)o);
   } else
   #endif
   {
@@ -26032,9 +26032,9 @@ static void __pyx_tp_dealloc_10algorithms_5track___pyx_scope_struct__genexpr(PyO
   }
 }
 
-static int __pyx_tp_traverse_10algorithms_5track___pyx_scope_struct__genexpr(PyObject *o, visitproc v, void *a) {
+static int __pyx_tp_traverse_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr(PyObject *o, visitproc v, void *a) {
   int e;
-  struct __pyx_obj_10algorithms_5track___pyx_scope_struct__genexpr *p = (struct __pyx_obj_10algorithms_5track___pyx_scope_struct__genexpr *)o;
+  struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr *p = (struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr *)o;
   {
     e = __Pyx_call_type_traverse(o, 1, v, a);
     if (e) return e;
@@ -26051,27 +26051,27 @@ static int __pyx_tp_traverse_10algorithms_5track___pyx_scope_struct__genexpr(PyO
   return 0;
 }
 #if CYTHON_USE_TYPE_SPECS
-static PyType_Slot __pyx_type_10algorithms_5track___pyx_scope_struct__genexpr_slots[] = {
-  {Py_tp_dealloc, (void *)__pyx_tp_dealloc_10algorithms_5track___pyx_scope_struct__genexpr},
-  {Py_tp_traverse, (void *)__pyx_tp_traverse_10algorithms_5track___pyx_scope_struct__genexpr},
-  {Py_tp_new, (void *)__pyx_tp_new_10algorithms_5track___pyx_scope_struct__genexpr},
+static PyType_Slot __pyx_type_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr_slots[] = {
+  {Py_tp_dealloc, (void *)__pyx_tp_dealloc_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr},
+  {Py_tp_traverse, (void *)__pyx_tp_traverse_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr},
+  {Py_tp_new, (void *)__pyx_tp_new_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr},
   {0, 0},
 };
-static PyType_Spec __pyx_type_10algorithms_5track___pyx_scope_struct__genexpr_spec = {
-  "algorithms.track.__pyx_scope_struct__genexpr",
-  sizeof(struct __pyx_obj_10algorithms_5track___pyx_scope_struct__genexpr),
+static PyType_Spec __pyx_type_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr_spec = {
+  "openptv2.algorithms.track.__pyx_scope_struct__genexpr",
+  sizeof(struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr),
   0,
   Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_HAVE_GC,
-  __pyx_type_10algorithms_5track___pyx_scope_struct__genexpr_slots,
+  __pyx_type_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr_slots,
 };
 #else
 
-static PyTypeObject __pyx_type_10algorithms_5track___pyx_scope_struct__genexpr = {
+static PyTypeObject __pyx_type_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr = {
   PyVarObject_HEAD_INIT(0, 0)
-  "algorithms.track.""__pyx_scope_struct__genexpr", /*tp_name*/
-  sizeof(struct __pyx_obj_10algorithms_5track___pyx_scope_struct__genexpr), /*tp_basicsize*/
+  "openptv2.algorithms.track.""__pyx_scope_struct__genexpr", /*tp_name*/
+  sizeof(struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr), /*tp_basicsize*/
   0, /*tp_itemsize*/
-  __pyx_tp_dealloc_10algorithms_5track___pyx_scope_struct__genexpr, /*tp_dealloc*/
+  __pyx_tp_dealloc_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr, /*tp_dealloc*/
   0, /*tp_vectorcall_offset*/
   0, /*tp_getattr*/
   0, /*tp_setattr*/
@@ -26088,7 +26088,7 @@ static PyTypeObject __pyx_type_10algorithms_5track___pyx_scope_struct__genexpr =
   0, /*tp_as_buffer*/
   Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_HAVE_GC, /*tp_flags*/
   0, /*tp_doc*/
-  __pyx_tp_traverse_10algorithms_5track___pyx_scope_struct__genexpr, /*tp_traverse*/
+  __pyx_tp_traverse_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr, /*tp_traverse*/
   0, /*tp_clear*/
   0, /*tp_richcompare*/
   0, /*tp_weaklistoffset*/
@@ -26106,7 +26106,7 @@ static PyTypeObject __pyx_type_10algorithms_5track___pyx_scope_struct__genexpr =
   #endif
   0, /*tp_init*/
   0, /*tp_alloc*/
-  __pyx_tp_new_10algorithms_5track___pyx_scope_struct__genexpr, /*tp_new*/
+  __pyx_tp_new_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr, /*tp_new*/
   0, /*tp_free*/
   0, /*tp_is_gc*/
   0, /*tp_bases*/
@@ -26139,16 +26139,16 @@ static PyTypeObject __pyx_type_10algorithms_5track___pyx_scope_struct__genexpr =
 };
 #endif
 
-static PyObject *__pyx_tp_new_10algorithms_5track___pyx_scope_struct_1_genexpr(PyTypeObject *t, CYTHON_UNUSED PyObject *a, CYTHON_UNUSED PyObject *k) {
+static PyObject *__pyx_tp_new_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr(PyTypeObject *t, CYTHON_UNUSED PyObject *a, CYTHON_UNUSED PyObject *k) {
   PyObject *o;
   #if CYTHON_USE_FREELISTS
-  if (likely((int)(__pyx_mstate_global->__pyx_freecount_10algorithms_5track___pyx_scope_struct_1_genexpr > 0) & __PYX_CHECK_FINAL_TYPE_FOR_FREELISTS(t, __pyx_mstate_global->__pyx_ptype_10algorithms_5track___pyx_scope_struct_1_genexpr, sizeof(struct __pyx_obj_10algorithms_5track___pyx_scope_struct_1_genexpr))))
+  if (likely((int)(__pyx_mstate_global->__pyx_freecount_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr > 0) & __PYX_CHECK_FINAL_TYPE_FOR_FREELISTS(t, __pyx_mstate_global->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr, sizeof(struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr))))
   {
-    o = (PyObject*)__pyx_mstate_global->__pyx_freelist_10algorithms_5track___pyx_scope_struct_1_genexpr[--__pyx_mstate_global->__pyx_freecount_10algorithms_5track___pyx_scope_struct_1_genexpr];
+    o = (PyObject*)__pyx_mstate_global->__pyx_freelist_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr[--__pyx_mstate_global->__pyx_freecount_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr];
     #if CYTHON_USE_TYPE_SPECS
     Py_DECREF(Py_TYPE(o));
     #endif
-    memset(o, 0, sizeof(struct __pyx_obj_10algorithms_5track___pyx_scope_struct_1_genexpr));
+    memset(o, 0, sizeof(struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr));
     #if CYTHON_COMPILING_IN_LIMITED_API
     (void) PyObject_Init(o, t);
     #else
@@ -26164,11 +26164,11 @@ static PyObject *__pyx_tp_new_10algorithms_5track___pyx_scope_struct_1_genexpr(P
   return o;
 }
 
-static void __pyx_tp_dealloc_10algorithms_5track___pyx_scope_struct_1_genexpr(PyObject *o) {
-  struct __pyx_obj_10algorithms_5track___pyx_scope_struct_1_genexpr *p = (struct __pyx_obj_10algorithms_5track___pyx_scope_struct_1_genexpr *)o;
+static void __pyx_tp_dealloc_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr(PyObject *o) {
+  struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr *p = (struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr *)o;
   #if CYTHON_USE_TP_FINALIZE
   if (unlikely(__Pyx_PyObject_GetSlot(o, tp_finalize, destructor)) && !__Pyx_PyObject_GC_IsFinalized(o)) {
-    if (__Pyx_PyObject_GetSlot(o, tp_dealloc, destructor) == __pyx_tp_dealloc_10algorithms_5track___pyx_scope_struct_1_genexpr) {
+    if (__Pyx_PyObject_GetSlot(o, tp_dealloc, destructor) == __pyx_tp_dealloc_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr) {
       if (PyObject_CallFinalizerFromDealloc(o)) return;
     }
   }
@@ -26178,9 +26178,9 @@ static void __pyx_tp_dealloc_10algorithms_5track___pyx_scope_struct_1_genexpr(Py
   Py_CLEAR(p->__pyx_v_m);
   Py_CLEAR(p->__pyx_t_0);
   #if CYTHON_USE_FREELISTS
-  if (likely((int)(__pyx_mstate_global->__pyx_freecount_10algorithms_5track___pyx_scope_struct_1_genexpr < 8) & __PYX_CHECK_FINAL_TYPE_FOR_FREELISTS(Py_TYPE(o), __pyx_mstate_global->__pyx_ptype_10algorithms_5track___pyx_scope_struct_1_genexpr, sizeof(struct __pyx_obj_10algorithms_5track___pyx_scope_struct_1_genexpr))))
+  if (likely((int)(__pyx_mstate_global->__pyx_freecount_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr < 8) & __PYX_CHECK_FINAL_TYPE_FOR_FREELISTS(Py_TYPE(o), __pyx_mstate_global->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr, sizeof(struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr))))
   {
-    __pyx_mstate_global->__pyx_freelist_10algorithms_5track___pyx_scope_struct_1_genexpr[__pyx_mstate_global->__pyx_freecount_10algorithms_5track___pyx_scope_struct_1_genexpr++] = ((struct __pyx_obj_10algorithms_5track___pyx_scope_struct_1_genexpr *)o);
+    __pyx_mstate_global->__pyx_freelist_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr[__pyx_mstate_global->__pyx_freecount_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr++] = ((struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr *)o);
   } else
   #endif
   {
@@ -26199,9 +26199,9 @@ static void __pyx_tp_dealloc_10algorithms_5track___pyx_scope_struct_1_genexpr(Py
   }
 }
 
-static int __pyx_tp_traverse_10algorithms_5track___pyx_scope_struct_1_genexpr(PyObject *o, visitproc v, void *a) {
+static int __pyx_tp_traverse_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr(PyObject *o, visitproc v, void *a) {
   int e;
-  struct __pyx_obj_10algorithms_5track___pyx_scope_struct_1_genexpr *p = (struct __pyx_obj_10algorithms_5track___pyx_scope_struct_1_genexpr *)o;
+  struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr *p = (struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr *)o;
   {
     e = __Pyx_call_type_traverse(o, 1, v, a);
     if (e) return e;
@@ -26218,27 +26218,27 @@ static int __pyx_tp_traverse_10algorithms_5track___pyx_scope_struct_1_genexpr(Py
   return 0;
 }
 #if CYTHON_USE_TYPE_SPECS
-static PyType_Slot __pyx_type_10algorithms_5track___pyx_scope_struct_1_genexpr_slots[] = {
-  {Py_tp_dealloc, (void *)__pyx_tp_dealloc_10algorithms_5track___pyx_scope_struct_1_genexpr},
-  {Py_tp_traverse, (void *)__pyx_tp_traverse_10algorithms_5track___pyx_scope_struct_1_genexpr},
-  {Py_tp_new, (void *)__pyx_tp_new_10algorithms_5track___pyx_scope_struct_1_genexpr},
+static PyType_Slot __pyx_type_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr_slots[] = {
+  {Py_tp_dealloc, (void *)__pyx_tp_dealloc_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr},
+  {Py_tp_traverse, (void *)__pyx_tp_traverse_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr},
+  {Py_tp_new, (void *)__pyx_tp_new_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr},
   {0, 0},
 };
-static PyType_Spec __pyx_type_10algorithms_5track___pyx_scope_struct_1_genexpr_spec = {
-  "algorithms.track.__pyx_scope_struct_1_genexpr",
-  sizeof(struct __pyx_obj_10algorithms_5track___pyx_scope_struct_1_genexpr),
+static PyType_Spec __pyx_type_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr_spec = {
+  "openptv2.algorithms.track.__pyx_scope_struct_1_genexpr",
+  sizeof(struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr),
   0,
   Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_HAVE_GC,
-  __pyx_type_10algorithms_5track___pyx_scope_struct_1_genexpr_slots,
+  __pyx_type_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr_slots,
 };
 #else
 
-static PyTypeObject __pyx_type_10algorithms_5track___pyx_scope_struct_1_genexpr = {
+static PyTypeObject __pyx_type_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr = {
   PyVarObject_HEAD_INIT(0, 0)
-  "algorithms.track.""__pyx_scope_struct_1_genexpr", /*tp_name*/
-  sizeof(struct __pyx_obj_10algorithms_5track___pyx_scope_struct_1_genexpr), /*tp_basicsize*/
+  "openptv2.algorithms.track.""__pyx_scope_struct_1_genexpr", /*tp_name*/
+  sizeof(struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr), /*tp_basicsize*/
   0, /*tp_itemsize*/
-  __pyx_tp_dealloc_10algorithms_5track___pyx_scope_struct_1_genexpr, /*tp_dealloc*/
+  __pyx_tp_dealloc_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr, /*tp_dealloc*/
   0, /*tp_vectorcall_offset*/
   0, /*tp_getattr*/
   0, /*tp_setattr*/
@@ -26255,7 +26255,7 @@ static PyTypeObject __pyx_type_10algorithms_5track___pyx_scope_struct_1_genexpr 
   0, /*tp_as_buffer*/
   Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_HAVE_GC, /*tp_flags*/
   0, /*tp_doc*/
-  __pyx_tp_traverse_10algorithms_5track___pyx_scope_struct_1_genexpr, /*tp_traverse*/
+  __pyx_tp_traverse_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr, /*tp_traverse*/
   0, /*tp_clear*/
   0, /*tp_richcompare*/
   0, /*tp_weaklistoffset*/
@@ -26273,7 +26273,7 @@ static PyTypeObject __pyx_type_10algorithms_5track___pyx_scope_struct_1_genexpr 
   #endif
   0, /*tp_init*/
   0, /*tp_alloc*/
-  __pyx_tp_new_10algorithms_5track___pyx_scope_struct_1_genexpr, /*tp_new*/
+  __pyx_tp_new_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr, /*tp_new*/
   0, /*tp_free*/
   0, /*tp_is_gc*/
   0, /*tp_bases*/
@@ -26306,16 +26306,16 @@ static PyTypeObject __pyx_type_10algorithms_5track___pyx_scope_struct_1_genexpr 
 };
 #endif
 
-static PyObject *__pyx_tp_new_10algorithms_5track___pyx_scope_struct_2_genexpr(PyTypeObject *t, CYTHON_UNUSED PyObject *a, CYTHON_UNUSED PyObject *k) {
+static PyObject *__pyx_tp_new_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr(PyTypeObject *t, CYTHON_UNUSED PyObject *a, CYTHON_UNUSED PyObject *k) {
   PyObject *o;
   #if CYTHON_USE_FREELISTS
-  if (likely((int)(__pyx_mstate_global->__pyx_freecount_10algorithms_5track___pyx_scope_struct_2_genexpr > 0) & __PYX_CHECK_FINAL_TYPE_FOR_FREELISTS(t, __pyx_mstate_global->__pyx_ptype_10algorithms_5track___pyx_scope_struct_2_genexpr, sizeof(struct __pyx_obj_10algorithms_5track___pyx_scope_struct_2_genexpr))))
+  if (likely((int)(__pyx_mstate_global->__pyx_freecount_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr > 0) & __PYX_CHECK_FINAL_TYPE_FOR_FREELISTS(t, __pyx_mstate_global->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr, sizeof(struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr))))
   {
-    o = (PyObject*)__pyx_mstate_global->__pyx_freelist_10algorithms_5track___pyx_scope_struct_2_genexpr[--__pyx_mstate_global->__pyx_freecount_10algorithms_5track___pyx_scope_struct_2_genexpr];
+    o = (PyObject*)__pyx_mstate_global->__pyx_freelist_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr[--__pyx_mstate_global->__pyx_freecount_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr];
     #if CYTHON_USE_TYPE_SPECS
     Py_DECREF(Py_TYPE(o));
     #endif
-    memset(o, 0, sizeof(struct __pyx_obj_10algorithms_5track___pyx_scope_struct_2_genexpr));
+    memset(o, 0, sizeof(struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr));
     #if CYTHON_COMPILING_IN_LIMITED_API
     (void) PyObject_Init(o, t);
     #else
@@ -26331,11 +26331,11 @@ static PyObject *__pyx_tp_new_10algorithms_5track___pyx_scope_struct_2_genexpr(P
   return o;
 }
 
-static void __pyx_tp_dealloc_10algorithms_5track___pyx_scope_struct_2_genexpr(PyObject *o) {
-  struct __pyx_obj_10algorithms_5track___pyx_scope_struct_2_genexpr *p = (struct __pyx_obj_10algorithms_5track___pyx_scope_struct_2_genexpr *)o;
+static void __pyx_tp_dealloc_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr(PyObject *o) {
+  struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr *p = (struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr *)o;
   #if CYTHON_USE_TP_FINALIZE
   if (unlikely(__Pyx_PyObject_GetSlot(o, tp_finalize, destructor)) && !__Pyx_PyObject_GC_IsFinalized(o)) {
-    if (__Pyx_PyObject_GetSlot(o, tp_dealloc, destructor) == __pyx_tp_dealloc_10algorithms_5track___pyx_scope_struct_2_genexpr) {
+    if (__Pyx_PyObject_GetSlot(o, tp_dealloc, destructor) == __pyx_tp_dealloc_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr) {
       if (PyObject_CallFinalizerFromDealloc(o)) return;
     }
   }
@@ -26345,9 +26345,9 @@ static void __pyx_tp_dealloc_10algorithms_5track___pyx_scope_struct_2_genexpr(Py
   Py_CLEAR(p->__pyx_v_m);
   Py_CLEAR(p->__pyx_t_0);
   #if CYTHON_USE_FREELISTS
-  if (likely((int)(__pyx_mstate_global->__pyx_freecount_10algorithms_5track___pyx_scope_struct_2_genexpr < 8) & __PYX_CHECK_FINAL_TYPE_FOR_FREELISTS(Py_TYPE(o), __pyx_mstate_global->__pyx_ptype_10algorithms_5track___pyx_scope_struct_2_genexpr, sizeof(struct __pyx_obj_10algorithms_5track___pyx_scope_struct_2_genexpr))))
+  if (likely((int)(__pyx_mstate_global->__pyx_freecount_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr < 8) & __PYX_CHECK_FINAL_TYPE_FOR_FREELISTS(Py_TYPE(o), __pyx_mstate_global->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr, sizeof(struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr))))
   {
-    __pyx_mstate_global->__pyx_freelist_10algorithms_5track___pyx_scope_struct_2_genexpr[__pyx_mstate_global->__pyx_freecount_10algorithms_5track___pyx_scope_struct_2_genexpr++] = ((struct __pyx_obj_10algorithms_5track___pyx_scope_struct_2_genexpr *)o);
+    __pyx_mstate_global->__pyx_freelist_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr[__pyx_mstate_global->__pyx_freecount_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr++] = ((struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr *)o);
   } else
   #endif
   {
@@ -26366,9 +26366,9 @@ static void __pyx_tp_dealloc_10algorithms_5track___pyx_scope_struct_2_genexpr(Py
   }
 }
 
-static int __pyx_tp_traverse_10algorithms_5track___pyx_scope_struct_2_genexpr(PyObject *o, visitproc v, void *a) {
+static int __pyx_tp_traverse_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr(PyObject *o, visitproc v, void *a) {
   int e;
-  struct __pyx_obj_10algorithms_5track___pyx_scope_struct_2_genexpr *p = (struct __pyx_obj_10algorithms_5track___pyx_scope_struct_2_genexpr *)o;
+  struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr *p = (struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr *)o;
   {
     e = __Pyx_call_type_traverse(o, 1, v, a);
     if (e) return e;
@@ -26385,27 +26385,27 @@ static int __pyx_tp_traverse_10algorithms_5track___pyx_scope_struct_2_genexpr(Py
   return 0;
 }
 #if CYTHON_USE_TYPE_SPECS
-static PyType_Slot __pyx_type_10algorithms_5track___pyx_scope_struct_2_genexpr_slots[] = {
-  {Py_tp_dealloc, (void *)__pyx_tp_dealloc_10algorithms_5track___pyx_scope_struct_2_genexpr},
-  {Py_tp_traverse, (void *)__pyx_tp_traverse_10algorithms_5track___pyx_scope_struct_2_genexpr},
-  {Py_tp_new, (void *)__pyx_tp_new_10algorithms_5track___pyx_scope_struct_2_genexpr},
+static PyType_Slot __pyx_type_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr_slots[] = {
+  {Py_tp_dealloc, (void *)__pyx_tp_dealloc_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr},
+  {Py_tp_traverse, (void *)__pyx_tp_traverse_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr},
+  {Py_tp_new, (void *)__pyx_tp_new_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr},
   {0, 0},
 };
-static PyType_Spec __pyx_type_10algorithms_5track___pyx_scope_struct_2_genexpr_spec = {
-  "algorithms.track.__pyx_scope_struct_2_genexpr",
-  sizeof(struct __pyx_obj_10algorithms_5track___pyx_scope_struct_2_genexpr),
+static PyType_Spec __pyx_type_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr_spec = {
+  "openptv2.algorithms.track.__pyx_scope_struct_2_genexpr",
+  sizeof(struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr),
   0,
   Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_HAVE_GC,
-  __pyx_type_10algorithms_5track___pyx_scope_struct_2_genexpr_slots,
+  __pyx_type_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr_slots,
 };
 #else
 
-static PyTypeObject __pyx_type_10algorithms_5track___pyx_scope_struct_2_genexpr = {
+static PyTypeObject __pyx_type_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr = {
   PyVarObject_HEAD_INIT(0, 0)
-  "algorithms.track.""__pyx_scope_struct_2_genexpr", /*tp_name*/
-  sizeof(struct __pyx_obj_10algorithms_5track___pyx_scope_struct_2_genexpr), /*tp_basicsize*/
+  "openptv2.algorithms.track.""__pyx_scope_struct_2_genexpr", /*tp_name*/
+  sizeof(struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr), /*tp_basicsize*/
   0, /*tp_itemsize*/
-  __pyx_tp_dealloc_10algorithms_5track___pyx_scope_struct_2_genexpr, /*tp_dealloc*/
+  __pyx_tp_dealloc_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr, /*tp_dealloc*/
   0, /*tp_vectorcall_offset*/
   0, /*tp_getattr*/
   0, /*tp_setattr*/
@@ -26422,7 +26422,7 @@ static PyTypeObject __pyx_type_10algorithms_5track___pyx_scope_struct_2_genexpr 
   0, /*tp_as_buffer*/
   Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_HAVE_GC, /*tp_flags*/
   0, /*tp_doc*/
-  __pyx_tp_traverse_10algorithms_5track___pyx_scope_struct_2_genexpr, /*tp_traverse*/
+  __pyx_tp_traverse_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr, /*tp_traverse*/
   0, /*tp_clear*/
   0, /*tp_richcompare*/
   0, /*tp_weaklistoffset*/
@@ -26440,7 +26440,7 @@ static PyTypeObject __pyx_type_10algorithms_5track___pyx_scope_struct_2_genexpr 
   #endif
   0, /*tp_init*/
   0, /*tp_alloc*/
-  __pyx_tp_new_10algorithms_5track___pyx_scope_struct_2_genexpr, /*tp_new*/
+  __pyx_tp_new_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr, /*tp_new*/
   0, /*tp_free*/
   0, /*tp_is_gc*/
   0, /*tp_bases*/
@@ -26473,16 +26473,16 @@ static PyTypeObject __pyx_type_10algorithms_5track___pyx_scope_struct_2_genexpr 
 };
 #endif
 
-static PyObject *__pyx_tp_new_10algorithms_5track___pyx_scope_struct_3_genexpr(PyTypeObject *t, CYTHON_UNUSED PyObject *a, CYTHON_UNUSED PyObject *k) {
+static PyObject *__pyx_tp_new_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr(PyTypeObject *t, CYTHON_UNUSED PyObject *a, CYTHON_UNUSED PyObject *k) {
   PyObject *o;
   #if CYTHON_USE_FREELISTS
-  if (likely((int)(__pyx_mstate_global->__pyx_freecount_10algorithms_5track___pyx_scope_struct_3_genexpr > 0) & __PYX_CHECK_FINAL_TYPE_FOR_FREELISTS(t, __pyx_mstate_global->__pyx_ptype_10algorithms_5track___pyx_scope_struct_3_genexpr, sizeof(struct __pyx_obj_10algorithms_5track___pyx_scope_struct_3_genexpr))))
+  if (likely((int)(__pyx_mstate_global->__pyx_freecount_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr > 0) & __PYX_CHECK_FINAL_TYPE_FOR_FREELISTS(t, __pyx_mstate_global->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr, sizeof(struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr))))
   {
-    o = (PyObject*)__pyx_mstate_global->__pyx_freelist_10algorithms_5track___pyx_scope_struct_3_genexpr[--__pyx_mstate_global->__pyx_freecount_10algorithms_5track___pyx_scope_struct_3_genexpr];
+    o = (PyObject*)__pyx_mstate_global->__pyx_freelist_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr[--__pyx_mstate_global->__pyx_freecount_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr];
     #if CYTHON_USE_TYPE_SPECS
     Py_DECREF(Py_TYPE(o));
     #endif
-    memset(o, 0, sizeof(struct __pyx_obj_10algorithms_5track___pyx_scope_struct_3_genexpr));
+    memset(o, 0, sizeof(struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr));
     #if CYTHON_COMPILING_IN_LIMITED_API
     (void) PyObject_Init(o, t);
     #else
@@ -26498,11 +26498,11 @@ static PyObject *__pyx_tp_new_10algorithms_5track___pyx_scope_struct_3_genexpr(P
   return o;
 }
 
-static void __pyx_tp_dealloc_10algorithms_5track___pyx_scope_struct_3_genexpr(PyObject *o) {
-  struct __pyx_obj_10algorithms_5track___pyx_scope_struct_3_genexpr *p = (struct __pyx_obj_10algorithms_5track___pyx_scope_struct_3_genexpr *)o;
+static void __pyx_tp_dealloc_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr(PyObject *o) {
+  struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr *p = (struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr *)o;
   #if CYTHON_USE_TP_FINALIZE
   if (unlikely(__Pyx_PyObject_GetSlot(o, tp_finalize, destructor)) && !__Pyx_PyObject_GC_IsFinalized(o)) {
-    if (__Pyx_PyObject_GetSlot(o, tp_dealloc, destructor) == __pyx_tp_dealloc_10algorithms_5track___pyx_scope_struct_3_genexpr) {
+    if (__Pyx_PyObject_GetSlot(o, tp_dealloc, destructor) == __pyx_tp_dealloc_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr) {
       if (PyObject_CallFinalizerFromDealloc(o)) return;
     }
   }
@@ -26512,9 +26512,9 @@ static void __pyx_tp_dealloc_10algorithms_5track___pyx_scope_struct_3_genexpr(Py
   Py_CLEAR(p->__pyx_v_m);
   Py_CLEAR(p->__pyx_t_0);
   #if CYTHON_USE_FREELISTS
-  if (likely((int)(__pyx_mstate_global->__pyx_freecount_10algorithms_5track___pyx_scope_struct_3_genexpr < 8) & __PYX_CHECK_FINAL_TYPE_FOR_FREELISTS(Py_TYPE(o), __pyx_mstate_global->__pyx_ptype_10algorithms_5track___pyx_scope_struct_3_genexpr, sizeof(struct __pyx_obj_10algorithms_5track___pyx_scope_struct_3_genexpr))))
+  if (likely((int)(__pyx_mstate_global->__pyx_freecount_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr < 8) & __PYX_CHECK_FINAL_TYPE_FOR_FREELISTS(Py_TYPE(o), __pyx_mstate_global->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr, sizeof(struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr))))
   {
-    __pyx_mstate_global->__pyx_freelist_10algorithms_5track___pyx_scope_struct_3_genexpr[__pyx_mstate_global->__pyx_freecount_10algorithms_5track___pyx_scope_struct_3_genexpr++] = ((struct __pyx_obj_10algorithms_5track___pyx_scope_struct_3_genexpr *)o);
+    __pyx_mstate_global->__pyx_freelist_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr[__pyx_mstate_global->__pyx_freecount_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr++] = ((struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr *)o);
   } else
   #endif
   {
@@ -26533,9 +26533,9 @@ static void __pyx_tp_dealloc_10algorithms_5track___pyx_scope_struct_3_genexpr(Py
   }
 }
 
-static int __pyx_tp_traverse_10algorithms_5track___pyx_scope_struct_3_genexpr(PyObject *o, visitproc v, void *a) {
+static int __pyx_tp_traverse_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr(PyObject *o, visitproc v, void *a) {
   int e;
-  struct __pyx_obj_10algorithms_5track___pyx_scope_struct_3_genexpr *p = (struct __pyx_obj_10algorithms_5track___pyx_scope_struct_3_genexpr *)o;
+  struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr *p = (struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr *)o;
   {
     e = __Pyx_call_type_traverse(o, 1, v, a);
     if (e) return e;
@@ -26552,27 +26552,27 @@ static int __pyx_tp_traverse_10algorithms_5track___pyx_scope_struct_3_genexpr(Py
   return 0;
 }
 #if CYTHON_USE_TYPE_SPECS
-static PyType_Slot __pyx_type_10algorithms_5track___pyx_scope_struct_3_genexpr_slots[] = {
-  {Py_tp_dealloc, (void *)__pyx_tp_dealloc_10algorithms_5track___pyx_scope_struct_3_genexpr},
-  {Py_tp_traverse, (void *)__pyx_tp_traverse_10algorithms_5track___pyx_scope_struct_3_genexpr},
-  {Py_tp_new, (void *)__pyx_tp_new_10algorithms_5track___pyx_scope_struct_3_genexpr},
+static PyType_Slot __pyx_type_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr_slots[] = {
+  {Py_tp_dealloc, (void *)__pyx_tp_dealloc_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr},
+  {Py_tp_traverse, (void *)__pyx_tp_traverse_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr},
+  {Py_tp_new, (void *)__pyx_tp_new_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr},
   {0, 0},
 };
-static PyType_Spec __pyx_type_10algorithms_5track___pyx_scope_struct_3_genexpr_spec = {
-  "algorithms.track.__pyx_scope_struct_3_genexpr",
-  sizeof(struct __pyx_obj_10algorithms_5track___pyx_scope_struct_3_genexpr),
+static PyType_Spec __pyx_type_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr_spec = {
+  "openptv2.algorithms.track.__pyx_scope_struct_3_genexpr",
+  sizeof(struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr),
   0,
   Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_HAVE_GC,
-  __pyx_type_10algorithms_5track___pyx_scope_struct_3_genexpr_slots,
+  __pyx_type_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr_slots,
 };
 #else
 
-static PyTypeObject __pyx_type_10algorithms_5track___pyx_scope_struct_3_genexpr = {
+static PyTypeObject __pyx_type_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr = {
   PyVarObject_HEAD_INIT(0, 0)
-  "algorithms.track.""__pyx_scope_struct_3_genexpr", /*tp_name*/
-  sizeof(struct __pyx_obj_10algorithms_5track___pyx_scope_struct_3_genexpr), /*tp_basicsize*/
+  "openptv2.algorithms.track.""__pyx_scope_struct_3_genexpr", /*tp_name*/
+  sizeof(struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr), /*tp_basicsize*/
   0, /*tp_itemsize*/
-  __pyx_tp_dealloc_10algorithms_5track___pyx_scope_struct_3_genexpr, /*tp_dealloc*/
+  __pyx_tp_dealloc_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr, /*tp_dealloc*/
   0, /*tp_vectorcall_offset*/
   0, /*tp_getattr*/
   0, /*tp_setattr*/
@@ -26589,7 +26589,7 @@ static PyTypeObject __pyx_type_10algorithms_5track___pyx_scope_struct_3_genexpr 
   0, /*tp_as_buffer*/
   Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_HAVE_GC, /*tp_flags*/
   0, /*tp_doc*/
-  __pyx_tp_traverse_10algorithms_5track___pyx_scope_struct_3_genexpr, /*tp_traverse*/
+  __pyx_tp_traverse_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr, /*tp_traverse*/
   0, /*tp_clear*/
   0, /*tp_richcompare*/
   0, /*tp_weaklistoffset*/
@@ -26607,7 +26607,7 @@ static PyTypeObject __pyx_type_10algorithms_5track___pyx_scope_struct_3_genexpr 
   #endif
   0, /*tp_init*/
   0, /*tp_alloc*/
-  __pyx_tp_new_10algorithms_5track___pyx_scope_struct_3_genexpr, /*tp_new*/
+  __pyx_tp_new_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr, /*tp_new*/
   0, /*tp_free*/
   0, /*tp_is_gc*/
   0, /*tp_bases*/
@@ -26640,16 +26640,16 @@ static PyTypeObject __pyx_type_10algorithms_5track___pyx_scope_struct_3_genexpr 
 };
 #endif
 
-static PyObject *__pyx_tp_new_10algorithms_5track___pyx_scope_struct_4_genexpr(PyTypeObject *t, CYTHON_UNUSED PyObject *a, CYTHON_UNUSED PyObject *k) {
+static PyObject *__pyx_tp_new_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr(PyTypeObject *t, CYTHON_UNUSED PyObject *a, CYTHON_UNUSED PyObject *k) {
   PyObject *o;
   #if CYTHON_USE_FREELISTS
-  if (likely((int)(__pyx_mstate_global->__pyx_freecount_10algorithms_5track___pyx_scope_struct_4_genexpr > 0) & __PYX_CHECK_FINAL_TYPE_FOR_FREELISTS(t, __pyx_mstate_global->__pyx_ptype_10algorithms_5track___pyx_scope_struct_4_genexpr, sizeof(struct __pyx_obj_10algorithms_5track___pyx_scope_struct_4_genexpr))))
+  if (likely((int)(__pyx_mstate_global->__pyx_freecount_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr > 0) & __PYX_CHECK_FINAL_TYPE_FOR_FREELISTS(t, __pyx_mstate_global->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr, sizeof(struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr))))
   {
-    o = (PyObject*)__pyx_mstate_global->__pyx_freelist_10algorithms_5track___pyx_scope_struct_4_genexpr[--__pyx_mstate_global->__pyx_freecount_10algorithms_5track___pyx_scope_struct_4_genexpr];
+    o = (PyObject*)__pyx_mstate_global->__pyx_freelist_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr[--__pyx_mstate_global->__pyx_freecount_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr];
     #if CYTHON_USE_TYPE_SPECS
     Py_DECREF(Py_TYPE(o));
     #endif
-    memset(o, 0, sizeof(struct __pyx_obj_10algorithms_5track___pyx_scope_struct_4_genexpr));
+    memset(o, 0, sizeof(struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr));
     #if CYTHON_COMPILING_IN_LIMITED_API
     (void) PyObject_Init(o, t);
     #else
@@ -26665,11 +26665,11 @@ static PyObject *__pyx_tp_new_10algorithms_5track___pyx_scope_struct_4_genexpr(P
   return o;
 }
 
-static void __pyx_tp_dealloc_10algorithms_5track___pyx_scope_struct_4_genexpr(PyObject *o) {
-  struct __pyx_obj_10algorithms_5track___pyx_scope_struct_4_genexpr *p = (struct __pyx_obj_10algorithms_5track___pyx_scope_struct_4_genexpr *)o;
+static void __pyx_tp_dealloc_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr(PyObject *o) {
+  struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr *p = (struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr *)o;
   #if CYTHON_USE_TP_FINALIZE
   if (unlikely(__Pyx_PyObject_GetSlot(o, tp_finalize, destructor)) && !__Pyx_PyObject_GC_IsFinalized(o)) {
-    if (__Pyx_PyObject_GetSlot(o, tp_dealloc, destructor) == __pyx_tp_dealloc_10algorithms_5track___pyx_scope_struct_4_genexpr) {
+    if (__Pyx_PyObject_GetSlot(o, tp_dealloc, destructor) == __pyx_tp_dealloc_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr) {
       if (PyObject_CallFinalizerFromDealloc(o)) return;
     }
   }
@@ -26679,9 +26679,9 @@ static void __pyx_tp_dealloc_10algorithms_5track___pyx_scope_struct_4_genexpr(Py
   Py_CLEAR(p->__pyx_v_m);
   Py_CLEAR(p->__pyx_t_0);
   #if CYTHON_USE_FREELISTS
-  if (likely((int)(__pyx_mstate_global->__pyx_freecount_10algorithms_5track___pyx_scope_struct_4_genexpr < 8) & __PYX_CHECK_FINAL_TYPE_FOR_FREELISTS(Py_TYPE(o), __pyx_mstate_global->__pyx_ptype_10algorithms_5track___pyx_scope_struct_4_genexpr, sizeof(struct __pyx_obj_10algorithms_5track___pyx_scope_struct_4_genexpr))))
+  if (likely((int)(__pyx_mstate_global->__pyx_freecount_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr < 8) & __PYX_CHECK_FINAL_TYPE_FOR_FREELISTS(Py_TYPE(o), __pyx_mstate_global->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr, sizeof(struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr))))
   {
-    __pyx_mstate_global->__pyx_freelist_10algorithms_5track___pyx_scope_struct_4_genexpr[__pyx_mstate_global->__pyx_freecount_10algorithms_5track___pyx_scope_struct_4_genexpr++] = ((struct __pyx_obj_10algorithms_5track___pyx_scope_struct_4_genexpr *)o);
+    __pyx_mstate_global->__pyx_freelist_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr[__pyx_mstate_global->__pyx_freecount_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr++] = ((struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr *)o);
   } else
   #endif
   {
@@ -26700,9 +26700,9 @@ static void __pyx_tp_dealloc_10algorithms_5track___pyx_scope_struct_4_genexpr(Py
   }
 }
 
-static int __pyx_tp_traverse_10algorithms_5track___pyx_scope_struct_4_genexpr(PyObject *o, visitproc v, void *a) {
+static int __pyx_tp_traverse_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr(PyObject *o, visitproc v, void *a) {
   int e;
-  struct __pyx_obj_10algorithms_5track___pyx_scope_struct_4_genexpr *p = (struct __pyx_obj_10algorithms_5track___pyx_scope_struct_4_genexpr *)o;
+  struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr *p = (struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr *)o;
   {
     e = __Pyx_call_type_traverse(o, 1, v, a);
     if (e) return e;
@@ -26719,27 +26719,27 @@ static int __pyx_tp_traverse_10algorithms_5track___pyx_scope_struct_4_genexpr(Py
   return 0;
 }
 #if CYTHON_USE_TYPE_SPECS
-static PyType_Slot __pyx_type_10algorithms_5track___pyx_scope_struct_4_genexpr_slots[] = {
-  {Py_tp_dealloc, (void *)__pyx_tp_dealloc_10algorithms_5track___pyx_scope_struct_4_genexpr},
-  {Py_tp_traverse, (void *)__pyx_tp_traverse_10algorithms_5track___pyx_scope_struct_4_genexpr},
-  {Py_tp_new, (void *)__pyx_tp_new_10algorithms_5track___pyx_scope_struct_4_genexpr},
+static PyType_Slot __pyx_type_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr_slots[] = {
+  {Py_tp_dealloc, (void *)__pyx_tp_dealloc_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr},
+  {Py_tp_traverse, (void *)__pyx_tp_traverse_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr},
+  {Py_tp_new, (void *)__pyx_tp_new_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr},
   {0, 0},
 };
-static PyType_Spec __pyx_type_10algorithms_5track___pyx_scope_struct_4_genexpr_spec = {
-  "algorithms.track.__pyx_scope_struct_4_genexpr",
-  sizeof(struct __pyx_obj_10algorithms_5track___pyx_scope_struct_4_genexpr),
+static PyType_Spec __pyx_type_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr_spec = {
+  "openptv2.algorithms.track.__pyx_scope_struct_4_genexpr",
+  sizeof(struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr),
   0,
   Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_HAVE_GC,
-  __pyx_type_10algorithms_5track___pyx_scope_struct_4_genexpr_slots,
+  __pyx_type_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr_slots,
 };
 #else
 
-static PyTypeObject __pyx_type_10algorithms_5track___pyx_scope_struct_4_genexpr = {
+static PyTypeObject __pyx_type_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr = {
   PyVarObject_HEAD_INIT(0, 0)
-  "algorithms.track.""__pyx_scope_struct_4_genexpr", /*tp_name*/
-  sizeof(struct __pyx_obj_10algorithms_5track___pyx_scope_struct_4_genexpr), /*tp_basicsize*/
+  "openptv2.algorithms.track.""__pyx_scope_struct_4_genexpr", /*tp_name*/
+  sizeof(struct __pyx_obj_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr), /*tp_basicsize*/
   0, /*tp_itemsize*/
-  __pyx_tp_dealloc_10algorithms_5track___pyx_scope_struct_4_genexpr, /*tp_dealloc*/
+  __pyx_tp_dealloc_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr, /*tp_dealloc*/
   0, /*tp_vectorcall_offset*/
   0, /*tp_getattr*/
   0, /*tp_setattr*/
@@ -26756,7 +26756,7 @@ static PyTypeObject __pyx_type_10algorithms_5track___pyx_scope_struct_4_genexpr 
   0, /*tp_as_buffer*/
   Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_HAVE_GC, /*tp_flags*/
   0, /*tp_doc*/
-  __pyx_tp_traverse_10algorithms_5track___pyx_scope_struct_4_genexpr, /*tp_traverse*/
+  __pyx_tp_traverse_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr, /*tp_traverse*/
   0, /*tp_clear*/
   0, /*tp_richcompare*/
   0, /*tp_weaklistoffset*/
@@ -26774,7 +26774,7 @@ static PyTypeObject __pyx_type_10algorithms_5track___pyx_scope_struct_4_genexpr 
   #endif
   0, /*tp_init*/
   0, /*tp_alloc*/
-  __pyx_tp_new_10algorithms_5track___pyx_scope_struct_4_genexpr, /*tp_new*/
+  __pyx_tp_new_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr, /*tp_new*/
   0, /*tp_free*/
   0, /*tp_is_gc*/
   0, /*tp_bases*/
@@ -26861,98 +26861,98 @@ static int __Pyx_modinit_type_init_code(__pyx_mstatetype *__pyx_mstate) {
   __Pyx_RefNannySetupContext("__Pyx_modinit_type_init_code", 0);
   /*--- Type init code ---*/
   #if CYTHON_USE_TYPE_SPECS
-  __pyx_mstate->__pyx_ptype_10algorithms_5track___pyx_scope_struct__genexpr = (PyTypeObject *) __Pyx_PyType_FromModuleAndSpec(__pyx_m, &__pyx_type_10algorithms_5track___pyx_scope_struct__genexpr_spec, NULL); if (unlikely(!__pyx_mstate->__pyx_ptype_10algorithms_5track___pyx_scope_struct__genexpr)) __PYX_ERR(0, 62, __pyx_L1_error)
-  if (__Pyx_fix_up_extension_type_from_spec(&__pyx_type_10algorithms_5track___pyx_scope_struct__genexpr_spec, __pyx_mstate->__pyx_ptype_10algorithms_5track___pyx_scope_struct__genexpr) < (0)) __PYX_ERR(0, 62, __pyx_L1_error)
+  __pyx_mstate->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr = (PyTypeObject *) __Pyx_PyType_FromModuleAndSpec(__pyx_m, &__pyx_type_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr_spec, NULL); if (unlikely(!__pyx_mstate->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr)) __PYX_ERR(0, 62, __pyx_L1_error)
+  if (__Pyx_fix_up_extension_type_from_spec(&__pyx_type_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr_spec, __pyx_mstate->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr) < (0)) __PYX_ERR(0, 62, __pyx_L1_error)
   #else
-  __pyx_mstate->__pyx_ptype_10algorithms_5track___pyx_scope_struct__genexpr = &__pyx_type_10algorithms_5track___pyx_scope_struct__genexpr;
+  __pyx_mstate->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr = &__pyx_type_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr;
   #endif
   #if !CYTHON_COMPILING_IN_LIMITED_API
   #endif
   #if !CYTHON_USE_TYPE_SPECS
-  if (__Pyx_PyType_Ready(__pyx_mstate->__pyx_ptype_10algorithms_5track___pyx_scope_struct__genexpr) < (0)) __PYX_ERR(0, 62, __pyx_L1_error)
+  if (__Pyx_PyType_Ready(__pyx_mstate->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr) < (0)) __PYX_ERR(0, 62, __pyx_L1_error)
   #endif
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
-  PyUnstable_Object_EnableDeferredRefcount((PyObject*)__pyx_mstate->__pyx_ptype_10algorithms_5track___pyx_scope_struct__genexpr);
+  PyUnstable_Object_EnableDeferredRefcount((PyObject*)__pyx_mstate->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr);
   #endif
   #if !CYTHON_COMPILING_IN_LIMITED_API
-  if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_mstate->__pyx_ptype_10algorithms_5track___pyx_scope_struct__genexpr->tp_dictoffset && __pyx_mstate->__pyx_ptype_10algorithms_5track___pyx_scope_struct__genexpr->tp_getattro == PyObject_GenericGetAttr)) {
-    __pyx_mstate->__pyx_ptype_10algorithms_5track___pyx_scope_struct__genexpr->tp_getattro = PyObject_GenericGetAttr;
+  if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_mstate->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr->tp_dictoffset && __pyx_mstate->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr->tp_getattro == PyObject_GenericGetAttr)) {
+    __pyx_mstate->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct__genexpr->tp_getattro = PyObject_GenericGetAttr;
   }
   #endif
   #if CYTHON_USE_TYPE_SPECS
-  __pyx_mstate->__pyx_ptype_10algorithms_5track___pyx_scope_struct_1_genexpr = (PyTypeObject *) __Pyx_PyType_FromModuleAndSpec(__pyx_m, &__pyx_type_10algorithms_5track___pyx_scope_struct_1_genexpr_spec, NULL); if (unlikely(!__pyx_mstate->__pyx_ptype_10algorithms_5track___pyx_scope_struct_1_genexpr)) __PYX_ERR(0, 63, __pyx_L1_error)
-  if (__Pyx_fix_up_extension_type_from_spec(&__pyx_type_10algorithms_5track___pyx_scope_struct_1_genexpr_spec, __pyx_mstate->__pyx_ptype_10algorithms_5track___pyx_scope_struct_1_genexpr) < (0)) __PYX_ERR(0, 63, __pyx_L1_error)
+  __pyx_mstate->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr = (PyTypeObject *) __Pyx_PyType_FromModuleAndSpec(__pyx_m, &__pyx_type_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr_spec, NULL); if (unlikely(!__pyx_mstate->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr)) __PYX_ERR(0, 63, __pyx_L1_error)
+  if (__Pyx_fix_up_extension_type_from_spec(&__pyx_type_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr_spec, __pyx_mstate->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr) < (0)) __PYX_ERR(0, 63, __pyx_L1_error)
   #else
-  __pyx_mstate->__pyx_ptype_10algorithms_5track___pyx_scope_struct_1_genexpr = &__pyx_type_10algorithms_5track___pyx_scope_struct_1_genexpr;
+  __pyx_mstate->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr = &__pyx_type_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr;
   #endif
   #if !CYTHON_COMPILING_IN_LIMITED_API
   #endif
   #if !CYTHON_USE_TYPE_SPECS
-  if (__Pyx_PyType_Ready(__pyx_mstate->__pyx_ptype_10algorithms_5track___pyx_scope_struct_1_genexpr) < (0)) __PYX_ERR(0, 63, __pyx_L1_error)
+  if (__Pyx_PyType_Ready(__pyx_mstate->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr) < (0)) __PYX_ERR(0, 63, __pyx_L1_error)
   #endif
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
-  PyUnstable_Object_EnableDeferredRefcount((PyObject*)__pyx_mstate->__pyx_ptype_10algorithms_5track___pyx_scope_struct_1_genexpr);
+  PyUnstable_Object_EnableDeferredRefcount((PyObject*)__pyx_mstate->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr);
   #endif
   #if !CYTHON_COMPILING_IN_LIMITED_API
-  if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_mstate->__pyx_ptype_10algorithms_5track___pyx_scope_struct_1_genexpr->tp_dictoffset && __pyx_mstate->__pyx_ptype_10algorithms_5track___pyx_scope_struct_1_genexpr->tp_getattro == PyObject_GenericGetAttr)) {
-    __pyx_mstate->__pyx_ptype_10algorithms_5track___pyx_scope_struct_1_genexpr->tp_getattro = PyObject_GenericGetAttr;
+  if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_mstate->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr->tp_dictoffset && __pyx_mstate->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr->tp_getattro == PyObject_GenericGetAttr)) {
+    __pyx_mstate->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_1_genexpr->tp_getattro = PyObject_GenericGetAttr;
   }
   #endif
   #if CYTHON_USE_TYPE_SPECS
-  __pyx_mstate->__pyx_ptype_10algorithms_5track___pyx_scope_struct_2_genexpr = (PyTypeObject *) __Pyx_PyType_FromModuleAndSpec(__pyx_m, &__pyx_type_10algorithms_5track___pyx_scope_struct_2_genexpr_spec, NULL); if (unlikely(!__pyx_mstate->__pyx_ptype_10algorithms_5track___pyx_scope_struct_2_genexpr)) __PYX_ERR(0, 64, __pyx_L1_error)
-  if (__Pyx_fix_up_extension_type_from_spec(&__pyx_type_10algorithms_5track___pyx_scope_struct_2_genexpr_spec, __pyx_mstate->__pyx_ptype_10algorithms_5track___pyx_scope_struct_2_genexpr) < (0)) __PYX_ERR(0, 64, __pyx_L1_error)
+  __pyx_mstate->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr = (PyTypeObject *) __Pyx_PyType_FromModuleAndSpec(__pyx_m, &__pyx_type_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr_spec, NULL); if (unlikely(!__pyx_mstate->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr)) __PYX_ERR(0, 64, __pyx_L1_error)
+  if (__Pyx_fix_up_extension_type_from_spec(&__pyx_type_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr_spec, __pyx_mstate->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr) < (0)) __PYX_ERR(0, 64, __pyx_L1_error)
   #else
-  __pyx_mstate->__pyx_ptype_10algorithms_5track___pyx_scope_struct_2_genexpr = &__pyx_type_10algorithms_5track___pyx_scope_struct_2_genexpr;
+  __pyx_mstate->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr = &__pyx_type_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr;
   #endif
   #if !CYTHON_COMPILING_IN_LIMITED_API
   #endif
   #if !CYTHON_USE_TYPE_SPECS
-  if (__Pyx_PyType_Ready(__pyx_mstate->__pyx_ptype_10algorithms_5track___pyx_scope_struct_2_genexpr) < (0)) __PYX_ERR(0, 64, __pyx_L1_error)
+  if (__Pyx_PyType_Ready(__pyx_mstate->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr) < (0)) __PYX_ERR(0, 64, __pyx_L1_error)
   #endif
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
-  PyUnstable_Object_EnableDeferredRefcount((PyObject*)__pyx_mstate->__pyx_ptype_10algorithms_5track___pyx_scope_struct_2_genexpr);
+  PyUnstable_Object_EnableDeferredRefcount((PyObject*)__pyx_mstate->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr);
   #endif
   #if !CYTHON_COMPILING_IN_LIMITED_API
-  if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_mstate->__pyx_ptype_10algorithms_5track___pyx_scope_struct_2_genexpr->tp_dictoffset && __pyx_mstate->__pyx_ptype_10algorithms_5track___pyx_scope_struct_2_genexpr->tp_getattro == PyObject_GenericGetAttr)) {
-    __pyx_mstate->__pyx_ptype_10algorithms_5track___pyx_scope_struct_2_genexpr->tp_getattro = PyObject_GenericGetAttr;
+  if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_mstate->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr->tp_dictoffset && __pyx_mstate->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr->tp_getattro == PyObject_GenericGetAttr)) {
+    __pyx_mstate->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_2_genexpr->tp_getattro = PyObject_GenericGetAttr;
   }
   #endif
   #if CYTHON_USE_TYPE_SPECS
-  __pyx_mstate->__pyx_ptype_10algorithms_5track___pyx_scope_struct_3_genexpr = (PyTypeObject *) __Pyx_PyType_FromModuleAndSpec(__pyx_m, &__pyx_type_10algorithms_5track___pyx_scope_struct_3_genexpr_spec, NULL); if (unlikely(!__pyx_mstate->__pyx_ptype_10algorithms_5track___pyx_scope_struct_3_genexpr)) __PYX_ERR(0, 65, __pyx_L1_error)
-  if (__Pyx_fix_up_extension_type_from_spec(&__pyx_type_10algorithms_5track___pyx_scope_struct_3_genexpr_spec, __pyx_mstate->__pyx_ptype_10algorithms_5track___pyx_scope_struct_3_genexpr) < (0)) __PYX_ERR(0, 65, __pyx_L1_error)
+  __pyx_mstate->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr = (PyTypeObject *) __Pyx_PyType_FromModuleAndSpec(__pyx_m, &__pyx_type_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr_spec, NULL); if (unlikely(!__pyx_mstate->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr)) __PYX_ERR(0, 65, __pyx_L1_error)
+  if (__Pyx_fix_up_extension_type_from_spec(&__pyx_type_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr_spec, __pyx_mstate->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr) < (0)) __PYX_ERR(0, 65, __pyx_L1_error)
   #else
-  __pyx_mstate->__pyx_ptype_10algorithms_5track___pyx_scope_struct_3_genexpr = &__pyx_type_10algorithms_5track___pyx_scope_struct_3_genexpr;
+  __pyx_mstate->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr = &__pyx_type_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr;
   #endif
   #if !CYTHON_COMPILING_IN_LIMITED_API
   #endif
   #if !CYTHON_USE_TYPE_SPECS
-  if (__Pyx_PyType_Ready(__pyx_mstate->__pyx_ptype_10algorithms_5track___pyx_scope_struct_3_genexpr) < (0)) __PYX_ERR(0, 65, __pyx_L1_error)
+  if (__Pyx_PyType_Ready(__pyx_mstate->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr) < (0)) __PYX_ERR(0, 65, __pyx_L1_error)
   #endif
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
-  PyUnstable_Object_EnableDeferredRefcount((PyObject*)__pyx_mstate->__pyx_ptype_10algorithms_5track___pyx_scope_struct_3_genexpr);
+  PyUnstable_Object_EnableDeferredRefcount((PyObject*)__pyx_mstate->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr);
   #endif
   #if !CYTHON_COMPILING_IN_LIMITED_API
-  if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_mstate->__pyx_ptype_10algorithms_5track___pyx_scope_struct_3_genexpr->tp_dictoffset && __pyx_mstate->__pyx_ptype_10algorithms_5track___pyx_scope_struct_3_genexpr->tp_getattro == PyObject_GenericGetAttr)) {
-    __pyx_mstate->__pyx_ptype_10algorithms_5track___pyx_scope_struct_3_genexpr->tp_getattro = PyObject_GenericGetAttr;
+  if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_mstate->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr->tp_dictoffset && __pyx_mstate->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr->tp_getattro == PyObject_GenericGetAttr)) {
+    __pyx_mstate->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_3_genexpr->tp_getattro = PyObject_GenericGetAttr;
   }
   #endif
   #if CYTHON_USE_TYPE_SPECS
-  __pyx_mstate->__pyx_ptype_10algorithms_5track___pyx_scope_struct_4_genexpr = (PyTypeObject *) __Pyx_PyType_FromModuleAndSpec(__pyx_m, &__pyx_type_10algorithms_5track___pyx_scope_struct_4_genexpr_spec, NULL); if (unlikely(!__pyx_mstate->__pyx_ptype_10algorithms_5track___pyx_scope_struct_4_genexpr)) __PYX_ERR(0, 66, __pyx_L1_error)
-  if (__Pyx_fix_up_extension_type_from_spec(&__pyx_type_10algorithms_5track___pyx_scope_struct_4_genexpr_spec, __pyx_mstate->__pyx_ptype_10algorithms_5track___pyx_scope_struct_4_genexpr) < (0)) __PYX_ERR(0, 66, __pyx_L1_error)
+  __pyx_mstate->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr = (PyTypeObject *) __Pyx_PyType_FromModuleAndSpec(__pyx_m, &__pyx_type_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr_spec, NULL); if (unlikely(!__pyx_mstate->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr)) __PYX_ERR(0, 66, __pyx_L1_error)
+  if (__Pyx_fix_up_extension_type_from_spec(&__pyx_type_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr_spec, __pyx_mstate->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr) < (0)) __PYX_ERR(0, 66, __pyx_L1_error)
   #else
-  __pyx_mstate->__pyx_ptype_10algorithms_5track___pyx_scope_struct_4_genexpr = &__pyx_type_10algorithms_5track___pyx_scope_struct_4_genexpr;
+  __pyx_mstate->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr = &__pyx_type_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr;
   #endif
   #if !CYTHON_COMPILING_IN_LIMITED_API
   #endif
   #if !CYTHON_USE_TYPE_SPECS
-  if (__Pyx_PyType_Ready(__pyx_mstate->__pyx_ptype_10algorithms_5track___pyx_scope_struct_4_genexpr) < (0)) __PYX_ERR(0, 66, __pyx_L1_error)
+  if (__Pyx_PyType_Ready(__pyx_mstate->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr) < (0)) __PYX_ERR(0, 66, __pyx_L1_error)
   #endif
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
-  PyUnstable_Object_EnableDeferredRefcount((PyObject*)__pyx_mstate->__pyx_ptype_10algorithms_5track___pyx_scope_struct_4_genexpr);
+  PyUnstable_Object_EnableDeferredRefcount((PyObject*)__pyx_mstate->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr);
   #endif
   #if !CYTHON_COMPILING_IN_LIMITED_API
-  if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_mstate->__pyx_ptype_10algorithms_5track___pyx_scope_struct_4_genexpr->tp_dictoffset && __pyx_mstate->__pyx_ptype_10algorithms_5track___pyx_scope_struct_4_genexpr->tp_getattro == PyObject_GenericGetAttr)) {
-    __pyx_mstate->__pyx_ptype_10algorithms_5track___pyx_scope_struct_4_genexpr->tp_getattro = PyObject_GenericGetAttr;
+  if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_mstate->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr->tp_dictoffset && __pyx_mstate->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr->tp_getattro == PyObject_GenericGetAttr)) {
+    __pyx_mstate->__pyx_ptype_8openptv2_10algorithms_5track___pyx_scope_struct_4_genexpr->tp_getattro = PyObject_GenericGetAttr;
   }
   #endif
   __Pyx_RefNannyFinishContext();
@@ -27239,13 +27239,13 @@ __Pyx_RefNannySetupContext("PyInit_track", 0);
   if (__Pyx_InitConstants(__pyx_mstate) < (0)) __PYX_ERR(0, 1, __pyx_L1_error)
   stringtab_initialized = 1;
   if (__Pyx_InitGlobals() < (0)) __PYX_ERR(0, 1, __pyx_L1_error)
-  if (__pyx_module_is_main_algorithms__track) {
+  if (__pyx_module_is_main_openptv2__algorithms__track) {
     if (PyObject_SetAttr(__pyx_m, __pyx_mstate_global->__pyx_n_u_name, __pyx_mstate_global->__pyx_n_u_main) < (0)) __PYX_ERR(0, 1, __pyx_L1_error)
   }
   {
     PyObject *modules = PyImport_GetModuleDict(); if (unlikely(!modules)) __PYX_ERR(0, 1, __pyx_L1_error)
-    if (!PyDict_GetItemString(modules, "algorithms.track")) {
-      if (unlikely((PyDict_SetItemString(modules, "algorithms.track", __pyx_m) < 0))) __PYX_ERR(0, 1, __pyx_L1_error)
+    if (!PyDict_GetItemString(modules, "openptv2.algorithms.track")) {
+      if (unlikely((PyDict_SetItemString(modules, "openptv2.algorithms.track", __pyx_m) < 0))) __PYX_ERR(0, 1, __pyx_L1_error)
     }
   }
   /*--- Builtin init code ---*/
@@ -27263,7 +27263,7 @@ __Pyx_RefNannySetupContext("PyInit_track", 0);
   (void)__Pyx_modinit_function_import_code(__pyx_mstate);
   /*--- Execution code ---*/
 
-  /* "algorithms/track.py":3
+  /* "openptv2/algorithms/track.py":3
  * """Tracking algorithms  Python translation of lib/src/track.c."""
  * import cython
  * import numpy as np             # <<<<<<<<<<<<<<
@@ -27276,7 +27276,7 @@ __Pyx_RefNannySetupContext("PyInit_track", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_np, __pyx_t_2) < (0)) __PYX_ERR(0, 3, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/track.py":12
+  /* "openptv2/algorithms/track.py":12
  *     from math import sqrt as c_sqrt, sin as c_sin, cos as c_cos, acos as c_acos
  * 
  * _M_PI: cython.double = 3.141592653589793             # <<<<<<<<<<<<<<
@@ -27285,7 +27285,7 @@ __Pyx_RefNannySetupContext("PyInit_track", 0);
 */
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_M_PI, __pyx_mstate_global->__pyx_float_3_141592653589793) < (0)) __PYX_ERR(0, 12, __pyx_L1_error)
 
-  /* "algorithms/track.py":14
+  /* "openptv2/algorithms/track.py":14
  * _M_PI: cython.double = 3.141592653589793
  * 
  * from .constants import (             # <<<<<<<<<<<<<<
@@ -27294,7 +27294,7 @@ __Pyx_RefNannySetupContext("PyInit_track", 0);
 */
   {
     PyObject* const __pyx_imported_names[] = {__pyx_mstate_global->__pyx_n_u_MAX_CANDS,__pyx_mstate_global->__pyx_n_u_PT_UNUSED,__pyx_mstate_global->__pyx_n_u_TR_UNUSED,__pyx_mstate_global->__pyx_n_u_CORRES_NONE,__pyx_mstate_global->__pyx_n_u_PREV_NONE,__pyx_mstate_global->__pyx_n_u_NEXT_NONE,__pyx_mstate_global->__pyx_n_u_COORD_UNUSED,__pyx_mstate_global->__pyx_n_u_TR_BUFSPACE,__pyx_mstate_global->__pyx_n_u_TR_MAX_CAMS,__pyx_mstate_global->__pyx_n_u_ADD_PART};
-    __pyx_t_1 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_constants, __pyx_imported_names, 10, __pyx_mstate_global->__pyx_kp_u_algorithms_constants, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 14, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_constants, __pyx_imported_names, 10, __pyx_mstate_global->__pyx_kp_u_openptv2_algorithms_constants, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 14, __pyx_L1_error)
   }
   __pyx_t_2 = __pyx_t_1;
   __Pyx_GOTREF(__pyx_t_2);
@@ -27309,7 +27309,7 @@ __Pyx_RefNannySetupContext("PyInit_track", 0);
   }
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/track.py":18
+  /* "openptv2/algorithms/track.py":18
  *     COORD_UNUSED, TR_BUFSPACE, TR_MAX_CAMS, ADD_PART,
  * )
  * from .tracking_frame_buf import register_link_candidate, reset_links             # <<<<<<<<<<<<<<
@@ -27318,7 +27318,7 @@ __Pyx_RefNannySetupContext("PyInit_track", 0);
 */
   {
     PyObject* const __pyx_imported_names[] = {__pyx_mstate_global->__pyx_n_u_register_link_candidate,__pyx_mstate_global->__pyx_n_u_reset_links};
-    __pyx_t_1 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_tracking_frame_buf, __pyx_imported_names, 2, __pyx_mstate_global->__pyx_kp_u_algorithms_tracking_frame_buf, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 18, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_tracking_frame_buf, __pyx_imported_names, 2, __pyx_mstate_global->__pyx_kp_u_openptv2_algorithms_tracking_fra, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 18, __pyx_L1_error)
   }
   __pyx_t_2 = __pyx_t_1;
   __Pyx_GOTREF(__pyx_t_2);
@@ -27333,7 +27333,7 @@ __Pyx_RefNannySetupContext("PyInit_track", 0);
   }
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/track.py":19
+  /* "openptv2/algorithms/track.py":19
  * )
  * from .tracking_frame_buf import register_link_candidate, reset_links
  * from .multimed import (             # <<<<<<<<<<<<<<
@@ -27342,7 +27342,7 @@ __Pyx_RefNannySetupContext("PyInit_track", 0);
 */
   {
     PyObject* const __pyx_imported_names[] = {__pyx_mstate_global->__pyx_n_u_multimed_nlay,__pyx_mstate_global->__pyx_n_u_multimed_r_nlay_iterative_2};
-    __pyx_t_1 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_multimed, __pyx_imported_names, 2, __pyx_mstate_global->__pyx_kp_u_algorithms_multimed, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 19, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_multimed, __pyx_imported_names, 2, __pyx_mstate_global->__pyx_kp_u_openptv2_algorithms_multimed, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 19, __pyx_L1_error)
   }
   __pyx_t_2 = __pyx_t_1;
   __Pyx_GOTREF(__pyx_t_2);
@@ -27365,7 +27365,7 @@ __Pyx_RefNannySetupContext("PyInit_track", 0);
   }
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/track.py":23
+  /* "openptv2/algorithms/track.py":23
  *     multimed_r_nlay_iterative as _multimed_r_nlay_iterative,
  * )
  * from .track_kernels import (             # <<<<<<<<<<<<<<
@@ -27374,7 +27374,7 @@ __Pyx_RefNannySetupContext("PyInit_track", 0);
 */
   {
     PyObject* const __pyx_imported_names[] = {__pyx_mstate_global->__pyx_n_u_pack_cal_array_2,__pyx_mstate_global->__pyx_n_u_pack_mmlut_2,__pyx_mstate_global->__pyx_n_u_point_to_pixel_fast_2,__pyx_mstate_global->__pyx_n_u_candsearch_in_pix_fast_2,__pyx_mstate_global->__pyx_n_u_candsearch_in_pix_rest_fast_2,__pyx_mstate_global->__pyx_n_u_searchquader_fast_2,__pyx_mstate_global->__pyx_n_u_sort_candidates_by_freq_fast,__pyx_mstate_global->__pyx_n_u_sorted_candidates_fast_2,__pyx_mstate_global->__pyx_n_u_point_position_fast,__pyx_mstate_global->__pyx_n_u_trackcorr_loop_fast_2,__pyx_mstate_global->__pyx_n_u_trackback_loop_fast_2};
-    __pyx_t_1 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_track_kernels, __pyx_imported_names, 11, __pyx_mstate_global->__pyx_kp_u_algorithms_track_kernels, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 23, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_track_kernels, __pyx_imported_names, 11, __pyx_mstate_global->__pyx_kp_u_openptv2_algorithms_track_kernel, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 23, __pyx_L1_error)
   }
   __pyx_t_2 = __pyx_t_1;
   __Pyx_GOTREF(__pyx_t_2);
@@ -27424,7 +27424,7 @@ __Pyx_RefNannySetupContext("PyInit_track", 0);
   }
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/track.py":37
+  /* "openptv2/algorithms/track.py":37
  * )
  * 
  * Foundpix_dtype = np.dtype([             # <<<<<<<<<<<<<<
@@ -27438,7 +27438,7 @@ __Pyx_RefNannySetupContext("PyInit_track", 0);
   __Pyx_GOTREF(__pyx_t_6);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "algorithms/track.py":38
+  /* "openptv2/algorithms/track.py":38
  * 
  * Foundpix_dtype = np.dtype([
  *     ("ftnr", np.int32),             # <<<<<<<<<<<<<<
@@ -27454,7 +27454,7 @@ __Pyx_RefNannySetupContext("PyInit_track", 0);
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
 
-  /* "algorithms/track.py":39
+  /* "openptv2/algorithms/track.py":39
  * Foundpix_dtype = np.dtype([
  *     ("ftnr", np.int32),
  *     ("freq", np.int32),             # <<<<<<<<<<<<<<
@@ -27470,7 +27470,7 @@ __Pyx_RefNannySetupContext("PyInit_track", 0);
   __Pyx_GOTREF(__pyx_t_7);
   __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
 
-  /* "algorithms/track.py":40
+  /* "openptv2/algorithms/track.py":40
  *     ("ftnr", np.int32),
  *     ("freq", np.int32),
  *     ("whichcam", np.int32, (4,)),             # <<<<<<<<<<<<<<
@@ -27486,7 +27486,7 @@ __Pyx_RefNannySetupContext("PyInit_track", 0);
   __Pyx_GOTREF(__pyx_t_8);
   __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
 
-  /* "algorithms/track.py":37
+  /* "openptv2/algorithms/track.py":37
  * )
  * 
  * Foundpix_dtype = np.dtype([             # <<<<<<<<<<<<<<
@@ -27511,14 +27511,14 @@ __Pyx_RefNannySetupContext("PyInit_track", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_Foundpix_dtype, __pyx_t_2) < (0)) __PYX_ERR(0, 37, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/track.py":44
+  /* "openptv2/algorithms/track.py":44
  * 
  * 
  * def _vec3_dist(a, b):             # <<<<<<<<<<<<<<
  *     dx = a[0] - b[0]
  *     dy = a[1] - b[1]
 */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_5track_1_vec3_dist, 0, __pyx_mstate_global->__pyx_n_u_vec3_dist, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[5])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 44, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_5track_1_vec3_dist, 0, __pyx_mstate_global->__pyx_n_u_vec3_dist, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[5])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 44, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -27526,14 +27526,14 @@ __Pyx_RefNannySetupContext("PyInit_track", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_vec3_dist, __pyx_t_2) < (0)) __PYX_ERR(0, 44, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/track.py":51
+  /* "openptv2/algorithms/track.py":51
  * 
  * 
  * def _pack_cams_fast(cals, mm):             # <<<<<<<<<<<<<<
  *     """Pack all cameras for compiled: returns (cal_arrays, mmlut_tuples)."""
  *     cal_arrays = [_pack_cal_array(c, mm) for c in cals]
 */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_5track_3_pack_cams_fast, 0, __pyx_mstate_global->__pyx_n_u_pack_cams_fast, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[6])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 51, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_5track_3_pack_cams_fast, 0, __pyx_mstate_global->__pyx_n_u_pack_cams_fast, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[6])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 51, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -27541,14 +27541,14 @@ __Pyx_RefNannySetupContext("PyInit_track", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_pack_cams_fast, __pyx_t_2) < (0)) __PYX_ERR(0, 51, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/track.py":58
+  /* "openptv2/algorithms/track.py":58
  * 
  * 
  * def _pack_cams_fast_tuples(fast_cals, fast_mmluts):             # <<<<<<<<<<<<<<
  *     """Convert lists to tuples for searchquader_fast."""
  *     return (
 */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_5track_5_pack_cams_fast_tuples, 0, __pyx_mstate_global->__pyx_n_u_pack_cams_fast_tuples, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[7])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 58, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_5track_5_pack_cams_fast_tuples, 0, __pyx_mstate_global->__pyx_n_u_pack_cams_fast_tuples, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[7])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 58, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -27556,14 +27556,14 @@ __Pyx_RefNannySetupContext("PyInit_track", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_pack_cams_fast_tuples, __pyx_t_2) < (0)) __PYX_ERR(0, 58, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/track.py":70
+  /* "openptv2/algorithms/track.py":70
  * 
  * 
  * def _ptp_fast(pos, cal_arr, mmlut_tup, imx_half, imy_half, inv_pix_x, inv_pix_y, chfield):             # <<<<<<<<<<<<<<
  *     """Call the compiled kernel with pre-packed arrays."""
  *     return _point_to_pixel_fast(
 */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_5track_7_ptp_fast, 0, __pyx_mstate_global->__pyx_n_u_ptp_fast, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[8])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 70, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_5track_7_ptp_fast, 0, __pyx_mstate_global->__pyx_n_u_ptp_fast, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[8])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 70, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -27571,14 +27571,14 @@ __Pyx_RefNannySetupContext("PyInit_track", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_ptp_fast, __pyx_t_2) < (0)) __PYX_ERR(0, 70, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/track.py":79
+  /* "openptv2/algorithms/track.py":79
  * 
  * 
  * def _pack_cal(cal, mm):             # <<<<<<<<<<<<<<
  *     """Pre-extract calibration fields into a tuple for fast access."""
  *     ext = cal.ext_par; ip = cal.int_par; gp = cal.glass_par; ap = cal.added_par
 */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_5track_9_pack_cal, 0, __pyx_mstate_global->__pyx_n_u_pack_cal, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[9])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 79, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_5track_9_pack_cal, 0, __pyx_mstate_global->__pyx_n_u_pack_cal, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[9])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 79, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -27586,14 +27586,14 @@ __Pyx_RefNannySetupContext("PyInit_track", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_pack_cal, __pyx_t_2) < (0)) __PYX_ERR(0, 79, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/track.py":104
+  /* "openptv2/algorithms/track.py":104
  * 
  * 
  * def _point_to_pixel_packed(pos, pc, imx_half, imy_half, inv_pix_x, inv_pix_y, chfield):             # <<<<<<<<<<<<<<
  *     """Project 3D position to pixel coordinates using pre-packed calibration."""
  *     pos0 = float(pos[0]); pos1 = float(pos[1]); pos2 = float(pos[2])
 */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_5track_11_point_to_pixel_packed, 0, __pyx_mstate_global->__pyx_n_u_point_to_pixel_packed, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[10])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 104, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_5track_11_point_to_pixel_packed, 0, __pyx_mstate_global->__pyx_n_u_point_to_pixel_packed, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[10])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 104, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -27601,14 +27601,14 @@ __Pyx_RefNannySetupContext("PyInit_track", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_point_to_pixel_packed, __pyx_t_2) < (0)) __PYX_ERR(0, 104, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/track.py":228
+  /* "openptv2/algorithms/track.py":228
  * 
  * 
  * def _point_to_pixel_fast(pos, cal, imx, imy, pix_x, pix_y, chfield, mm):             # <<<<<<<<<<<<<<
  *     """Project 3D position to pixel coordinates  convenience wrapper."""
  *     pc = _pack_cal(cal, mm)
 */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_5track_13_point_to_pixel_fast, 0, __pyx_mstate_global->__pyx_n_u_point_to_pixel_fast, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[11])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 228, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_5track_13_point_to_pixel_fast, 0, __pyx_mstate_global->__pyx_n_u_point_to_pixel_fast, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[11])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 228, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -27616,14 +27616,14 @@ __Pyx_RefNannySetupContext("PyInit_track", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_point_to_pixel_fast, __pyx_t_2) < (0)) __PYX_ERR(0, 228, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/track.py":234
+  /* "openptv2/algorithms/track.py":234
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def predict(prev_pos, curr_pos, c):
  *     prev_pos = np.asarray(prev_pos)
 */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_5track_15predict, 0, __pyx_mstate_global->__pyx_n_u_predict, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[12])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 234, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_5track_15predict, 0, __pyx_mstate_global->__pyx_n_u_predict, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[12])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 234, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -27631,14 +27631,14 @@ __Pyx_RefNannySetupContext("PyInit_track", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_predict, __pyx_t_2) < (0)) __PYX_ERR(0, 234, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/track.py":241
+  /* "openptv2/algorithms/track.py":241
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def search_volume_center_moving(prev_pos, curr_pos):
  *     prev_pos = np.asarray(prev_pos)
 */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_5track_17search_volume_center_moving, 0, __pyx_mstate_global->__pyx_n_u_search_volume_center_moving, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[13])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 241, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_5track_17search_volume_center_moving, 0, __pyx_mstate_global->__pyx_n_u_search_volume_center_moving, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[13])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 241, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -27646,14 +27646,14 @@ __Pyx_RefNannySetupContext("PyInit_track", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_search_volume_center_moving, __pyx_t_2) < (0)) __PYX_ERR(0, 241, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/track.py":248
+  /* "openptv2/algorithms/track.py":248
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def pos3d_in_bounds(pos, bounds):
  *     x, y, z = pos
 */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_5track_19pos3d_in_bounds, 0, __pyx_mstate_global->__pyx_n_u_pos3d_in_bounds, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[14])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 248, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_5track_19pos3d_in_bounds, 0, __pyx_mstate_global->__pyx_n_u_pos3d_in_bounds, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[14])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 248, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -27661,14 +27661,14 @@ __Pyx_RefNannySetupContext("PyInit_track", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_pos3d_in_bounds, __pyx_t_2) < (0)) __PYX_ERR(0, 248, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/track.py":258
+  /* "openptv2/algorithms/track.py":258
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def angle_acc(start, pred, cand):
  *     v0x: cython.double = pred[0] - start[0]
 */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_5track_21angle_acc, 0, __pyx_mstate_global->__pyx_n_u_angle_acc, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[15])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 258, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_5track_21angle_acc, 0, __pyx_mstate_global->__pyx_n_u_angle_acc, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[15])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 258, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -27676,14 +27676,14 @@ __Pyx_RefNannySetupContext("PyInit_track", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_angle_acc, __pyx_t_2) < (0)) __PYX_ERR(0, 258, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/track.py":299
+  /* "openptv2/algorithms/track.py":299
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * @cython.boundscheck(False)
  * @cython.wraparound(False)
 */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_5track_23candsearch_in_pix, 0, __pyx_mstate_global->__pyx_n_u_candsearch_in_pix, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[16])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 299, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_5track_23candsearch_in_pix, 0, __pyx_mstate_global->__pyx_n_u_candsearch_in_pix, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[16])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 299, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -27691,14 +27691,14 @@ __Pyx_RefNannySetupContext("PyInit_track", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_candsearch_in_pix, __pyx_t_2) < (0)) __PYX_ERR(0, 299, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/track.py":380
+  /* "openptv2/algorithms/track.py":380
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * @cython.boundscheck(False)
  * @cython.wraparound(False)
 */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_5track_25candsearch_in_pix_rest, 0, __pyx_mstate_global->__pyx_n_u_candsearch_in_pix_rest, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[17])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 380, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_5track_25candsearch_in_pix_rest, 0, __pyx_mstate_global->__pyx_n_u_candsearch_in_pix_rest, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[17])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 380, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -27706,14 +27706,14 @@ __Pyx_RefNannySetupContext("PyInit_track", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_candsearch_in_pix_rest, __pyx_t_2) < (0)) __PYX_ERR(0, 380, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/track.py":440
+  /* "openptv2/algorithms/track.py":440
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * @cython.boundscheck(False)
  * @cython.wraparound(False)
 */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_5track_27reset_foundpix_array, 0, __pyx_mstate_global->__pyx_n_u_reset_foundpix_array, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[18])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 440, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_5track_27reset_foundpix_array, 0, __pyx_mstate_global->__pyx_n_u_reset_foundpix_array, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[18])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 440, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -27721,14 +27721,14 @@ __Pyx_RefNannySetupContext("PyInit_track", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_reset_foundpix_array, __pyx_t_2) < (0)) __PYX_ERR(0, 440, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/track.py":453
+  /* "openptv2/algorithms/track.py":453
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * @cython.boundscheck(False)
  * @cython.wraparound(False)
 */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_5track_29copy_foundpix_array, 0, __pyx_mstate_global->__pyx_n_u_copy_foundpix_array, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[19])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 453, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_5track_29copy_foundpix_array, 0, __pyx_mstate_global->__pyx_n_u_copy_foundpix_array, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[19])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 453, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -27736,14 +27736,14 @@ __Pyx_RefNannySetupContext("PyInit_track", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_copy_foundpix_array, __pyx_t_2) < (0)) __PYX_ERR(0, 453, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/track.py":466
+  /* "openptv2/algorithms/track.py":466
  * 
  * 
  * def _make_foundpix(num_cams):             # <<<<<<<<<<<<<<
  *     """Create a single foundpix entry as [ftnr, freq, whichcam_list]."""
  *     return [TR_UNUSED, 0, [0] * num_cams]
 */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_5track_31_make_foundpix, 0, __pyx_mstate_global->__pyx_n_u_make_foundpix, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[20])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 466, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_5track_31_make_foundpix, 0, __pyx_mstate_global->__pyx_n_u_make_foundpix, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[20])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 466, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -27751,14 +27751,14 @@ __Pyx_RefNannySetupContext("PyInit_track", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_make_foundpix, __pyx_t_2) < (0)) __PYX_ERR(0, 466, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/track.py":471
+  /* "openptv2/algorithms/track.py":471
  * 
  * 
  * def _make_foundpix_array(n, num_cams):             # <<<<<<<<<<<<<<
  *     """Create array of n foundpix entries as plain Python lists."""
  *     return [_make_foundpix(num_cams) for _ in range(n)]
 */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_5track_33_make_foundpix_array, 0, __pyx_mstate_global->__pyx_n_u_make_foundpix_array, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[21])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 471, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_5track_33_make_foundpix_array, 0, __pyx_mstate_global->__pyx_n_u_make_foundpix_array, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[21])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 471, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -27766,14 +27766,14 @@ __Pyx_RefNannySetupContext("PyInit_track", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_make_foundpix_array, __pyx_t_2) < (0)) __PYX_ERR(0, 471, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/track.py":476
+  /* "openptv2/algorithms/track.py":476
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * @cython.boundscheck(False)
  * @cython.wraparound(False)
 */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_5track_35sort_candidates_by_freq, 0, __pyx_mstate_global->__pyx_n_u_sort_candidates_by_freq, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[22])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 476, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_5track_35sort_candidates_by_freq, 0, __pyx_mstate_global->__pyx_n_u_sort_candidates_by_freq, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[22])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 476, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -27781,14 +27781,14 @@ __Pyx_RefNannySetupContext("PyInit_track", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_sort_candidates_by_freq, __pyx_t_2) < (0)) __PYX_ERR(0, 476, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/track.py":526
+  /* "openptv2/algorithms/track.py":526
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * @cython.boundscheck(False)
  * @cython.wraparound(False)
 */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_5track_37sort, 0, __pyx_mstate_global->__pyx_n_u_sort, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[23])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 526, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_5track_37sort, 0, __pyx_mstate_global->__pyx_n_u_sort, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[23])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 526, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -27796,14 +27796,14 @@ __Pyx_RefNannySetupContext("PyInit_track", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_sort, __pyx_t_2) < (0)) __PYX_ERR(0, 526, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/track.py":542
+  /* "openptv2/algorithms/track.py":542
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def point_to_pixel(point, cal, cpar):
  *     return _point_to_pixel_fast(
 */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_5track_39point_to_pixel, 0, __pyx_mstate_global->__pyx_n_u_point_to_pixel, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[24])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 542, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_5track_39point_to_pixel, 0, __pyx_mstate_global->__pyx_n_u_point_to_pixel, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[24])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 542, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -27811,14 +27811,14 @@ __Pyx_RefNannySetupContext("PyInit_track", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_point_to_pixel, __pyx_t_2) < (0)) __PYX_ERR(0, 542, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/track.py":549
+  /* "openptv2/algorithms/track.py":549
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def searchquader(point, tpar, cpar, calib, _packed_cals=None, _pix_info=None,
  *                  _fast_tuples=None):
 */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_5track_41searchquader, 0, __pyx_mstate_global->__pyx_n_u_searchquader, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[25])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 549, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_5track_41searchquader, 0, __pyx_mstate_global->__pyx_n_u_searchquader, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[25])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 549, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -27827,14 +27827,14 @@ __Pyx_RefNannySetupContext("PyInit_track", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_searchquader, __pyx_t_2) < (0)) __PYX_ERR(0, 549, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/track.py":616
+  /* "openptv2/algorithms/track.py":616
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * @cython.boundscheck(False)
  * @cython.wraparound(False)
 */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_5track_43register_closest_neighbs, 0, __pyx_mstate_global->__pyx_n_u_register_closest_neighbs, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[26])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 616, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_5track_43register_closest_neighbs, 0, __pyx_mstate_global->__pyx_n_u_register_closest_neighbs, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[26])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 616, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -27843,14 +27843,14 @@ __Pyx_RefNannySetupContext("PyInit_track", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_register_closest_neighbs, __pyx_t_2) < (0)) __PYX_ERR(0, 616, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/track.py":636
+  /* "openptv2/algorithms/track.py":636
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def sorted_candidates_in_volume(center, center_proj, frm, run,
  *                                 _packed_cals=None, _pix_info=None,
 */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_5track_45sorted_candidates_in_volume, 0, __pyx_mstate_global->__pyx_n_u_sorted_candidates_in_volume, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[27])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 636, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_5track_45sorted_candidates_in_volume, 0, __pyx_mstate_global->__pyx_n_u_sorted_candidates_in_volume, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[27])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 636, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -27859,14 +27859,14 @@ __Pyx_RefNannySetupContext("PyInit_track", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_sorted_candidates_in_volume, __pyx_t_2) < (0)) __PYX_ERR(0, 636, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/track.py":676
+  /* "openptv2/algorithms/track.py":676
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def assess_new_position(pos, targ_pos, cand_inds, frm, run,
  *                         _fast_cals=None, _fast_mmluts=None, _pix_info=None):
 */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_5track_47assess_new_position, 0, __pyx_mstate_global->__pyx_n_u_assess_new_position, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[28])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 676, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_5track_47assess_new_position, 0, __pyx_mstate_global->__pyx_n_u_assess_new_position, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[28])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 676, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -27875,14 +27875,14 @@ __Pyx_RefNannySetupContext("PyInit_track", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_assess_new_position, __pyx_t_2) < (0)) __PYX_ERR(0, 676, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/track.py":737
+  /* "openptv2/algorithms/track.py":737
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def add_particle(frm, pos, cand_inds):
  *     num_parts = frm.num_parts
 */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_5track_49add_particle, 0, __pyx_mstate_global->__pyx_n_u_add_particle, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[29])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 737, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_5track_49add_particle, 0, __pyx_mstate_global->__pyx_n_u_add_particle, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[29])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 737, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -27890,14 +27890,14 @@ __Pyx_RefNannySetupContext("PyInit_track", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_add_particle, __pyx_t_2) < (0)) __PYX_ERR(0, 737, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/track.py":756
+  /* "openptv2/algorithms/track.py":756
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def track_forward_start(run):
  *     for step in range(run.seq_par.first, run.seq_par.first + TR_BUFSPACE - 1):
 */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_5track_51track_forward_start, 0, __pyx_mstate_global->__pyx_n_u_track_forward_start, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[30])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 756, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_5track_51track_forward_start, 0, __pyx_mstate_global->__pyx_n_u_track_forward_start, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[30])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 756, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -27905,14 +27905,14 @@ __Pyx_RefNannySetupContext("PyInit_track", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_track_forward_start, __pyx_t_2) < (0)) __PYX_ERR(0, 756, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/track.py":764
+  /* "openptv2/algorithms/track.py":764
  * 
  * 
  * def _sync_soa_to_aos(frm):             # <<<<<<<<<<<<<<
  *     """Fast SoA->AoS sync  only copies fields needed for file I/O."""
  *     for i in range(frm.num_parts):
 */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_5track_53_sync_soa_to_aos, 0, __pyx_mstate_global->__pyx_n_u_sync_soa_to_aos, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[31])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 764, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_5track_53_sync_soa_to_aos, 0, __pyx_mstate_global->__pyx_n_u_sync_soa_to_aos, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[31])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 764, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -27920,14 +27920,14 @@ __Pyx_RefNannySetupContext("PyInit_track", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_sync_soa_to_aos, __pyx_t_2) < (0)) __PYX_ERR(0, 764, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/track.py":783
+  /* "openptv2/algorithms/track.py":783
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def trackcorr_c_loop(run_info, step):
  *     from .orientation import point_position
 */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_5track_55trackcorr_c_loop, 0, __pyx_mstate_global->__pyx_n_u_trackcorr_c_loop, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[32])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 783, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_5track_55trackcorr_c_loop, 0, __pyx_mstate_global->__pyx_n_u_trackcorr_c_loop, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[32])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 783, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -27935,14 +27935,14 @@ __Pyx_RefNannySetupContext("PyInit_track", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_trackcorr_c_loop, __pyx_t_2) < (0)) __PYX_ERR(0, 783, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/track.py":870
+  /* "openptv2/algorithms/track.py":870
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def trackcorr_c_finish(run_info, step):
  *     range_val = run_info.seq_par.last - run_info.seq_par.first
 */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_5track_57trackcorr_c_finish, 0, __pyx_mstate_global->__pyx_n_u_trackcorr_c_finish, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[33])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 870, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_5track_57trackcorr_c_finish, 0, __pyx_mstate_global->__pyx_n_u_trackcorr_c_finish, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[33])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 870, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -27950,14 +27950,14 @@ __Pyx_RefNannySetupContext("PyInit_track", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_trackcorr_c_finish, __pyx_t_2) < (0)) __PYX_ERR(0, 870, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/track.py":882
+  /* "openptv2/algorithms/track.py":882
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def trackback_c(run_info):
  *     from .orientation import point_position
 */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_5track_59trackback_c, 0, __pyx_mstate_global->__pyx_n_u_trackback_c, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[34])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 882, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_5track_59trackback_c, 0, __pyx_mstate_global->__pyx_n_u_trackback_c, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[34])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 882, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -27965,7 +27965,7 @@ __Pyx_RefNannySetupContext("PyInit_track", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_trackback_c, __pyx_t_2) < (0)) __PYX_ERR(0, 882, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/track.py":979
+  /* "openptv2/algorithms/track.py":979
  * 
  * 
  * def is_compiled() -> bool:             # <<<<<<<<<<<<<<
@@ -27975,7 +27975,7 @@ __Pyx_RefNannySetupContext("PyInit_track", 0);
   __pyx_t_2 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 979, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   if (PyDict_SetItem(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_return, __pyx_mstate_global->__pyx_n_u_bool) < (0)) __PYX_ERR(0, 979, __pyx_L1_error)
-  __pyx_t_6 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_5track_61is_compiled, 0, __pyx_mstate_global->__pyx_n_u_is_compiled, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[35])); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 979, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_5track_61is_compiled, 0, __pyx_mstate_global->__pyx_n_u_is_compiled, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_track, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[35])); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 979, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_6);
@@ -27985,7 +27985,7 @@ __Pyx_RefNannySetupContext("PyInit_track", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_is_compiled, __pyx_t_6) < (0)) __PYX_ERR(0, 979, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-  /* "algorithms/track.py":1
+  /* "openptv2/algorithms/track.py":1
  * """Tracking algorithms  Python translation of lib/src/track.c."""             # <<<<<<<<<<<<<<
  * import cython
  * import numpy as np
@@ -28008,7 +28008,7 @@ __Pyx_RefNannySetupContext("PyInit_track", 0);
   __Pyx_XDECREF(__pyx_t_9);
   if (__pyx_m) {
     if (__pyx_mstate->__pyx_d && stringtab_initialized) {
-      __Pyx_AddTraceback("init algorithms.track", __pyx_clineno, __pyx_lineno, __pyx_filename);
+      __Pyx_AddTraceback("init openptv2.algorithms.track", __pyx_clineno, __pyx_lineno, __pyx_filename);
     }
     #if !CYTHON_USE_MODULE_STATE
     Py_CLEAR(__pyx_m);
@@ -28022,7 +28022,7 @@ __Pyx_RefNannySetupContext("PyInit_track", 0);
     }
     #endif
   } else if (!PyErr_Occurred()) {
-    PyErr_SetString(PyExc_ImportError, "init algorithms.track");
+    PyErr_SetString(PyExc_ImportError, "init openptv2.algorithms.track");
   }
   __pyx_L0:;
   __Pyx_RefNannyFinishContext();
@@ -28057,7 +28057,7 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
   CYTHON_UNUSED_VAR(__pyx_mstate);
   __Pyx_RefNannySetupContext("__Pyx_InitCachedConstants", 0);
 
-  /* "algorithms/track.py":89
+  /* "openptv2/algorithms/track.py":89
  *     return (
  *         ext.x0, ext.y0, ext.z0,
  *         ext.dm[0, 0], ext.dm[1, 0], ext.dm[2, 0],             # <<<<<<<<<<<<<<
@@ -28074,7 +28074,7 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
   __Pyx_GOTREF(__pyx_mstate_global->__pyx_tuple[2]);
   __Pyx_GIVEREF(__pyx_mstate_global->__pyx_tuple[2]);
 
-  /* "algorithms/track.py":90
+  /* "openptv2/algorithms/track.py":90
  *         ext.x0, ext.y0, ext.z0,
  *         ext.dm[0, 0], ext.dm[1, 0], ext.dm[2, 0],
  *         ext.dm[0, 1], ext.dm[1, 1], ext.dm[2, 1],             # <<<<<<<<<<<<<<
@@ -28091,7 +28091,7 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
   __Pyx_GOTREF(__pyx_mstate_global->__pyx_tuple[5]);
   __Pyx_GIVEREF(__pyx_mstate_global->__pyx_tuple[5]);
 
-  /* "algorithms/track.py":91
+  /* "openptv2/algorithms/track.py":91
  *         ext.dm[0, 0], ext.dm[1, 0], ext.dm[2, 0],
  *         ext.dm[0, 1], ext.dm[1, 1], ext.dm[2, 1],
  *         ext.dm[0, 2], ext.dm[1, 2], ext.dm[2, 2],             # <<<<<<<<<<<<<<
@@ -28108,7 +28108,7 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
   __Pyx_GOTREF(__pyx_mstate_global->__pyx_tuple[8]);
   __Pyx_GIVEREF(__pyx_mstate_global->__pyx_tuple[8]);
 
-  /* "algorithms/track.py":238
+  /* "openptv2/algorithms/track.py":238
  *     prev_pos = np.asarray(prev_pos)
  *     curr_pos = np.asarray(curr_pos)
  *     c[:] = curr_pos + (curr_pos - prev_pos)             # <<<<<<<<<<<<<<
@@ -28119,7 +28119,7 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
   __Pyx_GOTREF(__pyx_mstate_global->__pyx_slice[0]);
   __Pyx_GIVEREF(__pyx_mstate_global->__pyx_slice[0]);
 
-  /* "algorithms/track.py":558
+  /* "openptv2/algorithms/track.py":558
  *     dxmax, dymax, dzmax = tpar.dvxmax, tpar.dvymax, tpar.dvzmax
  * 
  *     quader = np.empty((8, 3))             # <<<<<<<<<<<<<<
@@ -28130,7 +28130,7 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
   __Pyx_GOTREF(__pyx_mstate_global->__pyx_tuple[9]);
   __Pyx_GIVEREF(__pyx_mstate_global->__pyx_tuple[9]);
 
-  /* "algorithms/track.py":40
+  /* "openptv2/algorithms/track.py":40
  *     ("ftnr", np.int32),
  *     ("freq", np.int32),
  *     ("whichcam", np.int32, (4,)),             # <<<<<<<<<<<<<<
@@ -28141,7 +28141,7 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
   __Pyx_GOTREF(__pyx_mstate_global->__pyx_tuple[10]);
   __Pyx_GIVEREF(__pyx_mstate_global->__pyx_tuple[10]);
 
-  /* "algorithms/track.py":549
+  /* "openptv2/algorithms/track.py":549
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -28208,25 +28208,25 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
 static int __Pyx_InitConstants(__pyx_mstatetype *__pyx_mstate) {
   CYTHON_UNUSED_VAR(__pyx_mstate);
   {
-    const struct { const unsigned int length: 11; } index[] = {{1},{4},{34},{1},{7},{20},{19},{22},{24},{19},{29},{16},{8},{7},{6},{2},{9},{9},{8},{8},{6},{8},{12},{11},{14},{9},{5},{9},{9},{9},{20},{1},{11},{11},{9},{5},{3},{8},{8},{1},{1},{3},{12},{9},{4},{4},{4},{16},{9},{2},{3},{5},{7},{19},{18},{1},{4},{6},{3},{7},{2},{2},{2},{1},{3},{7},{10},{5},{4},{3},{4},{9},{17},{23},{22},{22},{28},{27},{2},{4},{4},{4},{6},{6},{6},{11},{7},{17},{18},{5},{9},{19},{9},{8},{10},{7},{4},{4},{4},{4},{8},{1},{4},{6},{4},{2},{4},{4},{13},{11},{15},{12},{2},{2},{4},{4},{4},{4},{4},{4},{4},{4},{4},{7},{7},{2},{5},{2},{6},{6},{6},{6},{6},{6},{2},{2},{2},{5},{3},{7},{8},{6},{6},{6},{9},{10},{11},{12},{12},{2},{7},{7},{5},{11},{7},{4},{3},{4},{8},{7},{9},{2},{2},{2},{2},{1},{3},{8},{3},{8},{5},{6},{7},{7},{9},{9},{2},{2},{11},{13},{5},{2},{1},{2},{2},{2},{4},{4},{1},{8},{14},{20},{2},{5},{5},{7},{5},{3},{5},{10},{8},{8},{12},{8},{9},{12},{10},{8},{13},{14},{26},{25},{1},{2},{2},{2},{8},{4},{12},{6},{2},{5},{2},{8},{9},{11},{5},{2},{11},{6},{1},{2},{2},{9},{15},{14},{15},{22},{39},{11},{10},{12},{10},{15},{9},{11},{14},{9},{9},{9},{6},{2},{9},{5},{5},{15},{5},{14},{19},{20},{14},{20},{19},{22},{3},{3},{4},{4},{4},{15},{7},{7},{4},{7},{4},{8},{5},{4},{9},{12},{1},{2},{2},{13},{12},{17},{10},{3},{24},{23},{20},{11},{6},{3},{8},{2},{5},{3},{4},{3},{3},{3},{27},{12},{18},{17},{4},{7},{12},{10},{3},{7},{4},{23},{28},{29},{23},{22},{27},{2},{3},{5},{4},{17},{16},{2},{8},{9},{8},{7},{6},{7},{6},{7},{8},{5},{5},{5},{5},{3},{7},{4},{19},{13},{11},{20},{19},{18},{16},{20},{19},{18},{5},{2},{2},{2},{2},{2},{5},{6},{10},{5},{5},{5},{4},{8},{22},{1},{2},{6},{7},{2},{2},{1},{2},{6},{7},{2},{2},{4},{4},{2},{5},{17},{23},{387},{158},{126},{82},{151},{1299},{54},{583},{711},{549},{525},{10},{1211},{1046},{476},{47},{389},{65},{45},{69},{97},{201},{340},{95},{2},{57},{40},{37},{39},{61}};
-    #if (CYTHON_COMPRESS_STRINGS) == 2 /* compression: bz2 (5018 bytes) */
-const char* const cstring = "BZh91AY&SYI\336*\335\000\005V\177\377\377\377\377\377\377\377\377\377\277\377\377\377\277\377\377\377@@@@@@@@@@@@@\000@\000`\026-\367\207\226R7@]\227\327pQ\210\372\0057m\027e\254\320\221PO\254\234\264\367\207@\255V\307\241\241@\rU!\362\260\000\022\204\022\0224\336D\236\214\323T\305=\252z\236\243\324z# \311\223#\364\320\323$\3615\032\236\241\352z\206\207\251\243CA\240\000\323i\000I \021\2114\312i\241\251\350!1'\251\204\3204\003@h\320\000\000\001\240\031\r\001\240\320\304\320\006\230\202RI2\0004\001\240\000\000\032\006 \332i\211\236\206\246\311\252 z\231\r\032\000=@\006\010\022jA$\246\312\031\000\320h\001\243@\032\003\023\324\032\000\000\r4\007\250144\003C@\001\240j\022OPz\217Q\243OP\001\240\000x\211\241\230\246FF\215\250=C \000\032\r\000h\000\001\351\000H\204)\220\210\332iO)\373Ri&\312z\215\251\344\203&\214@\000\001\240=@\365\000\014@\323 \000\000#ZZ9|\302U\212*\231oo\355\273\335\317\017\213\371O\n\t\375\010\217\000\361 \2209\017\030\261\257K I$\203\212\010R\221x\023\0217!J\010\017N\232\301F[\204\214\r\030v\3052\250\252\204\245\001d\221`\013 \300\213\352\014\200f\006fe\316Y\313\025b$P\022*\252\n\200\304Pb#\031\026\n\254DVEE\024A\024E\210\221V\021F1\024AQPA\2020DU\004\024A`\260X\033c@\223\0054\211\2540X\033\320`2fc\0279\227\005PUITUU\007\304\377\311h8\t\220Jja2\3228\262\0054L\222$dca\033\014\026\002\300P\005\220R,\202\204\026\002\204M\244\206\322ccl\020\332\023fK$\221\220dk33\317^\334\314\321\230\226\361\212\006\210cM\031\24396\253\207\022\014\024\030\010\311\006(\246\206\201\257.\\\035\276\201\246\353\020\304\031\031\021@`70(h\030\330\331\214\nC0\314H\3531$\306&\301\030\301`cm\r\000\332\210!2\374|]s\213h`\026\030\n\033\032\325\024\2635\272\003c\\\324`2\213\210J\225\025\030\265cJ\272\005\302T*\202\232F4!M%\001R\263\2316\024@1|\010\212)AB\255PU\264\201\314n\003;\223.\0311j\016z\034\347\025\230\226`+\210\314\rv\233K\251\266\203\245DtD4N\24490HD\t\230\325w\342v\030\242\212\225\224fe\321\234\036\350?\004\215\346Aq\231d\3470\304\320`\200\242\005@1\002\311^\252\245n\206kX""\030s\231\314\254\001d\254\005\213Z\332\350\220d\214\362W\013\261\222L\341\371#$\226@d\006A\235\226\205\321z\205\270n\356<\311\001\220d\226B\310\257\002\2456\266\333\247\025U+US\223Ci\221{\326\250\250\253B4\242\034R\375\344\374\205\210bc\222\313\031\027c\021P\n\024T\246\267\302\210#\0228\353\032\235\274M\265&\033\314N#\215\212\373\362\261\001C\270\2567W\234]\217|\314\314\275&\365\037\300\310\326mm\243\235\242I\222A\275\"Yx$\201\353Dj\007\262\311\326\301r\340X\t\006SHPh4\313\0019\025,V\031V\241\275\t\034L\323n-T;\201\tBA\322X\013\202\220Q*\022\354\301`\222z\r\330\213\020\305\030\254\n\t\024\002\202^D\320M\023D\224\224\221\025\020\353\316JD\203)\204\302\010\202\n\365y2\025\315g[4\262Y#\277\200\305\0253$\303\222\017C\370z\276a\246\017m\307\221\221]\236tY\177\352\021\216a\342P'Ep\212s\247\204\214\316D\306\346\032\247\266x\255\236y\360\302\004A\004\032s\356>\021\3478v\241G4\001\312\"\001t\242\204x\367\355,_\013\035\332\226j\200\206:+.D\022(\030\227\341\241M \225\230\271\204\247A\255\031!\335\25579\206'\022o4W\276\232i\364\264\226\234\376Vfi\001\261#!-\000\320F\202\220K\327\361\255\346_'\361\240\212\n\342WJ\350\207\325\330\342@IHR<9\254\317\235\332\301\010\300\026\0020\003\005@\246\232P\025\002\224\242<\254>d\322\2310\237\203\303\020\"\242E\350{\3607Y\273^&\260\241DR\370\230\233d\236\241-;\327\344\364\033\357\216\375\007\251L*8\000\310E\200\311\021\016`\356\306\0034\246\364==\300\023\202E\254\253\007\005U\005F\204\277\201\2454\341\221\224%U\021\3576\004\234%1PDP`\024\n\024?\007\245\347\325\025\021QTU\252\251\335\237\343\257\242\352\376\307y\022\002\351\\\013\242\310\261\237\244\254\253\312\316\304\003\034E\210g\214\177nN\0214\246\023'~\364TB$Td\242F\013\317\347\212\"Lp\341\331\314\245\204T\220\2377\235\276/\036\242\374\324\272\311\340\344\\\267{\354n\031\237\3165\010\204\006\320\016$\271\020n[\343\222\352\345Q6\034^lZ\323x\273\233\332Q{C\265\234JdZj0]\336\n\265\231\267\233\226;\274\2750\264]\255\250\014\204\202\310,\221t\262[9W\241\327\323\313\255\221d\225\222\260Y[\221""\023)\277o\360\345\262\260\005\200\260\225\225\213m\277\243\316\270*\202\250\252\225J\243\034\372$\224\205)\027\242\210D#\005>s^\272\005\025(\251\010\"\034\322\203\344[\222\023\266\007<}9D\202IV0!P{S\374\372Yd3\205\3172\376\370Mg\253\236\352R7K_\247\317\364\332\227\235\253\254\271k#A\374_\346z\331\214\314N\027b\211\347\273\014\014\230\203\325\331\352\013\007\023\271J\036t\177\316\312l\367\263|\266ypY\277\327\036\244H\204lD\230W]t\276\332\266\236\250\350&\324\257&\024\316xXXQ\357\216\307>E\216\022\227\223\266\224\255\010\031\354\301\262\211!\362\260\355\211\240e\352\276\323,FA\257N0\204\232;\246\370\263\253\262\033S\231r\231\206\333`U\267]\313\330ji\264\2167\3232\351\330I\304r\2756L\303=\376\266\374I5\256\371\334\320\244.\301\263a\225\340\213F/\241\320\351ZM9B\222{\234\370\220\035\010\017s\342\316\356wM\014\2555i\245*\324\021\221\206\030\031A\205,Y:q\255\230\377\032H\204\326\032\272U\016EV\317\224\276\231C\343\343\234ivG\001\224\325\3037\241\035Uy\272\034\206\242\033\213DC(\322\316I\350\202l\273Hm\210\0070\213\363N\344Y)\210\241\211\nn\024% w\374\200\003D\205\240\022\203\310K\275\336\265\307x<\246I%\\a\025@\031\006\323\014\t\022EX#\005\312\226\220g%\007\224\323\3364\037Sz\345\335\306\035K\257=\335Qt\333\231\227_E\301d%\264\003T\215\250\321)\323\223^\261\3648\232m\301\342u\342\270\370N\346\245\213w\017\026R\247\300oQ\277\177W4\"\351?7\306q\331FK\237\330r\303\016\336\252\240\226\024\033\264\307\301\216\307\276\001j\362\351M\221\316\263k7q\367\342\270\245\320\222\342.)q\313\\\370\2742\360o{\331E\214\234;\231\251\265)\2233e8\343\312\376\206\212\351c\034\022\344\226+\024\356\327\233\346\373'9\316vX\3162\305\024e\026b\037^\266\3674\273m\263C\333\245\240\203Ah\032\010\320Z/|h\332\320\346\346\242\250Z,4\271\244+\210R\325\n\021\332p\251Q\032\241\025F\246\320l\247\353\305\240\254oGc\207\030\367\033&\313\265\207\0160\324\235\365.2\304\310\233\r'\310d\316pm/d\361M\315m\216\037\250\355k7\247U\203(\262\201\203,\003\313\243\337\330\272Y(\240(B\202\201((\321\263\314\262\253\313Z""\252\210\203\365%|y\265\344\026\303E\325\364\353\020q\002?S\362]\263\352\236`\346\\\333\315\373\016\200\332\333\037+\366\031\224\265\256\335\312U\202P\031\376\213\355\351\321(JJ\201h\233\2238\266\"\242*\346\032N\264\213\256\320\001\310\316\265\373k$\262FA\226]\323w]\216_* x\357#\314\343\277\276\202\317\206\230q\346\353ar\261\006z\317\001\353\300we\021C\200\377\017_i\200\320\216v\214,&\331\267\027\327t\372\232\200\326qB\276{\365\022\007 Q\255$F\232\006\202\323wE\254\202\326G\037\217\342\357zZ\260\003t\0163\030xt\367k$j3\014\334\252m\343\363\030\254CJQ\267\367\260\307\305\353{\214y\242\312\206,\201\360<{8n\210\345\375\"\211\223\211\261\223d\223\214N\240P:9\331\372 \207])\024\3525W\372\227gOc\260\253%F\336'a^\312\327\n\264P\274n\246\341\276\370\322\274\334\376\016\210+]\306+\223v\235\3402\007\266\351\217\360\272\034\241\332\236\263\337\343\305\215\206\310\00361\315t8\253q\220\365\224\322\244S\304\212fB\357x\342\215:\362\251\030\030\020\035\270.e\315QXW\032\317;\026H\242L`B\211\341J\356~$\031\016h\2273\335\311\261\005r\247x\177UBL8\354\252(\214\242\322\226\376\214\366v\300\210\262e\265,\014\001\354\213\014-]\263i \370\r\264\201\277\221\330s\357\313p9\262\23336\375Q&D\031f\325\326/\337\252\306\241\315WTfo\331\317\275Y\264\330a\341\206\031\320\215\220\336\261\217\217nO\253\223\203\3374\271\033\013\337\nm\221h\342\347\206t\340\355\310\342\242\356\357lc\270\340N\022\353H\224v\317k*\300\331,\260\273\212 \275J\2614HK\2710M\355C\006]\221U.\034\005X(\202\365k\333\035\216G\313\330pP1\3549\246J\344Iy5\006-\343\005@\3209\021}\360s\341\344uX\31022\354F\305l\006i\r\347\316\023,\352\355\320\032\370\266\035\230\305U\216\215\230\220o1\r=\232\373\364\265\265b\037\023%\251\"5G{\200\205\320\010\361\020\271\304t%\301p\366\244\300\347\344\342\005\203\306\177\201\2702\341\312N1rh\233\331\230f\343\200:\035\224u9c>\230:>.\023M\001a\315-\221\253\345\337\274nP\263\2356(\370\206Q\315\316$y-)\235Z\245j\333=&\357lc\233S\003I\245J\032\245\005\235)\273\327,\021\316\363+\0271v\001\312c\263\257HoK\244]""(\351\021\322t\337J\327\234\272\335(\342\302\214vuI\313N\006\350m\274\252V!T\2249\007,s-\345\030,p\312\326f\203,\2600\315\352\335\2513}\005\311\035\222\306E\244D@\204\315\302\261\002,\315\213\211\303\216\026n\3365f\311\220g\334\3028\323c\211:~\234\273\3724\342\363\304s\240\315sib\36505\215Y\2366\214\340\252 \343\222\016\2478\226\254\363\240\223\242\023\204\342\023\211>\200TY\215\000v\210\225\263R\002\315^\262#g\2119\020\036(L\210L\"L\2112M2\023i\245\032\271\211`\326\236[\0264\212\275ZN\231W\235\002\325-Mu5R\336\272\032\264E\005DR\235\373g\236a\310\312\355\301\2675\206\017F\251x\273\254\227r5^\375\322\r\343\351\200!\215\232\341\333\244\336\267\2562\333\346Mi\331\252\331\004Z\221y\027\216mv\313GR:x\215\273\016\342\263\261&\341\223\233*h\215\003\243\243\242g[j\306\336Mz5&KF\315\271\203f\315\2074 \374\303\203\344<T\"\343\302\371\003\310\366\207\337\035\323\340y\313(}\227.~\224\205\244\217\374\356\301\363\373\260\021\205\003\211\020\202q\221TP\024\006OY\3360)\204\330\022(t\362m\345\303\336f\340H\024\310RF\324KI\267d\342\246\363\345)\271*n\252PA\024K\002\250\200UT\362\022f}G:|\347v\013\013\222\324W\035,\304`R`\211%\230\277!&\344\370\347\014\264J\016\000\240\tg\300=P\321\240<\345\370\333_D\362\206E3\306\220\2476\237\014\304,\226\250K\203\243\201'\025\316h2\325\253\253\363\262A\020c\302\242\220\362h\235\200X\337W\331.\024K\214\207\323\213\226\211\0274\025\330\240\205\025\253J\204\246\010\207\177=\016\320\344q\016gj\301KW/\002\354rV\n\252>\"\257\241\210Q\226[\267\321D\311E\302\371\240\241Yq\232\236\313\2666\242\312)\234n\036\366\311.U\332=\323\314qs\022\261k\224ia\032GK\205\201#\203\023Io.\341\204(\266m%~<\237\\6\242\375>z<\312\034\001J|\370#\326\301\22258Q\250\324\032\246\321J\255\222\227rg5tl\026\232\252\3057\377*\243\221\014o\353|=\361C\2777\274X`\373l\004b\254\305K\227QN\002\010\211\212\312\002A\002$\325 \303K\024\340\313\210\340\231e\014\317\345\300&\264\340B\203\022\377\266\002\307\n\373&M\234E\211)\376\354\206\030\330\020\365FD\340\330\010\027\263\221\200\235\rj\365""\223\3650-'\367-\377xY\024\331\252\344Z\254k%\247\0358#\016\013\014\330\2640rK\342U\210\372S\340\245\004\220\262\250\036FG\254\024j\274#T\204%&\262\345\025\310v\036@/A\362;\234\201\244\202\373\236<P\021\342\375\342\224\031\356\365Y\017\307\352\302\030-L;\306/\"j\365\026\211\004\020`7\246\036\206z>\246hr\014\215\202\320\361|\177?\255\013\253\014uz\301\333\001\230\241\344\n\001\304\020\020e\303\210|}9\202\220TR\014\303`x\367\374\3547)\222\243\021q\021P\207\370n\233&\332\361\340\013\364\001\025]\365\021\330\260E\366\024\230a\212\270!^\200\25459\016\010\314\354\240.,\024)U\332\233\217C\367\350\016\307Z7\236\277\222\010\215\344\004\307l\177\266\311`\304v\220\255\261r\004\340\270\301\014<\224\230\333z\324\2021M\216\307\346\345\034\243i\333\337\376\316\335w\224\0229L\007\314%\212|\371f\030\320w&?\210\240\206\305\035@\325\252\026\274\211%\214=\r\211cYX'\354\345\262\323s\301\364\317\371\340!\237\340\377\337Zx\367\360:\224'`\"k`\317\302\036\t\311\325\003\022\200AQ(\331P\350\013nwr\356\203\265\236\347K=\003\240\230!\347\006\323\322\274\246lSA\303\202\010\260Y\0353\014\320\364\202\217G\237\204n\004\000\367\r\301\206::8\352\2642\326\224pr$\036\"\246S\014.37<\206h\352P\344\0347\357\217\373\274q\365\336[\006\241\325\251\026\270}u\341\272+\302@\233\313\0263\225\024W\204\325\206Z1\202\351\235I\337\274nC\234\360\035\317J\014\361c\314\006D\320\254\277c\001\0166$b\022\243\220\327$Uf\267m\034\343\3250\241\367\200\356p'\200\336\205OH12'\204\330v\023j\006\314\211\204:f'\210\r\337R\022\204\253\240sxg\275\277\204\317@\377\034\002&x\364\211\362\374\260\006\206PQ\026\341ZI\030\006{\340\274\311\030\350\0237bGkh\333\007\237\240 {\200\241\270\243#\306\0354+\205\013\010\215\233\350\2313\260\214\035 `\320\253\352ho\033\271\307\217\317\021\340\205\033\272\033\220\2301\320\252\207\376\336\366-\r\tP\306\224GL\376yR\007\265\334?!\217\332{\202w\364\361\\\001\202n\010\240/\245\0048\344X\3628\363n\2027\357\365xq/\244\336\020\200\"H\r\020U\017u\306i\323\262\030\337\342sz\204x\000\356\334\342\343\242b\253""\242w\260\025\205B\303\316:\215\2306T\030\307\263\227\177F\3777\305\341d\270E\t.h=\373\341R\032\205\016\354e\005\203\316\305\322v8\306&@\375\215\374\211\335\366w\375\247\3668*pI\242\370\323 \301\0109H\273\224\257\201\274o%s\266\203\355@\220\23490\333\215\257h\"a\t\256iC\271\240\334\340\354\366\300\354m3E\302A\214n\025rH&\3620\342\016\005\027\264+\235\335wo(\312?K\370\214K\333\000\215\2626\236S\317|\300\363^\265\007\t\t\306)\031=\201\344\362\217+\315\345\361\034\023e\352\330\230\310\344\357\251M\350\314\3763\006<XS\030\361\306\025\304w\340\331\r\342\220\264\212N(\031\0226\036\277dm\0360\177\370\307(\236\322)B\213Cj\0231>\010o6\355\327\233\326\215\243\261\345/\323\035\261\333\0266\221C\233\230!\253c\232\271{\335t\022\355\366e\004\301|\373G\301\273[\273\270\316\317=\303\360\246%R\030RE\014oH-\375\315\333\341\200\304*\275UU\207\n_T\372q\3436\257\356^\334\031\026\373\207{\303\242\216\354\264\007\0227\321g\207\315\300p\251\267{\213\006\002\034L-8.\312^\272m\253\231\234m\214%\353\303\240mjz\373\001\260\375\244\272\306\316\320\255\336\217\315\301v\321pk\267\006\270A\335c\257\303\327Q\203\205\275\207lDhC\344\270v.\023\334\016\021!\373C^ \205\206HRW\014.h%\003\013\004A\200\270as\024\220t\010\301\300\340^e\244q\203\010\004(+\215\343\244,\002\334\212\010\357\236\007\312*@\230Q\352\241^\024\344\252\032p/U\274\t\2244i\275\362\336\241\305~\330\347\335/[\350\351\024\035m\376<\013\316\262gO\321\350U=\273\335\rc\342D\234\356\006\270%\354Kv\344\001h~\343iJ\324\262u\032\343:\371\230\241-j\327\265\362\264R\307X\257\310S\007f\00608\005\366\030\3715\364\331\360\232E\014j\r\340\220\242\305\203w\212\350\031\311\206\304\335\n\313\001a8/\010\312@\324\265a\006\236I\240\251\016\357\353B\266a\320\301\244\355\3206f\005\354b.\352\350\231uD\032\300}\005\"\262\264\006\n\204*\250\213\325\345\305\006g\030\240\237\273KFmhd\315\241Z\265AbU\327\226u\232\221\261\306\201\235E\001;\032\246\325\004\262\371\023\224\020\315\204\035\014`6\013\010\002A\205\253\2242j\32062m\303\266\210\246r\220N\034e\254\3137MBb""\330\2779\202h\334\345\212\032\322\010\tO\262\342\316\023\231\254\245:\226C\224FITrq\310w\016\213\254Pk!b\265\203\001\017!\322W6\311%\224\301\242\003\274\3034\244\331f\246\314\310*Cr\301\3052\234\243\227Sy\000\233s!\2641's\222'\036K\265S)\205X\301/\026\021E\023+-U\311\014\243\213\003@\310\022\251&\"\216]\237\376.\344\212p\241 \223\274U\272";
-    PyObject *data = __Pyx_DecompressString(cstring, 5018, 2);
+    const struct { const unsigned int length: 11; } index[] = {{1},{4},{34},{1},{7},{8},{7},{6},{2},{9},{9},{8},{8},{29},{28},{31},{33},{38},{25},{32},{6},{8},{12},{11},{14},{9},{5},{9},{9},{9},{20},{1},{11},{11},{9},{5},{3},{8},{8},{1},{1},{3},{12},{9},{4},{4},{4},{9},{2},{3},{5},{7},{19},{18},{1},{4},{6},{3},{7},{2},{2},{2},{1},{3},{7},{10},{5},{4},{3},{4},{9},{17},{23},{22},{22},{28},{27},{2},{4},{4},{4},{6},{6},{6},{11},{7},{17},{18},{5},{9},{19},{9},{8},{10},{7},{4},{4},{4},{4},{8},{1},{4},{6},{4},{2},{4},{4},{13},{11},{15},{12},{2},{2},{4},{4},{4},{4},{4},{4},{4},{4},{4},{7},{7},{2},{5},{2},{6},{6},{6},{6},{6},{6},{2},{2},{2},{5},{3},{7},{8},{6},{6},{6},{9},{10},{11},{12},{12},{2},{7},{7},{5},{11},{7},{4},{3},{4},{8},{7},{9},{2},{2},{2},{2},{1},{3},{8},{3},{8},{5},{6},{7},{7},{9},{9},{2},{2},{11},{13},{5},{2},{1},{2},{2},{2},{4},{4},{1},{8},{14},{20},{2},{5},{5},{7},{5},{3},{5},{10},{8},{8},{12},{8},{9},{12},{10},{8},{13},{14},{26},{25},{1},{2},{2},{2},{8},{4},{12},{6},{2},{5},{2},{8},{9},{11},{5},{2},{25},{11},{6},{1},{2},{2},{9},{15},{14},{15},{22},{39},{11},{10},{12},{10},{15},{9},{11},{14},{9},{9},{9},{6},{2},{9},{5},{5},{15},{5},{14},{19},{20},{14},{20},{19},{22},{3},{3},{4},{4},{4},{15},{7},{7},{4},{7},{4},{8},{5},{4},{9},{12},{1},{2},{2},{13},{12},{17},{10},{3},{24},{23},{20},{11},{6},{3},{8},{2},{5},{3},{4},{3},{3},{3},{27},{12},{18},{17},{4},{7},{12},{10},{3},{7},{4},{23},{28},{29},{23},{22},{27},{2},{3},{5},{4},{17},{16},{2},{8},{9},{8},{7},{6},{7},{6},{7},{8},{5},{5},{5},{5},{3},{7},{4},{19},{13},{11},{20},{19},{18},{16},{20},{19},{18},{5},{2},{2},{2},{2},{2},{5},{6},{10},{5},{5},{5},{4},{8},{22},{1},{2},{6},{7},{2},{2},{1},{2},{6},{7},{2},{2},{4},{4},{2},{5},{17},{23},{387},{158},{126},{82},{151},{1299},{54},{583},{711},{549},{525},{10},{1211},{1046},{476},{47},{389},{65},{45},{69},{97},{201},{340},{95},{2},{57},{40},{37},{39},{61}};
+    #if (CYTHON_COMPRESS_STRINGS) == 2 /* compression: bz2 (5005 bytes) */
+const char* const cstring = "BZh91AY&SY\265\302\306\246\000\005V\177\377\377\377\377\377\377\377\377\377\277\377\377\377\277\377\377\377@@@@@@@@@@@@@\000@\000`\026]\310r\371\016\273@H\367\273\202\215Q U\260hP\005)m\241Zd\036\000uP\321\350\000\000\004\000@\000J\231\tMM\250\000\365\006CA\240\006\312d4y\001\223L\321\244\314\212\001\352h\032h2\006\200\000\031\000I\020\021\2214\312i\243FS#@\251\372\246\364S\322\001\246\200\r=@\000\000\006\200d=#@44\315@\022\231\002\222\211L\201\352\003@\000\000\0004\323\305\036\243\311\215'\2310\320\222\201\246\023FA\240\320\0034\305\004\232\2214\244\324\336\212zM\003A\240\000\320\001\352\033H\000\000\001\240\001\352z\217(\365\001\240\r\003\021\246\204\0310\002`\023\023&L\000\t\2010\023\023\004\300\000\000\000\t\221\200\230\020\302\000H\220\232\247\224zT\3750F\251\357Q\252\017)\352z\217Q\265\006\203@\320\000\000\000\000\000\000\000\000\000\306\377[\245\321\252k8\212j^\271u\273\263\310\345\177S\221\t\311$\270\007*\023#\373?\301\305\373\373\005$\220\265\302\0356\247G$VP\351\214>\315\313\322\325Jq\006\212\rW\264\212\242\251\304L\001q\020X\005\300i\006p\030\000\304\014LK\234\303\230*\304H\240$UT\025\001\210\240\304F2,\025X\210\254\212\212(\202(\213\021\"\254\"\214b(\202\242\240\203\004`\210\252\010(\202\301`\2609\2430\224\005D\212,0X\034P`2fc\027v]\312\300\254\222\260\254\254\020\221\377\311j8\024\"\225\025\002\205\346sd\n\210\2414L\314\306\34240X\013\001@\026AH\262\n\020X\n\0216\222\033I\215\215\260ChM\226\253RE\241i\256\\]v\275\367\027\"\341,\343\024\r\020\306\232.E\322/V\006$\025&\025\010\311\006(\246fa\275\227.\016\266a\237\007(e\006FDP\020\026\324J`\"\212g\231,\032a\246Hsi$D\212\020\3173 E`\300\026U\025\023\032\272\232\306\246\200\314&l\005\r\033\312\212Y\233\316|\321\2754\214\203\010\271BT\250\250\305rk\244\005\0048\033\006\232\024& i\241\200\341\346DhQ\000\312\371\010\212)AB\255PU\263\201\247\276\014p\0148\311\213\324x!\335\313PK@\026B4\003m\346\363%F\324y\325.\021\022\322\342\211\245\t\r\005Tq\177\030\256J-4\351\355\252\252\233T\214\0360\301#\211\230d3,\335\330b""\2100@U\002\250\030\201t\262\262\261l\220\315{\203\016\354\354\256\001t\256\005\313\336\373j\220f\2153Y\006Lf\2239\014\321\232K03\0030\322\353S$e`\277w\017D\014\320\031\206if,\313w\026+\275\267\344\234\262\261k+\035Z\233\314\314\262\265\221aZ\244\253T9\\\275J\031\213\020\304\3075\23632c\021T\n\225U\256\331aT\022\221,v\225\217>&\373\024\016&'1\315\313.9\334\210\243\350Y\r\346\370\326L|\361\2317\310\377[\270\314\332\215}\343\276\251&I\007\024\211\347\354\232\017\265#\210==\2569\031S\006\003d\247-\226K%\312\220sE\324\221b*\350K\344\022'3I'uB\300\034C\210\017\300,\014\0050\252U'\343\202\301%\004\0341\026!\2121X\025\022*\005D\276\n \242(\211\251\251\242JA\341\244\324\311\206t\n\004Q\024\026\363|3\024\313\032b\226\013\004{\350\024\211\030B\004\035\2409\372\037q\365\030\3453\342\316\245H\371\270\345\016/\326\253\030\237;j|P/L\002\245\3475\3630\331Z\274\032\332\272\313}\355\275MX \202\211-\222\345\313\263\265\375O\333\026\223\016\010Q\265\000f\021\000\267\2211\033\366p*\331U^9\311\232\320\020\205I\356Q\t\026(\251\371,\271lo\024eCu\301/\205H\234\233\326\016\3541I\024\201\304\r\226y\355\266\337\247\264\366\355\370\267\233\322\003D\215\302[\001\260\215\2050\237\330\367\337\246Y\303\205DTY\td\226H\217\353nr`MLS=\332-\017\317\357\301\010\300\026\0020\003\005P\256\272\324\025B\265\252>,?6\211P\240S\331\356\220\022R%\004B\030\036\236\274\233\236\320\251TW,LM\363PQ\236\276\253\365}&\376\001\377\244\372\325\302\303\200\031\210\270\031\242A\330\036R\210\315=\230&%\202ZQ\217o\005\245\335\216\325\225?\221\303\253\230\224m\224\362\223\036\030\t8\225\005Q\022A\200T*T\376\037\223\350\331\026\021aXV\262\261\345O\344\267\323{\177k\374\023\003$\262\003$]\0274\371\025\325\272\331\361\000\307\021b\032c/\251\233\210\242T\n\024\313\325% \221%)\251\022\212\372=\262D\212\220A\030\345$\252\211\310\204\364v\031\342\310\371\227\3075\215:\231\026k\036z\031F]\372%D:\003 \014\322\325\006\313\203\353521!!\236p\221)Bo7+)$YHt\243\211&E%8\251c\262\t\322\214\277Fh\351sn\302\301o\336\200\300H.\202\351\031%""\232\335\326\276\227\207N\275\256\213\244\256\225\302\352\375H\241^;\376\257]\325\300.\005\304\256\256_~_O\265w+\002\260\254\225\213#\0359M)\212s2\252\220H%\025N\323o\n\205Uj\253\030\242=\223\214&_\2525\330\264\323O\266\313\n*\345\262\205.'\026\375\374\274E6\307\244\305\365\323&\347e\246Z\325\216_'3\223\256\215n\237\213\215\342us\226\354\271\277\2761\266Vw\263YH\346\005\246&NJ\367%5l\024\310\255O\216_\363\272\273\276\372\220\236\357\273\212\322\037`\202\23122\271\"\201m\266\327-\366m~\270\361M\261n\254+\2450\270\260\254!-\317\t\227;\247?\207}kj\2214\335\203g\"d'q\367&\211\237\327\205\350\\\224\303n\230\3063ip\244$\317m\321\336\235\227Y\240o\276\005\233\206N\276V\256\273\311c\226\272\031'\302nK<\253\272\206\032q\377\2568\223k\345\ndjV90n\334g\224QyJ\0259<\3576\244\343Y\301\336\022\"<bA\341&\177G\221\251\235\350\317\256\363lD\351\307\035;\003\214\271w\037{>\255#\362\252#^O\305e\017\345\267\217A\332%\364N\346\214\006\254V\205\362B;\334r3\3171\262!\3579\010e*\361t\240\210\246\327\232\033\212\001\330F]\264\310\223%A\0251'\255\234P\224\200\344\343\0007R\026\350\022A\306\227+\225K\007d\035c$H\2545\027`\250X\344\220\242\221x#L\247R\331+i\223\262\203\302\003F\026=k\257\207H\370/>\234<%H\035\214\274yd\0131-\340\033$oF\251C\277\257k\334n\326xI\231\234\226\367\216\356\350l\312\014-\273\271A(\267p\315S\207\016}\221\223\316\032BT\226\352\262]\277+\2540\362\331X\022\302\243w\261\037F\350<B\366\353\326\273\245\245\250\327o(e\315sK\222K\230\271\245\317=\264\347\000\317\333\306\020e&3s\262\025\336\225\n\0322\244\261\353\207&\222\350\3068%\325<V)\373\376\207\320\367;\273\276x\321\251e\310\221lQ\210{3\277\207\013\033m\230\035jX\0100\026\001\200\214\005\336\277\014\361\347\341\327\3013\0073\223\357\340K\210\212\373C\242\207\224\261\305>$\330|\034\223\332?\014\336*\347\024x\270\346>\206\315\263\357\303\273\234v)\226\34063\031X\334U\206\244(2gp\336g\222\200\250\355\226\216Ca\366\265 \236\314\033\244\312&\014\260\017\274\254!\342\272:\351\320:#\241\320]\016\236=\373\273\314\233fI\021\365""\357\214\372\370\320nQd\266\262\325\321\357\220#\352|\216\3135K@hZ3\231\366\r!{ly\237Gq5e\351\231\025\032\033\300x\375\324}\036]7\206\363z\016f\277g\260\364\211\222f\320\363\303\232o\201\344\004\023=\362\363\254\322\315\031\206y\371\034<.u\374\331\001\357\201.\307=|j-;\265\303\237g\203\013\255\210\264\026\230\020^\303\312r\024{\210{\274;\330\rIiyF\342m\333\361\205\270S\314\311\302\306n\247\217\n\220\003P\211d\220\375\375\341\336.\375\273e$\022\2227{\375\274`\226\314\222nC\232\014\240\035<\2554l3\014\335j\215\357\3541X\206\265\253q\365a\217\267\302\016c\331&U1d\020\211\357\273\215\312Y\377\244\221B\222\r\314\331\244\346'\230\024N]\255\rPG\302\265\222z\265\227\331\237\217O\027\302\314\225[\210\237\013x\332\330Y\244\205\363<\315\335\307,kn\316\337g(\253\344\346+\253\206\276\2403\0107\n\020otz\303\312:7\017C\310\271w\003\026\030h\366\264\243-\303\265\210\262QD\335d)JAc\3168\231\206\314\224\321Q\201\001\301\005\205\246\211\304\346\005\024\306X\3432i\023I\214\010\325@+g\300\203!\332%\315\335[f\203\034\253\352!\346\262\233'<l\212\243\262[g|\337\224\376k^\375\276\315\260\362\002B\331\225\222\264\264$\321\214b\226\211e\347\t\2075\346&d\321\026\356i\305\264\020\361U\266\364\345D\331\021e\243[iC\267e\214]\241\030\370\276$\000\341~\\\024\331\2230I\250\301F;\221wf\260\303n\313\006\361\327\234!D\272\233\014\262\302\273\346^X\274\002\240c\265\356gF\245dt[\3438 \024\tt\t\022G\t\325IP\033$\312\013\212\0332\246,\232$%a,\234\272\020#\020\352\2454\302\254\"98\312r\247M\233wFr \303\\\353\204\010\352\222\370b\345%\342\021q\200\316\342b+86\352\3555P\264--\336\215\205J\205\311\r\335\266\022\2235p\304\013gs\301\351\030\310\355\275 \014\330\210d\327\267\301\025fR\035\263b\014\240;\325\375\375\302\027h#\212\027`\216\324\273\227w\333\224\003\267\253\240\027\017d=\215\334\313\273\254\244\244\351\244qfa\233\236\000\361\361\257\\g\323\027\247\332aD\321\026\035\223\335+B~\274\245\221R\356\364b\260\220g-\035\311\215O\266\204\031\212F\251\353f;\375\266%\2432\203\206V\024\016!\260mn\234[\004\202\231""\257\251\257He\354\010U\037Kt\016)t\027Dt\021\320\351\226\266\267#%\264\021\235\023\323\302\260:\242\3163P\222\\\252c\\T\224)\005(S)rzY\3629]\243\323\021q\243\006-]\252\230\341\020\231\001\244\2250%\001\022\00248\n\344T\206\305\312G\236\027o>6f\315\220i\350\302X\327s\223z{\247\353\326\222s\322\357\026c#yr\375{L\264\327s\211\217#\200\327E*\004\214\324\211o\0339p\301\013\004\214\003\001\030\013\rAs\312j\ts\302\315\235Py6\263%\032E\201`\023\030dH\324KT\265Z\352\215|\227K\201\355\321r>\327\276\\\271y\315\276}^\205\240r\026\311lm\261\262\237\025\311\255TTUEk\353\276\232h\035L\262n\346\331\225\030\033\275\224W-\244\227\255\3539\373\2078\r\315\300v\031\213;K\231\301p\\\347\277\360h\265\361\331n\212/W\"\343\266\333\345\253\322Z\372[\206\036\205w\304\243\220u\006\316\272\243P\345\313\225\017\006\331\215\375[r\330\241=[F\354\r\333\267\035\221\2144\016\350L\201$\355\005\350\371\207\307\330\335C\305\276\256\335g\221\340Z\366\276\275\312\322\252y;Q\335\332\2052\241\267\020\202|\310\252(\n\003'\025\3410)\204\320$P\351\244\326\227\017\205\233\341 S!I\033Q-&\263&\342p\276\202\233\222\247\006\245\004\021D\260*\210\005UO)&'\030\337\237Q\256\013\013\222\324V\352Y\210\300\244\310\211%\230\2779'\000\371g\270ZIGD\022\200\262x\207\334\035\033\000\341\315\305\236\261\334\211WN\236\301v\331M\251\224,\226\250K\203\233\220\223q\306(0\325\253\252\3640A\020c\355QHytN\300,lW\337.\024K\214\207\333\225\313D\213\212\n\354PB\212\322\316\241)\202!\303\236\227h}{f\246\315\202\226\256^\005\330\340\254\212\252>B\257\231\224(\303-\333\346\242`\242\341|PP\254\270\315'\262\355\215\230\260\306\243\350\367\376\304\242(t\231\374\247\270\256\213\207sC6D&\205\264\026\004\216FS9o6\341\222\024[\026\222\277_\313\330\r\2318\333\020\327\270\320\025\023\362X\376\256\234\240\3418|\034\007\023n\242\257\224J\3023\035!HLiU\212o\313\252\216\0042\342V\300\367\305\017\020\356\267!\221\370`)\231a\231^\3257\02701\242\242\366\302\204\021J\355\222Kv\325\230\256\025\221\212\030\243?\343\345\021\312>T\014.+\377,$\347^\241\207""\251q\205'?\343\261$\234\206|&\305i\310A\234\274R\016l\343\214\343k\3674{\036\374O\305\353`\221\3527\365%\311\311\023\037I\036\270\240\365\324\031$\301g\372\225qV>\251\354\250d\216\260\213\215\201\201\375\341\022\263tV\000\351@\2612$ql\033\020\235Hc\014\255\203\206\307\353\373\021a\036\267\362&\341W\315\366e\023\354{0\3151\324Nl\231\261W\234F4\204!A3\304\223\301\277c\340\336\017\021\261\310\306z\336\307\322\366\241\3731'\263\355\023\222\022\242\317\226XLB\006J\230\230\211\360\3735h\265\010\266\307\023\207;ME\327\253/T\201\244\0020\177\360\260f\225SF \256\360A\357\327\275\013\020\010\317#\245\022Iy\010y\300^\253\255\211\204n\373\25420L\267y\216\262>\237\325\340<\236\324s^\347\266\"9\240ry\217\375\231JE\021\345e\364FPV\231\032D\223\264\334\235\031\307\024#]a\344\372='I\320\272>7\367\371\257\3538H\351PO\234\251.z\267\024I\3019J?\314\261\234\234x\305\027N<|\211%\010<\276\224F\370\312\322}\356^\225\316\035\235g\301\3304}s\342\356\237\217\317\271qL\256B*\371\033\374\344\351[\\X\242\2301\332Mbq6\0313]}=p\272%vw\312\355;R\204N\367L\271\341\346\334\254.Y10\204`\245\035\365\022\254\367\307\037c\253\272:\304\004\365\235d\222v\366\370q|\033\217\207\035\323E\013\300\272\247$\217\302\253+\304\252\327\024\317\021\335\317\234}~g\207\333z$W\n\256\240\274\016\370\364d\025\350\031\tr\333<S\016\212\364\034j-\356\231\010\361\327>g[:\227q\331\357\302\257\t=\341QV^\347\334\300\317\014(\326S\217\022\277\024]\357\035}\007Q\360\250q?\354\035\235\311w\034\331u\336(\252+\272\260\234\034\313\203\226\305C;\352+\300&s\307\r\303w\332y\377y}n}\325]\247\375w\r*\360\357+\321\350\003\203lq\0310\361\266\324\n\275!\373\324l\330\225f\024yz\016\210]]\243\027`\231\326\232\243\370N\373/\272\314\0329s\264\251W$i\336\032p^x\3709\235}G\261\325\021\367\303\216\276\331\232\034\212;]\331\361s\236O\203\202\234I\303\210\357\257\353\247A\367\235g\365(\377\005\330W>\377\007\334(K!\026\031\336\306xla\362\374<\375p\216|\376\036\357\005=\3535\014\021H%\241;?\007\302\256nq\022s\365|\377\002>8\272\372\3462;j.\373k\234""\203\301\331\204\357\207\021\313NW\n6yt\363\355\347\363\275n\354Ja\246R\232\262y\363\207l\342\034Na\266=>~\276\365\312O1\035!\377'_L}\016\316\276u\352\366\370\273w\361+9\026\302\356Q\223\351*\263\240\350\217\273<\314\237,\0249\211\245\0233\035\023\320\"\241\225~zgg\004\315i\356\371\203\311\320zb\371\205\263\315\"]:GD2K\220B\363\212g\350OW\214\361\237\357\355\371O*\352\004tQ\320\272WVy\305\347\3168\205\251\016c]\033^C\333\351>g\316\351\365f\022\305I\371Y\3231\365\021\311\314Uv\211\024v\254\2621\303K)h\363\275m\222\022\204\224Jh\361\0348\327$Y\304\205\021\277\344e\261\326\225\025X\254\201I\024s\230\355\340\326\336I$\255\032\314\220\261e|\254\214\214\200\221\007\227.\nJ\201\245\307\333\370D\242\254y\316QZ#zr\016z\334\261b3:kGYe\244A\366Yx\201\033\230\364\257Z\305p\210\264\"9\021\021F\210WFy\243\214\251^\2645\205bWh\336\330\330\030\334\345x\322\361|\267\327yq\027P\253\016|Q\017\317Q5\317L\326CL\252\215UiTQ\220\3025\345N.^`f:\243)\251\233PE\322\203\311\326\247\275)\013N\220\264\207\267\034\311\273\222\202\205\325\242\334\310\005{\3744\214\252E\375!\245*?j4)\0319l\311\320\240cP\\\204\014\254s#\245@\306\240\250\314\216\2431\2324O4\373\232B\235& \216\3606\344\360\237\2474\267\316\346\234\351\263\230a\023p\347\023\274XZ\023\213.1's\014$,\256\327\270`\361L\372\370#]L\207\007\023\202o\214~\246\214I\277\2767W\370\223\266\307b\031\334\243A\214\277;\301\204\032\231\372\234\r\240\034H;\332\263<}\216\036\336\036D\234\372\331\244\313\273\354<\017\037VeY\351\321b)\300QTh.;Nc\361Z\234&\252\246l\270Y\245\0160\301fk\313\025mD\311Ye\356\003\324\264\315F\333\025\324\274\031.v\225\216\331\363\177\271\227\313W\006\2349\311\261b\2503\224\221\231yiT\335\241^\213\351\272/o\200\322\341\227v\214\3437\"\311U\262X\347\360\233\341V>\r\252\306_\030\354z\335\373\225+\215\342\216S\034\n\270\213\n\345.\346]\215\356x\234\323\031\274\220\2706BdR0HP\370\312f\325\343\026\033Y19-\027+m\216bcq\356\342\313\227\016L\223>|\211Z\312\334,\343\2060\247>\354\306-Kw\215\267\\T\242i\243i;[[4ND\332\233\327\n\366\036""\274zh\211\330\233o+%$\2459\025\240\234\335Un\226)WX\252\204\350\231\251\026\272\2474\326\345\326l\td\325\023,\326\347+h\255\235\251\307uNG{\"S\257Qi\245Oq\336R%5\257Ib\240\247m\311\026\2671\177\370\273\222)\302\204\205\256\02650";
+    PyObject *data = __Pyx_DecompressString(cstring, 5005, 2);
     if (unlikely(!data)) __PYX_ERR(0, 1, __pyx_L1_error)
     const char* const bytes = __Pyx_PyBytes_AsString(data);
     #if !CYTHON_ASSUME_SAFE_MACROS
     if (likely(bytes)); else { Py_DECREF(data); __PYX_ERR(0, 1, __pyx_L1_error) }
     #endif
-    #elif (CYTHON_COMPRESS_STRINGS) != 0 /* compression: zlib (5436 bytes) */
-const char* const cstring = "x\332\345ZKw\023\307\266\216\214ldc\300\222\337\220p,\333`\222\020\216%?BH\316\275K~\360\310\203\304\2621\004Hz\265\244\226,\320\263\273eK\342\234\263\030j\330\303\036\366\260\207=\324PC\206\032j\250\237\300O\270\337\336\325\326\303\330\204\334\254{\327\272\353\262\254\356]\273\253\253\253\366\343\333{Wq{\355v(\0319TT9\245\314\345q\237\323\224bI\311\305\225[s\005Y\325\323\361\214\242\335\235\373\317[sr\"qwN\316\244\362jZ?\310j\267\343\371\234\246\3139]\353\341eK\031=\235U\022=,\334\225\234.\353\351|\256\207\253\253r\374\225\364JQsJ\246g\200\2773\377v\241r\262k:\227\222\222\252\234U\244X)\331\3770\231\2775\027/\251\352\335\271DZ\223c\031E\311\3215\025Ok\202J\334\232\313\244s\257\260\n\020yM\247{N)\343\256\351J\341\356\\dkK\372%\022\335\333\374\371\347\350\226\364\370\321\343\335\355\255\315\237\243\321\355]\351\321\317\217\266\357\345K\271D!]\226\022z\245\240\374\024y*mF\036m\355J?I\277<|\264\375t\217;\375\022\335\336\027\304\236;\202$\375R)\343\267\225\216\353\322#|.\252$\243{Qi\343\361\275\335_\"\233\333 \305X?\355\202\024\357<\2252r\345\251\244?\313\312e\"\237e\3239\272K2\204\217?\351X#\240\025n\311)\251\214_\005\277\352I\231\311\271TF\221\344x\\FG\225\376*\262\346\3364E\323\244\234r$\025\362Z\232u\243Ur\361t\036ZU\363%=\235S\264X,\237\317\304h\361\032d\216?)\243\344b\345X%V\305\220\031\374I\030\314\275\311\025\rT:\206\013\210l\\\316%\350'\245\3616\021\232\"\253\361\0034%\222\344\373\234\244\254\351\037\313U\025M\227\316`\177\340\r~\204\177R\031\277\n~\3258\014\023-\272V\350\252\250\342*\025\324\374\313\370A2\255d\022\222\024\317@\\RJ\321\323\272\222\245&\204C\003\223\214\225\030\344\034\207Q)\035o\210\347\013\025)yl3,\032\310\0243\220r\252K\024\304\275\220\207\220\362\232\244\035(\361\002\346Q\300,\n\230\025\264E\366L\252\201\326\343\361\004+2!\353\320zB\311\345\023X\rL\235d\220\225R\230\0357\362]\262\220OcI\235\246\236\227\222\031YOd\022\331Dvy\031\277\020~\341D6\004:\004:\004:\014:\014:\034N\344yd\272\321\014T6\373D)qX\206U\322\025:=\2540]a\272\312t\225\350r""\242\222\250*\331\202^\201\301\343\217L\224n\272T]\246{\231\257\025\276V\227I#\022Y\214\324\241\230\310f3%\335e\366\322z\251\0000J\306\2221\211\374\027\267\202\252\034&\323\252\246\323\002u\005J\311g\222\231\274\254\257\257&U\245\230T\263I=\247JR\262\224\213K\320!^+\250)V(f\226*\244\312\251J\252\232Ng\313\370\223\016\344L2\235\255\340O\2209}%L\222\214\307\351\212\027\322\271C)\221O\321\215\224[>&*\351BZMkR<\237-\244\241*\211i\327\221\310l\264t\365\345\253\320\253\360\253\025|[\317@`\260\244\254\014+\242\333+\245k0\375-6\237,\376I\211e\\r!\272\204%\246W\262\331$K\207/\022\331\207\240r\252{\257\212;@\001S\026\264z$\356\020e\207\200L1\213|\242\004\264\220\216\021\374\370.\345\010\177\316h\251\242\215\025\252\000\370C\345\314\007\271\\(\027\316\255HR\216 \234\265\227c\273\200\022\024]\3131>\347\n9\302\267\234\232+e\311\0025\272\023\207\211\343\256\245l\241\222\253\366D\025\261\274B!T\010\2437\242\nAR\207`\t\366\267\216\037f]\263:\321t%r*\367\366w\231<\231\351\177\334vmItcQv)fB\n\324\263 \353\007RBA0b\nF%g\272\315t.\231w\211\014\\\225I\222E\267\007\211\211\t2u\227H\213w\312\2058[\037\017B\346\310\246\210\213\222!\237\317*\272\232\2163\026\010@8\206\372\376\226+\203\367y\202\205\201\304\210'\232\247\364\350\031\250\373\026K\242\220/`h\374-\343\027\302/\214\337\nE\007I\004\0304\201\021\313\342\026\306R\023\364C\344\344U\343GS\303\302\261\024\254^*\350\005\3615\251X\2223\302\246T5\254\256\252r\"-\323L\342: V4\264\203tRW\0212\335\004B\326%%\227`\006\233\235\252\244\360\007\351\003\370\031\3121.\2746u\020\323:|\352\310!'\r7S\200\335\212~\302I\005\317\035P/\2519\265D\177\254\034\365H\023\226\224\200Y\001\314\312\232T\325\342e7F\035\3463%L\313\r=\331\374!r\035\361\010\213K\200\325\327\240e\237\302\240\210W$g\221$\232\207\020\t\250\204\222\224\341\224\0101\032\204M\267<\374\t\277\356j4)\206\200\005\264<\203-$\375\207\017\331\336;\217yV\037\311\305\304\204\0144US\343\210\242\230!\0223\2112\022\211-\035\346\244\345e\301 \002m9\257iU\302\004\211\215\206\010 \307\361]0\312\342*\032""\225\356\0250\"I:\351Y\322\017\324\374\221\236E\370\245K\205.U\032\007C@\255:\241\017g\252\244DYMH<\273\276\344\225\0331\006\013\251Kg\362ya\242g\261(\005\300\033\300\203\264v\320\313\341n]\306)o\365\263\3722cN\207\365\262^\321\253\207\313\207+\207r\246\244\360E\223\016\225\370\212D\371\000\010\251L\227\n]\252\000\025\365\350 \035?\200\205\036!}T\334\321\222j>+\226[./\227\371\315\262p\352r\242|P\251,W\230W\021\274J\242r@9\001e\004\325\345\252\242\346\2657\236\266\367B-T\373\301\320\314\240\271fy\216\031\217\320\274k\355\331\223\266\342\204\234\310\033\317\273\221O\006\257\232KV\300\n\265\274W\316\"\336\215}2\350{S\252m\324\344\226\357r\255\330\362\236\347V\302\010R[7B\307\234\263\236\267\275\203ov\336(5t\274\204N4\2316w\3322\316\031w\315=k\322J\330\213v\334\271R_\255\027y\220\266w\270\366\251\261kzZ]b\244\266P\213b|\337\205\332wF\321<g\256\2301\313\323\032\r\030\3016]\334\027GjA\232\202V\233\257EZ\276\213\265\235\266\327W\033\254=6\202\306\252\201\267Gk?\232\036\323O\303\204j\333\306\270\021i\215\342EL%l\354\264\306\374\335\326cs\321\224M\315\232\267\266\355\t{\007\023\0148kuo=R\337m\0144\202\255\261\t\343\2369o\336\267\302\326\016V\260`Gm\315Y\252\007\352\241\372V\343\\#\324\032\033\307(Q|t\342\252\031jML\032;\206B\3045Sf\225\220f\306\360)\010f\334X1^Z\036\313\337\002g\300\270A\013\246y\240\207\037s\374\301,b\251X\310\371Z\311\210\260<|\001c\036\344\0233BK\371\006\344\236\3517\027\314]!\223\317\315\220\271\305\003b=e\310\313kF \352i\333C\214\nD0a\356\230)k\2475:e\304\320\234\246\367\246\214$\306\203\370\376m\354\300@F?\031\034%\265\221LY\267\220\336\2661i\310\206j\006\260\022\026\225\007\363\333\000\253h\016@\032\021\210\320\360\033\213\035\306\266\345\267\202\020Q\324\322\355\220\035\261w>\242\303\264Q|\303\252\367\327\202\265\225Z\014\337\360C\301\037\301\270P[\007\261\000\251k\030z\323T\255qk\303\212\333\001;\304\006\177c\265\271\262\t\325@\224^\330\337`s\362\226\r\001\372\215Y\363K\310\3027f\370 \251-\313kEh\261\3670O\226\310\030>0\001\tChdO>c\020\312\224\217%""\277\017[\224\2054\006\205\222\333\235FG\266\335\247\350lVl\217=\353\004\235\220p\3175\026c\0046\267\004w\220-\315\016\332k\316y\247\304\326\346i\370\333\203\027kOa\240\203\264\302)\343\320\334\267\326\355)\373\320\001\353bm\317\360\267\006\207k\023 >\303L\240\265\207l\031.\217f>I|\277q\315\254\332W\234\357\352\360\224K\265\224+'2\341]{\300^\202\205C6\023\306\003s\303<\260b\366\250\263\341\310\324S\201%\357B]\327]\211*v\030\212\362N\031\007pB\037^\r\266\275\243\200\0302\000,\347k\330\346&\214\304\177v\003\253n^\270j\206\315\235\026\257\177\200\265V<\273\321\206C\374\333\214\232\354\3437\300\r~\344\213-/Ym\200\334\354$AKK\262\002\303\020h\330\332\307\262\366\235\260\263_\017\327w\030\256\336\r}28!0\356\265\261D\270Az\210\032\377\264B\226\300\227Z\006\300\032z\217\277\3133d\002\266\331\362\021\364\261E\005\341\3521\300W\030\256:`q\227hM5\374'\373^\200]\307a\227\213f\234EN\010\263\353\300\220\374\354pih\302\177\242q\271\246\361\222u\230X\334\232\265\347mrG\006\034S\267V\240\320\001\006\332\000\226\270\323\232\230b\310\021\0162no\3301\307K\372\356}\360\322\031p\026\234\335\372@}\276\0369~0\001_\325h\3606\020n\2255;\261`\261\214\376\005\345\002&\246\233\323!\007\023\232\204A\177n\255\331\2030\226\321q\343\033XZ\210\324w\223\260\213D{\001\356{\207\221\027\276<\t?>\367\341\006\005\216\262\220\026\204\204\350B\035|\244\304\rr\307\223\004}b\2446\316\301\t\303\364\023\355\036#)\301\340\343\010wkd\312\204\016\236\3324\276\270\006\223_\200\315\225\\\020Y\2038\026\235X\335\363\021]\304\267\375\014R\324}\010\363Uat\024\022\004|b-j-\000\200\005\376\370\371\322\3567\006\266\240\031\000\222\230\034)\360\034,t\227\225\022u4V\212\373\3125\366\314MV\014\251r\300\231w6\035\025\341(\314\361j\276\261\321\220\377d\347\200q\035 \355\351!\374\300\222]6\336\2470\202\242`D\2152\331\037-\3702cJUd\020\227ji\254t\232\254\\\350M\243\365\214\033w\360\372c\204\325Hk\330\317\001\030\343\337$\350 \215\000O\t\022\207k\263\360\2245\212\203\300\211 b\304u\304\207U[u&\235\004\326\275\335\230hD\033Go\023""\315\350^s\357y\363\371\013\274\265\260\336\\\277\207\211\303\302\276jN\337\2641\316\025\023\352\244\360\353\235\241\261\320\244\2506\354\006RF|Bv\202\345;p\335-\300\362\244-\023\230m\242\307=\363\246\265`=\266y\376Uc\232D@~\371\322\034\261\276\264\237\327G\033\2216\026\264\016u\256Y\027\354u\306O\337\204\261\305F\361\330\272i\337\342\331n\326K\215\010=\330\204\245E\332=\201|\020\370\307Qu\226\263\265\021\340\376\272\363i}\247.\267\256,Z\337\333\257\352W\351\033\227j\231\346\225u\207\203\314\021B\347!\300\343\274U\264\207\340\315\263\365`\235c\361?\021\363\357Y\213@\212\033\010\035:1\307\215\257!\000\314\371.#\341(\345 \t\221\027\266\273\334\276ta\302M%\256#\365Y\262\375\000\014\331.\236\301\246\354\304\337z\1779\017z\322\221\213\024\321g\334\204\203\240\014\t\327\030\"\241dE\254\247H\253\022\210\202\253N\271^lx\033\221\306\336\333\361\267\021\232\321\002\017\020\024}_`bH\267\"\224R\335\301\344\317Ywl\316\257\356B\310\013\3263\273\004\363\2556\374\275\254\242h\354\303m^\0026\321\010\365\256\242x\242\301\206\302IY\353\316\203\267\236\326\265\277Q\006\306\351+\345\n\"\355\321Ip\300?X\004\276\317\341\354&\000:\r\323\374\306\331\"Xx\217\325\366\222\313\035r\244\r\n\034P\214\020\031\275\000\2605\316d\323\354\212\367\311z\376\014\273\307,\311.^\302~\276t\2367F\337\302d\306\014/\333\357\242%\267\316\262\321ED\371\014\303\225\267\036\021LO\233a\374>\205\264\313\230\367\276\3715\364=\0034\347\214\363\001\322\310'\326=\016-\276\313\315\313A\213a\376\251\371\314:\262\223\316\275\372Rc\372-g\222/\361\261o\235W\324lw#\203\250\030|\310\360\314av\352\242\355\265\357a\nJ}\215\363\034x~\200\2238N\357>Hv3{\016\277/\330^D\236z\371\330\275{[mr\264\246\177\t\337<o\353\316\335\372\263\306\353f\364\267\346o\277\213\310,0\016S\177\325\014~\355\024\353Cu\031~\273\365v\244\031}\321|\221j\246\324\246\252\211\364y\300\274A\376\367\221\rr5\021i\334t\375\275\306\022\347\210\275\215\266\017Y7\232\203\354\242nC\004\3043\237\020~\256B\300\253\224?Sy7\214 u\225#\342\331\005^\267\322\273\366\327+=""\n\325\212\013\333T9t\332\377/*\276v_\305\327\323\232\341\242b\020\325\367\204\275\007Wz\21719\303\336(\213'\333\200\230=\333\337\337\350\3552\010\031\372\273D\367\321,\345b\263\224]S\315\235\200i\204 tO\247\340\242\376b8\201u\357|\237\014N\032\017)\255~w\211\354\245\343O~\267\316c\237:.\373\212\002\216\037s\306;F\301\205\242\234\250\336T$?(\nl1\013\n\3474*\326\270\323\347\247}\343\022Z.@\t\243\275\334\376O@GF\334\034\207\253t\206\335\267B\335!W\014\271\277,%#\031`\324\033\025~\357\246[\\\rRm\245\"zA\227\223\\\234\221\334\024\004\376m\n\373\000\205\265\272\207\263\240\017L\272\377c=\237\021&\232B)\205|\027Y\225\307\031\347|\332\375\224\207k\260\336\306\377\306*\220\337\264z\227\"jM\324>\300c\212H\243\263\2420\0135?\231$\004A@\247\374k\2449\362\031\325\272\303\265\031\212\360\224\262s|\274c\204\372o\224*m\031C(\004\023(f\274\2279\324\225\314\037\254CxG\221*g/\000(\201@t\013\241~^DIb~\017I\301\020EY'\241\360\177\354\340}|w\016!\366\252\035\021\305\374\224q\204~\310\023D`\300W\375\230\374*\357\035 \000\014\261\215\207\233\027\377\206\030\376\321-\302\214y.\305B<\267 \022\322\337\2204\r\360\014\376\370Q\230\323\206y\363GT\013\327Q\203G\235\342\007\037\222\214~l\316\360V\3030!\366\"\327\002\376.9\213\027(\377\nX\337!\305\235pv\270\310\350<\246|}\002\230\023\263{\230\237\301D\274H\2428\017\357\031\223j\322\030\004L6s\204>C\250\326CH\363)\321\n;O\352\033\310-\377\312\207\233\376\0058<T'\222\200\016w\036\270I\371s\000\251\321\237\236Oo\247\n,\377\006\327\214\377W\246\331M\224\374\344\306\017a\002\263p\3364\\1\324\313H1\330s \3322\316\243l*\036\357\t\254\"\267\\GB\264h\035\330)\347i}G\274F\331:%\223EZ\330h\355{\316\252B\224\317!\246\2323\214\004E\221qo\231>\313gs\331y^\330z\3557\3003\345\334~\362\314\241\367\231m\357\004\257D\007\256DZg6\332\274\317\006\0000\376\301*X\305t\250L\036\tt\315\275\371\3512\360\316\337\307\003\010\250\3665$R\036r\200\207H\022\237\240H\216!\341\213\010l\240\005\035\360F\223\207\\\371\200\212\363\241\346\020\200\007@\351f\027\007\350\221\304kd\263""\315\221O\001\377T:nZ\257\235`\273\317<6\314\254\035\352\205.\027\263.a\010\371T\350j\tt\373\253\010\326:\013\301\332\"\007\342\313(r\023\257\233\233\210\335\303\024\244q\237\323\361U\247\330Y\334\276\365\255\315\356\311sg\231\270\310\327\373\346>o\330\235\267+uO\273\327\336C\255\217n\265Of\367\264\r<\204\364\247(\342\016T\367\231\223\024V\177\t6?\304\201\211j\270\2305\n\267P\234uJ|\250\316\030e\345\267F/Q*\310I\325i\344\257\035\270\372'\374i\257\356\347\335\213Sz6'\227\360\361\t\021B\377\314P\027O\353Q\341\375\030\331Q\353\376\276\036\317;\313\364w\231\277\367 \306i\037\376\255\007;N\371V\221\n\356us\312<\202\247\357P\"3\014\211\375\212T\361sV\262\313\340'\347\341[\337`\260!\373\200\312\3721\026\260n\256\232\207\234[\336\240\245Sw?\374?a}N[\343\304\0301\277\260~\240z|\232\003\343\036t\0074\344Z\026\236?|\241\023\033\310\301\277\244t\254\355\243\342;\200\221\351\014\241\267\321f8\203w\030\377\342\351\353\214wr\353\322TW\327\315\271U'\202\017\364\362\000Aa\373w$\275\\e\016\271\371\207\314{\220H\225\24694\273&Lv\035d\000\352)nh\333s\364R\363\022\371\311$oj}+\266\231S\274\023K~\301\333\313T\323&\341\330)\353\tM\214q\2509r\033)N\311\211\264FP\321#\037\277\r}L!(LQ\234\355\007\221\224\265s|\320\362\325?\000\251_\335\24615\252\034\373r\213\326\007\313h\332\343\033\002J\305)\271j\375w\266{(e\271\003$}\340\026\316=9\306\017\354oAk\005:\277N\313r^4\246\032\352[\377Gv:.\206\027\214\027@\346oQ\202\363\216=\355\220\217\230\267\2327h\331\230\3106\322\315\227\266\347D\244\"\365\307Y_\2678\330m\332G\"\256\212\007\263\234\305\270e\3510r\360mk\026E\017\241\334i\254\200\361\005@\363\265\023\024R\224\305\346D\3008\336\337\354)\"\0020\203\200y\007\013\222\331\352\266\235\231\3728\312\254\275\206\037e\326\325%f>`\303\363\211c\212\262\371\332\276\351,`\341\376\306B\303-\354\217\017\321\006\305\214\335\355\315\342\207n\324}\326\335\212\242\355^\017\341\367\377\000\343\335\004\025\323zm\205\267mVyK\2366\341W\261\264\025\336Q\243\235\307\3260m\363za@^$\366\235\247\374L\370\026aB\030E\033E]""\002\305(R\n\332\274\377\360C\262n:\027\210\003\2134r6\300C{Tl\326O\240,\323\031\347\002\356~j\274>UW\033\\\007\213\r\36518{\313?\311\265+\323\243T\370\322\256!e<|\330C\007K$\325S\010\262=\217\373yQ\310\234s\317\227\202b\177,HJ8\016fqd13\3668\264}\037\005\313\213\267\201\267\\\244\254\010t\230\022\366D{\256\034\305\251\314\277)\006\240S\304\277\003Y\026\270\210\346\320;\356\372\3129\310\243$*\210\357x+d\264\257\264\245\364k\003z)\031\221\023\215\036\023\245=\201\001\201\377t\240\367\336 \010\350\264\\\254a\227\021\225\222\246\263\230=\305\263(\275\350\274\264\004\215\013\267\246\335\004Y\310\244\257\032\334\254UE\305)\234|\2346\345h@\312Z\306y\273u\004o\207\376\230\321\346\301^\213s\252\341\332\024A`\347\300\2713\372CJ\273\332'\017\231\027\020\337d\263\347\350W\003X\310b\203\353\370\\9\212\200\027G\330\\r\374\016\353\206vn\236\361\n\253\000\315\270\363i\3751{-\303\325\035>3\271i]\347\330\353\r\320i7\220\344\3753\016N\336\022tT\324\342\375\370\"\025\177\223d\006\203\002\200\316\361~\250\260\027\250P3\026\305V\201\271\213\200\274\311\207\250\354M\177\355\361H\355:\"\352$\025\355$\205-\370\353O\226\377\230?\316\233\310\001\366\215y\204\321\235\336\027\006\335\203!\305=W\334\341\372\357b\355\271y\301\372\332\376\302\341\375\252'\260\331#\336\243>\263!\376\247\200\017\031\376\020\344\343s|\224\202R\322\177_\034\240\322\331\343S\332ni\375q\210$I\226\305\251\350f\363\362\r\322\245\200\305\013\315\013T)\343\273\277\032i\230\246\327z\310\3339>q^\337\307\352`}\357\213\264Q\261\205P\231\000Hx\341\320[u_\303\333\370\236\316hv\251\337eHe\206-\272\227\244#\237M.\246\202gw\032|\263\337\337\215\200`Q\374o\222U\002w\312\362c0\306{\010\302\301\0174\203\377\005o\004\263\316";
-    PyObject *data = __Pyx_DecompressString(cstring, 5436, 1);
+    #elif (CYTHON_COMPRESS_STRINGS) != 0 /* compression: zlib (5453 bytes) */
+const char* const cstring = "x\332\345ZKw\023\327\226FF6\262\021`\311oH\270\226m0I\010\261d\233\020\222\333\275\344\007\217<H\374\300\020 \251U\222J\262@\317\252\222-\211\334\273\030jX\303\032\326\260\2065\324PC\206\032j\250\237\300O\350o\357S\262$c\023\322Y\335k\365j\226Uu^u\352\234\375\370\366\267Oqk\365V8\031=PT9\245\314\346q\237\325\224bI\311\305\225\233\263\005Y\325\323\361\214\242\335\235\375\317\233\263r\"qw\366\346l\274\244\252wg\023iM\216e\024%G\327T<\255\211R\342\346l&\235{\245\321\300L^\323\351\236S\312\270\347\013J\256\240\037Dn\311\231T^M\353\373Y\355V<\237\323t9\247k'ufK\031=\235U\022'\365\341\256\344tYO\347s'u\353\252\034\177%\275R\324\234\222\321N\035\220\316\245\244\244*g\025)VJ\2362*\231\327\324\370W\235\316\257\272\235_\361\024\267\n\025MW\nwg\243\033\033\322/\321\355\335\365\237\177\336\336\220\036?z\274\263\271\261\376\363\366\366\346\216\364\350\347G\233\367\362\245\\\242\220.K\t\275RP~\212>\225\326\243\2176v\244\237\244_\036>\332|\272\313\203~\331\336\334\023\205]w\006I\372\245R\306o#\035\327\245G\020\343\266\222\334\336\335\226\326\036\337\333\371%\272\276\211\242\230\353\247\035\024\3053O\245\214\\y*\351\317\262r\231\212\317\262\351\034\335%\031\372\303\237\324Q*\312\n\327\344\224T\306\257\202_U\316\2452\212$\307\3432:T\372\253\310\232{\323\024M\223r\312\241T\310ki\022\275\254Ur\361t\036jT\363%=\235S\264X,\237\317\304h\263\032d\212?)\243\344b\345X%V\305\224\031\374I\230\314\275\311\025\r\245t\014\027\024\262q9\227\240\237\224\306\323T\320\024Y\215\357\243*\221\344\336oI\312\232\376\261\255\252\242\351\322)\315\037x\202\273\360O*\343W\301\257\032\207\335\241F\327\n]\025U\\\245\202\232\177\031\337O\246\225LB\222\342\031\210KJ)zZW\262T\205phb2\032%\006\303\211\3039\224#\363\217\347\013\025)\331\261\021\026\rd\212\025H9\325-\024\304\275\220\207\220\362\232\244\355+\361\002\326Q\300*\nX\025\264E~I\252\201\226\343\361\004+2!\353\320rB\311\345\023\330\r\\\226d\220\225RX\035W\362\335b!\237\306\226\216\252z^Jfd=\221Id\023\331\245%\374\302\370E\022\3310\312a\224\303(GP\216\240""\034\211$\362<3\335h\005*\233y\242\2248(\303\n\351\n\235\036T\270\\\341r\225\313U*\227\023\225DU\311\026\364\n\014\034\177d\222t\323\245\352\022\335\313|\255\360\265\272D\032\221\310b\244\243\022\027\262\331LIw\033{\313z\251\000\374J\306\2221\211p\010\267\202\252\034$\323\252\246\323\006u\005J\311g\222\231\274\254\337^I\252J1\251f\223zN\225\244d)\027\227\240C<VPS\254P\254,UH\225S\225T5\235\316\226\361'\355\313\231d:[\301\237(\346\364\345\010I2\036\247+\036H\347\016\244D>E7Rn\271S\250\244\013i5\255I\361|\266\220\206\252$.\273\216Df\243\245\253/_\205_E^-\343\335z\006\002\203%eeX\021\335^)]\203\351\257\261\371d\361OJ,\341\222\013\323%\"qy9\233M\262t\370\"\221}\210RNu\357Uq\007\312a\311\242\254\036\212;DyT\200L\261\212|\242\004\264\220:H\335\271K9\302\233Sj\252\250c\207*\360\373@9\265#\227\013\347\"\271eI\312\021D\263\366rl\027P\202\242k9\2163\271B\216\360,\247\346JY\262@\215\356\324\302\205\316\320R\266P\311UO\r\004\275\321\204\367](\204\013\021L\203 BXuT`\321\366\327:\235Y\327\336\216U]Q\235\330z\353\273L\236\354\367?n\271F&\206\261\214\273%n\204xhdA\326\367\245\204\202h\313%X\233\234\351V\3239D1Q\310\300\207\271HB\352\216 \371q\201|\300-\244\3053\345B\234\315\222'!;e\033\305E\311\020\030d\025]M\307\031$\004Rtb@\177\315\225\301\373m\242\t\023\211\031\217UO\030\3213Q\367)\226D!_\300\324\370[\302/\214_\004\277e\n\033\222\210<\250\002<\226\304-\202\255&\350\207\020\312\273\306\217\226\206\215c+\330\275T\320\013\342mR\261$g\204\261\251jD]Q\345DZ\246\225\304u`\257\250h\373\351\244\256\"v\272\314A\326%%\227\340\006\266GUI\341\017\322GD`\214\307\274p\347\324~L;j\247\201\034\213\322\360?\005\240\256\350\307\274W\264\271\023\352%5\247\226\350\217\225\243\036j\302\222\0220+\240\\Y\223\252Z\274\354\006\257\203|\246\204e\2711)\233?\000\311\021]\330\\\002M}\025\332\366\t\r\024\n\213\344E\222D\353\020\"A)\241$ex+b\217\006a\323-\017G\303\257\273\033M\212!\222\001FOi\026\222\376\323N\266\367\243n^\325G\266baB\006\232\n\346\206\360\212\025\202\241IDU$\266t\230\223\226\227E\003\025P""\227\363\232V%\260\220\330h\250\000H\351\334ECY\\E\245\322\275\002_$I'=K\372\276\232?\324\263\210\313t\251\320\245J\363`\n\250U'XbbJJ\224\325\204\304\253\353\343\252\\\2111XH\335r&\237\027&zZ\023q\003<\001<Hk\373\275-<\254\333p\302S\375M}\224\230\351\257^\326+z\365`\351`\371@\316\224\024\276h\322\201\022_\226\210(\240 \225\351R\241K\025\240\242\036\356\247\343\373\260\320C@\254\342\316\226T\363Y\261\335ry\251\314O\226\205S\227\023\345\375Je\251\302m\025\321VIT\366\211,\020U\250.U\0255\257\275\361\264\275\347k\341\332\017\206f\206\314U\313\323ix\204\352]k\327\236\260\025'\354D\337x\336\215\234\031\274b.ZA+\334\362^>\255\360n\364\314\240\357M\251\266V\223[\276K\265b\313{\216k\t#Du\335\010wZN\353o{\007\337l\275Qj\030x\021\203h1m\036\264a\2345\356\232\273\326\204\225\260\027\354\270s\271\276R/\362$m\357p\355\023c\307\364\264\272\205\221\332|m\033\363\373\316\327\2763\212\346Ys\331\214Y\236\226?h\204\332tq\037\034\251\205h\tZm\256\026m\371.\324\266\332^_m\260\366\330\010\031+\006\236\366\327~4=f\200\246\t\3276\2151#\332\362\343A,%bl\265F\003\335\332cs\301\224M\315\232\2636\355q{\013\013\014:\253uo=Z\337i\0144B\255\321q\343\2369g\336\267\"\326\026v0oo\333\232\263X\017\326\303\365\215\306\331F\2705:\206Y\266\361\322\361+f\2705>al\031\n\025\256\2322\253\20443\212WA0c\306\262\361\322\362X\201\026Z\006\214\353\264aZ\007F\004\260\306\037\314\"\266\212\215\234\253\225\214(\313\303\0274\346P|bFi+\337\240\270k\006\314ysG\310\34433ln\360\204\330O\031\362\362\232Q\210z\312\366PC\005\"\0307\267\314\224\265\325\362O\0321T\247\350\271I#\211\371 \276\177\033[0\020\377\231A?\251\215d\312\272\205\3646\215\tC6T3\210\235\260\250<X\337\032\232\212\346\000\244\021\205\010\215\200\261p\324\260i\005\254\020D\264m\351v\330\216\332[\0371`\312(\276a\325\007j\241\332r-\206w\004\240\340\217h8_\273\215\302<\244\256a\352uS\265\306\2545+n\007\3550\033\374\365\225\346\362:T\003Qza\177\203\315\211\2336\004\0300f\314/ \013\337\250\341\203\2446,\257\025\245\315\336\303:Y\"\243x\3018$\014\241\221=\371\214A""(S\356H~\017\266(\013i\014\n%\267\217*G\262\355\366b\260Y\261=\366\214\023r\302\302=WY\214Q\330\334\"\334A\2664;d\257:\347\234\022[\233\247\021h\017^\250=\205\201\016\322\016'\215\003s\317\272mO\332\007\016\232.\324v\215@kp\2706\216\302\247X\t\264\366\220-\303m\243\225OP{\300\270jV\355\313\316wux\312\305Z\312\225\023\231\360\216=`/\302\302!\233q\343\201\271f\356[1\333\357\25492\215T`\311;P\3275W\242\212\035\201\242\274\223\306>\234\320\207GCm\257\037\020C\006\200\355|\r\333\\\207\221\004N\257`\327\315\363W\314\210\271\325\342\375\017\260\326\212\247W\332p\210\177\233\333&\373\370u\264\206>\362\301\226\227\2546Hnv\274@[K\262\002#\020h\304\332\303\266\366\234\210\263W\217\324\267\030\256\336\r\235\031\034\027\030\367\332X$\334 =l\033\177XaK\340K-\003`\r\277\327\276\303+\344\002l\263\345#\350c\213\n\301\325c\200\257\010\\u\300\342!\3335\325\010\034\037{\036v\035\207].\230q\0269!\314\216\003C\n\260\303\245\241\211\300\261\312\245\232\306[\326abqk\306\236\263\311\035\031pL\335Z\206B\007\030h\203\330\342Vk|\222!G8\310\230\275f\307\034/\351\273\267\343\2453\340\314;;\365\201\372\\=\332\351\030\207\257j4y\033\010\267\302\232\035\237\267XF\377\202r\001\023S\315\251\260\203\005M\300\240?\263V\355A\030\213\177\314\370\006\226\026&\365\335 \354\"\321\236\207\373\336a\344\205/O\300\217\317~\270B\201\243,\244\005!!\272\320\000\037)q\215\334\361x\201^1R\033\343\340\204i\372\013\355\036#)\301\340\343\010w\253d\312\204\016\236\332\024\336\270\n\223\237\207\315\225\\\020Y\2058\026\234X\335\363\021C\304\273\003\014R4|\010\353Uat\024\022\004|b/j-\010\200\005\376\004\370\322\3567\006\266\240i\000\222X\034)\360,,t\207\225\262\355h\254\024\367\221\253\354\231\353\254\030R\345\2003\347\254;*\302Q\204\343\325\\c\255!\377\305\301A\343\032@\332\323S\010\000Kv\330x\237\302\010\212\242a\333(\223\375\321\206/1\246T\005\203\270XKc\247Sd\345Bo\032\355g\314\270\203\307\037#\254F[\303\001\016\300\230\377\006A\007i\004xJ\2208\\\233\201\247\254R\034\004N\204\020#\256!>\254\330\2523\341$\260\357\315""\306xc\273q\3706\321\334\336m\356>o>\177\201\247\346o7o\337\303\302aa_6\247n\330\230\347\262\tuR\370\365N\323\\\250RT\033v\003)#>!;\301\362\035\270\356\006`y\302\226\t\314\3261\342\236y\303\232\267\036\333\274\376\2521E\" \277|i\216X_\330\317\353\376F\264\215\r\335\206:W\255\363\366m\306O\337\270\261\301F\361\330\272a\337\344\325\256\327K\215(u\254\303\322\242\355\236@>\010\374\343\250:\303lm\004\270\177\333\371\244\276U\227[\227\027\254\357\355W\365+\364\216\213\265L\363\362m\207\203\314!B\347\001\300\343\234U\264\207\340\3153\365P\235c\361\037\210\371\367\254\005 \305u\204\016\235\032\307\214\257!\000\254\371.#\241\2378HB\360\302v\267\265\217.\214\273T\342\032\250\317\242\035\000`\310v\361\224fb'\201\326\373\333y\320CG.PD\237v\t\007A\031\010\327(\"\241dE\255\247\240U\tD\301\025\247\\/6\274\215hc\367\355\330\333(\255h\236'\010\211\261/\2600\320\255(Q\252;X\374Y\353\216\315\374\352.\204<o=\263K0\337j#\320\333T\024\225=\270\315K\300&*\341\336]\024\217U\330P\230\224\265\356<x\353i]\375\00710\246\257\304\025\004\355\321Ip\300?X\004\336\317\341\354\006\000:\r\323\374\306\331 Xx\257\251\355%\227;\340H\033\0228\240\030a2z\001`\253\314d\323\354\212\367\311z\376Js\217Y\222]\274\204\375|\341<o\370\337\302dF\r/\333\357\202%\267N\263\321\005D\371\014\303\225\267\036\025\215\2366\303\370}\ni\227\260\356=\363k\350{\032h\316\214\363\001h\344\023\353\036\207\026\337\245\346\245\220\3050\377\324|f\035\332I\347^}\2611\365\226\231\344K\274\354[\347\025U\333\335\310 2\006\037\030\2369\314N]\264\275\366=,A\251\2572\317\201\347\007\231\3041\275\373`\261\313\3549\374\276`{\021<\365R\307\275{kmr\264f`\021\357<g\353\316\335\372\263\306\353\346\366o\315\337~\027\221Y`\034\226\376\252\031\372\332)\326\207\3522\374v\343\355Hs\373E\363E\252\231R\233\252&\350\363\200y\235\374\357#+\344j\"\322\270t\375\275\312\"s\304\336J\333\007\326\215\352 \273\250[\021\001\361\324\036\302\317\025\010x\205\3703\245w\303\010RW8\"\236\236\340u3\275\253\177?\323\243P\255\270\260M\231\303Q\375\377E\306\327\356""\313\370zj\323\234T\014\"\373\036\267w\341J\3575LL\2637\312\242g\023\020\263k\007\372+\275C\006!\303@\267\320\355\232!.6C\354\232r\356\004L#\014\241{\216\022.\032/\246\023X\367\316wfp\302xH\264\372\335E\262\227#\177\n\270y\036\373T'\355+\n8~\314\214w\224\202\013E9\221\275\251 ?H\nl\261\n\n\3474+\366\270\325\347\247}\363\022Z\316C\t\376\336\326\376W@GF\334\034\203\253\034M\273g\205\273S.\033r\177ZJF2\300\250\347\027~\357\322-\316\006)\267R\021\275\240\313\tN\316Hn\n\002\377&\205}\200\302j\335\303,\350\003\213\356\177Y\317k\204\211\246\220J\201\357\202Uy\2341\346\323\356\253<\234\203\365V\3767v\001~\323\352\335\212\3105\221\373\000\217)\"\371gDb\026n\236\231 \004A@'\3765\322\034\371\224r\335\341\3324Ex\242\354\034\037\357\030\341\376\033Q\245\rc\010\211`\002\311\214\367\022\207\272\222\371\203u\000\357(R\346\354\005\000%\020\210n\"\324\317\211(I\215\337CR0D\221\326IH\374\037;x\036\357\235E\210\275bGE2?i\034b\034x\202\010\014xk\000\213_\341\263\003\004\200!\266\361H\363\302?\020\303?\272F\2301\307\251X\230\327\026\002!\375\r\244i\200W\360\347]\021\246\rs\346\217\310\026\256!\007\337v\212\037\354$\031\375\330\234\346\243\206aB\354\005\316\005\002\335\342\014\036 \376\025\264\276\003\305\035w\2668\3118\352&\276>\016\314\211\331=\215\237\302D\274 Q\314\303{\346\244\2344\006\001\223\315\034b\314\020\262\3650h>\021\255\210\363\244\276\006n\371w^\334\014\314\303\341\241:A\002\216Z\347\200\233\304\237\203\240F\177y=\275\203*\260\374\353\2343\376_Yf\227(\005\310\215\037\302\004f\340\274i\270b\270\267!\305`\317\201h\3038\207\264\251\3309\023X\001\267\274\rB\264`\355\333)\347i}K<Fl\235\310d\2216\346\257}\317\254*L|\0161\325\234f$(\n\306\275a\372,\237\315i\3479a\353\265\337\000\317\304\271\003\344\231C\3577\266\275\343\274\023\035\270\022m\235Zi\3639\033\000\300\370'\253`\005\313\2414y$\3305\367\346'K\300\273@_\033@@\265\257\202Hy\310\001\036\202$>A\222\034\003\341\213\nl\240\r\355\363A\223\207\\y\237\222\363\241\346\020\200\007@\351\262\213}\214H\3421\262\331\346\310'\200\177J""\035\327\255\327N\250\335g\036kf\326\016\367B\227\213Y\0271\205|\"t\265\004\272\375]\004k\235\206`m\301\201\370\342\0077\361\272\334D\234\036\246 \215\373L\307W\234\342\321\346\366\254omvO^;\313\304E\276\336'\367\370\300\356\234]\251{\332\275\366\036n}t\255}\234\335\3231\360\020\350OQ\304\035\250\356S')\254\376\"l~\210\003\023\345p1\313\017\267P\234\333D|(\317\360\263\362[\376\213D\005\231T\235T\374\365\010\256\376\200?\355\326\003|zq\302\310\346\304\"^>.B\350_\231\352\302I#*|\036#;j=\3207\342\371\3216\003\335\306\337{\020\343\244\027\377\326\203\035'\274\253H\t\367ms\322<\204\247o\021\221\031\206\304~\005U\374\214\225\3546p\3179\370\3267\230l\310\336\247\264~\224\005\254\233+\346\001s\313\353\264u\032\036\200\377'\254\317\350h\234\032F\314\317\255\037(\037\237\342\300\270\013\335\001\r9\227\205\347\017\237?\212\r\344\340_\020\035k\373(\371\016bf\372\206\320[i3\234\301;\214\177\361\362u\306;\271uq\262\253\353\346\354\212\023\305\013z\333\000A\021\373w\220^\3162\207\\\376!\363\031$\250\322\024\207f\327\204\311\256C\014@=\311\r\035{\372/6/\222\237L\360\241\326\267\342\2309\305'\261\344\027|\274L9m\022\216\235\262\236\320\302\030\207\232#\267@qJN\2645\202\214\036|\374\026\3641\211\2400Iq\266\037DR\326V\347C\313\227\377\004\244~y\213\346\324(s\354\343\026\255\017\246\321t\3067\004\224\212\023\271j\375w\216{\210\262\334\001\222>p\023\347\036\216\361\003\373[\310Z\206\316\257\321\266\234\027\215\311\206\3726\360\221\203:\311\360\274\361\002\310\374-Rp>\261\247\023\362\021\363f\363:m\033\013\331\004\335|i{\216E*R\177\234\365u\223\203\335\272}(\342\252\350\230a\026\343\246\245\303\340\340\233\326\014\222\036B\271\223\232\202\306\347\000\315\327NHHQ\026\207\023A\243s\276\331\223D\004a\006A\363\0166$\263\325m:\323\3651\244Y\273\215\000\322\254+\213\334\370\200\r\317'>S\224\315\327\366\rg\036\033\0174\346\033nb\337\371\2106(V\354\036o\026?t\243\3413\356Q\024\035\367z\010\277\377\007\032\336\215S2\255\327\226\371\330f\205\217\344\351\020~\005[[\346\0235:yl\r\3231\257\027\006""\344\005\261?\352\345>\341[\204\t\021$m\024u\t\024\267A)\350\360\376\303\235d\335\364] \016,\322\310\331\000\017m\2778\254\037GZ\2463\316\005\335\363\324x}\262\25668\017\026\007\352\243p\366V`\202sW.\373)\361\245SCb<\374\261\207>,\221TO(\220\355y\334\327\213D\346\254\373})$\316\307B\244\204N0\213\203\305L\333c\320\366}$,/\336\006\337r\222\262,\320aR\330\023\235\271r\024\2474\377\206\230\200\276\"~\005d\231\347$\232C\357\230\353+g!\217\222\310 \276\343\243\020\177_jK\364k\rz)\031\321c\225\036\023\2453\201\001\201\377\364A\357\275I\020\320i\273\330\303\016#*\221\246\323\032{\222g\221z\321\367\322\0224.\334\232N\023d!\223\276lp\275V\025\031\247p\3621:\224\243\t\211\265\214\361q\353\010\236\016\377yC\233'{-\276S\r\327&\t\002\217>8\037\315\376\220hW\373\370G\346y\3047\331\354\371\364\253\001,dq\300\325\371\256\274\215\200\027G\330\\t\002\016\353\206Nn\236\361\016\253\000\315\270\363I\3751{-\303\325\035\376fr\303\272\306\261\327\033\244\257\335@\222\367\277q0yK\320\247\242\026\237\307\027)\371\233 3\030\024\000t\226\317C\205\275@\205\232\261 \216\n\314\035\004\344u\376\210\312\336\364\367\272Gj\327\020Q'(i')l\300_\177\262\002\235\3661>D\016\262o\314!\214n\365>0\350~\030R\334\357\212[\234\377]\250=7\317[_\333\237;|^\365\0046{\310g\324\247V\304\377\024\360\201\341\017A>>\307G\024\224H\377}\361\001\225\276=>\245\343\226\326\237\207H\222dY|\025]o^\272N\272\024\260x\276y\2362e\274\367W#\r\323\364Z\017\3718\307'\276\327\3675\035a}\357\203tP\261\201P\231\000Hx\341\320\033u_\303\333\370\236\276\321\354\320\270K\220\3124[to\221>\371\254s2\025:}\320\340\233\275\376a\004\004\013\342\177\223\254\020\270\023\313\217\301\030\357!\010\207>P\r\375\027b\223\320\246";
+    PyObject *data = __Pyx_DecompressString(cstring, 5453, 1);
     if (unlikely(!data)) __PYX_ERR(0, 1, __pyx_L1_error)
     const char* const bytes = __Pyx_PyBytes_AsString(data);
     #if !CYTHON_ASSUME_SAFE_MACROS
     if (likely(bytes)); else { Py_DECREF(data); __PYX_ERR(0, 1, __pyx_L1_error) }
     #endif
-    #else /* compression: none (12154 bytes) */
-const char* const bytes = ".5.1fAverage over sequence, particles: ?, add: algorithms.constantsalgorithms.multimedalgorithms.orientationalgorithms.track_kernelsalgorithms/track.pyalgorithms.tracking_frame_bufalgorithms.trafo, curr: disableenablegcisenabled, links: , lost: , next: step: ADD_PARTCOORD_UNUSEDCORRES_NONEFoundpix_dtypeMAX_CANDS_M_PINEXT_NONEPREV_NONEPT_UNUSED__Pyx_PyDict_NextRefRTR_BUFSPACETR_MAX_CAMSTR_UNUSEDX_layX_tZmax_layZmin_lay_aaddadd_particleadded_parag_xag_yag_zalgorithms.trackangle_accaparrarrayasarrayassess_new_positionasyncio.coroutinesbboolboundsbufbuf_lenbxbybzccalcal_arrcal_arrayscalibcalscamcandcand_indscandsearch_in_pix_candsearch_in_pix_fastcandsearch_in_pix_fastcandsearch_in_pix_rest_candsearch_in_pix_rest_fastcandsearch_in_pix_rest_fastcccc_xcc_ycc_zcent_xcent_ycentercenter_projchfield__class_getitem__cline_in_tracebackcloseconstantscopy_foundpix_arraycorres_nrcorres_pcorrespondcos_shecp_xcp_ycp_zcparcurr_posddaccdangledatadddenodestdist_cam_glasdist_o_glasdist_point_glasdist_to_flatdldmdm00dm01dm02dm10dm11dm12dm20dm21dm22dot_camdot_posdrdtypedudvxmaxdvxmindvymaxdvymindvzmaxdvzmindxdydzemptyextext_parext_t_z0ext_x0ext_y0ext_z0fast_cals_fast_calsfast_mmluts_fast_mmluts_fast_tuplesfbfb_nextfb_prevfirstflatten_tolfloat64freqfrmftnr__func__genexprglass_pargpgxgygziimximx_halfimyimy_halfint32int_ccint_parinv_doginv_pix_xinv_pix_yipiris_compiled_is_coroutineitemsizjk1k2k3lastlmaxm__main___make_foundpix_make_foundpix_arraymmmm_d0mm_n1mm_n2_0mm_n3mmfmmlutmmlut_datammlut_nrmmlut_nzmmlut_originmmlut_rwmmlut_tupmmlut_tuples__module__multimedmultimed_nlay_multimed_nlay_multimed_r_nlay_iterativemultimed_r_nlay_iterativenn1n2n3__name__nextnext_targetsnlinksnpnpartnrnum_camsnum_partsnum_targetsnumpynzorientationoriginpp1p2_pack_cal_pack_cal_arraypack_cal_array_pack_cams_fast_pack_cams_fast_tuples_pack_cams_fast_tuples.<locals>.genexpr_pack_mmlutpack_mmlut_packed_calspath_decispath_finaldecispath_infopath_inlistpath_linkdecispath_nextpath_prevpath_priopath_xpc_pix_infopix_xpix_""ypixel_to_metricpointpoint_positionpoint_position_fast_point_position_fastpoint_to_pixel_point_to_pixel_fastpoint_to_pixel_fast_point_to_pixel_packedpoppospos0pos1pos2pos3d_in_boundspos_t_0pos_t_2predpredictprevprev_posprintprio_ptp_fast__qualname__rr2r4radial_factorradial_shiftread_frame_at_endread_linksregregister_closest_neighbsregister_link_candidatereset_foundpix_arrayreset_linksreturnrunrun_inforws_cams_ds_pts_xs_zscxsearch_volume_center_movingsearchquader_searchquader_fastsearchquader_fastsendseq_par__set_name__setdefaultshesin_shesortsort_candidates_by_freqsort_candidates_by_freq_fast_sort_candidates_by_freq_fast_sorted_candidates_fastsorted_candidates_fastsorted_candidates_in_volumesrsrcstartstep_sync_path_to_soa_sync_soa_to_aossztarg_pos_targ_tnrtarg_tnr_targ_xtarg_x_targ_ytarg_ytargets__test__throwtmp_xtmp_ytmp_ztnrtnr_arrtpartrack_forward_starttrack_kernelstrackback_c_trackback_loop_fasttrackback_loop_fasttrackcorr_c_finishtrackcorr_c_loop_trackcorr_loop_fasttrackcorr_loop_fasttracking_frame_buftrafotxtytzv0v3valuevalues_vec3_distvec_xvec_yvec_zvparwhichcamwrite_frame_from_startxx0x_distx_pixelxdxhyy0y_disty_pixelydyhymaxyminz0zeros\200\001\340\004\013\2101\210K\220s\230!\2305\240\001\200\001\340\004\013\2101\210N\230!\230:\240T\250\025\250e\2601\260A\200\001\360\n\000\005\033\230'\240\022\2401\330\004\032\230'\240\022\2401\330\004\032\230'\240\022\2401\330\004\032\230'\240\022\2401\360\020\000\005\010\200u\210B\210a\330\010\017\210q\330\004\007\200u\210B\210d\220!\330\010\017\210t\2201\330\004\007\200u\210B\210a\330\010\017\210q\330\004\007\200u\210B\210d\220!\330\010\017\210t\2201\340\004\005\200Q\200e\2101\330\004\016\210a\330\004\013\2101\340\004\007\200u\210D\220\003\220:\230T\240\025\240d\250$\250c\260\032\2704\270q\330\010\017\210q\340\004\t\210\034\220S\230\001\330\004\t\210\034\220S\230\001\330\004\n\210#\210R\210q\330\010\013\210<\220q\230\003\2303\230b\240\001\330\014\022\220!\340\014\022\220!\330\010\017\210q\340\004\n\210!\330\004\007\200s""\210\"\210A\330\010\r\210Q\340\004\010\210\005\210U\220!\2204\220q\330\010\014\210L\230\001\230\021\330\010\013\2101\210E\220\023\220A\330\014\017\210q\220\003\2202\220Q\330\020\021\330\014\017\210q\220\003\2202\220U\230$\230a\230s\240\"\240E\250\024\250Q\250c\260\022\2605\270\004\270A\270S\300\002\300!\330\020\024\220F\230\"\230G\2402\240Q\240d\250#\250R\250s\260'\270\022\2701\270D\300\003\3001\330\020\023\2202\220R\220q\330\024\033\2301\330\024\025\220Q\220e\2301\330\024\036\230a\340\004\013\2101\200\001\340\004\020\220\003\2201\330\004\023\2203\220j\240\001\240\021\330\004\020\220\002\220&\230\001\330\004\017\210q\220\001\340\004\021\220\023\220K\230q\240\001\330\004\010\210\007\210u\220A\220S\230\001\330\010\022\220\"\220A\220W\230A\330\010\013\2109\220A\220T\230\021\230#\230S\240\001\330\014\022\220)\2301\230D\240\001\240\021\330\014\017\210x\220q\230\004\230A\230T\240\027\250\001\330\014\017\210y\230\001\230\024\230Q\230g\240Q\330\014\026\220b\230\001\230\027\240\001\330\014\026\220f\230A\330\004\007\200~\220Q\200\001\360\014\000\005\014\2101\330\004\n\210!\330\010\017\210q\330\010\014\210E\220\025\220a\220r\230\022\2301\330\014\017\210q\220\001\220\023\220B\220a\220q\230\002\230\"\230A\330\020\021\220\021\220$\220a\220q\230\002\230\"\230E\240\021\240!\2402\240R\240t\2501\250A\250Q\330\020\021\220\021\220$\220a\220q\230\002\230\"\230E\240\021\240!\2402\240R\240t\2501\250A\250Q\330\020\027\220q\200\001\330\004\t\210\021\210!\2103\210b\220\001\220\021\220!\330\004\t\210\021\210!\2103\210b\220\001\220\021\220!\330\004\t\210\021\210!\2103\210b\220\001\220\021\220!\330\004\013\2106\220\021\220#\220R\220s\230\"\230C\230r\240\023\240B\240c\250\022\2501\200\001\360\n\000&4\3203C\3001\330\004\010\210\004\210D\220\005\320\025,\250A\330\010\021\220\031\230+\240Q\330\010\020\220\010\230\004\230D\240\004\240A\330\010\014\210F\220$\220f\230A\330\004\020\220\001\220\024\220T\230\024\230Q\340\004\010\210\010\220\005\220Q\220a\330\010\013\2109\220A\220V\2303\230a\330\014\017""\210q\220\005\220Q\220e\2301\340\014\017\210q\220\005\220Q\220b\230\001\230\027\240\001\330\014\017\210q\220\005\220Q\220e\2303\230a\230y\250\001\250\031\260!\2601\200\001\340\004\013\2105\220\001\220\023\220A\220U\230'\240\025\240a\240s\250!\2505\260\007\260u\270A\270S\300\001\300\021\340\005\r\210X\220Q\330\005\013\2106\220\026\220v\230V\2406\250\026\250v\260Q\330\005\r\210T\220\021\330\005\t\210\024\210T\220\035\230a\330\005\014\210I\220W\230A\330\005\t\210\024\210T\220\024\220T\230\025\230a\330\005\021\220\036\230z\250\032\260<\270q\340\004\016\210g\220R\220s\230\"\230G\2402\240S\250\002\250'\260\022\2601\330\004\024\220H\230B\230h\240b\250\014\260B\260a\340\004\016\210e\2202\220S\230\002\230%\230r\240\023\240B\240e\2502\250Q\330\004\026\220h\230b\240\010\250\002\250!\340\004\014\210N\230\"\230A\330\004\013\2107\220\"\220C\220r\230\021\330\004\013\2107\220\"\220C\220r\230\021\330\004\013\2107\220\"\220C\220r\230\021\340\004\013\320\013\033\2302\230Q\330\004\013\2105\220\002\220#\220R\220q\330\004\013\2105\220\002\220#\220R\220q\330\004\013\2105\220\002\220#\220R\220q\340\004\017\210~\230R\230q\340\004\n\210&\220\002\220!\330\004\013\2105\220\002\220#\220R\220q\330\004\013\2105\220\002\220#\220R\220q\330\004\013\2105\220\002\220#\220R\220q\330\004\014\210E\220\022\2201\330\004\014\210E\220\022\2201\330\004\014\210E\220\022\2201\340\004\016\210f\220A\220V\2302\230V\2402\240V\2502\250V\2602\260V\2702\270Q\330\004\016\210a\360\006\000\005\024\2201\330\004\007\200{\220'\230\021\330\010\r\210X\220R\220|\2401\240A\330\010\r\210Q\210l\230!\2301\330\010\r\210X\220R\220|\2401\240A\330\010\r\210S\220\002\220!\330\010\r\210S\220\001\220\021\330\010\016\210a\330\010\014\210F\220!\2203\220b\230\003\2302\230S\240\002\240!\330\010\r\210R\210r\220\021\330\010\r\210S\220\001\220\021\330\010\016\210a\330\010\013\2103\210c\220\031\230$\230c\240\023\240B\240d\250#\250S\260\001\330\014\021\220\023\220B\220i\230r\240\021\330\014\021\220\023\220B\220i\230r\240\021\330\014\017\210s\220#""\220R\220t\2303\230c\240\031\250\"\250A\330\020\021\330\024\036\230a\230t\2403\240b\250\002\250$\250c\260\022\2602\260Q\330\024\026\220j\240\001\240\023\240B\240c\250\023\250B\250b\260\004\260B\260a\330\024\026\220j\240\001\240\023\240B\240j\260\002\260#\260S\270\002\270\"\270A\330\024\026\220j\240\001\240\024\240R\240s\250\"\250A\340\020\023\2204\220r\230\021\330\024#\2401\330\004\007\200}\220C\220q\330\010\027\320\0271\260\021\330\014\025\220U\230)\2405\250\005\250Q\330\014\023\2209\230G\2401\340\004\n\210(\220\"\220A\360\006\000\005\013\210!\2108\2202\220Q\330\004\t\210\025\210b\220\003\2202\220Q\330\004\t\210\025\210b\220\003\2202\220Q\330\004\t\210\025\210b\220\003\2202\220Q\340\004\007\200x\210r\220\021\330\010\016\210a\210t\2202\220Q\330\010\016\210f\220B\220a\330\010\016\210f\220B\220a\330\010\016\210f\220B\220a\360\006\000\005\n\210\023\210B\210a\330\004\t\210\023\210B\210a\330\004\t\210\023\210B\210a\340\004\013\2105\220\002\220#\220R\220u\230B\230c\240\022\2405\250\002\250!\330\004\010\210\001\210\027\220\003\2205\230\002\230#\230R\230u\240B\240c\250\022\2505\260\002\260$\260b\270\001\330\004\010\210\001\210\027\220\003\2205\230\002\230#\230R\230u\240B\240c\250\022\2505\260\002\260$\260b\270\001\360\006\000\005\n\210\021\330\004\t\210\021\330\004\010\210\006\210a\210r\220\022\2202\220R\220r\230\022\2301\330\004\007\200r\210\022\2101\330\010\021\220\021\330\010\021\220\021\340\010\r\210R\210r\220\021\330\010\r\210S\220\002\220!\330\010\030\230\004\230B\230c\240\022\2403\240b\250\003\2502\250S\260\002\260#\260R\260s\270\"\270A\330\010\r\210R\210r\220\036\230r\240\023\240C\240s\250\"\250B\250b\260\002\260\"\260C\260r\270\022\2702\270S\300\002\300\"\300B\300a\330\010\r\210R\210r\220\036\230r\240\023\240C\240s\250\"\250B\250b\260\002\260\"\260C\260r\270\022\2702\270S\300\002\300\"\300B\300a\330\010\022\220%\220q\230\001\330\010\022\220%\220q\230\001\330\010\021\220\024\220S\230\003\2302\230X\240R\240q\330\010\021\220\024\220R\220x\230r\240\021\360\006\000\005""\017\210g\220R\220z\240\022\2401\330\004\016\210i\220r\230\027\240\002\240!\340\004\007\200x\210s\220!\330\010\023\2208\2302\230U\240\"\240A\330\t\021\220\023\220A\330\010\022\220(\230\"\230A\340\004\013\2109\220A\200\001\340\004\t\210\031\220!\2205\230\001\330\004\013\320\013!\240\021\240%\240t\2504\250r\260\025\260d\270\"\270E\300\024\300R\300w\310d\320RT\320T[\320[\\\200\001\340#6\3206F\300a\330\004\n\210-\320\027(\250\001\340\004\032\230!\330\004\033\2301\330\004\030\230\001\330\004\032\230!\360\014\000\005\t\210\007\210u\220A\220Q\330\010\020\220\001\220\024\220Q\220e\2308\2401\240D\250\001\250\025\250a\340\004\014\210C\210u\220F\230(\240#\240U\250!\340\004\007\200z\220\027\230\001\330\010\013\2103\210j\230\n\240+\250[\270\014\300A\340\010\023\2206\230\022\2305\240\013\2506\260\022\2601\330\010\024\220D\230\002\230#\230U\240(\250,\260d\270\"\270C\270u\300A\330\010\024\220C\220u\230A\340\004\010\210\007\210u\220A\220S\230\005\230Q\330\010\014\210E\220\031\230!\2305\240\n\250!\2506\260\034\270Q\270a\330\032$\240J\250k\270\033\300A\340\010\016\210l\320\0326\260a\330\014\017\210w\220a\220v\230S\240\007\240q\250\006\250c\260\031\270!\2701\330\014\017\210|\2301\230F\240$\240d\250&\260\007\260t\2701\330\014\023\2207\230!\330\010\013\210:\220R\220q\330\014\025\220Q\220d\230!\2305\240\001\340\010\013\210:\220R\220q\330\014\022\220)\2301\230D\240\001\240\021\330\014\024\220A\220T\230\021\230%\230s\240'\250\021\250$\250a\250q\330\014\024\220A\220T\230\021\230%\230s\240'\250\021\250$\250a\250q\340\004\021\220\021\330\004\010\210\007\210u\220A\220S\230\005\230Q\330\010\014\210H\220A\220T\230\021\230#\230S\240\r\250Q\330\020\030\230\001\230\024\230Q\230c\240\023\240A\330\014\020\220\005\220_\240A\240X\250Q\250d\260!\2604\260x\270q\300\004\300A\300T\310\023\310A\330\014\022\220#\220T\230\021\230!\330\014\020\220\005\220\\\240\021\330\020\024\220A\330\020\023\2208\2305\240\003\2408\2501\330\020\023\220:\230U\240#\240Z\250u\260C\260z\300\021\330\020\023\220:\230U\240#\240Z\250q""\330\020\023\220:\230V\2403\240j\260\001\330\020\023\2201\330\014\024\220A\220T\230\021\230%\230q\330\014\024\220A\220T\230\021\230%\230q\330\014\032\230!\330\004\013\2101\200\001\3308H\310\001\330\036\037\330\004\017\210t\2201\340\004\010\210\004\210E\220\025\220a\220t\2305\240\001\240\024\240U\250!\2501\330\004\013\2107\220(\230$\230i\240t\2509\260D\270\001\330\004\013\2107\220(\230$\230i\240t\2509\260D\270\001\340\004\r\210R\210v\220R\220s\230!\330\004\010\210\006\210e\2201\220A\330\010\016\210a\210t\2205\230\003\2303\230i\240s\250\"\250G\2601\330\010\016\210a\210t\2205\230\003\2303\230i\240s\250\"\250G\2601\330\010\016\210a\210t\2205\230\003\2303\230i\240s\250\"\250G\2601\340\004\007\200z\220\027\230\001\330\010\017\210w\220j\240\n\250+\260[\300\014\310A\340\010\020\220\004\220F\230(\240$\240a\330\010\023\2206\230\022\2305\240\013\2506\260\022\2601\330\010\024\220D\230\002\230$\230h\240l\260$\260b\270\004\270A\330\010\024\220D\230\001\340\004\007\200}\220G\2301\330\010\017\210v\220V\2307\240'\250\030\260\021\330\010\022\220\"\220H\230A\230W\240F\250\"\250A\330\010\017\320\017!\240\021\330\014\025\220X\230Z\240w\250f\260F\270'\300\027\310\001\330\014\026\220j\240\013\250;\260k\300\027\310\001\340\004\007\200}\220C\220q\330\010\017\210t\2201\330\010\027\220q\230\t\240\021\240%\240q\250\004\250F\260$\260e\2705\300\001\300\021\340\004\t\210\022\2106\220\021\220!\330\004\t\210\022\2106\220\021\220!\330\004\t\210\022\2106\220\021\220!\330\004\t\210\022\2106\220\021\220!\340\004\010\210\005\210U\220!\2201\330\010\r\210\\\230\021\230!\330\010\017\210q\330\010\017\210u\220A\220Q\330\010\017\210q\330\010\017\210u\220A\220Q\340\010\014\210E\320\021'\240q\250\007\250t\260:\270Z\300{\320R]\320]^\330\010\014\210F\220%\220q\230\001\330\014\026\220k\320!7\260q\270\006\270a\270u\300D\310\n\320R\\\320\\g\320gr\320rs\330\014\017\210y\230\002\230&\240\007\240q\330\014\017\210y\230\002\230&\240\007\240q\330\014\017\210y\230\002\230&\240\007\240q\330\014\017\210y\230\002\230&\240""\007\240q\340\010\013\2105\220\002\220#\220W\230A\330\010\013\2105\220\002\220#\220W\230A\330\010\013\2105\220\002\220'\230\027\240\001\330\010\013\2105\220\002\220'\230\027\240\001\340\010\n\210!\2105\220\005\220R\220q\330\010\n\210!\2105\220\003\2202\220Q\330\010\n\210!\2105\220\005\220R\220q\330\010\n\210!\2105\220\003\2202\220Q\340\004\013\2104\210t\2204\220q\200\001\360\n\000\005\t\210\001\210\033\220B\220a\330\004\032\230'\240\022\2401\330\004\032\230'\240\022\2401\330\004\032\230'\240\022\2401\330\004\032\230'\240\022\2401\360\036\000\005\010\200u\210B\210a\330\010\017\210q\330\004\007\200u\210B\210d\220!\330\010\017\210t\2201\330\004\007\200u\210B\210a\330\010\017\210q\330\004\007\200u\210B\210d\220!\330\010\017\210t\2201\340\004\t\210\025\210e\2205\230\001\330\004\013\2101\330\004\t\210\025\210e\2205\230\001\340\004\007\200u\210D\220\003\220:\230T\240\025\240d\250$\250c\260\032\2704\270q\330\010\017\210q\340\004\t\210\034\220S\230\001\330\004\t\210\034\220S\230\001\330\004\n\210#\210R\210q\330\010\013\210<\220q\230\003\2303\230b\240\001\330\014\022\220!\340\014\022\220!\330\010\017\210q\340\004\n\210!\330\004\007\200s\210\"\210A\330\010\r\210Q\340\004\010\210\005\210U\220!\2204\220q\330\010\014\210L\230\001\230\021\330\010\013\2101\210E\220\023\220A\330\014\017\210q\220\003\2202\220Q\330\020\021\330\014\017\210q\220\003\2202\220U\230$\230a\230s\240\"\240E\250\024\250Q\250c\260\022\2605\270\004\270A\270S\300\002\300!\330\020\024\220F\230\"\230G\2402\240Q\240d\250#\250R\250s\260'\270\022\2701\270D\300\003\3001\340\020\023\2202\220R\220q\330\024\033\2301\340\020\023\2202\220R\220q\330\024\030\230\004\230D\240\005\240T\250\024\250T\260\021\330\024\030\230\004\230D\240\005\240T\250\024\250T\260\021\330\025\030\230\002\230$\230a\330\024\030\230\004\230E\240\024\240T\250\021\330\024\030\230\004\230E\240\024\240T\250\021\330\025\030\230\002\230$\230a\330\024\030\230\005\230T\240\021\330\024\030\230\005\230T\240\021\330\025\030\230\002\230$\230a\330\024\031\230\021""\330\024\031\230\021\340\004\005\200Q\200d\210!\2101\210D\220\001\220\021\220$\220a\220q\230\005\230T\240\024\240T\250\021\330\004\013\2101\200\001\360\010\000\005\025\220I\230R\230q\360\016\000\005\t\210\005\210U\220!\2201\330\010\021\220\025\220a\220r\230\021\230!\330\010\014\210E\220\025\220a\220q\330\014\020\220\005\220U\230!\2301\330\020\023\2207\230#\230U\240!\2402\240R\240r\250\022\2502\250Q\250a\330\024\031\230\021\230\"\230A\230R\230q\240\005\240Q\340\004\010\210\005\210U\220!\2201\330\010\021\220\025\220a\220r\230\021\230!\330\010\013\2107\220#\220Q\330\014\021\220\025\220a\220r\230\021\230!\330\014\020\220\005\220U\230!\2301\330\020\023\2202\220Q\220c\230\023\230A\330\024\031\230\021\230\"\230A\230V\2401\340\004\010\210\005\210U\220!\2203\220a\330\010\014\210E\220\025\220a\220r\230\022\2303\230b\240\002\240$\240a\330\014\017\210u\220A\220R\220r\230\022\2301\230C\230r\240\025\240a\240r\250\021\250!\330\020\025\220Q\220b\230\002\230$\230e\2401\240E\250\025\250a\250t\2605\270\001\270\022\2702\270Q\340\004\010\210\005\210U\220!\2201\330\010\021\220\025\220a\220r\230\021\230!\330\010\014\210E\220\025\220a\220r\230\022\2303\230a\330\014\017\210u\220A\220R\220q\230\003\2303\230g\240S\250\005\250Q\250b\260\001\260\023\260B\260a\330\020\025\220Q\220b\230\001\230\025\230a\330\020\025\220Q\220b\230\001\230\025\230a\340\004\010\210\005\210U\220!\2203\220a\330\010\014\210E\220\025\220a\220r\230\022\2303\230b\240\002\240$\240a\330\014\017\210u\220A\220R\220r\230\022\2301\230C\230r\240\025\240a\240r\250\021\250!\330\020\025\220Q\220b\230\002\230$\230e\2401\240E\250\025\250a\250t\2605\270\001\270\022\2702\270Q\340\004\020\220\001\330\004\010\210\005\210U\220!\2201\330\010\013\2105\220\001\220\022\2201\220C\220s\230!\330\014\031\230\021\330\004\013\2101\320\000\025\220Q\340\004\021\220\021\200\001\340\004\n\320\n\035\230Q\340\004\t\210\030\220\021\330\004\n\210(\220!\330\004\013\2108\2201\330\004\013\2108\2201\330\004\013\2108\2201\340\004\014\210D\220\006\220h\230d\240!""\330\004\017\210v\220R\220u\230K\240v\250R\250q\330\004\020\220\004\220B\220d\230(\240,\250d\260\"\260D\270\001\330\004\020\220\004\220J\230g\240T\250\021\340\004\017\210~\230_\250A\250U\260!\330\004\n\320\n \240\001\240\033\250A\330\004\013\2106\220\026\220w\230g\240X\250Q\340\004\t\210\022\2101\330\004\021\220\022\2204\220q\230\002\230!\340\004\006\200d\210!\2102\320\r\037\230q\330\004\006\200d\210!\2102\320\r\037\230q\330\004\006\200d\210!\2102\320\r\037\230q\330\004\006\200d\210!\2102\320\r\037\230q\340\004\n\210\"\210F\220!\2201\220B\220d\230!\2302\230]\250&\260\002\260!\330\004\n\210\"\210F\220!\2201\220B\220d\230!\2302\230]\250&\260\002\260!\330\004\n\210\"\210F\220!\2202\220T\230\021\230\"\230L\250\002\250%\250v\260R\260q\330\004\n\210\"\210F\220!\2202\220T\230\021\230\"\230L\250\002\250%\250v\260R\260q\340\004\014\210L\320\030,\250A\330\010\t\330\010\n\210$\210a\210r\220\021\330\010\n\210$\210a\210r\220\031\230\"\230D\240\001\240\022\240<\250r\260\024\260Q\260b\270\001\330\010\n\210$\210a\210r\220\036\230r\240\024\240Q\240b\250\001\330\010\n\210$\210a\210r\220\035\230b\240\004\240A\240R\240q\330\010\n\210$\210a\210r\220\021\330\010\r\210Q\210b\220\004\220A\220R\220w\230b\240\006\240e\2501\250B\250d\260!\2602\260W\270B\270a\330\010\n\210$\210a\210r\220\031\230\"\230D\240\001\240\022\240<\250r\260\024\260Q\260b\270\001\330\010\n\210$\210a\210r\220\036\230r\240\024\240Q\240b\250\001\330\010\n\210$\210a\210r\320\021#\2402\240T\250\021\250\"\250A\330\010\n\210$\210a\210r\320\021\"\240\"\240D\250\001\250\022\2501\330\010\n\210$\210a\210r\220\021\330\010\r\210Q\210b\220\004\220A\220R\220w\230b\240\006\240e\2501\250B\250d\260!\2602\260W\270B\270a\330\010\r\210Q\210b\220\004\220A\220R\220y\240\002\240&\250\005\250Q\330\010\n\210$\210a\210r\220\031\230\"\230D\240\001\240\022\240<\250r\260\024\260Q\260b\270\001\330\010\n\210$\210a\210r\220\036\230r\240\024\240Q\240b\250\001\330\010\n\210$\210a\210r\320\021#\2402\240T\250\021\250\"\250A\330\010\n\210$\210a\210r\320""\021\"\240\"\240D\250\001\250\022\2501\330\010\n\210$\210a\210r\220\021\330\010\r\210Q\210b\220\004\220A\220R\220w\230b\240\006\240e\2501\250B\250d\260!\2602\260W\270B\270a\330\010\r\210Q\210b\220\004\220A\220R\220y\240\002\240&\250\005\250Q\330\010\017\210v\220V\2307\240'\250\021\330\010\014\210I\220T\230\031\240$\240i\250t\2601\330\010\014\210I\220T\230\031\240$\240g\250T\260\021\330\010\013\2101\210D\220\007\220x\230q\330\010\014\210F\220!\2204\220t\2306\240\021\240$\240h\250g\260X\270Q\330\010\014\210I\220Q\220d\230$\230i\240q\250\001\330\010\014\210J\220j\240\013\2501\330\010\023\2205\230\001\230\030\240\025\240a\240q\330\010\014\210H\220D\230\010\240\010\250\001\360\006\000\005\007\200d\210!\2102\210]\230#\230Q\230c\240\021\240!\330\004\006\200d\210!\2102\210]\230#\230Q\230c\240\021\240!\340\004\024\220A\220R\220t\2301\230A\330\004\024\220A\220R\220t\2301\230A\330\004\024\220A\220R\220t\2301\230A\340\004\t\210\021\210(\220!\220=\240\001\240\022\2404\240q\250\002\250!\330\n\022\220!\2202\220T\230\021\230\"\320\0340\260\001\260\021\330\n\022\220!\2202\220T\230\021\230\"\230K\240r\250\036\260q\270\001\340\004\014\210I\220X\230W\240B\240b\250\004\250A\250R\250q\330\004\014\210J\220h\230h\240b\250\001\340\004\006\200h\210a\330\004\006\320\006\035\230Q\230a\330\004\007\200u\210B\210h\220h\230f\240B\240a\330\010\n\320\n\034\230A\230U\240\"\240C\240{\260!\340\010\n\210$\210a\210r\220\031\230\"\230B\230m\2501\200\001\340\004\n\320\n\035\230Q\340\004\n\210(\220!\330\004\016\210h\220a\330\004\013\2108\2201\330\004\013\2108\2201\330\004\013\2108\2201\330\004\t\210\030\220\021\340\004\014\210D\220\006\220h\230d\240!\330\004\017\210v\220R\220u\230K\240v\250R\250q\330\004\020\220\004\220B\220d\230(\240,\250d\260\"\260D\270\001\330\004\020\220\004\220J\230g\240T\250\021\330\004\017\210~\230_\250A\250U\260!\330\004\n\320\n \240\001\240\033\250A\340\004\013\2101\330\004\013\2101\330\004\014\210A\330\004\r\210Q\340\004\010\210\010\220\005\220Q\220g\230W\240G\2506\260\022\2604""\260q\330\010\n\320\n\034\230A\230V\240;\250a\330\010\n\210(\220!\330\004\006\200h\210a\340\004\t\210\022\2101\340\004\010\210\010\220\005\220Q\220g\230V\2402\240S\250\007\250y\270\001\340\010\n\210$\210a\210r\320\021#\2401\330\010\n\210$\210a\210r\320\021#\2401\330\010\n\210$\210a\210r\320\021#\2401\330\010\n\210$\210a\210r\320\021#\2401\340\010\017\210v\220V\2307\240'\250\030\260\021\330\010\026\220b\230\006\230a\230q\240\002\240$\240a\240r\250\035\260f\270B\270a\330\010\016\210b\220\006\220a\220r\230\024\230Q\230b\240\014\250B\250e\2606\270\022\2701\340\010\020\220\014\320\0340\260\001\330\014\016\210d\220!\2202\220Q\330\014\016\210d\220!\2202\220Q\330\014\016\210d\220!\2202\220Y\230b\240\004\240A\240R\240|\2602\260T\270\021\270\"\270A\330\014\016\210d\220!\2202\220Q\330\014\016\210d\220!\2202\320\025'\240r\250\024\250Q\250b\260\001\330\014\016\210d\220!\2202\220Q\330\014\016\210d\220!\2202\220Y\230b\240\004\240A\240R\240|\2602\260T\270\021\270\"\270A\330\014\r\330\014\016\210d\220!\2202\220Y\230b\240\004\240A\240R\240y\260\002\260$\260a\260r\270\021\330\014\r\330\014\016\210d\220!\2202\220[\240\002\240$\240a\240r\250\021\330\014\016\210d\220!\2202\220^\2402\240T\250\021\250\"\250A\330\014\016\210d\220!\2202\220Q\330\014\016\210d\220!\2202\220]\240\"\240D\250\001\250\022\2501\330\014\016\210d\220!\2202\220Y\230b\240\004\240A\240R\240q\330\014\023\2206\230\026\230w\240g\250Q\330\014\020\220\t\230\024\230Y\240d\250)\2604\260q\330\014\020\220\t\230\024\230Q\330\014\020\220\007\220t\2309\240D\250\006\250h\260a\330\014\020\220\006\220a\220t\2304\230v\240Q\240d\250&\260\001\330\014\020\220\t\230\021\230$\230d\240)\2501\250A\330\014\020\220\n\230*\240K\250q\330\014\027\220w\230g\240T\250\030\260\024\260Q\330\014\024\220A\360\006\000\t\013\210$\210a\210r\220\035\230c\240\021\240+\250Q\250a\340\010\030\230\001\230\022\2304\230q\240\001\330\010\030\230\001\230\022\2304\230q\240\001\340\010\r\210Q\210h\220a\220}\240A\240R\240t\2501\250B\250a\330\016\026\220a\220r\230\024""\230Q\230b\320 4\260A\260Q\330\016\026\220a\220r\230\024\230Q\230b\240\013\2502\250^\2701\270A\340\010\020\220\006\220b\230\002\230$\230a\230r\240\021\330\010\021\220\027\230\002\230!\340\010\n\210(\220!\330\010\n\320\n!\240\021\240!\330\010\013\2105\220\002\220'\230\027\240\002\240!\330\014\016\320\016 \240\001\240\025\240b\250\003\250;\260a\340\004\016\210g\220V\2302\230W\240G\2502\250Q\330\004\017\210w\220f\230B\230g\240W\250B\250a\340\004\t\210\021\320\n.\250a\250u\260A\330\n\023\2201\220F\230.\250\001\250\026\250r\260\026\260q\340\004\006\200h\210a\330\004\006\320\006\035\230Q\230g\240Q\340\004\013\2101\200\001\340-=\270Q\330-.\330\004\017\210s\220!\340\004\013\2106\220\026\220w\230g\240X\250Q\330\004\007\200z\220\027\230\001\330\010\017\210w\220j\240\n\250+\260[\300\014\310A\340\010\020\220\003\2205\230\006\230h\240c\250\025\250a\330\010\023\2206\230\022\2305\240\013\2506\260\022\2601\330\010\024\220D\230\002\230#\230U\240(\250,\260d\270\"\270C\270u\300A\330\010\024\220C\220u\230A\340\004\021\220\022\2208\2301\230H\240F\250\"\250A\330\004\n\210\"\210F\220!\2201\220K\230q\240\002\240!\2403\240d\250%\250u\260A\260\\\300\026\300r\310\021\330\004\n\210\"\210F\220!\2201\220K\230q\240\002\240!\2403\240d\250%\250u\260A\260\\\300\026\300r\310\021\330\004\t\210\022\2106\220\021\220#\220\\\240\022\240;\250f\260B\260a\340\004\n\210&\220\n\230,\320&=\270Q\330\010\024\220E\230\025\230j\250\001\330\010\017\210v\220V\2307\240'\250\021\330\010\r\210Q\210c\220\027\230\002\230,\240e\2501\250C\250w\260b\270\001\330\010\r\210Q\210c\220\031\230\"\230L\250\001\330\010\013\2105\220\t\230\023\230E\240\031\250#\250U\260!\330\010\013\2105\220\t\230\023\230E\240\031\250#\250U\260!\330\010\022\220*\230K\240{\260!\330\010\017\210w\220a\340\004\007\200z\220\022\2201\330\010\021\220\021\330\010\014\210E\220\025\220a\220q\330\014\022\220'\230\022\2308\2403\240a\240t\2501\250E\260\030\270\023\270A\270T\300\021\300!\330\033'\240t\2501\250H\260A\260Q\330\010\016\210g\220R\220x\230{\250(\260#""\260\\\300\021\300#\300Q\330\010\017\210q\330\004\013\2101\200\001\340\004\005\330\010\r\210Q\210a\330\010\r\210R\210q\330\010\r\210R\210q\330\010\r\210R\210q\330\010\r\210R\210q\330\010\r\210R\210q\200\001\340\004\031\230\024\230Q\230c\240\022\2405\250\001\250\021\330\004\031\230\024\230Q\230c\240\022\2405\250\001\250\021\330\004\031\230\024\230Q\230c\240\022\2405\250\001\250\021\330\004\031\230\024\230Q\230c\240\022\2405\250\001\250\021\330\004\031\230\024\230Q\230c\240\022\2405\250\001\250\021\330\004\031\230\024\230Q\230c\240\022\2405\250\001\250\021\360\024\000\005\010\200t\2103\210a\210t\2204\220t\2303\230a\230t\2404\240t\2503\250a\250q\330\010\020\220\001\330\t\r\210S\220\004\220D\230\004\230C\230t\2404\240t\2503\250a\330\010\020\220\001\340\010\020\220\006\220a\220t\2302\230T\240\022\2404\240r\250\024\250R\250t\2602\260Q\330\010\020\220\006\220a\220t\2302\230T\240\022\2404\240r\250\024\250R\250t\2602\260Q\330\010\013\2106\220\023\220B\220c\230\026\230s\240!\330\014\024\220A\340\014\023\2204\220r\230\024\230R\230t\2402\240T\250\022\2504\250r\260\025\260c\270\026\270r\300\021\330\014\017\210t\2202\220Q\330\020\026\220a\330\021\025\220R\220q\330\020\026\220a\330\014\024\220F\230!\2305\240\002\240&\250\002\250!\340\004\t\210\024\210R\210q\330\004\t\210\024\210R\210q\330\004\t\210\024\210R\210q\330\004\n\210&\220\001\220\023\220B\220c\230\022\2303\230b\240\003\2402\240S\250\002\250!\330\004\013\2107\220!\200\001\340\004\010\210\010\220\005\220Q\220c\230\030\240\030\250\023\250H\260G\2702\270\\\310\022\3101\330\010\013\2103\320\016 \240\001\240\026\240{\260!\330\010\013\2103\210h\220a\330\004\007\200s\210(\220!\200\001\340\004\021\220\021\220/\240\021\240#\240T\250\024\250U\260!\330\004\023\2201\220K\230q\240\003\2404\240u\250A\330\004\013\210<\220q\200\001\360\014\000\005\t\210\005\210U\220!\2201\330\010\013\2101\210B\210a\210u\220A\330\010\013\2101\210B\210a\210u\220A\330\010\014\210E\220\025\220a\220q\330\014\017\210q\220\002\220!\2202\220Q\220e\2301\200\001""\360\014\000\005\t\210\005\210U\220!\2201\330\010\014\210A\210R\210q\220\005\220S\230\001\230\022\2301\230A\330\010\014\210A\210R\210q\220\005\220S\230\001\230\022\2301\230A\330\010\014\210E\220\025\220a\220q\330\014\020\220\001\220\022\2201\220B\220a\220u\230C\230q\240\002\240!\2402\240Q\240a\200\001\340\004\010\210\005\210U\220!\2203\220a\330\010\014\210C\210z\230\021\230!\330\010\t\210\022\2106\220\023\220G\2301\230A\330\010\t\210\030\220\023\220A\220S\230\n\240!\2401\330\010\t\210\030\220\023\220A\220S\230\n\240!\2401\330\010\t\210\030\220\023\220A\220S\230\n\240!\2401\340\010\014\210C\210{\230!\2301\330\010\t\210\026\210s\220!\2203\220j\240\001\240\021\330\010\t\210\022\2106\220\023\220I\230Q\230a\340\004\010\210\007\210u\220A\220S\230\001\330\010\022\220#\220Y\230a\230q\330\010\014\210E\220\025\220a\220s\230,\240a\240q\330\014\017\210x\220q\230\004\230A\230R\230w\240c\250\021\250'\260\021\260!\200\001\340\004\n\210#\210Z\220u\230C\230z\250\025\250c\260\034\270U\300#\300Q\330\004\t\210\022\2108\2205\230\002\230(\240%\240r\250\021\330\004\022\220&\230\001\230\023\230B\230c\240\022\2403\240b\250\003\2502\250S\260\002\260!\330\004\016\210d\220\"\220A\330\004\014\210C\210q\330\004\021\220\025\220a\330\004\005\330\010\013\2105\220\003\2205\230\003\2301\330\010\013\2103\210a\210s\220$\220c\230\023\230A\230S\240\004\240C\240s\250!\2503\250a\330\010\013\2103\210a\210s\220$\220c\230\023\230A\230S\240\004\240C\240s\250!\2503\250a\330\010\013\2103\210a\210s\220$\220c\230\023\230A\230S\240\004\240C\240s\250!\2503\250a\330\010\n\210%\210r\220\025\220b\230\001\330\010\014\210D\220\004\220M\240\021\330\010\n\210%\210r\220\023\220A\220T\230\022\2305\240\002\240\"\240A\240Q\330\010\n\210%\210r\220\025\220b\230\005\230R\230u\240B\240e\2502\250V\2602\260Q\330\010\t\330\010\r\210[\230\013\2407\250*\260A\330\010\r\210W\220K\230w\240j\260\001\330\010\r\210W\220K\230w\240j\260\001\330\010\r\210W\220K\230w\240j\260\001\200\001\340\004\020\220\010\230\010\240\006\240b\250\010\260\010""\270\001\330\004\014\210H\220G\2302\230Q\330\004\r\210X\220X\230R\230q\330\004\t\210\021\320\n.\250a\250u\260A\330\n\023\2201\220F\230.\250\001\250\026\250r\260\026\260q\340\004\014\210C\210x\220q\330\004\014\210C\320\017&\240a\240q\210q\200\001\340\004\013\320\013\037\230q\330\010\r\210Y\220i\230q\240\004\240I\250Q\250a\330\010\021\220\021\220$\220i\230q\240\004\240I\250Q\250a\330\010\022\220*\230K\240{\260!\200\001\340\004\013\320\013\037\230q\330\010\017\210u\220D\230\006\230d\240&\250\004\250H\260D\270\010\300\004\300J\310d\320RS\200\001\340\004\017\210r\220\030\230\021\230!\330\004\017\210r\220\030\230\021\230!\330\004\013\2109\220C\220y\240\002\240!\200\001\340\004\017\210r\220\030\230\021\230!\330\004\017\210r\220\030\230\021\230!\330\004\005\200V\2109\220C\220y\240\002\240!\200\001\340\004\007\200s\210$\210a\330\004\013\2104\210q\330\010\016\210h\220b\230\004\230F\240(\250!\330\010\016\210h\220b\230\004\230F\240(\250!\330\010\016\210h\220b\230\004\230F\240!";
+    #else /* compression: none (12230 bytes) */
+const char* const bytes = ".5.1fAverage over sequence, particles: ?, add: , curr: disableenablegcisenabled, links: , lost: , next: openptv2.algorithms.constantsopenptv2.algorithms.multimedopenptv2.algorithms.orientationopenptv2.algorithms.track_kernelsopenptv2.algorithms.tracking_frame_bufopenptv2.algorithms.trafosrc/openptv2/algorithms/track.pystep: ADD_PARTCOORD_UNUSEDCORRES_NONEFoundpix_dtypeMAX_CANDS_M_PINEXT_NONEPREV_NONEPT_UNUSED__Pyx_PyDict_NextRefRTR_BUFSPACETR_MAX_CAMSTR_UNUSEDX_layX_tZmax_layZmin_lay_aaddadd_particleadded_parag_xag_yag_zangle_accaparrarrayasarrayassess_new_positionasyncio.coroutinesbboolboundsbufbuf_lenbxbybzccalcal_arrcal_arrayscalibcalscamcandcand_indscandsearch_in_pix_candsearch_in_pix_fastcandsearch_in_pix_fastcandsearch_in_pix_rest_candsearch_in_pix_rest_fastcandsearch_in_pix_rest_fastcccc_xcc_ycc_zcent_xcent_ycentercenter_projchfield__class_getitem__cline_in_tracebackcloseconstantscopy_foundpix_arraycorres_nrcorres_pcorrespondcos_shecp_xcp_ycp_zcparcurr_posddaccdangledatadddenodestdist_cam_glasdist_o_glasdist_point_glasdist_to_flatdldmdm00dm01dm02dm10dm11dm12dm20dm21dm22dot_camdot_posdrdtypedudvxmaxdvxmindvymaxdvymindvzmaxdvzmindxdydzemptyextext_parext_t_z0ext_x0ext_y0ext_z0fast_cals_fast_calsfast_mmluts_fast_mmluts_fast_tuplesfbfb_nextfb_prevfirstflatten_tolfloat64freqfrmftnr__func__genexprglass_pargpgxgygziimximx_halfimyimy_halfint32int_ccint_parinv_doginv_pix_xinv_pix_yipiris_compiled_is_coroutineitemsizjk1k2k3lastlmaxm__main___make_foundpix_make_foundpix_arraymmmm_d0mm_n1mm_n2_0mm_n3mmfmmlutmmlut_datammlut_nrmmlut_nzmmlut_originmmlut_rwmmlut_tupmmlut_tuples__module__multimedmultimed_nlay_multimed_nlay_multimed_r_nlay_iterativemultimed_r_nlay_iterativenn1n2n3__name__nextnext_targetsnlinksnpnpartnrnum_camsnum_partsnum_targetsnumpynzopenptv2.algorithms.trackorientationoriginpp1p2_pack_cal_pack_cal_arraypack_cal_array_pack_cams_fast_pack_cams_fast_tuples_pack_cams_fast_tuples.<locals>.genexpr_pack_mmlutpack_mmlut_packed_calspath_decispath_finaldecispath_infopa""th_inlistpath_linkdecispath_nextpath_prevpath_priopath_xpc_pix_infopix_xpix_ypixel_to_metricpointpoint_positionpoint_position_fast_point_position_fastpoint_to_pixel_point_to_pixel_fastpoint_to_pixel_fast_point_to_pixel_packedpoppospos0pos1pos2pos3d_in_boundspos_t_0pos_t_2predpredictprevprev_posprintprio_ptp_fast__qualname__rr2r4radial_factorradial_shiftread_frame_at_endread_linksregregister_closest_neighbsregister_link_candidatereset_foundpix_arrayreset_linksreturnrunrun_inforws_cams_ds_pts_xs_zscxsearch_volume_center_movingsearchquader_searchquader_fastsearchquader_fastsendseq_par__set_name__setdefaultshesin_shesortsort_candidates_by_freqsort_candidates_by_freq_fast_sort_candidates_by_freq_fast_sorted_candidates_fastsorted_candidates_fastsorted_candidates_in_volumesrsrcstartstep_sync_path_to_soa_sync_soa_to_aossztarg_pos_targ_tnrtarg_tnr_targ_xtarg_x_targ_ytarg_ytargets__test__throwtmp_xtmp_ytmp_ztnrtnr_arrtpartrack_forward_starttrack_kernelstrackback_c_trackback_loop_fasttrackback_loop_fasttrackcorr_c_finishtrackcorr_c_loop_trackcorr_loop_fasttrackcorr_loop_fasttracking_frame_buftrafotxtytzv0v3valuevalues_vec3_distvec_xvec_yvec_zvparwhichcamwrite_frame_from_startxx0x_distx_pixelxdxhyy0y_disty_pixelydyhymaxyminz0zeros\200\001\340\004\013\2101\210K\220s\230!\2305\240\001\200\001\340\004\013\2101\210N\230!\230:\240T\250\025\250e\2601\260A\200\001\360\n\000\005\033\230'\240\022\2401\330\004\032\230'\240\022\2401\330\004\032\230'\240\022\2401\330\004\032\230'\240\022\2401\360\020\000\005\010\200u\210B\210a\330\010\017\210q\330\004\007\200u\210B\210d\220!\330\010\017\210t\2201\330\004\007\200u\210B\210a\330\010\017\210q\330\004\007\200u\210B\210d\220!\330\010\017\210t\2201\340\004\005\200Q\200e\2101\330\004\016\210a\330\004\013\2101\340\004\007\200u\210D\220\003\220:\230T\240\025\240d\250$\250c\260\032\2704\270q\330\010\017\210q\340\004\t\210\034\220S\230\001\330\004\t\210\034\220S\230\001\330\004\n\210#\210R\210q\330\010\013\210<\220q\230\003\2303\230b\240\001\330\014""\022\220!\340\014\022\220!\330\010\017\210q\340\004\n\210!\330\004\007\200s\210\"\210A\330\010\r\210Q\340\004\010\210\005\210U\220!\2204\220q\330\010\014\210L\230\001\230\021\330\010\013\2101\210E\220\023\220A\330\014\017\210q\220\003\2202\220Q\330\020\021\330\014\017\210q\220\003\2202\220U\230$\230a\230s\240\"\240E\250\024\250Q\250c\260\022\2605\270\004\270A\270S\300\002\300!\330\020\024\220F\230\"\230G\2402\240Q\240d\250#\250R\250s\260'\270\022\2701\270D\300\003\3001\330\020\023\2202\220R\220q\330\024\033\2301\330\024\025\220Q\220e\2301\330\024\036\230a\340\004\013\2101\200\001\340\004\020\220\003\2201\330\004\023\2203\220j\240\001\240\021\330\004\020\220\002\220&\230\001\330\004\017\210q\220\001\340\004\021\220\023\220K\230q\240\001\330\004\010\210\007\210u\220A\220S\230\001\330\010\022\220\"\220A\220W\230A\330\010\013\2109\220A\220T\230\021\230#\230S\240\001\330\014\022\220)\2301\230D\240\001\240\021\330\014\017\210x\220q\230\004\230A\230T\240\027\250\001\330\014\017\210y\230\001\230\024\230Q\230g\240Q\330\014\026\220b\230\001\230\027\240\001\330\014\026\220f\230A\330\004\007\200~\220Q\200\001\360\014\000\005\014\2101\330\004\n\210!\330\010\017\210q\330\010\014\210E\220\025\220a\220r\230\022\2301\330\014\017\210q\220\001\220\023\220B\220a\220q\230\002\230\"\230A\330\020\021\220\021\220$\220a\220q\230\002\230\"\230E\240\021\240!\2402\240R\240t\2501\250A\250Q\330\020\021\220\021\220$\220a\220q\230\002\230\"\230E\240\021\240!\2402\240R\240t\2501\250A\250Q\330\020\027\220q\200\001\330\004\t\210\021\210!\2103\210b\220\001\220\021\220!\330\004\t\210\021\210!\2103\210b\220\001\220\021\220!\330\004\t\210\021\210!\2103\210b\220\001\220\021\220!\330\004\013\2106\220\021\220#\220R\220s\230\"\230C\230r\240\023\240B\240c\250\022\2501\200\001\360\n\000&4\3203C\3001\330\004\010\210\004\210D\220\005\320\025,\250A\330\010\021\220\031\230+\240Q\330\010\020\220\010\230\004\230D\240\004\240A\330\010\014\210F\220$\220f\230A\330\004\020\220\001\220\024\220T\230\024\230Q\340\004\010""\210\010\220\005\220Q\220a\330\010\013\2109\220A\220V\2303\230a\330\014\017\210q\220\005\220Q\220e\2301\340\014\017\210q\220\005\220Q\220b\230\001\230\027\240\001\330\014\017\210q\220\005\220Q\220e\2303\230a\230y\250\001\250\031\260!\2601\200\001\340\004\013\2105\220\001\220\023\220A\220U\230'\240\025\240a\240s\250!\2505\260\007\260u\270A\270S\300\001\300\021\340\005\r\210X\220Q\330\005\013\2106\220\026\220v\230V\2406\250\026\250v\260Q\330\005\r\210T\220\021\330\005\t\210\024\210T\220\035\230a\330\005\014\210I\220W\230A\330\005\t\210\024\210T\220\024\220T\230\025\230a\330\005\021\220\036\230z\250\032\260<\270q\340\004\016\210g\220R\220s\230\"\230G\2402\240S\250\002\250'\260\022\2601\330\004\024\220H\230B\230h\240b\250\014\260B\260a\340\004\016\210e\2202\220S\230\002\230%\230r\240\023\240B\240e\2502\250Q\330\004\026\220h\230b\240\010\250\002\250!\340\004\014\210N\230\"\230A\330\004\013\2107\220\"\220C\220r\230\021\330\004\013\2107\220\"\220C\220r\230\021\330\004\013\2107\220\"\220C\220r\230\021\340\004\013\320\013\033\2302\230Q\330\004\013\2105\220\002\220#\220R\220q\330\004\013\2105\220\002\220#\220R\220q\330\004\013\2105\220\002\220#\220R\220q\340\004\017\210~\230R\230q\340\004\n\210&\220\002\220!\330\004\013\2105\220\002\220#\220R\220q\330\004\013\2105\220\002\220#\220R\220q\330\004\013\2105\220\002\220#\220R\220q\330\004\014\210E\220\022\2201\330\004\014\210E\220\022\2201\330\004\014\210E\220\022\2201\340\004\016\210f\220A\220V\2302\230V\2402\240V\2502\250V\2602\260V\2702\270Q\330\004\016\210a\360\006\000\005\024\2201\330\004\007\200{\220'\230\021\330\010\r\210X\220R\220|\2401\240A\330\010\r\210Q\210l\230!\2301\330\010\r\210X\220R\220|\2401\240A\330\010\r\210S\220\002\220!\330\010\r\210S\220\001\220\021\330\010\016\210a\330\010\014\210F\220!\2203\220b\230\003\2302\230S\240\002\240!\330\010\r\210R\210r\220\021\330\010\r\210S\220\001\220\021\330\010\016\210a\330\010\013\2103\210c\220\031\230$\230c\240\023\240B\240d\250#\250S\260\001\330\014\021\220\023\220B\220i""\230r\240\021\330\014\021\220\023\220B\220i\230r\240\021\330\014\017\210s\220#\220R\220t\2303\230c\240\031\250\"\250A\330\020\021\330\024\036\230a\230t\2403\240b\250\002\250$\250c\260\022\2602\260Q\330\024\026\220j\240\001\240\023\240B\240c\250\023\250B\250b\260\004\260B\260a\330\024\026\220j\240\001\240\023\240B\240j\260\002\260#\260S\270\002\270\"\270A\330\024\026\220j\240\001\240\024\240R\240s\250\"\250A\340\020\023\2204\220r\230\021\330\024#\2401\330\004\007\200}\220C\220q\330\010\027\320\0271\260\021\330\014\025\220U\230)\2405\250\005\250Q\330\014\023\2209\230G\2401\340\004\n\210(\220\"\220A\360\006\000\005\013\210!\2108\2202\220Q\330\004\t\210\025\210b\220\003\2202\220Q\330\004\t\210\025\210b\220\003\2202\220Q\330\004\t\210\025\210b\220\003\2202\220Q\340\004\007\200x\210r\220\021\330\010\016\210a\210t\2202\220Q\330\010\016\210f\220B\220a\330\010\016\210f\220B\220a\330\010\016\210f\220B\220a\360\006\000\005\n\210\023\210B\210a\330\004\t\210\023\210B\210a\330\004\t\210\023\210B\210a\340\004\013\2105\220\002\220#\220R\220u\230B\230c\240\022\2405\250\002\250!\330\004\010\210\001\210\027\220\003\2205\230\002\230#\230R\230u\240B\240c\250\022\2505\260\002\260$\260b\270\001\330\004\010\210\001\210\027\220\003\2205\230\002\230#\230R\230u\240B\240c\250\022\2505\260\002\260$\260b\270\001\360\006\000\005\n\210\021\330\004\t\210\021\330\004\010\210\006\210a\210r\220\022\2202\220R\220r\230\022\2301\330\004\007\200r\210\022\2101\330\010\021\220\021\330\010\021\220\021\340\010\r\210R\210r\220\021\330\010\r\210S\220\002\220!\330\010\030\230\004\230B\230c\240\022\2403\240b\250\003\2502\250S\260\002\260#\260R\260s\270\"\270A\330\010\r\210R\210r\220\036\230r\240\023\240C\240s\250\"\250B\250b\260\002\260\"\260C\260r\270\022\2702\270S\300\002\300\"\300B\300a\330\010\r\210R\210r\220\036\230r\240\023\240C\240s\250\"\250B\250b\260\002\260\"\260C\260r\270\022\2702\270S\300\002\300\"\300B\300a\330\010\022\220%\220q\230\001\330\010\022\220%\220q\230\001\330\010\021\220\024\220S\230\003""\2302\230X\240R\240q\330\010\021\220\024\220R\220x\230r\240\021\360\006\000\005\017\210g\220R\220z\240\022\2401\330\004\016\210i\220r\230\027\240\002\240!\340\004\007\200x\210s\220!\330\010\023\2208\2302\230U\240\"\240A\330\t\021\220\023\220A\330\010\022\220(\230\"\230A\340\004\013\2109\220A\200\001\340\004\t\210\031\220!\2205\230\001\330\004\013\320\013!\240\021\240%\240t\2504\250r\260\025\260d\270\"\270E\300\024\300R\300w\310d\320RT\320T[\320[\\\200\001\340#6\3206F\300a\330\004\n\210-\320\027(\250\001\340\004\032\230!\330\004\033\2301\330\004\030\230\001\330\004\032\230!\360\014\000\005\t\210\007\210u\220A\220Q\330\010\020\220\001\220\024\220Q\220e\2308\2401\240D\250\001\250\025\250a\340\004\014\210C\210u\220F\230(\240#\240U\250!\340\004\007\200z\220\027\230\001\330\010\013\2103\210j\230\n\240+\250[\270\014\300A\340\010\023\2206\230\022\2305\240\013\2506\260\022\2601\330\010\024\220D\230\002\230#\230U\240(\250,\260d\270\"\270C\270u\300A\330\010\024\220C\220u\230A\340\004\010\210\007\210u\220A\220S\230\005\230Q\330\010\014\210E\220\031\230!\2305\240\n\250!\2506\260\034\270Q\270a\330\032$\240J\250k\270\033\300A\340\010\016\210l\320\0326\260a\330\014\017\210w\220a\220v\230S\240\007\240q\250\006\250c\260\031\270!\2701\330\014\017\210|\2301\230F\240$\240d\250&\260\007\260t\2701\330\014\023\2207\230!\330\010\013\210:\220R\220q\330\014\025\220Q\220d\230!\2305\240\001\340\010\013\210:\220R\220q\330\014\022\220)\2301\230D\240\001\240\021\330\014\024\220A\220T\230\021\230%\230s\240'\250\021\250$\250a\250q\330\014\024\220A\220T\230\021\230%\230s\240'\250\021\250$\250a\250q\340\004\021\220\021\330\004\010\210\007\210u\220A\220S\230\005\230Q\330\010\014\210H\220A\220T\230\021\230#\230S\240\r\250Q\330\020\030\230\001\230\024\230Q\230c\240\023\240A\330\014\020\220\005\220_\240A\240X\250Q\250d\260!\2604\260x\270q\300\004\300A\300T\310\023\310A\330\014\022\220#\220T\230\021\230!\330\014\020\220\005\220\\\240\021\330\020\024\220A\330\020\023\2208\2305\240\003\2408\2501\330\020\023""\220:\230U\240#\240Z\250u\260C\260z\300\021\330\020\023\220:\230U\240#\240Z\250q\330\020\023\220:\230V\2403\240j\260\001\330\020\023\2201\330\014\024\220A\220T\230\021\230%\230q\330\014\024\220A\220T\230\021\230%\230q\330\014\032\230!\330\004\013\2101\200\001\3308H\310\001\330\036\037\330\004\017\210t\2201\340\004\010\210\004\210E\220\025\220a\220t\2305\240\001\240\024\240U\250!\2501\330\004\013\2107\220(\230$\230i\240t\2509\260D\270\001\330\004\013\2107\220(\230$\230i\240t\2509\260D\270\001\340\004\r\210R\210v\220R\220s\230!\330\004\010\210\006\210e\2201\220A\330\010\016\210a\210t\2205\230\003\2303\230i\240s\250\"\250G\2601\330\010\016\210a\210t\2205\230\003\2303\230i\240s\250\"\250G\2601\330\010\016\210a\210t\2205\230\003\2303\230i\240s\250\"\250G\2601\340\004\007\200z\220\027\230\001\330\010\017\210w\220j\240\n\250+\260[\300\014\310A\340\010\020\220\004\220F\230(\240$\240a\330\010\023\2206\230\022\2305\240\013\2506\260\022\2601\330\010\024\220D\230\002\230$\230h\240l\260$\260b\270\004\270A\330\010\024\220D\230\001\340\004\007\200}\220G\2301\330\010\017\210v\220V\2307\240'\250\030\260\021\330\010\022\220\"\220H\230A\230W\240F\250\"\250A\330\010\017\320\017!\240\021\330\014\025\220X\230Z\240w\250f\260F\270'\300\027\310\001\330\014\026\220j\240\013\250;\260k\300\027\310\001\340\004\007\200}\220C\220q\330\010\017\210t\2201\330\010\027\220q\230\t\240\021\240%\240q\250\004\250F\260$\260e\2705\300\001\300\021\340\004\t\210\022\2106\220\021\220!\330\004\t\210\022\2106\220\021\220!\330\004\t\210\022\2106\220\021\220!\330\004\t\210\022\2106\220\021\220!\340\004\010\210\005\210U\220!\2201\330\010\r\210\\\230\021\230!\330\010\017\210q\330\010\017\210u\220A\220Q\330\010\017\210q\330\010\017\210u\220A\220Q\340\010\014\210E\320\021'\240q\250\007\250t\260:\270Z\300{\320R]\320]^\330\010\014\210F\220%\220q\230\001\330\014\026\220k\320!7\260q\270\006\270a\270u\300D\310\n\320R\\\320\\g\320gr\320rs\330\014\017\210y\230\002\230&\240\007\240q\330\014\017\210y\230\002\230&\240\007\240q""\330\014\017\210y\230\002\230&\240\007\240q\330\014\017\210y\230\002\230&\240\007\240q\340\010\013\2105\220\002\220#\220W\230A\330\010\013\2105\220\002\220#\220W\230A\330\010\013\2105\220\002\220'\230\027\240\001\330\010\013\2105\220\002\220'\230\027\240\001\340\010\n\210!\2105\220\005\220R\220q\330\010\n\210!\2105\220\003\2202\220Q\330\010\n\210!\2105\220\005\220R\220q\330\010\n\210!\2105\220\003\2202\220Q\340\004\013\2104\210t\2204\220q\200\001\360\n\000\005\t\210\001\210\033\220B\220a\330\004\032\230'\240\022\2401\330\004\032\230'\240\022\2401\330\004\032\230'\240\022\2401\330\004\032\230'\240\022\2401\360\036\000\005\010\200u\210B\210a\330\010\017\210q\330\004\007\200u\210B\210d\220!\330\010\017\210t\2201\330\004\007\200u\210B\210a\330\010\017\210q\330\004\007\200u\210B\210d\220!\330\010\017\210t\2201\340\004\t\210\025\210e\2205\230\001\330\004\013\2101\330\004\t\210\025\210e\2205\230\001\340\004\007\200u\210D\220\003\220:\230T\240\025\240d\250$\250c\260\032\2704\270q\330\010\017\210q\340\004\t\210\034\220S\230\001\330\004\t\210\034\220S\230\001\330\004\n\210#\210R\210q\330\010\013\210<\220q\230\003\2303\230b\240\001\330\014\022\220!\340\014\022\220!\330\010\017\210q\340\004\n\210!\330\004\007\200s\210\"\210A\330\010\r\210Q\340\004\010\210\005\210U\220!\2204\220q\330\010\014\210L\230\001\230\021\330\010\013\2101\210E\220\023\220A\330\014\017\210q\220\003\2202\220Q\330\020\021\330\014\017\210q\220\003\2202\220U\230$\230a\230s\240\"\240E\250\024\250Q\250c\260\022\2605\270\004\270A\270S\300\002\300!\330\020\024\220F\230\"\230G\2402\240Q\240d\250#\250R\250s\260'\270\022\2701\270D\300\003\3001\340\020\023\2202\220R\220q\330\024\033\2301\340\020\023\2202\220R\220q\330\024\030\230\004\230D\240\005\240T\250\024\250T\260\021\330\024\030\230\004\230D\240\005\240T\250\024\250T\260\021\330\025\030\230\002\230$\230a\330\024\030\230\004\230E\240\024\240T\250\021\330\024\030\230\004\230E\240\024\240T\250\021\330\025\030\230\002\230$\230a\330\024\030\230\005\230T\240\021\330""\024\030\230\005\230T\240\021\330\025\030\230\002\230$\230a\330\024\031\230\021\330\024\031\230\021\340\004\005\200Q\200d\210!\2101\210D\220\001\220\021\220$\220a\220q\230\005\230T\240\024\240T\250\021\330\004\013\2101\200\001\360\010\000\005\025\220I\230R\230q\360\016\000\005\t\210\005\210U\220!\2201\330\010\021\220\025\220a\220r\230\021\230!\330\010\014\210E\220\025\220a\220q\330\014\020\220\005\220U\230!\2301\330\020\023\2207\230#\230U\240!\2402\240R\240r\250\022\2502\250Q\250a\330\024\031\230\021\230\"\230A\230R\230q\240\005\240Q\340\004\010\210\005\210U\220!\2201\330\010\021\220\025\220a\220r\230\021\230!\330\010\013\2107\220#\220Q\330\014\021\220\025\220a\220r\230\021\230!\330\014\020\220\005\220U\230!\2301\330\020\023\2202\220Q\220c\230\023\230A\330\024\031\230\021\230\"\230A\230V\2401\340\004\010\210\005\210U\220!\2203\220a\330\010\014\210E\220\025\220a\220r\230\022\2303\230b\240\002\240$\240a\330\014\017\210u\220A\220R\220r\230\022\2301\230C\230r\240\025\240a\240r\250\021\250!\330\020\025\220Q\220b\230\002\230$\230e\2401\240E\250\025\250a\250t\2605\270\001\270\022\2702\270Q\340\004\010\210\005\210U\220!\2201\330\010\021\220\025\220a\220r\230\021\230!\330\010\014\210E\220\025\220a\220r\230\022\2303\230a\330\014\017\210u\220A\220R\220q\230\003\2303\230g\240S\250\005\250Q\250b\260\001\260\023\260B\260a\330\020\025\220Q\220b\230\001\230\025\230a\330\020\025\220Q\220b\230\001\230\025\230a\340\004\010\210\005\210U\220!\2203\220a\330\010\014\210E\220\025\220a\220r\230\022\2303\230b\240\002\240$\240a\330\014\017\210u\220A\220R\220r\230\022\2301\230C\230r\240\025\240a\240r\250\021\250!\330\020\025\220Q\220b\230\002\230$\230e\2401\240E\250\025\250a\250t\2605\270\001\270\022\2702\270Q\340\004\020\220\001\330\004\010\210\005\210U\220!\2201\330\010\013\2105\220\001\220\022\2201\220C\220s\230!\330\014\031\230\021\330\004\013\2101\320\000\025\220Q\340\004\021\220\021\200\001\340\004\n\320\n\035\230Q\340\004\t\210\030\220\021\330\004\n\210(\220!\330\004\013\2108\2201\330""\004\013\2108\2201\330\004\013\2108\2201\340\004\014\210D\220\006\220h\230d\240!\330\004\017\210v\220R\220u\230K\240v\250R\250q\330\004\020\220\004\220B\220d\230(\240,\250d\260\"\260D\270\001\330\004\020\220\004\220J\230g\240T\250\021\340\004\017\210~\230_\250A\250U\260!\330\004\n\320\n \240\001\240\033\250A\330\004\013\2106\220\026\220w\230g\240X\250Q\340\004\t\210\022\2101\330\004\021\220\022\2204\220q\230\002\230!\340\004\006\200d\210!\2102\320\r\037\230q\330\004\006\200d\210!\2102\320\r\037\230q\330\004\006\200d\210!\2102\320\r\037\230q\330\004\006\200d\210!\2102\320\r\037\230q\340\004\n\210\"\210F\220!\2201\220B\220d\230!\2302\230]\250&\260\002\260!\330\004\n\210\"\210F\220!\2201\220B\220d\230!\2302\230]\250&\260\002\260!\330\004\n\210\"\210F\220!\2202\220T\230\021\230\"\230L\250\002\250%\250v\260R\260q\330\004\n\210\"\210F\220!\2202\220T\230\021\230\"\230L\250\002\250%\250v\260R\260q\340\004\014\210L\320\030,\250A\330\010\t\330\010\n\210$\210a\210r\220\021\330\010\n\210$\210a\210r\220\031\230\"\230D\240\001\240\022\240<\250r\260\024\260Q\260b\270\001\330\010\n\210$\210a\210r\220\036\230r\240\024\240Q\240b\250\001\330\010\n\210$\210a\210r\220\035\230b\240\004\240A\240R\240q\330\010\n\210$\210a\210r\220\021\330\010\r\210Q\210b\220\004\220A\220R\220w\230b\240\006\240e\2501\250B\250d\260!\2602\260W\270B\270a\330\010\n\210$\210a\210r\220\031\230\"\230D\240\001\240\022\240<\250r\260\024\260Q\260b\270\001\330\010\n\210$\210a\210r\220\036\230r\240\024\240Q\240b\250\001\330\010\n\210$\210a\210r\320\021#\2402\240T\250\021\250\"\250A\330\010\n\210$\210a\210r\320\021\"\240\"\240D\250\001\250\022\2501\330\010\n\210$\210a\210r\220\021\330\010\r\210Q\210b\220\004\220A\220R\220w\230b\240\006\240e\2501\250B\250d\260!\2602\260W\270B\270a\330\010\r\210Q\210b\220\004\220A\220R\220y\240\002\240&\250\005\250Q\330\010\n\210$\210a\210r\220\031\230\"\230D\240\001\240\022\240<\250r\260\024\260Q\260b\270\001\330\010\n\210$\210a\210r\220\036\230r\240\024\240Q\240b\250\001\330\010\n\210$""\210a\210r\320\021#\2402\240T\250\021\250\"\250A\330\010\n\210$\210a\210r\320\021\"\240\"\240D\250\001\250\022\2501\330\010\n\210$\210a\210r\220\021\330\010\r\210Q\210b\220\004\220A\220R\220w\230b\240\006\240e\2501\250B\250d\260!\2602\260W\270B\270a\330\010\r\210Q\210b\220\004\220A\220R\220y\240\002\240&\250\005\250Q\330\010\017\210v\220V\2307\240'\250\021\330\010\014\210I\220T\230\031\240$\240i\250t\2601\330\010\014\210I\220T\230\031\240$\240g\250T\260\021\330\010\013\2101\210D\220\007\220x\230q\330\010\014\210F\220!\2204\220t\2306\240\021\240$\240h\250g\260X\270Q\330\010\014\210I\220Q\220d\230$\230i\240q\250\001\330\010\014\210J\220j\240\013\2501\330\010\023\2205\230\001\230\030\240\025\240a\240q\330\010\014\210H\220D\230\010\240\010\250\001\360\006\000\005\007\200d\210!\2102\210]\230#\230Q\230c\240\021\240!\330\004\006\200d\210!\2102\210]\230#\230Q\230c\240\021\240!\340\004\024\220A\220R\220t\2301\230A\330\004\024\220A\220R\220t\2301\230A\330\004\024\220A\220R\220t\2301\230A\340\004\t\210\021\210(\220!\220=\240\001\240\022\2404\240q\250\002\250!\330\n\022\220!\2202\220T\230\021\230\"\320\0340\260\001\260\021\330\n\022\220!\2202\220T\230\021\230\"\230K\240r\250\036\260q\270\001\340\004\014\210I\220X\230W\240B\240b\250\004\250A\250R\250q\330\004\014\210J\220h\230h\240b\250\001\340\004\006\200h\210a\330\004\006\320\006\035\230Q\230a\330\004\007\200u\210B\210h\220h\230f\240B\240a\330\010\n\320\n\034\230A\230U\240\"\240C\240{\260!\340\010\n\210$\210a\210r\220\031\230\"\230B\230m\2501\200\001\340\004\n\320\n\035\230Q\340\004\n\210(\220!\330\004\016\210h\220a\330\004\013\2108\2201\330\004\013\2108\2201\330\004\013\2108\2201\330\004\t\210\030\220\021\340\004\014\210D\220\006\220h\230d\240!\330\004\017\210v\220R\220u\230K\240v\250R\250q\330\004\020\220\004\220B\220d\230(\240,\250d\260\"\260D\270\001\330\004\020\220\004\220J\230g\240T\250\021\330\004\017\210~\230_\250A\250U\260!\330\004\n\320\n \240\001\240\033\250A\340\004\013\2101\330\004\013\2101\330\004\014\210A\330""\004\r\210Q\340\004\010\210\010\220\005\220Q\220g\230W\240G\2506\260\022\2604\260q\330\010\n\320\n\034\230A\230V\240;\250a\330\010\n\210(\220!\330\004\006\200h\210a\340\004\t\210\022\2101\340\004\010\210\010\220\005\220Q\220g\230V\2402\240S\250\007\250y\270\001\340\010\n\210$\210a\210r\320\021#\2401\330\010\n\210$\210a\210r\320\021#\2401\330\010\n\210$\210a\210r\320\021#\2401\330\010\n\210$\210a\210r\320\021#\2401\340\010\017\210v\220V\2307\240'\250\030\260\021\330\010\026\220b\230\006\230a\230q\240\002\240$\240a\240r\250\035\260f\270B\270a\330\010\016\210b\220\006\220a\220r\230\024\230Q\230b\240\014\250B\250e\2606\270\022\2701\340\010\020\220\014\320\0340\260\001\330\014\016\210d\220!\2202\220Q\330\014\016\210d\220!\2202\220Q\330\014\016\210d\220!\2202\220Y\230b\240\004\240A\240R\240|\2602\260T\270\021\270\"\270A\330\014\016\210d\220!\2202\220Q\330\014\016\210d\220!\2202\320\025'\240r\250\024\250Q\250b\260\001\330\014\016\210d\220!\2202\220Q\330\014\016\210d\220!\2202\220Y\230b\240\004\240A\240R\240|\2602\260T\270\021\270\"\270A\330\014\r\330\014\016\210d\220!\2202\220Y\230b\240\004\240A\240R\240y\260\002\260$\260a\260r\270\021\330\014\r\330\014\016\210d\220!\2202\220[\240\002\240$\240a\240r\250\021\330\014\016\210d\220!\2202\220^\2402\240T\250\021\250\"\250A\330\014\016\210d\220!\2202\220Q\330\014\016\210d\220!\2202\220]\240\"\240D\250\001\250\022\2501\330\014\016\210d\220!\2202\220Y\230b\240\004\240A\240R\240q\330\014\023\2206\230\026\230w\240g\250Q\330\014\020\220\t\230\024\230Y\240d\250)\2604\260q\330\014\020\220\t\230\024\230Q\330\014\020\220\007\220t\2309\240D\250\006\250h\260a\330\014\020\220\006\220a\220t\2304\230v\240Q\240d\250&\260\001\330\014\020\220\t\230\021\230$\230d\240)\2501\250A\330\014\020\220\n\230*\240K\250q\330\014\027\220w\230g\240T\250\030\260\024\260Q\330\014\024\220A\360\006\000\t\013\210$\210a\210r\220\035\230c\240\021\240+\250Q\250a\340\010\030\230\001\230\022\2304\230q\240\001\330\010\030\230\001\230\022\2304\230q\240\001\340\010\r\210Q""\210h\220a\220}\240A\240R\240t\2501\250B\250a\330\016\026\220a\220r\230\024\230Q\230b\320 4\260A\260Q\330\016\026\220a\220r\230\024\230Q\230b\240\013\2502\250^\2701\270A\340\010\020\220\006\220b\230\002\230$\230a\230r\240\021\330\010\021\220\027\230\002\230!\340\010\n\210(\220!\330\010\n\320\n!\240\021\240!\330\010\013\2105\220\002\220'\230\027\240\002\240!\330\014\016\320\016 \240\001\240\025\240b\250\003\250;\260a\340\004\016\210g\220V\2302\230W\240G\2502\250Q\330\004\017\210w\220f\230B\230g\240W\250B\250a\340\004\t\210\021\320\n.\250a\250u\260A\330\n\023\2201\220F\230.\250\001\250\026\250r\260\026\260q\340\004\006\200h\210a\330\004\006\320\006\035\230Q\230g\240Q\340\004\013\2101\200\001\340-=\270Q\330-.\330\004\017\210s\220!\340\004\013\2106\220\026\220w\230g\240X\250Q\330\004\007\200z\220\027\230\001\330\010\017\210w\220j\240\n\250+\260[\300\014\310A\340\010\020\220\003\2205\230\006\230h\240c\250\025\250a\330\010\023\2206\230\022\2305\240\013\2506\260\022\2601\330\010\024\220D\230\002\230#\230U\240(\250,\260d\270\"\270C\270u\300A\330\010\024\220C\220u\230A\340\004\021\220\022\2208\2301\230H\240F\250\"\250A\330\004\n\210\"\210F\220!\2201\220K\230q\240\002\240!\2403\240d\250%\250u\260A\260\\\300\026\300r\310\021\330\004\n\210\"\210F\220!\2201\220K\230q\240\002\240!\2403\240d\250%\250u\260A\260\\\300\026\300r\310\021\330\004\t\210\022\2106\220\021\220#\220\\\240\022\240;\250f\260B\260a\340\004\n\210&\220\n\230,\320&=\270Q\330\010\024\220E\230\025\230j\250\001\330\010\017\210v\220V\2307\240'\250\021\330\010\r\210Q\210c\220\027\230\002\230,\240e\2501\250C\250w\260b\270\001\330\010\r\210Q\210c\220\031\230\"\230L\250\001\330\010\013\2105\220\t\230\023\230E\240\031\250#\250U\260!\330\010\013\2105\220\t\230\023\230E\240\031\250#\250U\260!\330\010\022\220*\230K\240{\260!\330\010\017\210w\220a\340\004\007\200z\220\022\2201\330\010\021\220\021\330\010\014\210E\220\025\220a\220q\330\014\022\220'\230\022\2308\2403\240a\240t\2501\250E\260\030\270\023\270A\270T\300\021\300!""\330\033'\240t\2501\250H\260A\260Q\330\010\016\210g\220R\220x\230{\250(\260#\260\\\300\021\300#\300Q\330\010\017\210q\330\004\013\2101\200\001\340\004\005\330\010\r\210Q\210a\330\010\r\210R\210q\330\010\r\210R\210q\330\010\r\210R\210q\330\010\r\210R\210q\330\010\r\210R\210q\200\001\340\004\031\230\024\230Q\230c\240\022\2405\250\001\250\021\330\004\031\230\024\230Q\230c\240\022\2405\250\001\250\021\330\004\031\230\024\230Q\230c\240\022\2405\250\001\250\021\330\004\031\230\024\230Q\230c\240\022\2405\250\001\250\021\330\004\031\230\024\230Q\230c\240\022\2405\250\001\250\021\330\004\031\230\024\230Q\230c\240\022\2405\250\001\250\021\360\024\000\005\010\200t\2103\210a\210t\2204\220t\2303\230a\230t\2404\240t\2503\250a\250q\330\010\020\220\001\330\t\r\210S\220\004\220D\230\004\230C\230t\2404\240t\2503\250a\330\010\020\220\001\340\010\020\220\006\220a\220t\2302\230T\240\022\2404\240r\250\024\250R\250t\2602\260Q\330\010\020\220\006\220a\220t\2302\230T\240\022\2404\240r\250\024\250R\250t\2602\260Q\330\010\013\2106\220\023\220B\220c\230\026\230s\240!\330\014\024\220A\340\014\023\2204\220r\230\024\230R\230t\2402\240T\250\022\2504\250r\260\025\260c\270\026\270r\300\021\330\014\017\210t\2202\220Q\330\020\026\220a\330\021\025\220R\220q\330\020\026\220a\330\014\024\220F\230!\2305\240\002\240&\250\002\250!\340\004\t\210\024\210R\210q\330\004\t\210\024\210R\210q\330\004\t\210\024\210R\210q\330\004\n\210&\220\001\220\023\220B\220c\230\022\2303\230b\240\003\2402\240S\250\002\250!\330\004\013\2107\220!\200\001\340\004\010\210\010\220\005\220Q\220c\230\030\240\030\250\023\250H\260G\2702\270\\\310\022\3101\330\010\013\2103\320\016 \240\001\240\026\240{\260!\330\010\013\2103\210h\220a\330\004\007\200s\210(\220!\200\001\340\004\021\220\021\220/\240\021\240#\240T\250\024\250U\260!\330\004\023\2201\220K\230q\240\003\2404\240u\250A\330\004\013\210<\220q\200\001\360\014\000\005\t\210\005\210U\220!\2201\330\010\013\2101\210B\210a\210u\220A\330\010\013\2101\210B\210a\210u\220A\330\010\014\210E""\220\025\220a\220q\330\014\017\210q\220\002\220!\2202\220Q\220e\2301\200\001\360\014\000\005\t\210\005\210U\220!\2201\330\010\014\210A\210R\210q\220\005\220S\230\001\230\022\2301\230A\330\010\014\210A\210R\210q\220\005\220S\230\001\230\022\2301\230A\330\010\014\210E\220\025\220a\220q\330\014\020\220\001\220\022\2201\220B\220a\220u\230C\230q\240\002\240!\2402\240Q\240a\200\001\340\004\010\210\005\210U\220!\2203\220a\330\010\014\210C\210z\230\021\230!\330\010\t\210\022\2106\220\023\220G\2301\230A\330\010\t\210\030\220\023\220A\220S\230\n\240!\2401\330\010\t\210\030\220\023\220A\220S\230\n\240!\2401\330\010\t\210\030\220\023\220A\220S\230\n\240!\2401\340\010\014\210C\210{\230!\2301\330\010\t\210\026\210s\220!\2203\220j\240\001\240\021\330\010\t\210\022\2106\220\023\220I\230Q\230a\340\004\010\210\007\210u\220A\220S\230\001\330\010\022\220#\220Y\230a\230q\330\010\014\210E\220\025\220a\220s\230,\240a\240q\330\014\017\210x\220q\230\004\230A\230R\230w\240c\250\021\250'\260\021\260!\200\001\340\004\n\210#\210Z\220u\230C\230z\250\025\250c\260\034\270U\300#\300Q\330\004\t\210\022\2108\2205\230\002\230(\240%\240r\250\021\330\004\022\220&\230\001\230\023\230B\230c\240\022\2403\240b\250\003\2502\250S\260\002\260!\330\004\016\210d\220\"\220A\330\004\014\210C\210q\330\004\021\220\025\220a\330\004\005\330\010\013\2105\220\003\2205\230\003\2301\330\010\013\2103\210a\210s\220$\220c\230\023\230A\230S\240\004\240C\240s\250!\2503\250a\330\010\013\2103\210a\210s\220$\220c\230\023\230A\230S\240\004\240C\240s\250!\2503\250a\330\010\013\2103\210a\210s\220$\220c\230\023\230A\230S\240\004\240C\240s\250!\2503\250a\330\010\n\210%\210r\220\025\220b\230\001\330\010\014\210D\220\004\220M\240\021\330\010\n\210%\210r\220\023\220A\220T\230\022\2305\240\002\240\"\240A\240Q\330\010\n\210%\210r\220\025\220b\230\005\230R\230u\240B\240e\2502\250V\2602\260Q\330\010\t\330\010\r\210[\230\013\2407\250*\260A\330\010\r\210W\220K\230w\240j\260\001\330\010\r\210W\220K\230w\240j\260\001\330\010\r\210W\220K\230w""\240j\260\001\200\001\340\004\020\220\010\230\010\240\006\240b\250\010\260\010\270\001\330\004\014\210H\220G\2302\230Q\330\004\r\210X\220X\230R\230q\330\004\t\210\021\320\n.\250a\250u\260A\330\n\023\2201\220F\230.\250\001\250\026\250r\260\026\260q\340\004\014\210C\210x\220q\330\004\014\210C\320\017&\240a\240q\210q\200\001\340\004\013\320\013\037\230q\330\010\r\210Y\220i\230q\240\004\240I\250Q\250a\330\010\021\220\021\220$\220i\230q\240\004\240I\250Q\250a\330\010\022\220*\230K\240{\260!\200\001\340\004\013\320\013\037\230q\330\010\017\210u\220D\230\006\230d\240&\250\004\250H\260D\270\010\300\004\300J\310d\320RS\200\001\340\004\017\210r\220\030\230\021\230!\330\004\017\210r\220\030\230\021\230!\330\004\013\2109\220C\220y\240\002\240!\200\001\340\004\017\210r\220\030\230\021\230!\330\004\017\210r\220\030\230\021\230!\330\004\005\200V\2109\220C\220y\240\002\240!\200\001\340\004\007\200s\210$\210a\330\004\013\2104\210q\330\010\016\210h\220b\230\004\230F\240(\250!\330\010\016\210h\220b\230\004\230F\240(\250!\330\010\016\210h\220b\230\004\230F\240!";
     PyObject *data = NULL;
     CYTHON_UNUSED_VAR(__Pyx_DecompressString);
     #endif
@@ -28352,182 +28352,182 @@ static int __Pyx_CreateCodeObjects(__pyx_mstatetype *__pyx_mstate) {
   {
     const __Pyx_PyCode_New_function_description descr = {0, 0, 0, 1, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS|CO_GENERATOR), 62};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_m};
-    __pyx_mstate_global->__pyx_codeobj_tab[0] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_track_py, __pyx_mstate->__pyx_n_u_genexpr, __pyx_mstate->__pyx_kp_b_iso88591_q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[0])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[0] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_track_py, __pyx_mstate->__pyx_n_u_genexpr, __pyx_mstate->__pyx_kp_b_iso88591_q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[0])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {0, 0, 0, 1, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS|CO_GENERATOR), 63};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_m};
-    __pyx_mstate_global->__pyx_codeobj_tab[1] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_track_py, __pyx_mstate->__pyx_n_u_genexpr, __pyx_mstate->__pyx_kp_b_iso88591_q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[1])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[1] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_track_py, __pyx_mstate->__pyx_n_u_genexpr, __pyx_mstate->__pyx_kp_b_iso88591_q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[1])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {0, 0, 0, 1, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS|CO_GENERATOR), 64};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_m};
-    __pyx_mstate_global->__pyx_codeobj_tab[2] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_track_py, __pyx_mstate->__pyx_n_u_genexpr, __pyx_mstate->__pyx_kp_b_iso88591_q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[2])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[2] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_track_py, __pyx_mstate->__pyx_n_u_genexpr, __pyx_mstate->__pyx_kp_b_iso88591_q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[2])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {0, 0, 0, 1, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS|CO_GENERATOR), 65};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_m};
-    __pyx_mstate_global->__pyx_codeobj_tab[3] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_track_py, __pyx_mstate->__pyx_n_u_genexpr, __pyx_mstate->__pyx_kp_b_iso88591_q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[3])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[3] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_track_py, __pyx_mstate->__pyx_n_u_genexpr, __pyx_mstate->__pyx_kp_b_iso88591_q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[3])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {0, 0, 0, 1, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS|CO_GENERATOR), 66};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_m};
-    __pyx_mstate_global->__pyx_codeobj_tab[4] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_track_py, __pyx_mstate->__pyx_n_u_genexpr, __pyx_mstate->__pyx_kp_b_iso88591_q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[4])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[4] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_track_py, __pyx_mstate->__pyx_n_u_genexpr, __pyx_mstate->__pyx_kp_b_iso88591_q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[4])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {2, 0, 0, 5, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 44};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_a, __pyx_mstate->__pyx_n_u_b, __pyx_mstate->__pyx_n_u_dx, __pyx_mstate->__pyx_n_u_dy, __pyx_mstate->__pyx_n_u_dz};
-    __pyx_mstate_global->__pyx_codeobj_tab[5] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_track_py, __pyx_mstate->__pyx_n_u_vec3_dist, __pyx_mstate->__pyx_kp_b_iso88591_3b_3b_3b_6_Rs_Cr_Bc_1, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[5])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[5] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_track_py, __pyx_mstate->__pyx_n_u_vec3_dist, __pyx_mstate->__pyx_kp_b_iso88591_3b_3b_3b_6_Rs_Cr_Bc_1, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[5])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {2, 0, 0, 6, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 51};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_cals, __pyx_mstate->__pyx_n_u_mm, __pyx_mstate->__pyx_n_u_cal_arrays, __pyx_mstate->__pyx_n_u_mmlut_tuples, __pyx_mstate->__pyx_n_u_c, __pyx_mstate->__pyx_n_u_c};
-    __pyx_mstate_global->__pyx_codeobj_tab[6] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_track_py, __pyx_mstate->__pyx_n_u_pack_cams_fast, __pyx_mstate->__pyx_kp_b_iso88591_T_U_1Kq_4uA_q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[6])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[6] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_track_py, __pyx_mstate->__pyx_n_u_pack_cams_fast, __pyx_mstate->__pyx_kp_b_iso88591_T_U_1Kq_4uA_q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[6])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {2, 0, 0, 8, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 58};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_fast_cals, __pyx_mstate->__pyx_n_u_fast_mmluts, __pyx_mstate->__pyx_n_u_genexpr, __pyx_mstate->__pyx_n_u_genexpr, __pyx_mstate->__pyx_n_u_genexpr, __pyx_mstate->__pyx_n_u_genexpr, __pyx_mstate->__pyx_n_u_genexpr, __pyx_mstate->__pyx_n_u_genexpr};
-    __pyx_mstate_global->__pyx_codeobj_tab[7] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_track_py, __pyx_mstate->__pyx_n_u_pack_cams_fast_tuples, __pyx_mstate->__pyx_kp_b_iso88591_Qa_Rq_Rq_Rq_Rq_Rq, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[7])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[7] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_track_py, __pyx_mstate->__pyx_n_u_pack_cams_fast_tuples, __pyx_mstate->__pyx_kp_b_iso88591_Qa_Rq_Rq_Rq_Rq_Rq, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[7])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {8, 0, 0, 8, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 70};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_pos, __pyx_mstate->__pyx_n_u_cal_arr, __pyx_mstate->__pyx_n_u_mmlut_tup, __pyx_mstate->__pyx_n_u_imx_half, __pyx_mstate->__pyx_n_u_imy_half, __pyx_mstate->__pyx_n_u_inv_pix_x, __pyx_mstate->__pyx_n_u_inv_pix_y, __pyx_mstate->__pyx_n_u_chfield};
-    __pyx_mstate_global->__pyx_codeobj_tab[8] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_track_py, __pyx_mstate->__pyx_n_u_ptp_fast, __pyx_mstate->__pyx_kp_b_iso88591_q_Yiq_IQa_iq_IQa_K, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[8])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[8] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_track_py, __pyx_mstate->__pyx_n_u_ptp_fast, __pyx_mstate->__pyx_kp_b_iso88591_q_Yiq_IQa_iq_IQa_K, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[8])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {2, 0, 0, 13, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 79};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_cal, __pyx_mstate->__pyx_n_u_mm, __pyx_mstate->__pyx_n_u_ext, __pyx_mstate->__pyx_n_u_ip, __pyx_mstate->__pyx_n_u_gp, __pyx_mstate->__pyx_n_u_ap, __pyx_mstate->__pyx_n_u_gx, __pyx_mstate->__pyx_n_u_gy, __pyx_mstate->__pyx_n_u_gz, __pyx_mstate->__pyx_n_u_dist_o_glas, __pyx_mstate->__pyx_n_u_inv_dog, __pyx_mstate->__pyx_n_u_mmlut, __pyx_mstate->__pyx_n_u_mmlut_data};
-    __pyx_mstate_global->__pyx_codeobj_tab[9] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_track_py, __pyx_mstate->__pyx_n_u_pack_cal, __pyx_mstate->__pyx_kp_b_iso88591_ZuCz_c_U_Q_85_r_Bc_3b_2S_d_A_Cq, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[9])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[9] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_track_py, __pyx_mstate->__pyx_n_u_pack_cal, __pyx_mstate->__pyx_kp_b_iso88591_ZuCz_c_U_Q_85_r_Bc_3b_2S_d_A_Cq, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[9])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {7, 0, 0, 104, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 104};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_pos, __pyx_mstate->__pyx_n_u_pc, __pyx_mstate->__pyx_n_u_imx_half, __pyx_mstate->__pyx_n_u_imy_half, __pyx_mstate->__pyx_n_u_inv_pix_x, __pyx_mstate->__pyx_n_u_inv_pix_y, __pyx_mstate->__pyx_n_u_chfield, __pyx_mstate->__pyx_n_u_pos0, __pyx_mstate->__pyx_n_u_pos1, __pyx_mstate->__pyx_n_u_pos2, __pyx_mstate->__pyx_n_u_ext_x0, __pyx_mstate->__pyx_n_u_ext_y0, __pyx_mstate->__pyx_n_u_ext_z0, __pyx_mstate->__pyx_n_u_dm00, __pyx_mstate->__pyx_n_u_dm10, __pyx_mstate->__pyx_n_u_dm20, __pyx_mstate->__pyx_n_u_dm01, __pyx_mstate->__pyx_n_u_dm11, __pyx_mstate->__pyx_n_u_dm21, __pyx_mstate->__pyx_n_u_dm02, __pyx_mstate->__pyx_n_u_dm12, __pyx_mstate->__pyx_n_u_dm22, __pyx_mstate->__pyx_n_u_int_cc, __pyx_mstate->__pyx_n_u_xh, __pyx_mstate->__pyx_n_u_yh, __pyx_mstate->__pyx_n_u_gx, __pyx_mstate->__pyx_n_u_gy, __pyx_mstate->__pyx_n_u_gz, __pyx_mstate->__pyx_n_u_dist_o_glas, __pyx_mstate->__pyx_n_u_inv_dog, __pyx_mstate->__pyx_n_u_mm_n1, __pyx_mstate->__pyx_n_u_mm_n2_0, __pyx_mstate->__pyx_n_u_mm_n3, __pyx_mstate->__pyx_n_u_mm_d0, __pyx_mstate->__pyx_n_u_k1, __pyx_mstate->__pyx_n_u_k2, __pyx_mstate->__pyx_n_u_k3, __pyx_mstate->__pyx_n_u_p1, __pyx_mstate->__pyx_n_u_p2, __pyx_mstate->__pyx_n_u_scx, __pyx_mstate->__pyx_n_u_she, __pyx_mstate->__pyx_n_u_mmlut_data, __pyx_mstate->__pyx_n_u_mmlut_origin, __pyx_mstate->__pyx_n_u_mmlut_nr, __pyx_mstate->__pyx_n_u_mmlut_nz, __pyx_mstate->__pyx_n_u_mmlut_rw, __pyx_mstate->__pyx_n_u_dot_cam, __pyx_mstate->__pyx_n_u_dist_cam_glas, __pyx_mstate->__pyx_n_u_dot_pos, __pyx_mstate->__pyx_n_u_dist_point_glas, __pyx_mstate->__pyx_n_u_s_cam, __pyx_mstate->__pyx_n_u_cc_x, __pyx_mstate->__pyx_n_u_cc_y, __pyx_mstate->__pyx_n_u_cc_z, __pyx_mstate->__pyx_n_u_s_pt, __pyx_mstate->__pyx_n_u_cp_x, __pyx_mstate->__pyx_n_u_cp_y, __pyx_mstate->__pyx_n_u_cp_z, __pyx_mstate->__pyx_n_u_ext_t_z0, __pyx_mstate->__pyx_n_u_s_d, __pyx_mstate->__pyx_n_u_ag_x, __pyx_mstate->__pyx_n_u_ag_y, __pyx_mstate->__pyx_n_u_ag_z, __pyx_mstate->__pyx_n_u_tmp_x, __pyx_mstate->__pyx_n_u_tmp_y, __pyx_mstate->__pyx_n_u_tmp_z, __pyx_mstate->__pyx_n_u_pos_t_0, __pyx_mstate->__pyx_n_u_pos_t_2, __pyx_mstate->__pyx_n_u_radial_shift, __pyx_mstate->__pyx_n_u_tx, __pyx_mstate->__pyx_n_u_ty, __pyx_mstate->__pyx_n_u_tz, __pyx_mstate->__pyx_n_u_sz, __pyx_mstate->__pyx_n_u_iz, __pyx_mstate->__pyx_n_u_R, __pyx_mstate->__pyx_n_u_sr, __pyx_mstate->__pyx_n_u_ir, __pyx_mstate->__pyx_n_u_v0, __pyx_mstate->__pyx_n_u_v3, __pyx_mstate->__pyx_n_u_mmf, __pyx_mstate->__pyx_n_u_X_t, __pyx_mstate->__pyx_n_u_s_z, __pyx_mstate->__pyx_n_u_bx, __pyx_mstate->__pyx_n_u_by, __pyx_mstate->__pyx_n_u_bz, __pyx_mstate->__pyx_n_u_s_x, __pyx_mstate->__pyx_n_u_dx, __pyx_mstate->__pyx_n_u_dy, __pyx_mstate->__pyx_n_u_dz, __pyx_mstate->__pyx_n_u_deno, __pyx_mstate->__pyx_n_u_x, __pyx_mstate->__pyx_n_u_y, __pyx_mstate->__pyx_n_u_r, __pyx_mstate->__pyx_n_u_x_dist, __pyx_mstate->__pyx_n_u_y_dist, __pyx_mstate->__pyx_n_u_r2, __pyx_mstate->__pyx_n_u_r4, __pyx_mstate->__pyx_n_u_radial_factor, __pyx_mstate->__pyx_n_u_xd, __pyx_mstate->__pyx_n_u_yd, __pyx_mstate->__pyx_n_u_sin_she, __pyx_mstate->__pyx_n_u_cos_she, __pyx_mstate->__pyx_n_u_x_pixel, __pyx_mstate->__pyx_n_u_y_pixel};
-    __pyx_mstate_global->__pyx_codeobj_tab[10] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_track_py, __pyx_mstate->__pyx_n_u_point_to_pixel_packed, __pyx_mstate->__pyx_kp_b_iso88591_5_AU_as_5_uAS_XQ_6_vV6_vQ_T_T_a, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[10])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[10] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_track_py, __pyx_mstate->__pyx_n_u_point_to_pixel_packed, __pyx_mstate->__pyx_kp_b_iso88591_5_AU_as_5_uAS_XQ_6_vV6_vQ_T_T_a, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[10])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {8, 0, 0, 9, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 228};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_pos, __pyx_mstate->__pyx_n_u_cal, __pyx_mstate->__pyx_n_u_imx, __pyx_mstate->__pyx_n_u_imy, __pyx_mstate->__pyx_n_u_pix_x, __pyx_mstate->__pyx_n_u_pix_y, __pyx_mstate->__pyx_n_u_chfield, __pyx_mstate->__pyx_n_u_mm, __pyx_mstate->__pyx_n_u_pc};
-    __pyx_mstate_global->__pyx_codeobj_tab[11] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_track_py, __pyx_mstate->__pyx_n_u_point_to_pixel_fast, __pyx_mstate->__pyx_kp_b_iso88591_5_t4r_d_E_RwdRTT, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[11])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[11] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_track_py, __pyx_mstate->__pyx_n_u_point_to_pixel_fast, __pyx_mstate->__pyx_kp_b_iso88591_5_t4r_d_E_RwdRTT, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[11])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {3, 0, 0, 3, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 234};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_prev_pos, __pyx_mstate->__pyx_n_u_curr_pos, __pyx_mstate->__pyx_n_u_c};
-    __pyx_mstate_global->__pyx_codeobj_tab[12] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_track_py, __pyx_mstate->__pyx_n_u_predict, __pyx_mstate->__pyx_kp_b_iso88591_r_r_V9Cy, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[12])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[12] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_track_py, __pyx_mstate->__pyx_n_u_predict, __pyx_mstate->__pyx_kp_b_iso88591_r_r_V9Cy, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[12])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {2, 0, 0, 2, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 241};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_prev_pos, __pyx_mstate->__pyx_n_u_curr_pos};
-    __pyx_mstate_global->__pyx_codeobj_tab[13] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_track_py, __pyx_mstate->__pyx_n_u_search_volume_center_moving, __pyx_mstate->__pyx_kp_b_iso88591_r_r_9Cy, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[13])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[13] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_track_py, __pyx_mstate->__pyx_n_u_search_volume_center_moving, __pyx_mstate->__pyx_kp_b_iso88591_r_r_9Cy, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[13])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {2, 0, 0, 2, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 248};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_pos, __pyx_mstate->__pyx_n_u_bounds};
-    __pyx_mstate_global->__pyx_codeobj_tab[14] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_track_py, __pyx_mstate->__pyx_n_u_pos3d_in_bounds, __pyx_mstate->__pyx_kp_b_iso88591_s_a_4q_hb_F_hb_F_hb_F, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[14])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[14] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_track_py, __pyx_mstate->__pyx_n_u_pos3d_in_bounds, __pyx_mstate->__pyx_kp_b_iso88591_s_a_4q_hb_F_hb_F_hb_F, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[14])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {3, 0, 0, 3, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 258};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_start, __pyx_mstate->__pyx_n_u_pred, __pyx_mstate->__pyx_n_u_cand};
-    __pyx_mstate_global->__pyx_codeobj_tab[15] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_track_py, __pyx_mstate->__pyx_n_u_angle_acc, __pyx_mstate->__pyx_kp_b_iso88591_Qc_5_Qc_5_Qc_5_Qc_5_Qc_5_Qc_5_t, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[15])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[15] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_track_py, __pyx_mstate->__pyx_n_u_angle_acc, __pyx_mstate->__pyx_kp_b_iso88591_Qc_5_Qc_5_Qc_5_Qc_5_Qc_5_Qc_5_t, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[15])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {9, 0, 0, 9, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 299};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_next_targets, __pyx_mstate->__pyx_n_u_num_targets, __pyx_mstate->__pyx_n_u_cent_x, __pyx_mstate->__pyx_n_u_cent_y, __pyx_mstate->__pyx_n_u_dl, __pyx_mstate->__pyx_n_u_dr, __pyx_mstate->__pyx_n_u_du, __pyx_mstate->__pyx_n_u_dd, __pyx_mstate->__pyx_n_u_cpar};
-    __pyx_mstate_global->__pyx_codeobj_tab[16] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_track_py, __pyx_mstate->__pyx_n_u_candsearch_in_pix, __pyx_mstate->__pyx_kp_b_iso88591_Ba_1_1_1_1_uBa_q_uBd_t1_uBa_q_u, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[16])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[16] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_track_py, __pyx_mstate->__pyx_n_u_candsearch_in_pix, __pyx_mstate->__pyx_kp_b_iso88591_Ba_1_1_1_1_uBa_q_uBd_t1_uBa_q_u, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[16])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {10, 0, 0, 10, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 380};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_next_targets, __pyx_mstate->__pyx_n_u_num_targets, __pyx_mstate->__pyx_n_u_cent_x, __pyx_mstate->__pyx_n_u_cent_y, __pyx_mstate->__pyx_n_u_dl, __pyx_mstate->__pyx_n_u_dr, __pyx_mstate->__pyx_n_u_du, __pyx_mstate->__pyx_n_u_dd, __pyx_mstate->__pyx_n_u_p, __pyx_mstate->__pyx_n_u_cpar};
-    __pyx_mstate_global->__pyx_codeobj_tab[17] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_track_py, __pyx_mstate->__pyx_n_u_candsearch_in_pix_rest, __pyx_mstate->__pyx_kp_b_iso88591_1_1_1_1_uBa_q_uBd_t1_uBa_q_uBd, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[17])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[17] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_track_py, __pyx_mstate->__pyx_n_u_candsearch_in_pix_rest, __pyx_mstate->__pyx_kp_b_iso88591_1_1_1_1_uBa_q_uBd_t1_uBa_q_uBd, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[17])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {3, 0, 0, 3, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 440};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_arr, __pyx_mstate->__pyx_n_u_n, __pyx_mstate->__pyx_n_u_num_cams};
-    __pyx_mstate_global->__pyx_codeobj_tab[18] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_track_py, __pyx_mstate->__pyx_n_u_reset_foundpix_array, __pyx_mstate->__pyx_kp_b_iso88591_U_1_1BauA_1BauA_E_aq_q_2Qe1, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[18])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[18] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_track_py, __pyx_mstate->__pyx_n_u_reset_foundpix_array, __pyx_mstate->__pyx_kp_b_iso88591_U_1_1BauA_1BauA_E_aq_q_2Qe1, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[18])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {4, 0, 0, 4, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 453};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_dest, __pyx_mstate->__pyx_n_u_src, __pyx_mstate->__pyx_n_u_n, __pyx_mstate->__pyx_n_u_num_cams};
-    __pyx_mstate_global->__pyx_codeobj_tab[19] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_track_py, __pyx_mstate->__pyx_n_u_copy_foundpix_array, __pyx_mstate->__pyx_kp_b_iso88591_U_1_ARq_S_1A_ARq_S_1A_E_aq_1Bau, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[19])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[19] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_track_py, __pyx_mstate->__pyx_n_u_copy_foundpix_array, __pyx_mstate->__pyx_kp_b_iso88591_U_1_ARq_S_1A_ARq_S_1A_E_aq_1Bau, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[19])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 1, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 466};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_num_cams};
-    __pyx_mstate_global->__pyx_codeobj_tab[20] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_track_py, __pyx_mstate->__pyx_n_u_make_foundpix, __pyx_mstate->__pyx_kp_b_iso88591_1Ks_5, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[20])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[20] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_track_py, __pyx_mstate->__pyx_n_u_make_foundpix, __pyx_mstate->__pyx_kp_b_iso88591_1Ks_5, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[20])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {2, 0, 0, 3, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 471};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_n, __pyx_mstate->__pyx_n_u_num_cams, __pyx_mstate->__pyx_n_u__3};
-    __pyx_mstate_global->__pyx_codeobj_tab[21] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_track_py, __pyx_mstate->__pyx_n_u_make_foundpix_array, __pyx_mstate->__pyx_kp_b_iso88591_1N_T_e1A, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[21])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[21] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_track_py, __pyx_mstate->__pyx_n_u_make_foundpix_array, __pyx_mstate->__pyx_kp_b_iso88591_1N_T_e1A, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[21])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {2, 0, 0, 2, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 476};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_items, __pyx_mstate->__pyx_n_u_num_cams};
-    __pyx_mstate_global->__pyx_codeobj_tab[22] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_track_py, __pyx_mstate->__pyx_n_u_sort_candidates_by_freq, __pyx_mstate->__pyx_kp_b_iso88591_IRq_U_1_ar_E_aq_U_1_7_U_2Rr_2Qa, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[22])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[22] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_track_py, __pyx_mstate->__pyx_n_u_sort_candidates_by_freq, __pyx_mstate->__pyx_kp_b_iso88591_IRq_U_1_ar_E_aq_U_1_7_U_2Rr_2Qa, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[22])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {3, 0, 0, 3, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 526};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_n, __pyx_mstate->__pyx_n_u_a, __pyx_mstate->__pyx_n_u_b};
-    __pyx_mstate_global->__pyx_codeobj_tab[23] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_track_py, __pyx_mstate->__pyx_n_u_sort, __pyx_mstate->__pyx_kp_b_iso88591_1_q_E_ar_1_q_Baq_A_aq_E_2Rt1AQ, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[23])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[23] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_track_py, __pyx_mstate->__pyx_n_u_sort, __pyx_mstate->__pyx_kp_b_iso88591_1_q_E_ar_1_q_Baq_A_aq_E_2Rt1AQ, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[23])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {3, 0, 0, 3, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 542};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_point, __pyx_mstate->__pyx_n_u_cal, __pyx_mstate->__pyx_n_u_cpar};
-    __pyx_mstate_global->__pyx_codeobj_tab[24] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_track_py, __pyx_mstate->__pyx_n_u_point_to_pixel, __pyx_mstate->__pyx_kp_b_iso88591_q_uD_d_HD_JdRS, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[24])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[24] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_track_py, __pyx_mstate->__pyx_n_u_point_to_pixel, __pyx_mstate->__pyx_kp_b_iso88591_q_uD_d_HD_JdRS, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[24])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {7, 0, 0, 7, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 549};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_point, __pyx_mstate->__pyx_n_u_tpar, __pyx_mstate->__pyx_n_u_cpar, __pyx_mstate->__pyx_n_u_calib, __pyx_mstate->__pyx_n_u_packed_cals, __pyx_mstate->__pyx_n_u_pix_info, __pyx_mstate->__pyx_n_u_fast_tuples};
-    __pyx_mstate_global->__pyx_codeobj_tab[25] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_track_py, __pyx_mstate->__pyx_n_u_searchquader, __pyx_mstate->__pyx_kp_b_iso88591_8H_t1_E_at5_U_1_7_it9D_7_it9D_R, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[25])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[25] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_track_py, __pyx_mstate->__pyx_n_u_searchquader, __pyx_mstate->__pyx_kp_b_iso88591_8H_t1_E_at5_U_1_7_it9D_7_it9D_R, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[25])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {14, 0, 0, 14, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 616};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_targets, __pyx_mstate->__pyx_n_u_num_targets, __pyx_mstate->__pyx_n_u_cam, __pyx_mstate->__pyx_n_u_cent_x, __pyx_mstate->__pyx_n_u_cent_y, __pyx_mstate->__pyx_n_u_dl, __pyx_mstate->__pyx_n_u_dr, __pyx_mstate->__pyx_n_u_du, __pyx_mstate->__pyx_n_u_dd, __pyx_mstate->__pyx_n_u_reg, __pyx_mstate->__pyx_n_u_cpar, __pyx_mstate->__pyx_n_u_targ_x, __pyx_mstate->__pyx_n_u_targ_y, __pyx_mstate->__pyx_n_u_targ_tnr};
-    __pyx_mstate_global->__pyx_codeobj_tab[26] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_track_py, __pyx_mstate->__pyx_n_u_register_closest_neighbs, __pyx_mstate->__pyx_kp_b_iso88591_43C1_D_A_Q_D_A_F_fA_T_Q_Qa_9AV3, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[26])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[26] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_track_py, __pyx_mstate->__pyx_n_u_register_closest_neighbs, __pyx_mstate->__pyx_kp_b_iso88591_43C1_D_A_Q_D_A_F_fA_T_Q_Qa_9AV3, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[26])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {7, 0, 0, 7, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 636};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_center, __pyx_mstate->__pyx_n_u_center_proj, __pyx_mstate->__pyx_n_u_frm, __pyx_mstate->__pyx_n_u_run, __pyx_mstate->__pyx_n_u_packed_cals, __pyx_mstate->__pyx_n_u_pix_info, __pyx_mstate->__pyx_n_u_fast_tuples};
-    __pyx_mstate_global->__pyx_codeobj_tab[27] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_track_py, __pyx_mstate->__pyx_n_u_sorted_candidates_in_volume, __pyx_mstate->__pyx_kp_b_iso88591_Q_s_6_wgXQ_z_wj_A_5_hc_a_6_5_6, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[27])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[27] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_track_py, __pyx_mstate->__pyx_n_u_sorted_candidates_in_volume, __pyx_mstate->__pyx_kp_b_iso88591_Q_s_6_wgXQ_z_wj_A_5_hc_a_6_5_6, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[27])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {8, 0, 0, 8, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 676};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_pos, __pyx_mstate->__pyx_n_u_targ_pos, __pyx_mstate->__pyx_n_u_cand_inds, __pyx_mstate->__pyx_n_u_frm, __pyx_mstate->__pyx_n_u_run, __pyx_mstate->__pyx_n_u_fast_cals_2, __pyx_mstate->__pyx_n_u_fast_mmluts_2, __pyx_mstate->__pyx_n_u_pix_info};
-    __pyx_mstate_global->__pyx_codeobj_tab[28] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_track_py, __pyx_mstate->__pyx_n_u_assess_new_position, __pyx_mstate->__pyx_kp_b_iso88591_66Fa_1_uAQ_Qe81D_a_CuF_U_z_3j_A, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[28])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[28] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_track_py, __pyx_mstate->__pyx_n_u_assess_new_position, __pyx_mstate->__pyx_kp_b_iso88591_66Fa_1_uAQ_Qe81D_a_CuF_U_z_3j_A, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[28])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {3, 0, 0, 3, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 737};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_frm, __pyx_mstate->__pyx_n_u_pos, __pyx_mstate->__pyx_n_u_cand_inds};
-    __pyx_mstate_global->__pyx_codeobj_tab[29] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_track_py, __pyx_mstate->__pyx_n_u_add_particle, __pyx_mstate->__pyx_kp_b_iso88591_1_3j_q_Kq_uAS_AWA_9AT_S_1D_xq_A, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[29])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[29] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_track_py, __pyx_mstate->__pyx_n_u_add_particle, __pyx_mstate->__pyx_kp_b_iso88591_1_3j_q_Kq_uAS_AWA_9AT_S_1D_xq_A, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[29])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 1, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 756};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_run};
-    __pyx_mstate_global->__pyx_codeobj_tab[30] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_track_py, __pyx_mstate->__pyx_n_u_track_forward_start, __pyx_mstate->__pyx_kp_b_iso88591_Qc_HG2_1_3_3ha_s, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[30])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[30] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_track_py, __pyx_mstate->__pyx_n_u_track_forward_start, __pyx_mstate->__pyx_kp_b_iso88591_Qc_HG2_1_3_3ha_s, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[30])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 7, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 764};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_frm, __pyx_mstate->__pyx_n_u_i, __pyx_mstate->__pyx_n_u_p, __pyx_mstate->__pyx_n_u_c, __pyx_mstate->__pyx_n_u_cam, __pyx_mstate->__pyx_n_u_tnr_arr, __pyx_mstate->__pyx_n_u_j};
-    __pyx_mstate_global->__pyx_codeobj_tab[31] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_track_py, __pyx_mstate->__pyx_n_u_sync_soa_to_aos, __pyx_mstate->__pyx_kp_b_iso88591_U_3a_Cz_6_G1A_AS_1_AS_1_AS_1_C, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[31])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[31] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_track_py, __pyx_mstate->__pyx_n_u_sync_soa_to_aos, __pyx_mstate->__pyx_kp_b_iso88591_U_3a_Cz_6_G1A_AS_1_AS_1_AS_1_C, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[31])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {2, 0, 0, 2, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 783};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_run_info, __pyx_mstate->__pyx_n_u_step_2};
-    __pyx_mstate_global->__pyx_codeobj_tab[32] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_track_py, __pyx_mstate->__pyx_n_u_trackcorr_c_loop, __pyx_mstate->__pyx_kp_b_iso88591_Q_81_81_81_D_hd_vRuKvRq_Bd_d_D, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[32])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[32] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_track_py, __pyx_mstate->__pyx_n_u_trackcorr_c_loop, __pyx_mstate->__pyx_kp_b_iso88591_Q_81_81_81_D_hd_vRuKvRq_Bd_d_D, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[32])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {2, 0, 0, 2, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 870};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_run_info, __pyx_mstate->__pyx_n_u_step_2};
-    __pyx_mstate_global->__pyx_codeobj_tab[33] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_track_py, __pyx_mstate->__pyx_n_u_trackcorr_c_finish, __pyx_mstate->__pyx_kp_b_iso88591_b_HG2Q_XXRq_auA_1F_r_q_Cxq_C_aq, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[33])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[33] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_track_py, __pyx_mstate->__pyx_n_u_trackcorr_c_finish, __pyx_mstate->__pyx_kp_b_iso88591_b_HG2Q_XXRq_auA_1F_r_q_Cxq_C_aq, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[33])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 1, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 882};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_run_info};
-    __pyx_mstate_global->__pyx_codeobj_tab[34] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_track_py, __pyx_mstate->__pyx_n_u_trackback_c, __pyx_mstate->__pyx_kp_b_iso88591_Q_ha_81_81_81_D_hd_vRuKvRq_Bd_d, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[34])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[34] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_track_py, __pyx_mstate->__pyx_n_u_trackback_c, __pyx_mstate->__pyx_kp_b_iso88591_Q_ha_81_81_81_D_hd_vRuKvRq_Bd_d, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[34])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {0, 0, 0, 0, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 979};
     PyObject* const varnames[] = {0};
-    __pyx_mstate_global->__pyx_codeobj_tab[35] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_track_py, __pyx_mstate->__pyx_n_u_is_compiled, __pyx_mstate->__pyx_kp_b_iso88591_Q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[35])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[35] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_track_py, __pyx_mstate->__pyx_n_u_is_compiled, __pyx_mstate->__pyx_kp_b_iso88591_Q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[35])) goto bad;
   }
   Py_DECREF(tuple_dedup_map);
   return 0;

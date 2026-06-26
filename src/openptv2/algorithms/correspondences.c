@@ -3,12 +3,12 @@
 /* BEGIN: Cython Metadata
 {
     "distutils": {
-        "name": "algorithms.correspondences",
+        "name": "openptv2.algorithms.correspondences",
         "sources": [
-            "algorithms/correspondences.py"
+            "src/openptv2/algorithms/correspondences.py"
         ]
     },
-    "module_name": "algorithms.correspondences"
+    "module_name": "openptv2.algorithms.correspondences"
 }
 END: Cython Metadata */
 
@@ -1126,8 +1126,8 @@ static int __Pyx_init_co_variables(void) {
   #endif
 #endif
 
-#define __PYX_HAVE__algorithms__correspondences
-#define __PYX_HAVE_API__algorithms__correspondences
+#define __PYX_HAVE__openptv2__algorithms__correspondences
+#define __PYX_HAVE_API__openptv2__algorithms__correspondences
 /* Early includes */
 #ifdef _OPENMP
 #include <omp.h>
@@ -1345,7 +1345,7 @@ static const char *__pyx_filename;
 /* #### Code section: filename_table ### */
 
 static const char* const __pyx_f[] = {
-  "algorithms/correspondences.py",
+  "src/openptv2/algorithms/correspondences.py",
 };
 /* #### Code section: utility_code_proto_before_types ### */
 /* Atomics.proto (used by UnpackUnboundCMethod) */
@@ -2451,43 +2451,43 @@ static int __Pyx_State_RemoveModule(void*);
 
 /* Module declarations from "cython" */
 
-/* Module declarations from "algorithms.correspondences" */
-static PyObject *__pyx_f_10algorithms_15correspondences_quicksort_target_y(PyObject *, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_15correspondences_quicksort_coord2d_x(PyObject *, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_15correspondences_safely_allocate_adjacency_lists(PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_15correspondences_match_pairs(PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_15correspondences_four_camera_matching(PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_15correspondences_three_camera_matching(PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_15correspondences_consistent_pair_matching(PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_15correspondences_take_best_candidates(PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_15correspondences_correct_frame(PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_15correspondences_correspondences(PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+/* Module declarations from "openptv2.algorithms.correspondences" */
+static PyObject *__pyx_f_8openptv2_10algorithms_15correspondences_quicksort_target_y(PyObject *, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_15correspondences_quicksort_coord2d_x(PyObject *, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_15correspondences_safely_allocate_adjacency_lists(PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_15correspondences_match_pairs(PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_15correspondences_four_camera_matching(PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_15correspondences_three_camera_matching(PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_15correspondences_consistent_pair_matching(PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_15correspondences_take_best_candidates(PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_15correspondences_correct_frame(PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_15correspondences_correspondences(PyObject *, PyObject *, PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
 /* #### Code section: typeinfo ### */
 /* #### Code section: before_global_var ### */
-#define __Pyx_MODULE_NAME "algorithms.correspondences"
-extern int __pyx_module_is_main_algorithms__correspondences;
-int __pyx_module_is_main_algorithms__correspondences = 0;
+#define __Pyx_MODULE_NAME "openptv2.algorithms.correspondences"
+extern int __pyx_module_is_main_openptv2__algorithms__correspondences;
+int __pyx_module_is_main_openptv2__algorithms__correspondences = 0;
 
-/* Implementation of "algorithms.correspondences" */
+/* Implementation of "openptv2.algorithms.correspondences" */
 /* #### Code section: global_var ### */
 /* #### Code section: string_decls ### */
 static const char __pyx_k_Multi_camera_correspondence_matc[] = "Multi-camera correspondence matching.\n\nTranslation of lib/src/correspondences.c and lib/include/correspondences.h.\n\nEstablishes correspondences between detected targets across 2-4 cameras\nusing epipolar geometry and clique finding.\n";
 /* #### Code section: decls ### */
-static PyObject *__pyx_pf_10algorithms_15correspondences__default_ntupel_p(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
-static PyObject *__pyx_pf_10algorithms_15correspondences_2_default_correspond_p2(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
-static PyObject *__pyx_pf_10algorithms_15correspondences_4_default_correspond_corr(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
-static PyObject *__pyx_pf_10algorithms_15correspondences_6_default_correspond_dist(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
-static PyObject *__pyx_pf_10algorithms_15correspondences_8quicksort_target_y(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_pix); /* proto */
-static PyObject *__pyx_pf_10algorithms_15correspondences_10quicksort_coord2d_x(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_crd); /* proto */
-static PyObject *__pyx_pf_10algorithms_15correspondences_12safely_allocate_adjacency_lists(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_num_cams, PyObject *__pyx_v_target_counts); /* proto */
-static PyObject *__pyx_pf_10algorithms_15correspondences_14match_pairs(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_lists, PyObject *__pyx_v_corrected, PyObject *__pyx_v_frm, PyObject *__pyx_v_vpar, PyObject *__pyx_v_cpar, PyObject *__pyx_v_calib); /* proto */
-static PyObject *__pyx_pf_10algorithms_15correspondences_16four_camera_matching(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_lists, PyObject *__pyx_v_base_target_count, PyObject *__pyx_v_accept_corr, PyObject *__pyx_v_scratch, PyObject *__pyx_v_scratch_size); /* proto */
-static PyObject *__pyx_pf_10algorithms_15correspondences_18three_camera_matching(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_lists, PyObject *__pyx_v_num_cams, PyObject *__pyx_v_target_counts, PyObject *__pyx_v_accept_corr, PyObject *__pyx_v_scratch, PyObject *__pyx_v_scratch_size, PyObject *__pyx_v_tusage); /* proto */
-static PyObject *__pyx_pf_10algorithms_15correspondences_20consistent_pair_matching(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_lists, PyObject *__pyx_v_num_cams, PyObject *__pyx_v_target_counts, PyObject *__pyx_v_accept_corr, PyObject *__pyx_v_scratch, PyObject *__pyx_v_scratch_size, PyObject *__pyx_v_tusage); /* proto */
-static PyObject *__pyx_pf_10algorithms_15correspondences_22take_best_candidates(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_src, PyObject *__pyx_v_dst, PyObject *__pyx_v_num_cams, PyObject *__pyx_v_num_cands, PyObject *__pyx_v_tusage); /* proto */
-static PyObject *__pyx_pf_10algorithms_15correspondences_24correct_frame(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_frm, PyObject *__pyx_v_calib, PyObject *__pyx_v_cpar, PyObject *__pyx_v_tol); /* proto */
-static PyObject *__pyx_pf_10algorithms_15correspondences_26correspondences(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_frm, PyObject *__pyx_v_corrected, PyObject *__pyx_v_vpar, PyObject *__pyx_v_cpar, PyObject *__pyx_v_calib); /* proto */
-static PyObject *__pyx_pf_10algorithms_15correspondences_28is_compiled(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_15correspondences__default_ntupel_p(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_15correspondences_2_default_correspond_p2(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_15correspondences_4_default_correspond_corr(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_15correspondences_6_default_correspond_dist(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_15correspondences_8quicksort_target_y(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_pix); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_15correspondences_10quicksort_coord2d_x(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_crd); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_15correspondences_12safely_allocate_adjacency_lists(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_num_cams, PyObject *__pyx_v_target_counts); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_15correspondences_14match_pairs(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_lists, PyObject *__pyx_v_corrected, PyObject *__pyx_v_frm, PyObject *__pyx_v_vpar, PyObject *__pyx_v_cpar, PyObject *__pyx_v_calib); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_15correspondences_16four_camera_matching(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_lists, PyObject *__pyx_v_base_target_count, PyObject *__pyx_v_accept_corr, PyObject *__pyx_v_scratch, PyObject *__pyx_v_scratch_size); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_15correspondences_18three_camera_matching(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_lists, PyObject *__pyx_v_num_cams, PyObject *__pyx_v_target_counts, PyObject *__pyx_v_accept_corr, PyObject *__pyx_v_scratch, PyObject *__pyx_v_scratch_size, PyObject *__pyx_v_tusage); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_15correspondences_20consistent_pair_matching(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_lists, PyObject *__pyx_v_num_cams, PyObject *__pyx_v_target_counts, PyObject *__pyx_v_accept_corr, PyObject *__pyx_v_scratch, PyObject *__pyx_v_scratch_size, PyObject *__pyx_v_tusage); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_15correspondences_22take_best_candidates(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_src, PyObject *__pyx_v_dst, PyObject *__pyx_v_num_cams, PyObject *__pyx_v_num_cands, PyObject *__pyx_v_tusage); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_15correspondences_24correct_frame(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_frm, PyObject *__pyx_v_calib, PyObject *__pyx_v_cpar, PyObject *__pyx_v_tol); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_15correspondences_26correspondences(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_frm, PyObject *__pyx_v_corrected, PyObject *__pyx_v_vpar, PyObject *__pyx_v_cpar, PyObject *__pyx_v_calib); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_15correspondences_28is_compiled(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
 /* #### Code section: late_includes ### */
 /* #### Code section: module_state ### */
 /* SmallCodeConfig */
@@ -2558,11 +2558,11 @@ static __pyx_mstatetype * const __pyx_mstate_global = &__pyx_mstate_global_stati
 #define __pyx_kp_u_A_correspondence_match_across_mu __pyx_string_tab[1]
 #define __pyx_kp_u_Adjacency_list_entry_for_candida __pyx_string_tab[2]
 #define __pyx_kp_u__2 __pyx_string_tab[3]
-#define __pyx_kp_u_algorithms_correspondences_py __pyx_string_tab[4]
-#define __pyx_kp_u_algorithms_epi __pyx_string_tab[5]
-#define __pyx_kp_u_algorithms_trafo __pyx_string_tab[6]
-#define __pyx_kp_u_list_int __pyx_string_tab[7]
-#define __pyx_kp_u_np_ndarray __pyx_string_tab[8]
+#define __pyx_kp_u_list_int __pyx_string_tab[4]
+#define __pyx_kp_u_np_ndarray __pyx_string_tab[5]
+#define __pyx_kp_u_openptv2_algorithms_epi __pyx_string_tab[6]
+#define __pyx_kp_u_openptv2_algorithms_trafo __pyx_string_tab[7]
+#define __pyx_kp_u_src_openptv2_algorithms_correspo __pyx_string_tab[8]
 #define __pyx_n_u_Candidate __pyx_string_tab[9]
 #define __pyx_n_u_Coord2d __pyx_string_tab[10]
 #define __pyx_n_u_Correspond __pyx_string_tab[11]
@@ -2573,70 +2573,70 @@ static __pyx_mstatetype * const __pyx_mstate_global = &__pyx_mstate_global_stati
 #define __pyx_n_u_Pyx_PyDict_NextRef __pyx_string_tab[16]
 #define __pyx_n_u_accept_corr __pyx_string_tab[17]
 #define __pyx_n_u_added_par __pyx_string_tab[18]
-#define __pyx_n_u_algorithms_correspondences __pyx_string_tab[19]
-#define __pyx_n_u_allCam_flag __pyx_string_tab[20]
-#define __pyx_n_u_annotations __pyx_string_tab[21]
-#define __pyx_n_u_asyncio_coroutines __pyx_string_tab[22]
-#define __pyx_n_u_attrgetter __pyx_string_tab[23]
-#define __pyx_n_u_base_target_count __pyx_string_tab[24]
-#define __pyx_n_u_bool __pyx_string_tab[25]
-#define __pyx_n_u_calib __pyx_string_tab[26]
-#define __pyx_n_u_class_getitem __pyx_string_tab[27]
-#define __pyx_n_u_cline_in_traceback __pyx_string_tab[28]
-#define __pyx_n_u_consistent_pair_matching __pyx_string_tab[29]
-#define __pyx_n_u_corr __pyx_string_tab[30]
-#define __pyx_n_u_correct_frame __pyx_string_tab[31]
-#define __pyx_n_u_corrected __pyx_string_tab[32]
-#define __pyx_n_u_correspondences __pyx_string_tab[33]
-#define __pyx_n_u_corrmin __pyx_string_tab[34]
-#define __pyx_n_u_cpar __pyx_string_tab[35]
-#define __pyx_n_u_crd __pyx_string_tab[36]
-#define __pyx_n_u_dataclass __pyx_string_tab[37]
-#define __pyx_n_u_dataclasses __pyx_string_tab[38]
-#define __pyx_n_u_default_correspond_corr __pyx_string_tab[39]
-#define __pyx_n_u_default_correspond_dist __pyx_string_tab[40]
-#define __pyx_n_u_default_correspond_p2 __pyx_string_tab[41]
-#define __pyx_n_u_default_factory __pyx_string_tab[42]
-#define __pyx_n_u_default_ntupel_p __pyx_string_tab[43]
-#define __pyx_n_u_dist __pyx_string_tab[44]
-#define __pyx_n_u_dist_to_flat __pyx_string_tab[45]
-#define __pyx_n_u_doc __pyx_string_tab[46]
-#define __pyx_n_u_dst __pyx_string_tab[47]
-#define __pyx_n_u_dtype __pyx_string_tab[48]
-#define __pyx_n_u_epi __pyx_string_tab[49]
-#define __pyx_n_u_epi_mm __pyx_string_tab[50]
-#define __pyx_n_u_field __pyx_string_tab[51]
-#define __pyx_n_u_find_candidate __pyx_string_tab[52]
-#define __pyx_n_u_float __pyx_string_tab[53]
-#define __pyx_n_u_float64 __pyx_string_tab[54]
-#define __pyx_n_u_four_camera_matching __pyx_string_tab[55]
-#define __pyx_n_u_frm __pyx_string_tab[56]
-#define __pyx_n_u_func __pyx_string_tab[57]
-#define __pyx_n_u_int __pyx_string_tab[58]
-#define __pyx_n_u_int32 __pyx_string_tab[59]
-#define __pyx_n_u_int_par __pyx_string_tab[60]
-#define __pyx_n_u_is_compiled __pyx_string_tab[61]
-#define __pyx_n_u_is_coroutine __pyx_string_tab[62]
-#define __pyx_n_u_items __pyx_string_tab[63]
-#define __pyx_n_u_k1 __pyx_string_tab[64]
-#define __pyx_n_u_k2 __pyx_string_tab[65]
-#define __pyx_n_u_k3 __pyx_string_tab[66]
-#define __pyx_n_u_key __pyx_string_tab[67]
-#define __pyx_n_u_lists __pyx_string_tab[68]
-#define __pyx_n_u_main __pyx_string_tab[69]
-#define __pyx_n_u_match_pairs __pyx_string_tab[70]
-#define __pyx_n_u_metaclass __pyx_string_tab[71]
-#define __pyx_n_u_mm __pyx_string_tab[72]
-#define __pyx_n_u_module __pyx_string_tab[73]
-#define __pyx_n_u_n __pyx_string_tab[74]
-#define __pyx_n_u_name __pyx_string_tab[75]
-#define __pyx_n_u_np __pyx_string_tab[76]
-#define __pyx_n_u_num_cams __pyx_string_tab[77]
-#define __pyx_n_u_num_cands __pyx_string_tab[78]
-#define __pyx_n_u_num_targets __pyx_string_tab[79]
-#define __pyx_n_u_numpy __pyx_string_tab[80]
-#define __pyx_n_u_nx __pyx_string_tab[81]
-#define __pyx_n_u_ny __pyx_string_tab[82]
+#define __pyx_n_u_allCam_flag __pyx_string_tab[19]
+#define __pyx_n_u_annotations __pyx_string_tab[20]
+#define __pyx_n_u_asyncio_coroutines __pyx_string_tab[21]
+#define __pyx_n_u_attrgetter __pyx_string_tab[22]
+#define __pyx_n_u_base_target_count __pyx_string_tab[23]
+#define __pyx_n_u_bool __pyx_string_tab[24]
+#define __pyx_n_u_calib __pyx_string_tab[25]
+#define __pyx_n_u_class_getitem __pyx_string_tab[26]
+#define __pyx_n_u_cline_in_traceback __pyx_string_tab[27]
+#define __pyx_n_u_consistent_pair_matching __pyx_string_tab[28]
+#define __pyx_n_u_corr __pyx_string_tab[29]
+#define __pyx_n_u_correct_frame __pyx_string_tab[30]
+#define __pyx_n_u_corrected __pyx_string_tab[31]
+#define __pyx_n_u_correspondences __pyx_string_tab[32]
+#define __pyx_n_u_corrmin __pyx_string_tab[33]
+#define __pyx_n_u_cpar __pyx_string_tab[34]
+#define __pyx_n_u_crd __pyx_string_tab[35]
+#define __pyx_n_u_dataclass __pyx_string_tab[36]
+#define __pyx_n_u_dataclasses __pyx_string_tab[37]
+#define __pyx_n_u_default_correspond_corr __pyx_string_tab[38]
+#define __pyx_n_u_default_correspond_dist __pyx_string_tab[39]
+#define __pyx_n_u_default_correspond_p2 __pyx_string_tab[40]
+#define __pyx_n_u_default_factory __pyx_string_tab[41]
+#define __pyx_n_u_default_ntupel_p __pyx_string_tab[42]
+#define __pyx_n_u_dist __pyx_string_tab[43]
+#define __pyx_n_u_dist_to_flat __pyx_string_tab[44]
+#define __pyx_n_u_doc __pyx_string_tab[45]
+#define __pyx_n_u_dst __pyx_string_tab[46]
+#define __pyx_n_u_dtype __pyx_string_tab[47]
+#define __pyx_n_u_epi __pyx_string_tab[48]
+#define __pyx_n_u_epi_mm __pyx_string_tab[49]
+#define __pyx_n_u_field __pyx_string_tab[50]
+#define __pyx_n_u_find_candidate __pyx_string_tab[51]
+#define __pyx_n_u_float __pyx_string_tab[52]
+#define __pyx_n_u_float64 __pyx_string_tab[53]
+#define __pyx_n_u_four_camera_matching __pyx_string_tab[54]
+#define __pyx_n_u_frm __pyx_string_tab[55]
+#define __pyx_n_u_func __pyx_string_tab[56]
+#define __pyx_n_u_int __pyx_string_tab[57]
+#define __pyx_n_u_int32 __pyx_string_tab[58]
+#define __pyx_n_u_int_par __pyx_string_tab[59]
+#define __pyx_n_u_is_compiled __pyx_string_tab[60]
+#define __pyx_n_u_is_coroutine __pyx_string_tab[61]
+#define __pyx_n_u_items __pyx_string_tab[62]
+#define __pyx_n_u_k1 __pyx_string_tab[63]
+#define __pyx_n_u_k2 __pyx_string_tab[64]
+#define __pyx_n_u_k3 __pyx_string_tab[65]
+#define __pyx_n_u_key __pyx_string_tab[66]
+#define __pyx_n_u_lists __pyx_string_tab[67]
+#define __pyx_n_u_main __pyx_string_tab[68]
+#define __pyx_n_u_match_pairs __pyx_string_tab[69]
+#define __pyx_n_u_metaclass __pyx_string_tab[70]
+#define __pyx_n_u_mm __pyx_string_tab[71]
+#define __pyx_n_u_module __pyx_string_tab[72]
+#define __pyx_n_u_n __pyx_string_tab[73]
+#define __pyx_n_u_name __pyx_string_tab[74]
+#define __pyx_n_u_np __pyx_string_tab[75]
+#define __pyx_n_u_num_cams __pyx_string_tab[76]
+#define __pyx_n_u_num_cands __pyx_string_tab[77]
+#define __pyx_n_u_num_targets __pyx_string_tab[78]
+#define __pyx_n_u_numpy __pyx_string_tab[79]
+#define __pyx_n_u_nx __pyx_string_tab[80]
+#define __pyx_n_u_ny __pyx_string_tab[81]
+#define __pyx_n_u_openptv2_algorithms_corresponden __pyx_string_tab[82]
 #define __pyx_n_u_operator __pyx_string_tab[83]
 #define __pyx_n_u_p __pyx_string_tab[84]
 #define __pyx_n_u_p1 __pyx_string_tab[85]
@@ -2755,7 +2755,7 @@ return 0;
 #endif
 /* #### Code section: module_code ### */
 
-/* "algorithms/correspondences.py":20
+/* "openptv2/algorithms/correspondences.py":20
  * 
  * 
  * def _default_ntupel_p():             # <<<<<<<<<<<<<<
@@ -2764,22 +2764,22 @@ return 0;
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_15correspondences_1_default_ntupel_p(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static PyMethodDef __pyx_mdef_10algorithms_15correspondences_1_default_ntupel_p = {"_default_ntupel_p", (PyCFunction)__pyx_pw_10algorithms_15correspondences_1_default_ntupel_p, METH_NOARGS, 0};
-static PyObject *__pyx_pw_10algorithms_15correspondences_1_default_ntupel_p(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_8openptv2_10algorithms_15correspondences_1_default_ntupel_p(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_15correspondences_1_default_ntupel_p = {"_default_ntupel_p", (PyCFunction)__pyx_pw_8openptv2_10algorithms_15correspondences_1_default_ntupel_p, METH_NOARGS, 0};
+static PyObject *__pyx_pw_8openptv2_10algorithms_15correspondences_1_default_ntupel_p(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused) {
   CYTHON_UNUSED PyObject *const *__pyx_kwvalues;
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("_default_ntupel_p (wrapper)", 0);
   __pyx_kwvalues = __Pyx_KwValues_VARARGS(__pyx_args, __pyx_nargs);
-  __pyx_r = __pyx_pf_10algorithms_15correspondences__default_ntupel_p(__pyx_self);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_15correspondences__default_ntupel_p(__pyx_self);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_15correspondences__default_ntupel_p(CYTHON_UNUSED PyObject *__pyx_self) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_15correspondences__default_ntupel_p(CYTHON_UNUSED PyObject *__pyx_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -2788,7 +2788,7 @@ static PyObject *__pyx_pf_10algorithms_15correspondences__default_ntupel_p(CYTHO
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("_default_ntupel_p", 0);
 
-  /* "algorithms/correspondences.py":21
+  /* "openptv2/algorithms/correspondences.py":21
  * 
  * def _default_ntupel_p():
  *     return [-1, -1, -1, -1]             # <<<<<<<<<<<<<<
@@ -2814,7 +2814,7 @@ static PyObject *__pyx_pf_10algorithms_15correspondences__default_ntupel_p(CYTHO
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/correspondences.py":20
+  /* "openptv2/algorithms/correspondences.py":20
  * 
  * 
  * def _default_ntupel_p():             # <<<<<<<<<<<<<<
@@ -2825,7 +2825,7 @@ static PyObject *__pyx_pf_10algorithms_15correspondences__default_ntupel_p(CYTHO
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.correspondences._default_ntupel_p", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.correspondences._default_ntupel_p", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -2833,7 +2833,7 @@ static PyObject *__pyx_pf_10algorithms_15correspondences__default_ntupel_p(CYTHO
   return __pyx_r;
 }
 
-/* "algorithms/correspondences.py":24
+/* "openptv2/algorithms/correspondences.py":24
  * 
  * 
  * def _default_correspond_p2():             # <<<<<<<<<<<<<<
@@ -2842,22 +2842,22 @@ static PyObject *__pyx_pf_10algorithms_15correspondences__default_ntupel_p(CYTHO
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_15correspondences_3_default_correspond_p2(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static PyMethodDef __pyx_mdef_10algorithms_15correspondences_3_default_correspond_p2 = {"_default_correspond_p2", (PyCFunction)__pyx_pw_10algorithms_15correspondences_3_default_correspond_p2, METH_NOARGS, 0};
-static PyObject *__pyx_pw_10algorithms_15correspondences_3_default_correspond_p2(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_8openptv2_10algorithms_15correspondences_3_default_correspond_p2(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_15correspondences_3_default_correspond_p2 = {"_default_correspond_p2", (PyCFunction)__pyx_pw_8openptv2_10algorithms_15correspondences_3_default_correspond_p2, METH_NOARGS, 0};
+static PyObject *__pyx_pw_8openptv2_10algorithms_15correspondences_3_default_correspond_p2(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused) {
   CYTHON_UNUSED PyObject *const *__pyx_kwvalues;
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("_default_correspond_p2 (wrapper)", 0);
   __pyx_kwvalues = __Pyx_KwValues_VARARGS(__pyx_args, __pyx_nargs);
-  __pyx_r = __pyx_pf_10algorithms_15correspondences_2_default_correspond_p2(__pyx_self);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_15correspondences_2_default_correspond_p2(__pyx_self);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_15correspondences_2_default_correspond_p2(CYTHON_UNUSED PyObject *__pyx_self) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_15correspondences_2_default_correspond_p2(CYTHON_UNUSED PyObject *__pyx_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -2872,7 +2872,7 @@ static PyObject *__pyx_pf_10algorithms_15correspondences_2_default_correspond_p2
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("_default_correspond_p2", 0);
 
-  /* "algorithms/correspondences.py":25
+  /* "openptv2/algorithms/correspondences.py":25
  * 
  * def _default_correspond_p2():
  *     return np.zeros(MAXCAND, dtype=np.int32)             # <<<<<<<<<<<<<<
@@ -2923,7 +2923,7 @@ static PyObject *__pyx_pf_10algorithms_15correspondences_2_default_correspond_p2
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/correspondences.py":24
+  /* "openptv2/algorithms/correspondences.py":24
  * 
  * 
  * def _default_correspond_p2():             # <<<<<<<<<<<<<<
@@ -2939,7 +2939,7 @@ static PyObject *__pyx_pf_10algorithms_15correspondences_2_default_correspond_p2
   __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_5);
   __Pyx_XDECREF(__pyx_t_6);
-  __Pyx_AddTraceback("algorithms.correspondences._default_correspond_p2", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.correspondences._default_correspond_p2", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -2947,7 +2947,7 @@ static PyObject *__pyx_pf_10algorithms_15correspondences_2_default_correspond_p2
   return __pyx_r;
 }
 
-/* "algorithms/correspondences.py":28
+/* "openptv2/algorithms/correspondences.py":28
  * 
  * 
  * def _default_correspond_corr():             # <<<<<<<<<<<<<<
@@ -2956,22 +2956,22 @@ static PyObject *__pyx_pf_10algorithms_15correspondences_2_default_correspond_p2
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_15correspondences_5_default_correspond_corr(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static PyMethodDef __pyx_mdef_10algorithms_15correspondences_5_default_correspond_corr = {"_default_correspond_corr", (PyCFunction)__pyx_pw_10algorithms_15correspondences_5_default_correspond_corr, METH_NOARGS, 0};
-static PyObject *__pyx_pw_10algorithms_15correspondences_5_default_correspond_corr(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_8openptv2_10algorithms_15correspondences_5_default_correspond_corr(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_15correspondences_5_default_correspond_corr = {"_default_correspond_corr", (PyCFunction)__pyx_pw_8openptv2_10algorithms_15correspondences_5_default_correspond_corr, METH_NOARGS, 0};
+static PyObject *__pyx_pw_8openptv2_10algorithms_15correspondences_5_default_correspond_corr(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused) {
   CYTHON_UNUSED PyObject *const *__pyx_kwvalues;
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("_default_correspond_corr (wrapper)", 0);
   __pyx_kwvalues = __Pyx_KwValues_VARARGS(__pyx_args, __pyx_nargs);
-  __pyx_r = __pyx_pf_10algorithms_15correspondences_4_default_correspond_corr(__pyx_self);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_15correspondences_4_default_correspond_corr(__pyx_self);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_15correspondences_4_default_correspond_corr(CYTHON_UNUSED PyObject *__pyx_self) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_15correspondences_4_default_correspond_corr(CYTHON_UNUSED PyObject *__pyx_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -2986,7 +2986,7 @@ static PyObject *__pyx_pf_10algorithms_15correspondences_4_default_correspond_co
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("_default_correspond_corr", 0);
 
-  /* "algorithms/correspondences.py":29
+  /* "openptv2/algorithms/correspondences.py":29
  * 
  * def _default_correspond_corr():
  *     return np.zeros(MAXCAND, dtype=np.float64)             # <<<<<<<<<<<<<<
@@ -3037,7 +3037,7 @@ static PyObject *__pyx_pf_10algorithms_15correspondences_4_default_correspond_co
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/correspondences.py":28
+  /* "openptv2/algorithms/correspondences.py":28
  * 
  * 
  * def _default_correspond_corr():             # <<<<<<<<<<<<<<
@@ -3053,7 +3053,7 @@ static PyObject *__pyx_pf_10algorithms_15correspondences_4_default_correspond_co
   __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_5);
   __Pyx_XDECREF(__pyx_t_6);
-  __Pyx_AddTraceback("algorithms.correspondences._default_correspond_corr", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.correspondences._default_correspond_corr", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -3061,7 +3061,7 @@ static PyObject *__pyx_pf_10algorithms_15correspondences_4_default_correspond_co
   return __pyx_r;
 }
 
-/* "algorithms/correspondences.py":32
+/* "openptv2/algorithms/correspondences.py":32
  * 
  * 
  * def _default_correspond_dist():             # <<<<<<<<<<<<<<
@@ -3070,22 +3070,22 @@ static PyObject *__pyx_pf_10algorithms_15correspondences_4_default_correspond_co
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_15correspondences_7_default_correspond_dist(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static PyMethodDef __pyx_mdef_10algorithms_15correspondences_7_default_correspond_dist = {"_default_correspond_dist", (PyCFunction)__pyx_pw_10algorithms_15correspondences_7_default_correspond_dist, METH_NOARGS, 0};
-static PyObject *__pyx_pw_10algorithms_15correspondences_7_default_correspond_dist(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_8openptv2_10algorithms_15correspondences_7_default_correspond_dist(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_15correspondences_7_default_correspond_dist = {"_default_correspond_dist", (PyCFunction)__pyx_pw_8openptv2_10algorithms_15correspondences_7_default_correspond_dist, METH_NOARGS, 0};
+static PyObject *__pyx_pw_8openptv2_10algorithms_15correspondences_7_default_correspond_dist(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused) {
   CYTHON_UNUSED PyObject *const *__pyx_kwvalues;
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("_default_correspond_dist (wrapper)", 0);
   __pyx_kwvalues = __Pyx_KwValues_VARARGS(__pyx_args, __pyx_nargs);
-  __pyx_r = __pyx_pf_10algorithms_15correspondences_6_default_correspond_dist(__pyx_self);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_15correspondences_6_default_correspond_dist(__pyx_self);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_15correspondences_6_default_correspond_dist(CYTHON_UNUSED PyObject *__pyx_self) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_15correspondences_6_default_correspond_dist(CYTHON_UNUSED PyObject *__pyx_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -3100,7 +3100,7 @@ static PyObject *__pyx_pf_10algorithms_15correspondences_6_default_correspond_di
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("_default_correspond_dist", 0);
 
-  /* "algorithms/correspondences.py":33
+  /* "openptv2/algorithms/correspondences.py":33
  * 
  * def _default_correspond_dist():
  *     return np.zeros(MAXCAND, dtype=np.float64)             # <<<<<<<<<<<<<<
@@ -3151,7 +3151,7 @@ static PyObject *__pyx_pf_10algorithms_15correspondences_6_default_correspond_di
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/correspondences.py":32
+  /* "openptv2/algorithms/correspondences.py":32
  * 
  * 
  * def _default_correspond_dist():             # <<<<<<<<<<<<<<
@@ -3167,7 +3167,7 @@ static PyObject *__pyx_pf_10algorithms_15correspondences_6_default_correspond_di
   __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_5);
   __Pyx_XDECREF(__pyx_t_6);
-  __Pyx_AddTraceback("algorithms.correspondences._default_correspond_dist", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.correspondences._default_correspond_dist", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -3175,7 +3175,7 @@ static PyObject *__pyx_pf_10algorithms_15correspondences_6_default_correspond_di
   return __pyx_r;
 }
 
-/* "algorithms/correspondences.py":56
+/* "openptv2/algorithms/correspondences.py":56
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -3183,14 +3183,14 @@ static PyObject *__pyx_pf_10algorithms_15correspondences_6_default_correspond_di
  *     """Sort target list by y coordinate in place."""
 */
 
-static PyObject *__pyx_pw_10algorithms_15correspondences_9quicksort_target_y(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_15correspondences_9quicksort_target_y(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_15correspondences_quicksort_target_y(PyObject *__pyx_v_pix, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_15correspondences_quicksort_target_y(PyObject *__pyx_v_pix, CYTHON_UNUSED int __pyx_skip_dispatch) {
   int __pyx_v_i;
   int __pyx_v_j;
   PyObject *__pyx_v_item = NULL;
@@ -3210,7 +3210,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_quicksort_target_y(PyObj
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("quicksort_target_y", 0);
 
-  /* "algorithms/correspondences.py":61
+  /* "openptv2/algorithms/correspondences.py":61
  *     i: cython.int
  *     j: cython.int
  *     for i in range(1, len(pix)):             # <<<<<<<<<<<<<<
@@ -3222,7 +3222,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_quicksort_target_y(PyObj
   for (__pyx_t_3 = 1; __pyx_t_3 < __pyx_t_2; __pyx_t_3+=1) {
     __pyx_v_i = __pyx_t_3;
 
-    /* "algorithms/correspondences.py":62
+    /* "openptv2/algorithms/correspondences.py":62
  *     j: cython.int
  *     for i in range(1, len(pix)):
  *         item = pix[i]             # <<<<<<<<<<<<<<
@@ -3234,7 +3234,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_quicksort_target_y(PyObj
     __Pyx_XDECREF_SET(__pyx_v_item, __pyx_t_4);
     __pyx_t_4 = 0;
 
-    /* "algorithms/correspondences.py":63
+    /* "openptv2/algorithms/correspondences.py":63
  *     for i in range(1, len(pix)):
  *         item = pix[i]
  *         j = i             # <<<<<<<<<<<<<<
@@ -3243,7 +3243,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_quicksort_target_y(PyObj
 */
     __pyx_v_j = __pyx_v_i;
 
-    /* "algorithms/correspondences.py":64
+    /* "openptv2/algorithms/correspondences.py":64
  *         item = pix[i]
  *         j = i
  *         while j > 0 and pix[j - 1].y > item.y:             # <<<<<<<<<<<<<<
@@ -3274,7 +3274,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_quicksort_target_y(PyObj
       __pyx_L7_bool_binop_done:;
       if (!__pyx_t_5) break;
 
-      /* "algorithms/correspondences.py":65
+      /* "openptv2/algorithms/correspondences.py":65
  *         j = i
  *         while j > 0 and pix[j - 1].y > item.y:
  *             pix[j] = pix[j - 1]             # <<<<<<<<<<<<<<
@@ -3287,7 +3287,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_quicksort_target_y(PyObj
       if (unlikely((__Pyx_SetItemInt(__pyx_v_pix, __pyx_v_j, __pyx_t_9, int, 1, __Pyx_PyLong_From_int, 0, 0, 0, 1, __Pyx_ReferenceSharing_FunctionArgument) < 0))) __PYX_ERR(0, 65, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
 
-      /* "algorithms/correspondences.py":66
+      /* "openptv2/algorithms/correspondences.py":66
  *         while j > 0 and pix[j - 1].y > item.y:
  *             pix[j] = pix[j - 1]
  *             j -= 1             # <<<<<<<<<<<<<<
@@ -3297,7 +3297,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_quicksort_target_y(PyObj
       __pyx_v_j = (__pyx_v_j - 1);
     }
 
-    /* "algorithms/correspondences.py":67
+    /* "openptv2/algorithms/correspondences.py":67
  *             pix[j] = pix[j - 1]
  *             j -= 1
  *         pix[j] = item             # <<<<<<<<<<<<<<
@@ -3307,7 +3307,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_quicksort_target_y(PyObj
     if (unlikely((__Pyx_SetItemInt(__pyx_v_pix, __pyx_v_j, __pyx_v_item, int, 1, __Pyx_PyLong_From_int, 0, 0, 0, 1, __Pyx_ReferenceSharing_FunctionArgument) < 0))) __PYX_ERR(0, 67, __pyx_L1_error)
   }
 
-  /* "algorithms/correspondences.py":56
+  /* "openptv2/algorithms/correspondences.py":56
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -3322,7 +3322,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_quicksort_target_y(PyObj
   __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_8);
   __Pyx_XDECREF(__pyx_t_9);
-  __Pyx_AddTraceback("algorithms.correspondences.quicksort_target_y", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.correspondences.quicksort_target_y", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_item);
@@ -3332,16 +3332,16 @@ static PyObject *__pyx_f_10algorithms_15correspondences_quicksort_target_y(PyObj
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_15correspondences_9quicksort_target_y(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_15correspondences_9quicksort_target_y(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_15correspondences_8quicksort_target_y, "Sort target list by y coordinate in place.");
-static PyMethodDef __pyx_mdef_10algorithms_15correspondences_9quicksort_target_y = {"quicksort_target_y", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_15correspondences_9quicksort_target_y, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_15correspondences_8quicksort_target_y};
-static PyObject *__pyx_pw_10algorithms_15correspondences_9quicksort_target_y(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_15correspondences_8quicksort_target_y, "Sort target list by y coordinate in place.");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_15correspondences_9quicksort_target_y = {"quicksort_target_y", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_15correspondences_9quicksort_target_y, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_15correspondences_8quicksort_target_y};
+static PyObject *__pyx_pw_8openptv2_10algorithms_15correspondences_9quicksort_target_y(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -3403,11 +3403,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.correspondences.quicksort_target_y", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.correspondences.quicksort_target_y", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_15correspondences_8quicksort_target_y(__pyx_self, __pyx_v_pix);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_15correspondences_8quicksort_target_y(__pyx_self, __pyx_v_pix);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -3417,7 +3417,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_15correspondences_8quicksort_target_y(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_pix) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_15correspondences_8quicksort_target_y(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_pix) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -3426,7 +3426,7 @@ static PyObject *__pyx_pf_10algorithms_15correspondences_8quicksort_target_y(CYT
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("quicksort_target_y", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_15correspondences_quicksort_target_y(__pyx_v_pix, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 56, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_15correspondences_quicksort_target_y(__pyx_v_pix, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 56, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -3435,7 +3435,7 @@ static PyObject *__pyx_pf_10algorithms_15correspondences_8quicksort_target_y(CYT
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.correspondences.quicksort_target_y", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.correspondences.quicksort_target_y", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -3443,7 +3443,7 @@ static PyObject *__pyx_pf_10algorithms_15correspondences_8quicksort_target_y(CYT
   return __pyx_r;
 }
 
-/* "algorithms/correspondences.py":70
+/* "openptv2/algorithms/correspondences.py":70
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -3451,14 +3451,14 @@ static PyObject *__pyx_pf_10algorithms_15correspondences_8quicksort_target_y(CYT
  *     """Sort Coord2d list by x coordinate in place."""
 */
 
-static PyObject *__pyx_pw_10algorithms_15correspondences_11quicksort_coord2d_x(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_15correspondences_11quicksort_coord2d_x(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_15correspondences_quicksort_coord2d_x(PyObject *__pyx_v_crd, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_15correspondences_quicksort_coord2d_x(PyObject *__pyx_v_crd, CYTHON_UNUSED int __pyx_skip_dispatch) {
   int __pyx_v_i;
   int __pyx_v_j;
   PyObject *__pyx_v_item = NULL;
@@ -3478,7 +3478,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_quicksort_coord2d_x(PyOb
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("quicksort_coord2d_x", 0);
 
-  /* "algorithms/correspondences.py":75
+  /* "openptv2/algorithms/correspondences.py":75
  *     i: cython.int
  *     j: cython.int
  *     for i in range(1, len(crd)):             # <<<<<<<<<<<<<<
@@ -3490,7 +3490,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_quicksort_coord2d_x(PyOb
   for (__pyx_t_3 = 1; __pyx_t_3 < __pyx_t_2; __pyx_t_3+=1) {
     __pyx_v_i = __pyx_t_3;
 
-    /* "algorithms/correspondences.py":76
+    /* "openptv2/algorithms/correspondences.py":76
  *     j: cython.int
  *     for i in range(1, len(crd)):
  *         item = crd[i]             # <<<<<<<<<<<<<<
@@ -3502,7 +3502,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_quicksort_coord2d_x(PyOb
     __Pyx_XDECREF_SET(__pyx_v_item, __pyx_t_4);
     __pyx_t_4 = 0;
 
-    /* "algorithms/correspondences.py":77
+    /* "openptv2/algorithms/correspondences.py":77
  *     for i in range(1, len(crd)):
  *         item = crd[i]
  *         j = i             # <<<<<<<<<<<<<<
@@ -3511,7 +3511,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_quicksort_coord2d_x(PyOb
 */
     __pyx_v_j = __pyx_v_i;
 
-    /* "algorithms/correspondences.py":78
+    /* "openptv2/algorithms/correspondences.py":78
  *         item = crd[i]
  *         j = i
  *         while j > 0 and crd[j - 1].x > item.x:             # <<<<<<<<<<<<<<
@@ -3542,7 +3542,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_quicksort_coord2d_x(PyOb
       __pyx_L7_bool_binop_done:;
       if (!__pyx_t_5) break;
 
-      /* "algorithms/correspondences.py":79
+      /* "openptv2/algorithms/correspondences.py":79
  *         j = i
  *         while j > 0 and crd[j - 1].x > item.x:
  *             crd[j] = crd[j - 1]             # <<<<<<<<<<<<<<
@@ -3555,7 +3555,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_quicksort_coord2d_x(PyOb
       if (unlikely((__Pyx_SetItemInt(__pyx_v_crd, __pyx_v_j, __pyx_t_9, int, 1, __Pyx_PyLong_From_int, 0, 0, 0, 1, __Pyx_ReferenceSharing_FunctionArgument) < 0))) __PYX_ERR(0, 79, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
 
-      /* "algorithms/correspondences.py":80
+      /* "openptv2/algorithms/correspondences.py":80
  *         while j > 0 and crd[j - 1].x > item.x:
  *             crd[j] = crd[j - 1]
  *             j -= 1             # <<<<<<<<<<<<<<
@@ -3565,7 +3565,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_quicksort_coord2d_x(PyOb
       __pyx_v_j = (__pyx_v_j - 1);
     }
 
-    /* "algorithms/correspondences.py":81
+    /* "openptv2/algorithms/correspondences.py":81
  *             crd[j] = crd[j - 1]
  *             j -= 1
  *         crd[j] = item             # <<<<<<<<<<<<<<
@@ -3575,7 +3575,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_quicksort_coord2d_x(PyOb
     if (unlikely((__Pyx_SetItemInt(__pyx_v_crd, __pyx_v_j, __pyx_v_item, int, 1, __Pyx_PyLong_From_int, 0, 0, 0, 1, __Pyx_ReferenceSharing_FunctionArgument) < 0))) __PYX_ERR(0, 81, __pyx_L1_error)
   }
 
-  /* "algorithms/correspondences.py":70
+  /* "openptv2/algorithms/correspondences.py":70
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -3590,7 +3590,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_quicksort_coord2d_x(PyOb
   __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_8);
   __Pyx_XDECREF(__pyx_t_9);
-  __Pyx_AddTraceback("algorithms.correspondences.quicksort_coord2d_x", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.correspondences.quicksort_coord2d_x", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_item);
@@ -3600,16 +3600,16 @@ static PyObject *__pyx_f_10algorithms_15correspondences_quicksort_coord2d_x(PyOb
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_15correspondences_11quicksort_coord2d_x(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_15correspondences_11quicksort_coord2d_x(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_15correspondences_10quicksort_coord2d_x, "Sort Coord2d list by x coordinate in place.");
-static PyMethodDef __pyx_mdef_10algorithms_15correspondences_11quicksort_coord2d_x = {"quicksort_coord2d_x", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_15correspondences_11quicksort_coord2d_x, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_15correspondences_10quicksort_coord2d_x};
-static PyObject *__pyx_pw_10algorithms_15correspondences_11quicksort_coord2d_x(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_15correspondences_10quicksort_coord2d_x, "Sort Coord2d list by x coordinate in place.");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_15correspondences_11quicksort_coord2d_x = {"quicksort_coord2d_x", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_15correspondences_11quicksort_coord2d_x, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_15correspondences_10quicksort_coord2d_x};
+static PyObject *__pyx_pw_8openptv2_10algorithms_15correspondences_11quicksort_coord2d_x(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -3671,11 +3671,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.correspondences.quicksort_coord2d_x", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.correspondences.quicksort_coord2d_x", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_15correspondences_10quicksort_coord2d_x(__pyx_self, __pyx_v_crd);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_15correspondences_10quicksort_coord2d_x(__pyx_self, __pyx_v_crd);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -3685,7 +3685,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_15correspondences_10quicksort_coord2d_x(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_crd) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_15correspondences_10quicksort_coord2d_x(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_crd) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -3694,7 +3694,7 @@ static PyObject *__pyx_pf_10algorithms_15correspondences_10quicksort_coord2d_x(C
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("quicksort_coord2d_x", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_15correspondences_quicksort_coord2d_x(__pyx_v_crd, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 70, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_15correspondences_quicksort_coord2d_x(__pyx_v_crd, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 70, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -3703,7 +3703,7 @@ static PyObject *__pyx_pf_10algorithms_15correspondences_10quicksort_coord2d_x(C
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.correspondences.quicksort_coord2d_x", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.correspondences.quicksort_coord2d_x", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -3711,7 +3711,7 @@ static PyObject *__pyx_pf_10algorithms_15correspondences_10quicksort_coord2d_x(C
   return __pyx_r;
 }
 
-/* "algorithms/correspondences.py":84
+/* "openptv2/algorithms/correspondences.py":84
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -3719,14 +3719,14 @@ static PyObject *__pyx_pf_10algorithms_15correspondences_10quicksort_coord2d_x(C
  *     """Allocate pairwise adjacency lists.
 */
 
-static PyObject *__pyx_pw_10algorithms_15correspondences_13safely_allocate_adjacency_lists(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_15correspondences_13safely_allocate_adjacency_lists(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_15correspondences_safely_allocate_adjacency_lists(PyObject *__pyx_v_num_cams, PyObject *__pyx_v_target_counts, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_15correspondences_safely_allocate_adjacency_lists(PyObject *__pyx_v_num_cams, PyObject *__pyx_v_target_counts, CYTHON_UNUSED int __pyx_skip_dispatch) {
   PyObject *__pyx_v_lists = NULL;
   int __pyx_v_c1;
   int __pyx_v_c2;
@@ -3753,7 +3753,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_safely_allocate_adjacenc
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("safely_allocate_adjacency_lists", 0);
 
-  /* "algorithms/correspondences.py":91
+  /* "openptv2/algorithms/correspondences.py":91
  *     of Correspond objects of length target_counts[c1], for c1 < c2.
  *     """
  *     lists = [[None] * num_cams for _ in range(num_cams)]             # <<<<<<<<<<<<<<
@@ -3815,7 +3815,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_safely_allocate_adjacenc
   __pyx_v_lists = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "algorithms/correspondences.py":94
+  /* "openptv2/algorithms/correspondences.py":94
  *     c1: cython.int
  *     c2: cython.int
  *     for c1 in range(num_cams - 1):             # <<<<<<<<<<<<<<
@@ -3830,7 +3830,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_safely_allocate_adjacenc
   for (__pyx_t_8 = 0; __pyx_t_8 < __pyx_t_7; __pyx_t_8+=1) {
     __pyx_v_c1 = __pyx_t_8;
 
-    /* "algorithms/correspondences.py":95
+    /* "openptv2/algorithms/correspondences.py":95
  *     c2: cython.int
  *     for c1 in range(num_cams - 1):
  *         for c2 in range(c1 + 1, num_cams):             # <<<<<<<<<<<<<<
@@ -3842,7 +3842,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_safely_allocate_adjacenc
     for (__pyx_t_11 = (__pyx_v_c1 + 1); __pyx_t_11 < __pyx_t_10; __pyx_t_11+=1) {
       __pyx_v_c2 = __pyx_t_11;
 
-      /* "algorithms/correspondences.py":96
+      /* "openptv2/algorithms/correspondences.py":96
  *     for c1 in range(num_cams - 1):
  *         for c2 in range(c1 + 1, num_cams):
  *             lists[c1][c2] = [Correspond(p1=0, n=0) for _ in range(target_counts[c1])]             # <<<<<<<<<<<<<<
@@ -3927,7 +3927,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_safely_allocate_adjacenc
     }
   }
 
-  /* "algorithms/correspondences.py":97
+  /* "openptv2/algorithms/correspondences.py":97
  *         for c2 in range(c1 + 1, num_cams):
  *             lists[c1][c2] = [Correspond(p1=0, n=0) for _ in range(target_counts[c1])]
  *     return lists             # <<<<<<<<<<<<<<
@@ -3939,7 +3939,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_safely_allocate_adjacenc
   __pyx_r = __pyx_v_lists;
   goto __pyx_L0;
 
-  /* "algorithms/correspondences.py":84
+  /* "openptv2/algorithms/correspondences.py":84
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -3955,7 +3955,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_safely_allocate_adjacenc
   __Pyx_XDECREF(__pyx_t_12);
   __Pyx_XDECREF(__pyx_t_13);
   __Pyx_XDECREF(__pyx_t_14);
-  __Pyx_AddTraceback("algorithms.correspondences.safely_allocate_adjacency_lists", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.correspondences.safely_allocate_adjacency_lists", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_lists);
@@ -3967,16 +3967,16 @@ static PyObject *__pyx_f_10algorithms_15correspondences_safely_allocate_adjacenc
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_15correspondences_13safely_allocate_adjacency_lists(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_15correspondences_13safely_allocate_adjacency_lists(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_15correspondences_12safely_allocate_adjacency_lists, "Allocate pairwise adjacency lists.\n\n    Returns lists[c1][c2] as a 2D list where lists[c1][c2] is an array\n    of Correspond objects of length target_counts[c1], for c1 < c2.\n    ");
-static PyMethodDef __pyx_mdef_10algorithms_15correspondences_13safely_allocate_adjacency_lists = {"safely_allocate_adjacency_lists", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_15correspondences_13safely_allocate_adjacency_lists, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_15correspondences_12safely_allocate_adjacency_lists};
-static PyObject *__pyx_pw_10algorithms_15correspondences_13safely_allocate_adjacency_lists(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_15correspondences_12safely_allocate_adjacency_lists, "Allocate pairwise adjacency lists.\n\n    Returns lists[c1][c2] as a 2D list where lists[c1][c2] is an array\n    of Correspond objects of length target_counts[c1], for c1 < c2.\n    ");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_15correspondences_13safely_allocate_adjacency_lists = {"safely_allocate_adjacency_lists", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_15correspondences_13safely_allocate_adjacency_lists, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_15correspondences_12safely_allocate_adjacency_lists};
+static PyObject *__pyx_pw_8openptv2_10algorithms_15correspondences_13safely_allocate_adjacency_lists(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -4046,11 +4046,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.correspondences.safely_allocate_adjacency_lists", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.correspondences.safely_allocate_adjacency_lists", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_15correspondences_12safely_allocate_adjacency_lists(__pyx_self, __pyx_v_num_cams, __pyx_v_target_counts);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_15correspondences_12safely_allocate_adjacency_lists(__pyx_self, __pyx_v_num_cams, __pyx_v_target_counts);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -4060,7 +4060,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_15correspondences_12safely_allocate_adjacency_lists(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_num_cams, PyObject *__pyx_v_target_counts) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_15correspondences_12safely_allocate_adjacency_lists(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_num_cams, PyObject *__pyx_v_target_counts) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -4069,7 +4069,7 @@ static PyObject *__pyx_pf_10algorithms_15correspondences_12safely_allocate_adjac
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("safely_allocate_adjacency_lists", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_15correspondences_safely_allocate_adjacency_lists(__pyx_v_num_cams, __pyx_v_target_counts, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 84, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_15correspondences_safely_allocate_adjacency_lists(__pyx_v_num_cams, __pyx_v_target_counts, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 84, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -4078,7 +4078,7 @@ static PyObject *__pyx_pf_10algorithms_15correspondences_12safely_allocate_adjac
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.correspondences.safely_allocate_adjacency_lists", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.correspondences.safely_allocate_adjacency_lists", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -4086,7 +4086,7 @@ static PyObject *__pyx_pf_10algorithms_15correspondences_12safely_allocate_adjac
   return __pyx_r;
 }
 
-/* "algorithms/correspondences.py":100
+/* "openptv2/algorithms/correspondences.py":100
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -4094,14 +4094,14 @@ static PyObject *__pyx_pf_10algorithms_15correspondences_12safely_allocate_adjac
  *     """Build pairwise adjacency lists between all camera pairs.
 */
 
-static PyObject *__pyx_pw_10algorithms_15correspondences_15match_pairs(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_15correspondences_15match_pairs(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_15correspondences_match_pairs(PyObject *__pyx_v_lists, PyObject *__pyx_v_corrected, PyObject *__pyx_v_frm, PyObject *__pyx_v_vpar, PyObject *__pyx_v_cpar, PyObject *__pyx_v_calib, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_15correspondences_match_pairs(PyObject *__pyx_v_lists, PyObject *__pyx_v_corrected, PyObject *__pyx_v_frm, PyObject *__pyx_v_vpar, PyObject *__pyx_v_cpar, PyObject *__pyx_v_calib, CYTHON_UNUSED int __pyx_skip_dispatch) {
   PyObject *__pyx_v_epi_mm = NULL;
   PyObject *__pyx_v_find_candidate = NULL;
   CYTHON_UNUSED PyObject *__pyx_v_Candidate = NULL;
@@ -4150,7 +4150,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_match_pairs(PyObject *__
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("match_pairs", 0);
 
-  /* "algorithms/correspondences.py":115
+  /* "openptv2/algorithms/correspondences.py":115
  *         calib: list of Calibration objects.
  *     """
  *     from .epi import epi_mm, find_candidate, Candidate             # <<<<<<<<<<<<<<
@@ -4159,7 +4159,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_match_pairs(PyObject *__
 */
   {
     PyObject* const __pyx_imported_names[] = {__pyx_mstate_global->__pyx_n_u_epi_mm,__pyx_mstate_global->__pyx_n_u_find_candidate,__pyx_mstate_global->__pyx_n_u_Candidate};
-    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_epi, __pyx_imported_names, 3, __pyx_mstate_global->__pyx_kp_u_algorithms_epi, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 115, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_epi, __pyx_imported_names, 3, __pyx_mstate_global->__pyx_kp_u_openptv2_algorithms_epi, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 115, __pyx_L1_error)
   }
   __pyx_t_1 = __pyx_t_2;
   __Pyx_GOTREF(__pyx_t_1);
@@ -4188,7 +4188,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_match_pairs(PyObject *__
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/correspondences.py":123
+  /* "openptv2/algorithms/correspondences.py":123
  *     pt1: cython.int
  *     count: cython.int
  *     for i1 in range(cpar.num_cams - 1):             # <<<<<<<<<<<<<<
@@ -4206,7 +4206,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_match_pairs(PyObject *__
   for (__pyx_t_6 = 0; __pyx_t_6 < __pyx_t_5; __pyx_t_6+=1) {
     __pyx_v_i1 = __pyx_t_6;
 
-    /* "algorithms/correspondences.py":124
+    /* "openptv2/algorithms/correspondences.py":124
  *     count: cython.int
  *     for i1 in range(cpar.num_cams - 1):
  *         for i2 in range(i1 + 1, cpar.num_cams):             # <<<<<<<<<<<<<<
@@ -4221,7 +4221,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_match_pairs(PyObject *__
     for (__pyx_t_9 = (__pyx_v_i1 + 1); __pyx_t_9 < __pyx_t_8; __pyx_t_9+=1) {
       __pyx_v_i2 = __pyx_t_9;
 
-      /* "algorithms/correspondences.py":125
+      /* "openptv2/algorithms/correspondences.py":125
  *     for i1 in range(cpar.num_cams - 1):
  *         for i2 in range(i1 + 1, cpar.num_cams):
  *             for i in range(frm.num_targets[i1]):             # <<<<<<<<<<<<<<
@@ -4239,7 +4239,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_match_pairs(PyObject *__
       for (__pyx_t_12 = 0; __pyx_t_12 < __pyx_t_11; __pyx_t_12+=1) {
         __pyx_v_i = __pyx_t_12;
 
-        /* "algorithms/correspondences.py":126
+        /* "openptv2/algorithms/correspondences.py":126
  *         for i2 in range(i1 + 1, cpar.num_cams):
  *             for i in range(frm.num_targets[i1]):
  *                 if corrected[i1][i].x == PT_UNUSED:             # <<<<<<<<<<<<<<
@@ -4263,7 +4263,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_match_pairs(PyObject *__
         __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
         if (__pyx_t_14) {
 
-          /* "algorithms/correspondences.py":127
+          /* "openptv2/algorithms/correspondences.py":127
  *             for i in range(frm.num_targets[i1]):
  *                 if corrected[i1][i].x == PT_UNUSED:
  *                     continue             # <<<<<<<<<<<<<<
@@ -4272,7 +4272,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_match_pairs(PyObject *__
 */
           goto __pyx_L7_continue;
 
-          /* "algorithms/correspondences.py":126
+          /* "openptv2/algorithms/correspondences.py":126
  *         for i2 in range(i1 + 1, cpar.num_cams):
  *             for i in range(frm.num_targets[i1]):
  *                 if corrected[i1][i].x == PT_UNUSED:             # <<<<<<<<<<<<<<
@@ -4281,7 +4281,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_match_pairs(PyObject *__
 */
         }
 
-        /* "algorithms/correspondences.py":129
+        /* "openptv2/algorithms/correspondences.py":129
  *                     continue
  * 
  *                 xmin, ymin, xmax, ymax = epi_mm(             # <<<<<<<<<<<<<<
@@ -4292,7 +4292,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_match_pairs(PyObject *__
         __Pyx_INCREF(__pyx_v_epi_mm);
         __pyx_t_1 = __pyx_v_epi_mm; 
 
-        /* "algorithms/correspondences.py":130
+        /* "openptv2/algorithms/correspondences.py":130
  * 
  *                 xmin, ymin, xmax, ymax = epi_mm(
  *                     corrected[i1][i].x, corrected[i1][i].y,             # <<<<<<<<<<<<<<
@@ -4316,7 +4316,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_match_pairs(PyObject *__
         __Pyx_GOTREF(__pyx_t_16);
         __Pyx_DECREF(__pyx_t_17); __pyx_t_17 = 0;
 
-        /* "algorithms/correspondences.py":131
+        /* "openptv2/algorithms/correspondences.py":131
  *                 xmin, ymin, xmax, ymax = epi_mm(
  *                     corrected[i1][i].x, corrected[i1][i].y,
  *                     calib[i1], calib[i2], cpar.mm, vpar)             # <<<<<<<<<<<<<<
@@ -4422,7 +4422,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_match_pairs(PyObject *__
           __pyx_L11_unpacking_done:;
         }
 
-        /* "algorithms/correspondences.py":129
+        /* "openptv2/algorithms/correspondences.py":129
  *                     continue
  * 
  *                 xmin, ymin, xmax, ymax = epi_mm(             # <<<<<<<<<<<<<<
@@ -4438,7 +4438,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_match_pairs(PyObject *__
         __Pyx_XDECREF_SET(__pyx_v_ymax, __pyx_t_17);
         __pyx_t_17 = 0;
 
-        /* "algorithms/correspondences.py":133
+        /* "openptv2/algorithms/correspondences.py":133
  *                     calib[i1], calib[i2], cpar.mm, vpar)
  * 
  *                 lists[i1][i2][i].p1 = i             # <<<<<<<<<<<<<<
@@ -4459,7 +4459,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_match_pairs(PyObject *__
         __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
         __Pyx_DECREF(__pyx_t_17); __pyx_t_17 = 0;
 
-        /* "algorithms/correspondences.py":134
+        /* "openptv2/algorithms/correspondences.py":134
  * 
  *                 lists[i1][i2][i].p1 = i
  *                 pt1 = corrected[i1][i].pnr             # <<<<<<<<<<<<<<
@@ -4478,7 +4478,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_match_pairs(PyObject *__
         __Pyx_DECREF(__pyx_t_17); __pyx_t_17 = 0;
         __pyx_v_pt1 = __pyx_t_22;
 
-        /* "algorithms/correspondences.py":136
+        /* "openptv2/algorithms/correspondences.py":136
  *                 pt1 = corrected[i1][i].pnr
  * 
  *                 cand = []             # <<<<<<<<<<<<<<
@@ -4490,7 +4490,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_match_pairs(PyObject *__
         __Pyx_XDECREF_SET(__pyx_v_cand, ((PyObject*)__pyx_t_17));
         __pyx_t_17 = 0;
 
-        /* "algorithms/correspondences.py":137
+        /* "openptv2/algorithms/correspondences.py":137
  * 
  *                 cand = []
  *                 count = find_candidate(             # <<<<<<<<<<<<<<
@@ -4501,7 +4501,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_match_pairs(PyObject *__
         __Pyx_INCREF(__pyx_v_find_candidate);
         __pyx_t_18 = __pyx_v_find_candidate; 
 
-        /* "algorithms/correspondences.py":138
+        /* "openptv2/algorithms/correspondences.py":138
  *                 cand = []
  *                 count = find_candidate(
  *                     corrected[i2], frm.targets[i2],             # <<<<<<<<<<<<<<
@@ -4516,7 +4516,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_match_pairs(PyObject *__
         __Pyx_GOTREF(__pyx_t_16);
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-        /* "algorithms/correspondences.py":139
+        /* "openptv2/algorithms/correspondences.py":139
  *                 count = find_candidate(
  *                     corrected[i2], frm.targets[i2],
  *                     frm.num_targets[i2],             # <<<<<<<<<<<<<<
@@ -4529,7 +4529,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_match_pairs(PyObject *__
         __Pyx_GOTREF(__pyx_t_15);
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-        /* "algorithms/correspondences.py":141
+        /* "openptv2/algorithms/correspondences.py":141
  *                     frm.num_targets[i2],
  *                     xmin, ymin, xmax, ymax,
  *                     frm.targets[i1][pt1].n, frm.targets[i1][pt1].nx,             # <<<<<<<<<<<<<<
@@ -4559,7 +4559,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_match_pairs(PyObject *__
         __Pyx_GOTREF(__pyx_t_23);
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-        /* "algorithms/correspondences.py":142
+        /* "openptv2/algorithms/correspondences.py":142
  *                     xmin, ymin, xmax, ymax,
  *                     frm.targets[i1][pt1].n, frm.targets[i1][pt1].nx,
  *                     frm.targets[i1][pt1].ny, frm.targets[i1][pt1].sumg,             # <<<<<<<<<<<<<<
@@ -4589,7 +4589,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_match_pairs(PyObject *__
         __Pyx_GOTREF(__pyx_t_25);
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-        /* "algorithms/correspondences.py":143
+        /* "openptv2/algorithms/correspondences.py":143
  *                     frm.targets[i1][pt1].n, frm.targets[i1][pt1].nx,
  *                     frm.targets[i1][pt1].ny, frm.targets[i1][pt1].sumg,
  *                     cand, vpar, cpar, calib[i2])             # <<<<<<<<<<<<<<
@@ -4627,7 +4627,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_match_pairs(PyObject *__
           __Pyx_GOTREF(__pyx_t_17);
         }
 
-        /* "algorithms/correspondences.py":137
+        /* "openptv2/algorithms/correspondences.py":137
  * 
  *                 cand = []
  *                 count = find_candidate(             # <<<<<<<<<<<<<<
@@ -4638,7 +4638,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_match_pairs(PyObject *__
         __Pyx_DECREF(__pyx_t_17); __pyx_t_17 = 0;
         __pyx_v_count = __pyx_t_22;
 
-        /* "algorithms/correspondences.py":145
+        /* "openptv2/algorithms/correspondences.py":145
  *                     cand, vpar, cpar, calib[i2])
  * 
  *                 if count > MAXCAND:             # <<<<<<<<<<<<<<
@@ -4656,7 +4656,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_match_pairs(PyObject *__
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
         if (__pyx_t_14) {
 
-          /* "algorithms/correspondences.py":146
+          /* "openptv2/algorithms/correspondences.py":146
  * 
  *                 if count > MAXCAND:
  *                     count = MAXCAND             # <<<<<<<<<<<<<<
@@ -4669,7 +4669,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_match_pairs(PyObject *__
           __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
           __pyx_v_count = __pyx_t_22;
 
-          /* "algorithms/correspondences.py":145
+          /* "openptv2/algorithms/correspondences.py":145
  *                     cand, vpar, cpar, calib[i2])
  * 
  *                 if count > MAXCAND:             # <<<<<<<<<<<<<<
@@ -4678,7 +4678,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_match_pairs(PyObject *__
 */
         }
 
-        /* "algorithms/correspondences.py":148
+        /* "openptv2/algorithms/correspondences.py":148
  *                     count = MAXCAND
  * 
  *                 for j in range(count):             # <<<<<<<<<<<<<<
@@ -4690,7 +4690,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_match_pairs(PyObject *__
         for (__pyx_t_27 = 0; __pyx_t_27 < __pyx_t_26; __pyx_t_27+=1) {
           __pyx_v_j = __pyx_t_27;
 
-          /* "algorithms/correspondences.py":149
+          /* "openptv2/algorithms/correspondences.py":149
  * 
  *                 for j in range(count):
  *                     lists[i1][i2][i].p2[j] = cand[j].pnr             # <<<<<<<<<<<<<<
@@ -4714,7 +4714,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_match_pairs(PyObject *__
           __Pyx_DECREF(__pyx_t_17); __pyx_t_17 = 0;
           __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-          /* "algorithms/correspondences.py":150
+          /* "openptv2/algorithms/correspondences.py":150
  *                 for j in range(count):
  *                     lists[i1][i2][i].p2[j] = cand[j].pnr
  *                     lists[i1][i2][i].corr[j] = cand[j].corr             # <<<<<<<<<<<<<<
@@ -4738,7 +4738,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_match_pairs(PyObject *__
           __Pyx_DECREF(__pyx_t_18); __pyx_t_18 = 0;
           __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-          /* "algorithms/correspondences.py":151
+          /* "openptv2/algorithms/correspondences.py":151
  *                     lists[i1][i2][i].p2[j] = cand[j].pnr
  *                     lists[i1][i2][i].corr[j] = cand[j].corr
  *                     lists[i1][i2][i].dist[j] = cand[j].tol             # <<<<<<<<<<<<<<
@@ -4763,7 +4763,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_match_pairs(PyObject *__
           __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
         }
 
-        /* "algorithms/correspondences.py":152
+        /* "openptv2/algorithms/correspondences.py":152
  *                     lists[i1][i2][i].corr[j] = cand[j].corr
  *                     lists[i1][i2][i].dist[j] = cand[j].tol
  *                 lists[i1][i2][i].n = count             # <<<<<<<<<<<<<<
@@ -4788,7 +4788,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_match_pairs(PyObject *__
     }
   }
 
-  /* "algorithms/correspondences.py":100
+  /* "openptv2/algorithms/correspondences.py":100
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -4811,7 +4811,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_match_pairs(PyObject *__
   __Pyx_XDECREF(__pyx_t_23);
   __Pyx_XDECREF(__pyx_t_24);
   __Pyx_XDECREF(__pyx_t_25);
-  __Pyx_AddTraceback("algorithms.correspondences.match_pairs", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.correspondences.match_pairs", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_epi_mm);
@@ -4828,16 +4828,16 @@ static PyObject *__pyx_f_10algorithms_15correspondences_match_pairs(PyObject *__
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_15correspondences_15match_pairs(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_15correspondences_15match_pairs(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_15correspondences_14match_pairs, "Build pairwise adjacency lists between all camera pairs.\n\n    Matches C match_pairs exactly. For each target in camera i1,\n    projects epipolar lines into camera i2 and finds candidate matches.\n\n    Args:\n        lists: adjacency lists[c1][c2], allocated by safely_allocate_adjacency_lists.\n        corrected: per-camera x-sorted Coord2d arrays.\n        frm: Frame object with targets and num_targets.\n        vpar: VolumePar.\n        cpar: ControlPar.\n        calib: list of Calibration objects.\n    ");
-static PyMethodDef __pyx_mdef_10algorithms_15correspondences_15match_pairs = {"match_pairs", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_15correspondences_15match_pairs, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_15correspondences_14match_pairs};
-static PyObject *__pyx_pw_10algorithms_15correspondences_15match_pairs(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_15correspondences_14match_pairs, "Build pairwise adjacency lists between all camera pairs.\n\n    Matches C match_pairs exactly. For each target in camera i1,\n    projects epipolar lines into camera i2 and finds candidate matches.\n\n    Args:\n        lists: adjacency lists[c1][c2], allocated by safely_allocate_adjacency_lists.\n        corrected: per-camera x-sorted Coord2d arrays.\n        frm: Frame object with targets and num_targets.\n        vpar: VolumePar.\n        cpar: ControlPar.\n        calib: list of Calibration objects.\n    ");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_15correspondences_15match_pairs = {"match_pairs", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_15correspondences_15match_pairs, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_15correspondences_14match_pairs};
+static PyObject *__pyx_pw_8openptv2_10algorithms_15correspondences_15match_pairs(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -4939,11 +4939,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.correspondences.match_pairs", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.correspondences.match_pairs", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_15correspondences_14match_pairs(__pyx_self, __pyx_v_lists, __pyx_v_corrected, __pyx_v_frm, __pyx_v_vpar, __pyx_v_cpar, __pyx_v_calib);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_15correspondences_14match_pairs(__pyx_self, __pyx_v_lists, __pyx_v_corrected, __pyx_v_frm, __pyx_v_vpar, __pyx_v_cpar, __pyx_v_calib);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -4953,7 +4953,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_15correspondences_14match_pairs(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_lists, PyObject *__pyx_v_corrected, PyObject *__pyx_v_frm, PyObject *__pyx_v_vpar, PyObject *__pyx_v_cpar, PyObject *__pyx_v_calib) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_15correspondences_14match_pairs(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_lists, PyObject *__pyx_v_corrected, PyObject *__pyx_v_frm, PyObject *__pyx_v_vpar, PyObject *__pyx_v_cpar, PyObject *__pyx_v_calib) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -4962,7 +4962,7 @@ static PyObject *__pyx_pf_10algorithms_15correspondences_14match_pairs(CYTHON_UN
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("match_pairs", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_15correspondences_match_pairs(__pyx_v_lists, __pyx_v_corrected, __pyx_v_frm, __pyx_v_vpar, __pyx_v_cpar, __pyx_v_calib, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 100, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_15correspondences_match_pairs(__pyx_v_lists, __pyx_v_corrected, __pyx_v_frm, __pyx_v_vpar, __pyx_v_cpar, __pyx_v_calib, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 100, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -4971,7 +4971,7 @@ static PyObject *__pyx_pf_10algorithms_15correspondences_14match_pairs(CYTHON_UN
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.correspondences.match_pairs", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.correspondences.match_pairs", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -4979,7 +4979,7 @@ static PyObject *__pyx_pf_10algorithms_15correspondences_14match_pairs(CYTHON_UN
   return __pyx_r;
 }
 
-/* "algorithms/correspondences.py":155
+/* "openptv2/algorithms/correspondences.py":155
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -4987,14 +4987,14 @@ static PyObject *__pyx_pf_10algorithms_15correspondences_14match_pairs(CYTHON_UN
  *     """Find consistent 4-camera correspondences (quadruplets).
 */
 
-static PyObject *__pyx_pw_10algorithms_15correspondences_17four_camera_matching(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_15correspondences_17four_camera_matching(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_15correspondences_four_camera_matching(PyObject *__pyx_v_lists, PyObject *__pyx_v_base_target_count, PyObject *__pyx_v_accept_corr, PyObject *__pyx_v_scratch, PyObject *__pyx_v_scratch_size, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_15correspondences_four_camera_matching(PyObject *__pyx_v_lists, PyObject *__pyx_v_base_target_count, PyObject *__pyx_v_accept_corr, PyObject *__pyx_v_scratch, PyObject *__pyx_v_scratch_size, CYTHON_UNUSED int __pyx_skip_dispatch) {
   int __pyx_v_matched;
   int __pyx_v_i;
   int __pyx_v_j;
@@ -5046,7 +5046,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_four_camera_matching(PyO
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("four_camera_matching", 0);
 
-  /* "algorithms/correspondences.py":164
+  /* "openptv2/algorithms/correspondences.py":164
  *         int, the number of candidate cliques found.
  *     """
  *     matched: cython.int = 0             # <<<<<<<<<<<<<<
@@ -5055,7 +5055,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_four_camera_matching(PyO
 */
   __pyx_v_matched = 0;
 
-  /* "algorithms/correspondences.py":181
+  /* "openptv2/algorithms/correspondences.py":181
  *     corr: cython.double
  * 
  *     for i in range(base_target_count):             # <<<<<<<<<<<<<<
@@ -5067,7 +5067,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_four_camera_matching(PyO
   for (__pyx_t_3 = 0; __pyx_t_3 < __pyx_t_2; __pyx_t_3+=1) {
     __pyx_v_i = __pyx_t_3;
 
-    /* "algorithms/correspondences.py":182
+    /* "openptv2/algorithms/correspondences.py":182
  * 
  *     for i in range(base_target_count):
  *         p1 = lists[0][1][i].p1             # <<<<<<<<<<<<<<
@@ -5089,7 +5089,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_four_camera_matching(PyO
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __pyx_v_p1 = __pyx_t_6;
 
-    /* "algorithms/correspondences.py":183
+    /* "openptv2/algorithms/correspondences.py":183
  *     for i in range(base_target_count):
  *         p1 = lists[0][1][i].p1
  *         for j in range(lists[0][1][i].n):             # <<<<<<<<<<<<<<
@@ -5113,7 +5113,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_four_camera_matching(PyO
     for (__pyx_t_6 = 0; __pyx_t_6 < __pyx_t_8; __pyx_t_6+=1) {
       __pyx_v_j = __pyx_t_6;
 
-      /* "algorithms/correspondences.py":184
+      /* "openptv2/algorithms/correspondences.py":184
  *         p1 = lists[0][1][i].p1
  *         for j in range(lists[0][1][i].n):
  *             for k in range(lists[0][2][i].n):             # <<<<<<<<<<<<<<
@@ -5137,7 +5137,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_four_camera_matching(PyO
       for (__pyx_t_11 = 0; __pyx_t_11 < __pyx_t_10; __pyx_t_11+=1) {
         __pyx_v_k = __pyx_t_11;
 
-        /* "algorithms/correspondences.py":185
+        /* "openptv2/algorithms/correspondences.py":185
  *         for j in range(lists[0][1][i].n):
  *             for k in range(lists[0][2][i].n):
  *                 for l in range(lists[0][3][i].n):             # <<<<<<<<<<<<<<
@@ -5161,7 +5161,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_four_camera_matching(PyO
         for (__pyx_t_14 = 0; __pyx_t_14 < __pyx_t_13; __pyx_t_14+=1) {
           __pyx_v_l = __pyx_t_14;
 
-          /* "algorithms/correspondences.py":186
+          /* "openptv2/algorithms/correspondences.py":186
  *             for k in range(lists[0][2][i].n):
  *                 for l in range(lists[0][3][i].n):
  *                     p2 = lists[0][1][i].p2[j]             # <<<<<<<<<<<<<<
@@ -5186,7 +5186,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_four_camera_matching(PyO
           __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
           __pyx_v_p2 = __pyx_t_15;
 
-          /* "algorithms/correspondences.py":187
+          /* "openptv2/algorithms/correspondences.py":187
  *                 for l in range(lists[0][3][i].n):
  *                     p2 = lists[0][1][i].p2[j]
  *                     p3 = lists[0][2][i].p2[k]             # <<<<<<<<<<<<<<
@@ -5211,7 +5211,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_four_camera_matching(PyO
           __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
           __pyx_v_p3 = __pyx_t_15;
 
-          /* "algorithms/correspondences.py":188
+          /* "openptv2/algorithms/correspondences.py":188
  *                     p2 = lists[0][1][i].p2[j]
  *                     p3 = lists[0][2][i].p2[k]
  *                     p4 = lists[0][3][i].p2[l]             # <<<<<<<<<<<<<<
@@ -5236,7 +5236,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_four_camera_matching(PyO
           __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
           __pyx_v_p4 = __pyx_t_15;
 
-          /* "algorithms/correspondences.py":190
+          /* "openptv2/algorithms/correspondences.py":190
  *                     p4 = lists[0][3][i].p2[l]
  * 
  *                     for m in range(lists[1][2][p2].n):             # <<<<<<<<<<<<<<
@@ -5260,7 +5260,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_four_camera_matching(PyO
           for (__pyx_t_15 = 0; __pyx_t_15 < __pyx_t_17; __pyx_t_15+=1) {
             __pyx_v_m = __pyx_t_15;
 
-            /* "algorithms/correspondences.py":191
+            /* "openptv2/algorithms/correspondences.py":191
  * 
  *                     for m in range(lists[1][2][p2].n):
  *                         p31 = lists[1][2][p2].p2[m]             # <<<<<<<<<<<<<<
@@ -5285,7 +5285,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_four_camera_matching(PyO
             __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
             __pyx_v_p31 = __pyx_t_18;
 
-            /* "algorithms/correspondences.py":192
+            /* "openptv2/algorithms/correspondences.py":192
  *                     for m in range(lists[1][2][p2].n):
  *                         p31 = lists[1][2][p2].p2[m]
  *                         if p3 != p31:             # <<<<<<<<<<<<<<
@@ -5295,7 +5295,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_four_camera_matching(PyO
             __pyx_t_19 = (__pyx_v_p3 != __pyx_v_p31);
             if (__pyx_t_19) {
 
-              /* "algorithms/correspondences.py":193
+              /* "openptv2/algorithms/correspondences.py":193
  *                         p31 = lists[1][2][p2].p2[m]
  *                         if p3 != p31:
  *                             continue             # <<<<<<<<<<<<<<
@@ -5304,7 +5304,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_four_camera_matching(PyO
 */
               goto __pyx_L11_continue;
 
-              /* "algorithms/correspondences.py":192
+              /* "openptv2/algorithms/correspondences.py":192
  *                     for m in range(lists[1][2][p2].n):
  *                         p31 = lists[1][2][p2].p2[m]
  *                         if p3 != p31:             # <<<<<<<<<<<<<<
@@ -5313,7 +5313,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_four_camera_matching(PyO
 */
             }
 
-            /* "algorithms/correspondences.py":195
+            /* "openptv2/algorithms/correspondences.py":195
  *                             continue
  * 
  *                         for n in range(lists[1][3][p2].n):             # <<<<<<<<<<<<<<
@@ -5337,7 +5337,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_four_camera_matching(PyO
             for (__pyx_t_18 = 0; __pyx_t_18 < __pyx_t_21; __pyx_t_18+=1) {
               __pyx_v_n = __pyx_t_18;
 
-              /* "algorithms/correspondences.py":196
+              /* "openptv2/algorithms/correspondences.py":196
  * 
  *                         for n in range(lists[1][3][p2].n):
  *                             p41 = lists[1][3][p2].p2[n]             # <<<<<<<<<<<<<<
@@ -5362,7 +5362,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_four_camera_matching(PyO
               __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
               __pyx_v_p41 = __pyx_t_22;
 
-              /* "algorithms/correspondences.py":197
+              /* "openptv2/algorithms/correspondences.py":197
  *                         for n in range(lists[1][3][p2].n):
  *                             p41 = lists[1][3][p2].p2[n]
  *                             if p4 != p41:             # <<<<<<<<<<<<<<
@@ -5372,7 +5372,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_four_camera_matching(PyO
               __pyx_t_19 = (__pyx_v_p4 != __pyx_v_p41);
               if (__pyx_t_19) {
 
-                /* "algorithms/correspondences.py":198
+                /* "openptv2/algorithms/correspondences.py":198
  *                             p41 = lists[1][3][p2].p2[n]
  *                             if p4 != p41:
  *                                 continue             # <<<<<<<<<<<<<<
@@ -5381,7 +5381,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_four_camera_matching(PyO
 */
                 goto __pyx_L14_continue;
 
-                /* "algorithms/correspondences.py":197
+                /* "openptv2/algorithms/correspondences.py":197
  *                         for n in range(lists[1][3][p2].n):
  *                             p41 = lists[1][3][p2].p2[n]
  *                             if p4 != p41:             # <<<<<<<<<<<<<<
@@ -5390,7 +5390,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_four_camera_matching(PyO
 */
               }
 
-              /* "algorithms/correspondences.py":200
+              /* "openptv2/algorithms/correspondences.py":200
  *                                 continue
  * 
  *                             for o in range(lists[2][3][p3].n):             # <<<<<<<<<<<<<<
@@ -5414,7 +5414,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_four_camera_matching(PyO
               for (__pyx_t_22 = 0; __pyx_t_22 < __pyx_t_24; __pyx_t_22+=1) {
                 __pyx_v_o = __pyx_t_22;
 
-                /* "algorithms/correspondences.py":201
+                /* "openptv2/algorithms/correspondences.py":201
  * 
  *                             for o in range(lists[2][3][p3].n):
  *                                 p42 = lists[2][3][p3].p2[o]             # <<<<<<<<<<<<<<
@@ -5439,7 +5439,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_four_camera_matching(PyO
                 __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
                 __pyx_v_p42 = __pyx_t_25;
 
-                /* "algorithms/correspondences.py":202
+                /* "openptv2/algorithms/correspondences.py":202
  *                             for o in range(lists[2][3][p3].n):
  *                                 p42 = lists[2][3][p3].p2[o]
  *                                 if p4 != p42:             # <<<<<<<<<<<<<<
@@ -5449,7 +5449,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_four_camera_matching(PyO
                 __pyx_t_19 = (__pyx_v_p4 != __pyx_v_p42);
                 if (__pyx_t_19) {
 
-                  /* "algorithms/correspondences.py":203
+                  /* "openptv2/algorithms/correspondences.py":203
  *                                 p42 = lists[2][3][p3].p2[o]
  *                                 if p4 != p42:
  *                                     continue             # <<<<<<<<<<<<<<
@@ -5458,7 +5458,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_four_camera_matching(PyO
 */
                   goto __pyx_L17_continue;
 
-                  /* "algorithms/correspondences.py":202
+                  /* "openptv2/algorithms/correspondences.py":202
  *                             for o in range(lists[2][3][p3].n):
  *                                 p42 = lists[2][3][p3].p2[o]
  *                                 if p4 != p42:             # <<<<<<<<<<<<<<
@@ -5467,7 +5467,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_four_camera_matching(PyO
 */
                 }
 
-                /* "algorithms/correspondences.py":205
+                /* "openptv2/algorithms/correspondences.py":205
  *                                     continue
  * 
  *                                 corr = (lists[0][1][i].corr[j]             # <<<<<<<<<<<<<<
@@ -5489,7 +5489,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_four_camera_matching(PyO
                 __Pyx_GOTREF(__pyx_t_5);
                 __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-                /* "algorithms/correspondences.py":206
+                /* "openptv2/algorithms/correspondences.py":206
  * 
  *                                 corr = (lists[0][1][i].corr[j]
  *                                     + lists[0][2][i].corr[k]             # <<<<<<<<<<<<<<
@@ -5515,7 +5515,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_four_camera_matching(PyO
                 __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
                 __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-                /* "algorithms/correspondences.py":207
+                /* "openptv2/algorithms/correspondences.py":207
  *                                 corr = (lists[0][1][i].corr[j]
  *                                     + lists[0][2][i].corr[k]
  *                                     + lists[0][3][i].corr[l]             # <<<<<<<<<<<<<<
@@ -5541,7 +5541,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_four_camera_matching(PyO
                 __Pyx_DECREF(__pyx_t_26); __pyx_t_26 = 0;
                 __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-                /* "algorithms/correspondences.py":208
+                /* "openptv2/algorithms/correspondences.py":208
  *                                     + lists[0][2][i].corr[k]
  *                                     + lists[0][3][i].corr[l]
  *                                     + lists[1][2][p2].corr[m]             # <<<<<<<<<<<<<<
@@ -5567,7 +5567,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_four_camera_matching(PyO
                 __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
                 __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-                /* "algorithms/correspondences.py":209
+                /* "openptv2/algorithms/correspondences.py":209
  *                                     + lists[0][3][i].corr[l]
  *                                     + lists[1][2][p2].corr[m]
  *                                     + lists[1][3][p2].corr[n]             # <<<<<<<<<<<<<<
@@ -5593,7 +5593,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_four_camera_matching(PyO
                 __Pyx_DECREF(__pyx_t_26); __pyx_t_26 = 0;
                 __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-                /* "algorithms/correspondences.py":210
+                /* "openptv2/algorithms/correspondences.py":210
  *                                     + lists[1][2][p2].corr[m]
  *                                     + lists[1][3][p2].corr[n]
  *                                     + lists[2][3][p3].corr[o]) / (             # <<<<<<<<<<<<<<
@@ -5619,7 +5619,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_four_camera_matching(PyO
                 __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
                 __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-                /* "algorithms/correspondences.py":211
+                /* "openptv2/algorithms/correspondences.py":211
  *                                     + lists[1][3][p2].corr[n]
  *                                     + lists[2][3][p3].corr[o]) / (
  *                                     lists[0][1][i].dist[j]             # <<<<<<<<<<<<<<
@@ -5641,7 +5641,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_four_camera_matching(PyO
                 __Pyx_GOTREF(__pyx_t_4);
                 __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-                /* "algorithms/correspondences.py":212
+                /* "openptv2/algorithms/correspondences.py":212
  *                                     + lists[2][3][p3].corr[o]) / (
  *                                     lists[0][1][i].dist[j]
  *                                     + lists[0][2][i].dist[k]             # <<<<<<<<<<<<<<
@@ -5667,7 +5667,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_four_camera_matching(PyO
                 __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
                 __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-                /* "algorithms/correspondences.py":213
+                /* "openptv2/algorithms/correspondences.py":213
  *                                     lists[0][1][i].dist[j]
  *                                     + lists[0][2][i].dist[k]
  *                                     + lists[0][3][i].dist[l]             # <<<<<<<<<<<<<<
@@ -5693,7 +5693,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_four_camera_matching(PyO
                 __Pyx_DECREF(__pyx_t_27); __pyx_t_27 = 0;
                 __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-                /* "algorithms/correspondences.py":214
+                /* "openptv2/algorithms/correspondences.py":214
  *                                     + lists[0][2][i].dist[k]
  *                                     + lists[0][3][i].dist[l]
  *                                     + lists[1][2][p2].dist[m]             # <<<<<<<<<<<<<<
@@ -5719,7 +5719,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_four_camera_matching(PyO
                 __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
                 __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-                /* "algorithms/correspondences.py":215
+                /* "openptv2/algorithms/correspondences.py":215
  *                                     + lists[0][3][i].dist[l]
  *                                     + lists[1][2][p2].dist[m]
  *                                     + lists[1][3][p2].dist[n]             # <<<<<<<<<<<<<<
@@ -5745,7 +5745,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_four_camera_matching(PyO
                 __Pyx_DECREF(__pyx_t_27); __pyx_t_27 = 0;
                 __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-                /* "algorithms/correspondences.py":216
+                /* "openptv2/algorithms/correspondences.py":216
  *                                     + lists[1][2][p2].dist[m]
  *                                     + lists[1][3][p2].dist[n]
  *                                     + lists[2][3][p3].dist[o])             # <<<<<<<<<<<<<<
@@ -5771,7 +5771,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_four_camera_matching(PyO
                 __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
                 __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-                /* "algorithms/correspondences.py":210
+                /* "openptv2/algorithms/correspondences.py":210
  *                                     + lists[1][2][p2].corr[m]
  *                                     + lists[1][3][p2].corr[n]
  *                                     + lists[2][3][p3].corr[o]) / (             # <<<<<<<<<<<<<<
@@ -5786,7 +5786,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_four_camera_matching(PyO
                 __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
                 __pyx_v_corr = __pyx_t_28;
 
-                /* "algorithms/correspondences.py":218
+                /* "openptv2/algorithms/correspondences.py":218
  *                                     + lists[2][3][p3].dist[o])
  * 
  *                                 if corr <= accept_corr:             # <<<<<<<<<<<<<<
@@ -5801,7 +5801,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_four_camera_matching(PyO
                 __Pyx_DECREF(__pyx_t_27); __pyx_t_27 = 0;
                 if (__pyx_t_19) {
 
-                  /* "algorithms/correspondences.py":219
+                  /* "openptv2/algorithms/correspondences.py":219
  * 
  *                                 if corr <= accept_corr:
  *                                     continue             # <<<<<<<<<<<<<<
@@ -5810,7 +5810,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_four_camera_matching(PyO
 */
                   goto __pyx_L17_continue;
 
-                  /* "algorithms/correspondences.py":218
+                  /* "openptv2/algorithms/correspondences.py":218
  *                                     + lists[2][3][p3].dist[o])
  * 
  *                                 if corr <= accept_corr:             # <<<<<<<<<<<<<<
@@ -5819,7 +5819,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_four_camera_matching(PyO
 */
                 }
 
-                /* "algorithms/correspondences.py":221
+                /* "openptv2/algorithms/correspondences.py":221
  *                                     continue
  * 
  *                                 scratch[matched].p[0] = p1             # <<<<<<<<<<<<<<
@@ -5837,7 +5837,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_four_camera_matching(PyO
                 __Pyx_DECREF(__pyx_t_26); __pyx_t_26 = 0;
                 __Pyx_DECREF(__pyx_t_27); __pyx_t_27 = 0;
 
-                /* "algorithms/correspondences.py":222
+                /* "openptv2/algorithms/correspondences.py":222
  * 
  *                                 scratch[matched].p[0] = p1
  *                                 scratch[matched].p[1] = p2             # <<<<<<<<<<<<<<
@@ -5855,7 +5855,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_four_camera_matching(PyO
                 __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
                 __Pyx_DECREF(__pyx_t_27); __pyx_t_27 = 0;
 
-                /* "algorithms/correspondences.py":223
+                /* "openptv2/algorithms/correspondences.py":223
  *                                 scratch[matched].p[0] = p1
  *                                 scratch[matched].p[1] = p2
  *                                 scratch[matched].p[2] = p3             # <<<<<<<<<<<<<<
@@ -5873,7 +5873,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_four_camera_matching(PyO
                 __Pyx_DECREF(__pyx_t_26); __pyx_t_26 = 0;
                 __Pyx_DECREF(__pyx_t_27); __pyx_t_27 = 0;
 
-                /* "algorithms/correspondences.py":224
+                /* "openptv2/algorithms/correspondences.py":224
  *                                 scratch[matched].p[1] = p2
  *                                 scratch[matched].p[2] = p3
  *                                 scratch[matched].p[3] = p4             # <<<<<<<<<<<<<<
@@ -5891,7 +5891,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_four_camera_matching(PyO
                 __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
                 __Pyx_DECREF(__pyx_t_27); __pyx_t_27 = 0;
 
-                /* "algorithms/correspondences.py":225
+                /* "openptv2/algorithms/correspondences.py":225
  *                                 scratch[matched].p[2] = p3
  *                                 scratch[matched].p[3] = p4
  *                                 scratch[matched].corr = corr             # <<<<<<<<<<<<<<
@@ -5906,7 +5906,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_four_camera_matching(PyO
                 __Pyx_DECREF(__pyx_t_27); __pyx_t_27 = 0;
                 __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-                /* "algorithms/correspondences.py":227
+                /* "openptv2/algorithms/correspondences.py":227
  *                                 scratch[matched].corr = corr
  * 
  *                                 matched += 1             # <<<<<<<<<<<<<<
@@ -5915,7 +5915,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_four_camera_matching(PyO
 */
                 __pyx_v_matched = (__pyx_v_matched + 1);
 
-                /* "algorithms/correspondences.py":228
+                /* "openptv2/algorithms/correspondences.py":228
  * 
  *                                 matched += 1
  *                                 if matched == scratch_size:             # <<<<<<<<<<<<<<
@@ -5930,7 +5930,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_four_camera_matching(PyO
                 __Pyx_DECREF(__pyx_t_27); __pyx_t_27 = 0;
                 if (__pyx_t_19) {
 
-                  /* "algorithms/correspondences.py":229
+                  /* "openptv2/algorithms/correspondences.py":229
  *                                 matched += 1
  *                                 if matched == scratch_size:
  *                                     return matched             # <<<<<<<<<<<<<<
@@ -5944,7 +5944,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_four_camera_matching(PyO
                   __pyx_t_27 = 0;
                   goto __pyx_L0;
 
-                  /* "algorithms/correspondences.py":228
+                  /* "openptv2/algorithms/correspondences.py":228
  * 
  *                                 matched += 1
  *                                 if matched == scratch_size:             # <<<<<<<<<<<<<<
@@ -5963,7 +5963,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_four_camera_matching(PyO
     }
   }
 
-  /* "algorithms/correspondences.py":230
+  /* "openptv2/algorithms/correspondences.py":230
  *                                 if matched == scratch_size:
  *                                     return matched
  *     return matched             # <<<<<<<<<<<<<<
@@ -5977,7 +5977,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_four_camera_matching(PyO
   __pyx_t_27 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/correspondences.py":155
+  /* "openptv2/algorithms/correspondences.py":155
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -5991,7 +5991,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_four_camera_matching(PyO
   __Pyx_XDECREF(__pyx_t_5);
   __Pyx_XDECREF(__pyx_t_26);
   __Pyx_XDECREF(__pyx_t_27);
-  __Pyx_AddTraceback("algorithms.correspondences.four_camera_matching", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.correspondences.four_camera_matching", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -6000,16 +6000,16 @@ static PyObject *__pyx_f_10algorithms_15correspondences_four_camera_matching(PyO
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_15correspondences_17four_camera_matching(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_15correspondences_17four_camera_matching(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_15correspondences_16four_camera_matching, "Find consistent 4-camera correspondences (quadruplets).\n\n    Matches C four_camera_matching exactly.\n\n    Returns:\n        int, the number of candidate cliques found.\n    ");
-static PyMethodDef __pyx_mdef_10algorithms_15correspondences_17four_camera_matching = {"four_camera_matching", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_15correspondences_17four_camera_matching, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_15correspondences_16four_camera_matching};
-static PyObject *__pyx_pw_10algorithms_15correspondences_17four_camera_matching(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_15correspondences_16four_camera_matching, "Find consistent 4-camera correspondences (quadruplets).\n\n    Matches C four_camera_matching exactly.\n\n    Returns:\n        int, the number of candidate cliques found.\n    ");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_15correspondences_17four_camera_matching = {"four_camera_matching", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_15correspondences_17four_camera_matching, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_15correspondences_16four_camera_matching};
+static PyObject *__pyx_pw_8openptv2_10algorithms_15correspondences_17four_camera_matching(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -6103,11 +6103,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.correspondences.four_camera_matching", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.correspondences.four_camera_matching", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_15correspondences_16four_camera_matching(__pyx_self, __pyx_v_lists, __pyx_v_base_target_count, __pyx_v_accept_corr, __pyx_v_scratch, __pyx_v_scratch_size);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_15correspondences_16four_camera_matching(__pyx_self, __pyx_v_lists, __pyx_v_base_target_count, __pyx_v_accept_corr, __pyx_v_scratch, __pyx_v_scratch_size);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -6117,7 +6117,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_15correspondences_16four_camera_matching(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_lists, PyObject *__pyx_v_base_target_count, PyObject *__pyx_v_accept_corr, PyObject *__pyx_v_scratch, PyObject *__pyx_v_scratch_size) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_15correspondences_16four_camera_matching(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_lists, PyObject *__pyx_v_base_target_count, PyObject *__pyx_v_accept_corr, PyObject *__pyx_v_scratch, PyObject *__pyx_v_scratch_size) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -6126,7 +6126,7 @@ static PyObject *__pyx_pf_10algorithms_15correspondences_16four_camera_matching(
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("four_camera_matching", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_15correspondences_four_camera_matching(__pyx_v_lists, __pyx_v_base_target_count, __pyx_v_accept_corr, __pyx_v_scratch, __pyx_v_scratch_size, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 155, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_15correspondences_four_camera_matching(__pyx_v_lists, __pyx_v_base_target_count, __pyx_v_accept_corr, __pyx_v_scratch, __pyx_v_scratch_size, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 155, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -6135,7 +6135,7 @@ static PyObject *__pyx_pf_10algorithms_15correspondences_16four_camera_matching(
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.correspondences.four_camera_matching", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.correspondences.four_camera_matching", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -6143,7 +6143,7 @@ static PyObject *__pyx_pf_10algorithms_15correspondences_16four_camera_matching(
   return __pyx_r;
 }
 
-/* "algorithms/correspondences.py":233
+/* "openptv2/algorithms/correspondences.py":233
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -6151,14 +6151,14 @@ static PyObject *__pyx_pf_10algorithms_15correspondences_16four_camera_matching(
  *                           scratch, scratch_size, tusage):
 */
 
-static PyObject *__pyx_pw_10algorithms_15correspondences_19three_camera_matching(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_15correspondences_19three_camera_matching(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_15correspondences_three_camera_matching(PyObject *__pyx_v_lists, PyObject *__pyx_v_num_cams, PyObject *__pyx_v_target_counts, PyObject *__pyx_v_accept_corr, PyObject *__pyx_v_scratch, PyObject *__pyx_v_scratch_size, PyObject *__pyx_v_tusage, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_15correspondences_three_camera_matching(PyObject *__pyx_v_lists, PyObject *__pyx_v_num_cams, PyObject *__pyx_v_target_counts, PyObject *__pyx_v_accept_corr, PyObject *__pyx_v_scratch, PyObject *__pyx_v_scratch_size, PyObject *__pyx_v_tusage, CYTHON_UNUSED int __pyx_skip_dispatch) {
   int __pyx_v_matched;
   int __pyx_v_i1;
   int __pyx_v_i2;
@@ -6210,7 +6210,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_three_camera_matching(Py
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("three_camera_matching", 0);
 
-  /* "algorithms/correspondences.py":243
+  /* "openptv2/algorithms/correspondences.py":243
  *         int, the number of candidate cliques found.
  *     """
  *     matched: cython.int = 0             # <<<<<<<<<<<<<<
@@ -6219,7 +6219,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_three_camera_matching(Py
 */
   __pyx_v_matched = 0;
 
-  /* "algorithms/correspondences.py":257
+  /* "openptv2/algorithms/correspondences.py":257
  *     corr: cython.double
  * 
  *     for i1 in range(num_cams - 2):             # <<<<<<<<<<<<<<
@@ -6234,7 +6234,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_three_camera_matching(Py
   for (__pyx_t_4 = 0; __pyx_t_4 < __pyx_t_3; __pyx_t_4+=1) {
     __pyx_v_i1 = __pyx_t_4;
 
-    /* "algorithms/correspondences.py":258
+    /* "openptv2/algorithms/correspondences.py":258
  * 
  *     for i1 in range(num_cams - 2):
  *         for i in range(target_counts[i1]):             # <<<<<<<<<<<<<<
@@ -6249,7 +6249,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_three_camera_matching(Py
     for (__pyx_t_7 = 0; __pyx_t_7 < __pyx_t_6; __pyx_t_7+=1) {
       __pyx_v_i = __pyx_t_7;
 
-      /* "algorithms/correspondences.py":259
+      /* "openptv2/algorithms/correspondences.py":259
  *     for i1 in range(num_cams - 2):
  *         for i in range(target_counts[i1]):
  *             for i2 in range(i1 + 1, num_cams - 1):             # <<<<<<<<<<<<<<
@@ -6264,7 +6264,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_three_camera_matching(Py
       for (__pyx_t_10 = (__pyx_v_i1 + 1); __pyx_t_10 < __pyx_t_9; __pyx_t_10+=1) {
         __pyx_v_i2 = __pyx_t_10;
 
-        /* "algorithms/correspondences.py":260
+        /* "openptv2/algorithms/correspondences.py":260
  *         for i in range(target_counts[i1]):
  *             for i2 in range(i1 + 1, num_cams - 1):
  *                 p1 = lists[i1][i2][i].p1             # <<<<<<<<<<<<<<
@@ -6286,7 +6286,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_three_camera_matching(Py
         __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
         __pyx_v_p1 = __pyx_t_12;
 
-        /* "algorithms/correspondences.py":261
+        /* "openptv2/algorithms/correspondences.py":261
  *             for i2 in range(i1 + 1, num_cams - 1):
  *                 p1 = lists[i1][i2][i].p1
  *                 if p1 > NMAX or tusage[i1][p1] > 0:             # <<<<<<<<<<<<<<
@@ -6320,7 +6320,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_three_camera_matching(Py
         __pyx_L10_bool_binop_done:;
         if (__pyx_t_13) {
 
-          /* "algorithms/correspondences.py":262
+          /* "openptv2/algorithms/correspondences.py":262
  *                 p1 = lists[i1][i2][i].p1
  *                 if p1 > NMAX or tusage[i1][p1] > 0:
  *                     continue             # <<<<<<<<<<<<<<
@@ -6329,7 +6329,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_three_camera_matching(Py
 */
           goto __pyx_L7_continue;
 
-          /* "algorithms/correspondences.py":261
+          /* "openptv2/algorithms/correspondences.py":261
  *             for i2 in range(i1 + 1, num_cams - 1):
  *                 p1 = lists[i1][i2][i].p1
  *                 if p1 > NMAX or tusage[i1][p1] > 0:             # <<<<<<<<<<<<<<
@@ -6338,7 +6338,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_three_camera_matching(Py
 */
         }
 
-        /* "algorithms/correspondences.py":264
+        /* "openptv2/algorithms/correspondences.py":264
  *                     continue
  * 
  *                 for j in range(lists[i1][i2][i].n):             # <<<<<<<<<<<<<<
@@ -6362,7 +6362,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_three_camera_matching(Py
         for (__pyx_t_12 = 0; __pyx_t_12 < __pyx_t_17; __pyx_t_12+=1) {
           __pyx_v_j = __pyx_t_12;
 
-          /* "algorithms/correspondences.py":265
+          /* "openptv2/algorithms/correspondences.py":265
  * 
  *                 for j in range(lists[i1][i2][i].n):
  *                     p2 = lists[i1][i2][i].p2[j]             # <<<<<<<<<<<<<<
@@ -6387,7 +6387,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_three_camera_matching(Py
           __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
           __pyx_v_p2 = __pyx_t_18;
 
-          /* "algorithms/correspondences.py":266
+          /* "openptv2/algorithms/correspondences.py":266
  *                 for j in range(lists[i1][i2][i].n):
  *                     p2 = lists[i1][i2][i].p2[j]
  *                     if p2 > NMAX or tusage[i2][p2] > 0:             # <<<<<<<<<<<<<<
@@ -6421,7 +6421,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_three_camera_matching(Py
           __pyx_L15_bool_binop_done:;
           if (__pyx_t_13) {
 
-            /* "algorithms/correspondences.py":267
+            /* "openptv2/algorithms/correspondences.py":267
  *                     p2 = lists[i1][i2][i].p2[j]
  *                     if p2 > NMAX or tusage[i2][p2] > 0:
  *                         continue             # <<<<<<<<<<<<<<
@@ -6430,7 +6430,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_three_camera_matching(Py
 */
             goto __pyx_L12_continue;
 
-            /* "algorithms/correspondences.py":266
+            /* "openptv2/algorithms/correspondences.py":266
  *                 for j in range(lists[i1][i2][i].n):
  *                     p2 = lists[i1][i2][i].p2[j]
  *                     if p2 > NMAX or tusage[i2][p2] > 0:             # <<<<<<<<<<<<<<
@@ -6439,7 +6439,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_three_camera_matching(Py
 */
           }
 
-          /* "algorithms/correspondences.py":269
+          /* "openptv2/algorithms/correspondences.py":269
  *                         continue
  * 
  *                     for i3 in range(i2 + 1, num_cams):             # <<<<<<<<<<<<<<
@@ -6451,7 +6451,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_three_camera_matching(Py
           for (__pyx_t_18 = (__pyx_v_i2 + 1); __pyx_t_18 < __pyx_t_20; __pyx_t_18+=1) {
             __pyx_v_i3 = __pyx_t_18;
 
-            /* "algorithms/correspondences.py":270
+            /* "openptv2/algorithms/correspondences.py":270
  * 
  *                     for i3 in range(i2 + 1, num_cams):
  *                         for k in range(lists[i1][i3][i].n):             # <<<<<<<<<<<<<<
@@ -6475,7 +6475,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_three_camera_matching(Py
             for (__pyx_t_23 = 0; __pyx_t_23 < __pyx_t_22; __pyx_t_23+=1) {
               __pyx_v_k = __pyx_t_23;
 
-              /* "algorithms/correspondences.py":271
+              /* "openptv2/algorithms/correspondences.py":271
  *                     for i3 in range(i2 + 1, num_cams):
  *                         for k in range(lists[i1][i3][i].n):
  *                             p3 = lists[i1][i3][i].p2[k]             # <<<<<<<<<<<<<<
@@ -6500,7 +6500,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_three_camera_matching(Py
               __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
               __pyx_v_p3 = __pyx_t_24;
 
-              /* "algorithms/correspondences.py":272
+              /* "openptv2/algorithms/correspondences.py":272
  *                         for k in range(lists[i1][i3][i].n):
  *                             p3 = lists[i1][i3][i].p2[k]
  *                             if p3 > NMAX or tusage[i3][p3] > 0:             # <<<<<<<<<<<<<<
@@ -6534,7 +6534,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_three_camera_matching(Py
               __pyx_L22_bool_binop_done:;
               if (__pyx_t_13) {
 
-                /* "algorithms/correspondences.py":273
+                /* "openptv2/algorithms/correspondences.py":273
  *                             p3 = lists[i1][i3][i].p2[k]
  *                             if p3 > NMAX or tusage[i3][p3] > 0:
  *                                 continue             # <<<<<<<<<<<<<<
@@ -6543,7 +6543,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_three_camera_matching(Py
 */
                 goto __pyx_L19_continue;
 
-                /* "algorithms/correspondences.py":272
+                /* "openptv2/algorithms/correspondences.py":272
  *                         for k in range(lists[i1][i3][i].n):
  *                             p3 = lists[i1][i3][i].p2[k]
  *                             if p3 > NMAX or tusage[i3][p3] > 0:             # <<<<<<<<<<<<<<
@@ -6552,7 +6552,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_three_camera_matching(Py
 */
               }
 
-              /* "algorithms/correspondences.py":275
+              /* "openptv2/algorithms/correspondences.py":275
  *                                 continue
  * 
  *                             for m_idx in range(lists[i2][i3][p2].n):             # <<<<<<<<<<<<<<
@@ -6576,7 +6576,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_three_camera_matching(Py
               for (__pyx_t_24 = 0; __pyx_t_24 < __pyx_t_26; __pyx_t_24+=1) {
                 __pyx_v_m_idx = __pyx_t_24;
 
-                /* "algorithms/correspondences.py":276
+                /* "openptv2/algorithms/correspondences.py":276
  * 
  *                             for m_idx in range(lists[i2][i3][p2].n):
  *                                 if p3 != lists[i2][i3][p2].p2[m_idx]:             # <<<<<<<<<<<<<<
@@ -6606,7 +6606,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_three_camera_matching(Py
                 __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
                 if (__pyx_t_13) {
 
-                  /* "algorithms/correspondences.py":277
+                  /* "openptv2/algorithms/correspondences.py":277
  *                             for m_idx in range(lists[i2][i3][p2].n):
  *                                 if p3 != lists[i2][i3][p2].p2[m_idx]:
  *                                     continue             # <<<<<<<<<<<<<<
@@ -6615,7 +6615,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_three_camera_matching(Py
 */
                   goto __pyx_L24_continue;
 
-                  /* "algorithms/correspondences.py":276
+                  /* "openptv2/algorithms/correspondences.py":276
  * 
  *                             for m_idx in range(lists[i2][i3][p2].n):
  *                                 if p3 != lists[i2][i3][p2].p2[m_idx]:             # <<<<<<<<<<<<<<
@@ -6624,7 +6624,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_three_camera_matching(Py
 */
                 }
 
-                /* "algorithms/correspondences.py":279
+                /* "openptv2/algorithms/correspondences.py":279
  *                                     continue
  * 
  *                                 corr = (lists[i1][i2][i].corr[j]             # <<<<<<<<<<<<<<
@@ -6646,7 +6646,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_three_camera_matching(Py
                 __Pyx_GOTREF(__pyx_t_14);
                 __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-                /* "algorithms/correspondences.py":280
+                /* "openptv2/algorithms/correspondences.py":280
  * 
  *                                 corr = (lists[i1][i2][i].corr[j]
  *                                     + lists[i1][i3][i].corr[k]             # <<<<<<<<<<<<<<
@@ -6672,7 +6672,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_three_camera_matching(Py
                 __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
                 __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-                /* "algorithms/correspondences.py":281
+                /* "openptv2/algorithms/correspondences.py":281
  *                                 corr = (lists[i1][i2][i].corr[j]
  *                                     + lists[i1][i3][i].corr[k]
  *                                     + lists[i2][i3][p2].corr[m_idx]) / (             # <<<<<<<<<<<<<<
@@ -6698,7 +6698,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_three_camera_matching(Py
                 __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
                 __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-                /* "algorithms/correspondences.py":282
+                /* "openptv2/algorithms/correspondences.py":282
  *                                     + lists[i1][i3][i].corr[k]
  *                                     + lists[i2][i3][p2].corr[m_idx]) / (
  *                                     lists[i1][i2][i].dist[j]             # <<<<<<<<<<<<<<
@@ -6720,7 +6720,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_three_camera_matching(Py
                 __Pyx_GOTREF(__pyx_t_1);
                 __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
 
-                /* "algorithms/correspondences.py":283
+                /* "openptv2/algorithms/correspondences.py":283
  *                                     + lists[i2][i3][p2].corr[m_idx]) / (
  *                                     lists[i1][i2][i].dist[j]
  *                                     + lists[i1][i3][i].dist[k]             # <<<<<<<<<<<<<<
@@ -6746,7 +6746,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_three_camera_matching(Py
                 __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
                 __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
 
-                /* "algorithms/correspondences.py":284
+                /* "openptv2/algorithms/correspondences.py":284
  *                                     lists[i1][i2][i].dist[j]
  *                                     + lists[i1][i3][i].dist[k]
  *                                     + lists[i2][i3][p2].dist[m_idx])             # <<<<<<<<<<<<<<
@@ -6772,7 +6772,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_three_camera_matching(Py
                 __Pyx_DECREF(__pyx_t_27); __pyx_t_27 = 0;
                 __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
 
-                /* "algorithms/correspondences.py":281
+                /* "openptv2/algorithms/correspondences.py":281
  *                                 corr = (lists[i1][i2][i].corr[j]
  *                                     + lists[i1][i3][i].corr[k]
  *                                     + lists[i2][i3][p2].corr[m_idx]) / (             # <<<<<<<<<<<<<<
@@ -6787,7 +6787,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_three_camera_matching(Py
                 __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
                 __pyx_v_corr = __pyx_t_28;
 
-                /* "algorithms/correspondences.py":286
+                /* "openptv2/algorithms/correspondences.py":286
  *                                     + lists[i2][i3][p2].dist[m_idx])
  * 
  *                                 if corr <= accept_corr:             # <<<<<<<<<<<<<<
@@ -6802,7 +6802,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_three_camera_matching(Py
                 __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
                 if (__pyx_t_13) {
 
-                  /* "algorithms/correspondences.py":287
+                  /* "openptv2/algorithms/correspondences.py":287
  * 
  *                                 if corr <= accept_corr:
  *                                     continue             # <<<<<<<<<<<<<<
@@ -6811,7 +6811,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_three_camera_matching(Py
 */
                   goto __pyx_L24_continue;
 
-                  /* "algorithms/correspondences.py":286
+                  /* "openptv2/algorithms/correspondences.py":286
  *                                     + lists[i2][i3][p2].dist[m_idx])
  * 
  *                                 if corr <= accept_corr:             # <<<<<<<<<<<<<<
@@ -6820,7 +6820,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_three_camera_matching(Py
 */
                 }
 
-                /* "algorithms/correspondences.py":289
+                /* "openptv2/algorithms/correspondences.py":289
  *                                     continue
  * 
  *                                 for nc in range(num_cams):             # <<<<<<<<<<<<<<
@@ -6832,7 +6832,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_three_camera_matching(Py
                 for (__pyx_t_31 = 0; __pyx_t_31 < __pyx_t_30; __pyx_t_31+=1) {
                   __pyx_v_nc = __pyx_t_31;
 
-                  /* "algorithms/correspondences.py":290
+                  /* "openptv2/algorithms/correspondences.py":290
  * 
  *                                 for nc in range(num_cams):
  *                                     scratch[matched].p[nc] = -2             # <<<<<<<<<<<<<<
@@ -6848,7 +6848,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_three_camera_matching(Py
                   __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
                 }
 
-                /* "algorithms/correspondences.py":292
+                /* "openptv2/algorithms/correspondences.py":292
  *                                     scratch[matched].p[nc] = -2
  * 
  *                                 scratch[matched].p[i1] = p1             # <<<<<<<<<<<<<<
@@ -6866,7 +6866,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_three_camera_matching(Py
                 __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
                 __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
 
-                /* "algorithms/correspondences.py":293
+                /* "openptv2/algorithms/correspondences.py":293
  * 
  *                                 scratch[matched].p[i1] = p1
  *                                 scratch[matched].p[i2] = p2             # <<<<<<<<<<<<<<
@@ -6884,7 +6884,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_three_camera_matching(Py
                 __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
                 __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
 
-                /* "algorithms/correspondences.py":294
+                /* "openptv2/algorithms/correspondences.py":294
  *                                 scratch[matched].p[i1] = p1
  *                                 scratch[matched].p[i2] = p2
  *                                 scratch[matched].p[i3] = p3             # <<<<<<<<<<<<<<
@@ -6902,7 +6902,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_three_camera_matching(Py
                 __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
                 __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
 
-                /* "algorithms/correspondences.py":295
+                /* "openptv2/algorithms/correspondences.py":295
  *                                 scratch[matched].p[i2] = p2
  *                                 scratch[matched].p[i3] = p3
  *                                 scratch[matched].corr = corr             # <<<<<<<<<<<<<<
@@ -6917,7 +6917,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_three_camera_matching(Py
                 __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
                 __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
 
-                /* "algorithms/correspondences.py":297
+                /* "openptv2/algorithms/correspondences.py":297
  *                                 scratch[matched].corr = corr
  * 
  *                                 matched += 1             # <<<<<<<<<<<<<<
@@ -6926,7 +6926,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_three_camera_matching(Py
 */
                 __pyx_v_matched = (__pyx_v_matched + 1);
 
-                /* "algorithms/correspondences.py":298
+                /* "openptv2/algorithms/correspondences.py":298
  * 
  *                                 matched += 1
  *                                 if matched == scratch_size:             # <<<<<<<<<<<<<<
@@ -6941,7 +6941,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_three_camera_matching(Py
                 __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
                 if (__pyx_t_13) {
 
-                  /* "algorithms/correspondences.py":299
+                  /* "openptv2/algorithms/correspondences.py":299
  *                                 matched += 1
  *                                 if matched == scratch_size:
  *                                     return matched             # <<<<<<<<<<<<<<
@@ -6955,7 +6955,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_three_camera_matching(Py
                   __pyx_t_11 = 0;
                   goto __pyx_L0;
 
-                  /* "algorithms/correspondences.py":298
+                  /* "openptv2/algorithms/correspondences.py":298
  * 
  *                                 matched += 1
  *                                 if matched == scratch_size:             # <<<<<<<<<<<<<<
@@ -6975,7 +6975,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_three_camera_matching(Py
     }
   }
 
-  /* "algorithms/correspondences.py":300
+  /* "openptv2/algorithms/correspondences.py":300
  *                                 if matched == scratch_size:
  *                                     return matched
  *     return matched             # <<<<<<<<<<<<<<
@@ -6989,7 +6989,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_three_camera_matching(Py
   __pyx_t_11 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/correspondences.py":233
+  /* "openptv2/algorithms/correspondences.py":233
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -7003,7 +7003,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_three_camera_matching(Py
   __Pyx_XDECREF(__pyx_t_11);
   __Pyx_XDECREF(__pyx_t_14);
   __Pyx_XDECREF(__pyx_t_27);
-  __Pyx_AddTraceback("algorithms.correspondences.three_camera_matching", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.correspondences.three_camera_matching", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -7012,16 +7012,16 @@ static PyObject *__pyx_f_10algorithms_15correspondences_three_camera_matching(Py
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_15correspondences_19three_camera_matching(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_15correspondences_19three_camera_matching(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_15correspondences_18three_camera_matching, "Find consistent 3-camera correspondences (triplets).\n\n    Matches C three_camera_matching exactly.\n\n    Returns:\n        int, the number of candidate cliques found.\n    ");
-static PyMethodDef __pyx_mdef_10algorithms_15correspondences_19three_camera_matching = {"three_camera_matching", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_15correspondences_19three_camera_matching, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_15correspondences_18three_camera_matching};
-static PyObject *__pyx_pw_10algorithms_15correspondences_19three_camera_matching(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_15correspondences_18three_camera_matching, "Find consistent 3-camera correspondences (triplets).\n\n    Matches C three_camera_matching exactly.\n\n    Returns:\n        int, the number of candidate cliques found.\n    ");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_15correspondences_19three_camera_matching = {"three_camera_matching", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_15correspondences_19three_camera_matching, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_15correspondences_18three_camera_matching};
+static PyObject *__pyx_pw_8openptv2_10algorithms_15correspondences_19three_camera_matching(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -7131,11 +7131,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.correspondences.three_camera_matching", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.correspondences.three_camera_matching", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_15correspondences_18three_camera_matching(__pyx_self, __pyx_v_lists, __pyx_v_num_cams, __pyx_v_target_counts, __pyx_v_accept_corr, __pyx_v_scratch, __pyx_v_scratch_size, __pyx_v_tusage);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_15correspondences_18three_camera_matching(__pyx_self, __pyx_v_lists, __pyx_v_num_cams, __pyx_v_target_counts, __pyx_v_accept_corr, __pyx_v_scratch, __pyx_v_scratch_size, __pyx_v_tusage);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -7145,7 +7145,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_15correspondences_18three_camera_matching(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_lists, PyObject *__pyx_v_num_cams, PyObject *__pyx_v_target_counts, PyObject *__pyx_v_accept_corr, PyObject *__pyx_v_scratch, PyObject *__pyx_v_scratch_size, PyObject *__pyx_v_tusage) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_15correspondences_18three_camera_matching(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_lists, PyObject *__pyx_v_num_cams, PyObject *__pyx_v_target_counts, PyObject *__pyx_v_accept_corr, PyObject *__pyx_v_scratch, PyObject *__pyx_v_scratch_size, PyObject *__pyx_v_tusage) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -7154,7 +7154,7 @@ static PyObject *__pyx_pf_10algorithms_15correspondences_18three_camera_matching
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("three_camera_matching", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_15correspondences_three_camera_matching(__pyx_v_lists, __pyx_v_num_cams, __pyx_v_target_counts, __pyx_v_accept_corr, __pyx_v_scratch, __pyx_v_scratch_size, __pyx_v_tusage, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 233, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_15correspondences_three_camera_matching(__pyx_v_lists, __pyx_v_num_cams, __pyx_v_target_counts, __pyx_v_accept_corr, __pyx_v_scratch, __pyx_v_scratch_size, __pyx_v_tusage, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 233, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -7163,7 +7163,7 @@ static PyObject *__pyx_pf_10algorithms_15correspondences_18three_camera_matching
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.correspondences.three_camera_matching", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.correspondences.three_camera_matching", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -7171,7 +7171,7 @@ static PyObject *__pyx_pf_10algorithms_15correspondences_18three_camera_matching
   return __pyx_r;
 }
 
-/* "algorithms/correspondences.py":303
+/* "openptv2/algorithms/correspondences.py":303
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -7179,14 +7179,14 @@ static PyObject *__pyx_pf_10algorithms_15correspondences_18three_camera_matching
  *                              scratch, scratch_size, tusage):
 */
 
-static PyObject *__pyx_pw_10algorithms_15correspondences_21consistent_pair_matching(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_15correspondences_21consistent_pair_matching(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_15correspondences_consistent_pair_matching(PyObject *__pyx_v_lists, PyObject *__pyx_v_num_cams, PyObject *__pyx_v_target_counts, PyObject *__pyx_v_accept_corr, PyObject *__pyx_v_scratch, PyObject *__pyx_v_scratch_size, PyObject *__pyx_v_tusage, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_15correspondences_consistent_pair_matching(PyObject *__pyx_v_lists, PyObject *__pyx_v_num_cams, PyObject *__pyx_v_target_counts, PyObject *__pyx_v_accept_corr, PyObject *__pyx_v_scratch, PyObject *__pyx_v_scratch_size, PyObject *__pyx_v_tusage, CYTHON_UNUSED int __pyx_skip_dispatch) {
   int __pyx_v_matched;
   int __pyx_v_i1;
   int __pyx_v_i2;
@@ -7220,7 +7220,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_consistent_pair_matching
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("consistent_pair_matching", 0);
 
-  /* "algorithms/correspondences.py":313
+  /* "openptv2/algorithms/correspondences.py":313
  *         int, the number of pairs found.
  *     """
  *     matched: cython.int = 0             # <<<<<<<<<<<<<<
@@ -7229,7 +7229,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_consistent_pair_matching
 */
   __pyx_v_matched = 0;
 
-  /* "algorithms/correspondences.py":322
+  /* "openptv2/algorithms/correspondences.py":322
  *     corr: cython.double
  * 
  *     for i1 in range(num_cams - 1):             # <<<<<<<<<<<<<<
@@ -7244,7 +7244,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_consistent_pair_matching
   for (__pyx_t_4 = 0; __pyx_t_4 < __pyx_t_3; __pyx_t_4+=1) {
     __pyx_v_i1 = __pyx_t_4;
 
-    /* "algorithms/correspondences.py":323
+    /* "openptv2/algorithms/correspondences.py":323
  * 
  *     for i1 in range(num_cams - 1):
  *         for i2 in range(i1 + 1, num_cams):             # <<<<<<<<<<<<<<
@@ -7256,7 +7256,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_consistent_pair_matching
     for (__pyx_t_7 = (__pyx_v_i1 + 1); __pyx_t_7 < __pyx_t_6; __pyx_t_7+=1) {
       __pyx_v_i2 = __pyx_t_7;
 
-      /* "algorithms/correspondences.py":324
+      /* "openptv2/algorithms/correspondences.py":324
  *     for i1 in range(num_cams - 1):
  *         for i2 in range(i1 + 1, num_cams):
  *             for i in range(target_counts[i1]):             # <<<<<<<<<<<<<<
@@ -7271,7 +7271,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_consistent_pair_matching
       for (__pyx_t_10 = 0; __pyx_t_10 < __pyx_t_9; __pyx_t_10+=1) {
         __pyx_v_i = __pyx_t_10;
 
-        /* "algorithms/correspondences.py":325
+        /* "openptv2/algorithms/correspondences.py":325
  *         for i2 in range(i1 + 1, num_cams):
  *             for i in range(target_counts[i1]):
  *                 p1 = lists[i1][i2][i].p1             # <<<<<<<<<<<<<<
@@ -7293,7 +7293,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_consistent_pair_matching
         __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
         __pyx_v_p1 = __pyx_t_12;
 
-        /* "algorithms/correspondences.py":326
+        /* "openptv2/algorithms/correspondences.py":326
  *             for i in range(target_counts[i1]):
  *                 p1 = lists[i1][i2][i].p1
  *                 if p1 > NMAX or tusage[i1][p1] > 0:             # <<<<<<<<<<<<<<
@@ -7327,7 +7327,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_consistent_pair_matching
         __pyx_L10_bool_binop_done:;
         if (__pyx_t_13) {
 
-          /* "algorithms/correspondences.py":327
+          /* "openptv2/algorithms/correspondences.py":327
  *                 p1 = lists[i1][i2][i].p1
  *                 if p1 > NMAX or tusage[i1][p1] > 0:
  *                     continue             # <<<<<<<<<<<<<<
@@ -7336,7 +7336,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_consistent_pair_matching
 */
           goto __pyx_L7_continue;
 
-          /* "algorithms/correspondences.py":326
+          /* "openptv2/algorithms/correspondences.py":326
  *             for i in range(target_counts[i1]):
  *                 p1 = lists[i1][i2][i].p1
  *                 if p1 > NMAX or tusage[i1][p1] > 0:             # <<<<<<<<<<<<<<
@@ -7345,7 +7345,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_consistent_pair_matching
 */
         }
 
-        /* "algorithms/correspondences.py":329
+        /* "openptv2/algorithms/correspondences.py":329
  *                     continue
  * 
  *                 if lists[i1][i2][i].n != 1:             # <<<<<<<<<<<<<<
@@ -7367,7 +7367,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_consistent_pair_matching
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
         if (__pyx_t_13) {
 
-          /* "algorithms/correspondences.py":330
+          /* "openptv2/algorithms/correspondences.py":330
  * 
  *                 if lists[i1][i2][i].n != 1:
  *                     continue             # <<<<<<<<<<<<<<
@@ -7376,7 +7376,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_consistent_pair_matching
 */
           goto __pyx_L7_continue;
 
-          /* "algorithms/correspondences.py":329
+          /* "openptv2/algorithms/correspondences.py":329
  *                     continue
  * 
  *                 if lists[i1][i2][i].n != 1:             # <<<<<<<<<<<<<<
@@ -7385,7 +7385,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_consistent_pair_matching
 */
         }
 
-        /* "algorithms/correspondences.py":332
+        /* "openptv2/algorithms/correspondences.py":332
  *                     continue
  * 
  *                 p2 = lists[i1][i2][i].p2[0]             # <<<<<<<<<<<<<<
@@ -7410,7 +7410,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_consistent_pair_matching
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
         __pyx_v_p2 = __pyx_t_12;
 
-        /* "algorithms/correspondences.py":333
+        /* "openptv2/algorithms/correspondences.py":333
  * 
  *                 p2 = lists[i1][i2][i].p2[0]
  *                 if p2 > NMAX or tusage[i2][p2] > 0:             # <<<<<<<<<<<<<<
@@ -7444,7 +7444,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_consistent_pair_matching
         __pyx_L14_bool_binop_done:;
         if (__pyx_t_13) {
 
-          /* "algorithms/correspondences.py":334
+          /* "openptv2/algorithms/correspondences.py":334
  *                 p2 = lists[i1][i2][i].p2[0]
  *                 if p2 > NMAX or tusage[i2][p2] > 0:
  *                     continue             # <<<<<<<<<<<<<<
@@ -7453,7 +7453,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_consistent_pair_matching
 */
           goto __pyx_L7_continue;
 
-          /* "algorithms/correspondences.py":333
+          /* "openptv2/algorithms/correspondences.py":333
  * 
  *                 p2 = lists[i1][i2][i].p2[0]
  *                 if p2 > NMAX or tusage[i2][p2] > 0:             # <<<<<<<<<<<<<<
@@ -7462,7 +7462,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_consistent_pair_matching
 */
         }
 
-        /* "algorithms/correspondences.py":336
+        /* "openptv2/algorithms/correspondences.py":336
  *                     continue
  * 
  *                 corr = lists[i1][i2][i].corr[0] / lists[i1][i2][i].dist[0]             # <<<<<<<<<<<<<<
@@ -7505,7 +7505,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_consistent_pair_matching
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
         __pyx_v_corr = __pyx_t_16;
 
-        /* "algorithms/correspondences.py":337
+        /* "openptv2/algorithms/correspondences.py":337
  * 
  *                 corr = lists[i1][i2][i].corr[0] / lists[i1][i2][i].dist[0]
  *                 if corr <= accept_corr:             # <<<<<<<<<<<<<<
@@ -7520,7 +7520,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_consistent_pair_matching
         __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
         if (__pyx_t_13) {
 
-          /* "algorithms/correspondences.py":338
+          /* "openptv2/algorithms/correspondences.py":338
  *                 corr = lists[i1][i2][i].corr[0] / lists[i1][i2][i].dist[0]
  *                 if corr <= accept_corr:
  *                     continue             # <<<<<<<<<<<<<<
@@ -7529,7 +7529,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_consistent_pair_matching
 */
           goto __pyx_L7_continue;
 
-          /* "algorithms/correspondences.py":337
+          /* "openptv2/algorithms/correspondences.py":337
  * 
  *                 corr = lists[i1][i2][i].corr[0] / lists[i1][i2][i].dist[0]
  *                 if corr <= accept_corr:             # <<<<<<<<<<<<<<
@@ -7538,7 +7538,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_consistent_pair_matching
 */
         }
 
-        /* "algorithms/correspondences.py":340
+        /* "openptv2/algorithms/correspondences.py":340
  *                     continue
  * 
  *                 for nc in range(num_cams):             # <<<<<<<<<<<<<<
@@ -7550,7 +7550,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_consistent_pair_matching
         for (__pyx_t_12 = 0; __pyx_t_12 < __pyx_t_18; __pyx_t_12+=1) {
           __pyx_v_nc = __pyx_t_12;
 
-          /* "algorithms/correspondences.py":341
+          /* "openptv2/algorithms/correspondences.py":341
  * 
  *                 for nc in range(num_cams):
  *                     scratch[matched].p[nc] = -2             # <<<<<<<<<<<<<<
@@ -7566,7 +7566,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_consistent_pair_matching
           __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
         }
 
-        /* "algorithms/correspondences.py":343
+        /* "openptv2/algorithms/correspondences.py":343
  *                     scratch[matched].p[nc] = -2
  * 
  *                 scratch[matched].p[i1] = p1             # <<<<<<<<<<<<<<
@@ -7584,7 +7584,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_consistent_pair_matching
         __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-        /* "algorithms/correspondences.py":344
+        /* "openptv2/algorithms/correspondences.py":344
  * 
  *                 scratch[matched].p[i1] = p1
  *                 scratch[matched].p[i2] = p2             # <<<<<<<<<<<<<<
@@ -7602,7 +7602,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_consistent_pair_matching
         __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-        /* "algorithms/correspondences.py":345
+        /* "openptv2/algorithms/correspondences.py":345
  *                 scratch[matched].p[i1] = p1
  *                 scratch[matched].p[i2] = p2
  *                 scratch[matched].corr = corr             # <<<<<<<<<<<<<<
@@ -7617,7 +7617,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_consistent_pair_matching
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
         __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
 
-        /* "algorithms/correspondences.py":347
+        /* "openptv2/algorithms/correspondences.py":347
  *                 scratch[matched].corr = corr
  * 
  *                 matched += 1             # <<<<<<<<<<<<<<
@@ -7626,7 +7626,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_consistent_pair_matching
 */
         __pyx_v_matched = (__pyx_v_matched + 1);
 
-        /* "algorithms/correspondences.py":348
+        /* "openptv2/algorithms/correspondences.py":348
  * 
  *                 matched += 1
  *                 if matched == scratch_size:             # <<<<<<<<<<<<<<
@@ -7641,7 +7641,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_consistent_pair_matching
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
         if (__pyx_t_13) {
 
-          /* "algorithms/correspondences.py":349
+          /* "openptv2/algorithms/correspondences.py":349
  *                 matched += 1
  *                 if matched == scratch_size:
  *                     return matched             # <<<<<<<<<<<<<<
@@ -7655,7 +7655,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_consistent_pair_matching
           __pyx_t_1 = 0;
           goto __pyx_L0;
 
-          /* "algorithms/correspondences.py":348
+          /* "openptv2/algorithms/correspondences.py":348
  * 
  *                 matched += 1
  *                 if matched == scratch_size:             # <<<<<<<<<<<<<<
@@ -7668,7 +7668,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_consistent_pair_matching
     }
   }
 
-  /* "algorithms/correspondences.py":350
+  /* "openptv2/algorithms/correspondences.py":350
  *                 if matched == scratch_size:
  *                     return matched
  *     return matched             # <<<<<<<<<<<<<<
@@ -7682,7 +7682,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_consistent_pair_matching
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/correspondences.py":303
+  /* "openptv2/algorithms/correspondences.py":303
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -7695,7 +7695,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_consistent_pair_matching
   __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_11);
   __Pyx_XDECREF(__pyx_t_14);
-  __Pyx_AddTraceback("algorithms.correspondences.consistent_pair_matching", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.correspondences.consistent_pair_matching", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -7704,16 +7704,16 @@ static PyObject *__pyx_f_10algorithms_15correspondences_consistent_pair_matching
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_15correspondences_21consistent_pair_matching(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_15correspondences_21consistent_pair_matching(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_15correspondences_20consistent_pair_matching, "Find unambiguous 2-camera pairs.\n\n    Matches C consistent_pair_matching exactly.\n\n    Returns:\n        int, the number of pairs found.\n    ");
-static PyMethodDef __pyx_mdef_10algorithms_15correspondences_21consistent_pair_matching = {"consistent_pair_matching", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_15correspondences_21consistent_pair_matching, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_15correspondences_20consistent_pair_matching};
-static PyObject *__pyx_pw_10algorithms_15correspondences_21consistent_pair_matching(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_15correspondences_20consistent_pair_matching, "Find unambiguous 2-camera pairs.\n\n    Matches C consistent_pair_matching exactly.\n\n    Returns:\n        int, the number of pairs found.\n    ");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_15correspondences_21consistent_pair_matching = {"consistent_pair_matching", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_15correspondences_21consistent_pair_matching, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_15correspondences_20consistent_pair_matching};
+static PyObject *__pyx_pw_8openptv2_10algorithms_15correspondences_21consistent_pair_matching(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -7823,11 +7823,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.correspondences.consistent_pair_matching", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.correspondences.consistent_pair_matching", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_15correspondences_20consistent_pair_matching(__pyx_self, __pyx_v_lists, __pyx_v_num_cams, __pyx_v_target_counts, __pyx_v_accept_corr, __pyx_v_scratch, __pyx_v_scratch_size, __pyx_v_tusage);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_15correspondences_20consistent_pair_matching(__pyx_self, __pyx_v_lists, __pyx_v_num_cams, __pyx_v_target_counts, __pyx_v_accept_corr, __pyx_v_scratch, __pyx_v_scratch_size, __pyx_v_tusage);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -7837,7 +7837,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_15correspondences_20consistent_pair_matching(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_lists, PyObject *__pyx_v_num_cams, PyObject *__pyx_v_target_counts, PyObject *__pyx_v_accept_corr, PyObject *__pyx_v_scratch, PyObject *__pyx_v_scratch_size, PyObject *__pyx_v_tusage) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_15correspondences_20consistent_pair_matching(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_lists, PyObject *__pyx_v_num_cams, PyObject *__pyx_v_target_counts, PyObject *__pyx_v_accept_corr, PyObject *__pyx_v_scratch, PyObject *__pyx_v_scratch_size, PyObject *__pyx_v_tusage) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -7846,7 +7846,7 @@ static PyObject *__pyx_pf_10algorithms_15correspondences_20consistent_pair_match
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("consistent_pair_matching", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_15correspondences_consistent_pair_matching(__pyx_v_lists, __pyx_v_num_cams, __pyx_v_target_counts, __pyx_v_accept_corr, __pyx_v_scratch, __pyx_v_scratch_size, __pyx_v_tusage, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 303, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_15correspondences_consistent_pair_matching(__pyx_v_lists, __pyx_v_num_cams, __pyx_v_target_counts, __pyx_v_accept_corr, __pyx_v_scratch, __pyx_v_scratch_size, __pyx_v_tusage, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 303, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -7855,7 +7855,7 @@ static PyObject *__pyx_pf_10algorithms_15correspondences_20consistent_pair_match
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.correspondences.consistent_pair_matching", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.correspondences.consistent_pair_matching", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -7863,7 +7863,7 @@ static PyObject *__pyx_pf_10algorithms_15correspondences_20consistent_pair_match
   return __pyx_r;
 }
 
-/* "algorithms/correspondences.py":353
+/* "openptv2/algorithms/correspondences.py":353
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -7871,14 +7871,14 @@ static PyObject *__pyx_pf_10algorithms_15correspondences_20consistent_pair_match
  *     """Take candidates by descending correlation, skipping used targets.
 */
 
-static PyObject *__pyx_pw_10algorithms_15correspondences_23take_best_candidates(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_15correspondences_23take_best_candidates(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_15correspondences_take_best_candidates(PyObject *__pyx_v_src, PyObject *__pyx_v_dst, PyObject *__pyx_v_num_cams, PyObject *__pyx_v_num_cands, PyObject *__pyx_v_tusage, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_15correspondences_take_best_candidates(PyObject *__pyx_v_src, PyObject *__pyx_v_dst, PyObject *__pyx_v_num_cams, PyObject *__pyx_v_num_cands, PyObject *__pyx_v_tusage, CYTHON_UNUSED int __pyx_skip_dispatch) {
   PyObject *__pyx_v_operator = NULL;
   PyObject *__pyx_v_src_slice = NULL;
   PyObject *__pyx_v_taken = NULL;
@@ -7906,7 +7906,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_take_best_candidates(PyO
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("take_best_candidates", 0);
 
-  /* "algorithms/correspondences.py":362
+  /* "openptv2/algorithms/correspondences.py":362
  *         int, the number of cliques taken.
  *     """
  *     import operator             # <<<<<<<<<<<<<<
@@ -7919,7 +7919,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_take_best_candidates(PyO
   __pyx_v_operator = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/correspondences.py":365
+  /* "openptv2/algorithms/correspondences.py":365
  * 
  *     # Sort the active slice of src using Python's optimized Timsort
  *     src_slice = src[:num_cands]             # <<<<<<<<<<<<<<
@@ -7931,7 +7931,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_take_best_candidates(PyO
   __pyx_v_src_slice = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/correspondences.py":366
+  /* "openptv2/algorithms/correspondences.py":366
  *     # Sort the active slice of src using Python's optimized Timsort
  *     src_slice = src[:num_cands]
  *     src_slice.sort(key=operator.attrgetter('corr'), reverse=True)             # <<<<<<<<<<<<<<
@@ -7966,7 +7966,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_take_best_candidates(PyO
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/correspondences.py":367
+  /* "openptv2/algorithms/correspondences.py":367
  *     src_slice = src[:num_cands]
  *     src_slice.sort(key=operator.attrgetter('corr'), reverse=True)
  *     src[:num_cands] = src_slice             # <<<<<<<<<<<<<<
@@ -7975,7 +7975,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_take_best_candidates(PyO
 */
   if (__Pyx_PyObject_SetSlice(__pyx_v_src, __pyx_v_src_slice, 0, 0, NULL, &__pyx_v_num_cands, NULL, 0, 0, 0) < (0)) __PYX_ERR(0, 367, __pyx_L1_error)
 
-  /* "algorithms/correspondences.py":369
+  /* "openptv2/algorithms/correspondences.py":369
  *     src[:num_cands] = src_slice
  * 
  *     taken = 0             # <<<<<<<<<<<<<<
@@ -7985,7 +7985,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_take_best_candidates(PyO
   __Pyx_INCREF(__pyx_mstate_global->__pyx_int_0);
   __pyx_v_taken = __pyx_mstate_global->__pyx_int_0;
 
-  /* "algorithms/correspondences.py":370
+  /* "openptv2/algorithms/correspondences.py":370
  * 
  *     taken = 0
  *     for cand in range(num_cands):             # <<<<<<<<<<<<<<
@@ -8021,7 +8021,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_take_best_candidates(PyO
     __Pyx_XDECREF_SET(__pyx_v_cand, __pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "algorithms/correspondences.py":371
+    /* "openptv2/algorithms/correspondences.py":371
  *     taken = 0
  *     for cand in range(num_cands):
  *         has_used = False             # <<<<<<<<<<<<<<
@@ -8030,7 +8030,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_take_best_candidates(PyO
 */
     __pyx_v_has_used = 0;
 
-    /* "algorithms/correspondences.py":372
+    /* "openptv2/algorithms/correspondences.py":372
  *     for cand in range(num_cands):
  *         has_used = False
  *         for cam in range(num_cams):             # <<<<<<<<<<<<<<
@@ -8066,7 +8066,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_take_best_candidates(PyO
       __Pyx_XDECREF_SET(__pyx_v_cam, __pyx_t_1);
       __pyx_t_1 = 0;
 
-      /* "algorithms/correspondences.py":373
+      /* "openptv2/algorithms/correspondences.py":373
  *         has_used = False
  *         for cam in range(num_cams):
  *             tnum = src[cand].p[cam]             # <<<<<<<<<<<<<<
@@ -8084,7 +8084,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_take_best_candidates(PyO
       __Pyx_XDECREF_SET(__pyx_v_tnum, __pyx_t_1);
       __pyx_t_1 = 0;
 
-      /* "algorithms/correspondences.py":374
+      /* "openptv2/algorithms/correspondences.py":374
  *         for cam in range(num_cams):
  *             tnum = src[cand].p[cam]
  *             if tnum > -1 and tusage[cam][tnum] > 0:             # <<<<<<<<<<<<<<
@@ -8112,7 +8112,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_take_best_candidates(PyO
       __pyx_L8_bool_binop_done:;
       if (__pyx_t_9) {
 
-        /* "algorithms/correspondences.py":375
+        /* "openptv2/algorithms/correspondences.py":375
  *             tnum = src[cand].p[cam]
  *             if tnum > -1 and tusage[cam][tnum] > 0:
  *                 has_used = True             # <<<<<<<<<<<<<<
@@ -8121,7 +8121,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_take_best_candidates(PyO
 */
         __pyx_v_has_used = 1;
 
-        /* "algorithms/correspondences.py":376
+        /* "openptv2/algorithms/correspondences.py":376
  *             if tnum > -1 and tusage[cam][tnum] > 0:
  *                 has_used = True
  *                 break             # <<<<<<<<<<<<<<
@@ -8130,7 +8130,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_take_best_candidates(PyO
 */
         goto __pyx_L6_break;
 
-        /* "algorithms/correspondences.py":374
+        /* "openptv2/algorithms/correspondences.py":374
  *         for cam in range(num_cams):
  *             tnum = src[cand].p[cam]
  *             if tnum > -1 and tusage[cam][tnum] > 0:             # <<<<<<<<<<<<<<
@@ -8139,7 +8139,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_take_best_candidates(PyO
 */
       }
 
-      /* "algorithms/correspondences.py":372
+      /* "openptv2/algorithms/correspondences.py":372
  *     for cand in range(num_cands):
  *         has_used = False
  *         for cam in range(num_cams):             # <<<<<<<<<<<<<<
@@ -8154,7 +8154,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_take_best_candidates(PyO
     goto __pyx_L10_for_end;
     __pyx_L10_for_end:;
 
-    /* "algorithms/correspondences.py":378
+    /* "openptv2/algorithms/correspondences.py":378
  *                 break
  * 
  *         if has_used:             # <<<<<<<<<<<<<<
@@ -8163,7 +8163,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_take_best_candidates(PyO
 */
     if (__pyx_v_has_used) {
 
-      /* "algorithms/correspondences.py":379
+      /* "openptv2/algorithms/correspondences.py":379
  * 
  *         if has_used:
  *             continue             # <<<<<<<<<<<<<<
@@ -8172,7 +8172,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_take_best_candidates(PyO
 */
       goto __pyx_L3_continue;
 
-      /* "algorithms/correspondences.py":378
+      /* "openptv2/algorithms/correspondences.py":378
  *                 break
  * 
  *         if has_used:             # <<<<<<<<<<<<<<
@@ -8181,7 +8181,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_take_best_candidates(PyO
 */
     }
 
-    /* "algorithms/correspondences.py":381
+    /* "openptv2/algorithms/correspondences.py":381
  *             continue
  * 
  *         for cam in range(num_cams):             # <<<<<<<<<<<<<<
@@ -8217,7 +8217,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_take_best_candidates(PyO
       __Pyx_XDECREF_SET(__pyx_v_cam, __pyx_t_4);
       __pyx_t_4 = 0;
 
-      /* "algorithms/correspondences.py":382
+      /* "openptv2/algorithms/correspondences.py":382
  * 
  *         for cam in range(num_cams):
  *             tnum = src[cand].p[cam]             # <<<<<<<<<<<<<<
@@ -8235,7 +8235,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_take_best_candidates(PyO
       __Pyx_XDECREF_SET(__pyx_v_tnum, __pyx_t_4);
       __pyx_t_4 = 0;
 
-      /* "algorithms/correspondences.py":383
+      /* "openptv2/algorithms/correspondences.py":383
  *         for cam in range(num_cams):
  *             tnum = src[cand].p[cam]
  *             if tnum > -1:             # <<<<<<<<<<<<<<
@@ -8247,7 +8247,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_take_best_candidates(PyO
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
       if (__pyx_t_9) {
 
-        /* "algorithms/correspondences.py":384
+        /* "openptv2/algorithms/correspondences.py":384
  *             tnum = src[cand].p[cam]
  *             if tnum > -1:
  *                 tusage[cam][tnum] += 1             # <<<<<<<<<<<<<<
@@ -8268,7 +8268,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_take_best_candidates(PyO
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
         __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-        /* "algorithms/correspondences.py":383
+        /* "openptv2/algorithms/correspondences.py":383
  *         for cam in range(num_cams):
  *             tnum = src[cand].p[cam]
  *             if tnum > -1:             # <<<<<<<<<<<<<<
@@ -8277,7 +8277,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_take_best_candidates(PyO
 */
       }
 
-      /* "algorithms/correspondences.py":381
+      /* "openptv2/algorithms/correspondences.py":381
  *             continue
  * 
  *         for cam in range(num_cams):             # <<<<<<<<<<<<<<
@@ -8287,7 +8287,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_take_best_candidates(PyO
     }
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "algorithms/correspondences.py":386
+    /* "openptv2/algorithms/correspondences.py":386
  *                 tusage[cam][tnum] += 1
  * 
  *         dst[taken] = NTupel(p=list(src[cand].p), corr=src[cand].corr)             # <<<<<<<<<<<<<<
@@ -8340,7 +8340,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_take_best_candidates(PyO
     if (unlikely((PyObject_SetItem(__pyx_v_dst, __pyx_v_taken, __pyx_t_1) < 0))) __PYX_ERR(0, 386, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "algorithms/correspondences.py":387
+    /* "openptv2/algorithms/correspondences.py":387
  * 
  *         dst[taken] = NTupel(p=list(src[cand].p), corr=src[cand].corr)
  *         taken += 1             # <<<<<<<<<<<<<<
@@ -8352,7 +8352,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_take_best_candidates(PyO
     __Pyx_DECREF_SET(__pyx_v_taken, __pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "algorithms/correspondences.py":370
+    /* "openptv2/algorithms/correspondences.py":370
  * 
  *     taken = 0
  *     for cand in range(num_cands):             # <<<<<<<<<<<<<<
@@ -8363,7 +8363,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_take_best_candidates(PyO
   }
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "algorithms/correspondences.py":388
+  /* "openptv2/algorithms/correspondences.py":388
  *         dst[taken] = NTupel(p=list(src[cand].p), corr=src[cand].corr)
  *         taken += 1
  *     return taken             # <<<<<<<<<<<<<<
@@ -8375,7 +8375,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_take_best_candidates(PyO
   __pyx_r = __pyx_v_taken;
   goto __pyx_L0;
 
-  /* "algorithms/correspondences.py":353
+  /* "openptv2/algorithms/correspondences.py":353
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -8392,7 +8392,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_take_best_candidates(PyO
   __Pyx_XDECREF(__pyx_t_11);
   __Pyx_XDECREF(__pyx_t_12);
   __Pyx_XDECREF(__pyx_t_13);
-  __Pyx_AddTraceback("algorithms.correspondences.take_best_candidates", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.correspondences.take_best_candidates", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_operator);
@@ -8407,16 +8407,16 @@ static PyObject *__pyx_f_10algorithms_15correspondences_take_best_candidates(PyO
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_15correspondences_23take_best_candidates(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_15correspondences_23take_best_candidates(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_15correspondences_22take_best_candidates, "Take candidates by descending correlation, skipping used targets.\n\n    Matches C take_best_candidates exactly.\n\n    Returns:\n        int, the number of cliques taken.\n    ");
-static PyMethodDef __pyx_mdef_10algorithms_15correspondences_23take_best_candidates = {"take_best_candidates", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_15correspondences_23take_best_candidates, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_15correspondences_22take_best_candidates};
-static PyObject *__pyx_pw_10algorithms_15correspondences_23take_best_candidates(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_15correspondences_22take_best_candidates, "Take candidates by descending correlation, skipping used targets.\n\n    Matches C take_best_candidates exactly.\n\n    Returns:\n        int, the number of cliques taken.\n    ");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_15correspondences_23take_best_candidates = {"take_best_candidates", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_15correspondences_23take_best_candidates, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_15correspondences_22take_best_candidates};
+static PyObject *__pyx_pw_8openptv2_10algorithms_15correspondences_23take_best_candidates(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -8510,11 +8510,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.correspondences.take_best_candidates", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.correspondences.take_best_candidates", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_15correspondences_22take_best_candidates(__pyx_self, __pyx_v_src, __pyx_v_dst, __pyx_v_num_cams, __pyx_v_num_cands, __pyx_v_tusage);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_15correspondences_22take_best_candidates(__pyx_self, __pyx_v_src, __pyx_v_dst, __pyx_v_num_cams, __pyx_v_num_cands, __pyx_v_tusage);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -8524,7 +8524,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_15correspondences_22take_best_candidates(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_src, PyObject *__pyx_v_dst, PyObject *__pyx_v_num_cams, PyObject *__pyx_v_num_cands, PyObject *__pyx_v_tusage) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_15correspondences_22take_best_candidates(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_src, PyObject *__pyx_v_dst, PyObject *__pyx_v_num_cams, PyObject *__pyx_v_num_cands, PyObject *__pyx_v_tusage) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -8533,7 +8533,7 @@ static PyObject *__pyx_pf_10algorithms_15correspondences_22take_best_candidates(
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("take_best_candidates", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_15correspondences_take_best_candidates(__pyx_v_src, __pyx_v_dst, __pyx_v_num_cams, __pyx_v_num_cands, __pyx_v_tusage, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 353, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_15correspondences_take_best_candidates(__pyx_v_src, __pyx_v_dst, __pyx_v_num_cams, __pyx_v_num_cands, __pyx_v_tusage, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 353, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -8542,7 +8542,7 @@ static PyObject *__pyx_pf_10algorithms_15correspondences_22take_best_candidates(
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.correspondences.take_best_candidates", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.correspondences.take_best_candidates", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -8550,7 +8550,7 @@ static PyObject *__pyx_pf_10algorithms_15correspondences_22take_best_candidates(
   return __pyx_r;
 }
 
-/* "algorithms/correspondences.py":391
+/* "openptv2/algorithms/correspondences.py":391
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -8558,14 +8558,14 @@ static PyObject *__pyx_pf_10algorithms_15correspondences_22take_best_candidates(
  *     """Transition from pixel to metric to flat coordinates, x-sorted.
 */
 
-static PyObject *__pyx_pw_10algorithms_15correspondences_25correct_frame(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_15correspondences_25correct_frame(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_15correspondences_correct_frame(PyObject *__pyx_v_frm, PyObject *__pyx_v_calib, PyObject *__pyx_v_cpar, PyObject *__pyx_v_tol, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_15correspondences_correct_frame(PyObject *__pyx_v_frm, PyObject *__pyx_v_calib, PyObject *__pyx_v_cpar, PyObject *__pyx_v_tol, CYTHON_UNUSED int __pyx_skip_dispatch) {
   PyObject *__pyx_v_Coord2d = NULL;
   PyObject *__pyx_v_pixel_to_metric = NULL;
   PyObject *__pyx_v_dist_to_flat = NULL;
@@ -8608,7 +8608,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correct_frame(PyObject *
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("correct_frame", 0);
 
-  /* "algorithms/correspondences.py":406
+  /* "openptv2/algorithms/correspondences.py":406
  *         list of lists of Coord2d, one per camera, x-sorted.
  *     """
  *     from .epi import Coord2d             # <<<<<<<<<<<<<<
@@ -8617,7 +8617,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correct_frame(PyObject *
 */
   {
     PyObject* const __pyx_imported_names[] = {__pyx_mstate_global->__pyx_n_u_Coord2d};
-    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_epi, __pyx_imported_names, 1, __pyx_mstate_global->__pyx_kp_u_algorithms_epi, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 406, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_epi, __pyx_imported_names, 1, __pyx_mstate_global->__pyx_kp_u_openptv2_algorithms_epi, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 406, __pyx_L1_error)
   }
   __pyx_t_1 = __pyx_t_2;
   __Pyx_GOTREF(__pyx_t_1);
@@ -8638,7 +8638,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correct_frame(PyObject *
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/correspondences.py":407
+  /* "openptv2/algorithms/correspondences.py":407
  *     """
  *     from .epi import Coord2d
  *     from .trafo import pixel_to_metric, dist_to_flat             # <<<<<<<<<<<<<<
@@ -8647,7 +8647,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correct_frame(PyObject *
 */
   {
     PyObject* const __pyx_imported_names[] = {__pyx_mstate_global->__pyx_n_u_pixel_to_metric,__pyx_mstate_global->__pyx_n_u_dist_to_flat};
-    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_trafo, __pyx_imported_names, 2, __pyx_mstate_global->__pyx_kp_u_algorithms_trafo, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 407, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_trafo, __pyx_imported_names, 2, __pyx_mstate_global->__pyx_kp_u_openptv2_algorithms_trafo, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 407, __pyx_L1_error)
   }
   __pyx_t_1 = __pyx_t_2;
   __Pyx_GOTREF(__pyx_t_1);
@@ -8672,7 +8672,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correct_frame(PyObject *
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/correspondences.py":409
+  /* "openptv2/algorithms/correspondences.py":409
  *     from .trafo import pixel_to_metric, dist_to_flat
  * 
  *     corrected = []             # <<<<<<<<<<<<<<
@@ -8684,7 +8684,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correct_frame(PyObject *
   __pyx_v_corrected = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "algorithms/correspondences.py":410
+  /* "openptv2/algorithms/correspondences.py":410
  * 
  *     corrected = []
  *     for cam in range(cpar.num_cams):             # <<<<<<<<<<<<<<
@@ -8723,7 +8723,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correct_frame(PyObject *
     __Pyx_XDECREF_SET(__pyx_v_cam, __pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "algorithms/correspondences.py":411
+    /* "openptv2/algorithms/correspondences.py":411
  *     corrected = []
  *     for cam in range(cpar.num_cams):
  *         cam_coords = []             # <<<<<<<<<<<<<<
@@ -8735,7 +8735,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correct_frame(PyObject *
     __Pyx_XDECREF_SET(__pyx_v_cam_coords, ((PyObject*)__pyx_t_1));
     __pyx_t_1 = 0;
 
-    /* "algorithms/correspondences.py":412
+    /* "openptv2/algorithms/correspondences.py":412
  *     for cam in range(cpar.num_cams):
  *         cam_coords = []
  *         for part in range(frm.num_targets[cam]):             # <<<<<<<<<<<<<<
@@ -8777,7 +8777,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correct_frame(PyObject *
       __Pyx_XDECREF_SET(__pyx_v_part, __pyx_t_1);
       __pyx_t_1 = 0;
 
-      /* "algorithms/correspondences.py":413
+      /* "openptv2/algorithms/correspondences.py":413
  *         cam_coords = []
  *         for part in range(frm.num_targets[cam]):
  *             t = frm.targets[cam][part]             # <<<<<<<<<<<<<<
@@ -8795,7 +8795,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correct_frame(PyObject *
       __Pyx_XDECREF_SET(__pyx_v_t, __pyx_t_1);
       __pyx_t_1 = 0;
 
-      /* "algorithms/correspondences.py":414
+      /* "openptv2/algorithms/correspondences.py":414
  *         for part in range(frm.num_targets[cam]):
  *             t = frm.targets[cam][part]
  *             xm, ym = pixel_to_metric(t.x, t.y, cpar)             # <<<<<<<<<<<<<<
@@ -8886,7 +8886,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correct_frame(PyObject *
       __Pyx_XDECREF_SET(__pyx_v_ym, __pyx_t_12);
       __pyx_t_12 = 0;
 
-      /* "algorithms/correspondences.py":416
+      /* "openptv2/algorithms/correspondences.py":416
  *             xm, ym = pixel_to_metric(t.x, t.y, cpar)
  * 
  *             ap = calib[cam].added_par             # <<<<<<<<<<<<<<
@@ -8901,7 +8901,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correct_frame(PyObject *
       __Pyx_XDECREF_SET(__pyx_v_ap, __pyx_t_12);
       __pyx_t_12 = 0;
 
-      /* "algorithms/correspondences.py":417
+      /* "openptv2/algorithms/correspondences.py":417
  * 
  *             ap = calib[cam].added_par
  *             ip = calib[cam].int_par             # <<<<<<<<<<<<<<
@@ -8916,7 +8916,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correct_frame(PyObject *
       __Pyx_XDECREF_SET(__pyx_v_ip, __pyx_t_1);
       __pyx_t_1 = 0;
 
-      /* "algorithms/correspondences.py":418
+      /* "openptv2/algorithms/correspondences.py":418
  *             ap = calib[cam].added_par
  *             ip = calib[cam].int_par
  *             fx, fy = dist_to_flat(xm, ym,             # <<<<<<<<<<<<<<
@@ -8927,7 +8927,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correct_frame(PyObject *
       __Pyx_INCREF(__pyx_v_dist_to_flat);
       __pyx_t_8 = __pyx_v_dist_to_flat; 
 
-      /* "algorithms/correspondences.py":419
+      /* "openptv2/algorithms/correspondences.py":419
  *             ip = calib[cam].int_par
  *             fx, fy = dist_to_flat(xm, ym,
  *                 ip.xh, ip.yh,             # <<<<<<<<<<<<<<
@@ -8939,7 +8939,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correct_frame(PyObject *
       __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_ip, __pyx_mstate_global->__pyx_n_u_yh); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 419, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_4);
 
-      /* "algorithms/correspondences.py":420
+      /* "openptv2/algorithms/correspondences.py":420
  *             fx, fy = dist_to_flat(xm, ym,
  *                 ip.xh, ip.yh,
  *                 ap.k1, ap.k2, ap.k3, ap.p1, ap.p2, ap.scx, ap.she,             # <<<<<<<<<<<<<<
@@ -8961,7 +8961,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correct_frame(PyObject *
       __pyx_t_20 = __Pyx_PyObject_GetAttrStr(__pyx_v_ap, __pyx_mstate_global->__pyx_n_u_she); if (unlikely(!__pyx_t_20)) __PYX_ERR(0, 420, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_20);
 
-      /* "algorithms/correspondences.py":421
+      /* "openptv2/algorithms/correspondences.py":421
  *                 ip.xh, ip.yh,
  *                 ap.k1, ap.k2, ap.k3, ap.p1, ap.p2, ap.scx, ap.she,
  *                 tol)             # <<<<<<<<<<<<<<
@@ -9048,7 +9048,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correct_frame(PyObject *
         __pyx_L10_unpacking_done:;
       }
 
-      /* "algorithms/correspondences.py":418
+      /* "openptv2/algorithms/correspondences.py":418
  *             ap = calib[cam].added_par
  *             ip = calib[cam].int_par
  *             fx, fy = dist_to_flat(xm, ym,             # <<<<<<<<<<<<<<
@@ -9060,7 +9060,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correct_frame(PyObject *
       __Pyx_XDECREF_SET(__pyx_v_fy, __pyx_t_20);
       __pyx_t_20 = 0;
 
-      /* "algorithms/correspondences.py":423
+      /* "openptv2/algorithms/correspondences.py":423
  *                 tol)
  * 
  *             cam_coords.append(Coord2d(pnr=t.pnr, x=fx, y=fy))             # <<<<<<<<<<<<<<
@@ -9102,7 +9102,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correct_frame(PyObject *
       __pyx_t_21 = __Pyx_PyList_Append(__pyx_v_cam_coords, __pyx_t_1); if (unlikely(__pyx_t_21 == ((int)-1))) __PYX_ERR(0, 423, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "algorithms/correspondences.py":412
+      /* "openptv2/algorithms/correspondences.py":412
  *     for cam in range(cpar.num_cams):
  *         cam_coords = []
  *         for part in range(frm.num_targets[cam]):             # <<<<<<<<<<<<<<
@@ -9112,18 +9112,18 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correct_frame(PyObject *
     }
     __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
 
-    /* "algorithms/correspondences.py":425
+    /* "openptv2/algorithms/correspondences.py":425
  *             cam_coords.append(Coord2d(pnr=t.pnr, x=fx, y=fy))
  * 
  *         quicksort_coord2d_x(cam_coords)             # <<<<<<<<<<<<<<
  *         corrected.append(cam_coords)
  * 
 */
-    __pyx_t_9 = __pyx_f_10algorithms_15correspondences_quicksort_coord2d_x(__pyx_v_cam_coords, 0); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 425, __pyx_L1_error)
+    __pyx_t_9 = __pyx_f_8openptv2_10algorithms_15correspondences_quicksort_coord2d_x(__pyx_v_cam_coords, 0); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 425, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_9);
     __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
 
-    /* "algorithms/correspondences.py":426
+    /* "openptv2/algorithms/correspondences.py":426
  * 
  *         quicksort_coord2d_x(cam_coords)
  *         corrected.append(cam_coords)             # <<<<<<<<<<<<<<
@@ -9132,7 +9132,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correct_frame(PyObject *
 */
     __pyx_t_21 = __Pyx_PyList_Append(__pyx_v_corrected, __pyx_v_cam_coords); if (unlikely(__pyx_t_21 == ((int)-1))) __PYX_ERR(0, 426, __pyx_L1_error)
 
-    /* "algorithms/correspondences.py":410
+    /* "openptv2/algorithms/correspondences.py":410
  * 
  *     corrected = []
  *     for cam in range(cpar.num_cams):             # <<<<<<<<<<<<<<
@@ -9142,7 +9142,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correct_frame(PyObject *
   }
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "algorithms/correspondences.py":428
+  /* "openptv2/algorithms/correspondences.py":428
  *         corrected.append(cam_coords)
  * 
  *     return corrected             # <<<<<<<<<<<<<<
@@ -9154,7 +9154,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correct_frame(PyObject *
   __pyx_r = __pyx_v_corrected;
   goto __pyx_L0;
 
-  /* "algorithms/correspondences.py":391
+  /* "openptv2/algorithms/correspondences.py":391
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -9178,7 +9178,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correct_frame(PyObject *
   __Pyx_XDECREF(__pyx_t_18);
   __Pyx_XDECREF(__pyx_t_19);
   __Pyx_XDECREF(__pyx_t_20);
-  __Pyx_AddTraceback("algorithms.correspondences.correct_frame", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.correspondences.correct_frame", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_Coord2d);
@@ -9201,16 +9201,16 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correct_frame(PyObject *
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_15correspondences_25correct_frame(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_15correspondences_25correct_frame(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_15correspondences_24correct_frame, "Transition from pixel to metric to flat coordinates, x-sorted.\n\n    Matches C correct_frame from check_correspondences.c.\n\n    Args:\n        frm: Frame object.\n        calib: list of Calibration objects.\n        cpar: ControlPar.\n        tol: tolerance for iterative flattening.\n\n    Returns:\n        list of lists of Coord2d, one per camera, x-sorted.\n    ");
-static PyMethodDef __pyx_mdef_10algorithms_15correspondences_25correct_frame = {"correct_frame", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_15correspondences_25correct_frame, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_15correspondences_24correct_frame};
-static PyObject *__pyx_pw_10algorithms_15correspondences_25correct_frame(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_15correspondences_24correct_frame, "Transition from pixel to metric to flat coordinates, x-sorted.\n\n    Matches C correct_frame from check_correspondences.c.\n\n    Args:\n        frm: Frame object.\n        calib: list of Calibration objects.\n        cpar: ControlPar.\n        tol: tolerance for iterative flattening.\n\n    Returns:\n        list of lists of Coord2d, one per camera, x-sorted.\n    ");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_15correspondences_25correct_frame = {"correct_frame", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_15correspondences_25correct_frame, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_15correspondences_24correct_frame};
+static PyObject *__pyx_pw_8openptv2_10algorithms_15correspondences_25correct_frame(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -9296,11 +9296,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.correspondences.correct_frame", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.correspondences.correct_frame", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_15correspondences_24correct_frame(__pyx_self, __pyx_v_frm, __pyx_v_calib, __pyx_v_cpar, __pyx_v_tol);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_15correspondences_24correct_frame(__pyx_self, __pyx_v_frm, __pyx_v_calib, __pyx_v_cpar, __pyx_v_tol);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -9310,7 +9310,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_15correspondences_24correct_frame(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_frm, PyObject *__pyx_v_calib, PyObject *__pyx_v_cpar, PyObject *__pyx_v_tol) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_15correspondences_24correct_frame(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_frm, PyObject *__pyx_v_calib, PyObject *__pyx_v_cpar, PyObject *__pyx_v_tol) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -9319,7 +9319,7 @@ static PyObject *__pyx_pf_10algorithms_15correspondences_24correct_frame(CYTHON_
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("correct_frame", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_15correspondences_correct_frame(__pyx_v_frm, __pyx_v_calib, __pyx_v_cpar, __pyx_v_tol, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 391, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_15correspondences_correct_frame(__pyx_v_frm, __pyx_v_calib, __pyx_v_cpar, __pyx_v_tol, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 391, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -9328,7 +9328,7 @@ static PyObject *__pyx_pf_10algorithms_15correspondences_24correct_frame(CYTHON_
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.correspondences.correct_frame", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.correspondences.correct_frame", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -9336,7 +9336,7 @@ static PyObject *__pyx_pf_10algorithms_15correspondences_24correct_frame(CYTHON_
   return __pyx_r;
 }
 
-/* "algorithms/correspondences.py":431
+/* "openptv2/algorithms/correspondences.py":431
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -9344,14 +9344,14 @@ static PyObject *__pyx_pf_10algorithms_15correspondences_24correct_frame(CYTHON_
  *     """Full correspondence matching pipeline.
 */
 
-static PyObject *__pyx_pw_10algorithms_15correspondences_27correspondences(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_15correspondences_27correspondences(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_15correspondences_correspondences(PyObject *__pyx_v_frm, PyObject *__pyx_v_corrected, PyObject *__pyx_v_vpar, PyObject *__pyx_v_cpar, PyObject *__pyx_v_calib, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_15correspondences_correspondences(PyObject *__pyx_v_frm, PyObject *__pyx_v_corrected, PyObject *__pyx_v_vpar, PyObject *__pyx_v_cpar, PyObject *__pyx_v_calib, CYTHON_UNUSED int __pyx_skip_dispatch) {
   PyObject *__pyx_v_num_cams = NULL;
   PyObject *__pyx_v_con0_size = NULL;
   PyObject *__pyx_v_con0 = NULL;
@@ -9388,7 +9388,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correspondences(PyObject
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("correspondences", 0);
 
-  /* "algorithms/correspondences.py":448
+  /* "openptv2/algorithms/correspondences.py":448
  *         and match_counts is [quads, trips, pairs, total].
  *     """
  *     num_cams = cpar.num_cams             # <<<<<<<<<<<<<<
@@ -9400,7 +9400,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correspondences(PyObject
   __pyx_v_num_cams = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/correspondences.py":449
+  /* "openptv2/algorithms/correspondences.py":449
  *     """
  *     num_cams = cpar.num_cams
  *     con0_size = num_cams * NMAX             # <<<<<<<<<<<<<<
@@ -9415,7 +9415,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correspondences(PyObject
   __pyx_v_con0_size = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "algorithms/correspondences.py":450
+  /* "openptv2/algorithms/correspondences.py":450
  *     num_cams = cpar.num_cams
  *     con0_size = num_cams * NMAX
  *     con0 = [NTupel() for _ in range(con0_size)]             # <<<<<<<<<<<<<<
@@ -9490,7 +9490,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correspondences(PyObject
   __pyx_v_con0 = ((PyObject*)__pyx_t_2);
   __pyx_t_2 = 0;
 
-  /* "algorithms/correspondences.py":451
+  /* "openptv2/algorithms/correspondences.py":451
  *     con0_size = num_cams * NMAX
  *     con0 = [NTupel() for _ in range(con0_size)]
  *     con = [NTupel() for _ in range(con0_size)]             # <<<<<<<<<<<<<<
@@ -9565,7 +9565,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correspondences(PyObject
   __pyx_v_con = ((PyObject*)__pyx_t_2);
   __pyx_t_2 = 0;
 
-  /* "algorithms/correspondences.py":453
+  /* "openptv2/algorithms/correspondences.py":453
  *     con = [NTupel() for _ in range(con0_size)]
  * 
  *     tusage = [[0] * NMAX for _ in range(num_cams)]             # <<<<<<<<<<<<<<
@@ -9630,7 +9630,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correspondences(PyObject
   __pyx_v_tusage = ((PyObject*)__pyx_t_2);
   __pyx_t_2 = 0;
 
-  /* "algorithms/correspondences.py":455
+  /* "openptv2/algorithms/correspondences.py":455
  *     tusage = [[0] * NMAX for _ in range(num_cams)]
  * 
  *     lists = safely_allocate_adjacency_lists(num_cams, frm.num_targets)             # <<<<<<<<<<<<<<
@@ -9639,13 +9639,13 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correspondences(PyObject
 */
   __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_frm, __pyx_mstate_global->__pyx_n_u_num_targets); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 455, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __pyx_f_10algorithms_15correspondences_safely_allocate_adjacency_lists(__pyx_v_num_cams, __pyx_t_2, 0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 455, __pyx_L1_error)
+  __pyx_t_3 = __pyx_f_8openptv2_10algorithms_15correspondences_safely_allocate_adjacency_lists(__pyx_v_num_cams, __pyx_t_2, 0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 455, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_v_lists = __pyx_t_3;
   __pyx_t_3 = 0;
 
-  /* "algorithms/correspondences.py":457
+  /* "openptv2/algorithms/correspondences.py":457
  *     lists = safely_allocate_adjacency_lists(num_cams, frm.num_targets)
  * 
  *     for i in range(NMAX):             # <<<<<<<<<<<<<<
@@ -9684,7 +9684,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correspondences(PyObject
     __Pyx_XDECREF_SET(__pyx_v_i, __pyx_t_3);
     __pyx_t_3 = 0;
 
-    /* "algorithms/correspondences.py":458
+    /* "openptv2/algorithms/correspondences.py":458
  * 
  *     for i in range(NMAX):
  *         for j in range(num_cams):             # <<<<<<<<<<<<<<
@@ -9720,7 +9720,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correspondences(PyObject
       __Pyx_XDECREF_SET(__pyx_v_j, __pyx_t_3);
       __pyx_t_3 = 0;
 
-      /* "algorithms/correspondences.py":459
+      /* "openptv2/algorithms/correspondences.py":459
  *     for i in range(NMAX):
  *         for j in range(num_cams):
  *             con0[i].p[j] = -1             # <<<<<<<<<<<<<<
@@ -9735,7 +9735,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correspondences(PyObject
       if (unlikely((PyObject_SetItem(__pyx_t_1, __pyx_v_j, __pyx_mstate_global->__pyx_int_neg_1) < 0))) __PYX_ERR(0, 459, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "algorithms/correspondences.py":458
+      /* "openptv2/algorithms/correspondences.py":458
  * 
  *     for i in range(NMAX):
  *         for j in range(num_cams):             # <<<<<<<<<<<<<<
@@ -9745,7 +9745,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correspondences(PyObject
     }
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "algorithms/correspondences.py":460
+    /* "openptv2/algorithms/correspondences.py":460
  *         for j in range(num_cams):
  *             con0[i].p[j] = -1
  *         con0[i].corr = 0.0             # <<<<<<<<<<<<<<
@@ -9757,7 +9757,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correspondences(PyObject
     if (__Pyx_PyObject_SetAttrStr(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_corr, __pyx_mstate_global->__pyx_float_0_0) < (0)) __PYX_ERR(0, 460, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "algorithms/correspondences.py":457
+    /* "openptv2/algorithms/correspondences.py":457
  *     lists = safely_allocate_adjacency_lists(num_cams, frm.num_targets)
  * 
  *     for i in range(NMAX):             # <<<<<<<<<<<<<<
@@ -9767,7 +9767,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correspondences(PyObject
   }
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-  /* "algorithms/correspondences.py":462
+  /* "openptv2/algorithms/correspondences.py":462
  *         con0[i].corr = 0.0
  * 
  *     match_counts = [0, 0, 0, 0]             # <<<<<<<<<<<<<<
@@ -9791,18 +9791,18 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correspondences(PyObject
   __pyx_v_match_counts = ((PyObject*)__pyx_t_6);
   __pyx_t_6 = 0;
 
-  /* "algorithms/correspondences.py":464
+  /* "openptv2/algorithms/correspondences.py":464
  *     match_counts = [0, 0, 0, 0]
  * 
  *     match_pairs(lists, corrected, frm, vpar, cpar, calib)             # <<<<<<<<<<<<<<
  * 
  *     if num_cams == 4:
 */
-  __pyx_t_6 = __pyx_f_10algorithms_15correspondences_match_pairs(__pyx_v_lists, __pyx_v_corrected, __pyx_v_frm, __pyx_v_vpar, __pyx_v_cpar, __pyx_v_calib, 0); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 464, __pyx_L1_error)
+  __pyx_t_6 = __pyx_f_8openptv2_10algorithms_15correspondences_match_pairs(__pyx_v_lists, __pyx_v_corrected, __pyx_v_frm, __pyx_v_vpar, __pyx_v_cpar, __pyx_v_calib, 0); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 464, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-  /* "algorithms/correspondences.py":466
+  /* "openptv2/algorithms/correspondences.py":466
  *     match_pairs(lists, corrected, frm, vpar, cpar, calib)
  * 
  *     if num_cams == 4:             # <<<<<<<<<<<<<<
@@ -9812,7 +9812,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correspondences(PyObject
   __pyx_t_9 = (__Pyx_PyLong_BoolEqObjC(__pyx_v_num_cams, __pyx_mstate_global->__pyx_int_4, 4, 0)); if (unlikely((__pyx_t_9 < 0))) __PYX_ERR(0, 466, __pyx_L1_error)
   if (__pyx_t_9) {
 
-    /* "algorithms/correspondences.py":467
+    /* "openptv2/algorithms/correspondences.py":467
  * 
  *     if num_cams == 4:
  *         match0 = four_camera_matching(lists, frm.num_targets[0],             # <<<<<<<<<<<<<<
@@ -9825,7 +9825,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correspondences(PyObject
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-    /* "algorithms/correspondences.py":468
+    /* "openptv2/algorithms/correspondences.py":468
  *     if num_cams == 4:
  *         match0 = four_camera_matching(lists, frm.num_targets[0],
  *             vpar.corrmin, con0, 4 * NMAX)             # <<<<<<<<<<<<<<
@@ -9840,14 +9840,14 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correspondences(PyObject
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "algorithms/correspondences.py":467
+    /* "openptv2/algorithms/correspondences.py":467
  * 
  *     if num_cams == 4:
  *         match0 = four_camera_matching(lists, frm.num_targets[0],             # <<<<<<<<<<<<<<
  *             vpar.corrmin, con0, 4 * NMAX)
  * 
 */
-    __pyx_t_1 = __pyx_f_10algorithms_15correspondences_four_camera_matching(__pyx_v_lists, __pyx_t_2, __pyx_t_6, __pyx_v_con0, __pyx_t_3, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 467, __pyx_L1_error)
+    __pyx_t_1 = __pyx_f_8openptv2_10algorithms_15correspondences_four_camera_matching(__pyx_v_lists, __pyx_t_2, __pyx_t_6, __pyx_v_con0, __pyx_t_3, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 467, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
@@ -9855,19 +9855,19 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correspondences(PyObject
     __pyx_v_match0 = __pyx_t_1;
     __pyx_t_1 = 0;
 
-    /* "algorithms/correspondences.py":470
+    /* "openptv2/algorithms/correspondences.py":470
  *             vpar.corrmin, con0, 4 * NMAX)
  * 
  *         match_counts[0] = take_best_candidates(con0, con, num_cams, match0, tusage)             # <<<<<<<<<<<<<<
  *         match_counts[3] += match_counts[0]
  * 
 */
-    __pyx_t_1 = __pyx_f_10algorithms_15correspondences_take_best_candidates(__pyx_v_con0, __pyx_v_con, __pyx_v_num_cams, __pyx_v_match0, __pyx_v_tusage, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 470, __pyx_L1_error)
+    __pyx_t_1 = __pyx_f_8openptv2_10algorithms_15correspondences_take_best_candidates(__pyx_v_con0, __pyx_v_con, __pyx_v_num_cams, __pyx_v_match0, __pyx_v_tusage, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 470, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     if (unlikely((__Pyx_SetItemInt(__pyx_v_match_counts, 0, __pyx_t_1, long, 1, __Pyx_PyLong_From_long, 1, 0, 0, 1, __Pyx_ReferenceSharing_OwnStrongReference) < 0))) __PYX_ERR(0, 470, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "algorithms/correspondences.py":471
+    /* "openptv2/algorithms/correspondences.py":471
  * 
  *         match_counts[0] = take_best_candidates(con0, con, num_cams, match0, tusage)
  *         match_counts[3] += match_counts[0]             # <<<<<<<<<<<<<<
@@ -9880,7 +9880,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correspondences(PyObject
     if (unlikely((__Pyx_SetItemInt(__pyx_v_match_counts, __pyx_t_10, __pyx_t_1, Py_ssize_t, 1, PyLong_FromSsize_t, 1, 0, 0, 1, __Pyx_ReferenceSharing_OwnStrongReference) < 0))) __PYX_ERR(0, 471, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "algorithms/correspondences.py":466
+    /* "openptv2/algorithms/correspondences.py":466
  *     match_pairs(lists, corrected, frm, vpar, cpar, calib)
  * 
  *     if num_cams == 4:             # <<<<<<<<<<<<<<
@@ -9889,7 +9889,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correspondences(PyObject
 */
   }
 
-  /* "algorithms/correspondences.py":473
+  /* "openptv2/algorithms/correspondences.py":473
  *         match_counts[3] += match_counts[0]
  * 
  *     if (num_cams == 4 and cpar.allCam_flag == 0) or num_cams == 3:             # <<<<<<<<<<<<<<
@@ -9916,7 +9916,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correspondences(PyObject
   __pyx_L32_bool_binop_done:;
   if (__pyx_t_9) {
 
-    /* "algorithms/correspondences.py":474
+    /* "openptv2/algorithms/correspondences.py":474
  * 
  *     if (num_cams == 4 and cpar.allCam_flag == 0) or num_cams == 3:
  *         match0 = three_camera_matching(lists, num_cams, frm.num_targets,             # <<<<<<<<<<<<<<
@@ -9926,7 +9926,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correspondences(PyObject
     __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_frm, __pyx_mstate_global->__pyx_n_u_num_targets); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 474, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
 
-    /* "algorithms/correspondences.py":475
+    /* "openptv2/algorithms/correspondences.py":475
  *     if (num_cams == 4 and cpar.allCam_flag == 0) or num_cams == 3:
  *         match0 = three_camera_matching(lists, num_cams, frm.num_targets,
  *             vpar.corrmin, con0, 4 * NMAX, tusage)             # <<<<<<<<<<<<<<
@@ -9941,14 +9941,14 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correspondences(PyObject
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-    /* "algorithms/correspondences.py":474
+    /* "openptv2/algorithms/correspondences.py":474
  * 
  *     if (num_cams == 4 and cpar.allCam_flag == 0) or num_cams == 3:
  *         match0 = three_camera_matching(lists, num_cams, frm.num_targets,             # <<<<<<<<<<<<<<
  *             vpar.corrmin, con0, 4 * NMAX, tusage)
  * 
 */
-    __pyx_t_6 = __pyx_f_10algorithms_15correspondences_three_camera_matching(__pyx_v_lists, __pyx_v_num_cams, __pyx_t_1, __pyx_t_3, __pyx_v_con0, __pyx_t_2, __pyx_v_tusage, 0); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 474, __pyx_L1_error)
+    __pyx_t_6 = __pyx_f_8openptv2_10algorithms_15correspondences_three_camera_matching(__pyx_v_lists, __pyx_v_num_cams, __pyx_t_1, __pyx_t_3, __pyx_v_con0, __pyx_t_2, __pyx_v_tusage, 0); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 474, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -9956,7 +9956,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correspondences(PyObject
     __Pyx_XDECREF_SET(__pyx_v_match0, __pyx_t_6);
     __pyx_t_6 = 0;
 
-    /* "algorithms/correspondences.py":477
+    /* "openptv2/algorithms/correspondences.py":477
  *             vpar.corrmin, con0, 4 * NMAX, tusage)
  * 
  *         offset = match_counts[3]             # <<<<<<<<<<<<<<
@@ -9968,7 +9968,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correspondences(PyObject
     __pyx_v_offset = __pyx_t_6;
     __pyx_t_6 = 0;
 
-    /* "algorithms/correspondences.py":478
+    /* "openptv2/algorithms/correspondences.py":478
  * 
  *         offset = match_counts[3]
  *         tmp = con[offset:]             # <<<<<<<<<<<<<<
@@ -9990,19 +9990,19 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correspondences(PyObject
     __pyx_v_tmp = ((PyObject*)__pyx_t_6);
     __pyx_t_6 = 0;
 
-    /* "algorithms/correspondences.py":479
+    /* "openptv2/algorithms/correspondences.py":479
  *         offset = match_counts[3]
  *         tmp = con[offset:]
  *         match_counts[1] = take_best_candidates(con0, tmp, num_cams,             # <<<<<<<<<<<<<<
  *             match0, tusage)
  *         for k in range(match_counts[1]):
 */
-    __pyx_t_6 = __pyx_f_10algorithms_15correspondences_take_best_candidates(__pyx_v_con0, __pyx_v_tmp, __pyx_v_num_cams, __pyx_v_match0, __pyx_v_tusage, 0); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 479, __pyx_L1_error)
+    __pyx_t_6 = __pyx_f_8openptv2_10algorithms_15correspondences_take_best_candidates(__pyx_v_con0, __pyx_v_tmp, __pyx_v_num_cams, __pyx_v_match0, __pyx_v_tusage, 0); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 479, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     if (unlikely((__Pyx_SetItemInt(__pyx_v_match_counts, 1, __pyx_t_6, long, 1, __Pyx_PyLong_From_long, 1, 0, 0, 1, __Pyx_ReferenceSharing_OwnStrongReference) < 0))) __PYX_ERR(0, 479, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-    /* "algorithms/correspondences.py":481
+    /* "openptv2/algorithms/correspondences.py":481
  *         match_counts[1] = take_best_candidates(con0, tmp, num_cams,
  *             match0, tusage)
  *         for k in range(match_counts[1]):             # <<<<<<<<<<<<<<
@@ -10038,7 +10038,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correspondences(PyObject
       __Pyx_XDECREF_SET(__pyx_v_k, __pyx_t_6);
       __pyx_t_6 = 0;
 
-      /* "algorithms/correspondences.py":482
+      /* "openptv2/algorithms/correspondences.py":482
  *             match0, tusage)
  *         for k in range(match_counts[1]):
  *             con[offset + k] = tmp[k]             # <<<<<<<<<<<<<<
@@ -10053,7 +10053,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correspondences(PyObject
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-      /* "algorithms/correspondences.py":481
+      /* "openptv2/algorithms/correspondences.py":481
  *         match_counts[1] = take_best_candidates(con0, tmp, num_cams,
  *             match0, tusage)
  *         for k in range(match_counts[1]):             # <<<<<<<<<<<<<<
@@ -10063,7 +10063,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correspondences(PyObject
     }
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "algorithms/correspondences.py":483
+    /* "openptv2/algorithms/correspondences.py":483
  *         for k in range(match_counts[1]):
  *             con[offset + k] = tmp[k]
  *         match_counts[3] += match_counts[1]             # <<<<<<<<<<<<<<
@@ -10076,7 +10076,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correspondences(PyObject
     if (unlikely((__Pyx_SetItemInt(__pyx_v_match_counts, __pyx_t_10, __pyx_t_2, Py_ssize_t, 1, PyLong_FromSsize_t, 1, 0, 0, 1, __Pyx_ReferenceSharing_OwnStrongReference) < 0))) __PYX_ERR(0, 483, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "algorithms/correspondences.py":473
+    /* "openptv2/algorithms/correspondences.py":473
  *         match_counts[3] += match_counts[0]
  * 
  *     if (num_cams == 4 and cpar.allCam_flag == 0) or num_cams == 3:             # <<<<<<<<<<<<<<
@@ -10085,7 +10085,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correspondences(PyObject
 */
   }
 
-  /* "algorithms/correspondences.py":485
+  /* "openptv2/algorithms/correspondences.py":485
  *         match_counts[3] += match_counts[1]
  * 
  *     if num_cams > 1 and cpar.allCam_flag == 0:             # <<<<<<<<<<<<<<
@@ -10108,7 +10108,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correspondences(PyObject
   __pyx_L39_bool_binop_done:;
   if (__pyx_t_9) {
 
-    /* "algorithms/correspondences.py":486
+    /* "openptv2/algorithms/correspondences.py":486
  * 
  *     if num_cams > 1 and cpar.allCam_flag == 0:
  *         match0 = consistent_pair_matching(lists, num_cams, frm.num_targets,             # <<<<<<<<<<<<<<
@@ -10118,7 +10118,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correspondences(PyObject
     __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_frm, __pyx_mstate_global->__pyx_n_u_num_targets); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 486, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
 
-    /* "algorithms/correspondences.py":487
+    /* "openptv2/algorithms/correspondences.py":487
  *     if num_cams > 1 and cpar.allCam_flag == 0:
  *         match0 = consistent_pair_matching(lists, num_cams, frm.num_targets,
  *             vpar.corrmin, con0, 4 * NMAX, tusage)             # <<<<<<<<<<<<<<
@@ -10133,14 +10133,14 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correspondences(PyObject
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-    /* "algorithms/correspondences.py":486
+    /* "openptv2/algorithms/correspondences.py":486
  * 
  *     if num_cams > 1 and cpar.allCam_flag == 0:
  *         match0 = consistent_pair_matching(lists, num_cams, frm.num_targets,             # <<<<<<<<<<<<<<
  *             vpar.corrmin, con0, 4 * NMAX, tusage)
  * 
 */
-    __pyx_t_3 = __pyx_f_10algorithms_15correspondences_consistent_pair_matching(__pyx_v_lists, __pyx_v_num_cams, __pyx_t_2, __pyx_t_6, __pyx_v_con0, __pyx_t_1, __pyx_v_tusage, 0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 486, __pyx_L1_error)
+    __pyx_t_3 = __pyx_f_8openptv2_10algorithms_15correspondences_consistent_pair_matching(__pyx_v_lists, __pyx_v_num_cams, __pyx_t_2, __pyx_t_6, __pyx_v_con0, __pyx_t_1, __pyx_v_tusage, 0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 486, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
@@ -10148,7 +10148,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correspondences(PyObject
     __Pyx_XDECREF_SET(__pyx_v_match0, __pyx_t_3);
     __pyx_t_3 = 0;
 
-    /* "algorithms/correspondences.py":489
+    /* "openptv2/algorithms/correspondences.py":489
  *             vpar.corrmin, con0, 4 * NMAX, tusage)
  * 
  *         offset = match_counts[3]             # <<<<<<<<<<<<<<
@@ -10160,7 +10160,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correspondences(PyObject
     __Pyx_XDECREF_SET(__pyx_v_offset, __pyx_t_3);
     __pyx_t_3 = 0;
 
-    /* "algorithms/correspondences.py":490
+    /* "openptv2/algorithms/correspondences.py":490
  * 
  *         offset = match_counts[3]
  *         tmp = con[offset:]             # <<<<<<<<<<<<<<
@@ -10182,19 +10182,19 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correspondences(PyObject
     __Pyx_XDECREF_SET(__pyx_v_tmp, ((PyObject*)__pyx_t_3));
     __pyx_t_3 = 0;
 
-    /* "algorithms/correspondences.py":491
+    /* "openptv2/algorithms/correspondences.py":491
  *         offset = match_counts[3]
  *         tmp = con[offset:]
  *         match_counts[2] = take_best_candidates(con0, tmp, num_cams,             # <<<<<<<<<<<<<<
  *             match0, tusage)
  *         for k in range(match_counts[2]):
 */
-    __pyx_t_3 = __pyx_f_10algorithms_15correspondences_take_best_candidates(__pyx_v_con0, __pyx_v_tmp, __pyx_v_num_cams, __pyx_v_match0, __pyx_v_tusage, 0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 491, __pyx_L1_error)
+    __pyx_t_3 = __pyx_f_8openptv2_10algorithms_15correspondences_take_best_candidates(__pyx_v_con0, __pyx_v_tmp, __pyx_v_num_cams, __pyx_v_match0, __pyx_v_tusage, 0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 491, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     if (unlikely((__Pyx_SetItemInt(__pyx_v_match_counts, 2, __pyx_t_3, long, 1, __Pyx_PyLong_From_long, 1, 0, 0, 1, __Pyx_ReferenceSharing_OwnStrongReference) < 0))) __PYX_ERR(0, 491, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-    /* "algorithms/correspondences.py":493
+    /* "openptv2/algorithms/correspondences.py":493
  *         match_counts[2] = take_best_candidates(con0, tmp, num_cams,
  *             match0, tusage)
  *         for k in range(match_counts[2]):             # <<<<<<<<<<<<<<
@@ -10230,7 +10230,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correspondences(PyObject
       __Pyx_XDECREF_SET(__pyx_v_k, __pyx_t_3);
       __pyx_t_3 = 0;
 
-      /* "algorithms/correspondences.py":494
+      /* "openptv2/algorithms/correspondences.py":494
  *             match0, tusage)
  *         for k in range(match_counts[2]):
  *             con[offset + k] = tmp[k]             # <<<<<<<<<<<<<<
@@ -10245,7 +10245,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correspondences(PyObject
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-      /* "algorithms/correspondences.py":493
+      /* "openptv2/algorithms/correspondences.py":493
  *         match_counts[2] = take_best_candidates(con0, tmp, num_cams,
  *             match0, tusage)
  *         for k in range(match_counts[2]):             # <<<<<<<<<<<<<<
@@ -10255,7 +10255,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correspondences(PyObject
     }
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "algorithms/correspondences.py":495
+    /* "openptv2/algorithms/correspondences.py":495
  *         for k in range(match_counts[2]):
  *             con[offset + k] = tmp[k]
  *         match_counts[3] += match_counts[2]             # <<<<<<<<<<<<<<
@@ -10268,7 +10268,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correspondences(PyObject
     if (unlikely((__Pyx_SetItemInt(__pyx_v_match_counts, __pyx_t_10, __pyx_t_1, Py_ssize_t, 1, PyLong_FromSsize_t, 1, 0, 0, 1, __Pyx_ReferenceSharing_OwnStrongReference) < 0))) __PYX_ERR(0, 495, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "algorithms/correspondences.py":485
+    /* "openptv2/algorithms/correspondences.py":485
  *         match_counts[3] += match_counts[1]
  * 
  *     if num_cams > 1 and cpar.allCam_flag == 0:             # <<<<<<<<<<<<<<
@@ -10277,7 +10277,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correspondences(PyObject
 */
   }
 
-  /* "algorithms/correspondences.py":497
+  /* "openptv2/algorithms/correspondences.py":497
  *         match_counts[3] += match_counts[2]
  * 
  *     for i in range(match_counts[3]):             # <<<<<<<<<<<<<<
@@ -10313,7 +10313,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correspondences(PyObject
     __Pyx_XDECREF_SET(__pyx_v_i, __pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "algorithms/correspondences.py":498
+    /* "openptv2/algorithms/correspondences.py":498
  * 
  *     for i in range(match_counts[3]):
  *         for j in range(num_cams):             # <<<<<<<<<<<<<<
@@ -10349,7 +10349,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correspondences(PyObject
       __Pyx_XDECREF_SET(__pyx_v_j, __pyx_t_1);
       __pyx_t_1 = 0;
 
-      /* "algorithms/correspondences.py":499
+      /* "openptv2/algorithms/correspondences.py":499
  *     for i in range(match_counts[3]):
  *         for j in range(num_cams):
  *             if con[i].p[j] < 0:             # <<<<<<<<<<<<<<
@@ -10370,7 +10370,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correspondences(PyObject
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
       if (__pyx_t_9) {
 
-        /* "algorithms/correspondences.py":500
+        /* "openptv2/algorithms/correspondences.py":500
  *         for j in range(num_cams):
  *             if con[i].p[j] < 0:
  *                 continue             # <<<<<<<<<<<<<<
@@ -10379,7 +10379,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correspondences(PyObject
 */
         goto __pyx_L46_continue;
 
-        /* "algorithms/correspondences.py":499
+        /* "openptv2/algorithms/correspondences.py":499
  *     for i in range(match_counts[3]):
  *         for j in range(num_cams):
  *             if con[i].p[j] < 0:             # <<<<<<<<<<<<<<
@@ -10388,7 +10388,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correspondences(PyObject
 */
       }
 
-      /* "algorithms/correspondences.py":501
+      /* "openptv2/algorithms/correspondences.py":501
  *             if con[i].p[j] < 0:
  *                 continue
  *             p1 = corrected[j][con[i].p[j]].pnr             # <<<<<<<<<<<<<<
@@ -10415,7 +10415,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correspondences(PyObject
       __Pyx_XDECREF_SET(__pyx_v_p1, __pyx_t_1);
       __pyx_t_1 = 0;
 
-      /* "algorithms/correspondences.py":502
+      /* "openptv2/algorithms/correspondences.py":502
  *                 continue
  *             p1 = corrected[j][con[i].p[j]].pnr
  *             if p1 > -1 and p1 < 1202590843:             # <<<<<<<<<<<<<<
@@ -10437,7 +10437,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correspondences(PyObject
       __pyx_L50_bool_binop_done:;
       if (__pyx_t_9) {
 
-        /* "algorithms/correspondences.py":503
+        /* "openptv2/algorithms/correspondences.py":503
  *             p1 = corrected[j][con[i].p[j]].pnr
  *             if p1 > -1 and p1 < 1202590843:
  *                 frm.targets[j][p1].tnr = i             # <<<<<<<<<<<<<<
@@ -10455,7 +10455,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correspondences(PyObject
         if (__Pyx_PyObject_SetAttrStr(__pyx_t_1, __pyx_mstate_global->__pyx_n_u_tnr, __pyx_v_i) < (0)) __PYX_ERR(0, 503, __pyx_L1_error)
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-        /* "algorithms/correspondences.py":502
+        /* "openptv2/algorithms/correspondences.py":502
  *                 continue
  *             p1 = corrected[j][con[i].p[j]].pnr
  *             if p1 > -1 and p1 < 1202590843:             # <<<<<<<<<<<<<<
@@ -10464,7 +10464,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correspondences(PyObject
 */
       }
 
-      /* "algorithms/correspondences.py":498
+      /* "openptv2/algorithms/correspondences.py":498
  * 
  *     for i in range(match_counts[3]):
  *         for j in range(num_cams):             # <<<<<<<<<<<<<<
@@ -10475,7 +10475,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correspondences(PyObject
     }
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-    /* "algorithms/correspondences.py":497
+    /* "openptv2/algorithms/correspondences.py":497
  *         match_counts[3] += match_counts[2]
  * 
  *     for i in range(match_counts[3]):             # <<<<<<<<<<<<<<
@@ -10485,7 +10485,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correspondences(PyObject
   }
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-  /* "algorithms/correspondences.py":505
+  /* "openptv2/algorithms/correspondences.py":505
  *                 frm.targets[j][p1].tnr = i
  * 
  *     return con[:match_counts[3]], match_counts             # <<<<<<<<<<<<<<
@@ -10517,7 +10517,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correspondences(PyObject
   __pyx_t_6 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/correspondences.py":431
+  /* "openptv2/algorithms/correspondences.py":431
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -10532,7 +10532,7 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correspondences(PyObject
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_6);
   __Pyx_XDECREF(__pyx_t_7);
-  __Pyx_AddTraceback("algorithms.correspondences.correspondences", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.correspondences.correspondences", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_num_cams);
@@ -10558,16 +10558,16 @@ static PyObject *__pyx_f_10algorithms_15correspondences_correspondences(PyObject
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_15correspondences_27correspondences(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_15correspondences_27correspondences(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_15correspondences_26correspondences, "Full correspondence matching pipeline.\n\n    Matches C correspondences() exactly.\n\n    Args:\n        frm: Frame object.\n        corrected: per-camera x-sorted Coord2d arrays (from correct_frame).\n        vpar: VolumePar.\n        cpar: ControlPar.\n        calib: list of Calibration objects.\n\n    Returns:\n        (con, match_counts) where con is the list of NTupel correspondences\n        and match_counts is [quads, trips, pairs, total].\n    ");
-static PyMethodDef __pyx_mdef_10algorithms_15correspondences_27correspondences = {"correspondences", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_15correspondences_27correspondences, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_15correspondences_26correspondences};
-static PyObject *__pyx_pw_10algorithms_15correspondences_27correspondences(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_15correspondences_26correspondences, "Full correspondence matching pipeline.\n\n    Matches C correspondences() exactly.\n\n    Args:\n        frm: Frame object.\n        corrected: per-camera x-sorted Coord2d arrays (from correct_frame).\n        vpar: VolumePar.\n        cpar: ControlPar.\n        calib: list of Calibration objects.\n\n    Returns:\n        (con, match_counts) where con is the list of NTupel correspondences\n        and match_counts is [quads, trips, pairs, total].\n    ");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_15correspondences_27correspondences = {"correspondences", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_15correspondences_27correspondences, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_15correspondences_26correspondences};
+static PyObject *__pyx_pw_8openptv2_10algorithms_15correspondences_27correspondences(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -10661,11 +10661,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.correspondences.correspondences", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.correspondences.correspondences", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_15correspondences_26correspondences(__pyx_self, __pyx_v_frm, __pyx_v_corrected, __pyx_v_vpar, __pyx_v_cpar, __pyx_v_calib);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_15correspondences_26correspondences(__pyx_self, __pyx_v_frm, __pyx_v_corrected, __pyx_v_vpar, __pyx_v_cpar, __pyx_v_calib);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -10675,7 +10675,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_15correspondences_26correspondences(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_frm, PyObject *__pyx_v_corrected, PyObject *__pyx_v_vpar, PyObject *__pyx_v_cpar, PyObject *__pyx_v_calib) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_15correspondences_26correspondences(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_frm, PyObject *__pyx_v_corrected, PyObject *__pyx_v_vpar, PyObject *__pyx_v_cpar, PyObject *__pyx_v_calib) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -10684,7 +10684,7 @@ static PyObject *__pyx_pf_10algorithms_15correspondences_26correspondences(CYTHO
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("correspondences", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_15correspondences_correspondences(__pyx_v_frm, __pyx_v_corrected, __pyx_v_vpar, __pyx_v_cpar, __pyx_v_calib, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 431, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_15correspondences_correspondences(__pyx_v_frm, __pyx_v_corrected, __pyx_v_vpar, __pyx_v_cpar, __pyx_v_calib, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 431, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -10693,7 +10693,7 @@ static PyObject *__pyx_pf_10algorithms_15correspondences_26correspondences(CYTHO
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.correspondences.correspondences", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.correspondences.correspondences", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -10701,7 +10701,7 @@ static PyObject *__pyx_pf_10algorithms_15correspondences_26correspondences(CYTHO
   return __pyx_r;
 }
 
-/* "algorithms/correspondences.py":508
+/* "openptv2/algorithms/correspondences.py":508
  * 
  * 
  * def is_compiled() -> bool:             # <<<<<<<<<<<<<<
@@ -10710,28 +10710,28 @@ static PyObject *__pyx_pf_10algorithms_15correspondences_26correspondences(CYTHO
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_15correspondences_29is_compiled(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_15correspondences_28is_compiled, "Return whether this module is compiled to C.");
-static PyMethodDef __pyx_mdef_10algorithms_15correspondences_29is_compiled = {"is_compiled", (PyCFunction)__pyx_pw_10algorithms_15correspondences_29is_compiled, METH_NOARGS, __pyx_doc_10algorithms_15correspondences_28is_compiled};
-static PyObject *__pyx_pw_10algorithms_15correspondences_29is_compiled(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_8openptv2_10algorithms_15correspondences_29is_compiled(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_15correspondences_28is_compiled, "Return whether this module is compiled to C.");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_15correspondences_29is_compiled = {"is_compiled", (PyCFunction)__pyx_pw_8openptv2_10algorithms_15correspondences_29is_compiled, METH_NOARGS, __pyx_doc_8openptv2_10algorithms_15correspondences_28is_compiled};
+static PyObject *__pyx_pw_8openptv2_10algorithms_15correspondences_29is_compiled(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused) {
   CYTHON_UNUSED PyObject *const *__pyx_kwvalues;
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("is_compiled (wrapper)", 0);
   __pyx_kwvalues = __Pyx_KwValues_VARARGS(__pyx_args, __pyx_nargs);
-  __pyx_r = __pyx_pf_10algorithms_15correspondences_28is_compiled(__pyx_self);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_15correspondences_28is_compiled(__pyx_self);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_15correspondences_28is_compiled(CYTHON_UNUSED PyObject *__pyx_self) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_15correspondences_28is_compiled(CYTHON_UNUSED PyObject *__pyx_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("is_compiled", 0);
 
-  /* "algorithms/correspondences.py":510
+  /* "openptv2/algorithms/correspondences.py":510
  * def is_compiled() -> bool:
  *     """Return whether this module is compiled to C."""
  *     return cython.compiled             # <<<<<<<<<<<<<<
@@ -10741,7 +10741,7 @@ static PyObject *__pyx_pf_10algorithms_15correspondences_28is_compiled(CYTHON_UN
   __pyx_r = Py_True;
   goto __pyx_L0;
 
-  /* "algorithms/correspondences.py":508
+  /* "openptv2/algorithms/correspondences.py":508
  * 
  * 
  * def is_compiled() -> bool:             # <<<<<<<<<<<<<<
@@ -11087,13 +11087,13 @@ __Pyx_RefNannySetupContext("PyInit_correspondences", 0);
   if (__Pyx_InitConstants(__pyx_mstate) < (0)) __PYX_ERR(0, 1, __pyx_L1_error)
   stringtab_initialized = 1;
   if (__Pyx_InitGlobals() < (0)) __PYX_ERR(0, 1, __pyx_L1_error)
-  if (__pyx_module_is_main_algorithms__correspondences) {
+  if (__pyx_module_is_main_openptv2__algorithms__correspondences) {
     if (PyObject_SetAttr(__pyx_m, __pyx_mstate_global->__pyx_n_u_name, __pyx_mstate_global->__pyx_n_u_main) < (0)) __PYX_ERR(0, 1, __pyx_L1_error)
   }
   {
     PyObject *modules = PyImport_GetModuleDict(); if (unlikely(!modules)) __PYX_ERR(0, 1, __pyx_L1_error)
-    if (!PyDict_GetItemString(modules, "algorithms.correspondences")) {
-      if (unlikely((PyDict_SetItemString(modules, "algorithms.correspondences", __pyx_m) < 0))) __PYX_ERR(0, 1, __pyx_L1_error)
+    if (!PyDict_GetItemString(modules, "openptv2.algorithms.correspondences")) {
+      if (unlikely((PyDict_SetItemString(modules, "openptv2.algorithms.correspondences", __pyx_m) < 0))) __PYX_ERR(0, 1, __pyx_L1_error)
     }
   }
   /*--- Builtin init code ---*/
@@ -11111,7 +11111,7 @@ __Pyx_RefNannySetupContext("PyInit_correspondences", 0);
   (void)__Pyx_modinit_function_import_code(__pyx_mstate);
   /*--- Execution code ---*/
 
-  /* "algorithms/correspondences.py":11
+  /* "openptv2/algorithms/correspondences.py":11
  * 
  * 
  * import numpy as np             # <<<<<<<<<<<<<<
@@ -11124,7 +11124,7 @@ __Pyx_RefNannySetupContext("PyInit_correspondences", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_np, __pyx_t_2) < (0)) __PYX_ERR(0, 11, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/correspondences.py":12
+  /* "openptv2/algorithms/correspondences.py":12
  * 
  * import numpy as np
  * from dataclasses import dataclass, field             # <<<<<<<<<<<<<<
@@ -11148,7 +11148,7 @@ __Pyx_RefNannySetupContext("PyInit_correspondences", 0);
   }
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/correspondences.py":14
+  /* "openptv2/algorithms/correspondences.py":14
  * from dataclasses import dataclass, field
  * 
  * from .epi import MAXCAND             # <<<<<<<<<<<<<<
@@ -11157,7 +11157,7 @@ __Pyx_RefNannySetupContext("PyInit_correspondences", 0);
 */
   {
     PyObject* const __pyx_imported_names[] = {__pyx_mstate_global->__pyx_n_u_MAXCAND};
-    __pyx_t_1 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_epi, __pyx_imported_names, 1, __pyx_mstate_global->__pyx_kp_u_algorithms_epi, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 14, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_epi, __pyx_imported_names, 1, __pyx_mstate_global->__pyx_kp_u_openptv2_algorithms_epi, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 14, __pyx_L1_error)
   }
   __pyx_t_2 = __pyx_t_1;
   __Pyx_GOTREF(__pyx_t_2);
@@ -11172,7 +11172,7 @@ __Pyx_RefNannySetupContext("PyInit_correspondences", 0);
   }
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/correspondences.py":16
+  /* "openptv2/algorithms/correspondences.py":16
  * from .epi import MAXCAND
  * 
  * NMAX = 20240             # <<<<<<<<<<<<<<
@@ -11181,7 +11181,7 @@ __Pyx_RefNannySetupContext("PyInit_correspondences", 0);
 */
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_NMAX, __pyx_mstate_global->__pyx_int_20240) < (0)) __PYX_ERR(0, 16, __pyx_L1_error)
 
-  /* "algorithms/correspondences.py":17
+  /* "openptv2/algorithms/correspondences.py":17
  * 
  * NMAX = 20240
  * PT_UNUSED = -999             # <<<<<<<<<<<<<<
@@ -11190,14 +11190,14 @@ __Pyx_RefNannySetupContext("PyInit_correspondences", 0);
 */
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_PT_UNUSED, __pyx_mstate_global->__pyx_int_neg_999) < (0)) __PYX_ERR(0, 17, __pyx_L1_error)
 
-  /* "algorithms/correspondences.py":20
+  /* "openptv2/algorithms/correspondences.py":20
  * 
  * 
  * def _default_ntupel_p():             # <<<<<<<<<<<<<<
  *     return [-1, -1, -1, -1]
  * 
 */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_15correspondences_1_default_ntupel_p, 0, __pyx_mstate_global->__pyx_n_u_default_ntupel_p, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_correspondences, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[0])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 20, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_15correspondences_1_default_ntupel_p, 0, __pyx_mstate_global->__pyx_n_u_default_ntupel_p, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_corresponden, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[0])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 20, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -11205,14 +11205,14 @@ __Pyx_RefNannySetupContext("PyInit_correspondences", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_default_ntupel_p, __pyx_t_2) < (0)) __PYX_ERR(0, 20, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/correspondences.py":24
+  /* "openptv2/algorithms/correspondences.py":24
  * 
  * 
  * def _default_correspond_p2():             # <<<<<<<<<<<<<<
  *     return np.zeros(MAXCAND, dtype=np.int32)
  * 
 */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_15correspondences_3_default_correspond_p2, 0, __pyx_mstate_global->__pyx_n_u_default_correspond_p2, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_correspondences, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[1])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 24, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_15correspondences_3_default_correspond_p2, 0, __pyx_mstate_global->__pyx_n_u_default_correspond_p2, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_corresponden, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[1])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 24, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -11220,14 +11220,14 @@ __Pyx_RefNannySetupContext("PyInit_correspondences", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_default_correspond_p2, __pyx_t_2) < (0)) __PYX_ERR(0, 24, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/correspondences.py":28
+  /* "openptv2/algorithms/correspondences.py":28
  * 
  * 
  * def _default_correspond_corr():             # <<<<<<<<<<<<<<
  *     return np.zeros(MAXCAND, dtype=np.float64)
  * 
 */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_15correspondences_5_default_correspond_corr, 0, __pyx_mstate_global->__pyx_n_u_default_correspond_corr, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_correspondences, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[2])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 28, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_15correspondences_5_default_correspond_corr, 0, __pyx_mstate_global->__pyx_n_u_default_correspond_corr, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_corresponden, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[2])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 28, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -11235,14 +11235,14 @@ __Pyx_RefNannySetupContext("PyInit_correspondences", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_default_correspond_corr, __pyx_t_2) < (0)) __PYX_ERR(0, 28, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/correspondences.py":32
+  /* "openptv2/algorithms/correspondences.py":32
  * 
  * 
  * def _default_correspond_dist():             # <<<<<<<<<<<<<<
  *     return np.zeros(MAXCAND, dtype=np.float64)
  * 
 */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_15correspondences_7_default_correspond_dist, 0, __pyx_mstate_global->__pyx_n_u_default_correspond_dist, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_correspondences, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[3])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 32, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_15correspondences_7_default_correspond_dist, 0, __pyx_mstate_global->__pyx_n_u_default_correspond_dist, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_corresponden, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[3])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 32, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -11250,14 +11250,14 @@ __Pyx_RefNannySetupContext("PyInit_correspondences", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_default_correspond_dist, __pyx_t_2) < (0)) __PYX_ERR(0, 32, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/correspondences.py":37
+  /* "openptv2/algorithms/correspondences.py":37
  * 
  * @dataclass
  * class NTupel:             # <<<<<<<<<<<<<<
  *     """A correspondence match across multiple cameras."""
  *     p: list[int] = field(default_factory=_default_ntupel_p)
 */
-  __pyx_t_2 = __Pyx_Py3MetaclassPrepare((PyObject *) NULL, __pyx_mstate_global->__pyx_empty_tuple, __pyx_mstate_global->__pyx_n_u_NTupel, __pyx_mstate_global->__pyx_n_u_NTupel, (PyObject *) NULL, __pyx_mstate_global->__pyx_n_u_algorithms_correspondences, __pyx_mstate_global->__pyx_kp_u_A_correspondence_match_across_mu); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 37, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_Py3MetaclassPrepare((PyObject *) NULL, __pyx_mstate_global->__pyx_empty_tuple, __pyx_mstate_global->__pyx_n_u_NTupel, __pyx_mstate_global->__pyx_n_u_NTupel, (PyObject *) NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_corresponden, __pyx_mstate_global->__pyx_kp_u_A_correspondence_match_across_mu); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 37, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_4 = __Pyx_PyDict_NewPresized(2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 37, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
@@ -11266,7 +11266,7 @@ __Pyx_RefNannySetupContext("PyInit_correspondences", 0);
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_annotations, __pyx_t_4) < (0)) __PYX_ERR(0, 37, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/correspondences.py":39
+  /* "openptv2/algorithms/correspondences.py":39
  * class NTupel:
  *     """A correspondence match across multiple cameras."""
  *     p: list[int] = field(default_factory=_default_ntupel_p)             # <<<<<<<<<<<<<<
@@ -11295,7 +11295,7 @@ __Pyx_RefNannySetupContext("PyInit_correspondences", 0);
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_p, __pyx_t_4) < (0)) __PYX_ERR(0, 39, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/correspondences.py":40
+  /* "openptv2/algorithms/correspondences.py":40
  *     """A correspondence match across multiple cameras."""
  *     p: list[int] = field(default_factory=_default_ntupel_p)
  *     corr: float = 0.0             # <<<<<<<<<<<<<<
@@ -11304,7 +11304,7 @@ __Pyx_RefNannySetupContext("PyInit_correspondences", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_corr, __pyx_mstate_global->__pyx_float_0_0) < (0)) __PYX_ERR(0, 40, __pyx_L1_error)
 
-  /* "algorithms/correspondences.py":36
+  /* "openptv2/algorithms/correspondences.py":36
  * 
  * 
  * @dataclass             # <<<<<<<<<<<<<<
@@ -11315,7 +11315,7 @@ __Pyx_RefNannySetupContext("PyInit_correspondences", 0);
   __Pyx_GetModuleGlobalName(__pyx_t_9, __pyx_mstate_global->__pyx_n_u_dataclass); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 36, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
 
-  /* "algorithms/correspondences.py":37
+  /* "openptv2/algorithms/correspondences.py":37
  * 
  * @dataclass
  * class NTupel:             # <<<<<<<<<<<<<<
@@ -11341,14 +11341,14 @@ __Pyx_RefNannySetupContext("PyInit_correspondences", 0);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/correspondences.py":44
+  /* "openptv2/algorithms/correspondences.py":44
  * 
  * @dataclass
  * class Correspond:             # <<<<<<<<<<<<<<
  *     """Adjacency list entry for candidate matching.
  * 
 */
-  __pyx_t_2 = __Pyx_Py3MetaclassPrepare((PyObject *) NULL, __pyx_mstate_global->__pyx_empty_tuple, __pyx_mstate_global->__pyx_n_u_Correspond, __pyx_mstate_global->__pyx_n_u_Correspond, (PyObject *) NULL, __pyx_mstate_global->__pyx_n_u_algorithms_correspondences, __pyx_mstate_global->__pyx_kp_u_Adjacency_list_entry_for_candida); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 44, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_Py3MetaclassPrepare((PyObject *) NULL, __pyx_mstate_global->__pyx_empty_tuple, __pyx_mstate_global->__pyx_n_u_Correspond, __pyx_mstate_global->__pyx_n_u_Correspond, (PyObject *) NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_corresponden, __pyx_mstate_global->__pyx_kp_u_Adjacency_list_entry_for_candida); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 44, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_4 = __Pyx_PyDict_NewPresized(5); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 44, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
@@ -11360,7 +11360,7 @@ __Pyx_RefNannySetupContext("PyInit_correspondences", 0);
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_annotations, __pyx_t_4) < (0)) __PYX_ERR(0, 44, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/correspondences.py":49
+  /* "openptv2/algorithms/correspondences.py":49
  *     Matches C correspond struct: indexed by target index in source camera.
  *     """
  *     p1: int = 0             # <<<<<<<<<<<<<<
@@ -11369,7 +11369,7 @@ __Pyx_RefNannySetupContext("PyInit_correspondences", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_p1, __pyx_mstate_global->__pyx_int_0) < (0)) __PYX_ERR(0, 49, __pyx_L1_error)
 
-  /* "algorithms/correspondences.py":50
+  /* "openptv2/algorithms/correspondences.py":50
  *     """
  *     p1: int = 0
  *     n: int = 0             # <<<<<<<<<<<<<<
@@ -11378,7 +11378,7 @@ __Pyx_RefNannySetupContext("PyInit_correspondences", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_n, __pyx_mstate_global->__pyx_int_0) < (0)) __PYX_ERR(0, 50, __pyx_L1_error)
 
-  /* "algorithms/correspondences.py":51
+  /* "openptv2/algorithms/correspondences.py":51
  *     p1: int = 0
  *     n: int = 0
  *     p2: np.ndarray = field(default_factory=_default_correspond_p2)             # <<<<<<<<<<<<<<
@@ -11407,7 +11407,7 @@ __Pyx_RefNannySetupContext("PyInit_correspondences", 0);
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_p2, __pyx_t_4) < (0)) __PYX_ERR(0, 51, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/correspondences.py":52
+  /* "openptv2/algorithms/correspondences.py":52
  *     n: int = 0
  *     p2: np.ndarray = field(default_factory=_default_correspond_p2)
  *     corr: np.ndarray = field(default_factory=_default_correspond_corr)             # <<<<<<<<<<<<<<
@@ -11436,7 +11436,7 @@ __Pyx_RefNannySetupContext("PyInit_correspondences", 0);
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_corr, __pyx_t_4) < (0)) __PYX_ERR(0, 52, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/correspondences.py":53
+  /* "openptv2/algorithms/correspondences.py":53
  *     p2: np.ndarray = field(default_factory=_default_correspond_p2)
  *     corr: np.ndarray = field(default_factory=_default_correspond_corr)
  *     dist: np.ndarray = field(default_factory=_default_correspond_dist)             # <<<<<<<<<<<<<<
@@ -11465,7 +11465,7 @@ __Pyx_RefNannySetupContext("PyInit_correspondences", 0);
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_dist, __pyx_t_4) < (0)) __PYX_ERR(0, 53, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/correspondences.py":43
+  /* "openptv2/algorithms/correspondences.py":43
  * 
  * 
  * @dataclass             # <<<<<<<<<<<<<<
@@ -11476,7 +11476,7 @@ __Pyx_RefNannySetupContext("PyInit_correspondences", 0);
   __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_mstate_global->__pyx_n_u_dataclass); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 43, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
 
-  /* "algorithms/correspondences.py":44
+  /* "openptv2/algorithms/correspondences.py":44
  * 
  * @dataclass
  * class Correspond:             # <<<<<<<<<<<<<<
@@ -11502,14 +11502,14 @@ __Pyx_RefNannySetupContext("PyInit_correspondences", 0);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/correspondences.py":56
+  /* "openptv2/algorithms/correspondences.py":56
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def quicksort_target_y(pix):
  *     """Sort target list by y coordinate in place."""
 */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_15correspondences_9quicksort_target_y, 0, __pyx_mstate_global->__pyx_n_u_quicksort_target_y, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_correspondences, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[4])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 56, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_15correspondences_9quicksort_target_y, 0, __pyx_mstate_global->__pyx_n_u_quicksort_target_y, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_corresponden, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[4])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 56, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -11517,14 +11517,14 @@ __Pyx_RefNannySetupContext("PyInit_correspondences", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_quicksort_target_y, __pyx_t_2) < (0)) __PYX_ERR(0, 56, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/correspondences.py":70
+  /* "openptv2/algorithms/correspondences.py":70
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def quicksort_coord2d_x(crd):
  *     """Sort Coord2d list by x coordinate in place."""
 */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_15correspondences_11quicksort_coord2d_x, 0, __pyx_mstate_global->__pyx_n_u_quicksort_coord2d_x, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_correspondences, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[5])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 70, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_15correspondences_11quicksort_coord2d_x, 0, __pyx_mstate_global->__pyx_n_u_quicksort_coord2d_x, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_corresponden, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[5])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 70, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -11532,14 +11532,14 @@ __Pyx_RefNannySetupContext("PyInit_correspondences", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_quicksort_coord2d_x, __pyx_t_2) < (0)) __PYX_ERR(0, 70, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/correspondences.py":84
+  /* "openptv2/algorithms/correspondences.py":84
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def safely_allocate_adjacency_lists(num_cams, target_counts):
  *     """Allocate pairwise adjacency lists.
 */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_15correspondences_13safely_allocate_adjacency_lists, 0, __pyx_mstate_global->__pyx_n_u_safely_allocate_adjacency_lists, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_correspondences, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[6])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 84, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_15correspondences_13safely_allocate_adjacency_lists, 0, __pyx_mstate_global->__pyx_n_u_safely_allocate_adjacency_lists, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_corresponden, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[6])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 84, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -11547,14 +11547,14 @@ __Pyx_RefNannySetupContext("PyInit_correspondences", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_safely_allocate_adjacency_lists, __pyx_t_2) < (0)) __PYX_ERR(0, 84, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/correspondences.py":100
+  /* "openptv2/algorithms/correspondences.py":100
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def match_pairs(lists, corrected, frm, vpar, cpar, calib):
  *     """Build pairwise adjacency lists between all camera pairs.
 */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_15correspondences_15match_pairs, 0, __pyx_mstate_global->__pyx_n_u_match_pairs, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_correspondences, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[7])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 100, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_15correspondences_15match_pairs, 0, __pyx_mstate_global->__pyx_n_u_match_pairs, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_corresponden, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[7])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 100, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -11562,14 +11562,14 @@ __Pyx_RefNannySetupContext("PyInit_correspondences", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_match_pairs, __pyx_t_2) < (0)) __PYX_ERR(0, 100, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/correspondences.py":155
+  /* "openptv2/algorithms/correspondences.py":155
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def four_camera_matching(lists, base_target_count, accept_corr, scratch, scratch_size):
  *     """Find consistent 4-camera correspondences (quadruplets).
 */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_15correspondences_17four_camera_matching, 0, __pyx_mstate_global->__pyx_n_u_four_camera_matching, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_correspondences, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[8])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 155, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_15correspondences_17four_camera_matching, 0, __pyx_mstate_global->__pyx_n_u_four_camera_matching, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_corresponden, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[8])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 155, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -11577,14 +11577,14 @@ __Pyx_RefNannySetupContext("PyInit_correspondences", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_four_camera_matching, __pyx_t_2) < (0)) __PYX_ERR(0, 155, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/correspondences.py":233
+  /* "openptv2/algorithms/correspondences.py":233
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def three_camera_matching(lists, num_cams, target_counts, accept_corr,
  *                           scratch, scratch_size, tusage):
 */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_15correspondences_19three_camera_matching, 0, __pyx_mstate_global->__pyx_n_u_three_camera_matching, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_correspondences, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[9])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 233, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_15correspondences_19three_camera_matching, 0, __pyx_mstate_global->__pyx_n_u_three_camera_matching, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_corresponden, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[9])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 233, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -11592,14 +11592,14 @@ __Pyx_RefNannySetupContext("PyInit_correspondences", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_three_camera_matching, __pyx_t_2) < (0)) __PYX_ERR(0, 233, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/correspondences.py":303
+  /* "openptv2/algorithms/correspondences.py":303
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def consistent_pair_matching(lists, num_cams, target_counts, accept_corr,
  *                              scratch, scratch_size, tusage):
 */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_15correspondences_21consistent_pair_matching, 0, __pyx_mstate_global->__pyx_n_u_consistent_pair_matching, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_correspondences, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[10])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 303, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_15correspondences_21consistent_pair_matching, 0, __pyx_mstate_global->__pyx_n_u_consistent_pair_matching, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_corresponden, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[10])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 303, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -11607,14 +11607,14 @@ __Pyx_RefNannySetupContext("PyInit_correspondences", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_consistent_pair_matching, __pyx_t_2) < (0)) __PYX_ERR(0, 303, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/correspondences.py":353
+  /* "openptv2/algorithms/correspondences.py":353
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def take_best_candidates(src, dst, num_cams, num_cands, tusage):
  *     """Take candidates by descending correlation, skipping used targets.
 */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_15correspondences_23take_best_candidates, 0, __pyx_mstate_global->__pyx_n_u_take_best_candidates, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_correspondences, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[11])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 353, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_15correspondences_23take_best_candidates, 0, __pyx_mstate_global->__pyx_n_u_take_best_candidates, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_corresponden, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[11])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 353, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -11622,14 +11622,14 @@ __Pyx_RefNannySetupContext("PyInit_correspondences", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_take_best_candidates, __pyx_t_2) < (0)) __PYX_ERR(0, 353, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/correspondences.py":391
+  /* "openptv2/algorithms/correspondences.py":391
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def correct_frame(frm, calib, cpar, tol):
  *     """Transition from pixel to metric to flat coordinates, x-sorted.
 */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_15correspondences_25correct_frame, 0, __pyx_mstate_global->__pyx_n_u_correct_frame, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_correspondences, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[12])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 391, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_15correspondences_25correct_frame, 0, __pyx_mstate_global->__pyx_n_u_correct_frame, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_corresponden, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[12])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 391, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -11637,14 +11637,14 @@ __Pyx_RefNannySetupContext("PyInit_correspondences", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_correct_frame, __pyx_t_2) < (0)) __PYX_ERR(0, 391, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/correspondences.py":431
+  /* "openptv2/algorithms/correspondences.py":431
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def correspondences(frm, corrected, vpar, cpar, calib):
  *     """Full correspondence matching pipeline.
 */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_15correspondences_27correspondences, 0, __pyx_mstate_global->__pyx_n_u_correspondences, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_correspondences, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[13])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 431, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_15correspondences_27correspondences, 0, __pyx_mstate_global->__pyx_n_u_correspondences, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_corresponden, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[13])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 431, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -11652,7 +11652,7 @@ __Pyx_RefNannySetupContext("PyInit_correspondences", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_correspondences, __pyx_t_2) < (0)) __PYX_ERR(0, 431, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/correspondences.py":508
+  /* "openptv2/algorithms/correspondences.py":508
  * 
  * 
  * def is_compiled() -> bool:             # <<<<<<<<<<<<<<
@@ -11662,7 +11662,7 @@ __Pyx_RefNannySetupContext("PyInit_correspondences", 0);
   __pyx_t_2 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 508, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   if (PyDict_SetItem(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_return, __pyx_mstate_global->__pyx_n_u_bool) < (0)) __PYX_ERR(0, 508, __pyx_L1_error)
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_15correspondences_29is_compiled, 0, __pyx_mstate_global->__pyx_n_u_is_compiled, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_correspondences, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[14])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 508, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_15correspondences_29is_compiled, 0, __pyx_mstate_global->__pyx_n_u_is_compiled, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_corresponden, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[14])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 508, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
@@ -11672,7 +11672,7 @@ __Pyx_RefNannySetupContext("PyInit_correspondences", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_is_compiled, __pyx_t_4) < (0)) __PYX_ERR(0, 508, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/correspondences.py":1
+  /* "openptv2/algorithms/correspondences.py":1
  * """Multi-camera correspondence matching.             # <<<<<<<<<<<<<<
  * 
  * Translation of lib/src/correspondences.c and lib/include/correspondences.h.
@@ -11694,7 +11694,7 @@ __Pyx_RefNannySetupContext("PyInit_correspondences", 0);
   __Pyx_XDECREF(__pyx_t_9);
   if (__pyx_m) {
     if (__pyx_mstate->__pyx_d && stringtab_initialized) {
-      __Pyx_AddTraceback("init algorithms.correspondences", __pyx_clineno, __pyx_lineno, __pyx_filename);
+      __Pyx_AddTraceback("init openptv2.algorithms.correspondences", __pyx_clineno, __pyx_lineno, __pyx_filename);
     }
     #if !CYTHON_USE_MODULE_STATE
     Py_CLEAR(__pyx_m);
@@ -11708,7 +11708,7 @@ __Pyx_RefNannySetupContext("PyInit_correspondences", 0);
     }
     #endif
   } else if (!PyErr_Occurred()) {
-    PyErr_SetString(PyExc_ImportError, "init algorithms.correspondences");
+    PyErr_SetString(PyExc_ImportError, "init openptv2.algorithms.correspondences");
   }
   __pyx_L0:;
   __Pyx_RefNannyFinishContext();
@@ -11747,25 +11747,25 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
 static int __Pyx_InitConstants(__pyx_mstatetype *__pyx_mstate) {
   CYTHON_UNUSED_VAR(__pyx_mstate);
   {
-    const struct { const unsigned int length: 10; } index[] = {{1},{47},{125},{1},{29},{14},{16},{9},{10},{9},{7},{10},{7},{4},{6},{9},{20},{11},{9},{26},{11},{15},{18},{10},{17},{4},{5},{17},{18},{24},{4},{13},{9},{15},{7},{4},{3},{9},{11},{24},{24},{22},{15},{17},{4},{12},{7},{3},{5},{3},{6},{5},{14},{5},{7},{20},{3},{8},{3},{5},{7},{11},{13},{5},{2},{2},{2},{3},{5},{8},{11},{13},{2},{10},{1},{8},{2},{8},{9},{11},{5},{2},{2},{8},{1},{2},{2},{3},{15},{3},{3},{11},{12},{19},{18},{6},{7},{31},{7},{12},{3},{12},{10},{3},{4},{3},{4},{20},{13},{7},{8},{21},{3},{3},{5},{6},{6},{4},{1},{2},{1},{2},{5},{229},{15},{19},{104},{10},{217},{748},{95},{431},{589},{330},{648}};
-    #if (CYTHON_COMPRESS_STRINGS) == 2 /* compression: bz2 (2298 bytes) */
-const char* const cstring = "BZh91AY&SY\252\362d\313\000\002\002\177\377\377\377\377\377\377\373\277v\277\363\177^\277\377\377\376@@@@@@@@@@@@@\000@\000`\t?\r\354\310hj\313A@\2409\273T P\200H\221\024\220mC\324=\020\320\321\352x\364j\230\324\330aM(\032\000\365\001\243\365 h\006 \320\003z\2434\324\022\210\023\023B4\311\241O&\220\304\324d\032\r\000\000\000\000\000\000\032h\000\032\001\006\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000Jd\232(\223P\017\325\000\032\003\324\006\232\0323i\3455@\000\000\014\200\320\r\014\206\232y@\004\030\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\001$\206D\324\241\352yI\346\250\336\247\242O\323T\365\001\223CA\241\241\240\000244h4\003@\032?I=OI\243N,\232;\214[g\032\263\3149\332\322t\365\357\013\262\217\355\033\341\376'\337\037\201\216\323I\345)\"*)\020\202\244%A\304E\025\204\351\323\242\253\375\355\203\014\300\314&\006a\230\210\214\302]\260\301'C\247E\277\342\002\"\005\241R\212\367\031!\231\003\014&`j\"\220\243\004\030\226\320\237\007{\371\247\"\344+\340M\016j\252\252\245\227*\010Z\250./z\240\221\271\261W/\021cR\266\243\232\300t\300\332IBHI\t$\220\204,Z\352!(\332\215\033EUiP\223\024N\0064\214ip\222Y\005\226\252\245k\265%dY0\325g\260Q\236Q6\306\230\263\204(\252\305|E\220X\265\225\221`\271s\030\214c$\261\tYXWX\301\331\230\216\001\310\205\022\2055\211\002J\343;\001\312\251\032\312(\321\312\003\272PF\222\275-iQ\013\244\223\024{\211\223\305\306\370\220a\260M&\001q\206fd\314\014\032\377/\303\256k\351tw\2708%\321\235K\353\2758\246\215\214\300m%J\010\320\222\320#\222'\201\307(;\nFb\027tT\225\254\205\026\023\247J\242q\307Al\311\"\"\"\250\241\315\242\242\261m\317@*\212\3100a\014\202\305\271\323(=\270\204\367\030s\237\211\377\177\323\241\233y\216\313\035\004\332\347`6\010\324\006\250\203T@u\240u\220^J/\tD\314\331CHH\030T4\347\307-\322\274\260.\027\025\321\201r\346\336\026\260\254\225\222\260\254\255\323\212\005\nL\"\001\3340\2648\356\246\2464\336P\034\276gy\365\222\271\t@\260A\200\256\030\205\024x%9\307\215EV\235T\244\365dM\023Bt\270\377\236\366""\255\335\233\253\334\272.b\373\272\327\260Z\301\037\217\025'C\247W\272+\001\021\001\024Sd8]\000|\037\nS\030t\276K\372\335\367S\026\026\027\027\t4A\251j\027\031\307\375j<\234\r\"\010R\236W\212R9\0309\001\t8[\206\356\201\307C\226/\227\010\244\037G\274G\211 \221$\006\243\224\034E\331\311=\364c\0315\351\263\254\272\027_/w\321\341\323\322j\336:'\022\273\325\266\253\017\213\304\037%i\342\335\321\211Vd;\274Z\211\277\202\347\032\035\360\315\034a\350\\\n4\245\205\272\337o`\266\325\266\354:\3521=v\334p.\023S\323\225\357\235\354+e0\"\375\031\372\272c?\347\257\332`\223\250F\252B\211A\027\005\205\371\202\031J\014\204xr\tL\273\021zc\343\n[\231\2226\320\265!j\004j\t\224\334w(\256c\032<z\271\254\327\272Z,\333BaD$P\273V1\230\252\252\216\337H10bX\200\255\270Z\224S\246\247j\247>W\321\310\27745jyJ4\225\027{\253\034\370\032M)\244\rA\220dJ\252\037C\001\252\254e\325\330\017\205\217\271\"\270\310MJ\ro\007,\\\365~\313\357\274\331Z\300\265\273\221\274\314\364\321\030D\344\226\211\272\377\321\302:n*\307{\310\005c7N\033n\205\241\\\177\276.X^.e{\250\201W\022\360\363\222KF1\212\220f\310x9\264\206|\341\234\003I\245l\355\260\271<N\025\014\216\371\333\256\371\033\206\273\227l\241EF\267\204(\310f\315\2541P\271\005\337\330c\r\3055\227tt\2076\006\235\030`\367\023\314n\005\3769#\241\304\313]\022\304\301\2046@.\037\221Q\265\275[,\263\274ae\022\366\202\364\033f\236I!V5l\301\3512\271\t\005u{W\rO\036\262\255UQ\240(\347=\251\026\352\010\325\031ZEV\265\215Ac\330Lb\247\"\203\t\240\250\213\301\327\225\267\354\211\022kEc*\206If\372\244\\l\\)\213\364\326\201\026q\366Lu*\211\316\007\222Q*P-F\336a\027\212\367\016\236}\265\261#\2039V\334H=/\307v\023\262\344\013\212K]\374\212b\324\035\332Z\005\251\001\245-\325\312\346\363\241N\262\032\030i1\024\244\3666rle[Z\247?s\265\n\365\251\217\312D\032\343\217\201\210\033y\217\022\202\304)\n\347G\221T\251PK\034\301\313'\253=\034\310h\r!x\006\023\321>`\325)L\320e\244\032\271\2250k\026KV\3022d\316'tIt\025\001\270V1KG\n+YR\301L_\n\266\246&(\230\201\211\211\242W\316\275\317s\\\323""\r\234\211\021\314\203YQ\007\270\250\343\277'\252\255\361\202\005O\030\223]\003q\213\207\0035\221u\222\244\013\037[y\265W\032MX\345\223\\\3311\226e\226A\226Y&_\325\226\260\225\210l[R\345\335q\334\336\301E3\206p\316\231\320\317\235/(\347\"\216v\375,\327\26735;+mJ6\\\270u5\275\374\027W{n\306\351\360\371\203\326\360\265\330U\351\275/\226\342D|\253\336\371\206\301\257\023\334\371\306\320\275_\243\331]\343\023bq\234\337\351\222m\306\257\311k:\201.\252Z5\240\330\364\246l\354\034\311k\342\2014\302\212{;\244\227W?\267\314\201\306\006\r\257a3)\0370\323\376\203\252}<\260\337\345n\024n\263Cs\0028\006\022\211\331\363\001,\334\346\222\370mA!\271\271\365\034\347\371\251\024\332\232\345B\232\222\322\326\244\211\235\206\272\003Xz\256@\315;\220R\254\257\262\276\305\272|1\322\234\257\030\264\324]J\021\360T\222\272C\343\363g\226\271\000\355\013\234L7\307\344G\343\036*\234\207\236\362\274\254\246n\220d*e\224Y;+,!\277\1774z+\357)\376\362[t\247s\270c/;\251\203\212\252\223\020\274\216W\003\363=\303_\337a\301\234\226\223\241&\361\232\344\241|2NY\302\211\214\241\243|\264\326\361\230g\t\243\"Ir\220\240\231\237\313~\212\3748s\313\327\3308\310\215\210?AR/}\334\263\214\221\233=\023\243\0231f|\256\035\212\266\303z\024\037\326\373A\277n32=<\3039\223(2n\nbN{\334tp\347\356\247\303\303\027\301\340C\024\312\312%\006x \321\311~\252\341\202\3712\367\014|Q\014\030P\315\310\266\334\327W93V\331\004:g\020\3552[b\224\022\214<\272\017\202t\005\244\351ID\255Z\245\275\333\264\240\265D\324!\261\216\206d\343\262-\264?\353`\240s\211\221!\016\316\331\2331\026I\373E\313ZS\177\314jQ\305M?^ex\354\317\n\370\276\\\024\rQ\020\254\005k\017\210.\271A\300B=\262:\362K-\366D\014\265\n\030_\022\221\224\261\331c\343\202\347C(\275\376\272.H\315\236\"?\025\007%\343P\266^\334\255\323X-k\231\314\230\201\270qB\202\267\265\372OY\224Bh%\310z3\006\\\256\0222+bRvY\217\1770\021\215%\006=\361\342\017[$\337EQD%\272\267\2728\275F\224#\247F\361\277\211Cb\335R\253\010\323\254\334\344\232\250\342\350WZ\254\210\333*\301XW!\232g\264\215\272""\260\250\303\"\3600`Cq\264\266V\312*\253\251-\0306G\203\002#k-[c\261\252\2521\354my\333\035'\346\363\361\342\362y;}\356\246\277\0073\306\345)s\327+SWr\215X\322\016\302sgd2\241:O\300;Z\233]\325\003\305\014\275\224'\214U\344x\264\315\242\344\312\2531Qa\331`lj%EZ\250x\233\\\253^\257T\357W\303\222\251\223\214\027q\"R*\234PP+I\214^\302\276\030\211sf\251W\323\240\3214\274I\021\241\032E\246~>^\223\211n\250\320\214\017m\225v\t\t\177\342\356H\247\n\022\025^L\231`";
-    PyObject *data = __Pyx_DecompressString(cstring, 2298, 2);
+    const struct { const unsigned int length: 10; } index[] = {{1},{47},{125},{1},{9},{10},{23},{25},{42},{9},{7},{10},{7},{4},{6},{9},{20},{11},{9},{11},{15},{18},{10},{17},{4},{5},{17},{18},{24},{4},{13},{9},{15},{7},{4},{3},{9},{11},{24},{24},{22},{15},{17},{4},{12},{7},{3},{5},{3},{6},{5},{14},{5},{7},{20},{3},{8},{3},{5},{7},{11},{13},{5},{2},{2},{2},{3},{5},{8},{11},{13},{2},{10},{1},{8},{2},{8},{9},{11},{5},{2},{2},{35},{8},{1},{2},{2},{3},{15},{3},{3},{11},{12},{19},{18},{6},{7},{31},{7},{12},{3},{12},{10},{3},{4},{3},{4},{20},{13},{7},{8},{21},{3},{3},{5},{6},{6},{4},{1},{2},{1},{2},{5},{229},{15},{19},{104},{10},{217},{748},{95},{431},{589},{330},{648}};
+    #if (CYTHON_COMPRESS_STRINGS) == 2 /* compression: bz2 (2328 bytes) */
+const char* const cstring = "BZh91AY&SY\331#\027\347\000\002\002\177\377\377\377\377\377\377\373\277v\277\363\177^\277\377\377\376@@@@@@@@@@@@@\000@\000`\t_\000\310\004\257{t\001@\007hx\"\003\271\327\206M)\245 \000\000\000c\322j`6\000\224\000\r\0002h\000\006\203@\003M4\022\210\023\023I\243&\232L\232i14\3214\310d\321\240\000\000\000\000\r\006\201\240\014\232\000\252y4i!\204\311\246\230&\023L&F#M0\203\002\030\23220F&\214&\004`\000@Jh\210\251\240\365\000\000h\017P\332\230\214\033\3255\r\000\032\000\003LC@4\000z\207\250\001\006\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000H\241\221\n\232z\247\224m\252h\336\244\323\032\200\r\000\000\000\000\3204\032\000\003@\017D\302\016>\233{:\315;\003\253\275u\220u8\347\275\277\317\027A\037\332:!\322Q\321#\246\316\243\244R\224D\334T%\005\311J\304\010\233,\n\024(E\327\371\376\203\033\006\304\301\261\262fu\211\177\241\222P\210P\214\177\304\204\314\213b\265\226y\215!\264\014bl\035\221iS\222\r\027\024Q\224F~9\304\314\225\236EQ\330\266\333[Z\232\021\301h|(\206\205\215U\303\263\344\233UZUZ\264\013f\006m\264\333\033cm\2661\216\366\226\223k5\214\310\210\311\246\331e\000jH\324\227\001%\266-\313\253\227\277\026\213\010\302c\273\214\005\234Rj\365&b\002T\335i\236\206\020`\306\026\021\200\314\314\324#P\322Z\tYXWX\301\331X\216\001\310\205\022\2057\004\201%q\231\200\345T\215e\024h\345\001\334\370#I\\\231\032TB\331$\305\036\342d\360q\266$\030j\023A\220f1\266\323`\303\177\235\367\376\006\377\267\313\347\364\372t\345\326\346{\371\333\2526p\265\201\305J\326\021\261%\260G\030Q$\020X\206*\032\311\\2\3451\204)\300\241BW\024\020B\014kI\02337E\216\376\312\313\0069\036X]\027\240d\3044\0301\342T\261\030\340\225\3442\017#H\375\277?3_\260\271\364:\014\363U\251\373\357\306`k\026\350\033\251\033\251\006\2608H\232\220JmV\265\263Tll(\021.\265\351\006\303/wJfh\032\013Dfhhq\362\306\005\204\260\226\005\205\216d\330,Z\2412\021\001\226&\010\205UQ\326)!\336w\335\247\330S2R\221d\203!f\032\nm\022R\265\237\006\312\356\267T\244]\242\250\252\024$\331\330\354\3639\272&\223\2314&W\327\353N!""\030\204>\374\250\217A\350\364\234\320\252\001\010@ \344k!\302\350\003\340\370R\230C\243\364]\330\361:\2700\260\264\264I\242\rL\210Zf#\234\310+#\241$\252Wr&\326\236&PHJP\030\332\210A\004!\344I\335(\244\037G\274G\211 \221$\006\243\224\034E\331\211=\364c\0315\351\277\275kV\316\325\233\267\257\270\016\245\220\210\256\026\375i\324\353{\3750\364W\327\365<\312\341I\306z\204A\226\002\214\343\021D4F\020@5\260\004hr\204\341\320\204\201z!,\030\000=\201\355\014\002-\001\n\335\242vW\264gzr=\363\271\205l\246r<\344\353c\031v\373\316\215\350\370\010\325HM&\"\336\260\333\324\023\256\222j'\273\240R\246l\234\355\267\270*rwR8\310[\310[\300\215\340h\356'\271Es\030\321\343\325\315f\366\311_f\355\t\205\020\221B6\351\302U\212\252\250\355\260\203\023;\022\304\005m\242\324\242\235\332\233\312p\312\3529\027n\232\264\274\245\032J\213\265\325\216|\r\006\204\320\006\220\3041%U\016\223\001\252\254fZ\354\007\302\307\332\221\\$&\225\006\267{\231\027=_\252\353\2565V\26027b7^j_\030D\345\312\371\272\357\331\302:n*\303k\310\005d\001\273'VM\332\262\004c\375\361q\302\343+\036\256\242\005\\K\277\300\222Z1\214T\202\256c\235\217\000k\326\032\3008\016\004\307j\211\277\222\2163?\\\016\273\363-\211\245\353p9Q\255\337\n2\031r\351\014\024-Av\363p\206\312n\026\363\264\007*\006\213\363\347{\211\3456\002\366\270\343{\253Z\314\217\221bga\rP\010\217\304\250\335o\331e\226w\354,\242\\\320^cl\321\307$*\303\361\327\203\322\262\222\022\212\352l\\7\036=eEUF\200\313Z*\261^\030b\370\313Q\206\364x\270mE\014\3125\331\260\241\232\032E\333\333\225A\222\375r$=h\254eP\322\226o\325\"\323Z\347\243\261\232\005L\343\3501\325\217\347\331\2713\210\"V\242M@\2026\027\2301\342\275\303\251v\365lH\340\316r\345\320A\007\227\256\215\271\347e\250\026\224\213\203T\372\217\257\2148Q7\204\343@8\2219\023\241\323\352\301\033S\005\202\212\305 \3477\r\027azn\265N-\216\322+\327L[\006\310\203\\q\3571\003w[\304\240\261\nB\271\321\344U*T\022\3070r\311\352\317S*\027\206\200\270\003<\357\236\261\252R\231`\314\204\032\271T\316\326,\226\255Dd\311\234\267G""\271\027\221P3\271k\030\246A\302\212\326T\260S\007\302\255\324\300\301\023\00000/\225\323\257c\334\3274\317\253\230\221\034\3105\225\020{\212\216]\330\275Un\214\020*x\304\232\3367\010\270p3p\213\254\225 X\372\333\312\252\270\322j\307,\232\346\311\214\262\320\307\034C\034qL\177\254\226\260\226D5-\251\225ve;\333\330(\246`\314\031\2232\031\263%AyG\275\024{\266\342\315[\271Y\270\354m\265(\331sw:\232\236\374\223\315VLo\266\275\376P\267f\320\241\311\344/ir+\032?\201\272\371\242@\233_\325\316\022a\271\331\371m|\206Hd\371F'l\204\223\330\314\270\217\200+\362\245\314\334\241\263\316\261\275\3105\327w\225A4\302-\352\366E\0277\257\365\371R@\301\206\343-\222g3\305\027C8\361\341\007\343\007xIh*\235\341\204}\207\010Dex\200\207,\350\020\377yL ,\331\363\032/\361P(\225V\242m&\206\274\232\270$z\223p\204\330\036\025\000\213\330.T\326\355{\233\310\330Gi\371\222\205\210J&\325(B3'\004+\243\341\350Fj\305\007\223-\022\031\337\017\025\275\255\304Q\214e,u\216\212\244\252\0049\215\345\006\367\300\312\210f\354L\271'\322#\373\336\242\227\212\226\244 \204oC \021\204 \343\000\264\263\376\027/\264)\320\210\",q\023\217\213\212\205\2153\006\316p\365\330X\271\254\246\026\210\236\025\013\000\260\262aXp\351\331\203\020\356\3726\300C\335\371\262\276\255\360\215`\337`>a\240\3028\350\256\303[\013\020\350\017\241w1!\342ED!\025\361Qb4\255L\005\261b\241X\351X\005\216\342\262+H\210 \314\242\307\323\205\266\177\213[j\251\r\212a\244Z'\016q\234s\275\376\271a\270\356\\\204\\N\205\324w@\202h\301zS#&\324\241\026)\000\352\251;\252\030\324\266\320\344>\006\242gfS\n\022\251\231\236(\326\n\177ro0Q\236L\354$!M\030\337\313oJ\007\346\216LRy\017\003\n}!4\301N\355\323\024\235\243\304\337e\201\014\310\343\362\314j\r=\210\324\252z\340\030\301#8\006\206\003\270\0054\224+\010\216\240^\267&Z\247H0\240\202\230\n\223\270\224N\323\316\332hR\320a\n\233G6\222D\326$\264\n\032\225\004\305\257\307\024\364\n@j[?=\311\t\024`\030\210UOER+%\223\000\351\303f\314\004\262\262$^4'v\236|\274\251\200\013,\222\206^Pl\2009\367\242l\223\010\"q\216>NG""5\211Dv\341\2162\262\nf\007\030\274\230\201\213]\030\272\221\031\006g\036\355\323t%\206$\271t\013\256\030~\242\302#\016LB\261\034T\000\271p\206e\204pN\t\022I\234\371\2670C\\\270B\302\226L0\323\252rr\035.\036>.\037%x7\372]\326\317\373\372\235Z<\034w\"\215\337H\325\237\201L\365H\030\341X\3271\314\241\t\322\035;cdV\323H\200\245\340\2416i\322\367\211\251K\332\265\262\222\265qj\016\013\024\263\271J\024j\255E\242\n^\266\222-11\024\230\233\322\t\315\310\256\262\247h\022\201N+\230L\024\240\256\272\244*\253q\020\361'p\343\352\301\212\303\345Tf\031\220\362\2577\341\310\322\333f\031r\234\n\0214\006\306\037\361w$S\205\t\r\2221~p";
+    PyObject *data = __Pyx_DecompressString(cstring, 2328, 2);
     if (unlikely(!data)) __PYX_ERR(0, 1, __pyx_L1_error)
     const char* const bytes = __Pyx_PyBytes_AsString(data);
     #if !CYTHON_ASSUME_SAFE_MACROS
     if (likely(bytes)); else { Py_DECREF(data); __PYX_ERR(0, 1, __pyx_L1_error) }
     #endif
-    #elif (CYTHON_COMPRESS_STRINGS) != 0 /* compression: zlib (2375 bytes) */
-const char* const cstring = "x\332\275W\317o\333F\026\216l+Q\\%\225,9q\022\247+Yv\322\335\"^H\376\201v\321\305B\226\355M\026H\020Y\266\021\354vA\214(\312f-\221\024I\245R\273\013\344\310\343\034\347\310#\217<\362\350c\216>\362\310?!\177B\277\031J\262\342\r\322d\017\r\024\2113\234y\363\336\367\276\367\315\363z\265 \353\246\251X\206\256\265\024MV\n]b\313\247\005\"\233\272e\025\272\375\216\255\032\035\245 \223\256b\022k\275\332\372\221\310X7,tT\313.(\232m\016\013m\335\304\002\255\245\266\210=2\240j'\353\363\363\005\374{\316\207\212U\250M\035T\260l\263/\333\177)\2508t\240\264\n\315a\301&\346\211b\3073\370.Xz\337\224\307\007\257\013S\177#\235\023\335T\355\323\256\365\347\367\275\266\326\215\341\345\313u\305P\247F\266I\332:w\367_\252f\377[3\326\265\0261M2\254\215]\256\351\272\331\252\264j\023\223\317\253\257j\325\027\273/\360\373\342\260o(\235\227\207\322\321\213\243\306\336\256$\275\034\016\360\177W\225m\351\2052\260\017\2246\221e\305\260%\356\021i\265\224\226d\020s\352\370+\236\222N\247F\272R\273CN$\211h\232n\023[\3255\013\003k\250\311\252\3167\350}[\325\260\326\2669(\266b6\211\245H1D8\250\257\331M]\357\310\244\2436%I\356\020\313\222\360F\265\225.\037b\253\244j\022\342\226\225&\221\317d\230G\370H\026\\SMi\234!\356\231\360\016\261\264M\000=\032(\255+>\363aW\325d\004&\233-@F\304\231\223\007\305\222Z\300\001d\221.w\212\307\017\315\267\340\313\207\346\215\312x\022\220\332\2729\234,\322l\236\004\311\340;\305n[\347\000\332\222\324\322e|a\326\036\032\n\322\216\217\324\355\266U\245\323j\253\334\207q\216\333\035\235\330\342k{\263\rjI1\261&X\264M@\327\356k0\007\226\340\263QQ\005^\246j\301\311\256\241v\220Y\361<\312\016G\333:+\237U\3166\316\224!\347\027r\330%\000>6*\260\346S\312\010%<\342\214\256\336\352w\024I\3022\r.\340\333\320\372]\356\216\025\377j-\361\020'\233?\032Cm\240\ru\003\356\002\025\303(\033\025C\035\340\003H\000\004\354\233\252lh\246\241\033\222d\230\n|\206YI\352\365I'>\242\327W\3453K79\334\202\352\322\340rj\304\252\241\251\330}S3\225\327\212\211\204\222\266\322\031J \253.\003=\211\214\353^\022""\201Z\262\311C\034\375H\226\3723H2\220$\013\206\342#\3614\312\236\205\352\3079\226)[\375\356\211M\316\024\251\251 \207\223\324X\323\274\036\r\000\026\177\201\357SSQ\256&\313\326L[\357\210\272\266\373\0269Q^\223N_\261^#\362\301\340t8<\375Y\201|\275I\274[\270\226\276\365\356\372\265d\226\316\322\n\255\207s\267\234#Z\244\233t\300~\361\212\336w\376\323\240\032\316\335xc:\017)\211\346\322\016F)'E\223\264NI\230\312\321r\230J;\177\247[,\301\262a:G7(\241}\266\303\010\353\205\351/\235>\255Q\223\345\331\261[vw\275\204w\3073\375l\230y\300\312a&\033\245\276p\312a\372V\364\233&za\346\016fmVf\317\334\272\330\347<\243\307\030\356\260\226[t7\\\342\366\275=\177\321\227\203l\260\026\364\302T\226f\3039\254{\223\340?\025\347\220\346\351!\313\216\207\307\264L\237\301\255\212[\007\014\267\257%o9U\247\356\234R\225\331\356\226\227\364\352\036\341\300\334t\256;\212X{\000w\340\350>]\243=6\313*\254\341&\3024\216\241%\200\321fU\366O\267\347\315z\033^\323\237\3657\375~\260w\236=\177\362\266w\361\262.<\271\270\266H\353\321\034v\340\304\257\256%\277p\276\341\210\317;O.\356~\355%\242\271\014Mpto \344*\3675La\003?\363)\335cYVb?xY\257\030\2463H\326\267\210}\327M\270Y>LR\311\255\272u\267\205\224mz\275\010^-\306p\205\323\217|\341\017n\326]uI\230Y@\034&\316\030=,\262\246\233t\017\200\342\216\247\370\025\3778\250\004u\236\243\364\035z\302\352\354dd~\333_@lf\200\344!\211\254\312\201\276\3133\027\305`\203Q\311\007\254\370n\205C\227\024d\002EbV\201`\264\211\265\013L\260fOx\326\007p\200\326\235A\032\221\214\330\313#Vd[\210n\001\264\331AnM\017\216\346\201\302\"X\321G\254\007\200z\006\356T\274z\230\277'\246MD\266\"^YxQ\376\274\351(\277\304\222\354\010>l\201\245\013^\0310\020\317\362\213\341\322WL\271\364\302+y\r?\001\n/=`\033L\006\374\313\017\243\245e\266\347.\n\nV\275\003\257\347\317\370E\177\303'\341\362\212\273v\351\250'\3739\277\352\327\303\345?0\313-!\326B1Z.\000\366#,\330\202\331\005\277\354\357\370\304\267\202bXx\344*#7P2~\311o\004\211 \033\026J \273\0148V\327\242\302\327\202\247\315\311N%(\243\\W\337""\337\271\342\357\241&\212\2378]\362\217\202bP\376\254\351M\324\333\352\037\001\316\312$\3765\277\027$~\177O\312\021\360\331B\021\226\005>\217\001~Jdc\013\336\374?\303T\220\210\n\337\300\034\354~\213\322&\341*\037\215\270>\177I\362\r*\243D\213a\352K\307\2129\317\2652u\333i\322\031\272Bw\241\030\\\254\232\340y\t\244\263a\004\332\326\003\327\033\242\"*\254.\304$\024\332\2667\255\021\257.\036>\361\352\3572\227b\264\313\3469y\257\312\321\034\246&\345\263\301:\202\357\231\034\375\016%\326\020\325\024S'\277\030AN\333l\337}\014A\356\205\371\207(pY\024\304\256wS\200Y\367\233\000\001\265\222ek\242\340\216\274U\350B9\312@\222D\250%\354i\272\327\271\224\334\201h\366\334\331\270J\242\314].\327K\3546^\t\313\n\216=E\232p\320]\372\037\254\252\206\371\373\354\221\330\213\231\301h\357\2567\347\325\274\001\2103\013\032\357\236'\336\177\231D\341!\033A.\250\006\207\347\331\261\t\316\201j\204 \267\205\254\344\227\031Fc\245\350\305\021\224&\341\325\220\324\244w(HW\275\372r\017\014^\363\354\270\006?\376\362\n\nIq\211\344c\345[\376\300\245\021K\335\177\271H\363\014]\247\n\330P\203\010\345\334g\274b\270\3018i\004\322\020\013a\206\337\204M\250R\203#%djS\334\236<}\323Z\330\200b\345\342\312\033\253\2335\272\023M\361\242\316\221\264\330\nT*\347\356\303\016x\214P*\220\242\245{\\\371\256\013\211\253\305\313\303\367\344\214\253\035W\255\003\277\027.\027\305\2645\262`N\313\031G(\347\355\307\302\347\333\342\366\210\345\355\246\267\210\305},m\214\322\327@nG:\266\030\253\254\330d\005\245\240\036\220)e\223'\\L\306o\342\232\257Abf\377W\360\306\3235\\\275\325\340\325y=\026\245\322\310\320\025\231\371$#\365\367\365d\025\350\255aAB\250\200\367T\210\365O\001\231V\232m.\322\2372\374\270\264\214\310\264\360\333\035\310\270\340\377\n\032d?\233H9\321w\345>\240\020W\r5b\373\0373vW\334\346\334PN\\\2551\201\342\333\200\027u-\350\235\317\234\257\235\367\336&Bq\362,/YA\347}\350L\017\341\344yW\361T\\\267?y\261\230\260\224h\016\266\371\351\037\034\246\320<\305-e\016}\021<\026V\306H\242\023\31186\024\031\375\325M!\022""\374\005P,\241\307Z\024\314\257\362.\254\350l\323\034\2445n\003\312\021Z\341\272C\320\213\355\241\177=\022\0279z\264\364E\232\247\376\037\274\321\214\320\254MZ\234q\221\367xF\022tAt;m&D\272\352\0348\003\332\213\346\320/\243\233\265\270lDs\\\376o\320_`\371\265w\014iE\233=Dg\007[\331\213\354\032\372\255\023\200\227\346,\344&\347!w3\\\365\243T\036\355\341\321\305\375u\324\316k\\{\177:\177\372\026\307\360\331c\366}\354f\312\271\211`vh\213\255\262.\310\305[\217g\242\360\270\361G\002\335\037yN\246MC\032\"\264s\313\3204\302\257.\031\275m1\274z\034\032P\314\\\006\034+z:\216\2067\222\\0\213W\374\341\241\305\367\340\034{.T\206\373\301\313\363\261\177?\330@m\377>~\214\023\366\275 \333t\322\342{\273B\017F\265\305\233_~#\337C\021T&\327\300N\314\371xy\t\213m\360\255\351&b\352\225\305_-\026\256U\321\016o\340\362O\243 \300\247_\001$^`G";
-    PyObject *data = __Pyx_DecompressString(cstring, 2375, 1);
+    #elif (CYTHON_COMPRESS_STRINGS) != 0 /* compression: zlib (2389 bytes) */
+const char* const cstring = "x\332\275WMo\333V\026\215b+Q\\\245\225,9q\022\247#Yv\322\231\"\016$\177\240\035t0\220eg\222\001\022D\376B0\323\001\361D=\331\254%\222\")Wjg\200,\271|\313\267\344\222K.\271\3642K/\271\324O\310O\230\363\036%\331\361\030i2\213\006\212\304\367\301\373\356=\367\334\363\256W\252\005\325\260,j\233\206\336\244\272J\013\035\342\250G\005\242Z\206m\027:\275\266\243\231mZPI\207Z\304^\2516\177\"*\366\r\nm\315v\nTw\254A\241eX\330\2407\265&qF\0064\375pef\246\200\177/\305\220\332\205\332\205\203\n\266c\365T\347\317\005\r\207\366i\263\320\030\024\034b\035R'\236\301w\3016z\226:>xE\232\372\2538\363\237\232\356\374K7W\364&\261,20L\252\233\316Ie\205\264\017\rKs\216:\366\n5\265\253\246\035\213\264\014\333R\237\216\027\237\236/>\375\020\005{\305\034\324\306\021\325\014\303jV\232\265\311\216\227\3257\265\352\253\255W\370}\265\3273i\373\365\236\262\377j\177w{KQ^\017\372\370\277\245\251\216\362\212\366\235\035\332\"\252JMG\021\007\220f\2236\025\223X\244\335\256\221\216\322j\223CE!\272n8\304\321\014\335\306\300\036\350\252f\254`\273\321s4\235\332\304q\0042\016\265\032\304\246J\214\023\314\365t\247a\030m\225\264\265\206\242\250mb\333\nV4\207v\304\020\257*\232\256 h\2256\210z\254\302<\340C\306\340\200f)\3434\t\277d\360\360\270e\001\355\321\2006/A\"\206\035MW\341\276j5\001\014\221gN\036\250\2554\021-\030\243\234\277)\037\257\232o\302\227\253\346\315\312x\022\3009\2065\230l\322\035\001\265b\2127\345\333\216!\000t\024\245i\250\370\302\25430)\222\217\217\322\351\2644\332n\2664\341\3038\223\255\266A\034\371\265\261\326\002\277\224\230]\023,Z\026\240k\365t\230\003\313\360Y\255h\022/K\263\341d\307\324\332\310\237|\036eG\240m\037\227\217+\307\253\307t \370\211\034v\010\200\217\215J\254\305\024\035\241\204G\234\3211\232\2756U\024l\323\341\002\276M\275\327\021\356\330\361\257\336\224\017q\262\305\2439\320\373\372\225l\277\224&l\261\010\2003\315\262Y1\265>>@\rX\301\005KSM\3352\rSQL\213\",\234\254(\335\036i\307^t{\232zl\033\226\310\210\344\274\322?\237\032\021o`Q\247g\351\026=\241\026rNZ\264=P\300gC\005""\300\n\031\353\203\"\261\260UK\2400\372Ql\355\027\360\250\257(6\014\305G\342i\224`\033*\201sP\240v\257s\350\220c\2524(\322<\311\236}\221\372\243\001\360\024\013\370>\262(\275\234OG\267\034\243-\353\336\351\331\344\220\236\220v\217\332'\210\274\337?\032\014\216~\241\220\271\267\211\367\263\327\322\267\337\337\270\226\314\262)Va\365h\372\266\273\317\212l\215\365\371\257~\321\377>x\036V\243\351\233o-\367!#\303\351\264\213Q\312M\261$\2533\022\245r\254\034\245\322\356\337\330:O\360l\224\316\261UFX\217or\302\273Q\372+\267\307j\314\342y~\340\225\275-?\341\337\361\255 \033e\036\360r\224\311\016S_\270\345(}{\370\233&\272Q\346\016f\035^\346/\274\272|\317}\301\0160\334\344M\257\350\255z\304\353\371\333\301\\\240\206\331p9\354F\251,\313F\323\330\3676!~*\356\036\313\263=\236\035\017\017X\231\275\200[\025\257\016\030\276\274\226\274\355V\335\272{\3044\356x\353~\322\257\373D\000s\313\275\341R\271w\007\356\300\321gl\231u\371\024\257\360]/\021\245q\014+\001\214\026\257\362\177x]\177\312_\365\033\301T\260\026\364\302\355\323\354\351\223w\335\263\327u\351\311\331\2659V\037N\343\r\234\370\365\265\344\027\356\267\002\361\031\367\311\331\335o\374\304p:\303\022\002\335\233\010\271*|\215RxA\234\371\234m\363,/\361\037\375\254_\214\322\031$\353;\304\276\345%\274\254\030&\231\342U\275\272\327D\312\326\374\356\020^\315\305pE\027\037\305\306\037\275\254\267\344\221(3\2138,\2341z\230\343\r/\351\355\000\305M\237\006\225\340 \254\204u\221\243\364\035v\310\353\374pd~#\230ElV\210\344!\211\274*\200\276+27\214\301\006\243\222\017x\361\375\242\200.)\311\004\212\304\254\002\301X\003{g\271d\315\266\364\254\007\340\000\255w\035iD2b/\367y\221\257#\272Y\320f\023\271\265|8\232\007\ns`E\017\261\356\000\352\353p\247\342\327\243\374=9m!\262E\271dc\241\374y\323\303\374<O\362}\370\260\016\226\316\372e\300@|;(F\363_sz\356\205_\362w\203\004(<\377\200\257r\025\360/<\034\316/\360moNR\260\352\357\370\335\340zP\014V\003\022-,z\313\347\216\372j\220\013\252A=Z\370\003\267\275\022b-\024\207\013\005\300\276\217\r\3530;""\033\224\203\315\200\004vX\214\n\217<:r\003%\023\224\202\3350\021f\243B\tdW\001\307\322\362\260\360\215\344ic\362&\r\313(\327\245\017\337\\\014\266Q\023\305O\234.\005\373a1,\177\326\364\032\352m\351\217\000gq\022\377r\320\r\023\277\277'\345!\360YG\021\226%>\217\001~Jfc\035\336\374?\303T\230\030\026\276\2059\330\375\016\245M\242%1\032q}\346\234\344\253LE\211\026\243\324W\256\035s^he\352K\267\301\256\263E\266\005\305\020b\325\000\317K \235\003#\320\266.\270\276++\242\302\353RL\"\251m\333\0275\342\315\331\303'~\375}\346\\\214\266\370\214 \357e9\232\306\324\244|Vy[\362=\223c\337\243\304ve5\305\324\311\317\r!\247-\376\314{\014A\356F\371\207(pU\026\304\226\177K\202Y\017\032\000\001\265\222\345\313\262\340\366\375%\350By\230\201$\311PKx\247\341\335\020Rr\007\242\331\365\246\342*\031f\356\n\271\236\347_bIZ\2468\366\010i\302Aw\331\277\261\253\032\345\357\363G\362]\314\364G\357n\371\323~\315\357\2038S\240\361\326i\342\303\305$\n\017\331\010sa5\334;\315\216M\010\016T\207\010rC\312J~\201c4V\212n\034Ai\022^\rIM\372{\222t\325\313\213\333`\360\262\357\3045\370\361\305K($\345%\222\217\225o\341\212K#\226\272\377\010\221\026\031\272\301(\330P\203\010\345\274\027\242b\204\3018i\004\322\020\013aF\334\204\r\250\322\256@J\312\324\232\274=E\372.j\341.\024+\027W\336X\335\354\321\235h\311\205\272@\322\346\213P\251\234\367\014v\300c\204R\201\024\315\337\023\312wCJ\\-\336\036} gB\355\204j\355\004\335h\241(\247\355\221\005\353\242\234\t\204r\376\263X\370\002G\336\036\261\274\335\362\347\260\271\207\255\273\243\364\355\"\267#\035\233\213UV\276d\207\245\260\036\222\013\312\246N\270\230\214W\342\232\257Ab\246\376W\360\306\3235\\\275\325\360\315i=\026\245\322\310\320%\231\371$#\365\017\365d\t\350-cCB\252\200\377\\\212\365\317!\271\2504\033B\244?e\370qi\031\221i\366\267;\220q\301\377\0054\310~6\221r\262\357\312]\241\020\227\r\355\306\366?f\354\256\274\315\205\241\234\274Zc\002\305\267\201(\352Z\330=\275~\272|\332}\227\210\344\311S\242d%\235\237Ag\272\010'/\272\212\347\362\272\375\331\217\305\204""\247ds\260!N\277r\230B\363\024\267\2249\364E\360XZ\031#\211N$\343:Pd\364W\267\244H\210\005\240XB\2175'\231_\025]X\321\335`9Hk\334\006\224\207h\205\353.A/\266\215\376u_^\344\350\321\322gi\221\372\277\213Fs\210fm\322\342\214\213\274+2\222`\263\262\333iq)\322Uw\307\355\263\356p\032\3752\272Y[\310\306pZ\310\377M\366+,\237\370\007\220V\264\331\003tv\260\225=\313.\243\337:\004xi\301Bar\006rw]\250\3760\225G{\270\177v\177\005\265s\202k\357O\247\317\337\341\0301{\300\177\210\335L\271\267\020\314&k\362%\336\001\271D\353\361B\026\2360\376H\242\373\223\310\311E\323\220\206!\332\271\005h\032\021W\227\212\336\266\030]>\016\r(f\316\003\216\025=\035G#\032I!\230\305K\376\210\320\342{p\232\277\224*#\374\020\345\3718\270\037\256\242\266\177\037?\306\t\373A\222\355b\322\342{\273\302vF\265%\232_q#\337C\021T&\327\300f\314\371x{\t\233\035\360\255\341%b\352\225\345_-6\256U\331\016\257\342\362O\243 \300\247\377\002j\262oo";
+    PyObject *data = __Pyx_DecompressString(cstring, 2389, 1);
     if (unlikely(!data)) __PYX_ERR(0, 1, __pyx_L1_error)
     const char* const bytes = __Pyx_PyBytes_AsString(data);
     #if !CYTHON_ASSUME_SAFE_MACROS
     if (likely(bytes)); else { Py_DECREF(data); __PYX_ERR(0, 1, __pyx_L1_error) }
     #endif
-    #else /* compression: none (4679 bytes) */
-const char* const bytes = ".A correspondence match across multiple cameras.Adjacency list entry for candidate matching.\n\n    Matches C correspond struct: indexed by target index in source camera.\n    ?algorithms/correspondences.pyalgorithms.epialgorithms.trafolist[int]np.ndarrayCandidateCoord2dCorrespondMAXCANDNMAXNTupelPT_UNUSED__Pyx_PyDict_NextRefaccept_corradded_paralgorithms.correspondencesallCam_flag__annotations__asyncio.coroutinesattrgetterbase_target_countboolcalib__class_getitem__cline_in_tracebackconsistent_pair_matchingcorrcorrect_framecorrectedcorrespondencescorrmincparcrddataclassdataclasses_default_correspond_corr_default_correspond_dist_default_correspond_p2default_factory_default_ntupel_pdistdist_to_flat__doc__dstdtypeepiepi_mmfieldfind_candidatefloatfloat64four_camera_matchingfrm__func__intint32int_paris_compiled_is_coroutineitemsk1k2k3keylists__main__match_pairs__metaclass__mm__module__n__name__npnum_camsnum_candsnum_targetsnumpynxnyoperatorpp1p2pixpixel_to_metricpnrpop__prepare____qualname__quicksort_coord2d_xquicksort_target_yreturnreversesafely_allocate_adjacency_listsscratchscratch_sizescx__set_name__setdefaultshesortsrcsumgtake_best_candidatestarget_countstargets__test__three_camera_matchingtnrtoltrafotusagevaluesvparxxhyyhzeros\200\001\360\022\000\014\r\360\006\000\005\021\220\003\2202\220Q\330\004\r\210U\220!\2204\220x\230{\250!\2509\260H\270A\330\004\007\200r\210\035\220a\340\004\014\210A\330\004\010\210\010\220\005\220Q\220a\330\010\023\2201\330\010\014\210G\2205\230\001\230\021\330\014\023\2203\220a\220u\230B\230a\230q\330\014\017\210u\220C\220r\230\024\230V\2401\240D\250\001\250\026\250r\260\021\330\020\033\2301\330\020\021\340\010\013\2101\330\014\r\340\010\014\210G\2205\230\001\230\021\330\014\023\2203\220a\220u\230B\230a\230q\330\014\017\210u\220C\220q\330\020\026\220a\220t\2301\230I\240Q\340\010\013\2101\210I\220V\2301\230B\230d\240!\2403\240a\240u\250E\260\025\260c\270\021\270%\270q\330\010\021\220\021\330\004\013\2101\200\001\330\004\013\2102\210T\220""\024\220T\230\021\200\001\330\004\013\2102\210V\2201\220I\230V\2402\240Q\200\001\360\016\000\005\r\210A\210Q\210h\220i\230t\2405\250\005\250Q\250a\360\006\000\005\t\210\006\210e\2201\220I\230R\230q\330\010\014\210F\220%\220q\230\003\2302\230S\240\001\330\014\021\220\021\220#\220Q\220f\230A\230Z\240q\250\003\2503\250b\260\003\2604\260u\270E\300\021\300-\310q\320PQ\330\004\013\2101\320\000\025\220Q\340\004\021\220\021\200\001\360\036\000\005\013\210+\220Q\330\004\n\210-\320\027(\250\001\340\004\020\220\001\330\004\010\210\007\210u\220A\220T\230\021\330\010\025\220Q\330\010\014\210H\220E\230\021\230#\230\\\250\021\250!\330\014\020\220\003\2208\2301\230D\240\001\240\021\330\014\020\220\005\220_\240A\240Q\240d\250!\2504\250q\340\014\021\220\025\220a\220t\2301\330\014\021\220\025\220a\220t\2301\330\014\020\220\005\220\\\240\021\240$\240a\330\020\022\220%\220r\230\021\330\020\022\220%\220r\230\025\230b\240\005\240R\240u\250B\250e\2602\260V\2702\270Q\330\020\021\340\014\026\220g\230Q\230g\240Q\240d\250!\2506\260\022\2604\260r\270\021\340\010\033\2301\230A\330\010\021\220\027\230\001\230\021\340\004\013\2101\200\001\360\022\000\005\033\230!\360\"\000\005\t\210\005\210U\220!\2201\330\010\r\210U\220!\2202\220Q\220b\230\001\230\022\2301\330\010\014\210E\220\025\220a\220u\230A\230R\230q\240\002\240!\2402\240Q\330\014\020\220\005\220U\230!\2305\240\001\240\022\2401\240B\240a\240r\250\021\330\020\024\220E\230\025\230a\230u\240A\240R\240q\250\002\250!\2502\250Q\330\024\031\230\025\230a\230r\240\021\240\"\240A\240R\240s\250!\2501\330\024\031\230\025\230a\230r\240\021\240\"\240A\240R\240s\250!\2501\330\024\031\230\025\230a\230r\240\021\240\"\240A\240R\240s\250!\2501\340\024\030\230\005\230U\240!\2405\250\001\250\022\2501\250B\250a\250s\260!\330\030\036\230e\2401\240B\240a\240r\250\021\250#\250S\260\001\260\021\330\030\033\2303\230c\240\021\330\034\035\340\030\034\230E\240\025\240a\240u\250A\250R\250q\260\002\260!\2603\260a\330\034\"\240%\240q\250\002\250!\2502\250Q\250c\260\023\260A""\260Q\330\034\037\230s\240#\240Q\330 !\340\034 \240\005\240U\250!\2505\260\001\260\022\2601\260B\260a\260s\270!\330 &\240e\2501\250B\250a\250r\260\021\260#\260S\270\001\270\021\330 #\2403\240c\250\021\330$%\340 (\250\005\250Q\250b\260\001\260\022\2601\260B\260e\2701\270A\330$&\240e\2501\250B\250a\250r\260\021\260\"\260E\270\021\270!\330$&\240e\2501\250B\250a\250r\260\021\260\"\260E\270\021\270!\330$&\240e\2501\250B\250a\250r\260\021\260#\260U\270!\2701\330$&\240e\2501\250B\250a\250r\260\021\260#\260U\270!\2701\330$&\240e\2501\250B\250a\250r\260\021\260#\260U\270!\2704\270q\330$)\250\021\250\"\250A\250R\250q\260\002\260%\260q\270\001\330$&\240e\2501\250B\250a\250r\260\021\260\"\260E\270\021\270!\330$&\240e\2501\250B\250a\250r\260\021\260\"\260E\270\021\270!\330$&\240e\2501\250B\250a\250r\260\021\260#\260U\270!\2701\330$&\240e\2501\250B\250a\250r\260\021\260#\260U\270!\2701\330$&\240e\2501\250B\250a\250r\260\021\260#\260U\270!\2701\340 #\2405\250\003\2501\330$%\340 '\240q\250\010\260\002\260!\2605\270\001\330 '\240q\250\010\260\002\260!\2605\270\001\330 '\240q\250\010\260\002\260!\2605\270\001\330 '\240q\250\010\260\002\260!\2605\270\001\330 '\240q\250\010\260\010\270\001\340 +\2501\330 #\2408\2503\250a\330$+\2501\330\004\013\2101\200\001\360\n\000\005\t\210\005\210U\220!\2203\220c\230\021\230!\330\010\017\210s\220!\2201\330\010\014\210A\330\010\016\210b\220\002\220\"\220D\230\003\2301\230B\230b\240\002\240#\240R\240t\2501\330\014\017\210q\220\005\220S\230\001\230\022\2302\230Q\330\014\021\220\021\330\010\013\2101\210E\220\021\200\001\360\036\000\005\013\210+\220X\320\035-\250Q\360\020\000\005\t\210\006\210e\2201\220D\230\n\240\"\240A\330\010\014\210F\220%\220q\230\003\2302\230S\240\004\240A\330\014\020\220\005\220U\230!\2303\230l\250!\2501\330\020\023\2209\230A\230S\240\001\240\022\2403\240c\250\021\330\024\025\340\020\026\220f\230F\240'\250\026\250q\330\024\035\230Q\230c\240\021\240\"\240D\250\t\260\021\260#\260Q\260b\270\001\330\024\031\230\021\230%\230u\240A\240U""\250$\250e\2601\340\020\025\220Q\220c\230\021\230#\230Q\230b\240\006\240a\330\020\026\220i\230q\240\003\2401\240B\240a\340\020\027\220q\330\020\030\230\016\240a\330\024\035\230Q\230e\2403\240h\250a\250q\330\024\027\220|\2401\240A\330\024\032\230&\240\006\240a\330\024\027\220x\230q\240\003\2401\240D\250\004\250C\250x\260q\270\003\2701\270D\300\001\330\024\027\220x\230q\240\003\2401\240D\250\005\250S\260\010\270\001\270\023\270A\270T\300\021\330\024\032\230&\240\006\240e\2501\250A\340\020\023\2206\230\022\2301\330\024\034\230A\340\020\024\220E\230\025\230a\230q\330\024\031\230\021\230#\230Q\230c\240\021\240\"\240C\240q\250\005\250T\260\021\260\"\260A\330\024\031\230\021\230#\230Q\230c\240\021\240\"\240E\250\021\250%\250t\2601\260B\260a\330\024\031\230\021\230#\230Q\230c\240\021\240\"\240E\250\021\250%\250t\2601\260B\260a\330\020\025\220Q\220c\230\021\230#\230Q\230b\240\005\240Q\200\001\360\024\000\005\033\230!\360\034\000\005\t\210\006\210e\2201\220I\230R\230q\330\010\014\210E\220\025\220a\220}\240A\240Q\330\014\020\220\006\220e\2301\230C\230r\240\023\240I\250R\250q\330\020\025\220U\230!\2303\230a\230s\240!\2402\240Q\330\020\023\2203\220b\230\005\230S\240\006\240a\240s\250!\2504\250r\260\021\330\024\025\340\020\024\220E\230\025\230a\230u\240A\240S\250\001\250\023\250A\250R\250q\330\024\031\230\025\230a\230s\240!\2403\240a\240r\250\023\250A\250Q\330\024\027\220s\230\"\230E\240\023\240F\250!\2503\250a\250t\2602\260Q\330\030\031\340\024\030\230\006\230e\2401\240C\240r\250\023\250A\330\030\034\230E\240\025\240a\240u\250A\250S\260\001\260\023\260A\260R\260q\330\034!\240\025\240a\240s\250!\2503\250a\250r\260\023\260A\260Q\330\034\037\230s\240\"\240E\250\023\250F\260!\2603\260a\260t\2702\270Q\330 !\340\034 \240\t\250\025\250a\250u\260A\260S\270\001\270\023\270A\270S\300\001\330 #\2403\240c\250\025\250a\250s\260!\2603\260a\260s\270#\270Q\270a\330$%\340 (\250\005\250Q\250c\260\021\260#\260Q\260b\270\005\270Q\270a\330$&\240e\2501\250C\250q\260\003\2601\260B\260e\2701\270A\330$&""\240e\2501\250C\250q\260\003\2601\260C\260u\270A\270X\300Q\330$)\250\021\250#\250Q\250c\260\021\260\"\260E\270\021\270!\330$&\240e\2501\250C\250q\260\003\2601\260B\260e\2701\270A\330$&\240e\2501\250C\250q\260\003\2601\260C\260u\270A\270Q\340 #\2405\250\003\2501\330$%\340 $\240F\250%\250q\260\001\330$+\2501\250H\260B\260a\260w\270a\340 '\240q\250\010\260\002\260!\2606\270\021\330 '\240q\250\010\260\002\260!\2606\270\021\330 '\240q\250\010\260\002\260!\2606\270\021\330 '\240q\250\010\260\010\270\001\340 +\2501\330 #\2408\2503\250a\330$+\2501\330\004\013\2101\200\001\360\024\000\005\033\230!\360\022\000\005\t\210\006\210e\2201\220I\230R\230q\330\010\014\210F\220%\220q\230\003\2302\230S\240\001\330\014\020\220\005\220U\230!\230=\250\001\250\021\330\020\025\220U\230!\2303\230a\230s\240!\2402\240Q\330\020\023\2203\220b\230\005\230S\240\006\240a\240s\250!\2504\250r\260\021\330\024\025\340\020\023\2205\230\001\230\023\230A\230S\240\001\240\022\2403\240c\250\021\330\024\025\340\020\025\220U\230!\2303\230a\230s\240!\2402\240S\250\001\250\021\330\020\023\2203\220b\230\005\230S\240\006\240a\240s\250!\2504\250r\260\021\330\024\025\340\020\027\220u\230A\230S\240\001\240\023\240A\240R\240u\250A\250S\260\002\260%\260q\270\003\2701\270C\270q\300\002\300%\300q\310\001\330\020\023\2205\230\003\2301\330\024\025\340\020\024\220F\230%\230q\240\001\330\024\033\2301\230H\240B\240a\240w\250a\340\020\027\220q\230\010\240\002\240!\2406\250\021\330\020\027\220q\230\010\240\002\240!\2406\250\021\330\020\027\220q\230\010\240\010\250\001\340\020\033\2301\330\020\023\2208\2303\230a\330\024\033\2301\330\004\013\2101\200\001\360\"\000\005\020\210t\2201\330\004\020\220\t\230\022\2301\330\004\013\2101\210F\220#\220T\230\025\230e\2401\240A\330\004\n\210!\2106\220\023\220D\230\005\230U\240!\2401\340\004\r\210Q\210a\210u\220E\230\024\230U\240%\240q\250\001\340\004\014\320\014+\2501\250J\260c\270\021\340\004\010\210\005\210U\220!\2201\330\010\014\210E\220\025\220a\220q\330\014\020\220\001\220\022\2202""\220Q\220f\230A\330\010\014\210A\210R\210x\220q\340\004\023\2201\220C\220s\230#\230Q\340\004\017\210q\220\007\220{\240%\240v\250V\2601\340\004\007\200y\220\003\2201\330\010\021\320\021%\240Q\240g\250S\260\014\270A\270Q\330\014\020\220\n\230&\240\002\240\"\240A\340\010\024\220A\220U\320\032.\250a\250v\260U\270*\300H\310A\330\010\024\220A\220V\230<\240q\250\001\340\004\010\210\t\220\023\220B\220d\230$\230m\2503\250c\260\023\260I\270S\300\001\330\010\021\320\021&\240a\240w\250j\270\003\2701\330\014\020\220\n\230&\240\002\240\"\240F\250!\340\010\021\220\034\230Q\230a\330\010\016\210c\220\021\220!\330\010\024\220A\220U\320\032.\250a\250v\260U\270!\330\014\024\220A\330\010\014\210E\220\025\220a\220|\2401\240A\330\014\017\210q\220\007\220r\230\025\230c\240\021\240!\330\010\024\220A\220V\230<\240q\250\001\340\004\007\200y\220\002\220\"\220D\230\004\230M\250\023\250A\330\010\021\320\021)\250\021\250'\260\032\2703\270a\330\014\020\220\n\230&\240\002\240\"\240F\250!\340\010\021\220\034\230Q\230a\330\010\016\210c\220\021\220!\330\010\024\220A\220U\320\032.\250a\250v\260U\270!\330\014\024\220A\330\010\014\210E\220\025\220a\220|\2401\240A\330\014\017\210q\220\007\220r\230\025\230c\240\021\240!\330\010\024\220A\220V\230<\240q\250\001\340\004\010\210\005\210U\220!\220<\230q\240\001\330\010\014\210E\220\025\220a\220q\330\014\017\210s\220!\2202\220R\220q\230\003\2302\230Q\330\020\021\330\014\021\220\031\230!\2302\230Q\230c\240\021\240\"\240B\240a\240s\250!\330\014\017\210s\220#\220R\220t\2303\230b\240\001\330\020\023\2208\2301\230B\230a\230s\240'\250\021\340\004\013\2103\210b\220\014\230A\230U\240!";
+    #else /* compression: none (4719 bytes) */
+const char* const bytes = ".A correspondence match across multiple cameras.Adjacency list entry for candidate matching.\n\n    Matches C correspond struct: indexed by target index in source camera.\n    ?list[int]np.ndarrayopenptv2.algorithms.epiopenptv2.algorithms.trafosrc/openptv2/algorithms/correspondences.pyCandidateCoord2dCorrespondMAXCANDNMAXNTupelPT_UNUSED__Pyx_PyDict_NextRefaccept_corradded_parallCam_flag__annotations__asyncio.coroutinesattrgetterbase_target_countboolcalib__class_getitem__cline_in_tracebackconsistent_pair_matchingcorrcorrect_framecorrectedcorrespondencescorrmincparcrddataclassdataclasses_default_correspond_corr_default_correspond_dist_default_correspond_p2default_factory_default_ntupel_pdistdist_to_flat__doc__dstdtypeepiepi_mmfieldfind_candidatefloatfloat64four_camera_matchingfrm__func__intint32int_paris_compiled_is_coroutineitemsk1k2k3keylists__main__match_pairs__metaclass__mm__module__n__name__npnum_camsnum_candsnum_targetsnumpynxnyopenptv2.algorithms.correspondencesoperatorpp1p2pixpixel_to_metricpnrpop__prepare____qualname__quicksort_coord2d_xquicksort_target_yreturnreversesafely_allocate_adjacency_listsscratchscratch_sizescx__set_name__setdefaultshesortsrcsumgtake_best_candidatestarget_countstargets__test__three_camera_matchingtnrtoltrafotusagevaluesvparxxhyyhzeros\200\001\360\022\000\014\r\360\006\000\005\021\220\003\2202\220Q\330\004\r\210U\220!\2204\220x\230{\250!\2509\260H\270A\330\004\007\200r\210\035\220a\340\004\014\210A\330\004\010\210\010\220\005\220Q\220a\330\010\023\2201\330\010\014\210G\2205\230\001\230\021\330\014\023\2203\220a\220u\230B\230a\230q\330\014\017\210u\220C\220r\230\024\230V\2401\240D\250\001\250\026\250r\260\021\330\020\033\2301\330\020\021\340\010\013\2101\330\014\r\340\010\014\210G\2205\230\001\230\021\330\014\023\2203\220a\220u\230B\230a\230q\330\014\017\210u\220C\220q\330\020\026\220a\220t\2301\230I\240Q\340\010\013\2101\210I\220V\2301\230B\230d\240!\2403\240a\240u\250E\260\025\260c\270\021\270%\270q\330\010\021\220\021\330\004\013""\2101\200\001\330\004\013\2102\210T\220\024\220T\230\021\200\001\330\004\013\2102\210V\2201\220I\230V\2402\240Q\200\001\360\016\000\005\r\210A\210Q\210h\220i\230t\2405\250\005\250Q\250a\360\006\000\005\t\210\006\210e\2201\220I\230R\230q\330\010\014\210F\220%\220q\230\003\2302\230S\240\001\330\014\021\220\021\220#\220Q\220f\230A\230Z\240q\250\003\2503\250b\260\003\2604\260u\270E\300\021\300-\310q\320PQ\330\004\013\2101\320\000\025\220Q\340\004\021\220\021\200\001\360\036\000\005\013\210+\220Q\330\004\n\210-\320\027(\250\001\340\004\020\220\001\330\004\010\210\007\210u\220A\220T\230\021\330\010\025\220Q\330\010\014\210H\220E\230\021\230#\230\\\250\021\250!\330\014\020\220\003\2208\2301\230D\240\001\240\021\330\014\020\220\005\220_\240A\240Q\240d\250!\2504\250q\340\014\021\220\025\220a\220t\2301\330\014\021\220\025\220a\220t\2301\330\014\020\220\005\220\\\240\021\240$\240a\330\020\022\220%\220r\230\021\330\020\022\220%\220r\230\025\230b\240\005\240R\240u\250B\250e\2602\260V\2702\270Q\330\020\021\340\014\026\220g\230Q\230g\240Q\240d\250!\2506\260\022\2604\260r\270\021\340\010\033\2301\230A\330\010\021\220\027\230\001\230\021\340\004\013\2101\200\001\360\022\000\005\033\230!\360\"\000\005\t\210\005\210U\220!\2201\330\010\r\210U\220!\2202\220Q\220b\230\001\230\022\2301\330\010\014\210E\220\025\220a\220u\230A\230R\230q\240\002\240!\2402\240Q\330\014\020\220\005\220U\230!\2305\240\001\240\022\2401\240B\240a\240r\250\021\330\020\024\220E\230\025\230a\230u\240A\240R\240q\250\002\250!\2502\250Q\330\024\031\230\025\230a\230r\240\021\240\"\240A\240R\240s\250!\2501\330\024\031\230\025\230a\230r\240\021\240\"\240A\240R\240s\250!\2501\330\024\031\230\025\230a\230r\240\021\240\"\240A\240R\240s\250!\2501\340\024\030\230\005\230U\240!\2405\250\001\250\022\2501\250B\250a\250s\260!\330\030\036\230e\2401\240B\240a\240r\250\021\250#\250S\260\001\260\021\330\030\033\2303\230c\240\021\330\034\035\340\030\034\230E\240\025\240a\240u\250A\250R\250q\260\002\260!\2603\260a\330\034\"\240%\240q""\250\002\250!\2502\250Q\250c\260\023\260A\260Q\330\034\037\230s\240#\240Q\330 !\340\034 \240\005\240U\250!\2505\260\001\260\022\2601\260B\260a\260s\270!\330 &\240e\2501\250B\250a\250r\260\021\260#\260S\270\001\270\021\330 #\2403\240c\250\021\330$%\340 (\250\005\250Q\250b\260\001\260\022\2601\260B\260e\2701\270A\330$&\240e\2501\250B\250a\250r\260\021\260\"\260E\270\021\270!\330$&\240e\2501\250B\250a\250r\260\021\260\"\260E\270\021\270!\330$&\240e\2501\250B\250a\250r\260\021\260#\260U\270!\2701\330$&\240e\2501\250B\250a\250r\260\021\260#\260U\270!\2701\330$&\240e\2501\250B\250a\250r\260\021\260#\260U\270!\2704\270q\330$)\250\021\250\"\250A\250R\250q\260\002\260%\260q\270\001\330$&\240e\2501\250B\250a\250r\260\021\260\"\260E\270\021\270!\330$&\240e\2501\250B\250a\250r\260\021\260\"\260E\270\021\270!\330$&\240e\2501\250B\250a\250r\260\021\260#\260U\270!\2701\330$&\240e\2501\250B\250a\250r\260\021\260#\260U\270!\2701\330$&\240e\2501\250B\250a\250r\260\021\260#\260U\270!\2701\340 #\2405\250\003\2501\330$%\340 '\240q\250\010\260\002\260!\2605\270\001\330 '\240q\250\010\260\002\260!\2605\270\001\330 '\240q\250\010\260\002\260!\2605\270\001\330 '\240q\250\010\260\002\260!\2605\270\001\330 '\240q\250\010\260\010\270\001\340 +\2501\330 #\2408\2503\250a\330$+\2501\330\004\013\2101\200\001\360\n\000\005\t\210\005\210U\220!\2203\220c\230\021\230!\330\010\017\210s\220!\2201\330\010\014\210A\330\010\016\210b\220\002\220\"\220D\230\003\2301\230B\230b\240\002\240#\240R\240t\2501\330\014\017\210q\220\005\220S\230\001\230\022\2302\230Q\330\014\021\220\021\330\010\013\2101\210E\220\021\200\001\360\036\000\005\013\210+\220X\320\035-\250Q\360\020\000\005\t\210\006\210e\2201\220D\230\n\240\"\240A\330\010\014\210F\220%\220q\230\003\2302\230S\240\004\240A\330\014\020\220\005\220U\230!\2303\230l\250!\2501\330\020\023\2209\230A\230S\240\001\240\022\2403\240c\250\021\330\024\025\340\020\026\220f\230F\240'\250\026\250q\330\024\035\230Q\230c\240\021\240\"\240D\250\t\260\021\260#\260Q\260b\270""\001\330\024\031\230\021\230%\230u\240A\240U\250$\250e\2601\340\020\025\220Q\220c\230\021\230#\230Q\230b\240\006\240a\330\020\026\220i\230q\240\003\2401\240B\240a\340\020\027\220q\330\020\030\230\016\240a\330\024\035\230Q\230e\2403\240h\250a\250q\330\024\027\220|\2401\240A\330\024\032\230&\240\006\240a\330\024\027\220x\230q\240\003\2401\240D\250\004\250C\250x\260q\270\003\2701\270D\300\001\330\024\027\220x\230q\240\003\2401\240D\250\005\250S\260\010\270\001\270\023\270A\270T\300\021\330\024\032\230&\240\006\240e\2501\250A\340\020\023\2206\230\022\2301\330\024\034\230A\340\020\024\220E\230\025\230a\230q\330\024\031\230\021\230#\230Q\230c\240\021\240\"\240C\240q\250\005\250T\260\021\260\"\260A\330\024\031\230\021\230#\230Q\230c\240\021\240\"\240E\250\021\250%\250t\2601\260B\260a\330\024\031\230\021\230#\230Q\230c\240\021\240\"\240E\250\021\250%\250t\2601\260B\260a\330\020\025\220Q\220c\230\021\230#\230Q\230b\240\005\240Q\200\001\360\024\000\005\033\230!\360\034\000\005\t\210\006\210e\2201\220I\230R\230q\330\010\014\210E\220\025\220a\220}\240A\240Q\330\014\020\220\006\220e\2301\230C\230r\240\023\240I\250R\250q\330\020\025\220U\230!\2303\230a\230s\240!\2402\240Q\330\020\023\2203\220b\230\005\230S\240\006\240a\240s\250!\2504\250r\260\021\330\024\025\340\020\024\220E\230\025\230a\230u\240A\240S\250\001\250\023\250A\250R\250q\330\024\031\230\025\230a\230s\240!\2403\240a\240r\250\023\250A\250Q\330\024\027\220s\230\"\230E\240\023\240F\250!\2503\250a\250t\2602\260Q\330\030\031\340\024\030\230\006\230e\2401\240C\240r\250\023\250A\330\030\034\230E\240\025\240a\240u\250A\250S\260\001\260\023\260A\260R\260q\330\034!\240\025\240a\240s\250!\2503\250a\250r\260\023\260A\260Q\330\034\037\230s\240\"\240E\250\023\250F\260!\2603\260a\260t\2702\270Q\330 !\340\034 \240\t\250\025\250a\250u\260A\260S\270\001\270\023\270A\270S\300\001\330 #\2403\240c\250\025\250a\250s\260!\2603\260a\260s\270#\270Q\270a\330$%\340 (\250\005\250Q\250c\260\021\260#\260Q\260b\270\005\270Q\270a\330$&\240e\2501\250C""\250q\260\003\2601\260B\260e\2701\270A\330$&\240e\2501\250C\250q\260\003\2601\260C\260u\270A\270X\300Q\330$)\250\021\250#\250Q\250c\260\021\260\"\260E\270\021\270!\330$&\240e\2501\250C\250q\260\003\2601\260B\260e\2701\270A\330$&\240e\2501\250C\250q\260\003\2601\260C\260u\270A\270Q\340 #\2405\250\003\2501\330$%\340 $\240F\250%\250q\260\001\330$+\2501\250H\260B\260a\260w\270a\340 '\240q\250\010\260\002\260!\2606\270\021\330 '\240q\250\010\260\002\260!\2606\270\021\330 '\240q\250\010\260\002\260!\2606\270\021\330 '\240q\250\010\260\010\270\001\340 +\2501\330 #\2408\2503\250a\330$+\2501\330\004\013\2101\200\001\360\024\000\005\033\230!\360\022\000\005\t\210\006\210e\2201\220I\230R\230q\330\010\014\210F\220%\220q\230\003\2302\230S\240\001\330\014\020\220\005\220U\230!\230=\250\001\250\021\330\020\025\220U\230!\2303\230a\230s\240!\2402\240Q\330\020\023\2203\220b\230\005\230S\240\006\240a\240s\250!\2504\250r\260\021\330\024\025\340\020\023\2205\230\001\230\023\230A\230S\240\001\240\022\2403\240c\250\021\330\024\025\340\020\025\220U\230!\2303\230a\230s\240!\2402\240S\250\001\250\021\330\020\023\2203\220b\230\005\230S\240\006\240a\240s\250!\2504\250r\260\021\330\024\025\340\020\027\220u\230A\230S\240\001\240\023\240A\240R\240u\250A\250S\260\002\260%\260q\270\003\2701\270C\270q\300\002\300%\300q\310\001\330\020\023\2205\230\003\2301\330\024\025\340\020\024\220F\230%\230q\240\001\330\024\033\2301\230H\240B\240a\240w\250a\340\020\027\220q\230\010\240\002\240!\2406\250\021\330\020\027\220q\230\010\240\002\240!\2406\250\021\330\020\027\220q\230\010\240\010\250\001\340\020\033\2301\330\020\023\2208\2303\230a\330\024\033\2301\330\004\013\2101\200\001\360\"\000\005\020\210t\2201\330\004\020\220\t\230\022\2301\330\004\013\2101\210F\220#\220T\230\025\230e\2401\240A\330\004\n\210!\2106\220\023\220D\230\005\230U\240!\2401\340\004\r\210Q\210a\210u\220E\230\024\230U\240%\240q\250\001\340\004\014\320\014+\2501\250J\260c\270\021\340\004\010\210\005\210U\220!\2201\330\010\014\210E\220\025""\220a\220q\330\014\020\220\001\220\022\2202\220Q\220f\230A\330\010\014\210A\210R\210x\220q\340\004\023\2201\220C\220s\230#\230Q\340\004\017\210q\220\007\220{\240%\240v\250V\2601\340\004\007\200y\220\003\2201\330\010\021\320\021%\240Q\240g\250S\260\014\270A\270Q\330\014\020\220\n\230&\240\002\240\"\240A\340\010\024\220A\220U\320\032.\250a\250v\260U\270*\300H\310A\330\010\024\220A\220V\230<\240q\250\001\340\004\010\210\t\220\023\220B\220d\230$\230m\2503\250c\260\023\260I\270S\300\001\330\010\021\320\021&\240a\240w\250j\270\003\2701\330\014\020\220\n\230&\240\002\240\"\240F\250!\340\010\021\220\034\230Q\230a\330\010\016\210c\220\021\220!\330\010\024\220A\220U\320\032.\250a\250v\260U\270!\330\014\024\220A\330\010\014\210E\220\025\220a\220|\2401\240A\330\014\017\210q\220\007\220r\230\025\230c\240\021\240!\330\010\024\220A\220V\230<\240q\250\001\340\004\007\200y\220\002\220\"\220D\230\004\230M\250\023\250A\330\010\021\320\021)\250\021\250'\260\032\2703\270a\330\014\020\220\n\230&\240\002\240\"\240F\250!\340\010\021\220\034\230Q\230a\330\010\016\210c\220\021\220!\330\010\024\220A\220U\320\032.\250a\250v\260U\270!\330\014\024\220A\330\010\014\210E\220\025\220a\220|\2401\240A\330\014\017\210q\220\007\220r\230\025\230c\240\021\240!\330\010\024\220A\220V\230<\240q\250\001\340\004\010\210\005\210U\220!\220<\230q\240\001\330\010\014\210E\220\025\220a\220q\330\014\017\210s\220!\2202\220R\220q\230\003\2302\230Q\330\020\021\330\014\021\220\031\230!\2302\230Q\230c\240\021\240\"\240B\240a\240s\250!\330\014\017\210s\220#\220R\220t\2303\230b\240\001\330\020\023\2208\2301\230B\230a\230s\240'\250\021\340\004\013\2103\210b\220\014\230A\230U\240!";
     PyObject *data = NULL;
     CYTHON_UNUSED_VAR(__Pyx_DecompressString);
     #endif
@@ -11893,77 +11893,77 @@ static int __Pyx_CreateCodeObjects(__pyx_mstatetype *__pyx_mstate) {
   {
     const __Pyx_PyCode_New_function_description descr = {0, 0, 0, 0, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 20};
     PyObject* const varnames[] = {0};
-    __pyx_mstate_global->__pyx_codeobj_tab[0] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_correspondences_py, __pyx_mstate->__pyx_n_u_default_ntupel_p, __pyx_mstate->__pyx_kp_b_iso88591_2T_T, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[0])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[0] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_correspo, __pyx_mstate->__pyx_n_u_default_ntupel_p, __pyx_mstate->__pyx_kp_b_iso88591_2T_T, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[0])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {0, 0, 0, 0, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 24};
     PyObject* const varnames[] = {0};
-    __pyx_mstate_global->__pyx_codeobj_tab[1] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_correspondences_py, __pyx_mstate->__pyx_n_u_default_correspond_p2, __pyx_mstate->__pyx_kp_b_iso88591_2V1IV2Q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[1])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[1] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_correspo, __pyx_mstate->__pyx_n_u_default_correspond_p2, __pyx_mstate->__pyx_kp_b_iso88591_2V1IV2Q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[1])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {0, 0, 0, 0, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 28};
     PyObject* const varnames[] = {0};
-    __pyx_mstate_global->__pyx_codeobj_tab[2] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_correspondences_py, __pyx_mstate->__pyx_n_u_default_correspond_corr, __pyx_mstate->__pyx_kp_b_iso88591_2V1IV2Q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[2])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[2] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_correspo, __pyx_mstate->__pyx_n_u_default_correspond_corr, __pyx_mstate->__pyx_kp_b_iso88591_2V1IV2Q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[2])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {0, 0, 0, 0, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 32};
     PyObject* const varnames[] = {0};
-    __pyx_mstate_global->__pyx_codeobj_tab[3] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_correspondences_py, __pyx_mstate->__pyx_n_u_default_correspond_dist, __pyx_mstate->__pyx_kp_b_iso88591_2V1IV2Q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[3])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[3] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_correspo, __pyx_mstate->__pyx_n_u_default_correspond_dist, __pyx_mstate->__pyx_kp_b_iso88591_2V1IV2Q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[3])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 1, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 56};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_pix};
-    __pyx_mstate_global->__pyx_codeobj_tab[4] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_correspondences_py, __pyx_mstate->__pyx_n_u_quicksort_target_y, __pyx_mstate->__pyx_kp_b_iso88591_U_3c_s_1_A_b_D_1Bb_Rt1_q_S_2Q_1, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[4])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[4] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_correspo, __pyx_mstate->__pyx_n_u_quicksort_target_y, __pyx_mstate->__pyx_kp_b_iso88591_U_3c_s_1_A_b_D_1Bb_Rt1_q_S_2Q_1, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[4])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 1, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 70};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_crd};
-    __pyx_mstate_global->__pyx_codeobj_tab[5] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_correspondences_py, __pyx_mstate->__pyx_n_u_quicksort_coord2d_x, __pyx_mstate->__pyx_kp_b_iso88591_U_3c_s_1_A_b_D_1Bb_Rt1_q_S_2Q_1, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[5])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[5] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_correspo, __pyx_mstate->__pyx_n_u_quicksort_coord2d_x, __pyx_mstate->__pyx_kp_b_iso88591_U_3c_s_1_A_b_D_1Bb_Rt1_q_S_2Q_1, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[5])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {2, 0, 0, 2, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 84};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_num_cams, __pyx_mstate->__pyx_n_u_target_counts};
-    __pyx_mstate_global->__pyx_codeobj_tab[6] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_correspondences_py, __pyx_mstate->__pyx_n_u_safely_allocate_adjacency_lists, __pyx_mstate->__pyx_kp_b_iso88591_AQhit5_Qa_e1IRq_F_q_2S_QfAZq_3b, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[6])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[6] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_correspo, __pyx_mstate->__pyx_n_u_safely_allocate_adjacency_lists, __pyx_mstate->__pyx_kp_b_iso88591_AQhit5_Qa_e1IRq_F_q_2S_QfAZq_3b, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[6])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {6, 0, 0, 6, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 100};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_lists, __pyx_mstate->__pyx_n_u_corrected, __pyx_mstate->__pyx_n_u_frm, __pyx_mstate->__pyx_n_u_vpar, __pyx_mstate->__pyx_n_u_cpar, __pyx_mstate->__pyx_n_u_calib};
-    __pyx_mstate_global->__pyx_codeobj_tab[7] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_correspondences_py, __pyx_mstate->__pyx_n_u_match_pairs, __pyx_mstate->__pyx_kp_b_iso88591_X_Q_e1D_A_F_q_2S_A_U_3l_1_9AS_3, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[7])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[7] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_correspo, __pyx_mstate->__pyx_n_u_match_pairs, __pyx_mstate->__pyx_kp_b_iso88591_X_Q_e1D_A_F_q_2S_A_U_3l_1_9AS_3, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[7])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {5, 0, 0, 5, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 155};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_lists, __pyx_mstate->__pyx_n_u_base_target_count, __pyx_mstate->__pyx_n_u_accept_corr, __pyx_mstate->__pyx_n_u_scratch, __pyx_mstate->__pyx_n_u_scratch_size};
-    __pyx_mstate_global->__pyx_codeobj_tab[8] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_correspondences_py, __pyx_mstate->__pyx_n_u_four_camera_matching, __pyx_mstate->__pyx_kp_b_iso88591_U_1_U_2Qb_1_E_auARq_2Q_U_5_1Bar, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[8])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[8] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_correspo, __pyx_mstate->__pyx_n_u_four_camera_matching, __pyx_mstate->__pyx_kp_b_iso88591_U_1_U_2Qb_1_E_auARq_2Q_U_5_1Bar, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[8])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {7, 0, 0, 7, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 233};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_lists, __pyx_mstate->__pyx_n_u_num_cams, __pyx_mstate->__pyx_n_u_target_counts, __pyx_mstate->__pyx_n_u_accept_corr, __pyx_mstate->__pyx_n_u_scratch, __pyx_mstate->__pyx_n_u_scratch_size, __pyx_mstate->__pyx_n_u_tusage};
-    __pyx_mstate_global->__pyx_codeobj_tab[9] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_correspondences_py, __pyx_mstate->__pyx_n_u_three_camera_matching, __pyx_mstate->__pyx_kp_b_iso88591_e1IRq_E_a_AQ_e1Cr_IRq_U_3as_2Q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[9])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[9] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_correspo, __pyx_mstate->__pyx_n_u_three_camera_matching, __pyx_mstate->__pyx_kp_b_iso88591_e1IRq_E_a_AQ_e1Cr_IRq_U_3as_2Q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[9])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {7, 0, 0, 7, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 303};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_lists, __pyx_mstate->__pyx_n_u_num_cams, __pyx_mstate->__pyx_n_u_target_counts, __pyx_mstate->__pyx_n_u_accept_corr, __pyx_mstate->__pyx_n_u_scratch, __pyx_mstate->__pyx_n_u_scratch_size, __pyx_mstate->__pyx_n_u_tusage};
-    __pyx_mstate_global->__pyx_codeobj_tab[10] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_correspondences_py, __pyx_mstate->__pyx_n_u_consistent_pair_matching, __pyx_mstate->__pyx_kp_b_iso88591_e1IRq_F_q_2S_U_U_3as_2Q_3b_S_as, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[10])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[10] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_correspo, __pyx_mstate->__pyx_n_u_consistent_pair_matching, __pyx_mstate->__pyx_kp_b_iso88591_e1IRq_F_q_2S_U_U_3as_2Q_3b_S_as, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[10])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {5, 0, 0, 5, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 353};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_src, __pyx_mstate->__pyx_n_u_dst, __pyx_mstate->__pyx_n_u_num_cams, __pyx_mstate->__pyx_n_u_num_cands, __pyx_mstate->__pyx_n_u_tusage};
-    __pyx_mstate_global->__pyx_codeobj_tab[11] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_correspondences_py, __pyx_mstate->__pyx_n_u_take_best_candidates, __pyx_mstate->__pyx_kp_b_iso88591_2Q_U_4x_9HA_r_a_A_Qa_1_G5_3auBa, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[11])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[11] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_correspo, __pyx_mstate->__pyx_n_u_take_best_candidates, __pyx_mstate->__pyx_kp_b_iso88591_2Q_U_4x_9HA_r_a_A_Qa_1_G5_3auBa, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[11])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {4, 0, 0, 4, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 391};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_frm, __pyx_mstate->__pyx_n_u_calib, __pyx_mstate->__pyx_n_u_cpar, __pyx_mstate->__pyx_n_u_tol};
-    __pyx_mstate_global->__pyx_codeobj_tab[12] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_correspondences_py, __pyx_mstate->__pyx_n_u_correct_frame, __pyx_mstate->__pyx_kp_b_iso88591_Q_uAT_Q_HE_81D__AQd_4q_at1_at1, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[12])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[12] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_correspo, __pyx_mstate->__pyx_n_u_correct_frame, __pyx_mstate->__pyx_kp_b_iso88591_Q_uAT_Q_HE_81D__AQd_4q_at1_at1, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[12])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {5, 0, 0, 5, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 431};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_frm, __pyx_mstate->__pyx_n_u_corrected, __pyx_mstate->__pyx_n_u_vpar, __pyx_mstate->__pyx_n_u_cpar, __pyx_mstate->__pyx_n_u_calib};
-    __pyx_mstate_global->__pyx_codeobj_tab[13] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_correspondences_py, __pyx_mstate->__pyx_n_u_correspondences, __pyx_mstate->__pyx_kp_b_iso88591_t1_1_1F_T_e1A_6_D_U_1_QauE_U_q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[13])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[13] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_correspo, __pyx_mstate->__pyx_n_u_correspondences, __pyx_mstate->__pyx_kp_b_iso88591_t1_1_1F_T_e1A_6_D_U_1_QauE_U_q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[13])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {0, 0, 0, 0, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 508};
     PyObject* const varnames[] = {0};
-    __pyx_mstate_global->__pyx_codeobj_tab[14] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_correspondences_py, __pyx_mstate->__pyx_n_u_is_compiled, __pyx_mstate->__pyx_kp_b_iso88591_Q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[14])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[14] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_correspo, __pyx_mstate->__pyx_n_u_is_compiled, __pyx_mstate->__pyx_kp_b_iso88591_Q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[14])) goto bad;
   }
   Py_DECREF(tuple_dedup_map);
   return 0;

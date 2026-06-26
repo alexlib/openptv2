@@ -4,12 +4,12 @@
 {
     "distutils": {
         "depends": [],
-        "name": "algorithms.ray_tracing",
+        "name": "openptv2.algorithms.ray_tracing",
         "sources": [
-            "algorithms/ray_tracing.py"
+            "src/openptv2/algorithms/ray_tracing.py"
         ]
     },
-    "module_name": "algorithms.ray_tracing"
+    "module_name": "openptv2.algorithms.ray_tracing"
 }
 END: Cython Metadata */
 
@@ -1127,8 +1127,8 @@ static int __Pyx_init_co_variables(void) {
   #endif
 #endif
 
-#define __PYX_HAVE__algorithms__ray_tracing
-#define __PYX_HAVE_API__algorithms__ray_tracing
+#define __PYX_HAVE__openptv2__algorithms__ray_tracing
+#define __PYX_HAVE_API__openptv2__algorithms__ray_tracing
 /* Early includes */
 #include <math.h>
 #include "pythread.h"
@@ -1350,7 +1350,7 @@ static const char *__pyx_filename;
 /* #### Code section: filename_table ### */
 
 static const char* const __pyx_f[] = {
-  "algorithms/ray_tracing.py",
+  "src/openptv2/algorithms/ray_tracing.py",
   "<stringsource>",
 };
 /* #### Code section: utility_code_proto_before_types ### */
@@ -2868,7 +2868,7 @@ static PyObject *__pyx_memoryviewslice__get_base(struct __pyx_memoryviewslice_ob
 
 /* Module declarations from "libc.math" */
 
-/* Module declarations from "algorithms.ray_tracing" */
+/* Module declarations from "openptv2.algorithms.ray_tracing" */
 static PyObject *__pyx_collections_abc_Sequence = 0;
 static PyObject *generic = 0;
 static PyObject *strided = 0;
@@ -2877,9 +2877,9 @@ static PyObject *contiguous = 0;
 static PyObject *indirect_contiguous = 0;
 static int __pyx_memoryview_thread_locks_used;
 static PyThread_type_lock __pyx_memoryview_thread_locks[8];
-static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double, double, __Pyx_memviewslice, double, double, double, double, double, double, double, double, double, double, double, __Pyx_memviewslice, __Pyx_memviewslice, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing(double, double, __Pyx_memviewslice, double, double, double, double, double, double, double, double, double, double, double, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static void __pyx_f_8openptv2_10algorithms_11ray_tracing__ray_tracing_core(double, double, __Pyx_memviewslice, double, double, double, double, double, double, double, double, double, double, double, __Pyx_memviewslice, __Pyx_memviewslice, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_11ray_tracing_ray_tracing(double, double, __Pyx_memviewslice, double, double, double, double, double, double, double, double, double, double, double, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *, PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
 static int __pyx_array_allocate_buffer(struct __pyx_array_obj *); /*proto*/
 static struct __pyx_array_obj *__pyx_array_new(PyObject *, Py_ssize_t, char *, char const *, char *); /*proto*/
 static PyObject *__pyx_memoryview_new(PyObject *, int, int, __Pyx_TypeInfo const *); /*proto*/
@@ -2916,11 +2916,11 @@ static PyObject *__pyx_unpickle_Enum__set_state(struct __pyx_MemviewEnum_obj *, 
 /* #### Code section: typeinfo ### */
 static const __Pyx_TypeInfo __Pyx_TypeInfo_double = { "double", NULL, sizeof(double), { 0 }, 0, 'R', 0, 0 };
 /* #### Code section: before_global_var ### */
-#define __Pyx_MODULE_NAME "algorithms.ray_tracing"
-extern int __pyx_module_is_main_algorithms__ray_tracing;
-int __pyx_module_is_main_algorithms__ray_tracing = 0;
+#define __Pyx_MODULE_NAME "openptv2.algorithms.ray_tracing"
+extern int __pyx_module_is_main_openptv2__algorithms__ray_tracing;
+int __pyx_module_is_main_openptv2__algorithms__ray_tracing = 0;
 
-/* Implementation of "algorithms.ray_tracing" */
+/* Implementation of "openptv2.algorithms.ray_tracing" */
 /* #### Code section: global_var ### */
 static PyObject *__pyx_builtin___import__;
 static PyObject *__pyx_builtin_enumerate;
@@ -2973,10 +2973,10 @@ static void __pyx_memoryviewslice___pyx_pf_15View_dot_MemoryView_16_memoryviewsl
 static PyObject *__pyx_pf___pyx_memoryviewslice___reduce_cython__(CYTHON_UNUSED struct __pyx_memoryviewslice_obj *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf___pyx_memoryviewslice_2__setstate_cython__(CYTHON_UNUSED struct __pyx_memoryviewslice_obj *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state); /* proto */
 static PyObject *__pyx_pf_15View_dot_MemoryView___pyx_unpickle_Enum(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v___pyx_type, long __pyx_v___pyx_checksum, PyObject *__pyx_v___pyx_state); /* proto */
-static PyObject *__pyx_pf_10algorithms_11ray_tracing__ray_tracing_core(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_x, double __pyx_v_y, __Pyx_memviewslice __pyx_v_ext_dm, double __pyx_v_ext_x0, double __pyx_v_ext_y0, double __pyx_v_ext_z0, double __pyx_v_int_cc, double __pyx_v_glass_vec_x, double __pyx_v_glass_vec_y, double __pyx_v_glass_vec_z, double __pyx_v_mm_n1, double __pyx_v_mm_n2_0, double __pyx_v_mm_n3, double __pyx_v_mm_d0, __Pyx_memviewslice __pyx_v_pos, __Pyx_memviewslice __pyx_v_out); /* proto */
-static PyObject *__pyx_pf_10algorithms_11ray_tracing_2ray_tracing(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_x, double __pyx_v_y, __Pyx_memviewslice __pyx_v_ext_dm, double __pyx_v_ext_x0, double __pyx_v_ext_y0, double __pyx_v_ext_z0, double __pyx_v_int_cc, double __pyx_v_glass_vec_x, double __pyx_v_glass_vec_y, double __pyx_v_glass_vec_z, double __pyx_v_mm_n1, double __pyx_v_mm_n2_0, double __pyx_v_mm_n3, double __pyx_v_mm_d0); /* proto */
-static PyObject *__pyx_pf_10algorithms_11ray_tracing_4ray_tracing_batch(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_xy, PyObject *__pyx_v_cal, PyObject *__pyx_v_mm); /* proto */
-static PyObject *__pyx_pf_10algorithms_11ray_tracing_6is_compiled(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_11ray_tracing__ray_tracing_core(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_x, double __pyx_v_y, __Pyx_memviewslice __pyx_v_ext_dm, double __pyx_v_ext_x0, double __pyx_v_ext_y0, double __pyx_v_ext_z0, double __pyx_v_int_cc, double __pyx_v_glass_vec_x, double __pyx_v_glass_vec_y, double __pyx_v_glass_vec_z, double __pyx_v_mm_n1, double __pyx_v_mm_n2_0, double __pyx_v_mm_n3, double __pyx_v_mm_d0, __Pyx_memviewslice __pyx_v_pos, __Pyx_memviewslice __pyx_v_out); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_11ray_tracing_2ray_tracing(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_x, double __pyx_v_y, __Pyx_memviewslice __pyx_v_ext_dm, double __pyx_v_ext_x0, double __pyx_v_ext_y0, double __pyx_v_ext_z0, double __pyx_v_int_cc, double __pyx_v_glass_vec_x, double __pyx_v_glass_vec_y, double __pyx_v_glass_vec_z, double __pyx_v_mm_n1, double __pyx_v_mm_n2_0, double __pyx_v_mm_n3, double __pyx_v_mm_d0); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_11ray_tracing_4ray_tracing_batch(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_xy, PyObject *__pyx_v_cal, PyObject *__pyx_v_mm); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_11ray_tracing_6is_compiled(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
 static PyObject *__pyx_tp_new_array(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_tp_new_Enum(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_tp_new_memoryview(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
@@ -3079,24 +3079,24 @@ static __pyx_mstatetype * const __pyx_mstate_global = &__pyx_mstate_global_stati
 #define __pyx_kp_u__5 __pyx_string_tab[19]
 #define __pyx_kp_u__6 __pyx_string_tab[20]
 #define __pyx_kp_u_add_note __pyx_string_tab[21]
-#define __pyx_kp_u_algorithms_ray_tracing_py __pyx_string_tab[22]
-#define __pyx_kp_u_and __pyx_string_tab[23]
-#define __pyx_kp_u_at_0x __pyx_string_tab[24]
-#define __pyx_kp_u_collections_abc __pyx_string_tab[25]
-#define __pyx_kp_u_contiguous_and_direct __pyx_string_tab[26]
-#define __pyx_kp_u_contiguous_and_indirect __pyx_string_tab[27]
-#define __pyx_kp_u_cython_double __pyx_string_tab[28]
-#define __pyx_kp_u_cython_double_2 __pyx_string_tab[29]
-#define __pyx_kp_u_cython_double_3 __pyx_string_tab[30]
-#define __pyx_kp_u_disable __pyx_string_tab[31]
-#define __pyx_kp_u_enable __pyx_string_tab[32]
-#define __pyx_kp_u_gc __pyx_string_tab[33]
-#define __pyx_kp_u_got __pyx_string_tab[34]
-#define __pyx_kp_u_got_differing_extents_in_dimensi __pyx_string_tab[35]
-#define __pyx_kp_u_isenabled __pyx_string_tab[36]
-#define __pyx_kp_u_itemsize_0_for_cython_array __pyx_string_tab[37]
-#define __pyx_kp_u_no_default___reduce___due_to_non __pyx_string_tab[38]
-#define __pyx_kp_u_object __pyx_string_tab[39]
+#define __pyx_kp_u_and __pyx_string_tab[22]
+#define __pyx_kp_u_at_0x __pyx_string_tab[23]
+#define __pyx_kp_u_collections_abc __pyx_string_tab[24]
+#define __pyx_kp_u_contiguous_and_direct __pyx_string_tab[25]
+#define __pyx_kp_u_contiguous_and_indirect __pyx_string_tab[26]
+#define __pyx_kp_u_cython_double __pyx_string_tab[27]
+#define __pyx_kp_u_cython_double_2 __pyx_string_tab[28]
+#define __pyx_kp_u_cython_double_3 __pyx_string_tab[29]
+#define __pyx_kp_u_disable __pyx_string_tab[30]
+#define __pyx_kp_u_enable __pyx_string_tab[31]
+#define __pyx_kp_u_gc __pyx_string_tab[32]
+#define __pyx_kp_u_got __pyx_string_tab[33]
+#define __pyx_kp_u_got_differing_extents_in_dimensi __pyx_string_tab[34]
+#define __pyx_kp_u_isenabled __pyx_string_tab[35]
+#define __pyx_kp_u_itemsize_0_for_cython_array __pyx_string_tab[36]
+#define __pyx_kp_u_no_default___reduce___due_to_non __pyx_string_tab[37]
+#define __pyx_kp_u_object __pyx_string_tab[38]
+#define __pyx_kp_u_src_openptv2_algorithms_ray_trac __pyx_string_tab[39]
 #define __pyx_kp_u_strided_and_direct __pyx_string_tab[40]
 #define __pyx_kp_u_strided_and_direct_or_indirect __pyx_string_tab[41]
 #define __pyx_kp_u_strided_and_indirect __pyx_string_tab[42]
@@ -3108,71 +3108,71 @@ static __pyx_mstatetype * const __pyx_mstate_global = &__pyx_mstate_global_stati
 #define __pyx_n_u_Sequence __pyx_string_tab[48]
 #define __pyx_n_u_View_MemoryView __pyx_string_tab[49]
 #define __pyx_n_u_abc __pyx_string_tab[50]
-#define __pyx_n_u_algorithms_ray_tracing __pyx_string_tab[51]
-#define __pyx_n_u_allocate_buffer __pyx_string_tab[52]
-#define __pyx_n_u_ascontiguousarray __pyx_string_tab[53]
-#define __pyx_n_u_asyncio_coroutines __pyx_string_tab[54]
-#define __pyx_n_u_base __pyx_string_tab[55]
-#define __pyx_n_u_bool __pyx_string_tab[56]
-#define __pyx_n_u_c __pyx_string_tab[57]
-#define __pyx_n_u_cal __pyx_string_tab[58]
-#define __pyx_n_u_cc __pyx_string_tab[59]
-#define __pyx_n_u_class __pyx_string_tab[60]
-#define __pyx_n_u_class_getitem __pyx_string_tab[61]
-#define __pyx_n_u_cline_in_traceback __pyx_string_tab[62]
-#define __pyx_n_u_count __pyx_string_tab[63]
-#define __pyx_n_u_d __pyx_string_tab[64]
-#define __pyx_n_u_dict __pyx_string_tab[65]
-#define __pyx_n_u_dm __pyx_string_tab[66]
-#define __pyx_n_u_dtype __pyx_string_tab[67]
-#define __pyx_n_u_dtype_is_object __pyx_string_tab[68]
-#define __pyx_n_u_empty __pyx_string_tab[69]
-#define __pyx_n_u_encode __pyx_string_tab[70]
-#define __pyx_n_u_enumerate __pyx_string_tab[71]
-#define __pyx_n_u_error __pyx_string_tab[72]
-#define __pyx_n_u_ext_dm __pyx_string_tab[73]
-#define __pyx_n_u_ext_par __pyx_string_tab[74]
-#define __pyx_n_u_ext_x0 __pyx_string_tab[75]
-#define __pyx_n_u_ext_y0 __pyx_string_tab[76]
-#define __pyx_n_u_ext_z0 __pyx_string_tab[77]
-#define __pyx_n_u_flags __pyx_string_tab[78]
-#define __pyx_n_u_float64 __pyx_string_tab[79]
-#define __pyx_n_u_format __pyx_string_tab[80]
-#define __pyx_n_u_fortran __pyx_string_tab[81]
-#define __pyx_n_u_func __pyx_string_tab[82]
-#define __pyx_n_u_getstate __pyx_string_tab[83]
-#define __pyx_n_u_glass_par __pyx_string_tab[84]
-#define __pyx_n_u_glass_vec_x __pyx_string_tab[85]
-#define __pyx_n_u_glass_vec_y __pyx_string_tab[86]
-#define __pyx_n_u_glass_vec_z __pyx_string_tab[87]
-#define __pyx_n_u_id __pyx_string_tab[88]
-#define __pyx_n_u_import __pyx_string_tab[89]
-#define __pyx_n_u_index __pyx_string_tab[90]
-#define __pyx_n_u_int_cc __pyx_string_tab[91]
-#define __pyx_n_u_int_par __pyx_string_tab[92]
-#define __pyx_n_u_is_compiled __pyx_string_tab[93]
-#define __pyx_n_u_is_coroutine __pyx_string_tab[94]
-#define __pyx_n_u_items __pyx_string_tab[95]
-#define __pyx_n_u_itemsize __pyx_string_tab[96]
-#define __pyx_n_u_main __pyx_string_tab[97]
-#define __pyx_n_u_memview __pyx_string_tab[98]
-#define __pyx_n_u_mm __pyx_string_tab[99]
-#define __pyx_n_u_mm_d0 __pyx_string_tab[100]
-#define __pyx_n_u_mm_n1 __pyx_string_tab[101]
-#define __pyx_n_u_mm_n2_0 __pyx_string_tab[102]
-#define __pyx_n_u_mm_n3 __pyx_string_tab[103]
-#define __pyx_n_u_mode __pyx_string_tab[104]
-#define __pyx_n_u_module __pyx_string_tab[105]
-#define __pyx_n_u_n1 __pyx_string_tab[106]
-#define __pyx_n_u_n2 __pyx_string_tab[107]
-#define __pyx_n_u_n3 __pyx_string_tab[108]
-#define __pyx_n_u_name __pyx_string_tab[109]
-#define __pyx_n_u_name_2 __pyx_string_tab[110]
-#define __pyx_n_u_ndim __pyx_string_tab[111]
-#define __pyx_n_u_new __pyx_string_tab[112]
-#define __pyx_n_u_np __pyx_string_tab[113]
-#define __pyx_n_u_numpy __pyx_string_tab[114]
-#define __pyx_n_u_obj __pyx_string_tab[115]
+#define __pyx_n_u_allocate_buffer __pyx_string_tab[51]
+#define __pyx_n_u_ascontiguousarray __pyx_string_tab[52]
+#define __pyx_n_u_asyncio_coroutines __pyx_string_tab[53]
+#define __pyx_n_u_base __pyx_string_tab[54]
+#define __pyx_n_u_bool __pyx_string_tab[55]
+#define __pyx_n_u_c __pyx_string_tab[56]
+#define __pyx_n_u_cal __pyx_string_tab[57]
+#define __pyx_n_u_cc __pyx_string_tab[58]
+#define __pyx_n_u_class __pyx_string_tab[59]
+#define __pyx_n_u_class_getitem __pyx_string_tab[60]
+#define __pyx_n_u_cline_in_traceback __pyx_string_tab[61]
+#define __pyx_n_u_count __pyx_string_tab[62]
+#define __pyx_n_u_d __pyx_string_tab[63]
+#define __pyx_n_u_dict __pyx_string_tab[64]
+#define __pyx_n_u_dm __pyx_string_tab[65]
+#define __pyx_n_u_dtype __pyx_string_tab[66]
+#define __pyx_n_u_dtype_is_object __pyx_string_tab[67]
+#define __pyx_n_u_empty __pyx_string_tab[68]
+#define __pyx_n_u_encode __pyx_string_tab[69]
+#define __pyx_n_u_enumerate __pyx_string_tab[70]
+#define __pyx_n_u_error __pyx_string_tab[71]
+#define __pyx_n_u_ext_dm __pyx_string_tab[72]
+#define __pyx_n_u_ext_par __pyx_string_tab[73]
+#define __pyx_n_u_ext_x0 __pyx_string_tab[74]
+#define __pyx_n_u_ext_y0 __pyx_string_tab[75]
+#define __pyx_n_u_ext_z0 __pyx_string_tab[76]
+#define __pyx_n_u_flags __pyx_string_tab[77]
+#define __pyx_n_u_float64 __pyx_string_tab[78]
+#define __pyx_n_u_format __pyx_string_tab[79]
+#define __pyx_n_u_fortran __pyx_string_tab[80]
+#define __pyx_n_u_func __pyx_string_tab[81]
+#define __pyx_n_u_getstate __pyx_string_tab[82]
+#define __pyx_n_u_glass_par __pyx_string_tab[83]
+#define __pyx_n_u_glass_vec_x __pyx_string_tab[84]
+#define __pyx_n_u_glass_vec_y __pyx_string_tab[85]
+#define __pyx_n_u_glass_vec_z __pyx_string_tab[86]
+#define __pyx_n_u_id __pyx_string_tab[87]
+#define __pyx_n_u_import __pyx_string_tab[88]
+#define __pyx_n_u_index __pyx_string_tab[89]
+#define __pyx_n_u_int_cc __pyx_string_tab[90]
+#define __pyx_n_u_int_par __pyx_string_tab[91]
+#define __pyx_n_u_is_compiled __pyx_string_tab[92]
+#define __pyx_n_u_is_coroutine __pyx_string_tab[93]
+#define __pyx_n_u_items __pyx_string_tab[94]
+#define __pyx_n_u_itemsize __pyx_string_tab[95]
+#define __pyx_n_u_main __pyx_string_tab[96]
+#define __pyx_n_u_memview __pyx_string_tab[97]
+#define __pyx_n_u_mm __pyx_string_tab[98]
+#define __pyx_n_u_mm_d0 __pyx_string_tab[99]
+#define __pyx_n_u_mm_n1 __pyx_string_tab[100]
+#define __pyx_n_u_mm_n2_0 __pyx_string_tab[101]
+#define __pyx_n_u_mm_n3 __pyx_string_tab[102]
+#define __pyx_n_u_mode __pyx_string_tab[103]
+#define __pyx_n_u_module __pyx_string_tab[104]
+#define __pyx_n_u_n1 __pyx_string_tab[105]
+#define __pyx_n_u_n2 __pyx_string_tab[106]
+#define __pyx_n_u_n3 __pyx_string_tab[107]
+#define __pyx_n_u_name __pyx_string_tab[108]
+#define __pyx_n_u_name_2 __pyx_string_tab[109]
+#define __pyx_n_u_ndim __pyx_string_tab[110]
+#define __pyx_n_u_new __pyx_string_tab[111]
+#define __pyx_n_u_np __pyx_string_tab[112]
+#define __pyx_n_u_numpy __pyx_string_tab[113]
+#define __pyx_n_u_obj __pyx_string_tab[114]
+#define __pyx_n_u_openptv2_algorithms_ray_tracing __pyx_string_tab[115]
 #define __pyx_n_u_out __pyx_string_tab[116]
 #define __pyx_n_u_pack __pyx_string_tab[117]
 #define __pyx_n_u_pop __pyx_string_tab[118]
@@ -15786,7 +15786,7 @@ static PyObject *__pyx_unpickle_Enum__set_state(struct __pyx_MemviewEnum_obj *__
   return __pyx_r;
 }
 
-/* "algorithms/ray_tracing.py":18
+/* "openptv2/algorithms/ray_tracing.py":18
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -15794,14 +15794,14 @@ static PyObject *__pyx_unpickle_Enum__set_state(struct __pyx_MemviewEnum_obj *__
  * @cython.wraparound(False)
 */
 
-static PyObject *__pyx_pw_10algorithms_11ray_tracing_1_ray_tracing_core(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_11ray_tracing_1_ray_tracing_core(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_x, double __pyx_v_y, __Pyx_memviewslice __pyx_v_ext_dm, double __pyx_v_ext_x0, double __pyx_v_ext_y0, double __pyx_v_ext_z0, double __pyx_v_int_cc, double __pyx_v_glass_vec_x, double __pyx_v_glass_vec_y, double __pyx_v_glass_vec_z, double __pyx_v_mm_n1, double __pyx_v_mm_n2_0, double __pyx_v_mm_n3, double __pyx_v_mm_d0, __Pyx_memviewslice __pyx_v_pos, __Pyx_memviewslice __pyx_v_out, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static void __pyx_f_8openptv2_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_x, double __pyx_v_y, __Pyx_memviewslice __pyx_v_ext_dm, double __pyx_v_ext_x0, double __pyx_v_ext_y0, double __pyx_v_ext_z0, double __pyx_v_int_cc, double __pyx_v_glass_vec_x, double __pyx_v_glass_vec_y, double __pyx_v_glass_vec_z, double __pyx_v_mm_n1, double __pyx_v_mm_n2_0, double __pyx_v_mm_n3, double __pyx_v_mm_d0, __Pyx_memviewslice __pyx_v_pos, __Pyx_memviewslice __pyx_v_out, CYTHON_UNUSED int __pyx_skip_dispatch) {
   double __pyx_v_norm_tmp1;
   double __pyx_v_tx;
   double __pyx_v_ty;
@@ -15849,7 +15849,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
   int __pyx_t_7;
   double __pyx_t_8;
 
-  /* "algorithms/ray_tracing.py":40
+  /* "openptv2/algorithms/ray_tracing.py":40
  * ) -> cython.void:
  *     # Initial ray direction in camera coordinate system
  *     norm_tmp1: cython.double = c_sqrt(x * x + y * y + int_cc * int_cc)             # <<<<<<<<<<<<<<
@@ -15858,7 +15858,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
 */
   __pyx_v_norm_tmp1 = sqrt((((__pyx_v_x * __pyx_v_x) + (__pyx_v_y * __pyx_v_y)) + (__pyx_v_int_cc * __pyx_v_int_cc)));
 
-  /* "algorithms/ray_tracing.py":41
+  /* "openptv2/algorithms/ray_tracing.py":41
  *     # Initial ray direction in camera coordinate system
  *     norm_tmp1: cython.double = c_sqrt(x * x + y * y + int_cc * int_cc)
  *     tx: cython.double = x / norm_tmp1             # <<<<<<<<<<<<<<
@@ -15867,7 +15867,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
 */
   __pyx_v_tx = (__pyx_v_x / __pyx_v_norm_tmp1);
 
-  /* "algorithms/ray_tracing.py":42
+  /* "openptv2/algorithms/ray_tracing.py":42
  *     norm_tmp1: cython.double = c_sqrt(x * x + y * y + int_cc * int_cc)
  *     tx: cython.double = x / norm_tmp1
  *     ty: cython.double = y / norm_tmp1             # <<<<<<<<<<<<<<
@@ -15876,7 +15876,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
 */
   __pyx_v_ty = (__pyx_v_y / __pyx_v_norm_tmp1);
 
-  /* "algorithms/ray_tracing.py":43
+  /* "openptv2/algorithms/ray_tracing.py":43
  *     tx: cython.double = x / norm_tmp1
  *     ty: cython.double = y / norm_tmp1
  *     tz: cython.double = -int_cc / norm_tmp1             # <<<<<<<<<<<<<<
@@ -15885,7 +15885,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
 */
   __pyx_v_tz = ((-__pyx_v_int_cc) / __pyx_v_norm_tmp1);
 
-  /* "algorithms/ray_tracing.py":46
+  /* "openptv2/algorithms/ray_tracing.py":46
  * 
  *     # Transform to global coordinate system (ext_dm @ tmp1)
  *     start_dir_x: cython.double = ext_dm[0, 0] * tx + ext_dm[0, 1] * ty + ext_dm[0, 2] * tz             # <<<<<<<<<<<<<<
@@ -15900,7 +15900,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
   __pyx_t_6 = 2;
   __pyx_v_start_dir_x = ((((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_ext_dm.data + __pyx_t_1 * __pyx_v_ext_dm.strides[0]) ) + __pyx_t_2 * __pyx_v_ext_dm.strides[1]) ))) * __pyx_v_tx) + ((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_ext_dm.data + __pyx_t_3 * __pyx_v_ext_dm.strides[0]) ) + __pyx_t_4 * __pyx_v_ext_dm.strides[1]) ))) * __pyx_v_ty)) + ((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_ext_dm.data + __pyx_t_5 * __pyx_v_ext_dm.strides[0]) ) + __pyx_t_6 * __pyx_v_ext_dm.strides[1]) ))) * __pyx_v_tz));
 
-  /* "algorithms/ray_tracing.py":47
+  /* "openptv2/algorithms/ray_tracing.py":47
  *     # Transform to global coordinate system (ext_dm @ tmp1)
  *     start_dir_x: cython.double = ext_dm[0, 0] * tx + ext_dm[0, 1] * ty + ext_dm[0, 2] * tz
  *     start_dir_y: cython.double = ext_dm[1, 0] * tx + ext_dm[1, 1] * ty + ext_dm[1, 2] * tz             # <<<<<<<<<<<<<<
@@ -15915,7 +15915,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
   __pyx_t_1 = 2;
   __pyx_v_start_dir_y = ((((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_ext_dm.data + __pyx_t_6 * __pyx_v_ext_dm.strides[0]) ) + __pyx_t_5 * __pyx_v_ext_dm.strides[1]) ))) * __pyx_v_tx) + ((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_ext_dm.data + __pyx_t_4 * __pyx_v_ext_dm.strides[0]) ) + __pyx_t_3 * __pyx_v_ext_dm.strides[1]) ))) * __pyx_v_ty)) + ((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_ext_dm.data + __pyx_t_2 * __pyx_v_ext_dm.strides[0]) ) + __pyx_t_1 * __pyx_v_ext_dm.strides[1]) ))) * __pyx_v_tz));
 
-  /* "algorithms/ray_tracing.py":48
+  /* "openptv2/algorithms/ray_tracing.py":48
  *     start_dir_x: cython.double = ext_dm[0, 0] * tx + ext_dm[0, 1] * ty + ext_dm[0, 2] * tz
  *     start_dir_y: cython.double = ext_dm[1, 0] * tx + ext_dm[1, 1] * ty + ext_dm[1, 2] * tz
  *     start_dir_z: cython.double = ext_dm[2, 0] * tx + ext_dm[2, 1] * ty + ext_dm[2, 2] * tz             # <<<<<<<<<<<<<<
@@ -15930,7 +15930,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
   __pyx_t_6 = 2;
   __pyx_v_start_dir_z = ((((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_ext_dm.data + __pyx_t_1 * __pyx_v_ext_dm.strides[0]) ) + __pyx_t_2 * __pyx_v_ext_dm.strides[1]) ))) * __pyx_v_tx) + ((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_ext_dm.data + __pyx_t_3 * __pyx_v_ext_dm.strides[0]) ) + __pyx_t_4 * __pyx_v_ext_dm.strides[1]) ))) * __pyx_v_ty)) + ((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_ext_dm.data + __pyx_t_5 * __pyx_v_ext_dm.strides[0]) ) + __pyx_t_6 * __pyx_v_ext_dm.strides[1]) ))) * __pyx_v_tz));
 
-  /* "algorithms/ray_tracing.py":51
+  /* "openptv2/algorithms/ray_tracing.py":51
  * 
  *     # Glass normal (unit vector)
  *     norm_glass: cython.double = c_sqrt(glass_vec_x * glass_vec_x + glass_vec_y * glass_vec_y + glass_vec_z * glass_vec_z)             # <<<<<<<<<<<<<<
@@ -15939,7 +15939,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
 */
   __pyx_v_norm_glass = sqrt((((__pyx_v_glass_vec_x * __pyx_v_glass_vec_x) + (__pyx_v_glass_vec_y * __pyx_v_glass_vec_y)) + (__pyx_v_glass_vec_z * __pyx_v_glass_vec_z)));
 
-  /* "algorithms/ray_tracing.py":52
+  /* "openptv2/algorithms/ray_tracing.py":52
  *     # Glass normal (unit vector)
  *     norm_glass: cython.double = c_sqrt(glass_vec_x * glass_vec_x + glass_vec_y * glass_vec_y + glass_vec_z * glass_vec_z)
  *     glass_dir_x: cython.double = glass_vec_x / norm_glass             # <<<<<<<<<<<<<<
@@ -15948,7 +15948,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
 */
   __pyx_v_glass_dir_x = (__pyx_v_glass_vec_x / __pyx_v_norm_glass);
 
-  /* "algorithms/ray_tracing.py":53
+  /* "openptv2/algorithms/ray_tracing.py":53
  *     norm_glass: cython.double = c_sqrt(glass_vec_x * glass_vec_x + glass_vec_y * glass_vec_y + glass_vec_z * glass_vec_z)
  *     glass_dir_x: cython.double = glass_vec_x / norm_glass
  *     glass_dir_y: cython.double = glass_vec_y / norm_glass             # <<<<<<<<<<<<<<
@@ -15957,7 +15957,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
 */
   __pyx_v_glass_dir_y = (__pyx_v_glass_vec_y / __pyx_v_norm_glass);
 
-  /* "algorithms/ray_tracing.py":54
+  /* "openptv2/algorithms/ray_tracing.py":54
  *     glass_dir_x: cython.double = glass_vec_x / norm_glass
  *     glass_dir_y: cython.double = glass_vec_y / norm_glass
  *     glass_dir_z: cython.double = glass_vec_z / norm_glass             # <<<<<<<<<<<<<<
@@ -15966,7 +15966,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
 */
   __pyx_v_glass_dir_z = (__pyx_v_glass_vec_z / __pyx_v_norm_glass);
 
-  /* "algorithms/ray_tracing.py":55
+  /* "openptv2/algorithms/ray_tracing.py":55
  *     glass_dir_y: cython.double = glass_vec_y / norm_glass
  *     glass_dir_z: cython.double = glass_vec_z / norm_glass
  *     c: cython.double = norm_glass + mm_d0             # <<<<<<<<<<<<<<
@@ -15975,7 +15975,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
 */
   __pyx_v_c = (__pyx_v_norm_glass + __pyx_v_mm_d0);
 
-  /* "algorithms/ray_tracing.py":58
+  /* "openptv2/algorithms/ray_tracing.py":58
  * 
  *     # Project start ray on glass vector to find n1/n2 interface
  *     dist_cam_glass: cython.double = (glass_dir_x * ext_x0 + glass_dir_y * ext_y0 + glass_dir_z * ext_z0) - c             # <<<<<<<<<<<<<<
@@ -15984,7 +15984,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
 */
   __pyx_v_dist_cam_glass = ((((__pyx_v_glass_dir_x * __pyx_v_ext_x0) + (__pyx_v_glass_dir_y * __pyx_v_ext_y0)) + (__pyx_v_glass_dir_z * __pyx_v_ext_z0)) - __pyx_v_c);
 
-  /* "algorithms/ray_tracing.py":59
+  /* "openptv2/algorithms/ray_tracing.py":59
  *     # Project start ray on glass vector to find n1/n2 interface
  *     dist_cam_glass: cython.double = (glass_dir_x * ext_x0 + glass_dir_y * ext_y0 + glass_dir_z * ext_z0) - c
  *     dot_glass_start: cython.double = glass_dir_x * start_dir_x + glass_dir_y * start_dir_y + glass_dir_z * start_dir_z             # <<<<<<<<<<<<<<
@@ -15993,7 +15993,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
 */
   __pyx_v_dot_glass_start = (((__pyx_v_glass_dir_x * __pyx_v_start_dir_x) + (__pyx_v_glass_dir_y * __pyx_v_start_dir_y)) + (__pyx_v_glass_dir_z * __pyx_v_start_dir_z));
 
-  /* "algorithms/ray_tracing.py":60
+  /* "openptv2/algorithms/ray_tracing.py":60
  *     dist_cam_glass: cython.double = (glass_dir_x * ext_x0 + glass_dir_y * ext_y0 + glass_dir_z * ext_z0) - c
  *     dot_glass_start: cython.double = glass_dir_x * start_dir_x + glass_dir_y * start_dir_y + glass_dir_z * start_dir_z
  *     d1: cython.double = -dist_cam_glass / dot_glass_start             # <<<<<<<<<<<<<<
@@ -16002,7 +16002,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
 */
   __pyx_v_d1 = ((-__pyx_v_dist_cam_glass) / __pyx_v_dot_glass_start);
 
-  /* "algorithms/ray_tracing.py":63
+  /* "openptv2/algorithms/ray_tracing.py":63
  * 
  *     # Xb = primary_point + start_dir * d1
  *     Xb_x: cython.double = ext_x0 + start_dir_x * d1             # <<<<<<<<<<<<<<
@@ -16011,7 +16011,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
 */
   __pyx_v_Xb_x = (__pyx_v_ext_x0 + (__pyx_v_start_dir_x * __pyx_v_d1));
 
-  /* "algorithms/ray_tracing.py":64
+  /* "openptv2/algorithms/ray_tracing.py":64
  *     # Xb = primary_point + start_dir * d1
  *     Xb_x: cython.double = ext_x0 + start_dir_x * d1
  *     Xb_y: cython.double = ext_y0 + start_dir_y * d1             # <<<<<<<<<<<<<<
@@ -16020,7 +16020,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
 */
   __pyx_v_Xb_y = (__pyx_v_ext_y0 + (__pyx_v_start_dir_y * __pyx_v_d1));
 
-  /* "algorithms/ray_tracing.py":65
+  /* "openptv2/algorithms/ray_tracing.py":65
  *     Xb_x: cython.double = ext_x0 + start_dir_x * d1
  *     Xb_y: cython.double = ext_y0 + start_dir_y * d1
  *     Xb_z: cython.double = ext_z0 + start_dir_z * d1             # <<<<<<<<<<<<<<
@@ -16029,7 +16029,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
 */
   __pyx_v_Xb_z = (__pyx_v_ext_z0 + (__pyx_v_start_dir_z * __pyx_v_d1));
 
-  /* "algorithms/ray_tracing.py":68
+  /* "openptv2/algorithms/ray_tracing.py":68
  * 
  *     # Decompose ray into glass-normal and glass-parallel components
  *     n: cython.double = start_dir_x * glass_dir_x + start_dir_y * glass_dir_y + start_dir_z * glass_dir_z             # <<<<<<<<<<<<<<
@@ -16038,7 +16038,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
 */
   __pyx_v_n = (((__pyx_v_start_dir_x * __pyx_v_glass_dir_x) + (__pyx_v_start_dir_y * __pyx_v_glass_dir_y)) + (__pyx_v_start_dir_z * __pyx_v_glass_dir_z));
 
-  /* "algorithms/ray_tracing.py":69
+  /* "openptv2/algorithms/ray_tracing.py":69
  *     # Decompose ray into glass-normal and glass-parallel components
  *     n: cython.double = start_dir_x * glass_dir_x + start_dir_y * glass_dir_y + start_dir_z * glass_dir_z
  *     bp_x: cython.double = start_dir_x - glass_dir_x * n             # <<<<<<<<<<<<<<
@@ -16047,7 +16047,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
 */
   __pyx_v_bp_x = (__pyx_v_start_dir_x - (__pyx_v_glass_dir_x * __pyx_v_n));
 
-  /* "algorithms/ray_tracing.py":70
+  /* "openptv2/algorithms/ray_tracing.py":70
  *     n: cython.double = start_dir_x * glass_dir_x + start_dir_y * glass_dir_y + start_dir_z * glass_dir_z
  *     bp_x: cython.double = start_dir_x - glass_dir_x * n
  *     bp_y: cython.double = start_dir_y - glass_dir_y * n             # <<<<<<<<<<<<<<
@@ -16056,7 +16056,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
 */
   __pyx_v_bp_y = (__pyx_v_start_dir_y - (__pyx_v_glass_dir_y * __pyx_v_n));
 
-  /* "algorithms/ray_tracing.py":71
+  /* "openptv2/algorithms/ray_tracing.py":71
  *     bp_x: cython.double = start_dir_x - glass_dir_x * n
  *     bp_y: cython.double = start_dir_y - glass_dir_y * n
  *     bp_z: cython.double = start_dir_z - glass_dir_z * n             # <<<<<<<<<<<<<<
@@ -16065,7 +16065,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
 */
   __pyx_v_bp_z = (__pyx_v_start_dir_z - (__pyx_v_glass_dir_z * __pyx_v_n));
 
-  /* "algorithms/ray_tracing.py":72
+  /* "openptv2/algorithms/ray_tracing.py":72
  *     bp_y: cython.double = start_dir_y - glass_dir_y * n
  *     bp_z: cython.double = start_dir_z - glass_dir_z * n
  *     norm_bp: cython.double = c_sqrt(bp_x * bp_x + bp_y * bp_y + bp_z * bp_z)             # <<<<<<<<<<<<<<
@@ -16074,7 +16074,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
 */
   __pyx_v_norm_bp = sqrt((((__pyx_v_bp_x * __pyx_v_bp_x) + (__pyx_v_bp_y * __pyx_v_bp_y)) + (__pyx_v_bp_z * __pyx_v_bp_z)));
 
-  /* "algorithms/ray_tracing.py":73
+  /* "openptv2/algorithms/ray_tracing.py":73
  *     bp_z: cython.double = start_dir_z - glass_dir_z * n
  *     norm_bp: cython.double = c_sqrt(bp_x * bp_x + bp_y * bp_y + bp_z * bp_z)
  *     if norm_bp > 0:             # <<<<<<<<<<<<<<
@@ -16084,7 +16084,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
   __pyx_t_7 = (__pyx_v_norm_bp > 0.0);
   if (__pyx_t_7) {
 
-    /* "algorithms/ray_tracing.py":74
+    /* "openptv2/algorithms/ray_tracing.py":74
  *     norm_bp: cython.double = c_sqrt(bp_x * bp_x + bp_y * bp_y + bp_z * bp_z)
  *     if norm_bp > 0:
  *         bp_x /= norm_bp             # <<<<<<<<<<<<<<
@@ -16093,7 +16093,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
 */
     __pyx_v_bp_x = (__pyx_v_bp_x / __pyx_v_norm_bp);
 
-    /* "algorithms/ray_tracing.py":75
+    /* "openptv2/algorithms/ray_tracing.py":75
  *     if norm_bp > 0:
  *         bp_x /= norm_bp
  *         bp_y /= norm_bp             # <<<<<<<<<<<<<<
@@ -16102,7 +16102,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
 */
     __pyx_v_bp_y = (__pyx_v_bp_y / __pyx_v_norm_bp);
 
-    /* "algorithms/ray_tracing.py":76
+    /* "openptv2/algorithms/ray_tracing.py":76
  *         bp_x /= norm_bp
  *         bp_y /= norm_bp
  *         bp_z /= norm_bp             # <<<<<<<<<<<<<<
@@ -16111,7 +16111,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
 */
     __pyx_v_bp_z = (__pyx_v_bp_z / __pyx_v_norm_bp);
 
-    /* "algorithms/ray_tracing.py":73
+    /* "openptv2/algorithms/ray_tracing.py":73
  *     bp_z: cython.double = start_dir_z - glass_dir_z * n
  *     norm_bp: cython.double = c_sqrt(bp_x * bp_x + bp_y * bp_y + bp_z * bp_z)
  *     if norm_bp > 0:             # <<<<<<<<<<<<<<
@@ -16120,7 +16120,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
 */
   }
 
-  /* "algorithms/ray_tracing.py":79
+  /* "openptv2/algorithms/ray_tracing.py":79
  * 
  *     # Transform direction inside glass using Snell's law
  *     p: cython.double = c_sqrt(1.0 - n * n) * mm_n1 / mm_n2_0  # glass parallel             # <<<<<<<<<<<<<<
@@ -16129,7 +16129,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
 */
   __pyx_v_p = ((sqrt((1.0 - (__pyx_v_n * __pyx_v_n))) * __pyx_v_mm_n1) / __pyx_v_mm_n2_0);
 
-  /* "algorithms/ray_tracing.py":80
+  /* "openptv2/algorithms/ray_tracing.py":80
  *     # Transform direction inside glass using Snell's law
  *     p: cython.double = c_sqrt(1.0 - n * n) * mm_n1 / mm_n2_0  # glass parallel
  *     n_glass: cython.double = -c_sqrt(1.0 - p * p)  # glass normal             # <<<<<<<<<<<<<<
@@ -16138,7 +16138,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
 */
   __pyx_v_n_glass = (-sqrt((1.0 - (__pyx_v_p * __pyx_v_p))));
 
-  /* "algorithms/ray_tracing.py":83
+  /* "openptv2/algorithms/ray_tracing.py":83
  * 
  *     # Propagation length in glass
  *     a2_x: cython.double = bp_x * p + glass_dir_x * n_glass             # <<<<<<<<<<<<<<
@@ -16147,7 +16147,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
 */
   __pyx_v_a2_x = ((__pyx_v_bp_x * __pyx_v_p) + (__pyx_v_glass_dir_x * __pyx_v_n_glass));
 
-  /* "algorithms/ray_tracing.py":84
+  /* "openptv2/algorithms/ray_tracing.py":84
  *     # Propagation length in glass
  *     a2_x: cython.double = bp_x * p + glass_dir_x * n_glass
  *     a2_y: cython.double = bp_y * p + glass_dir_y * n_glass             # <<<<<<<<<<<<<<
@@ -16156,7 +16156,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
 */
   __pyx_v_a2_y = ((__pyx_v_bp_y * __pyx_v_p) + (__pyx_v_glass_dir_y * __pyx_v_n_glass));
 
-  /* "algorithms/ray_tracing.py":85
+  /* "openptv2/algorithms/ray_tracing.py":85
  *     a2_x: cython.double = bp_x * p + glass_dir_x * n_glass
  *     a2_y: cython.double = bp_y * p + glass_dir_y * n_glass
  *     a2_z: cython.double = bp_z * p + glass_dir_z * n_glass             # <<<<<<<<<<<<<<
@@ -16165,7 +16165,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
 */
   __pyx_v_a2_z = ((__pyx_v_bp_z * __pyx_v_p) + (__pyx_v_glass_dir_z * __pyx_v_n_glass));
 
-  /* "algorithms/ray_tracing.py":87
+  /* "openptv2/algorithms/ray_tracing.py":87
  *     a2_z: cython.double = bp_z * p + glass_dir_z * n_glass
  * 
  *     dot_glass_a2: cython.double = glass_dir_x * a2_x + glass_dir_y * a2_y + glass_dir_z * a2_z             # <<<<<<<<<<<<<<
@@ -16174,7 +16174,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
 */
   __pyx_v_dot_glass_a2 = (((__pyx_v_glass_dir_x * __pyx_v_a2_x) + (__pyx_v_glass_dir_y * __pyx_v_a2_y)) + (__pyx_v_glass_dir_z * __pyx_v_a2_z));
 
-  /* "algorithms/ray_tracing.py":88
+  /* "openptv2/algorithms/ray_tracing.py":88
  * 
  *     dot_glass_a2: cython.double = glass_dir_x * a2_x + glass_dir_y * a2_y + glass_dir_z * a2_z
  *     d2: cython.double = mm_d0 / abs(dot_glass_a2)             # <<<<<<<<<<<<<<
@@ -16184,7 +16184,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
   __pyx_t_8 = fabs(__pyx_v_dot_glass_a2); 
   __pyx_v_d2 = (__pyx_v_mm_d0 / __pyx_t_8);
 
-  /* "algorithms/ray_tracing.py":91
+  /* "openptv2/algorithms/ray_tracing.py":91
  * 
  *     # Point X on horizontal plane between n2, n3
  *     X_x: cython.double = Xb_x + a2_x * d2             # <<<<<<<<<<<<<<
@@ -16193,7 +16193,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
 */
   __pyx_v_X_x = (__pyx_v_Xb_x + (__pyx_v_a2_x * __pyx_v_d2));
 
-  /* "algorithms/ray_tracing.py":92
+  /* "openptv2/algorithms/ray_tracing.py":92
  *     # Point X on horizontal plane between n2, n3
  *     X_x: cython.double = Xb_x + a2_x * d2
  *     X_y: cython.double = Xb_y + a2_y * d2             # <<<<<<<<<<<<<<
@@ -16202,7 +16202,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
 */
   __pyx_v_X_y = (__pyx_v_Xb_y + (__pyx_v_a2_y * __pyx_v_d2));
 
-  /* "algorithms/ray_tracing.py":93
+  /* "openptv2/algorithms/ray_tracing.py":93
  *     X_x: cython.double = Xb_x + a2_x * d2
  *     X_y: cython.double = Xb_y + a2_y * d2
  *     X_z: cython.double = Xb_z + a2_z * d2             # <<<<<<<<<<<<<<
@@ -16211,7 +16211,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
 */
   __pyx_v_X_z = (__pyx_v_Xb_z + (__pyx_v_a2_z * __pyx_v_d2));
 
-  /* "algorithms/ray_tracing.py":96
+  /* "openptv2/algorithms/ray_tracing.py":96
  * 
  *     # Direction in next medium
  *     n_a2: cython.double = a2_x * glass_dir_x + a2_y * glass_dir_y + a2_z * glass_dir_z             # <<<<<<<<<<<<<<
@@ -16220,7 +16220,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
 */
   __pyx_v_n_a2 = (((__pyx_v_a2_x * __pyx_v_glass_dir_x) + (__pyx_v_a2_y * __pyx_v_glass_dir_y)) + (__pyx_v_a2_z * __pyx_v_glass_dir_z));
 
-  /* "algorithms/ray_tracing.py":97
+  /* "openptv2/algorithms/ray_tracing.py":97
  *     # Direction in next medium
  *     n_a2: cython.double = a2_x * glass_dir_x + a2_y * glass_dir_y + a2_z * glass_dir_z
  *     bp_x = a2_x - glass_dir_x * n_glass             # <<<<<<<<<<<<<<
@@ -16229,7 +16229,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
 */
   __pyx_v_bp_x = (__pyx_v_a2_x - (__pyx_v_glass_dir_x * __pyx_v_n_glass));
 
-  /* "algorithms/ray_tracing.py":98
+  /* "openptv2/algorithms/ray_tracing.py":98
  *     n_a2: cython.double = a2_x * glass_dir_x + a2_y * glass_dir_y + a2_z * glass_dir_z
  *     bp_x = a2_x - glass_dir_x * n_glass
  *     bp_y = a2_y - glass_dir_y * n_glass             # <<<<<<<<<<<<<<
@@ -16238,7 +16238,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
 */
   __pyx_v_bp_y = (__pyx_v_a2_y - (__pyx_v_glass_dir_y * __pyx_v_n_glass));
 
-  /* "algorithms/ray_tracing.py":99
+  /* "openptv2/algorithms/ray_tracing.py":99
  *     bp_x = a2_x - glass_dir_x * n_glass
  *     bp_y = a2_y - glass_dir_y * n_glass
  *     bp_z = a2_z - glass_dir_z * n_glass             # <<<<<<<<<<<<<<
@@ -16247,7 +16247,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
 */
   __pyx_v_bp_z = (__pyx_v_a2_z - (__pyx_v_glass_dir_z * __pyx_v_n_glass));
 
-  /* "algorithms/ray_tracing.py":100
+  /* "openptv2/algorithms/ray_tracing.py":100
  *     bp_y = a2_y - glass_dir_y * n_glass
  *     bp_z = a2_z - glass_dir_z * n_glass
  *     norm_bp = c_sqrt(bp_x * bp_x + bp_y * bp_y + bp_z * bp_z)             # <<<<<<<<<<<<<<
@@ -16256,7 +16256,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
 */
   __pyx_v_norm_bp = sqrt((((__pyx_v_bp_x * __pyx_v_bp_x) + (__pyx_v_bp_y * __pyx_v_bp_y)) + (__pyx_v_bp_z * __pyx_v_bp_z)));
 
-  /* "algorithms/ray_tracing.py":101
+  /* "openptv2/algorithms/ray_tracing.py":101
  *     bp_z = a2_z - glass_dir_z * n_glass
  *     norm_bp = c_sqrt(bp_x * bp_x + bp_y * bp_y + bp_z * bp_z)
  *     if norm_bp > 0:             # <<<<<<<<<<<<<<
@@ -16266,7 +16266,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
   __pyx_t_7 = (__pyx_v_norm_bp > 0.0);
   if (__pyx_t_7) {
 
-    /* "algorithms/ray_tracing.py":102
+    /* "openptv2/algorithms/ray_tracing.py":102
  *     norm_bp = c_sqrt(bp_x * bp_x + bp_y * bp_y + bp_z * bp_z)
  *     if norm_bp > 0:
  *         bp_x /= norm_bp             # <<<<<<<<<<<<<<
@@ -16275,7 +16275,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
 */
     __pyx_v_bp_x = (__pyx_v_bp_x / __pyx_v_norm_bp);
 
-    /* "algorithms/ray_tracing.py":103
+    /* "openptv2/algorithms/ray_tracing.py":103
  *     if norm_bp > 0:
  *         bp_x /= norm_bp
  *         bp_y /= norm_bp             # <<<<<<<<<<<<<<
@@ -16284,7 +16284,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
 */
     __pyx_v_bp_y = (__pyx_v_bp_y / __pyx_v_norm_bp);
 
-    /* "algorithms/ray_tracing.py":104
+    /* "openptv2/algorithms/ray_tracing.py":104
  *         bp_x /= norm_bp
  *         bp_y /= norm_bp
  *         bp_z /= norm_bp             # <<<<<<<<<<<<<<
@@ -16293,7 +16293,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
 */
     __pyx_v_bp_z = (__pyx_v_bp_z / __pyx_v_norm_bp);
 
-    /* "algorithms/ray_tracing.py":101
+    /* "openptv2/algorithms/ray_tracing.py":101
  *     bp_z = a2_z - glass_dir_z * n_glass
  *     norm_bp = c_sqrt(bp_x * bp_x + bp_y * bp_y + bp_z * bp_z)
  *     if norm_bp > 0:             # <<<<<<<<<<<<<<
@@ -16302,7 +16302,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
 */
   }
 
-  /* "algorithms/ray_tracing.py":106
+  /* "openptv2/algorithms/ray_tracing.py":106
  *         bp_z /= norm_bp
  * 
  *     p = c_sqrt(1.0 - n_a2 * n_a2)             # <<<<<<<<<<<<<<
@@ -16311,7 +16311,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
 */
   __pyx_v_p = sqrt((1.0 - (__pyx_v_n_a2 * __pyx_v_n_a2)));
 
-  /* "algorithms/ray_tracing.py":107
+  /* "openptv2/algorithms/ray_tracing.py":107
  * 
  *     p = c_sqrt(1.0 - n_a2 * n_a2)
  *     p = p * mm_n2_0 / mm_n3             # <<<<<<<<<<<<<<
@@ -16320,7 +16320,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
 */
   __pyx_v_p = ((__pyx_v_p * __pyx_v_mm_n2_0) / __pyx_v_mm_n3);
 
-  /* "algorithms/ray_tracing.py":108
+  /* "openptv2/algorithms/ray_tracing.py":108
  *     p = c_sqrt(1.0 - n_a2 * n_a2)
  *     p = p * mm_n2_0 / mm_n3
  *     n_final: cython.double = -c_sqrt(1.0 - p * p)             # <<<<<<<<<<<<<<
@@ -16329,7 +16329,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
 */
   __pyx_v_n_final = (-sqrt((1.0 - (__pyx_v_p * __pyx_v_p))));
 
-  /* "algorithms/ray_tracing.py":110
+  /* "openptv2/algorithms/ray_tracing.py":110
  *     n_final: cython.double = -c_sqrt(1.0 - p * p)
  * 
  *     out_x: cython.double = bp_x * p + glass_dir_x * n_final             # <<<<<<<<<<<<<<
@@ -16338,7 +16338,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
 */
   __pyx_v_out_x = ((__pyx_v_bp_x * __pyx_v_p) + (__pyx_v_glass_dir_x * __pyx_v_n_final));
 
-  /* "algorithms/ray_tracing.py":111
+  /* "openptv2/algorithms/ray_tracing.py":111
  * 
  *     out_x: cython.double = bp_x * p + glass_dir_x * n_final
  *     out_y: cython.double = bp_y * p + glass_dir_y * n_final             # <<<<<<<<<<<<<<
@@ -16347,7 +16347,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
 */
   __pyx_v_out_y = ((__pyx_v_bp_y * __pyx_v_p) + (__pyx_v_glass_dir_y * __pyx_v_n_final));
 
-  /* "algorithms/ray_tracing.py":112
+  /* "openptv2/algorithms/ray_tracing.py":112
  *     out_x: cython.double = bp_x * p + glass_dir_x * n_final
  *     out_y: cython.double = bp_y * p + glass_dir_y * n_final
  *     out_z: cython.double = bp_z * p + glass_dir_z * n_final             # <<<<<<<<<<<<<<
@@ -16356,7 +16356,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
 */
   __pyx_v_out_z = ((__pyx_v_bp_z * __pyx_v_p) + (__pyx_v_glass_dir_z * __pyx_v_n_final));
 
-  /* "algorithms/ray_tracing.py":114
+  /* "openptv2/algorithms/ray_tracing.py":114
  *     out_z: cython.double = bp_z * p + glass_dir_z * n_final
  * 
  *     pos[0] = X_x             # <<<<<<<<<<<<<<
@@ -16366,7 +16366,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
   __pyx_t_6 = 0;
   *((double *) ( /* dim=0 */ (__pyx_v_pos.data + __pyx_t_6 * __pyx_v_pos.strides[0]) )) = __pyx_v_X_x;
 
-  /* "algorithms/ray_tracing.py":115
+  /* "openptv2/algorithms/ray_tracing.py":115
  * 
  *     pos[0] = X_x
  *     pos[1] = X_y             # <<<<<<<<<<<<<<
@@ -16376,7 +16376,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
   __pyx_t_6 = 1;
   *((double *) ( /* dim=0 */ (__pyx_v_pos.data + __pyx_t_6 * __pyx_v_pos.strides[0]) )) = __pyx_v_X_y;
 
-  /* "algorithms/ray_tracing.py":116
+  /* "openptv2/algorithms/ray_tracing.py":116
  *     pos[0] = X_x
  *     pos[1] = X_y
  *     pos[2] = X_z             # <<<<<<<<<<<<<<
@@ -16386,7 +16386,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
   __pyx_t_6 = 2;
   *((double *) ( /* dim=0 */ (__pyx_v_pos.data + __pyx_t_6 * __pyx_v_pos.strides[0]) )) = __pyx_v_X_z;
 
-  /* "algorithms/ray_tracing.py":118
+  /* "openptv2/algorithms/ray_tracing.py":118
  *     pos[2] = X_z
  * 
  *     out[0] = out_x             # <<<<<<<<<<<<<<
@@ -16396,7 +16396,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
   __pyx_t_6 = 0;
   *((double *) ( /* dim=0 */ (__pyx_v_out.data + __pyx_t_6 * __pyx_v_out.strides[0]) )) = __pyx_v_out_x;
 
-  /* "algorithms/ray_tracing.py":119
+  /* "openptv2/algorithms/ray_tracing.py":119
  * 
  *     out[0] = out_x
  *     out[1] = out_y             # <<<<<<<<<<<<<<
@@ -16406,7 +16406,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
   __pyx_t_6 = 1;
   *((double *) ( /* dim=0 */ (__pyx_v_out.data + __pyx_t_6 * __pyx_v_out.strides[0]) )) = __pyx_v_out_y;
 
-  /* "algorithms/ray_tracing.py":120
+  /* "openptv2/algorithms/ray_tracing.py":120
  *     out[0] = out_x
  *     out[1] = out_y
  *     out[2] = out_z             # <<<<<<<<<<<<<<
@@ -16416,7 +16416,7 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
   __pyx_t_6 = 2;
   *((double *) ( /* dim=0 */ (__pyx_v_out.data + __pyx_t_6 * __pyx_v_out.strides[0]) )) = __pyx_v_out_z;
 
-  /* "algorithms/ray_tracing.py":18
+  /* "openptv2/algorithms/ray_tracing.py":18
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -16428,15 +16428,15 @@ static void __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(double __pyx_v_
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_11ray_tracing_1_ray_tracing_core(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_11ray_tracing_1_ray_tracing_core(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_10algorithms_11ray_tracing_1_ray_tracing_core = {"_ray_tracing_core", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_11ray_tracing_1_ray_tracing_core, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10algorithms_11ray_tracing_1_ray_tracing_core(PyObject *__pyx_self, 
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_11ray_tracing_1_ray_tracing_core = {"_ray_tracing_core", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_11ray_tracing_1_ray_tracing_core, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_8openptv2_10algorithms_11ray_tracing_1_ray_tracing_core(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -16621,7 +16621,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   __PYX_XCLEAR_MEMVIEW(&__pyx_v_ext_dm, 1);
   __PYX_XCLEAR_MEMVIEW(&__pyx_v_pos, 1);
   __PYX_XCLEAR_MEMVIEW(&__pyx_v_out, 1);
-  __Pyx_AddTraceback("algorithms.ray_tracing._ray_tracing_core", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.ray_tracing._ray_tracing_core", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
@@ -16634,7 +16634,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   if (unlikely(((PyObject *)__pyx_v_out.memview) == Py_None)) {
     PyErr_Format(PyExc_TypeError, "Argument '%.200s' must not be None", "out"); __PYX_ERR(0, 37, __pyx_L1_error)
   }
-  __pyx_r = __pyx_pf_10algorithms_11ray_tracing__ray_tracing_core(__pyx_self, __pyx_v_x, __pyx_v_y, __pyx_v_ext_dm, __pyx_v_ext_x0, __pyx_v_ext_y0, __pyx_v_ext_z0, __pyx_v_int_cc, __pyx_v_glass_vec_x, __pyx_v_glass_vec_y, __pyx_v_glass_vec_z, __pyx_v_mm_n1, __pyx_v_mm_n2_0, __pyx_v_mm_n3, __pyx_v_mm_d0, __pyx_v_pos, __pyx_v_out);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_11ray_tracing__ray_tracing_core(__pyx_self, __pyx_v_x, __pyx_v_y, __pyx_v_ext_dm, __pyx_v_ext_x0, __pyx_v_ext_y0, __pyx_v_ext_z0, __pyx_v_int_cc, __pyx_v_glass_vec_x, __pyx_v_glass_vec_y, __pyx_v_glass_vec_z, __pyx_v_mm_n1, __pyx_v_mm_n2_0, __pyx_v_mm_n3, __pyx_v_mm_d0, __pyx_v_pos, __pyx_v_out);
 
   /* function exit code */
   goto __pyx_L0;
@@ -16656,7 +16656,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_11ray_tracing__ray_tracing_core(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_x, double __pyx_v_y, __Pyx_memviewslice __pyx_v_ext_dm, double __pyx_v_ext_x0, double __pyx_v_ext_y0, double __pyx_v_ext_z0, double __pyx_v_int_cc, double __pyx_v_glass_vec_x, double __pyx_v_glass_vec_y, double __pyx_v_glass_vec_z, double __pyx_v_mm_n1, double __pyx_v_mm_n2_0, double __pyx_v_mm_n3, double __pyx_v_mm_d0, __Pyx_memviewslice __pyx_v_pos, __Pyx_memviewslice __pyx_v_out) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_11ray_tracing__ray_tracing_core(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_x, double __pyx_v_y, __Pyx_memviewslice __pyx_v_ext_dm, double __pyx_v_ext_x0, double __pyx_v_ext_y0, double __pyx_v_ext_z0, double __pyx_v_int_cc, double __pyx_v_glass_vec_x, double __pyx_v_glass_vec_y, double __pyx_v_glass_vec_z, double __pyx_v_mm_n1, double __pyx_v_mm_n2_0, double __pyx_v_mm_n3, double __pyx_v_mm_d0, __Pyx_memviewslice __pyx_v_pos, __Pyx_memviewslice __pyx_v_out) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -16677,7 +16677,7 @@ static PyObject *__pyx_pf_10algorithms_11ray_tracing__ray_tracing_core(CYTHON_UN
     PyErr_SetString(PyExc_TypeError, "cannot pass None into a C function argument that is declared 'not None'");
     __PYX_ERR(0, 18, __pyx_L1_error)
   }
-  __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(__pyx_v_x, __pyx_v_y, __pyx_v_ext_dm, __pyx_v_ext_x0, __pyx_v_ext_y0, __pyx_v_ext_z0, __pyx_v_int_cc, __pyx_v_glass_vec_x, __pyx_v_glass_vec_y, __pyx_v_glass_vec_z, __pyx_v_mm_n1, __pyx_v_mm_n2_0, __pyx_v_mm_n3, __pyx_v_mm_d0, __pyx_v_pos, __pyx_v_out, 1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 18, __pyx_L1_error)
+  __pyx_f_8openptv2_10algorithms_11ray_tracing__ray_tracing_core(__pyx_v_x, __pyx_v_y, __pyx_v_ext_dm, __pyx_v_ext_x0, __pyx_v_ext_y0, __pyx_v_ext_z0, __pyx_v_int_cc, __pyx_v_glass_vec_x, __pyx_v_glass_vec_y, __pyx_v_glass_vec_z, __pyx_v_mm_n1, __pyx_v_mm_n2_0, __pyx_v_mm_n3, __pyx_v_mm_d0, __pyx_v_pos, __pyx_v_out, 1); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 18, __pyx_L1_error)
   __pyx_t_1 = __Pyx_void_to_None(NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 18, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
@@ -16687,7 +16687,7 @@ static PyObject *__pyx_pf_10algorithms_11ray_tracing__ray_tracing_core(CYTHON_UN
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.ray_tracing._ray_tracing_core", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.ray_tracing._ray_tracing_core", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -16695,7 +16695,7 @@ static PyObject *__pyx_pf_10algorithms_11ray_tracing__ray_tracing_core(CYTHON_UN
   return __pyx_r;
 }
 
-/* "algorithms/ray_tracing.py":123
+/* "openptv2/algorithms/ray_tracing.py":123
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -16703,14 +16703,14 @@ static PyObject *__pyx_pf_10algorithms_11ray_tracing__ray_tracing_core(CYTHON_UN
  *     x: cython.double,
 */
 
-static PyObject *__pyx_pw_10algorithms_11ray_tracing_3ray_tracing(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_11ray_tracing_3ray_tracing(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing(double __pyx_v_x, double __pyx_v_y, __Pyx_memviewslice __pyx_v_ext_dm, double __pyx_v_ext_x0, double __pyx_v_ext_y0, double __pyx_v_ext_z0, double __pyx_v_int_cc, double __pyx_v_glass_vec_x, double __pyx_v_glass_vec_y, double __pyx_v_glass_vec_z, double __pyx_v_mm_n1, double __pyx_v_mm_n2_0, double __pyx_v_mm_n3, double __pyx_v_mm_d0, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_11ray_tracing_ray_tracing(double __pyx_v_x, double __pyx_v_y, __Pyx_memviewslice __pyx_v_ext_dm, double __pyx_v_ext_x0, double __pyx_v_ext_y0, double __pyx_v_ext_z0, double __pyx_v_int_cc, double __pyx_v_glass_vec_x, double __pyx_v_glass_vec_y, double __pyx_v_glass_vec_z, double __pyx_v_mm_n1, double __pyx_v_mm_n2_0, double __pyx_v_mm_n3, double __pyx_v_mm_d0, CYTHON_UNUSED int __pyx_skip_dispatch) {
   PyObject *__pyx_v_pos = NULL;
   PyObject *__pyx_v_direction = NULL;
   PyObject *__pyx_r = NULL;
@@ -16728,7 +16728,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing(double __pyx_v_x
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("ray_tracing", 0);
 
-  /* "algorithms/ray_tracing.py":161
+  /* "openptv2/algorithms/ray_tracing.py":161
  *         direction vector in final medium (3,).
  *     """
  *     pos = np.empty(3, dtype=np.float64)             # <<<<<<<<<<<<<<
@@ -16774,7 +16774,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing(double __pyx_v_x
   __pyx_v_pos = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/ray_tracing.py":162
+  /* "openptv2/algorithms/ray_tracing.py":162
  *     """
  *     pos = np.empty(3, dtype=np.float64)
  *     direction = np.empty(3, dtype=np.float64)             # <<<<<<<<<<<<<<
@@ -16820,7 +16820,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing(double __pyx_v_x
   __pyx_v_direction = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/ray_tracing.py":168
+  /* "openptv2/algorithms/ray_tracing.py":168
  *         glass_vec_x, glass_vec_y, glass_vec_z,
  *         mm_n1, mm_n2_0, mm_n3, mm_d0,
  *         pos, direction             # <<<<<<<<<<<<<<
@@ -16838,20 +16838,20 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing(double __pyx_v_x
     __PYX_ERR(0, 168, __pyx_L1_error)
   }
 
-  /* "algorithms/ray_tracing.py":164
+  /* "openptv2/algorithms/ray_tracing.py":164
  *     direction = np.empty(3, dtype=np.float64)
  * 
  *     _ray_tracing_core(             # <<<<<<<<<<<<<<
  *         x, y, ext_dm, ext_x0, ext_y0, ext_z0, int_cc,
  *         glass_vec_x, glass_vec_y, glass_vec_z,
 */
-  __pyx_f_10algorithms_11ray_tracing__ray_tracing_core(__pyx_v_x, __pyx_v_y, __pyx_v_ext_dm, __pyx_v_ext_x0, __pyx_v_ext_y0, __pyx_v_ext_z0, __pyx_v_int_cc, __pyx_v_glass_vec_x, __pyx_v_glass_vec_y, __pyx_v_glass_vec_z, __pyx_v_mm_n1, __pyx_v_mm_n2_0, __pyx_v_mm_n3, __pyx_v_mm_d0, __pyx_t_7, __pyx_t_8, 0); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 164, __pyx_L1_error)
+  __pyx_f_8openptv2_10algorithms_11ray_tracing__ray_tracing_core(__pyx_v_x, __pyx_v_y, __pyx_v_ext_dm, __pyx_v_ext_x0, __pyx_v_ext_y0, __pyx_v_ext_z0, __pyx_v_int_cc, __pyx_v_glass_vec_x, __pyx_v_glass_vec_y, __pyx_v_glass_vec_z, __pyx_v_mm_n1, __pyx_v_mm_n2_0, __pyx_v_mm_n3, __pyx_v_mm_d0, __pyx_t_7, __pyx_t_8, 0); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 164, __pyx_L1_error)
   __PYX_XCLEAR_MEMVIEW(&__pyx_t_7, 1);
   __pyx_t_7.memview = NULL; __pyx_t_7.data = NULL;
   __PYX_XCLEAR_MEMVIEW(&__pyx_t_8, 1);
   __pyx_t_8.memview = NULL; __pyx_t_8.data = NULL;
 
-  /* "algorithms/ray_tracing.py":170
+  /* "openptv2/algorithms/ray_tracing.py":170
  *         pos, direction
  *     )
  *     return pos, direction             # <<<<<<<<<<<<<<
@@ -16871,7 +16871,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing(double __pyx_v_x
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/ray_tracing.py":123
+  /* "openptv2/algorithms/ray_tracing.py":123
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -16888,7 +16888,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing(double __pyx_v_x
   __Pyx_XDECREF(__pyx_t_5);
   __PYX_XCLEAR_MEMVIEW(&__pyx_t_7, 1);
   __PYX_XCLEAR_MEMVIEW(&__pyx_t_8, 1);
-  __Pyx_AddTraceback("algorithms.ray_tracing.ray_tracing", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.ray_tracing.ray_tracing", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_pos);
@@ -16899,16 +16899,16 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing(double __pyx_v_x
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_11ray_tracing_3ray_tracing(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_11ray_tracing_3ray_tracing(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_11ray_tracing_2ray_tracing, "Trace a ray through multi-media interface.\n\n    Traces the optical ray through layers (typically air-glass-water)\n    and returns the position of the ray crossing point and the direction\n    vector in the final medium.\n\n    Args:\n        x, y: metric position in image space.\n        ext_dm: 3x3 rotation matrix of camera.\n        ext_x0, ext_y0, ext_z0: camera center position.\n        int_cc: camera constant (focal length).\n        glass_vec_x, glass_vec_y, glass_vec_z: glass normal vector.\n        mm_n1: refractive index of first medium (air).\n        mm_n2_0: refractive index of second medium (glass).\n        mm_n3: refractive index of third medium (water).\n        mm_d0: thickness of glass layer.\n\n    Returns:\n        (X, out) where X is crossing point position (3,) and out is\n        direction vector in final medium (3,).\n    ");
-static PyMethodDef __pyx_mdef_10algorithms_11ray_tracing_3ray_tracing = {"ray_tracing", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_11ray_tracing_3ray_tracing, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_11ray_tracing_2ray_tracing};
-static PyObject *__pyx_pw_10algorithms_11ray_tracing_3ray_tracing(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_11ray_tracing_2ray_tracing, "Trace a ray through multi-media interface.\n\n    Traces the optical ray through layers (typically air-glass-water)\n    and returns the position of the ray crossing point and the direction\n    vector in the final medium.\n\n    Args:\n        x, y: metric position in image space.\n        ext_dm: 3x3 rotation matrix of camera.\n        ext_x0, ext_y0, ext_z0: camera center position.\n        int_cc: camera constant (focal length).\n        glass_vec_x, glass_vec_y, glass_vec_z: glass normal vector.\n        mm_n1: refractive index of first medium (air).\n        mm_n2_0: refractive index of second medium (glass).\n        mm_n3: refractive index of third medium (water).\n        mm_d0: thickness of glass layer.\n\n    Returns:\n        (X, out) where X is crossing point position (3,) and out is\n        direction vector in final medium (3,).\n    ");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_11ray_tracing_3ray_tracing = {"ray_tracing", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_11ray_tracing_3ray_tracing, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_11ray_tracing_2ray_tracing};
+static PyObject *__pyx_pw_8openptv2_10algorithms_11ray_tracing_3ray_tracing(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -17075,14 +17075,14 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
     Py_XDECREF(values[__pyx_temp]);
   }
   __PYX_XCLEAR_MEMVIEW(&__pyx_v_ext_dm, 1);
-  __Pyx_AddTraceback("algorithms.ray_tracing.ray_tracing", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.ray_tracing.ray_tracing", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
   if (unlikely(((PyObject *)__pyx_v_ext_dm.memview) == Py_None)) {
     PyErr_Format(PyExc_TypeError, "Argument '%.200s' must not be None", "ext_dm"); __PYX_ERR(0, 127, __pyx_L1_error)
   }
-  __pyx_r = __pyx_pf_10algorithms_11ray_tracing_2ray_tracing(__pyx_self, __pyx_v_x, __pyx_v_y, __pyx_v_ext_dm, __pyx_v_ext_x0, __pyx_v_ext_y0, __pyx_v_ext_z0, __pyx_v_int_cc, __pyx_v_glass_vec_x, __pyx_v_glass_vec_y, __pyx_v_glass_vec_z, __pyx_v_mm_n1, __pyx_v_mm_n2_0, __pyx_v_mm_n3, __pyx_v_mm_d0);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_11ray_tracing_2ray_tracing(__pyx_self, __pyx_v_x, __pyx_v_y, __pyx_v_ext_dm, __pyx_v_ext_x0, __pyx_v_ext_y0, __pyx_v_ext_z0, __pyx_v_int_cc, __pyx_v_glass_vec_x, __pyx_v_glass_vec_y, __pyx_v_glass_vec_z, __pyx_v_mm_n1, __pyx_v_mm_n2_0, __pyx_v_mm_n3, __pyx_v_mm_d0);
 
   /* function exit code */
   goto __pyx_L0;
@@ -17102,7 +17102,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_11ray_tracing_2ray_tracing(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_x, double __pyx_v_y, __Pyx_memviewslice __pyx_v_ext_dm, double __pyx_v_ext_x0, double __pyx_v_ext_y0, double __pyx_v_ext_z0, double __pyx_v_int_cc, double __pyx_v_glass_vec_x, double __pyx_v_glass_vec_y, double __pyx_v_glass_vec_z, double __pyx_v_mm_n1, double __pyx_v_mm_n2_0, double __pyx_v_mm_n3, double __pyx_v_mm_d0) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_11ray_tracing_2ray_tracing(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_x, double __pyx_v_y, __Pyx_memviewslice __pyx_v_ext_dm, double __pyx_v_ext_x0, double __pyx_v_ext_y0, double __pyx_v_ext_z0, double __pyx_v_int_cc, double __pyx_v_glass_vec_x, double __pyx_v_glass_vec_y, double __pyx_v_glass_vec_z, double __pyx_v_mm_n1, double __pyx_v_mm_n2_0, double __pyx_v_mm_n3, double __pyx_v_mm_d0) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -17115,7 +17115,7 @@ static PyObject *__pyx_pf_10algorithms_11ray_tracing_2ray_tracing(CYTHON_UNUSED 
     PyErr_SetString(PyExc_TypeError, "cannot pass None into a C function argument that is declared 'not None'");
     __PYX_ERR(0, 123, __pyx_L1_error)
   }
-  __pyx_t_1 = __pyx_f_10algorithms_11ray_tracing_ray_tracing(__pyx_v_x, __pyx_v_y, __pyx_v_ext_dm, __pyx_v_ext_x0, __pyx_v_ext_y0, __pyx_v_ext_z0, __pyx_v_int_cc, __pyx_v_glass_vec_x, __pyx_v_glass_vec_y, __pyx_v_glass_vec_z, __pyx_v_mm_n1, __pyx_v_mm_n2_0, __pyx_v_mm_n3, __pyx_v_mm_d0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 123, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_11ray_tracing_ray_tracing(__pyx_v_x, __pyx_v_y, __pyx_v_ext_dm, __pyx_v_ext_x0, __pyx_v_ext_y0, __pyx_v_ext_z0, __pyx_v_int_cc, __pyx_v_glass_vec_x, __pyx_v_glass_vec_y, __pyx_v_glass_vec_z, __pyx_v_mm_n1, __pyx_v_mm_n2_0, __pyx_v_mm_n3, __pyx_v_mm_d0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 123, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -17124,7 +17124,7 @@ static PyObject *__pyx_pf_10algorithms_11ray_tracing_2ray_tracing(CYTHON_UNUSED 
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.ray_tracing.ray_tracing", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.ray_tracing.ray_tracing", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -17132,7 +17132,7 @@ static PyObject *__pyx_pf_10algorithms_11ray_tracing_2ray_tracing(CYTHON_UNUSED 
   return __pyx_r;
 }
 
-/* "algorithms/ray_tracing.py":173
+/* "openptv2/algorithms/ray_tracing.py":173
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -17140,14 +17140,14 @@ static PyObject *__pyx_pf_10algorithms_11ray_tracing_2ray_tracing(CYTHON_UNUSED 
  * @cython.wraparound(False)
 */
 
-static PyObject *__pyx_pw_10algorithms_11ray_tracing_5ray_tracing_batch(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_11ray_tracing_5ray_tracing_batch(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *__pyx_v_xy, PyObject *__pyx_v_cal, PyObject *__pyx_v_mm, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *__pyx_v_xy, PyObject *__pyx_v_cal, PyObject *__pyx_v_mm, CYTHON_UNUSED int __pyx_skip_dispatch) {
   __Pyx_memviewslice __pyx_v_xy_mv = { 0, 0, { 0 }, { 0 }, { 0 } };
   int __pyx_v_n;
   PyObject *__pyx_v_positions = NULL;
@@ -17233,7 +17233,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("ray_tracing_batch", 0);
 
-  /* "algorithms/ray_tracing.py":187
+  /* "openptv2/algorithms/ray_tracing.py":187
  *         (positions, directions)  each (N, 3) float64 arrays.
  *     """
  *     xy_mv: cython.double[:, :] = np.ascontiguousarray(xy, dtype=np.float64)             # <<<<<<<<<<<<<<
@@ -17282,7 +17282,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
   __pyx_t_7.memview = NULL;
   __pyx_t_7.data = NULL;
 
-  /* "algorithms/ray_tracing.py":188
+  /* "openptv2/algorithms/ray_tracing.py":188
  *     """
  *     xy_mv: cython.double[:, :] = np.ascontiguousarray(xy, dtype=np.float64)
  *     n: cython.int = xy_mv.shape[0]             # <<<<<<<<<<<<<<
@@ -17291,7 +17291,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
 */
   __pyx_v_n = (__pyx_v_xy_mv.shape[0]);
 
-  /* "algorithms/ray_tracing.py":189
+  /* "openptv2/algorithms/ray_tracing.py":189
  *     xy_mv: cython.double[:, :] = np.ascontiguousarray(xy, dtype=np.float64)
  *     n: cython.int = xy_mv.shape[0]
  *     positions = np.empty((n, 3), dtype=np.float64)             # <<<<<<<<<<<<<<
@@ -17348,7 +17348,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
   __pyx_v_positions = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/ray_tracing.py":190
+  /* "openptv2/algorithms/ray_tracing.py":190
  *     n: cython.int = xy_mv.shape[0]
  *     positions = np.empty((n, 3), dtype=np.float64)
  *     directions = np.empty((n, 3), dtype=np.float64)             # <<<<<<<<<<<<<<
@@ -17405,7 +17405,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
   __pyx_v_directions = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/ray_tracing.py":191
+  /* "openptv2/algorithms/ray_tracing.py":191
  *     positions = np.empty((n, 3), dtype=np.float64)
  *     directions = np.empty((n, 3), dtype=np.float64)
  *     pos_mv: cython.double[:, :] = positions             # <<<<<<<<<<<<<<
@@ -17417,7 +17417,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
   __pyx_t_7.memview = NULL;
   __pyx_t_7.data = NULL;
 
-  /* "algorithms/ray_tracing.py":192
+  /* "openptv2/algorithms/ray_tracing.py":192
  *     directions = np.empty((n, 3), dtype=np.float64)
  *     pos_mv: cython.double[:, :] = positions
  *     dir_mv: cython.double[:, :] = directions             # <<<<<<<<<<<<<<
@@ -17429,7 +17429,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
   __pyx_t_7.memview = NULL;
   __pyx_t_7.data = NULL;
 
-  /* "algorithms/ray_tracing.py":194
+  /* "openptv2/algorithms/ray_tracing.py":194
  *     dir_mv: cython.double[:, :] = directions
  * 
  *     ext_dm: cython.double[:, :] = cal.ext_par.dm             # <<<<<<<<<<<<<<
@@ -17447,7 +17447,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
   __pyx_t_7.memview = NULL;
   __pyx_t_7.data = NULL;
 
-  /* "algorithms/ray_tracing.py":195
+  /* "openptv2/algorithms/ray_tracing.py":195
  * 
  *     ext_dm: cython.double[:, :] = cal.ext_par.dm
  *     ext_x0: cython.double = cal.ext_par.x0             # <<<<<<<<<<<<<<
@@ -17463,7 +17463,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_ext_x0 = __pyx_t_9;
 
-  /* "algorithms/ray_tracing.py":196
+  /* "openptv2/algorithms/ray_tracing.py":196
  *     ext_dm: cython.double[:, :] = cal.ext_par.dm
  *     ext_x0: cython.double = cal.ext_par.x0
  *     ext_y0: cython.double = cal.ext_par.y0             # <<<<<<<<<<<<<<
@@ -17479,7 +17479,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
   __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
   __pyx_v_ext_y0 = __pyx_t_9;
 
-  /* "algorithms/ray_tracing.py":197
+  /* "openptv2/algorithms/ray_tracing.py":197
  *     ext_x0: cython.double = cal.ext_par.x0
  *     ext_y0: cython.double = cal.ext_par.y0
  *     ext_z0: cython.double = cal.ext_par.z0             # <<<<<<<<<<<<<<
@@ -17495,7 +17495,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_ext_z0 = __pyx_t_9;
 
-  /* "algorithms/ray_tracing.py":198
+  /* "openptv2/algorithms/ray_tracing.py":198
  *     ext_y0: cython.double = cal.ext_par.y0
  *     ext_z0: cython.double = cal.ext_par.z0
  *     int_cc: cython.double = cal.int_par.cc             # <<<<<<<<<<<<<<
@@ -17511,7 +17511,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
   __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
   __pyx_v_int_cc = __pyx_t_9;
 
-  /* "algorithms/ray_tracing.py":199
+  /* "openptv2/algorithms/ray_tracing.py":199
  *     ext_z0: cython.double = cal.ext_par.z0
  *     int_cc: cython.double = cal.int_par.cc
  *     glass_vec_x: cython.double = cal.glass_par.vec_x             # <<<<<<<<<<<<<<
@@ -17527,7 +17527,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_glass_vec_x = __pyx_t_9;
 
-  /* "algorithms/ray_tracing.py":200
+  /* "openptv2/algorithms/ray_tracing.py":200
  *     int_cc: cython.double = cal.int_par.cc
  *     glass_vec_x: cython.double = cal.glass_par.vec_x
  *     glass_vec_y: cython.double = cal.glass_par.vec_y             # <<<<<<<<<<<<<<
@@ -17543,7 +17543,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
   __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
   __pyx_v_glass_vec_y = __pyx_t_9;
 
-  /* "algorithms/ray_tracing.py":201
+  /* "openptv2/algorithms/ray_tracing.py":201
  *     glass_vec_x: cython.double = cal.glass_par.vec_x
  *     glass_vec_y: cython.double = cal.glass_par.vec_y
  *     glass_vec_z: cython.double = cal.glass_par.vec_z             # <<<<<<<<<<<<<<
@@ -17559,7 +17559,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_glass_vec_z = __pyx_t_9;
 
-  /* "algorithms/ray_tracing.py":202
+  /* "openptv2/algorithms/ray_tracing.py":202
  *     glass_vec_y: cython.double = cal.glass_par.vec_y
  *     glass_vec_z: cython.double = cal.glass_par.vec_z
  *     mm_n1: cython.double = mm.n1             # <<<<<<<<<<<<<<
@@ -17572,7 +17572,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_mm_n1 = __pyx_t_9;
 
-  /* "algorithms/ray_tracing.py":203
+  /* "openptv2/algorithms/ray_tracing.py":203
  *     glass_vec_z: cython.double = cal.glass_par.vec_z
  *     mm_n1: cython.double = mm.n1
  *     mm_n2_0: cython.double = mm.n2[0]             # <<<<<<<<<<<<<<
@@ -17588,7 +17588,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
   __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
   __pyx_v_mm_n2_0 = __pyx_t_9;
 
-  /* "algorithms/ray_tracing.py":204
+  /* "openptv2/algorithms/ray_tracing.py":204
  *     mm_n1: cython.double = mm.n1
  *     mm_n2_0: cython.double = mm.n2[0]
  *     mm_n3: cython.double = mm.n3             # <<<<<<<<<<<<<<
@@ -17601,7 +17601,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
   __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
   __pyx_v_mm_n3 = __pyx_t_9;
 
-  /* "algorithms/ray_tracing.py":205
+  /* "openptv2/algorithms/ray_tracing.py":205
  *     mm_n2_0: cython.double = mm.n2[0]
  *     mm_n3: cython.double = mm.n3
  *     mm_d0: cython.double = mm.d[0]             # <<<<<<<<<<<<<<
@@ -17617,7 +17617,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_mm_d0 = __pyx_t_9;
 
-  /* "algorithms/ray_tracing.py":208
+  /* "openptv2/algorithms/ray_tracing.py":208
  * 
  *     # Hoist point-independent calculations from _ray_tracing_core
  *     norm_glass: cython.double = c_sqrt(glass_vec_x * glass_vec_x + glass_vec_y * glass_vec_y + glass_vec_z * glass_vec_z)             # <<<<<<<<<<<<<<
@@ -17626,7 +17626,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
 */
   __pyx_v_norm_glass = sqrt((((__pyx_v_glass_vec_x * __pyx_v_glass_vec_x) + (__pyx_v_glass_vec_y * __pyx_v_glass_vec_y)) + (__pyx_v_glass_vec_z * __pyx_v_glass_vec_z)));
 
-  /* "algorithms/ray_tracing.py":209
+  /* "openptv2/algorithms/ray_tracing.py":209
  *     # Hoist point-independent calculations from _ray_tracing_core
  *     norm_glass: cython.double = c_sqrt(glass_vec_x * glass_vec_x + glass_vec_y * glass_vec_y + glass_vec_z * glass_vec_z)
  *     glass_dir_x: cython.double = glass_vec_x / norm_glass             # <<<<<<<<<<<<<<
@@ -17635,7 +17635,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
 */
   __pyx_v_glass_dir_x = (__pyx_v_glass_vec_x / __pyx_v_norm_glass);
 
-  /* "algorithms/ray_tracing.py":210
+  /* "openptv2/algorithms/ray_tracing.py":210
  *     norm_glass: cython.double = c_sqrt(glass_vec_x * glass_vec_x + glass_vec_y * glass_vec_y + glass_vec_z * glass_vec_z)
  *     glass_dir_x: cython.double = glass_vec_x / norm_glass
  *     glass_dir_y: cython.double = glass_vec_y / norm_glass             # <<<<<<<<<<<<<<
@@ -17644,7 +17644,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
 */
   __pyx_v_glass_dir_y = (__pyx_v_glass_vec_y / __pyx_v_norm_glass);
 
-  /* "algorithms/ray_tracing.py":211
+  /* "openptv2/algorithms/ray_tracing.py":211
  *     glass_dir_x: cython.double = glass_vec_x / norm_glass
  *     glass_dir_y: cython.double = glass_vec_y / norm_glass
  *     glass_dir_z: cython.double = glass_vec_z / norm_glass             # <<<<<<<<<<<<<<
@@ -17653,7 +17653,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
 */
   __pyx_v_glass_dir_z = (__pyx_v_glass_vec_z / __pyx_v_norm_glass);
 
-  /* "algorithms/ray_tracing.py":212
+  /* "openptv2/algorithms/ray_tracing.py":212
  *     glass_dir_y: cython.double = glass_vec_y / norm_glass
  *     glass_dir_z: cython.double = glass_vec_z / norm_glass
  *     c: cython.double = norm_glass + mm_d0             # <<<<<<<<<<<<<<
@@ -17662,7 +17662,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
 */
   __pyx_v_c = (__pyx_v_norm_glass + __pyx_v_mm_d0);
 
-  /* "algorithms/ray_tracing.py":214
+  /* "openptv2/algorithms/ray_tracing.py":214
  *     c: cython.double = norm_glass + mm_d0
  * 
  *     dist_cam_glass: cython.double = (glass_dir_x * ext_x0 + glass_dir_y * ext_y0 + glass_dir_z * ext_z0) - c             # <<<<<<<<<<<<<<
@@ -17671,7 +17671,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
 */
   __pyx_v_dist_cam_glass = ((((__pyx_v_glass_dir_x * __pyx_v_ext_x0) + (__pyx_v_glass_dir_y * __pyx_v_ext_y0)) + (__pyx_v_glass_dir_z * __pyx_v_ext_z0)) - __pyx_v_c);
 
-  /* "algorithms/ray_tracing.py":252
+  /* "openptv2/algorithms/ray_tracing.py":252
  *     out_z: cython.double
  * 
  *     for i in range(n):             # <<<<<<<<<<<<<<
@@ -17683,7 +17683,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
   for (__pyx_t_12 = 0; __pyx_t_12 < __pyx_t_11; __pyx_t_12+=1) {
     __pyx_v_i = __pyx_t_12;
 
-    /* "algorithms/ray_tracing.py":253
+    /* "openptv2/algorithms/ray_tracing.py":253
  * 
  *     for i in range(n):
  *         x = xy_mv[i, 0]             # <<<<<<<<<<<<<<
@@ -17694,7 +17694,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
     __pyx_t_14 = 0;
     __pyx_v_x = (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_xy_mv.data + __pyx_t_13 * __pyx_v_xy_mv.strides[0]) ) + __pyx_t_14 * __pyx_v_xy_mv.strides[1]) )));
 
-    /* "algorithms/ray_tracing.py":254
+    /* "openptv2/algorithms/ray_tracing.py":254
  *     for i in range(n):
  *         x = xy_mv[i, 0]
  *         y = xy_mv[i, 1]             # <<<<<<<<<<<<<<
@@ -17705,7 +17705,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
     __pyx_t_13 = 1;
     __pyx_v_y = (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_xy_mv.data + __pyx_t_14 * __pyx_v_xy_mv.strides[0]) ) + __pyx_t_13 * __pyx_v_xy_mv.strides[1]) )));
 
-    /* "algorithms/ray_tracing.py":257
+    /* "openptv2/algorithms/ray_tracing.py":257
  * 
  *         # Initial ray direction in camera coordinate system
  *         norm_tmp1 = c_sqrt(x * x + y * y + int_cc * int_cc)             # <<<<<<<<<<<<<<
@@ -17714,7 +17714,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
 */
     __pyx_v_norm_tmp1 = sqrt((((__pyx_v_x * __pyx_v_x) + (__pyx_v_y * __pyx_v_y)) + (__pyx_v_int_cc * __pyx_v_int_cc)));
 
-    /* "algorithms/ray_tracing.py":258
+    /* "openptv2/algorithms/ray_tracing.py":258
  *         # Initial ray direction in camera coordinate system
  *         norm_tmp1 = c_sqrt(x * x + y * y + int_cc * int_cc)
  *         tx = x / norm_tmp1             # <<<<<<<<<<<<<<
@@ -17723,7 +17723,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
 */
     __pyx_v_tx = (__pyx_v_x / __pyx_v_norm_tmp1);
 
-    /* "algorithms/ray_tracing.py":259
+    /* "openptv2/algorithms/ray_tracing.py":259
  *         norm_tmp1 = c_sqrt(x * x + y * y + int_cc * int_cc)
  *         tx = x / norm_tmp1
  *         ty = y / norm_tmp1             # <<<<<<<<<<<<<<
@@ -17732,7 +17732,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
 */
     __pyx_v_ty = (__pyx_v_y / __pyx_v_norm_tmp1);
 
-    /* "algorithms/ray_tracing.py":260
+    /* "openptv2/algorithms/ray_tracing.py":260
  *         tx = x / norm_tmp1
  *         ty = y / norm_tmp1
  *         tz = -int_cc / norm_tmp1             # <<<<<<<<<<<<<<
@@ -17741,7 +17741,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
 */
     __pyx_v_tz = ((-__pyx_v_int_cc) / __pyx_v_norm_tmp1);
 
-    /* "algorithms/ray_tracing.py":263
+    /* "openptv2/algorithms/ray_tracing.py":263
  * 
  *         # Transform to global coordinate system (ext_dm @ tmp1)
  *         start_dir_x = ext_dm[0, 0] * tx + ext_dm[0, 1] * ty + ext_dm[0, 2] * tz             # <<<<<<<<<<<<<<
@@ -17756,7 +17756,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
     __pyx_t_18 = 2;
     __pyx_v_start_dir_x = ((((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_ext_dm.data + __pyx_t_13 * __pyx_v_ext_dm.strides[0]) ) + __pyx_t_14 * __pyx_v_ext_dm.strides[1]) ))) * __pyx_v_tx) + ((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_ext_dm.data + __pyx_t_15 * __pyx_v_ext_dm.strides[0]) ) + __pyx_t_16 * __pyx_v_ext_dm.strides[1]) ))) * __pyx_v_ty)) + ((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_ext_dm.data + __pyx_t_17 * __pyx_v_ext_dm.strides[0]) ) + __pyx_t_18 * __pyx_v_ext_dm.strides[1]) ))) * __pyx_v_tz));
 
-    /* "algorithms/ray_tracing.py":264
+    /* "openptv2/algorithms/ray_tracing.py":264
  *         # Transform to global coordinate system (ext_dm @ tmp1)
  *         start_dir_x = ext_dm[0, 0] * tx + ext_dm[0, 1] * ty + ext_dm[0, 2] * tz
  *         start_dir_y = ext_dm[1, 0] * tx + ext_dm[1, 1] * ty + ext_dm[1, 2] * tz             # <<<<<<<<<<<<<<
@@ -17771,7 +17771,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
     __pyx_t_13 = 2;
     __pyx_v_start_dir_y = ((((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_ext_dm.data + __pyx_t_18 * __pyx_v_ext_dm.strides[0]) ) + __pyx_t_17 * __pyx_v_ext_dm.strides[1]) ))) * __pyx_v_tx) + ((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_ext_dm.data + __pyx_t_16 * __pyx_v_ext_dm.strides[0]) ) + __pyx_t_15 * __pyx_v_ext_dm.strides[1]) ))) * __pyx_v_ty)) + ((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_ext_dm.data + __pyx_t_14 * __pyx_v_ext_dm.strides[0]) ) + __pyx_t_13 * __pyx_v_ext_dm.strides[1]) ))) * __pyx_v_tz));
 
-    /* "algorithms/ray_tracing.py":265
+    /* "openptv2/algorithms/ray_tracing.py":265
  *         start_dir_x = ext_dm[0, 0] * tx + ext_dm[0, 1] * ty + ext_dm[0, 2] * tz
  *         start_dir_y = ext_dm[1, 0] * tx + ext_dm[1, 1] * ty + ext_dm[1, 2] * tz
  *         start_dir_z = ext_dm[2, 0] * tx + ext_dm[2, 1] * ty + ext_dm[2, 2] * tz             # <<<<<<<<<<<<<<
@@ -17786,7 +17786,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
     __pyx_t_18 = 2;
     __pyx_v_start_dir_z = ((((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_ext_dm.data + __pyx_t_13 * __pyx_v_ext_dm.strides[0]) ) + __pyx_t_14 * __pyx_v_ext_dm.strides[1]) ))) * __pyx_v_tx) + ((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_ext_dm.data + __pyx_t_15 * __pyx_v_ext_dm.strides[0]) ) + __pyx_t_16 * __pyx_v_ext_dm.strides[1]) ))) * __pyx_v_ty)) + ((*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_ext_dm.data + __pyx_t_17 * __pyx_v_ext_dm.strides[0]) ) + __pyx_t_18 * __pyx_v_ext_dm.strides[1]) ))) * __pyx_v_tz));
 
-    /* "algorithms/ray_tracing.py":268
+    /* "openptv2/algorithms/ray_tracing.py":268
  * 
  *         # Project start ray on glass vector to find n1/n2 interface
  *         dot_glass_start = glass_dir_x * start_dir_x + glass_dir_y * start_dir_y + glass_dir_z * start_dir_z             # <<<<<<<<<<<<<<
@@ -17795,7 +17795,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
 */
     __pyx_v_dot_glass_start = (((__pyx_v_glass_dir_x * __pyx_v_start_dir_x) + (__pyx_v_glass_dir_y * __pyx_v_start_dir_y)) + (__pyx_v_glass_dir_z * __pyx_v_start_dir_z));
 
-    /* "algorithms/ray_tracing.py":269
+    /* "openptv2/algorithms/ray_tracing.py":269
  *         # Project start ray on glass vector to find n1/n2 interface
  *         dot_glass_start = glass_dir_x * start_dir_x + glass_dir_y * start_dir_y + glass_dir_z * start_dir_z
  *         d1 = -dist_cam_glass / dot_glass_start             # <<<<<<<<<<<<<<
@@ -17804,7 +17804,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
 */
     __pyx_v_d1 = ((-__pyx_v_dist_cam_glass) / __pyx_v_dot_glass_start);
 
-    /* "algorithms/ray_tracing.py":272
+    /* "openptv2/algorithms/ray_tracing.py":272
  * 
  *         # Xb = primary_point + start_dir * d1
  *         Xb_x = ext_x0 + start_dir_x * d1             # <<<<<<<<<<<<<<
@@ -17813,7 +17813,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
 */
     __pyx_v_Xb_x = (__pyx_v_ext_x0 + (__pyx_v_start_dir_x * __pyx_v_d1));
 
-    /* "algorithms/ray_tracing.py":273
+    /* "openptv2/algorithms/ray_tracing.py":273
  *         # Xb = primary_point + start_dir * d1
  *         Xb_x = ext_x0 + start_dir_x * d1
  *         Xb_y = ext_y0 + start_dir_y * d1             # <<<<<<<<<<<<<<
@@ -17822,7 +17822,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
 */
     __pyx_v_Xb_y = (__pyx_v_ext_y0 + (__pyx_v_start_dir_y * __pyx_v_d1));
 
-    /* "algorithms/ray_tracing.py":274
+    /* "openptv2/algorithms/ray_tracing.py":274
  *         Xb_x = ext_x0 + start_dir_x * d1
  *         Xb_y = ext_y0 + start_dir_y * d1
  *         Xb_z = ext_z0 + start_dir_z * d1             # <<<<<<<<<<<<<<
@@ -17831,7 +17831,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
 */
     __pyx_v_Xb_z = (__pyx_v_ext_z0 + (__pyx_v_start_dir_z * __pyx_v_d1));
 
-    /* "algorithms/ray_tracing.py":277
+    /* "openptv2/algorithms/ray_tracing.py":277
  * 
  *         # Decompose ray into glass-normal and glass-parallel components
  *         n_dot = start_dir_x * glass_dir_x + start_dir_y * glass_dir_y + start_dir_z * glass_dir_z             # <<<<<<<<<<<<<<
@@ -17840,7 +17840,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
 */
     __pyx_v_n_dot = (((__pyx_v_start_dir_x * __pyx_v_glass_dir_x) + (__pyx_v_start_dir_y * __pyx_v_glass_dir_y)) + (__pyx_v_start_dir_z * __pyx_v_glass_dir_z));
 
-    /* "algorithms/ray_tracing.py":278
+    /* "openptv2/algorithms/ray_tracing.py":278
  *         # Decompose ray into glass-normal and glass-parallel components
  *         n_dot = start_dir_x * glass_dir_x + start_dir_y * glass_dir_y + start_dir_z * glass_dir_z
  *         bp_x = start_dir_x - glass_dir_x * n_dot             # <<<<<<<<<<<<<<
@@ -17849,7 +17849,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
 */
     __pyx_v_bp_x = (__pyx_v_start_dir_x - (__pyx_v_glass_dir_x * __pyx_v_n_dot));
 
-    /* "algorithms/ray_tracing.py":279
+    /* "openptv2/algorithms/ray_tracing.py":279
  *         n_dot = start_dir_x * glass_dir_x + start_dir_y * glass_dir_y + start_dir_z * glass_dir_z
  *         bp_x = start_dir_x - glass_dir_x * n_dot
  *         bp_y = start_dir_y - glass_dir_y * n_dot             # <<<<<<<<<<<<<<
@@ -17858,7 +17858,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
 */
     __pyx_v_bp_y = (__pyx_v_start_dir_y - (__pyx_v_glass_dir_y * __pyx_v_n_dot));
 
-    /* "algorithms/ray_tracing.py":280
+    /* "openptv2/algorithms/ray_tracing.py":280
  *         bp_x = start_dir_x - glass_dir_x * n_dot
  *         bp_y = start_dir_y - glass_dir_y * n_dot
  *         bp_z = start_dir_z - glass_dir_z * n_dot             # <<<<<<<<<<<<<<
@@ -17867,7 +17867,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
 */
     __pyx_v_bp_z = (__pyx_v_start_dir_z - (__pyx_v_glass_dir_z * __pyx_v_n_dot));
 
-    /* "algorithms/ray_tracing.py":281
+    /* "openptv2/algorithms/ray_tracing.py":281
  *         bp_y = start_dir_y - glass_dir_y * n_dot
  *         bp_z = start_dir_z - glass_dir_z * n_dot
  *         norm_bp = c_sqrt(bp_x * bp_x + bp_y * bp_y + bp_z * bp_z)             # <<<<<<<<<<<<<<
@@ -17876,7 +17876,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
 */
     __pyx_v_norm_bp = sqrt((((__pyx_v_bp_x * __pyx_v_bp_x) + (__pyx_v_bp_y * __pyx_v_bp_y)) + (__pyx_v_bp_z * __pyx_v_bp_z)));
 
-    /* "algorithms/ray_tracing.py":282
+    /* "openptv2/algorithms/ray_tracing.py":282
  *         bp_z = start_dir_z - glass_dir_z * n_dot
  *         norm_bp = c_sqrt(bp_x * bp_x + bp_y * bp_y + bp_z * bp_z)
  *         if norm_bp > 0:             # <<<<<<<<<<<<<<
@@ -17886,7 +17886,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
     __pyx_t_19 = (__pyx_v_norm_bp > 0.0);
     if (__pyx_t_19) {
 
-      /* "algorithms/ray_tracing.py":283
+      /* "openptv2/algorithms/ray_tracing.py":283
  *         norm_bp = c_sqrt(bp_x * bp_x + bp_y * bp_y + bp_z * bp_z)
  *         if norm_bp > 0:
  *             bp_x /= norm_bp             # <<<<<<<<<<<<<<
@@ -17895,7 +17895,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
 */
       __pyx_v_bp_x = (__pyx_v_bp_x / __pyx_v_norm_bp);
 
-      /* "algorithms/ray_tracing.py":284
+      /* "openptv2/algorithms/ray_tracing.py":284
  *         if norm_bp > 0:
  *             bp_x /= norm_bp
  *             bp_y /= norm_bp             # <<<<<<<<<<<<<<
@@ -17904,7 +17904,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
 */
       __pyx_v_bp_y = (__pyx_v_bp_y / __pyx_v_norm_bp);
 
-      /* "algorithms/ray_tracing.py":285
+      /* "openptv2/algorithms/ray_tracing.py":285
  *             bp_x /= norm_bp
  *             bp_y /= norm_bp
  *             bp_z /= norm_bp             # <<<<<<<<<<<<<<
@@ -17913,7 +17913,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
 */
       __pyx_v_bp_z = (__pyx_v_bp_z / __pyx_v_norm_bp);
 
-      /* "algorithms/ray_tracing.py":282
+      /* "openptv2/algorithms/ray_tracing.py":282
  *         bp_z = start_dir_z - glass_dir_z * n_dot
  *         norm_bp = c_sqrt(bp_x * bp_x + bp_y * bp_y + bp_z * bp_z)
  *         if norm_bp > 0:             # <<<<<<<<<<<<<<
@@ -17922,7 +17922,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
 */
     }
 
-    /* "algorithms/ray_tracing.py":288
+    /* "openptv2/algorithms/ray_tracing.py":288
  * 
  *         # Transform direction inside glass using Snell's law
  *         p = c_sqrt(1.0 - n_dot * n_dot) * mm_n1 / mm_n2_0  # glass parallel             # <<<<<<<<<<<<<<
@@ -17931,7 +17931,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
 */
     __pyx_v_p = ((sqrt((1.0 - (__pyx_v_n_dot * __pyx_v_n_dot))) * __pyx_v_mm_n1) / __pyx_v_mm_n2_0);
 
-    /* "algorithms/ray_tracing.py":289
+    /* "openptv2/algorithms/ray_tracing.py":289
  *         # Transform direction inside glass using Snell's law
  *         p = c_sqrt(1.0 - n_dot * n_dot) * mm_n1 / mm_n2_0  # glass parallel
  *         n_glass = -c_sqrt(1.0 - p * p)  # glass normal             # <<<<<<<<<<<<<<
@@ -17940,7 +17940,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
 */
     __pyx_v_n_glass = (-sqrt((1.0 - (__pyx_v_p * __pyx_v_p))));
 
-    /* "algorithms/ray_tracing.py":292
+    /* "openptv2/algorithms/ray_tracing.py":292
  * 
  *         # Propagation length in glass
  *         a2_x = bp_x * p + glass_dir_x * n_glass             # <<<<<<<<<<<<<<
@@ -17949,7 +17949,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
 */
     __pyx_v_a2_x = ((__pyx_v_bp_x * __pyx_v_p) + (__pyx_v_glass_dir_x * __pyx_v_n_glass));
 
-    /* "algorithms/ray_tracing.py":293
+    /* "openptv2/algorithms/ray_tracing.py":293
  *         # Propagation length in glass
  *         a2_x = bp_x * p + glass_dir_x * n_glass
  *         a2_y = bp_y * p + glass_dir_y * n_glass             # <<<<<<<<<<<<<<
@@ -17958,7 +17958,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
 */
     __pyx_v_a2_y = ((__pyx_v_bp_y * __pyx_v_p) + (__pyx_v_glass_dir_y * __pyx_v_n_glass));
 
-    /* "algorithms/ray_tracing.py":294
+    /* "openptv2/algorithms/ray_tracing.py":294
  *         a2_x = bp_x * p + glass_dir_x * n_glass
  *         a2_y = bp_y * p + glass_dir_y * n_glass
  *         a2_z = bp_z * p + glass_dir_z * n_glass             # <<<<<<<<<<<<<<
@@ -17967,7 +17967,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
 */
     __pyx_v_a2_z = ((__pyx_v_bp_z * __pyx_v_p) + (__pyx_v_glass_dir_z * __pyx_v_n_glass));
 
-    /* "algorithms/ray_tracing.py":296
+    /* "openptv2/algorithms/ray_tracing.py":296
  *         a2_z = bp_z * p + glass_dir_z * n_glass
  * 
  *         dot_glass_a2 = glass_dir_x * a2_x + glass_dir_y * a2_y + glass_dir_z * a2_z             # <<<<<<<<<<<<<<
@@ -17976,7 +17976,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
 */
     __pyx_v_dot_glass_a2 = (((__pyx_v_glass_dir_x * __pyx_v_a2_x) + (__pyx_v_glass_dir_y * __pyx_v_a2_y)) + (__pyx_v_glass_dir_z * __pyx_v_a2_z));
 
-    /* "algorithms/ray_tracing.py":297
+    /* "openptv2/algorithms/ray_tracing.py":297
  * 
  *         dot_glass_a2 = glass_dir_x * a2_x + glass_dir_y * a2_y + glass_dir_z * a2_z
  *         d2 = mm_d0 / abs(dot_glass_a2)             # <<<<<<<<<<<<<<
@@ -17986,7 +17986,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
     __pyx_t_9 = fabs(__pyx_v_dot_glass_a2); 
     __pyx_v_d2 = (__pyx_v_mm_d0 / __pyx_t_9);
 
-    /* "algorithms/ray_tracing.py":300
+    /* "openptv2/algorithms/ray_tracing.py":300
  * 
  *         # Point X on horizontal plane between n2, n3
  *         X_x = Xb_x + a2_x * d2             # <<<<<<<<<<<<<<
@@ -17995,7 +17995,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
 */
     __pyx_v_X_x = (__pyx_v_Xb_x + (__pyx_v_a2_x * __pyx_v_d2));
 
-    /* "algorithms/ray_tracing.py":301
+    /* "openptv2/algorithms/ray_tracing.py":301
  *         # Point X on horizontal plane between n2, n3
  *         X_x = Xb_x + a2_x * d2
  *         X_y = Xb_y + a2_y * d2             # <<<<<<<<<<<<<<
@@ -18004,7 +18004,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
 */
     __pyx_v_X_y = (__pyx_v_Xb_y + (__pyx_v_a2_y * __pyx_v_d2));
 
-    /* "algorithms/ray_tracing.py":302
+    /* "openptv2/algorithms/ray_tracing.py":302
  *         X_x = Xb_x + a2_x * d2
  *         X_y = Xb_y + a2_y * d2
  *         X_z = Xb_z + a2_z * d2             # <<<<<<<<<<<<<<
@@ -18013,7 +18013,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
 */
     __pyx_v_X_z = (__pyx_v_Xb_z + (__pyx_v_a2_z * __pyx_v_d2));
 
-    /* "algorithms/ray_tracing.py":305
+    /* "openptv2/algorithms/ray_tracing.py":305
  * 
  *         # Direction in next medium
  *         n_a2 = a2_x * glass_dir_x + a2_y * glass_dir_y + a2_z * glass_dir_z             # <<<<<<<<<<<<<<
@@ -18022,7 +18022,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
 */
     __pyx_v_n_a2 = (((__pyx_v_a2_x * __pyx_v_glass_dir_x) + (__pyx_v_a2_y * __pyx_v_glass_dir_y)) + (__pyx_v_a2_z * __pyx_v_glass_dir_z));
 
-    /* "algorithms/ray_tracing.py":306
+    /* "openptv2/algorithms/ray_tracing.py":306
  *         # Direction in next medium
  *         n_a2 = a2_x * glass_dir_x + a2_y * glass_dir_y + a2_z * glass_dir_z
  *         bp_x = a2_x - glass_dir_x * n_glass             # <<<<<<<<<<<<<<
@@ -18031,7 +18031,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
 */
     __pyx_v_bp_x = (__pyx_v_a2_x - (__pyx_v_glass_dir_x * __pyx_v_n_glass));
 
-    /* "algorithms/ray_tracing.py":307
+    /* "openptv2/algorithms/ray_tracing.py":307
  *         n_a2 = a2_x * glass_dir_x + a2_y * glass_dir_y + a2_z * glass_dir_z
  *         bp_x = a2_x - glass_dir_x * n_glass
  *         bp_y = a2_y - glass_dir_y * n_glass             # <<<<<<<<<<<<<<
@@ -18040,7 +18040,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
 */
     __pyx_v_bp_y = (__pyx_v_a2_y - (__pyx_v_glass_dir_y * __pyx_v_n_glass));
 
-    /* "algorithms/ray_tracing.py":308
+    /* "openptv2/algorithms/ray_tracing.py":308
  *         bp_x = a2_x - glass_dir_x * n_glass
  *         bp_y = a2_y - glass_dir_y * n_glass
  *         bp_z = a2_z - glass_dir_z * n_glass             # <<<<<<<<<<<<<<
@@ -18049,7 +18049,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
 */
     __pyx_v_bp_z = (__pyx_v_a2_z - (__pyx_v_glass_dir_z * __pyx_v_n_glass));
 
-    /* "algorithms/ray_tracing.py":309
+    /* "openptv2/algorithms/ray_tracing.py":309
  *         bp_y = a2_y - glass_dir_y * n_glass
  *         bp_z = a2_z - glass_dir_z * n_glass
  *         norm_bp = c_sqrt(bp_x * bp_x + bp_y * bp_y + bp_z * bp_z)             # <<<<<<<<<<<<<<
@@ -18058,7 +18058,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
 */
     __pyx_v_norm_bp = sqrt((((__pyx_v_bp_x * __pyx_v_bp_x) + (__pyx_v_bp_y * __pyx_v_bp_y)) + (__pyx_v_bp_z * __pyx_v_bp_z)));
 
-    /* "algorithms/ray_tracing.py":310
+    /* "openptv2/algorithms/ray_tracing.py":310
  *         bp_z = a2_z - glass_dir_z * n_glass
  *         norm_bp = c_sqrt(bp_x * bp_x + bp_y * bp_y + bp_z * bp_z)
  *         if norm_bp > 0:             # <<<<<<<<<<<<<<
@@ -18068,7 +18068,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
     __pyx_t_19 = (__pyx_v_norm_bp > 0.0);
     if (__pyx_t_19) {
 
-      /* "algorithms/ray_tracing.py":311
+      /* "openptv2/algorithms/ray_tracing.py":311
  *         norm_bp = c_sqrt(bp_x * bp_x + bp_y * bp_y + bp_z * bp_z)
  *         if norm_bp > 0:
  *             bp_x /= norm_bp             # <<<<<<<<<<<<<<
@@ -18077,7 +18077,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
 */
       __pyx_v_bp_x = (__pyx_v_bp_x / __pyx_v_norm_bp);
 
-      /* "algorithms/ray_tracing.py":312
+      /* "openptv2/algorithms/ray_tracing.py":312
  *         if norm_bp > 0:
  *             bp_x /= norm_bp
  *             bp_y /= norm_bp             # <<<<<<<<<<<<<<
@@ -18086,7 +18086,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
 */
       __pyx_v_bp_y = (__pyx_v_bp_y / __pyx_v_norm_bp);
 
-      /* "algorithms/ray_tracing.py":313
+      /* "openptv2/algorithms/ray_tracing.py":313
  *             bp_x /= norm_bp
  *             bp_y /= norm_bp
  *             bp_z /= norm_bp             # <<<<<<<<<<<<<<
@@ -18095,7 +18095,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
 */
       __pyx_v_bp_z = (__pyx_v_bp_z / __pyx_v_norm_bp);
 
-      /* "algorithms/ray_tracing.py":310
+      /* "openptv2/algorithms/ray_tracing.py":310
  *         bp_z = a2_z - glass_dir_z * n_glass
  *         norm_bp = c_sqrt(bp_x * bp_x + bp_y * bp_y + bp_z * bp_z)
  *         if norm_bp > 0:             # <<<<<<<<<<<<<<
@@ -18104,7 +18104,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
 */
     }
 
-    /* "algorithms/ray_tracing.py":315
+    /* "openptv2/algorithms/ray_tracing.py":315
  *             bp_z /= norm_bp
  * 
  *         p = c_sqrt(1.0 - n_a2 * n_a2)             # <<<<<<<<<<<<<<
@@ -18113,7 +18113,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
 */
     __pyx_v_p = sqrt((1.0 - (__pyx_v_n_a2 * __pyx_v_n_a2)));
 
-    /* "algorithms/ray_tracing.py":316
+    /* "openptv2/algorithms/ray_tracing.py":316
  * 
  *         p = c_sqrt(1.0 - n_a2 * n_a2)
  *         p = p * mm_n2_0 / mm_n3             # <<<<<<<<<<<<<<
@@ -18122,7 +18122,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
 */
     __pyx_v_p = ((__pyx_v_p * __pyx_v_mm_n2_0) / __pyx_v_mm_n3);
 
-    /* "algorithms/ray_tracing.py":317
+    /* "openptv2/algorithms/ray_tracing.py":317
  *         p = c_sqrt(1.0 - n_a2 * n_a2)
  *         p = p * mm_n2_0 / mm_n3
  *         n_final = -c_sqrt(1.0 - p * p)             # <<<<<<<<<<<<<<
@@ -18131,7 +18131,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
 */
     __pyx_v_n_final = (-sqrt((1.0 - (__pyx_v_p * __pyx_v_p))));
 
-    /* "algorithms/ray_tracing.py":319
+    /* "openptv2/algorithms/ray_tracing.py":319
  *         n_final = -c_sqrt(1.0 - p * p)
  * 
  *         out_x = bp_x * p + glass_dir_x * n_final             # <<<<<<<<<<<<<<
@@ -18140,7 +18140,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
 */
     __pyx_v_out_x = ((__pyx_v_bp_x * __pyx_v_p) + (__pyx_v_glass_dir_x * __pyx_v_n_final));
 
-    /* "algorithms/ray_tracing.py":320
+    /* "openptv2/algorithms/ray_tracing.py":320
  * 
  *         out_x = bp_x * p + glass_dir_x * n_final
  *         out_y = bp_y * p + glass_dir_y * n_final             # <<<<<<<<<<<<<<
@@ -18149,7 +18149,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
 */
     __pyx_v_out_y = ((__pyx_v_bp_y * __pyx_v_p) + (__pyx_v_glass_dir_y * __pyx_v_n_final));
 
-    /* "algorithms/ray_tracing.py":321
+    /* "openptv2/algorithms/ray_tracing.py":321
  *         out_x = bp_x * p + glass_dir_x * n_final
  *         out_y = bp_y * p + glass_dir_y * n_final
  *         out_z = bp_z * p + glass_dir_z * n_final             # <<<<<<<<<<<<<<
@@ -18158,7 +18158,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
 */
     __pyx_v_out_z = ((__pyx_v_bp_z * __pyx_v_p) + (__pyx_v_glass_dir_z * __pyx_v_n_final));
 
-    /* "algorithms/ray_tracing.py":323
+    /* "openptv2/algorithms/ray_tracing.py":323
  *         out_z = bp_z * p + glass_dir_z * n_final
  * 
  *         pos_mv[i, 0] = X_x             # <<<<<<<<<<<<<<
@@ -18169,7 +18169,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
     __pyx_t_17 = 0;
     *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_pos_mv.data + __pyx_t_18 * __pyx_v_pos_mv.strides[0]) ) + __pyx_t_17 * __pyx_v_pos_mv.strides[1]) )) = __pyx_v_X_x;
 
-    /* "algorithms/ray_tracing.py":324
+    /* "openptv2/algorithms/ray_tracing.py":324
  * 
  *         pos_mv[i, 0] = X_x
  *         pos_mv[i, 1] = X_y             # <<<<<<<<<<<<<<
@@ -18180,7 +18180,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
     __pyx_t_18 = 1;
     *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_pos_mv.data + __pyx_t_17 * __pyx_v_pos_mv.strides[0]) ) + __pyx_t_18 * __pyx_v_pos_mv.strides[1]) )) = __pyx_v_X_y;
 
-    /* "algorithms/ray_tracing.py":325
+    /* "openptv2/algorithms/ray_tracing.py":325
  *         pos_mv[i, 0] = X_x
  *         pos_mv[i, 1] = X_y
  *         pos_mv[i, 2] = X_z             # <<<<<<<<<<<<<<
@@ -18191,7 +18191,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
     __pyx_t_17 = 2;
     *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_pos_mv.data + __pyx_t_18 * __pyx_v_pos_mv.strides[0]) ) + __pyx_t_17 * __pyx_v_pos_mv.strides[1]) )) = __pyx_v_X_z;
 
-    /* "algorithms/ray_tracing.py":327
+    /* "openptv2/algorithms/ray_tracing.py":327
  *         pos_mv[i, 2] = X_z
  * 
  *         dir_mv[i, 0] = out_x             # <<<<<<<<<<<<<<
@@ -18202,7 +18202,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
     __pyx_t_18 = 0;
     *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_dir_mv.data + __pyx_t_17 * __pyx_v_dir_mv.strides[0]) ) + __pyx_t_18 * __pyx_v_dir_mv.strides[1]) )) = __pyx_v_out_x;
 
-    /* "algorithms/ray_tracing.py":328
+    /* "openptv2/algorithms/ray_tracing.py":328
  * 
  *         dir_mv[i, 0] = out_x
  *         dir_mv[i, 1] = out_y             # <<<<<<<<<<<<<<
@@ -18213,7 +18213,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
     __pyx_t_17 = 1;
     *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_dir_mv.data + __pyx_t_18 * __pyx_v_dir_mv.strides[0]) ) + __pyx_t_17 * __pyx_v_dir_mv.strides[1]) )) = __pyx_v_out_y;
 
-    /* "algorithms/ray_tracing.py":329
+    /* "openptv2/algorithms/ray_tracing.py":329
  *         dir_mv[i, 0] = out_x
  *         dir_mv[i, 1] = out_y
  *         dir_mv[i, 2] = out_z             # <<<<<<<<<<<<<<
@@ -18225,7 +18225,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
     *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_dir_mv.data + __pyx_t_17 * __pyx_v_dir_mv.strides[0]) ) + __pyx_t_18 * __pyx_v_dir_mv.strides[1]) )) = __pyx_v_out_z;
   }
 
-  /* "algorithms/ray_tracing.py":331
+  /* "openptv2/algorithms/ray_tracing.py":331
  *         dir_mv[i, 2] = out_z
  * 
  *     return positions, directions             # <<<<<<<<<<<<<<
@@ -18245,7 +18245,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/ray_tracing.py":173
+  /* "openptv2/algorithms/ray_tracing.py":173
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -18262,7 +18262,7 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
   __Pyx_XDECREF(__pyx_t_5);
   __PYX_XCLEAR_MEMVIEW(&__pyx_t_7, 1);
   __Pyx_XDECREF(__pyx_t_8);
-  __Pyx_AddTraceback("algorithms.ray_tracing.ray_tracing_batch", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.ray_tracing.ray_tracing_batch", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __PYX_XCLEAR_MEMVIEW(&__pyx_v_xy_mv, 1);
@@ -18277,16 +18277,16 @@ static PyObject *__pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(PyObject *
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_11ray_tracing_5ray_tracing_batch(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_11ray_tracing_5ray_tracing_batch(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_11ray_tracing_4ray_tracing_batch, "Trace N rays through multi-media interface.\n\n    Args:\n        xy: (N, 2) array of metric image coordinates.\n        cal: Calibration object.\n        mm: MmNp multimedia parameters.\n\n    Returns:\n        (positions, directions) \342\200\224 each (N, 3) float64 arrays.\n    ");
-static PyMethodDef __pyx_mdef_10algorithms_11ray_tracing_5ray_tracing_batch = {"ray_tracing_batch", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_11ray_tracing_5ray_tracing_batch, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_11ray_tracing_4ray_tracing_batch};
-static PyObject *__pyx_pw_10algorithms_11ray_tracing_5ray_tracing_batch(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_11ray_tracing_4ray_tracing_batch, "Trace N rays through multi-media interface.\n\n    Args:\n        xy: (N, 2) array of metric image coordinates.\n        cal: Calibration object.\n        mm: MmNp multimedia parameters.\n\n    Returns:\n        (positions, directions) \342\200\224 each (N, 3) float64 arrays.\n    ");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_11ray_tracing_5ray_tracing_batch = {"ray_tracing_batch", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_11ray_tracing_5ray_tracing_batch, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_11ray_tracing_4ray_tracing_batch};
+static PyObject *__pyx_pw_8openptv2_10algorithms_11ray_tracing_5ray_tracing_batch(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -18364,11 +18364,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.ray_tracing.ray_tracing_batch", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.ray_tracing.ray_tracing_batch", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_11ray_tracing_4ray_tracing_batch(__pyx_self, __pyx_v_xy, __pyx_v_cal, __pyx_v_mm);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_11ray_tracing_4ray_tracing_batch(__pyx_self, __pyx_v_xy, __pyx_v_cal, __pyx_v_mm);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -18378,7 +18378,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_11ray_tracing_4ray_tracing_batch(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_xy, PyObject *__pyx_v_cal, PyObject *__pyx_v_mm) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_11ray_tracing_4ray_tracing_batch(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_xy, PyObject *__pyx_v_cal, PyObject *__pyx_v_mm) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -18387,7 +18387,7 @@ static PyObject *__pyx_pf_10algorithms_11ray_tracing_4ray_tracing_batch(CYTHON_U
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("ray_tracing_batch", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_11ray_tracing_ray_tracing_batch(__pyx_v_xy, __pyx_v_cal, __pyx_v_mm, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 173, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_11ray_tracing_ray_tracing_batch(__pyx_v_xy, __pyx_v_cal, __pyx_v_mm, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 173, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -18396,7 +18396,7 @@ static PyObject *__pyx_pf_10algorithms_11ray_tracing_4ray_tracing_batch(CYTHON_U
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.ray_tracing.ray_tracing_batch", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.ray_tracing.ray_tracing_batch", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -18404,7 +18404,7 @@ static PyObject *__pyx_pf_10algorithms_11ray_tracing_4ray_tracing_batch(CYTHON_U
   return __pyx_r;
 }
 
-/* "algorithms/ray_tracing.py":334
+/* "openptv2/algorithms/ray_tracing.py":334
  * 
  * 
  * def is_compiled() -> bool:             # <<<<<<<<<<<<<<
@@ -18413,28 +18413,28 @@ static PyObject *__pyx_pf_10algorithms_11ray_tracing_4ray_tracing_batch(CYTHON_U
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_11ray_tracing_7is_compiled(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_11ray_tracing_6is_compiled, "Return whether this module is compiled to C.");
-static PyMethodDef __pyx_mdef_10algorithms_11ray_tracing_7is_compiled = {"is_compiled", (PyCFunction)__pyx_pw_10algorithms_11ray_tracing_7is_compiled, METH_NOARGS, __pyx_doc_10algorithms_11ray_tracing_6is_compiled};
-static PyObject *__pyx_pw_10algorithms_11ray_tracing_7is_compiled(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_8openptv2_10algorithms_11ray_tracing_7is_compiled(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_11ray_tracing_6is_compiled, "Return whether this module is compiled to C.");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_11ray_tracing_7is_compiled = {"is_compiled", (PyCFunction)__pyx_pw_8openptv2_10algorithms_11ray_tracing_7is_compiled, METH_NOARGS, __pyx_doc_8openptv2_10algorithms_11ray_tracing_6is_compiled};
+static PyObject *__pyx_pw_8openptv2_10algorithms_11ray_tracing_7is_compiled(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused) {
   CYTHON_UNUSED PyObject *const *__pyx_kwvalues;
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("is_compiled (wrapper)", 0);
   __pyx_kwvalues = __Pyx_KwValues_VARARGS(__pyx_args, __pyx_nargs);
-  __pyx_r = __pyx_pf_10algorithms_11ray_tracing_6is_compiled(__pyx_self);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_11ray_tracing_6is_compiled(__pyx_self);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_11ray_tracing_6is_compiled(CYTHON_UNUSED PyObject *__pyx_self) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_11ray_tracing_6is_compiled(CYTHON_UNUSED PyObject *__pyx_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("is_compiled", 0);
 
-  /* "algorithms/ray_tracing.py":336
+  /* "openptv2/algorithms/ray_tracing.py":336
  * def is_compiled() -> bool:
  *     """Return whether this module is compiled to C."""
  *     return cython.compiled             # <<<<<<<<<<<<<<
@@ -18444,7 +18444,7 @@ static PyObject *__pyx_pf_10algorithms_11ray_tracing_6is_compiled(CYTHON_UNUSED 
   __pyx_r = Py_True;
   goto __pyx_L0;
 
-  /* "algorithms/ray_tracing.py":334
+  /* "openptv2/algorithms/ray_tracing.py":334
  * 
  * 
  * def is_compiled() -> bool:             # <<<<<<<<<<<<<<
@@ -18585,7 +18585,7 @@ static PyType_Slot __pyx_type___pyx_array_slots[] = {
   {0, 0},
 };
 static PyType_Spec __pyx_type___pyx_array_spec = {
-  "algorithms.ray_tracing.array",
+  "openptv2.algorithms.ray_tracing.array",
   sizeof(struct __pyx_array_obj),
   0,
   Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_BASETYPE|Py_TPFLAGS_SEQUENCE,
@@ -18619,7 +18619,7 @@ static PyBufferProcs __pyx_tp_as_buffer_array = {
 
 static PyTypeObject __pyx_type___pyx_array = {
   PyVarObject_HEAD_INIT(0, 0)
-  "algorithms.ray_tracing.""array", /*tp_name*/
+  "openptv2.algorithms.ray_tracing.""array", /*tp_name*/
   sizeof(struct __pyx_array_obj), /*tp_basicsize*/
   0, /*tp_itemsize*/
   __pyx_tp_dealloc_array, /*tp_dealloc*/
@@ -18764,7 +18764,7 @@ static PyType_Slot __pyx_type___pyx_MemviewEnum_slots[] = {
   {0, 0},
 };
 static PyType_Spec __pyx_type___pyx_MemviewEnum_spec = {
-  "algorithms.ray_tracing.Enum",
+  "openptv2.algorithms.ray_tracing.Enum",
   sizeof(struct __pyx_MemviewEnum_obj),
   0,
   Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_BASETYPE|Py_TPFLAGS_HAVE_GC,
@@ -18774,7 +18774,7 @@ static PyType_Spec __pyx_type___pyx_MemviewEnum_spec = {
 
 static PyTypeObject __pyx_type___pyx_MemviewEnum = {
   PyVarObject_HEAD_INIT(0, 0)
-  "algorithms.ray_tracing.""Enum", /*tp_name*/
+  "openptv2.algorithms.ray_tracing.""Enum", /*tp_name*/
   sizeof(struct __pyx_MemviewEnum_obj), /*tp_basicsize*/
   0, /*tp_itemsize*/
   __pyx_tp_dealloc_Enum, /*tp_dealloc*/
@@ -19041,7 +19041,7 @@ static PyType_Slot __pyx_type___pyx_memoryview_slots[] = {
   {0, 0},
 };
 static PyType_Spec __pyx_type___pyx_memoryview_spec = {
-  "algorithms.ray_tracing.memoryview",
+  "openptv2.algorithms.ray_tracing.memoryview",
   sizeof(struct __pyx_memoryview_obj),
   0,
   Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_BASETYPE|Py_TPFLAGS_HAVE_GC,
@@ -19075,7 +19075,7 @@ static PyBufferProcs __pyx_tp_as_buffer_memoryview = {
 
 static PyTypeObject __pyx_type___pyx_memoryview = {
   PyVarObject_HEAD_INIT(0, 0)
-  "algorithms.ray_tracing.""memoryview", /*tp_name*/
+  "openptv2.algorithms.ray_tracing.""memoryview", /*tp_name*/
   sizeof(struct __pyx_memoryview_obj), /*tp_basicsize*/
   0, /*tp_itemsize*/
   __pyx_tp_dealloc_memoryview, /*tp_dealloc*/
@@ -19218,7 +19218,7 @@ static PyType_Slot __pyx_type___pyx_memoryviewslice_slots[] = {
   {0, 0},
 };
 static PyType_Spec __pyx_type___pyx_memoryviewslice_spec = {
-  "algorithms.ray_tracing._memoryviewslice",
+  "openptv2.algorithms.ray_tracing._memoryviewslice",
   sizeof(struct __pyx_memoryviewslice_obj),
   0,
   Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_BASETYPE|Py_TPFLAGS_HAVE_GC|Py_TPFLAGS_SEQUENCE,
@@ -19228,7 +19228,7 @@ static PyType_Spec __pyx_type___pyx_memoryviewslice_spec = {
 
 static PyTypeObject __pyx_type___pyx_memoryviewslice = {
   PyVarObject_HEAD_INIT(0, 0)
-  "algorithms.ray_tracing.""_memoryviewslice", /*tp_name*/
+  "openptv2.algorithms.ray_tracing.""_memoryviewslice", /*tp_name*/
   sizeof(struct __pyx_memoryviewslice_obj), /*tp_basicsize*/
   0, /*tp_itemsize*/
   __pyx_tp_dealloc__memoryviewslice, /*tp_dealloc*/
@@ -19776,13 +19776,13 @@ __Pyx_RefNannySetupContext("PyInit_ray_tracing", 0);
   if (__Pyx_InitConstants(__pyx_mstate) < (0)) __PYX_ERR(0, 1, __pyx_L1_error)
   stringtab_initialized = 1;
   if (__Pyx_InitGlobals() < (0)) __PYX_ERR(0, 1, __pyx_L1_error)
-  if (__pyx_module_is_main_algorithms__ray_tracing) {
+  if (__pyx_module_is_main_openptv2__algorithms__ray_tracing) {
     if (PyObject_SetAttr(__pyx_m, __pyx_mstate_global->__pyx_n_u_name_2, __pyx_mstate_global->__pyx_n_u_main) < (0)) __PYX_ERR(0, 1, __pyx_L1_error)
   }
   {
     PyObject *modules = PyImport_GetModuleDict(); if (unlikely(!modules)) __PYX_ERR(0, 1, __pyx_L1_error)
-    if (!PyDict_GetItemString(modules, "algorithms.ray_tracing")) {
-      if (unlikely((PyDict_SetItemString(modules, "algorithms.ray_tracing", __pyx_m) < 0))) __PYX_ERR(0, 1, __pyx_L1_error)
+    if (!PyDict_GetItemString(modules, "openptv2.algorithms.ray_tracing")) {
+      if (unlikely((PyDict_SetItemString(modules, "openptv2.algorithms.ray_tracing", __pyx_m) < 0))) __PYX_ERR(0, 1, __pyx_L1_error)
     }
   }
   /*--- Builtin init code ---*/
@@ -20291,7 +20291,7 @@ __Pyx_RefNannySetupContext("PyInit_ray_tracing", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_pyx_unpickle_Enum, __pyx_t_4) < (0)) __PYX_ERR(1, 4, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/ray_tracing.py":10
+  /* "openptv2/algorithms/ray_tracing.py":10
  * 
  * import cython
  * import numpy as np             # <<<<<<<<<<<<<<
@@ -20304,7 +20304,7 @@ __Pyx_RefNannySetupContext("PyInit_ray_tracing", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_np, __pyx_t_4) < (0)) __PYX_ERR(0, 10, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/ray_tracing.py":18
+  /* "openptv2/algorithms/ray_tracing.py":18
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -20329,7 +20329,7 @@ __Pyx_RefNannySetupContext("PyInit_ray_tracing", 0);
   if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_mm_d0, __pyx_mstate_global->__pyx_kp_u_cython_double) < (0)) __PYX_ERR(0, 18, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_pos, __pyx_mstate_global->__pyx_kp_u_cython_double_3) < (0)) __PYX_ERR(0, 18, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_out, __pyx_mstate_global->__pyx_kp_u_cython_double_3) < (0)) __PYX_ERR(0, 18, __pyx_L1_error)
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_11ray_tracing_1_ray_tracing_core, 0, __pyx_mstate_global->__pyx_n_u_ray_tracing_core, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_ray_tracing, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[0])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 18, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_11ray_tracing_1_ray_tracing_core, 0, __pyx_mstate_global->__pyx_n_u_ray_tracing_core, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_ray_tracing, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[0])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 18, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_5);
@@ -20339,7 +20339,7 @@ __Pyx_RefNannySetupContext("PyInit_ray_tracing", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_ray_tracing_core, __pyx_t_5) < (0)) __PYX_ERR(0, 18, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "algorithms/ray_tracing.py":123
+  /* "openptv2/algorithms/ray_tracing.py":123
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -20362,7 +20362,7 @@ __Pyx_RefNannySetupContext("PyInit_ray_tracing", 0);
   if (PyDict_SetItem(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_mm_n2_0, __pyx_mstate_global->__pyx_kp_u_cython_double) < (0)) __PYX_ERR(0, 123, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_mm_n3, __pyx_mstate_global->__pyx_kp_u_cython_double) < (0)) __PYX_ERR(0, 123, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_mm_d0, __pyx_mstate_global->__pyx_kp_u_cython_double) < (0)) __PYX_ERR(0, 123, __pyx_L1_error)
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_11ray_tracing_3ray_tracing, 0, __pyx_mstate_global->__pyx_n_u_ray_tracing, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_ray_tracing, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[1])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 123, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_11ray_tracing_3ray_tracing, 0, __pyx_mstate_global->__pyx_n_u_ray_tracing, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_ray_tracing, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[1])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 123, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
@@ -20372,14 +20372,14 @@ __Pyx_RefNannySetupContext("PyInit_ray_tracing", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_ray_tracing, __pyx_t_4) < (0)) __PYX_ERR(0, 123, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/ray_tracing.py":173
+  /* "openptv2/algorithms/ray_tracing.py":173
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * @cython.boundscheck(False)
  * @cython.wraparound(False)
 */
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_11ray_tracing_5ray_tracing_batch, 0, __pyx_mstate_global->__pyx_n_u_ray_tracing_batch, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_ray_tracing, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[2])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 173, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_11ray_tracing_5ray_tracing_batch, 0, __pyx_mstate_global->__pyx_n_u_ray_tracing_batch, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_ray_tracing, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[2])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 173, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
@@ -20387,7 +20387,7 @@ __Pyx_RefNannySetupContext("PyInit_ray_tracing", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_ray_tracing_batch, __pyx_t_4) < (0)) __PYX_ERR(0, 173, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/ray_tracing.py":334
+  /* "openptv2/algorithms/ray_tracing.py":334
  * 
  * 
  * def is_compiled() -> bool:             # <<<<<<<<<<<<<<
@@ -20397,7 +20397,7 @@ __Pyx_RefNannySetupContext("PyInit_ray_tracing", 0);
   __pyx_t_4 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 334, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_return, __pyx_mstate_global->__pyx_n_u_bool) < (0)) __PYX_ERR(0, 334, __pyx_L1_error)
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_11ray_tracing_7is_compiled, 0, __pyx_mstate_global->__pyx_n_u_is_compiled, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_ray_tracing, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[3])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 334, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_11ray_tracing_7is_compiled, 0, __pyx_mstate_global->__pyx_n_u_is_compiled, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_ray_tracing, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[3])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 334, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_5);
@@ -20407,7 +20407,7 @@ __Pyx_RefNannySetupContext("PyInit_ray_tracing", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_is_compiled, __pyx_t_5) < (0)) __PYX_ERR(0, 334, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "algorithms/ray_tracing.py":1
+  /* "openptv2/algorithms/ray_tracing.py":1
  * """Ray tracing through multi-media interfaces.             # <<<<<<<<<<<<<<
  * 
  * Translation of lib/src/ray_tracing.c and lib/include/ray_tracing.h.
@@ -20425,7 +20425,7 @@ __Pyx_RefNannySetupContext("PyInit_ray_tracing", 0);
   __Pyx_XDECREF(__pyx_t_5);
   if (__pyx_m) {
     if (__pyx_mstate->__pyx_d && stringtab_initialized) {
-      __Pyx_AddTraceback("init algorithms.ray_tracing", __pyx_clineno, __pyx_lineno, __pyx_filename);
+      __Pyx_AddTraceback("init openptv2.algorithms.ray_tracing", __pyx_clineno, __pyx_lineno, __pyx_filename);
     }
     #if !CYTHON_USE_MODULE_STATE
     Py_CLEAR(__pyx_m);
@@ -20439,7 +20439,7 @@ __Pyx_RefNannySetupContext("PyInit_ray_tracing", 0);
     }
     #endif
   } else if (!PyErr_Occurred()) {
-    PyErr_SetString(PyExc_ImportError, "init algorithms.ray_tracing");
+    PyErr_SetString(PyExc_ImportError, "init openptv2.algorithms.ray_tracing");
   }
   __pyx_L0:;
   __Pyx_RefNannyFinishContext();
@@ -20558,25 +20558,25 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
 static int __Pyx_InitConstants(__pyx_mstatetype *__pyx_mstate) {
   CYTHON_UNUSED_VAR(__pyx_mstate);
   {
-    const struct { const unsigned int length: 11; } index[] = {{2},{35},{54},{37},{60},{24},{52},{26},{34},{33},{45},{22},{15},{179},{37},{32},{1},{1},{1},{1},{1},{8},{25},{5},{6},{15},{23},{25},{13},{19},{16},{7},{6},{2},{6},{35},{9},{30},{50},{8},{20},{32},{22},{30},{37},{5},{8},{20},{8},{15},{3},{22},{15},{17},{18},{4},{4},{1},{3},{2},{9},{17},{18},{5},{1},{8},{2},{5},{15},{5},{6},{9},{5},{6},{7},{6},{6},{6},{5},{7},{6},{7},{8},{12},{9},{11},{11},{11},{2},{10},{5},{6},{7},{11},{13},{5},{8},{8},{7},{2},{5},{5},{7},{5},{4},{10},{2},{2},{2},{4},{8},{4},{7},{2},{5},{3},{3},{4},{3},{3},{14},{11},{10},{19},{14},{12},{11},{17},{17},{10},{17},{13},{8},{6},{12},{10},{12},{19},{5},{4},{5},{4},{4},{6},{8},{6},{6},{6},{5},{5},{5},{1},{2},{2},{1},{2},{2},{1197},{128},{10},{1019},{1}};
-    #if (CYTHON_COMPRESS_STRINGS) == 2 /* compression: bz2 (2290 bytes) */
-const char* const cstring = "BZh91AY&SY<\230\244\020\000\001\360\177\377\377\377\377\376\377\347\377\337\277w\377\377\377\377\377\374@@@@@@@@@@@@@\000@\000`\010\257\201\317o\025,o]\315f\000\322\206\270\016\234\\\356\022E\020B\014\217I\221\223Fjg\243)\250\3102hh=L\215\001\221\220=M=A\220d\001\211\345='\222\032\014\221O@\020\332\214\201\241\033T\332\214\324\364\230@\320\000\000\000\001\240\000h\000h\001\220\"\247\3510\232\024\362\200\032d\000\001\243#M\031\000\003 z\201\243#CM\006 \000\302\000\003M\004\210\310G\252i\352h\323\324\332\203\023jm \321\240h\032\000\000\000\000\000\000\000\320\001\006\000\t\200\000\230&\000\000\000\000\t\200L\0040\000\004`\000\000$P\004L\204\301\002\247\342d\247\251\372\221\214\243M4d\323\3244\000\000\000\320\000\320h\017P\311\221\265=F\222b\016+\026\354\203\371\357\250,\353\002\262\266\355YE\243r\024Z\201\341\200\334\201\023R\204S\002\312\305\275\302a0\232\212\361\237\370hcM\246\306\322\006\322COp\226)b\254\212\337\310\010\236\211\227\271\310\004\251\204\2056&4\220\332\0073\016e\"h9\267\363\222\024cPc\210\004\002\270-A\253\240T/Qt\210`_\250\224R\032b\210\324\305\204\244@\300\303a\020\202\204j\022\200k\002`M-\206R\356\212\220S[\226b\307C\327\225\205Z\221\"X0V\2619\317Y$\233I\251\300[XI,\224\002\237\303\305\353\220\366=\236\375\217l\344\031\262\321\272'\223\007\242UXT>\331@\210\266pFZ\313\217\231\025Yd.\004P\245@\202\356\006\037\325\3659g\264\331\314b\254\004\240\312\340\243\004\022\034\202\310\027\345\244\270\026XIA-(p|\223P\264\002\263\211\251b\254\310&\211\241\3544\323\321\373\225Z\233\301.(\324\"\013\267o(\214\205g\340$\225J\204\220\246\250\216\320\262;|\354L,\316\250\212\001\201\206\030L1y\200R\277\207Nh\200\210\323\n\027p\327U2\3411\305\2518\207.\375\344\236x\326\340\310C]yH\333\317\353\307C\030\306>$\022\031\256\005\313l\255\300\262f%\204\006\026\000/:]\027\336y\323\247\325\355\2608\003\206\027z6\334+\214bxzueE\250Q@\021\230\314\020\n\303\277\235P\036\3145]\\\252\202\261\300p$\246\021\201\006\233\216Y\310\010\222KB\240\252\277\225\350h\030b\200\007\213\3063u\374:""\215\311hl-\020F\302\306)\357+\"\241O\235\224\242\250\213\005\235\372\257\353\307\326\217\232\0235\300\031\304\263\341\020\216q\206\323!\223\031\n\356\221 \230XVAmZ\260[\377f\204x1\305b\254\252\270\212\316f\254\354\210\344^\241\277\314u\275WO\272\361\370>\004*?\"\264\204(j\300\\%\361H\350\004\251\205\241\027\361\372\334\000y\343\237A\321\031\261\230!\274\343bq\033q\217<\244\314\254@{\323\253\002g5\344\263)\026F\321\332)J\320`g\270\223+\220\246\225\2342PH2\"\014\230\225A\271 \n\346\213\250\031Yd\206V\201 \221pT)\372\340\313'D\264\2414\030\316\t\241\372\030C\331\277\267d\366\370\212x\314N_S\305-!\313\347\353,\004\003\320\214\203Z\236\375\257u7Sh\025\347w)\340L\340\316\032\341;\\\022\257 \307-\376r\320bc%\031<\222C\032[\271jX\355s{70\351;\233\302!\021\266\251\251Q\347\220\263\005\212\r\010\317\320>\017gO/s\233H\234Zo\006\265\332\300-\333lY\010\266.T\201\031\212\020\2471+HY\264\213\024k,BH\210ZP\245\030\034\255\334\342\227\000\240\365L\244\266\000\205\252\027Y_\"kbH^b\302\260\254\312P\202\205\010\246\273\206\264\220\370\304\007\255\212.X\307\341Yc\210\246\333\023y\222\334>\0259\350\233r-9i%Xw\234j\336\271\314\223%|E\242K\334caXa\030,\364%J\302R\002\206\224f(h\202\320\226\006\200(\240\032,Q\201\225\000I\316e\365CK\002\226\306\330\2006\230\252\252\357KQ\323\224\210\225\231t\227\320A:\\\037\227k'4R\306q\006\236\034\246b\032\0057\344\200q\261V[i\355\000\240f\231\201\250\3465*\276<\211(\021\214\3703\030\r=\272\316\247\270\032\203H\226\315\236\016\314\373=\236\275\262;\260E\017\013lny\344\037\ta\323<Z\344\340\253\2721l3\221\225\366\013\221\231\023m\323\001\023,\245k\223\227{\216q\2775-\360\312\023q]\375'\224\254\364\233\020\327:\322S\273#P2=\355\267\027\300|7\303\026\252d\313\316\377*A\242J\027/\r\352\375\001\321\320\272\215+\336\347S\014I-\2349s\016dJ\241Y\327\267\304\341\356\271K\377\2142K=\034#\227|\200k)\252\260lp\227<c!]j~\234e=\221\203\304\366\3603\277+\234\274\247\200\027'\346\300(\370\231&\006*\210\264\371\3066\312TtW\n\330\234\202[\037V$\270\035\201\213\013\347\221""\226qU:\2375\026\022\330\357.8h\202P\217\323 \246\216\275Zi\3269\341\312J%\010\031\245\005-\003ca\357\336\275KE\367\206'\237\345\351\276\345\252\270\362&v\262\024\327\031\307\025\352\032\331\345\207o\021f\031\246\312\r|v\002d\214\224\342\246vh\331\270E\002#-\003\022\356\331]\246\270\3205\314\177\236\346\235nEy\216\203h\211\233\007*S\234\320-\020\363$I\360\354\254J\005T\002\024\202]!\255\034B\330\215\241\337G\005\306\270\316}\306\261\231*\332\305:\270\223#\334\n\262|\025\nH\006x\252\006B\304\206\223\r4\272vFz\000\273ah\213\300C3*\314k\177M2\014\353u\267(\2717\250\234\\Mt\014#\317\272R\273\204\332]oK\255\241\267e.\340\325\255\347Q\030J\225\202\213\023\266\021,E\253\332/l\311\232\220\316\350\030\206Y\224\276N\300a<\005\240\224\205\332\360\255\225)\r\244-\312B\033u\370\361 \250\027r\323\332{L\226\262\332W\207\336w\264f>\220\347\350\273\2209\350ZN\021\2061bx\240K\251u\306Z\0138\031\261\301\001\001\300\211\031S yhF\332\224x\r\004>$\274\263\000\352\350\2637\276\242\370\375*Hb\244\366\306\332\246/S\261*\331^b-\356\270\022\356n\323\223\210S\027\246,\205\325Kj\240T\240*\217WU\200\364*\315\352}7\031\014\231\276\002\325\307\326\201x\251\266y|NK^b\030aXp\0312\311\2743I\340\375\215%\362 $\025\354\003\005}CB\2271B\211}\037\250\254\323I\376\347\267@w\353a(Q\251*\316\020w\226\316\311\310\321\224\025E\206\032f\324\324\325\177i\314v\037\r>[\257\211\260\321'j\365\310\010\341r\214Q\260\300\321\237\253a\206 L\23417TP&Q,\2016M`\202\307\233l\211i3\320R<\n~\322\216\311\226\350\351F\304s$\216\233\030\252\006|\374\360\211f3r\\\313M\312L\214\022\200Q\327X\020\246cbS\211\272p\3535\035\025Kv\006oIG\206?|\3722\2312\325\t\002\370\220O1\031h@S}/\356\222\361\005/\203|\246T\367i\010\225%\033\270F\352\212\242g\003>\252u\3321\026\366\323\321\242\243\202D\301@7Tf,\r\022\312\240\350\236\2140e\203\2321[\236.0\315\375W\367\374\345\200\345\360\027\347%S\201b\342\0011\262N\364\252Y\206\272(LsyB\321\315\024\200\264\0062\227\025\2635m\342Bl\035,\265\035\301\267n\335\255ad\214\002\320\263\242\226\214\242\261""\317*\034\226\211\r:\225D\206K\351|4\324\334\233\342\355\321\2652\021sD\317Cj\231\3063&d\206\363EJ\rH\316Y\3164\354\214E7\177Ie\033\342]\322\"\236\024\224\333\027\307@+\351\205l\202\252\326G\270\306\013\271\330T\242\254\376w\206\205;\\=\206X\241\246\344^\025\035\024`5\017 \303\32611\365~\275\256g\214r\321\214)\0042\211\2220\362X\251@d\212J\2269\274\217\325:\310d~0\t\n\3008\200\034;\322\266K-4\264\027\260\254\025XE1S@\221\022\263YQ\321\024\237\361w$S\205\t\003\311\212A\000";
-    PyObject *data = __Pyx_DecompressString(cstring, 2290, 2);
+    const struct { const unsigned int length: 11; } index[] = {{2},{35},{54},{37},{60},{24},{52},{26},{34},{33},{45},{22},{15},{179},{37},{32},{1},{1},{1},{1},{1},{8},{5},{6},{15},{23},{25},{13},{19},{16},{7},{6},{2},{6},{35},{9},{30},{50},{8},{38},{20},{32},{22},{30},{37},{5},{8},{20},{8},{15},{3},{15},{17},{18},{4},{4},{1},{3},{2},{9},{17},{18},{5},{1},{8},{2},{5},{15},{5},{6},{9},{5},{6},{7},{6},{6},{6},{5},{7},{6},{7},{8},{12},{9},{11},{11},{11},{2},{10},{5},{6},{7},{11},{13},{5},{8},{8},{7},{2},{5},{5},{7},{5},{4},{10},{2},{2},{2},{4},{8},{4},{7},{2},{5},{3},{31},{3},{4},{3},{3},{14},{11},{10},{19},{14},{12},{11},{17},{17},{10},{17},{13},{8},{6},{12},{10},{12},{19},{5},{4},{5},{4},{4},{6},{8},{6},{6},{6},{5},{5},{5},{1},{2},{2},{1},{2},{2},{1197},{128},{10},{1019},{1}};
+    #if (CYTHON_COMPRESS_STRINGS) == 2 /* compression: bz2 (2301 bytes) */
+const char* const cstring = "BZh91AY&SY\001#\266\214\000\001\362\377\377\377\377\377\376\377\347\377\337\277w\377\377\377\377\377\374@@@@@@@@@@@@@\000@\000`\010\257\201\317o%;\216\346\014h\333=\014\223\003\247\023\234$\211)\204\214OI\243#F\214\324\317L\223\325\031\006M\017Ph\321\2402\032\006\231\2502\014\200\0310OH4\022I2\010\30224\r&\223\311O\324\310\237\251\251\246#!\2204\000\320\000\000\000\000\032\003A\352\004L\211\223M)\345\032\000\000\000\000\0004\000\000\320\000\000\000\000\365\r=@\000i\242i\006\2214\311=C\004\364\206&\324\364A\240\003@\000\000\000\000\000\000\000\320\365\002\014\000\023\000\0010L\000\000\000\000\023\000\230\010`\000\010\300\000\000H\240\020\231S\311\241\242\006Bi\221\265\014F\200\001\240\000\000\007\244\000\r4\000\000\036\243U\236\203\206\305\233 \376{\263E\223\262+\013kn\3026\317\334H\333\203\305\003\367\004PJ!L\013+\026\377\t\204\302j+\375?\341\241\2156\233\033H\033I\r=\201,\022\301Y\025\273\200\021<\323.\270\333\002T\276B\233\023\032Hm\003\231\177\021H\232\016&\317\024\220\243\032\203\034@ \025\275g\014\374qP\272\242\334\020\300\273t\224R\032b\210\324\305|\244@\274\277I\020\202\204j\022\200h\002`M-&2\353\205H)\255\205\220\260\314\364caV\244H\226\013\325\254Ns\320I&\322jp\026\273\t%\212\200S\253\370\365\210~\277\267vw\266\022\232\214\210j\n\007S\n\033u\260)\004\210\216i\3017\313p`&\327\366\246\001\035\010P\203\0148\377U\221\021\035\370\311i\2448\005\350\363\000\356\220\222H^\004|\276\263\013\316\255\000\267\316\220\261[RY\002\263\211\252b\254\310&y\236\025\232i\345~6r.\204\306Q\216\210.\\\272\241\362\325\237<\222U*\022B\232\2429\241ds{\\\013\354\315\330\212\001y}\367\3140\226\000\375[}\253g\t\325#\215;q:\225\032TO\364\\_\342\325\274\327]D^\244\207)\2267\355\205\261b\325\177\222\256\010B\020\276XX\262\334E\223B\213\220\220zY\222\215\004j07\345U9\026\265V\377\257\356L\240Qa_O\215E\034N\312\307W\363\331q\201\303\345\232\236K%\206\006\271\357\364s\213\333\206\213\225\305T\025\215\261\300\222\230F\004\032n9p\244\004I%\231F)\027\335\252\377lp\317x%R\252\025sp\3755\353\254""\256\375e\352 \241\007K\362\302~\007L\271\230\314\346nN\326\316{\276\270\375\021\347\204\315\020\006k,\265D#\224a\256b2c!]\211\022\t\205\205d\026\317\236\365\263\363fGG\014\026\n\312\253X\254\346g\312\310\216%\325\002Z\274T\271\025\033\276x\320,\001\204o#\034X\004\021\3342Le\202\rh\002\3754@\023\370\3036\000g\326\305\317\202#6K\0047`6\007\021\2679S\306,\312\304\010]\235X\0239\246+2\221\\m \317RP\345\307\002\002,\260!MK8d\221 \304\2071bU\006\350\200)2\270\201\225\226(c\200\t\004\214adU\367\301\216e\245\251\t\221}\330M\033\343\021\367\365\355\244\376\253\253\353\353\024\017\353\366_\2003\367U\222\200\340\351\304\360\255B|M\216<q\330\005x\256\343\247\307\256\326\221\340\240\360'\252=\022\376\265\020s:\ts\216Q\275\274t)\010\037\325\010<\373V\361M\303\221\262\021\010\215\265L\352\217,E\220,\020fF]\311\322\336\334\323\303\310\304\260\020\265\244\307\026\255M\204\003M\206\354\200\263\265\263I{\322\013\033\313\270\032|2\303U}\204\221\005C\001B\224`sw\223\212\240\001A\354\231Ik\001\326\313\256\256\234\271\255\210\241\204\305\205\002\206R\204\024(ET\3006\002<2H\020\242\340\307\255\225\304\256\030\342)\266\304\335d\266\360\302\216,P\223\001;\303\000Be\306-18.\3405\022\tT\022\371\000\221\025\245\225h\222YV\021\210\022h\276\311C;\226t\254?\000\242\200eZV/V\021\t \335\035\316d\375n\212\025\344\276MI\201\330\245\307T\213\266fk!\245)\230\275sh;RX\335\201\373\2274\255u\361\253QXS6\033\307\215\315\262*\351\343\r\2079Z\212\243\334\347b\335\277\207aA\317\274s \025p\3417\333\0302s$>\313;\215\224\354\375\365\342y\300\344Fx\014\3143\236X\207p\257\334\236\rm\352U\330\214[\014\244cv\221m\263\022m\272^\"e\223\345\230\203\366\345\204Sh\216^\241\031\006\211q\324q)Z\242\3042\271TG\300\363\0001\026\334S\013\271l\226\272\373)\n\030\232\023x\217\t\336\23513\255So\006\366\362\337*\\\312d/_\036\254\311\236\220\320\207\310\022BN\036\313;Nro\316\365\tS>H\250\343\034\030H\360H\244\202\260\305f\200J\022\301\320h=\246S!\371\244W\243\014\2743\r \n\003\347(\021z\314\223\003\005DZ|Q\215\262\225\035\305S""\n\330\234\202Z^\356\004\265\033\002\373\004\324\320QLJC}\264F\257>\306\231\371];\222t]\201\312\010\327\322\353W\206^\001\244\236\341\361\021\2160$\344\372Fa\231\035\013+T\315\224/\222\356\246\365\252\251/\347LH\327#B}(N\207\026+rJ3\250\334\360\236\211@\305kTaN\317\024\244\253\264\253b\234\310\204\340\2048\321\0233\337\02532e\225\003-\007*\352\260\263\313e\320i-\021\031\210g\311\035\305\002\241\333\236=\263k\222\"0\2218\035\033\222\324\025\242\301bF0\343FU\231f-\306a\030\241\316\252\346\327\010\342O\3229\321\277\013\2073\003K\n\340r\335\010\314\231Vk\242Q>\370o\320\247\213\276u\361\014TJ\304\362\336\352\246\034\306\306\222]\002\341\352Q4\351kpa\0366\314\245s\204\332\\\247\302u\26465\351s\203V\267mD_*V\021cb\265\360,E\253\255\027\2572ft3\226\006\001\216E.\305\330\013\320\274)\307\274\\MzITq\273\020:]\003\235\213\017%\361\3120\231\237W\t\332a\370IjZ9{g\244mAv\364\314\360\363YV\226\323l\n\014\227Oy\264\266\230\341\230\211k\2073\223z\n\r\344\241;\355\026\216\224\243\250h!\335Kx\2748\325f\207\270Z\375\3372\263\030\253Mx\323<\305\323\345%[+\252\213\364kS>\302\201\256I3h\336\347\032=\253\272\200f\324\026k\327\321`3\326\263z_9\306C&ox\264p\364\240\274X\355\224]\227\ti\317C\014-\227\001\223,[\223 \246\017\327\314_\022\005Q]@`\327\3202\346\345(\221;\237\364\025\214t\237\354{2\307~\245\362\211\032\026V/\203\272\2655\0167\206\310+\212\3743\215Z\t\253\376\223\230l=\372z\316\276\007\341\243N\332\372\344\tbrH\345a\201\2456(\2141\004\311\303\003qG\004\3125\210&\305\326\010l\371\266\210\326c=EU\340\251\352\251l\025\235\035\tX\226}Yq\330\301Pg\312\312\010\327Y\233\216\345d\334\204\310\275*\004\232j\362$H\370:\204:\020\363\034\316\202f\377\230\236\341H;\035\035\374\2572g*\022\006h\210O9\031\311\201\332e5e+\014\246\032fX\324\335\252\221\251\224\256\341+\251\024\206H3\350\247]\223\001Zm\274\222)aU0T\r\305)\203\006\215cTtSE\3702\275\310\030\375:b\3243r+\256\351-\347\032\000\271r\235pd\320\301j\312\227U;\035\247#8\265s\274\2232\347\017\014\301\2716\207v\353\006~k%\221u8\234\273\265\237>|""\337\341\225\032\314\306^\203fX\313\027=8\362+0\252j\300aXu6\242\265WMj4\351:+\n4t\025\333+\300\256&T\245\244\257-\313jj\332\321H\260\225\255\320\304t-\246X\305\251:\222#\246\023*\0337g85\363\203[\020\256\264\221\3550\203}q}4\025\006\311\351N'Tg\330b\2018\266\242A\254\347\215E\030\rC\200a\363\230\030o\3726\270\313\010\343\233\010R\010e\023$_\301b\245\001\222)*X\342p=\363\222C\023\250\005\013\202D\302D\245\232\0318\3036h\315\312\262\260U`\365=\226q\022#^\2053\n\260\177\342\356H\247\n\022\000$v\321\200";
+    PyObject *data = __Pyx_DecompressString(cstring, 2301, 2);
     if (unlikely(!data)) __PYX_ERR(0, 1, __pyx_L1_error)
     const char* const bytes = __Pyx_PyBytes_AsString(data);
     #if !CYTHON_ASSUME_SAFE_MACROS
     if (likely(bytes)); else { Py_DECREF(data); __PYX_ERR(0, 1, __pyx_L1_error) }
     #endif
-    #elif (CYTHON_COMPRESS_STRINGS) != 0 /* compression: zlib (2101 bytes) */
-const char* const cstring = "x\332\265V\313s\023\311\031\267d\033LlXl\326\260Y\330J[\304\366\246\312(~\300\356\026qHY^S!Ev\221\214\035\262<f[3-i\302hF\232\207\221\010\007\216:\316q\216s\324QG\035u\324q\216:\352O\340O\310\357\353\031Yf1&\225\312\272\244\326\327\335\337\363\367=\332wY\316+\225\204\315\216t\361\212i\226p\230i\271L4j\226#\230\343\332\272&\234]n2\3134\232L\265\005w\005\343\254\030\013\271\025\3562\335a\252e\272z\331\263<\207\351&\253\212\252e7\263\220\"U\334q\364\262\311\\\213AX\273%\365\304\034d2aJ\024\277\262u\227\027\r\2210\304N\225l\253z\226\254nj\242\301^\351n\205\271\315\232`\253\311\271ks\323\221a\214Eb6H\350\266P]\246\351Ua:\272e:\337\217(\266\254QD\244 f\332\253\326\334&s*\034\252]\257\006\347J\226\315\324\246[\261\314,\267m\336|\360\241:)\357x\265\232e\273B{`\036qC\327X\325\322\304\032a\013f\241\261Uu\225A\325*\364\221\257\253k\254\014\251\021sl\021p\362\006\374\331\376\273\214\341\220b\260J\354\007\013hI\364w\245#\344\262&\014\275(l\340\010\224(s0\"Sd\262G{\217n\335\376\3566\343\246\006$\377\005\363\016\274+\252\006\222\203\214Ca\321\323\r\027\306\010A'\313\036\224X\323\362\230)\340&2W\003\337I\001\267\"L\346\010\227\010\266*\341\346.\342V \256\233\345\325\004:\375H\220\364}n8\"\373\243\347JC\226gj0i\216j\210\253\252\200\366\257e\230\007\246L?\204PRG\302Fv]Q\245\275U$\267\263\367V\377\360\027\256i\n,\nn\224-\024L\245\352\374\021YP\200\241\n\343\331ZS\306\311\000\316zC\265\014\203<AN\262\274\250n\237\250Tb\212\375\274\367\313\343Q\201\334K\322\254Y\036\334zo\363\364\356\032\273\373\374\027G\3175\335\241\000\204\014\243\254\262\257)\243eYK\024,\334C\372]a\272\262Q\216\353\005\351\213E4\n\327\321_\013\266\375g\266\376A\245\231\026\262\\\342\236\3412E\261\205\346\251BQ\230\346I\304L\313\274\205\254\037\351\334\300-\240\320]\\\306\270\335\333\216[Y{/\352\017\317\250\036\217\203\177\357\376\370\324;N\0217\014K\225\363\200|c\032wy\366\224\333\270\220IG2N\262;\373\273\017\036\354\031\206^stGQ\0365\033\370~\217zU~\000:\005Q\332\027uO\230\252\240r\317\216+\037\t\034\347<{\"\347#[J""\\S\334\031\347S\372\306\235\246\251\352VV\265l\313C\231\013\247\310\035Q\264,C\205FU\005\\T\331\2122\"\312\302\245L\320\026\334\212nJK\242\310\325\227*\n\330\325\024E#\177\025\255\252Q\313\310EA01\334\202f\006\002@\277\013\323\253\312\246\024\266m\331\010\017\"\264\326\270\3344\326im\312\365\365z\311\340e\247dX\334\375\3466r_\345n2\033\024\245\344\231*\371\007\317\034\227BU\312\322S\350\211\211#\241*\2151\331\034\223\257u\270\253Wi\026\341\227\246\245n\272\212\252\322\nqx\255Z\325\232\216\352S$\235`\024\227bR\217\212R\345@A\301(\2459Z\305\237\242\255c17h\331T$\275E\023\016L\226\346\031\37057\314Ms\313\344U\242\343\025%\217U\274\302R\0032\265&\000\203\271\032\200\255Y\030\227\310A\r\345\240V\204\372\322\361\252\361.\t\230H\211\263\244<\263\246\253/af\317\034\361\035\311\307\203P\252{\334\210-\236\250\222\023\244R\344\256Z9yIq\213qS\035Sq\373\2358\020\r\"\313\272\203\351j\013\327\263q\211Q\230\004\010*\351PI'\236\237\240G\372dW\020\2628\266q'j\216k\341k{TV.\216\025\n\021\270x5t\226\300\243\340\tG&Y\246W&\266\321Xo4\233\315\365\327\353oS\357nLLg\302\205\350\346\235N\276\243uWz\351\336\322`\352s\177/\270\032\324\303\324`\352\262\237\366W\202tp3x\034^\r\355\366\374`j\336_\360\277\t\026\202\255@\013W\332\3516\0042a\274\014\261\334\014\237\264\363\203\251\033\301n\320\010\353g\022K\341\225\360om~\032q=\330\014\240\345\253\240\0208\341R\270q|B?\005\362\355\335\271\211\351\245\360\\\310\3037\235\315\316\263\336Bo\273oG\371\347\321s%R^F/\253Q\325$\2057\332\205v\3754\342\232\377\3570\023\356\014\247\226\303g\235\205\316\267\335L\367a?\335_\215\362\373\321>t\360\210\353\221\016M\306\273\207\251\211\351\013\255\351\326\201\277\344o\014f\346Z{\376\274\177\323\317\237 \341\316\205E\377~\260$\375\263\303\205p3,\000\260\205\366\267\235Lgg0s\261Uh\331\376\374{D\276U\366\013~\235d\257\371\245`'\330\017'!\267\017TW:\251\316\225\316n\307\356^\351\346\272\245\336No\277?\331\337\354\303\346\325_\201\225\\\270\036\254\205\305\366\\'\3271z\231\336\303\350Q!*\274\210^\374\034\375\314cg-B""\2368/\267^\371\305`.\314\205\270\371\354#\033b\234\367\347\202\\`\2643\355\207\335tw\255W\354\317E\217\017\243\303\177\020\347\033@\365\014\000m\234\265Y@\371\245\202\305\240\030N\003O\257\235k\013\244\373\000\311\002\246\263\255\357\374M\244a\356s\177g\274\220\341\213\255\373\310\325m\337F!\333\3415\031z\272\263D\372\226P\275\363\301\357\2411M\371\217\343\361\374\034\374NK\004R\344\302\331\007\303\231k\376\033`z\220D\266\334\265{7\372\205~\235\200:\204O\373pz\236T\177\326\022\330\036\004\231\000\376^\372\310f\354\203\001\227\366\020\3716R\264\330-\366\216M\323\305\316Y\233\377\001\250!\312w\004\023\t\246\250\236s\255\242?\2038O\303j8s\331\237F\305\332h\377m9\r>y0D\234\274\345\370\313~}p*\371i\206\251\331\326\237|\37665<?3\300g\356\342{\237\371\205\3443;7\270x\211\326\331\271w\331\211\351\331VF\006\267\205\026\310\005|4\312R\301\225\340~\334\367\213\324\300\263\255\255V\305\257\004\225\260\202\2713\263\350?\307,\003\262\315\340| \263\231'\373w\374T4\001\376!\246\337<\306\346\314\304\314\205\377\322\227\301\205\337\340C\323\212\005Ga\036\325\223F\321\344\332E\324c\006\275V\356\026\272\230F_\000r*\213\223D*\270\006\334\227H6\203\351[oO\266\267 7\211\274\036v7\272\273]\007}\272\333\263\373W\373\365\350\021\246\026:\353I\364\344\2374\344~=\366\377\327\340%=+\237\032\275\203d:o'\r\366&z\nC\307\227\204\321\357\350\r\"e\327\203U\214\335\355\266\335\301+\365\345G6\304\370\205\354\335\017\325\276 \316\321\014\344gm\276\n\016\303\r\331\250w\220\306\345\244Y\247{\205\036\342;\377\266\021\017\370\313~j\274\304\206\217\202<\236\315\014\346c\021xo\266\017\001\241|\347\362A)\334\t\037C\343&\241\024\307\263\234<$\344\352\006\271p\366\001=\277kH\341t\247\320y\323\333\354\035\3643\375\207\321\223\237\242\237\236\022T\347\320\306\223p[\"\377\345\361\250\200\307\277\375\310f\354\005\245\316K^\206\275\376B\037\306\251+\322\376\232\234\033gl.\265J\376\216\034s{\360\364\016\222\265\214<,v\212\335\324\307\240\032N\315\264\316\241\375\335\343a\211\2034\372\371\257\030w\374\024\264\206\370""\267\340\216\034Q\271\320\220\317\355'\017\206\260]\307\223\236\037|@\234q\365\343\177\000t[\265\204";
-    PyObject *data = __Pyx_DecompressString(cstring, 2101, 1);
+    #elif (CYTHON_COMPRESS_STRINGS) != 0 /* compression: zlib (2117 bytes) */
+const char* const cstring = "x\332\265VKs\023\331\025\266\204\r&6\0146c\230\014L\345Z\304\366\244\312\010[\206\231)\342\220\262<\246\342\024\231A2v\310\200\351\271\352\276\222:\264\272\245~\030\211\260`\251e/{\331K-\265\324RK-{\251\245~\002?a\276s[\262\314`L*\225qIW\347>\316\271\337\371\316\343\372>\313z\305\242\260\331\221.^1\315\022\0163-\227\211z\325r\004s\\[\327\204\263\315Mf\231F\203\251\266\340\256`\234\025b%\267\314]\246;L\265LW/y\226\3470\335d\025Q\261\354F\032Zd\212;\216^2\231k1(k\267\245\235\370\004]9<44\374\312\326]^0\304\360@\014\252h[\225\263tuS\023u\366Jw\313\314mT\005[\031\256\27367\035\351\306X%>\006\r\335\026\252\3134\275\"LG\267L\347\373\221\304\2264\362\210\014\304\207v*U\267\301\2342\207i\327\253\002\\\321\262\231\332p\313\226\231\346\266\315\033\273\037\232\223\372\216W\255Z\266+\264]\363\210\033\272\306*\226&V\211[\034\026\032[QW\030L\255\300\036a]Ye%h\215\016\3077\202N^\007\236\315\177H\037\016\310\007\253\310~\260\300\226d\177[\002!\310\2320\364\202\260\301#X\242\310\341\022\031\"\223=\336y|\373\356ww\031750\371o\\\357\000]A5\020\034D\034\006\013\236n\270\270\214\030t\322l\267\310\032\226\307L\001\230\210\\\025\347N*\270ea2G\270$\260\025I7w\341\267\002u\335,\255\014\251\323\217\004i?\344\206#\322?z\256\274\310\362L\rW\232\243\034\342\252*`\375k\351\346\276)\303\017%\244\324\221\260\021]WThn\025\010v\372\301\312\237\376\3125M1\211\000r\207\201\203\265\272j\031\006]\010\352\323\274\240n\236HH:\024\303y\360\353\345Q\036<\030FS\263<\334\376\336\344\331\375Uv\377\360WK\207\232\356\020N!\321\226T\3665\005\256$S\206|\002\005\210\262+LW\326\303qZ J\261\212F^9\372k\3016\377\302\326>H(\323B0\213\3343\\\246(\266\320<U(\n\323<I\214i\231\267\021\334#\235\033\330UuSw\261\031\323\363\300\261\325;VU\230U\367(s\207\033%\013\005U\2568w`TA\216\341t)]ml\306u\255\275\307\315\207k\224\234\307\024\275\267\177\274\352\035\307\213\033\206\245\312\346@\0360\215\273<}\312n\234\325dc\330[\322[{\333\273\273;\206\241W\035\335Q\224\307\215:\276\337#y\225\037\300a^\024\367D\315\023\246*(\367\323\3432@""\230GV\2258\225\2703\216\257D\301\235\206\251\352VZ\265l\313Cv\013\247\300\035Q\260,C\205\256\252\202>JhE\031\t%\341Rdh\212\323\212nJ\322D\201\253/U\344\255\253)\212F\310\024\255\242Q\245\310A\001\354\230~A\255\002PQ\346\302\364*\262\026\205m[6\034\201\n\215U.'\3655\032\033r|\275V4x\311)\032\026w\277\271\213\\\250pw\330\022\024\245\350\231*\341\0032\307%W\225\222D\n;\261p$T\245>\026\033c\361\265\016\270z\205Z\020~\251I\352\246\253\250*\215P\007j\325\252Tud\243\"\345!Gqj\016\363SQ*\034,(\350\240\324>+\370S\2645\014\346:\r\031E\312\033\324\330p\310\322<\003\277\346\272\23117L^!9\036Q\002\030\305+\014U0Sm\200\260Q\236\246\307y\232>\221\247@S\005\357U\013M\024!\252\"/\324\262P_:^%\236\r\371 Q\206AJ\236Y\325\325\227@\261c\216\316\035\311'\205H\254y\334\210\001\235\270\347\204\250\024\270\253\226On\022-b\\\203\307R\\\255'\026D\235\304\222\356\240\347\332\302\365ll\242A\016\375\2074,h)\017\221\237\220G\366dy\020\361X\266\261'\252\216k\341k{\224u.\226\025r\021\274xU\224\230\300S\341\tG\346\200\214\276\214{\275\276Vo4\032k\257\327\336&\336\335\234\230J\205\363\321\255{\355\\[\353,w\223\335\305\376\344\347\376Np-\250\205\211\376\344\025?\351/\007\311\340V\360$\274\026\332\255\271\376\344\234?\357\177\023\314\007\033\201\026.\267\222-(\244\302x\030`\270\025>m\345\372\2237\203\355\240\036\326\316\024\026\303\253\341\337[\3744\341F\220\t`\345\253 \0378\341b\270~\274B?y\302\366\356\374\304\324bx>\344\341\233v\246\375\274;\337\335\354\331Q\3560:T\"\345e\364\262\022UL2x\263\225o\325N\023\256\373\377\tS\341\326`r)|\336\236o\177\333Iu\036\365\222\275\225(\267\027\355\301\006\217\270\036\351\260d\274{\224\230\230\272\330\234j\356\373\213\376z\177z\266\271\343\317\371\267\374\334\t\021p..\370\017\203E\211\317\016\347\303L\230\007a\363\255o\333\251\366V\177\372R3\337\264\375\271\367\204\\\263\344\347\375\032\351^\367\213\301V\260\027\236\203\336\036X]n'\332W\333\333m\273s\265\223\355\024\273[\335\275\336\271^\246\207;\257\375\006G\t\302\215`5,\264f\333\331\266\321Mu\037E\217\363Q\376E""\364\342\347\350g\036\203\265\210y:y\245\371\312/\004\263a6\304\316g\037\231\320\3019\1776\310\006F+\325z\324IvV\273\205\336l\364\344 :\370'\235|\003\252\236\203\240\365\263&\363H\277D\260\020\024\302)\360\351\265\262-\201p\357#X\340t\246\371\235\237A\030f?\367\267\306\003]|\251\371\020\261\272\353\333Hd;\274.]O\266\027\311\336\"\262w.\370#,&)\376\261?\236\237\005\356\244d A\020\316^\030L_\367\337\200\323\375\241gK\035\273{\263\227\357\325\210\250\003`\332\003\35092\375YS`\272\037\244\002\340\275\374\221\311\030\203\001H;\360|\023!Z\350\024\272\307W\323\306\326Y\223\377\201\250\001\322wD\023)&(\237\263\315\202?\r?O\343j0}\305\237B\306\332(\377M\331\r>\2710\200\237\274\351\370K~\255\177\252\370\351\003\2233\315?\373\374mbpa\272\217\317\354\245\367>s\363\303\317\314l\377\322e\032gf\337\245'\246f\232)\351\334\006J \033\360Q+K\004W\203\207q\335/P\001\31747\232e\277\034\224\3032\372\316\364\202\177\210^\006f\033\301\205@F3G\367\337\363\023\321\004\316\017\320\375\346\3206\247'\246/\376\227X\372\027\177\207\017u+\026\034\2059dO\022I\223m\025\220\217)\324Z\251\223\357\240\033}\001\312)-N\n\211\340:x_$\335\024\272o\255u\256\265\001\275s\210\353Ag\275\263\335qP\247\333]\273w\255W\213\036\243k\241\262\236FO\377EM\356\267;\376\377j\274dg\371S\255\267?\354\316\233\303\002{\023=\303E\307\233\304\321\037\350\r\"c7\202\025\264\335\315\226\335\306+\365\345G&t\360\013Y\273\037\232}A'G=\220\2375\371*8\010\327e\241\336C\030\227\206\305:\325\315w\341\337\205\267\365\270\301_\361\023\343!\276\370(\310\341\331L\241?\026\300w\246u\000\n\345;\227\013\212\341V\370\004\0263\304R\354\317\322\360!!\250\353\004\341\354\005z~W\021\302\251v\276\375\246\233\351\356\367R\275G\321\323\237\242\237\236\021U\347Q\306\347\000[2\377\345q\253\000\342\337\177d2FA\241\363\206/\303No\276\207\313\251*\222\376\252\354\033gL.7\213\376\226ls;@z\017\301ZB\034\026\332\205N\342cT\r&\247\233\347Q\376\356q\263\304B\022\365\3747\264;~\n[\003\374[pO\266\250lh\310\347\366\223\013\003\334]\303\223\236\353\177 \234\261""\365\343/\312S\275\324";
+    PyObject *data = __Pyx_DecompressString(cstring, 2117, 1);
     if (unlikely(!data)) __PYX_ERR(0, 1, __pyx_L1_error)
     const char* const bytes = __Pyx_PyBytes_AsString(data);
     #if !CYTHON_ASSUME_SAFE_MACROS
     if (likely(bytes)); else { Py_DECREF(data); __PYX_ERR(0, 1, __pyx_L1_error) }
     #endif
-    #else /* compression: none (4347 bytes) */
-const char* const bytes = ": Buffer view does not expose stridesCan only create a buffer that is contiguous in memory.Cannot assign to read-only memoryviewCannot create writable memory view from read-only memoryviewCannot index with type 'Cannot transpose memoryview with indirect dimensionsDimension %d is not directEmpty shape tuple for cython.arrayIndirect dimensions not supportedInvalid mode, expected 'c' or 'fortran', got Invalid shape in axis <MemoryView of Note that Cython is deliberately stricter than PEP-484 and rejects subclasses of builtin types. If you need to pass subclasses then set the 'annotation_typing' directive to False.Out of bounds on buffer access (axis Unable to convert item to object.>')?add_notealgorithms/ray_tracing.py and  at 0xcollections.abc<contiguous and direct><contiguous and indirect>cython.doublecython.double[:, :]cython.double[:]disableenablegc (got got differing extents in dimension isenableditemsize <= 0 for cython.arrayno default __reduce__ due to non-trivial __cinit__ object><strided and direct><strided and direct or indirect><strided and indirect>unable to allocate array data.unable to allocate shape and strides.ASCIIEllipsis__Pyx_PyDict_NextRefSequenceView.MemoryViewabcalgorithms.ray_tracingallocate_bufferascontiguousarrayasyncio.coroutinesbaseboolccalcc__class____class_getitem__cline_in_tracebackcountd__dict__dmdtypedtype_is_objectemptyencodeenumerateerrorext_dmext_parext_x0ext_y0ext_z0flagsfloat64formatfortran__func____getstate__glass_parglass_vec_xglass_vec_yglass_vec_zid__import__indexint_ccint_paris_compiled_is_coroutineitemsitemsize__main__memviewmmmm_d0mm_n1mm_n2_0mm_n3mode__module__n1n2n3name__name__ndim__new__npnumpyobjoutpackpoppos__pyx_checksum__pyx_state__pyx_type__pyx_unpickle_Enum__pyx_vtable____qualname__ray_tracingray_tracing_batch_ray_tracing_core__reduce____reduce_cython____reduce_ex__registerreturn__set_name__setdefault__setstate____setstate_cython__shapesizestartstepstopstruct__test__unpackupdatevaluesvec_xvec_yvec_zxx0xyyy0z0\200""\001\360\034\000\005\"\240\022\320#5\260Q\260d\270&\300\002\300!\330\004\024\220E\230\026\230q\240\001\330\004\020\220\002\220&\230\002\230#\230T\240\026\240r\250\021\330\004\021\220\022\2206\230\022\2303\230d\240&\250\002\250!\330\004\"\240!\330\004\"\240!\340\004\"\240#\240X\250Q\330\004\034\230C\230x\240q\330\004\034\230C\230x\240q\330\004\034\230C\230x\240q\330\004\034\230C\230x\240q\330\004!\240\023\240J\250a\330\004!\240\023\240J\250a\330\004!\240\023\240J\250a\330\004\033\2302\230Q\330\004\035\230R\230s\240!\2401\330\004\033\2302\230Q\330\004\033\2302\230R\230q\240\001\360\006\000\005!\240\006\240a\240|\2602\260\\\300\022\300<\310r\320Q]\320]_\320_k\320km\320mn\330\004!\240\034\250R\250q\330\004!\240\034\250R\250q\330\004!\240\034\250R\250q\330\004\027\220{\240\"\240A\340\004%\240\\\260\022\2607\270\"\270L\310\002\310'\320QS\320S_\320_a\320ai\320ik\320kl\360L\001\000\005\t\210\005\210U\220!\2201\330\010\014\210E\220\021\220#\220Q\330\010\014\210E\220\021\220#\220Q\360\006\000\t\025\220F\230!\2302\230R\230r\240\022\2402\240R\240r\250\022\2507\260\"\260A\330\010\r\210R\210r\220\021\330\010\r\210R\210r\220\021\330\010\r\210Q\210g\220R\220q\360\006\000\t\027\220f\230A\230S\240\003\2402\240S\250\002\250&\260\001\260\023\260C\260r\270\023\270B\270f\300A\300S\310\003\3102\310Q\330\010\026\220f\230A\230S\240\003\2402\240S\250\002\250&\260\001\260\023\260C\260r\270\023\270B\270f\300A\300S\310\003\3102\310Q\330\010\026\220f\230A\230S\240\003\2402\240S\250\002\250&\260\001\260\023\260C\260r\270\023\270B\270f\300A\300S\310\003\3102\310Q\360\006\000\t\033\230,\240b\250\014\260B\260l\300\"\300L\320PR\320R^\320^`\320`a\330\010\r\210Q\210o\230R\230q\360\006\000\t\020\210w\220b\230\014\240B\240a\330\010\017\210w\220b\230\014\240B\240a\330\010\017\210w\220b\230\014\240B\240a\360\006\000\t\021\220\014\230B\230l\250\"\250L\270\002\270,\300b\310\014\320TV\320VW\330\010\017\210|\2302\230\\\250\022\2501\330\010\017\210|\2302\230\\\250\022\2501\330\010\017\210|\2302\230\\\250\022""\2501\330\010\022\220&\230\001\230\025\230b\240\005\240R\240u\250B\250e\2602\260U\270\"\270A\330\010\013\2108\2202\220Q\330\014\024\220A\330\014\024\220A\330\014\024\220A\360\006\000\t\r\210F\220!\2204\220r\230\026\230r\240\027\250\002\250&\260\002\260!\330\010\022\220!\2206\230\021\230$\230b\240\002\240\"\240A\360\006\000\t\020\210u\220B\220b\230\002\230,\240b\250\001\330\010\017\210u\220B\220b\230\002\230,\240b\250\001\330\010\017\210u\220B\220b\230\002\230,\240b\250\001\340\010\027\220|\2402\240U\250\"\250L\270\002\270%\270r\300\034\310R\310q\330\010\r\210V\2202\220S\230\001\230\021\360\006\000\t\017\210e\2202\220U\230\"\230A\330\010\016\210e\2202\220U\230\"\230A\330\010\016\210e\2202\220U\230\"\230A\360\006\000\t\020\210u\220B\220l\240\"\240E\250\022\250<\260r\270\025\270b\300\001\330\010\017\210u\220B\220l\240\"\240A\330\010\017\210u\220B\220l\240\"\240A\330\010\017\210u\220B\220l\240\"\240A\330\010\022\220&\230\001\230\025\230b\240\005\240R\240u\250B\250e\2602\260U\270\"\270A\330\010\013\2108\2202\220Q\330\014\024\220A\330\014\024\220A\330\014\024\220A\340\010\014\210F\220!\2204\220r\230\025\230b\240\001\330\010\014\210B\210b\220\010\230\002\230!\330\010\022\220!\2206\230\021\230$\230b\240\002\240\"\240A\340\010\020\220\005\220R\220r\230\022\230<\240r\250\021\330\010\020\220\005\220R\220r\230\022\230<\240r\250\021\330\010\020\220\005\220R\220r\230\022\230<\240r\250\021\340\010\016\210a\210s\220%\220q\330\010\016\210a\210s\220%\220q\330\010\016\210a\210s\220%\220q\340\010\016\210a\210s\220%\220q\330\010\016\210a\210s\220%\220q\330\010\016\210a\210s\220%\220q\340\004\013\210;\220a\200\001\340\007\010\330\007\010\330\014\r\330\014\r\330\014\r\330\014\r\330\014\r\330\021\022\330\021\022\330\021\022\330\013\014\330\r\016\330\013\014\330\013\014\360.\000\005\013\210\"\210F\220!\2203\220f\230B\230a\330\004\020\220\002\220&\230\001\230\023\230F\240\"\240A\340\004\025\220Q\330\010\013\2103\210h\220h\230h\240h\250a\330\010\025\220]\240!\330\010\017\210y\230\007\230q""\330\010\r\210Q\340\004\013\2105\220\001\320\000\025\220Q\340\004\021\220\021\200\001\360\010\000\010\t\330\007\010\330\014\r\330\014\r\330\014\r\330\014\r\330\014\r\330\021\022\330\021\022\330\021\022\330\013\014\330\r\016\330\013\014\330\013\014\330\t\n\330\t\n\360\006\000\005 \230v\240Q\240b\250\002\250\"\250B\250b\260\002\260\"\260B\260g\270R\270q\330\004\030\230\002\230\"\230A\330\004\030\230\002\230\"\230A\330\004\030\230\001\230\027\240\002\240!\360\006\000\005\"\240\026\240q\250\003\2503\250b\260\003\2602\260V\2701\270C\270s\300\"\300C\300r\310\026\310q\320PS\320SV\320VX\320XY\330\004!\240\026\240q\250\003\2503\250b\260\003\2602\260V\2701\270C\270s\300\"\300C\300r\310\026\310q\320PS\320SV\320VX\320XY\330\004!\240\026\240q\250\003\2503\250b\260\003\2602\260V\2701\270C\270s\300\"\300C\300r\310\026\310q\320PS\320SV\320VX\320XY\360\006\000\005!\240\006\240a\240|\2602\260\\\300\022\300<\310r\320Q]\320]_\320_k\320km\320mn\330\004!\240\034\250R\250q\330\004!\240\034\250R\250q\330\004!\240\034\250R\250q\330\004\027\220{\240\"\240A\360\006\000\005&\240\\\260\022\2607\270\"\270L\310\002\310'\320QS\320S_\320_a\320ai\320ik\320kl\330\004%\240\\\260\022\260<\270r\300\034\310R\310|\320[]\320]i\320ik\320kl\330\004\030\230\001\230\037\250\002\250!\360\006\000\005\033\230'\240\022\240<\250r\260\021\330\004\032\230'\240\022\240<\250r\260\021\330\004\032\230'\240\022\240<\250r\260\021\360\006\000\005\030\220|\2402\240\\\260\022\260<\270r\300\034\310R\310|\320[]\320]^\330\004\032\230,\240b\250\014\260B\260a\330\004\032\230,\240b\250\014\260B\260a\330\004\032\230,\240b\250\014\260B\260a\330\004\035\230V\2401\240E\250\022\2505\260\002\260%\260r\270\025\270b\300\005\300R\300q\330\004\007\200x\210r\220\021\330\010\020\220\001\330\010\020\220\001\330\010\020\220\001\360\006\000\005\030\220v\230Q\230d\240\"\240B\240b\250\003\2502\250V\2602\260Q\330\004\035\230Q\230f\240A\240T\250\022\2502\250R\250q\360\006\000\005\033\230%\230r\240\022\2402\240\\\260\022\2601\330\004\032\230%\230r""\240\022\2402\240\\\260\022\2601\330\004\032\230%\230r\240\022\2402\240\\\260\022\2601\340\004\"\240,\250b\260\005\260R\260|\3002\300U\310\"\310L\320XZ\320Z[\330\004\030\230\006\230b\240\003\2401\240A\360\006\000\005\032\230\025\230b\240\005\240R\240q\330\004\031\230\025\230b\240\005\240R\240q\330\004\031\230\025\230b\240\005\240R\240q\360\006\000\005\033\230%\230r\240\034\250R\250u\260B\260l\300\"\300E\310\022\3101\330\004\013\2105\220\002\220,\230b\240\001\330\004\013\2105\220\002\220,\230b\240\001\330\004\013\2105\220\002\220,\230b\240\001\330\004\016\210f\220A\220U\230\"\230E\240\022\2405\250\002\250%\250r\260\025\260b\270\001\330\004\007\200x\210r\220\021\330\010\020\220\001\330\010\020\220\001\330\010\020\220\001\340\004\010\210\006\210a\210t\2202\220U\230\"\230A\330\004\010\210\002\210\"\210H\220B\220a\330\004\035\230Q\230f\240A\240T\250\022\2502\250R\250q\340\004\033\2305\240\002\240\"\240B\240l\260\"\260A\330\004\033\2305\240\002\240\"\240B\240l\260\"\260A\330\004\033\2305\240\002\240\"\240B\240l\260\"\260A\340\004\007\200q\210\005\210Q\330\004\007\200q\210\005\210Q\330\004\007\200q\210\005\210Q\340\004\007\200q\210\005\210Q\330\004\007\200q\210\005\210Q\330\004\007\200q\210\005\210QO";
+    #else /* compression: none (4369 bytes) */
+const char* const bytes = ": Buffer view does not expose stridesCan only create a buffer that is contiguous in memory.Cannot assign to read-only memoryviewCannot create writable memory view from read-only memoryviewCannot index with type 'Cannot transpose memoryview with indirect dimensionsDimension %d is not directEmpty shape tuple for cython.arrayIndirect dimensions not supportedInvalid mode, expected 'c' or 'fortran', got Invalid shape in axis <MemoryView of Note that Cython is deliberately stricter than PEP-484 and rejects subclasses of builtin types. If you need to pass subclasses then set the 'annotation_typing' directive to False.Out of bounds on buffer access (axis Unable to convert item to object.>')?add_note and  at 0xcollections.abc<contiguous and direct><contiguous and indirect>cython.doublecython.double[:, :]cython.double[:]disableenablegc (got got differing extents in dimension isenableditemsize <= 0 for cython.arrayno default __reduce__ due to non-trivial __cinit__ object>src/openptv2/algorithms/ray_tracing.py<strided and direct><strided and direct or indirect><strided and indirect>unable to allocate array data.unable to allocate shape and strides.ASCIIEllipsis__Pyx_PyDict_NextRefSequenceView.MemoryViewabcallocate_bufferascontiguousarrayasyncio.coroutinesbaseboolccalcc__class____class_getitem__cline_in_tracebackcountd__dict__dmdtypedtype_is_objectemptyencodeenumerateerrorext_dmext_parext_x0ext_y0ext_z0flagsfloat64formatfortran__func____getstate__glass_parglass_vec_xglass_vec_yglass_vec_zid__import__indexint_ccint_paris_compiled_is_coroutineitemsitemsize__main__memviewmmmm_d0mm_n1mm_n2_0mm_n3mode__module__n1n2n3name__name__ndim__new__npnumpyobjopenptv2.algorithms.ray_tracingoutpackpoppos__pyx_checksum__pyx_state__pyx_type__pyx_unpickle_Enum__pyx_vtable____qualname__ray_tracingray_tracing_batch_ray_tracing_core__reduce____reduce_cython____reduce_ex__registerreturn__set_name__setdefault__setstate____setstate_cython__shapesizestartstepstopstruct__test__unpackupdatevaluesvec_xvec_yv""ec_zxx0xyyy0z0\200\001\360\034\000\005\"\240\022\320#5\260Q\260d\270&\300\002\300!\330\004\024\220E\230\026\230q\240\001\330\004\020\220\002\220&\230\002\230#\230T\240\026\240r\250\021\330\004\021\220\022\2206\230\022\2303\230d\240&\250\002\250!\330\004\"\240!\330\004\"\240!\340\004\"\240#\240X\250Q\330\004\034\230C\230x\240q\330\004\034\230C\230x\240q\330\004\034\230C\230x\240q\330\004\034\230C\230x\240q\330\004!\240\023\240J\250a\330\004!\240\023\240J\250a\330\004!\240\023\240J\250a\330\004\033\2302\230Q\330\004\035\230R\230s\240!\2401\330\004\033\2302\230Q\330\004\033\2302\230R\230q\240\001\360\006\000\005!\240\006\240a\240|\2602\260\\\300\022\300<\310r\320Q]\320]_\320_k\320km\320mn\330\004!\240\034\250R\250q\330\004!\240\034\250R\250q\330\004!\240\034\250R\250q\330\004\027\220{\240\"\240A\340\004%\240\\\260\022\2607\270\"\270L\310\002\310'\320QS\320S_\320_a\320ai\320ik\320kl\360L\001\000\005\t\210\005\210U\220!\2201\330\010\014\210E\220\021\220#\220Q\330\010\014\210E\220\021\220#\220Q\360\006\000\t\025\220F\230!\2302\230R\230r\240\022\2402\240R\240r\250\022\2507\260\"\260A\330\010\r\210R\210r\220\021\330\010\r\210R\210r\220\021\330\010\r\210Q\210g\220R\220q\360\006\000\t\027\220f\230A\230S\240\003\2402\240S\250\002\250&\260\001\260\023\260C\260r\270\023\270B\270f\300A\300S\310\003\3102\310Q\330\010\026\220f\230A\230S\240\003\2402\240S\250\002\250&\260\001\260\023\260C\260r\270\023\270B\270f\300A\300S\310\003\3102\310Q\330\010\026\220f\230A\230S\240\003\2402\240S\250\002\250&\260\001\260\023\260C\260r\270\023\270B\270f\300A\300S\310\003\3102\310Q\360\006\000\t\033\230,\240b\250\014\260B\260l\300\"\300L\320PR\320R^\320^`\320`a\330\010\r\210Q\210o\230R\230q\360\006\000\t\020\210w\220b\230\014\240B\240a\330\010\017\210w\220b\230\014\240B\240a\330\010\017\210w\220b\230\014\240B\240a\360\006\000\t\021\220\014\230B\230l\250\"\250L\270\002\270,\300b\310\014\320TV\320VW\330\010\017\210|\2302\230\\\250\022\2501\330\010\017\210|\2302\230\\\250\022\2501\330\010\017\210|""\2302\230\\\250\022\2501\330\010\022\220&\230\001\230\025\230b\240\005\240R\240u\250B\250e\2602\260U\270\"\270A\330\010\013\2108\2202\220Q\330\014\024\220A\330\014\024\220A\330\014\024\220A\360\006\000\t\r\210F\220!\2204\220r\230\026\230r\240\027\250\002\250&\260\002\260!\330\010\022\220!\2206\230\021\230$\230b\240\002\240\"\240A\360\006\000\t\020\210u\220B\220b\230\002\230,\240b\250\001\330\010\017\210u\220B\220b\230\002\230,\240b\250\001\330\010\017\210u\220B\220b\230\002\230,\240b\250\001\340\010\027\220|\2402\240U\250\"\250L\270\002\270%\270r\300\034\310R\310q\330\010\r\210V\2202\220S\230\001\230\021\360\006\000\t\017\210e\2202\220U\230\"\230A\330\010\016\210e\2202\220U\230\"\230A\330\010\016\210e\2202\220U\230\"\230A\360\006\000\t\020\210u\220B\220l\240\"\240E\250\022\250<\260r\270\025\270b\300\001\330\010\017\210u\220B\220l\240\"\240A\330\010\017\210u\220B\220l\240\"\240A\330\010\017\210u\220B\220l\240\"\240A\330\010\022\220&\230\001\230\025\230b\240\005\240R\240u\250B\250e\2602\260U\270\"\270A\330\010\013\2108\2202\220Q\330\014\024\220A\330\014\024\220A\330\014\024\220A\340\010\014\210F\220!\2204\220r\230\025\230b\240\001\330\010\014\210B\210b\220\010\230\002\230!\330\010\022\220!\2206\230\021\230$\230b\240\002\240\"\240A\340\010\020\220\005\220R\220r\230\022\230<\240r\250\021\330\010\020\220\005\220R\220r\230\022\230<\240r\250\021\330\010\020\220\005\220R\220r\230\022\230<\240r\250\021\340\010\016\210a\210s\220%\220q\330\010\016\210a\210s\220%\220q\330\010\016\210a\210s\220%\220q\340\010\016\210a\210s\220%\220q\330\010\016\210a\210s\220%\220q\330\010\016\210a\210s\220%\220q\340\004\013\210;\220a\200\001\340\007\010\330\007\010\330\014\r\330\014\r\330\014\r\330\014\r\330\014\r\330\021\022\330\021\022\330\021\022\330\013\014\330\r\016\330\013\014\330\013\014\360.\000\005\013\210\"\210F\220!\2203\220f\230B\230a\330\004\020\220\002\220&\230\001\230\023\230F\240\"\240A\340\004\025\220Q\330\010\013\2103\210h\220h\230h\240h\250a\330\010\025\220]\240!\330\010\017""\210y\230\007\230q\330\010\r\210Q\340\004\013\2105\220\001\320\000\025\220Q\340\004\021\220\021\200\001\360\010\000\010\t\330\007\010\330\014\r\330\014\r\330\014\r\330\014\r\330\014\r\330\021\022\330\021\022\330\021\022\330\013\014\330\r\016\330\013\014\330\013\014\330\t\n\330\t\n\360\006\000\005 \230v\240Q\240b\250\002\250\"\250B\250b\260\002\260\"\260B\260g\270R\270q\330\004\030\230\002\230\"\230A\330\004\030\230\002\230\"\230A\330\004\030\230\001\230\027\240\002\240!\360\006\000\005\"\240\026\240q\250\003\2503\250b\260\003\2602\260V\2701\270C\270s\300\"\300C\300r\310\026\310q\320PS\320SV\320VX\320XY\330\004!\240\026\240q\250\003\2503\250b\260\003\2602\260V\2701\270C\270s\300\"\300C\300r\310\026\310q\320PS\320SV\320VX\320XY\330\004!\240\026\240q\250\003\2503\250b\260\003\2602\260V\2701\270C\270s\300\"\300C\300r\310\026\310q\320PS\320SV\320VX\320XY\360\006\000\005!\240\006\240a\240|\2602\260\\\300\022\300<\310r\320Q]\320]_\320_k\320km\320mn\330\004!\240\034\250R\250q\330\004!\240\034\250R\250q\330\004!\240\034\250R\250q\330\004\027\220{\240\"\240A\360\006\000\005&\240\\\260\022\2607\270\"\270L\310\002\310'\320QS\320S_\320_a\320ai\320ik\320kl\330\004%\240\\\260\022\260<\270r\300\034\310R\310|\320[]\320]i\320ik\320kl\330\004\030\230\001\230\037\250\002\250!\360\006\000\005\033\230'\240\022\240<\250r\260\021\330\004\032\230'\240\022\240<\250r\260\021\330\004\032\230'\240\022\240<\250r\260\021\360\006\000\005\030\220|\2402\240\\\260\022\260<\270r\300\034\310R\310|\320[]\320]^\330\004\032\230,\240b\250\014\260B\260a\330\004\032\230,\240b\250\014\260B\260a\330\004\032\230,\240b\250\014\260B\260a\330\004\035\230V\2401\240E\250\022\2505\260\002\260%\260r\270\025\270b\300\005\300R\300q\330\004\007\200x\210r\220\021\330\010\020\220\001\330\010\020\220\001\330\010\020\220\001\360\006\000\005\030\220v\230Q\230d\240\"\240B\240b\250\003\2502\250V\2602\260Q\330\004\035\230Q\230f\240A\240T\250\022\2502\250R\250q\360\006\000\005\033\230%\230r\240\022\2402\240\\\260\022\2601\330""\004\032\230%\230r\240\022\2402\240\\\260\022\2601\330\004\032\230%\230r\240\022\2402\240\\\260\022\2601\340\004\"\240,\250b\260\005\260R\260|\3002\300U\310\"\310L\320XZ\320Z[\330\004\030\230\006\230b\240\003\2401\240A\360\006\000\005\032\230\025\230b\240\005\240R\240q\330\004\031\230\025\230b\240\005\240R\240q\330\004\031\230\025\230b\240\005\240R\240q\360\006\000\005\033\230%\230r\240\034\250R\250u\260B\260l\300\"\300E\310\022\3101\330\004\013\2105\220\002\220,\230b\240\001\330\004\013\2105\220\002\220,\230b\240\001\330\004\013\2105\220\002\220,\230b\240\001\330\004\016\210f\220A\220U\230\"\230E\240\022\2405\250\002\250%\250r\260\025\260b\270\001\330\004\007\200x\210r\220\021\330\010\020\220\001\330\010\020\220\001\330\010\020\220\001\340\004\010\210\006\210a\210t\2202\220U\230\"\230A\330\004\010\210\002\210\"\210H\220B\220a\330\004\035\230Q\230f\240A\240T\250\022\2502\250R\250q\340\004\033\2305\240\002\240\"\240B\240l\260\"\260A\330\004\033\2305\240\002\240\"\240B\240l\260\"\260A\330\004\033\2305\240\002\240\"\240B\240l\260\"\260A\340\004\007\200q\210\005\210Q\330\004\007\200q\210\005\210Q\330\004\007\200q\210\005\210Q\340\004\007\200q\210\005\210Q\330\004\007\200q\210\005\210Q\330\004\007\200q\210\005\210QO";
     PyObject *data = NULL;
     CYTHON_UNUSED_VAR(__Pyx_DecompressString);
     #endif
@@ -20695,22 +20695,22 @@ static int __Pyx_CreateCodeObjects(__pyx_mstatetype *__pyx_mstate) {
   {
     const __Pyx_PyCode_New_function_description descr = {16, 0, 0, 16, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 18};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_x, __pyx_mstate->__pyx_n_u_y, __pyx_mstate->__pyx_n_u_ext_dm, __pyx_mstate->__pyx_n_u_ext_x0, __pyx_mstate->__pyx_n_u_ext_y0, __pyx_mstate->__pyx_n_u_ext_z0, __pyx_mstate->__pyx_n_u_int_cc, __pyx_mstate->__pyx_n_u_glass_vec_x, __pyx_mstate->__pyx_n_u_glass_vec_y, __pyx_mstate->__pyx_n_u_glass_vec_z, __pyx_mstate->__pyx_n_u_mm_n1, __pyx_mstate->__pyx_n_u_mm_n2_0, __pyx_mstate->__pyx_n_u_mm_n3, __pyx_mstate->__pyx_n_u_mm_d0, __pyx_mstate->__pyx_n_u_pos, __pyx_mstate->__pyx_n_u_out};
-    __pyx_mstate_global->__pyx_codeobj_tab[0] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_ray_tracing_py, __pyx_mstate->__pyx_n_u_ray_tracing_core, __pyx_mstate->__pyx_kp_b_iso88591_vQb_Bb_BgRq_A_A_q_3b_2V1Cs_Cr_q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[0])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[0] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_ray_trac, __pyx_mstate->__pyx_n_u_ray_tracing_core, __pyx_mstate->__pyx_kp_b_iso88591_vQb_Bb_BgRq_A_A_q_3b_2V1Cs_Cr_q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[0])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {14, 0, 0, 14, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 123};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_x, __pyx_mstate->__pyx_n_u_y, __pyx_mstate->__pyx_n_u_ext_dm, __pyx_mstate->__pyx_n_u_ext_x0, __pyx_mstate->__pyx_n_u_ext_y0, __pyx_mstate->__pyx_n_u_ext_z0, __pyx_mstate->__pyx_n_u_int_cc, __pyx_mstate->__pyx_n_u_glass_vec_x, __pyx_mstate->__pyx_n_u_glass_vec_y, __pyx_mstate->__pyx_n_u_glass_vec_z, __pyx_mstate->__pyx_n_u_mm_n1, __pyx_mstate->__pyx_n_u_mm_n2_0, __pyx_mstate->__pyx_n_u_mm_n3, __pyx_mstate->__pyx_n_u_mm_d0};
-    __pyx_mstate_global->__pyx_codeobj_tab[1] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_ray_tracing_py, __pyx_mstate->__pyx_n_u_ray_tracing, __pyx_mstate->__pyx_kp_b_iso88591_F_3fBa_F_A_Q_3hhhha_y_q_Q_5, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[1])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[1] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_ray_trac, __pyx_mstate->__pyx_n_u_ray_tracing, __pyx_mstate->__pyx_kp_b_iso88591_F_3fBa_F_A_Q_3hhhha_y_q_Q_5, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[1])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {3, 0, 0, 3, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 173};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_xy, __pyx_mstate->__pyx_n_u_cal, __pyx_mstate->__pyx_n_u_mm};
-    __pyx_mstate_global->__pyx_codeobj_tab[2] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_ray_tracing_py, __pyx_mstate->__pyx_n_u_ray_tracing_batch, __pyx_mstate->__pyx_kp_b_iso88591_5Qd_E_q_T_r_6_3d_XQ_Cxq_Cxq_Cxq, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[2])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[2] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_ray_trac, __pyx_mstate->__pyx_n_u_ray_tracing_batch, __pyx_mstate->__pyx_kp_b_iso88591_5Qd_E_q_T_r_6_3d_XQ_Cxq_Cxq_Cxq, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[2])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {0, 0, 0, 0, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 334};
     PyObject* const varnames[] = {0};
-    __pyx_mstate_global->__pyx_codeobj_tab[3] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_ray_tracing_py, __pyx_mstate->__pyx_n_u_is_compiled, __pyx_mstate->__pyx_kp_b_iso88591_Q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[3])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[3] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_ray_trac, __pyx_mstate->__pyx_n_u_is_compiled, __pyx_mstate->__pyx_kp_b_iso88591_Q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[3])) goto bad;
   }
   Py_DECREF(tuple_dedup_map);
   return 0;

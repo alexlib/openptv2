@@ -3,12 +3,12 @@
 /* BEGIN: Cython Metadata
 {
     "distutils": {
-        "name": "algorithms.calibration",
+        "name": "openptv2.algorithms.calibration",
         "sources": [
-            "algorithms/calibration.py"
+            "src/openptv2/algorithms/calibration.py"
         ]
     },
-    "module_name": "algorithms.calibration"
+    "module_name": "openptv2.algorithms.calibration"
 }
 END: Cython Metadata */
 
@@ -1126,8 +1126,8 @@ static int __Pyx_init_co_variables(void) {
   #endif
 #endif
 
-#define __PYX_HAVE__algorithms__calibration
-#define __PYX_HAVE_API__algorithms__calibration
+#define __PYX_HAVE__openptv2__algorithms__calibration
+#define __PYX_HAVE_API__openptv2__algorithms__calibration
 /* Early includes */
 #ifdef _OPENMP
 #include <omp.h>
@@ -1345,7 +1345,7 @@ static const char *__pyx_filename;
 /* #### Code section: filename_table ### */
 
 static const char* const __pyx_f[] = {
-  "algorithms/calibration.py",
+  "src/openptv2/algorithms/calibration.py",
 };
 /* #### Code section: utility_code_proto_before_types ### */
 /* Atomics.proto (used by UnpackUnboundCMethod) */
@@ -2632,37 +2632,37 @@ static int __Pyx_State_RemoveModule(void*);
 
 /* Module declarations from "cython" */
 
-/* Module declarations from "algorithms.calibration" */
-static int __pyx_f_10algorithms_11calibration_compare_exterior(PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
-static int __pyx_f_10algorithms_11calibration_compare_interior(PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
-static int __pyx_f_10algorithms_11calibration_compare_glass(PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
-static int __pyx_f_10algorithms_11calibration_compare_addpar(PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
-static int __pyx_f_10algorithms_11calibration_compare_calib(PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+/* Module declarations from "openptv2.algorithms.calibration" */
+static int __pyx_f_8openptv2_10algorithms_11calibration_compare_exterior(PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static int __pyx_f_8openptv2_10algorithms_11calibration_compare_interior(PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static int __pyx_f_8openptv2_10algorithms_11calibration_compare_glass(PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static int __pyx_f_8openptv2_10algorithms_11calibration_compare_addpar(PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static int __pyx_f_8openptv2_10algorithms_11calibration_compare_calib(PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
 /* #### Code section: typeinfo ### */
 /* #### Code section: before_global_var ### */
-#define __Pyx_MODULE_NAME "algorithms.calibration"
-extern int __pyx_module_is_main_algorithms__calibration;
-int __pyx_module_is_main_algorithms__calibration = 0;
+#define __Pyx_MODULE_NAME "openptv2.algorithms.calibration"
+extern int __pyx_module_is_main_openptv2__algorithms__calibration;
+int __pyx_module_is_main_openptv2__algorithms__calibration = 0;
 
-/* Implementation of "algorithms.calibration" */
+/* Implementation of "openptv2.algorithms.calibration" */
 /* #### Code section: global_var ### */
 static PyObject *__pyx_builtin_property;
 /* #### Code section: string_decls ### */
 static const char __pyx_k_Camera_calibration_data_structur[] = "Camera calibration data structures and I/O.\n\nTranslation of lib/src/calibration.c and lib/include/calibration.h.\n\nProvides:\n- Exterior: camera position (x0, y0, z0) and angles (omega, phi, kappa) + rotation matrix\n- Interior: principal point (xh, yh) and camera constant (cc)\n- Glass: glass interface normal vector and refractive properties\n- AddedPar: Brown distortion parameters (k1, k2, k3, p1, p2, scx, she)\n- MmLut: multimedia look-up table\n- Calibration: aggregates all above\n";
 /* #### Code section: decls ### */
-static PyObject *__pyx_lambda_funcdef_10algorithms_11calibration_8Exterior_lambda(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
-static PyObject *__pyx_pf_10algorithms_11calibration_8Exterior_compute_rotation_matrix(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self); /* proto */
-static PyObject *__pyx_lambda_funcdef_10algorithms_11calibration_5MmLut_lambda1(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
-static PyObject *__pyx_pf_10algorithms_11calibration_5MmLut_is_initialized(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration___post_init__(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cls, PyObject *__pyx_v_ori_file, PyObject *__pyx_v_add_file, PyObject *__pyx_v_add_fallback); /* proto */
-static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_4to_file(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_ori_file, PyObject *__pyx_v_add_file); /* proto */
-static PyObject *__pyx_pf_10algorithms_11calibration_compare_exterior(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_e1, PyObject *__pyx_v_e2); /* proto */
-static PyObject *__pyx_pf_10algorithms_11calibration_2compare_interior(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_i1, PyObject *__pyx_v_i2); /* proto */
-static PyObject *__pyx_pf_10algorithms_11calibration_4compare_glass(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_g1, PyObject *__pyx_v_g2); /* proto */
-static PyObject *__pyx_pf_10algorithms_11calibration_6compare_addpar(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_a1, PyObject *__pyx_v_a2); /* proto */
-static PyObject *__pyx_pf_10algorithms_11calibration_8compare_calib(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_c1, PyObject *__pyx_v_c2); /* proto */
-static PyObject *__pyx_pf_10algorithms_11calibration_10is_compiled(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
+static PyObject *__pyx_lambda_funcdef_8openptv2_10algorithms_11calibration_8Exterior_lambda(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_11calibration_8Exterior_compute_rotation_matrix(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self); /* proto */
+static PyObject *__pyx_lambda_funcdef_8openptv2_10algorithms_11calibration_5MmLut_lambda1(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_11calibration_5MmLut_is_initialized(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_11calibration_11Calibration___post_init__(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_11calibration_11Calibration_2from_file(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cls, PyObject *__pyx_v_ori_file, PyObject *__pyx_v_add_file, PyObject *__pyx_v_add_fallback); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_11calibration_11Calibration_4to_file(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_ori_file, PyObject *__pyx_v_add_file); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_11calibration_compare_exterior(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_e1, PyObject *__pyx_v_e2); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_11calibration_2compare_interior(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_i1, PyObject *__pyx_v_i2); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_11calibration_4compare_glass(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_g1, PyObject *__pyx_v_g2); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_11calibration_6compare_addpar(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_a1, PyObject *__pyx_v_a2); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_11calibration_8compare_calib(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_c1, PyObject *__pyx_v_c2); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_11calibration_10is_compiled(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
 /* #### Code section: late_includes ### */
 /* #### Code section: module_state ### */
 /* SmallCodeConfig */
@@ -2755,8 +2755,8 @@ static __pyx_mstatetype * const __pyx_mstate_global = &__pyx_mstate_global_stati
 #define __pyx_kp_u__5 __pyx_string_tab[21]
 #define __pyx_kp_u__6 __pyx_string_tab[22]
 #define __pyx_kp_u__7 __pyx_string_tab[23]
-#define __pyx_kp_u_algorithms_calibration_py __pyx_string_tab[24]
-#define __pyx_kp_u_np_ndarray __pyx_string_tab[25]
+#define __pyx_kp_u_np_ndarray __pyx_string_tab[24]
+#define __pyx_kp_u_src_openptv2_algorithms_calibrat __pyx_string_tab[25]
 #define __pyx_kp_u_str_Path __pyx_string_tab[26]
 #define __pyx_kp_u_str_Path_None __pyx_string_tab[27]
 #define __pyx_n_u_AddedPar __pyx_string_tab[28]
@@ -2783,89 +2783,89 @@ static __pyx_mstatetype * const __pyx_mstate_global = &__pyx_mstate_global_stati
 #define __pyx_n_u_add_lines __pyx_string_tab[49]
 #define __pyx_n_u_add_path __pyx_string_tab[50]
 #define __pyx_n_u_added_par __pyx_string_tab[51]
-#define __pyx_n_u_algorithms_calibration __pyx_string_tab[52]
-#define __pyx_n_u_allclose __pyx_string_tab[53]
-#define __pyx_n_u_annotations __pyx_string_tab[54]
-#define __pyx_n_u_ap __pyx_string_tab[55]
-#define __pyx_n_u_array __pyx_string_tab[56]
-#define __pyx_n_u_asyncio_coroutines __pyx_string_tab[57]
-#define __pyx_n_u_bool __pyx_string_tab[58]
-#define __pyx_n_u_c1 __pyx_string_tab[59]
-#define __pyx_n_u_c2 __pyx_string_tab[60]
-#define __pyx_n_u_cc __pyx_string_tab[61]
-#define __pyx_n_u_cc_line __pyx_string_tab[62]
-#define __pyx_n_u_ck __pyx_string_tab[63]
-#define __pyx_n_u_class_getitem __pyx_string_tab[64]
-#define __pyx_n_u_cline_in_traceback __pyx_string_tab[65]
-#define __pyx_n_u_cls __pyx_string_tab[66]
-#define __pyx_n_u_co __pyx_string_tab[67]
-#define __pyx_n_u_compare_addpar __pyx_string_tab[68]
-#define __pyx_n_u_compare_calib __pyx_string_tab[69]
-#define __pyx_n_u_compare_exterior __pyx_string_tab[70]
-#define __pyx_n_u_compare_glass __pyx_string_tab[71]
-#define __pyx_n_u_compare_interior __pyx_string_tab[72]
-#define __pyx_n_u_compute_rotation_matrix __pyx_string_tab[73]
-#define __pyx_n_u_cos __pyx_string_tab[74]
-#define __pyx_n_u_cp __pyx_string_tab[75]
-#define __pyx_n_u_d __pyx_string_tab[76]
-#define __pyx_n_u_data __pyx_string_tab[77]
-#define __pyx_n_u_dataclass __pyx_string_tab[78]
-#define __pyx_n_u_dataclasses __pyx_string_tab[79]
-#define __pyx_n_u_default_factory __pyx_string_tab[80]
-#define __pyx_n_u_dm __pyx_string_tab[81]
-#define __pyx_n_u_doc __pyx_string_tab[82]
-#define __pyx_n_u_dtype __pyx_string_tab[83]
-#define __pyx_n_u_e1 __pyx_string_tab[84]
-#define __pyx_n_u_e2 __pyx_string_tab[85]
-#define __pyx_n_u_exists __pyx_string_tab[86]
-#define __pyx_n_u_ext __pyx_string_tab[87]
-#define __pyx_n_u_ext_par __pyx_string_tab[88]
-#define __pyx_n_u_eye __pyx_string_tab[89]
-#define __pyx_n_u_fallback_path __pyx_string_tab[90]
-#define __pyx_n_u_fb_lines __pyx_string_tab[91]
-#define __pyx_n_u_field __pyx_string_tab[92]
-#define __pyx_n_u_first_line __pyx_string_tab[93]
-#define __pyx_n_u_float __pyx_string_tab[94]
-#define __pyx_n_u_float64 __pyx_string_tab[95]
-#define __pyx_n_u_from_file __pyx_string_tab[96]
-#define __pyx_n_u_func __pyx_string_tab[97]
-#define __pyx_n_u_g1 __pyx_string_tab[98]
-#define __pyx_n_u_g2 __pyx_string_tab[99]
-#define __pyx_n_u_glass __pyx_string_tab[100]
-#define __pyx_n_u_glass_line __pyx_string_tab[101]
-#define __pyx_n_u_glass_par __pyx_string_tab[102]
-#define __pyx_n_u_glass_parts __pyx_string_tab[103]
-#define __pyx_n_u_i __pyx_string_tab[104]
-#define __pyx_n_u_i1 __pyx_string_tab[105]
-#define __pyx_n_u_i2 __pyx_string_tab[106]
-#define __pyx_n_u_idx __pyx_string_tab[107]
-#define __pyx_n_u_int __pyx_string_tab[108]
-#define __pyx_n_u_int_par __pyx_string_tab[109]
-#define __pyx_n_u_interior_line __pyx_string_tab[110]
-#define __pyx_n_u_interior_parts __pyx_string_tab[111]
-#define __pyx_n_u_is_compiled __pyx_string_tab[112]
-#define __pyx_n_u_is_coroutine __pyx_string_tab[113]
-#define __pyx_n_u_is_initialized __pyx_string_tab[114]
-#define __pyx_n_u_items __pyx_string_tab[115]
-#define __pyx_n_u_k1 __pyx_string_tab[116]
-#define __pyx_n_u_k2 __pyx_string_tab[117]
-#define __pyx_n_u_k3 __pyx_string_tab[118]
-#define __pyx_n_u_kappa __pyx_string_tab[119]
-#define __pyx_n_u_lambda __pyx_string_tab[120]
-#define __pyx_n_u_lines __pyx_string_tab[121]
-#define __pyx_n_u_main __pyx_string_tab[122]
-#define __pyx_n_u_metaclass __pyx_string_tab[123]
-#define __pyx_n_u_mmlut __pyx_string_tab[124]
-#define __pyx_n_u_module __pyx_string_tab[125]
-#define __pyx_n_u_n1 __pyx_string_tab[126]
-#define __pyx_n_u_n2 __pyx_string_tab[127]
-#define __pyx_n_u_n3 __pyx_string_tab[128]
-#define __pyx_n_u_name __pyx_string_tab[129]
-#define __pyx_n_u_np __pyx_string_tab[130]
-#define __pyx_n_u_nr __pyx_string_tab[131]
-#define __pyx_n_u_numpy __pyx_string_tab[132]
-#define __pyx_n_u_nz __pyx_string_tab[133]
-#define __pyx_n_u_omega __pyx_string_tab[134]
+#define __pyx_n_u_allclose __pyx_string_tab[52]
+#define __pyx_n_u_annotations __pyx_string_tab[53]
+#define __pyx_n_u_ap __pyx_string_tab[54]
+#define __pyx_n_u_array __pyx_string_tab[55]
+#define __pyx_n_u_asyncio_coroutines __pyx_string_tab[56]
+#define __pyx_n_u_bool __pyx_string_tab[57]
+#define __pyx_n_u_c1 __pyx_string_tab[58]
+#define __pyx_n_u_c2 __pyx_string_tab[59]
+#define __pyx_n_u_cc __pyx_string_tab[60]
+#define __pyx_n_u_cc_line __pyx_string_tab[61]
+#define __pyx_n_u_ck __pyx_string_tab[62]
+#define __pyx_n_u_class_getitem __pyx_string_tab[63]
+#define __pyx_n_u_cline_in_traceback __pyx_string_tab[64]
+#define __pyx_n_u_cls __pyx_string_tab[65]
+#define __pyx_n_u_co __pyx_string_tab[66]
+#define __pyx_n_u_compare_addpar __pyx_string_tab[67]
+#define __pyx_n_u_compare_calib __pyx_string_tab[68]
+#define __pyx_n_u_compare_exterior __pyx_string_tab[69]
+#define __pyx_n_u_compare_glass __pyx_string_tab[70]
+#define __pyx_n_u_compare_interior __pyx_string_tab[71]
+#define __pyx_n_u_compute_rotation_matrix __pyx_string_tab[72]
+#define __pyx_n_u_cos __pyx_string_tab[73]
+#define __pyx_n_u_cp __pyx_string_tab[74]
+#define __pyx_n_u_d __pyx_string_tab[75]
+#define __pyx_n_u_data __pyx_string_tab[76]
+#define __pyx_n_u_dataclass __pyx_string_tab[77]
+#define __pyx_n_u_dataclasses __pyx_string_tab[78]
+#define __pyx_n_u_default_factory __pyx_string_tab[79]
+#define __pyx_n_u_dm __pyx_string_tab[80]
+#define __pyx_n_u_doc __pyx_string_tab[81]
+#define __pyx_n_u_dtype __pyx_string_tab[82]
+#define __pyx_n_u_e1 __pyx_string_tab[83]
+#define __pyx_n_u_e2 __pyx_string_tab[84]
+#define __pyx_n_u_exists __pyx_string_tab[85]
+#define __pyx_n_u_ext __pyx_string_tab[86]
+#define __pyx_n_u_ext_par __pyx_string_tab[87]
+#define __pyx_n_u_eye __pyx_string_tab[88]
+#define __pyx_n_u_fallback_path __pyx_string_tab[89]
+#define __pyx_n_u_fb_lines __pyx_string_tab[90]
+#define __pyx_n_u_field __pyx_string_tab[91]
+#define __pyx_n_u_first_line __pyx_string_tab[92]
+#define __pyx_n_u_float __pyx_string_tab[93]
+#define __pyx_n_u_float64 __pyx_string_tab[94]
+#define __pyx_n_u_from_file __pyx_string_tab[95]
+#define __pyx_n_u_func __pyx_string_tab[96]
+#define __pyx_n_u_g1 __pyx_string_tab[97]
+#define __pyx_n_u_g2 __pyx_string_tab[98]
+#define __pyx_n_u_glass __pyx_string_tab[99]
+#define __pyx_n_u_glass_line __pyx_string_tab[100]
+#define __pyx_n_u_glass_par __pyx_string_tab[101]
+#define __pyx_n_u_glass_parts __pyx_string_tab[102]
+#define __pyx_n_u_i __pyx_string_tab[103]
+#define __pyx_n_u_i1 __pyx_string_tab[104]
+#define __pyx_n_u_i2 __pyx_string_tab[105]
+#define __pyx_n_u_idx __pyx_string_tab[106]
+#define __pyx_n_u_int __pyx_string_tab[107]
+#define __pyx_n_u_int_par __pyx_string_tab[108]
+#define __pyx_n_u_interior_line __pyx_string_tab[109]
+#define __pyx_n_u_interior_parts __pyx_string_tab[110]
+#define __pyx_n_u_is_compiled __pyx_string_tab[111]
+#define __pyx_n_u_is_coroutine __pyx_string_tab[112]
+#define __pyx_n_u_is_initialized __pyx_string_tab[113]
+#define __pyx_n_u_items __pyx_string_tab[114]
+#define __pyx_n_u_k1 __pyx_string_tab[115]
+#define __pyx_n_u_k2 __pyx_string_tab[116]
+#define __pyx_n_u_k3 __pyx_string_tab[117]
+#define __pyx_n_u_kappa __pyx_string_tab[118]
+#define __pyx_n_u_lambda __pyx_string_tab[119]
+#define __pyx_n_u_lines __pyx_string_tab[120]
+#define __pyx_n_u_main __pyx_string_tab[121]
+#define __pyx_n_u_metaclass __pyx_string_tab[122]
+#define __pyx_n_u_mmlut __pyx_string_tab[123]
+#define __pyx_n_u_module __pyx_string_tab[124]
+#define __pyx_n_u_n1 __pyx_string_tab[125]
+#define __pyx_n_u_n2 __pyx_string_tab[126]
+#define __pyx_n_u_n3 __pyx_string_tab[127]
+#define __pyx_n_u_name __pyx_string_tab[128]
+#define __pyx_n_u_np __pyx_string_tab[129]
+#define __pyx_n_u_nr __pyx_string_tab[130]
+#define __pyx_n_u_numpy __pyx_string_tab[131]
+#define __pyx_n_u_nz __pyx_string_tab[132]
+#define __pyx_n_u_omega __pyx_string_tab[133]
+#define __pyx_n_u_openptv2_algorithms_calibration __pyx_string_tab[134]
 #define __pyx_n_u_ori_file __pyx_string_tab[135]
 #define __pyx_n_u_ori_path __pyx_string_tab[136]
 #define __pyx_n_u_origin __pyx_string_tab[137]
@@ -2990,7 +2990,7 @@ return 0;
 #endif
 /* #### Code section: module_code ### */
 
-/* "algorithms/calibration.py":39
+/* "openptv2/algorithms/calibration.py":39
  *     phi: float = 0.0
  *     kappa: float = 0.0
  *     dm: np.ndarray = field(default_factory=lambda: np.eye(3, dtype=np.float64))             # <<<<<<<<<<<<<<
@@ -2999,22 +2999,22 @@ return 0;
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_11calibration_8Exterior_2lambda(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static PyMethodDef __pyx_mdef_10algorithms_11calibration_8Exterior_2lambda = {"lambda", (PyCFunction)__pyx_pw_10algorithms_11calibration_8Exterior_2lambda, METH_NOARGS, 0};
-static PyObject *__pyx_pw_10algorithms_11calibration_8Exterior_2lambda(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_8openptv2_10algorithms_11calibration_8Exterior_2lambda(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_11calibration_8Exterior_2lambda = {"lambda", (PyCFunction)__pyx_pw_8openptv2_10algorithms_11calibration_8Exterior_2lambda, METH_NOARGS, 0};
+static PyObject *__pyx_pw_8openptv2_10algorithms_11calibration_8Exterior_2lambda(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused) {
   CYTHON_UNUSED PyObject *const *__pyx_kwvalues;
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("lambda (wrapper)", 0);
   __pyx_kwvalues = __Pyx_KwValues_VARARGS(__pyx_args, __pyx_nargs);
-  __pyx_r = __pyx_lambda_funcdef_10algorithms_11calibration_8Exterior_lambda(__pyx_self);
+  __pyx_r = __pyx_lambda_funcdef_8openptv2_10algorithms_11calibration_8Exterior_lambda(__pyx_self);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_lambda_funcdef_10algorithms_11calibration_8Exterior_lambda(CYTHON_UNUSED PyObject *__pyx_self) {
+static PyObject *__pyx_lambda_funcdef_8openptv2_10algorithms_11calibration_8Exterior_lambda(CYTHON_UNUSED PyObject *__pyx_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -3075,7 +3075,7 @@ static PyObject *__pyx_lambda_funcdef_10algorithms_11calibration_8Exterior_lambd
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_5);
-  __Pyx_AddTraceback("algorithms.calibration.Exterior.lambda", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.calibration.Exterior.lambda", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -3083,7 +3083,7 @@ static PyObject *__pyx_lambda_funcdef_10algorithms_11calibration_8Exterior_lambd
   return __pyx_r;
 }
 
-/* "algorithms/calibration.py":41
+/* "openptv2/algorithms/calibration.py":41
  *     dm: np.ndarray = field(default_factory=lambda: np.eye(3, dtype=np.float64))
  * 
  *     def compute_rotation_matrix(self) -> np.ndarray:             # <<<<<<<<<<<<<<
@@ -3092,16 +3092,16 @@ static PyObject *__pyx_lambda_funcdef_10algorithms_11calibration_8Exterior_lambd
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_11calibration_8Exterior_1compute_rotation_matrix(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_11calibration_8Exterior_1compute_rotation_matrix(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_11calibration_8Exterior_compute_rotation_matrix, "Compute rotation matrix from omega, phi, kappa angles.\n\n        Matches the C `rotation_matrix()` function.\n\n        Returns:\n            3x3 rotation matrix.\n        ");
-static PyMethodDef __pyx_mdef_10algorithms_11calibration_8Exterior_1compute_rotation_matrix = {"compute_rotation_matrix", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_11calibration_8Exterior_1compute_rotation_matrix, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_11calibration_8Exterior_compute_rotation_matrix};
-static PyObject *__pyx_pw_10algorithms_11calibration_8Exterior_1compute_rotation_matrix(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_11calibration_8Exterior_compute_rotation_matrix, "Compute rotation matrix from omega, phi, kappa angles.\n\n        Matches the C `rotation_matrix()` function.\n\n        Returns:\n            3x3 rotation matrix.\n        ");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_11calibration_8Exterior_1compute_rotation_matrix = {"compute_rotation_matrix", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_11calibration_8Exterior_1compute_rotation_matrix, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_11calibration_8Exterior_compute_rotation_matrix};
+static PyObject *__pyx_pw_8openptv2_10algorithms_11calibration_8Exterior_1compute_rotation_matrix(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -3163,11 +3163,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.calibration.Exterior.compute_rotation_matrix", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.calibration.Exterior.compute_rotation_matrix", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_11calibration_8Exterior_compute_rotation_matrix(__pyx_self, __pyx_v_self);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_11calibration_8Exterior_compute_rotation_matrix(__pyx_self, __pyx_v_self);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -3177,7 +3177,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_11calibration_8Exterior_compute_rotation_matrix(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_11calibration_8Exterior_compute_rotation_matrix(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self) {
   PyObject *__pyx_v_cp = NULL;
   PyObject *__pyx_v_sp = NULL;
   PyObject *__pyx_v_co = NULL;
@@ -3202,7 +3202,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_8Exterior_compute_rotation_
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("compute_rotation_matrix", 0);
 
-  /* "algorithms/calibration.py":49
+  /* "openptv2/algorithms/calibration.py":49
  *             3x3 rotation matrix.
  *         """
  *         cp = np.cos(self.phi)             # <<<<<<<<<<<<<<
@@ -3241,7 +3241,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_8Exterior_compute_rotation_
   __pyx_v_cp = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/calibration.py":50
+  /* "openptv2/algorithms/calibration.py":50
  *         """
  *         cp = np.cos(self.phi)
  *         sp = np.sin(self.phi)             # <<<<<<<<<<<<<<
@@ -3280,7 +3280,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_8Exterior_compute_rotation_
   __pyx_v_sp = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/calibration.py":51
+  /* "openptv2/algorithms/calibration.py":51
  *         cp = np.cos(self.phi)
  *         sp = np.sin(self.phi)
  *         co = np.cos(self.omega)             # <<<<<<<<<<<<<<
@@ -3319,7 +3319,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_8Exterior_compute_rotation_
   __pyx_v_co = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/calibration.py":52
+  /* "openptv2/algorithms/calibration.py":52
  *         sp = np.sin(self.phi)
  *         co = np.cos(self.omega)
  *         so = np.sin(self.omega)             # <<<<<<<<<<<<<<
@@ -3358,7 +3358,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_8Exterior_compute_rotation_
   __pyx_v_so = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/calibration.py":53
+  /* "openptv2/algorithms/calibration.py":53
  *         co = np.cos(self.omega)
  *         so = np.sin(self.omega)
  *         ck = np.cos(self.kappa)             # <<<<<<<<<<<<<<
@@ -3397,7 +3397,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_8Exterior_compute_rotation_
   __pyx_v_ck = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/calibration.py":54
+  /* "openptv2/algorithms/calibration.py":54
  *         so = np.sin(self.omega)
  *         ck = np.cos(self.kappa)
  *         sk = np.sin(self.kappa)             # <<<<<<<<<<<<<<
@@ -3436,7 +3436,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_8Exterior_compute_rotation_
   __pyx_v_sk = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/calibration.py":56
+  /* "openptv2/algorithms/calibration.py":56
  *         sk = np.sin(self.kappa)
  * 
  *         dm = np.array([             # <<<<<<<<<<<<<<
@@ -3450,7 +3450,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_8Exterior_compute_rotation_
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-  /* "algorithms/calibration.py":57
+  /* "openptv2/algorithms/calibration.py":57
  * 
  *         dm = np.array([
  *             [cp * ck, -cp * sk, sp],             # <<<<<<<<<<<<<<
@@ -3476,7 +3476,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_8Exterior_compute_rotation_
   __pyx_t_3 = 0;
   __pyx_t_7 = 0;
 
-  /* "algorithms/calibration.py":58
+  /* "openptv2/algorithms/calibration.py":58
  *         dm = np.array([
  *             [cp * ck, -cp * sk, sp],
  *             [co * sk + so * sp * ck, co * ck - so * sp * sk, -so * cp],             # <<<<<<<<<<<<<<
@@ -3522,7 +3522,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_8Exterior_compute_rotation_
   __pyx_t_7 = 0;
   __pyx_t_8 = 0;
 
-  /* "algorithms/calibration.py":59
+  /* "openptv2/algorithms/calibration.py":59
  *             [cp * ck, -cp * sk, sp],
  *             [co * sk + so * sp * ck, co * ck - so * sp * sk, -so * cp],
  *             [so * sk - co * sp * ck, so * ck + co * sp * sk, co * cp],             # <<<<<<<<<<<<<<
@@ -3565,7 +3565,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_8Exterior_compute_rotation_
   __pyx_t_8 = 0;
   __pyx_t_10 = 0;
 
-  /* "algorithms/calibration.py":56
+  /* "openptv2/algorithms/calibration.py":56
  *         sk = np.sin(self.kappa)
  * 
  *         dm = np.array([             # <<<<<<<<<<<<<<
@@ -3584,7 +3584,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_8Exterior_compute_rotation_
   __pyx_t_9 = 0;
   __pyx_t_3 = 0;
 
-  /* "algorithms/calibration.py":60
+  /* "openptv2/algorithms/calibration.py":60
  *             [co * sk + so * sp * ck, co * ck - so * sp * sk, -so * cp],
  *             [so * sk - co * sp * ck, so * ck + co * sp * sk, co * cp],
  *         ], dtype=np.float64)             # <<<<<<<<<<<<<<
@@ -3625,7 +3625,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_8Exterior_compute_rotation_
   __pyx_v_dm = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/calibration.py":62
+  /* "openptv2/algorithms/calibration.py":62
  *         ], dtype=np.float64)
  * 
  *         self.dm = dm             # <<<<<<<<<<<<<<
@@ -3634,7 +3634,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_8Exterior_compute_rotation_
 */
   if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_dm, __pyx_v_dm) < (0)) __PYX_ERR(0, 62, __pyx_L1_error)
 
-  /* "algorithms/calibration.py":63
+  /* "openptv2/algorithms/calibration.py":63
  * 
  *         self.dm = dm
  *         return dm             # <<<<<<<<<<<<<<
@@ -3646,7 +3646,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_8Exterior_compute_rotation_
   __pyx_r = __pyx_v_dm;
   goto __pyx_L0;
 
-  /* "algorithms/calibration.py":41
+  /* "openptv2/algorithms/calibration.py":41
  *     dm: np.ndarray = field(default_factory=lambda: np.eye(3, dtype=np.float64))
  * 
  *     def compute_rotation_matrix(self) -> np.ndarray:             # <<<<<<<<<<<<<<
@@ -3665,7 +3665,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_8Exterior_compute_rotation_
   __Pyx_XDECREF(__pyx_t_8);
   __Pyx_XDECREF(__pyx_t_9);
   __Pyx_XDECREF(__pyx_t_10);
-  __Pyx_AddTraceback("algorithms.calibration.Exterior.compute_rotation_matrix", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.calibration.Exterior.compute_rotation_matrix", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_cp);
@@ -3680,7 +3680,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_8Exterior_compute_rotation_
   return __pyx_r;
 }
 
-/* "algorithms/calibration.py":129
+/* "openptv2/algorithms/calibration.py":129
  *         data: 1D array of size nr * nz with multimedia factors.
  *     """
  *     origin: np.ndarray = field(default_factory=lambda: np.zeros(3, dtype=np.float64))             # <<<<<<<<<<<<<<
@@ -3689,22 +3689,22 @@ static PyObject *__pyx_pf_10algorithms_11calibration_8Exterior_compute_rotation_
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_11calibration_5MmLut_2lambda1(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static PyMethodDef __pyx_mdef_10algorithms_11calibration_5MmLut_2lambda1 = {"lambda1", (PyCFunction)__pyx_pw_10algorithms_11calibration_5MmLut_2lambda1, METH_NOARGS, 0};
-static PyObject *__pyx_pw_10algorithms_11calibration_5MmLut_2lambda1(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_8openptv2_10algorithms_11calibration_5MmLut_2lambda1(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_11calibration_5MmLut_2lambda1 = {"lambda1", (PyCFunction)__pyx_pw_8openptv2_10algorithms_11calibration_5MmLut_2lambda1, METH_NOARGS, 0};
+static PyObject *__pyx_pw_8openptv2_10algorithms_11calibration_5MmLut_2lambda1(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused) {
   CYTHON_UNUSED PyObject *const *__pyx_kwvalues;
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("lambda1 (wrapper)", 0);
   __pyx_kwvalues = __Pyx_KwValues_VARARGS(__pyx_args, __pyx_nargs);
-  __pyx_r = __pyx_lambda_funcdef_10algorithms_11calibration_5MmLut_lambda1(__pyx_self);
+  __pyx_r = __pyx_lambda_funcdef_8openptv2_10algorithms_11calibration_5MmLut_lambda1(__pyx_self);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_lambda_funcdef_10algorithms_11calibration_5MmLut_lambda1(CYTHON_UNUSED PyObject *__pyx_self) {
+static PyObject *__pyx_lambda_funcdef_8openptv2_10algorithms_11calibration_5MmLut_lambda1(CYTHON_UNUSED PyObject *__pyx_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -3765,7 +3765,7 @@ static PyObject *__pyx_lambda_funcdef_10algorithms_11calibration_5MmLut_lambda1(
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_5);
-  __Pyx_AddTraceback("algorithms.calibration.MmLut.lambda1", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.calibration.MmLut.lambda1", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -3773,7 +3773,7 @@ static PyObject *__pyx_lambda_funcdef_10algorithms_11calibration_5MmLut_lambda1(
   return __pyx_r;
 }
 
-/* "algorithms/calibration.py":135
+/* "openptv2/algorithms/calibration.py":135
  *     data: Optional[np.ndarray] = None  # 1D array of size nr * nz
  * 
  *     @property             # <<<<<<<<<<<<<<
@@ -3782,16 +3782,16 @@ static PyObject *__pyx_lambda_funcdef_10algorithms_11calibration_5MmLut_lambda1(
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_11calibration_5MmLut_1is_initialized(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_11calibration_5MmLut_1is_initialized(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_11calibration_5MmLut_is_initialized, "Check if the LUT has been populated.");
-static PyMethodDef __pyx_mdef_10algorithms_11calibration_5MmLut_1is_initialized = {"is_initialized", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_11calibration_5MmLut_1is_initialized, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_11calibration_5MmLut_is_initialized};
-static PyObject *__pyx_pw_10algorithms_11calibration_5MmLut_1is_initialized(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_11calibration_5MmLut_is_initialized, "Check if the LUT has been populated.");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_11calibration_5MmLut_1is_initialized = {"is_initialized", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_11calibration_5MmLut_1is_initialized, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_11calibration_5MmLut_is_initialized};
+static PyObject *__pyx_pw_8openptv2_10algorithms_11calibration_5MmLut_1is_initialized(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -3853,11 +3853,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.calibration.MmLut.is_initialized", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.calibration.MmLut.is_initialized", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_11calibration_5MmLut_is_initialized(__pyx_self, __pyx_v_self);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_11calibration_5MmLut_is_initialized(__pyx_self, __pyx_v_self);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -3867,7 +3867,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_11calibration_5MmLut_is_initialized(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_11calibration_5MmLut_is_initialized(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -3877,7 +3877,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_5MmLut_is_initialized(CYTHO
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("is_initialized", 0);
 
-  /* "algorithms/calibration.py":138
+  /* "openptv2/algorithms/calibration.py":138
  *     def is_initialized(self) -> bool:
  *         """Check if the LUT has been populated."""
  *         return self.data is not None             # <<<<<<<<<<<<<<
@@ -3895,7 +3895,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_5MmLut_is_initialized(CYTHO
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/calibration.py":135
+  /* "openptv2/algorithms/calibration.py":135
  *     data: Optional[np.ndarray] = None  # 1D array of size nr * nz
  * 
  *     @property             # <<<<<<<<<<<<<<
@@ -3906,7 +3906,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_5MmLut_is_initialized(CYTHO
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.calibration.MmLut.is_initialized", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.calibration.MmLut.is_initialized", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -3914,7 +3914,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_5MmLut_is_initialized(CYTHO
   return __pyx_r;
 }
 
-/* "algorithms/calibration.py":160
+/* "openptv2/algorithms/calibration.py":160
  *     mmlut: MmLut = field(default_factory=MmLut)
  * 
  *     def __post_init__(self):             # <<<<<<<<<<<<<<
@@ -3923,16 +3923,16 @@ static PyObject *__pyx_pf_10algorithms_11calibration_5MmLut_is_initialized(CYTHO
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_11calibration_11Calibration_1__post_init__(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_11calibration_11Calibration_1__post_init__(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_11calibration_11Calibration___post_init__, "Ensure rotation matrix is computed after initialization.");
-static PyMethodDef __pyx_mdef_10algorithms_11calibration_11Calibration_1__post_init__ = {"__post_init__", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_11calibration_11Calibration_1__post_init__, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_11calibration_11Calibration___post_init__};
-static PyObject *__pyx_pw_10algorithms_11calibration_11Calibration_1__post_init__(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_11calibration_11Calibration___post_init__, "Ensure rotation matrix is computed after initialization.");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_11calibration_11Calibration_1__post_init__ = {"__post_init__", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_11calibration_11Calibration_1__post_init__, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_11calibration_11Calibration___post_init__};
+static PyObject *__pyx_pw_8openptv2_10algorithms_11calibration_11Calibration_1__post_init__(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -3994,11 +3994,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.calibration.Calibration.__post_init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.calibration.Calibration.__post_init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_11calibration_11Calibration___post_init__(__pyx_self, __pyx_v_self);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_11calibration_11Calibration___post_init__(__pyx_self, __pyx_v_self);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -4008,7 +4008,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration___post_init__(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_11calibration_11Calibration___post_init__(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -4021,7 +4021,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration___post_init__
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__post_init__", 0);
 
-  /* "algorithms/calibration.py":162
+  /* "openptv2/algorithms/calibration.py":162
  *     def __post_init__(self):
  *         """Ensure rotation matrix is computed after initialization."""
  *         if self.ext_par is not None:             # <<<<<<<<<<<<<<
@@ -4034,7 +4034,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration___post_init__
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   if (__pyx_t_2) {
 
-    /* "algorithms/calibration.py":163
+    /* "openptv2/algorithms/calibration.py":163
  *         """Ensure rotation matrix is computed after initialization."""
  *         if self.ext_par is not None:
  *             self.ext_par.compute_rotation_matrix()             # <<<<<<<<<<<<<<
@@ -4056,7 +4056,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration___post_init__
     }
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "algorithms/calibration.py":162
+    /* "openptv2/algorithms/calibration.py":162
  *     def __post_init__(self):
  *         """Ensure rotation matrix is computed after initialization."""
  *         if self.ext_par is not None:             # <<<<<<<<<<<<<<
@@ -4065,7 +4065,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration___post_init__
 */
   }
 
-  /* "algorithms/calibration.py":160
+  /* "openptv2/algorithms/calibration.py":160
  *     mmlut: MmLut = field(default_factory=MmLut)
  * 
  *     def __post_init__(self):             # <<<<<<<<<<<<<<
@@ -4080,7 +4080,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration___post_init__
   __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_4);
-  __Pyx_AddTraceback("algorithms.calibration.Calibration.__post_init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.calibration.Calibration.__post_init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -4088,7 +4088,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration___post_init__
   return __pyx_r;
 }
 
-/* "algorithms/calibration.py":165
+/* "openptv2/algorithms/calibration.py":165
  *             self.ext_par.compute_rotation_matrix()
  * 
  *     @classmethod             # <<<<<<<<<<<<<<
@@ -4097,16 +4097,16 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration___post_init__
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_11calibration_11Calibration_3from_file(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_11calibration_11Calibration_3from_file(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_11calibration_11Calibration_2from_file, "Read calibration from orientation files.\n\n        Args:\n            ori_file: path to file with exterior, interior, glass parameters.\n            add_file: path to file with distortion parameters.\n            add_fallback: fallback path if add_file doesn't exist.\n\n        Returns:\n            Calibration instance.\n\n        Raises:\n            FileNotFoundError: if ori_file doesn't exist.\n            ValueError: if file format is invalid.\n        ");
-static PyMethodDef __pyx_mdef_10algorithms_11calibration_11Calibration_3from_file = {"from_file", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_11calibration_11Calibration_3from_file, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_11calibration_11Calibration_2from_file};
-static PyObject *__pyx_pw_10algorithms_11calibration_11Calibration_3from_file(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_11calibration_11Calibration_2from_file, "Read calibration from orientation files.\n\n        Args:\n            ori_file: path to file with exterior, interior, glass parameters.\n            add_file: path to file with distortion parameters.\n            add_fallback: fallback path if add_file doesn't exist.\n\n        Returns:\n            Calibration instance.\n\n        Raises:\n            FileNotFoundError: if ori_file doesn't exist.\n            ValueError: if file format is invalid.\n        ");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_11calibration_11Calibration_3from_file = {"from_file", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_11calibration_11Calibration_3from_file, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_11calibration_11Calibration_2from_file};
+static PyObject *__pyx_pw_8openptv2_10algorithms_11calibration_11Calibration_3from_file(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -4164,7 +4164,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
       const Py_ssize_t kwd_pos_args = __pyx_nargs;
       if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "from_file", 0) < (0)) __PYX_ERR(0, 165, __pyx_L3_error)
 
-      /* "algorithms/calibration.py":169
+      /* "openptv2/algorithms/calibration.py":169
  *         cls,
  *         ori_file: str | Path,
  *         add_file: str | Path | None = None,             # <<<<<<<<<<<<<<
@@ -4173,7 +4173,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 */
       if (!values[2]) values[2] = __Pyx_NewRef(((PyObject *)Py_None));
 
-      /* "algorithms/calibration.py":170
+      /* "openptv2/algorithms/calibration.py":170
  *         ori_file: str | Path,
  *         add_file: str | Path | None = None,
  *         add_fallback: str | Path | None = None,             # <<<<<<<<<<<<<<
@@ -4203,7 +4203,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
         default: goto __pyx_L5_argtuple_error;
       }
 
-      /* "algorithms/calibration.py":169
+      /* "openptv2/algorithms/calibration.py":169
  *         cls,
  *         ori_file: str | Path,
  *         add_file: str | Path | None = None,             # <<<<<<<<<<<<<<
@@ -4212,7 +4212,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 */
       if (!values[2]) values[2] = __Pyx_NewRef(((PyObject *)Py_None));
 
-      /* "algorithms/calibration.py":170
+      /* "openptv2/algorithms/calibration.py":170
  *         ori_file: str | Path,
  *         add_file: str | Path | None = None,
  *         add_fallback: str | Path | None = None,             # <<<<<<<<<<<<<<
@@ -4235,13 +4235,13 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.calibration.Calibration.from_file", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.calibration.Calibration.from_file", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_11calibration_11Calibration_2from_file(__pyx_self, __pyx_v_cls, __pyx_v_ori_file, __pyx_v_add_file, __pyx_v_add_fallback);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_11calibration_11Calibration_2from_file(__pyx_self, __pyx_v_cls, __pyx_v_ori_file, __pyx_v_add_file, __pyx_v_add_fallback);
 
-  /* "algorithms/calibration.py":165
+  /* "openptv2/algorithms/calibration.py":165
  *             self.ext_par.compute_rotation_matrix()
  * 
  *     @classmethod             # <<<<<<<<<<<<<<
@@ -4257,7 +4257,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cls, PyObject *__pyx_v_ori_file, PyObject *__pyx_v_add_file, PyObject *__pyx_v_add_fallback) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_11calibration_11Calibration_2from_file(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cls, PyObject *__pyx_v_ori_file, PyObject *__pyx_v_add_file, PyObject *__pyx_v_add_fallback) {
   PyObject *__pyx_v_ori_path = NULL;
   PyObject *__pyx_v_lines = NULL;
   PyObject *__pyx_v_idx = NULL;
@@ -4322,7 +4322,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("from_file", 0);
 
-  /* "algorithms/calibration.py":186
+  /* "openptv2/algorithms/calibration.py":186
  *             ValueError: if file format is invalid.
  *         """
  *         ori_path = Path(ori_file)             # <<<<<<<<<<<<<<
@@ -4355,7 +4355,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
   __pyx_v_ori_path = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/calibration.py":187
+  /* "openptv2/algorithms/calibration.py":187
  *         """
  *         ori_path = Path(ori_file)
  *         if not ori_path.exists():             # <<<<<<<<<<<<<<
@@ -4377,7 +4377,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
   __pyx_t_6 = (!__pyx_t_5);
   if (unlikely(__pyx_t_6)) {
 
-    /* "algorithms/calibration.py":188
+    /* "openptv2/algorithms/calibration.py":188
  *         ori_path = Path(ori_file)
  *         if not ori_path.exists():
  *             raise FileNotFoundError(f"ORI file not found: {ori_file}")             # <<<<<<<<<<<<<<
@@ -4403,7 +4403,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __PYX_ERR(0, 188, __pyx_L1_error)
 
-    /* "algorithms/calibration.py":187
+    /* "openptv2/algorithms/calibration.py":187
  *         """
  *         ori_path = Path(ori_file)
  *         if not ori_path.exists():             # <<<<<<<<<<<<<<
@@ -4412,7 +4412,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
 */
   }
 
-  /* "algorithms/calibration.py":190
+  /* "openptv2/algorithms/calibration.py":190
  *             raise FileNotFoundError(f"ORI file not found: {ori_file}")
  * 
  *         lines = ori_path.read_text().strip().splitlines()             # <<<<<<<<<<<<<<
@@ -4454,7 +4454,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
   __pyx_v_lines = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/calibration.py":191
+  /* "openptv2/algorithms/calibration.py":191
  * 
  *         lines = ori_path.read_text().strip().splitlines()
  *         idx = 0             # <<<<<<<<<<<<<<
@@ -4464,7 +4464,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
   __Pyx_INCREF(__pyx_mstate_global->__pyx_int_0);
   __pyx_v_idx = __pyx_mstate_global->__pyx_int_0;
 
-  /* "algorithms/calibration.py":194
+  /* "openptv2/algorithms/calibration.py":194
  * 
  *         # Parse exterior: x0 y0 z0 omega phi kappa (may span 2 lines)
  *         first_line = lines[idx].strip()             # <<<<<<<<<<<<<<
@@ -4487,7 +4487,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
   __pyx_v_first_line = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/calibration.py":195
+  /* "openptv2/algorithms/calibration.py":195
  *         # Parse exterior: x0 y0 z0 omega phi kappa (may span 2 lines)
  *         first_line = lines[idx].strip()
  *         idx += 1             # <<<<<<<<<<<<<<
@@ -4499,7 +4499,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
   __Pyx_DECREF_SET(__pyx_v_idx, __pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "algorithms/calibration.py":196
+  /* "openptv2/algorithms/calibration.py":196
  *         first_line = lines[idx].strip()
  *         idx += 1
  *         parts = first_line.split()             # <<<<<<<<<<<<<<
@@ -4519,7 +4519,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
   __pyx_v_parts = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/calibration.py":198
+  /* "openptv2/algorithms/calibration.py":198
  *         parts = first_line.split()
  * 
  *         if len(parts) >= 6:             # <<<<<<<<<<<<<<
@@ -4530,7 +4530,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
   __pyx_t_6 = (__pyx_t_10 >= 6);
   if (__pyx_t_6) {
 
-    /* "algorithms/calibration.py":199
+    /* "openptv2/algorithms/calibration.py":199
  * 
  *         if len(parts) >= 6:
  *             x0, y0, z0, omega, phi, kappa = [float(p) for p in parts[:6]]             # <<<<<<<<<<<<<<
@@ -4660,7 +4660,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
     __pyx_v_kappa = __pyx_t_12;
     __pyx_t_12 = 0;
 
-    /* "algorithms/calibration.py":198
+    /* "openptv2/algorithms/calibration.py":198
  *         parts = first_line.split()
  * 
  *         if len(parts) >= 6:             # <<<<<<<<<<<<<<
@@ -4670,7 +4670,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
     goto __pyx_L4;
   }
 
-  /* "algorithms/calibration.py":200
+  /* "openptv2/algorithms/calibration.py":200
  *         if len(parts) >= 6:
  *             x0, y0, z0, omega, phi, kappa = [float(p) for p in parts[:6]]
  *         elif len(parts) == 3:             # <<<<<<<<<<<<<<
@@ -4681,7 +4681,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
   __pyx_t_6 = (__pyx_t_10 == 3);
   if (likely(__pyx_t_6)) {
 
-    /* "algorithms/calibration.py":202
+    /* "openptv2/algorithms/calibration.py":202
  *         elif len(parts) == 3:
  *             # Values split across lines
  *             x0, y0, z0 = [float(p) for p in parts]             # <<<<<<<<<<<<<<
@@ -4790,7 +4790,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
     __pyx_v_z0 = __pyx_t_2;
     __pyx_t_2 = 0;
 
-    /* "algorithms/calibration.py":203
+    /* "openptv2/algorithms/calibration.py":203
  *             # Values split across lines
  *             x0, y0, z0 = [float(p) for p in parts]
  *             second_line = lines[idx].strip()             # <<<<<<<<<<<<<<
@@ -4813,7 +4813,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
     __pyx_v_second_line = __pyx_t_1;
     __pyx_t_1 = 0;
 
-    /* "algorithms/calibration.py":204
+    /* "openptv2/algorithms/calibration.py":204
  *             x0, y0, z0 = [float(p) for p in parts]
  *             second_line = lines[idx].strip()
  *             idx += 1             # <<<<<<<<<<<<<<
@@ -4825,7 +4825,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
     __Pyx_DECREF_SET(__pyx_v_idx, __pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "algorithms/calibration.py":205
+    /* "openptv2/algorithms/calibration.py":205
  *             second_line = lines[idx].strip()
  *             idx += 1
  *             omega, phi, kappa = [float(p) for p in second_line.split()[:3]]             # <<<<<<<<<<<<<<
@@ -4948,7 +4948,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
     __pyx_v_kappa = __pyx_t_12;
     __pyx_t_12 = 0;
 
-    /* "algorithms/calibration.py":200
+    /* "openptv2/algorithms/calibration.py":200
  *         if len(parts) >= 6:
  *             x0, y0, z0, omega, phi, kappa = [float(p) for p in parts[:6]]
  *         elif len(parts) == 3:             # <<<<<<<<<<<<<<
@@ -4958,7 +4958,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
     goto __pyx_L4;
   }
 
-  /* "algorithms/calibration.py":207
+  /* "openptv2/algorithms/calibration.py":207
  *             omega, phi, kappa = [float(p) for p in second_line.split()[:3]]
  *         else:
  *             raise ValueError(f"Invalid exterior orientation format: {first_line}")             # <<<<<<<<<<<<<<
@@ -4987,7 +4987,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
   }
   __pyx_L4:;
 
-  /* "algorithms/calibration.py":210
+  /* "openptv2/algorithms/calibration.py":210
  * 
  *         # Skip empty line if present
  *         while idx < len(lines) and lines[idx].strip() == "":             # <<<<<<<<<<<<<<
@@ -5026,7 +5026,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
     __pyx_L28_bool_binop_done:;
     if (!__pyx_t_6) break;
 
-    /* "algorithms/calibration.py":211
+    /* "openptv2/algorithms/calibration.py":211
  *         # Skip empty line if present
  *         while idx < len(lines) and lines[idx].strip() == "":
  *             idx += 1             # <<<<<<<<<<<<<<
@@ -5039,7 +5039,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
     __pyx_t_9 = 0;
   }
 
-  /* "algorithms/calibration.py":214
+  /* "openptv2/algorithms/calibration.py":214
  * 
  *         # Parse rotation matrix: 3 rows of 3 values
  *         dm = np.eye(3, dtype=np.float64)             # <<<<<<<<<<<<<<
@@ -5085,7 +5085,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
   __pyx_v_dm = __pyx_t_9;
   __pyx_t_9 = 0;
 
-  /* "algorithms/calibration.py":215
+  /* "openptv2/algorithms/calibration.py":215
  *         # Parse rotation matrix: 3 rows of 3 values
  *         dm = np.eye(3, dtype=np.float64)
  *         for i in range(3):             # <<<<<<<<<<<<<<
@@ -5095,7 +5095,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
   for (__pyx_t_13 = 0; __pyx_t_13 < 3; __pyx_t_13+=1) {
     __pyx_v_i = __pyx_t_13;
 
-    /* "algorithms/calibration.py":216
+    /* "openptv2/algorithms/calibration.py":216
  *         dm = np.eye(3, dtype=np.float64)
  *         for i in range(3):
  *             row_parts = lines[idx].strip().split()             # <<<<<<<<<<<<<<
@@ -5129,7 +5129,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
     __Pyx_XDECREF_SET(__pyx_v_row_parts, __pyx_t_9);
     __pyx_t_9 = 0;
 
-    /* "algorithms/calibration.py":217
+    /* "openptv2/algorithms/calibration.py":217
  *         for i in range(3):
  *             row_parts = lines[idx].strip().split()
  *             idx += 1             # <<<<<<<<<<<<<<
@@ -5141,7 +5141,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
     __Pyx_DECREF_SET(__pyx_v_idx, __pyx_t_9);
     __pyx_t_9 = 0;
 
-    /* "algorithms/calibration.py":218
+    /* "openptv2/algorithms/calibration.py":218
  *             row_parts = lines[idx].strip().split()
  *             idx += 1
  *             dm[i] = [float(row_parts[0]), float(row_parts[1]), float(row_parts[2])]             # <<<<<<<<<<<<<<
@@ -5178,7 +5178,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
     __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
   }
 
-  /* "algorithms/calibration.py":221
+  /* "openptv2/algorithms/calibration.py":221
  * 
  *         # Skip empty lines
  *         while idx < len(lines) and lines[idx].strip() == "":             # <<<<<<<<<<<<<<
@@ -5217,7 +5217,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
     __pyx_L34_bool_binop_done:;
     if (!__pyx_t_6) break;
 
-    /* "algorithms/calibration.py":222
+    /* "openptv2/algorithms/calibration.py":222
  *         # Skip empty lines
  *         while idx < len(lines) and lines[idx].strip() == "":
  *             idx += 1             # <<<<<<<<<<<<<<
@@ -5230,7 +5230,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
     __pyx_t_12 = 0;
   }
 
-  /* "algorithms/calibration.py":225
+  /* "openptv2/algorithms/calibration.py":225
  * 
  *         # Parse interior: xh yh cc (may span 2 lines)
  *         interior_line = lines[idx].strip()             # <<<<<<<<<<<<<<
@@ -5253,7 +5253,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
   __pyx_v_interior_line = __pyx_t_12;
   __pyx_t_12 = 0;
 
-  /* "algorithms/calibration.py":226
+  /* "openptv2/algorithms/calibration.py":226
  *         # Parse interior: xh yh cc (may span 2 lines)
  *         interior_line = lines[idx].strip()
  *         idx += 1             # <<<<<<<<<<<<<<
@@ -5265,7 +5265,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
   __Pyx_DECREF_SET(__pyx_v_idx, __pyx_t_12);
   __pyx_t_12 = 0;
 
-  /* "algorithms/calibration.py":227
+  /* "openptv2/algorithms/calibration.py":227
  *         interior_line = lines[idx].strip()
  *         idx += 1
  *         interior_parts = interior_line.split()             # <<<<<<<<<<<<<<
@@ -5285,7 +5285,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
   __pyx_v_interior_parts = __pyx_t_12;
   __pyx_t_12 = 0;
 
-  /* "algorithms/calibration.py":229
+  /* "openptv2/algorithms/calibration.py":229
  *         interior_parts = interior_line.split()
  * 
  *         if len(interior_parts) >= 3:             # <<<<<<<<<<<<<<
@@ -5296,7 +5296,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
   __pyx_t_6 = (__pyx_t_10 >= 3);
   if (__pyx_t_6) {
 
-    /* "algorithms/calibration.py":230
+    /* "openptv2/algorithms/calibration.py":230
  * 
  *         if len(interior_parts) >= 3:
  *             xh, yh, cc = [float(p) for p in interior_parts[:3]]             # <<<<<<<<<<<<<<
@@ -5408,7 +5408,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
     __pyx_v_cc = __pyx_t_1;
     __pyx_t_1 = 0;
 
-    /* "algorithms/calibration.py":229
+    /* "openptv2/algorithms/calibration.py":229
  *         interior_parts = interior_line.split()
  * 
  *         if len(interior_parts) >= 3:             # <<<<<<<<<<<<<<
@@ -5418,7 +5418,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
     goto __pyx_L36;
   }
 
-  /* "algorithms/calibration.py":231
+  /* "openptv2/algorithms/calibration.py":231
  *         if len(interior_parts) >= 3:
  *             xh, yh, cc = [float(p) for p in interior_parts[:3]]
  *         elif len(interior_parts) == 2:             # <<<<<<<<<<<<<<
@@ -5429,7 +5429,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
   __pyx_t_6 = (__pyx_t_10 == 2);
   if (likely(__pyx_t_6)) {
 
-    /* "algorithms/calibration.py":232
+    /* "openptv2/algorithms/calibration.py":232
  *             xh, yh, cc = [float(p) for p in interior_parts[:3]]
  *         elif len(interior_parts) == 2:
  *             xh, yh = [float(p) for p in interior_parts]             # <<<<<<<<<<<<<<
@@ -5531,7 +5531,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
     __pyx_v_yh = __pyx_t_9;
     __pyx_t_9 = 0;
 
-    /* "algorithms/calibration.py":233
+    /* "openptv2/algorithms/calibration.py":233
  *         elif len(interior_parts) == 2:
  *             xh, yh = [float(p) for p in interior_parts]
  *             cc_line = lines[idx].strip()             # <<<<<<<<<<<<<<
@@ -5554,7 +5554,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
     __pyx_v_cc_line = __pyx_t_12;
     __pyx_t_12 = 0;
 
-    /* "algorithms/calibration.py":234
+    /* "openptv2/algorithms/calibration.py":234
  *             xh, yh = [float(p) for p in interior_parts]
  *             cc_line = lines[idx].strip()
  *             idx += 1             # <<<<<<<<<<<<<<
@@ -5566,7 +5566,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
     __Pyx_DECREF_SET(__pyx_v_idx, __pyx_t_12);
     __pyx_t_12 = 0;
 
-    /* "algorithms/calibration.py":235
+    /* "openptv2/algorithms/calibration.py":235
  *             cc_line = lines[idx].strip()
  *             idx += 1
  *             cc = float(cc_line.split()[0])             # <<<<<<<<<<<<<<
@@ -5592,7 +5592,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
     __pyx_v_cc = __pyx_t_12;
     __pyx_t_12 = 0;
 
-    /* "algorithms/calibration.py":231
+    /* "openptv2/algorithms/calibration.py":231
  *         if len(interior_parts) >= 3:
  *             xh, yh, cc = [float(p) for p in interior_parts[:3]]
  *         elif len(interior_parts) == 2:             # <<<<<<<<<<<<<<
@@ -5602,7 +5602,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
     goto __pyx_L36;
   }
 
-  /* "algorithms/calibration.py":237
+  /* "openptv2/algorithms/calibration.py":237
  *             cc = float(cc_line.split()[0])
  *         else:
  *             raise ValueError(f"Invalid interior orientation format: {interior_line}")             # <<<<<<<<<<<<<<
@@ -5631,7 +5631,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
   }
   __pyx_L36:;
 
-  /* "algorithms/calibration.py":240
+  /* "openptv2/algorithms/calibration.py":240
  * 
  *         # Skip empty lines
  *         while idx < len(lines) and lines[idx].strip() == "":             # <<<<<<<<<<<<<<
@@ -5670,7 +5670,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
     __pyx_L53_bool_binop_done:;
     if (!__pyx_t_6) break;
 
-    /* "algorithms/calibration.py":241
+    /* "openptv2/algorithms/calibration.py":241
  *         # Skip empty lines
  *         while idx < len(lines) and lines[idx].strip() == "":
  *             idx += 1             # <<<<<<<<<<<<<<
@@ -5683,7 +5683,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
     __pyx_t_2 = 0;
   }
 
-  /* "algorithms/calibration.py":244
+  /* "openptv2/algorithms/calibration.py":244
  * 
  *         # Parse glass: vec_x vec_y vec_z (may span lines)
  *         glass_line = lines[idx].strip()             # <<<<<<<<<<<<<<
@@ -5706,7 +5706,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
   __pyx_v_glass_line = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "algorithms/calibration.py":245
+  /* "openptv2/algorithms/calibration.py":245
  *         # Parse glass: vec_x vec_y vec_z (may span lines)
  *         glass_line = lines[idx].strip()
  *         idx += 1             # <<<<<<<<<<<<<<
@@ -5718,7 +5718,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
   __Pyx_DECREF_SET(__pyx_v_idx, __pyx_t_2);
   __pyx_t_2 = 0;
 
-  /* "algorithms/calibration.py":246
+  /* "openptv2/algorithms/calibration.py":246
  *         glass_line = lines[idx].strip()
  *         idx += 1
  *         glass_parts = glass_line.split()             # <<<<<<<<<<<<<<
@@ -5738,7 +5738,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
   __pyx_v_glass_parts = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "algorithms/calibration.py":248
+  /* "openptv2/algorithms/calibration.py":248
  *         glass_parts = glass_line.split()
  * 
  *         if len(glass_parts) >= 3:             # <<<<<<<<<<<<<<
@@ -5749,7 +5749,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
   __pyx_t_6 = (__pyx_t_10 >= 3);
   if (likely(__pyx_t_6)) {
 
-    /* "algorithms/calibration.py":249
+    /* "openptv2/algorithms/calibration.py":249
  * 
  *         if len(glass_parts) >= 3:
  *             vec_x, vec_y, vec_z = [float(p) for p in glass_parts[:3]]             # <<<<<<<<<<<<<<
@@ -5861,7 +5861,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
     __pyx_v_vec_z = __pyx_t_9;
     __pyx_t_9 = 0;
 
-    /* "algorithms/calibration.py":248
+    /* "openptv2/algorithms/calibration.py":248
  *         glass_parts = glass_line.split()
  * 
  *         if len(glass_parts) >= 3:             # <<<<<<<<<<<<<<
@@ -5871,7 +5871,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
     goto __pyx_L55;
   }
 
-  /* "algorithms/calibration.py":251
+  /* "openptv2/algorithms/calibration.py":251
  *             vec_x, vec_y, vec_z = [float(p) for p in glass_parts[:3]]
  *         else:
  *             raise ValueError(f"Invalid glass format: {glass_line}")             # <<<<<<<<<<<<<<
@@ -5900,7 +5900,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
   }
   __pyx_L55:;
 
-  /* "algorithms/calibration.py":254
+  /* "openptv2/algorithms/calibration.py":254
  * 
  *         # Parse additional parameters
  *         added_par = AddedPar()             # <<<<<<<<<<<<<<
@@ -5933,7 +5933,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
   __pyx_v_added_par = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "algorithms/calibration.py":255
+  /* "openptv2/algorithms/calibration.py":255
  *         # Parse additional parameters
  *         added_par = AddedPar()
  *         if add_file is not None:             # <<<<<<<<<<<<<<
@@ -5943,7 +5943,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
   __pyx_t_6 = (__pyx_v_add_file != Py_None);
   if (__pyx_t_6) {
 
-    /* "algorithms/calibration.py":256
+    /* "openptv2/algorithms/calibration.py":256
  *         added_par = AddedPar()
  *         if add_file is not None:
  *             add_path = Path(add_file)             # <<<<<<<<<<<<<<
@@ -5976,7 +5976,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
     __pyx_v_add_path = __pyx_t_2;
     __pyx_t_2 = 0;
 
-    /* "algorithms/calibration.py":257
+    /* "openptv2/algorithms/calibration.py":257
  *         if add_file is not None:
  *             add_path = Path(add_file)
  *             if add_path.exists():             # <<<<<<<<<<<<<<
@@ -5997,7 +5997,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     if (__pyx_t_6) {
 
-      /* "algorithms/calibration.py":258
+      /* "openptv2/algorithms/calibration.py":258
  *             add_path = Path(add_file)
  *             if add_path.exists():
  *                 add_lines = add_path.read_text().strip().split()             # <<<<<<<<<<<<<<
@@ -6039,7 +6039,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
       __pyx_v_add_lines = __pyx_t_2;
       __pyx_t_2 = 0;
 
-      /* "algorithms/calibration.py":259
+      /* "openptv2/algorithms/calibration.py":259
  *             if add_path.exists():
  *                 add_lines = add_path.read_text().strip().split()
  *                 if len(add_lines) >= 7:             # <<<<<<<<<<<<<<
@@ -6050,7 +6050,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
       __pyx_t_6 = (__pyx_t_10 >= 7);
       if (__pyx_t_6) {
 
-        /* "algorithms/calibration.py":260
+        /* "openptv2/algorithms/calibration.py":260
  *                 add_lines = add_path.read_text().strip().split()
  *                 if len(add_lines) >= 7:
  *                     added_par = AddedPar(             # <<<<<<<<<<<<<<
@@ -6061,7 +6061,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
         __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_mstate_global->__pyx_n_u_AddedPar); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 260, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
 
-        /* "algorithms/calibration.py":261
+        /* "openptv2/algorithms/calibration.py":261
  *                 if len(add_lines) >= 7:
  *                     added_par = AddedPar(
  *                         k1=float(add_lines[0]),             # <<<<<<<<<<<<<<
@@ -6074,7 +6074,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
         __Pyx_GOTREF(__pyx_t_12);
         __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
 
-        /* "algorithms/calibration.py":262
+        /* "openptv2/algorithms/calibration.py":262
  *                     added_par = AddedPar(
  *                         k1=float(add_lines[0]),
  *                         k2=float(add_lines[1]),             # <<<<<<<<<<<<<<
@@ -6087,7 +6087,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
         __Pyx_GOTREF(__pyx_t_7);
         __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
 
-        /* "algorithms/calibration.py":263
+        /* "openptv2/algorithms/calibration.py":263
  *                         k1=float(add_lines[0]),
  *                         k2=float(add_lines[1]),
  *                         k3=float(add_lines[2]),             # <<<<<<<<<<<<<<
@@ -6100,7 +6100,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
         __Pyx_GOTREF(__pyx_t_3);
         __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
 
-        /* "algorithms/calibration.py":264
+        /* "openptv2/algorithms/calibration.py":264
  *                         k2=float(add_lines[1]),
  *                         k3=float(add_lines[2]),
  *                         p1=float(add_lines[3]),             # <<<<<<<<<<<<<<
@@ -6113,7 +6113,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
         __Pyx_GOTREF(__pyx_t_14);
         __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
 
-        /* "algorithms/calibration.py":265
+        /* "openptv2/algorithms/calibration.py":265
  *                         k3=float(add_lines[2]),
  *                         p1=float(add_lines[3]),
  *                         p2=float(add_lines[4]),             # <<<<<<<<<<<<<<
@@ -6126,7 +6126,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
         __Pyx_GOTREF(__pyx_t_15);
         __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
 
-        /* "algorithms/calibration.py":266
+        /* "openptv2/algorithms/calibration.py":266
  *                         p1=float(add_lines[3]),
  *                         p2=float(add_lines[4]),
  *                         scx=float(add_lines[5]),             # <<<<<<<<<<<<<<
@@ -6139,7 +6139,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
         __Pyx_GOTREF(__pyx_t_16);
         __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
 
-        /* "algorithms/calibration.py":267
+        /* "openptv2/algorithms/calibration.py":267
  *                         p2=float(add_lines[4]),
  *                         scx=float(add_lines[5]),
  *                         she=float(add_lines[6]),             # <<<<<<<<<<<<<<
@@ -6191,7 +6191,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
         __Pyx_DECREF_SET(__pyx_v_added_par, __pyx_t_2);
         __pyx_t_2 = 0;
 
-        /* "algorithms/calibration.py":259
+        /* "openptv2/algorithms/calibration.py":259
  *             if add_path.exists():
  *                 add_lines = add_path.read_text().strip().split()
  *                 if len(add_lines) >= 7:             # <<<<<<<<<<<<<<
@@ -6200,7 +6200,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
 */
       }
 
-      /* "algorithms/calibration.py":257
+      /* "openptv2/algorithms/calibration.py":257
  *         if add_file is not None:
  *             add_path = Path(add_file)
  *             if add_path.exists():             # <<<<<<<<<<<<<<
@@ -6210,7 +6210,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
       goto __pyx_L64;
     }
 
-    /* "algorithms/calibration.py":269
+    /* "openptv2/algorithms/calibration.py":269
  *                         she=float(add_lines[6]),
  *                     )
  *             elif add_fallback is not None:             # <<<<<<<<<<<<<<
@@ -6220,7 +6220,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
     __pyx_t_6 = (__pyx_v_add_fallback != Py_None);
     if (__pyx_t_6) {
 
-      /* "algorithms/calibration.py":270
+      /* "openptv2/algorithms/calibration.py":270
  *                     )
  *             elif add_fallback is not None:
  *                 fallback_path = Path(add_fallback)             # <<<<<<<<<<<<<<
@@ -6253,7 +6253,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
       __pyx_v_fallback_path = __pyx_t_2;
       __pyx_t_2 = 0;
 
-      /* "algorithms/calibration.py":271
+      /* "openptv2/algorithms/calibration.py":271
  *             elif add_fallback is not None:
  *                 fallback_path = Path(add_fallback)
  *                 if fallback_path.exists():             # <<<<<<<<<<<<<<
@@ -6274,7 +6274,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
       if (__pyx_t_6) {
 
-        /* "algorithms/calibration.py":272
+        /* "openptv2/algorithms/calibration.py":272
  *                 fallback_path = Path(add_fallback)
  *                 if fallback_path.exists():
  *                     fb_lines = fallback_path.read_text().strip().split()             # <<<<<<<<<<<<<<
@@ -6316,7 +6316,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
         __pyx_v_fb_lines = __pyx_t_2;
         __pyx_t_2 = 0;
 
-        /* "algorithms/calibration.py":273
+        /* "openptv2/algorithms/calibration.py":273
  *                 if fallback_path.exists():
  *                     fb_lines = fallback_path.read_text().strip().split()
  *                     if len(fb_lines) >= 7:             # <<<<<<<<<<<<<<
@@ -6327,7 +6327,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
         __pyx_t_6 = (__pyx_t_10 >= 7);
         if (__pyx_t_6) {
 
-          /* "algorithms/calibration.py":274
+          /* "openptv2/algorithms/calibration.py":274
  *                     fb_lines = fallback_path.read_text().strip().split()
  *                     if len(fb_lines) >= 7:
  *                         added_par = AddedPar(             # <<<<<<<<<<<<<<
@@ -6338,7 +6338,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
           __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_mstate_global->__pyx_n_u_AddedPar); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 274, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_8);
 
-          /* "algorithms/calibration.py":275
+          /* "openptv2/algorithms/calibration.py":275
  *                     if len(fb_lines) >= 7:
  *                         added_par = AddedPar(
  *                             k1=float(fb_lines[0]),             # <<<<<<<<<<<<<<
@@ -6351,7 +6351,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
           __Pyx_GOTREF(__pyx_t_17);
           __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
 
-          /* "algorithms/calibration.py":276
+          /* "openptv2/algorithms/calibration.py":276
  *                         added_par = AddedPar(
  *                             k1=float(fb_lines[0]),
  *                             k2=float(fb_lines[1]),             # <<<<<<<<<<<<<<
@@ -6364,7 +6364,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
           __Pyx_GOTREF(__pyx_t_15);
           __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
 
-          /* "algorithms/calibration.py":277
+          /* "openptv2/algorithms/calibration.py":277
  *                             k1=float(fb_lines[0]),
  *                             k2=float(fb_lines[1]),
  *                             k3=float(fb_lines[2]),             # <<<<<<<<<<<<<<
@@ -6377,7 +6377,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
           __Pyx_GOTREF(__pyx_t_14);
           __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
 
-          /* "algorithms/calibration.py":278
+          /* "openptv2/algorithms/calibration.py":278
  *                             k2=float(fb_lines[1]),
  *                             k3=float(fb_lines[2]),
  *                             p1=float(fb_lines[3]),             # <<<<<<<<<<<<<<
@@ -6390,7 +6390,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
           __Pyx_GOTREF(__pyx_t_3);
           __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
 
-          /* "algorithms/calibration.py":279
+          /* "openptv2/algorithms/calibration.py":279
  *                             k3=float(fb_lines[2]),
  *                             p1=float(fb_lines[3]),
  *                             p2=float(fb_lines[4]),             # <<<<<<<<<<<<<<
@@ -6403,7 +6403,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
           __Pyx_GOTREF(__pyx_t_7);
           __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
 
-          /* "algorithms/calibration.py":280
+          /* "openptv2/algorithms/calibration.py":280
  *                             p1=float(fb_lines[3]),
  *                             p2=float(fb_lines[4]),
  *                             scx=float(fb_lines[5]),             # <<<<<<<<<<<<<<
@@ -6416,7 +6416,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
           __Pyx_GOTREF(__pyx_t_12);
           __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
 
-          /* "algorithms/calibration.py":281
+          /* "openptv2/algorithms/calibration.py":281
  *                             p2=float(fb_lines[4]),
  *                             scx=float(fb_lines[5]),
  *                             she=float(fb_lines[6]),             # <<<<<<<<<<<<<<
@@ -6468,7 +6468,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
           __Pyx_DECREF_SET(__pyx_v_added_par, __pyx_t_2);
           __pyx_t_2 = 0;
 
-          /* "algorithms/calibration.py":273
+          /* "openptv2/algorithms/calibration.py":273
  *                 if fallback_path.exists():
  *                     fb_lines = fallback_path.read_text().strip().split()
  *                     if len(fb_lines) >= 7:             # <<<<<<<<<<<<<<
@@ -6477,7 +6477,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
 */
         }
 
-        /* "algorithms/calibration.py":271
+        /* "openptv2/algorithms/calibration.py":271
  *             elif add_fallback is not None:
  *                 fallback_path = Path(add_fallback)
  *                 if fallback_path.exists():             # <<<<<<<<<<<<<<
@@ -6486,7 +6486,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
 */
       }
 
-      /* "algorithms/calibration.py":269
+      /* "openptv2/algorithms/calibration.py":269
  *                         she=float(add_lines[6]),
  *                     )
  *             elif add_fallback is not None:             # <<<<<<<<<<<<<<
@@ -6496,7 +6496,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
     }
     __pyx_L64:;
 
-    /* "algorithms/calibration.py":255
+    /* "openptv2/algorithms/calibration.py":255
  *         # Parse additional parameters
  *         added_par = AddedPar()
  *         if add_file is not None:             # <<<<<<<<<<<<<<
@@ -6505,7 +6505,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
 */
   }
 
-  /* "algorithms/calibration.py":284
+  /* "openptv2/algorithms/calibration.py":284
  *                         )
  * 
  *         ext = Exterior(x0=x0, y0=y0, z0=z0, omega=omega, phi=phi, kappa=kappa, dm=dm)             # <<<<<<<<<<<<<<
@@ -6548,7 +6548,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
   __pyx_v_ext = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "algorithms/calibration.py":285
+  /* "openptv2/algorithms/calibration.py":285
  * 
  *         ext = Exterior(x0=x0, y0=y0, z0=z0, omega=omega, phi=phi, kappa=kappa, dm=dm)
  *         int_par = Interior(xh=xh, yh=yh, cc=cc)             # <<<<<<<<<<<<<<
@@ -6587,7 +6587,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
   __pyx_v_int_par = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "algorithms/calibration.py":286
+  /* "openptv2/algorithms/calibration.py":286
  *         ext = Exterior(x0=x0, y0=y0, z0=z0, omega=omega, phi=phi, kappa=kappa, dm=dm)
  *         int_par = Interior(xh=xh, yh=yh, cc=cc)
  *         glass = Glass(vec_x=vec_x, vec_y=vec_y, vec_z=vec_z)             # <<<<<<<<<<<<<<
@@ -6626,7 +6626,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
   __pyx_v_glass = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "algorithms/calibration.py":288
+  /* "openptv2/algorithms/calibration.py":288
  *         glass = Glass(vec_x=vec_x, vec_y=vec_y, vec_z=vec_z)
  * 
  *         return cls(             # <<<<<<<<<<<<<<
@@ -6638,7 +6638,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
   __Pyx_INCREF(__pyx_v_cls);
   __pyx_t_16 = __pyx_v_cls; 
 
-  /* "algorithms/calibration.py":292
+  /* "openptv2/algorithms/calibration.py":292
  *             int_par=int_par,
  *             glass_par=glass,
  *             added_par=added_par,             # <<<<<<<<<<<<<<
@@ -6676,7 +6676,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/calibration.py":165
+  /* "openptv2/algorithms/calibration.py":165
  *             self.ext_par.compute_rotation_matrix()
  * 
  *     @classmethod             # <<<<<<<<<<<<<<
@@ -6697,7 +6697,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
   __Pyx_XDECREF(__pyx_t_15);
   __Pyx_XDECREF(__pyx_t_16);
   __Pyx_XDECREF(__pyx_t_17);
-  __Pyx_AddTraceback("algorithms.calibration.Calibration.from_file", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.calibration.Calibration.from_file", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_ori_path);
@@ -6744,7 +6744,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
   return __pyx_r;
 }
 
-/* "algorithms/calibration.py":295
+/* "openptv2/algorithms/calibration.py":295
  *         )
  * 
  *     def to_file(             # <<<<<<<<<<<<<<
@@ -6753,16 +6753,16 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_2from_file(CY
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_11calibration_11Calibration_5to_file(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_11calibration_11Calibration_5to_file(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_11calibration_11Calibration_4to_file, "Write calibration to orientation files.\n\n        Args:\n            ori_file: path to output file for exterior, interior, glass.\n            add_file: path to output file for distortion parameters.\n        ");
-static PyMethodDef __pyx_mdef_10algorithms_11calibration_11Calibration_5to_file = {"to_file", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_11calibration_11Calibration_5to_file, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_11calibration_11Calibration_4to_file};
-static PyObject *__pyx_pw_10algorithms_11calibration_11Calibration_5to_file(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_11calibration_11Calibration_4to_file, "Write calibration to orientation files.\n\n        Args:\n            ori_file: path to output file for exterior, interior, glass.\n            add_file: path to output file for distortion parameters.\n        ");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_11calibration_11Calibration_5to_file = {"to_file", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_11calibration_11Calibration_5to_file, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_11calibration_11Calibration_4to_file};
+static PyObject *__pyx_pw_8openptv2_10algorithms_11calibration_11Calibration_5to_file(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -6815,7 +6815,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
       const Py_ssize_t kwd_pos_args = __pyx_nargs;
       if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "to_file", 0) < (0)) __PYX_ERR(0, 295, __pyx_L3_error)
 
-      /* "algorithms/calibration.py":298
+      /* "openptv2/algorithms/calibration.py":298
  *         self,
  *         ori_file: str | Path,
  *         add_file: str | Path | None = None,             # <<<<<<<<<<<<<<
@@ -6855,13 +6855,13 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.calibration.Calibration.to_file", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.calibration.Calibration.to_file", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_11calibration_11Calibration_4to_file(__pyx_self, __pyx_v_self, __pyx_v_ori_file, __pyx_v_add_file);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_11calibration_11Calibration_4to_file(__pyx_self, __pyx_v_self, __pyx_v_ori_file, __pyx_v_add_file);
 
-  /* "algorithms/calibration.py":295
+  /* "openptv2/algorithms/calibration.py":295
  *         )
  * 
  *     def to_file(             # <<<<<<<<<<<<<<
@@ -6877,7 +6877,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_4to_file(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_ori_file, PyObject *__pyx_v_add_file) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_11calibration_11Calibration_4to_file(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_ori_file, PyObject *__pyx_v_add_file) {
   PyObject *__pyx_v_ori_path = NULL;
   PyObject *__pyx_v_ext = NULL;
   PyObject *__pyx_v_int_par = NULL;
@@ -6910,7 +6910,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_4to_file(CYTH
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("to_file", 0);
 
-  /* "algorithms/calibration.py":306
+  /* "openptv2/algorithms/calibration.py":306
  *             add_file: path to output file for distortion parameters.
  *         """
  *         ori_path = Path(ori_file)             # <<<<<<<<<<<<<<
@@ -6943,7 +6943,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_4to_file(CYTH
   __pyx_v_ori_path = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/calibration.py":307
+  /* "openptv2/algorithms/calibration.py":307
  *         """
  *         ori_path = Path(ori_file)
  *         ext = self.ext_par             # <<<<<<<<<<<<<<
@@ -6955,7 +6955,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_4to_file(CYTH
   __pyx_v_ext = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/calibration.py":308
+  /* "openptv2/algorithms/calibration.py":308
  *         ori_path = Path(ori_file)
  *         ext = self.ext_par
  *         int_par = self.int_par             # <<<<<<<<<<<<<<
@@ -6967,7 +6967,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_4to_file(CYTH
   __pyx_v_int_par = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/calibration.py":309
+  /* "openptv2/algorithms/calibration.py":309
  *         ext = self.ext_par
  *         int_par = self.int_par
  *         glass = self.glass_par             # <<<<<<<<<<<<<<
@@ -6979,7 +6979,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_4to_file(CYTH
   __pyx_v_glass = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/calibration.py":312
+  /* "openptv2/algorithms/calibration.py":312
  * 
  *         lines = [
  *             f"{ext.x0:11.8f} {ext.y0:11.8f} {ext.z0:11.8f}",             # <<<<<<<<<<<<<<
@@ -7013,7 +7013,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_4to_file(CYTH
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "algorithms/calibration.py":313
+  /* "openptv2/algorithms/calibration.py":313
  *         lines = [
  *             f"{ext.x0:11.8f} {ext.y0:11.8f} {ext.z0:11.8f}",
  *             f"    {ext.omega:10.8f}  {ext.phi:10.8f}  {ext.kappa:10.8f}",             # <<<<<<<<<<<<<<
@@ -7048,7 +7048,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_4to_file(CYTH
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
 
-  /* "algorithms/calibration.py":311
+  /* "openptv2/algorithms/calibration.py":311
  *         glass = self.glass_par
  * 
  *         lines = [             # <<<<<<<<<<<<<<
@@ -7069,7 +7069,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_4to_file(CYTH
   __pyx_v_lines = ((PyObject*)__pyx_t_7);
   __pyx_t_7 = 0;
 
-  /* "algorithms/calibration.py":317
+  /* "openptv2/algorithms/calibration.py":317
  *         ]
  * 
  *         for i in range(3):             # <<<<<<<<<<<<<<
@@ -7079,7 +7079,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_4to_file(CYTH
   for (__pyx_t_9 = 0; __pyx_t_9 < 3; __pyx_t_9+=1) {
     __pyx_v_i = __pyx_t_9;
 
-    /* "algorithms/calibration.py":319
+    /* "openptv2/algorithms/calibration.py":319
  *         for i in range(3):
  *             lines.append(
  *                 f"    {ext.dm[i, 0]:10.7f} {ext.dm[i, 1]:10.7f} {ext.dm[i, 2]:10.7f}"             # <<<<<<<<<<<<<<
@@ -7156,7 +7156,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_4to_file(CYTH
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "algorithms/calibration.py":318
+    /* "openptv2/algorithms/calibration.py":318
  * 
  *         for i in range(3):
  *             lines.append(             # <<<<<<<<<<<<<<
@@ -7167,7 +7167,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_4to_file(CYTH
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   }
 
-  /* "algorithms/calibration.py":322
+  /* "openptv2/algorithms/calibration.py":322
  *             )
  * 
  *         lines.append("")             # <<<<<<<<<<<<<<
@@ -7176,7 +7176,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_4to_file(CYTH
 */
   __pyx_t_10 = __Pyx_PyList_Append(__pyx_v_lines, __pyx_mstate_global->__pyx_kp_u_); if (unlikely(__pyx_t_10 == ((int)-1))) __PYX_ERR(0, 322, __pyx_L1_error)
 
-  /* "algorithms/calibration.py":323
+  /* "openptv2/algorithms/calibration.py":323
  * 
  *         lines.append("")
  *         lines.append(f"    {int_par.xh:8.4f} {int_par.yh:8.4f}")             # <<<<<<<<<<<<<<
@@ -7205,7 +7205,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_4to_file(CYTH
   __pyx_t_10 = __Pyx_PyList_Append(__pyx_v_lines, __pyx_t_5); if (unlikely(__pyx_t_10 == ((int)-1))) __PYX_ERR(0, 323, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "algorithms/calibration.py":324
+  /* "openptv2/algorithms/calibration.py":324
  *         lines.append("")
  *         lines.append(f"    {int_par.xh:8.4f} {int_par.yh:8.4f}")
  *         lines.append(f"    {int_par.cc:8.4f}")             # <<<<<<<<<<<<<<
@@ -7223,7 +7223,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_4to_file(CYTH
   __pyx_t_10 = __Pyx_PyList_Append(__pyx_v_lines, __pyx_t_5); if (unlikely(__pyx_t_10 == ((int)-1))) __PYX_ERR(0, 324, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "algorithms/calibration.py":325
+  /* "openptv2/algorithms/calibration.py":325
  *         lines.append(f"    {int_par.xh:8.4f} {int_par.yh:8.4f}")
  *         lines.append(f"    {int_par.cc:8.4f}")
  *         lines.append("")             # <<<<<<<<<<<<<<
@@ -7232,7 +7232,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_4to_file(CYTH
 */
   __pyx_t_10 = __Pyx_PyList_Append(__pyx_v_lines, __pyx_mstate_global->__pyx_kp_u_); if (unlikely(__pyx_t_10 == ((int)-1))) __PYX_ERR(0, 325, __pyx_L1_error)
 
-  /* "algorithms/calibration.py":327
+  /* "openptv2/algorithms/calibration.py":327
  *         lines.append("")
  *         lines.append(
  *             f"    {glass.vec_x:20.15f} {glass.vec_y:20.15f}  {glass.vec_z:20.15f}"             # <<<<<<<<<<<<<<
@@ -7267,7 +7267,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_4to_file(CYTH
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/calibration.py":326
+  /* "openptv2/algorithms/calibration.py":326
  *         lines.append(f"    {int_par.cc:8.4f}")
  *         lines.append("")
  *         lines.append(             # <<<<<<<<<<<<<<
@@ -7277,7 +7277,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_4to_file(CYTH
   __pyx_t_10 = __Pyx_PyList_Append(__pyx_v_lines, __pyx_t_5); if (unlikely(__pyx_t_10 == ((int)-1))) __PYX_ERR(0, 326, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "algorithms/calibration.py":330
+  /* "openptv2/algorithms/calibration.py":330
  *         )
  * 
  *         ori_path.write_text("\n".join(lines) + "\n")             # <<<<<<<<<<<<<<
@@ -7302,7 +7302,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_4to_file(CYTH
   }
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "algorithms/calibration.py":332
+  /* "openptv2/algorithms/calibration.py":332
  *         ori_path.write_text("\n".join(lines) + "\n")
  * 
  *         if add_file is not None:             # <<<<<<<<<<<<<<
@@ -7312,7 +7312,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_4to_file(CYTH
   __pyx_t_12 = (__pyx_v_add_file != Py_None);
   if (__pyx_t_12) {
 
-    /* "algorithms/calibration.py":333
+    /* "openptv2/algorithms/calibration.py":333
  * 
  *         if add_file is not None:
  *             add_path = Path(add_file)             # <<<<<<<<<<<<<<
@@ -7345,7 +7345,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_4to_file(CYTH
     __pyx_v_add_path = __pyx_t_5;
     __pyx_t_5 = 0;
 
-    /* "algorithms/calibration.py":334
+    /* "openptv2/algorithms/calibration.py":334
  *         if add_file is not None:
  *             add_path = Path(add_file)
  *             ap = self.added_par             # <<<<<<<<<<<<<<
@@ -7357,7 +7357,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_4to_file(CYTH
     __pyx_v_ap = __pyx_t_5;
     __pyx_t_5 = 0;
 
-    /* "algorithms/calibration.py":336
+    /* "openptv2/algorithms/calibration.py":336
  *             ap = self.added_par
  *             add_lines = [
  *                 f"{ap.k1:.8f} {ap.k2:.8f} {ap.k3:.8f} "             # <<<<<<<<<<<<<<
@@ -7380,7 +7380,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_4to_file(CYTH
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-    /* "algorithms/calibration.py":337
+    /* "openptv2/algorithms/calibration.py":337
  *             add_lines = [
  *                 f"{ap.k1:.8f} {ap.k2:.8f} {ap.k3:.8f} "
  *                 f"{ap.p1:.8f} {ap.p2:.8f} {ap.scx:.8f} {ap.she:.8f}"             # <<<<<<<<<<<<<<
@@ -7421,7 +7421,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_4to_file(CYTH
     __pyx_t_16[11] = __pyx_mstate_global->__pyx_kp_u__2;
     __pyx_t_16[12] = __pyx_t_15;
 
-    /* "algorithms/calibration.py":336
+    /* "openptv2/algorithms/calibration.py":336
  *             ap = self.added_par
  *             add_lines = [
  *                 f"{ap.k1:.8f} {ap.k2:.8f} {ap.k3:.8f} "             # <<<<<<<<<<<<<<
@@ -7439,7 +7439,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_4to_file(CYTH
     __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
     __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
 
-    /* "algorithms/calibration.py":335
+    /* "openptv2/algorithms/calibration.py":335
  *             add_path = Path(add_file)
  *             ap = self.added_par
  *             add_lines = [             # <<<<<<<<<<<<<<
@@ -7454,7 +7454,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_4to_file(CYTH
     __pyx_v_add_lines = ((PyObject*)__pyx_t_15);
     __pyx_t_15 = 0;
 
-    /* "algorithms/calibration.py":339
+    /* "openptv2/algorithms/calibration.py":339
  *                 f"{ap.p1:.8f} {ap.p2:.8f} {ap.scx:.8f} {ap.she:.8f}"
  *             ]
  *             add_path.write_text("\n".join(add_lines) + "\n")             # <<<<<<<<<<<<<<
@@ -7479,7 +7479,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_4to_file(CYTH
     }
     __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
 
-    /* "algorithms/calibration.py":332
+    /* "openptv2/algorithms/calibration.py":332
  *         ori_path.write_text("\n".join(lines) + "\n")
  * 
  *         if add_file is not None:             # <<<<<<<<<<<<<<
@@ -7488,7 +7488,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_4to_file(CYTH
 */
   }
 
-  /* "algorithms/calibration.py":295
+  /* "openptv2/algorithms/calibration.py":295
  *         )
  * 
  *     def to_file(             # <<<<<<<<<<<<<<
@@ -7508,7 +7508,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_4to_file(CYTH
   __Pyx_XDECREF(__pyx_t_13);
   __Pyx_XDECREF(__pyx_t_14);
   __Pyx_XDECREF(__pyx_t_15);
-  __Pyx_AddTraceback("algorithms.calibration.Calibration.to_file", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.calibration.Calibration.to_file", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_ori_path);
@@ -7524,7 +7524,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_4to_file(CYTH
   return __pyx_r;
 }
 
-/* "algorithms/calibration.py":342
+/* "openptv2/algorithms/calibration.py":342
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -7532,14 +7532,14 @@ static PyObject *__pyx_pf_10algorithms_11calibration_11Calibration_4to_file(CYTH
  *     """Compare two Exterior objects for equality (all fields, including dm)."""
 */
 
-static PyObject *__pyx_pw_10algorithms_11calibration_1compare_exterior(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_11calibration_1compare_exterior(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static int __pyx_f_10algorithms_11calibration_compare_exterior(PyObject *__pyx_v_e1, PyObject *__pyx_v_e2, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static int __pyx_f_8openptv2_10algorithms_11calibration_compare_exterior(PyObject *__pyx_v_e1, PyObject *__pyx_v_e2, CYTHON_UNUSED int __pyx_skip_dispatch) {
   int __pyx_r;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -7555,7 +7555,7 @@ static int __pyx_f_10algorithms_11calibration_compare_exterior(PyObject *__pyx_v
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("compare_exterior", 0);
 
-  /* "algorithms/calibration.py":345
+  /* "openptv2/algorithms/calibration.py":345
  * def compare_exterior(e1: Exterior, e2: Exterior) -> bool:
  *     """Compare two Exterior objects for equality (all fields, including dm)."""
  *     if not np.allclose(e1.dm, e2.dm):             # <<<<<<<<<<<<<<
@@ -7599,7 +7599,7 @@ static int __pyx_f_10algorithms_11calibration_compare_exterior(PyObject *__pyx_v
   __pyx_t_8 = (!__pyx_t_7);
   if (__pyx_t_8) {
 
-    /* "algorithms/calibration.py":346
+    /* "openptv2/algorithms/calibration.py":346
  *     """Compare two Exterior objects for equality (all fields, including dm)."""
  *     if not np.allclose(e1.dm, e2.dm):
  *         return False             # <<<<<<<<<<<<<<
@@ -7609,7 +7609,7 @@ static int __pyx_f_10algorithms_11calibration_compare_exterior(PyObject *__pyx_v
     __pyx_r = 0;
     goto __pyx_L0;
 
-    /* "algorithms/calibration.py":345
+    /* "openptv2/algorithms/calibration.py":345
  * def compare_exterior(e1: Exterior, e2: Exterior) -> bool:
  *     """Compare two Exterior objects for equality (all fields, including dm)."""
  *     if not np.allclose(e1.dm, e2.dm):             # <<<<<<<<<<<<<<
@@ -7618,7 +7618,7 @@ static int __pyx_f_10algorithms_11calibration_compare_exterior(PyObject *__pyx_v
 */
   }
 
-  /* "algorithms/calibration.py":348
+  /* "openptv2/algorithms/calibration.py":348
  *         return False
  *     return (
  *         e1.x0 == e2.x0 and             # <<<<<<<<<<<<<<
@@ -7640,7 +7640,7 @@ static int __pyx_f_10algorithms_11calibration_compare_exterior(PyObject *__pyx_v
     goto __pyx_L4_bool_binop_done;
   }
 
-  /* "algorithms/calibration.py":349
+  /* "openptv2/algorithms/calibration.py":349
  *     return (
  *         e1.x0 == e2.x0 and
  *         e1.y0 == e2.y0 and             # <<<<<<<<<<<<<<
@@ -7662,7 +7662,7 @@ static int __pyx_f_10algorithms_11calibration_compare_exterior(PyObject *__pyx_v
     goto __pyx_L4_bool_binop_done;
   }
 
-  /* "algorithms/calibration.py":350
+  /* "openptv2/algorithms/calibration.py":350
  *         e1.x0 == e2.x0 and
  *         e1.y0 == e2.y0 and
  *         e1.z0 == e2.z0 and             # <<<<<<<<<<<<<<
@@ -7684,7 +7684,7 @@ static int __pyx_f_10algorithms_11calibration_compare_exterior(PyObject *__pyx_v
     goto __pyx_L4_bool_binop_done;
   }
 
-  /* "algorithms/calibration.py":351
+  /* "openptv2/algorithms/calibration.py":351
  *         e1.y0 == e2.y0 and
  *         e1.z0 == e2.z0 and
  *         e1.omega == e2.omega and             # <<<<<<<<<<<<<<
@@ -7706,7 +7706,7 @@ static int __pyx_f_10algorithms_11calibration_compare_exterior(PyObject *__pyx_v
     goto __pyx_L4_bool_binop_done;
   }
 
-  /* "algorithms/calibration.py":352
+  /* "openptv2/algorithms/calibration.py":352
  *         e1.z0 == e2.z0 and
  *         e1.omega == e2.omega and
  *         e1.phi == e2.phi and             # <<<<<<<<<<<<<<
@@ -7728,7 +7728,7 @@ static int __pyx_f_10algorithms_11calibration_compare_exterior(PyObject *__pyx_v
     goto __pyx_L4_bool_binop_done;
   }
 
-  /* "algorithms/calibration.py":353
+  /* "openptv2/algorithms/calibration.py":353
  *         e1.omega == e2.omega and
  *         e1.phi == e2.phi and
  *         e1.kappa == e2.kappa             # <<<<<<<<<<<<<<
@@ -7749,7 +7749,7 @@ static int __pyx_f_10algorithms_11calibration_compare_exterior(PyObject *__pyx_v
   __pyx_r = __pyx_t_8;
   goto __pyx_L0;
 
-  /* "algorithms/calibration.py":342
+  /* "openptv2/algorithms/calibration.py":342
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -7764,7 +7764,7 @@ static int __pyx_f_10algorithms_11calibration_compare_exterior(PyObject *__pyx_v
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_5);
-  __Pyx_AddTraceback("algorithms.calibration.compare_exterior", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.calibration.compare_exterior", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = -1;
   __pyx_L0:;
   __Pyx_RefNannyFinishContext();
@@ -7772,16 +7772,16 @@ static int __pyx_f_10algorithms_11calibration_compare_exterior(PyObject *__pyx_v
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_11calibration_1compare_exterior(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_11calibration_1compare_exterior(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_11calibration_compare_exterior, "Compare two Exterior objects for equality (all fields, including dm).");
-static PyMethodDef __pyx_mdef_10algorithms_11calibration_1compare_exterior = {"compare_exterior", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_11calibration_1compare_exterior, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_11calibration_compare_exterior};
-static PyObject *__pyx_pw_10algorithms_11calibration_1compare_exterior(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_11calibration_compare_exterior, "Compare two Exterior objects for equality (all fields, including dm).");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_11calibration_1compare_exterior = {"compare_exterior", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_11calibration_1compare_exterior, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_11calibration_compare_exterior};
+static PyObject *__pyx_pw_8openptv2_10algorithms_11calibration_1compare_exterior(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -7851,11 +7851,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.calibration.compare_exterior", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.calibration.compare_exterior", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_11calibration_compare_exterior(__pyx_self, __pyx_v_e1, __pyx_v_e2);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_11calibration_compare_exterior(__pyx_self, __pyx_v_e1, __pyx_v_e2);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -7865,7 +7865,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_11calibration_compare_exterior(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_e1, PyObject *__pyx_v_e2) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_11calibration_compare_exterior(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_e1, PyObject *__pyx_v_e2) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   int __pyx_t_1;
@@ -7875,7 +7875,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_compare_exterior(CYTHON_UNU
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("compare_exterior", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_11calibration_compare_exterior(__pyx_v_e1, __pyx_v_e2, 1); if (unlikely(__pyx_t_1 == ((int)-1) && PyErr_Occurred())) __PYX_ERR(0, 342, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_11calibration_compare_exterior(__pyx_v_e1, __pyx_v_e2, 1); if (unlikely(__pyx_t_1 == ((int)-1) && PyErr_Occurred())) __PYX_ERR(0, 342, __pyx_L1_error)
   __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 342, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_r = __pyx_t_2;
@@ -7885,7 +7885,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_compare_exterior(CYTHON_UNU
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_2);
-  __Pyx_AddTraceback("algorithms.calibration.compare_exterior", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.calibration.compare_exterior", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -7893,7 +7893,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_compare_exterior(CYTHON_UNU
   return __pyx_r;
 }
 
-/* "algorithms/calibration.py":356
+/* "openptv2/algorithms/calibration.py":356
  *     )
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -7901,14 +7901,14 @@ static PyObject *__pyx_pf_10algorithms_11calibration_compare_exterior(CYTHON_UNU
  *     """Compare two Interior objects for equality."""
 */
 
-static PyObject *__pyx_pw_10algorithms_11calibration_3compare_interior(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_11calibration_3compare_interior(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static int __pyx_f_10algorithms_11calibration_compare_interior(PyObject *__pyx_v_i1, PyObject *__pyx_v_i2, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static int __pyx_f_8openptv2_10algorithms_11calibration_compare_interior(PyObject *__pyx_v_i1, PyObject *__pyx_v_i2, CYTHON_UNUSED int __pyx_skip_dispatch) {
   int __pyx_r;
   __Pyx_RefNannyDeclarations
   int __pyx_t_1;
@@ -7921,7 +7921,7 @@ static int __pyx_f_10algorithms_11calibration_compare_interior(PyObject *__pyx_v
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("compare_interior", 0);
 
-  /* "algorithms/calibration.py":360
+  /* "openptv2/algorithms/calibration.py":360
  *     """Compare two Interior objects for equality."""
  *     return (
  *         i1.xh == i2.xh and             # <<<<<<<<<<<<<<
@@ -7943,7 +7943,7 @@ static int __pyx_f_10algorithms_11calibration_compare_interior(PyObject *__pyx_v
     goto __pyx_L3_bool_binop_done;
   }
 
-  /* "algorithms/calibration.py":361
+  /* "openptv2/algorithms/calibration.py":361
  *     return (
  *         i1.xh == i2.xh and
  *         i1.yh == i2.yh and             # <<<<<<<<<<<<<<
@@ -7965,7 +7965,7 @@ static int __pyx_f_10algorithms_11calibration_compare_interior(PyObject *__pyx_v
     goto __pyx_L3_bool_binop_done;
   }
 
-  /* "algorithms/calibration.py":362
+  /* "openptv2/algorithms/calibration.py":362
  *         i1.xh == i2.xh and
  *         i1.yh == i2.yh and
  *         i1.cc == i2.cc             # <<<<<<<<<<<<<<
@@ -7986,7 +7986,7 @@ static int __pyx_f_10algorithms_11calibration_compare_interior(PyObject *__pyx_v
   __pyx_r = __pyx_t_1;
   goto __pyx_L0;
 
-  /* "algorithms/calibration.py":356
+  /* "openptv2/algorithms/calibration.py":356
  *     )
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -7999,7 +7999,7 @@ static int __pyx_f_10algorithms_11calibration_compare_interior(PyObject *__pyx_v
   __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_4);
-  __Pyx_AddTraceback("algorithms.calibration.compare_interior", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.calibration.compare_interior", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = -1;
   __pyx_L0:;
   __Pyx_RefNannyFinishContext();
@@ -8007,16 +8007,16 @@ static int __pyx_f_10algorithms_11calibration_compare_interior(PyObject *__pyx_v
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_11calibration_3compare_interior(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_11calibration_3compare_interior(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_11calibration_2compare_interior, "Compare two Interior objects for equality.");
-static PyMethodDef __pyx_mdef_10algorithms_11calibration_3compare_interior = {"compare_interior", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_11calibration_3compare_interior, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_11calibration_2compare_interior};
-static PyObject *__pyx_pw_10algorithms_11calibration_3compare_interior(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_11calibration_2compare_interior, "Compare two Interior objects for equality.");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_11calibration_3compare_interior = {"compare_interior", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_11calibration_3compare_interior, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_11calibration_2compare_interior};
+static PyObject *__pyx_pw_8openptv2_10algorithms_11calibration_3compare_interior(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -8086,11 +8086,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.calibration.compare_interior", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.calibration.compare_interior", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_11calibration_2compare_interior(__pyx_self, __pyx_v_i1, __pyx_v_i2);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_11calibration_2compare_interior(__pyx_self, __pyx_v_i1, __pyx_v_i2);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -8100,7 +8100,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_11calibration_2compare_interior(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_i1, PyObject *__pyx_v_i2) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_11calibration_2compare_interior(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_i1, PyObject *__pyx_v_i2) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   int __pyx_t_1;
@@ -8110,7 +8110,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_2compare_interior(CYTHON_UN
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("compare_interior", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_11calibration_compare_interior(__pyx_v_i1, __pyx_v_i2, 1); if (unlikely(__pyx_t_1 == ((int)-1) && PyErr_Occurred())) __PYX_ERR(0, 356, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_11calibration_compare_interior(__pyx_v_i1, __pyx_v_i2, 1); if (unlikely(__pyx_t_1 == ((int)-1) && PyErr_Occurred())) __PYX_ERR(0, 356, __pyx_L1_error)
   __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 356, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_r = __pyx_t_2;
@@ -8120,7 +8120,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_2compare_interior(CYTHON_UN
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_2);
-  __Pyx_AddTraceback("algorithms.calibration.compare_interior", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.calibration.compare_interior", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -8128,7 +8128,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_2compare_interior(CYTHON_UN
   return __pyx_r;
 }
 
-/* "algorithms/calibration.py":365
+/* "openptv2/algorithms/calibration.py":365
  *     )
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -8136,14 +8136,14 @@ static PyObject *__pyx_pf_10algorithms_11calibration_2compare_interior(CYTHON_UN
  *     """Compare two Glass objects for equality (only normal vector)."""
 */
 
-static PyObject *__pyx_pw_10algorithms_11calibration_5compare_glass(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_11calibration_5compare_glass(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static int __pyx_f_10algorithms_11calibration_compare_glass(PyObject *__pyx_v_g1, PyObject *__pyx_v_g2, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static int __pyx_f_8openptv2_10algorithms_11calibration_compare_glass(PyObject *__pyx_v_g1, PyObject *__pyx_v_g2, CYTHON_UNUSED int __pyx_skip_dispatch) {
   int __pyx_r;
   __Pyx_RefNannyDeclarations
   int __pyx_t_1;
@@ -8156,7 +8156,7 @@ static int __pyx_f_10algorithms_11calibration_compare_glass(PyObject *__pyx_v_g1
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("compare_glass", 0);
 
-  /* "algorithms/calibration.py":369
+  /* "openptv2/algorithms/calibration.py":369
  *     """Compare two Glass objects for equality (only normal vector)."""
  *     return (
  *         g1.vec_x == g2.vec_x and             # <<<<<<<<<<<<<<
@@ -8178,7 +8178,7 @@ static int __pyx_f_10algorithms_11calibration_compare_glass(PyObject *__pyx_v_g1
     goto __pyx_L3_bool_binop_done;
   }
 
-  /* "algorithms/calibration.py":370
+  /* "openptv2/algorithms/calibration.py":370
  *     return (
  *         g1.vec_x == g2.vec_x and
  *         g1.vec_y == g2.vec_y and             # <<<<<<<<<<<<<<
@@ -8200,7 +8200,7 @@ static int __pyx_f_10algorithms_11calibration_compare_glass(PyObject *__pyx_v_g1
     goto __pyx_L3_bool_binop_done;
   }
 
-  /* "algorithms/calibration.py":371
+  /* "openptv2/algorithms/calibration.py":371
  *         g1.vec_x == g2.vec_x and
  *         g1.vec_y == g2.vec_y and
  *         g1.vec_z == g2.vec_z             # <<<<<<<<<<<<<<
@@ -8221,7 +8221,7 @@ static int __pyx_f_10algorithms_11calibration_compare_glass(PyObject *__pyx_v_g1
   __pyx_r = __pyx_t_1;
   goto __pyx_L0;
 
-  /* "algorithms/calibration.py":365
+  /* "openptv2/algorithms/calibration.py":365
  *     )
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -8234,7 +8234,7 @@ static int __pyx_f_10algorithms_11calibration_compare_glass(PyObject *__pyx_v_g1
   __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_4);
-  __Pyx_AddTraceback("algorithms.calibration.compare_glass", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.calibration.compare_glass", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = -1;
   __pyx_L0:;
   __Pyx_RefNannyFinishContext();
@@ -8242,16 +8242,16 @@ static int __pyx_f_10algorithms_11calibration_compare_glass(PyObject *__pyx_v_g1
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_11calibration_5compare_glass(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_11calibration_5compare_glass(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_11calibration_4compare_glass, "Compare two Glass objects for equality (only normal vector).");
-static PyMethodDef __pyx_mdef_10algorithms_11calibration_5compare_glass = {"compare_glass", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_11calibration_5compare_glass, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_11calibration_4compare_glass};
-static PyObject *__pyx_pw_10algorithms_11calibration_5compare_glass(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_11calibration_4compare_glass, "Compare two Glass objects for equality (only normal vector).");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_11calibration_5compare_glass = {"compare_glass", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_11calibration_5compare_glass, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_11calibration_4compare_glass};
+static PyObject *__pyx_pw_8openptv2_10algorithms_11calibration_5compare_glass(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -8321,11 +8321,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.calibration.compare_glass", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.calibration.compare_glass", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_11calibration_4compare_glass(__pyx_self, __pyx_v_g1, __pyx_v_g2);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_11calibration_4compare_glass(__pyx_self, __pyx_v_g1, __pyx_v_g2);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -8335,7 +8335,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_11calibration_4compare_glass(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_g1, PyObject *__pyx_v_g2) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_11calibration_4compare_glass(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_g1, PyObject *__pyx_v_g2) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   int __pyx_t_1;
@@ -8345,7 +8345,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_4compare_glass(CYTHON_UNUSE
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("compare_glass", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_11calibration_compare_glass(__pyx_v_g1, __pyx_v_g2, 1); if (unlikely(__pyx_t_1 == ((int)-1) && PyErr_Occurred())) __PYX_ERR(0, 365, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_11calibration_compare_glass(__pyx_v_g1, __pyx_v_g2, 1); if (unlikely(__pyx_t_1 == ((int)-1) && PyErr_Occurred())) __PYX_ERR(0, 365, __pyx_L1_error)
   __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 365, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_r = __pyx_t_2;
@@ -8355,7 +8355,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_4compare_glass(CYTHON_UNUSE
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_2);
-  __Pyx_AddTraceback("algorithms.calibration.compare_glass", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.calibration.compare_glass", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -8363,7 +8363,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_4compare_glass(CYTHON_UNUSE
   return __pyx_r;
 }
 
-/* "algorithms/calibration.py":374
+/* "openptv2/algorithms/calibration.py":374
  *     )
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -8371,14 +8371,14 @@ static PyObject *__pyx_pf_10algorithms_11calibration_4compare_glass(CYTHON_UNUSE
  *     """Compare two AddedPar (distortion) objects for equality."""
 */
 
-static PyObject *__pyx_pw_10algorithms_11calibration_7compare_addpar(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_11calibration_7compare_addpar(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static int __pyx_f_10algorithms_11calibration_compare_addpar(PyObject *__pyx_v_a1, PyObject *__pyx_v_a2, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static int __pyx_f_8openptv2_10algorithms_11calibration_compare_addpar(PyObject *__pyx_v_a1, PyObject *__pyx_v_a2, CYTHON_UNUSED int __pyx_skip_dispatch) {
   int __pyx_r;
   __Pyx_RefNannyDeclarations
   int __pyx_t_1;
@@ -8391,7 +8391,7 @@ static int __pyx_f_10algorithms_11calibration_compare_addpar(PyObject *__pyx_v_a
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("compare_addpar", 0);
 
-  /* "algorithms/calibration.py":378
+  /* "openptv2/algorithms/calibration.py":378
  *     """Compare two AddedPar (distortion) objects for equality."""
  *     return (
  *         a1.k1 == a2.k1 and             # <<<<<<<<<<<<<<
@@ -8413,7 +8413,7 @@ static int __pyx_f_10algorithms_11calibration_compare_addpar(PyObject *__pyx_v_a
     goto __pyx_L3_bool_binop_done;
   }
 
-  /* "algorithms/calibration.py":379
+  /* "openptv2/algorithms/calibration.py":379
  *     return (
  *         a1.k1 == a2.k1 and
  *         a1.k2 == a2.k2 and             # <<<<<<<<<<<<<<
@@ -8435,7 +8435,7 @@ static int __pyx_f_10algorithms_11calibration_compare_addpar(PyObject *__pyx_v_a
     goto __pyx_L3_bool_binop_done;
   }
 
-  /* "algorithms/calibration.py":380
+  /* "openptv2/algorithms/calibration.py":380
  *         a1.k1 == a2.k1 and
  *         a1.k2 == a2.k2 and
  *         a1.k3 == a2.k3 and             # <<<<<<<<<<<<<<
@@ -8457,7 +8457,7 @@ static int __pyx_f_10algorithms_11calibration_compare_addpar(PyObject *__pyx_v_a
     goto __pyx_L3_bool_binop_done;
   }
 
-  /* "algorithms/calibration.py":381
+  /* "openptv2/algorithms/calibration.py":381
  *         a1.k2 == a2.k2 and
  *         a1.k3 == a2.k3 and
  *         a1.p1 == a2.p1 and             # <<<<<<<<<<<<<<
@@ -8479,7 +8479,7 @@ static int __pyx_f_10algorithms_11calibration_compare_addpar(PyObject *__pyx_v_a
     goto __pyx_L3_bool_binop_done;
   }
 
-  /* "algorithms/calibration.py":382
+  /* "openptv2/algorithms/calibration.py":382
  *         a1.k3 == a2.k3 and
  *         a1.p1 == a2.p1 and
  *         a1.p2 == a2.p2 and             # <<<<<<<<<<<<<<
@@ -8501,7 +8501,7 @@ static int __pyx_f_10algorithms_11calibration_compare_addpar(PyObject *__pyx_v_a
     goto __pyx_L3_bool_binop_done;
   }
 
-  /* "algorithms/calibration.py":383
+  /* "openptv2/algorithms/calibration.py":383
  *         a1.p1 == a2.p1 and
  *         a1.p2 == a2.p2 and
  *         a1.scx == a2.scx and             # <<<<<<<<<<<<<<
@@ -8523,7 +8523,7 @@ static int __pyx_f_10algorithms_11calibration_compare_addpar(PyObject *__pyx_v_a
     goto __pyx_L3_bool_binop_done;
   }
 
-  /* "algorithms/calibration.py":384
+  /* "openptv2/algorithms/calibration.py":384
  *         a1.p2 == a2.p2 and
  *         a1.scx == a2.scx and
  *         a1.she == a2.she             # <<<<<<<<<<<<<<
@@ -8544,7 +8544,7 @@ static int __pyx_f_10algorithms_11calibration_compare_addpar(PyObject *__pyx_v_a
   __pyx_r = __pyx_t_1;
   goto __pyx_L0;
 
-  /* "algorithms/calibration.py":374
+  /* "openptv2/algorithms/calibration.py":374
  *     )
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -8557,7 +8557,7 @@ static int __pyx_f_10algorithms_11calibration_compare_addpar(PyObject *__pyx_v_a
   __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_4);
-  __Pyx_AddTraceback("algorithms.calibration.compare_addpar", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.calibration.compare_addpar", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = -1;
   __pyx_L0:;
   __Pyx_RefNannyFinishContext();
@@ -8565,16 +8565,16 @@ static int __pyx_f_10algorithms_11calibration_compare_addpar(PyObject *__pyx_v_a
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_11calibration_7compare_addpar(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_11calibration_7compare_addpar(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_11calibration_6compare_addpar, "Compare two AddedPar (distortion) objects for equality.");
-static PyMethodDef __pyx_mdef_10algorithms_11calibration_7compare_addpar = {"compare_addpar", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_11calibration_7compare_addpar, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_11calibration_6compare_addpar};
-static PyObject *__pyx_pw_10algorithms_11calibration_7compare_addpar(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_11calibration_6compare_addpar, "Compare two AddedPar (distortion) objects for equality.");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_11calibration_7compare_addpar = {"compare_addpar", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_11calibration_7compare_addpar, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_11calibration_6compare_addpar};
+static PyObject *__pyx_pw_8openptv2_10algorithms_11calibration_7compare_addpar(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -8644,11 +8644,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.calibration.compare_addpar", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.calibration.compare_addpar", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_11calibration_6compare_addpar(__pyx_self, __pyx_v_a1, __pyx_v_a2);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_11calibration_6compare_addpar(__pyx_self, __pyx_v_a1, __pyx_v_a2);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -8658,7 +8658,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_11calibration_6compare_addpar(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_a1, PyObject *__pyx_v_a2) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_11calibration_6compare_addpar(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_a1, PyObject *__pyx_v_a2) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   int __pyx_t_1;
@@ -8668,7 +8668,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_6compare_addpar(CYTHON_UNUS
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("compare_addpar", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_11calibration_compare_addpar(__pyx_v_a1, __pyx_v_a2, 1); if (unlikely(__pyx_t_1 == ((int)-1) && PyErr_Occurred())) __PYX_ERR(0, 374, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_11calibration_compare_addpar(__pyx_v_a1, __pyx_v_a2, 1); if (unlikely(__pyx_t_1 == ((int)-1) && PyErr_Occurred())) __PYX_ERR(0, 374, __pyx_L1_error)
   __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 374, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_r = __pyx_t_2;
@@ -8678,7 +8678,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_6compare_addpar(CYTHON_UNUS
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_2);
-  __Pyx_AddTraceback("algorithms.calibration.compare_addpar", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.calibration.compare_addpar", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -8686,7 +8686,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_6compare_addpar(CYTHON_UNUS
   return __pyx_r;
 }
 
-/* "algorithms/calibration.py":387
+/* "openptv2/algorithms/calibration.py":387
  *     )
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -8694,14 +8694,14 @@ static PyObject *__pyx_pf_10algorithms_11calibration_6compare_addpar(CYTHON_UNUS
  *     """Deep comparison of two Calibration objects (all fields except mmlut)."""
 */
 
-static PyObject *__pyx_pw_10algorithms_11calibration_9compare_calib(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_11calibration_9compare_calib(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static int __pyx_f_10algorithms_11calibration_compare_calib(PyObject *__pyx_v_c1, PyObject *__pyx_v_c2, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static int __pyx_f_8openptv2_10algorithms_11calibration_compare_calib(PyObject *__pyx_v_c1, PyObject *__pyx_v_c2, CYTHON_UNUSED int __pyx_skip_dispatch) {
   int __pyx_r;
   __Pyx_RefNannyDeclarations
   int __pyx_t_1;
@@ -8713,7 +8713,7 @@ static int __pyx_f_10algorithms_11calibration_compare_calib(PyObject *__pyx_v_c1
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("compare_calib", 0);
 
-  /* "algorithms/calibration.py":391
+  /* "openptv2/algorithms/calibration.py":391
  *     """Deep comparison of two Calibration objects (all fields except mmlut)."""
  *     return (
  *         compare_exterior(c1.ext_par, c2.ext_par)             # <<<<<<<<<<<<<<
@@ -8724,7 +8724,7 @@ static int __pyx_f_10algorithms_11calibration_compare_calib(PyObject *__pyx_v_c1
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_c2, __pyx_mstate_global->__pyx_n_u_ext_par); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 391, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = __pyx_f_10algorithms_11calibration_compare_exterior(__pyx_t_2, __pyx_t_3, 0); if (unlikely(__pyx_t_4 == ((int)-1) && PyErr_Occurred())) __PYX_ERR(0, 391, __pyx_L1_error)
+  __pyx_t_4 = __pyx_f_8openptv2_10algorithms_11calibration_compare_exterior(__pyx_t_2, __pyx_t_3, 0); if (unlikely(__pyx_t_4 == ((int)-1) && PyErr_Occurred())) __PYX_ERR(0, 391, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   if (__pyx_t_4) {
@@ -8733,7 +8733,7 @@ static int __pyx_f_10algorithms_11calibration_compare_calib(PyObject *__pyx_v_c1
     goto __pyx_L3_bool_binop_done;
   }
 
-  /* "algorithms/calibration.py":392
+  /* "openptv2/algorithms/calibration.py":392
  *     return (
  *         compare_exterior(c1.ext_par, c2.ext_par)
  *         and compare_interior(c1.int_par, c2.int_par)             # <<<<<<<<<<<<<<
@@ -8744,7 +8744,7 @@ static int __pyx_f_10algorithms_11calibration_compare_calib(PyObject *__pyx_v_c1
   __Pyx_GOTREF(__pyx_t_3);
   __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_c2, __pyx_mstate_global->__pyx_n_u_int_par); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 392, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_4 = __pyx_f_10algorithms_11calibration_compare_interior(__pyx_t_3, __pyx_t_2, 0); if (unlikely(__pyx_t_4 == ((int)-1) && PyErr_Occurred())) __PYX_ERR(0, 392, __pyx_L1_error)
+  __pyx_t_4 = __pyx_f_8openptv2_10algorithms_11calibration_compare_interior(__pyx_t_3, __pyx_t_2, 0); if (unlikely(__pyx_t_4 == ((int)-1) && PyErr_Occurred())) __PYX_ERR(0, 392, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   if (__pyx_t_4) {
@@ -8753,7 +8753,7 @@ static int __pyx_f_10algorithms_11calibration_compare_calib(PyObject *__pyx_v_c1
     goto __pyx_L3_bool_binop_done;
   }
 
-  /* "algorithms/calibration.py":393
+  /* "openptv2/algorithms/calibration.py":393
  *         compare_exterior(c1.ext_par, c2.ext_par)
  *         and compare_interior(c1.int_par, c2.int_par)
  *         and compare_glass(c1.glass_par, c2.glass_par)             # <<<<<<<<<<<<<<
@@ -8764,7 +8764,7 @@ static int __pyx_f_10algorithms_11calibration_compare_calib(PyObject *__pyx_v_c1
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_c2, __pyx_mstate_global->__pyx_n_u_glass_par); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 393, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = __pyx_f_10algorithms_11calibration_compare_glass(__pyx_t_2, __pyx_t_3, 0); if (unlikely(__pyx_t_4 == ((int)-1) && PyErr_Occurred())) __PYX_ERR(0, 393, __pyx_L1_error)
+  __pyx_t_4 = __pyx_f_8openptv2_10algorithms_11calibration_compare_glass(__pyx_t_2, __pyx_t_3, 0); if (unlikely(__pyx_t_4 == ((int)-1) && PyErr_Occurred())) __PYX_ERR(0, 393, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   if (__pyx_t_4) {
@@ -8773,7 +8773,7 @@ static int __pyx_f_10algorithms_11calibration_compare_calib(PyObject *__pyx_v_c1
     goto __pyx_L3_bool_binop_done;
   }
 
-  /* "algorithms/calibration.py":394
+  /* "openptv2/algorithms/calibration.py":394
  *         and compare_interior(c1.int_par, c2.int_par)
  *         and compare_glass(c1.glass_par, c2.glass_par)
  *         and compare_addpar(c1.added_par, c2.added_par)             # <<<<<<<<<<<<<<
@@ -8784,7 +8784,7 @@ static int __pyx_f_10algorithms_11calibration_compare_calib(PyObject *__pyx_v_c1
   __Pyx_GOTREF(__pyx_t_3);
   __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_c2, __pyx_mstate_global->__pyx_n_u_added_par); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 394, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_4 = __pyx_f_10algorithms_11calibration_compare_addpar(__pyx_t_3, __pyx_t_2, 0); if (unlikely(__pyx_t_4 == ((int)-1) && PyErr_Occurred())) __PYX_ERR(0, 394, __pyx_L1_error)
+  __pyx_t_4 = __pyx_f_8openptv2_10algorithms_11calibration_compare_addpar(__pyx_t_3, __pyx_t_2, 0); if (unlikely(__pyx_t_4 == ((int)-1) && PyErr_Occurred())) __PYX_ERR(0, 394, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_t_1 = __pyx_t_4;
@@ -8792,7 +8792,7 @@ static int __pyx_f_10algorithms_11calibration_compare_calib(PyObject *__pyx_v_c1
   __pyx_r = __pyx_t_1;
   goto __pyx_L0;
 
-  /* "algorithms/calibration.py":387
+  /* "openptv2/algorithms/calibration.py":387
  *     )
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -8804,7 +8804,7 @@ static int __pyx_f_10algorithms_11calibration_compare_calib(PyObject *__pyx_v_c1
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3);
-  __Pyx_AddTraceback("algorithms.calibration.compare_calib", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.calibration.compare_calib", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = -1;
   __pyx_L0:;
   __Pyx_RefNannyFinishContext();
@@ -8812,16 +8812,16 @@ static int __pyx_f_10algorithms_11calibration_compare_calib(PyObject *__pyx_v_c1
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_11calibration_9compare_calib(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_11calibration_9compare_calib(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_11calibration_8compare_calib, "Deep comparison of two Calibration objects (all fields except mmlut).");
-static PyMethodDef __pyx_mdef_10algorithms_11calibration_9compare_calib = {"compare_calib", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_11calibration_9compare_calib, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_11calibration_8compare_calib};
-static PyObject *__pyx_pw_10algorithms_11calibration_9compare_calib(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_11calibration_8compare_calib, "Deep comparison of two Calibration objects (all fields except mmlut).");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_11calibration_9compare_calib = {"compare_calib", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_11calibration_9compare_calib, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_11calibration_8compare_calib};
+static PyObject *__pyx_pw_8openptv2_10algorithms_11calibration_9compare_calib(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -8891,11 +8891,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.calibration.compare_calib", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.calibration.compare_calib", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_11calibration_8compare_calib(__pyx_self, __pyx_v_c1, __pyx_v_c2);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_11calibration_8compare_calib(__pyx_self, __pyx_v_c1, __pyx_v_c2);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -8905,7 +8905,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_11calibration_8compare_calib(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_c1, PyObject *__pyx_v_c2) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_11calibration_8compare_calib(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_c1, PyObject *__pyx_v_c2) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   int __pyx_t_1;
@@ -8915,7 +8915,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_8compare_calib(CYTHON_UNUSE
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("compare_calib", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_11calibration_compare_calib(__pyx_v_c1, __pyx_v_c2, 1); if (unlikely(__pyx_t_1 == ((int)-1) && PyErr_Occurred())) __PYX_ERR(0, 387, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_11calibration_compare_calib(__pyx_v_c1, __pyx_v_c2, 1); if (unlikely(__pyx_t_1 == ((int)-1) && PyErr_Occurred())) __PYX_ERR(0, 387, __pyx_L1_error)
   __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 387, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_r = __pyx_t_2;
@@ -8925,7 +8925,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_8compare_calib(CYTHON_UNUSE
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_2);
-  __Pyx_AddTraceback("algorithms.calibration.compare_calib", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.calibration.compare_calib", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -8933,7 +8933,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_8compare_calib(CYTHON_UNUSE
   return __pyx_r;
 }
 
-/* "algorithms/calibration.py":401
+/* "openptv2/algorithms/calibration.py":401
  * 
  * 
  * def is_compiled() -> bool:             # <<<<<<<<<<<<<<
@@ -8942,28 +8942,28 @@ static PyObject *__pyx_pf_10algorithms_11calibration_8compare_calib(CYTHON_UNUSE
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_11calibration_11is_compiled(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_11calibration_10is_compiled, "Return whether this module is compiled to C.");
-static PyMethodDef __pyx_mdef_10algorithms_11calibration_11is_compiled = {"is_compiled", (PyCFunction)__pyx_pw_10algorithms_11calibration_11is_compiled, METH_NOARGS, __pyx_doc_10algorithms_11calibration_10is_compiled};
-static PyObject *__pyx_pw_10algorithms_11calibration_11is_compiled(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_8openptv2_10algorithms_11calibration_11is_compiled(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_11calibration_10is_compiled, "Return whether this module is compiled to C.");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_11calibration_11is_compiled = {"is_compiled", (PyCFunction)__pyx_pw_8openptv2_10algorithms_11calibration_11is_compiled, METH_NOARGS, __pyx_doc_8openptv2_10algorithms_11calibration_10is_compiled};
+static PyObject *__pyx_pw_8openptv2_10algorithms_11calibration_11is_compiled(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused) {
   CYTHON_UNUSED PyObject *const *__pyx_kwvalues;
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("is_compiled (wrapper)", 0);
   __pyx_kwvalues = __Pyx_KwValues_VARARGS(__pyx_args, __pyx_nargs);
-  __pyx_r = __pyx_pf_10algorithms_11calibration_10is_compiled(__pyx_self);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_11calibration_10is_compiled(__pyx_self);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_11calibration_10is_compiled(CYTHON_UNUSED PyObject *__pyx_self) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_11calibration_10is_compiled(CYTHON_UNUSED PyObject *__pyx_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("is_compiled", 0);
 
-  /* "algorithms/calibration.py":403
+  /* "openptv2/algorithms/calibration.py":403
  * def is_compiled() -> bool:
  *     """Return whether this module is compiled to C."""
  *     return cython.compiled             # <<<<<<<<<<<<<<
@@ -8973,7 +8973,7 @@ static PyObject *__pyx_pf_10algorithms_11calibration_10is_compiled(CYTHON_UNUSED
   __pyx_r = Py_True;
   goto __pyx_L0;
 
-  /* "algorithms/calibration.py":401
+  /* "openptv2/algorithms/calibration.py":401
  * 
  * 
  * def is_compiled() -> bool:             # <<<<<<<<<<<<<<
@@ -9319,13 +9319,13 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
   if (__Pyx_InitConstants(__pyx_mstate) < (0)) __PYX_ERR(0, 1, __pyx_L1_error)
   stringtab_initialized = 1;
   if (__Pyx_InitGlobals() < (0)) __PYX_ERR(0, 1, __pyx_L1_error)
-  if (__pyx_module_is_main_algorithms__calibration) {
+  if (__pyx_module_is_main_openptv2__algorithms__calibration) {
     if (PyObject_SetAttr(__pyx_m, __pyx_mstate_global->__pyx_n_u_name, __pyx_mstate_global->__pyx_n_u_main) < (0)) __PYX_ERR(0, 1, __pyx_L1_error)
   }
   {
     PyObject *modules = PyImport_GetModuleDict(); if (unlikely(!modules)) __PYX_ERR(0, 1, __pyx_L1_error)
-    if (!PyDict_GetItemString(modules, "algorithms.calibration")) {
-      if (unlikely((PyDict_SetItemString(modules, "algorithms.calibration", __pyx_m) < 0))) __PYX_ERR(0, 1, __pyx_L1_error)
+    if (!PyDict_GetItemString(modules, "openptv2.algorithms.calibration")) {
+      if (unlikely((PyDict_SetItemString(modules, "openptv2.algorithms.calibration", __pyx_m) < 0))) __PYX_ERR(0, 1, __pyx_L1_error)
     }
   }
   /*--- Builtin init code ---*/
@@ -9343,7 +9343,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
   (void)__Pyx_modinit_function_import_code(__pyx_mstate);
   /*--- Execution code ---*/
 
-  /* "algorithms/calibration.py":17
+  /* "openptv2/algorithms/calibration.py":17
  * import cython
  * 
  * from dataclasses import dataclass, field             # <<<<<<<<<<<<<<
@@ -9367,7 +9367,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
   }
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/calibration.py":18
+  /* "openptv2/algorithms/calibration.py":18
  * 
  * from dataclasses import dataclass, field
  * from pathlib import Path             # <<<<<<<<<<<<<<
@@ -9391,7 +9391,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
   }
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/calibration.py":19
+  /* "openptv2/algorithms/calibration.py":19
  * from dataclasses import dataclass, field
  * from pathlib import Path
  * from typing import Optional             # <<<<<<<<<<<<<<
@@ -9415,7 +9415,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
   }
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/calibration.py":21
+  /* "openptv2/algorithms/calibration.py":21
  * from typing import Optional
  * 
  * import numpy as np             # <<<<<<<<<<<<<<
@@ -9428,14 +9428,14 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_np, __pyx_t_2) < (0)) __PYX_ERR(0, 21, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/calibration.py":25
+  /* "openptv2/algorithms/calibration.py":25
  * 
  * @dataclass
  * class Exterior:             # <<<<<<<<<<<<<<
  *     """Exterior orientation: camera position and orientation.
  * 
 */
-  __pyx_t_2 = __Pyx_Py3MetaclassPrepare((PyObject *) NULL, __pyx_mstate_global->__pyx_empty_tuple, __pyx_mstate_global->__pyx_n_u_Exterior, __pyx_mstate_global->__pyx_n_u_Exterior, (PyObject *) NULL, __pyx_mstate_global->__pyx_n_u_algorithms_calibration, __pyx_mstate_global->__pyx_kp_u_Exterior_orientation_camera_posi); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 25, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_Py3MetaclassPrepare((PyObject *) NULL, __pyx_mstate_global->__pyx_empty_tuple, __pyx_mstate_global->__pyx_n_u_Exterior, __pyx_mstate_global->__pyx_n_u_Exterior, (PyObject *) NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_calibration, __pyx_mstate_global->__pyx_kp_u_Exterior_orientation_camera_posi); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 25, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_4 = __Pyx_PyDict_NewPresized(7); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 25, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
@@ -9449,7 +9449,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_annotations, __pyx_t_4) < (0)) __PYX_ERR(0, 25, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/calibration.py":33
+  /* "openptv2/algorithms/calibration.py":33
  *         dm: 3x3 rotation matrix (computed from angles).
  *     """
  *     x0: float = 0.0             # <<<<<<<<<<<<<<
@@ -9458,7 +9458,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_x0, __pyx_mstate_global->__pyx_float_0_0) < (0)) __PYX_ERR(0, 33, __pyx_L1_error)
 
-  /* "algorithms/calibration.py":34
+  /* "openptv2/algorithms/calibration.py":34
  *     """
  *     x0: float = 0.0
  *     y0: float = 0.0             # <<<<<<<<<<<<<<
@@ -9467,7 +9467,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_y0, __pyx_mstate_global->__pyx_float_0_0) < (0)) __PYX_ERR(0, 34, __pyx_L1_error)
 
-  /* "algorithms/calibration.py":35
+  /* "openptv2/algorithms/calibration.py":35
  *     x0: float = 0.0
  *     y0: float = 0.0
  *     z0: float = 0.0             # <<<<<<<<<<<<<<
@@ -9476,7 +9476,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_z0, __pyx_mstate_global->__pyx_float_0_0) < (0)) __PYX_ERR(0, 35, __pyx_L1_error)
 
-  /* "algorithms/calibration.py":36
+  /* "openptv2/algorithms/calibration.py":36
  *     y0: float = 0.0
  *     z0: float = 0.0
  *     omega: float = 0.0             # <<<<<<<<<<<<<<
@@ -9485,7 +9485,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_omega, __pyx_mstate_global->__pyx_float_0_0) < (0)) __PYX_ERR(0, 36, __pyx_L1_error)
 
-  /* "algorithms/calibration.py":37
+  /* "openptv2/algorithms/calibration.py":37
  *     z0: float = 0.0
  *     omega: float = 0.0
  *     phi: float = 0.0             # <<<<<<<<<<<<<<
@@ -9494,7 +9494,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_phi, __pyx_mstate_global->__pyx_float_0_0) < (0)) __PYX_ERR(0, 37, __pyx_L1_error)
 
-  /* "algorithms/calibration.py":38
+  /* "openptv2/algorithms/calibration.py":38
  *     omega: float = 0.0
  *     phi: float = 0.0
  *     kappa: float = 0.0             # <<<<<<<<<<<<<<
@@ -9503,7 +9503,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_kappa, __pyx_mstate_global->__pyx_float_0_0) < (0)) __PYX_ERR(0, 38, __pyx_L1_error)
 
-  /* "algorithms/calibration.py":39
+  /* "openptv2/algorithms/calibration.py":39
  *     phi: float = 0.0
  *     kappa: float = 0.0
  *     dm: np.ndarray = field(default_factory=lambda: np.eye(3, dtype=np.float64))             # <<<<<<<<<<<<<<
@@ -9513,7 +9513,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
   __pyx_t_5 = NULL;
   __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_field); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 39, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
-  __pyx_t_7 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_11calibration_8Exterior_2lambda, 0, __pyx_mstate_global->__pyx_n_u_Exterior_lambda, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_calibration, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[0])); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 39, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_11calibration_8Exterior_2lambda, 0, __pyx_mstate_global->__pyx_n_u_Exterior_lambda, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_calibration, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[0])); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 39, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_7);
@@ -9535,7 +9535,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_dm, __pyx_t_4) < (0)) __PYX_ERR(0, 39, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/calibration.py":41
+  /* "openptv2/algorithms/calibration.py":41
  *     dm: np.ndarray = field(default_factory=lambda: np.eye(3, dtype=np.float64))
  * 
  *     def compute_rotation_matrix(self) -> np.ndarray:             # <<<<<<<<<<<<<<
@@ -9545,7 +9545,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
   __pyx_t_4 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 41, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_return, __pyx_mstate_global->__pyx_kp_u_np_ndarray) < (0)) __PYX_ERR(0, 41, __pyx_L1_error)
-  __pyx_t_6 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_11calibration_8Exterior_1compute_rotation_matrix, 0, __pyx_mstate_global->__pyx_n_u_Exterior_compute_rotation_matrix, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_calibration, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[1])); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 41, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_11calibration_8Exterior_1compute_rotation_matrix, 0, __pyx_mstate_global->__pyx_n_u_Exterior_compute_rotation_matrix, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_calibration, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[1])); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 41, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_6);
@@ -9555,7 +9555,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_compute_rotation_matrix, __pyx_t_6) < (0)) __PYX_ERR(0, 41, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-  /* "algorithms/calibration.py":24
+  /* "openptv2/algorithms/calibration.py":24
  * 
  * 
  * @dataclass             # <<<<<<<<<<<<<<
@@ -9566,7 +9566,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
   __Pyx_GetModuleGlobalName(__pyx_t_9, __pyx_mstate_global->__pyx_n_u_dataclass); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 24, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
 
-  /* "algorithms/calibration.py":25
+  /* "openptv2/algorithms/calibration.py":25
  * 
  * @dataclass
  * class Exterior:             # <<<<<<<<<<<<<<
@@ -9592,14 +9592,14 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/calibration.py":67
+  /* "openptv2/algorithms/calibration.py":67
  * 
  * @dataclass
  * class Interior:             # <<<<<<<<<<<<<<
  *     """Interior orientation: principal point and camera constant.
  * 
 */
-  __pyx_t_2 = __Pyx_Py3MetaclassPrepare((PyObject *) NULL, __pyx_mstate_global->__pyx_empty_tuple, __pyx_mstate_global->__pyx_n_u_Interior, __pyx_mstate_global->__pyx_n_u_Interior, (PyObject *) NULL, __pyx_mstate_global->__pyx_n_u_algorithms_calibration, __pyx_mstate_global->__pyx_kp_u_Interior_orientation_principal_p); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 67, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_Py3MetaclassPrepare((PyObject *) NULL, __pyx_mstate_global->__pyx_empty_tuple, __pyx_mstate_global->__pyx_n_u_Interior, __pyx_mstate_global->__pyx_n_u_Interior, (PyObject *) NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_calibration, __pyx_mstate_global->__pyx_kp_u_Interior_orientation_principal_p); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 67, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_6 = __Pyx_PyDict_NewPresized(3); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 67, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
@@ -9609,7 +9609,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_annotations, __pyx_t_6) < (0)) __PYX_ERR(0, 67, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-  /* "algorithms/calibration.py":74
+  /* "openptv2/algorithms/calibration.py":74
  *         cc: camera constant (focal length) [mm].
  *     """
  *     xh: float = 0.0             # <<<<<<<<<<<<<<
@@ -9618,7 +9618,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_xh, __pyx_mstate_global->__pyx_float_0_0) < (0)) __PYX_ERR(0, 74, __pyx_L1_error)
 
-  /* "algorithms/calibration.py":75
+  /* "openptv2/algorithms/calibration.py":75
  *     """
  *     xh: float = 0.0
  *     yh: float = 0.0             # <<<<<<<<<<<<<<
@@ -9627,7 +9627,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_yh, __pyx_mstate_global->__pyx_float_0_0) < (0)) __PYX_ERR(0, 75, __pyx_L1_error)
 
-  /* "algorithms/calibration.py":76
+  /* "openptv2/algorithms/calibration.py":76
  *     xh: float = 0.0
  *     yh: float = 0.0
  *     cc: float = 0.0             # <<<<<<<<<<<<<<
@@ -9636,7 +9636,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_cc, __pyx_mstate_global->__pyx_float_0_0) < (0)) __PYX_ERR(0, 76, __pyx_L1_error)
 
-  /* "algorithms/calibration.py":66
+  /* "openptv2/algorithms/calibration.py":66
  * 
  * 
  * @dataclass             # <<<<<<<<<<<<<<
@@ -9647,7 +9647,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
   __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_mstate_global->__pyx_n_u_dataclass); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 66, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
 
-  /* "algorithms/calibration.py":67
+  /* "openptv2/algorithms/calibration.py":67
  * 
  * @dataclass
  * class Interior:             # <<<<<<<<<<<<<<
@@ -9673,14 +9673,14 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/calibration.py":80
+  /* "openptv2/algorithms/calibration.py":80
  * 
  * @dataclass
  * class Glass:             # <<<<<<<<<<<<<<
  *     """Glass interface parameters.
  * 
 */
-  __pyx_t_2 = __Pyx_Py3MetaclassPrepare((PyObject *) NULL, __pyx_mstate_global->__pyx_empty_tuple, __pyx_mstate_global->__pyx_n_u_Glass, __pyx_mstate_global->__pyx_n_u_Glass, (PyObject *) NULL, __pyx_mstate_global->__pyx_n_u_algorithms_calibration, __pyx_mstate_global->__pyx_kp_u_Glass_interface_parameters_Attri); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 80, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_Py3MetaclassPrepare((PyObject *) NULL, __pyx_mstate_global->__pyx_empty_tuple, __pyx_mstate_global->__pyx_n_u_Glass, __pyx_mstate_global->__pyx_n_u_Glass, (PyObject *) NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_calibration, __pyx_mstate_global->__pyx_kp_u_Glass_interface_parameters_Attri); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 80, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_6 = __Pyx_PyDict_NewPresized(7); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 80, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
@@ -9694,7 +9694,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_annotations, __pyx_t_6) < (0)) __PYX_ERR(0, 80, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-  /* "algorithms/calibration.py":88
+  /* "openptv2/algorithms/calibration.py":88
  *         d: glass thickness [mm].
  *     """
  *     vec_x: float = 0.0             # <<<<<<<<<<<<<<
@@ -9703,7 +9703,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_vec_x, __pyx_mstate_global->__pyx_float_0_0) < (0)) __PYX_ERR(0, 88, __pyx_L1_error)
 
-  /* "algorithms/calibration.py":89
+  /* "openptv2/algorithms/calibration.py":89
  *     """
  *     vec_x: float = 0.0
  *     vec_y: float = 0.0             # <<<<<<<<<<<<<<
@@ -9712,7 +9712,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_vec_y, __pyx_mstate_global->__pyx_float_0_0) < (0)) __PYX_ERR(0, 89, __pyx_L1_error)
 
-  /* "algorithms/calibration.py":90
+  /* "openptv2/algorithms/calibration.py":90
  *     vec_x: float = 0.0
  *     vec_y: float = 0.0
  *     vec_z: float = 0.0             # <<<<<<<<<<<<<<
@@ -9721,7 +9721,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_vec_z, __pyx_mstate_global->__pyx_float_0_0) < (0)) __PYX_ERR(0, 90, __pyx_L1_error)
 
-  /* "algorithms/calibration.py":91
+  /* "openptv2/algorithms/calibration.py":91
  *     vec_y: float = 0.0
  *     vec_z: float = 0.0
  *     n1: float = 0.0             # <<<<<<<<<<<<<<
@@ -9730,7 +9730,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_n1, __pyx_mstate_global->__pyx_float_0_0) < (0)) __PYX_ERR(0, 91, __pyx_L1_error)
 
-  /* "algorithms/calibration.py":92
+  /* "openptv2/algorithms/calibration.py":92
  *     vec_z: float = 0.0
  *     n1: float = 0.0
  *     n2: float = 0.0             # <<<<<<<<<<<<<<
@@ -9739,7 +9739,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_n2, __pyx_mstate_global->__pyx_float_0_0) < (0)) __PYX_ERR(0, 92, __pyx_L1_error)
 
-  /* "algorithms/calibration.py":93
+  /* "openptv2/algorithms/calibration.py":93
  *     n1: float = 0.0
  *     n2: float = 0.0
  *     n3: float = 0.0             # <<<<<<<<<<<<<<
@@ -9748,7 +9748,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_n3, __pyx_mstate_global->__pyx_float_0_0) < (0)) __PYX_ERR(0, 93, __pyx_L1_error)
 
-  /* "algorithms/calibration.py":94
+  /* "openptv2/algorithms/calibration.py":94
  *     n2: float = 0.0
  *     n3: float = 0.0
  *     d: float = 0.0             # <<<<<<<<<<<<<<
@@ -9757,7 +9757,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_d, __pyx_mstate_global->__pyx_float_0_0) < (0)) __PYX_ERR(0, 94, __pyx_L1_error)
 
-  /* "algorithms/calibration.py":79
+  /* "openptv2/algorithms/calibration.py":79
  * 
  * 
  * @dataclass             # <<<<<<<<<<<<<<
@@ -9768,7 +9768,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
   __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_dataclass); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 79, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
 
-  /* "algorithms/calibration.py":80
+  /* "openptv2/algorithms/calibration.py":80
  * 
  * @dataclass
  * class Glass:             # <<<<<<<<<<<<<<
@@ -9794,14 +9794,14 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/calibration.py":98
+  /* "openptv2/algorithms/calibration.py":98
  * 
  * @dataclass
  * class AddedPar:             # <<<<<<<<<<<<<<
  *     """Brown distortion parameters.
  * 
 */
-  __pyx_t_2 = __Pyx_Py3MetaclassPrepare((PyObject *) NULL, __pyx_mstate_global->__pyx_empty_tuple, __pyx_mstate_global->__pyx_n_u_AddedPar, __pyx_mstate_global->__pyx_n_u_AddedPar, (PyObject *) NULL, __pyx_mstate_global->__pyx_n_u_algorithms_calibration, __pyx_mstate_global->__pyx_kp_u_Brown_distortion_parameters_Attr); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 98, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_Py3MetaclassPrepare((PyObject *) NULL, __pyx_mstate_global->__pyx_empty_tuple, __pyx_mstate_global->__pyx_n_u_AddedPar, __pyx_mstate_global->__pyx_n_u_AddedPar, (PyObject *) NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_calibration, __pyx_mstate_global->__pyx_kp_u_Brown_distortion_parameters_Attr); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 98, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_6 = __Pyx_PyDict_NewPresized(8); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 98, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
@@ -9816,7 +9816,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_annotations, __pyx_t_6) < (0)) __PYX_ERR(0, 98, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-  /* "algorithms/calibration.py":108
+  /* "openptv2/algorithms/calibration.py":108
  *         field: unused field (legacy).
  *     """
  *     k1: float = 0.0             # <<<<<<<<<<<<<<
@@ -9825,7 +9825,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_k1, __pyx_mstate_global->__pyx_float_0_0) < (0)) __PYX_ERR(0, 108, __pyx_L1_error)
 
-  /* "algorithms/calibration.py":109
+  /* "openptv2/algorithms/calibration.py":109
  *     """
  *     k1: float = 0.0
  *     k2: float = 0.0             # <<<<<<<<<<<<<<
@@ -9834,7 +9834,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_k2, __pyx_mstate_global->__pyx_float_0_0) < (0)) __PYX_ERR(0, 109, __pyx_L1_error)
 
-  /* "algorithms/calibration.py":110
+  /* "openptv2/algorithms/calibration.py":110
  *     k1: float = 0.0
  *     k2: float = 0.0
  *     k3: float = 0.0             # <<<<<<<<<<<<<<
@@ -9843,7 +9843,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_k3, __pyx_mstate_global->__pyx_float_0_0) < (0)) __PYX_ERR(0, 110, __pyx_L1_error)
 
-  /* "algorithms/calibration.py":111
+  /* "openptv2/algorithms/calibration.py":111
  *     k2: float = 0.0
  *     k3: float = 0.0
  *     p1: float = 0.0             # <<<<<<<<<<<<<<
@@ -9852,7 +9852,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_p1, __pyx_mstate_global->__pyx_float_0_0) < (0)) __PYX_ERR(0, 111, __pyx_L1_error)
 
-  /* "algorithms/calibration.py":112
+  /* "openptv2/algorithms/calibration.py":112
  *     k3: float = 0.0
  *     p1: float = 0.0
  *     p2: float = 0.0             # <<<<<<<<<<<<<<
@@ -9861,7 +9861,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_p2, __pyx_mstate_global->__pyx_float_0_0) < (0)) __PYX_ERR(0, 112, __pyx_L1_error)
 
-  /* "algorithms/calibration.py":113
+  /* "openptv2/algorithms/calibration.py":113
  *     p1: float = 0.0
  *     p2: float = 0.0
  *     scx: float = 1.0             # <<<<<<<<<<<<<<
@@ -9870,7 +9870,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_scx, __pyx_mstate_global->__pyx_float_1_0) < (0)) __PYX_ERR(0, 113, __pyx_L1_error)
 
-  /* "algorithms/calibration.py":114
+  /* "openptv2/algorithms/calibration.py":114
  *     p2: float = 0.0
  *     scx: float = 1.0
  *     she: float = 0.0             # <<<<<<<<<<<<<<
@@ -9879,7 +9879,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_she, __pyx_mstate_global->__pyx_float_0_0) < (0)) __PYX_ERR(0, 114, __pyx_L1_error)
 
-  /* "algorithms/calibration.py":115
+  /* "openptv2/algorithms/calibration.py":115
  *     scx: float = 1.0
  *     she: float = 0.0
  *     field: int = 0             # <<<<<<<<<<<<<<
@@ -9888,7 +9888,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_field, __pyx_mstate_global->__pyx_int_0) < (0)) __PYX_ERR(0, 115, __pyx_L1_error)
 
-  /* "algorithms/calibration.py":97
+  /* "openptv2/algorithms/calibration.py":97
  * 
  * 
  * @dataclass             # <<<<<<<<<<<<<<
@@ -9899,7 +9899,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
   __Pyx_GetModuleGlobalName(__pyx_t_9, __pyx_mstate_global->__pyx_n_u_dataclass); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 97, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
 
-  /* "algorithms/calibration.py":98
+  /* "openptv2/algorithms/calibration.py":98
  * 
  * @dataclass
  * class AddedPar:             # <<<<<<<<<<<<<<
@@ -9925,14 +9925,14 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/calibration.py":119
+  /* "openptv2/algorithms/calibration.py":119
  * 
  * @dataclass
  * class MmLut:             # <<<<<<<<<<<<<<
  *     """Multimedia Look-Up Table.
  * 
 */
-  __pyx_t_2 = __Pyx_Py3MetaclassPrepare((PyObject *) NULL, __pyx_mstate_global->__pyx_empty_tuple, __pyx_mstate_global->__pyx_n_u_MmLut, __pyx_mstate_global->__pyx_n_u_MmLut, (PyObject *) NULL, __pyx_mstate_global->__pyx_n_u_algorithms_calibration, __pyx_mstate_global->__pyx_kp_u_Multimedia_Look_Up_Table_Attribu); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 119, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_Py3MetaclassPrepare((PyObject *) NULL, __pyx_mstate_global->__pyx_empty_tuple, __pyx_mstate_global->__pyx_n_u_MmLut, __pyx_mstate_global->__pyx_n_u_MmLut, (PyObject *) NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_calibration, __pyx_mstate_global->__pyx_kp_u_Multimedia_Look_Up_Table_Attribu); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 119, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_6 = __Pyx_PyDict_NewPresized(5); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 119, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
@@ -9944,7 +9944,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_annotations, __pyx_t_6) < (0)) __PYX_ERR(0, 119, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-  /* "algorithms/calibration.py":129
+  /* "openptv2/algorithms/calibration.py":129
  *         data: 1D array of size nr * nz with multimedia factors.
  *     """
  *     origin: np.ndarray = field(default_factory=lambda: np.zeros(3, dtype=np.float64))             # <<<<<<<<<<<<<<
@@ -9954,7 +9954,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
   __pyx_t_9 = NULL;
   __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_mstate_global->__pyx_n_u_field); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 129, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_11calibration_5MmLut_2lambda1, 0, __pyx_mstate_global->__pyx_n_u_MmLut_lambda, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_calibration, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[2])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 129, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_11calibration_5MmLut_2lambda1, 0, __pyx_mstate_global->__pyx_n_u_MmLut_lambda, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_calibration, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[2])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 129, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
@@ -9976,7 +9976,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_origin, __pyx_t_6) < (0)) __PYX_ERR(0, 129, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-  /* "algorithms/calibration.py":130
+  /* "openptv2/algorithms/calibration.py":130
  *     """
  *     origin: np.ndarray = field(default_factory=lambda: np.zeros(3, dtype=np.float64))
  *     nr: int = 0             # <<<<<<<<<<<<<<
@@ -9985,7 +9985,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_nr, __pyx_mstate_global->__pyx_int_0) < (0)) __PYX_ERR(0, 130, __pyx_L1_error)
 
-  /* "algorithms/calibration.py":131
+  /* "openptv2/algorithms/calibration.py":131
  *     origin: np.ndarray = field(default_factory=lambda: np.zeros(3, dtype=np.float64))
  *     nr: int = 0
  *     nz: int = 0             # <<<<<<<<<<<<<<
@@ -9994,7 +9994,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_nz, __pyx_mstate_global->__pyx_int_0) < (0)) __PYX_ERR(0, 131, __pyx_L1_error)
 
-  /* "algorithms/calibration.py":132
+  /* "openptv2/algorithms/calibration.py":132
  *     nr: int = 0
  *     nz: int = 0
  *     rw: int = 2             # <<<<<<<<<<<<<<
@@ -10003,7 +10003,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_rw, __pyx_mstate_global->__pyx_int_2) < (0)) __PYX_ERR(0, 132, __pyx_L1_error)
 
-  /* "algorithms/calibration.py":133
+  /* "openptv2/algorithms/calibration.py":133
  *     nz: int = 0
  *     rw: int = 2
  *     data: Optional[np.ndarray] = None  # 1D array of size nr * nz             # <<<<<<<<<<<<<<
@@ -10012,7 +10012,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_data, Py_None) < (0)) __PYX_ERR(0, 133, __pyx_L1_error)
 
-  /* "algorithms/calibration.py":135
+  /* "openptv2/algorithms/calibration.py":135
  *     data: Optional[np.ndarray] = None  # 1D array of size nr * nz
  * 
  *     @property             # <<<<<<<<<<<<<<
@@ -10023,7 +10023,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
   __pyx_t_5 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 135, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   if (PyDict_SetItem(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_return, __pyx_mstate_global->__pyx_n_u_bool) < (0)) __PYX_ERR(0, 135, __pyx_L1_error)
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_11calibration_5MmLut_1is_initialized, 0, __pyx_mstate_global->__pyx_n_u_MmLut_is_initialized, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_calibration, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[3])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 135, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_11calibration_5MmLut_1is_initialized, 0, __pyx_mstate_global->__pyx_n_u_MmLut_is_initialized, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_calibration, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[3])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 135, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
@@ -10042,7 +10042,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_is_initialized, __pyx_t_6) < (0)) __PYX_ERR(0, 135, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-  /* "algorithms/calibration.py":118
+  /* "openptv2/algorithms/calibration.py":118
  * 
  * 
  * @dataclass             # <<<<<<<<<<<<<<
@@ -10053,7 +10053,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
   __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_mstate_global->__pyx_n_u_dataclass); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 118, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
 
-  /* "algorithms/calibration.py":119
+  /* "openptv2/algorithms/calibration.py":119
  * 
  * @dataclass
  * class MmLut:             # <<<<<<<<<<<<<<
@@ -10079,14 +10079,14 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/calibration.py":142
+  /* "openptv2/algorithms/calibration.py":142
  * 
  * @dataclass
  * class Calibration:             # <<<<<<<<<<<<<<
  *     """Complete calibration for a single camera.
  * 
 */
-  __pyx_t_2 = __Pyx_Py3MetaclassPrepare((PyObject *) NULL, __pyx_mstate_global->__pyx_empty_tuple, __pyx_mstate_global->__pyx_n_u_Calibration, __pyx_mstate_global->__pyx_n_u_Calibration, (PyObject *) NULL, __pyx_mstate_global->__pyx_n_u_algorithms_calibration, __pyx_mstate_global->__pyx_kp_u_Complete_calibration_for_a_singl); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 142, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_Py3MetaclassPrepare((PyObject *) NULL, __pyx_mstate_global->__pyx_empty_tuple, __pyx_mstate_global->__pyx_n_u_Calibration, __pyx_mstate_global->__pyx_n_u_Calibration, (PyObject *) NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_calibration, __pyx_mstate_global->__pyx_kp_u_Complete_calibration_for_a_singl); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 142, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_6 = __Pyx_PyDict_NewPresized(5); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 142, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
@@ -10098,7 +10098,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_annotations, __pyx_t_6) < (0)) __PYX_ERR(0, 142, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-  /* "algorithms/calibration.py":154
+  /* "openptv2/algorithms/calibration.py":154
  *         mmlut: multimedia look-up table.
  *     """
  *     ext_par: Exterior = field(default_factory=Exterior)             # <<<<<<<<<<<<<<
@@ -10127,7 +10127,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_ext_par, __pyx_t_6) < (0)) __PYX_ERR(0, 154, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-  /* "algorithms/calibration.py":155
+  /* "openptv2/algorithms/calibration.py":155
  *     """
  *     ext_par: Exterior = field(default_factory=Exterior)
  *     int_par: Interior = field(default_factory=Interior)             # <<<<<<<<<<<<<<
@@ -10156,7 +10156,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_int_par, __pyx_t_6) < (0)) __PYX_ERR(0, 155, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-  /* "algorithms/calibration.py":156
+  /* "openptv2/algorithms/calibration.py":156
  *     ext_par: Exterior = field(default_factory=Exterior)
  *     int_par: Interior = field(default_factory=Interior)
  *     glass_par: Glass = field(default_factory=Glass)             # <<<<<<<<<<<<<<
@@ -10185,7 +10185,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_glass_par, __pyx_t_6) < (0)) __PYX_ERR(0, 156, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-  /* "algorithms/calibration.py":157
+  /* "openptv2/algorithms/calibration.py":157
  *     int_par: Interior = field(default_factory=Interior)
  *     glass_par: Glass = field(default_factory=Glass)
  *     added_par: AddedPar = field(default_factory=AddedPar)             # <<<<<<<<<<<<<<
@@ -10214,7 +10214,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_added_par, __pyx_t_6) < (0)) __PYX_ERR(0, 157, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-  /* "algorithms/calibration.py":158
+  /* "openptv2/algorithms/calibration.py":158
  *     glass_par: Glass = field(default_factory=Glass)
  *     added_par: AddedPar = field(default_factory=AddedPar)
  *     mmlut: MmLut = field(default_factory=MmLut)             # <<<<<<<<<<<<<<
@@ -10243,14 +10243,14 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_mmlut, __pyx_t_6) < (0)) __PYX_ERR(0, 158, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-  /* "algorithms/calibration.py":160
+  /* "openptv2/algorithms/calibration.py":160
  *     mmlut: MmLut = field(default_factory=MmLut)
  * 
  *     def __post_init__(self):             # <<<<<<<<<<<<<<
  *         """Ensure rotation matrix is computed after initialization."""
  *         if self.ext_par is not None:
 */
-  __pyx_t_6 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_11calibration_11Calibration_1__post_init__, 0, __pyx_mstate_global->__pyx_n_u_Calibration___post_init, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_calibration, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[4])); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 160, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_11calibration_11Calibration_1__post_init__, 0, __pyx_mstate_global->__pyx_n_u_Calibration___post_init, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_calibration, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[4])); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 160, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_6);
@@ -10258,7 +10258,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_post_init, __pyx_t_6) < (0)) __PYX_ERR(0, 160, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-  /* "algorithms/calibration.py":165
+  /* "openptv2/algorithms/calibration.py":165
  *             self.ext_par.compute_rotation_matrix()
  * 
  *     @classmethod             # <<<<<<<<<<<<<<
@@ -10271,7 +10271,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
   if (PyDict_SetItem(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_add_file, __pyx_mstate_global->__pyx_kp_u_str_Path_None) < (0)) __PYX_ERR(0, 165, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_add_fallback, __pyx_mstate_global->__pyx_kp_u_str_Path_None) < (0)) __PYX_ERR(0, 165, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_return, __pyx_mstate_global->__pyx_n_u_Calibration) < (0)) __PYX_ERR(0, 165, __pyx_L1_error)
-  __pyx_t_9 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_11calibration_11Calibration_3from_file, __Pyx_CYFUNCTION_CLASSMETHOD, __pyx_mstate_global->__pyx_n_u_Calibration_from_file, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_calibration, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[5])); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 165, __pyx_L1_error)
+  __pyx_t_9 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_11calibration_11Calibration_3from_file, __Pyx_CYFUNCTION_CLASSMETHOD, __pyx_mstate_global->__pyx_n_u_Calibration_from_file, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_calibration, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[5])); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 165, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_9);
@@ -10285,7 +10285,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_from_file, __pyx_t_6) < (0)) __PYX_ERR(0, 165, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-  /* "algorithms/calibration.py":295
+  /* "openptv2/algorithms/calibration.py":295
  *         )
  * 
  *     def to_file(             # <<<<<<<<<<<<<<
@@ -10297,7 +10297,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
   if (PyDict_SetItem(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_ori_file, __pyx_mstate_global->__pyx_kp_u_str_Path) < (0)) __PYX_ERR(0, 295, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_add_file, __pyx_mstate_global->__pyx_kp_u_str_Path_None) < (0)) __PYX_ERR(0, 295, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_return, __pyx_mstate_global->__pyx_n_u_None) < (0)) __PYX_ERR(0, 295, __pyx_L1_error)
-  __pyx_t_9 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_11calibration_11Calibration_5to_file, 0, __pyx_mstate_global->__pyx_n_u_Calibration_to_file, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_calibration, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[6])); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 295, __pyx_L1_error)
+  __pyx_t_9 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_11calibration_11Calibration_5to_file, 0, __pyx_mstate_global->__pyx_n_u_Calibration_to_file, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_calibration, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[6])); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 295, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_9);
@@ -10308,7 +10308,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
   if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_to_file, __pyx_t_9) < (0)) __PYX_ERR(0, 295, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
 
-  /* "algorithms/calibration.py":141
+  /* "openptv2/algorithms/calibration.py":141
  * 
  * 
  * @dataclass             # <<<<<<<<<<<<<<
@@ -10319,7 +10319,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
   __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_mstate_global->__pyx_n_u_dataclass); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 141, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
 
-  /* "algorithms/calibration.py":142
+  /* "openptv2/algorithms/calibration.py":142
  * 
  * @dataclass
  * class Calibration:             # <<<<<<<<<<<<<<
@@ -10345,7 +10345,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
   __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/calibration.py":342
+  /* "openptv2/algorithms/calibration.py":342
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -10356,7 +10356,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
   __Pyx_GOTREF(__pyx_t_2);
   if (PyDict_SetItem(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_e1, __pyx_mstate_global->__pyx_n_u_Exterior) < (0)) __PYX_ERR(0, 342, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_e2, __pyx_mstate_global->__pyx_n_u_Exterior) < (0)) __PYX_ERR(0, 342, __pyx_L1_error)
-  __pyx_t_9 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_11calibration_1compare_exterior, 0, __pyx_mstate_global->__pyx_n_u_compare_exterior, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_calibration, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[7])); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 342, __pyx_L1_error)
+  __pyx_t_9 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_11calibration_1compare_exterior, 0, __pyx_mstate_global->__pyx_n_u_compare_exterior, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_calibration, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[7])); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 342, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_9);
@@ -10366,7 +10366,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_compare_exterior, __pyx_t_9) < (0)) __PYX_ERR(0, 342, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
 
-  /* "algorithms/calibration.py":356
+  /* "openptv2/algorithms/calibration.py":356
  *     )
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -10377,7 +10377,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
   __Pyx_GOTREF(__pyx_t_9);
   if (PyDict_SetItem(__pyx_t_9, __pyx_mstate_global->__pyx_n_u_i1, __pyx_mstate_global->__pyx_n_u_Interior) < (0)) __PYX_ERR(0, 356, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_9, __pyx_mstate_global->__pyx_n_u_i2, __pyx_mstate_global->__pyx_n_u_Interior) < (0)) __PYX_ERR(0, 356, __pyx_L1_error)
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_11calibration_3compare_interior, 0, __pyx_mstate_global->__pyx_n_u_compare_interior, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_calibration, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[8])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 356, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_11calibration_3compare_interior, 0, __pyx_mstate_global->__pyx_n_u_compare_interior, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_calibration, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[8])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 356, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -10387,7 +10387,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_compare_interior, __pyx_t_2) < (0)) __PYX_ERR(0, 356, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/calibration.py":365
+  /* "openptv2/algorithms/calibration.py":365
  *     )
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -10398,7 +10398,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
   __Pyx_GOTREF(__pyx_t_2);
   if (PyDict_SetItem(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_g1, __pyx_mstate_global->__pyx_n_u_Glass) < (0)) __PYX_ERR(0, 365, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_g2, __pyx_mstate_global->__pyx_n_u_Glass) < (0)) __PYX_ERR(0, 365, __pyx_L1_error)
-  __pyx_t_9 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_11calibration_5compare_glass, 0, __pyx_mstate_global->__pyx_n_u_compare_glass, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_calibration, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[9])); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 365, __pyx_L1_error)
+  __pyx_t_9 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_11calibration_5compare_glass, 0, __pyx_mstate_global->__pyx_n_u_compare_glass, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_calibration, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[9])); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 365, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_9);
@@ -10408,7 +10408,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_compare_glass, __pyx_t_9) < (0)) __PYX_ERR(0, 365, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
 
-  /* "algorithms/calibration.py":374
+  /* "openptv2/algorithms/calibration.py":374
  *     )
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -10419,7 +10419,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
   __Pyx_GOTREF(__pyx_t_9);
   if (PyDict_SetItem(__pyx_t_9, __pyx_mstate_global->__pyx_n_u_a1, __pyx_mstate_global->__pyx_n_u_AddedPar) < (0)) __PYX_ERR(0, 374, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_9, __pyx_mstate_global->__pyx_n_u_a2, __pyx_mstate_global->__pyx_n_u_AddedPar) < (0)) __PYX_ERR(0, 374, __pyx_L1_error)
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_11calibration_7compare_addpar, 0, __pyx_mstate_global->__pyx_n_u_compare_addpar, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_calibration, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[10])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 374, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_11calibration_7compare_addpar, 0, __pyx_mstate_global->__pyx_n_u_compare_addpar, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_calibration, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[10])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 374, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -10429,7 +10429,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_compare_addpar, __pyx_t_2) < (0)) __PYX_ERR(0, 374, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/calibration.py":387
+  /* "openptv2/algorithms/calibration.py":387
  *     )
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -10440,7 +10440,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
   __Pyx_GOTREF(__pyx_t_2);
   if (PyDict_SetItem(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_c1, __pyx_mstate_global->__pyx_n_u_Calibration) < (0)) __PYX_ERR(0, 387, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_c2, __pyx_mstate_global->__pyx_n_u_Calibration) < (0)) __PYX_ERR(0, 387, __pyx_L1_error)
-  __pyx_t_9 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_11calibration_9compare_calib, 0, __pyx_mstate_global->__pyx_n_u_compare_calib, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_calibration, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[11])); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 387, __pyx_L1_error)
+  __pyx_t_9 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_11calibration_9compare_calib, 0, __pyx_mstate_global->__pyx_n_u_compare_calib, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_calibration, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[11])); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 387, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_9);
@@ -10450,7 +10450,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_compare_calib, __pyx_t_9) < (0)) __PYX_ERR(0, 387, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
 
-  /* "algorithms/calibration.py":401
+  /* "openptv2/algorithms/calibration.py":401
  * 
  * 
  * def is_compiled() -> bool:             # <<<<<<<<<<<<<<
@@ -10460,7 +10460,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
   __pyx_t_9 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 401, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
   if (PyDict_SetItem(__pyx_t_9, __pyx_mstate_global->__pyx_n_u_return, __pyx_mstate_global->__pyx_n_u_bool) < (0)) __PYX_ERR(0, 401, __pyx_L1_error)
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_11calibration_11is_compiled, 0, __pyx_mstate_global->__pyx_n_u_is_compiled, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_calibration, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[12])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 401, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_11calibration_11is_compiled, 0, __pyx_mstate_global->__pyx_n_u_is_compiled, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_calibration, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[12])); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 401, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_2);
@@ -10470,7 +10470,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_is_compiled, __pyx_t_2) < (0)) __PYX_ERR(0, 401, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/calibration.py":1
+  /* "openptv2/algorithms/calibration.py":1
  * """Camera calibration data structures and I/O.             # <<<<<<<<<<<<<<
  * 
  * Translation of lib/src/calibration.c and lib/include/calibration.h.
@@ -10492,7 +10492,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
   __Pyx_XDECREF(__pyx_t_9);
   if (__pyx_m) {
     if (__pyx_mstate->__pyx_d && stringtab_initialized) {
-      __Pyx_AddTraceback("init algorithms.calibration", __pyx_clineno, __pyx_lineno, __pyx_filename);
+      __Pyx_AddTraceback("init openptv2.algorithms.calibration", __pyx_clineno, __pyx_lineno, __pyx_filename);
     }
     #if !CYTHON_USE_MODULE_STATE
     Py_CLEAR(__pyx_m);
@@ -10506,7 +10506,7 @@ __Pyx_RefNannySetupContext("PyInit_calibration", 0);
     }
     #endif
   } else if (!PyErr_Occurred()) {
-    PyErr_SetString(PyExc_ImportError, "init algorithms.calibration");
+    PyErr_SetString(PyExc_ImportError, "init openptv2.algorithms.calibration");
   }
   __pyx_L0:;
   __Pyx_RefNannyFinishContext();
@@ -10541,7 +10541,7 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
   CYTHON_UNUSED_VAR(__pyx_mstate);
   __Pyx_RefNannySetupContext("__Pyx_InitCachedConstants", 0);
 
-  /* "algorithms/calibration.py":199
+  /* "openptv2/algorithms/calibration.py":199
  * 
  *         if len(parts) >= 6:
  *             x0, y0, z0, omega, phi, kappa = [float(p) for p in parts[:6]]             # <<<<<<<<<<<<<<
@@ -10552,7 +10552,7 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
   __Pyx_GOTREF(__pyx_mstate_global->__pyx_slice[0]);
   __Pyx_GIVEREF(__pyx_mstate_global->__pyx_slice[0]);
 
-  /* "algorithms/calibration.py":205
+  /* "openptv2/algorithms/calibration.py":205
  *             second_line = lines[idx].strip()
  *             idx += 1
  *             omega, phi, kappa = [float(p) for p in second_line.split()[:3]]             # <<<<<<<<<<<<<<
@@ -10563,7 +10563,7 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
   __Pyx_GOTREF(__pyx_mstate_global->__pyx_slice[1]);
   __Pyx_GIVEREF(__pyx_mstate_global->__pyx_slice[1]);
 
-  /* "algorithms/calibration.py":165
+  /* "openptv2/algorithms/calibration.py":165
  *             self.ext_par.compute_rotation_matrix()
  * 
  *     @classmethod             # <<<<<<<<<<<<<<
@@ -10574,7 +10574,7 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
   __Pyx_GOTREF(__pyx_mstate_global->__pyx_tuple[0]);
   __Pyx_GIVEREF(__pyx_mstate_global->__pyx_tuple[0]);
 
-  /* "algorithms/calibration.py":295
+  /* "openptv2/algorithms/calibration.py":295
  *         )
  * 
  *     def to_file(             # <<<<<<<<<<<<<<
@@ -10641,25 +10641,25 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
 static int __Pyx_InitConstants(__pyx_mstatetype *__pyx_mstate) {
   CYTHON_UNUSED_VAR(__pyx_mstate);
   {
-    const struct { const unsigned int length: 11; } index[] = {{0},{5},{5},{5},{6},{4},{3},{246},{336},{235},{225},{182},{37},{22},{37},{273},{20},{20},{1},{4},{2},{1},{1},{1},{25},{10},{10},{17},{8},{11},{25},{21},{19},{8},{32},{17},{5},{8},{5},{20},{14},{4},{8},{4},{20},{2},{2},{12},{8},{9},{8},{9},{22},{8},{15},{2},{5},{18},{4},{2},{2},{2},{7},{2},{17},{18},{3},{2},{14},{13},{16},{13},{16},{23},{3},{2},{1},{4},{9},{11},{15},{2},{7},{5},{2},{2},{6},{3},{7},{3},{13},{8},{5},{10},{5},{7},{9},{8},{2},{2},{5},{10},{9},{11},{1},{2},{2},{3},{3},{7},{13},{14},{11},{13},{14},{5},{2},{2},{2},{5},{8},{5},{8},{13},{5},{10},{2},{2},{2},{8},{2},{2},{5},{2},{5},{8},{8},{6},{1},{2},{2},{5},{7},{3},{3},{13},{11},{8},{12},{9},{6},{9},{2},{3},{11},{4},{12},{10},{3},{3},{2},{2},{2},{5},{10},{5},{8},{7},{6},{6},{5},{5},{5},{10},{2},{2},{2},{2},{2},{5},{16},{400},{23},{1093},{16},{47},{10},{99},{226},{69},{47},{110},{16}};
-    #if (CYTHON_COMPRESS_STRINGS) == 2 /* compression: bz2 (2588 bytes) */
-const char* const cstring = "BZh91AY&SY\331a\343\235\000\002<\177\377\377\377\377\377\377\377\377\377\277\377\377\356\277\377\377\376@@@@@@@@@@@@@\000@\000`\t\257\200\273N\266{j\335\270\225v\032\215\216\334;l{\225\000\336\004\242\"D\0324\3204\365=O\"mM\006\302i\262\r\n\001\246\233)\231!\240\311\223A\243 \r\032\0304\r\032\203$\010hh\020\030U?M1\014\222\036\223\324`CC@\000\000\000\000\003@\000\000\320\032\023\n&E\033H\365\003CG\251\352\032=\252~\242z\201\240\000\000\000\000\000\320\000\000\032\000\002SD\246\324\230S\320\217I\352b4\321\264G\250\3204\000\003@\000\000\007\250\000h\0004\000\000A\223\000&\000\002`\010\323\010\300\000\000\0012i\211\240\300\010\300\000\000\000\t$\0024%<\023M#h\236\251\351\232\246@\036\240\006\200\000\000\000\000\000\000\003@\014\210E\332\211\026\355\210Z\277A43\315\275\335\275\306\211\272\033\3568&\372\272\352\272\354'\035b\357#F$\377\366J!J\025\224\313!N\221\322`\302\211\"\241EW\026\217O\267B?\344(\250\220//\224Q\033\357H/L\314\314\314\0032C&\031\220V1\243\340gI[\334%\251&H\360\3313!\230\031ru$\024\256\361l\022\203\200\275\200d\311\014\300f\202\034E\302\345\246\006\312\364\341\344^\016I\360\212Z\310\020\006\031\247:S.\271\252\254\246\326a\351\223\363\302\265\324P\274\031^\n\333(h\266Z\030V0\324D\302d\371\231\0262\212sS\014K\206U\222\276v\021,\273\007\r\246\262\342\211im\361\003\035\222\036U\367\"\034\344E'8\276j\315\0336KC\223\031\021\020H\310'\311Q\020\272\335\263\367\262\314\013*\032\237\221\234\n\245\233\216\371\264\313\236'\205\311\036__\337f\221h\322\324\003\022\\\277\213-\014\226f\231r\241\r\216\324\204}Nz\002z\250\236\026A*\333\036\204\2445\006<\254\207\371G\024`\315HR\347>\342d\356\252\310\367\036\223\016Uh\236\342\243\305\267\026?hC\t\305\354Q\213|\013\300\267\327\265U\021V+H\003\003JX\312\200\247\001\232\00416\007\016\032\257\361\020\201\025\273\261)p\025D\246\022\225\016C\203\230I\340\014\317\305\233\321\327~\256\235A\3575k\212\341\351z\177\272\224\234\023\363R\201R\017\3447\231-i=\234l=x`i\216\212\341\222\372)\225\272{F0\257\255;\n&\\\2115a\003Up\\\031\312B""\254\035\303\242\226L\300\347\367\272\267<\r\275;\267]v\255\3405\244\345\313n(\034\r\022\010v\307\271Yeo\242\212(\2428\342\342x\226q\n,\314\367\204\261\345\341\366\007\221\213\331pp\005\301\303\"\302\310Y\036^\014]\002E\345QeO\022`\r9\2723\035\232\256v\366\371o]Qi\n\333\027<M~-K\323\245\206`\023\264\231\347\226\315&'i\232\321\202\322\220B\222\206\214dp\322\207s\224\364Jf?\022\271\256\230\\\025\304Y\275\262IIK|\246{k\276P(b{\005\224\370\034\034Q\032\177\006\357\246\260\326\307\0220\352-\273D\033>5ArMCdN\335#\030\340g\003\020Z-\255\302\n$F`n)\237\207e\227\030\022(R\252\261Q \020!]\257\310P\347;\355\036\344\205\255\221a@)\344-\204)\224H\005h\371\357\316mLf\273\224U\261\314H\301\236\246\231rJE(\310V\362^\272\266\242\207\254$S\020\361\243\253\255O\253\212\t\314@@\217uV\362\217\304[\006\003\232\243\232\032\031\275K\207L\020\240\031*$\370`\232#(\02375U\356\205\202c\317[C\233Qa[\014pg%+\257\241m\2179k6P\027\210|~w\037P\3147EP\310O\243\ri\352H\2604\212\3733\031\337\230\315\214:\014\222\246\2273\005\350\rZ\263\250\205_B`\327`\302`a\230f\232\312V\001\263\210\030\016\003a\260\177\027X\351E\312NwO\315\203\250\210\322-:\3463\355\342G\031\255\340\231\346y\226{\245\340V\\ \n\246\303'\307\271DG\2618,\225\003e\260\255\205j+G\240Hi\2361\013\270Q\221P\277\212h\303[\330\305<\361\004+\tq#\013N\026\233l\304\371P\240p\300\332!\003\246\031\240\341\327fP$\374\"\340\327\3669f\202\216\272\324$\255\230\236\375\231\036\231\350\306\006#f\352(\034)\321\320\024R\2151V\320\230\2245\350@\2001%(\307IQd\235\223\203\207R\351X\305\240\375\276\277<Jf.u,g=fW\\BO\202X\010\211`\224Sc\035\306\013\010,^S\204\206\252\325Q|\210\271*\212\207\013\225\342\337\312\37108=b=\361\267\177(\0377[\273\035d\247K\304\004\026\2102!\2642\252\224\340p\256-\315\005I\272\235\021\343\0336\344\3007d\240+l\206b)\251\330\242\275\340d\030H\002\305&\232E\370\316\355\2124\224\324\212R\210c6\304/\305\222\301p1\310\025Y\001\200\252\361\037\224\322\3201\264\250\235\201\3124\260\212P<\014\203\2174C4\3049\002!\\\257|@H\275B\351-\01394\3112""\263\004\244\200q\213'\"\3537\253\024W\224[Xq\274\201a\220\224\022\326/\302\221[k\314\231q\025s\224\033\230\201\365\034\337z\000\215\n!\002@L\230\312\342\277\230=\313\234\307\016\016\201\251\324\242\324\302.\335\016{-4\"-\342\263/\024:\202x\365t\024\003\007\300\273t*\342\305h\313\220\022\034\216\325\202\323\373\r\332\022\021L\245\365PG-\202\346\021JGSj\224\2230\314\243\270\325\267\212F%\t\360\020p\311\034h)4\335\207\252a\343_\325\255:/p\260*W\242\263\221\002D\000\2229\351&\035$a\324\264\256Im\215\005c=\367\332\202@)\002\223\0037h\340zHg$\024\345\nP\356a\252W\302 S\202\245\204@\002d\311P\002\235\355b\347\232D\204\245\020\023\240\204A\000H\224\007R\326\t\235>\234\265\260J\241y\016\002\333-!\207\032\r(cK/\231\371\244a\300\314\260\026LN%@\272\241_t&+\246\265\344\337!P\030\371\013\203i\020\010D:\224I)M2[w\276\263\177hq\222m \230\200\222p\223\022\305\317\027(c@\315\254\035A\205\227K\346pWz\352?[\246@R\007\010\221(\260\004z\230\216L\023\305\211Rv\227\023%\370\324$A\213\334\207\203\3705Ck@iR\213\014\206l\250\306\034\242\002\205\343\235p\31408\305\302\373\257\314\371C\2178\376\2529\214 \373+\006f\203\254\037\206\007V\370\233Rt\363\240\030y\222\204\362#\233\314\301\360\245\233\350\333\026\336\375\372\r\273\324\026\014\025\234J\002\013x)\013\253\0045:4H\353b\213D\255\010\204!`\214\274H\223SB\020\2012R\t\322\033\n\222\"\205\210\212\211(\020\212\2412\307\220\32002`ZF+\204Z\316\013\236bfC0\3547\004\373\025\300\250NeNp3\310\275\253\357n\000\\.\003\257,P\336\345@\252M\266\345\352\342\306\267r\t\221-<@\310+\250\035#\214Ht]\301D.Mi.y\205\360jr\255\3162\350\342\237'C}\320F\370\027\350\337\211\010\374Q\n\0014\006\330\235\203q\r\335WT\230\245t3\350\021\010\237$/\220L\325\330eca\336\334%\313t\260|\223\216Cl\273\364\256\210\027\232(\237\017hi\214@U\n\2140\021r\221\005\333\030\3665\216;4;\256$'\272\337fL\026Ki\014f\260\372a\026n\207\317P\346@\354\2178\224\ri\233\306\316\233\332%\334 a\342H\374\031h\315S2\2510\342GDj0\3305af\352\230\303\\\3260\r!\324k\0347\343\265\3670l\016\273%l1\212\355&""\213gE\220\306;fi\307g%\276 \360e]a=\020\263#$\355o\346\323\217W3T\030r\261t\356\263\352\347\244\300yE?\335\235\034B\267mw\217y\375\240\032\350,\013\370\375&\344\005\270\006*\216\212g\261Z\375\250\014\304\247\005-\222\201\005\022\010\0309\265\n\251i`\257J\001M\266\243\030\203*\016\266\234\351\350{(\356R2\324k\005\341\264\332\207Z\242\323\030\242\324\022\n3\355\327JGa\361\363\217D\032\375j\331(d<\343\005y\216I\241\250\372<<\375\344\233%tk\242dO\236\361?a\254M\014G\262\322y8\232\030\212\366F\232\216+\3636\255\351l\315\007\254XC0\314QI\371L~e\321\256\307\321.$\022\345\325l\326\016M\254\365\305T&\022\212\262\325p\321\345\364\222P\267A\223\244K\\v\014\370\341a\030\330\370\362\260\243`\251\325\356u#\345\"\257\216\370{\206\3724\\\352\221\026-4\"gX\214g_E\350\304H\234\023\223$\355..l\372\013\342\217\177\032M\312\222\341\311X\205\270r\216\354\256\206\2648w\275\256q*\234\211\022\246\023\216\237K\262\347\237\013:n\252\274}\320\246\017\344\343\357\322\177}Yc\271\247\251\303\003\332\204\010\200nMJE\"\344\205\214dR\024\034\t\"\234\201\253\266\243;\032S[\006\220sX\222\004\236\206G5CGsg&y;\033\260\241\325\215\202*\"\032\244\200b\014\204lA\220\332\020#3\005uXe\010\254\3142\236\t\204\316\024?-O\376.\344\212p\241!\262\303\307:";
-    PyObject *data = __Pyx_DecompressString(cstring, 2588, 2);
+    const struct { const unsigned int length: 11; } index[] = {{0},{5},{5},{5},{6},{4},{3},{246},{336},{235},{225},{182},{37},{22},{37},{273},{20},{20},{1},{4},{2},{1},{1},{1},{10},{38},{10},{17},{8},{11},{25},{21},{19},{8},{32},{17},{5},{8},{5},{20},{14},{4},{8},{4},{20},{2},{2},{12},{8},{9},{8},{9},{8},{15},{2},{5},{18},{4},{2},{2},{2},{7},{2},{17},{18},{3},{2},{14},{13},{16},{13},{16},{23},{3},{2},{1},{4},{9},{11},{15},{2},{7},{5},{2},{2},{6},{3},{7},{3},{13},{8},{5},{10},{5},{7},{9},{8},{2},{2},{5},{10},{9},{11},{1},{2},{2},{3},{3},{7},{13},{14},{11},{13},{14},{5},{2},{2},{2},{5},{8},{5},{8},{13},{5},{10},{2},{2},{2},{8},{2},{2},{5},{2},{5},{31},{8},{8},{6},{1},{2},{2},{5},{7},{3},{3},{13},{11},{8},{12},{9},{6},{9},{2},{3},{11},{4},{12},{10},{3},{3},{2},{2},{2},{5},{10},{5},{8},{7},{6},{6},{5},{5},{5},{10},{2},{2},{2},{2},{2},{5},{16},{400},{23},{1093},{16},{47},{10},{99},{226},{69},{47},{110},{16}};
+    #if (CYTHON_COMPRESS_STRINGS) == 2 /* compression: bz2 (2615 bytes) */
+const char* const cstring = "BZh91AY&SY(\220f\305\000\002=\377\377\377\377\377\377\377\377\377\377\277\377\377\356\277\377\377\376@@@@@@@@@@@@@\000@\000`\t\317\203[\235T\027ovrV\330\250*\203l\207k\324\007\335\3602$\3254\203F\200\007\251\355Df\240\364\3655=6M\032\024\006\203e=2CA\243\322h\r\032\000\320\007\246\231O#Pd\204\311\220\001\0232j\236\021\242yDi\247\244\323\324\310h=@\000h\032\000\003CM\000\006\2002\003Bb\024\364\232\221\351\351'\250\000\310\006LA\240\000\000\000\000\000\032\000\00044\000\006\202\223$\032\000\003@i\352\001\220\320\032\000\032\000\000\000\320\310\032\000\032\000\000\005T\3654b`\002c F\020b~\244d`\001\030\001\r4\302\030\231\030#F\004a\030\000\004\212\t\221\242M\030\215\021\212\236\3651\2451F\214\320\t\350@\000\304h\006@0\000M4~\251\246\020\r\030C\025\001\221\212\244_\307 \352i\215\233\2737\030\r\320/8\3407\221\255F\267\t\306\252\177\213\003.\217\374\271L+R\327P\276U\371\217\231\206j\244\213\005U\240`EG\016\004\177\344)\251\22222\272h\236Y$\031&\333m\200\332CLm\005\247:\306F\244\226\035\344\271\022i\037q\246\320\3305\326\344H+nS\t%(\001\223\001\246\220\330\032d\210\023\200\273\t\203\321\025\002$\342\020J2\232[\t\022\0067JV\2726QYh7\364\221MGT\255nB\246@\326@0|cr\r\334@^\201#!\3008;]f\241\031s\213\200\240\357\266F\231\234\3612\374s@|6\273l\314\0142\230\033\267\334D\264qD\273h\232P\201\225\025\374\035=2\310\336\272I \272A\326BH\304\273o\345myv\320\017\257\320.\322 \267\0334l.\036\343\264\344\017/\261\360\267P\254\322\270\203\020\\\274\246Z2[\224\227&(lu\300G\352s\240O]'\025p\036\226\233\346\356\016@\307*\340\375I\004\214\013$\262\251!P\210\215T+\220A\3220\214dN~6)\256\255\242\035\225\021SF\275\003G,\r`\370\232\366\366\304\363\0071N\003\206%\257c\020\024\300f\210\213\023k\2348lO\361\020\210\216+\273\022\227\005TBB\020\243\220\341_$\323\203,-\311\353of\335\350\324!\003V\363\257\035O_\370R\223~njP*A\375\010\271rV\223Y\312a\354\003\003LdW\014\230h\246W*\355\230\314\341\255Y\024\262m\216\257\212\020;\3605\227\205\340\326\303\030\305pd|\034(\035.<\367\317\223.\022\313/#8\003Q*:S""\201\203y\"\014!\\\225\250\275\375\221d\224\323M4\275\356\331 \226qE6\345\204\002[\003\001\013D\010\305\35744\002\320\321\270\260\262\026GO\220\305\320\036\275\305\026U\000\376@4\344\350Jw\367\257n\235\323\027iN\324\025\265\334B\\\332aH\352f\030\303\262!S\270\311a\016\310NAqc\000Z1\026W\255\007\222\210\265(fY\rp\253\312\222\331\\\004\240I@~}\215%\245\272\004x\241&\201\030\021\212\026`N^\027\016FlYM\244< \315(\232\226\t6wC[[\272\225\302u_4\317nr\027s,\203p0\026\377\021%2c`\366\320\352\361tn\201qR\266V\232\231 `d\230\373\002\206\265\277\200\370^b\211\353\n\001P!l!L\241\340V\220\2336Srb5\317\241#h(\226y\252\327\"\255\203`8Z\203m\352:6\315YI\020f\034\203\010\264r\017\315+\240\3421\021\010\021\360Ut\252?1\270\014\0075G443|E\277\252$(\014\225\024\373\001\210FP&Nj\253\333=\202S\304\270\203b\250\260\255\2069\331\334R\272\373\313\254\201\334\254\331@]\241y~5\017\254\"\004\347\230\305\202\035\246j0.\" .\006w\342\030\327\210b\254\037\023IW\212\r\206H\016^]\3650\264jP\0369\230\2301\261\272-\005\244\035;A\201\314t\235$v\375\030]8+\241\016\373\265(U\023\254\335-\244\325\257q\016p\335X&i`d\232\372\245\340^\346\024\002\251\260\307\247R\210\217y5\333\"\010\244\264\255\205j+H I\364\315\030\236\235\364c\250_VX\304Qr\3354\316\010V\022\362F\027\034.7Yn\026i\220\030>\tH\354\215\312\0041\322\244]\034\323\200l\367\340\264\311Oe\254\027\0308\025\303^8&Z1\001i\263e\024\016\004\342\316\024R\215.\256 \226\250og@\2001(F\257:\002\271\031\305P$\252y\230\264\004/kn\260\225\202\244\224\315 V\025U\005{\022\232Y\206J|E/GD\004\033\2140\276\261lVVf\353#\332\226\016\345\001\266e\353\354f~\007\010,G\250l\325\270\007[\257\340\016\272S\246\002q:\321\00647\006UR\232\016\025\273l@\2516\323\236<C^\314x\010\265\310\002\266<\312E56\327f\200\030\306\017\001b\223M#6#\267Z\215%7QJQ\014f\307\014\326\343\260^\014o\n\254\200\300U\230\257\23550\3255\004\271\313\240\263\311\031\331\200o\235\275t5\342\213\230\332\215\260\302\200={\242\367\300\007\337\035n\0228\002Z@\n\024WL\257\317$DI\230BFp\2540\274\336.\222\214N\277""\036sz{\332\337\006\225\017\n\004\365\240\376+_S\0072\010c\314b\365(\323\257\334#\005\333gFhH\344\205j\271\030\214x\303\274\327\rI\213\224\265\014\205.\341M\336O\211H3FF<ah\027\254\006\263\205\304\021\3430\300\377A\307R\341\025\320ee$v\030b\304V\263\344|\227\\\233\033'\304\355\206\333\215\305*s\022\200\322;\254&\251\004BV:\374\333\337\323*\336Sw\257\301\2164\244\010\304l\210\r\020zh\210B\221#\r\246\"\267\325|h,\027a\205\350\036\005 Rg2\360\264\036\212,\204'\335 @\362ss[W\215\216{\304\372tDl\007\326\327\240\r\355\235\004\357[\244d\2454\tPL\340\200#\224\007J\366\t[6\356J\230$P\300\206\201}\227\220\303\215\235\226\252\364q\342\260\341\276N\206y\206L\274\215\216y\022\273\352\027\025\016y\375/#\350#\277\017\003\301\227\205\364\351A\024\245\322Q\223r\243M\367\241\216\255\355d\004\332\3304D$\340\022D\273\032N\345\310\341K`pF\361\213O\014jsc\313\225c\262\024$+\202\002..\233\000\237\1772\t\2053\347U\246\006%\013\272\254\027\022fPDB<\333\222\337\340\016\025t\330\320\336\204n\207\031!K\"\020\304la\003s\2428\345\246\016\271\027D1\232\301Z\302tS3T\230\205u\214x0\300|(K\000\200\006\024_\314J\3026\276u\2627\350# 94M\234\335\242\202\301\202\262\211\000Av\375!u`\206\246\306\211]\351AL\264\306\320\324\212\227\266IU\214c\006\233\220Rb\353M\221\271\362\263\006\334F2\301B\370\222\340\0304\301p\214\266i\273\371\261\211B!\010\201S\334\n\336e\001S\314dN f\234A\233\031\307x\002\361x\035\251]F\216\351\002\2527]\223\303\305\215m\346\211Q1\036H/\025\324\016\221\312\022\010\034\367\357\321E\351\274\222\345\230f\242$\347-\2552g\344\315OCSgH\274l\331\3659\010\374\321\n\001,\343c\233\204V\215\274m\251-\221\263\345\316\340\345A\363\346x\226%\330dR\356\310\343\032\372\273\375>x\241\177\274]o8\220,\370\211\337\206\004P\204\001\230\027H\036\021\346\221\003\206\010v\024\236Y\022\242\036B\232B/b2\006\243\235\261\035H\207H\315_\254>>\334\r\244\023=\321\270\213Z^\312\203_\314n PA\025\203\037\003\000\307q\264,\\\020`\251\210\224\220y\010\314\354\306\030aX\360\017\007\010ib\270/d2\007$\330\rk\311aU\032\322""\314\221\341(\010\222u\271\301J\2073C\006\254\335\262\006\214\251\361+\321\022\013D\322\365g>\002\275\364\030\256\266\261\241\025\200\026F\014w\335\360?\030\367\247\362=c\363<\017\341\t\022|\365\315\310\206\010\202\242\006\204\032j\214\202\374CH\322\212\215\241<E@E\022\20760\252\013\351\025z1\004\033,*\244-0\326R\235\t\036j\027(\215\024\014P\233w\331Lsi\245 \250\022\2301P\207\005sDs\340\020\r\335\000\031\005Z\271\344V}\305\010\372\270\364\375x\013\341\3707\357[\025\313\032\rha|C\375b\235L\307\364L\"p\232\006b?[\332\201\304\202f\306\017e\251\240?b\301\032CI\002\010t\026\t\230\202\322\300Ll\241.]FMP\344\332\257\306\250D\301\226*KD\350\027\323\304\036#\004\365\235\225-3\224.\254\251C\263\235\235\227)\331(9\235L\234\215\002\211\334\306\017\355\343;\"\3158\351\"\221\021\354\330tY\306\221\310\216c\355N9\343\244\235\177\0343\323\267\221\216\353\330h%\361\336H\343X\301\007XE\2760\307\334\035\000Z\253V\036\200/\003Faa\265\000Q\024\2315\276\344\006\013\022\347T\364B\264\266\317\021A5\345m\314\273\243\033\016\323\354\301\301\306\372J\235\364$\213:\021\204\234G+\247\267]65\264i\023\225\250 I\321\221\315P\321\334\331\311\236\016\306\354(\352\306\301\025\021\rR\0001\006B6 \310m\024\010\314\301]V,\241\025\231\206K\304\230I\302\207\346)\377\305\334\221N\024$\n$\031\261@";
+    PyObject *data = __Pyx_DecompressString(cstring, 2615, 2);
     if (unlikely(!data)) __PYX_ERR(0, 1, __pyx_L1_error)
     const char* const bytes = __Pyx_PyBytes_AsString(data);
     #if !CYTHON_ASSUME_SAFE_MACROS
     if (likely(bytes)); else { Py_DECREF(data); __PYX_ERR(0, 1, __pyx_L1_error) }
     #endif
-    #elif (CYTHON_COMPRESS_STRINGS) != 0 /* compression: zlib (2465 bytes) */
-const char* const cstring = "x\332\245VKW\333H\026\216\023H\034B\036\006\002\311L\272#\003I\240\207a\220\201t\332\363:\016\344\325\335I\307\220d:'\323G\247,\225l\r\262$K2\330\314\3649Yz\251\245\226Zj\251\245\227^\262d\351%?!?a\276*Y\266ICw&\343s,\325\255\272u\353\336\357~\367\226\304\225\345\257Uqe\371\201*\212x\344V\226\305u\365\301\362\232\n\341\241m\356\031\202\2429\256i\273\232i\010\026\261I\225\272\324v\226\307\306\004\374\n\256kk\245\272K\235<\227\331oG\\\022vr\370\257\346\005\233(\032\321\207M\310&UUM\326\250\341\302H\262\307\302\036+\227\027\024*c\201\332\232Q\376\355M\216\334\310\343At*\250D\206\356\320R\205\346\331\203\330\0021\312:\035\254\250\032\325\225\274P7\352\016UbIX\320i\231\310\315\305Xk\303\254Z:\202\024`Y+\331\204{\240\232\260$8\0323\206\205*\265I\002A\271lc; \020h\203\271n\332K\202f$\243\262N\034gi(\230%x\244\010\325\272\356jU\nt\204\357_\277\372\0254aS\002\354\371\276q\301\264\031\016\334\255AX80VKN>Y\215{\023+\362\341\261\214&JDQ\250\022+\235\222\373D\263Z\325\353n~8\030\3354w\376X\267\004\227\224\022\324\037\235\340x\276\207\241`\231\216\306\3153P\216\271|*\"\215\225%\241\211\377\376J\337JL\232\201\261w\325\352O\003/\315*\362\003~U4\220\222X\026\001/\315\370\230\230\035\216\360\216\023\325p\206v)\325\274\260\332X\035\250V\t|i\010\0132\370\001\217@\036\333\254\366\014\364\250\363\204c\312S\000F\322O\253\227]*K\215%\376j\306\257\375\274`\230v\025\205\003\t\370\013\256\331K\227S\347\206\007^\032(\034\003\305f\260b\243\252\215:\320v)\\P4\031q-\030\246+p\246+\232\r[:N`\031e\336\303.vP\233\0322]\034\212;\241\206[\321\344\035\203b4\200\363\231qR.-\324\253\254Y\360\3272\021<\317e\222\031\323p\\b\270\277\226\317\n\362Y\371\245\225\005\207\032\016\216r*\232\352.~\224SY\316\177|\204\260\240\232(YA\247F\331\255,\036\363z\027\245\254\234XB\014\007d6\337W\212\203\377x\366\244\262\352+=\037*f\306\377\327\226\360*\346\377\251A\303LY\003t\013\0036/\366&\005S\005\366\224\365\005\241lk\312P\262Q\221F\275Z\002\325\241\323\353\255L%Fl\2500\215\375aM\3228U\321\336\313\307\013\216Edt\267!""\036\020\027\205\"n\n\304\266I\223\231q\264}\n\037\204\257`^\330\323\334\312p\341\307\035\270g\371\207\255gh\255\350\224\214~\252Y7@\252\037,\206\031\321\337\031\326\262\241p\243?\365\216\032[\376;\321\313\210\336\255T\235?\r\265\335e\2539\320v\\[\370\217\360\222\270\225\301\010\257\027\246A\013\254c\275$\366\306`\353\320pY\222\320\031\\I34W\222\206\027X\005K\314\321\341I\327\344SI\333J\336\313\275\272\227\222\206 \305\r\241\277\376\027\235TK\n\371\033o\002I\241<\257~_w\371cYs\270\007H\005pT\342\271d\017\013\"\001\210\305%I/\233\r\37475\331\225^\200\267[T%\"\311\2415K*\321\365\022\221w\370\030\216\262\267\256\241P\331\300\302\346~\377\036\200\272<\004*\266\313\272\351PI\"\206\321\213\305\201`q\224\211\323D\025\232\210\3266\353.3[2M]\026\345\234\214\037?H\336\221$\231_$e\352j.\2552\021\363\010Or\321\201(\363N\326\035\331d\220\021\233J\360\010\357D\342\276$BR\223\211\314\313/\021\222\252;\005z\331tdKaDe\177\356R\177@\035\005\220\201\237R\314\314\246\0027\025S\306\303mZ\224\2124G\033\270\335\034\346@|\307\322&M\260\3458\252\245\030W\376\221\240j6(\304dU7\211\313\037\367\327\372\004\222$\265n\300xY,\347x\010\361M\313\364\373wn\177\340:\232&j9Mi \300\336\315\235\204\312\267\364\205X\331\221\030\0008E\221\370\270\227\231\343\204b\211pv\304\235\334\316*\277\344\022j\361\020$ \206\354\340\207\353(\006\010Cv{\343e*u\026\200!\0329c\025o\264U<-\303F\007A\001\356\363\373\023D\342\201\2627\003'\356U\226%Z9\356$\233CZq\311Z\246u\254\340 \330\224\247\023\003\323\242\266\333\224\244Z\235\350\361A6\010,\261\024\330\324\255\333\006>9\343\250\355=|\3379\024\335\275Go\252\253\222\344P\267\347 F\275\014\343;\017\037f\316\216c:\226c\351\232\313\037|\017:\205\006o\320z\341H\257\260\221~4:\264\365:u\370\335\313o^~\357\356\241Z(w\246\261\322\2504W\232\225\375\225}j\233N\370 \312E\257\332\231\366\\\373M'\327)\276/\034MLv\323\023^\266{q\354\303\2253\027\247\2745\257\346\247\272\351+-\005\223X\231\367H7}\315\033\361\nGx\245\272\343WZ\244\345xs\336\217~\321\227\203\311\340iX\010\267\243s\221""\330\035\207\035o\325S\375gA1\220\303\251\360mD\"\247}\267\203]\227?\234?s\361r\353\221w\335#^\255;\236\361fp\314\265iH\216?\307MM\004\017B1\334\010\235(\033\255F\245v\272\223\352Lv6:\265\203s\007\271\203\"3p\245\365\017\257\340\025\273\351\313|\360\306\027\375'\301jP\016\213a9\332n\247>^ \311D\262%\366q\335?\357kA-\034\r\337D\371v\261M;\367\0172\314~\306\273\204\235\233\301(\002(\207[a\355(}\251\365\215\367\304Gp3\236\213\265\002s}\n\366\306o0\377\231\265\234\267\r{\304\267\001\306\3430\033\346\000\307\251K\257\242\351\250\326>\333\236o\223\243\361)\357;\277\026\214\004\217\302L\370\207h+\252!\0378p\255\325\364/\370\000\351\232\227>\274\261\022\245\336\027\340\334\344T\234\25040c\331\372r([lO\303\333\363\t\342;\234\230\013\304\303\371|;\333\026Y\312\322\376X0\213\323g\303\357\242\032K,a\221N{\257\375\254\277\346\357\006\200\346j\253\306r<\346\337\rR\314\201U\244x\317\223\375\014sa\304\333\2047u\236\347\327<5J\373N\273\336y\330!\335\313`\004\022y\316\027\217\270\346#?\343\337AH\347\202\265\240\036\002\253\337qq\204\005\337\035\237\364D\366X\367\323A*\270\036\220\300\t\347C\032\375\271\255\302X\351 u\204\344|\345\027\016\277\330\354\024:<\337W\301\302Yo\003A^\360\335`=L\201To\340\201\334\316ps1'\266Z\256'Bk\327\337\002j\351\361\001\313n\370\243\240\226\022\334\r\317\206w\221\224\330\005\306\340:H\301\020\370&(\004\257\303;a-\272\210\262`q\025:o\017\310A\355S\217\277\331?\"\325\003\362\246\377E\240\206\205\036\220\207Wo\373N\220\355\236\200\317\213\366l\273\3001<\314d\301\220\002S\032\365\212\036\005\3216\342\023\273\343\323\\\334\014\316\203\315\261\377\031\036\336\236\257\006\017\001b\355\363`\373%\001\246\275\177\261C\022\002\374\014\027jL\375k\177!\310r+\223\341f4\032\275\353\234\355d\373\207\256G\305\2103\352\272\367\024\325qB\275\\\355Q\363\332-\377i\360mX\212\316\243\270\317\26711\211nA\274\177\007s\360aJ\010\322\010\367\306\357\375u\260\343&\212E\374<\341\226\377(\310\004\213h%\205c\302Q\346K\277\214\203\256\t\340c\201\r&\275\277\006\027\202Zw\352\266\377s""\370-w\252\3249\017ZO\315\240)e\375|\260\315<\232g\324\357\336\272\215\032(\004?\242\325\220\317\023\004\336V*!\tk\307\2048c\025\336\t\347\321\007\247p\354H\3708\272\327\236j\277\356\334=\270p\340\034nm\263\342_\200S\253\340\332\\\360\n\271(\260\232etQ\321\353\356\2073\300\025\311\273\212\346\014\266M\261^\307\037\254]\260\307\373BW\310\262u\327\273\357\317\004\251\367\251\356t6\310\034\215\214v\323c\255{\336\244\367\320+\373\305S\004rx\346\272W<\032\311x\031l\234\271\023\024{\033\347[\2627\301\372\320\347\nw\340\360,\253\214\201P8\034Y\0143\037\256\r\212{\323\347\275\375\377\022\216\270\260\013\300\000\310\345\326\266w\226]n\000}\026\325\225J\246\346\274->\265\201\246\3152q6\234\303E\340D\263\321Fd##\305\266\334\231\350\210\237\252\276\315\212\245{)\203x\321\215\307[\217Y\007G\2711\364\357\241v\031\210\270I\374\t\260m+`\335\353p\374\226_@'\333\017'@gly\216\2461\353\177\017\323Y&\276\000\tr\376?\331*\214\334L\214\3746\336\003\365\013\357\335V\256\365\026\301\333\376u\277\024\364:\327\377\224\320c\0349\226\303\036a\302\006\000\230n\327:\347p\273N\034\210\377\005\305~M\275";
-    PyObject *data = __Pyx_DecompressString(cstring, 2465, 1);
+    #elif (CYTHON_COMPRESS_STRINGS) != 0 /* compression: zlib (2479 bytes) */
+const char* const cstring = "x\332\245VKw\323H\026nC\000\023\302\303IH`\206n\344$@\322\2231\221\0034\355y\3641\t\257n\240q\002Ls\230>:e\251dk\"K\262$'vf\372\034\226^j\251\245\226Zj\351\245\227Yf\351e~\002?a\276*Y\266C'\335\014\343s,\325\255\272u\353\336\357~\367\226\304\225\3347\252\270\222\273\257\212\"\036\371\225\234xW\275\237\273\243Bx`\233;\206\240h\216k\332\256f\032\202ElR\243.\265\235\334\370\270\200_\321um\255\334p\251S\3402\373m\211\313\302V\036\377\325\202`\023E#\372\250\t\331\244\252\252\311\0325\\\030I\366X\330c\345\013\202Be,P[3*\277\277\311\221\233\005<\210N\005\225\310\320\035Y\252\322\002{\020[ FE\247\303\025U\243\272R\020\032F\303\241J,\t\213:\255\020\271\265\024k\255\2315KG\220\002,ke\233p\017T\023\226\004Gc\306\260P\2436I \250Tll\007\004\002m2\327M{Y\320\214dT\321\211\343,\217\004\263\014\217\024\241\326\320]\255F\201\216\360\354\365\253\337@\0236%\300^\030\030\027L\233\341\300\335\032\206\205\003c\265\344\344\243\325\2707\261\"\037\036\312h\242D\024\205*\261\3221\271O4k5\275\341\026F\203\321Ms\353\317\rKpI9A\375\341\021\216\027\372\030\n\226\351h\334<\003\345\220\313\307\"\322\\Y\026Z\370\357\256\014\254\304\244\031\032{W\253\375<\364\322\254!?\340WU\003)\211e\021\360\322\214\217\211\331\341\010\3578Q\rgd\227R+\010\253\315\325\241j\215\300\227\246\260(\203\037\360\010\344\261\315Z\337@\237:\2179\246<\005`$\375\264z\331\246\262\324\\\346\257V\374\332-\010\206i\327P8\220\200\277\340\232\375t9\rnx\350\245\201\3021Pl\006+6\252\332\250\003m\233\302\005E\223\021\327\242a\272\002g\272\242\331\260\245\343\004\226Q\346=\354b\007\265\251!\323\245\221\270\023j\270UM\3362(FC8\237\032G\345\322B\275\312\232\005\177-\023\301\363\\&\2311\r\307%\206\373[\371\254\"\237\325_[Yt\250\341\340(\247\252\251\356\322G9\225\345\302\307G\010\213\252\211\222\025tjT\334\352\322!\257\267Q\312\312\221%\304p@f\013\003\2458\370\217g\217*\253\201\322\363\221bf\374\177m\t\257b\376\037\0334\314T4@\2678d\363R\177R0U`OY_\020*\266\246\214$\033\025i4jeP\035:\375\336\312Tb\304F\n\323\330\035\325$\315c\025\355\235B""\274\340XDFw\033\341\001qQ(\342\272@l\233\264\230\031G\333\245\360A\370\032\346\205\035\315\255\216\026~\334\201\373\226\177\334x\212\326\212N\311\350\247\232\r\003\244\372\321b\230\021\375\235a\345\014\205\033\375\271\177\324x\356\273\341\244c\313\267M\213\032\226\273\235\277M\364\n@q\2535\347\366H7\316Y-\307\265\205\377\010/\211[\035\216\360za\032\264\310\332\327Kb\257\r7\214\014s\222\2046\341J\232\241\271\2224\272\300\312Yb^\217N\272&\237JzX\362\316\365\233\200\224t\007)\356\016\203\365\277\352\244VV\310\337yGH\252\346y\355Y\303\345\217\234\346p\017\220\027\200\252\304s\311\036\026D\202\026\213K\222^\266\232\370\257k\262+\275\000\2117\250JD\222G\237\226T\242\353e\"o\3611\034eo]C\325\262\201\205\315\203f\016EY7\035*I\3040\372^;\020,\216:qZ(>\023q\331f\303e\006\312\246\251\313\242\234\227\361\343&\345-I\222\371\375Q\241\256\346\322\032\0231\217@$\027\215\2072?d\335\221M\006\016\261\251\204\263\361N$\236\300DHJ1\221y\325%BRl\307\200,\233\216l)\214\237\354\317]\032\014\250\243\000\034\320R\212\t\331R\340\246b\312x\270-\213R\221\346i\023\227\232\303\034\210\257V\332\242\t\212\0341\265\034#\310\277\rT\315\006Y\230\254\352&q\371\343\336\235\001U$Im\0300^\021+y\036B|\3012\375\301U;\030\270\216\246\211Z^S\232\010\260\177a'\241\362-\003!Vv$\006\000NQ$>\356g\3460uX\"\234-q+\277\265\312\357\266\204D<\004\t\210!;\370\341\026\212\001\302\220]\332x\231J\203\005`\210F\336X\305\033\335\024O\313\260\3218\254\226\261\313\257\315\244\022s\303J\314\215T\"\2468\016\354\315\260\213;\230e\211V\236\307\300\346\240\214\253\3272\255C\225\007\301\246<\333\030\340\024\333mIR\275A\364\330\017\033L\226X\206l\3526l\003\037\2421(\366\016\276\372\034\212\236\337\3479\325UIr\250\333\367\037\243>\001\360\365\207\3175g\3131\035\313\261t\315\345\017\276\007-C\2037h\310p\244_\341`\007\332\037\232}\203:\374F\346\3671\277\215w\0207\345\3164W\232\325\326J\253\272\273\262Km\323\t\357G\371\350U'\323\231\357\274\351\346\273\245\367\305\203\311\251^z\322\313\366\316\216\177\270\360\305\331i\357\216W\367S""\275\364\205\266\202I\254,x\244\227\276\344\215y\305\003\274R\275\211\013m\322v\274y\357'\277\344\313\301T\360$,\206\233\321\311H\354M\300\216\267\352\251\376\323\240\024\310\341t\3706\"\221\323\271\331\305\256\363\037N\177q\366|\373\241w\331#^\2757\221\361fq\314\245\031H\216?\317MM\006\367C1\\\013\235(\033\255F\345N\272\233\352Nu\327\272\365\275\223{\371\275\0223p\241\375\017\257\350\225z\351\363|\360\306\027\375\307\301jP\tKa%\332\354\244>^ \311D\262%\366\361\256\177\332\327\202zx*|\023\025:\245\016\355\336\333\3130\373\031\357\034v\256\007\247\020@%\334\010\353\007\351s\355o\275\307>\202\233\365\\\254\025\231\353\323\2607q\205\371\317\254\345\275M\330#\276\r0\036\205\3310\0178\216]z\025\315D\365\316\211\316B\207\034LL{?\370\365`,x\030f\302?E\033Q\035\371\300\201w\332-\377\214\017\220.y\351\375++Q\352}\021\316MM\307\211J\0033\226\255\257F\262\305\3664\275\035\237 \276\375\311\371@\334_(t\262\035\221\245,\355\217\007s8}.\374!\252\263\304\022\026\351\214\367\332\317\372w\374\355\000\320\\l\327Y\216\307\375\233A\2129\260\212\024\357x\262\237a.\214y\353\360\246\301\363\374\232\247F\351\334\3504\272\017\272\244w\036\214@\"O\372\342\001\327|\350g\374\033\010\351dp'h\204\300\352\017\\\034c\301\367&\246<\221=\356\372\351 \025\\\016H\340\204\013!\215\376\322Qa\254\274\227:@r\276\366\213\373_\256w\213]\236\357\213`\341\234\267\206 \317\370np7L\201To\340\201\334\311ps1'6\332\256'Bk\333\337\000j\351\211!\313\256\370\247@-%\270\031\236\010o\")\261\013\214\301\r\220\202!\360mP\014^\2077\302zt\026e\301\342*v\337\356\221\275\372\247\036\177upD\252\017\344U\377\313@\r\213} \367/^\367\235 \333;\002\237\027\235\271N\221c\270\237\311\202!E\246t\312+y\024D[\213O\354M\314pq=8\r6\307\376gxx;\276\032<\000\210\365\317\203\355\327\004\230\361\376\305\016I\010\360\013\\\2503\365o\374\305 \313\255L\205\353\321\251\350]\367D7;8\364nT\2128\243.{OP\035G\324\313\305>5/]\363\237\004\337\207\345\3504\212\373t\007\023S\350\026\304\373w0\017\037\246\205 \215p\257\374\321\277\013v\\E\261\210\237'""\\\363\037\006\231`\t\255\244xH8\310|\345Wp\320%\001|,\262\301\224\367\267\340LP\357M_\367\177\t\277\347N\225\273\247A\353\351Y4\245\254_\0106\231G\013\214\372\275k\327Q\003\305\340'\264\032\362y\202\300\333J5$a\375\220\020g\254\312;\341\002\372\3404\216\035\013\037E\267:\323\235\327\335\233{g\366\234\375\215MV\374\213pj\025\\\233\017^!\027EV\263\214.*z\335\275p\026\270\"y\027\321\234\301\266i\326\353\370\203\265\013\366x_\354\tY\266\356z\367\374\331 \365>\325\233\311\006\231\203\261S\275\364x\373\2267\345=\360*~\351\030\201\354\177q\331+\035\214e\274\0146\316\336\010J\375\215\013m\331\233d}\350s\205\033px\216U\306P(\356\217-\205\231\017\227\206\305\275\356\363\336\376\177\t\007\\\330\006`\000\344|{\323;\301.7\200>\207\352J%S\363\336\006\237ZC\323f\2318\021\316\343\"p\242\271h-\262\221\221RG\356Nv\305OU\337d\305\322;\227A\274\350\306\023\355G\254\203\243\334\030\372\267P\273\014D\334$\376$\330\266\021\260\356\265?q\315/\242\223\355\206\223\2403\266<G\323\230\363\237\301t\226\211/@\202\274\377O\266\n#W\023#\277\217\367P\375\314{\267\235o\277E\360\266\177\331/\007\375\316\365?%\364\020G\016\345\260O\230\260\t\000f:\365\356I\334\256\223{\342\177\001\253\276V\r";
+    PyObject *data = __Pyx_DecompressString(cstring, 2479, 1);
     if (unlikely(!data)) __PYX_ERR(0, 1, __pyx_L1_error)
     const char* const bytes = __Pyx_PyBytes_AsString(data);
     #if !CYTHON_ASSUME_SAFE_MACROS
     if (likely(bytes)); else { Py_DECREF(data); __PYX_ERR(0, 1, __pyx_L1_error) }
     #endif
-    #else /* compression: none (5026 bytes) */
-const char* const bytes = "10.7f10.8f11.8f20.15f8.4f.8fBrown distortion parameters.\n\n    Attributes:\n        k1, k2, k3: radial distortion coefficients.\n        p1, p2: decentering distortion coefficients.\n        scx: scale factor.\n        she: shear angle.\n        field: unused field (legacy).\n    Complete calibration for a single camera.\n\n    Aggregates exterior, interior, glass, distortion, and multimedia LUT.\n\n    Attributes:\n        ext_par: exterior orientation.\n        int_par: interior orientation.\n        glass_par: glass parameters.\n        added_par: distortion parameters.\n        mmlut: multimedia look-up table.\n    Exterior orientation: camera position and orientation.\n\n    Attributes:\n        x0, y0, z0: camera center position [mm].\n        omega, phi, kappa: rotation angles [radians].\n        dm: 3x3 rotation matrix (computed from angles).\n    Glass interface parameters.\n\n    Attributes:\n        vec_x, vec_y, vec_z: normal vector to glass surface.\n        n1, n2, n3: refractive indices (not used directly, stored for reference).\n        d: glass thickness [mm].\n    Interior orientation: principal point and camera constant.\n\n    Attributes:\n        xh, yh: principal point (sensor shift) [mm].\n        cc: camera constant (focal length) [mm].\n    Invalid exterior orientation format: Invalid glass format: Invalid interior orientation format: Multimedia Look-Up Table.\n\n    Attributes:\n        origin: (x0, y0, z0) origin of the LUT grid.\n        nr: number of radial grid points.\n        nz: number of axial grid points.\n        rw: grid spacing.\n        data: 1D array of size nr * nz with multimedia factors.\n    ORI file not found: Optional[np.ndarray]       \n.?algorithms/calibration.pynp.ndarraystr | Pathstr | Path | NoneAddedParCalibrationCalibration.__post_init__Calibration.from_fileCalibration.to_fileExteriorExterior.compute_rotation_matrixExterior.<lambda>GlassInteriorMmLutMmLut.is_initializedMmLut.<lambda>NoneOptionalPath__Pyx_PyDict_N""extRefa1a2add_fallbackadd_fileadd_linesadd_pathadded_paralgorithms.calibrationallclose__annotations__aparrayasyncio.coroutinesboolc1c2cccc_lineck__class_getitem__cline_in_tracebackclscocompare_addparcompare_calibcompare_exteriorcompare_glasscompare_interiorcompute_rotation_matrixcoscpddatadataclassdataclassesdefault_factorydm__doc__dtypee1e2existsextext_pareyefallback_pathfb_linesfieldfirst_linefloatfloat64from_file__func__g1g2glassglass_lineglass_parglass_partsii1i2idxintint_parinterior_lineinterior_partsis_compiled_is_coroutineis_initializeditemsk1k2k3kappa<lambda>lines__main____metaclass__mmlut__module__n1n2n3__name__npnrnumpynzomegaori_fileori_pathoriginpp1p2partspathlibphipop__post_init____prepare__property__qualname__read_textreturnrow_partsrwscxsecond_lineself__set_name__setdefaultshesinsksospsplitsplitlinesstrip__test__to_filetypingvaluesvec_xvec_yvec_zwrite_textx0xhy0yhz0zeros\2508\2602\260T\270\021\270#\270V\3002\300Q\200A\340\022\023\330\010\022\220!\330\t\n\360\016\000\t\024\2204\220q\230\001\330\010\016\210d\220!\330\010\022\220$\220a\330\010\020\220\004\220A\340\010\020\220\001\330\014\016\210a\210s\220#\220X\230Q\230c\240\023\240H\250A\250S\260\003\2601\330\014\022\220!\2203\220f\230I\240Q\240c\250\024\250Y\260a\260s\270&\300\001\330\014\r\360\006\000\t\r\210E\220\025\220a\220q\330\014\021\220\027\230\001\330\020\026\220a\220s\230#\230Q\230c\240\022\2408\2501\250C\250s\260!\2603\260b\270\010\300\001\300\023\300C\300q\310\003\3102\310Q\360\006\000\t\016\210W\220A\220Q\330\010\r\210W\220A\220V\2301\230G\2403\240g\250Q\250g\260S\270\001\330\010\r\210W\220A\220V\2301\230G\2403\240a\330\010\r\210W\220A\220Q\330\010\r\210W\220A\330\014\022\220!\2205\230\006\230i\240q\250\005\250V\260:\270Q\270e\3006\310\021\360\006\000\t\021\220\013\2301\230D\240\005\240Q\240g\250R\250q\340\010\013\2109\220G\2301\330\014\027\220t\2301\230A\330\014\021\220\024\220Q\330\014\030\230\001\330\020\022\220!\2202\220S\230\006\230a\230r\240\023\240F\250!\2502\250S\260\001\330\020""\022\220!\2202\220S\230\006\230a\230r\240\023\240F\250!\2502\250T\260\026\260q\270\002\270$\270a\340\014\024\220K\230q\240\004\240E\250\021\250+\260R\260q\200A\340\010\013\2104\210y\230\007\230q\330\014\020\220\010\320\0300\260\001\200A\360\006\000\023\024\330\010\022\220!\330\010\026\220a\330\t\n\360\036\000\t\024\2204\220q\230\001\330\010\013\2104\210x\220w\230a\330\014\022\320\022#\2401\320$:\270!\2701\340\010\020\220\010\230\n\240\"\240F\250\"\250K\260q\330\010\016\210a\360\006\000\t\026\220U\230!\2304\230v\240Q\330\010\017\210q\330\010\020\220\n\230&\240\001\340\010\013\2103\210a\210w\220c\230\021\330\014\020\220\004\220D\230\007\230u\240H\250A\250U\260!\2603\260d\270%\270u\300B\300a\330\r\020\220\001\220\027\230\003\2301\340\014\020\220\004\220E\230\021\230%\230q\240\003\2404\240u\250A\330\014\032\230%\230q\240\004\240F\250!\330\014\023\2201\330\014\023\2205\230\010\240\001\240\025\240a\240s\250$\250e\260;\270f\300B\300b\310\001\340\014\022\220*\230A\320\035D\300A\300Q\360\006\000\t\017\210d\220\"\220C\220q\230\007\230t\2405\250\001\250\024\250V\2603\260c\270\021\330\014\023\2201\360\006\000\t\016\210R\210t\2201\220C\220v\230R\230q\330\010\014\210E\220\025\220a\220q\330\014\030\230\005\230Q\230d\240&\250\002\250&\260\001\330\014\023\2201\330\014\016\210a\210u\220A\220U\230!\2309\240A\240U\250%\250q\260\t\270\021\270%\270u\300A\300Y\310a\310q\360\006\000\t\017\210d\220\"\220C\220q\230\007\230t\2405\250\001\250\024\250V\2603\260c\270\021\330\014\023\2201\360\006\000\t\031\230\005\230Q\230d\240&\250\001\330\010\017\210q\330\010\031\230\035\240f\250A\340\010\013\2103\210a\320\017\037\230s\240!\330\014\020\220\004\220E\230\021\230%\230q\240\003\2404\240u\250N\270\"\270A\330\r\020\220\001\320\021!\240\023\240A\330\014\020\220\005\220Q\220e\2301\230C\230t\2405\250\001\330\014\026\220e\2301\230D\240\006\240a\330\014\023\2201\330\014\021\220\025\220a\220w\230f\240B\240a\240q\340\014\022\220*\230A\320\035D\300A\300Q\360\006\000\t\017\210d\220\"\220C\220q\230\007\230t""\2405\250\001\250\024\250V\2603\260c\270\021\330\014\023\2201\360\006\000\t\026\220U\230!\2304\230v\240Q\330\010\017\210q\330\010\026\220j\240\006\240a\340\010\013\2103\210a\210}\230C\230q\330\014\023\2207\230(\240!\2405\250\001\250\023\250D\260\005\260[\300\002\300!\340\014\022\220*\230A\320\0355\260Q\260a\360\006\000\t\025\220H\230A\330\010\013\2109\220G\2301\330\014\027\220t\2301\230A\330\014\017\210x\220w\230a\330\020\034\230H\240J\250b\260\006\260b\270\006\270a\330\020\023\2203\220a\220{\240#\240Q\330\024 \240\010\250\001\330\030\033\2305\240\001\240\031\250!\2501\330\030\033\2305\240\001\240\031\250!\2501\330\030\033\2305\240\001\240\031\250!\2501\330\030\033\2305\240\001\240\031\250!\2501\330\030\033\2305\240\001\240\031\250!\2501\330\030\034\230E\240\021\240)\2501\250A\330\030\034\230E\240\021\240)\2501\250A\340\021\036\230g\240Q\330\020 \240\004\240A\240Q\330\020\023\220=\240\007\240q\330\024\037\230}\250J\260b\270\006\270b\300\006\300a\330\024\027\220s\230!\230:\240S\250\001\330\030$\240H\250A\330\034\037\230u\240A\240X\250Q\250a\330\034\037\230u\240A\240X\250Q\250a\330\034\037\230u\240A\240X\250Q\250a\330\034\037\230u\240A\240X\250Q\250a\330\034\037\230u\240A\240X\250Q\250a\330\034 \240\005\240Q\240h\250a\250q\330\034 \240\005\240Q\240h\250a\250q\360\006\000\t\017\210h\220a\220s\230$\230c\240\024\240S\250\004\250F\260'\270\024\270U\300&\310\007\310s\320RS\330\010\022\220(\230!\2303\230d\240#\240T\250\023\250A\330\010\020\220\005\220Q\220f\230G\2406\250\027\260\006\260a\340\010\017\210s\220!\330\014\024\220A\330\014\024\220A\330\014\026\220a\330\014\026\220a\200A\330 !\340\010\017\210t\2206\230\027\240\001\200\001\330\026!\240\021\340\004\005\330\010\n\210'\220\023\220B\220g\230Q\330\010\n\210'\220\023\220B\220g\230Q\330\010\n\210'\220\023\220B\220a\320\000\025\220Q\340\004\021\220\021\200\001\330\027%\240Q\340\004\005\330\010\n\210$\210c\220\022\2204\220q\330\010\n\210$\210c\220\022\2204\220q\330\010\n\210$\210c\220\022\2204\220q\330\010\n\210$\210c\220""\022\2204\220q\330\010\n\210$\210c\220\022\2204\220q\330\010\n\210%\210s\220\"\220E\230\021\330\010\n\210%\210s\220\"\220A\320\004)\250\021\360\020\000\t\016\210R\210t\2201\220D\230\001\330\010\r\210R\210t\2201\220D\230\001\330\010\r\210R\210t\2201\220D\230\001\330\010\r\210R\210t\2201\220D\230\001\330\010\r\210R\210t\2201\220D\230\001\330\010\r\210R\210t\2201\220D\230\001\340\010\r\210R\210v\220Q\220a\330\014\r\210S\220\002\220$\220a\220s\230\"\230D\240\001\330\014\r\210S\220\002\220#\220R\220s\230\"\230C\230r\240\024\240S\250\002\250#\250R\250s\260\"\260C\260r\270\024\270Q\270c\300\022\3001\330\014\r\210S\220\002\220#\220R\220s\230\"\230C\230r\240\024\240S\250\002\250#\250R\250s\260\"\260C\260r\270\024\270S\300\002\300!\330\013\021\220\022\2201\340\010\014\210F\220!\330\010\017\210q\200\001\330\026'\240q\340\004\005\330\010\030\230\001\230\022\230:\240R\240q\330\010\014\320\014\034\230A\230R\230z\250\022\2501\330\010\014\210M\230\021\230\"\230L\250\002\250!\330\010\014\210N\230!\2302\230\\\250\022\2501\200\001\330\031'\240q\340\004\005\330\010\n\210$\210c\220\022\2204\220q\330\010\n\210$\210c\220\022\2204\220q\330\010\n\210$\210c\220\022\2201\200\001\330\031'\240q\340\004\007\200t\2102\210Y\220a\220r\230\025\230b\240\001\330\010\017\210q\330\004\005\330\010\n\210$\210c\220\022\2204\220q\330\010\n\210$\210c\220\022\2204\220q\330\010\n\210$\210c\220\022\2204\220q\330\010\n\210'\220\023\220B\220g\230Q\330\010\n\210%\210s\220\"\220E\230\021\330\010\n\210'\220\023\220B\220a\250x\260r\270\026\270q\300\003\3006\310\022\3101";
+    #else /* compression: none (5048 bytes) */
+const char* const bytes = "10.7f10.8f11.8f20.15f8.4f.8fBrown distortion parameters.\n\n    Attributes:\n        k1, k2, k3: radial distortion coefficients.\n        p1, p2: decentering distortion coefficients.\n        scx: scale factor.\n        she: shear angle.\n        field: unused field (legacy).\n    Complete calibration for a single camera.\n\n    Aggregates exterior, interior, glass, distortion, and multimedia LUT.\n\n    Attributes:\n        ext_par: exterior orientation.\n        int_par: interior orientation.\n        glass_par: glass parameters.\n        added_par: distortion parameters.\n        mmlut: multimedia look-up table.\n    Exterior orientation: camera position and orientation.\n\n    Attributes:\n        x0, y0, z0: camera center position [mm].\n        omega, phi, kappa: rotation angles [radians].\n        dm: 3x3 rotation matrix (computed from angles).\n    Glass interface parameters.\n\n    Attributes:\n        vec_x, vec_y, vec_z: normal vector to glass surface.\n        n1, n2, n3: refractive indices (not used directly, stored for reference).\n        d: glass thickness [mm].\n    Interior orientation: principal point and camera constant.\n\n    Attributes:\n        xh, yh: principal point (sensor shift) [mm].\n        cc: camera constant (focal length) [mm].\n    Invalid exterior orientation format: Invalid glass format: Invalid interior orientation format: Multimedia Look-Up Table.\n\n    Attributes:\n        origin: (x0, y0, z0) origin of the LUT grid.\n        nr: number of radial grid points.\n        nz: number of axial grid points.\n        rw: grid spacing.\n        data: 1D array of size nr * nz with multimedia factors.\n    ORI file not found: Optional[np.ndarray]       \n.?np.ndarraysrc/openptv2/algorithms/calibration.pystr | Pathstr | Path | NoneAddedParCalibrationCalibration.__post_init__Calibration.from_fileCalibration.to_fileExteriorExterior.compute_rotation_matrixExterior.<lambda>GlassInteriorMmLutMmLut.is_initializedMmLut.<lambda>NoneOptionalPath_""_Pyx_PyDict_NextRefa1a2add_fallbackadd_fileadd_linesadd_pathadded_parallclose__annotations__aparrayasyncio.coroutinesboolc1c2cccc_lineck__class_getitem__cline_in_tracebackclscocompare_addparcompare_calibcompare_exteriorcompare_glasscompare_interiorcompute_rotation_matrixcoscpddatadataclassdataclassesdefault_factorydm__doc__dtypee1e2existsextext_pareyefallback_pathfb_linesfieldfirst_linefloatfloat64from_file__func__g1g2glassglass_lineglass_parglass_partsii1i2idxintint_parinterior_lineinterior_partsis_compiled_is_coroutineis_initializeditemsk1k2k3kappa<lambda>lines__main____metaclass__mmlut__module__n1n2n3__name__npnrnumpynzomegaopenptv2.algorithms.calibrationori_fileori_pathoriginpp1p2partspathlibphipop__post_init____prepare__property__qualname__read_textreturnrow_partsrwscxsecond_lineself__set_name__setdefaultshesinsksospsplitsplitlinesstrip__test__to_filetypingvaluesvec_xvec_yvec_zwrite_textx0xhy0yhz0zeros\2508\2602\260T\270\021\270#\270V\3002\300Q\200A\340\022\023\330\010\022\220!\330\t\n\360\016\000\t\024\2204\220q\230\001\330\010\016\210d\220!\330\010\022\220$\220a\330\010\020\220\004\220A\340\010\020\220\001\330\014\016\210a\210s\220#\220X\230Q\230c\240\023\240H\250A\250S\260\003\2601\330\014\022\220!\2203\220f\230I\240Q\240c\250\024\250Y\260a\260s\270&\300\001\330\014\r\360\006\000\t\r\210E\220\025\220a\220q\330\014\021\220\027\230\001\330\020\026\220a\220s\230#\230Q\230c\240\022\2408\2501\250C\250s\260!\2603\260b\270\010\300\001\300\023\300C\300q\310\003\3102\310Q\360\006\000\t\016\210W\220A\220Q\330\010\r\210W\220A\220V\2301\230G\2403\240g\250Q\250g\260S\270\001\330\010\r\210W\220A\220V\2301\230G\2403\240a\330\010\r\210W\220A\220Q\330\010\r\210W\220A\330\014\022\220!\2205\230\006\230i\240q\250\005\250V\260:\270Q\270e\3006\310\021\360\006\000\t\021\220\013\2301\230D\240\005\240Q\240g\250R\250q\340\010\013\2109\220G\2301\330\014\027\220t\2301\230A\330\014\021\220\024\220Q\330\014\030\230\001\330\020\022\220!\2202\220S\230\006\230a\230r\240\023\240F\250!\2502""\250S\260\001\330\020\022\220!\2202\220S\230\006\230a\230r\240\023\240F\250!\2502\250T\260\026\260q\270\002\270$\270a\340\014\024\220K\230q\240\004\240E\250\021\250+\260R\260q\200A\340\010\013\2104\210y\230\007\230q\330\014\020\220\010\320\0300\260\001\200A\360\006\000\023\024\330\010\022\220!\330\010\026\220a\330\t\n\360\036\000\t\024\2204\220q\230\001\330\010\013\2104\210x\220w\230a\330\014\022\320\022#\2401\320$:\270!\2701\340\010\020\220\010\230\n\240\"\240F\250\"\250K\260q\330\010\016\210a\360\006\000\t\026\220U\230!\2304\230v\240Q\330\010\017\210q\330\010\020\220\n\230&\240\001\340\010\013\2103\210a\210w\220c\230\021\330\014\020\220\004\220D\230\007\230u\240H\250A\250U\260!\2603\260d\270%\270u\300B\300a\330\r\020\220\001\220\027\230\003\2301\340\014\020\220\004\220E\230\021\230%\230q\240\003\2404\240u\250A\330\014\032\230%\230q\240\004\240F\250!\330\014\023\2201\330\014\023\2205\230\010\240\001\240\025\240a\240s\250$\250e\260;\270f\300B\300b\310\001\340\014\022\220*\230A\320\035D\300A\300Q\360\006\000\t\017\210d\220\"\220C\220q\230\007\230t\2405\250\001\250\024\250V\2603\260c\270\021\330\014\023\2201\360\006\000\t\016\210R\210t\2201\220C\220v\230R\230q\330\010\014\210E\220\025\220a\220q\330\014\030\230\005\230Q\230d\240&\250\002\250&\260\001\330\014\023\2201\330\014\016\210a\210u\220A\220U\230!\2309\240A\240U\250%\250q\260\t\270\021\270%\270u\300A\300Y\310a\310q\360\006\000\t\017\210d\220\"\220C\220q\230\007\230t\2405\250\001\250\024\250V\2603\260c\270\021\330\014\023\2201\360\006\000\t\031\230\005\230Q\230d\240&\250\001\330\010\017\210q\330\010\031\230\035\240f\250A\340\010\013\2103\210a\320\017\037\230s\240!\330\014\020\220\004\220E\230\021\230%\230q\240\003\2404\240u\250N\270\"\270A\330\r\020\220\001\320\021!\240\023\240A\330\014\020\220\005\220Q\220e\2301\230C\230t\2405\250\001\330\014\026\220e\2301\230D\240\006\240a\330\014\023\2201\330\014\021\220\025\220a\220w\230f\240B\240a\240q\340\014\022\220*\230A\320\035D\300A\300Q\360\006\000\t\017\210d\220\"\220C""\220q\230\007\230t\2405\250\001\250\024\250V\2603\260c\270\021\330\014\023\2201\360\006\000\t\026\220U\230!\2304\230v\240Q\330\010\017\210q\330\010\026\220j\240\006\240a\340\010\013\2103\210a\210}\230C\230q\330\014\023\2207\230(\240!\2405\250\001\250\023\250D\260\005\260[\300\002\300!\340\014\022\220*\230A\320\0355\260Q\260a\360\006\000\t\025\220H\230A\330\010\013\2109\220G\2301\330\014\027\220t\2301\230A\330\014\017\210x\220w\230a\330\020\034\230H\240J\250b\260\006\260b\270\006\270a\330\020\023\2203\220a\220{\240#\240Q\330\024 \240\010\250\001\330\030\033\2305\240\001\240\031\250!\2501\330\030\033\2305\240\001\240\031\250!\2501\330\030\033\2305\240\001\240\031\250!\2501\330\030\033\2305\240\001\240\031\250!\2501\330\030\033\2305\240\001\240\031\250!\2501\330\030\034\230E\240\021\240)\2501\250A\330\030\034\230E\240\021\240)\2501\250A\340\021\036\230g\240Q\330\020 \240\004\240A\240Q\330\020\023\220=\240\007\240q\330\024\037\230}\250J\260b\270\006\270b\300\006\300a\330\024\027\220s\230!\230:\240S\250\001\330\030$\240H\250A\330\034\037\230u\240A\240X\250Q\250a\330\034\037\230u\240A\240X\250Q\250a\330\034\037\230u\240A\240X\250Q\250a\330\034\037\230u\240A\240X\250Q\250a\330\034\037\230u\240A\240X\250Q\250a\330\034 \240\005\240Q\240h\250a\250q\330\034 \240\005\240Q\240h\250a\250q\360\006\000\t\017\210h\220a\220s\230$\230c\240\024\240S\250\004\250F\260'\270\024\270U\300&\310\007\310s\320RS\330\010\022\220(\230!\2303\230d\240#\240T\250\023\250A\330\010\020\220\005\220Q\220f\230G\2406\250\027\260\006\260a\340\010\017\210s\220!\330\014\024\220A\330\014\024\220A\330\014\026\220a\330\014\026\220a\200A\330 !\340\010\017\210t\2206\230\027\240\001\200\001\330\026!\240\021\340\004\005\330\010\n\210'\220\023\220B\220g\230Q\330\010\n\210'\220\023\220B\220g\230Q\330\010\n\210'\220\023\220B\220a\320\000\025\220Q\340\004\021\220\021\200\001\330\027%\240Q\340\004\005\330\010\n\210$\210c\220\022\2204\220q\330\010\n\210$\210c\220\022\2204\220q\330\010\n\210$\210c\220\022\2204\220q\330""\010\n\210$\210c\220\022\2204\220q\330\010\n\210$\210c\220\022\2204\220q\330\010\n\210%\210s\220\"\220E\230\021\330\010\n\210%\210s\220\"\220A\320\004)\250\021\360\020\000\t\016\210R\210t\2201\220D\230\001\330\010\r\210R\210t\2201\220D\230\001\330\010\r\210R\210t\2201\220D\230\001\330\010\r\210R\210t\2201\220D\230\001\330\010\r\210R\210t\2201\220D\230\001\330\010\r\210R\210t\2201\220D\230\001\340\010\r\210R\210v\220Q\220a\330\014\r\210S\220\002\220$\220a\220s\230\"\230D\240\001\330\014\r\210S\220\002\220#\220R\220s\230\"\230C\230r\240\024\240S\250\002\250#\250R\250s\260\"\260C\260r\270\024\270Q\270c\300\022\3001\330\014\r\210S\220\002\220#\220R\220s\230\"\230C\230r\240\024\240S\250\002\250#\250R\250s\260\"\260C\260r\270\024\270S\300\002\300!\330\013\021\220\022\2201\340\010\014\210F\220!\330\010\017\210q\200\001\330\026'\240q\340\004\005\330\010\030\230\001\230\022\230:\240R\240q\330\010\014\320\014\034\230A\230R\230z\250\022\2501\330\010\014\210M\230\021\230\"\230L\250\002\250!\330\010\014\210N\230!\2302\230\\\250\022\2501\200\001\330\031'\240q\340\004\005\330\010\n\210$\210c\220\022\2204\220q\330\010\n\210$\210c\220\022\2204\220q\330\010\n\210$\210c\220\022\2201\200\001\330\031'\240q\340\004\007\200t\2102\210Y\220a\220r\230\025\230b\240\001\330\010\017\210q\330\004\005\330\010\n\210$\210c\220\022\2204\220q\330\010\n\210$\210c\220\022\2204\220q\330\010\n\210$\210c\220\022\2204\220q\330\010\n\210'\220\023\220B\220g\230Q\330\010\n\210%\210s\220\"\220E\230\021\330\010\n\210'\220\023\220B\220a\250x\260r\270\026\270q\300\003\3006\310\022\3101";
     PyObject *data = NULL;
     CYTHON_UNUSED_VAR(__Pyx_DecompressString);
     #endif
@@ -10785,67 +10785,67 @@ static int __Pyx_CreateCodeObjects(__pyx_mstatetype *__pyx_mstate) {
   {
     const __Pyx_PyCode_New_function_description descr = {0, 0, 0, 0, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 39};
     PyObject* const varnames[] = {0};
-    __pyx_mstate_global->__pyx_codeobj_tab[0] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_calibration_py, __pyx_mstate->__pyx_n_u_lambda, __pyx_mstate->__pyx_kp_b_iso88591_82T_V2Q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[0])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[0] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_calibrat, __pyx_mstate->__pyx_n_u_lambda, __pyx_mstate->__pyx_kp_b_iso88591_82T_V2Q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[0])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 8, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 41};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self, __pyx_mstate->__pyx_n_u_cp, __pyx_mstate->__pyx_n_u_sp, __pyx_mstate->__pyx_n_u_co, __pyx_mstate->__pyx_n_u_so, __pyx_mstate->__pyx_n_u_ck, __pyx_mstate->__pyx_n_u_sk, __pyx_mstate->__pyx_n_u_dm};
-    __pyx_mstate_global->__pyx_codeobj_tab[1] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_calibration_py, __pyx_mstate->__pyx_n_u_compute_rotation_matrix, __pyx_mstate->__pyx_kp_b_iso88591_Rt1D_Rt1D_Rt1D_Rt1D_Rt1D_Rt1D_R, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[1])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[1] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_calibrat, __pyx_mstate->__pyx_n_u_compute_rotation_matrix, __pyx_mstate->__pyx_kp_b_iso88591_Rt1D_Rt1D_Rt1D_Rt1D_Rt1D_Rt1D_R, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[1])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {0, 0, 0, 0, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 129};
     PyObject* const varnames[] = {0};
-    __pyx_mstate_global->__pyx_codeobj_tab[2] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_calibration_py, __pyx_mstate->__pyx_n_u_lambda, __pyx_mstate->__pyx_kp_b_iso88591_xr_q_6_1, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[2])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[2] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_calibrat, __pyx_mstate->__pyx_n_u_lambda, __pyx_mstate->__pyx_kp_b_iso88591_xr_q_6_1, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[2])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 1, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 135};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self};
-    __pyx_mstate_global->__pyx_codeobj_tab[3] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_calibration_py, __pyx_mstate->__pyx_n_u_is_initialized, __pyx_mstate->__pyx_kp_b_iso88591_A_t6, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[3])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[3] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_calibrat, __pyx_mstate->__pyx_n_u_is_initialized, __pyx_mstate->__pyx_kp_b_iso88591_A_t6, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[3])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 1, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 160};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self};
-    __pyx_mstate_global->__pyx_codeobj_tab[4] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_calibration_py, __pyx_mstate->__pyx_n_u_post_init, __pyx_mstate->__pyx_kp_b_iso88591_A_4y_q_0, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[4])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[4] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_calibrat, __pyx_mstate->__pyx_n_u_post_init, __pyx_mstate->__pyx_kp_b_iso88591_A_4y_q_0, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[4])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {4, 0, 0, 44, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 165};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_cls, __pyx_mstate->__pyx_n_u_ori_file, __pyx_mstate->__pyx_n_u_add_file, __pyx_mstate->__pyx_n_u_add_fallback, __pyx_mstate->__pyx_n_u_ori_path, __pyx_mstate->__pyx_n_u_lines, __pyx_mstate->__pyx_n_u_idx, __pyx_mstate->__pyx_n_u_first_line, __pyx_mstate->__pyx_n_u_parts, __pyx_mstate->__pyx_n_u_x0, __pyx_mstate->__pyx_n_u_y0, __pyx_mstate->__pyx_n_u_z0, __pyx_mstate->__pyx_n_u_omega, __pyx_mstate->__pyx_n_u_phi, __pyx_mstate->__pyx_n_u_kappa, __pyx_mstate->__pyx_n_u_second_line, __pyx_mstate->__pyx_n_u_dm, __pyx_mstate->__pyx_n_u_i, __pyx_mstate->__pyx_n_u_row_parts, __pyx_mstate->__pyx_n_u_interior_line, __pyx_mstate->__pyx_n_u_interior_parts, __pyx_mstate->__pyx_n_u_xh, __pyx_mstate->__pyx_n_u_yh, __pyx_mstate->__pyx_n_u_cc, __pyx_mstate->__pyx_n_u_cc_line, __pyx_mstate->__pyx_n_u_glass_line, __pyx_mstate->__pyx_n_u_glass_parts, __pyx_mstate->__pyx_n_u_vec_x, __pyx_mstate->__pyx_n_u_vec_y, __pyx_mstate->__pyx_n_u_vec_z, __pyx_mstate->__pyx_n_u_added_par, __pyx_mstate->__pyx_n_u_add_path, __pyx_mstate->__pyx_n_u_add_lines, __pyx_mstate->__pyx_n_u_fallback_path, __pyx_mstate->__pyx_n_u_fb_lines, __pyx_mstate->__pyx_n_u_ext, __pyx_mstate->__pyx_n_u_int_par, __pyx_mstate->__pyx_n_u_glass, __pyx_mstate->__pyx_n_u_p, __pyx_mstate->__pyx_n_u_p, __pyx_mstate->__pyx_n_u_p, __pyx_mstate->__pyx_n_u_p, __pyx_mstate->__pyx_n_u_p, __pyx_mstate->__pyx_n_u_p};
-    __pyx_mstate_global->__pyx_codeobj_tab[5] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_calibration_py, __pyx_mstate->__pyx_n_u_from_file, __pyx_mstate->__pyx_kp_b_iso88591_A_a_4q_4xwa_1_1_F_Kq_a_U_4vQ_q_3, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[5])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[5] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_calibrat, __pyx_mstate->__pyx_n_u_from_file, __pyx_mstate->__pyx_kp_b_iso88591_A_a_4q_4xwa_1_1_F_Kq_a_U_4vQ_q_3, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[5])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {3, 0, 0, 12, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 295};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self, __pyx_mstate->__pyx_n_u_ori_file, __pyx_mstate->__pyx_n_u_add_file, __pyx_mstate->__pyx_n_u_ori_path, __pyx_mstate->__pyx_n_u_ext, __pyx_mstate->__pyx_n_u_int_par, __pyx_mstate->__pyx_n_u_glass, __pyx_mstate->__pyx_n_u_lines, __pyx_mstate->__pyx_n_u_i, __pyx_mstate->__pyx_n_u_add_path, __pyx_mstate->__pyx_n_u_ap, __pyx_mstate->__pyx_n_u_add_lines};
-    __pyx_mstate_global->__pyx_codeobj_tab[6] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_calibration_py, __pyx_mstate->__pyx_n_u_to_file, __pyx_mstate->__pyx_kp_b_iso88591_A_4q_d_a_A_as_XQc_HAS_1_3fIQc_Ya, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[6])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[6] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_calibrat, __pyx_mstate->__pyx_n_u_to_file, __pyx_mstate->__pyx_kp_b_iso88591_A_4q_d_a_A_as_XQc_HAS_1_3fIQc_Ya, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[6])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {2, 0, 0, 2, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 342};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_e1, __pyx_mstate->__pyx_n_u_e2};
-    __pyx_mstate_global->__pyx_codeobj_tab[7] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_calibration_py, __pyx_mstate->__pyx_n_u_compare_exterior, __pyx_mstate->__pyx_kp_b_iso88591_q_t2Yar_b_q_c_4q_c_4q_c_4q_BgQ, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[7])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[7] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_calibrat, __pyx_mstate->__pyx_n_u_compare_exterior, __pyx_mstate->__pyx_kp_b_iso88591_q_t2Yar_b_q_c_4q_c_4q_c_4q_BgQ, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[7])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {2, 0, 0, 2, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 356};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_i1, __pyx_mstate->__pyx_n_u_i2};
-    __pyx_mstate_global->__pyx_codeobj_tab[8] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_calibration_py, __pyx_mstate->__pyx_n_u_compare_interior, __pyx_mstate->__pyx_kp_b_iso88591_q_c_4q_c_4q_c_1, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[8])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[8] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_calibrat, __pyx_mstate->__pyx_n_u_compare_interior, __pyx_mstate->__pyx_kp_b_iso88591_q_c_4q_c_4q_c_1, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[8])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {2, 0, 0, 2, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 365};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_g1, __pyx_mstate->__pyx_n_u_g2};
-    __pyx_mstate_global->__pyx_codeobj_tab[9] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_calibration_py, __pyx_mstate->__pyx_n_u_compare_glass, __pyx_mstate->__pyx_kp_b_iso88591_BgQ_BgQ_Ba, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[9])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[9] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_calibrat, __pyx_mstate->__pyx_n_u_compare_glass, __pyx_mstate->__pyx_kp_b_iso88591_BgQ_BgQ_Ba, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[9])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {2, 0, 0, 2, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 374};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_a1, __pyx_mstate->__pyx_n_u_a2};
-    __pyx_mstate_global->__pyx_codeobj_tab[10] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_calibration_py, __pyx_mstate->__pyx_n_u_compare_addpar, __pyx_mstate->__pyx_kp_b_iso88591_Q_c_4q_c_4q_c_4q_c_4q_c_4q_s_E, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[10])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[10] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_calibrat, __pyx_mstate->__pyx_n_u_compare_addpar, __pyx_mstate->__pyx_kp_b_iso88591_Q_c_4q_c_4q_c_4q_c_4q_c_4q_s_E, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[10])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {2, 0, 0, 2, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 387};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_c1, __pyx_mstate->__pyx_n_u_c2};
-    __pyx_mstate_global->__pyx_codeobj_tab[11] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_calibration_py, __pyx_mstate->__pyx_n_u_compare_calib, __pyx_mstate->__pyx_kp_b_iso88591_q_Rq_ARz_1_M_L_N_2_1, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[11])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[11] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_calibrat, __pyx_mstate->__pyx_n_u_compare_calib, __pyx_mstate->__pyx_kp_b_iso88591_q_Rq_ARz_1_M_L_N_2_1, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[11])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {0, 0, 0, 0, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 401};
     PyObject* const varnames[] = {0};
-    __pyx_mstate_global->__pyx_codeobj_tab[12] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_calibration_py, __pyx_mstate->__pyx_n_u_is_compiled, __pyx_mstate->__pyx_kp_b_iso88591_Q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[12])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[12] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_calibrat, __pyx_mstate->__pyx_n_u_is_compiled, __pyx_mstate->__pyx_kp_b_iso88591_Q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[12])) goto bad;
   }
   Py_DECREF(tuple_dedup_map);
   return 0;

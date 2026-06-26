@@ -4,12 +4,12 @@
 {
     "distutils": {
         "depends": [],
-        "name": "algorithms.trafo",
+        "name": "openptv2.algorithms.trafo",
         "sources": [
-            "algorithms/trafo.py"
+            "src/openptv2/algorithms/trafo.py"
         ]
     },
-    "module_name": "algorithms.trafo"
+    "module_name": "openptv2.algorithms.trafo"
 }
 END: Cython Metadata */
 
@@ -1127,8 +1127,8 @@ static int __Pyx_init_co_variables(void) {
   #endif
 #endif
 
-#define __PYX_HAVE__algorithms__trafo
-#define __PYX_HAVE_API__algorithms__trafo
+#define __PYX_HAVE__openptv2__algorithms__trafo
+#define __PYX_HAVE_API__openptv2__algorithms__trafo
 /* Early includes */
 #include <math.h>
 #include "pythread.h"
@@ -1350,7 +1350,7 @@ static const char *__pyx_filename;
 /* #### Code section: filename_table ### */
 
 static const char* const __pyx_f[] = {
-  "algorithms/trafo.py",
+  "src/openptv2/algorithms/trafo.py",
   "<stringsource>",
 };
 /* #### Code section: utility_code_proto_before_types ### */
@@ -1610,45 +1610,45 @@ struct __pyx_array_obj;
 struct __pyx_MemviewEnum_obj;
 struct __pyx_memoryview_obj;
 struct __pyx_memoryviewslice_obj;
-struct __pyx_opt_args_10algorithms_5trafo_old_pixel_to_metric;
-struct __pyx_opt_args_10algorithms_5trafo_old_metric_to_pixel;
-struct __pyx_opt_args_10algorithms_5trafo_pixel_to_metric;
-struct __pyx_opt_args_10algorithms_5trafo_metric_to_pixel;
-struct __pyx_opt_args_10algorithms_5trafo_correct_brown_affine_exact;
-struct __pyx_opt_args_10algorithms_5trafo_dist_to_flat;
+struct __pyx_opt_args_8openptv2_10algorithms_5trafo_old_pixel_to_metric;
+struct __pyx_opt_args_8openptv2_10algorithms_5trafo_old_metric_to_pixel;
+struct __pyx_opt_args_8openptv2_10algorithms_5trafo_pixel_to_metric;
+struct __pyx_opt_args_8openptv2_10algorithms_5trafo_metric_to_pixel;
+struct __pyx_opt_args_8openptv2_10algorithms_5trafo_correct_brown_affine_exact;
+struct __pyx_opt_args_8openptv2_10algorithms_5trafo_dist_to_flat;
 
-/* "algorithms/trafo.py":26
+/* "openptv2/algorithms/trafo.py":26
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def old_pixel_to_metric(
  *     x_pixel: cython.double,
 */
-struct __pyx_opt_args_10algorithms_5trafo_old_pixel_to_metric {
+struct __pyx_opt_args_8openptv2_10algorithms_5trafo_old_pixel_to_metric {
   int __pyx_n;
   int y_remap_mode;
 };
 
-/* "algorithms/trafo.py":59
+/* "openptv2/algorithms/trafo.py":59
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def old_metric_to_pixel(
  *     x_metric: cython.double,
 */
-struct __pyx_opt_args_10algorithms_5trafo_old_metric_to_pixel {
+struct __pyx_opt_args_8openptv2_10algorithms_5trafo_old_metric_to_pixel {
   int __pyx_n;
   int y_remap_mode;
 };
 
-/* "algorithms/trafo.py":92
+/* "openptv2/algorithms/trafo.py":92
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def pixel_to_metric(
  *     x_pixel: cython.double,
 */
-struct __pyx_opt_args_10algorithms_5trafo_pixel_to_metric {
+struct __pyx_opt_args_8openptv2_10algorithms_5trafo_pixel_to_metric {
   int __pyx_n;
   int imy;
   double pix_x;
@@ -1656,14 +1656,14 @@ struct __pyx_opt_args_10algorithms_5trafo_pixel_to_metric {
   int chfield;
 };
 
-/* "algorithms/trafo.py":127
+/* "openptv2/algorithms/trafo.py":127
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def metric_to_pixel(
  *     x_metric: cython.double,
 */
-struct __pyx_opt_args_10algorithms_5trafo_metric_to_pixel {
+struct __pyx_opt_args_8openptv2_10algorithms_5trafo_metric_to_pixel {
   int __pyx_n;
   int imy;
   double pix_x;
@@ -1671,26 +1671,26 @@ struct __pyx_opt_args_10algorithms_5trafo_metric_to_pixel {
   int chfield;
 };
 
-/* "algorithms/trafo.py":349
+/* "openptv2/algorithms/trafo.py":349
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def correct_brown_affine_exact(
  *     x: cython.double,
 */
-struct __pyx_opt_args_10algorithms_5trafo_correct_brown_affine_exact {
+struct __pyx_opt_args_8openptv2_10algorithms_5trafo_correct_brown_affine_exact {
   int __pyx_n;
   double tol;
 };
 
-/* "algorithms/trafo.py":459
+/* "openptv2/algorithms/trafo.py":459
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def dist_to_flat(
  *     dist_x: cython.double,
 */
-struct __pyx_opt_args_10algorithms_5trafo_dist_to_flat {
+struct __pyx_opt_args_8openptv2_10algorithms_5trafo_dist_to_flat {
   int __pyx_n;
   double tol;
 };
@@ -2973,7 +2973,7 @@ static PyObject *__pyx_memoryviewslice__get_base(struct __pyx_memoryviewslice_ob
 
 /* Module declarations from "libc.math" */
 
-/* Module declarations from "algorithms.trafo" */
+/* Module declarations from "openptv2.algorithms.trafo" */
 static PyObject *__pyx_collections_abc_Sequence = 0;
 static PyObject *generic = 0;
 static PyObject *strided = 0;
@@ -2982,19 +2982,19 @@ static PyObject *contiguous = 0;
 static PyObject *indirect_contiguous = 0;
 static int __pyx_memoryview_thread_locks_used;
 static PyThread_type_lock __pyx_memoryview_thread_locks[8];
-static PyObject *__pyx_f_10algorithms_5trafo_old_pixel_to_metric(double, double, int, int, double, double, int __pyx_skip_dispatch, struct __pyx_opt_args_10algorithms_5trafo_old_pixel_to_metric *__pyx_optional_args); /*proto*/
-static PyObject *__pyx_f_10algorithms_5trafo_old_metric_to_pixel(double, double, int, int, double, double, int __pyx_skip_dispatch, struct __pyx_opt_args_10algorithms_5trafo_old_metric_to_pixel *__pyx_optional_args); /*proto*/
-static PyObject *__pyx_f_10algorithms_5trafo_pixel_to_metric(double, double, PyObject *, int __pyx_skip_dispatch, struct __pyx_opt_args_10algorithms_5trafo_pixel_to_metric *__pyx_optional_args); /*proto*/
-static PyObject *__pyx_f_10algorithms_5trafo_metric_to_pixel(double, double, PyObject *, int __pyx_skip_dispatch, struct __pyx_opt_args_10algorithms_5trafo_metric_to_pixel *__pyx_optional_args); /*proto*/
-static PyObject *__pyx_f_10algorithms_5trafo_pixel_to_metric_batch(PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_5trafo_metric_to_pixel_batch(PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_5trafo_distort_brown_affin(double, double, double, double, double, double, double, double, double, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affin(double, double, double, double, double, double, double, double, double, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_exact(double, double, double, double, double, double, double, double, double, int __pyx_skip_dispatch, struct __pyx_opt_args_10algorithms_5trafo_correct_brown_affine_exact *__pyx_optional_args); /*proto*/
-static PyObject *__pyx_f_10algorithms_5trafo_flat_to_dist(double, double, double, double, double, double, double, double, double, double, double, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_5trafo_dist_to_flat(double, double, double, double, double, double, double, double, double, double, double, int __pyx_skip_dispatch, struct __pyx_opt_args_10algorithms_5trafo_dist_to_flat *__pyx_optional_args); /*proto*/
-static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_batch(__Pyx_memviewslice, double, double, double, double, double, double, double, int __pyx_skip_dispatch); /*proto*/
-static PyObject *__pyx_f_10algorithms_5trafo_distort_brown_affine_batch(__Pyx_memviewslice, double, double, double, double, double, double, double, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_5trafo_old_pixel_to_metric(double, double, int, int, double, double, int __pyx_skip_dispatch, struct __pyx_opt_args_8openptv2_10algorithms_5trafo_old_pixel_to_metric *__pyx_optional_args); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_5trafo_old_metric_to_pixel(double, double, int, int, double, double, int __pyx_skip_dispatch, struct __pyx_opt_args_8openptv2_10algorithms_5trafo_old_metric_to_pixel *__pyx_optional_args); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_5trafo_pixel_to_metric(double, double, PyObject *, int __pyx_skip_dispatch, struct __pyx_opt_args_8openptv2_10algorithms_5trafo_pixel_to_metric *__pyx_optional_args); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_5trafo_metric_to_pixel(double, double, PyObject *, int __pyx_skip_dispatch, struct __pyx_opt_args_8openptv2_10algorithms_5trafo_metric_to_pixel *__pyx_optional_args); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_5trafo_pixel_to_metric_batch(PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_5trafo_metric_to_pixel_batch(PyObject *, PyObject *, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_5trafo_distort_brown_affin(double, double, double, double, double, double, double, double, double, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_5trafo_correct_brown_affin(double, double, double, double, double, double, double, double, double, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_5trafo_correct_brown_affine_exact(double, double, double, double, double, double, double, double, double, int __pyx_skip_dispatch, struct __pyx_opt_args_8openptv2_10algorithms_5trafo_correct_brown_affine_exact *__pyx_optional_args); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_5trafo_flat_to_dist(double, double, double, double, double, double, double, double, double, double, double, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_5trafo_dist_to_flat(double, double, double, double, double, double, double, double, double, double, double, int __pyx_skip_dispatch, struct __pyx_opt_args_8openptv2_10algorithms_5trafo_dist_to_flat *__pyx_optional_args); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_5trafo_correct_brown_affine_batch(__Pyx_memviewslice, double, double, double, double, double, double, double, int __pyx_skip_dispatch); /*proto*/
+static PyObject *__pyx_f_8openptv2_10algorithms_5trafo_distort_brown_affine_batch(__Pyx_memviewslice, double, double, double, double, double, double, double, int __pyx_skip_dispatch); /*proto*/
 static int __pyx_array_allocate_buffer(struct __pyx_array_obj *); /*proto*/
 static struct __pyx_array_obj *__pyx_array_new(PyObject *, Py_ssize_t, char *, char const *, char *); /*proto*/
 static PyObject *__pyx_memoryview_new(PyObject *, int, int, __Pyx_TypeInfo const *); /*proto*/
@@ -3031,11 +3031,11 @@ static PyObject *__pyx_unpickle_Enum__set_state(struct __pyx_MemviewEnum_obj *, 
 /* #### Code section: typeinfo ### */
 static const __Pyx_TypeInfo __Pyx_TypeInfo_double = { "double", NULL, sizeof(double), { 0 }, 0, 'R', 0, 0 };
 /* #### Code section: before_global_var ### */
-#define __Pyx_MODULE_NAME "algorithms.trafo"
-extern int __pyx_module_is_main_algorithms__trafo;
-int __pyx_module_is_main_algorithms__trafo = 0;
+#define __Pyx_MODULE_NAME "openptv2.algorithms.trafo"
+extern int __pyx_module_is_main_openptv2__algorithms__trafo;
+int __pyx_module_is_main_openptv2__algorithms__trafo = 0;
 
-/* Implementation of "algorithms.trafo" */
+/* Implementation of "openptv2.algorithms.trafo" */
 /* #### Code section: global_var ### */
 static PyObject *__pyx_builtin___import__;
 static PyObject *__pyx_builtin_enumerate;
@@ -3088,20 +3088,20 @@ static void __pyx_memoryviewslice___pyx_pf_15View_dot_MemoryView_16_memoryviewsl
 static PyObject *__pyx_pf___pyx_memoryviewslice___reduce_cython__(CYTHON_UNUSED struct __pyx_memoryviewslice_obj *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf___pyx_memoryviewslice_2__setstate_cython__(CYTHON_UNUSED struct __pyx_memoryviewslice_obj *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state); /* proto */
 static PyObject *__pyx_pf_15View_dot_MemoryView___pyx_unpickle_Enum(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v___pyx_type, long __pyx_v___pyx_checksum, PyObject *__pyx_v___pyx_state); /* proto */
-static PyObject *__pyx_pf_10algorithms_5trafo_old_pixel_to_metric(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_x_pixel, double __pyx_v_y_pixel, int __pyx_v_im_size_x, int __pyx_v_im_size_y, double __pyx_v_pix_size_x, double __pyx_v_pix_size_y, int __pyx_v_y_remap_mode); /* proto */
-static PyObject *__pyx_pf_10algorithms_5trafo_2old_metric_to_pixel(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_x_metric, double __pyx_v_y_metric, int __pyx_v_im_size_x, int __pyx_v_im_size_y, double __pyx_v_pix_size_x, double __pyx_v_pix_size_y, int __pyx_v_y_remap_mode); /* proto */
-static PyObject *__pyx_pf_10algorithms_5trafo_4pixel_to_metric(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_x_pixel, double __pyx_v_y_pixel, PyObject *__pyx_v_imx_or_cpar, int __pyx_v_imy, double __pyx_v_pix_x, double __pyx_v_pix_y, int __pyx_v_chfield); /* proto */
-static PyObject *__pyx_pf_10algorithms_5trafo_6metric_to_pixel(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_x_metric, double __pyx_v_y_metric, PyObject *__pyx_v_imx_or_cpar, int __pyx_v_imy, double __pyx_v_pix_x, double __pyx_v_pix_y, int __pyx_v_chfield); /* proto */
-static PyObject *__pyx_pf_10algorithms_5trafo_8pixel_to_metric_batch(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_xy, PyObject *__pyx_v_cpar); /* proto */
-static PyObject *__pyx_pf_10algorithms_5trafo_10metric_to_pixel_batch(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_xy, PyObject *__pyx_v_cpar); /* proto */
-static PyObject *__pyx_pf_10algorithms_5trafo_12distort_brown_affin(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_x, double __pyx_v_y, double __pyx_v_k1, double __pyx_v_k2, double __pyx_v_k3, double __pyx_v_p1, double __pyx_v_p2, double __pyx_v_scx, double __pyx_v_she); /* proto */
-static PyObject *__pyx_pf_10algorithms_5trafo_14correct_brown_affin(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_x, double __pyx_v_y, double __pyx_v_k1, double __pyx_v_k2, double __pyx_v_k3, double __pyx_v_p1, double __pyx_v_p2, double __pyx_v_scx, double __pyx_v_she); /* proto */
-static PyObject *__pyx_pf_10algorithms_5trafo_16correct_brown_affine_exact(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_x, double __pyx_v_y, double __pyx_v_k1, double __pyx_v_k2, double __pyx_v_k3, double __pyx_v_p1, double __pyx_v_p2, double __pyx_v_scx, double __pyx_v_she, double __pyx_v_tol); /* proto */
-static PyObject *__pyx_pf_10algorithms_5trafo_18flat_to_dist(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_flat_x, double __pyx_v_flat_y, double __pyx_v_xh, double __pyx_v_yh, double __pyx_v_k1, double __pyx_v_k2, double __pyx_v_k3, double __pyx_v_p1, double __pyx_v_p2, double __pyx_v_scx, double __pyx_v_she); /* proto */
-static PyObject *__pyx_pf_10algorithms_5trafo_20dist_to_flat(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_dist_x, double __pyx_v_dist_y, double __pyx_v_xh, double __pyx_v_yh, double __pyx_v_k1, double __pyx_v_k2, double __pyx_v_k3, double __pyx_v_p1, double __pyx_v_p2, double __pyx_v_scx, double __pyx_v_she, double __pyx_v_tol); /* proto */
-static PyObject *__pyx_pf_10algorithms_5trafo_22is_compiled(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
-static PyObject *__pyx_pf_10algorithms_5trafo_24correct_brown_affine_batch(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_xy, double __pyx_v_k1, double __pyx_v_k2, double __pyx_v_k3, double __pyx_v_p1, double __pyx_v_p2, double __pyx_v_scx, double __pyx_v_she); /* proto */
-static PyObject *__pyx_pf_10algorithms_5trafo_26distort_brown_affine_batch(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_xy, double __pyx_v_k1, double __pyx_v_k2, double __pyx_v_k3, double __pyx_v_p1, double __pyx_v_p2, double __pyx_v_scx, double __pyx_v_she); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_5trafo_old_pixel_to_metric(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_x_pixel, double __pyx_v_y_pixel, int __pyx_v_im_size_x, int __pyx_v_im_size_y, double __pyx_v_pix_size_x, double __pyx_v_pix_size_y, int __pyx_v_y_remap_mode); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_5trafo_2old_metric_to_pixel(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_x_metric, double __pyx_v_y_metric, int __pyx_v_im_size_x, int __pyx_v_im_size_y, double __pyx_v_pix_size_x, double __pyx_v_pix_size_y, int __pyx_v_y_remap_mode); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_5trafo_4pixel_to_metric(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_x_pixel, double __pyx_v_y_pixel, PyObject *__pyx_v_imx_or_cpar, int __pyx_v_imy, double __pyx_v_pix_x, double __pyx_v_pix_y, int __pyx_v_chfield); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_5trafo_6metric_to_pixel(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_x_metric, double __pyx_v_y_metric, PyObject *__pyx_v_imx_or_cpar, int __pyx_v_imy, double __pyx_v_pix_x, double __pyx_v_pix_y, int __pyx_v_chfield); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_5trafo_8pixel_to_metric_batch(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_xy, PyObject *__pyx_v_cpar); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_5trafo_10metric_to_pixel_batch(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_xy, PyObject *__pyx_v_cpar); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_5trafo_12distort_brown_affin(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_x, double __pyx_v_y, double __pyx_v_k1, double __pyx_v_k2, double __pyx_v_k3, double __pyx_v_p1, double __pyx_v_p2, double __pyx_v_scx, double __pyx_v_she); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_5trafo_14correct_brown_affin(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_x, double __pyx_v_y, double __pyx_v_k1, double __pyx_v_k2, double __pyx_v_k3, double __pyx_v_p1, double __pyx_v_p2, double __pyx_v_scx, double __pyx_v_she); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_5trafo_16correct_brown_affine_exact(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_x, double __pyx_v_y, double __pyx_v_k1, double __pyx_v_k2, double __pyx_v_k3, double __pyx_v_p1, double __pyx_v_p2, double __pyx_v_scx, double __pyx_v_she, double __pyx_v_tol); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_5trafo_18flat_to_dist(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_flat_x, double __pyx_v_flat_y, double __pyx_v_xh, double __pyx_v_yh, double __pyx_v_k1, double __pyx_v_k2, double __pyx_v_k3, double __pyx_v_p1, double __pyx_v_p2, double __pyx_v_scx, double __pyx_v_she); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_5trafo_20dist_to_flat(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_dist_x, double __pyx_v_dist_y, double __pyx_v_xh, double __pyx_v_yh, double __pyx_v_k1, double __pyx_v_k2, double __pyx_v_k3, double __pyx_v_p1, double __pyx_v_p2, double __pyx_v_scx, double __pyx_v_she, double __pyx_v_tol); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_5trafo_22is_compiled(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_5trafo_24correct_brown_affine_batch(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_xy, double __pyx_v_k1, double __pyx_v_k2, double __pyx_v_k3, double __pyx_v_p1, double __pyx_v_p2, double __pyx_v_scx, double __pyx_v_she); /* proto */
+static PyObject *__pyx_pf_8openptv2_10algorithms_5trafo_26distort_brown_affine_batch(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_xy, double __pyx_v_k1, double __pyx_v_k2, double __pyx_v_k3, double __pyx_v_p1, double __pyx_v_p2, double __pyx_v_scx, double __pyx_v_she); /* proto */
 static PyObject *__pyx_tp_new_array(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_tp_new_Enum(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_tp_new_memoryview(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
@@ -3204,24 +3204,24 @@ static __pyx_mstatetype * const __pyx_mstate_global = &__pyx_mstate_global_stati
 #define __pyx_kp_u__5 __pyx_string_tab[19]
 #define __pyx_kp_u__6 __pyx_string_tab[20]
 #define __pyx_kp_u_add_note __pyx_string_tab[21]
-#define __pyx_kp_u_algorithms_trafo_py __pyx_string_tab[22]
-#define __pyx_kp_u_and __pyx_string_tab[23]
-#define __pyx_kp_u_at_0x __pyx_string_tab[24]
-#define __pyx_kp_u_collections_abc __pyx_string_tab[25]
-#define __pyx_kp_u_contiguous_and_direct __pyx_string_tab[26]
-#define __pyx_kp_u_contiguous_and_indirect __pyx_string_tab[27]
-#define __pyx_kp_u_cython_double __pyx_string_tab[28]
-#define __pyx_kp_u_cython_double_2 __pyx_string_tab[29]
-#define __pyx_kp_u_cython_int __pyx_string_tab[30]
-#define __pyx_kp_u_disable __pyx_string_tab[31]
-#define __pyx_kp_u_enable __pyx_string_tab[32]
-#define __pyx_kp_u_gc __pyx_string_tab[33]
-#define __pyx_kp_u_got __pyx_string_tab[34]
-#define __pyx_kp_u_got_differing_extents_in_dimensi __pyx_string_tab[35]
-#define __pyx_kp_u_isenabled __pyx_string_tab[36]
-#define __pyx_kp_u_itemsize_0_for_cython_array __pyx_string_tab[37]
-#define __pyx_kp_u_no_default___reduce___due_to_non __pyx_string_tab[38]
-#define __pyx_kp_u_object __pyx_string_tab[39]
+#define __pyx_kp_u_and __pyx_string_tab[22]
+#define __pyx_kp_u_at_0x __pyx_string_tab[23]
+#define __pyx_kp_u_collections_abc __pyx_string_tab[24]
+#define __pyx_kp_u_contiguous_and_direct __pyx_string_tab[25]
+#define __pyx_kp_u_contiguous_and_indirect __pyx_string_tab[26]
+#define __pyx_kp_u_cython_double __pyx_string_tab[27]
+#define __pyx_kp_u_cython_double_2 __pyx_string_tab[28]
+#define __pyx_kp_u_cython_int __pyx_string_tab[29]
+#define __pyx_kp_u_disable __pyx_string_tab[30]
+#define __pyx_kp_u_enable __pyx_string_tab[31]
+#define __pyx_kp_u_gc __pyx_string_tab[32]
+#define __pyx_kp_u_got __pyx_string_tab[33]
+#define __pyx_kp_u_got_differing_extents_in_dimensi __pyx_string_tab[34]
+#define __pyx_kp_u_isenabled __pyx_string_tab[35]
+#define __pyx_kp_u_itemsize_0_for_cython_array __pyx_string_tab[36]
+#define __pyx_kp_u_no_default___reduce___due_to_non __pyx_string_tab[37]
+#define __pyx_kp_u_object __pyx_string_tab[38]
+#define __pyx_kp_u_src_openptv2_algorithms_trafo_py __pyx_string_tab[39]
 #define __pyx_kp_u_strided_and_direct __pyx_string_tab[40]
 #define __pyx_kp_u_strided_and_direct_or_indirect __pyx_string_tab[41]
 #define __pyx_kp_u_strided_and_indirect __pyx_string_tab[42]
@@ -3236,74 +3236,74 @@ static __pyx_mstatetype * const __pyx_mstate_global = &__pyx_mstate_global_stati
 #define __pyx_n_u_Sequence __pyx_string_tab[51]
 #define __pyx_n_u_View_MemoryView __pyx_string_tab[52]
 #define __pyx_n_u_abc __pyx_string_tab[53]
-#define __pyx_n_u_algorithms_trafo __pyx_string_tab[54]
-#define __pyx_n_u_allocate_buffer __pyx_string_tab[55]
-#define __pyx_n_u_asarray __pyx_string_tab[56]
-#define __pyx_n_u_asyncio_coroutines __pyx_string_tab[57]
-#define __pyx_n_u_base __pyx_string_tab[58]
-#define __pyx_n_u_bool __pyx_string_tab[59]
-#define __pyx_n_u_c __pyx_string_tab[60]
-#define __pyx_n_u_chfield __pyx_string_tab[61]
-#define __pyx_n_u_class __pyx_string_tab[62]
-#define __pyx_n_u_class_getitem __pyx_string_tab[63]
-#define __pyx_n_u_cline_in_traceback __pyx_string_tab[64]
-#define __pyx_n_u_correct_brown_affin __pyx_string_tab[65]
-#define __pyx_n_u_correct_brown_affine_batch __pyx_string_tab[66]
-#define __pyx_n_u_correct_brown_affine_exact __pyx_string_tab[67]
-#define __pyx_n_u_count __pyx_string_tab[68]
-#define __pyx_n_u_cpar __pyx_string_tab[69]
-#define __pyx_n_u_dict __pyx_string_tab[70]
-#define __pyx_n_u_dist_to_flat __pyx_string_tab[71]
-#define __pyx_n_u_dist_x __pyx_string_tab[72]
-#define __pyx_n_u_dist_y __pyx_string_tab[73]
-#define __pyx_n_u_distort_brown_affin __pyx_string_tab[74]
-#define __pyx_n_u_distort_brown_affine_batch __pyx_string_tab[75]
-#define __pyx_n_u_dtype __pyx_string_tab[76]
-#define __pyx_n_u_dtype_is_object __pyx_string_tab[77]
-#define __pyx_n_u_empty __pyx_string_tab[78]
-#define __pyx_n_u_empty_like __pyx_string_tab[79]
-#define __pyx_n_u_encode __pyx_string_tab[80]
-#define __pyx_n_u_enumerate __pyx_string_tab[81]
-#define __pyx_n_u_error __pyx_string_tab[82]
-#define __pyx_n_u_flags __pyx_string_tab[83]
-#define __pyx_n_u_flat_to_dist __pyx_string_tab[84]
-#define __pyx_n_u_flat_x __pyx_string_tab[85]
-#define __pyx_n_u_flat_y __pyx_string_tab[86]
-#define __pyx_n_u_float64 __pyx_string_tab[87]
-#define __pyx_n_u_format __pyx_string_tab[88]
-#define __pyx_n_u_fortran __pyx_string_tab[89]
-#define __pyx_n_u_func __pyx_string_tab[90]
-#define __pyx_n_u_getstate __pyx_string_tab[91]
-#define __pyx_n_u_id __pyx_string_tab[92]
-#define __pyx_n_u_im_size_x __pyx_string_tab[93]
-#define __pyx_n_u_im_size_y __pyx_string_tab[94]
-#define __pyx_n_u_import __pyx_string_tab[95]
-#define __pyx_n_u_imx __pyx_string_tab[96]
-#define __pyx_n_u_imx_or_cpar __pyx_string_tab[97]
-#define __pyx_n_u_imy __pyx_string_tab[98]
-#define __pyx_n_u_index __pyx_string_tab[99]
-#define __pyx_n_u_is_compiled __pyx_string_tab[100]
-#define __pyx_n_u_is_coroutine __pyx_string_tab[101]
-#define __pyx_n_u_items __pyx_string_tab[102]
-#define __pyx_n_u_itemsize __pyx_string_tab[103]
-#define __pyx_n_u_k1 __pyx_string_tab[104]
-#define __pyx_n_u_k2 __pyx_string_tab[105]
-#define __pyx_n_u_k3 __pyx_string_tab[106]
-#define __pyx_n_u_main __pyx_string_tab[107]
-#define __pyx_n_u_memview __pyx_string_tab[108]
-#define __pyx_n_u_metric_to_pixel __pyx_string_tab[109]
-#define __pyx_n_u_metric_to_pixel_batch __pyx_string_tab[110]
-#define __pyx_n_u_mode __pyx_string_tab[111]
-#define __pyx_n_u_module __pyx_string_tab[112]
-#define __pyx_n_u_name __pyx_string_tab[113]
-#define __pyx_n_u_name_2 __pyx_string_tab[114]
-#define __pyx_n_u_ndim __pyx_string_tab[115]
-#define __pyx_n_u_new __pyx_string_tab[116]
-#define __pyx_n_u_np __pyx_string_tab[117]
-#define __pyx_n_u_numpy __pyx_string_tab[118]
-#define __pyx_n_u_obj __pyx_string_tab[119]
-#define __pyx_n_u_old_metric_to_pixel __pyx_string_tab[120]
-#define __pyx_n_u_old_pixel_to_metric __pyx_string_tab[121]
+#define __pyx_n_u_allocate_buffer __pyx_string_tab[54]
+#define __pyx_n_u_asarray __pyx_string_tab[55]
+#define __pyx_n_u_asyncio_coroutines __pyx_string_tab[56]
+#define __pyx_n_u_base __pyx_string_tab[57]
+#define __pyx_n_u_bool __pyx_string_tab[58]
+#define __pyx_n_u_c __pyx_string_tab[59]
+#define __pyx_n_u_chfield __pyx_string_tab[60]
+#define __pyx_n_u_class __pyx_string_tab[61]
+#define __pyx_n_u_class_getitem __pyx_string_tab[62]
+#define __pyx_n_u_cline_in_traceback __pyx_string_tab[63]
+#define __pyx_n_u_correct_brown_affin __pyx_string_tab[64]
+#define __pyx_n_u_correct_brown_affine_batch __pyx_string_tab[65]
+#define __pyx_n_u_correct_brown_affine_exact __pyx_string_tab[66]
+#define __pyx_n_u_count __pyx_string_tab[67]
+#define __pyx_n_u_cpar __pyx_string_tab[68]
+#define __pyx_n_u_dict __pyx_string_tab[69]
+#define __pyx_n_u_dist_to_flat __pyx_string_tab[70]
+#define __pyx_n_u_dist_x __pyx_string_tab[71]
+#define __pyx_n_u_dist_y __pyx_string_tab[72]
+#define __pyx_n_u_distort_brown_affin __pyx_string_tab[73]
+#define __pyx_n_u_distort_brown_affine_batch __pyx_string_tab[74]
+#define __pyx_n_u_dtype __pyx_string_tab[75]
+#define __pyx_n_u_dtype_is_object __pyx_string_tab[76]
+#define __pyx_n_u_empty __pyx_string_tab[77]
+#define __pyx_n_u_empty_like __pyx_string_tab[78]
+#define __pyx_n_u_encode __pyx_string_tab[79]
+#define __pyx_n_u_enumerate __pyx_string_tab[80]
+#define __pyx_n_u_error __pyx_string_tab[81]
+#define __pyx_n_u_flags __pyx_string_tab[82]
+#define __pyx_n_u_flat_to_dist __pyx_string_tab[83]
+#define __pyx_n_u_flat_x __pyx_string_tab[84]
+#define __pyx_n_u_flat_y __pyx_string_tab[85]
+#define __pyx_n_u_float64 __pyx_string_tab[86]
+#define __pyx_n_u_format __pyx_string_tab[87]
+#define __pyx_n_u_fortran __pyx_string_tab[88]
+#define __pyx_n_u_func __pyx_string_tab[89]
+#define __pyx_n_u_getstate __pyx_string_tab[90]
+#define __pyx_n_u_id __pyx_string_tab[91]
+#define __pyx_n_u_im_size_x __pyx_string_tab[92]
+#define __pyx_n_u_im_size_y __pyx_string_tab[93]
+#define __pyx_n_u_import __pyx_string_tab[94]
+#define __pyx_n_u_imx __pyx_string_tab[95]
+#define __pyx_n_u_imx_or_cpar __pyx_string_tab[96]
+#define __pyx_n_u_imy __pyx_string_tab[97]
+#define __pyx_n_u_index __pyx_string_tab[98]
+#define __pyx_n_u_is_compiled __pyx_string_tab[99]
+#define __pyx_n_u_is_coroutine __pyx_string_tab[100]
+#define __pyx_n_u_items __pyx_string_tab[101]
+#define __pyx_n_u_itemsize __pyx_string_tab[102]
+#define __pyx_n_u_k1 __pyx_string_tab[103]
+#define __pyx_n_u_k2 __pyx_string_tab[104]
+#define __pyx_n_u_k3 __pyx_string_tab[105]
+#define __pyx_n_u_main __pyx_string_tab[106]
+#define __pyx_n_u_memview __pyx_string_tab[107]
+#define __pyx_n_u_metric_to_pixel __pyx_string_tab[108]
+#define __pyx_n_u_metric_to_pixel_batch __pyx_string_tab[109]
+#define __pyx_n_u_mode __pyx_string_tab[110]
+#define __pyx_n_u_module __pyx_string_tab[111]
+#define __pyx_n_u_name __pyx_string_tab[112]
+#define __pyx_n_u_name_2 __pyx_string_tab[113]
+#define __pyx_n_u_ndim __pyx_string_tab[114]
+#define __pyx_n_u_new __pyx_string_tab[115]
+#define __pyx_n_u_np __pyx_string_tab[116]
+#define __pyx_n_u_numpy __pyx_string_tab[117]
+#define __pyx_n_u_obj __pyx_string_tab[118]
+#define __pyx_n_u_old_metric_to_pixel __pyx_string_tab[119]
+#define __pyx_n_u_old_pixel_to_metric __pyx_string_tab[120]
+#define __pyx_n_u_openptv2_algorithms_trafo __pyx_string_tab[121]
 #define __pyx_n_u_p1 __pyx_string_tab[122]
 #define __pyx_n_u_p2 __pyx_string_tab[123]
 #define __pyx_n_u_pack __pyx_string_tab[124]
@@ -15938,7 +15938,7 @@ static PyObject *__pyx_unpickle_Enum__set_state(struct __pyx_MemviewEnum_obj *__
   return __pyx_r;
 }
 
-/* "algorithms/trafo.py":26
+/* "openptv2/algorithms/trafo.py":26
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -15946,14 +15946,14 @@ static PyObject *__pyx_unpickle_Enum__set_state(struct __pyx_MemviewEnum_obj *__
  *     x_pixel: cython.double,
 */
 
-static PyObject *__pyx_pw_10algorithms_5trafo_1old_pixel_to_metric(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5trafo_1old_pixel_to_metric(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_5trafo_old_pixel_to_metric(double __pyx_v_x_pixel, double __pyx_v_y_pixel, int __pyx_v_im_size_x, int __pyx_v_im_size_y, double __pyx_v_pix_size_x, double __pyx_v_pix_size_y, CYTHON_UNUSED int __pyx_skip_dispatch, struct __pyx_opt_args_10algorithms_5trafo_old_pixel_to_metric *__pyx_optional_args) {
+static PyObject *__pyx_f_8openptv2_10algorithms_5trafo_old_pixel_to_metric(double __pyx_v_x_pixel, double __pyx_v_y_pixel, int __pyx_v_im_size_x, int __pyx_v_im_size_y, double __pyx_v_pix_size_x, double __pyx_v_pix_size_y, CYTHON_UNUSED int __pyx_skip_dispatch, struct __pyx_opt_args_8openptv2_10algorithms_5trafo_old_pixel_to_metric *__pyx_optional_args) {
   int __pyx_v_y_remap_mode = ((int)0);
   double __pyx_v_x_metric;
   double __pyx_v_y_metric;
@@ -15973,7 +15973,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_old_pixel_to_metric(double __pyx_v_
     }
   }
 
-  /* "algorithms/trafo.py":48
+  /* "openptv2/algorithms/trafo.py":48
  *     """
  *     # Apply y remapping
  *     if y_remap_mode == DOUBLED_PLUS_ONE:             # <<<<<<<<<<<<<<
@@ -15991,7 +15991,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_old_pixel_to_metric(double __pyx_v_
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   if (__pyx_t_4) {
 
-    /* "algorithms/trafo.py":49
+    /* "openptv2/algorithms/trafo.py":49
  *     # Apply y remapping
  *     if y_remap_mode == DOUBLED_PLUS_ONE:
  *         y_pixel = 2.0 * y_pixel + 1.0             # <<<<<<<<<<<<<<
@@ -16000,7 +16000,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_old_pixel_to_metric(double __pyx_v_
 */
     __pyx_v_y_pixel = ((2.0 * __pyx_v_y_pixel) + 1.0);
 
-    /* "algorithms/trafo.py":48
+    /* "openptv2/algorithms/trafo.py":48
  *     """
  *     # Apply y remapping
  *     if y_remap_mode == DOUBLED_PLUS_ONE:             # <<<<<<<<<<<<<<
@@ -16010,7 +16010,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_old_pixel_to_metric(double __pyx_v_
     goto __pyx_L3;
   }
 
-  /* "algorithms/trafo.py":50
+  /* "openptv2/algorithms/trafo.py":50
  *     if y_remap_mode == DOUBLED_PLUS_ONE:
  *         y_pixel = 2.0 * y_pixel + 1.0
  *     elif y_remap_mode == DOUBLED:             # <<<<<<<<<<<<<<
@@ -16028,7 +16028,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_old_pixel_to_metric(double __pyx_v_
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   if (__pyx_t_4) {
 
-    /* "algorithms/trafo.py":51
+    /* "openptv2/algorithms/trafo.py":51
  *         y_pixel = 2.0 * y_pixel + 1.0
  *     elif y_remap_mode == DOUBLED:
  *         y_pixel = 2.0 * y_pixel             # <<<<<<<<<<<<<<
@@ -16037,7 +16037,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_old_pixel_to_metric(double __pyx_v_
 */
     __pyx_v_y_pixel = (2.0 * __pyx_v_y_pixel);
 
-    /* "algorithms/trafo.py":50
+    /* "openptv2/algorithms/trafo.py":50
  *     if y_remap_mode == DOUBLED_PLUS_ONE:
  *         y_pixel = 2.0 * y_pixel + 1.0
  *     elif y_remap_mode == DOUBLED:             # <<<<<<<<<<<<<<
@@ -16047,7 +16047,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_old_pixel_to_metric(double __pyx_v_
   }
   __pyx_L3:;
 
-  /* "algorithms/trafo.py":53
+  /* "openptv2/algorithms/trafo.py":53
  *         y_pixel = 2.0 * y_pixel
  * 
  *     x_metric: cython.double = (x_pixel - im_size_x / 2.0) * pix_size_x             # <<<<<<<<<<<<<<
@@ -16056,7 +16056,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_old_pixel_to_metric(double __pyx_v_
 */
   __pyx_v_x_metric = ((__pyx_v_x_pixel - (((double)__pyx_v_im_size_x) / 2.0)) * __pyx_v_pix_size_x);
 
-  /* "algorithms/trafo.py":54
+  /* "openptv2/algorithms/trafo.py":54
  * 
  *     x_metric: cython.double = (x_pixel - im_size_x / 2.0) * pix_size_x
  *     y_metric: cython.double = (im_size_y / 2.0 - y_pixel) * pix_size_y             # <<<<<<<<<<<<<<
@@ -16065,7 +16065,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_old_pixel_to_metric(double __pyx_v_
 */
   __pyx_v_y_metric = (((((double)__pyx_v_im_size_y) / 2.0) - __pyx_v_y_pixel) * __pyx_v_pix_size_y);
 
-  /* "algorithms/trafo.py":56
+  /* "openptv2/algorithms/trafo.py":56
  *     y_metric: cython.double = (im_size_y / 2.0 - y_pixel) * pix_size_y
  * 
  *     return x_metric, y_metric             # <<<<<<<<<<<<<<
@@ -16089,7 +16089,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_old_pixel_to_metric(double __pyx_v_
   __pyx_t_3 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/trafo.py":26
+  /* "openptv2/algorithms/trafo.py":26
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -16102,7 +16102,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_old_pixel_to_metric(double __pyx_v_
   __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3);
-  __Pyx_AddTraceback("algorithms.trafo.old_pixel_to_metric", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.trafo.old_pixel_to_metric", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -16111,16 +16111,16 @@ static PyObject *__pyx_f_10algorithms_5trafo_old_pixel_to_metric(double __pyx_v_
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_5trafo_1old_pixel_to_metric(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5trafo_1old_pixel_to_metric(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_5trafo_old_pixel_to_metric, "Convert pixel coordinates to metric coordinates.\n\n    Args:\n        x_pixel, y_pixel: input pixel coordinates.\n        im_size_x, im_size_y: image dimensions in pixels.\n        pix_size_x, pix_size_y: pixel size in mm.\n        y_remap_mode: 0=normal, 1=odd lines, 2=even lines (interlaced).\n\n    Returns:\n        (x_metric, y_metric) tuple.\n    ");
-static PyMethodDef __pyx_mdef_10algorithms_5trafo_1old_pixel_to_metric = {"old_pixel_to_metric", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_5trafo_1old_pixel_to_metric, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_5trafo_old_pixel_to_metric};
-static PyObject *__pyx_pw_10algorithms_5trafo_1old_pixel_to_metric(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_5trafo_old_pixel_to_metric, "Convert pixel coordinates to metric coordinates.\n\n    Args:\n        x_pixel, y_pixel: input pixel coordinates.\n        im_size_x, im_size_y: image dimensions in pixels.\n        pix_size_x, pix_size_y: pixel size in mm.\n        y_remap_mode: 0=normal, 1=odd lines, 2=even lines (interlaced).\n\n    Returns:\n        (x_metric, y_metric) tuple.\n    ");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_5trafo_1old_pixel_to_metric = {"old_pixel_to_metric", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_5trafo_1old_pixel_to_metric, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_5trafo_old_pixel_to_metric};
+static PyObject *__pyx_pw_8openptv2_10algorithms_5trafo_1old_pixel_to_metric(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -16239,11 +16239,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.trafo.old_pixel_to_metric", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.trafo.old_pixel_to_metric", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_5trafo_old_pixel_to_metric(__pyx_self, __pyx_v_x_pixel, __pyx_v_y_pixel, __pyx_v_im_size_x, __pyx_v_im_size_y, __pyx_v_pix_size_x, __pyx_v_pix_size_y, __pyx_v_y_remap_mode);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_5trafo_old_pixel_to_metric(__pyx_self, __pyx_v_x_pixel, __pyx_v_y_pixel, __pyx_v_im_size_x, __pyx_v_im_size_y, __pyx_v_pix_size_x, __pyx_v_pix_size_y, __pyx_v_y_remap_mode);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -16253,11 +16253,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_5trafo_old_pixel_to_metric(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_x_pixel, double __pyx_v_y_pixel, int __pyx_v_im_size_x, int __pyx_v_im_size_y, double __pyx_v_pix_size_x, double __pyx_v_pix_size_y, int __pyx_v_y_remap_mode) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_5trafo_old_pixel_to_metric(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_x_pixel, double __pyx_v_y_pixel, int __pyx_v_im_size_x, int __pyx_v_im_size_y, double __pyx_v_pix_size_x, double __pyx_v_pix_size_y, int __pyx_v_y_remap_mode) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
-  struct __pyx_opt_args_10algorithms_5trafo_old_pixel_to_metric __pyx_t_2;
+  struct __pyx_opt_args_8openptv2_10algorithms_5trafo_old_pixel_to_metric __pyx_t_2;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -16265,7 +16265,7 @@ static PyObject *__pyx_pf_10algorithms_5trafo_old_pixel_to_metric(CYTHON_UNUSED 
   __Pyx_XDECREF(__pyx_r);
   __pyx_t_2.__pyx_n = 1;
   __pyx_t_2.y_remap_mode = __pyx_v_y_remap_mode;
-  __pyx_t_1 = __pyx_f_10algorithms_5trafo_old_pixel_to_metric(__pyx_v_x_pixel, __pyx_v_y_pixel, __pyx_v_im_size_x, __pyx_v_im_size_y, __pyx_v_pix_size_x, __pyx_v_pix_size_y, 1, &__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 26, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_5trafo_old_pixel_to_metric(__pyx_v_x_pixel, __pyx_v_y_pixel, __pyx_v_im_size_x, __pyx_v_im_size_y, __pyx_v_pix_size_x, __pyx_v_pix_size_y, 1, &__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 26, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -16274,7 +16274,7 @@ static PyObject *__pyx_pf_10algorithms_5trafo_old_pixel_to_metric(CYTHON_UNUSED 
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.trafo.old_pixel_to_metric", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.trafo.old_pixel_to_metric", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -16282,7 +16282,7 @@ static PyObject *__pyx_pf_10algorithms_5trafo_old_pixel_to_metric(CYTHON_UNUSED 
   return __pyx_r;
 }
 
-/* "algorithms/trafo.py":59
+/* "openptv2/algorithms/trafo.py":59
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -16290,14 +16290,14 @@ static PyObject *__pyx_pf_10algorithms_5trafo_old_pixel_to_metric(CYTHON_UNUSED 
  *     x_metric: cython.double,
 */
 
-static PyObject *__pyx_pw_10algorithms_5trafo_3old_metric_to_pixel(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5trafo_3old_metric_to_pixel(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_5trafo_old_metric_to_pixel(double __pyx_v_x_metric, double __pyx_v_y_metric, int __pyx_v_im_size_x, int __pyx_v_im_size_y, double __pyx_v_pix_size_x, double __pyx_v_pix_size_y, CYTHON_UNUSED int __pyx_skip_dispatch, struct __pyx_opt_args_10algorithms_5trafo_old_metric_to_pixel *__pyx_optional_args) {
+static PyObject *__pyx_f_8openptv2_10algorithms_5trafo_old_metric_to_pixel(double __pyx_v_x_metric, double __pyx_v_y_metric, int __pyx_v_im_size_x, int __pyx_v_im_size_y, double __pyx_v_pix_size_x, double __pyx_v_pix_size_y, CYTHON_UNUSED int __pyx_skip_dispatch, struct __pyx_opt_args_8openptv2_10algorithms_5trafo_old_metric_to_pixel *__pyx_optional_args) {
   int __pyx_v_y_remap_mode = ((int)0);
   double __pyx_v_x_pixel;
   double __pyx_v_y_pixel;
@@ -16317,7 +16317,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_old_metric_to_pixel(double __pyx_v_
     }
   }
 
-  /* "algorithms/trafo.py":80
+  /* "openptv2/algorithms/trafo.py":80
  *         (x_pixel, y_pixel) tuple.
  *     """
  *     x_pixel: cython.double = x_metric / pix_size_x + im_size_x / 2.0             # <<<<<<<<<<<<<<
@@ -16326,7 +16326,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_old_metric_to_pixel(double __pyx_v_
 */
   __pyx_v_x_pixel = ((__pyx_v_x_metric / __pyx_v_pix_size_x) + (((double)__pyx_v_im_size_x) / 2.0));
 
-  /* "algorithms/trafo.py":81
+  /* "openptv2/algorithms/trafo.py":81
  *     """
  *     x_pixel: cython.double = x_metric / pix_size_x + im_size_x / 2.0
  *     y_pixel: cython.double = im_size_y / 2.0 - y_metric / pix_size_y             # <<<<<<<<<<<<<<
@@ -16335,7 +16335,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_old_metric_to_pixel(double __pyx_v_
 */
   __pyx_v_y_pixel = ((((double)__pyx_v_im_size_y) / 2.0) - (__pyx_v_y_metric / __pyx_v_pix_size_y));
 
-  /* "algorithms/trafo.py":84
+  /* "openptv2/algorithms/trafo.py":84
  * 
  *     # Apply y remapping (inverse)
  *     if y_remap_mode == DOUBLED_PLUS_ONE:             # <<<<<<<<<<<<<<
@@ -16353,7 +16353,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_old_metric_to_pixel(double __pyx_v_
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   if (__pyx_t_4) {
 
-    /* "algorithms/trafo.py":85
+    /* "openptv2/algorithms/trafo.py":85
  *     # Apply y remapping (inverse)
  *     if y_remap_mode == DOUBLED_PLUS_ONE:
  *         y_pixel = (y_pixel - 1.0) / 2.0             # <<<<<<<<<<<<<<
@@ -16362,7 +16362,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_old_metric_to_pixel(double __pyx_v_
 */
     __pyx_v_y_pixel = ((__pyx_v_y_pixel - 1.0) / 2.0);
 
-    /* "algorithms/trafo.py":84
+    /* "openptv2/algorithms/trafo.py":84
  * 
  *     # Apply y remapping (inverse)
  *     if y_remap_mode == DOUBLED_PLUS_ONE:             # <<<<<<<<<<<<<<
@@ -16372,7 +16372,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_old_metric_to_pixel(double __pyx_v_
     goto __pyx_L3;
   }
 
-  /* "algorithms/trafo.py":86
+  /* "openptv2/algorithms/trafo.py":86
  *     if y_remap_mode == DOUBLED_PLUS_ONE:
  *         y_pixel = (y_pixel - 1.0) / 2.0
  *     elif y_remap_mode == DOUBLED:             # <<<<<<<<<<<<<<
@@ -16390,7 +16390,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_old_metric_to_pixel(double __pyx_v_
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   if (__pyx_t_4) {
 
-    /* "algorithms/trafo.py":87
+    /* "openptv2/algorithms/trafo.py":87
  *         y_pixel = (y_pixel - 1.0) / 2.0
  *     elif y_remap_mode == DOUBLED:
  *         y_pixel = y_pixel / 2.0             # <<<<<<<<<<<<<<
@@ -16399,7 +16399,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_old_metric_to_pixel(double __pyx_v_
 */
     __pyx_v_y_pixel = (__pyx_v_y_pixel / 2.0);
 
-    /* "algorithms/trafo.py":86
+    /* "openptv2/algorithms/trafo.py":86
  *     if y_remap_mode == DOUBLED_PLUS_ONE:
  *         y_pixel = (y_pixel - 1.0) / 2.0
  *     elif y_remap_mode == DOUBLED:             # <<<<<<<<<<<<<<
@@ -16409,7 +16409,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_old_metric_to_pixel(double __pyx_v_
   }
   __pyx_L3:;
 
-  /* "algorithms/trafo.py":89
+  /* "openptv2/algorithms/trafo.py":89
  *         y_pixel = y_pixel / 2.0
  * 
  *     return x_pixel, y_pixel             # <<<<<<<<<<<<<<
@@ -16433,7 +16433,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_old_metric_to_pixel(double __pyx_v_
   __pyx_t_3 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/trafo.py":59
+  /* "openptv2/algorithms/trafo.py":59
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -16446,7 +16446,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_old_metric_to_pixel(double __pyx_v_
   __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3);
-  __Pyx_AddTraceback("algorithms.trafo.old_metric_to_pixel", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.trafo.old_metric_to_pixel", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -16455,16 +16455,16 @@ static PyObject *__pyx_f_10algorithms_5trafo_old_metric_to_pixel(double __pyx_v_
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_5trafo_3old_metric_to_pixel(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5trafo_3old_metric_to_pixel(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_5trafo_2old_metric_to_pixel, "Convert metric coordinates to pixel coordinates.\n\n    Args:\n        x_metric, y_metric: input metric coordinates.\n        im_size_x, im_size_y: image dimensions in pixels.\n        pix_size_x, pix_size_y: pixel size in mm.\n        y_remap_mode: 0=normal, 1=odd lines, 2=even lines (interlaced).\n\n    Returns:\n        (x_pixel, y_pixel) tuple.\n    ");
-static PyMethodDef __pyx_mdef_10algorithms_5trafo_3old_metric_to_pixel = {"old_metric_to_pixel", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_5trafo_3old_metric_to_pixel, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_5trafo_2old_metric_to_pixel};
-static PyObject *__pyx_pw_10algorithms_5trafo_3old_metric_to_pixel(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_5trafo_2old_metric_to_pixel, "Convert metric coordinates to pixel coordinates.\n\n    Args:\n        x_metric, y_metric: input metric coordinates.\n        im_size_x, im_size_y: image dimensions in pixels.\n        pix_size_x, pix_size_y: pixel size in mm.\n        y_remap_mode: 0=normal, 1=odd lines, 2=even lines (interlaced).\n\n    Returns:\n        (x_pixel, y_pixel) tuple.\n    ");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_5trafo_3old_metric_to_pixel = {"old_metric_to_pixel", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_5trafo_3old_metric_to_pixel, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_5trafo_2old_metric_to_pixel};
+static PyObject *__pyx_pw_8openptv2_10algorithms_5trafo_3old_metric_to_pixel(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -16583,11 +16583,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.trafo.old_metric_to_pixel", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.trafo.old_metric_to_pixel", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_5trafo_2old_metric_to_pixel(__pyx_self, __pyx_v_x_metric, __pyx_v_y_metric, __pyx_v_im_size_x, __pyx_v_im_size_y, __pyx_v_pix_size_x, __pyx_v_pix_size_y, __pyx_v_y_remap_mode);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_5trafo_2old_metric_to_pixel(__pyx_self, __pyx_v_x_metric, __pyx_v_y_metric, __pyx_v_im_size_x, __pyx_v_im_size_y, __pyx_v_pix_size_x, __pyx_v_pix_size_y, __pyx_v_y_remap_mode);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -16597,11 +16597,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_5trafo_2old_metric_to_pixel(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_x_metric, double __pyx_v_y_metric, int __pyx_v_im_size_x, int __pyx_v_im_size_y, double __pyx_v_pix_size_x, double __pyx_v_pix_size_y, int __pyx_v_y_remap_mode) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_5trafo_2old_metric_to_pixel(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_x_metric, double __pyx_v_y_metric, int __pyx_v_im_size_x, int __pyx_v_im_size_y, double __pyx_v_pix_size_x, double __pyx_v_pix_size_y, int __pyx_v_y_remap_mode) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
-  struct __pyx_opt_args_10algorithms_5trafo_old_metric_to_pixel __pyx_t_2;
+  struct __pyx_opt_args_8openptv2_10algorithms_5trafo_old_metric_to_pixel __pyx_t_2;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -16609,7 +16609,7 @@ static PyObject *__pyx_pf_10algorithms_5trafo_2old_metric_to_pixel(CYTHON_UNUSED
   __Pyx_XDECREF(__pyx_r);
   __pyx_t_2.__pyx_n = 1;
   __pyx_t_2.y_remap_mode = __pyx_v_y_remap_mode;
-  __pyx_t_1 = __pyx_f_10algorithms_5trafo_old_metric_to_pixel(__pyx_v_x_metric, __pyx_v_y_metric, __pyx_v_im_size_x, __pyx_v_im_size_y, __pyx_v_pix_size_x, __pyx_v_pix_size_y, 1, &__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 59, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_5trafo_old_metric_to_pixel(__pyx_v_x_metric, __pyx_v_y_metric, __pyx_v_im_size_x, __pyx_v_im_size_y, __pyx_v_pix_size_x, __pyx_v_pix_size_y, 1, &__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 59, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -16618,7 +16618,7 @@ static PyObject *__pyx_pf_10algorithms_5trafo_2old_metric_to_pixel(CYTHON_UNUSED
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.trafo.old_metric_to_pixel", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.trafo.old_metric_to_pixel", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -16626,7 +16626,7 @@ static PyObject *__pyx_pf_10algorithms_5trafo_2old_metric_to_pixel(CYTHON_UNUSED
   return __pyx_r;
 }
 
-/* "algorithms/trafo.py":92
+/* "openptv2/algorithms/trafo.py":92
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -16634,14 +16634,14 @@ static PyObject *__pyx_pf_10algorithms_5trafo_2old_metric_to_pixel(CYTHON_UNUSED
  *     x_pixel: cython.double,
 */
 
-static PyObject *__pyx_pw_10algorithms_5trafo_5pixel_to_metric(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5trafo_5pixel_to_metric(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_5trafo_pixel_to_metric(double __pyx_v_x_pixel, double __pyx_v_y_pixel, PyObject *__pyx_v_imx_or_cpar, CYTHON_UNUSED int __pyx_skip_dispatch, struct __pyx_opt_args_10algorithms_5trafo_pixel_to_metric *__pyx_optional_args) {
+static PyObject *__pyx_f_8openptv2_10algorithms_5trafo_pixel_to_metric(double __pyx_v_x_pixel, double __pyx_v_y_pixel, PyObject *__pyx_v_imx_or_cpar, CYTHON_UNUSED int __pyx_skip_dispatch, struct __pyx_opt_args_8openptv2_10algorithms_5trafo_pixel_to_metric *__pyx_optional_args) {
   int __pyx_v_imy = ((int)0);
   double __pyx_v_pix_x = ((double)0.0);
   double __pyx_v_pix_y = ((double)0.0);
@@ -16655,7 +16655,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_pixel_to_metric(double __pyx_v_x_pi
   double __pyx_t_5;
   double __pyx_t_6;
   int __pyx_t_7;
-  struct __pyx_opt_args_10algorithms_5trafo_old_pixel_to_metric __pyx_t_8;
+  struct __pyx_opt_args_8openptv2_10algorithms_5trafo_old_pixel_to_metric __pyx_t_8;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -16675,7 +16675,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_pixel_to_metric(double __pyx_v_x_pi
     }
   }
 
-  /* "algorithms/trafo.py":106
+  /* "openptv2/algorithms/trafo.py":106
  *     Accepts either (x, y, cpar) or (x, y, imx, imy, pix_x, pix_y, chfield).
  *     """
  *     if hasattr(imx_or_cpar, 'imx'):             # <<<<<<<<<<<<<<
@@ -16685,7 +16685,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_pixel_to_metric(double __pyx_v_x_pi
   __pyx_t_1 = __Pyx_HasAttr(__pyx_v_imx_or_cpar, __pyx_mstate_global->__pyx_n_u_imx); if (unlikely(__pyx_t_1 == ((int)-1))) __PYX_ERR(0, 106, __pyx_L1_error)
   if (__pyx_t_1) {
 
-    /* "algorithms/trafo.py":107
+    /* "openptv2/algorithms/trafo.py":107
  *     """
  *     if hasattr(imx_or_cpar, 'imx'):
  *         return old_pixel_to_metric(             # <<<<<<<<<<<<<<
@@ -16694,7 +16694,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_pixel_to_metric(double __pyx_v_x_pi
 */
     __Pyx_XDECREF(__pyx_r);
 
-    /* "algorithms/trafo.py":110
+    /* "openptv2/algorithms/trafo.py":110
  *             x_pixel,
  *             y_pixel,
  *             imx_or_cpar.imx,             # <<<<<<<<<<<<<<
@@ -16706,7 +16706,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_pixel_to_metric(double __pyx_v_x_pi
     __pyx_t_3 = __Pyx_PyLong_As_int(__pyx_t_2); if (unlikely((__pyx_t_3 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 110, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "algorithms/trafo.py":111
+    /* "openptv2/algorithms/trafo.py":111
  *             y_pixel,
  *             imx_or_cpar.imx,
  *             imx_or_cpar.imy,             # <<<<<<<<<<<<<<
@@ -16718,7 +16718,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_pixel_to_metric(double __pyx_v_x_pi
     __pyx_t_4 = __Pyx_PyLong_As_int(__pyx_t_2); if (unlikely((__pyx_t_4 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 111, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "algorithms/trafo.py":112
+    /* "openptv2/algorithms/trafo.py":112
  *             imx_or_cpar.imx,
  *             imx_or_cpar.imy,
  *             imx_or_cpar.pix_x,             # <<<<<<<<<<<<<<
@@ -16730,7 +16730,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_pixel_to_metric(double __pyx_v_x_pi
     __pyx_t_5 = __Pyx_PyFloat_AsDouble(__pyx_t_2); if (unlikely((__pyx_t_5 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 112, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "algorithms/trafo.py":113
+    /* "openptv2/algorithms/trafo.py":113
  *             imx_or_cpar.imy,
  *             imx_or_cpar.pix_x,
  *             imx_or_cpar.pix_y,             # <<<<<<<<<<<<<<
@@ -16742,7 +16742,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_pixel_to_metric(double __pyx_v_x_pi
     __pyx_t_6 = __Pyx_PyFloat_AsDouble(__pyx_t_2); if (unlikely((__pyx_t_6 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 113, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "algorithms/trafo.py":114
+    /* "openptv2/algorithms/trafo.py":114
  *             imx_or_cpar.pix_x,
  *             imx_or_cpar.pix_y,
  *             imx_or_cpar.chfield,             # <<<<<<<<<<<<<<
@@ -16754,7 +16754,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_pixel_to_metric(double __pyx_v_x_pi
     __pyx_t_7 = __Pyx_PyLong_As_int(__pyx_t_2); if (unlikely((__pyx_t_7 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 114, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "algorithms/trafo.py":107
+    /* "openptv2/algorithms/trafo.py":107
  *     """
  *     if hasattr(imx_or_cpar, 'imx'):
  *         return old_pixel_to_metric(             # <<<<<<<<<<<<<<
@@ -16763,13 +16763,13 @@ static PyObject *__pyx_f_10algorithms_5trafo_pixel_to_metric(double __pyx_v_x_pi
 */
     __pyx_t_8.__pyx_n = 1;
     __pyx_t_8.y_remap_mode = __pyx_t_7;
-    __pyx_t_2 = __pyx_f_10algorithms_5trafo_old_pixel_to_metric(__pyx_v_x_pixel, __pyx_v_y_pixel, __pyx_t_3, __pyx_t_4, __pyx_t_5, __pyx_t_6, 0, &__pyx_t_8); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 107, __pyx_L1_error)
+    __pyx_t_2 = __pyx_f_8openptv2_10algorithms_5trafo_old_pixel_to_metric(__pyx_v_x_pixel, __pyx_v_y_pixel, __pyx_t_3, __pyx_t_4, __pyx_t_5, __pyx_t_6, 0, &__pyx_t_8); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 107, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __pyx_r = ((PyObject*)__pyx_t_2);
     __pyx_t_2 = 0;
     goto __pyx_L0;
 
-    /* "algorithms/trafo.py":106
+    /* "openptv2/algorithms/trafo.py":106
  *     Accepts either (x, y, cpar) or (x, y, imx, imy, pix_x, pix_y, chfield).
  *     """
  *     if hasattr(imx_or_cpar, 'imx'):             # <<<<<<<<<<<<<<
@@ -16778,7 +16778,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_pixel_to_metric(double __pyx_v_x_pi
 */
   }
 
-  /* "algorithms/trafo.py":116
+  /* "openptv2/algorithms/trafo.py":116
  *             imx_or_cpar.chfield,
  *         )
  *     return old_pixel_to_metric(             # <<<<<<<<<<<<<<
@@ -16787,7 +16787,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_pixel_to_metric(double __pyx_v_x_pi
 */
   __Pyx_XDECREF(__pyx_r);
 
-  /* "algorithms/trafo.py":119
+  /* "openptv2/algorithms/trafo.py":119
  *         x_pixel,
  *         y_pixel,
  *         int(imx_or_cpar),             # <<<<<<<<<<<<<<
@@ -16799,7 +16799,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_pixel_to_metric(double __pyx_v_x_pi
   __pyx_t_7 = __Pyx_PyLong_As_int(__pyx_t_2); if (unlikely((__pyx_t_7 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 119, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/trafo.py":116
+  /* "openptv2/algorithms/trafo.py":116
  *             imx_or_cpar.chfield,
  *         )
  *     return old_pixel_to_metric(             # <<<<<<<<<<<<<<
@@ -16808,13 +16808,13 @@ static PyObject *__pyx_f_10algorithms_5trafo_pixel_to_metric(double __pyx_v_x_pi
 */
   __pyx_t_8.__pyx_n = 1;
   __pyx_t_8.y_remap_mode = __pyx_v_chfield;
-  __pyx_t_2 = __pyx_f_10algorithms_5trafo_old_pixel_to_metric(__pyx_v_x_pixel, __pyx_v_y_pixel, __pyx_t_7, __pyx_v_imy, __pyx_v_pix_x, __pyx_v_pix_y, 0, &__pyx_t_8); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 116, __pyx_L1_error)
+  __pyx_t_2 = __pyx_f_8openptv2_10algorithms_5trafo_old_pixel_to_metric(__pyx_v_x_pixel, __pyx_v_y_pixel, __pyx_t_7, __pyx_v_imy, __pyx_v_pix_x, __pyx_v_pix_y, 0, &__pyx_t_8); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 116, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_r = ((PyObject*)__pyx_t_2);
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/trafo.py":92
+  /* "openptv2/algorithms/trafo.py":92
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -16825,7 +16825,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_pixel_to_metric(double __pyx_v_x_pi
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_2);
-  __Pyx_AddTraceback("algorithms.trafo.pixel_to_metric", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.trafo.pixel_to_metric", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -16834,16 +16834,16 @@ static PyObject *__pyx_f_10algorithms_5trafo_pixel_to_metric(double __pyx_v_x_pi
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_5trafo_5pixel_to_metric(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5trafo_5pixel_to_metric(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_5trafo_4pixel_to_metric, "Convert pixel to metric coordinates.\n\n    Accepts either (x, y, cpar) or (x, y, imx, imy, pix_x, pix_y, chfield).\n    ");
-static PyMethodDef __pyx_mdef_10algorithms_5trafo_5pixel_to_metric = {"pixel_to_metric", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_5trafo_5pixel_to_metric, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_5trafo_4pixel_to_metric};
-static PyObject *__pyx_pw_10algorithms_5trafo_5pixel_to_metric(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_5trafo_4pixel_to_metric, "Convert pixel to metric coordinates.\n\n    Accepts either (x, y, cpar) or (x, y, imx, imy, pix_x, pix_y, chfield).\n    ");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_5trafo_5pixel_to_metric = {"pixel_to_metric", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_5trafo_5pixel_to_metric, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_5trafo_4pixel_to_metric};
+static PyObject *__pyx_pw_8openptv2_10algorithms_5trafo_5pixel_to_metric(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -16980,11 +16980,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.trafo.pixel_to_metric", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.trafo.pixel_to_metric", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_5trafo_4pixel_to_metric(__pyx_self, __pyx_v_x_pixel, __pyx_v_y_pixel, __pyx_v_imx_or_cpar, __pyx_v_imy, __pyx_v_pix_x, __pyx_v_pix_y, __pyx_v_chfield);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_5trafo_4pixel_to_metric(__pyx_self, __pyx_v_x_pixel, __pyx_v_y_pixel, __pyx_v_imx_or_cpar, __pyx_v_imy, __pyx_v_pix_x, __pyx_v_pix_y, __pyx_v_chfield);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -16994,11 +16994,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_5trafo_4pixel_to_metric(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_x_pixel, double __pyx_v_y_pixel, PyObject *__pyx_v_imx_or_cpar, int __pyx_v_imy, double __pyx_v_pix_x, double __pyx_v_pix_y, int __pyx_v_chfield) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_5trafo_4pixel_to_metric(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_x_pixel, double __pyx_v_y_pixel, PyObject *__pyx_v_imx_or_cpar, int __pyx_v_imy, double __pyx_v_pix_x, double __pyx_v_pix_y, int __pyx_v_chfield) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
-  struct __pyx_opt_args_10algorithms_5trafo_pixel_to_metric __pyx_t_2;
+  struct __pyx_opt_args_8openptv2_10algorithms_5trafo_pixel_to_metric __pyx_t_2;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -17009,7 +17009,7 @@ static PyObject *__pyx_pf_10algorithms_5trafo_4pixel_to_metric(CYTHON_UNUSED PyO
   __pyx_t_2.pix_x = __pyx_v_pix_x;
   __pyx_t_2.pix_y = __pyx_v_pix_y;
   __pyx_t_2.chfield = __pyx_v_chfield;
-  __pyx_t_1 = __pyx_f_10algorithms_5trafo_pixel_to_metric(__pyx_v_x_pixel, __pyx_v_y_pixel, __pyx_v_imx_or_cpar, 1, &__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 92, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_5trafo_pixel_to_metric(__pyx_v_x_pixel, __pyx_v_y_pixel, __pyx_v_imx_or_cpar, 1, &__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 92, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -17018,7 +17018,7 @@ static PyObject *__pyx_pf_10algorithms_5trafo_4pixel_to_metric(CYTHON_UNUSED PyO
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.trafo.pixel_to_metric", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.trafo.pixel_to_metric", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -17026,7 +17026,7 @@ static PyObject *__pyx_pf_10algorithms_5trafo_4pixel_to_metric(CYTHON_UNUSED PyO
   return __pyx_r;
 }
 
-/* "algorithms/trafo.py":127
+/* "openptv2/algorithms/trafo.py":127
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -17034,14 +17034,14 @@ static PyObject *__pyx_pf_10algorithms_5trafo_4pixel_to_metric(CYTHON_UNUSED PyO
  *     x_metric: cython.double,
 */
 
-static PyObject *__pyx_pw_10algorithms_5trafo_7metric_to_pixel(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5trafo_7metric_to_pixel(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_5trafo_metric_to_pixel(double __pyx_v_x_metric, double __pyx_v_y_metric, PyObject *__pyx_v_imx_or_cpar, CYTHON_UNUSED int __pyx_skip_dispatch, struct __pyx_opt_args_10algorithms_5trafo_metric_to_pixel *__pyx_optional_args) {
+static PyObject *__pyx_f_8openptv2_10algorithms_5trafo_metric_to_pixel(double __pyx_v_x_metric, double __pyx_v_y_metric, PyObject *__pyx_v_imx_or_cpar, CYTHON_UNUSED int __pyx_skip_dispatch, struct __pyx_opt_args_8openptv2_10algorithms_5trafo_metric_to_pixel *__pyx_optional_args) {
   int __pyx_v_imy = ((int)0);
   double __pyx_v_pix_x = ((double)0.0);
   double __pyx_v_pix_y = ((double)0.0);
@@ -17055,7 +17055,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_metric_to_pixel(double __pyx_v_x_me
   double __pyx_t_5;
   double __pyx_t_6;
   int __pyx_t_7;
-  struct __pyx_opt_args_10algorithms_5trafo_old_metric_to_pixel __pyx_t_8;
+  struct __pyx_opt_args_8openptv2_10algorithms_5trafo_old_metric_to_pixel __pyx_t_8;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -17075,7 +17075,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_metric_to_pixel(double __pyx_v_x_me
     }
   }
 
-  /* "algorithms/trafo.py":141
+  /* "openptv2/algorithms/trafo.py":141
  *     Accepts either (x, y, cpar) or (x, y, imx, imy, pix_x, pix_y, chfield).
  *     """
  *     if hasattr(imx_or_cpar, 'imx'):             # <<<<<<<<<<<<<<
@@ -17085,7 +17085,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_metric_to_pixel(double __pyx_v_x_me
   __pyx_t_1 = __Pyx_HasAttr(__pyx_v_imx_or_cpar, __pyx_mstate_global->__pyx_n_u_imx); if (unlikely(__pyx_t_1 == ((int)-1))) __PYX_ERR(0, 141, __pyx_L1_error)
   if (__pyx_t_1) {
 
-    /* "algorithms/trafo.py":142
+    /* "openptv2/algorithms/trafo.py":142
  *     """
  *     if hasattr(imx_or_cpar, 'imx'):
  *         return old_metric_to_pixel(             # <<<<<<<<<<<<<<
@@ -17094,7 +17094,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_metric_to_pixel(double __pyx_v_x_me
 */
     __Pyx_XDECREF(__pyx_r);
 
-    /* "algorithms/trafo.py":145
+    /* "openptv2/algorithms/trafo.py":145
  *             x_metric,
  *             y_metric,
  *             imx_or_cpar.imx,             # <<<<<<<<<<<<<<
@@ -17106,7 +17106,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_metric_to_pixel(double __pyx_v_x_me
     __pyx_t_3 = __Pyx_PyLong_As_int(__pyx_t_2); if (unlikely((__pyx_t_3 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 145, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "algorithms/trafo.py":146
+    /* "openptv2/algorithms/trafo.py":146
  *             y_metric,
  *             imx_or_cpar.imx,
  *             imx_or_cpar.imy,             # <<<<<<<<<<<<<<
@@ -17118,7 +17118,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_metric_to_pixel(double __pyx_v_x_me
     __pyx_t_4 = __Pyx_PyLong_As_int(__pyx_t_2); if (unlikely((__pyx_t_4 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 146, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "algorithms/trafo.py":147
+    /* "openptv2/algorithms/trafo.py":147
  *             imx_or_cpar.imx,
  *             imx_or_cpar.imy,
  *             imx_or_cpar.pix_x,             # <<<<<<<<<<<<<<
@@ -17130,7 +17130,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_metric_to_pixel(double __pyx_v_x_me
     __pyx_t_5 = __Pyx_PyFloat_AsDouble(__pyx_t_2); if (unlikely((__pyx_t_5 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 147, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "algorithms/trafo.py":148
+    /* "openptv2/algorithms/trafo.py":148
  *             imx_or_cpar.imy,
  *             imx_or_cpar.pix_x,
  *             imx_or_cpar.pix_y,             # <<<<<<<<<<<<<<
@@ -17142,7 +17142,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_metric_to_pixel(double __pyx_v_x_me
     __pyx_t_6 = __Pyx_PyFloat_AsDouble(__pyx_t_2); if (unlikely((__pyx_t_6 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 148, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "algorithms/trafo.py":149
+    /* "openptv2/algorithms/trafo.py":149
  *             imx_or_cpar.pix_x,
  *             imx_or_cpar.pix_y,
  *             imx_or_cpar.chfield,             # <<<<<<<<<<<<<<
@@ -17154,7 +17154,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_metric_to_pixel(double __pyx_v_x_me
     __pyx_t_7 = __Pyx_PyLong_As_int(__pyx_t_2); if (unlikely((__pyx_t_7 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 149, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "algorithms/trafo.py":142
+    /* "openptv2/algorithms/trafo.py":142
  *     """
  *     if hasattr(imx_or_cpar, 'imx'):
  *         return old_metric_to_pixel(             # <<<<<<<<<<<<<<
@@ -17163,13 +17163,13 @@ static PyObject *__pyx_f_10algorithms_5trafo_metric_to_pixel(double __pyx_v_x_me
 */
     __pyx_t_8.__pyx_n = 1;
     __pyx_t_8.y_remap_mode = __pyx_t_7;
-    __pyx_t_2 = __pyx_f_10algorithms_5trafo_old_metric_to_pixel(__pyx_v_x_metric, __pyx_v_y_metric, __pyx_t_3, __pyx_t_4, __pyx_t_5, __pyx_t_6, 0, &__pyx_t_8); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 142, __pyx_L1_error)
+    __pyx_t_2 = __pyx_f_8openptv2_10algorithms_5trafo_old_metric_to_pixel(__pyx_v_x_metric, __pyx_v_y_metric, __pyx_t_3, __pyx_t_4, __pyx_t_5, __pyx_t_6, 0, &__pyx_t_8); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 142, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __pyx_r = ((PyObject*)__pyx_t_2);
     __pyx_t_2 = 0;
     goto __pyx_L0;
 
-    /* "algorithms/trafo.py":141
+    /* "openptv2/algorithms/trafo.py":141
  *     Accepts either (x, y, cpar) or (x, y, imx, imy, pix_x, pix_y, chfield).
  *     """
  *     if hasattr(imx_or_cpar, 'imx'):             # <<<<<<<<<<<<<<
@@ -17178,7 +17178,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_metric_to_pixel(double __pyx_v_x_me
 */
   }
 
-  /* "algorithms/trafo.py":151
+  /* "openptv2/algorithms/trafo.py":151
  *             imx_or_cpar.chfield,
  *         )
  *     return old_metric_to_pixel(             # <<<<<<<<<<<<<<
@@ -17187,7 +17187,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_metric_to_pixel(double __pyx_v_x_me
 */
   __Pyx_XDECREF(__pyx_r);
 
-  /* "algorithms/trafo.py":154
+  /* "openptv2/algorithms/trafo.py":154
  *         x_metric,
  *         y_metric,
  *         int(imx_or_cpar),             # <<<<<<<<<<<<<<
@@ -17199,7 +17199,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_metric_to_pixel(double __pyx_v_x_me
   __pyx_t_7 = __Pyx_PyLong_As_int(__pyx_t_2); if (unlikely((__pyx_t_7 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 154, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "algorithms/trafo.py":151
+  /* "openptv2/algorithms/trafo.py":151
  *             imx_or_cpar.chfield,
  *         )
  *     return old_metric_to_pixel(             # <<<<<<<<<<<<<<
@@ -17208,13 +17208,13 @@ static PyObject *__pyx_f_10algorithms_5trafo_metric_to_pixel(double __pyx_v_x_me
 */
   __pyx_t_8.__pyx_n = 1;
   __pyx_t_8.y_remap_mode = __pyx_v_chfield;
-  __pyx_t_2 = __pyx_f_10algorithms_5trafo_old_metric_to_pixel(__pyx_v_x_metric, __pyx_v_y_metric, __pyx_t_7, __pyx_v_imy, __pyx_v_pix_x, __pyx_v_pix_y, 0, &__pyx_t_8); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 151, __pyx_L1_error)
+  __pyx_t_2 = __pyx_f_8openptv2_10algorithms_5trafo_old_metric_to_pixel(__pyx_v_x_metric, __pyx_v_y_metric, __pyx_t_7, __pyx_v_imy, __pyx_v_pix_x, __pyx_v_pix_y, 0, &__pyx_t_8); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 151, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_r = ((PyObject*)__pyx_t_2);
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/trafo.py":127
+  /* "openptv2/algorithms/trafo.py":127
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -17225,7 +17225,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_metric_to_pixel(double __pyx_v_x_me
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_2);
-  __Pyx_AddTraceback("algorithms.trafo.metric_to_pixel", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.trafo.metric_to_pixel", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -17234,16 +17234,16 @@ static PyObject *__pyx_f_10algorithms_5trafo_metric_to_pixel(double __pyx_v_x_me
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_5trafo_7metric_to_pixel(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5trafo_7metric_to_pixel(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_5trafo_6metric_to_pixel, "Convert metric to pixel coordinates.\n\n    Accepts either (x, y, cpar) or (x, y, imx, imy, pix_x, pix_y, chfield).\n    ");
-static PyMethodDef __pyx_mdef_10algorithms_5trafo_7metric_to_pixel = {"metric_to_pixel", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_5trafo_7metric_to_pixel, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_5trafo_6metric_to_pixel};
-static PyObject *__pyx_pw_10algorithms_5trafo_7metric_to_pixel(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_5trafo_6metric_to_pixel, "Convert metric to pixel coordinates.\n\n    Accepts either (x, y, cpar) or (x, y, imx, imy, pix_x, pix_y, chfield).\n    ");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_5trafo_7metric_to_pixel = {"metric_to_pixel", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_5trafo_7metric_to_pixel, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_5trafo_6metric_to_pixel};
+static PyObject *__pyx_pw_8openptv2_10algorithms_5trafo_7metric_to_pixel(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -17380,11 +17380,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.trafo.metric_to_pixel", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.trafo.metric_to_pixel", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_5trafo_6metric_to_pixel(__pyx_self, __pyx_v_x_metric, __pyx_v_y_metric, __pyx_v_imx_or_cpar, __pyx_v_imy, __pyx_v_pix_x, __pyx_v_pix_y, __pyx_v_chfield);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_5trafo_6metric_to_pixel(__pyx_self, __pyx_v_x_metric, __pyx_v_y_metric, __pyx_v_imx_or_cpar, __pyx_v_imy, __pyx_v_pix_x, __pyx_v_pix_y, __pyx_v_chfield);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -17394,11 +17394,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_5trafo_6metric_to_pixel(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_x_metric, double __pyx_v_y_metric, PyObject *__pyx_v_imx_or_cpar, int __pyx_v_imy, double __pyx_v_pix_x, double __pyx_v_pix_y, int __pyx_v_chfield) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_5trafo_6metric_to_pixel(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_x_metric, double __pyx_v_y_metric, PyObject *__pyx_v_imx_or_cpar, int __pyx_v_imy, double __pyx_v_pix_x, double __pyx_v_pix_y, int __pyx_v_chfield) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
-  struct __pyx_opt_args_10algorithms_5trafo_metric_to_pixel __pyx_t_2;
+  struct __pyx_opt_args_8openptv2_10algorithms_5trafo_metric_to_pixel __pyx_t_2;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -17409,7 +17409,7 @@ static PyObject *__pyx_pf_10algorithms_5trafo_6metric_to_pixel(CYTHON_UNUSED PyO
   __pyx_t_2.pix_x = __pyx_v_pix_x;
   __pyx_t_2.pix_y = __pyx_v_pix_y;
   __pyx_t_2.chfield = __pyx_v_chfield;
-  __pyx_t_1 = __pyx_f_10algorithms_5trafo_metric_to_pixel(__pyx_v_x_metric, __pyx_v_y_metric, __pyx_v_imx_or_cpar, 1, &__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 127, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_5trafo_metric_to_pixel(__pyx_v_x_metric, __pyx_v_y_metric, __pyx_v_imx_or_cpar, 1, &__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 127, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -17418,7 +17418,7 @@ static PyObject *__pyx_pf_10algorithms_5trafo_6metric_to_pixel(CYTHON_UNUSED PyO
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.trafo.metric_to_pixel", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.trafo.metric_to_pixel", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -17426,7 +17426,7 @@ static PyObject *__pyx_pf_10algorithms_5trafo_6metric_to_pixel(CYTHON_UNUSED PyO
   return __pyx_r;
 }
 
-/* "algorithms/trafo.py":162
+/* "openptv2/algorithms/trafo.py":162
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -17434,14 +17434,14 @@ static PyObject *__pyx_pf_10algorithms_5trafo_6metric_to_pixel(CYTHON_UNUSED PyO
  *     """Convert N pixel coordinates to metric.
 */
 
-static PyObject *__pyx_pw_10algorithms_5trafo_9pixel_to_metric_batch(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5trafo_9pixel_to_metric_batch(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_5trafo_pixel_to_metric_batch(PyObject *__pyx_v_xy, PyObject *__pyx_v_cpar, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_5trafo_pixel_to_metric_batch(PyObject *__pyx_v_xy, PyObject *__pyx_v_cpar, CYTHON_UNUSED int __pyx_skip_dispatch) {
   PyObject *__pyx_v_xy_arr = NULL;
   double __pyx_v_imx;
   double __pyx_v_imy;
@@ -17466,7 +17466,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_pixel_to_metric_batch(PyObject *__p
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("pixel_to_metric_batch", 0);
 
-  /* "algorithms/trafo.py":173
+  /* "openptv2/algorithms/trafo.py":173
  *         (N, 2) array of metric coordinates.
  *     """
  *     xy_arr = np.asarray(xy, dtype=np.float64)             # <<<<<<<<<<<<<<
@@ -17512,7 +17512,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_pixel_to_metric_batch(PyObject *__p
   __pyx_v_xy_arr = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/trafo.py":175
+  /* "openptv2/algorithms/trafo.py":175
  *     xy_arr = np.asarray(xy, dtype=np.float64)
  * 
  *     imx: cython.double = cpar.imx             # <<<<<<<<<<<<<<
@@ -17525,7 +17525,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_pixel_to_metric_batch(PyObject *__p
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_imx = __pyx_t_7;
 
-  /* "algorithms/trafo.py":176
+  /* "openptv2/algorithms/trafo.py":176
  * 
  *     imx: cython.double = cpar.imx
  *     imy: cython.double = cpar.imy             # <<<<<<<<<<<<<<
@@ -17538,7 +17538,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_pixel_to_metric_batch(PyObject *__p
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_imy = __pyx_t_7;
 
-  /* "algorithms/trafo.py":177
+  /* "openptv2/algorithms/trafo.py":177
  *     imx: cython.double = cpar.imx
  *     imy: cython.double = cpar.imy
  *     pix_x: cython.double = cpar.pix_x             # <<<<<<<<<<<<<<
@@ -17551,7 +17551,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_pixel_to_metric_batch(PyObject *__p
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_pix_x = __pyx_t_7;
 
-  /* "algorithms/trafo.py":178
+  /* "openptv2/algorithms/trafo.py":178
  *     imy: cython.double = cpar.imy
  *     pix_x: cython.double = cpar.pix_x
  *     pix_y: cython.double = cpar.pix_y             # <<<<<<<<<<<<<<
@@ -17564,7 +17564,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_pixel_to_metric_batch(PyObject *__p
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_pix_y = __pyx_t_7;
 
-  /* "algorithms/trafo.py":179
+  /* "openptv2/algorithms/trafo.py":179
  *     pix_x: cython.double = cpar.pix_x
  *     pix_y: cython.double = cpar.pix_y
  *     chfield: cython.int = cpar.chfield             # <<<<<<<<<<<<<<
@@ -17577,7 +17577,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_pixel_to_metric_batch(PyObject *__p
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_chfield = __pyx_t_8;
 
-  /* "algorithms/trafo.py":181
+  /* "openptv2/algorithms/trafo.py":181
  *     chfield: cython.int = cpar.chfield
  * 
  *     result = np.empty_like(xy_arr)             # <<<<<<<<<<<<<<
@@ -17613,7 +17613,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_pixel_to_metric_batch(PyObject *__p
   __pyx_v_result = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/trafo.py":182
+  /* "openptv2/algorithms/trafo.py":182
  * 
  *     result = np.empty_like(xy_arr)
  *     result[:, 0] = (xy_arr[:, 0] - imx / 2.0) * pix_x             # <<<<<<<<<<<<<<
@@ -17637,7 +17637,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_pixel_to_metric_batch(PyObject *__p
   if (unlikely((PyObject_SetItem(__pyx_v_result, __pyx_mstate_global->__pyx_tuple[1], __pyx_t_1) < 0))) __PYX_ERR(0, 182, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/trafo.py":184
+  /* "openptv2/algorithms/trafo.py":184
  *     result[:, 0] = (xy_arr[:, 0] - imx / 2.0) * pix_x
  * 
  *     if chfield == DOUBLED_PLUS_ONE:             # <<<<<<<<<<<<<<
@@ -17655,7 +17655,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_pixel_to_metric_batch(PyObject *__p
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   if (__pyx_t_9) {
 
-    /* "algorithms/trafo.py":185
+    /* "openptv2/algorithms/trafo.py":185
  * 
  *     if chfield == DOUBLED_PLUS_ONE:
  *         y_pixel = 2.0 * xy_arr[:, 1] + 1.0             # <<<<<<<<<<<<<<
@@ -17673,7 +17673,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_pixel_to_metric_batch(PyObject *__p
     __pyx_v_y_pixel = __pyx_t_4;
     __pyx_t_4 = 0;
 
-    /* "algorithms/trafo.py":184
+    /* "openptv2/algorithms/trafo.py":184
  *     result[:, 0] = (xy_arr[:, 0] - imx / 2.0) * pix_x
  * 
  *     if chfield == DOUBLED_PLUS_ONE:             # <<<<<<<<<<<<<<
@@ -17683,7 +17683,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_pixel_to_metric_batch(PyObject *__p
     goto __pyx_L3;
   }
 
-  /* "algorithms/trafo.py":186
+  /* "openptv2/algorithms/trafo.py":186
  *     if chfield == DOUBLED_PLUS_ONE:
  *         y_pixel = 2.0 * xy_arr[:, 1] + 1.0
  *     elif chfield == DOUBLED:             # <<<<<<<<<<<<<<
@@ -17701,7 +17701,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_pixel_to_metric_batch(PyObject *__p
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   if (__pyx_t_9) {
 
-    /* "algorithms/trafo.py":187
+    /* "openptv2/algorithms/trafo.py":187
  *         y_pixel = 2.0 * xy_arr[:, 1] + 1.0
  *     elif chfield == DOUBLED:
  *         y_pixel = 2.0 * xy_arr[:, 1]             # <<<<<<<<<<<<<<
@@ -17716,7 +17716,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_pixel_to_metric_batch(PyObject *__p
     __pyx_v_y_pixel = __pyx_t_5;
     __pyx_t_5 = 0;
 
-    /* "algorithms/trafo.py":186
+    /* "openptv2/algorithms/trafo.py":186
  *     if chfield == DOUBLED_PLUS_ONE:
  *         y_pixel = 2.0 * xy_arr[:, 1] + 1.0
  *     elif chfield == DOUBLED:             # <<<<<<<<<<<<<<
@@ -17726,7 +17726,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_pixel_to_metric_batch(PyObject *__p
     goto __pyx_L3;
   }
 
-  /* "algorithms/trafo.py":189
+  /* "openptv2/algorithms/trafo.py":189
  *         y_pixel = 2.0 * xy_arr[:, 1]
  *     else:
  *         y_pixel = xy_arr[:, 1]             # <<<<<<<<<<<<<<
@@ -17741,7 +17741,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_pixel_to_metric_batch(PyObject *__p
   }
   __pyx_L3:;
 
-  /* "algorithms/trafo.py":191
+  /* "openptv2/algorithms/trafo.py":191
  *         y_pixel = xy_arr[:, 1]
  * 
  *     result[:, 1] = (imy / 2.0 - y_pixel) * pix_y             # <<<<<<<<<<<<<<
@@ -17762,7 +17762,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_pixel_to_metric_batch(PyObject *__p
   if (unlikely((PyObject_SetItem(__pyx_v_result, __pyx_mstate_global->__pyx_tuple[2], __pyx_t_4) < 0))) __PYX_ERR(0, 191, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/trafo.py":192
+  /* "openptv2/algorithms/trafo.py":192
  * 
  *     result[:, 1] = (imy / 2.0 - y_pixel) * pix_y
  *     return result             # <<<<<<<<<<<<<<
@@ -17774,7 +17774,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_pixel_to_metric_batch(PyObject *__p
   __pyx_r = __pyx_v_result;
   goto __pyx_L0;
 
-  /* "algorithms/trafo.py":162
+  /* "openptv2/algorithms/trafo.py":162
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -17789,7 +17789,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_pixel_to_metric_batch(PyObject *__p
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_5);
-  __Pyx_AddTraceback("algorithms.trafo.pixel_to_metric_batch", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.trafo.pixel_to_metric_batch", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_xy_arr);
@@ -17801,16 +17801,16 @@ static PyObject *__pyx_f_10algorithms_5trafo_pixel_to_metric_batch(PyObject *__p
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_5trafo_9pixel_to_metric_batch(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5trafo_9pixel_to_metric_batch(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_5trafo_8pixel_to_metric_batch, "Convert N pixel coordinates to metric.\n\n    Args:\n        xy: (N, 2) array of pixel coordinates.\n        cpar: ControlPar with imx, imy, pix_x, pix_y, chfield.\n\n    Returns:\n        (N, 2) array of metric coordinates.\n    ");
-static PyMethodDef __pyx_mdef_10algorithms_5trafo_9pixel_to_metric_batch = {"pixel_to_metric_batch", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_5trafo_9pixel_to_metric_batch, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_5trafo_8pixel_to_metric_batch};
-static PyObject *__pyx_pw_10algorithms_5trafo_9pixel_to_metric_batch(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_5trafo_8pixel_to_metric_batch, "Convert N pixel coordinates to metric.\n\n    Args:\n        xy: (N, 2) array of pixel coordinates.\n        cpar: ControlPar with imx, imy, pix_x, pix_y, chfield.\n\n    Returns:\n        (N, 2) array of metric coordinates.\n    ");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_5trafo_9pixel_to_metric_batch = {"pixel_to_metric_batch", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_5trafo_9pixel_to_metric_batch, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_5trafo_8pixel_to_metric_batch};
+static PyObject *__pyx_pw_8openptv2_10algorithms_5trafo_9pixel_to_metric_batch(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -17880,11 +17880,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.trafo.pixel_to_metric_batch", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.trafo.pixel_to_metric_batch", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_5trafo_8pixel_to_metric_batch(__pyx_self, __pyx_v_xy, __pyx_v_cpar);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_5trafo_8pixel_to_metric_batch(__pyx_self, __pyx_v_xy, __pyx_v_cpar);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -17894,7 +17894,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_5trafo_8pixel_to_metric_batch(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_xy, PyObject *__pyx_v_cpar) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_5trafo_8pixel_to_metric_batch(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_xy, PyObject *__pyx_v_cpar) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -17903,7 +17903,7 @@ static PyObject *__pyx_pf_10algorithms_5trafo_8pixel_to_metric_batch(CYTHON_UNUS
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("pixel_to_metric_batch", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_5trafo_pixel_to_metric_batch(__pyx_v_xy, __pyx_v_cpar, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 162, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_5trafo_pixel_to_metric_batch(__pyx_v_xy, __pyx_v_cpar, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 162, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -17912,7 +17912,7 @@ static PyObject *__pyx_pf_10algorithms_5trafo_8pixel_to_metric_batch(CYTHON_UNUS
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.trafo.pixel_to_metric_batch", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.trafo.pixel_to_metric_batch", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -17920,7 +17920,7 @@ static PyObject *__pyx_pf_10algorithms_5trafo_8pixel_to_metric_batch(CYTHON_UNUS
   return __pyx_r;
 }
 
-/* "algorithms/trafo.py":195
+/* "openptv2/algorithms/trafo.py":195
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -17928,14 +17928,14 @@ static PyObject *__pyx_pf_10algorithms_5trafo_8pixel_to_metric_batch(CYTHON_UNUS
  *     """Convert N metric coordinates to pixel.
 */
 
-static PyObject *__pyx_pw_10algorithms_5trafo_11metric_to_pixel_batch(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5trafo_11metric_to_pixel_batch(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_5trafo_metric_to_pixel_batch(PyObject *__pyx_v_xy, PyObject *__pyx_v_cpar, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_5trafo_metric_to_pixel_batch(PyObject *__pyx_v_xy, PyObject *__pyx_v_cpar, CYTHON_UNUSED int __pyx_skip_dispatch) {
   PyObject *__pyx_v_xy_arr = NULL;
   double __pyx_v_imx;
   double __pyx_v_imy;
@@ -17960,7 +17960,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_metric_to_pixel_batch(PyObject *__p
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("metric_to_pixel_batch", 0);
 
-  /* "algorithms/trafo.py":206
+  /* "openptv2/algorithms/trafo.py":206
  *         (N, 2) array of pixel coordinates.
  *     """
  *     xy_arr = np.asarray(xy, dtype=np.float64)             # <<<<<<<<<<<<<<
@@ -18006,7 +18006,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_metric_to_pixel_batch(PyObject *__p
   __pyx_v_xy_arr = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/trafo.py":208
+  /* "openptv2/algorithms/trafo.py":208
  *     xy_arr = np.asarray(xy, dtype=np.float64)
  * 
  *     imx: cython.double = cpar.imx             # <<<<<<<<<<<<<<
@@ -18019,7 +18019,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_metric_to_pixel_batch(PyObject *__p
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_imx = __pyx_t_7;
 
-  /* "algorithms/trafo.py":209
+  /* "openptv2/algorithms/trafo.py":209
  * 
  *     imx: cython.double = cpar.imx
  *     imy: cython.double = cpar.imy             # <<<<<<<<<<<<<<
@@ -18032,7 +18032,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_metric_to_pixel_batch(PyObject *__p
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_imy = __pyx_t_7;
 
-  /* "algorithms/trafo.py":210
+  /* "openptv2/algorithms/trafo.py":210
  *     imx: cython.double = cpar.imx
  *     imy: cython.double = cpar.imy
  *     pix_x: cython.double = cpar.pix_x             # <<<<<<<<<<<<<<
@@ -18045,7 +18045,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_metric_to_pixel_batch(PyObject *__p
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_pix_x = __pyx_t_7;
 
-  /* "algorithms/trafo.py":211
+  /* "openptv2/algorithms/trafo.py":211
  *     imy: cython.double = cpar.imy
  *     pix_x: cython.double = cpar.pix_x
  *     pix_y: cython.double = cpar.pix_y             # <<<<<<<<<<<<<<
@@ -18058,7 +18058,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_metric_to_pixel_batch(PyObject *__p
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_pix_y = __pyx_t_7;
 
-  /* "algorithms/trafo.py":212
+  /* "openptv2/algorithms/trafo.py":212
  *     pix_x: cython.double = cpar.pix_x
  *     pix_y: cython.double = cpar.pix_y
  *     chfield: cython.int = cpar.chfield             # <<<<<<<<<<<<<<
@@ -18071,7 +18071,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_metric_to_pixel_batch(PyObject *__p
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_chfield = __pyx_t_8;
 
-  /* "algorithms/trafo.py":214
+  /* "openptv2/algorithms/trafo.py":214
  *     chfield: cython.int = cpar.chfield
  * 
  *     result = np.empty_like(xy_arr)             # <<<<<<<<<<<<<<
@@ -18107,7 +18107,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_metric_to_pixel_batch(PyObject *__p
   __pyx_v_result = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/trafo.py":215
+  /* "openptv2/algorithms/trafo.py":215
  * 
  *     result = np.empty_like(xy_arr)
  *     result[:, 0] = xy_arr[:, 0] / pix_x + imx / 2.0             # <<<<<<<<<<<<<<
@@ -18131,7 +18131,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_metric_to_pixel_batch(PyObject *__p
   if (unlikely((PyObject_SetItem(__pyx_v_result, __pyx_mstate_global->__pyx_tuple[1], __pyx_t_1) < 0))) __PYX_ERR(0, 215, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "algorithms/trafo.py":216
+  /* "openptv2/algorithms/trafo.py":216
  *     result = np.empty_like(xy_arr)
  *     result[:, 0] = xy_arr[:, 0] / pix_x + imx / 2.0
  *     y_pixel = imy / 2.0 - xy_arr[:, 1] / pix_y             # <<<<<<<<<<<<<<
@@ -18155,7 +18155,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_metric_to_pixel_batch(PyObject *__p
   __pyx_v_y_pixel = __pyx_t_4;
   __pyx_t_4 = 0;
 
-  /* "algorithms/trafo.py":218
+  /* "openptv2/algorithms/trafo.py":218
  *     y_pixel = imy / 2.0 - xy_arr[:, 1] / pix_y
  * 
  *     if chfield == DOUBLED_PLUS_ONE:             # <<<<<<<<<<<<<<
@@ -18173,7 +18173,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_metric_to_pixel_batch(PyObject *__p
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   if (__pyx_t_9) {
 
-    /* "algorithms/trafo.py":219
+    /* "openptv2/algorithms/trafo.py":219
  * 
  *     if chfield == DOUBLED_PLUS_ONE:
  *         y_pixel = (y_pixel - 1.0) / 2.0             # <<<<<<<<<<<<<<
@@ -18188,7 +18188,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_metric_to_pixel_batch(PyObject *__p
     __Pyx_DECREF_SET(__pyx_v_y_pixel, __pyx_t_3);
     __pyx_t_3 = 0;
 
-    /* "algorithms/trafo.py":218
+    /* "openptv2/algorithms/trafo.py":218
  *     y_pixel = imy / 2.0 - xy_arr[:, 1] / pix_y
  * 
  *     if chfield == DOUBLED_PLUS_ONE:             # <<<<<<<<<<<<<<
@@ -18198,7 +18198,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_metric_to_pixel_batch(PyObject *__p
     goto __pyx_L3;
   }
 
-  /* "algorithms/trafo.py":220
+  /* "openptv2/algorithms/trafo.py":220
  *     if chfield == DOUBLED_PLUS_ONE:
  *         y_pixel = (y_pixel - 1.0) / 2.0
  *     elif chfield == DOUBLED:             # <<<<<<<<<<<<<<
@@ -18216,7 +18216,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_metric_to_pixel_batch(PyObject *__p
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   if (__pyx_t_9) {
 
-    /* "algorithms/trafo.py":221
+    /* "openptv2/algorithms/trafo.py":221
  *         y_pixel = (y_pixel - 1.0) / 2.0
  *     elif chfield == DOUBLED:
  *         y_pixel = y_pixel / 2.0             # <<<<<<<<<<<<<<
@@ -18228,7 +18228,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_metric_to_pixel_batch(PyObject *__p
     __Pyx_DECREF_SET(__pyx_v_y_pixel, __pyx_t_4);
     __pyx_t_4 = 0;
 
-    /* "algorithms/trafo.py":220
+    /* "openptv2/algorithms/trafo.py":220
  *     if chfield == DOUBLED_PLUS_ONE:
  *         y_pixel = (y_pixel - 1.0) / 2.0
  *     elif chfield == DOUBLED:             # <<<<<<<<<<<<<<
@@ -18238,7 +18238,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_metric_to_pixel_batch(PyObject *__p
   }
   __pyx_L3:;
 
-  /* "algorithms/trafo.py":223
+  /* "openptv2/algorithms/trafo.py":223
  *         y_pixel = y_pixel / 2.0
  * 
  *     result[:, 1] = y_pixel             # <<<<<<<<<<<<<<
@@ -18247,7 +18247,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_metric_to_pixel_batch(PyObject *__p
 */
   if (unlikely((PyObject_SetItem(__pyx_v_result, __pyx_mstate_global->__pyx_tuple[2], __pyx_v_y_pixel) < 0))) __PYX_ERR(0, 223, __pyx_L1_error)
 
-  /* "algorithms/trafo.py":224
+  /* "openptv2/algorithms/trafo.py":224
  * 
  *     result[:, 1] = y_pixel
  *     return result             # <<<<<<<<<<<<<<
@@ -18259,7 +18259,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_metric_to_pixel_batch(PyObject *__p
   __pyx_r = __pyx_v_result;
   goto __pyx_L0;
 
-  /* "algorithms/trafo.py":195
+  /* "openptv2/algorithms/trafo.py":195
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -18274,7 +18274,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_metric_to_pixel_batch(PyObject *__p
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_5);
-  __Pyx_AddTraceback("algorithms.trafo.metric_to_pixel_batch", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.trafo.metric_to_pixel_batch", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_xy_arr);
@@ -18286,16 +18286,16 @@ static PyObject *__pyx_f_10algorithms_5trafo_metric_to_pixel_batch(PyObject *__p
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_5trafo_11metric_to_pixel_batch(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5trafo_11metric_to_pixel_batch(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_5trafo_10metric_to_pixel_batch, "Convert N metric coordinates to pixel.\n\n    Args:\n        xy: (N, 2) array of metric coordinates.\n        cpar: ControlPar with imx, imy, pix_x, pix_y, chfield.\n\n    Returns:\n        (N, 2) array of pixel coordinates.\n    ");
-static PyMethodDef __pyx_mdef_10algorithms_5trafo_11metric_to_pixel_batch = {"metric_to_pixel_batch", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_5trafo_11metric_to_pixel_batch, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_5trafo_10metric_to_pixel_batch};
-static PyObject *__pyx_pw_10algorithms_5trafo_11metric_to_pixel_batch(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_5trafo_10metric_to_pixel_batch, "Convert N metric coordinates to pixel.\n\n    Args:\n        xy: (N, 2) array of metric coordinates.\n        cpar: ControlPar with imx, imy, pix_x, pix_y, chfield.\n\n    Returns:\n        (N, 2) array of pixel coordinates.\n    ");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_5trafo_11metric_to_pixel_batch = {"metric_to_pixel_batch", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_5trafo_11metric_to_pixel_batch, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_5trafo_10metric_to_pixel_batch};
+static PyObject *__pyx_pw_8openptv2_10algorithms_5trafo_11metric_to_pixel_batch(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -18365,11 +18365,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.trafo.metric_to_pixel_batch", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.trafo.metric_to_pixel_batch", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_5trafo_10metric_to_pixel_batch(__pyx_self, __pyx_v_xy, __pyx_v_cpar);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_5trafo_10metric_to_pixel_batch(__pyx_self, __pyx_v_xy, __pyx_v_cpar);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -18379,7 +18379,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_5trafo_10metric_to_pixel_batch(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_xy, PyObject *__pyx_v_cpar) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_5trafo_10metric_to_pixel_batch(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_xy, PyObject *__pyx_v_cpar) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -18388,7 +18388,7 @@ static PyObject *__pyx_pf_10algorithms_5trafo_10metric_to_pixel_batch(CYTHON_UNU
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("metric_to_pixel_batch", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_5trafo_metric_to_pixel_batch(__pyx_v_xy, __pyx_v_cpar, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 195, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_5trafo_metric_to_pixel_batch(__pyx_v_xy, __pyx_v_cpar, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 195, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -18397,7 +18397,7 @@ static PyObject *__pyx_pf_10algorithms_5trafo_10metric_to_pixel_batch(CYTHON_UNU
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.trafo.metric_to_pixel_batch", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.trafo.metric_to_pixel_batch", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -18405,7 +18405,7 @@ static PyObject *__pyx_pf_10algorithms_5trafo_10metric_to_pixel_batch(CYTHON_UNU
   return __pyx_r;
 }
 
-/* "algorithms/trafo.py":228
+/* "openptv2/algorithms/trafo.py":228
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -18413,14 +18413,14 @@ static PyObject *__pyx_pf_10algorithms_5trafo_10metric_to_pixel_batch(CYTHON_UNU
  *     x: cython.double,
 */
 
-static PyObject *__pyx_pw_10algorithms_5trafo_13distort_brown_affin(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5trafo_13distort_brown_affin(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_5trafo_distort_brown_affin(double __pyx_v_x, double __pyx_v_y, double __pyx_v_k1, double __pyx_v_k2, double __pyx_v_k3, double __pyx_v_p1, double __pyx_v_p2, double __pyx_v_scx, double __pyx_v_she, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_5trafo_distort_brown_affin(double __pyx_v_x, double __pyx_v_y, double __pyx_v_k1, double __pyx_v_k2, double __pyx_v_k3, double __pyx_v_p1, double __pyx_v_p2, double __pyx_v_scx, double __pyx_v_she, CYTHON_UNUSED int __pyx_skip_dispatch) {
   double __pyx_v_r;
   double __pyx_v_r2;
   double __pyx_v_r4;
@@ -18443,7 +18443,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_distort_brown_affin(double __pyx_v_
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("distort_brown_affin", 0);
 
-  /* "algorithms/trafo.py":254
+  /* "openptv2/algorithms/trafo.py":254
  *         (x_distorted, y_distorted) tuple.
  *     """
  *     r: cython.double = c_sqrt(x * x + y * y)             # <<<<<<<<<<<<<<
@@ -18452,7 +18452,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_distort_brown_affin(double __pyx_v_
 */
   __pyx_v_r = sqrt(((__pyx_v_x * __pyx_v_x) + (__pyx_v_y * __pyx_v_y)));
 
-  /* "algorithms/trafo.py":256
+  /* "openptv2/algorithms/trafo.py":256
  *     r: cython.double = c_sqrt(x * x + y * y)
  * 
  *     if r < 1e-10:             # <<<<<<<<<<<<<<
@@ -18462,7 +18462,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_distort_brown_affin(double __pyx_v_
   __pyx_t_1 = (__pyx_v_r < 1e-10);
   if (__pyx_t_1) {
 
-    /* "algorithms/trafo.py":257
+    /* "openptv2/algorithms/trafo.py":257
  * 
  *     if r < 1e-10:
  *         return 0.0, 0.0             # <<<<<<<<<<<<<<
@@ -18474,7 +18474,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_distort_brown_affin(double __pyx_v_
     __pyx_r = __pyx_mstate_global->__pyx_tuple[3];
     goto __pyx_L0;
 
-    /* "algorithms/trafo.py":256
+    /* "openptv2/algorithms/trafo.py":256
  *     r: cython.double = c_sqrt(x * x + y * y)
  * 
  *     if r < 1e-10:             # <<<<<<<<<<<<<<
@@ -18483,7 +18483,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_distort_brown_affin(double __pyx_v_
 */
   }
 
-  /* "algorithms/trafo.py":259
+  /* "openptv2/algorithms/trafo.py":259
  *         return 0.0, 0.0
  * 
  *     r2: cython.double = r * r             # <<<<<<<<<<<<<<
@@ -18492,7 +18492,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_distort_brown_affin(double __pyx_v_
 */
   __pyx_v_r2 = (__pyx_v_r * __pyx_v_r);
 
-  /* "algorithms/trafo.py":260
+  /* "openptv2/algorithms/trafo.py":260
  * 
  *     r2: cython.double = r * r
  *     r4: cython.double = r2 * r2             # <<<<<<<<<<<<<<
@@ -18501,7 +18501,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_distort_brown_affin(double __pyx_v_
 */
   __pyx_v_r4 = (__pyx_v_r2 * __pyx_v_r2);
 
-  /* "algorithms/trafo.py":261
+  /* "openptv2/algorithms/trafo.py":261
  *     r2: cython.double = r * r
  *     r4: cython.double = r2 * r2
  *     r6: cython.double = r4 * r2             # <<<<<<<<<<<<<<
@@ -18510,7 +18510,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_distort_brown_affin(double __pyx_v_
 */
   __pyx_v_r6 = (__pyx_v_r4 * __pyx_v_r2);
 
-  /* "algorithms/trafo.py":262
+  /* "openptv2/algorithms/trafo.py":262
  *     r4: cython.double = r2 * r2
  *     r6: cython.double = r4 * r2
  *     radial_factor: cython.double = 1.0 + k1 * r2 + k2 * r4 + k3 * r6             # <<<<<<<<<<<<<<
@@ -18519,7 +18519,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_distort_brown_affin(double __pyx_v_
 */
   __pyx_v_radial_factor = (((1.0 + (__pyx_v_k1 * __pyx_v_r2)) + (__pyx_v_k2 * __pyx_v_r4)) + (__pyx_v_k3 * __pyx_v_r6));
 
-  /* "algorithms/trafo.py":264
+  /* "openptv2/algorithms/trafo.py":264
  *     radial_factor: cython.double = 1.0 + k1 * r2 + k2 * r4 + k3 * r6
  * 
  *     x_dist: cython.double = x * radial_factor + p1 * (r2 + 2.0 * x * x) + 2.0 * p2 * x * y             # <<<<<<<<<<<<<<
@@ -18528,7 +18528,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_distort_brown_affin(double __pyx_v_
 */
   __pyx_v_x_dist = (((__pyx_v_x * __pyx_v_radial_factor) + (__pyx_v_p1 * (__pyx_v_r2 + ((2.0 * __pyx_v_x) * __pyx_v_x)))) + (((2.0 * __pyx_v_p2) * __pyx_v_x) * __pyx_v_y));
 
-  /* "algorithms/trafo.py":265
+  /* "openptv2/algorithms/trafo.py":265
  * 
  *     x_dist: cython.double = x * radial_factor + p1 * (r2 + 2.0 * x * x) + 2.0 * p2 * x * y
  *     y_dist: cython.double = y * radial_factor + p2 * (r2 + 2.0 * y * y) + 2.0 * p1 * x * y             # <<<<<<<<<<<<<<
@@ -18537,7 +18537,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_distort_brown_affin(double __pyx_v_
 */
   __pyx_v_y_dist = (((__pyx_v_y * __pyx_v_radial_factor) + (__pyx_v_p2 * (__pyx_v_r2 + ((2.0 * __pyx_v_y) * __pyx_v_y)))) + (((2.0 * __pyx_v_p1) * __pyx_v_x) * __pyx_v_y));
 
-  /* "algorithms/trafo.py":267
+  /* "openptv2/algorithms/trafo.py":267
  *     y_dist: cython.double = y * radial_factor + p2 * (r2 + 2.0 * y * y) + 2.0 * p1 * x * y
  * 
  *     sin_she: cython.double = c_sin(she)             # <<<<<<<<<<<<<<
@@ -18546,7 +18546,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_distort_brown_affin(double __pyx_v_
 */
   __pyx_v_sin_she = sin(__pyx_v_she);
 
-  /* "algorithms/trafo.py":268
+  /* "openptv2/algorithms/trafo.py":268
  * 
  *     sin_she: cython.double = c_sin(she)
  *     cos_she: cython.double = c_cos(she)             # <<<<<<<<<<<<<<
@@ -18555,7 +18555,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_distort_brown_affin(double __pyx_v_
 */
   __pyx_v_cos_she = cos(__pyx_v_she);
 
-  /* "algorithms/trafo.py":270
+  /* "openptv2/algorithms/trafo.py":270
  *     cos_she: cython.double = c_cos(she)
  * 
  *     x1: cython.double = scx * (x_dist - sin_she * y_dist)             # <<<<<<<<<<<<<<
@@ -18564,7 +18564,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_distort_brown_affin(double __pyx_v_
 */
   __pyx_v_x1 = (__pyx_v_scx * (__pyx_v_x_dist - (__pyx_v_sin_she * __pyx_v_y_dist)));
 
-  /* "algorithms/trafo.py":271
+  /* "openptv2/algorithms/trafo.py":271
  * 
  *     x1: cython.double = scx * (x_dist - sin_she * y_dist)
  *     y1: cython.double = scx * cos_she * y_dist             # <<<<<<<<<<<<<<
@@ -18573,7 +18573,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_distort_brown_affin(double __pyx_v_
 */
   __pyx_v_y1 = ((__pyx_v_scx * __pyx_v_cos_she) * __pyx_v_y_dist);
 
-  /* "algorithms/trafo.py":273
+  /* "openptv2/algorithms/trafo.py":273
  *     y1: cython.double = scx * cos_she * y_dist
  * 
  *     return x1, y1             # <<<<<<<<<<<<<<
@@ -18597,7 +18597,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_distort_brown_affin(double __pyx_v_
   __pyx_t_4 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/trafo.py":228
+  /* "openptv2/algorithms/trafo.py":228
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -18610,7 +18610,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_distort_brown_affin(double __pyx_v_
   __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_4);
-  __Pyx_AddTraceback("algorithms.trafo.distort_brown_affin", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.trafo.distort_brown_affin", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -18619,16 +18619,16 @@ static PyObject *__pyx_f_10algorithms_5trafo_distort_brown_affin(double __pyx_v_
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_5trafo_13distort_brown_affin(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5trafo_13distort_brown_affin(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_5trafo_12distort_brown_affin, "Apply Brown distortion to undistorted metric coordinates.\n\n    Transforms ideal pinhole coordinates to real distorted image coordinates.\n\n    Args:\n        x, y: undistorted metric coordinates.\n        k1, k2, k3: radial distortion coefficients.\n        p1, p2: decentering distortion coefficients.\n        scx: scale factor.\n        she: shear angle.\n\n    Returns:\n        (x_distorted, y_distorted) tuple.\n    ");
-static PyMethodDef __pyx_mdef_10algorithms_5trafo_13distort_brown_affin = {"distort_brown_affin", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_5trafo_13distort_brown_affin, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_5trafo_12distort_brown_affin};
-static PyObject *__pyx_pw_10algorithms_5trafo_13distort_brown_affin(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_5trafo_12distort_brown_affin, "Apply Brown distortion to undistorted metric coordinates.\n\n    Transforms ideal pinhole coordinates to real distorted image coordinates.\n\n    Args:\n        x, y: undistorted metric coordinates.\n        k1, k2, k3: radial distortion coefficients.\n        p1, p2: decentering distortion coefficients.\n        scx: scale factor.\n        she: shear angle.\n\n    Returns:\n        (x_distorted, y_distorted) tuple.\n    ");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_5trafo_13distort_brown_affin = {"distort_brown_affin", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_5trafo_13distort_brown_affin, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_5trafo_12distort_brown_affin};
+static PyObject *__pyx_pw_8openptv2_10algorithms_5trafo_13distort_brown_affin(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -18754,11 +18754,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.trafo.distort_brown_affin", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.trafo.distort_brown_affin", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_5trafo_12distort_brown_affin(__pyx_self, __pyx_v_x, __pyx_v_y, __pyx_v_k1, __pyx_v_k2, __pyx_v_k3, __pyx_v_p1, __pyx_v_p2, __pyx_v_scx, __pyx_v_she);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_5trafo_12distort_brown_affin(__pyx_self, __pyx_v_x, __pyx_v_y, __pyx_v_k1, __pyx_v_k2, __pyx_v_k3, __pyx_v_p1, __pyx_v_p2, __pyx_v_scx, __pyx_v_she);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -18768,7 +18768,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_5trafo_12distort_brown_affin(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_x, double __pyx_v_y, double __pyx_v_k1, double __pyx_v_k2, double __pyx_v_k3, double __pyx_v_p1, double __pyx_v_p2, double __pyx_v_scx, double __pyx_v_she) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_5trafo_12distort_brown_affin(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_x, double __pyx_v_y, double __pyx_v_k1, double __pyx_v_k2, double __pyx_v_k3, double __pyx_v_p1, double __pyx_v_p2, double __pyx_v_scx, double __pyx_v_she) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -18777,7 +18777,7 @@ static PyObject *__pyx_pf_10algorithms_5trafo_12distort_brown_affin(CYTHON_UNUSE
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("distort_brown_affin", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_5trafo_distort_brown_affin(__pyx_v_x, __pyx_v_y, __pyx_v_k1, __pyx_v_k2, __pyx_v_k3, __pyx_v_p1, __pyx_v_p2, __pyx_v_scx, __pyx_v_she, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 228, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_5trafo_distort_brown_affin(__pyx_v_x, __pyx_v_y, __pyx_v_k1, __pyx_v_k2, __pyx_v_k3, __pyx_v_p1, __pyx_v_p2, __pyx_v_scx, __pyx_v_she, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 228, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -18786,7 +18786,7 @@ static PyObject *__pyx_pf_10algorithms_5trafo_12distort_brown_affin(CYTHON_UNUSE
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.trafo.distort_brown_affin", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.trafo.distort_brown_affin", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -18794,7 +18794,7 @@ static PyObject *__pyx_pf_10algorithms_5trafo_12distort_brown_affin(CYTHON_UNUSE
   return __pyx_r;
 }
 
-/* "algorithms/trafo.py":276
+/* "openptv2/algorithms/trafo.py":276
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -18802,14 +18802,14 @@ static PyObject *__pyx_pf_10algorithms_5trafo_12distort_brown_affin(CYTHON_UNUSE
  *     x: cython.double,
 */
 
-static PyObject *__pyx_pw_10algorithms_5trafo_15correct_brown_affin(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5trafo_15correct_brown_affin(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affin(double __pyx_v_x, double __pyx_v_y, double __pyx_v_k1, double __pyx_v_k2, double __pyx_v_k3, double __pyx_v_p1, double __pyx_v_p2, double __pyx_v_scx, double __pyx_v_she, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_5trafo_correct_brown_affin(double __pyx_v_x, double __pyx_v_y, double __pyx_v_k1, double __pyx_v_k2, double __pyx_v_k3, double __pyx_v_p1, double __pyx_v_p2, double __pyx_v_scx, double __pyx_v_she, CYTHON_UNUSED int __pyx_skip_dispatch) {
   double __pyx_v_sin_she;
   double __pyx_v_cos_she;
   double __pyx_v_inv_scx;
@@ -18845,7 +18845,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affin(double __pyx_v_
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("correct_brown_affin", 0);
 
-  /* "algorithms/trafo.py":300
+  /* "openptv2/algorithms/trafo.py":300
  *         (x_flat, y_flat) undistorted coordinates.
  *     """
  *     sin_she: cython.double = c_sin(she)             # <<<<<<<<<<<<<<
@@ -18854,7 +18854,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affin(double __pyx_v_
 */
   __pyx_v_sin_she = sin(__pyx_v_she);
 
-  /* "algorithms/trafo.py":301
+  /* "openptv2/algorithms/trafo.py":301
  *     """
  *     sin_she: cython.double = c_sin(she)
  *     cos_she: cython.double = c_cos(she)             # <<<<<<<<<<<<<<
@@ -18863,7 +18863,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affin(double __pyx_v_
 */
   __pyx_v_cos_she = cos(__pyx_v_she);
 
-  /* "algorithms/trafo.py":302
+  /* "openptv2/algorithms/trafo.py":302
  *     sin_she: cython.double = c_sin(she)
  *     cos_she: cython.double = c_cos(she)
  *     inv_scx: cython.double = 1.0 / scx             # <<<<<<<<<<<<<<
@@ -18872,7 +18872,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affin(double __pyx_v_
 */
   __pyx_v_inv_scx = (1.0 / __pyx_v_scx);
 
-  /* "algorithms/trafo.py":305
+  /* "openptv2/algorithms/trafo.py":305
  * 
  *     # Initial guess: inverse affine transformation
  *     xq: cython.double = x * inv_scx             # <<<<<<<<<<<<<<
@@ -18881,7 +18881,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affin(double __pyx_v_
 */
   __pyx_v_xq = (__pyx_v_x * __pyx_v_inv_scx);
 
-  /* "algorithms/trafo.py":306
+  /* "openptv2/algorithms/trafo.py":306
  *     # Initial guess: inverse affine transformation
  *     xq: cython.double = x * inv_scx
  *     yq: cython.double = y * inv_scx / cos_she             # <<<<<<<<<<<<<<
@@ -18890,7 +18890,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affin(double __pyx_v_
 */
   __pyx_v_yq = ((__pyx_v_y * __pyx_v_inv_scx) / __pyx_v_cos_she);
 
-  /* "algorithms/trafo.py":307
+  /* "openptv2/algorithms/trafo.py":307
  *     xq: cython.double = x * inv_scx
  *     yq: cython.double = y * inv_scx / cos_she
  *     xq += yq * sin_she             # <<<<<<<<<<<<<<
@@ -18899,7 +18899,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affin(double __pyx_v_
 */
   __pyx_v_xq = (__pyx_v_xq + (__pyx_v_yq * __pyx_v_sin_she));
 
-  /* "algorithms/trafo.py":309
+  /* "openptv2/algorithms/trafo.py":309
  *     xq += yq * sin_she
  * 
  *     max_iter: cython.int = 20             # <<<<<<<<<<<<<<
@@ -18908,7 +18908,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affin(double __pyx_v_
 */
   __pyx_v_max_iter = 20;
 
-  /* "algorithms/trafo.py":310
+  /* "openptv2/algorithms/trafo.py":310
  * 
  *     max_iter: cython.int = 20
  *     damping: cython.double = 0.7             # <<<<<<<<<<<<<<
@@ -18917,7 +18917,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affin(double __pyx_v_
 */
   __pyx_v_damping = 0.7;
 
-  /* "algorithms/trafo.py":311
+  /* "openptv2/algorithms/trafo.py":311
  *     max_iter: cython.int = 20
  *     damping: cython.double = 0.7
  *     tol: cython.double = 1e-8             # <<<<<<<<<<<<<<
@@ -18926,7 +18926,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affin(double __pyx_v_
 */
   __pyx_v_tol = 1e-8;
 
-  /* "algorithms/trafo.py":324
+  /* "openptv2/algorithms/trafo.py":324
  *     _: cython.int
  * 
  *     for _ in range(max_iter):             # <<<<<<<<<<<<<<
@@ -18938,7 +18938,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affin(double __pyx_v_
   for (__pyx_t_3 = 0; __pyx_t_3 < __pyx_t_2; __pyx_t_3+=1) {
     __pyx_v__ = __pyx_t_3;
 
-    /* "algorithms/trafo.py":325
+    /* "openptv2/algorithms/trafo.py":325
  * 
  *     for _ in range(max_iter):
  *         xq_old, yq_old = xq, yq             # <<<<<<<<<<<<<<
@@ -18950,19 +18950,19 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affin(double __pyx_v_
     __pyx_v_xq_old = __pyx_t_4;
     __pyx_v_yq_old = __pyx_t_5;
 
-    /* "algorithms/trafo.py":328
+    /* "openptv2/algorithms/trafo.py":328
  * 
  *         # Forward distort current guess
  *         temp = distort_brown_affin(xq, yq, k1, k2, k3, p1, p2, scx, she)             # <<<<<<<<<<<<<<
  *         xt = temp[0]
  *         yt = temp[1]
 */
-    __pyx_t_6 = __pyx_f_10algorithms_5trafo_distort_brown_affin(__pyx_v_xq, __pyx_v_yq, __pyx_v_k1, __pyx_v_k2, __pyx_v_k3, __pyx_v_p1, __pyx_v_p2, __pyx_v_scx, __pyx_v_she, 0); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 328, __pyx_L1_error)
+    __pyx_t_6 = __pyx_f_8openptv2_10algorithms_5trafo_distort_brown_affin(__pyx_v_xq, __pyx_v_yq, __pyx_v_k1, __pyx_v_k2, __pyx_v_k3, __pyx_v_p1, __pyx_v_p2, __pyx_v_scx, __pyx_v_she, 0); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 328, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __Pyx_XDECREF_SET(__pyx_v_temp, ((PyObject*)__pyx_t_6));
     __pyx_t_6 = 0;
 
-    /* "algorithms/trafo.py":329
+    /* "openptv2/algorithms/trafo.py":329
  *         # Forward distort current guess
  *         temp = distort_brown_affin(xq, yq, k1, k2, k3, p1, p2, scx, she)
  *         xt = temp[0]             # <<<<<<<<<<<<<<
@@ -18976,7 +18976,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affin(double __pyx_v_
     __pyx_t_5 = __Pyx_PyFloat_AsDouble(__Pyx_PyTuple_GET_ITEM(__pyx_v_temp, 0)); if (unlikely((__pyx_t_5 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 329, __pyx_L1_error)
     __pyx_v_xt = __pyx_t_5;
 
-    /* "algorithms/trafo.py":330
+    /* "openptv2/algorithms/trafo.py":330
  *         temp = distort_brown_affin(xq, yq, k1, k2, k3, p1, p2, scx, she)
  *         xt = temp[0]
  *         yt = temp[1]             # <<<<<<<<<<<<<<
@@ -18990,7 +18990,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affin(double __pyx_v_
     __pyx_t_5 = __Pyx_PyFloat_AsDouble(__Pyx_PyTuple_GET_ITEM(__pyx_v_temp, 1)); if (unlikely((__pyx_t_5 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 330, __pyx_L1_error)
     __pyx_v_yt = __pyx_t_5;
 
-    /* "algorithms/trafo.py":333
+    /* "openptv2/algorithms/trafo.py":333
  * 
  *         # Error
  *         dx = (x - xt) * inv_scx             # <<<<<<<<<<<<<<
@@ -18999,7 +18999,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affin(double __pyx_v_
 */
     __pyx_v_dx = ((__pyx_v_x - __pyx_v_xt) * __pyx_v_inv_scx);
 
-    /* "algorithms/trafo.py":334
+    /* "openptv2/algorithms/trafo.py":334
  *         # Error
  *         dx = (x - xt) * inv_scx
  *         dy = (y - yt) * inv_scx             # <<<<<<<<<<<<<<
@@ -19008,7 +19008,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affin(double __pyx_v_
 */
     __pyx_v_dy = ((__pyx_v_y - __pyx_v_yt) * __pyx_v_inv_scx);
 
-    /* "algorithms/trafo.py":337
+    /* "openptv2/algorithms/trafo.py":337
  * 
  *         # Update with damping
  *         xq += dx * damping             # <<<<<<<<<<<<<<
@@ -19017,7 +19017,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affin(double __pyx_v_
 */
     __pyx_v_xq = (__pyx_v_xq + (__pyx_v_dx * __pyx_v_damping));
 
-    /* "algorithms/trafo.py":338
+    /* "openptv2/algorithms/trafo.py":338
  *         # Update with damping
  *         xq += dx * damping
  *         yq += dy * damping             # <<<<<<<<<<<<<<
@@ -19026,7 +19026,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affin(double __pyx_v_
 */
     __pyx_v_yq = (__pyx_v_yq + (__pyx_v_dy * __pyx_v_damping));
 
-    /* "algorithms/trafo.py":341
+    /* "openptv2/algorithms/trafo.py":341
  * 
  *         # Check convergence
  *         change = c_sqrt((xq - xq_old) ** 2 + (yq - yq_old) ** 2)             # <<<<<<<<<<<<<<
@@ -19035,7 +19035,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affin(double __pyx_v_
 */
     __pyx_v_change = sqrt((pow((__pyx_v_xq - __pyx_v_xq_old), 2.0) + pow((__pyx_v_yq - __pyx_v_yq_old), 2.0)));
 
-    /* "algorithms/trafo.py":342
+    /* "openptv2/algorithms/trafo.py":342
  *         # Check convergence
  *         change = c_sqrt((xq - xq_old) ** 2 + (yq - yq_old) ** 2)
  *         pos_magnitude = c_sqrt(xq * xq + yq * yq)             # <<<<<<<<<<<<<<
@@ -19044,7 +19044,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affin(double __pyx_v_
 */
     __pyx_v_pos_magnitude = sqrt(((__pyx_v_xq * __pyx_v_xq) + (__pyx_v_yq * __pyx_v_yq)));
 
-    /* "algorithms/trafo.py":343
+    /* "openptv2/algorithms/trafo.py":343
  *         change = c_sqrt((xq - xq_old) ** 2 + (yq - yq_old) ** 2)
  *         pos_magnitude = c_sqrt(xq * xq + yq * yq)
  *         if pos_magnitude > 1e-10 and change / pos_magnitude < tol:             # <<<<<<<<<<<<<<
@@ -19062,7 +19062,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affin(double __pyx_v_
     __pyx_L6_bool_binop_done:;
     if (__pyx_t_7) {
 
-      /* "algorithms/trafo.py":344
+      /* "openptv2/algorithms/trafo.py":344
  *         pos_magnitude = c_sqrt(xq * xq + yq * yq)
  *         if pos_magnitude > 1e-10 and change / pos_magnitude < tol:
  *             break             # <<<<<<<<<<<<<<
@@ -19071,7 +19071,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affin(double __pyx_v_
 */
       goto __pyx_L4_break;
 
-      /* "algorithms/trafo.py":343
+      /* "openptv2/algorithms/trafo.py":343
  *         change = c_sqrt((xq - xq_old) ** 2 + (yq - yq_old) ** 2)
  *         pos_magnitude = c_sqrt(xq * xq + yq * yq)
  *         if pos_magnitude > 1e-10 and change / pos_magnitude < tol:             # <<<<<<<<<<<<<<
@@ -19082,7 +19082,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affin(double __pyx_v_
   }
   __pyx_L4_break:;
 
-  /* "algorithms/trafo.py":346
+  /* "openptv2/algorithms/trafo.py":346
  *             break
  * 
  *     return xq, yq             # <<<<<<<<<<<<<<
@@ -19106,7 +19106,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affin(double __pyx_v_
   __pyx_t_10 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/trafo.py":276
+  /* "openptv2/algorithms/trafo.py":276
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -19119,7 +19119,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affin(double __pyx_v_
   __Pyx_XDECREF(__pyx_t_6);
   __Pyx_XDECREF(__pyx_t_9);
   __Pyx_XDECREF(__pyx_t_10);
-  __Pyx_AddTraceback("algorithms.trafo.correct_brown_affin", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.trafo.correct_brown_affin", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_temp);
@@ -19129,16 +19129,16 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affin(double __pyx_v_
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_5trafo_15correct_brown_affin(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5trafo_15correct_brown_affin(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_5trafo_14correct_brown_affin, "Inverse Brown distortion (single iteration, for backward compatibility).\n\n    Args:\n        x, y: distorted metric coordinates.\n        k1, k2, k3: radial distortion coefficients.\n        p1, p2: decentering distortion coefficients.\n        scx: scale factor.\n        she: shear angle.\n\n    Returns:\n        (x_flat, y_flat) undistorted coordinates.\n    ");
-static PyMethodDef __pyx_mdef_10algorithms_5trafo_15correct_brown_affin = {"correct_brown_affin", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_5trafo_15correct_brown_affin, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_5trafo_14correct_brown_affin};
-static PyObject *__pyx_pw_10algorithms_5trafo_15correct_brown_affin(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_5trafo_14correct_brown_affin, "Inverse Brown distortion (single iteration, for backward compatibility).\n\n    Args:\n        x, y: distorted metric coordinates.\n        k1, k2, k3: radial distortion coefficients.\n        p1, p2: decentering distortion coefficients.\n        scx: scale factor.\n        she: shear angle.\n\n    Returns:\n        (x_flat, y_flat) undistorted coordinates.\n    ");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_5trafo_15correct_brown_affin = {"correct_brown_affin", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_5trafo_15correct_brown_affin, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_5trafo_14correct_brown_affin};
+static PyObject *__pyx_pw_8openptv2_10algorithms_5trafo_15correct_brown_affin(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -19264,11 +19264,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.trafo.correct_brown_affin", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.trafo.correct_brown_affin", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_5trafo_14correct_brown_affin(__pyx_self, __pyx_v_x, __pyx_v_y, __pyx_v_k1, __pyx_v_k2, __pyx_v_k3, __pyx_v_p1, __pyx_v_p2, __pyx_v_scx, __pyx_v_she);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_5trafo_14correct_brown_affin(__pyx_self, __pyx_v_x, __pyx_v_y, __pyx_v_k1, __pyx_v_k2, __pyx_v_k3, __pyx_v_p1, __pyx_v_p2, __pyx_v_scx, __pyx_v_she);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -19278,7 +19278,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_5trafo_14correct_brown_affin(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_x, double __pyx_v_y, double __pyx_v_k1, double __pyx_v_k2, double __pyx_v_k3, double __pyx_v_p1, double __pyx_v_p2, double __pyx_v_scx, double __pyx_v_she) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_5trafo_14correct_brown_affin(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_x, double __pyx_v_y, double __pyx_v_k1, double __pyx_v_k2, double __pyx_v_k3, double __pyx_v_p1, double __pyx_v_p2, double __pyx_v_scx, double __pyx_v_she) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -19287,7 +19287,7 @@ static PyObject *__pyx_pf_10algorithms_5trafo_14correct_brown_affin(CYTHON_UNUSE
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("correct_brown_affin", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_5trafo_correct_brown_affin(__pyx_v_x, __pyx_v_y, __pyx_v_k1, __pyx_v_k2, __pyx_v_k3, __pyx_v_p1, __pyx_v_p2, __pyx_v_scx, __pyx_v_she, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 276, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_5trafo_correct_brown_affin(__pyx_v_x, __pyx_v_y, __pyx_v_k1, __pyx_v_k2, __pyx_v_k3, __pyx_v_p1, __pyx_v_p2, __pyx_v_scx, __pyx_v_she, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 276, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -19296,7 +19296,7 @@ static PyObject *__pyx_pf_10algorithms_5trafo_14correct_brown_affin(CYTHON_UNUSE
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.trafo.correct_brown_affin", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.trafo.correct_brown_affin", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -19304,7 +19304,7 @@ static PyObject *__pyx_pf_10algorithms_5trafo_14correct_brown_affin(CYTHON_UNUSE
   return __pyx_r;
 }
 
-/* "algorithms/trafo.py":349
+/* "openptv2/algorithms/trafo.py":349
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -19312,14 +19312,14 @@ static PyObject *__pyx_pf_10algorithms_5trafo_14correct_brown_affin(CYTHON_UNUSE
  *     x: cython.double,
 */
 
-static PyObject *__pyx_pw_10algorithms_5trafo_17correct_brown_affine_exact(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5trafo_17correct_brown_affine_exact(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_exact(double __pyx_v_x, double __pyx_v_y, double __pyx_v_k1, double __pyx_v_k2, double __pyx_v_k3, double __pyx_v_p1, double __pyx_v_p2, double __pyx_v_scx, double __pyx_v_she, CYTHON_UNUSED int __pyx_skip_dispatch, struct __pyx_opt_args_10algorithms_5trafo_correct_brown_affine_exact *__pyx_optional_args) {
+static PyObject *__pyx_f_8openptv2_10algorithms_5trafo_correct_brown_affine_exact(double __pyx_v_x, double __pyx_v_y, double __pyx_v_k1, double __pyx_v_k2, double __pyx_v_k3, double __pyx_v_p1, double __pyx_v_p2, double __pyx_v_scx, double __pyx_v_she, CYTHON_UNUSED int __pyx_skip_dispatch, struct __pyx_opt_args_8openptv2_10algorithms_5trafo_correct_brown_affine_exact *__pyx_optional_args) {
   double __pyx_v_tol = ((double)1e-8);
   double __pyx_v_r_init;
   double __pyx_v_sin_she;
@@ -19359,7 +19359,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_exact(double _
     }
   }
 
-  /* "algorithms/trafo.py":375
+  /* "openptv2/algorithms/trafo.py":375
  *         (x_flat, y_flat) undistorted coordinates.
  *     """
  *     r_init: cython.double = c_sqrt(x * x + y * y)             # <<<<<<<<<<<<<<
@@ -19368,7 +19368,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_exact(double _
 */
   __pyx_v_r_init = sqrt(((__pyx_v_x * __pyx_v_x) + (__pyx_v_y * __pyx_v_y)));
 
-  /* "algorithms/trafo.py":377
+  /* "openptv2/algorithms/trafo.py":377
  *     r_init: cython.double = c_sqrt(x * x + y * y)
  * 
  *     if r_init < 1e-10:             # <<<<<<<<<<<<<<
@@ -19378,7 +19378,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_exact(double _
   __pyx_t_1 = (__pyx_v_r_init < 1e-10);
   if (__pyx_t_1) {
 
-    /* "algorithms/trafo.py":378
+    /* "openptv2/algorithms/trafo.py":378
  * 
  *     if r_init < 1e-10:
  *         return 0.0, 0.0             # <<<<<<<<<<<<<<
@@ -19390,7 +19390,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_exact(double _
     __pyx_r = __pyx_mstate_global->__pyx_tuple[3];
     goto __pyx_L0;
 
-    /* "algorithms/trafo.py":377
+    /* "openptv2/algorithms/trafo.py":377
  *     r_init: cython.double = c_sqrt(x * x + y * y)
  * 
  *     if r_init < 1e-10:             # <<<<<<<<<<<<<<
@@ -19399,7 +19399,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_exact(double _
 */
   }
 
-  /* "algorithms/trafo.py":380
+  /* "openptv2/algorithms/trafo.py":380
  *         return 0.0, 0.0
  * 
  *     sin_she: cython.double = c_sin(she)             # <<<<<<<<<<<<<<
@@ -19408,7 +19408,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_exact(double _
 */
   __pyx_v_sin_she = sin(__pyx_v_she);
 
-  /* "algorithms/trafo.py":381
+  /* "openptv2/algorithms/trafo.py":381
  * 
  *     sin_she: cython.double = c_sin(she)
  *     cos_she: cython.double = c_cos(she)             # <<<<<<<<<<<<<<
@@ -19417,7 +19417,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_exact(double _
 */
   __pyx_v_cos_she = cos(__pyx_v_she);
 
-  /* "algorithms/trafo.py":382
+  /* "openptv2/algorithms/trafo.py":382
  *     sin_she: cython.double = c_sin(she)
  *     cos_she: cython.double = c_cos(she)
  *     inv_scx: cython.double = 1.0 / scx             # <<<<<<<<<<<<<<
@@ -19426,7 +19426,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_exact(double _
 */
   __pyx_v_inv_scx = (1.0 / __pyx_v_scx);
 
-  /* "algorithms/trafo.py":385
+  /* "openptv2/algorithms/trafo.py":385
  * 
  *     # Initial guess: inverse affine transformation
  *     xq: cython.double = (x + y * sin_she) * inv_scx             # <<<<<<<<<<<<<<
@@ -19435,7 +19435,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_exact(double _
 */
   __pyx_v_xq = ((__pyx_v_x + (__pyx_v_y * __pyx_v_sin_she)) * __pyx_v_inv_scx);
 
-  /* "algorithms/trafo.py":386
+  /* "openptv2/algorithms/trafo.py":386
  *     # Initial guess: inverse affine transformation
  *     xq: cython.double = (x + y * sin_she) * inv_scx
  *     yq: cython.double = y / cos_she             # <<<<<<<<<<<<<<
@@ -19444,7 +19444,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_exact(double _
 */
   __pyx_v_yq = (__pyx_v_y / __pyx_v_cos_she);
 
-  /* "algorithms/trafo.py":388
+  /* "openptv2/algorithms/trafo.py":388
  *     yq: cython.double = y / cos_she
  * 
  *     max_iter: cython.int = 50             # <<<<<<<<<<<<<<
@@ -19453,7 +19453,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_exact(double _
 */
   __pyx_v_max_iter = 50;
 
-  /* "algorithms/trafo.py":389
+  /* "openptv2/algorithms/trafo.py":389
  * 
  *     max_iter: cython.int = 50
  *     damping: cython.double = 0.5             # <<<<<<<<<<<<<<
@@ -19462,7 +19462,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_exact(double _
 */
   __pyx_v_damping = 0.5;
 
-  /* "algorithms/trafo.py":403
+  /* "openptv2/algorithms/trafo.py":403
  *     _: cython.int
  * 
  *     for _ in range(max_iter):             # <<<<<<<<<<<<<<
@@ -19474,7 +19474,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_exact(double _
   for (__pyx_t_4 = 0; __pyx_t_4 < __pyx_t_3; __pyx_t_4+=1) {
     __pyx_v__ = __pyx_t_4;
 
-    /* "algorithms/trafo.py":404
+    /* "openptv2/algorithms/trafo.py":404
  * 
  *     for _ in range(max_iter):
  *         r2 = xq * xq + yq * yq             # <<<<<<<<<<<<<<
@@ -19483,7 +19483,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_exact(double _
 */
     __pyx_v_r2 = ((__pyx_v_xq * __pyx_v_xq) + (__pyx_v_yq * __pyx_v_yq));
 
-    /* "algorithms/trafo.py":405
+    /* "openptv2/algorithms/trafo.py":405
  *     for _ in range(max_iter):
  *         r2 = xq * xq + yq * yq
  *         r4 = r2 * r2             # <<<<<<<<<<<<<<
@@ -19492,7 +19492,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_exact(double _
 */
     __pyx_v_r4 = (__pyx_v_r2 * __pyx_v_r2);
 
-    /* "algorithms/trafo.py":406
+    /* "openptv2/algorithms/trafo.py":406
  *         r2 = xq * xq + yq * yq
  *         r4 = r2 * r2
  *         r6 = r4 * r2             # <<<<<<<<<<<<<<
@@ -19501,7 +19501,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_exact(double _
 */
     __pyx_v_r6 = (__pyx_v_r4 * __pyx_v_r2);
 
-    /* "algorithms/trafo.py":408
+    /* "openptv2/algorithms/trafo.py":408
  *         r6 = r4 * r2
  * 
  *         radial_factor = k1 * r2 + k2 * r4 + k3 * r6             # <<<<<<<<<<<<<<
@@ -19510,7 +19510,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_exact(double _
 */
     __pyx_v_radial_factor = (((__pyx_v_k1 * __pyx_v_r2) + (__pyx_v_k2 * __pyx_v_r4)) + (__pyx_v_k3 * __pyx_v_r6));
 
-    /* "algorithms/trafo.py":410
+    /* "openptv2/algorithms/trafo.py":410
  *         radial_factor = k1 * r2 + k2 * r4 + k3 * r6
  * 
  *         dx = xq * radial_factor + p1 * (r2 + 2.0 * xq * xq) + 2.0 * p2 * xq * yq             # <<<<<<<<<<<<<<
@@ -19519,7 +19519,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_exact(double _
 */
     __pyx_v_dx = (((__pyx_v_xq * __pyx_v_radial_factor) + (__pyx_v_p1 * (__pyx_v_r2 + ((2.0 * __pyx_v_xq) * __pyx_v_xq)))) + (((2.0 * __pyx_v_p2) * __pyx_v_xq) * __pyx_v_yq));
 
-    /* "algorithms/trafo.py":411
+    /* "openptv2/algorithms/trafo.py":411
  * 
  *         dx = xq * radial_factor + p1 * (r2 + 2.0 * xq * xq) + 2.0 * p2 * xq * yq
  *         dy = yq * radial_factor + p2 * (r2 + 2.0 * yq * yq) + 2.0 * p1 * xq * yq             # <<<<<<<<<<<<<<
@@ -19528,7 +19528,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_exact(double _
 */
     __pyx_v_dy = (((__pyx_v_yq * __pyx_v_radial_factor) + (__pyx_v_p2 * (__pyx_v_r2 + ((2.0 * __pyx_v_yq) * __pyx_v_yq)))) + (((2.0 * __pyx_v_p1) * __pyx_v_xq) * __pyx_v_yq));
 
-    /* "algorithms/trafo.py":413
+    /* "openptv2/algorithms/trafo.py":413
  *         dy = yq * radial_factor + p2 * (r2 + 2.0 * yq * yq) + 2.0 * p1 * xq * yq
  * 
  *         xq_new = (x + y * sin_she) * inv_scx - dx             # <<<<<<<<<<<<<<
@@ -19537,7 +19537,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_exact(double _
 */
     __pyx_v_xq_new = (((__pyx_v_x + (__pyx_v_y * __pyx_v_sin_she)) * __pyx_v_inv_scx) - __pyx_v_dx);
 
-    /* "algorithms/trafo.py":414
+    /* "openptv2/algorithms/trafo.py":414
  * 
  *         xq_new = (x + y * sin_she) * inv_scx - dx
  *         yq_new = y / cos_she - dy             # <<<<<<<<<<<<<<
@@ -19546,7 +19546,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_exact(double _
 */
     __pyx_v_yq_new = ((__pyx_v_y / __pyx_v_cos_she) - __pyx_v_dy);
 
-    /* "algorithms/trafo.py":416
+    /* "openptv2/algorithms/trafo.py":416
  *         yq_new = y / cos_she - dy
  * 
  *         dx_change = xq_new - xq             # <<<<<<<<<<<<<<
@@ -19555,7 +19555,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_exact(double _
 */
     __pyx_v_dx_change = (__pyx_v_xq_new - __pyx_v_xq);
 
-    /* "algorithms/trafo.py":417
+    /* "openptv2/algorithms/trafo.py":417
  * 
  *         dx_change = xq_new - xq
  *         dy_change = yq_new - yq             # <<<<<<<<<<<<<<
@@ -19564,7 +19564,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_exact(double _
 */
     __pyx_v_dy_change = (__pyx_v_yq_new - __pyx_v_yq);
 
-    /* "algorithms/trafo.py":419
+    /* "openptv2/algorithms/trafo.py":419
  *         dy_change = yq_new - yq
  * 
  *         xq += damping * dx_change             # <<<<<<<<<<<<<<
@@ -19573,7 +19573,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_exact(double _
 */
     __pyx_v_xq = (__pyx_v_xq + (__pyx_v_damping * __pyx_v_dx_change));
 
-    /* "algorithms/trafo.py":420
+    /* "openptv2/algorithms/trafo.py":420
  * 
  *         xq += damping * dx_change
  *         yq += damping * dy_change             # <<<<<<<<<<<<<<
@@ -19582,7 +19582,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_exact(double _
 */
     __pyx_v_yq = (__pyx_v_yq + (__pyx_v_damping * __pyx_v_dy_change));
 
-    /* "algorithms/trafo.py":422
+    /* "openptv2/algorithms/trafo.py":422
  *         yq += damping * dy_change
  * 
  *         if c_sqrt(dx_change ** 2 + dy_change ** 2) < tol:             # <<<<<<<<<<<<<<
@@ -19592,7 +19592,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_exact(double _
     __pyx_t_1 = (sqrt((pow(__pyx_v_dx_change, 2.0) + pow(__pyx_v_dy_change, 2.0))) < __pyx_v_tol);
     if (__pyx_t_1) {
 
-      /* "algorithms/trafo.py":423
+      /* "openptv2/algorithms/trafo.py":423
  * 
  *         if c_sqrt(dx_change ** 2 + dy_change ** 2) < tol:
  *             break             # <<<<<<<<<<<<<<
@@ -19601,7 +19601,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_exact(double _
 */
       goto __pyx_L5_break;
 
-      /* "algorithms/trafo.py":422
+      /* "openptv2/algorithms/trafo.py":422
  *         yq += damping * dy_change
  * 
  *         if c_sqrt(dx_change ** 2 + dy_change ** 2) < tol:             # <<<<<<<<<<<<<<
@@ -19612,7 +19612,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_exact(double _
   }
   __pyx_L5_break:;
 
-  /* "algorithms/trafo.py":425
+  /* "openptv2/algorithms/trafo.py":425
  *             break
  * 
  *     return xq, yq             # <<<<<<<<<<<<<<
@@ -19636,7 +19636,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_exact(double _
   __pyx_t_7 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/trafo.py":349
+  /* "openptv2/algorithms/trafo.py":349
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -19649,7 +19649,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_exact(double _
   __Pyx_XDECREF(__pyx_t_5);
   __Pyx_XDECREF(__pyx_t_6);
   __Pyx_XDECREF(__pyx_t_7);
-  __Pyx_AddTraceback("algorithms.trafo.correct_brown_affine_exact", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.trafo.correct_brown_affine_exact", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -19658,16 +19658,16 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_exact(double _
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_5trafo_17correct_brown_affine_exact(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5trafo_17correct_brown_affine_exact(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_5trafo_16correct_brown_affine_exact, "Iteratively solve inverse Brown distortion with full convergence.\n\n    Args:\n        x, y: distorted metric coordinates.\n        k1, k2, k3: radial distortion coefficients.\n        p1, p2: decentering distortion coefficients.\n        scx: scale factor.\n        she: shear angle.\n        tol: convergence tolerance.\n\n    Returns:\n        (x_flat, y_flat) undistorted coordinates.\n    ");
-static PyMethodDef __pyx_mdef_10algorithms_5trafo_17correct_brown_affine_exact = {"correct_brown_affine_exact", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_5trafo_17correct_brown_affine_exact, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_5trafo_16correct_brown_affine_exact};
-static PyObject *__pyx_pw_10algorithms_5trafo_17correct_brown_affine_exact(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_5trafo_16correct_brown_affine_exact, "Iteratively solve inverse Brown distortion with full convergence.\n\n    Args:\n        x, y: distorted metric coordinates.\n        k1, k2, k3: radial distortion coefficients.\n        p1, p2: decentering distortion coefficients.\n        scx: scale factor.\n        she: shear angle.\n        tol: convergence tolerance.\n\n    Returns:\n        (x_flat, y_flat) undistorted coordinates.\n    ");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_5trafo_17correct_brown_affine_exact = {"correct_brown_affine_exact", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_5trafo_17correct_brown_affine_exact, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_5trafo_16correct_brown_affine_exact};
+static PyObject *__pyx_pw_8openptv2_10algorithms_5trafo_17correct_brown_affine_exact(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -19810,11 +19810,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.trafo.correct_brown_affine_exact", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.trafo.correct_brown_affine_exact", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_5trafo_16correct_brown_affine_exact(__pyx_self, __pyx_v_x, __pyx_v_y, __pyx_v_k1, __pyx_v_k2, __pyx_v_k3, __pyx_v_p1, __pyx_v_p2, __pyx_v_scx, __pyx_v_she, __pyx_v_tol);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_5trafo_16correct_brown_affine_exact(__pyx_self, __pyx_v_x, __pyx_v_y, __pyx_v_k1, __pyx_v_k2, __pyx_v_k3, __pyx_v_p1, __pyx_v_p2, __pyx_v_scx, __pyx_v_she, __pyx_v_tol);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -19824,11 +19824,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_5trafo_16correct_brown_affine_exact(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_x, double __pyx_v_y, double __pyx_v_k1, double __pyx_v_k2, double __pyx_v_k3, double __pyx_v_p1, double __pyx_v_p2, double __pyx_v_scx, double __pyx_v_she, double __pyx_v_tol) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_5trafo_16correct_brown_affine_exact(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_x, double __pyx_v_y, double __pyx_v_k1, double __pyx_v_k2, double __pyx_v_k3, double __pyx_v_p1, double __pyx_v_p2, double __pyx_v_scx, double __pyx_v_she, double __pyx_v_tol) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
-  struct __pyx_opt_args_10algorithms_5trafo_correct_brown_affine_exact __pyx_t_2;
+  struct __pyx_opt_args_8openptv2_10algorithms_5trafo_correct_brown_affine_exact __pyx_t_2;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -19836,7 +19836,7 @@ static PyObject *__pyx_pf_10algorithms_5trafo_16correct_brown_affine_exact(CYTHO
   __Pyx_XDECREF(__pyx_r);
   __pyx_t_2.__pyx_n = 1;
   __pyx_t_2.tol = __pyx_v_tol;
-  __pyx_t_1 = __pyx_f_10algorithms_5trafo_correct_brown_affine_exact(__pyx_v_x, __pyx_v_y, __pyx_v_k1, __pyx_v_k2, __pyx_v_k3, __pyx_v_p1, __pyx_v_p2, __pyx_v_scx, __pyx_v_she, 1, &__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 349, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_5trafo_correct_brown_affine_exact(__pyx_v_x, __pyx_v_y, __pyx_v_k1, __pyx_v_k2, __pyx_v_k3, __pyx_v_p1, __pyx_v_p2, __pyx_v_scx, __pyx_v_she, 1, &__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 349, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -19845,7 +19845,7 @@ static PyObject *__pyx_pf_10algorithms_5trafo_16correct_brown_affine_exact(CYTHO
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.trafo.correct_brown_affine_exact", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.trafo.correct_brown_affine_exact", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -19853,7 +19853,7 @@ static PyObject *__pyx_pf_10algorithms_5trafo_16correct_brown_affine_exact(CYTHO
   return __pyx_r;
 }
 
-/* "algorithms/trafo.py":428
+/* "openptv2/algorithms/trafo.py":428
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -19861,14 +19861,14 @@ static PyObject *__pyx_pf_10algorithms_5trafo_16correct_brown_affine_exact(CYTHO
  *     flat_x: cython.double,
 */
 
-static PyObject *__pyx_pw_10algorithms_5trafo_19flat_to_dist(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5trafo_19flat_to_dist(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_5trafo_flat_to_dist(double __pyx_v_flat_x, double __pyx_v_flat_y, double __pyx_v_xh, double __pyx_v_yh, double __pyx_v_k1, double __pyx_v_k2, double __pyx_v_k3, double __pyx_v_p1, double __pyx_v_p2, double __pyx_v_scx, double __pyx_v_she, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_5trafo_flat_to_dist(double __pyx_v_flat_x, double __pyx_v_flat_y, double __pyx_v_xh, double __pyx_v_yh, double __pyx_v_k1, double __pyx_v_k2, double __pyx_v_k3, double __pyx_v_p1, double __pyx_v_p2, double __pyx_v_scx, double __pyx_v_she, CYTHON_UNUSED int __pyx_skip_dispatch) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -19877,7 +19877,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_flat_to_dist(double __pyx_v_flat_x,
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("flat_to_dist", 0);
 
-  /* "algorithms/trafo.py":453
+  /* "openptv2/algorithms/trafo.py":453
  *     """
  *     # Make coordinates relative to sensor center
  *     flat_x += xh             # <<<<<<<<<<<<<<
@@ -19886,7 +19886,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_flat_to_dist(double __pyx_v_flat_x,
 */
   __pyx_v_flat_x = (__pyx_v_flat_x + __pyx_v_xh);
 
-  /* "algorithms/trafo.py":454
+  /* "openptv2/algorithms/trafo.py":454
  *     # Make coordinates relative to sensor center
  *     flat_x += xh
  *     flat_y += yh             # <<<<<<<<<<<<<<
@@ -19895,7 +19895,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_flat_to_dist(double __pyx_v_flat_x,
 */
   __pyx_v_flat_y = (__pyx_v_flat_y + __pyx_v_yh);
 
-  /* "algorithms/trafo.py":456
+  /* "openptv2/algorithms/trafo.py":456
  *     flat_y += yh
  * 
  *     return distort_brown_affin(flat_x, flat_y, k1, k2, k3, p1, p2, scx, she)             # <<<<<<<<<<<<<<
@@ -19903,13 +19903,13 @@ static PyObject *__pyx_f_10algorithms_5trafo_flat_to_dist(double __pyx_v_flat_x,
  * 
 */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_5trafo_distort_brown_affin(__pyx_v_flat_x, __pyx_v_flat_y, __pyx_v_k1, __pyx_v_k2, __pyx_v_k3, __pyx_v_p1, __pyx_v_p2, __pyx_v_scx, __pyx_v_she, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 456, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_5trafo_distort_brown_affin(__pyx_v_flat_x, __pyx_v_flat_y, __pyx_v_k1, __pyx_v_k2, __pyx_v_k3, __pyx_v_p1, __pyx_v_p2, __pyx_v_scx, __pyx_v_she, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 456, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/trafo.py":428
+  /* "openptv2/algorithms/trafo.py":428
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -19920,7 +19920,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_flat_to_dist(double __pyx_v_flat_x,
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.trafo.flat_to_dist", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.trafo.flat_to_dist", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -19929,16 +19929,16 @@ static PyObject *__pyx_f_10algorithms_5trafo_flat_to_dist(double __pyx_v_flat_x,
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_5trafo_19flat_to_dist(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5trafo_19flat_to_dist(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_5trafo_18flat_to_dist, "Convert flat-image to distorted metric coordinates.\n\n    Args:\n        flat_x, flat_y: flat-image (undistorted, centered) coordinates.\n        xh, yh: principal point (sensor shift).\n        k1, k2, k3, p1, p2, scx, she: distortion parameters.\n\n    Returns:\n        (dist_x, dist_y) distorted metric coordinates.\n    ");
-static PyMethodDef __pyx_mdef_10algorithms_5trafo_19flat_to_dist = {"flat_to_dist", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_5trafo_19flat_to_dist, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_5trafo_18flat_to_dist};
-static PyObject *__pyx_pw_10algorithms_5trafo_19flat_to_dist(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_5trafo_18flat_to_dist, "Convert flat-image to distorted metric coordinates.\n\n    Args:\n        flat_x, flat_y: flat-image (undistorted, centered) coordinates.\n        xh, yh: principal point (sensor shift).\n        k1, k2, k3, p1, p2, scx, she: distortion parameters.\n\n    Returns:\n        (dist_x, dist_y) distorted metric coordinates.\n    ");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_5trafo_19flat_to_dist = {"flat_to_dist", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_5trafo_19flat_to_dist, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_5trafo_18flat_to_dist};
+static PyObject *__pyx_pw_8openptv2_10algorithms_5trafo_19flat_to_dist(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -20080,11 +20080,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.trafo.flat_to_dist", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.trafo.flat_to_dist", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_5trafo_18flat_to_dist(__pyx_self, __pyx_v_flat_x, __pyx_v_flat_y, __pyx_v_xh, __pyx_v_yh, __pyx_v_k1, __pyx_v_k2, __pyx_v_k3, __pyx_v_p1, __pyx_v_p2, __pyx_v_scx, __pyx_v_she);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_5trafo_18flat_to_dist(__pyx_self, __pyx_v_flat_x, __pyx_v_flat_y, __pyx_v_xh, __pyx_v_yh, __pyx_v_k1, __pyx_v_k2, __pyx_v_k3, __pyx_v_p1, __pyx_v_p2, __pyx_v_scx, __pyx_v_she);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -20094,7 +20094,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_5trafo_18flat_to_dist(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_flat_x, double __pyx_v_flat_y, double __pyx_v_xh, double __pyx_v_yh, double __pyx_v_k1, double __pyx_v_k2, double __pyx_v_k3, double __pyx_v_p1, double __pyx_v_p2, double __pyx_v_scx, double __pyx_v_she) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_5trafo_18flat_to_dist(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_flat_x, double __pyx_v_flat_y, double __pyx_v_xh, double __pyx_v_yh, double __pyx_v_k1, double __pyx_v_k2, double __pyx_v_k3, double __pyx_v_p1, double __pyx_v_p2, double __pyx_v_scx, double __pyx_v_she) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -20103,7 +20103,7 @@ static PyObject *__pyx_pf_10algorithms_5trafo_18flat_to_dist(CYTHON_UNUSED PyObj
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("flat_to_dist", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_10algorithms_5trafo_flat_to_dist(__pyx_v_flat_x, __pyx_v_flat_y, __pyx_v_xh, __pyx_v_yh, __pyx_v_k1, __pyx_v_k2, __pyx_v_k3, __pyx_v_p1, __pyx_v_p2, __pyx_v_scx, __pyx_v_she, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 428, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_5trafo_flat_to_dist(__pyx_v_flat_x, __pyx_v_flat_y, __pyx_v_xh, __pyx_v_yh, __pyx_v_k1, __pyx_v_k2, __pyx_v_k3, __pyx_v_p1, __pyx_v_p2, __pyx_v_scx, __pyx_v_she, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 428, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -20112,7 +20112,7 @@ static PyObject *__pyx_pf_10algorithms_5trafo_18flat_to_dist(CYTHON_UNUSED PyObj
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.trafo.flat_to_dist", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.trafo.flat_to_dist", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -20120,7 +20120,7 @@ static PyObject *__pyx_pf_10algorithms_5trafo_18flat_to_dist(CYTHON_UNUSED PyObj
   return __pyx_r;
 }
 
-/* "algorithms/trafo.py":459
+/* "openptv2/algorithms/trafo.py":459
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -20128,14 +20128,14 @@ static PyObject *__pyx_pf_10algorithms_5trafo_18flat_to_dist(CYTHON_UNUSED PyObj
  *     dist_x: cython.double,
 */
 
-static PyObject *__pyx_pw_10algorithms_5trafo_21dist_to_flat(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5trafo_21dist_to_flat(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_5trafo_dist_to_flat(double __pyx_v_dist_x, double __pyx_v_dist_y, double __pyx_v_xh, double __pyx_v_yh, double __pyx_v_k1, double __pyx_v_k2, double __pyx_v_k3, double __pyx_v_p1, double __pyx_v_p2, double __pyx_v_scx, double __pyx_v_she, CYTHON_UNUSED int __pyx_skip_dispatch, struct __pyx_opt_args_10algorithms_5trafo_dist_to_flat *__pyx_optional_args) {
+static PyObject *__pyx_f_8openptv2_10algorithms_5trafo_dist_to_flat(double __pyx_v_dist_x, double __pyx_v_dist_y, double __pyx_v_xh, double __pyx_v_yh, double __pyx_v_k1, double __pyx_v_k2, double __pyx_v_k3, double __pyx_v_p1, double __pyx_v_p2, double __pyx_v_scx, double __pyx_v_she, CYTHON_UNUSED int __pyx_skip_dispatch, struct __pyx_opt_args_8openptv2_10algorithms_5trafo_dist_to_flat *__pyx_optional_args) {
   double __pyx_v_tol = ((double)1e-8);
   double __pyx_v_flat_x;
   double __pyx_v_flat_y;
@@ -20143,7 +20143,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_dist_to_flat(double __pyx_v_dist_x,
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
-  struct __pyx_opt_args_10algorithms_5trafo_correct_brown_affine_exact __pyx_t_2;
+  struct __pyx_opt_args_8openptv2_10algorithms_5trafo_correct_brown_affine_exact __pyx_t_2;
   double __pyx_t_3;
   PyObject *__pyx_t_4 = NULL;
   PyObject *__pyx_t_5 = NULL;
@@ -20157,7 +20157,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_dist_to_flat(double __pyx_v_dist_x,
     }
   }
 
-  /* "algorithms/trafo.py":489
+  /* "openptv2/algorithms/trafo.py":489
  *     temp: tuple
  * 
  *     temp = correct_brown_affine_exact(             # <<<<<<<<<<<<<<
@@ -20166,12 +20166,12 @@ static PyObject *__pyx_f_10algorithms_5trafo_dist_to_flat(double __pyx_v_dist_x,
 */
   __pyx_t_2.__pyx_n = 1;
   __pyx_t_2.tol = __pyx_v_tol;
-  __pyx_t_1 = __pyx_f_10algorithms_5trafo_correct_brown_affine_exact(__pyx_v_dist_x, __pyx_v_dist_y, __pyx_v_k1, __pyx_v_k2, __pyx_v_k3, __pyx_v_p1, __pyx_v_p2, __pyx_v_scx, __pyx_v_she, 0, &__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 489, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_5trafo_correct_brown_affine_exact(__pyx_v_dist_x, __pyx_v_dist_y, __pyx_v_k1, __pyx_v_k2, __pyx_v_k3, __pyx_v_p1, __pyx_v_p2, __pyx_v_scx, __pyx_v_she, 0, &__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 489, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_v_temp = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "algorithms/trafo.py":492
+  /* "openptv2/algorithms/trafo.py":492
  *         dist_x, dist_y, k1, k2, k3, p1, p2, scx, she, tol
  *     )
  *     flat_x = temp[0]             # <<<<<<<<<<<<<<
@@ -20185,7 +20185,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_dist_to_flat(double __pyx_v_dist_x,
   __pyx_t_3 = __Pyx_PyFloat_AsDouble(__Pyx_PyTuple_GET_ITEM(__pyx_v_temp, 0)); if (unlikely((__pyx_t_3 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 492, __pyx_L1_error)
   __pyx_v_flat_x = __pyx_t_3;
 
-  /* "algorithms/trafo.py":493
+  /* "openptv2/algorithms/trafo.py":493
  *     )
  *     flat_x = temp[0]
  *     flat_y = temp[1]             # <<<<<<<<<<<<<<
@@ -20199,7 +20199,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_dist_to_flat(double __pyx_v_dist_x,
   __pyx_t_3 = __Pyx_PyFloat_AsDouble(__Pyx_PyTuple_GET_ITEM(__pyx_v_temp, 1)); if (unlikely((__pyx_t_3 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 493, __pyx_L1_error)
   __pyx_v_flat_y = __pyx_t_3;
 
-  /* "algorithms/trafo.py":494
+  /* "openptv2/algorithms/trafo.py":494
  *     flat_x = temp[0]
  *     flat_y = temp[1]
  *     return flat_x - xh, flat_y - yh             # <<<<<<<<<<<<<<
@@ -20223,7 +20223,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_dist_to_flat(double __pyx_v_dist_x,
   __pyx_t_5 = 0;
   goto __pyx_L0;
 
-  /* "algorithms/trafo.py":459
+  /* "openptv2/algorithms/trafo.py":459
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -20236,7 +20236,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_dist_to_flat(double __pyx_v_dist_x,
   __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_5);
-  __Pyx_AddTraceback("algorithms.trafo.dist_to_flat", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.trafo.dist_to_flat", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_temp);
@@ -20246,16 +20246,16 @@ static PyObject *__pyx_f_10algorithms_5trafo_dist_to_flat(double __pyx_v_dist_x,
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_5trafo_21dist_to_flat(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5trafo_21dist_to_flat(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_5trafo_20dist_to_flat, "Convert distorted metric to flat-image coordinates.\n\n    Args:\n        dist_x, dist_y: distorted metric coordinates.\n        xh, yh: principal point (sensor shift).\n        k1, k2, k3, p1, p2, scx, she: distortion parameters.\n        tol: convergence tolerance.\n\n    Returns:\n        (flat_x, flat_y) flat-image coordinates.\n    ");
-static PyMethodDef __pyx_mdef_10algorithms_5trafo_21dist_to_flat = {"dist_to_flat", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_5trafo_21dist_to_flat, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10algorithms_5trafo_20dist_to_flat};
-static PyObject *__pyx_pw_10algorithms_5trafo_21dist_to_flat(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_5trafo_20dist_to_flat, "Convert distorted metric to flat-image coordinates.\n\n    Args:\n        dist_x, dist_y: distorted metric coordinates.\n        xh, yh: principal point (sensor shift).\n        k1, k2, k3, p1, p2, scx, she: distortion parameters.\n        tol: convergence tolerance.\n\n    Returns:\n        (flat_x, flat_y) flat-image coordinates.\n    ");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_5trafo_21dist_to_flat = {"dist_to_flat", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_5trafo_21dist_to_flat, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_8openptv2_10algorithms_5trafo_20dist_to_flat};
+static PyObject *__pyx_pw_8openptv2_10algorithms_5trafo_21dist_to_flat(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -20414,11 +20414,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("algorithms.trafo.dist_to_flat", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.trafo.dist_to_flat", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10algorithms_5trafo_20dist_to_flat(__pyx_self, __pyx_v_dist_x, __pyx_v_dist_y, __pyx_v_xh, __pyx_v_yh, __pyx_v_k1, __pyx_v_k2, __pyx_v_k3, __pyx_v_p1, __pyx_v_p2, __pyx_v_scx, __pyx_v_she, __pyx_v_tol);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_5trafo_20dist_to_flat(__pyx_self, __pyx_v_dist_x, __pyx_v_dist_y, __pyx_v_xh, __pyx_v_yh, __pyx_v_k1, __pyx_v_k2, __pyx_v_k3, __pyx_v_p1, __pyx_v_p2, __pyx_v_scx, __pyx_v_she, __pyx_v_tol);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -20428,11 +20428,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_5trafo_20dist_to_flat(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_dist_x, double __pyx_v_dist_y, double __pyx_v_xh, double __pyx_v_yh, double __pyx_v_k1, double __pyx_v_k2, double __pyx_v_k3, double __pyx_v_p1, double __pyx_v_p2, double __pyx_v_scx, double __pyx_v_she, double __pyx_v_tol) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_5trafo_20dist_to_flat(CYTHON_UNUSED PyObject *__pyx_self, double __pyx_v_dist_x, double __pyx_v_dist_y, double __pyx_v_xh, double __pyx_v_yh, double __pyx_v_k1, double __pyx_v_k2, double __pyx_v_k3, double __pyx_v_p1, double __pyx_v_p2, double __pyx_v_scx, double __pyx_v_she, double __pyx_v_tol) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
-  struct __pyx_opt_args_10algorithms_5trafo_dist_to_flat __pyx_t_2;
+  struct __pyx_opt_args_8openptv2_10algorithms_5trafo_dist_to_flat __pyx_t_2;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -20440,7 +20440,7 @@ static PyObject *__pyx_pf_10algorithms_5trafo_20dist_to_flat(CYTHON_UNUSED PyObj
   __Pyx_XDECREF(__pyx_r);
   __pyx_t_2.__pyx_n = 1;
   __pyx_t_2.tol = __pyx_v_tol;
-  __pyx_t_1 = __pyx_f_10algorithms_5trafo_dist_to_flat(__pyx_v_dist_x, __pyx_v_dist_y, __pyx_v_xh, __pyx_v_yh, __pyx_v_k1, __pyx_v_k2, __pyx_v_k3, __pyx_v_p1, __pyx_v_p2, __pyx_v_scx, __pyx_v_she, 1, &__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 459, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_5trafo_dist_to_flat(__pyx_v_dist_x, __pyx_v_dist_y, __pyx_v_xh, __pyx_v_yh, __pyx_v_k1, __pyx_v_k2, __pyx_v_k3, __pyx_v_p1, __pyx_v_p2, __pyx_v_scx, __pyx_v_she, 1, &__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 459, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -20449,7 +20449,7 @@ static PyObject *__pyx_pf_10algorithms_5trafo_20dist_to_flat(CYTHON_UNUSED PyObj
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.trafo.dist_to_flat", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.trafo.dist_to_flat", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -20457,7 +20457,7 @@ static PyObject *__pyx_pf_10algorithms_5trafo_20dist_to_flat(CYTHON_UNUSED PyObj
   return __pyx_r;
 }
 
-/* "algorithms/trafo.py":497
+/* "openptv2/algorithms/trafo.py":497
  * 
  * 
  * def is_compiled() -> bool:             # <<<<<<<<<<<<<<
@@ -20466,28 +20466,28 @@ static PyObject *__pyx_pf_10algorithms_5trafo_20dist_to_flat(CYTHON_UNUSED PyObj
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_5trafo_23is_compiled(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10algorithms_5trafo_22is_compiled, "Return whether this module is compiled to C.");
-static PyMethodDef __pyx_mdef_10algorithms_5trafo_23is_compiled = {"is_compiled", (PyCFunction)__pyx_pw_10algorithms_5trafo_23is_compiled, METH_NOARGS, __pyx_doc_10algorithms_5trafo_22is_compiled};
-static PyObject *__pyx_pw_10algorithms_5trafo_23is_compiled(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_8openptv2_10algorithms_5trafo_23is_compiled(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+PyDoc_STRVAR(__pyx_doc_8openptv2_10algorithms_5trafo_22is_compiled, "Return whether this module is compiled to C.");
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_5trafo_23is_compiled = {"is_compiled", (PyCFunction)__pyx_pw_8openptv2_10algorithms_5trafo_23is_compiled, METH_NOARGS, __pyx_doc_8openptv2_10algorithms_5trafo_22is_compiled};
+static PyObject *__pyx_pw_8openptv2_10algorithms_5trafo_23is_compiled(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused) {
   CYTHON_UNUSED PyObject *const *__pyx_kwvalues;
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("is_compiled (wrapper)", 0);
   __pyx_kwvalues = __Pyx_KwValues_VARARGS(__pyx_args, __pyx_nargs);
-  __pyx_r = __pyx_pf_10algorithms_5trafo_22is_compiled(__pyx_self);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_5trafo_22is_compiled(__pyx_self);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_5trafo_22is_compiled(CYTHON_UNUSED PyObject *__pyx_self) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_5trafo_22is_compiled(CYTHON_UNUSED PyObject *__pyx_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("is_compiled", 0);
 
-  /* "algorithms/trafo.py":499
+  /* "openptv2/algorithms/trafo.py":499
  * def is_compiled() -> bool:
  *     """Return whether this module is compiled to C."""
  *     return cython.compiled             # <<<<<<<<<<<<<<
@@ -20499,7 +20499,7 @@ static PyObject *__pyx_pf_10algorithms_5trafo_22is_compiled(CYTHON_UNUSED PyObje
   __pyx_r = Py_True;
   goto __pyx_L0;
 
-  /* "algorithms/trafo.py":497
+  /* "openptv2/algorithms/trafo.py":497
  * 
  * 
  * def is_compiled() -> bool:             # <<<<<<<<<<<<<<
@@ -20514,7 +20514,7 @@ static PyObject *__pyx_pf_10algorithms_5trafo_22is_compiled(CYTHON_UNUSED PyObje
   return __pyx_r;
 }
 
-/* "algorithms/trafo.py":502
+/* "openptv2/algorithms/trafo.py":502
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -20522,14 +20522,14 @@ static PyObject *__pyx_pf_10algorithms_5trafo_22is_compiled(CYTHON_UNUSED PyObje
  * @cython.wraparound(False)
 */
 
-static PyObject *__pyx_pw_10algorithms_5trafo_25correct_brown_affine_batch(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5trafo_25correct_brown_affine_batch(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_batch(__Pyx_memviewslice __pyx_v_xy, double __pyx_v_k1, double __pyx_v_k2, double __pyx_v_k3, double __pyx_v_p1, double __pyx_v_p2, double __pyx_v_scx, double __pyx_v_she, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_5trafo_correct_brown_affine_batch(__Pyx_memviewslice __pyx_v_xy, double __pyx_v_k1, double __pyx_v_k2, double __pyx_v_k3, double __pyx_v_p1, double __pyx_v_p2, double __pyx_v_scx, double __pyx_v_she, CYTHON_UNUSED int __pyx_skip_dispatch) {
   Py_ssize_t __pyx_v_n;
   PyObject *__pyx_v_result = NULL;
   __Pyx_memviewslice __pyx_v_result_view = { 0, 0, { 0 }, { 0 }, { 0 } };
@@ -20586,7 +20586,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_batch(__Pyx_me
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("correct_brown_affine_batch", 0);
 
-  /* "algorithms/trafo.py":515
+  /* "openptv2/algorithms/trafo.py":515
  *     she: cython.double,
  * ) -> np.ndarray:
  *     n: cython.Py_ssize_t = xy.shape[0]             # <<<<<<<<<<<<<<
@@ -20595,7 +20595,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_batch(__Pyx_me
 */
   __pyx_v_n = (__pyx_v_xy.shape[0]);
 
-  /* "algorithms/trafo.py":516
+  /* "openptv2/algorithms/trafo.py":516
  * ) -> np.ndarray:
  *     n: cython.Py_ssize_t = xy.shape[0]
  *     result: np.ndarray = np.empty((n, 2), dtype=np.float64)             # <<<<<<<<<<<<<<
@@ -20652,7 +20652,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_batch(__Pyx_me
   __pyx_v_result = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/trafo.py":517
+  /* "openptv2/algorithms/trafo.py":517
  *     n: cython.Py_ssize_t = xy.shape[0]
  *     result: np.ndarray = np.empty((n, 2), dtype=np.float64)
  *     result_view: cython.double[:, :] = result             # <<<<<<<<<<<<<<
@@ -20664,7 +20664,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_batch(__Pyx_me
   __pyx_t_8.memview = NULL;
   __pyx_t_8.data = NULL;
 
-  /* "algorithms/trafo.py":518
+  /* "openptv2/algorithms/trafo.py":518
  *     result: np.ndarray = np.empty((n, 2), dtype=np.float64)
  *     result_view: cython.double[:, :] = result
  *     xy_view: cython.double[:, :] = xy             # <<<<<<<<<<<<<<
@@ -20674,7 +20674,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_batch(__Pyx_me
   __PYX_INC_MEMVIEW(&__pyx_v_xy, 1);
   __pyx_v_xy_view = __pyx_v_xy;
 
-  /* "algorithms/trafo.py":520
+  /* "openptv2/algorithms/trafo.py":520
  *     xy_view: cython.double[:, :] = xy
  * 
  *     sin_she: cython.double = c_sin(she)             # <<<<<<<<<<<<<<
@@ -20683,7 +20683,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_batch(__Pyx_me
 */
   __pyx_v_sin_she = sin(__pyx_v_she);
 
-  /* "algorithms/trafo.py":521
+  /* "openptv2/algorithms/trafo.py":521
  * 
  *     sin_she: cython.double = c_sin(she)
  *     cos_she: cython.double = c_cos(she)             # <<<<<<<<<<<<<<
@@ -20692,7 +20692,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_batch(__Pyx_me
 */
   __pyx_v_cos_she = cos(__pyx_v_she);
 
-  /* "algorithms/trafo.py":522
+  /* "openptv2/algorithms/trafo.py":522
  *     sin_she: cython.double = c_sin(she)
  *     cos_she: cython.double = c_cos(she)
  *     inv_scx: cython.double = 1.0 / scx             # <<<<<<<<<<<<<<
@@ -20701,7 +20701,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_batch(__Pyx_me
 */
   __pyx_v_inv_scx = (1.0 / __pyx_v_scx);
 
-  /* "algorithms/trafo.py":523
+  /* "openptv2/algorithms/trafo.py":523
  *     cos_she: cython.double = c_cos(she)
  *     inv_scx: cython.double = 1.0 / scx
  *     damping: cython.double = 0.7             # <<<<<<<<<<<<<<
@@ -20710,7 +20710,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_batch(__Pyx_me
 */
   __pyx_v_damping = 0.7;
 
-  /* "algorithms/trafo.py":524
+  /* "openptv2/algorithms/trafo.py":524
  *     inv_scx: cython.double = 1.0 / scx
  *     damping: cython.double = 0.7
  *     tol: cython.double = 1e-8             # <<<<<<<<<<<<<<
@@ -20719,7 +20719,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_batch(__Pyx_me
 */
   __pyx_v_tol = 1e-8;
 
-  /* "algorithms/trafo.py":525
+  /* "openptv2/algorithms/trafo.py":525
  *     damping: cython.double = 0.7
  *     tol: cython.double = 1e-8
  *     max_iter: cython.int = 20             # <<<<<<<<<<<<<<
@@ -20728,7 +20728,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_batch(__Pyx_me
 */
   __pyx_v_max_iter = 20;
 
-  /* "algorithms/trafo.py":549
+  /* "openptv2/algorithms/trafo.py":549
  *     pos_magnitude: cython.double
  * 
  *     for i in range(n):             # <<<<<<<<<<<<<<
@@ -20740,7 +20740,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_batch(__Pyx_me
   for (__pyx_t_11 = 0; __pyx_t_11 < __pyx_t_10; __pyx_t_11+=1) {
     __pyx_v_i = __pyx_t_11;
 
-    /* "algorithms/trafo.py":550
+    /* "openptv2/algorithms/trafo.py":550
  * 
  *     for i in range(n):
  *         x = xy_view[i, 0]             # <<<<<<<<<<<<<<
@@ -20751,7 +20751,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_batch(__Pyx_me
     __pyx_t_13 = 0;
     __pyx_v_x = (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_xy_view.data + __pyx_t_12 * __pyx_v_xy_view.strides[0]) ) + __pyx_t_13 * __pyx_v_xy_view.strides[1]) )));
 
-    /* "algorithms/trafo.py":551
+    /* "openptv2/algorithms/trafo.py":551
  *     for i in range(n):
  *         x = xy_view[i, 0]
  *         y = xy_view[i, 1]             # <<<<<<<<<<<<<<
@@ -20762,7 +20762,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_batch(__Pyx_me
     __pyx_t_12 = 1;
     __pyx_v_y = (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_xy_view.data + __pyx_t_13 * __pyx_v_xy_view.strides[0]) ) + __pyx_t_12 * __pyx_v_xy_view.strides[1]) )));
 
-    /* "algorithms/trafo.py":554
+    /* "openptv2/algorithms/trafo.py":554
  * 
  *         # Initial guess: inverse affine transformation
  *         xq = x * inv_scx             # <<<<<<<<<<<<<<
@@ -20771,7 +20771,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_batch(__Pyx_me
 */
     __pyx_v_xq = (__pyx_v_x * __pyx_v_inv_scx);
 
-    /* "algorithms/trafo.py":555
+    /* "openptv2/algorithms/trafo.py":555
  *         # Initial guess: inverse affine transformation
  *         xq = x * inv_scx
  *         yq = y * inv_scx / cos_she             # <<<<<<<<<<<<<<
@@ -20780,7 +20780,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_batch(__Pyx_me
 */
     __pyx_v_yq = ((__pyx_v_y * __pyx_v_inv_scx) / __pyx_v_cos_she);
 
-    /* "algorithms/trafo.py":556
+    /* "openptv2/algorithms/trafo.py":556
  *         xq = x * inv_scx
  *         yq = y * inv_scx / cos_she
  *         xq += yq * sin_she             # <<<<<<<<<<<<<<
@@ -20789,7 +20789,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_batch(__Pyx_me
 */
     __pyx_v_xq = (__pyx_v_xq + (__pyx_v_yq * __pyx_v_sin_she));
 
-    /* "algorithms/trafo.py":558
+    /* "openptv2/algorithms/trafo.py":558
  *         xq += yq * sin_she
  * 
  *         for _ in range(max_iter):             # <<<<<<<<<<<<<<
@@ -20801,7 +20801,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_batch(__Pyx_me
     for (__pyx_t_16 = 0; __pyx_t_16 < __pyx_t_15; __pyx_t_16+=1) {
       __pyx_v__ = __pyx_t_16;
 
-      /* "algorithms/trafo.py":559
+      /* "openptv2/algorithms/trafo.py":559
  * 
  *         for _ in range(max_iter):
  *             xq_old = xq             # <<<<<<<<<<<<<<
@@ -20810,7 +20810,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_batch(__Pyx_me
 */
       __pyx_v_xq_old = __pyx_v_xq;
 
-      /* "algorithms/trafo.py":560
+      /* "openptv2/algorithms/trafo.py":560
  *         for _ in range(max_iter):
  *             xq_old = xq
  *             yq_old = yq             # <<<<<<<<<<<<<<
@@ -20819,7 +20819,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_batch(__Pyx_me
 */
       __pyx_v_yq_old = __pyx_v_yq;
 
-      /* "algorithms/trafo.py":563
+      /* "openptv2/algorithms/trafo.py":563
  * 
  *             # Inlined distort_brown_affin
  *             r = c_sqrt(xq * xq + yq * yq)             # <<<<<<<<<<<<<<
@@ -20828,7 +20828,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_batch(__Pyx_me
 */
       __pyx_v_r = sqrt(((__pyx_v_xq * __pyx_v_xq) + (__pyx_v_yq * __pyx_v_yq)));
 
-      /* "algorithms/trafo.py":564
+      /* "openptv2/algorithms/trafo.py":564
  *             # Inlined distort_brown_affin
  *             r = c_sqrt(xq * xq + yq * yq)
  *             if r < 1e-10:             # <<<<<<<<<<<<<<
@@ -20838,7 +20838,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_batch(__Pyx_me
       __pyx_t_17 = (__pyx_v_r < 1e-10);
       if (__pyx_t_17) {
 
-        /* "algorithms/trafo.py":565
+        /* "openptv2/algorithms/trafo.py":565
  *             r = c_sqrt(xq * xq + yq * yq)
  *             if r < 1e-10:
  *                 xt = 0.0             # <<<<<<<<<<<<<<
@@ -20847,7 +20847,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_batch(__Pyx_me
 */
         __pyx_v_xt = 0.0;
 
-        /* "algorithms/trafo.py":566
+        /* "openptv2/algorithms/trafo.py":566
  *             if r < 1e-10:
  *                 xt = 0.0
  *                 yt = 0.0             # <<<<<<<<<<<<<<
@@ -20856,7 +20856,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_batch(__Pyx_me
 */
         __pyx_v_yt = 0.0;
 
-        /* "algorithms/trafo.py":564
+        /* "openptv2/algorithms/trafo.py":564
  *             # Inlined distort_brown_affin
  *             r = c_sqrt(xq * xq + yq * yq)
  *             if r < 1e-10:             # <<<<<<<<<<<<<<
@@ -20866,7 +20866,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_batch(__Pyx_me
         goto __pyx_L7;
       }
 
-      /* "algorithms/trafo.py":568
+      /* "openptv2/algorithms/trafo.py":568
  *                 yt = 0.0
  *             else:
  *                 r2 = r * r             # <<<<<<<<<<<<<<
@@ -20876,7 +20876,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_batch(__Pyx_me
       /*else*/ {
         __pyx_v_r2 = (__pyx_v_r * __pyx_v_r);
 
-        /* "algorithms/trafo.py":569
+        /* "openptv2/algorithms/trafo.py":569
  *             else:
  *                 r2 = r * r
  *                 r4 = r2 * r2             # <<<<<<<<<<<<<<
@@ -20885,7 +20885,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_batch(__Pyx_me
 */
         __pyx_v_r4 = (__pyx_v_r2 * __pyx_v_r2);
 
-        /* "algorithms/trafo.py":570
+        /* "openptv2/algorithms/trafo.py":570
  *                 r2 = r * r
  *                 r4 = r2 * r2
  *                 r6 = r4 * r2             # <<<<<<<<<<<<<<
@@ -20894,7 +20894,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_batch(__Pyx_me
 */
         __pyx_v_r6 = (__pyx_v_r4 * __pyx_v_r2);
 
-        /* "algorithms/trafo.py":571
+        /* "openptv2/algorithms/trafo.py":571
  *                 r4 = r2 * r2
  *                 r6 = r4 * r2
  *                 radial_factor = 1.0 + k1 * r2 + k2 * r4 + k3 * r6             # <<<<<<<<<<<<<<
@@ -20903,7 +20903,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_batch(__Pyx_me
 */
         __pyx_v_radial_factor = (((1.0 + (__pyx_v_k1 * __pyx_v_r2)) + (__pyx_v_k2 * __pyx_v_r4)) + (__pyx_v_k3 * __pyx_v_r6));
 
-        /* "algorithms/trafo.py":572
+        /* "openptv2/algorithms/trafo.py":572
  *                 r6 = r4 * r2
  *                 radial_factor = 1.0 + k1 * r2 + k2 * r4 + k3 * r6
  *                 x_dist = xq * radial_factor + p1 * (r2 + 2.0 * xq * xq) + 2.0 * p2 * xq * yq             # <<<<<<<<<<<<<<
@@ -20912,7 +20912,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_batch(__Pyx_me
 */
         __pyx_v_x_dist = (((__pyx_v_xq * __pyx_v_radial_factor) + (__pyx_v_p1 * (__pyx_v_r2 + ((2.0 * __pyx_v_xq) * __pyx_v_xq)))) + (((2.0 * __pyx_v_p2) * __pyx_v_xq) * __pyx_v_yq));
 
-        /* "algorithms/trafo.py":573
+        /* "openptv2/algorithms/trafo.py":573
  *                 radial_factor = 1.0 + k1 * r2 + k2 * r4 + k3 * r6
  *                 x_dist = xq * radial_factor + p1 * (r2 + 2.0 * xq * xq) + 2.0 * p2 * xq * yq
  *                 y_dist = yq * radial_factor + p2 * (r2 + 2.0 * yq * yq) + 2.0 * p1 * xq * yq             # <<<<<<<<<<<<<<
@@ -20921,7 +20921,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_batch(__Pyx_me
 */
         __pyx_v_y_dist = (((__pyx_v_yq * __pyx_v_radial_factor) + (__pyx_v_p2 * (__pyx_v_r2 + ((2.0 * __pyx_v_yq) * __pyx_v_yq)))) + (((2.0 * __pyx_v_p1) * __pyx_v_xq) * __pyx_v_yq));
 
-        /* "algorithms/trafo.py":574
+        /* "openptv2/algorithms/trafo.py":574
  *                 x_dist = xq * radial_factor + p1 * (r2 + 2.0 * xq * xq) + 2.0 * p2 * xq * yq
  *                 y_dist = yq * radial_factor + p2 * (r2 + 2.0 * yq * yq) + 2.0 * p1 * xq * yq
  *                 xt = scx * (x_dist - sin_she * y_dist)             # <<<<<<<<<<<<<<
@@ -20930,7 +20930,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_batch(__Pyx_me
 */
         __pyx_v_xt = (__pyx_v_scx * (__pyx_v_x_dist - (__pyx_v_sin_she * __pyx_v_y_dist)));
 
-        /* "algorithms/trafo.py":575
+        /* "openptv2/algorithms/trafo.py":575
  *                 y_dist = yq * radial_factor + p2 * (r2 + 2.0 * yq * yq) + 2.0 * p1 * xq * yq
  *                 xt = scx * (x_dist - sin_she * y_dist)
  *                 yt = scx * cos_she * y_dist             # <<<<<<<<<<<<<<
@@ -20941,7 +20941,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_batch(__Pyx_me
       }
       __pyx_L7:;
 
-      /* "algorithms/trafo.py":577
+      /* "openptv2/algorithms/trafo.py":577
  *                 yt = scx * cos_she * y_dist
  * 
  *             dx = (x - xt) * inv_scx             # <<<<<<<<<<<<<<
@@ -20950,7 +20950,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_batch(__Pyx_me
 */
       __pyx_v_dx = ((__pyx_v_x - __pyx_v_xt) * __pyx_v_inv_scx);
 
-      /* "algorithms/trafo.py":578
+      /* "openptv2/algorithms/trafo.py":578
  * 
  *             dx = (x - xt) * inv_scx
  *             dy = (y - yt) * inv_scx             # <<<<<<<<<<<<<<
@@ -20959,7 +20959,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_batch(__Pyx_me
 */
       __pyx_v_dy = ((__pyx_v_y - __pyx_v_yt) * __pyx_v_inv_scx);
 
-      /* "algorithms/trafo.py":580
+      /* "openptv2/algorithms/trafo.py":580
  *             dy = (y - yt) * inv_scx
  * 
  *             xq += dx * damping             # <<<<<<<<<<<<<<
@@ -20968,7 +20968,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_batch(__Pyx_me
 */
       __pyx_v_xq = (__pyx_v_xq + (__pyx_v_dx * __pyx_v_damping));
 
-      /* "algorithms/trafo.py":581
+      /* "openptv2/algorithms/trafo.py":581
  * 
  *             xq += dx * damping
  *             yq += dy * damping             # <<<<<<<<<<<<<<
@@ -20977,7 +20977,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_batch(__Pyx_me
 */
       __pyx_v_yq = (__pyx_v_yq + (__pyx_v_dy * __pyx_v_damping));
 
-      /* "algorithms/trafo.py":583
+      /* "openptv2/algorithms/trafo.py":583
  *             yq += dy * damping
  * 
  *             change = c_sqrt((xq - xq_old) ** 2 + (yq - yq_old) ** 2)             # <<<<<<<<<<<<<<
@@ -20986,7 +20986,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_batch(__Pyx_me
 */
       __pyx_v_change = sqrt((pow((__pyx_v_xq - __pyx_v_xq_old), 2.0) + pow((__pyx_v_yq - __pyx_v_yq_old), 2.0)));
 
-      /* "algorithms/trafo.py":584
+      /* "openptv2/algorithms/trafo.py":584
  * 
  *             change = c_sqrt((xq - xq_old) ** 2 + (yq - yq_old) ** 2)
  *             pos_magnitude = c_sqrt(xq * xq + yq * yq)             # <<<<<<<<<<<<<<
@@ -20995,7 +20995,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_batch(__Pyx_me
 */
       __pyx_v_pos_magnitude = sqrt(((__pyx_v_xq * __pyx_v_xq) + (__pyx_v_yq * __pyx_v_yq)));
 
-      /* "algorithms/trafo.py":585
+      /* "openptv2/algorithms/trafo.py":585
  *             change = c_sqrt((xq - xq_old) ** 2 + (yq - yq_old) ** 2)
  *             pos_magnitude = c_sqrt(xq * xq + yq * yq)
  *             if pos_magnitude > 1e-10 and change / pos_magnitude < tol:             # <<<<<<<<<<<<<<
@@ -21013,7 +21013,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_batch(__Pyx_me
       __pyx_L9_bool_binop_done:;
       if (__pyx_t_17) {
 
-        /* "algorithms/trafo.py":586
+        /* "openptv2/algorithms/trafo.py":586
  *             pos_magnitude = c_sqrt(xq * xq + yq * yq)
  *             if pos_magnitude > 1e-10 and change / pos_magnitude < tol:
  *                 break             # <<<<<<<<<<<<<<
@@ -21022,7 +21022,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_batch(__Pyx_me
 */
         goto __pyx_L6_break;
 
-        /* "algorithms/trafo.py":585
+        /* "openptv2/algorithms/trafo.py":585
  *             change = c_sqrt((xq - xq_old) ** 2 + (yq - yq_old) ** 2)
  *             pos_magnitude = c_sqrt(xq * xq + yq * yq)
  *             if pos_magnitude > 1e-10 and change / pos_magnitude < tol:             # <<<<<<<<<<<<<<
@@ -21033,7 +21033,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_batch(__Pyx_me
     }
     __pyx_L6_break:;
 
-    /* "algorithms/trafo.py":588
+    /* "openptv2/algorithms/trafo.py":588
  *                 break
  * 
  *         result_view[i, 0] = xq             # <<<<<<<<<<<<<<
@@ -21044,7 +21044,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_batch(__Pyx_me
     __pyx_t_13 = 0;
     *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_result_view.data + __pyx_t_12 * __pyx_v_result_view.strides[0]) ) + __pyx_t_13 * __pyx_v_result_view.strides[1]) )) = __pyx_v_xq;
 
-    /* "algorithms/trafo.py":589
+    /* "openptv2/algorithms/trafo.py":589
  * 
  *         result_view[i, 0] = xq
  *         result_view[i, 1] = yq             # <<<<<<<<<<<<<<
@@ -21056,7 +21056,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_batch(__Pyx_me
     *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_result_view.data + __pyx_t_13 * __pyx_v_result_view.strides[0]) ) + __pyx_t_12 * __pyx_v_result_view.strides[1]) )) = __pyx_v_yq;
   }
 
-  /* "algorithms/trafo.py":591
+  /* "openptv2/algorithms/trafo.py":591
  *         result_view[i, 1] = yq
  * 
  *     return result             # <<<<<<<<<<<<<<
@@ -21068,7 +21068,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_batch(__Pyx_me
   __pyx_r = __pyx_v_result;
   goto __pyx_L0;
 
-  /* "algorithms/trafo.py":502
+  /* "openptv2/algorithms/trafo.py":502
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -21085,7 +21085,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_batch(__Pyx_me
   __Pyx_XDECREF(__pyx_t_5);
   __Pyx_XDECREF(__pyx_t_6);
   __PYX_XCLEAR_MEMVIEW(&__pyx_t_8, 1);
-  __Pyx_AddTraceback("algorithms.trafo.correct_brown_affine_batch", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.trafo.correct_brown_affine_batch", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_result);
@@ -21097,15 +21097,15 @@ static PyObject *__pyx_f_10algorithms_5trafo_correct_brown_affine_batch(__Pyx_me
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_5trafo_25correct_brown_affine_batch(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5trafo_25correct_brown_affine_batch(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_10algorithms_5trafo_25correct_brown_affine_batch = {"correct_brown_affine_batch", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_5trafo_25correct_brown_affine_batch, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10algorithms_5trafo_25correct_brown_affine_batch(PyObject *__pyx_self, 
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_5trafo_25correct_brown_affine_batch = {"correct_brown_affine_batch", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_5trafo_25correct_brown_affine_batch, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_8openptv2_10algorithms_5trafo_25correct_brown_affine_batch(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -21224,14 +21224,14 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
     Py_XDECREF(values[__pyx_temp]);
   }
   __PYX_XCLEAR_MEMVIEW(&__pyx_v_xy, 1);
-  __Pyx_AddTraceback("algorithms.trafo.correct_brown_affine_batch", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.trafo.correct_brown_affine_batch", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
   if (unlikely(((PyObject *)__pyx_v_xy.memview) == Py_None)) {
     PyErr_Format(PyExc_TypeError, "Argument '%.200s' must not be None", "xy"); __PYX_ERR(0, 506, __pyx_L1_error)
   }
-  __pyx_r = __pyx_pf_10algorithms_5trafo_24correct_brown_affine_batch(__pyx_self, __pyx_v_xy, __pyx_v_k1, __pyx_v_k2, __pyx_v_k3, __pyx_v_p1, __pyx_v_p2, __pyx_v_scx, __pyx_v_she);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_5trafo_24correct_brown_affine_batch(__pyx_self, __pyx_v_xy, __pyx_v_k1, __pyx_v_k2, __pyx_v_k3, __pyx_v_p1, __pyx_v_p2, __pyx_v_scx, __pyx_v_she);
 
   /* function exit code */
   goto __pyx_L0;
@@ -21251,7 +21251,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_5trafo_24correct_brown_affine_batch(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_xy, double __pyx_v_k1, double __pyx_v_k2, double __pyx_v_k3, double __pyx_v_p1, double __pyx_v_p2, double __pyx_v_scx, double __pyx_v_she) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_5trafo_24correct_brown_affine_batch(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_xy, double __pyx_v_k1, double __pyx_v_k2, double __pyx_v_k3, double __pyx_v_p1, double __pyx_v_p2, double __pyx_v_scx, double __pyx_v_she) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -21264,7 +21264,7 @@ static PyObject *__pyx_pf_10algorithms_5trafo_24correct_brown_affine_batch(CYTHO
     PyErr_SetString(PyExc_TypeError, "cannot pass None into a C function argument that is declared 'not None'");
     __PYX_ERR(0, 502, __pyx_L1_error)
   }
-  __pyx_t_1 = __pyx_f_10algorithms_5trafo_correct_brown_affine_batch(__pyx_v_xy, __pyx_v_k1, __pyx_v_k2, __pyx_v_k3, __pyx_v_p1, __pyx_v_p2, __pyx_v_scx, __pyx_v_she, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 502, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_5trafo_correct_brown_affine_batch(__pyx_v_xy, __pyx_v_k1, __pyx_v_k2, __pyx_v_k3, __pyx_v_p1, __pyx_v_p2, __pyx_v_scx, __pyx_v_she, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 502, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -21273,7 +21273,7 @@ static PyObject *__pyx_pf_10algorithms_5trafo_24correct_brown_affine_batch(CYTHO
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.trafo.correct_brown_affine_batch", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.trafo.correct_brown_affine_batch", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -21281,7 +21281,7 @@ static PyObject *__pyx_pf_10algorithms_5trafo_24correct_brown_affine_batch(CYTHO
   return __pyx_r;
 }
 
-/* "algorithms/trafo.py":594
+/* "openptv2/algorithms/trafo.py":594
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -21289,14 +21289,14 @@ static PyObject *__pyx_pf_10algorithms_5trafo_24correct_brown_affine_batch(CYTHO
  * @cython.wraparound(False)
 */
 
-static PyObject *__pyx_pw_10algorithms_5trafo_27distort_brown_affine_batch(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5trafo_27distort_brown_affine_batch(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyObject *__pyx_f_10algorithms_5trafo_distort_brown_affine_batch(__Pyx_memviewslice __pyx_v_xy, double __pyx_v_k1, double __pyx_v_k2, double __pyx_v_k3, double __pyx_v_p1, double __pyx_v_p2, double __pyx_v_scx, double __pyx_v_she, CYTHON_UNUSED int __pyx_skip_dispatch) {
+static PyObject *__pyx_f_8openptv2_10algorithms_5trafo_distort_brown_affine_batch(__Pyx_memviewslice __pyx_v_xy, double __pyx_v_k1, double __pyx_v_k2, double __pyx_v_k3, double __pyx_v_p1, double __pyx_v_p2, double __pyx_v_scx, double __pyx_v_she, CYTHON_UNUSED int __pyx_skip_dispatch) {
   Py_ssize_t __pyx_v_n;
   PyObject *__pyx_v_result = NULL;
   __Pyx_memviewslice __pyx_v_result_view = { 0, 0, { 0 }, { 0 }, { 0 } };
@@ -21334,7 +21334,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_distort_brown_affine_batch(__Pyx_me
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("distort_brown_affine_batch", 0);
 
-  /* "algorithms/trafo.py":607
+  /* "openptv2/algorithms/trafo.py":607
  *     she: cython.double,
  * ) -> np.ndarray:
  *     n: cython.Py_ssize_t = xy.shape[0]             # <<<<<<<<<<<<<<
@@ -21343,7 +21343,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_distort_brown_affine_batch(__Pyx_me
 */
   __pyx_v_n = (__pyx_v_xy.shape[0]);
 
-  /* "algorithms/trafo.py":608
+  /* "openptv2/algorithms/trafo.py":608
  * ) -> np.ndarray:
  *     n: cython.Py_ssize_t = xy.shape[0]
  *     result: np.ndarray = np.empty((n, 2), dtype=np.float64)             # <<<<<<<<<<<<<<
@@ -21400,7 +21400,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_distort_brown_affine_batch(__Pyx_me
   __pyx_v_result = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "algorithms/trafo.py":609
+  /* "openptv2/algorithms/trafo.py":609
  *     n: cython.Py_ssize_t = xy.shape[0]
  *     result: np.ndarray = np.empty((n, 2), dtype=np.float64)
  *     result_view: cython.double[:, :] = result             # <<<<<<<<<<<<<<
@@ -21412,7 +21412,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_distort_brown_affine_batch(__Pyx_me
   __pyx_t_8.memview = NULL;
   __pyx_t_8.data = NULL;
 
-  /* "algorithms/trafo.py":610
+  /* "openptv2/algorithms/trafo.py":610
  *     result: np.ndarray = np.empty((n, 2), dtype=np.float64)
  *     result_view: cython.double[:, :] = result
  *     xy_view: cython.double[:, :] = xy             # <<<<<<<<<<<<<<
@@ -21422,7 +21422,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_distort_brown_affine_batch(__Pyx_me
   __PYX_INC_MEMVIEW(&__pyx_v_xy, 1);
   __pyx_v_xy_view = __pyx_v_xy;
 
-  /* "algorithms/trafo.py":612
+  /* "openptv2/algorithms/trafo.py":612
  *     xy_view: cython.double[:, :] = xy
  * 
  *     sin_she: cython.double = c_sin(she)             # <<<<<<<<<<<<<<
@@ -21431,7 +21431,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_distort_brown_affine_batch(__Pyx_me
 */
   __pyx_v_sin_she = sin(__pyx_v_she);
 
-  /* "algorithms/trafo.py":613
+  /* "openptv2/algorithms/trafo.py":613
  * 
  *     sin_she: cython.double = c_sin(she)
  *     cos_she: cython.double = c_cos(she)             # <<<<<<<<<<<<<<
@@ -21440,7 +21440,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_distort_brown_affine_batch(__Pyx_me
 */
   __pyx_v_cos_she = cos(__pyx_v_she);
 
-  /* "algorithms/trafo.py":626
+  /* "openptv2/algorithms/trafo.py":626
  *     y_dist: cython.double
  * 
  *     for i in range(n):             # <<<<<<<<<<<<<<
@@ -21452,7 +21452,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_distort_brown_affine_batch(__Pyx_me
   for (__pyx_t_11 = 0; __pyx_t_11 < __pyx_t_10; __pyx_t_11+=1) {
     __pyx_v_i = __pyx_t_11;
 
-    /* "algorithms/trafo.py":627
+    /* "openptv2/algorithms/trafo.py":627
  * 
  *     for i in range(n):
  *         x = xy_view[i, 0]             # <<<<<<<<<<<<<<
@@ -21463,7 +21463,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_distort_brown_affine_batch(__Pyx_me
     __pyx_t_13 = 0;
     __pyx_v_x = (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_xy_view.data + __pyx_t_12 * __pyx_v_xy_view.strides[0]) ) + __pyx_t_13 * __pyx_v_xy_view.strides[1]) )));
 
-    /* "algorithms/trafo.py":628
+    /* "openptv2/algorithms/trafo.py":628
  *     for i in range(n):
  *         x = xy_view[i, 0]
  *         y = xy_view[i, 1]             # <<<<<<<<<<<<<<
@@ -21474,7 +21474,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_distort_brown_affine_batch(__Pyx_me
     __pyx_t_12 = 1;
     __pyx_v_y = (*((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_xy_view.data + __pyx_t_13 * __pyx_v_xy_view.strides[0]) ) + __pyx_t_12 * __pyx_v_xy_view.strides[1]) )));
 
-    /* "algorithms/trafo.py":629
+    /* "openptv2/algorithms/trafo.py":629
  *         x = xy_view[i, 0]
  *         y = xy_view[i, 1]
  *         r = c_sqrt(x * x + y * y)             # <<<<<<<<<<<<<<
@@ -21483,7 +21483,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_distort_brown_affine_batch(__Pyx_me
 */
     __pyx_v_r = sqrt(((__pyx_v_x * __pyx_v_x) + (__pyx_v_y * __pyx_v_y)));
 
-    /* "algorithms/trafo.py":630
+    /* "openptv2/algorithms/trafo.py":630
  *         y = xy_view[i, 1]
  *         r = c_sqrt(x * x + y * y)
  *         if r < 1e-10:             # <<<<<<<<<<<<<<
@@ -21493,7 +21493,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_distort_brown_affine_batch(__Pyx_me
     __pyx_t_14 = (__pyx_v_r < 1e-10);
     if (__pyx_t_14) {
 
-      /* "algorithms/trafo.py":631
+      /* "openptv2/algorithms/trafo.py":631
  *         r = c_sqrt(x * x + y * y)
  *         if r < 1e-10:
  *             result_view[i, 0] = 0.0             # <<<<<<<<<<<<<<
@@ -21504,7 +21504,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_distort_brown_affine_batch(__Pyx_me
       __pyx_t_13 = 0;
       *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_result_view.data + __pyx_t_12 * __pyx_v_result_view.strides[0]) ) + __pyx_t_13 * __pyx_v_result_view.strides[1]) )) = 0.0;
 
-      /* "algorithms/trafo.py":632
+      /* "openptv2/algorithms/trafo.py":632
  *         if r < 1e-10:
  *             result_view[i, 0] = 0.0
  *             result_view[i, 1] = 0.0             # <<<<<<<<<<<<<<
@@ -21515,7 +21515,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_distort_brown_affine_batch(__Pyx_me
       __pyx_t_12 = 1;
       *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_result_view.data + __pyx_t_13 * __pyx_v_result_view.strides[0]) ) + __pyx_t_12 * __pyx_v_result_view.strides[1]) )) = 0.0;
 
-      /* "algorithms/trafo.py":630
+      /* "openptv2/algorithms/trafo.py":630
  *         y = xy_view[i, 1]
  *         r = c_sqrt(x * x + y * y)
  *         if r < 1e-10:             # <<<<<<<<<<<<<<
@@ -21525,7 +21525,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_distort_brown_affine_batch(__Pyx_me
       goto __pyx_L5;
     }
 
-    /* "algorithms/trafo.py":634
+    /* "openptv2/algorithms/trafo.py":634
  *             result_view[i, 1] = 0.0
  *         else:
  *             r2 = r * r             # <<<<<<<<<<<<<<
@@ -21535,7 +21535,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_distort_brown_affine_batch(__Pyx_me
     /*else*/ {
       __pyx_v_r2 = (__pyx_v_r * __pyx_v_r);
 
-      /* "algorithms/trafo.py":635
+      /* "openptv2/algorithms/trafo.py":635
  *         else:
  *             r2 = r * r
  *             r4 = r2 * r2             # <<<<<<<<<<<<<<
@@ -21544,7 +21544,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_distort_brown_affine_batch(__Pyx_me
 */
       __pyx_v_r4 = (__pyx_v_r2 * __pyx_v_r2);
 
-      /* "algorithms/trafo.py":636
+      /* "openptv2/algorithms/trafo.py":636
  *             r2 = r * r
  *             r4 = r2 * r2
  *             r6 = r4 * r2             # <<<<<<<<<<<<<<
@@ -21553,7 +21553,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_distort_brown_affine_batch(__Pyx_me
 */
       __pyx_v_r6 = (__pyx_v_r4 * __pyx_v_r2);
 
-      /* "algorithms/trafo.py":637
+      /* "openptv2/algorithms/trafo.py":637
  *             r4 = r2 * r2
  *             r6 = r4 * r2
  *             radial_factor = 1.0 + k1 * r2 + k2 * r4 + k3 * r6             # <<<<<<<<<<<<<<
@@ -21562,7 +21562,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_distort_brown_affine_batch(__Pyx_me
 */
       __pyx_v_radial_factor = (((1.0 + (__pyx_v_k1 * __pyx_v_r2)) + (__pyx_v_k2 * __pyx_v_r4)) + (__pyx_v_k3 * __pyx_v_r6));
 
-      /* "algorithms/trafo.py":638
+      /* "openptv2/algorithms/trafo.py":638
  *             r6 = r4 * r2
  *             radial_factor = 1.0 + k1 * r2 + k2 * r4 + k3 * r6
  *             x_dist = x * radial_factor + p1 * (r2 + 2.0 * x * x) + 2.0 * p2 * x * y             # <<<<<<<<<<<<<<
@@ -21571,7 +21571,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_distort_brown_affine_batch(__Pyx_me
 */
       __pyx_v_x_dist = (((__pyx_v_x * __pyx_v_radial_factor) + (__pyx_v_p1 * (__pyx_v_r2 + ((2.0 * __pyx_v_x) * __pyx_v_x)))) + (((2.0 * __pyx_v_p2) * __pyx_v_x) * __pyx_v_y));
 
-      /* "algorithms/trafo.py":639
+      /* "openptv2/algorithms/trafo.py":639
  *             radial_factor = 1.0 + k1 * r2 + k2 * r4 + k3 * r6
  *             x_dist = x * radial_factor + p1 * (r2 + 2.0 * x * x) + 2.0 * p2 * x * y
  *             y_dist = y * radial_factor + p2 * (r2 + 2.0 * y * y) + 2.0 * p1 * x * y             # <<<<<<<<<<<<<<
@@ -21580,7 +21580,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_distort_brown_affine_batch(__Pyx_me
 */
       __pyx_v_y_dist = (((__pyx_v_y * __pyx_v_radial_factor) + (__pyx_v_p2 * (__pyx_v_r2 + ((2.0 * __pyx_v_y) * __pyx_v_y)))) + (((2.0 * __pyx_v_p1) * __pyx_v_x) * __pyx_v_y));
 
-      /* "algorithms/trafo.py":640
+      /* "openptv2/algorithms/trafo.py":640
  *             x_dist = x * radial_factor + p1 * (r2 + 2.0 * x * x) + 2.0 * p2 * x * y
  *             y_dist = y * radial_factor + p2 * (r2 + 2.0 * y * y) + 2.0 * p1 * x * y
  *             result_view[i, 0] = scx * (x_dist - sin_she * y_dist)             # <<<<<<<<<<<<<<
@@ -21591,7 +21591,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_distort_brown_affine_batch(__Pyx_me
       __pyx_t_13 = 0;
       *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_result_view.data + __pyx_t_12 * __pyx_v_result_view.strides[0]) ) + __pyx_t_13 * __pyx_v_result_view.strides[1]) )) = (__pyx_v_scx * (__pyx_v_x_dist - (__pyx_v_sin_she * __pyx_v_y_dist)));
 
-      /* "algorithms/trafo.py":641
+      /* "openptv2/algorithms/trafo.py":641
  *             y_dist = y * radial_factor + p2 * (r2 + 2.0 * y * y) + 2.0 * p1 * x * y
  *             result_view[i, 0] = scx * (x_dist - sin_she * y_dist)
  *             result_view[i, 1] = scx * cos_she * y_dist             # <<<<<<<<<<<<<<
@@ -21605,7 +21605,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_distort_brown_affine_batch(__Pyx_me
     __pyx_L5:;
   }
 
-  /* "algorithms/trafo.py":643
+  /* "openptv2/algorithms/trafo.py":643
  *             result_view[i, 1] = scx * cos_she * y_dist
  * 
  *     return result             # <<<<<<<<<<<<<<
@@ -21615,7 +21615,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_distort_brown_affine_batch(__Pyx_me
   __pyx_r = __pyx_v_result;
   goto __pyx_L0;
 
-  /* "algorithms/trafo.py":594
+  /* "openptv2/algorithms/trafo.py":594
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -21632,7 +21632,7 @@ static PyObject *__pyx_f_10algorithms_5trafo_distort_brown_affine_batch(__Pyx_me
   __Pyx_XDECREF(__pyx_t_5);
   __Pyx_XDECREF(__pyx_t_6);
   __PYX_XCLEAR_MEMVIEW(&__pyx_t_8, 1);
-  __Pyx_AddTraceback("algorithms.trafo.distort_brown_affine_batch", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.trafo.distort_brown_affine_batch", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_result);
@@ -21644,15 +21644,15 @@ static PyObject *__pyx_f_10algorithms_5trafo_distort_brown_affine_batch(__Pyx_me
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10algorithms_5trafo_27distort_brown_affine_batch(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_8openptv2_10algorithms_5trafo_27distort_brown_affine_batch(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_10algorithms_5trafo_27distort_brown_affine_batch = {"distort_brown_affine_batch", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10algorithms_5trafo_27distort_brown_affine_batch, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10algorithms_5trafo_27distort_brown_affine_batch(PyObject *__pyx_self, 
+static PyMethodDef __pyx_mdef_8openptv2_10algorithms_5trafo_27distort_brown_affine_batch = {"distort_brown_affine_batch", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_8openptv2_10algorithms_5trafo_27distort_brown_affine_batch, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_8openptv2_10algorithms_5trafo_27distort_brown_affine_batch(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -21771,14 +21771,14 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
     Py_XDECREF(values[__pyx_temp]);
   }
   __PYX_XCLEAR_MEMVIEW(&__pyx_v_xy, 1);
-  __Pyx_AddTraceback("algorithms.trafo.distort_brown_affine_batch", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.trafo.distort_brown_affine_batch", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
   if (unlikely(((PyObject *)__pyx_v_xy.memview) == Py_None)) {
     PyErr_Format(PyExc_TypeError, "Argument '%.200s' must not be None", "xy"); __PYX_ERR(0, 598, __pyx_L1_error)
   }
-  __pyx_r = __pyx_pf_10algorithms_5trafo_26distort_brown_affine_batch(__pyx_self, __pyx_v_xy, __pyx_v_k1, __pyx_v_k2, __pyx_v_k3, __pyx_v_p1, __pyx_v_p2, __pyx_v_scx, __pyx_v_she);
+  __pyx_r = __pyx_pf_8openptv2_10algorithms_5trafo_26distort_brown_affine_batch(__pyx_self, __pyx_v_xy, __pyx_v_k1, __pyx_v_k2, __pyx_v_k3, __pyx_v_p1, __pyx_v_p2, __pyx_v_scx, __pyx_v_she);
 
   /* function exit code */
   goto __pyx_L0;
@@ -21798,7 +21798,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10algorithms_5trafo_26distort_brown_affine_batch(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_xy, double __pyx_v_k1, double __pyx_v_k2, double __pyx_v_k3, double __pyx_v_p1, double __pyx_v_p2, double __pyx_v_scx, double __pyx_v_she) {
+static PyObject *__pyx_pf_8openptv2_10algorithms_5trafo_26distort_brown_affine_batch(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_xy, double __pyx_v_k1, double __pyx_v_k2, double __pyx_v_k3, double __pyx_v_p1, double __pyx_v_p2, double __pyx_v_scx, double __pyx_v_she) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -21811,7 +21811,7 @@ static PyObject *__pyx_pf_10algorithms_5trafo_26distort_brown_affine_batch(CYTHO
     PyErr_SetString(PyExc_TypeError, "cannot pass None into a C function argument that is declared 'not None'");
     __PYX_ERR(0, 594, __pyx_L1_error)
   }
-  __pyx_t_1 = __pyx_f_10algorithms_5trafo_distort_brown_affine_batch(__pyx_v_xy, __pyx_v_k1, __pyx_v_k2, __pyx_v_k3, __pyx_v_p1, __pyx_v_p2, __pyx_v_scx, __pyx_v_she, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 594, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_8openptv2_10algorithms_5trafo_distort_brown_affine_batch(__pyx_v_xy, __pyx_v_k1, __pyx_v_k2, __pyx_v_k3, __pyx_v_p1, __pyx_v_p2, __pyx_v_scx, __pyx_v_she, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 594, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -21820,7 +21820,7 @@ static PyObject *__pyx_pf_10algorithms_5trafo_26distort_brown_affine_batch(CYTHO
   /* function exit code */
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("algorithms.trafo.distort_brown_affine_batch", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("openptv2.algorithms.trafo.distort_brown_affine_batch", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -21954,7 +21954,7 @@ static PyType_Slot __pyx_type___pyx_array_slots[] = {
   {0, 0},
 };
 static PyType_Spec __pyx_type___pyx_array_spec = {
-  "algorithms.trafo.array",
+  "openptv2.algorithms.trafo.array",
   sizeof(struct __pyx_array_obj),
   0,
   Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_BASETYPE|Py_TPFLAGS_SEQUENCE,
@@ -21988,7 +21988,7 @@ static PyBufferProcs __pyx_tp_as_buffer_array = {
 
 static PyTypeObject __pyx_type___pyx_array = {
   PyVarObject_HEAD_INIT(0, 0)
-  "algorithms.trafo.""array", /*tp_name*/
+  "openptv2.algorithms.trafo.""array", /*tp_name*/
   sizeof(struct __pyx_array_obj), /*tp_basicsize*/
   0, /*tp_itemsize*/
   __pyx_tp_dealloc_array, /*tp_dealloc*/
@@ -22133,7 +22133,7 @@ static PyType_Slot __pyx_type___pyx_MemviewEnum_slots[] = {
   {0, 0},
 };
 static PyType_Spec __pyx_type___pyx_MemviewEnum_spec = {
-  "algorithms.trafo.Enum",
+  "openptv2.algorithms.trafo.Enum",
   sizeof(struct __pyx_MemviewEnum_obj),
   0,
   Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_BASETYPE|Py_TPFLAGS_HAVE_GC,
@@ -22143,7 +22143,7 @@ static PyType_Spec __pyx_type___pyx_MemviewEnum_spec = {
 
 static PyTypeObject __pyx_type___pyx_MemviewEnum = {
   PyVarObject_HEAD_INIT(0, 0)
-  "algorithms.trafo.""Enum", /*tp_name*/
+  "openptv2.algorithms.trafo.""Enum", /*tp_name*/
   sizeof(struct __pyx_MemviewEnum_obj), /*tp_basicsize*/
   0, /*tp_itemsize*/
   __pyx_tp_dealloc_Enum, /*tp_dealloc*/
@@ -22410,7 +22410,7 @@ static PyType_Slot __pyx_type___pyx_memoryview_slots[] = {
   {0, 0},
 };
 static PyType_Spec __pyx_type___pyx_memoryview_spec = {
-  "algorithms.trafo.memoryview",
+  "openptv2.algorithms.trafo.memoryview",
   sizeof(struct __pyx_memoryview_obj),
   0,
   Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_BASETYPE|Py_TPFLAGS_HAVE_GC,
@@ -22444,7 +22444,7 @@ static PyBufferProcs __pyx_tp_as_buffer_memoryview = {
 
 static PyTypeObject __pyx_type___pyx_memoryview = {
   PyVarObject_HEAD_INIT(0, 0)
-  "algorithms.trafo.""memoryview", /*tp_name*/
+  "openptv2.algorithms.trafo.""memoryview", /*tp_name*/
   sizeof(struct __pyx_memoryview_obj), /*tp_basicsize*/
   0, /*tp_itemsize*/
   __pyx_tp_dealloc_memoryview, /*tp_dealloc*/
@@ -22587,7 +22587,7 @@ static PyType_Slot __pyx_type___pyx_memoryviewslice_slots[] = {
   {0, 0},
 };
 static PyType_Spec __pyx_type___pyx_memoryviewslice_spec = {
-  "algorithms.trafo._memoryviewslice",
+  "openptv2.algorithms.trafo._memoryviewslice",
   sizeof(struct __pyx_memoryviewslice_obj),
   0,
   Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_BASETYPE|Py_TPFLAGS_HAVE_GC|Py_TPFLAGS_SEQUENCE,
@@ -22597,7 +22597,7 @@ static PyType_Spec __pyx_type___pyx_memoryviewslice_spec = {
 
 static PyTypeObject __pyx_type___pyx_memoryviewslice = {
   PyVarObject_HEAD_INIT(0, 0)
-  "algorithms.trafo.""_memoryviewslice", /*tp_name*/
+  "openptv2.algorithms.trafo.""_memoryviewslice", /*tp_name*/
   sizeof(struct __pyx_memoryviewslice_obj), /*tp_basicsize*/
   0, /*tp_itemsize*/
   __pyx_tp_dealloc__memoryviewslice, /*tp_dealloc*/
@@ -23145,13 +23145,13 @@ __Pyx_RefNannySetupContext("PyInit_trafo", 0);
   if (__Pyx_InitConstants(__pyx_mstate) < (0)) __PYX_ERR(0, 1, __pyx_L1_error)
   stringtab_initialized = 1;
   if (__Pyx_InitGlobals() < (0)) __PYX_ERR(0, 1, __pyx_L1_error)
-  if (__pyx_module_is_main_algorithms__trafo) {
+  if (__pyx_module_is_main_openptv2__algorithms__trafo) {
     if (PyObject_SetAttr(__pyx_m, __pyx_mstate_global->__pyx_n_u_name_2, __pyx_mstate_global->__pyx_n_u_main) < (0)) __PYX_ERR(0, 1, __pyx_L1_error)
   }
   {
     PyObject *modules = PyImport_GetModuleDict(); if (unlikely(!modules)) __PYX_ERR(0, 1, __pyx_L1_error)
-    if (!PyDict_GetItemString(modules, "algorithms.trafo")) {
-      if (unlikely((PyDict_SetItemString(modules, "algorithms.trafo", __pyx_m) < 0))) __PYX_ERR(0, 1, __pyx_L1_error)
+    if (!PyDict_GetItemString(modules, "openptv2.algorithms.trafo")) {
+      if (unlikely((PyDict_SetItemString(modules, "openptv2.algorithms.trafo", __pyx_m) < 0))) __PYX_ERR(0, 1, __pyx_L1_error)
     }
   }
   /*--- Builtin init code ---*/
@@ -23660,7 +23660,7 @@ __Pyx_RefNannySetupContext("PyInit_trafo", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_pyx_unpickle_Enum, __pyx_t_4) < (0)) __PYX_ERR(1, 4, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/trafo.py":13
+  /* "openptv2/algorithms/trafo.py":13
  * 
  * import cython
  * import numpy as np             # <<<<<<<<<<<<<<
@@ -23673,7 +23673,7 @@ __Pyx_RefNannySetupContext("PyInit_trafo", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_np, __pyx_t_4) < (0)) __PYX_ERR(0, 13, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/trafo.py":21
+  /* "openptv2/algorithms/trafo.py":21
  * 
  * # Y-remap mode constants (for interlaced cameras)
  * NO_REMAP: cython.int = 0             # <<<<<<<<<<<<<<
@@ -23682,7 +23682,7 @@ __Pyx_RefNannySetupContext("PyInit_trafo", 0);
 */
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_NO_REMAP, __pyx_mstate_global->__pyx_int_0) < (0)) __PYX_ERR(0, 21, __pyx_L1_error)
 
-  /* "algorithms/trafo.py":22
+  /* "openptv2/algorithms/trafo.py":22
  * # Y-remap mode constants (for interlaced cameras)
  * NO_REMAP: cython.int = 0
  * DOUBLED_PLUS_ONE: cython.int = 1             # <<<<<<<<<<<<<<
@@ -23691,7 +23691,7 @@ __Pyx_RefNannySetupContext("PyInit_trafo", 0);
 */
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_DOUBLED_PLUS_ONE, __pyx_mstate_global->__pyx_int_1) < (0)) __PYX_ERR(0, 22, __pyx_L1_error)
 
-  /* "algorithms/trafo.py":23
+  /* "openptv2/algorithms/trafo.py":23
  * NO_REMAP: cython.int = 0
  * DOUBLED_PLUS_ONE: cython.int = 1
  * DOUBLED: cython.int = 2             # <<<<<<<<<<<<<<
@@ -23700,7 +23700,7 @@ __Pyx_RefNannySetupContext("PyInit_trafo", 0);
 */
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_DOUBLED, __pyx_mstate_global->__pyx_int_2) < (0)) __PYX_ERR(0, 23, __pyx_L1_error)
 
-  /* "algorithms/trafo.py":26
+  /* "openptv2/algorithms/trafo.py":26
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -23716,7 +23716,7 @@ __Pyx_RefNannySetupContext("PyInit_trafo", 0);
   if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_pix_size_x, __pyx_mstate_global->__pyx_kp_u_cython_double) < (0)) __PYX_ERR(0, 26, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_pix_size_y, __pyx_mstate_global->__pyx_kp_u_cython_double) < (0)) __PYX_ERR(0, 26, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_y_remap_mode, __pyx_mstate_global->__pyx_kp_u_cython_int) < (0)) __PYX_ERR(0, 26, __pyx_L1_error)
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_5trafo_1old_pixel_to_metric, 0, __pyx_mstate_global->__pyx_n_u_old_pixel_to_metric, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_trafo, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[0])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 26, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_5trafo_1old_pixel_to_metric, 0, __pyx_mstate_global->__pyx_n_u_old_pixel_to_metric, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_trafo, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[0])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 26, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_5);
@@ -23727,7 +23727,7 @@ __Pyx_RefNannySetupContext("PyInit_trafo", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_old_pixel_to_metric, __pyx_t_5) < (0)) __PYX_ERR(0, 26, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "algorithms/trafo.py":59
+  /* "openptv2/algorithms/trafo.py":59
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -23743,7 +23743,7 @@ __Pyx_RefNannySetupContext("PyInit_trafo", 0);
   if (PyDict_SetItem(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_pix_size_x, __pyx_mstate_global->__pyx_kp_u_cython_double) < (0)) __PYX_ERR(0, 59, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_pix_size_y, __pyx_mstate_global->__pyx_kp_u_cython_double) < (0)) __PYX_ERR(0, 59, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_y_remap_mode, __pyx_mstate_global->__pyx_kp_u_cython_int) < (0)) __PYX_ERR(0, 59, __pyx_L1_error)
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_5trafo_3old_metric_to_pixel, 0, __pyx_mstate_global->__pyx_n_u_old_metric_to_pixel, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_trafo, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[1])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 59, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_5trafo_3old_metric_to_pixel, 0, __pyx_mstate_global->__pyx_n_u_old_metric_to_pixel, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_trafo, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[1])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 59, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
@@ -23754,7 +23754,7 @@ __Pyx_RefNannySetupContext("PyInit_trafo", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_old_metric_to_pixel, __pyx_t_4) < (0)) __PYX_ERR(0, 59, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/trafo.py":92
+  /* "openptv2/algorithms/trafo.py":92
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -23769,7 +23769,7 @@ __Pyx_RefNannySetupContext("PyInit_trafo", 0);
   if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_pix_x, __pyx_mstate_global->__pyx_kp_u_cython_double) < (0)) __PYX_ERR(0, 92, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_pix_y, __pyx_mstate_global->__pyx_kp_u_cython_double) < (0)) __PYX_ERR(0, 92, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_chfield, __pyx_mstate_global->__pyx_kp_u_cython_int) < (0)) __PYX_ERR(0, 92, __pyx_L1_error)
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_5trafo_5pixel_to_metric, 0, __pyx_mstate_global->__pyx_n_u_pixel_to_metric, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_trafo, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[2])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 92, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_5trafo_5pixel_to_metric, 0, __pyx_mstate_global->__pyx_n_u_pixel_to_metric, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_trafo, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[2])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 92, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_5);
@@ -23780,7 +23780,7 @@ __Pyx_RefNannySetupContext("PyInit_trafo", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_pixel_to_metric, __pyx_t_5) < (0)) __PYX_ERR(0, 92, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "algorithms/trafo.py":127
+  /* "openptv2/algorithms/trafo.py":127
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -23795,7 +23795,7 @@ __Pyx_RefNannySetupContext("PyInit_trafo", 0);
   if (PyDict_SetItem(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_pix_x, __pyx_mstate_global->__pyx_kp_u_cython_double) < (0)) __PYX_ERR(0, 127, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_pix_y, __pyx_mstate_global->__pyx_kp_u_cython_double) < (0)) __PYX_ERR(0, 127, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_chfield, __pyx_mstate_global->__pyx_kp_u_cython_int) < (0)) __PYX_ERR(0, 127, __pyx_L1_error)
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_5trafo_7metric_to_pixel, 0, __pyx_mstate_global->__pyx_n_u_metric_to_pixel, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_trafo, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[3])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 127, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_5trafo_7metric_to_pixel, 0, __pyx_mstate_global->__pyx_n_u_metric_to_pixel, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_trafo, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[3])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 127, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
@@ -23806,14 +23806,14 @@ __Pyx_RefNannySetupContext("PyInit_trafo", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_metric_to_pixel, __pyx_t_4) < (0)) __PYX_ERR(0, 127, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/trafo.py":162
+  /* "openptv2/algorithms/trafo.py":162
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def pixel_to_metric_batch(xy, cpar) -> np.ndarray:
  *     """Convert N pixel coordinates to metric.
 */
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_5trafo_9pixel_to_metric_batch, 0, __pyx_mstate_global->__pyx_n_u_pixel_to_metric_batch, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_trafo, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[4])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 162, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_5trafo_9pixel_to_metric_batch, 0, __pyx_mstate_global->__pyx_n_u_pixel_to_metric_batch, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_trafo, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[4])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 162, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
@@ -23821,14 +23821,14 @@ __Pyx_RefNannySetupContext("PyInit_trafo", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_pixel_to_metric_batch, __pyx_t_4) < (0)) __PYX_ERR(0, 162, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/trafo.py":195
+  /* "openptv2/algorithms/trafo.py":195
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
  * def metric_to_pixel_batch(xy, cpar) -> np.ndarray:
  *     """Convert N metric coordinates to pixel.
 */
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_5trafo_11metric_to_pixel_batch, 0, __pyx_mstate_global->__pyx_n_u_metric_to_pixel_batch, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_trafo, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[5])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 195, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_5trafo_11metric_to_pixel_batch, 0, __pyx_mstate_global->__pyx_n_u_metric_to_pixel_batch, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_trafo, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[5])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 195, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
@@ -23836,7 +23836,7 @@ __Pyx_RefNannySetupContext("PyInit_trafo", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_metric_to_pixel_batch, __pyx_t_4) < (0)) __PYX_ERR(0, 195, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/trafo.py":228
+  /* "openptv2/algorithms/trafo.py":228
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -23854,7 +23854,7 @@ __Pyx_RefNannySetupContext("PyInit_trafo", 0);
   if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_p2, __pyx_mstate_global->__pyx_kp_u_cython_double) < (0)) __PYX_ERR(0, 228, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_scx, __pyx_mstate_global->__pyx_kp_u_cython_double) < (0)) __PYX_ERR(0, 228, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_she, __pyx_mstate_global->__pyx_kp_u_cython_double) < (0)) __PYX_ERR(0, 228, __pyx_L1_error)
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_5trafo_13distort_brown_affin, 0, __pyx_mstate_global->__pyx_n_u_distort_brown_affin, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_trafo, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[6])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 228, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_5trafo_13distort_brown_affin, 0, __pyx_mstate_global->__pyx_n_u_distort_brown_affin, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_trafo, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[6])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 228, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_5);
@@ -23864,7 +23864,7 @@ __Pyx_RefNannySetupContext("PyInit_trafo", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_distort_brown_affin, __pyx_t_5) < (0)) __PYX_ERR(0, 228, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "algorithms/trafo.py":276
+  /* "openptv2/algorithms/trafo.py":276
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -23882,7 +23882,7 @@ __Pyx_RefNannySetupContext("PyInit_trafo", 0);
   if (PyDict_SetItem(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_p2, __pyx_mstate_global->__pyx_kp_u_cython_double) < (0)) __PYX_ERR(0, 276, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_scx, __pyx_mstate_global->__pyx_kp_u_cython_double) < (0)) __PYX_ERR(0, 276, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_she, __pyx_mstate_global->__pyx_kp_u_cython_double) < (0)) __PYX_ERR(0, 276, __pyx_L1_error)
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_5trafo_15correct_brown_affin, 0, __pyx_mstate_global->__pyx_n_u_correct_brown_affin, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_trafo, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[7])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 276, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_5trafo_15correct_brown_affin, 0, __pyx_mstate_global->__pyx_n_u_correct_brown_affin, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_trafo, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[7])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 276, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
@@ -23892,7 +23892,7 @@ __Pyx_RefNannySetupContext("PyInit_trafo", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_correct_brown_affin, __pyx_t_4) < (0)) __PYX_ERR(0, 276, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/trafo.py":349
+  /* "openptv2/algorithms/trafo.py":349
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -23911,7 +23911,7 @@ __Pyx_RefNannySetupContext("PyInit_trafo", 0);
   if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_scx, __pyx_mstate_global->__pyx_kp_u_cython_double) < (0)) __PYX_ERR(0, 349, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_she, __pyx_mstate_global->__pyx_kp_u_cython_double) < (0)) __PYX_ERR(0, 349, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_tol, __pyx_mstate_global->__pyx_kp_u_cython_double) < (0)) __PYX_ERR(0, 349, __pyx_L1_error)
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_5trafo_17correct_brown_affine_exact, 0, __pyx_mstate_global->__pyx_n_u_correct_brown_affine_exact, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_trafo, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[8])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 349, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_5trafo_17correct_brown_affine_exact, 0, __pyx_mstate_global->__pyx_n_u_correct_brown_affine_exact, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_trafo, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[8])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 349, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_5);
@@ -23922,7 +23922,7 @@ __Pyx_RefNannySetupContext("PyInit_trafo", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_correct_brown_affine_exact, __pyx_t_5) < (0)) __PYX_ERR(0, 349, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "algorithms/trafo.py":428
+  /* "openptv2/algorithms/trafo.py":428
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -23942,7 +23942,7 @@ __Pyx_RefNannySetupContext("PyInit_trafo", 0);
   if (PyDict_SetItem(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_p2, __pyx_mstate_global->__pyx_kp_u_cython_double) < (0)) __PYX_ERR(0, 428, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_scx, __pyx_mstate_global->__pyx_kp_u_cython_double) < (0)) __PYX_ERR(0, 428, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_she, __pyx_mstate_global->__pyx_kp_u_cython_double) < (0)) __PYX_ERR(0, 428, __pyx_L1_error)
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_5trafo_19flat_to_dist, 0, __pyx_mstate_global->__pyx_n_u_flat_to_dist, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_trafo, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[9])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 428, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_5trafo_19flat_to_dist, 0, __pyx_mstate_global->__pyx_n_u_flat_to_dist, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_trafo, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[9])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 428, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
@@ -23952,7 +23952,7 @@ __Pyx_RefNannySetupContext("PyInit_trafo", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_flat_to_dist, __pyx_t_4) < (0)) __PYX_ERR(0, 428, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/trafo.py":459
+  /* "openptv2/algorithms/trafo.py":459
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -23973,7 +23973,7 @@ __Pyx_RefNannySetupContext("PyInit_trafo", 0);
   if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_scx, __pyx_mstate_global->__pyx_kp_u_cython_double) < (0)) __PYX_ERR(0, 459, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_she, __pyx_mstate_global->__pyx_kp_u_cython_double) < (0)) __PYX_ERR(0, 459, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_tol, __pyx_mstate_global->__pyx_kp_u_cython_double) < (0)) __PYX_ERR(0, 459, __pyx_L1_error)
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_5trafo_21dist_to_flat, 0, __pyx_mstate_global->__pyx_n_u_dist_to_flat, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_trafo, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[10])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 459, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_5trafo_21dist_to_flat, 0, __pyx_mstate_global->__pyx_n_u_dist_to_flat, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_trafo, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[10])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 459, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_5);
@@ -23984,7 +23984,7 @@ __Pyx_RefNannySetupContext("PyInit_trafo", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_dist_to_flat, __pyx_t_5) < (0)) __PYX_ERR(0, 459, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "algorithms/trafo.py":497
+  /* "openptv2/algorithms/trafo.py":497
  * 
  * 
  * def is_compiled() -> bool:             # <<<<<<<<<<<<<<
@@ -23994,7 +23994,7 @@ __Pyx_RefNannySetupContext("PyInit_trafo", 0);
   __pyx_t_5 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 497, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   if (PyDict_SetItem(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_return, __pyx_mstate_global->__pyx_n_u_bool) < (0)) __PYX_ERR(0, 497, __pyx_L1_error)
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_5trafo_23is_compiled, 0, __pyx_mstate_global->__pyx_n_u_is_compiled, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_trafo, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[11])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 497, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_5trafo_23is_compiled, 0, __pyx_mstate_global->__pyx_n_u_is_compiled, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_trafo, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[11])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 497, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
@@ -24004,7 +24004,7 @@ __Pyx_RefNannySetupContext("PyInit_trafo", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_is_compiled, __pyx_t_4) < (0)) __PYX_ERR(0, 497, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/trafo.py":502
+  /* "openptv2/algorithms/trafo.py":502
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -24021,7 +24021,7 @@ __Pyx_RefNannySetupContext("PyInit_trafo", 0);
   if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_p2, __pyx_mstate_global->__pyx_kp_u_cython_double) < (0)) __PYX_ERR(0, 502, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_scx, __pyx_mstate_global->__pyx_kp_u_cython_double) < (0)) __PYX_ERR(0, 502, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_she, __pyx_mstate_global->__pyx_kp_u_cython_double) < (0)) __PYX_ERR(0, 502, __pyx_L1_error)
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_5trafo_25correct_brown_affine_batch, 0, __pyx_mstate_global->__pyx_n_u_correct_brown_affine_batch, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_trafo, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[12])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 502, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_5trafo_25correct_brown_affine_batch, 0, __pyx_mstate_global->__pyx_n_u_correct_brown_affine_batch, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_trafo, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[12])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 502, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_5);
@@ -24031,7 +24031,7 @@ __Pyx_RefNannySetupContext("PyInit_trafo", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_correct_brown_affine_batch, __pyx_t_5) < (0)) __PYX_ERR(0, 502, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "algorithms/trafo.py":594
+  /* "openptv2/algorithms/trafo.py":594
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -24048,7 +24048,7 @@ __Pyx_RefNannySetupContext("PyInit_trafo", 0);
   if (PyDict_SetItem(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_p2, __pyx_mstate_global->__pyx_kp_u_cython_double) < (0)) __PYX_ERR(0, 594, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_scx, __pyx_mstate_global->__pyx_kp_u_cython_double) < (0)) __PYX_ERR(0, 594, __pyx_L1_error)
   if (PyDict_SetItem(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_she, __pyx_mstate_global->__pyx_kp_u_cython_double) < (0)) __PYX_ERR(0, 594, __pyx_L1_error)
-  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_10algorithms_5trafo_27distort_brown_affine_batch, 0, __pyx_mstate_global->__pyx_n_u_distort_brown_affine_batch, NULL, __pyx_mstate_global->__pyx_n_u_algorithms_trafo, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[13])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 594, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CyFunction_New(&__pyx_mdef_8openptv2_10algorithms_5trafo_27distort_brown_affine_batch, 0, __pyx_mstate_global->__pyx_n_u_distort_brown_affine_batch, NULL, __pyx_mstate_global->__pyx_n_u_openptv2_algorithms_trafo, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[13])); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 594, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_4);
@@ -24058,7 +24058,7 @@ __Pyx_RefNannySetupContext("PyInit_trafo", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_distort_brown_affine_batch, __pyx_t_4) < (0)) __PYX_ERR(0, 594, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "algorithms/trafo.py":1
+  /* "openptv2/algorithms/trafo.py":1
  * """Coordinate transformations between pixel, metric, and flat-image systems.             # <<<<<<<<<<<<<<
  * 
  * Translation of lib/src/trafo.c and lib/include/trafo.h.
@@ -24076,7 +24076,7 @@ __Pyx_RefNannySetupContext("PyInit_trafo", 0);
   __Pyx_XDECREF(__pyx_t_5);
   if (__pyx_m) {
     if (__pyx_mstate->__pyx_d && stringtab_initialized) {
-      __Pyx_AddTraceback("init algorithms.trafo", __pyx_clineno, __pyx_lineno, __pyx_filename);
+      __Pyx_AddTraceback("init openptv2.algorithms.trafo", __pyx_clineno, __pyx_lineno, __pyx_filename);
     }
     #if !CYTHON_USE_MODULE_STATE
     Py_CLEAR(__pyx_m);
@@ -24090,7 +24090,7 @@ __Pyx_RefNannySetupContext("PyInit_trafo", 0);
     }
     #endif
   } else if (!PyErr_Occurred()) {
-    PyErr_SetString(PyExc_ImportError, "init algorithms.trafo");
+    PyErr_SetString(PyExc_ImportError, "init openptv2.algorithms.trafo");
   }
   __pyx_L0:;
   __Pyx_RefNannyFinishContext();
@@ -24153,7 +24153,7 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
   __Pyx_GOTREF(__pyx_mstate_global->__pyx_slice[0]);
   __Pyx_GIVEREF(__pyx_mstate_global->__pyx_slice[0]);
 
-  /* "algorithms/trafo.py":182
+  /* "openptv2/algorithms/trafo.py":182
  * 
  *     result = np.empty_like(xy_arr)
  *     result[:, 0] = (xy_arr[:, 0] - imx / 2.0) * pix_x             # <<<<<<<<<<<<<<
@@ -24164,7 +24164,7 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
   __Pyx_GOTREF(__pyx_mstate_global->__pyx_tuple[1]);
   __Pyx_GIVEREF(__pyx_mstate_global->__pyx_tuple[1]);
 
-  /* "algorithms/trafo.py":185
+  /* "openptv2/algorithms/trafo.py":185
  * 
  *     if chfield == DOUBLED_PLUS_ONE:
  *         y_pixel = 2.0 * xy_arr[:, 1] + 1.0             # <<<<<<<<<<<<<<
@@ -24175,7 +24175,7 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
   __Pyx_GOTREF(__pyx_mstate_global->__pyx_tuple[2]);
   __Pyx_GIVEREF(__pyx_mstate_global->__pyx_tuple[2]);
 
-  /* "algorithms/trafo.py":257
+  /* "openptv2/algorithms/trafo.py":257
  * 
  *     if r < 1e-10:
  *         return 0.0, 0.0             # <<<<<<<<<<<<<<
@@ -24186,7 +24186,7 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
   __Pyx_GOTREF(__pyx_mstate_global->__pyx_tuple[3]);
   __Pyx_GIVEREF(__pyx_mstate_global->__pyx_tuple[3]);
 
-  /* "algorithms/trafo.py":26
+  /* "openptv2/algorithms/trafo.py":26
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -24197,7 +24197,7 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
   __Pyx_GOTREF(__pyx_mstate_global->__pyx_tuple[4]);
   __Pyx_GIVEREF(__pyx_mstate_global->__pyx_tuple[4]);
 
-  /* "algorithms/trafo.py":92
+  /* "openptv2/algorithms/trafo.py":92
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -24208,7 +24208,7 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
   __Pyx_GOTREF(__pyx_mstate_global->__pyx_tuple[5]);
   __Pyx_GIVEREF(__pyx_mstate_global->__pyx_tuple[5]);
 
-  /* "algorithms/trafo.py":127
+  /* "openptv2/algorithms/trafo.py":127
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -24219,7 +24219,7 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
   __Pyx_GOTREF(__pyx_mstate_global->__pyx_tuple[6]);
   __Pyx_GIVEREF(__pyx_mstate_global->__pyx_tuple[6]);
 
-  /* "algorithms/trafo.py":349
+  /* "openptv2/algorithms/trafo.py":349
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -24230,7 +24230,7 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
   __Pyx_GOTREF(__pyx_mstate_global->__pyx_tuple[7]);
   __Pyx_GIVEREF(__pyx_mstate_global->__pyx_tuple[7]);
 
-  /* "algorithms/trafo.py":459
+  /* "openptv2/algorithms/trafo.py":459
  * 
  * 
  * @cython.ccall             # <<<<<<<<<<<<<<
@@ -24297,25 +24297,25 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
 static int __Pyx_InitConstants(__pyx_mstatetype *__pyx_mstate) {
   CYTHON_UNUSED_VAR(__pyx_mstate);
   {
-    const struct { const unsigned int length: 10; } index[] = {{2},{35},{54},{37},{60},{24},{52},{26},{34},{33},{45},{22},{15},{179},{37},{32},{1},{1},{1},{1},{1},{8},{19},{5},{6},{15},{23},{25},{13},{19},{10},{7},{6},{2},{6},{35},{9},{30},{50},{8},{20},{32},{22},{30},{37},{5},{7},{16},{8},{8},{20},{8},{15},{3},{16},{15},{7},{18},{4},{4},{1},{7},{9},{17},{18},{19},{26},{26},{5},{4},{8},{12},{6},{6},{19},{26},{5},{15},{5},{10},{6},{9},{5},{5},{12},{6},{6},{7},{6},{7},{8},{12},{2},{9},{9},{10},{3},{11},{3},{5},{11},{13},{5},{8},{2},{2},{2},{8},{7},{15},{21},{4},{10},{4},{8},{4},{7},{2},{5},{3},{19},{19},{2},{2},{4},{10},{10},{5},{5},{15},{21},{3},{14},{11},{10},{19},{14},{12},{10},{17},{13},{8},{6},{3},{12},{10},{12},{19},{5},{3},{4},{5},{4},{4},{6},{8},{3},{6},{6},{6},{1},{8},{7},{2},{2},{1},{8},{7},{12},{2},{572},{370},{406},{10},{104},{165},{173},{305},{113},{113},{73},{106},{108},{279},{1}};
-    #if (CYTHON_COMPRESS_STRINGS) == 2 /* compression: bz2 (2591 bytes) */
-const char* const cstring = "BZh91AY&SYefQ\354\000\002\237\177\377\377\377\377\377\377\367\377\367\277\347\377\372\277\377\377\373@@@@@@@@@@@@@\000@\000`\nO\201\223\266\n\223\266\212\210U\024@J\300\000Vd%4\210\242F\324\014x)=\023\332z'\246\251\261\251\245\031\246\243\312z#F\236\3254\001\246F\207\246P\000\321\247\251\346\246\247\344j\236\220J\020#M\023#\"\236\232\211\346\251\344F4 \032\032\001\246\215\000\000\000\000\001\210\0004\001\223&\t\242`\001\0310\000\231\014\232\014C\000\000\002da\030\231\014\023F\006\201\030\204\030\000&\000\002`\230\000\000\000\000&\0010\020\300\000\021\200\000\002\014\000\023\000\0010L\000\000\000\000\023\000\230\010`\000\010\300\000\000H\246\232M\004CS\006\211\350j5O\323J\032b\003@\000\320\000\000\032\000\000\000\000d\365\034\323\323\315\350\337\203\350\330\036\314\246\204\261\364\010\215\227\276\315\227\217\031\217$\0168\344d\210\240t\022\225\020@\025%\036\252=b\341d\245HO\230<\315\266\333m6\223lcC`\306\014l`\330\206\r6)\025\321i9\204\036`\377\3104\301b\261[\202$\201!U\266\201\2616\003`\330\332m\276\240\264\345\247X\2630\022`\307r\201\306b\030\353\204\002\321\035\200\026\0160\200\252i\264\364\242\326I\220\300lm\2646\001\"\312\0103el41\233\204IS,\013Y6fx\302\301D\214\212\344*\234\001\024I\252#\210q\3035\226Rr\220\304P\317\245\230\344\n\246|Y\311i\225s\230*%bE\022\324I\2410\322\224\t\004\202A)\004\2270X\221L\334\307W#\243c\007\224\345\312j\n\310\224\362q#S\034\304\026\031\210\303L\262\013l$\311\235\300\322\224\315\013P\002(Up\035\340\200\tw%\360\002'G\314\315/\306\022`d\303\013\354\300\271\303\034\300\340~\231\030\020A\226(\003s\220\\\034A\016A\003X3\236\371)b/O\257\316\316\377\3077>0\203\3467\345u\203\250\312\321e\270\177\363\232\264[\251]Lx\"\307\371\306s\246c\245\3144\207H\204a8MuF\027\317\325\266\316\356\364v\036D*\036D\302\212\236\303\316$\357\244\332\\\236:\"\202=\005\"\301\\\300.\036}\327r\301\030a\205\202\302\304'\317\r\376Y\234lo\357\3659\361\rc1/\327\224w\362\327\365u\031vu\275\333\257\022oi\323\273Clxx\217\365\376\372E\200\270\3163lD\014\n*:\272\036\026R""\251\261\272a\205\245T\024\206\001\230_q\214\251%\023\367>\267\251\232\310*J\212\212\202d\001t\312\217F\341p\351?\355\375pu\030\336\336\017\207\265\264I{?k\356\331\300hl\271\033\031a\310\3211\004Q\377#\202\021\002\252.\215\230#\274?\217\026\335\247\036\224\002\211D\240P\270\372\272\237[r.\232L\235egT\353}\374\27379\372\360\316\327\\\014\0141\237\251\014\374\306\352\026\333\273\257\177U\365u\333Y\224\253\214<\221:\254h\320\201\261v8)\024\243u\261\317\314\004\245!`\347E\373\027\031\236A\277\322\315\031\231\254\314\314\363\3524\r\306!\211\212\307\023\230\352\326\033.\030\002\325\2747{7\244\2274\330P\254\010\020#\3028\374\314G\220\3638\216\265\206\010X\363\372[\022t\0234\262\326\2036\205\331\033YV\267\265\340\3161\334wU\357\010\363;\266p\263\274uRQPc\245k\320t3&b\347\216;\346\035*\324p\276\030&\254\302\272\345b\313;\333\n\262\230JM\206\270l\246\006\212\210\353`\252@\240\312\302\265\316\344\336\321E[\226\027\377\030\025\314\374h\204K\263\1777\313\372(h\361\377G\336\035>\346\322\240\0309\356\266\001\234\216\254\227L\264\307@K\210\265\230=5\310\033F\"\330\214\266\021\271\335\241gZ!\302p\235\231\302\3469\275\347m\021b\304bp\306\376&\360|C\260\337\316\020\020\333V\342\262\030\336kD\032\006\244p%\255k\027\247\325\321\331\2006\t~\310g\007l\326hf\032\017\255qW\372V\r\036;w\246\241\273\036\224v\333j\305\244jH\241\301E\255\220\327M\t#\340\177\313\233\226\343v\343pn]F\314\301\243\367\353\243q\302>\226\373_\027t\365\027N\274\256\014J\354\254V\212\203M2j\372i\335:[\244\210\350a\\\271yNS\224\3438\261\365\270a\370(\372!\277,/\014\327\232\333\3547\337I%\357\035\026\320:*\254>a\310 \244+\243\223\373QU\022M73J\304\311\234F!c\266\312=\006\037\030\255\273\003\213\026J\225H^tEN+\301\257\302\375\n\360\203/q\302\312\217\354\231\320\325\306\254\323y\241\255\342W\216j\223\225\230\006e\321\034\221,R\233E\336<%m\246\t\321\3052B\360\237\002\030\275\014\327\337\262\375\312\213\317\033\231'G\003\022\367s\032\375\322G;J\254\227\0003\244m\322\205\004>\036\035gq\335\327\253\214:\331\356<4U\0328\371""\360?\265U\025c}\351T\366@\276\214\2269i\222W\213\356~u\006\nD\2254r\2271\006\335\265\010\324d\253M\n\325\256\306\2724\256;g\037lX\227\254\025R\355X7\375\277\275\374U\014\240\030\270\0247\334\244\353C\224\272\364\264\325&T\246VF}($V\220G:d\332O\311\024e\037\001I\273\t\006H>\001\026\257\026B\034\014V\211:\255q\\F\007\244&\314\252+;S\234\364Ef\232\014\322<I\024\261\036\355\213*\300d\367Q\026a\255\225k%d^xF6\313`;.\034\202\363\214\252\360\274\250?i\333l\013T+\311\200\\//\301\311\3115)\306\212[\315\214g\223RZ\332\346DgyC$\003f5\307\001p\263`\372\220\224\205q\202#\020\264U\025C\226\2724\026\317ZQ\021\267r\331\2738\031\352\262(\246\325\0327\273z\014\270\326\256P\252Z\252\321\266\270\352\352\341\301x\236h\362ymODOxyG\013\304\310eX\021\350\272\0214\031\236\r5\313N\301B\351\r\2479\304\202\023\340\340N]oq,q\362T\253\360o\302\016\244\\(\256\230\251\205\022\373\274K\211\034A\306\203\300\275\251\310\2750\350\3456\014\325Jpn~)\264*\364\024\245\252\306\315\225\256\303\272\263cn\325\321\353\241FS\220u\350H9\253\310O$\365\026d\0303\037I2\031\343x_i\264\333\264\332\271\325\216NF\272\306\021\273mk\243\244\264\267\275\217\013\323\231\303n\370Tm\226\363\241\030\324-\315\203\200\253\023\255\340\271\rex|\323G'\201\014\355\003%\253Ylu;\201\222\t\242\376\274\027\020\220\221QP\344\255+zF-\255\032{\2436\235&\323V\237\"\341\212\302\212\374x\017%G\344U\235:\031vT\236\r\300\233w\346\257O\021M\363|\306\343sy\227p\336N>k\366\335\005\207\232)\336\253\3258\276\312v\347\032\025\006O\324\325\000>W\207Ab\006\231r\35613\031\266\357\322\3058\213\330\235\027\261t3\350\224a\005\277\014!fR\022G\2054J&vc\031\325-Tf\347s\316\200\232\371\207\365\360~TrC?2U\275\270&D\201\316\375\230\357\215\366&\014\303pm~\037\277y\t\230\336\r\223r.\356\223b\004m\267\300\321]!\307\r!\365\373\214\204U\335\026P\334\253:DF\333\255\034!\363\310\177\013Pw\225\2739\034\210\222\032.r\007\214\353\177\255*@\223\300\344F\021\037\333L\334\242n\334\005\300xt\270X\234N\207L:\361\360\037\021>\004\223\246\200\346 \234\332b\345\310\214<\021*h""\300\362\\b\341\305\006\372\310\273u\303\215\315h\017\022E/P\241\332G\305\003\273~0\035\006\27519J\014\321\027\257n\220x<EJ.\231\013\311\214\205$\007\373\277\302A\240\021\r6\274R\347\013\273c!\201\262\306\021\\\216\344\221\336\246ST\035\223\276\372\362\250\250\263eL8;\352\273`6\326\250\2428vCP\377\2148\010j\247\214\027)\202\237W\007\3409\364\313\325RJ\327\2605'\255\001\327\2661t\351\335E1\"F\230\270\327J/\260l\016=\365\217Q\342H\235v\014\340\362\351\275\326H\337\243\230\220^\323\201\244m,]\316(F#\357\224P\226\235'\023\366\244\036HZ'T\023\271k\331S\234\0165\n\327bsj\027\t\215\226M\273\2431\372\030\340@\267\260h\333\264\370Qg\327\303n\337\314\\\226\t\2554\305\244=\250=\226\353\333-\373\352!f\324\302t|\217d&ed\355\367\246h\023\017\240\326L\377Q6}\206\260\213\005r\275\177\017P\257]\2535R\241\257C\267>\246\263\225J\205\304NV\322+\325\254\305K\325\215\030\016l\352\3114\233\331\034#\030\206=<C\003\260-<\013N1pZ\033C\020\345\207\233\300\236\307w\350&\032\271\234\023\006\003\001\254t\316\326\300l\217\365x\033n(q\036\221\336C\231\271\254\212\314\223c\320^\364R}\242\204?\266:\014KA\210/Fd<\257\215f#J\215\2703\2140\255\242\220\342'\013\245\222U\265\234\022\\\314\221\221w\014\321\220\350\340\353$\352\207\201S\372\004\214\221\264\205\304!c\235W\\Vp\255GZ2\255\006)\001R\247V\243\326\342\267\273\006\255\005\235U\311\325\265\327T\222\234\\\016\215eiZ\325\320\201\221|\354Z\220\335\177\370\273\222)\302\204\203+2\217`";
-    PyObject *data = __Pyx_DecompressString(cstring, 2591, 2);
+    const struct { const unsigned int length: 10; } index[] = {{2},{35},{54},{37},{60},{24},{52},{26},{34},{33},{45},{22},{15},{179},{37},{32},{1},{1},{1},{1},{1},{8},{5},{6},{15},{23},{25},{13},{19},{10},{7},{6},{2},{6},{35},{9},{30},{50},{8},{32},{20},{32},{22},{30},{37},{5},{7},{16},{8},{8},{20},{8},{15},{3},{15},{7},{18},{4},{4},{1},{7},{9},{17},{18},{19},{26},{26},{5},{4},{8},{12},{6},{6},{19},{26},{5},{15},{5},{10},{6},{9},{5},{5},{12},{6},{6},{7},{6},{7},{8},{12},{2},{9},{9},{10},{3},{11},{3},{5},{11},{13},{5},{8},{2},{2},{2},{8},{7},{15},{21},{4},{10},{4},{8},{4},{7},{2},{5},{3},{19},{19},{25},{2},{2},{4},{10},{10},{5},{5},{15},{21},{3},{14},{11},{10},{19},{14},{12},{10},{17},{13},{8},{6},{3},{12},{10},{12},{19},{5},{3},{4},{5},{4},{4},{6},{8},{3},{6},{6},{6},{1},{8},{7},{2},{2},{1},{8},{7},{12},{2},{572},{370},{406},{10},{104},{165},{173},{305},{113},{113},{73},{106},{108},{279},{1}};
+    #if (CYTHON_COMPRESS_STRINGS) == 2 /* compression: bz2 (2611 bytes) */
+const char* const cstring = "BZh91AY&SY\001\206C\206\000\002\241\377\377\377\377\377\377\377\367\377\367\277\347\377\372\277\377\377\373@@@@@@@@@@@@@\000@\000`\nO\200\034N\211-\262R\321\205\266\202\205K\336\240\007]\352\tB\"\246\203@i\223\3124\323z\236Jy\251\206\247\245\006#&#@\365\000\0324\001\240\000\006\206\232y\032\231\004\241\004\231211\r&\223\310'\252yM\242\000hb\r0@\006\200\000\000\017H\320\320i\240\r4 \"iF\200\000\006\232\003@\000\003C@\032\000\000\000\000\320\032\006@\032jSPh\000\301\000\r\033@F\203L&\200\003 \310\323M4\000\0004\003@\000 \300\0010\000\023\004\300\000\000\000\0010\t\200\206\000\000\214\000\000\004\212\001\004\324\324\364\310\323CM\004\325?MQ\372\247\244\3104\365\031\000\000\000\032mM=G\250\003F\214@\006OQ\2708W\234\033\016lJ#E\t\207\013\367c\304\273\242\211wZ\331n\343\215g\334EQ\352\014\2414\240\202 H\232=\304{\245\202\211ML'\346\0173m\266\333M\244\333\030\320\3301\203\033\0306!\203M\212b\262)3\204A\346\017\374\203\032\253\225\313\224#2\"B\223m\003bl\006\301\261\264\333{B\223\277\036a`TI\203\035\210\006\222\340\273(\240\026(\334\001@\322\021\t&\233O\030,\211\227\214\006\306\333C`\023\025\361\"`\311Phc9DL\221}JQ6`t\205\003\025J\227Tl\352\n%{J$\373\341\275\206\030\337Z\220(\215\034\020\201\3266h\323\010\254\306\253\257\274\032W\n\211fJ\364^\034\013\020\250T*\025\250Up\205\t\212s\261vmN\r\214\035\363\277\200\314\022\230\224\365w\221\231\216q\211A\227\0141\276\360\246\202e\354\353\006\224\3231)\000\010\300\222\336;\010\010z~^\260\271\037on7\337\022P\306|\214U\307\266?W\235\263\013z$\236s\010\341\322\247\035gL\251X\025\235\344E\210y\0318x\017\363\277\271\214 \365\013\364\272\300\326\251X\251\270?\352\375\020\335m\034R\373D~)\013\026\300VbV\261Vd\022\204\240\367\232S\263*8\0308H4\243V\201 {\304\302\n\036\367\270\231\331\t\322ngL\021\001\036r\230\252\254T,\036\033.\265TV\265\240PW\004\374!\317\340\234\356\241\317\331\370\365\334\031\014\270\2675\361\354\340\227\257\264\233W!t\351\300\357b&\342\242\273e\005\361\262\032r\037\317ohID\270\270\275\316p\24023\223\201\312\310I67\017p""\265\253E0T\013\006Aw1t\324\311\242\177\223\324\365\260W\205\225\213\026\013\311\203\342\2562P\367\361#Y{\037\343Dq\201\253\240\345~_C![\307\354K{\1779\230\337\261\035\366Ps\032'\030\221\203\376fx\242\"\222,\215\372\241\302\035\235\2727\215\223\316\004\351:N\023\230\217\267\217\356l\330\246I\211\245%;\007\343\331\342\303\1777=U\266,@\300\303\025\361\302\276cq\224Q\310\317\273\226\234\035\306\316[$\261\207\234'a\214\231\0208\337\034B\021\204\033\225\r| M)\205\003Z-\271i0\2749\374X#\003\005\201\201\206\033LC\224\270..W\\p\233r\r\026\n\202\315\316\034\277\005\3432\304\365\214=\303\207\017\355\0144\277\261\373\223\177\0076\364\007_\217o\241\013U\0221\314\344M|PM\341\316\340\3618u\214s\355\216\356\004v\033\245`k\226\r9\020P(\305\274\350\032\027\322\370\271\310\236\234\007\t5\034\357<I\311\225\226SW2\216\324\254\231\n\315&\303(\2664\204\351::\210*\220'\031XV\304\356\nZ(\253\211aOn\242Y\217\322t\"b\307\375c\374\272\005\005}^\323\352\016\267\205A\200\006\017\021\324@2\021\242\325\272K\243XI\231e8\244\266T!\257H\360Px\024\312?\000\303\332\240w\035\307\200\356\214\017\017\213\320\240\351\002\224;\251\237_8|\363q\321\254\"\021m\252w\250\2067\202\305\006!\231\033\311d\262\023\251\267]\372\253\006\255*\321\014\200\355\031\313\031\206\203\345[U\375|#G\222\3361\230\225\333\235*\363\346'J\231\222 oAd\310\265\311\002d~W\374\261\265m6\3556\206\325\314h\300\032=\254\240\334s\217\215\276\247\336\353\236\322\311\313\201\304\270\226\211FPP\032i\223\222\350nL'\216\201\316\275A\363]qqqaT\277\335#\227#-\356U\340rmA\371c\256 \234%\200\203\270h\256`4IP\365\003P\003\322\326O\331\000\224\021Z\262\255,KY\304b\030]\256H\370\354>1Z4\006\324Y0*\220\244\350\212\233O\006\246\252r-D\002._\007\224\312\217\330\316\206]3\022\322dj3Kf<\t\303\214\006e\311\033Q0\251>\261u\036J\266\262\244\350\330\226\241HM\274\205\217C\0354\350\246\374\005'O\212GF\242\302\230\367C?1S\303\214\225\353x\031\3066\341\002\002\036|\371\035g_6m!\314\317G\222\nCF\235u=\326\330\3353\347V\277\216f|`\260\213\307R\273L\262\226\206\020""\014hW\035\376\327\274M\267L\3023\027\251C\022Rks[1\225\334S\273\341\224&\362\005$\272\225[\376\377_?#\rS\r1\006\0351e\367#\265\361pB\366\257,\315XR\376\224\022+<\021\316\230\231\244}\250\243(\370\nL\352\244\013P|\002--\214\2047\224Q\022\263\274\302\221\n\003\244*\252H*\331\306gD*\265@\253!\211!m\211(\361\272\334\003'\327\004Q\206L\223W\252\"\323\3161\266R\243\270\252\316\301\202\022\301\037J\3338\375g}\240(P\226\326\002\252Jjrp\031T\323\024\243\227\030\335\252\030\327\212\031A(G\352\220S\016<\372c\342\302\323\036\214y\tU\026\250\342hJ\004\362\033\033G\276\323\244\312\375\213\024\265n|\233\260\251\242\330Q3\241\330q\256x\363\322\017M\356,.\256\273o\364]M|\331\\Yt\274\021\331\333Xy\342}\001\3328\256\226E\222`G\317p#8\014\306\2555\301\r\302\212\343\r\376#Y\276\202I\347\316\234\334\256\270J\373\373$I\352\347\254M\250\260AY1B\260K\311\241hF\200\324\203J\370E\311\323\014\267\025\212P\315\216\365\334\204\\\217\274f\213\324U+{\3536>\0213\347K\367\342\243|\357\016lI\203\234\275\030`'\202y\025dK2\377\212\231\026u:\333a\260\331\260\330\270\225\016\016\006\267\014#\267d\245\213\204\332]\017C\255\241\255\305\267j\310m\224\360\305\027H)\256\256$\230\330\245h\026\"\325\366\213\341\234\034\315\3643\276\005\3536E.\314\354\005\350/O\301\337\310\235EF4v\274n\222\245!\304\210M\250f\272\343p\313wW\020\304\241:\276\315\363\254\243\3550V\232\355\331<\3256\362k\335\231^\237-\235'I\246fF\315\320{\r\313\277\275wU\220Px\242\035\212[gs\335\016\254#\211 R\035z\034\002\334\262^Dp\251ow\210\264\306c\327\206e-]f\357\227\007\030\243^L\021\204\026\232\252\206\033d\022C\310\231\022t\242D(\273~\344L\226\026\212\234\303\315\373=\337\247\207\270\3552Q\371|\203L\230o\372\350\365\005\3534\025<\202\361\177_\321\345cH\362\207\246y%\010A\224\363\000\210\311\242\213\0330\240\240\034\005C\320B\010k\276\017\330\033\255W$,\0223e\243\207v\003\346\270\3034)\235q\207\212\252#\330\327\017\271\311\376\244*\240\252\3165\324\264\021\336\215\323\364\024\315`\014\361\274\343\311\002\340\250\205\024\n=\323\304\200\275""\351%E\030\005\r@\246f!R\243\304\031\312B\250\367\037\312\210T5\\\2361\354\231\001\254\306;\206y\002\303\212J\311\003j8\320\260\367\014\241\2233\315\202R\360R\275}!\314\346x\263)X\270WT.\023\016\033\323\371 \021\300\360\252\225\311\230\375\263%\261\323\245\327\271\353\256\314@\377D\320\226A\221Y\264\327e^\257D\272\25003Yd\234\351\255\221^0g\0061\376-N:\312\263\334\273\004\363q\247\365\214x!\344,\020\245y\322c\216\341\227\234!X\302\254\244\317\036>g\260\225\211l e\0145\205\267\214\317 V\\\322\3646j\265dU4\345\332\252\205z\2568\246b\352uu\\\367\215\246K*\255Y\215V\317\200h\035!Me)\261'1i\237\246\022U\2236\231\230\352\204fZ*ibF{\313n\034R\3121)H\326\224\213\225j\225.\341R\027*H\221\222(\3229\242L\212E.\242\274\"\2221YN\323D\021\242\304t{\361\243\210\306\303H\214\036\"\246\r\024\242\245\022\201B\207\237\024\241A8\t\200_\2312\262__\343\261\200_\225\024\356\214\333\014\371s!w/1\272\341\216~[R\343U\247(b\300\263\251`Tm\224\034\372\014\023r\027\241\206\027\301\212\035h\323GC\274F%\002\364#\t\311\314s\010\317\312\014\262\036\257\215}92\0034\037\205\220-d\211Nd\350y\313\322\024\317T\201\027\343\034\006\021-\004 \023R*\rgG\2035\256\t,,iI\342\312\305\232\022\232%R\225(\342L\261\2011\221\263\214!J\221\247z8V6$\005\245\361\212\232\2248\000\270B\0263O$\025`V\326\274\024\233B\213`\nM\250C\233\205\035\262\353D\006\263\244\232\213u\323IV,\003F\201\325\335\312\206\0044\354\210\212\261/\377\027rE8P\220\001\206C\206";
+    PyObject *data = __Pyx_DecompressString(cstring, 2611, 2);
     if (unlikely(!data)) __PYX_ERR(0, 1, __pyx_L1_error)
     const char* const bytes = __Pyx_PyBytes_AsString(data);
     #if !CYTHON_ASSUME_SAFE_MACROS
     if (likely(bytes)); else { Py_DECREF(data); __PYX_ERR(0, 1, __pyx_L1_error) }
     #endif
-    #elif (CYTHON_COMPRESS_STRINGS) != 0 /* compression: zlib (2515 bytes) */
-const char* const cstring = "x\332\275VKs\333\326\025\226d\312\241\2427e'\266\343\330\220\344XN'aC\212q]\217\353\216^v=\223\330\026i\331\2163\035\314%p)\242\002\001\n\017\211L'\035/\261\304\022K,\261\344\222K-\275\324\022K\376\004\375\204~\347\002\244([\343L:mgH\360\340\334{\317\353\373\316\271\274/\255\273\265\032\267\244\003\215\037J\252\311m\3110\035\211\267\232\246\315%\333\2614\225\333\033\314\220LCoK\212\305\231\303%&U\223CN\2359\222fK\212i8\332\256k\272\266\244\031R\2037L\253\235\307)2\305l[\3335$\307\224pX\375V\330Iv\220\313tSj\370\320\322\034V\325y\272!\t\252f\231\215\217\235\325\014\225\267\244C\315\251KN\273\311\245\225T\357X\314\260E\032\247G\222m8\241Y\\q$Ukp\303\326L\303\336\354K\322W*eD\006\222M[\215\246\323\226\354:\203i\307m\"\270\232iIJ\333\251\233F\236Y\026k?\371\320\2348o\273\315\246i9\\}b\0340]S\245\206\251\362o\250\266\330\314UiEY\221`j\005\366(\326\225o\244]\234\352oN<\242\234\254\205x\036\374(rxI9\2305\351\251\211j\211\352o\210@(d\225\353Z\225[\250#\252D\310\301\211\200\310\220\236o=\377\266t\257$1CE%\377\001\3676\242\253*:\300\001\3420Xu5\335\2013\252\240\235\227\236\324\244\266\351J\006G\230@\256\211}\303\007\234:7$\233;$H+\242\334\314A\3362\216k\306\356JZ:\355\200\323\351GL\267y\376\231\353\010G\246k\250pi\3649\304\024\205\303\372\035\221\346\216!\340\307!P\352\200[@\327\341\rz7\253\024v\376\341\312\327\177e\252*\303#g\372\256\t\302\324\033\366\037Q\277\232\231o\266E\206\022\312\362]K1u\235b\000\032yVU\036\014q\2246%\021>|_\335\247\306\303\024`\325t\021\320\231\227\237\357\177#\335\377{\252\322\014G\325l\n\232\213\320w\025\351\016\241\270+\370C\t\242\036\200\334\341\206#\232c\300\021@\226\034Q)E[\373\205K\017\376\"}\367\001\273\014\023\310\326\230\253;\222,[\\u\025.\313\222\352\212*\031\246\361-\220>\320\230\216UE34\007\213I\255\036>H\332W=\223\357\207:\342\340 \3553\353\003\255;\200\205\351\272\251\210\031@\261I*sX\376\234\325\204\274d#\035!\371\265\312\306\223'\233\317v\326\177\330\332L\177\344\347?\354T\344gO\267\266t]k\332\232\375\364\231\\\336\372q\355\271,?o""\267\360\335\004\205\345\247(^\231\327*|\337\345\206\302\251\003\362\247\315\000dOi\220\0274\350\007!'\004c\266\010\225\331mC\321\314\274bZ\246\013\246s\273\312l^5M]Q\3525\215\353*\352G\364\226\345\276\260\313\035\202\206^\261_\326@o\213)\274\312\224=X\241\302\310U\313<4dV\253i\3069*\204\300\034\245~\356\no1\305Q\320\014\216\322d\226,\253\224+\236\266#;\246\\\323\231#\344\226x\266\351\211)1l\342\034U\352O\245&\026\017Y\263\345\204\014\234\246\230x\310\272\266\007\262*\230E\334p\033b`p\3132-\370\334\265\3111\005@\326\205\334\022\317vM7\231s\267\004r6\230\223\016,Y\256\271\206B\365B\245l\207J.k\340\267Ld\226[}\241\rm\203\006!\375B\333\222MK\246\244\265F[\314n\004\251\230\215\246\206V\220\205\234\"\224\364E\332\034{\205\275\342\336\252,7\030p\2201\321i\23478\2159\212\267\251\265\270\376\336kR\r\032\2728`\252\256\216_\2035N\237\024\253l\360C<\232(E\263\215Z\231 \302{vH\225\030\204&Yk\026\232\305&x\000u\232\355@j\223$^\333\357\037:\373\232\204\3274\233\262\334\004\335\225:W\366l\267\221\274\245\345$Q\000)$\327hj\312\036\322\3302\372\373\016\304}I\030\354\273LO\362:\035\023\003)\031(C\n\336\"q\027(\003{\356\270\226a+Pa\246\247\305\201\224\216\035!\247\361\014\311}\223\242\325\355:\247\344\261ba\2317AM|-\2278\355@\215\247\251#|\224\314mbhp\334q.\267[\255\264\026\255\244\300\255z\253\335n\247\272v\242k#\316\006k\022\202\274]\177;z\222\035\231\3704\316N\234\371@3\361i/\363EP\014^\206\205p-\316\\\rr\301\3350\027\256\206jt\2733\326Y\2143+\341~\234Y\016\013\275\314\227\301N\270\030\026\342a\341\0056\013a\233\016\317\3070V8\371nd|\302\033\367v\374E\277\020g\247\274\307~\301\337\360\367\207\304\223\213#\0233^\331\263\374\3718;-\204+p\215\3353\236\342\347\374B\017{\267\374\313>\303\261\251\313\376\266x\340\324\364\274\177\021J;X\n6\002+\\\010\327C\026O\315\342<\016\305s\264\223\036=<\312\276\205\200 T\202\261`qH\220\302\014\216)Q.Z\215\252\235\013\235b\247\322\035\353.w\313\335\375x\356j\260\020\254\007F\264\036)\235\205\316F\307\352^\302\202}\264t\264\371n\354\335\255w\325\343""\347\225\343\312\316\361\316\353\343\327o\216\337\374\374\237\234\270\354\277\300\231\307a1|\035\225\243\375D\221\013\356A\261\335\233\312\371K\376\272\257\"\303\265x\370\205V\226\221\325~\334\027z(\312K\200W\t\307\302;\3212l\331\235\345N\271\323\202\367\305x\352z\360\0100\255\206\325\350BT\214*\002N\224\352_A98\010_D\237C\221?\032\303\316\271\371^vA\000\343\302\347\251\330\313Lz\205\377\rwN\256\375&GH|\204\345\242@2\007G\345\000\312I\257\010\276\240\010\237\373\373\301\205\340\373ptH\354M\315\203\010E\342\313\274\277\200\312\261!\341z\260\211B-\207\345\320\216\226\242\215\310\002\\\353\035\245\233\353\026\210^\344\345FhE\013X\262;K\235M\220b\251\273\336U\216rG\245#\353\335\302\273u\302\262|\\\256\374\356\355\375\0003\341Fx\010\322e\261yqX\275\036\326\241\036M+\336\373$\033\343s^\311\343\t\264\331\311\215\221\361/\005\272Edc\201\311E\"R/\363\311\333C\257\352\217\306\331Y\317\365\327>\322\262h\245\361kiQ\255\360*\352\001\004\257\240?\210h\324\304\242\247O\256\237Ai\332\253\370c\202z\266`g\252X\034\010\275\354\025\344\223\020r\270\316\340W\262#/\026*\202\220/:\271\316j\247\332\315\240h*\272e#-\032\213\177\317\346^6i\221*b\377z\320Q\331\204\006\257\2112\275\354%\3771\202\332\216\373B\017S\246\216\023\243q_\350\201Vw\375y\377\017b\252\344\302\373h\027\032\014\340\3214aR\362\366\217Gh\256d\346\375y\34035\215\205\367\361\371\000\245\245\221\361\251\343\311\257Bx\236\363\263A\006\374\313\204\233Q&\332\352\\\356\260^f\332{\001\237\350\223\2010\351\375\t\331l\006\237 \n\3709\371ld\234\306d\013<\311\000\357\245\020\340\\\r.%\323V\374|\021\224\320\025\375\237k\301\255@\030.{\377\014\026\t\305O\275[\036\367\357b3\201r;\032\213n\021\321\342\314\214\247\nWc\301mAK+\232'\376\264<\233\000]\360\357\241R;\3441\236\240\016\002\3329\377NB\217\304f!N\307\303\177'\310\232\377\010z\005\305/!\226\313I7\014\342\311\371\267\200\323\305@\025\274\332\037\212\251\257_$&\334F\004i\2005\221\333\255\240\032N\240?\372\301~\244\263\210\3547>\326/W\223\366\350\367\311\337\304\335\003_\3134\217N\233F""\\\204\357\315\2679\177\202*A\327\336\334\361\354\022L\227B'*EN\247\324q\272\245\256{$\272)aA_\240\335\263h\3471\221\243 \353\340%Y\023W\345\340\316$]\316\377\014s\211.\244zz\303)\350\234{\335\325.\332\352\n\n\305\002\033\010m\210\301\265\0361\232\247\017\305\340\276\024\276\202\302@\177\261S\322\243`\3233\361\364Lo\3423L\320IJQ<\246\257\005\213'S#\343Y\314\033\346\375J\263`V\344\025'\235A\223\355\274\007\314\036O\336\010X\277\364\300\304[\033\206\002\016gf\343\231\331\377\247\303\337jf\302r\326c\3242\254o/h\205\255\001z\316\321\367\357F\373\245\212g\347\35037O\237\334\315`\237x\225}\373kr\245%|\315\242\025\027c\244\250\340\037J\252\003\333o\302\252\025]\303\334\331\301U\002\242\335\014~\001\206%L\320\253\244 P\356\373\333\375\032}\350\351\0321\370'\\\370\223\260\361\246k\035\315\023#\337\300\350%\214\3056]:D\344A4g\272|\020M\332\345\223\336\237\375\265\217w\21442~\305?\010\266\321dc0\262\016\317c\321\"\265\255\345\345\274\302\340\032\272r\3329\027\304$>\025\226E\273/\210\177O\311\210\277\320-v+\364\277\244\227\271\016\036W\303\031\361/mU\334\324%$\225;*\036U\316\376\265zu\374\352\247\343\237\336\304\277\373\304\207W$E\233\3015p\210d\262\311\337\030RPCU\243\321\264/\236\375\033\266M\270\267";
-    PyObject *data = __Pyx_DecompressString(cstring, 2515, 1);
+    #elif (CYTHON_COMPRESS_STRINGS) != 0 /* compression: zlib (2531 bytes) */
+const char* const cstring = "x\332\275VKs\333\326\025\226d*\241\2427e'\266\343:\220\344XN'aB\212q]\217\353\216^N=\223\370AZ\211\343L\007s\t\\\212\250@\000\302C\"\323I'K,\261\304\022K,\271\344RK/\265\304\222?A?\241\337\271\000)J\3668\223N\333\031\022<8\367\336\363\370\316w\316\345}i\323k4\270-\035j\374HRM\356H\206\351J\274m\231\016\227\034\327\326T\356l1C2\r\275#)6g.\227\230TO\017\271M\346J\232#)\246\341j{\236\3519\222fH-\3362\355N\021\247\310\024s\034m\317\220\\S\302a\365\013a'\335A.\263M\231\341#[sY]\347\331\2064\250\206m\266\336uV3T\336\226\2164\267)\271\035\213Kk\231\336\265\231\341\2104\316\216\244\333pB\263\271\342J\252\326\342\206\243\231\206\263=\220\244OU\312\210\014\244\233vZ\226\333\221\234&\203i\327\263\020\\\303\264%\245\3436M\243\310l\233u\036\277iN\234w<\3132m\227\253\217\215C\246k\252\3242U\3769a\213\315\\\225\326\2245\t\246\326`\217b]\373\\\332\303\251\301\346\324#\340dm\304\363\340;\221\303\367\224\203\331\220\236\230@K\240\277%\002\241\220U\256kun\003G\240D\225\203\023Q\"Cz\266\363\354\213\312\275\212\304\014\025H\376\003\356\035DWWt\024\007\025\207\301\272\247\351.\234\021\202NQz\334\220:\246'\031\034a\242r\026\366\215\036p\233\334\220\034\356\222 \255\t\270\231\213\274e\034\327\214\275\265\014:\355\220\323\351GLwx\361\251\347\nG\246g\250pi\0148\304\024\205\303\372\035\221\346\256!\312\217C\240\324!\267Q]\227\267\350\335\254S\330\305\207k\237\375\225\251\252l\020\000\224\216\004\014\276j+\246\256\223C@_du\345\301\010!iS\032\316\303\213\352\001\017\036f\325TM\017\336\317\275\374t\377s\351\376\3373\225f\270\252\346P\204\\\304\271\247Hw\250d{\202,\224\r\222G}]n\270\242\023\206\204@}\322#*\345\343h?s\351\301_\244\257\336\240\222a\242\214\r\346\351\256$\3136W=\205\313\262\244z\002\022\3034\276@Y\0175\246cU\321\014\315\305b\n\314C\307V\2764-nX\356a\371K\246\357\231h\245f\313\371\022\314j\230E\253\363 \355e\365\034\036o\352\210\220CX\316\255\017\265\336\260FL\327ME\014\004\212]R\231\313\212oYM\231L6\262yR\334\250m=~\274\375tw\363\333\235\355\354G~\366\355nM~\372dgG\3275\313\321\234'""O\345\352\316w\033\317d\371Y\247\215\3576\370,?\001\270U\336\250\361\003\217\033\n\247v(\236u\006*?p*\247\354b\216\010\2159\035C\321\314\242b\332\246\007\232s\247\316\034^7M]Q\232\r\215\353*\360$n\313\362@\330\343.\225\212^\261_\326\300m\233)\274\316\224}X! \344\272m\036\0312k44\343-*\204\300\\\245\371\326\025\336f\212\253\240\023\\\305b\266,\253\224\033\236\216+\273\246\334\320\231+\344\266xv\350\211\0211j\342-\252\314\237J\035,\036\262\346\310)98\2150\361\220um\037\344U0\210\270\341\265\304\264\340\266m\332\360\271\347\220c\n\200\254\013\271-\236\235\206n2\367n\005dm17\233V\262\334\360\014\205\360\002R\216K\220\313\032\370.\023\271\345\366@\350@\333\242)H\277\320\266e\323\226)i\255\325\021\203\033A*f\313\322\320\032\262\220\263\n\245}\2225\313~i\277\274\277.\313-\206:\310\030\3474\313[\234f\034\305kim\256_xM\321\240\211\213\003\246\352\351\3705X\353\354I\261\312\006?\302\303\002\024V\007X\231 \302\005;\244J\rB\223\256\r\332\254x\326fE\321fV\311*[ \010\366g0\014\245\016I\342\265s\301\332\205\3274n\313\264d\331\002\357\225&W\366\035\257\225\276e8\223(*,$\317\2604e\037\371\355\030\203}\207\342\026\245\342\034xLO\023>\233'C)\235<#\n\336&q\017\345\007)\270\353\331\206\243@\205I\237\241\006)\233OB\316\342\031\221\007&E\317;MN\311c\305\3062\267\300Y|m\217\310\356B\215\247\251#|@\346Y\230\036\0347\237\307\235v;\303\242\235\"\337n\266;\235N\246\353\244\272\016\342l1\213J\313;\315_\307O\363cS\037$\371\251s\037h\246>\350\347>\016\313\341\367Q)\332Hr\327\302Bx7*D\353\221\032\337\356Nt\227\223\334Zt\220\344V\243R?\367\207p7Z\216J\311\250\360\002\233\205\360\234\016/&0V:\375jlr\312\237\364w\203\345\240\224\344g\374o\202R\260\025\034\214\210\247\357\215M\315\371U\337\016\026\223\374\254\020\256\3025v\317\371JP\010J}\354\335\t\256\004\014\307f\256\004\317\305\003\247f\027\203\367\240t\302\225p+\264\243\245h3b\311\314<\316\343P\262@;\351\321\307\243\032\330\010\010B-\234\010\227G\004)\312\341\230\022\027\342\365\270\336\275\324-wk\275\211\336j\257\332;H\026\256\205K\341fh\304\233""\261\322]\352nu\355\336e,8\307+\307\333\257'^\337z]?yV;\251\355\236\354\276<y\371\352\344\325O\377\311\211+\301\013\234\371&*G/\343j|\220*\n\341=(\236\367g\n\301J\260\031\250\310p#\031}\241\225Udu\220\014\204>@\371\036\305\253E\023\321\235x\025\266\234\356j\267\332m\303\373r2s#|\2042\255G\365\370R\\\216k\242\234\200\352_a5<\214^\304\037AQ<\236\300\316\205\305~~I\024\306\203\3173\261\237\233\366K\377\033\356\234^\377M\216\220\370\010\313eQ\311\002\034UC(\247\3752\370\002\020>\n\016\302K\341\327\321\370\210\330\237Y\004\021\312\304\227\305`\t\310\261\021\341F\270\r\240V\243j\344\304+\361Vl\243\\\233]\245W\350\225\210^\344\345fd\307KXr\272+\335m\220b\245\267\331S\216\013\307\225c\373\365\322\353M\252e\365\244Z\373\335\333\007\001\346\242\255\350\010\244\313c\363\362\250z3jB=\236!\336\177?\237\340\3636\310\223)\264\331\351\315\261\311?\210\352\226\221\215\r&\227\211H\375\334\373\277\036\371\365`<\311\317\373^\260\361\216\226E+M^\317@\265\243k\300\003\025\274\212\376 \242Q\023\213\236>\275q\256J\263~-\230\020\324s\004;3\305\362P\350\347\257\"\237\224\220\2438\203_\351\216\242X\250\tB\276\350\026\272\353\335z/\007\320Tt\313V\006\032K~\317\346~>m\221:b\377l\330Q\371\224\006/\2112\375\374\345\340\033\004\365<\031\010}L\231&N\214'\003\241\017Z\335\r\026\203?\212\251R\210\356\243]h0\200G\263T\223\212\177p2Fs%\267\030,\242>3\263X\270X\2377\252\264269s2\375i\004\317\013A>\314\201\177\271h;\316\305;\335+]\326\317\315\372/\340\023}2\024\246\375?!\233\355\360}D\001?\247\037\216M\322\230l\203'9\324{%Bq\256\205\227\323i+~>\016+\350\212\301\317\365\360V(\014W\375\177\206\313T\305\017\374[>\017\356b3\025\345v<\021\337\"\242%\2719_\025\256&\302\333\202\226v\274H\374i\373\016\025t)\270\007\244v\311c2E\035\204j\027\202;)=R\233\245$\033\017\377\235 \033\301#\350\025\200_A,W\322n\030\306S\010n\241N\357\205\252\340\325\301HL\003\37521\3416\"\310\002l\210\334n\205\365h\n\3751\010\366\035\235Ed\277\371\256~\271\226\266\307\240O\376&\356\036\370Z\245yt\3264\342\"\2740\337\026\202)B\202\256""\275\205\223\371\025\230\256Dn\\\211\335n\245\353\366*=\357XtS\312\202\201@\273\347\321\316\023\"GA\326\341K\272&\256\312\341\235I\272B\360!\346\022]H\315\354\206S\3209\367z\353=\264\325U\000\305B\007\025\332\022\203k3f4O\037\212\301}9\372\001\n\003\375\305\316H\017\300f\347\222\331\271\376\324\207\230\240\323\224\242x\314^\017\227Og\306&\363\2307\314\377\205f\301\274\310+I;\203&\333\333\0360{2}3d\003\350Q\023\177c\264\024p87\237\314\315\377?\035\376V3S-\347}F-\303\006\366\302v\324\036V\317=\376\372\365\370\000\252d~\201>\013\213\364)|\022\036\020\257\362\277\376\222^i)_\363h\305\345\004)*\370\207\222\351\300\366O`\325\216\257c\356\354\342*\001\321>\t\177F\r+\230\240\327HAE\271\037<\037`\364\246\247\353\304\340\037q\341O\303\306\253\236}\274H\214|\005\243\2271\026;t\351\020\221\207\321\234\353\362a4Y\227O\373\177\0166\336\3351\322\330\344\325\3400|\216&\233\200\221Mx\236\210\227\251mm\277\340\227\206\327\320\325\263\316\271$&\361\231\260*\332}I\374{JG\374\245^\271W\243\377%\375\334\r\360\270\036\315\211\177i\353\342\246\256 \251\302q\371\270v\376\257\325\017'?\374x\362\343\253\344w\237x\363\212\244hs\270\006\216\220L>\375\033C\nj\250z<\236\365\305\323\177\003\344\217\301\007";
+    PyObject *data = __Pyx_DecompressString(cstring, 2531, 1);
     if (unlikely(!data)) __PYX_ERR(0, 1, __pyx_L1_error)
     const char* const bytes = __Pyx_PyBytes_AsString(data);
     #if !CYTHON_ASSUME_SAFE_MACROS
     if (likely(bytes)); else { Py_DECREF(data); __PYX_ERR(0, 1, __pyx_L1_error) }
     #endif
-    #else /* compression: none (5122 bytes) */
-const char* const bytes = ": Buffer view does not expose stridesCan only create a buffer that is contiguous in memory.Cannot assign to read-only memoryviewCannot create writable memory view from read-only memoryviewCannot index with type 'Cannot transpose memoryview with indirect dimensionsDimension %d is not directEmpty shape tuple for cython.arrayIndirect dimensions not supportedInvalid mode, expected 'c' or 'fortran', got Invalid shape in axis <MemoryView of Note that Cython is deliberately stricter than PEP-484 and rejects subclasses of builtin types. If you need to pass subclasses then set the 'annotation_typing' directive to False.Out of bounds on buffer access (axis Unable to convert item to object.>')?add_notealgorithms/trafo.py and  at 0xcollections.abc<contiguous and direct><contiguous and indirect>cython.doublecython.double[:, :]cython.intdisableenablegc (got got differing extents in dimension isenableditemsize <= 0 for cython.arrayno default __reduce__ due to non-trivial __cinit__ object><strided and direct><strided and direct or indirect><strided and indirect>unable to allocate array data.unable to allocate shape and strides.ASCIIDOUBLEDDOUBLED_PLUS_ONEEllipsisNO_REMAP__Pyx_PyDict_NextRefSequenceView.MemoryViewabcalgorithms.trafoallocate_bufferasarrayasyncio.coroutinesbaseboolcchfield__class____class_getitem__cline_in_tracebackcorrect_brown_affincorrect_brown_affine_batchcorrect_brown_affine_exactcountcpar__dict__dist_to_flatdist_xdist_ydistort_brown_affindistort_brown_affine_batchdtypedtype_is_objectemptyempty_likeencodeenumerateerrorflagsflat_to_distflat_xflat_yfloat64formatfortran__func____getstate__idim_size_xim_size_y__import__imximx_or_cparimyindexis_compiled_is_coroutineitemsitemsizek1k2k3__main__memviewmetric_to_pixelmetric_to_pixel_batchmode__module__name__name__ndim__new__npnumpyobjold_metric_to_pixelold_pixel_to_metricp1p2packpix_size_xpix_size_ypix_xpix_ypixel_to_metricpixel_to_metric_batchpop__pyx_checksum__pyx_state__pyx_type__pyx_unpickle_Enum__pyx_vtable____qualna""me____reduce____reduce_cython____reduce_ex__registerreturnscx__set_name__setdefault__setstate____setstate_cython__shapeshesizestartstepstopstruct__test__tolunpackupdatevaluesxx_metricx_pixelxhxyyy_metricy_pixely_remap_modeyh\200\001\360\010\000\t\n\330\010\t\330\010\t\330\010\t\330\010\t\330\010\t\330\t\n\330\t\n\340\004\033\2302\230V\2401\240A\330\004\031\230\022\2306\240\022\2403\240d\250&\260\002\260!\330\004'\240q\330\004#\2401\340\004\035\230U\240!\2401\330\004\035\230U\240!\2401\330\004\035\230T\240\022\2401\330\004\035\230Q\330\004\031\230\021\330\004\033\2301\3600\000\005\t\210\005\210U\220!\2201\330\010\014\210G\2201\220C\220q\330\010\014\210G\2201\220C\220q\360\006\000\t\016\210R\210r\220\021\330\010\r\210R\210r\220\030\230\022\2301\330\010\016\210c\220\022\2201\340\010\014\210E\220\025\220a\220q\330\014\025\220Q\330\014\025\220Q\360\006\000\r\021\220\006\220a\220s\230\"\230C\230r\240\023\240B\240a\330\014\017\210r\220\022\2201\330\020\025\220Q\330\020\025\220Q\340\020\025\220R\220r\230\021\330\020\025\220S\230\002\230!\330\020\025\220S\230\002\230!\330\020 \240\004\240B\240c\250\022\2503\250b\260\003\2602\260S\270\002\270#\270R\270q\330\020\031\230\023\230B\230n\250B\250c\260\023\260C\260r\270\024\270R\270s\300\"\300D\310\002\310$\310b\320PS\320SU\320UX\320XZ\320Z[\330\020\031\230\023\230B\230n\250B\250c\260\023\260C\260r\270\024\270R\270s\300\"\300D\310\002\310$\310b\320PS\320SU\320UX\320XZ\320Z[\330\020\025\220T\230\023\230G\2402\240X\250R\250q\330\020\025\220T\230\022\2308\2402\240Q\340\014\022\220\"\220B\220d\230\"\230A\330\014\022\220\"\220B\220d\230\"\230A\340\014\022\220#\220R\220q\330\014\022\220#\220R\220q\340\014\025\220V\2302\230S\240\002\240(\250#\250R\250s\260#\260R\260x\270s\300!\330\014\034\230F\240!\2403\240b\250\003\2502\250S\260\002\260!\330\014\017\210~\230R\230v\240T\250\027\260\002\260.\300\002\300!\330\020\021\340\010\023\2201\220C\220u\230A\330\010\023\2201\220C\220u\230A\340\004\013\2101\200\001\360\010\000\t\n\330\010\t\330\010""\t\330\010\t\330\010\t\330\010\t\330\t\n\330\t\n\340\004\033\2302\230V\2401\240A\330\004\031\230\022\2306\240\022\2403\240d\250&\260\002\260!\330\004'\240q\330\004#\2401\340\004\035\230U\240!\2401\330\004\035\230U\240!\2401\360\032\000\005\t\210\005\210U\220!\2201\330\010\014\210G\2201\220C\220q\330\010\014\210G\2201\220C\220q\330\010\014\210F\220!\2202\220R\220r\230\022\2302\230R\230q\330\010\013\2102\210R\210q\330\014\027\220q\230\003\2305\240\001\330\014\027\220q\230\003\2305\240\001\340\014\021\220\022\2202\220Q\330\014\021\220\023\220B\220a\330\014\021\220\023\220B\220a\330\014\034\230D\240\002\240#\240R\240s\250\"\250C\250r\260\023\260B\260c\270\022\2701\330\014\025\220R\220r\230\036\240r\250\023\250C\250s\260\"\260D\270\002\270\"\270B\270c\300\022\3004\300r\310\023\310B\310b\320PR\320RS\330\014\025\220R\220r\230\036\240r\250\023\250C\250s\260\"\260D\270\002\270\"\270B\270c\300\022\3004\300r\310\023\310B\310b\320PR\320RS\330\014\027\220q\230\003\2305\240\004\240C\240w\250b\260\010\270\002\270!\330\014\027\220q\230\003\2305\240\004\240B\240h\250b\260\001\340\004\013\2101\200\001\340\007\010\330\007\010\330\010\t\330\010\t\330\010\t\330\010\t\330\010\t\330\t\n\330\t\n\330\t\031\230\021\360\036\000\005\035\230F\240!\2402\240R\240r\250\022\2502\250R\250q\340\004\007\200w\210b\220\001\330\010\017\210u\220A\340\004\035\230U\240!\2401\330\004\035\230U\240!\2401\330\004\035\230T\240\022\2401\360\006\000\005\032\230\022\2302\230R\230r\240\031\250\"\250A\330\004\030\230\002\230\"\230A\340\004\033\2301\330\004\035\230Q\360\034\000\005\t\210\005\210U\220!\2201\330\010\r\210S\220\002\220#\220R\220s\230\"\230A\330\010\r\210S\220\002\220!\330\010\r\210S\220\002\220!\340\010\030\230\003\2302\230S\240\002\240#\240R\240s\250\"\250C\250r\260\021\340\010\r\210S\220\002\220.\240\002\240#\240S\250\003\2502\250T\260\022\2603\260b\270\004\270B\270d\300\"\300C\300r\310\023\310B\310a\330\010\r\210S\220\002\220.\240\002\240#\240S\250\003\2502\250T\260\022\2603\260b\270\004\270B\270d""\300\"\300C\300r\310\023\310B\310a\340\010\022\220\"\220B\220b\230\002\230)\2402\240X\250R\250q\330\010\021\220\022\2202\220X\230R\230q\340\010\024\220G\2302\230Q\330\010\024\220G\2302\230Q\340\010\016\210h\220b\230\001\330\010\016\210h\220b\230\001\340\010\013\2106\220\021\220*\230C\230r\240\022\240:\250S\260\003\2602\260Q\330\014\r\340\004\013\2104\210q\320\000\025\220Q\340\004\021\220\021\200\001\340\014\r\330\014\r\330\010\t\330\010\t\330\010\t\330\010\t\330\010\t\330\010\t\330\010\t\330\t\n\330\t\n\330\t\031\230\021\360\"\000\005\014\320\013%\240Q\330\010\020\220\010\230\004\230D\240\004\240D\250\004\250E\260\025\260a\340\004\r\210T\220\021\220!\330\004\r\210T\220\021\220!\330\004\013\2107\220\"\220D\230\007\230r\240\021\200\001\360\026\000\005\016\210R\210x\220q\230\004\230F\240\"\240A\340\004\031\230\024\230Q\330\004\031\230\024\230Q\330\004\033\2304\230q\330\004\033\2304\230q\330\004\032\230$\230a\340\004\r\210R\210{\230!\2301\330\004\n\210$\210e\2206\230\024\230S\240\002\240&\250\002\250$\250b\260\001\330\004\016\210d\220\"\220D\230\002\230&\240\004\240C\240r\250\021\340\004\007\200x\210s\220!\330\010\023\2208\2302\230U\240\"\240A\330\t\021\220\023\220A\330\010\022\220(\230\"\230A\340\004\n\210$\210e\2201\330\004\013\2101\200\001\360\026\000\005\016\210R\210x\220q\230\004\230F\240\"\240A\340\004\031\230\024\230Q\330\004\031\230\024\230Q\330\004\033\2304\230q\330\004\033\2304\230q\330\004\032\230$\230a\340\004\r\210R\210{\230!\2301\330\004\n\210$\210f\220F\230$\230c\240\022\2404\240r\250\025\250b\260\001\340\004\007\200x\210s\220!\330\010\022\220$\220b\230\006\230d\240#\240R\240q\330\t\021\220\023\220A\330\010\022\220$\220b\230\006\230d\240!\340\010\022\220&\230\004\230A\340\004\n\210$\210f\220D\230\002\230$\230b\240\t\250\022\2501\330\004\013\2101\200\001\340\007\010\330\007\010\330\010\t\330\010\t\330\010\t\330\010\t\330\010\t\330\t\n\330\t\n\360\034\000\005\036\230U\240!\2401\330\004\035\230U\240!\2401\330\004\035\230T\240\022\2401\360\006\000\005\031""\230\002\230\"\230A\330\004\030\230\002\230\"\230H\240B\240a\330\004\n\210#\210R\210q\340\004\033\2301\330\004\035\230Q\330\004\031\230\021\360\032\000\005\t\210\005\210U\220!\2201\330\010\020\220\t\230\024\230Q\360\006\000\t\020\320\017\"\240!\2404\240t\2504\250t\2604\260t\2704\270u\300A\330\010\r\210T\220\021\220!\330\010\r\210T\220\021\220!\360\006\000\t\017\210b\220\002\220$\220b\230\001\330\010\016\210b\220\002\220$\220b\230\001\360\006\000\t\017\210c\220\022\2201\330\010\016\210c\220\022\2201\360\006\000\t\022\220\026\220r\230\023\230B\230h\240c\250\022\2503\250c\260\022\2608\2703\270a\330\010\030\230\006\230a\230s\240\"\240C\240r\250\023\250B\250a\330\010\013\210>\230\022\2306\240\024\240W\250B\250n\270B\270a\330\014\r\340\004\013\2104\210q\200\001\340\r\016\330\r\016\340\t\026\220a\330\013\033\2301\330\013\033\2301\330\r\032\230!\360\014\000\005\010\200w\210a\210}\230A\330\010\017\320\017\"\240!\330\014\r\330\014\r\330\014\027\220q\330\014\027\220q\330\014\027\220q\330\014\027\220q\330\014\027\220q\340\004\013\320\013\036\230a\330\010\t\330\010\t\330\010\013\2101\210A\330\010\t\330\010\t\330\010\t\330\010\t\200\001\340\016\017\330\016\017\340\t\026\220a\330\013\033\2301\330\013\033\2301\330\r\032\230!\360\014\000\005\010\200w\210a\210}\230A\330\010\017\320\017\"\240!\330\014\r\330\014\r\330\014\027\220q\330\014\027\220q\330\014\027\220q\330\014\027\220q\330\014\027\220q\340\004\013\320\013\036\230a\330\010\t\330\010\t\330\010\013\2101\210A\330\010\t\330\010\t\330\010\t\330\010\t\200\001\340\014\r\330\014\r\330\010\t\330\010\t\330\010\t\330\010\t\330\010\t\330\010\t\330\010\t\330\t\n\330\t\n\360\032\000\005\017\210a\330\004\016\210a\340\004\013\320\013\036\230a\230x\240x\250t\2604\260t\2704\270t\3005\310\001\200\001\340\r\016\330\r\016\330\017\020\330\017\020\330\020\021\330\020\021\330\022\037\230q\360\034\000\005\010\200}\220C\220q\330\010\022\220$\220b\230\010\240\002\240!\330\t\026\220c\230\021\330\010\022\220$\220b\230\001\340\004\037\230x\240r\250\032""\2602\260U\270\"\270A\330\004\037\230z\250\022\2504\250r\260\031\270\"\270A\340\004\013\210:\220Q\200\001\340\016\017\330\016\017\330\017\020\330\017\020\330\020\021\330\020\021\330\022\037\230q\360\032\000\005\036\230Y\240b\250\013\2602\260Z\270r\300\021\330\004\035\230Z\240r\250\024\250R\250y\270\002\270!\360\006\000\005\010\200}\220C\220q\330\010\023\2208\2302\230U\240\"\240A\330\t\026\220c\230\021\330\010\022\220(\230\"\230A\340\004\013\2109\220A\200\001\340\007\010\330\007\010\330\010\t\330\010\t\330\010\t\330\010\t\330\010\t\330\t\n\330\t\n\360 \000\005\030\220v\230Q\230b\240\002\240\"\240B\240b\250\002\250!\340\004\007\200r\210\022\2101\330\010\017\210u\220A\340\004\030\230\002\230\"\230A\330\004\030\230\003\2302\230Q\330\004\030\230\003\2302\230Q\330\004#\2404\240r\250\023\250B\250c\260\022\2603\260b\270\003\2702\270S\300\002\300!\340\004\034\230B\230b\240\016\250b\260\003\2603\260c\270\022\2704\270r\300\022\3002\300S\310\002\310$\310b\320PS\320SU\320UW\320WY\320YZ\330\004\034\230B\230b\240\016\250b\260\003\2603\260c\270\022\2704\270r\300\022\3002\300S\310\002\310$\310b\320PS\320SU\320UW\320WY\320YZ\340\004\035\230U\240!\2401\330\004\035\230U\240!\2401\340\004\030\230\004\230C\230w\240b\250\010\260\002\260!\330\004\030\230\004\230B\230h\240b\250\001\340\004\013\2104\210qO";
+    #else /* compression: none (5144 bytes) */
+const char* const bytes = ": Buffer view does not expose stridesCan only create a buffer that is contiguous in memory.Cannot assign to read-only memoryviewCannot create writable memory view from read-only memoryviewCannot index with type 'Cannot transpose memoryview with indirect dimensionsDimension %d is not directEmpty shape tuple for cython.arrayIndirect dimensions not supportedInvalid mode, expected 'c' or 'fortran', got Invalid shape in axis <MemoryView of Note that Cython is deliberately stricter than PEP-484 and rejects subclasses of builtin types. If you need to pass subclasses then set the 'annotation_typing' directive to False.Out of bounds on buffer access (axis Unable to convert item to object.>')?add_note and  at 0xcollections.abc<contiguous and direct><contiguous and indirect>cython.doublecython.double[:, :]cython.intdisableenablegc (got got differing extents in dimension isenableditemsize <= 0 for cython.arrayno default __reduce__ due to non-trivial __cinit__ object>src/openptv2/algorithms/trafo.py<strided and direct><strided and direct or indirect><strided and indirect>unable to allocate array data.unable to allocate shape and strides.ASCIIDOUBLEDDOUBLED_PLUS_ONEEllipsisNO_REMAP__Pyx_PyDict_NextRefSequenceView.MemoryViewabcallocate_bufferasarrayasyncio.coroutinesbaseboolcchfield__class____class_getitem__cline_in_tracebackcorrect_brown_affincorrect_brown_affine_batchcorrect_brown_affine_exactcountcpar__dict__dist_to_flatdist_xdist_ydistort_brown_affindistort_brown_affine_batchdtypedtype_is_objectemptyempty_likeencodeenumerateerrorflagsflat_to_distflat_xflat_yfloat64formatfortran__func____getstate__idim_size_xim_size_y__import__imximx_or_cparimyindexis_compiled_is_coroutineitemsitemsizek1k2k3__main__memviewmetric_to_pixelmetric_to_pixel_batchmode__module__name__name__ndim__new__npnumpyobjold_metric_to_pixelold_pixel_to_metricopenptv2.algorithms.trafop1p2packpix_size_xpix_size_ypix_xpix_ypixel_to_metricpixel_to_metric_batchpop__pyx_checksum__pyx_state__pyx_type__pyx_unpickle_Enum""__pyx_vtable____qualname____reduce____reduce_cython____reduce_ex__registerreturnscx__set_name__setdefault__setstate____setstate_cython__shapeshesizestartstepstopstruct__test__tolunpackupdatevaluesxx_metricx_pixelxhxyyy_metricy_pixely_remap_modeyh\200\001\360\010\000\t\n\330\010\t\330\010\t\330\010\t\330\010\t\330\010\t\330\t\n\330\t\n\340\004\033\2302\230V\2401\240A\330\004\031\230\022\2306\240\022\2403\240d\250&\260\002\260!\330\004'\240q\330\004#\2401\340\004\035\230U\240!\2401\330\004\035\230U\240!\2401\330\004\035\230T\240\022\2401\330\004\035\230Q\330\004\031\230\021\330\004\033\2301\3600\000\005\t\210\005\210U\220!\2201\330\010\014\210G\2201\220C\220q\330\010\014\210G\2201\220C\220q\360\006\000\t\016\210R\210r\220\021\330\010\r\210R\210r\220\030\230\022\2301\330\010\016\210c\220\022\2201\340\010\014\210E\220\025\220a\220q\330\014\025\220Q\330\014\025\220Q\360\006\000\r\021\220\006\220a\220s\230\"\230C\230r\240\023\240B\240a\330\014\017\210r\220\022\2201\330\020\025\220Q\330\020\025\220Q\340\020\025\220R\220r\230\021\330\020\025\220S\230\002\230!\330\020\025\220S\230\002\230!\330\020 \240\004\240B\240c\250\022\2503\250b\260\003\2602\260S\270\002\270#\270R\270q\330\020\031\230\023\230B\230n\250B\250c\260\023\260C\260r\270\024\270R\270s\300\"\300D\310\002\310$\310b\320PS\320SU\320UX\320XZ\320Z[\330\020\031\230\023\230B\230n\250B\250c\260\023\260C\260r\270\024\270R\270s\300\"\300D\310\002\310$\310b\320PS\320SU\320UX\320XZ\320Z[\330\020\025\220T\230\023\230G\2402\240X\250R\250q\330\020\025\220T\230\022\2308\2402\240Q\340\014\022\220\"\220B\220d\230\"\230A\330\014\022\220\"\220B\220d\230\"\230A\340\014\022\220#\220R\220q\330\014\022\220#\220R\220q\340\014\025\220V\2302\230S\240\002\240(\250#\250R\250s\260#\260R\260x\270s\300!\330\014\034\230F\240!\2403\240b\250\003\2502\250S\260\002\260!\330\014\017\210~\230R\230v\240T\250\027\260\002\260.\300\002\300!\330\020\021\340\010\023\2201\220C\220u\230A\330\010\023\2201\220C\220u\230A\340\004\013\2101\200\001\360\010\000""\t\n\330\010\t\330\010\t\330\010\t\330\010\t\330\010\t\330\t\n\330\t\n\340\004\033\2302\230V\2401\240A\330\004\031\230\022\2306\240\022\2403\240d\250&\260\002\260!\330\004'\240q\330\004#\2401\340\004\035\230U\240!\2401\330\004\035\230U\240!\2401\360\032\000\005\t\210\005\210U\220!\2201\330\010\014\210G\2201\220C\220q\330\010\014\210G\2201\220C\220q\330\010\014\210F\220!\2202\220R\220r\230\022\2302\230R\230q\330\010\013\2102\210R\210q\330\014\027\220q\230\003\2305\240\001\330\014\027\220q\230\003\2305\240\001\340\014\021\220\022\2202\220Q\330\014\021\220\023\220B\220a\330\014\021\220\023\220B\220a\330\014\034\230D\240\002\240#\240R\240s\250\"\250C\250r\260\023\260B\260c\270\022\2701\330\014\025\220R\220r\230\036\240r\250\023\250C\250s\260\"\260D\270\002\270\"\270B\270c\300\022\3004\300r\310\023\310B\310b\320PR\320RS\330\014\025\220R\220r\230\036\240r\250\023\250C\250s\260\"\260D\270\002\270\"\270B\270c\300\022\3004\300r\310\023\310B\310b\320PR\320RS\330\014\027\220q\230\003\2305\240\004\240C\240w\250b\260\010\270\002\270!\330\014\027\220q\230\003\2305\240\004\240B\240h\250b\260\001\340\004\013\2101\200\001\340\007\010\330\007\010\330\010\t\330\010\t\330\010\t\330\010\t\330\010\t\330\t\n\330\t\n\330\t\031\230\021\360\036\000\005\035\230F\240!\2402\240R\240r\250\022\2502\250R\250q\340\004\007\200w\210b\220\001\330\010\017\210u\220A\340\004\035\230U\240!\2401\330\004\035\230U\240!\2401\330\004\035\230T\240\022\2401\360\006\000\005\032\230\022\2302\230R\230r\240\031\250\"\250A\330\004\030\230\002\230\"\230A\340\004\033\2301\330\004\035\230Q\360\034\000\005\t\210\005\210U\220!\2201\330\010\r\210S\220\002\220#\220R\220s\230\"\230A\330\010\r\210S\220\002\220!\330\010\r\210S\220\002\220!\340\010\030\230\003\2302\230S\240\002\240#\240R\240s\250\"\250C\250r\260\021\340\010\r\210S\220\002\220.\240\002\240#\240S\250\003\2502\250T\260\022\2603\260b\270\004\270B\270d\300\"\300C\300r\310\023\310B\310a\330\010\r\210S\220\002\220.\240\002\240#\240S\250\003\2502\250T\260\022\2603\260b""\270\004\270B\270d\300\"\300C\300r\310\023\310B\310a\340\010\022\220\"\220B\220b\230\002\230)\2402\240X\250R\250q\330\010\021\220\022\2202\220X\230R\230q\340\010\024\220G\2302\230Q\330\010\024\220G\2302\230Q\340\010\016\210h\220b\230\001\330\010\016\210h\220b\230\001\340\010\013\2106\220\021\220*\230C\230r\240\022\240:\250S\260\003\2602\260Q\330\014\r\340\004\013\2104\210q\320\000\025\220Q\340\004\021\220\021\200\001\340\014\r\330\014\r\330\010\t\330\010\t\330\010\t\330\010\t\330\010\t\330\010\t\330\010\t\330\t\n\330\t\n\330\t\031\230\021\360\"\000\005\014\320\013%\240Q\330\010\020\220\010\230\004\230D\240\004\240D\250\004\250E\260\025\260a\340\004\r\210T\220\021\220!\330\004\r\210T\220\021\220!\330\004\013\2107\220\"\220D\230\007\230r\240\021\200\001\360\026\000\005\016\210R\210x\220q\230\004\230F\240\"\240A\340\004\031\230\024\230Q\330\004\031\230\024\230Q\330\004\033\2304\230q\330\004\033\2304\230q\330\004\032\230$\230a\340\004\r\210R\210{\230!\2301\330\004\n\210$\210e\2206\230\024\230S\240\002\240&\250\002\250$\250b\260\001\330\004\016\210d\220\"\220D\230\002\230&\240\004\240C\240r\250\021\340\004\007\200x\210s\220!\330\010\023\2208\2302\230U\240\"\240A\330\t\021\220\023\220A\330\010\022\220(\230\"\230A\340\004\n\210$\210e\2201\330\004\013\2101\200\001\360\026\000\005\016\210R\210x\220q\230\004\230F\240\"\240A\340\004\031\230\024\230Q\330\004\031\230\024\230Q\330\004\033\2304\230q\330\004\033\2304\230q\330\004\032\230$\230a\340\004\r\210R\210{\230!\2301\330\004\n\210$\210f\220F\230$\230c\240\022\2404\240r\250\025\250b\260\001\340\004\007\200x\210s\220!\330\010\022\220$\220b\230\006\230d\240#\240R\240q\330\t\021\220\023\220A\330\010\022\220$\220b\230\006\230d\240!\340\010\022\220&\230\004\230A\340\004\n\210$\210f\220D\230\002\230$\230b\240\t\250\022\2501\330\004\013\2101\200\001\340\007\010\330\007\010\330\010\t\330\010\t\330\010\t\330\010\t\330\010\t\330\t\n\330\t\n\360\034\000\005\036\230U\240!\2401\330\004\035\230U\240!\2401\330\004\035\230T\240\022\2401\360""\006\000\005\031\230\002\230\"\230A\330\004\030\230\002\230\"\230H\240B\240a\330\004\n\210#\210R\210q\340\004\033\2301\330\004\035\230Q\330\004\031\230\021\360\032\000\005\t\210\005\210U\220!\2201\330\010\020\220\t\230\024\230Q\360\006\000\t\020\320\017\"\240!\2404\240t\2504\250t\2604\260t\2704\270u\300A\330\010\r\210T\220\021\220!\330\010\r\210T\220\021\220!\360\006\000\t\017\210b\220\002\220$\220b\230\001\330\010\016\210b\220\002\220$\220b\230\001\360\006\000\t\017\210c\220\022\2201\330\010\016\210c\220\022\2201\360\006\000\t\022\220\026\220r\230\023\230B\230h\240c\250\022\2503\250c\260\022\2608\2703\270a\330\010\030\230\006\230a\230s\240\"\240C\240r\250\023\250B\250a\330\010\013\210>\230\022\2306\240\024\240W\250B\250n\270B\270a\330\014\r\340\004\013\2104\210q\200\001\340\r\016\330\r\016\340\t\026\220a\330\013\033\2301\330\013\033\2301\330\r\032\230!\360\014\000\005\010\200w\210a\210}\230A\330\010\017\320\017\"\240!\330\014\r\330\014\r\330\014\027\220q\330\014\027\220q\330\014\027\220q\330\014\027\220q\330\014\027\220q\340\004\013\320\013\036\230a\330\010\t\330\010\t\330\010\013\2101\210A\330\010\t\330\010\t\330\010\t\330\010\t\200\001\340\016\017\330\016\017\340\t\026\220a\330\013\033\2301\330\013\033\2301\330\r\032\230!\360\014\000\005\010\200w\210a\210}\230A\330\010\017\320\017\"\240!\330\014\r\330\014\r\330\014\027\220q\330\014\027\220q\330\014\027\220q\330\014\027\220q\330\014\027\220q\340\004\013\320\013\036\230a\330\010\t\330\010\t\330\010\013\2101\210A\330\010\t\330\010\t\330\010\t\330\010\t\200\001\340\014\r\330\014\r\330\010\t\330\010\t\330\010\t\330\010\t\330\010\t\330\010\t\330\010\t\330\t\n\330\t\n\360\032\000\005\017\210a\330\004\016\210a\340\004\013\320\013\036\230a\230x\240x\250t\2604\260t\2704\270t\3005\310\001\200\001\340\r\016\330\r\016\330\017\020\330\017\020\330\020\021\330\020\021\330\022\037\230q\360\034\000\005\010\200}\220C\220q\330\010\022\220$\220b\230\010\240\002\240!\330\t\026\220c\230\021\330\010\022\220$\220b\230\001\340\004\037""\230x\240r\250\032\2602\260U\270\"\270A\330\004\037\230z\250\022\2504\250r\260\031\270\"\270A\340\004\013\210:\220Q\200\001\340\016\017\330\016\017\330\017\020\330\017\020\330\020\021\330\020\021\330\022\037\230q\360\032\000\005\036\230Y\240b\250\013\2602\260Z\270r\300\021\330\004\035\230Z\240r\250\024\250R\250y\270\002\270!\360\006\000\005\010\200}\220C\220q\330\010\023\2208\2302\230U\240\"\240A\330\t\026\220c\230\021\330\010\022\220(\230\"\230A\340\004\013\2109\220A\200\001\340\007\010\330\007\010\330\010\t\330\010\t\330\010\t\330\010\t\330\010\t\330\t\n\330\t\n\360 \000\005\030\220v\230Q\230b\240\002\240\"\240B\240b\250\002\250!\340\004\007\200r\210\022\2101\330\010\017\210u\220A\340\004\030\230\002\230\"\230A\330\004\030\230\003\2302\230Q\330\004\030\230\003\2302\230Q\330\004#\2404\240r\250\023\250B\250c\260\022\2603\260b\270\003\2702\270S\300\002\300!\340\004\034\230B\230b\240\016\250b\260\003\2603\260c\270\022\2704\270r\300\022\3002\300S\310\002\310$\310b\320PS\320SU\320UW\320WY\320YZ\330\004\034\230B\230b\240\016\250b\260\003\2603\260c\270\022\2704\270r\300\022\3002\300S\310\002\310$\310b\320PS\320SU\320UW\320WY\320YZ\340\004\035\230U\240!\2401\330\004\035\230U\240!\2401\340\004\030\230\004\230C\230w\240b\250\010\260\002\260!\330\004\030\230\004\230B\230h\240b\250\001\340\004\013\2104\210qO";
     PyObject *data = NULL;
     CYTHON_UNUSED_VAR(__Pyx_DecompressString);
     #endif
@@ -24442,72 +24442,72 @@ static int __Pyx_CreateCodeObjects(__pyx_mstatetype *__pyx_mstate) {
   {
     const __Pyx_PyCode_New_function_description descr = {7, 0, 0, 7, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 26};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_x_pixel, __pyx_mstate->__pyx_n_u_y_pixel, __pyx_mstate->__pyx_n_u_im_size_x, __pyx_mstate->__pyx_n_u_im_size_y, __pyx_mstate->__pyx_n_u_pix_size_x, __pyx_mstate->__pyx_n_u_pix_size_y, __pyx_mstate->__pyx_n_u_y_remap_mode};
-    __pyx_mstate_global->__pyx_codeobj_tab[0] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_trafo_py, __pyx_mstate->__pyx_n_u_old_pixel_to_metric, __pyx_mstate->__pyx_kp_b_iso88591_q_Cq_b_c_b_xr_2U_A_z_4r_A_Q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[0])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[0] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_trafo_py, __pyx_mstate->__pyx_n_u_old_pixel_to_metric, __pyx_mstate->__pyx_kp_b_iso88591_q_Cq_b_c_b_xr_2U_A_z_4r_A_Q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[0])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {7, 0, 0, 7, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 59};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_x_metric, __pyx_mstate->__pyx_n_u_y_metric, __pyx_mstate->__pyx_n_u_im_size_x, __pyx_mstate->__pyx_n_u_im_size_y, __pyx_mstate->__pyx_n_u_pix_size_x, __pyx_mstate->__pyx_n_u_pix_size_y, __pyx_mstate->__pyx_n_u_y_remap_mode};
-    __pyx_mstate_global->__pyx_codeobj_tab[1] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_trafo_py, __pyx_mstate->__pyx_n_u_old_metric_to_pixel, __pyx_mstate->__pyx_kp_b_iso88591_q_Yb_2Zr_Zr_Ry_Cq_82U_A_c_A_9A, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[1])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[1] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_trafo_py, __pyx_mstate->__pyx_n_u_old_metric_to_pixel, __pyx_mstate->__pyx_kp_b_iso88591_q_Yb_2Zr_Zr_Ry_Cq_82U_A_c_A_9A, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[1])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {7, 0, 0, 7, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 92};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_x_pixel, __pyx_mstate->__pyx_n_u_y_pixel, __pyx_mstate->__pyx_n_u_imx_or_cpar, __pyx_mstate->__pyx_n_u_imy, __pyx_mstate->__pyx_n_u_pix_x, __pyx_mstate->__pyx_n_u_pix_y, __pyx_mstate->__pyx_n_u_chfield};
-    __pyx_mstate_global->__pyx_codeobj_tab[2] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_trafo_py, __pyx_mstate->__pyx_n_u_pixel_to_metric, __pyx_mstate->__pyx_kp_b_iso88591_a_1_1_wa_A_q_q_q_q_q_a_1A, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[2])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[2] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_trafo_py, __pyx_mstate->__pyx_n_u_pixel_to_metric, __pyx_mstate->__pyx_kp_b_iso88591_a_1_1_wa_A_q_q_q_q_q_a_1A, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[2])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {7, 0, 0, 7, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 127};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_x_metric, __pyx_mstate->__pyx_n_u_y_metric, __pyx_mstate->__pyx_n_u_imx_or_cpar, __pyx_mstate->__pyx_n_u_imy, __pyx_mstate->__pyx_n_u_pix_x, __pyx_mstate->__pyx_n_u_pix_y, __pyx_mstate->__pyx_n_u_chfield};
-    __pyx_mstate_global->__pyx_codeobj_tab[3] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_trafo_py, __pyx_mstate->__pyx_n_u_metric_to_pixel, __pyx_mstate->__pyx_kp_b_iso88591_a_1_1_wa_A_q_q_q_q_q_a_1A_2, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[3])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[3] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_trafo_py, __pyx_mstate->__pyx_n_u_metric_to_pixel, __pyx_mstate->__pyx_kp_b_iso88591_a_1_1_wa_A_q_q_q_q_q_a_1A_2, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[3])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {2, 0, 0, 2, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 162};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_xy, __pyx_mstate->__pyx_n_u_cpar};
-    __pyx_mstate_global->__pyx_codeobj_tab[4] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_trafo_py, __pyx_mstate->__pyx_n_u_pixel_to_metric_batch, __pyx_mstate->__pyx_kp_b_iso88591_Rxq_F_A_Q_Q_4q_4q_a_R_1_fF_c_4r, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[4])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[4] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_trafo_py, __pyx_mstate->__pyx_n_u_pixel_to_metric_batch, __pyx_mstate->__pyx_kp_b_iso88591_Rxq_F_A_Q_Q_4q_4q_a_R_1_fF_c_4r, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[4])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {2, 0, 0, 2, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 195};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_xy, __pyx_mstate->__pyx_n_u_cpar};
-    __pyx_mstate_global->__pyx_codeobj_tab[5] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_trafo_py, __pyx_mstate->__pyx_n_u_metric_to_pixel_batch, __pyx_mstate->__pyx_kp_b_iso88591_Rxq_F_A_Q_Q_4q_4q_a_R_1_e6_S_b, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[5])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[5] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_trafo_py, __pyx_mstate->__pyx_n_u_metric_to_pixel_batch, __pyx_mstate->__pyx_kp_b_iso88591_Rxq_F_A_Q_Q_4q_4q_a_R_1_e6_S_b, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[5])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {9, 0, 0, 9, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 228};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_x, __pyx_mstate->__pyx_n_u_y, __pyx_mstate->__pyx_n_u_k1, __pyx_mstate->__pyx_n_u_k2, __pyx_mstate->__pyx_n_u_k3, __pyx_mstate->__pyx_n_u_p1, __pyx_mstate->__pyx_n_u_p2, __pyx_mstate->__pyx_n_u_scx, __pyx_mstate->__pyx_n_u_she};
-    __pyx_mstate_global->__pyx_codeobj_tab[6] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_trafo_py, __pyx_mstate->__pyx_n_u_distort_brown_affin, __pyx_mstate->__pyx_kp_b_iso88591_vQb_Bb_r_1_uA_A_2Q_2Q_4r_Bc_3b, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[6])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[6] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_trafo_py, __pyx_mstate->__pyx_n_u_distort_brown_affin, __pyx_mstate->__pyx_kp_b_iso88591_vQb_Bb_r_1_uA_A_2Q_2Q_4r_Bc_3b, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[6])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {9, 0, 0, 9, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 276};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_x, __pyx_mstate->__pyx_n_u_y, __pyx_mstate->__pyx_n_u_k1, __pyx_mstate->__pyx_n_u_k2, __pyx_mstate->__pyx_n_u_k3, __pyx_mstate->__pyx_n_u_p1, __pyx_mstate->__pyx_n_u_p2, __pyx_mstate->__pyx_n_u_scx, __pyx_mstate->__pyx_n_u_she};
-    __pyx_mstate_global->__pyx_codeobj_tab[7] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_trafo_py, __pyx_mstate->__pyx_n_u_correct_brown_affin, __pyx_mstate->__pyx_kp_b_iso88591_U_1_U_1_T_1_A_HBa_Rq_1_Q_U_1_Q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[7])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[7] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_trafo_py, __pyx_mstate->__pyx_n_u_correct_brown_affin, __pyx_mstate->__pyx_kp_b_iso88591_U_1_U_1_T_1_A_HBa_Rq_1_Q_U_1_Q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[7])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {10, 0, 0, 10, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 349};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_x, __pyx_mstate->__pyx_n_u_y, __pyx_mstate->__pyx_n_u_k1, __pyx_mstate->__pyx_n_u_k2, __pyx_mstate->__pyx_n_u_k3, __pyx_mstate->__pyx_n_u_p1, __pyx_mstate->__pyx_n_u_p2, __pyx_mstate->__pyx_n_u_scx, __pyx_mstate->__pyx_n_u_she, __pyx_mstate->__pyx_n_u_tol};
-    __pyx_mstate_global->__pyx_codeobj_tab[8] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_trafo_py, __pyx_mstate->__pyx_n_u_correct_brown_affine_exact, __pyx_mstate->__pyx_kp_b_iso88591_F_2Rr_2Rq_wb_uA_U_1_U_1_T_1_2Rr, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[8])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[8] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_trafo_py, __pyx_mstate->__pyx_n_u_correct_brown_affine_exact, __pyx_mstate->__pyx_kp_b_iso88591_F_2Rr_2Rq_wb_uA_U_1_U_1_T_1_2Rr, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[8])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {11, 0, 0, 11, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 428};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_flat_x, __pyx_mstate->__pyx_n_u_flat_y, __pyx_mstate->__pyx_n_u_xh, __pyx_mstate->__pyx_n_u_yh, __pyx_mstate->__pyx_n_u_k1, __pyx_mstate->__pyx_n_u_k2, __pyx_mstate->__pyx_n_u_k3, __pyx_mstate->__pyx_n_u_p1, __pyx_mstate->__pyx_n_u_p2, __pyx_mstate->__pyx_n_u_scx, __pyx_mstate->__pyx_n_u_she};
-    __pyx_mstate_global->__pyx_codeobj_tab[9] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_trafo_py, __pyx_mstate->__pyx_n_u_flat_to_dist, __pyx_mstate->__pyx_kp_b_iso88591_a_a_axxt4t4t5, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[9])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[9] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_trafo_py, __pyx_mstate->__pyx_n_u_flat_to_dist, __pyx_mstate->__pyx_kp_b_iso88591_a_a_axxt4t4t5, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[9])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {12, 0, 0, 12, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 459};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_dist_x, __pyx_mstate->__pyx_n_u_dist_y, __pyx_mstate->__pyx_n_u_xh, __pyx_mstate->__pyx_n_u_yh, __pyx_mstate->__pyx_n_u_k1, __pyx_mstate->__pyx_n_u_k2, __pyx_mstate->__pyx_n_u_k3, __pyx_mstate->__pyx_n_u_p1, __pyx_mstate->__pyx_n_u_p2, __pyx_mstate->__pyx_n_u_scx, __pyx_mstate->__pyx_n_u_she, __pyx_mstate->__pyx_n_u_tol};
-    __pyx_mstate_global->__pyx_codeobj_tab[10] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_trafo_py, __pyx_mstate->__pyx_n_u_dist_to_flat, __pyx_mstate->__pyx_kp_b_iso88591_Q_D_D_E_a_T_T_7_D_r, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[10])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[10] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_trafo_py, __pyx_mstate->__pyx_n_u_dist_to_flat, __pyx_mstate->__pyx_kp_b_iso88591_Q_D_D_E_a_T_T_7_D_r, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[10])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {0, 0, 0, 0, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 497};
     PyObject* const varnames[] = {0};
-    __pyx_mstate_global->__pyx_codeobj_tab[11] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_trafo_py, __pyx_mstate->__pyx_n_u_is_compiled, __pyx_mstate->__pyx_kp_b_iso88591_Q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[11])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[11] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_trafo_py, __pyx_mstate->__pyx_n_u_is_compiled, __pyx_mstate->__pyx_kp_b_iso88591_Q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[11])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {8, 0, 0, 8, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 502};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_xy, __pyx_mstate->__pyx_n_u_k1, __pyx_mstate->__pyx_n_u_k2, __pyx_mstate->__pyx_n_u_k3, __pyx_mstate->__pyx_n_u_p1, __pyx_mstate->__pyx_n_u_p2, __pyx_mstate->__pyx_n_u_scx, __pyx_mstate->__pyx_n_u_she};
-    __pyx_mstate_global->__pyx_codeobj_tab[12] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_trafo_py, __pyx_mstate->__pyx_n_u_correct_brown_affine_batch, __pyx_mstate->__pyx_kp_b_iso88591_2V1A_6_3d_q_1_U_1_U_1_T_1_Q_10, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[12])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[12] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_trafo_py, __pyx_mstate->__pyx_n_u_correct_brown_affine_batch, __pyx_mstate->__pyx_kp_b_iso88591_2V1A_6_3d_q_1_U_1_U_1_T_1_Q_10, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[12])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {8, 0, 0, 8, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 594};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_xy, __pyx_mstate->__pyx_n_u_k1, __pyx_mstate->__pyx_n_u_k2, __pyx_mstate->__pyx_n_u_k3, __pyx_mstate->__pyx_n_u_p1, __pyx_mstate->__pyx_n_u_p2, __pyx_mstate->__pyx_n_u_scx, __pyx_mstate->__pyx_n_u_she};
-    __pyx_mstate_global->__pyx_codeobj_tab[13] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_algorithms_trafo_py, __pyx_mstate->__pyx_n_u_distort_brown_affine_batch, __pyx_mstate->__pyx_kp_b_iso88591_2V1A_6_3d_q_1_U_1_U_1_U_1_G1Cq, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[13])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[13] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_src_openptv2_algorithms_trafo_py, __pyx_mstate->__pyx_n_u_distort_brown_affine_batch, __pyx_mstate->__pyx_kp_b_iso88591_2V1A_6_3d_q_1_U_1_U_1_U_1_G1Cq, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[13])) goto bad;
   }
   Py_DECREF(tuple_dedup_map);
   return 0;

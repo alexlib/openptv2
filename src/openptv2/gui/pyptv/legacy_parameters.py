@@ -724,6 +724,7 @@ class TrackingParams(Parameters):
         angle: float = 0.0,
         dacc: float = 0.0,
         flagNewParticles: bool = False,
+        track_mode: int = 0,
         path=Parameters.default_path,
     ):
         Parameters.__init__(self, path)
@@ -736,6 +737,7 @@ class TrackingParams(Parameters):
         self.angle = angle
         self.dacc = dacc
         self.flagNewParticles = flagNewParticles
+        self.track_mode = track_mode
 
     filename = "track.par"
 
@@ -751,6 +753,13 @@ class TrackingParams(Parameters):
             self.angle = float(g(f))
             self.dacc = float(g(f))
             self.flagNewParticles = int(g(f)) != 0
+            
+            # Read track_mode if available (optional 10th line)
+            try:
+                self.track_mode = int(g(f))
+            except BaseException:
+                self.track_mode = 0
+                
             f.close()
         except BaseException:
             error(None, "%s not found" % self.filepath())
@@ -767,11 +776,13 @@ class TrackingParams(Parameters):
             f.write("%g\n" % self.angle)
             f.write("%g\n" % self.dacc)
             f.write("%d\n" % self.flagNewParticles)
+            f.write("%d\n" % self.track_mode)
             f.close()
             return True
         except BaseException:
             error(None, "Error writing %s." % self.filepath())
             return False
+
 
 
 class PftVersionParams(Parameters):

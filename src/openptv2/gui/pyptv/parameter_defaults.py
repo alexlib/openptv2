@@ -73,6 +73,7 @@ DEFAULT_TRACK = {
     "dnx": 0,
     "dny": 0,
     "angle": 10,
+    "track_mode": 0,
 }
 
 DEFAULT_DETECT_PLATE = {

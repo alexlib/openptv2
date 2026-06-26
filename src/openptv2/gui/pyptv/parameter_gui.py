@@ -1,4 +1,4 @@
-from traits.api import HasTraits, Str, Float, Int, List, Bool
+from traits.api import HasTraits, Str, Float, Int, List, Bool, Enum
 from traitsui.api import (
     View,
     Item,
@@ -244,7 +244,8 @@ class TrackHandler(Handler):
                 'dvymin': track_params.dvymin, 'dvymax': track_params.dvymax,
                 'dvzmin': track_params.dvzmin, 'dvzmax': track_params.dvzmax,
                 'angle': track_params.angle, 'dacc': track_params.dacc,
-                'flagNewParticles': track_params.flagNewParticles
+                'flagNewParticles': track_params.flagNewParticles,
+                'track_mode': int(track_params.track_mode)
             })
             
             # Save all changes to the YAML file through the experiment
@@ -262,6 +263,7 @@ class Tracking_Params(HasTraits):
     angle = Float()
     dacc = Float()
     flagNewParticles = Bool(True)
+    track_mode = Enum(0, 1)
 
     def __init__(self, experiment: Experiment):
         super(Tracking_Params, self).__init__()
@@ -277,6 +279,7 @@ class Tracking_Params(HasTraits):
         self.angle = tracking_params['angle']
         self.dacc = tracking_params['dacc']
         self.flagNewParticles = bool(tracking_params['flagNewParticles'])
+        self.track_mode = int(tracking_params.get('track_mode', 0))
 
     Tracking_Params_View = View(
         HGroup(
@@ -296,6 +299,7 @@ class Tracking_Params(HasTraits):
             Item(name="dacc", label="dacc:"),
         ),
         Item(name="flagNewParticles", label="Add new particles?"),
+        Item(name="track_mode", label="Tracking mode (0=Standard, 1=3D Seg):"),
         buttons=["Undo", "OK", "Cancel"],
         handler=TrackHandler(),
         title="Tracking Parameters",
