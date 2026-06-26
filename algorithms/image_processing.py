@@ -100,15 +100,15 @@ def lowpass_3(img: np.ndarray, imx: cython.int, imy: cython.int) -> np.ndarray:
     end = image_size - imx - 1
     for idx in range(start, end):
         total = (
-            src_mv[idx]
-            + src_mv[idx - imx - 1]
-            + src_mv[idx - imx]
-            + src_mv[idx - imx + 1]
-            + src_mv[idx - 1]
-            + src_mv[idx + 1]
-            + src_mv[idx + imx - 1]
-            + src_mv[idx + imx]
-            + src_mv[idx + imx + 1]
+            int(src_mv[idx])
+            + int(src_mv[idx - imx - 1])
+            + int(src_mv[idx - imx])
+            + int(src_mv[idx - imx + 1])
+            + int(src_mv[idx - 1])
+            + int(src_mv[idx + 1])
+            + int(src_mv[idx + imx - 1])
+            + int(src_mv[idx + imx])
+            + int(src_mv[idx + imx + 1])
         )
         result_mv[idx] = total // 9
 

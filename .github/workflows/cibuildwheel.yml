@@ -37,12 +37,13 @@ jobs:
           CIBW_BEFORE_BUILD_WINDOWS: pip install numpy>=2.0.0 cython>=3.0.0 setuptools wheel && python setup.py prepare
           CIBW_BEFORE_BUILD_MACOS: pip install numpy>=2.0.0 cython>=3.0.0 setuptools wheel && python setup.py prepare
           CIBW_BUILD_FRONTEND: "pip"
-          CIBW_MANYLINUX_X86_64_IMAGE: "manylinux2014"
-          CIBW_MANYLINUX_AARCH64_IMAGE: "manylinux2014"
+          CIBW_MANYLINUX_X86_64_IMAGE: "manylinux_2_28"
+          CIBW_MANYLINUX_AARCH64_IMAGE: "manylinux_2_28"
           CIBW_ARCHS_WINDOWS: AMD64
           CIBW_ARCHS_MACOS: x86_64 arm64
-          CIBW_TEST_REQUIRES: "pytest numpy cython"
-          CIBW_TEST_COMMAND: "pytest {project}/algorithms/tests/ -v -m \"not slow\" --tb=short"
+          CIBW_TEST_REQUIRES: "pytest numpy cython scipy pyyaml"
+          CIBW_TEST_COMMAND: "python -c \"import shutil, pathlib; p = pathlib.Path('{project}'); shutil.copytree(p/'test_data', 'test_data', dirs_exist_ok=True); shutil.copytree(p/'algorithms'/'tests', 'tests', dirs_exist_ok=True)\" && pytest tests/ -v -m \"not slow\" --tb=short"
+
       
       - uses: actions/upload-artifact@v4
         with:
