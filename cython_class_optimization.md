@@ -34,9 +34,7 @@ Certain classes do not need to be `@cython.cclass` extensions. Keeping them as s
 ### B. Sequence and Ring-Buffer Managers (`tracking_frame_buf.py`)
 * **Classes:** `Frame`, `FrameBuf`
 * **Why they are standard Python:**
-  * **NumPy Delegation:** While `Frame` is a high-level container, its performance-critical fields (coordinates, linkages) are stored as contiguous **Structure-of-Arrays (SoA) NumPy arrays** (e.g., `self.targ_x`, `self.path_x`, `self.corres_nr`).
-  * **No Loop Overhead:** Cython code accesses these contiguous array memory views directly (e.g., `double[:, ::1]`), completely bypassing the Python-level `Frame` container during hot paths.
-  * **High-Level Tasks:** `Frame` and `FrameBuf` only manage file loading, saving, and rotating ring buffers (`fb_next()`), which run exactly once per time-step.
+  * **High-Level Tasks Only:** `Frame` and `FrameBuf` only manage file loading, saving, and rotating ring buffers (`fb_next()`), which run exactly once per time-step. Inside their methods, all hot loops (such as copying or referencing objects) are optimized by typing the local references to `@cython.cclass` types.
 
 ### C. Batch Vector Containers (`vec_utils.py`)
 * **Classes:** `Vec3dBatch`
@@ -62,37 +60,24 @@ While the codebase is highly optimized, readability can be enhanced to make deve
    * Add PEP 484 Python type-hints to all pure Python interfaces and wrappers to assist IDE auto-completion.
 
 2. **Refactor compiler optimization in `setup.py` for Developers**
-   * Add a `DEV_BUILD` environment variable to `setup.py` to allow compiling with `-O0` or `-O1` instead of `-O3`.
-   * *Benefit:* Reduces local development build times from ~5 minutes to < 10 seconds, which is crucial for quick local testing.
-   * Example implementation:
-     ```python
-     opt_level = "-O0" if os.environ.get("DEV_BUILD") else "-O3"
-     extra_compile_args.append(opt_level)
-     ```
+   * **[DONE]** Added a `DEV_BUILD` environment variable to `setup.py` to allow compiling with `-O0` or `-O1` instead of `-O3`.
+   * *Benefit:* Reduces local development build times from ~5 minutes to < 35 seconds, which is crucial for quick local testing.
 
 3. **Enhance Docstrings for Cython/Python Dual Execution**
    * Document compiled vs. interpreted fallback behavior at the module-level in each pure Python algorithm file.
-   * Clearly outline the expected array-layout/dtypes for each function input (e.g., `float64`, `int32`) so developers know exactly what shape Cython-typed memory views expect.
+   * Clearly outline the expected array-layout/dtypes for each function input so developers know exactly what shape Cython-typed memory views expect.
 
 ---
 
 ## 4. Detailed Plan for Performance & Speed Improvements
 
-To squeeze out even more speed, we can optimize several performance bottlenecks related to memory allocations and data structures.
+To squeeze out even more speed, we can optimize several performance bottlenecks related to memory allocations and data structures, while **firmly preserving `@cython.cclass` objects** as the primary, clean data representation.
 
 ### 📋 Action Items:
 
-1. **Eliminate AoS to SoA Synchronization Overhead (`Frame` class)**
-   * **The Issue:** Inside `tracking_frame_buf.py`, the `Frame` class currently runs high-overhead loops inside `_sync_path_to_soa()` and `_sync_soa_to_path()` copying data field-by-field between lists of `Target`/`Corres`/`Pathinfo` objects and NumPy arrays:
-     ```python
-     for i in range(self.num_parts):
-         p = self.path_info[i]
-         self.path_x[i] = p.x
-         ...
-     ```
-   * **The Solution:** 
-     * Write optimized, fully compiled conversion routines in Cython to sync these fields.
-     * Better yet, refactor the algorithms to directly use the NumPy SoA arrays, eliminating the need to maintain duplicate Array-of-Structures (`self.path_info`) list objects.
+1. **Optimize AoS to SoA Synchronization (`Frame` class)**
+   * **The Approach:** We **will not** refactor the codebase to pass flat NumPy structures or lose object-oriented semantics (which would make the code highly unreadable and introduce flat index arithmetic errors) unless a 10x speedup is proven.
+   * **The Optimization:** Keep `@cython.cclass` (`Target`, `Corres`, `Pathinfo`) as the primary data structures. To minimize synchronization loop overhead inside the `Frame` manager class, ensure all local loop variables and array bindings are fully Cython-typed (e.g., `p: Pathinfo`, `c: Corres`). This compiles down to direct C pointer attribute access (`p->prev`, `c->nr`), which is fast and completely bypasses Python dictionary lookups.
 
 2. **Optimize Memory Views using Contiguous Slices**
    * Ensure all multidimensional typed memory views inside hot paths are declared as contiguous in memory (e.g., `double[:, ::1]` instead of `double[:, :]`).
