@@ -6,7 +6,7 @@ import os
 from pathlib import Path
 from unittest.mock import Mock, patch, MagicMock
 from openptv2.correspondences import MatchedCoords
-from openptv2.gui.pyptv.ptv import (
+from openptv2.gui.ptv import (
     _read_calibrations,
     generate_short_file_bases,
     py_pre_processing_c,
@@ -16,7 +16,7 @@ from openptv2.gui.pyptv.ptv import (
     py_sequence_loop,
     py_trackcorr_init,
 )
-from openptv2.gui.pyptv.experiment import Experiment
+from openptv2.gui.experiment import Experiment
 from openptv2.parameters import ControlParams
 from openptv2.calibration import Calibration
 
@@ -75,7 +75,7 @@ class TestReadCalibrations:
 
     def test_read_calibrations_basic(self, test_cavity_exp):
         """Test basic calibration reading with real experiment data"""
-        from openptv2.gui.pyptv import ptv
+        from openptv2.gui import ptv
 
         try:
             # Initialize PyPTV core with real experiment data
@@ -97,7 +97,7 @@ class TestReadCalibrations:
 
     def test_read_calibrations_mismatched_count(self, test_splitter_exp):
         """Test calibration reading with different camera count"""
-        from openptv2.gui.pyptv import ptv
+        from openptv2.gui import ptv
 
         cpar, spar, vpar, track_par, tpar, cals, epar = ptv.py_start_proc_c(
             test_splitter_exp.pm
@@ -117,7 +117,7 @@ class TestPyPreProcessingC:
 
     def test_py_pre_processing_c_basic(self, test_cavity_exp):
         """Test basic preprocessing with real experiment data"""
-        from openptv2.gui.pyptv import ptv
+        from openptv2.gui import ptv
 
         try:
             # Initialize PyPTV core with real experiment data
@@ -173,7 +173,7 @@ class TestPyPreProcessingC:
         # Should return empty list for empty input
         assert len(result) == 0
 
-    @patch("pyptv.ptv._populate_cpar")
+    @patch("openptv2.gui.ptv._populate_cpar")
     def test_py_pre_processing_c_invalid_params(self, mock_populate_cpar):
         """Test preprocessing with invalid parameters"""
         num_cams = 1
@@ -189,7 +189,7 @@ class TestPyPreProcessingC:
 class TestPyDeterminationProcC:
     """Test py_determination_proc_c function"""
 
-    @patch("pyptv.ptv.point_positions")
+    @patch("openptv2.gui.ptv.point_positions")
     def test_py_determination_proc_c_basic(
         self, mock_point_positions, tmp_path, monkeypatch
     ):
@@ -216,7 +216,7 @@ class TestPyDeterminationProcC:
 
     def test_py_determination_proc_c_real_data(self, test_cavity_exp):
         """Test determination processing rejects empty real-data inputs cleanly."""
-        from openptv2.gui.pyptv import ptv
+        from openptv2.gui import ptv
 
         cpar, spar, vpar, track_par, tpar, cals, epar = ptv.py_start_proc_c(
             test_cavity_exp.pm
@@ -255,8 +255,8 @@ class TestPyDeterminationProcC:
 class TestRunSequencePlugin:
     """Test run_sequence_plugin function"""
 
-    @patch("pyptv.ptv.os.listdir")
-    @patch("pyptv.ptv.os.getcwd")
+    @patch("openptv2.gui.ptv.os.listdir")
+    @patch("openptv2.gui.ptv.os.getcwd")
     def test_run_sequence_plugin_empty_dir(self, mock_getcwd, mock_listdir):
         """Test sequence plugin with empty plugin directory"""
         from unittest.mock import Mock
@@ -304,8 +304,8 @@ class TestRunSequencePlugin:
 class TestRunTrackingPlugin:
     """Test run_tracking_plugin function"""
 
-    @patch("pyptv.ptv.os.listdir")
-    @patch("pyptv.ptv.os.getcwd")
+    @patch("openptv2.gui.ptv.os.listdir")
+    @patch("openptv2.gui.ptv.os.getcwd")
     def test_run_tracking_plugin_empty_dir(self, mock_getcwd, mock_listdir):
         """Test tracking plugin with empty plugin directory"""
         from unittest.mock import Mock
@@ -355,7 +355,7 @@ class TestPySequenceLoop:
 
     def test_py_sequence_loop_basic_real_data(self, test_cavity_exp):
         """Test basic sequence loop execution with real test_cavity data"""
-        from openptv2.gui.pyptv import ptv
+        from openptv2.gui import ptv
 
         # Initialize PyPTV core with real experiment data
         cpar, spar, vpar, track_par, tpar, cals, epar = ptv.py_start_proc_c(
@@ -397,7 +397,7 @@ class TestPyTrackcorrInit:
 
     def test_py_trackcorr_init_real_data(self, test_splitter_exp):
         """Test basic tracking correction initialization with real test_splitter data"""
-        from openptv2.gui.pyptv import ptv
+        from openptv2.gui import ptv
 
         cpar, spar, vpar, track_par, tpar, cals, epar = ptv.py_start_proc_c(
             test_splitter_exp.pm

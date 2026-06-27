@@ -9,8 +9,8 @@ from pathlib import Path
 import yaml
 import shutil
 
-from openptv2.gui.pyptv.legacy_parameters import Parameters, PtvParams, SequenceParams
-from openptv2.gui.pyptv.parameter_manager import ParameterManager
+from openptv2.gui.legacy_parameters import Parameters, PtvParams, SequenceParams
+from openptv2.gui.parameter_manager import ParameterManager
 
 
 @pytest.fixture

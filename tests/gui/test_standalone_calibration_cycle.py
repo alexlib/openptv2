@@ -8,13 +8,13 @@ import numpy as np
 from openptv2.imgcoord import image_coordinates
 from openptv2.transforms import convert_arr_metric_to_pixel
 
-from openptv2.gui.pyptv.ground_truth import generate_ground_truth, save_ground_truth_npz
-from openptv2.gui.pyptv.standalone_calibration import (
+from openptv2.gui.ground_truth import generate_ground_truth, save_ground_truth_npz
+from openptv2.gui.standalone_calibration import (
     get_flags_from_yaml,
     load_parameter_manager,
     run_standalone_calibration,
 )
-from openptv2.gui.pyptv import ptv
+from openptv2.gui import ptv
 
 
 def _copy_tree(src: Path, dst: Path) -> None:

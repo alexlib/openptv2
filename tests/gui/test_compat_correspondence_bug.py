@@ -2,7 +2,7 @@
 Pinpoint where the compat correspondences wrapper loses matches.
 
 Usage:
-    uv run pytest gui/tests/test_compat_correspondence_bug.py -v -s
+    uv run pytest tests/gui/test_compat_correspondence_bug.py -v -s
 """
 
 import os
@@ -43,8 +43,8 @@ def test_compat_correspondences_parity(cavity_dir):
     os.chdir(cavity_dir)
 
     try:
-        from openptv2.gui.pyptv.experiment import Experiment
-        from openptv2.gui.pyptv.ptv import py_start_proc_c, simple_highpass
+        from openptv2.gui.experiment import Experiment
+        from openptv2.gui.ptv import py_start_proc_c, simple_highpass
         from imageio.v3 import imread
         from skimage.util import img_as_ubyte
         from skimage.color import rgb2gray

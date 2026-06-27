@@ -3,7 +3,7 @@ Diagnostic test: pinpoint why algorithms correspondences produce far fewer
 matches than optv.
 
 Usage:
-    uv run pytest gui/tests/test_correspondence_disparity.py -v -s
+    uv run pytest tests/gui/test_correspondence_disparity.py -v -s
 """
 
 import os
@@ -100,8 +100,8 @@ def test_detection_parity(cavity_dir):
     os.chdir(cavity_dir)
 
     try:
-        from openptv2.gui.pyptv.experiment import Experiment
-        from openptv2.gui.pyptv.ptv import py_start_proc_c, simple_highpass
+        from openptv2.gui.experiment import Experiment
+        from openptv2.gui.ptv import py_start_proc_c, simple_highpass
         from imageio.v3 import imread
         from skimage.util import img_as_ubyte
         from skimage.color import rgb2gray
@@ -178,8 +178,8 @@ def test_correspondence_raw_vs_optv(cavity_dir):
     os.chdir(cavity_dir)
 
     try:
-        from openptv2.gui.pyptv.experiment import Experiment
-        from openptv2.gui.pyptv.ptv import py_start_proc_c, simple_highpass
+        from openptv2.gui.experiment import Experiment
+        from openptv2.gui.ptv import py_start_proc_c, simple_highpass
         from imageio.v3 import imread
         from skimage.util import img_as_ubyte
         from skimage.color import rgb2gray

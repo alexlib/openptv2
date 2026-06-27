@@ -69,11 +69,12 @@ def matinv(a: np.ndarray, n: int) -> np.ndarray:
 
     Returns:
         Inverse of a[:n, :n] as ndarray of shape (n, n).
-
-    Raises:
-        np.linalg.LinAlgError: if a is singular.
     """
-    return np.linalg.inv(np.asarray(a, dtype=np.float64).reshape(-1, n)[:n, :n])
+    sub = np.asarray(a, dtype=np.float64).reshape(-1, n)[:n, :n]
+    try:
+        return np.linalg.inv(sub)
+    except np.linalg.LinAlgError:
+        return np.linalg.pinv(sub)
 
 
 @cython.ccall

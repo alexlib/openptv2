@@ -4,8 +4,8 @@
 import pytest
 import os
 from pathlib import Path
-from openptv2.gui.pyptv.ptv import py_start_proc_c
-from openptv2.gui.pyptv.parameter_manager import ParameterManager
+from openptv2.gui.ptv import py_start_proc_c
+from openptv2.gui.parameter_manager import ParameterManager
 
 
 class TestTrackingParameterBug:

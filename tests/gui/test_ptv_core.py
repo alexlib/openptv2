@@ -5,7 +5,7 @@ Unit tests for the core ptv module functionality
 import pytest
 import numpy as np
 
-from openptv2.gui.pyptv.ptv import negative, py_start_proc_c, _read_calibrations
+from openptv2.gui.ptv import negative, py_start_proc_c, _read_calibrations
 
 
 @pytest.fixture

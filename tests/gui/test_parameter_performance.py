@@ -10,8 +10,8 @@ from pathlib import Path
 # Add pyptv to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from openptv2.gui.pyptv.experiment import Experiment
-from openptv2.gui.pyptv.parameter_manager import ParameterManager
+from openptv2.gui.experiment import Experiment
+from openptv2.gui.parameter_manager import ParameterManager
 
 
 def test_parameter_access_performance():

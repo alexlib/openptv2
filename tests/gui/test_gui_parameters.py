@@ -9,9 +9,9 @@ import tempfile
 import pytest
 from pathlib import Path
 
-from openptv2.gui.pyptv.parameter_manager import ParameterManager
-from openptv2.gui.pyptv.experiment import Experiment
-from openptv2.gui.pyptv.parameter_gui import Main_Params, Calib_Params, Tracking_Params, ParamHandler, CalHandler, TrackHandler
+from openptv2.gui.parameter_manager import ParameterManager
+from openptv2.gui.experiment import Experiment
+from openptv2.gui.parameter_gui import Main_Params, Calib_Params, Tracking_Params, ParamHandler, CalHandler, TrackHandler
 
 
 class DummyInfo:

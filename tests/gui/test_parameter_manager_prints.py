@@ -1,5 +1,5 @@
 import yaml
-from openptv2.gui.pyptv.parameter_manager import ParameterManager
+from openptv2.gui.parameter_manager import ParameterManager
 from pathlib import Path
 
 

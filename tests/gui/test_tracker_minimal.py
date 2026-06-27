@@ -2,8 +2,8 @@ import os
 import shutil
 import pytest
 from pathlib import Path
-from openptv2.gui.pyptv.parameter_manager import ParameterManager
-from openptv2.gui.pyptv.ptv import Tracker
+from openptv2.gui.parameter_manager import ParameterManager
+from openptv2.gui.ptv import Tracker
 from openptv2.tracker import Tracker, default_naming
 
 
@@ -32,7 +32,7 @@ def test_tracker_minimal(tmp_path):
         pm = ParameterManager()
         pm.from_yaml(param_path)
 
-        from openptv2.gui.pyptv.ptv import py_start_proc_c
+        from openptv2.gui.ptv import py_start_proc_c
 
         cpar, spar, vpar, track_par, tpar, cals, epar = py_start_proc_c(pm)
 

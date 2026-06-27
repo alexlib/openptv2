@@ -3,7 +3,7 @@ Test whether compat MatchedCoords produces same corrected coordinates as optv
 for identical target inputs.
 
 Usage:
-    uv run pytest gui/tests/test_matched_coords_parity.py -v -s
+    uv run pytest tests/gui/test_matched_coords_parity.py -v -s
 """
 
 import os
@@ -44,8 +44,8 @@ def test_matched_coords_parity(cavity_dir):
     os.chdir(cavity_dir)
 
     try:
-        from openptv2.gui.pyptv.experiment import Experiment
-        from openptv2.gui.pyptv.ptv import py_start_proc_c, simple_highpass
+        from openptv2.gui.experiment import Experiment
+        from openptv2.gui.ptv import py_start_proc_c, simple_highpass
         from imageio.v3 import imread
         from skimage.util import img_as_ubyte
         from skimage.color import rgb2gray

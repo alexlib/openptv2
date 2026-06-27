@@ -3,7 +3,7 @@
 import pytest
 import numpy as np
 from unittest.mock import Mock, patch, mock_open
-from openptv2.gui.pyptv.ptv import (
+from openptv2.gui.ptv import (
     py_calibration
 )
 

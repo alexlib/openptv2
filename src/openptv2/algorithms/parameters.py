@@ -1,32 +1,49 @@
-import cython
+# -*- coding: utf-8 -*-
+"""Camera and tracking sequence parameters and file I/O.
 
-# Convert TrackPar to TrackParTuple for test compatibility
-@cython.ccall
-def convert_track_par_to_tuple(track_par):
-    return TrackParTuple(
-        track_par.dvxmin, track_par.dvxmax, track_par.dvymin, track_par.dvymax,
-        track_par.dvzmin, track_par.dvzmax, track_par.dangle, track_par.dacc,
-        track_par.add, getattr(track_par, 'dsumg', 0.0), getattr(track_par, 'dn', 0.0),
-        getattr(track_par, 'dnx', 0.0), getattr(track_par, 'dny', 0.0)
-    )
+Translation of parameters from old C/C++ representation into modern Python.
+"""
+from __future__ import annotations
+
+import cython
 from collections import namedtuple
+from pathlib import Path
+from typing import Optional, List, Union
+
+import numpy as np
 
 # TrackParTuple for test compatibility
 TrackParTuple = namedtuple('TrackParTuple', [
     'dvxmin', 'dvxmax', 'dvymin', 'dvymax', 'dvzmin', 'dvzmax',
     'dangle', 'dacc', 'add', 'dsumg', 'dn', 'dnx', 'dny'
 ])
-import numpy as np
-from pathlib import Path
+
+
+# Convert TrackPar to TrackParTuple for test compatibility
+@cython.ccall
+def convert_track_par_to_tuple(track_par: TrackPar) -> TrackParTuple:
+    return TrackParTuple(
+        track_par.dvxmin, track_par.dvxmax, track_par.dvymin, track_par.dvymax,
+        track_par.dvzmin, track_par.dvzmax, track_par.dangle, track_par.dacc,
+        track_par.add, getattr(track_par, 'dsumg', 0.0), getattr(track_par, 'dn', 0.0),
+        getattr(track_par, 'dnx', 0.0), getattr(track_par, 'dny', 0.0)
+    )
+
 
 class SequencePar:
-    def __init__(self, num_cams=0, img_base_name=None, first=0, last=0):
+    num_cams: int
+    img_base_name: list[str]
+    first: int
+    last: int
+
+    def __init__(self, num_cams: int = 0, img_base_name: list[str] | None = None, first: int = 0, last: int = 0) -> None:
         self.num_cams = num_cams
         self.img_base_name = img_base_name if img_base_name is not None else []
         self.first = first
         self.last = last
+
     @staticmethod
-    def from_file(filename, num_cams):
+    def from_file(filename: str | Path, num_cams: int) -> SequencePar:
         path = Path(filename)
         lines = path.read_text().strip().splitlines()
         if len(lines) < num_cams + 2:
@@ -36,8 +53,36 @@ class SequencePar:
         last = int(lines[num_cams + 1].strip())
         return SequencePar(num_cams, img_base_name, first, last)
 
+
 class TrackPar:
-    def __init__(self, dvxmin=0.0, dvxmax=0.0, dvymin=0.0, dvymax=0.0, dvzmin=0.0, dvzmax=0.0, dangle=0.0, dacc=0.0, add=0, track_mode=0):
+    dvxmin: float
+    dvxmax: float
+    dvymin: float
+    dvymax: float
+    dvzmin: float
+    dvzmax: float
+    dangle: float
+    dacc: float
+    add: int
+    track_mode: int
+    dsumg: int
+    dn: int
+    dnx: int
+    dny: int
+
+    def __init__(
+        self,
+        dvxmin: float = 0.0,
+        dvxmax: float = 0.0,
+        dvymin: float = 0.0,
+        dvymax: float = 0.0,
+        dvzmin: float = 0.0,
+        dvzmax: float = 0.0,
+        dangle: float = 0.0,
+        dacc: float = 0.0,
+        add: int = 0,
+        track_mode: int = 0
+    ) -> None:
         self.dvxmin = dvxmin
         self.dvxmax = dvxmax
         self.dvymin = dvymin
@@ -52,8 +97,9 @@ class TrackPar:
         self.dn = 0
         self.dnx = 0
         self.dny = 0
+
     @staticmethod
-    def from_file(filename):
+    def from_file(filename: str | Path) -> TrackPar:
         path = Path(filename)
         lines = path.read_text().strip().splitlines()
         if len(lines) < 9:
@@ -72,7 +118,28 @@ class TrackPar:
 
 
 class VolumePar:
-    def __init__(self, X_lay=None, Zmin_lay=None, Zmax_lay=None, cnx=0.0, cny=0.0, cn=0.0, csumg=0.0, corrmin=0.0, eps0=0.0):
+    X_lay: np.ndarray
+    Zmin_lay: np.ndarray
+    Zmax_lay: np.ndarray
+    cnx: float
+    cny: float
+    cn: float
+    csumg: float
+    corrmin: float
+    eps0: float
+
+    def __init__(
+        self,
+        X_lay: list[float] | np.ndarray | None = None,
+        Zmin_lay: list[float] | np.ndarray | None = None,
+        Zmax_lay: list[float] | np.ndarray | None = None,
+        cnx: float = 0.0,
+        cny: float = 0.0,
+        cn: float = 0.0,
+        csumg: float = 0.0,
+        corrmin: float = 0.0,
+        eps0: float = 0.0
+    ) -> None:
         self.X_lay = np.zeros(2) if X_lay is None else np.array(X_lay, dtype=np.float64)
         self.Zmin_lay = np.zeros(2) if Zmin_lay is None else np.array(Zmin_lay, dtype=np.float64)
         self.Zmax_lay = np.zeros(2) if Zmax_lay is None else np.array(Zmax_lay, dtype=np.float64)
@@ -82,8 +149,9 @@ class VolumePar:
         self.csumg = csumg
         self.corrmin = corrmin
         self.eps0 = eps0
+
     @staticmethod
-    def from_file(filename):
+    def from_file(filename: str | Path) -> VolumePar:
         path = Path(filename)
         lines = path.read_text().strip().splitlines()
         if len(lines) < 12:
@@ -99,16 +167,59 @@ class VolumePar:
         eps0 = float(lines[11])
         return VolumePar(X_lay, Zmin_lay, Zmax_lay, cnx, cny, cn, csumg, corrmin, eps0)
 
+
 class MmNp:
-    def __init__(self, nlay=1, n1=1.0, n2=None, d=None, n3=1.0):
+    nlay: int
+    n1: float
+    n2: np.ndarray
+    d: np.ndarray
+    n3: float
+
+    def __init__(
+        self,
+        nlay: int = 1,
+        n1: float = 1.0,
+        n2: list[float] | np.ndarray | None = None,
+        d: list[float] | np.ndarray | None = None,
+        n3: float = 1.0
+    ) -> None:
         self.nlay = nlay
         self.n1 = n1
         self.n2 = np.ones(3) if n2 is None else np.array(n2, dtype=np.float64)
         self.d = np.zeros(3) if d is None else np.array(d, dtype=np.float64)
         self.n3 = n3
 
+
 class ControlPar:
-    def __init__(self, num_cams=0, img_base_name=None, cal_img_base_name=None, hp_flag=0, allCam_flag=0, all_cam_flag=None, tiff_flag=0, imx=0, imy=0, pix_x=0.0, pix_y=0.0, chfield=0, mm=None):
+    num_cams: int
+    img_base_name: list[str]
+    cal_img_base_name: list[str]
+    hp_flag: int
+    allCam_flag: int
+    tiff_flag: int
+    imx: int
+    imy: int
+    pix_x: float
+    pix_y: float
+    chfield: int
+    mm: MmNp
+
+    def __init__(
+        self,
+        num_cams: int = 0,
+        img_base_name: list[str] | None = None,
+        cal_img_base_name: list[str] | None = None,
+        hp_flag: int = 0,
+        allCam_flag: int = 0,
+        all_cam_flag: int | None = None,
+        tiff_flag: int = 0,
+        imx: int = 0,
+        imy: int = 0,
+        pix_x: float = 0.0,
+        pix_y: float = 0.0,
+        chfield: int = 0,
+        mm: MmNp | None = None
+    ) -> None:
         self.num_cams = num_cams
         self.img_base_name = img_base_name if img_base_name is not None else []
         self.cal_img_base_name = cal_img_base_name if cal_img_base_name is not None else []
@@ -125,8 +236,9 @@ class ControlPar:
         self.pix_y = pix_y
         self.chfield = chfield
         self.mm = mm if mm is not None else MmNp()
+
     @staticmethod
-    def from_file(filename):
+    def from_file(filename: str | Path) -> ControlPar:
         path = Path(filename)
         lines = path.read_text().strip().splitlines()
         if len(lines) < 1:
@@ -174,8 +286,32 @@ class ControlPar:
             chfield=chfield, mm=mm,
         )
 
+
 class TargetPar:
-    def __init__(self, gvthres=None, discont=0, nnmin=0, nnmax=0, nxmin=0, nxmax=0, nymin=0, nymax=0, sumg_min=0, cr_sz=0):
+    gvthres: np.ndarray
+    discont: int
+    nnmin: int
+    nnmax: int
+    nxmin: int
+    nxmax: int
+    nymin: int
+    nymax: int
+    sumg_min: int
+    cr_sz: int
+
+    def __init__(
+        self,
+        gvthres: list[int] | np.ndarray | None = None,
+        discont: int = 0,
+        nnmin: int = 0,
+        nnmax: int = 0,
+        nxmin: int = 0,
+        nxmax: int = 0,
+        nymin: int = 0,
+        nymax: int = 0,
+        sumg_min: int = 0,
+        cr_sz: int = 0
+    ) -> None:
         self.gvthres = np.zeros(4, dtype=int) if gvthres is None else np.array(gvthres, dtype=int)
         self.discont = discont
         self.nnmin = nnmin
@@ -186,8 +322,9 @@ class TargetPar:
         self.nymax = nymax
         self.sumg_min = sumg_min
         self.cr_sz = cr_sz
+
     @staticmethod
-    def from_file(filename):
+    def from_file(filename: str | Path) -> TargetPar:
         path = Path(filename)
         tokens = path.read_text().split()
         if len(tokens) < 12:
@@ -200,7 +337,8 @@ class TargetPar:
         sumg_min = int(tokens[11])
         cr_sz = int(tokens[12]) if len(tokens) > 12 else 0
         return TargetPar(gvthres, discont, nnmin, nnmax, nxmin, nxmax, nymin, nymax, sumg_min, cr_sz)
-    def to_file(self, filename):
+
+    def to_file(self, filename: str | Path) -> None:
         path = Path(filename)
         lines = [
             str(self.gvthres[0]),
@@ -217,11 +355,35 @@ class TargetPar:
         path.write_text("\n".join(lines) + "\n")
 
 
-
 class OrientPar:
-    def __init__(self, useflag=0, ccflag=0, xhflag=0, yhflag=0,
-                 k1flag=0, k2flag=0, k3flag=0, p1flag=0, p2flag=0,
-                 scxflag=0, sheflag=0, interfflag=0):
+    useflag: int
+    ccflag: int
+    xhflag: int
+    yhflag: int
+    k1flag: int
+    k2flag: int
+    k3flag: int
+    p1flag: int
+    p2flag: int
+    scxflag: int
+    sheflag: int
+    interfflag: int
+
+    def __init__(
+        self,
+        useflag: int = 0,
+        ccflag: int = 0,
+        xhflag: int = 0,
+        yhflag: int = 0,
+        k1flag: int = 0,
+        k2flag: int = 0,
+        k3flag: int = 0,
+        p1flag: int = 0,
+        p2flag: int = 0,
+        scxflag: int = 0,
+        sheflag: int = 0,
+        interfflag: int = 0
+    ) -> None:
         self.useflag = useflag
         self.ccflag = ccflag
         self.xhflag = xhflag
@@ -236,7 +398,7 @@ class OrientPar:
         self.interfflag = interfflag
 
     @staticmethod
-    def from_file(filename):
+    def from_file(filename: str | Path) -> OrientPar:
         path = Path(filename)
         lines = path.read_text().strip().splitlines()
         flags = [int(line.strip()) for line in lines[:12]]
@@ -244,19 +406,47 @@ class OrientPar:
             flags.append(0)
         return OrientPar(*flags)
 
+
 class MultimediaPar:
-    def __init__(self, n1=1.0, n2=None, d=None, n3=1.0, nlay=1):
+    n1: float
+    n2: np.ndarray
+    d: np.ndarray
+    n3: float
+    nlay: int
+
+    def __init__(
+        self,
+        n1: float = 1.0,
+        n2: list[float] | np.ndarray | None = None,
+        d: list[float] | np.ndarray | None = None,
+        n3: float = 1.0,
+        nlay: int = 1
+    ) -> None:
         self.n1 = n1
         self.n2 = np.ones(3) if n2 is None else np.array(n2, dtype=np.float64)
         self.d = np.zeros(3) if d is None else np.array(d, dtype=np.float64)
         self.n3 = n3
         self.nlay = nlay
 
+
 class CalibrationPar:
     """Calibration parameters for calibration workflow."""
+    fixp_name: str
+    img_cal_name: list[str]
+    img_ori: list[str]
+    tiff_flag: int
+    pair_flag: int
+    chfield: int
 
-
-    def __init__(self, fixp_name="", img_cal_name=None, img_ori=None, tiff_flag=0, pair_flag=0, chfield=0):
+    def __init__(
+        self,
+        fixp_name: str = "",
+        img_cal_name: list[str] | None = None,
+        img_ori: list[str] | None = None,
+        tiff_flag: int = 0,
+        pair_flag: int = 0,
+        chfield: int = 0
+    ) -> None:
         self.fixp_name = fixp_name
         self.img_cal_name = img_cal_name if img_cal_name is not None else []
         self.img_ori = img_ori if img_ori is not None else []
@@ -265,7 +455,7 @@ class CalibrationPar:
         self.chfield = chfield
 
     @staticmethod
-    def from_file(file_path: str, num_cams: int):
+    def from_file(file_path: str | Path, num_cams: int) -> CalibrationPar:
         """Read from cal_ori.par file."""
         with open(file_path, "r", encoding="utf-8") as file:
             fixp_name = file.readline().strip()
@@ -281,13 +471,15 @@ class CalibrationPar:
 
 class MultiPlanesPar:
     """Multiplanes parameters."""
+    num_planes: int
+    filename: list[str]
 
-    def __init__(self, num_planes=0, filename=None):
+    def __init__(self, num_planes: int = 0, filename: list[str] | None = None) -> None:
         self.num_planes = num_planes
         self.filename = filename if filename is not None else []
 
     @staticmethod
-    def from_file(file_path: str):
+    def from_file(file_path: str | Path) -> MultiPlanesPar:
         """Read from multiplanes.par file."""
         with open(file_path, "r", encoding="utf-8") as file:
             num_planes = int(file.readline().strip())
@@ -297,13 +489,15 @@ class MultiPlanesPar:
 
 class ExaminePar:
     """Examine parameters."""
+    examine_flag: bool
+    combine_flag: bool
 
-    def __init__(self, examine_flag=False, combine_flag=False):
+    def __init__(self, examine_flag: bool = False, combine_flag: bool = False) -> None:
         self.examine_flag = examine_flag
         self.combine_flag = combine_flag
 
     @staticmethod
-    def from_file(file_path: str):
+    def from_file(file_path: str | Path) -> ExaminePar:
         """Read from examine.par file."""
         with open(file_path, "r", encoding="utf-8") as file:
             examine_flag = bool(int(file.readline().strip()))
@@ -313,12 +507,13 @@ class ExaminePar:
 
 class PftVersionPar:
     """PFT version parameters."""
+    existing_target_flag: bool
 
-    def __init__(self, existing_target_flag=False):
+    def __init__(self, existing_target_flag: bool = False) -> None:
         self.existing_target_flag = existing_target_flag
 
     @staticmethod
-    def from_file(file_path: str):
+    def from_file(file_path: str | Path) -> PftVersionPar:
         """Read from pft_version.par file."""
         with open(file_path, "r", encoding="utf-8") as file:
             existing_target_flag = bool(int(file.readline().strip()))

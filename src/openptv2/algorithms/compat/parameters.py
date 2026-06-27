@@ -149,7 +149,10 @@ class ControlParams:
 
     def get_img_base_name(self, cam):
         """Get image base name for camera."""
-        return self._cpar.img_base_name[cam]
+        try:
+            return self._cpar.img_base_name[cam]
+        except IndexError:
+            return ""
 
     def set_img_base_name(self, cam, name):
         """Set image base name for camera."""
@@ -157,7 +160,10 @@ class ControlParams:
 
     def get_cal_img_base_name(self, cam):
         """Get calibration image base name for camera."""
-        return self._cpar.cal_img_base_name[cam]
+        try:
+            return self._cpar.cal_img_base_name[cam]
+        except IndexError:
+            return ""
 
     def set_cal_img_base_name(self, cam, name):
         """Set calibration image base name for camera."""

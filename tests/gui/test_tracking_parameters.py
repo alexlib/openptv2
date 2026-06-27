@@ -8,7 +8,7 @@ import tempfile
 import shutil
 import os
 import yaml
-from openptv2.gui.pyptv.pyptv_batch_plugins import run_batch
+from openptv2.batch.pyptv_batch_plugins import run_batch
 
 
 def test_tracking_parameters_propagation():
@@ -20,8 +20,8 @@ def test_tracking_parameters_propagation():
         pytest.skip(f"Test data not found: {test_path}")
 
     # Test parameter reading first
-    from openptv2.gui.pyptv.experiment import Experiment
-    from openptv2.gui.pyptv.ptv import py_start_proc_c
+    from openptv2.gui.experiment import Experiment
+    from openptv2.gui.ptv import py_start_proc_c
 
     # Create experiment and load parameters
     experiment = Experiment()
@@ -95,7 +95,7 @@ def test_tracking_parameters_propagation():
 def test_tracking_parameters_missing_fail():
     """Test that missing tracking parameters cause explicit failure"""
 
-    from openptv2.gui.pyptv.ptv import _populate_track_par
+    from openptv2.gui.ptv import _populate_track_par
 
     # Test with missing parameters
     incomplete_params = {
@@ -220,8 +220,8 @@ def test_parameter_propagation_with_corrupted_yaml():
             f.write("\n".join(filtered_lines))
 
         # Test that this causes proper failure
-        from openptv2.gui.pyptv.experiment import Experiment
-        from openptv2.gui.pyptv.ptv import py_start_proc_c
+        from openptv2.gui.experiment import Experiment
+        from openptv2.gui.ptv import py_start_proc_c
 
         experiment = Experiment()
         experiment.populate_runs(temp_test_path)
@@ -242,8 +242,8 @@ def test_tracking_parameters_yaml_and_c_conversion():
     test_path = Path(__file__).parent.parent.parent / "test_data" / "test_splitter"
     if not test_path.exists():
         pytest.skip(f"Test data not found: {test_path}")
-    from openptv2.gui.pyptv.experiment import Experiment
-    from openptv2.gui.pyptv.ptv import py_start_proc_c
+    from openptv2.gui.experiment import Experiment
+    from openptv2.gui.ptv import py_start_proc_c
 
     experiment = Experiment()
     experiment.populate_runs(test_path)
@@ -273,7 +273,7 @@ def test_tracking_parameters_yaml_and_c_conversion():
 
 def test_tracking_parameters_missing_raises():
     """Test that missing tracking parameters raise ValueError."""
-    from openptv2.gui.pyptv.ptv import _populate_track_par
+    from openptv2.gui.ptv import _populate_track_par
 
     incomplete_params = {"dvxmin": -1.0, "dvxmax": 1.0}
     with pytest.raises(ValueError, match="Missing required tracking parameters"):
@@ -307,8 +307,8 @@ def test_parameter_propagation_with_corrupted_yaml_unit():
                 filtered_lines.append(line)
         with open(yaml_file, "w") as f:
             f.write("\n".join(filtered_lines))
-        from openptv2.gui.pyptv.experiment import Experiment
-        from openptv2.gui.pyptv.ptv import py_start_proc_c
+        from openptv2.gui.experiment import Experiment
+        from openptv2.gui.ptv import py_start_proc_c
 
         experiment = Experiment()
         experiment.populate_runs(temp_test_path)
@@ -346,7 +346,7 @@ def test_tracking_parameters_in_batch_run_plugin():
         with open(yaml_file, "w") as f:
             yaml.safe_dump(params, f)
         # Import and run batch function directly
-        from openptv2.gui.pyptv.pyptv_batch_plugins import run_batch
+        from openptv2.batch.pyptv_batch_plugins import run_batch
 
         # Run batch with tracking mode
         run_batch(

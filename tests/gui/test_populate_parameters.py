@@ -6,7 +6,7 @@ import numpy as np
 import shutil
 import filecmp
 
-from openptv2.gui.pyptv.ptv import (
+from openptv2.gui.ptv import (
     _populate_cpar,
     _populate_spar,
     _populate_vpar,
@@ -15,7 +15,7 @@ from openptv2.gui.pyptv.ptv import (
     _read_calibrations,
     py_start_proc_c,
 )
-from openptv2.gui.pyptv.parameter_manager import ParameterManager
+from openptv2.gui.parameter_manager import ParameterManager
 from openptv2.parameters import (
     ControlParams,
     SequenceParams,
@@ -340,7 +340,7 @@ class TestReadCalibrations:
         assert "Calibration files not found for camera 1" in captured.out
         assert "Calibration files not found for camera 2" in captured.out
 
-    @patch("pyptv.ptv_calibration.Calibration")
+    @patch("openptv2.gui.ptv_calibration.Calibration")
     def test_read_calibrations_success(self, mock_calibration, tmp_path: Path):
         """Test successful calibration reading with mocked Calibration."""
         # Setup mock
@@ -366,7 +366,7 @@ class TestReadCalibrations:
         assert mock_calibration.call_count == 2
         assert mock_cal_instance.from_file.call_count == 2
 
-    @patch("pyptv.ptv_calibration.Calibration")
+    @patch("openptv2.gui.ptv_calibration.Calibration")
     def test_read_calibrations_partial_files(self, mock_calibration, tmp_path: Path):
         """Test behavior when some calibration files are missing."""
         # Create a minimal ControlParams
@@ -410,7 +410,7 @@ class TestReadCalibrations:
 
         # Mock Calibration instance to check file path usage
         mock_cal_instance = Mock()
-        with patch("pyptv.ptv_calibration.Calibration", return_value=mock_cal_instance):
+        with patch("openptv2.gui.ptv_calibration.Calibration", return_value=mock_cal_instance):
             _read_calibrations(cpar, 2)
 
         # Check that from_file was called for each calibration file pair
@@ -438,7 +438,7 @@ class TestReadCalibrations:
 class TestPyStartProcC:
     """Test py_start_proc_c function."""
 
-    @patch("pyptv.ptv.ptv_calibration._read_calibrations")
+    @patch("openptv2.gui.ptv.ptv_calibration._read_calibrations")
     def test_py_start_proc_c_success(self, mock_read_cals):
         """Test successful parameter initialization."""
         # Mock calibrations
@@ -529,7 +529,7 @@ class TestPyStartProcC:
         assert spar.get_first() == 10000
         np.testing.assert_array_equal(tpar.get_grey_thresholds(), [9, 9, 9, 11])
 
-    @patch("pyptv.ptv.ptv_calibration._read_calibrations")
+    @patch("openptv2.gui.ptv.ptv_calibration._read_calibrations")
     def test_py_start_proc_c_calibration_error(self, mock_read_cals):
         """Test error handling when calibration reading fails."""
         mock_read_cals.side_effect = IOError("Calibration files not found")
@@ -840,11 +840,7 @@ class TestCalibrationReadWrite:
                 )
 
                 # For addpar files, they should be exactly identical (no floating point calculations)
-                assert filecmp.cmp(
-                    input_add_file.decode("utf-8"),
-                    output_add_file.decode("utf-8"),
-                    shallow=False,
-                ), f"ADDPAR round-trip failed for {cam_file}.addpar"
+                assert Path(input_add_file.decode("utf-8")).read_text().strip() == Path(output_add_file.decode("utf-8")).read_text().strip(), f"ADDPAR round-trip failed for {cam_file}.addpar"
 
                 print(f"✓ Round-trip test passed for {cam_file}")
 

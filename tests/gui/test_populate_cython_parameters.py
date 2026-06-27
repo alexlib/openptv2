@@ -3,9 +3,9 @@ import sys
 sys.path.insert(0, ".")
 import numpy as np
 from pathlib import Path
-from openptv2.gui.pyptv.experiment import Experiment
-from openptv2.gui.pyptv.ptv import py_start_proc_c, _populate_cpar, _populate_tpar, _populate_spar
-from openptv2.gui.pyptv.parameter_util import legacy_to_yaml
+from openptv2.gui.experiment import Experiment
+from openptv2.gui.ptv import py_start_proc_c, _populate_cpar, _populate_tpar, _populate_spar
+from openptv2.gui.parameter_util import legacy_to_yaml
 
 
 def test_parameter_translation_pipeline():

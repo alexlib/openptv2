@@ -1,7 +1,7 @@
 import pytest
-from openptv2.gui.pyptv.parameter_manager import ParameterManager
+from openptv2.gui.parameter_manager import ParameterManager
 from pathlib import Path
-from openptv2.gui.pyptv.experiment import Experiment
+from openptv2.gui.experiment import Experiment
 
 TEST_DATA = Path(__file__).parent.parent.parent / "test_data"
 

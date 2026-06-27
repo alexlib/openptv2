@@ -1,7 +1,7 @@
 import shutil
 from pathlib import Path
 import pytest
-from openptv2.gui.pyptv.parameter_manager import ParameterManager
+from openptv2.gui.parameter_manager import ParameterManager
 
 
 @pytest.mark.parametrize(

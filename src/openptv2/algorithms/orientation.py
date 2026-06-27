@@ -512,7 +512,11 @@ def raw_orient(cal, cpar, nfix, fix, pix):
         n = 0
 
         for i in range(nfix):
-            xc, yc = pixel_to_metric(pix[i].x, pix[i].y, cpar)
+            x_val = pix[i].x
+            x_px = x_val() if callable(x_val) else x_val
+            y_val = pix[i].y
+            y_px = y_val() if callable(y_val) else y_val
+            xc, yc = pixel_to_metric(x_px, y_px, cpar)
 
             cal.ext_par.compute_rotation_matrix()
             xp, yp = img_coord(np.asarray(fix[i]), cal, cpar.mm)
@@ -633,7 +637,9 @@ def orient(cal_in, cpar, nfix, fix, pix, flags, sigmabeta):
         n = 0
 
         for i in range(nfix):
-            if pix[i].pnr != i:
+            pnr_val = pix[i].pnr
+            pnr_i = pnr_val() if callable(pnr_val) else pnr_val
+            if pnr_i != i:
                 continue
 
             if flags.useflag == 1 and (i % 2) == 0:
@@ -643,7 +649,11 @@ def orient(cal_in, cpar, nfix, fix, pix, flags, sigmabeta):
             if flags.useflag == 3 and (i % 3) == 0:
                 continue
 
-            xc, yc = pixel_to_metric(pix[i].x, pix[i].y, cpar)
+            x_val = pix[i].x
+            x_px = x_val() if callable(x_val) else x_val
+            y_val = pix[i].y
+            y_px = y_val() if callable(y_val) else y_val
+            xc, yc = pixel_to_metric(x_px, y_px, cpar)
             xc, yc = correct_brown_affin(
                 xc, yc,
                 cal.added_par.k1, cal.added_par.k2, cal.added_par.k3,
@@ -1007,7 +1017,8 @@ def full_calibration(cal, ref_pts, img_pts, cpar, flags=None):
     for i in range(n):
         ret[i, 0] = residuals[2 * i]
         ret[i, 1] = residuals[2 * i + 1]
-        used[i] = img_pts[i].pnr
+        pnr_val = img_pts[i].pnr
+        used[i] = pnr_val() if callable(pnr_val) else pnr_val
 
     return ret, used, sigmabeta
 

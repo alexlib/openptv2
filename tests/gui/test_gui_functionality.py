@@ -183,9 +183,9 @@ def test_gui_classes():
     print("=" * 60)
     
     try:
-        from openptv2.gui.pyptv.pyptv_gui import Clicker, FilteredFileBrowserExample
-        from openptv2.gui.pyptv.experiment import Experiment, Paramset
-        from openptv2.gui.pyptv.parameter_manager import ParameterManager
+        from openptv2.gui.pyptv_gui import Clicker, FilteredFileBrowserExample
+        from openptv2.gui.experiment import Experiment, Paramset
+        from openptv2.gui.parameter_manager import ParameterManager
         
         # Try to instantiate
         file_browser = FilteredFileBrowserExample()
@@ -294,12 +294,12 @@ def main():
         print("\nTo launch the GUI:")
         print("  openptv2-gui")
         print("  or")
-        print("  python -m gui.pyptv.pyptv_gui")
+        print("  python -m openptv2.gui.pyptv_gui")
         return 0
     else:
         print(f"\n⚠️ {total - passed} test(s) failed")
         print("\nNote: Some tests may fail due to API differences.")
-        print("The GUI itself works - see gui/tests/ for working test examples.")
+        print("The GUI itself works - see tests/gui/ for working test examples.")
         return 1
 
 

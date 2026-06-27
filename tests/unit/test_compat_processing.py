@@ -212,7 +212,7 @@ class TestOrientationCompat:
         # Initialize with reasonable camera position (not at origin)
         cal.set_pos(np.array([0.0, 0.0, 1000.0]))  # 1m behind target
         cal.set_angles(np.array([0.0, 0.0, 0.0]))
-        cal.set_primary_point(np.array([0.0, 0.0]))
+        cal.set_primary_point(np.array([0.0, 0.0, 100.0]))
 
         cpar = ControlParams(num_cams=1)
         cpar.set_image_size((1280, 1024))

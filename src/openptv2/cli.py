@@ -37,7 +37,7 @@ def main():
     if command == "track":
         # Headless batch sequence / tracking
         try:
-            from openptv2.gui.pyptv.pyptv_batch import run_batch, parse_command_line_args, main as batch_main
+            from openptv2.batch.pyptv_batch import run_batch, parse_command_line_args, main as batch_main
             
             # Re-parse sys.argv[2:] using pyptv_batch's parser
             yaml_file, first_frame, last_frame, mode = parse_command_line_args(sys.argv[2:])
@@ -63,7 +63,7 @@ def main():
         # Interactive 3D-PTV GUI
         try:
             print("Launching interactive OpenPTV GUI...")
-            from openptv2.gui.pyptv.pyptv_gui import main as gui_main
+            from openptv2.gui.pyptv_gui import main as gui_main
             gui_main()
             
         except Exception as e:

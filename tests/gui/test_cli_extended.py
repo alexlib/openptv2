@@ -8,7 +8,7 @@ from pathlib import Path
 import tempfile
 import shutil
 
-from openptv2.gui.pyptv.cli import cli
+from openptv2.gui.cli import cli
 
 
 @pytest.fixture
@@ -51,7 +51,7 @@ def test_cli_with_args(monkeypatch):
         return "0.3.5"
 
     # Apply the mock
-    import openptv2.gui.pyptv
+    import openptv2.gui as pyptv
 
     monkeypatch.setattr(pyptv, "__version__", mock_version())
 

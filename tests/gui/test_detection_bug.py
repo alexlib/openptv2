@@ -10,8 +10,8 @@ This test demonstrates that:
 
 import numpy as np
 from pathlib import Path
-from openptv2.gui.pyptv.experiment import Experiment
-from openptv2.gui.pyptv.ptv import py_detection_proc_c, _populate_tpar
+from openptv2.gui.experiment import Experiment
+from openptv2.gui.ptv import py_detection_proc_c, _populate_tpar
 from skimage.io import imread
 from skimage.color import rgb2gray
 from skimage.util import img_as_ubyte

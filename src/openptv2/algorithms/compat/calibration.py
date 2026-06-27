@@ -44,6 +44,8 @@ class Calibration:
 
     def set_pos(self, pos):
         """Set camera position from ndarray[3]."""
+        if len(pos) != 3:
+            raise ValueError("pos must have exactly 3 elements")
         self._cal.ext_par.x0 = float(pos[0])
         self._cal.ext_par.y0 = float(pos[1])
         self._cal.ext_par.z0 = float(pos[2])
@@ -54,6 +56,8 @@ class Calibration:
 
     def set_angles(self, angles):
         """Set rotation angles from ndarray[3]."""
+        if len(angles) != 3:
+            raise ValueError("angles must have exactly 3 elements")
         self._cal.ext_par.omega = float(angles[0])
         self._cal.ext_par.phi = float(angles[1])
         self._cal.ext_par.kappa = float(angles[2])
@@ -65,11 +69,12 @@ class Calibration:
         return np.array([self._cal.int_par.xh, self._cal.int_par.yh, self._cal.int_par.cc])
 
     def set_primary_point(self, pp):
-        """Set primary point from ndarray (2 or 3 elements)."""
+        """Set primary point from ndarray[3]."""
+        if len(pp) != 3:
+            raise ValueError("primary point must have exactly 3 elements")
         self._cal.int_par.xh = float(pp[0])
         self._cal.int_par.yh = float(pp[1])
-        if len(pp) > 2:
-            self._cal.int_par.cc = float(pp[2])
+        self._cal.int_par.cc = float(pp[2])
 
     def get_radial_distortion(self):
         """Get radial distortion coefficients (k1, k2, k3) as ndarray[3]."""
@@ -77,6 +82,8 @@ class Calibration:
 
     def set_radial_distortion(self, dist):
         """Set radial distortion from ndarray[3]."""
+        if len(dist) != 3:
+            raise ValueError("radial distortion must have exactly 3 elements")
         self._cal.added_par.k1 = float(dist[0])
         self._cal.added_par.k2 = float(dist[1])
         self._cal.added_par.k3 = float(dist[2])
@@ -87,6 +94,8 @@ class Calibration:
 
     def set_decentering(self, decent):
         """Set decentering from ndarray[2]."""
+        if len(decent) != 2:
+            raise ValueError("decentering parameters must have exactly 2 elements")
         self._cal.added_par.p1 = float(decent[0])
         self._cal.added_par.p2 = float(decent[1])
 
@@ -96,6 +105,8 @@ class Calibration:
 
     def set_affine_trans(self, affine):
         """Set affine transform from ndarray[2]."""
+        if len(affine) != 2:
+            raise ValueError("affine parameters must have exactly 2 elements")
         self._cal.added_par.scx = float(affine[0])
         self._cal.added_par.she = float(affine[1])
 
@@ -105,6 +116,8 @@ class Calibration:
 
     def set_glass_vec(self, gvec):
         """Set glass vector from ndarray[3]."""
+        if len(gvec) != 3:
+            raise ValueError("glass vector must have exactly 3 elements")
         self._cal.glass_par.vec_x = float(gvec[0])
         self._cal.glass_par.vec_y = float(gvec[1])
         self._cal.glass_par.vec_z = float(gvec[2])

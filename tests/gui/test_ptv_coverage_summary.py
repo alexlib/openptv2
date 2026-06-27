@@ -85,7 +85,7 @@ This documentation is included to ensure all public functions in ptv.py are cove
 
 # This file serves as documentation and can be run as a test to verify coverage
 import pytest
-from openptv2.gui.pyptv import ptv
+from openptv2.gui import ptv
 import inspect
 
 def test_function_coverage_documentation():
@@ -93,7 +93,7 @@ def test_function_coverage_documentation():
     
     # Get all functions defined in ptv.py
     ptv_functions = [name for name, obj in inspect.getmembers(ptv, inspect.isfunction)
-                     if obj.__module__ == 'pyptv.ptv']
+                     if obj.__module__.endswith('ptv')]
     
     # Functions that should have tests (excluding private helpers)
     documented_functions = [

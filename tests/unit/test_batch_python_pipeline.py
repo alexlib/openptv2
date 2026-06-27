@@ -1,7 +1,7 @@
 """
 Full batch pipeline test using pure Python algorithms.
 
-Mirrors gui/tests/test_pyptv_batch.py but uses algorithms/ directly,
+Mirrors tests/batch/test_pyptv_batch.py but uses algorithms/ directly,
 with all three bug fixes applied and detailed logging at every step.
 
 Pipeline:

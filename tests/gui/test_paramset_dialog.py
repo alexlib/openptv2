@@ -1,7 +1,7 @@
 import yaml
 
-from openptv2.gui.pyptv.experiment import Experiment
-from openptv2.gui.pyptv.pyptv_gui import TreeMenuHandler
+from openptv2.gui.experiment import Experiment
+from openptv2.gui.pyptv_gui import TreeMenuHandler
 
 
 def _write_yaml(path, data):

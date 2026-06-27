@@ -4,13 +4,13 @@ import pytest
 from pathlib import Path
 import numpy as np
 
-from openptv2.gui.pyptv.parameter_manager import ParameterManager
+from openptv2.gui.parameter_manager import ParameterManager
 
 # Add pyptv to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from openptv2.gui.pyptv.experiment import Experiment
-from openptv2.gui.pyptv import ptv
+from openptv2.gui.experiment import Experiment
+from openptv2.gui import ptv
 from skimage.io import imread
 from skimage.color import rgb2gray
 from skimage.util import img_as_ubyte

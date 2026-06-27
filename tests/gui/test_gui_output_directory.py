@@ -2,7 +2,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from openptv2.gui.pyptv.pyptv_gui import MainGUI
+from openptv2.gui.pyptv_gui import MainGUI
 
 
 class TestEnsureResDirectoryReady:

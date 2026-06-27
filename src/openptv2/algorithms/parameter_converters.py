@@ -25,7 +25,7 @@ Usage:
 
 import numpy as np
 
-from openptv2.gui.pyptv.parameter_defaults import (
+from openptv2.gui.parameter_defaults import (
     DEFAULT_PTV,
     DEFAULT_PTV_OPTIONAL,
     DEFAULT_SEQUENCE,

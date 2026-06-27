@@ -2,7 +2,7 @@
 Debug: compare calibration/distortion parameters between optv and compat.
 
 Usage:
-    uv run pytest gui/tests/test_cal_parity.py -v -s
+    uv run pytest tests/gui/test_cal_parity.py -v -s
 """
 
 import os
@@ -42,8 +42,8 @@ def test_calibration_parameter_parity(cavity_dir):
     os.chdir(cavity_dir)
 
     try:
-        from openptv2.gui.pyptv.experiment import Experiment
-        from openptv2.gui.pyptv.ptv import py_start_proc_c
+        from openptv2.gui.experiment import Experiment
+        from openptv2.gui.ptv import py_start_proc_c
 
         yaml_file = cavity_dir / "parameters_Run1.yaml"
         exp = Experiment()

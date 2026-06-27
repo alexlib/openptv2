@@ -9,7 +9,7 @@ from pathlib import Path
 
 import numpy as np
 
-from openptv2.gui.pyptv.dumbbell_ground_truth import DumbbellGTSpec, generate_dumbbell_target_files
+from openptv2.gui.dumbbell_ground_truth import DumbbellGTSpec, generate_dumbbell_target_files
 
 
 def _copy_tree(src: Path, dst: Path) -> None:
@@ -60,7 +60,7 @@ def test_standalone_dumbbell_calibration_cycle(tmp_path: Path):
     )
 
     # 4) Run the standalone script as a module (it uses relative imports)
-    script_module = "gui.pyptv.standalone_dumbbell_calibration"
+    script_module = "openptv2.gui.standalone_dumbbell_calibration"
     proc = subprocess.run(
         [
             sys.executable,

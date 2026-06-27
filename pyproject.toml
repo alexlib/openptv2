@@ -98,20 +98,21 @@ docs = [
 
 [project.scripts]
 openptv = "openptv2.cli:main"
-openptv2-gui = "openptv2.gui.pyptv.pyptv_gui:main"
-openptv2-batch = "openptv2.gui.pyptv.pyptv_batch:main_cli"
+openptv2-gui = "openptv2.gui.pyptv_gui:main"
+openptv2-batch = "openptv2.batch.pyptv_batch:main_cli"
 openptv2-validate = "openptv2.validate:main"
-pyptv = "openptv2.gui.pyptv.pyptv_gui:main"
-pyptv_gui = "openptv2.gui.pyptv.pyptv_gui:main"
-pyptv_batch = "openptv2.gui.pyptv.pyptv_batch:main_cli"
+pyptv = "openptv2.gui.pyptv_gui:main"
+pyptv_gui = "openptv2.gui.pyptv_gui:main"
+pyptv_batch = "openptv2.batch.pyptv_batch:main_cli"
 
 [tool.setuptools]
 packages = [
     "openptv2",
     "openptv2.algorithms",
     "openptv2.algorithms.compat",
-    "openptv2.gui.pyptv",
+    "openptv2.gui",
     "openptv2.gui.plugins",
+    "openptv2.batch",
 ]
 include-package-data = true
 zip-safe = false
@@ -136,7 +137,7 @@ markers = [
 
 [tool.coverage.run]
 branch = true
-source = ["openptv2", "algorithms", "gui.pyptv"]
+source = ["openptv2", "algorithms", "gui", "batch"]
 
 [tool.mypy]
 python_version = "3.11"

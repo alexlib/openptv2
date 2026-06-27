@@ -11,7 +11,7 @@ from openptv2.calibration import Calibration
 def test_installation(test_data_dir):
     """Test if pyptv and optv are installed correctly"""
     try:
-        import openptv2.gui.pyptv
+        import openptv2.gui as pyptv
 
         print(f"PyPTV version: {pyptv.__version__}")
     except ImportError:

@@ -8,8 +8,8 @@ import tempfile
 from pathlib import Path
 import shutil
 
-from openptv2.gui.pyptv.experiment import Experiment, Paramset
-from openptv2.gui.pyptv.parameter_manager import ParameterManager
+from openptv2.gui.experiment import Experiment, Paramset
+from openptv2.gui.parameter_manager import ParameterManager
 
 
 @pytest.fixture

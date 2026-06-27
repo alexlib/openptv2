@@ -8,9 +8,9 @@ import numpy as np
 from pathlib import Path
 from unittest.mock import patch, MagicMock
 
-from openptv2.gui.pyptv.ptv import py_detection_proc_c, py_start_proc_c, _populate_tpar
-from openptv2.gui.pyptv.parameter_manager import ParameterManager
-from openptv2.gui.pyptv.experiment import Experiment
+from openptv2.gui.ptv import py_detection_proc_c, py_start_proc_c, _populate_tpar
+from openptv2.gui.parameter_manager import ParameterManager
+from openptv2.gui.experiment import Experiment
 
 
 class TestDetectionConsistency:
@@ -126,7 +126,7 @@ if __name__ == "__main__":
     # Run a simple test manually
     test_case = TestDetectionConsistency()
 
-    from openptv2.gui.pyptv.experiment import Experiment
+    from openptv2.gui.experiment import Experiment
 
     experiment = Experiment()
     test_dir = Path(__file__).parent.parent.parent / "test_data" / "test_cavity"

@@ -1,7 +1,7 @@
 import os
 import openptv2 as optv
 import pytest
-import openptv2.gui.pyptv as pyptv
+import openptv2.gui as pyptv
 import numpy as np
 from openptv2.calibration import Calibration
 from openptv2.parameters import VolumeParams
