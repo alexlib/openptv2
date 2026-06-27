@@ -109,7 +109,6 @@ pyptv_batch = "openptv2.batch.pyptv_batch:main_cli"
 packages = [
     "openptv2",
     "openptv2.algorithms",
-    "openptv2.algorithms.compat",
     "openptv2.gui",
     "openptv2.gui.plugins",
     "openptv2.batch",

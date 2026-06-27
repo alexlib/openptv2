@@ -83,7 +83,7 @@ def _(base_path):
     """Run tracking with the single runtime."""
     from openptv2.gui.pyptv.ptv import py_start_proc_c
     from openptv2.gui.pyptv.parameter_manager import ParameterManager
-    from openptv2.algorithms.compat.tracker import Tracker, default_naming
+    from openptv2.tracker import Tracker, default_naming
 
     pm = ParameterManager(base_path / "parameters_Run1.yaml")
     cpar, spar, vpar, track_par, tpar, cals, epar = py_start_proc_c(pm)

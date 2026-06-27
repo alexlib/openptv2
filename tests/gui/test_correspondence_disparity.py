@@ -131,7 +131,7 @@ def test_detection_parity(cavity_dir):
             t_o = o_tr(high_pass, tpar, i_cam, cpar_optv)
 
             from openptv2.algorithms.segmentation import targ_rec
-            from openptv2.algorithms.compat.tracking_framebuf import TargetArray
+            from openptv2.algorithms.tracking_frame_buf import TargetArray
 
             # Get grey threshold for this camera
             gv = tp_raw.gvthres[i_cam]

@@ -60,8 +60,8 @@ def test_matched_coords_parity(cavity_dir):
         targ_p = exp.pm.get_parameter("targ_rec")
         cal_p = exp.pm.get_parameter("cal_ori")
 
-        from openptv2.algorithms.compat.parameters import ControlParams as C, TargetParams as T
-        from openptv2.algorithms.compat.calibration import Calibration as CalC
+        from openptv2.parameters import ControlParams as C, TargetParams as T
+        from openptv2.calibration import Calibration as CalC
 
         cp_c = C(num_cams=num_cams)
         cp_c.set_image_size((ptv_p["imx"], ptv_p["imy"]))
@@ -111,7 +111,7 @@ def test_matched_coords_parity(cavity_dir):
             targs_o.sort_y()
 
             # Get compat detections
-            from openptv2.algorithms.compat.segmentation import target_recognition as c_tr
+            from openptv2.segmentation import target_recognition as c_tr
 
             targs_c = c_tr(high_pass, tp_c, i_cam, cp_c)
 
@@ -126,7 +126,7 @@ def test_matched_coords_parity(cavity_dir):
             pos_o, pnr_o = o_mc_obj.as_arrays()
 
             # Build compat MatchedCoords (using SAME optv targets for fairness)
-            from openptv2.algorithms.compat.correspondences import MatchedCoords as c_mc
+            from openptv2.correspondences import MatchedCoords as c_mc
 
             c_mc_obj = c_mc(targs_o, cp_c, cals_c[i_cam])
             pos_c, pnr_c = c_mc_obj.as_arrays()

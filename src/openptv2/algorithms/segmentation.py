@@ -11,78 +11,15 @@ Uses NumPy vectorized operations where possible, with clear Python
 logic for the connected component labeling algorithms.
 """
 import cython
+from dataclasses import dataclass, field
 
 
 import numpy as np
-from dataclasses import dataclass, field
+from .tracking_frame_buf import Target
+from .track_kernels import targ_rec_fast as _targ_rec_fast
 
 # Constant for no correspondence assigned
 CORRES_NONE = -1
-
-from .track_kernels import targ_rec_fast as _targ_rec_fast
-
-
-
-
-@cython.cclass
-@dataclass
-class Target:
-    """Detected particle target.
-    pnr: particle number (index)
-    x, y: centroid coordinates
-    n: number of pixels in target
-    nx, ny: extent in x and y
-    sumg: sum of grey values
-    tnr: correspondence number (-1 = unassigned)
-    """
-    pnr: cython.int = cython.declare(cython.int, 0, visibility='public')
-    x: cython.double = cython.declare(cython.double, 0.0, visibility='public')
-    y: cython.double = cython.declare(cython.double, 0.0, visibility='public')
-    n: cython.int = cython.declare(cython.int, 0, visibility='public')
-    nx: cython.int = cython.declare(cython.int, 0, visibility='public')
-    ny: cython.int = cython.declare(cython.int, 0, visibility='public')
-    sumg: cython.int = cython.declare(cython.int, 0, visibility='public')
-    tnr: cython.int = cython.declare(cython.int, CORRES_NONE, visibility='public')
-
-    # --- Backward Compatibility OOP Methods ---
-    def pnr(self) -> int:
-        return self.pnr
-
-    def set_pnr(self, pnr: int) -> None:
-        self.pnr = int(pnr)
-
-    def pos(self) -> np.ndarray:
-        return np.array([self.x, self.y], dtype=np.float64)
-
-    def set_pos(self, pos) -> None:
-        self.x = float(pos[0])
-        self.y = float(pos[1])
-
-    def x(self) -> float:
-        return self.x
-
-    def y(self) -> float:
-        return self.y
-
-    def tnr(self) -> int:
-        return self.tnr
-
-    def set_tnr(self, tnr: int) -> None:
-        self.tnr = int(tnr)
-
-    def count_pixels(self) -> tuple[int, int, int]:
-        return (self.n, self.nx, self.ny)
-
-    def set_pixel_counts(self, n: int, nx: int, ny: int) -> None:
-        self.n = int(n)
-        self.nx = int(nx)
-        self.ny = int(ny)
-
-    def sum_grey_value(self) -> int:
-        return self.sumg
-
-    def set_sum_grey_value(self, sumg: int) -> None:
-        self.sumg = int(sumg)
 
 
 @cython.cclass

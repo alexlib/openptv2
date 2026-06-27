@@ -11,43 +11,88 @@ from pathlib import Path
 from .constants import POSI, PT_UNUSED, CORRES_NONE, PREV_NONE, NEXT_NONE
 
 
+class CallableInt(int):
+    def __call__(self):
+        return int(self)
+
+
+class CallableFloat(float):
+    def __call__(self):
+        return float(self)
+
+
 @cython.cclass
 @dataclass
 class Target:
-    pnr: cython.int = cython.declare(cython.int, 0, visibility='public')
-    x: cython.double = cython.declare(cython.double, 0.0, visibility='public')
-    y: cython.double = cython.declare(cython.double, 0.0, visibility='public')
+    c_pnr: cython.int = cython.declare(cython.int, 0, visibility='public')
+    c_x: cython.double = cython.declare(cython.double, 0.0, visibility='public')
+    c_y: cython.double = cython.declare(cython.double, 0.0, visibility='public')
     n: cython.int = cython.declare(cython.int, 0, visibility='public')
     nx: cython.int = cython.declare(cython.int, 0, visibility='public')
     ny: cython.int = cython.declare(cython.int, 0, visibility='public')
     sumg: cython.int = cython.declare(cython.int, 0, visibility='public')
-    tnr: cython.int = cython.declare(cython.int, 0, visibility='public')
+    c_tnr: cython.int = cython.declare(cython.int, 0, visibility='public')
+
+    def __init__(self, pnr=0, x=0.0, y=0.0, n=0, nx=0, ny=0, sumg=0, tnr=0):
+        self.c_pnr = int(pnr)
+        self.c_x = float(x)
+        self.c_y = float(y)
+        self.n = int(n)
+        self.nx = int(nx)
+        self.ny = int(ny)
+        self.sumg = int(sumg)
+        self.c_tnr = int(tnr)
+
+    def __repr__(self):
+        return (f"Target(pnr={self.c_pnr}, x={self.c_x}, y={self.c_y}, "
+                f"n={self.n}, nx={self.nx}, ny={self.ny}, "
+                f"sumg={self.sumg}, tnr={self.c_tnr})")
+
+    @property
+    def pnr(self):
+        return CallableInt(self.c_pnr)
+
+    @pnr.setter
+    def pnr(self, val):
+        self.c_pnr = int(val)
+
+    @property
+    def x(self):
+        return CallableFloat(self.c_x)
+
+    @x.setter
+    def x(self, val):
+        self.c_x = float(val)
+
+    @property
+    def y(self):
+        return CallableFloat(self.c_y)
+
+    @y.setter
+    def y(self, val):
+        self.c_y = float(val)
+
+    @property
+    def tnr(self):
+        return CallableInt(self.c_tnr)
+
+    @tnr.setter
+    def tnr(self, val):
+        self.c_tnr = int(val)
 
     # --- Backward Compatibility OOP Methods ---
-    def pnr(self) -> int:
-        return self.pnr
-
     def set_pnr(self, pnr: int) -> None:
-        self.pnr = int(pnr)
+        self.c_pnr = int(pnr)
 
     def pos(self) -> np.ndarray:
-        return np.array([self.x, self.y], dtype=np.float64)
+        return np.array([self.c_x, self.c_y], dtype=np.float64)
 
     def set_pos(self, pos) -> None:
-        self.x = float(pos[0])
-        self.y = float(pos[1])
-
-    def x(self) -> float:
-        return self.x
-
-    def y(self) -> float:
-        return self.y
-
-    def tnr(self) -> int:
-        return self.tnr
+        self.c_x = float(pos[0])
+        self.c_y = float(pos[1])
 
     def set_tnr(self, tnr: int) -> None:
-        self.tnr = int(tnr)
+        self.c_tnr = int(tnr)
 
     def count_pixels(self) -> tuple[int, int, int]:
         return (self.n, self.nx, self.ny)
@@ -395,6 +440,7 @@ def write_path_frame(cor_buf, path_buf, num_parts, corres_file_base,
 class Frame:
     def __init__(self, num_cams=4, max_targets=1000, **kwargs):
         self.num_cams = num_cams
+        self._num_cams = num_cams
         self.max_targets = max_targets
         self.targets = [[Target() for _ in range(max_targets)] for _ in range(num_cams)]
         self.correspond = [Corres() for _ in range(max_targets)]

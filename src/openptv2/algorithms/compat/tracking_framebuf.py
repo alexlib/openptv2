@@ -3,18 +3,55 @@ Tracking frame buffer compatibility wrappers providing optv-like API.
 """
 
 import numpy as np
-from openptv2.algorithms.tracking_frame_buf import (
-    Target as AlgoTarget,
-    Frame as AlgoFrame,
-    read_targets,
-    write_targets,
-    read_path_frame,
-    write_path_frame,
-)
+
+from openptv2.algorithms import tracking_frame_buf as algo_tfb
 
 # Constants matching optv
 CORRES_NONE = -1
 PT_UNUSED = -999
+
+
+def _value(obj, name, default=None):
+    value = getattr(obj, name, default)
+    return value() if callable(value) else value
+
+
+def _coerce_target(target):
+    if isinstance(target, Target):
+        return target._target
+    if isinstance(target, algo_tfb.Target):
+        return target
+    if hasattr(target, 'pnr') and hasattr(target, 'x'):
+        if hasattr(target, 'count_pixels') and callable(target.count_pixels):
+            n, nx, ny = target.count_pixels()
+        else:
+            n = _value(target, 'n', 0)
+            nx = _value(target, 'nx', 0)
+            ny = _value(target, 'ny', 0)
+
+        sumg = (
+            target.sum_grey_value()
+            if hasattr(target, 'sum_grey_value') and callable(target.sum_grey_value)
+            else _value(target, 'sumg', 0)
+        )
+
+        if hasattr(target, 'pos') and callable(target.pos):
+            x, y = target.pos()
+        else:
+            x = _value(target, 'x', 0.0)
+            y = _value(target, 'y', 0.0)
+
+        return algo_tfb.Target(
+            pnr=_value(target, 'pnr', 0),
+            x=x,
+            y=y,
+            n=n,
+            nx=nx,
+            ny=ny,
+            sumg=sumg,
+            tnr=_value(target, 'tnr', CORRES_NONE),
+        )
+    raise TypeError(f"Expected Target, got {type(target)}")
 
 
 class Target:
@@ -29,17 +66,9 @@ class Target:
             **kwargs: pnr, x, y, n, nx, ny, sumg, tnr
         """
         if target is None:
-            self._target = AlgoTarget(**kwargs)
-        elif isinstance(target, AlgoTarget):
-            self._target = target
-        elif hasattr(target, 'pnr') and hasattr(target, 'x'):
-            self._target = AlgoTarget(
-                pnr=target.pnr, x=target.x, y=target.y,
-                n=target.n, nx=target.nx, ny=target.ny,
-                sumg=target.sumg, tnr=target.tnr
-            )
+            self._target = algo_tfb.Target(**kwargs)
         else:
-            raise TypeError(f"Expected Target, got {type(target)}")
+            self._target = _coerce_target(target)
 
     def pnr(self):
         """Get particle number."""
@@ -106,12 +135,21 @@ class TargetArray:
         if isinstance(size_or_list, int):
             # Create empty array of given size
             self._targets = [
-                AlgoTarget(pnr=-1, x=0.0, y=0.0, n=0, nx=0, ny=0, sumg=0, tnr=CORRES_NONE)
+                algo_tfb.Target(
+                    pnr=-1,
+                    x=0.0,
+                    y=0.0,
+                    n=0,
+                    nx=0,
+                    ny=0,
+                    sumg=0,
+                    tnr=CORRES_NONE,
+                )
                 for _ in range(size_or_list)
             ]
         elif isinstance(size_or_list, list):
             # Wrap existing list
-            self._targets = size_or_list
+            self._targets = [_coerce_target(target) for target in size_or_list]
         else:
             raise TypeError(f"Expected int or list, got {type(size_or_list)}")
 
@@ -121,17 +159,7 @@ class TargetArray:
 
     def __setitem__(self, idx, val):
         """Set Target at index."""
-        if isinstance(val, Target):
-            self._targets[idx] = val._target
-        elif isinstance(val, AlgoTarget):
-            self._targets[idx] = val
-        elif hasattr(val, 'pnr') and hasattr(val, 'x'):
-            self._targets[idx] = AlgoTarget(
-                pnr=val.pnr, x=val.x, y=val.y, n=val.n,
-                nx=val.nx, ny=val.ny, sumg=val.sumg, tnr=val.tnr
-            )
-        else:
-            raise TypeError(f"Expected Target or AlgoTarget, got {type(val)}")
+        self._targets[idx] = _coerce_target(val)
 
     def __len__(self):
         """Get number of targets."""
@@ -143,7 +171,9 @@ class TargetArray:
 
     def write(self, file_base, frame_num):
         """Write targets to file."""
-        return write_targets(self._targets, len(self._targets), file_base, frame_num)
+        return algo_tfb.write_targets(
+            self._targets, len(self._targets), file_base, frame_num
+        )
 
     @staticmethod
     def read_targets(base_name, frame_num, cpar=None):
@@ -158,7 +188,7 @@ class TargetArray:
         Returns:
             TargetArray instance
         """
-        targets = read_targets(base_name, frame_num)
+        targets = algo_tfb.read_targets(base_name, frame_num)
         return TargetArray(targets)
 
 
@@ -175,7 +205,7 @@ class Frame:
                      target_file_base, frame_num
         """
         self._num_cams = num_cams
-        self._frame = AlgoFrame(num_cams=num_cams, max_targets=1000)
+        self._frame = algo_tfb.Frame(num_cams=num_cams, max_targets=1000)
 
         # Read from files if provided
         if 'frame_num' in kwargs and 'target_file_base' in kwargs:
@@ -246,3 +276,6 @@ def read_targets_compat(file_base, frame_num):
         TargetArray instance
     """
     return TargetArray.read_targets(file_base, frame_num)
+
+
+read_targets = read_targets_compat
