@@ -1,103 +1,63 @@
 # Running and Managing Tests
 
-OpenPTV2 uses `pytest` for all Python-level tests, `ctest` for the underlying native C library, and automated build pipelines for wheel verification.
+OpenPTV2 uses `pytest` for all tests. Since migrating to the Cython 3 Pure Python architecture, the test suites have been completely streamlined.
 
 ---
 
 ## 1. Test Suite Structure
 
-The test suite is structured as follows:
-- **`algorithms/tests/`**: Unit tests for the core algorithms (segmentation, calibration, tracking).
-- **`bindings/tests/`**: Verifies that the legacy Cython binding APIs operate exactly like the new unified algorithms.
-- **`gui/tests/`**: End-to-end and unit tests verifying interface parameters, window rendering, and visualization layouts.
-- **`tests/integration/`**: Verification of full tracking sequences on actual experimental datasets.
-- **`tests/engine_comparison/`**: Asserts mathematical output equivalence (within `1e-7`) between the Cython pure-python algorithms and the original C core.
+The tests are organized under the main `/tests/` directory:
+- **`tests/unit/`**: Light and fast unit tests for each individual algorithmic module (trafo, imgcoord, correspondences, tracker compatibility, etc.).
+- **`tests/batch/`**: Functional and integration tests for CLI batch sequences, parallelization commands, and tracking parameters optimizations.
+- **`tests/gui/`**: End-to-end and functionality tests for the user interface, parameter managers, dialog frames, and window states (headless compatible).
+- **`tests/parity/`**: Validates value-level parity, C-comparisons, and runtime indicators.
 
 ---
 
-## 2. Command Line Execution
+## 2. Running Tests with uv
 
-### Running the Standard Test Suite (Fast)
-To run all standard unit tests and quickly verify your environment, use:
+We recommend utilizing `uv` for python testing to automatically resolve dependencies in the active virtual environment context.
+
+### Running the Entire Test Suite
+To run all tests (excluding slow tracking integration runs):
 ```bash
-# Runs the full test suite while automatically bypassing heavy/slow integration tests
 uv run pytest -v
 ```
 
 ### Excluding Slow Integration Tests
-Some tracking integration tests read multi-megabyte TIFF files and perform complex search calculations. These take around 1.5 minutes to complete and are decorated with `@pytest.mark.slow`.
-
-To guarantee a fast test run (under ~70 seconds), explicitly exclude slow tests:
+Several integration tests process multi-megabyte raw TIFF files and perform complex multi-frame particle matching. These are marked as slow. To exclude them for instant feedback under ~20 seconds:
 ```bash
 uv run pytest -m "not slow" -v
 ```
 
-To run *only* those heavy integration tests:
-```bash
-uv run pytest -m "slow" -v
-```
-
 ### Running Specific Test Categories
 
-=== "Algorithms Unit Tests"
+=== "Unit Tests"
     ```bash
-    uv run pytest algorithms/tests/ -v
+    uv run pytest tests/unit/ -v
     ```
 
-=== "Bindings Compatibility Tests"
+=== "Batch Processing Tests"
     ```bash
-    uv run pytest bindings/tests/ -v
+    uv run pytest tests/batch/ -v
     ```
 
-=== "Headless GUI Tests"
-    To run the GUI test suite without physically launching a Tkinter screen (using virtual framebuffers):
+=== "GUI Interface Tests"
+    To run the GUI tests without physically rendering a window on your desktop screen:
     ```bash
-    uv run pytest gui/tests/ --headless
+    uv run pytest tests/gui/ -v
     ```
 
-=== "Engine Comparison Tests"
+=== "Parity Verification"
     ```bash
-    uv run pytest tests/engine_comparison/ --validate-engine
+    uv run pytest tests/parity/ -v
     ```
 
 ---
 
-## 3. Running Native C Core Tests (CMake + CTest)
+## 3. Test Suite Performance Optimizations
 
-If you have modified the underlying C code inside `lib/` and want to compile and verify the native C tests:
-
-```bash
-cd lib
-mkdir -p build && cd build
-cmake ..
-make
-ctest -V
-```
-
-This compiles and runs the raw C assertions independently from the Python/Cython binding wrappers.
-
----
-
-## 4. Binary Wheel Build & Verification Pipeline
-
-We maintain a dedicated pipeline to compile binary wheels using `cibuildwheel` locally and verify that they install cleanly and run compiled native code in clean virtual environments.
-
-### Complete Build and Test Pipeline
-To compile binary wheels for your active platform and run verification tests on it:
-```bash
-uv run python scripts/wheel_test_pipeline.py
-```
-This script will:
-1. Initialize `cibuildwheel` to target the active Python version (e.g. `cp313` inside Docker on Linux).
-2. Save compiled `.whl` files into the `wheelhouse/` directory.
-3. Build a temporary clean virtual environment completely isolated from your project directory.
-4. Install the precompiled binary wheel inside the isolated venv.
-5. Run Step 4 imports to assert `is_compiled() is True` (verifying optimized Cython execution).
-6. Run the fast unit test suite inside that isolated venv.
-
-### Testing Already Built Wheels
-If you have already built wheels inside `wheelhouse/` and want to skip compilation, verifying only installation and test behaviors:
-```bash
-uv run python scripts/wheel_test_pipeline.py --skip-build
-```
-This is an incredibly fast way to verify packaging modifications.
+Our batch and optimization tests are highly optimized:
+- **Redundancy Removal**: We eliminated redundant sequence-mode file pre-generations in tracking perturbation runs. Because tracking parameter updates do not change camera detection results, skipping these steps optimized execution time down from **178s to 33s**.
+- **Unified Pathing**: Integrated automated environment helpers inside subprocess tests to inject correct relative workspace paths, preventing module-not-found errors during child process runs.
+- **Parallel Workers Context**: Configured multiprocessing to select `'fork'` over `'spawn'` on Linux/macOS, entirely avoiding Python pytest-sandbox deadlocks.

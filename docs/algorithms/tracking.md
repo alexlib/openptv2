@@ -32,9 +32,9 @@ Tracking parameters (velocity, acceleration, angle limits) can be chosen systema
 
 ### Reference test
 
-See the test: `test_tracking_parameters_from_data_statistics` in [algorithms/tests/parity/test_burgers_tracking_parameter_sensitivity.py](../../algorithms/tests/parity/test_burgers_tracking_parameter_sensitivity.py)
+See the tracking parameter sensitivity tests in `tests/batch/test_pyptv_batch.py` and `tests/batch/test_apply_optimizations.py`.
 
-This test demonstrates the full workflow and can be used as a template for your own datasets.
+These tests demonstrate the full workflow and can be used as a template for your own datasets.
 
 ---
 # Tracking Algorithms
@@ -316,7 +316,7 @@ The C code increments `count1` inside the conflict resolution loop. When particl
 
 ### Synthetic Test Suite
 
-A synthetic test case (`algorithms/tests/test_synthetic_tracking.py`) validates both algorithms against known ground truth:
+A synthetic test case (`tests/unit/test_synthetic_tracking.py`) validates both algorithms against known ground truth:
 
 - **15 particles** with diverse trajectories:
   - 5 constant-velocity straight lines
@@ -329,5 +329,5 @@ A synthetic test case (`algorithms/tests/test_synthetic_tracking.py`) validates 
 - **5 test cases**: link correctness, recovery rate, trajectory distance validation, and trackcorr >= track3d comparison
 
 ```bash
-uv run pytest algorithms/tests/test_synthetic_tracking.py -v
+uv run pytest tests/unit/test_synthetic_tracking.py -v
 ```
