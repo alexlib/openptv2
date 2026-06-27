@@ -15,6 +15,7 @@ docs/
 ├── tests.md                 # Running and managing test suites
 ├── developer_guide/         # Developer guides
 │   ├── building.md          # Build instructions
+│   ├── cython_and_pure_python.md # Pure Python vs Cython compiled mode guide
 │   ├── documentation_workflow.md # This guide
 │   └── packaging_and_releases.md # Wheel & releasing guide
 ├── tutorials/               # User tutorials

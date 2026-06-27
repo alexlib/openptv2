@@ -21,6 +21,7 @@ Welcome to the openptv2 documentation.
 ### Developer Documentation
 
 - [Building from Source](developer_guide/building.md) - Detailed build instructions
+- [Cython & Pure Python Modes](developer_guide/cython_and_pure_python.md) - Switch between high-performance Cython and debuggable Pure Python
 - [Documentation Workflow](developer_guide/documentation_workflow.md) - Editing documentation and deploying to GitHub Pages
 - [Packaging & Releases](developer_guide/packaging_and_releases.md) - Building binary wheels and releasing them on PyPI and GitHub
 - [GUI Testing Guide](HOW_TO_TEST_GUI.md) - How to test the GUI
@@ -64,6 +65,7 @@ docs/
 
 ### Developer Guide
 - [Building from Source](developer_guide/building.md) - Full build instructions
+- [Cython & Pure Python Modes](developer_guide/cython_and_pure_python.md) - Seamlessly switch between C-level speed and pure python debugging
 - [Building Binary Wheels](../../BUILDING_BINARY_WHEELS.md) - manylinux/macOS/Windows wheels
 
 ### GUI
@@ -84,9 +86,10 @@ docs/
 
 ## For Developers
 
-1. **Build Setup**: See [building.md](building.md)
-2. **Development Workflow**: See [building.md#development-workflow](building.md#development-workflow)
-3. **Testing**: See [building.md#testing](building.md#testing)
+1. **Build Setup**: See [building.md](developer_guide/building.md)
+2. **Cython & Pure Python modes**: See [cython_and_pure_python.md](developer_guide/cython_and_pure_python.md)
+3. **Development Workflow**: See [building.md#development-workflow](developer_guide/building.md#development-workflow)
+4. **Testing**: See [building.md#testing](developer_guide/building.md#testing)
 
 ## For Contributors
 
