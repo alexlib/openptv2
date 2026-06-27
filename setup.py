@@ -10,6 +10,7 @@ Usage:
     pip install .             # Regular install
 """
 
+import os
 import sys
 from pathlib import Path
 
@@ -110,6 +111,11 @@ def get_extensions():
     """Create Extension objects for all Cython modules."""
     extensions = []
     
+    # Check for fast developer build (O0 / Od)
+    is_dev = os.environ.get("DEV_BUILD", "0") in ("1", "true", "True")
+    if is_dev:
+        print("[OpenPTV2] Fast developer build mode enabled (using -O0 / /Od compiler flags)")
+    
     # Cython 3 Pure Python algorithms extensions only
     for mod in ALGORITHMS_MODULES:
         py_file = ROOT / "src" / "openptv2" / "algorithms" / f"{mod}.py"
@@ -118,10 +124,12 @@ def get_extensions():
             extra_compile_args = []
             extra_link_args = []
             if not sys.platform.startswith("win"):
-                extra_compile_args.extend(["-O3", "-Wno-cpp", "-Wno-unused-function"])
+                opt = "-O0" if is_dev else "-O3"
+                extra_compile_args.extend([opt, "-Wno-cpp", "-Wno-unused-function"])
                 extra_link_args.extend(["-Wl,-rpath,$ORIGIN"])
             else:
-                extra_compile_args.extend(["/O2", "/W4", "/std:c11", "/D_CRT_SECURE_NO_WARNINGS"])
+                opt = "/Od" if is_dev else "/O2"
+                extra_compile_args.extend([opt, "/W4", "/std:c11", "/D_CRT_SECURE_NO_WARNINGS"])
 
             extensions.append(
                 Extension(

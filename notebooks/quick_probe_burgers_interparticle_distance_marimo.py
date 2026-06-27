@@ -18,7 +18,7 @@ def _():
     import sys
 
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-    from gui.pyptv.ptv import read_rt_is_file
+    from openptv2.gui.pyptv.ptv import read_rt_is_file
 
     return np, os, read_rt_is_file
 

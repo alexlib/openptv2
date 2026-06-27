@@ -10,9 +10,8 @@ def _():
     import matplotlib.pyplot as plt
     import numpy as np
     from wigglystuff import ChartPuck
-    import sys
 
-    return ChartPuck, mo, plt, sys
+    return ChartPuck, mo, plt
 
 
 @app.cell(hide_code=True)
@@ -32,16 +31,9 @@ def _(mo):
 
 
 @app.cell
-def _(sys):
+def _():
     from pathlib import Path
-
-    # Note: This is a marimo notebook cell, imports are relative to the package
-    # The pyptv package is available via relative imports
-    parent_dir = str(Path(".").absolute())
-    if parent_dir not in sys.path:
-        sys.path.insert(0, parent_dir)
-
-    from .parameter_manager import ParameterManager
+    from openptv2.gui.pyptv.parameter_manager import ParameterManager
 
     # Path to the YAML file
     yaml_path = Path("tests/test_cavity/parameters_Run1.yaml")

@@ -1,14 +1,12 @@
 # /// script
-# requires-python = ">=3.14"
+# requires-python = ">=3.11"
 # dependencies = [
 #     "marimo>=0.19.9",
-#     "matplotlib==3.10.8",
-#     "numpy==2.4.2",
-#     "optv==0.3.0",
-#     "pandas==3.0.0",
-#     "pydantic-ai==1.56.0",
-#     "pyzmq>=27.1.0",
-#     "scikit-image==0.26.0",
+#     "matplotlib>=3.7.0",
+#     "numpy>=2.0.0",
+#     "openptv2",
+#     "pandas>=2.0.0",
+#     "scikit-image>=0.21.0",
 # ]
 # ///
 
@@ -25,15 +23,13 @@ def _():
     import pandas as pd
     import matplotlib.pyplot as plt
 
-    from dataclasses import dataclass
     from pathlib import Path
-    import sys
 
     from skimage.color import rgb2gray
     from skimage.io import imread
     from skimage.util import img_as_ubyte
 
-    from openptv2.segmentation import target_recognition
+    from openptv2 import target_recognition
 
     return (
         Path,
@@ -44,7 +40,6 @@ def _():
         pd,
         plt,
         rgb2gray,
-        sys,
         target_recognition,
     )
 
@@ -59,20 +54,15 @@ def _(mo):
     - Load an image from a working directory
     - Apply **inverse** and/or **highpass** preprocessing
     - Tune detection parameters (threshold, size/pixel bounds, etc.)
-    - Run particle detection (`optv.segmentation.target_recognition`)
+    - Run particle detection (`openptv2.target_recognition`)
     - Visualize detected particle centers overlaid on the image
     """)
     return
 
 
 @app.cell
-def _(Path, sys):
-    # Allow running directly from repo root without installation
-    repo_root = Path(".").resolve()
-    if str(repo_root) not in sys.path:
-        sys.path.insert(0, str(repo_root))
-
-    from . import ptv
+def _():
+    from openptv2.gui.pyptv import ptv
 
     return (ptv,)
 

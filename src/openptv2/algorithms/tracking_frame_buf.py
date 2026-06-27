@@ -3,7 +3,7 @@
 Translation of lib/src/tracking_frame_buf.c and lib/include/tracking_frame_buf.h.
 """
 import cython
-
+from dataclasses import dataclass, field
 
 import numpy as np
 from pathlib import Path
@@ -11,18 +11,17 @@ from pathlib import Path
 from .constants import POSI, PT_UNUSED, CORRES_NONE, PREV_NONE, NEXT_NONE
 
 
+@cython.cclass
+@dataclass
 class Target:
-    __slots__ = ('pnr', 'x', 'y', 'n', 'nx', 'ny', 'sumg', 'tnr')
-
-    def __init__(self, pnr=0, x=0.0, y=0.0, n=0, nx=0, ny=0, sumg=0, tnr=0):
-        self.pnr = pnr
-        self.x = x
-        self.y = y
-        self.n = n
-        self.nx = nx
-        self.ny = ny
-        self.sumg = sumg
-        self.tnr = tnr
+    pnr: cython.int = 0
+    x: cython.double = 0.0
+    y: cython.double = 0.0
+    n: cython.int = 0
+    nx: cython.int = 0
+    ny: cython.int = 0
+    sumg: cython.int = 0
+    tnr: cython.int = 0
 
 
 @cython.ccall
@@ -83,12 +82,17 @@ def write_targets(tbuf, num_targets, file_base, frame_num):
         return False
 
 
+@cython.cclass
+@dataclass
 class Corres:
-    __slots__ = ('nr', 'p')
+    nr: cython.int = 0
+    p: np.ndarray = None
 
-    def __init__(self, nr=0, p=None):
-        self.nr = nr
-        self.p = np.array([CORRES_NONE] * 4, dtype=np.int32) if p is None else np.asarray(p, dtype=np.int32)
+    def __post_init__(self):
+        if self.p is None:
+            self.p = np.array([CORRES_NONE] * 4, dtype=np.int32)
+        else:
+            self.p = np.asarray(self.p, dtype=np.int32)
 
 
 @cython.ccall
@@ -98,21 +102,33 @@ def compare_corres(c1, c2):
             c1.p[2] == c2.p[2] and c1.p[3] == c2.p[3])
 
 
+@cython.cclass
+@dataclass
 class Pathinfo:
-    __slots__ = ('x', 'prev', 'next', 'prio', 'decis', 'finaldecis',
-                 'linkdecis', 'inlist')
+    x: np.ndarray = None
+    prev: cython.int = PREV_NONE
+    next: cython.int = NEXT_NONE
+    prio: cython.int = 4
+    finaldecis: cython.double = 1000000.0
+    inlist: cython.int = 0
+    decis: list = None
+    linkdecis: list = None
 
-    def __init__(self, x=None, prev=PREV_NONE, next=NEXT_NONE,
-                 prio=4, finaldecis=1000000.0, inlist=0,
-                 decis=None, linkdecis=None):
-        self.x = np.zeros(3, dtype=np.float64) if x is None else np.asarray(x, dtype=np.float64)
-        self.prev = prev
-        self.next = next
-        self.prio = prio
-        self.finaldecis = finaldecis
-        self.inlist = inlist
-        self.decis = [0.0] * POSI if decis is None else list(decis)
-        self.linkdecis = [PT_UNUSED] * POSI if linkdecis is None else list(linkdecis)
+    def __post_init__(self):
+        if self.x is None:
+            self.x = np.zeros(3, dtype=np.float64)
+        else:
+            self.x = np.asarray(self.x, dtype=np.float64)
+
+        if self.decis is None:
+            self.decis = [0.0] * POSI
+        else:
+            self.decis = list(self.decis)
+
+        if self.linkdecis is None:
+            self.linkdecis = [PT_UNUSED] * POSI
+        else:
+            self.linkdecis = list(self.linkdecis)
 
 
 @cython.ccall
@@ -344,7 +360,12 @@ class Frame:
 
     def _sync_path_to_soa(self):
         """Copy AoS path_info/correspond into SoA arrays."""
-        for i in range(self.num_parts):
+        i: cython.int
+        k: cython.int
+        num_parts: cython.int = self.num_parts
+        p: Pathinfo
+        c: Corres
+        for i in range(num_parts):
             p = self.path_info[i]
             self.path_x[i] = p.x
             self.path_prev[i] = p.prev
@@ -352,7 +373,7 @@ class Frame:
             self.path_prio[i] = p.prio
             self.path_inlist[i] = p.inlist
             self.path_finaldecis[i] = p.finaldecis
-            for k in range(len(p.decis)):
+            for k in range(POSI):
                 self.path_decis[i, k] = p.decis[k]
                 self.path_linkdecis[i, k] = p.linkdecis[k]
 
@@ -362,7 +383,12 @@ class Frame:
 
     def _sync_soa_to_path(self):
         """Copy SoA arrays back into AoS path_info/correspond."""
-        for i in range(self.num_parts):
+        i: cython.int
+        k: cython.int
+        num_parts: cython.int = self.num_parts
+        p: Pathinfo
+        c: Corres
+        for i in range(num_parts):
             p = self.path_info[i]
             p.x[:] = self.path_x[i]
             p.prev = int(self.path_prev[i])

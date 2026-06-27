@@ -8,9 +8,8 @@ app = marimo.App(width="full", auto_download=["ipynb"])
 def _():
     import marimo as mo
     from pathlib import Path
-    import sys
 
-    return Path, mo, sys
+    return Path, mo
 
 
 @app.cell(hide_code=True)
@@ -37,15 +36,9 @@ def _(mo):
 
 
 @app.cell
-def _(Path, sys):
-    repo_root = Path("..").resolve()
-    gui_root = repo_root / "pyptv"
-    if str(gui_root) not in sys.path:
-        sys.path.insert(0, str(repo_root))
-        sys.path.insert(0, str(gui_root))
-
-    from pyptv.parameter_manager import ParameterManager
-    from pyptv.experiment import Experiment
+def _():
+    from openptv2.gui.pyptv.parameter_manager import ParameterManager
+    from openptv2.gui.pyptv.experiment import Experiment
 
     return Experiment, ParameterManager
 

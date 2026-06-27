@@ -321,6 +321,7 @@ def test_trackcorr_with_add():
     finally:
         os.chdir(original)
 
+@pytest.mark.slow
 def test_cavity():
     import os
     original = os.getcwd()
@@ -370,6 +371,7 @@ def test_cavity():
     finally:
         os.chdir(original)
 
+@pytest.mark.slow
 def test_burgers():
     import os
     original = os.getcwd()
@@ -413,6 +415,7 @@ def test_burgers():
     finally:
         os.chdir(original)
 
+@pytest.mark.slow
 def test_trackback():
     import os
     original = os.getcwd()

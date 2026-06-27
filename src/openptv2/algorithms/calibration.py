@@ -21,6 +21,7 @@ from typing import Optional
 import numpy as np
 
 
+@cython.cclass
 @dataclass
 class Exterior:
     """Exterior orientation: camera position and orientation.
@@ -30,12 +31,12 @@ class Exterior:
         omega, phi, kappa: rotation angles [radians].
         dm: 3x3 rotation matrix (computed from angles).
     """
-    x0: float = 0.0
-    y0: float = 0.0
-    z0: float = 0.0
-    omega: float = 0.0
-    phi: float = 0.0
-    kappa: float = 0.0
+    x0: cython.double = 0.0
+    y0: cython.double = 0.0
+    z0: cython.double = 0.0
+    omega: cython.double = 0.0
+    phi: cython.double = 0.0
+    kappa: cython.double = 0.0
     dm: np.ndarray = field(default_factory=lambda: np.eye(3, dtype=np.float64))
 
     def compute_rotation_matrix(self) -> np.ndarray:
@@ -63,6 +64,7 @@ class Exterior:
         return dm
 
 
+@cython.cclass
 @dataclass
 class Interior:
     """Interior orientation: principal point and camera constant.
@@ -71,11 +73,12 @@ class Interior:
         xh, yh: principal point (sensor shift) [mm].
         cc: camera constant (focal length) [mm].
     """
-    xh: float = 0.0
-    yh: float = 0.0
-    cc: float = 0.0
+    xh: cython.double = 0.0
+    yh: cython.double = 0.0
+    cc: cython.double = 0.0
 
 
+@cython.cclass
 @dataclass
 class Glass:
     """Glass interface parameters.
@@ -85,15 +88,16 @@ class Glass:
         n1, n2, n3: refractive indices (not used directly, stored for reference).
         d: glass thickness [mm].
     """
-    vec_x: float = 0.0
-    vec_y: float = 0.0
-    vec_z: float = 0.0
-    n1: float = 0.0
-    n2: float = 0.0
-    n3: float = 0.0
-    d: float = 0.0
+    vec_x: cython.double = 0.0
+    vec_y: cython.double = 0.0
+    vec_z: cython.double = 0.0
+    n1: cython.double = 0.0
+    n2: cython.double = 0.0
+    n3: cython.double = 0.0
+    d: cython.double = 0.0
 
 
+@cython.cclass
 @dataclass
 class AddedPar:
     """Brown distortion parameters.
@@ -105,16 +109,17 @@ class AddedPar:
         she: shear angle.
         field: unused field (legacy).
     """
-    k1: float = 0.0
-    k2: float = 0.0
-    k3: float = 0.0
-    p1: float = 0.0
-    p2: float = 0.0
-    scx: float = 1.0
-    she: float = 0.0
-    field: int = 0
+    k1: cython.double = 0.0
+    k2: cython.double = 0.0
+    k3: cython.double = 0.0
+    p1: cython.double = 0.0
+    p2: cython.double = 0.0
+    scx: cython.double = 1.0
+    she: cython.double = 0.0
+    field: cython.int = 0
 
 
+@cython.cclass
 @dataclass
 class MmLut:
     """Multimedia Look-Up Table.
@@ -127,9 +132,9 @@ class MmLut:
         data: 1D array of size nr * nz with multimedia factors.
     """
     origin: np.ndarray = field(default_factory=lambda: np.zeros(3, dtype=np.float64))
-    nr: int = 0
-    nz: int = 0
-    rw: int = 2
+    nr: cython.int = 0
+    nz: cython.int = 0
+    rw: cython.int = 2
     data: Optional[np.ndarray] = None  # 1D array of size nr * nz
 
     @property
@@ -138,6 +143,7 @@ class MmLut:
         return self.data is not None
 
 
+@cython.cclass
 @dataclass
 class Calibration:
     """Complete calibration for a single camera.

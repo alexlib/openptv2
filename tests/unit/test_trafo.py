@@ -164,6 +164,7 @@ def test_radial_distortion_round_trip():
     assert abs(yres - y) < iter_eps
 
 def test_dist_flat_round_trip():
+    from openptv2.algorithms.calibration import AddedPar
     x = 10.0
     y = 10.0
     iter_eps = 1e-3
@@ -172,10 +173,11 @@ def test_dist_flat_round_trip():
     cal.int_par.xh = 1.5
     cal.int_par.yh = 1.5
     cal.int_par.cc = 60.
-    cal.added_par = np.array([0.0005, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0])
+    cal.added_par = AddedPar(k1=0.0005, k2=0.0, k3=0.0, p1=0.0, p2=0.0, scx=1.0, she=0.0)
     
-    xres, yres = flat_to_dist(x, y, cal.int_par.xh, cal.int_par.yh, cal.added_par[0], cal.added_par[1], cal.added_par[2], cal.added_par[3], cal.added_par[4], cal.added_par[5], cal.added_par[6])
-    xres, yres = dist_to_flat(xres, yres, cal.int_par.xh, cal.int_par.yh, cal.added_par[0], cal.added_par[1], cal.added_par[2], cal.added_par[3], cal.added_par[4], cal.added_par[5], cal.added_par[6], iter_eps)
+    ap = cal.added_par
+    xres, yres = flat_to_dist(x, y, cal.int_par.xh, cal.int_par.yh, ap.k1, ap.k2, ap.k3, ap.p1, ap.p2, ap.scx, ap.she)
+    xres, yres = dist_to_flat(xres, yres, cal.int_par.xh, cal.int_par.yh, ap.k1, ap.k2, ap.k3, ap.p1, ap.p2, ap.scx, ap.she, iter_eps)
     
     assert abs(xres - x) < iter_eps
     assert abs(yres - y) < iter_eps

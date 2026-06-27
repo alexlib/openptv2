@@ -24,7 +24,7 @@ def _():
 @app.cell
 def _(base_path, res_dir):
     # Run batch sequence with the single runtime
-    from gui.pyptv import pyptv_batch
+    from openptv2.gui.pyptv import pyptv_batch
 
     yaml_path = base_path / "parameters_Run1.yaml"
     with open(yaml_path) as f:
@@ -49,7 +49,7 @@ def _(base_path, res_dir):
 
 @app.cell
 def _():
-    from gui.pyptv.ptv import read_rt_is_file
+    from openptv2.gui.pyptv.ptv import read_rt_is_file
     # def read_rt_is_file(filename) -> List[List[float]]:
     #     """Read data from an rt_is file and return the parsed values."""
     #     try:

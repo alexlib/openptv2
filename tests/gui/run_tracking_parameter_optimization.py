@@ -8,7 +8,7 @@ import yaml
 from pathlib import Path
 
 
-def test_tracking_with_different_parameters():
+def run_tracking_with_different_parameters():
     """Test tracking with progressively more relaxed velocity constraints"""
 
     base_test_path = Path(__file__).parent.parent.parent / "test_data" / "test_splitter"
@@ -207,4 +207,4 @@ def parse_tracking_output(output_text):
 
 
 if __name__ == "__main__":
-    test_tracking_with_different_parameters()
+    run_tracking_with_different_parameters()
