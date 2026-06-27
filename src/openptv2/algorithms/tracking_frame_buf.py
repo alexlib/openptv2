@@ -14,14 +14,77 @@ from .constants import POSI, PT_UNUSED, CORRES_NONE, PREV_NONE, NEXT_NONE
 @cython.cclass
 @dataclass
 class Target:
-    pnr: cython.int = 0
-    x: cython.double = 0.0
-    y: cython.double = 0.0
-    n: cython.int = 0
-    nx: cython.int = 0
-    ny: cython.int = 0
-    sumg: cython.int = 0
-    tnr: cython.int = 0
+    pnr: cython.int = cython.declare(cython.int, 0, visibility='public')
+    x: cython.double = cython.declare(cython.double, 0.0, visibility='public')
+    y: cython.double = cython.declare(cython.double, 0.0, visibility='public')
+    n: cython.int = cython.declare(cython.int, 0, visibility='public')
+    nx: cython.int = cython.declare(cython.int, 0, visibility='public')
+    ny: cython.int = cython.declare(cython.int, 0, visibility='public')
+    sumg: cython.int = cython.declare(cython.int, 0, visibility='public')
+    tnr: cython.int = cython.declare(cython.int, 0, visibility='public')
+
+    # --- Backward Compatibility OOP Methods ---
+    def pnr(self) -> int:
+        return self.pnr
+
+    def set_pnr(self, pnr: int) -> None:
+        self.pnr = int(pnr)
+
+    def pos(self) -> np.ndarray:
+        return np.array([self.x, self.y], dtype=np.float64)
+
+    def set_pos(self, pos) -> None:
+        self.x = float(pos[0])
+        self.y = float(pos[1])
+
+    def x(self) -> float:
+        return self.x
+
+    def y(self) -> float:
+        return self.y
+
+    def tnr(self) -> int:
+        return self.tnr
+
+    def set_tnr(self, tnr: int) -> None:
+        self.tnr = int(tnr)
+
+    def count_pixels(self) -> tuple[int, int, int]:
+        return (self.n, self.nx, self.ny)
+
+    def set_pixel_counts(self, n: int, nx: int, ny: int) -> None:
+        self.n = int(n)
+        self.nx = int(nx)
+        self.ny = int(ny)
+
+    def sum_grey_value(self) -> int:
+        return self.sumg
+
+    def set_sum_grey_value(self, sumg: int) -> None:
+        self.sumg = int(sumg)
+
+
+class TargetArray(list):
+    """A list of Targets that behaves like the legacy TargetArray."""
+    
+    def __init__(self, size_or_list=0):
+        if isinstance(size_or_list, int):
+            super().__init__([Target(pnr=-1) for _ in range(size_or_list)])
+        elif isinstance(size_or_list, list):
+            super().__init__(size_or_list)
+        else:
+            raise TypeError(f"Expected int or list, got {type(size_or_list)}")
+
+    def sort_y(self) -> None:
+        self.sort(key=lambda t: t.y)
+
+    def write(self, file_base: str, frame_num: int) -> bool:
+        return write_targets(self, len(self), file_base, frame_num)
+
+    @staticmethod
+    def read_targets(base_name: str, frame_num: int, cpar=None) -> TargetArray:
+        targets = read_targets(base_name, frame_num)
+        return TargetArray(targets)
 
 
 @cython.ccall
@@ -85,8 +148,8 @@ def write_targets(tbuf, num_targets, file_base, frame_num):
 @cython.cclass
 @dataclass
 class Corres:
-    nr: cython.int = 0
-    p: np.ndarray = None
+    nr: cython.int = cython.declare(cython.int, 0, visibility='public')
+    p: np.ndarray = cython.declare(object, None, visibility='public')
 
     def __post_init__(self):
         if self.p is None:
@@ -105,14 +168,14 @@ def compare_corres(c1, c2):
 @cython.cclass
 @dataclass
 class Pathinfo:
-    x: np.ndarray = None
-    prev: cython.int = PREV_NONE
-    next: cython.int = NEXT_NONE
-    prio: cython.int = 4
-    finaldecis: cython.double = 1000000.0
-    inlist: cython.int = 0
-    decis: list = None
-    linkdecis: list = None
+    x: np.ndarray = cython.declare(object, None, visibility='public')
+    prev: cython.int = cython.declare(cython.int, PREV_NONE, visibility='public')
+    next: cython.int = cython.declare(cython.int, NEXT_NONE, visibility='public')
+    prio: cython.int = cython.declare(cython.int, 4, visibility='public')
+    finaldecis: cython.double = cython.declare(cython.double, 1000000.0, visibility='public')
+    inlist: cython.int = cython.declare(cython.int, 0, visibility='public')
+    decis: list = cython.declare(object, None, visibility='public')
+    linkdecis: list = cython.declare(object, None, visibility='public')
 
     def __post_init__(self):
         if self.x is None:
@@ -330,7 +393,7 @@ def write_path_frame(cor_buf, path_buf, num_parts, corres_file_base,
 
 
 class Frame:
-    def __init__(self, num_cams=4, max_targets=100):
+    def __init__(self, num_cams=4, max_targets=1000, **kwargs):
         self.num_cams = num_cams
         self.max_targets = max_targets
         self.targets = [[Target() for _ in range(max_targets)] for _ in range(num_cams)]
@@ -357,6 +420,33 @@ class Frame:
         # SoA for Corres
         self.corres_nr = np.zeros(max_targets, dtype=np.int32)
         self.corres_p = np.full((max_targets, 4), CORRES_NONE, dtype=np.int32)
+
+        # Legacy convenience: read if file info is provided in kwargs
+        if 'frame_num' in kwargs and 'target_file_base' in kwargs:
+            self.read(
+                kwargs.get('corres_file_base'),
+                kwargs.get('linkage_file_base'),
+                kwargs.get('prio_file_base'),
+                kwargs.get('target_file_base'),
+                kwargs['frame_num']
+            )
+
+    def positions(self) -> np.ndarray:
+        """Get 3D positions as ndarray[n, 3]."""
+        num_parts = self.num_parts
+        positions = np.zeros((num_parts, 3), dtype=np.float64)
+        for i in range(num_parts):
+            positions[i] = self.path_info[i].x
+        return positions
+
+    def target_positions_for_camera(self, cam: int) -> np.ndarray:
+        """Get 2D target positions for specific camera as ndarray[n, 2]."""
+        num_targs = self.num_targets[cam]
+        positions = np.zeros((num_targs, 2), dtype=np.float64)
+        for i in range(num_targs):
+            positions[i, 0] = self.targets[cam][i].x
+            positions[i, 1] = self.targets[cam][i].y
+        return positions
 
     def _sync_path_to_soa(self):
         """Copy AoS path_info/correspond into SoA arrays."""
@@ -404,8 +494,41 @@ class Frame:
             c.nr = int(self.corres_nr[i])
             c.p[:] = self.corres_p[i]
 
-    def read(self, corres_file_base, linkage_file_base, prio_file_base,
-             target_file_base, frame_num):
+    def read(self, corres_file_base, linkage_file_base, *args, **kwargs):
+        prio_file_base = None
+        target_file_base = None
+        frame_num = None
+
+        if "prio_file_base" in kwargs:
+            prio_file_base = kwargs["prio_file_base"]
+        if "target_file_base" in kwargs:
+            target_file_base = kwargs["target_file_base"]
+        if "frame_num" in kwargs:
+            frame_num = kwargs["frame_num"]
+
+        remaining_args = list(args)
+        
+        is_legacy = False
+        if len(remaining_args) >= 2:
+            if isinstance(remaining_args[1], int) or isinstance(remaining_args[0], list):
+                is_legacy = True
+        
+        if is_legacy:
+            if target_file_base is None and len(remaining_args) > 0:
+                target_file_base = remaining_args.pop(0)
+            if frame_num is None and len(remaining_args) > 0:
+                frame_num = remaining_args.pop(0)
+            if prio_file_base is None and len(remaining_args) > 0:
+                prio_file_base = remaining_args.pop(0)
+        else:
+            if prio_file_base is None and len(remaining_args) > 0:
+                prio_file_base = remaining_args.pop(0)
+            if target_file_base is None and len(remaining_args) > 0:
+                target_file_base = remaining_args.pop(0)
+            if frame_num is None and len(remaining_args) > 0:
+                frame_num = remaining_args.pop(0)
+
+        # Execute read using resolved parameters
         fname = f"{corres_file_base}.{frame_num}"
         if not Path(fname).exists():
             return False
@@ -425,7 +548,7 @@ class Frame:
         self._sync_path_to_soa()
 
         for cam in range(self.num_cams):
-            targets = read_targets(target_file_base[cam], frame_num)
+            targets = read_targets(target_file_base[cam] if isinstance(target_file_base, list) else target_file_base, frame_num)
             self.num_targets[cam] = len(targets)
             tx = self.targ_x[cam]
             ty = self.targ_y[cam]

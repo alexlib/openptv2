@@ -2,12 +2,12 @@
 
 from .algorithms.track_kernels import is_compiled as _is_compiled
 
-from .algorithms.compat.calibration import Calibration
-from .algorithms.compat.correspondences import MatchedCoords, correspondences
-from .algorithms.compat.epipolar import epipolar_curve
-from .algorithms.compat.image_processing import preprocess_image
-from .algorithms.compat.imgcoord import flat_image_coordinates, image_coordinates
-from .algorithms.compat.orientation import (
+from .calibration import Calibration
+from .correspondences import MatchedCoords, correspondences
+from .epipolar import epipolar_curve
+from .image_processing import preprocess_image
+from .imgcoord import flat_image_coordinates, image_coordinates
+from .orientation import (
     dumbbell_target_func,
     external_calibration,
     full_calibration,
@@ -34,7 +34,7 @@ from .algorithms.parameters import (
     TrackParTuple,
     convert_track_par_to_tuple,
 )
-from .algorithms.compat.parameters import (
+from .parameters import (
     ControlParams,
     MultimediaParams,
     SequenceParams,
@@ -42,10 +42,10 @@ from .algorithms.compat.parameters import (
     TrackingParams,
     VolumeParams,
 )
-from .algorithms.compat.segmentation import target_recognition
-from .algorithms.compat.tracker import Tracker, default_naming
-from .algorithms.compat.tracking_framebuf import Frame, Target, TargetArray, read_targets
-from .algorithms.compat.transforms import (
+from .segmentation import target_recognition
+from .tracker import Tracker, default_naming
+from .tracking_framebuf import Frame, Target, TargetArray, read_targets
+from .transforms import (
     convert_arr_metric_to_pixel,
     convert_arr_pixel_to_metric,
     correct_arr_brown_affine,

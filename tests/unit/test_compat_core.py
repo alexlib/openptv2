@@ -6,12 +6,12 @@ import pytest
 import numpy as np
 from pathlib import Path
 
-from openptv2.algorithms.compat.calibration import Calibration
-from openptv2.algorithms.compat.parameters import (
+from openptv2.calibration import Calibration
+from openptv2.parameters import (
     ControlParams, VolumeParams, TrackingParams,
     SequenceParams, TargetParams, MultimediaParams
 )
-from openptv2.algorithms.compat.tracking_framebuf import Target, TargetArray, Frame, CORRES_NONE
+from openptv2.tracking_framebuf import Target, TargetArray, Frame, CORRES_NONE
 
 
 # Test data paths

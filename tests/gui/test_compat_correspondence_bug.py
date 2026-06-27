@@ -56,12 +56,12 @@ def test_compat_correspondences_parity(cavity_dir):
         cpar, spar, vpar, trk_par, tpar, cals_optv, epar = py_start_proc_c(exp.pm)
 
         # Build compat params
-        from openptv2.algorithms.compat.parameters import (
+        from openptv2.parameters import (
             ControlParams as C,
             VolumeParams as V,
             TargetParams as T,
         )
-        from openptv2.algorithms.compat.calibration import Calibration as CCal
+        from openptv2.calibration import Calibration as CCal
 
         ptv_p = exp.pm.get_parameter("ptv")
         seq_p = exp.pm.get_parameter("sequence")
@@ -144,7 +144,7 @@ def test_compat_correspondences_parity(cavity_dir):
         # Build raw algorithms Frame + corrected from optv detections
         from openptv2.algorithms.tracking_frame_buf import Frame as RawFrame
         from openptv2.algorithms.epi import Coord2d
-        from openptv2.algorithms.compat.transforms import (
+        from openptv2.transforms import (
             distorted_to_flat,
             convert_arr_pixel_to_metric,
         )
@@ -215,10 +215,10 @@ def test_compat_correspondences_parity(cavity_dir):
 
         # --- COMPAT correspondences (calls raw under the hood) ---
         print(f"\n  --- COMPAT LAYER ---")
-        from openptv2.algorithms.compat.correspondences import correspondences as comp_corr
-        from openptv2.algorithms.compat.correspondences import MatchedCoords as comp_mc
-        from openptv2.algorithms.compat.segmentation import target_recognition as comp_tr
-        from openptv2.algorithms.compat.tracking_framebuf import TargetArray, read_targets
+        from openptv2.correspondences import correspondences as comp_corr
+        from openptv2.correspondences import MatchedCoords as comp_mc
+        from openptv2.segmentation import target_recognition as comp_tr
+        from openptv2.tracking_framebuf import TargetArray, read_targets
 
         # Build detection + corrected using COMPAT APIs
         det_c, corr_c = [], []

@@ -53,7 +53,7 @@ def test_calibration_parameter_parity(cavity_dir):
 
         cpar, spar, vpar, trk, tpar, cals_optv, epar = py_start_proc_c(exp.pm)
 
-        from openptv2.algorithms.compat.calibration import Calibration as CalC
+        from openptv2.calibration import Calibration as CalC
 
         print("\nCalibration parameter comparison (optv vs compat):")
 
@@ -65,7 +65,7 @@ def test_calibration_parameter_parity(cavity_dir):
             add_f = ori_f.replace(".ori", ".addpar")
             cal_c.from_file(ori_f, add_f)
 
-            rc = cal_c._cal
+            rc = cal_c._cal if hasattr(cal_c, '_cal') else cal_c
             pos_o = cal_o.get_pos()
             pos_c = cal_c.get_pos()
             print(f"\n  cam{i + 1}:")
@@ -90,7 +90,7 @@ def test_calibration_parameter_parity(cavity_dir):
             print(f"    glass:      optv={gv_o}  compat={gv_c}")
 
             # Also check pixel to metric conversion
-            from openptv2.algorithms.compat.transforms import convert_arr_pixel_to_metric
+            from openptv2.transforms import convert_arr_pixel_to_metric
 
             test_pts = np.array([[100.0, 200.0], [500.0, 300.0]], dtype=np.float64)
 

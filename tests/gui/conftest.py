@@ -4,6 +4,7 @@ import importlib
 
 # Register pyptv package and its submodules as aliases to openptv2.gui in sys.modules
 try:
+    import openptv2
     import openptv2.gui as _gui
     import openptv2.gui.pyptv as _pyptv_base
     sys.modules["pyptv"] = _pyptv_base

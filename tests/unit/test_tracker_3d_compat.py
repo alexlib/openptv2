@@ -4,11 +4,11 @@ import os
 import shutil
 from pathlib import Path
 
-from openptv2.algorithms.compat.calibration import Calibration
-from openptv2.algorithms.compat.parameters import (
+from openptv2.calibration import Calibration
+from openptv2.parameters import (
     ControlParams, VolumeParams, TrackingParams, SequenceParams
 )
-from openptv2.algorithms.compat.tracker import Tracker
+from openptv2.tracker import Tracker
 
 
 def read_all_calibration(num_cams, base_path="test_data/track"):

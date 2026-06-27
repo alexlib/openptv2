@@ -6,25 +6,25 @@ import pytest
 import numpy as np
 from pathlib import Path
 
-from openptv2.algorithms.compat.calibration import Calibration
-from openptv2.algorithms.compat.parameters import ControlParams, VolumeParams, TargetParams, MultimediaParams
-from openptv2.algorithms.compat.transforms import (
+from openptv2.calibration import Calibration
+from openptv2.parameters import ControlParams, VolumeParams, TargetParams, MultimediaParams
+from openptv2.transforms import (
     convert_arr_pixel_to_metric,
     convert_arr_metric_to_pixel,
     correct_arr_brown_affine,
     distort_arr_brown_affine,
     distorted_to_flat,
 )
-from openptv2.algorithms.compat.imgcoord import image_coordinates, flat_image_coordinates
-from openptv2.algorithms.compat.image_processing import preprocess_image
-from openptv2.algorithms.compat.segmentation import target_recognition
-from openptv2.algorithms.compat.orientation import (
+from openptv2.imgcoord import image_coordinates, flat_image_coordinates
+from openptv2.image_processing import preprocess_image
+from openptv2.segmentation import target_recognition
+from openptv2.orientation import (
     external_calibration,
     multi_cam_point_positions,
     point_positions,
     match_detection_to_ref,
 )
-from openptv2.algorithms.compat.epipolar import epipolar_curve
+from openptv2.epipolar import epipolar_curve
 
 
 # Test data paths

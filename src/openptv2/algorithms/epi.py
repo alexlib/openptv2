@@ -20,17 +20,17 @@ MAXCAND: cython.int = 200
 @cython.cclass
 @dataclass
 class Candidate:
-    pnr: cython.int
-    tol: cython.double
-    corr: cython.double
+    pnr: cython.int = cython.declare(cython.int, 0, visibility='public')
+    tol: cython.double = cython.declare(cython.double, 0.0, visibility='public')
+    corr: cython.double = cython.declare(cython.double, 0.0, visibility='public')
 
 
 @cython.cclass
 @dataclass
 class Coord2d:
-    pnr: cython.int
-    x: cython.double
-    y: cython.double
+    pnr: cython.int = cython.declare(cython.int, 0, visibility='public')
+    x: cython.double = cython.declare(cython.double, 0.0, visibility='public')
+    y: cython.double = cython.declare(cython.double, 0.0, visibility='public')
 
 
 @cython.ccall

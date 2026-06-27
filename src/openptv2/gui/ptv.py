@@ -734,14 +734,14 @@ def py_sequence_loop_python(exp) -> None:
     Args:
         exp: Same ProcessingExperiment object as py_sequence_loop expects.
     """
-    from openptv2.algorithms.compat.segmentation import target_recognition as alg_target_recognition
-    from openptv2.algorithms.compat.correspondences import MatchedCoords as AlgMatchedCoords
+    from openptv2.segmentation import target_recognition as alg_target_recognition
+    from openptv2.correspondences import MatchedCoords as AlgMatchedCoords
     from openptv2.algorithms.correspondences import correspondences as alg_correspondences
     from openptv2.algorithms.orientation import point_positions as alg_point_positions
-    from openptv2.algorithms.compat.tracker import default_naming as alg_default_naming
+    from openptv2.tracker import default_naming as alg_default_naming
     from openptv2.algorithms.parameters import ControlPar, VolumePar, TargetPar, MultimediaPar
-    from openptv2.algorithms.compat.calibration import Calibration as AlgCalibration
-    from openptv2.algorithms.tracking_frame_buf import Frame, Target, read_targets
+    from openptv2.calibration import Calibration as AlgCalibration
+    from openptv2.tracking_framebuf import Frame, Target, read_targets
 
     # Handle both Experiment objects and MainGUI objects
     if hasattr(exp, "pm"):
@@ -973,7 +973,7 @@ def py_sequence_loop_python(exp) -> None:
 
         match_counts = [0] * 4  # [4-cam, 3-cam, 2-cam, total]
         con, counts = alg_correspondences(
-            frm, [mc._corrected for mc in corrected], vpar_py, cpar_py, [c._cal for c in cals_py]
+            frm, [mc._corrected for mc in corrected], vpar_py, cpar_py, [c._cal if hasattr(c, '_cal') else c for c in cals_py]
         )
         match_counts[0] = counts[0]
         match_counts[1] = counts[1]

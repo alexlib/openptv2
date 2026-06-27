@@ -143,6 +143,24 @@ class MmLut:
         return self.data is not None
 
 
+class hybrid_from_file:
+    """A descriptor that allows from_file to be called as a classmethod or instance method."""
+    def __get__(self, obj, cls):
+        if obj is None:
+            def _classmethod(ori_file, add_file=None, add_fallback=None):
+                return cls._from_file_class(ori_file, add_file, add_fallback)
+            return _classmethod
+        else:
+            def _instancemethod(ori_file, add_file=None, fallback_file=None):
+                new_cal = cls._from_file_class(ori_file, add_file, fallback_file)
+                obj.ext_par = new_cal.ext_par
+                obj.int_par = new_cal.int_par
+                obj.glass_par = new_cal.glass_par
+                obj.added_par = new_cal.added_par
+                obj.mmlut = new_cal.mmlut
+                return obj
+            return _instancemethod
+
 @cython.cclass
 @dataclass
 class Calibration:
@@ -163,13 +181,161 @@ class Calibration:
     added_par: AddedPar = field(default_factory=AddedPar)
     mmlut: MmLut = field(default_factory=MmLut)
 
+    def __init__(
+        self,
+        ext_par: Exterior | None = None,
+        int_par: Interior | None = None,
+        glass_par: Glass | None = None,
+        added_par: AddedPar | None = None,
+        mmlut: MmLut | None = None,
+        pos=None,
+        angs=None,
+        prim_point=None,
+        rad_dist=None,
+        decent=None,
+        affine=None,
+        glass=None,
+        cal=None,
+    ):
+        """Initialize Calibration supporting both dataclass and legacy optv args."""
+        if cal is not None and hasattr(cal, "ext_par"):
+            self.ext_par = cal.ext_par
+            self.int_par = cal.int_par
+            self.glass_par = cal.glass_par
+            self.added_par = cal.added_par
+            self.mmlut = cal.mmlut
+            return
+
+        self.ext_par = ext_par if ext_par is not None else Exterior()
+        self.int_par = int_par if int_par is not None else Interior()
+        self.glass_par = glass_par if glass_par is not None else Glass()
+        self.added_par = added_par if added_par is not None else AddedPar()
+        self.mmlut = mmlut if mmlut is not None else MmLut()
+
+        if pos is not None:
+            self.set_pos(pos)
+        if angs is not None:
+            self.set_angles(angs)
+        if prim_point is not None:
+            self.set_primary_point(prim_point)
+        if rad_dist is not None:
+            self.set_radial_distortion(rad_dist)
+        if decent is not None:
+            self.set_decentering(decent)
+        if affine is not None:
+            self.set_affine_trans(affine)
+        if glass is not None:
+            self.set_glass_vec(glass)
+
+        if self.ext_par is not None:
+            self.ext_par.compute_rotation_matrix()
+
     def __post_init__(self):
         """Ensure rotation matrix is computed after initialization."""
         if self.ext_par is not None:
             self.ext_par.compute_rotation_matrix()
 
+    # --- Backward Compatibility OOP Methods (No wrappers or indirection) ---
+
+    def get_pos(self) -> np.ndarray:
+        """Get camera position as ndarray[3]."""
+        return np.array([self.ext_par.x0, self.ext_par.y0, self.ext_par.z0], dtype=np.float64)
+
+    def set_pos(self, pos) -> None:
+        """Set camera position from ndarray[3]."""
+        if len(pos) != 3:
+            raise ValueError("pos must have exactly 3 elements")
+        self.ext_par.x0 = float(pos[0])
+        self.ext_par.y0 = float(pos[1])
+        self.ext_par.z0 = float(pos[2])
+
+    def get_angles(self) -> np.ndarray:
+        """Get rotation angles (omega, phi, kappa) as ndarray[3]."""
+        return np.array([self.ext_par.omega, self.ext_par.phi, self.ext_par.kappa], dtype=np.float64)
+
+    def set_angles(self, angles) -> None:
+        """Set rotation angles from ndarray[3] and compute rotation matrix."""
+        if len(angles) != 3:
+            raise ValueError("angles must have exactly 3 elements")
+        self.ext_par.omega = float(angles[0])
+        self.ext_par.phi = float(angles[1])
+        self.ext_par.kappa = float(angles[2])
+        self.ext_par.compute_rotation_matrix()
+
+    def get_primary_point(self) -> np.ndarray:
+        """Get primary point (xh, yh, cc) as ndarray[3]."""
+        return np.array([self.int_par.xh, self.int_par.yh, self.int_par.cc], dtype=np.float64)
+
+    def set_primary_point(self, pp) -> None:
+        """Set primary point from ndarray[3]."""
+        if len(pp) != 3:
+            raise ValueError("primary point must have exactly 3 elements")
+        self.int_par.xh = float(pp[0])
+        self.int_par.yh = float(pp[1])
+        self.int_par.cc = float(pp[2])
+
+    def get_radial_distortion(self) -> np.ndarray:
+        """Get radial distortion coefficients (k1, k2, k3) as ndarray[3]."""
+        return np.array([self.added_par.k1, self.added_par.k2, self.added_par.k3], dtype=np.float64)
+
+    def set_radial_distortion(self, dist) -> None:
+        """Set radial distortion from ndarray[3]."""
+        if len(dist) != 3:
+            raise ValueError("radial distortion must have exactly 3 elements")
+        self.added_par.k1 = float(dist[0])
+        self.added_par.k2 = float(dist[1])
+        self.added_par.k3 = float(dist[2])
+
+    def get_decentering(self) -> np.ndarray:
+        """Get decentering parameters (p1, p2) as ndarray[2]."""
+        return np.array([self.added_par.p1, self.added_par.p2], dtype=np.float64)
+
+    def set_decentering(self, decent) -> None:
+        """Set decentering from ndarray[2]."""
+        if len(decent) != 2:
+            raise ValueError("decentering parameters must have exactly 2 elements")
+        self.added_par.p1 = float(decent[0])
+        self.added_par.p2 = float(decent[1])
+
+    def get_affine(self) -> np.ndarray:
+        """Get affine parameters (scx, she) as ndarray[2]."""
+        return np.array([self.added_par.scx, self.added_par.she], dtype=np.float64)
+
+    def set_affine_trans(self, affine) -> None:
+        """Set affine transform from ndarray[2]."""
+        if len(affine) != 2:
+            raise ValueError("affine parameters must have exactly 2 elements")
+        self.added_par.scx = float(affine[0])
+        self.added_par.she = float(affine[1])
+
+    def get_glass_vec(self) -> np.ndarray:
+        """Get glass vector (vec_x, vec_y, vec_z) as ndarray[3]."""
+        return np.array([self.glass_par.vec_x, self.glass_par.vec_y, self.glass_par.vec_z], dtype=np.float64)
+
+    def set_glass_vec(self, gvec) -> None:
+        """Set glass vector from ndarray[3]."""
+        if len(gvec) != 3:
+            raise ValueError("glass vector must have exactly 3 elements")
+        self.glass_par.vec_x = float(gvec[0])
+        self.glass_par.vec_y = float(gvec[1])
+        self.glass_par.vec_z = float(gvec[2])
+
+    def get_rotation_matrix(self) -> np.ndarray:
+        """Get rotation matrix as ndarray[3, 3]."""
+        return self.ext_par.dm.copy()
+
+    def write(self, ori_file, add_file=None) -> None:
+        """Write calibration to file(s)."""
+        if isinstance(ori_file, bytes):
+            ori_file = ori_file.decode('utf-8')
+        if isinstance(add_file, bytes):
+            add_file = add_file.decode('utf-8')
+        self.to_file(ori_file, add_file)
+
+    from_file = hybrid_from_file()
+
     @classmethod
-    def from_file(
+    def _from_file_class(
         cls,
         ori_file: str | Path,
         add_file: str | Path | None = None,

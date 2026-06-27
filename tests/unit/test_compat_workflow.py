@@ -6,13 +6,13 @@ import pytest
 import numpy as np
 from pathlib import Path
 
-from openptv2.algorithms.compat.calibration import Calibration
-from openptv2.algorithms.compat.parameters import (
+from openptv2.calibration import Calibration
+from openptv2.parameters import (
     ControlParams, VolumeParams, TrackingParams, SequenceParams, TargetParams
 )
-from openptv2.algorithms.compat.tracking_framebuf import TargetArray, Target
-from openptv2.algorithms.compat.correspondences import MatchedCoords, correspondences
-from openptv2.algorithms.compat.tracker import Tracker, default_naming
+from openptv2.tracking_framebuf import TargetArray, Target
+from openptv2.correspondences import MatchedCoords, correspondences
+from openptv2.tracker import Tracker, default_naming
 from openptv2.algorithms.tracking_frame_buf import Target as AlgoTarget
 
 

@@ -39,6 +39,8 @@ class SequencePar:
     def __init__(self, num_cams: int = 0, img_base_name: list[str] | None = None, first: int = 0, last: int = 0) -> None:
         self.num_cams = num_cams
         self.img_base_name = img_base_name if img_base_name is not None else []
+        if not self.img_base_name and num_cams > 0:
+            self.img_base_name = [""] * num_cams
         self.first = first
         self.last = last
 
@@ -53,6 +55,38 @@ class SequencePar:
         last = int(lines[num_cams + 1].strip())
         return SequencePar(num_cams, img_base_name, first, last)
 
+    # --- Backward Compatibility OOP Methods ---
+    def get_first(self) -> int:
+        return self.first
+
+    def set_first(self, first: int) -> None:
+        self.first = int(first)
+
+    def get_last(self) -> int:
+        return self.last
+
+    def set_last(self, last: int) -> None:
+        self.last = int(last)
+
+    def get_img_base_name(self, cam: int) -> str:
+        try:
+            return self.img_base_name[cam]
+        except IndexError:
+            return ""
+
+    def set_img_base_name(self, cam: int, name: str) -> None:
+        while len(self.img_base_name) <= cam:
+            self.img_base_name.append("")
+        self.img_base_name[cam] = str(name)
+
+    def read_sequence_par(self, filename: str | Path, num_cams: int) -> None:
+        """Read sequence parameters from file in-place."""
+        new_par = SequencePar.from_file(filename, num_cams)
+        self.num_cams = new_par.num_cams
+        self.img_base_name = new_par.img_base_name
+        self.first = new_par.first
+        self.last = new_par.last
+
 
 class TrackPar:
     dvxmin: float
@@ -65,10 +99,10 @@ class TrackPar:
     dacc: float
     add: int
     track_mode: int
-    dsumg: int
-    dn: int
-    dnx: int
-    dny: int
+    dsumg: float
+    dn: float
+    dnx: float
+    dny: float
 
     def __init__(
         self,
@@ -93,10 +127,10 @@ class TrackPar:
         self.dacc = dacc
         self.add = add
         self.track_mode = track_mode
-        self.dsumg = 0
-        self.dn = 0
-        self.dnx = 0
-        self.dny = 0
+        self.dsumg = 0.0
+        self.dn = 0.0
+        self.dnx = 0.0
+        self.dny = 0.0
 
     @staticmethod
     def from_file(filename: str | Path) -> TrackPar:
@@ -115,6 +149,109 @@ class TrackPar:
             float(lines[4]), float(lines[5]), float(lines[6]), float(lines[7]), int(lines[8]),
             track_mode
         )
+
+    # --- Backward Compatibility OOP Methods ---
+    def get_dvxmin(self) -> float:
+        return self.dvxmin
+
+    def set_dvxmin(self, val: float) -> None:
+        self.dvxmin = float(val)
+
+    def get_dvxmax(self) -> float:
+        return self.dvxmax
+
+    def set_dvxmax(self, val: float) -> None:
+        self.dvxmax = float(val)
+
+    def get_dvymin(self) -> float:
+        return self.dvymin
+
+    def set_dvymin(self, val: float) -> None:
+        self.dvymin = float(val)
+
+    def get_dvymax(self) -> float:
+        return self.dvymax
+
+    def set_dvymax(self, val: float) -> None:
+        self.dvymax = float(val)
+
+    def get_dvzmin(self) -> float:
+        return self.dvzmin
+
+    def set_dvzmin(self, val: float) -> None:
+        self.dvzmin = float(val)
+
+    def get_dvzmax(self) -> float:
+        return self.dvzmax
+
+    def set_dvzmax(self, val: float) -> None:
+        self.dvzmax = float(val)
+
+    def get_dangle(self) -> float:
+        return self.dangle
+
+    def set_dangle(self, val: float) -> None:
+        self.dangle = float(val)
+
+    def get_dacc(self) -> float:
+        return self.dacc
+
+    def set_dacc(self, val: float) -> None:
+        self.dacc = float(val)
+
+    def get_add(self) -> int:
+        return self.add
+
+    def set_add(self, val: int) -> None:
+        self.add = int(val)
+
+    def get_track_mode(self) -> int:
+        return self.track_mode
+
+    def set_track_mode(self, val: int) -> None:
+        self.track_mode = int(val)
+
+    def get_dsumg(self) -> float:
+        return self.dsumg
+
+    def set_dsumg(self, val: float) -> None:
+        self.dsumg = float(val)
+
+    def get_dn(self) -> float:
+        return self.dn
+
+    def set_dn(self, val: float) -> None:
+        self.dn = float(val)
+
+    def get_dnx(self) -> float:
+        return self.dnx
+
+    def set_dnx(self, val: float) -> None:
+        self.dnx = float(val)
+
+    def get_dny(self) -> float:
+        return self.dny
+
+    def set_dny(self, val: float) -> None:
+        self.dny = float(val)
+
+    def read_track_par(self, filename: str | Path) -> None:
+        """Read tracking parameters from file in-place."""
+        new_par = TrackPar.from_file(filename)
+        self.dvxmin = new_par.dvxmin
+        self.dvxmax = new_par.dvxmax
+        self.dvymin = new_par.dvymin
+        self.dvymax = new_par.dvymax
+        self.dvzmin = new_par.dvzmin
+        self.dvzmax = new_par.dvzmax
+        self.dangle = new_par.dangle
+        self.dacc = new_par.dacc
+        self.add = new_par.add
+        self.track_mode = new_par.track_mode
+        self.dsumg = new_par.dsumg
+        self.dn = new_par.dn
+        self.dnx = new_par.dnx
+        self.dny = new_par.dny
 
 
 class VolumePar:
@@ -167,6 +304,80 @@ class VolumePar:
         eps0 = float(lines[11])
         return VolumePar(X_lay, Zmin_lay, Zmax_lay, cnx, cny, cn, csumg, corrmin, eps0)
 
+    # --- Backward Compatibility OOP Methods ---
+    def get_X_lay(self, copy: bool = True) -> np.ndarray:
+        if copy:
+            return self.X_lay.copy()
+        return self.X_lay
+
+    def set_X_lay(self, X_lay) -> None:
+        self.X_lay = np.asarray(X_lay, dtype=np.float64)
+
+    def get_Zmin_lay(self, copy: bool = True) -> np.ndarray:
+        if copy:
+            return self.Zmin_lay.copy()
+        return self.Zmin_lay
+
+    def set_Zmin_lay(self, Zmin_lay) -> None:
+        self.Zmin_lay = np.asarray(Zmin_lay, dtype=np.float64)
+
+    def get_Zmax_lay(self, copy: bool = True) -> np.ndarray:
+        if copy:
+            return self.Zmax_lay.copy()
+        return self.Zmax_lay
+
+    def set_Zmax_lay(self, Zmax_lay) -> None:
+        self.Zmax_lay = np.asarray(Zmax_lay, dtype=np.float64)
+
+    def get_cn(self) -> float:
+        return self.cn
+
+    def set_cn(self, cn: float) -> None:
+        self.cn = float(cn)
+
+    def get_cnx(self) -> float:
+        return self.cnx
+
+    def set_cnx(self, cnx: float) -> None:
+        self.cnx = float(cnx)
+
+    def get_cny(self) -> float:
+        return self.cny
+
+    def set_cny(self, cny: float) -> None:
+        self.cny = float(cny)
+
+    def get_csumg(self) -> float:
+        return self.csumg
+
+    def set_csumg(self, csumg: float) -> None:
+        self.csumg = float(csumg)
+
+    def get_eps0(self) -> float:
+        return self.eps0
+
+    def set_eps0(self, eps0: float) -> None:
+        self.eps0 = float(eps0)
+
+    def get_corrmin(self) -> float:
+        return self.corrmin
+
+    def set_corrmin(self, corrmin: float) -> None:
+        self.corrmin = float(corrmin)
+
+    def read_volume_par(self, filename: str | Path) -> None:
+        """Read volume parameters from file in-place."""
+        new_par = VolumePar.from_file(filename)
+        self.X_lay = new_par.X_lay
+        self.Zmin_lay = new_par.Zmin_lay
+        self.Zmax_lay = new_par.Zmax_lay
+        self.cnx = new_par.cnx
+        self.cny = new_par.cny
+        self.cn = new_par.cn
+        self.csumg = new_par.csumg
+        self.corrmin = new_par.corrmin
+        self.eps0 = new_par.eps0
+
 
 class MmNp:
     nlay: int
@@ -181,13 +392,53 @@ class MmNp:
         n1: float = 1.0,
         n2: list[float] | np.ndarray | None = None,
         d: list[float] | np.ndarray | None = None,
-        n3: float = 1.0
+        n3: float = 1.0,
+        _mm: MmNp | None = None,
     ) -> None:
+        if _mm is not None:
+            self.nlay = _mm.nlay
+            self.n1 = _mm.n1
+            self.n2 = _mm.n2
+            self.d = _mm.d
+            self.n3 = _mm.n3
+            return
+
         self.nlay = nlay
         self.n1 = n1
         self.n2 = np.ones(3) if n2 is None else np.array(n2, dtype=np.float64)
         self.d = np.zeros(3) if d is None else np.array(d, dtype=np.float64)
         self.n3 = n3
+
+    # --- Backward Compatibility OOP Methods ---
+    def get_nlay(self) -> int:
+        return self.nlay
+
+    def get_n1(self) -> float:
+        return self.n1
+
+    def set_n1(self, n1: float) -> None:
+        self.n1 = float(n1)
+
+    def get_n2(self, copy: bool = True) -> np.ndarray:
+        if copy:
+            return self.n2.copy()
+        return self.n2
+
+    def get_d(self, copy: bool = True) -> np.ndarray:
+        if copy:
+            return self.d.copy()
+        return self.d
+
+    def set_layers(self, n2, d) -> None:
+        self.n2 = np.asarray(n2, dtype=np.float64)
+        self.d = np.asarray(d, dtype=np.float64)
+        self.nlay = len(n2)
+
+    def get_n3(self) -> float:
+        return self.n3
+
+    def set_n3(self, n3: float) -> None:
+        self.n3 = float(n3)
 
 
 class ControlPar:
@@ -223,6 +474,10 @@ class ControlPar:
         self.num_cams = num_cams
         self.img_base_name = img_base_name if img_base_name is not None else []
         self.cal_img_base_name = cal_img_base_name if cal_img_base_name is not None else []
+        if not self.img_base_name and num_cams > 0:
+            self.img_base_name = [""] * num_cams
+        if not self.cal_img_base_name and num_cams > 0:
+            self.cal_img_base_name = [""] * num_cams
         self.hp_flag = hp_flag
         # Accept both allCam_flag and all_cam_flag for compatibility
         if all_cam_flag is not None:
@@ -286,6 +541,89 @@ class ControlPar:
             chfield=chfield, mm=mm,
         )
 
+    # --- Backward Compatibility OOP Methods ---
+    def get_num_cams(self) -> int:
+        return self.num_cams
+
+    def get_image_size(self, copy: bool = True) -> tuple[int, int]:
+        return (self.imx, self.imy)
+
+    def set_image_size(self, size: tuple[int, int]) -> None:
+        self.imx = int(size[0])
+        self.imy = int(size[1])
+
+    def get_pixel_size(self, copy: bool = True) -> tuple[float, float]:
+        return (self.pix_x, self.pix_y)
+
+    def set_pixel_size(self, size: tuple[float, float]) -> None:
+        self.pix_x = float(size[0])
+        self.pix_y = float(size[1])
+
+    def get_hp_flag(self) -> int:
+        return self.hp_flag
+
+    def set_hp_flag(self, flag: int) -> None:
+        self.hp_flag = int(flag)
+
+    def get_allCam_flag(self) -> int:
+        return self.allCam_flag
+
+    def set_allCam_flag(self, flag: int) -> None:
+        self.allCam_flag = int(flag)
+
+    def get_tiff_flag(self) -> int:
+        return self.tiff_flag
+
+    def set_tiff_flag(self, flag: int) -> None:
+        self.tiff_flag = int(flag)
+
+    def get_chfield(self) -> int:
+        return self.chfield
+
+    def set_chfield(self, chfield: int) -> None:
+        self.chfield = int(chfield)
+
+    def get_multimedia_params(self) -> MmNp:
+        return self.mm
+
+    def get_img_base_name(self, cam: int) -> str:
+        try:
+            return self.img_base_name[cam]
+        except IndexError:
+            return ""
+
+    def set_img_base_name(self, cam: int, name: str) -> None:
+        while len(self.img_base_name) <= cam:
+            self.img_base_name.append("")
+        self.img_base_name[cam] = str(name)
+
+    def get_cal_img_base_name(self, cam: int) -> str:
+        try:
+            return self.cal_img_base_name[cam]
+        except IndexError:
+            return ""
+
+    def set_cal_img_base_name(self, cam: int, name: str) -> None:
+        while len(self.cal_img_base_name) <= cam:
+            self.cal_img_base_name.append("")
+        self.cal_img_base_name[cam] = str(name)
+
+    def read_control_par(self, filename: str | Path) -> None:
+        """Read control parameters from file in-place."""
+        new_par = ControlPar.from_file(filename)
+        self.num_cams = new_par.num_cams
+        self.img_base_name = new_par.img_base_name
+        self.cal_img_base_name = new_par.cal_img_base_name
+        self.hp_flag = new_par.hp_flag
+        self.allCam_flag = new_par.allCam_flag
+        self.tiff_flag = new_par.tiff_flag
+        self.imx = new_par.imx
+        self.imy = new_par.imy
+        self.pix_x = new_par.pix_x
+        self.pix_y = new_par.pix_y
+        self.chfield = new_par.chfield
+        self.mm = new_par.mm
+
 
 class TargetPar:
     gvthres: np.ndarray
@@ -310,18 +648,46 @@ class TargetPar:
         nymin: int = 0,
         nymax: int = 0,
         sumg_min: int = 0,
-        cr_sz: int = 0
+        cr_sz: int = 0,
+        # support TargetParams constructor arguments:
+        gvthresh: list[int] | np.ndarray | None = None,
+        pixel_count_bounds: tuple[int, int] | None = None,
+        xsize_bounds: tuple[int, int] | None = None,
+        ysize_bounds: tuple[int, int] | None = None,
+        min_sum_grey: int | None = None,
+        cross_size: int | None = None,
     ) -> None:
-        self.gvthres = np.zeros(4, dtype=int) if gvthres is None else np.array(gvthres, dtype=int)
         self.discont = discont
-        self.nnmin = nnmin
-        self.nnmax = nnmax
-        self.nxmin = nxmin
-        self.nxmax = nxmax
-        self.nymin = nymin
-        self.nymax = nymax
-        self.sumg_min = sumg_min
-        self.cr_sz = cr_sz
+
+        if gvthresh is not None:
+            self.gvthres = np.array(gvthresh, dtype=int)
+        else:
+            self.gvthres = np.zeros(4, dtype=int) if gvthres is None else np.array(gvthres, dtype=int)
+
+        if pixel_count_bounds is not None:
+            self.nnmin, self.nnmax = pixel_count_bounds
+        else:
+            self.nnmin, self.nnmax = nnmin, nnmax
+
+        if xsize_bounds is not None:
+            self.nxmin, self.nxmax = xsize_bounds
+        else:
+            self.nxmin, self.nxmax = nxmin, nxmax
+
+        if ysize_bounds is not None:
+            self.nymin, self.nymax = ysize_bounds
+        else:
+            self.nymin, self.nymax = nymin, nymax
+
+        if min_sum_grey is not None:
+            self.sumg_min = min_sum_grey
+        else:
+            self.sumg_min = sumg_min
+
+        if cross_size is not None:
+            self.cr_sz = cross_size
+        else:
+            self.cr_sz = cr_sz
 
     @staticmethod
     def from_file(filename: str | Path) -> TargetPar:
@@ -353,6 +719,68 @@ class TargetPar:
             str(self.cr_sz),
         ]
         path.write_text("\n".join(lines) + "\n")
+
+    # --- Backward Compatibility OOP Methods ---
+    def get_grey_thresholds(self, num_cams=4, copy: bool = True) -> np.ndarray:
+        if copy:
+            return self.gvthres.copy()
+        return self.gvthres
+
+    def set_grey_thresholds(self, gvthres) -> None:
+        self.gvthres = np.asarray(gvthres, dtype=np.int32)
+
+    def get_max_discontinuity(self) -> int:
+        return self.discont
+
+    def set_max_discontinuity(self, discont: int) -> None:
+        self.discont = int(discont)
+
+    def get_pixel_count_bounds(self) -> tuple[int, int]:
+        return (self.nnmin, self.nnmax)
+
+    def set_pixel_count_bounds(self, bounds: tuple[int, int]) -> None:
+        self.nnmin = int(bounds[0])
+        self.nnmax = int(bounds[1])
+
+    def get_xsize_bounds(self) -> tuple[int, int]:
+        return (self.nxmin, self.nxmax)
+
+    def set_xsize_bounds(self, bounds: tuple[int, int]) -> None:
+        self.nxmin = int(bounds[0])
+        self.nxmax = int(bounds[1])
+
+    def get_ysize_bounds(self) -> tuple[int, int]:
+        return (self.nymin, self.nymax)
+
+    def set_ysize_bounds(self, bounds: tuple[int, int]) -> None:
+        self.nymin = int(bounds[0])
+        self.nymax = int(bounds[1])
+
+    def get_min_sum_grey(self) -> int:
+        return self.sumg_min
+
+    def set_min_sum_grey(self, sumg_min: int) -> None:
+        self.sumg_min = int(sumg_min)
+
+    def get_cross_size(self) -> int:
+        return self.cr_sz
+
+    def set_cross_size(self, cr_sz: int) -> None:
+        self.cr_sz = int(cr_sz)
+
+    def read(self, filename: str | Path) -> None:
+        """Read target parameters from file in-place."""
+        new_par = TargetPar.from_file(filename)
+        self.gvthres = new_par.gvthres
+        self.discont = new_par.discont
+        self.nnmin = new_par.nnmin
+        self.nnmax = new_par.nnmax
+        self.nxmin = new_par.nxmin
+        self.nxmax = new_par.nxmax
+        self.nymin = new_par.nymin
+        self.nymax = new_par.nymax
+        self.sumg_min = new_par.sumg_min
+        self.cr_sz = new_par.cr_sz
 
 
 class OrientPar:
@@ -525,6 +953,13 @@ read_control_par = ControlPar.from_file
 read_volume_par = VolumePar.from_file
 read_sequence_par = SequencePar.from_file
 read_track_par = TrackPar.from_file
+
+ControlParams = ControlPar
+VolumeParams = VolumePar
+TargetParams = TargetPar
+TrackingParams = TrackPar
+SequenceParams = SequencePar
+MultimediaParams = MmNp
 
 
 def is_compiled() -> bool:
