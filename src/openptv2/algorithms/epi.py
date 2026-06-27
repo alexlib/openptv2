@@ -17,18 +17,20 @@ from dataclasses import dataclass
 MAXCAND: cython.int = 200
 
 
+@cython.cclass
 @dataclass
 class Candidate:
-    pnr: int
-    tol: float
-    corr: float
+    pnr: cython.int
+    tol: cython.double
+    corr: cython.double
 
 
+@cython.cclass
 @dataclass
 class Coord2d:
-    pnr: int
-    x: float
-    y: float
+    pnr: cython.int
+    x: cython.double
+    y: cython.double
 
 
 @cython.ccall

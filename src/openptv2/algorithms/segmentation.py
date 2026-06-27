@@ -24,6 +24,7 @@ from .track_kernels import targ_rec_fast as _targ_rec_fast
 
 
 
+@cython.cclass
 @dataclass
 class Target:
     """Detected particle target.
@@ -34,32 +35,33 @@ class Target:
     sumg: sum of grey values
     tnr: correspondence number (-1 = unassigned)
     """
-    pnr: int = 0
-    x: float = 0.0
-    y: float = 0.0
-    n: int = 0
-    nx: int = 0
-    ny: int = 0
-    sumg: int = 0
-    tnr: int = CORRES_NONE
+    pnr: cython.int = 0
+    x: cython.double = 0.0
+    y: cython.double = 0.0
+    n: cython.int = 0
+    nx: cython.int = 0
+    ny: cython.int = 0
+    sumg: cython.int = 0
+    tnr: cython.int = CORRES_NONE
 
 
+@cython.cclass
 @dataclass
 class Peak:
     """Detected peak for connectivity analysis."""
-    pos: int = 0
-    status: int = 0
-    xmin: int = 0
-    xmax: int = 0
-    ymin: int = 0
-    ymax: int = 0
-    n: int = 0
-    sumg: int = 0
-    x: float = 0.0
-    y: float = 0.0
-    unr: int = 0
-    touch: list[int] = field(default_factory=lambda: [0, 0, 0, 0])
-    n_touch: int = 0
+    pos: cython.int = 0
+    status: cython.int = 0
+    xmin: cython.int = 0
+    xmax: cython.int = 0
+    ymin: cython.int = 0
+    ymax: cython.int = 0
+    n: cython.int = 0
+    sumg: cython.int = 0
+    x: cython.double = 0.0
+    y: cython.double = 0.0
+    unr: cython.int = 0
+    touch: list = field(default_factory=lambda: [0, 0, 0, 0])
+    n_touch: cython.int = 0
 
 
 @cython.ccall

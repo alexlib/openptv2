@@ -33,21 +33,23 @@ def _default_correspond_dist():
     return np.zeros(MAXCAND, dtype=np.float64)
 
 
+@cython.cclass
 @dataclass
 class NTupel:
     """A correspondence match across multiple cameras."""
-    p: list[int] = field(default_factory=_default_ntupel_p)
-    corr: float = 0.0
+    p: list = field(default_factory=_default_ntupel_p)
+    corr: cython.double = 0.0
 
 
+@cython.cclass
 @dataclass
 class Correspond:
     """Adjacency list entry for candidate matching.
 
     Matches C correspond struct: indexed by target index in source camera.
     """
-    p1: int = 0
-    n: int = 0
+    p1: cython.int = 0
+    n: cython.int = 0
     p2: np.ndarray = field(default_factory=_default_correspond_p2)
     corr: np.ndarray = field(default_factory=_default_correspond_corr)
     dist: np.ndarray = field(default_factory=_default_correspond_dist)
