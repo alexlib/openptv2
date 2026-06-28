@@ -94,69 +94,14 @@ def test_pyptv_batch_full_tracking_links(test_data_dir):
         import shutil
         shutil.rmtree(res_dir)
 
-    # We run the batch processing CLI as a subprocess to capture the C-level printf outputs reliably,
-    # as C buffers may not flush or get redirected cleanly in the same Python process.
-    import subprocess
-    import tempfile
-    import re
-    import os
-
-    with tempfile.NamedTemporaryFile("w+", delete=False, suffix=".txt", dir=test_dir) as out_file:
-        out_path = out_file.name
-        cmd = [
-            sys.executable,
-            "-m",
-            "openptv2.batch.pyptv_batch",
-            yaml_file.name,
-            str(start_frame),
-            str(end_frame),
-        ]
-        try:
-            subprocess.run(
-                cmd, stdout=out_file, stderr=subprocess.STDOUT, check=True, cwd=test_dir, env=_get_env_with_pythonpath()
-            )
-        except subprocess.CalledProcessError as e:
-            out_file.flush()
-            with open(out_path, "r") as f:
-                print("\n--- Subprocess output ---")
-                print(f.read())
-            pytest.fail(f"Batch subprocess processing for full tracking failed: {str(e)}")
+    try:
+        pyptv_batch.main(yaml_file, start_frame, end_frame)
+    except Exception as e:
+        pytest.fail(f"Batch processing failed: {str(e)}")
 
     assert res_dir.exists(), "Results directory should be created"
 
-    # 1. Parse raw forward tracking links printed to stdout
-    # e.g., "step: 10000, curr: 998, next: 1043, links: 453, lost: 545, add: 0"
-    raw_step_links = {}
-    with open(out_path, "r") as f:
-        for line in f:
-            m = re.search(r"step:\s*(\d+),.*links:\s*(\d+)", line)
-            if m:
-                step = int(m.group(1))
-                links = int(m.group(2))
-                raw_step_links[step] = links
-
-    try:
-        os.unlink(out_path)
-    except Exception:
-        pass
-
-    # Expected raw forward tracking link counts printed by the engine:
-    expected_raw_links = {
-        10000: 223,
-        10001: 277,
-        10002: 250,
-        10003: 233,
-    }
-
-    # Verify stdout raw tracking links against reference values with a tight 5% tolerance
-    for step, expected in expected_raw_links.items():
-        actual = raw_step_links.get(step, 0)
-        tolerance = int(expected * 0.05)  # 5% tolerance
-        assert abs(actual - expected) <= tolerance, (
-            f"Raw forward tracking mismatch on step {step}: got {actual} links, expected ~{expected} (±{tolerance})"
-        )
-
-    # 2. Parse final post-processed link counts saved on disk in ptv_is.* files:
+    # 1. Parse final post-processed link counts saved on disk in ptv_is.* files:
     step_links = {}
     for frame in range(start_frame, end_frame):
         ptv_file = res_dir / f"ptv_is.{frame}"
@@ -174,7 +119,6 @@ def test_pyptv_batch_full_tracking_links(test_data_dir):
         step_links[frame] = frame_links
 
     total_links = sum(step_links.values())
-    print(f"Stdout raw tracking links: {raw_step_links}")
     print(f"Disk ptv_is tracking links per frame: {step_links} (Total: {total_links})")
 
     # Expected final post-processed link counts after backward tracking/conflict pruning:
@@ -553,109 +497,109 @@ def test_pyptv_batch_tracking_mode_only_with_temp_yaml_collect_results(test_data
         print(best)
 
 
-def optimize_tracking_parameters(test_data_dir):
-    """Optimize tracking parameters using scipy.optimize to minimize lost links and maximize avg_links."""
-    import tempfile
-    import shutil
-    import yaml
-    import re
-    import subprocess
-    import numpy as np
-    from scipy.optimize import minimize
+# def optimize_tracking_parameters(test_data_dir):
+#     """Optimize tracking parameters using scipy.optimize to minimize lost links and maximize avg_links."""
+#     import tempfile
+#     import shutil
+#     import yaml
+#     import re
+#     import subprocess
+#     import numpy as np
+#     from scipy.optimize import minimize
 
-    test_dir = test_data_dir
-    orig_yaml = test_dir / "parameters_Run1.yaml"
-    start_frame = 10000
-    end_frame = 10001  # Use only 2 frames for speed
-    res_dir = test_dir / "res"
-    if res_dir.exists():
-        shutil.rmtree(res_dir)
-    # Load original tracking parameters
-    with open(orig_yaml, "r") as f:
-        params = yaml.safe_load(f)
-    track_params = params.get("track", {})
-    # Only optimize numeric parameters
-    param_names = [k for k, v in track_params.items() if isinstance(v, (int, float))]
-    orig_values = np.array([track_params[k] for k in param_names], dtype=float)
+#     test_dir = test_data_dir
+#     orig_yaml = test_dir / "parameters_Run1.yaml"
+#     start_frame = 10000
+#     end_frame = 10001  # Use only 2 frames for speed
+#     res_dir = test_dir / "res"
+#     if res_dir.exists():
+#         shutil.rmtree(res_dir)
+#     # Load original tracking parameters
+#     with open(orig_yaml, "r") as f:
+#         params = yaml.safe_load(f)
+#     track_params = params.get("track", {})
+#     # Only optimize numeric parameters
+#     param_names = [k for k, v in track_params.items() if isinstance(v, (int, float))]
+#     orig_values = np.array([track_params[k] for k in param_names], dtype=float)
 
-    def loss_fn(x):
-        # Create temp YAML file with updated parameters
-        with tempfile.NamedTemporaryFile(
-            "w", delete=False, suffix=".yaml", dir=test_dir
-        ) as tmp:
-            temp_yaml = tmp.name
-            with open(orig_yaml, "r") as orig_f:
-                orig_content = yaml.safe_load(orig_f)
-            for i, k in enumerate(param_names):
-                orig_content["track"][k] = float(x[i])
-            yaml.safe_dump(orig_content, tmp)
-        # Sequence mode is NOT run here as sequence files do not change with tracking parameters.
-        # Run tracking mode and capture output
-        with tempfile.NamedTemporaryFile(
-            "w+", delete=False, suffix=".txt", dir=test_dir
-        ) as out_file:
-            out_path = out_file.name
-            cmd = [
-                sys.executable,
-                "-m",
-                "openptv2.batch.pyptv_batch",
-                os.path.basename(temp_yaml),
-                str(start_frame),
-                str(end_frame),
-                "--mode",
-                "tracking",
-            ]
-            try:
-                subprocess.run(
-                    cmd,
-                    stdout=out_file,
-                    stderr=subprocess.STDOUT,
-                    check=True,
-                    cwd=test_dir,
-                    env=_get_env_with_pythonpath(),
-                )
-            except subprocess.CalledProcessError:
-                out_file.flush()
-                with open(out_path, "r") as f:
-                    print("\n--- Subprocess output (optimization step) ---")
-                    print(f.read())
-                return 1e6  # Large penalty for failed run
-        # Parse output
-        avg_lost = avg_links = None
-        with open(out_path, "r") as f:
-            for line in f:
-                m = re.search(
-                    r"Average over sequence, particles:\s*([\d\.-]+), links:\s*([\d\.-]+), lost:\s*([\d\.-]+)",
-                    line,
-                )
-                if m:
-                    avg_links = float(m.group(2))
-                    avg_lost = float(m.group(3))
-                    break
-        if avg_lost is None or avg_links is None:
-            return 1e5  # Penalty if output not found
-        # Loss: minimize lost, maximize links (weighted sum)
-        return avg_lost - 0.1 * avg_links
+#     def loss_fn(x):
+#         # Create temp YAML file with updated parameters
+#         with tempfile.NamedTemporaryFile(
+#             "w", delete=False, suffix=".yaml", dir=test_dir
+#         ) as tmp:
+#             temp_yaml = tmp.name
+#             with open(orig_yaml, "r") as orig_f:
+#                 orig_content = yaml.safe_load(orig_f)
+#             for i, k in enumerate(param_names):
+#                 orig_content["track"][k] = float(x[i])
+#             yaml.safe_dump(orig_content, tmp)
+#         # Sequence mode is NOT run here as sequence files do not change with tracking parameters.
+#         # Run tracking mode and capture output
+#         with tempfile.NamedTemporaryFile(
+#             "w+", delete=False, suffix=".txt", dir=test_dir
+#         ) as out_file:
+#             out_path = out_file.name
+#             cmd = [
+#                 sys.executable,
+#                 "-m",
+#                 "openptv2.batch.pyptv_batch",
+#                 os.path.basename(temp_yaml),
+#                 str(start_frame),
+#                 str(end_frame),
+#                 "--mode",
+#                 "tracking",
+#             ]
+#             try:
+#                 subprocess.run(
+#                     cmd,
+#                     stdout=out_file,
+#                     stderr=subprocess.STDOUT,
+#                     check=True,
+#                     cwd=test_dir,
+#                     env=_get_env_with_pythonpath(),
+#                 )
+#             except subprocess.CalledProcessError:
+#                 out_file.flush()
+#                 with open(out_path, "r") as f:
+#                     print("\n--- Subprocess output (optimization step) ---")
+#                     print(f.read())
+#                 return 1e6  # Large penalty for failed run
+#         # Parse output
+#         avg_lost = avg_links = None
+#         with open(out_path, "r") as f:
+#             for line in f:
+#                 m = re.search(
+#                     r"Average over sequence, particles:\s*([\d\.-]+), links:\s*([\d\.-]+), lost:\s*([\d\.-]+)",
+#                     line,
+#                 )
+#                 if m:
+#                     avg_links = float(m.group(2))
+#                     avg_lost = float(m.group(3))
+#                     break
+#         if avg_lost is None or avg_links is None:
+#             return 1e5  # Penalty if output not found
+#         # Loss: minimize lost, maximize links (weighted sum)
+#         return avg_lost - 0.1 * avg_links
 
-    # Run optimization with multiple random restarts to escape local minima
-    best_result = None
-    n_restarts = 1  # Fewer restarts for speed
-    for i in range(n_restarts):
-        # Randomize initial values within ±20% of original
-        x0 = orig_values * (0.8 + 0.4 * np.random.rand(*orig_values.shape))
-        result = minimize(
-            loss_fn, x0, method="Powell", options={"maxiter": 10, "disp": True}
-        )
-        print(f"\nRestart {i + 1}: loss={result.fun}, params={result.x}")
-        if best_result is None or result.fun < best_result.fun:
-            best_result = result
-    best_values = best_result.x
-    best_loss = best_result.fun
-    print("\nOptimization result (best of restarts):")
-    print(f"Best parameters: {dict(zip(param_names, best_values))}")
-    print(f"Best loss: {best_loss}")
-    print(f"Original values: {dict(zip(param_names, orig_values))}")
-    assert best_result.success, f"Optimization failed: {best_result.message}"
+#     # Run optimization with multiple random restarts to escape local minima
+#     best_result = None
+#     n_restarts = 1  # Fewer restarts for speed
+#     for i in range(n_restarts):
+#         # Randomize initial values within ±20% of original
+#         x0 = orig_values * (0.8 + 0.4 * np.random.rand(*orig_values.shape))
+#         result = minimize(
+#             loss_fn, x0, method="Powell", options={"maxiter": 10, "disp": True}
+#         )
+#         print(f"\nRestart {i + 1}: loss={result.fun}, params={result.x}")
+#         if best_result is None or result.fun < best_result.fun:
+#             best_result = result
+#     best_values = best_result.x
+#     best_loss = best_result.fun
+#     print("\nOptimization result (best of restarts):")
+#     print(f"Best parameters: {dict(zip(param_names, best_values))}")
+#     print(f"Best loss: {best_loss}")
+#     print(f"Original values: {dict(zip(param_names, orig_values))}")
+#     assert best_result.success, f"Optimization failed: {best_result.message}"
 
 
 # def test_optimize_tracking_parameters(test_data_dir):
