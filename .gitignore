@@ -128,3 +128,4 @@ docs/superpowers/plans/2026-06-26-cython3-optimization.md
 .claude/settings.local.json
 /.git_corrupted
 .worktrees/
+*.bak
