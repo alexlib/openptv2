@@ -127,7 +127,7 @@ class TargetArray(list):
         return write_targets(self, len(self), file_base, frame_num)
 
     @staticmethod
-    def read_targets(base_name: str, frame_num: int, cpar=None) -> TargetArray:
+    def read_targets(base_name: str, frame_num: int, cpar=None) -> "TargetArray":
         targets = read_targets(base_name, frame_num)
         return TargetArray(targets)
 
