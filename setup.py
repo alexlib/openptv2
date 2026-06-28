@@ -11,6 +11,7 @@ Usage:
 """
 
 import os
+import shutil
 import sys
 from pathlib import Path
 
@@ -99,18 +100,86 @@ def _needs_rebuild():
     return False
 
 
+def _compiler_available():
+    """Best-effort detection of a working C compiler.
+
+    The algorithms/ modules run interpreted as plain Python; compilation only
+    adds a speedup. On machines without a toolchain (e.g. Windows without MSVC),
+    return False so editable/regular installs fall back to pure Python instead
+    of failing the whole build.
+
+    Overrides:
+      OPENPTV2_SKIP_COMPILE=1   -> never compile (force pure Python)
+      OPENPTV2_FORCE_COMPILE=1  -> always attempt to compile
+    """
+    if os.environ.get("OPENPTV2_SKIP_COMPILE", "0") in ("1", "true", "True"):
+        return False
+    if os.environ.get("OPENPTV2_FORCE_COMPILE", "0") in ("1", "true", "True"):
+        return True
+
+    try:
+        from setuptools._distutils import sysconfig as du_sysconfig
+        from setuptools._distutils.ccompiler import new_compiler
+    except Exception:
+        try:
+            from distutils import sysconfig as du_sysconfig
+            from distutils.ccompiler import new_compiler
+        except Exception:
+            return False
+
+    try:
+        compiler = new_compiler()
+    except Exception:
+        return False
+
+    # MSVC: initialize() runs the vcvars lookup that raises when the Build
+    # Tools are absent.
+    if sys.platform.startswith("win"):
+        try:
+            compiler.initialize()
+            return True
+        except Exception:
+            return False
+
+    # POSIX: confirm the configured cc executable actually exists on PATH.
+    try:
+        du_sysconfig.customize_compiler(compiler)
+    except Exception:
+        pass
+    candidates = []
+    for attr in ("compiler_so", "compiler", "compiler_cxx"):
+        val = getattr(compiler, attr, None)
+        if val:
+            candidates.append(val[0])
+    if not candidates:
+        candidates = [os.environ.get("CC", "cc")]
+    return any(shutil.which(c) for c in candidates if c)
+
+
+# Resolved once: governs whether C extensions are built or skipped this run.
+HAVE_COMPILER = _compiler_available()
+
+
 # ---------------------------------------------------------------------------
 # Prepare Cython files before setup() runs
 # ---------------------------------------------------------------------------
 if __name__ == "__main__":
-    if _needs_rebuild():
+    if not HAVE_COMPILER:
+        print(
+            "[OpenPTV2] No C compiler detected — installing pure-Python "
+            "(interpreted) algorithms. Set OPENPTV2_FORCE_COMPILE=1 to override."
+        )
+    elif _needs_rebuild():
         _cythonize_all()
 
 
 def get_extensions():
     """Create Extension objects for all Cython modules."""
+    if not HAVE_COMPILER:
+        return []
+
     extensions = []
-    
+
     # Check for fast developer build (O0 / Od)
     is_dev = os.environ.get("DEV_BUILD", "0") in ("1", "true", "True")
     if is_dev:
@@ -175,6 +244,12 @@ class BuildExtWithPrepare(build_ext):
 
     def run(self):
         import time
+        if not HAVE_COMPILER or not self.extensions:
+            print(
+                "[OpenPTV2] Skipping Cython extension build — using pure-Python "
+                "(interpreted) algorithms."
+            )
+            return
         start_time = time.time()
         if _needs_rebuild():
             _cythonize_all()
