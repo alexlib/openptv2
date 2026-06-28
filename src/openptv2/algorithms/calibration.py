@@ -183,11 +183,11 @@ class Calibration:
 
     def __init__(
         self,
-        ext_par: Exterior | None = None,
-        int_par: Interior | None = None,
-        glass_par: Glass | None = None,
-        added_par: AddedPar | None = None,
-        mmlut: MmLut | None = None,
+        ext_par = None,
+        int_par = None,
+        glass_par = None,
+        added_par = None,
+        mmlut = None,
         pos=None,
         angs=None,
         prim_point=None,
