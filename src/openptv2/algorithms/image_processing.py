@@ -149,7 +149,15 @@ def fast_box_blur(
 ) -> np.ndarray:
     """Perform the C box blur with matching integer rounding."""
     src_arr = np.asarray(img, dtype=np.uint8).reshape(imy, imx).ravel()
-    src_mv = src_arr
+    # When compiled, src_mv is a typed uchar[:] and C integer promotion widens
+    # each element to int during accumulation. In pure-Python (interpreted) mode
+    # the type hints are ignored, so indexing a uint8 array yields uint8 numpy
+    # scalars and the running `accum` overflows (e.g. 18+56 wraps mod 256).
+    # Read through a widened int64 view in interpreted mode to match C semantics.
+    if cython.compiled:
+        src_mv = src_arr
+    else:
+        src_mv = src_arr.astype(np.int64)
     n = 2 * filt_span + 1
     nq = n * n
     image_size = imx * imy

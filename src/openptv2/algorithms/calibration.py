@@ -198,6 +198,18 @@ class Calibration:
         cal=None,
     ):
         """Initialize Calibration supporting both dataclass and legacy optv args."""
+        # Legacy optv-style positional constructor:
+        #   Calibration(pos, angs, prim_point, rad_dist, decent, affine, glass)
+        # Those arrays would otherwise bind positionally to the dataclass fields
+        # (ext_par, int_par, ...), so pos would receive `affine` and fail.
+        # Detect this by the first positional being array-like (not an Exterior)
+        # and remap to the legacy keyword arguments.
+        if ext_par is not None and not isinstance(ext_par, Exterior):
+            (pos, angs, prim_point, rad_dist, decent, affine, glass) = (
+                ext_par, int_par, glass_par, added_par, mmlut, pos, angs,
+            )
+            ext_par = int_par = glass_par = added_par = mmlut = None
+
         if cal is not None and hasattr(cal, "ext_par"):
             self.ext_par = cal.ext_par
             self.int_par = cal.int_par
@@ -355,6 +367,16 @@ class Calibration:
             FileNotFoundError: if ori_file doesn't exist.
             ValueError: if file format is invalid.
         """
+        # Accept bytes paths (the legacy liboptv/GUI API passes char* filenames,
+        # e.g. cal_file.encode()). Path() rejects bytes, so decode first — mirrors
+        # the symmetric handling already done in write().
+        if isinstance(ori_file, bytes):
+            ori_file = ori_file.decode('utf-8')
+        if isinstance(add_file, bytes):
+            add_file = add_file.decode('utf-8')
+        if isinstance(add_fallback, bytes):
+            add_fallback = add_fallback.decode('utf-8')
+
         ori_path = Path(ori_file)
         if not ori_path.exists():
             raise FileNotFoundError(f"ORI file not found: {ori_file}")

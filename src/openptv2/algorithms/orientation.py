@@ -1002,6 +1002,19 @@ def full_calibration(cal, ref_pts, img_pts, cpar, flags=None):
     )
 
     ref_pts = np.ascontiguousarray(ref_pts, dtype=np.float64)
+
+    # Accept either Target objects or a raw (n, 2) pixel-coordinate array.
+    # orient() indexes img_pts[i].pnr/.x/.y, so a bare ndarray (as passed by
+    # run_standalone_calibration) must be wrapped first — mirrors the conversion
+    # done in external_calibration(). pnr=i keeps every point (orient skips rows
+    # whose pnr != i).
+    if len(img_pts) > 0 and not hasattr(img_pts[0], "x"):
+        from .tracking_frame_buf import Target
+
+        pts = np.ascontiguousarray(img_pts, dtype=np.float64)
+        img_pts = [Target(pnr=i, x=pts[i, 0], y=pts[i, 1])
+                   for i in range(len(pts))]
+
     sigmabeta = np.zeros(NPAR + 1)
 
     residuals = orient(cal, cpar, len(ref_pts), ref_pts, img_pts,

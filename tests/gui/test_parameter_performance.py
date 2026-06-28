@@ -39,46 +39,49 @@ def test_parameter_access_performance():
         print("\n1. Testing direct ParameterManager access...")
         pm = experiment.pm
 
-        start_time = time.time()
+        # Use perf_counter, not time.time(): on Windows time.time() has ~16 ms
+        # resolution, so 1000 cheap dict reads measure exactly 0.0s and the later
+        # `delegation_time / direct_time` ratio raises ZeroDivisionError.
+        start_time = time.perf_counter()
         for i in range(1000):
             ptv_params = pm.parameters.get("ptv", {})
             num_cams = ptv_params.get("num_cams", 0)
             img_names = ptv_params.get("img_name", [])
-        direct_time = time.time() - start_time
+        direct_time = time.perf_counter() - start_time
         print(f"Direct access (1000 iterations): {direct_time:.4f} seconds")
 
         # Test 2: Via Experiment delegation
         print("\n2. Testing Experiment delegation...")
 
-        start_time = time.time()
+        start_time = time.perf_counter()
         for i in range(1000):
             ptv_params = experiment.pm.parameters.get("ptv", {})
             num_cams = ptv_params.get("num_cams", 0)
             img_names = ptv_params.get("img_name", [])
-        delegation_time = time.time() - start_time
+        delegation_time = time.perf_counter() - start_time
         print(f"Experiment delegation (1000 iterations): {delegation_time:.4f} seconds")
 
         # Test 3: Cached access (storing reference)
         print("\n3. Testing cached parameter access...")
         cached_ptv_params = experiment.pm.parameters.get("ptv", {})
 
-        start_time = time.time()
+        start_time = time.perf_counter()
         for i in range(1000):
             num_cams = cached_ptv_params.get("num_cams", 0)
             img_names = cached_ptv_params.get("img_name", [])
-        cached_time = time.time() - start_time
+        cached_time = time.perf_counter() - start_time
         print(f"Cached access (1000 iterations): {cached_time:.4f} seconds")
 
         # Test 4: File I/O performance
         print("\n4. Testing file I/O performance...")
         yaml_path = experiment.active_params.yaml_path
 
-        start_time = time.time()
+        start_time = time.perf_counter()
         for i in range(10):  # Fewer iterations for I/O
             pm_temp = ParameterManager()
             pm_temp.from_yaml(yaml_path)
             ptv_params = pm_temp.parameters.get("ptv", {})
-        io_time = time.time() - start_time
+        io_time = time.perf_counter() - start_time
         print(f"File I/O reload (10 iterations): {io_time:.4f} seconds")
 
         # Test 5: Memory usage estimation
