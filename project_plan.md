@@ -195,3 +195,22 @@ test_data/test_cavity_small/
 
 4. **Streamline Parallel Execution via Numba**:
    * Ensure fallback pathways using Numba JIT are decorated with `@njit(parallel=True)` where appropriate and utilize `prange` for thread-level loop parallelization.
+
+---
+
+### Phase 7 — Algorithmic Modernization & Deep Cython Optimization
+
+1. **Integration of SciPy Algorithms**:
+   * Replace custom or legacy mathematical routines with highly optimized, robust implementations from the `scipy` ecosystem where applicable (e.g., `scipy.spatial`, `scipy.optimize`, `scipy.ndimage`).
+   * *Benefit*: Standardizes algorithms and removes the maintenance burden of custom numeric code.
+
+2. **Rigorous Array/Cython Type Management**:
+   * Carefully ensure that we do **not mix** standard NumPy arrays (`np.ndarray`) with native Cython C-structs/classes inside tight loops.
+   * Passing Python objects or generic arrays into Cython C-functions triggers the GIL and causes heavy computational penalties due to type-coercion.
+   * Enforce strict boundary layers where SciPy/NumPy calculations are done in bulk, and the resulting arrays are passed directly to Cython as strictly typed Memoryviews (e.g., `double[:, ::1]`).
+
+3. **Systematic Profiling & Compilation via `cython-optimize` Workflow**:
+   * **Profile & Baseline**: Establish empirical baselines for critical algorithm components.
+   * **Modern Refactoring**: Refactor code to replace Python bottlenecks with typed memoryviews, strictly typed loop counters, and `cdef` internal functions. Bypass the GIL using `nogil` blocks for purely numerical loops.
+   * **Compile & Tune**: Compile the code and analyze HTML annotation reports (`cython -a`). Refactor any deep yellow (Python API) interactions down to white/light yellow.
+   * **Verify**: Guarantee the output exactly matches the original algorithms via automated testing before finalizing optimization.

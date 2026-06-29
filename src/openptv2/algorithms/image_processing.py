@@ -39,41 +39,19 @@ def filter_3(
     imy: cython.int,
     min_brightness: cython.int = 8,
 ) -> np.ndarray:
-    """Apply the C 3x3 filter kernel with matching integer semantics."""
+    """Apply a 3x3 filter kernel using SciPy convolution."""
+    from scipy.ndimage import convolve
+    
     filt_arr = np.asarray(filt, dtype=np.float64).reshape(3, 3)
-    filt_mv = filt_arr
-    filt_sum = float(filt_arr.sum())
+    filt_sum = filt_arr.sum()
     if filt_sum == 0:
         raise ValueError("Filter kernel sum is zero")
 
-    src_arr = np.asarray(img, dtype=np.uint8).reshape(imy, imx).ravel()
-    src_mv = src_arr
-    image_size = imx * imy
-    result_arr = np.zeros(image_size, dtype=np.uint8)
-    result_mv = result_arr
-
-    start = imx + 1
-    end = image_size - imx - 1
-    for idx in range(start, end):
-        total = (
-            filt_mv[0, 0] * src_mv[idx - imx - 1]
-            + filt_mv[0, 1] * src_mv[idx - imx]
-            + filt_mv[0, 2] * src_mv[idx - imx + 1]
-            + filt_mv[1, 0] * src_mv[idx - 1]
-            + filt_mv[1, 1] * src_mv[idx]
-            + filt_mv[1, 2] * src_mv[idx + 1]
-            + filt_mv[2, 0] * src_mv[idx + imx - 1]
-            + filt_mv[2, 1] * src_mv[idx + imx]
-            + filt_mv[2, 2] * src_mv[idx + imx + 1]
-        )
-        buf = int(total / filt_sum)
-        if buf > 255:
-            buf = 255
-        if buf < min_brightness:
-            buf = min_brightness
-        result_mv[idx] = buf
-
-    return result_arr.reshape(imy, imx)
+    img_float = np.asarray(img, dtype=np.float64)
+    res = convolve(img_float, filt_arr, mode='constant', cval=0.0)
+    
+    res = np.trunc(res / filt_sum)
+    return np.clip(res, min_brightness, 255).astype(np.uint8)
 
 
 @cython.ccall
@@ -89,30 +67,12 @@ def filter_3(
     result_mv=cython.uchar[:],
 )
 def lowpass_3(img: np.ndarray, imx: cython.int, imy: cython.int) -> np.ndarray:
-    """Apply the C 3x3 low-pass filter with integer division."""
-    src_arr = np.asarray(img, dtype=np.uint8).reshape(imy, imx).ravel()
-    src_mv = src_arr
-    image_size = imx * imy
-    result_arr = np.zeros(image_size, dtype=np.uint8)
-    result_mv = result_arr
-
-    start = imx + 1
-    end = image_size - imx - 1
-    for idx in range(start, end):
-        total = (
-            int(src_mv[idx])
-            + int(src_mv[idx - imx - 1])
-            + int(src_mv[idx - imx])
-            + int(src_mv[idx - imx + 1])
-            + int(src_mv[idx - 1])
-            + int(src_mv[idx + 1])
-            + int(src_mv[idx + imx - 1])
-            + int(src_mv[idx + imx])
-            + int(src_mv[idx + imx + 1])
-        )
-        result_mv[idx] = total // 9
-
-    return result_arr.reshape(imy, imx)
+    """Apply a 3x3 low-pass filter using SciPy uniform_filter."""
+    from scipy.ndimage import uniform_filter
+    
+    img_float = np.asarray(img, dtype=np.float64)
+    res = uniform_filter(img_float, size=3, mode='constant', cval=0.0)
+    return res.astype(np.uint8)
 
 
 @cython.ccall
@@ -147,82 +107,13 @@ def fast_box_blur(
     imx: cython.int,
     imy: cython.int,
 ) -> np.ndarray:
-    """Perform the C box blur with matching integer rounding."""
-    src_arr = np.asarray(img, dtype=np.uint8).reshape(imy, imx).ravel()
-    # When compiled, src_mv is a typed uchar[:] and C integer promotion widens
-    # each element to int during accumulation. In pure-Python (interpreted) mode
-    # the type hints are ignored, so indexing a uint8 array yields uint8 numpy
-    # scalars and the running `accum` overflows (e.g. 18+56 wraps mod 256).
-    # Read through a widened int64 view in interpreted mode to match C semantics.
-    if cython.compiled:
-        src_mv = src_arr
-    else:
-        src_mv = src_arr.astype(np.int64)
-    n = 2 * filt_span + 1
-    nq = n * n
-    image_size = imx * imy
-    row_accum_arr = np.zeros(image_size, dtype=np.int64)
-    row_accum_mv = row_accum_arr
-    col_accum_arr = np.zeros(imx, dtype=np.int64)
-    col_accum_mv = col_accum_arr
-    dest_arr = np.zeros(image_size, dtype=np.uint8)
-    dest_mv = dest_arr
-
-    for row in range(imy):
-        row_start = row * imx
-        accum = src_mv[row_start]
-        row_accum_mv[row_start] = accum * n
-
-        for col in range(1, min(filt_span + 1, imx)):
-            left_idx = row_start + 2 * col - 1
-            right_idx = row_start + 2 * col
-            accum += src_mv[left_idx] + src_mv[right_idx]
-            m = 2 * col + 1
-            row_accum_mv[row_start + col] = accum * n // m
-
-        for col in range(filt_span + 1, imx - filt_span):
-            accum += src_mv[row_start + col + filt_span] - src_mv[row_start + col - filt_span - 1]
-            row_accum_mv[row_start + col] = accum
-
-        left_ptr = row_start + imx - n
-        m = n - 2
-        for col in range(max(imx - filt_span, filt_span + 1), imx):
-            accum -= src_mv[left_ptr] + src_mv[left_ptr + 1]
-            row_accum_mv[row_start + col] = accum * n // m
-            left_ptr += 2
-            m -= 2
-
-    for col in range(imx):
-        col_accum_mv[col] = row_accum_mv[col]
-        dest_mv[col] = col_accum_mv[col] // n
-
-    for row in range(1, min(filt_span + 1, imy)):
-        ptr1 = (2 * row - 1) * imx
-        ptr2 = ptr1 + imx
-        out = row * imx
-        for col in range(imx):
-            col_accum_mv[col] += row_accum_mv[ptr1 + col] + row_accum_mv[ptr2 + col]
-            dest_mv[out + col] = (n * col_accum_mv[col]) // nq // (2 * row + 1)
-
-    ptr1 = 0
-    ptr2 = imx * n
-    for row in range(filt_span + 1, imy - filt_span):
-        out = row * imx
-        for col in range(imx):
-            col_accum_mv[col] += row_accum_mv[ptr2 + col] - row_accum_mv[ptr1 + col]
-            dest_mv[out + col] = col_accum_mv[col] // nq
-        ptr1 += imx
-        ptr2 += imx
-
-    for row in range(filt_span, 0, -1):
-        ptr1 = (imy - 2 * row - 1) * imx
-        ptr2 = ptr1 + imx
-        out = (imy - row) * imx
-        for col in range(imx):
-            col_accum_mv[col] -= row_accum_mv[ptr1 + col] + row_accum_mv[ptr2 + col]
-            dest_mv[out + col] = (n * col_accum_mv[col]) // nq // (2 * row + 1)
-
-    return dest_arr.reshape(imy, imx)
+    """Perform a box blur using SciPy uniform_filter."""
+    from scipy.ndimage import uniform_filter
+    
+    size = 2 * filt_span + 1
+    img_float = np.asarray(img, dtype=np.float64)
+    res = uniform_filter(img_float, size=size, mode='constant', cval=0.0)
+    return res.astype(np.uint8)
 
 
 @cython.ccall
