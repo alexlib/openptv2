@@ -1,10 +1,14 @@
 """Tracking algorithms — Python translation of lib/src/track.c."""
+
 import cython
 import numpy as np
 
 if cython.compiled:
     from cython.cimports.libc.math import (
-        sqrt as c_sqrt, sin as c_sin, cos as c_cos, acos as c_acos,
+        sqrt as c_sqrt,
+        sin as c_sin,
+        cos as c_cos,
+        acos as c_acos,
     )
 else:
     from math import sqrt as c_sqrt, sin as c_sin, cos as c_cos, acos as c_acos
@@ -12,8 +16,16 @@ else:
 _M_PI: cython.double = 3.141592653589793
 
 from .constants import (
-    MAX_CANDS, PT_UNUSED, TR_UNUSED, CORRES_NONE, PREV_NONE, NEXT_NONE,
-    COORD_UNUSED, TR_BUFSPACE, TR_MAX_CAMS, ADD_PART,
+    MAX_CANDS,
+    PT_UNUSED,
+    TR_UNUSED,
+    CORRES_NONE,
+    PREV_NONE,
+    NEXT_NONE,
+    COORD_UNUSED,
+    TR_BUFSPACE,
+    TR_MAX_CAMS,
+    ADD_PART,
 )
 from .tracking_frame_buf import register_link_candidate, reset_links
 from .multimed import (
@@ -23,7 +35,7 @@ from .multimed import (
 from .track_kernels import (
     pack_cal_array as _pack_cal_array,
     pack_mmlut as _pack_mmlut,
-    point_to_pixel_fast as _point_to_pixel_fast,
+    point_to_pixel_fast as _point_to_pixel_fast_kernel,
     candsearch_in_pix_fast as _candsearch_in_pix_fast,
     candsearch_in_pix_rest_fast as _candsearch_in_pix_rest_fast,
     searchquader_fast as _searchquader_fast,
@@ -34,11 +46,13 @@ from .track_kernels import (
     trackback_loop_fast as _trackback_loop_fast,
 )
 
-Foundpix_dtype = np.dtype([
-    ("ftnr", np.int32),
-    ("freq", np.int32),
-    ("whichcam", np.int32, (4,)),
-])
+Foundpix_dtype = np.dtype(
+    [
+        ("ftnr", np.int32),
+        ("freq", np.int32),
+        ("whichcam", np.int32, (4,)),
+    ]
+)
 
 
 def _vec3_dist(a, b):
@@ -67,32 +81,73 @@ def _pack_cams_fast_tuples(fast_cals, fast_mmluts):
     )
 
 
-def _ptp_fast(pos, cal_arr, mmlut_tup, imx_half, imy_half, inv_pix_x, inv_pix_y, chfield):
+def _ptp_fast(
+    pos, cal_arr, mmlut_tup, imx_half, imy_half, inv_pix_x, inv_pix_y, chfield
+):
     """Call the compiled kernel with pre-packed arrays."""
-    return _point_to_pixel_fast(
-        pos, cal_arr, mmlut_tup[0], mmlut_tup[1],
-        mmlut_tup[2], mmlut_tup[3], mmlut_tup[4],
-        imx_half, imy_half, inv_pix_x, inv_pix_y, chfield,
+    has_mmlut = 1 if len(mmlut_tup[0]) > 0 else 0
+    return _point_to_pixel_fast_kernel(
+        pos,
+        cal_arr,
+        mmlut_tup[0],
+        mmlut_tup[1],
+        mmlut_tup[2],
+        mmlut_tup[3],
+        mmlut_tup[4],
+        has_mmlut,
+        imx_half,
+        imy_half,
+        inv_pix_x,
+        inv_pix_y,
+        chfield,
     )
 
 
 def _pack_cal(cal, mm):
     """Pre-extract calibration fields into a tuple for fast access."""
-    ext = cal.ext_par; ip = cal.int_par; gp = cal.glass_par; ap = cal.added_par
-    gx = gp.vec_x; gy = gp.vec_y; gz = gp.vec_z
+    ext = cal.ext_par
+    ip = cal.int_par
+    gp = cal.glass_par
+    ap = cal.added_par
+    gx = gp.vec_x
+    gy = gp.vec_y
+    gz = gp.vec_z
     dist_o_glas = c_sqrt(gx * gx + gy * gy + gz * gz)
     inv_dog = 1.0 / dist_o_glas
     mmlut = cal.mmlut
     mmlut_data = mmlut.data
     return (
-        ext.x0, ext.y0, ext.z0,
-        ext.dm[0, 0], ext.dm[1, 0], ext.dm[2, 0],
-        ext.dm[0, 1], ext.dm[1, 1], ext.dm[2, 1],
-        ext.dm[0, 2], ext.dm[1, 2], ext.dm[2, 2],
-        ip.cc, ip.xh, ip.yh,
-        gx, gy, gz, dist_o_glas, inv_dog,
-        mm.n1, mm.n2[0], mm.n3, mm.d[0],
-        ap.k1, ap.k2, ap.k3, ap.p1, ap.p2, ap.scx, ap.she,
+        ext.x0,
+        ext.y0,
+        ext.z0,
+        ext.dm[0, 0],
+        ext.dm[1, 0],
+        ext.dm[2, 0],
+        ext.dm[0, 1],
+        ext.dm[1, 1],
+        ext.dm[2, 1],
+        ext.dm[0, 2],
+        ext.dm[1, 2],
+        ext.dm[2, 2],
+        ip.cc,
+        ip.xh,
+        ip.yh,
+        gx,
+        gy,
+        gz,
+        dist_o_glas,
+        inv_dog,
+        mm.n1,
+        mm.n2[0],
+        mm.n3,
+        mm.d[0],
+        ap.k1,
+        ap.k2,
+        ap.k3,
+        ap.p1,
+        ap.p2,
+        ap.scx,
+        ap.she,
         mmlut_data,
         mmlut.origin if mmlut_data is not None else None,
         mmlut.nr if mmlut_data is not None else 0,
@@ -103,15 +158,48 @@ def _pack_cal(cal, mm):
 
 def _point_to_pixel_packed(pos, pc, imx_half, imy_half, inv_pix_x, inv_pix_y, chfield):
     """Project 3D position to pixel coordinates using pre-packed calibration."""
-    pos0 = float(pos[0]); pos1 = float(pos[1]); pos2 = float(pos[2])
+    pos0 = float(pos[0])
+    pos1 = float(pos[1])
+    pos2 = float(pos[2])
 
-    (ext_x0, ext_y0, ext_z0,
-     dm00, dm10, dm20, dm01, dm11, dm21, dm02, dm12, dm22,
-     int_cc, xh, yh,
-     gx, gy, gz, dist_o_glas, inv_dog,
-     mm_n1, mm_n2_0, mm_n3, mm_d0,
-     k1, k2, k3, p1, p2, scx, she,
-     mmlut_data, mmlut_origin, mmlut_nr, mmlut_nz, mmlut_rw) = pc
+    (
+        ext_x0,
+        ext_y0,
+        ext_z0,
+        dm00,
+        dm10,
+        dm20,
+        dm01,
+        dm11,
+        dm21,
+        dm02,
+        dm12,
+        dm22,
+        int_cc,
+        xh,
+        yh,
+        gx,
+        gy,
+        gz,
+        dist_o_glas,
+        inv_dog,
+        mm_n1,
+        mm_n2_0,
+        mm_n3,
+        mm_d0,
+        k1,
+        k2,
+        k3,
+        p1,
+        p2,
+        scx,
+        she,
+        mmlut_data,
+        mmlut_origin,
+        mmlut_nr,
+        mmlut_nz,
+        mmlut_rw,
+    ) = pc
 
     dot_cam = ext_x0 * gx + ext_y0 * gy + ext_z0 * gz
     dist_cam_glas = dot_cam * inv_dog - dist_o_glas - mm_d0
@@ -169,8 +257,16 @@ def _point_to_pixel_packed(pos, pc, imx_half, imy_half, inv_pix_x, inv_pix_y, ch
                     radial_shift = mmf
     if radial_shift == 1.0:
         radial_shift = _multimed_r_nlay_iterative(
-            pos_t_0, 0.0, pos_t_2, 0.0, 0.0, ext_t_z0,
-            mm_n1, mm_n2_0, mm_n3, mm_d0,
+            pos_t_0,
+            0.0,
+            pos_t_2,
+            0.0,
+            0.0,
+            ext_t_z0,
+            mm_n1,
+            mm_n2_0,
+            mm_n3,
+            mm_d0,
         )
     X_t = pos_t_0 * radial_shift
 
@@ -228,7 +324,9 @@ def _point_to_pixel_packed(pos, pc, imx_half, imy_half, inv_pix_x, inv_pix_y, ch
 def _point_to_pixel_fast(pos, cal, imx, imy, pix_x, pix_y, chfield, mm):
     """Project 3D position to pixel coordinates — convenience wrapper."""
     pc = _pack_cal(cal, mm)
-    return _point_to_pixel_packed(pos, pc, imx * 0.5, imy * 0.5, 1.0 / pix_x, 1.0 / pix_y, chfield)
+    return _point_to_pixel_packed(
+        pos, pc, imx * 0.5, imy * 0.5, 1.0 / pix_x, 1.0 / pix_y, chfield
+    )
 
 
 @cython.ccall
@@ -249,9 +347,9 @@ def search_volume_center_moving(prev_pos, curr_pos):
 def pos3d_in_bounds(pos, bounds):
     x, y, z = pos
     return bool(
-        bounds.dvxmin < x < bounds.dvxmax and
-        bounds.dvymin < y < bounds.dvymax and
-        bounds.dvzmin < z < bounds.dvzmax
+        bounds.dvxmin < x < bounds.dvxmax
+        and bounds.dvymin < y < bounds.dvymax
+        and bounds.dvzmin < z < bounds.dvzmax
     )
 
 
@@ -299,8 +397,7 @@ def angle_acc(start, pred, cand):
 @cython.ccall
 @cython.boundscheck(False)
 @cython.wraparound(False)
-def candsearch_in_pix(next_targets, num_targets, cent_x, cent_y,
-                      dl, dr, du, dd, cpar):
+def candsearch_in_pix(next_targets, num_targets, cent_x, cent_y, dl, dr, du, dd, cpar):
     p = [PT_UNUSED] * 4
     xmin: cython.double = cent_x - dl
     xmax: cython.double = cent_x + dr
@@ -380,8 +477,9 @@ def candsearch_in_pix(next_targets, num_targets, cent_x, cent_y,
 @cython.ccall
 @cython.boundscheck(False)
 @cython.wraparound(False)
-def candsearch_in_pix_rest(next_targets, num_targets, cent_x, cent_y,
-                           dl, dr, du, dd, p, cpar):
+def candsearch_in_pix_rest(
+    next_targets, num_targets, cent_x, cent_y, dl, dr, du, dd, p, cpar
+):
     xmin: cython.double = cent_x - dl
     xmax: cython.double = cent_x + dr
     ymin: cython.double = cent_y - du
@@ -445,9 +543,9 @@ def reset_foundpix_array(arr, n, num_cams):
     j: cython.Py_ssize_t
     for i in range(n):
         arr[i][0] = TR_UNUSED  # ftnr
-        arr[i][1] = 0          # freq
+        arr[i][1] = 0  # freq
         for j in range(num_cams):
-            arr[i][2][j] = 0   # whichcam
+            arr[i][2][j] = 0  # whichcam
 
 
 @cython.ccall
@@ -542,13 +640,21 @@ def sort(n, a, b):
 @cython.ccall
 def point_to_pixel(point, cal, cpar):
     return _point_to_pixel_fast(
-        point, cal, cpar.imx, cpar.imy, cpar.pix_x, cpar.pix_y, cpar.chfield, cpar.mm,
+        point,
+        cal,
+        cpar.imx,
+        cpar.imy,
+        cpar.pix_x,
+        cpar.pix_y,
+        cpar.chfield,
+        cpar.mm,
     )
 
 
 @cython.ccall
-def searchquader(point, tpar, cpar, calib, _packed_cals=None, _pix_info=None,
-                 _fast_tuples=None):
+def searchquader(
+    point, tpar, cpar, calib, _packed_cals=None, _pix_info=None, _fast_tuples=None
+):
     num_cams = cpar.num_cams
 
     px, py, pz = point[0], point[1], point[2]
@@ -564,17 +670,35 @@ def searchquader(point, tpar, cpar, calib, _packed_cals=None, _pix_info=None,
     if _pix_info is not None:
         c_imx, c_imy, imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield = _pix_info
     else:
-        c_imx = cpar.imx; c_imy = cpar.imy
-        imx_half = c_imx * 0.5; imy_half = c_imy * 0.5
-        inv_pix_x = 1.0 / cpar.pix_x; inv_pix_y = 1.0 / cpar.pix_y
+        c_imx = cpar.imx
+        c_imy = cpar.imy
+        imx_half = c_imx * 0.5
+        imy_half = c_imy * 0.5
+        inv_pix_x = 1.0 / cpar.pix_x
+        inv_pix_y = 1.0 / cpar.pix_y
         c_chfield = cpar.chfield
 
     if _fast_tuples is not None:
         cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t = _fast_tuples
         pos_arr = np.asarray(point, dtype=np.float64)
         return _searchquader_fast(
-            pos_arr, quader, num_cams, cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t,
-            imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield, c_imx, c_imy)
+            pos_arr,
+            quader,
+            num_cams,
+            cal_t,
+            md_t,
+            mo_t,
+            mnr_t,
+            mnz_t,
+            mrw_t,
+            imx_half,
+            imy_half,
+            inv_pix_x,
+            inv_pix_y,
+            c_chfield,
+            c_imx,
+            c_imy,
+        )
 
     if _packed_cals is None:
         c_mm = cpar.mm
@@ -592,18 +716,30 @@ def searchquader(point, tpar, cpar, calib, _packed_cals=None, _pix_info=None,
         yd_i = 0.0
         yu_i = float(c_imy)
 
-        cx, cy = _point_to_pixel_packed(point, pc, imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield)
+        cx, cy = _point_to_pixel_packed(
+            point, pc, imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield
+        )
         for pt in range(8):
-            corner_x, corner_y = _point_to_pixel_packed(quader[pt], pc, imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield)
-            if corner_x < xl_i: xl_i = corner_x
-            if corner_y < yu_i: yu_i = corner_y
-            if corner_x > xr_i: xr_i = corner_x
-            if corner_y > yd_i: yd_i = corner_y
+            corner_x, corner_y = _point_to_pixel_packed(
+                quader[pt], pc, imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield
+            )
+            if corner_x < xl_i:
+                xl_i = corner_x
+            if corner_y < yu_i:
+                yu_i = corner_y
+            if corner_x > xr_i:
+                xr_i = corner_x
+            if corner_y > yd_i:
+                yd_i = corner_y
 
-        if xl_i < 0: xl_i = 0
-        if yu_i < 0: yu_i = 0
-        if xr_i > c_imx: xr_i = c_imx
-        if yd_i > c_imy: yd_i = c_imy
+        if xl_i < 0:
+            xl_i = 0
+        if yu_i < 0:
+            yu_i = 0
+        if xr_i > c_imx:
+            xr_i = c_imx
+        if yd_i > c_imy:
+            yd_i = c_imy
 
         xr[i] = xr_i - cx
         xl[i] = cx - xl_i
@@ -616,13 +752,37 @@ def searchquader(point, tpar, cpar, calib, _packed_cals=None, _pix_info=None,
 @cython.ccall
 @cython.boundscheck(False)
 @cython.wraparound(False)
-def register_closest_neighbs(targets, num_targets, cam, cent_x, cent_y,
-                             dl, dr, du, dd, reg, cpar,
-                             _targ_x=None, _targ_y=None, _targ_tnr=None):
+def register_closest_neighbs(
+    targets,
+    num_targets,
+    cam,
+    cent_x,
+    cent_y,
+    dl,
+    dr,
+    du,
+    dd,
+    reg,
+    cpar,
+    _targ_x=None,
+    _targ_y=None,
+    _targ_tnr=None,
+):
     p0, p1, p2, p3 = _candsearch_in_pix_fast(
-        _targ_x, _targ_y, _targ_tnr, num_targets,
-        cent_x, cent_y, dl, dr, du, dd,
-        cpar.imx, cpar.imy, TR_UNUSED)
+        _targ_x,
+        _targ_y,
+        _targ_tnr,
+        num_targets,
+        cent_x,
+        cent_y,
+        dl,
+        dr,
+        du,
+        dd,
+        cpar.imx,
+        cpar.imy,
+        TR_UNUSED,
+    )
     all_cands = [p0, p1, p2, p3]
     cand: cython.Py_ssize_t
     for cand in range(MAX_CANDS):
@@ -634,18 +794,21 @@ def register_closest_neighbs(targets, num_targets, cam, cent_x, cent_y,
 
 
 @cython.ccall
-def sorted_candidates_in_volume(center, center_proj, frm, run,
-                                _packed_cals=None, _pix_info=None,
-                                _fast_tuples=None):
+def sorted_candidates_in_volume(
+    center, center_proj, frm, run, _packed_cals=None, _pix_info=None, _fast_tuples=None
+):
     num_cams = frm.num_cams
 
     cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t = _fast_tuples
     if _pix_info is not None:
         c_imx, c_imy, imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield = _pix_info
     else:
-        c_imx = run.cpar.imx; c_imy = run.cpar.imy
-        imx_half = c_imx * 0.5; imy_half = c_imy * 0.5
-        inv_pix_x = 1.0 / run.cpar.pix_x; inv_pix_y = 1.0 / run.cpar.pix_y
+        c_imx = run.cpar.imx
+        c_imy = run.cpar.imy
+        imx_half = c_imx * 0.5
+        imy_half = c_imy * 0.5
+        inv_pix_x = 1.0 / run.cpar.pix_x
+        inv_pix_y = 1.0 / run.cpar.pix_y
         c_chfield = run.cpar.chfield
 
     center_arr = np.asarray(center, dtype=np.float64)
@@ -654,28 +817,62 @@ def sorted_candidates_in_volume(center, center_proj, frm, run,
     nt = np.array(frm.num_targets[:num_cams], dtype=np.int32)
 
     ftnr, freq, whichcam, num_cands = _sorted_candidates_fast(
-        center_arr, cpx, cpy, num_cams, MAX_CANDS,
-        cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t,
-        tuple(frm.targ_x[:num_cams]), tuple(frm.targ_y[:num_cams]),
-        tuple(frm.targ_tnr[:num_cams]), nt,
-        run.tpar.dvxmin, run.tpar.dvxmax, run.tpar.dvymin,
-        run.tpar.dvymax, run.tpar.dvzmin, run.tpar.dvzmax,
-        imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield,
-        c_imx, c_imy, TR_UNUSED,
+        center_arr,
+        cpx,
+        cpy,
+        num_cams,
+        MAX_CANDS,
+        cal_t,
+        md_t,
+        mo_t,
+        mnr_t,
+        mnz_t,
+        mrw_t,
+        tuple(frm.targ_x[:num_cams]),
+        tuple(frm.targ_y[:num_cams]),
+        tuple(frm.targ_tnr[:num_cams]),
+        nt,
+        run.tpar.dvxmin,
+        run.tpar.dvxmax,
+        run.tpar.dvymin,
+        run.tpar.dvymax,
+        run.tpar.dvzmin,
+        run.tpar.dvzmax,
+        imx_half,
+        imy_half,
+        inv_pix_x,
+        inv_pix_y,
+        c_chfield,
+        c_imx,
+        c_imy,
+        TR_UNUSED,
     )
     if num_cands > 0:
         result = []
         for i in range(num_cands):
-            result.append({'ftnr': int(ftnr[i]), 'freq': int(freq[i]),
-                           'whichcam': list(whichcam[i])})
-        result.append({'ftnr': TR_UNUSED, 'freq': 0, 'whichcam': [0]*num_cams})
+            result.append(
+                {
+                    "ftnr": int(ftnr[i]),
+                    "freq": int(freq[i]),
+                    "whichcam": list(whichcam[i]),
+                }
+            )
+        result.append({"ftnr": TR_UNUSED, "freq": 0, "whichcam": [0] * num_cams})
         return result
     return None
 
 
 @cython.ccall
-def assess_new_position(pos, targ_pos, cand_inds, frm, run,
-                        _fast_cals=None, _fast_mmluts=None, _pix_info=None):
+def assess_new_position(
+    pos,
+    targ_pos,
+    cand_inds,
+    frm,
+    run,
+    _fast_cals=None,
+    _fast_mmluts=None,
+    _pix_info=None,
+):
     from .trafo import pixel_to_metric, dist_to_flat
 
     left: cython.double = ADD_PART
@@ -690,23 +887,45 @@ def assess_new_position(pos, targ_pos, cand_inds, frm, run,
     for cam in range(TR_MAX_CAMS):
         targ_pos[cam][0] = targ_pos[cam][1] = COORD_UNUSED
 
-    c_imx = run.cpar.imx; c_imy = run.cpar.imy
+    c_imx = run.cpar.imx
+    c_imy = run.cpar.imy
 
     if _pix_info is not None:
         _, _, imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield = _pix_info
     else:
-        imx_half = c_imx * 0.5; imy_half = c_imy * 0.5
-        inv_pix_x = 1.0 / run.cpar.pix_x; inv_pix_y = 1.0 / run.cpar.pix_y
+        imx_half = c_imx * 0.5
+        imy_half = c_imy * 0.5
+        inv_pix_x = 1.0 / run.cpar.pix_x
+        inv_pix_y = 1.0 / run.cpar.pix_y
         c_chfield = run.cpar.chfield
 
     for cam in range(run.cpar.num_cams):
-        px, py = _ptp_fast(pos, _fast_cals[cam], _fast_mmluts[cam],
-                          imx_half, imy_half, inv_pix_x, inv_pix_y, c_chfield)
+        px, py = _ptp_fast(
+            pos,
+            _fast_cals[cam],
+            _fast_mmluts[cam],
+            imx_half,
+            imy_half,
+            inv_pix_x,
+            inv_pix_y,
+            c_chfield,
+        )
 
         best, num_cands = _candsearch_in_pix_rest_fast(
-            frm.targ_x[cam], frm.targ_y[cam], frm.targ_tnr[cam],
-            frm.num_targets[cam], px, py, left, right, up, down,
-            c_imx, c_imy, TR_UNUSED)
+            frm.targ_x[cam],
+            frm.targ_y[cam],
+            frm.targ_tnr[cam],
+            frm.num_targets[cam],
+            px,
+            py,
+            left,
+            right,
+            up,
+            down,
+            c_imx,
+            c_imy,
+            TR_UNUSED,
+        )
         if num_cands > 0:
             cand_inds[cam][0] = best
 
@@ -717,17 +936,23 @@ def assess_new_position(pos, targ_pos, cand_inds, frm, run,
 
     valid_cams = 0
     for cam in range(run.cpar.num_cams):
-        if (targ_pos[cam][0] != COORD_UNUSED and
-                targ_pos[cam][1] != COORD_UNUSED):
+        if targ_pos[cam][0] != COORD_UNUSED and targ_pos[cam][1] != COORD_UNUSED:
             mx, my = pixel_to_metric(targ_pos[cam][0], targ_pos[cam][1], run.cpar)
             cal = run.cal[cam]
             fx, fy = dist_to_flat(
-                mx, my,
-                cal.int_par.xh, cal.int_par.yh,
-                cal.added_par.k1, cal.added_par.k2, cal.added_par.k3,
-                cal.added_par.p1, cal.added_par.p2,
-                cal.added_par.scx, cal.added_par.she,
-                run.flatten_tol)
+                mx,
+                my,
+                cal.int_par.xh,
+                cal.int_par.yh,
+                cal.added_par.k1,
+                cal.added_par.k2,
+                cal.added_par.k3,
+                cal.added_par.p1,
+                cal.added_par.p2,
+                cal.added_par.scx,
+                cal.added_par.she,
+                run.flatten_tol,
+            )
             targ_pos[cam][0] = fx
             targ_pos[cam][1] = fy
             valid_cams += 1
@@ -790,10 +1015,14 @@ def trackcorr_c_loop(run_info, step):
     vpar = run_info.vpar
     cpar = run_info.cpar
 
-    c_imx = cpar.imx; c_imy = cpar.imy
-    imx_half = c_imx * 0.5; imy_half = c_imy * 0.5
-    inv_pix_x = 1.0 / cpar.pix_x; inv_pix_y = 1.0 / cpar.pix_y
-    c_chfield = cpar.chfield; c_mm = cpar.mm
+    c_imx = cpar.imx
+    c_imy = cpar.imy
+    imx_half = c_imx * 0.5
+    imy_half = c_imy * 0.5
+    inv_pix_x = 1.0 / cpar.pix_x
+    inv_pix_y = 1.0 / cpar.pix_y
+    c_chfield = cpar.chfield
+    c_mm = cpar.mm
 
     fast_cals, fast_mmluts = _pack_cams_fast(cal, c_mm)
     _jt = _pack_cams_fast_tuples(fast_cals, fast_mmluts)
@@ -815,34 +1044,79 @@ def trackcorr_c_loop(run_info, step):
     count1, num_added = _trackcorr_loop_fast(
         orig_parts,
         fb.buf[0].path_x,
-        fb.buf[1].path_x, fb.buf[1].path_prev, fb.buf[1].path_next,
-        fb.buf[1].path_inlist, fb.buf[1].path_finaldecis,
-        fb.buf[1].path_decis, fb.buf[1].path_linkdecis,
+        fb.buf[1].path_x,
+        fb.buf[1].path_prev,
+        fb.buf[1].path_next,
+        fb.buf[1].path_inlist,
+        fb.buf[1].path_finaldecis,
+        fb.buf[1].path_decis,
+        fb.buf[1].path_linkdecis,
         fb.buf[1].corres_p,
-        tuple(fb.buf[1].targ_x[:nc]), tuple(fb.buf[1].targ_y[:nc]),
-        fb.buf[2].path_x, fb.buf[2].path_prev, fb.buf[2].path_next,
-        fb.buf[2].path_inlist, fb.buf[2].path_prio,
-        fb.buf[2].path_finaldecis, fb.buf[2].path_decis,
-        fb.buf[2].path_linkdecis, fb.buf[2].corres_p,
+        tuple(fb.buf[1].targ_x[:nc]),
+        tuple(fb.buf[1].targ_y[:nc]),
+        fb.buf[2].path_x,
+        fb.buf[2].path_prev,
+        fb.buf[2].path_next,
+        fb.buf[2].path_inlist,
+        fb.buf[2].path_prio,
+        fb.buf[2].path_finaldecis,
+        fb.buf[2].path_decis,
+        fb.buf[2].path_linkdecis,
+        fb.buf[2].corres_p,
         fb.buf[2].corres_nr,
-        tuple(fb.buf[2].targ_x[:nc]), tuple(fb.buf[2].targ_y[:nc]),
-        tuple(fb.buf[2].targ_tnr[:nc]), nt2, np2,
-        fb.buf[3].path_x, fb.buf[3].path_prev, fb.buf[3].path_next,
-        fb.buf[3].path_inlist, fb.buf[3].path_prio,
-        fb.buf[3].path_finaldecis, fb.buf[3].path_decis,
-        fb.buf[3].path_linkdecis, fb.buf[3].corres_p,
+        tuple(fb.buf[2].targ_x[:nc]),
+        tuple(fb.buf[2].targ_y[:nc]),
+        tuple(fb.buf[2].targ_tnr[:nc]),
+        nt2,
+        np2,
+        fb.buf[3].path_x,
+        fb.buf[3].path_prev,
+        fb.buf[3].path_next,
+        fb.buf[3].path_inlist,
+        fb.buf[3].path_prio,
+        fb.buf[3].path_finaldecis,
+        fb.buf[3].path_decis,
+        fb.buf[3].path_linkdecis,
+        fb.buf[3].corres_p,
         fb.buf[3].corres_nr,
-        tuple(fb.buf[3].targ_x[:nc]), tuple(fb.buf[3].targ_y[:nc]),
-        tuple(fb.buf[3].targ_tnr[:nc]), nt3, np3,
-        cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t,
-        tpar.dvxmin, tpar.dvxmax, tpar.dvymin, tpar.dvymax,
-        tpar.dvzmin, tpar.dvzmax, tpar.dacc, tpar.dangle,
-        int(tpar.add), run_info.lmax,
-        vpar.X_lay[0], vpar.X_lay[1], run_info.ymin, run_info.ymax,
-        vpar.Zmin_lay[0], vpar.Zmax_lay[1],
-        nc, imx_half, imy_half, inv_pix_x, inv_pix_y,
-        c_chfield, float(c_imx), float(c_imy),
-        cpar.pix_x, cpar.pix_y, run_info.flatten_tol,
+        tuple(fb.buf[3].targ_x[:nc]),
+        tuple(fb.buf[3].targ_y[:nc]),
+        tuple(fb.buf[3].targ_tnr[:nc]),
+        nt3,
+        np3,
+        cal_t,
+        md_t,
+        mo_t,
+        mnr_t,
+        mnz_t,
+        mrw_t,
+        tpar.dvxmin,
+        tpar.dvxmax,
+        tpar.dvymin,
+        tpar.dvymax,
+        tpar.dvzmin,
+        tpar.dvzmax,
+        tpar.dacc,
+        tpar.dangle,
+        int(tpar.add),
+        run_info.lmax,
+        vpar.X_lay[0],
+        vpar.X_lay[1],
+        run_info.ymin,
+        run_info.ymax,
+        vpar.Zmin_lay[0],
+        vpar.Zmax_lay[1],
+        nc,
+        imx_half,
+        imy_half,
+        inv_pix_x,
+        inv_pix_y,
+        c_chfield,
+        float(c_imx),
+        float(c_imy),
+        cpar.pix_x,
+        cpar.pix_y,
+        run_info.flatten_tol,
     )
 
     fb.buf[2].num_parts = int(np2[0])
@@ -852,9 +1126,11 @@ def trackcorr_c_loop(run_info, step):
     _sync_soa_to_aos(fb.buf[2])
     _sync_soa_to_aos(fb.buf[3])
 
-    print(f"step: {step}, curr: {fb.buf[1].num_parts}, "
-          f"next: {fb.buf[2].num_parts}, links: {count1}, "
-          f"lost: {fb.buf[1].num_parts - count1}, add: {num_added}")
+    print(
+        f"step: {step}, curr: {fb.buf[1].num_parts}, "
+        f"next: {fb.buf[2].num_parts}, links: {count1}, "
+        f"lost: {fb.buf[1].num_parts - count1}, add: {num_added}"
+    )
 
     run_info.npart = run_info.npart + fb.buf[1].num_parts
     run_info.nlinks = run_info.nlinks + count1
@@ -872,8 +1148,10 @@ def trackcorr_c_finish(run_info, step):
     range_val = run_info.seq_par.last - run_info.seq_par.first
     npart = run_info.npart / range_val
     nlinks = run_info.nlinks / range_val
-    print(f"Average over sequence, particles: {npart:5.1f}, "
-          f"links: {nlinks:5.1f}, lost: {npart - nlinks:5.1f}")
+    print(
+        f"Average over sequence, particles: {npart:5.1f}, "
+        f"links: {nlinks:5.1f}, lost: {npart - nlinks:5.1f}"
+    )
 
     run_info.fb.fb_next()
     run_info.fb.write_frame_from_start(step)
@@ -890,10 +1168,14 @@ def trackback_c(run_info):
     cpar = run_info.cpar
     fb = run_info.fb
 
-    c_imx = cpar.imx; c_imy = cpar.imy
-    imx_half = c_imx * 0.5; imy_half = c_imy * 0.5
-    inv_pix_x = 1.0 / cpar.pix_x; inv_pix_y = 1.0 / cpar.pix_y
-    c_chfield = cpar.chfield; c_mm = cpar.mm
+    c_imx = cpar.imx
+    c_imy = cpar.imy
+    imx_half = c_imx * 0.5
+    imy_half = c_imy * 0.5
+    inv_pix_x = 1.0 / cpar.pix_x
+    inv_pix_y = 1.0 / cpar.pix_y
+    c_chfield = cpar.chfield
+    c_mm = cpar.mm
     fast_cals, fast_mmluts = _pack_cams_fast(cal, c_mm)
     _jt = _pack_cams_fast_tuples(fast_cals, fast_mmluts)
 
@@ -910,7 +1192,6 @@ def trackback_c(run_info):
     nc = fb.num_cams
 
     for step in range(seq_par.last - 1, seq_par.first, -1):
-
         fb.buf[0]._sync_path_to_soa()
         fb.buf[1]._sync_path_to_soa()
         fb.buf[2]._sync_path_to_soa()
@@ -923,27 +1204,62 @@ def trackback_c(run_info):
         count1, num_added = _trackback_loop_fast(
             fb.buf[1].num_parts,
             fb.buf[0].path_x,
-            fb.buf[1].path_x, fb.buf[1].path_prev, fb.buf[1].path_next,
+            fb.buf[1].path_x,
+            fb.buf[1].path_prev,
+            fb.buf[1].path_next,
             fb.buf[1].path_inlist,
-            fb.buf[1].path_finaldecis, fb.buf[1].path_decis,
+            fb.buf[1].path_finaldecis,
+            fb.buf[1].path_decis,
             fb.buf[1].path_linkdecis,
-            fb.buf[2].path_x, fb.buf[2].path_prev, fb.buf[2].path_next,
+            fb.buf[2].path_x,
+            fb.buf[2].path_prev,
+            fb.buf[2].path_next,
             num_parts_2,
-            fb.buf[2].targ_x, fb.buf[2].targ_y, fb.buf[2].targ_tnr,
+            fb.buf[2].targ_x,
+            fb.buf[2].targ_y,
+            fb.buf[2].targ_tnr,
             nt2,
-            fb.buf[2].corres_p, fb.buf[2].corres_nr,
-            fb.buf[2].path_inlist, fb.buf[2].path_prio,
+            fb.buf[2].corres_p,
+            fb.buf[2].corres_nr,
+            fb.buf[2].path_inlist,
+            fb.buf[2].path_prio,
             fb.buf[2].path_finaldecis,
-            fb.buf[2].path_decis, fb.buf[2].path_linkdecis,
-            fb.buf[3].path_x, fb.buf[3].path_prev,
-            cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t,
-            tpar.dvxmin, tpar.dvxmax, tpar.dvymin, tpar.dvymax,
-            tpar.dvzmin, tpar.dvzmax,
-            tpar.dacc, tpar.dangle, tpar.add, run_info.lmax,
-            vpar.X_lay[0], vpar.X_lay[1], Ymin, Ymax,
-            vpar.Zmin_lay[0], vpar.Zmax_lay[1],
-            nc, imx_half, imy_half, inv_pix_x, inv_pix_y,
-            c_chfield, c_imx, c_imy, cpar.pix_x, cpar.pix_y,
+            fb.buf[2].path_decis,
+            fb.buf[2].path_linkdecis,
+            fb.buf[3].path_x,
+            fb.buf[3].path_prev,
+            cal_t,
+            md_t,
+            mo_t,
+            mnr_t,
+            mnz_t,
+            mrw_t,
+            tpar.dvxmin,
+            tpar.dvxmax,
+            tpar.dvymin,
+            tpar.dvymax,
+            tpar.dvzmin,
+            tpar.dvzmax,
+            tpar.dacc,
+            tpar.dangle,
+            tpar.add,
+            run_info.lmax,
+            vpar.X_lay[0],
+            vpar.X_lay[1],
+            Ymin,
+            Ymax,
+            vpar.Zmin_lay[0],
+            vpar.Zmax_lay[1],
+            nc,
+            imx_half,
+            imy_half,
+            inv_pix_x,
+            inv_pix_y,
+            c_chfield,
+            c_imx,
+            c_imy,
+            cpar.pix_x,
+            cpar.pix_y,
             run_info.flatten_tol,
         )
 
@@ -952,9 +1268,11 @@ def trackback_c(run_info):
         _sync_soa_to_aos(fb.buf[1])
         _sync_soa_to_aos(fb.buf[2])
 
-        print(f"step: {step}, curr: {fb.buf[1].num_parts}, "
-              f"next: {fb.buf[2].num_parts}, links: {count1}, "
-              f"lost: {fb.buf[1].num_parts - count1}, add: {num_added}")
+        print(
+            f"step: {step}, curr: {fb.buf[1].num_parts}, "
+            f"next: {fb.buf[2].num_parts}, links: {count1}, "
+            f"lost: {fb.buf[1].num_parts - count1}, add: {num_added}"
+        )
 
         npart = npart + fb.buf[1].num_parts
         nlinks = nlinks + count1
@@ -964,11 +1282,13 @@ def trackback_c(run_info):
         if step > seq_par.first + 2:
             fb.read_frame_at_end(step - 3, read_links=True)
 
-    npart /= (seq_par.last - seq_par.first - 1)
-    nlinks /= (seq_par.last - seq_par.first - 1)
+    npart /= seq_par.last - seq_par.first - 1
+    nlinks /= seq_par.last - seq_par.first - 1
 
-    print(f"Average over sequence, particles: {npart:5.1f}, "
-          f"links: {nlinks:5.1f}, lost: {npart - nlinks:5.1f}")
+    print(
+        f"Average over sequence, particles: {npart:5.1f}, "
+        f"links: {nlinks:5.1f}, lost: {npart - nlinks:5.1f}"
+    )
 
     fb.fb_next()
     fb.write_frame_from_start(seq_par.first)

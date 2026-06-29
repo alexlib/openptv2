@@ -5,8 +5,10 @@ Translation of lib/src/correspondences.c and lib/include/correspondences.h.
 Establishes correspondences between detected targets across 2-4 cameras
 using epipolar geometry and clique finding.
 """
-import cython
 
+import cython
+from concurrent.futures import ThreadPoolExecutor, as_completed
+import operator
 
 import numpy as np
 from dataclasses import dataclass, field
@@ -37,6 +39,7 @@ def _default_correspond_dist():
 @dataclass
 class NTupel:
     """A correspondence match across multiple cameras."""
+
     p: list = field(default_factory=_default_ntupel_p)
     corr: cython.double = 0.0
 
@@ -48,6 +51,7 @@ class Correspond:
 
     Matches C correspond struct: indexed by target index in source camera.
     """
+
     p1: cython.int = 0
     n: cython.int = 0
     p2: np.ndarray = field(default_factory=_default_correspond_p2)
@@ -57,30 +61,14 @@ class Correspond:
 
 @cython.ccall
 def quicksort_target_y(pix):
-    """Sort target list by y coordinate in place."""
-    i: cython.int
-    j: cython.int
-    for i in range(1, len(pix)):
-        item = pix[i]
-        j = i
-        while j > 0 and pix[j - 1].y > item.y:
-            pix[j] = pix[j - 1]
-            j -= 1
-        pix[j] = item
+    """Sort target list by y coordinate in place using Timsort."""
+    pix.sort(key=operator.attrgetter("y"))
 
 
 @cython.ccall
 def quicksort_coord2d_x(crd):
-    """Sort Coord2d list by x coordinate in place."""
-    i: cython.int
-    j: cython.int
-    for i in range(1, len(crd)):
-        item = crd[i]
-        j = i
-        while j > 0 and crd[j - 1].x > item.x:
-            crd[j] = crd[j - 1]
-            j -= 1
-        crd[j] = item
+    """Sort Coord2d list by x coordinate in place using Timsort."""
+    crd.sort(key=operator.attrgetter("x"))
 
 
 @cython.ccall
@@ -99,6 +87,57 @@ def safely_allocate_adjacency_lists(num_cams, target_counts):
     return lists
 
 
+def _match_one_pair(i1, i2, pair_list, corrected, frm, vpar, cpar, calib):
+    """Build adjacency list for one camera pair (module-level for pickling)."""
+    from .epi import epi_mm, find_candidate
+
+    for i in range(frm.num_targets[i1]):
+        if corrected[i1][i].x == PT_UNUSED:
+            continue
+
+        xmin, ymin, xmax, ymax = epi_mm(
+            corrected[i1][i].x,
+            corrected[i1][i].y,
+            calib[i1],
+            calib[i2],
+            cpar.mm,
+            vpar,
+        )
+
+        pair_list[i].p1 = i
+        pt1 = corrected[i1][i].pnr
+
+        cand = []
+        count = find_candidate(
+            corrected[i2],
+            frm.targets[i2],
+            frm.num_targets[i2],
+            xmin,
+            ymin,
+            xmax,
+            ymax,
+            frm.targets[i1][pt1].n,
+            frm.targets[i1][pt1].nx,
+            frm.targets[i1][pt1].ny,
+            frm.targets[i1][pt1].sumg,
+            cand,
+            vpar,
+            cpar,
+            calib[i2],
+        )
+
+        if count > MAXCAND:
+            count = MAXCAND
+
+        for j in range(count):
+            pair_list[i].p2[j] = cand[j].pnr
+            pair_list[i].corr[j] = cand[j].corr
+            pair_list[i].dist[j] = cand[j].tol
+        pair_list[i].n = count
+
+    return i1, i2, pair_list
+
+
 @cython.ccall
 def match_pairs(lists, corrected, frm, vpar, cpar, calib):
     """Build pairwise adjacency lists between all camera pairs.
@@ -114,44 +153,33 @@ def match_pairs(lists, corrected, frm, vpar, cpar, calib):
         cpar: ControlPar.
         calib: list of Calibration objects.
     """
-    from .epi import epi_mm, find_candidate, Candidate
+    num_cams = cpar.num_cams
+    pairs = [(i1, i2) for i1 in range(num_cams - 1) for i2 in range(i1 + 1, num_cams)]
 
-    i1: cython.int
-    i2: cython.int
-    i: cython.int
-    j: cython.int
-    pt1: cython.int
-    count: cython.int
-    for i1 in range(cpar.num_cams - 1):
-        for i2 in range(i1 + 1, cpar.num_cams):
-            for i in range(frm.num_targets[i1]):
-                if corrected[i1][i].x == PT_UNUSED:
-                    continue
+    if len(pairs) <= 1:
+        # Sequential for 2 cameras (no parallelism benefit)
+        for i1, i2 in pairs:
+            _match_one_pair(i1, i2, lists[i1][i2], corrected, frm, vpar, cpar, calib)
+        return
 
-                xmin, ymin, xmax, ymax = epi_mm(
-                    corrected[i1][i].x, corrected[i1][i].y,
-                    calib[i1], calib[i2], cpar.mm, vpar)
-
-                lists[i1][i2][i].p1 = i
-                pt1 = corrected[i1][i].pnr
-
-                cand = []
-                count = find_candidate(
-                    corrected[i2], frm.targets[i2],
-                    frm.num_targets[i2],
-                    xmin, ymin, xmax, ymax,
-                    frm.targets[i1][pt1].n, frm.targets[i1][pt1].nx,
-                    frm.targets[i1][pt1].ny, frm.targets[i1][pt1].sumg,
-                    cand, vpar, cpar, calib[i2])
-
-                if count > MAXCAND:
-                    count = MAXCAND
-
-                for j in range(count):
-                    lists[i1][i2][i].p2[j] = cand[j].pnr
-                    lists[i1][i2][i].corr[j] = cand[j].corr
-                    lists[i1][i2][i].dist[j] = cand[j].tol
-                lists[i1][i2][i].n = count
+    with ThreadPoolExecutor(max_workers=len(pairs)) as pool:
+        futures = {
+            pool.submit(
+                _match_one_pair,
+                i1,
+                i2,
+                lists[i1][i2],
+                corrected,
+                frm,
+                vpar,
+                cpar,
+                calib,
+            ): (i1, i2)
+            for i1, i2 in pairs
+        }
+        for future in as_completed(futures):
+            i1, i2, pair_list = future.result()
+            lists[i1][i2] = pair_list
 
 
 @cython.ccall
@@ -204,18 +232,21 @@ def four_camera_matching(lists, base_target_count, accept_corr, scratch, scratch
                                 if p4 != p42:
                                     continue
 
-                                corr = (lists[0][1][i].corr[j]
+                                corr = (
+                                    lists[0][1][i].corr[j]
                                     + lists[0][2][i].corr[k]
                                     + lists[0][3][i].corr[l]
                                     + lists[1][2][p2].corr[m]
                                     + lists[1][3][p2].corr[n]
-                                    + lists[2][3][p3].corr[o]) / (
+                                    + lists[2][3][p3].corr[o]
+                                ) / (
                                     lists[0][1][i].dist[j]
                                     + lists[0][2][i].dist[k]
                                     + lists[0][3][i].dist[l]
                                     + lists[1][2][p2].dist[m]
                                     + lists[1][3][p2].dist[n]
-                                    + lists[2][3][p3].dist[o])
+                                    + lists[2][3][p3].dist[o]
+                                )
 
                                 if corr <= accept_corr:
                                     continue
@@ -233,8 +264,9 @@ def four_camera_matching(lists, base_target_count, accept_corr, scratch, scratch
 
 
 @cython.ccall
-def three_camera_matching(lists, num_cams, target_counts, accept_corr,
-                          scratch, scratch_size, tusage):
+def three_camera_matching(
+    lists, num_cams, target_counts, accept_corr, scratch, scratch_size, tusage
+):
     """Find consistent 3-camera correspondences (triplets).
 
     Matches C three_camera_matching exactly.
@@ -278,12 +310,15 @@ def three_camera_matching(lists, num_cams, target_counts, accept_corr,
                                 if p3 != lists[i2][i3][p2].p2[m_idx]:
                                     continue
 
-                                corr = (lists[i1][i2][i].corr[j]
+                                corr = (
+                                    lists[i1][i2][i].corr[j]
                                     + lists[i1][i3][i].corr[k]
-                                    + lists[i2][i3][p2].corr[m_idx]) / (
+                                    + lists[i2][i3][p2].corr[m_idx]
+                                ) / (
                                     lists[i1][i2][i].dist[j]
                                     + lists[i1][i3][i].dist[k]
-                                    + lists[i2][i3][p2].dist[m_idx])
+                                    + lists[i2][i3][p2].dist[m_idx]
+                                )
 
                                 if corr <= accept_corr:
                                     continue
@@ -303,8 +338,9 @@ def three_camera_matching(lists, num_cams, target_counts, accept_corr,
 
 
 @cython.ccall
-def consistent_pair_matching(lists, num_cams, target_counts, accept_corr,
-                             scratch, scratch_size, tusage):
+def consistent_pair_matching(
+    lists, num_cams, target_counts, accept_corr, scratch, scratch_size, tusage
+):
     """Find unambiguous 2-camera pairs.
 
     Matches C consistent_pair_matching exactly.
@@ -362,10 +398,10 @@ def take_best_candidates(src, dst, num_cams, num_cands, tusage):
         int, the number of cliques taken.
     """
     import operator
-    
+
     # Sort the active slice of src using Python's optimized Timsort
     src_slice = src[:num_cands]
-    src_slice.sort(key=operator.attrgetter('corr'), reverse=True)
+    src_slice.sort(key=operator.attrgetter("corr"), reverse=True)
     src[:num_cands] = src_slice
 
     taken = 0
@@ -390,6 +426,39 @@ def take_best_candidates(src, dst, num_cams, num_cands, tusage):
     return taken
 
 
+def _correct_one_camera(cam, frm, calib, cpar, tol):
+    """Process a single camera (module-level for pickling/compatibility)."""
+    from .epi import Coord2d
+    from .trafo import pixel_to_metric, dist_to_flat
+
+    cam_coords = []
+    for part in range(frm.num_targets[cam]):
+        t = frm.targets[cam][part]
+        xm, ym = pixel_to_metric(t.x, t.y, cpar)
+
+        ap = calib[cam].added_par
+        ip = calib[cam].int_par
+        fx, fy = dist_to_flat(
+            xm,
+            ym,
+            ip.xh,
+            ip.yh,
+            ap.k1,
+            ap.k2,
+            ap.k3,
+            ap.p1,
+            ap.p2,
+            ap.scx,
+            ap.she,
+            tol,
+        )
+
+        cam_coords.append(Coord2d(pnr=t.pnr, x=fx, y=fy))
+
+    quicksort_coord2d_x(cam_coords)
+    return cam_coords
+
+
 @cython.ccall
 def correct_frame(frm, calib, cpar, tol):
     """Transition from pixel to metric to flat coordinates, x-sorted.
@@ -406,27 +475,21 @@ def correct_frame(frm, calib, cpar, tol):
         list of lists of Coord2d, one per camera, x-sorted.
     """
     from .epi import Coord2d
-    from .trafo import pixel_to_metric, dist_to_flat
 
-    corrected = []
-    for cam in range(cpar.num_cams):
-        cam_coords = []
-        for part in range(frm.num_targets[cam]):
-            t = frm.targets[cam][part]
-            xm, ym = pixel_to_metric(t.x, t.y, cpar)
+    num_cams = cpar.num_cams
+    if num_cams <= 1:
+        # Sequential path for single camera (no parallelism benefit)
+        corrected = []
+        for cam in range(num_cams):
+            corrected.append(_correct_one_camera(cam, frm, calib, cpar, tol))
+        return corrected
 
-            ap = calib[cam].added_par
-            ip = calib[cam].int_par
-            fx, fy = dist_to_flat(xm, ym,
-                ip.xh, ip.yh,
-                ap.k1, ap.k2, ap.k3, ap.p1, ap.p2, ap.scx, ap.she,
-                tol)
-
-            cam_coords.append(Coord2d(pnr=t.pnr, x=fx, y=fy))
-
-        quicksort_coord2d_x(cam_coords)
-        corrected.append(cam_coords)
-
+    with ThreadPoolExecutor(max_workers=num_cams) as pool:
+        futures = [
+            pool.submit(_correct_one_camera, cam, frm, calib, cpar, tol)
+            for cam in range(num_cams)
+        ]
+        corrected = [f.result() for f in futures]
     return corrected
 
 
@@ -466,32 +529,33 @@ def correspondences(frm, corrected, vpar, cpar, calib):
     match_pairs(lists, corrected, frm, vpar, cpar, calib)
 
     if num_cams == 4:
-        match0 = four_camera_matching(lists, frm.num_targets[0],
-            vpar.corrmin, con0, 4 * NMAX)
+        match0 = four_camera_matching(
+            lists, frm.num_targets[0], vpar.corrmin, con0, 4 * NMAX
+        )
 
         match_counts[0] = take_best_candidates(con0, con, num_cams, match0, tusage)
         match_counts[3] += match_counts[0]
 
     if (num_cams == 4 and cpar.allCam_flag == 0) or num_cams == 3:
-        match0 = three_camera_matching(lists, num_cams, frm.num_targets,
-            vpar.corrmin, con0, 4 * NMAX, tusage)
+        match0 = three_camera_matching(
+            lists, num_cams, frm.num_targets, vpar.corrmin, con0, 4 * NMAX, tusage
+        )
 
         offset = match_counts[3]
         tmp = con[offset:]
-        match_counts[1] = take_best_candidates(con0, tmp, num_cams,
-            match0, tusage)
+        match_counts[1] = take_best_candidates(con0, tmp, num_cams, match0, tusage)
         for k in range(match_counts[1]):
             con[offset + k] = tmp[k]
         match_counts[3] += match_counts[1]
 
     if num_cams > 1 and cpar.allCam_flag == 0:
-        match0 = consistent_pair_matching(lists, num_cams, frm.num_targets,
-            vpar.corrmin, con0, 4 * NMAX, tusage)
+        match0 = consistent_pair_matching(
+            lists, num_cams, frm.num_targets, vpar.corrmin, con0, 4 * NMAX, tusage
+        )
 
         offset = match_counts[3]
         tmp = con[offset:]
-        match_counts[2] = take_best_candidates(con0, tmp, num_cams,
-            match0, tusage)
+        match_counts[2] = take_best_candidates(con0, tmp, num_cams, match0, tusage)
         for k in range(match_counts[2]):
             con[offset + k] = tmp[k]
         match_counts[3] += match_counts[2]
@@ -504,7 +568,7 @@ def correspondences(frm, corrected, vpar, cpar, calib):
             if p1 > -1 and p1 < 1202590843:
                 frm.targets[j][p1].tnr = i
 
-    return con[:match_counts[3]], match_counts
+    return con[: match_counts[3]], match_counts
 
 
 def is_compiled() -> bool:

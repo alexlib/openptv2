@@ -125,6 +125,17 @@ python_files = ["test_*.py"]
 python_functions = ["test_*"]
 pythonpath = ["src"]
 addopts = "-v --tb=short --import-mode=importlib"
+filterwarnings = [
+    "ignore:builtin type SwigPyPacked has no __module__ attribute:DeprecationWarning",
+    "ignore:builtin type SwigPyObject has no __module__ attribute:DeprecationWarning",
+    "ignore:builtin type swigvarlink has no __module__ attribute:DeprecationWarning",
+    "ignore:.*oneOf.*:DeprecationWarning",
+    "ignore:.*setParseAction.*:DeprecationWarning",
+    "ignore:.*delimitedList.*:DeprecationWarning",
+    "ignore:.*setName.*:DeprecationWarning",
+    "ignore:.*leaveWhitespace.*:DeprecationWarning",
+    "ignore:This process .* is multi-threaded, use of fork\\(\\) may lead to deadlocks:DeprecationWarning",
+]
 markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
     "gui: marks tests that require GUI",

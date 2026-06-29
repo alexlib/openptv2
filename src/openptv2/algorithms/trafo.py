@@ -23,7 +23,7 @@ DOUBLED_PLUS_ONE: cython.int = 1
 DOUBLED: cython.int = 2
 
 
-@cython.ccall
+@cython.cfunc
 def old_pixel_to_metric(
     x_pixel: cython.double,
     y_pixel: cython.double,
@@ -56,7 +56,7 @@ def old_pixel_to_metric(
     return x_metric, y_metric
 
 
-@cython.ccall
+@cython.cfunc
 def old_metric_to_pixel(
     x_metric: cython.double,
     y_metric: cython.double,
@@ -103,7 +103,7 @@ def pixel_to_metric(
 
     Accepts either (x, y, cpar) or (x, y, imx, imy, pix_x, pix_y, chfield).
     """
-    if hasattr(imx_or_cpar, 'imx'):
+    if hasattr(imx_or_cpar, "imx"):
         return old_pixel_to_metric(
             x_pixel,
             y_pixel,
@@ -138,7 +138,7 @@ def metric_to_pixel(
 
     Accepts either (x, y, cpar) or (x, y, imx, imy, pix_x, pix_y, chfield).
     """
-    if hasattr(imx_or_cpar, 'imx'):
+    if hasattr(imx_or_cpar, "imx"):
         return old_metric_to_pixel(
             x_metric,
             y_metric,
@@ -224,8 +224,45 @@ def metric_to_pixel_batch(xy, cpar) -> np.ndarray:
     return result
 
 
+@cython.cfunc
+@cython.inline
+def _distort_brown_affin_core(
+    x: cython.double,
+    y: cython.double,
+    k1: cython.double,
+    k2: cython.double,
+    k3: cython.double,
+    p1: cython.double,
+    p2: cython.double,
+    scx: cython.double,
+    sin_she: cython.double,
+    cos_she: cython.double,
+) -> tuple:
+    """Brown distortion with precomputed trig values."""
+    r: cython.double = c_sqrt(x * x + y * y)
 
-@cython.ccall
+    if r < 1e-10:
+        return 0.0, 0.0
+
+    r2: cython.double = r * r
+    r4: cython.double = r2 * r2
+    r6: cython.double = r4 * r2
+    radial_factor: cython.double = 1.0 + k1 * r2 + k2 * r4 + k3 * r6
+
+    x_dist: cython.double = (
+        x * radial_factor + p1 * (r2 + 2.0 * x * x) + 2.0 * p2 * x * y
+    )
+    y_dist: cython.double = (
+        y * radial_factor + p2 * (r2 + 2.0 * y * y) + 2.0 * p1 * x * y
+    )
+
+    x1: cython.double = scx * (x_dist - sin_she * y_dist)
+    y1: cython.double = scx * cos_she * y_dist
+
+    return x1, y1
+
+
+@cython.cfunc
 def distort_brown_affin(
     x: cython.double,
     y: cython.double,
@@ -251,26 +288,9 @@ def distort_brown_affin(
     Returns:
         (x_distorted, y_distorted) tuple.
     """
-    r: cython.double = c_sqrt(x * x + y * y)
-
-    if r < 1e-10:
-        return 0.0, 0.0
-
-    r2: cython.double = r * r
-    r4: cython.double = r2 * r2
-    r6: cython.double = r4 * r2
-    radial_factor: cython.double = 1.0 + k1 * r2 + k2 * r4 + k3 * r6
-
-    x_dist: cython.double = x * radial_factor + p1 * (r2 + 2.0 * x * x) + 2.0 * p2 * x * y
-    y_dist: cython.double = y * radial_factor + p2 * (r2 + 2.0 * y * y) + 2.0 * p1 * x * y
-
     sin_she: cython.double = c_sin(she)
     cos_she: cython.double = c_cos(she)
-
-    x1: cython.double = scx * (x_dist - sin_she * y_dist)
-    y1: cython.double = scx * cos_she * y_dist
-
-    return x1, y1
+    return _distort_brown_affin_core(x, y, k1, k2, k3, p1, p2, scx, sin_she, cos_she)
 
 
 @cython.ccall
@@ -324,8 +344,10 @@ def correct_brown_affin(
     for _ in range(max_iter):
         xq_old, yq_old = xq, yq
 
-        # Forward distort current guess
-        temp = distort_brown_affin(xq, yq, k1, k2, k3, p1, p2, scx, she)
+        # Forward distort current guess (with precomputed trig)
+        temp = _distort_brown_affin_core(
+            xq, yq, k1, k2, k3, p1, p2, scx, sin_she, cos_she
+        )
         xt = temp[0]
         yt = temp[1]
 
@@ -346,7 +368,7 @@ def correct_brown_affin(
     return xq, yq
 
 
-@cython.ccall
+@cython.cfunc
 def correct_brown_affine_exact(
     x: cython.double,
     y: cython.double,
@@ -419,7 +441,7 @@ def correct_brown_affine_exact(
         xq += damping * dx_change
         yq += damping * dy_change
 
-        if c_sqrt(dx_change ** 2 + dy_change ** 2) < tol:
+        if c_sqrt(dx_change**2 + dy_change**2) < tol:
             break
 
     return xq, yq
@@ -486,9 +508,7 @@ def dist_to_flat(
     flat_y: cython.double
     temp: tuple
 
-    temp = correct_brown_affine_exact(
-        dist_x, dist_y, k1, k2, k3, p1, p2, scx, she, tol
-    )
+    temp = correct_brown_affine_exact(dist_x, dist_y, k1, k2, k3, p1, p2, scx, she, tol)
     flat_x = temp[0]
     flat_y = temp[1]
     return flat_x - xh, flat_y - yh
@@ -503,7 +523,7 @@ def is_compiled() -> bool:
 @cython.boundscheck(False)
 @cython.wraparound(False)
 def correct_brown_affine_batch(
-    xy: cython.double[:, :],
+    xy: cython.double[:, ::1],
     k1: cython.double,
     k2: cython.double,
     k3: cython.double,
@@ -511,9 +531,13 @@ def correct_brown_affine_batch(
     p2: cython.double,
     scx: cython.double,
     she: cython.double,
+    out: np.ndarray = None,
 ) -> np.ndarray:
     n: cython.Py_ssize_t = xy.shape[0]
-    result: np.ndarray = np.empty((n, 2), dtype=np.float64)
+    if out is None:
+        result: np.ndarray = np.empty((n, 2), dtype=np.float64)
+    else:
+        result = out
     result_view: cython.double[:, :] = result
     xy_view: cython.double[:, :] = xy
 
@@ -525,7 +549,7 @@ def correct_brown_affine_batch(
     max_iter: cython.int = 20
 
     i: cython.Py_ssize_t
-    _ : cython.int
+    _: cython.int
     x: cython.double
     y: cython.double
     xq: cython.double
@@ -569,8 +593,12 @@ def correct_brown_affine_batch(
                 r4 = r2 * r2
                 r6 = r4 * r2
                 radial_factor = 1.0 + k1 * r2 + k2 * r4 + k3 * r6
-                x_dist = xq * radial_factor + p1 * (r2 + 2.0 * xq * xq) + 2.0 * p2 * xq * yq
-                y_dist = yq * radial_factor + p2 * (r2 + 2.0 * yq * yq) + 2.0 * p1 * xq * yq
+                x_dist = (
+                    xq * radial_factor + p1 * (r2 + 2.0 * xq * xq) + 2.0 * p2 * xq * yq
+                )
+                y_dist = (
+                    yq * radial_factor + p2 * (r2 + 2.0 * yq * yq) + 2.0 * p1 * xq * yq
+                )
                 xt = scx * (x_dist - sin_she * y_dist)
                 yt = scx * cos_she * y_dist
 
@@ -595,7 +623,7 @@ def correct_brown_affine_batch(
 @cython.boundscheck(False)
 @cython.wraparound(False)
 def distort_brown_affine_batch(
-    xy: cython.double[:, :],
+    xy: cython.double[:, ::1],
     k1: cython.double,
     k2: cython.double,
     k3: cython.double,

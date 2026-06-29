@@ -51,6 +51,7 @@ def test_optimized_performance():
     """Test tracking performance with optimized parameters"""
 
     import subprocess
+    import pytest
 
     test_path = Path(__file__).parent.parent.parent / "test_data" / "test_splitter"
     yaml_file = test_path / "parameters_Run1.yaml"
@@ -62,7 +63,11 @@ def test_optimized_performance():
         "1000001",
         "1000003",
         "--mode",
-        "sequence",
+        "both",
+        "--sequence",
+        "ext_sequence_splitter",
+        "--tracking",
+        "ext_tracker_splitter",
     ]
 
     print("🚀 Testing performance with optimized parameters...")
@@ -70,9 +75,7 @@ def test_optimized_performance():
     try:
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
 
-        if result.returncode != 0:
-            print(f"❌ Test failed: {result.stderr}")
-            return False
+        assert result.returncode == 0, f"Test failed: {result.stderr}"
 
         # Parse tracking output
         lines = result.stdout.split("\n")
@@ -101,34 +104,28 @@ def test_optimized_performance():
             except (ValueError, IndexError):
                 continue
 
-        if frames_count > 0 and total_particles > 0:
-            avg_particles = total_particles / frames_count
-            avg_links = total_links / frames_count
-            link_ratio = avg_links / avg_particles * 100
+        assert frames_count > 0 and total_particles > 0, "No tracking data found"
 
-            print(f"\n📈 Performance Results:")
-            print(f"Average particles per frame: {avg_particles:.1f}")
-            print(f"Average links per frame: {avg_links:.1f}")
-            print(f"Link ratio: {link_ratio:.1f}%")
+        avg_particles = total_particles / frames_count
+        avg_links = total_links / frames_count
+        link_ratio = avg_links / avg_particles * 100
 
-            if link_ratio > 12:
-                print("🎉 Excellent improvement! Link ratio > 12%")
-            elif link_ratio > 10:
-                print("✅ Good improvement! Link ratio > 10%")
-            else:
-                print("⚠️  Still room for improvement")
+        print(f"\n📈 Performance Results:")
+        print(f"Average particles per frame: {avg_particles:.1f}")
+        print(f"Average links per frame: {avg_links:.1f}")
+        print(f"Link ratio: {link_ratio:.1f}%")
 
-            return True
+        if link_ratio > 12:
+            print("🎉 Excellent improvement! Link ratio > 12%")
+        elif link_ratio > 10:
+            print("✅ Good improvement! Link ratio > 10%")
         else:
-            print("❌ No tracking data found")
-            return False
+            print("⚠️  Still room for improvement")
 
     except subprocess.TimeoutExpired:
-        print("❌ Test timed out")
-        return False
+        pytest.fail("Test timed out")
     except Exception as e:
-        print(f"❌ Test error: {e}")
-        return False
+        pytest.fail(f"Test error: {e}")
 
 
 if __name__ == "__main__":

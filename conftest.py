@@ -11,6 +11,19 @@ import pytest
 import sys
 import importlib
 
+# Register optv package and its submodules as aliases in sys.modules for legacy compatibility
+try:
+    import openptv2
+    sys.modules["optv"] = openptv2
+    for sub in ["correspondences", "tracker", "orientation", "calibration", "parameters", "imgcoord"]:
+        try:
+            mod = importlib.import_module(f"openptv2.{sub}")
+            sys.modules[f"optv.{sub}"] = mod
+        except ImportError:
+            pass
+except ImportError:
+    pass
+
 # Register pyptv package and its submodules as aliases in sys.modules
 try:
     import openptv2.gui as _gui

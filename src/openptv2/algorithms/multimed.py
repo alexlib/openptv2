@@ -14,12 +14,28 @@ import numpy as np
 
 if cython.compiled:
     from cython.cimports.libc.math import (
-        sqrt as c_sqrt, tan as c_tan, asin as c_asin, atan as c_atan, sin as c_sin,
+        sqrt as c_sqrt,
+        tan as c_tan,
+        asin as c_asin,
+        atan as c_atan,
+        sin as c_sin,
     )
 else:
-    from math import sqrt as c_sqrt, tan as c_tan, asin as c_asin, atan as c_atan, sin as c_sin
+    from math import (
+        sqrt as c_sqrt,
+        tan as c_tan,
+        asin as c_asin,
+        atan as c_atan,
+        sin as c_sin,
+    )
 from .vec_utils import (
-    vec_set, vec_norm, vec_dot, vec_scalar_mul, vec_add, vec_subt, unit_vector
+    vec_set,
+    vec_norm,
+    vec_dot,
+    vec_scalar_mul,
+    vec_add,
+    vec_subt,
+    unit_vector,
 )
 
 from .track_kernels import init_mmlut_data_fast as _init_mmlut_data_fast
@@ -66,10 +82,19 @@ def multimed_nlay(
         radial_shift = mmf
     else:
         radial_shift = multimed_r_nlay_iterative(
-            pos_x, pos_y, pos_z,
-            ext_x0, ext_y0, ext_z0,
-            mm_n1, mm_n2_0, mm_n3, mm_d0, mm_nlay,
-            mm_n2=mm_n2, mm_d=mm_d,
+            pos_x,
+            pos_y,
+            pos_z,
+            ext_x0,
+            ext_y0,
+            ext_z0,
+            mm_n1,
+            mm_n2_0,
+            mm_n3,
+            mm_d0,
+            mm_nlay,
+            mm_n2=mm_n2,
+            mm_d=mm_d,
         )
 
     Xq: cython.double = ext_x0 + (pos_x - ext_x0) * radial_shift
@@ -78,11 +103,21 @@ def multimed_nlay(
     return Xq, Yq
 
 
-@cython.ccall
+@cython.cfunc
 @cython.locals(
-    zout=cython.double, dx=cython.double, dy=cython.double, r=cython.double, rq=cython.double,
-    it=cython.int, beta1=cython.double, sin_beta1=cython.double, arg=cython.double,
-    beta3=cython.double, rbeta=cython.double, rdiff=cython.double, i=cython.int
+    zout=cython.double,
+    dx=cython.double,
+    dy=cython.double,
+    r=cython.double,
+    rq=cython.double,
+    it=cython.int,
+    beta1=cython.double,
+    sin_beta1=cython.double,
+    arg=cython.double,
+    beta3=cython.double,
+    rbeta=cython.double,
+    rdiff=cython.double,
+    i=cython.int,
 )
 def multimed_r_nlay_iterative(
     pos_x: cython.double,
@@ -137,15 +172,6 @@ def multimed_r_nlay_iterative(
         beta1 = c_atan(rq / (ext_z0 - pos_z))
         sin_beta1 = c_sin(beta1)
 
-        beta2_vals = [0.0] * mm_nlay
-        for i in range(mm_nlay):
-            arg = sin_beta1 * mm_n1 / mm_n2[i]
-            if arg > 1.0:
-                arg = 1.0
-            elif arg < -1.0:
-                arg = -1.0
-            beta2_vals[i] = c_asin(arg)
-
         arg = sin_beta1 * mm_n1 / mm_n3
         if arg > 1.0:
             arg = 1.0
@@ -155,7 +181,12 @@ def multimed_r_nlay_iterative(
 
         rbeta = (ext_z0 - mm_d0) * c_tan(beta1) - zout * c_tan(beta3)
         for i in range(mm_nlay):
-            rbeta += mm_d[i] * c_tan(beta2_vals[i])
+            arg_i = sin_beta1 * mm_n1 / mm_n2[i]
+            if arg_i > 1.0:
+                arg_i = 1.0
+            elif arg_i < -1.0:
+                arg_i = -1.0
+            rbeta += mm_d[i] * c_tan(c_asin(arg_i))
 
         rdiff = r - rbeta
         rq += rdiff
@@ -173,13 +204,25 @@ def multimed_r_nlay_iterative(
 
 @cython.ccall
 @cython.locals(
-    gx=cython.double, gy=cython.double, gz=cython.double,
-    dist_o_glas=cython.double, inv_dog=cython.double,
-    dot_cam=cython.double, dist_cam_glas=cython.double,
-    dot_pos=cython.double, dist_point_glas=cython.double,
-    s_cam=cython.double, s_pt=cython.double, ext_t_z0=cython.double,
-    s_d=cython.double, ag_x=cython.double, ag_y=cython.double, ag_z=cython.double,
-    tmp_x=cython.double, tmp_y=cython.double, tmp_z=cython.double
+    gx=cython.double,
+    gy=cython.double,
+    gz=cython.double,
+    dist_o_glas=cython.double,
+    inv_dog=cython.double,
+    dot_cam=cython.double,
+    dist_cam_glas=cython.double,
+    dot_pos=cython.double,
+    dist_point_glas=cython.double,
+    s_cam=cython.double,
+    s_pt=cython.double,
+    ext_t_z0=cython.double,
+    s_d=cython.double,
+    ag_x=cython.double,
+    ag_y=cython.double,
+    ag_z=cython.double,
+    tmp_x=cython.double,
+    tmp_y=cython.double,
+    tmp_z=cython.double,
 )
 def trans_cam_point(
     pos: cython.double[:],
@@ -206,10 +249,15 @@ def trans_cam_point(
     dist_point_glas = dot_pos * inv_dog - dist_o_glas
 
     s_cam = dist_cam_glas * inv_dog
-    cross_c = np.array([ext_x0 - gx * s_cam, ext_y0 - gy * s_cam, ext_z0 - gz * s_cam], dtype=np.float64)
+    cross_c = np.array(
+        [ext_x0 - gx * s_cam, ext_y0 - gy * s_cam, ext_z0 - gz * s_cam],
+        dtype=np.float64,
+    )
 
     s_pt = dist_point_glas * inv_dog
-    cross_p = np.array([pos[0] - gx * s_pt, pos[1] - gy * s_pt, pos[2] - gz * s_pt], dtype=np.float64)
+    cross_p = np.array(
+        [pos[0] - gx * s_pt, pos[1] - gy * s_pt, pos[2] - gz * s_pt], dtype=np.float64
+    )
 
     ext_t_z0 = dist_cam_glas + mm_d0
 
@@ -221,21 +269,34 @@ def trans_cam_point(
     tmp_y = cross_p[1] - ag_y
     tmp_z = cross_p[2] - ag_z
 
-    pos_t = np.array([c_sqrt(tmp_x * tmp_x + tmp_y * tmp_y + tmp_z * tmp_z),
-                      0.0, dist_point_glas], dtype=np.float64)
+    pos_t = np.array(
+        [c_sqrt(tmp_x * tmp_x + tmp_y * tmp_y + tmp_z * tmp_z), 0.0, dist_point_glas],
+        dtype=np.float64,
+    )
 
     return pos_t, cross_p, cross_c, ext_t_z0
 
 
 @cython.ccall
 @cython.locals(
-    gx=cython.double, gy=cython.double, gz=cython.double,
-    n_gl=cython.double, inv_ngl=cython.double,
-    s_d=cython.double, ag_x=cython.double, ag_y=cython.double, ag_z=cython.double,
-    tmp_x=cython.double, tmp_y=cython.double, tmp_z=cython.double,
-    n_ve=cython.double, s_z=cython.double,
-    px=cython.double, py=cython.double, pz=cython.double,
-    s_x=cython.double
+    gx=cython.double,
+    gy=cython.double,
+    gz=cython.double,
+    n_gl=cython.double,
+    inv_ngl=cython.double,
+    s_d=cython.double,
+    ag_x=cython.double,
+    ag_y=cython.double,
+    ag_z=cython.double,
+    tmp_x=cython.double,
+    tmp_y=cython.double,
+    tmp_z=cython.double,
+    n_ve=cython.double,
+    s_z=cython.double,
+    px=cython.double,
+    py=cython.double,
+    pz=cython.double,
+    s_x=cython.double,
 )
 def back_trans_point(
     pos_t: cython.double[:],
@@ -292,10 +353,16 @@ def move_along_ray(
 
 @cython.ccall
 @cython.locals(
-    tx=cython.double, ty=cython.double, tz=cython.double,
-    sz=cython.double, iz=cython.int,
-    R=cython.double, sr=cython.double, ir=cython.int,
-    v=cython.int, mmf=cython.double
+    tx=cython.double,
+    ty=cython.double,
+    tz=cython.double,
+    sz=cython.double,
+    iz=cython.int,
+    R=cython.double,
+    sr=cython.double,
+    ir=cython.int,
+    v=cython.int,
+    mmf=cython.double,
 )
 def get_mmf_from_mmlut(
     pos: cython.double[:],
@@ -331,10 +398,14 @@ def get_mmf_from_mmlut(
     v4_3: cython.int = (ir + 1) * mmlut_nz + (iz + 1)
 
     max_v: cython.int = mmlut_nr * mmlut_nz
-    if v4_0 < 0 or v4_0 > max_v: return 0.0
-    if v4_1 < 0 or v4_1 > max_v: return 0.0
-    if v4_2 < 0 or v4_2 > max_v: return 0.0
-    if v4_3 < 0 or v4_3 > max_v: return 0.0
+    if v4_0 < 0 or v4_0 > max_v:
+        return 0.0
+    if v4_1 < 0 or v4_1 > max_v:
+        return 0.0
+    if v4_2 < 0 or v4_2 > max_v:
+        return 0.0
+    if v4_3 < 0 or v4_3 > max_v:
+        return 0.0
 
     # Bilinear interpolation
     mmf = (
@@ -389,14 +460,24 @@ def volumedimension(vpar, cpar, cal):
                 y -= c.int_par.yh
 
                 x, y = correct_brown_affin(
-                    x, y, ap.k1, ap.k2, ap.k3, ap.p1, ap.p2, ap.scx, ap.she)
+                    x, y, ap.k1, ap.k2, ap.k3, ap.p1, ap.p2, ap.scx, ap.she
+                )
 
                 pos, a = ray_tracing(
-                    x, y,
-                    c.ext_par.dm, c.ext_par.x0, c.ext_par.y0, c.ext_par.z0,
+                    x,
+                    y,
+                    c.ext_par.dm,
+                    c.ext_par.x0,
+                    c.ext_par.y0,
+                    c.ext_par.z0,
                     c.int_par.cc,
-                    c.glass_par.vec_x, c.glass_par.vec_y, c.glass_par.vec_z,
-                    mm.n1, mm.n2[0], mm.n3, mm.d[0],
+                    c.glass_par.vec_x,
+                    c.glass_par.vec_y,
+                    c.glass_par.vec_z,
+                    mm.n1,
+                    mm.n2[0],
+                    mm.n3,
+                    mm.d[0],
                 )
 
                 for Z in [Zmin, Zmax]:
@@ -408,10 +489,14 @@ def volumedimension(vpar, cpar, cal):
                         ymin = ymax = Y
                         first = False
                     else:
-                        if X > xmax: xmax = X
-                        if X < xmin: xmin = X
-                        if Y > ymax: ymax = Y
-                        if Y < ymin: ymin = Y
+                        if X > xmax:
+                            xmax = X
+                        if X < xmin:
+                            xmin = X
+                        if Y > ymax:
+                            ymax = Y
+                        if Y < ymin:
+                            ymin = Y
 
     return xmax, xmin, ymax, ymin, Zmax, Zmin
 
@@ -459,34 +544,59 @@ def init_mmlut(vpar, cpar, cal):
     for i in range(2):
         for j in range(2):
             x, y = pixel_to_metric(
-                xc[i], yc[j], cpar.imx, cpar.imy,
-                cpar.pix_x, cpar.pix_y, cpar.chfield,
+                xc[i],
+                yc[j],
+                cpar.imx,
+                cpar.imy,
+                cpar.pix_x,
+                cpar.pix_y,
+                cpar.chfield,
             )
             x -= cal.int_par.xh
             y -= cal.int_par.yh
 
             x, y = correct_brown_affin(
-                x, y,
-                cal.added_par.k1, cal.added_par.k2, cal.added_par.k3,
-                cal.added_par.p1, cal.added_par.p2,
-                cal.added_par.scx, cal.added_par.she,
+                x,
+                y,
+                cal.added_par.k1,
+                cal.added_par.k2,
+                cal.added_par.k3,
+                cal.added_par.p1,
+                cal.added_par.p2,
+                cal.added_par.scx,
+                cal.added_par.she,
             )
 
             pos, a = ray_tracing(
-                x, y,
+                x,
+                y,
                 cal.ext_par.dm,
-                cal.ext_par.x0, cal.ext_par.y0, cal.ext_par.z0,
+                cal.ext_par.x0,
+                cal.ext_par.y0,
+                cal.ext_par.z0,
                 cal.int_par.cc,
-                cal.glass_par.vec_x, cal.glass_par.vec_y, cal.glass_par.vec_z,
-                cpar.mm.n1, cpar.mm.n2[0], cpar.mm.n3, cpar.mm.d[0],
+                cal.glass_par.vec_x,
+                cal.glass_par.vec_y,
+                cal.glass_par.vec_z,
+                cpar.mm.n1,
+                cpar.mm.n2[0],
+                cpar.mm.n3,
+                cpar.mm.d[0],
             )
 
             xyz = move_along_ray(Zmin, pos, a)
             xyz_t, cross_p, cross_c, ext_t_z0 = trans_cam_point(
                 xyz,
-                cal.ext_par.x0, cal.ext_par.y0, cal.ext_par.z0,
-                cal.glass_par.vec_x, cal.glass_par.vec_y, cal.glass_par.vec_z,
-                cpar.mm.n1, cpar.mm.n2[0], cpar.mm.n3, cpar.mm.d[0],
+                cal.ext_par.x0,
+                cal.ext_par.y0,
+                cal.ext_par.z0,
+                cal.glass_par.vec_x,
+                cal.glass_par.vec_y,
+                cal.glass_par.vec_z,
+                cpar.mm.n1,
+                cpar.mm.n2[0],
+                cpar.mm.n3,
+                cpar.mm.d[0],
             )
             cal_t_x0 = 0.0
             cal_t_y0 = 0.0
@@ -504,9 +614,16 @@ def init_mmlut(vpar, cpar, cal):
             xyz = move_along_ray(Zmax, pos, a)
             xyz_t, cross_p, cross_c, ext_t_z0 = trans_cam_point(
                 xyz,
-                cal.ext_par.x0, cal.ext_par.y0, cal.ext_par.z0,
-                cal.glass_par.vec_x, cal.glass_par.vec_y, cal.glass_par.vec_z,
-                cpar.mm.n1, cpar.mm.n2[0], cpar.mm.n3, cpar.mm.d[0],
+                cal.ext_par.x0,
+                cal.ext_par.y0,
+                cal.ext_par.z0,
+                cal.glass_par.vec_x,
+                cal.glass_par.vec_y,
+                cal.glass_par.vec_z,
+                cpar.mm.n1,
+                cpar.mm.n2[0],
+                cpar.mm.n3,
+                cpar.mm.d[0],
             )
             cal_t_x0 = 0.0
             cal_t_y0 = 0.0
@@ -534,10 +651,17 @@ def init_mmlut(vpar, cpar, cal):
     if cal.mmlut.data is None:
         if cpar.mm.nlay == 1:
             data = _init_mmlut_data_fast(
-                nr, nz, rw,
-                cal_t_x0, cal_t_y0, cal_t_z0,
+                nr,
+                nz,
+                rw,
+                cal_t_x0,
+                cal_t_y0,
+                cal_t_z0,
                 Zmin_t,
-                cpar.mm.n1, cpar.mm.n2[0], cpar.mm.n3, cpar.mm.d[0],
+                cpar.mm.n1,
+                cpar.mm.n2[0],
+                cpar.mm.n3,
+                cpar.mm.d[0],
             )
         else:
             Ri = np.arange(nr) * rw
@@ -545,11 +669,20 @@ def init_mmlut(vpar, cpar, cal):
             data = np.zeros(nr * nz, dtype=np.float64)
             for i in range(nr):
                 for j in range(nz):
-                    xyz = np.array([Ri[i] + cal_t_x0, cal_t_y0, Zi[j]], dtype=np.float64)
+                    xyz = np.array(
+                        [Ri[i] + cal_t_x0, cal_t_y0, Zi[j]], dtype=np.float64
+                    )
                     data[i * nz + j] = multimed_r_nlay_iterative(
-                        xyz[0], xyz[1], xyz[2],
-                        cal_t_x0, cal_t_y0, cal_t_z0,
-                        cpar.mm.n1, cpar.mm.n2[0], cpar.mm.n3, cpar.mm.d[0],
+                        xyz[0],
+                        xyz[1],
+                        xyz[2],
+                        cal_t_x0,
+                        cal_t_y0,
+                        cal_t_z0,
+                        cpar.mm.n1,
+                        cpar.mm.n2[0],
+                        cpar.mm.n3,
+                        cpar.mm.d[0],
                         cpar.mm.nlay,
                         mm_n2=cpar.mm.n2,
                         mm_d=cpar.mm.d,

@@ -3,8 +3,13 @@ import pytest
 from pathlib import Path
 
 from openptv2.algorithms.orientation import (
-    read_man_ori_fix, read_calblock, raw_orient, orient,
-    skew_midpoint, point_position, weighted_dumbbell_precision,
+    read_man_ori_fix,
+    read_calblock,
+    raw_orient,
+    orient,
+    skew_midpoint,
+    point_position,
+    weighted_dumbbell_precision,
 )
 from openptv2.algorithms.calibration import Calibration
 from openptv2.algorithms.parameters import ControlPar, OrientPar, MultimediaPar
@@ -19,15 +24,19 @@ EPS = 1e-6
 def _has_optv():
     try:
         from optv.orientation import (
-            external_calibration, full_calibration,
-            point_positions, dumbbell_target_func,
+            external_calibration,
+            full_calibration,
+            point_positions,
+            dumbbell_target_func,
         )
+
         return True
     except ImportError:
         return False
 
 
 # --- Unit tests ---
+
 
 def test_file_reading():
     f1 = Path("test_data/calibration/calblock.txt")
@@ -40,19 +49,25 @@ def test_file_reading():
     assert fix4 is not None, "read_man_ori_fix failed completely"
     assert len(fix4) == 4
 
+
 def test_calblock_content():
     f1 = Path("test_data/calibration/calblock.txt")
     fix, num_fix = read_calblock(f1)
     assert fix is not None, "read_calblock failed"
     assert num_fix > 0
 
+
 def test_raw_orient():
-    fix4_wrong = read_man_ori_fix("test_data/calibration/calblock.txt",
-                                  "test_data/parameters/wrong_man_ori.par", 0)
+    fix4_wrong = read_man_ori_fix(
+        "test_data/calibration/calblock.txt",
+        "test_data/parameters/wrong_man_ori.par",
+        0,
+    )
     assert fix4_wrong is None
 
-    fix4 = read_man_ori_fix("test_data/calibration/calblock.txt",
-                            "test_data/parameters/man_ori.par", 0)
+    fix4 = read_man_ori_fix(
+        "test_data/calibration/calblock.txt", "test_data/parameters/man_ori.par", 0
+    )
     assert fix4 is not None
     assert len(fix4) == 4
     assert fix4[3][2] == 8.0
@@ -80,14 +95,15 @@ def test_raw_orient():
     assert success is True
 
     diff = (
-        abs(cal.ext_par.x0 - org_cal.ext_par.x0) +
-        abs(cal.ext_par.y0 - org_cal.ext_par.y0) +
-        abs(cal.ext_par.z0 - org_cal.ext_par.z0) +
-        abs(cal.ext_par.omega - org_cal.ext_par.omega) +
-        abs(cal.ext_par.phi - org_cal.ext_par.phi) +
-        abs(cal.ext_par.kappa - org_cal.ext_par.kappa)
+        abs(cal.ext_par.x0 - org_cal.ext_par.x0)
+        + abs(cal.ext_par.y0 - org_cal.ext_par.y0)
+        + abs(cal.ext_par.z0 - org_cal.ext_par.z0)
+        + abs(cal.ext_par.omega - org_cal.ext_par.omega)
+        + abs(cal.ext_par.phi - org_cal.ext_par.phi)
+        + abs(cal.ext_par.kappa - org_cal.ext_par.kappa)
     )
     assert diff < 1e-3
+
 
 def test_orient():
     fix = np.zeros((64, 3))
@@ -128,12 +144,12 @@ def test_orient():
     org_cal = Calibration.from_file(ori_file, add_file)
 
     diff = (
-        abs(cal.ext_par.x0 - org_cal.ext_par.x0) +
-        abs(cal.ext_par.y0 - org_cal.ext_par.y0) +
-        abs(cal.ext_par.z0 - org_cal.ext_par.z0) +
-        abs(cal.ext_par.omega - org_cal.ext_par.omega) +
-        abs(cal.ext_par.phi - org_cal.ext_par.phi) +
-        abs(cal.ext_par.kappa - org_cal.ext_par.kappa)
+        abs(cal.ext_par.x0 - org_cal.ext_par.x0)
+        + abs(cal.ext_par.y0 - org_cal.ext_par.y0)
+        + abs(cal.ext_par.z0 - org_cal.ext_par.z0)
+        + abs(cal.ext_par.omega - org_cal.ext_par.omega)
+        + abs(cal.ext_par.phi - org_cal.ext_par.phi)
+        + abs(cal.ext_par.kappa - org_cal.ext_par.kappa)
     )
     assert diff < 1e-6
 
@@ -155,29 +171,31 @@ def test_orient():
     assert resi is not None
 
     diff = (
-        abs(cal.ext_par.x0 - org_cal.ext_par.x0) +
-        abs(cal.ext_par.y0 - org_cal.ext_par.y0) +
-        abs(cal.ext_par.z0 - org_cal.ext_par.z0) +
-        abs(cal.ext_par.omega - org_cal.ext_par.omega) / 180 +
-        abs(cal.ext_par.phi - org_cal.ext_par.phi) / 180 +
-        abs(cal.ext_par.kappa - org_cal.ext_par.kappa) / 180
+        abs(cal.ext_par.x0 - org_cal.ext_par.x0)
+        + abs(cal.ext_par.y0 - org_cal.ext_par.y0)
+        + abs(cal.ext_par.z0 - org_cal.ext_par.z0)
+        + abs(cal.ext_par.omega - org_cal.ext_par.omega) / 180
+        + abs(cal.ext_par.phi - org_cal.ext_par.phi) / 180
+        + abs(cal.ext_par.kappa - org_cal.ext_par.kappa) / 180
     )
     assert abs(diff - 19.495073) < 1e-6
 
+
 def test_ray_distance_midpoint():
-    pos1 = np.array([0., 0., 0.])
-    dir1 = np.array([1., 0., 0.])
-    pos2 = np.array([0., 0., 1.])
-    dir2 = np.array([0., 1., 0.])
-    skew_midp = np.array([0., 0., 0.5])
+    pos1 = np.array([0.0, 0.0, 0.0])
+    dir1 = np.array([1.0, 0.0, 0.0])
+    pos2 = np.array([0.0, 0.0, 1.0])
+    dir2 = np.array([0.0, 1.0, 0.0])
+    skew_midp = np.array([0.0, 0.0, 0.5])
 
     dist, midpoint = skew_midpoint(pos1, dir1, pos2, dir2)
-    assert abs(dist - 1.) < EPS
+    assert abs(dist - 1.0) < EPS
     assert vec_cmp(midpoint, skew_midp)
 
     dist, midpoint = skew_midpoint(pos1, dir1, dir1, dir2)
-    assert abs(dist - 0.) < EPS
+    assert abs(dist - 0.0) < EPS
     assert vec_cmp(midpoint, dir1)
+
 
 def test_point_position():
     num_cams = 4
@@ -186,9 +204,9 @@ def test_point_position():
 
     calib = []
     ori_tmpl = "test_data/calibration/sym_cam{}.tif.ori"
-    media_par = MultimediaPar(n1=1., n2=[1.0], d=[1.0], n3=1.)
+    media_par = MultimediaPar(n1=1.0, n2=[1.0], d=[1.0], n3=1.0)
 
-    point = np.array([17., 42., 0.])
+    point = np.array([17.0, 42.0, 0.0])
     jigg_amp = 0.5
 
     for cam in range(num_cams):
@@ -200,7 +218,7 @@ def test_point_position():
         targs_plain[cam, 0] = xp
         targs_plain[cam, 1] = yp
 
-        jigged = vec_copy(point)
+        jigged = point.copy()
         jigged[1] += jigg_amp if cam % 2 else -jigg_amp
         xp, yp = img_coord(jigged, cal, media_par)
         targs_jigged[cam, 0] = xp
@@ -217,6 +235,7 @@ def test_point_position():
     diff = vec_subt(point, res)
     assert vec_norm(diff) < 0.01
 
+
 def test_convergence_measure():
     num_cams = 4
     num_pts = 16
@@ -227,7 +246,7 @@ def test_convergence_measure():
     calib = []
 
     ori_tmpl = "test_data/calibration/sym_cam{}.tif.ori"
-    media_par = MultimediaPar(n1=1., n2=[1.0], d=[1.0], n3=1.)
+    media_par = MultimediaPar(n1=1.0, n2=[1.0], d=[1.0], n3=1.0)
 
     for cam in range(num_cams):
         ori_name = ori_tmpl.format(cam + 1)
@@ -237,7 +256,7 @@ def test_convergence_measure():
     for cpt_horz in range(4):
         for cpt_vert in range(4):
             cpt_ix = cpt_horz * 4 + cpt_vert
-            known[cpt_ix] = np.array([cpt_vert * 10., cpt_horz * 10., 0.])
+            known[cpt_ix] = np.array([cpt_vert * 10.0, cpt_horz * 10.0, 0.0])
 
     for cpt_ix in range(num_pts):
         for cam in range(num_cams):
@@ -245,24 +264,30 @@ def test_convergence_measure():
             targets[cpt_ix, cam, 0] = xp
             targets[cpt_ix, cam, 1] = yp
 
-    dist = weighted_dumbbell_precision(targets, num_pts, num_cams, media_par, calib, 1, 0)
+    dist = weighted_dumbbell_precision(
+        targets, num_pts, num_cams, media_par, calib, 1, 0
+    )
     assert abs(dist) < 1e-10
 
-    dist = weighted_dumbbell_precision(targets, num_pts, num_cams, media_par, calib, 10, 10)
+    dist = weighted_dumbbell_precision(
+        targets, num_pts, num_cams, media_par, calib, 10, 10
+    )
     assert abs(dist) < 1e-10
 
     for cam in range(num_cams):
         calib[cam].ext_par.y0 += jigg_amp if cam % 2 else -jigg_amp
 
         for cpt_ix in range(num_pts):
-            jigged = vec_copy(known[cpt_ix])
+            jigged = list(vec_copy(known[cpt_ix]))
             jigged[1] += jigg_amp if cam % 2 else -jigg_amp
 
             xp, yp = img_coord(jigged, calib[cam], media_par)
             targets[cpt_ix, cam, 0] = xp
             targets[cpt_ix, cam, 1] = yp
 
-    jigged_skew_dist = weighted_dumbbell_precision(targets, num_pts, num_cams, media_par, calib, 1, 0)
+    jigged_skew_dist = weighted_dumbbell_precision(
+        targets, num_pts, num_cams, media_par, calib, 1, 0
+    )
     jigged_correct = 16 * 4 * (2 * jigg_amp) / (16 * 6)
 
     assert abs(jigged_skew_dist - jigged_correct) < 0.05
@@ -296,12 +321,14 @@ def test_external_calibration_parity():
     add_file = "test_data/calibration/cam1.tif.addpar"
     control_file = "test_data/corresp/control.par"
 
-    ref_pts = np.array([
-        [-40.0, -25.0, 8.0],
-        [40.0, -15.0, 0.0],
-        [40.0, 15.0, 0.0],
-        [40.0, 0.0, 8.0],
-    ])
+    ref_pts = np.array(
+        [
+            [-40.0, -25.0, 8.0],
+            [40.0, -15.0, 0.0],
+            [40.0, 15.0, 0.0],
+            [40.0, 0.0, 8.0],
+        ]
+    )
 
     # --- C/Cython path ---
     c_cal = CCalib()
@@ -338,10 +365,12 @@ def test_external_calibration_parity():
     py_pos = np.array([py_cal.ext_par.x0, py_cal.ext_par.y0, py_cal.ext_par.z0])
     py_ang = np.array([py_cal.ext_par.omega, py_cal.ext_par.phi, py_cal.ext_par.kappa])
 
-    np.testing.assert_allclose(py_pos, c_pos, atol=1e-3,
-                               err_msg="Position mismatch after raw_orient")
-    np.testing.assert_allclose(py_ang, c_ang, atol=1e-4,
-                               err_msg="Angles mismatch after raw_orient")
+    np.testing.assert_allclose(
+        py_pos, c_pos, atol=1e-3, err_msg="Position mismatch after raw_orient"
+    )
+    np.testing.assert_allclose(
+        py_ang, c_ang, atol=1e-4, err_msg="Angles mismatch after raw_orient"
+    )
 
 
 @pytest.mark.skipif(not _has_optv(), reason="optv (Cython bindings) not available")
@@ -414,10 +443,12 @@ def test_full_calibration_parity():
     py_pos = np.array([py_cal.ext_par.x0, py_cal.ext_par.y0, py_cal.ext_par.z0])
     py_ang = np.array([py_cal.ext_par.omega, py_cal.ext_par.phi, py_cal.ext_par.kappa])
 
-    np.testing.assert_allclose(py_pos, c_pos, atol=1e-3,
-                               err_msg="Position mismatch after orient")
-    np.testing.assert_allclose(py_ang, c_ang, atol=1e-4,
-                               err_msg="Angles mismatch after orient")
+    np.testing.assert_allclose(
+        py_pos, c_pos, atol=1e-3, err_msg="Position mismatch after orient"
+    )
+    np.testing.assert_allclose(
+        py_ang, c_ang, atol=1e-4, err_msg="Angles mismatch after orient"
+    )
 
 
 @pytest.mark.skipif(not _has_optv(), reason="optv (Cython bindings) not available")
@@ -457,7 +488,11 @@ def test_full_calibration_with_flags_parity():
     c_cal.set_angles(c_cal.get_angles() + np.r_[-0.5, 0.5, -0.5])
 
     c_ret, c_used, c_err = full_calibration(
-        c_cal, ref_pts, target_array, c_cpar, flags=['cc', 'xh'],
+        c_cal,
+        ref_pts,
+        target_array,
+        c_cpar,
+        flags=["cc", "xh"],
     )
 
     # --- Python path ---
@@ -495,19 +530,25 @@ def test_full_calibration_with_flags_parity():
     py_ang = np.array([py_cal.ext_par.omega, py_cal.ext_par.phi, py_cal.ext_par.kappa])
     py_pp = np.array([py_cal.int_par.xh, py_cal.int_par.yh, py_cal.int_par.cc])
 
-    np.testing.assert_allclose(py_pos, c_pos, atol=1e-3,
-                               err_msg="Position mismatch after orient with flags")
-    np.testing.assert_allclose(py_ang, c_ang, atol=1e-4,
-                               err_msg="Angles mismatch after orient with flags")
-    np.testing.assert_allclose(py_pp, c_pp, atol=1e-3,
-                               err_msg="Primary point mismatch after orient with flags")
+    np.testing.assert_allclose(
+        py_pos, c_pos, atol=1e-3, err_msg="Position mismatch after orient with flags"
+    )
+    np.testing.assert_allclose(
+        py_ang, c_ang, atol=1e-4, err_msg="Angles mismatch after orient with flags"
+    )
+    np.testing.assert_allclose(
+        py_pp, c_pp, atol=1e-3, err_msg="Primary point mismatch after orient with flags"
+    )
 
 
 @pytest.mark.skipif(not _has_optv(), reason="optv (Cython bindings) not available")
 def test_point_positions_parity():
     """Compare Python point_position against C point_positions (multi-cam)."""
     from optv.calibration import Calibration as CCalib
-    from optv.parameters import ControlParams as CControlParams, VolumeParams as CVolumeParams
+    from optv.parameters import (
+        ControlParams as CControlParams,
+        VolumeParams as CVolumeParams,
+    )
     from optv.orientation import point_positions
     from optv.imgcoord import image_coordinates
 
@@ -550,7 +591,7 @@ def test_point_positions_parity():
     c_res, c_rcm = point_positions(c_targs, c_cpar, c_calibs, c_vpar)
 
     # --- Python path ---
-    media_par = MultimediaPar(n1=1., n2=[1.0], d=[1.0], n3=1.)
+    media_par = MultimediaPar(n1=1.0, n2=[1.0], d=[1.0], n3=1.0)
 
     py_targs = np.zeros((num_cams, 2))
     py_results = []
@@ -570,10 +611,10 @@ def test_point_positions_parity():
     py_rcm = np.array(py_rcms)
 
     # --- Compare ---
-    np.testing.assert_allclose(py_res, c_res, atol=1e-6,
-                               err_msg="3D positions differ")
-    np.testing.assert_allclose(py_rcm, c_rcm, atol=1e-10,
-                               err_msg="Ray convergence measures differ")
+    np.testing.assert_allclose(py_res, c_res, atol=1e-6, err_msg="3D positions differ")
+    np.testing.assert_allclose(
+        py_rcm, c_rcm, atol=1e-10, err_msg="Ray convergence measures differ"
+    )
 
 
 @pytest.mark.skipif(not _has_optv(), reason="optv (Cython bindings) not available")
@@ -618,7 +659,7 @@ def test_dumbbell_parity():
     c_tf_wrong = dumbbell_target_func(c_targs, c_cpar, c_calibs, 25.0, 1.0)
 
     # --- Python path ---
-    media_par = MultimediaPar(n1=1., n2=[1.0], d=[1.0], n3=1.)
+    media_par = MultimediaPar(n1=1.0, n2=[1.0], d=[1.0], n3=1.0)
 
     py_targs = np.zeros((len(points), num_cams, 2))
     for pt_idx in range(len(points)):
@@ -628,13 +669,31 @@ def test_dumbbell_parity():
             py_targs[pt_idx, cam, 1] = yp
 
     py_tf = weighted_dumbbell_precision(
-        py_targs, len(points), num_cams, media_par, py_calibs, 35.0, 0.0,
+        py_targs,
+        len(points),
+        num_cams,
+        media_par,
+        py_calibs,
+        35.0,
+        0.0,
     )
     py_tf_w = weighted_dumbbell_precision(
-        py_targs, len(points), num_cams, media_par, py_calibs, 35.0, 1.0,
+        py_targs,
+        len(points),
+        num_cams,
+        media_par,
+        py_calibs,
+        35.0,
+        1.0,
     )
     py_tf_wrong = weighted_dumbbell_precision(
-        py_targs, len(points), num_cams, media_par, py_calibs, 25.0, 1.0,
+        py_targs,
+        len(points),
+        num_cams,
+        media_par,
+        py_calibs,
+        25.0,
+        1.0,
     )
 
     # Both should be near-zero (perfect convergence with n1=n2=n3=1)

@@ -21,7 +21,7 @@ else:
 def _ray_tracing_core(
     x: cython.double,
     y: cython.double,
-    ext_dm: cython.double[:, :],
+    ext_dm: cython.double[:, ::1],
     ext_x0: cython.double,
     ext_y0: cython.double,
     ext_z0: cython.double,
@@ -43,20 +43,36 @@ def _ray_tracing_core(
     tz: cython.double = -int_cc / norm_tmp1
 
     # Transform to global coordinate system (ext_dm @ tmp1)
-    start_dir_x: cython.double = ext_dm[0, 0] * tx + ext_dm[0, 1] * ty + ext_dm[0, 2] * tz
-    start_dir_y: cython.double = ext_dm[1, 0] * tx + ext_dm[1, 1] * ty + ext_dm[1, 2] * tz
-    start_dir_z: cython.double = ext_dm[2, 0] * tx + ext_dm[2, 1] * ty + ext_dm[2, 2] * tz
+    start_dir_x: cython.double = (
+        ext_dm[0, 0] * tx + ext_dm[0, 1] * ty + ext_dm[0, 2] * tz
+    )
+    start_dir_y: cython.double = (
+        ext_dm[1, 0] * tx + ext_dm[1, 1] * ty + ext_dm[1, 2] * tz
+    )
+    start_dir_z: cython.double = (
+        ext_dm[2, 0] * tx + ext_dm[2, 1] * ty + ext_dm[2, 2] * tz
+    )
 
     # Glass normal (unit vector)
-    norm_glass: cython.double = c_sqrt(glass_vec_x * glass_vec_x + glass_vec_y * glass_vec_y + glass_vec_z * glass_vec_z)
+    norm_glass: cython.double = c_sqrt(
+        glass_vec_x * glass_vec_x
+        + glass_vec_y * glass_vec_y
+        + glass_vec_z * glass_vec_z
+    )
     glass_dir_x: cython.double = glass_vec_x / norm_glass
     glass_dir_y: cython.double = glass_vec_y / norm_glass
     glass_dir_z: cython.double = glass_vec_z / norm_glass
     c: cython.double = norm_glass + mm_d0
 
     # Project start ray on glass vector to find n1/n2 interface
-    dist_cam_glass: cython.double = (glass_dir_x * ext_x0 + glass_dir_y * ext_y0 + glass_dir_z * ext_z0) - c
-    dot_glass_start: cython.double = glass_dir_x * start_dir_x + glass_dir_y * start_dir_y + glass_dir_z * start_dir_z
+    dist_cam_glass: cython.double = (
+        glass_dir_x * ext_x0 + glass_dir_y * ext_y0 + glass_dir_z * ext_z0
+    ) - c
+    dot_glass_start: cython.double = (
+        glass_dir_x * start_dir_x
+        + glass_dir_y * start_dir_y
+        + glass_dir_z * start_dir_z
+    )
     d1: cython.double = -dist_cam_glass / dot_glass_start
 
     # Xb = primary_point + start_dir * d1
@@ -65,7 +81,11 @@ def _ray_tracing_core(
     Xb_z: cython.double = ext_z0 + start_dir_z * d1
 
     # Decompose ray into glass-normal and glass-parallel components
-    n: cython.double = start_dir_x * glass_dir_x + start_dir_y * glass_dir_y + start_dir_z * glass_dir_z
+    n: cython.double = (
+        start_dir_x * glass_dir_x
+        + start_dir_y * glass_dir_y
+        + start_dir_z * glass_dir_z
+    )
     bp_x: cython.double = start_dir_x - glass_dir_x * n
     bp_y: cython.double = start_dir_y - glass_dir_y * n
     bp_z: cython.double = start_dir_z - glass_dir_z * n
@@ -83,8 +103,10 @@ def _ray_tracing_core(
     a2_x: cython.double = bp_x * p + glass_dir_x * n_glass
     a2_y: cython.double = bp_y * p + glass_dir_y * n_glass
     a2_z: cython.double = bp_z * p + glass_dir_z * n_glass
-    
-    dot_glass_a2: cython.double = glass_dir_x * a2_x + glass_dir_y * a2_y + glass_dir_z * a2_z
+
+    dot_glass_a2: cython.double = (
+        glass_dir_x * a2_x + glass_dir_y * a2_y + glass_dir_z * a2_z
+    )
     d2: cython.double = mm_d0 / abs(dot_glass_a2)
 
     # Point X on horizontal plane between n2, n3
@@ -124,7 +146,7 @@ def _ray_tracing_core(
 def ray_tracing(
     x: cython.double,
     y: cython.double,
-    ext_dm: cython.double[:, :],
+    ext_dm: cython.double[:, ::1],
     ext_x0: cython.double,
     ext_y0: cython.double,
     ext_z0: cython.double,
@@ -160,12 +182,24 @@ def ray_tracing(
     """
     pos = np.empty(3, dtype=np.float64)
     direction = np.empty(3, dtype=np.float64)
-    
+
     _ray_tracing_core(
-        x, y, ext_dm, ext_x0, ext_y0, ext_z0, int_cc,
-        glass_vec_x, glass_vec_y, glass_vec_z,
-        mm_n1, mm_n2_0, mm_n3, mm_d0,
-        pos, direction
+        x,
+        y,
+        ext_dm,
+        ext_x0,
+        ext_y0,
+        ext_z0,
+        int_cc,
+        glass_vec_x,
+        glass_vec_y,
+        glass_vec_z,
+        mm_n1,
+        mm_n2_0,
+        mm_n3,
+        mm_d0,
+        pos,
+        direction,
     )
     return pos, direction
 
@@ -205,13 +239,19 @@ def ray_tracing_batch(xy, cal, mm):
     mm_d0: cython.double = mm.d[0]
 
     # Hoist point-independent calculations from _ray_tracing_core
-    norm_glass: cython.double = c_sqrt(glass_vec_x * glass_vec_x + glass_vec_y * glass_vec_y + glass_vec_z * glass_vec_z)
+    norm_glass: cython.double = c_sqrt(
+        glass_vec_x * glass_vec_x
+        + glass_vec_y * glass_vec_y
+        + glass_vec_z * glass_vec_z
+    )
     glass_dir_x: cython.double = glass_vec_x / norm_glass
     glass_dir_y: cython.double = glass_vec_y / norm_glass
     glass_dir_z: cython.double = glass_vec_z / norm_glass
     c: cython.double = norm_glass + mm_d0
 
-    dist_cam_glass: cython.double = (glass_dir_x * ext_x0 + glass_dir_y * ext_y0 + glass_dir_z * ext_z0) - c
+    dist_cam_glass: cython.double = (
+        glass_dir_x * ext_x0 + glass_dir_y * ext_y0 + glass_dir_z * ext_z0
+    ) - c
 
     i: cython.int
     x: cython.double
@@ -265,7 +305,11 @@ def ray_tracing_batch(xy, cal, mm):
         start_dir_z = ext_dm[2, 0] * tx + ext_dm[2, 1] * ty + ext_dm[2, 2] * tz
 
         # Project start ray on glass vector to find n1/n2 interface
-        dot_glass_start = glass_dir_x * start_dir_x + glass_dir_y * start_dir_y + glass_dir_z * start_dir_z
+        dot_glass_start = (
+            glass_dir_x * start_dir_x
+            + glass_dir_y * start_dir_y
+            + glass_dir_z * start_dir_z
+        )
         d1 = -dist_cam_glass / dot_glass_start
 
         # Xb = primary_point + start_dir * d1
@@ -274,7 +318,11 @@ def ray_tracing_batch(xy, cal, mm):
         Xb_z = ext_z0 + start_dir_z * d1
 
         # Decompose ray into glass-normal and glass-parallel components
-        n_dot = start_dir_x * glass_dir_x + start_dir_y * glass_dir_y + start_dir_z * glass_dir_z
+        n_dot = (
+            start_dir_x * glass_dir_x
+            + start_dir_y * glass_dir_y
+            + start_dir_z * glass_dir_z
+        )
         bp_x = start_dir_x - glass_dir_x * n_dot
         bp_y = start_dir_y - glass_dir_y * n_dot
         bp_z = start_dir_z - glass_dir_z * n_dot
@@ -292,7 +340,7 @@ def ray_tracing_batch(xy, cal, mm):
         a2_x = bp_x * p + glass_dir_x * n_glass
         a2_y = bp_y * p + glass_dir_y * n_glass
         a2_z = bp_z * p + glass_dir_z * n_glass
-        
+
         dot_glass_a2 = glass_dir_x * a2_x + glass_dir_y * a2_y + glass_dir_z * a2_z
         d2 = mm_d0 / abs(dot_glass_a2)
 

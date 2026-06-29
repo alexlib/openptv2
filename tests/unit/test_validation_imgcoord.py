@@ -29,9 +29,8 @@ except ImportError:
 # Helper to load interpreted/fallback version of algorithms/imgcoord.py
 def load_interpreted_imgcoord():
     path = Path(__file__).parent.parent.parent / "src" / "openptv2" / "algorithms" / "imgcoord.py"
-    spec = importlib.util.spec_from_file_location("algorithms.imgcoord_fallback", str(path))
+    spec = importlib.util.spec_from_file_location("openptv2.algorithms.imgcoord_fallback", str(path))
     module = importlib.util.module_from_spec(spec)
-    module.__package__ = "openptv2.algorithms"
     # Ensure a clean module namespace
     sys.modules["openptv2.algorithms.imgcoord_fallback"] = module
     spec.loader.exec_module(module)

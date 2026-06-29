@@ -14,14 +14,14 @@ from openptv2.gui.experiment import Experiment
 from openptv2.gui.parameter_manager import ParameterManager
 
 
-def test_parameter_access_performance():
+def _run_parameter_access_performance():
     """Test different parameter access patterns for performance"""
 
     # Setup experiment with test_cavity data
     test_cavity_path = Path(__file__).parent.parent.parent / "test_data" / "test_cavity"
     if not test_cavity_path.exists():
         print("Test cavity not found, skipping performance test")
-        return
+        return None
 
     import os
 
@@ -121,13 +121,18 @@ def test_parameter_access_performance():
         os.chdir(original_cwd)
 
 
-def test_parameter_change_scenarios():
+def test_parameter_access_performance():
+    """Test parameter access performance without returning a value to pytest."""
+    _run_parameter_access_performance()
+
+
+def _run_parameter_change_scenarios():
     """Test different scenarios for parameter changes"""
 
     test_cavity_path = Path(__file__).parent.parent.parent / "test_data" / "test_cavity"
     if not test_cavity_path.exists():
         print("Test cavity not found, skipping change scenarios test")
-        return
+        return None
 
     import os
 
@@ -197,9 +202,14 @@ def test_parameter_change_scenarios():
         os.chdir(original_cwd)
 
 
+def test_parameter_change_scenarios():
+    """Test parameter change scenarios without returning a value to pytest."""
+    _run_parameter_change_scenarios()
+
+
 if __name__ == "__main__":
-    perf_results = test_parameter_access_performance()
-    change_results = test_parameter_change_scenarios()
+    perf_results = _run_parameter_access_performance()
+    change_results = _run_parameter_change_scenarios()
 
     print("\n=== RECOMMENDATIONS ===")
     if perf_results:

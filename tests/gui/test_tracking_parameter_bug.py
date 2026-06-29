@@ -11,8 +11,8 @@ from openptv2.gui.parameter_manager import ParameterManager
 class TestTrackingParameterBug:
     """Test class to debug tracking parameter translation issues."""
 
-    def test_cavity_tracking_parameter_translation(self):
-        """Test tracking parameter translation in test_cavity to debug poor tracking performance."""
+    def _run_cavity_tracking_parameter_translation(self):
+        """Run tracking parameter translation in test_cavity to debug poor tracking performance."""
 
         # Load test_cavity parameters
         test_cavity_path = (
@@ -172,8 +172,12 @@ class TestTrackingParameterBug:
         finally:
             os.chdir(original_cwd)
 
-    def test_splitter_tracking_parameter_translation(self):
-        """Test tracking parameter translation in test_splitter for comparison."""
+    def test_cavity_tracking_parameter_translation(self):
+        """Test cavity tracking parameter translation without returning a value to pytest."""
+        self._run_cavity_tracking_parameter_translation()
+
+    def _run_splitter_tracking_parameter_translation(self):
+        """Run tracking parameter translation in test_splitter for comparison."""
 
         test_splitter_path = (
             Path(__file__).parent.parent.parent / "test_data" / "test_splitter"
@@ -225,8 +229,14 @@ class TestTrackingParameterBug:
             print(f"  Y range: {vel_range_y}")
             print(f"  Z range: {vel_range_z}")
 
+            return translated_params
+
         finally:
             os.chdir(original_cwd)
+
+    def test_splitter_tracking_parameter_translation(self):
+        """Test splitter tracking parameter translation without returning a value to pytest."""
+        self._run_splitter_tracking_parameter_translation()
 
     def test_parameter_comparison(self):
         """Compare parameters between test_cavity and test_splitter to identify differences."""
@@ -235,8 +245,8 @@ class TestTrackingParameterBug:
 
         # This test will run after the other two and compare their results
         # For now, just run both and let the user compare the output
-        cavity_result = self.test_cavity_tracking_parameter_translation()
-        splitter_result = self.test_splitter_tracking_parameter_translation()
+        cavity_result = self._run_cavity_tracking_parameter_translation()
+        splitter_result = self._run_splitter_tracking_parameter_translation()
 
         print("\n=== COMPARISON COMPLETE ===")
         print(

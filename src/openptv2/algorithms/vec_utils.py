@@ -33,6 +33,7 @@ def is_empty(x: cython.double) -> cython.bint:
 # Single-vector operations (direct translations of C functions)
 # ---------------------------------------------------------------------------
 
+
 @cython.ccall
 def vec_init() -> np.ndarray:
     """Return a 3D vector initialized to NaN.
@@ -44,33 +45,33 @@ def vec_init() -> np.ndarray:
 
 
 @cython.ccall
-def vec_set(x: cython.double, y: cython.double, z: cython.double) -> np.ndarray:
+def vec_set(x: cython.double, y: cython.double, z: cython.double) -> tuple:
     """Create a 3D vector from components.
 
     Args:
         x, y, z: vector components.
 
     Returns:
-        ndarray of shape (3,) with [x, y, z].
+        tuple of (x, y, z).
     """
-    return np.array([x, y, z], dtype=np.float64)
+    return (x, y, z)
 
 
 @cython.ccall
-def vec_copy(src: cython.double[:]) -> np.ndarray:
+def vec_copy(src: cython.double[:]) -> tuple:
     """Copy a 3D vector.
 
     Args:
         src: source vector of shape (3,).
 
     Returns:
-        A new ndarray copy.
+        A tuple copy of (src[0], src[1], src[2]).
     """
-    return np.array([src[0], src[1], src[2]], dtype=np.float64)
+    return (src[0], src[1], src[2])
 
 
 @cython.ccall
-def vec_subt(from_vec: cython.double[:], sub: cython.double[:]) -> np.ndarray:
+def vec_subt(from_vec: cython.double[:], sub: cython.double[:]) -> tuple:
     """Subtract two 3D vectors.
 
     Args:
@@ -78,34 +79,34 @@ def vec_subt(from_vec: cython.double[:], sub: cython.double[:]) -> np.ndarray:
         sub: vector to subtract.
 
     Returns:
-        from_vec - sub as ndarray of shape (3,).
+        from_vec - sub as tuple of (x, y, z).
     """
-    return np.array([
+    return (
         from_vec[0] - sub[0],
         from_vec[1] - sub[1],
-        from_vec[2] - sub[2]
-    ], dtype=np.float64)
+        from_vec[2] - sub[2],
+    )
 
 
 @cython.ccall
-def vec_add(vec1: cython.double[:], vec2: cython.double[:]) -> np.ndarray:
+def vec_add(vec1: cython.double[:], vec2: cython.double[:]) -> tuple:
     """Add two 3D vectors.
 
     Args:
         vec1, vec2: vectors to add.
 
     Returns:
-        vec1 + vec2 as ndarray of shape (3,).
+        vec1 + vec2 as tuple of (x, y, z).
     """
-    return np.array([
+    return (
         vec1[0] + vec2[0],
         vec1[1] + vec2[1],
-        vec1[2] + vec2[2]
-    ], dtype=np.float64)
+        vec1[2] + vec2[2],
+    )
 
 
 @cython.ccall
-def vec_scalar_mul(vec: cython.double[:], scalar: cython.double) -> np.ndarray:
+def vec_scalar_mul(vec: cython.double[:], scalar: cython.double) -> tuple:
     """Multiply a vector by a scalar.
 
     Args:
@@ -113,13 +114,13 @@ def vec_scalar_mul(vec: cython.double[:], scalar: cython.double) -> np.ndarray:
         scalar: scalar multiplier.
 
     Returns:
-        scalar * vec as ndarray of shape (3,).
+        scalar * vec as tuple of (x, y, z).
     """
-    return np.array([
+    return (
         vec[0] * scalar,
         vec[1] * scalar,
-        vec[2] * scalar
-    ], dtype=np.float64)
+        vec[2] * scalar,
+    )
 
 
 @cython.ccall
@@ -170,20 +171,20 @@ def vec_dot(vec1: cython.double[:], vec2: cython.double[:]) -> cython.double:
 
 
 @cython.ccall
-def vec_cross(vec1: cython.double[:], vec2: cython.double[:]) -> np.ndarray:
+def vec_cross(vec1: cython.double[:], vec2: cython.double[:]) -> tuple:
     """Compute the cross product of two 3D vectors.
 
     Args:
         vec1, vec2: vectors.
 
     Returns:
-        vec1 x vec2 as ndarray of shape (3,).
+        vec1 x vec2 as tuple of (x, y, z).
     """
-    return np.array([
+    return (
         vec1[1] * vec2[2] - vec1[2] * vec2[1],
         vec1[2] * vec2[0] - vec1[0] * vec2[2],
         vec1[0] * vec2[1] - vec1[1] * vec2[0],
-    ], dtype=np.float64)
+    )
 
 
 @cython.ccall
@@ -202,7 +203,9 @@ def vec_cmp(vec1: cython.double[:], vec2: cython.double[:]) -> cython.bint:
 
 @cython.ccall
 @cython.inline
-def vec_approx_cmp(vec1: cython.double[:], vec2: cython.double[:], eps: cython.double = 1e-10) -> cython.bint:
+def vec_approx_cmp(
+    vec1: cython.double[:], vec2: cython.double[:], eps: cython.double = 1e-10
+) -> cython.bint:
     """Check approximate equality of two vectors.
 
     Args:
@@ -213,14 +216,14 @@ def vec_approx_cmp(vec1: cython.double[:], vec2: cython.double[:], eps: cython.d
         True if |vec1[i] - vec2[i]| <= eps for all i.
     """
     return (
-        (abs(vec1[0] - vec2[0]) <= eps) and
-        (abs(vec1[1] - vec2[1]) <= eps) and
-        (abs(vec1[2] - vec2[2]) <= eps)
+        (abs(vec1[0] - vec2[0]) <= eps)
+        and (abs(vec1[1] - vec2[1]) <= eps)
+        and (abs(vec1[2] - vec2[2]) <= eps)
     )
 
 
 @cython.ccall
-def unit_vector(vec: cython.double[:]) -> np.ndarray:
+def unit_vector(vec: cython.double[:]) -> tuple:
     """Normalize a vector to unit length.
 
     If the vector has zero norm, returns the original vector unchanged
@@ -230,12 +233,12 @@ def unit_vector(vec: cython.double[:]) -> np.ndarray:
         vec: vector of shape (3,).
 
     Returns:
-        vec / ||vec|| as ndarray of shape (3,).
+        vec / ||vec|| as tuple of (x, y, z).
     """
     norm: cython.double = vec_norm(vec)
     if norm == 0.0:
-        return np.array([vec[0], vec[1], vec[2]], dtype=np.float64)
-    return np.array([vec[0] / norm, vec[1] / norm, vec[2] / norm], dtype=np.float64)
+        return (vec[0], vec[1], vec[2])
+    return (vec[0] / norm, vec[1] / norm, vec[2] / norm)
 
 
 def is_compiled() -> bool:
@@ -246,6 +249,7 @@ def is_compiled() -> bool:
 # ---------------------------------------------------------------------------
 # Batch (SoA) vectorized operations
 # ---------------------------------------------------------------------------
+
 
 class Vec3dBatch:
     """Batch 3D vectors stored as Structure-of-Arrays.
@@ -368,7 +372,7 @@ class Vec3dBatch:
         Returns:
             (N,) array of norms.
         """
-        return np.sqrt(self.x ** 2 + self.y ** 2 + self.z ** 2)
+        return np.sqrt(self.x**2 + self.y**2 + self.z**2)
 
     def diff_norms(self, other: "Vec3dBatch") -> np.ndarray:
         """Compute ||self[i] - other[i]|| for each pair.

@@ -5,6 +5,7 @@ Test script to verify pyptv installation
 
 import os
 import sys
+import pytest
 from openptv2.calibration import Calibration
 
 
@@ -14,17 +15,15 @@ def test_installation(test_data_dir):
         import openptv2.gui as pyptv
 
         print(f"PyPTV version: {pyptv.__version__}")
-    except ImportError:
-        print("Error: PyPTV is not installed correctly")
-        return False
+    except ImportError as e:
+        pytest.fail(f"Error: PyPTV is not installed correctly: {e}")
 
     try:
         import optv
 
         print(f"OpenPTV version: {optv.__version__}")
-    except ImportError:
-        print("Error: OpenPTV is not installed correctly")
-        return False
+    except ImportError as e:
+        pytest.skip(f"Legacy optv package not installed: {e}")
 
     # Test path to test_cavity
     test_cavity_path = test_data_dir
@@ -41,16 +40,21 @@ def test_installation(test_data_dir):
             print("Successfully loaded calibration")
             print(f"Calibration parameters: {cal.get_pos()}")
         else:
-            print("Calibration files not found")
-            return False
+            pytest.fail(f"Calibration files not found: {cal_file} or {addpar_file}")
     except Exception as e:
-        print(f"Error loading calibration: {str(e)}")
-        return False
+        pytest.fail(f"Error loading calibration: {str(e)}")
 
     print("Installation test completed successfully!")
-    return True
 
 
 if __name__ == "__main__":
-    success = test_installation()
-    sys.exit(0 if success else 1)
+    try:
+        # If run as standalone, use a default test_data path if sys.argv or environment is not set,
+        # or require pytest to run it with the fixture
+        test_dir = sys.argv[1] if len(sys.argv) > 1 else "test_data/test_cavity"
+        test_installation(test_dir)
+        print("Success!")
+        sys.exit(0)
+    except Exception as e:
+        print(f"Failed: {e}")
+        sys.exit(1)

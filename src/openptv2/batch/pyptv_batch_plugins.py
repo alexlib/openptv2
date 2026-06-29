@@ -13,6 +13,40 @@ import sys
 import json
 import importlib
 
+# Register optv package and its submodules as aliases in sys.modules for legacy compatibility
+try:
+    import openptv2
+    sys.modules["optv"] = openptv2
+    for sub in ["correspondences", "tracker", "orientation", "calibration", "parameters", "imgcoord"]:
+        try:
+            mod = importlib.import_module(f"openptv2.{sub}")
+            sys.modules[f"optv.{sub}"] = mod
+        except ImportError:
+            pass
+except ImportError:
+    pass
+
+# Register pyptv package and its submodules as aliases in sys.modules
+try:
+    import openptv2.gui as _gui
+    import openptv2.gui.pyptv as _pyptv_base
+    sys.modules["pyptv"] = _pyptv_base
+    
+    for sub, target in _gui.submodule_mapping.items():
+        try:
+            # Map the alias directly using the registered lazy shim
+            shim = sys.modules[f"openptv2.gui.pyptv.{sub}"]
+            sys.modules[f"pyptv.{sub}"] = shim
+        except KeyError:
+            try:
+                mod = importlib.import_module(target)
+                sys.modules[f"pyptv.{sub}"] = mod
+                sys.modules[f"openptv2.gui.pyptv.{sub}"] = mod
+            except ImportError:
+                pass
+except ImportError:
+    pass
+
 from openptv2.gui.ptv import generate_short_file_bases, py_start_proc_c
 from openptv2.gui.experiment import Experiment
 
@@ -83,27 +117,38 @@ def run_batch(yaml_file: Path, seq_first: int, seq_last: int,
         res_dir.mkdir(exist_ok=True)
     try:
         if mode in ("both", "sequence"):
-            seq_plugin = importlib.import_module(sequence_plugin)
-            if hasattr(seq_plugin, "Sequence"):
-                print(f"Running sequence plugin: {sequence_plugin}")
+            if sequence_plugin == "default":
+                from openptv2.gui.ptv import py_sequence_loop
+                print("Running default sequence loop...")
+                py_sequence_loop(exp_config)
+            else:
+                seq_plugin = importlib.import_module(sequence_plugin)
+                if hasattr(seq_plugin, "Sequence"):
+                    print(f"Running sequence plugin: {sequence_plugin}")
+                    try:
+                        sequence = seq_plugin.Sequence(exp=exp_config)
+                        sequence.do_sequence()
+                    except Exception as e:
+                        print(f"Error running sequence plugin: {e}")
+                        os.chdir(original_cwd)
+                        return
+        if mode in ("both", "tracking"):
+            if tracking_plugin == "default":
+                from openptv2.gui.ptv import py_trackcorr_init
+                print("Running default tracking...")
+                tracker = py_trackcorr_init(exp_config)
+                tracker.full_forward()
+            else:
                 try:
-                    sequence = seq_plugin.Sequence(exp=exp_config)
-                    sequence.do_sequence()
+                    track_plugin = importlib.import_module(tracking_plugin)
+                    print(f"[DEBUG] Loaded tracking plugin: {track_plugin}")
+                    print(f"Running tracking plugin: {tracking_plugin}")
+                    tracker = track_plugin.Tracking(exp=exp_config)
+                    tracker.do_tracking()
                 except Exception as e:
-                    print(f"Error running sequence plugin: {e}")
+                    print(f"ERROR: Tracking plugin {tracking_plugin} not found or not implemented. Exception: {e}")
                     os.chdir(original_cwd)
                     return
-        if mode in ("both", "tracking"):
-            try:
-                track_plugin = importlib.import_module(tracking_plugin)
-                print(f"[DEBUG] Loaded tracking plugin: {track_plugin}")
-                print(f"Running tracking plugin: {tracking_plugin}")
-                tracker = track_plugin.Tracking(exp=exp_config)
-                tracker.do_tracking()
-            except Exception as e:
-                print(f"ERROR: Tracking plugin {tracking_plugin} not found or not implemented. Exception: {e}")
-                os.chdir(original_cwd)
-                return
         print("Batch processing completed successfully")
     except ImportError as e:
         print(f"Error loading plugin: {e}")
@@ -125,6 +170,8 @@ def main():
         "--mode", type=str, default="both", choices=["both", "sequence", "tracking"],
         help="Which steps to run: both (default), sequence, or tracking."
     )
+    parser.add_argument("--sequence", type=str, help="Sequence plugin to use.")
+    parser.add_argument("--tracking", type=str, help="Tracking plugin to use.")
     args = parser.parse_args()
     yaml_file = Path(args.yaml_file).resolve()
     first_frame = args.first_frame
@@ -134,8 +181,8 @@ def main():
     plugins_config = load_plugins_config(yaml_file)
     print(f"Available tracking plugins: {plugins_config.get('tracking', ['default'])}")
     print(f"Available sequence plugins: {plugins_config.get('sequence', ['default'])}")
-    tracking_plugin = plugins_config.get('tracking', ['default'])[0]
-    sequence_plugin = plugins_config.get('sequence', ['default'])[0]
+    tracking_plugin = args.tracking or plugins_config.get('tracking', ['default'])[0]
+    sequence_plugin = args.sequence or plugins_config.get('sequence', ['default'])[0]
     run_batch(yaml_file, first_frame, last_frame, tracking_plugin, sequence_plugin, mode)
 
 

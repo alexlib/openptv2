@@ -1,4 +1,5 @@
 import sys
+import pytest
 
 sys.path.insert(0, ".")
 import numpy as np
@@ -18,9 +19,7 @@ def test_parameter_translation_pipeline():
     experiment = Experiment()
     experiment.populate_runs(test_dir)
 
-    if not experiment.paramsets:
-        print("❌ No parameter sets found!")
-        return False
+    assert experiment.paramsets, "No parameter sets found!"
 
     experiment.active_params = experiment.paramsets[0]
     print(f"✅ Loaded experiment with {len(experiment.paramsets)} parameter sets")
@@ -46,9 +45,7 @@ def test_parameter_translation_pipeline():
     print(f"   Target recognition keys: {list(targ_params.keys())}")
     print(f"   Sequence section keys: {list(seq_params.keys())}")
 
-    if not ptv_params or not targ_params:
-        print("❌ Missing critical parameter sections!")
-        return False
+    assert ptv_params and targ_params, "Missing critical parameter sections!"
 
     # Step 3: Test individual parameter object creation
     print("\n3. Testing individual parameter object creation...")
@@ -79,7 +76,7 @@ def test_parameter_translation_pipeline():
         import traceback
 
         traceback.print_exc()
-        return False
+        raise
 
     # Step 4: Test full py_start_proc_c
     print("\n4. Testing complete parameter initialization...")
@@ -94,7 +91,7 @@ def test_parameter_translation_pipeline():
         import traceback
 
         traceback.print_exc()
-        return False
+        raise
 
     # Step 5: Test target recognition with real image
     print("\n5. Testing target recognition with real image...")
@@ -109,21 +106,20 @@ def test_parameter_translation_pipeline():
         print(f"   Image base name: {img_base}")
 
         # Try with frame 10000
-        img_path = Path(img_base % 10000)
+        img_path = test_dir / (img_base % 10000)
         if not img_path.exists():
             # Try other frames
             for frame in [10001, 10002, 10003, 10004]:
-                img_path = Path(img_base % frame)
+                img_path = test_dir / (img_base % frame)
                 if img_path.exists():
                     break
 
         if not img_path.exists():
-            print(f"❌ No image found for pattern {img_base}")
             # Let's check what files actually exist
-            img_dir = Path("img")
+            img_dir = test_dir / "img"
             if img_dir.exists():
                 print(f"   Available files in img/: {list(img_dir.glob('cam1.*'))}")
-            return False
+            assert False, f"No image found for pattern {img_base}"
 
         print(f"   Loading image: {img_path}")
         img = imread(img_path)
@@ -160,7 +156,7 @@ def test_parameter_translation_pipeline():
                 print("   ❌ Grey thresholds seem wrong!")
                 print(f"      Raw targ_rec params: {targ_params}")
 
-            return False
+            assert False, "Zero targets found - Grey thresholds seem wrong!"
         else:
             print(f"   ✅ Target recognition working - found {len(targs)} targets")
 
@@ -169,10 +165,9 @@ def test_parameter_translation_pipeline():
         import traceback
 
         traceback.print_exc()
-        return False
+        raise
 
     print("\n✅ ALL TESTS PASSED - Parameter translation pipeline is working!")
-    return True
 
 
 if __name__ == "__main__":
