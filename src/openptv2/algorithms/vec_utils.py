@@ -45,33 +45,41 @@ def vec_init() -> np.ndarray:
 
 
 @cython.ccall
-def vec_set(x: cython.double, y: cython.double, z: cython.double) -> tuple:
+def vec_set(x: cython.double, y: cython.double, z: cython.double) -> np.ndarray:
     """Create a 3D vector from components.
 
     Args:
         x, y, z: vector components.
 
     Returns:
-        tuple of (x, y, z).
+        ndarray of shape (3,) with (x, y, z).
     """
-    return (x, y, z)
+    out = np.empty(3, dtype=np.float64)
+    out[0] = x
+    out[1] = y
+    out[2] = z
+    return out
 
 
 @cython.ccall
-def vec_copy(src: cython.double[:]) -> tuple:
+def vec_copy(src: cython.double[:]) -> np.ndarray:
     """Copy a 3D vector.
 
     Args:
         src: source vector of shape (3,).
 
     Returns:
-        A tuple copy of (src[0], src[1], src[2]).
+        ndarray copy of src.
     """
-    return (src[0], src[1], src[2])
+    out = np.empty(3, dtype=np.float64)
+    out[0] = src[0]
+    out[1] = src[1]
+    out[2] = src[2]
+    return out
 
 
 @cython.ccall
-def vec_subt(from_vec: cython.double[:], sub: cython.double[:]) -> tuple:
+def vec_subt(from_vec: cython.double[:], sub: cython.double[:]) -> np.ndarray:
     """Subtract two 3D vectors.
 
     Args:
@@ -79,34 +87,34 @@ def vec_subt(from_vec: cython.double[:], sub: cython.double[:]) -> tuple:
         sub: vector to subtract.
 
     Returns:
-        from_vec - sub as tuple of (x, y, z).
+        from_vec - sub as ndarray of shape (3,).
     """
-    return (
-        from_vec[0] - sub[0],
-        from_vec[1] - sub[1],
-        from_vec[2] - sub[2],
-    )
+    out = np.empty(3, dtype=np.float64)
+    out[0] = from_vec[0] - sub[0]
+    out[1] = from_vec[1] - sub[1]
+    out[2] = from_vec[2] - sub[2]
+    return out
 
 
 @cython.ccall
-def vec_add(vec1: cython.double[:], vec2: cython.double[:]) -> tuple:
+def vec_add(vec1: cython.double[:], vec2: cython.double[:]) -> np.ndarray:
     """Add two 3D vectors.
 
     Args:
         vec1, vec2: vectors to add.
 
     Returns:
-        vec1 + vec2 as tuple of (x, y, z).
+        vec1 + vec2 as ndarray of shape (3,).
     """
-    return (
-        vec1[0] + vec2[0],
-        vec1[1] + vec2[1],
-        vec1[2] + vec2[2],
-    )
+    out = np.empty(3, dtype=np.float64)
+    out[0] = vec1[0] + vec2[0]
+    out[1] = vec1[1] + vec2[1]
+    out[2] = vec1[2] + vec2[2]
+    return out
 
 
 @cython.ccall
-def vec_scalar_mul(vec: cython.double[:], scalar: cython.double) -> tuple:
+def vec_scalar_mul(vec: cython.double[:], scalar: cython.double) -> np.ndarray:
     """Multiply a vector by a scalar.
 
     Args:
@@ -114,13 +122,13 @@ def vec_scalar_mul(vec: cython.double[:], scalar: cython.double) -> tuple:
         scalar: scalar multiplier.
 
     Returns:
-        scalar * vec as tuple of (x, y, z).
+        scalar * vec as ndarray of shape (3,).
     """
-    return (
-        vec[0] * scalar,
-        vec[1] * scalar,
-        vec[2] * scalar,
-    )
+    out = np.empty(3, dtype=np.float64)
+    out[0] = vec[0] * scalar
+    out[1] = vec[1] * scalar
+    out[2] = vec[2] * scalar
+    return out
 
 
 @cython.ccall
@@ -171,20 +179,20 @@ def vec_dot(vec1: cython.double[:], vec2: cython.double[:]) -> cython.double:
 
 
 @cython.ccall
-def vec_cross(vec1: cython.double[:], vec2: cython.double[:]) -> tuple:
+def vec_cross(vec1: cython.double[:], vec2: cython.double[:]) -> np.ndarray:
     """Compute the cross product of two 3D vectors.
 
     Args:
         vec1, vec2: vectors.
 
     Returns:
-        vec1 x vec2 as tuple of (x, y, z).
+        vec1 x vec2 as ndarray of shape (3,).
     """
-    return (
-        vec1[1] * vec2[2] - vec1[2] * vec2[1],
-        vec1[2] * vec2[0] - vec1[0] * vec2[2],
-        vec1[0] * vec2[1] - vec1[1] * vec2[0],
-    )
+    out = np.empty(3, dtype=np.float64)
+    out[0] = vec1[1] * vec2[2] - vec1[2] * vec2[1]
+    out[1] = vec1[2] * vec2[0] - vec1[0] * vec2[2]
+    out[2] = vec1[0] * vec2[1] - vec1[1] * vec2[0]
+    return out
 
 
 @cython.ccall
@@ -223,7 +231,7 @@ def vec_approx_cmp(
 
 
 @cython.ccall
-def unit_vector(vec: cython.double[:]) -> tuple:
+def unit_vector(vec: cython.double[:]) -> np.ndarray:
     """Normalize a vector to unit length.
 
     If the vector has zero norm, returns the original vector unchanged
@@ -233,12 +241,19 @@ def unit_vector(vec: cython.double[:]) -> tuple:
         vec: vector of shape (3,).
 
     Returns:
-        vec / ||vec|| as tuple of (x, y, z).
+        vec / ||vec|| as ndarray of shape (3,).
     """
     norm: cython.double = vec_norm(vec)
+    out = np.empty(3, dtype=np.float64)
     if norm == 0.0:
-        return (vec[0], vec[1], vec[2])
-    return (vec[0] / norm, vec[1] / norm, vec[2] / norm)
+        out[0] = vec[0]
+        out[1] = vec[1]
+        out[2] = vec[2]
+    else:
+        out[0] = vec[0] / norm
+        out[1] = vec[1] / norm
+        out[2] = vec[2] / norm
+    return out
 
 
 def is_compiled() -> bool:
