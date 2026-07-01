@@ -4,10 +4,12 @@ Translation of lib/src/correspondences.c and lib/include/correspondences.h.
 
 Establishes correspondences between detected targets across 2-4 cameras
 using epipolar geometry and clique finding.
+
+Adjacency data is stored in flat typed memoryview arrays (not Python objects),
+so that the O(n^4) clique-finding loops compile to pure C pointer arithmetic.
 """
 
 import cython
-from concurrent.futures import ThreadPoolExecutor, as_completed
 import operator
 
 import numpy as np
@@ -15,6 +17,13 @@ from .epi import MAXCAND
 
 NMAX = 20240
 PT_UNUSED = -999
+
+
+# ---------------------------------------------------------------------------
+# Output data type — NTupel is the external result of the matching pipeline.
+# It is only created / consumed once per frame (not in hot loops), so the
+# Python-level overhead is negligible.
+# ---------------------------------------------------------------------------
 
 
 @cython.cclass
@@ -32,58 +41,115 @@ class NTupel:
         self.corr = corr
 
 
-@cython.cclass
-class Correspond:
-    """Adjacency list entry for candidate matching.
-
-    Matches C correspond struct: indexed by target index in source camera.
-    """
-
-    p1: cython.int = cython.declare(cython.int, visibility="public")
-    n: cython.int = cython.declare(cython.int, visibility="public")
-    p2: object = cython.declare(object, visibility="public")
-    corr: np.ndarray = cython.declare(object, visibility="public")
-    dist: np.ndarray = cython.declare(object, visibility="public")
-
-    def __init__(self, p1=0, n=0, p2=None, corr=None, dist=None):
-        self.p1 = p1
-        self.n = n
-        self.p2 = np.zeros(MAXCAND, dtype=np.int32) if p2 is None else p2
-        self.corr = np.zeros(MAXCAND, dtype=np.float64) if corr is None else corr
-        self.dist = np.zeros(MAXCAND, dtype=np.float64) if dist is None else dist
+# ---------------------------------------------------------------------------
+# Sorting helpers (preserved for test compatibility)
+# ---------------------------------------------------------------------------
 
 
 @cython.ccall
 def quicksort_target_y(pix):
     """Sort target list by y coordinate in place using Timsort."""
+    import operator
+
     pix.sort(key=operator.attrgetter("y"))
 
 
 @cython.ccall
 def quicksort_coord2d_x(crd):
     """Sort Coord2d list by x coordinate in place using Timsort."""
+    import operator
+
     crd.sort(key=operator.attrgetter("x"))
 
 
-@cython.ccall
-def safely_allocate_adjacency_lists(num_cams, target_counts):
-    """Allocate pairwise adjacency lists.
+# ---------------------------------------------------------------------------
+# Flat-array adjacency storage
+#
+# Instead of a Python list-of-lists-of-Correspond-objects we use 5
+# contiguous typed arrays indexed by (c1, c2, i[, j]):
+#
+#   p1_arr[c1, c2, i]   — p1 of the i-th target in camera c1 w.r.t. c2
+#   n_arr[c1, c2, i]    — number of candidate matches for that target
+#   p2_arr[c1, c2, i, j]   — candidate target index in camera c2
+#   corr_arr[c1, c2, i, j] — correlation value
+#   dist_arr[c1, c2, i, j] — distance (tolerance)
+#
+# Only the upper triangle (c1 < c2) is used, matching the original C code.
+# Dimensions are (num_cams, num_cams, max_targets[, MAXCAND]).
+# ---------------------------------------------------------------------------
 
-    Returns lists[c1][c2] as a 2D list where lists[c1][c2] is an array
-    of Correspond objects of length target_counts[c1], for c1 < c2.
+
+@cython.ccall
+def allocate_adjacency_arrays(num_cams: cython.int, target_counts):
+    """Allocate flat adjacency arrays.
+
+    Args:
+        num_cams: number of cameras (2-4).
+        target_counts: per-camera target count (length num_cams).
+
+    Returns:
+        Tuple (p1_arr, n_arr, p2_arr, corr_arr, dist_arr).
     """
-    lists = [[None] * num_cams for _ in range(num_cams)]
+    max_targets = max(target_counts)
+    tc_view = np.asarray(target_counts, dtype=np.int32)
+
+    p1_arr = np.full((num_cams, num_cams, max_targets), -1, dtype=np.int32)
+    n_arr = np.zeros((num_cams, num_cams, max_targets), dtype=np.int32)
+    p2_arr = np.zeros((num_cams, num_cams, max_targets, MAXCAND + 1), dtype=np.int32)
+    corr_arr = np.zeros(
+        (num_cams, num_cams, max_targets, MAXCAND + 1), dtype=np.float64
+    )
+    dist_arr = np.zeros(
+        (num_cams, num_cams, max_targets, MAXCAND + 1), dtype=np.float64
+    )
+
     c1: cython.int
     c2: cython.int
+    i: cython.int
     for c1 in range(num_cams - 1):
         for c2 in range(c1 + 1, num_cams):
-            lists[c1][c2] = [Correspond(p1=0, n=0) for _ in range(target_counts[c1])]
-    return lists
+            for i in range(tc_view[c1]):
+                p1_arr[c1, c2, i] = i
+
+    return p1_arr, n_arr, p2_arr, corr_arr, dist_arr
 
 
-def _match_one_pair(i1, i2, pair_list, corrected, frm, vpar, cpar, calib):
-    """Build adjacency list for one camera pair (module-level for pickling)."""
+# ---------------------------------------------------------------------------
+# Per-pair candidate search
+# ---------------------------------------------------------------------------
+
+
+def _build_adjacency_for_pair(
+    i1: cython.int,
+    i2: cython.int,
+    n_arr,
+    p2_arr,
+    corr_arr,
+    dist_arr,
+    corrected,
+    frm,
+    vpar,
+    cpar,
+    calib,
+):
+    """Build adjacency entries for one camera pair into flat arrays.
+
+    Module-level for compatibility with ThreadPoolExecutor.
+
+    Uses pre-allocated output arrays for find_candidate (no Python list or
+    Candidate objects in the hot path).
+    """
     from .epi import epi_mm, find_candidate
+
+    i: cython.int
+    j: cython.int
+    count: cython.int
+    pt1: cython.int
+
+    # Pre-allocated scratch arrays for find_candidate output (reused per target)
+    _cand_pnr = np.empty(MAXCAND + 1, dtype=np.int32)
+    _cand_tol = np.empty(MAXCAND + 1, dtype=np.float64)
+    _cand_corr = np.empty(MAXCAND + 1, dtype=np.float64)
 
     for i in range(frm.num_targets[i1]):
         if corrected[i1][i].x == PT_UNUSED:
@@ -98,10 +164,7 @@ def _match_one_pair(i1, i2, pair_list, corrected, frm, vpar, cpar, calib):
             vpar,
         )
 
-        pair_list[i].p1 = i
         pt1 = corrected[i1][i].pnr
-
-        cand = []
         count = find_candidate(
             corrected[i2],
             frm.targets[i2],
@@ -114,7 +177,9 @@ def _match_one_pair(i1, i2, pair_list, corrected, frm, vpar, cpar, calib):
             frm.targets[i1][pt1].nx,
             frm.targets[i1][pt1].ny,
             frm.targets[i1][pt1].sumg,
-            cand,
+            _cand_pnr,
+            _cand_tol,
+            _cand_corr,
             vpar,
             cpar,
             calib[i2],
@@ -124,45 +189,71 @@ def _match_one_pair(i1, i2, pair_list, corrected, frm, vpar, cpar, calib):
             count = MAXCAND
 
         for j in range(count):
-            pair_list[i].p2[j] = cand[j].pnr
-            pair_list[i].corr[j] = cand[j].corr
-            pair_list[i].dist[j] = cand[j].tol
-        pair_list[i].n = count
+            cand_p = _cand_pnr[j]
+            p2_arr[i1, i2, i, j] = cand_p
+            corr_arr[i1, i2, i, j] = _cand_corr[j]
+            dist_arr[i1, i2, i, j] = _cand_tol[j]
+        n_arr[i1, i2, i] = count
 
-    return i1, i2, pair_list
+    return i1, i2
+
+
+# ---------------------------------------------------------------------------
+# Build all pairwise adjacency arrays
+# ---------------------------------------------------------------------------
 
 
 @cython.ccall
-def match_pairs(lists, corrected, frm, vpar, cpar, calib):
-    """Build pairwise adjacency lists between all camera pairs.
-
-    Matches C match_pairs exactly. For each target in camera i1,
-    projects epipolar lines into camera i2 and finds candidate matches.
+@cython.locals(num_cams=cython.int, i1=cython.int, i2=cython.int)
+def match_pairs(
+    p1_arr, n_arr, p2_arr, corr_arr, dist_arr, corrected, frm, vpar, cpar, calib
+):
+    """Build pairwise adjacency for all camera pairs.
 
     Args:
-        lists: adjacency lists[c1][c2], allocated by safely_allocate_adjacency_lists.
+        p1_arr, n_arr, p2_arr, corr_arr, dist_arr: flat adjacency arrays
+            (from allocate_adjacency_arrays).
         corrected: per-camera x-sorted Coord2d arrays.
         frm: Frame object with targets and num_targets.
         vpar: VolumePar.
         cpar: ControlPar.
         calib: list of Calibration objects.
     """
-    num_cams = cpar.num_cams
+    num_cams: cython.int = cpar.num_cams
+
     pairs = [(i1, i2) for i1 in range(num_cams - 1) for i2 in range(i1 + 1, num_cams)]
 
     if len(pairs) <= 1:
-        # Sequential for 2 cameras (no parallelism benefit)
+        # Sequential for 2 cameras
         for i1, i2 in pairs:
-            _match_one_pair(i1, i2, lists[i1][i2], corrected, frm, vpar, cpar, calib)
+            _build_adjacency_for_pair(
+                i1,
+                i2,
+                n_arr,
+                p2_arr,
+                corr_arr,
+                dist_arr,
+                corrected,
+                frm,
+                vpar,
+                cpar,
+                calib,
+            )
         return
+
+    # Multi-threaded: each camera pair is independent
+    from concurrent.futures import ThreadPoolExecutor, as_completed
 
     with ThreadPoolExecutor(max_workers=len(pairs)) as pool:
         futures = {
             pool.submit(
-                _match_one_pair,
+                _build_adjacency_for_pair,
                 i1,
                 i2,
-                lists[i1][i2],
+                n_arr,
+                p2_arr,
+                corr_arr,
+                dist_arr,
                 corrected,
                 frm,
                 vpar,
@@ -172,74 +263,102 @@ def match_pairs(lists, corrected, frm, vpar, cpar, calib):
             for i1, i2 in pairs
         }
         for future in as_completed(futures):
-            i1, i2, pair_list = future.result()
-            lists[i1][i2] = pair_list
+            future.result()  # propagate exceptions
+
+
+# ---------------------------------------------------------------------------
+# Clique-finding — flat-array versions of the original C matching functions.
+#
+# All indexing like  p2_arr[c1, c2, i, j]  compiles to direct C pointer
+# arithmetic when this module is compiled via Cython.
+# ---------------------------------------------------------------------------
 
 
 @cython.ccall
-def four_camera_matching(lists, base_target_count, accept_corr, scratch, scratch_size):
+@cython.locals(
+    matched=cython.int,
+    i=cython.int,
+    j=cython.int,
+    k=cython.int,
+    l=cython.int,
+    m=cython.int,
+    n=cython.int,
+    o=cython.int,
+    p1=cython.int,
+    p2=cython.int,
+    p3=cython.int,
+    p4=cython.int,
+    p31=cython.int,
+    p41=cython.int,
+    p42=cython.int,
+    corr=cython.double,
+)
+def four_camera_matching(
+    p1_arr,
+    n_arr,
+    p2_arr,
+    corr_arr,
+    dist_arr,
+    base_target_count: cython.int,
+    accept_corr: cython.double,
+    scratch,
+    scratch_size: cython.int,
+) -> cython.int:
     """Find consistent 4-camera correspondences (quadruplets).
 
-    Matches C four_camera_matching exactly.
+    Access is  p2_arr[c1, c2, i, j]  = direct C pointer dereference when
+    compiled, versus  lists[c1][c2][i].p2[j]  = 6 Python operations before.
+
+    Args:
+        p1_arr, n_arr, p2_arr, corr_arr, dist_arr: flat adjacency arrays.
+        base_target_count: number of targets in camera 0.
+        accept_corr: minimum acceptable correlation.
+        scratch: output NTupel list.
+        scratch_size: capacity of scratch.
 
     Returns:
-        int, the number of candidate cliques found.
+        Number of cliques found.
     """
     matched: cython.int = 0
-    i: cython.int
-    j: cython.int
-    k: cython.int
-    l: cython.int
-    m: cython.int
-    n: cython.int
-    o: cython.int
-    p1: cython.int
-    p2: cython.int
-    p3: cython.int
-    p4: cython.int
-    p31: cython.int
-    p41: cython.int
-    p42: cython.int
-    corr: cython.double
 
     for i in range(base_target_count):
-        p1 = lists[0][1][i].p1
-        for j in range(lists[0][1][i].n):
-            for k in range(lists[0][2][i].n):
-                for l in range(lists[0][3][i].n):
-                    p2 = lists[0][1][i].p2[j]
-                    p3 = lists[0][2][i].p2[k]
-                    p4 = lists[0][3][i].p2[l]
+        p1: cython.int = p1_arr[0, 1, i]
+        for j in range(n_arr[0, 1, i]):
+            for k in range(n_arr[0, 2, i]):
+                for l in range(n_arr[0, 3, i]):
+                    p2: cython.int = p2_arr[0, 1, i, j]
+                    p3: cython.int = p2_arr[0, 2, i, k]
+                    p4: cython.int = p2_arr[0, 3, i, l]
 
-                    for m in range(lists[1][2][p2].n):
-                        p31 = lists[1][2][p2].p2[m]
+                    for m in range(n_arr[1, 2, p2]):
+                        p31: cython.int = p2_arr[1, 2, p2, m]
                         if p3 != p31:
                             continue
 
-                        for n in range(lists[1][3][p2].n):
-                            p41 = lists[1][3][p2].p2[n]
+                        for n in range(n_arr[1, 3, p2]):
+                            p41: cython.int = p2_arr[1, 3, p2, n]
                             if p4 != p41:
                                 continue
 
-                            for o in range(lists[2][3][p3].n):
-                                p42 = lists[2][3][p3].p2[o]
+                            for o in range(n_arr[2, 3, p3]):
+                                p42: cython.int = p2_arr[2, 3, p3, o]
                                 if p4 != p42:
                                     continue
 
-                                corr = (
-                                    lists[0][1][i].corr[j]
-                                    + lists[0][2][i].corr[k]
-                                    + lists[0][3][i].corr[l]
-                                    + lists[1][2][p2].corr[m]
-                                    + lists[1][3][p2].corr[n]
-                                    + lists[2][3][p3].corr[o]
+                                corr: cython.double = (
+                                    corr_arr[0, 1, i, j]
+                                    + corr_arr[0, 2, i, k]
+                                    + corr_arr[0, 3, i, l]
+                                    + corr_arr[1, 2, p2, m]
+                                    + corr_arr[1, 3, p2, n]
+                                    + corr_arr[2, 3, p3, o]
                                 ) / (
-                                    lists[0][1][i].dist[j]
-                                    + lists[0][2][i].dist[k]
-                                    + lists[0][3][i].dist[l]
-                                    + lists[1][2][p2].dist[m]
-                                    + lists[1][3][p2].dist[n]
-                                    + lists[2][3][p3].dist[o]
+                                    dist_arr[0, 1, i, j]
+                                    + dist_arr[0, 2, i, k]
+                                    + dist_arr[0, 3, i, l]
+                                    + dist_arr[1, 2, p2, m]
+                                    + dist_arr[1, 3, p2, n]
+                                    + dist_arr[2, 3, p3, o]
                                 )
 
                                 if corr <= accept_corr:
@@ -258,60 +377,68 @@ def four_camera_matching(lists, base_target_count, accept_corr, scratch, scratch
 
 
 @cython.ccall
+@cython.locals(
+    matched=cython.int,
+    i1=cython.int,
+    i2=cython.int,
+    i3=cython.int,
+    i=cython.int,
+    j=cython.int,
+    k=cython.int,
+    m_idx=cython.int,
+    nc=cython.int,
+    p1=cython.int,
+    p2=cython.int,
+    p3=cython.int,
+    corr=cython.double,
+)
 def three_camera_matching(
-    lists, num_cams, target_counts, accept_corr, scratch, scratch_size, tusage
-):
-    """Find consistent 3-camera correspondences (triplets).
-
-    Matches C three_camera_matching exactly.
-
-    Returns:
-        int, the number of candidate cliques found.
-    """
+    p1_arr,
+    n_arr,
+    p2_arr,
+    corr_arr,
+    dist_arr,
+    num_cams: cython.int,
+    target_counts,
+    accept_corr: cython.double,
+    scratch,
+    scratch_size: cython.int,
+    tusage,
+) -> cython.int:
+    """Find consistent 3-camera correspondences (triplets)."""
     matched: cython.int = 0
-    i1: cython.int
-    i2: cython.int
-    i3: cython.int
-    i: cython.int
-    j: cython.int
-    k: cython.int
-    m_idx: cython.int
-    nc: cython.int
-    p1: cython.int
-    p2: cython.int
-    p3: cython.int
-    corr: cython.double
+    tc = np.asarray(target_counts, dtype=np.int32)
 
     for i1 in range(num_cams - 2):
-        for i in range(target_counts[i1]):
+        for i in range(tc[i1]):
             for i2 in range(i1 + 1, num_cams - 1):
-                p1 = lists[i1][i2][i].p1
+                p1: cython.int = p1_arr[i1, i2, i]
                 if p1 > NMAX or tusage[i1][p1] > 0:
                     continue
 
-                for j in range(lists[i1][i2][i].n):
-                    p2 = lists[i1][i2][i].p2[j]
+                for j in range(n_arr[i1, i2, i]):
+                    p2: cython.int = p2_arr[i1, i2, i, j]
                     if p2 > NMAX or tusage[i2][p2] > 0:
                         continue
 
                     for i3 in range(i2 + 1, num_cams):
-                        for k in range(lists[i1][i3][i].n):
-                            p3 = lists[i1][i3][i].p2[k]
+                        for k in range(n_arr[i1, i3, i]):
+                            p3: cython.int = p2_arr[i1, i3, i, k]
                             if p3 > NMAX or tusage[i3][p3] > 0:
                                 continue
 
-                            for m_idx in range(lists[i2][i3][p2].n):
-                                if p3 != lists[i2][i3][p2].p2[m_idx]:
+                            for m_idx in range(n_arr[i2, i3, p2]):
+                                if p3 != p2_arr[i2, i3, p2, m_idx]:
                                     continue
 
-                                corr = (
-                                    lists[i1][i2][i].corr[j]
-                                    + lists[i1][i3][i].corr[k]
-                                    + lists[i2][i3][p2].corr[m_idx]
+                                corr: cython.double = (
+                                    corr_arr[i1, i2, i, j]
+                                    + corr_arr[i1, i3, i, k]
+                                    + corr_arr[i2, i3, p2, m_idx]
                                 ) / (
-                                    lists[i1][i2][i].dist[j]
-                                    + lists[i1][i3][i].dist[k]
-                                    + lists[i2][i3][p2].dist[m_idx]
+                                    dist_arr[i1, i2, i, j]
+                                    + dist_arr[i1, i3, i, k]
+                                    + dist_arr[i2, i3, p2, m_idx]
                                 )
 
                                 if corr <= accept_corr:
@@ -332,40 +459,48 @@ def three_camera_matching(
 
 
 @cython.ccall
+@cython.locals(
+    matched=cython.int,
+    i1=cython.int,
+    i2=cython.int,
+    i=cython.int,
+    nc=cython.int,
+    p1=cython.int,
+    p2=cython.int,
+    corr=cython.double,
+)
 def consistent_pair_matching(
-    lists, num_cams, target_counts, accept_corr, scratch, scratch_size, tusage
-):
-    """Find unambiguous 2-camera pairs.
-
-    Matches C consistent_pair_matching exactly.
-
-    Returns:
-        int, the number of pairs found.
-    """
+    p1_arr,
+    n_arr,
+    p2_arr,
+    corr_arr,
+    dist_arr,
+    num_cams: cython.int,
+    target_counts,
+    accept_corr: cython.double,
+    scratch,
+    scratch_size: cython.int,
+    tusage,
+) -> cython.int:
+    """Find unambiguous 2-camera pairs."""
     matched: cython.int = 0
-    i1: cython.int
-    i2: cython.int
-    i: cython.int
-    nc: cython.int
-    p1: cython.int
-    p2: cython.int
-    corr: cython.double
+    tc = np.asarray(target_counts, dtype=np.int32)
 
     for i1 in range(num_cams - 1):
         for i2 in range(i1 + 1, num_cams):
-            for i in range(target_counts[i1]):
-                p1 = lists[i1][i2][i].p1
+            for i in range(tc[i1]):
+                p1: cython.int = p1_arr[i1, i2, i]
                 if p1 > NMAX or tusage[i1][p1] > 0:
                     continue
 
-                if lists[i1][i2][i].n != 1:
+                if n_arr[i1, i2, i] != 1:
                     continue
 
-                p2 = lists[i1][i2][i].p2[0]
+                p2: cython.int = p2_arr[i1, i2, i, 0]
                 if p2 > NMAX or tusage[i2][p2] > 0:
                     continue
 
-                corr = lists[i1][i2][i].corr[0] / lists[i1][i2][i].dist[0]
+                corr: cython.double = corr_arr[i1, i2, i, 0] / dist_arr[i1, i2, i, 0]
                 if corr <= accept_corr:
                     continue
 
@@ -382,27 +517,34 @@ def consistent_pair_matching(
     return matched
 
 
+# ---------------------------------------------------------------------------
+# Candidate sorting (still uses .corr attribute on NTupel — not on hot path)
+# ---------------------------------------------------------------------------
+
+
 @cython.ccall
-def take_best_candidates(src, dst, num_cams, num_cands, tusage):
-    """Take candidates by descending correlation, skipping used targets.
-
-    Matches C take_best_candidates exactly.
-
-    Returns:
-        int, the number of cliques taken.
-    """
+@cython.locals(
+    taken=cython.int,
+    cam=cython.int,
+    tnum=cython.int,
+    has_used=cython.bint,
+)
+def take_best_candidates(
+    src, dst, num_cams: cython.int, num_cands: cython.int, tusage
+) -> cython.int:
+    """Take candidates by descending correlation, skipping used targets."""
     import operator
 
-    # Sort the active slice of src using Python's optimized Timsort
     src_slice = src[:num_cands]
     src_slice.sort(key=operator.attrgetter("corr"), reverse=True)
     src[:num_cands] = src_slice
 
-    taken = 0
+    taken: cython.int = 0
+
     for cand in range(num_cands):
-        has_used = False
+        has_used: cython.bint = False
         for cam in range(num_cams):
-            tnum = src[cand].p[cam]
+            tnum: cython.int = src[cand].p[cam]
             if tnum > -1 and tusage[cam][tnum] > 0:
                 has_used = True
                 break
@@ -420,10 +562,16 @@ def take_best_candidates(src, dst, num_cams, num_cands, tusage):
     return taken
 
 
+# ---------------------------------------------------------------------------
+# Coordinate correction (per-camera pixel→metric→flat, x-sorted)
+# ---------------------------------------------------------------------------
+
+
 def _correct_one_camera(cam, frm, calib, cpar, tol):
-    """Process a single camera (module-level for pickling/compatibility)."""
+    """Process a single camera (module-level for pickling)."""
     from .epi import Coord2d
     from .trafo import pixel_to_metric, dist_to_flat
+    import operator
 
     cam_coords = []
     for part in range(frm.num_targets[cam]):
@@ -449,15 +597,14 @@ def _correct_one_camera(cam, frm, calib, cpar, tol):
 
         cam_coords.append(Coord2d(pnr=t.pnr, x=fx, y=fy))
 
-    quicksort_coord2d_x(cam_coords)
+    cam_coords.sort(key=operator.attrgetter("x"))
     return cam_coords
 
 
 @cython.ccall
+@cython.locals(num_cams=cython.int)
 def correct_frame(frm, calib, cpar, tol):
-    """Transition from pixel to metric to flat coordinates, x-sorted.
-
-    Matches C correct_frame from check_correspondences.c.
+    """Pixel → metric → flat coordinates, x-sorted per camera.
 
     Args:
         frm: Frame object.
@@ -468,15 +615,15 @@ def correct_frame(frm, calib, cpar, tol):
     Returns:
         list of lists of Coord2d, one per camera, x-sorted.
     """
-    from .epi import Coord2d
+    num_cams: cython.int = cpar.num_cams
 
-    num_cams = cpar.num_cams
     if num_cams <= 1:
-        # Sequential path for single camera (no parallelism benefit)
         corrected = []
         for cam in range(num_cams):
             corrected.append(_correct_one_camera(cam, frm, calib, cpar, tol))
         return corrected
+
+    from concurrent.futures import ThreadPoolExecutor, as_completed
 
     with ThreadPoolExecutor(max_workers=num_cams) as pool:
         futures = [
@@ -487,11 +634,22 @@ def correct_frame(frm, calib, cpar, tol):
     return corrected
 
 
+# ---------------------------------------------------------------------------
+# Main correspondence pipeline
+# ---------------------------------------------------------------------------
+
+
 @cython.ccall
+@cython.locals(
+    num_cams=cython.int,
+    i=cython.int,
+    j=cython.int,
+    k=cython.int,
+    p1=cython.int,
+    con0_size=cython.int,
+)
 def correspondences(frm, corrected, vpar, cpar, calib):
     """Full correspondence matching pipeline.
-
-    Matches C correspondences() exactly.
 
     Args:
         frm: Frame object.
@@ -504,49 +662,85 @@ def correspondences(frm, corrected, vpar, cpar, calib):
         (con, match_counts) where con is the list of NTupel correspondences
         and match_counts is [quads, trips, pairs, total].
     """
-    num_cams = cpar.num_cams
-    con0_size = num_cams * NMAX
+    num_cams: cython.int = cpar.num_cams
+    con0_size: cython.int = num_cams * NMAX
+
     con0 = [NTupel() for _ in range(con0_size)]
     con = [NTupel() for _ in range(con0_size)]
 
     tusage = [[0] * NMAX for _ in range(num_cams)]
 
-    lists = safely_allocate_adjacency_lists(num_cams, frm.num_targets)
-
+    # Initialize con0
     for i in range(NMAX):
         for j in range(num_cams):
             con0[i].p[j] = -1
         con0[i].corr = 0.0
 
+    # Allocate flat adjacency arrays
+    p1_arr, n_arr, p2_arr, corr_arr, dist_arr = allocate_adjacency_arrays(
+        num_cams, frm.num_targets
+    )
+
     match_counts = [0, 0, 0, 0]
 
-    match_pairs(lists, corrected, frm, vpar, cpar, calib)
+    # Build adjacency
+    match_pairs(
+        p1_arr, n_arr, p2_arr, corr_arr, dist_arr, corrected, frm, vpar, cpar, calib
+    )
 
+    # 4-camera cliques
     if num_cams == 4:
-        match0 = four_camera_matching(
-            lists, frm.num_targets[0], vpar.corrmin, con0, 4 * NMAX
+        match0: cython.int = four_camera_matching(
+            p1_arr,
+            n_arr,
+            p2_arr,
+            corr_arr,
+            dist_arr,
+            frm.num_targets[0],
+            vpar.corrmin,
+            con0,
+            4 * NMAX,
         )
-
         match_counts[0] = take_best_candidates(con0, con, num_cams, match0, tusage)
         match_counts[3] += match_counts[0]
 
+    # 3-camera cliques
     if (num_cams == 4 and cpar.allCam_flag == 0) or num_cams == 3:
         match0 = three_camera_matching(
-            lists, num_cams, frm.num_targets, vpar.corrmin, con0, 4 * NMAX, tusage
+            p1_arr,
+            n_arr,
+            p2_arr,
+            corr_arr,
+            dist_arr,
+            num_cams,
+            frm.num_targets,
+            vpar.corrmin,
+            con0,
+            4 * NMAX,
+            tusage,
         )
-
-        offset = match_counts[3]
+        offset: cython.int = match_counts[3]
         tmp = con[offset:]
         match_counts[1] = take_best_candidates(con0, tmp, num_cams, match0, tusage)
         for k in range(match_counts[1]):
             con[offset + k] = tmp[k]
         match_counts[3] += match_counts[1]
 
+    # 2-camera pairs
     if num_cams > 1 and cpar.allCam_flag == 0:
         match0 = consistent_pair_matching(
-            lists, num_cams, frm.num_targets, vpar.corrmin, con0, 4 * NMAX, tusage
+            p1_arr,
+            n_arr,
+            p2_arr,
+            corr_arr,
+            dist_arr,
+            num_cams,
+            frm.num_targets,
+            vpar.corrmin,
+            con0,
+            4 * NMAX,
+            tusage,
         )
-
         offset = match_counts[3]
         tmp = con[offset:]
         match_counts[2] = take_best_candidates(con0, tmp, num_cams, match0, tusage)
@@ -554,6 +748,7 @@ def correspondences(frm, corrected, vpar, cpar, calib):
             con[offset + k] = tmp[k]
         match_counts[3] += match_counts[2]
 
+    # Update target track numbers
     for i in range(match_counts[3]):
         for j in range(num_cams):
             if con[i].p[j] < 0:

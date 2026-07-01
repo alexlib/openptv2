@@ -8,10 +8,18 @@ from openptv2.algorithms.parameters import ControlPar, VolumePar
 from openptv2.algorithms.tracking_frame_buf import Target, Frame
 from openptv2.algorithms.epi import Coord2d
 from openptv2.algorithms.correspondences import (
-    NTupel, Correspond, quicksort_target_y, quicksort_coord2d_x,
-    safely_allocate_adjacency_lists, match_pairs, four_camera_matching,
-    three_camera_matching, consistent_pair_matching, take_best_candidates,
-    correct_frame, correspondences, NMAX,
+    NTupel,
+    quicksort_target_y,
+    quicksort_coord2d_x,
+    allocate_adjacency_arrays,
+    match_pairs,
+    four_camera_matching,
+    three_camera_matching,
+    consistent_pair_matching,
+    take_best_candidates,
+    correct_frame,
+    correspondences,
+    NMAX,
 )
 from openptv2.algorithms.epi import MAXCAND
 from openptv2.algorithms.imgcoord import img_coord
@@ -114,20 +122,24 @@ class TestPairwiseMatching:
         frm = generate_test_set(calib, cpar, vpar)
         corrected = correct_frame(frm, calib, cpar, 0.0001)
 
-        lists = safely_allocate_adjacency_lists(cpar.num_cams, frm.num_targets)
-        match_pairs(lists, corrected, frm, vpar, cpar, calib)
+        p1_arr, n_arr, p2_arr, corr_arr, dist_arr = allocate_adjacency_arrays(
+            cpar.num_cams, frm.num_targets
+        )
+        match_pairs(
+            p1_arr, n_arr, p2_arr, corr_arr, dist_arr, corrected, frm, vpar, cpar, calib
+        )
 
         for cam in range(cpar.num_cams - 1):
             for subcam in range(cam + 1, cpar.num_cams):
                 for part in range(frm.num_targets[cam]):
                     if (subcam - cam) % 2 == 0:
-                        correct_pnr = corrected[cam][lists[cam][subcam][part].p1].pnr
+                        correct_pnr = corrected[cam][p1_arr[cam, subcam, part]].pnr
                     else:
-                        correct_pnr = 15 - corrected[cam][lists[cam][subcam][part].p1].pnr
+                        correct_pnr = 15 - corrected[cam][p1_arr[cam, subcam, part]].pnr
 
                     found = False
-                    for cand_idx in range(MAXCAND):
-                        p2_idx = lists[cam][subcam][part].p2[cand_idx]
+                    for cand_idx in range(n_arr[cam, subcam, part]):
+                        p2_idx = p2_arr[cam, subcam, part, cand_idx]
                         if p2_idx < 0 or p2_idx >= len(corrected[subcam]):
                             continue
                         if corrected[subcam][p2_idx].pnr == correct_pnr:
@@ -151,11 +163,17 @@ class TestFourCameraMatching:
         frm = generate_test_set(calib, cpar, vpar)
         corrected = correct_frame(frm, calib, cpar, 0.0001)
 
-        lists = safely_allocate_adjacency_lists(cpar.num_cams, frm.num_targets)
-        match_pairs(lists, corrected, frm, vpar, cpar, calib)
+        p1_arr, n_arr, p2_arr, corr_arr, dist_arr = allocate_adjacency_arrays(
+            cpar.num_cams, frm.num_targets
+        )
+        match_pairs(
+            p1_arr, n_arr, p2_arr, corr_arr, dist_arr, corrected, frm, vpar, cpar, calib
+        )
 
         con = [NTupel() for _ in range(16)]
-        matched = four_camera_matching(lists, 16, 1.0, con, 16)
+        matched = four_camera_matching(
+            p1_arr, n_arr, p2_arr, corr_arr, dist_arr, 16, 1.0, con, 16
+        )
         assert matched == 16
 
 
@@ -179,14 +197,29 @@ class TestThreeCameraMatching:
             targ.sumg = 0
 
         corrected = correct_frame(frm, calib, cpar, 0.0001)
-        lists = safely_allocate_adjacency_lists(cpar.num_cams, frm.num_targets)
-        match_pairs(lists, corrected, frm, vpar, cpar, calib)
+        p1_arr, n_arr, p2_arr, corr_arr, dist_arr = allocate_adjacency_arrays(
+            cpar.num_cams, frm.num_targets
+        )
+        match_pairs(
+            p1_arr, n_arr, p2_arr, corr_arr, dist_arr, corrected, frm, vpar, cpar, calib
+        )
 
         con = [NTupel() for _ in range(4 * 16)]
         tusage = [[0] * NMAX for _ in range(cpar.num_cams)]
 
-        matched = three_camera_matching(lists, 4, frm.num_targets,
-            100000.0, con, 4 * 16, tusage)
+        matched = three_camera_matching(
+            p1_arr,
+            n_arr,
+            p2_arr,
+            corr_arr,
+            dist_arr,
+            4,
+            frm.num_targets,
+            100000.0,
+            con,
+            4 * 16,
+            tusage,
+        )
         assert matched == 16
 
 
@@ -207,14 +240,29 @@ class TestTwoCameraMatching:
 
         cpar.num_cams = 2
         corrected = correct_frame(frm, calib, cpar, 0.0001)
-        lists = safely_allocate_adjacency_lists(cpar.num_cams, frm.num_targets)
-        match_pairs(lists, corrected, frm, vpar, cpar, calib)
+        p1_arr, n_arr, p2_arr, corr_arr, dist_arr = allocate_adjacency_arrays(
+            cpar.num_cams, frm.num_targets
+        )
+        match_pairs(
+            p1_arr, n_arr, p2_arr, corr_arr, dist_arr, corrected, frm, vpar, cpar, calib
+        )
 
         con = [NTupel() for _ in range(4 * 16)]
         tusage = [[0] * NMAX for _ in range(cpar.num_cams)]
 
-        matched = consistent_pair_matching(lists, 2, frm.num_targets,
-            10000.0, con, 4 * 16, tusage)
+        matched = consistent_pair_matching(
+            p1_arr,
+            n_arr,
+            p2_arr,
+            corr_arr,
+            dist_arr,
+            2,
+            frm.num_targets,
+            10000.0,
+            con,
+            4 * 16,
+            tusage,
+        )
         assert matched == 16
 
 
