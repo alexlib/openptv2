@@ -557,51 +557,107 @@ class Frame:
             positions[i, 1] = self.targets[cam][i].y
         return positions
 
+    @cython.boundscheck(False)
+    @cython.wraparound(False)
     def _sync_path_to_soa(self):
-        """Copy AoS path_info/correspond into SoA arrays."""
+        """Copy AoS path_info/correspond into SoA arrays (memoryview-optimized)."""
         i: cython.int
         k: cython.int
         num_parts: cython.int = self.num_parts
         p: Pathinfo
         c: Corres
+
+        # Local typed memoryview references — avoids repeated self.path_* lookups
+        path_x: cython.double[:, ::1] = cython.declare(
+            cython.double[:, ::1], self.path_x
+        )
+        path_prev: cython.int[::1] = cython.declare(cython.int[::1], self.path_prev)
+        path_next: cython.int[::1] = cython.declare(cython.int[::1], self.path_next)
+        path_prio: cython.int[::1] = cython.declare(cython.int[::1], self.path_prio)
+        path_inlist: cython.int[::1] = cython.declare(cython.int[::1], self.path_inlist)
+        path_finaldecis: cython.double[::1] = cython.declare(
+            cython.double[::1], self.path_finaldecis
+        )
+        path_decis: cython.double[:, ::1] = cython.declare(
+            cython.double[:, ::1], self.path_decis
+        )
+        path_linkdecis: cython.int[:, ::1] = cython.declare(
+            cython.int[:, ::1], self.path_linkdecis
+        )
+        corres_nr: cython.int[::1] = cython.declare(cython.int[::1], self.corres_nr)
+        corres_p: cython.int[:, ::1] = cython.declare(cython.int[:, ::1], self.corres_p)
+
         for i in range(num_parts):
             p = self.path_info[i]
-            self.path_x[i] = p.x
-            self.path_prev[i] = p.prev
-            self.path_next[i] = p.next_idx
-            self.path_prio[i] = p.prio
-            self.path_inlist[i] = p.inlist
-            self.path_finaldecis[i] = p.finaldecis
+            path_x[i, 0] = p.x[0]
+            path_x[i, 1] = p.x[1]
+            path_x[i, 2] = p.x[2]
+            path_prev[i] = p.prev
+            path_next[i] = p.next_idx
+            path_prio[i] = p.prio
+            path_inlist[i] = p.inlist
+            path_finaldecis[i] = p.finaldecis
             for k in range(POSI):
-                self.path_decis[i, k] = p.decis[k]
-                self.path_linkdecis[i, k] = p.linkdecis[k]
+                path_decis[i, k] = p.decis[k]
+                path_linkdecis[i, k] = p.linkdecis[k]
 
             c = self.correspond[i]
-            self.corres_nr[i] = c.nr
-            self.corres_p[i] = c.p
+            corres_nr[i] = c.nr
+            corres_p[i, 0] = c.p[0]
+            corres_p[i, 1] = c.p[1]
+            corres_p[i, 2] = c.p[2]
+            corres_p[i, 3] = c.p[3]
 
+    @cython.boundscheck(False)
+    @cython.wraparound(False)
     def _sync_soa_to_path(self):
-        """Copy SoA arrays back into AoS path_info/correspond."""
+        """Copy SoA arrays back into AoS path_info/correspond (memoryview-optimized)."""
         i: cython.int
         k: cython.int
         num_parts: cython.int = self.num_parts
         p: Pathinfo
         c: Corres
+
+        # Local typed memoryview references — avoids repeated self.path_* lookups
+        path_x: cython.double[:, ::1] = cython.declare(
+            cython.double[:, ::1], self.path_x
+        )
+        path_prev: cython.int[::1] = cython.declare(cython.int[::1], self.path_prev)
+        path_next: cython.int[::1] = cython.declare(cython.int[::1], self.path_next)
+        path_prio: cython.int[::1] = cython.declare(cython.int[::1], self.path_prio)
+        path_inlist: cython.int[::1] = cython.declare(cython.int[::1], self.path_inlist)
+        path_finaldecis: cython.double[::1] = cython.declare(
+            cython.double[::1], self.path_finaldecis
+        )
+        path_decis: cython.double[:, ::1] = cython.declare(
+            cython.double[:, ::1], self.path_decis
+        )
+        path_linkdecis: cython.int[:, ::1] = cython.declare(
+            cython.int[:, ::1], self.path_linkdecis
+        )
+        corres_nr: cython.int[::1] = cython.declare(cython.int[::1], self.corres_nr)
+        corres_p: cython.int[:, ::1] = cython.declare(cython.int[:, ::1], self.corres_p)
+
         for i in range(num_parts):
             p = self.path_info[i]
-            p.x[:] = self.path_x[i]
-            p.prev = int(self.path_prev[i])
-            p.next_idx = int(self.path_next[i])
-            p.prio = int(self.path_prio[i])
-            p.inlist = int(self.path_inlist[i])
-            p.finaldecis = float(self.path_finaldecis[i])
+            p.x[0] = path_x[i, 0]
+            p.x[1] = path_x[i, 1]
+            p.x[2] = path_x[i, 2]
+            p.prev = int(path_prev[i])
+            p.next_idx = int(path_next[i])
+            p.prio = int(path_prio[i])
+            p.inlist = int(path_inlist[i])
+            p.finaldecis = float(path_finaldecis[i])
             for k in range(POSI):
-                p.decis[k] = float(self.path_decis[i, k])
-                p.linkdecis[k] = int(self.path_linkdecis[i, k])
+                p.decis[k] = float(path_decis[i, k])
+                p.linkdecis[k] = int(path_linkdecis[i, k])
 
             c = self.correspond[i]
-            c.nr = int(self.corres_nr[i])
-            c.p[:] = self.corres_p[i]
+            c.nr = int(corres_nr[i])
+            c.p[0] = int(corres_p[i, 0])
+            c.p[1] = int(corres_p[i, 1])
+            c.p[2] = int(corres_p[i, 2])
+            c.p[3] = int(corres_p[i, 3])
 
     def read(self, corres_file_base, linkage_file_base, *args, **kwargs):
         prio_file_base = None
