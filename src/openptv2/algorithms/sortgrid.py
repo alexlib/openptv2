@@ -8,6 +8,7 @@ Provides:
 - read_sortgrid_par: reads search radius.
 - read_calblock: reads 3D calibration point coordinates.
 """
+
 import cython
 import numpy as np
 
@@ -23,7 +24,7 @@ from .tracking_frame_buf import Target
 
 @cython.ccall
 @cython.boundscheck(False)
-def nearest_neighbour_pix(pix: list, x: float, y: float, eps: float) -> int:
+def nearest_neighbour_pix(pix: object, x: float, y: float, eps: float) -> int:
     """Search for the nearest target in the image space within epsilon distance."""
     if eps < 0:
         return -999
@@ -41,7 +42,7 @@ def nearest_neighbour_pix(pix: list, x: float, y: float, eps: float) -> int:
 
     for j, p in enumerate(pix):
         if ymin < p.y < ymax and xmin < p.x < xmax:
-            d = c_sqrt((x - p.x)**2 + (y - p.y)**2)
+            d = c_sqrt((x - p.x) ** 2 + (y - p.y) ** 2)
             if d < dmin:
                 dmin = d
                 pnr = j
@@ -50,17 +51,17 @@ def nearest_neighbour_pix(pix: list, x: float, y: float, eps: float) -> int:
 
 
 def _nearest_neighbour_arr(
-    pix_x: np.ndarray, pix_y: np.ndarray,
-    x: cython.double, y: cython.double, eps: cython.double,
+    pix_x: np.ndarray,
+    pix_y: np.ndarray,
+    x: cython.double,
+    y: cython.double,
+    eps: cython.double,
 ) -> int:
     """Vectorized nearest-neighbour search over pre-extracted coordinate arrays."""
     if eps < 0:
         return -999
 
-    mask = (
-        (pix_x > x - eps) & (pix_x < x + eps)
-        & (pix_y > y - eps) & (pix_y < y + eps)
-    )
+    mask = (pix_x > x - eps) & (pix_x < x + eps) & (pix_y > y - eps) & (pix_y < y + eps)
     if not mask.any():
         return -999
 
@@ -83,6 +84,7 @@ def read_sortgrid_par(filename: str | Path) -> int:
     except (ValueError, IndexError):
         print(f"Error reading sortgrid parameter from {filename}")
         return 0
+
 
 @cython.ccall
 def read_calblock(filename: str | Path) -> Tuple[np.ndarray, int]:
@@ -114,7 +116,7 @@ def sortgrid(
     fix: np.ndarray,
     num: int,
     eps: int,
-    pix: list,
+    pix: object,
 ) -> list:
     """Sort detected target points by back-projection.
 
@@ -148,16 +150,20 @@ def sortgrid(
         xp, yp = img_coord(fix[i], cal, mm)
         px, py = metric_to_pixel(xp, yp, imx, imy, pix_size_x, pix_size_y, chfield)
 
-        if (px > -eps and py > -eps
-                and px < imx + eps and py < imy + eps):
-
+        if px > -eps and py > -eps and px < imx + eps and py < imy + eps:
             j = nn_func(px, py)
 
             if j != -999:
                 t = pix[j]
                 sorted_pix[i] = Target(
-                    pnr=i, x=t.x, y=t.y, n=t.n,
-                    nx=t.nx, ny=t.ny, sumg=t.sumg, tnr=t.tnr,
+                    pnr=i,
+                    x=t.x,
+                    y=t.y,
+                    n=t.n,
+                    nx=t.nx,
+                    ny=t.ny,
+                    sumg=t.sumg,
+                    tnr=t.tnr,
                 )
 
     return sorted_pix

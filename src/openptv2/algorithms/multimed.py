@@ -103,7 +103,7 @@ def multimed_nlay(
     return Xq, Yq
 
 
-@cython.cfunc
+@cython.ccall
 @cython.locals(
     zout=cython.double,
     dx=cython.double,

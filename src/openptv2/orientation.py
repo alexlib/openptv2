@@ -11,6 +11,7 @@ from openptv2.algorithms.orientation import (
     weighted_dumbbell_precision as _weighted_dumbbell_precision,
 )
 
+
 def _is_empty_targets(targets) -> bool:
     """Check if the given targets structure represents an empty set of targets."""
     if targets is None:
@@ -31,21 +32,21 @@ def _is_empty_targets(targets) -> bool:
 
 
 def _unwrap_cal(cal):
-    if hasattr(cal, '_cal'):
+    if hasattr(cal, "_cal"):
         return cal._cal
     return cal
 
 
 def _unwrap_cpar(cpar):
-    if hasattr(cpar, '_cpar'):
+    if hasattr(cpar, "_cpar"):
         return cpar._cpar
-    if hasattr(cpar, 'control_par'):
+    if hasattr(cpar, "control_par"):
         return cpar.control_par
     return cpar
 
 
 def _unwrap_vpar(vpar):
-    if hasattr(vpar, '_vpar'):
+    if hasattr(vpar, "_vpar"):
         return vpar._vpar
     return vpar
 
@@ -81,11 +82,11 @@ def full_calibration(cal, ref_pts, img_pts, cpar, flags=None):
         tuple: (residuals, used_points, error_estimate)
     """
     # Unwrap img_pts if needed
-    if hasattr(img_pts, '__iter__') and len(img_pts) > 0:
-        if hasattr(img_pts[0], '_target'):
+    if hasattr(img_pts, "__iter__") and len(img_pts) > 0:
+        if hasattr(img_pts[0], "_target"):
             # List of Target wrappers
             img_array = np.array([[t._target.x, t._target.y] for t in img_pts])
-        elif hasattr(img_pts[0], 'x') and hasattr(img_pts[0], 'y'):
+        elif hasattr(img_pts[0], "x") and hasattr(img_pts[0], "y"):
             # Core Target objects
             img_array = np.array([[t.x, t.y] for t in img_pts])
         else:
@@ -94,7 +95,9 @@ def full_calibration(cal, ref_pts, img_pts, cpar, flags=None):
     else:
         img_array = img_pts
 
-    return _full_calibration(_unwrap_cal(cal), ref_pts, img_array, _unwrap_cpar(cpar), flags)
+    return _full_calibration(
+        _unwrap_cal(cal), ref_pts, img_array, _unwrap_cpar(cpar), flags
+    )
 
 
 def match_detection_to_ref(cal, ref_pts, img_pts, cpar, eps=25):
@@ -112,17 +115,20 @@ def match_detection_to_ref(cal, ref_pts, img_pts, cpar, eps=25):
         TargetArray of matched targets
     """
     # Unwrap img_pts if it's a TargetArray
-    if hasattr(img_pts, '_targets'):
+    if hasattr(img_pts, "_targets"):
         targets = img_pts._targets
-    elif hasattr(img_pts, '_target_array'):
+    elif hasattr(img_pts, "_target_array"):
         targets = img_pts._target_array
     else:
         targets = img_pts
 
-    matched = _match_detection_to_ref(_unwrap_cal(cal), ref_pts, targets, _unwrap_cpar(cpar), eps)
+    matched = _match_detection_to_ref(
+        _unwrap_cal(cal), ref_pts, targets, _unwrap_cpar(cpar), eps
+    )
 
     # Wrap result in TargetArray
     from openptv2.tracking_framebuf import TargetArray
+
     return TargetArray(matched)
 
 
@@ -144,9 +150,9 @@ def multi_cam_point_positions(targets, cpar, cals):
     # Unwrap targets if they're TargetArrays
     unwrapped_targets = []
     for cam_targets in targets:
-        if hasattr(cam_targets, '_targets'):
+        if hasattr(cam_targets, "_targets"):
             unwrapped_targets.append(cam_targets._targets)
-        elif hasattr(cam_targets, '_target_array'):
+        elif hasattr(cam_targets, "_target_array"):
             unwrapped_targets.append(cam_targets._target_array)
         else:
             unwrapped_targets.append(cam_targets)
@@ -154,7 +160,9 @@ def multi_cam_point_positions(targets, cpar, cals):
     # Unwrap calibrations
     unwrapped_cals = [_unwrap_cal(c) for c in cals]
 
-    return _multi_cam_point_positions(unwrapped_targets, _unwrap_cpar(cpar), unwrapped_cals)
+    return _multi_cam_point_positions(
+        unwrapped_targets, _unwrap_cpar(cpar), unwrapped_cals
+    )
 
 
 def point_positions(targets, cpar, cals, vpar=None):
@@ -176,9 +184,9 @@ def point_positions(targets, cpar, cals, vpar=None):
     # Unwrap targets if they're TargetArrays
     unwrapped_targets = []
     for cam_targets in targets:
-        if hasattr(cam_targets, '_targets'):
+        if hasattr(cam_targets, "_targets"):
             unwrapped_targets.append(cam_targets._targets)
-        elif hasattr(cam_targets, '_target_array'):
+        elif hasattr(cam_targets, "_target_array"):
             unwrapped_targets.append(cam_targets._target_array)
         else:
             unwrapped_targets.append(cam_targets)
@@ -189,7 +197,9 @@ def point_positions(targets, cpar, cals, vpar=None):
     # Unwrap volume params
     unwrapped_vpar = _unwrap_vpar(vpar) if vpar is not None else None
 
-    return _point_positions(unwrapped_targets, _unwrap_cpar(cpar), unwrapped_cals, unwrapped_vpar)
+    return _point_positions(
+        unwrapped_targets, _unwrap_cpar(cpar), unwrapped_cals, unwrapped_vpar
+    )
 
 
 def single_cam_point_positions(targets, cpar, cals, vpar):
@@ -211,9 +221,9 @@ def single_cam_point_positions(targets, cpar, cals, vpar):
     # Unwrap targets if they're TargetArrays
     unwrapped_targets = []
     for cam_targets in targets:
-        if hasattr(cam_targets, '_targets'):
+        if hasattr(cam_targets, "_targets"):
             unwrapped_targets.append(cam_targets._targets)
-        elif hasattr(cam_targets, '_target_array'):
+        elif hasattr(cam_targets, "_target_array"):
             unwrapped_targets.append(cam_targets._target_array)
         else:
             unwrapped_targets.append(cam_targets)
@@ -221,7 +231,9 @@ def single_cam_point_positions(targets, cpar, cals, vpar):
     # Unwrap calibrations
     unwrapped_cals = [_unwrap_cal(c) for c in cals]
 
-    return _single_cam_point_positions(unwrapped_targets, _unwrap_cpar(cpar), unwrapped_cals, _unwrap_vpar(vpar))
+    return _single_cam_point_positions(
+        unwrapped_targets, _unwrap_cpar(cpar), unwrapped_cals, _unwrap_vpar(vpar)
+    )
 
 
 def dumbbell_target_func(targets, cpar, cals, db_length, db_weight):
@@ -241,9 +253,9 @@ def dumbbell_target_func(targets, cpar, cals, db_length, db_weight):
     # Unwrap targets if they're TargetArrays
     unwrapped_targets = []
     for cam_targets in targets:
-        if hasattr(cam_targets, '_targets'):
+        if hasattr(cam_targets, "_targets"):
             unwrapped_targets.append(cam_targets._targets)
-        elif hasattr(cam_targets, '_target_array'):
+        elif hasattr(cam_targets, "_target_array"):
             unwrapped_targets.append(cam_targets._target_array)
         else:
             unwrapped_targets.append(cam_targets)
@@ -255,12 +267,18 @@ def dumbbell_target_func(targets, cpar, cals, db_length, db_weight):
     raw_cpar = _unwrap_cpar(cpar)
 
     # Get number of targets (assuming same for all cams)
-    num_targs = len(unwrapped_targets[0]) if unwrapped_targets else 0
+    num_targs = len(unwrapped_targets) if unwrapped_targets else 0
 
     return _weighted_dumbbell_precision(
-        unwrapped_targets, num_targs, raw_cpar.get_num_cams(),
-        raw_cpar.mm, unwrapped_cals, db_length, db_weight
+        unwrapped_targets,
+        num_targs,
+        raw_cpar.get_num_cams(),
+        raw_cpar.mm,
+        unwrapped_cals,
+        db_length,
+        db_weight,
     )
+
 
 __all__ = [
     "dumbbell_target_func",
@@ -271,4 +289,3 @@ __all__ = [
     "point_positions",
     "single_cam_point_positions",
 ]
-

@@ -46,7 +46,9 @@ class MultimediaParams:
         if isinstance(n2, (list, np.ndarray)):
             n2_arr = np.asarray(n2, dtype=np.float64)
             if n2_arr.size == 3:
-                d_arr = np.asarray(d, dtype=np.float64) if d is not None else np.zeros(3)
+                d_arr = (
+                    np.asarray(d, dtype=np.float64) if d is not None else np.zeros(3)
+                )
                 nlay = max(1, int(np.sum(d_arr > 0)))
             else:
                 nlay = n2_arr.size
@@ -380,6 +382,13 @@ class SequenceParams:
 
     def __init__(self, num_cams=0, **kwargs):
         """Initialize sequence parameters."""
+        # Translate legacy kwarg names to match AlgoSequencePar.__init__
+        if "image_base" in kwargs:
+            kwargs["img_base_name"] = kwargs.pop("image_base")
+        if "frame_range" in kwargs:
+            fr = kwargs.pop("frame_range")
+            kwargs["first"] = fr[0]
+            kwargs["last"] = fr[1]
         self._spar = AlgoSequencePar(num_cams=num_cams, **kwargs)
         if not self._spar.img_base_name:
             self._spar.img_base_name = [""] * num_cams
@@ -416,9 +425,17 @@ class SequenceParams:
 class TargetParams:
     """Wrapper for algorithms.parameters.TargetPar with optv-compatible API."""
 
-    def __init__(self, discont=0, gvthresh=None, pixel_count_bounds=(0, 1000),
-                 xsize_bounds=(0, 100), ysize_bounds=(0, 100), min_sum_grey=0,
-                 cross_size=2, **kwargs):
+    def __init__(
+        self,
+        discont=0,
+        gvthresh=None,
+        pixel_count_bounds=(0, 1000),
+        xsize_bounds=(0, 100),
+        ysize_bounds=(0, 100),
+        min_sum_grey=0,
+        cross_size=2,
+        **kwargs,
+    ):
         """Initialize target parameters (matching optv signature)."""
         self._tpar = AlgoTargetPar(**kwargs)
         self.set_max_discontinuity(discont)

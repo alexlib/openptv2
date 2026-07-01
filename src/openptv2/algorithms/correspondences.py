@@ -11,52 +11,46 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import operator
 
 import numpy as np
-from dataclasses import dataclass, field
-
 from .epi import MAXCAND
 
 NMAX = 20240
 PT_UNUSED = -999
 
 
-def _default_ntupel_p():
-    return [-1, -1, -1, -1]
-
-
-def _default_correspond_p2():
-    return np.zeros(MAXCAND, dtype=np.int32)
-
-
-def _default_correspond_corr():
-    return np.zeros(MAXCAND, dtype=np.float64)
-
-
-def _default_correspond_dist():
-    return np.zeros(MAXCAND, dtype=np.float64)
-
-
 @cython.cclass
-@dataclass
 class NTupel:
     """A correspondence match across multiple cameras."""
 
-    p: list = field(default_factory=_default_ntupel_p)
-    corr: cython.double = 0.0
+    p: list = cython.declare(object, visibility="public")
+    corr: cython.double = cython.declare(cython.double, visibility="public")
+
+    def __init__(self, p=None, corr=0.0):
+        if p is None:
+            self.p = [-1, -1, -1, -1]
+        else:
+            self.p = p
+        self.corr = corr
 
 
 @cython.cclass
-@dataclass
 class Correspond:
     """Adjacency list entry for candidate matching.
 
     Matches C correspond struct: indexed by target index in source camera.
     """
 
-    p1: cython.int = 0
-    n: cython.int = 0
-    p2: np.ndarray = field(default_factory=_default_correspond_p2)
-    corr: np.ndarray = field(default_factory=_default_correspond_corr)
-    dist: np.ndarray = field(default_factory=_default_correspond_dist)
+    p1: cython.int = cython.declare(cython.int, visibility="public")
+    n: cython.int = cython.declare(cython.int, visibility="public")
+    p2: object = cython.declare(object, visibility="public")
+    corr: np.ndarray = cython.declare(object, visibility="public")
+    dist: np.ndarray = cython.declare(object, visibility="public")
+
+    def __init__(self, p1=0, n=0, p2=None, corr=None, dist=None):
+        self.p1 = p1
+        self.n = n
+        self.p2 = np.zeros(MAXCAND, dtype=np.int32) if p2 is None else p2
+        self.corr = np.zeros(MAXCAND, dtype=np.float64) if corr is None else corr
+        self.dist = np.zeros(MAXCAND, dtype=np.float64) if dist is None else dist
 
 
 @cython.ccall

@@ -6,12 +6,24 @@ import numpy as np
 
 from openptv2.algorithms.tracking_run import TrackingRun, tr_new
 from openptv2.algorithms.tracking_frame_buf import (
-    FrameBuf, Frame, Target, Corres, Pathinfo,
-    read_targets, read_path_frame, write_targets, write_path_frame,
+    FrameBuf,
+    Frame,
+    Target,
+    Corres,
+    Pathinfo,
+    read_targets,
+    read_path_frame,
+    write_targets,
+    write_path_frame,
 )
 from openptv2.algorithms.parameters import (
-    ControlPar, SequencePar, VolumePar,
-    read_control_par, read_sequence_par, read_track_par, read_volume_par,
+    ControlPar,
+    SequencePar,
+    VolumePar,
+    read_control_par,
+    read_sequence_par,
+    read_track_par,
+    read_volume_par,
     convert_track_par_to_tuple,
 )
 from openptv2.algorithms.calibration import Calibration
@@ -40,10 +52,18 @@ class TestTrackingRunInit:
             calib = read_all_calibration(cpar.num_cams, base_path=".")
 
             run = tr_new(
-                "parameters/sequence.par", "parameters/track.par",
-                "parameters/criteria.par", "parameters/ptv.par",
-                4, 20000, "res_orig/rt_is", "res_orig/ptv_is", "res_orig/added",
-                calib, 0.0001)
+                "parameters/sequence.par",
+                "parameters/track.par",
+                "parameters/criteria.par",
+                "parameters/ptv.par",
+                4,
+                20000,
+                "res_orig/rt_is",
+                "res_orig/ptv_is",
+                "res_orig/added",
+                calib,
+                0.0001,
+            )
 
             assert isinstance(run, TrackingRun)
             assert isinstance(run.fb, FrameBuf)
@@ -57,8 +77,8 @@ class TestTrackingRunInit:
             assert run.nlinks == 0
             assert run.flatten_tol == 0.0001
             assert run.lmax > 0
-            assert hasattr(run, 'ymin')
-            assert hasattr(run, 'ymax')
+            assert hasattr(run, "ymin")
+            assert hasattr(run, "ymax")
         finally:
             os.chdir(original)
 
@@ -75,9 +95,18 @@ class TestTrackingRunInit:
             calib = read_all_calibration(cpar.num_cams, base_path=".")
 
             run = tr_new(
-                seq_par, tpar, vpar, cpar, 4, 20000,
-                "res_orig/rt_is", "res_orig/ptv_is", "res_orig/added",
-                calib, 0.0001)
+                seq_par,
+                tpar,
+                vpar,
+                cpar,
+                4,
+                20000,
+                "res_orig/rt_is",
+                "res_orig/ptv_is",
+                "res_orig/added",
+                calib,
+                0.0001,
+            )
 
             assert isinstance(run, TrackingRun)
             assert isinstance(run.fb, FrameBuf)
@@ -95,16 +124,26 @@ class TestTrackingRunInit:
             calib = read_all_calibration(cpar.num_cams, base_path=".")
 
             run = tr_new(
-                "parameters/sequence.par", "parameters/track.par",
-                "parameters/criteria.par", "parameters/ptv.par",
-                4, 20000, "res_orig/rt_is", "res_orig/ptv_is", "res_orig/added",
-                calib, 0.0001)
+                "parameters/sequence.par",
+                "parameters/track.par",
+                "parameters/criteria.par",
+                "parameters/ptv.par",
+                4,
+                20000,
+                "res_orig/rt_is",
+                "res_orig/ptv_is",
+                "res_orig/added",
+                calib,
+                0.0001,
+            )
 
-            expected = np.linalg.norm([
-                run.tpar.dvxmin - run.tpar.dvxmax,
-                run.tpar.dvymin - run.tpar.dvymax,
-                run.tpar.dvzmin - run.tpar.dvzmax,
-            ])
+            expected = np.linalg.norm(
+                [
+                    run.tpar.dvxmin - run.tpar.dvxmax,
+                    run.tpar.dvymin - run.tpar.dvymax,
+                    run.tpar.dvzmin - run.tpar.dvzmax,
+                ]
+            )
             assert abs(run.lmax - expected) < EPS
             assert run.lmax > 0
         finally:
@@ -119,10 +158,18 @@ class TestTrackingRunInit:
             calib = read_all_calibration(cpar.num_cams, base_path=".")
 
             run = tr_new(
-                "parameters/sequence.par", "parameters/track.par",
-                "parameters/criteria.par", "parameters/ptv.par",
-                4, 20000, "res_orig/rt_is", "res_orig/ptv_is", "res_orig/added",
-                calib, 0.0001)
+                "parameters/sequence.par",
+                "parameters/track.par",
+                "parameters/criteria.par",
+                "parameters/ptv.par",
+                4,
+                20000,
+                "res_orig/rt_is",
+                "res_orig/ptv_is",
+                "res_orig/added",
+                calib,
+                0.0001,
+            )
 
             assert run.ymin != 0.0 or run.ymax != 0.0
             assert run.ymin < run.ymax
@@ -138,10 +185,18 @@ class TestTrackingRunInit:
             calib = read_all_calibration(cpar.num_cams, base_path=".")
 
             run = tr_new(
-                "parameters/sequence.par", "parameters/track.par",
-                "parameters/criteria.par", "parameters/ptv.par",
-                4, 20000, "res_orig/rt_is", "res_orig/ptv_is", "res_orig/added",
-                calib, 0.0001)
+                "parameters/sequence.par",
+                "parameters/track.par",
+                "parameters/criteria.par",
+                "parameters/ptv.par",
+                4,
+                20000,
+                "res_orig/rt_is",
+                "res_orig/ptv_is",
+                "res_orig/added",
+                calib,
+                0.0001,
+            )
 
             assert run.fb.target_file_base == run.seq_par.img_base_name
             assert run.fb.corres_file_base == "res_orig/rt_is"
@@ -165,7 +220,8 @@ class TestFrameReading:
     def test_read_path_frame(self):
         """read_path_frame should parse correspondence files."""
         cor_list, path_list = read_path_frame(
-            "test_data/track/res_orig/rt_is", "", "", 10095)
+            "test_data/track/res_orig/rt_is", "", "", 10095
+        )
         assert len(cor_list) > 0
         assert len(path_list) > 0
         assert len(cor_list) == len(path_list)
@@ -177,7 +233,7 @@ class TestFrameReading:
         p = path_list[0]
         assert isinstance(p, Pathinfo)
         assert p.prev == PREV_NONE
-        assert p.next == NEXT_NONE
+        assert p.next_idx == NEXT_NONE
         assert p.prio == 4
         assert p.finaldecis == 1000000.0
         assert p.inlist == 0
@@ -193,8 +249,13 @@ class TestFrameReading:
             os.chdir("test_data/track")
             cpar = read_control_par("parameters/ptv.par")
             frm = Frame(cpar.num_cams, 20000)
-            ok = frm.read("res_orig/rt_is", "res_orig/ptv_is", "res_orig/added",
-                         ["img_orig/cam1.", "img_orig/cam2."], 10095)
+            ok = frm.read(
+                "res_orig/rt_is",
+                "res_orig/ptv_is",
+                "res_orig/added",
+                ["img_orig/cam1.", "img_orig/cam2."],
+                10095,
+            )
 
             assert ok is True
             assert frm.num_parts > 0
@@ -215,9 +276,15 @@ class TestFrameReading:
             cpar = read_control_par("parameters/ptv.par")
             seq_par = read_sequence_par("parameters/sequence.par", cpar.num_cams)
 
-            fb = FrameBuf(4, cpar.num_cams, 20000,
-                         "res_orig/rt_is", "res_orig/ptv_is", "res_orig/added",
-                         seq_par.img_base_name)
+            fb = FrameBuf(
+                4,
+                cpar.num_cams,
+                20000,
+                "res_orig/rt_is",
+                "res_orig/ptv_is",
+                "res_orig/added",
+                seq_par.img_base_name,
+            )
 
             ok = fb.read_frame_at_end(10095, read_links=True)
             assert ok is True
@@ -237,9 +304,15 @@ class TestFrameReading:
             cpar = read_control_par("parameters/ptv.par")
             seq_par = read_sequence_par("parameters/sequence.par", cpar.num_cams)
 
-            fb = FrameBuf(4, cpar.num_cams, 20000,
-                         "res_orig/rt_is", "res_orig/ptv_is", "res_orig/added",
-                         seq_par.img_base_name)
+            fb = FrameBuf(
+                4,
+                cpar.num_cams,
+                20000,
+                "res_orig/rt_is",
+                "res_orig/ptv_is",
+                "res_orig/added",
+                seq_par.img_base_name,
+            )
 
             fb.read_frame_at_end(10095, read_links=True)
             last_before = fb.buf[3]
@@ -259,9 +332,15 @@ class TestFrameReading:
             cpar = read_control_par("parameters/ptv.par")
             seq_par = read_sequence_par("parameters/sequence.par", cpar.num_cams)
 
-            fb = FrameBuf(4, cpar.num_cams, 20000,
-                         "res_orig/rt_is", "res_orig/ptv_is", "res_orig/added",
-                         seq_par.img_base_name)
+            fb = FrameBuf(
+                4,
+                cpar.num_cams,
+                20000,
+                "res_orig/rt_is",
+                "res_orig/ptv_is",
+                "res_orig/added",
+                seq_par.img_base_name,
+            )
 
             for i in range(4):
                 ok = fb.read_frame_at_end(seq_par.first + i, read_links=True)
@@ -304,8 +383,8 @@ class TestTargetIO:
             Corres(nr=2, p=np.array([1, 0, 2, -1], dtype=np.int32)),
         ]
         path_buf = [
-            Pathinfo(x=np.array([10.0, 20.0, 30.0]), prev=-1, next=-2),
-            Pathinfo(x=np.array([40.0, 50.0, 60.0]), prev=0, next=1),
+            Pathinfo(x=np.array([10.0, 20.0, 30.0]), prev=-1, next_idx=-2),
+            Pathinfo(x=np.array([40.0, 50.0, 60.0]), prev=0, next_idx=1),
         ]
         base_corres = str(tmp_path / "rt_is")
         base_linkage = str(tmp_path / "ptv_is")

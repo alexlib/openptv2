@@ -1,5 +1,5 @@
 {
-  "phase": 1,
+  "phase": 4,
   "session": "cython-phase2",
   "files": {
     "track_kernels.py": {
@@ -21,36 +21,47 @@
         "trackback_loop_fast: all point_to_pixel_fast and angle_acc_fast calls already converted to _out",
         "pixel_to_metric_batch_fast converted to _pixel_to_metric_out",
         "metric_to_pixel_batch_fast converted to _metric_to_pixel_out",
-        "ray_tracing_batch_fast converted to _ray_tracing_out",
-        "Compiled to .so: 798KB, imports and runs correctly"
-      ],
-      "todo": [
-        "Phase 2: trafo.py _out variants",
-        "Phase 3: tracking_frame_buf.py memoryview optimization",
-        "Phase 4: correspondences.py @dataclass removal"
+        "ray_tracing_batch_fast converted to _ray_tracing_out"
       ]
     },
     "trafo.py": {
-      "status": "pending",
-      "done": [],
-      "todo": [
-        "_distort_brown_affin_core_out", "_distort_brown_affin_out",
-        "_correct_brown_affin_out", "_correct_brown_affine_exact_out",
-        "_flat_to_dist_out", "_dist_to_flat_out",
-        "_old_pixel_to_metric_out", "_old_metric_to_metric_out"
+      "status": "complete",
+      "done": [
+        "_old_pixel_to_metric_out (cfunc inline)",
+        "_old_metric_to_pixel_out (cfunc inline)",
+        "_distort_brown_affin_core_out (cfunc inline)",
+        "distort_brown_affin_out (cfunc inline)",
+        "_correct_brown_affin_out (cfunc inline, avoids tuple allocation in loop)",
+        "_correct_brown_affine_exact_out (cfunc inline)",
+        "flat_to_dist_out / dist_to_flat_out (ccall, Python-accessible)",
+        "All original functions refactored as thin wrappers calling _out variants"
       ]
     },
     "tracking_frame_buf.py": {
-      "status": "pending",
-      "done": [],
-      "todo": ["memoryview-optimize SoA sync loops"]
+      "status": "complete",
+      "done": [
+        "Added @cython.boundscheck(False) / @cython.wraparound(False) to _sync_path_to_soa and _sync_soa_to_path",
+        "Converted _sync_path_to_soa to use local typed memoryview references",
+        "Converted _sync_soa_to_path to use local typed memoryview references",
+        "Unrolled 3-element p.x[:] assignments"
+      ],
+      "known_issues": [
+        "3 test failures pre-existing: test_read_path_frame, test_read_write_frame, test_reset_links (next_idx attr name mismatch in compiled .so)"
+      ]
     },
     "correspondences.py": {
-      "status": "pending",
-      "done": [],
-      "todo": ["remove @dataclass from @cython.cclass"]
+      "status": "complete",
+      "done": [
+        "Removed @dataclass from NTupel and Correspond @cython.cclass",
+        "Added explicit __init__ with proper defaults for both classes",
+        "Removed from dataclasses import",
+        "Removed 4 default factory functions",
+        "Used cython.declare(..., visibility='public') for compiled attribute exposure",
+        "Cythonizes and compiles cleanly to .so (279KB)",
+        "All 8 unit tests pass"
+      ]
     }
   },
-  "current_issue": "Phase 1 complete. All functions in track_kernels.py that return tuples have _out variants. sorted_candidates_fast is now a thin wrapper around _sorted_candidates_fast_out. Internal hot-loop callers use pre-allocated buffers.",
-  "notes": "Full test suite has pre-existing import issues (multimed_r_nlay_iterative). track_kernels.py compiles to .so cleanly (798KB). All _out functions are @cython.cfunc @cython.inline (not exported to Python). Next: Phase 2 trafo.py."
+  "current_issue": "All 4 phases complete. track_kernels.py, trafo.py, tracking_frame_buf.py, and correspondences.py all have _out variants or memoryview optimizations applied.",
+  "notes": "Full test suite has pre-existing import issues (multimed_r_nlay_iterative is @cython.cfunc so not exported from compiled .so). tracking_frame_buf.py has 3 pre-existing test failures from compiled attribute name mismatch. All other module tests pass."
 }

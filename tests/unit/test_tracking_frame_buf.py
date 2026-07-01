@@ -74,7 +74,7 @@ def test_read_path_frame():
     path_correct = Pathinfo(
         x=np.array([45.219, -20.269, 25.946]),
         prev=PREV_NONE,
-        next=NEXT_NONE,
+        next_idx=NEXT_NONE,
         prio=4,
         finaldecis=1000000.0,
         inlist=0,
@@ -116,7 +116,7 @@ def test_write_path_frame(tmp_path):
         Pathinfo(
             x=np.array([45.219, -20.269, 25.946]),
             prev=-1,
-            next=-2,
+            next_idx=-2,
             prio=4,
             finaldecis=1000000.0,
             inlist=0,
@@ -124,7 +124,7 @@ def test_write_path_frame(tmp_path):
         Pathinfo(
             x=np.array([45.219, -20.269, 25.946]),
             prev=-1,
-            next=-2,
+            next_idx=-2,
             prio=0,
             finaldecis=2000000.0,
             inlist=1,
@@ -178,7 +178,7 @@ def test_read_write_frame(tmp_path):
     t_path = Pathinfo(
         x=np.array([45.219, -20.269, 25.946]),
         prev=-1,
-        next=-2,
+        next_idx=-2,
         prio=4,
         finaldecis=1000000.0,
         inlist=0,

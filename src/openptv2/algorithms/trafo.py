@@ -45,7 +45,7 @@ def _old_pixel_to_metric_out(
     out[1] = (im_size_y * 0.5 - yp) * pix_size_y
 
 
-@cython.cfunc
+@cython.ccall
 @cython.cdivision(True)
 @cython.profile(False)
 def old_pixel_to_metric(
@@ -106,7 +106,7 @@ def _old_metric_to_pixel_out(
     out[1] = yp
 
 
-@cython.cfunc
+@cython.ccall
 def old_metric_to_pixel(
     x_metric: cython.double,
     y_metric: cython.double,
@@ -371,7 +371,7 @@ def distort_brown_affin_out(
     _distort_brown_affin_core_out(x, y, k1, k2, k3, p1, p2, scx, sin_she, cos_she, out)
 
 
-@cython.cfunc
+@cython.ccall
 def distort_brown_affin(
     x: cython.double,
     y: cython.double,

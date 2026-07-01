@@ -26,14 +26,14 @@ class CallableFloat(float):
 class Target:
     """Particle target in a camera frame."""
 
-    c_pnr: cython.int = cython.declare(cython.int, 0, visibility="public")
-    c_x: cython.double = cython.declare(cython.double, 0.0, visibility="public")
-    c_y: cython.double = cython.declare(cython.double, 0.0, visibility="public")
-    n: cython.int = cython.declare(cython.int, 0, visibility="public")
-    nx: cython.int = cython.declare(cython.int, 0, visibility="public")
-    ny: cython.int = cython.declare(cython.int, 0, visibility="public")
-    sumg: cython.int = cython.declare(cython.int, 0, visibility="public")
-    c_tnr: cython.int = cython.declare(cython.int, 0, visibility="public")
+    c_pnr: cython.int = cython.declare(cython.int, visibility="public")
+    c_x: cython.double = cython.declare(cython.double, visibility="public")
+    c_y: cython.double = cython.declare(cython.double, visibility="public")
+    n: cython.int = cython.declare(cython.int, visibility="public")
+    nx: cython.int = cython.declare(cython.int, visibility="public")
+    ny: cython.int = cython.declare(cython.int, visibility="public")
+    sumg: cython.int = cython.declare(cython.int, visibility="public")
+    c_tnr: cython.int = cython.declare(cython.int, visibility="public")
 
     def __init__(self, pnr=0, x=0.0, y=0.0, n=0, nx=0, ny=0, sumg=0, tnr=0):
         self.c_pnr = int(pnr)
@@ -212,8 +212,8 @@ def write_targets(tbuf, num_targets, file_base, frame_num):
 class Corres:
     """Correspondence between cameras for a 3D particle."""
 
-    nr: cython.int = cython.declare(cython.int, 0, visibility="public")
-    p: np.ndarray = cython.declare(object, None, visibility="public")
+    nr: cython.int = cython.declare(cython.int, visibility="public")
+    p: np.ndarray = cython.declare(object, visibility="public")
 
     def __init__(self, nr=0, p=None):
         self.nr = int(nr)
@@ -238,16 +238,14 @@ def compare_corres(c1, c2):
 class Pathinfo:
     """Particle path information across frames."""
 
-    x: np.ndarray = cython.declare(object, None, visibility="public")
-    prev: cython.int = cython.declare(cython.int, PREV_NONE, visibility="public")
-    next_idx: cython.int = cython.declare(cython.int, NEXT_NONE, visibility="public")
-    prio: cython.int = cython.declare(cython.int, 4, visibility="public")
-    finaldecis: cython.double = cython.declare(
-        cython.double, 1000000.0, visibility="public"
-    )
-    inlist: cython.int = cython.declare(cython.int, 0, visibility="public")
-    decis: list = cython.declare(object, None, visibility="public")
-    linkdecis: list = cython.declare(object, None, visibility="public")
+    x: np.ndarray = cython.declare(object, visibility="public")
+    prev: cython.int = cython.declare(cython.int, visibility="public")
+    next_idx: cython.int = cython.declare(cython.int, visibility="public")
+    prio: cython.int = cython.declare(cython.int, visibility="public")
+    finaldecis: cython.double = cython.declare(cython.double, visibility="public")
+    inlist: cython.int = cython.declare(cython.int, visibility="public")
+    decis: list = cython.declare(object, visibility="public")
+    linkdecis: list = cython.declare(object, visibility="public")
 
     def __init__(
         self,

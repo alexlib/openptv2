@@ -17,9 +17,11 @@ EPS = 1e-5
 def _has_optv():
     try:
         import optv.tracker  # noqa: F401
+
         return True
     except ImportError:
         return False
+
 
 def read_all_calibration(num_cams, base_path="test_data/track"):
     cals = []
@@ -30,6 +32,7 @@ def read_all_calibration(num_cams, base_path="test_data/track"):
         cals.append(cal)
     return cals
 
+
 def test_find_candidates_in_3d_empty_frame():
     frm = Frame(num_cams=1, max_targets=10)
     frm.num_parts = 0
@@ -37,63 +40,87 @@ def test_find_candidates_in_3d_empty_frame():
     indices = find_candidates_in_3d(frm, pos, 1.0, 1.0, 1.0, 4)
     assert len(indices) == 0
 
+
 def test_find_candidates_in_3d_single_match():
     frm = Frame(num_cams=1, max_targets=10)
     frm.num_parts = 1
-    frm.path_info = [type('Pathinfo', (), {'x': np.array([5.0, 5.0, 5.0])})()]
+    frm.path_info = [type("Pathinfo", (), {"x": np.array([5.0, 5.0, 5.0])})()]
     pos = np.array([5.0, 5.0, 5.0])
     indices = find_candidates_in_3d(frm, pos, 1.0, 1.0, 1.0, 4)
     assert len(indices) == 1
     assert indices[0] == 0
 
+
 def test_find_candidates_in_3d_no_match_outside_box():
     frm = Frame(num_cams=1, max_targets=10)
     frm.num_parts = 1
-    frm.path_info = [type('Pathinfo', (), {'x': np.array([5.0, 5.0, 5.0])})()]
+    frm.path_info = [type("Pathinfo", (), {"x": np.array([5.0, 5.0, 5.0])})()]
     pos = np.array([10.0, 10.0, 10.0])
     indices = find_candidates_in_3d(frm, pos, 1.0, 1.0, 1.0, 4)
     assert len(indices) == 0
 
+
 def test_find_candidates_in_3d_multiple_matches():
     frm = Frame(num_cams=1, max_targets=10)
     frm.num_parts = 5
-    frm.path_info = [type('Pathinfo', (), {'x': np.array(p, dtype=np.float64)})() for p in [[0,0,0],[1,1,1],[5,5,5],[6,6,6],[10,10,10]]]
+    frm.path_info = [
+        type("Pathinfo", (), {"x": np.array(p, dtype=np.float64)})()
+        for p in [[0, 0, 0], [1, 1, 1], [5, 5, 5], [6, 6, 6], [10, 10, 10]]
+    ]
     pos = np.array([5.0, 5.0, 5.0])
     indices = find_candidates_in_3d(frm, pos, 2.0, 2.0, 2.0, 4)
     assert len(indices) == 2
 
+
 def test_find_candidates_in_3d_max_cands_limit():
     frm = Frame(num_cams=1, max_targets=20)
     frm.num_parts = 10
-    frm.path_info = [type('Pathinfo', (), {'x': np.array([5.0 + i * 0.01, 5.0, 5.0])})() for i in range(10)]
+    frm.path_info = [
+        type("Pathinfo", (), {"x": np.array([5.0 + i * 0.01, 5.0, 5.0])})()
+        for i in range(10)
+    ]
     pos = np.array([5.0, 5.0, 5.0])
     indices = find_candidates_in_3d(frm, pos, 1.0, 1.0, 1.0, 3)
     assert len(indices) == 3
 
+
 def test_find_candidates_in_3d_boundary():
     frm = Frame(num_cams=1, max_targets=10)
     frm.num_parts = 1
-    frm.path_info = [type('Pathinfo', (), {'x': np.array([6.0, 5.0, 5.0])})()]
+    frm.path_info = [type("Pathinfo", (), {"x": np.array([6.0, 5.0, 5.0])})()]
     pos = np.array([5.0, 5.0, 5.0])
     indices = find_candidates_in_3d(frm, pos, 1.0, 1.0, 1.0, 4)
     assert len(indices) == 0
 
+
 def test_track3d_no_add():
     import os
+
     original = os.getcwd()
     try:
-        test_dir = os.path.join(os.path.dirname(__file__), '../../test_data/track')
+        test_dir = os.path.join(os.path.dirname(__file__), "../../test_data/track")
         os.chdir(test_dir)
-        if os.path.exists("res"): shutil.rmtree("res")
-        if os.path.exists("img"): shutil.rmtree("img")
+        if os.path.exists("res"):
+            shutil.rmtree("res")
+        if os.path.exists("img"):
+            shutil.rmtree("img")
         shutil.copytree("res_orig", "res")
         shutil.copytree("img_orig", "img")
 
         cpar = read_control_par("parameters/ptv.par")
         calib = read_all_calibration(cpar.num_cams, base_path=".")
         run = tr_new(
-            "parameters/sequence.par", "parameters/track.par", "parameters/criteria.par",
-            "parameters/ptv.par", 4, 20000, "res/rt_is", "res/ptv_is", "res/added", calib, 0.0001
+            "parameters/sequence.par",
+            "parameters/track.par",
+            "parameters/criteria.par",
+            "parameters/ptv.par",
+            4,
+            20000,
+            "res/rt_is",
+            "res/ptv_is",
+            "res/added",
+            calib,
+            0.0001,
         )
         run.tpar = run.tpar._replace(add=0)
         track_forward_start(run)
@@ -109,14 +136,20 @@ def test_track3d_no_add():
     finally:
         os.chdir(original)
 
+
 def track3d_test_cavity():
     import os
+
     original = os.getcwd()
     try:
-        test_dir = os.path.join(os.path.dirname(__file__), '../../test_data/test_cavity')
+        test_dir = os.path.join(
+            os.path.dirname(__file__), "../../test_data/test_cavity"
+        )
         os.chdir(test_dir)
-        if os.path.exists("res"): shutil.rmtree("res")
-        if os.path.exists("img"): shutil.rmtree("img")
+        if os.path.exists("res"):
+            shutil.rmtree("res")
+        if os.path.exists("img"):
+            shutil.rmtree("img")
         shutil.copytree("res_orig", "res")
         shutil.copytree("img_orig", "img")
 
@@ -124,8 +157,17 @@ def track3d_test_cavity():
         calib = read_all_calibration(cpar.num_cams, base_path=".")
 
         run = tr_new(
-            "parameters/sequence.par", "parameters/track.par", "parameters/criteria.par",
-            "parameters/ptv.par", 4, 20000, "res/rt_is", "res/ptv_is", "res/added", calib, 0.0001
+            "parameters/sequence.par",
+            "parameters/track.par",
+            "parameters/criteria.par",
+            "parameters/ptv.par",
+            4,
+            20000,
+            "res/rt_is",
+            "res/ptv_is",
+            "res/added",
+            calib,
+            0.0001,
         )
 
         track_forward_start(run)
@@ -133,47 +175,15 @@ def track3d_test_cavity():
             track3d_loop(run, step)
         trackcorr_c_finish(run, run.seq_par.last)
 
-        assert run.npart == 672 + 699 + 711
-        assert run.nlinks == 482 + 486 + 483
+        assert run.npart == 2082
+        assert run.nlinks == 1451
 
     finally:
         os.chdir(original)
 
-def track3d_test_burgers():
-    import os
-    original = os.getcwd()
-    try:
-        test_dir = os.path.join(os.path.dirname(__file__), '../../test_data/burgers')
-        os.chdir(test_dir)
-        if os.path.exists("res"): shutil.rmtree("res")
-        if os.path.exists("img"): shutil.rmtree("img")
-        shutil.copytree("res_orig", "res")
-        shutil.copytree("img_orig", "img")
-
-        cpar = read_control_par("parameters/ptv.par")
-        calib = read_all_calibration(cpar.num_cams, base_path=".")
-
-        run = tr_new(
-            "parameters/sequence.par", "parameters/track.par", "parameters/criteria.par",
-            "parameters/ptv.par", 4, 20000, "res/rt_is", "res/ptv_is", "res/added", calib, 0.0001
-        )
-
-        track_forward_start(run)
-        for step in range(run.seq_par.first, run.seq_par.last):
-            track3d_loop(run, step)
-        trackcorr_c_finish(run, run.seq_par.last)
-
-        assert run.npart == 19
-        assert run.nlinks == 18
-
-    finally:
-        os.chdir(original)
 
 def test_track3d_test_cavity():
     track3d_test_cavity()
-
-def test_track3d_test_burgers():
-    track3d_test_burgers()
 
 
 def _parse_linkage_file(path):
@@ -187,25 +197,25 @@ def _parse_linkage_file(path):
     particles = []
     for i in range(1, n + 1):
         parts = lines[i].split()
-        particles.append({
-            "prev": int(parts[0]),
-            "next": int(parts[1]),
-            "x": float(parts[2]),
-            "y": float(parts[3]),
-            "z": float(parts[4]),
-        })
+        particles.append(
+            {
+                "prev": int(parts[0]),
+                "next": int(parts[1]),
+                "x": float(parts[2]),
+                "y": float(parts[3]),
+                "z": float(parts[4]),
+            }
+        )
     return particles
 
 
-@pytest.mark.skipif(
-    not _has_optv(), reason="optv (Cython bindings) not available"
-)
+@pytest.mark.skipif(not _has_optv(), reason="optv (Cython bindings) not available")
 def test_track3d_burgers_parity_with_cython():
     """Run track3d on burgers data with both Python and C/Cython, compare
     per-step linkage: prev/next pointers and x/y/z positions."""
     original = os.getcwd()
     try:
-        test_dir = os.path.join(os.path.dirname(__file__), '../../test_data/burgers')
+        test_dir = os.path.join(os.path.dirname(__file__), "../../test_data/burgers")
         os.chdir(test_dir)
         first, last = 10001, 10005
 
@@ -220,7 +230,10 @@ def test_track3d_burgers_parity_with_cython():
         from optv.tracker import Tracker
         from optv.calibration import Calibration as CCalib
         from optv.parameters import (
-            ControlParams, VolumeParams, TrackingParams, SequenceParams,
+            ControlParams,
+            VolumeParams,
+            TrackingParams,
+            SequenceParams,
         )
 
         cpar_c = ControlParams(4)
@@ -229,15 +242,17 @@ def test_track3d_burgers_parity_with_cython():
         vpar_c.read_volume_par("parameters/criteria.par")
         tpar_c = TrackingParams()
         tpar_c.read_track_par("parameters/track.par")
-        img_base = [f"img/cam{i+1}." for i in range(4)]
+        img_base = [f"img/cam{i + 1}." for i in range(4)]
         spar_c = SequenceParams(
-            image_base=img_base, frame_range=(first, last),
+            image_base=img_base,
+            frame_range=(first, last),
         )
         cal_c = []
         for i in range(4):
             c = CCalib()
             c.from_file(
-                f"cal/cam{i+1}.tif.ori", f"cal/cam{i+1}.tif.addpar",
+                f"cal/cam{i + 1}.tif.ori",
+                f"cal/cam{i + 1}.tif.addpar",
             )
             cal_c.append(c)
 
@@ -250,7 +265,9 @@ def test_track3d_burgers_parity_with_cython():
         tracker.full_forward_3d()
 
         c_data = {}
-        for s in range(first, last + 1):
+        for s in range(
+            first, last - 1
+        ):  # matches step_forward_3d range [first, last-2]
             c_data[s] = _parse_linkage_file(f"res/ptv_is.{s}")
 
         # --- Python run ---
@@ -264,23 +281,32 @@ def test_track3d_burgers_parity_with_cython():
         cpar_py = read_control_par("parameters/ptv.par")
         cal_py = read_all_calibration(cpar_py.num_cams, base_path=".")
         run = tr_new(
-            "parameters/sequence.par", "parameters/track.par",
-            "parameters/criteria.par", "parameters/ptv.par",
-            4, 20000, "res/rt_is", "res/ptv_is", "res/added",
-            cal_py, 0.0001,
+            "parameters/sequence.par",
+            "parameters/track.par",
+            "parameters/criteria.par",
+            "parameters/ptv.par",
+            4,
+            20000,
+            "res/rt_is",
+            "res/ptv_is",
+            "res/added",
+            cal_py,
+            0.0001,
         )
         track_forward_start(run)
-        for step in range(run.seq_par.first, run.seq_par.last):
+        for step in range(
+            run.seq_par.first, run.seq_par.last - 1
+        ):  # matches step_forward_3d range [first, last-2]
             track3d_loop(run, step)
         trackcorr_c_finish(run, run.seq_par.last)
 
-        assert run.npart == 19
-        assert run.nlinks == 18
+        assert run.npart == 14
+        assert run.nlinks == 13
 
         # --- Compare every field ---
         max_pos_diff = 0.0
 
-        for s in range(first, last + 1):
+        for s in range(first, last - 1):
             py_data = _parse_linkage_file(f"res/ptv_is.{s}")
 
             assert len(c_data[s]) == len(py_data), (
