@@ -46,6 +46,7 @@ def find_candidates_in_3d(frm, pos, dx, dy, dz, max_cands=MAX_CANDS):
                     break
     return [idx for idx in indices if idx >= 0]
 
+
 @cython.ccall
 def sort(n, a, b):
     """
@@ -64,7 +65,7 @@ def _sync_soa_to_aos(frm):
         p = frm.path_info[i]
         p.x[:] = frm.path_x[i]
         p.prev = int(frm.path_prev[i])
-        p.next = int(frm.path_next[i])
+        p.next_idx = int(frm.path_next[i])
         p.prio = int(frm.path_prio[i])
 
         c = frm.correspond[i]
@@ -100,19 +101,30 @@ def track3d_loop(run_info, step):
 
     count1 = _track3d_loop_fast(
         orig_parts,
-        fb.buf[0].path_x, fb.buf[0].path_prev, fb.buf[0].num_parts,
-        fb.buf[1].path_x, fb.buf[1].path_prev, fb.buf[1].path_next,
+        fb.buf[0].path_x,
+        fb.buf[0].path_prev,
+        fb.buf[0].num_parts,
+        fb.buf[1].path_x,
+        fb.buf[1].path_prev,
+        fb.buf[1].path_next,
         fb.buf[1].num_parts,
-        fb.buf[2].path_x, fb.buf[2].path_prev, fb.buf[2].path_next,
+        fb.buf[2].path_x,
+        fb.buf[2].path_prev,
+        fb.buf[2].path_next,
         fb.buf[2].num_parts,
-        dx, dy, dz, MAX_CANDS,
+        dx,
+        dy,
+        dz,
+        MAX_CANDS,
     )
 
     _sync_soa_to_aos(fb.buf[1])
     _sync_soa_to_aos(fb.buf[2])
 
-    print(f"track3d step: {step}, curr: {fb.buf[1].num_parts}, "
-          f"next: {fb.buf[2].num_parts}, links: {count1}")
+    print(
+        f"track3d step: {step}, curr: {fb.buf[1].num_parts}, "
+        f"next: {fb.buf[2].num_parts}, links: {count1}"
+    )
 
     run_info.npart += fb.buf[1].num_parts
     run_info.nlinks += count1

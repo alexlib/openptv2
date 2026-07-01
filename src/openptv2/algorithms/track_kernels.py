@@ -476,6 +476,275 @@ def point_to_pixel_fast(
     return x_pixel, y_pixel
 
 
+@cython.cfunc
+@cython.inline
+@cython.boundscheck(False)
+@cython.wraparound(False)
+@cython.cdivision(True)
+@cython.profile(False)
+def _point_to_pixel_out(
+    pos: cython.double[:],
+    cal: cython.double[:],
+    mmlut_data: cython.double[:],
+    mmlut_origin: cython.double[:],
+    mmlut_nr: cython.int,
+    mmlut_nz: cython.int,
+    mmlut_rw: cython.double,
+    has_mmlut: cython.int,
+    imx_half: cython.double,
+    imy_half: cython.double,
+    inv_pix_x: cython.double,
+    inv_pix_y: cython.double,
+    chfield: cython.int,
+    out: cython.double[:],
+):
+    """Write pixel coordinates to out[0], out[1] — no tuple creation."""
+    pos0: cython.double
+    pos1: cython.double
+    pos2: cython.double
+    ext_x0: cython.double
+    ext_y0: cython.double
+    ext_z0: cython.double
+    dm00: cython.double
+    dm10: cython.double
+    dm20: cython.double
+    dm01: cython.double
+    dm11: cython.double
+    dm21: cython.double
+    dm02: cython.double
+    dm12: cython.double
+    dm22: cython.double
+    int_cc: cython.double
+    xh: cython.double
+    yh: cython.double
+    gx: cython.double
+    gy: cython.double
+    gz: cython.double
+    inv_dog: cython.double
+    mm_n1: cython.double
+    mm_n2_0: cython.double
+    mm_n3: cython.double
+    mm_d0: cython.double
+    k1: cython.double
+    k2: cython.double
+    k3: cython.double
+    p1: cython.double
+    p2: cython.double
+    scx: cython.double
+    she: cython.double
+    dot_cam: cython.double
+    dist_o_glas: cython.double
+    dist_cam_glas: cython.double
+    dot_pos: cython.double
+    dist_point_glas: cython.double
+    s_cam: cython.double
+    cc_x: cython.double
+    cc_y: cython.double
+    cc_z: cython.double
+    s_pt: cython.double
+    cp_x: cython.double
+    cp_y: cython.double
+    cp_z: cython.double
+    ext_t_z0: cython.double
+    s_d: cython.double
+    ag_x: cython.double
+    ag_y: cython.double
+    ag_z: cython.double
+    tmp_x: cython.double
+    tmp_y: cython.double
+    tmp_z: cython.double
+    pos_t_0: cython.double
+    pos_t_2: cython.double
+    radial_shift: cython.double
+    tx: cython.double
+    ty: cython.double
+    tz: cython.double
+    sz: cython.double
+    iz: cython.int
+    R: cython.double
+    sr: cython.double
+    ir: cython.int
+    v0: cython.int
+    v3: cython.int
+    mmf: cython.double
+    X_t: cython.double
+    s_z: cython.double
+    bx: cython.double
+    by: cython.double
+    bz: cython.double
+    s_x: cython.double
+    dx: cython.double
+    dy: cython.double
+    dz: cython.double
+    deno: cython.double
+    x: cython.double
+    y: cython.double
+    r: cython.double
+    r2: cython.double
+    r4: cython.double
+    radial_factor: cython.double
+    xd: cython.double
+    yd: cython.double
+    sin_she: cython.double
+    cos_she: cython.double
+    x_dist: cython.double
+    y_dist: cython.double
+    x_pixel: cython.double
+    y_pixel: cython.double
+    pos0 = pos[0]
+    pos1 = pos[1]
+    pos2 = pos[2]
+
+    ext_x0 = cal[0]
+    ext_y0 = cal[1]
+    ext_z0 = cal[2]
+    dm00 = cal[3]
+    dm10 = cal[4]
+    dm20 = cal[5]
+    dm01 = cal[6]
+    dm11 = cal[7]
+    dm21 = cal[8]
+    dm02 = cal[9]
+    dm12 = cal[10]
+    dm22 = cal[11]
+    int_cc = cal[12]
+    xh = cal[13]
+    yh = cal[14]
+    gx = cal[15]
+    gy = cal[16]
+    gz = cal[17]
+    inv_dog = cal[19]
+    mm_n1 = cal[20]
+    mm_n2_0 = cal[21]
+    mm_n3 = cal[22]
+    mm_d0 = cal[23]
+    k1 = cal[24]
+    k2 = cal[25]
+    k3 = cal[26]
+    p1 = cal[27]
+    p2 = cal[28]
+    scx = cal[29]
+    she = cal[30]
+
+    # trans_cam_point
+    dot_cam = ext_x0 * gx + ext_y0 * gy + ext_z0 * gz
+    dist_o_glas = cal[18]
+    dist_cam_glas = dot_cam * inv_dog - dist_o_glas - mm_d0
+
+    dot_pos = pos0 * gx + pos1 * gy + pos2 * gz
+    dist_point_glas = dot_pos * inv_dog - dist_o_glas
+
+    s_cam = dist_cam_glas * inv_dog
+    cc_x = ext_x0 - gx * s_cam
+    cc_y = ext_y0 - gy * s_cam
+    cc_z = ext_z0 - gz * s_cam
+
+    s_pt = dist_point_glas * inv_dog
+    cp_x = pos0 - gx * s_pt
+    cp_y = pos1 - gy * s_pt
+    cp_z = pos2 - gz * s_pt
+
+    ext_t_z0 = dist_cam_glas + mm_d0
+
+    s_d = mm_d0 * inv_dog
+    ag_x = cc_x - gx * s_d
+    ag_y = cc_y - gy * s_d
+    ag_z = cc_z - gz * s_d
+    tmp_x = cp_x - ag_x
+    tmp_y = cp_y - ag_y
+    tmp_z = cp_z - ag_z
+
+    pos_t_0 = c_sqrt(tmp_x * tmp_x + tmp_y * tmp_y + tmp_z * tmp_z)
+    pos_t_2 = dist_point_glas
+
+    # mmlut lookup + multimed_nlay
+    radial_shift = 1.0
+    if has_mmlut:
+        tx = pos_t_0 - mmlut_origin[0]
+        ty = -mmlut_origin[1]
+        tz = pos_t_2 - mmlut_origin[2]
+        sz = tz / mmlut_rw
+        iz = int(sz)
+        sz -= iz
+        R = c_sqrt(tx * tx + ty * ty)
+        sr = R / mmlut_rw
+        ir = int(sr)
+        sr -= ir
+        if ir <= mmlut_nr and iz >= 0 and iz <= mmlut_nz:
+            v0 = ir * mmlut_nz + iz
+            v3 = v0 + mmlut_nz + 1
+            if v0 >= 0 and v3 <= mmlut_nr * mmlut_nz:
+                mmf = (
+                    mmlut_data[v0] * (1.0 - sr) * (1.0 - sz)
+                    + mmlut_data[v0 + 1] * (1.0 - sr) * sz
+                    + mmlut_data[v0 + mmlut_nz] * sr * (1.0 - sz)
+                    + mmlut_data[v3] * sr * sz
+                )
+                if mmf > 0.0:
+                    radial_shift = mmf
+    if radial_shift == 1.0:
+        radial_shift = _multimed_r_nlay_1layer(
+            pos_t_0,
+            0.0,
+            pos_t_2,
+            0.0,
+            0.0,
+            ext_t_z0,
+            mm_n1,
+            mm_n2_0,
+            mm_n3,
+            mm_d0,
+        )
+    X_t = pos_t_0 * radial_shift
+
+    # back_trans_point
+    s_z = -pos_t_2 * inv_dog
+    bx = ag_x - gx * s_z
+    by = ag_y - gy * s_z
+    bz = ag_z - gz * s_z
+    if pos_t_0 > 0.0:
+        s_x = -X_t / pos_t_0
+        bx -= tmp_x * s_x
+        by -= tmp_y * s_x
+        bz -= tmp_z * s_x
+
+    # perspective projection
+    dx = bx - ext_x0
+    dy = by - ext_y0
+    dz = bz - ext_z0
+    deno = dm02 * dx + dm12 * dy + dm22 * dz
+    x = -int_cc * (dm00 * dx + dm10 * dy + dm20 * dz) / deno
+    y = -int_cc * (dm01 * dx + dm11 * dy + dm21 * dz) / deno
+
+    # flat_to_dist + distort_brown_affin
+    x += xh
+    y += yh
+    r = c_sqrt(x * x + y * y)
+    if r < 1e-10:
+        x_dist = 0.0
+        y_dist = 0.0
+    else:
+        r2 = r * r
+        r4 = r2 * r2
+        radial_factor = 1.0 + k1 * r2 + k2 * r4 + k3 * r4 * r2
+        xd = x * radial_factor + p1 * (r2 + 2.0 * x * x) + 2.0 * p2 * x * y
+        yd = y * radial_factor + p2 * (r2 + 2.0 * y * y) + 2.0 * p1 * x * y
+        sin_she = c_sin(she)
+        cos_she = c_cos(she)
+        x_dist = scx * (xd - sin_she * yd)
+        y_dist = scx * cos_she * yd
+
+    # metric_to_pixel
+    x_pixel = x_dist * inv_pix_x + imx_half
+    y_pixel = imy_half - y_dist * inv_pix_y
+    if chfield == 1:
+        y_pixel = (y_pixel - 1.0) * 0.5
+    elif chfield == 2:
+        y_pixel = y_pixel * 0.5
+    out[0] = x_pixel
+    out[1] = y_pixel
+
+
 PT_UNUSED = -999
 
 
@@ -981,6 +1250,8 @@ def sorted_candidates_fast(
     p1: cython.int
     p2: cython.int
     p3: cython.int
+    _pp = np.empty(2, dtype=np.float64)
+    _pp_mv: cython.double[:] = _pp
     n = num_cams * max_cands
 
     # --- searchquader inlined ---
@@ -1011,7 +1282,7 @@ def sorted_candidates_fast(
         xl_i = float(imx)
         yd_i = 0.0
         yu_i = float(imy)
-        cx, cy = point_to_pixel_fast(
+        _point_to_pixel_out(
             center,
             cal,
             md,
@@ -1025,9 +1296,12 @@ def sorted_candidates_fast(
             inv_pix_x,
             inv_pix_y,
             chfield,
+            _pp_mv,
         )
+        cx = _pp_mv[0]
+        cy = _pp_mv[1]
         for pt in range(8):
-            corner_x, corner_y = point_to_pixel_fast(
+            _point_to_pixel_out(
                 quader[pt],
                 cal,
                 md,
@@ -1041,7 +1315,10 @@ def sorted_candidates_fast(
                 inv_pix_x,
                 inv_pix_y,
                 chfield,
+                _pp_mv,
             )
+            corner_x = _pp_mv[0]
+            corner_y = _pp_mv[1]
             if corner_x < xl_i:
                 xl_i = corner_x
             if corner_y < yu_i:
@@ -1201,6 +1478,71 @@ def angle_acc_fast(
     dz = v1z - v0z
     acc = c_sqrt(dx * dx + dy * dy + dz * dz)
     return angle, acc
+
+
+@cython.cfunc
+@cython.inline
+@cython.boundscheck(False)
+@cython.wraparound(False)
+@cython.cdivision(True)
+@cython.profile(False)
+def _angle_acc_out(
+    start_x: cython.double,
+    start_y: cython.double,
+    start_z: cython.double,
+    pred_x: cython.double,
+    pred_y: cython.double,
+    pred_z: cython.double,
+    cand_x: cython.double,
+    cand_y: cython.double,
+    cand_z: cython.double,
+    out: cython.double[:],
+):
+    """Write angle and acc to out[0], out[1] — no tuple creation."""
+    v0x: cython.double
+    v0y: cython.double
+    v0z: cython.double
+    v1x: cython.double
+    v1y: cython.double
+    v1z: cython.double
+    angle: cython.double
+    norm0: cython.double
+    norm1: cython.double
+    dot: cython.double
+    dx: cython.double
+    dy: cython.double
+    dz: cython.double
+    acc: cython.double
+    v0x = pred_x - start_x
+    v0y = pred_y - start_y
+    v0z = pred_z - start_z
+    v1x = cand_x - start_x
+    v1y = cand_y - start_y
+    v1z = cand_z - start_z
+
+    if v0x == -v1x and v0y == -v1y and v0z == -v1z:
+        angle = 200.0
+    elif v0x == v1x and v0y == v1y and v0z == v1z:
+        angle = 0.0
+    else:
+        norm0 = c_sqrt(v0x * v0x + v0y * v0y + v0z * v0z)
+        norm1 = c_sqrt(v1x * v1x + v1y * v1y + v1z * v1z)
+        if norm0 == 0.0 or norm1 == 0.0:
+            angle = 0.0
+        else:
+            dot = (v0x * v1x + v0y * v1y + v0z * v1z) / (norm0 * norm1)
+            if dot > 1.0:
+                dot = 1.0
+            elif dot < -1.0:
+                dot = -1.0
+            angle = c_acos(dot) * 200.0 / _M_PI
+
+    dx = v1x - v0x
+    dy = v1y - v0y
+    dz = v1z - v0z
+    acc = c_sqrt(dx * dx + dy * dy + dz * dz)
+    out[0] = angle
+    out[1] = acc
 
 
 @cython.boundscheck(False)
@@ -1378,6 +1720,192 @@ def _ray_tracing_fast(x: cython.double, y: cython.double, cal: cython.double[:])
     return Xx, Xy, Xz, ox, oy, oz
 
 
+@cython.cfunc
+@cython.inline
+@cython.boundscheck(False)
+@cython.wraparound(False)
+@cython.cdivision(True)
+@cython.profile(False)
+def _ray_tracing_out(
+    x: cython.double,
+    y: cython.double,
+    cal: cython.double[:],
+    out: cython.double[:],
+):
+    """Write ray tracing results into out[0:6] — no tuple creation."""
+    ext_x0: cython.double
+    ext_y0: cython.double
+    ext_z0: cython.double
+    dm00: cython.double
+    dm10: cython.double
+    dm20: cython.double
+    dm01: cython.double
+    dm11: cython.double
+    dm21: cython.double
+    dm02: cython.double
+    dm12: cython.double
+    dm22: cython.double
+    int_cc: cython.double
+    gx: cython.double
+    gy: cython.double
+    gz: cython.double
+    mm_n1: cython.double
+    mm_n2_0: cython.double
+    mm_n3: cython.double
+    mm_d0: cython.double
+    t0: cython.double
+    t1: cython.double
+    t2: cython.double
+    tn: cython.double
+    sd0: cython.double
+    sd1: cython.double
+    sd2: cython.double
+    gn: cython.double
+    gd0: cython.double
+    gd1: cython.double
+    gd2: cython.double
+    c: cython.double
+    dcg: cython.double
+    denom: cython.double
+    d1: cython.double
+    Xb0: cython.double
+    Xb1: cython.double
+    Xb2: cython.double
+    n: cython.double
+    bp0: cython.double
+    bp1: cython.double
+    bp2: cython.double
+    bpn: cython.double
+    p: cython.double
+    n_glass: cython.double
+    a2_0: cython.double
+    a2_1: cython.double
+    a2_2: cython.double
+    d2_denom: cython.double
+    d2: cython.double
+    Xx: cython.double
+    Xy: cython.double
+    Xz: cython.double
+    n_a2: cython.double
+    p2: cython.double
+    n_final: cython.double
+    ox: cython.double
+    oy: cython.double
+    oz: cython.double
+    ext_x0 = cal[0]
+    ext_y0 = cal[1]
+    ext_z0 = cal[2]
+    dm00 = cal[3]
+    dm10 = cal[4]
+    dm20 = cal[5]
+    dm01 = cal[6]
+    dm11 = cal[7]
+    dm21 = cal[8]
+    dm02 = cal[9]
+    dm12 = cal[10]
+    dm22 = cal[11]
+    int_cc = cal[12]
+    gx = cal[15]
+    gy = cal[16]
+    gz = cal[17]
+    mm_n1 = cal[20]
+    mm_n2_0 = cal[21]
+    mm_n3 = cal[22]
+    mm_d0 = cal[23]
+
+    # tmp1 = unit_vector([x, y, -int_cc])
+    t0 = x
+    t1 = y
+    t2 = -int_cc
+    tn = c_sqrt(t0 * t0 + t1 * t1 + t2 * t2)
+    if tn > 0.0:
+        t0 /= tn
+        t1 /= tn
+        t2 /= tn
+
+    # start_dir = dm @ tmp1
+    sd0 = dm00 * t0 + dm01 * t1 + dm02 * t2
+    sd1 = dm10 * t0 + dm11 * t1 + dm12 * t2
+    sd2 = dm20 * t0 + dm21 * t1 + dm22 * t2
+
+    # glass_dir = unit_vector(glass_vec)
+    gn = c_sqrt(gx * gx + gy * gy + gz * gz)
+    if gn > 0.0:
+        gd0 = gx / gn
+        gd1 = gy / gn
+        gd2 = gz / gn
+    else:
+        gd0 = 0.0
+        gd1 = 0.0
+        gd2 = 0.0
+    c = gn + mm_d0
+
+    # dist_cam_glass, d1
+    dcg = gd0 * ext_x0 + gd1 * ext_y0 + gd2 * ext_z0 - c
+    denom = gd0 * sd0 + gd1 * sd1 + gd2 * sd2
+    d1 = -dcg / denom
+
+    # Xb = primary_point + start_dir * d1
+    Xb0 = ext_x0 + sd0 * d1
+    Xb1 = ext_y0 + sd1 * d1
+    Xb2 = ext_z0 + sd2 * d1
+
+    # Decompose ray: n = dot(start_dir, glass_dir)
+    n = sd0 * gd0 + sd1 * gd1 + sd2 * gd2
+    # bp = unit_vector(start_dir - glass_dir * n)
+    bp0 = sd0 - gd0 * n
+    bp1 = sd1 - gd1 * n
+    bp2 = sd2 - gd2 * n
+    bpn = c_sqrt(bp0 * bp0 + bp1 * bp1 + bp2 * bp2)
+    if bpn > 0.0:
+        bp0 /= bpn
+        bp1 /= bpn
+        bp2 /= bpn
+
+    # Snell's law: air -> glass
+    p = c_sqrt(1.0 - n * n) * mm_n1 / mm_n2_0
+    n_glass = -c_sqrt(1.0 - p * p)
+
+    # a2 = bp * p + glass_dir * n_glass
+    a2_0 = bp0 * p + gd0 * n_glass
+    a2_1 = bp1 * p + gd1 * n_glass
+    a2_2 = bp2 * p + gd2 * n_glass
+
+    d2_denom = gd0 * a2_0 + gd1 * a2_1 + gd2 * a2_2
+    d2 = mm_d0 / abs(d2_denom)
+
+    # X = Xb + a2 * d2
+    Xx = Xb0 + a2_0 * d2
+    Xy = Xb1 + a2_1 * d2
+    Xz = Xb2 + a2_2 * d2
+
+    # Direction in next medium: Snell glass -> water
+    n_a2 = a2_0 * gd0 + a2_1 * gd1 + a2_2 * gd2
+    # bp = unit_vector(a2 - glass_dir * n_glass)
+    bp0 = a2_0 - gd0 * n_glass
+    bp1 = a2_1 - gd1 * n_glass
+    bp2 = a2_2 - gd2 * n_glass
+    bpn = c_sqrt(bp0 * bp0 + bp1 * bp1 + bp2 * bp2)
+    if bpn > 0.0:
+        bp0 /= bpn
+        bp1 /= bpn
+        bp2 /= bpn
+
+    p2 = c_sqrt(1.0 - n_a2 * n_a2) * mm_n2_0 / mm_n3
+    n_final = -c_sqrt(1.0 - p2 * p2)
+
+    ox = bp0 * p2 + gd0 * n_final
+    oy = bp1 * p2 + gd1 * n_final
+    oz = bp2 * p2 + gd2 * n_final
+
+    out[0] = Xx
+    out[1] = Xy
+    out[2] = Xz
+    out[3] = ox
+    out[4] = oy
+    out[5] = oz
+
+
 COORD_UNUSED = -1e10
 
 
@@ -1454,19 +1982,21 @@ def point_position_fast(targets: cython.double[:, :], num_cams: cython.int, cal_
     dirs_y = np.empty(num_cams, dtype=np.float64)
     dirs_z = np.empty(num_cams, dtype=np.float64)
     valid = np.zeros(num_cams, dtype=np.int32)
+    _ray_out_pp = np.empty(6, dtype=np.float64)
+    _ray_out_mv_pp: cython.double[:] = _ray_out_pp
 
     for cam in range(num_cams):
         tx = targets[cam, 0]
         ty = targets[cam, 1]
         if tx == COORD_UNUSED:
             continue
-        Xx, Xy, Xz, ox, oy, oz = _ray_tracing_fast(tx, ty, cal_arrays[cam])
-        verts_x[cam] = Xx
-        verts_y[cam] = Xy
-        verts_z[cam] = Xz
-        dirs_x[cam] = ox
-        dirs_y[cam] = oy
-        dirs_z[cam] = oz
+        _ray_tracing_out(tx, ty, cal_arrays[cam], _ray_out_mv_pp)
+        verts_x[cam] = _ray_out_mv_pp[0]
+        verts_y[cam] = _ray_out_mv_pp[1]
+        verts_z[cam] = _ray_out_mv_pp[2]
+        dirs_x[cam] = _ray_out_mv_pp[3]
+        dirs_y[cam] = _ray_out_mv_pp[4]
+        dirs_z[cam] = _ray_out_mv_pp[5]
         valid[cam] = 1
 
     dtot = 0.0
@@ -1578,6 +2108,31 @@ def pixel_to_metric_fast(
     return x_metric, y_metric
 
 
+@cython.cfunc
+@cython.inline
+@cython.cdivision(True)
+@cython.profile(False)
+def _pixel_to_metric_out(
+    x_pixel: cython.double,
+    y_pixel: cython.double,
+    imx: cython.int,
+    imy: cython.int,
+    pix_x: cython.double,
+    pix_y: cython.double,
+    chfield: cython.int,
+    out: cython.double[:],
+):
+    """Write pixel-to-metric coords to out[0], out[1]."""
+    yp: cython.double
+    yp = y_pixel
+    if chfield == 1:
+        yp = 2.0 * yp + 1.0
+    elif chfield == 2:
+        yp = 2.0 * yp
+    out[0] = (x_pixel - imx * 0.5) * pix_x
+    out[1] = (imy * 0.5 - yp) * pix_y
+
+
 @cython.ccall
 @cython.boundscheck(False)
 @cython.wraparound(False)
@@ -1649,6 +2204,68 @@ def dist_to_flat_fast(
     return xq - xh, yq - yh
 
 
+@cython.cfunc
+@cython.inline
+@cython.boundscheck(False)
+@cython.wraparound(False)
+@cython.cdivision(True)
+@cython.profile(False)
+def _dist_to_flat_out(
+    dist_x: cython.double,
+    dist_y: cython.double,
+    xh: cython.double,
+    yh: cython.double,
+    k1: cython.double,
+    k2: cython.double,
+    k3: cython.double,
+    p1: cython.double,
+    p2: cython.double,
+    scx: cython.double,
+    she: cython.double,
+    tol: cython.double,
+    out: cython.double[:],
+):
+    """Write dist-to-flat coords to out[0], out[1]."""
+    r_init: cython.double = c_sqrt(dist_x * dist_x + dist_y * dist_y)
+    if r_init < 1e-10:
+        out[0] = -xh
+        out[1] = -yh
+        return
+    sin_she: cython.double = c_sin(she)
+    cos_she: cython.double = c_cos(she)
+    inv_scx: cython.double = 1.0 / scx
+    xq: cython.double = (dist_x + dist_y * sin_she) * inv_scx
+    yq: cython.double = dist_y / cos_she
+    _: cython.int
+    r2: cython.double
+    r4: cython.double
+    r6: cython.double
+    radial_factor: cython.double
+    dx: cython.double
+    dy: cython.double
+    xq_new: cython.double
+    yq_new: cython.double
+    dx_change: cython.double
+    dy_change: cython.double
+    for _ in range(50):
+        r2 = xq * xq + yq * yq
+        r4 = r2 * r2
+        r6 = r4 * r2
+        radial_factor = k1 * r2 + k2 * r4 + k3 * r6
+        dx = xq * radial_factor + p1 * (r2 + 2.0 * xq * xq) + 2.0 * p2 * xq * yq
+        dy = yq * radial_factor + p2 * (r2 + 2.0 * yq * yq) + 2.0 * p1 * xq * yq
+        xq_new = (dist_x + dist_y * sin_she) * inv_scx - dx
+        yq_new = dist_y / cos_she - dy
+        dx_change = xq_new - xq
+        dy_change = yq_new - yq
+        xq += 0.5 * dx_change
+        yq += 0.5 * dy_change
+        if c_sqrt(dx_change * dx_change + dy_change * dy_change) < tol:
+            break
+    out[0] = xq - xh
+    out[1] = yq - yh
+
+
 @cython.ccall
 @cython.boundscheck(False)
 @cython.wraparound(False)
@@ -1694,12 +2311,14 @@ def assess_new_position_fast(
     my: cython.double
     fx: cython.double
     fy: cython.double
+    _pp = np.empty(2, dtype=np.float64)
+    _pp_mv: cython.double[:] = _pp
     targ_pos = np.full((num_cams, 2), coord_unused, dtype=np.float64)
     cand_inds = np.full(num_cams, PT_UNUSED, dtype=np.int32)
 
     for cam in range(num_cams):
         has_mmlut = mmlut_nrs[cam] > 0
-        px, py = point_to_pixel_fast(
+        _point_to_pixel_out(
             pos,
             cal_arrays[cam],
             mmlut_datas[cam],
@@ -1713,7 +2332,10 @@ def assess_new_position_fast(
             inv_pix_x,
             inv_pix_y,
             chfield,
+            _pp_mv,
         )
+        px = _pp_mv[0]
+        py = _pp_mv[1]
 
         best, count = candsearch_in_pix_rest_fast(
             targ_x_tuple[cam],
@@ -1739,12 +2361,21 @@ def assess_new_position_fast(
     valid_cams = 0
     for cam in range(num_cams):
         if targ_pos[cam, 0] != coord_unused:
-            mx, my = pixel_to_metric_fast(
-                targ_pos[cam, 0], targ_pos[cam, 1], imx, imy, pix_x, pix_y, chfield
+            _pixel_to_metric_out(
+                targ_pos[cam, 0],
+                targ_pos[cam, 1],
+                imx,
+                imy,
+                pix_x,
+                pix_y,
+                chfield,
+                _pp_mv,
             )
+            mx = _pp_mv[0]
+            my = _pp_mv[1]
 
             cal = cal_arrays[cam]
-            fx, fy = dist_to_flat_fast(
+            _dist_to_flat_out(
                 mx,
                 my,
                 cal[13],
@@ -1757,10 +2388,11 @@ def assess_new_position_fast(
                 cal[29],
                 cal[30],
                 flatten_tol,
+                _pp_mv,
             )
 
-            targ_pos[cam, 0] = fx
-            targ_pos[cam, 1] = fy
+            targ_pos[cam, 0] = _pp_mv[0]
+            targ_pos[cam, 1] = _pp_mv[1]
             valid_cams += 1
 
     return targ_pos, cand_inds, valid_cams
@@ -1923,6 +2555,8 @@ def trackcorr_loop_fast(
     cpx: cython.double[:] = _cpx
     cpy: cython.double[:] = _cpy
     X: cython.double[:, :] = _X
+    _pp = np.empty(2, dtype=np.float64)
+    _pp_mv: cython.double[:] = _pp
 
     for h in range(orig_parts_1):
         path_inlist_1[h] = 0
@@ -1943,7 +2577,7 @@ def trackcorr_loop_fast(
 
             for j in range(num_cams):
                 has_mmlut = mnr_t[j] > 0
-                px, py = point_to_pixel_fast(
+                _point_to_pixel_out(
                     X[2],
                     cal_t[j],
                     md_t[j],
@@ -1957,9 +2591,10 @@ def trackcorr_loop_fast(
                     inv_pix_x,
                     inv_pix_y,
                     chfield,
+                    _pp_mv,
                 )
-                cpx[j] = px
-                cpy[j] = py
+                cpx[j] = _pp_mv[0]
+                cpy[j] = _pp_mv[1]
         else:
             X[2, 0] = X[1, 0]
             X[2, 1] = X[1, 1]
@@ -1968,7 +2603,7 @@ def trackcorr_loop_fast(
             for j in range(num_cams):
                 if corres_p_1[h, j] == CORRES_NONE_K:
                     has_mmlut = mnr_t[j] > 0
-                    px, py = point_to_pixel_fast(
+                    _point_to_pixel_out(
                         X[2],
                         cal_t[j],
                         md_t[j],
@@ -1982,9 +2617,10 @@ def trackcorr_loop_fast(
                         inv_pix_x,
                         inv_pix_y,
                         chfield,
+                        _pp_mv,
                     )
-                    cpx[j] = px
-                    cpy[j] = py
+                    cpx[j] = _pp_mv[0]
+                    cpy[j] = _pp_mv[1]
                 else:
                     _ix = corres_p_1[h, j]
                     cpx[j] = targ_x_1[j][_ix]
@@ -2043,7 +2679,7 @@ def trackcorr_loop_fast(
 
             for j in range(num_cams):
                 has_mmlut = mnr_t[j] > 0
-                px, py = point_to_pixel_fast(
+                _point_to_pixel_out(
                     X[5],
                     cal_t[j],
                     md_t[j],
@@ -2057,9 +2693,10 @@ def trackcorr_loop_fast(
                     inv_pix_x,
                     inv_pix_y,
                     chfield,
+                    _pp_mv,
                 )
-                cpx[j] = px
-                cpy[j] = py
+                cpx[j] = _pp_mv[0]
+                cpy[j] = _pp_mv[1]
 
             # --- sorted_candidates for frame 3 ---
             wn_ftnr, wn_freq, wn_wc, wn_nc = sorted_candidates_fast(
@@ -2111,7 +2748,7 @@ def trackcorr_loop_fast(
                         and dvymin < dp1 < dvymax
                         and dvzmin < dp2 < dvzmax
                     ):
-                        angle1, acc1 = angle_acc_fast(
+                        _angle_acc_out(
                             X[3, 0],
                             X[3, 1],
                             X[3, 2],
@@ -2121,9 +2758,12 @@ def trackcorr_loop_fast(
                             X[5, 0],
                             X[5, 1],
                             X[5, 2],
+                            _pp_mv,
                         )
+                        angle1 = _pp_mv[0]
+                        acc1 = _pp_mv[1]
                         if prev_h >= 0:
-                            angle0, acc0 = angle_acc_fast(
+                            _angle_acc_out(
                                 X[1, 0],
                                 X[1, 1],
                                 X[1, 2],
@@ -2133,7 +2773,10 @@ def trackcorr_loop_fast(
                                 X[3, 0],
                                 X[3, 1],
                                 X[3, 2],
+                                _pp_mv,
                             )
+                            angle0 = _pp_mv[0]
+                            acc0 = _pp_mv[1]
                         else:
                             acc0 = acc1
                             angle0 = angle1
@@ -2217,7 +2860,7 @@ def trackcorr_loop_fast(
                     and dvymin < dp1 < dvymax
                     and dvzmin < dp2 < dvzmax
                 ):
-                    angle, acc = angle_acc_fast(
+                    _angle_acc_out(
                         X[3, 0],
                         X[3, 1],
                         X[3, 2],
@@ -2227,7 +2870,10 @@ def trackcorr_loop_fast(
                         X[5, 0],
                         X[5, 1],
                         X[5, 2],
+                        _pp_mv,
                     )
+                    angle = _pp_mv[0]
+                    acc = _pp_mv[1]
 
                     if (acc < dacc and angle < dangle) or acc < dacc * 0.1:
                         d13 = c_sqrt(
@@ -2289,7 +2935,7 @@ def trackcorr_loop_fast(
                     and dvymin < dp1 < dvymax
                     and dvzmin < dp2 < dvzmax
                 ):
-                    angle, acc = angle_acc_fast(
+                    _angle_acc_out(
                         X[1, 0],
                         X[1, 1],
                         X[1, 2],
@@ -2299,7 +2945,10 @@ def trackcorr_loop_fast(
                         X[3, 0],
                         X[3, 1],
                         X[3, 2],
+                        _pp_mv,
                     )
+                    angle = _pp_mv[0]
+                    acc = _pp_mv[1]
 
                     if (acc < dacc and angle < dangle) or acc < dacc * 0.1:
                         quali_f = w_freq[mm]
@@ -2379,7 +3028,7 @@ def trackcorr_loop_fast(
                         and dvymin < dp1 < dvymax
                         and dvzmin < dp2 < dvzmax
                     ):
-                        angle, acc = angle_acc_fast(
+                        _angle_acc_out(
                             X[1, 0],
                             X[1, 1],
                             X[1, 2],
@@ -2389,7 +3038,10 @@ def trackcorr_loop_fast(
                             X[3, 0],
                             X[3, 1],
                             X[3, 2],
+                            _pp_mv,
                         )
+                        angle = _pp_mv[0]
+                        acc = _pp_mv[1]
 
                         if (acc < dacc and angle < dangle) or acc < dacc * 0.1:
                             d13 = c_sqrt(
@@ -2606,6 +3258,8 @@ def trackback_loop_fast(
     cpx: cython.double[:] = _cpx
     cpy: cython.double[:] = _cpy
     X: cython.double[:, :] = _X
+    _pp = np.empty(2, dtype=np.float64)
+    _pp_mv: cython.double[:] = _pp
 
     for h in range(num_parts_1):
         next_h = path_next_1[h]
@@ -2631,7 +3285,7 @@ def trackback_loop_fast(
 
         for j in range(num_cams):
             has_mmlut = mnr_t[j] > 0
-            px, py = point_to_pixel_fast(
+            _point_to_pixel_out(
                 X[2],
                 cal_t[j],
                 md_t[j],
@@ -2645,9 +3299,10 @@ def trackback_loop_fast(
                 inv_pix_x,
                 inv_pix_y,
                 chfield,
+                _pp_mv,
             )
-            cpx[j] = px
-            cpy[j] = py
+            cpx[j] = _pp_mv[0]
+            cpy[j] = _pp_mv[1]
 
         w_ftnr, w_freq, w_wc, w_nc = sorted_candidates_fast(
             X[2],
@@ -2698,7 +3353,7 @@ def trackback_loop_fast(
                     and dvymin < dp1 < dvymax
                     and dvzmin < dp2 < dvzmax
                 ):
-                    angle, acc = angle_acc_fast(
+                    _angle_acc_out(
                         X[1, 0],
                         X[1, 1],
                         X[1, 2],
@@ -2708,7 +3363,10 @@ def trackback_loop_fast(
                         X[3, 0],
                         X[3, 1],
                         X[3, 2],
+                        _pp_mv,
                     )
+                    angle = _pp_mv[0]
+                    acc = _pp_mv[1]
 
                     if (acc < dacc and angle < dangle) or acc < dacc * 0.1:
                         d13 = c_sqrt(
@@ -2716,20 +3374,20 @@ def trackback_loop_fast(
                             + (X[1, 1] - X[3, 1]) ** 2
                             + (X[1, 2] - X[3, 2]) ** 2
                         )
-                        d01 = c_sqrt(
-                            (X[0, 0] - X[1, 0]) ** 2
-                            + (X[0, 1] - X[1, 1]) ** 2
-                            + (X[0, 2] - X[1, 2]) ** 2
-                        )
-                        dl = (d13 + d01) * 0.5
-                        quali = w_freq[i]
-                        rr = (dl / lmax + acc / dacc + angle / dangle) / quali
+                    d01 = c_sqrt(
+                        (X[0, 0] - X[1, 0]) ** 2
+                        + (X[0, 1] - X[1, 1]) ** 2
+                        + (X[0, 2] - X[1, 2]) ** 2
+                    )
+                    dl = (d13 + d01) * 0.5
+                    quali = w_freq[i]
+                    rr = (dl / lmax + acc / dacc + angle / dangle) / quali
 
-                        inlist = path_inlist_1[h]
-                        if inlist < POSI_K:
-                            path_decis_1[h, inlist] = rr
-                            path_linkdecis_1[h, inlist] = ftnr_i
-                            path_inlist_1[h] = inlist + 1
+                    inlist = path_inlist_1[h]
+                    if inlist < POSI_K:
+                        path_decis_1[h, inlist] = rr
+                        path_linkdecis_1[h, inlist] = ftnr_i
+                        path_inlist_1[h] = inlist + 1
 
                 i += 1
 
@@ -2787,7 +3445,7 @@ def trackback_loop_fast(
                         and dvymin < dp1 < dvymax
                         and dvzmin < dp2 < dvzmax
                     ):
-                        angle, acc = angle_acc_fast(
+                        _angle_acc_out(
                             X[1, 0],
                             X[1, 1],
                             X[1, 2],
@@ -2797,7 +3455,10 @@ def trackback_loop_fast(
                             X[3, 0],
                             X[3, 1],
                             X[3, 2],
+                            _pp_mv,
                         )
+                        angle = _pp_mv[0]
+                        acc = _pp_mv[1]
 
                         if (acc < dacc and angle < dangle) or acc < dacc * 0.1:
                             d13 = c_sqrt(
@@ -2901,7 +3562,7 @@ def trackback_loop_fast(
                 for j in range(3):
                     X[5, j] = 0.5 * (5.0 * X[3, j] - 4.0 * X[1, j] + X[0, j])
 
-                angle, acc = angle_acc_fast(
+                _angle_acc_out(
                     X[3, 0],
                     X[3, 1],
                     X[3, 2],
@@ -2911,7 +3572,10 @@ def trackback_loop_fast(
                     X[5, 0],
                     X[5, 1],
                     X[5, 2],
+                    _pp_mv,
                 )
+                angle = _pp_mv[0]
+                acc = _pp_mv[1]
 
                 if (acc < dacc and angle < dangle) or acc < dacc * 0.1:
                     path_finaldecis_1[h] = path_decis_1[h, 0]
@@ -3282,6 +3946,31 @@ def metric_to_pixel_fast(
     return x_pixel, y_pixel
 
 
+@cython.cfunc
+@cython.inline
+@cython.cdivision(True)
+@cython.profile(False)
+def _metric_to_pixel_out(
+    x_metric: cython.double,
+    y_metric: cython.double,
+    imx: cython.int,
+    imy: cython.int,
+    pix_x: cython.double,
+    pix_y: cython.double,
+    chfield: cython.int,
+    out: cython.double[:],
+):
+    """Write metric-to-pixel coords to out[0], out[1]."""
+    x_pixel: cython.double = x_metric / pix_x + imx * 0.5
+    y_pixel: cython.double = imy * 0.5 - y_metric / pix_y
+    if chfield == 1:
+        y_pixel = (y_pixel - 1.0) * 0.5
+    elif chfield == 2:
+        y_pixel = y_pixel * 0.5
+    out[0] = x_pixel
+    out[1] = y_pixel
+
+
 @cython.boundscheck(False)
 @cython.wraparound(False)
 def _flat_image_coord_fast(
@@ -3614,23 +4303,19 @@ def ray_tracing_batch_fast(xy: cython.double[:, :], cal: cython.double[:]):
     """
     n: cython.Py_ssize_t
     i: cython.Py_ssize_t
-    Xx: cython.double
-    Xy: cython.double
-    Xz: cython.double
-    ox: cython.double
-    oy: cython.double
-    oz: cython.double
+    _ray_out = np.empty(6, dtype=np.float64)
+    _ray_out_mv: cython.double[:] = _ray_out
     n = xy.shape[0]
     positions = np.empty((n, 3), dtype=np.float64)
     directions = np.empty((n, 3), dtype=np.float64)
     for i in range(n):
-        Xx, Xy, Xz, ox, oy, oz = _ray_tracing_fast(xy[i, 0], xy[i, 1], cal)
-        positions[i, 0] = Xx
-        positions[i, 1] = Xy
-        positions[i, 2] = Xz
-        directions[i, 0] = ox
-        directions[i, 1] = oy
-        directions[i, 2] = oz
+        _ray_tracing_out(xy[i, 0], xy[i, 1], cal, _ray_out_mv)
+        positions[i, 0] = _ray_out_mv[0]
+        positions[i, 1] = _ray_out_mv[1]
+        positions[i, 2] = _ray_out_mv[2]
+        directions[i, 0] = _ray_out_mv[3]
+        directions[i, 1] = _ray_out_mv[4]
+        directions[i, 2] = _ray_out_mv[5]
     return positions, directions
 
 
@@ -3681,12 +4366,23 @@ def pixel_to_metric_batch_fast(
     """Convert N pixel coordinates to metric."""
     n: cython.Py_ssize_t
     i: cython.Py_ssize_t
+    _pp = np.empty(2, dtype=np.float64)
+    _pp_mv: cython.double[:] = _pp
     n = xy.shape[0]
     result = np.empty((n, 2), dtype=np.float64)
     for i in range(n):
-        result[i, 0], result[i, 1] = pixel_to_metric_fast(
-            xy[i, 0], xy[i, 1], imx, imy, pix_x, pix_y, chfield
+        _pixel_to_metric_out(
+            xy[i, 0],
+            xy[i, 1],
+            imx,
+            imy,
+            pix_x,
+            pix_y,
+            chfield,
+            _pp_mv,
         )
+        result[i, 0] = _pp_mv[0]
+        result[i, 1] = _pp_mv[1]
     return result
 
 
@@ -3704,12 +4400,23 @@ def metric_to_pixel_batch_fast(
     """Convert N metric coordinates to pixel."""
     n: cython.Py_ssize_t
     i: cython.Py_ssize_t
+    _pp = np.empty(2, dtype=np.float64)
+    _pp_mv: cython.double[:] = _pp
     n = xy.shape[0]
     result = np.empty((n, 2), dtype=np.float64)
     for i in range(n):
-        result[i, 0], result[i, 1] = metric_to_pixel_fast(
-            xy[i, 0], xy[i, 1], imx, imy, pix_x, pix_y, chfield
+        _metric_to_pixel_out(
+            xy[i, 0],
+            xy[i, 1],
+            imx,
+            imy,
+            pix_x,
+            pix_y,
+            chfield,
+            _pp_mv,
         )
+        result[i, 0] = _pp_mv[0]
+        result[i, 1] = _pp_mv[1]
     return result
 
 

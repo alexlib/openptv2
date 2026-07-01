@@ -992,7 +992,7 @@ def _sync_soa_to_aos(frm):
         p = frm.path_info[i]
         p.x[:] = frm.path_x[i]
         p.prev = int(frm.path_prev[i])
-        p.next = int(frm.path_next[i])
+        p.next_idx = int(frm.path_next[i])
         p.prio = int(frm.path_prio[i])
 
         c = frm.correspond[i]

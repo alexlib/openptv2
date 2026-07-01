@@ -24,6 +24,8 @@ DOUBLED: cython.int = 2
 
 
 @cython.cfunc
+@cython.cdivision(True)
+@cython.profile(False)
 def old_pixel_to_metric(
     x_pixel: cython.double,
     y_pixel: cython.double,

@@ -2,8 +2,9 @@
 
 Translation of lib/src/tracking_frame_buf.c and lib/include/tracking_frame_buf.h.
 """
+
 import cython
-from dataclasses import dataclass, field
+
 
 import numpy as np
 from pathlib import Path
@@ -22,16 +23,17 @@ class CallableFloat(float):
 
 
 @cython.cclass
-@dataclass
 class Target:
-    c_pnr: cython.int = cython.declare(cython.int, 0, visibility='public')
-    c_x: cython.double = cython.declare(cython.double, 0.0, visibility='public')
-    c_y: cython.double = cython.declare(cython.double, 0.0, visibility='public')
-    n: cython.int = cython.declare(cython.int, 0, visibility='public')
-    nx: cython.int = cython.declare(cython.int, 0, visibility='public')
-    ny: cython.int = cython.declare(cython.int, 0, visibility='public')
-    sumg: cython.int = cython.declare(cython.int, 0, visibility='public')
-    c_tnr: cython.int = cython.declare(cython.int, 0, visibility='public')
+    """Particle target in a camera frame."""
+
+    c_pnr: cython.int = cython.declare(cython.int, 0, visibility="public")
+    c_x: cython.double = cython.declare(cython.double, 0.0, visibility="public")
+    c_y: cython.double = cython.declare(cython.double, 0.0, visibility="public")
+    n: cython.int = cython.declare(cython.int, 0, visibility="public")
+    nx: cython.int = cython.declare(cython.int, 0, visibility="public")
+    ny: cython.int = cython.declare(cython.int, 0, visibility="public")
+    sumg: cython.int = cython.declare(cython.int, 0, visibility="public")
+    c_tnr: cython.int = cython.declare(cython.int, 0, visibility="public")
 
     def __init__(self, pnr=0, x=0.0, y=0.0, n=0, nx=0, ny=0, sumg=0, tnr=0):
         self.c_pnr = int(pnr)
@@ -44,9 +46,14 @@ class Target:
         self.c_tnr = int(tnr)
 
     def __repr__(self):
-        return (f"Target(pnr={self.c_pnr}, x={self.c_x}, y={self.c_y}, "
-                f"n={self.n}, nx={self.nx}, ny={self.ny}, "
-                f"sumg={self.sumg}, tnr={self.c_tnr})")
+        return (
+            f"Target(pnr={self.c_pnr}, x={self.c_x}, y={self.c_y}, "
+            f"n={self.n}, nx={self.nx}, ny={self.ny}, "
+            f"sumg={self.sumg}, tnr={self.c_tnr})"
+        )
+
+    # --- Direct field access preferred in compiled code ---
+    # Use c_x, c_y, c_tnr, c_pnr directly for C-speed access
 
     @property
     def pnr(self):
@@ -111,7 +118,7 @@ class Target:
 
 class TargetArray(list):
     """A list of Targets that behaves like the legacy TargetArray."""
-    
+
     def __init__(self, size_or_list=0):
         if isinstance(size_or_list, int):
             super().__init__([Target(pnr=-1) for _ in range(size_or_list)])
@@ -134,13 +141,20 @@ class TargetArray(list):
 
 @cython.ccall
 def compare_targets(t1, t2):
-    return (t1.pnr == t2.pnr and t1.x == t2.x and t1.y == t2.y and
-            t1.n == t2.n and t1.nx == t2.nx and t1.ny == t2.ny and
-            t1.sumg == t2.sumg and t1.tnr == t2.tnr)
+    return (
+        t1.pnr == t2.pnr
+        and t1.x == t2.x
+        and t1.y == t2.y
+        and t1.n == t2.n
+        and t1.nx == t2.nx
+        and t1.ny == t2.ny
+        and t1.sumg == t2.sumg
+        and t1.tnr == t2.tnr
+    )
 
 
 def _resolve_file_base(file_base, frame_num):
-    if '%d' in file_base:
+    if "%d" in file_base:
         return (file_base % frame_num) + "_targets"
     if frame_num > 0:
         return f"{file_base}{frame_num:04d}_targets"
@@ -152,23 +166,25 @@ def read_targets(file_base, frame_num):
     fname = _resolve_file_base(file_base, frame_num)
 
     try:
-        with open(fname, 'r') as f:
+        with open(fname, "r") as f:
             num_targets = int(f.readline().strip())
             targets = []
             for _ in range(num_targets):
                 parts = f.readline().split()
                 if len(parts) < 8:
                     return []
-                targets.append(Target(
-                    pnr=int(parts[0]),
-                    x=float(parts[1]),
-                    y=float(parts[2]),
-                    n=int(parts[3]),
-                    nx=int(parts[4]),
-                    ny=int(parts[5]),
-                    sumg=int(parts[6]),
-                    tnr=int(parts[7]),
-                ))
+                targets.append(
+                    Target(
+                        pnr=int(parts[0]),
+                        x=float(parts[1]),
+                        y=float(parts[2]),
+                        n=int(parts[3]),
+                        nx=int(parts[4]),
+                        ny=int(parts[5]),
+                        sumg=int(parts[6]),
+                        tnr=int(parts[7]),
+                    )
+                )
             return targets
     except FileNotFoundError:
         return []
@@ -179,73 +195,102 @@ def write_targets(tbuf, num_targets, file_base, frame_num):
     fname = _resolve_file_base(file_base, frame_num)
 
     try:
-        with open(fname, 'w') as f:
+        with open(fname, "w") as f:
             f.write(f"{num_targets}\n")
             for i in range(num_targets):
                 t = tbuf[i]
-                f.write(f"{t.pnr:4d} {t.x:9.4f} {t.y:9.4f} "
-                        f"{t.n:5d} {t.nx:5d} {t.ny:5d} {t.sumg:5d} {t.tnr:5d}\n")
+                f.write(
+                    f"{t.pnr:4d} {t.x:9.4f} {t.y:9.4f} "
+                    f"{t.n:5d} {t.nx:5d} {t.ny:5d} {t.sumg:5d} {t.tnr:5d}\n"
+                )
         return True
     except IOError:
         return False
 
 
 @cython.cclass
-@dataclass
 class Corres:
-    nr: cython.int = cython.declare(cython.int, 0, visibility='public')
-    p: np.ndarray = cython.declare(object, None, visibility='public')
+    """Correspondence between cameras for a 3D particle."""
 
-    def __post_init__(self):
-        if self.p is None:
+    nr: cython.int = cython.declare(cython.int, 0, visibility="public")
+    p: np.ndarray = cython.declare(object, None, visibility="public")
+
+    def __init__(self, nr=0, p=None):
+        self.nr = int(nr)
+        if p is None:
             self.p = np.array([CORRES_NONE] * 4, dtype=np.int32)
         else:
-            self.p = np.asarray(self.p, dtype=np.int32)
+            self.p = np.asarray(p, dtype=np.int32)
 
 
 @cython.ccall
 def compare_corres(c1, c2):
-    return (c1.nr == c2.nr and
-            c1.p[0] == c2.p[0] and c1.p[1] == c2.p[1] and
-            c1.p[2] == c2.p[2] and c1.p[3] == c2.p[3])
+    return (
+        c1.nr == c2.nr
+        and c1.p[0] == c2.p[0]
+        and c1.p[1] == c2.p[1]
+        and c1.p[2] == c2.p[2]
+        and c1.p[3] == c2.p[3]
+    )
 
 
 @cython.cclass
-@dataclass
 class Pathinfo:
-    x: np.ndarray = cython.declare(object, None, visibility='public')
-    prev: cython.int = cython.declare(cython.int, PREV_NONE, visibility='public')
-    next: cython.int = cython.declare(cython.int, NEXT_NONE, visibility='public')
-    prio: cython.int = cython.declare(cython.int, 4, visibility='public')
-    finaldecis: cython.double = cython.declare(cython.double, 1000000.0, visibility='public')
-    inlist: cython.int = cython.declare(cython.int, 0, visibility='public')
-    decis: list = cython.declare(object, None, visibility='public')
-    linkdecis: list = cython.declare(object, None, visibility='public')
+    """Particle path information across frames."""
 
-    def __post_init__(self):
-        if self.x is None:
+    x: np.ndarray = cython.declare(object, None, visibility="public")
+    prev: cython.int = cython.declare(cython.int, PREV_NONE, visibility="public")
+    next_idx: cython.int = cython.declare(cython.int, NEXT_NONE, visibility="public")
+    prio: cython.int = cython.declare(cython.int, 4, visibility="public")
+    finaldecis: cython.double = cython.declare(
+        cython.double, 1000000.0, visibility="public"
+    )
+    inlist: cython.int = cython.declare(cython.int, 0, visibility="public")
+    decis: list = cython.declare(object, None, visibility="public")
+    linkdecis: list = cython.declare(object, None, visibility="public")
+
+    def __init__(
+        self,
+        x=None,
+        prev=PREV_NONE,
+        next_idx=NEXT_NONE,
+        prio=4,
+        finaldecis=1000000.0,
+        inlist=0,
+        decis=None,
+        linkdecis=None,
+    ):
+        if x is None:
             self.x = np.zeros(3, dtype=np.float64)
         else:
-            self.x = np.asarray(self.x, dtype=np.float64)
-
-        if self.decis is None:
+            self.x = np.asarray(x, dtype=np.float64)
+        self.prev = int(prev)
+        self.next_idx = int(next_idx)
+        self.prio = int(prio)
+        self.finaldecis = float(finaldecis)
+        self.inlist = int(inlist)
+        if decis is None:
             self.decis = [0.0] * POSI
         else:
-            self.decis = list(self.decis)
-
-        if self.linkdecis is None:
+            self.decis = list(decis)
+        if linkdecis is None:
             self.linkdecis = [PT_UNUSED] * POSI
         else:
-            self.linkdecis = list(self.linkdecis)
+            self.linkdecis = list(linkdecis)
 
 
 @cython.ccall
 @cython.boundscheck(False)
 @cython.wraparound(False)
 def compare_path_info(p1, p2):
-    if not (p1.prev == p2.prev and p1.next == p2.next and
-            p1.prio == p2.prio and p1.finaldecis == p2.finaldecis and
-            p1.inlist == p2.inlist and np.allclose(p1.x, p2.x)):
+    if not (
+        p1.prev == p2.prev
+        and p1.next_idx == p2.next_idx
+        and p1.prio == p2.prio
+        and p1.finaldecis == p2.finaldecis
+        and p1.inlist == p2.inlist
+        and np.allclose(p1.x, p2.x)
+    ):
         return False
     for i in range(POSI):
         if p1.decis[i] != p2.decis[i]:
@@ -265,16 +310,15 @@ def register_link_candidate(path, fitness, cand):
 @cython.ccall
 def reset_links(path):
     path.prev = PREV_NONE
-    path.next = NEXT_NONE
+    path.next_idx = NEXT_NONE
     path.prio = 2  # PRIO_DEFAULT
 
 
 @cython.ccall
-def read_path_frame(corres_file_base, linkage_file_base, prio_file_base,
-                    frame_num):
+def read_path_frame(corres_file_base, linkage_file_base, prio_file_base, frame_num):
     fname = f"{corres_file_base}.{frame_num}"
     try:
-        corres_file = open(fname, 'r')
+        corres_file = open(fname, "r")
     except FileNotFoundError:
         return [], []
 
@@ -284,7 +328,7 @@ def read_path_frame(corres_file_base, linkage_file_base, prio_file_base,
     if linkage_file_base:
         lfname = f"{linkage_file_base}.{frame_num}"
         try:
-            linkage_file = open(lfname, 'r')
+            linkage_file = open(lfname, "r")
             linkage_file.readline()  # skip header
         except FileNotFoundError:
             linkage_file = None
@@ -293,7 +337,7 @@ def read_path_frame(corres_file_base, linkage_file_base, prio_file_base,
     if prio_file_base:
         pfname = f"{prio_file_base}.{frame_num}"
         try:
-            prio_file = open(pfname, 'r')
+            prio_file = open(pfname, "r")
             prio_file.readline()  # skip header
         except FileNotFoundError:
             prio_file = None
@@ -340,7 +384,7 @@ def read_path_frame(corres_file_base, linkage_file_base, prio_file_base,
         path = Pathinfo(
             x=np.array([float(parts[1]), float(parts[2]), float(parts[3])]),
             prev=prev_val,
-            next=next_val,
+            next_idx=next_val,
             prio=prio_val,
             finaldecis=1000000.0,
             inlist=0,
@@ -349,8 +393,10 @@ def read_path_frame(corres_file_base, linkage_file_base, prio_file_base,
         targets += 1
         cor = Corres(
             nr=targets,
-            p=np.array([int(parts[4]), int(parts[5]),
-                         int(parts[6]), int(parts[7])], dtype=np.int32)
+            p=np.array(
+                [int(parts[4]), int(parts[5]), int(parts[6]), int(parts[7])],
+                dtype=np.int32,
+            ),
         )
 
         cor_buf.append(cor)
@@ -366,20 +412,27 @@ def read_path_frame(corres_file_base, linkage_file_base, prio_file_base,
 
 
 @cython.ccall
-def write_path_frame(cor_buf, path_buf, num_parts, corres_file_base,
-                     linkage_file_base, prio_file_base, frame_num):
+def write_path_frame(
+    cor_buf,
+    path_buf,
+    num_parts,
+    corres_file_base,
+    linkage_file_base,
+    prio_file_base,
+    frame_num,
+):
     corres_fname = f"{corres_file_base}.{frame_num}"
     linkage_fname = f"{linkage_file_base}.{frame_num}" if linkage_file_base else None
 
     try:
-        corres_file = open(corres_fname, 'w')
+        corres_file = open(corres_fname, "w")
     except IOError:
         return False
 
     linkage_file = None
     if linkage_fname:
         try:
-            linkage_file = open(linkage_fname, 'w')
+            linkage_file = open(linkage_fname, "w")
         except IOError:
             corres_file.close()
             return False
@@ -388,7 +441,7 @@ def write_path_frame(cor_buf, path_buf, num_parts, corres_file_base,
     if prio_file_base:
         prio_fname = f"{prio_file_base}.{frame_num}"
         try:
-            prio_file = open(prio_fname, 'w')
+            prio_file = open(prio_fname, "w")
         except IOError:
             corres_file.close()
             if linkage_file:
@@ -405,17 +458,25 @@ def write_path_frame(cor_buf, path_buf, num_parts, corres_file_base,
         p = path_buf[pix]
 
         # Handle cor_buf: can be list of Corres objects, or (nr_array, p_array) tuple
-        if isinstance(cor_buf, (list, tuple)) and len(cor_buf) == 2 and isinstance(cor_buf[0], np.ndarray):
+        if (
+            isinstance(cor_buf, (list, tuple))
+            and len(cor_buf) == 2
+            and isinstance(cor_buf[0], np.ndarray)
+        ):
             c_nr = int(cor_buf[0][pix])
             c_p = cor_buf[1][pix]
         elif isinstance(cor_buf, list) and isinstance(cor_buf[0], Corres):
             c_p = cor_buf[pix].p
         else:
-            c_p = cor_buf[pix].p if hasattr(cor_buf[pix], 'p') else np.zeros(4, dtype=np.int32)
+            c_p = (
+                cor_buf[pix].p
+                if hasattr(cor_buf[pix], "p")
+                else np.zeros(4, dtype=np.int32)
+            )
 
         if linkage_file:
             linkage_file.write(
-                f"{p.prev:4d} {p.next:4d} {p.x[0]:10.3f} {p.x[1]:10.3f} {p.x[2]:10.3f}\n"
+                f"{p.prev:4d} {p.next_idx:4d} {p.x[0]:10.3f} {p.x[1]:10.3f} {p.x[2]:10.3f}\n"
             )
 
         corres_file.write(
@@ -425,7 +486,7 @@ def write_path_frame(cor_buf, path_buf, num_parts, corres_file_base,
 
         if prio_file:
             prio_file.write(
-                f"{p.prev:4d} {p.next:4d} {p.x[0]:10.3f} {p.x[1]:10.3f} {p.x[2]:10.3f} {p.prio:d}\n"
+                f"{p.prev:4d} {p.next_idx:4d} {p.x[0]:10.3f} {p.x[1]:10.3f} {p.x[2]:10.3f} {p.prio:d}\n"
             )
 
     corres_file.close()
@@ -451,7 +512,9 @@ class Frame:
         # SoA for targets (per camera)
         self.targ_x = [np.zeros(max_targets, dtype=np.float64) for _ in range(num_cams)]
         self.targ_y = [np.zeros(max_targets, dtype=np.float64) for _ in range(num_cams)]
-        self.targ_tnr = [np.full(max_targets, PT_UNUSED, dtype=np.int32) for _ in range(num_cams)]
+        self.targ_tnr = [
+            np.full(max_targets, PT_UNUSED, dtype=np.int32) for _ in range(num_cams)
+        ]
 
         # SoA for Pathinfo
         self.path_x = np.zeros((max_targets, 3), dtype=np.float64)
@@ -468,13 +531,13 @@ class Frame:
         self.corres_p = np.full((max_targets, 4), CORRES_NONE, dtype=np.int32)
 
         # Legacy convenience: read if file info is provided in kwargs
-        if 'frame_num' in kwargs and 'target_file_base' in kwargs:
+        if "frame_num" in kwargs and "target_file_base" in kwargs:
             self.read(
-                kwargs.get('corres_file_base'),
-                kwargs.get('linkage_file_base'),
-                kwargs.get('prio_file_base'),
-                kwargs.get('target_file_base'),
-                kwargs['frame_num']
+                kwargs.get("corres_file_base"),
+                kwargs.get("linkage_file_base"),
+                kwargs.get("prio_file_base"),
+                kwargs.get("target_file_base"),
+                kwargs["frame_num"],
             )
 
     def positions(self) -> np.ndarray:
@@ -505,7 +568,7 @@ class Frame:
             p = self.path_info[i]
             self.path_x[i] = p.x
             self.path_prev[i] = p.prev
-            self.path_next[i] = p.next
+            self.path_next[i] = p.next_idx
             self.path_prio[i] = p.prio
             self.path_inlist[i] = p.inlist
             self.path_finaldecis[i] = p.finaldecis
@@ -528,7 +591,7 @@ class Frame:
             p = self.path_info[i]
             p.x[:] = self.path_x[i]
             p.prev = int(self.path_prev[i])
-            p.next = int(self.path_next[i])
+            p.next_idx = int(self.path_next[i])
             p.prio = int(self.path_prio[i])
             p.inlist = int(self.path_inlist[i])
             p.finaldecis = float(self.path_finaldecis[i])
@@ -553,12 +616,14 @@ class Frame:
             frame_num = kwargs["frame_num"]
 
         remaining_args = list(args)
-        
+
         is_legacy = False
         if len(remaining_args) >= 2:
-            if isinstance(remaining_args[1], int) or isinstance(remaining_args[0], list):
+            if isinstance(remaining_args[1], int) or isinstance(
+                remaining_args[0], list
+            ):
                 is_legacy = True
-        
+
         if is_legacy:
             if target_file_base is None and len(remaining_args) > 0:
                 target_file_base = remaining_args.pop(0)
@@ -583,7 +648,7 @@ class Frame:
             corres_file_base,
             linkage_file_base if linkage_file_base else "",
             prio_file_base if prio_file_base else "",
-            frame_num
+            frame_num,
         )
 
         self.num_parts = len(cor_list)
@@ -594,7 +659,12 @@ class Frame:
         self._sync_path_to_soa()
 
         for cam in range(self.num_cams):
-            targets = read_targets(target_file_base[cam] if isinstance(target_file_base, list) else target_file_base, frame_num)
+            targets = read_targets(
+                target_file_base[cam]
+                if isinstance(target_file_base, list)
+                else target_file_base,
+                frame_num,
+            )
             self.num_targets[cam] = len(targets)
             tx = self.targ_x[cam]
             ty = self.targ_y[cam]
@@ -607,13 +677,22 @@ class Frame:
 
         return True
 
-    def write(self, corres_file_base, linkage_file_base, prio_file_base,
-              target_file_base, frame_num):
+    def write(
+        self,
+        corres_file_base,
+        linkage_file_base,
+        prio_file_base,
+        target_file_base,
+        frame_num,
+    ):
         ok = write_path_frame(
-            self.correspond, self.path_info, self.num_parts,
-            corres_file_base, linkage_file_base,
+            self.correspond,
+            self.path_info,
+            self.num_parts,
+            corres_file_base,
+            linkage_file_base,
             prio_file_base if prio_file_base else None,
-            frame_num
+            frame_num,
         )
         if not ok:
             return False
@@ -621,8 +700,10 @@ class Frame:
         for cam in range(self.num_cams):
             if self.num_targets[cam] > 0:
                 ok = write_targets(
-                    self.targets[cam], self.num_targets[cam],
-                    target_file_base[cam], frame_num
+                    self.targets[cam],
+                    self.num_targets[cam],
+                    target_file_base[cam],
+                    frame_num,
                 )
                 if not ok:
                     return False
@@ -631,9 +712,16 @@ class Frame:
 
 
 class FrameBuf:
-    def __init__(self, buf_len, num_cams, max_targets,
-                 corres_file_base, linkage_file_base, prio_file_base,
-                 target_file_base):
+    def __init__(
+        self,
+        buf_len,
+        num_cams,
+        max_targets,
+        corres_file_base,
+        linkage_file_base,
+        prio_file_base,
+        target_file_base,
+    ):
         self.buf_len = buf_len
         self.num_cams = num_cams
         self._frames = [Frame(num_cams, max_targets) for _ in range(buf_len)]
@@ -658,17 +746,22 @@ class FrameBuf:
         frame = self.buf[self.buf_len - 1]
         linkage = self.linkage_file_base if read_links else ""
         prio = self.prio_file_base if read_links else ""
-        return frame.read(self.corres_file_base, linkage, prio,
-                          self.target_file_base, frame_num)
+        return frame.read(
+            self.corres_file_base, linkage, prio, self.target_file_base, frame_num
+        )
 
     def write_frame_from_start(self, frame_num):
         frame = self.buf[0]
-        return frame.write(self.corres_file_base, self.linkage_file_base,
-                           self.prio_file_base, self.target_file_base,
-                           frame_num)
+        return frame.write(
+            self.corres_file_base,
+            self.linkage_file_base,
+            self.prio_file_base,
+            self.target_file_base,
+            frame_num,
+        )
 
 
-Corres_dtype = np.dtype([('nr', np.int32), ('p', np.int32, (4,))])
+Corres_dtype = np.dtype([("nr", np.int32), ("p", np.int32, (4,))])
 
 
 def is_compiled() -> bool:
