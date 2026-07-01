@@ -3,30 +3,52 @@
 
 Translation of parameters from old C/C++ representation into modern Python.
 """
+
 from __future__ import annotations
 
 import cython
 from collections import namedtuple
 from pathlib import Path
-from typing import Optional, List, Union
-
 import numpy as np
 
 # TrackParTuple for test compatibility
-TrackParTuple = namedtuple('TrackParTuple', [
-    'dvxmin', 'dvxmax', 'dvymin', 'dvymax', 'dvzmin', 'dvzmax',
-    'dangle', 'dacc', 'add', 'dsumg', 'dn', 'dnx', 'dny'
-])
+TrackParTuple = namedtuple(
+    "TrackParTuple",
+    [
+        "dvxmin",
+        "dvxmax",
+        "dvymin",
+        "dvymax",
+        "dvzmin",
+        "dvzmax",
+        "dangle",
+        "dacc",
+        "add",
+        "dsumg",
+        "dn",
+        "dnx",
+        "dny",
+    ],
+)
 
 
 # Convert TrackPar to TrackParTuple for test compatibility
 @cython.ccall
 def convert_track_par_to_tuple(track_par: TrackPar) -> TrackParTuple:
     return TrackParTuple(
-        track_par.dvxmin, track_par.dvxmax, track_par.dvymin, track_par.dvymax,
-        track_par.dvzmin, track_par.dvzmax, track_par.dangle, track_par.dacc,
-        track_par.add, getattr(track_par, 'dsumg', 0.0), getattr(track_par, 'dn', 0.0),
-        getattr(track_par, 'dnx', 0.0), getattr(track_par, 'dny', 0.0)
+        track_par.dvxmin,
+        track_par.dvxmax,
+        track_par.dvymin,
+        track_par.dvymax,
+        track_par.dvzmin,
+        track_par.dvzmax,
+        track_par.dangle,
+        track_par.dacc,
+        track_par.add,
+        getattr(track_par, "dsumg", 0.0),
+        getattr(track_par, "dn", 0.0),
+        getattr(track_par, "dnx", 0.0),
+        getattr(track_par, "dny", 0.0),
     )
 
 
@@ -36,7 +58,13 @@ class SequencePar:
     first: int
     last: int
 
-    def __init__(self, num_cams: int = 0, img_base_name: list[str] | None = None, first: int = 0, last: int = 0) -> None:
+    def __init__(
+        self,
+        num_cams: int = 0,
+        img_base_name: list[str] | None = None,
+        first: int = 0,
+        last: int = 0,
+    ) -> None:
         self.num_cams = num_cams
         self.img_base_name = img_base_name if img_base_name is not None else []
         if not self.img_base_name and num_cams > 0:
@@ -49,7 +77,9 @@ class SequencePar:
         path = Path(filename)
         lines = path.read_text().strip().splitlines()
         if len(lines) < num_cams + 2:
-            raise ValueError(f"Expected at least {num_cams + 2} lines, got {len(lines)}")
+            raise ValueError(
+                f"Expected at least {num_cams + 2} lines, got {len(lines)}"
+            )
         img_base_name = [lines[i].strip() for i in range(num_cams)]
         first = int(lines[num_cams].strip())
         last = int(lines[num_cams + 1].strip())
@@ -115,7 +145,7 @@ class TrackPar:
         dangle: float = 0.0,
         dacc: float = 0.0,
         add: int = 0,
-        track_mode: int = 0
+        track_mode: int = 0,
     ) -> None:
         self.dvxmin = dvxmin
         self.dvxmax = dvxmax
@@ -145,9 +175,16 @@ class TrackPar:
             except (ValueError, IndexError):
                 track_mode = 0
         return TrackPar(
-            float(lines[0]), float(lines[1]), float(lines[2]), float(lines[3]),
-            float(lines[4]), float(lines[5]), float(lines[6]), float(lines[7]), int(lines[8]),
-            track_mode
+            float(lines[0]),
+            float(lines[1]),
+            float(lines[2]),
+            float(lines[3]),
+            float(lines[4]),
+            float(lines[5]),
+            float(lines[6]),
+            float(lines[7]),
+            int(lines[8]),
+            track_mode,
         )
 
     # --- Backward Compatibility OOP Methods ---
@@ -275,11 +312,15 @@ class VolumePar:
         cn: float = 0.0,
         csumg: float = 0.0,
         corrmin: float = 0.0,
-        eps0: float = 0.0
+        eps0: float = 0.0,
     ) -> None:
         self.X_lay = np.zeros(2) if X_lay is None else np.array(X_lay, dtype=np.float64)
-        self.Zmin_lay = np.zeros(2) if Zmin_lay is None else np.array(Zmin_lay, dtype=np.float64)
-        self.Zmax_lay = np.zeros(2) if Zmax_lay is None else np.array(Zmax_lay, dtype=np.float64)
+        self.Zmin_lay = (
+            np.zeros(2) if Zmin_lay is None else np.array(Zmin_lay, dtype=np.float64)
+        )
+        self.Zmax_lay = (
+            np.zeros(2) if Zmax_lay is None else np.array(Zmax_lay, dtype=np.float64)
+        )
         self.cnx = cnx
         self.cny = cny
         self.cn = cn
@@ -469,11 +510,13 @@ class ControlPar:
         pix_x: float = 0.0,
         pix_y: float = 0.0,
         chfield: int = 0,
-        mm: MmNp | None = None
+        mm: MmNp | None = None,
     ) -> None:
         self.num_cams = num_cams
         self.img_base_name = img_base_name if img_base_name is not None else []
-        self.cal_img_base_name = cal_img_base_name if cal_img_base_name is not None else []
+        self.cal_img_base_name = (
+            cal_img_base_name if cal_img_base_name is not None else []
+        )
         if not self.img_base_name and num_cams > 0:
             self.img_base_name = [""] * num_cams
         if not self.cal_img_base_name and num_cams > 0:
@@ -534,11 +577,18 @@ class ControlPar:
         idx += 1
         mm = MmNp(nlay=1, n1=n1, n2=[n2_0, 1.0, 1.0], d=[d0, 0.0, 0.0], n3=n3)
         return ControlPar(
-            num_cams=num_cams, img_base_name=img_base_name,
-            cal_img_base_name=cal_img_base_name, hp_flag=hp_flag,
-            allCam_flag=allCam_flag, tiff_flag=tiff_flag,
-            imx=imx, imy=imy, pix_x=pix_x, pix_y=pix_y,
-            chfield=chfield, mm=mm,
+            num_cams=num_cams,
+            img_base_name=img_base_name,
+            cal_img_base_name=cal_img_base_name,
+            hp_flag=hp_flag,
+            allCam_flag=allCam_flag,
+            tiff_flag=tiff_flag,
+            imx=imx,
+            imy=imy,
+            pix_x=pix_x,
+            pix_y=pix_y,
+            chfield=chfield,
+            mm=mm,
         )
 
     # --- Backward Compatibility OOP Methods ---
@@ -662,7 +712,11 @@ class TargetPar:
         if gvthresh is not None:
             self.gvthres = np.array(gvthresh, dtype=int)
         else:
-            self.gvthres = np.zeros(4, dtype=int) if gvthres is None else np.array(gvthres, dtype=int)
+            self.gvthres = (
+                np.zeros(4, dtype=int)
+                if gvthres is None
+                else np.array(gvthres, dtype=int)
+            )
 
         if pixel_count_bounds is not None:
             self.nnmin, self.nnmax = pixel_count_bounds
@@ -702,7 +756,9 @@ class TargetPar:
         nymin, nymax = int(tokens[9]), int(tokens[10])
         sumg_min = int(tokens[11])
         cr_sz = int(tokens[12]) if len(tokens) > 12 else 0
-        return TargetPar(gvthres, discont, nnmin, nnmax, nxmin, nxmax, nymin, nymax, sumg_min, cr_sz)
+        return TargetPar(
+            gvthres, discont, nnmin, nnmax, nxmin, nxmax, nymin, nymax, sumg_min, cr_sz
+        )
 
     def to_file(self, filename: str | Path) -> None:
         path = Path(filename)
@@ -810,7 +866,7 @@ class OrientPar:
         p2flag: int = 0,
         scxflag: int = 0,
         sheflag: int = 0,
-        interfflag: int = 0
+        interfflag: int = 0,
     ) -> None:
         self.useflag = useflag
         self.ccflag = ccflag
@@ -848,7 +904,7 @@ class MultimediaPar:
         n2: list[float] | np.ndarray | None = None,
         d: list[float] | np.ndarray | None = None,
         n3: float = 1.0,
-        nlay: int = 1
+        nlay: int = 1,
     ) -> None:
         self.n1 = n1
         self.n2 = np.ones(3) if n2 is None else np.array(n2, dtype=np.float64)
@@ -859,6 +915,7 @@ class MultimediaPar:
 
 class CalibrationPar:
     """Calibration parameters for calibration workflow."""
+
     fixp_name: str
     img_cal_name: list[str]
     img_ori: list[str]
@@ -873,7 +930,7 @@ class CalibrationPar:
         img_ori: list[str] | None = None,
         tiff_flag: int = 0,
         pair_flag: int = 0,
-        chfield: int = 0
+        chfield: int = 0,
     ) -> None:
         self.fixp_name = fixp_name
         self.img_cal_name = img_cal_name if img_cal_name is not None else []
@@ -894,11 +951,14 @@ class CalibrationPar:
             pair_flag = int(file.readline().strip())
             chfield = int(file.readline().strip())
 
-        return CalibrationPar(fixp_name, img_cal_name, img_ori, tiff_flag, pair_flag, chfield)
+        return CalibrationPar(
+            fixp_name, img_cal_name, img_ori, tiff_flag, pair_flag, chfield
+        )
 
 
 class MultiPlanesPar:
     """Multiplanes parameters."""
+
     num_planes: int
     filename: list[str]
 
@@ -917,6 +977,7 @@ class MultiPlanesPar:
 
 class ExaminePar:
     """Examine parameters."""
+
     examine_flag: bool
     combine_flag: bool
 
@@ -935,6 +996,7 @@ class ExaminePar:
 
 class PftVersionPar:
     """PFT version parameters."""
+
     existing_target_flag: bool
 
     def __init__(self, existing_target_flag: bool = False) -> None:

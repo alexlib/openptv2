@@ -136,21 +136,6 @@ def convert_optv_calibrations(cals):
     return py_cals
 
 
-from .parameters import (
-    ControlPar,
-    SequencePar,
-    VolumePar,
-    TrackParTuple,
-    TargetPar,
-    CalibrationPar,
-    OrientPar,
-    MultiPlanesPar,
-    ExaminePar,
-    PftVersionPar,
-    MultimediaPar,
-)
-
-
 def _get_section(yaml_params, *keys):
     """Get a section from YAML params, trying multiple key names.
 

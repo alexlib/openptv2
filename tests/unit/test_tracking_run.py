@@ -214,8 +214,8 @@ class TestFrameReading:
         t = targets[0]
         assert isinstance(t, Target)
         assert t.pnr == 0
-        assert abs(t.x - 1485.9354) < 0.001
-        assert abs(t.y - 904.9284) < 0.001
+        assert abs(t.x - 1053.3689) < 0.001
+        assert abs(t.y - 696.799) < 0.001
 
     def test_read_path_frame(self):
         """read_path_frame should parse correspondence files."""

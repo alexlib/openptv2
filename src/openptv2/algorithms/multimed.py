@@ -28,16 +28,6 @@ else:
         atan as c_atan,
         sin as c_sin,
     )
-from .vec_utils import (
-    vec_set,
-    vec_norm,
-    vec_dot,
-    vec_scalar_mul,
-    vec_add,
-    vec_subt,
-    unit_vector,
-)
-
 from .track_kernels import init_mmlut_data_fast as _init_mmlut_data_fast
 
 

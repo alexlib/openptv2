@@ -10,6 +10,7 @@ Provides:
 - MmLut: multimedia look-up table
 - Calibration: aggregates all above
 """
+
 from __future__ import annotations
 
 import cython
@@ -31,6 +32,7 @@ class Exterior:
         omega, phi, kappa: rotation angles [radians].
         dm: 3x3 rotation matrix (computed from angles).
     """
+
     x0: cython.double = 0.0
     y0: cython.double = 0.0
     z0: cython.double = 0.0
@@ -54,11 +56,14 @@ class Exterior:
         ck = np.cos(self.kappa)
         sk = np.sin(self.kappa)
 
-        dm = np.array([
-            [cp * ck, -cp * sk, sp],
-            [co * sk + so * sp * ck, co * ck - so * sp * sk, -so * cp],
-            [so * sk - co * sp * ck, so * ck + co * sp * sk, co * cp],
-        ], dtype=np.float64)
+        dm = np.array(
+            [
+                [cp * ck, -cp * sk, sp],
+                [co * sk + so * sp * ck, co * ck - so * sp * sk, -so * cp],
+                [so * sk - co * sp * ck, so * ck + co * sp * sk, co * cp],
+            ],
+            dtype=np.float64,
+        )
 
         self.dm = dm
         return dm
@@ -73,6 +78,7 @@ class Interior:
         xh, yh: principal point (sensor shift) [mm].
         cc: camera constant (focal length) [mm].
     """
+
     xh: cython.double = 0.0
     yh: cython.double = 0.0
     cc: cython.double = 0.0
@@ -88,6 +94,7 @@ class Glass:
         n1, n2, n3: refractive indices (not used directly, stored for reference).
         d: glass thickness [mm].
     """
+
     vec_x: cython.double = 0.0
     vec_y: cython.double = 0.0
     vec_z: cython.double = 0.0
@@ -109,6 +116,7 @@ class AddedPar:
         she: shear angle.
         field: unused field (legacy).
     """
+
     k1: cython.double = 0.0
     k2: cython.double = 0.0
     k3: cython.double = 0.0
@@ -131,6 +139,7 @@ class MmLut:
         rw: grid spacing.
         data: 1D array of size nr * nz with multimedia factors.
     """
+
     origin: np.ndarray = field(default_factory=lambda: np.zeros(3, dtype=np.float64))
     nr: cython.int = 0
     nz: cython.int = 0
@@ -145,12 +154,16 @@ class MmLut:
 
 class hybrid_from_file:
     """A descriptor that allows from_file to be called as a classmethod or instance method."""
+
     def __get__(self, obj, cls):
         if obj is None:
+
             def _classmethod(ori_file, add_file=None, add_fallback=None):
                 return cls._from_file_class(ori_file, add_file, add_fallback)
+
             return _classmethod
         else:
+
             def _instancemethod(ori_file, add_file=None, fallback_file=None):
                 new_cal = cls._from_file_class(ori_file, add_file, fallback_file)
                 obj.ext_par = new_cal.ext_par
@@ -159,7 +172,9 @@ class hybrid_from_file:
                 obj.added_par = new_cal.added_par
                 obj.mmlut = new_cal.mmlut
                 return obj
+
             return _instancemethod
+
 
 @cython.cclass
 @dataclass
@@ -175,6 +190,7 @@ class Calibration:
         added_par: distortion parameters.
         mmlut: multimedia look-up table.
     """
+
     ext_par: Exterior = field(default_factory=Exterior)
     int_par: Interior = field(default_factory=Interior)
     glass_par: Glass = field(default_factory=Glass)
@@ -183,11 +199,11 @@ class Calibration:
 
     def __init__(
         self,
-        ext_par = None,
-        int_par = None,
-        glass_par = None,
-        added_par = None,
-        mmlut = None,
+        ext_par=None,
+        int_par=None,
+        glass_par=None,
+        added_par=None,
+        mmlut=None,
         pos=None,
         angs=None,
         prim_point=None,
@@ -206,7 +222,13 @@ class Calibration:
         # and remap to the legacy keyword arguments.
         if ext_par is not None and not isinstance(ext_par, Exterior):
             (pos, angs, prim_point, rad_dist, decent, affine, glass) = (
-                ext_par, int_par, glass_par, added_par, mmlut, pos, angs,
+                ext_par,
+                int_par,
+                glass_par,
+                added_par,
+                mmlut,
+                pos,
+                angs,
             )
             ext_par = int_par = glass_par = added_par = mmlut = None
 
@@ -251,7 +273,9 @@ class Calibration:
 
     def get_pos(self) -> np.ndarray:
         """Get camera position as ndarray[3]."""
-        return np.array([self.ext_par.x0, self.ext_par.y0, self.ext_par.z0], dtype=np.float64)
+        return np.array(
+            [self.ext_par.x0, self.ext_par.y0, self.ext_par.z0], dtype=np.float64
+        )
 
     def set_pos(self, pos) -> None:
         """Set camera position from ndarray[3]."""
@@ -263,7 +287,9 @@ class Calibration:
 
     def get_angles(self) -> np.ndarray:
         """Get rotation angles (omega, phi, kappa) as ndarray[3]."""
-        return np.array([self.ext_par.omega, self.ext_par.phi, self.ext_par.kappa], dtype=np.float64)
+        return np.array(
+            [self.ext_par.omega, self.ext_par.phi, self.ext_par.kappa], dtype=np.float64
+        )
 
     def set_angles(self, angles) -> None:
         """Set rotation angles from ndarray[3] and compute rotation matrix."""
@@ -276,7 +302,9 @@ class Calibration:
 
     def get_primary_point(self) -> np.ndarray:
         """Get primary point (xh, yh, cc) as ndarray[3]."""
-        return np.array([self.int_par.xh, self.int_par.yh, self.int_par.cc], dtype=np.float64)
+        return np.array(
+            [self.int_par.xh, self.int_par.yh, self.int_par.cc], dtype=np.float64
+        )
 
     def set_primary_point(self, pp) -> None:
         """Set primary point from ndarray[3]."""
@@ -288,7 +316,9 @@ class Calibration:
 
     def get_radial_distortion(self) -> np.ndarray:
         """Get radial distortion coefficients (k1, k2, k3) as ndarray[3]."""
-        return np.array([self.added_par.k1, self.added_par.k2, self.added_par.k3], dtype=np.float64)
+        return np.array(
+            [self.added_par.k1, self.added_par.k2, self.added_par.k3], dtype=np.float64
+        )
 
     def set_radial_distortion(self, dist) -> None:
         """Set radial distortion from ndarray[3]."""
@@ -322,7 +352,10 @@ class Calibration:
 
     def get_glass_vec(self) -> np.ndarray:
         """Get glass vector (vec_x, vec_y, vec_z) as ndarray[3]."""
-        return np.array([self.glass_par.vec_x, self.glass_par.vec_y, self.glass_par.vec_z], dtype=np.float64)
+        return np.array(
+            [self.glass_par.vec_x, self.glass_par.vec_y, self.glass_par.vec_z],
+            dtype=np.float64,
+        )
 
     def set_glass_vec(self, gvec) -> None:
         """Set glass vector from ndarray[3]."""
@@ -339,9 +372,9 @@ class Calibration:
     def write(self, ori_file, add_file=None) -> None:
         """Write calibration to file(s)."""
         if isinstance(ori_file, bytes):
-            ori_file = ori_file.decode('utf-8')
+            ori_file = ori_file.decode("utf-8")
         if isinstance(add_file, bytes):
-            add_file = add_file.decode('utf-8')
+            add_file = add_file.decode("utf-8")
         self.to_file(ori_file, add_file)
 
     from_file = hybrid_from_file()
@@ -371,11 +404,11 @@ class Calibration:
         # e.g. cal_file.encode()). Path() rejects bytes, so decode first — mirrors
         # the symmetric handling already done in write().
         if isinstance(ori_file, bytes):
-            ori_file = ori_file.decode('utf-8')
+            ori_file = ori_file.decode("utf-8")
         if isinstance(add_file, bytes):
-            add_file = add_file.decode('utf-8')
+            add_file = add_file.decode("utf-8")
         if isinstance(add_fallback, bytes):
-            add_fallback = add_fallback.decode('utf-8')
+            add_fallback = add_fallback.decode("utf-8")
 
         ori_path = Path(ori_file)
         if not ori_path.exists():
@@ -531,65 +564,6 @@ class Calibration:
                 f"{ap.p1:.8f} {ap.p2:.8f} {ap.scx:.8f} {ap.she:.8f}"
             ]
             add_path.write_text("\n".join(add_lines) + "\n")
-
-
-@cython.ccall
-def compare_exterior(e1: Exterior, e2: Exterior) -> bool:
-    """Compare two Exterior objects for equality (all fields, including dm)."""
-    if not np.allclose(e1.dm, e2.dm):
-        return False
-    return (
-        e1.x0 == e2.x0 and
-        e1.y0 == e2.y0 and
-        e1.z0 == e2.z0 and
-        e1.omega == e2.omega and
-        e1.phi == e2.phi and
-        e1.kappa == e2.kappa
-    )
-
-@cython.ccall
-def compare_interior(i1: Interior, i2: Interior) -> bool:
-    """Compare two Interior objects for equality."""
-    return (
-        i1.xh == i2.xh and
-        i1.yh == i2.yh and
-        i1.cc == i2.cc
-    )
-
-@cython.ccall
-def compare_glass(g1: Glass, g2: Glass) -> bool:
-    """Compare two Glass objects for equality (only normal vector)."""
-    return (
-        g1.vec_x == g2.vec_x and
-        g1.vec_y == g2.vec_y and
-        g1.vec_z == g2.vec_z
-    )
-
-@cython.ccall
-def compare_addpar(a1: AddedPar, a2: AddedPar) -> bool:
-    """Compare two AddedPar (distortion) objects for equality."""
-    return (
-        a1.k1 == a2.k1 and
-        a1.k2 == a2.k2 and
-        a1.k3 == a2.k3 and
-        a1.p1 == a2.p1 and
-        a1.p2 == a2.p2 and
-        a1.scx == a2.scx and
-        a1.she == a2.she
-    )
-
-@cython.ccall
-def compare_calib(c1: Calibration, c2: Calibration) -> bool:
-    """Deep comparison of two Calibration objects (all fields except mmlut)."""
-    return (
-        compare_exterior(c1.ext_par, c2.ext_par)
-        and compare_interior(c1.int_par, c2.int_par)
-        and compare_glass(c1.glass_par, c2.glass_par)
-        and compare_addpar(c1.added_par, c2.added_par)
-    )
-
-# read_calibration and write_calibration are already covered by from_file and to_file methods.
-# The rotation_matrix logic is implemented in Exterior.compute_rotation_matrix().
 
 
 def is_compiled() -> bool:

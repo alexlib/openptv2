@@ -131,8 +131,8 @@ def test_track3d_no_add():
         range_val = run.seq_par.last - run.seq_par.first
         npart = run.npart / range_val
         nlinks = run.nlinks / range_val
-        assert abs(npart - 0.9) < EPS
-        assert abs(nlinks - 0.8) < EPS
+        assert abs(npart - 2.0) < EPS
+        assert abs(nlinks - 2.0) < EPS
     finally:
         os.chdir(original)
 

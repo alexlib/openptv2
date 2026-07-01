@@ -16,8 +16,6 @@ if cython.compiled:
     from cython.cimports.libc.math import sqrt as c_sqrt, isnan as c_isnan
 else:
     from math import sqrt as c_sqrt, isnan as c_isnan
-from typing import Tuple
-
 # Sentinel value for empty/unused cells (matches C's EMPTY_CELL = NaN)
 EMPTY_CELL = np.nan
 
@@ -34,15 +32,6 @@ def is_empty(x: cython.double) -> cython.bint:
 # ---------------------------------------------------------------------------
 
 
-@cython.cfunc
-@cython.inline
-def _vec_init_out(out: cython.double[:]):
-    """Write NaN into pre-allocated out array."""
-    out[0] = np.nan
-    out[1] = np.nan
-    out[2] = np.nan
-
-
 @cython.ccall
 def vec_init() -> np.ndarray:
     """Return a 3D vector initialized to NaN.
@@ -51,17 +40,6 @@ def vec_init() -> np.ndarray:
         ndarray of shape (3,) filled with NaN.
     """
     return np.full(3, np.nan, dtype=np.float64)
-
-
-@cython.cfunc
-@cython.inline
-def _vec_set_out(
-    x: cython.double, y: cython.double, z: cython.double, out: cython.double[:]
-):
-    """Write vec components into pre-allocated out array."""
-    out[0] = x
-    out[1] = y
-    out[2] = z
 
 
 @cython.ccall
@@ -81,15 +59,6 @@ def vec_set(x: cython.double, y: cython.double, z: cython.double) -> np.ndarray:
     return out
 
 
-@cython.cfunc
-@cython.inline
-def _vec_copy_out(src: cython.double[:], out: cython.double[:]):
-    """Copy src into pre-allocated out array."""
-    out[0] = src[0]
-    out[1] = src[1]
-    out[2] = src[2]
-
-
 @cython.ccall
 def vec_copy(src: cython.double[:]) -> np.ndarray:
     """Copy a 3D vector.
@@ -105,17 +74,6 @@ def vec_copy(src: cython.double[:]) -> np.ndarray:
     out[1] = src[1]
     out[2] = src[2]
     return out
-
-
-@cython.cfunc
-@cython.inline
-def _vec_subt_out(
-    from_vec: cython.double[:], sub: cython.double[:], out: cython.double[:]
-):
-    """Write from_vec - sub into pre-allocated out array."""
-    out[0] = from_vec[0] - sub[0]
-    out[1] = from_vec[1] - sub[1]
-    out[2] = from_vec[2] - sub[2]
 
 
 @cython.ccall
@@ -136,15 +94,6 @@ def vec_subt(from_vec: cython.double[:], sub: cython.double[:]) -> np.ndarray:
     return out
 
 
-@cython.cfunc
-@cython.inline
-def _vec_add_out(vec1: cython.double[:], vec2: cython.double[:], out: cython.double[:]):
-    """Write vec1 + vec2 into pre-allocated out array."""
-    out[0] = vec1[0] + vec2[0]
-    out[1] = vec1[1] + vec2[1]
-    out[2] = vec1[2] + vec2[2]
-
-
 @cython.ccall
 def vec_add(vec1: cython.double[:], vec2: cython.double[:]) -> np.ndarray:
     """Add two 3D vectors.
@@ -160,17 +109,6 @@ def vec_add(vec1: cython.double[:], vec2: cython.double[:]) -> np.ndarray:
     out[1] = vec1[1] + vec2[1]
     out[2] = vec1[2] + vec2[2]
     return out
-
-
-@cython.cfunc
-@cython.inline
-def _vec_scalar_mul_out(
-    vec: cython.double[:], scalar: cython.double, out: cython.double[:]
-):
-    """Write scalar * vec into pre-allocated out array."""
-    out[0] = vec[0] * scalar
-    out[1] = vec[1] * scalar
-    out[2] = vec[2] * scalar
 
 
 @cython.ccall
@@ -238,17 +176,6 @@ def vec_dot(vec1: cython.double[:], vec2: cython.double[:]) -> cython.double:
     return vec1[0] * vec2[0] + vec1[1] * vec2[1] + vec1[2] * vec2[2]
 
 
-@cython.cfunc
-@cython.inline
-def _vec_cross_out(
-    vec1: cython.double[:], vec2: cython.double[:], out: cython.double[:]
-):
-    """Write vec1 x vec2 into pre-allocated out array."""
-    out[0] = vec1[1] * vec2[2] - vec1[2] * vec2[1]
-    out[1] = vec1[2] * vec2[0] - vec1[0] * vec2[2]
-    out[2] = vec1[0] * vec2[1] - vec1[1] * vec2[0]
-
-
 @cython.ccall
 def vec_cross(vec1: cython.double[:], vec2: cython.double[:]) -> np.ndarray:
     """Compute the cross product of two 3D vectors.
@@ -299,22 +226,6 @@ def vec_approx_cmp(
         and (abs(vec1[1] - vec2[1]) <= eps)
         and (abs(vec1[2] - vec2[2]) <= eps)
     )
-
-
-@cython.cfunc
-@cython.inline
-@cython.cdivision(True)
-def _unit_vector_out(vec: cython.double[:], out: cython.double[:]):
-    """Write normalized vec into pre-allocated out array."""
-    norm: cython.double = vec_norm(vec)
-    if norm == 0.0:
-        out[0] = vec[0]
-        out[1] = vec[1]
-        out[2] = vec[2]
-    else:
-        out[0] = vec[0] / norm
-        out[1] = vec[1] / norm
-        out[2] = vec[2] / norm
 
 
 @cython.ccall

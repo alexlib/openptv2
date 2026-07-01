@@ -29,7 +29,6 @@ from .constants import (
 )
 from .tracking_frame_buf import register_link_candidate, reset_links
 from .multimed import (
-    multimed_nlay as _multimed_nlay,
     multimed_r_nlay_iterative as _multimed_r_nlay_iterative,
 )
 from .track_kernels import (

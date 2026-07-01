@@ -5,6 +5,7 @@ Translation of lib/src/orientation.c and lib/include/orientation.h.
 Determines camera exterior orientation and refines interior/distortion
 parameters using known 3D points and their 2D image projections.
 """
+
 from __future__ import annotations
 
 import cython
@@ -18,7 +19,6 @@ import copy
 from pathlib import Path
 
 import numpy as np
-from .ray_tracing import _ray_tracing_core
 
 NPAR = 19
 IDT = 10
@@ -33,10 +33,18 @@ COORD_UNUSED = -1e10
 @cython.boundscheck(False)
 @cython.wraparound(False)
 def _skew_midpoint_core(
-    v1_0: cython.double, v1_1: cython.double, v1_2: cython.double,
-    d1_0: cython.double, d1_1: cython.double, d1_2: cython.double,
-    v2_0: cython.double, v2_1: cython.double, v2_2: cython.double,
-    d2_0: cython.double, d2_1: cython.double, d2_2: cython.double,
+    v1_0: cython.double,
+    v1_1: cython.double,
+    v1_2: cython.double,
+    d1_0: cython.double,
+    d1_1: cython.double,
+    d1_2: cython.double,
+    v2_0: cython.double,
+    v2_1: cython.double,
+    v2_2: cython.double,
+    d2_0: cython.double,
+    d2_1: cython.double,
+    d2_2: cython.double,
     midpoint: cython.double[:],
 ) -> cython.double:
     sp_x: cython.double = v2_0 - v1_0
@@ -101,11 +109,19 @@ def skew_midpoint(
     d1: cython.double[:] = direct1
     d2: cython.double[:] = direct2
     dist = _skew_midpoint_core(
-        v1[0], v1[1], v1[2],
-        d1[0], d1[1], d1[2],
-        v2[0], v2[1], v2[2],
-        d2[0], d2[1], d2[2],
-        midpoint
+        v1[0],
+        v1[1],
+        v1[2],
+        d1[0],
+        d1[1],
+        d1[2],
+        v2[0],
+        v2[1],
+        v2[2],
+        d2[0],
+        d2[1],
+        d2[2],
+        midpoint,
     )
     return dist, midpoint
 
@@ -177,7 +193,7 @@ def point_position_batch(targets, num_cams: cython.int, mm, cals):
 
     # 1. Unpack multimedia params once
     # Handle wrapper layers if needed
-    if hasattr(mm, '_mm'):
+    if hasattr(mm, "_mm"):
         mm_obj = mm._mm
     else:
         mm_obj = mm
@@ -192,7 +208,7 @@ def point_position_batch(targets, num_cams: cython.int, mm, cals):
     ext_y0_all = np.empty(num_cams, dtype=np.float64)
     ext_z0_all = np.empty(num_cams, dtype=np.float64)
     int_cc_all = np.empty(num_cams, dtype=np.float64)
-    
+
     glass_dir_x = np.empty(num_cams, dtype=np.float64)
     glass_dir_y = np.empty(num_cams, dtype=np.float64)
     glass_dir_z = np.empty(num_cams, dtype=np.float64)
@@ -203,7 +219,7 @@ def point_position_batch(targets, num_cams: cython.int, mm, cals):
     ext_y0_mv: cython.double[:] = ext_y0_all
     ext_z0_mv: cython.double[:] = ext_z0_all
     int_cc_mv: cython.double[:] = int_cc_all
-    
+
     glass_dir_x_mv: cython.double[:] = glass_dir_x
     glass_dir_y_mv: cython.double[:] = glass_dir_y
     glass_dir_z_mv: cython.double[:] = glass_dir_z
@@ -220,18 +236,22 @@ def point_position_batch(targets, num_cams: cython.int, mm, cals):
         ext_y0_mv[cam] = cal_obj.ext_par.y0
         ext_z0_mv[cam] = cal_obj.ext_par.z0
         int_cc_mv[cam] = cal_obj.int_par.cc
-        
+
         g_x: cython.double = cal_obj.glass_par.vec_x
         g_y: cython.double = cal_obj.glass_par.vec_y
         g_z: cython.double = cal_obj.glass_par.vec_z
-        norm_g: cython.double = c_sqrt(g_x*g_x + g_y*g_y + g_z*g_z)
-        
+        norm_g: cython.double = c_sqrt(g_x * g_x + g_y * g_y + g_z * g_z)
+
         glass_dir_x_mv[cam] = g_x / norm_g
         glass_dir_y_mv[cam] = g_y / norm_g
         glass_dir_z_mv[cam] = g_z / norm_g
-        
+
         c: cython.double = norm_g + mm_d0
-        dist_cam_glass_mv[cam] = (glass_dir_x_mv[cam] * ext_x0_mv[cam] + glass_dir_y_mv[cam] * ext_y0_mv[cam] + glass_dir_z_mv[cam] * ext_z0_mv[cam]) - c
+        dist_cam_glass_mv[cam] = (
+            glass_dir_x_mv[cam] * ext_x0_mv[cam]
+            + glass_dir_y_mv[cam] * ext_y0_mv[cam]
+            + glass_dir_z_mv[cam] * ext_z0_mv[cam]
+        ) - c
 
     # Local variables for inlined ray tracing core
     tx: cython.double
@@ -285,15 +305,29 @@ def point_position_batch(targets, num_cams: cython.int, mm, cals):
             ty = y / norm_tmp1
             tz = -cc / norm_tmp1
 
-            start_dir_x = ext_dm_mv[cam, 0, 0] * tx + ext_dm_mv[cam, 0, 1] * ty + ext_dm_mv[cam, 0, 2] * tz
-            start_dir_y = ext_dm_mv[cam, 1, 0] * tx + ext_dm_mv[cam, 1, 1] * ty + ext_dm_mv[cam, 1, 2] * tz
-            start_dir_z = ext_dm_mv[cam, 2, 0] * tx + ext_dm_mv[cam, 2, 1] * ty + ext_dm_mv[cam, 2, 2] * tz
+            start_dir_x = (
+                ext_dm_mv[cam, 0, 0] * tx
+                + ext_dm_mv[cam, 0, 1] * ty
+                + ext_dm_mv[cam, 0, 2] * tz
+            )
+            start_dir_y = (
+                ext_dm_mv[cam, 1, 0] * tx
+                + ext_dm_mv[cam, 1, 1] * ty
+                + ext_dm_mv[cam, 1, 2] * tz
+            )
+            start_dir_z = (
+                ext_dm_mv[cam, 2, 0] * tx
+                + ext_dm_mv[cam, 2, 1] * ty
+                + ext_dm_mv[cam, 2, 2] * tz
+            )
 
             g_dx = glass_dir_x_mv[cam]
             g_dy = glass_dir_y_mv[cam]
             g_dz = glass_dir_z_mv[cam]
 
-            dot_glass_start = g_dx * start_dir_x + g_dy * start_dir_y + g_dz * start_dir_z
+            dot_glass_start = (
+                g_dx * start_dir_x + g_dy * start_dir_y + g_dz * start_dir_z
+            )
             d1 = -dist_cam_glass_mv[cam] / dot_glass_start
 
             Xb_x = ext_x0_mv[cam] + start_dir_x * d1
@@ -364,11 +398,19 @@ def point_position_batch(targets, num_cams: cython.int, mm, cals):
                     continue
                 num_used_pairs += 1
                 d = _skew_midpoint_core(
-                    vertices_mv[cam, 0], vertices_mv[cam, 1], vertices_mv[cam, 2],
-                    directs_mv[cam, 0], directs_mv[cam, 1], directs_mv[cam, 2],
-                    vertices_mv[pair, 0], vertices_mv[pair, 1], vertices_mv[pair, 2],
-                    directs_mv[pair, 0], directs_mv[pair, 1], directs_mv[pair, 2],
-                    midpoint_mv
+                    vertices_mv[cam, 0],
+                    vertices_mv[cam, 1],
+                    vertices_mv[cam, 2],
+                    directs_mv[cam, 0],
+                    directs_mv[cam, 1],
+                    directs_mv[cam, 2],
+                    vertices_mv[pair, 0],
+                    vertices_mv[pair, 1],
+                    vertices_mv[pair, 2],
+                    directs_mv[pair, 0],
+                    directs_mv[pair, 1],
+                    directs_mv[pair, 2],
+                    midpoint_mv,
                 )
                 dtot += d
                 pt_tot_x += midpoint_mv[0]
@@ -390,8 +432,9 @@ def point_position_batch(targets, num_cams: cython.int, mm, cals):
 
 
 @cython.ccall
-def weighted_dumbbell_precision(targets, num_targs, num_cams, mm, cals,
-                                db_length, db_weight):
+def weighted_dumbbell_precision(
+    targets, num_targs, num_cams, mm, cals, db_length, db_weight
+):
     """Weighted sum of dumbbell precision measures.
 
     Args:
@@ -449,7 +492,7 @@ def num_deriv_exterior(cal, cpar, dpos, dang, pos):
     x_ders = np.zeros(6)
     y_ders = np.zeros(6)
 
-    var_names = ['x0', 'y0', 'z0', 'omega', 'phi', 'kappa']
+    var_names = ["x0", "y0", "z0", "omega", "phi", "kappa"]
 
     for pd in range(6):
         step = dang if pd > 2 else dpos
@@ -521,8 +564,7 @@ def raw_orient(cal, cpar, nfix, fix, pix):
             cal.ext_par.compute_rotation_matrix()
             xp, yp = img_coord(np.asarray(fix[i]), cal, cpar.mm)
 
-            x_ders, y_ders = num_deriv_exterior(cal, cpar, dm, drad,
-                                                np.asarray(fix[i]))
+            x_ders, y_ders = num_deriv_exterior(cal, cpar, dm, drad, np.asarray(fix[i]))
 
             X[n, :] = x_ders
             X[n + 1, :] = y_ders
@@ -592,8 +634,9 @@ def orient(cal_in, cpar, nfix, fix, pix, flags, sigmabeta):
 
     numbers = 18 if flags.interfflag else 16
 
-    glass_dir = np.array([cal.glass_par.vec_x, cal.glass_par.vec_y,
-                          cal.glass_par.vec_z])
+    glass_dir = np.array(
+        [cal.glass_par.vec_x, cal.glass_par.vec_y, cal.glass_par.vec_z]
+    )
     nGl = vec_norm(glass_dir)
 
     e1_x = 2 * cal.glass_par.vec_z - 3 * cal.glass_par.vec_x
@@ -610,12 +653,20 @@ def orient(cal_in, cpar, nfix, fix, pix, flags, sigmabeta):
     be = 0.0
     ga = 0.0
 
-    ident = np.array([
-        cal.int_par.cc, cal.int_par.xh, cal.int_par.yh,
-        cal.added_par.k1, cal.added_par.k2, cal.added_par.k3,
-        cal.added_par.p1, cal.added_par.p2,
-        cal.added_par.scx, cal.added_par.she,
-    ])
+    ident = np.array(
+        [
+            cal.int_par.cc,
+            cal.int_par.xh,
+            cal.int_par.yh,
+            cal.added_par.k1,
+            cal.added_par.k2,
+            cal.added_par.k3,
+            cal.added_par.p1,
+            cal.added_par.p2,
+            cal.added_par.scx,
+            cal.added_par.she,
+        ]
+    )
 
     safety_x = cal.glass_par.vec_x
     safety_y = cal.glass_par.vec_y
@@ -655,10 +706,15 @@ def orient(cal_in, cpar, nfix, fix, pix, flags, sigmabeta):
             y_px = y_val() if callable(y_val) else y_val
             xc, yc = pixel_to_metric(x_px, y_px, cpar)
             xc, yc = correct_brown_affin(
-                xc, yc,
-                cal.added_par.k1, cal.added_par.k2, cal.added_par.k3,
-                cal.added_par.p1, cal.added_par.p2,
-                cal.added_par.scx, cal.added_par.she,
+                xc,
+                yc,
+                cal.added_par.k1,
+                cal.added_par.k2,
+                cal.added_par.k3,
+                cal.added_par.p1,
+                cal.added_par.p2,
+                cal.added_par.scx,
+                cal.added_par.she,
             )
 
             cal.ext_par.compute_rotation_matrix()
@@ -691,16 +747,17 @@ def orient(cal_in, cpar, nfix, fix, pix, flags, sigmabeta):
             qq += cal.added_par.k2 * r**4
             qq += cal.added_par.k3 * r**6
             qq += 1
-            X[n, 14] = (xp * qq
-                        + cal.added_par.p1 * (r * r + 2 * xp * xp)
-                        + 2 * cal.added_par.p2 * xp * yp)
+            X[n, 14] = (
+                xp * qq
+                + cal.added_par.p1 * (r * r + 2 * xp * xp)
+                + 2 * cal.added_par.p2 * xp * yp
+            )
             X[n + 1, 14] = 0
 
             X[n, 15] = -np.cos(cal.added_par.she) * yp
             X[n + 1, 15] = -np.sin(cal.added_par.she) * yp
 
-            x_ders, y_ders = num_deriv_exterior(cal, cpar, dm, drad,
-                                                np.asarray(fix[i]))
+            x_ders, y_ders = num_deriv_exterior(cal, cpar, dm, drad, np.asarray(fix[i]))
             X[n, 0:6] = x_ders
             X[n + 1, 0:6] = y_ders
 
@@ -922,6 +979,7 @@ def read_man_ori_fix(calblock_filename, man_ori_filename, cam):
 def read_calblock(filename):
     """Read calibration block file. Delegates to sortgrid.read_calblock."""
     from .sortgrid import read_calblock as _read_calblock
+
     return _read_calblock(filename)
 
 
@@ -988,16 +1046,16 @@ def full_calibration(cal, ref_pts, img_pts, cpar, flags=None):
 
     orient_par = OrientPar(
         useflag=0,
-        ccflag=1 if 'cc' in flags else 0,
-        xhflag=1 if 'xh' in flags else 0,
-        yhflag=1 if 'yh' in flags else 0,
-        k1flag=1 if 'k1' in flags else 0,
-        k2flag=1 if 'k2' in flags else 0,
-        k3flag=1 if 'k3' in flags else 0,
-        p1flag=1 if 'p1' in flags else 0,
-        p2flag=1 if 'p2' in flags else 0,
-        scxflag=1 if 'scale' in flags else 0,
-        sheflag=1 if 'shear' in flags else 0,
+        ccflag=1 if "cc" in flags else 0,
+        xhflag=1 if "xh" in flags else 0,
+        yhflag=1 if "yh" in flags else 0,
+        k1flag=1 if "k1" in flags else 0,
+        k2flag=1 if "k2" in flags else 0,
+        k3flag=1 if "k3" in flags else 0,
+        p1flag=1 if "p1" in flags else 0,
+        p2flag=1 if "p2" in flags else 0,
+        scxflag=1 if "scale" in flags else 0,
+        sheflag=1 if "shear" in flags else 0,
         interfflag=0,
     )
 
@@ -1012,13 +1070,11 @@ def full_calibration(cal, ref_pts, img_pts, cpar, flags=None):
         from .tracking_frame_buf import Target
 
         pts = np.ascontiguousarray(img_pts, dtype=np.float64)
-        img_pts = [Target(pnr=i, x=pts[i, 0], y=pts[i, 1])
-                   for i in range(len(pts))]
+        img_pts = [Target(pnr=i, x=pts[i, 0], y=pts[i, 1]) for i in range(len(pts))]
 
     sigmabeta = np.zeros(NPAR + 1)
 
-    residuals = orient(cal, cpar, len(ref_pts), ref_pts, img_pts,
-                       orient_par, sigmabeta)
+    residuals = orient(cal, cpar, len(ref_pts), ref_pts, img_pts, orient_par, sigmabeta)
 
     if residuals is None:
         raise ValueError("Orientation iteration failed, need better setup.")
@@ -1058,8 +1114,7 @@ def match_detection_to_ref(cal, ref_pts, img_pts, cpar, eps=25):
 
     ref_pts = np.ascontiguousarray(ref_pts, dtype=np.float64)
 
-    return sortgrid(cal, cpar, len(ref_pts), ref_pts, len(img_pts),
-                    eps, img_pts)
+    return sortgrid(cal, cpar, len(ref_pts), ref_pts, len(img_pts), eps, img_pts)
 
 
 @cython.ccall
@@ -1082,7 +1137,6 @@ def multi_cam_point_positions(targets, cpar, cals):
     targets = np.ascontiguousarray(targets, dtype=np.float64)
     num_cams: cython.int = targets.shape[1]
     return point_position_batch(targets, num_cams, cpar.mm, cals)
-
 
 
 @cython.ccall
@@ -1146,12 +1200,20 @@ def single_cam_point_positions(targets, cpar, cals, vpar):
     for pt in range(num_targets):
         x, y = targets[pt, 0, 0], targets[pt, 0, 1]
         pos, direct = ray_tracing(
-            x, y,
+            x,
+            y,
             cal.ext_par.dm,
-            cal.ext_par.x0, cal.ext_par.y0, cal.ext_par.z0,
+            cal.ext_par.x0,
+            cal.ext_par.y0,
+            cal.ext_par.z0,
             cal.int_par.cc,
-            cal.glass_par.vec_x, cal.glass_par.vec_y, cal.glass_par.vec_z,
-            mm.n1, mm.n2[0], mm.n3, mm.d[0],
+            cal.glass_par.vec_x,
+            cal.glass_par.vec_y,
+            cal.glass_par.vec_z,
+            mm.n1,
+            mm.n2[0],
+            mm.n3,
+            mm.d[0],
         )
         if abs(direct[2]) > 1e-10:
             t = (z_mid - pos[2]) / direct[2]

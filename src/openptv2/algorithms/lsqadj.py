@@ -7,11 +7,11 @@ These are the core matrix operations used in Gauss-Markov models:
 - atl: A^T @ l (normal equations RHS)
 - matinv: matrix inversion via np.linalg.inv (LAPACK)
 - matmul: matrix-vector multiplication
-- norm_cross: normalized cross product of two 3-vectors
 
 All functions operate on row-major (C-order) flat arrays to match
 the C implementation's memory layout.
 """
+
 import cython
 
 
@@ -95,23 +95,6 @@ def matmul(b: np.ndarray, c: np.ndarray, m: int, n: int) -> np.ndarray:
     b = np.asarray(b, dtype=np.float64).reshape(-1, n)
     c = np.asarray(c, dtype=np.float64).ravel()
     return b[:m, :n] @ c[:n]
-
-
-@cython.ccall
-def norm_cross(a: np.ndarray, b: np.ndarray) -> np.ndarray:
-    """Compute the normalized cross product of two 3-vectors.
-
-    Args:
-        a: first 3-vector.
-        b: second 3-vector.
-
-    Returns:
-        Unit vector in direction of a x b.
-    """
-    from .vec_utils import vec_cross, unit_vector
-
-    cross = vec_cross(a, b)
-    return unit_vector(cross)
 
 
 def is_compiled() -> bool:
