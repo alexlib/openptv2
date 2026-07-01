@@ -1367,24 +1367,9 @@ def _sorted_candidates_fast_out(
         xl_i = float(imx)
         yd_i = 0.0
         yu_i = float(imy)
-        _point_to_pixel_out(
-            center,
-            cal,
-            md,
-            mo,
-            mnr,
-            mnz,
-            mrw,
-            has_mmlut,
-            imx_half,
-            imy_half,
-            inv_pix_x,
-            inv_pix_y,
-            chfield,
-            _pp_mv,
-        )
-        cx = _pp_mv[0]
-        cy = _pp_mv[1]
+        # Use pre-computed center projection (caller already projected it)
+        cx = center_proj_x[i]
+        cy = center_proj_y[i]
         for pt in range(8):
             _point_to_pixel_out(
                 quader[pt],
@@ -2383,8 +2368,15 @@ def assess_new_position_fast(
     flatten_tol: cython.double,
     tr_unused: cython.int,
     coord_unused: cython.double,
+    use_proj: cython.bint,
+    proj_x: cython.double[:],
+    proj_y: cython.double[:],
 ):
     """Assess new position: project, find unused targets, undistort.
+
+    When use_proj=True, proj_x[cam] and proj_y[cam] provide pre-computed
+    pixel projections (avoids redundant _point_to_pixel_out calls).
+    When use_proj=False, proj_x/proj_y are unused (can be empty arrays).
 
     Returns (targ_pos, cand_inds, valid_cams).
     """
@@ -2405,25 +2397,30 @@ def assess_new_position_fast(
     cand_inds = np.full(num_cams, PT_UNUSED, dtype=np.int32)
 
     for cam in range(num_cams):
-        has_mmlut = mmlut_nrs[cam] > 0
-        _point_to_pixel_out(
-            pos,
-            cal_arrays[cam],
-            mmlut_datas[cam],
-            mmlut_origins[cam],
-            mmlut_nrs[cam],
-            mmlut_nzs[cam],
-            mmlut_rws[cam],
-            has_mmlut,
-            imx_half,
-            imy_half,
-            inv_pix_x,
-            inv_pix_y,
-            chfield,
-            _pp_mv,
-        )
-        px = _pp_mv[0]
-        py = _pp_mv[1]
+        if use_proj:
+            # Use pre-computed projection (caller already projected this pos)
+            px = proj_x[cam]
+            py = proj_y[cam]
+        else:
+            has_mmlut = mmlut_nrs[cam] > 0
+            _point_to_pixel_out(
+                pos,
+                cal_arrays[cam],
+                mmlut_datas[cam],
+                mmlut_origins[cam],
+                mmlut_nrs[cam],
+                mmlut_nzs[cam],
+                mmlut_rws[cam],
+                has_mmlut,
+                imx_half,
+                imy_half,
+                inv_pix_x,
+                inv_pix_y,
+                chfield,
+                _pp_mv,
+            )
+            px = _pp_mv[0]
+            py = _pp_mv[1]
 
         best, count = candsearch_in_pix_rest_fast(
             targ_x_tuple[cam],
@@ -2653,9 +2650,13 @@ def trackcorr_loop_fast(
 
     _cpx = np.empty(num_cams, dtype=np.float64)
     _cpy = np.empty(num_cams, dtype=np.float64)
+    _x2_cpx_save = np.empty(num_cams, dtype=np.float64)  # saved X[2] projection
+    _x2_cpy_save = np.empty(num_cams, dtype=np.float64)
     _X = np.zeros((6, 3), dtype=np.float64)
     cpx: cython.double[:] = _cpx
     cpy: cython.double[:] = _cpy
+    x2_cpx: cython.double[:] = _x2_cpx_save
+    x2_cpy: cython.double[:] = _x2_cpy_save
     X: cython.double[:, :] = _X
     _pp = np.empty(2, dtype=np.float64)
     _pp_mv: cython.double[:] = _pp
@@ -2727,6 +2728,11 @@ def trackcorr_loop_fast(
                     _ix = corres_p_1[h, j]
                     cpx[j] = targ_x_1[j][_ix]
                     cpy[j] = targ_y_1[j][_ix]
+
+        # Save X[2] projections for later use by assess_new_position_fast
+        for j in range(num_cams):
+            x2_cpx[j] = cpx[j]
+            x2_cpy[j] = cpy[j]
 
         # --- sorted_candidates for frame 2 ---
         w_nc = _sorted_candidates_fast_out(
@@ -2916,6 +2922,7 @@ def trackcorr_loop_fast(
                     kk += 1
 
             # --- assess_new_position for X[5] in frame 3 ---
+            # Use cached pixel projection (cpx/cpy just computed from X[5] above)
             targ_pos, cand_inds, quali = assess_new_position_fast(
                 X[5],
                 num_cams,
@@ -2942,6 +2949,9 @@ def trackcorr_loop_fast(
                 flatten_tol,
                 TR_UNUSED_K,
                 COORD_UNUSED_K,
+                use_proj=True,
+                proj_x=cpx,
+                proj_y=cpy,
             )
 
             if quali >= 2:
@@ -3084,6 +3094,7 @@ def trackcorr_loop_fast(
         # --- add_particle to frame 2 if no links found ---
         if add_flag:
             if path_inlist_1[h] == 0 and prev_h >= 0:
+                # Use cached X[2] projection (saved before the inner candidate loop)
                 targ_pos2, cand_inds2, quali2 = assess_new_position_fast(
                     X[2],
                     num_cams,
@@ -3110,6 +3121,9 @@ def trackcorr_loop_fast(
                     flatten_tol,
                     TR_UNUSED_K,
                     COORD_UNUSED_K,
+                    use_proj=True,
+                    proj_x=x2_cpx,
+                    proj_y=x2_cpy,
                 )
 
                 if quali2 >= 2:
@@ -3537,6 +3551,9 @@ def trackback_loop_fast(
                     flatten_tol,
                     TR_UNUSED_K,
                     COORD_UNUSED_K,
+                    use_proj=False,
+                    proj_x=cpx,
+                    proj_y=cpy,
                 )
 
                 if quali >= 2:
