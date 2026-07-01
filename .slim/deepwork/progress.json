@@ -3,26 +3,28 @@
   "session": "cython-phase2",
   "files": {
     "track_kernels.py": {
-      "status": "in_progress",
+      "status": "complete",
       "done": [
-        "_angle_acc_out added (line 1212)",
-        "_ray_tracing_out added (line 1452)",
-        "_pixel_to_metric_out added (line 1838)",
-        "_dist_to_flat_out added (line 1936)",
-        "_metric_to_pixel_out added (line 3629)",
-        "_point_to_pixel_out added (line 485)",
+        "_point_to_pixel_out added",
+        "_angle_acc_out added",
+        "_ray_tracing_out added",
+        "_pixel_to_metric_out added",
+        "_dist_to_flat_out added",
+        "_metric_to_pixel_out added",
+        "_sorted_candidates_fast_out added (cfunc, returns num_valid as scalar)",
         "point_position_fast converted to use _ray_tracing_out",
-        "sorted_candidates_fast internal calls converted to _point_to_pixel_out",
+        "sorted_candidates_fast refactored to call _sorted_candidates_fast_out internally",
         "assess_new_position_fast internal calls converted to _point_to_pixel_out, _pixel_to_metric_out, _dist_to_flat_out",
-        "trackcorr_loop_fast: 3x point_to_pixel_fast + 5x angle_acc_fast converted",
-        "trackback_loop_fast: 1x point_to_pixel_fast + 2x angle_acc_fast converted",
+        "trackcorr_loop_fast: 2x sorted_candidates_fast converted to _sorted_candidates_fast_out with pre-allocated buffers",
+        "trackback_loop_fast: 1x sorted_candidates_fast converted to _sorted_candidates_fast_out with pre-allocated buffers",
+        "trackcorr_loop_fast: all point_to_pixel_fast and angle_acc_fast calls already converted to _out",
+        "trackback_loop_fast: all point_to_pixel_fast and angle_acc_fast calls already converted to _out",
         "pixel_to_metric_batch_fast converted to _pixel_to_metric_out",
         "metric_to_pixel_batch_fast converted to _metric_to_pixel_out",
         "ray_tracing_batch_fast converted to _ray_tracing_out",
-        "Compiled and tested: 91/105 unit tests pass (14 pre-existing failures/skips)"
+        "Compiled to .so: 798KB, imports and runs correctly"
       ],
       "todo": [
-        "sorted_candidates_fast still returns 4-tuple in hot loops (complex _out variant)",
         "Phase 2: trafo.py _out variants",
         "Phase 3: tracking_frame_buf.py memoryview optimization",
         "Phase 4: correspondences.py @dataclass removal"
@@ -49,6 +51,6 @@
       "todo": ["remove @dataclass from @cython.cclass"]
     }
   },
-  "current_issue": "track_kernels.py Phase 1 substantially complete. Trackcorr_loop_fast and trackback_loop_fast internal point_to_pixel and angle_acc calls converted to _out variants. Remaining: sorted_candidates_fast 4-tuple return (complex), and batch functions of other modules.",
-  "notes": "91/105 unit tests pass. Pre-existing failures in multimed/trafo/track modules (unrelated). Batch tests all pass confirming _out variants work correctly."
+  "current_issue": "Phase 1 complete. All functions in track_kernels.py that return tuples have _out variants. sorted_candidates_fast is now a thin wrapper around _sorted_candidates_fast_out. Internal hot-loop callers use pre-allocated buffers.",
+  "notes": "Full test suite has pre-existing import issues (multimed_r_nlay_iterative). track_kernels.py compiles to .so cleanly (798KB). All _out functions are @cython.cfunc @cython.inline (not exported to Python). Next: Phase 2 trafo.py."
 }

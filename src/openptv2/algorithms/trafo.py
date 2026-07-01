@@ -24,6 +24,28 @@ DOUBLED: cython.int = 2
 
 
 @cython.cfunc
+@cython.inline
+def _old_pixel_to_metric_out(
+    x_pixel: cython.double,
+    y_pixel: cython.double,
+    im_size_x: cython.int,
+    im_size_y: cython.int,
+    pix_size_x: cython.double,
+    pix_size_y: cython.double,
+    y_remap_mode: cython.int,
+    out: cython.double[:],
+):
+    """Convert pixel to metric coordinates — _out variant."""
+    yp: cython.double = y_pixel
+    if y_remap_mode == DOUBLED_PLUS_ONE:
+        yp = 2.0 * yp + 1.0
+    elif y_remap_mode == DOUBLED:
+        yp = 2.0 * yp
+    out[0] = (x_pixel - im_size_x * 0.5) * pix_size_x
+    out[1] = (im_size_y * 0.5 - yp) * pix_size_y
+
+
+@cython.cfunc
 @cython.cdivision(True)
 @cython.profile(False)
 def old_pixel_to_metric(
@@ -46,16 +68,42 @@ def old_pixel_to_metric(
     Returns:
         (x_metric, y_metric) tuple.
     """
-    # Apply y remapping
+    _out = np.empty(2, dtype=np.float64)
+    _out_mv: cython.double[:] = _out
+    _old_pixel_to_metric_out(
+        x_pixel,
+        y_pixel,
+        im_size_x,
+        im_size_y,
+        pix_size_x,
+        pix_size_y,
+        y_remap_mode,
+        _out_mv,
+    )
+    return _out_mv[0], _out_mv[1]
+
+
+@cython.cfunc
+@cython.inline
+def _old_metric_to_pixel_out(
+    x_metric: cython.double,
+    y_metric: cython.double,
+    im_size_x: cython.int,
+    im_size_y: cython.int,
+    pix_size_x: cython.double,
+    pix_size_y: cython.double,
+    y_remap_mode: cython.int,
+    out: cython.double[:],
+):
+    """Convert metric to pixel coordinates — _out variant."""
+    xp: cython.double = x_metric / pix_size_x + im_size_x * 0.5
+    yp: cython.double = im_size_y * 0.5 - y_metric / pix_size_y
     if y_remap_mode == DOUBLED_PLUS_ONE:
-        y_pixel = 2.0 * y_pixel + 1.0
+        yp = (yp - 1.0) * 0.5
     elif y_remap_mode == DOUBLED:
-        y_pixel = 2.0 * y_pixel
-
-    x_metric: cython.double = (x_pixel - im_size_x / 2.0) * pix_size_x
-    y_metric: cython.double = (im_size_y / 2.0 - y_pixel) * pix_size_y
-
-    return x_metric, y_metric
+        yp = yp * 0.5
+    out[0] = xp
+    out[1] = yp
 
 
 @cython.cfunc
@@ -79,16 +127,19 @@ def old_metric_to_pixel(
     Returns:
         (x_pixel, y_pixel) tuple.
     """
-    x_pixel: cython.double = x_metric / pix_size_x + im_size_x / 2.0
-    y_pixel: cython.double = im_size_y / 2.0 - y_metric / pix_size_y
-
-    # Apply y remapping (inverse)
-    if y_remap_mode == DOUBLED_PLUS_ONE:
-        y_pixel = (y_pixel - 1.0) / 2.0
-    elif y_remap_mode == DOUBLED:
-        y_pixel = y_pixel / 2.0
-
-    return x_pixel, y_pixel
+    _out = np.empty(2, dtype=np.float64)
+    _out_mv: cython.double[:] = _out
+    _old_metric_to_pixel_out(
+        x_metric,
+        y_metric,
+        im_size_x,
+        im_size_y,
+        pix_size_x,
+        pix_size_y,
+        y_remap_mode,
+        _out_mv,
+    )
+    return _out_mv[0], _out_mv[1]
 
 
 @cython.ccall
@@ -105,8 +156,10 @@ def pixel_to_metric(
 
     Accepts either (x, y, cpar) or (x, y, imx, imy, pix_x, pix_y, chfield).
     """
+    _out = np.empty(2, dtype=np.float64)
+    _out_mv: cython.double[:] = _out
     if hasattr(imx_or_cpar, "imx"):
-        return old_pixel_to_metric(
+        _old_pixel_to_metric_out(
             x_pixel,
             y_pixel,
             imx_or_cpar.imx,
@@ -114,16 +167,20 @@ def pixel_to_metric(
             imx_or_cpar.pix_x,
             imx_or_cpar.pix_y,
             imx_or_cpar.chfield,
+            _out_mv,
         )
-    return old_pixel_to_metric(
-        x_pixel,
-        y_pixel,
-        int(imx_or_cpar),
-        imy,
-        pix_x,
-        pix_y,
-        chfield,
-    )
+    else:
+        _old_pixel_to_metric_out(
+            x_pixel,
+            y_pixel,
+            int(imx_or_cpar),
+            imy,
+            pix_x,
+            pix_y,
+            chfield,
+            _out_mv,
+        )
+    return _out_mv[0], _out_mv[1]
 
 
 @cython.ccall
@@ -140,8 +197,10 @@ def metric_to_pixel(
 
     Accepts either (x, y, cpar) or (x, y, imx, imy, pix_x, pix_y, chfield).
     """
+    _out = np.empty(2, dtype=np.float64)
+    _out_mv: cython.double[:] = _out
     if hasattr(imx_or_cpar, "imx"):
-        return old_metric_to_pixel(
+        _old_metric_to_pixel_out(
             x_metric,
             y_metric,
             imx_or_cpar.imx,
@@ -149,16 +208,20 @@ def metric_to_pixel(
             imx_or_cpar.pix_x,
             imx_or_cpar.pix_y,
             imx_or_cpar.chfield,
+            _out_mv,
         )
-    return old_metric_to_pixel(
-        x_metric,
-        y_metric,
-        int(imx_or_cpar),
-        imy,
-        pix_x,
-        pix_y,
-        chfield,
-    )
+    else:
+        _old_metric_to_pixel_out(
+            x_metric,
+            y_metric,
+            int(imx_or_cpar),
+            imy,
+            pix_x,
+            pix_y,
+            chfield,
+            _out_mv,
+        )
+    return _out_mv[0], _out_mv[1]
 
 
 @cython.ccall
@@ -228,7 +291,7 @@ def metric_to_pixel_batch(xy, cpar) -> np.ndarray:
 
 @cython.cfunc
 @cython.inline
-def _distort_brown_affin_core(
+def _distort_brown_affin_core_out(
     x: cython.double,
     y: cython.double,
     k1: cython.double,
@@ -239,12 +302,15 @@ def _distort_brown_affin_core(
     scx: cython.double,
     sin_she: cython.double,
     cos_she: cython.double,
-) -> tuple:
-    """Brown distortion with precomputed trig values."""
+    out: cython.double[:],
+):
+    """Brown distortion with precomputed trig values — _out variant."""
     r: cython.double = c_sqrt(x * x + y * y)
 
     if r < 1e-10:
-        return 0.0, 0.0
+        out[0] = 0.0
+        out[1] = 0.0
+        return
 
     r2: cython.double = r * r
     r4: cython.double = r2 * r2
@@ -258,10 +324,51 @@ def _distort_brown_affin_core(
         y * radial_factor + p2 * (r2 + 2.0 * y * y) + 2.0 * p1 * x * y
     )
 
-    x1: cython.double = scx * (x_dist - sin_she * y_dist)
-    y1: cython.double = scx * cos_she * y_dist
+    out[0] = scx * (x_dist - sin_she * y_dist)
+    out[1] = scx * cos_she * y_dist
 
-    return x1, y1
+
+@cython.cfunc
+@cython.inline
+def _distort_brown_affin_core(
+    x: cython.double,
+    y: cython.double,
+    k1: cython.double,
+    k2: cython.double,
+    k3: cython.double,
+    p1: cython.double,
+    p2: cython.double,
+    scx: cython.double,
+    sin_she: cython.double,
+    cos_she: cython.double,
+) -> tuple:
+    """Brown distortion with precomputed trig values."""
+    _out = np.empty(2, dtype=np.float64)
+    _out_mv: cython.double[:] = _out
+    _distort_brown_affin_core_out(
+        x, y, k1, k2, k3, p1, p2, scx, sin_she, cos_she, _out_mv
+    )
+    return _out_mv[0], _out_mv[1]
+
+
+@cython.cfunc
+@cython.inline
+def distort_brown_affin_out(
+    x: cython.double,
+    y: cython.double,
+    k1: cython.double,
+    k2: cython.double,
+    k3: cython.double,
+    p1: cython.double,
+    p2: cython.double,
+    scx: cython.double,
+    she: cython.double,
+    out: cython.double[:],
+):
+    """Apply Brown distortion — _out variant."""
+    sin_she: cython.double = c_sin(she)
+    cos_she: cython.double = c_cos(she)
+    _distort_brown_affin_core_out(x, y, k1, k2, k3, p1, p2, scx, sin_she, cos_she, out)
 
 
 @cython.cfunc
@@ -290,9 +397,80 @@ def distort_brown_affin(
     Returns:
         (x_distorted, y_distorted) tuple.
     """
+    _out = np.empty(2, dtype=np.float64)
+    _out_mv: cython.double[:] = _out
+    distort_brown_affin_out(x, y, k1, k2, k3, p1, p2, scx, she, _out_mv)
+    return _out_mv[0], _out_mv[1]
+
+
+@cython.cfunc
+@cython.inline
+def _correct_brown_affin_out(
+    x: cython.double,
+    y: cython.double,
+    k1: cython.double,
+    k2: cython.double,
+    k3: cython.double,
+    p1: cython.double,
+    p2: cython.double,
+    scx: cython.double,
+    she: cython.double,
+    out: cython.double[:],
+    _scratch: cython.double[:],
+):
+    """Inverse Brown distortion — _out variant (no tuple allocation in loop).
+
+    Args:
+        x, y: distorted metric coordinates.
+        k1, k2, k3, p1, p2, scx, she: distortion parameters.
+        out: [x_flat, y_flat] output array.
+        _scratch: scratch [2] array for _distort_brown_affin_core_out.
+    """
     sin_she: cython.double = c_sin(she)
     cos_she: cython.double = c_cos(she)
-    return _distort_brown_affin_core(x, y, k1, k2, k3, p1, p2, scx, sin_she, cos_she)
+    inv_scx: cython.double = 1.0 / scx
+
+    # Initial guess: inverse affine transformation
+    xq: cython.double = x * inv_scx
+    yq: cython.double = y * inv_scx / cos_she
+    xq += yq * sin_she
+
+    max_iter: cython.int = 20
+    damping: cython.double = 0.7
+    tol: cython.double = 1e-8
+
+    xq_old: cython.double
+    yq_old: cython.double
+    dx: cython.double
+    dy: cython.double
+    change: cython.double
+    pos_magnitude: cython.double
+    _: cython.int
+
+    for _ in range(max_iter):
+        xq_old, yq_old = xq, yq
+
+        # Forward distort current guess (no tuple creation)
+        _distort_brown_affin_core_out(
+            xq, yq, k1, k2, k3, p1, p2, scx, sin_she, cos_she, _scratch
+        )
+
+        # Error
+        dx = (x - _scratch[0]) * inv_scx
+        dy = (y - _scratch[1]) * inv_scx
+
+        # Update with damping
+        xq += dx * damping
+        yq += dy * damping
+
+        # Check convergence
+        change = c_sqrt((xq - xq_old) ** 2 + (yq - yq_old) ** 2)
+        pos_magnitude = c_sqrt(xq * xq + yq * yq)
+        if pos_magnitude > 1e-10 and change / pos_magnitude < tol:
+            break
+
+    out[0] = xq
+    out[1] = yq
 
 
 @cython.ccall
@@ -319,59 +497,17 @@ def correct_brown_affin(
     Returns:
         (x_flat, y_flat) undistorted coordinates.
     """
-    sin_she: cython.double = c_sin(she)
-    cos_she: cython.double = c_cos(she)
-    inv_scx: cython.double = 1.0 / scx
-
-    # Initial guess: inverse affine transformation
-    xq: cython.double = x * inv_scx
-    yq: cython.double = y * inv_scx / cos_she
-    xq += yq * sin_she
-
-    max_iter: cython.int = 20
-    damping: cython.double = 0.7
-    tol: cython.double = 1e-8
-
-    xq_old: cython.double
-    yq_old: cython.double
-    xt: cython.double
-    yt: cython.double
-    dx: cython.double
-    dy: cython.double
-    change: cython.double
-    pos_magnitude: cython.double
-    temp: tuple
-    _: cython.int
-
-    for _ in range(max_iter):
-        xq_old, yq_old = xq, yq
-
-        # Forward distort current guess (with precomputed trig)
-        temp = _distort_brown_affin_core(
-            xq, yq, k1, k2, k3, p1, p2, scx, sin_she, cos_she
-        )
-        xt = temp[0]
-        yt = temp[1]
-
-        # Error
-        dx = (x - xt) * inv_scx
-        dy = (y - yt) * inv_scx
-
-        # Update with damping
-        xq += dx * damping
-        yq += dy * damping
-
-        # Check convergence
-        change = c_sqrt((xq - xq_old) ** 2 + (yq - yq_old) ** 2)
-        pos_magnitude = c_sqrt(xq * xq + yq * yq)
-        if pos_magnitude > 1e-10 and change / pos_magnitude < tol:
-            break
-
-    return xq, yq
+    _out = np.empty(2, dtype=np.float64)
+    _out_mv: cython.double[:] = _out
+    _scratch = np.empty(2, dtype=np.float64)
+    _scratch_mv: cython.double[:] = _scratch
+    _correct_brown_affin_out(x, y, k1, k2, k3, p1, p2, scx, she, _out_mv, _scratch_mv)
+    return _out_mv[0], _out_mv[1]
 
 
 @cython.cfunc
-def correct_brown_affine_exact(
+@cython.inline
+def _correct_brown_affine_exact_out(
     x: cython.double,
     y: cython.double,
     k1: cython.double,
@@ -381,25 +517,22 @@ def correct_brown_affine_exact(
     p2: cython.double,
     scx: cython.double,
     she: cython.double,
-    tol: cython.double = 1e-8,
-) -> tuple:
-    """Iteratively solve inverse Brown distortion with full convergence.
+    tol: cython.double,
+    out: cython.double[:],
+):
+    """Iteratively solve inverse Brown distortion — _out variant.
 
     Args:
         x, y: distorted metric coordinates.
-        k1, k2, k3: radial distortion coefficients.
-        p1, p2: decentering distortion coefficients.
-        scx: scale factor.
-        she: shear angle.
-        tol: convergence tolerance.
-
-    Returns:
-        (x_flat, y_flat) undistorted coordinates.
+        k1, k2, k3, p1, p2, scx, she, tol: params.
+        out: [x_flat, y_flat] output array.
     """
     r_init: cython.double = c_sqrt(x * x + y * y)
 
     if r_init < 1e-10:
-        return 0.0, 0.0
+        out[0] = 0.0
+        out[1] = 0.0
+        return
 
     sin_she: cython.double = c_sin(she)
     cos_she: cython.double = c_cos(she)
@@ -446,7 +579,59 @@ def correct_brown_affine_exact(
         if c_sqrt(dx_change**2 + dy_change**2) < tol:
             break
 
-    return xq, yq
+    out[0] = xq
+    out[1] = yq
+
+
+@cython.cfunc
+def correct_brown_affine_exact(
+    x: cython.double,
+    y: cython.double,
+    k1: cython.double,
+    k2: cython.double,
+    k3: cython.double,
+    p1: cython.double,
+    p2: cython.double,
+    scx: cython.double,
+    she: cython.double,
+    tol: cython.double = 1e-8,
+) -> tuple:
+    """Iteratively solve inverse Brown distortion with full convergence.
+
+    Args:
+        x, y: distorted metric coordinates.
+        k1, k2, k3: radial distortion coefficients.
+        p1, p2: decentering distortion coefficients.
+        scx: scale factor.
+        she: shear angle.
+        tol: convergence tolerance.
+
+    Returns:
+        (x_flat, y_flat) undistorted coordinates.
+    """
+    _out = np.empty(2, dtype=np.float64)
+    _out_mv: cython.double[:] = _out
+    _correct_brown_affine_exact_out(x, y, k1, k2, k3, p1, p2, scx, she, tol, _out_mv)
+    return _out_mv[0], _out_mv[1]
+
+
+@cython.ccall
+def flat_to_dist_out(
+    flat_x: cython.double,
+    flat_y: cython.double,
+    xh: cython.double,
+    yh: cython.double,
+    k1: cython.double,
+    k2: cython.double,
+    k3: cython.double,
+    p1: cython.double,
+    p2: cython.double,
+    scx: cython.double,
+    she: cython.double,
+    out: cython.double[:],
+):
+    """Convert flat-image to distorted metric coordinates — _out variant."""
+    distort_brown_affin_out(flat_x + xh, flat_y + yh, k1, k2, k3, p1, p2, scx, she, out)
 
 
 @cython.ccall
@@ -473,11 +658,36 @@ def flat_to_dist(
     Returns:
         (dist_x, dist_y) distorted metric coordinates.
     """
-    # Make coordinates relative to sensor center
-    flat_x += xh
-    flat_y += yh
+    _out = np.empty(2, dtype=np.float64)
+    _out_mv: cython.double[:] = _out
+    flat_to_dist_out(flat_x, flat_y, xh, yh, k1, k2, k3, p1, p2, scx, she, _out_mv)
+    return _out_mv[0], _out_mv[1]
 
-    return distort_brown_affin(flat_x, flat_y, k1, k2, k3, p1, p2, scx, she)
+
+@cython.ccall
+def dist_to_flat_out(
+    dist_x: cython.double,
+    dist_y: cython.double,
+    xh: cython.double,
+    yh: cython.double,
+    k1: cython.double,
+    k2: cython.double,
+    k3: cython.double,
+    p1: cython.double,
+    p2: cython.double,
+    scx: cython.double,
+    she: cython.double,
+    tol: cython.double,
+    out: cython.double[:],
+):
+    """Convert distorted metric to flat-image coordinates — _out variant."""
+    _scratch = np.empty(2, dtype=np.float64)
+    _scratch_mv: cython.double[:] = _scratch
+    _correct_brown_affine_exact_out(
+        dist_x, dist_y, k1, k2, k3, p1, p2, scx, she, tol, _scratch_mv
+    )
+    out[0] = _scratch_mv[0] - xh
+    out[1] = _scratch_mv[1] - yh
 
 
 @cython.ccall
@@ -506,14 +716,10 @@ def dist_to_flat(
     Returns:
         (flat_x, flat_y) flat-image coordinates.
     """
-    flat_x: cython.double
-    flat_y: cython.double
-    temp: tuple
-
-    temp = correct_brown_affine_exact(dist_x, dist_y, k1, k2, k3, p1, p2, scx, she, tol)
-    flat_x = temp[0]
-    flat_y = temp[1]
-    return flat_x - xh, flat_y - yh
+    _out = np.empty(2, dtype=np.float64)
+    _out_mv: cython.double[:] = _out
+    dist_to_flat_out(dist_x, dist_y, xh, yh, k1, k2, k3, p1, p2, scx, she, tol, _out_mv)
+    return _out_mv[0], _out_mv[1]
 
 
 def is_compiled() -> bool:

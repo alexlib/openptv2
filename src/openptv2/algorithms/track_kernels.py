@@ -1220,6 +1220,91 @@ def sorted_candidates_fast(
     Returns (ftnr, freq, whichcam, num_valid).
     """
     n: cython.int
+    _pp = np.empty(2, dtype=np.float64)
+    _pp_mv: cython.double[:] = _pp
+    n = num_cams * max_cands
+    ftnr = np.full(n, tr_unused, dtype=np.int32)
+    freq = np.zeros(n, dtype=np.int32)
+    whichcam = np.zeros((n, num_cams), dtype=np.int32)
+    num_valid = _sorted_candidates_fast_out(
+        center,
+        center_proj_x,
+        center_proj_y,
+        num_cams,
+        max_cands,
+        cal_arrays,
+        mmlut_datas,
+        mmlut_origins,
+        mmlut_nrs,
+        mmlut_nzs,
+        mmlut_rws,
+        targ_x_tuple,
+        targ_y_tuple,
+        targ_tnr_tuple,
+        num_targets,
+        dvxmin,
+        dvxmax,
+        dvymin,
+        dvymax,
+        dvzmin,
+        dvzmax,
+        imx_half,
+        imy_half,
+        inv_pix_x,
+        inv_pix_y,
+        chfield,
+        imx,
+        imy,
+        tr_unused,
+        ftnr,
+        freq,
+        whichcam,
+    )
+    return ftnr, freq, whichcam, num_valid
+
+
+@cython.cfunc
+@cython.inline
+@cython.boundscheck(False)
+@cython.wraparound(False)
+def _sorted_candidates_fast_out(
+    center: cython.double[:],
+    center_proj_x: cython.double[:],
+    center_proj_y: cython.double[:],
+    num_cams: cython.int,
+    max_cands: cython.int,
+    cal_arrays: tuple,
+    mmlut_datas: tuple,
+    mmlut_origins: tuple,
+    mmlut_nrs: tuple,
+    mmlut_nzs: tuple,
+    mmlut_rws: tuple,
+    targ_x_tuple: object,
+    targ_y_tuple: object,
+    targ_tnr_tuple: object,
+    num_targets: cython.int[:],
+    dvxmin: cython.double,
+    dvxmax: cython.double,
+    dvymin: cython.double,
+    dvymax: cython.double,
+    dvzmin: cython.double,
+    dvzmax: cython.double,
+    imx_half: cython.double,
+    imy_half: cython.double,
+    inv_pix_x: cython.double,
+    inv_pix_y: cython.double,
+    chfield: cython.int,
+    imx: cython.double,
+    imy: cython.double,
+    tr_unused: cython.int,
+    ftnr_out: cython.int[:],
+    freq_out: cython.int[:],
+    whichcam_out: cython.int[:, :],
+) -> cython.int:
+    """Fused searchquader + candsearch + sort — _out variant.
+    Returns num_valid.
+    """
+    n: cython.int
     px: cython.double
     py: cython.double
     pz: cython.double
@@ -1340,11 +1425,14 @@ def sorted_candidates_fast(
         yd[i] = yd_i - cy
         yu[i] = cy - yu_i
 
-    # --- candsearch per camera, write directly into ftnr/whichcam ---
-    ftnr = np.full(n, tr_unused, dtype=np.int32)
-    freq = np.zeros(n, dtype=np.int32)
-    whichcam = np.zeros((n, num_cams), dtype=np.int32)
+    # --- initialize output buffers ---
+    for i in range(n):
+        ftnr_out[i] = tr_unused
+        freq_out[i] = 0
+        for j in range(num_cams):
+            whichcam_out[i, j] = 0
 
+    # --- candsearch per camera, write directly into ftnr_out/whichcam_out ---
     for cam in range(num_cams):
         p0, p1, p2, p3 = candsearch_in_pix_fast(
             targ_x_tuple[cam],
@@ -1367,59 +1455,59 @@ def sorted_candidates_fast(
         for ci in range(4):
             idx = cands[ci]
             if idx != PT_UNUSED:
-                whichcam[base + ci, cam] = 1
-                ftnr[base + ci] = int(targ_tnr_tuple[cam][idx])
+                whichcam_out[base + ci, cam] = 1
+                ftnr_out[base + ci] = int(targ_tnr_tuple[cam][idx])
 
     # --- sort_candidates_by_freq inlined ---
     for i in range(n):
-        ftnr_i = ftnr[i]
+        ftnr_i = ftnr_out[i]
         if ftnr_i == tr_unused:
             continue
         for j in range(num_cams):
             for m in range(max_cands):
-                if ftnr_i == ftnr[max_cands * j + m]:
-                    whichcam[i, j] = 1
+                if ftnr_i == ftnr_out[max_cands * j + m]:
+                    whichcam_out[i, j] = 1
 
     for i in range(n):
-        if ftnr[i] != tr_unused:
+        if ftnr_out[i] != tr_unused:
             for j in range(num_cams):
-                if whichcam[i, j] == 1:
-                    freq[i] += 1
+                if whichcam_out[i, j] == 1:
+                    freq_out[i] += 1
 
     for i in range(1, n):
         for j in range(n - 1, i - 1, -1):
-            if freq[j - 1] < freq[j]:
-                ftnr[j - 1], ftnr[j] = ftnr[j], ftnr[j - 1]
-                freq[j - 1], freq[j] = freq[j], freq[j - 1]
+            if freq_out[j - 1] < freq_out[j]:
+                ftnr_out[j - 1], ftnr_out[j] = ftnr_out[j], ftnr_out[j - 1]
+                freq_out[j - 1], freq_out[j] = freq_out[j], freq_out[j - 1]
                 for k in range(num_cams):
-                    whichcam[j - 1, k], whichcam[j, k] = (
-                        whichcam[j, k],
-                        whichcam[j - 1, k],
+                    whichcam_out[j - 1, k], whichcam_out[j, k] = (
+                        whichcam_out[j, k],
+                        whichcam_out[j - 1, k],
                     )
 
     for i in range(n):
-        ftnr_i = ftnr[i]
+        ftnr_i = ftnr_out[i]
         for j in range(i + 1, n):
-            if ftnr[j] == ftnr_i or freq[j] < 2:
-                freq[j] = 0
-                ftnr[j] = tr_unused
+            if ftnr_out[j] == ftnr_i or freq_out[j] < 2:
+                freq_out[j] = 0
+                ftnr_out[j] = tr_unused
 
     for i in range(1, n):
         for j in range(n - 1, i - 1, -1):
-            if freq[j - 1] < freq[j]:
-                ftnr[j - 1], ftnr[j] = ftnr[j], ftnr[j - 1]
-                freq[j - 1], freq[j] = freq[j], freq[j - 1]
+            if freq_out[j - 1] < freq_out[j]:
+                ftnr_out[j - 1], ftnr_out[j] = ftnr_out[j], ftnr_out[j - 1]
+                freq_out[j - 1], freq_out[j] = freq_out[j], freq_out[j - 1]
                 for k in range(num_cams):
-                    whichcam[j - 1, k], whichcam[j, k] = (
-                        whichcam[j, k],
-                        whichcam[j - 1, k],
+                    whichcam_out[j - 1, k], whichcam_out[j, k] = (
+                        whichcam_out[j, k],
+                        whichcam_out[j - 1, k],
                     )
 
     num_valid = 0
     for i in range(n):
-        if freq[i] != 0:
+        if freq_out[i] != 0:
             num_valid += 1
-    return ftnr, freq, whichcam, num_valid
+    return num_valid
 
 
 @cython.ccall
@@ -2549,6 +2637,20 @@ def trackcorr_loop_fast(
     num_added = 0
     n_sc = num_cams * MAX_CANDS_K
 
+    # Pre-allocated output buffers for _sorted_candidates_fast_out
+    _n_ftnr1 = np.empty(n_sc, dtype=np.int32)
+    _n_freq1 = np.empty(n_sc, dtype=np.int32)
+    _n_wc1 = np.empty((n_sc, num_cams), dtype=np.int32)
+    _n_ftnr2 = np.empty(n_sc, dtype=np.int32)
+    _n_freq2 = np.empty(n_sc, dtype=np.int32)
+    _n_wc2 = np.empty((n_sc, num_cams), dtype=np.int32)
+    _ftnr_buf1: cython.int[:] = _n_ftnr1
+    _freq_buf1: cython.int[:] = _n_freq1
+    _wc_buf1: cython.int[:, :] = _n_wc1
+    _ftnr_buf2: cython.int[:] = _n_ftnr2
+    _freq_buf2: cython.int[:] = _n_freq2
+    _wc_buf2: cython.int[:, :] = _n_wc2
+
     _cpx = np.empty(num_cams, dtype=np.float64)
     _cpy = np.empty(num_cams, dtype=np.float64)
     _X = np.zeros((6, 3), dtype=np.float64)
@@ -2627,7 +2729,7 @@ def trackcorr_loop_fast(
                     cpy[j] = targ_y_1[j][_ix]
 
         # --- sorted_candidates for frame 2 ---
-        w_ftnr, w_freq, w_wc, w_nc = sorted_candidates_fast(
+        w_nc = _sorted_candidates_fast_out(
             X[2],
             cpx,
             cpy,
@@ -2657,6 +2759,9 @@ def trackcorr_loop_fast(
             imx,
             imy,
             TR_UNUSED_K,
+            _ftnr_buf1,
+            _freq_buf1,
+            _wc_buf1,
         )
 
         if w_nc == 0:
@@ -2664,7 +2769,7 @@ def trackcorr_loop_fast(
 
         mm = 0
         while mm < w_nc:
-            ftnr_mm = w_ftnr[mm]
+            ftnr_mm = _ftnr_buf1[mm]
             X[3, 0] = path_x_2[ftnr_mm, 0]
             X[3, 1] = path_x_2[ftnr_mm, 1]
             X[3, 2] = path_x_2[ftnr_mm, 2]
@@ -2699,7 +2804,7 @@ def trackcorr_loop_fast(
                 cpy[j] = _pp_mv[1]
 
             # --- sorted_candidates for frame 3 ---
-            wn_ftnr, wn_freq, wn_wc, wn_nc = sorted_candidates_fast(
+            wn_nc = _sorted_candidates_fast_out(
                 X[5],
                 cpx,
                 cpy,
@@ -2729,12 +2834,15 @@ def trackcorr_loop_fast(
                 imx,
                 imy,
                 TR_UNUSED_K,
+                _ftnr_buf2,
+                _freq_buf2,
+                _wc_buf2,
             )
 
             if wn_nc > 0:
                 kk = 0
                 while kk < wn_nc:
-                    ftnr_kk = wn_ftnr[kk]
+                    ftnr_kk = _ftnr_buf2[kk]
                     X[4, 0] = path_x_3[ftnr_kk, 0]
                     X[4, 1] = path_x_3[ftnr_kk, 1]
                     X[4, 2] = path_x_3[ftnr_kk, 2]
@@ -2783,7 +2891,7 @@ def trackcorr_loop_fast(
 
                         acc = (acc0 + acc1) * 0.5
                         angle = (angle0 + angle1) * 0.5
-                        quali = wn_freq[kk] + w_freq[mm]
+                        quali = _freq_buf2[kk] + _freq_buf1[mm]
 
                         if (acc < dacc and angle < dangle) or acc < dacc * 0.1:
                             d13 = c_sqrt(
@@ -2888,7 +2996,7 @@ def trackcorr_loop_fast(
                         )
                         dl = (d13 + d43) * 0.5
                         rr = (dl / lmax + acc / dacc + angle / dangle) / (
-                            quali + w_freq[mm]
+                            quali + _freq_buf1[mm]
                         )
 
                         inlist = path_inlist_1[h]
@@ -2951,7 +3059,7 @@ def trackcorr_loop_fast(
                     acc = _pp_mv[1]
 
                     if (acc < dacc and angle < dangle) or acc < dacc * 0.1:
-                        quali_f = w_freq[mm]
+                        quali_f = _freq_buf1[mm]
                         d13 = c_sqrt(
                             (X[1, 0] - X[3, 0]) ** 2
                             + (X[1, 1] - X[3, 1]) ** 2
@@ -3252,6 +3360,13 @@ def trackback_loop_fast(
     flag: cython.bint
     count1 = 0
     num_added = 0
+    n_sc = num_cams * MAX_CANDS_K
+    _n_ftnr = np.empty(n_sc, dtype=np.int32)
+    _n_freq = np.empty(n_sc, dtype=np.int32)
+    _n_wc = np.empty((n_sc, num_cams), dtype=np.int32)
+    _ftnr_buf: cython.int[:] = _n_ftnr
+    _freq_buf: cython.int[:] = _n_freq
+    _wc_buf: cython.int[:, :] = _n_wc
     _cpx = np.empty(num_cams, dtype=np.float64)
     _cpy = np.empty(num_cams, dtype=np.float64)
     _X = np.zeros((6, 3), dtype=np.float64)
@@ -3304,7 +3419,7 @@ def trackback_loop_fast(
             cpx[j] = _pp_mv[0]
             cpy[j] = _pp_mv[1]
 
-        w_ftnr, w_freq, w_wc, w_nc = sorted_candidates_fast(
+        w_nc = _sorted_candidates_fast_out(
             X[2],
             cpx,
             cpy,
@@ -3334,12 +3449,15 @@ def trackback_loop_fast(
             imx,
             imy,
             TR_UNUSED_K,
+            _ftnr_buf,
+            _freq_buf,
+            _wc_buf,
         )
 
         if w_nc > 0:
             i = 0
             while i < w_nc:
-                ftnr_i = w_ftnr[i]
+                ftnr_i = _ftnr_buf[i]
                 X[3, 0] = path_x_2[ftnr_i, 0]
                 X[3, 1] = path_x_2[ftnr_i, 1]
                 X[3, 2] = path_x_2[ftnr_i, 2]
@@ -3380,7 +3498,7 @@ def trackback_loop_fast(
                         + (X[0, 2] - X[1, 2]) ** 2
                     )
                     dl = (d13 + d01) * 0.5
-                    quali = w_freq[i]
+                    quali = _freq_buf[i]
                     rr = (dl / lmax + acc / dacc + angle / dangle) / quali
 
                     inlist = path_inlist_1[h]
