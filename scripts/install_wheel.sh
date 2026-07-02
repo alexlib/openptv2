@@ -25,7 +25,7 @@ uv pip install --python "$TEST_VENV/bin/python" "$WHEEL_FILE[gui]"
 
 echo ""
 echo "=== Installing test dependencies ==="
-uv pip install --python "$TEST_VENV/bin/python" pytest pytest-cov numba
+uv pip install --python "$TEST_VENV/bin/python" pytest pytest-cov
 
 echo ""
 echo "=== Verifying import ==="
@@ -34,4 +34,4 @@ echo "=== Verifying import ==="
 echo ""
 echo "=== Test environment ready at: $TEST_VENV ==="
 echo "To activate: source $TEST_VENV/bin/activate"
-echo "To run tests: $TEST_VENV/bin/python -m pytest bindings/tests/ algorithms/tests/ -v"
+echo "To run tests: $TEST_VENV/bin/python -m pytest tests/unit/ -v"

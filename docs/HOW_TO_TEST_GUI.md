@@ -1,136 +1,66 @@
 # How to Test the GUI
 
-This document explains how to test that the openptv2 GUI works correctly.
+This document explains how to test that the OpenPTV2 GUI works correctly under the restructured directory format.
 
-## Quick Test
+---
 
-```bash
-# Launch the GUI
-openptv2-gui
+## 1. Quick Launch
 
-# Or alternatively
-python -m gui.pyptv.pyptv_gui
-```
-
-## Automated Tests
-
-### Run the test suite
+To launch the desktop GUI from the terminal, run:
 
 ```bash
-cd /home/user/Documents/GitHub/openptv2
-source .venv311/bin/activate
+# Using the command-line shortcut
+uv run openptv2-gui -w ./test_data/test_cavity
 
-# Run GUI-related tests
-pytest gui/tests/test_optv.py -v
-pytest gui/tests/test_environment.py -v
-pytest gui/tests/test_installation.py -v
-pytest gui/tests/test_core_functionality.py -v
-pytest gui/tests/test_tracker_minimal.py -v
+# Or directly running the module
+uv run python -m openptv2.gui.pyptv_gui -w ./test_data/test_cavity
 ```
 
-### Run the GUI functionality test script
+---
 
+## 2. Automated Tests
+
+All GUI-related tests are located in `tests/gui/` and run seamlessly using pytest.
+
+### Running GUI Tests
 ```bash
-python test_gui_functionality.py
+# Run the entire GUI test suite (60+ test files, 230+ test cases)
+uv run pytest tests/gui/ -v
 ```
 
-This script tests:
-- optv module imports
-- Target detection (segmentation)
-- Calibration object manipulation
-- Epipolar geometry module
-- Coordinate transforms
-- GUI class instantiation
-- Tracker initialization
-
-## What Has Been Tested ✅
-
-### Phase 1 GUI Verification (Complete)
-
-| Test | Status | Details |
-|------|--------|---------|
-| GUI imports | ✅ PASS | All modules import correctly |
-| optv integration | ✅ PASS | All optv modules work |
-| GUI classes | ✅ PASS | Can be instantiated |
-| GUI entry point | ✅ PASS | `openptv2-gui` available |
-| Virtual display test | ✅ PASS | Works with xvfb |
-| Core functionality | ✅ PASS | 15+ pytest tests pass |
-| Tracker tests | ✅ PASS | Particle tracking works |
-
-### Test Results Summary
-
-```
-GUI tests: 15+ passed
-optv tests: All passed  
-Tracker tests: All passed
-Coordinate transforms: Working
-Calibration: Working
-```
-
-## Manual GUI Testing
-
-### 1. Launch the GUI
-
+### Running Specific GUI Tests
 ```bash
-openptv2-gui
+# Test general core interface functionality
+uv run pytest tests/gui/test_gui_functionality.py -v
+
+# Test parameter manager loading and YAML transitions
+uv run pytest tests/gui/test_parameter_manager_structure.py -v
+
+# Test image path resolution across working directories
+uv run pytest tests/gui/test_image_path_resolution_fixed.py -v
 ```
 
-### 2. Load Test Data
+---
 
-The test fixtures are in `gui/tests/`:
-- `gui/tests/test_rembg/` - Complete test dataset
-- `gui/tests/test_splitter/` - Multi-camera test data
-- `gui/tests/test_cavity/` - Cavity flow experiment
+## 3. Scope of Automated GUI Testing
 
-### 3. Test Workflows
+The GUI test suite covers a wide range of components:
+- **Module Imports**: Verifies that standard packages import correctly under the unified single-engine runtime.
+- **Path Resolution**: Asserts that relative and absolute path conversions resolve successfully across changing working directories.
+- **Parameter Translation**: Validates the translation pipeline from human-readable `.yaml` parameter files to structured parameter models.
+- **Class Instantiation**: Smoke-tests panel and dialog windows to prevent crash-on-launch regressions.
+- **Workflow Simulation**: Simulates the target detection, calibration optimization, and tracking pipelines end-to-end.
 
-#### Detection Workflow
-1. Load parameters from YAML
-2. Load an image
-3. Run target detection
-4. Verify targets appear
+---
 
-#### Calibration Workflow  
-1. Load calibration files (.ori, .addpar)
-2. Verify camera parameters display
-3. Test epipolar lines
+## 4. Manual Verification Workflow
 
-#### Tracking Workflow
-1. Load sequence parameters
-2. Run tracking
-3. Verify particle tracks
+If you are modifying interactive graphics, UI components, or Matplotlib figures, perform this manual checklist:
 
-## Troubleshooting
-
-### GUI won't launch
-
-Check dependencies:
-```bash
-python -c "import traits; import traitsui; import chaco; import PySide6; print('OK')"
-```
-
-### optv import errors
-
-Verify optv is installed:
-```bash
-python -c "import optv; print(optv.__version__)"
-```
-
-Should show: `0.3.2` (local build)
-
-### Test fixture not found
-
-Test data should be in `gui/tests/`. If missing, the tests will skip gracefully.
-
-## CI/CD Testing
-
-The GitHub Actions workflow (`.github/workflows/cibuildwheel.yml`) automatically tests:
-- Build succeeds
-- Basic imports work
-- Version is correct
-
-For full GUI testing, a display or virtual framebuffer (xvfb) is needed.
-
-## Next Steps
-
-After GUI testing is complete, proceed to **Phase 2: Python/Numba Engine** as described in DESIGN_PLAN.md.
+1. **Launch the GUI** with the mock dataset:
+   ```bash
+   uv run openptv2-gui -w ./test_data/test_cavity
+   ```
+2. **Reload parameters**: Click **Start ➔ Init / Reload** on the top menu bar. Check that the console logs successful loading of cameras and parameters.
+3. **Run Segmentation**: Click **Preprocess ➔ Image coord**. Verify that camera image panels render successfully and display blue coordinate crosses marking detected targets.
+4. **Run Tracking**: Click **Tracking ➔ Track Sequence**. Check that the status panel updates the tracked links in real-time.

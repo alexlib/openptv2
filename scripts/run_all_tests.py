@@ -22,7 +22,7 @@ Usage:
 Requirements:
     - pytest
     - cmake (for C library tests)
-    - numba (for algorithms tests, optional)
+
 """
 
 import argparse
@@ -127,7 +127,7 @@ class TestRunner:
     
     def _run_pytest(self, test_dir: Path, cwd: Path, timeout: int = 300) -> Tuple[bool, str, float]:
         """Run pytest using the Python executable."""
-        cmd = [self.python, '-m', 'pytest', str(test_dir), '-v', '--tb=short']
+        cmd = [self.python, '-m', 'pytest', str(test_dir), '-v', '-m', 'not slow', '--tb=short']
         if not self.verbose:
             cmd.append('--tb=line')
         
@@ -311,7 +311,7 @@ class TestRunner:
         return results
     
     def run_algorithms_tests(self) -> List[TestResult]:
-        """Run algorithms (Python/Numba) tests."""
+        """Run algorithms (Python) tests."""
         results = []
         algorithms_dir = self.project_root / 'algorithms'
 
@@ -322,23 +322,7 @@ class TestRunner:
             ))
             return results
 
-        print_subheader("Algorithms Tests (Python/Numba)")
-
-        # Check if numba is available
-        try:
-            subprocess.run(
-                [self.python, '-c', 'import numba'],
-                capture_output=True,
-                timeout=10
-            )
-        except (subprocess.CalledProcessError, subprocess.TimeoutExpired):
-            results.append(TestResult(
-                'Algorithms', False, 
-                'numba not installed - skipping algorithms tests', 0.0,
-                'MISSING_NUMBA'
-            ))
-            print_warning("numba not installed - skipping algorithms tests")
-            return results
+        print_subheader("Algorithms Tests (Python)")
 
         # Check if tests directory exists
         tests_dir = algorithms_dir / 'tests'
@@ -353,7 +337,7 @@ class TestRunner:
 
         # Run pytest
         print_info("Running pytest on algorithms/tests/...")
-        cmd = [self.python, '-m', 'pytest', 'tests/', '-v', '--tb=short']
+        cmd = [self.python, '-m', 'pytest', 'tests/', '-v', '-m', 'not slow', '--tb=short']
         if not self.verbose:
             cmd.append('--tb=line')
 

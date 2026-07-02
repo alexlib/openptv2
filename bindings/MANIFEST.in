@@ -1,7 +1,0 @@
-recursive-include optv *.pyx *.pxd *.py
-recursive-include ../lib/src *.c
-recursive-include ../lib/include *.h
-global-exclude *.pyc
-global-exclude *.pyo
-global-exclude __pycache__
-global-exclude *.so

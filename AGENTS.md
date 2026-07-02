@@ -14,8 +14,9 @@ Instead of:
 ### Running Tests
 
 ```bash
-uv run pytest algorithms/tests/test_parameter_converters.py -v
+uv run pytest tests/unit/test_trafo.py -v
 ```
+
 
 ### Virtual Environment
 

@@ -4,13 +4,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-openptv2 is a Particle Tracking Velocimetry (PTV) library with a dual-engine architecture:
-- **C core + Cython bindings** (`lib/` + `bindings/`) — production engine (`optv`)
-- **Pure Python/NumPy** (`algorithms/`) — debuggable engine, a direct C-to-Python translation
-- **openptv2 package** (`openptv2/`) — unified API with engine selection
-- **GUI** (`gui/`) — TraitsUI-based desktop application
+openptv2 is a Particle Tracking Velocimetry (PTV) library centered on a single Cython 3 Pure Python implementation:
+- **Pure Python/NumPy/Cython modules** (`src/openptv2/algorithms/`) — the only algorithm implementation path
+- **openptv2 package** (`src/openptv2/`) — public API and compatibility namespace over that runtime
+- **GUI** (`src/openptv2/gui/`) — Tkinter/ttkbootstrap-based desktop application
 
-Active work: translating remaining C modules in `lib/src/` to Python in `algorithms/`. Each `algorithms/*.py` maps 1:1 to a `lib/src/*.c` file. See `STATUS.md` for translation progress.
+The current focus is optimizing and validating the single-engine pure Python/Cython modules and keeping the GUI/API aligned with that runtime. See `STATUS.md` for translation and migration progress.
 
 ## Commands
 
@@ -20,14 +19,14 @@ Always use `uv` — never bare `python` or `pip`.
 # Setup
 uv sync --extra dev
 
-# Run all tests (configured testpaths: algorithms/tests, bindings/tests, gui/tests)
+# Run all tests (configured testpaths: tests)
 uv run pytest
 
 # Run a single test file
-uv run pytest algorithms/tests/test_vec_utils.py -v
+uv run pytest tests/unit/test_vec_utils.py -v
 
 # Run a single test function
-uv run pytest algorithms/tests/test_vec_utils.py::test_dot -v
+uv run pytest tests/unit/test_vec_utils.py::test_dot -v
 
 # Run tests by marker
 uv run pytest -m unit
@@ -37,33 +36,30 @@ uv run pytest -m "not slow"
 uv run ruff check .
 
 # Type check
-uv run mypy openptv2/
+uv run mypy src/openptv2/
 
-# Build C library (needed for optv engine)
-cd lib && mkdir -p build && cd build && cmake .. && make
-
-# Python-only install (skips Cython build, ~100x faster)
-OPENPTV_PYTHON_ONLY=1 uv pip install -e .
+# Editable install
+uv pip install -e .
 ```
 
 ## Architecture
 
-**Engine selection** (`openptv2/engine.py`): Thread-local `EngineSelector` picks between `optv` (C/Cython) and `python` (NumPy). Falls back to Python if optv is unavailable.
+**Runtime model**: the same `src/openptv2/algorithms/*.py` modules run interpreted in development and compiled when built through Cython 3. There is no runtime engine selector.
 
-**algorithms/ design principles** (from `algorithms/__init__.py`):
+**algorithms/ design principles**:
 - Structure-of-Arrays (SoA) layout for batch data
 - Dataclasses for parameters — no getter/setter boilerplate
 - No adapter layers or dual storage
 - Each module is a standalone translation of its C counterpart
 
-**Test data**: `test_data/` contains calibration files, parameter files, and fixture data used across all test suites. Tests import from `algorithms.*` directly (e.g., `from algorithms.vec_utils import ...`).
+**Test data**: `test_data/` contains calibration files, parameter files, and fixture data used across all test suites. Tests import from `openptv2.algorithms.*` directly (e.g., `from openptv2.algorithms.vec_utils import ...`).
 
 ## Code Style
 
 - Python 3.11+, line length 88 (ruff configured)
 - ruff lint rules: E, W, F, I (no docstring enforcement)
-- Match the direct-translation style in `algorithms/`: function names mirror C originals, SoA patterns, numpy vectorized operations
-- Tests use pytest with markers: `unit`, `parity`, `perf`, `integration`, `requires_optv`, `slow`, `gui`
+- Match the direct-translation style in `src/openptv2/algorithms/`: function names mirror C originals, SoA patterns, numpy vectorized operations
+- Tests use pytest with markers: `unit`, `parity`, `perf`, `integration`, `slow`, `gui`
 
 ## Behavioral Guidelines
 

@@ -645,13 +645,8 @@ for i in range(orig_parts):
 
 ```bash
 # Focused regression tests
-uv run pytest algorithms/tests/parity/test_burgers_tracking_value_parity.py -k "relinks_reappeared_particle or backward_starts_from_forward" -v
-
-# Full parity suite
-uv run pytest algorithms/tests/parity/ algorithms/tests/integration/ -v
-
-# Specific Burgers case
-uv run pytest algorithms/tests/parity/test_burgers_tracking_value_parity.py::test_burgers_trackcorr_forward_python_vs_cython_value_by_value -v
+uv run pytest tests/unit/test_track.py -k "burgers" -v
+uv run pytest tests/unit/test_track3d.py -k "burgers" -v
 ```
 
 ---
@@ -779,9 +774,7 @@ The C code increments `count1` inside the conflict resolution loop. Particles th
 
 With Phase 3 disabled, Python matches C files exactly at steps 10001-10002 (0 mismatches). The 2 remaining mismatches at step 10003 are from the stale buffer fix.
 
-### Synthetic Validation
-
-A synthetic test case (`algorithms/tests/test_synthetic_tracking.py`) with 15 particles and known ground truth trajectories confirms:
+A synthetic test case (`tests/unit/test_synthetic_tracking.py`) with 15 particles and known ground truth trajectories confirms:
 - trackcorr: 103/103 correct links (100%), 0 wrong
 - track3d: 102/103 correct links (99%), 0 wrong
 - trackcorr correctly produces >= track3d links
@@ -789,8 +782,8 @@ A synthetic test case (`algorithms/tests/test_synthetic_tracking.py`) with 15 pa
 ## References
 
 - **Tracking Algorithms**: [algorithms/tracking.md](tracking.md)
-- **trackcorr_c_loop**: [algorithms/track.py](../../../algorithms/track.py)
-- **track3d_loop**: [algorithms/track3d.py](../../../algorithms/track3d.py)
-- **Backward Tracking**: [algorithms/track.py](../../../algorithms/track.py) (`trackback_c`)
-- **Synthetic Test**: `algorithms/tests/test_synthetic_tracking.py`
-- **Burgers Test Suite**: `algorithms/tests/test_track3d.py`
+- **trackcorr_c_loop**: `src/openptv2/algorithms/track.py`
+- **track3d_loop**: `src/openptv2/algorithms/track3d.py`
+- **Backward Tracking**: `src/openptv2/algorithms/track.py` (`trackback_c`)
+- **Synthetic Test**: `tests/unit/test_synthetic_tracking.py`
+- **Burgers Test Suite**: `tests/unit/test_track.py` and `tests/unit/test_track3d.py`

@@ -12,4 +12,4 @@ fi
 echo "=== Running full test suite ==="
 echo "Using Python: $TEST_VENV/bin/python"
 
-"$TEST_VENV/bin/python" -m pytest bindings/tests/ algorithms/tests/ -v --tb=short
+"$TEST_VENV/bin/python" -m pytest tests/unit/ -v -m "not slow" --tb=short

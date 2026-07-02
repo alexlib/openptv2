@@ -32,9 +32,9 @@ Tracking parameters (velocity, acceleration, angle limits) can be chosen systema
 
 ### Reference test
 
-See the test: `test_tracking_parameters_from_data_statistics` in [algorithms/tests/parity/test_burgers_tracking_parameter_sensitivity.py](../../algorithms/tests/parity/test_burgers_tracking_parameter_sensitivity.py)
+See the tracking parameter sensitivity tests in `tests/batch/test_pyptv_batch.py` and `tests/batch/test_apply_optimizations.py`.
 
-This test demonstrates the full workflow and can be used as a template for your own datasets.
+These tests demonstrate the full workflow and can be used as a template for your own datasets.
 
 ---
 # Tracking Algorithms
@@ -219,7 +219,50 @@ track3d.c:  track3d step: 10001, curr: 1, next: 1, links: 0
 | Fast iteration on 3D data | `track3d.c` |
 | Multi-camera redundancy required | `track.c` |
 
+## How to Choose/Enable 3D Segment Tracking (`track3d`)
+
+You can select and run the direct 3D segment tracking algorithm (`track3d`) over the standard multi-camera epipolar tracking algorithm (`trackcorr`) in three different ways:
+
+### 1. Through the Desktop GUI
+1. Open the **Parameter Editor** in the GUI.
+2. Navigate to the **Track Parameters** (Tracking) tab.
+3. Locate the **Tracking mode (0=Standard, 1=3D Seg):** parameter.
+4. Set the value to:
+   - `0` for Standard Epipolar tracking (`trackcorr`).
+   - `1` for 3D Segment tracking (`track3d`).
+5. Save the parameters. The GUI and its interactive step-by-step previewers/visualizers (`tracking_preview` and `tracking_viz_panel`) will conditionally load and execute the selected algorithm automatically.
+
+### 2. Through Parameter Files (YAML & Legacy `.par`)
+* **YAML configuration**: In your active YAML parameters, set the `track_mode` key in the `track` section:
+  ```yaml
+  track:
+    track_mode: 1
+    ...
+  ```
+* **Legacy `.par` configuration**: In `parameters/track.par`, the 10th line (if present) represents the tracking mode. Set it to `1` to enable 3D segment tracking:
+  ```
+  0.100000
+  0.200000
+  0.100000
+  0.200000
+  0.100000
+  0.200000
+  20.000000
+  0.100000
+  0
+  1
+  ```
+  *(Note: If the 10th line is absent, the system gracefully defaults to `0` / Standard mode).*
+
+### 3. Via the Command-Line Batch Utility (`pyptv_batch.py`)
+When executing batch processing from the CLI, you can force the use of 3D tracking using the `--track3d` option:
+```bash
+uv run python -m openptv2.gui.pyptv.pyptv_batch --workdir=./test_data/test_cavity --track3d
+```
+If `--track3d` is not specified, the utility will fall back to reading the `track_mode` setting from the active parameter file.
+
 ---
+
 
 ## Python Translation Status
 
@@ -273,7 +316,7 @@ The C code increments `count1` inside the conflict resolution loop. When particl
 
 ### Synthetic Test Suite
 
-A synthetic test case (`algorithms/tests/test_synthetic_tracking.py`) validates both algorithms against known ground truth:
+A synthetic test case (`tests/unit/test_synthetic_tracking.py`) validates both algorithms against known ground truth:
 
 - **15 particles** with diverse trajectories:
   - 5 constant-velocity straight lines
@@ -286,5 +329,5 @@ A synthetic test case (`algorithms/tests/test_synthetic_tracking.py`) validates 
 - **5 test cases**: link correctness, recovery rate, trajectory distance validation, and trackcorr >= track3d comparison
 
 ```bash
-uv run pytest algorithms/tests/test_synthetic_tracking.py -v
+uv run pytest tests/unit/test_synthetic_tracking.py -v
 ```

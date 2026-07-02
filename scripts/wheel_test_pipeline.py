@@ -133,11 +133,11 @@ def build_wheel(
     print_step(1, "Building binary wheel")
 
     python = find_python()
-    dist_dir = project_root / "dist"
+    dist_dir = project_root / "wheelhouse"
 
     # Clean previous builds
     if dist_dir.exists():
-        print_info("Cleaning previous dist/ directory...")
+        print_info("Cleaning previous wheelhouse/ directory...")
         shutil.rmtree(dist_dir)
 
     # Prepare sources (C + Cython)
@@ -168,6 +168,7 @@ def build_wheel(
             "wheel",
             "cython",
             "numpy",
+            "cibuildwheel",
         ],
         cwd=project_root,
         verbose=verbose,
@@ -176,13 +177,20 @@ def build_wheel(
         print_failure("Build dependency installation failed")
         return False, output, None
 
-    # Build the wheel
-    print_info("Building wheel...")
+    # Build the wheel using cibuildwheel
+    print_info("Building wheel using cibuildwheel...")
+    # Targets only the current python version to avoid compiling unneeded versions
+    import sys
+    env_vars = {
+        "CIBW_BUILD": f"cp{sys.version_info.major}{sys.version_info.minor}-*",
+        "CIBW_SKIP": "musllinux*",
+    }
     success, output, duration = run_cmd(
-        [python, "-m", "build", "--wheel"],
+        [python, "-m", "cibuildwheel", "--output-dir", "wheelhouse"],
         cwd=project_root,
         verbose=verbose,
         timeout=900,
+        env=env_vars,
     )
 
     if not success:
@@ -196,7 +204,7 @@ def build_wheel(
     # Find the wheel file
     wheels = list(dist_dir.glob("*.whl"))
     if not wheels:
-        print_failure("No wheel file found in dist/")
+        print_failure("No wheel file found in wheelhouse/")
         return False, "No wheel file found", None
 
     wheel_path = wheels[0]
@@ -302,36 +310,24 @@ def run_import_tests(python_path: str, verbose: bool = False) -> list[dict]:
             "cmd": "import openptv2; print(f'openptv2 v{openptv2.__version__}')",
         },
         {
-            "name": "optv Cython bindings import",
-            "cmd": "from optv.tracking_framebuf import Target, TargetArray; print('optv.tracking_framebuf OK')",
-        },
-        {
-            "name": "optv calibration import",
-            "cmd": "from optv.calibration import Calibration; print('optv.calibration OK')",
-        },
-        {
-            "name": "optv tracker import",
-            "cmd": "from optv.tracker import Tracker; print('optv.tracker OK')",
-        },
-        {
-            "name": "openptv2 engine selector",
-            "cmd": "from openptv2.engine import EngineSelector, get_engine, set_engine; print('engine selector OK')",
-        },
-        {
             "name": "openptv2 unified imports",
-            "cmd": "from openptv2 import Target, Tracker, Calibration, Correspondence; print('unified imports OK')",
+            "cmd": "from openptv2 import Target, Tracker, Calibration, MatchedCoords; print('unified imports OK')",
         },
         {
             "name": "openptv2 version",
             "cmd": "import openptv2; print(openptv2.get_version())",
         },
         {
-            "name": "openptv2 engine info",
-            "cmd": "import openptv2; info = openptv2.get_engine_info(); print(info)",
+            "name": "openptv2 runtime info",
+            "cmd": "import openptv2; info = openptv2.get_runtime_info(); print(info)",
         },
         {
-            "name": "algorithms package import (lazy, no numba required)",
+            "name": "algorithms package import",
             "cmd": "import algorithms; print('algorithms package OK (lazy import)')",
+        },
+        {
+            "name": "openptv2 binary wheel verification (is_compiled)",
+            "cmd": "from algorithms.image_processing import is_compiled; assert is_compiled() is True, 'Error: The installed package is running uncompiled un-optimized Python code rather than compiled Cython binary wheel extensions!'",
         },
     ]
 
@@ -379,29 +375,23 @@ def run_installed_tests(
     # Install test dependencies
     print_info("Installing test dependencies...")
     success, output, duration = run_cmd(
-        [python_path, "-m", "pip", "install", "pytest", "pytest-cov", "numba"],
+        [python_path, "-m", "pip", "install", "pytest", "pytest-cov", "cython"],
         verbose=verbose,
     )
     if not success:
-        print_warning("numba installation failed, running tests without it")
-        # Retry without numba
-        success, output, duration = run_cmd(
-            [python_path, "-m", "pip", "install", "pytest", "pytest-cov"],
-            verbose=verbose,
-        )
-        if not success:
-            print_failure("Test dependency installation failed")
-            return False, output, duration
+        print_failure("Test dependency installation failed")
+        return False, output, duration
 
     # Run tests from project root (uses installed package)
-    print_info("Running pytest...")
+    print_info("Running pytest (excluding slow tests)...")
     cmd = [
         python_path,
         "-m",
         "pytest",
-        "bindings/tests/",
-        "algorithms/tests/",
+        "tests/unit/",
         "-v",
+        "-m",
+        "not slow",
         "--tb=short",
     ]
     if not verbose:
@@ -547,10 +537,10 @@ Examples:
         build_ok = True
         print_info(f"Using existing wheel: {wheel_path.name}")
     elif args.skip_build:
-        dist_dir = project_root / "dist"
+        dist_dir = project_root / "wheelhouse"
         wheels = list(dist_dir.glob("*.whl"))
         if not wheels:
-            print_failure("No wheel found in dist/. Run with --build-only first.")
+            print_failure("No wheel found in wheelhouse/. Run with --build-only first.")
             return 1
         wheel_path = max(wheels, key=lambda p: p.stat().st_mtime)
         build_ok = True

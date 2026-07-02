@@ -8,10 +8,10 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "openptv2"
-version = "0.1.7"
-description = "Unified OpenPTV: Particle Tracking Velocimetry with dual-engine support"
+version = "0.2.0"
+description = "OpenPTV2 single-engine particle tracking with Cython 3 pure Python modules"
 readme = "README.md"
-license = {text = "LGPL-3.0-or-later"}
+license = "LGPL-3.0-or-later"
 authors = [
     {name = "OpenPTV Community", email = "openptv@googlegroups.com"}
 ]
@@ -19,7 +19,6 @@ requires-python = ">=3.11,<3.14"
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)",
     "Operating System :: Microsoft :: Windows",
     "Operating System :: MacOS",
     "Operating System :: POSIX :: Linux",
@@ -32,18 +31,18 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Visualization",
 ]
 dependencies = [
+    "cython>=3.0.0,<4",
     "marimo>=0.23.0",
+    "mkdocs>=1.6.1",
     "numpy>=2.0.0",
     "plotly>=6.7.0",
     "pytest>=9.0.2",
     "pyyaml>=6.0",
     "scipy>=1.10.0",
+    "traits>=7.1.0",
 ]
 
 [project.optional-dependencies]
-python-only = [
-    "numba>=0.60.0",
-]
 gui = [
     "traits>=6.4.0",
     "traitsui>=7.4.0",
@@ -60,9 +59,6 @@ gui = [
     "Pygments>=2.15.0",
     "pyparsing>=3.0.0",
     "marimo>=0.19.10",
-]
-numba = [
-    "numba>=0.60.0",
 ]
 test = [
     "pytest>=8.0.0",
@@ -89,7 +85,6 @@ dev = [
     "Pygments>=2.15.0",
     "pyparsing>=3.0.0",
     "marimo>=0.19.10",
-    "numba>=0.60.0",
 ]
 docs = [
     "sphinx>=8.0.0",
@@ -103,50 +98,56 @@ docs = [
 
 [project.scripts]
 openptv = "openptv2.cli:main"
-openptv2-gui = "gui.pyptv.pyptv_gui:main"
-openptv2-batch = "gui.pyptv.pyptv_batch:main_cli"
+openptv2-gui = "openptv2.gui.pyptv_gui:main"
+openptv2-batch = "openptv2.batch.pyptv_batch:main_cli"
 openptv2-validate = "openptv2.validate:main"
-pyptv = "gui.pyptv.pyptv_gui:main"
-pyptv_gui = "gui.pyptv.pyptv_gui:main"
-pyptv_batch = "gui.pyptv.pyptv_batch:main_cli"
+pyptv = "openptv2.gui.pyptv_gui:main"
+pyptv_gui = "openptv2.gui.pyptv_gui:main"
+pyptv_batch = "openptv2.batch.pyptv_batch:main_cli"
 
 [tool.setuptools]
 packages = [
     "openptv2",
-    "algorithms",
-    "optv",
-    "gui.pyptv",
-    "gui.plugins",
+    "openptv2.algorithms",
+    "openptv2.gui",
+    "openptv2.gui.plugins",
+    "openptv2.batch",
 ]
 include-package-data = true
 zip-safe = false
 
 [tool.setuptools.package-dir]
-optv = "bindings/optv"
-"gui.pyptv" = "gui/pyptv"
-"gui.plugins" = "gui/plugins"
+"" = "src"
 
 [tool.pytest.ini_options]
-testpaths = ["algorithms/tests", "bindings/tests", "gui/tests"]
+testpaths = ["tests"]
 python_files = ["test_*.py"]
 python_functions = ["test_*"]
-pythonpath = ["gui"]
+pythonpath = ["src"]
 addopts = "-v --tb=short --import-mode=importlib"
+filterwarnings = [
+    "ignore:builtin type SwigPyPacked has no __module__ attribute:DeprecationWarning",
+    "ignore:builtin type SwigPyObject has no __module__ attribute:DeprecationWarning",
+    "ignore:builtin type swigvarlink has no __module__ attribute:DeprecationWarning",
+    "ignore:.*oneOf.*:DeprecationWarning",
+    "ignore:.*setParseAction.*:DeprecationWarning",
+    "ignore:.*delimitedList.*:DeprecationWarning",
+    "ignore:.*setName.*:DeprecationWarning",
+    "ignore:.*leaveWhitespace.*:DeprecationWarning",
+    "ignore:This process .* is multi-threaded, use of fork\\(\\) may lead to deadlocks:DeprecationWarning",
+]
 markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
     "gui: marks tests that require GUI",
-    "engine_optv: marks tests for optv engine",
-    "engine_python: marks tests for Python engine",
     "unit: fast deterministic unit tests",
-    "parity: python vs optv/cython parity tests",
+    "parity: compiled-vs-reference parity tests",
     "perf: performance and throughput tests",
     "integration: multi-module integration tests",
-    "requires_optv: tests that require optv bindings",
 ]
 
 [tool.coverage.run]
 branch = true
-source = ["openptv2", "algorithms", "gui.pyptv"]
+source = ["openptv2", "algorithms", "gui", "batch"]
 
 [tool.mypy]
 python_version = "3.11"

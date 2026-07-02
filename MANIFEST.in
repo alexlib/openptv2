@@ -3,23 +3,8 @@ include LICENSE
 include pyproject.toml
 include setup.py
 
-# Include C source files
-recursive-include lib *.c *.h *.txt
-recursive-include lib/src *.c
-recursive-include lib/include *.h
-
-# Include Cython sources (both .pyx and generated .c)
-recursive-include bindings *.pyx *.pxd *.py *.toml *.c
-recursive-include bindings/optv *.pyx *.pxd *.py *.c
-recursive-include bindings/liboptv *.c *.h
-
 # Include Python packages
-recursive-include openptv2 *.py *.pxd
-recursive-include algorithms *.py
-recursive-include gui *.py *.toml
+recursive-include src/openptv2 *.py *.json
 
 # Include tests
-recursive-include bindings/tests *.py
-recursive-include algorithms/tests *.py
-recursive-include gui/tests *.py
-recursive-include lib/tests *.c
+recursive-include tests *.py
