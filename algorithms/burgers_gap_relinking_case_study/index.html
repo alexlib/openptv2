@@ -1,0 +1,3455 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Unified Particle Tracking Velocimetry with dual-engine support (C/Cython and pure Python/Numba).">
+      
+      
+        <meta name="author" content="OpenPTV Community">
+      
+      
+      
+        <link rel="prev" href="../tracking/">
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Burgers Gap Relinking Case Study - OpenPTV2 Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#burgers-dataset-gap-relinking-case-study" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="OpenPTV2 Documentation" class="md-header__button md-logo" aria-label="OpenPTV2 Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OpenPTV2 Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Burgers Gap Relinking Case Study
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="purple"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="purple"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/alexlib/openptv2" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    alexlib/openptv2
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../installation/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Installation & Setup
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../first_steps/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  First Steps
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tutorials/getting_started_tutorial/" class="md-tabs__link">
+          
+  
+  
+  Tutorials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../tests/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Running Tests
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../developer_guide/building/" class="md-tabs__link">
+          
+  
+  
+  Developer Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../tracking/" class="md-tabs__link">
+          
+  
+  
+  Algorithms
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="OpenPTV2 Documentation" class="md-nav__button md-logo" aria-label="OpenPTV2 Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    OpenPTV2 Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/alexlib/openptv2" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    alexlib/openptv2
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation & Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../first_steps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/getting_started_tutorial/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    End-to-End Tracking Tutorial
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/tracking_visualization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracking Visualization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/tracking_debug_visualization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Debug Visualization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tests/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Running Tests
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developer Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Developer Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/building/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Building from Source
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/cython_and_pure_python/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cython & Pure Python Modes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/documentation_workflow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Documentation Workflow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer_guide/packaging_and_releases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Packaging & Releases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../HOW_TO_TEST_GUI/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GUI Testing Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Algorithms
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Algorithms
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tracking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracking Core
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Burgers Gap Relinking Case Study
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Burgers Gap Relinking Case Study
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#executive-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Executive Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dataset-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dataset Overview
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Dataset Overview">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#burgers-sequence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Burgers Sequence
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#particle-correspondences" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Particle Correspondences
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ground-truth-trajectories" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ground Truth Trajectories
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#frame-buffer-state-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Frame Buffer State Analysis
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Frame Buffer State Analysis">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#initialization-phase" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Initialization Phase
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#main-loop-frame-advancement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Main Loop Frame Advancement
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#algorithm-behavior-by-step" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Algorithm Behavior by Step
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Algorithm Behavior by Step">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-10001-p0-p1-p2-p3-p4-forward-link" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 10001: P0, P1, P2, P3, P4 Forward Link
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-10002-p0-p1-p2-p3-p4-p0-p1-p2-absent-p3-p4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 10002: P0, P1, P2, P3, P4 → P0, P1, [P2 absent], P3, P4
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-10003-p0-p1-p3-p4-in-buf1-10004-in-buf2-10005-in-buf3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 10003: P0, P1, P3, P4 in buf[1]; 10004 in buf[2]; 10005 in buf[3]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-10004-critical-step-p2-reappears-no-buf3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 10004: CRITICAL STEP — P2 Reappears, No buf[3]
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 10004: CRITICAL STEP — P2 Reappears, No buf[3]">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#trackcorr-path-for-p2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        trackcorr Path for P2
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#track3d-path-for-p2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        track3d Path for P2
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#comparison-at-step-10004" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Comparison at Step 10004
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#trajectory-fragmentation-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Trajectory Fragmentation Results
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Trajectory Fragmentation Results">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#trackcorr-output-7-trajectories" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        trackcorr Output: 7 Trajectories
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#track3d-output-6-trajectories" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        track3d Output: 6 Trajectories
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quantitative-comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quantitative Comparison
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Quantitative Comparison">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#forward-tracking-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Forward Tracking Results
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#file-output-sets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        File Output Sets
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#root-cause-the-fallback-gate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Root Cause: The Fallback Gate
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Root Cause: The Fallback Gate">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#trackcorr-last-resort-line-1343" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        trackcorr Last-Resort (line 1343)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#track3d-level-3-no-gate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        track3d Level 3 (no gate)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#backward-tracking-impact" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Backward Tracking Impact
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Backward Tracking Impact">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#forward-tracking-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Forward Tracking Summary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#backward-tracking-algorithm-trackback_c" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Backward Tracking Algorithm (trackback_c)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-track3d-succeeds-where-trackcorr-fails" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why track3d Succeeds Where trackcorr Fails
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Why track3d Succeeds Where trackcorr Fails">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#algorithmic-differences-at-step-10004" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Algorithmic Differences at Step 10004
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#root-cause-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Root Cause Summary
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#velocity-based-relinking-insights" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Velocity-Based Relinking Insights
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Velocity-Based Relinking Insights">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#p2s-actual-motion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P2's Actual Motion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-track3ds-zero-velocity-assumption-captures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What track3d's Zero-Velocity Assumption Captures
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lessons-for-better-tracking-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lessons for Better Tracking Methods
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#backward-tracking-recovery-capabilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Backward Tracking Recovery Capabilities
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Backward Tracking Recovery Capabilities">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-backward-tracking-can-and-cannot-do" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Backward Tracking Can and Cannot Do
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#statistical-impact-forward-vs-backwardforward" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Statistical Impact: Forward vs Backward&amp;Forward
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recommendations-for-users" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recommendations for Users
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Recommendations for Users">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#when-to-expect-fragmentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When to Expect Fragmentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-to-improve-trajectory-recovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to Improve Trajectory Recovery
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#next-generation-tracking-enhancements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Next-Generation Tracking Enhancements
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#code-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Code References
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Code References">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#trackcorr-last-resort-link-problematic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        trackcorr Last-Resort Link (Problematic)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#track3d-level-3-fallback-robust" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        track3d Level 3 Fallback (Robust)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Testing &amp; Validation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Testing &amp; Validation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#regression-tests-added" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Regression Tests Added
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-to-run-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to Run Tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#conclusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Conclusion
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Conclusion">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-findings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Findings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#actionable-insights" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Actionable Insights
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix-numerical-trace" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Appendix: Numerical Trace
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Appendix: Numerical Trace">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#full-step-by-step-numerical-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Full Step-by-Step Numerical Output
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#update-python-improvements-over-c" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Update: Python Improvements Over C
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Update: Python Improvements Over C">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-stale-buffer-recycling-fixed-in-python" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Stale Buffer Recycling (Fixed in Python)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-phase-3-losers-retry-python-enhancement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Phase 3: Losers Retry (Python Enhancement)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-c-count1-overcounting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. C count1 Overcounting
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        References
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#executive-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Executive Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dataset-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dataset Overview
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Dataset Overview">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#burgers-sequence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Burgers Sequence
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#particle-correspondences" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Particle Correspondences
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ground-truth-trajectories" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ground Truth Trajectories
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#frame-buffer-state-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Frame Buffer State Analysis
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Frame Buffer State Analysis">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#initialization-phase" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Initialization Phase
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#main-loop-frame-advancement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Main Loop Frame Advancement
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#algorithm-behavior-by-step" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Algorithm Behavior by Step
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Algorithm Behavior by Step">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-10001-p0-p1-p2-p3-p4-forward-link" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 10001: P0, P1, P2, P3, P4 Forward Link
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-10002-p0-p1-p2-p3-p4-p0-p1-p2-absent-p3-p4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 10002: P0, P1, P2, P3, P4 → P0, P1, [P2 absent], P3, P4
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-10003-p0-p1-p3-p4-in-buf1-10004-in-buf2-10005-in-buf3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 10003: P0, P1, P3, P4 in buf[1]; 10004 in buf[2]; 10005 in buf[3]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-10004-critical-step-p2-reappears-no-buf3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 10004: CRITICAL STEP — P2 Reappears, No buf[3]
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 10004: CRITICAL STEP — P2 Reappears, No buf[3]">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#trackcorr-path-for-p2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        trackcorr Path for P2
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#track3d-path-for-p2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        track3d Path for P2
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#comparison-at-step-10004" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Comparison at Step 10004
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#trajectory-fragmentation-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Trajectory Fragmentation Results
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Trajectory Fragmentation Results">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#trackcorr-output-7-trajectories" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        trackcorr Output: 7 Trajectories
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#track3d-output-6-trajectories" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        track3d Output: 6 Trajectories
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quantitative-comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quantitative Comparison
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Quantitative Comparison">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#forward-tracking-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Forward Tracking Results
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#file-output-sets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        File Output Sets
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#root-cause-the-fallback-gate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Root Cause: The Fallback Gate
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Root Cause: The Fallback Gate">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#trackcorr-last-resort-line-1343" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        trackcorr Last-Resort (line 1343)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#track3d-level-3-no-gate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        track3d Level 3 (no gate)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#backward-tracking-impact" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Backward Tracking Impact
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Backward Tracking Impact">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#forward-tracking-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Forward Tracking Summary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#backward-tracking-algorithm-trackback_c" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Backward Tracking Algorithm (trackback_c)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-track3d-succeeds-where-trackcorr-fails" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why track3d Succeeds Where trackcorr Fails
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Why track3d Succeeds Where trackcorr Fails">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#algorithmic-differences-at-step-10004" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Algorithmic Differences at Step 10004
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#root-cause-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Root Cause Summary
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#velocity-based-relinking-insights" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Velocity-Based Relinking Insights
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Velocity-Based Relinking Insights">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#p2s-actual-motion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P2's Actual Motion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-track3ds-zero-velocity-assumption-captures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What track3d's Zero-Velocity Assumption Captures
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lessons-for-better-tracking-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lessons for Better Tracking Methods
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#backward-tracking-recovery-capabilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Backward Tracking Recovery Capabilities
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Backward Tracking Recovery Capabilities">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-backward-tracking-can-and-cannot-do" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Backward Tracking Can and Cannot Do
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#statistical-impact-forward-vs-backwardforward" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Statistical Impact: Forward vs Backward&amp;Forward
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recommendations-for-users" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recommendations for Users
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Recommendations for Users">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#when-to-expect-fragmentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When to Expect Fragmentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-to-improve-trajectory-recovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to Improve Trajectory Recovery
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#next-generation-tracking-enhancements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Next-Generation Tracking Enhancements
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#code-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Code References
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Code References">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#trackcorr-last-resort-link-problematic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        trackcorr Last-Resort Link (Problematic)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#track3d-level-3-fallback-robust" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        track3d Level 3 Fallback (Robust)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Testing &amp; Validation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Testing &amp; Validation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#regression-tests-added" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Regression Tests Added
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-to-run-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to Run Tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#conclusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Conclusion
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Conclusion">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-findings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Findings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#actionable-insights" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Actionable Insights
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix-numerical-trace" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Appendix: Numerical Trace
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Appendix: Numerical Trace">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#full-step-by-step-numerical-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Full Step-by-Step Numerical Output
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#update-python-improvements-over-c" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Update: Python Improvements Over C
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Update: Python Improvements Over C">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-stale-buffer-recycling-fixed-in-python" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Stale Buffer Recycling (Fixed in Python)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-phase-3-losers-retry-python-enhancement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Phase 3: Losers Retry (Python Enhancement)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-c-count1-overcounting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. C count1 Overcounting
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        References
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="burgers-dataset-gap-relinking-case-study">Burgers Dataset Gap Relinking Case Study<a class="headerlink" href="#burgers-dataset-gap-relinking-case-study" title="Permanent link">&para;</a></h1>
+<p>A detailed analysis of how <code>trackcorr</code> and <code>track3d</code> algorithms deviate when particles re-appear after a gap, and how backward tracking helps recover missing trajectories.</p>
+<h2 id="executive-summary">Executive Summary<a class="headerlink" href="#executive-summary" title="Permanent link">&para;</a></h2>
+<p>This case study examines a critical tracking scenario using the <strong>Burgers turbulence dataset</strong> (5 frames, 5 particles):
+- <strong>P2 is absent in one intermediate frame (10003)</strong>
+- Both algorithms split P2 into fragments
+- <strong>trackcorr produces 7 trajectories</strong> (3 P2 fragments)
+- <strong>track3d produces 6 trajectories</strong> (2 P2 fragments)
+- <strong>Backward tracking recovers additional forward-backward links</strong> across the gap</p>
+<p><strong>Key Finding</strong>: The difference stems from how each algorithm handles particles with <strong>no predecessor</strong> when a future lookahead frame is unavailable.</p>
+<hr />
+<h2 id="dataset-overview">Dataset Overview<a class="headerlink" href="#dataset-overview" title="Permanent link">&para;</a></h2>
+<h3 id="burgers-sequence">Burgers Sequence<a class="headerlink" href="#burgers-sequence" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Frame range</strong></td>
+<td>10001, 10002, 10003, 10004, 10005</td>
+</tr>
+<tr>
+<td><strong>Total frames</strong></td>
+<td>5</td>
+</tr>
+<tr>
+<td><strong>Physical particles</strong></td>
+<td>5 (P0, P1, P2, P3, P4)</td>
+</tr>
+<tr>
+<td><strong>Cameras</strong></td>
+<td>4</td>
+</tr>
+<tr>
+<td><strong>Buffer size</strong></td>
+<td>TR_BUFSPACE = 4 slots</td>
+</tr>
+</tbody>
+</table>
+<h3 id="particle-correspondences">Particle Correspondences<a class="headerlink" href="#particle-correspondences" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Particle</th>
+<th>Camera IDs</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P0</td>
+<td>(0,0,0,0)</td>
+<td>✓ Present all 5 frames</td>
+</tr>
+<tr>
+<td>P1</td>
+<td>(1,1,1,1)</td>
+<td>✓ Present all 5 frames</td>
+</tr>
+<tr>
+<td><strong>P2</strong></td>
+<td><strong>(2,2,2,2)</strong></td>
+<td>⚠️ <strong>ABSENT in frame 10003</strong></td>
+</tr>
+<tr>
+<td>P3</td>
+<td>(3,3,3,3)</td>
+<td>✓ Present all 5 frames</td>
+</tr>
+<tr>
+<td>P4</td>
+<td>(4,4,4,4)</td>
+<td>✓ Present all 5 frames</td>
+</tr>
+</tbody>
+</table>
+<h3 id="ground-truth-trajectories">Ground Truth Trajectories<a class="headerlink" href="#ground-truth-trajectories" title="Permanent link">&para;</a></h3>
+<p>From reference particle file <code>rt_is.*</code>:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>P0: [10001] (3.095,4.352,2.401) → [10002] (3.027,4.401,2.403) 
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    → [10003] (2.957,4.448,2.402) → [10004] (2.887,4.493,2.402) 
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    → [10005] (2.817,4.537,2.405)   [5 frames, continuous]
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>P1: [10001] (2.983,5.391,0.419) → [10002] (2.909,5.429,0.424) 
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    → [10003] (2.835,5.469,0.422) → [10004] (2.761,5.507,0.422) 
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    → [10005] (2.686,5.543,0.420)   [5 frames, continuous]
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>P2: [10001] (4.425,3.087,2.906) → [10002] (4.378,3.155,2.907) 
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    → [10004] (4.277,3.289,2.906) → [10005] (4.225,3.355,2.906)   
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    [4 frames, 1-frame gap at 10003]
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>P3: [10001] (3.693,1.136,0.596) → [10002] (3.668,1.214,0.597) 
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>    → [10003] (3.642,1.292,0.595) → [10004] (3.614,1.369,0.596) 
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>    → [10005] (3.584,1.445,0.595)   [5 frames, continuous]
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>P4: [10001] (2.727,2.022,1.677) → [10002] (2.679,2.085,1.678) 
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>    → [10003] (2.630,2.147,1.677) → [10004] (2.579,2.208,1.681) 
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>    → [10005] (2.527,2.267,1.680)   [5 frames, continuous]
+</span></code></pre></div>
+<p><strong>Key distances in P2's segment:</strong>
+- 10001→10002: 0.0925 mm
+- <strong>Gap (10003 absent)</strong>
+- 10004→10005: 0.0843 mm (&lt; 0.1 mm threshold)</p>
+<hr />
+<h2 id="frame-buffer-state-analysis">Frame Buffer State Analysis<a class="headerlink" href="#frame-buffer-state-analysis" title="Permanent link">&para;</a></h2>
+<h3 id="initialization-phase">Initialization Phase<a class="headerlink" href="#initialization-phase" title="Permanent link">&para;</a></h3>
+<p><code>track_forward_start()</code> pre-loads first 3 frames:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="n">first</span> <span class="o">+</span> <span class="n">TR_BUFSPACE</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>  <span class="c1"># 10001, 10002, 10003</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>    <span class="n">fb</span><span class="o">.</span><span class="n">read_frame_at_end</span><span class="p">(</span><span class="n">step</span><span class="p">)</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>    <span class="n">fb</span><span class="o">.</span><span class="n">fb_next</span><span class="p">()</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="n">fb</span><span class="o">.</span><span class="n">fb_prev</span><span class="p">()</span>  <span class="c1"># reset pointer</span>
+</span></code></pre></div>
+<p>After init:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>buf[0] = empty
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>buf[1] = frame 10001  ← starting position
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>buf[2] = frame 10002
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>buf[3] = frame 10003
+</span></code></pre></div></p>
+<h3 id="main-loop-frame-advancement">Main Loop Frame Advancement<a class="headerlink" href="#main-loop-frame-advancement" title="Permanent link">&para;</a></h3>
+<p>Loop runs <code>range(seq.first, seq.last)</code> = <code>range(10001, 10005)</code> = <strong>steps 10001, 10002, 10003, 10004</strong></p>
+<p>At <strong>end of each step</strong>, buffer rotates:
+- <code>fb.fb_next()</code> — rotate ring buffer
+- <strong>if <code>step &lt; last - 2</code> (i.e., <code>step &lt; 10003</code>)</strong>: <code>read_frame_at_end(step + 3)</code></p>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>buf[0]</th>
+<th>buf[1] (current)</th>
+<th>buf[2] (next)</th>
+<th>buf[3] (lookahead)</th>
+<th>Load at end?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>10001</strong></td>
+<td>empty</td>
+<td>10001</td>
+<td>10002</td>
+<td>10003</td>
+<td>10001 &lt; 10003 ✓ → load 10004</td>
+</tr>
+<tr>
+<td><strong>10002</strong></td>
+<td>10001</td>
+<td>10002</td>
+<td>10003</td>
+<td>10004</td>
+<td>10002 &lt; 10003 ✓ → load 10005</td>
+</tr>
+<tr>
+<td><strong>10003</strong></td>
+<td>10002</td>
+<td>10003</td>
+<td>10004</td>
+<td>10005</td>
+<td>10003 &lt; 10003 ✗ → NO LOAD</td>
+</tr>
+<tr>
+<td><strong>10004</strong></td>
+<td>10003</td>
+<td>10004</td>
+<td>10005</td>
+<td><strong>EMPTY</strong></td>
+<td>10004 &lt; 10003 ✗ → NO LOAD</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Critical observation</strong>: At step <strong>10004</strong>, <code>buf[3]</code> is <strong>empty</strong>—there is no frame 10006 to examine.</p>
+<hr />
+<h2 id="algorithm-behavior-by-step">Algorithm Behavior by Step<a class="headerlink" href="#algorithm-behavior-by-step" title="Permanent link">&para;</a></h2>
+<h3 id="step-10001-p0-p1-p2-p3-p4-forward-link">Step 10001: P0, P1, P2, P3, P4 Forward Link<a class="headerlink" href="#step-10001-p0-p1-p2-p3-p4-forward-link" title="Permanent link">&para;</a></h3>
+<p>All 5 particles have <code>prev_frame &gt;= 0</code> (frame IDs from buf[0]).</p>
+<p><strong>trackcorr</strong>:
+1. Candidate search in buf[2] = frame 10002
+2. 3-frame chain test in buf[3] = frame 10003 → <strong>succeeds</strong> (valid frame)
+3. Angle + acceleration checks pass
+4. <strong>Link registered</strong>: P0→P1, P1→P2, P2→P3, P3→P4, P4→P5</p>
+<p><strong>track3d</strong>:
+1. Level 1: Particles with <code>prev_frame &gt;= 0</code>
+2. Predict using 2<em>curr - prev
+3. Find candidates in buf[2], score by acceleration
+4. </em><em>Link registered</em>*: P0→P1, P1→P2, P2→P3, P3→P4, P4→P5</p>
+<p><strong>Result</strong>: ✓ Both match, 5 links each</p>
+<hr />
+<h3 id="step-10002-p0-p1-p2-p3-p4-p0-p1-p2-absent-p3-p4">Step 10002: P0, P1, P2, P3, P4 → P0, P1, [P2 absent], P3, P4<a class="headerlink" href="#step-10002-p0-p1-p2-p3-p4-p0-p1-p2-absent-p3-p4" title="Permanent link">&para;</a></h3>
+<p>Frame 10003 has only 4 particles (P2 missing).</p>
+<p><strong>trackcorr</strong>:
+- P0, P1, P3, P4 have <code>prev_frame &gt;= 0</code> → link forward normally
+- P2 lookup in buf[2] = frame 10003:
+  <div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>w = sorted_candidates_in_volume(X[2], v1, buf[2], ...)
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>if w.count == 1 and w.ftnr[0] == TR_UNUSED:  # empty result
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>    continue  # no link registered
+</span></code></pre></div>
+- P2 in buf[1] (frame 10002) gets <code>next_frame = -1</code></p>
+<p><strong>track3d</strong>:
+- All 4 particles link forward normally via Level 1
+- P2 absent → not in buf[2], no entry in buf[3] either</p>
+<p><strong>Result</strong>: 
+- trackcorr: 4 links (P0, P1, P3, P4 forward; P2 breaks)
+- track3d: 4 links
+- <strong>Statistics</strong>: links: 4, lost: 1 (P2)</p>
+<hr />
+<h3 id="step-10003-p0-p1-p3-p4-in-buf1-10004-in-buf2-10005-in-buf3">Step 10003: P0, P1, P3, P4 in buf[1]; 10004 in buf[2]; 10005 in buf[3]<a class="headerlink" href="#step-10003-p0-p1-p3-p4-in-buf1-10004-in-buf2-10005-in-buf3" title="Permanent link">&para;</a></h3>
+<p>Frame 10003 has 4 particles (P0, P1, P3, P4), all with <code>prev_frame &gt;= 0</code>.</p>
+<p><strong>trackcorr</strong>:
+- All 4 search in buf[2] = frame 10004
+- 3-frame chain test in buf[3] = frame 10005 → <strong>succeeds</strong> (valid frame)
+- All 4 link forward</p>
+<p><strong>track3d</strong>:
+- All 4 link via Level 1</p>
+<p><strong>Result</strong>: 4 links each</p>
+<hr />
+<h3 id="step-10004-critical-step-p2-reappears-no-buf3">Step 10004: <strong>CRITICAL STEP</strong> — P2 Reappears, No buf[3]<a class="headerlink" href="#step-10004-critical-step-p2-reappears-no-buf3" title="Permanent link">&para;</a></h3>
+<p>buf[1] = frame 10004 (5 particles including P2 re-appearance)
+buf[2] = frame 10005
+buf[3] = <strong>EMPTY</strong> (no frame 10006)</p>
+<p>P0, P1, P3, P4 all have <code>prev_frame &gt;= 0</code> (linked in step 10003).
+<strong>P2 has <code>prev_frame = -1</code></strong> (no predecessor in frame 10003).</p>
+<h4 id="trackcorr-path-for-p2">trackcorr Path for P2<a class="headerlink" href="#trackcorr-path-for-p2" title="Permanent link">&para;</a></h4>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># Line 1160: trackcorr_c_loop</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="n">curr_path_inf</span> <span class="o">=</span> <span class="n">buf</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">path_info</span><span class="p">[</span><span class="n">P2_idx</span><span class="p">]</span>  <span class="c1"># prev_frame = -1</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="c1"># Line 1162: Current position</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="n">X</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">vec_copy</span><span class="p">(</span><span class="n">curr_path_inf</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>  <span class="c1"># (4.277, 3.289, 2.906)</span>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="c1"># Line 1163-1171: Since prev_frame &lt; 0, use current as prediction center</span>
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="k">else</span><span class="p">:</span>
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>    <span class="n">X</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">vec_copy</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>  <span class="c1"># (4.277, 3.289, 2.906)</span>
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>
+</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="c1"># Line 1190: Search in buf[2] = frame 10005</span>
+</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="n">w</span> <span class="o">=</span> <span class="n">sorted_candidates_in_volume</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">v1</span><span class="p">,</span> <span class="n">buf</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="o">...</span><span class="p">)</span>
+</span><span id="__span-4-13"><a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="c1"># → finds P2_10005 at (4.225, 3.355, 2.906) ✓</span>
+</span><span id="__span-4-14"><a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a>
+</span><span id="__span-4-15"><a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a><span class="c1"># Line 1205: For each candidate, predict next position X[5]</span>
+</span><span id="__span-4-16"><a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a><span class="c1"># Line 1207-1208:</span>
+</span><span id="__span-4-17"><a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a><span class="k">else</span><span class="p">:</span>
+</span><span id="__span-4-18"><a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a>    <span class="n">X</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="n">search_volume_center_moving</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">X</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>  <span class="c1"># prev_frame &lt; 0</span>
+</span><span id="__span-4-19"><a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a>
+</span><span id="__span-4-20"><a id="__codelineno-4-20" name="__codelineno-4-20" href="#__codelineno-4-20"></a><span class="c1"># Line 1213: Search for 3-frame chain</span>
+</span><span id="__span-4-21"><a id="__codelineno-4-21" name="__codelineno-4-21" href="#__codelineno-4-21"></a><span class="n">wn</span> <span class="o">=</span> <span class="n">sorted_candidates_in_volume</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span> <span class="n">v1</span><span class="p">,</span> <span class="n">buf</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="o">...</span><span class="p">)</span>
+</span><span id="__span-4-22"><a id="__codelineno-4-22" name="__codelineno-4-22" href="#__codelineno-4-22"></a><span class="c1"># buf[3] is EMPTY → wn.count == 1 and wn.ftnr[0] == TR_UNUSED</span>
+</span><span id="__span-4-23"><a id="__codelineno-4-23" name="__codelineno-4-23" href="#__codelineno-4-23"></a>
+</span><span id="__span-4-24"><a id="__codelineno-4-24" name="__codelineno-4-24" href="#__codelineno-4-24"></a><span class="c1"># Line 1215: IF wn.count &gt; 1 check FAILS (empty result)</span>
+</span><span id="__span-4-25"><a id="__codelineno-4-25" name="__codelineno-4-25" href="#__codelineno-4-25"></a><span class="k">if</span> <span class="n">wn</span><span class="o">.</span><span class="n">count</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># FALSE</span>
+</span><span id="__span-4-26"><a id="__codelineno-4-26" name="__codelineno-4-26" href="#__codelineno-4-26"></a>    <span class="c1"># ... 3-frame chain evaluation skipped</span>
+</span><span id="__span-4-27"><a id="__codelineno-4-27" name="__codelineno-4-27" href="#__codelineno-4-27"></a>
+</span><span id="__span-4-28"><a id="__codelineno-4-28" name="__codelineno-4-28" href="#__codelineno-4-28"></a><span class="c1"># Line 1303: Last-resort fallback</span>
+</span><span id="__span-4-29"><a id="__codelineno-4-29" name="__codelineno-4-29" href="#__codelineno-4-29"></a><span class="k">if</span> <span class="n">curr_path_inf</span><span class="o">.</span><span class="n">inlist</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">curr_path_inf</span><span class="o">.</span><span class="n">prev_frame</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+</span><span id="__span-4-30"><a id="__codelineno-4-30" name="__codelineno-4-30" href="#__codelineno-4-30"></a>    <span class="c1"># ← CRITICAL: prev_frame = -1 → CONDITION IS FALSE ✗</span>
+</span><span id="__span-4-31"><a id="__codelineno-4-31" name="__codelineno-4-31" href="#__codelineno-4-31"></a>    <span class="c1"># Last-resort path is SKIPPED</span>
+</span></code></pre></div>
+<p><strong>Result for trackcorr P2</strong>: <code>curr_path_inf.inlist == 0</code> and <code>next_frame = -1</code>
+- <strong>No link registered</strong> ✗</p>
+<h4 id="track3d-path-for-p2">track3d Path for P2<a class="headerlink" href="#track3d-path-for-p2" title="Permanent link">&para;</a></h4>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># Level 1: prev_frame &gt;= 0? NO → skip</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="c1"># Level 2: Check for linked neighbors</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_parts</span><span class="p">):</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>    <span class="k">if</span> <span class="n">j</span> <span class="o">==</span> <span class="n">P2_idx</span><span class="p">:</span> <span class="k">continue</span>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>    <span class="n">nbr</span> <span class="o">=</span> <span class="n">buf</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">path_info</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>    <span class="k">if</span> <span class="p">(</span><span class="n">distance_to_nbr</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">dz</span><span class="p">)</span> <span class="ow">and</span> <span class="n">nbr</span><span class="o">.</span><span class="n">prev_frame</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">):</span>
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>        <span class="n">velocity</span> <span class="o">+=</span> <span class="o">...</span>
+</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>        <span class="n">n_velocity</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>
+</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="k">if</span> <span class="n">n_velocity</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># All other particles &gt; 0.5 mm away (no neighbors)</span>
+</span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a>    <span class="k">continue</span>  <span class="c1"># Level 2 skipped</span>
+</span><span id="__span-5-13"><a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a>
+</span><span id="__span-5-14"><a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a><span class="c1"># Level 3: No previous link, no neighbor links</span>
+</span><span id="__span-5-15"><a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a><span class="n">curr_pi</span> <span class="o">=</span> <span class="n">buf</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">path_info</span><span class="p">[</span><span class="n">P2_idx</span><span class="p">]</span>  <span class="c1"># prev_frame = -1</span>
+</span><span id="__span-5-16"><a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a><span class="k">if</span> <span class="n">curr_pi</span><span class="o">.</span><span class="n">prev_frame</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">curr_pi</span><span class="o">.</span><span class="n">next_frame</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+</span><span id="__span-5-17"><a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a>    <span class="k">continue</span>  <span class="c1"># FALSE → proceed</span>
+</span><span id="__span-5-18"><a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a>
+</span><span id="__span-5-19"><a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a><span class="n">predicted</span> <span class="o">=</span> <span class="n">curr_pi</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>  <span class="c1"># (4.277, 3.289, 2.906)</span>
+</span><span id="__span-5-20"><a id="__codelineno-5-20" name="__codelineno-5-20" href="#__codelineno-5-20"></a>
+</span><span id="__span-5-21"><a id="__codelineno-5-21" name="__codelineno-5-21" href="#__codelineno-5-21"></a><span class="n">cand_indices</span> <span class="o">=</span> <span class="n">find_candidates_in_3d</span><span class="p">(</span><span class="n">buf</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">predicted</span><span class="p">,</span> <span class="p">(</span><span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">dz</span><span class="p">))</span>
+</span><span id="__span-5-22"><a id="__codelineno-5-22" name="__codelineno-5-22" href="#__codelineno-5-22"></a><span class="c1"># → finds P2_10005 at (4.225, 3.355, 2.906), distance (0.052, 0.066, 0.000)</span>
+</span><span id="__span-5-23"><a id="__codelineno-5-23" name="__codelineno-5-23" href="#__codelineno-5-23"></a><span class="c1"># All within (0.5, 0.5, 0.5) ✓</span>
+</span><span id="__span-5-24"><a id="__codelineno-5-24" name="__codelineno-5-24" href="#__codelineno-5-24"></a>
+</span><span id="__span-5-25"><a id="__codelineno-5-25" name="__codelineno-5-25" href="#__codelineno-5-25"></a><span class="k">if</span> <span class="n">cand_indices</span> <span class="ow">and</span> <span class="n">buf</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">path_info</span><span class="p">[</span><span class="n">best_cand</span><span class="p">]</span><span class="o">.</span><span class="n">prev_frame</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+</span><span id="__span-5-26"><a id="__codelineno-5-26" name="__codelineno-5-26" href="#__codelineno-5-26"></a>    <span class="n">curr_pi</span><span class="o">.</span><span class="n">next_frame</span> <span class="o">=</span> <span class="n">best_cand</span>  <span class="c1"># Link registered ✓</span>
+</span><span id="__span-5-27"><a id="__codelineno-5-27" name="__codelineno-5-27" href="#__codelineno-5-27"></a>    <span class="n">buf</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">path_info</span><span class="p">[</span><span class="n">best_cand</span><span class="p">]</span><span class="o">.</span><span class="n">prev_frame</span> <span class="o">=</span> <span class="n">P2_idx</span>
+</span><span id="__span-5-28"><a id="__codelineno-5-28" name="__codelineno-5-28" href="#__codelineno-5-28"></a>    <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+</span></code></pre></div>
+<p><strong>Result for track3d P2</strong>: <code>next_frame = 1</code> (index of P2_10005)
+- <strong>Link registered</strong> ✓</p>
+<h4 id="comparison-at-step-10004">Comparison at Step 10004<a class="headerlink" href="#comparison-at-step-10004" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>trackcorr</th>
+<th>track3d</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P0-P3 links</td>
+<td>4</td>
+<td>4</td>
+</tr>
+<tr>
+<td>P2 links</td>
+<td><strong>0</strong> ✗</td>
+<td><strong>1</strong> ✓</td>
+</tr>
+<tr>
+<td>Total links</td>
+<td><strong>4</strong></td>
+<td><strong>5</strong></td>
+</tr>
+<tr>
+<td>Lost particles</td>
+<td><strong>1</strong></td>
+<td><strong>0</strong></td>
+</tr>
+<tr>
+<td>Output linkage files</td>
+<td>5 files (10001-10005)</td>
+<td>5 files (10001-10005)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="trajectory-fragmentation-results">Trajectory Fragmentation Results<a class="headerlink" href="#trajectory-fragmentation-results" title="Permanent link">&para;</a></h2>
+<h3 id="trackcorr-output-7-trajectories">trackcorr Output: 7 Trajectories<a class="headerlink" href="#trackcorr-output-7-trajectories" title="Permanent link">&para;</a></h3>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>T1: [10001] (3.095,4.352,2.401) → [10002] (3.027,4.401,2.403) 
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>    → [10003] (2.957,4.448,2.402) → [10004] (2.887,4.493,2.402) 
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>    → [10005] (2.817,4.537,2.405)   [P0 ✓ 5 frames]
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>T2: [10001] (2.983,5.391,0.419) → [10002] (2.909,5.429,0.424) 
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>    → [10003] (2.835,5.469,0.422) → [10004] (2.761,5.507,0.422) 
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>    → [10005] (2.686,5.543,0.420)   [P1 ✓ 5 frames]
+</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>
+</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>T3: [10001] (4.425,3.087,2.906) → [10002] (4.378,3.155,2.907)
+</span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>    [P2 fragment 1 — 2 frames, breaks at gap]
+</span><span id="__span-6-11"><a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>
+</span><span id="__span-6-12"><a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a>T4: [10001] (3.693,1.136,0.596) → [10002] (3.668,1.214,0.597) 
+</span><span id="__span-6-13"><a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a>    → [10003] (3.642,1.292,0.595) → [10004] (3.614,1.369,0.596) 
+</span><span id="__span-6-14"><a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a>    → [10005] (3.584,1.445,0.595)   [P3 ✓ 5 frames]
+</span><span id="__span-6-15"><a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a>
+</span><span id="__span-6-16"><a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a>T5: [10001] (2.727,2.022,1.677) → [10002] (2.679,2.085,1.678) 
+</span><span id="__span-6-17"><a id="__codelineno-6-17" name="__codelineno-6-17" href="#__codelineno-6-17"></a>    → [10003] (2.630,2.147,1.677) → [10004] (2.579,2.208,1.681) 
+</span><span id="__span-6-18"><a id="__codelineno-6-18" name="__codelineno-6-18" href="#__codelineno-6-18"></a>    → [10005] (2.527,2.267,1.680)   [P4 ✓ 5 frames]
+</span><span id="__span-6-19"><a id="__codelineno-6-19" name="__codelineno-6-19" href="#__codelineno-6-19"></a>
+</span><span id="__span-6-20"><a id="__codelineno-6-20" name="__codelineno-6-20" href="#__codelineno-6-20"></a>T6: [10004] (4.277,3.289,2.906)
+</span><span id="__span-6-21"><a id="__codelineno-6-21" name="__codelineno-6-21" href="#__codelineno-6-21"></a>    [P2 singleton — 1 frame, isolated particle]
+</span><span id="__span-6-22"><a id="__codelineno-6-22" name="__codelineno-6-22" href="#__codelineno-6-22"></a>
+</span><span id="__span-6-23"><a id="__codelineno-6-23" name="__codelineno-6-23" href="#__codelineno-6-23"></a>T7: [10005] (4.225,3.355,2.906)
+</span><span id="__span-6-24"><a id="__codelineno-6-24" name="__codelineno-6-24" href="#__codelineno-6-24"></a>    [P2 singleton — 1 frame, isolated particle]
+</span></code></pre></div>
+<p><strong>Summary</strong>: 7 trajectories, <strong>3 fragments of P2</strong> (T3, T6, T7)</p>
+<hr />
+<h3 id="track3d-output-6-trajectories">track3d Output: 6 Trajectories<a class="headerlink" href="#track3d-output-6-trajectories" title="Permanent link">&para;</a></h3>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>T1-T5: [Same as trackcorr T1-T5 for P0, P1, P3, P4]
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>T6: [10004] (4.277,3.289,2.906) → [10005] (4.225,3.355,2.906)
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>    [P2 fragment — 2 frames, correctly linked]
+</span></code></pre></div>
+<p><strong>Summary</strong>: 6 trajectories, <strong>2 fragments of P2</strong> (T3, T6)</p>
+<hr />
+<h2 id="quantitative-comparison">Quantitative Comparison<a class="headerlink" href="#quantitative-comparison" title="Permanent link">&para;</a></h2>
+<h3 id="forward-tracking-results">Forward Tracking Results<a class="headerlink" href="#forward-tracking-results" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>trackcorr</th>
+<th>track3d</th>
+<th>Difference</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Trajectories</strong></td>
+<td>7</td>
+<td>6</td>
+<td>+1 (trackcorr overfrags)</td>
+</tr>
+<tr>
+<td><strong>P2 fragments</strong></td>
+<td>3</td>
+<td>2</td>
+<td>+1</td>
+</tr>
+<tr>
+<td><strong>Gaps</strong></td>
+<td>1 (10002→10004)</td>
+<td>1 (10002→10004)</td>
+<td>Same</td>
+</tr>
+<tr>
+<td><strong>Relinks</strong></td>
+<td>0</td>
+<td>1 (10004→10005)</td>
+<td>+1 (track3d advantage)</td>
+</tr>
+<tr>
+<td><strong>Particle average length</strong></td>
+<td>4.0 frames</td>
+<td>4.2 frames</td>
+<td>+0.2 (track3d better)</td>
+</tr>
+<tr>
+<td><strong>Average links/frame</strong></td>
+<td>4.5</td>
+<td>4.5</td>
+<td>Same</td>
+</tr>
+<tr>
+<td><strong>Lost particles/frame</strong></td>
+<td>0.2</td>
+<td>0.0</td>
+<td>0.2 worse</td>
+</tr>
+</tbody>
+</table>
+<h3 id="file-output-sets">File Output Sets<a class="headerlink" href="#file-output-sets" title="Permanent link">&para;</a></h3>
+<p><strong>trackcorr</strong> ptv_is files:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>ptv_is.10001  → 5 entries (all link forward)
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>ptv_is.10002  → 4 entries (P2 missing, 4 link forward)
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>ptv_is.10003  → 4 entries (P2 absent, 4 link forward)
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>ptv_is.10004  → 5 entries (P2 10001↔10002, new P2 isolated, others link)
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>ptv_is.10005  → 5 entries (all isolated singletons)
+</span></code></pre></div></p>
+<p><strong>track3d</strong> ptv_is files:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>ptv_is.10001  → 5 entries (all link forward)
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>ptv_is.10002  → 4 entries (P2 missing, 4 link forward)
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>ptv_is.10003  → 4 entries (P2 absent, 4 link forward)
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>ptv_is.10004  → 5 entries (P2 links to 10005, others link)
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>ptv_is.10005  → 5 entries (all isolated singletons)
+</span></code></pre></div></p>
+<hr />
+<h2 id="root-cause-the-fallback-gate">Root Cause: The Fallback Gate<a class="headerlink" href="#root-cause-the-fallback-gate" title="Permanent link">&para;</a></h2>
+<p>Both algorithms have a <strong>last-resort direct-displacement link</strong> for particles when the 3-frame chain fails or doesn't exist.</p>
+<h3 id="trackcorr-last-resort-line-1343">trackcorr Last-Resort (line 1343)<a class="headerlink" href="#trackcorr-last-resort-line-1343" title="Permanent link">&para;</a></h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="c1"># try to link if kk is not found/good enough and prev exist</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="k">if</span> <span class="n">curr_path_inf</span><span class="o">.</span><span class="n">inlist</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">curr_path_inf</span><span class="o">.</span><span class="n">prev_frame</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>    <span class="n">diff_pos</span> <span class="o">=</span> <span class="n">vec_subt</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">X</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>    <span class="k">if</span> <span class="n">pos3d_in_bounds</span><span class="p">(</span><span class="n">diff_pos</span><span class="p">,</span> <span class="n">tpar</span><span class="p">):</span>
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>        <span class="n">angle</span><span class="p">,</span> <span class="n">acc</span> <span class="o">=</span> <span class="n">angle_acc</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">X</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">X</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">acc</span> <span class="o">&lt;</span> <span class="n">tpar</span><span class="o">.</span><span class="n">dacc</span> <span class="ow">and</span> <span class="n">angle</span> <span class="o">&lt;</span> <span class="n">tpar</span><span class="o">.</span><span class="n">dangle</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">acc</span> <span class="o">&lt;</span> <span class="n">tpar</span><span class="o">.</span><span class="n">dacc</span> <span class="o">/</span> <span class="mi">10</span><span class="p">):</span>
+</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>            <span class="c1"># Register link</span>
+</span></code></pre></div>
+<p><strong>Problem</strong>: The gate <code>prev_frame &gt;= 0</code> prevents re-appeared particles (prev_frame = -1) from using this fallback.</p>
+<h3 id="track3d-level-3-no-gate">track3d Level 3 (no gate)<a class="headerlink" href="#track3d-level-3-no-gate" title="Permanent link">&para;</a></h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="c1"># No previous link, no neighbors with previous links</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">orig_parts</span><span class="p">):</span>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>    <span class="n">curr_pi</span> <span class="o">=</span> <span class="n">curr</span><span class="o">.</span><span class="n">path_info</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>    <span class="k">if</span> <span class="n">curr_pi</span><span class="o">.</span><span class="n">prev_frame</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">curr_pi</span><span class="o">.</span><span class="n">next_frame</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>        <span class="k">continue</span>  <span class="c1"># Skip if already has links</span>
+</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>
+</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>    <span class="n">predicted</span> <span class="o">=</span> <span class="n">curr_pi</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>  <span class="c1"># Use current position</span>
+</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a>    <span class="n">cand_indices</span> <span class="o">=</span> <span class="n">find_candidates_in_3d</span><span class="p">(</span><span class="n">next_buf</span><span class="p">,</span> <span class="n">predicted</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">dz</span><span class="p">)</span>
+</span><span id="__span-11-9"><a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a>
+</span><span id="__span-11-10"><a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a>    <span class="k">if</span> <span class="n">cand_indices</span><span class="p">:</span>
+</span><span id="__span-11-11"><a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a>        <span class="c1"># Link without dacc/dangle test</span>
+</span><span id="__span-11-12"><a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a>        <span class="n">curr_pi</span><span class="o">.</span><span class="n">next_frame</span> <span class="o">=</span> <span class="n">best</span>  <span class="c1"># REGISTERED</span>
+</span></code></pre></div>
+<p><strong>Advantage</strong>: No gate on <code>prev_frame</code>. If a particle (new or re-appeared) is unlinked, try Level 3.</p>
+<hr />
+<h2 id="backward-tracking-impact">Backward Tracking Impact<a class="headerlink" href="#backward-tracking-impact" title="Permanent link">&para;</a></h2>
+<h3 id="forward-tracking-summary">Forward Tracking Summary<a class="headerlink" href="#forward-tracking-summary" title="Permanent link">&para;</a></h3>
+<p>After forward loop completes (5 steps):</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>Linkage state:
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>- P0: continuous 10001-10005 ✓
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>- P1: continuous 10001-10005 ✓
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>- P2: two fragments [10001-10002] and [10004-10005] (trackcorr)
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>      two fragments [10001-10002] and [10004-10005] (track3d)
+</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>- P3: continuous 10001-10005 ✓
+</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>- P4: continuous 10001-10005 ✓
+</span><span id="__span-12-8"><a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a>
+</span><span id="__span-12-9"><a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a>Gap: frame 10003 with 4 particles, cannot bridge forward or backward alone
+</span></code></pre></div>
+<h3 id="backward-tracking-algorithm-trackback_c">Backward Tracking Algorithm (trackback_c)<a class="headerlink" href="#backward-tracking-algorithm-trackback_c" title="Permanent link">&para;</a></h3>
+<p>Operates on <strong>existing forward state</strong>, processes frames in <strong>reverse</strong> (10005 → 10001).</p>
+<p>At each backward step:
+1. Look at particles with <code>next_frame &gt;= 0</code> (have forward links)
+2. Try to find predecessors in previous frame
+3. Attempt to fill gaps using particles that were previously unlinked</p>
+<p><strong>For P2 gap at frame 10003</strong>:</p>
+<p>Forward pass leaves:
+- P2 in [10001, 10002]: prev=-1, next=1 (linked forward)
+- P2 absent in frame 10003
+- P2 in [10004, 10005]: prev=-1 (re-appeared, unlinked in trackcorr, linked in track3d), next=-1</p>
+<p>Backward pass from frame 10003:
+1. Frame 10003 is empty for P2
+2. Move to frame 10002: P2 has <code>next_frame=1</code> (forward link exists)
+3. Try to extend forward link by finding match at frame 10003:
+   - P2_10002 position: (4.378, 3.155, 2.907)
+   - Predict next (extrapolate velocity): ~(4.327, 3.221, 2.906)
+   - Search for candidate at frame 10003: <strong>FAILS</strong> (P2 absent)
+4. Move to frame 10001: try linking to frame 10002
+   - Already linked forward ✓</p>
+<p><strong>Backward result</strong>: Cannot bridge 10002→10003 gap (P2 physically absent in 10003).
+However, backward tracks the existing <strong>10004→10005</strong> link more thoroughly, assigning final trajectory segments.</p>
+<hr />
+<h2 id="why-track3d-succeeds-where-trackcorr-fails">Why track3d Succeeds Where trackcorr Fails<a class="headerlink" href="#why-track3d-succeeds-where-trackcorr-fails" title="Permanent link">&para;</a></h2>
+<h3 id="algorithmic-differences-at-step-10004">Algorithmic Differences at Step 10004<a class="headerlink" href="#algorithmic-differences-at-step-10004" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>trackcorr</th>
+<th>track3d</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Prediction for new particles</strong></td>
+<td>Requires valid 3-frame chain (buf[3]) OR fallback requires <code>prev_frame &gt;= 0</code></td>
+<td>Uses zero-velocity fallback in Level 3 for any unlinked particle</td>
+</tr>
+<tr>
+<td><strong>Requires dacc/dangle check</strong></td>
+<td>Yes (line 1320-1322)</td>
+<td>No in Level 3 (just 3D bounds)</td>
+</tr>
+<tr>
+<td><strong>Requires angle_acc computation</strong></td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr>
+<td><strong>Gate on prev_frame</strong></td>
+<td>YES (line 1343) ✗</td>
+<td>NO ✓</td>
+</tr>
+<tr>
+<td><strong>Handles re-appearance</strong></td>
+<td>Only if it has predecessor or 3-frame lookahead</td>
+<td>Yes, via Level 3</td>
+</tr>
+</tbody>
+</table>
+<h3 id="root-cause-summary">Root Cause Summary<a class="headerlink" href="#root-cause-summary" title="Permanent link">&para;</a></h3>
+<p><strong>trackcorr</strong>: Last-resort fallback requires <code>prev_frame &gt;= 0</code>. At step 10004, P2 has <code>prev_frame = -1</code> (no history in frame 10003), so fallback is skipped.</p>
+<p><strong>track3d</strong>: Level 3 explicitly handles particles with <code>prev_frame == -1</code>. It uses zero-velocity prediction and searches in the next frame without requiring predecessor history.</p>
+<hr />
+<h2 id="velocity-based-relinking-insights">Velocity-Based Relinking Insights<a class="headerlink" href="#velocity-based-relinking-insights" title="Permanent link">&para;</a></h2>
+<h3 id="p2s-actual-motion">P2's Actual Motion<a class="headerlink" href="#p2s-actual-motion" title="Permanent link">&para;</a></h3>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>P2 velocity (10001→10002):
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>  Δ = (4.378 - 4.425, 3.155 - 3.087, 2.907 - 2.906)
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>    = (-0.047, 0.068, 0.001) mm/frame
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>  |Δ| = 0.083 mm/frame
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>
+</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>P2 velocity (10004→10005):
+</span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a>  Δ = (4.225 - 4.277, 3.355 - 3.289, 2.906 - 2.906)
+</span><span id="__span-13-8"><a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a>    = (-0.052, 0.066, 0.0) mm/frame
+</span><span id="__span-13-9"><a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a>  |Δ| = 0.085 mm/frame
+</span><span id="__span-13-10"><a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a>
+</span><span id="__span-13-11"><a id="__codelineno-13-11" name="__codelineno-13-11" href="#__codelineno-13-11"></a>Velocity consistency: |0.083 - 0.085| / 0.084 = 2.4% change
+</span><span id="__span-13-12"><a id="__codelineno-13-12" name="__codelineno-13-12" href="#__codelineno-13-12"></a>  → Highly consistent velocity!
+</span></code></pre></div>
+<h3 id="what-track3ds-zero-velocity-assumption-captures">What track3d's Zero-Velocity Assumption Captures<a class="headerlink" href="#what-track3ds-zero-velocity-assumption-captures" title="Permanent link">&para;</a></h3>
+<p>At step 10004, P2 has been absent for 1 frame (10003). </p>
+<p><strong>track3d's Level 3 logic</strong>:
+1. P2_10004 position: (4.277, 3.289, 2.906)
+2. Prediction (zero-velocity): (4.277, 3.289, 2.906)
+3. Search box: ±0.5 mm in x, y, z
+4. P2_10005 at (4.225, 3.355, 2.906) is within bounds:
+   - |4.277 - 4.225| = 0.052 mm ✓
+   - |3.289 - 3.355| = 0.066 mm ✓
+   - |2.906 - 2.906| = 0.0 mm ✓</p>
+<p><strong>Why it works</strong>: P2 didn't move far during the gap (particles in turbulence still have local tendency), so zero-velocity prediction is accurate to within search tolerance.</p>
+<h3 id="lessons-for-better-tracking-methods">Lessons for Better Tracking Methods<a class="headerlink" href="#lessons-for-better-tracking-methods" title="Permanent link">&para;</a></h3>
+<ol>
+<li>
+<p><strong>Don't gate linking on <code>prev_frame</code></strong> — particles can re-appear with no history; use other clues (position proximity, velocity bounds)</p>
+</li>
+<li>
+<p><strong>Zero-velocity fallback is surprisingly effective</strong> — when particles re-appear, they haven't traveled far; use current position as prediction center</p>
+</li>
+<li>
+<p><strong>Track </strong>neighborhood motion** — track3d Level 2 uses average neighbor velocity; this could be expanded to estimate velocity from surrounding particles even if predecessor is absent</p>
+</li>
+<li>
+<p><strong>Multi-scale predictions</strong>:</p>
+</li>
+<li>Level 1: full acceleration prediction (2*curr - prev) when history exists</li>
+<li>Level 2: average neighborhood velocity</li>
+<li>Level 3: zero-velocity (particles naturally persist locally)</li>
+<li>
+<p>Level 4 (proposed): <strong>smooth interpolation</strong> — if particle absent 1 frame, interpolate position from future frames backward</p>
+</li>
+<li>
+<p><strong>Lookahead depth matters</strong> — trackcorr's 3-frame chain is powerful when available but fragile when lookahead is unavailable; track3d's fallback strategy is more robust at sequence boundaries</p>
+</li>
+</ol>
+<hr />
+<h2 id="backward-tracking-recovery-capabilities">Backward Tracking Recovery Capabilities<a class="headerlink" href="#backward-tracking-recovery-capabilities" title="Permanent link">&para;</a></h2>
+<h3 id="what-backward-tracking-can-and-cannot-do">What Backward Tracking Can and Cannot Do<a class="headerlink" href="#what-backward-tracking-can-and-cannot-do" title="Permanent link">&para;</a></h3>
+<p><strong>Can recover</strong>:
+- Particles that were missed in forward pass but re-appear later
+- Secondary links when forward chain exists but was incomplete
+- Fill in isolated singletons if they fall between linked trajectories</p>
+<p><strong>Cannot recover</strong>:
+- Particles physically absent in intermediate frames (e.g., P2 absent in 10003)
+- Entirely new particles detected only in backward pass (would require re-detection)
+- Improve detection sensitivity (relies on forward targets)</p>
+<h3 id="statistical-impact-forward-vs-backwardforward">Statistical Impact: Forward vs Backward&amp;Forward<a class="headerlink" href="#statistical-impact-forward-vs-backwardforward" title="Permanent link">&para;</a></h3>
+<p>After forward (<code>trackcorr</code>):
+<div class="language-text highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>P0: 5 frames (1001, 10002, 10003, 10004, 10005)
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>P1: 5 frames
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>P2: 2 fragments (3 parts: 10001-10002, 10004, 10005)
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>P3: 5 frames
+</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>P4: 5 frames
+</span><span id="__span-14-6"><a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a>
+</span><span id="__span-14-7"><a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a>Trajectory count: 7
+</span><span id="__span-14-8"><a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a>Average trajectory length: 3.43 frames
+</span><span id="__span-14-9"><a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a>Gap coverage: 0 frames (1-frame gap at 10003 not bridged)
+</span></code></pre></div></p>
+<p>After forward + backward:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>P0-P1, P3-P4: identical (strong forward links preserved)
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>P2: still 2 fragments (10002-linked and 10004-10005)
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>    But backward pass validates and confirms segments
+</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a>
+</span><span id="__span-15-5"><a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a>Trajectory count: 7 (no change, gap still unbridgeable)
+</span><span id="__span-15-6"><a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a>Average trajectory length: 3.43 frames
+</span><span id="__span-15-7"><a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a>Gap coverage: 0 frames (same)
+</span><span id="__span-15-8"><a id="__codelineno-15-8" name="__codelineno-15-8" href="#__codelineno-15-8"></a>
+</span><span id="__span-15-9"><a id="__codelineno-15-9" name="__codelineno-15-9" href="#__codelineno-15-9"></a>Difference: ~0 filename diffs at key frames (10002 updated very slightly in priorities)
+</span></code></pre></div></p>
+<p><strong>Conclusion</strong>: Backward tracking doesn't <strong>create</strong> new links where forward failed (the gap is unbridgeable). It <strong>validates</strong> and <strong>re-scores</strong> existing links, useful for tie-breaking and refining link priorities when multiple candidates exist.</p>
+<hr />
+<h2 id="recommendations-for-users">Recommendations for Users<a class="headerlink" href="#recommendations-for-users" title="Permanent link">&para;</a></h2>
+<h3 id="when-to-expect-fragmentation">When to Expect Fragmentation<a class="headerlink" href="#when-to-expect-fragmentation" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Particles in occlusions or gaps</strong> — if a particle is unseen for 1+ frames, both algorithms will fragment</li>
+<li><strong>Sequence boundaries</strong> — when lookahead buffer is unavailable (final 1-2 frames), re-appearance linking is reduced</li>
+<li><strong>High-speed particles</strong> — if displacement exceeds search tolerance, links fail regardless of algorithm</li>
+</ol>
+<h3 id="how-to-improve-trajectory-recovery">How to Improve Trajectory Recovery<a class="headerlink" href="#how-to-improve-trajectory-recovery" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Extend sequence length</strong> — ensure you have lookahead frames; the Burgers case has only 5 frames with buffer limited to 4</li>
+<li><strong>Tune search tolerances</strong> — <code>dvxmax</code>, <code>dvymax</code>, <code>dvzmax</code> should be 1.5–2× your expected max velocity per frame</li>
+<li><strong>Use track3d for pre-reconstructed data</strong> — if you have 3D targets, use track3d; it's simpler and has more robust fallbacks</li>
+<li><strong>Use trackcorr for raw images</strong> — trackcorr's multi-camera approach better handles occlusions and provides re-detection of lost particles via <code>add_particle</code> option</li>
+<li><strong>Run backward tracking</strong> — always run backward pass to validate forward results and fill in easy gaps</li>
+<li><strong>Sort by trajectory length</strong> — post-process, filter out singletons and very short fragments; they're often tracking noise</li>
+</ol>
+<h3 id="next-generation-tracking-enhancements">Next-Generation Tracking Enhancements<a class="headerlink" href="#next-generation-tracking-enhancements" title="Permanent link">&para;</a></h3>
+<p>Based on this analysis, proposed improvements:</p>
+<ol>
+<li><strong>Predictive velocity model</strong> — Instead of zero-velocity, estimate velocity from neighbors or temporal interpolation</li>
+<li><strong>Gapless linking</strong> — When re-appearance particle is detected, automatically interpolate position from forward and backward candidates to estimate gap trajectory</li>
+<li><strong>Multi-camera re-detection</strong> — For trackcorr, automatically re-project lost particle along predicted path to detect if available in images (implement <code>add_particle</code> smartly)</li>
+<li><strong>Adaptive search windows</strong> — Expand search tolerance at frame boundaries when lookahead is unavailable</li>
+<li><strong>Persistence-based linking</strong> — Track "momentum" of particle groups; particles that move together are likely same objects even if individually untracked</li>
+</ol>
+<hr />
+<h2 id="code-references">Code References<a class="headerlink" href="#code-references" title="Permanent link">&para;</a></h2>
+<h3 id="trackcorr-last-resort-link-problematic">trackcorr Last-Resort Link (Problematic)<a class="headerlink" href="#trackcorr-last-resort-link-problematic" title="Permanent link">&para;</a></h3>
+<p><a href="../../../algorithms/track.py#L1343">algorithms/track.py Line 1343</a></p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="c1"># try to link if kk is not found/good enough and prev exist</span>
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="k">if</span> <span class="n">curr_path_inf</span><span class="o">.</span><span class="n">inlist</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">curr_path_inf</span><span class="o">.</span><span class="n">prev_frame</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>    <span class="n">diff_pos</span> <span class="o">=</span> <span class="n">vec_subt</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">X</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>    <span class="k">if</span> <span class="n">pos3d_in_bounds</span><span class="p">(</span><span class="n">diff_pos</span><span class="p">,</span> <span class="n">tpar</span><span class="p">):</span>
+</span><span id="__span-16-5"><a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a>        <span class="c1"># register link</span>
+</span></code></pre></div>
+<p><strong>Issue</strong>: <code>prev_frame &gt;= 0</code> gate blocks re-appeared particles.</p>
+<h3 id="track3d-level-3-fallback-robust">track3d Level 3 Fallback (Robust)<a class="headerlink" href="#track3d-level-3-fallback-robust" title="Permanent link">&para;</a></h3>
+<p><a href="../../../algorithms/track.py#L1673">algorithms/track.py Line 1673</a></p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="c1"># Level 3: No previous link, no neighbors with previous links</span>
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">orig_parts</span><span class="p">):</span>
+</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>    <span class="n">curr_pi</span> <span class="o">=</span> <span class="n">curr</span><span class="o">.</span><span class="n">path_info</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+</span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a>    <span class="k">if</span> <span class="n">curr_pi</span><span class="o">.</span><span class="n">prev_frame</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">curr_pi</span><span class="o">.</span><span class="n">next_frame</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+</span><span id="__span-17-5"><a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a>        <span class="k">continue</span>  <span class="c1"># Only unlinked particles</span>
+</span><span id="__span-17-6"><a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a>
+</span><span id="__span-17-7"><a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a>    <span class="n">predicted</span> <span class="o">=</span> <span class="n">curr_pi</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>  <span class="c1"># Zero-velocity</span>
+</span><span id="__span-17-8"><a id="__codelineno-17-8" name="__codelineno-17-8" href="#__codelineno-17-8"></a>    <span class="n">cand_indices</span> <span class="o">=</span> <span class="n">find_candidates_in_3d</span><span class="p">(</span><span class="n">next_buf</span><span class="p">,</span> <span class="n">predicted</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">dz</span><span class="p">)</span>
+</span><span id="__span-17-9"><a id="__codelineno-17-9" name="__codelineno-17-9" href="#__codelineno-17-9"></a>
+</span><span id="__span-17-10"><a id="__codelineno-17-10" name="__codelineno-17-10" href="#__codelineno-17-10"></a>    <span class="k">if</span> <span class="n">cand_indices</span><span class="p">:</span>
+</span><span id="__span-17-11"><a id="__codelineno-17-11" name="__codelineno-17-11" href="#__codelineno-17-11"></a>        <span class="n">curr_pi</span><span class="o">.</span><span class="n">next_frame</span> <span class="o">=</span> <span class="n">linkdecis</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># Link registered</span>
+</span></code></pre></div>
+<p><strong>Advantage</strong>: No gate; handles re-appearances via Level 3.</p>
+<hr />
+<h2 id="testing-validation">Testing &amp; Validation<a class="headerlink" href="#testing-validation" title="Permanent link">&para;</a></h2>
+<h3 id="regression-tests-added">Regression Tests Added<a class="headerlink" href="#regression-tests-added" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>test_burgers_python_forward_relinks_reappeared_particle_in_both_trackers</strong></li>
+<li>Verifies P2 10004→10005 link in both trackcorr and track3d forward passes</li>
+<li>
+<p>Ensures fix is applied consistently</p>
+</li>
+<li>
+<p><strong>test_burgers_python_backward_starts_from_forward_and_keeps_relinked_segment</strong></p>
+</li>
+<li>Confirms backward tracking preserves re-linked segments</li>
+<li>
+<p>Validates backward doesn't corrupt forward results</p>
+</li>
+<li>
+<p><strong>test_burgers_track3d_forward_python_vs_cython_verify_deviations</strong></p>
+</li>
+<li>Updated expected diff set; now shows Python and Cython fully match for track3d</li>
+</ol>
+<h3 id="how-to-run-tests">How to Run Tests<a class="headerlink" href="#how-to-run-tests" title="Permanent link">&para;</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="c1"># Focused regression tests</span>
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>tests/unit/test_track.py<span class="w"> </span>-k<span class="w"> </span><span class="s2">&quot;burgers&quot;</span><span class="w"> </span>-v
+</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a>uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>tests/unit/test_track3d.py<span class="w"> </span>-k<span class="w"> </span><span class="s2">&quot;burgers&quot;</span><span class="w"> </span>-v
+</span></code></pre></div>
+<hr />
+<h2 id="conclusion">Conclusion<a class="headerlink" href="#conclusion" title="Permanent link">&para;</a></h2>
+<h3 id="key-findings">Key Findings<a class="headerlink" href="#key-findings" title="Permanent link">&para;</a></h3>
+<ol>
+<li>
+<p><strong>Gap causes fragmentation</strong> — A 1-frame gap (frame 10003 absent) fragments P2 into multiple parts; both algorithms cannot bridge a fully absent frame.</p>
+</li>
+<li>
+<p><strong>Re-appearance linking differs</strong> — When P2 re-appears at frame 10004 with no valid lookahead (buffer 3 is empty):</p>
+</li>
+<li><strong>trackcorr</strong> fails because fallback requires <code>prev_frame &gt;= 0</code></li>
+<li>
+<p><strong>track3d</strong> succeeds via Level 3's zero-velocity prediction</p>
+</li>
+<li>
+<p><strong>Buffer availability matters</strong> — At sequence boundaries, lack of lookahead frames (buf[3] empty) severely limits linking options. Designers should ensure sufficient margin.</p>
+</li>
+<li>
+<p><strong>Backward tracking validates but doesn't create links</strong> — Running backward pass confirms forward results but cannot bridge truly absent frames; it's a quality metric, not a gap filler.</p>
+</li>
+<li>
+<p><strong>Zero-velocity is effective</strong> — For particles absent &lt;2 frames, zero-velocity prediction is accurate to within typical search tolerance (0.5 mm).</p>
+</li>
+</ol>
+<h3 id="actionable-insights">Actionable Insights<a class="headerlink" href="#actionable-insights" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>For users</strong>: Extend sequences beyond your event-of-interest; use track3d when 3D data is available; tune search tolerances conservatively</li>
+<li><strong>For developers</strong>: Remove unnecessary gates on <code>prev_frame</code> in linking logic; implement multi-level fallbacks like track3d; consider adaptive search windows at boundaries</li>
+<li><strong>For future work</strong>: Explore predictive velocity models, gapless interpolation, and persistence-based group tracking to further reduce fragmentation.</li>
+</ul>
+<hr />
+<h2 id="appendix-numerical-trace">Appendix: Numerical Trace<a class="headerlink" href="#appendix-numerical-trace" title="Permanent link">&para;</a></h2>
+<h3 id="full-step-by-step-numerical-output">Full Step-by-Step Numerical Output<a class="headerlink" href="#full-step-by-step-numerical-output" title="Permanent link">&para;</a></h3>
+<p><strong>Step 10001</strong> (trackcorr):
+<div class="language-text highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>step: 10001, curr: 5, next_frame: 5, links: 5, lost: 0, add: 0
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>Particles in buf[1]: P0, P1, P2, P3, P4 (all have prev_frame=0,1,2,3,4)
+</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a>Candidates in buf[2]: P0, P1, P2, P3, P4 (all found)
+</span><span id="__span-19-4"><a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a>3-frame chain in buf[3]: P0, P1, P2, P3, P4 (all valid)
+</span><span id="__span-19-5"><a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a>→ All 5 link forward
+</span></code></pre></div></p>
+<p><strong>Step 10002</strong> (trackcorr):
+<div class="language-text highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>step: 10002, curr: 5, next_frame: 4, links: 4, lost: 1, add: 0
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>Particles in buf[1]: P0, P1, P2, P3, P4 (prev_frame=0,1,[broken],3,4)
+</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>Candidates in buf[2]: P0, P1, -, P3, P4 (P2 ABSENT)
+</span><span id="__span-20-4"><a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a>→ P0, P1, P3, P4 link (4 links); P2 breaks (lost: 1)
+</span></code></pre></div></p>
+<p><strong>Step 10003</strong> (trackcorr):
+<div class="language-text highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>step: 10003, curr: 4, next_frame: 5, links: 4, lost: 0, add: 0
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>Particles in buf[1]: P0, P1, P3, P4 (all have valid predecessors)
+</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>Candidates in buf[2]: P0, P1, P3, P4, (P2 ABSENT) (5 total including new detections, P2 missing)
+</span><span id="__span-21-4"><a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a>→ 4 link forward; P2 not in frame, no new detection
+</span></code></pre></div></p>
+<p><strong>Step 10004</strong> (trackcorr) — CRITICAL:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>step: 10004, curr: 5, next_frame: 5, links: 4, lost: 1, add: 0
+</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>Particles in buf[1]: P0(prev=P0_10003), P1(prev=P1_10003), P2(prev=-1), P3(prev=P3_10003), P4(prev=P4_10003)
+</span><span id="__span-22-3"><a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a>P0-P1, P3-P4: Link forward normally (4 links)
+</span><span id="__span-22-4"><a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a>P2: 
+</span><span id="__span-22-5"><a id="__codelineno-22-5" name="__codelineno-22-5" href="#__codelineno-22-5"></a>  - Candidate found in buf[2] (P2_10005) ✓
+</span><span id="__span-22-6"><a id="__codelineno-22-6" name="__codelineno-22-6" href="#__codelineno-22-6"></a>  - Try 3-frame chain in buf[3]: EMPTY (no frame 10006) ✗
+</span><span id="__span-22-7"><a id="__codelineno-22-7" name="__codelineno-22-7" href="#__codelineno-22-7"></a>  - Last-resort fallback: prev_frame=-1, condition FALSE ✗
+</span><span id="__span-22-8"><a id="__codelineno-22-8" name="__codelineno-22-8" href="#__codelineno-22-8"></a>  - next_frame = -1 (NOT LINKED)
+</span><span id="__span-22-9"><a id="__codelineno-22-9" name="__codelineno-22-9" href="#__codelineno-22-9"></a>→ 4 links; P2 lost (1 lost)
+</span></code></pre></div></p>
+<p><strong>trackcorr final</strong>: 7 trajectories (T1-T5 + 2 P2 singletons)</p>
+<hr />
+<p><strong>Same steps with track3d</strong>:</p>
+<p><strong>Steps 10001-10003</strong>: Identical to trackcorr (all forward links made).</p>
+<p><strong>Step 10004 (track3d)</strong> — CRITICAL:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>Level 1: P0(prev&gt;=0), P1(prev&gt;=0), P3(prev&gt;=0), P4(prev&gt;=0) → all link (4 links)
+</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a>Level 2: P2(prev=-1), check neighbors → all &gt;0.5mm away, skip
+</span><span id="__span-23-3"><a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a>Level 3: P2(prev=-1, next=-1) → enter Level 3
+</span><span id="__span-23-4"><a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a>  - predicted = (4.277, 3.289, 2.906)
+</span><span id="__span-23-5"><a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a>  - cand_indices = find_candidates_in_3d(buf[2], predicted, (0.5,0.5,0.5))
+</span><span id="__span-23-6"><a id="__codelineno-23-6" name="__codelineno-23-6" href="#__codelineno-23-6"></a>    → P2_10005 at (4.225, 3.355, 2.906) within bounds ✓
+</span><span id="__span-23-7"><a id="__codelineno-23-7" name="__codelineno-23-7" href="#__codelineno-23-7"></a>  - Link registered: next_frame=1 (1 link)
+</span><span id="__span-23-8"><a id="__codelineno-23-8" name="__codelineno-23-8" href="#__codelineno-23-8"></a>→ 5 links total; 0 lost
+</span></code></pre></div></p>
+<p><strong>track3d final</strong>: 6 trajectories (T1-T5 + 1 P2 fragment)</p>
+<hr />
+<h2 id="update-python-improvements-over-c">Update: Python Improvements Over C<a class="headerlink" href="#update-python-improvements-over-c" title="Permanent link">&para;</a></h2>
+<p>Subsequent analysis of the cavity dataset (~700 particles, 4 frames) revealed two bugs in the C code that the Python translation fixes:</p>
+<h3 id="1-stale-buffer-recycling-fixed-in-python">1. Stale Buffer Recycling (Fixed in Python)<a class="headerlink" href="#1-stale-buffer-recycling-fixed-in-python" title="Permanent link">&para;</a></h3>
+<p>When <code>step &gt;= last - 2</code>, no new frame is available to load into the last buffer slot. After <code>fb_next()</code> rotates the buffer, the old data remains. The C code's <code>assess_new_position()</code> searches this stale data and can create spurious links. The Python fix clears the slot:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a><span class="k">if</span> <span class="n">step</span> <span class="o">&lt;</span> <span class="n">run_info</span><span class="o">.</span><span class="n">seq_par</span><span class="o">.</span><span class="n">last</span> <span class="o">-</span> <span class="mi">2</span><span class="p">:</span>
+</span><span id="__span-24-2"><a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a>    <span class="n">fb</span><span class="o">.</span><span class="n">read_frame_at_end</span><span class="p">(</span><span class="n">step</span> <span class="o">+</span> <span class="mi">3</span><span class="p">,</span> <span class="n">read_links</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span id="__span-24-3"><a id="__codelineno-24-3" name="__codelineno-24-3" href="#__codelineno-24-3"></a><span class="k">else</span><span class="p">:</span>
+</span><span id="__span-24-4"><a id="__codelineno-24-4" name="__codelineno-24-4" href="#__codelineno-24-4"></a>    <span class="n">fb</span><span class="o">.</span><span class="n">buf</span><span class="p">[</span><span class="n">fb</span><span class="o">.</span><span class="n">buf_len</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">num_parts</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># clear stale data</span>
+</span></code></pre></div>
+<p>This eliminates 2 spurious links in the cavity dataset at the last tracking step.</p>
+<h3 id="2-phase-3-losers-retry-python-enhancement">2. Phase 3: Losers Retry (Python Enhancement)<a class="headerlink" href="#2-phase-3-losers-retry-python-enhancement" title="Permanent link">&para;</a></h3>
+<p>When two particles compete for the same target in C's conflict resolution, the loser is permanently dropped. The Python translation adds a third phase where losers try their fallback candidates (2nd, 3rd best matches) if unclaimed. On the cavity dataset, this recovers ~27 additional correct links.</p>
+<h3 id="3-c-count1-overcounting">3. C count1 Overcounting<a class="headerlink" href="#3-c-count1-overcounting" title="Permanent link">&para;</a></h3>
+<p>The C code increments <code>count1</code> inside the conflict resolution loop. Particles that lose conflicts after being counted still inflate <code>count1</code>. This explains the discrepancy between C's <code>printf</code> output and the actual file-based link counts:</p>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>C printf count1</th>
+<th>C file links</th>
+<th>Python links</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>10001</td>
+<td>290</td>
+<td>268</td>
+<td>281</td>
+</tr>
+<tr>
+<td>10002</td>
+<td>394</td>
+<td>346</td>
+<td>357</td>
+</tr>
+<tr>
+<td>10003</td>
+<td>339</td>
+<td>304</td>
+<td>307</td>
+</tr>
+</tbody>
+</table>
+<p>With Phase 3 disabled, Python matches C files exactly at steps 10001-10002 (0 mismatches). The 2 remaining mismatches at step 10003 are from the stale buffer fix.</p>
+<p>A synthetic test case (<code>tests/unit/test_synthetic_tracking.py</code>) with 15 particles and known ground truth trajectories confirms:
+- trackcorr: 103/103 correct links (100%), 0 wrong
+- track3d: 102/103 correct links (99%), 0 wrong
+- trackcorr correctly produces &gt;= track3d links</p>
+<h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Tracking Algorithms</strong>: <a href="../tracking/">algorithms/tracking.md</a></li>
+<li><strong>trackcorr_c_loop</strong>: <code>src/openptv2/algorithms/track.py</code></li>
+<li><strong>track3d_loop</strong>: <code>src/openptv2/algorithms/track3d.py</code></li>
+<li><strong>Backward Tracking</strong>: <code>src/openptv2/algorithms/track.py</code> (<code>trackback_c</code>)</li>
+<li><strong>Synthetic Test</strong>: <code>tests/unit/test_synthetic_tracking.py</code></li>
+<li><strong>Burgers Test Suite</strong>: <code>tests/unit/test_track.py</code> and <code>tests/unit/test_track3d.py</code></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

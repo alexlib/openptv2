@@ -1,0 +1,1432 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Unified Particle Tracking Velocimetry with dual-engine support (C/Cython and pure Python/Numba).">
+      
+      
+        <meta name="author" content="OpenPTV Community">
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>openptv2 (optv bindings) -- Generated-Code Orientation - OpenPTV2 Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#openptv2-optv-bindings-generated-code-orientation" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../.." title="OpenPTV2 Documentation" class="md-header__button md-logo" aria-label="OpenPTV2 Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OpenPTV2 Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              openptv2 (optv bindings) -- Generated-Code Orientation
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="purple"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="purple"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/alexlib/openptv2" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    alexlib/openptv2
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../../installation/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Installation & Setup
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../../first_steps/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  First Steps
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../tutorials/getting_started_tutorial/" class="md-tabs__link">
+          
+  
+  
+  Tutorials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../../tests/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Running Tests
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../developer_guide/building/" class="md-tabs__link">
+          
+  
+  
+  Developer Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../algorithms/tracking/" class="md-tabs__link">
+          
+  
+  
+  Algorithms
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../.." title="OpenPTV2 Documentation" class="md-nav__button md-logo" aria-label="OpenPTV2 Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    OpenPTV2 Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/alexlib/openptv2" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    alexlib/openptv2
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation & Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../first_steps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../tutorials/getting_started_tutorial/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    End-to-End Tracking Tutorial
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../tutorials/tracking_visualization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracking Visualization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../tutorials/tracking_debug_visualization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Debug Visualization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../tests/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Running Tests
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developer Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Developer Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../developer_guide/building/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Building from Source
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../developer_guide/cython_and_pure_python/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cython & Pure Python Modes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../developer_guide/documentation_workflow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Documentation Workflow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../developer_guide/packaging_and_releases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Packaging & Releases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../HOW_TO_TEST_GUI/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GUI Testing Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Algorithms
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Algorithms
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../algorithms/tracking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tracking Core
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../algorithms/burgers_gap_relinking_case_study/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Burgers Gap Relinking Case Study
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-generator-inventory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Generator inventory
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-source-of-truth-map" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Source-of-truth map
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-cross-reference-recipe" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Cross-reference recipe
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-idioms-to-treat-as-acceptable-noise" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Idioms to treat as ACCEPTABLE noise
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-cython-specific-bug-patterns-no-ast-scripts-run-manual-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Cython-specific bug patterns (no AST scripts run -- manual analysis)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Cython-specific bug patterns (no AST scripts run -- manual analysis)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pattern-a-__init__-used-instead-of-__cinit__-for-c-allocation-all-11-cdef-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pattern A: __init__ used instead of __cinit__ for C allocation (ALL 11 cdef classes)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pattern-b-read_-methods-reassign-c-pointer-inconsistent-free-before-reassign" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pattern B: read_* methods reassign C pointer -- inconsistent free-before-reassign
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pattern-c-cdef-function-with-no-return-type-exception-spec" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pattern C: cdef function with no return-type exception spec
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pattern-d-no-nogil-blocks-no-buffer-protocol-__getbuffer__" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pattern D: No nogil blocks, no buffer protocol __getbuffer__
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-project-specific-structural-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Project-specific structural patterns
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-build-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Build / configuration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-what-this-orientation-does-not-cover" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. What this orientation does NOT cover
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-triage-hints-for-downstream-agents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Triage hints for downstream agents
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="openptv2-optv-bindings-generated-code-orientation">openptv2 (optv bindings) -- Generated-Code Orientation<a class="headerlink" href="#openptv2-optv-bindings-generated-code-orientation" title="Permanent link">&para;</a></h1>
+<p><strong>Project</strong>: openptv2 -- Particle Tracking Velocimetry with C core + Cython bindings
+<strong>SHA</strong>: 5a8e937cf5e27df489aa89c541c9821072238010
+<strong>Generators detected</strong>: Cython</p>
+<h2 id="1-generator-inventory">1. Generator inventory<a class="headerlink" href="#1-generator-inventory" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Generator</th>
+<th>Version</th>
+<th>Source files</th>
+<th>Output files</th>
+<th>LOC: source / output</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cython</td>
+<td>3.2.4</td>
+<td>11 .pyx + 12 .pxd</td>
+<td>11 .c</td>
+<td>2841+402 / 206,156</td>
+</tr>
+<tr>
+<td>Hand-written C (liboptv)</td>
+<td>n/a</td>
+<td>18 files in lib/src/</td>
+<td>linked via cmake</td>
+<td>(separate library)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="2-source-of-truth-map">2. Source-of-truth map<a class="headerlink" href="#2-source-of-truth-map" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Bugs originate in</strong>: <code>bindings/optv/*.pyx</code> (11 files, 2841 LOC total)</li>
+<li><strong>Generated artefacts (review only via cross-reference)</strong>: <code>bindings/optv/*.c</code> (11 files, 206K LOC)</li>
+<li><strong>C library (separate audit scope)</strong>: <code>lib/src/*.c</code> (18 files) -- the underlying C engine</li>
+<li><strong>Vendored deps</strong>: none</li>
+</ul>
+<h2 id="3-cross-reference-recipe">3. Cross-reference recipe<a class="headerlink" href="#3-cross-reference-recipe" title="Permanent link">&para;</a></h2>
+<p>Cython 3.2.4 embeds source-line markers in generated <code>.c</code>:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>grep &#39;&quot;calibration.pyx&quot;:35&#39; bindings/optv/calibration.c
+</span></code></pre></div></p>
+<h2 id="4-idioms-to-treat-as-acceptable-noise">4. Idioms to treat as ACCEPTABLE noise<a class="headerlink" href="#4-idioms-to-treat-as-acceptable-noise" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Pattern</th>
+<th>grep regex</th>
+<th>Reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Refcount macros</td>
+<td><code>__Pyx_X?(INC\|DEC)REF\(</code></td>
+<td>Cython runtime</td>
+</tr>
+<tr>
+<td>Ownership tracking</td>
+<td><code>__Pyx_X?(GIVE\|GOT)REF\(</code></td>
+<td>Cython runtime</td>
+</tr>
+<tr>
+<td>Error indicator checks</td>
+<td><code>__Pyx_PyErr_</code></td>
+<td>Cython error-path boilerplate</td>
+</tr>
+<tr>
+<td>Buffer protocol setup</td>
+<td><code>__Pyx_GetBuffer\|__Pyx_ReleaseBuffer</code></td>
+<td>Cython typed-memoryview internals</td>
+</tr>
+<tr>
+<td>Type-ready macros</td>
+<td><code>__Pyx_PyType_Ready</code></td>
+<td>Cython module init</td>
+</tr>
+<tr>
+<td>Import machinery</td>
+<td><code>__Pyx_Import\|__Pyx_ImportFrom</code></td>
+<td>Cython module init</td>
+</tr>
+</tbody>
+</table>
+<h2 id="5-cython-specific-bug-patterns-no-ast-scripts-run-manual-analysis">5. Cython-specific bug patterns (no AST scripts run -- manual analysis)<a class="headerlink" href="#5-cython-specific-bug-patterns-no-ast-scripts-run-manual-analysis" title="Permanent link">&para;</a></h2>
+<p><strong>No AST script outputs were found</strong> in <code>reports/optv_v1/preflight/q*.json</code>. The following is manual identification.</p>
+<h3 id="pattern-a-__init__-used-instead-of-__cinit__-for-c-allocation-all-11-cdef-classes">Pattern A: <code>__init__</code> used instead of <code>__cinit__</code> for C allocation (ALL 11 cdef classes)<a class="headerlink" href="#pattern-a-__init__-used-instead-of-__cinit__-for-c-allocation-all-11-cdef-classes" title="Permanent link">&para;</a></h3>
+<p>Every <code>cdef class</code> in this project allocates C memory in <code>__init__</code>, never <code>__cinit__</code>. This means:
+- If <code>__init__</code> raises mid-way, partially-allocated fields may leak (no <code>__cinit__</code> guarantee of <code>__dealloc__</code> being called)
+- Subclass <code>__init__</code> chains could re-allocate without freeing</p>
+<p><strong>Affected classes</strong> (verified): <code>Calibration</code> (calibration.pyx:35), <code>MatchedCoords</code> (correspondences.pyx:63), <code>MultimediaParams</code> (parameters.pyx:57), <code>TrackingParams</code> (parameters.pyx:154), <code>SequenceParams</code> (parameters.pyx:327), <code>VolumeParams</code> (parameters.pyx:420), <code>ControlParams</code> (parameters.pyx:561), <code>TargetParams</code> (parameters.pyx:761), <code>Tracker</code> (tracker.pyx:40), <code>Target</code> (tracking_framebuf.pyx:31), <code>TargetArray</code> (tracking_framebuf.pyx:132), <code>Frame</code> (tracking_framebuf.pyx:241).</p>
+<p><strong>Triage</strong>: CONSIDER MEDIUM -- no subclassing observed in codebase; risk is theoretical but architecturally fragile.</p>
+<h3 id="pattern-b-read_-methods-reassign-c-pointer-inconsistent-free-before-reassign">Pattern B: <code>read_*</code> methods reassign C pointer -- inconsistent free-before-reassign<a class="headerlink" href="#pattern-b-read_-methods-reassign-c-pointer-inconsistent-free-before-reassign" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>File:line</th>
+<th>Frees old pointer?</th>
+<th>Risk</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Calibration.from_file</code></td>
+<td>calibration.pyx:77</td>
+<td>YES (<code>free()</code>)</td>
+<td>OK</td>
+</tr>
+<tr>
+<td><code>TrackingParams.read_track_par</code></td>
+<td>parameters.pyx:210</td>
+<td>YES (<code>free()</code>)</td>
+<td>OK</td>
+</tr>
+<tr>
+<td><code>SequenceParams.read_sequence_par</code></td>
+<td>parameters.pyx:378-379</td>
+<td>YES (NULL-checked <code>free_sequence_par</code>)</td>
+<td>OK</td>
+</tr>
+<tr>
+<td><code>VolumeParams.read_volume_par</code></td>
+<td>parameters.pyx:533-534</td>
+<td>YES (NULL-checked <code>free()</code>)</td>
+<td>OK</td>
+</tr>
+<tr>
+<td><code>ControlParams.read_control_par</code></td>
+<td>parameters.pyx:695-697</td>
+<td>YES (complex: nulls mm, frees, reassigns)</td>
+<td>OK but fragile</td>
+</tr>
+<tr>
+<td><code>TargetParams.read_target_par</code></td>
+<td>parameters.pyx:900</td>
+<td>YES (<code>free()</code>)</td>
+<td>OK</td>
+</tr>
+</tbody>
+</table>
+<p>All <code>read_*</code> methods do free before reassign. <strong>No active memory leaks here.</strong></p>
+<h3 id="pattern-c-cdef-function-with-no-return-type-exception-spec">Pattern C: <code>cdef</code> function with no return-type exception spec<a class="headerlink" href="#pattern-c-cdef-function-with-no-return-type-exception-spec" title="Permanent link">&para;</a></h3>
+<p><code>wrap_1d_c_arr_as_ndarray</code> at parameters.pyx:17 is <code>cdef</code> with implicit <code>object</code> return -- exceptions propagate correctly for <code>object</code>-returning cdefs. <strong>Not a bug.</strong></p>
+<p>The <code>cdef int</code> local variables (parameters.pyx lines 115-737) are <strong>variable declarations</strong>, not function signatures. <strong>No Q1-type bugs present.</strong></p>
+<h3 id="pattern-d-no-nogil-blocks-no-buffer-protocol-__getbuffer__">Pattern D: No <code>nogil</code> blocks, no buffer protocol <code>__getbuffer__</code><a class="headerlink" href="#pattern-d-no-nogil-blocks-no-buffer-protocol-__getbuffer__" title="Permanent link">&para;</a></h3>
+<p>Grep confirms: no <code>with nogil:</code> blocks, no <code>__getbuffer__</code>/<code>__releasebuffer__</code> implementations. Q2/Q5 patterns are not applicable.</p>
+<h2 id="6-project-specific-structural-patterns">6. Project-specific structural patterns<a class="headerlink" href="#6-project-specific-structural-patterns" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Pattern</th>
+<th>Where</th>
+<th>Description</th>
+<th>Why it matters</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ownership-flag pattern</td>
+<td><code>Target.__init__</code> (tracking_framebuf.pyx:48-51)</td>
+<td><code>_owns_data</code> flag controls whether <code>__dealloc__</code> frees memory</td>
+<td>Prevents double-free when Target wraps borrowed C pointer; downstream agents must not flag the conditional free as a bug</td>
+</tr>
+<tr>
+<td>keepalive reference</td>
+<td><code>Tracker.__init__</code> (tracker.pyx:57)</td>
+<td><code>self._keepalive = (cpar, vpar, tpar, spar, cals)</code></td>
+<td>Prevents GC of parameter objects whose C pointers are borrowed by <code>run_info</code>; correct RAII pattern</td>
+</tr>
+<tr>
+<td><code>wrap_1d_c_arr_as_ndarray</code></td>
+<td>parameters.pyx:17-46</td>
+<td>Creates ndarray view over C data with <code>Py_INCREF(base_obj)</code> + <code>PyArray_SetBaseObject</code></td>
+<td>Correct base-object pattern; prevents use-after-free of C arrays returned as numpy views</td>
+</tr>
+<tr>
+<td><code>ControlParams</code> owns <code>MultimediaParams</code></td>
+<td>parameters.pyx:695-701</td>
+<td><code>read_control_par</code> nulls <code>_mm_np</code> before free to prevent double-free of shared <code>mm</code> pointer</td>
+<td>Fragile ownership coupling -- a real area to watch</td>
+</tr>
+</tbody>
+</table>
+<h2 id="7-build-configuration">7. Build / configuration<a class="headerlink" href="#7-build-configuration" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Cython version</strong>: 3.2.4 (from generated .c header); <code>pyproject.toml</code> requires <code>cython&gt;=3.0.0</code> -- <strong>no upper bound, Cython 4 risk</strong></li>
+<li><strong>language_level</strong>: <code>3</code> set in parameters.pyx, tracker.pyx, and all .pxd files; <strong>missing from</strong> calibration.pyx, correspondences.pyx, epipolar.pyx, image_processing.pyx, imgcoord.pyx, orientation.pyx, segmentation.pyx, tracking_framebuf.pyx, transforms.pyx (9 of 11 .pyx files)</li>
+<li><strong>Safety directives</strong>: no <code>boundscheck</code>, <code>wraparound</code>, <code>cdivision</code>, <code>initializedcheck</code>, or <code>nonecheck</code> overrides found -- all use Cython defaults (safe)</li>
+<li><strong>abi3 / limited API</strong>: not used (<code>Py_LIMITED_API</code> not defined)</li>
+<li><strong>Free-threading</strong>: no <code>freethreading_compatible</code> directive; no <code>Py_MOD_GIL</code> macros</li>
+<li><strong>Subinterpreters</strong>: default Cython single-interpreter check applies</li>
+<li><strong>Module-state</strong>: no <code>CYTHON_USE_MODULE_STATE</code> or <code>CYTHON_USE_TYPE_SPECS</code> overrides</li>
+</ul>
+<h2 id="8-what-this-orientation-does-not-cover">8. What this orientation does NOT cover<a class="headerlink" href="#8-what-this-orientation-does-not-cover" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>AST scripts were not run</strong> -- no Q1-Q5 JSON outputs exist. Manual analysis substituted but is less systematic.</li>
+<li><strong>No playbook file found</strong> at expected location -- orientation produced from direct source analysis.</li>
+<li><strong>lib/src/*.c audit</strong> -- the underlying C library is a separate scope; bugs there affect optv but require C-level review.</li>
+<li><strong>Refcount dataflow across .pyx module boundaries</strong> -- e.g., <code>MatchedCoords</code> takes <code>TargetArray</code> and <code>Calibration</code> by reference; lifetime correctness depends on Python GC, not verified end-to-end.</li>
+<li><strong>Cython 3.2 vs 3.3+ idiom differences</strong> -- not yet documented.</li>
+</ul>
+<h2 id="9-triage-hints-for-downstream-agents">9. Triage hints for downstream agents<a class="headerlink" href="#9-triage-hints-for-downstream-agents" title="Permanent link">&para;</a></h2>
+<p>This is a medium-complexity Cython binding layer (2841 LOC across 11 modules) wrapping a C library. The generated C is 98.6% Cython runtime -- filter aggressively. Real bugs concentrate in <strong>parameters.pyx</strong> (907 LOC, 6 cdef classes, complex ownership) and <strong>tracking_framebuf.pyx</strong> (367 LOC, ownership-flag pattern). The universal use of <code>__init__</code> instead of <code>__cinit__</code> for C allocation is the main architectural concern but is low-risk given no subclassing. The <code>ControlParams</code>/<code>MultimediaParams</code> shared-pointer coupling (parameters.pyx:695-701) is the most fragile pattern. Nine .pyx files lack explicit <code>language_level=3</code> directives -- not a runtime bug with Cython 3.x defaults but a forward-compatibility risk.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
