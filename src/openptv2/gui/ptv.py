@@ -52,7 +52,11 @@ example from Tracker documentation:
 # PyPTV imports
 from .parameter_manager import ParameterManager
 from . import ptv_calibration
-from .ptv_calibration import _read_calibrations, clone_calibration
+from .ptv_calibration import (
+    _read_calibrations,
+    clone_calibration,
+    full_scipy_calibration,
+)
 
 # Constants
 DEFAULT_FRAME_NUM = 123456789
@@ -91,7 +95,6 @@ def _extract_frame_num(img_name: str) -> int:
             pass
 
     return DEFAULT_FRAME_NUM
-
 
 
 def _prepare_output_path(filename: str) -> Path:
@@ -369,8 +372,6 @@ def _populate_tpar(targ_params: dict, num_cams: int) -> TargetParams:
     return tpar
 
 
-
-
 def py_start_proc_c(
     pm: ParameterManager,
 ) -> Tuple[
@@ -477,7 +478,11 @@ def py_correspondences_proc_c(exp):
 
     if pm is not None:
         ptv_params = pm.get_parameter("ptv")
-        if isinstance(ptv_params, dict) and "img_name" in ptv_params and ptv_params["img_name"]:
+        if (
+            isinstance(ptv_params, dict)
+            and "img_name" in ptv_params
+            and ptv_params["img_name"]
+        ):
             frame = _extract_frame_num(ptv_params["img_name"][0])
 
     sorted_pos, sorted_corresp, num_targs = correspondences(
@@ -736,10 +741,17 @@ def py_sequence_loop_python(exp) -> None:
     """
     from openptv2.segmentation import target_recognition as alg_target_recognition
     from openptv2.correspondences import MatchedCoords as AlgMatchedCoords
-    from openptv2.algorithms.correspondences import correspondences as alg_correspondences
+    from openptv2.algorithms.correspondences import (
+        correspondences as alg_correspondences,
+    )
     from openptv2.algorithms.orientation import point_positions as alg_point_positions
     from openptv2.tracker import default_naming as alg_default_naming
-    from openptv2.algorithms.parameters import ControlPar, VolumePar, TargetPar, MultimediaPar
+    from openptv2.algorithms.parameters import (
+        ControlPar,
+        VolumePar,
+        TargetPar,
+        MultimediaPar,
+    )
     from openptv2.calibration import Calibration as AlgCalibration
     from openptv2.tracking_framebuf import Frame, Target, read_targets
 
@@ -965,7 +977,7 @@ def py_sequence_loop_python(exp) -> None:
                 frm.targets[i_cam][tnum].nx = t_native.nx
                 frm.targets[i_cam][tnum].ny = t_native.ny
                 frm.targets[i_cam][tnum].sumg = t_native.sumg
-                
+
                 # Update SoA
                 frm.targ_x[i_cam][tnum] = t_native.x
                 frm.targ_y[i_cam][tnum] = t_native.y
@@ -973,7 +985,11 @@ def py_sequence_loop_python(exp) -> None:
 
         match_counts = [0] * 4  # [4-cam, 3-cam, 2-cam, total]
         con, counts = alg_correspondences(
-            frm, [mc._corrected for mc in corrected], vpar_py, cpar_py, [c._cal if hasattr(c, '_cal') else c for c in cals_py]
+            frm,
+            [mc._corrected for mc in corrected],
+            vpar_py,
+            cpar_py,
+            [c._cal if hasattr(c, "_cal") else c for c in cals_py],
         )
         match_counts[0] = counts[0]
         match_counts[1] = counts[1]
@@ -984,7 +1000,7 @@ def py_sequence_loop_python(exp) -> None:
             valid = con[:total]
             # Sort by correlation descending (highest quality first)
             valid.sort(key=lambda x: x.corr, reverse=True)
-            
+
             # Map the x-sorted indices row.p to original target indices (pnrs)
             corresp_list = []
             for row in valid:
@@ -996,7 +1012,7 @@ def py_sequence_loop_python(exp) -> None:
                     else:
                         mapped_p.append(-1)
                 corresp_list.append(mapped_p)
-            
+
             corresp = np.array(corresp_list).T  # (num_cams, N)
             sorted_corresp = [corresp]
             sorted_pos = [np.zeros((3, corresp.shape[1]))]
@@ -1366,6 +1382,5 @@ def read_rt_is_file(filename) -> List[List[float]]:
     except IOError as e:
         print(f"Can't open ascii file: {filename}")
         raise e
-
 
     return new_cal
