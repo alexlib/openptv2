@@ -48,16 +48,17 @@ ALGORITHMS_MODULES = [
     "tracking_run",
     "track",
     "track3d",
-    "track_kernels"
+    "track_kernels",
 ]
 
 
 def _cythonize_all():
     """Run Cython on all Pure Python modules in algorithms/."""
     import time
+
     start_time = time.time()
     print("[OpenPTV2] Starting Cythonization of algorithms pure Python modules...")
-    
+
     from Cython.Build import cythonize
     import os
 
@@ -71,7 +72,9 @@ def _cythonize_all():
     # Cythonize all modules in a single call in parallel
     if targets:
         nthreads = min(4, os.cpu_count() or 1)
-        print(f"[OpenPTV2] Running cythonize on {len(targets)} targets with {nthreads} threads...")
+        print(
+            f"[OpenPTV2] Running cythonize on {len(targets)} targets with {nthreads} threads..."
+        )
         cythonize(
             targets,
             nthreads=nthreads,
@@ -84,7 +87,9 @@ def _cythonize_all():
                 "initializedcheck": False,
             },
         )
-    print(f"[OpenPTV2] Cythonization of algorithms completed successfully in {time.time() - start_time:.2f} seconds.")
+    print(
+        f"[OpenPTV2] Cythonization of algorithms completed successfully in {time.time() - start_time:.2f} seconds."
+    )
 
 
 def _needs_rebuild():
@@ -95,7 +100,9 @@ def _needs_rebuild():
         if py_file.exists():
             py_c = py_file.with_suffix(".c")
             if not py_c.exists() or py_file.stat().st_mtime > py_c.stat().st_mtime:
-                print(f"[OpenPTV2] Pure Python module modified: {mod}.py. Rebuild required.")
+                print(
+                    f"[OpenPTV2] Pure Python module modified: {mod}.py. Rebuild required."
+                )
                 return True
     return False
 
@@ -183,8 +190,10 @@ def get_extensions():
     # Check for fast developer build (O0 / Od)
     is_dev = os.environ.get("DEV_BUILD", "0") in ("1", "true", "True")
     if is_dev:
-        print("[OpenPTV2] Fast developer build mode enabled (using -O0 / /Od compiler flags)")
-    
+        print(
+            "[OpenPTV2] Fast developer build mode enabled (using -O0 / /Od compiler flags)"
+        )
+
     # Cython 3 Pure Python algorithms extensions only
     for mod in ALGORITHMS_MODULES:
         py_file = ROOT / "src" / "openptv2" / "algorithms" / f"{mod}.py"
@@ -198,7 +207,9 @@ def get_extensions():
                 extra_link_args.extend(["-Wl,-rpath,$ORIGIN"])
             else:
                 opt = "/Od" if is_dev else "/O2"
-                extra_compile_args.extend([opt, "/W4", "/std:c11", "/D_CRT_SECURE_NO_WARNINGS"])
+                extra_compile_args.extend(
+                    [opt, "/W4", "/std:c11", "/D_CRT_SECURE_NO_WARNINGS"]
+                )
 
             extensions.append(
                 Extension(
@@ -209,7 +220,7 @@ def get_extensions():
                     extra_link_args=extra_link_args,
                 )
             )
-        
+
     return extensions
 
 
@@ -229,7 +240,13 @@ class PrepareSources(Command):
         pass
 
     def run(self):
-        _cythonize_all()
+        try:
+            _cythonize_all()
+        except Exception as e:
+            print(
+                "[OpenPTV2] Warning: Cython prepare step failed; "
+                f"continuing with available sources. Reason: {e}"
+            )
 
 
 class BuildExtWithPrepare(build_ext):
@@ -238,12 +255,14 @@ class BuildExtWithPrepare(build_ext):
     def finalize_options(self):
         super().finalize_options()
         import os
+
         # We can compile extensions in parallel since generated C sources are pre-generated
         # and static before compiling begins.
         self.parallel = min(4, os.cpu_count() or 1)
 
     def run(self):
         import time
+
         if not HAVE_COMPILER or not self.extensions:
             print(
                 "[OpenPTV2] Skipping Cython extension build — using pure-Python "
@@ -253,9 +272,13 @@ class BuildExtWithPrepare(build_ext):
         start_time = time.time()
         if _needs_rebuild():
             _cythonize_all()
-        print(f"[OpenPTV2] Compiling and linking Cython extensions in parallel ({self.parallel} workers)...")
+        print(
+            f"[OpenPTV2] Compiling and linking Cython extensions in parallel ({self.parallel} workers)..."
+        )
         super().run()
-        print(f"[OpenPTV2] Cython extensions built successfully in {time.time() - start_time:.2f} seconds!")
+        print(
+            f"[OpenPTV2] Cython extensions built successfully in {time.time() - start_time:.2f} seconds!"
+        )
 
 
 class BuildPyWithExtensions(build_py):
