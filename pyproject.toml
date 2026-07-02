@@ -11,7 +11,7 @@ name = "openptv2"
 version = "0.2.0"
 description = "OpenPTV2 single-engine particle tracking with Cython 3 pure Python modules"
 readme = "README.md"
-license = {text = "LGPL-3.0-or-later"}
+license = "LGPL-3.0-or-later"
 authors = [
     {name = "OpenPTV Community", email = "openptv@googlegroups.com"}
 ]
@@ -19,7 +19,6 @@ requires-python = ">=3.11,<3.14"
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)",
     "Operating System :: Microsoft :: Windows",
     "Operating System :: MacOS",
     "Operating System :: POSIX :: Linux",
