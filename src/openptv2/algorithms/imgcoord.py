@@ -508,7 +508,7 @@ def img_coord_batch(positions, cal, mm):
 @cython.ccall
 @cython.boundscheck(False)
 @cython.wraparound(False)
-def _img_coord_batch_impl(positions: cython.double[:, :], cal, mm) -> np.ndarray:
+def _img_coord_batch_impl(positions: cython.double[:, :], cal, mm) -> object:
     n: cython.int = positions.shape[0]
     result = np.empty((n, 2), dtype=np.float64)
     res_mv: cython.double[:, :] = result
@@ -778,7 +778,7 @@ def flat_image_coord_batch(positions, cal, mm):
 @cython.ccall
 @cython.boundscheck(False)
 @cython.wraparound(False)
-def _flat_image_coord_batch_impl(positions: cython.double[:, :], cal, mm) -> np.ndarray:
+def _flat_image_coord_batch_impl(positions: cython.double[:, :], cal, mm) -> object:
     n: cython.int = positions.shape[0]
     result = np.empty((n, 2), dtype=np.float64)
     res_mv: cython.double[:, :] = result

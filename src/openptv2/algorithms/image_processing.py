@@ -51,7 +51,7 @@ def filter_3(
     imx: cython.int,
     imy: cython.int,
     min_brightness: cython.int = 8,
-) -> np.ndarray:
+) -> object:
     """Apply the C 3x3 filter kernel with matching integer semantics."""
     filt_arr = np.asarray(filt, dtype=np.float64).ravel()
     f0 = filt_arr[0]
@@ -110,7 +110,7 @@ def filter_3(
     src_mv=cython.uchar[:],
     result_mv=cython.uchar[:],
 )
-def lowpass_3(img: np.ndarray, imx: cython.int, imy: cython.int) -> np.ndarray:
+def lowpass_3(img: np.ndarray, imx: cython.int, imy: cython.int) -> object:
     """Apply the C 3x3 low-pass filter with integer division."""
     src_arr = np.asarray(img, dtype=np.uint8).reshape(imy, imx).ravel()
     src_mv = src_arr
@@ -170,7 +170,7 @@ def fast_box_blur(
     filt_span: cython.int,
     imx: cython.int,
     imy: cython.int,
-) -> np.ndarray:
+) -> object:
     """Perform the C box blur with matching integer rounding."""
     src_arr = np.asarray(img, dtype=np.uint8).reshape(imy, imx).ravel()
     # Widened int64 view to prevent uint8 overflow during accumulation
@@ -272,7 +272,7 @@ def fast_box_blur(
 )
 def split(
     img: np.ndarray, half_selector: cython.int, imx: cython.int, imy: cython.int
-) -> np.ndarray:
+) -> object:
     """Extract even or odd lines into first half of image.
 
     Used with interlaced cameras.
@@ -306,7 +306,7 @@ def split(
 
 
 @cython.ccall
-def subtract_img(img1: np.ndarray, img2: np.ndarray) -> np.ndarray:
+def subtract_img(img1: np.ndarray, img2: np.ndarray) -> object:
     """Subtract img2 from img1, clamping to zero.
 
     Args:
@@ -321,7 +321,7 @@ def subtract_img(img1: np.ndarray, img2: np.ndarray) -> np.ndarray:
 
 
 @cython.ccall
-def subtract_mask(img: np.ndarray, mask: np.ndarray) -> np.ndarray:
+def subtract_mask(img: np.ndarray, mask: np.ndarray) -> object:
     """Apply mask to image: zero pixels where mask is zero.
 
     Args:
@@ -355,7 +355,7 @@ def prepare_image(
     filter_hp: cython.int = 0,
     filter_file: str | Path | None = None,
     chfield: cython.int = 0,
-) -> np.ndarray:
+) -> object:
     """Prepare image for particle detection: smoothing + optional filtering.
 
     Steps:

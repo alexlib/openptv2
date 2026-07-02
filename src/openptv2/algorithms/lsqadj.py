@@ -19,7 +19,7 @@ import numpy as np
 
 
 @cython.ccall
-def ata(a: np.ndarray, m: int, n: int) -> np.ndarray:
+def ata(a: np.ndarray, m: int, n: int) -> object:
     """Compute A^T @ A for a submatrix of A.
 
     Matches the C `ata()` function. Computes the product of the transpose
@@ -39,7 +39,7 @@ def ata(a: np.ndarray, m: int, n: int) -> np.ndarray:
 
 
 @cython.ccall
-def atl(a: np.ndarray, l: np.ndarray, m: int, n: int) -> np.ndarray:
+def atl(a: np.ndarray, l: np.ndarray, m: int, n: int) -> object:
     """Compute A^T @ l for a submatrix of A.
 
     Matches the C `atl()` function.
@@ -60,7 +60,7 @@ def atl(a: np.ndarray, l: np.ndarray, m: int, n: int) -> np.ndarray:
 
 
 @cython.ccall
-def matinv(a: np.ndarray, n: int) -> np.ndarray:
+def matinv(a: np.ndarray, n: int) -> object:
     """Invert a square matrix.
 
     Args:
@@ -78,7 +78,7 @@ def matinv(a: np.ndarray, n: int) -> np.ndarray:
 
 
 @cython.ccall
-def matmul(b: np.ndarray, c: np.ndarray, m: int, n: int) -> np.ndarray:
+def matmul(b: np.ndarray, c: np.ndarray, m: int, n: int) -> object:
     """Compute b @ c for submatrix b and sub-vector c.
 
     Matches the C `matmul()` function.

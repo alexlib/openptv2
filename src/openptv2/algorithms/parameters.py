@@ -34,7 +34,7 @@ TrackParTuple = namedtuple(
 
 # Convert TrackPar to TrackParTuple for test compatibility
 @cython.ccall
-def convert_track_par_to_tuple(track_par: TrackPar) -> TrackParTuple:
+def convert_track_par_to_tuple(track_par: TrackPar) -> object:
     return TrackParTuple(
         track_par.dvxmin,
         track_par.dvxmax,
