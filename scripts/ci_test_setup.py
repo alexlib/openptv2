@@ -33,6 +33,13 @@ def main() -> int:
         symlinks=True,
         ignore=shutil.ignore_patterns("testing_fodder"),
     )
+    # Copy source .py files so tests that use importlib to load
+    # interpreted (non-compiled) module variants can find them.
+    srcalgo = project / "src" / "openptv2" / "algorithms"
+    dstalgo = Path("src") / "openptv2" / "algorithms"
+    dstalgo.mkdir(parents=True, exist_ok=True)
+    for f in srcalgo.glob("*.py"):
+        shutil.copy2(f, dstalgo / f.name)
     return 0
 
 
