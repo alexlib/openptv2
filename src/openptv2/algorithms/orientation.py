@@ -1083,11 +1083,19 @@ def full_calibration(cal, ref_pts, img_pts, cpar, flags=None):
     ret = np.empty((n, 2))
     used = np.empty(n, dtype=np.int32)
 
+    res_idx = 0
     for i in range(n):
-        ret[i, 0] = residuals[2 * i]
-        ret[i, 1] = residuals[2 * i + 1]
         pnr_val = img_pts[i].pnr
-        used[i] = pnr_val() if callable(pnr_val) else pnr_val
+        pnr_i = pnr_val() if callable(pnr_val) else pnr_val
+        used[i] = pnr_i
+        
+        if pnr_i == i:
+            ret[i, 0] = residuals[res_idx]
+            ret[i, 1] = residuals[res_idx + 1]
+            res_idx += 2
+        else:
+            ret[i, 0] = np.nan
+            ret[i, 1] = np.nan
 
     return ret, used, sigmabeta
 
