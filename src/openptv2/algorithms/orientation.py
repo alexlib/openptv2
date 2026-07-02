@@ -854,11 +854,10 @@ def orient(cal_in, cpar, nfix, fix, pix, flags, sigmabeta):
         XPy = atl(Xh, yh, n_obs, numbers)
         beta = matmul(XPX, XPy, numbers, numbers)
 
-        stopflag = 1
-        for i in range(numbers):
-            if abs(beta[i]) > CONVERGENCE:
-                stopflag = 0
-
+        # Zero constrained parameters BEFORE convergence check.
+        # Otherwise a large computed update to a fixed parameter (e.g. cc
+        # when ccflag=0) keeps the iteration running indefinitely even
+        # though the parameter never actually changes.
         if not flags.ccflag:
             beta[6] = 0.0
         if not flags.xhflag:
@@ -879,6 +878,11 @@ def orient(cal_in, cpar, nfix, fix, pix, flags, sigmabeta):
             beta[14] = 0.0
         if not flags.sheflag:
             beta[15] = 0.0
+
+        stopflag = 1
+        for i in range(numbers):
+            if abs(beta[i]) > CONVERGENCE:
+                stopflag = 0
 
         cal.ext_par.x0 += beta[0]
         cal.ext_par.y0 += beta[1]
@@ -1088,7 +1092,7 @@ def full_calibration(cal, ref_pts, img_pts, cpar, flags=None):
         pnr_val = img_pts[i].pnr
         pnr_i = pnr_val() if callable(pnr_val) else pnr_val
         used[i] = pnr_i
-        
+
         if pnr_i == i:
             ret[i, 0] = residuals[res_idx]
             ret[i, 1] = residuals[res_idx + 1]

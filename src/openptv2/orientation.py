@@ -81,14 +81,24 @@ def full_calibration(cal, ref_pts, img_pts, cpar, flags=None):
     Returns:
         tuple: (residuals, used_points, error_estimate)
     """
-    # Unwrap img_pts if needed
+    # Unwrap img_pts if needed.  CRITICAL: filter out unmatched targets
+    # (pnr == -999) so that garbage coordinates are NOT fed into the
+    # bundle adjustment as valid correspondences.
     if hasattr(img_pts, "__iter__") and len(img_pts) > 0:
         if hasattr(img_pts[0], "_target"):
-            # List of Target wrappers
-            img_array = np.array([[t._target.x, t._target.y] for t in img_pts])
+            # List of Target wrappers — filter by pnr()
+            matched_pts = [t for t in img_pts if t.pnr() != -999]
+            ref_pts = ref_pts[[t.pnr() for t in matched_pts]]
+            img_array = np.array([[t._target.x, t._target.y] for t in matched_pts])
         elif hasattr(img_pts[0], "x") and hasattr(img_pts[0], "y"):
-            # Core Target objects
-            img_array = np.array([[t.x, t.y] for t in img_pts])
+            # Core Target objects — filter by pnr
+            matched_pts = [
+                t for t in img_pts if (t.pnr() if callable(t.pnr) else t.pnr) != -999
+            ]
+            ref_pts = ref_pts[
+                [t.pnr() if callable(t.pnr) else t.pnr for t in matched_pts]
+            ]
+            img_array = np.array([[t.x, t.y] for t in matched_pts])
         else:
             # Already an array or list of targets
             img_array = img_pts

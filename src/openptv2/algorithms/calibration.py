@@ -93,15 +93,48 @@ class Glass:
         vec_x, vec_y, vec_z: normal vector to glass surface.
         n1, n2, n3: refractive indices (not used directly, stored for reference).
         d: glass thickness [mm].
+
+    A (0,0,0) glass vector causes division-by-zero in the imaging model
+    (the glass-plane ray intersection divides by |vec|).  The default is
+    (0,0,1).  Use :meth:`sanitize` to detect and auto-fix a zero vector.
     """
 
     vec_x: cython.double = 0.0
     vec_y: cython.double = 0.0
-    vec_z: cython.double = 0.0
+    vec_z: cython.double = 1.0
     n1: cython.double = 0.0
     n2: cython.double = 0.0
     n3: cython.double = 0.0
     d: cython.double = 0.0
+
+    def sanitize(self):
+        """If the glass vector is (0,0,0), warn and replace with (0,0,1)."""
+        import math
+
+        norm = math.sqrt(
+            self.vec_x * self.vec_x + self.vec_y * self.vec_y + self.vec_z * self.vec_z
+        )
+        if norm < 1e-12:
+            import warnings
+
+            warnings.warn(
+                "Glass vector is (0,0,0) — replacing with (0,0,1). "
+                "A zero glass vector causes division-by-zero in the "
+                "imaging model.",
+                stacklevel=2,
+            )
+            self.vec_x = 0.0
+            self.vec_y = 0.0
+            self.vec_z = 1.0
+
+    def is_zero(self) -> bool:
+        """Return True if the glass vector is effectively zero."""
+        import math
+
+        norm = math.sqrt(
+            self.vec_x * self.vec_x + self.vec_y * self.vec_y + self.vec_z * self.vec_z
+        )
+        return norm < 1e-12
 
 
 @cython.cclass
@@ -236,6 +269,7 @@ class Calibration:
             self.ext_par = cal.ext_par
             self.int_par = cal.int_par
             self.glass_par = cal.glass_par
+            self.glass_par.sanitize()
             self.added_par = cal.added_par
             self.mmlut = cal.mmlut
             return
@@ -243,6 +277,7 @@ class Calibration:
         self.ext_par = ext_par if ext_par is not None else Exterior()
         self.int_par = int_par if int_par is not None else Interior()
         self.glass_par = glass_par if glass_par is not None else Glass()
+        self.glass_par.sanitize()
         self.added_par = added_par if added_par is not None else AddedPar()
         self.mmlut = mmlut if mmlut is not None else MmLut()
 
@@ -364,6 +399,7 @@ class Calibration:
         self.glass_par.vec_x = float(gvec[0])
         self.glass_par.vec_y = float(gvec[1])
         self.glass_par.vec_z = float(gvec[2])
+        self.glass_par.sanitize()
 
     def get_rotation_matrix(self) -> np.ndarray:
         """Get rotation matrix as ndarray[3, 3]."""
