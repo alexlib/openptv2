@@ -299,7 +299,7 @@ def back_trans_point(
     mm_n2_0: cython.double,
     mm_n3: cython.double,
     mm_d0: cython.double,
-) -> np.ndarray:
+) -> object:
     """Transform from local coordinates back to global 3D space."""
     gx, gy, gz = glass_vec_x, glass_vec_y, glass_vec_z
     n_gl = c_sqrt(gx * gx + gy * gy + gz * gz)
@@ -334,7 +334,7 @@ def move_along_ray(
     glob_Z: cython.double,
     vertex: cython.double[:],
     direct: cython.double[:],
-) -> np.ndarray:
+) -> object:
     """Find point along ray at given global Z value."""
     x: cython.double = vertex[0] + (glob_Z - vertex[2]) * direct[0] / direct[2]
     y: cython.double = vertex[1] + (glob_Z - vertex[2]) * direct[1] / direct[2]

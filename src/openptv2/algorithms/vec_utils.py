@@ -33,7 +33,7 @@ def is_empty(x: cython.double) -> cython.bint:
 
 
 @cython.ccall
-def vec_init() -> np.ndarray:
+def vec_init() -> object:
     """Return a 3D vector initialized to NaN.
 
     Returns:
@@ -43,7 +43,7 @@ def vec_init() -> np.ndarray:
 
 
 @cython.ccall
-def vec_set(x: cython.double, y: cython.double, z: cython.double) -> np.ndarray:
+def vec_set(x: cython.double, y: cython.double, z: cython.double) -> object:
     """Create a 3D vector from components.
 
     Args:
@@ -60,7 +60,7 @@ def vec_set(x: cython.double, y: cython.double, z: cython.double) -> np.ndarray:
 
 
 @cython.ccall
-def vec_copy(src: cython.double[:]) -> np.ndarray:
+def vec_copy(src: cython.double[:]) -> object:
     """Copy a 3D vector.
 
     Args:
@@ -77,7 +77,7 @@ def vec_copy(src: cython.double[:]) -> np.ndarray:
 
 
 @cython.ccall
-def vec_subt(from_vec: cython.double[:], sub: cython.double[:]) -> np.ndarray:
+def vec_subt(from_vec: cython.double[:], sub: cython.double[:]) -> object:
     """Subtract two 3D vectors.
 
     Args:
@@ -95,7 +95,7 @@ def vec_subt(from_vec: cython.double[:], sub: cython.double[:]) -> np.ndarray:
 
 
 @cython.ccall
-def vec_add(vec1: cython.double[:], vec2: cython.double[:]) -> np.ndarray:
+def vec_add(vec1: cython.double[:], vec2: cython.double[:]) -> object:
     """Add two 3D vectors.
 
     Args:
@@ -112,7 +112,7 @@ def vec_add(vec1: cython.double[:], vec2: cython.double[:]) -> np.ndarray:
 
 
 @cython.ccall
-def vec_scalar_mul(vec: cython.double[:], scalar: cython.double) -> np.ndarray:
+def vec_scalar_mul(vec: cython.double[:], scalar: cython.double) -> object:
     """Multiply a vector by a scalar.
 
     Args:
@@ -177,7 +177,7 @@ def vec_dot(vec1: cython.double[:], vec2: cython.double[:]) -> cython.double:
 
 
 @cython.ccall
-def vec_cross(vec1: cython.double[:], vec2: cython.double[:]) -> np.ndarray:
+def vec_cross(vec1: cython.double[:], vec2: cython.double[:]) -> object:
     """Compute the cross product of two 3D vectors.
 
     Args:
@@ -229,7 +229,7 @@ def vec_approx_cmp(
 
 
 @cython.ccall
-def unit_vector(vec: cython.double[:]) -> np.ndarray:
+def unit_vector(vec: cython.double[:]) -> object:
     """Normalize a vector to unit length.
 
     If the vector has zero norm, returns the original vector unchanged

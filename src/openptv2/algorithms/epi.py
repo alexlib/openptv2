@@ -50,7 +50,7 @@ class Coord2d:
 )
 def epipolar_curve(
     image_point, origin_cal, project_cal, num_points: cython.int, cpar, vpar
-) -> np.ndarray:
+) -> object:
     """Generate points along the epipolar line projected into a second camera."""
     from .trafo import pixel_to_metric, metric_to_pixel, dist_to_flat
     from .ray_tracing import ray_tracing
@@ -209,7 +209,7 @@ def epi_mm(xl: cython.double, yl: cython.double, cal1, cal2, mmp, vpar):
     n3=cython.double,
     d0=cython.double,
 )
-def epi_mm_2d(xl: cython.double, yl: cython.double, cal, mmp, vpar) -> np.ndarray:
+def epi_mm_2d(xl: cython.double, yl: cython.double, cal, mmp, vpar) -> object:
     """Compute 3D position for single-camera multimedia case."""
     from .ray_tracing import ray_tracing
     from .multimed import move_along_ray

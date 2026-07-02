@@ -225,7 +225,7 @@ def metric_to_pixel(
 
 
 @cython.ccall
-def pixel_to_metric_batch(xy, cpar) -> np.ndarray:
+def pixel_to_metric_batch(xy, cpar) -> object:
     """Convert N pixel coordinates to metric.
 
     Args:
@@ -258,7 +258,7 @@ def pixel_to_metric_batch(xy, cpar) -> np.ndarray:
 
 
 @cython.ccall
-def metric_to_pixel_batch(xy, cpar) -> np.ndarray:
+def metric_to_pixel_batch(xy, cpar) -> object:
     """Convert N metric coordinates to pixel.
 
     Args:
@@ -740,7 +740,7 @@ def correct_brown_affine_batch(
     scx: cython.double,
     she: cython.double,
     out: np.ndarray = None,
-) -> np.ndarray:
+) -> object:
     n: cython.Py_ssize_t = xy.shape[0]
     if out is None:
         result: np.ndarray = np.empty((n, 2), dtype=np.float64)
@@ -839,7 +839,7 @@ def distort_brown_affine_batch(
     p2: cython.double,
     scx: cython.double,
     she: cython.double,
-) -> np.ndarray:
+) -> object:
     n: cython.Py_ssize_t = xy.shape[0]
     result: np.ndarray = np.empty((n, 2), dtype=np.float64)
     result_view: cython.double[:, :] = result
