@@ -114,10 +114,10 @@ ptv:
   - cal/cam3.tif
   - cal/cam4.tif
   img_name:
-  - img_3/cam1.0
-  - img_3/cam2.0
-  - img_3/cam3.0
-  - img_3/cam4.0
+  - img/cam1.10000
+  - img/cam2.10000
+  - img/cam3.10000
+  - img/cam4.10000
   imx: 1280
   imy: 1024
   mmp_d: 6.0
@@ -128,6 +128,7 @@ ptv:
   pix_y: 0.012
   tiff_flag: true
   splitter: false
+  negative: false
 sequence:
   base_name:
   - img_3/cam1.%d
