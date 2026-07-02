@@ -304,7 +304,7 @@ def _quality_ratio(a: cython.double, b: cython.double) -> cython.double:
     yh=cython.double,
 )
 def find_candidate(
-    crd: list[Coord2d],  # typed list — crd[j].x compiles to C field load
+    crd: list,  # list[Coord2d] — typed in docstring, Cython Pure Python doesn't support generic list[T]
     pix,
     num: cython.int,
     xa: cython.double,

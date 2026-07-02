@@ -224,7 +224,7 @@ def peak_fit(
 
     # Label image
     label_img = np.zeros((imy, imx), dtype=np.int32)
-    peaks: list[Peak] = []
+    peaks: list = []
 
     # ---- Pass 1: Connectivity analysis with peak search ----
     for i in range(ymin, ymax - 1):
