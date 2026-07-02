@@ -59,7 +59,13 @@ def _cythonize_all():
     start_time = time.time()
     print("[OpenPTV2] Starting Cythonization of algorithms pure Python modules...")
 
-    from Cython.Build import cythonize
+    try:
+        from Cython.Build import cythonize
+    except Exception as e:
+        raise RuntimeError(
+            "Cython is required for 'python setup.py prepare'. "
+            "Install with: python -m pip install 'cython>=3.0.10,<3.1'"
+        ) from e
     import os
 
     # Collect all existing pure Python modules
