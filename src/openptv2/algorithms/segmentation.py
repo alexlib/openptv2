@@ -48,7 +48,7 @@ class Peak:
 
 
 @cython.ccall
-def check_touch(tpeak: Peak, p1: cython.int, p2: cython.int) -> None:
+def check_touch(tpeak, p1: cython.int, p2: cython.int):
     """Check whether p1, p2 are already marked as touching and mark them otherwise."""
     if p2 == 0 or p2 == p1:
         return
