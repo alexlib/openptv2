@@ -42,7 +42,7 @@ jobs:
           CIBW_ARCHS_WINDOWS: AMD64
           CIBW_ARCHS_MACOS: x86_64 arm64
           CIBW_TEST_REQUIRES: "pytest numpy cython scipy pyyaml"
-          CIBW_TEST_COMMAND: "python -c \"import shutil, pathlib; p = pathlib.Path('{project}'); shutil.copytree(p/'test_data', 'test_data', dirs_exist_ok=True); shutil.copytree(p/'tests', 'tests', dirs_exist_ok=True)\" && pytest tests/unit/ -v -m \"not slow\" --tb=short"
+          CIBW_TEST_COMMAND: "python -c \"import shutil, pathlib; p = pathlib.Path('{project}'); shutil.copytree(p/'test_data', 'test_data', dirs_exist_ok=True, symlinks=True); shutil.copytree(p/'tests', 'tests', dirs_exist_ok=True, symlinks=True, ignore=shutil.ignore_patterns('testing_fodder'))\" && pytest tests/unit/ -v -m \"not slow\" --tb=short"
 
       
       - uses: actions/upload-artifact@v4
