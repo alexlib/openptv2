@@ -24,8 +24,8 @@ cal_ori:
   cal_splitter: false
 criteria:
   X_lay:
-  - -10
-  - 10
+  - -20
+  - 20
   Zmax_lay:
   - 25
   - 25
@@ -37,7 +37,7 @@ criteria:
   cny: 0.02
   corrmin: 33.0
   csumg: 0.02
-  eps0: 0.2
+  eps0: 0.05
 detect_plate:
   gvth_1: 40
   gvth_2: 40
@@ -119,8 +119,8 @@ ptv:
   imy: 256
   mmp_d: 6.0
   mmp_n1: 1.0
-  mmp_n2: 1.33
-  mmp_n3: 1.46
+  mmp_n2: 1.46
+  mmp_n3: 1.33
   pix_x: 0.012
   pix_y: 0.012
   tiff_flag: true

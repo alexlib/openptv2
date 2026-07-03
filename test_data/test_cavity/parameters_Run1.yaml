@@ -64,6 +64,7 @@ dumbbell:
   dumbbell_penalty_weight: 1.0
   dumbbell_scale: 25.0
   dumbbell_step: 1
+  dumbbell_fixed_camera: 0
 examine:
   Combine_Flag: false
   Examine_Flag: false
@@ -102,8 +103,8 @@ orient:
   pnfo: 0
   scale: 0
   shear: 0
-  xh: 0
-  yh: 0
+  xh: 1
+  yh: 1
 pft_version:
   Existing_Target: 0
 ptv:
