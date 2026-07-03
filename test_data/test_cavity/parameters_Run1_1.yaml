@@ -108,7 +108,7 @@ orient:
 pft_version:
   Existing_Target: 0
 ptv:
-  allcam_flag: false
+  allcam_flag: true
   chfield: 0
   hp_flag: true
   img_cal:
@@ -117,10 +117,10 @@ ptv:
   - cal/cam3.tif
   - cal/cam4.tif
   img_name:
-  - img/cam1.10000
-  - img/cam2.10000
-  - img/cam3.10000
-  - img/cam4.10000
+  - cal/cam1.tif
+  - cal/cam2.tif
+  - cal/cam3.tif
+  - cal/cam4.tif
   imx: 1280
   imy: 1024
   mmp_d: 6.0
