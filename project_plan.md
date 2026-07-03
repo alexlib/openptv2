@@ -163,6 +163,23 @@ test_data/test_cavity_small/
 
 ---
 
+## ✅ Milestone: Full Calibration Convergence Fixes
+
+Completed fixes that make `full_calibration` stable across all 4 cameras in the test_cavity dataset:
+
+| Fix | File | Issue |
+|-----|------|-------|
+| Convergence-check ordering | `algorithms/orientation.py:857-885` | Constrained-param betas zeroed after check → infinite iteration |
+| Unmatched target filtering | `orientation.py:84-99` (wrapper) | `pnr=-999` garbage coordinates fed into bundle adjustment |
+| Glass vector default `(0,0,0)` | `algorithms/calibration.py:104` | Division-by-zero in imaging model |
+| `sanitize()` auto-fix + warning | `algorithms/calibration.py` (Glass class) | Catches zero vectors at creation time |
+| Runtime pinhole fallback | `algorithms/imgcoord.py:253-264` | Last-resort guard in projection function |
+| Test data paths | `parameters/{ptv,sequence}.par`, `parameters_Run1.yaml` | `img/` → `img_3/` broke image loading |
+
+All 219 unit tests pass (was 216) including 3 new wrapper tests for unmatched-target filtering.
+
+---
+
 ## Part 2: Optimizations & Developer Experience (Phases 5–6)
 
 ### Phase 5 — Readability & Developer Experience Improvements
@@ -556,6 +573,37 @@ This allows callers in tracking loops to allocate once and reuse across frames.
   uv run pytest tests/unit/test_batch_fast.py -v -m "not slow" 2>&1 | tail -30
   uv run pytest tests/unit/test_batch_fast.py::test_batch_speedup -v -s 2>&1 | tail -30
   ```
+
+---
+
+## 🔮 Future Optimization Ideas (beyond Phase 6)
+
+### Robustness improvements for `orient()` / `full_calibration`
+
+| Idea | Rationale |
+|------|-----------|
+| **Levenberg-Marquardt damping** | Current Gauss-Newton can diverge when the initial guess is far from the solution. Add a damping factor `λ` (trust-region) to the normal equations: `(XᵀPX + λ·diag(XᵀPX)) β = XᵀPy`. Start with `λ=1e-3`, decrease on success, increase on failure. |
+| **Singular-value clamping in `matinv`** | Replace direct matrix inversion with a clamped pseudo-inverse. If a singular value is below `1e-10`, set its reciprocal to zero. Prevents the NaN `sqrt(XPX[i,i])` in `sigmabeta`. |
+| **Robust loss function** | Replace pure least-squares with Huber or Tukey biweight loss to down-weight outlier matches (spurious `pnr=-999` that slip through filtering, or mis-identified grid points). |
+| **Pre-conditioned conjugate gradient** | Replace direct `matinv` with PCG for large point sets (>100 points). Avoids the O(P³) inversion cost — only O(P²) per iteration with 10-20 iterations to converge. |
+| **Warm-start from previous frame** | In multi-frame calibration, use the previous frame's converged solution as the initial guess for the next frame. Reduces iteration count from 20-80 to 2-5. |
+
+### GUI workflow improvements
+
+| Idea | Rationale |
+|------|-----------|
+| **`_button_sort_grid_fired` should not save `.ori` files** | The current flow saves `.ori` with `tmp.addpar` after sort grid, which can corrupt calibration state if raw_orient hasn't been run yet. Separate the save into an explicit user action. |
+| **Backup rotation** | Instead of overwriting `.bck` on every calibration run, rotate backups: `.bck.0` → `.bck.1` → `.bck.2`, so the user can roll back multiple steps. |
+| **Visual match quality indicator** | After sort grid, color-code each reference point by match distance (green < 5px, yellow < 15px, red > 15px). Helps the user identify which cameras need raw_orient refinement. |
+| **Per-camera convergence diagnostics** | Show per-iteration RMS trace and parameter deltas in the calibration dialog, so the user can see whether the solver is converging or oscillating. |
+
+### Code quality / DX
+
+| Idea | Rationale |
+|------|-----------|
+| **`matinv` → `numpy.linalg.solve`** | When compiled, the current hand-written Gauss-Jordan `matinv` is comparable. In interpreted mode, `np.linalg.solve` is 5-10× faster. Use a `cython.compiled` branch. |
+| **Fuse `ata` + `atl` into single pass** | Currently `ata(X)` and `atl(X, y)` scan the design matrix twice. A fused `ata_atl(X, y)` would halve memory bandwidth for the hot path. |
+| **`.par` ↔ YAML round-trip fuzz testing** | Automated tests that write random calibration parameters to both formats, read back, and compare. Ensures no parameters are silently dropped in the GUI's YAML-only path. |
 
 ---
 

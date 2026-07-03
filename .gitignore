@@ -129,3 +129,4 @@ docs/superpowers/plans/2026-06-26-cython3-optimization.md
 /.git_corrupted
 .worktrees/
 *.bak
+/notebooks/__marimo__

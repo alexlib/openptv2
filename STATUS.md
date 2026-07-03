@@ -63,6 +63,49 @@ src/openptv2/
 
 ---
 
+## 🛠 Full Calibration Fixes
+
+All fixes are in `src/openptv2/` (algorithms + compatibility wrappers) and the test suite.
+
+### Fixed: Convergence-check ordering in `orient()`
+**File:** `algorithms/orientation.py`
+
+The convergence test ran *before* constrained-parameter beta values were zeroed. When calibrating with `flags=[]` (all interior/distortion params fixed), the solver computed large updates to fixed params — but those were zeroed *after* the check, so the iteration ran all 80 cycles without ever converging.
+
+### Fixed: Unmatched target filtering in GUI wrapper
+**File:** `orientation.py` (top-level compatibility layer)
+
+`full_calibration()` unwrapped ALL `img_pts` targets — including unmatched entries with `pnr=-999` and garbage pixel coordinates — then rewrapped every one with `pnr=i`, making the solver treat garbage as valid correspondences. This caused the catastrophic calibration corruption (x0 in billions of mm) for cameras with few matches (44/73 and 46/73).
+
+**Fix:** The wrapper now filters out `pnr=-999` targets and their corresponding reference points *before* calling the solver.
+
+### Fixed: Zero glass-vector default
+**File:** `algorithms/calibration.py`, `Glass` class
+
+The `Glass()` default was `(0,0,0)`, which causes division-by-zero in the imaging model (`1/|glass_vec|` → NaN cascade). Changed to `(0,0,1)` with a `sanitize()` method that warns and auto-fixes explicitly zero vectors.
+
+### Fixed: Test data paths in `test_cavity` configs
+**Files:** `test_data/test_cavity/parameters/{ptv,sequence}.par`, `parameters_Run1.yaml`
+
+Image paths were changed from `img/` → `img_3/` during a data reorganization, but `img_3/` only contains target files (no images). Restored all paths.
+
+### New synthetic calibration tests
+**File:** `tests/unit/test_synthetic_calibration.py`
+
+10 tests covering exterior-only recovery, per-flag convergence, edge cases (empty/no-matched targets), and — critically — a `TestWrapperUnmatchedFiltering` class that validates pnr=-999 filtering through the GUI wrapper path.
+
+**Test count:** 219 passed, 2 skipped.
+
+---
+
+## 🐛 Known Issues
+
+- **RuntimeWarning `invalid value encountered in sqrt`** at `orientation.py:98` (wrapper line during `_full_calibration` call). Occurs when the covariance-matrix inverse has negative diagonal entries (ill-conditioned normal equations). Does not crash the solver but may slow convergence. Mitigation: ensure initial guess is close to the solution (use raw_orient first) and that matched target count >> number of free parameters.
+- **GUI plot overlay lines from (0,0) corner** — minor rendering issue in calibration dialog, no functional impact.
+- **`sequence.base_name` still points to `img_3/`** in `parameters_Run1.yaml`. The image loading paths for tracking use `sequence.base_name` rather than `ptv.img_name`. If `img_3/` lacks actual image files, tracking will read 0 frames. Workaround: set `img_name` paths for calibration, verify `sequence.base_name` for tracking.
+
+---
+
 ## 🎉 Single-Engine Architecture Summary
 
 **Completed:** The repository targets a single, highly performant Cython 3 pure-Python runtime.

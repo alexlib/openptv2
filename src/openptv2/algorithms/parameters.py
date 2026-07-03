@@ -606,8 +606,9 @@ class ControlPar:
         return (self.pix_x, self.pix_y)
 
     def set_pixel_size(self, size: tuple[float, float]) -> None:
-        self.pix_x = float(size[0])
-        self.pix_y = float(size[1])
+        pix_x, pix_y = size
+        self.pix_x = float(pix_x)
+        self.pix_y = float(pix_y)
 
     def get_hp_flag(self) -> int:
         return self.hp_flag
@@ -988,6 +989,8 @@ class ExaminePar:
     @staticmethod
     def from_file(file_path: str | Path) -> ExaminePar:
         """Read from examine.par file."""
+        examine_flag = False
+        combine_flag = False
         with open(file_path, "r", encoding="utf-8") as file:
             examine_flag = bool(int(file.readline().strip()))
             combine_flag = bool(int(file.readline().strip()))
@@ -1005,6 +1008,7 @@ class PftVersionPar:
     @staticmethod
     def from_file(file_path: str | Path) -> PftVersionPar:
         """Read from pft_version.par file."""
+        existing_target_flag = False
         with open(file_path, "r", encoding="utf-8") as file:
             existing_target_flag = bool(int(file.readline().strip()))
         return PftVersionPar(existing_target_flag)

@@ -65,7 +65,7 @@ def _cythonize_all():
     except Exception as e:
         raise RuntimeError(
             "Cython is required for 'python setup.py prepare'. "
-            "Install with: python -m pip install 'cython>=3.0.10,<3.1'"
+            "Install with: python -m pip install 'cython>=3.0.10,<4'"
         ) from e
 
     from packaging.version import Version
@@ -73,7 +73,7 @@ def _cythonize_all():
     if Version(Cython.__version__) < Version("3.0.10"):
         raise RuntimeError(
             f"Cython>=3.0.10 required, found {Cython.__version__}. "
-            "Upgrade with: python -m pip install 'cython>=3.0.10,<3.1'"
+            "Upgrade with: python -m pip install 'cython>=3.0.10,<4'"
         )
     import os
 
