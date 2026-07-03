@@ -16,7 +16,6 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        python: ['cp311', 'cp312', 'cp313']
     steps:
       - uses: actions/checkout@v5
       
@@ -30,7 +29,7 @@ jobs:
         with:
           output-dir: ./wheelhouse
         env:
-          CIBW_BUILD: ${{ matrix.python }}-*
+          CIBW_BUILD: "cp311-* cp312-* cp313-*"
           CIBW_SKIP: "musllinux*"
           CIBW_BUILD_VERBOSITY: 2
           CIBW_BEFORE_BUILD_LINUX: >
@@ -48,15 +47,17 @@ jobs:
           CIBW_BUILD_FRONTEND: "pip"
           CIBW_MANYLINUX_X86_64_IMAGE: "manylinux_2_28"
           CIBW_MANYLINUX_AARCH64_IMAGE: "manylinux_2_28"
+          CIBW_ARCHS_LINUX: x86_64 aarch64
           CIBW_ARCHS_WINDOWS: AMD64
           CIBW_ARCHS_MACOS: x86_64 arm64
+          CIBW_ENVIRONMENT: OPENPTV2_FORCE_COMPILE=1
           CIBW_TEST_REQUIRES: "pytest numpy cython scipy pyyaml"
           CIBW_TEST_COMMAND: "python {project}/scripts/ci_test_setup.py {project} && pytest tests/unit/ -v -m \"not slow\" --tb=short"
 
       
       - uses: actions/upload-artifact@v4
         with:
-          name: wheels-${{ matrix.os }}-${{ matrix.python }}
+          name: wheels-${{ matrix.os }}
           path: ./wheelhouse/*.whl
 
   build_sdist:
