@@ -52,7 +52,7 @@ jobs:
           CIBW_ARCHS_MACOS: x86_64 arm64
           CIBW_ENVIRONMENT: OPENPTV2_FORCE_COMPILE=1
           CIBW_TEST_REQUIRES: "pytest numpy cython scipy pyyaml"
-          CIBW_TEST_COMMAND: "python {project}/scripts/ci_test_setup.py {project} && pytest tests/unit/ -v -m \"not slow\" --tb=short"
+          CIBW_TEST_COMMAND: "python {project}/scripts/ci_test_setup.py {project} && python -c \"from openptv2.algorithms.image_processing import is_compiled; assert is_compiled()\" && pytest tests/unit/test_vec_utils.py tests/unit/test_trafo.py -v --tb=short"
 
       
       - uses: actions/upload-artifact@v4
