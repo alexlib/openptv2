@@ -2,10 +2,10 @@ name: Build Wheels
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main, master, feature/cython3-pure-python ]
     tags: [ 'v*', '[0-9]*' ]
   pull_request:
-    branches: [ main, master ]
+    branches: [ main, master, feature/cython3-pure-python ]
   workflow_dispatch:
 
 jobs:
