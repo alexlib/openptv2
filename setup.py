@@ -86,7 +86,7 @@ def _cythonize_all():
 
     # Cythonize all modules in a single call in parallel
     if targets:
-        nthreads = min(4, os.cpu_count() or 1)
+        nthreads = os.cpu_count() or 1
         print(
             f"[OpenPTV2] Running cythonize on {len(targets)} targets with {nthreads} threads..."
         )
@@ -120,6 +120,19 @@ def _needs_rebuild():
                 )
                 return True
     return False
+
+
+def _setup_ccache_env():
+    """Prepend ccache to CC/CXX if available (dramatically speeds up rebuilds)."""
+    ccache = shutil.which("ccache")
+    if ccache:
+        for var in ("CC", "CXX"):
+            existing = os.environ.get(var, "")
+            if existing:
+                os.environ[var] = f"{ccache} {existing}"
+            else:
+                os.environ[var] = f"{ccache} {var.lower()}"
+        print(f"[OpenPTV2] ccache enabled ({ccache})")
 
 
 def _compiler_available():
@@ -178,6 +191,9 @@ def _compiler_available():
     return any(shutil.which(c) for c in candidates if c)
 
 
+# Enable ccache for faster rebuilds if available
+_setup_ccache_env()
+
 # Resolved once: governs whether C extensions are built or skipped this run.
 HAVE_COMPILER = _compiler_available()
 
@@ -218,7 +234,14 @@ def get_extensions():
             extra_link_args = []
             if not sys.platform.startswith("win"):
                 opt = "-O0" if is_dev else "-O3"
-                extra_compile_args.extend([opt, "-Wno-cpp", "-Wno-unused-function"])
+                extra_compile_args.extend(
+                    [
+                        opt,
+                        "-Wno-cpp",
+                        "-Wno-unused-function",
+                        "-Wno-maybe-uninitialized",
+                    ]
+                )
                 extra_link_args.extend(["-Wl,-rpath,$ORIGIN"])
             else:
                 opt = "/Od" if is_dev else "/O2"
@@ -273,7 +296,18 @@ class BuildExtWithPrepare(build_ext):
 
         # We can compile extensions in parallel since generated C sources are pre-generated
         # and static before compiling begins.
-        self.parallel = min(4, os.cpu_count() or 1)
+        self.parallel = min(os.cpu_count() or 1, 8)
+
+    def _setup_ccache(self):
+        """Prepend ccache to the compiler if available (speeds up rebuilds)."""
+        import shutil
+
+        ccache = shutil.which("ccache")
+        if ccache and hasattr(self, "compiler"):
+            for attr in ("compiler", "compiler_so", "compiler_cxx", "linker_so"):
+                cmd = getattr(self.compiler, attr, None)
+                if cmd and cmd and cmd[0] != ccache:
+                    setattr(self.compiler, attr, [ccache] + cmd)
 
     def run(self):
         import time
@@ -287,6 +321,7 @@ class BuildExtWithPrepare(build_ext):
         start_time = time.time()
         if _needs_rebuild():
             _cythonize_all()
+        self._setup_ccache()
         print(
             f"[OpenPTV2] Compiling and linking Cython extensions in parallel ({self.parallel} workers)..."
         )
