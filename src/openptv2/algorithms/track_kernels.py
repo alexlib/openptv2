@@ -989,8 +989,15 @@ def searchquader_fast(
     chfield: cython.int,
     imx: cython.double,
     imy: cython.double,
+    xr_out: cython.double[:] = None,
+    xl_out: cython.double[:] = None,
+    yd_out: cython.double[:] = None,
+    yu_out: cython.double[:] = None,
 ):
     """Compute search area for all cameras.
+
+    When xr_out/xl_out/yd_out/yu_out are provided (each (num_cams,) float64),
+    they are used as output buffers instead of allocating new arrays internally.
 
     Projects point + 8 corner points through all cameras in a single compiled call,
     eliminating per-projection dispatch overhead.
@@ -1021,10 +1028,10 @@ def searchquader_fast(
     mnr: cython.int
     mnz: cython.int
     has_mmlut: cython.int
-    xr = np.zeros(num_cams, dtype=np.float64)
-    xl = np.zeros(num_cams, dtype=np.float64)
-    yd = np.zeros(num_cams, dtype=np.float64)
-    yu = np.zeros(num_cams, dtype=np.float64)
+    xr = np.zeros(num_cams, dtype=np.float64) if xr_out is None else xr_out
+    xl = np.zeros(num_cams, dtype=np.float64) if xl_out is None else xl_out
+    yd = np.zeros(num_cams, dtype=np.float64) if yd_out is None else yd_out
+    yu = np.zeros(num_cams, dtype=np.float64) if yu_out is None else yu_out
 
     for i in range(num_cams):
         cal = cal_arrays[i]
@@ -2371,12 +2378,18 @@ def assess_new_position_fast(
     use_proj: cython.bint,
     proj_x: cython.double[:],
     proj_y: cython.double[:],
+    targ_pos_out: cython.double[:, :] = None,
+    cand_inds_out: cython.int[:] = None,
+    scratch: cython.double[:] = None,
 ):
     """Assess new position: project, find unused targets, undistort.
 
     When use_proj=True, proj_x[cam] and proj_y[cam] provide pre-computed
     pixel projections (avoids redundant _point_to_pixel_out calls).
     When use_proj=False, proj_x/proj_y are unused (can be empty arrays).
+
+    When targ_pos_out, cand_inds_out, and scratch are provided, they are
+    used as pre-allocated output buffers instead of allocating new arrays.
 
     Returns (targ_pos, cand_inds, valid_cams).
     """
@@ -2391,10 +2404,21 @@ def assess_new_position_fast(
     my: cython.double
     fx: cython.double
     fy: cython.double
-    _pp = np.empty(2, dtype=np.float64)
-    _pp_mv: cython.double[:] = _pp
-    targ_pos = np.full((num_cams, 2), coord_unused, dtype=np.float64)
-    cand_inds = np.full(num_cams, PT_UNUSED, dtype=np.int32)
+    _pp_mv: cython.double[:]
+    targ_pos: cython.double[:, :]
+    cand_inds: cython.int[:]
+    if scratch is not None:
+        _pp_mv = scratch
+    else:
+        _pp_mv = np.empty(2, dtype=np.float64)
+    if targ_pos_out is not None:
+        targ_pos = targ_pos_out
+    else:
+        targ_pos = np.full((num_cams, 2), coord_unused, dtype=np.float64)
+    if cand_inds_out is not None:
+        cand_inds = cand_inds_out
+    else:
+        cand_inds = np.full(num_cams, PT_UNUSED, dtype=np.int32)
 
     for cam in range(num_cams):
         if use_proj:
@@ -2660,6 +2684,13 @@ def trackcorr_loop_fast(
     X: cython.double[:, :] = _X
     _pp = np.empty(2, dtype=np.float64)
     _pp_mv: cython.double[:] = _pp
+
+    # Pre-allocated output buffers for assess_new_position_fast
+    _assess_targ = np.full((num_cams, 2), COORD_UNUSED_K, dtype=np.float64)
+    _assess_inds = np.full(num_cams, PT_UNUSED, dtype=np.int32)
+    _assess_pp = np.empty(2, dtype=np.float64)
+    _assess_targ2 = np.full((num_cams, 2), COORD_UNUSED_K, dtype=np.float64)
+    _assess_inds2 = np.full(num_cams, PT_UNUSED, dtype=np.int32)
 
     for h in range(orig_parts_1):
         path_inlist_1[h] = 0
@@ -2952,6 +2983,9 @@ def trackcorr_loop_fast(
                 use_proj=True,
                 proj_x=cpx,
                 proj_y=cpy,
+                targ_pos_out=_assess_targ,
+                cand_inds_out=_assess_inds,
+                scratch=_assess_pp,
             )
 
             if quali >= 2:
@@ -3124,6 +3158,9 @@ def trackcorr_loop_fast(
                     use_proj=True,
                     proj_x=x2_cpx,
                     proj_y=x2_cpy,
+                    targ_pos_out=_assess_targ2,
+                    cand_inds_out=_assess_inds2,
+                    scratch=_assess_pp,
                 )
 
                 if quali2 >= 2:
@@ -3390,6 +3427,11 @@ def trackback_loop_fast(
     _pp = np.empty(2, dtype=np.float64)
     _pp_mv: cython.double[:] = _pp
 
+    # Pre-allocated output buffers for assess_new_position_fast
+    _assess_targ = np.full((num_cams, 2), COORD_UNUSED_K, dtype=np.float64)
+    _assess_inds = np.full(num_cams, PT_UNUSED, dtype=np.int32)
+    _assess_pp = np.empty(2, dtype=np.float64)
+
     for h in range(num_parts_1):
         next_h = path_next_1[h]
         prev_h = path_prev_1[h]
@@ -3554,6 +3596,9 @@ def trackback_loop_fast(
                     use_proj=False,
                     proj_x=cpx,
                     proj_y=cpy,
+                    targ_pos_out=_assess_targ,
+                    cand_inds_out=_assess_inds,
+                    scratch=_assess_pp,
                 )
 
                 if quali >= 2:
@@ -4638,7 +4683,7 @@ def targ_rec_fast(
 
     for i in range(ymin, ymax):
         for j in range(xmin, xmax):
-            gv = img[i, j]
+            gv = int(img[i, j])
             if gv <= gvthres:
                 continue
 
@@ -4680,7 +4725,7 @@ def targ_rec_fast(
                 head += 1
                 if head >= queue_size:
                     head = 0
-                gvref = img[wi, wj]
+                gvref = int(img[wi, wj])
 
                 for d in range(4):
                     xn4 = wj + dx4[d]
@@ -4689,7 +4734,7 @@ def targ_rec_fast(
                     if xn4 < xmin or xn4 >= xmax or yn4 < ymin or yn4 >= ymax:
                         continue
 
-                    gv4 = img0[yn4, xn4]
+                    gv4 = int(img0[yn4, xn4])
                     if (
                         gv4 > gvthres
                         and gv4 <= gvref + discont

@@ -46,6 +46,10 @@ class Peak:
     touch: list = cython.declare(list, visibility="public")
     n_touch: cython.int = 0
 
+    def __post_init__(self):
+        if self.touch is None:
+            self.touch = []
+
 
 @cython.ccall
 def check_touch(tpeak: Peak, p1: cython.int, p2: cython.int):
@@ -230,7 +234,7 @@ def peak_fit(
     for i in range(ymin, ymax - 1):
         for j in range(xmin, xmax):
             n = i * imx + j
-            gv = img[i, j]
+            gv = int(img[i, j])
 
             if gv <= gvthres:
                 continue
@@ -260,7 +264,7 @@ def peak_fit(
                 wx = qx[qhead]
                 wy = qy[qhead]
                 qhead += 1
-                gvref = img[wy, wx]
+                gvref = int(img[wy, wx])
 
                 for d in range(4):
                     nx_pos = wx + dx4[d]
@@ -270,7 +274,7 @@ def peak_fit(
                     if label_img[ny_pos, nx_pos] != 0:
                         continue
 
-                    neighbor_gv = img[ny_pos, nx_pos]
+                    neighbor_gv = int(img[ny_pos, nx_pos])
 
                     if (
                         neighbor_gv > gvthres

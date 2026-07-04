@@ -622,7 +622,41 @@ def _img_coord_params(
     return _flat_to_dist_core(x, y, int_xh, int_yh, k1, k2, k3, p1, p2, scx, she)
 
 
-def img_coord_batch(positions, cal, mm):
+def img_coord_typed(pos: cython.double[:], cal, mm):
+    """Fast typed path: pos must be a contiguous float64 array (no conversion).
+
+    Same as img_coord but skips the np.ascontiguousarray check.
+    Use in hot loops where the caller already has an ndarray view.
+    """
+    mmlut = cal.mmlut if cal.mmlut.is_initialized else None
+    return _img_coord_params(
+        pos,
+        cal.ext_par.x0,
+        cal.ext_par.y0,
+        cal.ext_par.z0,
+        cal.ext_par.dm,
+        cal.int_par.cc,
+        cal.int_par.xh,
+        cal.int_par.yh,
+        cal.glass_par.vec_x,
+        cal.glass_par.vec_y,
+        cal.glass_par.vec_z,
+        mm.n1,
+        mm.n2[0],
+        mm.n3,
+        mm.d[0],
+        cal.added_par.k1,
+        cal.added_par.k2,
+        cal.added_par.k3,
+        cal.added_par.p1,
+        cal.added_par.p2,
+        cal.added_par.scx,
+        cal.added_par.she,
+        mmlut=mmlut,
+    )
+
+
+def img_coord_batch(positions: cython.double[:, :], cal, mm):
     """Project N 3D positions to distorted metric image coordinates.
 
     Args:
@@ -633,7 +667,8 @@ def img_coord_batch(positions, cal, mm):
     Returns:
         (N, 2) array of distorted metric coordinates.
     """
-    positions = np.ascontiguousarray(positions, dtype=np.float64)
+    if not cython.compiled:
+        positions = np.ascontiguousarray(positions, dtype=np.float64)
     return _img_coord_batch_impl(positions, cal, mm)
 
 
@@ -915,7 +950,7 @@ def _img_coord_batch_impl(positions: cython.double[:, :], cal, mm) -> object:
     return result
 
 
-def flat_image_coord_batch(positions, cal, mm):
+def flat_image_coord_batch(positions: cython.double[:, :], cal, mm):
     """Project N 3D positions to flat metric image coordinates.
 
     Args:
@@ -926,7 +961,8 @@ def flat_image_coord_batch(positions, cal, mm):
     Returns:
         (N, 2) array of flat (undistorted) metric coordinates.
     """
-    positions = np.ascontiguousarray(positions, dtype=np.float64)
+    if not cython.compiled:
+        positions = np.ascontiguousarray(positions, dtype=np.float64)
     return _flat_image_coord_batch_impl(positions, cal, mm)
 
 

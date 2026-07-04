@@ -292,11 +292,13 @@ def split(
     src_arr = np.asarray(img, dtype=np.uint8).reshape(imy, imx).copy()
     src_mv = src_arr
     half = imy // 2
-    cond_offs = imx if half_selector % 2 else 0
+    # Hoist conditional out of inner loop: half_selector 1→odd(offset=1), 2→even(offset=0)
+    row_offset: cython.int = 1 if half_selector == 1 else 0
 
     for row in range(half):
+        src_row: cython.int = 2 * row + row_offset
         for col in range(imx):
-            src_mv[row, col] = src_mv[2 * row + (1 if cond_offs else 0), col]
+            src_mv[row, col] = src_mv[src_row, col]
 
     for row in range(half, imy):
         for col in range(imx):

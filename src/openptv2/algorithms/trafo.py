@@ -728,6 +728,7 @@ def is_compiled() -> bool:
 
 
 @cython.ccall
+@cython.profile(False)
 @cython.boundscheck(False)
 @cython.wraparound(False)
 def correct_brown_affine_batch(
@@ -739,15 +740,14 @@ def correct_brown_affine_batch(
     p2: cython.double,
     scx: cython.double,
     she: cython.double,
-    out: np.ndarray = None,
+    out: object = None,
 ) -> object:
     n: cython.Py_ssize_t = xy.shape[0]
     if out is None:
         result: np.ndarray = np.empty((n, 2), dtype=np.float64)
     else:
-        result = out
+        result = np.asarray(out, dtype=np.float64)
     result_view: cython.double[:, :] = result
-    xy_view: cython.double[:, :] = xy
 
     sin_she: cython.double = c_sin(she)
     cos_she: cython.double = c_cos(she)
@@ -779,8 +779,8 @@ def correct_brown_affine_batch(
     pos_magnitude: cython.double
 
     for i in range(n):
-        x = xy_view[i, 0]
-        y = xy_view[i, 1]
+        x = xy[i, 0]
+        y = xy[i, 1]
 
         # Initial guess: inverse affine transformation
         xq = x * inv_scx
@@ -828,6 +828,7 @@ def correct_brown_affine_batch(
 
 
 @cython.ccall
+@cython.profile(False)
 @cython.boundscheck(False)
 @cython.wraparound(False)
 def distort_brown_affine_batch(
@@ -842,8 +843,7 @@ def distort_brown_affine_batch(
 ) -> object:
     n: cython.Py_ssize_t = xy.shape[0]
     result: np.ndarray = np.empty((n, 2), dtype=np.float64)
-    result_view: cython.double[:, :] = result
-    xy_view: cython.double[:, :] = xy
+    result_view: cython.double[:, ::1] = result
 
     sin_she: cython.double = c_sin(she)
     cos_she: cython.double = c_cos(she)
@@ -860,8 +860,8 @@ def distort_brown_affine_batch(
     y_dist: cython.double
 
     for i in range(n):
-        x = xy_view[i, 0]
-        y = xy_view[i, 1]
+        x = xy[i, 0]
+        y = xy[i, 1]
         r = c_sqrt(x * x + y * y)
         if r < 1e-10:
             result_view[i, 0] = 0.0

@@ -471,7 +471,9 @@ def weighted_dumbbell_precision(
 
 
 @cython.ccall
-def num_deriv_exterior(cal, cpar, dpos, dang, pos):
+def num_deriv_exterior(
+    cal, cpar, dpos: cython.double, dang: cython.double, pos: cython.double[:]
+):
     """Compute numerical derivatives of image coords w.r.t. exterior params.
 
     Args:
@@ -484,10 +486,10 @@ def num_deriv_exterior(cal, cpar, dpos, dang, pos):
     Returns:
         (x_ders, y_ders) each shape (6,).
     """
-    from .imgcoord import img_coord
+    from .imgcoord import img_coord_typed
 
     cal.ext_par.compute_rotation_matrix()
-    xs, ys = img_coord(pos, cal, cpar.mm)
+    xs, ys = img_coord_typed(pos, cal, cpar.mm)
 
     x_ders = np.zeros(6)
     y_ders = np.zeros(6)
@@ -503,7 +505,7 @@ def num_deriv_exterior(cal, cpar, dpos, dang, pos):
         if pd > 2:
             cal.ext_par.compute_rotation_matrix()
 
-        xpd, ypd = img_coord(pos, cal, cpar.mm)
+        xpd, ypd = img_coord_typed(pos, cal, cpar.mm)
         x_ders[pd] = (xpd - xs) / step
         y_ders[pd] = (ypd - ys) / step
 
@@ -527,7 +529,7 @@ def raw_orient(cal, cpar, nfix, fix, pix):
     Returns:
         True on success, False on failure.
     """
-    from .imgcoord import img_coord
+    from .imgcoord import img_coord_typed
     from .trafo import pixel_to_metric, correct_brown_affin
     from .lsqadj import ata, atl, matinv, matmul
 
@@ -562,9 +564,9 @@ def raw_orient(cal, cpar, nfix, fix, pix):
             xc, yc = pixel_to_metric(x_px, y_px, cpar)
 
             cal.ext_par.compute_rotation_matrix()
-            xp, yp = img_coord(np.asarray(fix[i]), cal, cpar.mm)
+            xp, yp = img_coord_typed(fix[i], cal, cpar.mm)
 
-            x_ders, y_ders = num_deriv_exterior(cal, cpar, dm, drad, np.asarray(fix[i]))
+            x_ders, y_ders = num_deriv_exterior(cal, cpar, dm, drad, fix[i])
 
             X[n, :] = x_ders
             X[n + 1, :] = y_ders
@@ -613,7 +615,7 @@ def orient(cal_in, cpar, nfix, fix, pix, flags, sigmabeta):
     Returns:
         Array of residuals on success, None on failure.
     """
-    from .imgcoord import img_coord
+    from .imgcoord import img_coord_typed
     from .trafo import pixel_to_metric, correct_brown_affin
     from .lsqadj import ata, atl, matinv, matmul
     from .vec_utils import vec_set, unit_vector, vec_norm
@@ -718,7 +720,7 @@ def orient(cal_in, cpar, nfix, fix, pix, flags, sigmabeta):
             )
 
             cal.ext_par.compute_rotation_matrix()
-            xp, yp = img_coord(np.asarray(fix[i]), cal, cpar.mm)
+            xp, yp = img_coord_typed(fix[i], cal, cpar.mm)
 
             r = np.sqrt(xp * xp + yp * yp)
 
@@ -757,14 +759,14 @@ def orient(cal_in, cpar, nfix, fix, pix, flags, sigmabeta):
             X[n, 15] = -np.cos(cal.added_par.she) * yp
             X[n + 1, 15] = -np.sin(cal.added_par.she) * yp
 
-            x_ders, y_ders = num_deriv_exterior(cal, cpar, dm, drad, np.asarray(fix[i]))
+            x_ders, y_ders = num_deriv_exterior(cal, cpar, dm, drad, fix[i])
             X[n, 0:6] = x_ders
             X[n + 1, 0:6] = y_ders
 
             # cc derivative
             cal.int_par.cc += dm
             cal.ext_par.compute_rotation_matrix()
-            xpd, ypd = img_coord(np.asarray(fix[i]), cal, cpar.mm)
+            xpd, ypd = img_coord_typed(fix[i], cal, cpar.mm)
             X[n, 6] = (xpd - xp) / dm
             X[n + 1, 6] = (ypd - yp) / dm
             cal.int_par.cc -= dm
@@ -774,7 +776,7 @@ def orient(cal_in, cpar, nfix, fix, pix, flags, sigmabeta):
             cal.glass_par.vec_x += e1[0] * nGl * al
             cal.glass_par.vec_y += e1[1] * nGl * al
             cal.glass_par.vec_z += e1[2] * nGl * al
-            xpd, ypd = img_coord(np.asarray(fix[i]), cal, cpar.mm)
+            xpd, ypd = img_coord_typed(fix[i], cal, cpar.mm)
             X[n, 16] = (xpd - xp) / dm
             X[n + 1, 16] = (ypd - yp) / dm
             al -= dm
@@ -786,7 +788,7 @@ def orient(cal_in, cpar, nfix, fix, pix, flags, sigmabeta):
             cal.glass_par.vec_x += e2[0] * nGl * be
             cal.glass_par.vec_y += e2[1] * nGl * be
             cal.glass_par.vec_z += e2[2] * nGl * be
-            xpd, ypd = img_coord(np.asarray(fix[i]), cal, cpar.mm)
+            xpd, ypd = img_coord_typed(fix[i], cal, cpar.mm)
             X[n, 17] = (xpd - xp) / dm
             X[n + 1, 17] = (ypd - yp) / dm
             be -= dm
@@ -798,7 +800,7 @@ def orient(cal_in, cpar, nfix, fix, pix, flags, sigmabeta):
             cal.glass_par.vec_x += cal.glass_par.vec_x * nGl * ga
             cal.glass_par.vec_y += cal.glass_par.vec_y * nGl * ga
             cal.glass_par.vec_z += cal.glass_par.vec_z * nGl * ga
-            xpd, ypd = img_coord(np.asarray(fix[i]), cal, cpar.mm)
+            xpd, ypd = img_coord_typed(fix[i], cal, cpar.mm)
             X[n, 18] = (xpd - xp) / dm
             X[n + 1, 18] = (ypd - yp) / dm
             ga -= dm
