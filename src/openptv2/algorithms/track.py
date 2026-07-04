@@ -69,7 +69,7 @@ def _pack_cams_fast(cals, mm):
 
 
 def _pack_cams_fast_tuples(fast_cals, fast_mmluts):
-    """Convert lists to tuples for searchquader_fast."""
+    """Convert lists to tuples for kernel functions."""
     return (
         tuple(fast_cals),
         tuple(m[0] for m in fast_mmluts),

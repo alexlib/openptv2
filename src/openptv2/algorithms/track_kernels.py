@@ -2692,6 +2692,15 @@ def trackcorr_loop_fast(
     _assess_targ2 = np.full((num_cams, 2), COORD_UNUSED_K, dtype=np.float64)
     _assess_inds2 = np.full(num_cams, PT_UNUSED, dtype=np.int32)
 
+    # Convert calibration tuples to flat arrays for C-speed access
+    nc_local = len(cal_t)
+    cal_arr = np.asarray(list(cal_t), dtype=np.float64)
+    md_arr = list(md_t)
+    mo_arr = np.asarray(list(mo_t), dtype=np.float64)
+    mnr_arr = np.array(list(mnr_t), dtype=np.int32)
+    mnz_arr = np.array(list(mnz_t), dtype=np.int32)
+    mrw_arr = np.array(list(mrw_t), dtype=np.float64)
+
     for h in range(orig_parts_1):
         path_inlist_1[h] = 0
 
@@ -2710,15 +2719,15 @@ def trackcorr_loop_fast(
             X[2, 2] = 2.0 * X[1, 2] - X[0, 2]
 
             for j in range(num_cams):
-                has_mmlut = mnr_t[j] > 0
+                has_mmlut = mnr_arr[j] > 0
                 _point_to_pixel_out(
                     X[2],
-                    cal_t[j],
-                    md_t[j],
-                    mo_t[j],
-                    mnr_t[j],
-                    mnz_t[j],
-                    mrw_t[j],
+                    cal_arr[j],
+                    md_arr[j],
+                    mo_arr[j],
+                    mnr_arr[j],
+                    mnz_arr[j],
+                    mrw_arr[j],
                     has_mmlut,
                     imx_half,
                     imy_half,
@@ -2736,15 +2745,15 @@ def trackcorr_loop_fast(
 
             for j in range(num_cams):
                 if corres_p_1[h, j] == CORRES_NONE_K:
-                    has_mmlut = mnr_t[j] > 0
+                    has_mmlut = mnr_arr[j] > 0
                     _point_to_pixel_out(
                         X[2],
-                        cal_t[j],
-                        md_t[j],
-                        mo_t[j],
-                        mnr_t[j],
-                        mnz_t[j],
-                        mrw_t[j],
+                        cal_arr[j],
+                        md_arr[j],
+                        mo_arr[j],
+                        mnr_arr[j],
+                        mnz_arr[j],
+                        mrw_arr[j],
                         has_mmlut,
                         imx_half,
                         imy_half,
@@ -2820,15 +2829,15 @@ def trackcorr_loop_fast(
                 X[5, 2] = 2.0 * X[3, 2] - X[1, 2]
 
             for j in range(num_cams):
-                has_mmlut = mnr_t[j] > 0
+                has_mmlut = mnr_arr[j] > 0
                 _point_to_pixel_out(
                     X[5],
-                    cal_t[j],
-                    md_t[j],
-                    mo_t[j],
-                    mnr_t[j],
-                    mnz_t[j],
-                    mrw_t[j],
+                    cal_arr[j],
+                    md_arr[j],
+                    mo_arr[j],
+                    mnr_arr[j],
+                    mnz_arr[j],
+                    mrw_arr[j],
                     has_mmlut,
                     imx_half,
                     imy_half,
@@ -3432,6 +3441,14 @@ def trackback_loop_fast(
     _assess_inds = np.full(num_cams, PT_UNUSED, dtype=np.int32)
     _assess_pp = np.empty(2, dtype=np.float64)
 
+    # Convert calibration tuples to flat arrays for C-speed access
+    cal_arr = np.asarray(list(cal_t), dtype=np.float64)
+    md_arr = list(md_t)
+    mo_arr = np.asarray(list(mo_t), dtype=np.float64)
+    mnr_arr = np.array(list(mnr_t), dtype=np.int32)
+    mnz_arr = np.array(list(mnz_t), dtype=np.int32)
+    mrw_arr = np.array(list(mrw_t), dtype=np.float64)
+
     for h in range(num_parts_1):
         next_h = path_next_1[h]
         prev_h = path_prev_1[h]
@@ -3455,15 +3472,15 @@ def trackback_loop_fast(
         X[2, 2] = 2.0 * X[1, 2] - X[0, 2]
 
         for j in range(num_cams):
-            has_mmlut = mnr_t[j] > 0
+            has_mmlut = mnr_arr[j] > 0
             _point_to_pixel_out(
                 X[2],
-                cal_t[j],
-                md_t[j],
-                mo_t[j],
-                mnr_t[j],
-                mnz_t[j],
-                mrw_t[j],
+                cal_arr[j],
+                md_arr[j],
+                mo_arr[j],
+                mnr_arr[j],
+                mnz_arr[j],
+                mrw_arr[j],
                 has_mmlut,
                 imx_half,
                 imy_half,
