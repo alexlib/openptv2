@@ -353,8 +353,8 @@ def peak_fit(
                 unify = True
                 l: cython.int
                 for l in range(1, int(s12)):
-                    intx1 = int(x1 + l * (x2 - x1) / s12)
-                    inty1 = int(y1 + l * (y2 - y1) / s12)
+                    intx1: cython.int = int(x1 + l * (x2 - x1) / s12)
+                    inty1: cython.int = int(y1 + l * (y2 - y1) / s12)
 
                     if 0 <= inty1 < imy and 0 <= intx1 < imx:
                         gv = img[inty1, intx1] + discont

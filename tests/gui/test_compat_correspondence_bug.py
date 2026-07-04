@@ -286,7 +286,11 @@ def test_compat_correspondences_parity(cavity_dir):
             )
 
         ntupels_r2, mc_r2 = raw_corr(
-            r_frm, r_corr, vpar_c._vpar, cpar_c._cpar, [c._cal for c in cals_c]
+            r_frm,
+            r_corr,
+            vpar_c._vpar if hasattr(vpar_c, "_vpar") else vpar_c,
+            cpar_c._cpar if hasattr(cpar_c, "_cpar") else cpar_c,
+            [getattr(c, "_cal", c) for c in cals_c],
         )
         print(f"  RAW with compat-unwrapped: total={mc_r2[3]} match_counts={mc_r2}")
 

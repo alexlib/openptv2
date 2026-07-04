@@ -2625,10 +2625,10 @@ def trackcorr_loop_fast(
     acc: cython.double
     angle: cython.double
     rr: cython.double
-    d13: cython.double
-    d43: cython.double
-    dl: cython.double
-    d01: cython.double
+    d13: cython.double = 0.0
+    d43: cython.double = 0.0
+    dl: cython.double = 0.0
+    d01: cython.double = 0.0
     quali_f: cython.int
     count1 = 0
     num_added = 0
@@ -3367,9 +3367,9 @@ def trackback_loop_fast(
     angle: cython.double
     acc: cython.double
     rr: cython.double
-    d13: cython.double
-    d01: cython.double
-    dl: cython.double
+    d13: cython.double = 0.0
+    d01: cython.double = 0.0
+    dl: cython.double = 0.0
     idx: cython.int
     flag: cython.bint
     count1 = 0
