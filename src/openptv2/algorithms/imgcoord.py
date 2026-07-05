@@ -31,6 +31,7 @@ from .trafo import flat_to_dist as _flat_to_dist
 from .multimed import (
     multimed_nlay as _multimed_nlay,
     get_mmf_from_mmlut as _get_mmf_from_mmlut,
+    _multimed_nlay_core as _multimed_nlay_core,
 )
 
 _DUMMY_MMLUT_DATA = np.zeros(1, dtype=np.float64)
@@ -140,109 +141,6 @@ def _get_mmf_from_mmlut_core(
     )
 
     return mmf
-
-
-@cython.cfunc
-@cython.inline
-@cython.boundscheck(False)
-@cython.wraparound(False)
-def _multimed_r_1lay_iterative(
-    pos_x: cython.double,
-    pos_z: cython.double,
-    ext_z0: cython.double,
-    mm_n1: cython.double,
-    mm_n2_0: cython.double,
-    mm_n3: cython.double,
-    mm_d0: cython.double,
-) -> cython.double:
-    if mm_n1 == 1.0 and mm_n2_0 == 1.0 and mm_n3 == 1.0:
-        return 1.0
-
-    r: cython.double = pos_x
-    rq: cython.double = r
-
-    it: cython.int
-    beta1: cython.double
-    sin_beta1: cython.double
-    beta2: cython.double
-    beta3: cython.double
-    rbeta: cython.double
-    rdiff: cython.double
-    arg: cython.double
-
-    # Constants for iteration
-    n_iter: cython.int = 40
-    tol: cython.double = 0.001
-
-    for it in range(n_iter):
-        beta1 = c_atan(rq / (ext_z0 - pos_z))
-        sin_beta1 = c_sin(beta1)
-
-        arg = sin_beta1 * mm_n1 / mm_n2_0
-        if arg > 1.0:
-            arg = 1.0
-        elif arg < -1.0:
-            arg = -1.0
-        beta2 = c_asin(arg)
-
-        arg = sin_beta1 * mm_n1 / mm_n3
-        if arg > 1.0:
-            arg = 1.0
-        elif arg < -1.0:
-            arg = -1.0
-        beta3 = c_asin(arg)
-
-        rbeta = (
-            (ext_z0 - mm_d0) * c_tan(beta1)
-            - pos_z * c_tan(beta3)
-            + mm_d0 * c_tan(beta2)
-        )
-        rdiff = r - rbeta
-        rq += rdiff
-
-        if abs(rdiff) < tol:
-            break
-    else:
-        return 1.0
-
-    if r != 0.0:
-        return rq / r
-    else:
-        return 1.0
-
-
-@cython.cfunc
-@cython.inline
-@cython.boundscheck(False)
-@cython.wraparound(False)
-def _multimed_nlay_core(
-    pos_x: cython.double,
-    pos_z: cython.double,
-    ext_z0: cython.double,
-    mm_n1: cython.double,
-    mm_n2_0: cython.double,
-    mm_n3: cython.double,
-    mm_d0: cython.double,
-    mmf: cython.double,
-) -> tuple:
-    radial_shift: cython.double = 1.0
-    if mmf > 0.0 and mmf != 1.0:
-        radial_shift = mmf
-    else:
-        radial_shift = _multimed_r_1lay_iterative(
-            pos_x,
-            pos_z,
-            ext_z0,
-            mm_n1,
-            mm_n2_0,
-            mm_n3,
-            mm_d0,
-        )
-
-    Xq: cython.double = pos_x * radial_shift
-    Yq: cython.double = 0.0
-
-    return Xq, Yq
 
 
 @cython.cfunc

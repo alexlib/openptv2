@@ -29,6 +29,7 @@ CORRES_NONE = -1
 
 @cython.cclass
 @dataclass
+
 class Peak:
     """Detected peak for connectivity analysis."""
 
@@ -52,23 +53,7 @@ class Peak:
 
 
 @cython.ccall
-def check_touch(tpeak: Peak, p1: cython.int, p2: cython.int):
-    """Check whether p1, p2 are already marked as touching and mark them otherwise."""
-    if p2 == 0 or p2 == p1:
-        return
 
-    m: cython.int
-    for m in range(tpeak.n_touch):
-        if tpeak.touch[m] == p2:
-            return
-
-    tpeak.touch[tpeak.n_touch] = p2
-    tpeak.n_touch += 1
-    if tpeak.n_touch > 3:
-        tpeak.n_touch = 3
-
-
-@cython.ccall
 def _is_local_maximum(
     img: cython.uchar[:, :], i: cython.int, j: cython.int
 ) -> cython.bint:
@@ -90,6 +75,25 @@ def _is_local_maximum(
 
 
 @cython.ccall
+
+def check_touch(tpeak: Peak, p1: cython.int, p2: cython.int):
+    """Check whether p1, p2 are already marked as touching and mark them otherwise."""
+    if p2 == 0 or p2 == p1:
+        return
+
+    m: cython.int
+    for m in range(tpeak.n_touch):
+        if tpeak.touch[m] == p2:
+            return
+
+    tpeak.touch[tpeak.n_touch] = p2
+    tpeak.n_touch += 1
+    if tpeak.n_touch > 3:
+        tpeak.n_touch = 3
+
+
+@cython.ccall
+
 def targ_rec(
     img: cython.uchar[:, :],
     gvthres: cython.int,
@@ -176,6 +180,7 @@ def targ_rec(
 @cython.ccall
 @cython.boundscheck(False)
 @cython.wraparound(False)
+
 def peak_fit(
     img: cython.uchar[:, :],
     gvthres: cython.int,
@@ -426,7 +431,6 @@ def peak_fit(
             )
 
     return targets
-
 
 def is_compiled() -> bool:
     """Return whether this module is compiled to C."""

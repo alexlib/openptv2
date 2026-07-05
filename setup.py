@@ -29,6 +29,7 @@ import numpy
 ROOT = Path(__file__).parent.resolve()
 
 # All 18 modules translated from the C library to Cython 3 Pure Python
+# Note: track_kernels.py is a shim re-exporting from sub-modules.
 ALGORITHMS_MODULES = [
     "vec_utils",
     "trafo",
@@ -48,7 +49,12 @@ ALGORITHMS_MODULES = [
     "tracking_run",
     "track",
     "track3d",
-    "track_kernels",
+    "track_kernels",  # shim re-exporting sub-modules below
+    "track_kernels_geom",  # multimedia + pixel_projection + angle
+    "track_kernels_search",  # candidate search
+    "track_kernels_transform",  # point_position + image_coord transforms
+    "track_kernels_tracking",  # tracking + track3d loops
+    "track_kernels_batch",  # batch processing + detection
 ]
 
 
@@ -93,6 +99,7 @@ def _cythonize_all():
         cythonize(
             targets,
             nthreads=nthreads,
+            annotate=True,  # generates .html showing Python-vs-C per line
             compiler_directives={
                 "language_level": "3",
                 "boundscheck": False,
