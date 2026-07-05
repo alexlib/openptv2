@@ -48,13 +48,15 @@ PT_UNUSED = -999
 COORD_UNUSED = -1e10
 
 
-def point_position_fast(targets: cython.double[:, :], num_cams: cython.int, cal_arrays):
+def point_position_fast(
+    targets: cython.double[:, :], num_cams: cython.int, cal_arr: cython.double[:, ::1]
+):
     """Compute 3D position from multiple camera rays.
 
     Args:
         targets: (num_cams, 2) float64 — metric flat coordinates per camera.
         num_cams: int.
-        cal_arrays: tuple of (31,) float64 arrays, one per camera.
+        cal_arr: tuple of (31,) float64 arrays, one per camera.
 
     Returns:
         (pos, avg_dist) — (3,) float64 position and average ray distance.
@@ -111,22 +113,26 @@ def point_position_fast(targets: cython.double[:, :], num_cams: cython.int, cal_
     ddx: cython.double
     ddy: cython.double
     ddz: cython.double
-    verts_x = np.empty(num_cams, dtype=np.float64)
-    verts_y = np.empty(num_cams, dtype=np.float64)
-    verts_z = np.empty(num_cams, dtype=np.float64)
-    dirs_x = np.empty(num_cams, dtype=np.float64)
-    dirs_y = np.empty(num_cams, dtype=np.float64)
-    dirs_z = np.empty(num_cams, dtype=np.float64)
-    valid = np.zeros(num_cams, dtype=np.int32)
-    _ray_out_pp = np.empty(6, dtype=np.float64)
+    verts_x: cython.double[4]
+    verts_y: cython.double[4]
+    verts_z: cython.double[4]
+    dirs_x: cython.double[4]
+    dirs_y: cython.double[4]
+    dirs_z: cython.double[4]
+    valid: cython.int[4]
+    _ray_out_pp: cython.double[6]
     _ray_out_mv_pp: cython.double[:] = _ray_out_pp
+    _vi: cython.int
+
+    for _vi in range(4):
+        valid[_vi] = 0
 
     for cam in range(num_cams):
         tx = targets[cam, 0]
         ty = targets[cam, 1]
         if tx == COORD_UNUSED:
             continue
-        _ray_tracing_out(tx, ty, cal_arrays[cam], _ray_out_mv_pp)
+        _ray_tracing_out(tx, ty, cal_arr[cam], _ray_out_mv_pp)
         verts_x[cam] = _ray_out_mv_pp[0]
         verts_y[cam] = _ray_out_mv_pp[1]
         verts_z[cam] = _ray_out_mv_pp[2]
@@ -409,15 +415,15 @@ def assess_new_position_fast(
     pos: cython.double[:],
     num_cams: cython.int,
     add_part: cython.double,
-    cal_arrays,
-    mmlut_datas,
-    mmlut_origins,
-    mmlut_nrs,
-    mmlut_nzs,
-    mmlut_rws,
-    targ_x_tuple,
-    targ_y_tuple,
-    targ_tnr_tuple,
+    cal_arr: cython.double[:, ::1],
+    md_arr: object,
+    mo_arr: cython.double[:, ::1],
+    mnr_arr: cython.int[:],
+    mnz_arr: cython.int[:],
+    mrw_arr: cython.double[:],
+    targ_x: cython.double[:, ::1],
+    targ_y: cython.double[:, ::1],
+    targ_tnr: cython.int[:, ::1],
     num_targets,
     imx_half: cython.double,
     imy_half: cython.double,
@@ -482,15 +488,15 @@ def assess_new_position_fast(
             px = proj_x[cam]
             py = proj_y[cam]
         else:
-            has_mmlut = mmlut_nrs[cam] > 0
+            has_mmlut = mnr_arr[cam] > 0
             _point_to_pixel_out(
                 pos,
-                cal_arrays[cam],
-                mmlut_datas[cam],
-                mmlut_origins[cam],
-                mmlut_nrs[cam],
-                mmlut_nzs[cam],
-                mmlut_rws[cam],
+                cal_arr[cam],
+                md_arr[cam],
+                mo_arr[cam],
+                mnr_arr[cam],
+                mnz_arr[cam],
+                mrw_arr[cam],
                 has_mmlut,
                 imx_half,
                 imy_half,
@@ -503,9 +509,9 @@ def assess_new_position_fast(
             py = _pp_mv[1]
 
         best, count = candsearch_in_pix_rest_fast(
-            targ_x_tuple[cam],
-            targ_y_tuple[cam],
-            targ_tnr_tuple[cam],
+            targ_x[cam],
+            targ_y[cam],
+            targ_tnr[cam],
             num_targets[cam],
             px,
             py,
@@ -520,8 +526,8 @@ def assess_new_position_fast(
 
         if count > 0:
             cand_inds[cam] = best
-            targ_pos[cam, 0] = targ_x_tuple[cam][best]
-            targ_pos[cam, 1] = targ_y_tuple[cam][best]
+            targ_pos[cam, 0] = targ_x[cam, best]
+            targ_pos[cam, 1] = targ_y[cam, best]
 
     valid_cams = 0
     for cam in range(num_cams):
@@ -539,7 +545,7 @@ def assess_new_position_fast(
             mx = _pp_mv[0]
             my = _pp_mv[1]
 
-            cal = cal_arrays[cam]
+            cal = cal_arr[cam]
             _dist_to_flat_out(
                 mx,
                 my,

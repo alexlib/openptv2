@@ -32,6 +32,9 @@ uv run pytest tests/unit/test_vec_utils.py::test_dot -v
 uv run pytest -m unit
 uv run pytest -m "not slow"
 
+# Hot-path smoke test (tracking + correspondences)
+uv run pytest tests/unit/test_track.py tests/unit/test_track3d.py tests/unit/test_correspondences.py -v --tb=short
+
 # Lint
 uv run ruff check .
 
@@ -40,6 +43,17 @@ uv run mypy src/openptv2/
 
 # Editable install
 uv pip install -e .
+
+# Cython build (required after any .py change in algorithms/)
+uv run python setup.py build_ext --inplace
+
+# Clean Cython rebuild (use after structural changes — new files, renames)
+rm -f src/openptv2/algorithms/*.c src/openptv2/algorithms/*.so
+rm -rf build/
+uv run python setup.py build_ext --inplace
+
+# Check annotation scores (open generated HTML in browser)
+# annotate=True is already set in setup.py — every rebuild generates <module>.html
 ```
 
 ## Architecture

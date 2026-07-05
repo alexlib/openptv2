@@ -79,8 +79,9 @@ def trackcorr_loop_fast(
     path_decis_1: cython.double[:, :],
     path_linkdecis_1: cython.int[:, :],
     corres_p_1: cython.int[:, :],
-    targ_x_1: object,
-    targ_y_1: object,
+    targ_x_1: cython.double[:, ::1],
+    targ_y_1: cython.double[:, ::1],
+    targ_tnr_1: cython.int[:, ::1],
     # Frame 2 (next — read/write)
     path_x_2: cython.double[:, :],
     path_prev_2: cython.int[:],
@@ -92,9 +93,9 @@ def trackcorr_loop_fast(
     path_linkdecis_2: cython.int[:, :],
     corres_p_2: cython.int[:, :],
     corres_nr_2: cython.int[:],
-    targ_x_2: object,
-    targ_y_2: object,
-    targ_tnr_2: object,
+    targ_x_2: cython.double[:, ::1],
+    targ_y_2: cython.double[:, ::1],
+    targ_tnr_2: cython.int[:, ::1],
     num_targets_2: cython.int[:],
     num_parts_2: cython.int[:],
     # Frame 3 (next-next — read/write)
@@ -108,18 +109,18 @@ def trackcorr_loop_fast(
     path_linkdecis_3: cython.int[:, :],
     corres_p_3: cython.int[:, :],
     corres_nr_3: cython.int[:],
-    targ_x_3: object,
-    targ_y_3: object,
-    targ_tnr_3: object,
+    targ_x_3: cython.double[:, ::1],
+    targ_y_3: cython.double[:, ::1],
+    targ_tnr_3: cython.int[:, ::1],
     num_targets_3: cython.int[:],
     num_parts_3: cython.int[:],
-    # Calibration
-    cal_t: tuple,
-    md_t: tuple,
-    mo_t: tuple,
-    mnr_t: tuple,
-    mnz_t: tuple,
-    mrw_t: tuple,
+    # Calibration — pre-flattened arrays
+    cal_arr: cython.double[:, ::1],
+    md_arr: object,
+    mo_arr: cython.double[:, ::1],
+    mnr_arr: cython.int[:],
+    mnz_arr: cython.int[:],
+    mrw_arr: cython.double[:],
     # Tracking params
     dvxmin: cython.double,
     dvxmax: cython.double,
@@ -238,15 +239,7 @@ def trackcorr_loop_fast(
     _assess_targ2 = np.full((num_cams, 2), COORD_UNUSED_K, dtype=np.float64)
     _assess_inds2 = np.full(num_cams, PT_UNUSED, dtype=np.int32)
 
-    # Convert calibration tuples to flat arrays for C-speed access
-    nc_local = len(cal_t)
-    cal_arr = np.asarray(list(cal_t), dtype=np.float64)
-    md_arr = list(md_t)
-    mo_arr = np.asarray(list(mo_t), dtype=np.float64)
-    mnr_arr = np.array(list(mnr_t), dtype=np.int32)
-    mnz_arr = np.array(list(mnz_t), dtype=np.int32)
-    mrw_arr = np.array(list(mrw_t), dtype=np.float64)
-
+    # cal_arr, md_arr, mo_arr, mnr_arr, mnz_arr, mrw_arr pre-flattened by caller
     for h in range(orig_parts_1):
         path_inlist_1[h] = 0
 
@@ -312,8 +305,8 @@ def trackcorr_loop_fast(
                     cpy[j] = _pp_mv[1]
                 else:
                     _ix = corres_p_1[h, j]
-                    cpx[j] = targ_x_1[j][_ix]
-                    cpy[j] = targ_y_1[j][_ix]
+                    cpx[j] = targ_x_1[j, _ix]
+                    cpy[j] = targ_y_1[j, _ix]
 
         # Save X[2] projections for later use by assess_new_position_fast
         for j in range(num_cams):
@@ -327,12 +320,12 @@ def trackcorr_loop_fast(
             cpy,
             num_cams,
             MAX_CANDS_K,
-            cal_t,
-            md_t,
-            mo_t,
-            mnr_t,
-            mnz_t,
-            mrw_t,
+            cal_arr,
+            md_arr,
+            mo_arr,
+            mnr_arr,
+            mnz_arr,
+            mrw_arr,
             targ_x_2,
             targ_y_2,
             targ_tnr_2,
@@ -402,12 +395,12 @@ def trackcorr_loop_fast(
                 cpy,
                 num_cams,
                 MAX_CANDS_K,
-                cal_t,
-                md_t,
-                mo_t,
-                mnr_t,
-                mnz_t,
-                mrw_t,
+                cal_arr,
+                md_arr,
+                mo_arr,
+                mnr_arr,
+                mnz_arr,
+                mrw_arr,
                 targ_x_3,
                 targ_y_3,
                 targ_tnr_3,
@@ -513,12 +506,12 @@ def trackcorr_loop_fast(
                 X[5],
                 num_cams,
                 ADD_PART_K,
-                cal_t,
-                md_t,
-                mo_t,
-                mnr_t,
-                mnz_t,
-                mrw_t,
+                cal_arr,
+                md_arr,
+                mo_arr,
+                mnr_arr,
+                mnz_arr,
+                mrw_arr,
                 targ_x_3,
                 targ_y_3,
                 targ_tnr_3,
@@ -545,7 +538,7 @@ def trackcorr_loop_fast(
 
             if quali >= 2:
                 in_volume = 0
-                pos_new, dl_pp = point_position_fast(targ_pos, num_cams, cal_t)
+                pos_new, dl_pp = point_position_fast(targ_pos, num_cams, cal_arr)
                 X[4, 0] = pos_new[0]
                 X[4, 1] = pos_new[1]
                 X[4, 2] = pos_new[2]
@@ -623,7 +616,7 @@ def trackcorr_loop_fast(
                             for ci in range(num_cams):
                                 if cand_inds[ci] != PT_UNUSED:
                                     idx = cand_inds[ci]
-                                    targ_tnr_3[ci][idx] = np3
+                                    targ_tnr_3[ci, idx] = np3
                                     corres_p_3[np3, ci] = idx
                             num_parts_3[0] = np3 + 1
                             num_added += 1
@@ -688,12 +681,12 @@ def trackcorr_loop_fast(
                     X[2],
                     num_cams,
                     ADD_PART_K,
-                    cal_t,
-                    md_t,
-                    mo_t,
-                    mnr_t,
-                    mnz_t,
-                    mrw_t,
+                    cal_arr,
+                    md_arr,
+                    mo_arr,
+                    mnr_arr,
+                    mnz_arr,
+                    mrw_arr,
                     targ_x_2,
                     targ_y_2,
                     targ_tnr_2,
@@ -720,7 +713,7 @@ def trackcorr_loop_fast(
 
                 if quali2 >= 2:
                     in_volume = 0
-                    pos_new2, dl_pp2 = point_position_fast(targ_pos2, num_cams, cal_t)
+                    pos_new2, dl_pp2 = point_position_fast(targ_pos2, num_cams, cal_arr)
                     X[3, 0] = pos_new2[0]
                     X[3, 1] = pos_new2[1]
                     X[3, 2] = pos_new2[2]
@@ -795,12 +788,12 @@ def trackcorr_loop_fast(
                             for ci in range(num_cams):
                                 if cand_inds2[ci] != PT_UNUSED:
                                     idx = cand_inds2[ci]
-                                    targ_tnr_2[ci][idx] = np2
+                                    targ_tnr_2[ci, idx] = np2
                                     corres_p_2[np2, ci] = idx
                             num_parts_2[0] = np2 + 1
                             num_added += 1
 
-                    in_volume = 0
+                        in_volume = 0
 
     # ========== LINK RESOLUTION ==========
     # Phase 1: Sort decis/linkdecis, set finaldecis and next
@@ -876,9 +869,9 @@ def trackback_loop_fast(
     path_prev_2: cython.int[:],
     path_next_2: cython.int[:],
     num_parts_2: cython.int[:],
-    targ_x_2: object,
-    targ_y_2: object,
-    targ_tnr_2: object,
+    targ_x_2: cython.double[:, ::1],
+    targ_y_2: cython.double[:, ::1],
+    targ_tnr_2: cython.int[:, ::1],
     num_targets_2: cython.int[:],
     corres_p_2: cython.int[:, :],
     corres_nr_2: cython.int[:],
@@ -890,13 +883,13 @@ def trackback_loop_fast(
     # Frame 3 (further backward — read only, for extra angle check)
     path_x_3: cython.double[:, :],
     path_prev_3: cython.int[:],
-    # Calibration
-    cal_t: tuple,
-    md_t: tuple,
-    mo_t: tuple,
-    mnr_t: tuple,
-    mnz_t: tuple,
-    mrw_t: tuple,
+    # Calibration — pre-flattened arrays
+    cal_arr: cython.double[:, ::1],
+    md_arr: object,
+    mo_arr: cython.double[:, ::1],
+    mnr_arr: cython.int[:],
+    mnz_arr: cython.int[:],
+    mrw_arr: cython.double[:],
     # Tracking params
     dvxmin: cython.double,
     dvxmax: cython.double,
@@ -987,14 +980,7 @@ def trackback_loop_fast(
     _assess_inds = np.full(num_cams, PT_UNUSED, dtype=np.int32)
     _assess_pp = np.empty(2, dtype=np.float64)
 
-    # Convert calibration tuples to flat arrays for C-speed access
-    cal_arr = np.asarray(list(cal_t), dtype=np.float64)
-    md_arr = list(md_t)
-    mo_arr = np.asarray(list(mo_t), dtype=np.float64)
-    mnr_arr = np.array(list(mnr_t), dtype=np.int32)
-    mnz_arr = np.array(list(mnz_t), dtype=np.int32)
-    mrw_arr = np.array(list(mrw_t), dtype=np.float64)
-
+    # cal_arr, md_arr, mo_arr, mnr_arr, mnz_arr, mrw_arr pre-flattened by caller
     for h in range(num_parts_1):
         next_h = path_next_1[h]
         prev_h = path_prev_1[h]
@@ -1044,12 +1030,12 @@ def trackback_loop_fast(
             cpy,
             num_cams,
             MAX_CANDS_K,
-            cal_t,
-            md_t,
-            mo_t,
-            mnr_t,
-            mnz_t,
-            mrw_t,
+            cal_arr,
+            md_arr,
+            mo_arr,
+            mnr_arr,
+            mnz_arr,
+            mrw_arr,
             targ_x_2,
             targ_y_2,
             targ_tnr_2,
@@ -1134,12 +1120,12 @@ def trackback_loop_fast(
                     X[2],
                     num_cams,
                     ADD_PART_K,
-                    cal_t,
-                    md_t,
-                    mo_t,
-                    mnr_t,
-                    mnz_t,
-                    mrw_t,
+                    cal_arr,
+                    md_arr,
+                    mo_arr,
+                    mnr_arr,
+                    mnz_arr,
+                    mrw_arr,
                     targ_x_2,
                     targ_y_2,
                     targ_tnr_2,
@@ -1156,7 +1142,7 @@ def trackback_loop_fast(
                     flatten_tol,
                     TR_UNUSED_K,
                     COORD_UNUSED_K,
-                    use_proj=False,
+                    use_proj=True,
                     proj_x=cpx,
                     proj_y=cpy,
                     targ_pos_out=_assess_targ,
@@ -1166,7 +1152,7 @@ def trackback_loop_fast(
 
                 if quali >= 2:
                     in_volume = 0
-                    pos_new, dl_pp = point_position_fast(targ_pos, num_cams, cal_t)
+                    pos_new, dl_pp = point_position_fast(targ_pos, num_cams, cal_arr)
                     X[3, 0] = pos_new[0]
                     X[3, 1] = pos_new[1]
                     X[3, 2] = pos_new[2]
@@ -1241,12 +1227,12 @@ def trackback_loop_fast(
                             for ci in range(num_cams):
                                 if cand_inds[ci] != PT_UNUSED:
                                     idx = cand_inds[ci]
-                                    targ_tnr_2[ci][idx] = np2
+                                    targ_tnr_2[ci, idx] = np2
                                     corres_p_2[np2, ci] = idx
                             num_parts_2[0] = np2 + 1
                             num_added += 1
 
-                    in_volume = 0
+                        in_volume = 0
 
     # Sort candidates
     for h in range(num_parts_1):

@@ -827,9 +827,9 @@ def sorted_candidates_in_volume(
         mnr_t,
         mnz_t,
         mrw_t,
-        tuple(frm.targ_x[:num_cams]),
-        tuple(frm.targ_y[:num_cams]),
-        tuple(frm.targ_tnr[:num_cams]),
+        frm.targ_x[:num_cams],
+        frm.targ_y[:num_cams],
+        frm.targ_tnr[:num_cams],
         nt,
         run.tpar.dvxmin,
         run.tpar.dvxmax,
@@ -1024,17 +1024,27 @@ def trackcorr_c_loop(run_info, step):
     c_mm = cpar.mm
 
     fast_cals, fast_mmluts = _pack_cams_fast(cal, c_mm)
-    _jt = _pack_cams_fast_tuples(fast_cals, fast_mmluts)
-    cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t = _jt
+    cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t = _pack_cams_fast_tuples(
+        fast_cals, fast_mmluts
+    )
+    cal_arr = np.asarray(list(cal_t), dtype=np.float64)
+    md_arr = list(md_t)
+    mo_arr = np.asarray(list(mo_t), dtype=np.float64)
+    mnr_arr = np.array(list(mnr_t), dtype=np.int32)
+    mnz_arr = np.array(list(mnz_t), dtype=np.int32)
+    mrw_arr = np.array(list(mrw_t), dtype=np.float64)
 
     nc = fb.num_cams
     orig_parts = fb.buf[1].num_parts
 
+    # Synchronize path data from AoS to SoA
     fb.buf[0]._sync_path_to_soa()
     fb.buf[1]._sync_path_to_soa()
     fb.buf[2]._sync_path_to_soa()
     fb.buf[3]._sync_path_to_soa()
 
+    # Target arrays are native 2D on Frame — pass directly
+    nt1 = np.array(fb.buf[1].num_targets[:nc], dtype=np.int32)
     np2 = np.array([fb.buf[2].num_parts], dtype=np.int32)
     np3 = np.array([fb.buf[3].num_parts], dtype=np.int32)
     nt2 = np.array(fb.buf[2].num_targets[:nc], dtype=np.int32)
@@ -1051,8 +1061,9 @@ def trackcorr_c_loop(run_info, step):
         fb.buf[1].path_decis,
         fb.buf[1].path_linkdecis,
         fb.buf[1].corres_p,
-        tuple(fb.buf[1].targ_x[:nc]),
-        tuple(fb.buf[1].targ_y[:nc]),
+        fb.buf[1].targ_x,
+        fb.buf[1].targ_y,
+        fb.buf[1].targ_tnr,
         fb.buf[2].path_x,
         fb.buf[2].path_prev,
         fb.buf[2].path_next,
@@ -1063,9 +1074,9 @@ def trackcorr_c_loop(run_info, step):
         fb.buf[2].path_linkdecis,
         fb.buf[2].corres_p,
         fb.buf[2].corres_nr,
-        tuple(fb.buf[2].targ_x[:nc]),
-        tuple(fb.buf[2].targ_y[:nc]),
-        tuple(fb.buf[2].targ_tnr[:nc]),
+        fb.buf[2].targ_x,
+        fb.buf[2].targ_y,
+        fb.buf[2].targ_tnr,
         nt2,
         np2,
         fb.buf[3].path_x,
@@ -1078,17 +1089,17 @@ def trackcorr_c_loop(run_info, step):
         fb.buf[3].path_linkdecis,
         fb.buf[3].corres_p,
         fb.buf[3].corres_nr,
-        tuple(fb.buf[3].targ_x[:nc]),
-        tuple(fb.buf[3].targ_y[:nc]),
-        tuple(fb.buf[3].targ_tnr[:nc]),
+        fb.buf[3].targ_x,
+        fb.buf[3].targ_y,
+        fb.buf[3].targ_tnr,
         nt3,
         np3,
-        cal_t,
-        md_t,
-        mo_t,
-        mnr_t,
-        mnz_t,
-        mrw_t,
+        cal_arr,
+        md_arr,
+        mo_arr,
+        mnr_arr,
+        mnz_arr,
+        mrw_arr,
         tpar.dvxmin,
         tpar.dvxmax,
         tpar.dvymin,
@@ -1176,7 +1187,15 @@ def trackback_c(run_info):
     c_chfield = cpar.chfield
     c_mm = cpar.mm
     fast_cals, fast_mmluts = _pack_cams_fast(cal, c_mm)
-    _jt = _pack_cams_fast_tuples(fast_cals, fast_mmluts)
+    cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t = _pack_cams_fast_tuples(
+        fast_cals, fast_mmluts
+    )
+    cal_arr = np.asarray(list(cal_t), dtype=np.float64)
+    md_arr = list(md_t)
+    mo_arr = np.asarray(list(mo_t), dtype=np.float64)
+    mnr_arr = np.array(list(mnr_t), dtype=np.int32)
+    mnz_arr = np.array(list(mnz_t), dtype=np.int32)
+    mrw_arr = np.array(list(mrw_t), dtype=np.float64)
 
     Ymin = 0.0
     Ymax = 0.0
@@ -1190,13 +1209,13 @@ def trackback_c(run_info):
 
     nc = fb.num_cams
 
-    for step in range(seq_par.last - 1, seq_par.first, -1):
+    for _bk_step in range(seq_par.last - 1, seq_par.first, -1):
         fb.buf[0]._sync_path_to_soa()
         fb.buf[1]._sync_path_to_soa()
         fb.buf[2]._sync_path_to_soa()
         fb.buf[3]._sync_path_to_soa()
 
-        cal_t, md_t, mo_t, mnr_t, mnz_t, mrw_t = _jt
+        # cal_arr, md_arr, mo_arr, mnr_arr, mnz_arr, mrw_arr pre-flattened above
         num_parts_2 = np.array([fb.buf[2].num_parts], dtype=np.int32)
         nt2 = np.array(fb.buf[2].num_targets[:nc], dtype=np.int32)
 
@@ -1227,12 +1246,12 @@ def trackback_c(run_info):
             fb.buf[2].path_linkdecis,
             fb.buf[3].path_x,
             fb.buf[3].path_prev,
-            cal_t,
-            md_t,
-            mo_t,
-            mnr_t,
-            mnz_t,
-            mrw_t,
+            cal_arr,
+            md_arr,
+            mo_arr,
+            mnr_arr,
+            mnz_arr,
+            mrw_arr,
             tpar.dvxmin,
             tpar.dvxmax,
             tpar.dvymin,
@@ -1268,7 +1287,7 @@ def trackback_c(run_info):
         _sync_soa_to_aos(fb.buf[2])
 
         print(
-            f"step: {step}, curr: {fb.buf[1].num_parts}, "
+            f"step: {_bk_step}, curr: {fb.buf[1].num_parts}, "
             f"next: {fb.buf[2].num_parts}, links: {count1}, "
             f"lost: {fb.buf[1].num_parts - count1}, add: {num_added}"
         )
@@ -1277,9 +1296,9 @@ def trackback_c(run_info):
         nlinks = nlinks + count1
 
         fb.fb_next()
-        fb.write_frame_from_start(step)
-        if step > seq_par.first + 2:
-            fb.read_frame_at_end(step - 3, read_links=True)
+        fb.write_frame_from_start(_bk_step)
+        if _bk_step > seq_par.first + 2:
+            fb.read_frame_at_end(_bk_step - 3, read_links=True)
 
     npart /= seq_par.last - seq_par.first - 1
     nlinks /= seq_par.last - seq_par.first - 1

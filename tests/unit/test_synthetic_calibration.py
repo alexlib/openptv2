@@ -16,7 +16,7 @@ from openptv2.algorithms.calibration import (
     Glass,
     MmLut,
 )
-from openptv2.algorithms.parameters import ControlPar, MultimediaPar
+from openptv2.algorithms.parameters import ControlPar, MmNp
 from openptv2.algorithms.orientation import full_calibration
 from openptv2.algorithms.imgcoord import img_coord
 from openptv2.algorithms.trafo import metric_to_pixel
@@ -89,7 +89,7 @@ def make_control_par():
         imy=1024,
         # Flat multimedia (n1=n2=n3=1, d=0) so mmLut is not actually
         # consulted during projection – the mmf factor stays 1.0.
-        mm=MultimediaPar(n1=1.0, n2=[1.0] * 4, d=[0.0] * 4, n3=1.0),
+        mm=MmNp(n1=1.0, n2=[1.0] * 4, d=[0.0] * 4, n3=1.0),
     )
 
 

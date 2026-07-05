@@ -25,7 +25,6 @@ DOUBLED: cython.int = 2
 
 @cython.cfunc
 @cython.inline
-
 @cython.cfunc
 @cython.inline
 def _old_pixel_to_metric_out(
@@ -47,7 +46,9 @@ def _old_pixel_to_metric_out(
     out[0] = (x_pixel - im_size_x * 0.5) * pix_size_x
     out[1] = (im_size_y * 0.5 - yp) * pix_size_y
 
+
 @cython.ccall
+@cython.exceptval(check=False)
 @cython.cdivision(True)
 @cython.profile(False)
 def old_pixel_to_metric(
@@ -84,6 +85,7 @@ def old_pixel_to_metric(
     )
     return _out_mv[0], _out_mv[1]
 
+
 @cython.ccall
 def pixel_to_metric_batch(xy, cpar) -> object:
     """Convert N pixel coordinates to metric.
@@ -115,6 +117,7 @@ def pixel_to_metric_batch(xy, cpar) -> object:
 
     result[:, 1] = (imy / 2.0 - y_pixel) * pix_y
     return result
+
 
 @cython.ccall
 def pixel_to_metric(
@@ -156,6 +159,7 @@ def pixel_to_metric(
         )
     return _out_mv[0], _out_mv[1]
 
+
 @cython.cfunc
 @cython.inline
 def _old_metric_to_pixel_out(
@@ -178,7 +182,9 @@ def _old_metric_to_pixel_out(
     out[0] = xp
     out[1] = yp
 
+
 @cython.ccall
+@cython.exceptval(check=False)
 def old_metric_to_pixel(
     x_metric: cython.double,
     y_metric: cython.double,
@@ -213,6 +219,7 @@ def old_metric_to_pixel(
     )
     return _out_mv[0], _out_mv[1]
 
+
 @cython.ccall
 def metric_to_pixel_batch(xy, cpar) -> object:
     """Convert N metric coordinates to pixel.
@@ -243,6 +250,7 @@ def metric_to_pixel_batch(xy, cpar) -> object:
 
     result[:, 1] = y_pixel
     return result
+
 
 @cython.ccall
 def metric_to_pixel(
@@ -284,6 +292,7 @@ def metric_to_pixel(
         )
     return _out_mv[0], _out_mv[1]
 
+
 @cython.cfunc
 @cython.inline
 def _distort_brown_affin_core_out(
@@ -322,6 +331,7 @@ def _distort_brown_affin_core_out(
     out[0] = scx * (x_dist - sin_she * y_dist)
     out[1] = scx * cos_she * y_dist
 
+
 @cython.cfunc
 @cython.inline
 def _distort_brown_affin_core(
@@ -344,8 +354,10 @@ def _distort_brown_affin_core(
     )
     return _out_mv[0], _out_mv[1]
 
+
 @cython.cfunc
 @cython.inline
+@cython.exceptval(check=False)
 def distort_brown_affin_out(
     x: cython.double,
     y: cython.double,
@@ -363,7 +375,9 @@ def distort_brown_affin_out(
     cos_she: cython.double = c_cos(she)
     _distort_brown_affin_core_out(x, y, k1, k2, k3, p1, p2, scx, sin_she, cos_she, out)
 
+
 @cython.ccall
+@cython.exceptval(check=False)
 def distort_brown_affin(
     x: cython.double,
     y: cython.double,
@@ -393,6 +407,7 @@ def distort_brown_affin(
     _out_mv: cython.double[:] = _out
     distort_brown_affin_out(x, y, k1, k2, k3, p1, p2, scx, she, _out_mv)
     return _out_mv[0], _out_mv[1]
+
 
 @cython.ccall
 @cython.profile(False)
@@ -515,6 +530,7 @@ def _correct_brown_affin_out(
     out[0] = xq
     out[1] = yq
 
+
 @cython.ccall
 def correct_brown_affin(
     x: cython.double,
@@ -545,6 +561,7 @@ def correct_brown_affin(
     _scratch_mv: cython.double[:] = _scratch
     _correct_brown_affin_out(x, y, k1, k2, k3, p1, p2, scx, she, _out_mv, _scratch_mv)
     return _out_mv[0], _out_mv[1]
+
 
 @cython.cfunc
 @cython.inline
@@ -623,7 +640,9 @@ def _correct_brown_affine_exact_out(
     out[0] = xq
     out[1] = yq
 
+
 @cython.cfunc
+@cython.exceptval(check=False)
 def correct_brown_affine_exact(
     x: cython.double,
     y: cython.double,
@@ -654,6 +673,7 @@ def correct_brown_affine_exact(
     _correct_brown_affine_exact_out(x, y, k1, k2, k3, p1, p2, scx, she, tol, _out_mv)
     return _out_mv[0], _out_mv[1]
 
+
 @cython.ccall
 def flat_to_dist_out(
     flat_x: cython.double,
@@ -671,6 +691,7 @@ def flat_to_dist_out(
 ):
     """Convert flat-image to distorted metric coordinates — _out variant."""
     distort_brown_affin_out(flat_x + xh, flat_y + yh, k1, k2, k3, p1, p2, scx, she, out)
+
 
 @cython.ccall
 def flat_to_dist(
@@ -701,6 +722,7 @@ def flat_to_dist(
     flat_to_dist_out(flat_x, flat_y, xh, yh, k1, k2, k3, p1, p2, scx, she, _out_mv)
     return _out_mv[0], _out_mv[1]
 
+
 @cython.ccall
 def dist_to_flat_out(
     dist_x: cython.double,
@@ -725,6 +747,7 @@ def dist_to_flat_out(
     )
     out[0] = _scratch_mv[0] - xh
     out[1] = _scratch_mv[1] - yh
+
 
 @cython.ccall
 def dist_to_flat(
@@ -757,9 +780,11 @@ def dist_to_flat(
     dist_to_flat_out(dist_x, dist_y, xh, yh, k1, k2, k3, p1, p2, scx, she, tol, _out_mv)
     return _out_mv[0], _out_mv[1]
 
+
 def is_compiled() -> bool:
     """Return whether this module is compiled to C."""
     return cython.compiled
+
 
 @cython.ccall
 @cython.profile(False)
@@ -859,4 +884,3 @@ def correct_brown_affine_batch(
         result_view[i, 1] = yq
 
     return result
-

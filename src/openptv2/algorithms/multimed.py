@@ -215,6 +215,8 @@ def multimed_nlay(
     rdiff=cython.double,
     i=cython.int,
 )
+@cython.ccall
+@cython.exceptval(check=False)
 def multimed_r_nlay_iterative(
     pos_x: cython.double,
     pos_y: cython.double,

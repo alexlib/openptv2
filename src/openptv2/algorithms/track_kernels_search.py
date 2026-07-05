@@ -359,9 +359,9 @@ def sorted_candidates_fast(
     mmlut_nrs: tuple,
     mmlut_nzs: tuple,
     mmlut_rws: tuple,
-    targ_x_tuple: object,
-    targ_y_tuple: object,
-    targ_tnr_tuple: object,
+    targ_x: cython.double[:, ::1],
+    targ_y: cython.double[:, ::1],
+    targ_tnr: cython.int[:, ::1],
     num_targets: cython.int[:],
     dvxmin: cython.double,
     dvxmax: cython.double,
@@ -401,9 +401,9 @@ def sorted_candidates_fast(
         mmlut_nrs,
         mmlut_nzs,
         mmlut_rws,
-        targ_x_tuple,
-        targ_y_tuple,
-        targ_tnr_tuple,
+        targ_x,
+        targ_y,
+        targ_tnr,
         num_targets,
         dvxmin,
         dvxmax,
@@ -436,15 +436,15 @@ def _sorted_candidates_fast_out(
     center_proj_y: cython.double[:],
     num_cams: cython.int,
     max_cands: cython.int,
-    cal_arrays: tuple,
-    mmlut_datas: tuple,
-    mmlut_origins: tuple,
-    mmlut_nrs: tuple,
-    mmlut_nzs: tuple,
-    mmlut_rws: tuple,
-    targ_x_tuple: object,
-    targ_y_tuple: object,
-    targ_tnr_tuple: object,
+    cal_arr: cython.double[:, ::1],
+    md_arr: object,
+    mo_arr: cython.double[:, ::1],
+    mnr_arr: cython.int[:],
+    mnz_arr: cython.int[:],
+    mrw_arr: cython.double[:],
+    targ_x: cython.double[:, ::1],
+    targ_y: cython.double[:, ::1],
+    targ_tnr: cython.int[:, ::1],
     num_targets: cython.int[:],
     dvxmin: cython.double,
     dvxmax: cython.double,
@@ -498,7 +498,7 @@ def _sorted_candidates_fast_out(
     p1: cython.int
     p2: cython.int
     p3: cython.int
-    _pp = np.empty(2, dtype=np.float64)
+    _pp: cython.double[2]
     _pp_mv: cython.double[:] = _pp
     n = num_cams * max_cands
 
@@ -512,18 +512,18 @@ def _sorted_candidates_fast_out(
         quader[pt, 1] = py + (dvymax if pt & 2 else dvymin)
         quader[pt, 2] = pz + (dvzmax if pt & 4 else dvzmin)
 
-    xr = np.zeros(num_cams, dtype=np.float64)
-    xl = np.zeros(num_cams, dtype=np.float64)
-    yd = np.zeros(num_cams, dtype=np.float64)
-    yu = np.zeros(num_cams, dtype=np.float64)
+    xr: cython.double[4]
+    xl: cython.double[4]
+    yd: cython.double[4]
+    yu: cython.double[4]
 
     for i in range(num_cams):
-        cal = cal_arrays[i]
-        md = mmlut_datas[i]
-        mo = mmlut_origins[i]
-        mnr = mmlut_nrs[i]
-        mnz = mmlut_nzs[i]
-        mrw = mmlut_rws[i]
+        cal = cal_arr[i]
+        md = md_arr[i]
+        mo = mo_arr[i]
+        mnr = mnr_arr[i]
+        mnz = mnz_arr[i]
+        mrw = mrw_arr[i]
         has_mmlut = mnr > 0
 
         xr_i = 0.0
@@ -583,9 +583,9 @@ def _sorted_candidates_fast_out(
     # --- candsearch per camera, write directly into ftnr_out/whichcam_out ---
     for cam in range(num_cams):
         p0, p1, p2, p3 = candsearch_in_pix_fast(
-            targ_x_tuple[cam],
-            targ_y_tuple[cam],
-            targ_tnr_tuple[cam],
+            targ_x[cam],
+            targ_y[cam],
+            targ_tnr[cam],
             num_targets[cam],
             center_proj_x[cam],
             center_proj_y[cam],
@@ -604,7 +604,7 @@ def _sorted_candidates_fast_out(
             idx = cands[ci]
             if idx != PT_UNUSED:
                 whichcam_out[base + ci, cam] = 1
-                ftnr_out[base + ci] = int(targ_tnr_tuple[cam][idx])
+                ftnr_out[base + ci] = int(targ_tnr[cam, idx])
 
     # --- sort_candidates_by_freq inlined ---
     for i in range(n):

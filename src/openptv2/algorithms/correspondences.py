@@ -321,14 +321,27 @@ def four_camera_matching(
     """
     matched: cython.int = 0
 
+    # scratch_p0 = p1_arr[0, 1, i] is the reference target in camera 0 for this i
     for i in range(base_target_count):
         p1: cython.int = p1_arr[0, 1, i]
         for j in range(n_arr[0, 1, i]):
+            p2: cython.int = p2_arr[0, 1, i, j]
+            c01: cython.double = corr_arr[0, 1, i, j]
+            d01: cython.double = dist_arr[0, 1, i, j]
+
             for k in range(n_arr[0, 2, i]):
+                p3: cython.int = p2_arr[0, 2, i, k]
+                c02: cython.double = corr_arr[0, 2, i, k]
+                d02: cython.double = dist_arr[0, 2, i, k]
+
                 for l in range(n_arr[0, 3, i]):
-                    p2: cython.int = p2_arr[0, 1, i, j]
-                    p3: cython.int = p2_arr[0, 2, i, k]
                     p4: cython.int = p2_arr[0, 3, i, l]
+                    c03: cython.double = corr_arr[0, 3, i, l]
+                    d03: cython.double = dist_arr[0, 3, i, l]
+
+                    # Pre-compute camera-0 pair sum (always needed)
+                    corr_partial: cython.double = c01 + c02 + c03
+                    dist_partial: cython.double = d01 + d02 + d03
 
                     for m in range(n_arr[1, 2, p2]):
                         p31: cython.int = p2_arr[1, 2, p2, m]
@@ -346,16 +359,12 @@ def four_camera_matching(
                                     continue
 
                                 corr: cython.double = (
-                                    corr_arr[0, 1, i, j]
-                                    + corr_arr[0, 2, i, k]
-                                    + corr_arr[0, 3, i, l]
+                                    corr_partial
                                     + corr_arr[1, 2, p2, m]
                                     + corr_arr[1, 3, p2, n]
                                     + corr_arr[2, 3, p3, o]
                                 ) / (
-                                    dist_arr[0, 1, i, j]
-                                    + dist_arr[0, 2, i, k]
-                                    + dist_arr[0, 3, i, l]
+                                    dist_partial
                                     + dist_arr[1, 2, p2, m]
                                     + dist_arr[1, 3, p2, n]
                                     + dist_arr[2, 3, p3, o]
@@ -421,25 +430,27 @@ def three_camera_matching(
                     if p2 > NMAX or tusage[i2][p2] > 0:
                         continue
 
+                    c12: cython.double = corr_arr[i1, i2, i, j]
+                    d12: cython.double = dist_arr[i1, i2, i, j]
+
                     for i3 in range(i2 + 1, num_cams):
                         for k in range(n_arr[i1, i3, i]):
                             p3: cython.int = p2_arr[i1, i3, i, k]
                             if p3 > NMAX or tusage[i3][p3] > 0:
                                 continue
 
+                            c13: cython.double = corr_arr[i1, i3, i, k]
+                            d13: cython.double = dist_arr[i1, i3, i, k]
+                            corr_partial: cython.double = c12 + c13
+                            dist_partial: cython.double = d12 + d13
+
                             for m_idx in range(n_arr[i2, i3, p2]):
                                 if p3 != p2_arr[i2, i3, p2, m_idx]:
                                     continue
 
                                 corr: cython.double = (
-                                    corr_arr[i1, i2, i, j]
-                                    + corr_arr[i1, i3, i, k]
-                                    + corr_arr[i2, i3, p2, m_idx]
-                                ) / (
-                                    dist_arr[i1, i2, i, j]
-                                    + dist_arr[i1, i3, i, k]
-                                    + dist_arr[i2, i3, p2, m_idx]
-                                )
+                                    corr_partial + corr_arr[i2, i3, p2, m_idx]
+                                ) / (dist_partial + dist_arr[i2, i3, p2, m_idx])
 
                                 if corr <= accept_corr:
                                     continue

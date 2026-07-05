@@ -30,7 +30,6 @@ else:
 _M_PI: cython.double = 3.141592653589793
 
 
-
 from .track_kernels_geom import (
     _multimed_r_nlay_1layer,
     _ray_tracing_out,
@@ -40,6 +39,7 @@ from .track_kernels_transform import (
     _pixel_to_metric_out,
     point_position_fast,
 )
+
 
 def ray_tracing_batch_fast(xy: cython.double[:, :], cal: cython.double[:]):
     """Trace N rays through multi-media interface.
@@ -72,7 +72,6 @@ def ray_tracing_batch_fast(xy: cython.double[:, :], cal: cython.double[:]):
 @cython.ccall
 @cython.boundscheck(False)
 @cython.wraparound(False)
-
 def point_position_batch_fast(
     all_targets: cython.double[:, :, :],
     num_pts: cython.int,
@@ -95,7 +94,8 @@ def point_position_batch_fast(
     positions = np.empty((num_pts, 3), dtype=np.float64)
     distances = np.empty(num_pts, dtype=np.float64)
     for i in range(num_pts):
-        pos, dist = point_position_fast(all_targets[i], num_cams, cal_arrays)
+        _cal_arr = np.asarray(list(cal_arrays), dtype=np.float64)
+        pos, dist = point_position_fast(all_targets[i], num_cams, _cal_arr)
         positions[i, 0] = pos[0]
         positions[i, 1] = pos[1]
         positions[i, 2] = pos[2]
@@ -106,7 +106,6 @@ def point_position_batch_fast(
 @cython.ccall
 @cython.boundscheck(False)
 @cython.wraparound(False)
-
 def pixel_to_metric_batch_fast(
     xy: cython.double[:, :],
     imx: cython.int,
@@ -141,7 +140,6 @@ def pixel_to_metric_batch_fast(
 @cython.ccall
 @cython.boundscheck(False)
 @cython.wraparound(False)
-
 def metric_to_pixel_batch_fast(
     xy: cython.double[:, :],
     imx: cython.int,
@@ -176,7 +174,6 @@ def metric_to_pixel_batch_fast(
 @cython.ccall
 @cython.boundscheck(False)
 @cython.wraparound(False)
-
 def targ_rec_fast(
     img: cython.uchar[:, :],
     img0: cython.uchar[:, :],
@@ -373,7 +370,6 @@ def targ_rec_fast(
 @cython.ccall
 @cython.boundscheck(False)
 @cython.wraparound(False)
-
 def init_mmlut_data_fast(
     nr: cython.int,
     nz: cython.int,
@@ -425,4 +421,3 @@ def init_mmlut_data_fast(
                 mm_d0,
             )
     return data
-
