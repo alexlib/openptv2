@@ -70,29 +70,29 @@ ADD_PART_K = 3.0
 def trackcorr_loop_fast(
     orig_parts_1: cython.int,
     # Frame 0 (prev — read only)
-    path_x_0: cython.double[:, :],
+    path_x_0: cython.double[:, ::1],
     # Frame 1 (curr — read/write)
-    path_x_1: cython.double[:, :],
+    path_x_1: cython.double[:, ::1],
     path_prev_1: cython.int[:],
     path_next_1: cython.int[:],
     path_inlist_1: cython.int[:],
     path_finaldecis_1: cython.double[:],
-    path_decis_1: cython.double[:, :],
-    path_linkdecis_1: cython.int[:, :],
-    corres_p_1: cython.int[:, :],
+    path_decis_1: cython.double[:, ::1],
+    path_linkdecis_1: cython.int[:, ::1],
+    corres_p_1: cython.int[:, ::1],
     targ_x_1: cython.double[:, ::1],
     targ_y_1: cython.double[:, ::1],
     targ_tnr_1: cython.int[:, ::1],
     # Frame 2 (next — read/write)
-    path_x_2: cython.double[:, :],
+    path_x_2: cython.double[:, ::1],
     path_prev_2: cython.int[:],
     path_next_2: cython.int[:],
     path_inlist_2: cython.int[:],
     path_prio_2: cython.int[:],
     path_finaldecis_2: cython.double[:],
-    path_decis_2: cython.double[:, :],
-    path_linkdecis_2: cython.int[:, :],
-    corres_p_2: cython.int[:, :],
+    path_decis_2: cython.double[:, ::1],
+    path_linkdecis_2: cython.int[:, ::1],
+    corres_p_2: cython.int[:, ::1],
     corres_nr_2: cython.int[:],
     targ_x_2: cython.double[:, ::1],
     targ_y_2: cython.double[:, ::1],
@@ -100,15 +100,15 @@ def trackcorr_loop_fast(
     num_targets_2: cython.int[:],
     num_parts_2: cython.int[:],
     # Frame 3 (next-next — read/write)
-    path_x_3: cython.double[:, :],
+    path_x_3: cython.double[:, ::1],
     path_prev_3: cython.int[:],
     path_next_3: cython.int[:],
     path_inlist_3: cython.int[:],
     path_prio_3: cython.int[:],
     path_finaldecis_3: cython.double[:],
-    path_decis_3: cython.double[:, :],
-    path_linkdecis_3: cython.int[:, :],
-    corres_p_3: cython.int[:, :],
+    path_decis_3: cython.double[:, ::1],
+    path_linkdecis_3: cython.int[:, ::1],
+    corres_p_3: cython.int[:, ::1],
     corres_nr_3: cython.int[:],
     targ_x_3: cython.double[:, ::1],
     targ_y_3: cython.double[:, ::1],
@@ -215,10 +215,10 @@ def trackcorr_loop_fast(
     _n_wc2 = np.empty((n_sc, num_cams), dtype=np.int32)
     _ftnr_buf1: cython.int[:] = _n_ftnr1
     _freq_buf1: cython.int[:] = _n_freq1
-    _wc_buf1: cython.int[:, :] = _n_wc1
+    _wc_buf1: cython.int[:, ::1] = _n_wc1
     _ftnr_buf2: cython.int[:] = _n_ftnr2
     _freq_buf2: cython.int[:] = _n_freq2
-    _wc_buf2: cython.int[:, :] = _n_wc2
+    _wc_buf2: cython.int[:, ::1] = _n_wc2
 
     _cpx = np.empty(num_cams, dtype=np.float64)
     _cpy = np.empty(num_cams, dtype=np.float64)
@@ -229,7 +229,7 @@ def trackcorr_loop_fast(
     cpy: cython.double[:] = _cpy
     x2_cpx: cython.double[:] = _x2_cpx_save
     x2_cpy: cython.double[:] = _x2_cpy_save
-    X: cython.double[:, :] = _X
+    X: cython.double[:, ::1] = _X
     _pp = np.empty(2, dtype=np.float64)
     _pp_mv: cython.double[:] = _pp
 
@@ -860,17 +860,17 @@ def trackcorr_loop_fast(
 def trackback_loop_fast(
     num_parts_1: cython.int,
     # Frame 0 (forward/next in time — read only)
-    path_x_0: cython.double[:, :],
+    path_x_0: cython.double[:, ::1],
     # Frame 1 (current — read/write)
-    path_x_1: cython.double[:, :],
+    path_x_1: cython.double[:, ::1],
     path_prev_1: cython.int[:],
     path_next_1: cython.int[:],
     path_inlist_1: cython.int[:],
     path_finaldecis_1: cython.double[:],
-    path_decis_1: cython.double[:, :],
-    path_linkdecis_1: cython.int[:, :],
+    path_decis_1: cython.double[:, ::1],
+    path_linkdecis_1: cython.int[:, ::1],
     # Frame 2 (backward/prev in time — read/write)
-    path_x_2: cython.double[:, :],
+    path_x_2: cython.double[:, ::1],
     path_prev_2: cython.int[:],
     path_next_2: cython.int[:],
     num_parts_2: cython.int[:],
@@ -878,15 +878,15 @@ def trackback_loop_fast(
     targ_y_2: cython.double[:, ::1],
     targ_tnr_2: cython.int[:, ::1],
     num_targets_2: cython.int[:],
-    corres_p_2: cython.int[:, :],
+    corres_p_2: cython.int[:, ::1],
     corres_nr_2: cython.int[:],
     path_inlist_2: cython.int[:],
     path_prio_2: cython.int[:],
     path_finaldecis_2: cython.double[:],
-    path_decis_2: cython.double[:, :],
-    path_linkdecis_2: cython.int[:, :],
+    path_decis_2: cython.double[:, ::1],
+    path_linkdecis_2: cython.int[:, ::1],
     # Frame 3 (further backward — read only, for extra angle check)
-    path_x_3: cython.double[:, :],
+    path_x_3: cython.double[:, ::1],
     path_prev_3: cython.int[:],
     # Calibration — pre-flattened arrays
     cal_arr: cython.double[:, ::1],
@@ -970,13 +970,13 @@ def trackback_loop_fast(
     _n_wc = np.empty((n_sc, num_cams), dtype=np.int32)
     _ftnr_buf: cython.int[:] = _n_ftnr
     _freq_buf: cython.int[:] = _n_freq
-    _wc_buf: cython.int[:, :] = _n_wc
+    _wc_buf: cython.int[:, ::1] = _n_wc
     _cpx = np.empty(num_cams, dtype=np.float64)
     _cpy = np.empty(num_cams, dtype=np.float64)
     _X = np.zeros((6, 3), dtype=np.float64)
     cpx: cython.double[:] = _cpx
     cpy: cython.double[:] = _cpy
-    X: cython.double[:, :] = _X
+    X: cython.double[:, ::1] = _X
     _pp = np.empty(2, dtype=np.float64)
     _pp_mv: cython.double[:] = _pp
 
@@ -1330,7 +1330,7 @@ def trackback_loop_fast(
 @cython.boundscheck(False)
 @cython.wraparound(False)
 def _find_closest_in_3d(
-    path_x_2: cython.double[:, :],
+    path_x_2: cython.double[:, ::1],
     np2: cython.int,
     pred_x: cython.double,
     pred_y: cython.double,
@@ -1387,16 +1387,16 @@ def _find_closest_in_3d(
 def track3d_loop_fast(
     orig_parts: cython.int,
     # Frame 0 (prev) — read only
-    path_x_0: cython.double[:, :],
+    path_x_0: cython.double[:, ::1],
     path_prev_0: cython.int[:],
     num_parts_0: cython.int,
     # Frame 1 (curr) — read/write
-    path_x_1: cython.double[:, :],
+    path_x_1: cython.double[:, ::1],
     path_prev_1: cython.int[:],
     path_next_1: cython.int[:],
     num_parts_1: cython.int,
     # Frame 2 (next) — read/write
-    path_x_2: cython.double[:, :],
+    path_x_2: cython.double[:, ::1],
     path_prev_2: cython.int[:],
     path_next_2: cython.int[:],
     num_parts_2: cython.int,

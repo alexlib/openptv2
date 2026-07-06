@@ -52,7 +52,7 @@ COORD_UNUSED = -1e10
 @cython.boundscheck(False)
 @cython.wraparound(False)
 def _point_position_out(
-    targets: cython.double[:, :],
+    targets: cython.double[:, ::1],
     num_cams: cython.int,
     cal_arr: cython.double[:, ::1],
     out: cython.double[:],
@@ -227,7 +227,7 @@ def _point_position_out(
 
 @cython.ccall
 def point_position_fast(
-    targets: cython.double[:, :], num_cams: cython.int, cal_arr: cython.double[:, ::1]
+    targets: cython.double[:, ::1], num_cams: cython.int, cal_arr: cython.double[:, ::1]
 ):
     """Compute 3D position from multiple camera rays.
 
@@ -454,7 +454,7 @@ def assess_new_position_fast(
     use_proj: cython.bint,
     proj_x: cython.double[:],
     proj_y: cython.double[:],
-    targ_pos_out: cython.double[:, :] = None,
+    targ_pos_out: cython.double[:, ::1] = None,
     cand_inds_out: cython.int[:] = None,
     scratch: cython.double[:] = None,
 ):
@@ -481,7 +481,7 @@ def assess_new_position_fast(
     fx: cython.double
     fy: cython.double
     _pp_mv: cython.double[:]
-    targ_pos: cython.double[:, :]
+    targ_pos: cython.double[:, ::1]
     cand_inds: cython.int[:]
     if scratch is not None:
         _pp_mv = scratch
@@ -915,7 +915,7 @@ def _img_coord_fast(
 @cython.boundscheck(False)
 @cython.wraparound(False)
 def img_coord_batch_fast(
-    positions: cython.double[:, :],
+    positions: cython.double[:, ::1],
     cal: cython.double[:],
     mmlut_data: cython.double[:],
     mmlut_origin: cython.double[:],
@@ -939,7 +939,7 @@ def img_coord_batch_fast(
 @cython.boundscheck(False)
 @cython.wraparound(False)
 def flat_image_coord_batch_fast(
-    positions: cython.double[:, :],
+    positions: cython.double[:, ::1],
     cal: cython.double[:],
     mmlut_data: cython.double[:],
     mmlut_origin: cython.double[:],
