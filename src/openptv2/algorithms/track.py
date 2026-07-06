@@ -54,6 +54,7 @@ Foundpix_dtype = np.dtype(
 )
 
 
+@cython.ccall
 def _vec3_dist(a, b):
     dx = a[0] - b[0]
     dy = a[1] - b[1]
@@ -61,6 +62,7 @@ def _vec3_dist(a, b):
     return c_sqrt(dx * dx + dy * dy + dz * dz)
 
 
+@cython.ccall
 def _pack_cams_fast(cals, mm):
     """Pack all cameras for compiled: returns (cal_arrays, mmlut_tuples)."""
     cal_arrays = [_pack_cal_array(c, mm) for c in cals]
@@ -68,15 +70,28 @@ def _pack_cams_fast(cals, mm):
     return cal_arrays, mmlut_tuples
 
 
+@cython.ccall
 def _pack_cams_fast_tuples(fast_cals, fast_mmluts):
     """Convert lists to tuples for kernel functions."""
+    # Manual list building — generator expressions not supported in ccall
+    t0 = []
+    t1 = []
+    t2 = []
+    t3 = []
+    t4 = []
+    for m in fast_mmluts:
+        t0.append(m[0])
+        t1.append(m[1])
+        t2.append(m[2])
+        t3.append(m[3])
+        t4.append(m[4])
     return (
         tuple(fast_cals),
-        tuple(m[0] for m in fast_mmluts),
-        tuple(m[1] for m in fast_mmluts),
-        tuple(m[2] for m in fast_mmluts),
-        tuple(m[3] for m in fast_mmluts),
-        tuple(m[4] for m in fast_mmluts),
+        tuple(t0),
+        tuple(t1),
+        tuple(t2),
+        tuple(t3),
+        tuple(t4),
     )
 
 
