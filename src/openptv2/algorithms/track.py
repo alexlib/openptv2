@@ -80,6 +80,7 @@ def _pack_cams_fast_tuples(fast_cals, fast_mmluts):
     )
 
 
+@cython.ccall
 def _ptp_fast(
     pos, cal_arr, mmlut_tup, imx_half, imy_half, inv_pix_x, inv_pix_y, chfield
 ):
@@ -102,6 +103,7 @@ def _ptp_fast(
     )
 
 
+@cython.ccall
 def _pack_cal(cal, mm):
     """Pre-extract calibration fields into a tuple for fast access."""
     ext = cal.ext_par
@@ -155,11 +157,12 @@ def _pack_cal(cal, mm):
     )
 
 
+@cython.ccall
 def _point_to_pixel_packed(pos, pc, imx_half, imy_half, inv_pix_x, inv_pix_y, chfield):
     """Project 3D position to pixel coordinates using pre-packed calibration."""
-    pos0 = float(pos[0])
-    pos1 = float(pos[1])
-    pos2 = float(pos[2])
+    pos0: cython.double = pos[0]
+    pos1: cython.double = pos[1]
+    pos2: cython.double = pos[2]
 
     (
         ext_x0,
@@ -985,6 +988,7 @@ def track_forward_start(run):
     run.fb.fb_prev()
 
 
+@cython.ccall
 def _sync_soa_to_aos(frm):
     """Fast SoA->AoS sync — only copies fields needed for file I/O."""
     for i in range(frm.num_parts):
