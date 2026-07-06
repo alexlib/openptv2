@@ -38,6 +38,7 @@ from .track_kernels_search import (
     _sorted_candidates_fast_out,
 )
 from .track_kernels_transform import (
+    _point_position_out,
     assess_new_position_fast,
     point_position_fast,
 )
@@ -238,6 +239,10 @@ def trackcorr_loop_fast(
     _assess_pp = np.empty(2, dtype=np.float64)
     _assess_targ2 = np.full((num_cams, 2), COORD_UNUSED_K, dtype=np.float64)
     _assess_inds2 = np.full(num_cams, PT_UNUSED, dtype=np.int32)
+
+    # Pre-allocated C stack array for _point_position_out (avoids np.zeros + tuple index)
+    _pos_buf: cython.double[3]
+    _pos_mv: cython.double[:] = _pos_buf
 
     # cal_arr, md_arr, mo_arr, mnr_arr, mnz_arr, mrw_arr pre-flattened by caller
     for h in range(orig_parts_1):
@@ -538,10 +543,10 @@ def trackcorr_loop_fast(
 
             if quali >= 2:
                 in_volume = 0
-                pos_new, dl_pp = point_position_fast(targ_pos, num_cams, cal_arr)
-                X[4, 0] = pos_new[0]
-                X[4, 1] = pos_new[1]
-                X[4, 2] = pos_new[2]
+                _point_position_out(targ_pos, num_cams, cal_arr, _pos_mv)
+                X[4, 0] = _pos_buf[0]
+                X[4, 1] = _pos_buf[1]
+                X[4, 2] = _pos_buf[2]
 
                 if (
                     X_lay_0 < X[4, 0] < X_lay_1
@@ -713,10 +718,10 @@ def trackcorr_loop_fast(
 
                 if quali2 >= 2:
                     in_volume = 0
-                    pos_new2, dl_pp2 = point_position_fast(targ_pos2, num_cams, cal_arr)
-                    X[3, 0] = pos_new2[0]
-                    X[3, 1] = pos_new2[1]
-                    X[3, 2] = pos_new2[2]
+                    _point_position_out(targ_pos2, num_cams, cal_arr, _pos_mv)
+                    X[3, 0] = _pos_buf[0]
+                    X[3, 1] = _pos_buf[1]
+                    X[3, 2] = _pos_buf[2]
 
                     if (
                         X_lay_0 < X[3, 0] < X_lay_1
@@ -980,6 +985,10 @@ def trackback_loop_fast(
     _assess_inds = np.full(num_cams, PT_UNUSED, dtype=np.int32)
     _assess_pp = np.empty(2, dtype=np.float64)
 
+    # Pre-allocated C stack array for _point_position_out
+    _pos_buf: cython.double[3]
+    _pos_mv: cython.double[:] = _pos_buf
+
     # cal_arr, md_arr, mo_arr, mnr_arr, mnz_arr, mrw_arr pre-flattened by caller
     for h in range(num_parts_1):
         next_h = path_next_1[h]
@@ -1152,10 +1161,10 @@ def trackback_loop_fast(
 
                 if quali >= 2:
                     in_volume = 0
-                    pos_new, dl_pp = point_position_fast(targ_pos, num_cams, cal_arr)
-                    X[3, 0] = pos_new[0]
-                    X[3, 1] = pos_new[1]
-                    X[3, 2] = pos_new[2]
+                    _point_position_out(targ_pos, num_cams, cal_arr, _pos_mv)
+                    X[3, 0] = _pos_buf[0]
+                    X[3, 1] = _pos_buf[1]
+                    X[3, 2] = _pos_buf[2]
 
                     if (
                         X_lay_0 < X[3, 0] < X_lay_1

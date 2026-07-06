@@ -48,18 +48,18 @@ PT_UNUSED = -999
 COORD_UNUSED = -1e10
 
 
-def point_position_fast(
-    targets: cython.double[:, :], num_cams: cython.int, cal_arr: cython.double[:, ::1]
-):
-    """Compute 3D position from multiple camera rays.
+@cython.ccall
+@cython.boundscheck(False)
+@cython.wraparound(False)
+def _point_position_out(
+    targets: cython.double[:, :],
+    num_cams: cython.int,
+    cal_arr: cython.double[:, ::1],
+    out: cython.double[:],
+) -> cython.double:
+    """Internal — writes 3D position to out[0:3], returns avg_dist (scalar).
 
-    Args:
-        targets: (num_cams, 2) float64 — metric flat coordinates per camera.
-        num_cams: int.
-        cal_arr: tuple of (31,) float64 arrays, one per camera.
-
-    Returns:
-        (pos, avg_dist) — (3,) float64 position and average ray distance.
+    Pure C entry — zero Python object creation, zero tuple overhead.
     """
     cam: cython.int
     pair: cython.int
@@ -154,7 +154,6 @@ def point_position_fast(
             if valid[pair] == 0:
                 continue
 
-            # skew_midpoint inlined
             v1x = verts_x[cam]
             v1y = verts_y[cam]
             v1z = verts_z[cam]
@@ -172,7 +171,6 @@ def point_position_fast(
             sp1 = v2y - v1y
             sp2 = v2z - v1z
 
-            # perp_both = cross(d1, d2)
             pb0 = d1y * d2z - d1z * d2y
             pb1 = d1z * d2x - d1x * d2z
             pb2 = d1x * d2y - d1y * d2x
@@ -184,7 +182,6 @@ def point_position_fast(
                 my = (v1y + v2y) * 0.5
                 mz = (v1z + v2z) * 0.5
             else:
-                # temp = cross(sp, d2)
                 t0 = sp1 * d2z - sp2 * d2y
                 t1 = sp2 * d2x - sp0 * d2z
                 t2 = sp0 * d2y - sp1 * d2x
@@ -193,7 +190,6 @@ def point_position_fast(
                 on1y = v1y + d1y * s1
                 on1z = v1z + d1z * s1
 
-                # temp = cross(sp, d1)
                 t0 = sp1 * d1z - sp2 * d1y
                 t1 = sp2 * d1x - sp0 * d1z
                 t2 = sp0 * d1y - sp1 * d1x
@@ -216,13 +212,31 @@ def point_position_fast(
             py += my
             pz += mz
 
-    pos = np.zeros(3, dtype=np.float64)
     if num_used > 0:
-        pos[0] = px / num_used
-        pos[1] = py / num_used
-        pos[2] = pz / num_used
-        dtot /= num_used
+        inv = 1.0 / num_used
+        out[0] = px * inv
+        out[1] = py * inv
+        out[2] = pz * inv
+        return dtot * inv
+    else:
+        out[0] = 0.0
+        out[1] = 0.0
+        out[2] = 0.0
+        return 0.0
 
+
+@cython.ccall
+def point_position_fast(
+    targets: cython.double[:, :], num_cams: cython.int, cal_arr: cython.double[:, ::1]
+):
+    """Compute 3D position from multiple camera rays.
+
+    Returns:
+        (pos, avg_dist) — (3,) float64 position and average ray distance.
+    """
+    pos = np.zeros(3, dtype=np.float64)
+    pos_mv: cython.double[:] = pos
+    dtot = _point_position_out(targets, num_cams, cal_arr, pos_mv)
     return pos, dtot
 
 

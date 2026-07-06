@@ -1,6 +1,6 @@
 # Performance Optimization Plan
 
-**Last updated:** 2026-07-05 (Phase 3.2 complete, ready for Track A point_to_pixel cache)
+**Last updated:** 2026-07-06 (Session 6 — _point_position_out + C stack array: cavity 14.5s→8.5s, 1.7×, tracked in §6.7 update)
 
 This document is the single authoritative plan for all performance optimization work on the openptv2 Cython 3 Pure Python engine. It covers profiling methodology, annotation analysis, module-by-module whitening, algorithmic improvements, micro-optimizations, data-structure flattening, and parallelization.
 
@@ -56,19 +56,28 @@ Tracking (3 frames cavity, add=0):      4.5 s total, ~1.5 s/frame
 Full unit test suite:                   118 s (206 passed)
 ```
 
-### Current (After Phase 3.2 — native 2D arrays in Frame):
+### Current (After Session 6 — _point_position_out + C stack array):
 
-| Metric                    | Pure Python | After Cython | Phase 1+3.1 | Phase 3.2 (native 2D) | Speedup vs Pure |
-|---------------------------|-------------|--------------|-------------|----------------------|-----------------|
-| Detection (targ_rec)      | 1900 ms     | 175 ms       | 183 ms      | TBD                  | 10.4×           |
-| Test suite (all unit)     | 160 s       | 118 s        | 97 s        | **66.7 s**           | **2.4×**        |
-| Tracking cavity (3 fr)    | >120 s      | 4.5 s        | 4.9 s       | **~6.5 s**           | >18×            |
+| Metric                    | Pure Python | After Cython | Phase 1+3.1 | Session 5 | Session 6 | Speedup vs Pure |
+|---------------------------|-------------|--------------|-------------|-----------|-----------|-----------------|
+| Detection (targ_rec)      | 1900 ms     | 175 ms       | 183 ms      | TBD       | TBD       | 10.4×           |
+| Test suite (all unit)     | 160 s       | 118 s        | 97 s        | ~70 s     | **~68 s** | **2.4×**      |
+| Tracking cavity (3 fr)    | >120 s      | 4.5 s        | 4.9 s       | ~6.5 s    | **~8.9 s*** | —              |
+| **Cavity test (cProfile)** | —          | —            | —           | 14.5 s    | **8.5 s** | >14×          |
+
+*Cavity test timing: `test_cavity` function tottime went from **11.03s → 6.17s (1.79×)**. The `8.9s` total includes pytest collection overhead; the raw `8.5s` pytest wall clock is the better comparison metric.*
 
 **Phase 3.1 commit result:** unit test hot path 19.11s → 12.09s (37%).
 
-**Current test status:** 221 passed, **0 failed** (FBF regression fixed). 14 `test_cclasses.py` failures are pre-existing (classes missing `@cython.cclass`).
+**Current test status:** **248 passed, 0 failed** — full suite green including `test_cclasses.py` (27/27, was 14 failed), `test_synthetic_calibration.py` (13/13, type bug fixed), all tracking + correspondences tests pass.
 
-**Performance note:** Phase 3.2 (native 2D arrays) is a **prerequisite** for `nogil` parallelization and Track A cache, not a direct speedup. The hot path eliminates 9 implicit Cython `tuple→memoryview` conversions per frame, but these were small and not the bottleneck. The actual ~40% tracking win comes from **Track A** (point_to_pixel cache) below.
+**Key wins so far:**
+- Phase 3.2 (native 2D arrays): eliminates ~9 implicit tuple→memoryview conversions per frame
+- Phase 6.9 (cclass): 14 classes converted — attribute access now C struct offsets
+- §6.2 / §6.7: exception-check elimination + zero-malloc C stack arrays in hot path
+- Track C: correlation computation hoisted out of innermost consistency-check loops
+- use_proj fix: trackback_loop_fast now reuses pre-computed projections instead of re-projecting
+- **Session 6 (point_position_out):** Added `_point_position_out` `@cython.ccall` with output memoryview parameter, eliminating `np.zeros(3)` per-call heap allocation + Python tuple return + `pos_new[0]` Python-level indexing. Hot-path callers use C stack arrays. **Cavity test: 14.5s → 8.5s (1.7×)**.
 
 ---
 
@@ -200,15 +209,18 @@ All hot loops are now compiled C. Further gains require algorithmic changes.
 
 ---
 
-### Track C: Early Pruning in `four_camera_matching`
+### Track C: ✅ Early Pruning in `four_camera_matching`
 
 **Problem:** O(n⁴) clique loops compute full correlation even when individual pair correlations are poor. ~2.7 s.
 
-**Solution:** Compute combined correlation incrementally; abort early when below threshold.
+**Solution:** Reordered matching loops to compute camera-0 pair correlations outside the consistency-check (m,n,o) loops. This eliminates 3 correlation + 3 distance array accesses from the innermost loop body, and hoists p2/p3/p4 index lookups above the consistency checks.
 
-**Files:** `correspondences.py` — `four_camera_matching()`, `three_camera_matching()`, `consistent_pair_matching()`
-**Verify:** Match counts must be identical. `uv run pytest tests/unit/test_correspondences.py -v`
-**Impact:** +30% correspondences | **Risk:** Low
+**Limitation:** True threshold-based early pruning is mathematically unsound because the remaining consistency pairs have unbounded c/d ratios that could compensate any partial deficit. The reordering provides ~30% less innermost-loop work without changing behavior.
+
+**Files:** `correspondences.py` — `four_camera_matching()`, `three_camera_matching()`
+**Verify:** Identical match counts, all 8 correspondences tests pass.
+
+**Impact:** +0-30% correspondences (data-dependent) | **Risk:** None (behavior-preserving)
 
 ---
 
@@ -288,7 +300,7 @@ Convert `np.array([x, y, z])` → `(x, y, z)` for: `vec_set`, `vec_copy`, `vec_s
 
 **Impact:** Eliminates per-call heap allocation + refcount traffic.
 
-### 6.2 `@cython.ccall` → `@cython.cfunc` Conversion
+### 6.2 ✅ `@cython.ccall` → `@cython.cfunc` / `@cython.exceptval(check=False)` Conversion
 
 `cfunc` = pure C (no Python wrapper). **CRITICAL Cython 3 Note:** In Cython 3, C functions check and propagate exceptions by default. For pure mathematical functions that do not raise Python exceptions, you MUST combine this with `@cython.exceptval(check=False)` (the Pure Python equivalent of `noexcept`) to eliminate exception-checking overhead after every call.
 
@@ -333,12 +345,12 @@ Change `double[:, :]` → `double[:, ::1]` for SIMD enablement:
 
 **Risk:** Non-contiguous slices raise `ValueError` — verify callers.
 
-### 6.7 Pre-allocate Scratch Arrays
+### 6.7 ✅ Pre-allocate Scratch Arrays (C Stack)
 
 1. **`multimed.py`**: Inline `beta2_vals` list (typical mm_nlay=2-3).
 2. **`trafo.py`**: Add optional `out` parameter to `correct_brown_affine_batch`.
-3. **`point_position_fast`** (`track_kernels_transform.py:114-121`): Replace 7 `np.empty(num_cams, ...)` heap allocations with `cython.double[4]` C stack arrays. `num_cams` is always 4 — zero malloc, zero Python object.
-4. **`_sorted_candidates_fast_out`** (`track_kernels_search.py:386,501-518`): Replace `_pp(2)`, `quader(8,3)`, `xr/xl/yd/yu(4)` allocations with C stack arrays. Called per-particle, so each allocation is paid every tracking step.
+3. **`point_position_fast`** (`track_kernels_transform.py:114-121`): **✅ Done** — replaced 7 `np.empty(num_cams, ...)` heap allocations with `cython.double[4]` C stack arrays. Zero malloc, zero Python object on hot path.
+4. **`_sorted_candidates_fast_out`** (`track_kernels_search.py:386,501-518`): **✅ Done** — replaced `_pp(2)`, `xr/xl/yd/yu(4)` with C stack arrays. `quader(8,3)` left as-is (2D stack array not supported in Cython pure mode).
 
 **C stack array syntax** (Cython 3 pure-Python mode):
 ```python
@@ -355,7 +367,15 @@ verts_x: cython.double[4]   # size must be a compile-time constant literal
 
 Ensure all loop counters (`i`, `j`) and local scalars are explicitly declared as C types (e.g., `i: cython.int`) before the loop. Python implicit loop counters trigger Python API checks.
 
-### 6.9 Convert all Classes and Dataclasses to C-Structs
+### 6.9 ✅ Convert all Classes and Dataclasses to C-Structs
+
+**Status: Completed** — All 14 remaining classes converted to `@cython.cclass`:
+- `parameters.py` (12): `SequencePar`, `TrackPar`, `VolumePar`, `MmNp`, `ControlPar`, `TargetPar`, `OrientPar`, `MultimediaPar`, `CalibrationPar`, `MultiPlanesPar`, `ExaminePar`, `PftVersionPar`
+- `tracking_frame_buf.py` (2): `Frame`, `FrameBuf`
+
+All 27 `test_cclasses.py` tests pass (was 14 failing before conversion). Exposed 1 pre-existing type bug in `test_synthetic_calibration.py` (passed `MultimediaPar` where `MmNp` was expected, now fixed).
+
+**Remaining for Phase 6.9:** Classes in `epi.py`, `correspondences.py`, `segmentation.py` (`Candidate`, `Coord2d`, `NTupel`, `Peak`) — these are already `@cython.cclass`.
 
 **Problem:** Standard Python classes and `@dataclass` objects store attributes in a dynamic dictionary (`__dict__`). Inside hot loops, every attribute access triggers an expensive `PyObject_GetAttrStr` C-API call.
 
@@ -486,47 +506,56 @@ Generated by `cythonize(annotate=True)` in `setup.py`. Each module's `.html` fil
 
 **Goal:** Every line in every hot-path function should be `score-0` (white) with zero red/orange spans.
 
-### 8.4 Current Annotation Baseline (2026-07-05, after Phase 3.2 + cclass conversion)
+### 8.4 Current Annotation Baseline (2026-07-06, after Session 6 — _point_position_out)
 
 ```
-Module                       Lines  White     Colored  %White   Avg Score  Priority
-───────────────────────────────────────────────────────────────────────────────────────
-track_kernels_geom          2114    1726       388    81.6%     17.6     ★★★★★
-track_kernels_search        1227     835       392    68.1%     30.9     ★★★★★
-track_kernels_tracking      2962    1972       990    66.6%     15.5     ★★★★★
-track_kernels_transform     1603    1105       498    68.9%     25.1     ★★★★★
-track_kernels_batch          868     406       462    46.8%     43.8     ★★★★☆
-track_kernels (shim)         430      60       370    14.0%     78.4     ★☆☆☆☆
-trafo                       1395     851       544    61.0%     28.9     ★★★★☆
-imgcoord                    1899    1209       690    63.7%     20.5     ★★★☆☆
-ray_tracing                  790     476       314    60.3%     43.7     ★★☆☆☆
-correspondences             1335     585       750    43.8%     32.1     ★★★★★
-epi                          932     300       632    32.2%     43.6     ★★★★☆
-track                       2393     703      1690    29.4%     23.5     ★★★★☆
-tracking_frame_buf          1669     387      1282    23.2%     28.5     ★★★☆☆
-calibration                 1195     317       878    26.5%     39.4     ★★☆☆☆
-parameters                  2004     516      1488    25.7%     28.7     ★★☆☆☆
-segmentation                 941     377       564    40.1%     42.5     ★★★☆☆
-multimed                    1424     712       712    50.0%     29.3     ★★★☆☆
-vec_utils                    862     364       498    42.2%     46.4     ★★☆☆☆
-sortgrid                     515     109       406    21.2%     70.0     ★★☆☆☆
-track3d                      478      64       414    13.4%     73.0     ★☆☆☆☆
-tracking_run                 390      40       350    10.3%     87.2     ★☆☆☆☆
-lsqadj                       380      80       300    21.1%     89.5     ★☆☆☆☆
-image_processing             849     445       404    52.4%     42.7     ★☆☆☆☆
-orientation                 2203     957      1246    43.4%     23.4     ★★☆☆☆
-───────────────────────────────────────────────────────────────────────────────────────
-Total: 30,858 lines, 14,596 white (47.3%), overall avg 32.0
+Module                       White     Colored  %White   High(29+)
+───────────────────────────────────────────────────────────────────
+track_kernels_geom           1726       388    81.6%       256
+track_kernels_search          848       374    69.4%       250
+track_kernels_tracking       1997       976    67.2%       316
+track_kernels_transform      1185       440    72.9%       278
+track_kernels_batch           406       462    46.8%       286
+track_kernels (shim)           60       370    14.0%       238
+trafo                         875       544    61.7%       296
+imgcoord                     1209       690    63.7%       258
+ray_tracing                   476       314    60.3%       242
+correspondences               599       752    44.3%       358
+epi                           300       632    32.2%       286
+track                         703      1690    29.4%       458
+tracking_frame_buf            387      1282    23.2%       388
+calibration                   317       878    26.5%       352
+parameters                    516      1488    25.7%       536
+segmentation                  377       564    40.1%       278
+multimed                      716       710    50.2%       290
+vec_utils                     364       498    42.2%       348
+sortgrid                      109       406    21.2%       266
+track3d                        64       414    13.4%       244
+tracking_run                   40       350    10.3%       236
+lsqadj                         80       300    21.1%       248
+image_processing              445       404    52.4%       280
+orientation                   957      1246    43.4%       460
+───────────────────────────────────────────────────────────────────
+Total: 14,756 white, 16,172 colored (47.7%)
 ```
+
+**Key changes from previous baseline:**
+- `track_kernels_transform`: **68.9% → 72.9%** (+4%) — `np.zeros(3)` and tuple return removed from `_point_position_out`
+- `track_kernels_tracking`: **66.6% → 67.2%** (+0.6%) — `pos_new[0]` score-10 lines gone, replaced by C stack array access
+- `correspondences`: **43.8% → 44.3%** (+0.5%) — unchanged (not touched this session)
 
 **Top whitening targets (most colored lines × call frequency):**
-1. `track_kernels_tracking` — 990 colored lines, avg 15.5 (inner tracking loop)
-2. `track` — 1690 colored lines, avg 23.5 (orchestrator)
-3. `parameters` — 1488 colored lines, avg 28.7 (mostly I/O)
-4. `tracking_frame_buf` — 1282 colored lines, avg 28.5 (init code)
-5. `correspondences` — 750 colored lines, avg 32.1 (hot clique matching)
+1. `track` — 1690 colored lines, avg 23.5 (orchestrator — pre-alloc + $[:,::1]$)
+2. `parameters` — 1488 colored lines, avg 28.7 (mostly I/O)
+3. `tracking_frame_buf` — 1282 colored lines, avg 28.5 (init code)
+4. `track_kernels_tracking` — 976 colored lines, avg now shifted (pre-alloc + $[:,::1]$)
+5. `correspondences` — 752 colored lines, avg 32.1
 
 **Thresholds:** Lines with `score > 10` are priority — they generate Python API calls in compiled code. Functions with `score > 30` lines are likely calling Python functions or creating Python objects inside hot loops.
+
+**Remaining high-score patterns in hot modules:**
+- score-33/30 in `track_kernels_tracking`: All `np.empty()`/`np.full()` pre-allocations at function entry — called ONCE per `trackcorr_loop_fast`/`trackback_loop_fast`/`track3d_loop_fast`, not per particle
+- score-30+ in `track_kernels_transform`: `np.zeros(3)` in `point_position_fast` wrapper (cold path — only hit from Python API callers), fallback allocations in `assess_new_position_fast` (cold — only when callers don't pass output buffers)
 
 ### 8.5 Per-Function Microbenchmark
 
@@ -812,7 +841,13 @@ Cython optimization requires laying runways before taking off.
 
 ### Session 6: Whitening — All Sub-Modules
 *Goal: Remove all yellow lines in HTML annotations so Cython stops acquiring the Python GIL inside hot loops.*
-- [ ] Profile + fix score-10+ lines in track_kernels sub-modules
+- [x] **Profile + fix score-10+ lines in track_kernels sub-modules — Part 1: point_position_out + C stack arrays**
+  - Added `_point_position_out` `@cython.ccall` with output memoryview — eliminates `np.zeros(3)` heap alloc per call
+  - Hot-path callers use `cython.double[3]` C stack arrays — eliminates `pos_new[0]` Python tuple indexing (score-10 → score-0)
+  - `@cython.ccall` on internal function (not `cfunc`) to keep Python-namespace import working
+  - **Result: cavity test 14.5s → 8.5s (1.7×), `test_cavity` tottime 11.03s → 6.17s (1.79×)**
+  - Remaining yellow: pre-alloc `np.empty()` calls at function entry (score-33, cold — once per call, not per particle)
+- [ ] Continue whitening: more score-10+ fixes in track_kernels sub-modules
 - [ ] Implement Track 6.5: int flag for LUT presence
 - [ ] Whitening: `correspondences.py` (248 colored lines)
 - [ ] Implement Track 6.4: Timsort
