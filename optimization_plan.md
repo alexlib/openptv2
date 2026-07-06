@@ -1,6 +1,6 @@
 # Performance Optimization Plan
 
-**Last updated:** 2026-07-06 (Session 6 complete — 6 commits: _point_position_out, 1D slicing in correspondences, def→ccall in track.py, exceptval in trafo.py, contiguous memoryviews. Cavity 14.5s→~9s, 248/248 green. Track A/B analyzed and deferred — see §7.)
+**Last updated:** 2026-07-06 (Session 6 complete. All hot modules compiled. Next steps in §16. Merged to main.)
 
 This document is the single authoritative plan for all performance optimization work on the openptv2 Cython 3 Pure Python engine. It covers profiling methodology, annotation analysis, module-by-module whitening, algorithmic improvements, micro-optimizations, data-structure flattening, and parallelization.
 
