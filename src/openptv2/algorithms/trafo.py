@@ -25,8 +25,7 @@ DOUBLED: cython.int = 2
 
 @cython.cfunc
 @cython.inline
-@cython.cfunc
-@cython.inline
+@cython.exceptval(check=False)
 def _old_pixel_to_metric_out(
     x_pixel: cython.double,
     y_pixel: cython.double,
@@ -71,7 +70,7 @@ def old_pixel_to_metric(
     Returns:
         (x_metric, y_metric) tuple.
     """
-    _out = np.empty(2, dtype=np.float64)
+    _out: cython.double[2]
     _out_mv: cython.double[:] = _out
     _old_pixel_to_metric_out(
         x_pixel,
@@ -133,7 +132,7 @@ def pixel_to_metric(
 
     Accepts either (x, y, cpar) or (x, y, imx, imy, pix_x, pix_y, chfield).
     """
-    _out = np.empty(2, dtype=np.float64)
+    _out: cython.double[2]
     _out_mv: cython.double[:] = _out
     if hasattr(imx_or_cpar, "imx"):
         _old_pixel_to_metric_out(
@@ -162,6 +161,7 @@ def pixel_to_metric(
 
 @cython.cfunc
 @cython.inline
+@cython.exceptval(check=False)
 def _old_metric_to_pixel_out(
     x_metric: cython.double,
     y_metric: cython.double,
@@ -205,7 +205,7 @@ def old_metric_to_pixel(
     Returns:
         (x_pixel, y_pixel) tuple.
     """
-    _out = np.empty(2, dtype=np.float64)
+    _out: cython.double[2]
     _out_mv: cython.double[:] = _out
     _old_metric_to_pixel_out(
         x_metric,
@@ -266,7 +266,7 @@ def metric_to_pixel(
 
     Accepts either (x, y, cpar) or (x, y, imx, imy, pix_x, pix_y, chfield).
     """
-    _out = np.empty(2, dtype=np.float64)
+    _out: cython.double[2]
     _out_mv: cython.double[:] = _out
     if hasattr(imx_or_cpar, "imx"):
         _old_metric_to_pixel_out(
@@ -295,6 +295,7 @@ def metric_to_pixel(
 
 @cython.cfunc
 @cython.inline
+@cython.exceptval(check=False)
 def _distort_brown_affin_core_out(
     x: cython.double,
     y: cython.double,
@@ -347,7 +348,7 @@ def _distort_brown_affin_core(
     cos_she: cython.double,
 ) -> tuple:
     """Brown distortion with precomputed trig values."""
-    _out = np.empty(2, dtype=np.float64)
+    _out: cython.double[2]
     _out_mv: cython.double[:] = _out
     _distort_brown_affin_core_out(
         x, y, k1, k2, k3, p1, p2, scx, sin_she, cos_she, _out_mv
@@ -403,7 +404,7 @@ def distort_brown_affin(
     Returns:
         (x_distorted, y_distorted) tuple.
     """
-    _out = np.empty(2, dtype=np.float64)
+    _out: cython.double[2]
     _out_mv: cython.double[:] = _out
     distort_brown_affin_out(x, y, k1, k2, k3, p1, p2, scx, she, _out_mv)
     return _out_mv[0], _out_mv[1]
@@ -463,6 +464,7 @@ def distort_brown_affine_batch(
 
 @cython.cfunc
 @cython.inline
+@cython.exceptval(check=False)
 def _correct_brown_affin_out(
     x: cython.double,
     y: cython.double,
@@ -555,9 +557,9 @@ def correct_brown_affin(
     Returns:
         (x_flat, y_flat) undistorted coordinates.
     """
-    _out = np.empty(2, dtype=np.float64)
+    _out: cython.double[2]
     _out_mv: cython.double[:] = _out
-    _scratch = np.empty(2, dtype=np.float64)
+    _scratch: cython.double[2]
     _scratch_mv: cython.double[:] = _scratch
     _correct_brown_affin_out(x, y, k1, k2, k3, p1, p2, scx, she, _out_mv, _scratch_mv)
     return _out_mv[0], _out_mv[1]
@@ -565,6 +567,7 @@ def correct_brown_affin(
 
 @cython.cfunc
 @cython.inline
+@cython.exceptval(check=False)
 def _correct_brown_affine_exact_out(
     x: cython.double,
     y: cython.double,
@@ -668,7 +671,7 @@ def correct_brown_affine_exact(
     Returns:
         (x_flat, y_flat) undistorted coordinates.
     """
-    _out = np.empty(2, dtype=np.float64)
+    _out: cython.double[2]
     _out_mv: cython.double[:] = _out
     _correct_brown_affine_exact_out(x, y, k1, k2, k3, p1, p2, scx, she, tol, _out_mv)
     return _out_mv[0], _out_mv[1]
@@ -717,7 +720,7 @@ def flat_to_dist(
     Returns:
         (dist_x, dist_y) distorted metric coordinates.
     """
-    _out = np.empty(2, dtype=np.float64)
+    _out: cython.double[2]
     _out_mv: cython.double[:] = _out
     flat_to_dist_out(flat_x, flat_y, xh, yh, k1, k2, k3, p1, p2, scx, she, _out_mv)
     return _out_mv[0], _out_mv[1]
@@ -740,7 +743,7 @@ def dist_to_flat_out(
     out: cython.double[:],
 ):
     """Convert distorted metric to flat-image coordinates — _out variant."""
-    _scratch = np.empty(2, dtype=np.float64)
+    _scratch: cython.double[2]
     _scratch_mv: cython.double[:] = _scratch
     _correct_brown_affine_exact_out(
         dist_x, dist_y, k1, k2, k3, p1, p2, scx, she, tol, _scratch_mv
@@ -775,7 +778,7 @@ def dist_to_flat(
     Returns:
         (flat_x, flat_y) flat-image coordinates.
     """
-    _out = np.empty(2, dtype=np.float64)
+    _out: cython.double[2]
     _out_mv: cython.double[:] = _out
     dist_to_flat_out(dist_x, dist_y, xh, yh, k1, k2, k3, p1, p2, scx, she, tol, _out_mv)
     return _out_mv[0], _out_mv[1]
