@@ -153,13 +153,15 @@ def epi_mm(xl: cython.double, yl: cython.double, cal1, cal2, mmp, vpar):
         d0,
     )
 
-    Zmin = vpar.Zmin_lay[0] + (pos[0] - vpar.X_lay[0]) * (
-        vpar.Zmin_lay[1] - vpar.Zmin_lay[0]
-    ) / (vpar.X_lay[1] - vpar.X_lay[0])
+    Zmin_lay0: cython.double = vpar.Zmin_lay[0]
+    Zmin_lay1: cython.double = vpar.Zmin_lay[1]
+    Zmax_lay0: cython.double = vpar.Zmax_lay[0]
+    Zmax_lay1: cython.double = vpar.Zmax_lay[1]
+    X_lay0: cython.double = vpar.X_lay[0]
+    X_lay1: cython.double = vpar.X_lay[1]
+    Zmin = Zmin_lay0 + (pos[0] - X_lay0) * (Zmin_lay1 - Zmin_lay0) / (X_lay1 - X_lay0)
 
-    Zmax = vpar.Zmax_lay[0] + (pos[0] - vpar.X_lay[0]) * (
-        vpar.Zmax_lay[1] - vpar.Zmax_lay[0]
-    ) / (vpar.X_lay[1] - vpar.X_lay[0])
+    Zmax = Zmax_lay0 + (pos[0] - X_lay0) * (Zmax_lay1 - Zmax_lay0) / (X_lay1 - X_lay0)
 
     X_at_Zmin = move_along_ray(Zmin, pos, v)
     xmin, ymin = flat_image_coord(

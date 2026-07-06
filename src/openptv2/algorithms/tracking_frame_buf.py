@@ -9,7 +9,7 @@ import cython
 import numpy as np
 from pathlib import Path
 
-from .constants import POSI, PT_UNUSED, CORRES_NONE, PREV_NONE, NEXT_NONE
+from .constants import POSI, PT_UNUSED, CORRES_NONE, PREV_NONE, NEXT_NONE, COORD_UNUSED
 
 
 class CallableInt(int):
@@ -496,7 +496,30 @@ def write_path_frame(
     return True
 
 
+@cython.cclass
 class Frame:
+    num_cams: cython.int = cython.declare(cython.int, visibility="public")
+    _num_cams: cython.int = cython.declare(cython.int, visibility="public")
+    max_targets: cython.int = cython.declare(cython.int, visibility="public")
+    targets: object = cython.declare(object, visibility="public")
+    correspond: object = cython.declare(object, visibility="public")
+    path_info: object = cython.declare(object, visibility="public")
+    num_targets: object = cython.declare(object, visibility="public")
+    num_parts: cython.int = cython.declare(cython.int, visibility="public")
+    targ_x: object = cython.declare(object, visibility="public")
+    targ_y: object = cython.declare(object, visibility="public")
+    targ_tnr: object = cython.declare(object, visibility="public")
+    path_x: object = cython.declare(object, visibility="public")
+    path_prev: object = cython.declare(object, visibility="public")
+    path_next: object = cython.declare(object, visibility="public")
+    path_prio: object = cython.declare(object, visibility="public")
+    path_inlist: object = cython.declare(object, visibility="public")
+    path_finaldecis: object = cython.declare(object, visibility="public")
+    path_decis: object = cython.declare(object, visibility="public")
+    path_linkdecis: object = cython.declare(object, visibility="public")
+    corres_nr: object = cython.declare(object, visibility="public")
+    corres_p: object = cython.declare(object, visibility="public")
+
     def __init__(self, num_cams=4, max_targets=1000, **kwargs):
         self.num_cams = num_cams
         self._num_cams = num_cams
@@ -507,12 +530,10 @@ class Frame:
         self.num_targets = [0] * num_cams
         self.num_parts = 0
 
-        # SoA for targets (per camera)
-        self.targ_x = [np.zeros(max_targets, dtype=np.float64) for _ in range(num_cams)]
-        self.targ_y = [np.zeros(max_targets, dtype=np.float64) for _ in range(num_cams)]
-        self.targ_tnr = [
-            np.full(max_targets, PT_UNUSED, dtype=np.int32) for _ in range(num_cams)
-        ]
+        # SoA for targets — native 2D arrays (num_cams, max_targets)
+        self.targ_x = np.full((num_cams, max_targets), COORD_UNUSED, dtype=np.float64)
+        self.targ_y = np.full((num_cams, max_targets), COORD_UNUSED, dtype=np.float64)
+        self.targ_tnr = np.full((num_cams, max_targets), PT_UNUSED, dtype=np.int32)
 
         # SoA for Pathinfo
         self.path_x = np.zeros((max_targets, 3), dtype=np.float64)
@@ -765,7 +786,17 @@ class Frame:
         return True
 
 
+@cython.cclass
 class FrameBuf:
+    buf_len: cython.int = cython.declare(cython.int, visibility="public")
+    num_cams: cython.int = cython.declare(cython.int, visibility="public")
+    _frames: object = cython.declare(object, visibility="public")
+    buf: object = cython.declare(object, visibility="public")
+    corres_file_base: object = cython.declare(object, visibility="public")
+    linkage_file_base: object = cython.declare(object, visibility="public")
+    prio_file_base: object = cython.declare(object, visibility="public")
+    target_file_base: object = cython.declare(object, visibility="public")
+
     def __init__(
         self,
         buf_len,

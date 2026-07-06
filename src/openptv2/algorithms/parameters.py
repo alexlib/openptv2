@@ -52,11 +52,12 @@ def convert_track_par_to_tuple(track_par: object) -> object:
     )
 
 
+@cython.cclass
 class SequencePar:
-    num_cams: int
-    img_base_name: list[str]
-    first: int
-    last: int
+    num_cams: cython.int = cython.declare(cython.int, visibility="public")
+    img_base_name: object = cython.declare(object, visibility="public")
+    first: cython.int = cython.declare(cython.int, visibility="public")
+    last: cython.int = cython.declare(cython.int, visibility="public")
 
     def __init__(
         self,
@@ -118,21 +119,22 @@ class SequencePar:
         self.last = new_par.last
 
 
+@cython.cclass
 class TrackPar:
-    dvxmin: float
-    dvxmax: float
-    dvymin: float
-    dvymax: float
-    dvzmin: float
-    dvzmax: float
-    dangle: float
-    dacc: float
-    add: int
-    track_mode: int
-    dsumg: float
-    dn: float
-    dnx: float
-    dny: float
+    dvxmin: cython.double = cython.declare(cython.double, visibility="public")
+    dvxmax: cython.double = cython.declare(cython.double, visibility="public")
+    dvymin: cython.double = cython.declare(cython.double, visibility="public")
+    dvymax: cython.double = cython.declare(cython.double, visibility="public")
+    dvzmin: cython.double = cython.declare(cython.double, visibility="public")
+    dvzmax: cython.double = cython.declare(cython.double, visibility="public")
+    dangle: cython.double = cython.declare(cython.double, visibility="public")
+    dacc: cython.double = cython.declare(cython.double, visibility="public")
+    add: cython.int = cython.declare(cython.int, visibility="public")
+    track_mode: cython.int = cython.declare(cython.int, visibility="public")
+    dsumg: cython.double = cython.declare(cython.double, visibility="public")
+    dn: cython.double = cython.declare(cython.double, visibility="public")
+    dnx: cython.double = cython.declare(cython.double, visibility="public")
+    dny: cython.double = cython.declare(cython.double, visibility="public")
 
     def __init__(
         self,
@@ -291,16 +293,17 @@ class TrackPar:
         self.dny = new_par.dny
 
 
+@cython.cclass
 class VolumePar:
-    X_lay: np.ndarray
-    Zmin_lay: np.ndarray
-    Zmax_lay: np.ndarray
-    cnx: float
-    cny: float
-    cn: float
-    csumg: float
-    corrmin: float
-    eps0: float
+    X_lay: object = cython.declare(object, visibility="public")
+    Zmin_lay: object = cython.declare(object, visibility="public")
+    Zmax_lay: object = cython.declare(object, visibility="public")
+    cnx: cython.double = cython.declare(cython.double, visibility="public")
+    cny: cython.double = cython.declare(cython.double, visibility="public")
+    cn: cython.double = cython.declare(cython.double, visibility="public")
+    csumg: cython.double = cython.declare(cython.double, visibility="public")
+    corrmin: cython.double = cython.declare(cython.double, visibility="public")
+    eps0: cython.double = cython.declare(cython.double, visibility="public")
 
     def __init__(
         self,
@@ -420,12 +423,13 @@ class VolumePar:
         self.eps0 = new_par.eps0
 
 
+@cython.cclass
 class MmNp:
-    nlay: int
-    n1: float
-    n2: np.ndarray
-    d: np.ndarray
-    n3: float
+    nlay: cython.int = cython.declare(cython.int, visibility="public")
+    n1: cython.double = cython.declare(cython.double, visibility="public")
+    n2: object = cython.declare(object, visibility="public")
+    d: object = cython.declare(object, visibility="public")
+    n3: cython.double = cython.declare(cython.double, visibility="public")
 
     def __init__(
         self,
@@ -482,19 +486,20 @@ class MmNp:
         self.n3 = float(n3)
 
 
+@cython.cclass
 class ControlPar:
-    num_cams: int
-    img_base_name: list[str]
-    cal_img_base_name: list[str]
-    hp_flag: int
-    allCam_flag: int
-    tiff_flag: int
-    imx: int
-    imy: int
-    pix_x: float
-    pix_y: float
-    chfield: int
-    mm: MmNp
+    num_cams: cython.int = cython.declare(cython.int, visibility="public")
+    img_base_name: object = cython.declare(object, visibility="public")
+    cal_img_base_name: object = cython.declare(object, visibility="public")
+    hp_flag: cython.int = cython.declare(cython.int, visibility="public")
+    allCam_flag: cython.int = cython.declare(cython.int, visibility="public")
+    tiff_flag: cython.int = cython.declare(cython.int, visibility="public")
+    imx: cython.int = cython.declare(cython.int, visibility="public")
+    imy: cython.int = cython.declare(cython.int, visibility="public")
+    pix_x: cython.double = cython.declare(cython.double, visibility="public")
+    pix_y: cython.double = cython.declare(cython.double, visibility="public")
+    chfield: cython.int = cython.declare(cython.int, visibility="public")
+    mm: object = cython.declare(object, visibility="public")
 
     def __init__(
         self,
@@ -676,17 +681,18 @@ class ControlPar:
         self.mm = new_par.mm
 
 
+@cython.cclass
 class TargetPar:
-    gvthres: np.ndarray
-    discont: int
-    nnmin: int
-    nnmax: int
-    nxmin: int
-    nxmax: int
-    nymin: int
-    nymax: int
-    sumg_min: int
-    cr_sz: int
+    gvthres: object = cython.declare(object, visibility="public")
+    discont: cython.int = cython.declare(cython.int, visibility="public")
+    nnmin: cython.int = cython.declare(cython.int, visibility="public")
+    nnmax: cython.int = cython.declare(cython.int, visibility="public")
+    nxmin: cython.int = cython.declare(cython.int, visibility="public")
+    nxmax: cython.int = cython.declare(cython.int, visibility="public")
+    nymin: cython.int = cython.declare(cython.int, visibility="public")
+    nymax: cython.int = cython.declare(cython.int, visibility="public")
+    sumg_min: cython.int = cython.declare(cython.int, visibility="public")
+    cr_sz: cython.int = cython.declare(cython.int, visibility="public")
 
     def __init__(
         self,
@@ -840,19 +846,20 @@ class TargetPar:
         self.cr_sz = new_par.cr_sz
 
 
+@cython.cclass
 class OrientPar:
-    useflag: int
-    ccflag: int
-    xhflag: int
-    yhflag: int
-    k1flag: int
-    k2flag: int
-    k3flag: int
-    p1flag: int
-    p2flag: int
-    scxflag: int
-    sheflag: int
-    interfflag: int
+    useflag: cython.int = cython.declare(cython.int, visibility="public")
+    ccflag: cython.int = cython.declare(cython.int, visibility="public")
+    xhflag: cython.int = cython.declare(cython.int, visibility="public")
+    yhflag: cython.int = cython.declare(cython.int, visibility="public")
+    k1flag: cython.int = cython.declare(cython.int, visibility="public")
+    k2flag: cython.int = cython.declare(cython.int, visibility="public")
+    k3flag: cython.int = cython.declare(cython.int, visibility="public")
+    p1flag: cython.int = cython.declare(cython.int, visibility="public")
+    p2flag: cython.int = cython.declare(cython.int, visibility="public")
+    scxflag: cython.int = cython.declare(cython.int, visibility="public")
+    sheflag: cython.int = cython.declare(cython.int, visibility="public")
+    interfflag: cython.int = cython.declare(cython.int, visibility="public")
 
     def __init__(
         self,
@@ -892,12 +899,13 @@ class OrientPar:
         return OrientPar(*flags)
 
 
+@cython.cclass
 class MultimediaPar:
-    n1: float
-    n2: np.ndarray
-    d: np.ndarray
-    n3: float
-    nlay: int
+    n1: cython.double = cython.declare(cython.double, visibility="public")
+    n2: object = cython.declare(object, visibility="public")
+    d: object = cython.declare(object, visibility="public")
+    n3: cython.double = cython.declare(cython.double, visibility="public")
+    nlay: cython.int = cython.declare(cython.int, visibility="public")
 
     def __init__(
         self,
@@ -914,15 +922,16 @@ class MultimediaPar:
         self.nlay = nlay
 
 
+@cython.cclass
 class CalibrationPar:
     """Calibration parameters for calibration workflow."""
 
-    fixp_name: str
-    img_cal_name: list[str]
-    img_ori: list[str]
-    tiff_flag: int
-    pair_flag: int
-    chfield: int
+    fixp_name: object = cython.declare(object, visibility="public")
+    img_cal_name: object = cython.declare(object, visibility="public")
+    img_ori: object = cython.declare(object, visibility="public")
+    tiff_flag: cython.int = cython.declare(cython.int, visibility="public")
+    pair_flag: cython.int = cython.declare(cython.int, visibility="public")
+    chfield: cython.int = cython.declare(cython.int, visibility="public")
 
     def __init__(
         self,
@@ -957,11 +966,12 @@ class CalibrationPar:
         )
 
 
+@cython.cclass
 class MultiPlanesPar:
     """Multiplanes parameters."""
 
-    num_planes: int
-    filename: list[str]
+    num_planes: cython.int = cython.declare(cython.int, visibility="public")
+    filename: object = cython.declare(object, visibility="public")
 
     def __init__(self, num_planes: int = 0, filename: list[str] | None = None) -> None:
         self.num_planes = num_planes
@@ -976,11 +986,12 @@ class MultiPlanesPar:
         return MultiPlanesPar(num_planes, filename)
 
 
+@cython.cclass
 class ExaminePar:
     """Examine parameters."""
 
-    examine_flag: bool
-    combine_flag: bool
+    examine_flag: cython.bint = cython.declare(cython.bint, visibility="public")
+    combine_flag: cython.bint = cython.declare(cython.bint, visibility="public")
 
     def __init__(self, examine_flag: bool = False, combine_flag: bool = False) -> None:
         self.examine_flag = examine_flag
@@ -997,10 +1008,11 @@ class ExaminePar:
         return ExaminePar(examine_flag, combine_flag)
 
 
+@cython.cclass
 class PftVersionPar:
     """PFT version parameters."""
 
-    existing_target_flag: bool
+    existing_target_flag: cython.bint = cython.declare(cython.bint, visibility="public")
 
     def __init__(self, existing_target_flag: bool = False) -> None:
         self.existing_target_flag = existing_target_flag

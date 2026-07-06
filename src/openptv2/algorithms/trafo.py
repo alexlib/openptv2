@@ -25,6 +25,7 @@ DOUBLED: cython.int = 2
 
 @cython.cfunc
 @cython.inline
+@cython.exceptval(check=False)
 def _old_pixel_to_metric_out(
     x_pixel: cython.double,
     y_pixel: cython.double,
@@ -46,6 +47,7 @@ def _old_pixel_to_metric_out(
 
 
 @cython.ccall
+@cython.exceptval(check=False)
 @cython.cdivision(True)
 @cython.profile(False)
 def old_pixel_to_metric(
@@ -68,7 +70,7 @@ def old_pixel_to_metric(
     Returns:
         (x_metric, y_metric) tuple.
     """
-    _out = np.empty(2, dtype=np.float64)
+    _out: cython.double[2]
     _out_mv: cython.double[:] = _out
     _old_pixel_to_metric_out(
         x_pixel,
@@ -80,147 +82,6 @@ def old_pixel_to_metric(
         y_remap_mode,
         _out_mv,
     )
-    return _out_mv[0], _out_mv[1]
-
-
-@cython.cfunc
-@cython.inline
-def _old_metric_to_pixel_out(
-    x_metric: cython.double,
-    y_metric: cython.double,
-    im_size_x: cython.int,
-    im_size_y: cython.int,
-    pix_size_x: cython.double,
-    pix_size_y: cython.double,
-    y_remap_mode: cython.int,
-    out: cython.double[:],
-):
-    """Convert metric to pixel coordinates — _out variant."""
-    xp: cython.double = x_metric / pix_size_x + im_size_x * 0.5
-    yp: cython.double = im_size_y * 0.5 - y_metric / pix_size_y
-    if y_remap_mode == DOUBLED_PLUS_ONE:
-        yp = (yp - 1.0) * 0.5
-    elif y_remap_mode == DOUBLED:
-        yp = yp * 0.5
-    out[0] = xp
-    out[1] = yp
-
-
-@cython.ccall
-def old_metric_to_pixel(
-    x_metric: cython.double,
-    y_metric: cython.double,
-    im_size_x: cython.int,
-    im_size_y: cython.int,
-    pix_size_x: cython.double,
-    pix_size_y: cython.double,
-    y_remap_mode: cython.int = 0,
-) -> tuple:
-    """Convert metric coordinates to pixel coordinates.
-
-    Args:
-        x_metric, y_metric: input metric coordinates.
-        im_size_x, im_size_y: image dimensions in pixels.
-        pix_size_x, pix_size_y: pixel size in mm.
-        y_remap_mode: 0=normal, 1=odd lines, 2=even lines (interlaced).
-
-    Returns:
-        (x_pixel, y_pixel) tuple.
-    """
-    _out = np.empty(2, dtype=np.float64)
-    _out_mv: cython.double[:] = _out
-    _old_metric_to_pixel_out(
-        x_metric,
-        y_metric,
-        im_size_x,
-        im_size_y,
-        pix_size_x,
-        pix_size_y,
-        y_remap_mode,
-        _out_mv,
-    )
-    return _out_mv[0], _out_mv[1]
-
-
-@cython.ccall
-def pixel_to_metric(
-    x_pixel: cython.double,
-    y_pixel: cython.double,
-    imx_or_cpar,
-    imy: cython.int = 0,
-    pix_x: cython.double = 0.0,
-    pix_y: cython.double = 0.0,
-    chfield: cython.int = 0,
-) -> tuple:
-    """Convert pixel to metric coordinates.
-
-    Accepts either (x, y, cpar) or (x, y, imx, imy, pix_x, pix_y, chfield).
-    """
-    _out = np.empty(2, dtype=np.float64)
-    _out_mv: cython.double[:] = _out
-    if hasattr(imx_or_cpar, "imx"):
-        _old_pixel_to_metric_out(
-            x_pixel,
-            y_pixel,
-            imx_or_cpar.imx,
-            imx_or_cpar.imy,
-            imx_or_cpar.pix_x,
-            imx_or_cpar.pix_y,
-            imx_or_cpar.chfield,
-            _out_mv,
-        )
-    else:
-        _old_pixel_to_metric_out(
-            x_pixel,
-            y_pixel,
-            int(imx_or_cpar),
-            imy,
-            pix_x,
-            pix_y,
-            chfield,
-            _out_mv,
-        )
-    return _out_mv[0], _out_mv[1]
-
-
-@cython.ccall
-def metric_to_pixel(
-    x_metric: cython.double,
-    y_metric: cython.double,
-    imx_or_cpar,
-    imy: cython.int = 0,
-    pix_x: cython.double = 0.0,
-    pix_y: cython.double = 0.0,
-    chfield: cython.int = 0,
-) -> tuple:
-    """Convert metric to pixel coordinates.
-
-    Accepts either (x, y, cpar) or (x, y, imx, imy, pix_x, pix_y, chfield).
-    """
-    _out = np.empty(2, dtype=np.float64)
-    _out_mv: cython.double[:] = _out
-    if hasattr(imx_or_cpar, "imx"):
-        _old_metric_to_pixel_out(
-            x_metric,
-            y_metric,
-            imx_or_cpar.imx,
-            imx_or_cpar.imy,
-            imx_or_cpar.pix_x,
-            imx_or_cpar.pix_y,
-            imx_or_cpar.chfield,
-            _out_mv,
-        )
-    else:
-        _old_metric_to_pixel_out(
-            x_metric,
-            y_metric,
-            int(imx_or_cpar),
-            imy,
-            pix_x,
-            pix_y,
-            chfield,
-            _out_mv,
-        )
     return _out_mv[0], _out_mv[1]
 
 
@@ -258,6 +119,108 @@ def pixel_to_metric_batch(xy, cpar) -> object:
 
 
 @cython.ccall
+def pixel_to_metric(
+    x_pixel: cython.double,
+    y_pixel: cython.double,
+    imx_or_cpar,
+    imy: cython.int = 0,
+    pix_x: cython.double = 0.0,
+    pix_y: cython.double = 0.0,
+    chfield: cython.int = 0,
+) -> tuple:
+    """Convert pixel to metric coordinates.
+
+    Accepts either (x, y, cpar) or (x, y, imx, imy, pix_x, pix_y, chfield).
+    """
+    _out: cython.double[2]
+    _out_mv: cython.double[:] = _out
+    if hasattr(imx_or_cpar, "imx"):
+        _old_pixel_to_metric_out(
+            x_pixel,
+            y_pixel,
+            imx_or_cpar.imx,
+            imx_or_cpar.imy,
+            imx_or_cpar.pix_x,
+            imx_or_cpar.pix_y,
+            imx_or_cpar.chfield,
+            _out_mv,
+        )
+    else:
+        _old_pixel_to_metric_out(
+            x_pixel,
+            y_pixel,
+            int(imx_or_cpar),
+            imy,
+            pix_x,
+            pix_y,
+            chfield,
+            _out_mv,
+        )
+    return _out_mv[0], _out_mv[1]
+
+
+@cython.cfunc
+@cython.inline
+@cython.exceptval(check=False)
+def _old_metric_to_pixel_out(
+    x_metric: cython.double,
+    y_metric: cython.double,
+    im_size_x: cython.int,
+    im_size_y: cython.int,
+    pix_size_x: cython.double,
+    pix_size_y: cython.double,
+    y_remap_mode: cython.int,
+    out: cython.double[:],
+):
+    """Convert metric to pixel coordinates — _out variant."""
+    xp: cython.double = x_metric / pix_size_x + im_size_x * 0.5
+    yp: cython.double = im_size_y * 0.5 - y_metric / pix_size_y
+    if y_remap_mode == DOUBLED_PLUS_ONE:
+        yp = (yp - 1.0) * 0.5
+    elif y_remap_mode == DOUBLED:
+        yp = yp * 0.5
+    out[0] = xp
+    out[1] = yp
+
+
+@cython.ccall
+@cython.exceptval(check=False)
+def old_metric_to_pixel(
+    x_metric: cython.double,
+    y_metric: cython.double,
+    im_size_x: cython.int,
+    im_size_y: cython.int,
+    pix_size_x: cython.double,
+    pix_size_y: cython.double,
+    y_remap_mode: cython.int = 0,
+) -> tuple:
+    """Convert metric coordinates to pixel coordinates.
+
+    Args:
+        x_metric, y_metric: input metric coordinates.
+        im_size_x, im_size_y: image dimensions in pixels.
+        pix_size_x, pix_size_y: pixel size in mm.
+        y_remap_mode: 0=normal, 1=odd lines, 2=even lines (interlaced).
+
+    Returns:
+        (x_pixel, y_pixel) tuple.
+    """
+    _out: cython.double[2]
+    _out_mv: cython.double[:] = _out
+    _old_metric_to_pixel_out(
+        x_metric,
+        y_metric,
+        im_size_x,
+        im_size_y,
+        pix_size_x,
+        pix_size_y,
+        y_remap_mode,
+        _out_mv,
+    )
+    return _out_mv[0], _out_mv[1]
+
+
+@cython.ccall
 def metric_to_pixel_batch(xy, cpar) -> object:
     """Convert N metric coordinates to pixel.
 
@@ -289,8 +252,50 @@ def metric_to_pixel_batch(xy, cpar) -> object:
     return result
 
 
+@cython.ccall
+def metric_to_pixel(
+    x_metric: cython.double,
+    y_metric: cython.double,
+    imx_or_cpar,
+    imy: cython.int = 0,
+    pix_x: cython.double = 0.0,
+    pix_y: cython.double = 0.0,
+    chfield: cython.int = 0,
+) -> tuple:
+    """Convert metric to pixel coordinates.
+
+    Accepts either (x, y, cpar) or (x, y, imx, imy, pix_x, pix_y, chfield).
+    """
+    _out: cython.double[2]
+    _out_mv: cython.double[:] = _out
+    if hasattr(imx_or_cpar, "imx"):
+        _old_metric_to_pixel_out(
+            x_metric,
+            y_metric,
+            imx_or_cpar.imx,
+            imx_or_cpar.imy,
+            imx_or_cpar.pix_x,
+            imx_or_cpar.pix_y,
+            imx_or_cpar.chfield,
+            _out_mv,
+        )
+    else:
+        _old_metric_to_pixel_out(
+            x_metric,
+            y_metric,
+            int(imx_or_cpar),
+            imy,
+            pix_x,
+            pix_y,
+            chfield,
+            _out_mv,
+        )
+    return _out_mv[0], _out_mv[1]
+
+
 @cython.cfunc
 @cython.inline
+@cython.exceptval(check=False)
 def _distort_brown_affin_core_out(
     x: cython.double,
     y: cython.double,
@@ -343,7 +348,7 @@ def _distort_brown_affin_core(
     cos_she: cython.double,
 ) -> tuple:
     """Brown distortion with precomputed trig values."""
-    _out = np.empty(2, dtype=np.float64)
+    _out: cython.double[2]
     _out_mv: cython.double[:] = _out
     _distort_brown_affin_core_out(
         x, y, k1, k2, k3, p1, p2, scx, sin_she, cos_she, _out_mv
@@ -353,6 +358,7 @@ def _distort_brown_affin_core(
 
 @cython.cfunc
 @cython.inline
+@cython.exceptval(check=False)
 def distort_brown_affin_out(
     x: cython.double,
     y: cython.double,
@@ -372,6 +378,7 @@ def distort_brown_affin_out(
 
 
 @cython.ccall
+@cython.exceptval(check=False)
 def distort_brown_affin(
     x: cython.double,
     y: cython.double,
@@ -397,14 +404,67 @@ def distort_brown_affin(
     Returns:
         (x_distorted, y_distorted) tuple.
     """
-    _out = np.empty(2, dtype=np.float64)
+    _out: cython.double[2]
     _out_mv: cython.double[:] = _out
     distort_brown_affin_out(x, y, k1, k2, k3, p1, p2, scx, she, _out_mv)
     return _out_mv[0], _out_mv[1]
 
 
+@cython.ccall
+@cython.profile(False)
+@cython.boundscheck(False)
+@cython.wraparound(False)
+def distort_brown_affine_batch(
+    xy: cython.double[:, ::1],
+    k1: cython.double,
+    k2: cython.double,
+    k3: cython.double,
+    p1: cython.double,
+    p2: cython.double,
+    scx: cython.double,
+    she: cython.double,
+) -> object:
+    n: cython.Py_ssize_t = xy.shape[0]
+    result: np.ndarray = np.empty((n, 2), dtype=np.float64)
+    result_view: cython.double[:, ::1] = result
+
+    sin_she: cython.double = c_sin(she)
+    cos_she: cython.double = c_cos(she)
+
+    i: cython.Py_ssize_t
+    x: cython.double
+    y: cython.double
+    r: cython.double
+    r2: cython.double
+    r4: cython.double
+    r6: cython.double
+    radial_factor: cython.double
+    x_dist: cython.double
+    y_dist: cython.double
+
+    for i in range(n):
+        x = xy[i, 0]
+        y = xy[i, 1]
+        r = c_sqrt(x * x + y * y)
+        if r < 1e-10:
+            result_view[i, 0] = 0.0
+            result_view[i, 1] = 0.0
+        else:
+            r2 = r * r
+            r4 = r2 * r2
+            r6 = r4 * r2
+            radial_factor = 1.0 + k1 * r2 + k2 * r4 + k3 * r6
+            x_dist = x * radial_factor + p1 * (r2 + 2.0 * x * x) + 2.0 * p2 * x * y
+            y_dist = y * radial_factor + p2 * (r2 + 2.0 * y * y) + 2.0 * p1 * x * y
+            result_view[i, 0] = scx * (x_dist - sin_she * y_dist)
+            result_view[i, 1] = scx * cos_she * y_dist
+
+    return result
+
+
 @cython.cfunc
 @cython.inline
+@cython.exceptval(check=False)
 def _correct_brown_affin_out(
     x: cython.double,
     y: cython.double,
@@ -497,9 +557,9 @@ def correct_brown_affin(
     Returns:
         (x_flat, y_flat) undistorted coordinates.
     """
-    _out = np.empty(2, dtype=np.float64)
+    _out: cython.double[2]
     _out_mv: cython.double[:] = _out
-    _scratch = np.empty(2, dtype=np.float64)
+    _scratch: cython.double[2]
     _scratch_mv: cython.double[:] = _scratch
     _correct_brown_affin_out(x, y, k1, k2, k3, p1, p2, scx, she, _out_mv, _scratch_mv)
     return _out_mv[0], _out_mv[1]
@@ -507,6 +567,7 @@ def correct_brown_affin(
 
 @cython.cfunc
 @cython.inline
+@cython.exceptval(check=False)
 def _correct_brown_affine_exact_out(
     x: cython.double,
     y: cython.double,
@@ -584,6 +645,7 @@ def _correct_brown_affine_exact_out(
 
 
 @cython.cfunc
+@cython.exceptval(check=False)
 def correct_brown_affine_exact(
     x: cython.double,
     y: cython.double,
@@ -609,7 +671,7 @@ def correct_brown_affine_exact(
     Returns:
         (x_flat, y_flat) undistorted coordinates.
     """
-    _out = np.empty(2, dtype=np.float64)
+    _out: cython.double[2]
     _out_mv: cython.double[:] = _out
     _correct_brown_affine_exact_out(x, y, k1, k2, k3, p1, p2, scx, she, tol, _out_mv)
     return _out_mv[0], _out_mv[1]
@@ -658,7 +720,7 @@ def flat_to_dist(
     Returns:
         (dist_x, dist_y) distorted metric coordinates.
     """
-    _out = np.empty(2, dtype=np.float64)
+    _out: cython.double[2]
     _out_mv: cython.double[:] = _out
     flat_to_dist_out(flat_x, flat_y, xh, yh, k1, k2, k3, p1, p2, scx, she, _out_mv)
     return _out_mv[0], _out_mv[1]
@@ -681,7 +743,7 @@ def dist_to_flat_out(
     out: cython.double[:],
 ):
     """Convert distorted metric to flat-image coordinates — _out variant."""
-    _scratch = np.empty(2, dtype=np.float64)
+    _scratch: cython.double[2]
     _scratch_mv: cython.double[:] = _scratch
     _correct_brown_affine_exact_out(
         dist_x, dist_y, k1, k2, k3, p1, p2, scx, she, tol, _scratch_mv
@@ -716,7 +778,7 @@ def dist_to_flat(
     Returns:
         (flat_x, flat_y) flat-image coordinates.
     """
-    _out = np.empty(2, dtype=np.float64)
+    _out: cython.double[2]
     _out_mv: cython.double[:] = _out
     dist_to_flat_out(dist_x, dist_y, xh, yh, k1, k2, k3, p1, p2, scx, she, tol, _out_mv)
     return _out_mv[0], _out_mv[1]
@@ -823,57 +885,5 @@ def correct_brown_affine_batch(
 
         result_view[i, 0] = xq
         result_view[i, 1] = yq
-
-    return result
-
-
-@cython.ccall
-@cython.profile(False)
-@cython.boundscheck(False)
-@cython.wraparound(False)
-def distort_brown_affine_batch(
-    xy: cython.double[:, ::1],
-    k1: cython.double,
-    k2: cython.double,
-    k3: cython.double,
-    p1: cython.double,
-    p2: cython.double,
-    scx: cython.double,
-    she: cython.double,
-) -> object:
-    n: cython.Py_ssize_t = xy.shape[0]
-    result: np.ndarray = np.empty((n, 2), dtype=np.float64)
-    result_view: cython.double[:, ::1] = result
-
-    sin_she: cython.double = c_sin(she)
-    cos_she: cython.double = c_cos(she)
-
-    i: cython.Py_ssize_t
-    x: cython.double
-    y: cython.double
-    r: cython.double
-    r2: cython.double
-    r4: cython.double
-    r6: cython.double
-    radial_factor: cython.double
-    x_dist: cython.double
-    y_dist: cython.double
-
-    for i in range(n):
-        x = xy[i, 0]
-        y = xy[i, 1]
-        r = c_sqrt(x * x + y * y)
-        if r < 1e-10:
-            result_view[i, 0] = 0.0
-            result_view[i, 1] = 0.0
-        else:
-            r2 = r * r
-            r4 = r2 * r2
-            r6 = r4 * r2
-            radial_factor = 1.0 + k1 * r2 + k2 * r4 + k3 * r6
-            x_dist = x * radial_factor + p1 * (r2 + 2.0 * x * x) + 2.0 * p2 * x * y
-            y_dist = y * radial_factor + p2 * (r2 + 2.0 * y * y) + 2.0 * p1 * x * y
-            result_view[i, 0] = scx * (x_dist - sin_she * y_dist)
-            result_view[i, 1] = scx * cos_she * y_dist
 
     return result

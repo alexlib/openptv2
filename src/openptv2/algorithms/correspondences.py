@@ -188,11 +188,15 @@ def _build_adjacency_for_pair(
         if count > MAXCAND:
             count = MAXCAND
 
+        # 1D views for (i1, i2, i) row — 4D write becomes 1D
+        p2_row: cython.int[:] = p2_arr[i1, i2, i]
+        corr_row: cython.double[:] = corr_arr[i1, i2, i]
+        dist_row: cython.double[:] = dist_arr[i1, i2, i]
         for j in range(count):
             cand_p = _cand_pnr[j]
-            p2_arr[i1, i2, i, j] = cand_p
-            corr_arr[i1, i2, i, j] = _cand_corr[j]
-            dist_arr[i1, i2, i, j] = _cand_tol[j]
+            p2_row[j] = cand_p
+            corr_row[j] = _cand_corr[j]
+            dist_row[j] = _cand_tol[j]
         n_arr[i1, i2, i] = count
 
     return i1, i2
@@ -321,45 +325,75 @@ def four_camera_matching(
     """
     matched: cython.int = 0
 
+    # scratch_p0 = p1_arr[0, 1, i] is the reference target in camera 0 for this i
     for i in range(base_target_count):
         p1: cython.int = p1_arr[0, 1, i]
-        for j in range(n_arr[0, 1, i]):
-            for k in range(n_arr[0, 2, i]):
-                for l in range(n_arr[0, 3, i]):
-                    p2: cython.int = p2_arr[0, 1, i, j]
-                    p3: cython.int = p2_arr[0, 2, i, k]
-                    p4: cython.int = p2_arr[0, 3, i, l]
 
-                    for m in range(n_arr[1, 2, p2]):
-                        p31: cython.int = p2_arr[1, 2, p2, m]
+        # Slice 1D views from 4D arrays — inner loops become 1D access (score-0)
+        n_01_i: cython.int = n_arr[0, 1, i]
+        n_02_i: cython.int = n_arr[0, 2, i]
+        n_03_i: cython.int = n_arr[0, 3, i]
+        p2_01_i: cython.int[:] = p2_arr[0, 1, i]
+        c01_i: cython.double[:] = corr_arr[0, 1, i]
+        d01_i: cython.double[:] = dist_arr[0, 1, i]
+        p2_02_i: cython.int[:] = p2_arr[0, 2, i]
+        c02_i: cython.double[:] = corr_arr[0, 2, i]
+        d02_i: cython.double[:] = dist_arr[0, 2, i]
+        p2_03_i: cython.int[:] = p2_arr[0, 3, i]
+        c03_i: cython.double[:] = corr_arr[0, 3, i]
+        d03_i: cython.double[:] = dist_arr[0, 3, i]
+
+        for j in range(n_01_i):
+            p2: cython.int = p2_01_i[j]
+            c01: cython.double = c01_i[j]
+            d01: cython.double = d01_i[j]
+
+            for k in range(n_02_i):
+                p3: cython.int = p2_02_i[k]
+                c02: cython.double = c02_i[k]
+                d02: cython.double = d02_i[k]
+
+                for l in range(n_03_i):
+                    p4: cython.int = p2_03_i[l]
+                    c03: cython.double = c03_i[l]
+                    d03: cython.double = d03_i[l]
+
+                    # Pre-compute camera-0 pair sum (always needed)
+                    corr_partial: cython.double = c01 + c02 + c03
+                    dist_partial: cython.double = d01 + d02 + d03
+
+                    # Slice 1D views for camera-1/2/3 adjacency rows (variable p2, p3)
+                    n_12_p2: cython.int = n_arr[1, 2, p2]
+                    n_13_p2: cython.int = n_arr[1, 3, p2]
+                    n_23_p3: cython.int = n_arr[2, 3, p3]
+                    p2_12_p2: cython.int[:] = p2_arr[1, 2, p2]
+                    c12_p2: cython.double[:] = corr_arr[1, 2, p2]
+                    d12_p2: cython.double[:] = dist_arr[1, 2, p2]
+                    p2_13_p2: cython.int[:] = p2_arr[1, 3, p2]
+                    c13_p2: cython.double[:] = corr_arr[1, 3, p2]
+                    d13_p2: cython.double[:] = dist_arr[1, 3, p2]
+                    p2_23_p3: cython.int[:] = p2_arr[2, 3, p3]
+                    c23_p3: cython.double[:] = corr_arr[2, 3, p3]
+                    d23_p3: cython.double[:] = dist_arr[2, 3, p3]
+
+                    for m in range(n_12_p2):
+                        p31: cython.int = p2_12_p2[m]
                         if p3 != p31:
                             continue
 
-                        for n in range(n_arr[1, 3, p2]):
-                            p41: cython.int = p2_arr[1, 3, p2, n]
+                        for n in range(n_13_p2):
+                            p41: cython.int = p2_13_p2[n]
                             if p4 != p41:
                                 continue
 
-                            for o in range(n_arr[2, 3, p3]):
-                                p42: cython.int = p2_arr[2, 3, p3, o]
+                            for o in range(n_23_p3):
+                                p42: cython.int = p2_23_p3[o]
                                 if p4 != p42:
                                     continue
 
                                 corr: cython.double = (
-                                    corr_arr[0, 1, i, j]
-                                    + corr_arr[0, 2, i, k]
-                                    + corr_arr[0, 3, i, l]
-                                    + corr_arr[1, 2, p2, m]
-                                    + corr_arr[1, 3, p2, n]
-                                    + corr_arr[2, 3, p3, o]
-                                ) / (
-                                    dist_arr[0, 1, i, j]
-                                    + dist_arr[0, 2, i, k]
-                                    + dist_arr[0, 3, i, l]
-                                    + dist_arr[1, 2, p2, m]
-                                    + dist_arr[1, 3, p2, n]
-                                    + dist_arr[2, 3, p3, o]
-                                )
+                                    corr_partial + c12_p2[m] + c13_p2[n] + c23_p3[o]
+                                ) / (dist_partial + d12_p2[m] + d13_p2[n] + d23_p3[o])
 
                                 if corr <= accept_corr:
                                     continue
@@ -416,30 +450,50 @@ def three_camera_matching(
                 if p1 > NMAX or tusage[i1][p1] > 0:
                     continue
 
-                for j in range(n_arr[i1, i2, i]):
-                    p2: cython.int = p2_arr[i1, i2, i, j]
+                # 1D views for (i1, i2, i) row
+                n_i1i2_i: cython.int = n_arr[i1, i2, i]
+                p2_i1i2_i: cython.int[:] = p2_arr[i1, i2, i]
+                c_i1i2_i: cython.double[:] = corr_arr[i1, i2, i]
+                d_i1i2_i: cython.double[:] = dist_arr[i1, i2, i]
+
+                for j in range(n_i1i2_i):
+                    p2: cython.int = p2_i1i2_i[j]
                     if p2 > NMAX or tusage[i2][p2] > 0:
                         continue
 
+                    c12: cython.double = c_i1i2_i[j]
+                    d12: cython.double = d_i1i2_i[j]
+
                     for i3 in range(i2 + 1, num_cams):
-                        for k in range(n_arr[i1, i3, i]):
-                            p3: cython.int = p2_arr[i1, i3, i, k]
+                        # 1D views for (i1, i3, i) row
+                        n_i1i3_i: cython.int = n_arr[i1, i3, i]
+                        p2_i1i3_i: cython.int[:] = p2_arr[i1, i3, i]
+                        c_i1i3_i: cython.double[:] = corr_arr[i1, i3, i]
+                        d_i1i3_i: cython.double[:] = dist_arr[i1, i3, i]
+
+                        for k in range(n_i1i3_i):
+                            p3: cython.int = p2_i1i3_i[k]
                             if p3 > NMAX or tusage[i3][p3] > 0:
                                 continue
 
-                            for m_idx in range(n_arr[i2, i3, p2]):
-                                if p3 != p2_arr[i2, i3, p2, m_idx]:
+                            c13: cython.double = c_i1i3_i[k]
+                            d13: cython.double = d_i1i3_i[k]
+                            corr_partial: cython.double = c12 + c13
+                            dist_partial: cython.double = d12 + d13
+
+                            # 1D views for (i2, i3, p2) row
+                            n_i2i3_p2: cython.int = n_arr[i2, i3, p2]
+                            p2_i2i3_p2: cython.int[:] = p2_arr[i2, i3, p2]
+                            c_i2i3_p2: cython.double[:] = corr_arr[i2, i3, p2]
+                            d_i2i3_p2: cython.double[:] = dist_arr[i2, i3, p2]
+
+                            for m_idx in range(n_i2i3_p2):
+                                if p3 != p2_i2i3_p2[m_idx]:
                                     continue
 
                                 corr: cython.double = (
-                                    corr_arr[i1, i2, i, j]
-                                    + corr_arr[i1, i3, i, k]
-                                    + corr_arr[i2, i3, p2, m_idx]
-                                ) / (
-                                    dist_arr[i1, i2, i, j]
-                                    + dist_arr[i1, i3, i, k]
-                                    + dist_arr[i2, i3, p2, m_idx]
-                                )
+                                    corr_partial + c_i2i3_p2[m_idx]
+                                ) / (dist_partial + d_i2i3_p2[m_idx])
 
                                 if corr <= accept_corr:
                                     continue
@@ -496,11 +550,15 @@ def consistent_pair_matching(
                 if n_arr[i1, i2, i] != 1:
                     continue
 
-                p2: cython.int = p2_arr[i1, i2, i, 0]
+                # 1D view for (i1, i2, i) row — avoid 4D strided access
+                p2_row: cython.int[:] = p2_arr[i1, i2, i]
+                c_row: cython.double[:] = corr_arr[i1, i2, i]
+                d_row: cython.double[:] = dist_arr[i1, i2, i]
+                p2: cython.int = p2_row[0]
                 if p2 > NMAX or tusage[i2][p2] > 0:
                     continue
 
-                corr: cython.double = corr_arr[i1, i2, i, 0] / dist_arr[i1, i2, i, 0]
+                corr: cython.double = c_row[0] / d_row[0]
                 if corr <= accept_corr:
                     continue
 
