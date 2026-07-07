@@ -247,13 +247,14 @@ def get_extensions():
                         "-Wno-cpp",
                         "-Wno-unused-function",
                         "-Wno-maybe-uninitialized",
+                        "-fopenmp",
                     ]
                 )
-                extra_link_args.extend(["-Wl,-rpath,$ORIGIN"])
+                extra_link_args.extend(["-Wl,-rpath,$ORIGIN", "-fopenmp"])
             else:
                 opt = "/Od" if is_dev else "/O2"
                 extra_compile_args.extend(
-                    [opt, "/W4", "/std:c11", "/D_CRT_SECURE_NO_WARNINGS"]
+                    [opt, "/W4", "/std:c11", "/D_CRT_SECURE_NO_WARNINGS", "/openmp"]
                 )
 
             extensions.append(

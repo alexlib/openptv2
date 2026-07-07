@@ -31,9 +31,7 @@ _M_PI: cython.double = 3.141592653589793
 
 
 from .track_kernels_geom import (
-    _multimed_r_nlay_1layer,
     _point_to_pixel_out,
-    _ray_tracing_out,
 )
 from .track_kernels_search import (
     candsearch_in_pix_rest_fast,
@@ -49,13 +47,271 @@ COORD_UNUSED = -1e10
 
 
 @cython.ccall
+@cython.nogil
+def _multimed_r_nlay_1layer(
+    pos_x: cython.double,
+    pos_y: cython.double,
+    pos_z: cython.double,
+    ext_x0: cython.double,
+    ext_y0: cython.double,
+    ext_z0: cython.double,
+    mm_n1: cython.double,
+    mm_n2_0: cython.double,
+    mm_n3: cython.double,
+    mm_d0: cython.double,
+) -> cython.double:
+    """Single-layer iterative radial shift."""
+    zout: cython.double
+    dx: cython.double
+    dy: cython.double
+    r: cython.double
+    rq: cython.double
+    it: cython.int
+    denom: cython.double
+    beta1: cython.double
+    sin_beta1: cython.double
+    arg: cython.double
+    beta2_0: cython.double
+    arg3: cython.double
+    beta3: cython.double
+    rbeta: cython.double
+    rdiff: cython.double
+    if mm_n1 == 1.0 and mm_n2_0 == 1.0 and mm_n3 == 1.0:
+        return 1.0
+
+    zout = pos_z
+    dx = pos_x - ext_x0
+    dy = pos_y - ext_y0
+    r = c_sqrt(dx * dx + dy * dy)
+    rq = r
+
+    for it in range(40):
+        denom = ext_z0 - pos_z
+        if denom == 0.0:
+            return 1.0
+        beta1 = c_atan(rq / denom)
+        sin_beta1 = c_sin(beta1)
+
+        arg = sin_beta1 * mm_n1 / mm_n2_0
+        if arg > 1.0:
+            arg = 1.0
+        elif arg < -1.0:
+            arg = -1.0
+        beta2_0 = c_asin(arg)
+
+        arg3 = sin_beta1 * mm_n1 / mm_n3
+        if arg3 > 1.0:
+            arg3 = 1.0
+        elif arg3 < -1.0:
+            arg3 = -1.0
+        beta3 = c_asin(arg3)
+
+        rbeta = (
+            (ext_z0 - mm_d0) * c_tan(beta1)
+            + mm_d0 * c_tan(beta2_0)
+            - zout * c_tan(beta3)
+        )
+
+        rdiff = r - rbeta
+        rq += rdiff
+
+        if abs(rdiff) < 0.001:
+            break
+    else:
+        return 1.0
+
+    if r != 0.0:
+        return rq / r
+    return 1.0
+
+
+@cython.ccall
+@cython.inline
 @cython.boundscheck(False)
 @cython.wraparound(False)
+@cython.cdivision(True)
+@cython.profile(False)
+@cython.nogil
+def _ray_tracing_out(
+    x: cython.double,
+    y: cython.double,
+    cal: cython.double[:],
+    out: cython.double[:],
+) -> cython.int:
+    """Write ray tracing results into out[0:6] — no tuple creation."""
+    ext_x0: cython.double
+    ext_y0: cython.double
+    ext_z0: cython.double
+    dm00: cython.double
+    dm10: cython.double
+    dm20: cython.double
+    dm01: cython.double
+    dm11: cython.double
+    dm21: cython.double
+    dm02: cython.double
+    dm12: cython.double
+    dm22: cython.double
+    int_cc: cython.double
+    gx: cython.double
+    gy: cython.double
+    gz: cython.double
+    mm_n1: cython.double
+    mm_n2_0: cython.double
+    mm_n3: cython.double
+    mm_d0: cython.double
+    t0: cython.double
+    t1: cython.double
+    t2: cython.double
+    tn: cython.double
+    sd0: cython.double
+    sd1: cython.double
+    sd2: cython.double
+    gn: cython.double
+    gd0: cython.double
+    gd1: cython.double
+    gd2: cython.double
+    c: cython.double
+    dcg: cython.double
+    denom: cython.double
+    d1: cython.double
+    Xb0: cython.double
+    Xb1: cython.double
+    Xb2: cython.double
+    n: cython.double
+    bp0: cython.double
+    bp1: cython.double
+    bp2: cython.double
+    bpn: cython.double
+    p: cython.double
+    n_glass: cython.double
+    a2_0: cython.double
+    a2_1: cython.double
+    a2_2: cython.double
+    d2_denom: cython.double
+    d2: cython.double
+    Xx: cython.double
+    Xy: cython.double
+    Xz: cython.double
+    n_a2: cython.double
+    p2: cython.double
+    n_final: cython.double
+    ox: cython.double
+    oy: cython.double
+    oz: cython.double
+    ext_x0 = cal[0]
+    ext_y0 = cal[1]
+    ext_z0 = cal[2]
+    dm00 = cal[3]
+    dm10 = cal[4]
+    dm20 = cal[5]
+    dm01 = cal[6]
+    dm11 = cal[7]
+    dm21 = cal[8]
+    dm02 = cal[9]
+    dm12 = cal[10]
+    dm22 = cal[11]
+    int_cc = cal[12]
+    gx = cal[15]
+    gy = cal[16]
+    gz = cal[17]
+    mm_n1 = cal[20]
+    mm_n2_0 = cal[21]
+    mm_n3 = cal[22]
+    mm_d0 = cal[23]
+
+    t0 = x
+    t1 = y
+    t2 = -int_cc
+    tn = c_sqrt(t0 * t0 + t1 * t1 + t2 * t2)
+    if tn > 0.0:
+        t0 /= tn
+        t1 /= tn
+        t2 /= tn
+
+    sd0 = dm00 * t0 + dm01 * t1 + dm02 * t2
+    sd1 = dm10 * t0 + dm11 * t1 + dm12 * t2
+    sd2 = dm20 * t0 + dm21 * t1 + dm22 * t2
+
+    gn = c_sqrt(gx * gx + gy * gy + gz * gz)
+    if gn > 0.0:
+        gd0 = gx / gn
+        gd1 = gy / gn
+        gd2 = gz / gn
+    else:
+        gd0 = 0.0
+        gd1 = 0.0
+        gd2 = 0.0
+    c = gn + mm_d0
+
+    dcg = gd0 * ext_x0 + gd1 * ext_y0 + gd2 * ext_z0 - c
+    denom = gd0 * sd0 + gd1 * sd1 + gd2 * sd2
+    d1 = -dcg / denom
+
+    Xb0 = ext_x0 + sd0 * d1
+    Xb1 = ext_y0 + sd1 * d1
+    Xb2 = ext_z0 + sd2 * d1
+
+    n = sd0 * gd0 + sd1 * gd1 + sd2 * gd2
+    bp0 = sd0 - gd0 * n
+    bp1 = sd1 - gd1 * n
+    bp2 = sd2 - gd2 * n
+    bpn = c_sqrt(bp0 * bp0 + bp1 * bp1 + bp2 * bp2)
+    if bpn > 0.0:
+        bp0 /= bpn
+        bp1 /= bpn
+        bp2 /= bpn
+
+    p = c_sqrt(1.0 - n * n) * mm_n1 / mm_n2_0
+    n_glass = -c_sqrt(1.0 - p * p)
+
+    a2_0 = bp0 * p + gd0 * n_glass
+    a2_1 = bp1 * p + gd1 * n_glass
+    a2_2 = bp2 * p + gd2 * n_glass
+
+    d2_denom = gd0 * a2_0 + gd1 * a2_1 + gd2 * a2_2
+    d2 = mm_d0 / abs(d2_denom)
+
+    Xx = Xb0 + a2_0 * d2
+    Xy = Xb1 + a2_1 * d2
+    Xz = Xb2 + a2_2 * d2
+
+    n_a2 = a2_0 * gd0 + a2_1 * gd1 + a2_2 * gd2
+    bp0 = a2_0 - gd0 * n_glass
+    bp1 = a2_1 - gd1 * n_glass
+    bp2 = a2_2 - gd2 * n_glass
+    bpn = c_sqrt(bp0 * bp0 + bp1 * bp1 + bp2 * bp2)
+    if bpn > 0.0:
+        bp0 /= bpn
+        bp1 /= bpn
+        bp2 /= bpn
+
+    p2 = c_sqrt(1.0 - n_a2 * n_a2) * mm_n2_0 / mm_n3
+    n_final = -c_sqrt(1.0 - p2 * p2)
+
+    ox = bp0 * p2 + gd0 * n_final
+    oy = bp1 * p2 + gd1 * n_final
+    oz = bp2 * p2 + gd2 * n_final
+
+    out[0] = Xx
+    out[1] = Xy
+    out[2] = Xz
+    out[3] = ox
+    out[4] = oy
+    out[5] = oz
+    return 0
+
+
+
+@cython.ccall
+@cython.boundscheck(False)
+@cython.wraparound(False)
+@cython.nogil
 def _point_position_out(
     targets: cython.double[:, ::1],
     num_cams: cython.int,
     cal_arr: cython.double[:, ::1],
     out: cython.double[:],
+    scratch_ray: cython.double[:],
 ) -> cython.double:
     """Internal — writes 3D position to out[0:3], returns avg_dist (scalar).
 
@@ -113,18 +369,16 @@ def _point_position_out(
     ddx: cython.double
     ddy: cython.double
     ddz: cython.double
-    verts_x: cython.double[4]
-    verts_y: cython.double[4]
-    verts_z: cython.double[4]
-    dirs_x: cython.double[4]
-    dirs_y: cython.double[4]
-    dirs_z: cython.double[4]
-    valid: cython.int[4]
-    _ray_out_pp: cython.double[6]
-    _ray_out_mv_pp: cython.double[:] = _ray_out_pp
+    verts_x: cython.double[8]
+    verts_y: cython.double[8]
+    verts_z: cython.double[8]
+    dirs_x: cython.double[8]
+    dirs_y: cython.double[8]
+    dirs_z: cython.double[8]
+    valid: cython.int[8]
     _vi: cython.int
 
-    for _vi in range(4):
+    for _vi in range(8):
         valid[_vi] = 0
 
     for cam in range(num_cams):
@@ -132,13 +386,13 @@ def _point_position_out(
         ty = targets[cam, 1]
         if tx == COORD_UNUSED:
             continue
-        _ray_tracing_out(tx, ty, cal_arr[cam], _ray_out_mv_pp)
-        verts_x[cam] = _ray_out_mv_pp[0]
-        verts_y[cam] = _ray_out_mv_pp[1]
-        verts_z[cam] = _ray_out_mv_pp[2]
-        dirs_x[cam] = _ray_out_mv_pp[3]
-        dirs_y[cam] = _ray_out_mv_pp[4]
-        dirs_z[cam] = _ray_out_mv_pp[5]
+        _ray_tracing_out(tx, ty, cal_arr[cam], scratch_ray)
+        verts_x[cam] = scratch_ray[0]
+        verts_y[cam] = scratch_ray[1]
+        verts_z[cam] = scratch_ray[2]
+        dirs_x[cam] = scratch_ray[3]
+        dirs_y[cam] = scratch_ray[4]
+        dirs_z[cam] = scratch_ray[5]
         valid[cam] = 1
 
     dtot = 0.0
@@ -236,8 +490,10 @@ def point_position_fast(
     """
     pos = np.zeros(3, dtype=np.float64)
     pos_mv: cython.double[:] = pos
-    dtot = _point_position_out(targets, num_cams, cal_arr, pos_mv)
+    scratch_ray = np.zeros(6, dtype=np.float64)
+    dtot = _point_position_out(targets, num_cams, cal_arr, pos_mv, scratch_ray)
     return pos, dtot
+
 
 
 @cython.ccall
