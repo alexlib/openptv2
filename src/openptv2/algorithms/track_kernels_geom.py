@@ -44,6 +44,8 @@ _M_PI: cython.double = 3.141592653589793
 CAL_ARRAY_SIZE = 31
 
 
+@cython.ccall
+@cython.nogil
 def _multimed_r_nlay_1layer(
     pos_x: cython.double,
     pos_y: cython.double,
@@ -55,7 +57,7 @@ def _multimed_r_nlay_1layer(
     mm_n2_0: cython.double,
     mm_n3: cython.double,
     mm_d0: cython.double,
-):
+) -> cython.double:
     """Single-layer iterative radial shift."""
     zout: cython.double
     dx: cython.double
@@ -406,6 +408,7 @@ def point_to_pixel_fast(
 @cython.wraparound(False)
 @cython.cdivision(True)
 @cython.profile(False)
+@cython.nogil
 def _point_to_pixel_out(
     pos: cython.double[:],
     cal: cython.double[:],
@@ -421,7 +424,7 @@ def _point_to_pixel_out(
     inv_pix_y: cython.double,
     chfield: cython.int,
     out: cython.double[:],
-):
+) -> cython.int:
     """Write pixel coordinates to out[0], out[1] — no tuple creation."""
     pos0: cython.double
     pos1: cython.double
@@ -667,6 +670,7 @@ def _point_to_pixel_out(
         y_pixel = y_pixel * 0.5
     out[0] = x_pixel
     out[1] = y_pixel
+    return 0
 
 
 PT_UNUSED = -999
@@ -874,6 +878,7 @@ def angle_acc_fast(
 @cython.wraparound(False)
 @cython.cdivision(True)
 @cython.profile(False)
+@cython.nogil
 def _angle_acc_out(
     start_x: cython.double,
     start_y: cython.double,
@@ -885,7 +890,7 @@ def _angle_acc_out(
     cand_y: cython.double,
     cand_z: cython.double,
     out: cython.double[:],
-):
+) -> cython.int:
     """Write angle and acc to out[0], out[1] — no tuple creation."""
     v0x: cython.double
     v0y: cython.double
@@ -923,7 +928,7 @@ def _angle_acc_out(
                 dot = 1.0
             elif dot < -1.0:
                 dot = -1.0
-            angle = c_acos(dot) * 200.0 / _M_PI
+            angle = c_acos(dot) * 200.0 / 3.141592653589793
 
     dx = v1x - v0x
     dy = v1y - v0y
@@ -931,6 +936,7 @@ def _angle_acc_out(
     acc = c_sqrt(dx * dx + dy * dy + dz * dz)
     out[0] = angle
     out[1] = acc
+    return 0
 
 
 @cython.boundscheck(False)
@@ -1114,12 +1120,13 @@ def _ray_tracing_fast(x: cython.double, y: cython.double, cal: cython.double[:])
 @cython.wraparound(False)
 @cython.cdivision(True)
 @cython.profile(False)
+@cython.nogil
 def _ray_tracing_out(
     x: cython.double,
     y: cython.double,
     cal: cython.double[:],
     out: cython.double[:],
-):
+) -> cython.int:
     """Write ray tracing results into out[0:6] — no tuple creation."""
     ext_x0: cython.double
     ext_y0: cython.double
@@ -1292,3 +1299,4 @@ def _ray_tracing_out(
     out[3] = ox
     out[4] = oy
     out[5] = oz
+    return 0

@@ -154,11 +154,12 @@ def compare_targets(t1, t2):
 
 
 def _resolve_file_base(file_base, frame_num):
-    if "%d" in file_base:
-        return (file_base % frame_num) + "_targets"
+    file_base_str = str(file_base)
+    if "%d" in file_base_str:
+        return (file_base_str % frame_num) + "_targets"
     if frame_num > 0:
-        return f"{file_base}{frame_num:04d}_targets"
-    return f"{file_base}_targets"
+        return f"{file_base_str}{frame_num:04d}_targets"
+    return f"{file_base_str}_targets"
 
 
 @cython.ccall

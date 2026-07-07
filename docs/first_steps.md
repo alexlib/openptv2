@@ -147,3 +147,37 @@ uv run pyptv_batch --workdir=./test_data/test_cavity --first=10000 --last=10005
 ```
 
 This runs detection, correspondences, and tracking, exporting the resulting tracked trajectories to the experimental output directory.
+
+---
+
+## 5. High-Performance Parallel Processing
+
+OpenPTV2 includes built-in multi-core parallel processing to significantly accelerate image pre-processing and target detection (Approach C). You can configure and run parallel processing in three ways:
+
+### A. Via the GUI
+1. Launch the GUI: `uv run openptv2-gui -w ./test_data/test_cavity`
+2. Select **Parameters → Main** from the top menu.
+3. Select the **Sequence** tab.
+4. Check **Parallel Pre-processing** and specify the **Number of workers** (e.g., `4`, or `0` for auto-detecting CPU cores).
+5. Click **OK** to save. When you select **Tracking → Track Sequence**, OpenPTV2 will automatically process the raw images and segment targets in parallel.
+
+### B. Via Environment Variables (CLI Batch)
+Before running the `pyptv_batch` utility, set the following environment variables to activate parallel processing:
+```bash
+# Enable parallel pre-processing
+export OPENPTV_PARALLEL_PREPROCESS=True
+
+# (Optional) Specify number of parallel worker processes (defaults to CPU core count)
+export OPENPTV_NUM_WORKERS=4
+
+# Run batch sequence
+uv run pyptv_batch --workdir=./test_data/test_cavity --first=10000 --last=10004
+```
+
+### C. Parallel Batch Chunking Script
+You can also run sequence chunk-level parallelization across cores using the specialized `pyptv_batch_parallel` script, which divides the frame sequence into equal chunks and processes them concurrently:
+```bash
+# Process frames 10000 to 10004 on 4 cores concurrently
+uv run python -m openptv2.batch.pyptv_batch_parallel test_data/test_cavity/parameters_Run1.yaml 10000 10004 4 --mode sequence
+```
+

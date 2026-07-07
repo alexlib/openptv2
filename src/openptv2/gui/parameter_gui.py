@@ -53,7 +53,9 @@ class ParamHandler(Handler):
                 'mmp_n3': main_params.Refr_Water,
                 'mmp_d': main_params.Thick_Glass,
                 'splitter': main_params.Splitter,
-                'negative': main_params.Negative
+                'negative': main_params.Negative,
+                'parallel_preprocess': main_params.Parallel_Preprocess,
+                'num_workers': main_params.Num_Workers
             })
 
             # Update cal_ori.par
@@ -371,6 +373,8 @@ class Main_Params(HasTraits):
     Basename_2_Seq = Str(label="Basename for 2. sequence")
     Basename_3_Seq = Str(label="Basename for 3. sequence")
     Basename_4_Seq = Str(label="Basename for 4. sequence")
+    Parallel_Preprocess = Bool(label="Parallel Pre-processing")
+    Num_Workers = Int(label="Number of workers (0 for auto)")
 
     # Panel 4: ObservationVolume
     Xmin = Int(label="Xmin")
@@ -486,6 +490,11 @@ class Main_Params(HasTraits):
             Item(name="Basename_3_Seq"),
             Item(name="Basename_4_Seq"),
             orientation="vertical",
+        ),
+        Group(
+            Item(name="Parallel_Preprocess"),
+            Item(name="Num_Workers"),
+            orientation="horizontal",
         ),
         label="Parameters for sequence processing",
         orientation="vertical",
@@ -608,6 +617,9 @@ class Main_Params(HasTraits):
 
         self.Seq_First = sequence_params['first']
         self.Seq_Last = sequence_params['last']
+
+        self.Parallel_Preprocess = bool(ptv_params.get('parallel_preprocess', False))
+        self.Num_Workers = int(ptv_params.get('num_workers', 0))
 
         criteria_params = params['criteria']
         X_lay = criteria_params['X_lay']

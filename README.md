@@ -274,9 +274,19 @@ uv run pyptv_batch --workdir=./test_data/test_cavity --first=10000 --last=10005
 # Run with legacy positional arguments (for backward compatibility)
 uv run pyptv_batch ./test_data/test_cavity/parameters_Run1.yaml 10000 10004
 
-# Parallel batch processing
-uv run python -m openptv2.gui.pyptv_batch_parallel parameters_Run1.yaml 10000 10004 4
-```
+# Parallel batch processing (distributes frame chunks to multiple cores)
+uv run python -m openptv2.batch.pyptv_batch_parallel test_data/test_cavity/parameters_Run1.yaml 10000 10004 4 --mode sequence
+
+### Parallel Processing Config
+OpenPTV2 supports multi-core parallel processing during image preprocessing and target detection (Approach C). This is highly effective for accelerating execution on multi-core systems.
+
+* **GUI Configuration**: Open the **Main Parameters** dialog, navigate to the **Sequence** tab, check the **Parallel Pre-processing** box, and set the **Number of workers** (e.g., `4` or `0` for automatic core detection).
+* **CLI/Environment Configuration**: Set environment variables before running any tracking or batch sequence:
+  ```bash
+  export OPENPTV_PARALLEL_PREPROCESS=True
+  export OPENPTV_NUM_WORKERS=4  # Set worker processes (omitting uses all CPU cores)
+  ```
+
 
 ### Command-line Shortcuts and Running Without `uv`
 

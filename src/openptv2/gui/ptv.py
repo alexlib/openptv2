@@ -164,6 +164,157 @@ def _ensure_target_output_writable(short_file_bases: List[str]) -> None:
         checked_dirs.add(directory_key)
 
 
+def _process_frame_worker(args: Tuple) -> int:
+    """Worker function to process a single frame for target recognition.
+
+    This function runs in a separate worker process to avoid GIL bottlenecks.
+    It takes a tuple of arguments to support easy pickling.
+    """
+    (
+        frame,
+        num_cams,
+        img_base_names,
+        short_file_bases,
+        ptv_params,
+        targ_params,
+        negative_flag,
+        masking_params,
+    ) = args
+
+    # Recreate the ControlParams and TargetParams objects inside the worker
+    cpar = _populate_cpar(ptv_params, num_cams)
+    tpar = _populate_tpar(targ_params, num_cams)
+
+    for i_cam in range(num_cams):
+        imname = Path(img_base_names[i_cam] % frame)
+        if not imname.exists():
+            raise FileNotFoundError(f"{imname} does not exist")
+        else:
+            img = imread(imname)
+            if img.ndim > 2:
+                img = rgb2gray(img)
+            if img.dtype != np.uint8:
+                img = img_as_ubyte(img)
+        if negative_flag:
+            img = negative(img)
+        if masking_params and masking_params.get("mask_flag", False):
+            try:
+                background_name = masking_params["mask_base_name"] % (i_cam + 1)
+                background = imread(background_name)
+                img = np.clip(img - background, 0, 255).astype(np.uint8)
+            except (ValueError, FileNotFoundError):
+                pass
+        high_pass = simple_highpass(img, cpar)
+        targs = target_recognition(high_pass, tpar, i_cam, cpar)
+
+        if len(targs) > 0:
+            if hasattr(targs, "sort_y"):
+                targs.sort_y()
+            else:
+                targs.sort(key=lambda t: t.y)
+
+        write_targets(targs, short_file_bases[i_cam], frame)
+
+    return frame
+
+
+def preprocess_and_detect_all_parallel(exp, num_workers: int = None) -> None:
+    """Preprocess and detect targets in parallel across all frames.
+
+    Args:
+        exp: Either an Experiment object with pm attribute,
+             or a MainGUI object with exp1.pm and cached parameter objects
+        num_workers: Optional number of worker processes. Defaults to all available cores.
+    """
+    from concurrent.futures import ProcessPoolExecutor
+
+    # Handle both Experiment objects and MainGUI objects
+    if hasattr(exp, "pm"):
+        pm = exp.pm
+        num_cams = pm.num_cams
+        spar = exp.spar
+    elif hasattr(exp, "exp1") and hasattr(exp.exp1, "pm"):
+        pm = exp.exp1.pm
+        num_cams = exp.num_cams
+        spar = exp.spar
+    else:
+        raise ValueError("Object must have either pm or exp1.pm attribute")
+
+    first_frame = spar.get_first()
+    last_frame = spar.get_last()
+    img_base_names = [spar.get_img_base_name(i) for i in range(num_cams)]
+    short_file_bases = exp.target_filenames
+
+    _ensure_target_output_writable(short_file_bases)
+
+    # Extract clean python dicts for parameters
+    if hasattr(pm, "parameters") and isinstance(pm.parameters, dict):
+        ptv_params_dict = pm.parameters.get("ptv", {})
+        masking_params_dict = pm.parameters.get("masking", {})
+        targ_params_dict = {}
+        if "targ_rec" in pm.parameters:
+            targ_params_dict["targ_rec"] = pm.parameters["targ_rec"]
+        elif "detect_plate" in pm.parameters:
+            targ_params_dict["detect_plate"] = pm.parameters["detect_plate"]
+    else:
+        try:
+            ptv_params_dict = pm.get_parameter("ptv")
+        except ValueError:
+            ptv_params_dict = {}
+        try:
+            masking_params_dict = pm.get_parameter("masking")
+        except ValueError:
+            masking_params_dict = {}
+        targ_params_dict = {}
+        try:
+            targ_params_dict["targ_rec"] = pm.get_parameter("targ_rec")
+        except ValueError:
+            try:
+                targ_params_dict["detect_plate"] = pm.get_parameter("detect_plate")
+            except ValueError:
+                pass
+
+    negative_flag = ptv_params_dict.get("negative", False)
+
+    # Determine num_workers
+    if num_workers is None:
+        try:
+            num_workers = int(os.environ.get("OPENPTV_NUM_WORKERS", 0))
+            if num_workers <= 0:
+                num_workers = None
+        except ValueError:
+            num_workers = None
+
+    tasks = [
+        (
+            frame,
+            num_cams,
+            img_base_names,
+            short_file_bases,
+            ptv_params_dict,
+            targ_params_dict,
+            negative_flag,
+            masking_params_dict,
+        )
+        for frame in range(first_frame, last_frame + 1)
+    ]
+
+    print(
+        f"Starting parallel target detection for {len(tasks)} frames using "
+        f"{num_workers or 'all'} processes..."
+    )
+
+    if num_workers == 1:
+        print("Running target detection sequentially on 1 worker...")
+        for task in tasks:
+            _process_frame_worker(task)
+    else:
+        with ProcessPoolExecutor(max_workers=num_workers) as executor:
+            list(executor.map(_process_frame_worker, tasks))
+
+    print("Parallel target detection completed successfully.")
+
+
 def image_split(img: np.ndarray, order=[0, 1, 3, 2]) -> List[np.ndarray]:
     """Split image into four quadrants."""
     list_of_images = [
@@ -644,6 +795,22 @@ def py_sequence_loop(exp) -> None:
 
     existing_target = pm.get_parameter("pft_version").get("Existing_Target", False)
 
+    # Check if we should run parallel preprocessing (Approach C)
+    ptv_params_dict = pm.parameters.get("ptv", {}) if hasattr(pm, "parameters") and isinstance(pm.parameters, dict) else {}
+    if not isinstance(ptv_params_dict, dict):
+        try:
+            ptv_params_dict = pm.get_parameter("ptv")
+        except ValueError:
+            ptv_params_dict = {}
+
+    parallel_preprocess = os.environ.get("OPENPTV_PARALLEL_PREPROCESS", "").lower() in ("true", "1")
+    if not parallel_preprocess and isinstance(ptv_params_dict, dict):
+        parallel_preprocess = ptv_params_dict.get("parallel_preprocess", False)
+
+    if parallel_preprocess and not existing_target:
+        preprocess_and_detect_all_parallel(exp)
+        existing_target = True
+
     first_frame = spar.get_first()
     last_frame = spar.get_last()
     # Generate short_file_bases once per experiment
@@ -776,6 +943,22 @@ def py_sequence_loop_python(exp) -> None:
         raise ValueError("Object must have either pm or exp1.pm attribute")
 
     existing_target = pm.get_parameter("pft_version").get("Existing_Target", False)
+
+    # Check if we should run parallel preprocessing (Approach C)
+    ptv_params_dict = pm.parameters.get("ptv", {}) if hasattr(pm, "parameters") and isinstance(pm.parameters, dict) else {}
+    if not isinstance(ptv_params_dict, dict):
+        try:
+            ptv_params_dict = pm.get_parameter("ptv")
+        except ValueError:
+            ptv_params_dict = {}
+
+    parallel_preprocess = os.environ.get("OPENPTV_PARALLEL_PREPROCESS", "").lower() in ("true", "1")
+    if not parallel_preprocess and isinstance(ptv_params_dict, dict):
+        parallel_preprocess = ptv_params_dict.get("parallel_preprocess", False)
+
+    if parallel_preprocess and not existing_target:
+        preprocess_and_detect_all_parallel(exp)
+        existing_target = True
 
     first_frame = spar.get_first()
     last_frame = spar.get_last()

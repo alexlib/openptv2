@@ -72,10 +72,14 @@ def pack_cal_array(cal, mm):
 def pack_mmlut(cal):
     """Pack mmlut into kernel-friendly arrays.
 
-    Returns (data, origin, nr, nz, rw). If no mmlut, data has length 0.
+    When no real mmlut data exists, creates a synthetic 2×2 table of 1.0
+    values so the kernel always takes the fast mmlut-lookup path and never
+    falls back to the slow iterative _multimed_r_nlay_1layer solver.
+
+    Returns (data, origin, nr, nz, rw).
     """
     mmlut = cal.mmlut
-    if mmlut.data is not None:
+    if mmlut.data is not None and len(mmlut.data) > 0:
         return (
             mmlut.data.astype(np.float64, copy=False),
             mmlut.origin.astype(np.float64, copy=False),
@@ -83,7 +87,15 @@ def pack_mmlut(cal):
             mmlut.nz,
             float(mmlut.rw),
         )
-    return (np.empty(0, dtype=np.float64), np.zeros(3, dtype=np.float64), 0, 0, 0.0)
+    # No real mmlut → synthetic 2×2 table of 1.0 (no multimedia correction).
+    # nr=2, nz=2, rw=1000 ensures the lookup is always in-bounds.
+    return (
+        np.ones(4, dtype=np.float64),
+        np.zeros(3, dtype=np.float64),
+        2,
+        2,
+        1000.0,
+    )
 
 
 # ── Re-exports from sub-modules ─────────────────────────────

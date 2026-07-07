@@ -268,6 +268,7 @@ def pixel_to_metric_fast(
 @cython.inline
 @cython.cdivision(True)
 @cython.profile(False)
+@cython.nogil
 def _pixel_to_metric_out(
     x_pixel: cython.double,
     y_pixel: cython.double,
@@ -277,7 +278,7 @@ def _pixel_to_metric_out(
     pix_y: cython.double,
     chfield: cython.int,
     out: cython.double[:],
-):
+) -> cython.int:
     """Write pixel-to-metric coords to out[0], out[1]."""
     yp: cython.double
     yp = y_pixel
@@ -287,6 +288,7 @@ def _pixel_to_metric_out(
         yp = 2.0 * yp
     out[0] = (x_pixel - imx * 0.5) * pix_x
     out[1] = (imy * 0.5 - yp) * pix_y
+    return 0
 
 
 @cython.ccall
@@ -366,6 +368,7 @@ def dist_to_flat_fast(
 @cython.wraparound(False)
 @cython.cdivision(True)
 @cython.profile(False)
+@cython.nogil
 def _dist_to_flat_out(
     dist_x: cython.double,
     dist_y: cython.double,
@@ -380,13 +383,13 @@ def _dist_to_flat_out(
     she: cython.double,
     tol: cython.double,
     out: cython.double[:],
-):
+) -> cython.int:
     """Write dist-to-flat coords to out[0], out[1]."""
     r_init: cython.double = c_sqrt(dist_x * dist_x + dist_y * dist_y)
     if r_init < 1e-10:
         out[0] = -xh
         out[1] = -yh
-        return
+        return 0
     sin_she: cython.double = c_sin(she)
     cos_she: cython.double = c_cos(she)
     inv_scx: cython.double = 1.0 / scx
@@ -420,6 +423,7 @@ def _dist_to_flat_out(
             break
     out[0] = xq - xh
     out[1] = yq - yh
+    return 0
 
 
 @cython.ccall
@@ -581,6 +585,204 @@ def assess_new_position_fast(
             valid_cams += 1
 
     return targ_pos, cand_inds, valid_cams
+
+
+@cython.ccall
+@cython.boundscheck(False)
+@cython.wraparound(False)
+@cython.nogil
+def _candsearch_in_pix_rest_nogil(
+    targ_x: cython.double[:],
+    targ_y: cython.double[:],
+    targ_tnr: cython.int[:],
+    num_targets: cython.int,
+    cent_x: cython.double,
+    cent_y: cython.double,
+    dl: cython.double,
+    dr: cython.double,
+    du: cython.double,
+    dd: cython.double,
+    imx: cython.double,
+    imy: cython.double,
+    tr_unused: cython.int,
+) -> cython.int:
+    """Find closest unused candidate GIL-free."""
+    xmin: cython.double
+    xmax: cython.double
+    ymin: cython.double
+    ymax: cython.double
+    best: cython.int
+    dmin: cython.double
+    j0: cython.int
+    dj: cython.int
+    j: cython.int
+    ty: cython.double
+    tx: cython.double
+    dx: cython.double
+    dy: cython.double
+    d: cython.double
+    xmin = cent_x - dl
+    xmax = cent_x + dr
+    ymin = cent_y - du
+    ymax = cent_y + dd
+
+    if xmin < 0.0:
+        xmin = 0.0
+    if xmax > imx:
+        xmax = imx
+    if ymin < 0.0:
+        ymin = 0.0
+    if ymax > imy:
+        ymax = imy
+
+    best = tr_unused
+    dmin = 1e20
+
+    if not (0.0 <= cent_x <= imx and 0.0 <= cent_y <= imy):
+        return best
+
+    j0 = num_targets // 2
+    dj = num_targets // 4
+    while dj > 1:
+        if targ_y[j0] < ymin:
+            j0 += dj
+        else:
+            j0 -= dj
+        dj //= 2
+
+    j0 -= 12
+    if j0 < 0:
+        j0 = 0
+
+    for j in range(j0, num_targets):
+        ty = targ_y[j]
+        if targ_tnr[j] == tr_unused:
+            if ty > ymax:
+                break
+            tx = targ_x[j]
+            if tx > xmin and tx < xmax and ty > ymin and ty < ymax:
+                dx = cent_x - tx
+                dy = cent_y - ty
+                d = c_sqrt(dx * dx + dy * dy)
+                if d < dmin:
+                    dmin = d
+                    best = j
+
+    return best
+
+
+@cython.ccall
+@cython.boundscheck(False)
+@cython.wraparound(False)
+@cython.nogil
+def assess_new_position_fast_nogil(
+    pos: cython.double[:],
+    num_cams: cython.int,
+    add_part: cython.double,
+    cal_arr: cython.double[:, ::1],
+    mo_arr: cython.double[:, ::1],
+    mnr_arr: cython.int[:],
+    mnz_arr: cython.int[:],
+    mrw_arr: cython.double[:],
+    targ_x: cython.double[:, ::1],
+    targ_y: cython.double[:, ::1],
+    targ_tnr: cython.int[:, ::1],
+    num_targets: cython.int[:],
+    imx_half: cython.double,
+    imy_half: cython.double,
+    inv_pix_x: cython.double,
+    inv_pix_y: cython.double,
+    chfield: cython.int,
+    imx: cython.int,
+    imy: cython.int,
+    pix_x: cython.double,
+    pix_y: cython.double,
+    flatten_tol: cython.double,
+    tr_unused: cython.int,
+    coord_unused: cython.double,
+    proj_x: cython.double[:],
+    proj_y: cython.double[:],
+    targ_pos_out: cython.double[:, :],
+    cand_inds_out: cython.int[:],
+    scratch: cython.double[:],
+) -> cython.int:
+    """Assess new position GIL-free. Assumes use_proj=True."""
+    cam: cython.int
+    valid_cams: cython.int
+    best: cython.int
+    px: cython.double
+    py: cython.double
+    mx: cython.double
+    my: cython.double
+
+    for cam in range(num_cams):
+        cand_inds_out[cam] = tr_unused
+        targ_pos_out[cam, 0] = coord_unused
+        targ_pos_out[cam, 1] = coord_unused
+
+    for cam in range(num_cams):
+        px = proj_x[cam]
+        py = proj_y[cam]
+
+        best = _candsearch_in_pix_rest_nogil(
+            targ_x[cam],
+            targ_y[cam],
+            targ_tnr[cam],
+            num_targets[cam],
+            px,
+            py,
+            add_part,
+            add_part,
+            add_part,
+            add_part,
+            imx,
+            imy,
+            tr_unused,
+        )
+
+        if best != tr_unused:
+            cand_inds_out[cam] = best
+            targ_pos_out[cam, 0] = targ_x[cam, best]
+            targ_pos_out[cam, 1] = targ_y[cam, best]
+
+    valid_cams = 0
+    for cam in range(num_cams):
+        if targ_pos_out[cam, 0] != coord_unused:
+            _pixel_to_metric_out(
+                targ_pos_out[cam, 0],
+                targ_pos_out[cam, 1],
+                imx,
+                imy,
+                pix_x,
+                pix_y,
+                chfield,
+                scratch,
+            )
+            mx = scratch[0]
+            my = scratch[1]
+
+            cal = cal_arr[cam]
+            _dist_to_flat_out(
+                mx,
+                my,
+                cal[13],
+                cal[14],
+                cal[24],
+                cal[25],
+                cal[26],
+                cal[27],
+                cal[28],
+                cal[29],
+                cal[30],
+                flatten_tol,
+                scratch,
+            )
+
+            targ_pos_out[cam, 0] = scratch[0]
+            targ_pos_out[cam, 1] = scratch[1]
+            valid_cams += 1
+
+    return valid_cams
 
 
 POSI_K = 80
