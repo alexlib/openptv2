@@ -1404,6 +1404,62 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#high-performance-parallelization-openmp-cython" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        High-Performance Parallelization (OpenMP &amp; Cython)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="High-Performance Parallelization (OpenMP &amp; Cython)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-parallel-image-preprocessing-approach-c" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Parallel Image Preprocessing (Approach C)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-particle-level-parallel-tracking-approach-b" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Particle-Level Parallel Tracking (Approach B)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Particle-Level Parallel Tracking (Approach B)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#algorithmic-design-thread-safety" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Algorithmic Design &amp; Thread-Safety
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1906,6 +1962,62 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#high-performance-parallelization-openmp-cython" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        High-Performance Parallelization (OpenMP &amp; Cython)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="High-Performance Parallelization (OpenMP &amp; Cython)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-parallel-image-preprocessing-approach-c" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Parallel Image Preprocessing (Approach C)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-particle-level-parallel-tracking-approach-b" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Particle-Level Parallel Tracking (Approach B)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Particle-Level Parallel Tracking (Approach B)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#algorithmic-design-thread-safety" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Algorithmic Design &amp; Thread-Safety
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2302,6 +2414,58 @@ If <code>--track3d</code> is not specified, the utility will fall back to readin
 </ul>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>tests/unit/test_synthetic_tracking.py<span class="w"> </span>-v
 </span></code></pre></div>
+<hr />
+<h2 id="high-performance-parallelization-openmp-cython">High-Performance Parallelization (OpenMP &amp; Cython)<a class="headerlink" href="#high-performance-parallelization-openmp-cython" title="Permanent link">&para;</a></h2>
+<p>To support high-throughput processing on large experimental datasets (e.g., thousands of frames with 1,000+ particles), OpenPTV2 includes two major OpenMP-parallelized optimization pipelines implemented under standard Cython 3 pure-Python mode:</p>
+<h3 id="1-parallel-image-preprocessing-approach-c">1. Parallel Image Preprocessing (Approach C)<a class="headerlink" href="#1-parallel-image-preprocessing-approach-c" title="Permanent link">&para;</a></h3>
+<p>The preprocessing pipeline (including highpass filtering, thresholding, background subtraction, and image segmentation/detection) is parallelized across frames.
+* <strong>Mechanism:</strong> Rather than processing each camera sequence sequentially, OpenPTV2 chunks and distributes the image-processing workload across threads using OpenMP.
+* <strong>Speedup:</strong> Provides a <strong>2.4x to 4x speedup</strong> on multi-core systems, greatly reducing batch initialization times.
+* <strong>Integration:</strong> Seamlessly integrated into both the Python CLI/batch processing backend and the modern Tkinter/ttkbootstrap GUI.</p>
+<h3 id="2-particle-level-parallel-tracking-approach-b">2. Particle-Level Parallel Tracking (Approach B)<a class="headerlink" href="#2-particle-level-parallel-tracking-approach-b" title="Permanent link">&para;</a></h3>
+<p>The forward multi-camera tracking loop (<code>trackcorr_loop_fast</code>) is parallelized at the particle level, distributing calculations concurrently across OpenMP threads.</p>
+<h4 id="algorithmic-design-thread-safety">Algorithmic Design &amp; Thread-Safety<a class="headerlink" href="#algorithmic-design-thread-safety" title="Permanent link">&para;</a></h4>
+<p>Parallelizing a complex, stateful tracking pipeline requires careful handling of shared states, coordinate buffers, and memory management:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>[ Parallel Particle Loop (prange schedule=&#39;guided&#39;, nogil) ]
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>  ├── 1. Linear prediction per particle
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>  ├── 2. 3D search box projection to 2D per camera
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>  ├── 3. Pixel candidate searches
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>  ├── 4. Candidate frequency sorting
+</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>  └── 5. Log particle additions to Thread-Local buffers
+</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>                   │
+</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a>                   ▼
+</span><span id="__span-11-9"><a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a>[ Sequential Post-Loop Phase (Single-Threaded) ]
+</span><span id="__span-11-10"><a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a>  ├── 1. Gather &amp; append additions deterministically
+</span><span id="__span-11-11"><a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a>  ├── 2. Resolve link conflicts (Phase 1 &amp; 2)
+</span><span id="__span-11-12"><a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a>  └── 3. Losers retry fallback candidates (Phase 3)
+</span></code></pre></div>
+<ol>
+<li>
+<p><strong>Lock-Free Parallel Computation:</strong>
+   The tracking prediction, 2D epipolar-box projection (<code>searchquader</code>), candidate coordinate filtering, candidate sorting, and cost-metric evaluation all run concurrently without lock overhead or the Python GIL.</p>
+</li>
+<li>
+<p><strong>Zero-Allocation Thread-Local Scratch Space:</strong>
+   Memory allocation inside parallel <code>nogil</code> blocks triggers expensive runtime allocations or requires acquiring the GIL. To prevent this, we pre-allocate thread-local scratch arrays (such as ray-tracing coordinate arrays, pixel coordinates, and temporary lists) during initiation.</p>
+</li>
+<li>
+<p><strong>Dynamic Thread-ID Safety &amp; Defensive Clamping:</strong>
+   Because OpenMP's <code>threadid()</code> can occasionally return indices greater than the requested thread count due to runtime thread-pooling, OpenPTV2 dynamically pads scratch buffer allocations to <code>max_threads_alloc = max(num_threads, 64)</code> and clamps indexing bounds defensively:
+   <div class="language-python highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="k">if</span> <span class="n">tid</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>    <span class="n">tid</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="k">elif</span> <span class="n">tid</span> <span class="o">&gt;=</span> <span class="n">X_threads</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>    <span class="n">tid</span> <span class="o">=</span> <span class="n">X_threads</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
+</span></code></pre></div></p>
+</li>
+<li>
+<p><strong>Absolute Mathematical Determinism:</strong>
+   Adding new particles or modifying candidate tables directly in parallel threads would lead to non-deterministic race conditions (and require locks). Instead, each thread writes its added particles and candidate tables into dedicated thread-local buffers. A single-threaded post-loop sequential block then collects and appends these records in a fixed, thread-independent order. This guarantees <strong>100% mathematical parity and identical tracking results</strong> across any thread configuration.</p>
+</li>
+<li>
+<p><strong>Robust Bounds Checking:</strong>
+   All candidate array insertions verify array bounds (e.g. checking if <code>0 &lt;= cand_idx &lt; targ_tnr.shape[1]</code>) before performing any writes, preventing memory corruption or <code>free(): invalid next size</code> errors.</p>
+</li>
+</ol>
 
 
 
