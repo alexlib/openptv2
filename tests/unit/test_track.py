@@ -615,8 +615,11 @@ def test_burgers():
             trackcorr_c_loop(run, step)
         trackcorr_c_finish(run, run.seq_par.last)
 
-        assert run.npart == 20
-        assert run.nlinks == 20
+        # CAS fix (Approach B) prevents double-claiming targets:
+        # the add-flag can't create NEW particles when all targets
+        # are already claimed by existing links (same as add=0 run).
+        assert run.npart == 19
+        assert run.nlinks == 17
 
     finally:
         os.chdir(original)

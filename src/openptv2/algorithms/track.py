@@ -1024,8 +1024,12 @@ def _sync_soa_to_aos(frm):
 
 
 @cython.ccall
-def trackcorr_c_loop(run_info, step):
+def trackcorr_c_loop(run_info, step, num_threads=None):
     from .orientation import point_position
+    import os
+
+    if num_threads is None:
+        num_threads = int(os.environ.get("OPENPTV_NUM_THREADS", "1"))
 
     fb = run_info.fb
     cal = run_info.cal
@@ -1146,6 +1150,7 @@ def trackcorr_c_loop(run_info, step):
         cpar.pix_x,
         cpar.pix_y,
         run_info.flatten_tol,
+        num_threads,
     )
 
     fb.buf[2].num_parts = int(np2[0])

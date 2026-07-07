@@ -27,6 +27,24 @@ else:
         atan as c_atan,
     )
 
+if cython.compiled:
+
+    @cython.cfunc
+    @cython.cname("__sync_bool_compare_and_swap")
+    @cython.nogil
+    @cython.exceptval(check=False)
+    @cython.returns(cython.int)
+    def __sync_bool_compare_and_swap(
+        ptr: cython.pointer(cython.int), oldval: cython.int, newval: cython.int
+    ) -> cython.int: ...
+
+
+if not cython.compiled:
+
+    def __sync_bool_compare_and_swap(ptr, oldval, newval):
+        return True
+
+
 from cython.parallel import prange, threadid
 
 from .track_kernels_geom import (
@@ -517,7 +535,7 @@ def candsearch_in_pix_fast_nogil(
     dx: cython.double
     dy: cython.double
     d: cython.double
-    
+
     xmin = cent_x - dl
     xmax = cent_x + dr
     ymin = cent_y - du
@@ -679,7 +697,7 @@ def _sorted_candidates_fast_out_nogil(
     j: cython.int
     m: cython.int
     k: cython.int
-    
+
     # Static flat stack array for quader (avoids numpy memory allocation and casting)
     quader_buf: cython.double[24]
 
@@ -1504,7 +1522,6 @@ def assess_new_position_fast_nogil(
     return valid_cams
 
 
-
 @cython.cfunc
 @cython.inline
 @cython.boundscheck(False)
@@ -1657,6 +1674,7 @@ def _trackcorr_particle_fast(
     quali_f: cython.int
     d01: cython.double
     quali2: cython.int
+    claimed_ok: cython.int
 
     if tid < 0:
         tid = 0
@@ -2106,14 +2124,47 @@ def _trackcorr_particle_fast(
                         path_inlist_1[h] = inlist + 1
 
                     if add_flag:
-                        idx_add = thread_added_count_3[tid]
-                        if idx_add < thread_added_x_3.shape[1]:
-                            thread_added_x_3[tid, idx_add, 0] = X[4, 0]
-                            thread_added_x_3[tid, idx_add, 1] = X[4, 1]
-                            thread_added_x_3[tid, idx_add, 2] = X[4, 2]
+                        claimed_ok = 1
+                        for ci in range(num_cams):
+                            cand_idx = _assess_inds[ci]
+                            if cand_idx != PT_UNUSED:
+                                if not __sync_bool_compare_and_swap(
+                                    cython.address(targ_tnr_3[ci, cand_idx]),
+                                    TR_UNUSED_K,
+                                    -100 - tid,
+                                ):
+                                    claimed_ok = 0
+                                    break
+
+                        if claimed_ok:
+                            idx_add = thread_added_count_3[tid]
+                            if idx_add < thread_added_x_3.shape[1]:
+                                thread_added_x_3[tid, idx_add, 0] = X[4, 0]
+                                thread_added_x_3[tid, idx_add, 1] = X[4, 1]
+                                thread_added_x_3[tid, idx_add, 2] = X[4, 2]
+                                for ci in range(num_cams):
+                                    thread_added_cand_3[tid, idx_add, ci] = (
+                                        _assess_inds[ci]
+                                    )
+                                thread_added_count_3[tid] = idx_add + 1
+                            else:
+                                for ci in range(num_cams):
+                                    cand_idx = _assess_inds[ci]
+                                    if cand_idx != PT_UNUSED:
+                                        __sync_bool_compare_and_swap(
+                                            cython.address(targ_tnr_3[ci, cand_idx]),
+                                            -100 - tid,
+                                            TR_UNUSED_K,
+                                        )
+                        else:
                             for ci in range(num_cams):
-                                thread_added_cand_3[tid, idx_add, ci] = _assess_inds[ci]
-                            thread_added_count_3[tid] = idx_add + 1
+                                cand_idx = _assess_inds[ci]
+                                if cand_idx != PT_UNUSED:
+                                    __sync_bool_compare_and_swap(
+                                        cython.address(targ_tnr_3[ci, cand_idx]),
+                                        -100 - tid,
+                                        TR_UNUSED_K,
+                                    )
 
             in_volume = 0
         quali = 0
@@ -2202,7 +2253,9 @@ def _trackcorr_particle_fast(
 
             if quali2 >= 2:
                 in_volume = 0
-                _point_position_out(_assess_targ2, num_cams, cal_arr, _pos_mv, scratch_ray)
+                _point_position_out(
+                    _assess_targ2, num_cams, cal_arr, _pos_mv, scratch_ray
+                )
                 X[3, 0] = _pos_mv[0]
                 X[3, 1] = _pos_mv[1]
                 X[3, 2] = _pos_mv[2]
@@ -2253,16 +2306,49 @@ def _trackcorr_particle_fast(
                         dl = (d13 + d01) * 0.5
                         rr = (dl / lmax + acc / dacc + angle / dangle) / quali2
 
-                        idx_add = thread_added_count_2[tid]
-                        if idx_add < thread_added_x_2.shape[1]:
-                            thread_added_h_2[tid, idx_add] = h
-                            thread_added_x_2[tid, idx_add, 0] = X[3, 0]
-                            thread_added_x_2[tid, idx_add, 1] = X[3, 1]
-                            thread_added_x_2[tid, idx_add, 2] = X[3, 2]
-                            thread_added_rr_2[tid, idx_add] = rr
+                        claimed_ok = 1
+                        for ci in range(num_cams):
+                            cand_idx = _assess_inds2[ci]
+                            if cand_idx != PT_UNUSED:
+                                if not __sync_bool_compare_and_swap(
+                                    cython.address(targ_tnr_2[ci, cand_idx]),
+                                    TR_UNUSED_K,
+                                    -100 - tid,
+                                ):
+                                    claimed_ok = 0
+                                    break
+
+                        if claimed_ok:
+                            idx_add = thread_added_count_2[tid]
+                            if idx_add < thread_added_x_2.shape[1]:
+                                thread_added_h_2[tid, idx_add] = h
+                                thread_added_x_2[tid, idx_add, 0] = X[3, 0]
+                                thread_added_x_2[tid, idx_add, 1] = X[3, 1]
+                                thread_added_x_2[tid, idx_add, 2] = X[3, 2]
+                                thread_added_rr_2[tid, idx_add] = rr
+                                for ci in range(num_cams):
+                                    thread_added_cand_2[tid, idx_add, ci] = (
+                                        _assess_inds2[ci]
+                                    )
+                                thread_added_count_2[tid] = idx_add + 1
+                            else:
+                                for ci in range(num_cams):
+                                    cand_idx = _assess_inds2[ci]
+                                    if cand_idx != PT_UNUSED:
+                                        __sync_bool_compare_and_swap(
+                                            cython.address(targ_tnr_2[ci, cand_idx]),
+                                            -100 - tid,
+                                            TR_UNUSED_K,
+                                        )
+                        else:
                             for ci in range(num_cams):
-                                thread_added_cand_2[tid, idx_add, ci] = _assess_inds2[ci]
-                            thread_added_count_2[tid] = idx_add + 1
+                                cand_idx = _assess_inds2[ci]
+                                if cand_idx != PT_UNUSED:
+                                    __sync_bool_compare_and_swap(
+                                        cython.address(targ_tnr_2[ci, cand_idx]),
+                                        -100 - tid,
+                                        TR_UNUSED_K,
+                                    )
 
                 in_volume = 0
 
@@ -2482,11 +2568,19 @@ def trackcorr_loop_fast(
     pp_threads: cython.double[:, :] = _pp_threads
 
     # Pre-allocated output buffers for assess_new_position_fast_nogil across threads
-    _assess_targ_threads = np.full((max_threads_alloc, num_cams, 2), COORD_UNUSED_K, dtype=np.float64)
-    _assess_inds_threads = np.full((max_threads_alloc, num_cams), PT_UNUSED, dtype=np.int32)
+    _assess_targ_threads = np.full(
+        (max_threads_alloc, num_cams, 2), COORD_UNUSED_K, dtype=np.float64
+    )
+    _assess_inds_threads = np.full(
+        (max_threads_alloc, num_cams), PT_UNUSED, dtype=np.int32
+    )
     _assess_pp_threads = np.empty((max_threads_alloc, 2), dtype=np.float64)
-    _assess_targ2_threads = np.full((max_threads_alloc, num_cams, 2), COORD_UNUSED_K, dtype=np.float64)
-    _assess_inds2_threads = np.full((max_threads_alloc, num_cams), PT_UNUSED, dtype=np.int32)
+    _assess_targ2_threads = np.full(
+        (max_threads_alloc, num_cams, 2), COORD_UNUSED_K, dtype=np.float64
+    )
+    _assess_inds2_threads = np.full(
+        (max_threads_alloc, num_cams), PT_UNUSED, dtype=np.int32
+    )
 
     assess_targ_threads: cython.double[:, :, ::1] = _assess_targ_threads
     assess_inds_threads: cython.int[:, :] = _assess_inds_threads
@@ -2509,7 +2603,9 @@ def trackcorr_loop_fast(
 
     _thread_added_count_3 = np.zeros(max_threads_alloc, dtype=np.int32)
     _thread_added_x_3 = np.empty((max_threads_alloc, max_cap3, 3), dtype=np.float64)
-    _thread_added_cand_3 = np.empty((max_threads_alloc, max_cap3, num_cams), dtype=np.int32)
+    _thread_added_cand_3 = np.empty(
+        (max_threads_alloc, max_cap3, num_cams), dtype=np.int32
+    )
 
     thread_added_count_3: cython.int[:] = _thread_added_count_3
     thread_added_x_3: cython.double[:, :, ::1] = _thread_added_x_3
@@ -2518,7 +2614,9 @@ def trackcorr_loop_fast(
     _thread_added_count_2 = np.zeros(max_threads_alloc, dtype=np.int32)
     _thread_added_h_2 = np.empty((max_threads_alloc, max_cap2), dtype=np.int32)
     _thread_added_x_2 = np.empty((max_threads_alloc, max_cap2, 3), dtype=np.float64)
-    _thread_added_cand_2 = np.empty((max_threads_alloc, max_cap2, num_cams), dtype=np.int32)
+    _thread_added_cand_2 = np.empty(
+        (max_threads_alloc, max_cap2, num_cams), dtype=np.int32
+    )
     _thread_added_rr_2 = np.empty((max_threads_alloc, max_cap2), dtype=np.float64)
 
     thread_added_count_2: cython.int[:] = _thread_added_count_2
@@ -2528,7 +2626,9 @@ def trackcorr_loop_fast(
     thread_added_rr_2: cython.double[:, :] = _thread_added_rr_2
 
     # Parallel loop over particles
-    for h in prange(orig_parts_1, nogil=True, schedule='guided', num_threads=num_threads):
+    for h in prange(
+        orig_parts_1, nogil=True, schedule="guided", num_threads=num_threads
+    ):
         tid = threadid()
 
         _trackcorr_particle_fast(
@@ -2562,7 +2662,14 @@ def trackcorr_loop_fast(
             thread_added_x_2,
             thread_added_cand_2,
             thread_added_rr_2,
-            md0, md1, md2, md3, md4, md5, md6, md7,
+            md0,
+            md1,
+            md2,
+            md3,
+            md4,
+            md5,
+            md6,
+            md7,
             path_inlist_1,
             path_x_1,
             path_prev_1,
@@ -2585,20 +2692,34 @@ def trackcorr_loop_fast(
             targ_y_2,
             targ_tnr_2,
             num_targets_2,
-            dvxmin, dvxmax, dvymin, dvymax, dvzmin, dvzmax,
-            imx, imy,
+            dvxmin,
+            dvxmax,
+            dvymin,
+            dvymax,
+            dvzmin,
+            dvzmax,
+            imx,
+            imy,
             path_x_2,
             targ_x_3,
             targ_y_3,
             targ_tnr_3,
             num_targets_3,
             path_x_3,
-            dacc, dangle, lmax,
+            dacc,
+            dangle,
+            lmax,
             path_decis_1,
             path_linkdecis_1,
             flatten_tol,
-            pix_x, pix_y,
-            X_lay_0, X_lay_1, ymin, ymax, Zmin_lay_0, Zmax_lay_1,
+            pix_x,
+            pix_y,
+            X_lay_0,
+            X_lay_1,
+            ymin,
+            ymax,
+            Zmin_lay_0,
+            Zmax_lay_1,
             add_flag,
         )
 
@@ -3027,7 +3148,9 @@ def trackback_loop_fast(
 
                 if quali >= 2:
                     in_volume = 0
-                    _point_position_out(targ_pos, num_cams, cal_arr, _pos_mv, scratch_ray)
+                    _point_position_out(
+                        targ_pos, num_cams, cal_arr, _pos_mv, scratch_ray
+                    )
                     X[3, 0] = _pos_buf[0]
                     X[3, 1] = _pos_buf[1]
                     X[3, 2] = _pos_buf[2]
