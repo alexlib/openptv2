@@ -19,9 +19,7 @@ def temp_cavity_dir(tmp_path):
     This ensures that our tests are completely non-destructive and do not
     leave any generated target files in the active git workspace.
     """
-    original_dir = (
-        Path(__file__).parent.parent.parent / "test_data" / "test_cavity"
-    )
+    original_dir = Path(__file__).parent.parent.parent / "test_data" / "test_cavity"
     if not original_dir.exists():
         pytest.skip("test_cavity directory not found")
 
@@ -157,8 +155,13 @@ def test_parallel_preprocessing_file_handling_and_cleanliness(temp_cavity_dir):
         ptv.preprocess_and_detect_all_parallel(exp_mock, num_workers=2)
 
 
+@pytest.mark.perf
 def test_parallel_preprocessing_io_scaling_benchmark(temp_cavity_dir):
-    """Run preprocessing on different worker counts and log the processing times."""
+    """Run preprocessing on different worker counts and log the processing times.
+
+    Asserts that 4-worker is at least 1.5× faster than 1-worker
+    (5 frames × 4 cameras = 20 images, embarassingly parallel).
+    """
     yaml_file = temp_cavity_dir / "parameters_Run1.yaml"
     exp = Experiment()
     exp.pm.from_yaml(yaml_file)
@@ -179,6 +182,14 @@ def test_parallel_preprocessing_io_scaling_benchmark(temp_cavity_dir):
     spar.set_first(10000)
     spar.set_last(10004)
 
+    # Warmup run to populate disk caches
+    ptv.preprocess_and_detect_all_parallel(exp_mock, num_workers=1)
+    for frame in range(10000, 10005):
+        for i_cam in range(exp.pm.num_cams):
+            target_file = Path(f"{exp.target_filenames[i_cam]}.{frame:04d}_targets")
+            if target_file.exists():
+                target_file.unlink()
+
     times = {}
     for num_workers in [1, 2, 4]:
         # Delete generated target files beforehand to force re-run
@@ -188,14 +199,28 @@ def test_parallel_preprocessing_io_scaling_benchmark(temp_cavity_dir):
                 if target_file.exists():
                     target_file.unlink()
 
-        start_time = time.time()
+        start_time = time.perf_counter()
         ptv.preprocess_and_detect_all_parallel(exp_mock, num_workers=num_workers)
-        elapsed = time.time() - start_time
+        elapsed = time.perf_counter() - start_time
         times[num_workers] = elapsed
         print(f"Workers={num_workers}: {elapsed:.3f} seconds")
 
-    # Assert that multi-worker preprocessing doesn't crash
-    assert len(times) == 3
+    assert len(times) == 3, "Must have timings for 1, 2, 4 workers"
+
+    baseline = times[1]
+    print(f"\n── Preprocessing I/O Scaling ──")
+    for nw in [2, 4]:
+        speedup = baseline / times[nw]
+        print(f"  {nw} workers: {speedup:.2f}× vs 1 worker")
+
+    # 4 workers should be at least 1.5× faster than 1 on 20 images
+    speedup_4 = baseline / times[4]
+    assert speedup_4 >= 1.5, (
+        f"4-worker speedup {speedup_4:.2f} is below 1.5 — "
+        f"expected better scaling for 20 embarrassingly parallel work items. "
+        f"System may be I/O bound."
+    )
+
     # Clean up
     for frame in range(10000, 10005):
         for i_cam in range(exp.pm.num_cams):

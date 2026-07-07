@@ -239,6 +239,12 @@ def get_extensions():
             c_file = py_file.with_suffix(".c")
             extra_compile_args = []
             extra_link_args = []
+            sources = [str(c_file.relative_to(ROOT))]
+
+            # Add CAS shim for MSVC portability (__sync_bool_compare_and_swap)
+            if mod == "track_kernels_tracking":
+                sources.append("src/openptv2/algorithms/cas_shim.c")
+
             if not sys.platform.startswith("win"):
                 opt = "-O0" if is_dev else "-O3"
                 extra_compile_args.extend(
@@ -260,7 +266,7 @@ def get_extensions():
             extensions.append(
                 Extension(
                     f"openptv2.algorithms.{mod}",
-                    sources=[str(c_file.relative_to(ROOT))],
+                    sources=sources,
                     include_dirs=[numpy.get_include()],
                     extra_compile_args=extra_compile_args,
                     extra_link_args=extra_link_args,
