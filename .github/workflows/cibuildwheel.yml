@@ -42,6 +42,7 @@ jobs:
             python -m pip install "numpy>=2.0,<3" "cython>=3.0.10,<4" "setuptools>=77" "packaging>=24.2" "wheel>=0.43" &&
             python setup.py prepare
           CIBW_BEFORE_BUILD_MACOS: >
+            brew install libomp &&
             python -m pip install --upgrade pip &&
             python -m pip install "numpy>=2.0,<3" "cython>=3.0.10,<4" "setuptools>=77" "packaging>=24.2" "wheel>=0.43" &&
             python setup.py prepare
