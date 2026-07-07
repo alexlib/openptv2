@@ -677,6 +677,56 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#5-high-performance-parallel-processing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. High-Performance Parallel Processing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. High-Performance Parallel Processing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a-via-the-gui" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A. Via the GUI
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#b-via-environment-variables-cli-batch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B. Via Environment Variables (CLI Batch)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c-parallel-batch-chunking-script" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C. Parallel Batch Chunking Script
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1356,6 +1406,56 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#5-high-performance-parallel-processing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. High-Performance Parallel Processing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. High-Performance Parallel Processing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a-via-the-gui" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A. Via the GUI
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#b-via-environment-variables-cli-batch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B. Via Environment Variables (CLI Batch)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c-parallel-batch-chunking-script" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C. Parallel Batch Chunking Script
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1490,6 +1590,33 @@
 </span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>uv<span class="w"> </span>run<span class="w"> </span>pyptv_batch<span class="w"> </span>--workdir<span class="o">=</span>./test_data/test_cavity<span class="w"> </span>--first<span class="o">=</span><span class="m">10000</span><span class="w"> </span>--last<span class="o">=</span><span class="m">10005</span>
 </span></code></pre></div>
 <p>This runs detection, correspondences, and tracking, exporting the resulting tracked trajectories to the experimental output directory.</p>
+<hr />
+<h2 id="5-high-performance-parallel-processing">5. High-Performance Parallel Processing<a class="headerlink" href="#5-high-performance-parallel-processing" title="Permanent link">&para;</a></h2>
+<p>OpenPTV2 includes built-in multi-core parallel processing to significantly accelerate image pre-processing and target detection (Approach C). You can configure and run parallel processing in three ways:</p>
+<h3 id="a-via-the-gui">A. Via the GUI<a class="headerlink" href="#a-via-the-gui" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Launch the GUI: <code>uv run openptv2-gui -w ./test_data/test_cavity</code></li>
+<li>Select <strong>Parameters → Main</strong> from the top menu.</li>
+<li>Select the <strong>Sequence</strong> tab.</li>
+<li>Check <strong>Parallel Pre-processing</strong> and specify the <strong>Number of workers</strong> (e.g., <code>4</code>, or <code>0</code> for auto-detecting CPU cores).</li>
+<li>Click <strong>OK</strong> to save. When you select <strong>Tracking → Track Sequence</strong>, OpenPTV2 will automatically process the raw images and segment targets in parallel.</li>
+</ol>
+<h3 id="b-via-environment-variables-cli-batch">B. Via Environment Variables (CLI Batch)<a class="headerlink" href="#b-via-environment-variables-cli-batch" title="Permanent link">&para;</a></h3>
+<p>Before running the <code>pyptv_batch</code> utility, set the following environment variables to activate parallel processing:
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="c1"># Enable parallel pre-processing</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">OPENPTV_PARALLEL_PREPROCESS</span><span class="o">=</span>True
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="c1"># (Optional) Specify number of parallel worker processes (defaults to CPU core count)</span>
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="nb">export</span><span class="w"> </span><span class="nv">OPENPTV_NUM_WORKERS</span><span class="o">=</span><span class="m">4</span>
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>
+</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="c1"># Run batch sequence</span>
+</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>uv<span class="w"> </span>run<span class="w"> </span>pyptv_batch<span class="w"> </span>--workdir<span class="o">=</span>./test_data/test_cavity<span class="w"> </span>--first<span class="o">=</span><span class="m">10000</span><span class="w"> </span>--last<span class="o">=</span><span class="m">10004</span>
+</span></code></pre></div></p>
+<h3 id="c-parallel-batch-chunking-script">C. Parallel Batch Chunking Script<a class="headerlink" href="#c-parallel-batch-chunking-script" title="Permanent link">&para;</a></h3>
+<p>You can also run sequence chunk-level parallelization across cores using the specialized <code>pyptv_batch_parallel</code> script, which divides the frame sequence into equal chunks and processes them concurrently:
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="c1"># Process frames 10000 to 10004 on 4 cores concurrently</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>openptv2.batch.pyptv_batch_parallel<span class="w"> </span>test_data/test_cavity/parameters_Run1.yaml<span class="w"> </span><span class="m">10000</span><span class="w"> </span><span class="m">10004</span><span class="w"> </span><span class="m">4</span><span class="w"> </span>--mode<span class="w"> </span>sequence
+</span></code></pre></div></p>
 
 
 
