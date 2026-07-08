@@ -130,3 +130,7 @@ docs/superpowers/plans/2026-06-26-cython3-optimization.md
 .worktrees/
 *.bak
 /notebooks/__marimo__
+
+# generated calibration artifacts (openptv-calibrate skill)
+**/cal/auto_calib/
+**/cal/seed_help/
