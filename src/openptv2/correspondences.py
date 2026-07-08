@@ -174,6 +174,22 @@ def correspondences(img_pts, flat_coords, cals, vparam, cparam):
     sorted_corresp = [None] * (num_cams - 1)
     last_count = 0
 
+    # Build pnr-to-target mapping for each camera to avoid wrong direct indexing on sorted lists
+    pnr_to_targ_maps = []
+    for cam in range(num_cams):
+        if hasattr(img_pts[cam], '_targets'):
+            targets = img_pts[cam]._targets
+        else:
+            targets = img_pts[cam]
+        mapping = {}
+        for t in targets:
+            if hasattr(t, 'pnr'):
+                p_val = t.pnr() if callable(t.pnr) else t.pnr
+            else:
+                p_val = 0
+            mapping[p_val] = t
+        pnr_to_targ_maps.append(mapping)
+
     for clique_type in range(num_cams - 1):
         num_points = match_counts[4 - num_cams + clique_type]
         clique_targs = np.full((num_cams, num_points, 2), -999.0, dtype=np.float64)  # PT_UNUSED = -999
@@ -189,17 +205,15 @@ def correspondences(img_pts, flat_coords, cals, vparam, cparam):
                 clique_ids[cam, pt] = p1
 
                 if p1 > -1:
-                    if hasattr(img_pts[cam], '_targets'):
-                        targ = img_pts[cam]._targets[p1]
-                    else:
-                        targ = img_pts[cam][p1]
-                    if hasattr(targ, 'pos') and callable(targ.pos):
-                        pos_val = targ.pos()
-                        x_val, y_val = pos_val[0], pos_val[1]
-                    else:
-                        x_val, y_val = targ.x, targ.y
-                    clique_targs[cam, pt, 0] = x_val
-                    clique_targs[cam, pt, 1] = y_val
+                    targ = pnr_to_targ_maps[cam].get(p1)
+                    if targ is not None:
+                        if hasattr(targ, 'pos') and callable(targ.pos):
+                            pos_val = targ.pos()
+                            x_val, y_val = pos_val[0], pos_val[1]
+                        else:
+                            x_val, y_val = targ.x, targ.y
+                        clique_targs[cam, pt, 0] = x_val
+                        clique_targs[cam, pt, 1] = y_val
 
         last_count += num_points
         sorted_pos[clique_type] = clique_targs

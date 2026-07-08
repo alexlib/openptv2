@@ -47,7 +47,7 @@ def _build_raw_algo_params(exp_pm, num_cams):
     cp.pix_x = ptv_p["pix_x"]
     cp.pix_y = ptv_p["pix_y"]
     cp.hp_flag = ptv_p["hp_flag"]
-    cp.all_cam_flag = ptv_p["allcam_flag"]
+    cp.allCam_flag = ptv_p["allcam_flag"]
     cp.tiff_flag = ptv_p["tiff_flag"]
     cp.chfield = ptv_p["chfield"]
     cp.mm.n1 = ptv_p["mmp_n1"]

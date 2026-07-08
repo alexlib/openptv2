@@ -166,7 +166,7 @@ def test_compat_bridge_correctness(cavity_dir):
         cpar_r.pix_x = ptv_p["pix_x"]
         cpar_r.pix_y = ptv_p["pix_y"]
         cpar_r.hp_flag = ptv_p["hp_flag"]
-        cpar_r.all_cam_flag = ptv_p["allcam_flag"]
+        cpar_r.allCam_flag = ptv_p["allcam_flag"]
         cpar_r.tiff_flag = ptv_p["tiff_flag"]
         cpar_r.chfield = ptv_p["chfield"]
         cpar_r.mm.n1 = ptv_p["mmp_n1"]

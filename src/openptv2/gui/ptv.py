@@ -334,7 +334,7 @@ def negative(img: np.ndarray) -> np.ndarray:
 
 def simple_highpass(img: np.ndarray, cpar: ControlParams) -> np.ndarray:
     """Apply a simple highpass filter to an image using liboptv preprocess_image."""
-    return preprocess_image(img, DEFAULT_NO_FILTER, cpar, DEFAULT_HIGHPASS_FILTER_SIZE)
+    return preprocess_image(img, cpar.get_hp_flag(), cpar, DEFAULT_HIGHPASS_FILTER_SIZE)
 
 
 def _populate_cpar(ptv_params: dict, num_cams: int) -> ControlParams:
