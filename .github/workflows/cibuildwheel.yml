@@ -54,6 +54,9 @@ jobs:
           CIBW_BUILD_FRONTEND: "pip"
           CIBW_MANYLINUX_X86_64_IMAGE: "manylinux_2_28"
           CIBW_MANYLINUX_AARCH64_IMAGE: "manylinux_2_28"
+          # 64-bit only. i686 is dropped: numpy/scipy ship no 32-bit wheels, so
+          # the i686 test-install tries to build scipy from source and fails.
+          CIBW_ARCHS_LINUX: x86_64
           CIBW_ARCHS_WINDOWS: AMD64
           # Apple-Silicon-first: arm64 only. Intel Macs use the sdist.
           # (Add a macos-13 runner later if prebuilt x86_64 wheels are needed.)
