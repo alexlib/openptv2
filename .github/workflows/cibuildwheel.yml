@@ -46,7 +46,7 @@ jobs:
           # low-deployment-target (darwin20 = macOS 11) libomp from
           # mac.r-project.org instead — installs to /usr/local.
           CIBW_BEFORE_BUILD_MACOS: >
-            curl -L -o /tmp/openmp.tar.gz https://mac.r-project.org/openmp/openmp-17.0.6-darwin20-Release.tar.gz &&
+            curl -L -o /tmp/openmp.tar.gz https://mac.r-project.org/openmp/openmp-19.1.5-darwin20-Release.tar.gz &&
             sudo tar fxz /tmp/openmp.tar.gz -C / &&
             python -m pip install --upgrade pip &&
             python -m pip install "numpy>=2.0,<3" "cython>=3.0.10,<4" "setuptools>=77" "packaging>=24.2" "wheel>=0.43" &&
@@ -60,8 +60,26 @@ jobs:
           CIBW_ARCHS_MACOS: arm64
           # Point setup.py at the low-target libomp and match the wheel floor.
           CIBW_ENVIRONMENT_MACOS: "OPENPTV_LIBOMP_PREFIX=/usr/local MACOSX_DEPLOYMENT_TARGET=11.0"
-          CIBW_TEST_REQUIRES: "pytest numpy cython scipy pyyaml imageio scikit-image"
-          CIBW_TEST_COMMAND: "python {project}/scripts/ci_test_setup.py {project} && pytest tests/unit/ -v -m \"not slow\" --tb=short"
+          # Wheel smoke test: exercise the compiled core (incl. OpenMP tracking
+          # kernels) with dependency-light tests. numpy/scipy/pyyaml ship as
+          # wheel deps; the full suite's GUI-optional deps (imageio, skimage,
+          # tqdm, ...) are intentionally out of scope for wheel CI.
+          CIBW_TEST_REQUIRES: "pytest"
+          CIBW_TEST_COMMAND: >
+            python {project}/scripts/ci_test_setup.py {project} &&
+            pytest
+            tests/unit/test_vec_utils.py
+            tests/unit/test_track.py
+            tests/unit/test_track3d.py
+            tests/unit/test_correspondences.py
+            tests/unit/test_orientation.py
+            tests/unit/test_lsqadj.py
+            tests/unit/test_imgcoord.py
+            tests/unit/test_trafo.py
+            tests/unit/test_epi.py
+            tests/unit/test_multimed.py
+            tests/unit/test_sortgrid.py
+            -v -m "not slow" --tb=short
 
       
       - uses: actions/upload-artifact@v4
