@@ -29,6 +29,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 import numpy as np
+import yaml
 
 from openptv2.algorithms.calibration import Calibration
 from openptv2.algorithms.imgcoord import img_coord
@@ -37,7 +38,7 @@ from openptv2.algorithms.orientation import (
     full_calibration,
     read_man_ori_fix,
 )
-from openptv2.algorithms.parameters import ControlPar
+from openptv2.algorithms.parameters import ControlPar, MmNp
 from openptv2.algorithms.sortgrid import read_calblock, sortgrid
 from openptv2.algorithms.tracking_frame_buf import read_targets
 from openptv2.algorithms.trafo import metric_to_pixel
@@ -93,6 +94,107 @@ def rms_px(det, rep) -> float:
     return float(np.sqrt(np.mean(np.sum(d * d, axis=1))))
 
 
+def _find_yaml(base: Path) -> Path | None:
+    """Preferred dataset YAML: parameters_Run1.yaml, else first parameters_*.yaml."""
+    pref = base / "parameters_Run1.yaml"
+    if pref.exists():
+        return pref
+    cands = sorted(base.glob("parameters_*.yaml"))
+    return cands[0] if cands else None
+
+
+@dataclass
+class DatasetParams:
+    cpar: object
+    num_cams: int
+    eps: int
+    ids_per_cam: list[list[int]]      # 4 calibration-point IDs per camera
+    clicks_per_cam: list[np.ndarray]  # (4,2) pixel seed clicks per camera
+    source: str                        # "yaml" or "par"
+
+
+def _cpar_from_ptv(ptv: dict, num_cams: int):
+    """Build a ControlPar from a YAML 'ptv' block (same fields as the .par reader)."""
+    mm = MmNp(
+        nlay=1,
+        n1=float(ptv["mmp_n1"]),
+        n2=[float(ptv["mmp_n2"]), 1.0, 1.0],
+        d=[float(ptv["mmp_d"]), 0.0, 0.0],
+        n3=float(ptv["mmp_n3"]),
+    )
+    return ControlPar(
+        num_cams=num_cams,
+        hp_flag=int(ptv.get("hp_flag", 0)),
+        allCam_flag=int(ptv.get("allcam_flag", 0)),
+        tiff_flag=int(ptv.get("tiff_flag", 1)),
+        imx=int(ptv["imx"]),
+        imy=int(ptv["imy"]),
+        pix_x=float(ptv["pix_x"]),
+        pix_y=float(ptv["pix_y"]),
+        chfield=int(ptv.get("chfield", 0)),
+        mm=mm,
+    )
+
+
+def _seed_from_par(base: Path, num_cams: int, calblock: Path):
+    """Fallback seed source: man_ori.par (IDs) + man_ori.dat (clicks)."""
+    par = base / "parameters"
+    clicks = np.loadtxt(par / "man_ori.dat").reshape(-1, 2)
+    ids_per_cam, clicks_per_cam = [], []
+    for cam in range(num_cams):
+        fix4 = read_man_ori_fix(str(calblock), str(par / "man_ori.par"), cam)
+        if fix4 is None:
+            raise RuntimeError(f"cam{cam + 1}: could not read man_ori.par IDs")
+        # read_man_ori_fix returns 3D coords; recover the IDs from man_ori.par
+        toks = (par / "man_ori.par").read_text().split()
+        ids_per_cam.append([int(toks[cam * 4 + i]) for i in range(4)])
+        clicks_per_cam.append(clicks[cam * 4:(cam + 1) * 4])
+    return ids_per_cam, clicks_per_cam
+
+
+def _load_dataset_params(base: Path, calblock: Path) -> DatasetParams:
+    """Resolve control params + calibration seed, YAML-first with .par fallback.
+
+    The processing parameters (ptv, sortgrid) and the manual-orientation seed
+    (man_ori ids + pixel clicks) are read from the dataset YAML when present;
+    legacy .par/.dat files are used only as a fallback (backward compatibility).
+    """
+    yaml_path = _find_yaml(base)
+    if yaml_path is not None:
+        y = yaml.safe_load(yaml_path.read_text())
+        num_cams = int(y.get("num_cams") or y["ptv"].get("num_cams"))
+        cpar = _cpar_from_ptv(y["ptv"], num_cams)
+        eps = int(y.get("sortgrid", {}).get("radius", 0))
+        mo = y.get("man_ori") or {}
+        coords = y.get("man_ori_coordinates") or {}
+        if eps and mo.get("nr") and coords:
+            nr = [int(v) for v in mo["nr"]]
+            ids_per_cam, clicks_per_cam = [], []
+            for cam in range(num_cams):
+                ids_per_cam.append(nr[cam * 4:(cam + 1) * 4])
+                pts = coords[f"camera_{cam}"]
+                clicks_per_cam.append(
+                    np.array([[pts[f"point_{k}"]["x"], pts[f"point_{k}"]["y"]]
+                              for k in range(1, 5)], dtype=float)
+                )
+            return DatasetParams(cpar, num_cams, eps, ids_per_cam,
+                                 clicks_per_cam, "yaml")
+        # YAML present but lacks a usable seed/sortgrid -> fall back for those
+        if not eps:
+            eps = int((base / "parameters" / "sortgrid.par").read_text().strip())
+        ids_per_cam, clicks_per_cam = _seed_from_par(base, num_cams, calblock)
+        return DatasetParams(cpar, num_cams, eps, ids_per_cam, clicks_per_cam,
+                             "yaml+par-seed")
+
+    # No YAML at all: pure legacy .par path.
+    par = base / "parameters"
+    cpar = ControlPar.from_file(str(par / "ptv.par"))
+    num_cams = cpar.num_cams
+    eps = int((par / "sortgrid.par").read_text().strip())
+    ids_per_cam, clicks_per_cam = _seed_from_par(base, num_cams, calblock)
+    return DatasetParams(cpar, num_cams, eps, ids_per_cam, clicks_per_cam, "par")
+
+
 def calibrate_camera(
     cam: int,
     base: Path,
@@ -100,22 +202,21 @@ def calibrate_camera(
     fix: np.ndarray,
     nfix: int,
     eps: int,
-    calblock: Path,
-    man_par: Path,
-    man_dat: Path,
+    fix4: np.ndarray,
+    pix4: np.ndarray,
 ) -> CamResult:
-    """Run the full calibration pipeline for a single camera."""
+    """Run the full calibration pipeline for a single camera.
+
+    fix4: (4,3) 3D coords of the manual-orientation seed points.
+    pix4: (4,2) pixel clicks for those seed points.
+    """
     ori = base / "cal" / f"cam{cam + 1}.tif.ori"
     addpar = base / "cal" / f"cam{cam + 1}.tif.addpar"
 
-    fix4 = read_man_ori_fix(str(calblock), str(man_par), cam)
-    if fix4 is None:
-        raise RuntimeError(f"cam{cam + 1}: could not read man_ori point IDs")
     fix4 = np.asarray(fix4, float)
-    clicks = np.loadtxt(man_dat).reshape(-1, 2)
-    pix4 = clicks[cam * 4:(cam + 1) * 4]
-    if pix4.shape[0] < 4:
-        raise RuntimeError(f"cam{cam + 1}: man_ori.dat has <4 clicks")
+    pix4 = np.asarray(pix4, float)
+    if pix4.shape[0] < 4 or fix4.shape[0] < 4:
+        raise RuntimeError(f"cam{cam + 1}: need 4 seed points, got {pix4.shape[0]}")
 
     pix = read_targets(str(base / "cal" / f"cam{cam + 1}.tif"), 0)
     if not pix:
@@ -182,15 +283,12 @@ def calibrate_dataset(
         One CamResult per camera.
     """
     base = Path(dataset_dir).resolve()
-    par = base / "parameters"
-    cpar = ControlPar.from_file(str(par / "ptv.par"))
-    num_cams = cpar.num_cams
-    eps = int((par / "sortgrid.par").read_text().strip())
 
     calblock = base / "cal" / "target_on_a_side.txt"
     fix, nfix = read_calblock(str(calblock))
-    man_par = par / "man_ori.par"
-    man_dat = par / "man_ori.dat"
+
+    dp = _load_dataset_params(base, calblock)
+    cpar, num_cams, eps = dp.cpar, dp.num_cams, dp.eps
 
     out = Path(outdir) if outdir else base / "cal" / "auto_calib"
     if overlays:
@@ -198,8 +296,10 @@ def calibrate_dataset(
 
     results: list[CamResult] = []
     for cam in range(num_cams):
+        ids = dp.ids_per_cam[cam]
+        fix4 = np.asarray([fix[i - 1] for i in ids], dtype=float)
         res = calibrate_camera(
-            cam, base, cpar, fix, nfix, eps, calblock, man_par, man_dat
+            cam, base, cpar, fix, nfix, eps, fix4, dp.clicks_per_cam[cam]
         )
         results.append(res)
 

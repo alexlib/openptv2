@@ -214,17 +214,41 @@ def cmd_render(args) -> int:
 # --- seed writing (shared) --------------------------------------------------
 
 def _write_seed(base: Path, seeds: dict, num_cams: int) -> None:
-    par = base / "parameters"
-    par_lines, dat_lines = [], []
+    """Write the manual-orientation seed.
+
+    YAML is the source of truth (openptv2.autocalibration reads it first), so we
+    update every parameters_*.yaml's man_ori.nr + man_ori_coordinates. The legacy
+    man_ori.par/.dat are also written for backward compatibility (e.g. optv).
+    """
+    per_cam = []
     for cam in range(num_cams):
         pts = seeds.get(str(cam)) or seeds.get(cam)
         if not pts or len(pts) != 4:
             raise ValueError(f"need exactly 4 points for camera {cam}")
-        for pid, x, y in pts:
-            par_lines.append(f"{int(pid)}")
-            dat_lines.append(f"{float(x):.6f} {float(y):.6f}")
-    (par / "man_ori.par").write_text("\n".join(par_lines) + "\n")
-    (par / "man_ori.dat").write_text("\n".join(dat_lines) + "\n")
+        per_cam.append([(int(pid), float(x), float(y)) for pid, x, y in pts])
+
+    # legacy .par/.dat (backward compat)
+    par = base / "parameters"
+    if par.is_dir():
+        par_lines = [str(pid) for cam in per_cam for pid, _, _ in cam]
+        dat_lines = [f"{x:.6f} {y:.6f}" for cam in per_cam for _, x, y in cam]
+        (par / "man_ori.par").write_text("\n".join(par_lines) + "\n")
+        (par / "man_ori.dat").write_text("\n".join(dat_lines) + "\n")
+
+    # YAML (source of truth)
+    import yaml
+    for yp in sorted(base.glob("parameters_*.yaml")):
+        y = yaml.safe_load(yp.read_text()) or {}
+        nr = [pid for cam in per_cam for pid, _, _ in cam]
+        y.setdefault("man_ori", {})["nr"] = nr
+        coords = {}
+        for cam_idx, cam in enumerate(per_cam):
+            coords[f"camera_{cam_idx}"] = {
+                f"point_{k + 1}": {"x": x, "y": yv}
+                for k, (_, x, yv) in enumerate(cam)
+            }
+        y["man_ori_coordinates"] = coords
+        yp.write_text(yaml.safe_dump(y, sort_keys=False))
 
 
 def cmd_seed(args) -> int:
@@ -239,7 +263,7 @@ def cmd_seed(args) -> int:
     except ValueError as e:
         print(f"ERROR: {e}", file=sys.stderr)
         return 1
-    print("Success! Wrote man_ori.par + man_ori.dat.")
+    print("Success! Wrote man_ori seed to YAML (+ man_ori.par/.dat for compat).")
     return 0
 
 
