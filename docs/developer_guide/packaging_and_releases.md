@@ -71,15 +71,43 @@ This script automatically:
 ### Multi-Platform Production Build (via CI/CD)
 To build production wheels for all platforms (Windows, macOS Intel/Arm, Linux manylinux), we use GitHub Actions. The matrix is defined in `.github/workflows/cibuildwheel.yml`:
 
-- **Linux**: Compiled inside a `manylinux2014` Docker container for broad GLIBC compatibility.
-- **macOS**: Built on macOS runners generating universal binaries (`x86_64` and `arm64`).
-- **Windows**: Built using MSVC compiler tools targeting `AMD64`.
+- **Linux**: `x86_64` only, compiled inside a `manylinux_2_28` Docker container
+  for broad GLIBC compatibility (32-bit `i686` and `musllinux` are skipped —
+  NumPy/SciPy ship no wheels for them). OpenMP via the system `libgomp`.
+- **macOS**: `arm64` only (Apple Silicon). OpenMP uses a low-deployment-target
+  `libomp` (macOS 11) fetched from `mac.r-project.org` and bundled into the
+  wheel by `delocate`. Intel Macs install from the source distribution.
+- **Windows**: Built using MSVC compiler tools targeting `AMD64`; OpenMP via
+  `/openmp`.
 
 ---
 
 ## 3. Releasing on GitHub and PyPI
 
 Releasing a new version is fully automated via our CI/CD pipeline using **Trusted Publishing (OIDC)** on PyPI and automated GitHub Release attachments.
+
+### Step 0: One-Time PyPI Setup (Trusted Publisher)
+Trusted publishing must be registered **once** on PyPI. No API tokens are stored
+in GitHub. Sign in to [pypi.org](https://pypi.org) and:
+
+- **New project** (not yet on PyPI): account → *Publishing* → *Add a pending publisher*.
+- **Existing project**: project → *Manage* → *Publishing* → *Add a new publisher*.
+
+Fill in **exactly**:
+
+| Field | Value |
+|-------|-------|
+| PyPI Project Name | `openptv2` |
+| Owner | `alexlib` |
+| Repository name | `openptv2` |
+| Workflow name | `cibuildwheel.yml` |
+| Environment name | `pypi` |
+
+The `Environment name` **must** match the `environment: pypi` declared on the
+`upload_pypi` job — otherwise PyPI rejects the OIDC token. Optionally, in the
+GitHub repo *Settings → Environments → `pypi`*, add yourself as a **required
+reviewer** so each publish waits for one-click approval (guards against
+accidental releases).
 
 ### Step 1: Update the Version
 1. Open `pyproject.toml` and locate the `[project]` configuration block.
@@ -110,7 +138,11 @@ git push origin v1.0.1
 When the release tag is pushed, the `.github/workflows/cibuildwheel.yml` action triggers:
 1. **Compilation**: Launches parallel compilation tasks for all matrix platforms using `cibuildwheel`.
 2. **Packaging**: Creates the source distribution (`.tar.gz`).
-3. **PyPI Upload**: Authenticates with PyPI using **Trusted Publishing (OIDC)** (no password/token storage needed) and uploads all generated wheel assets to PyPI.
+3. **PyPI Upload**: Runs in the `pypi` GitHub environment and authenticates with
+   PyPI using **Trusted Publishing (OIDC)** (no password/token storage needed),
+   then uploads all wheels and the sdist. `skip-existing` is enabled, so
+   re-running a release that was already (partly) uploaded won't fail — but PyPI
+   still rejects re-uploading an *existing version*, so always bump first.
 
 ### Step 4: GitHub Release Creation
 The CI/CD workflow automatically creates a GitHub Release for your tag:
