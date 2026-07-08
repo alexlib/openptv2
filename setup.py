@@ -28,6 +28,25 @@ import numpy
 # ---------------------------------------------------------------------------
 ROOT = Path(__file__).parent.resolve()
 
+
+def _libomp_prefix():
+    """libomp prefix for macOS OpenMP (Apple clang needs it).
+
+    Order: explicit OPENPTV_LIBOMP_PREFIX (CI uses a low-deployment-target
+    libomp under /usr/local), then `brew --prefix libomp`, then arm64 default.
+    """
+    import subprocess
+
+    env = os.environ.get("OPENPTV_LIBOMP_PREFIX")
+    if env:
+        return env
+    try:
+        return subprocess.check_output(
+            ["brew", "--prefix", "libomp"], text=True
+        ).strip()
+    except Exception:
+        return "/opt/homebrew/opt/libomp"
+
 # All 18 modules translated from the C library to Cython 3 Pure Python
 # Note: track_kernels.py is a shim re-exporting from sub-modules.
 ALGORITHMS_MODULES = [
@@ -245,7 +264,31 @@ def get_extensions():
             if mod == "track_kernels_tracking":
                 sources.append("src/openptv2/algorithms/cas_shim.c")
 
-            if not sys.platform.startswith("win"):
+            if sys.platform.startswith("win"):
+                opt = "/Od" if is_dev else "/O2"
+                extra_compile_args.extend(
+                    [opt, "/W4", "/std:c11", "/D_CRT_SECURE_NO_WARNINGS", "/openmp"]
+                )
+            elif sys.platform == "darwin":
+                # Apple clang rejects bare -fopenmp; it needs Homebrew libomp
+                # via -Xpreprocessor -fopenmp + -lomp. delocate bundles
+                # libomp.dylib into the wheel and rewrites the rpath.
+                opt = "-O0" if is_dev else "-O3"
+                libomp = _libomp_prefix()
+                extra_compile_args.extend(
+                    [
+                        opt,
+                        "-Wno-cpp",
+                        "-Wno-unused-function",
+                        "-Xpreprocessor",
+                        "-fopenmp",
+                        f"-I{libomp}/include",
+                    ]
+                )
+                extra_link_args.extend(
+                    ["-Wl,-rpath,@loader_path", f"-L{libomp}/lib", "-lomp"]
+                )
+            else:
                 opt = "-O0" if is_dev else "-O3"
                 extra_compile_args.extend(
                     [
@@ -257,11 +300,6 @@ def get_extensions():
                     ]
                 )
                 extra_link_args.extend(["-Wl,-rpath,$ORIGIN", "-fopenmp"])
-            else:
-                opt = "/Od" if is_dev else "/O2"
-                extra_compile_args.extend(
-                    [opt, "/W4", "/std:c11", "/D_CRT_SECURE_NO_WARNINGS", "/openmp"]
-                )
 
             extensions.append(
                 Extension(
