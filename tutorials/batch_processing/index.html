@@ -13,10 +13,10 @@
       
       
       
-        <link rel="prev" href="../cython_and_pure_python/">
+        <link rel="prev" href="../getting_started_tutorial/">
       
       
-        <link rel="next" href="../packaging_and_releases/">
+        <link rel="next" href="../tracking_visualization/">
       
       
         
@@ -27,7 +27,7 @@
     
     
       
-        <title>Documentation Workflow - OpenPTV2 Documentation</title>
+        <title>Command-Line Batch Processing - OpenPTV2 Documentation</title>
       
     
     
@@ -78,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#documentation-workflow-github-pages-deployment" class="md-skip">
+        <a href="#tutorial-command-line-batch-processing-with-openptv2" class="md-skip">
           Skip to content
         </a>
       
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Documentation Workflow
+              Command-Line Batch Processing
             
           </span>
         </div>
@@ -280,11 +280,13 @@
   
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="../../tutorials/getting_started_tutorial/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../getting_started_tutorial/" class="md-tabs__link">
           
   
   
@@ -319,13 +321,11 @@
   
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="../building/" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="../../developer_guide/building/" class="md-tabs__link">
           
   
   
@@ -487,28 +487,31 @@
       
   
   
+    
   
   
+  
     
     
     
     
+      
+        
+        
       
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
         
           
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
-        
-          
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
             
   
   
@@ -526,7 +529,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             
@@ -544,7 +547,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/getting_started_tutorial/" class="md-nav__link">
+      <a href="../getting_started_tutorial/" class="md-nav__link">
         
   
   
@@ -569,10 +572,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../tutorials/batch_processing/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Command-Line Batch Processing
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -588,6 +618,154 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerequisites
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cli-command-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CLI Command Structure
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CLI Command Structure">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-positional-arguments" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Positional Arguments:
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#major-optional-flags" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Major Optional Flags:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#guided-walkthrough-cavity-flow-dataset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Guided Walkthrough: Cavity Flow Dataset
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Guided Walkthrough: Cavity Flow Dataset">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-identifying-the-frame-range" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Identifying the Frame Range
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-standard-tracking-mode-mode-tracking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Standard Tracking Mode (--mode tracking)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Standard Tracking Mode (--mode tracking)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#expected-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Expected Output:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-full-pipeline-mode-mode-both" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Full Pipeline Mode (--mode both)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#benefits-of-the-cython-3-single-engine-batch-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Benefits of the Cython 3 Single-Engine Batch Mode
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -600,7 +778,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/tracking_visualization/" class="md-nav__link">
+      <a href="../tracking_visualization/" class="md-nav__link">
         
   
   
@@ -628,7 +806,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/tracking_debug_visualization/" class="md-nav__link">
+      <a href="../tracking_debug_visualization/" class="md-nav__link">
         
   
   
@@ -687,31 +865,28 @@
       
   
   
-    
   
   
-  
     
     
     
     
-      
-        
-        
       
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
         
           
-          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
             
   
   
@@ -729,7 +904,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             
@@ -747,7 +922,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../building/" class="md-nav__link">
+      <a href="../../developer_guide/building/" class="md-nav__link">
         
   
   
@@ -775,7 +950,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../cython_and_pure_python/" class="md-nav__link">
+      <a href="../../developer_guide/cython_and_pure_python/" class="md-nav__link">
         
   
   
@@ -800,37 +975,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Documentation Workflow
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../developer_guide/documentation_workflow/" class="md-nav__link">
         
   
   
@@ -846,137 +994,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#1-documentation-structure" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. Documentation Structure
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#2-editing-and-updating-documents" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. Editing and Updating Documents
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="2. Editing and Updating Documents">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#step-1-create-or-modify-a-markdown-file" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Step 1: Create or Modify a Markdown File
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#step-2-register-in-mkdocsyml-if-adding-a-new-page" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Step 2: Register in mkdocs.yml (If adding a new page)
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#3-previewing-your-changes-locally" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. Previewing Your Changes Locally
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#4-triggering-automated-deployment-to-github-pages" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. Triggering Automated Deployment to GitHub Pages
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="4. Triggering Automated Deployment to GitHub Pages">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#option-a-automatic-deployment-on-push-recommended" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Option A: Automatic Deployment on Push (Recommended)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#option-b-manual-workflow-dispatch" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Option B: Manual Workflow Dispatch
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#5-verifying-the-rendered-website" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5. Verifying the Rendered Website
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -989,7 +1006,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../packaging_and_releases/" class="md-nav__link">
+      <a href="../../developer_guide/packaging_and_releases/" class="md-nav__link">
         
   
   
@@ -1189,10 +1206,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#1-documentation-structure" class="md-nav__link">
+  <a href="#prerequisites" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. Documentation Structure
+        Prerequisites
       
     </span>
   </a>
@@ -1200,22 +1217,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#2-editing-and-updating-documents" class="md-nav__link">
+  <a href="#cli-command-structure" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. Editing and Updating Documents
+        CLI Command Structure
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="2. Editing and Updating Documents">
+    <nav class="md-nav" aria-label="CLI Command Structure">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#step-1-create-or-modify-a-markdown-file" class="md-nav__link">
+  <a href="#key-positional-arguments" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 1: Create or Modify a Markdown File
+        Key Positional Arguments:
       
     </span>
   </a>
@@ -1223,10 +1240,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#step-2-register-in-mkdocsyml-if-adding-a-new-page" class="md-nav__link">
+  <a href="#major-optional-flags" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 2: Register in mkdocs.yml (If adding a new page)
+        Major Optional Flags:
       
     </span>
   </a>
@@ -1239,33 +1256,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#3-previewing-your-changes-locally" class="md-nav__link">
+  <a href="#guided-walkthrough-cavity-flow-dataset" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Previewing Your Changes Locally
+        Guided Walkthrough: Cavity Flow Dataset
       
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#4-triggering-automated-deployment-to-github-pages" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. Triggering Automated Deployment to GitHub Pages
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="4. Triggering Automated Deployment to GitHub Pages">
+    <nav class="md-nav" aria-label="Guided Walkthrough: Cavity Flow Dataset">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#option-a-automatic-deployment-on-push-recommended" class="md-nav__link">
+  <a href="#1-identifying-the-frame-range" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Option A: Automatic Deployment on Push (Recommended)
+        1. Identifying the Frame Range
       
     </span>
   </a>
@@ -1273,10 +1279,38 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#option-b-manual-workflow-dispatch" class="md-nav__link">
+  <a href="#2-standard-tracking-mode-mode-tracking" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Option B: Manual Workflow Dispatch
+        2. Standard Tracking Mode (--mode tracking)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Standard Tracking Mode (--mode tracking)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#expected-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Expected Output:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-full-pipeline-mode-mode-both" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Full Pipeline Mode (--mode both)
       
     </span>
   </a>
@@ -1289,10 +1323,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#5-verifying-the-rendered-website" class="md-nav__link">
+  <a href="#benefits-of-the-cython-3-single-engine-batch-mode" class="md-nav__link">
     <span class="md-ellipsis">
       
-        5. Verifying the Rendered Website
+        Benefits of the Cython 3 Single-Engine Batch Mode
       
     </span>
   </a>
@@ -1319,75 +1353,105 @@
   
 
 
-<h1 id="documentation-workflow-github-pages-deployment">Documentation Workflow &amp; GitHub Pages Deployment<a class="headerlink" href="#documentation-workflow-github-pages-deployment" title="Permanent link">&para;</a></h1>
-<p>This guide explains how to add, edit, preview, and deploy documentation for OpenPTV2.</p>
+<h1 id="tutorial-command-line-batch-processing-with-openptv2">Tutorial: Command-Line Batch Processing with OpenPTV2<a class="headerlink" href="#tutorial-command-line-batch-processing-with-openptv2" title="Permanent link">&para;</a></h1>
+<p>In this tutorial, you will learn how to run Particle Tracking Velocimetry (PTV) on image sequences using the <code>openptv2-batch</code> command-line interface (CLI). </p>
+<p>The batch processing utility is designed for high-performance automation, running the unified <strong>Cython 3 Pure Python</strong> engine headlessly. This is ideal for large datasets, overnight runs, or remote cluster deployments where a graphical user interface (GUI) is not available.</p>
 <hr />
-<h2 id="1-documentation-structure">1. Documentation Structure<a class="headerlink" href="#1-documentation-structure" title="Permanent link">&para;</a></h2>
-<p>All documentation resides in the <code>docs/</code> folder at the root of the repository:
-<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>docs/
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>├── index.md                 # Documentation home page
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>├── installation.md          # Platform &amp; VM setup instructions
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>├── first_steps.md           # Quick start scripting and GUI guides
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>├── tests.md                 # Running and managing test suites
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>├── developer_guide/         # Developer guides
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>│   ├── building.md          # Build instructions
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>│   ├── cython_and_pure_python.md # Pure Python vs Cython compiled mode guide
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>│   ├── documentation_workflow.md # This guide
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>│   └── packaging_and_releases.md # Wheel &amp; releasing guide
-</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>├── tutorials/               # User tutorials
-</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>│   ├── getting_started_tutorial.md # End-to-end tutorial
-</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>│   ├── tracking_visualization.md
-</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>│   └── tracking_debug_visualization.md
-</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>└── HOW_TO_TEST_GUI.md       # GUI testing guide
+<h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
+<p>Ensure that you have installed OpenPTV2 using <code>uv</code> (as managed in this project):
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Setup development dependencies if not already done</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>uv<span class="w"> </span>sync<span class="w"> </span>--extra<span class="w"> </span>dev
 </span></code></pre></div></p>
+<p>To run the commands in this tutorial, we will use the <code>test_cavity</code> dataset included in the repository's test suite under <code>test_data/test_cavity</code>.</p>
 <hr />
-<h2 id="2-editing-and-updating-documents">2. Editing and Updating Documents<a class="headerlink" href="#2-editing-and-updating-documents" title="Permanent link">&para;</a></h2>
-<h3 id="step-1-create-or-modify-a-markdown-file">Step 1: Create or Modify a Markdown File<a class="headerlink" href="#step-1-create-or-modify-a-markdown-file" title="Permanent link">&para;</a></h3>
-<p>You can edit any existing <code>.md</code> file inside the <code>docs/</code> folder or create a new one.</p>
-<h3 id="step-2-register-in-mkdocsyml-if-adding-a-new-page">Step 2: Register in <code>mkdocs.yml</code> (If adding a new page)<a class="headerlink" href="#step-2-register-in-mkdocsyml-if-adding-a-new-page" title="Permanent link">&para;</a></h3>
-<p>If you create a new Markdown file, you <strong>must</strong> register it in the <code>nav</code> section of <code>mkdocs.yml</code> at the repository root so it appears in the website sidebar:</p>
-<div class="language-yaml highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nt">nav</span><span class="p">:</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">Home</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">index.md</span>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">Installation &amp; Setup</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">installation.md</span>
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">Developer Guide</span><span class="p">:</span>
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">Building from Source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">developer_guide/building.md</span>
-</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">Documentation Workflow</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">developer_guide/documentation_workflow.md</span><span class="w"> </span><span class="c1"># Added here</span>
+<h2 id="cli-command-structure">CLI Command Structure<a class="headerlink" href="#cli-command-structure" title="Permanent link">&para;</a></h2>
+<p>The general syntax of the batch processor command is:
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>uv<span class="w"> </span>run<span class="w"> </span>openptv2-batch<span class="w"> </span>&lt;experiment_directory_or_yaml&gt;<span class="w"> </span>&lt;first_frame&gt;<span class="w"> </span>&lt;last_frame&gt;<span class="w"> </span><span class="o">[</span>options<span class="o">]</span>
+</span></code></pre></div></p>
+<h3 id="key-positional-arguments">Key Positional Arguments:<a class="headerlink" href="#key-positional-arguments" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>&lt;experiment_directory_or_yaml&gt;</code>: The absolute or relative path to either the directory containing your experiment files, or a specific <code>.yaml</code> configuration file (e.g., <code>parameters_Run1.yaml</code>). If a directory is specified, the CLI will automatically search for and select the first available YAML parameter file.</li>
+<li><code>&lt;first_frame&gt;</code>: The first frame index of the sequence to process.</li>
+<li><code>&lt;last_frame&gt;</code>: The last frame index of the sequence to process.</li>
+</ul>
+<h3 id="major-optional-flags">Major Optional Flags:<a class="headerlink" href="#major-optional-flags" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>--mode &lt;both|sequence|tracking&gt;</code>:</li>
+<li><code>both</code> (Default): Runs the entire 3D-PTV pipeline (image preprocessing, target detection, stereo-correspondence, and trajectory tracking).</li>
+<li><code>sequence</code>: Runs the sequence loop only (preprocessing, detection, and stereo-correspondence), writing output files into <code>res/rt_is.&lt;frame&gt;</code>.</li>
+<li><code>tracking</code>: Runs the tracking engine only, using pre-existing 3D correspondence files (<code>res/rt_is.&lt;frame&gt;</code>) and 2D target files (<code>img/cam*.&lt;frame&gt;_targets</code>).</li>
+<li><code>--track3d</code>: Enables 3D segment tracking instead of standard epipolar tracking.</li>
+</ul>
+<hr />
+<h2 id="guided-walkthrough-cavity-flow-dataset">Guided Walkthrough: Cavity Flow Dataset<a class="headerlink" href="#guided-walkthrough-cavity-flow-dataset" title="Permanent link">&para;</a></h2>
+<p>Let's walk through how to run batch tracking on the <code>test_cavity</code> dataset located in <code>test_data/test_cavity</code>.</p>
+<h3 id="1-identifying-the-frame-range">1. Identifying the Frame Range<a class="headerlink" href="#1-identifying-the-frame-range" title="Permanent link">&para;</a></h3>
+<p>First, check the sequence parameters configured for the dataset. Viewing <code>test_data/test_cavity/parameters/sequence.par</code> or <code>test_data/test_cavity/parameters_Run1.yaml</code> reveals:
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nt">sequence</span><span class="p">:</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span><span class="nt">first</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10001</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">  </span><span class="nt">last</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10004</span>
 </span></code></pre></div>
-<hr />
-<h2 id="3-previewing-your-changes-locally">3. Previewing Your Changes Locally<a class="headerlink" href="#3-previewing-your-changes-locally" title="Permanent link">&para;</a></h2>
-<p>Before pushing changes to GitHub, it is best to build and run the documentation server locally to verify spelling, layout, and link paths:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># 1. Install development documentation utilities</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>uv<span class="w"> </span>sync<span class="w"> </span>--extra<span class="w"> </span>dev
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="c1"># 2. Run the local development server</span>
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>uv<span class="w"> </span>run<span class="w"> </span>mkdocs<span class="w"> </span>serve
+Our sequence spans from frame <strong>10001</strong> to <strong>10004</strong>.</p>
+<h3 id="2-standard-tracking-mode-mode-tracking">2. Standard Tracking Mode (<code>--mode tracking</code>)<a class="headerlink" href="#2-standard-tracking-mode-mode-tracking" title="Permanent link">&para;</a></h3>
+<p>Experimental PTV datasets often contain fine-tuned 2D target and 3D correspondence files generated or corrected manually. When you have high-quality pre-existing <code>rt_is</code> correspondence files and wish to run/re-run only the tracking step, use <code>--mode tracking</code>.</p>
+<p>Let's clean and restore the original <code>test_cavity</code> sequence data, then run the tracking batch processor:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># Clean up any previously generated targets and results</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>rm<span class="w"> </span>-rf<span class="w"> </span>test_data/test_cavity/img<span class="w"> </span>test_data/test_cavity/res
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="c1"># Restore original targets and correspondence files</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>cp<span class="w"> </span>-rf<span class="w"> </span>test_data/test_cavity/img_orig<span class="w"> </span>test_data/test_cavity/img
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>cp<span class="w"> </span>-rf<span class="w"> </span>test_data/test_cavity/res_orig<span class="w"> </span>test_data/test_cavity/res
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="c1"># Run the batch tracker</span>
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>uv<span class="w"> </span>run<span class="w"> </span>openptv2-batch<span class="w"> </span>test_data/test_cavity<span class="w"> </span><span class="m">10001</span><span class="w"> </span><span class="m">10004</span><span class="w"> </span>--mode<span class="w"> </span>tracking
 </span></code></pre></div>
-<p>This starts a server at <strong><a href="http://127.0.0.1:8000/">http://127.0.0.1:8000/</a></strong>. The local server dynamically watches your <code>docs/</code> directory and will automatically refresh and re-render the pages in your browser as you make modifications!</p>
-<hr />
-<h2 id="4-triggering-automated-deployment-to-github-pages">4. Triggering Automated Deployment to GitHub Pages<a class="headerlink" href="#4-triggering-automated-deployment-to-github-pages" title="Permanent link">&para;</a></h2>
-<p>Documentation hosting is fully automated. To render and publish updates to the live site at <strong><a href="https://alexlib.github.io/openptv2/">https://alexlib.github.io/openptv2/</a></strong>:</p>
-<h3 id="option-a-automatic-deployment-on-push-recommended">Option A: Automatic Deployment on Push (Recommended)<a class="headerlink" href="#option-a-automatic-deployment-on-push-recommended" title="Permanent link">&para;</a></h3>
-<p>Our CI/CD workflow (<code>.github/workflows/deploy_docs.yml</code>) is configured to listen for updates:
-1. When you push your modifications to the <strong><code>main</code></strong> or <strong><code>master</code></strong> branches:
-   <div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>git<span class="w"> </span>add<span class="w"> </span>.
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;docs: describe documentation workflow and update pages&quot;</span>
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>main
+<h4 id="expected-output">Expected Output:<a class="headerlink" href="#expected-output" title="Permanent link">&para;</a></h4>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>Starting batch processing
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>Using tracking engine: cython3-pure-python
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>Directory provided. Selected parameter file: /home/user/Documents/GitHub/openptv2/test_data/test_cavity/parameters_Run1.yaml
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>Starting batch processing with YAML file: /home/user/Documents/GitHub/openptv2/test_data/test_cavity/parameters_Run1.yaml
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>Frame range: 10001 to 10004
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>Repetitions: 1
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>Experiment directory: /home/user/Documents/GitHub/openptv2/test_data/test_cavity
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>Loaded calibration for camera 1 from cal/cam1.tif.ori
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>Loaded calibration for camera 2 from cal/cam2.tif.ori
+</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>Loaded calibration for camera 3 from cal/cam3.tif.ori
+</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a>Loaded calibration for camera 4 from cal/cam4.tif.ori
+</span><span id="__span-4-13"><a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a>
+</span><span id="__span-4-14"><a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a>Initializing tracker only (skipping sequence)...
+</span><span id="__span-4-15"><a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a>Initializing Tracker with parameters:
+</span><span id="__span-4-16"><a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a>[ENGINE] Using single Cython 3 tracker runtime
+</span><span id="__span-4-17"><a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a>Running Standard Epipolar Tracking only...
+</span><span id="__span-4-18"><a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a>step: 10001, curr: 672, next: 699, links: 447, lost: 225, add: 0
+</span><span id="__span-4-19"><a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a>step: 10002, curr: 699, next: 711, links: 492, lost: 207, add: 0
+</span><span id="__span-4-20"><a id="__codelineno-4-20" name="__codelineno-4-20" href="#__codelineno-4-20"></a>step: 10003, curr: 711, next: 692, links: 439, lost: 272, add: 0
+</span><span id="__span-4-21"><a id="__codelineno-4-21" name="__codelineno-4-21" href="#__codelineno-4-21"></a>step: 10004, curr: 692, next: 0, links: 426, lost: 266, add: 0
+</span><span id="__span-4-22"><a id="__codelineno-4-22" name="__codelineno-4-22" href="#__codelineno-4-22"></a>Average over sequence, particles: 924.7, links: 601.3, lost: 323.3
+</span><span id="__span-4-23"><a id="__codelineno-4-23" name="__codelineno-4-23" href="#__codelineno-4-23"></a>Batch processing completed successfully
+</span><span id="__span-4-24"><a id="__codelineno-4-24" name="__codelineno-4-24" href="#__codelineno-4-24"></a>Total processing time: 1.41 seconds
 </span></code></pre></div>
-2. The GitHub Actions runner will automatically spin up, install the dependencies, build the static site, and force-push the compiled output directly to the repository's <code>gh-pages</code> branch.</p>
-<h3 id="option-b-manual-workflow-dispatch">Option B: Manual Workflow Dispatch<a class="headerlink" href="#option-b-manual-workflow-dispatch" title="Permanent link">&para;</a></h3>
-<p>If you need to manually force a re-render and deployment without pushing a new commit:
-1. Navigate to your repository on GitHub: <code>https://github.com/alexlib/openptv2</code>
-2. Click on the <strong>Actions</strong> tab at the top.
-3. Select <strong>Deploy Docs</strong> from the list of workflows on the left.
-4. Click the <strong>Run workflow</strong> dropdown on the right, select your branch (e.g., <code>main</code>), and click the green <strong>Run workflow</strong> button.</p>
+<p>The output indicates that:
+* At step 10001, out of 672 active particles, <strong>447</strong> successful forward links (trajectories) were established.
+* At step 10002, <strong>492</strong> links were found.
+* At step 10003, <strong>439</strong> links were found.
+* A total of <strong>1,378 unique trajectory links</strong> were established across the sequence, matching the standard benchmark exactly.</p>
 <hr />
-<h2 id="5-verifying-the-rendered-website">5. Verifying the Rendered Website<a class="headerlink" href="#5-verifying-the-rendered-website" title="Permanent link">&para;</a></h2>
-<p>Once the GitHub Actions workflow successfully finishes, the generated documentation site will render and serve live at:</p>
-<p>👉 <strong><a href="https://alexlib.github.io/openptv2/">https://alexlib.github.io/openptv2/</a></strong></p>
+<h3 id="3-full-pipeline-mode-mode-both">3. Full Pipeline Mode (<code>--mode both</code>)<a class="headerlink" href="#3-full-pipeline-mode-mode-both" title="Permanent link">&para;</a></h3>
+<p>If you want to perform particle detection, stereomatching, and tracking from raw images entirely from scratch:
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>uv<span class="w"> </span>run<span class="w"> </span>openptv2-batch<span class="w"> </span>test_data/test_cavity<span class="w"> </span><span class="m">10001</span><span class="w"> </span><span class="m">10004</span><span class="w"> </span>--mode<span class="w"> </span>both
+</span></code></pre></div></p>
 <blockquote>
-<p>[!TIP]
-If you make changes and do not see them on the live website immediately, clear your browser cache (using <code>Ctrl+F5</code> or <code>Cmd+Shift+R</code>) or check the GitHub Actions logs to make sure the <strong>Deploy Docs</strong> workflow run was successfully completed.</p>
+<p>[!IMPORTANT]
+Running the full pipeline from scratch requires highly accurate detection thresholds (e.g., grey-value thresholds, pixel size limits) configured in <code>parameters_Run1.yaml</code> (<code>targ_rec</code> and <code>detect_plate</code> sections). If the default values are not tuned, particle detection may yield too few or noisy targets, leading to low stereomatching quality and poor tracking links. When processing new raw images, use the <code>openptv2-gui</code> first to fine-tune your detection parameters visually before deploying batch runs!</p>
 </blockquote>
+<hr />
+<h2 id="benefits-of-the-cython-3-single-engine-batch-mode">Benefits of the Cython 3 Single-Engine Batch Mode<a class="headerlink" href="#benefits-of-the-cython-3-single-engine-batch-mode" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Headless Execution</strong>: No graphics context, display server (X11/Wayland), or GUI libraries are loaded. It runs perfectly over SSH and within Docker containers.</li>
+<li><strong>Compiled Execution Speed</strong>: By utilizing the unified Cython 3 engine, the mathematical loops run compiled at C-speeds, processing hundreds of particles per frame in milliseconds.</li>
+<li><strong>Reproducibility</strong>: Parameter configs are completely standardized in human-readable YAML files, ensuring your scientific tracking experiments are 100% reproducible across different systems.</li>
+</ol>
 
 
 
