@@ -204,7 +204,7 @@ def _process_frame_worker(args: Tuple) -> int:
                 img = np.clip(img - background, 0, 255).astype(np.uint8)
             except (ValueError, FileNotFoundError):
                 pass
-        high_pass = simple_highpass(img, cpar)
+        high_pass = simple_highpass(img, cpar, tpar.get_cross_size() if hasattr(tpar, "get_cross_size") else DEFAULT_HIGHPASS_FILTER_SIZE)
         targs = target_recognition(high_pass, tpar, i_cam, cpar)
 
         if len(targs) > 0:
@@ -332,9 +332,11 @@ def negative(img: np.ndarray) -> np.ndarray:
     return 255 - img
 
 
-def simple_highpass(img: np.ndarray, cpar: ControlParams) -> np.ndarray:
+def simple_highpass(img: np.ndarray, cpar: ControlParams, filter_size: int = None) -> np.ndarray:
     """Apply a simple highpass filter to an image using liboptv preprocess_image."""
-    return preprocess_image(img, cpar.get_hp_flag(), cpar, DEFAULT_HIGHPASS_FILTER_SIZE)
+    if filter_size is None:
+        filter_size = DEFAULT_HIGHPASS_FILTER_SIZE
+    return preprocess_image(img, 0, cpar, filter_size)
 
 
 def _populate_cpar(ptv_params: dict, num_cams: int) -> ControlParams:
@@ -476,6 +478,7 @@ def _populate_tpar(targ_params: dict, num_cams: int) -> TargetParams:
         tpar.set_ysize_bounds((params["nymin"], params["nymax"]))
         tpar.set_min_sum_grey(params["sumg_min"])
         tpar.set_max_discontinuity(params["disco"])
+        tpar.set_cross_size(params.get("cr_sz", 2))
     elif "detect_plate" in targ_params:
         params = targ_params["detect_plate"]
         # Convert detect_plate keys to TargetParams fields
@@ -516,6 +519,7 @@ def _populate_tpar(targ_params: dict, num_cams: int) -> TargetParams:
         tpar.set_ysize_bounds((params["min_npix_y"], params["max_npix_y"]))
         tpar.set_min_sum_grey(params["sum_grey"])
         tpar.set_max_discontinuity(params["tol_dis"])
+        tpar.set_cross_size(params.get("size_cross", 3))
     else:
         raise ValueError(
             "Target parameters must contain either 'targ_rec' or 'detect_plate' section."
@@ -845,7 +849,7 @@ def py_sequence_loop(exp) -> None:
                         img = np.clip(img - background, 0, 255).astype(np.uint8)
                     except (ValueError, FileNotFoundError):
                         print("failed to read the mask")
-                high_pass = simple_highpass(img, cpar)
+                high_pass = simple_highpass(img, cpar, tpar.get_cross_size() if hasattr(tpar, "get_cross_size") else DEFAULT_HIGHPASS_FILTER_SIZE)
                 targs = target_recognition(high_pass, tpar, i_cam, cpar)
 
             if len(targs) > 0:
@@ -1130,7 +1134,7 @@ def py_sequence_loop_python(exp) -> None:
                         img = np.clip(img - background, 0, 255).astype(np.uint8)
                     except (ValueError, FileNotFoundError):
                         print("failed to read the mask")
-                high_pass = simple_highpass(img, cpar)
+                high_pass = simple_highpass(img, cpar, tpar.get_cross_size() if hasattr(tpar, "get_cross_size") else DEFAULT_HIGHPASS_FILTER_SIZE)
                 targs = alg_target_recognition(high_pass, tpar, i_cam, cpar)
 
             if len(targs) > 0:
