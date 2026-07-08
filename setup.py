@@ -30,18 +30,21 @@ ROOT = Path(__file__).parent.resolve()
 
 
 def _libomp_prefix():
-    """Homebrew libomp prefix for macOS OpenMP (Apple clang needs it).
+    """libomp prefix for macOS OpenMP (Apple clang needs it).
 
-    Queries `brew --prefix libomp`; falls back to the default arm64 path.
+    Order: explicit OPENPTV_LIBOMP_PREFIX (CI uses a low-deployment-target
+    libomp under /usr/local), then `brew --prefix libomp`, then arm64 default.
     """
     import subprocess
 
+    env = os.environ.get("OPENPTV_LIBOMP_PREFIX")
+    if env:
+        return env
     try:
         return subprocess.check_output(
             ["brew", "--prefix", "libomp"], text=True
         ).strip()
     except Exception:
-        # ponytail: arm64 default; brew query above is the real path
         return "/opt/homebrew/opt/libomp"
 
 # All 18 modules translated from the C library to Cython 3 Pure Python
