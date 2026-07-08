@@ -65,12 +65,16 @@ jobs:
           # wheel deps; the full suite's GUI-optional deps (imageio, skimage,
           # tqdm, ...) are intentionally out of scope for wheel CI.
           CIBW_TEST_REQUIRES: "pytest"
+          # Import the OpenMP tracking kernels (validates libomp linkage — this
+          # is where the macOS wheel failed at load), then run dependency-light
+          # compiled-core tests. test_track/test_track3d are excluded: they
+          # chdir + copytree dataset res_orig fixtures (not all tracked) and are
+          # regression tests unsuited to wheel smoke.
           CIBW_TEST_COMMAND: >
             python {project}/scripts/ci_test_setup.py {project} &&
+            python -c "import openptv2.algorithms.track_kernels_tracking, openptv2.algorithms.track3d; print('openmp import OK')" &&
             pytest
             tests/unit/test_vec_utils.py
-            tests/unit/test_track.py
-            tests/unit/test_track3d.py
             tests/unit/test_correspondences.py
             tests/unit/test_orientation.py
             tests/unit/test_lsqadj.py
