@@ -50,8 +50,10 @@ jobs:
           CIBW_MANYLINUX_X86_64_IMAGE: "manylinux_2_28"
           CIBW_MANYLINUX_AARCH64_IMAGE: "manylinux_2_28"
           CIBW_ARCHS_WINDOWS: AMD64
-          CIBW_ARCHS_MACOS: x86_64 arm64
-          CIBW_TEST_REQUIRES: "pytest numpy cython scipy pyyaml"
+          # Apple-Silicon-first: arm64 only. Intel Macs use the sdist.
+          # (Add a macos-13 runner later if prebuilt x86_64 wheels are needed.)
+          CIBW_ARCHS_MACOS: arm64
+          CIBW_TEST_REQUIRES: "pytest numpy cython scipy pyyaml imageio scikit-image"
           CIBW_TEST_COMMAND: "python {project}/scripts/ci_test_setup.py {project} && pytest tests/unit/ -v -m \"not slow\" --tb=short"
 
       
