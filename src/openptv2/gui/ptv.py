@@ -204,7 +204,9 @@ def _process_frame_worker(args: Tuple) -> int:
                 img = np.clip(img - background, 0, 255).astype(np.uint8)
             except (ValueError, FileNotFoundError):
                 pass
-        high_pass = simple_highpass(img, cpar)
+        high_pass = simple_highpass(
+            img, cpar, ptv_params.get("highpass_size", DEFAULT_HIGHPASS_FILTER_SIZE)
+        )
         targs = target_recognition(high_pass, tpar, i_cam, cpar)
 
         if len(targs) > 0:
@@ -574,7 +576,11 @@ def py_pre_processing_c(
     processed_images = []
     for i, img in enumerate(list_of_images):
         img_lp = img.copy()
-        processed_images.append(simple_highpass(img_lp, cpar))
+        processed_images.append(
+            simple_highpass(
+                img_lp, cpar, ptv_params.get("highpass_size", DEFAULT_HIGHPASS_FILTER_SIZE)
+            )
+        )
 
     return processed_images
 
@@ -849,7 +855,11 @@ def py_sequence_loop(exp) -> None:
                         img = np.clip(img - background, 0, 255).astype(np.uint8)
                     except (ValueError, FileNotFoundError):
                         print("failed to read the mask")
-                high_pass = simple_highpass(img, cpar)
+                high_pass = simple_highpass(
+                    img,
+                    cpar,
+                    ptv_params_dict.get("highpass_size", DEFAULT_HIGHPASS_FILTER_SIZE),
+                )
                 targs = target_recognition(high_pass, tpar, i_cam, cpar)
 
             if len(targs) > 0:
@@ -1134,7 +1144,11 @@ def py_sequence_loop_python(exp) -> None:
                         img = np.clip(img - background, 0, 255).astype(np.uint8)
                     except (ValueError, FileNotFoundError):
                         print("failed to read the mask")
-                high_pass = simple_highpass(img, cpar)
+                high_pass = simple_highpass(
+                    img,
+                    cpar,
+                    ptv_params_dict.get("highpass_size", DEFAULT_HIGHPASS_FILTER_SIZE),
+                )
                 targs = alg_target_recognition(high_pass, tpar, i_cam, cpar)
 
             if len(targs) > 0:
