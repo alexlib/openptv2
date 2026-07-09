@@ -394,13 +394,19 @@ def test_step3_pixel_to_metric(rembg_small_dir):
             assert set(pnrs) == set(range(len(raw))), (
                 f"cam{cam + 1}: pnrs not a complete set 0..{len(raw) - 1}: got {sorted(pnrs)[:10]}..."
             )
-            # Metric coords should be in reasonable range (|x|,|y| < sensor half-size)
+            # Flat (corrected) coords are the undistorted metric coordinate
+            # minus the principal point (xh, yh), so the physical bound must
+            # include the principal-point offset — for off-center calibrations
+            # |xh|,|yh| can exceed the sensor half-size on their own. Use a
+            # generous margin (2× sensor half-size) on top of that offset.
             sensor_half_x = cpar.imx * cpar.pix_x / 2  # ~0.896 mm for 256×256
             sensor_half_y = cpar.imy * cpar.pix_y / 2
-            assert np.all(np.abs(positions[:, 0]) < sensor_half_x * 2), (
+            bound_x = 2 * sensor_half_x + abs(cals[cam].int_par.xh)
+            bound_y = 2 * sensor_half_y + abs(cals[cam].int_par.yh)
+            assert np.all(np.abs(positions[:, 0]) < bound_x), (
                 f"cam{cam + 1}: corrected x out of range: {positions[:, 0].min():.4f} to {positions[:, 0].max():.4f}"
             )
-            assert np.all(np.abs(positions[:, 1]) < sensor_half_y * 2)
+            assert np.all(np.abs(positions[:, 1]) < bound_y)
 
             print(
                 f"    cam{cam + 1}: {len(raw)} targets → "

@@ -503,6 +503,8 @@ def _correct_brown_affin_out(
     yq_old: cython.double
     dx: cython.double
     dy: cython.double
+    dxq: cython.double
+    dyq: cython.double
     change: cython.double
     pos_magnitude: cython.double
     _: cython.int
@@ -524,7 +526,9 @@ def _correct_brown_affin_out(
         yq += dy * damping
 
         # Check convergence
-        change = c_sqrt((xq - xq_old) ** 2 + (yq - yq_old) ** 2)
+        dxq = xq - xq_old
+        dyq = yq - yq_old
+        change = c_sqrt(dxq * dxq + dyq * dyq)
         pos_magnitude = c_sqrt(xq * xq + yq * yq)
         if pos_magnitude > 1e-10 and change / pos_magnitude < tol:
             break
@@ -637,7 +641,7 @@ def _correct_brown_affine_exact_out(
         xq += damping * dx_change
         yq += damping * dy_change
 
-        if c_sqrt(dx_change**2 + dy_change**2) < tol:
+        if c_sqrt(dx_change * dx_change + dy_change * dy_change) < tol:
             break
 
     out[0] = xq
@@ -837,6 +841,8 @@ def correct_brown_affine_batch(
     yt: cython.double
     dx: cython.double
     dy: cython.double
+    dxq: cython.double
+    dyq: cython.double
     change: cython.double
     pos_magnitude: cython.double
 
@@ -878,7 +884,9 @@ def correct_brown_affine_batch(
             xq += dx * damping
             yq += dy * damping
 
-            change = c_sqrt((xq - xq_old) ** 2 + (yq - yq_old) ** 2)
+            dxq = xq - xq_old
+            dyq = yq - yq_old
+            change = c_sqrt(dxq * dxq + dyq * dyq)
             pos_magnitude = c_sqrt(xq * xq + yq * yq)
             if pos_magnitude > 1e-10 and change / pos_magnitude < tol:
                 break

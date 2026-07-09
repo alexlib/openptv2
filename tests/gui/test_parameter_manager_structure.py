@@ -3,6 +3,7 @@
 Test the new ParameterManager structure with global num_cams
 """
 
+import shutil
 import sys
 import os
 from pathlib import Path
@@ -25,6 +26,9 @@ def test_parameter_manager_new_structure():
     # Change to test cavity directory
     original_cwd = Path.cwd()
     os.chdir(test_cavity_path)
+
+    new_yaml_path = test_cavity_path / "parameters_new_structure.yaml"
+    new_dir_path = test_cavity_path / "parameters_test_new"
 
     try:
         print("=== TESTING NEW PARAMETER MANAGER STRUCTURE ===")
@@ -63,7 +67,6 @@ def test_parameter_manager_new_structure():
 
         # Test saving to new YAML format
         print("\n2. Saving to new YAML format...")
-        new_yaml_path = test_cavity_path / "parameters_new_structure.yaml"
         pm.to_yaml(new_yaml_path)
 
         # Test loading from new YAML format
@@ -76,7 +79,6 @@ def test_parameter_manager_new_structure():
 
         # Test converting back to directory
         print("\n4. Converting back to legacy directory format...")
-        new_dir_path = test_cavity_path / "parameters_test_new"
         pm2.to_directory(new_dir_path)
 
         # Check the generated files
@@ -84,14 +86,16 @@ def test_parameter_manager_new_structure():
         for par_file in sorted(new_dir_path.glob("*.par")):
             print(f"  {par_file.name}")
 
-        # Clean up
-        if new_yaml_path.exists():
-            new_yaml_path.unlink()
-            print(f"Cleaned up {new_yaml_path}")
-
         print("\n=== TEST COMPLETED SUCCESSFULLY ===")
 
     finally:
+        # Clean up generated artifacts regardless of test outcome, since they
+        # were written into the shared test_data/test_cavity fixture rather
+        # than a pytest tmp_path.
+        if new_yaml_path.exists():
+            new_yaml_path.unlink()
+        if new_dir_path.exists():
+            shutil.rmtree(new_dir_path)
         os.chdir(original_cwd)
 
 

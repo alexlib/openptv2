@@ -281,6 +281,80 @@ def test_correspondence_raw_vs_optv(cavity_dir):
         os.chdir(original_cwd)
 
 
+def test_detection_value_parity(cavity_dir):
+    """Deep parity: detected target POSITIONS + pixel stats must match optv,
+    not just the counts. Same highpass image + same YAML params into both
+    optv.target_recognition and openptv2.targ_rec.
+    """
+    try:
+        import optv  # noqa: F401
+    except ImportError:
+        pytest.skip("optv bindings not available")
+
+    _prepare_test_data(cavity_dir)
+    original_cwd = Path.cwd()
+    os.chdir(cavity_dir)
+    try:
+        from imageio.v3 import imread
+        from skimage.color import rgb2gray
+        from skimage.util import img_as_ubyte
+
+        from openptv2.algorithms.segmentation import targ_rec
+        from openptv2.gui.experiment import Experiment
+        from openptv2.gui.ptv import py_start_proc_c, simple_highpass
+
+        exp = Experiment()
+        exp.pm.from_yaml(cavity_dir / "parameters_Run1.yaml")
+        num_cams = exp.pm.num_cams
+        cpar_o, spar, _vpar, _trk, tpar, _cals, _epar = py_start_proc_c(exp.pm)
+        cp_a, _vp, tp_a, _cals_a = _build_raw_algo_params(exp.pm, num_cams)
+
+        from optv.segmentation import target_recognition as o_tr
+
+        frame = 10000
+        for cam in range(num_cams):
+            img = imread(Path(spar.get_img_base_name(cam) % frame))
+            if img.ndim > 2:
+                img = rgb2gray(img)
+            if img.dtype != np.uint8:
+                img = img_as_ubyte(img)
+            hp = simple_highpass(img, cpar_o)
+
+            t_o = o_tr(hp, tpar, cam, cpar_o)
+            t_a = targ_rec(
+                img=hp, gvthres=tp_a.gvthres[cam], discont=tp_a.discont,
+                nnmin=tp_a.nnmin, nnmax=tp_a.nnmax, nxmin=tp_a.nxmin,
+                nxmax=tp_a.nxmax, nymin=tp_a.nymin, nymax=tp_a.nymax,
+                sumg_min=tp_a.sumg_min, xmin=1, xmax=cp_a.imx - 1,
+                ymin=1, ymax=cp_a.imy - 1,
+            )
+            assert len(t_o) == len(t_a), (
+                f"cam{cam + 1}: detection count {len(t_a)} != optv {len(t_o)}"
+            )
+
+            def _rows(get):
+                return np.array(sorted(get, key=lambda r: (r[1], r[0])))
+
+            arr_o = _rows(
+                (d.pos()[0], d.pos()[1], *d.count_pixels(), d.sum_grey_value())
+                for d in t_o
+            )
+            arr_a = _rows(
+                (d.x, d.y, d.n, d.nx, d.ny, d.sumg) for d in t_a
+            )
+            # centroid x,y to sub-pixel; pixel-count/sumg exactly
+            np.testing.assert_allclose(
+                arr_a[:, :2], arr_o[:, :2], atol=1e-4,
+                err_msg=f"cam{cam + 1}: target centroids differ from optv",
+            )
+            np.testing.assert_array_equal(
+                arr_a[:, 2:].astype(int), arr_o[:, 2:].astype(int),
+                err_msg=f"cam{cam + 1}: target pixel stats differ from optv",
+            )
+    finally:
+        os.chdir(original_cwd)
+
+
 def test_correspondence_value_parity(cavity_dir):
     """Deep parity: the matched correspondence TUPLES (sorted_corresp) must be
     identical between optv and openptv2, using identical detections + the same

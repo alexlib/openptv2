@@ -168,7 +168,7 @@ def vec_norm(vec: cython.double[:]) -> cython.double:
     Returns:
         ||vec|| as float.
     """
-    return c_sqrt(vec[0] ** 2 + vec[1] ** 2 + vec[2] ** 2)
+    return c_sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2])
 
 
 @cython.ccall

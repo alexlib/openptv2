@@ -245,8 +245,13 @@ class Pathinfo:
     prio: cython.int = cython.declare(cython.int, visibility="public")
     finaldecis: cython.double = cython.declare(cython.double, visibility="public")
     inlist: cython.int = cython.declare(cython.int, visibility="public")
-    decis: list = cython.declare(object, visibility="public")
-    linkdecis: list = cython.declare(object, visibility="public")
+    # Backing storage for decis/linkdecis is lazily materialized (see
+    # properties below): Frame() mass-preallocates max_targets Pathinfo
+    # objects but only ~num_parts are ever touched per frame, so eagerly
+    # building two POSI-length lists per object wastes the vast majority
+    # of the allocations.
+    _decis: list = cython.declare(object)
+    _linkdecis: list = cython.declare(object)
 
     def __init__(
         self,
@@ -268,14 +273,28 @@ class Pathinfo:
         self.prio = int(prio)
         self.finaldecis = float(finaldecis)
         self.inlist = int(inlist)
-        if decis is None:
-            self.decis = [0.0] * POSI
-        else:
-            self.decis = list(decis)
-        if linkdecis is None:
-            self.linkdecis = [PT_UNUSED] * POSI
-        else:
-            self.linkdecis = list(linkdecis)
+        self._decis = list(decis) if decis is not None else None
+        self._linkdecis = list(linkdecis) if linkdecis is not None else None
+
+    @property
+    def decis(self):
+        if self._decis is None:
+            self._decis = [0.0] * POSI
+        return self._decis
+
+    @decis.setter
+    def decis(self, value):
+        self._decis = list(value)
+
+    @property
+    def linkdecis(self):
+        if self._linkdecis is None:
+            self._linkdecis = [PT_UNUSED] * POSI
+        return self._linkdecis
+
+    @linkdecis.setter
+    def linkdecis(self, value):
+        self._linkdecis = list(value)
 
 
 @cython.ccall

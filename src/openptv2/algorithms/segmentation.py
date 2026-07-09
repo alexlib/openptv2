@@ -232,7 +232,7 @@ def peak_fit(
     d: cython.int
 
     # Label image
-    label_img = np.zeros((imy, imx), dtype=np.int32)
+    label_img: cython.int[:, :] = np.zeros((imy, imx), dtype=np.int32)
     peaks: list = []
 
     # ---- Pass 1: Connectivity analysis with peak search ----
