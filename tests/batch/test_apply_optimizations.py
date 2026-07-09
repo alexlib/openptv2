@@ -50,7 +50,13 @@ def apply_optimized_parameters():
 
 def test_optimized_performance():
     """Test tracking performance with optimized parameters"""
-    pytest.skip("Splitter pipeline produces 0 particles (pre-existing dataset issue)")
+    pytest.skip(
+        "Integration test runs full both-mode (sequence+tracking) via the "
+        "splitter plugins against the shared test_data/test_splitter fixture, "
+        "which it mutates; both-mode is also slow. The old '0 particles' reason "
+        "is stale (sequence now yields correspondences after the dist_to_flat "
+        "fix). Enable once rewritten to run on a tmp copy."
+    )
 
     import subprocess
 

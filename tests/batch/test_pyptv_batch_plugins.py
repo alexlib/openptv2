@@ -20,7 +20,12 @@ def _get_env_with_pythonpath() -> dict:
 
 def test_batch_plugins_runs():
     """Test that pyptv_batch_plugins runs without errors"""
-    pytest.skip("Splitter dataset needs imx/imy=1024 for raw images (pre-existing)")
+    pytest.skip(
+        "Runs the splitter batch in all modes (incl. both/tracking) against the "
+        "shared test_data/test_splitter fixture, which it mutates; both-mode is "
+        "slow/fragile. Sequence-only works after the dist_to_flat fix (see "
+        "test_ext_sequence_splitter). Enable once rewritten to run on a tmp copy."
+    )
 
     gui_dir = Path(__file__).parent.parent
     test_exp_path = Path(__file__).parent.parent.parent / "test_data" / "test_splitter"
