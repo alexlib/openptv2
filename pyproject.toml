@@ -64,6 +64,7 @@ gui = [
 test = [
     "pytest>=8.0.0",
     "pytest-cov>=5.0.0",
+    "optv>=0.3.2",  # legacy C bindings used by parity tests (skipped if absent)
 ]
 dev = [
     "pytest>=8.0.0",
@@ -191,4 +192,6 @@ dev = [
     "mypy>=1.10.0",
     "pre-commit>=4.0.0",
     "ruff>=0.5.0",
+    "setuptools>=61.0",  # required to build the Cython extensions in-place
+    "optv>=0.3.2",  # legacy C bindings for parity tests
 ]
