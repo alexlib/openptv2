@@ -20,10 +20,7 @@ from openptv2.algorithms.parameters import (
     ControlPar,
     SequencePar,
     VolumePar,
-    read_control_par,
-    read_sequence_par,
-    read_track_par,
-    read_volume_par,
+    TrackPar,
     convert_track_par_to_tuple,
 )
 from openptv2.algorithms.calibration import Calibration
@@ -48,14 +45,14 @@ class TestTrackingRunInit:
         original = os.getcwd()
         try:
             os.chdir("test_data/track")
-            cpar = read_control_par("parameters/ptv.par")
+            cpar = ControlPar.from_yaml("parameters.yaml")
             calib = read_all_calibration(cpar.num_cams, base_path=".")
 
             run = tr_new(
-                "parameters/sequence.par",
-                "parameters/track.par",
-                "parameters/criteria.par",
-                "parameters/ptv.par",
+                SequencePar.from_yaml("parameters.yaml"),
+                TrackPar.from_yaml("parameters.yaml"),
+                VolumePar.from_yaml("parameters.yaml"),
+                ControlPar.from_yaml("parameters.yaml"),
                 4,
                 20000,
                 "res_orig/rt_is",
@@ -87,11 +84,11 @@ class TestTrackingRunInit:
         original = os.getcwd()
         try:
             os.chdir("test_data/track")
-            cpar = read_control_par("parameters/ptv.par")
-            seq_par = read_sequence_par("parameters/sequence.par", cpar.num_cams)
-            tpar = read_track_par("parameters/track.par")
+            cpar = ControlPar.from_yaml("parameters.yaml")
+            seq_par = SequencePar.from_yaml("parameters.yaml", cpar.num_cams)
+            tpar = TrackPar.from_yaml("parameters.yaml")
             tpar = convert_track_par_to_tuple(tpar)
-            vpar = read_volume_par("parameters/criteria.par")
+            vpar = VolumePar.from_yaml("parameters.yaml")
             calib = read_all_calibration(cpar.num_cams, base_path=".")
 
             run = tr_new(
@@ -120,14 +117,14 @@ class TestTrackingRunInit:
         original = os.getcwd()
         try:
             os.chdir("test_data/track")
-            cpar = read_control_par("parameters/ptv.par")
+            cpar = ControlPar.from_yaml("parameters.yaml")
             calib = read_all_calibration(cpar.num_cams, base_path=".")
 
             run = tr_new(
-                "parameters/sequence.par",
-                "parameters/track.par",
-                "parameters/criteria.par",
-                "parameters/ptv.par",
+                SequencePar.from_yaml("parameters.yaml"),
+                TrackPar.from_yaml("parameters.yaml"),
+                VolumePar.from_yaml("parameters.yaml"),
+                ControlPar.from_yaml("parameters.yaml"),
                 4,
                 20000,
                 "res_orig/rt_is",
@@ -154,14 +151,14 @@ class TestTrackingRunInit:
         original = os.getcwd()
         try:
             os.chdir("test_data/track")
-            cpar = read_control_par("parameters/ptv.par")
+            cpar = ControlPar.from_yaml("parameters.yaml")
             calib = read_all_calibration(cpar.num_cams, base_path=".")
 
             run = tr_new(
-                "parameters/sequence.par",
-                "parameters/track.par",
-                "parameters/criteria.par",
-                "parameters/ptv.par",
+                SequencePar.from_yaml("parameters.yaml"),
+                TrackPar.from_yaml("parameters.yaml"),
+                VolumePar.from_yaml("parameters.yaml"),
+                ControlPar.from_yaml("parameters.yaml"),
                 4,
                 20000,
                 "res_orig/rt_is",
@@ -181,14 +178,14 @@ class TestTrackingRunInit:
         original = os.getcwd()
         try:
             os.chdir("test_data/track")
-            cpar = read_control_par("parameters/ptv.par")
+            cpar = ControlPar.from_yaml("parameters.yaml")
             calib = read_all_calibration(cpar.num_cams, base_path=".")
 
             run = tr_new(
-                "parameters/sequence.par",
-                "parameters/track.par",
-                "parameters/criteria.par",
-                "parameters/ptv.par",
+                SequencePar.from_yaml("parameters.yaml"),
+                TrackPar.from_yaml("parameters.yaml"),
+                VolumePar.from_yaml("parameters.yaml"),
+                ControlPar.from_yaml("parameters.yaml"),
                 4,
                 20000,
                 "res_orig/rt_is",
@@ -247,7 +244,7 @@ class TestFrameReading:
         original = os.getcwd()
         try:
             os.chdir("test_data/track")
-            cpar = read_control_par("parameters/ptv.par")
+            cpar = ControlPar.from_yaml("parameters.yaml")
             frm = Frame(cpar.num_cams, 20000)
             ok = frm.read(
                 "res_orig/rt_is",
@@ -273,8 +270,8 @@ class TestFrameReading:
         original = os.getcwd()
         try:
             os.chdir("test_data/track")
-            cpar = read_control_par("parameters/ptv.par")
-            seq_par = read_sequence_par("parameters/sequence.par", cpar.num_cams)
+            cpar = ControlPar.from_yaml("parameters.yaml")
+            seq_par = SequencePar.from_yaml("parameters.yaml", cpar.num_cams)
 
             fb = FrameBuf(
                 4,
@@ -301,8 +298,8 @@ class TestFrameReading:
         original = os.getcwd()
         try:
             os.chdir("test_data/track")
-            cpar = read_control_par("parameters/ptv.par")
-            seq_par = read_sequence_par("parameters/sequence.par", cpar.num_cams)
+            cpar = ControlPar.from_yaml("parameters.yaml")
+            seq_par = SequencePar.from_yaml("parameters.yaml", cpar.num_cams)
 
             fb = FrameBuf(
                 4,
@@ -329,8 +326,8 @@ class TestFrameReading:
         original = os.getcwd()
         try:
             os.chdir("test_data/track")
-            cpar = read_control_par("parameters/ptv.par")
-            seq_par = read_sequence_par("parameters/sequence.par", cpar.num_cams)
+            cpar = ControlPar.from_yaml("parameters.yaml")
+            seq_par = SequencePar.from_yaml("parameters.yaml", cpar.num_cams)
 
             fb = FrameBuf(
                 4,

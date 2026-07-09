@@ -28,11 +28,10 @@ from openptv2.algorithms.tracking_frame_buf import Target
 from openptv2.algorithms.tracking_run import tr_new
 from openptv2.algorithms.parameters import (
     ControlPar,
+    SequencePar,
+    TrackPar,
     TrackParTuple,
-    read_control_par,
-    read_sequence_par,
-    read_track_par,
-    read_volume_par,
+    VolumePar,
     convert_track_par_to_tuple,
 )
 from openptv2.algorithms.calibration import Calibration
@@ -286,7 +285,7 @@ def test_copy_foundpix_array():
 def test_searchquader():
     point = np.array([185.5, 3.2, 203.9])
 
-    cpar = read_control_par("test_data/track/parameters/ptv.par")
+    cpar = ControlPar.from_yaml("test_data/track/parameters.yaml")
     cpar.mm.n2[0] = 1.0000001
     cpar.mm.n3 = 1.0000001
 
@@ -384,15 +383,15 @@ def test_trackcorr_no_add():
         shutil.copytree("res_orig", "res")
         shutil.copytree("img_orig", "img")
 
-        cpar = read_control_par("parameters/ptv.par")
+        cpar = ControlPar.from_yaml("parameters.yaml")
         calib = read_all_calibration(cpar.num_cams, base_path=".")
 
         # Manually create run
         run = tr_new(
-            "parameters/sequence.par",
-            "parameters/track.par",
-            "parameters/criteria.par",
-            "parameters/ptv.par",
+            SequencePar.from_yaml("parameters.yaml"),
+            TrackPar.from_yaml("parameters.yaml"),
+            VolumePar.from_yaml("parameters.yaml"),
+            ControlPar.from_yaml("parameters.yaml"),
             4,
             20000,
             "res/rt_is",
@@ -437,14 +436,14 @@ def test_trackcorr_with_add():
         shutil.copytree("res_orig", "res")
         shutil.copytree("img_orig", "img")
 
-        cpar = read_control_par("parameters/ptv.par")
+        cpar = ControlPar.from_yaml("parameters.yaml")
         calib = read_all_calibration(cpar.num_cams, base_path=".")
 
         run = tr_new(
-            "parameters/sequence.par",
-            "parameters/track.par",
-            "parameters/criteria.par",
-            "parameters/ptv.par",
+            SequencePar.from_yaml("parameters.yaml"),
+            TrackPar.from_yaml("parameters.yaml"),
+            VolumePar.from_yaml("parameters.yaml"),
+            ControlPar.from_yaml("parameters.yaml"),
             4,
             20000,
             "res/rt_is",
@@ -491,14 +490,14 @@ def test_cavity():
         shutil.copytree("res_orig", "res")
         shutil.copytree("img_orig", "img")
 
-        cpar = read_control_par("parameters/ptv.par")
+        cpar = ControlPar.from_yaml("parameters.yaml")
         calib = read_all_calibration(cpar.num_cams, base_path=".")
 
         run = tr_new(
-            "parameters/sequence.par",
-            "parameters/track.par",
-            "parameters/criteria.par",
-            "parameters/ptv.par",
+            SequencePar.from_yaml("parameters.yaml"),
+            TrackPar.from_yaml("parameters.yaml"),
+            VolumePar.from_yaml("parameters.yaml"),
+            ControlPar.from_yaml("parameters.yaml"),
             4,
             20000,
             "res/rt_is",
@@ -530,10 +529,10 @@ def test_cavity():
         shutil.copytree("img_orig", "img")
 
         run = tr_new(
-            "parameters/sequence.par",
-            "parameters/track.par",
-            "parameters/criteria.par",
-            "parameters/ptv.par",
+            SequencePar.from_yaml("parameters.yaml"),
+            TrackPar.from_yaml("parameters.yaml"),
+            VolumePar.from_yaml("parameters.yaml"),
+            ControlPar.from_yaml("parameters.yaml"),
             4,
             20000,
             "res/rt_is",
@@ -570,14 +569,14 @@ def test_burgers():
         shutil.copytree("res_orig", "res")
         shutil.copytree("img_orig", "img")
 
-        cpar = read_control_par("parameters/ptv.par")
+        cpar = ControlPar.from_yaml("parameters.yaml")
         calib = read_all_calibration(cpar.num_cams, base_path=".")
 
         run = tr_new(
-            "parameters/sequence.par",
-            "parameters/track.par",
-            "parameters/criteria.par",
-            "parameters/ptv.par",
+            SequencePar.from_yaml("parameters.yaml"),
+            TrackPar.from_yaml("parameters.yaml"),
+            VolumePar.from_yaml("parameters.yaml"),
+            ControlPar.from_yaml("parameters.yaml"),
             4,
             20000,
             "res/rt_is",
@@ -596,10 +595,10 @@ def test_burgers():
         assert run.nlinks == 17
 
         run = tr_new(
-            "parameters/sequence.par",
-            "parameters/track.par",
-            "parameters/criteria.par",
-            "parameters/ptv.par",
+            SequencePar.from_yaml("parameters.yaml"),
+            TrackPar.from_yaml("parameters.yaml"),
+            VolumePar.from_yaml("parameters.yaml"),
+            ControlPar.from_yaml("parameters.yaml"),
             4,
             20000,
             "res/rt_is",
@@ -639,14 +638,14 @@ def test_trackback():
         shutil.copytree("res_orig", "res")
         shutil.copytree("img_orig", "img")
 
-        cpar = read_control_par("parameters/ptv.par")
+        cpar = ControlPar.from_yaml("parameters.yaml")
         calib = read_all_calibration(cpar.num_cams, base_path=".")
 
         run = tr_new(
-            "parameters/sequence.par",
-            "parameters/track.par",
-            "parameters/criteria.par",
-            "parameters/ptv.par",
+            SequencePar.from_yaml("parameters.yaml"),
+            TrackPar.from_yaml("parameters.yaml"),
+            VolumePar.from_yaml("parameters.yaml"),
+            ControlPar.from_yaml("parameters.yaml"),
             4,
             20000,
             "res/rt_is",
