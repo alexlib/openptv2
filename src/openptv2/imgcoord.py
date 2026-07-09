@@ -16,8 +16,8 @@ def image_coordinates(input_arr, cal, mm, output=None):
     Returns:
         ndarray[n, 2] of image coordinates
     """
-    raw_cal = cal._cal if hasattr(cal, '_cal') else cal
-    raw_mm = mm._mm if hasattr(mm, '_mm') else mm
+    raw_cal = cal
+    raw_mm = mm
 
     result = img_coord_batch(input_arr, raw_cal, raw_mm)
 
@@ -40,8 +40,8 @@ def flat_image_coordinates(input_arr, cal, mm, output=None):
     Returns:
         ndarray[n, 2] of flat image coordinates
     """
-    raw_cal = cal._cal if hasattr(cal, '_cal') else cal
-    raw_mm = mm._mm if hasattr(mm, '_mm') else mm
+    raw_cal = cal
+    raw_mm = mm
 
     result = flat_image_coord_batch(input_arr, raw_cal, raw_mm)
 

@@ -126,7 +126,9 @@ testpaths = ["tests"]
 python_files = ["test_*.py"]
 python_functions = ["test_*"]
 pythonpath = ["src"]
-addopts = "-v --tb=short --import-mode=importlib"
+# Slow tests (full batch/tracking pipelines) are deselected by default.
+# Run them with: uv run pytest -m slow   (or -m "slow or not slow" for all)
+addopts = "-v --tb=short --import-mode=importlib -m 'not slow'"
 filterwarnings = [
     "ignore:builtin type SwigPyPacked has no __module__ attribute:DeprecationWarning",
     "ignore:builtin type SwigPyObject has no __module__ attribute:DeprecationWarning",

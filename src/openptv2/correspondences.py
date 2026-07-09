@@ -11,8 +11,8 @@ class MatchedCoords:
 
     def __init__(self, targets, cpar, cal, tol=0.00001, reset_numbers=True):
         self._targets = targets._targets if hasattr(targets, '_targets') else targets
-        self._cpar = cpar._cpar if hasattr(cpar, '_cpar') else cpar
-        self._cal = cal._cal if hasattr(cal, '_cal') else cal
+        self._cpar = cpar
+        self._cal = cal
         self._tol = tol
         self._corrected = []
 
@@ -124,9 +124,9 @@ def correspondences(img_pts, flat_coords, cals, vparam, cparam):
     from openptv2.algorithms.tracking_frame_buf import Frame as AlgoFrame
     from openptv2.algorithms.tracking_frame_buf import Target as AlgoTarget
 
-    raw_cparam = cparam._cpar if hasattr(cparam, '_cpar') else cparam
-    raw_vparam = vparam._vpar if hasattr(vparam, '_vpar') else vparam
-    raw_cals = [c._cal if hasattr(c, '_cal') else c for c in cals]
+    raw_cparam = cparam
+    raw_vparam = vparam
+    raw_cals = cals
 
     num_cams = raw_cparam.get_num_cams() if hasattr(raw_cparam, 'get_num_cams') else raw_cparam.num_cams
 

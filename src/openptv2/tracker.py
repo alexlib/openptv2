@@ -51,15 +51,13 @@ class Tracker:
             naming = default_naming.copy()
         self._naming = naming
 
-        # Unwrap parameters robustly
-        self._cpar_algo = cpar._cpar if hasattr(cpar, '_cpar') else cpar
-        self._vpar_algo = vpar._vpar if hasattr(vpar, '_vpar') else vpar
-        
-        raw_tpar = tpar._tpar if hasattr(tpar, '_tpar') else tpar
-        self._tpar_algo = convert_track_par_to_tuple(raw_tpar)
-        
-        self._spar_algo = spar._spar if hasattr(spar, '_spar') else spar
-        self._cals_algo = [c._cal if hasattr(c, '_cal') else c for c in cals]
+        # Params are the algorithms *Par classes directly; tpar still needs the
+        # tuple conversion the tracking loop expects.
+        self._cpar_algo = cpar
+        self._vpar_algo = vpar
+        self._tpar_algo = convert_track_par_to_tuple(tpar)
+        self._spar_algo = spar
+        self._cals_algo = list(cals)
 
         # Tracking run object
         self._run = None

@@ -10,6 +10,10 @@ import os
 import yaml
 from openptv2.batch.pyptv_batch_plugins import run_batch
 
+# Whole module drives the full splitter batch pipeline (subprocess + tracking),
+# which is slow. Deselected from the default run; use `pytest -m slow` to run it.
+pytestmark = pytest.mark.slow
+
 
 def test_tracking_parameters_propagation():
     """Test that tracking parameters are correctly transferred from YAML to C/Cython tracking code"""

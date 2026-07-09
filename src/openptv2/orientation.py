@@ -31,26 +31,6 @@ def _is_empty_targets(targets) -> bool:
     return total_elements == 0
 
 
-def _unwrap_cal(cal):
-    if hasattr(cal, "_cal"):
-        return cal._cal
-    return cal
-
-
-def _unwrap_cpar(cpar):
-    if hasattr(cpar, "_cpar"):
-        return cpar._cpar
-    if hasattr(cpar, "control_par"):
-        return cpar.control_par
-    return cpar
-
-
-def _unwrap_vpar(vpar):
-    if hasattr(vpar, "_vpar"):
-        return vpar._vpar
-    return vpar
-
-
 def external_calibration(cal, ref_pts, img_pts, cpar):
     """
     External calibration wrapper.
@@ -64,7 +44,7 @@ def external_calibration(cal, ref_pts, img_pts, cpar):
     Returns:
         bool: True if successful
     """
-    return _external_calibration(_unwrap_cal(cal), ref_pts, img_pts, _unwrap_cpar(cpar))
+    return _external_calibration(cal, ref_pts, img_pts, cpar)
 
 
 def full_calibration(cal, ref_pts, img_pts, cpar, flags=None):
@@ -106,7 +86,7 @@ def full_calibration(cal, ref_pts, img_pts, cpar, flags=None):
         img_array = img_pts
 
     return _full_calibration(
-        _unwrap_cal(cal), ref_pts, img_array, _unwrap_cpar(cpar), flags
+        cal, ref_pts, img_array, cpar, flags
     )
 
 
@@ -133,7 +113,7 @@ def match_detection_to_ref(cal, ref_pts, img_pts, cpar, eps=25):
         targets = img_pts
 
     matched = _match_detection_to_ref(
-        _unwrap_cal(cal), ref_pts, targets, _unwrap_cpar(cpar), eps
+        cal, ref_pts, targets, cpar, eps
     )
 
     # Wrap result in TargetArray
@@ -168,10 +148,10 @@ def multi_cam_point_positions(targets, cpar, cals):
             unwrapped_targets.append(cam_targets)
 
     # Unwrap calibrations
-    unwrapped_cals = [_unwrap_cal(c) for c in cals]
+    unwrapped_cals = list(cals)
 
     return _multi_cam_point_positions(
-        unwrapped_targets, _unwrap_cpar(cpar), unwrapped_cals
+        unwrapped_targets, cpar, unwrapped_cals
     )
 
 
@@ -202,13 +182,13 @@ def point_positions(targets, cpar, cals, vpar=None):
             unwrapped_targets.append(cam_targets)
 
     # Unwrap calibrations
-    unwrapped_cals = [_unwrap_cal(c) for c in cals]
+    unwrapped_cals = list(cals)
 
     # Unwrap volume params
-    unwrapped_vpar = _unwrap_vpar(vpar) if vpar is not None else None
+    unwrapped_vpar = vpar if vpar is not None else None
 
     return _point_positions(
-        unwrapped_targets, _unwrap_cpar(cpar), unwrapped_cals, unwrapped_vpar
+        unwrapped_targets, cpar, unwrapped_cals, unwrapped_vpar
     )
 
 
@@ -239,10 +219,10 @@ def single_cam_point_positions(targets, cpar, cals, vpar):
             unwrapped_targets.append(cam_targets)
 
     # Unwrap calibrations
-    unwrapped_cals = [_unwrap_cal(c) for c in cals]
+    unwrapped_cals = list(cals)
 
     return _single_cam_point_positions(
-        unwrapped_targets, _unwrap_cpar(cpar), unwrapped_cals, _unwrap_vpar(vpar)
+        unwrapped_targets, cpar, unwrapped_cals, vpar
     )
 
 
@@ -271,10 +251,10 @@ def dumbbell_target_func(targets, cpar, cals, db_length, db_weight):
             unwrapped_targets.append(cam_targets)
 
     # Unwrap calibrations
-    unwrapped_cals = [_unwrap_cal(c) for c in cals]
+    unwrapped_cals = list(cals)
 
     # Unwrap cpar
-    raw_cpar = _unwrap_cpar(cpar)
+    raw_cpar = cpar
 
     # Get number of targets (assuming same for all cams)
     num_targs = len(unwrapped_targets) if unwrapped_targets else 0
