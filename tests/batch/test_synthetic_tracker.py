@@ -60,7 +60,9 @@ def test_fully_verifiable_synthetic_tracker(tmp_path):
     
     # Air=1.0, Glass(5mm)=1.46, Water=1.33
     mpar = MultimediaParams(n1=1.0, n2=[1.46], n3=1.33, d=[5.0])
-    raw_mm = mpar._mm
+    # MultimediaParams is now an alias for the algorithms MmNp class, so mpar is
+    # already the raw multimedia-params object (no wrapper to unwrap).
+    raw_mm = mpar
     
     # Cameras placement (symmetric square looking down from Z=500 to water domain Z=0)
     positions = [

@@ -89,7 +89,14 @@ class SequencePar:
         img_base_name: list[str] | None = None,
         first: int = 0,
         last: int = 0,
+        # optv-compatible aliases (used via the tests' `optv` -> openptv2 shim)
+        image_base: list[str] | None = None,
+        frame_range: tuple[int, int] | None = None,
     ) -> None:
+        if image_base is not None:
+            img_base_name = image_base
+        if frame_range is not None:
+            first, last = frame_range
         self.num_cams = num_cams
         self.img_base_name = img_base_name if img_base_name is not None else []
         if not self.img_base_name and num_cams > 0:
