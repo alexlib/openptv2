@@ -10,7 +10,7 @@ from openptv2.algorithms.track import (
     trackcorr_c_loop,
     trackcorr_c_finish,
 )
-from openptv2.algorithms.parameters import read_control_par
+from openptv2.algorithms.parameters import ControlPar, SequencePar, TrackPar, VolumePar
 from openptv2.algorithms.tracking_run import tr_new
 from openptv2.algorithms.calibration import Calibration
 
@@ -53,14 +53,14 @@ def run_tracking(num_threads, add_flag):
         shutil.rmtree("res")
     shutil.copytree("res_orig", "res")
 
-    cpar = read_control_par("parameters/ptv.par")
+    cpar = ControlPar.from_yaml("parameters.yaml")
     calib = read_all_calibration(cpar.num_cams, base_path=".")
 
     run = tr_new(
-        "parameters/sequence.par",
-        "parameters/track.par",
-        "parameters/criteria.par",
-        "parameters/ptv.par",
+        SequencePar.from_yaml("parameters.yaml"),
+        TrackPar.from_yaml("parameters.yaml"),
+        VolumePar.from_yaml("parameters.yaml"),
+        ControlPar.from_yaml("parameters.yaml"),
         4,
         20000,
         "res/rt_is",

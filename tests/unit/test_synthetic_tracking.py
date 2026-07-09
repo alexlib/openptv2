@@ -14,7 +14,7 @@ import pytest
 from pathlib import Path
 
 from openptv2.algorithms.calibration import Calibration
-from openptv2.algorithms.parameters import read_control_par
+from openptv2.algorithms.parameters import ControlPar, SequencePar, TrackPar, VolumePar
 from openptv2.algorithms.tracking_run import tr_new
 from openptv2.algorithms.track import (
     track_forward_start, trackcorr_c_loop, trackcorr_c_finish, trackback_c,
@@ -361,7 +361,7 @@ def synthetic_data():
     trajs = _make_trajectories()
     frames = _build_frame_data(trajs)
     cals = _load_calibrations()
-    cpar = read_control_par(str(TEST_DIR / "parameters/ptv.par"))
+    cpar = ControlPar.from_yaml(str(TEST_DIR / "parameters.yaml"))
     _generate_test_files(frames, cals, cpar)
     gt_next, gt_prev, slot_to_pid = _build_ground_truth_links(frames)
     return {
@@ -408,7 +408,7 @@ class TestSyntheticTrack3d:
             os.chdir(TEST_DIR)
             _setup_working_copy()
 
-            cpar = read_control_par("parameters/ptv.par")
+            cpar = ControlPar.from_yaml("parameters.yaml")
             cals = [
                 Calibration.from_file(
                     f"cal/cam{i+1}.tif.ori", f"cal/cam{i+1}.tif.addpar"
@@ -417,8 +417,8 @@ class TestSyntheticTrack3d:
             ]
 
             run = tr_new(
-                "parameters/sequence.par", "parameters/track.par",
-                "parameters/criteria.par", "parameters/ptv.par",
+                SequencePar.from_yaml("parameters.yaml"), TrackPar.from_yaml("parameters.yaml"),
+                VolumePar.from_yaml("parameters.yaml"), ControlPar.from_yaml("parameters.yaml"),
                 4, 20000, "res/rt_is", "res/ptv_is", "res/added",
                 cals, 0.0001,
             )
@@ -457,7 +457,7 @@ class TestSyntheticTrack3d:
             os.chdir(TEST_DIR)
             _setup_working_copy()
 
-            cpar = read_control_par("parameters/ptv.par")
+            cpar = ControlPar.from_yaml("parameters.yaml")
             cals = [
                 Calibration.from_file(
                     f"cal/cam{i+1}.tif.ori", f"cal/cam{i+1}.tif.addpar"
@@ -466,8 +466,8 @@ class TestSyntheticTrack3d:
             ]
 
             run = tr_new(
-                "parameters/sequence.par", "parameters/track.par",
-                "parameters/criteria.par", "parameters/ptv.par",
+                SequencePar.from_yaml("parameters.yaml"), TrackPar.from_yaml("parameters.yaml"),
+                VolumePar.from_yaml("parameters.yaml"), ControlPar.from_yaml("parameters.yaml"),
                 4, 20000, "res/rt_is", "res/ptv_is", "res/added",
                 cals, 0.0001,
             )
@@ -505,7 +505,7 @@ class TestSyntheticTrackcorr:
             os.chdir(TEST_DIR)
             _setup_working_copy()
 
-            cpar = read_control_par("parameters/ptv.par")
+            cpar = ControlPar.from_yaml("parameters.yaml")
             cals = [
                 Calibration.from_file(
                     f"cal/cam{i+1}.tif.ori", f"cal/cam{i+1}.tif.addpar"
@@ -514,8 +514,8 @@ class TestSyntheticTrackcorr:
             ]
 
             run = tr_new(
-                "parameters/sequence.par", "parameters/track.par",
-                "parameters/criteria.par", "parameters/ptv.par",
+                SequencePar.from_yaml("parameters.yaml"), TrackPar.from_yaml("parameters.yaml"),
+                VolumePar.from_yaml("parameters.yaml"), ControlPar.from_yaml("parameters.yaml"),
                 4, 20000, "res/rt_is", "res/ptv_is", "res/added",
                 cals, 0.0001,
             )
@@ -554,7 +554,7 @@ class TestSyntheticTrackcorr:
             os.chdir(TEST_DIR)
             _setup_working_copy()
 
-            cpar = read_control_par("parameters/ptv.par")
+            cpar = ControlPar.from_yaml("parameters.yaml")
             cals = [
                 Calibration.from_file(
                     f"cal/cam{i+1}.tif.ori", f"cal/cam{i+1}.tif.addpar"
@@ -563,8 +563,8 @@ class TestSyntheticTrackcorr:
             ]
 
             run = tr_new(
-                "parameters/sequence.par", "parameters/track.par",
-                "parameters/criteria.par", "parameters/ptv.par",
+                SequencePar.from_yaml("parameters.yaml"), TrackPar.from_yaml("parameters.yaml"),
+                VolumePar.from_yaml("parameters.yaml"), ControlPar.from_yaml("parameters.yaml"),
                 4, 20000, "res/rt_is", "res/ptv_is", "res/added",
                 cals, 0.0001,
             )
@@ -604,7 +604,7 @@ class TestSyntheticComparison:
 
             # --- track3d ---
             _setup_working_copy()
-            cpar = read_control_par("parameters/ptv.par")
+            cpar = ControlPar.from_yaml("parameters.yaml")
             cals = [
                 Calibration.from_file(
                     f"cal/cam{i+1}.tif.ori", f"cal/cam{i+1}.tif.addpar"
@@ -612,8 +612,8 @@ class TestSyntheticComparison:
                 for i in range(cpar.num_cams)
             ]
             run_t3 = tr_new(
-                "parameters/sequence.par", "parameters/track.par",
-                "parameters/criteria.par", "parameters/ptv.par",
+                SequencePar.from_yaml("parameters.yaml"), TrackPar.from_yaml("parameters.yaml"),
+                VolumePar.from_yaml("parameters.yaml"), ControlPar.from_yaml("parameters.yaml"),
                 4, 20000, "res/rt_is", "res/ptv_is", "res/added",
                 cals, 0.0001,
             )
@@ -635,8 +635,8 @@ class TestSyntheticComparison:
                 for i in range(cpar.num_cams)
             ]
             run_tc = tr_new(
-                "parameters/sequence.par", "parameters/track.par",
-                "parameters/criteria.par", "parameters/ptv.par",
+                SequencePar.from_yaml("parameters.yaml"), TrackPar.from_yaml("parameters.yaml"),
+                VolumePar.from_yaml("parameters.yaml"), ControlPar.from_yaml("parameters.yaml"),
                 4, 20000, "res/rt_is", "res/ptv_is", "res/added",
                 cals2, 0.0001,
             )
@@ -679,7 +679,7 @@ class TestSyntheticForwardBackwardForward:
     def _run_fbf(self, add):
         """Run forward-backward-forward and return per-frame link counts."""
         _setup_working_copy()
-        cpar = read_control_par("parameters/ptv.par")
+        cpar = ControlPar.from_yaml("parameters.yaml")
         cals = [
             Calibration.from_file(
                 f"cal/cam{i+1}.tif.ori", f"cal/cam{i+1}.tif.addpar"
@@ -688,8 +688,8 @@ class TestSyntheticForwardBackwardForward:
         ]
 
         run = tr_new(
-            "parameters/sequence.par", "parameters/track.par",
-            "parameters/criteria.par", "parameters/ptv.par",
+            SequencePar.from_yaml("parameters.yaml"), TrackPar.from_yaml("parameters.yaml"),
+            VolumePar.from_yaml("parameters.yaml"), ControlPar.from_yaml("parameters.yaml"),
             4, 20000, "res/rt_is", "res/ptv_is", "res/added",
             cals, 0.0001,
         )
@@ -708,8 +708,8 @@ class TestSyntheticForwardBackwardForward:
         # Forward again
         _setup_working_copy_res_only()
         run2 = tr_new(
-            "parameters/sequence.par", "parameters/track.par",
-            "parameters/criteria.par", "parameters/ptv.par",
+            SequencePar.from_yaml("parameters.yaml"), TrackPar.from_yaml("parameters.yaml"),
+            VolumePar.from_yaml("parameters.yaml"), ControlPar.from_yaml("parameters.yaml"),
             4, 20000, "res/rt_is", "res/ptv_is", "res/added",
             cals, 0.0001,
         )
@@ -756,7 +756,7 @@ class TestSyntheticForwardBackwardForward:
         try:
             os.chdir(TEST_DIR)
             _setup_working_copy()
-            cpar = read_control_par("parameters/ptv.par")
+            cpar = ControlPar.from_yaml("parameters.yaml")
             cals = [
                 Calibration.from_file(
                     f"cal/cam{i+1}.tif.ori", f"cal/cam{i+1}.tif.addpar"
@@ -765,8 +765,8 @@ class TestSyntheticForwardBackwardForward:
             ]
 
             run = tr_new(
-                "parameters/sequence.par", "parameters/track.par",
-                "parameters/criteria.par", "parameters/ptv.par",
+                SequencePar.from_yaml("parameters.yaml"), TrackPar.from_yaml("parameters.yaml"),
+                VolumePar.from_yaml("parameters.yaml"), ControlPar.from_yaml("parameters.yaml"),
                 4, 20000, "res/rt_is", "res/ptv_is", "res/added",
                 cals, 0.0001,
             )
