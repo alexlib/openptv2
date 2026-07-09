@@ -147,8 +147,10 @@ def validate_experiment_directory(exp_path: Path) -> None:
     if not exp_path.is_dir():
         raise ProcessingError(f"Path is not a directory: {exp_path}")
 
-    # Check for required subdirectories
-    required_dirs = ["parameters", "img", "cal"]
+    # Check for required subdirectories. openptv2 is YAML-only at runtime, so
+    # a legacy "parameters" .par directory is NOT required — parameters come
+    # from the experiment YAML.
+    required_dirs = ["img", "cal"]
     missing_dirs = []
 
     for dir_name in required_dirs:
@@ -161,10 +163,13 @@ def validate_experiment_directory(exp_path: Path) -> None:
             f"Missing required directories in {exp_path}: {', '.join(missing_dirs)}"
         )
 
-    # Check for required parameter file
-    ptv_par_file = exp_path / "parameters" / "ptv.par"
-    if not ptv_par_file.exists():
-        raise ProcessingError(f"Required file not found: {ptv_par_file}")
+    # Require an experiment YAML (parameters_*.yaml), not legacy .par files.
+    if not list(exp_path.glob("parameters_*.yaml")):
+        raise ProcessingError(
+            f"No experiment YAML (parameters_*.yaml) found in {exp_path}. "
+            "openptv2 is YAML-only; convert legacy .par folders first with "
+            "`python -m openptv2.gui.parameter_util legacy-to-yaml <parameters_dir>`."
+        )
 
 
 def validate_experiment_setup(yaml_file: Path) -> Path:

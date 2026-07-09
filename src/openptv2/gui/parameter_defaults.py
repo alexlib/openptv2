@@ -36,6 +36,7 @@ DEFAULT_CAL_ORI = {
 
 DEFAULT_PTV_OPTIONAL = {
     "hp_flag": True,
+    "highpass_size": 25,  # low-pass box dim subtracted in simple_highpass
     "tiff_flag": True,
     "chfield": 0,
     "allcam_flag": False,
