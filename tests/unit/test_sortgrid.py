@@ -67,7 +67,7 @@ def test_sortgrid():
         "test_data/calibration/cam1.tif.ori",
         "test_data/calibration/cam1.tif.addpar",
     )
-    cpar = ControlPar.from_file("test_data/parameters/ptv.par")
+    cpar = ControlPar.from_yaml("test_data/parameters.yaml")
     fix, nfix = read_calblock("test_data/calibration/calblock.txt")
     assert nfix == 5
 
@@ -92,7 +92,7 @@ def test_sortgrid_does_not_mutate_input():
         "test_data/calibration/cam1.tif.ori",
         "test_data/calibration/cam1.tif.addpar",
     )
-    cpar = ControlPar.from_file("test_data/parameters/ptv.par")
+    cpar = ControlPar.from_yaml("test_data/parameters.yaml")
     fix, nfix = read_calblock("test_data/calibration/calblock.txt")
 
     sortgrid(cal, cpar, nfix, fix, len(pix), 120, pix)

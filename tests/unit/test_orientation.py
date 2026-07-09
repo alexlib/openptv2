@@ -76,7 +76,7 @@ def test_raw_orient():
     add_file = "test_data/calibration/cam1.tif.addpar"
 
     cal = Calibration.from_file(ori_file, add_file)
-    cpar = ControlPar.from_file("test_data/parameters/ptv.par")
+    cpar = ControlPar.from_yaml("test_data/parameters.yaml")
 
     pix4 = [Target() for _ in range(4)]
     for i in range(4):
@@ -118,7 +118,7 @@ def test_orient():
     add_file = "test_data/calibration/cam1.tif.addpar"
 
     cal = Calibration.from_file(ori_file, add_file)
-    cpar = ControlPar.from_file("test_data/parameters/ptv.par")
+    cpar = ControlPar.from_yaml("test_data/parameters.yaml")
 
     pix = [Target() for _ in range(64)]
     for i in range(64):
