@@ -148,7 +148,25 @@ markers = [
 
 [tool.coverage.run]
 branch = true
-source = ["openptv2", "algorithms", "gui", "batch"]
+# Measure the actual source package. The previous value used bare names
+# ("algorithms", "gui", "batch") which are NOT importable top-level modules
+# (they live under openptv2.*), so coverage silently measured 0 source files
+# and only reported coverage of the test files themselves.
+source = ["src/openptv2"]
+omit = [
+    # Non-product code: marimo notebooks, demos, ad-hoc scripts.
+    "*_nb.py",
+    "*/batch/demo_*.py",
+    "*/batch/logger_demo.py",
+    "*/batch/run_tracking_parameter_optimization.py",
+]
+# NOTE: modules under openptv2/algorithms compile to .so via Cython and CANNOT
+# be traced by coverage.py in a normal run (they report 0%). To measure them,
+# rebuild with line tracing (OPENPTV_CYTHON_TRACE=1) and enable the
+# "Cython.Coverage" plugin — see the coverage plan in docs/.
+
+[tool.coverage.report]
+show_missing = true
 
 [tool.mypy]
 python_version = "3.11"

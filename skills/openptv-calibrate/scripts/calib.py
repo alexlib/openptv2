@@ -28,7 +28,7 @@ from pathlib import Path
 
 def _num_cams(base: Path) -> int:
     from openptv2.algorithms.parameters import ControlPar
-    return ControlPar.from_file(str(base / "parameters" / "ptv.par")).num_cams
+    return ControlPar.from_file(base / "parameters" / "ptv.par").num_cams
 
 
 def _cam_files(base: Path, cam: int) -> dict:
@@ -55,7 +55,7 @@ def cmd_inspect(args) -> int:
         num_cams = _num_cams(base)
     report["num_cams"] = num_cams
 
-    calblock = base / "cal" / "target_on_a_side.txt"
+    calblock = _calblock_path(base)
     report["calblock"] = str(calblock)
     report["calblock_exists"] = calblock.exists()
     if not calblock.exists():
@@ -97,10 +97,28 @@ def cmd_inspect(args) -> int:
 
 # --- shared helpers ---------------------------------------------------------
 
+def _calblock_path(base: Path) -> Path:
+    """Resolve calblock path: YAML fixp_name first, then legacy names."""
+    import yaml
+    for yp in sorted(base.glob("parameters_*.yaml")):
+        try:
+            y = yaml.safe_load(yp.read_text()) or {}
+            name = (y.get("cal_ori") or {}).get("fixp_name")
+            if name:
+                return base / name
+        except Exception:
+            pass
+    # legacy fallbacks
+    for name in ["target_on_a_side.txt", "splitter_target.txt"]:
+        p = base / "cal" / name
+        if p.exists():
+            return p
+    return base / "cal" / "target_on_a_side.txt"  # canonical missing path for error messages
+
 def _calblock_map(base: Path):
     """Return (ids, xyz) for the 3D calibration body."""
     import numpy as np
-    data = np.loadtxt(base / "cal" / "target_on_a_side.txt", ndmin=2)
+    data = np.loadtxt(_calblock_path(base), ndmin=2)
     return data[:, 0].astype(int), data[:, 1:4]
 
 
@@ -193,7 +211,7 @@ def cmd_render(args) -> int:
         plt.close(fig)
         written.append(str(dest))
 
-    calblock = base / "cal" / "target_on_a_side.txt"
+    calblock = _calblock_path(base)
     if calblock.exists():
         ids, xyz = _calblock_map(base)
         fig, ax = plt.subplots(figsize=(9, 7.2))
@@ -296,7 +314,7 @@ def cmd_pick(args) -> int:
     base = Path(args.dataset).resolve()
     num_cams = _num_cams(base)
     from openptv2.algorithms.parameters import ControlPar
-    cpar = ControlPar.from_file(str(base / "parameters" / "ptv.par"))
+    cpar = ControlPar.from_file(base / "parameters" / "ptv.par")
     ids_all, xyz_all = _calblock_map(base)
 
     try:
