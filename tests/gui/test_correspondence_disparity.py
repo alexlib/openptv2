@@ -281,5 +281,82 @@ def test_correspondence_raw_vs_optv(cavity_dir):
         os.chdir(original_cwd)
 
 
+def test_correspondence_value_parity(cavity_dir):
+    """Deep parity: the matched correspondence TUPLES (sorted_corresp) must be
+    identical between optv and openptv2, using identical detections + the same
+    YAML params. If the per-camera target-index tuples match and triangulation
+    is already parity-verified, the reconstructed 3D is identical.
+    """
+    try:
+        import optv  # noqa: F401
+    except ImportError:
+        pytest.skip("optv bindings not available")
+
+    _prepare_test_data(cavity_dir)
+    original_cwd = Path.cwd()
+    os.chdir(cavity_dir)
+    try:
+        from imageio.v3 import imread
+        from skimage.color import rgb2gray
+        from skimage.util import img_as_ubyte
+
+        from openptv2.algorithms.tracking_frame_buf import Target, TargetArray
+        from openptv2.correspondences import MatchedCoords as OurMC
+        from openptv2.correspondences import correspondences as our_corr
+        from openptv2.gui.experiment import Experiment
+        from openptv2.gui.ptv import py_start_proc_c, simple_highpass
+
+        exp = Experiment()
+        exp.pm.from_yaml(cavity_dir / "parameters_Run1.yaml")
+        num_cams = exp.pm.num_cams
+        cpar_o, spar, vpar_o, _trk, tpar, cals_o, _epar = py_start_proc_c(exp.pm)
+        cp_a, vp_a, _tp_a, cals_a = _build_raw_algo_params(exp.pm, num_cams)
+
+        from optv.correspondences import MatchedCoords as OptvMC
+        from optv.correspondences import correspondences as optv_corr
+        from optv.segmentation import target_recognition as o_tr
+
+        for frame in (10000, 10001):
+            # identical detections fed to BOTH libraries
+            dets_o, our_targs = [], []
+            for cam in range(num_cams):
+                img = imread(Path(spar.get_img_base_name(cam) % frame))
+                if img.ndim > 2:
+                    img = rgb2gray(img)
+                if img.dtype != np.uint8:
+                    img = img_as_ubyte(img)
+                hp = simple_highpass(img, cpar_o)
+                t = o_tr(hp, tpar, cam, cpar_o)
+                t.sort_y()
+                dets_o.append(t)
+                our_targs.append(TargetArray([
+                    Target(pnr=d.pnr(), x=d.pos()[0], y=d.pos()[1],
+                           n=d.count_pixels()[0], nx=d.count_pixels()[1],
+                           ny=d.count_pixels()[2], sumg=d.sum_grey_value(),
+                           tnr=d.tnr())
+                    for d in t
+                ]))
+
+            corrected_o = [OptvMC(dets_o[c], cpar_o, cals_o[c])
+                           for c in range(num_cams)]
+            corrected_a = [OurMC(our_targs[c], cp_a, cals_a[c])
+                           for c in range(num_cams)]
+
+            _sp_o, sc_o, _nt_o = optv_corr(dets_o, corrected_o, cals_o, vpar_o, cpar_o)
+            _sp_a, sc_a, _nt_a = our_corr(our_targs, corrected_a, cals_a, vp_a, cp_a)
+
+            assert len(sc_o) == len(sc_a), "different number of clique groups"
+            for g, (go, ga) in enumerate(zip(sc_o, sc_a)):
+                set_o = {tuple(int(v) for v in go[:, j]) for j in range(go.shape[1])}
+                set_a = {tuple(int(v) for v in ga[:, j]) for j in range(ga.shape[1])}
+                assert set_o == set_a, (
+                    f"frame {frame} group {g}: correspondence tuples differ "
+                    f"(optv {len(set_o)} vs openptv2 {len(set_a)}; "
+                    f"only_optv={len(set_o - set_a)}, only_ours={len(set_a - set_o)})"
+                )
+    finally:
+        os.chdir(original_cwd)
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v", "-s", "--tb=short"])
