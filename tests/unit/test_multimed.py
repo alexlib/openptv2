@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 from pathlib import Path
 from openptv2.algorithms.calibration import Calibration, Exterior, Interior, Glass, AddedPar
-from openptv2.algorithms.parameters import ControlPar, VolumePar, MmNp, read_control_par, read_volume_par
+from openptv2.algorithms.parameters import ControlPar, VolumePar, MmNp
 from openptv2.algorithms.multimed import (
     init_mmlut,
     back_trans_point,
@@ -25,13 +25,10 @@ def test_init_mmLUT():
 
     cal = Calibration.from_file(ori_file, add_file)
 
-    vol_file = "test_data/parameters/criteria.par"
-    assert Path(vol_file).exists()
-    vpar = read_volume_par(vol_file)
-
-    ptv_file = "test_data/parameters/ptv.par"
-    assert Path(ptv_file).exists()
-    cpar = read_control_par(ptv_file)
+    yaml_file = "test_data/parameters.yaml"
+    assert Path(yaml_file).exists()
+    vpar = VolumePar.from_yaml(yaml_file)
+    cpar = ControlPar.from_yaml(yaml_file)
     cpar.num_cams = 1
 
     cal = init_mmlut(vpar, cpar, cal)
@@ -91,8 +88,8 @@ def test_volumedimension():
 
     cals = [cal1, cal2]
 
-    vpar = read_volume_par("test_data/parameters/criteria.par")
-    cpar = read_control_par("test_data/parameters/ptv.par")
+    vpar = VolumePar.from_yaml("test_data/parameters.yaml")
+    cpar = ControlPar.from_yaml("test_data/parameters.yaml")
     cpar.mm.nlay = 1
     cpar.num_cams = 2
 
@@ -110,8 +107,8 @@ def test_get_mmf_mmLUT():
     add_file = "test_data/calibration/cam2.tif.addpar"
     cal = Calibration.from_file(ori_file, add_file)
 
-    vpar = read_volume_par("test_data/parameters/criteria.par")
-    cpar = read_control_par("test_data/parameters/ptv.par")
+    vpar = VolumePar.from_yaml("test_data/parameters.yaml")
+    cpar = ControlPar.from_yaml("test_data/parameters.yaml")
     
     cal = init_mmlut(vpar, cpar, cal)
     
@@ -126,8 +123,8 @@ def test_multimed_nlay():
     add_file = "test_data/calibration/cam1.tif.addpar"
     cal = Calibration.from_file(ori_file, add_file)
 
-    vpar = read_volume_par("test_data/parameters/criteria.par")
-    cpar = read_control_par("test_data/parameters/ptv.par")
+    vpar = VolumePar.from_yaml("test_data/parameters.yaml")
+    cpar = ControlPar.from_yaml("test_data/parameters.yaml")
     cpar.num_cams = 1
     
     cal = init_mmlut(vpar, cpar, cal)
