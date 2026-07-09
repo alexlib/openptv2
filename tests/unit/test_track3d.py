@@ -8,7 +8,12 @@ from openptv2.algorithms.track3d import find_candidates_in_3d, track3d_loop
 from openptv2.algorithms.track import track_forward_start, trackcorr_c_finish
 from openptv2.algorithms.tracking_frame_buf import Frame
 from openptv2.algorithms.tracking_run import tr_new
-from openptv2.algorithms.parameters import read_control_par
+from openptv2.algorithms.parameters import (
+    ControlPar,
+    SequencePar,
+    TrackPar,
+    VolumePar,
+)
 from openptv2.algorithms.calibration import Calibration
 
 EPS = 1e-5
@@ -107,13 +112,13 @@ def test_track3d_no_add():
         shutil.copytree("res_orig", "res")
         shutil.copytree("img_orig", "img")
 
-        cpar = read_control_par("parameters/ptv.par")
+        cpar = ControlPar.from_yaml("parameters.yaml")
         calib = read_all_calibration(cpar.num_cams, base_path=".")
         run = tr_new(
-            "parameters/sequence.par",
-            "parameters/track.par",
-            "parameters/criteria.par",
-            "parameters/ptv.par",
+            SequencePar.from_yaml("parameters.yaml"),
+            TrackPar.from_yaml("parameters.yaml"),
+            VolumePar.from_yaml("parameters.yaml"),
+            ControlPar.from_yaml("parameters.yaml"),
             4,
             20000,
             "res/rt_is",
@@ -153,14 +158,14 @@ def track3d_test_cavity():
         shutil.copytree("res_orig", "res")
         shutil.copytree("img_orig", "img")
 
-        cpar = read_control_par("parameters/ptv.par")
+        cpar = ControlPar.from_yaml("parameters.yaml")
         calib = read_all_calibration(cpar.num_cams, base_path=".")
 
         run = tr_new(
-            "parameters/sequence.par",
-            "parameters/track.par",
-            "parameters/criteria.par",
-            "parameters/ptv.par",
+            SequencePar.from_yaml("parameters.yaml"),
+            TrackPar.from_yaml("parameters.yaml"),
+            VolumePar.from_yaml("parameters.yaml"),
+            ControlPar.from_yaml("parameters.yaml"),
             4,
             20000,
             "res/rt_is",
@@ -278,13 +283,13 @@ def test_track3d_burgers_parity_with_cython():
         shutil.copytree("res_orig", "res")
         shutil.copytree("img_orig", "img")
 
-        cpar_py = read_control_par("parameters/ptv.par")
+        cpar_py = ControlPar.from_yaml("parameters.yaml")
         cal_py = read_all_calibration(cpar_py.num_cams, base_path=".")
         run = tr_new(
-            "parameters/sequence.par",
-            "parameters/track.par",
-            "parameters/criteria.par",
-            "parameters/ptv.par",
+            SequencePar.from_yaml("parameters.yaml"),
+            TrackPar.from_yaml("parameters.yaml"),
+            VolumePar.from_yaml("parameters.yaml"),
+            ControlPar.from_yaml("parameters.yaml"),
             4,
             20000,
             "res/rt_is",

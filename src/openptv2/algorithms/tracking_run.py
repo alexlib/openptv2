@@ -73,6 +73,9 @@ def tr_new(seq_par, tpar, vpar, cpar, buf_len, max_targets,
 
     if isinstance(tpar, str):
         tpar = TrackPar.from_file(tpar)
+    # Convert a TrackPar (from .par or .from_yaml) into the tuple the tracker
+    # uses; an already-converted tuple is passed through unchanged.
+    if isinstance(tpar, TrackPar):
         tpar = convert_track_par_to_tuple(tpar)
 
     if isinstance(vpar, str):

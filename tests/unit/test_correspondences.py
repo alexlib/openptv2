@@ -112,8 +112,8 @@ class TestSorting:
 
 class TestPairwiseMatching:
     def test_pairwise_matching(self):
-        cpar = ControlPar.from_file("test_data/parameters/ptv.par")
-        vpar = VolumePar.from_file("test_data/parameters/criteria.par")
+        cpar = ControlPar.from_yaml("test_data/parameters.yaml")
+        vpar = VolumePar.from_yaml("test_data/parameters.yaml")
 
         cpar.mm.n2[0] = 1.0001
         cpar.mm.n3 = 1.0001
@@ -153,8 +153,8 @@ class TestPairwiseMatching:
 
 class TestFourCameraMatching:
     def test_four_camera_matching(self):
-        cpar = ControlPar.from_file("test_data/parameters/ptv.par")
-        vpar = VolumePar.from_file("test_data/parameters/criteria.par")
+        cpar = ControlPar.from_yaml("test_data/parameters.yaml")
+        vpar = VolumePar.from_yaml("test_data/parameters.yaml")
 
         cpar.mm.n2[0] = 1.0001
         cpar.mm.n3 = 1.0001
@@ -179,8 +179,8 @@ class TestFourCameraMatching:
 
 class TestThreeCameraMatching:
     def test_three_camera_matching(self):
-        cpar = ControlPar.from_file("test_data/parameters/ptv.par")
-        vpar = VolumePar.from_file("test_data/parameters/criteria.par")
+        cpar = ControlPar.from_yaml("test_data/parameters.yaml")
+        vpar = VolumePar.from_yaml("test_data/parameters.yaml")
 
         cpar.mm.n2[0] = 1.0001
         cpar.mm.n3 = 1.0001
@@ -225,8 +225,8 @@ class TestThreeCameraMatching:
 
 class TestTwoCameraMatching:
     def test_two_camera_matching(self):
-        cpar = ControlPar.from_file("test_data/parameters/ptv.par")
-        vpar = VolumePar.from_file("test_data/parameters/criteria.par")
+        cpar = ControlPar.from_yaml("test_data/parameters.yaml")
+        vpar = VolumePar.from_yaml("test_data/parameters.yaml")
 
         cpar.mm.n2[0] = 1.0001
         cpar.mm.n3 = 1.0001
@@ -268,8 +268,8 @@ class TestTwoCameraMatching:
 
 class TestFullCorrespondences:
     def test_correspondences(self):
-        cpar = ControlPar.from_file("test_data/parameters/ptv.par")
-        vpar = VolumePar.from_file("test_data/parameters/criteria.par")
+        cpar = ControlPar.from_yaml("test_data/parameters.yaml")
+        vpar = VolumePar.from_yaml("test_data/parameters.yaml")
 
         cpar.mm.n2[0] = 1.0001
         cpar.mm.n3 = 1.0001
