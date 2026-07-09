@@ -820,6 +820,45 @@ class TreeMenuHandler(Handler):
             frame=frame,
         )
 
+    def visualize_3d_positions(self, info):
+        """Open an interactive 3D plot of the current frame's rt_is positions."""
+        from pyface.api import information, warning
+
+        from .plot_3d_positions import compute_fov_bounds, create_3d_positions_panel
+
+        mainGui = info.object
+        frame = ptv.DEFAULT_FRAME_NUM
+        ptv_params = mainGui.get_parameter("ptv")
+        if isinstance(ptv_params, dict) and "img_name" in ptv_params and ptv_params["img_name"]:
+            frame = ptv._extract_frame_num(ptv_params["img_name"][0])
+
+        rt_is_path = Path(mainGui.exp_path) / "res" / f"rt_is.{frame}"
+        if not rt_is_path.exists():
+            warning(
+                info.ui.control,
+                f"No 3D positions found for frame {frame}.\n\n"
+                f"Run '3D Positions -> 3D positions' first to generate\n{rt_is_path}.",
+            )
+            return
+
+        # Clamp axes to the measurement volume (field of view) from the
+        # criteria/volume parameters so out-of-volume outliers don't squash
+        # the plot.
+        bounds = None
+        try:
+            bounds = compute_fov_bounds(mainGui.vpar, mainGui.cpar, mainGui.cals)
+        except Exception:
+            bounds = None
+
+        panel = create_3d_positions_panel(rt_is_path, frame, bounds=bounds)
+        if panel.figure.axes and not panel.figure.axes[0].collections:
+            information(
+                info.ui.control,
+                f"{rt_is_path} contains no 3D positions to plot.",
+            )
+            return
+        panel.configure_traits()
+
     def detect_part_track(self, info):
         """track detected particles"""
         info.object.clear_plots(remove_background=False)
@@ -1004,6 +1043,11 @@ menu_bar = MenuBar(
         Action(
             name="3D positions",
             action="three_d_positions",
+            enabled_when="pass_init",
+        ),
+        Action(
+            name="Visualize 3D positions",
+            action="visualize_3d_positions",
             enabled_when="pass_init",
         ),
         name="3D Positions",
