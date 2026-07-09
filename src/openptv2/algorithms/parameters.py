@@ -11,6 +11,30 @@ from collections import namedtuple
 from pathlib import Path
 import numpy as np
 
+
+def _load_yaml_params(filename: str | Path) -> dict:
+    """Load an experiment YAML into a plain dict (YAML-only parameter I/O).
+
+    Used by the ``from_yaml`` constructors below so parameter objects can be
+    built directly from the single experiment YAML, without any legacy .par
+    files.
+    """
+    import yaml
+
+    with open(Path(filename), "r", encoding="utf-8") as fh:
+        data = yaml.safe_load(fh)
+    if not isinstance(data, dict):
+        raise ValueError(f"{filename} is not a valid parameter YAML")
+    return data
+
+
+def _clean_name_list(names, num_cams: int) -> list[str]:
+    """Drop placeholder entries ('---'/'--') and pad to num_cams."""
+    out = [str(n) for n in (names or []) if str(n) not in ("---", "--", "")]
+    if not out and num_cams > 0:
+        out = [""] * num_cams
+    return out
+
 # TrackParTuple for test compatibility
 TrackParTuple = namedtuple(
     "TrackParTuple",
@@ -85,6 +109,19 @@ class SequencePar:
         first = int(lines[num_cams].strip())
         last = int(lines[num_cams + 1].strip())
         return SequencePar(num_cams, img_base_name, first, last)
+
+    @staticmethod
+    def from_yaml(filename: str | Path, num_cams: int | None = None) -> SequencePar:
+        """Build a SequencePar from an experiment YAML (YAML-only)."""
+        data = _load_yaml_params(filename)
+        seq = data.get("sequence", {})
+        nc = int(num_cams if num_cams is not None else data.get("num_cams", 0))
+        return SequencePar(
+            num_cams=nc,
+            img_base_name=_clean_name_list(seq.get("base_name"), nc),
+            first=int(seq.get("first", 0)),
+            last=int(seq.get("last", 0)),
+        )
 
     # --- Backward Compatibility OOP Methods ---
     def get_first(self) -> int:
@@ -187,6 +224,25 @@ class TrackPar:
             float(lines[7]),
             int(lines[8]),
             track_mode,
+        )
+
+    @staticmethod
+    def from_yaml(filename: str | Path) -> TrackPar:
+        """Build a TrackPar from an experiment YAML (YAML-only)."""
+        t = _load_yaml_params(filename).get("track", {})
+        # 'angle' is the YAML name for dangle; 'add'/'flagNewParticles' -> add.
+        add = t.get("add", t.get("flagNewParticles", 0))
+        return TrackPar(
+            dvxmin=float(t.get("dvxmin", 0.0)),
+            dvxmax=float(t.get("dvxmax", 0.0)),
+            dvymin=float(t.get("dvymin", 0.0)),
+            dvymax=float(t.get("dvymax", 0.0)),
+            dvzmin=float(t.get("dvzmin", 0.0)),
+            dvzmax=float(t.get("dvzmax", 0.0)),
+            dangle=float(t.get("angle", t.get("dangle", 0.0))),
+            dacc=float(t.get("dacc", 0.0)),
+            add=int(bool(add)),
+            track_mode=int(t.get("track_mode", 0)),
         )
 
     # --- Backward Compatibility OOP Methods ---
@@ -347,6 +403,22 @@ class VolumePar:
         corrmin = float(lines[10])
         eps0 = float(lines[11])
         return VolumePar(X_lay, Zmin_lay, Zmax_lay, cnx, cny, cn, csumg, corrmin, eps0)
+
+    @staticmethod
+    def from_yaml(filename: str | Path) -> VolumePar:
+        """Build a VolumePar from an experiment YAML (YAML-only)."""
+        c = _load_yaml_params(filename).get("criteria", {})
+        return VolumePar(
+            X_lay=list(c.get("X_lay", [0.0, 0.0])),
+            Zmin_lay=list(c.get("Zmin_lay", [0.0, 0.0])),
+            Zmax_lay=list(c.get("Zmax_lay", [0.0, 0.0])),
+            cnx=float(c.get("cnx", 0.0)),
+            cny=float(c.get("cny", 0.0)),
+            cn=float(c.get("cn", 0.0)),
+            csumg=float(c.get("csumg", 0.0)),
+            corrmin=float(c.get("corrmin", 0.0)),
+            eps0=float(c.get("eps0", 0.0)),
+        )
 
     # --- Backward Compatibility OOP Methods ---
     def get_X_lay(self, copy: bool = True) -> np.ndarray:
@@ -593,6 +665,35 @@ class ControlPar:
             pix_x=pix_x,
             pix_y=pix_y,
             chfield=chfield,
+            mm=mm,
+        )
+
+    @staticmethod
+    def from_yaml(filename: str | Path, num_cams: int | None = None) -> ControlPar:
+        """Build a ControlPar from an experiment YAML (YAML-only)."""
+        data = _load_yaml_params(filename)
+        ptv = data.get("ptv", {})
+        seq = data.get("sequence", {})
+        nc = int(num_cams if num_cams is not None else data.get("num_cams", 0))
+        mm = MmNp(
+            nlay=1,
+            n1=float(ptv.get("mmp_n1", 1.0)),
+            n2=[float(ptv.get("mmp_n2", 1.0)), 1.0, 1.0],
+            d=[float(ptv.get("mmp_d", 0.0)), 0.0, 0.0],
+            n3=float(ptv.get("mmp_n3", 1.0)),
+        )
+        return ControlPar(
+            num_cams=nc,
+            img_base_name=_clean_name_list(seq.get("base_name"), nc),
+            cal_img_base_name=_clean_name_list(ptv.get("img_cal"), nc),
+            hp_flag=int(ptv.get("hp_flag", 0)),
+            allCam_flag=int(ptv.get("allcam_flag", 0)),
+            tiff_flag=int(ptv.get("tiff_flag", 0)),
+            imx=int(ptv["imx"]),
+            imy=int(ptv["imy"]),
+            pix_x=float(ptv["pix_x"]),
+            pix_y=float(ptv["pix_y"]),
+            chfield=int(ptv.get("chfield", 0)),
             mm=mm,
         )
 
