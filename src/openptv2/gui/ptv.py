@@ -204,7 +204,7 @@ def _process_frame_worker(args: Tuple) -> int:
                 img = np.clip(img - background, 0, 255).astype(np.uint8)
             except (ValueError, FileNotFoundError):
                 pass
-        high_pass = simple_highpass(img, cpar, tpar.get_cross_size() if hasattr(tpar, "get_cross_size") else DEFAULT_HIGHPASS_FILTER_SIZE)
+        high_pass = simple_highpass(img, cpar)
         targs = target_recognition(high_pass, tpar, i_cam, cpar)
 
         if len(targs) > 0:
@@ -849,7 +849,7 @@ def py_sequence_loop(exp) -> None:
                         img = np.clip(img - background, 0, 255).astype(np.uint8)
                     except (ValueError, FileNotFoundError):
                         print("failed to read the mask")
-                high_pass = simple_highpass(img, cpar, tpar.get_cross_size() if hasattr(tpar, "get_cross_size") else DEFAULT_HIGHPASS_FILTER_SIZE)
+                high_pass = simple_highpass(img, cpar)
                 targs = target_recognition(high_pass, tpar, i_cam, cpar)
 
             if len(targs) > 0:
@@ -1134,7 +1134,7 @@ def py_sequence_loop_python(exp) -> None:
                         img = np.clip(img - background, 0, 255).astype(np.uint8)
                     except (ValueError, FileNotFoundError):
                         print("failed to read the mask")
-                high_pass = simple_highpass(img, cpar, tpar.get_cross_size() if hasattr(tpar, "get_cross_size") else DEFAULT_HIGHPASS_FILTER_SIZE)
+                high_pass = simple_highpass(img, cpar)
                 targs = alg_target_recognition(high_pass, tpar, i_cam, cpar)
 
             if len(targs) > 0:
