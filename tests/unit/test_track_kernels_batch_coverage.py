@@ -245,66 +245,36 @@ def test_point_position_batch_empty():
 
 
 def test_point_position_batch_one_point():
-    """num_pts=1, num_cams=2 → (1, 3) and (1,); finite values.
-
-    Bug: _point_position_out uses a Cython C-array declaration
-    ``valid: cython.int[num_cams]`` which becomes UnboundLocalError in
-    pure-Python mode. The try/except documents this known issue without
-    hiding any other failure.
-    """
+    """num_pts=1, num_cams=2 → (1, 3) and (1,); finite values."""
     all_targets = np.zeros((1, 2, 2), dtype=np.float64)
     cal_arrays = _two_cams()
-    try:
-        positions, distances = point_position_batch_fast(all_targets, 1, 2, cal_arrays)
-        assert positions.shape == (1, 3)
-        assert distances.shape == (1,)
-        assert np.all(np.isfinite(positions))
-        assert np.isfinite(distances[0])
-    except UnboundLocalError:
-        pytest.xfail(
-            "Bug: _point_position_out C-array 'valid[_vi]' → UnboundLocalError"
-            " in pure-Python mode (Cython compiled mode works correctly)"
-        )
+    positions, distances = point_position_batch_fast(all_targets, 1, 2, cal_arrays)
+    assert positions.shape == (1, 3)
+    assert distances.shape == (1,)
+    assert np.all(np.isfinite(positions))
+    assert np.isfinite(distances[0])
 
 
 def test_point_position_batch_multiple_points():
-    """num_pts=3 → (3, 3) positions and (3,) distances.
-
-    Same UnboundLocalError bug as test_point_position_batch_one_point.
-    """
+    """num_pts=3 → (3, 3) positions and (3,) distances."""
     all_targets = np.zeros((3, 2, 2), dtype=np.float64)
     cal_arrays = _two_cams()
-    try:
-        positions, distances = point_position_batch_fast(all_targets, 3, 2, cal_arrays)
-        assert positions.shape == (3, 3)
-        assert distances.shape == (3,)
-    except UnboundLocalError:
-        pytest.xfail(
-            "Bug: _point_position_out C-array 'valid[_vi]' → UnboundLocalError"
-            " in pure-Python mode"
-        )
+    positions, distances = point_position_batch_fast(all_targets, 3, 2, cal_arrays)
+    assert positions.shape == (3, 3)
+    assert distances.shape == (3,)
 
 
 def test_point_position_batch_nonzero_targets():
-    """Finite target coords still yield finite positions.
-
-    Same UnboundLocalError bug as test_point_position_batch_one_point.
-    """
+    """Finite target coords still yield finite positions."""
     all_targets = np.array(
         [[[1.0, 2.0], [-1.0, 2.0]],
          [[0.5, 0.5], [-0.5, 0.5]]],
         dtype=np.float64,
     )
     cal_arrays = _two_cams()
-    try:
-        positions, distances = point_position_batch_fast(all_targets, 2, 2, cal_arrays)
-        assert positions.shape == (2, 3)
-        assert np.all(np.isfinite(positions))
-    except UnboundLocalError:
-        pytest.xfail(
-            "Bug: _point_position_out C-array 'valid[_vi]' → UnboundLocalError"
-            " in pure-Python mode"
-        )
+    positions, distances = point_position_batch_fast(all_targets, 2, 2, cal_arrays)
+    assert positions.shape == (2, 3)
+    assert np.all(np.isfinite(positions))
 
 
 # ─────────────────────────────────────────────────────────────────────────────
