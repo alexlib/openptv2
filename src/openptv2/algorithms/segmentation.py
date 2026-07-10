@@ -49,7 +49,7 @@ class Peak:
 
     def __post_init__(self):
         if self.touch is None:
-            self.touch = []
+            self.touch = [0, 0, 0, 0]
 
 
 @cython.ccall
@@ -310,7 +310,7 @@ def peak_fit(
             gv = img[i, j]
 
             peak.n += 1
-            peak.sumg += gv
+            peak.sumg += int(gv)
             peak.x += float(j) * gv
             peak.y += float(i) * gv
 
