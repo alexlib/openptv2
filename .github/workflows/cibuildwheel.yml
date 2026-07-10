@@ -16,17 +16,17 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        python: ['cp311', 'cp312', 'cp313']
+        python: ['cp311', 'cp312', 'cp313', 'cp314']
     steps:
-      - uses: actions/checkout@v5
-      
+      - uses: actions/checkout@v7
+
       - name: Set up Python (host)
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: '3.12'
-        
+
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.21
+        uses: pypa/cibuildwheel@v4.1.0
         with:
           output-dir: ./wheelhouse
         env:
@@ -89,7 +89,7 @@ jobs:
             -v -m "not slow" --tb=short
 
       
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: wheels-${{ matrix.os }}-${{ matrix.python }}
           path: ./wheelhouse/*.whl
@@ -99,13 +99,13 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
     steps:
-      - uses: actions/checkout@v5
-      
+      - uses: actions/checkout@v7
+
       - name: Set up Python (host)
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: '3.12'
-      
+
       - name: Install dependencies (sdist)
         run: |
           python -m pip install --upgrade pip
@@ -119,7 +119,7 @@ jobs:
         run: |
           python -m build --sdist
       
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: sdist
           path: dist/*.tar.gz
@@ -131,19 +131,19 @@ jobs:
     if: "false"  # Skip for now - tests not included in wheel
     # if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           pattern: wheels-*
           path: dist
           merge-multiple: true
       
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: sdist
           path: dist
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: '3.12'
 
@@ -174,13 +174,13 @@ jobs:
       attestations: write  # needed by pypa/gh-action-pypi-publish >= v1.12 for Sigstore attestations
       contents: read  # needed to read repo contents for attestation metadata
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           pattern: wheels-*
           path: dist
           merge-multiple: true
       
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: sdist
           path: dist
@@ -201,25 +201,25 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           pattern: wheels-*
           path: dist
           merge-multiple: true
       
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: sdist
           path: dist
       
       - name: Upload wheels to release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: dist/*.whl
           fail_on_unmatched_files: false
       
       - name: Upload sdist to release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: dist/*.tar.gz
           fail_on_unmatched_files: false
