@@ -1009,6 +1009,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#step-0-one-time-pypi-setup-trusted-publisher" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 0: One-Time PyPI Setup (Trusted Publisher)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#step-1-update-the-version" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1363,6 +1374,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#step-0-one-time-pypi-setup-trusted-publisher" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 0: One-Time PyPI Setup (Trusted Publisher)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#step-1-update-the-version" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1484,13 +1506,61 @@
 <h3 id="multi-platform-production-build-via-cicd">Multi-Platform Production Build (via CI/CD)<a class="headerlink" href="#multi-platform-production-build-via-cicd" title="Permanent link">&para;</a></h3>
 <p>To build production wheels for all platforms (Windows, macOS Intel/Arm, Linux manylinux), we use GitHub Actions. The matrix is defined in <code>.github/workflows/cibuildwheel.yml</code>:</p>
 <ul>
-<li><strong>Linux</strong>: Compiled inside a <code>manylinux2014</code> Docker container for broad GLIBC compatibility.</li>
-<li><strong>macOS</strong>: Built on macOS runners generating universal binaries (<code>x86_64</code> and <code>arm64</code>).</li>
-<li><strong>Windows</strong>: Built using MSVC compiler tools targeting <code>AMD64</code>.</li>
+<li><strong>Linux</strong>: <code>x86_64</code> only, compiled inside a <code>manylinux_2_28</code> Docker container
+  for broad GLIBC compatibility (32-bit <code>i686</code> and <code>musllinux</code> are skipped —
+  NumPy/SciPy ship no wheels for them). OpenMP via the system <code>libgomp</code>.</li>
+<li><strong>macOS</strong>: <code>arm64</code> only (Apple Silicon). OpenMP uses a low-deployment-target
+  <code>libomp</code> (macOS 11) fetched from <code>mac.r-project.org</code> and bundled into the
+  wheel by <code>delocate</code>. Intel Macs install from the source distribution.</li>
+<li><strong>Windows</strong>: Built using MSVC compiler tools targeting <code>AMD64</code>; OpenMP via
+  <code>/openmp</code>.</li>
 </ul>
 <hr />
 <h2 id="3-releasing-on-github-and-pypi">3. Releasing on GitHub and PyPI<a class="headerlink" href="#3-releasing-on-github-and-pypi" title="Permanent link">&para;</a></h2>
 <p>Releasing a new version is fully automated via our CI/CD pipeline using <strong>Trusted Publishing (OIDC)</strong> on PyPI and automated GitHub Release attachments.</p>
+<h3 id="step-0-one-time-pypi-setup-trusted-publisher">Step 0: One-Time PyPI Setup (Trusted Publisher)<a class="headerlink" href="#step-0-one-time-pypi-setup-trusted-publisher" title="Permanent link">&para;</a></h3>
+<p>Trusted publishing must be registered <strong>once</strong> on PyPI. No API tokens are stored
+in GitHub. Sign in to <a href="https://pypi.org">pypi.org</a> and:</p>
+<ul>
+<li><strong>New project</strong> (not yet on PyPI): account → <em>Publishing</em> → <em>Add a pending publisher</em>.</li>
+<li><strong>Existing project</strong>: project → <em>Manage</em> → <em>Publishing</em> → <em>Add a new publisher</em>.</li>
+</ul>
+<p>Fill in <strong>exactly</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PyPI Project Name</td>
+<td><code>openptv2</code></td>
+</tr>
+<tr>
+<td>Owner</td>
+<td><code>alexlib</code></td>
+</tr>
+<tr>
+<td>Repository name</td>
+<td><code>openptv2</code></td>
+</tr>
+<tr>
+<td>Workflow name</td>
+<td><code>cibuildwheel.yml</code></td>
+</tr>
+<tr>
+<td>Environment name</td>
+<td><code>pypi</code></td>
+</tr>
+</tbody>
+</table>
+<p>The <code>Environment name</code> <strong>must</strong> match the <code>environment: pypi</code> declared on the
+<code>upload_pypi</code> job — otherwise PyPI rejects the OIDC token. Optionally, in the
+GitHub repo <em>Settings → Environments → <code>pypi</code></em>, add yourself as a <strong>required
+reviewer</strong> so each publish waits for one-click approval (guards against
+accidental releases).</p>
 <h3 id="step-1-update-the-version">Step 1: Update the Version<a class="headerlink" href="#step-1-update-the-version" title="Permanent link">&para;</a></h3>
 <ol>
 <li>Open <code>pyproject.toml</code> and locate the <code>[project]</code> configuration block.</li>
@@ -1516,7 +1586,11 @@
 <p>When the release tag is pushed, the <code>.github/workflows/cibuildwheel.yml</code> action triggers:
 1. <strong>Compilation</strong>: Launches parallel compilation tasks for all matrix platforms using <code>cibuildwheel</code>.
 2. <strong>Packaging</strong>: Creates the source distribution (<code>.tar.gz</code>).
-3. <strong>PyPI Upload</strong>: Authenticates with PyPI using <strong>Trusted Publishing (OIDC)</strong> (no password/token storage needed) and uploads all generated wheel assets to PyPI.</p>
+3. <strong>PyPI Upload</strong>: Runs in the <code>pypi</code> GitHub environment and authenticates with
+   PyPI using <strong>Trusted Publishing (OIDC)</strong> (no password/token storage needed),
+   then uploads all wheels and the sdist. <code>skip-existing</code> is enabled, so
+   re-running a release that was already (partly) uploaded won't fail — but PyPI
+   still rejects re-uploading an <em>existing version</em>, so always bump first.</p>
 <h3 id="step-4-github-release-creation">Step 4: GitHub Release Creation<a class="headerlink" href="#step-4-github-release-creation" title="Permanent link">&para;</a></h3>
 <p>The CI/CD workflow automatically creates a GitHub Release for your tag:
 1. Gathers all <code>.whl</code> binaries and the <code>.tar.gz</code> source package.
