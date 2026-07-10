@@ -1,36 +1,20 @@
-"""Compiled kernels for the tracking hot path.
-
-Auto-generated split from track_kernels.py.
-"""
-
+"""Per-camera pixel-space math: projection, candidate search, multimedia refraction."""
 import cython
 import numpy as np
 
 if cython.compiled:
     from cython.cimports.libc.math import (
-        sqrt as c_sqrt,
-        sin as c_sin,
-        cos as c_cos,
-        tan as c_tan,
-        asin as c_asin,
-        acos as c_acos,
-        atan as c_atan,
+        sqrt as c_sqrt, sin as c_sin, cos as c_cos, tan as c_tan,
+        asin as c_asin, acos as c_acos, atan as c_atan,
     )
 else:
     from math import (
-        sqrt as c_sqrt,
-        sin as c_sin,
-        cos as c_cos,
-        tan as c_tan,
-        asin as c_asin,
-        acos as c_acos,
-        atan as c_atan,
+        sqrt as c_sqrt, sin as c_sin, cos as c_cos, tan as c_tan,
+        asin as c_asin, acos as c_acos, atan as c_atan,
     )
 
-_M_PI: cython.double = 3.141592653589793
 
-
-@cython.cfunc
+@cython.ccall
 @cython.nogil
 def _multimed_r_nlay_1layer(
     pos_x: cython.double,
@@ -109,11 +93,11 @@ def _multimed_r_nlay_1layer(
     return 1.0
 
 
-@cython.cfunc
+@cython.ccall
 @cython.profile(False)
 @cython.nogil
 def _point_to_pixel_out(
-    pos: cython.p_double,
+    pos: cython.double[:],
     cal: cython.double[:],
     mmlut_data: cython.double[:],
     mmlut_origin: cython.double[:],
@@ -126,7 +110,7 @@ def _point_to_pixel_out(
     inv_pix_x: cython.double,
     inv_pix_y: cython.double,
     chfield: cython.int,
-    out: cython.p_double,
+    out: cython.double[:],
 ) -> cython.int:
     """Write pixel coordinates to out[0], out[1] — no tuple creation."""
     pos0: cython.double
@@ -221,7 +205,6 @@ def _point_to_pixel_out(
     y_dist: cython.double
     x_pixel: cython.double
     y_pixel: cython.double
-
     pos0 = pos[0]
     pos1 = pos[1]
     pos2 = pos[2]
@@ -376,639 +359,6 @@ def _point_to_pixel_out(
     out[1] = y_pixel
     return 0
 
-# Sentinel values for unused particle/candidate indices — typed C int
-cython.declare(
-    PT_UNUSED=cython.int,
-    TR_UNUSED_K=cython.int,
-)
-PT_UNUSED = -999
-TR_UNUSED_K = -1
-
-
-def candsearch_in_pix_fast(
-    targ_x: cython.double[:],
-    targ_y: cython.double[:],
-    targ_tnr: cython.int[:],
-    num_targets: cython.int,
-    cent_x: cython.double,
-    cent_y: cython.double,
-    dl: cython.double,
-    dr: cython.double,
-    du: cython.double,
-    dd: cython.double,
-    imx: cython.double,
-    imy: cython.double,
-    tr_unused: cython.int,
-):
-    """Find up to 4 closest candidates in pixel search area.
-
-    Args:
-        targ_x, targ_y: float64 arrays of target coordinates.
-        targ_tnr: int32 array of target numbers (TR_UNUSED = unused).
-        num_targets: number of valid targets.
-        cent_x, cent_y: search center.
-        dl, dr, du, dd: search margins (left, right, up, down).
-        imx, imy: image dimensions.
-        tr_unused: TR_UNUSED sentinel value.
-
-    Returns:
-        (p0, p1, p2, p3) — indices of up to 4 closest candidates,
-        PT_UNUSED for empty slots.
-    """
-    xmin: cython.double
-    xmax: cython.double
-    ymin: cython.double
-    ymax: cython.double
-    p1: cython.int
-    p2: cython.int
-    p3: cython.int
-    p4: cython.int
-    d1: cython.double
-    d2: cython.double
-    d3: cython.double
-    d4: cython.double
-    j0: cython.int
-    dj: cython.int
-    j: cython.int
-    ty: cython.double
-    tx: cython.double
-    dx: cython.double
-    dy: cython.double
-    d: cython.double
-    xmin = cent_x - dl
-    xmax = cent_x + dr
-    ymin = cent_y - du
-    ymax = cent_y + dd
-
-    if xmin < 0.0:
-        xmin = 0.0
-    if xmax > imx:
-        xmax = imx
-    if ymin < 0.0:
-        ymin = 0.0
-    if ymax > imy:
-        ymax = imy
-
-    p1 = PT_UNUSED
-    p2 = PT_UNUSED
-    p3 = PT_UNUSED
-    p4 = PT_UNUSED
-    d1 = 1e20
-    d2 = 1e20
-    d3 = 1e20
-    d4 = 1e20
-
-    if not (0.0 <= cent_x <= imx and 0.0 <= cent_y <= imy):
-        return p1, p2, p3, p4
-
-    j0 = num_targets // 2
-    dj = num_targets // 4
-    while dj > 1:
-        if targ_y[j0] < ymin:
-            j0 += dj
-        else:
-            j0 -= dj
-        dj //= 2
-
-    j0 -= 12
-    if j0 < 0:
-        j0 = 0
-
-    for j in range(j0, num_targets):
-        ty = targ_y[j]
-        if targ_tnr[j] != tr_unused:
-            if ty > ymax:
-                break
-            tx = targ_x[j]
-            if tx > xmin and tx < xmax and ty > ymin and ty < ymax:
-                dx = cent_x - tx
-                dy = cent_y - ty
-                d = c_sqrt(dx * dx + dy * dy)
-
-                if d < d1:
-                    p4 = p3
-                    p3 = p2
-                    p2 = p1
-                    p1 = j
-                    d4 = d3
-                    d3 = d2
-                    d2 = d1
-                    d1 = d
-                elif d < d2:
-                    p4 = p3
-                    p3 = p2
-                    p2 = j
-                    d4 = d3
-                    d3 = d2
-                    d2 = d
-                elif d < d3:
-                    p4 = p3
-                    p3 = j
-                    d4 = d3
-                    d3 = d
-                elif d < d4:
-                    p4 = j
-                    d4 = d
-
-    return p1, p2, p3, p4
-
-
-@cython.ccall
-@cython.boundscheck(False)
-@cython.wraparound(False)
-def candsearch_in_pix_rest_fast(
-    targ_x: cython.double[:],
-    targ_y: cython.double[:],
-    targ_tnr: cython.int[:],
-    num_targets: cython.int,
-    cent_x: cython.double,
-    cent_y: cython.double,
-    dl: cython.double,
-    dr: cython.double,
-    du: cython.double,
-    dd: cython.double,
-    imx: cython.double,
-    imy: cython.double,
-    tr_unused: cython.int,
-):
-    """Find closest unused candidate.
-
-    Returns:
-        (index, count) — index of closest candidate with tnr==TR_UNUSED, count (0 or 1).
-    """
-    xmin: cython.double
-    xmax: cython.double
-    ymin: cython.double
-    ymax: cython.double
-    best: cython.int
-    dmin: cython.double
-    counter: cython.int
-    j0: cython.int
-    dj: cython.int
-    j: cython.int
-    ty: cython.double
-    tx: cython.double
-    dx: cython.double
-    dy: cython.double
-    d: cython.double
-    xmin = cent_x - dl
-    xmax = cent_x + dr
-    ymin = cent_y - du
-    ymax = cent_y + dd
-
-    if xmin < 0.0:
-        xmin = 0.0
-    if xmax > imx:
-        xmax = imx
-    if ymin < 0.0:
-        ymin = 0.0
-    if ymax > imy:
-        ymax = imy
-
-    best = PT_UNUSED
-    dmin = 1e20
-    counter = 0
-
-    if not (0.0 <= cent_x <= imx and 0.0 <= cent_y <= imy):
-        return best, 0
-
-    j0 = num_targets // 2
-    dj = num_targets // 4
-    while dj > 1:
-        if targ_y[j0] < ymin:
-            j0 += dj
-        else:
-            j0 -= dj
-        dj //= 2
-
-    j0 -= 12
-    if j0 < 0:
-        j0 = 0
-
-    for j in range(j0, num_targets):
-        ty = targ_y[j]
-        if targ_tnr[j] == tr_unused:
-            if ty > ymax:
-                break
-            tx = targ_x[j]
-            if tx > xmin and tx < xmax and ty > ymin and ty < ymax:
-                dx = cent_x - tx
-                dy = cent_y - ty
-                d = c_sqrt(dx * dx + dy * dy)
-                if d < dmin:
-                    dmin = d
-                    best = j
-                    counter = 1
-
-    return best, counter
-
-
-@cython.ccall
-@cython.boundscheck(False)
-@cython.wraparound(False)
-def sort_candidates_by_freq_fast(
-    ftnr: cython.int[:],
-    freq: cython.int[:],
-    whichcam: cython.int[:, ::1],
-    n: cython.int,
-    num_cams: cython.int,
-    max_cands: cython.int,
-):
-    """Sort candidates by frequency, matches C algorithm.
-
-    Args:
-        ftnr: (n,) int32 — candidate target numbers (TR_UNUSED = -1).
-        freq: (n,) int32 — frequency counts (zeroed on entry).
-        whichcam: (n, num_cams) int32 — camera flags.
-        n: total number of entries (num_cams * max_cands).
-        num_cams: number of cameras.
-        max_cands: candidates per camera (4).
-
-    Returns:
-        num_valid: number of valid candidates after sort.
-    """
-    i: cython.int
-    j: cython.int
-    m: cython.int
-    k: cython.int
-    ftnr_i: cython.int
-    num_valid: cython.int
-    tr_unused = -1
-
-    for i in range(n):
-        ftnr_i = ftnr[i]
-        if ftnr_i == tr_unused:
-            continue
-        for j in range(num_cams):
-            for m in range(max_cands):
-                if ftnr_i == ftnr[max_cands * j + m]:
-                    whichcam[i, j] = 1
-
-    for i in range(n):
-        if ftnr[i] != tr_unused:
-            for j in range(num_cams):
-                if whichcam[i, j] == 1:
-                    freq[i] += 1
-
-    for i in range(1, n):
-        for j in range(n - 1, i - 1, -1):
-            if freq[j - 1] < freq[j]:
-                ftnr[j - 1], ftnr[j] = ftnr[j], ftnr[j - 1]
-                freq[j - 1], freq[j] = freq[j], freq[j - 1]
-                for k in range(num_cams):
-                    whichcam[j - 1, k], whichcam[j, k] = (
-                        whichcam[j, k],
-                        whichcam[j - 1, k],
-                    )
-
-    for i in range(n):
-        ftnr_i = ftnr[i]
-        for j in range(i + 1, n):
-            if ftnr[j] == ftnr_i or freq[j] < 2:
-                freq[j] = 0
-                ftnr[j] = tr_unused
-
-    for i in range(1, n):
-        for j in range(n - 1, i - 1, -1):
-            if freq[j - 1] < freq[j]:
-                ftnr[j - 1], ftnr[j] = ftnr[j], ftnr[j - 1]
-                freq[j - 1], freq[j] = freq[j], freq[j - 1]
-                for k in range(num_cams):
-                    whichcam[j - 1, k], whichcam[j, k] = (
-                        whichcam[j, k],
-                        whichcam[j - 1, k],
-                    )
-
-    num_valid = 0
-    for i in range(n):
-        if freq[i] != 0:
-            num_valid += 1
-    return num_valid
-
-
-@cython.ccall
-@cython.boundscheck(False)
-@cython.wraparound(False)
-def sorted_candidates_fast(
-    center: cython.double[:],
-    center_proj_x: cython.double[:],
-    center_proj_y: cython.double[:],
-    num_cams: cython.int,
-    max_cands: cython.int,
-    cal_arrays: tuple,
-    mmlut_datas: tuple,
-    mmlut_origins: tuple,
-    mmlut_nrs: tuple,
-    mmlut_nzs: tuple,
-    mmlut_rws: tuple,
-    targ_x: cython.double[:, ::1],
-    targ_y: cython.double[:, ::1],
-    targ_tnr: cython.int[:, ::1],
-    num_targets: cython.int[:],
-    dvxmin: cython.double,
-    dvxmax: cython.double,
-    dvymin: cython.double,
-    dvymax: cython.double,
-    dvzmin: cython.double,
-    dvzmax: cython.double,
-    imx_half: cython.double,
-    imy_half: cython.double,
-    inv_pix_x: cython.double,
-    inv_pix_y: cython.double,
-    chfield: cython.int,
-    imx: cython.double,
-    imy: cython.double,
-    tr_unused: cython.int,
-):
-    """Fused searchquader + candsearch + sort — single compiled entry.
-
-    Returns (ftnr, freq, whichcam, num_valid).
-    """
-    n: cython.int
-    _pp = np.empty(2, dtype=np.float64)
-    _pp_mv: cython.double[:] = _pp
-    n = num_cams * max_cands
-    ftnr = np.full(n, tr_unused, dtype=np.int32)
-    freq = np.zeros(n, dtype=np.int32)
-    whichcam = np.zeros((n, num_cams), dtype=np.int32)
-    num_valid = _sorted_candidates_fast_out(
-        center,
-        center_proj_x,
-        center_proj_y,
-        num_cams,
-        max_cands,
-        cal_arrays,
-        mmlut_datas,
-        mmlut_origins,
-        mmlut_nrs,
-        mmlut_nzs,
-        mmlut_rws,
-        targ_x,
-        targ_y,
-        targ_tnr,
-        num_targets,
-        dvxmin,
-        dvxmax,
-        dvymin,
-        dvymax,
-        dvzmin,
-        dvzmax,
-        imx_half,
-        imy_half,
-        inv_pix_x,
-        inv_pix_y,
-        chfield,
-        imx,
-        imy,
-        tr_unused,
-        ftnr,
-        freq,
-        whichcam,
-    )
-    return ftnr, freq, whichcam, num_valid
-
-
-@cython.ccall
-@cython.inline
-@cython.boundscheck(False)
-@cython.wraparound(False)
-def _sorted_candidates_fast_out(
-    center: cython.double[:],
-    center_proj_x: cython.double[:],
-    center_proj_y: cython.double[:],
-    num_cams: cython.int,
-    max_cands: cython.int,
-    cal_arr: cython.double[:, ::1],
-    md_arr: object,
-    mo_arr: cython.double[:, ::1],
-    mnr_arr: cython.int[:],
-    mnz_arr: cython.int[:],
-    mrw_arr: cython.double[:],
-    targ_x: cython.double[:, ::1],
-    targ_y: cython.double[:, ::1],
-    targ_tnr: cython.int[:, ::1],
-    num_targets: cython.int[:],
-    dvxmin: cython.double,
-    dvxmax: cython.double,
-    dvymin: cython.double,
-    dvymax: cython.double,
-    dvzmin: cython.double,
-    dvzmax: cython.double,
-    imx_half: cython.double,
-    imy_half: cython.double,
-    inv_pix_x: cython.double,
-    inv_pix_y: cython.double,
-    chfield: cython.int,
-    imx: cython.double,
-    imy: cython.double,
-    tr_unused: cython.int,
-    ftnr_out: cython.int[:],
-    freq_out: cython.int[:],
-    whichcam_out: cython.int[:, :],
-) -> cython.int:
-    """Fused searchquader + candsearch + sort — _out variant.
-    Returns num_valid.
-    """
-    n: cython.int
-    px: cython.double
-    py: cython.double
-    pz: cython.double
-    i: cython.int
-    pt: cython.int
-    xr_i: cython.double
-    xl_i: cython.double
-    yd_i: cython.double
-    yu_i: cython.double
-    cx: cython.double
-    cy: cython.double
-    corner_x: cython.double
-    corner_y: cython.double
-    mrw: cython.double
-    mnr: cython.int
-    mnz: cython.int
-    has_mmlut: cython.int
-    cam: cython.int
-    base: cython.int
-    ci: cython.int
-    idx: cython.int
-    ftnr_i: cython.int
-    num_valid: cython.int
-    j: cython.int
-    m: cython.int
-    k: cython.int
-    p0: cython.int
-    p1: cython.int
-    p2: cython.int
-    p3: cython.int
-    _pp_buf = np.zeros(2, dtype=np.float64)
-    _pp: cython.double[:] = _pp_buf
-    _quader_buf = np.zeros(24, dtype=np.float64)
-    quader_buf: cython.double[:] = _quader_buf
-    _pt_buf = np.zeros(3, dtype=np.float64)
-    pt_buf: cython.double[:] = _pt_buf
-    n = num_cams * max_cands
-
-    # --- searchquader inlined ---
-    px = center[0]
-    py = center[1]
-    pz = center[2]
-    for pt in range(8):
-        quader_buf[pt * 3 + 0] = px + (dvxmax if pt & 1 else dvxmin)
-        quader_buf[pt * 3 + 1] = py + (dvymax if pt & 2 else dvymin)
-        quader_buf[pt * 3 + 2] = pz + (dvzmax if pt & 4 else dvzmin)
-
-    _xr_buf = np.zeros(4, dtype=np.float64)
-    xr: cython.double[:] = _xr_buf
-    _xl_buf = np.zeros(4, dtype=np.float64)
-    xl: cython.double[:] = _xl_buf
-    _yd_buf = np.zeros(4, dtype=np.float64)
-    yd: cython.double[:] = _yd_buf
-    _yu_buf = np.zeros(4, dtype=np.float64)
-    yu: cython.double[:] = _yu_buf
-
-    for i in range(num_cams):
-        cal = cal_arr[i]
-        md = md_arr[i]
-        mo = mo_arr[i]
-        mnr = mnr_arr[i]
-        mnz = mnz_arr[i]
-        mrw = mrw_arr[i]
-        has_mmlut = mnr > 0
-
-        xr_i = 0.0
-        xl_i = float(imx)
-        yd_i = 0.0
-        yu_i = float(imy)
-        # Use pre-computed center projection (caller already projected it)
-        cx = center_proj_x[i]
-        cy = center_proj_y[i]
-        for pt in range(8):
-            pt_buf[0] = quader_buf[pt * 3 + 0]
-            pt_buf[1] = quader_buf[pt * 3 + 1]
-            pt_buf[2] = quader_buf[pt * 3 + 2]
-            _point_to_pixel_out(
-                cython.address(pt_buf[0]),
-                cal,
-                md,
-                mo,
-                mnr,
-                mnz,
-                mrw,
-                has_mmlut,
-                imx_half,
-                imy_half,
-                inv_pix_x,
-                inv_pix_y,
-                chfield,
-                cython.address(_pp[0]),
-            )
-            corner_x = _pp[0]
-            corner_y = _pp[1]
-            if corner_x < xl_i:
-                xl_i = corner_x
-            if corner_y < yu_i:
-                yu_i = corner_y
-            if corner_x > xr_i:
-                xr_i = corner_x
-            if corner_y > yd_i:
-                yd_i = corner_y
-        if xl_i < 0.0:
-            xl_i = 0.0
-        if yu_i < 0.0:
-            yu_i = 0.0
-        if xr_i > imx:
-            xr_i = imx
-        if yd_i > imy:
-            yd_i = imy
-        xr[i] = xr_i - cx
-        xl[i] = cx - xl_i
-        yd[i] = yd_i - cy
-        yu[i] = cy - yu_i
-
-    # --- initialize output buffers ---
-    for i in range(n):
-        ftnr_out[i] = tr_unused
-        freq_out[i] = 0
-        for j in range(num_cams):
-            whichcam_out[i, j] = 0
-
-    # --- candsearch per camera, write directly into ftnr_out/whichcam_out ---
-    for cam in range(num_cams):
-        p0, p1, p2, p3 = candsearch_in_pix_fast(
-            targ_x[cam],
-            targ_y[cam],
-            targ_tnr[cam],
-            num_targets[cam],
-            center_proj_x[cam],
-            center_proj_y[cam],
-            xl[cam],
-            xr[cam],
-            yu[cam],
-            yd[cam],
-            imx,
-            imy,
-            tr_unused,
-        )
-
-        base = cam * max_cands
-        cands = (p0, p1, p2, p3)
-        for ci in range(4):
-            idx = cands[ci]
-            if idx != PT_UNUSED:
-                whichcam_out[base + ci, cam] = 1
-                ftnr_out[base + ci] = int(targ_tnr[cam, idx])
-
-    # --- sort_candidates_by_freq inlined ---
-    for i in range(n):
-        ftnr_i = ftnr_out[i]
-        if ftnr_i == tr_unused:
-            continue
-        for j in range(num_cams):
-            for m in range(max_cands):
-                if ftnr_i == ftnr_out[max_cands * j + m]:
-                    whichcam_out[i, j] = 1
-
-    for i in range(n):
-        if ftnr_out[i] != tr_unused:
-            for j in range(num_cams):
-                if whichcam_out[i, j] == 1:
-                    freq_out[i] += 1
-
-    for i in range(1, n):
-        for j in range(n - 1, i - 1, -1):
-            if freq_out[j - 1] < freq_out[j]:
-                ftnr_out[j - 1], ftnr_out[j] = ftnr_out[j], ftnr_out[j - 1]
-                freq_out[j - 1], freq_out[j] = freq_out[j], freq_out[j - 1]
-                for k in range(num_cams):
-                    whichcam_out[j - 1, k], whichcam_out[j, k] = (
-                        whichcam_out[j, k],
-                        whichcam_out[j - 1, k],
-                    )
-
-    for i in range(n):
-        ftnr_i = ftnr_out[i]
-        for j in range(i + 1, n):
-            if ftnr_out[j] == ftnr_i or freq_out[j] < 2:
-                freq_out[j] = 0
-                ftnr_out[j] = tr_unused
-
-    for i in range(1, n):
-        for j in range(n - 1, i - 1, -1):
-            if freq_out[j - 1] < freq_out[j]:
-                ftnr_out[j - 1], ftnr_out[j] = ftnr_out[j], ftnr_out[j - 1]
-                freq_out[j - 1], freq_out[j] = freq_out[j], freq_out[j - 1]
-                for k in range(num_cams):
-                    whichcam_out[j - 1, k], whichcam_out[j, k] = (
-                        whichcam_out[j, k],
-                        whichcam_out[j - 1, k],
-                    )
-
-    num_valid = 0
-    for i in range(n):
-        if freq_out[i] != 0:
-            num_valid += 1
-    return num_valid
-
 
 @cython.ccall
 @cython.boundscheck(False)
@@ -1050,7 +400,7 @@ def candsearch_in_pix_fast_nogil(
     dx: cython.double
     dy: cython.double
     d: cython.double
-    
+
     xmin = cent_x - dl
     xmax = cent_x + dr
     ymin = cent_y - du
@@ -1182,6 +532,8 @@ def _sorted_candidates_fast_out_nogil(
     ftnr_out: cython.int[:],
     freq_out: cython.int[:],
     whichcam_out: cython.int[:, :],
+    pt_buf: cython.double[:],
+    _pp: cython.double[:],
 ) -> cython.int:
     n: cython.int
     px: cython.double
@@ -1210,16 +562,22 @@ def _sorted_candidates_fast_out_nogil(
     j: cython.int
     m: cython.int
     k: cython.int
-    _pp: cython.double[:]
     quader_buf: cython.double[:]
-    pt_buf: cython.double[:]
+    xr: cython.double[:]
+    xl: cython.double[:]
+    yd: cython.double[:]
+    yu: cython.double[:]
     with cython.gil:
-        _pp_buf = np.zeros(2, dtype=np.float64)
-        _pp = _pp_buf
         _quader_buf = np.zeros(24, dtype=np.float64)
         quader_buf = _quader_buf
-        _pt_buf = np.zeros(3, dtype=np.float64)
-        pt_buf = _pt_buf
+        _xr_buf = np.zeros(8, dtype=np.float64)
+        xr = _xr_buf
+        _xl_buf = np.zeros(8, dtype=np.float64)
+        xl = _xl_buf
+        _yd_buf = np.zeros(8, dtype=np.float64)
+        yd = _yd_buf
+        _yu_buf = np.zeros(8, dtype=np.float64)
+        yu = _yu_buf
 
     n = num_cams * max_cands
 
@@ -1231,20 +589,6 @@ def _sorted_candidates_fast_out_nogil(
         quader_buf[pt * 3 + 0] = px + (dvxmax if pt & 1 else dvxmin)
         quader_buf[pt * 3 + 1] = py + (dvymax if pt & 2 else dvymin)
         quader_buf[pt * 3 + 2] = pz + (dvzmax if pt & 4 else dvzmin)
-
-    xr: cython.double[:]
-    xl: cython.double[:]
-    yd: cython.double[:]
-    yu: cython.double[:]
-    with cython.gil:
-        _xr_buf = np.zeros(8, dtype=np.float64)
-        xr = _xr_buf
-        _xl_buf = np.zeros(8, dtype=np.float64)
-        xl = _xl_buf
-        _yd_buf = np.zeros(8, dtype=np.float64)
-        yd = _yd_buf
-        _yu_buf = np.zeros(8, dtype=np.float64)
-        yu = _yu_buf
 
     for i in range(num_cams):
         cal = cal_arr[i]
@@ -1285,7 +629,7 @@ def _sorted_candidates_fast_out_nogil(
             pt_buf[1] = quader_buf[pt * 3 + 1]
             pt_buf[2] = quader_buf[pt * 3 + 2]
             _point_to_pixel_out(
-                cython.address(pt_buf[0]),
+                pt_buf,
                 cal,
                 md,
                 mo,
@@ -1298,7 +642,7 @@ def _sorted_candidates_fast_out_nogil(
                 inv_pix_x,
                 inv_pix_y,
                 chfield,
-                cython.address(_pp[0]),
+                _pp,
             )
             corner_x = _pp[0]
             corner_y = _pp[1]
@@ -1412,3 +756,176 @@ def _sorted_candidates_fast_out_nogil(
         if freq_out[i] != 0:
             num_valid += 1
     return num_valid
+
+
+@cython.ccall
+@cython.boundscheck(False)
+@cython.wraparound(False)
+@cython.nogil
+def _candsearch_in_pix_rest_nogil(
+    targ_x: cython.double[:],
+    targ_y: cython.double[:],
+    targ_tnr: cython.int[:],
+    num_targets: cython.int,
+    cent_x: cython.double,
+    cent_y: cython.double,
+    dl: cython.double,
+    dr: cython.double,
+    du: cython.double,
+    dd: cython.double,
+    imx: cython.double,
+    imy: cython.double,
+    tr_unused: cython.int,
+) -> cython.int:
+    """Find closest unused candidate GIL-free."""
+    xmin: cython.double
+    xmax: cython.double
+    ymin: cython.double
+    ymax: cython.double
+    best: cython.int
+    dmin: cython.double
+    j0: cython.int
+    dj: cython.int
+    j: cython.int
+    ty: cython.double
+    tx: cython.double
+    dx: cython.double
+    dy: cython.double
+    d: cython.double
+    xmin = cent_x - dl
+    xmax = cent_x + dr
+    ymin = cent_y - du
+    ymax = cent_y + dd
+
+    if xmin < 0.0:
+        xmin = 0.0
+    if xmax > imx:
+        xmax = imx
+    if ymin < 0.0:
+        ymin = 0.0
+    if ymax > imy:
+        ymax = imy
+
+    best = tr_unused
+    dmin = 1e20
+
+    if not (0.0 <= cent_x <= imx and 0.0 <= cent_y <= imy):
+        return best
+
+    j0 = num_targets // 2
+    dj = num_targets // 4
+    while dj > 1:
+        if targ_y[j0] < ymin:
+            j0 += dj
+        else:
+            j0 -= dj
+        dj //= 2
+
+    j0 -= 12
+    if j0 < 0:
+        j0 = 0
+
+    for j in range(j0, num_targets):
+        ty = targ_y[j]
+        if targ_tnr[j] == tr_unused:
+            if ty > ymax:
+                break
+            tx = targ_x[j]
+            if tx > xmin and tx < xmax and ty > ymin and ty < ymax:
+                dx = cent_x - tx
+                dy = cent_y - ty
+                d = c_sqrt(dx * dx + dy * dy)
+                if d < dmin:
+                    dmin = d
+                    best = j
+    return best
+
+
+@cython.ccall
+@cython.cdivision(True)
+@cython.profile(False)
+@cython.nogil
+def _pixel_to_metric_out(
+    x_pixel: cython.double,
+    y_pixel: cython.double,
+    imx: cython.int,
+    imy: cython.int,
+    pix_x: cython.double,
+    pix_y: cython.double,
+    chfield: cython.int,
+    out: cython.double[:],
+) -> cython.int:
+    """Write pixel-to-metric coords to out[0], out[1]."""
+    yp: cython.double
+    yp = y_pixel
+    if chfield == 1:
+        yp = 2.0 * yp + 1.0
+    elif chfield == 2:
+        yp = 2.0 * yp
+    out[0] = (x_pixel - imx * 0.5) * pix_x
+    out[1] = (imy * 0.5 - yp) * pix_y
+    return 0
+
+
+@cython.ccall
+@cython.inline
+@cython.boundscheck(False)
+@cython.wraparound(False)
+@cython.cdivision(True)
+@cython.profile(False)
+@cython.nogil
+def _dist_to_flat_out(
+    dist_x: cython.double,
+    dist_y: cython.double,
+    xh: cython.double,
+    yh: cython.double,
+    k1: cython.double,
+    k2: cython.double,
+    k3: cython.double,
+    p1: cython.double,
+    p2: cython.double,
+    scx: cython.double,
+    she: cython.double,
+    tol: cython.double,
+    out: cython.double[:],
+) -> cython.int:
+    """Write dist-to-flat coords to out[0], out[1]."""
+    r_init: cython.double = c_sqrt(dist_x * dist_x + dist_y * dist_y)
+    if r_init < 1e-10:
+        out[0] = -xh
+        out[1] = -yh
+        return 0
+    sin_she: cython.double = c_sin(she)
+    cos_she: cython.double = c_cos(she)
+    inv_scx: cython.double = 1.0 / scx
+    xq: cython.double = (dist_x + dist_y * sin_she) * inv_scx
+    yq: cython.double = dist_y / cos_she
+    _: cython.int
+    r2: cython.double
+    r4: cython.double
+    r6: cython.double
+    radial_factor: cython.double
+    dx: cython.double
+    dy: cython.double
+    xq_new: cython.double
+    yq_new: cython.double
+    dx_change: cython.double
+    dy_change: cython.double
+    for _ in range(50):
+        r2 = xq * xq + yq * yq
+        r4 = r2 * r2
+        r6 = r4 * r2
+        radial_factor = k1 * r2 + k2 * r4 + k3 * r6
+        dx = xq * radial_factor + p1 * (r2 + 2.0 * xq * xq) + 2.0 * p2 * xq * yq
+        dy = yq * radial_factor + p2 * (r2 + 2.0 * yq * yq) + 2.0 * p1 * xq * yq
+        xq_new = (dist_x + dist_y * sin_she) * inv_scx - dx
+        yq_new = dist_y / cos_she - dy
+        dx_change = xq_new - xq
+        dy_change = yq_new - yq
+        xq += 0.5 * dx_change
+        yq += 0.5 * dy_change
+        if c_sqrt(dx_change * dx_change + dy_change * dy_change) < tol:
+            break
+    out[0] = xq - xh
+    out[1] = yq - yh
+    return 0

@@ -72,7 +72,11 @@ ALGORITHMS_MODULES = [
     "track_kernels_geom",  # multimedia + pixel_projection + angle
     "track_kernels_search",  # candidate search
     "track_kernels_transform",  # point_position + image_coord transforms
-    "track_kernels_tracking",  # tracking + track3d loops
+    "track_kernels_pixel",  # per-camera pixel-space math
+    "track_kernels_position",  # 3D ray tracing + position reconstruction
+    "track_kernels_track3d",  # stereo-3D tracking loop
+    "track_kernels_corr",  # forward/backward tracking loops + CAS
+    "track_kernels_tracking",  # compatibility shim (re-exports above)
     "track_kernels_batch",  # batch processing + detection
 ]
 
@@ -278,7 +282,7 @@ def get_extensions():
             sources = [str(c_file.relative_to(ROOT))]
 
             # Add CAS shim for MSVC portability (__sync_bool_compare_and_swap)
-            if mod == "track_kernels_tracking":
+            if mod == "track_kernels_corr":
                 sources.append("src/openptv2/algorithms/cas_shim.c")
 
             if sys.platform.startswith("win"):

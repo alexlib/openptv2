@@ -27,8 +27,30 @@ from pathlib import Path
 # --- dataset layout ---------------------------------------------------------
 
 def _num_cams(base: Path) -> int:
+    import yaml
+    pref = base / "parameters_Run1.yaml"
+    if pref.exists():
+        try:
+            y = yaml.safe_load(pref.read_text()) or {}
+            num = y.get("num_cams") or y.get("ptv", {}).get("num_cams")
+            if num is not None:
+                return int(num)
+        except Exception:
+            pass
+    cands = sorted(base.glob("parameters_*.yaml"))
+    if cands:
+        try:
+            y = yaml.safe_load(cands[0].read_text()) or {}
+            num = y.get("num_cams") or y.get("ptv", {}).get("num_cams")
+            if num is not None:
+                return int(num)
+        except Exception:
+            pass
     from openptv2.algorithms.parameters import ControlPar
-    return ControlPar.from_file(base / "parameters" / "ptv.par").num_cams
+    ptv_path = base / "parameters" / "ptv.par"
+    if ptv_path.exists():
+        return ControlPar.from_file(ptv_path).num_cams
+    return 0
 
 
 def _cam_files(base: Path, cam: int) -> dict:
@@ -47,12 +69,7 @@ def cmd_inspect(args) -> int:
     par = base / "parameters"
     report: dict = {"dataset": str(base), "problems": []}
 
-    ptv = par / "ptv.par"
-    if not ptv.exists():
-        report["problems"].append(f"missing {ptv}")
-        num_cams = 0
-    else:
-        num_cams = _num_cams(base)
+    num_cams = _num_cams(base)
     report["num_cams"] = num_cams
 
     calblock = _calblock_path(base)
@@ -61,12 +78,41 @@ def cmd_inspect(args) -> int:
     if not calblock.exists():
         report["problems"].append(f"missing 3D calibration body {calblock}")
 
-    report["sortgrid_par"] = (par / "sortgrid.par").exists()
-    report["man_ori_par"] = (par / "man_ori.par").exists()
-    report["man_ori_dat"] = (par / "man_ori.dat").exists()
+    import yaml
+    has_sortgrid = (par / "sortgrid.par").exists()
+    yaml_path = None
+    pref = base / "parameters_Run1.yaml"
+    if pref.exists():
+        yaml_path = pref
+    else:
+        cands = sorted(base.glob("parameters_*.yaml"))
+        if cands:
+            yaml_path = cands[0]
+
+    if yaml_path is not None:
+        try:
+            y = yaml.safe_load(yaml_path.read_text()) or {}
+            if "sortgrid" in y:
+                has_sortgrid = True
+        except Exception:
+            pass
+
+    report["sortgrid_par"] = has_sortgrid
+
+    has_seed = (par / "man_ori.par").exists() and (par / "man_ori.dat").exists()
+    if yaml_path is not None:
+        try:
+            y = yaml.safe_load(yaml_path.read_text()) or {}
+            if "man_ori" in y or "man_ori_coordinates" in y:
+                has_seed = True
+        except Exception:
+            pass
+
+    report["man_ori_par"] = (par / "man_ori.par").exists() or (yaml_path is not None)
+    report["man_ori_dat"] = (par / "man_ori.dat").exists() or (yaml_path is not None)
     report["cameras"] = [_cam_files(base, c) for c in range(num_cams)]
 
-    have_seed = report["man_ori_par"] and report["man_ori_dat"]
+    have_seed = has_seed
     have_targets = num_cams > 0 and all(c["targets"] for c in report["cameras"])
     have_init = num_cams > 0 and all(
         c["ori"] and c["addpar"] for c in report["cameras"]
@@ -80,7 +126,7 @@ def cmd_inspect(args) -> int:
     )
     if not have_seed:
         report["problems"].append(
-            "no manual-orientation seed (man_ori.par/.dat) -> use `pick` (mouse) "
+            "no manual-orientation seed (man_ori.par/.dat or YAML configuration) -> use `pick` (mouse) "
             "or `render` + `seed`"
         )
     if not have_targets:

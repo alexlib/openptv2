@@ -369,21 +369,29 @@ def _point_position_out(
     ddx: cython.double
     ddy: cython.double
     ddz: cython.double
-    _verts_x_buf = np.zeros(8, dtype=np.float64)
-    verts_x: cython.double[:] = _verts_x_buf
-    _verts_y_buf = np.zeros(8, dtype=np.float64)
-    verts_y: cython.double[:] = _verts_y_buf
-    _verts_z_buf = np.zeros(8, dtype=np.float64)
-    verts_z: cython.double[:] = _verts_z_buf
-    _dirs_x_buf = np.zeros(8, dtype=np.float64)
-    dirs_x: cython.double[:] = _dirs_x_buf
-    _dirs_y_buf = np.zeros(8, dtype=np.float64)
-    dirs_y: cython.double[:] = _dirs_y_buf
-    _dirs_z_buf = np.zeros(8, dtype=np.float64)
-    dirs_z: cython.double[:] = _dirs_z_buf
-    _valid_buf = np.zeros(8, dtype=np.int32)
-    valid: cython.int[:] = _valid_buf
+    verts_x: cython.double[:]
+    verts_y: cython.double[:]
+    verts_z: cython.double[:]
+    dirs_x: cython.double[:]
+    dirs_y: cython.double[:]
+    dirs_z: cython.double[:]
+    valid: cython.int[:]
     _vi: cython.int
+    with cython.gil:
+        _verts_x_buf = np.zeros(8, dtype=np.float64)
+        verts_x = _verts_x_buf
+        _verts_y_buf = np.zeros(8, dtype=np.float64)
+        verts_y = _verts_y_buf
+        _verts_z_buf = np.zeros(8, dtype=np.float64)
+        verts_z = _verts_z_buf
+        _dirs_x_buf = np.zeros(8, dtype=np.float64)
+        dirs_x = _dirs_x_buf
+        _dirs_y_buf = np.zeros(8, dtype=np.float64)
+        dirs_y = _dirs_y_buf
+        _dirs_z_buf = np.zeros(8, dtype=np.float64)
+        dirs_z = _dirs_z_buf
+        _valid_buf = np.zeros(8, dtype=np.int32)
+        valid = _valid_buf
 
     for _vi in range(8):
         valid[_vi] = 0
