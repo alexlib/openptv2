@@ -1205,7 +1205,7 @@ def single_cam_point_positions(targets, cpar, cals, vpar):
 
     cal = cals[0]
     mm = cpar.mm
-    z_mid: cython.double = 0.5 * (vpar.z_min_lay[0] + vpar.z_max_lay[0])
+    z_mid: cython.double = 0.5 * (vpar.Zmin_lay[0] + vpar.Zmax_lay[0])
 
     pt: cython.int
     x: cython.double
