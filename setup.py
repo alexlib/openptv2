@@ -126,6 +126,9 @@ def _cythonize_all():
             "cdivision": True,
             "nonecheck": False,
             "initializedcheck": False,
+            # Mark all modules as free-threaded (no-GIL) compatible.
+            # The @cython.nogil hot paths gain real parallelism on cp313t/cp314t.
+            "freethreading_compatible": True,
         }
         # Opt-in line tracing for coverage (OPENPTV_CYTHON_TRACE=1). Never on by
         # default: line tracing makes the compiled code much slower. Pair with
