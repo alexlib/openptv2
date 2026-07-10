@@ -115,18 +115,26 @@ def _cythonize_all():
         print(
             f"[OpenPTV2] Running cythonize on {len(targets)} targets with {nthreads} threads..."
         )
+        directives = {
+            "language_level": "3",
+            "boundscheck": False,
+            "wraparound": False,
+            "cdivision": True,
+            "nonecheck": False,
+            "initializedcheck": False,
+        }
+        # Opt-in line tracing for coverage (OPENPTV_CYTHON_TRACE=1). Never on by
+        # default: line tracing makes the compiled code much slower. Pair with
+        # the CYTHON_TRACE_NOGIL macro added in get_extensions().
+        if os.environ.get("OPENPTV_CYTHON_TRACE") == "1":
+            print("[OpenPTV2] Cython line tracing ENABLED (coverage build, slow)")
+            directives["linetrace"] = True
+            directives["profile"] = True
         cythonize(
             targets,
             nthreads=nthreads,
             annotate=True,  # generates .html showing Python-vs-C per line
-            compiler_directives={
-                "language_level": "3",
-                "boundscheck": False,
-                "wraparound": False,
-                "cdivision": True,
-                "nonecheck": False,
-                "initializedcheck": False,
-            },
+            compiler_directives=directives,
         )
     print(
         f"[OpenPTV2] Cythonization of algorithms completed successfully in {time.time() - start_time:.2f} seconds."
@@ -244,6 +252,15 @@ def get_extensions():
 
     extensions = []
 
+    # Opt-in coverage build: emit Cython line-trace calls in the generated C.
+    # Must match the linetrace directive set in _cythonize_all().
+    trace = os.environ.get("OPENPTV_CYTHON_TRACE") == "1"
+    # Define both: CYTHON_TRACE enables tracing in gil-holding code, _NOGIL adds
+    # nogil sections. NOGIL alone did not force CYTHON_TRACE=1 in the generated C.
+    define_macros = (
+        [("CYTHON_TRACE", "1"), ("CYTHON_TRACE_NOGIL", "1")] if trace else []
+    )
+
     # Check for fast developer build (O0 / Od)
     is_dev = os.environ.get("DEV_BUILD", "0") in ("1", "true", "True")
     if is_dev:
@@ -308,6 +325,7 @@ def get_extensions():
                     include_dirs=[numpy.get_include()],
                     extra_compile_args=extra_compile_args,
                     extra_link_args=extra_link_args,
+                    define_macros=define_macros,
                 )
             )
 

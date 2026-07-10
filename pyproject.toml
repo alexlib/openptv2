@@ -178,6 +178,11 @@ warn_unused_configs = true
 ignore_missing_imports = true
 strict = false
 
+# tifffile uses 3.12+ `type` statements; don't parse its source under py3.11 mypy.
+[[tool.mypy.overrides]]
+module = "tifffile.*"
+follow_imports = "skip"
+
 [tool.ruff]
 target-version = "py311"
 line-length = 88
