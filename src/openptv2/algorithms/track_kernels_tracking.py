@@ -698,8 +698,8 @@ def _sorted_candidates_fast_out_nogil(
     m: cython.int
     k: cython.int
 
-    # Static flat stack array for quader (avoids numpy memory allocation and casting)
-    quader_buf: cython.double[24]
+    _quader_buf = np.zeros(24, dtype=np.float64)
+    quader_buf: cython.double[:] = _quader_buf
 
     n = num_cams * max_cands
 
@@ -712,10 +712,14 @@ def _sorted_candidates_fast_out_nogil(
         quader_buf[pt * 3 + 1] = py + (dvymax if pt & 2 else dvymin)
         quader_buf[pt * 3 + 2] = pz + (dvzmax if pt & 4 else dvzmin)
 
-    xr: cython.double[8]
-    xl: cython.double[8]
-    yd: cython.double[8]
-    yu: cython.double[8]
+    _xr_buf = np.zeros(8, dtype=np.float64)
+    xr: cython.double[:] = _xr_buf
+    _xl_buf = np.zeros(8, dtype=np.float64)
+    xl: cython.double[:] = _xl_buf
+    _yd_buf = np.zeros(8, dtype=np.float64)
+    yd: cython.double[:] = _yd_buf
+    _yu_buf = np.zeros(8, dtype=np.float64)
+    yu: cython.double[:] = _yu_buf
 
     for i in range(num_cams):
         cal = cal_arr[i]
@@ -801,8 +805,9 @@ def _sorted_candidates_fast_out_nogil(
         for j in range(num_cams):
             whichcam_out[i, j] = 0
 
-    # Local stack buffer for candsearch_in_pix_fast_nogil
-    cands_buf: cython.int[4]
+    # Local buffer for candsearch_in_pix_fast_nogil
+    _cands_buf = np.zeros(4, dtype=np.int32)
+    cands_buf: cython.int[:] = _cands_buf
 
     # --- candsearch per camera, write directly into ftnr_out/whichcam_out ---
     for cam in range(num_cams):
@@ -1125,13 +1130,20 @@ def _point_position_out(
     ddx: cython.double
     ddy: cython.double
     ddz: cython.double
-    verts_x: cython.double[8]
-    verts_y: cython.double[8]
-    verts_z: cython.double[8]
-    dirs_x: cython.double[8]
-    dirs_y: cython.double[8]
-    dirs_z: cython.double[8]
-    valid: cython.int[8]
+    _verts_x_buf = np.zeros(8, dtype=np.float64)
+    verts_x: cython.double[:] = _verts_x_buf
+    _verts_y_buf = np.zeros(8, dtype=np.float64)
+    verts_y: cython.double[:] = _verts_y_buf
+    _verts_z_buf = np.zeros(8, dtype=np.float64)
+    verts_z: cython.double[:] = _verts_z_buf
+    _dirs_x_buf = np.zeros(8, dtype=np.float64)
+    dirs_x: cython.double[:] = _dirs_x_buf
+    _dirs_y_buf = np.zeros(8, dtype=np.float64)
+    dirs_y: cython.double[:] = _dirs_y_buf
+    _dirs_z_buf = np.zeros(8, dtype=np.float64)
+    dirs_z: cython.double[:] = _dirs_z_buf
+    _valid_buf = np.zeros(8, dtype=np.int32)
+    valid: cython.int[:] = _valid_buf
     _vi: cython.int
 
     for _vi in range(8):
@@ -2970,8 +2982,7 @@ def trackback_loop_fast(
     _assess_inds = np.full(num_cams, PT_UNUSED, dtype=np.int32)
     _assess_pp = np.empty(2, dtype=np.float64)
 
-    # Pre-allocated C stack array for _point_position_out
-    _pos_buf: cython.double[3]
+    _pos_buf = np.zeros(3, dtype=np.float64)
     _pos_mv: cython.double[:] = _pos_buf
     _scratch_ray = np.zeros(6, dtype=np.float64)
     scratch_ray: cython.double[:] = _scratch_ray

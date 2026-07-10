@@ -355,8 +355,8 @@ def get_calibration_par(yaml_params):
 
     return CalibrationPar(
         fixp_name=opt.get("fixp_name", ""),
-        img_name=cal["img_cal_name"],
-        img_ori0=cal["img_ori"],
+        img_cal_name=cal["img_cal_name"],
+        img_ori=cal["img_ori"],
         tiff_flag=1 if opt.get("tiff_flag", True) else 0,
         pair_flag=1 if opt.get("pair_flag", False) else 0,
         chfield=opt.get("chfield", 0),
@@ -386,7 +386,7 @@ def get_orient_par(yaml_params):
 
 def get_multiplanes_par(yaml_params):
     """Get MultiPlanesPar from YAML parameters."""
-    mp = yaml_params.get("multi_planes") or yaml_params.get("multi_planes", {})
+    mp = yaml_params.get("multi_planes") or {}
     m = _merge_with_defaults(mp, DEFAULT_MULTI_PLANES)
 
     return MultiPlanesPar(

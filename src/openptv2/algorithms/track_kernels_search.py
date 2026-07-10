@@ -840,9 +840,12 @@ def _sorted_candidates_fast_out(
     p1: cython.int
     p2: cython.int
     p3: cython.int
-    _pp: cython.double[2]
-    quader_buf: cython.double[24]
-    pt_buf: cython.double[3]
+    _pp_buf = np.zeros(2, dtype=np.float64)
+    _pp: cython.double[:] = _pp_buf
+    _quader_buf = np.zeros(24, dtype=np.float64)
+    quader_buf: cython.double[:] = _quader_buf
+    _pt_buf = np.zeros(3, dtype=np.float64)
+    pt_buf: cython.double[:] = _pt_buf
     n = num_cams * max_cands
 
     # --- searchquader inlined ---
@@ -854,10 +857,14 @@ def _sorted_candidates_fast_out(
         quader_buf[pt * 3 + 1] = py + (dvymax if pt & 2 else dvymin)
         quader_buf[pt * 3 + 2] = pz + (dvzmax if pt & 4 else dvzmin)
 
-    xr: cython.double[4]
-    xl: cython.double[4]
-    yd: cython.double[4]
-    yu: cython.double[4]
+    _xr_buf = np.zeros(4, dtype=np.float64)
+    xr: cython.double[:] = _xr_buf
+    _xl_buf = np.zeros(4, dtype=np.float64)
+    xl: cython.double[:] = _xl_buf
+    _yd_buf = np.zeros(4, dtype=np.float64)
+    yd: cython.double[:] = _yd_buf
+    _yu_buf = np.zeros(4, dtype=np.float64)
+    yu: cython.double[:] = _yu_buf
 
     for i in range(num_cams):
         cal = cal_arr[i]
@@ -1203,11 +1210,13 @@ def _sorted_candidates_fast_out_nogil(
     j: cython.int
     m: cython.int
     k: cython.int
-    _pp: cython.double[2]
-    
-    # Static flat stack array for quader (avoids numpy memory allocation and casting)
-    quader_buf: cython.double[24]
-    pt_buf: cython.double[3]
+    _pp_buf = np.zeros(2, dtype=np.float64)
+    _pp: cython.double[:] = _pp_buf
+
+    _quader_buf = np.zeros(24, dtype=np.float64)
+    quader_buf: cython.double[:] = _quader_buf
+    _pt_buf = np.zeros(3, dtype=np.float64)
+    pt_buf: cython.double[:] = _pt_buf
 
     n = num_cams * max_cands
 
@@ -1220,10 +1229,14 @@ def _sorted_candidates_fast_out_nogil(
         quader_buf[pt * 3 + 1] = py + (dvymax if pt & 2 else dvymin)
         quader_buf[pt * 3 + 2] = pz + (dvzmax if pt & 4 else dvzmin)
 
-    xr: cython.double[8]
-    xl: cython.double[8]
-    yd: cython.double[8]
-    yu: cython.double[8]
+    _xr_buf = np.zeros(8, dtype=np.float64)
+    xr: cython.double[:] = _xr_buf
+    _xl_buf = np.zeros(8, dtype=np.float64)
+    xl: cython.double[:] = _xl_buf
+    _yd_buf = np.zeros(8, dtype=np.float64)
+    yd: cython.double[:] = _yd_buf
+    _yu_buf = np.zeros(8, dtype=np.float64)
+    yu: cython.double[:] = _yu_buf
 
     for i in range(num_cams):
         cal = cal_arr[i]
@@ -1309,8 +1322,9 @@ def _sorted_candidates_fast_out_nogil(
         for j in range(num_cams):
             whichcam_out[i, j] = 0
 
-    # Local stack buffer for candsearch_in_pix_fast_nogil
-    cands_buf: cython.int[4]
+    # Local buffer for candsearch_in_pix_fast_nogil
+    _cands_buf = np.zeros(4, dtype=np.int32)
+    cands_buf: cython.int[:] = _cands_buf
 
     # --- candsearch per camera, write directly into ftnr_out/whichcam_out ---
     for cam in range(num_cams):
