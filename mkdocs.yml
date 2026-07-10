@@ -64,6 +64,7 @@ nav:
   - Developer Guide:
     - Building from Source: developer_guide/building.md
     - Cython & Pure Python Modes: developer_guide/cython_and_pure_python.md
+    - Free-Threaded Python (no-GIL): developer_guide/free_threading.md
     - Documentation Workflow: developer_guide/documentation_workflow.md
     - Packaging & Releases: developer_guide/packaging_and_releases.md
     - GUI Testing Guide: HOW_TO_TEST_GUI.md

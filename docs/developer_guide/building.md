@@ -101,6 +101,22 @@ uv pip install -e .
 uv run python setup.py build_ext --inplace
 ```
 
+!!! note "Forced regeneration after compiler-directive changes"
+    `cythonize` skips `.c` regeneration when the `.py` file is older than the
+    existing `.c` file.  If you change a directive in `setup.py` (e.g.
+    `freethreading_compatible`) without touching the source files, the old `.c`
+    files are reused silently.  Force a full regen:
+    ```bash
+    touch src/openptv2/algorithms/*.py
+    python setup.py build_ext --inplace
+    ```
+    Clean rebuild (also resets this):
+    ```bash
+    rm -f src/openptv2/algorithms/*.c src/openptv2/algorithms/*.so
+    rm -rf build/
+    uv run python setup.py build_ext --inplace
+    ```
+
 To enable faster compile times during local rapid-prototyping, you can compile with lower optimization flags (bypassing slow `-O3` vectorizations) using:
 ```bash
 DEV_BUILD=1 uv pip install -e .
