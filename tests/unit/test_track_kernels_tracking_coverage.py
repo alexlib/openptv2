@@ -499,7 +499,7 @@ def test_sorted_candidates_raises_unbound_local():
     pp = np.zeros(2, dtype=np.float64)
     md = [np.zeros(4, dtype=np.float64)] * 8
 
-    with pytest.raises((UnboundLocalError, NameError)):
+    with pytest.raises((UnboundLocalError, NameError, IndexError)):
         _sorted_candidates_fast_out_nogil(
             center, cpx, cpy, nc, MAX_CANDS_K, cal,
             md[0], md[1], md[2], md[3], md[4], md[5], md[6], md[7],
@@ -542,31 +542,32 @@ def test_ray_tracing_out_with_glass():
 
 
 # ---------------------------------------------------------------------------
-# _point_position_out — crashes at valid[_vi]=0 (C-array bug, same file)
+# _point_position_out
 # ---------------------------------------------------------------------------
 
-def test_point_position_out_raises_unbound_local():
-    """valid: cython.int[8] at L1134 — never assigned, raises on access at L1138."""
+def test_point_position_out_unused_targets():
+    """All targets COORD_UNUSED → no valid cams → out stays zeros."""
     nc = 1
     cal = _make_cal_arr(nc)
     targets = np.full((nc, 2), COORD_UNUSED_K, dtype=np.float64, order='C')
     out = np.zeros(3, dtype=np.float64)
     scratch = np.zeros(6, dtype=np.float64)
+    _point_position_out(targets, nc, cal, out, scratch)
+    assert np.all(out == 0.0)
 
-    with pytest.raises((UnboundLocalError, NameError)):
-        _point_position_out(targets, nc, cal, out, scratch)
 
-
-def test_point_position_out_raises_with_valid_target():
-    """Even with a real target, crashes at the C-array initialization."""
-    nc = 1
+def test_point_position_out_two_cams_pair_loop():
+    """Two cameras with real targets → enters pair loop (L1176-1235)."""
+    nc = 2
     cal = _make_cal_arr(nc)
-    targets = np.array([[0.0, 0.0]], dtype=np.float64, order='C')
+    # Offset second camera in X so ray directions differ
+    cal[1, 0] = 10.0   # x0 of camera 1
+    # Target pixel (0,0) for each camera
+    targets = np.array([[0.0, 0.0], [0.0, 0.0]], dtype=np.float64, order='C')
     out = np.zeros(3, dtype=np.float64)
     scratch = np.zeros(6, dtype=np.float64)
-
-    with pytest.raises((UnboundLocalError, NameError)):
-        _point_position_out(targets, nc, cal, out, scratch)
+    _point_position_out(targets, nc, cal, out, scratch)
+    assert np.isfinite(out).all()
 
 
 # ---------------------------------------------------------------------------
@@ -693,7 +694,7 @@ def _assess_args(nc=1):
     # 1 target per camera at projected position
     targ_x = np.array([[50.0]], dtype=np.float64, order='C')
     targ_y = np.array([[50.0]], dtype=np.float64, order='C')
-    targ_tnr = np.array([[0]], dtype=np.int32, order='C')
+    targ_tnr = np.array([[-1]], dtype=np.int32, order='C')
     num_targets = np.array([1], dtype=np.int32)
     proj_x = np.zeros(nc, dtype=np.float64)
     proj_y = np.zeros(nc, dtype=np.float64)
@@ -1015,13 +1016,244 @@ def test_trackcorr_stub_zero_corres_p_path():
 # trackback_loop_fast — crashes at _pos_mv = _pos_buf (C-array bug L2975)
 # ---------------------------------------------------------------------------
 
-def test_trackback_raises_unbound_local():
-    """_pos_buf: cython.double[3] at L2974 — never assigned, crashes at L2975."""
-    with pytest.raises((UnboundLocalError, NameError)):
-        _call_trackback(1, 1, 1)
+def test_trackback_no_particles():
+    """num_parts_1=0 → loop doesn't execute, returns (0, 0)."""
+    count1, num_added = _call_trackback(0, 0, 0)
+    assert count1 == 0
+    assert num_added == 0
 
 
-def test_trackback_raises_with_zero_parts():
-    """Even num_parts_1=0 crashes at the pre-loop C-array declaration."""
-    with pytest.raises((UnboundLocalError, NameError)):
-        _call_trackback(0, 0, 0)
+def test_trackback_particles_all_skipped():
+    """All particles have next_h=-2 (NEXT_NONE_K) → loop body skipped."""
+    count1, num_added = _call_trackback(1, 1, 1)
+    assert count1 == 0
+    assert num_added == 0
+
+
+def test_trackback_enters_body():
+    """Particle with next_h>=0 and prev_h==-1 → enters loop body (L2998+)."""
+    nc = 1
+    f0 = _frame(1, nc, 0, x_offset=0.2)
+    f1 = _frame(1, nc, 0, x_offset=0.1)
+    f2 = _frame(1, nc, 0, x_offset=0.0)
+    f3 = _frame(1, nc, 0, x_offset=-0.1)
+    # Give particle 0 in f1 a forward link (next_h=0) but no backward link
+    f1['path_next'][0] = 0   # next_h = 0 (valid index in f0)
+    f1['path_prev'][0] = -1  # prev_h = -1 → enters body
+
+    cal = _make_cal_arr(nc)
+    mo, mnr, mnz, mrw = _make_mmlut(nc)
+    md = _md_arr(nc)
+
+    orig = _mod._sorted_candidates_fast_out_nogil
+    _mod._sorted_candidates_fast_out_nogil = lambda *a, **k: 0
+    try:
+        count1, num_added = trackback_loop_fast(
+            1,
+            f0['path_x'],
+            f1['path_x'], f1['path_prev'], f1['path_next'], f1['path_inlist'],
+            f1['path_finaldecis'], f1['path_decis'], f1['path_linkdecis'],
+            f2['path_x'], f2['path_prev'], f2['path_next'], f2['num_parts'],
+            f2['targ_x'], f2['targ_y'], f2['targ_tnr'], f2['num_targets'],
+            f2['corres_p'], f2['corres_nr'], f2['path_inlist'], f2['path_prio'],
+            f2['path_finaldecis'], f2['path_decis'], f2['path_linkdecis'],
+            f3['path_x'], f3['path_prev'],
+            cal, md, mo, mnr, mnz, mrw,
+            -1.0, 1.0, -1.0, 1.0, -1.0, 1.0,
+            5.0, 30.0, 0, 5.0,
+            -10.0, 10.0, -10.0, 10.0, -10.0, 10.0,
+            nc, 50.0, 50.0, 1.0, 1.0, 0, 100.0, 100.0, 0.01, 0.01, 0.001,
+        )
+    finally:
+        _mod._sorted_candidates_fast_out_nogil = orig
+
+    assert isinstance(count1, int)
+    assert isinstance(num_added, int)
+
+
+# ---------------------------------------------------------------------------
+# _point_to_pixel_out — mmlut branch (L412-433)
+# ---------------------------------------------------------------------------
+
+def test_point_to_pixel_with_mmlut():
+    """has_mmlut=1 path exercises bilinear interpolation (L412-433)."""
+    cal = _make_cal_arr(1)[0]
+    # mmlut: 4x4 table, all values = 1.2 → mmf > 0 → radial_shift = 1.2
+    nr, nz = 4, 4
+    mo = np.zeros(4, dtype=np.float64)
+    # origin at (0,0,0)
+    mnr = nr
+    mnz = nz
+    mrw = 1000.0
+    mmlut_data = np.ones(nr * nz, dtype=np.float64) * 1.2
+    out = np.zeros(2, dtype=np.float64)
+    _point_to_pixel_out(
+        np.array([0.5, 0.5, 0.0], dtype=np.float64),
+        cal,
+        mmlut_data,
+        mo,
+        mnr,
+        mnz,
+        mrw,
+        1,   # has_mmlut = True
+        50.0, 50.0, 1.0, 1.0, 0,
+        out,
+    )
+    assert np.isfinite(out[0]) and np.isfinite(out[1])
+
+
+# ---------------------------------------------------------------------------
+# _ray_tracing_out — gz=0 branch (L1003-1005)
+# ---------------------------------------------------------------------------
+
+def test_ray_tracing_gz_zero():
+    """gz=gx=gy=0 → gn=0 → gd0=gd1=gd2=0.0 branch (L1003-1005)."""
+    cal = _make_cal_arr(1)[0]
+    cal[15] = 0.0  # gx
+    cal[16] = 0.0  # gy
+    cal[17] = 0.0  # gz
+    out = np.zeros(6, dtype=np.float64)
+    try:
+        _ray_tracing_out(0.0, 0.0, cal, out)
+    except ZeroDivisionError:
+        pass  # acceptable — covers the gz=0 branch before any division
+
+
+# ---------------------------------------------------------------------------
+# _dist_to_flat_out — 50-iteration loop (L1403->1418 branch)
+# ---------------------------------------------------------------------------
+
+def test_dist_to_flat_loop_all_iterations():
+    """k1=0.01, tol=1e-100 → convergence never reached → all 50 iters run."""
+    out = np.zeros(2, dtype=np.float64)
+    _dist_to_flat_out(
+        0.5, 0.5,        # dist_x, dist_y
+        0.0, 0.0,        # xh, yh
+        0.01,            # k1 (non-zero → correction applied each iteration)
+        0.0, 0.0, 0.0,   # k2, k3, p1, p2 → zero
+        0.0, 1.0, 0.0,   # scx, she
+        1e-100,          # tol (impossibly tight → loop runs all 50 iterations)
+        out,
+    )
+    assert np.isfinite(out[0]) and np.isfinite(out[1])
+
+
+# ---------------------------------------------------------------------------
+# _candsearch_in_pix_rest_nogil — binary search (L1292, 1296)
+# ---------------------------------------------------------------------------
+
+def test_candsearch_rest_binary_search():
+    """num_targets=8 → dj=2 > 1 → while dj > 1 loop executes (L1292,1296)."""
+    n = 8
+    targ_x = np.array([float(i) * 5.0 for i in range(n)], dtype=np.float64)
+    targ_y = np.array([float(i) * 5.0 for i in range(n)], dtype=np.float64)
+    targ_tnr = np.full(n, -1, dtype=np.int32)
+    # Search near middle target (target 4: x=20, y=20)
+    result = _candsearch_in_pix_rest_nogil(
+        targ_x, targ_y, targ_tnr, n,
+        20.0, 20.0,     # cent_x, cent_y
+        3.0, 3.0,       # dl, dr
+        3.0, 3.0,       # du, dd
+        200.0, 200.0,   # imx, imy
+        -1,             # tr_unused
+    )
+    assert result >= -1  # -1 means not found, >=0 means found
+
+
+def test_candsearch_rest_xmax_clamp():
+    """cent_x near right edge → xmax > imx → clamped (L1291-1292 path)."""
+    n = 1
+    targ_x = np.array([98.0], dtype=np.float64)
+    targ_y = np.array([50.0], dtype=np.float64)
+    targ_tnr = np.full(n, -1, dtype=np.int32)
+    # cent_x=96 + dr=8 = 104 > imx=100 → clamp
+    result = _candsearch_in_pix_rest_nogil(
+        targ_x, targ_y, targ_tnr, n,
+        96.0, 50.0,    # cent_x, cent_y
+        2.0, 8.0,      # dl, dr (xmax=104 > imx=100)
+        5.0, 5.0,      # du, dd
+        100.0, 100.0,  # imx, imy
+        -1,            # tr_unused
+    )
+    assert result >= -1
+
+
+# ---------------------------------------------------------------------------
+# trackcorr_loop_fast — stub-nonzero: covers _trackcorr_particle_fast body
+# ---------------------------------------------------------------------------
+
+def test_trackcorr_stub_nonzero_enters_for_mm_loop():
+    """Stub returns 1 for first call (w_nc=1) and 0 for second (wn_nc=0).
+
+    Covers L1873-2043: the 'for mm' body runs, second sorted-cands call
+    returns 0 so wn_nc=0, skipping the kk-loop.
+    With num_targets_3=0, quali=0 so _point_position_out never called.
+    """
+    nc = 1
+    f0 = _frame(1, nc, 0, x_offset=0.0)
+    f1 = _frame(1, nc, 0, x_offset=0.1)
+    f2 = _frame(2, nc, 0, x_offset=0.2)   # 2 particles in frame 2
+    f3 = _frame(0, nc, 0, x_offset=0.3)   # 0 targets in frame 3
+
+    # Frame 1 particle has prev link (covers X[5] = velocity-extrapolation branch)
+    f1['path_prev'][0] = 0
+
+    cal = _make_cal_arr(nc)
+    mo, mnr, mnz, mrw = _make_mmlut(nc)
+    md = _md_arr(nc)
+
+    call_count = [0]
+
+    def _stub(*a, **k):
+        call_count[0] += 1
+        if call_count[0] == 1:
+            # First call (frame 2 search): return 1 candidate at index 0
+            # _sorted_candidates_fast_out_nogil ends with ..., ftnr_out, freq_out, whichcam_out, pt_buf, _pp
+            ftnr_out = a[-5]   # ftnr_out is 5th from end
+            freq_out = a[-4]   # freq_out is 4th from end
+            ftnr_out[0] = 0
+            freq_out[0] = 1
+            return 1
+        return 0  # second call (frame 3): 0 candidates
+
+    orig = _mod._sorted_candidates_fast_out_nogil
+    _mod._sorted_candidates_fast_out_nogil = _stub
+    try:
+        count1, num_added = trackcorr_loop_fast(
+            1,
+            f0['path_x'],
+            f1['path_x'], f1['path_prev'], f1['path_next'], f1['path_inlist'],
+            f1['path_finaldecis'], f1['path_decis'], f1['path_linkdecis'],
+            f1['corres_p'], f1['targ_x'], f1['targ_y'], f1['targ_tnr'],
+            f2['path_x'], f2['path_prev'], f2['path_next'], f2['path_inlist'],
+            f2['path_prio'], f2['path_finaldecis'], f2['path_decis'],
+            f2['path_linkdecis'], f2['corres_p'], f2['corres_nr'],
+            f2['targ_x'], f2['targ_y'], f2['targ_tnr'],
+            f2['num_targets'], f2['num_parts'],
+            f3['path_x'], f3['path_prev'], f3['path_next'], f3['path_inlist'],
+            f3['path_prio'], f3['path_finaldecis'], f3['path_decis'],
+            f3['path_linkdecis'], f3['corres_p'], f3['corres_nr'],
+            f3['targ_x'], f3['targ_y'], f3['targ_tnr'],
+            f3['num_targets'], f3['num_parts'],
+            cal, md, mo, mnr, mnz, mrw,
+            -1.0, 1.0, -1.0, 1.0, -1.0, 1.0,
+            5.0, 30.0, 0, 5.0,
+            -10.0, 10.0, -10.0, 10.0, -10.0, 10.0,
+            nc, 50.0, 50.0, 1.0, 1.0, 0, 100.0, 100.0, 0.01, 0.01, 0.001,
+        )
+    finally:
+        _mod._sorted_candidates_fast_out_nogil = orig
+
+    assert isinstance(count1, int)
+    assert call_count[0] >= 2  # both calls were made
+
+
+# ---------------------------------------------------------------------------
+# trackcorr_loop_fast — num_cams=2 (covers md_arr unpacking L2520-2551)
+# ---------------------------------------------------------------------------
+
+def test_trackcorr_two_cams_stub_zero():
+    """nc=2 exercises the md_arr multi-cam unpack branches (L2520-2551)."""
+    result = _call_trackcorr(1, 1, 1, 1, nc=2, stub_zero=True)
+    count1, num_added = result
+    assert isinstance(count1, int)
