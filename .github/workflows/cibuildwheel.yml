@@ -16,7 +16,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        python: ['cp311', 'cp312', 'cp313', 'cp314']
+        python: ['cp311', 'cp312', 'cp313']
     steps:
       - uses: actions/checkout@v7
 
