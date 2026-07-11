@@ -75,3 +75,14 @@ def test_calibration_and_3d_windows_open(app):
     app.open_view3d()
     # status reflects success (not an exception message)
     assert "opened" in app.status.cget("text") or "3D" in app.status.cget("text")
+
+
+def test_theme_applied_and_toggles(app):
+    from openptv2.gui_tk import theme
+
+    assert "View" in app._menus                 # theme toggle menu present
+    assert app.palette in (theme.DARK, theme.LIGHT)
+    start = theme.current_mode()
+    app.toggle_theme()
+    assert theme.current_mode() != start        # theme actually flipped
+    assert f"theme: {theme.current_mode()}" == app.status.cget("text")

@@ -36,10 +36,12 @@ CAL_ACTIONS = [
 
 
 class CalibrationWindow:
-    def __init__(self, parent, pm, dataset_dir: Path, bus: EventBus | None = None):
+    def __init__(self, parent, pm, dataset_dir: Path, bus: EventBus | None = None,
+                 palette: dict | None = None):
         self.pm = pm
         self.dataset_dir = Path(dataset_dir)
         self.bus = bus or EventBus()
+        self.palette = palette
         self.num_cams = int(pm.parameters.get("num_cams", 4) or 4)
         self.views: dict[int, MplImageView] = {}
 
@@ -59,7 +61,7 @@ class CalibrationWindow:
         grid = ttk.Frame(self.top)
         grid.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         for cam in range(self.num_cams):
-            v = MplImageView(grid, cam=cam, bus=self.bus)
+            v = MplImageView(grid, cam=cam, bus=self.bus, palette=self.palette)
             img = self._cal_image(cam)
             v.set_image(img)
             r, c = divmod(cam, 2)

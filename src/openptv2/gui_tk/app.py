@@ -15,6 +15,7 @@ from tkinter import ttk
 
 import numpy as np
 
+from . import theme
 from .events import CameraClick, EventBus, ExperimentLoaded, ParamsChanged, Status
 from .paramform import ParamForm
 from .widgets import MplImageView
@@ -53,6 +54,7 @@ class MainWindow:
         self.num_cams = int(self.pm.parameters.get("num_cams", 4) or 4)
         self.views: dict[int, MplImageView] = {}
 
+        self.palette = theme.apply(root, "dark")
         root.title(f"OpenPTV2 (Tk) — {self.dataset_dir.name}")
         root.geometry("1200x800")
         self._build_menu()
@@ -93,6 +95,10 @@ class MainWindow:
         calm.add_command(label="Open calibration…", command=self.open_calibration)
         m.add_cascade(label="Calibration", menu=calm)
 
+        viewm = tk.Menu(m, tearoff=0)
+        viewm.add_command(label="Toggle dark / light", command=self.toggle_theme)
+        m.add_cascade(label="View", menu=viewm)
+
         winm = tk.Menu(m, tearoff=0)
         winm.add_command(label="3D positions view", command=self.open_view3d)
         winm.add_command(label="Detach all cameras", command=self._detach_cameras)
@@ -103,8 +109,8 @@ class MainWindow:
             "OpenPTV2 Tk GUI (migration in progress)"))
         m.add_cascade(label="Help", menu=helpm)
         self.root.config(menu=m)
-        self._menus = {"File": filem, "Run": runm, "Calibration": calm,
-                       "Windows": winm, "Help": helpm}
+        self._menus = {"File": filem, "Run": runm, "View": viewm,
+                       "Calibration": calm, "Windows": winm, "Help": helpm}
 
     # --- parameter tree ---------------------------------------------------- #
 
@@ -182,7 +188,7 @@ class MainWindow:
         frame = ttk.Frame(master)
         cols = 2
         for cam in range(self.num_cams):
-            view = MplImageView(frame, cam=cam, bus=self.bus)
+            view = MplImageView(frame, cam=cam, bus=self.bus, palette=self.palette)
             view.set_image(_camera_image(self.dataset_dir, cam))
             r, c = divmod(cam, cols)
             view.grid(row=r, column=c, sticky="nsew", padx=2, pady=2)
@@ -208,6 +214,13 @@ class MainWindow:
     def _detach_cameras(self) -> None:
         self._set_status("detach cameras — placeholder (per-panel detach next)")
 
+    def toggle_theme(self) -> None:
+        mode = theme.toggle(self.root)
+        self.palette = theme.palette(mode)
+        for view in self.views.values():
+            view.set_palette(self.palette)
+        self._set_status(f"theme: {mode}")
+
     # --- run actions (delegate to existing ptv/tracker) -------------------- #
 
     def _run(self, what: str) -> None:
@@ -216,7 +229,8 @@ class MainWindow:
     def open_calibration(self) -> None:
         try:
             from .calibration import CalibrationWindow
-            CalibrationWindow(self.root, self.pm, self.dataset_dir, self.bus)
+            CalibrationWindow(self.root, self.pm, self.dataset_dir, self.bus,
+                              palette=self.palette)
             self._set_status("calibration window opened")
         except Exception as exc:  # scaffold may be incomplete
             self._set_status(f"calibration window: {exc}")
@@ -224,7 +238,7 @@ class MainWindow:
     def open_view3d(self) -> None:
         try:
             from .view3d import View3DWindow
-            View3DWindow(self.root, self.dataset_dir, self.bus)
+            View3DWindow(self.root, self.dataset_dir, self.bus, palette=self.palette)
             self._set_status("3D view opened")
         except Exception as exc:
             self._set_status(f"3D view: {exc}")

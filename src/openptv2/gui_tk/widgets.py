@@ -21,7 +21,8 @@ class MplImageView(ttk.Frame):
     """
 
     def __init__(self, master, cam: int = 0, bus: EventBus | None = None,
-                 on_click: Callable[[float, float, int], None] | None = None):
+                 on_click: Callable[[float, float, int], None] | None = None,
+                 palette: dict | None = None):
         super().__init__(master)
         import matplotlib
         matplotlib.use("TkAgg")
@@ -43,10 +44,18 @@ class MplImageView(ttk.Frame):
 
         self._canvas = FigureCanvasTkAgg(self._fig, master=self)
         self._canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
-        toolbar = NavigationToolbar2Tk(self._canvas, self, pack_toolbar=False)
-        toolbar.update()
-        toolbar.pack(side=tk.BOTTOM, fill=tk.X)
+        self._toolbar = NavigationToolbar2Tk(self._canvas, self, pack_toolbar=False)
+        self._toolbar.update()
+        self._toolbar.pack(side=tk.BOTTOM, fill=tk.X)
         self._canvas.mpl_connect("button_press_event", self._handle_click)
+        if palette is not None:
+            self.set_palette(palette)
+
+    def set_palette(self, palette: dict) -> None:
+        from . import theme
+        theme.style_figure(self._fig, palette)
+        theme.style_toolbar(self._toolbar, palette)
+        self._canvas.draw_idle()
 
     # --- image + overlays -------------------------------------------------- #
 

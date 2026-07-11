@@ -28,7 +28,8 @@ def _load_points(res_dir: Path) -> np.ndarray:
 
 
 class View3DWindow:
-    def __init__(self, parent, dataset_dir: Path, bus: EventBus | None = None):
+    def __init__(self, parent, dataset_dir: Path, bus: EventBus | None = None,
+                 palette: dict | None = None):
         import matplotlib
         matplotlib.use("TkAgg")
         from matplotlib.backends.backend_tkagg import (
@@ -51,6 +52,9 @@ class View3DWindow:
         ax.set_zlabel("Z")
         ax.set_title(f"{len(pts)} points")
 
+        if palette is not None:
+            from . import theme
+            theme.style_figure(fig, palette)
         canvas = FigureCanvasTkAgg(fig, master=self.top)
         canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         NavigationToolbar2Tk(canvas, self.top)

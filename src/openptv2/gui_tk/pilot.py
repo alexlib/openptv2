@@ -151,6 +151,11 @@ def main(argv=None) -> int:
     fig, ax = _build_figure(img, det, matched, res)
 
     root = tk.Tk()
+    try:
+        from . import theme
+        theme.style_figure(fig, theme.apply(root, "dark"))
+    except Exception:
+        pass
     root.title("OpenPTV2 Tk pilot — click the image")
     canvas = FigureCanvasTkAgg(fig, master=root)
     canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
