@@ -13,18 +13,19 @@ from .parameter_manager import ParameterManager
 
 
 class Paramset(HasTraits):
-    """A parameter set with a name and YAML file path"""
+    """A parameter set identified by name and YAML file path.
+
+    This is intentionally thin — no copy of parameters lives here.
+    The authoritative parameters for any run live in its YAML file;
+    the active run's parameters live in Experiment.pm.
+    """
     name = Str()
     yaml_path = Path()
-    parameters = Any()
-    num_cams = Any()
-    
+
     def __init__(self, name: str, yaml_path: Path, **traits):
         super().__init__(**traits)
         self.name = name
         self.yaml_path = yaml_path
-        self.parameters = {}
-        self.num_cams = None
 
 
 class Experiment(HasTraits):
@@ -48,8 +49,6 @@ class Experiment(HasTraits):
         yaml_path = getattr(self.pm, 'yaml_path', None)
         if yaml_path is not None:
             paramset = Paramset(name=yaml_path.stem, yaml_path=yaml_path)
-            paramset.parameters = copy.deepcopy(self.pm.parameters)
-            paramset.num_cams = self.pm.num_cams
             self.paramsets.append(paramset)
             self.active_params = paramset
         else:
@@ -70,14 +69,19 @@ class Experiment(HasTraits):
             print(f"Parameters saved to {target_path}")
 
     def load_parameters_for_active(self):
-        """Load parameters for the active parameter set"""
+        """Load parameters from the active paramset's YAML into experiment.pm."""
         try:
             print(f"Loading parameters from YAML: {self.active_params.yaml_path}")
             self.pm.from_yaml(self.active_params.yaml_path)
-            self.active_params.parameters = copy.deepcopy(self.pm.parameters)
-            self.active_params.num_cams = self.pm.num_cams
         except Exception as e:
             raise IOError(f"Failed to load parameters from {self.active_params.yaml_path}: {e}")
+
+    def save_active(self):
+        """Save experiment.pm to the active paramset's YAML file."""
+        if self.active_params is None:
+            return
+        self.pm.to_yaml(self.active_params.yaml_path)
+        print(f"Parameters saved to {self.active_params.yaml_path}")
 
     def getParamsetIdx(self, paramset):
         """Get the index of a parameter set"""
@@ -214,15 +218,7 @@ class Experiment(HasTraits):
     def _load_paramset_from_yaml(self, yaml_file: Path):
         run_name = self._run_name_from_yaml(yaml_file)
         print(f"Adding parameter set: {run_name} from {yaml_file}")
-        paramset = self.addParamset(run_name, yaml_file)
-        try:
-            pm = ParameterManager()
-            pm.from_yaml(yaml_file)
-            paramset.parameters = copy.deepcopy(pm.parameters)
-            paramset.num_cams = pm.num_cams
-        except Exception as e:
-            print(f"Warning: Failed to load parameters from {yaml_file}: {e}")
-        return paramset
+        return self.addParamset(run_name, yaml_file)
 
     # def export_legacy_directory(self, output_dir: Path):
     #     """Export current parameters to legacy .par files directory (for compatibility)"""
