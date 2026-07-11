@@ -193,7 +193,13 @@ class Experiment(HasTraits):
 
             yaml_files.append(yaml_file)
 
-        return sorted(set(yaml_files))
+        result = sorted(set(yaml_files))
+        if not result:
+            raise FileNotFoundError(
+                f"No parameter YAML files found in {exp_path} and no legacy "
+                "parameter directories to convert. Create a parameters_<name>.yaml first."
+            )
+        return result
 
     def _run_name_from_yaml(self, yaml_file: Path):
         filename = yaml_file.stem
@@ -226,17 +232,34 @@ class Experiment(HasTraits):
     #     else:
     #         print("No active parameter set to export")
 
-    def populate_runs(self, exp_path: Path):
-        """Populate parameter sets from an experiment directory"""
+    def populate_runs(self, exp_path: Path, active_yaml: Path | None = None):
+        """Populate parameter sets from an experiment directory.
+
+        active_yaml: path to the YAML that should become the active paramset.
+          When omitted the first discovered YAML is activated (alphabetical order).
+        """
         self.paramsets = []
 
         yaml_files = self._collect_yaml_files(exp_path)
 
         for yaml_file in yaml_files:
             self._load_paramset_from_yaml(yaml_file)
-        
-        # Set the first parameter set as active if none is active
-        if self.nParamsets() > 0 and self.active_params is None:
+
+        if self.nParamsets() == 0:
+            return
+
+        if active_yaml is not None:
+            active_yaml = Path(active_yaml).resolve()
+            for i, ps in enumerate(self.paramsets):
+                if ps.yaml_path.resolve() == active_yaml:
+                    self.set_active(i)
+                    return
+            print(
+                f"WARNING: requested active YAML {active_yaml} not found among "
+                "discovered parameter sets; falling back to first."
+            )
+
+        if self.active_params is None:
             self.set_active(0)
 
 

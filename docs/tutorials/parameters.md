@@ -119,6 +119,35 @@ uv run python $PP set <dataset> ptv.mmp_n3 1.33
 uv run python $PP validate <dataset>
 ```
 
+## Launching the GUI
+
+Pass the active YAML file directly so the GUI knows which run to activate on
+startup — this is the recommended invocation:
+
+```bash
+uv run openptv2-gui /data/exp1/parameters_Run3.yaml
+```
+
+You can also pass the experiment directory; the GUI will activate the first
+YAML it finds (alphabetical order):
+
+```bash
+uv run openptv2-gui /data/exp1/
+```
+
+**YAML discovery rules applied at startup:**
+
+| Situation | Behaviour |
+|-----------|-----------|
+| Legacy `parameters*/` dirs, no YAMLs | Converted to `parameters_<name>.yaml` once; dirs ignored afterward |
+| YAMLs exist alongside dirs | Dirs ignored; only YAML files used |
+| No dirs, YAMLs exist | YAMLs used directly |
+| Neither dirs nor YAMLs | Error — create at least one `parameters_<name>.yaml` first |
+
+When a YAML path is given on the command line, that run becomes active
+regardless of alphabetical order. When a directory is given, the first YAML
+(sorted) is activated.
+
 ## Restoring a Backup
 
 If you set a wrong value:

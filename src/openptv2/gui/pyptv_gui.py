@@ -2003,9 +2003,21 @@ def main():
     parser.add_argument(
         "--workdir",
         "-w",
-        help="YAML file or experiment directory",
+        help=(
+            "Active YAML parameter file (recommended) or experiment directory. "
+            "Example: -w /data/exp1/parameters_Run3.yaml  "
+            "Passing a YAML file sets that run as active; passing a directory "
+            "activates the first YAML found (alphabetical)."
+        ),
     )
-    parser.add_argument("path", nargs="?", help="YAML file or experiment directory")
+    parser.add_argument(
+        "path",
+        nargs="?",
+        help=(
+            "Active YAML parameter file (recommended) or experiment directory. "
+            "Example: openptv2-gui /data/exp1/parameters_Run3.yaml"
+        ),
+    )
     args = parser.parse_args()
 
     if args.engine or args.debug_mode:
@@ -2041,8 +2053,7 @@ def main():
             print(f"Initialize  Experiment from {yaml_file.parent}")
             exp_path = yaml_file.parent
             exp = Experiment(pm=pm)  # ensures pm is an active parameter set
-            exp.populate_runs(exp_path)
-            # exp.pm.from_yaml(yaml_file)
+            exp.populate_runs(exp_path, active_yaml=yaml_file)
         elif arg_path.is_dir():  # second option - supply directory
             exp = Experiment()
             exp.populate_runs(arg_path)
@@ -2059,7 +2070,10 @@ def main():
         yaml_file = exp.active_params.yaml_path
         # exp.pm.from_yaml(yaml_file)
         print(f"Without inputs, PyPTV uses default case {yaml_file}")
-        print("Tip: in PyPTV use File -> Open to select another YAML file")
+        print(
+            "Tip: pass the active YAML directly to choose which run loads on "
+            "startup, e.g.: openptv2-gui /data/exp1/parameters_Run3.yaml"
+        )
 
     if not yaml_file or not yaml_file.exists():
         raise OSError(f"YAML parameter file does not exist: {yaml_file}")
