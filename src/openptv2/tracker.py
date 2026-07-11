@@ -1,14 +1,14 @@
 """Streamlined particle tracking control class."""
 
-from openptv2.algorithms.tracking_run import TrackingRun
+from openptv2.algorithms.parameters import convert_track_par_to_tuple
 from openptv2.algorithms.track import (
     track_forward_start,
-    trackcorr_c_loop,
-    trackcorr_c_finish,
     trackback_c,
+    trackcorr_c_finish,
+    trackcorr_c_loop,
 )
 from openptv2.algorithms.track3d import track3d_loop
-from openptv2.algorithms.parameters import convert_track_par_to_tuple
+from openptv2.algorithms.tracking_run import TrackingRun
 
 # Default file naming (matches optv)
 default_naming = {
@@ -147,6 +147,32 @@ class Tracker:
             raise RuntimeError("Tracker not initialized. Run full_forward() first.")
 
         trackback_c(self._run)
+
+    def postprocess(self, cold_start: bool = True, reciprocity: bool = True):
+        """Disk-level trajectory-quality post-passes over the linkage files.
+
+        Run after full_forward (+ full_backward). ``cold_start`` recovers the
+        under-linked first transition using the velocity field the later frames
+        established; ``reciprocity`` severs any non-bidirectional links. Returns
+        a stats dict (link counts before/after) for measurement.
+        """
+        from openptv2.tracking_postprocess import (
+            count_links,
+            enforce_reciprocity,
+            seed_cold_start,
+        )
+
+        base = self._naming["linkage"]
+        first, last = self._spar.get_first(), self._spar.get_last()
+        stats = {"links_before": count_links(base, first, last)}
+        if cold_start:
+            stats["cold_start"] = seed_cold_start(
+                base, first, last, float(self._tpar_algo.dvxmax)
+            )
+        if reciprocity:
+            stats["reciprocity"] = enforce_reciprocity(base, first, last)
+        stats["links_after"] = count_links(base, first, last)
+        return stats
 
     def step_forward_3d(self):
         """
