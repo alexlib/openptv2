@@ -58,11 +58,12 @@ def test_tracker_minimal(tmp_path):
 
             num_tracks = int(lines[0].strip()) if lines else 0
 
-            # Special case: for ptv_is.10100 or the last frame (10004), allow zero tracks
-            if ptv_is_file.name in ["ptv_is.10100", "ptv_is.10004"]:
-                assert num_tracks <= 0, f"Unexpected track count in {ptv_is_file}."
-            else:
-                assert num_tracks > 0, f"No tracks found in {ptv_is_file}."
+            # Every frame in [first, last] must be populated. The last frame
+            # (written by trackcorr_c_finish) carries each particle's prev-link
+            # with next = -2; it must NOT be empty. An empty last frame was the
+            # symptom of the forward off-by-one (an extra step that ran one past
+            # `last` and clobbered the final write).
+            assert num_tracks > 0, f"No tracks found in {ptv_is_file}."
     finally:
         os.chdir(old_cwd)
 

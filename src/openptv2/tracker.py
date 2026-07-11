@@ -100,8 +100,9 @@ class Tracker:
         if not self._is_initialized:
             raise RuntimeError("Tracker not initialized. Call restart() first.")
 
-        # Check if we've reached the end
-        if self._current_step > self._spar.get_last():
+        # Stop before the last frame: step k links frame k -> k+1, so the last
+        # valid step is (last - 1). Mirrors step_forward_3d / range(first, last).
+        if self._current_step >= self._spar.get_last():
             return False
 
         # Process current frame
@@ -110,17 +111,18 @@ class Tracker:
         # Advance to next frame
         self._current_step += 1
 
-        return self._current_step <= self._spar.get_last()
+        return self._current_step < self._spar.get_last()
 
     def finalize(self):
         """
-        Finalize forward tracking (finish last frame).
+        Finalize forward tracking (write the last frame).
         """
         if not self._is_initialized:
             raise RuntimeError("Tracker not initialized. Call restart() first.")
 
-        # Finish tracking at last processed frame
-        trackcorr_c_finish(self._run, self._current_step - 1)
+        # Finish at seq_par.last (mirrors full_forward_3d); independent of how
+        # many steps ran.
+        trackcorr_c_finish(self._run, self._spar.get_last())
 
     def full_forward(self):
         """
