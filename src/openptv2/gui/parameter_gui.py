@@ -377,12 +377,12 @@ class Main_Params(HasTraits):
     Num_Workers = Int(label="Number of workers (0 for auto)")
 
     # Panel 4: ObservationVolume
-    Xmin = Int(label="Xmin")
-    Xmax = Int(label="Xmax")
-    Zmin1 = Int(label="Zmin")
-    Zmin2 = Int(label="Zmin")
-    Zmax1 = Int(label="Zmax")
-    Zmax2 = Int(label="Zmax")
+    Xmin = Float(label="Xmin")
+    Xmax = Float(label="Xmax")
+    Zmin1 = Float(label="Zmin")
+    Zmin2 = Float(label="Zmin")
+    Zmax1 = Float(label="Zmax")
+    Zmax2 = Float(label="Zmax")
 
     # Panel 5: ParticleDetection
     Min_Corr_nx = Float(label="min corr for ratio nx")
