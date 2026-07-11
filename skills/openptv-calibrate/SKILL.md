@@ -131,6 +131,32 @@ uv run python $SK run <dataset> --output /tmp/calib.json
 Writes `cal/camN.tif.ori` / `.addpar`; originals backed up as `*.autobck`.
 Tell the user where files + overlays are, and the final mean RMS.
 
+### 5. Snapshot Refinement — use tracking results to further improve calibration
+After step 4, if `res/ptv_is.*` tracking results exist, run this to refine
+calibration using real 3D particle positions as additional control points:
+```
+uv run python $SK snapshot-refine <dataset> --dry-run        # preview
+uv run python $SK snapshot-refine <dataset>                   # write
+```
+Per-camera output: `N pts  before=X.XXXpx  after=Y.YYYpx  flags=[...]`
+
+How it works: projects 3D particle positions (from tracking) onto each camera
+image, matches to detected targets within `--tol-px` (default 5 px), then
+runs bundle adjustment with the matched pairs. Originals backed up as
+`*.snpbck` / `*.addpar.snpbck`.
+
+**Interpret:** improvement of 0.1–0.5 px is typical. The before/after RMS is
+against noisy tracking data; run `run --dry-run` after to verify the cal plate
+RMS is preserved or improved.
+
+**Note:** tracking results from before calibration fixing may be slightly off;
+best practice is to re-run tracking with the new calibration, then
+snapshot-refine again for a second-pass improvement.
+
+**Maximizing quadruplets/triplets:** after snapshot-refine, re-run tracking
+to get more correspondences seen across cameras, which feeds back into
+snapshot-refine for the next iteration.
+
 ## Utility Scripts
 `scripts/calib.py <subcommand>` — all write to files; stdout is short status.
 - `inspect <dataset> --output F` — readiness JSON.
@@ -138,6 +164,7 @@ Tell the user where files + overlays are, and the final mean RMS.
 - `pick <dataset> [--ids a,b,c,d]` — interactive mouse click-picker for the seed.
 - `seed <dataset> --seed-json F` — write `man_ori.par` + `man_ori.dat` from JSON.
 - `run <dataset> --output F [--dry-run]` — calibrate, overlays, report JSON.
+- `snapshot-refine <dataset> [--tol-px N] [--frames F1,F2] [--dry-run]` — refine from tracking results.
 
 ## Common Mistakes
 - **Running outside the openptv2 venv** — imports fail. Always `uv run` from the
