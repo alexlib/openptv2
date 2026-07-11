@@ -1,8 +1,29 @@
 import yaml
 from pathlib import Path
 from . import legacy_parameters as legacy_params
+from .parameter_models import AllParams
 
-# Minimal ParameterManager for converting between .par directories and YAML files.
+
+def scan_plugins_dir(plugins_dir) -> dict:
+    """Scan a plugins directory; return plugins info dict. Works if dir is missing."""
+    plugins_dir = Path(plugins_dir)
+    available_tracking = ["default"]
+    available_sequence = ["default"]
+    if plugins_dir.exists() and plugins_dir.is_dir():
+        for entry in plugins_dir.iterdir():
+            if entry.is_file() and entry.suffix == ".py":
+                name = entry.stem
+                if "sequence" in name:
+                    available_sequence.append(name)
+                if "track" in name or "tracker" in name:
+                    available_tracking.append(name)
+    return {
+        "available_tracking": sorted(available_tracking),
+        "available_sequence": sorted(available_sequence),
+        "selected_tracking": "default",
+        "selected_sequence": "default",
+    }
+
 
 class ParameterManager:
     
@@ -116,6 +137,15 @@ class ParameterManager:
         if 'cal_ori' in self.parameters:
             self.parameters['cal_ori']['cal_splitter'] = getattr(self, 'cal_splitter', False)
 
+        # Fallback: if cal_ori image lists are empty but ptv.img_cal has values, copy them
+        # (happens when num_cams was 0 during cal_ori.par conversion)
+        cal_ori = self.parameters.get('cal_ori', {})
+        ptv = self.parameters.get('ptv', {})
+        if not cal_ori.get('img_cal_name') and ptv.get('img_cal'):
+            cal_ori['img_cal_name'] = list(ptv['img_cal'])
+            cal_ori['img_ori'] = [f"{p}.ori" for p in ptv['img_cal']]
+            print("Info: Populated cal_ori img_cal_name/img_ori from ptv.img_cal")
+
         # Default masking parameters
         if 'masking' not in self.parameters:
             self.parameters['masking'] = {
@@ -132,59 +162,10 @@ class ParameterManager:
             }
             print("Info: Added default unsharp mask parameters")
 
-        # Default plugins parameters or scan plugins directory
-        plugins_dir = dir_path.parent / 'plugins'
-        if not plugins_dir.exists() or not plugins_dir.is_dir():
-            if 'plugins' not in self.parameters:
-                self.parameters['plugins'] = {
-                    'available_tracking': ['default'],
-                    'available_sequence': ['default'],
-                    'selected_tracking': 'default',
-                    'selected_sequence': 'default'
-                }
-                print("Info: Added default plugins parameters")
-        else:
-            available_tracking = ['default']
-            available_sequence = ['default']
-            for entry in plugins_dir.iterdir():
-                if entry.is_file() and entry.suffix == '.py':
-                    name = entry.stem
-                    if 'sequence' in name:
-                        available_sequence.append(name)
-                    if 'track' in name or 'tracker' in name:
-                        available_tracking.append(name)
-            self.parameters['plugins'] = {
-                'available_tracking': sorted(available_tracking),
-                'available_sequence': sorted(available_sequence),
-                'selected_tracking': 'default',
-                'selected_sequence': 'default'
-            }
-            print("Info: Populated plugins from plugins directory")
+        # Plugins — always use scan_plugins_dir (handles missing dir gracefully)
+        self.parameters['plugins'] = scan_plugins_dir(dir_path.parent / 'plugins')
 
-    def scan_plugins(self, plugins_dir=None):
-        """Scan the plugins directory and update self.plugins_info with available plugins."""
-        if plugins_dir is None:
-            plugins_dir = Path('plugins')
-        else:
-            plugins_dir = Path(plugins_dir)
-        plugins = []
-        if plugins_dir.exists() and plugins_dir.is_dir():
-            for entry in plugins_dir.iterdir():
-                if entry.is_dir() or (entry.is_file() and entry.suffix in {'.py', '.so', '.dll'}):
-                    plugins.append(entry.stem)
-        # Always include 'default' in both available lists
-        available_sequence = ['default']
-        available_tracking = ['default']
-        for plugin in plugins:
-            if plugin != 'default':
-                available_sequence.append(plugin)
-                available_tracking.append(plugin)
-        self.plugins_info = {
-            'available_sequence': sorted(available_sequence),
-            'available_tracking': sorted(available_tracking),
-            'selected_sequence': 'default',
-            'selected_tracking': 'default'
-        }
+        self._validate_warn(dir_path)
 
     def to_yaml(self, file_path) -> dict:
         """Write parameters to a YAML file."""
@@ -230,14 +211,14 @@ class ParameterManager:
 
     def from_yaml(self, file_path):
         """Load parameters from a YAML file."""
-
         file_path = Path(file_path)
         with file_path.open('r') as f:
             data = yaml.safe_load(f)
 
         self.num_cams = data.get('num_cams')
         self.parameters = data
-        self.yaml_path = file_path  # Store the path for later reference
+        self.yaml_path = file_path
+        self._validate_warn(file_path)
 
 
     def to_directory(self, dir_path):
@@ -293,6 +274,17 @@ class ParameterManager:
             except Exception as e:
                 print(f"Warning: Failed to write man_ori.dat: {e}")
 
+    def _validate_warn(self, source=None):
+        try:
+            self.validated()
+        except Exception as exc:
+            print(f"Warning: parameter validation failed ({source}): {exc}")
+
+    def validated(self) -> AllParams:
+        """Return a fully-validated AllParams model from current parameters dict."""
+        data = {"num_cams": self.num_cams, **self.parameters}
+        return AllParams.model_validate(data)
+
     def get_n_cam(self):
         return self.num_cams
     
@@ -302,6 +294,12 @@ class ParameterManager:
         if parameter is None:
             raise ValueError(f'{name} returns None')
         return parameter
+
+    def get_section(self, section: str) -> dict:
+        """Return the named parameter section dict; raise KeyError if missing."""
+        if section not in self.parameters:
+            raise KeyError(f"Parameter section '{section}' not found. Available: {list(self.parameters)}")
+        return self.parameters[section]
 
 if __name__ == '__main__':
     import argparse

@@ -35,6 +35,7 @@ from .quiverplot import QuiverPlot
 from .detection_gui import DetectionGUI
 from .mask_gui import MaskGUI
 from .parameter_gui import Main_Params, Calib_Params, Tracking_Params
+from .parameter_manager import ParameterManager
 from openptv2 import __version__ as openptv_version
 from . import ptv
 from openptv2.epipolar import epipolar_curve
@@ -399,14 +400,20 @@ class TreeMenuHandler(Handler):
     def _open_param_dialog(self, editor, object, dialog_cls, view_name, label):
         experiment = editor.get_parent(object)
         paramset = object
-        active_paramset = experiment.active_params
-        previous_override = getattr(experiment, "_override_save_path", None)
+
+        # For a non-active run: swap experiment.pm with a fresh local pm loaded
+        # from that run's YAML.  The active pm is preserved as an object reference
+        # and restored in finally — no from_yaml call needed on the way back.
+        original_pm = experiment.pm
+        original_override = getattr(experiment, "_override_save_path", None)
         switched = False
 
         try:
-            if isinstance(paramset, Paramset) and paramset != active_paramset:
+            if isinstance(paramset, Paramset) and paramset != experiment.active_params:
+                local_pm = ParameterManager()
+                local_pm.from_yaml(paramset.yaml_path)
+                experiment.pm = local_pm
                 experiment._override_save_path = paramset.yaml_path
-                experiment.pm.from_yaml(paramset.yaml_path)
                 switched = True
 
             print(label)
@@ -417,26 +424,19 @@ class TreeMenuHandler(Handler):
             run_label = f" [{paramset.name}]" if isinstance(paramset, Paramset) else ""
             view = copy.copy(dialog.trait_view(view_name))
             view.title = view.title + run_label
-            result = dialog.edit_traits(view=view, kind="livemodal")
+            return dialog.edit_traits(view=view, kind="livemodal")
 
-            if switched:
-                paramset.parameters = copy.deepcopy(experiment.pm.parameters)
-                paramset.num_cams = experiment.pm.num_cams
-
-            return result
-        except Exception as exc:
+        except Exception:
             import traceback
             print(f"\nERROR opening parameters dialog for '{paramset.name}':")
             traceback.print_exc()
             print(f"YAML path: {getattr(paramset, 'yaml_path', 'unknown')}")
             return None
         finally:
-            experiment._override_save_path = previous_override
-            if switched and active_paramset is not None:
-                try:
-                    experiment.load_parameters_for_active()
-                except Exception as e:
-                    print(f"WARNING: failed to restore active parameters: {e}")
+            # Restore unconditionally — object swap, no I/O needed.
+            if switched:
+                experiment.pm = original_pm
+                experiment._override_save_path = original_override
 
     def configure_main_par(self, editor, object):
         result = self._open_param_dialog(
@@ -1463,8 +1463,8 @@ class MainGUI(HasTraits):
                 # look for points along epipolars for other cameras
                 from openptv2.gui import ptv
 
-                cpar = ptv._populate_cpar(self.exp1.pm.parameters["ptv"], self.num_cams)
-                vpar = ptv._populate_vpar(self.exp1.pm.parameters["criteria"])
+                cpar = ptv._populate_cpar(self.exp1.pm.get_section("ptv"), self.num_cams)
+                vpar = ptv._populate_vpar(self.exp1.pm.get_section("criteria"))
 
                 for j in range(self.num_cams):
                     if i == j:
@@ -1970,7 +1970,7 @@ class MainGUI(HasTraits):
 
     def save_parameters(self):
         """Save current parameters to YAML"""
-        self.exp1.save_parameters()
+        self.exp1.save_active()
         print("Parameters saved")
 
 
@@ -2044,8 +2044,6 @@ def main():
         if arg_path.is_file() and arg_path.suffix in {".yaml", ".yml"}:
             yaml_file = arg_path
             print(f"YAML parameter file provided: {yaml_file}")
-            from .parameter_manager import ParameterManager
-
             pm = ParameterManager()
             pm.from_yaml(yaml_file)
 

@@ -235,3 +235,53 @@ def test_tracking_params_binding(temp_experiment):
     # Verify changes wrote back to the ParameterManager
     assert exp.pm.parameters['track']['dvxmin'] == -5.0
     assert exp.pm.parameters['track']['angle'] == 30.0
+
+
+# --- Step 3: descriptive KeyError on missing sections ---
+
+def test_tracking_params_missing_section_descriptive_error(temp_experiment):
+    """Step 3: missing 'track' section gives descriptive KeyError, not bare key."""
+    exp = temp_experiment
+    del exp.pm.parameters['track']
+    with pytest.raises(KeyError, match="not found"):
+        Tracking_Params(exp)
+
+
+def test_main_params_missing_section_descriptive_error(temp_experiment):
+    """Step 3: missing 'ptv' section gives descriptive KeyError."""
+    exp = temp_experiment
+    del exp.pm.parameters['ptv']
+    with pytest.raises(KeyError, match="not found"):
+        Main_Params(exp)
+
+
+# --- Step 4: float-valued int fields must not raise TraitError ---
+
+def test_main_params_accepts_float_int_values(temp_experiment):
+    """Step 4: Int traits must accept float-valued YAML ints without TraitError."""
+    exp = temp_experiment
+    exp.pm.parameters['ptv']['imx'] = 1280.0
+    exp.pm.parameters['ptv']['imy'] = 1024.0
+    exp.pm.parameters['ptv']['chfield'] = 0.0
+    exp.pm.parameters['targ_rec']['nnmin'] = 5.0
+    exp.pm.parameters['sequence']['first'] = 1.0
+    exp.pm.parameters['sequence']['last'] = 100.0
+    mp = Main_Params(exp)
+    assert mp.imx == 1280
+    assert mp.imy == 1024
+    assert mp.Seq_First == 1
+    assert mp.Seq_Last == 100
+
+
+def test_calib_params_accepts_float_int_values(temp_experiment):
+    """Step 4: Calib_Params Int traits must accept float-valued YAML ints."""
+    exp = temp_experiment
+    exp.pm.parameters['ptv']['imx'] = 1280.0
+    exp.pm.parameters['detect_plate']['gvth_1'] = 100.0
+    exp.pm.parameters['dumbbell']['dumbbell_step'] = 10.0
+    exp.pm.parameters['dumbbell']['dumbbell_niter'] = 100.0
+    cp = Calib_Params(exp)
+    assert cp.h_image_size == 1280
+    assert cp.grey_value_treshold_1 == 100
+    assert cp.dumbbell_step == 10
+    assert cp.dumbbell_niter == 100
