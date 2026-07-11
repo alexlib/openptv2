@@ -415,9 +415,9 @@ class TreeMenuHandler(Handler):
                 raise RuntimeError("Failed to create parameters GUI (dialog is None)")
 
             run_label = f" [{paramset.name}]" if isinstance(paramset, Paramset) else ""
-            base_title = dialog.trait_view(view_name).title
-            result = dialog.edit_traits(view=view_name, kind="livemodal",
-                                        title=base_title + run_label)
+            view = copy.copy(dialog.trait_view(view_name))
+            view.title = view.title + run_label
+            result = dialog.edit_traits(view=view, kind="livemodal")
 
             if switched:
                 paramset.parameters = copy.deepcopy(experiment.pm.parameters)
