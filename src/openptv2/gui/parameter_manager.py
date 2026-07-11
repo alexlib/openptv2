@@ -1,6 +1,7 @@
 import yaml
 from pathlib import Path
 from . import legacy_parameters as legacy_params
+from .parameter_models import AllParams
 
 # Minimal ParameterManager for converting between .par directories and YAML files.
 
@@ -170,6 +171,8 @@ class ParameterManager:
             }
             print("Info: Populated plugins from plugins directory")
 
+        self._validate_warn(dir_path)
+
     def scan_plugins(self, plugins_dir=None):
         """Scan the plugins directory and update self.plugins_info with available plugins."""
         if plugins_dir is None:
@@ -239,14 +242,14 @@ class ParameterManager:
 
     def from_yaml(self, file_path):
         """Load parameters from a YAML file."""
-
         file_path = Path(file_path)
         with file_path.open('r') as f:
             data = yaml.safe_load(f)
 
         self.num_cams = data.get('num_cams')
         self.parameters = data
-        self.yaml_path = file_path  # Store the path for later reference
+        self.yaml_path = file_path
+        self._validate_warn(file_path)
 
 
     def to_directory(self, dir_path):
@@ -301,6 +304,17 @@ class ParameterManager:
                             f.write(f"{pt['x']} {pt['y']}\n")
             except Exception as e:
                 print(f"Warning: Failed to write man_ori.dat: {e}")
+
+    def _validate_warn(self, source=None):
+        try:
+            self.validated()
+        except Exception as exc:
+            print(f"Warning: parameter validation failed ({source}): {exc}")
+
+    def validated(self) -> AllParams:
+        """Return a fully-validated AllParams model from current parameters dict."""
+        data = {"num_cams": self.num_cams, **self.parameters}
+        return AllParams.model_validate(data)
 
     def get_n_cam(self):
         return self.num_cams
