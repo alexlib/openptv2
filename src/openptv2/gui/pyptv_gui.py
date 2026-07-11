@@ -421,10 +421,19 @@ class TreeMenuHandler(Handler):
                 paramset.num_cams = experiment.pm.num_cams
 
             return result
+        except Exception as exc:
+            import traceback
+            print(f"\nERROR opening parameters dialog for '{paramset.name}':")
+            traceback.print_exc()
+            print(f"YAML path: {getattr(paramset, 'yaml_path', 'unknown')}")
+            return None
         finally:
             experiment._override_save_path = previous_override
             if switched and active_paramset is not None:
-                experiment.load_parameters_for_active()
+                try:
+                    experiment.load_parameters_for_active()
+                except Exception as e:
+                    print(f"WARNING: failed to restore active parameters: {e}")
 
     def configure_main_par(self, editor, object):
         result = self._open_param_dialog(
