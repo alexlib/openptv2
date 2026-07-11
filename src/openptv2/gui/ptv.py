@@ -608,21 +608,21 @@ def py_detection_proc_c(
 
     cals = ptv_calibration._read_calibrations(cpar, num_cams)
 
-    detections = []
-    corrected = []
+    if existing_target:
+        raise NotImplementedError("Existing targets are not implemented")
 
-    for i_cam, img in enumerate(list_of_images):
-        if existing_target:
-            raise NotImplementedError("Existing targets are not implemented")
-        else:
-            im = img.copy()
-            targs = target_recognition(im, tpar, i_cam, cpar)
+    from concurrent.futures import ThreadPoolExecutor
 
+    def _detect(args):
+        i_cam, img = args
+        targs = target_recognition(img.copy(), tpar, i_cam, cpar)
         targs.sort_y()
-        # print(f"Camera {i_cam} detected {len(targs)} targets.")
-        detections.append(targs)
-        mc = MatchedCoords(targs, cpar, cals[i_cam])
-        corrected.append(mc)
+        return targs
+
+    with ThreadPoolExecutor(max_workers=num_cams) as pool:
+        detections = list(pool.map(_detect, enumerate(list_of_images)))
+
+    corrected = [MatchedCoords(targs, cpar, cals[i]) for i, targs in enumerate(detections)]
 
     return detections, corrected
 

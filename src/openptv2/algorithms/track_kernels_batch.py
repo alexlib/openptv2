@@ -250,119 +250,128 @@ def targ_rec_fast(
     dx4: cython.int[:] = np.array([-1, 1, 0, 0], dtype=np.int32)
     dy4: cython.int[:] = np.array([0, 0, -1, 1], dtype=np.int32)
 
+    # Typed memoryview aliases so the nogil block can write outputs without GIL
+    out_x_mv: cython.double[:] = out_x
+    out_y_mv: cython.double[:] = out_y
+    out_n_mv: cython.longlong[:] = out_n
+    out_nx_mv: cython.longlong[:] = out_nx
+    out_ny_mv: cython.longlong[:] = out_ny
+    out_sumg_mv: cython.longlong[:] = out_sumg
+
     n_targets = 0
 
-    for i in range(ymin, ymax):
-        for j in range(xmin, xmax):
-            gv = img[i, j]
-            if gv <= gvthres:
-                continue
+    with cython.nogil:
+        for i in range(ymin, ymax):
+            for j in range(xmin, xmax):
+                gv = img[i, j]
+                if gv <= gvthres:
+                    continue
 
-            # 8-neighbor local maximum check
-            if not (
-                gv >= img[i, j - 1]
-                and gv >= img[i, j + 1]
-                and gv >= img[i - 1, j]
-                and gv >= img[i + 1, j]
-                and gv >= img[i - 1, j - 1]
-                and gv >= img[i + 1, j - 1]
-                and gv >= img[i - 1, j + 1]
-                and gv >= img[i + 1, j + 1]
-            ):
-                continue
+                # 8-neighbor local maximum check
+                if not (
+                    gv >= img[i, j - 1]
+                    and gv >= img[i, j + 1]
+                    and gv >= img[i - 1, j]
+                    and gv >= img[i + 1, j]
+                    and gv >= img[i - 1, j - 1]
+                    and gv >= img[i + 1, j - 1]
+                    and gv >= img[i - 1, j + 1]
+                    and gv >= img[i + 1, j + 1]
+                ):
+                    continue
 
-            if img0[i, j] <= gvthres:
-                continue
+                if img0[i, j] <= gvthres:
+                    continue
 
-            # Start BFS from this peak
-            sumg = gv
-            img0[i, j] = 0
-            xa = j
-            xb = j
-            ya = i
-            yb = i
-            x_weighted = float(j) * float(gv - gvthres)
-            y_weighted = float(i) * float(gv - gvthres)
-            numpix = 1
+                # Start BFS from this peak
+                sumg = gv
+                img0[i, j] = 0
+                xa = j
+                xb = j
+                ya = i
+                yb = i
+                x_weighted = float(j) * float(gv - gvthres)
+                y_weighted = float(i) * float(gv - gvthres)
+                numpix = 1
 
-            head = 0
-            tail = 1
-            qx[0] = j
-            qy[0] = i
+                head = 0
+                tail = 1
+                qx[0] = j
+                qy[0] = i
 
-            while head != tail:
-                wj = qx[head]
-                wi = qy[head]
-                head += 1
-                if head >= queue_size:
-                    head = 0
-                gvref = img[wi, wj]
+                while head != tail:
+                    wj = qx[head]
+                    wi = qy[head]
+                    head += 1
+                    if head >= queue_size:
+                        head = 0
+                    gvref = img[wi, wj]
 
-                for d in range(4):
-                    xn4 = wj + dx4[d]
-                    yn4 = wi + dy4[d]
+                    for d in range(4):
+                        xn4 = wj + dx4[d]
+                        yn4 = wi + dy4[d]
 
-                    if xn4 < xmin or xn4 >= xmax or yn4 < ymin or yn4 >= ymax:
-                        continue
+                        if xn4 < xmin or xn4 >= xmax or yn4 < ymin or yn4 >= ymax:
+                            continue
 
-                    gv4 = img0[yn4, xn4]
-                    if (
-                        gv4 > gvthres
-                        and gv4 <= gvref + discont
-                        and gvref + discont >= img[yn4 - 1, xn4]
-                        and gvref + discont >= img[yn4 + 1, xn4]
-                        and gvref + discont >= img[yn4, xn4 - 1]
-                        and gvref + discont >= img[yn4, xn4 + 1]
-                    ):
-                        sumg += gv4
-                        img0[yn4, xn4] = 0
-                        if xn4 < xa:
-                            xa = xn4
-                        if xn4 > xb:
-                            xb = xn4
-                        if yn4 < ya:
-                            ya = yn4
-                        if yn4 > yb:
-                            yb = yn4
-                        x_weighted += float(xn4) * float(gv4 - gvthres)
-                        y_weighted += float(yn4) * float(gv4 - gvthres)
-                        numpix += 1
-                        if numpix <= nnmax:
-                            qx[tail] = xn4
-                            qy[tail] = yn4
-                            tail += 1
-                            if tail >= queue_size:
-                                tail = 0
+                        gv4 = img0[yn4, xn4]
+                        if (
+                            gv4 > gvthres
+                            and gv4 <= gvref + discont
+                            and gvref + discont >= img[yn4 - 1, xn4]
+                            and gvref + discont >= img[yn4 + 1, xn4]
+                            and gvref + discont >= img[yn4, xn4 - 1]
+                            and gvref + discont >= img[yn4, xn4 + 1]
+                        ):
+                            sumg += gv4
+                            img0[yn4, xn4] = 0
+                            if xn4 < xa:
+                                xa = xn4
+                            if xn4 > xb:
+                                xb = xn4
+                            if yn4 < ya:
+                                ya = yn4
+                            if yn4 > yb:
+                                yb = yn4
+                            x_weighted += float(xn4) * float(gv4 - gvthres)
+                            y_weighted += float(yn4) * float(gv4 - gvthres)
+                            numpix += 1
+                            if numpix <= nnmax:
+                                qx[tail] = xn4
+                                qy[tail] = yn4
+                                tail += 1
+                                if tail >= queue_size:
+                                    tail = 0
 
-            # Skip particles whose bounding box would extend outside the
-            # search area (mirrors the original C border check convention).
-            if xa == xmin - 1 or ya == ymin - 1 or xb == xmax + 1 or yb == ymax + 1:
-                continue
+                # Skip particles whose bounding box would extend outside the
+                # search area (mirrors the original C border check convention).
+                if xa == xmin - 1 or ya == ymin - 1 or xb == xmax + 1 or yb == ymax + 1:
+                    continue
 
-            nx = xb - xa + 1
-            ny = yb - ya + 1
+                nx = xb - xa + 1
+                ny = yb - ya + 1
 
-            if (
-                nnmin <= numpix <= nnmax
-                and nxmin <= nx <= nxmax
-                and nymin <= ny <= nymax
-                and sumg > sumg_min
-            ):
-                if n_targets >= max_targets:
-                    break
+                if (
+                    nnmin <= numpix <= nnmax
+                    and nxmin <= nx <= nxmax
+                    and nymin <= ny <= nymax
+                    and sumg > sumg_min
+                ):
+                    if n_targets >= max_targets:
+                        break
 
-                sumg_adj = sumg - numpix * gvthres
-                if sumg_adj > 0:
-                    out_x[n_targets] = x_weighted / float(sumg_adj) + 0.5
-                    out_y[n_targets] = y_weighted / float(sumg_adj) + 0.5
-                else:
-                    out_x[n_targets] = float(j) + 0.5
-                    out_y[n_targets] = float(i) + 0.5
-                out_n[n_targets] = numpix
-                out_nx[n_targets] = nx
-                out_ny[n_targets] = ny
-                out_sumg[n_targets] = sumg
-                n_targets += 1
+                    sumg_adj = sumg - numpix * gvthres
+                    if sumg_adj > 0:
+                        out_x_mv[n_targets] = x_weighted / float(sumg_adj) + 0.5
+                        out_y_mv[n_targets] = y_weighted / float(sumg_adj) + 0.5
+                    else:
+                        out_x_mv[n_targets] = float(j) + 0.5
+                        out_y_mv[n_targets] = float(i) + 0.5
+                    out_n_mv[n_targets] = numpix
+                    out_nx_mv[n_targets] = nx
+                    out_ny_mv[n_targets] = ny
+                    out_sumg_mv[n_targets] = sumg
+                    n_targets += 1
 
     return n_targets, out_x, out_y, out_n, out_nx, out_ny, out_sumg
 
