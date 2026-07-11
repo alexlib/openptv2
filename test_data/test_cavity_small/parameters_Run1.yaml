@@ -24,20 +24,20 @@ cal_ori:
   cal_splitter: false
 criteria:
   X_lay:
-  - -10
-  - 10
+  - -10.0
+  - 10.0
   Zmax_lay:
-  - 25
-  - 25
+  - 25.0
+  - 25.0
   Zmin_lay:
-  - -20
-  - -20
+  - -20.0
+  - -20.0
   cn: 0.02
   cnx: 0.02
   cny: 0.02
   corrmin: 33.0
   csumg: 0.02
-  eps0: 0.2
+  eps0: 0.06
 detect_plate:
   gvth_1: 40
   gvth_2: 40
@@ -111,10 +111,10 @@ ptv:
   - cal/cam3.tif
   - cal/cam4.tif
   img_name:
-  - img/cam1.10001
-  - img/cam2.10001
-  - img/cam3.10001
-  - img/cam4.10001
+  - img/cam1.10000
+  - img/cam2.10000
+  - img/cam3.10000
+  - img/cam4.10000
   imx: 256
   imy: 256
   mmp_d: 6.0
@@ -126,13 +126,15 @@ ptv:
   tiff_flag: true
   splitter: false
   negative: false
+  parallel_preprocess: false
+  num_workers: 0
 sequence:
   base_name:
   - img/cam1.%d
   - img/cam2.%d
   - img/cam3.%d
   - img/cam4.%d
-  first: 10001
+  first: 10000
   last: 10004
 shaking:
   shaking_first_frame: 10001
@@ -145,16 +147,16 @@ targ_rec:
   cr_sz: 2
   disco: 100
   gvthres:
-  - 9
-  - 9
-  - 9
-  - 11
+  - 4
+  - 4
+  - 4
+  - 4
   nnmax: 500
-  nnmin: 4
+  nnmin: 2
   nxmax: 100
-  nxmin: 2
+  nxmin: 1
   nymax: 100
-  nymin: 2
+  nymin: 1
   sumg_min: 150
 track:
   angle: 100.0
