@@ -66,11 +66,12 @@ class Experiment(HasTraits):
             raise IOError(f"Failed to load parameters from {self.active_params.yaml_path}: {e}")
 
     def save_active(self):
-        """Save experiment.pm to the active paramset's YAML file."""
-        if self.active_params is None:
+        """Save experiment.pm to the active paramset's YAML file (or override path)."""
+        path = self._override_save_path or (self.active_params.yaml_path if self.active_params else None)
+        if path is None:
             return
-        self.pm.to_yaml(self.active_params.yaml_path)
-        print(f"Parameters saved to {self.active_params.yaml_path}")
+        self.pm.to_yaml(path)
+        print(f"Parameters saved to {path}")
 
     def getParamsetIdx(self, paramset):
         """Get the index of a parameter set"""

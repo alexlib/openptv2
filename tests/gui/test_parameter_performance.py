@@ -161,7 +161,7 @@ def _run_parameter_change_scenarios():
 
         # Scenario 2: Save changes
         print("\n2. Saving changes to file...")
-        experiment.save_parameters()
+        experiment.save_active()
 
         # Scenario 3: Reload from file (simulating manual file edit)
         print("\n3. Reloading from file...")

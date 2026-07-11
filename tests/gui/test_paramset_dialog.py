@@ -31,7 +31,7 @@ class _DummyDialog:
 
     def edit_traits(self, view=None, kind=None):
         self.experiment.pm.parameters["ptv"]["imx"] = 999
-        self.experiment.save_parameters()
+        self.experiment.save_active()
         return True
 
 

@@ -138,7 +138,7 @@ def test_experiment_parameter_saving(temp_experiment_dir):
         exp.populate_runs(temp_experiment_dir)
         
         # Save parameters
-        exp.save_parameters()
+        exp.save_active()
         
         # Check that YAML file was created
         yaml_path = exp.active_params.yaml_path
@@ -167,7 +167,7 @@ def test_experiment_no_circular_dependency():
     # The experiment should be self-contained for parameter management
     assert hasattr(exp, 'pm')
     assert hasattr(exp, 'get_parameter')
-    assert hasattr(exp, 'save_parameters')
+    assert hasattr(exp, 'save_active')
 
 
 def test_experiment_parameter_updates(temp_experiment_dir):
@@ -194,7 +194,7 @@ def test_experiment_parameter_updates(temp_experiment_dir):
         assert updated_params['imx'] != original_imx
         
         # Save and verify persistence
-        exp.save_parameters()
+        exp.save_active()
         
         # Load in a new experiment instance
         exp2 = Experiment()
@@ -219,7 +219,7 @@ def test_clean_design_principles():
     
     # 2. Experiment has clear interface for parameter access
     assert callable(exp.get_parameter)
-    assert callable(exp.save_parameters)
+    assert callable(exp.save_active)
     
     # 3. Experiment doesn't depend on GUI
     # We check that no GUI-related attributes are present

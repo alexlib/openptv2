@@ -55,7 +55,6 @@ def test_parameter_manager_yaml_plugins():
         yaml_path = par_dir / 'params.yaml'
         pm = ParameterManager()
         pm.from_directory(par_dir)
-        pm.scan_plugins(par_dir / 'plugins')
         pm.to_yaml(yaml_path)
         # Print YAML
         with open(yaml_path) as f:
