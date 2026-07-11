@@ -326,6 +326,12 @@ class ParameterManager:
             raise ValueError(f'{name} returns None')
         return parameter
 
+    def get_section(self, section: str) -> dict:
+        """Return the named parameter section dict; raise KeyError if missing."""
+        if section not in self.parameters:
+            raise KeyError(f"Parameter section '{section}' not found. Available: {list(self.parameters)}")
+        return self.parameters[section]
+
 if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser(description="Convert between .par directory and YAML file.")

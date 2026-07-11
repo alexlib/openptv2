@@ -105,3 +105,19 @@ def test_validated_rejects_empty_cal_ori(tmp_path):
 
     with pytest.raises(ValidationError):
         pm.validated()
+
+
+# --- ParameterManager.get_section() ---
+
+def test_get_section_returns_dict():
+    pm = ParameterManager()
+    pm.from_yaml("test_data/test_cavity/parameters_Run1.yaml")
+    ptv = pm.get_section("ptv")
+    assert ptv["imx"] == 1280
+
+
+def test_get_section_raises_on_missing():
+    pm = ParameterManager()
+    pm.parameters = {}
+    with pytest.raises(KeyError, match="no_such"):
+        pm.get_section("no_such")
