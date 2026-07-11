@@ -121,3 +121,22 @@ def test_get_section_raises_on_missing():
     pm.parameters = {}
     with pytest.raises(KeyError, match="no_such"):
         pm.get_section("no_such")
+
+
+# --- scan_plugins_dir ---
+
+from openptv2.gui.parameter_manager import scan_plugins_dir
+
+
+def test_scan_plugins_dir_returns_defaults_when_missing(tmp_path):
+    result = scan_plugins_dir(tmp_path / "nonexistent")
+    assert result["selected_tracking"] == "default"
+    assert "default" in result["available_tracking"]
+
+
+def test_scan_plugins_dir_finds_py_files(tmp_path):
+    plugins = tmp_path / "plugins"
+    plugins.mkdir()
+    (plugins / "my_tracker.py").touch()
+    result = scan_plugins_dir(plugins)
+    assert "my_tracker" in result["available_tracking"]
