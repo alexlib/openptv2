@@ -58,13 +58,17 @@ def style_figure(fig, pal: dict) -> None:
 
 
 def style_toolbar(toolbar, pal: dict) -> None:
-    """Best-effort recolor of the matplotlib Tk navigation toolbar (classic tk
-    widgets that the ttk theme doesn't reach)."""
+    """Recolor the matplotlib Tk navigation toolbar.
+
+    matplotlib's toolbar icons are dark glyphs with no theme awareness, so a
+    dark strip makes them invisible. Keep the strip LIGHT in both modes so the
+    icons always read; the surrounding chrome is themed by sv-ttk."""
+    strip = "#f0f0f0"  # always light so the dark toolbar icons stay visible
     try:
-        toolbar.config(background=pal["bg"])
+        toolbar.config(background=strip)
         for child in toolbar.winfo_children():
             try:
-                child.config(background=pal["bg"])
+                child.config(background=strip)
             except Exception:
                 pass
     except Exception:

@@ -153,7 +153,7 @@ def main(argv=None) -> int:
     root = tk.Tk()
     try:
         from . import theme
-        theme.style_figure(fig, theme.apply(root, "dark"))
+        theme.style_figure(fig, theme.apply(root, "light"))
     except Exception:
         pass
     root.title("OpenPTV2 Tk pilot — click the image")

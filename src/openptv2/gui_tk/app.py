@@ -54,7 +54,7 @@ class MainWindow:
         self.num_cams = int(self.pm.parameters.get("num_cams", 4) or 4)
         self.views: dict[int, MplImageView] = {}
 
-        self.palette = theme.apply(root, "dark")
+        self.palette = theme.apply(root, "light")
         root.title(f"OpenPTV2 (Tk) — {self.dataset_dir.name}")
         root.geometry("1200x800")
         self._build_menu()
