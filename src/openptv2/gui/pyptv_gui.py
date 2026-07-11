@@ -1463,8 +1463,8 @@ class MainGUI(HasTraits):
                 # look for points along epipolars for other cameras
                 from openptv2.gui import ptv
 
-                cpar = ptv._populate_cpar(self.exp1.pm.parameters["ptv"], self.num_cams)
-                vpar = ptv._populate_vpar(self.exp1.pm.parameters["criteria"])
+                cpar = ptv._populate_cpar(self.exp1.pm.get_section("ptv"), self.num_cams)
+                vpar = ptv._populate_vpar(self.exp1.pm.get_section("criteria"))
 
                 for j in range(self.num_cams):
                     if i == j:
