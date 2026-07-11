@@ -170,9 +170,11 @@ class TestFourCameraMatching:
             p1_arr, n_arr, p2_arr, corr_arr, dist_arr, corrected, frm, vpar, cpar, calib
         )
 
-        con = [NTupel() for _ in range(16)]
+        import numpy as np
+        scratch_p = np.full((16, 4), -1, dtype=np.int32)
+        scratch_corr = np.zeros(16, dtype=np.float64)
         matched = four_camera_matching(
-            p1_arr, n_arr, p2_arr, corr_arr, dist_arr, 16, 1.0, con, 16
+            p1_arr, n_arr, p2_arr, corr_arr, dist_arr, 16, 1.0, scratch_p, scratch_corr, 16
         )
         assert matched == 16
 
@@ -204,8 +206,10 @@ class TestThreeCameraMatching:
             p1_arr, n_arr, p2_arr, corr_arr, dist_arr, corrected, frm, vpar, cpar, calib
         )
 
-        con = [NTupel() for _ in range(4 * 16)]
-        tusage = [[0] * NMAX for _ in range(cpar.num_cams)]
+        import numpy as np
+        scratch_p = np.full((4 * 16, 4), -1, dtype=np.int32)
+        scratch_corr = np.zeros(4 * 16, dtype=np.float64)
+        tusage = np.zeros((cpar.num_cams, NMAX), dtype=np.int32)
 
         matched = three_camera_matching(
             p1_arr,
@@ -216,7 +220,8 @@ class TestThreeCameraMatching:
             4,
             frm.num_targets,
             100000.0,
-            con,
+            scratch_p,
+            scratch_corr,
             4 * 16,
             tusage,
         )
@@ -247,8 +252,10 @@ class TestTwoCameraMatching:
             p1_arr, n_arr, p2_arr, corr_arr, dist_arr, corrected, frm, vpar, cpar, calib
         )
 
-        con = [NTupel() for _ in range(4 * 16)]
-        tusage = [[0] * NMAX for _ in range(cpar.num_cams)]
+        import numpy as np
+        scratch_p = np.full((4 * 16, 2), -1, dtype=np.int32)
+        scratch_corr = np.zeros(4 * 16, dtype=np.float64)
+        tusage = np.zeros((cpar.num_cams, NMAX), dtype=np.int32)
 
         matched = consistent_pair_matching(
             p1_arr,
@@ -259,7 +266,8 @@ class TestTwoCameraMatching:
             2,
             frm.num_targets,
             10000.0,
-            con,
+            scratch_p,
+            scratch_corr,
             4 * 16,
             tusage,
         )
