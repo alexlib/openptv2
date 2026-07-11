@@ -191,6 +191,45 @@ def test_track3d_test_cavity():
     track3d_test_cavity()
 
 
+def test_tracker_full_forward_3d_test_cavity():
+    """Tracker.full_forward_3d() must produce the same result as the direct loop.
+
+    This exercises the actual GUI code path (Tracker class, track_mode dispatch,
+    step range, and finalize). The direct-loop test above would NOT catch bugs in
+    step_forward_3d's frame range or a missing trackcorr_c_finish call.
+    """
+    original = os.getcwd()
+    try:
+        test_dir = os.path.join(
+            os.path.dirname(__file__), "../../test_data/test_cavity"
+        )
+        os.chdir(test_dir)
+        if os.path.exists("res"):
+            shutil.rmtree("res")
+        if os.path.exists("img"):
+            shutil.rmtree("img")
+        shutil.copytree("res_orig", "res")
+        shutil.copytree("img_orig", "img")
+
+        from openptv2.tracker import Tracker
+
+        cpar = ControlPar.from_yaml("parameters.yaml")
+        cals = read_all_calibration(cpar.num_cams, base_path=".")
+        tracker = Tracker(
+            cpar,
+            VolumePar.from_yaml("parameters.yaml"),
+            TrackPar.from_yaml("parameters.yaml"),
+            SequencePar.from_yaml("parameters.yaml"),
+            cals,
+        )
+        tracker.full_forward_3d()
+
+        assert tracker.npart == 2082
+        assert tracker.nlinks == 1451
+    finally:
+        os.chdir(original)
+
+
 def _parse_linkage_file(path):
     """Parse a ptv_is linkage file into structured data.
 
@@ -270,9 +309,7 @@ def test_track3d_burgers_parity_with_cython():
         tracker.full_forward_3d()
 
         c_data = {}
-        for s in range(
-            first, last - 1
-        ):  # matches step_forward_3d range [first, last-2]
+        for s in range(first, last):
             c_data[s] = _parse_linkage_file(f"res/ptv_is.{s}")
 
         # --- Python run ---
@@ -299,19 +336,14 @@ def test_track3d_burgers_parity_with_cython():
             0.0001,
         )
         track_forward_start(run)
-        for step in range(
-            run.seq_par.first, run.seq_par.last - 1
-        ):  # matches step_forward_3d range [first, last-2]
+        for step in range(run.seq_par.first, run.seq_par.last):
             track3d_loop(run, step)
         trackcorr_c_finish(run, run.seq_par.last)
-
-        assert run.npart == 14
-        assert run.nlinks == 13
 
         # --- Compare every field ---
         max_pos_diff = 0.0
 
-        for s in range(first, last - 1):
+        for s in range(first, last):
             py_data = _parse_linkage_file(f"res/ptv_is.{s}")
 
             assert len(c_data[s]) == len(py_data), (

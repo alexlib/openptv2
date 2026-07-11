@@ -182,15 +182,17 @@ class Tracker:
         trackcorr_c_finish(self._run, self._spar.get_last())
 
     def current_step(self):
-        """
-        Get current frame number.
-
-        Returns:
-            int: Current frame number
-        """
         if not self._is_initialized:
             return -1
         return self._current_step
+
+    @property
+    def npart(self):
+        return self._run.npart if self._run else 0
+
+    @property
+    def nlinks(self):
+        return self._run.nlinks if self._run else 0
 
 
 __all__ = ["Tracker", "default_naming"]
