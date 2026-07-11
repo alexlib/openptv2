@@ -241,20 +241,20 @@ def targ_rec_fast(
     out_ny = np.empty(max_targets, dtype=np.int64)
     out_sumg = np.empty(max_targets, dtype=np.int64)
 
-    # BFS circular queue — bounded by nnmax (we stop adding beyond that).
+    # BFS circular queue — typed memoryviews for zero-overhead C indexing
     queue_size = nnmax + 16
-    qx = np.empty(queue_size, dtype=np.int32)
-    qy = np.empty(queue_size, dtype=np.int32)
+    qx: cython.int[:] = np.empty(queue_size, dtype=np.int32)
+    qy: cython.int[:] = np.empty(queue_size, dtype=np.int32)
 
-    # Offsets for 4-connectivity
-    dx4 = np.array([-1, 1, 0, 0], dtype=np.int32)
-    dy4 = np.array([0, 0, -1, 1], dtype=np.int32)
+    # 4-connectivity offsets — typed memoryviews, avoids buffer-protocol on each BFS step
+    dx4: cython.int[:] = np.array([-1, 1, 0, 0], dtype=np.int32)
+    dy4: cython.int[:] = np.array([0, 0, -1, 1], dtype=np.int32)
 
     n_targets = 0
 
     for i in range(ymin, ymax):
         for j in range(xmin, xmax):
-            gv = int(img[i, j])
+            gv = img[i, j]
             if gv <= gvthres:
                 continue
 
@@ -285,10 +285,10 @@ def targ_rec_fast(
             y_weighted = float(i) * float(gv - gvthres)
             numpix = 1
 
-            head = np.int32(0)
-            tail = np.int32(1)
-            qx[0] = np.int32(j)
-            qy[0] = np.int32(i)
+            head = 0
+            tail = 1
+            qx[0] = j
+            qy[0] = i
 
             while head != tail:
                 wj = qx[head]
@@ -296,7 +296,7 @@ def targ_rec_fast(
                 head += 1
                 if head >= queue_size:
                     head = 0
-                gvref = int(img[wi, wj])
+                gvref = img[wi, wj]
 
                 for d in range(4):
                     xn4 = wj + dx4[d]
@@ -305,7 +305,7 @@ def targ_rec_fast(
                     if xn4 < xmin or xn4 >= xmax or yn4 < ymin or yn4 >= ymax:
                         continue
 
-                    gv4 = int(img0[yn4, xn4])
+                    gv4 = img0[yn4, xn4]
                     if (
                         gv4 > gvthres
                         and gv4 <= gvref + discont
