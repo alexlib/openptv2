@@ -17,9 +17,17 @@ class _DummyEditor:
         return self._experiment
 
 
+class _DummyView:
+    def __init__(self, title=""):
+        self.title = title
+
+
 class _DummyDialog:
     def __init__(self, experiment):
         self.experiment = experiment
+
+    def trait_view(self, name):
+        return _DummyView(title="Test")
 
     def edit_traits(self, view=None, kind=None):
         self.experiment.pm.parameters["ptv"]["imx"] = 999
