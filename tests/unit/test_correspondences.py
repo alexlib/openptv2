@@ -4,25 +4,23 @@ import numpy as np
 import pytest
 
 from openptv2.algorithms.calibration import Calibration
-from openptv2.algorithms.parameters import ControlPar, VolumePar
-from openptv2.algorithms.tracking_frame_buf import Target, Frame
-from openptv2.algorithms.epi import Coord2d
 from openptv2.algorithms.correspondences import (
+    NMAX,
     NTupel,
-    quicksort_target_y,
-    quicksort_coord2d_x,
     allocate_adjacency_arrays,
-    match_pairs,
-    four_camera_matching,
-    three_camera_matching,
     consistent_pair_matching,
-    take_best_candidates,
     correct_frame,
     correspondences,
-    NMAX,
+    four_camera_matching,
+    match_pairs,
+    quicksort_coord2d_x,
+    quicksort_target_y,
+    three_camera_matching,
 )
-from openptv2.algorithms.epi import MAXCAND
+from openptv2.algorithms.epi import Coord2d
 from openptv2.algorithms.imgcoord import img_coord
+from openptv2.algorithms.parameters import ControlPar, VolumePar
+from openptv2.algorithms.tracking_frame_buf import Frame, Target
 from openptv2.algorithms.trafo import metric_to_pixel
 
 
@@ -174,7 +172,8 @@ class TestFourCameraMatching:
         scratch_p = np.full((16, 4), -1, dtype=np.int32)
         scratch_corr = np.zeros(16, dtype=np.float64)
         matched = four_camera_matching(
-            p1_arr, n_arr, p2_arr, corr_arr, dist_arr, 16, 1.0, scratch_p, scratch_corr, 16
+            p1_arr, n_arr, p2_arr, corr_arr, dist_arr, 16, 1.0,
+            scratch_p, scratch_corr, 16,
         )
         assert matched == 16
 
@@ -303,9 +302,9 @@ def test_get_by_pnrs_uses_coord_unused_sentinel():
     Regression: existing tests only exercise 4-camera quads, so this mismatch
     slipped through while GUI sequence/determination produced garbage 3D.
     """
-    from openptv2.correspondences import MatchedCoords
     from openptv2.algorithms.constants import COORD_UNUSED
     from openptv2.algorithms.epi import Coord2d
+    from openptv2.correspondences import MatchedCoords
 
     mc = MatchedCoords.__new__(MatchedCoords)
     mc._corrected = [Coord2d(x=1.0, y=2.0, pnr=5)]
@@ -331,9 +330,10 @@ def test_determination_3d_cloud_is_physically_bounded():
     """
     import os
     from pathlib import Path
-    from openptv2.algorithms.parameters import ControlPar, VolumePar
+
     from openptv2.algorithms.calibration import Calibration
-    from openptv2.correspondences import correspondences, MatchedCoords
+    from openptv2.algorithms.parameters import ControlPar, VolumePar
+    from openptv2.correspondences import MatchedCoords, correspondences
     from openptv2.orientation import point_positions
     # gui.ptv pulls in skimage (a GUI-optional dep not installed in the
     # cibuildwheel test env); skip cleanly there instead of erroring.
