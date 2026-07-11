@@ -77,12 +77,15 @@ def test_calibration_and_3d_windows_open(app):
     assert "opened" in app.status.cget("text") or "3D" in app.status.cget("text")
 
 
-def test_theme_applied_and_toggles(app):
+def test_theme_applied_and_switches(app):
     from openptv2.gui_tk import theme
 
-    assert "View" in app._menus                 # theme toggle menu present
-    assert app.palette in (theme.DARK, theme.LIGHT)
-    start = theme.current_mode()
-    app.toggle_theme()
-    assert theme.current_mode() != start        # theme actually flipped
-    assert f"theme: {theme.current_mode()}" == app.status.cget("text")
+    assert "View" in app._menus                       # View → Theme menu present
+    assert set(app.palette) >= {"bg", "fg", "accent"}  # palette derived from theme
+    # switch to a different (dark) theme and confirm it took effect
+    target = "darkly"
+    app.set_theme(target)
+    assert theme.current_theme(app.root) == target
+    assert app.status.cget("text") == f"theme: {target}"
+    # palette now reflects the dark theme's background
+    assert app.palette["bg"] == theme.palette(target)["bg"]

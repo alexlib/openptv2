@@ -1,45 +1,67 @@
-"""Modern look for the Tk GUI.
+"""Modern look for the Tk GUI, via ttkbootstrap.
 
-Uses the Sun Valley (sv-ttk) theme for all ttk widgets (buttons, tree, panes)
-and provides a matching matplotlib palette so the embedded image/plot panels
-blend into the dark/light chrome instead of glaring white. Pure Python/Tcl —
-free-threaded-safe, no Qt/C-extension theming stack.
+ttkbootstrap restyles *all* standard ttk widgets — including the parameter
+``ttk.Treeview`` — with Bootstrap-style themes (accent colours, flat modern
+controls, ~18 light/dark themes). It is a drop-in over ttk (no widget rewrite),
+pure Python (free-threaded-safe), and unlike CustomTkinter it themes the tree
+and works with our embedded matplotlib panels.
+
+We derive a matplotlib palette from the active theme's colours so the image/plot
+panels blend into the chrome. The matplotlib navigation-toolbar icons are dark
+glyphs with no theme awareness, so that one strip is kept light in all themes.
 """
 from __future__ import annotations
 
-DARK = {
-    "bg": "#1c1c1c", "panel": "#1c1c1c", "fg": "#fafafa",
-    "axes": "#242424", "grid": "#3a3a3a", "accent": "#3b8ed0",
-}
-LIGHT = {
-    "bg": "#fafafa", "panel": "#fafafa", "fg": "#1c1c1c",
-    "axes": "#ffffff", "grid": "#c8c8c8", "accent": "#1f6aa5",
-}
+# Curated shortlist shown in the View → Theme menu (all 18 are available).
+LIGHT_THEMES = ["litera", "cosmo", "flatly", "minty", "yeti", "sandstone"]
+DARK_THEMES = ["darkly", "superhero", "cyborg", "solar"]
+DEFAULT_THEME = "litera"
 
 
-def palette(mode: str) -> dict:
-    return DARK if mode == "dark" else LIGHT
+def _colors(theme_name: str) -> dict:
+    from ttkbootstrap.themes.standard import STANDARD_THEMES
+    return STANDARD_THEMES[theme_name]["colors"]
 
 
-def apply(root, mode: str = "dark") -> dict:
-    """Apply the Sun Valley theme to the whole app; return the mpl palette."""
-    import sv_ttk
-    sv_ttk.set_theme(mode)
-    return palette(mode)
+def palette(theme_name: str) -> dict:
+    c = _colors(theme_name)
+    return {
+        "bg": c["bg"], "panel": c["bg"], "fg": c["fg"],
+        "axes": c["bg"], "grid": c["border"], "accent": c["primary"],
+    }
 
 
-def current_mode() -> str:
-    try:
-        import sv_ttk
-        return sv_ttk.get_theme()
-    except Exception:
-        return "dark"
+def theme_names() -> list[str]:
+    return LIGHT_THEMES + DARK_THEMES
 
 
-def toggle(root) -> str:
-    import sv_ttk
-    sv_ttk.toggle_theme()
-    return current_mode()
+def apply(root, theme_name: str = DEFAULT_THEME) -> dict:
+    """Apply a ttkbootstrap theme to the app; return the matplotlib palette."""
+    import ttkbootstrap as tb
+    from ttkbootstrap import Style
+    style = getattr(root, "_tb_style", None)
+    if style is None:
+        # ttkbootstrap's Style is a process singleton bound to one interpreter;
+        # drop any stale instance (e.g. a previous root/app) so it binds to THIS
+        # root instead of a destroyed one.
+        try:
+            tb.style.Style.instance = None
+        except Exception:
+            pass
+        style = Style(theme=theme_name)
+        root._tb_style = style
+    else:
+        style.theme_use(theme_name)
+    root._tb_theme = theme_name
+    return palette(theme_name)
+
+
+def set_theme(root, theme_name: str) -> dict:
+    return apply(root, theme_name)
+
+
+def current_theme(root) -> str:
+    return getattr(root, "_tb_theme", DEFAULT_THEME)
 
 
 def style_figure(fig, pal: dict) -> None:
@@ -58,12 +80,9 @@ def style_figure(fig, pal: dict) -> None:
 
 
 def style_toolbar(toolbar, pal: dict) -> None:
-    """Recolor the matplotlib Tk navigation toolbar.
-
-    matplotlib's toolbar icons are dark glyphs with no theme awareness, so a
-    dark strip makes them invisible. Keep the strip LIGHT in both modes so the
-    icons always read; the surrounding chrome is themed by sv-ttk."""
-    strip = "#f0f0f0"  # always light so the dark toolbar icons stay visible
+    """Keep the matplotlib toolbar strip light so its dark icons stay visible in
+    every theme (the icons are not theme-aware)."""
+    strip = "#f0f0f0"
     try:
         toolbar.config(background=strip)
         for child in toolbar.winfo_children():

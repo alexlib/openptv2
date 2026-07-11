@@ -54,7 +54,7 @@ class MainWindow:
         self.num_cams = int(self.pm.parameters.get("num_cams", 4) or 4)
         self.views: dict[int, MplImageView] = {}
 
-        self.palette = theme.apply(root, "light")
+        self.palette = theme.apply(root, theme.DEFAULT_THEME)
         root.title(f"OpenPTV2 (Tk) — {self.dataset_dir.name}")
         root.geometry("1200x800")
         self._build_menu()
@@ -96,7 +96,11 @@ class MainWindow:
         m.add_cascade(label="Calibration", menu=calm)
 
         viewm = tk.Menu(m, tearoff=0)
-        viewm.add_command(label="Toggle dark / light", command=self.toggle_theme)
+        thememenu = tk.Menu(viewm, tearoff=0)
+        for name in theme.theme_names():
+            thememenu.add_command(label=name,
+                                  command=lambda n=name: self.set_theme(n))
+        viewm.add_cascade(label="Theme", menu=thememenu)
         m.add_cascade(label="View", menu=viewm)
 
         winm = tk.Menu(m, tearoff=0)
@@ -214,12 +218,11 @@ class MainWindow:
     def _detach_cameras(self) -> None:
         self._set_status("detach cameras — placeholder (per-panel detach next)")
 
-    def toggle_theme(self) -> None:
-        mode = theme.toggle(self.root)
-        self.palette = theme.palette(mode)
+    def set_theme(self, name: str) -> None:
+        self.palette = theme.set_theme(self.root, name)
         for view in self.views.values():
             view.set_palette(self.palette)
-        self._set_status(f"theme: {mode}")
+        self._set_status(f"theme: {name}")
 
     # --- run actions (delegate to existing ptv/tracker) -------------------- #
 

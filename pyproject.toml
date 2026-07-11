@@ -65,7 +65,7 @@ gui = [
 gui-tk = [
     "matplotlib>=3.7.0",
     "imageio>=2.28.0",
-    "sv-ttk>=2.6",
+    "ttkbootstrap>=1.10",
 ]
 test = [
     "pytest>=8.0.0",
