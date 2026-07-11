@@ -809,7 +809,7 @@ class CalibrationGUI(HasTraits):
 
             try:
                 print(f"Calibrating external (6DOF) and flags: {flags} \n")
-                residuals, targ_ix, err_est = full_calibration(
+                residuals, _used, _err_est = full_calibration(
                     self.cals[i_cam],
                     self.cal_points["pos"],
                     targs,
@@ -828,27 +828,31 @@ class CalibrationGUI(HasTraits):
                     flags=flags,
                 )
 
-                targ_ix = [t.pnr() for t in targs if t.pnr() != -999]
-
             self._write_ori(i_cam, addpar_flag=True)
 
-            x, y = [], []
-            for t in targ_ix:
-                if t != -999:
-                    pos = targs[t].pos()
-                    x.append(pos[0])
-                    y.append(pos[1])
+            # Draw a residual vector at each MATCHED calibration point only.
+            # Iterate by index so targs[i] and residuals[i] stay aligned, and
+            # skip unmatched reference points: full_calibration marks them with
+            # pnr == -999 and a NaN residual (their placeholder position is the
+            # image origin, which previously produced spurious lines from 0,0).
+            # Note: targ_ix values run 0..n-1 and never equal -999, so the old
+            # `if t != -999` filter never fired and let placeholders through.
+            x, y, u, v = [], [], [], []
+            for i in range(len(targs)):
+                pnr = targs[i].pnr() if callable(targs[i].pnr) else targs[i].pnr
+                if pnr == -999:
+                    continue
+                if i >= len(residuals) or np.isnan(residuals[i, 0]):
+                    continue
+                pos = targs[i].pos()
+                x.append(pos[0])
+                y.append(pos[1])
+                u.append(pos[0] + SCALE * residuals[i, 0])
+                v.append(pos[1] + SCALE * residuals[i, 1])
 
             self.camera[i_cam]._plot.overlays.clear()
             self.drawcross("orient_x", "orient_y", x, y, "orange", 5, i_cam=i_cam)
-
-            self.camera[i_cam].drawquiver(
-                x,
-                y,
-                x + SCALE * residuals[: len(x), 0],
-                y + SCALE * residuals[: len(x), 1],
-                "red",
-            )
+            self.camera[i_cam].drawquiver(x, y, u, v, "red")
 
         self.status_text = "Orientation finished."
 
