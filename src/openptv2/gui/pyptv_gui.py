@@ -1970,7 +1970,7 @@ class MainGUI(HasTraits):
 
     def save_parameters(self):
         """Save current parameters to YAML"""
-        self.exp1.save_parameters()
+        self.exp1.save_active()
         print("Parameters saved")
 
 

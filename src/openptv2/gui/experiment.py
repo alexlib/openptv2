@@ -57,16 +57,6 @@ class Experiment(HasTraits):
         """Get parameter with ParameterManager delegation"""
         return self.pm.get_parameter(key)
     
-    def save_parameters(self):
-        """Save current parameters to the active parameter set's YAML file"""
-        target_path = self._override_save_path
-        if target_path is None and self.active_params is not None:
-            target_path = self.active_params.yaml_path
-
-        if target_path is not None:
-            self.pm.to_yaml(target_path)
-            print(f"Parameters saved to {target_path}")
-
     def load_parameters_for_active(self):
         """Load parameters from the active paramset's YAML into experiment.pm."""
         try:

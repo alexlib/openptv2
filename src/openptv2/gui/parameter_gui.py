@@ -112,7 +112,7 @@ class ParamHandler(Handler):
             })
 
             # Save all changes to the YAML file through the experiment
-            experiment.save_parameters()
+            experiment.save_active()
             print("Parameters saved successfully!")
             if main_params.Negative:
                 print("[WARNING] You must reload images for 'Negative images?' to take effect.")
@@ -225,7 +225,7 @@ class CalHandler(Handler):
             })
 
             # Save all changes to the YAML file through the experiment
-            experiment.save_parameters()
+            experiment.save_active()
             print("Calibration parameters saved successfully!")
 
 
@@ -251,7 +251,7 @@ class TrackHandler(Handler):
             })
             
             # Save all changes to the YAML file through the experiment
-            experiment.save_parameters()
+            experiment.save_active()
             print("Tracking parameters saved successfully!")
 
 
