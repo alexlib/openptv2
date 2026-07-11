@@ -335,6 +335,9 @@ def test_determination_3d_cloud_is_physically_bounded():
     from openptv2.algorithms.calibration import Calibration
     from openptv2.correspondences import correspondences, MatchedCoords
     from openptv2.orientation import point_positions
+    # gui.ptv pulls in skimage (a GUI-optional dep not installed in the
+    # cibuildwheel test env); skip cleanly there instead of erroring.
+    pytest.importorskip("skimage")
     from openptv2.gui.ptv import read_targets
 
     ds = Path(__file__).resolve().parents[2] / "test_data" / "test_cavity"
