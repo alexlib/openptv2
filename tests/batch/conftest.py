@@ -46,7 +46,7 @@ try:
 except ImportError:
     pass
 
-from openptv2.test_support import find_test_data_root
+from tests._support import find_test_data_root
 
 TEST_DATA_ROOT = find_test_data_root(Path(__file__))
 

@@ -23,7 +23,7 @@ def _prepare_test_data(test_dir):
 
 @pytest.fixture(scope="module")
 def cavity_dir():
-    from openptv2.test_support import find_test_data_root
+    from tests._support import find_test_data_root
 
     root = find_test_data_root(Path(__file__))
     d = root / "test_cavity"

@@ -126,7 +126,7 @@ zip-safe = false
 testpaths = ["tests"]
 python_files = ["test_*.py"]
 python_functions = ["test_*"]
-pythonpath = ["src"]
+pythonpath = ["src", "."]
 # Slow tests (full batch/tracking pipelines) are deselected by default.
 # Run them with: uv run pytest -m slow   (or -m "slow or not slow" for all)
 addopts = "-v --tb=short --import-mode=importlib -m 'not slow'"
