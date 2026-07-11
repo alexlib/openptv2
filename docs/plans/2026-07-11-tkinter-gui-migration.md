@@ -124,3 +124,46 @@ Each slice: 🚦 human checkpoint before the next.
 2. Confirm the free-threaded premise (Task 0.1) before investing.
 3. Is a "slightly different look" acceptable enough that CustomTkinter theming is worth it, or is plain ttk fine?
 4. Must the Traits GUI keep working during migration (coexistence), or is a clean break acceptable?
+
+---
+
+## Architecture v2 (expanded per user spec, 2026-07-11)
+
+Target is a full multi-window application, not a tabbed single window:
+
+- **Multi-panel camera grid**: all N cameras visible at once (2×2 grid of
+  `MplImageView`s), not tabs. Each panel = image + overlays + zoom/pan + click.
+- **Cross-view click propagation**: clicking in one camera publishes an event on
+  a central **EventBus**; other views react (e.g. draw the epipolar line via the
+  existing `epi.py`, highlight candidates). Decoupled pub/sub, no view-to-view
+  refs.
+- **Detachable / additional windows**: any panel (a camera, the 3D view, a plot)
+  can pop out into its own `Toplevel`; "open additional window" from the menu.
+- **Parameter tree**: `ttk.Treeview` mirroring the YAML sections (ptv, criteria,
+  sequence, track, detect_plate, …). **Right-click a node → context menu →**
+  opens a `ParamForm` editor `Toplevel` for that section (from the Pydantic
+  models); Save writes through `ParameterManager`.
+- **Menus & submenus**: `tk.Menu` menubar (File / View / Run / Calibration /
+  Windows / Help) with cascades.
+- **Calibration as a separate app**: its own `Toplevel` (or `openptv2-cal-tk`
+  entry) with the full button set (Detection, Manual orient, Sortgrid, Raw/Fine
+  orientation, Orient-from-dumbbell, edit ori/addpar, orientation-with-particles)
+  and its own sub-windows.
+- **Embedded matplotlib for debugging + 3D**: tracking/calibration debug views
+  and a `Axes3D` 3-D positions view embedded in-app (`FigureCanvasTkAgg`).
+
+### Foundation modules (Phase 1, revised)
+- `gui_tk/events.py` — `EventBus` pub/sub (pure Python; fully unit-tested).
+- `gui_tk/widgets.py` — `MplImageView` (image+overlays+click→bus), detachable `PanelFrame`.
+- `gui_tk/paramform.py` — build a ttk form from a Pydantic model/section; load/save via `ParameterManager`.
+- `gui_tk/paramtree.py` — `ttk.Treeview` + right-click context menu → `ParamForm`.
+- `gui_tk/app.py` — `MainWindow`: menubar, param tree, N-camera grid, detach, bus-wired click propagation.
+- `gui_tk/calibration.py` — calibration `Toplevel` app (buttons + sub-windows).
+- `gui_tk/view3d.py` — embedded `Axes3D` positions view.
+- Entry points: `openptv2-gui-tk`, `openptv2-cal-tk`.
+
+### Verification upgrade
+Xvfb is available → the whole Tk app is **headlessly testable**: instantiate under
+`xvfb-run`, invoke menu/tree/context callbacks, fire a click through the bus and
+assert other views received it, open/save a `ParamForm`. Only visual look/feel &
+overlay-alignment remain human checkpoints.
