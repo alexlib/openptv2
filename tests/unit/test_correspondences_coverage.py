@@ -20,26 +20,25 @@ Strategy
 import numpy as np
 import pytest
 
+from openptv2.algorithms.calibration import Calibration
 from openptv2.algorithms.correspondences import (
-    NTupel,
-    PT_UNUSED,
     NMAX,
-    quicksort_target_y,
-    quicksort_coord2d_x,
+    PT_UNUSED,
+    NTupel,
     allocate_adjacency_arrays,
-    four_camera_matching,
-    three_camera_matching,
     consistent_pair_matching,
-    take_best_candidates,
     correct_frame,
     correspondences,
+    four_camera_matching,
     is_compiled,
+    quicksort_coord2d_x,
+    quicksort_target_y,
+    take_best_candidates,
+    three_camera_matching,
 )
-from openptv2.algorithms.epi import Coord2d, MAXCAND
-from openptv2.algorithms.tracking_frame_buf import Target, Frame
-from openptv2.algorithms.calibration import Calibration
+from openptv2.algorithms.epi import MAXCAND, Coord2d
 from openptv2.algorithms.parameters import ControlPar, VolumePar
-
+from openptv2.algorithms.tracking_frame_buf import Frame, Target
 
 # ---------------------------------------------------------------------------
 # Shared helpers
@@ -243,6 +242,21 @@ def test_is_compiled_pure_python():
 # ---------------------------------------------------------------------------
 
 
+# ---------------------------------------------------------------------------
+# Matching-kernel helpers (new flat-array / scratch-memoryview API)
+# ---------------------------------------------------------------------------
+
+
+def _scratch(alloc, num_cams):
+    """Allocate (scratch_p, scratch_corr) for a matcher's output."""
+    return (np.full((alloc, num_cams), -1, dtype=np.int32),
+            np.zeros(alloc, dtype=np.float64))
+
+
+def _tusage(num_cams):
+    return np.zeros((num_cams, NMAX), dtype=np.int32)
+
+
 class TestFourCameraMatching:
     def _make(self, n=1):
         p1_arr, n_arr, p2_arr, corr_arr, dist_arr = _make_flat_arrays(4, n)
@@ -250,68 +264,61 @@ class TestFourCameraMatching:
         return p1_arr, n_arr, p2_arr, corr_arr, dist_arr
 
     def test_one_quadruplet(self):
-        p1_arr, n_arr, p2_arr, corr_arr, dist_arr = self._make(1)
-        scratch = [NTupel() for _ in range(10)]
+        arrays = self._make(1)
+        sp, sc = _scratch(10, 4)
         matched = four_camera_matching(
-            p1_arr, n_arr, p2_arr, corr_arr, dist_arr,
-            base_target_count=1, accept_corr=1.0,
-            scratch=scratch, scratch_size=10,
+            *arrays, base_target_count=1, accept_corr=1.0,
+            scratch_p=sp, scratch_corr=sc, scratch_size=10,
         )
         assert matched == 1
-        assert scratch[0].p[0] == 0
-        assert scratch[0].p[1] == 0
+        assert sp[0, 0] == 0
+        assert sp[0, 1] == 0
 
     def test_corr_below_threshold_no_match(self):
-        p1_arr, n_arr, p2_arr, corr_arr, dist_arr = self._make(1)
-        scratch = [NTupel() for _ in range(10)]
+        arrays = self._make(1)
+        sp, sc = _scratch(10, 4)
         matched = four_camera_matching(
-            p1_arr, n_arr, p2_arr, corr_arr, dist_arr,
-            base_target_count=1, accept_corr=10.0,
-            scratch=scratch, scratch_size=10,
+            *arrays, base_target_count=1, accept_corr=10.0,
+            scratch_p=sp, scratch_corr=sc, scratch_size=10,
         )
         assert matched == 0
 
     def test_scratch_limit_early_return(self):
-        p1_arr, n_arr, p2_arr, corr_arr, dist_arr = self._make(2)
-        scratch = [NTupel() for _ in range(5)]
+        arrays = self._make(2)
+        sp, sc = _scratch(5, 4)
         matched = four_camera_matching(
-            p1_arr, n_arr, p2_arr, corr_arr, dist_arr,
-            base_target_count=2, accept_corr=1.0,
-            scratch=scratch, scratch_size=1,
+            *arrays, base_target_count=2, accept_corr=1.0,
+            scratch_p=sp, scratch_corr=sc, scratch_size=1,
         )
         assert matched == 1
 
     def test_inconsistent_cross_pair_no_match(self):
-        """cam1→cam2 points to target 1 but cam0→cam2 points to target 0 → no clique."""
+        """cam1->cam2 points to target 1 but cam0->cam2 points to target 0 -> no clique."""
         p1_arr, n_arr, p2_arr, corr_arr, dist_arr = _make_flat_arrays(4, 2)
-        # cam0→cam1: target 0 → target 0
         p1_arr[0, 1, 0] = 0; n_arr[0, 1, 0] = 1
         p2_arr[0, 1, 0, 0] = 0; corr_arr[0, 1, 0, 0] = 2.0; dist_arr[0, 1, 0, 0] = 1.0
-        # cam0→cam2: target 0 → target 0
         p1_arr[0, 2, 0] = 0; n_arr[0, 2, 0] = 1
         p2_arr[0, 2, 0, 0] = 0; corr_arr[0, 2, 0, 0] = 2.0; dist_arr[0, 2, 0, 0] = 1.0
-        # cam0→cam3: target 0 → target 0
         p1_arr[0, 3, 0] = 0; n_arr[0, 3, 0] = 1
         p2_arr[0, 3, 0, 0] = 0; corr_arr[0, 3, 0, 0] = 2.0; dist_arr[0, 3, 0, 0] = 1.0
-        # cam1→cam2: target 0 → target 1 (mismatch with p3=0)
         p1_arr[1, 2, 0] = 0; n_arr[1, 2, 0] = 1
         p2_arr[1, 2, 0, 0] = 1; corr_arr[1, 2, 0, 0] = 2.0; dist_arr[1, 2, 0, 0] = 1.0
-        scratch = [NTupel() for _ in range(5)]
+        sp, sc = _scratch(5, 4)
         matched = four_camera_matching(
             p1_arr, n_arr, p2_arr, corr_arr, dist_arr,
             base_target_count=1, accept_corr=1.0,
-            scratch=scratch, scratch_size=5,
+            scratch_p=sp, scratch_corr=sc, scratch_size=5,
         )
         assert matched == 0
 
     def test_zero_candidates(self):
         p1_arr, n_arr, p2_arr, corr_arr, dist_arr = _make_flat_arrays(4, 1)
-        p1_arr[0, 1, 0] = 0  # p1 set but n=0 → inner loops don't execute
-        scratch = [NTupel() for _ in range(5)]
+        p1_arr[0, 1, 0] = 0  # p1 set but n=0 -> inner loops don't execute
+        sp, sc = _scratch(5, 4)
         matched = four_camera_matching(
             p1_arr, n_arr, p2_arr, corr_arr, dist_arr,
             base_target_count=1, accept_corr=1.0,
-            scratch=scratch, scratch_size=5,
+            scratch_p=sp, scratch_corr=sc, scratch_size=5,
         )
         assert matched == 0
 
@@ -328,88 +335,76 @@ class TestThreeCameraMatching:
         return p1_arr, n_arr, p2_arr, corr_arr, dist_arr
 
     def test_one_triplet_3cam(self):
-        p1_arr, n_arr, p2_arr, corr_arr, dist_arr = self._make(3, 1)
-        scratch = [NTupel() for _ in range(10)]
-        tusage = [[0] * NMAX for _ in range(3)]
+        arrays = self._make(3, 1)
+        sp, sc = _scratch(10, 3)
         matched = three_camera_matching(
-            p1_arr, n_arr, p2_arr, corr_arr, dist_arr,
-            num_cams=3, target_counts=[1, 1, 1], accept_corr=1.0,
-            scratch=scratch, scratch_size=10, tusage=tusage,
+            *arrays, num_cams=3, target_counts=[1, 1, 1], accept_corr=1.0,
+            scratch_p=sp, scratch_corr=sc, scratch_size=10, tusage=_tusage(3),
         )
         assert matched == 1
-        assert scratch[0].p[0] == 0
-        assert scratch[0].p[1] == 0
-        assert scratch[0].p[2] == 0
+        assert sp[0, 0] == 0
+        assert sp[0, 1] == 0
+        assert sp[0, 2] == 0
 
     def test_non_triplet_slots_are_minus2(self):
         """In 4-cam mode, unused slots in a triplet should be -2."""
-        p1_arr, n_arr, p2_arr, corr_arr, dist_arr = self._make(4, 1)
-        scratch = [NTupel() for _ in range(10)]
-        tusage = [[0] * NMAX for _ in range(4)]
+        arrays = self._make(4, 1)
+        sp, sc = _scratch(10, 4)
         three_camera_matching(
-            p1_arr, n_arr, p2_arr, corr_arr, dist_arr,
-            num_cams=4, target_counts=[1, 1, 1, 1], accept_corr=1.0,
-            scratch=scratch, scratch_size=10, tusage=tusage,
+            *arrays, num_cams=4, target_counts=[1, 1, 1, 1], accept_corr=1.0,
+            scratch_p=sp, scratch_corr=sc, scratch_size=10, tusage=_tusage(4),
         )
-        # At least one slot should be -2 (the missing camera)
-        found_minus2 = any(scratch[0].p[c] == -2 for c in range(4))
+        found_minus2 = any(sp[0, c] == -2 for c in range(4))
         assert found_minus2
 
     def test_corr_below_threshold(self):
-        p1_arr, n_arr, p2_arr, corr_arr, dist_arr = self._make(3, 1)
-        scratch = [NTupel() for _ in range(10)]
-        tusage = [[0] * NMAX for _ in range(3)]
+        arrays = self._make(3, 1)
+        sp, sc = _scratch(10, 3)
         matched = three_camera_matching(
-            p1_arr, n_arr, p2_arr, corr_arr, dist_arr,
-            num_cams=3, target_counts=[1, 1, 1], accept_corr=10.0,
-            scratch=scratch, scratch_size=10, tusage=tusage,
+            *arrays, num_cams=3, target_counts=[1, 1, 1], accept_corr=10.0,
+            scratch_p=sp, scratch_corr=sc, scratch_size=10, tusage=_tusage(3),
         )
         assert matched == 0
 
     def test_skips_used_p1_target(self):
-        p1_arr, n_arr, p2_arr, corr_arr, dist_arr = self._make(3, 1)
-        scratch = [NTupel() for _ in range(10)]
-        tusage = [[0] * NMAX for _ in range(3)]
-        tusage[0][0] = 1
+        arrays = self._make(3, 1)
+        sp, sc = _scratch(10, 3)
+        tu = _tusage(3)
+        tu[0, 0] = 1
         matched = three_camera_matching(
-            p1_arr, n_arr, p2_arr, corr_arr, dist_arr,
-            num_cams=3, target_counts=[1, 1, 1], accept_corr=1.0,
-            scratch=scratch, scratch_size=10, tusage=tusage,
+            *arrays, num_cams=3, target_counts=[1, 1, 1], accept_corr=1.0,
+            scratch_p=sp, scratch_corr=sc, scratch_size=10, tusage=tu,
         )
         assert matched == 0
 
     def test_skips_used_p2_target(self):
-        p1_arr, n_arr, p2_arr, corr_arr, dist_arr = self._make(3, 1)
-        scratch = [NTupel() for _ in range(10)]
-        tusage = [[0] * NMAX for _ in range(3)]
-        tusage[1][0] = 1
+        arrays = self._make(3, 1)
+        sp, sc = _scratch(10, 3)
+        tu = _tusage(3)
+        tu[1, 0] = 1
         matched = three_camera_matching(
-            p1_arr, n_arr, p2_arr, corr_arr, dist_arr,
-            num_cams=3, target_counts=[1, 1, 1], accept_corr=1.0,
-            scratch=scratch, scratch_size=10, tusage=tusage,
+            *arrays, num_cams=3, target_counts=[1, 1, 1], accept_corr=1.0,
+            scratch_p=sp, scratch_corr=sc, scratch_size=10, tusage=tu,
         )
         assert matched == 0
 
     def test_skips_used_p3_target(self):
-        p1_arr, n_arr, p2_arr, corr_arr, dist_arr = self._make(3, 1)
-        scratch = [NTupel() for _ in range(10)]
-        tusage = [[0] * NMAX for _ in range(3)]
-        tusage[2][0] = 1
+        arrays = self._make(3, 1)
+        sp, sc = _scratch(10, 3)
+        tu = _tusage(3)
+        tu[2, 0] = 1
         matched = three_camera_matching(
-            p1_arr, n_arr, p2_arr, corr_arr, dist_arr,
-            num_cams=3, target_counts=[1, 1, 1], accept_corr=1.0,
-            scratch=scratch, scratch_size=10, tusage=tusage,
+            *arrays, num_cams=3, target_counts=[1, 1, 1], accept_corr=1.0,
+            scratch_p=sp, scratch_corr=sc, scratch_size=10, tusage=tu,
         )
         assert matched == 0
 
     def test_scratch_limit_early_return(self):
-        p1_arr, n_arr, p2_arr, corr_arr, dist_arr = self._make(3, 2)
-        scratch = [NTupel() for _ in range(5)]
-        tusage = [[0] * NMAX for _ in range(3)]
+        arrays = self._make(3, 2)
+        sp, sc = _scratch(5, 3)
         matched = three_camera_matching(
-            p1_arr, n_arr, p2_arr, corr_arr, dist_arr,
-            num_cams=3, target_counts=[2, 2, 2], accept_corr=1.0,
-            scratch=scratch, scratch_size=1, tusage=tusage,
+            *arrays, num_cams=3, target_counts=[2, 2, 2], accept_corr=1.0,
+            scratch_p=sp, scratch_corr=sc, scratch_size=1, tusage=_tusage(3),
         )
         assert matched == 1
 
@@ -426,85 +421,74 @@ class TestConsistentPairMatching:
         return p1_arr, n_arr, p2_arr, corr_arr, dist_arr
 
     def test_one_pair(self):
-        p1_arr, n_arr, p2_arr, corr_arr, dist_arr = self._make(1)
-        scratch = [NTupel() for _ in range(10)]
-        tusage = [[0] * NMAX for _ in range(2)]
+        arrays = self._make(1)
+        sp, sc = _scratch(10, 2)
         matched = consistent_pair_matching(
-            p1_arr, n_arr, p2_arr, corr_arr, dist_arr,
-            num_cams=2, target_counts=[1, 1], accept_corr=1.0,
-            scratch=scratch, scratch_size=10, tusage=tusage,
+            *arrays, num_cams=2, target_counts=[1, 1], accept_corr=1.0,
+            scratch_p=sp, scratch_corr=sc, scratch_size=10, tusage=_tusage(2),
         )
         assert matched == 1
-        assert scratch[0].p[0] == 0
-        assert scratch[0].p[1] == 0
+        assert sp[0, 0] == 0
+        assert sp[0, 1] == 0
 
     def test_non_pair_slots_are_minus2(self):
-        p1_arr, n_arr, p2_arr, corr_arr, dist_arr = self._make(1)
-        scratch = [NTupel() for _ in range(10)]
-        tusage = [[0] * NMAX for _ in range(2)]
+        arrays = self._make(1)
+        sp, sc = _scratch(10, 2)
         consistent_pair_matching(
-            p1_arr, n_arr, p2_arr, corr_arr, dist_arr,
-            num_cams=2, target_counts=[1, 1], accept_corr=1.0,
-            scratch=scratch, scratch_size=10, tusage=tusage,
+            *arrays, num_cams=2, target_counts=[1, 1], accept_corr=1.0,
+            scratch_p=sp, scratch_corr=sc, scratch_size=10, tusage=_tusage(2),
         )
-        assert scratch[0].p[0] == 0
-        assert scratch[0].p[1] == 0
+        assert sp[0, 0] == 0
+        assert sp[0, 1] == 0
 
     def test_ambiguous_n_not_one_skipped(self):
         p1_arr, n_arr, p2_arr, corr_arr, dist_arr = self._make(1)
         n_arr[0, 1, 0] = 2  # ambiguous
-        scratch = [NTupel() for _ in range(10)]
-        tusage = [[0] * NMAX for _ in range(2)]
+        sp, sc = _scratch(10, 2)
         matched = consistent_pair_matching(
             p1_arr, n_arr, p2_arr, corr_arr, dist_arr,
             num_cams=2, target_counts=[1, 1], accept_corr=1.0,
-            scratch=scratch, scratch_size=10, tusage=tusage,
+            scratch_p=sp, scratch_corr=sc, scratch_size=10, tusage=_tusage(2),
         )
         assert matched == 0
 
     def test_corr_below_threshold(self):
-        p1_arr, n_arr, p2_arr, corr_arr, dist_arr = self._make(1)
-        scratch = [NTupel() for _ in range(10)]
-        tusage = [[0] * NMAX for _ in range(2)]
+        arrays = self._make(1)
+        sp, sc = _scratch(10, 2)
         matched = consistent_pair_matching(
-            p1_arr, n_arr, p2_arr, corr_arr, dist_arr,
-            num_cams=2, target_counts=[1, 1], accept_corr=10.0,
-            scratch=scratch, scratch_size=10, tusage=tusage,
+            *arrays, num_cams=2, target_counts=[1, 1], accept_corr=10.0,
+            scratch_p=sp, scratch_corr=sc, scratch_size=10, tusage=_tusage(2),
         )
         assert matched == 0
 
     def test_skips_used_p1(self):
-        p1_arr, n_arr, p2_arr, corr_arr, dist_arr = self._make(1)
-        scratch = [NTupel() for _ in range(10)]
-        tusage = [[0] * NMAX for _ in range(2)]
-        tusage[0][0] = 1
+        arrays = self._make(1)
+        sp, sc = _scratch(10, 2)
+        tu = _tusage(2)
+        tu[0, 0] = 1
         matched = consistent_pair_matching(
-            p1_arr, n_arr, p2_arr, corr_arr, dist_arr,
-            num_cams=2, target_counts=[1, 1], accept_corr=1.0,
-            scratch=scratch, scratch_size=10, tusage=tusage,
+            *arrays, num_cams=2, target_counts=[1, 1], accept_corr=1.0,
+            scratch_p=sp, scratch_corr=sc, scratch_size=10, tusage=tu,
         )
         assert matched == 0
 
     def test_skips_used_p2(self):
-        p1_arr, n_arr, p2_arr, corr_arr, dist_arr = self._make(1)
-        scratch = [NTupel() for _ in range(10)]
-        tusage = [[0] * NMAX for _ in range(2)]
-        tusage[1][0] = 1
+        arrays = self._make(1)
+        sp, sc = _scratch(10, 2)
+        tu = _tusage(2)
+        tu[1, 0] = 1
         matched = consistent_pair_matching(
-            p1_arr, n_arr, p2_arr, corr_arr, dist_arr,
-            num_cams=2, target_counts=[1, 1], accept_corr=1.0,
-            scratch=scratch, scratch_size=10, tusage=tusage,
+            *arrays, num_cams=2, target_counts=[1, 1], accept_corr=1.0,
+            scratch_p=sp, scratch_corr=sc, scratch_size=10, tusage=tu,
         )
         assert matched == 0
 
     def test_scratch_limit_early_return(self):
-        p1_arr, n_arr, p2_arr, corr_arr, dist_arr = self._make(2)
-        scratch = [NTupel() for _ in range(5)]
-        tusage = [[0] * NMAX for _ in range(2)]
+        arrays = self._make(2)
+        sp, sc = _scratch(5, 2)
         matched = consistent_pair_matching(
-            p1_arr, n_arr, p2_arr, corr_arr, dist_arr,
-            num_cams=2, target_counts=[2, 2], accept_corr=1.0,
-            scratch=scratch, scratch_size=1, tusage=tusage,
+            *arrays, num_cams=2, target_counts=[2, 2], accept_corr=1.0,
+            scratch_p=sp, scratch_corr=sc, scratch_size=1, tusage=_tusage(2),
         )
         assert matched == 1
 
@@ -512,12 +496,11 @@ class TestConsistentPairMatching:
         """consistent_pair_matching also works with num_cams=4."""
         p1_arr, n_arr, p2_arr, corr_arr, dist_arr = _make_flat_arrays(4, 1)
         _fill_perfect_pairs(p1_arr, n_arr, p2_arr, corr_arr, dist_arr, 4, 1)
-        scratch = [NTupel() for _ in range(20)]
-        tusage = [[0] * NMAX for _ in range(4)]
+        sp, sc = _scratch(20, 4)
         matched = consistent_pair_matching(
             p1_arr, n_arr, p2_arr, corr_arr, dist_arr,
             num_cams=4, target_counts=[1, 1, 1, 1], accept_corr=1.0,
-            scratch=scratch, scratch_size=20, tusage=tusage,
+            scratch_p=sp, scratch_corr=sc, scratch_size=20, tusage=_tusage(4),
         )
         assert matched >= 1
 
@@ -529,55 +512,56 @@ class TestConsistentPairMatching:
 
 class TestTakeBestCandidates:
     def test_sorts_descending_corr(self):
-        src = [
-            NTupel(p=[0, 1, -2, -2], corr=1.0),
-            NTupel(p=[2, 3, -2, -2], corr=3.0),
-            NTupel(p=[4, 5, -2, -2], corr=2.0),
-        ]
-        dst = [NTupel() for _ in range(5)]
-        tusage = [[0] * NMAX for _ in range(4)]
-        taken = take_best_candidates(src, dst, num_cams=4, num_cands=3, tusage=tusage)
+        src_p = np.array([[0, 1, -2, -2], [2, 3, -2, -2], [4, 5, -2, -2]], dtype=np.int32)
+        src_corr = np.array([1.0, 3.0, 2.0], dtype=np.float64)
+        dst_p, dst_corr = _scratch(5, 4)
+        taken = take_best_candidates(
+            src_p, src_corr, dst_p, dst_corr, 4, 3, _tusage(4), 0
+        )
         assert taken == 3
-        assert dst[0].corr == pytest.approx(3.0)
-        assert dst[1].corr == pytest.approx(2.0)
-        assert dst[2].corr == pytest.approx(1.0)
+        assert dst_corr[0] == pytest.approx(3.0)
+        assert dst_corr[1] == pytest.approx(2.0)
+        assert dst_corr[2] == pytest.approx(1.0)
 
     def test_skips_used_targets(self):
-        src = [
-            NTupel(p=[0, 1, -2, -2], corr=5.0),
-            NTupel(p=[2, 3, -2, -2], corr=2.0),
-        ]
-        dst = [NTupel() for _ in range(5)]
-        tusage = [[0] * NMAX for _ in range(4)]
-        tusage[0][0] = 1  # cam0 target0 used → first candidate skipped
-        taken = take_best_candidates(src, dst, num_cams=4, num_cands=2, tusage=tusage)
+        src_p = np.array([[0, 1, -2, -2], [2, 3, -2, -2]], dtype=np.int32)
+        src_corr = np.array([5.0, 2.0], dtype=np.float64)
+        dst_p, dst_corr = _scratch(5, 4)
+        tu = _tusage(4)
+        tu[0, 0] = 1  # cam0 target0 used -> first candidate skipped
+        taken = take_best_candidates(
+            src_p, src_corr, dst_p, dst_corr, 4, 2, tu, 0
+        )
         assert taken == 1
-        assert dst[0].p[0] == 2
+        assert dst_p[0, 0] == 2
 
     def test_marks_usage_after_taking(self):
-        src = [NTupel(p=[0, 1, -2, -2], corr=2.0)]
-        dst = [NTupel() for _ in range(5)]
-        tusage = [[0] * NMAX for _ in range(4)]
-        take_best_candidates(src, dst, num_cams=4, num_cands=1, tusage=tusage)
-        assert tusage[0][0] == 1
-        assert tusage[1][1] == 1
+        src_p = np.array([[0, 1, -2, -2]], dtype=np.int32)
+        src_corr = np.array([2.0], dtype=np.float64)
+        dst_p, dst_corr = _scratch(5, 4)
+        tu = _tusage(4)
+        take_best_candidates(src_p, src_corr, dst_p, dst_corr, 4, 1, tu, 0)
+        assert tu[0, 0] == 1
+        assert tu[1, 1] == 1
 
     def test_empty_candidates(self):
-        src = []
-        dst = [NTupel() for _ in range(5)]
-        tusage = [[0] * NMAX for _ in range(2)]
-        taken = take_best_candidates(src, dst, num_cams=2, num_cands=0, tusage=tusage)
+        src_p = np.empty((0, 2), dtype=np.int32)
+        src_corr = np.empty(0, dtype=np.float64)
+        dst_p, dst_corr = _scratch(5, 2)
+        taken = take_best_candidates(
+            src_p, src_corr, dst_p, dst_corr, 2, 0, _tusage(2), 0
+        )
         assert taken == 0
 
     def test_negative_one_slots_not_marked(self):
         """p[cam]==-1 should not touch tusage."""
-        src = [NTupel(p=[-1, 0, -1, -1], corr=2.0)]
-        dst = [NTupel() for _ in range(5)]
-        tusage = [[0] * NMAX for _ in range(4)]
-        take_best_candidates(src, dst, num_cams=4, num_cands=1, tusage=tusage)
-        assert tusage[0][0] == 0  # cam0 target0 NOT marked (slot was -1)
-        assert tusage[1][0] == 1  # cam1 target0 marked
-
+        src_p = np.array([[-1, 0, -1, -1]], dtype=np.int32)
+        src_corr = np.array([2.0], dtype=np.float64)
+        dst_p, dst_corr = _scratch(5, 4)
+        tu = _tusage(4)
+        take_best_candidates(src_p, src_corr, dst_p, dst_corr, 4, 1, tu, 0)
+        assert tu[0, 0] == 0  # cam0 target0 NOT marked (slot was -1)
+        assert tu[1, 0] == 1  # cam1 target0 marked
 
 # ---------------------------------------------------------------------------
 # correct_frame  (monkeypatch trafo)
