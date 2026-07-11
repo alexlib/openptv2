@@ -93,8 +93,11 @@ class MatchedCoords:
         return pos, pnr
 
     def get_by_pnrs(self, pnrs):
-        pos = np.full((len(pnrs), 2), -999.0, dtype=np.float64)
-        
+        # COORD_UNUSED sentinel expected by point_position triangulation
+        # (must match orientation.COORD_UNUSED, not PT_UNUSED=-999).
+        from openptv2.algorithms.constants import COORD_UNUSED
+        pos = np.full((len(pnrs), 2), COORD_UNUSED, dtype=np.float64)
+
         # Build mapping from pnr to coordinate
         pnr_to_coord = {c.pnr: (c.x, c.y) for c in self._corrected}
         

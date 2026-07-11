@@ -292,3 +292,90 @@ class TestFullCorrespondences:
         assert match_counts[1] == 0
         assert match_counts[2] == 0
         assert match_counts[3] == 16
+
+
+def test_get_by_pnrs_uses_coord_unused_sentinel():
+    """Missing pnrs must be filled with COORD_UNUSED (-1e10), the sentinel
+    point_position triangulation skips — NOT PT_UNUSED (-999), which would be
+    triangulated as a real ray and produce out-of-volume 3D garbage for any
+    non-quadruplet (triplet/pair) correspondence.
+
+    Regression: existing tests only exercise 4-camera quads, so this mismatch
+    slipped through while GUI sequence/determination produced garbage 3D.
+    """
+    from openptv2.correspondences import MatchedCoords
+    from openptv2.algorithms.constants import COORD_UNUSED
+    from openptv2.algorithms.epi import Coord2d
+
+    mc = MatchedCoords.__new__(MatchedCoords)
+    mc._corrected = [Coord2d(x=1.0, y=2.0, pnr=5)]
+    out = mc.get_by_pnrs(np.array([5, -1], dtype=np.int32))
+    assert out[0, 0] == 1.0 and out[0, 1] == 2.0
+    assert out[1, 0] == COORD_UNUSED and out[1, 1] == COORD_UNUSED
+
+
+@pytest.mark.integration
+def test_determination_3d_cloud_is_physically_bounded():
+    """End-to-end image->3D on real 4-camera data must not explode.
+
+    This is the test that was MISSING: prior tests only built synthetic
+    4-camera quadruplets, so a triplet/pair (which carry a COORD_UNUSED
+    sentinel for the absent camera) was never triangulated. With the wrong
+    sentinel (-999) those absent cameras were treated as real rays and
+    produced 3D coordinates in the tens of thousands (|X|~35000, |Z|~45000),
+    while every unit test still passed.
+
+    The volume here is X in [-40,40], Z in [-20,20]. A correct cloud sits
+    near that (|X|,|Z| < ~70); the bug produced |X|,|Z| in the tens of
+    thousands. A bound of 500 cleanly separates the two.
+    """
+    import os
+    from pathlib import Path
+    from openptv2.algorithms.parameters import ControlPar, VolumePar
+    from openptv2.algorithms.calibration import Calibration
+    from openptv2.correspondences import correspondences, MatchedCoords
+    from openptv2.orientation import point_positions
+    from openptv2.gui.ptv import read_targets
+
+    ds = Path(__file__).resolve().parents[2] / "test_data" / "test_cavity"
+    yaml = ds / "parameters_Run1.yaml"
+    if not yaml.exists() or not (ds / "img_3" / "cam1.0001_targets").exists():
+        pytest.skip("test_cavity fixture not available")
+
+    cwd = os.getcwd()
+    os.chdir(ds)
+    try:
+        cpar = ControlPar.from_yaml(str(yaml))
+        vpar = VolumePar.from_yaml(str(yaml))
+        nc = cpar.num_cams
+        cals = []
+        for i in range(nc):
+            c = Calibration()
+            c.from_file(f"cal/cam{i+1}.tif.ori", f"cal/cam{i+1}.tif.addpar")
+            cals.append(c)
+
+        detections, corrected = [], []
+        for i in range(nc):
+            t = read_targets(f"img_3/cam{i+1}", 1)
+            if len(t) > 0:
+                t.sort_y()
+            detections.append(t)
+            corrected.append(MatchedCoords(t, cpar, cals[i]))
+
+        _, sorted_corresp, _ = correspondences(detections, corrected, cals, vpar, cpar)
+        concat = np.concatenate(sorted_corresp, axis=1)
+        flat = np.array(
+            [c.get_by_pnrs(concat[cam]) for cam, c in enumerate(corrected)]
+        )
+        pos, _ = point_positions(flat.transpose(1, 0, 2), cpar, cals, vpar)
+    finally:
+        os.chdir(cwd)
+
+    assert len(pos) > 0
+    x, z = pos[:, 0], pos[:, 2]
+    # The bug drove these into the tens of thousands; correct output is ~70.
+    assert np.abs(x).max() < 500.0, f"X exploded: max|X|={np.abs(x).max():.1f}"
+    assert np.abs(z).max() < 500.0, f"Z exploded: max|Z|={np.abs(z).max():.1f}"
+    # Most points should land near the measurement volume, not scattered far.
+    near = (np.abs(x) < 80.0) & (np.abs(z) < 60.0)
+    assert near.mean() > 0.5, f"only {near.mean():.0%} of cloud near volume"
