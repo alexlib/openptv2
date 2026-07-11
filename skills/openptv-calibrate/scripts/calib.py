@@ -465,6 +465,148 @@ def cmd_run(args) -> int:
     return 0
 
 
+def cmd_snapshot_refine(args) -> int:
+    """Refine calibration using 3D particle positions from tracking results."""
+    import copy
+
+    import numpy as np
+    import yaml
+
+    from openptv2.algorithms.calibration import Calibration
+    from openptv2.algorithms.orientation import full_calibration
+    from openptv2.algorithms.tracking_frame_buf import read_targets
+    from openptv2.autocalibration import (
+        CANDIDATE_FLAGS,
+        _find_yaml,
+        _load_dataset_params,
+        _reproject_px,
+        rms_px,
+    )
+
+    base = Path(args.dataset).resolve()
+    calblock = base / "cal" / "target_on_a_side.txt"
+    dp = _load_dataset_params(base, calblock)
+    cpar, num_cams = dp.cpar, dp.num_cams
+
+    # sequence base names (strip %d so read_targets uses 4-digit padding)
+    yaml_path = _find_yaml(base)
+    if yaml_path is None:
+        print("ERROR: no parameters YAML found", file=sys.stderr)
+        return 1
+    y = yaml.safe_load(yaml_path.read_text())
+    seq_raw = y["sequence"]["base_name"]
+    seq_bases = [str(base / s.replace("%d", "")) for s in seq_raw]
+
+    # load current calibrations
+    cals = []
+    for cam in range(num_cams):
+        ori = base / "cal" / f"cam{cam + 1}.tif.ori"
+        addpar = base / "cal" / f"cam{cam + 1}.tif.addpar"
+        cals.append(Calibration.from_file(str(ori), str(addpar)))
+
+    # discover tracking result frames
+    ptv_is_files = sorted(
+        (base / "res").glob("ptv_is.*"),
+        key=lambda p: int(p.suffix.lstrip(".")),
+    )
+    if not ptv_is_files:
+        print("ERROR: no res/ptv_is.* files found", file=sys.stderr)
+        return 1
+    if args.frames:
+        wanted = {int(f) for f in args.frames.split(",")}
+        ptv_is_files = [p for p in ptv_is_files
+                        if int(p.suffix.lstrip(".")) in wanted]
+
+    print(f"Using {len(ptv_is_files)} frames from res/ptv_is.*")
+
+    # accumulate per-camera correspondences
+    per_cam_ref: list[list] = [[] for _ in range(num_cams)]
+    per_cam_det: list[list] = [[] for _ in range(num_cams)]
+
+    for pf in ptv_is_files:
+        frame = int(pf.suffix.lstrip("."))
+        lines = pf.read_text().splitlines()
+        n = int(lines[0])
+        pts3d = []
+        for line in lines[1: n + 1]:
+            parts = line.split()
+            if len(parts) >= 5:
+                pts3d.append([float(parts[2]), float(parts[3]), float(parts[4])])
+        if not pts3d:
+            continue
+        pts3d_arr = np.array(pts3d)
+
+        for cam in range(num_cams):
+            targets = read_targets(seq_bases[cam], frame)
+            if not targets:
+                continue
+            proj = np.array([_reproject_px(cals[cam], cpar.mm, p, cpar)
+                             for p in pts3d_arr])
+            tgt_xy = np.array([[t.x, t.y] for t in targets])
+            for i, pp in enumerate(proj):
+                d = np.linalg.norm(tgt_xy - pp, axis=1)
+                j = int(np.argmin(d))
+                if d[j] <= args.tol_px:
+                    per_cam_ref[cam].append(pts3d_arr[i])
+                    per_cam_det[cam].append(tgt_xy[j])
+
+    # refine each camera
+    for cam in range(num_cams):
+        ref = np.array(per_cam_ref[cam]) if per_cam_ref[cam] else np.empty((0, 3))
+        det = np.array(per_cam_det[cam]) if per_cam_det[cam] else np.empty((0, 2))
+
+        if len(ref) < 6:
+            print(f"  cam{cam + 1}: {len(ref)} correspondences — skipping (need ≥6)")
+            continue
+
+        rep_before = np.array([_reproject_px(cals[cam], cpar.mm, r, cpar) for r in ref])
+        rms_before = rms_px(det, rep_before)
+
+        # Conservative progression: start extrinsics-only (no flags).
+        # Noisy tracking data makes intrinsic/distortion params ill-conditioned;
+        # only accept a richer flag set if it genuinely reduces RMS and is NaN-free.
+        # ponytail: no k3/p1/p2 — snapshot data is too noisy to constrain them
+        SNAP_FLAGS = [
+            [],                             # extrinsics only
+            ["cc", "xh", "yh"],             # + principal point/distance
+            ["cc", "xh", "yh", "k1"],       # + 1st-order radial
+            ["cc", "xh", "yh", "k1", "k2"],  # + 2nd-order radial
+        ]
+        best_cal, best_rms, best_flags = None, rms_before, None
+        for flags in SNAP_FLAGS:
+            trial = copy.deepcopy(cals[cam])
+            try:
+                full_calibration(trial, ref, det, cpar, flags)
+                rep = np.array([_reproject_px(trial, cpar.mm, r, cpar) for r in ref])
+                r = rms_px(det, rep)
+                if np.isnan(r) or np.any(np.isnan(rep)):
+                    continue  # NaN → skip this flag set
+                if r < best_rms * 0.99:  # require at least 1% improvement
+                    best_rms, best_cal, best_flags = r, trial, flags
+            except Exception:
+                continue
+
+        if best_cal is None:
+            print(f"  cam{cam + 1}: {len(ref)} pts  before={rms_before:.3f}px  "
+                  f"no improvement (NaN or RMS did not decrease)")
+            continue
+
+        print(f"  cam{cam + 1}: {len(ref)} pts  before={rms_before:.3f}px  "
+              f"after={best_rms:.3f}px  flags={best_flags}")
+
+        if not args.dry_run:
+            cals[cam] = best_cal
+            ori = base / "cal" / f"cam{cam + 1}.tif.ori"
+            addpar = base / "cal" / f"cam{cam + 1}.tif.addpar"
+            ori.rename(ori.with_suffix(".snpbck"))
+            addpar.rename(addpar.with_suffix(".addpar.snpbck"))
+            best_cal.write(str(ori), str(addpar))
+
+    status = "dry-run" if args.dry_run else "written"
+    print(f"Done ({status}).")
+    return 0
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description="openptv-calibrate helper")
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -494,6 +636,17 @@ def main() -> int:
     p.add_argument("--output", required=True)
     p.add_argument("--dry-run", action="store_true")
     p.set_defaults(func=cmd_run)
+
+    p = sub.add_parser("snapshot-refine",
+                       help="refine calibration from tracking result 3D positions")
+    p.add_argument("dataset")
+    p.add_argument("--tol-px", type=float, default=5.0,
+                   help="match tolerance in pixels (default 5.0)")
+    p.add_argument("--frames", default=None,
+                   help="comma-separated frame numbers to use (default: all)")
+    p.add_argument("--dry-run", action="store_true",
+                   help="report without writing .ori/.addpar")
+    p.set_defaults(func=cmd_snapshot_refine)
 
     args = ap.parse_args()
     return args.func(args)
