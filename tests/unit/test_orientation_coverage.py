@@ -12,10 +12,8 @@ Launch with::
       --cov-report=term-missing \\
       -q
 
-Source bugs noted (do NOT fix here):
-  B1 – single_cam_point_positions uses ``vpar.z_min_lay`` / ``vpar.z_max_lay``
-       but VolumePar stores ``Zmin_lay`` / ``Zmax_lay`` (capital-Z). Works only
-       with a duck-typed mock.
+Note: single_cam_point_positions reads ``vpar.Zmin_lay`` / ``vpar.Zmax_lay``
+(capital-Z, matching VolumePar); the duck-typed _MockVpar mirrors those names.
 """
 from __future__ import annotations
 
@@ -834,9 +832,10 @@ def test_multi_cam_point_positions_basic():
 # ─────────────────────────────────────────────────────────────────────────────
 
 class _MockVpar:
-    """Duck-typed VolumePar with lowercase z_min_lay / z_max_lay (bug B1)."""
-    z_min_lay = np.array([-10.0, -10.0])
-    z_max_lay = np.array([10.0, 10.0])
+    """Duck-typed VolumePar exposing Zmin_lay / Zmax_lay (matches VolumePar and
+    single_cam_point_positions, which reads the capital-Z attributes)."""
+    Zmin_lay = np.array([-10.0, -10.0])
+    Zmax_lay = np.array([10.0, 10.0])
 
 
 def test_point_positions_zero_cals_raises():
