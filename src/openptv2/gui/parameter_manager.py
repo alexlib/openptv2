@@ -116,6 +116,15 @@ class ParameterManager:
         if 'cal_ori' in self.parameters:
             self.parameters['cal_ori']['cal_splitter'] = getattr(self, 'cal_splitter', False)
 
+        # Fallback: if cal_ori image lists are empty but ptv.img_cal has values, copy them
+        # (happens when num_cams was 0 during cal_ori.par conversion)
+        cal_ori = self.parameters.get('cal_ori', {})
+        ptv = self.parameters.get('ptv', {})
+        if not cal_ori.get('img_cal_name') and ptv.get('img_cal'):
+            cal_ori['img_cal_name'] = list(ptv['img_cal'])
+            cal_ori['img_ori'] = [f"{p}.ori" for p in ptv['img_cal']]
+            print("Info: Populated cal_ori img_cal_name/img_ori from ptv.img_cal")
+
         # Default masking parameters
         if 'masking' not in self.parameters:
             self.parameters['masking'] = {
