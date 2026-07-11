@@ -1127,6 +1127,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#launching-the-gui" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Launching the GUI
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#restoring-a-backup" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1265,10 +1276,49 @@ puts them in the wrong layer order.</p>
 </span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span><span class="nv">$PP</span><span class="w"> </span><span class="nb">set</span><span class="w"> </span>&lt;dataset&gt;<span class="w"> </span>ptv.mmp_n3<span class="w"> </span><span class="m">1</span>.33
 </span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span><span class="nv">$PP</span><span class="w"> </span>validate<span class="w"> </span>&lt;dataset&gt;
 </span></code></pre></div></p>
+<h2 id="launching-the-gui">Launching the GUI<a class="headerlink" href="#launching-the-gui" title="Permanent link">&para;</a></h2>
+<p>Pass the active YAML file directly so the GUI knows which run to activate on
+startup — this is the recommended invocation:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>uv<span class="w"> </span>run<span class="w"> </span>openptv2-gui<span class="w"> </span>/data/exp1/parameters_Run3.yaml
+</span></code></pre></div>
+<p>You can also pass the experiment directory; the GUI will activate the first
+YAML it finds (alphabetical order):</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>uv<span class="w"> </span>run<span class="w"> </span>openptv2-gui<span class="w"> </span>/data/exp1/
+</span></code></pre></div>
+<p><strong>YAML discovery rules applied at startup:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Situation</th>
+<th>Behaviour</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Legacy <code>parameters*/</code> dirs, no YAMLs</td>
+<td>Converted to <code>parameters_&lt;name&gt;.yaml</code> once; dirs ignored afterward</td>
+</tr>
+<tr>
+<td>YAMLs exist alongside dirs</td>
+<td>Dirs ignored; only YAML files used</td>
+</tr>
+<tr>
+<td>No dirs, YAMLs exist</td>
+<td>YAMLs used directly</td>
+</tr>
+<tr>
+<td>Neither dirs nor YAMLs</td>
+<td>Error — create at least one <code>parameters_&lt;name&gt;.yaml</code> first</td>
+</tr>
+</tbody>
+</table>
+<p>When a YAML path is given on the command line, that run becomes active
+regardless of alphabetical order. When a directory is given, the first YAML
+(sorted) is activated.</p>
 <h2 id="restoring-a-backup">Restoring a Backup<a class="headerlink" href="#restoring-a-backup" title="Permanent link">&para;</a></h2>
 <p>If you set a wrong value:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="c1"># The backup is &lt;yaml_file&gt;.parbak — copy it back</span>
-</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>cp<span class="w"> </span>&lt;dataset&gt;/parameters_run1.yaml.parbak<span class="w"> </span>&lt;dataset&gt;/parameters_run1.yaml
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="c1"># The backup is &lt;yaml_file&gt;.parbak — copy it back</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>cp<span class="w"> </span>&lt;dataset&gt;/parameters_run1.yaml.parbak<span class="w"> </span>&lt;dataset&gt;/parameters_run1.yaml
 </span></code></pre></div>
 
 
