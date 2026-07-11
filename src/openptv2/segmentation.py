@@ -143,6 +143,8 @@ def _vectorized_targ_rec(
 
 def target_recognition(img, tpar, cam, cpar, subrange_x=None, subrange_y=None):
     """Recognize targets in image using segmentation."""
+    from openptv2.algorithms.track_kernels_batch import targ_rec_fast
+
     imx, imy = cpar.get_image_size()
 
     if subrange_x is None:
@@ -155,23 +157,38 @@ def target_recognition(img, tpar, cam, cpar, subrange_x=None, subrange_y=None):
     else:
         ymin, ymax = subrange_y
 
-    targets = _vectorized_targ_rec(
-        img=img,
+    img_u8 = np.ascontiguousarray(img, dtype=np.uint8)
+    img0 = img_u8.copy()
+
+    nnmax = int(tpar.get_pixel_count_bounds()[1])
+    n, xs, ys, ns, nxs, nys, sumgs = targ_rec_fast(
+        img_u8,
+        img0,
         gvthres=int(tpar.get_grey_thresholds()[cam]),
         discont=int(tpar.get_max_discontinuity()),
         nnmin=int(tpar.get_pixel_count_bounds()[0]),
-        nnmax=int(tpar.get_pixel_count_bounds()[1]),
+        nnmax=nnmax,
         nxmin=int(tpar.get_xsize_bounds()[0]),
         nxmax=int(tpar.get_xsize_bounds()[1]),
         nymin=int(tpar.get_ysize_bounds()[0]),
         nymax=int(tpar.get_ysize_bounds()[1]),
         sumg_min=int(tpar.get_min_sum_grey()),
-        xmin=xmin,
-        xmax=xmax,
-        ymin=ymin,
-        ymax=ymax,
+        xmin=int(xmin),
+        ymin=int(ymin),
+        xmax=int(xmax),
+        ymax=int(ymax),
+        max_targets=10000,
     )
 
+    if n == 0:
+        return TargetArray([_empty_target()])
+
+    targets = [
+        Target(pnr=i, x=float(xs[i]), y=float(ys[i]),
+               n=int(ns[i]), nx=int(nxs[i]), ny=int(nys[i]),
+               sumg=int(sumgs[i]), tnr=CORRES_NONE)
+        for i in range(n)
+    ]
     return TargetArray(targets)
 
 
