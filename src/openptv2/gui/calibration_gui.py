@@ -468,8 +468,9 @@ class CalibrationGUI(HasTraits):
                 for _ in range(len(self.camera)):
                     self.cal_images.append(img_as_ubyte(np.zeros((ptv_params['imy'], ptv_params['imx']), dtype=np.uint8)))
         else:
+            img_cal_names = self.get_parameter('cal_ori').get('img_cal_name', [])
             for i, cam in enumerate(self.camera):
-                imname = self.get_parameter('cal_ori')['img_cal_name'][i]
+                imname = img_cal_names[i] if i < len(img_cal_names) else ''
                 if Path(imname).exists():
                     im = imread(imname)
                     if im.ndim > 2:

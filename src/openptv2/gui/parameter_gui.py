@@ -986,14 +986,13 @@ class Calib_Params(HasTraits):
         # self.mmp_d = ptv_params['mmp_d']
 
         cal_ori_params = params['cal_ori']
-        cal_names = cal_ori_params['img_cal_name']
+        cal_names = list(cal_ori_params.get('img_cal_name', []))
+        cal_names += [''] * max(0, global_n_cam - len(cal_names))
         for i in range(global_n_cam):
             setattr(self, f"cam_{i + 1}", cal_names[i])
-        # else:
-        #     setattr(self, f"cam_{i + 1}", DEFAULT_STRING)
 
-        
-        ori_names = cal_ori_params['img_ori']
+        ori_names = list(cal_ori_params.get('img_ori', []))
+        ori_names += [''] * max(0, global_n_cam - len(ori_names))
         for i in range(global_n_cam):
             setattr(self, f"ori_cam_{i + 1}", ori_names[i])
         # else:

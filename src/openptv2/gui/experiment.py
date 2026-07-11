@@ -5,7 +5,6 @@ This module contains the Experiment class which manages parameter sets
 and experiment configuration for PyPTV.
 """
 
-import copy
 import shutil
 from pathlib import Path
 from traits.api import HasTraits, Instance, List, Str, Bool, Any
