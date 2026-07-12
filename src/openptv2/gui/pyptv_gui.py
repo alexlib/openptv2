@@ -2068,8 +2068,16 @@ def main():
         else:
             raise OSError(f"Argument must be a directory or YAML file, got: {arg_path}")
     else:
-        # Fallback to default test directory
+        # Fallback to the bundled dev test case if it happens to be present
+        # (running from a source checkout). A fresh install won't have it, so
+        # exit with guidance instead of an opaque FileNotFoundError.
         exp_path = software_path / "gui" / "tests" / "test_cavity"
+        if not exp_path.is_dir():
+            print(
+                "No experiment given. Pass a directory or an active YAML file, "
+                "e.g.:\n    openptv2-gui /data/exp1/parameters_Run3.yaml"
+            )
+            raise SystemExit(2)
         exp = Experiment()
         exp.populate_runs(exp_path)
         yaml_file = exp.active_params.yaml_path
