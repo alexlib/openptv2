@@ -41,8 +41,10 @@ uv run ruff check .
 # Type check
 uv run mypy src/openptv2/
 
-# Editable install
-uv pip install -e .
+# Editable install — three profiles:
+uv pip install -e .            # default: headless library + openptv2-batch pipeline
+uv pip install -e ".[gui]"     # + desktop GUI (traitsui/chaco/enable/PySide6)
+uv pip install -e ".[dev]"     # everything: GUI, tests, lint, notebooks, docs
 
 # Cython build (required after any .py change in algorithms/)
 uv run python setup.py build_ext --inplace

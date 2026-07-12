@@ -25,11 +25,11 @@ def _(mo):
 @app.cell
 def _():
     import numpy as np
-    import plotly.graph_objects as go
+    import matplotlib.pyplot as plt
     import os
     import glob
 
-    return go, np, os
+    return np, os, plt
 
 
 @app.cell
@@ -75,70 +75,46 @@ def _(np, os):
 
 
 @app.cell
-def _(cam_centers_arr, cam_directions_arr, cam_names, go, point_ids, x, y, z):
-    # Create the 3D plot
-    fig = go.Figure()
+def _(cam_centers_arr, cam_directions_arr, cam_names, plt, point_ids, x, y, z):
+    # Create the 3D plot (matplotlib)
+    fig = plt.figure(figsize=(10, 8))
+    ax = fig.add_subplot(111, projection="3d")
 
-    # Add Target Points
-    fig.add_trace(go.Scatter3d(
-        x=x, y=y, z=z,
-        mode='markers+text',
-        name='Target Points',
-        text=point_ids,
-        textposition='top center',
-        marker=dict(size=4, color='blue', opacity=0.8),
-        textfont=dict(size=10, color='darkblue')
-    ))
+    # Target points
+    ax.scatter(x, y, z, s=16, c="blue", alpha=0.8, label="Target Points")
+    for _px, _py, _pz, _pid in zip(x, y, z, point_ids):
+        ax.text(_px, _py, _pz, str(_pid), size=8, color="darkblue")
 
-    # Add Cameras
+    # Cameras + optical-axis lines
     if len(cam_centers_arr) > 0:
-        fig.add_trace(go.Scatter3d(
-            x=cam_centers_arr[:, 0],
-            y=cam_centers_arr[:, 1],
-            z=cam_centers_arr[:, 2],
-            mode='markers+text',
-            name='Cameras',
-            text=cam_names,
-            textposition='bottom center',
-            marker=dict(size=8, color='red', symbol='square'),
-            textfont=dict(size=12, color='red', weight='bold')
-        ))
-
-        # Add camera direction lines
+        ax.scatter(
+            cam_centers_arr[:, 0], cam_centers_arr[:, 1], cam_centers_arr[:, 2],
+            s=64, c="red", marker="s", label="Cameras",
+        )
         for _i in range(len(cam_centers_arr)):
             _start = cam_centers_arr[_i]
             # Draw a line of length 150 towards the target
-            _end = _start - 150 * cam_directions_arr[_i] 
-            fig.add_trace(go.Scatter3d(
-                x=[_start[0], _end[0]],
-                y=[_start[1], _end[1]],
-                z=[_start[2], _end[2]],
-                mode='lines',
-                line=dict(color='red', width=2),
-                showlegend=False,
-                hoverinfo='none'
-            ))
+            _end = _start - 150 * cam_directions_arr[_i]
+            ax.plot(
+                [_start[0], _end[0]], [_start[1], _end[1]], [_start[2], _end[2]],
+                color="red", linewidth=2,
+            )
+            ax.text(_start[0], _start[1], _start[2], cam_names[_i],
+                    size=10, color="red")
 
-    # Set Layout matching OpenPTV orientation
-    # X to the left (reversed), Y upward, Z towards the viewer
-    fig.update_layout(
-        title='OpenPTV Camera and Target 3D View',
-        scene=dict(
-            xaxis=dict(title='X (Left)', autorange='reversed', showgrid=True),
-            yaxis=dict(title='Y (Up)', showgrid=True),
-            zaxis=dict(title='Z (Towards Viewer)', showgrid=True),
-            camera=dict(
-                up=dict(x=0, y=1, z=0),      # Y is upward
-                eye=dict(x=0, y=0, z=2.0)    # Looking from positive Z towards origin
-            ),
-            aspectmode='data' # Ensures equal scaling for x, y, z so angles aren't distorted
-        ),
-        width=1000,
-        height=800,
-        margin=dict(l=0, r=0, b=0, t=40)
-    )
+    # OpenPTV orientation: X to the left (reversed), Y upward, Z towards viewer
+    ax.set_xlabel("X (Left)")
+    ax.set_ylabel("Y (Up)")
+    ax.set_zlabel("Z (Towards Viewer)")
+    ax.invert_xaxis()
+    ax.set_title("OpenPTV Camera and Target 3D View")
+    ax.legend(loc="upper right")
+    try:
+        ax.set_box_aspect((1, 1, 1))  # roughly equal scaling for x, y, z
+    except Exception:
+        pass
 
-    fig
+    ax
     return
 
 

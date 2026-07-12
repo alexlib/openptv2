@@ -15,7 +15,9 @@ license = "LGPL-3.0-or-later"
 authors = [
     {name = "OpenPTV Community", email = "openptv@googlegroups.com"}
 ]
-requires-python = ">=3.11,<3.14"
+# Core + batch run on 3.11–3.14 (incl. free-threaded 3.14t; see Dockerfile.cloud).
+# The [gui] stack (enable/chaco) currently has wheels only through 3.13.
+requires-python = ">=3.11,<3.15"
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Science/Research",
@@ -30,66 +32,49 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Physics",
     "Topic :: Scientific/Engineering :: Visualization",
 ]
+# Default install (`pip install openptv2`) = the headless batch runtime: the
+# minimum to `import openptv2`, run the algorithms/API, and the openptv2-batch
+# sequence + tracking pipeline. `cython` is required by the interpreted
+# fallback of the algorithms/ modules (they `import cython`); `traits` and
+# `scikit-image` are pulled in by the batch pipeline. No Qt/chaco here.
 dependencies = [
     "cython>=3.0.0,<4",
     "imageio>=2.19.0",
-    "marimo>=0.23.0",
-    "mkdocs>=1.6.1",
     "numpy>=2.0.0",
-    "plotly>=6.7.0",
     "pydantic>=2.13.4",
-    "pytest>=9.0.2",
     "pyyaml>=6.0",
+    "scikit-image>=0.20.0",
     "scipy>=1.10.0",
-    "traits>=7.1.0",
+    "traits>=6.4.0",
 ]
 
 [project.optional-dependencies]
+# End-user desktop GUI (openptv2-gui): the TraitsUI/Chaco/Enable stack on top
+# of the default runtime. `enable` also provides `kiva`; `PySide6` is the Qt
+# backend pyface binds to. (rembg is intentionally NOT here — it is only used
+# by the optional gui/plugins/ext_sequence_rembg* plugins; install it
+# separately if you need background-removal preprocessing.)
 gui = [
-    "traits>=6.4.0",
     "traitsui>=7.4.0",
     "enable>=6.1.0",
     "chaco>=6.1.0",
     "PySide6>=6.0.0",
-    "scikit-image>=0.20.0",
-    "pandas>=2.0.0",
     "matplotlib>=3.7.0",
-    "tables>=3.8.0",
-    "tqdm>=4.65.0",
-    "imagecodecs>=2023.1.23",
+    "pandas>=2.0.0",
     "flowtracks>=0.3.0",
-    "Pygments>=2.15.0",
-    "pyparsing>=3.0.0",
-    "marimo>=0.19.10",
 ]
-test = [
-    "pytest>=8.0.0",
-    "pytest-cov>=5.0.0",
-    "optv>=0.3.2",  # legacy C bindings used by parity tests (skipped if absent)
-]
+# Everything a contributor needs: the full GUI, test/lint/type tooling, the
+# marimo notebooks, and the docs toolchain.
 dev = [
+    "openptv2[gui]",
     "pytest>=8.0.0",
     "pytest-cov>=5.0.0",
     "mypy>=1.10.0",
     "pre-commit>=4.0.0",
     "ruff>=0.5.0",
-    "traits>=6.4.0",
-    "traitsui>=7.4.0",
-    "enable>=6.1.0",
-    "chaco>=6.1.0",
-    "PySide6>=6.0.0",
-    "scikit-image>=0.20.0",
-    "pandas>=2.0.0",
-    "matplotlib>=3.7.0",
-    "tables>=3.8.0",
-    "tqdm>=4.65.0",
-    "imagecodecs>=2023.1.23",
-    "flowtracks>=0.3.0",
-    "Pygments>=2.15.0",
-    "pyparsing>=3.0.0",
-    "marimo>=0.19.10",
-]
-docs = [
+    "setuptools>=61.0",              # build the Cython extensions in-place
+    "optv>=0.3.2",                   # legacy C bindings for parity tests
+    "marimo>=0.19.10",              # notebooks/ (matplotlib-based)
     "sphinx>=8.0.0",
     "sphinx-autoapi>=3.0.0",
     "pydata-sphinx-theme>=0.16.0",

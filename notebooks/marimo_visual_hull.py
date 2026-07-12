@@ -3,7 +3,7 @@
 # dependencies = [
 #     "marimo>=0.20.0",
 #     "numpy>=2.0.0",
-#     "plotly>=5.0.0",
+#     "matplotlib>=3.7.0",
 #     "openptv2",
 # ]
 # ///
@@ -18,9 +18,9 @@ app = marimo.App(width="medium")
 def _():
     import marimo as mo
     import numpy as np
-    import plotly.graph_objects as go
+    import matplotlib.pyplot as plt
 
-    return go, mo, np
+    return mo, np, plt
 
 
 @app.cell(hide_code=True)
@@ -74,7 +74,7 @@ def _(load_btn, mo, np, yaml_input):
 
 
 @app.cell
-def _(cals, cpar, go, mo, np, num_cams, res_slider, side_slider):
+def _(cals, cpar, np, num_cams, plt, res_slider, side_slider):
     def _find_convergence(cals):
         """Least-squares convergence point of all optical axes."""
         origins, dirs = [], []
@@ -122,17 +122,19 @@ def _(cals, cpar, go, mo, np, num_cams, res_slider, side_slider):
     visible = pts[mask]
     print(f"Convergence center: {center.round(1)}, visible voxels: {mask.sum()}/{len(pts)}")
 
-    fig = go.Figure(data=go.Scatter3d(
-        x=visible[:, 0], y=visible[:, 1], z=visible[:, 2],
-        mode="markers",
-        marker=dict(size=3, color=visible[:, 2], colorscale="Viridis", opacity=0.6),
-    ))
-    fig.update_layout(
-        title=f"Visual hull — {mask.sum()} voxels visible from all {num_cams} cameras",
-        scene=dict(xaxis_title="X", yaxis_title="Y", zaxis_title="Z"),
-        margin=dict(l=0, r=0, b=0, t=40),
-    )
-    mo.ui.plotly(fig)
+    fig = plt.figure(figsize=(9, 7))
+    ax = fig.add_subplot(111, projection="3d")
+    if len(visible) > 0:
+        sc = ax.scatter(
+            visible[:, 0], visible[:, 1], visible[:, 2],
+            s=6, c=visible[:, 2], cmap="viridis", alpha=0.6,
+        )
+        fig.colorbar(sc, ax=ax, shrink=0.6, label="Z")
+    ax.set_xlabel("X")
+    ax.set_ylabel("Y")
+    ax.set_zlabel("Z")
+    ax.set_title(f"Visual hull — {mask.sum()} voxels visible from all {num_cams} cameras")
+    ax
     return
 
 

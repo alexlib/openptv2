@@ -1,0 +1,53 @@
+# High-performance, GIL-free BATCH image for the cloud (Google Cloud Run / GCE,
+# any container host). Free-threaded CPython 3.14t with the GIL disabled
+# (PYTHON_GIL=0). No GUI. Parallelize a workload across cores with
+# multiprocessing — each worker is its own process, so the compiled kernels run
+# safely while the free-threaded interpreter removes GIL contention for any
+# Python-level threading.
+#
+#   docker build -f Dockerfile.cloud -t openptv2-cloud .
+#   # smoke test on the baked demo:
+#   docker run --rm openptv2-cloud sh -c \
+#     "cp -r /demo/test_cavity /tmp/c && cd /tmp/c && \
+#      openptv2-batch parameters_Run1.yaml 10001 10004"
+#   # your own data:
+#   docker run --rm -v "$PWD:/data" openptv2-cloud \
+#     openptv2-batch /data/<exp>/parameters_Run1.yaml <first> <last>
+#
+# NOTE: the algorithms/ Cython kernels do not yet *declare* free-threading
+# safety, so PYTHON_GIL=0 force-disables the GIL "at your own risk". That is
+# safe for the batch use case (single thread per process + multiprocessing);
+# do not call the same kernel from multiple threads in one process until the
+# modules are declared free-threading-compatible.
+
+FROM ghcr.io/astral-sh/uv:bookworm-slim
+
+# build-essential: compile the Cython extensions (and traits) for 3.14t.
+# libgomp1 stays at runtime for the OpenMP kernels (built with -fopenmp).
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Pin the free-threaded interpreter at a fixed path so the venv is portable.
+ENV UV_PYTHON_INSTALL_DIR=/opt/pyft \
+    UV_LINK_MODE=copy
+RUN uv python install 3.14t
+
+WORKDIR /app
+COPY . /app
+
+# Default (headless batch) runtime into an isolated venv. requires-python allows
+# 3.14; no GUI extras here.
+RUN uv venv --python 3.14t /opt/venv \
+    && VIRTUAL_ENV=/opt/venv uv pip install --no-cache -e .
+
+# Baked demo for a zero-data smoke test.
+RUN mkdir -p /demo && cp -r /app/test_data/test_cavity /demo/test_cavity
+
+ENV PATH=/opt/venv/bin:$PATH \
+    PYTHON_GIL=0 \
+    PYTHONUNBUFFERED=1
+VOLUME ["/data"]
+WORKDIR /data
+
+CMD ["openptv2-batch", "--help"]

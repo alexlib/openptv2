@@ -27,23 +27,32 @@ openptv2 combines the best of three repositories into a single, maintainable pac
 
 ## Installation
 
-### Quick Install (Recommended)
+There are three install profiles:
 
-Most users will want the GUI included. Install with:
+| Command | For | Includes |
+| --- | --- | --- |
+| `pip install openptv2` | scripting + `openptv2-batch` (default) | headless algorithms/API + sequence/tracking pipeline |
+| `pip install openptv2[gui]` | desktop users | default **plus** the TraitsUI/Chaco/PySide6 GUI |
+| `pip install openptv2[dev]` | contributors | everything: GUI, tests, lint, type-check, notebooks, docs |
+
+### Default (headless / batch)
+
+The bare install *is* the headless batch runtime — the library, the
+`openptv2-batch` sequence + tracking pipeline, no GUI:
+
+```bash
+uv pip install openptv2
+# or
+pip install openptv2
+```
+
+Don't have `uv`? `curl -LsSf https://astral.sh/uv/install.sh | sh`
+
+### GUI (desktop users)
 
 ```bash
 uv pip install openptv2[gui]
-```
-
-Don't have `uv`? Install it first:
-
-```bash
-curl -LsSf https://astral.sh/uv/install.sh | sh
-```
-
-**Alternative with pip:**
-
-```bash
+# or
 pip install openptv2[gui]
 ```
 
@@ -54,15 +63,32 @@ python -c "import openptv2; print(f'openptv2 version: {openptv2.__version__}')"
 python -c "from openptv2 import Tracker; print('Tracker imported successfully')"
 ```
 
-### Base Install (No GUI)
+> **Note:** launching the GUI (`openptv2-gui`) requires the `[gui]` extra. A
+> default install that then launches the GUI will fail with
+> `ModuleNotFoundError: No module named 'traitsui'` (and chaco/PySide6) — that
+> is expected; install `openptv2[gui]`.
 
-If you only need the library (e.g., for scripting or batch processing):
+### Docker (no Python setup required)
+
+A single image serves both the GUI and batch. It bakes in a trimmed
+`test_cavity` demo at `/demo/test_cavity` so the first run works with no data.
 
 ```bash
-uv pip install openptv2
-# or
-pip install openptv2
+# Build once
+docker build -t openptv2 .
+
+# GUI on the host X display (Linux/X11), current folder mounted at /data
+./docker/run-gui.sh
+#   in the GUI, open /demo/test_cavity to try the baked demo
+
+# Headless batch on your own data
+docker run --rm -v "$PWD:/data" openptv2 \
+  openptv2-batch /data/<experiment>/parameters_Run1.yaml <first> <last>
 ```
+
+X11 notes: `run-gui.sh` handles `xhost` and mounts `/tmp/.X11-unix`. On Wayland
+run `xhost +local:root` in an XWayland session; on macOS/Windows use an X
+server (XQuartz / VcXsrv) and set `DISPLAY` accordingly.
 
 ---
 

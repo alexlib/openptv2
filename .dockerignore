@@ -1,0 +1,28 @@
+# Build/venv/VCS noise
+.git
+.github
+.venv
+venv
+build/
+dist/
+*.egg-info/
+__pycache__/
+*.pyc
+# Cython build artifacts (rebuilt inside the image) — but keep the hand-written
+# C shim (cas_shim.c is a real source setup.py compiles, not generated).
+src/openptv2/algorithms/*.c
+!src/openptv2/algorithms/cas_shim.c
+src/openptv2/algorithms/*.so
+src/openptv2/algorithms/*.html
+
+# Heavy test fixtures: keep ONLY test_cavity as the baked demo
+test_data/*
+!test_data/test_cavity
+# ...and trim test_cavity down to what the demo needs
+test_data/test_cavity/tmp*.yaml
+test_data/test_cavity/res
+test_data/test_cavity/img_orig
+test_data/test_cavity/img_1
+test_data/test_cavity/img_2
+test_data/test_cavity/img_3
+test_data/test_cavity/dt_lsq

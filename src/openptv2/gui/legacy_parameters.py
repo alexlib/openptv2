@@ -4,7 +4,6 @@ from __future__ import absolute_import
 
 from pathlib import Path
 import shutil
-from tqdm import tqdm
 import collections.abc
 from typing import Optional
 
@@ -145,7 +144,7 @@ def copy_params_dir(src: Path, dest: Path):
 
     print(f"Copying now file by file from {src} to {dest}: \n")
 
-    for f in tqdm(files):
+    for f in files:
         shutil.copyfile(
             f,
             dest / f.name,
