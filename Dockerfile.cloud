@@ -1,9 +1,7 @@
-# High-performance, GIL-free BATCH image for the cloud (Google Cloud Run / GCE,
-# any container host). Free-threaded CPython 3.14t with the GIL disabled
-# (PYTHON_GIL=0). No GUI. Parallelize a workload across cores with
-# multiprocessing — each worker is its own process, so the compiled kernels run
-# safely while the free-threaded interpreter removes GIL contention for any
-# Python-level threading.
+# Headless BATCH image for the cloud (Google Cloud Run / GCE, any container
+# host). Free-threaded CPython 3.14t, no GUI. Parallelize across cores with
+# multiprocessing — each worker is its own process, so the compiled OpenMP
+# kernels do the heavy lifting regardless of the GIL.
 #
 #   docker build -f Dockerfile.cloud -t openptv2-cloud .
 #   # smoke test on the baked demo:
@@ -14,11 +12,12 @@
 #   docker run --rm -v "$PWD:/data" openptv2-cloud \
 #     openptv2-batch /data/<exp>/parameters_Run1.yaml <first> <last>
 #
-# NOTE: the algorithms/ Cython kernels do not yet *declare* free-threading
-# safety, so PYTHON_GIL=0 force-disables the GIL "at your own risk". That is
-# safe for the batch use case (single thread per process + multiprocessing);
-# do not call the same kernel from multiple threads in one process until the
-# modules are declared free-threading-compatible.
+# MEASURED (docs/cloud-batch.md): PYTHON_GIL=0 is NOT faster for this batch —
+# a single-process run is ~25% SLOWER than with the GIL on, because the speed
+# comes from the compiled Cython/OpenMP kernels, not from Python-level threads.
+# The GIL is left ENABLED by default here (the kernels re-enable it on import
+# anyway, since they don't yet *declare* free-threading safety). Set
+# PYTHON_GIL=0 only to experiment; revisit once the modules declare Py_mod_gil.
 
 FROM ghcr.io/astral-sh/uv:bookworm-slim
 
@@ -37,15 +36,18 @@ WORKDIR /app
 COPY . /app
 
 # Default (headless batch) runtime into an isolated venv. requires-python allows
-# 3.14; no GUI extras here.
+# 3.14; no GUI extras here. Non-editable install = the same "cloud-like" command
+# documented in docs/cloud-batch.md: the compiled kernels land in site-packages,
+# so /app is not needed at runtime.
 RUN uv venv --python 3.14t /opt/venv \
-    && VIRTUAL_ENV=/opt/venv uv pip install --no-cache -e .
+    && VIRTUAL_ENV=/opt/venv uv pip install --no-cache .
 
 # Baked demo for a zero-data smoke test.
 RUN mkdir -p /demo && cp -r /app/test_data/test_cavity /demo/test_cavity
 
+# GIL left at its default (enabled). Run with `-e PYTHON_GIL=0` to force it off
+# — see the MEASURED note above before you do.
 ENV PATH=/opt/venv/bin:$PATH \
-    PYTHON_GIL=0 \
     PYTHONUNBUFFERED=1
 VOLUME ["/data"]
 WORKDIR /data

@@ -90,6 +90,10 @@ X11 notes: `run-gui.sh` handles `xhost` and mounts `/tmp/.X11-unix`. On Wayland
 run `xhost +local:root` in an XWayland session; on macOS/Windows use an X
 server (XQuartz / VcXsrv) and set `DISPLAY` accordingly.
 
+**Headless cloud batch:** `Dockerfile.cloud` is a slim, no-GUI, free-threaded
+3.14t image for servers/Cloud Run. See [docs/cloud-batch.md](docs/cloud-batch.md)
+for the one-command install, `openptv2-batch` usage, and measured timings.
+
 ---
 
 ### For Developers (Build from Source)
