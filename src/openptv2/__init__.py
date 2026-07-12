@@ -53,7 +53,7 @@ from .transforms import (
     distorted_to_flat,
 )
 
-__version__ = "0.2.0"
+__version__ = "0.2.1"
 __author__ = "OpenPTV Community"
 __email__ = "openptv@googlegroups.com"
 
