@@ -1113,6 +1113,16 @@ section) or an experiment directory:</p>
 tracking. Output (<code>ptv_is.*</code>, <code>rt_is.*</code>, <code>added.*</code>) is written to the
 experiment's <code>res/</code> directory. The run is verbose by default — per-frame
 correspondences and per-step tracking links/lost are printed to stdout.</p>
+<p><code>--sequence-plugin</code>/<code>--tracking-plugin</code> select an alternate processing
+strategy instead of the core pipeline (<code>default</code>) — for example, an
+image-splitter dataset that multiplexes four views onto one sensor:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>openptv2-batch<span class="w"> </span>/data/exp1/parameters_Run1.yaml<span class="w"> </span><span class="m">1000001</span><span class="w"> </span><span class="m">1000002</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span>--sequence-plugin<span class="w"> </span>splitter_sequence<span class="w"> </span>--tracking-plugin<span class="w"> </span>splitter_tracking
+</span></code></pre></div>
+<p><code>default</code> and every other plugin name go through the same
+<code>openptv2.plugins</code> loader — see <code>src/openptv2/plugins/</code> for the built-ins
+(<code>splitter_sequence</code>/<code>splitter_tracking</code>, <code>contour_sequence</code>,
+<code>rembg_sequence</code>, <code>rembg_contour_sequence</code>) and how to add your own.</p>
 <h2 id="free-threading-314t-measured-not-assumed">Free-threading (3.14t): measured, not assumed<a class="headerlink" href="#free-threading-314t-measured-not-assumed" title="Permanent link">&para;</a></h2>
 <p>The <code>test_cavity</code> demo (4 frames, sequence + tracking) on free-threaded
 3.14.3, compiled Cython + OpenMP:</p>
@@ -1157,17 +1167,26 @@ force <code>PYTHON_GIL=0</code> to experiment; revisit if the algorithms modules
 declare free-threading safety.</p>
 <h2 id="docker">Docker<a class="headerlink" href="#docker" title="Permanent link">&para;</a></h2>
 <p><code>Dockerfile.cloud</code> bakes exactly the install above (free-threaded 3.14t,
-<code>uv pip install .</code>, no GUI) plus the <code>test_cavity</code> demo at <code>/demo/test_cavity</code>:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>docker<span class="w"> </span>build<span class="w"> </span>-f<span class="w"> </span>Dockerfile.cloud<span class="w"> </span>-t<span class="w"> </span>openptv2-cloud<span class="w"> </span>.
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="c1"># zero-data smoke test on the baked demo:</span>
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>openptv2-cloud<span class="w"> </span>sh<span class="w"> </span>-c<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">  </span><span class="s2">&quot;cp -r /demo/test_cavity /tmp/c &amp;&amp; cd /tmp/c &amp;&amp; \</span>
-</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="s2">   openptv2-batch parameters_Run1.yaml 10001 10004&quot;</span>
-</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>
-</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="c1"># your own data (mounted at /data):</span>
-</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>-v<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">:/data&quot;</span><span class="w"> </span>openptv2-cloud<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="w">  </span>openptv2-batch<span class="w"> </span>/data/&lt;exp&gt;/parameters_Run1.yaml<span class="w"> </span>&lt;first&gt;<span class="w"> </span>&lt;last&gt;
+<code>uv pip install .</code>, no GUI) plus two demos: <code>test_cavity</code> at
+<code>/demo/test_cavity</code> (default pipeline) and <code>test_splitter</code> at
+<code>/demo/test_splitter</code> (exercises the built-in splitter plugins, proving
+plugin support ships in this image with no extra data):</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>docker<span class="w"> </span>build<span class="w"> </span>-f<span class="w"> </span>Dockerfile.cloud<span class="w"> </span>-t<span class="w"> </span>openptv2-cloud<span class="w"> </span>.
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="c1"># zero-data smoke test on the baked demo (default pipeline):</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>openptv2-cloud<span class="w"> </span>sh<span class="w"> </span>-c<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">  </span><span class="s2">&quot;cp -r /demo/test_cavity /tmp/c &amp;&amp; cd /tmp/c &amp;&amp; \</span>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="s2">   openptv2-batch parameters_Run1.yaml 10001 10004&quot;</span>
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="c1"># zero-data smoke test of a non-default plugin (image-splitter dataset):</span>
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>openptv2-cloud<span class="w"> </span>sh<span class="w"> </span>-c<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="w">  </span><span class="s2">&quot;cp -r /demo/test_splitter /tmp/s &amp;&amp; cd /tmp/s &amp;&amp; \</span>
+</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="s2">   openptv2-batch parameters_Run1.yaml 1000001 1000002 \</span>
+</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="s2">   --sequence-plugin splitter_sequence --tracking-plugin splitter_tracking&quot;</span>
+</span><span id="__span-4-13"><a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a>
+</span><span id="__span-4-14"><a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a><span class="c1"># your own data (mounted at /data):</span>
+</span><span id="__span-4-15"><a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>-v<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">:/data&quot;</span><span class="w"> </span>openptv2-cloud<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-4-16"><a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a><span class="w">  </span>openptv2-batch<span class="w"> </span>/data/&lt;exp&gt;/parameters_Run1.yaml<span class="w"> </span>&lt;first&gt;<span class="w"> </span>&lt;last&gt;
 </span></code></pre></div>
 <p>The image leaves the GIL enabled by default. Add <code>-e PYTHON_GIL=0</code> to force it
 off (see the table above first).</p>

@@ -1228,11 +1228,12 @@ same particle cloud). Regenerate it any time with:</p>
 </span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>│   └── C001H001S0001000001.tif # the (full 1024×1024) calibration image
 </span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>├── img/                        # raw single-sensor frames, one file per time step
 </span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>│   └── C001H001S000&lt;frame&gt;.tif
-</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>├── plugins/                    # experiment-local sequence/tracker plugins
-</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>│   ├── ext_sequence_splitter.py
-</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>│   └── ext_tracker_splitter.py
-</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>└── res/                        # outputs (rt_is.*, ptv_is.*) are written here
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>└── res/                        # outputs (rt_is.*, ptv_is.*) are written here
 </span></code></pre></div>
+<p>The splitter sequence/tracker plugins are built into <code>openptv2.plugins</code> — no
+<code>plugins/</code> folder is needed in the experiment directory. (An experiment-local
+<code>plugins/</code> dir is still supported as an override for one-off scripts; see
+§6.)</p>
 <p>Even though there are four virtual cameras, there is only <strong>one</strong> raw image series
 in <code>img/</code> and <strong>one</strong> calibration image in <code>cal/</code> — both full 1024×1024. The
 splitter code does the cropping.</p>
@@ -1373,13 +1374,21 @@ orientation) and <code>cam_N.tif.addpar</code> (Brown distortion: k1,k2,k3,p1,p2
 </ul>
 <hr />
 <h2 id="6-the-splitter-plugins">6. The splitter plugins<a class="headerlink" href="#6-the-splitter-plugins" title="Permanent link">&para;</a></h2>
-<p>Splitter behavior lives in two experiment-local plugins in <code>plugins/</code>:</p>
+<p>Splitter behavior lives in two built-in plugins, shipped in
+<code>src/openptv2/plugins/</code>:</p>
 <ul>
-<li><code>ext_sequence_splitter.py</code> — detection + correspondence (the <code>Sequence</code> class,
-  <code>do_sequence()</code>).</li>
-<li><code>ext_tracker_splitter.py</code> — temporal tracking (the <code>Tracking</code> class,
-  <code>do_tracking()</code>).</li>
+<li><code>splitter_sequence.py</code> — detection + correspondence (the <code>Sequence</code> class,
+  <code>do_sequence()</code>). Selected as <code>sequence_plugin="ext_sequence_splitter"</code>
+  below — the legacy name is an alias, resolved by
+  <code>openptv2.plugins.loader.LEGACY_ALIASES</code>.</li>
+<li><code>splitter_tracking.py</code> — temporal tracking (the <code>Tracking</code> class,
+  <code>do_tracking()</code>). Selected as <code>tracking_plugin="ext_tracker_splitter"</code>.</li>
 </ul>
+<p>You do not need to copy these into your experiment folder. If you need a
+one-off variant for a specific dataset, drop a <code>.py</code> file in an
+experiment-local <code>plugins/</code> directory next to the YAML — it is resolved after
+the built-ins, so it can shadow them by using the same name, or add a new
+one.</p>
 <p>The core of the sequence plugin (simplified):</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="n">full_image</span> <span class="o">=</span> <span class="n">imread</span><span class="p">(</span><span class="n">imname</span><span class="p">)</span>                       <span class="c1"># one 1024×1024 frame</span>
 </span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="n">list_of_images</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ptv</span><span class="o">.</span><span class="n">image_split</span><span class="p">(</span><span class="n">full_image</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>  <span class="c1"># -&gt; 4 views</span>
@@ -1405,16 +1414,15 @@ zero, a wrong <code>order</code> is a prime suspect</strong> — the calibration
 describes the wrong quadrant. Try the permutation that matches how your splitter
 routes views to quadrants.</p>
 <h3 id="6b-use-openptv2-imports-not-optv">6b. Use openptv2 imports, not <code>optv</code><a class="headerlink" href="#6b-use-openptv2-imports-not-optv" title="Permanent link">&para;</a></h3>
-<p>The plugins shipped importing from the legacy <code>optv</code> C package. In a pure
-<code>openptv2</code> install they must import from <code>openptv2</code>, otherwise openptv2-detected
-targets are silently fed to optv's C structures and you get <strong>zero
-correspondences</strong>. Ensure the plugin headers read:</p>
+<p>If you write your own plugin (built-in or experiment-local), import from
+<code>openptv2</code>, not the legacy <code>optv</code> C package — mixing them silently feeds
+openptv2-detected targets to optv's C structures and you get <strong>zero
+correspondences</strong>. The built-in <code>splitter_sequence.py</code> / <code>splitter_tracking.py</code>
+already do this; keep new plugin headers consistent:</p>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">openptv2.correspondences</span><span class="w"> </span><span class="kn">import</span> <span class="n">correspondences</span><span class="p">,</span> <span class="n">MatchedCoords</span>
 </span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">openptv2.tracker</span><span class="w"> </span><span class="kn">import</span> <span class="n">default_naming</span><span class="p">,</span> <span class="n">Tracker</span>
 </span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">openptv2.orientation</span><span class="w"> </span><span class="kn">import</span> <span class="n">point_positions</span>
 </span></code></pre></div>
-<p>(The reference <code>ext_sequence_splitter.py</code> has already been migrated; check
-<code>ext_tracker_splitter.py</code> similarly if you copy it into a new experiment.)</p>
 <hr />
 <h2 id="7-running-the-pipeline">7. Running the pipeline<a class="headerlink" href="#7-running-the-pipeline" title="Permanent link">&para;</a></h2>
 <p>Programmatically, via <code>run_batch</code>:</p>

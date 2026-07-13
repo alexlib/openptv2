@@ -690,6 +690,78 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#troubleshooting-windows-installation-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting: Windows Installation Issues
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting: Windows Installation Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#quick-reference-remove-recreate-and-verify-the-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick reference: remove, recreate, and verify the environment
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1-dont-share-a-repo-directory-between-wsl-and-native-windows" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Don't share a repo directory between WSL and native Windows
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-pin-the-python-version-wheels-only-cover-311313" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Pin the Python version — wheels only cover 3.11–3.13
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-uv-venv-doesnt-include-pip-and-uv-runuv-sync-install-the-local-project-not-the-pypi-wheel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. uv venv doesn't include pip — and uv run/uv sync install the local project, not the PyPI wheel
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-powershell-blocks-scriptsactivateps1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. PowerShell blocks Scripts\activate.ps1
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1464,6 +1536,78 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#troubleshooting-windows-installation-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting: Windows Installation Issues
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting: Windows Installation Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#quick-reference-remove-recreate-and-verify-the-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick reference: remove, recreate, and verify the environment
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1-dont-share-a-repo-directory-between-wsl-and-native-windows" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Don't share a repo directory between WSL and native Windows
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-pin-the-python-version-wheels-only-cover-311313" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Pin the Python version — wheels only cover 3.11–3.13
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-uv-venv-doesnt-include-pip-and-uv-runuv-sync-install-the-local-project-not-the-pypi-wheel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. uv venv doesn't include pip — and uv run/uv sync install the local project, not the PyPI wheel
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-powershell-blocks-scriptsactivateps1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. PowerShell blocks Scripts\activate.ps1
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1620,6 +1764,83 @@ The <code>[gui]</code> extra installs Tkinter/ttkbootstrap support, Matplotlib, 
 <h3 id="running-a-core-module-test">Running a Core Module Test<a class="headerlink" href="#running-a-core-module-test" title="Permanent link">&para;</a></h3>
 <p>Ensure the unified APIs are available:
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;from openptv2 import Tracker; print(&#39;OpenPTV2 Unified Tracker API: OK&#39;)&quot;</span>
+</span></code></pre></div></p>
+<hr />
+<h2 id="troubleshooting-windows-installation-issues">Troubleshooting: Windows Installation Issues<a class="headerlink" href="#troubleshooting-windows-installation-issues" title="Permanent link">&para;</a></h2>
+<p>If <code>openptv2.get_runtime_info()</code> reports <code>"compiled": false</code>, or the GUI raises
+<code>OverflowError</code>/<code>RuntimeWarning: overflow encountered...</code> from
+<code>track_kernels_batch.py</code> during detection, you're running the pure-Python
+interpreted fallback instead of the compiled extensions. This is functionally
+correct but much slower, and (on very old NumPy or, before this project's fix,
+NumPy 2.x with dense/bright images) can hit integer-overflow edge cases.</p>
+<h3 id="quick-reference-remove-recreate-and-verify-the-environment">Quick reference: remove, recreate, and verify the environment<a class="headerlink" href="#quick-reference-remove-recreate-and-verify-the-environment" title="Permanent link">&para;</a></h3>
+<p>When in doubt, start clean. These three steps resolve most Windows install
+issues; the numbered sections below explain <em>why</em> each one matters.</p>
+<p><strong>1. Remove the virtual environment</strong> (and any locally-built extensions):
+<div class="language-powershell highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="nb">Remove-Item</span> <span class="n">-Recurse</span> <span class="n">-Force</span> <span class="p">.</span><span class="n">venv</span>
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="nb">Remove-Item</span> <span class="n">-Force</span> <span class="n">src</span><span class="p">\</span><span class="n">openptv2</span><span class="p">\</span><span class="n">algorithms</span><span class="p">\*.</span><span class="n">so</span><span class="p">,</span> <span class="n">src</span><span class="p">\</span><span class="n">openptv2</span><span class="p">\</span><span class="n">algorithms</span><span class="p">\*.</span><span class="n">c</span> <span class="n">-ErrorAction</span> <span class="n">SilentlyContinue</span>
+</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a><span class="nb">Remove-Item</span> <span class="n">-Recurse</span> <span class="n">-Force</span> <span class="n">build</span> <span class="n">-ErrorAction</span> <span class="n">SilentlyContinue</span>
+</span></code></pre></div>
+(Omit the second and third lines if you're not working inside a cloned
+openptv2 checkout — a plain <code>pip install</code>-only setup has no local <code>src/</code> or
+<code>build/</code> to clean up.)</p>
+<p><strong>2. Create a new one</strong>, pinned to a Python version openptv2 has wheels for
+(3.11, 3.12, or 3.13 — see item 2 below for why this matters):
+<div class="language-powershell highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="n">uv</span> <span class="n">venv</span> <span class="p">-</span><span class="n">-python</span> <span class="n">3</span><span class="p">.</span><span class="n">13</span>
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="n">uv</span> <span class="n">pip</span> <span class="n">install</span> <span class="p">-</span><span class="n">-python</span> <span class="p">.</span><span class="n">venv</span><span class="p">\</span><span class="n">Scripts</span><span class="p">\</span><span class="n">python</span><span class="p">.</span><span class="n">exe</span> <span class="s2">&quot;openptv2[gui]&quot;</span>
+</span></code></pre></div></p>
+<p><strong>3. Test whether you got the compiled extensions or the interpreted fallback</strong>:
+<div class="language-powershell highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="p">.</span><span class="n">venv</span><span class="p">\</span><span class="n">Scripts</span><span class="p">\</span><span class="n">python</span><span class="p">.</span><span class="n">exe</span> <span class="n">-c</span> <span class="s2">&quot;import openptv2; print(openptv2.get_runtime_info())&quot;</span>
+</span></code></pre></div>
+<div class="language-json highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="p">{</span><span class="nt">&quot;engine&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;cython3-pure-python&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;compiled&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;package&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;openptv2&quot;</span><span class="p">}</span>
+</span></code></pre></div>
+<code>"compiled": true</code> means you're running the fast, pre-compiled <code>.pyd</code>
+extensions. <code>"compiled": false</code> means something below is still going wrong —
+work through the numbered sections in order.</p>
+<h3 id="1-dont-share-a-repo-directory-between-wsl-and-native-windows">1. Don't share a repo directory between WSL and native Windows<a class="headerlink" href="#1-dont-share-a-repo-directory-between-wsl-and-native-windows" title="Permanent link">&para;</a></h3>
+<p>If you <code>git clone</code>d (or otherwise use) the same folder from <strong>both</strong> WSL and a
+native Windows shell — e.g. editing/running it via <code>/mnt/c/Users/you/openptv2</code>
+in WSL and <code>C:\Users\you\openptv2</code> in PowerShell, which are the same
+filesystem path — a <code>.venv</code> or compiled <code>.so</code>/<code>.pyd</code> files built from one side
+are incompatible with the other and will confuse <code>uv</code>/<code>pip</code> on the other side
+(look for <code>pyvenv.cfg</code> inside <code>.venv</code> mentioning a Linux path, or a <code>Scripts/</code>
+folder that's actually missing because a Linux <code>bin/</code>-layout venv is sitting
+there instead). Fix: pick one platform per checkout, or delete and rebuild the
+environment before switching:
+<div class="language-powershell highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="nb">Remove-Item</span> <span class="n">-Recurse</span> <span class="n">-Force</span> <span class="p">.</span><span class="n">venv</span>
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a><span class="nb">Remove-Item</span> <span class="n">-Force</span> <span class="n">src</span><span class="p">\</span><span class="n">openptv2</span><span class="p">\</span><span class="n">algorithms</span><span class="p">\*.</span><span class="n">so</span><span class="p">,</span> <span class="n">src</span><span class="p">\</span><span class="n">openptv2</span><span class="p">\</span><span class="n">algorithms</span><span class="p">\*.</span><span class="n">c</span> <span class="n">-ErrorAction</span> <span class="n">SilentlyContinue</span>
+</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a><span class="nb">Remove-Item</span> <span class="n">-Recurse</span> <span class="n">-Force</span> <span class="n">build</span> <span class="n">-ErrorAction</span> <span class="n">SilentlyContinue</span>
+</span></code></pre></div></p>
+<h3 id="2-pin-the-python-version-wheels-only-cover-311313">2. Pin the Python version — wheels only cover 3.11–3.13<a class="headerlink" href="#2-pin-the-python-version-wheels-only-cover-311313" title="Permanent link">&para;</a></h3>
+<p><code>uv</code> defaults to the newest Python it can find, which may be newer than what
+openptv2 publishes wheels for. If <code>uv venv</code> picks e.g. 3.14, <code>pip install
+openptv2</code> has no wheel to use and silently falls back to building from source
+(needing a local compiler) or to the interpreted <code>.py</code> modules. Pin explicitly:
+<div class="language-powershell highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="n">uv</span> <span class="n">venv</span> <span class="p">-</span><span class="n">-python</span> <span class="n">3</span><span class="p">.</span><span class="n">13</span>
+</span></code></pre></div></p>
+<h3 id="3-uv-venv-doesnt-include-pip-and-uv-runuv-sync-install-the-local-project-not-the-pypi-wheel">3. <code>uv venv</code> doesn't include <code>pip</code> — and <code>uv run</code>/<code>uv sync</code> install the <em>local</em> project, not the PyPI wheel<a class="headerlink" href="#3-uv-venv-doesnt-include-pip-and-uv-runuv-sync-install-the-local-project-not-the-pypi-wheel" title="Permanent link">&para;</a></h3>
+<p>A venv created by <code>uv venv</code> has no <code>pip</code> module (<code>python -m pip install ...</code>
+fails with <code>No module named pip</code>) — use <code>uv pip install --python &lt;path-to-venv-python&gt;
+&lt;package&gt;</code> instead. Also, running <code>uv run</code>/<code>uv sync</code> <strong>inside a cloned
+openptv2 checkout</strong> installs your local source tree (equivalent to <code>pip
+install -e .</code>), which is never pre-compiled automatically — Cython
+compilation is always the separate, manual <code>uv run python setup.py
+build_ext --inplace</code> step (requires Visual Studio Build Tools, "Desktop
+development with C++" workload). To test the actual <strong>published PyPI wheel</strong>
+in isolation, install into a venv <em>outside</em> any openptv2 checkout:
+<div class="language-powershell highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="nb">cd </span><span class="n">C</span><span class="p">:\</span>
+</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a><span class="n">uv</span> <span class="n">venv</span> <span class="p">-</span><span class="n">-python</span> <span class="n">3</span><span class="p">.</span><span class="n">13</span> <span class="n">wheel-test-venv</span>
+</span><span id="__span-23-3"><a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a><span class="n">uv</span> <span class="n">pip</span> <span class="n">install</span> <span class="p">-</span><span class="n">-python</span> <span class="n">wheel-test-venv</span><span class="p">\</span><span class="n">Scripts</span><span class="p">\</span><span class="n">python</span><span class="p">.</span><span class="n">exe</span> <span class="s2">&quot;openptv2[gui]&quot;</span>
+</span><span id="__span-23-4"><a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a><span class="n">wheel-test-venv</span><span class="p">\</span><span class="n">Scripts</span><span class="p">\</span><span class="n">python</span><span class="p">.</span><span class="n">exe</span> <span class="n">-c</span> <span class="s2">&quot;import openptv2; print(openptv2.get_runtime_info())&quot;</span>
+</span></code></pre></div>
+This should print <code>{"engine": "cython3-pure-python", "compiled": true, ...}</code>
+immediately, with no build step — the wheel ships pre-compiled <code>.pyd</code> files.</p>
+<h3 id="4-powershell-blocks-scriptsactivateps1">4. PowerShell blocks <code>Scripts\activate.ps1</code><a class="headerlink" href="#4-powershell-blocks-scriptsactivateps1" title="Permanent link">&para;</a></h3>
+<p><code>&lt;venv&gt;\Scripts\activate</code> fails with <code>running scripts is disabled on this
+system</code> under PowerShell's default execution policy. Either call the venv's
+<code>python.exe</code> by full path instead of activating (as in the commands above),
+or allow local scripts for your user once:
+<div class="language-powershell highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a><span class="nb">Set-ExecutionPolicy</span> <span class="n">-Scope</span> <span class="n">CurrentUser</span> <span class="n">-ExecutionPolicy</span> <span class="n">RemoteSigned</span>
 </span></code></pre></div></p>
 
 

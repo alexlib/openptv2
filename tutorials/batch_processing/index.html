@@ -1381,55 +1381,63 @@
 <li><code>sequence</code>: Runs the sequence loop only (preprocessing, detection, and stereo-correspondence), writing output files into <code>res/rt_is.&lt;frame&gt;</code>.</li>
 <li><code>tracking</code>: Runs the tracking engine only, using pre-existing 3D correspondence files (<code>res/rt_is.&lt;frame&gt;</code>) and 2D target files (<code>img/cam*.&lt;frame&gt;_targets</code>).</li>
 <li><code>--track3d</code>: Enables 3D segment tracking instead of standard epipolar tracking.</li>
+<li><code>--sequence-plugin &lt;name&gt;</code> / <code>--tracking-plugin &lt;name&gt;</code>: Use an alternate
+  processing strategy instead of the core pipeline (<code>default</code>) — for example
+  an image-splitter dataset:
+  <div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>uv<span class="w"> </span>run<span class="w"> </span>openptv2-batch<span class="w"> </span>test_data/test_splitter<span class="w"> </span><span class="m">1000001</span><span class="w"> </span><span class="m">1000002</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span>--sequence-plugin<span class="w"> </span>splitter_sequence<span class="w"> </span>--tracking-plugin<span class="w"> </span>splitter_tracking
+</span></code></pre></div>
+  See the <a href="../plugins/">Plugins tutorial</a> for the full list of built-ins and
+  how to write your own.</li>
 </ul>
 <hr />
 <h2 id="guided-walkthrough-cavity-flow-dataset">Guided Walkthrough: Cavity Flow Dataset<a class="headerlink" href="#guided-walkthrough-cavity-flow-dataset" title="Permanent link">&para;</a></h2>
 <p>Let's walk through how to run batch tracking on the <code>test_cavity</code> dataset located in <code>test_data/test_cavity</code>.</p>
 <h3 id="1-identifying-the-frame-range">1. Identifying the Frame Range<a class="headerlink" href="#1-identifying-the-frame-range" title="Permanent link">&para;</a></h3>
 <p>First, check the sequence parameters configured for the dataset. Viewing <code>test_data/test_cavity/parameters/sequence.par</code> or <code>test_data/test_cavity/parameters_Run1.yaml</code> reveals:
-<div class="language-yaml highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nt">sequence</span><span class="p">:</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span><span class="nt">first</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10001</span>
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">  </span><span class="nt">last</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10004</span>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nt">sequence</span><span class="p">:</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span><span class="nt">first</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10001</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">  </span><span class="nt">last</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10004</span>
 </span></code></pre></div>
 Our sequence spans from frame <strong>10001</strong> to <strong>10004</strong>.</p>
 <h3 id="2-standard-tracking-mode-mode-tracking">2. Standard Tracking Mode (<code>--mode tracking</code>)<a class="headerlink" href="#2-standard-tracking-mode-mode-tracking" title="Permanent link">&para;</a></h3>
 <p>Experimental PTV datasets often contain fine-tuned 2D target and 3D correspondence files generated or corrected manually. When you have high-quality pre-existing <code>rt_is</code> correspondence files and wish to run/re-run only the tracking step, use <code>--mode tracking</code>.</p>
 <p>Let's clean and restore the original <code>test_cavity</code> sequence data, then run the tracking batch processor:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># Clean up any previously generated targets and results</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>rm<span class="w"> </span>-rf<span class="w"> </span>test_data/test_cavity/img<span class="w"> </span>test_data/test_cavity/res
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="c1"># Restore original targets and correspondence files</span>
-</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>cp<span class="w"> </span>-rf<span class="w"> </span>test_data/test_cavity/img_orig<span class="w"> </span>test_data/test_cavity/img
-</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>cp<span class="w"> </span>-rf<span class="w"> </span>test_data/test_cavity/res_orig<span class="w"> </span>test_data/test_cavity/res
-</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>
-</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="c1"># Run the batch tracker</span>
-</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>uv<span class="w"> </span>run<span class="w"> </span>openptv2-batch<span class="w"> </span>test_data/test_cavity<span class="w"> </span><span class="m">10001</span><span class="w"> </span><span class="m">10004</span><span class="w"> </span>--mode<span class="w"> </span>tracking
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># Clean up any previously generated targets and results</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>rm<span class="w"> </span>-rf<span class="w"> </span>test_data/test_cavity/img<span class="w"> </span>test_data/test_cavity/res
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="c1"># Restore original targets and correspondence files</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>cp<span class="w"> </span>-rf<span class="w"> </span>test_data/test_cavity/img_orig<span class="w"> </span>test_data/test_cavity/img
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>cp<span class="w"> </span>-rf<span class="w"> </span>test_data/test_cavity/res_orig<span class="w"> </span>test_data/test_cavity/res
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="c1"># Run the batch tracker</span>
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>uv<span class="w"> </span>run<span class="w"> </span>openptv2-batch<span class="w"> </span>test_data/test_cavity<span class="w"> </span><span class="m">10001</span><span class="w"> </span><span class="m">10004</span><span class="w"> </span>--mode<span class="w"> </span>tracking
 </span></code></pre></div>
 <h4 id="expected-output">Expected Output:<a class="headerlink" href="#expected-output" title="Permanent link">&para;</a></h4>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>Starting batch processing
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>Using tracking engine: cython3-pure-python
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>Directory provided. Selected parameter file: /home/user/Documents/GitHub/openptv2/test_data/test_cavity/parameters_Run1.yaml
-</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>Starting batch processing with YAML file: /home/user/Documents/GitHub/openptv2/test_data/test_cavity/parameters_Run1.yaml
-</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>Frame range: 10001 to 10004
-</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>Repetitions: 1
-</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>Experiment directory: /home/user/Documents/GitHub/openptv2/test_data/test_cavity
-</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>
-</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>Loaded calibration for camera 1 from cal/cam1.tif.ori
-</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>Loaded calibration for camera 2 from cal/cam2.tif.ori
-</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>Loaded calibration for camera 3 from cal/cam3.tif.ori
-</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a>Loaded calibration for camera 4 from cal/cam4.tif.ori
-</span><span id="__span-4-13"><a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a>
-</span><span id="__span-4-14"><a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a>Initializing tracker only (skipping sequence)...
-</span><span id="__span-4-15"><a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a>Initializing Tracker with parameters:
-</span><span id="__span-4-16"><a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a>[ENGINE] Using single Cython 3 tracker runtime
-</span><span id="__span-4-17"><a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a>Running Standard Epipolar Tracking only...
-</span><span id="__span-4-18"><a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a>step: 10001, curr: 672, next: 699, links: 447, lost: 225, add: 0
-</span><span id="__span-4-19"><a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a>step: 10002, curr: 699, next: 711, links: 492, lost: 207, add: 0
-</span><span id="__span-4-20"><a id="__codelineno-4-20" name="__codelineno-4-20" href="#__codelineno-4-20"></a>step: 10003, curr: 711, next: 692, links: 439, lost: 272, add: 0
-</span><span id="__span-4-21"><a id="__codelineno-4-21" name="__codelineno-4-21" href="#__codelineno-4-21"></a>step: 10004, curr: 692, next: 0, links: 426, lost: 266, add: 0
-</span><span id="__span-4-22"><a id="__codelineno-4-22" name="__codelineno-4-22" href="#__codelineno-4-22"></a>Average over sequence, particles: 924.7, links: 601.3, lost: 323.3
-</span><span id="__span-4-23"><a id="__codelineno-4-23" name="__codelineno-4-23" href="#__codelineno-4-23"></a>Batch processing completed successfully
-</span><span id="__span-4-24"><a id="__codelineno-4-24" name="__codelineno-4-24" href="#__codelineno-4-24"></a>Total processing time: 1.41 seconds
+<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>Starting batch processing
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>Using tracking engine: cython3-pure-python
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>Directory provided. Selected parameter file: /home/user/Documents/GitHub/openptv2/test_data/test_cavity/parameters_Run1.yaml
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>Starting batch processing with YAML file: /home/user/Documents/GitHub/openptv2/test_data/test_cavity/parameters_Run1.yaml
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>Frame range: 10001 to 10004
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>Repetitions: 1
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>Experiment directory: /home/user/Documents/GitHub/openptv2/test_data/test_cavity
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>
+</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>Loaded calibration for camera 1 from cal/cam1.tif.ori
+</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>Loaded calibration for camera 2 from cal/cam2.tif.ori
+</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>Loaded calibration for camera 3 from cal/cam3.tif.ori
+</span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a>Loaded calibration for camera 4 from cal/cam4.tif.ori
+</span><span id="__span-5-13"><a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a>
+</span><span id="__span-5-14"><a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a>Initializing tracker only (skipping sequence)...
+</span><span id="__span-5-15"><a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a>Initializing Tracker with parameters:
+</span><span id="__span-5-16"><a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a>[ENGINE] Using single Cython 3 tracker runtime
+</span><span id="__span-5-17"><a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a>Running Standard Epipolar Tracking only...
+</span><span id="__span-5-18"><a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a>step: 10001, curr: 672, next: 699, links: 447, lost: 225, add: 0
+</span><span id="__span-5-19"><a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a>step: 10002, curr: 699, next: 711, links: 492, lost: 207, add: 0
+</span><span id="__span-5-20"><a id="__codelineno-5-20" name="__codelineno-5-20" href="#__codelineno-5-20"></a>step: 10003, curr: 711, next: 692, links: 439, lost: 272, add: 0
+</span><span id="__span-5-21"><a id="__codelineno-5-21" name="__codelineno-5-21" href="#__codelineno-5-21"></a>step: 10004, curr: 692, next: 0, links: 426, lost: 266, add: 0
+</span><span id="__span-5-22"><a id="__codelineno-5-22" name="__codelineno-5-22" href="#__codelineno-5-22"></a>Average over sequence, particles: 924.7, links: 601.3, lost: 323.3
+</span><span id="__span-5-23"><a id="__codelineno-5-23" name="__codelineno-5-23" href="#__codelineno-5-23"></a>Batch processing completed successfully
+</span><span id="__span-5-24"><a id="__codelineno-5-24" name="__codelineno-5-24" href="#__codelineno-5-24"></a>Total processing time: 1.41 seconds
 </span></code></pre></div>
 <p>The output indicates that:
 * At step 10001, out of 672 active particles, <strong>447</strong> successful forward links (trajectories) were established.
@@ -1439,7 +1447,7 @@ Our sequence spans from frame <strong>10001</strong> to <strong>10004</strong>.<
 <hr />
 <h3 id="3-full-pipeline-mode-mode-both">3. Full Pipeline Mode (<code>--mode both</code>)<a class="headerlink" href="#3-full-pipeline-mode-mode-both" title="Permanent link">&para;</a></h3>
 <p>If you want to perform particle detection, stereomatching, and tracking from raw images entirely from scratch:
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>uv<span class="w"> </span>run<span class="w"> </span>openptv2-batch<span class="w"> </span>test_data/test_cavity<span class="w"> </span><span class="m">10001</span><span class="w"> </span><span class="m">10004</span><span class="w"> </span>--mode<span class="w"> </span>both
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>uv<span class="w"> </span>run<span class="w"> </span>openptv2-batch<span class="w"> </span>test_data/test_cavity<span class="w"> </span><span class="m">10001</span><span class="w"> </span><span class="m">10004</span><span class="w"> </span>--mode<span class="w"> </span>both
 </span></code></pre></div></p>
 <blockquote>
 <p>[!IMPORTANT]
