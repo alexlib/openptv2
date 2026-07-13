@@ -616,7 +616,7 @@ def orient(cal_in, cpar, nfix, fix, pix, flags, sigmabeta):
         Array of residuals on success, None on failure.
     """
     from .imgcoord import img_coord_typed
-    from .trafo import pixel_to_metric, correct_brown_affin
+    from .trafo import pixel_to_metric
     from .lsqadj import ata, atl, matinv, matmul
     from .vec_utils import vec_set, unit_vector, vec_norm
 
@@ -674,6 +674,19 @@ def orient(cal_in, cpar, nfix, fix, pix, flags, sigmabeta):
     safety_y = cal.glass_par.vec_y
     safety_z = cal.glass_par.vec_z
 
+    # Column scaling for the radial-distortion terms. The raw k1/k2/k3
+    # design columns are xp*r^2, xp*r^4, xp*r^6 with r in mm, spanning ~6
+    # orders of magnitude across the sensor, which makes the normal
+    # equations ill-conditioned and produces wild, mutually-cancelling
+    # k2/k3. Solving for k_n' = k_n * r_max^(2n) (the fractional distortion
+    # at the sensor half-diagonal) keeps all columns O(xp). Results are
+    # unscaled before being applied, so a well-posed fit is unchanged.
+    r_max_norm = 0.5 * float(np.hypot(cpar.imx * cpar.pix_x, cpar.imy * cpar.pix_y))
+    rscale = np.ones(NPAR)
+    rscale[9] = r_max_norm**2
+    rscale[10] = r_max_norm**4
+    rscale[11] = r_max_norm**6
+
     itnum: cython.int = 0
     stopflag: cython.int = 0
     i: cython.int
@@ -706,18 +719,17 @@ def orient(cal_in, cpar, nfix, fix, pix, flags, sigmabeta):
             x_px = x_val() if callable(x_val) else x_val
             y_val = pix[i].y
             y_px = y_val() if callable(y_val) else y_val
+            # The residual is formed in DISTORTED metric space: the raw
+            # measurement (pixel -> metric) is compared against the fully
+            # distorted model projection (img_coord). Every Jacobian column
+            # below (k1..she analytic, exterior/cc/glass numeric) is a
+            # derivative of the distorted model, so this is the consistent
+            # pairing. The historical liboptv code undistorted the
+            # measurement here (correct_brown_affin), which makes the
+            # residual non-zero at the true parameters, biases fitted
+            # distortion toward half its true value and causes a period-2
+            # oscillation of k1..k3 that prevents convergence.
             xc, yc = pixel_to_metric(x_px, y_px, cpar)
-            xc, yc = correct_brown_affin(
-                xc,
-                yc,
-                cal.added_par.k1,
-                cal.added_par.k2,
-                cal.added_par.k3,
-                cal.added_par.p1,
-                cal.added_par.p2,
-                cal.added_par.scx,
-                cal.added_par.she,
-            )
 
             cal.ext_par.compute_rotation_matrix()
             xp, yp = img_coord_typed(fix[i], cal, cpar.mm)
@@ -841,6 +853,47 @@ def orient(cal_in, cpar, nfix, fix, pix, flags, sigmabeta):
         P[n_obs + 8] = 1 if flags.scxflag else POS_INF
         P[n_obs + 9] = 1 if flags.sheflag else POS_INF
 
+        # scale radial-distortion columns (identity rows included) so the
+        # solved beta[9..11] are in normalized units
+        X[: n_obs + IDT, 9] /= rscale[9]
+        X[: n_obs + IDT, 10] /= rscale[10]
+        X[: n_obs + IDT, 11] /= rscale[11]
+
+        # Prior rows for k1/k2/k3 after column scaling.
+        #
+        # Flag OFF (clamp): rewrite the row in normalized units
+        # (coefficient 1.0, y = 0) so the POS_INF clamp diagonal has the
+        # same magnitude as the other clamp rows — the pivoting-free
+        # matinv cannot cope with clamp diagonals spread over many orders
+        # of magnitude. (A free k1 row is left as-is: reparameterization-
+        # neutral, weight-1 in raw units, which is negligible.)
+        #
+        # Flag ON for k2/k3 (adaptive ridge): the row acts on the
+        # normalized unknown (mm of radial distortion at the sensor
+        # half-diagonal), weighted by the current data residual RMS
+        # against a prior scale of a few pixels, capped at 1. For
+        # well-determined fits the weight is negligible (residual <<
+        # prior scale); it suppresses the near-degenerate k2/k3
+        # cancellation directions that otherwise produce huge
+        # opposite-signed coefficients and a non-monotonic (folding)
+        # distortion model. The cap prevents a self-locking spiral when
+        # genuinely large k2/k3 keep early residuals high.
+        sigma_res = np.sqrt(np.mean(y[:n_obs] ** 2)) if n_obs > 0 else 0.0
+        sigma_prior = 5.0 * cpar.pix_x
+        w_ridge = min((sigma_res / sigma_prior) ** 2, 1.0)
+
+        if not flags.k1flag:
+            X[n_obs + 3, 9] = 1.0
+            y[n_obs + 3] = 0.0
+        X[n_obs + 4, 10] = 1.0
+        y[n_obs + 4] = (ident[4] - cal.added_par.k2) * rscale[10]
+        if flags.k2flag:
+            P[n_obs + 4] = w_ridge
+        X[n_obs + 5, 11] = 1.0
+        y[n_obs + 5] = (ident[5] - cal.added_par.k3) * rscale[11]
+        if flags.k3flag:
+            P[n_obs + 5] = w_ridge
+
         n_obs += IDT
 
         # homogenize
@@ -855,6 +908,12 @@ def orient(cal_in, cpar, nfix, fix, pix, flags, sigmabeta):
         XPX = matinv(XPX, numbers)
         XPy = atl(Xh, yh, n_obs, numbers)
         beta = matmul(XPX, XPy, numbers, numbers)
+
+        # A singular/blown-up solve produces non-finite updates. NaN would
+        # slip through the convergence check below (abs(nan) > tol is
+        # False) and be reported as a "converged" NaN calibration.
+        if not np.all(np.isfinite(beta[:numbers])):
+            return None
 
         # Zero constrained parameters BEFORE convergence check.
         # Otherwise a large computed update to a fixed parameter (e.g. cc
@@ -881,35 +940,38 @@ def orient(cal_in, cpar, nfix, fix, pix, flags, sigmabeta):
         if not flags.sheflag:
             beta[15] = 0.0
 
+        # convert normalized radial updates back to raw parameter units
+        beta_raw = beta[:numbers] / rscale[:numbers]
+
         stopflag = 1
         for i in range(numbers):
-            if abs(beta[i]) > CONVERGENCE:
+            if abs(beta_raw[i]) > CONVERGENCE:
                 stopflag = 0
 
-        cal.ext_par.x0 += beta[0]
-        cal.ext_par.y0 += beta[1]
-        cal.ext_par.z0 += beta[2]
-        cal.ext_par.omega += beta[3]
-        cal.ext_par.phi += beta[4]
-        cal.ext_par.kappa += beta[5]
-        cal.int_par.cc += beta[6]
-        cal.int_par.xh += beta[7]
-        cal.int_par.yh += beta[8]
-        cal.added_par.k1 += beta[9]
-        cal.added_par.k2 += beta[10]
-        cal.added_par.k3 += beta[11]
-        cal.added_par.p1 += beta[12]
-        cal.added_par.p2 += beta[13]
-        cal.added_par.scx += beta[14]
-        cal.added_par.she += beta[15]
+        cal.ext_par.x0 += beta_raw[0]
+        cal.ext_par.y0 += beta_raw[1]
+        cal.ext_par.z0 += beta_raw[2]
+        cal.ext_par.omega += beta_raw[3]
+        cal.ext_par.phi += beta_raw[4]
+        cal.ext_par.kappa += beta_raw[5]
+        cal.int_par.cc += beta_raw[6]
+        cal.int_par.xh += beta_raw[7]
+        cal.int_par.yh += beta_raw[8]
+        cal.added_par.k1 += beta_raw[9]
+        cal.added_par.k2 += beta_raw[10]
+        cal.added_par.k3 += beta_raw[11]
+        cal.added_par.p1 += beta_raw[12]
+        cal.added_par.p2 += beta_raw[13]
+        cal.added_par.scx += beta_raw[14]
+        cal.added_par.she += beta_raw[15]
 
         if flags.interfflag:
-            cal.glass_par.vec_x += e1[0] * nGl * beta[16]
-            cal.glass_par.vec_y += e1[1] * nGl * beta[16]
-            cal.glass_par.vec_z += e1[2] * nGl * beta[16]
-            cal.glass_par.vec_x += e2[0] * nGl * beta[17]
-            cal.glass_par.vec_y += e2[1] * nGl * beta[17]
-            cal.glass_par.vec_z += e2[2] * nGl * beta[17]
+            cal.glass_par.vec_x += e1[0] * nGl * beta_raw[16]
+            cal.glass_par.vec_y += e1[1] * nGl * beta_raw[16]
+            cal.glass_par.vec_z += e1[2] * nGl * beta_raw[16]
+            cal.glass_par.vec_x += e2[0] * nGl * beta_raw[17]
+            cal.glass_par.vec_y += e2[1] * nGl * beta_raw[17]
+            cal.glass_par.vec_z += e2[2] * nGl * beta_raw[17]
 
     # compute residuals
     beta_full = np.zeros(NPAR)
@@ -923,9 +985,53 @@ def orient(cal_in, cpar, nfix, fix, pix, flags, sigmabeta):
 
     sigmabeta[NPAR] = np.sqrt(omega / (n_obs - numbers))
     for i in range(numbers):
-        sigmabeta[i] = sigmabeta[NPAR] * np.sqrt(XPX[i, i])
+        # XPX is in normalized units for the radial columns; report raw
+        sigmabeta[i] = sigmabeta[NPAR] * np.sqrt(XPX[i, i]) / rscale[i]
 
     if stopflag:
+        if flags.k1flag or flags.k2flag or flags.k3flag:
+            from .trafo import radial_distortion_folds
+
+            r_max = 0.5 * float(
+                np.hypot(cpar.imx * cpar.pix_x, cpar.imy * cpar.pix_y)
+            )
+            r_fold = radial_distortion_folds(cal.added_par, r_max)
+            if r_fold is not None:
+                import warnings
+
+                # Staged fallback: refit from the ORIGINAL calibration with
+                # the highest-order free radial term dropped (k3 first,
+                # then k2). cal_in has not been touched yet, so the
+                # recursive call starts from the same state this fit did.
+                if flags.k3flag or flags.k2flag:
+                    flags_retry = copy.deepcopy(flags)
+                    if flags_retry.k3flag:
+                        dropped = "k3"
+                        flags_retry.k3flag = 0
+                    else:
+                        dropped = "k2"
+                        flags_retry.k2flag = 0
+                    warnings.warn(
+                        f"Fitted radial distortion is non-monotonic (folds "
+                        f"at r={r_fold:.2f} mm, sensor half-diagonal "
+                        f"{r_max:.2f} mm): the model is over-fitted. "
+                        f"Refitting with {dropped} disabled.",
+                        RuntimeWarning,
+                        stacklevel=2,
+                    )
+                    return orient(
+                        cal_in, cpar, nfix, fix, pix, flags_retry, sigmabeta
+                    )
+                warnings.warn(
+                    f"Fitted radial distortion is non-monotonic: it folds at "
+                    f"r={r_fold:.2f} mm, inside the sensor (half-diagonal "
+                    f"{r_max:.2f} mm), even with k1 alone. The result will "
+                    "corrupt undistortion and correspondence matching — "
+                    "check the calibration data (target coverage, wrong "
+                    "point correspondences).",
+                    RuntimeWarning,
+                    stacklevel=2,
+                )
         cal.ext_par.compute_rotation_matrix()
         cal_in.ext_par = copy.deepcopy(cal.ext_par)
         cal_in.int_par = copy.deepcopy(cal.int_par)

@@ -42,7 +42,7 @@ criteria:
   cny: 0.02
   corrmin: 33.0
   csumg: 0.02
-  eps0: 0.06
+  eps0: 0.025
 detect_plate:
   gvth_1: 10
   gvth_2: 10
@@ -98,8 +98,8 @@ orient:
   k1: 1
   k2: 0
   k3: 0
-  p1: 0
-  p2: 0
+  p1: 1
+  p2: 1
   pnfo: 0
   scale: 0
   shear: 0
@@ -117,10 +117,10 @@ ptv:
   - cal/cam3.tif
   - cal/cam4.tif
   img_name:
-  - img/cam1.10002
-  - img/cam2.10002
-  - img/cam3.10002
-  - img/cam4.10002
+  - cal/cam1.tif
+  - cal/cam2.tif
+  - cal/cam3.tif
+  - cal/cam4.tif
   imx: 1280
   imy: 1024
   mmp_d: 6.0

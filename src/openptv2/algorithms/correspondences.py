@@ -298,11 +298,11 @@ def match_pairs(
     corr=cython.double,
 )
 def four_camera_matching(
-    p1_arr,
-    n_arr,
-    p2_arr,
-    corr_arr,
-    dist_arr,
+    p1_arr: cython.int[:, :, :],
+    n_arr: cython.int[:, :, :],
+    p2_arr: cython.int[:, :, :, :],
+    corr_arr: cython.double[:, :, :, :],
+    dist_arr: cython.double[:, :, :, :],
     base_target_count: cython.int,
     accept_corr: cython.double,
     scratch_p: cython.int[:, :],
@@ -349,33 +349,34 @@ def four_camera_matching(
             c01: cython.double = c01_i[j]
             d01: cython.double = d01_i[j]
 
+            # Rows depending only on p2 — hoisted out of the k/l loops
+            n_12_p2: cython.int = n_arr[1, 2, p2]
+            n_13_p2: cython.int = n_arr[1, 3, p2]
+            p2_12_p2: cython.int[:] = p2_arr[1, 2, p2]
+            c12_p2: cython.double[:] = corr_arr[1, 2, p2]
+            d12_p2: cython.double[:] = dist_arr[1, 2, p2]
+            p2_13_p2: cython.int[:] = p2_arr[1, 3, p2]
+            c13_p2: cython.double[:] = corr_arr[1, 3, p2]
+            d13_p2: cython.double[:] = dist_arr[1, 3, p2]
+
             for k in range(n_02_i):
                 p3: cython.int = p2_02_i[k]
                 c02: cython.double = c02_i[k]
                 d02: cython.double = d02_i[k]
+
+                # Rows depending only on p3 — hoisted out of the l loop
+                n_23_p3: cython.int = n_arr[2, 3, p3]
+                p2_23_p3: cython.int[:] = p2_arr[2, 3, p3]
+                c23_p3: cython.double[:] = corr_arr[2, 3, p3]
+                d23_p3: cython.double[:] = dist_arr[2, 3, p3]
 
                 for l in range(n_03_i):
                     p4: cython.int = p2_03_i[l]
                     c03: cython.double = c03_i[l]
                     d03: cython.double = d03_i[l]
 
-                    # Pre-compute camera-0 pair sum (always needed)
                     corr_partial: cython.double = c01 + c02 + c03
                     dist_partial: cython.double = d01 + d02 + d03
-
-                    # Slice 1D views for camera-1/2/3 adjacency rows (variable p2, p3)
-                    n_12_p2: cython.int = n_arr[1, 2, p2]
-                    n_13_p2: cython.int = n_arr[1, 3, p2]
-                    n_23_p3: cython.int = n_arr[2, 3, p3]
-                    p2_12_p2: cython.int[:] = p2_arr[1, 2, p2]
-                    c12_p2: cython.double[:] = corr_arr[1, 2, p2]
-                    d12_p2: cython.double[:] = dist_arr[1, 2, p2]
-                    p2_13_p2: cython.int[:] = p2_arr[1, 3, p2]
-                    c13_p2: cython.double[:] = corr_arr[1, 3, p2]
-                    d13_p2: cython.double[:] = dist_arr[1, 3, p2]
-                    p2_23_p3: cython.int[:] = p2_arr[2, 3, p3]
-                    c23_p3: cython.double[:] = corr_arr[2, 3, p3]
-                    d23_p3: cython.double[:] = dist_arr[2, 3, p3]
 
                     for m in range(n_12_p2):
                         p31: cython.int = p2_12_p2[m]
@@ -428,11 +429,11 @@ def four_camera_matching(
     corr=cython.double,
 )
 def three_camera_matching(
-    p1_arr,
-    n_arr,
-    p2_arr,
-    corr_arr,
-    dist_arr,
+    p1_arr: cython.int[:, :, :],
+    n_arr: cython.int[:, :, :],
+    p2_arr: cython.int[:, :, :, :],
+    corr_arr: cython.double[:, :, :, :],
+    dist_arr: cython.double[:, :, :, :],
     num_cams: cython.int,
     target_counts,
     accept_corr: cython.double,
@@ -473,6 +474,12 @@ def three_camera_matching(
                         c_i1i3_i: cython.double[:] = corr_arr[i1, i3, i]
                         d_i1i3_i: cython.double[:] = dist_arr[i1, i3, i]
 
+                        # 1D views for (i2, i3, p2) row — invariant over k
+                        n_i2i3_p2: cython.int = n_arr[i2, i3, p2]
+                        p2_i2i3_p2: cython.int[:] = p2_arr[i2, i3, p2]
+                        c_i2i3_p2: cython.double[:] = corr_arr[i2, i3, p2]
+                        d_i2i3_p2: cython.double[:] = dist_arr[i2, i3, p2]
+
                         for k in range(n_i1i3_i):
                             p3: cython.int = p2_i1i3_i[k]
                             if p3 > NMAX or tusage[i3, p3] > 0:
@@ -482,12 +489,6 @@ def three_camera_matching(
                             d13: cython.double = d_i1i3_i[k]
                             corr_partial: cython.double = c12 + c13
                             dist_partial: cython.double = d12 + d13
-
-                            # 1D views for (i2, i3, p2) row
-                            n_i2i3_p2: cython.int = n_arr[i2, i3, p2]
-                            p2_i2i3_p2: cython.int[:] = p2_arr[i2, i3, p2]
-                            c_i2i3_p2: cython.double[:] = corr_arr[i2, i3, p2]
-                            d_i2i3_p2: cython.double[:] = dist_arr[i2, i3, p2]
 
                             for m_idx in range(n_i2i3_p2):
                                 if p3 != p2_i2i3_p2[m_idx]:
@@ -526,11 +527,11 @@ def three_camera_matching(
     corr=cython.double,
 )
 def consistent_pair_matching(
-    p1_arr,
-    n_arr,
-    p2_arr,
-    corr_arr,
-    dist_arr,
+    p1_arr: cython.int[:, :, :],
+    n_arr: cython.int[:, :, :],
+    p2_arr: cython.int[:, :, :, :],
+    corr_arr: cython.double[:, :, :, :],
+    dist_arr: cython.double[:, :, :, :],
     num_cams: cython.int,
     target_counts,
     accept_corr: cython.double,
@@ -702,6 +703,63 @@ def correct_frame(frm, calib, cpar, tol):
 
 
 # ---------------------------------------------------------------------------
+# Candidate-saturation diagnostics
+# ---------------------------------------------------------------------------
+
+_saturation_warned = False
+
+
+def _warn_candidate_saturation(n_arr, calib, cpar):
+    """Warn once if epipolar candidate lists hit MAXCAND.
+
+    Saturation means some targets collect the maximum number of epipolar
+    candidates, which makes the clique search combinatorially expensive and
+    the matching unreliable. The usual cause is an over-fitted distortion
+    model whose undistortion folds image-edge coordinates on top of the
+    central ones.
+    """
+    global _saturation_warned
+    if _saturation_warned:
+        return
+    n = np.asarray(n_arr)
+    saturated = int((n >= MAXCAND).sum())
+    if saturated == 0:
+        return
+
+    from .trafo import radial_distortion_folds
+
+    r_max = 0.5 * float(np.hypot(cpar.imx * cpar.pix_x, cpar.imy * cpar.pix_y))
+    folding = []
+    for cam, cal in enumerate(calib):
+        r_fold = radial_distortion_folds(cal.added_par, r_max)
+        if r_fold is not None:
+            folding.append(f"cam{cam + 1} (folds at r={r_fold:.2f} mm)")
+
+    msg = (
+        f"{saturated} epipolar candidate lists hit MAXCAND={MAXCAND}; "
+        "correspondence matching will be slow and unreliable. This usually "
+        "indicates an over-fitted distortion model (.addpar)."
+    )
+    if folding:
+        msg += (
+            " Radial distortion is non-monotonic within the sensor "
+            f"(half-diagonal {r_max:.2f} mm) for: {', '.join(folding)}. "
+            "Re-calibrate these cameras with fewer additional parameters "
+            "(e.g. k1 only) or with calibration targets covering the image "
+            "corners."
+        )
+    else:
+        msg += (
+            " Consider re-calibrating with fewer additional parameters or "
+            "reducing the epipolar band width (eps0)."
+        )
+    import warnings
+
+    warnings.warn(msg, RuntimeWarning, stacklevel=3)
+    _saturation_warned = True
+
+
+# ---------------------------------------------------------------------------
 # Main correspondence pipeline
 # ---------------------------------------------------------------------------
 
@@ -750,6 +808,7 @@ def correspondences(frm, corrected, vpar, cpar, calib):
     match_pairs(
         p1_arr, n_arr, p2_arr, corr_arr, dist_arr, corrected, frm, vpar, cpar, calib
     )
+    _warn_candidate_saturation(n_arr, calib, cpar)
 
     # 4-camera cliques
     if num_cams == 4:

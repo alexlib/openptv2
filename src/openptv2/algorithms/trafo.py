@@ -788,6 +788,45 @@ def dist_to_flat(
     return _out_mv[0], _out_mv[1]
 
 
+def radial_distortion_folds(added_par, r_max: cython.double):
+    """Return the radius where the Brown radial mapping stops being invertible.
+
+    The distorted radius is r * (1 + k1 r^2 + k2 r^4 + k3 r^6); the mapping
+    is invertible only while its derivative 1 + 3 k1 r^2 + 5 k2 r^4 + 7 k3 r^6
+    stays positive. A model that folds within the sensor collapses edge
+    coordinates onto central ones, breaking undistortion and correspondence
+    matching.
+
+    Args:
+        added_par: ap_52 with k1, k2, k3.
+        r_max: largest radius to check [mm], typically the sensor
+            half-diagonal.
+
+    Returns:
+        The smallest r in (0, r_max] where the derivative is <= 0, or None
+        if the mapping is monotone over the whole range. Non-finite
+        coefficients are reported as folding at r=0 (the model is invalid
+        everywhere).
+    """
+    if not (
+        np.isfinite(added_par.k1)
+        and np.isfinite(added_par.k2)
+        and np.isfinite(added_par.k3)
+    ):
+        return 0.0
+    r2 = np.linspace(0.0, r_max, 200) ** 2
+    deriv = (
+        1.0
+        + 3.0 * added_par.k1 * r2
+        + 5.0 * added_par.k2 * r2**2
+        + 7.0 * added_par.k3 * r2**3
+    )
+    bad = np.nonzero(deriv <= 0.0)[0]
+    if bad.size == 0:
+        return None
+    return float(np.sqrt(r2[bad[0]]))
+
+
 def is_compiled() -> bool:
     """Return whether this module is compiled to C."""
     return cython.compiled

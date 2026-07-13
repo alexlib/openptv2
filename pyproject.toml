@@ -62,6 +62,7 @@ gui = [
     "matplotlib>=3.7.0",
     "pandas>=2.0.0",
     "flowtracks>=0.3.0",
+    "imagecodecs>=2023.1.23",
 ]
 # Background-removal preprocessing (openptv2.plugins.rembg_sequence /
 # rembg_contour_sequence). Not a core dependency: pulls in onnxruntime and
