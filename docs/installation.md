@@ -175,3 +175,104 @@ Ensure the unified APIs are available:
 ```bash
 uv run python -c "from openptv2 import Tracker; print('OpenPTV2 Unified Tracker API: OK')"
 ```
+
+---
+
+## Troubleshooting: Windows Installation Issues
+
+If `openptv2.get_runtime_info()` reports `"compiled": false`, or the GUI raises
+`OverflowError`/`RuntimeWarning: overflow encountered...` from
+`track_kernels_batch.py` during detection, you're running the pure-Python
+interpreted fallback instead of the compiled extensions. This is functionally
+correct but much slower, and (on very old NumPy or, before this project's fix,
+NumPy 2.x with dense/bright images) can hit integer-overflow edge cases.
+
+### Quick reference: remove, recreate, and verify the environment
+
+When in doubt, start clean. These three steps resolve most Windows install
+issues; the numbered sections below explain *why* each one matters.
+
+**1. Remove the virtual environment** (and any locally-built extensions):
+```powershell
+Remove-Item -Recurse -Force .venv
+Remove-Item -Force src\openptv2\algorithms\*.so, src\openptv2\algorithms\*.c -ErrorAction SilentlyContinue
+Remove-Item -Recurse -Force build -ErrorAction SilentlyContinue
+```
+(Omit the second and third lines if you're not working inside a cloned
+openptv2 checkout — a plain `pip install`-only setup has no local `src/` or
+`build/` to clean up.)
+
+**2. Create a new one**, pinned to a Python version openptv2 has wheels for
+(3.11, 3.12, or 3.13 — see item 2 below for why this matters):
+```powershell
+uv venv --python 3.13
+uv pip install --python .venv\Scripts\python.exe "openptv2[gui]"
+```
+
+**3. Test whether you got the compiled extensions or the interpreted fallback**:
+```powershell
+.venv\Scripts\python.exe -c "import openptv2; print(openptv2.get_runtime_info())"
+```
+```json
+{"engine": "cython3-pure-python", "compiled": true, "package": "openptv2"}
+```
+`"compiled": true` means you're running the fast, pre-compiled `.pyd`
+extensions. `"compiled": false` means something below is still going wrong —
+work through the numbered sections in order.
+
+### 1. Don't share a repo directory between WSL and native Windows
+
+If you `git clone`d (or otherwise use) the same folder from **both** WSL and a
+native Windows shell — e.g. editing/running it via `/mnt/c/Users/you/openptv2`
+in WSL and `C:\Users\you\openptv2` in PowerShell, which are the same
+filesystem path — a `.venv` or compiled `.so`/`.pyd` files built from one side
+are incompatible with the other and will confuse `uv`/`pip` on the other side
+(look for `pyvenv.cfg` inside `.venv` mentioning a Linux path, or a `Scripts/`
+folder that's actually missing because a Linux `bin/`-layout venv is sitting
+there instead). Fix: pick one platform per checkout, or delete and rebuild the
+environment before switching:
+```powershell
+Remove-Item -Recurse -Force .venv
+Remove-Item -Force src\openptv2\algorithms\*.so, src\openptv2\algorithms\*.c -ErrorAction SilentlyContinue
+Remove-Item -Recurse -Force build -ErrorAction SilentlyContinue
+```
+
+### 2. Pin the Python version — wheels only cover 3.11–3.13
+
+`uv` defaults to the newest Python it can find, which may be newer than what
+openptv2 publishes wheels for. If `uv venv` picks e.g. 3.14, `pip install
+openptv2` has no wheel to use and silently falls back to building from source
+(needing a local compiler) or to the interpreted `.py` modules. Pin explicitly:
+```powershell
+uv venv --python 3.13
+```
+
+### 3. `uv venv` doesn't include `pip` — and `uv run`/`uv sync` install the *local* project, not the PyPI wheel
+
+A venv created by `uv venv` has no `pip` module (`python -m pip install ...`
+fails with `No module named pip`) — use `uv pip install --python <path-to-venv-python>
+<package>` instead. Also, running `uv run`/`uv sync` **inside a cloned
+openptv2 checkout** installs your local source tree (equivalent to `pip
+install -e .`), which is never pre-compiled automatically — Cython
+compilation is always the separate, manual `uv run python setup.py
+build_ext --inplace` step (requires Visual Studio Build Tools, "Desktop
+development with C++" workload). To test the actual **published PyPI wheel**
+in isolation, install into a venv *outside* any openptv2 checkout:
+```powershell
+cd C:\
+uv venv --python 3.13 wheel-test-venv
+uv pip install --python wheel-test-venv\Scripts\python.exe "openptv2[gui]"
+wheel-test-venv\Scripts\python.exe -c "import openptv2; print(openptv2.get_runtime_info())"
+```
+This should print `{"engine": "cython3-pure-python", "compiled": true, ...}`
+immediately, with no build step — the wheel ships pre-compiled `.pyd` files.
+
+### 4. PowerShell blocks `Scripts\activate.ps1`
+
+`<venv>\Scripts\activate` fails with `running scripts is disabled on this
+system` under PowerShell's default execution policy. Either call the venv's
+`python.exe` by full path instead of activating (as in the commands above),
+or allow local scripts for your user once:
+```powershell
+Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+```

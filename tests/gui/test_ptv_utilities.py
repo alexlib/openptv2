@@ -253,101 +253,64 @@ class TestPyDeterminationProcC:
 
 
 class TestRunSequencePlugin:
-    """Test run_sequence_plugin function"""
+    """Test run_sequence_plugin function.
 
-    @patch("openptv2.gui.ptv.os.listdir")
-    @patch("openptv2.gui.ptv.os.getcwd")
-    def test_run_sequence_plugin_empty_dir(self, mock_getcwd, mock_listdir):
-        """Test sequence plugin with empty plugin directory"""
-        from unittest.mock import Mock
-        import tempfile
-        import os
+    run_sequence_plugin/run_tracking_plugin in ptv.py are thin wrappers around
+    openptv2.plugins.run_sequence_plugin/run_tracking_plugin (built-ins ->
+    entry points -> experiment-local plugins/ dir). Unlike the old cwd/os.listdir
+    implementation, an unresolved plugin now raises PluginError explicitly
+    rather than silently doing nothing.
+    """
 
-        # Create a mock experiment object with plugin system
+    def test_run_sequence_plugin_unknown_name_raises(self, tmp_path, monkeypatch):
+        """An unresolved sequence plugin name raises PluginError, not a silent no-op."""
+        from openptv2.plugins import PluginError
+
         exp = Mock()
         exp.plugins = Mock()
-        exp.plugins.sequence_alg = "test_plugin"
+        exp.plugins.sequence_alg = "does_not_exist"
 
-        # Mock an empty plugin directory
-        with tempfile.TemporaryDirectory() as temp_dir:
-            # Create the plugins subdirectory
-            plugins_dir = os.path.join(temp_dir, "plugins")
-            os.makedirs(plugins_dir, exist_ok=True)
-
-            mock_getcwd.return_value = temp_dir
-            mock_listdir.return_value = []  # Empty directory
-
-            # Should handle gracefully when no plugins found
+        monkeypatch.chdir(tmp_path)
+        with pytest.raises(PluginError):
             run_sequence_plugin(exp)
 
-    def test_run_sequence_plugin_no_plugin_error(self):
-        """Test sequence plugin with missing plugin directory - expect error"""
-        import tempfile
-        import os
+    def test_run_sequence_plugin_no_plugin_error(self, tmp_path, monkeypatch):
+        """Same as above with no plugins/ dir present at all — still raises."""
+        from openptv2.plugins import PluginError
 
         exp = Mock()
         exp.plugins = Mock()
         exp.plugins.sequence_alg = "nonexistent"
 
-        # Create a temporary directory without plugins subdirectory to ensure clean test
-        with tempfile.TemporaryDirectory() as temp_dir:
-            original_cwd = os.getcwd()
-            try:
-                os.chdir(temp_dir)
-                # Should raise FileNotFoundError when plugin directory doesn't exist
-                with pytest.raises(FileNotFoundError):
-                    run_sequence_plugin(exp)
-            finally:
-                os.chdir(original_cwd)
+        monkeypatch.chdir(tmp_path)
+        with pytest.raises(PluginError):
+            run_sequence_plugin(exp)
 
 
 class TestRunTrackingPlugin:
-    """Test run_tracking_plugin function"""
+    """Test run_tracking_plugin function (see TestRunSequencePlugin docstring)."""
 
-    @patch("openptv2.gui.ptv.os.listdir")
-    @patch("openptv2.gui.ptv.os.getcwd")
-    def test_run_tracking_plugin_empty_dir(self, mock_getcwd, mock_listdir):
-        """Test tracking plugin with empty plugin directory"""
-        from unittest.mock import Mock
-        import tempfile
-        import os
+    def test_run_tracking_plugin_unknown_name_raises(self, tmp_path, monkeypatch):
+        from openptv2.plugins import PluginError
 
-        # Create a mock experiment object with plugin system
         exp = Mock()
         exp.plugins = Mock()
-        exp.plugins.track_alg = "test_tracker"
+        exp.plugins.track_alg = "does_not_exist"
 
-        # Mock an empty plugin directory
-        with tempfile.TemporaryDirectory() as temp_dir:
-            # Create the plugins subdirectory
-            plugins_dir = os.path.join(temp_dir, "plugins")
-            os.makedirs(plugins_dir, exist_ok=True)
-
-            mock_getcwd.return_value = temp_dir
-            mock_listdir.return_value = []  # Empty directory
-
-            # Should handle gracefully when no plugins found
+        monkeypatch.chdir(tmp_path)
+        with pytest.raises(PluginError):
             run_tracking_plugin(exp)
 
-    def test_run_tracking_plugin_no_plugin_error(self):
-        """Test tracking plugin with missing plugin directory - expect error"""
-        import tempfile
-        import os
+    def test_run_tracking_plugin_no_plugin_error(self, tmp_path, monkeypatch):
+        from openptv2.plugins import PluginError
 
         exp = Mock()
         exp.plugins = Mock()
         exp.plugins.track_alg = "nonexistent"
 
-        # Create a temporary directory without plugins subdirectory to ensure clean test
-        with tempfile.TemporaryDirectory() as temp_dir:
-            original_cwd = os.getcwd()
-            try:
-                os.chdir(temp_dir)
-                # Should raise FileNotFoundError when plugin directory doesn't exist
-                with pytest.raises(FileNotFoundError):
-                    run_tracking_plugin(exp)
-            finally:
-                os.chdir(original_cwd)
+        monkeypatch.chdir(tmp_path)
+        with pytest.raises(PluginError):
+            run_tracking_plugin(exp)
 
 
 class TestPySequenceLoop:

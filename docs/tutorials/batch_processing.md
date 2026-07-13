@@ -36,6 +36,15 @@ uv run openptv2-batch <experiment_directory_or_yaml> <first_frame> <last_frame> 
   * `sequence`: Runs the sequence loop only (preprocessing, detection, and stereo-correspondence), writing output files into `res/rt_is.<frame>`.
   * `tracking`: Runs the tracking engine only, using pre-existing 3D correspondence files (`res/rt_is.<frame>`) and 2D target files (`img/cam*.<frame>_targets`).
 * `--track3d`: Enables 3D segment tracking instead of standard epipolar tracking.
+* `--sequence-plugin <name>` / `--tracking-plugin <name>`: Use an alternate
+  processing strategy instead of the core pipeline (`default`) — for example
+  an image-splitter dataset:
+  ```bash
+  uv run openptv2-batch test_data/test_splitter 1000001 1000002 \
+    --sequence-plugin splitter_sequence --tracking-plugin splitter_tracking
+  ```
+  See the [Plugins tutorial](plugins.md) for the full list of built-ins and
+  how to write your own.
 
 ---
 

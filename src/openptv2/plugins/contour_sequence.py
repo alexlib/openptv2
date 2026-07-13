@@ -1,18 +1,14 @@
+from pathlib import Path
 
 import numpy as np
 from imageio.v3 import imread, imwrite
-from pathlib import Path
+from skimage import filters, img_as_ubyte, measure, morphology
+from skimage.color import label2rgb, rgb2gray
+from skimage.morphology import binary_dilation, binary_erosion, disk
 
-from skimage import img_as_ubyte
-from skimage import filters, measure, morphology
-from skimage.color import rgb2gray, label2rgb
-from skimage.morphology import binary_erosion, binary_dilation, disk
-
-from optv.correspondences import correspondences, MatchedCoords
-from optv.tracker import default_naming
-from optv.orientation import point_positions
-
-import matplotlib.pyplot as plt
+from openptv2.correspondences import MatchedCoords, correspondences
+from openptv2.orientation import point_positions
+from openptv2.tracker import default_naming
 
 
 def mask_image(imname: Path, display: bool = False) -> np.ndarray:
@@ -40,83 +36,65 @@ def mask_image(imname: Path, display: bool = False) -> np.ndarray:
     smoothed_frame = filters.gaussian(img, sigma=5)
 
     if display:
+        import matplotlib.pyplot as plt
+
         plt.figure()
         plt.imshow(smoothed_frame)
         plt.show()
 
     # Apply Otsu's thresholding method to segment the object
     thresh = filters.threshold_otsu(smoothed_frame)
-    # print('Threshold:', thresh)
     binary_frame = smoothed_frame > 1.1 * thresh
 
     if display:
+        import matplotlib.pyplot as plt
+
         plt.figure()
         plt.imshow(binary_frame)
         plt.show()
 
-    # binary_frame_cleared = clear_border(binary_frame, buffer_size=20)
     binary_frame_cleared = binary_frame.copy()
-
-    # plt.figure()
-    # plt.imshow(binary_frame_cleared)
-    # plt.show()
 
     # Remove small bright objects
     cleaned_frame = morphology.remove_small_objects(
         binary_frame_cleared, min_size=100000
     )
 
-    # %%
     # Apply morphological closing to close the boundary
     closed_cleaned_frame = binary_dilation(cleaned_frame, disk(21))
     closed_cleaned_frame = binary_erosion(closed_cleaned_frame, disk(21))
 
     if display:
-        # Display the result
+        import matplotlib.pyplot as plt
+
         plt.figure()
         plt.imshow(closed_cleaned_frame, cmap="gray")
         plt.title("Closed Boundary of Cleaned Frame")
         plt.show()
 
-    # check the size of the second largest black hole
-    # labeled_frame = measure.label(~closed_cleaned_frame)
-    # regions = measure.regionprops(labeled_frame)
-    # areas = np.array([r.area for r in regions])
-    # area_to_remove = np.sort(areas)[-2] # 2nd largest, 1st is the surrounding
-
-    # %%
     # Fill holes inside the binary frame to remove large black objects
     filled_frame = morphology.remove_small_holes(
         closed_cleaned_frame, area_threshold=2e6
     )
 
     if display:
-        # # Display the result
+        import matplotlib.pyplot as plt
+
         plt.figure()
         plt.imshow(filled_frame, cmap="gray")
         plt.title("Binary Frame with Large Black Objects Removed")
         plt.show()
 
-    # %%
-
-    # # Remove small objects and clear the border
-    # cleaned_frame = morphology.remove_small_objects(binary_frame, min_size=100000)
-    # # Fill holes inside the binary frame to remove dark islands
-    # filled_frame = morphology.remove_small_holes(cleaned_frame, area_threshold=100000)
-
-    # filled_frame = clear_border(filled_frame)
-
     # Label the segmented regions
     labeled_frame = measure.label(filled_frame)
 
     if display:
-        # Show the labeled filled frame as a color labeled image
+        import matplotlib.pyplot as plt
+
         plt.figure()
         plt.imshow(label2rgb(labeled_frame, image=img, bg_label=0))
         plt.title("Color Labeled Frame with Filled Holes")
         plt.show()
-
-    # %%
 
     # Find region properties
     regions = measure.regionprops(labeled_frame)
@@ -135,7 +113,8 @@ def mask_image(imname: Path, display: bool = False) -> np.ndarray:
     smooth_contour_image[minr:maxr, minc:maxc] = smooth_contour
 
     if display:
-        # Display the smooth contour on the labeled image
+        import matplotlib.pyplot as plt
+
         plt.figure()
         plt.imshow(labeled_frame, cmap="jet")
         plt.contour(smooth_contour_image, colors="red", linewidths=2)
@@ -146,14 +125,13 @@ def mask_image(imname: Path, display: bool = False) -> np.ndarray:
     bw_image = np.zeros_like(labeled_frame, dtype=bool)
     bw_image[largest_region.coords[:, 0], largest_region.coords[:, 1]] = True
 
-    # plt.figure(), plt.imshow(bw_image, cmap='gray')
-
     # Apply morphological closing to remove sharp spikes
     closed_image = binary_dilation(bw_image, disk(21))
     closed_image = binary_erosion(closed_image, disk(21))
 
     if display:
-        # Display the result
+        import matplotlib.pyplot as plt
+
         plt.figure()
         plt.imshow(closed_image, cmap="gray")
         plt.title("Smooth Boundary without Sharp Spikes")
@@ -174,6 +152,8 @@ def mask_image(imname: Path, display: bool = False) -> np.ndarray:
     masked_image[closed_image] = img[closed_image]
 
     if display:
+        import matplotlib.pyplot as plt
+
         plt.figure()
         plt.imshow(masked_image)
         plt.show()
@@ -182,14 +162,11 @@ def mask_image(imname: Path, display: bool = False) -> np.ndarray:
 
 
 class Sequence:
-    """Sequence class defines external tracking addon for pyptv
-    User needs to implement the following functions:
-            do_sequence(self)
+    """Sequence plugin that masks each frame to its largest smooth contour
+    before detection and correspondence.
 
-    Connection to C ptv module is given via self.ptv and provided by pyptv software
-    Connection to active parameters is given via self.exp1 and provided by pyptv software.
-
-    User responsibility is to read necessary files, make the calculations and write the files back.
+    Connection to the ptv module is given via ``self.ptv`` and connection to
+    the active experiment via ``self.exp``, both injected by the loader.
     """
 
     def __init__(self, ptv=None, exp=None):
@@ -197,12 +174,6 @@ class Sequence:
         self.exp = exp
 
     def do_sequence(self):
-        """Copy of the sequence loop with one change we call everything as
-        self.ptv instead of ptv.
-
-        """
-        # Sequence parameters
-
         num_cams, cpar, spar, vpar, tpar, cals = (
             self.exp.num_cams,
             self.exp.cpar,
@@ -212,31 +183,17 @@ class Sequence:
             self.exp.cals,
         )
 
-        # # Sequence parameters
-        # spar = SequenceParams(num_cams=num_cams)
-        # spar.read_sequence_par(b"parameters/sequence.par", num_cams)
-
-        # sequence loop for all frames
         first_frame = spar.get_first()
         last_frame = spar.get_last()
         print(f" From {first_frame = } to {last_frame = }")
 
         for frame in range(first_frame, last_frame + 1):
-            # print(f"processing {frame = }")
-
             detections = []
             corrected = []
             for i_cam in range(num_cams):
                 base_image_name = spar.get_img_base_name(i_cam).decode()
                 imname = Path(base_image_name % frame)  # works with jumps from 1 to 10
                 masked_image = mask_image(imname)
-
-                # img = imread(imname)
-                # if img.ndim > 2:
-                #     img = rgb2gray(img)
-
-                # if img.dtype != np.uint8:
-                #     img = img_as_ubyte(img)
 
                 high_pass = self.ptv.simple_highpass(masked_image, cpar)
                 targs = self.ptv.target_recognition(high_pass, tpar, i_cam, cpar)
@@ -247,19 +204,14 @@ class Sequence:
                 pos, _ = masked_coords.as_arrays()
                 corrected.append(masked_coords)
 
-            #        if any([len(det) == 0 for det in detections]):
-            #            return False
-
             # Corresp. + positions.
             sorted_pos, sorted_corresp, _ = correspondences(
                 detections, corrected, cals, vpar, cpar
             )
 
             # Save targets only after they've been modified:
-            # this is a workaround of the proper way to construct _targets name
             for i_cam in range(num_cams):
                 base_name = spar.get_img_base_name(i_cam).decode()
-                # base_name = replace_format_specifiers(base_name) # %d to %04d
                 self.ptv.write_targets(detections[i_cam], base_name, frame)
 
             print(
@@ -278,10 +230,6 @@ class Sequence:
                 [corrected[i].get_by_pnrs(sorted_corresp[i]) for i in range(len(cals))]
             )
             pos, _ = point_positions(flat.transpose(1, 0, 2), cpar, cals, vpar)
-
-            # if len(cals) == 1: # single camera case
-            #     sorted_corresp = np.tile(sorted_corresp,(4,1))
-            #     sorted_corresp[1:,:] = -1
 
             if len(cals) < 4:
                 print_corresp = -1 * np.ones((4, sorted_corresp.shape[1]))

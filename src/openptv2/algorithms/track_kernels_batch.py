@@ -263,7 +263,7 @@ def targ_rec_fast(
     with cython.nogil:
         for i in range(ymin, ymax):
             for j in range(xmin, xmax):
-                gv = img[i, j]
+                gv = int(img[i, j])
                 if gv <= gvthres:
                     continue
 
@@ -305,7 +305,7 @@ def targ_rec_fast(
                     head += 1
                     if head >= queue_size:
                         head = 0
-                    gvref = img[wi, wj]
+                    gvref = int(img[wi, wj])
 
                     for d in range(4):
                         xn4 = wj + dx4[d]
@@ -314,7 +314,7 @@ def targ_rec_fast(
                         if xn4 < xmin or xn4 >= xmax or yn4 < ymin or yn4 >= ymax:
                             continue
 
-                        gv4 = img0[yn4, xn4]
+                        gv4 = int(img0[yn4, xn4])
                         if (
                             gv4 > gvthres
                             and gv4 <= gvref + discont

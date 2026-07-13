@@ -15,8 +15,9 @@ src/openptv2/
 │   ├── compat/             # Backward-compatibility API adapters
 │   └── *.py                # 18 compiled/interpreted math modules
 ├── gui/                    # Desktop GUI (flat namespace, no nested 'pyptv' subfolder)
-│   ├── plugins/            # GUI plugins
 │   └── *.py                # Main GUI window, parameters, and interactive panels
+├── plugins/                # Sequence/tracking plugins (default + built-ins);
+│   └── *.py                # not GUI-specific — used by GUI and batch alike
 └── batch/                  # Command-line batch execution & parallel wrappers
     └── *.py                # pyptv_batch.py, pyptv_batch_parallel.py, etc.
 ```

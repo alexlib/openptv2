@@ -1,20 +1,18 @@
-from pathlib import Path
-from optv.tracker import Tracker, default_naming
 import sys
+from pathlib import Path
+
+from openptv2.tracker import Tracker, default_naming
+
 
 class Tracking:
-    """Tracking class defines external tracking addon for pyptv
-    User needs to implement the following functions:
-            do_tracking(self)
-            do_back_tracking(self)
-    Connection to C ptv module is given via self.ptv and provided by pyptv software
-    Connection to active parameters is given via self.exp1 and provided by pyptv software.
-    User responsibility is to read necessary files, make the calculations and write the files back.
+    """Tracking plugin for four-view-splitter cameras: runs the standard
+    forward tracker against the short (splitter-derived) target file bases.
+
+    Connection to the ptv module is given via ``self.ptv`` and connection to
+    the active experiment via ``self.exp``, both injected by the loader.
     """
 
     def __init__(self, ptv=None, exp=None):
-        if ptv is None:
-            from pyptv import ptv
         self.ptv = ptv
         self.exp = exp
 
@@ -23,23 +21,17 @@ class Tracking:
         print("inside plugin tracker")
         sys.stdout.flush()
 
-        # Safety check
         if self.exp is None:
             print("Error: No experiment object available")
             sys.stdout.flush()
             return
 
-
         print(f"Number of cameras: {self.exp.cpar.get_num_cams()}")
         sys.stdout.flush()
 
-
-        # img_base_names = [self.exp.spar.get_img_base_name(i) for i in range(self.exp.cpar.get_num_cams())]
-        # self.exp.short_file_bases = self.exp.target_filenames
-
         for cam_id, short_name in enumerate(self.exp.target_filenames):
-            # print(f"Setting tracker image base name for cam {cam_id+1}: {Path(short_name).resolve()}")
-            self.exp.spar.set_img_base_name(cam_id, str(Path(short_name).resolve())+'.')
+            resolved = str(Path(short_name).resolve()) + "."
+            self.exp.spar.set_img_base_name(cam_id, resolved)
 
         try:
             tracker = Tracker(
@@ -48,9 +40,12 @@ class Tracking:
                 self.exp.track_par,
                 self.exp.spar,
                 self.exp.cals,
-                default_naming
+                default_naming,
             )
-            
+            # Side effect required for GUI "Track back"/postprocessing, which
+            # reads mainGui.tracker after a forward-tracking run.
+            self.exp.tracker = tracker
+
             tracker.full_forward()
         except Exception as e:
             print(f"Error during tracking: {e}")
@@ -60,12 +55,11 @@ class Tracking:
     def do_back_tracking(self):
         """this function is callback for "tracking back" """
         print("inside custom back tracking")
-        
-        # Safety check
+
         if self.exp is None:
             print("Error: No experiment object available")
             return
-            
+
         # Implement back tracking logic here
         # This is a placeholder - actual back tracking implementation would go here
         print("Back tracking functionality not yet implemented")

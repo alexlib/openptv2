@@ -128,8 +128,10 @@ def test_tracking_parameters_in_batch_run():
     with tempfile.TemporaryDirectory() as temp_dir:
         temp_test_path = Path(temp_dir) / "test_splitter"
         shutil.copytree(test_path, temp_test_path)
-        # Print contents of temp_test_path to verify required directories and files
-        required_items = ["img", "cal", "plugins", "res", "parameters_Run1.yaml"]
+        # Print contents of temp_test_path to verify required directories and files.
+        # Splitter plugins are built into openptv2.plugins now, not shipped
+        # per-experiment, so no "plugins" dir is expected here.
+        required_items = ["img", "cal", "res", "parameters_Run1.yaml"]
         actual_items = [item.name for item in temp_test_path.iterdir()]
         print(f"Contents of temp_test_path: {actual_items}")
         for req in required_items:

@@ -12,6 +12,8 @@ Welcome to the openptv2 documentation.
 
 ### User Documentation
 
+- [Command-Line Batch Processing](tutorials/batch_processing.md) - Running `openptv2-batch` headlessly
+- [Sequence & Tracking Plugins](tutorials/plugins.md) - Built-in plugins, selecting one, writing your own
 - [Tracking Visualization](tutorials/tracking_visualization.md) - Preview tracking results
 - [Tracking Debug Visualization](tutorials/tracking_debug_visualization.md) - Debug tracking parameters interactively
 - [Running Tests](tests.md) - Command-line test suite, excluding slow tests, running native C and virtual wheel pipelines

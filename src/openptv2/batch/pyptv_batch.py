@@ -21,13 +21,11 @@ Example:
     >>> main("tests/test_cavity/parameters_Run1.yaml", 10000, 10004)
 """
 
-from pathlib import Path
 import os
 import sys
 import time
+from pathlib import Path
 from typing import Union
-
-
 
 
 class ProcessingError(Exception):
@@ -57,7 +55,7 @@ def validate_experiment_setup(yaml_file: Path) -> Path:
     if not yaml_file.is_file():
         raise ProcessingError(f"Path is not a file: {yaml_file}")
 
-    if not yaml_file.suffix.lower() in [".yaml", ".yml"]:
+    if yaml_file.suffix.lower() not in [".yaml", ".yml"]:
         raise ProcessingError(f"File must have .yaml or .yml extension: {yaml_file}")
 
     # Get experiment directory (parent of YAML file)
@@ -82,7 +80,13 @@ def validate_experiment_setup(yaml_file: Path) -> Path:
 
 
 def run_batch(
-    yaml_file: Path, seq_first: int, seq_last: int, mode: str = "both", track3d: bool = False
+    yaml_file: Path,
+    seq_first: int,
+    seq_last: int,
+    mode: str = "both",
+    track3d: bool = False,
+    sequence_plugin: str = "default",
+    tracking_plugin: str = "default",
 ) -> None:
     """Run batch processing for a sequence of frames.
 
@@ -90,7 +94,10 @@ def run_batch(
         seq_first: First frame number in the sequence
         seq_last: Last frame number in the sequence
         yaml_file: Path to the YAML parameter file
-        track3d: Whether to use 3D segment tracking
+        track3d: Whether to use 3D segment tracking (only affects the
+            "default" tracking plugin; see openptv2.plugins.default_tracking)
+        sequence_plugin: Sequence plugin name (default: the core pipeline)
+        tracking_plugin: Tracking plugin name (default: the core pipeline)
 
     Raises:
         ProcessingError: If processing fails
@@ -117,12 +124,7 @@ def run_batch(
         experiment.pm.from_yaml(yaml_file)
 
         print(f"Initializing processing with num_cams = {experiment.pm.num_cams}")
-        from openptv2.gui.ptv import (
-            py_start_proc_c,
-            py_trackcorr_init,
-            py_sequence_loop,
-            py_sequence_loop_python,
-        )
+        from openptv2.gui.ptv import py_start_proc_c
         cpar, spar, vpar, track_par, tpar, cals, epar = py_start_proc_c(experiment.pm)
 
         # Set sequence parameters
@@ -153,42 +155,27 @@ def run_batch(
 
         # Centralized: get target_filenames from ParameterManager
         proc_exp.target_filenames = experiment.pm.get_target_filenames()
+        if track3d:
+            proc_exp.track3d = True
 
-        seq_loop = py_sequence_loop
-        print("[ENGINE] Using single Cython 3 sequence loop")
+        # default_naming (res/rt_is, res/ptv_is, res/added) is relative to
+        # cwd and used by every sequence/tracking plugin, so the output
+        # directory must exist before any of them run.
+        Path("res").mkdir(exist_ok=True)
 
-        # Determine if we should use 3D segment tracking
-        yaml_track_mode = experiment.pm.parameters.get("track", {}).get("track_mode", 0)
-        use_3d = track3d or (yaml_track_mode == 1)
+        from openptv2.plugins import run_sequence_plugin, run_tracking_plugin
 
-        # Run processing according to mode
-        if mode == "both":
-            print("Running sequence loop...")
-            seq_loop(proc_exp)
-            print("Initializing tracker...")
-            tracker = py_trackcorr_init(proc_exp)
-            if use_3d:
-                print("Running 3D Segment Tracking...")
-                tracker.full_forward_3d()
-            else:
-                print("Running Standard Epipolar Tracking...")
-                tracker.full_forward()
-        elif mode == "sequence":
-            print("Running sequence loop only...")
-            seq_loop(proc_exp)
-        elif mode == "tracking":
-            print("Initializing tracker only (skipping sequence)...")
-            tracker = py_trackcorr_init(proc_exp)
-            if use_3d:
-                print("Running 3D Segment Tracking only...")
-                tracker.full_forward_3d()
-            else:
-                print("Running Standard Epipolar Tracking only...")
-                tracker.full_forward()
-        else:
+        plugins_dir = exp_path / "plugins"
+        if mode not in ("both", "sequence", "tracking"):
             raise ProcessingError(
                 f"Unknown mode: {mode}. Use 'both', 'sequence', or 'tracking'."
             )
+        if mode in ("both", "sequence"):
+            print(f"Running sequence plugin: {sequence_plugin}")
+            run_sequence_plugin(sequence_plugin, proc_exp, plugins_dir)
+        if mode in ("both", "tracking"):
+            print(f"Running tracking plugin: {tracking_plugin}")
+            run_tracking_plugin(tracking_plugin, proc_exp, plugins_dir)
 
         print("Batch processing completed successfully")
 
@@ -208,6 +195,8 @@ def main(
     repetitions: int = 1,
     mode: str = "both",
     track3d: bool = False,
+    sequence_plugin: str = "default",
+    tracking_plugin: str = "default",
 ) -> None:
     """Run PyPTV batch processing.
 
@@ -218,6 +207,8 @@ def main(
         repetitions: Number of times to repeat the processing (default: 1)
         mode: Which steps to run: both (default), sequence, or tracking
         track3d: Whether to use 3D segment tracking
+        sequence_plugin: Sequence plugin name (default: the core pipeline)
+        tracking_plugin: Tracking plugin name (default: the core pipeline)
 
     Raises:
         ProcessingError: If processing fails
@@ -261,7 +252,15 @@ def main(
         for i in range(repetitions):
             if repetitions > 1:
                 print(f"Starting repetition {i + 1} of {repetitions}")
-            run_batch(yaml_file, seq_first, seq_last, mode=mode, track3d=track3d)
+            run_batch(
+                yaml_file,
+                seq_first,
+                seq_last,
+                mode=mode,
+                track3d=track3d,
+                sequence_plugin=sequence_plugin,
+                tracking_plugin=tracking_plugin,
+            )
         elapsed_time = time.time() - start_time
         print(f"Total processing time: {elapsed_time:.2f} seconds")
 
@@ -273,11 +272,14 @@ def main(
         raise ProcessingError(f"Unexpected error: {e}")
 
 
-def parse_command_line_args(args_list=None) -> tuple[Path, int, int, str]:
+def parse_command_line_args(
+    args_list=None,
+) -> tuple[Path, int, int, str, bool, str, str]:
     """Parse and validate command line arguments.
 
     Returns:
-        Tuple of (yaml_file_path, first_frame, last_frame, mode)
+        Tuple of (yaml_file_path, first_frame, last_frame, mode, track3d,
+        sequence_plugin, tracking_plugin)
 
     Raises:
         ValueError: If arguments are invalid
@@ -321,6 +323,16 @@ def parse_command_line_args(args_list=None) -> tuple[Path, int, int, str]:
         "--track3d",
         action="store_true",
         help="Use 3D segment tracking instead of standard tracking",
+    )
+    parser.add_argument(
+        "--sequence-plugin",
+        default="default",
+        help="Sequence plugin name (default: the core pipeline)",
+    )
+    parser.add_argument(
+        "--tracking-plugin",
+        default="default",
+        help="Tracking plugin name (default: the core pipeline)",
     )
     parser.add_argument(
         "--debug-mode",
@@ -378,8 +390,18 @@ def parse_command_line_args(args_list=None) -> tuple[Path, int, int, str]:
 
     mode = args.mode
     track3d = args.track3d
+    sequence_plugin = args.sequence_plugin
+    tracking_plugin = args.tracking_plugin
 
-    return yaml_file, first_frame, last_frame, mode, track3d
+    return (
+        yaml_file,
+        first_frame,
+        last_frame,
+        mode,
+        track3d,
+        sequence_plugin,
+        tracking_plugin,
+    )
 
 
 def main_cli() -> None:
@@ -388,8 +410,24 @@ def main_cli() -> None:
         print("Starting batch processing")
         print(f"Command line arguments: {sys.argv}")
 
-        yaml_file, first_frame, last_frame, mode, track3d = parse_command_line_args()
-        main(yaml_file, first_frame, last_frame, mode=mode, track3d=track3d)
+        (
+            yaml_file,
+            first_frame,
+            last_frame,
+            mode,
+            track3d,
+            sequence_plugin,
+            tracking_plugin,
+        ) = parse_command_line_args()
+        main(
+            yaml_file,
+            first_frame,
+            last_frame,
+            mode=mode,
+            track3d=track3d,
+            sequence_plugin=sequence_plugin,
+            tracking_plugin=tracking_plugin,
+        )
 
         print("Batch processing completed successfully")
 

@@ -1,7 +1,6 @@
 import os
 import copy
 import sys
-import json
 import yaml
 from pathlib import Path
 import numpy as np
@@ -394,6 +393,16 @@ class CameraWindow(HasTraits):
 # ------------------------------------------
 
 
+def _plugin_error_message(kind: str, name: str, exc: Exception) -> str:
+    """Turn a plugin failure into an actionable dialog message."""
+    if isinstance(exc, ImportError) and "rembg" in str(exc):
+        return (
+            f"{name!r} requires the optional 'rembg' package.\n"
+            f"Install with: pip install openptv2[rembg]"
+        )
+    return f"{kind.capitalize()} plugin {name!r} failed:\n{exc}"
+
+
 class TreeMenuHandler(Handler):
     """TreeMenuHandler handles the menu actions and tree node actions"""
 
@@ -755,43 +764,35 @@ class TreeMenuHandler(Handler):
         detection_gui.configure_traits()
 
     def sequence_action(self, info):
-        """sequence action - implements binding to C sequence function"""
+        """sequence action - implements binding to the sequence plugin
+        selected in mainGui.plugins.sequence_alg ("default" runs the core
+        pipeline, via the same loader as any other plugin)."""
         mainGui = info.object
-
-        extern_sequence = mainGui.plugins.sequence_alg
-        if extern_sequence != "default":
+        try:
             ptv.run_sequence_plugin(mainGui)
-        else:
-            ptv.py_sequence_loop(mainGui)
+        except Exception as e:
+            from pyface.api import warning
+
+            warning(
+                info.ui.control,
+                _plugin_error_message("sequence", mainGui.plugins.sequence_alg, e),
+            )
 
     def track_no_disp_action(self, info):
-        """track_no_disp_action uses ptv.py_trackcorr_loop(..) binding"""
-        import contextlib
-        import io
-
+        """track_no_disp_action - implements binding to the tracking plugin
+        selected in mainGui.plugins.track_alg ("default" runs the core
+        pipeline, via the same loader as any other plugin)."""
         mainGui = info.object
-
-        extern_tracker = mainGui.plugins.track_alg
-        if extern_tracker != "default":
-            # If plugin is a batch script, run as subprocess and capture output
-            # plugin_script = getattr(mainGui.plugins, 'tracking_plugin_script', None)
-            # if plugin_script:
-            #     cmd = [sys.executable, plugin_script]  # Add args as needed
-            #     self.run_subprocess_and_capture(cmd, mainGui, description="Tracking plugin")
-            # else:
+        try:
             ptv.run_tracking_plugin(mainGui)
-            print("After plugin tracker")
-        else:
-            print("Using default liboptv tracker")
-            mainGui.tracker = ptv.py_trackcorr_init(mainGui)
-            track_mode = mainGui.exp1.pm.parameters.get('track', {}).get('track_mode', 0)
-            if track_mode == 1:
-                print("Running 3D Segment Tracking...")
-                mainGui.tracker.full_forward_3d()
-            else:
-                print("Running Standard Epipolar Tracking...")
-                mainGui.tracker.full_forward()
             print("tracking without display finished")
+        except Exception as e:
+            from pyface.api import warning
+
+            warning(
+                info.ui.control,
+                _plugin_error_message("tracking", mainGui.plugins.track_alg, e),
+            )
 
     def track_disp_action(self, info):
         """tracking with display - not implemented"""
@@ -1192,86 +1193,68 @@ class Plugins(HasTraits):
         self.read()
 
     def read(self):
-        """Read plugin configuration from experiment parameters (YAML) with fallback to plugins.json"""
-        if self.experiment is not None:
-            # Primary source: YAML parameters
-            plugins_params = self.experiment.get_parameter("plugins")
-            if plugins_params is not None:
-                try:
-                    track_options = plugins_params.get(
-                        "available_tracking", ["default"]
-                    )
-                    seq_options = plugins_params.get("available_sequence", ["default"])
+        """Rescan available plugins from disk every time this is called
+        (built-ins + entry points + the experiment-local plugins/ dir), so a
+        plugin file dropped in while the GUI is open shows up immediately —
+        no experiment reload required. Restores the previously-saved
+        selection if it's still available, otherwise falls back to
+        "default" explicitly (not options[0] — sorted order is not
+        "default"-first)."""
+        from openptv2.plugins import discover_available_plugins
 
-                    self.add_trait("track_alg", Enum(*track_options))
-                    self.add_trait("sequence_alg", Enum(*seq_options))
+        pm = getattr(self.experiment, "pm", None)
+        yaml_path = getattr(pm, "yaml_path", None) if pm is not None else None
 
-                    # Set selected algorithms from YAML
-                    self.track_alg = plugins_params.get(
-                        "selected_tracking", track_options[0]
-                    )
-                    self.sequence_alg = plugins_params.get(
-                        "selected_sequence", seq_options[0]
-                    )
-
-                    print(
-                        f"Loaded plugins from YAML: tracking={self.track_alg}, sequence={self.sequence_alg}"
-                    )
-                    return
-
-                except Exception as e:
-                    print(f"Error reading plugins from YAML: {e}")
-
-        # Fallback to plugins.json for backward compatibility
-        self._read_from_json()
-
-    def _read_from_json(self):
-        """Fallback method to read from plugins.json"""
-        config_file = Path.cwd() / "plugins.json"
-
-        if config_file.exists():
-            try:
-                with open(config_file, "r") as f:
-                    config = json.load(f)
-
-                track_options = config.get("tracking", ["default"])
-                seq_options = config.get("sequence", ["default"])
-
-                self.add_trait("track_alg", Enum(*track_options))
-                self.add_trait("sequence_alg", Enum(*seq_options))
-
-                self.track_alg = track_options[0]
-                self.sequence_alg = seq_options[0]
-
-                print(
-                    f"Loaded plugins from plugins.json: tracking={self.track_alg}, sequence={self.sequence_alg}"
-                )
-
-            except (json.JSONDecodeError, KeyError) as e:
-                print(f"Error reading plugins.json: {e}")
-                self._set_defaults()
+        if yaml_path is not None:
+            discovered = discover_available_plugins(Path(yaml_path).parent / "plugins")
         else:
-            print("No plugins.json found, using defaults")
-            self._set_defaults()
+            discovered = discover_available_plugins(None)
+
+        track_options = discovered["available_tracking"]
+        seq_options = discovered["available_sequence"]
+
+        saved = pm.parameters.get("plugins", {}) if pm is not None else {}
+        selected_tracking = saved.get("selected_tracking", "default")
+        selected_sequence = saved.get("selected_sequence", "default")
+        if selected_tracking not in track_options:
+            print(
+                f"Warning: previously selected tracking plugin {selected_tracking!r} "
+                "no longer available; using 'default'"
+            )
+            selected_tracking = "default"
+        if selected_sequence not in seq_options:
+            print(
+                f"Warning: previously selected sequence plugin {selected_sequence!r} "
+                "no longer available; using 'default'"
+            )
+            selected_sequence = "default"
+
+        self.add_trait("track_alg", Enum(*track_options))
+        self.add_trait("sequence_alg", Enum(*seq_options))
+        self.track_alg = selected_tracking
+        self.sequence_alg = selected_sequence
+
+        print(
+            f"Available plugins: tracking={track_options}, sequence={seq_options}"
+        )
+        print(
+            f"Selected plugins: tracking={self.track_alg}, sequence={self.sequence_alg}"
+        )
 
     def save(self):
-        """Save plugin selections back to experiment parameters"""
-        if self.experiment is not None:
-            plugins_params = self.experiment.get_parameter("plugins", {})
-            plugins_params["selected_tracking"] = self.track_alg
-            plugins_params["selected_sequence"] = self.sequence_alg
-
-            # Update the parameter manager
-            self.experiment.pm.parameters["plugins"] = plugins_params
-            print(
-                f"Saved plugin selections: tracking={self.track_alg}, sequence={self.sequence_alg}"
-            )
-
-    def _set_defaults(self):
-        self.add_trait("track_alg", Enum("default"))
-        self.add_trait("sequence_alg", Enum("default"))
-        self.track_alg = "default"
-        self.sequence_alg = "default"
+        """Persist the selection into pm.parameters (in-memory); the caller
+        is responsible for exp1.save_active() if it wants this on disk."""
+        pm = getattr(self.experiment, "pm", None)
+        if pm is None:
+            return
+        plugins_params = dict(pm.parameters.get("plugins", {}))
+        plugins_params["selected_tracking"] = self.track_alg
+        plugins_params["selected_sequence"] = self.sequence_alg
+        pm.parameters["plugins"] = plugins_params
+        print(
+            f"Saved plugin selections: tracking={self.track_alg}, "
+            f"sequence={self.sequence_alg}"
+        )
 
 
 # ----------------------------------------------

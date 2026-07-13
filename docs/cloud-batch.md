@@ -40,6 +40,20 @@ tracking. Output (`ptv_is.*`, `rt_is.*`, `added.*`) is written to the
 experiment's `res/` directory. The run is verbose by default — per-frame
 correspondences and per-step tracking links/lost are printed to stdout.
 
+`--sequence-plugin`/`--tracking-plugin` select an alternate processing
+strategy instead of the core pipeline (`default`) — for example, an
+image-splitter dataset that multiplexes four views onto one sensor:
+
+```bash
+openptv2-batch /data/exp1/parameters_Run1.yaml 1000001 1000002 \
+  --sequence-plugin splitter_sequence --tracking-plugin splitter_tracking
+```
+
+`default` and every other plugin name go through the same
+`openptv2.plugins` loader — see `src/openptv2/plugins/` for the built-ins
+(`splitter_sequence`/`splitter_tracking`, `contour_sequence`,
+`rembg_sequence`, `rembg_contour_sequence`) and how to add your own.
+
 ## Free-threading (3.14t): measured, not assumed
 
 The `test_cavity` demo (4 frames, sequence + tracking) on free-threaded
@@ -69,15 +83,24 @@ declare free-threading safety.
 ## Docker
 
 `Dockerfile.cloud` bakes exactly the install above (free-threaded 3.14t,
-`uv pip install .`, no GUI) plus the `test_cavity` demo at `/demo/test_cavity`:
+`uv pip install .`, no GUI) plus two demos: `test_cavity` at
+`/demo/test_cavity` (default pipeline) and `test_splitter` at
+`/demo/test_splitter` (exercises the built-in splitter plugins, proving
+plugin support ships in this image with no extra data):
 
 ```bash
 docker build -f Dockerfile.cloud -t openptv2-cloud .
 
-# zero-data smoke test on the baked demo:
+# zero-data smoke test on the baked demo (default pipeline):
 docker run --rm openptv2-cloud sh -c \
   "cp -r /demo/test_cavity /tmp/c && cd /tmp/c && \
    openptv2-batch parameters_Run1.yaml 10001 10004"
+
+# zero-data smoke test of a non-default plugin (image-splitter dataset):
+docker run --rm openptv2-cloud sh -c \
+  "cp -r /demo/test_splitter /tmp/s && cd /tmp/s && \
+   openptv2-batch parameters_Run1.yaml 1000001 1000002 \
+   --sequence-plugin splitter_sequence --tracking-plugin splitter_tracking"
 
 # your own data (mounted at /data):
 docker run --rm -v "$PWD:/data" openptv2-cloud \

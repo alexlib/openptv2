@@ -1,32 +1,15 @@
-import yaml
 from pathlib import Path
+
+import yaml
+
+from openptv2.plugins import discover_available_plugins as scan_plugins_dir
+
 from . import legacy_parameters as legacy_params
 from .parameter_models import AllParams
 
 
-def scan_plugins_dir(plugins_dir) -> dict:
-    """Scan a plugins directory; return plugins info dict. Works if dir is missing."""
-    plugins_dir = Path(plugins_dir)
-    available_tracking = ["default"]
-    available_sequence = ["default"]
-    if plugins_dir.exists() and plugins_dir.is_dir():
-        for entry in plugins_dir.iterdir():
-            if entry.is_file() and entry.suffix == ".py":
-                name = entry.stem
-                if "sequence" in name:
-                    available_sequence.append(name)
-                if "track" in name or "tracker" in name:
-                    available_tracking.append(name)
-    return {
-        "available_tracking": sorted(available_tracking),
-        "available_sequence": sorted(available_sequence),
-        "selected_tracking": "default",
-        "selected_sequence": "default",
-    }
-
-
 class ParameterManager:
-    
+
     def get_target_filenames(self):
         """Return the list of target_filenames for the current experiment, based on YAML parameters and splitter mode."""
         seq_params = self.parameters.get('sequence')
@@ -42,8 +25,8 @@ class ParameterManager:
         # Non-splitter: one base_name per camera
         else:
             return [Path(bn).parent / f'cam{i+1}' for i, bn in enumerate(base_names)]
-        
-    
+
+
     def __init__(self):
         self.parameters = {}
         self.num_cams = 0
@@ -189,7 +172,7 @@ class ParameterManager:
         if hasattr(self, 'plugins_info'):
             out['plugins'] = self.plugins_info
         out.update(filtered_params)
-        
+
         def convert(obj):
             if isinstance(obj, dict):
                 return {k: convert(v) for k, v in obj.items()}
@@ -199,9 +182,9 @@ class ParameterManager:
                 return str(obj)
             else:
                 return obj
-            
+
         data = convert(out)
-        
+
         # import traceback
 
         with file_path.open('w') as f:
@@ -287,7 +270,7 @@ class ParameterManager:
 
     def get_n_cam(self):
         return self.num_cams
-    
+
     def get_parameter(self, name):
         """Get a specific parameter by name, returning None if not found."""
         parameter = self.parameters.get(name, None)

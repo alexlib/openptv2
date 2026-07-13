@@ -62,11 +62,13 @@ test_data/test_splitter/
 │   └── C001H001S0001000001.tif # the (full 1024×1024) calibration image
 ├── img/                        # raw single-sensor frames, one file per time step
 │   └── C001H001S000<frame>.tif
-├── plugins/                    # experiment-local sequence/tracker plugins
-│   ├── ext_sequence_splitter.py
-│   └── ext_tracker_splitter.py
 └── res/                        # outputs (rt_is.*, ptv_is.*) are written here
 ```
+
+The splitter sequence/tracker plugins are built into `openptv2.plugins` — no
+`plugins/` folder is needed in the experiment directory. (An experiment-local
+`plugins/` dir is still supported as an override for one-off scripts; see
+§6.)
 
 Even though there are four virtual cameras, there is only **one** raw image series
 in `img/` and **one** calibration image in `cal/` — both full 1024×1024. The
@@ -234,12 +236,21 @@ Workflow to produce them:
 
 ## 6. The splitter plugins
 
-Splitter behavior lives in two experiment-local plugins in `plugins/`:
+Splitter behavior lives in two built-in plugins, shipped in
+`src/openptv2/plugins/`:
 
-- `ext_sequence_splitter.py` — detection + correspondence (the `Sequence` class,
-  `do_sequence()`).
-- `ext_tracker_splitter.py` — temporal tracking (the `Tracking` class,
-  `do_tracking()`).
+- `splitter_sequence.py` — detection + correspondence (the `Sequence` class,
+  `do_sequence()`). Selected as `sequence_plugin="ext_sequence_splitter"`
+  below — the legacy name is an alias, resolved by
+  `openptv2.plugins.loader.LEGACY_ALIASES`.
+- `splitter_tracking.py` — temporal tracking (the `Tracking` class,
+  `do_tracking()`). Selected as `tracking_plugin="ext_tracker_splitter"`.
+
+You do not need to copy these into your experiment folder. If you need a
+one-off variant for a specific dataset, drop a `.py` file in an
+experiment-local `plugins/` directory next to the YAML — it is resolved after
+the built-ins, so it can shadow them by using the same name, or add a new
+one.
 
 The core of the sequence plugin (simplified):
 
@@ -273,19 +284,17 @@ routes views to quadrants.
 
 ### 6b. Use openptv2 imports, not `optv`
 
-The plugins shipped importing from the legacy `optv` C package. In a pure
-`openptv2` install they must import from `openptv2`, otherwise openptv2-detected
-targets are silently fed to optv's C structures and you get **zero
-correspondences**. Ensure the plugin headers read:
+If you write your own plugin (built-in or experiment-local), import from
+`openptv2`, not the legacy `optv` C package — mixing them silently feeds
+openptv2-detected targets to optv's C structures and you get **zero
+correspondences**. The built-in `splitter_sequence.py` / `splitter_tracking.py`
+already do this; keep new plugin headers consistent:
 
 ```python
 from openptv2.correspondences import correspondences, MatchedCoords
 from openptv2.tracker import default_naming, Tracker
 from openptv2.orientation import point_positions
 ```
-
-(The reference `ext_sequence_splitter.py` has already been migrated; check
-`ext_tracker_splitter.py` similarly if you copy it into a new experiment.)
 
 ---
 

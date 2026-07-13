@@ -1,20 +1,26 @@
+from pathlib import Path
 
 import numpy as np
 from imageio.v3 import imread
-from pathlib import Path
-
 from skimage import img_as_ubyte
 from skimage.color import rgb2gray
 
-from optv.correspondences import correspondences, MatchedCoords
-from optv.tracker import default_naming
-from optv.orientation import point_positions
+from openptv2.correspondences import MatchedCoords, correspondences
+from openptv2.orientation import point_positions
+from openptv2.tracker import default_naming
+
+# rembg (and its ONNX model download) is only imported on first actual use —
+# not a core dependency, install with `openptv2[rembg]`.
+_session = None
 
 
+def _get_session():
+    global _session
+    if _session is None:
+        from rembg import new_session
 
-from rembg import remove, new_session
-
-session = new_session("u2net")
+        _session = new_session("u2net")
+    return _session
 
 
 def mask_image(imname: Path, display: bool = False) -> np.ndarray:
@@ -30,45 +36,28 @@ def mask_image(imname: Path, display: bool = False) -> np.ndarray:
     np.ndarray
         The masked image.
     """
-    # session = new_session('u2net')
-    input_data = imread(imname)
-    result = remove(input_data, session=session)
-    result = img_as_ubyte(rgb2gray(result[:, :, :3]))
+    from rembg import remove
 
-    # plt.figure()
-    # plt.imshow(result, cmap='gray')
-    # plt.show()
+    input_data = imread(imname)
+    result = remove(input_data, session=_get_session())
+    result = img_as_ubyte(rgb2gray(result[:, :, :3]))
 
     return result
 
 
 class Sequence:
-    """Sequence class defines external tracking addon for pyptv
-    User needs to implement the following functions:
-            do_sequence(self)
+    """Sequence plugin that removes the background with ``rembg`` before
+    detection and correspondence.
 
-    Connection to C ptv module is given via self.ptv and provided by pyptv software
-    Connection to active parameters is given via self.exp1 and provided by pyptv software.
-
-    User responsibility is to read necessary files, make the calculations and write the files back.
+    Connection to the ptv module is given via ``self.ptv`` and connection to
+    the active experiment via ``self.exp``, both injected by the loader.
     """
 
     def __init__(self, ptv=None, exp=None):
-        if ptv is None:
-            from pyptv import ptv
-            self.ptv = ptv
-        else:
-            self.ptv = ptv
-        
+        self.ptv = ptv
         self.exp = exp
 
     def do_sequence(self):
-        """Copy of the sequence loop with one change we call everything as
-        self.ptv instead of ptv.
-
-        """
-        # Sequence parameters
-
         num_cams, cpar, spar, vpar, tpar, cals = (
             self.exp.num_cams,
             self.exp.cpar,
@@ -78,31 +67,17 @@ class Sequence:
             self.exp.cals,
         )
 
-        # # Sequence parameters
-        # spar = SequenceParams(num_cams=num_cams)
-        # spar.read_sequence_par(b"parameters/sequence.par", num_cams)
-
-        # sequence loop for all frames
         first_frame = spar.get_first()
         last_frame = spar.get_last()
         print(f" From {first_frame = } to {last_frame = }")
 
         for frame in range(first_frame, last_frame + 1):
-            # print(f"processing {frame = }")
-
             detections = []
             corrected = []
             for i_cam in range(num_cams):
                 base_image_name = spar.get_img_base_name(i_cam)
                 imname = Path(base_image_name % frame)  # works with jumps from 1 to 10
                 masked_image = mask_image(imname)
-
-                # img = imread(imname)
-                # if img.ndim > 2:
-                #     img = rgb2gray(img)
-
-                # if img.dtype != np.uint8:
-                #     img = img_as_ubyte(img)
 
                 high_pass = self.ptv.simple_highpass(masked_image, cpar)
                 targs = self.ptv.target_recognition(high_pass, tpar, i_cam, cpar)
@@ -113,20 +88,14 @@ class Sequence:
                 pos, _ = masked_coords.as_arrays()
                 corrected.append(masked_coords)
 
-            #        if any([len(det) == 0 for det in detections]):
-            #            return False
-
             # Corresp. + positions.
             sorted_pos, sorted_corresp, _ = correspondences(
                 detections, corrected, cals, vpar, cpar
             )
 
             # Save targets only after they've been modified:
-            # this is a workaround of the proper way to construct _targets name
-            target_filenames = self.exp.exp1.pm.get_target_filenames()
             for i_cam in range(num_cams):
-                base_name = target_filenames[i_cam]
-                # base_name = replace_format_specifiers(base_name) # %d to %04d
+                base_name = self.exp.target_filenames[i_cam]
                 self.ptv.write_targets(detections[i_cam], base_name, frame)
 
             print(
@@ -145,10 +114,6 @@ class Sequence:
                 [corrected[i].get_by_pnrs(sorted_corresp[i]) for i in range(len(cals))]
             )
             pos, _ = point_positions(flat.transpose(1, 0, 2), cpar, cals, vpar)
-
-            # if len(cals) == 1: # single camera case
-            #     sorted_corresp = np.tile(sorted_corresp,(4,1))
-            #     sorted_corresp[1:,:] = -1
 
             if len(cals) < 4:
                 print_corresp = -1 * np.ones((4, sorted_corresp.shape[1]))

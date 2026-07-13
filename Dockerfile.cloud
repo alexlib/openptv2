@@ -4,10 +4,15 @@
 # kernels do the heavy lifting regardless of the GIL.
 #
 #   docker build -f Dockerfile.cloud -t openptv2-cloud .
-#   # smoke test on the baked demo:
+#   # smoke test on the baked demo (default pipeline):
 #   docker run --rm openptv2-cloud sh -c \
 #     "cp -r /demo/test_cavity /tmp/c && cd /tmp/c && \
 #      openptv2-batch parameters_Run1.yaml 10001 10004"
+#   # smoke test a non-default plugin (image-splitter dataset):
+#   docker run --rm openptv2-cloud sh -c \
+#     "cp -r /demo/test_splitter /tmp/s && cd /tmp/s && \
+#      openptv2-batch parameters_Run1.yaml 1000001 1000002 \
+#      --sequence-plugin splitter_sequence --tracking-plugin splitter_tracking"
 #   # your own data:
 #   docker run --rm -v "$PWD:/data" openptv2-cloud \
 #     openptv2-batch /data/<exp>/parameters_Run1.yaml <first> <last>
@@ -42,8 +47,11 @@ COPY . /app
 RUN uv venv --python 3.14t /opt/venv \
     && VIRTUAL_ENV=/opt/venv uv pip install --no-cache .
 
-# Baked demo for a zero-data smoke test.
-RUN mkdir -p /demo && cp -r /app/test_data/test_cavity /demo/test_cavity
+# Baked demos for a zero-data smoke test: test_cavity (default pipeline) and
+# test_splitter (exercises the built-in splitter_sequence/splitter_tracking
+# plugins, proving plugin support ships in this image with no extra data).
+RUN mkdir -p /demo && cp -r /app/test_data/test_cavity /demo/test_cavity \
+    && cp -r /app/test_data/test_splitter /demo/test_splitter
 
 # GIL left at its default (enabled). Run with `-e PYTHON_GIL=0` to force it off
 # — see the MEASURED note above before you do.

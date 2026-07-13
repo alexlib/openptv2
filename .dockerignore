@@ -15,9 +15,11 @@ src/openptv2/algorithms/*.c
 src/openptv2/algorithms/*.so
 src/openptv2/algorithms/*.html
 
-# Heavy test fixtures: keep ONLY test_cavity as the baked demo
+# Heavy test fixtures: keep ONLY test_cavity and test_splitter as baked demos
+# (the latter proves plugin support ships in the image — see Dockerfile.cloud)
 test_data/*
 !test_data/test_cavity
+!test_data/test_splitter
 # ...and trim test_cavity down to what the demo needs
 test_data/test_cavity/tmp*.yaml
 test_data/test_cavity/res

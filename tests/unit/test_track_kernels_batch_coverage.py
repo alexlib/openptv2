@@ -17,6 +17,8 @@ These omissions are intrinsic to the source; they are documented here rather
 than papered over with unreachable test stubs.
 """
 
+import warnings
+
 import numpy as np
 import pytest
 
@@ -411,6 +413,30 @@ def test_targ_rec_sumg_below_min():
     img0[:] = img
     n, *_ = _call_targ_rec(img, img0, sumg_min=200)
     assert n == 0
+
+
+def test_targ_rec_large_sumg_does_not_overflow_uint8():
+    """Regression test: gv/gvref/gv4 are read from uint8 image buffers via
+    plain indexing in the pure-Python path, which returns numpy uint8
+    scalars rather than Python ints. Accumulating enough of them into sumg
+    (or computing sumg - numpix * gvthres) used to silently wrap under old
+    NumPy and raises OverflowError under NumPy>=2's strict scalar casting
+    (NEP 50) once the true value exceeds 255 — see the reported Windows GUI
+    crash in track_kernels_batch.targ_rec_fast. A large bright blob (many
+    pixels each near 255) pushes sumg well past 255, which must not raise.
+    """
+    img, img0 = _blank(h=40, w=40, bg=0)
+    img[10:30, 10:30] = 250  # 400 pixels near-max grey value: sumg > 90000
+    img0[:] = img
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")  # any overflow warning fails the test
+        n, xs, ys, ns, nxs, nys, sumgs = _call_targ_rec(
+            img, img0, gvthres=5, discont=10,
+            nnmin=1, nnmax=2000, nxmin=1, nxmax=40, nymin=1, nymax=40,
+            sumg_min=0, xmin=1, ymin=1, xmax=39, ymax=39, max_targets=10,
+        )
+    assert n == 1
+    assert sumgs[0] > 255  # proves sumg was never narrowed to fit uint8
 
 
 def test_targ_rec_numpix_too_small():

@@ -5,35 +5,32 @@ image processing, calibration, tracking, and other utilities.
 """
 
 # Standard library imports
-import importlib
 import os
-import sys
 import re
 from pathlib import Path
-from typing import List, Sequence, Tuple
+from typing import List, Tuple
 
 # Third-party imports
 import numpy as np
 from imageio.v3 import imread
-from skimage.util import img_as_ubyte
 from skimage.color import rgb2gray
+from skimage.util import img_as_ubyte
 
 # Backend imports from openptv2 (dual-engine: optv or algorithms)
 from openptv2.calibration import Calibration
+from openptv2.correspondences import MatchedCoords, correspondences
+from openptv2.image_processing import preprocess_image
+from openptv2.orientation import point_positions
 from openptv2.parameters import (
     ControlParams,
     SequenceParams,
-    TrackingParams,
     TargetParams,
+    TrackingParams,
     VolumeParams,
 )
-from openptv2.correspondences import correspondences, MatchedCoords
-from openptv2.image_processing import preprocess_image
-from openptv2.orientation import point_positions
 from openptv2.segmentation import target_recognition
-from openptv2.tracking_framebuf import TargetArray
 from openptv2.tracker import Tracker, default_naming
-from openptv2.transforms import convert_arr_pixel_to_metric, convert_arr_metric_to_pixel
+from openptv2.tracking_framebuf import TargetArray
 
 """
 example from Tracker documentation: 
@@ -50,8 +47,8 @@ example from Tracker documentation:
 """
 
 # PyPTV imports
-from .parameter_manager import ParameterManager
 from . import ptv_calibration
+from .parameter_manager import ParameterManager
 from .ptv_calibration import (
     _read_calibrations,
     clone_calibration,
@@ -710,67 +707,17 @@ def py_determination_proc_c(
 
 
 def run_sequence_plugin(exp) -> None:
-    """Load and run plugins for sequence processing."""
-    plugin_dir = Path(os.getcwd()) / "plugins"
-    print(f"Plugin directory: {plugin_dir}")
+    """Load and run the sequence plugin selected in ``exp.plugins.sequence_alg``."""
+    from openptv2.plugins import run_sequence_plugin as _run_sequence_plugin
 
-    # Check if plugin directory exists
-    if not plugin_dir.exists():
-        raise FileNotFoundError(f"Plugin directory not found: {plugin_dir}")
-
-    if str(plugin_dir) not in sys.path:
-        sys.path.append(str(plugin_dir))
-
-    for filename in os.listdir(plugin_dir):
-        if filename.endswith(".py") and filename != "__init__.py":
-            plugin_name = filename[:-3]
-            if plugin_name == exp.plugins.sequence_alg:
-                try:
-                    print(f"Loading plugin: {plugin_name}")
-                    plugin = importlib.import_module(plugin_name)
-                except ImportError as e:
-                    print(f"Error loading {plugin_name}: {e}")
-                    return
-
-                if hasattr(plugin, "Sequence"):
-                    print(f"Running sequence plugin: {exp.plugins.sequence_alg}")
-                    try:
-                        sequence = plugin.Sequence(exp=exp)
-                        sequence.do_sequence()
-                    except Exception as e:
-                        print(f"Error running sequence plugin {plugin_name}: {e}")
+    _run_sequence_plugin(exp.plugins.sequence_alg, exp)
 
 
 def run_tracking_plugin(exp) -> None:
-    """Load and run plugins for sequence processing."""
-    plugin_dir = Path(os.getcwd()) / "plugins"
-    print(f"Plugin directory: {plugin_dir}")
+    """Load and run the tracking plugin selected in ``exp.plugins.track_alg``."""
+    from openptv2.plugins import run_tracking_plugin as _run_tracking_plugin
 
-    # Check if plugin directory exists
-    if not plugin_dir.exists():
-        raise FileNotFoundError(f"Plugin directory not found: {plugin_dir}")
-
-    if str(plugin_dir) not in sys.path:
-        sys.path.append(str(plugin_dir))
-
-    for filename in os.listdir(plugin_dir):
-        if filename.endswith(".py") and filename != "__init__.py":
-            plugin_name = filename[:-3]
-            if plugin_name == exp.plugins.track_alg:
-                try:
-                    print(f"Loading plugin: {plugin_name}")
-                    plugin = importlib.import_module(plugin_name)
-                except ImportError as e:
-                    print(f"Error loading {plugin_name}: {e}")
-                    return
-
-                if hasattr(plugin, "Tracking"):
-                    print(f"Running tracking plugin: {exp.plugins.track_alg}")
-                    try:
-                        tracker = plugin.Tracking(exp=exp)
-                        tracker.do_tracking()
-                    except Exception as e:
-                        print(f"Error running tracking plugin {plugin_name}: {e}")
+    _run_tracking_plugin(exp.plugins.track_alg, exp)
 
 
 def py_sequence_loop(exp) -> None:
@@ -920,21 +867,20 @@ def py_sequence_loop_python(exp) -> None:
     Args:
         exp: Same ProcessingExperiment object as py_sequence_loop expects.
     """
-    from openptv2.segmentation import target_recognition as alg_target_recognition
-    from openptv2.correspondences import MatchedCoords as AlgMatchedCoords
     from openptv2.algorithms.correspondences import (
         correspondences as alg_correspondences,
     )
     from openptv2.algorithms.orientation import point_positions as alg_point_positions
-    from openptv2.tracker import default_naming as alg_default_naming
     from openptv2.algorithms.parameters import (
         ControlPar,
-        VolumePar,
         TargetPar,
-        MultimediaPar,
+        VolumePar,
     )
     from openptv2.calibration import Calibration as AlgCalibration
-    from openptv2.tracking_framebuf import Frame, Target, read_targets
+    from openptv2.correspondences import MatchedCoords as AlgMatchedCoords
+    from openptv2.segmentation import target_recognition as alg_target_recognition
+    from openptv2.tracker import default_naming as alg_default_naming
+    from openptv2.tracking_framebuf import Frame, read_targets
 
     # Handle both Experiment objects and MainGUI objects
     if hasattr(exp, "pm"):

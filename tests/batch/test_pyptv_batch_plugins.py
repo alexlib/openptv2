@@ -1,82 +1,47 @@
-"""Simple test for pyptv_batch_plugins.py - runs the actual code"""
+"""Tests for openptv2.batch.pyptv_batch_plugins.run_batch, covering all three
+modes (sequence, tracking, both) with the built-in splitter plugins.
 
-import subprocess
-import sys
-import pytest
+Runs against a scratch copy of test_data/test_splitter: the splitter plugins
+write detection (cam*_targets) and tracking (rt_is.*/ptv_is.*) output files
+in place, so operating on the checked-in fixture directly would leave it
+dirty after every run.
+"""
+
+import shutil
 from pathlib import Path
 
+import pytest
 
-def _get_env_with_pythonpath() -> dict:
-    import os
-
-    env = os.environ.copy()
-    src_dir = str(Path(__file__).parent.parent.parent / "src")
-    if "PYTHONPATH" in env:
-        env["PYTHONPATH"] = f"{src_dir}{os.pathsep}{env['PYTHONPATH']}"
-    else:
-        env["PYTHONPATH"] = src_dir
-    return env
+from openptv2.batch.pyptv_batch_plugins import run_batch
 
 
-def test_batch_plugins_runs():
-    """Test that pyptv_batch_plugins runs without errors"""
-    pytest.skip(
-        "Runs the splitter batch in all modes (incl. both/tracking) against the "
-        "shared test_data/test_splitter fixture, which it mutates; both-mode is "
-        "slow/fragile. Sequence-only works after the dist_to_flat fix (see "
-        "test_ext_sequence_splitter). Enable once rewritten to run on a tmp copy."
+@pytest.fixture
+def splitter_copy(tmp_path):
+    src_exp_path = Path(__file__).parent.parent.parent / "test_data" / "test_splitter"
+    assert src_exp_path.exists(), f"Fixture not found: {src_exp_path}"
+
+    test_exp_path = tmp_path / "test_splitter"
+    shutil.copytree(src_exp_path, test_exp_path)
+    return test_exp_path / "parameters_Run1.yaml"
+
+
+@pytest.mark.integration
+@pytest.mark.parametrize("mode", ["sequence", "tracking", "both"])
+def test_batch_plugins_runs(splitter_copy, mode):
+    """Each mode runs end-to-end via the built-in splitter plugins and exits
+    cleanly (run_batch raises on plugin failure, so no exception == success).
+    """
+    run_batch(
+        yaml_file=splitter_copy,
+        seq_first=1000001,
+        seq_last=1000002,
+        tracking_plugin="ext_tracker_splitter",
+        sequence_plugin="ext_sequence_splitter",
+        mode=mode,
     )
 
-    gui_dir = Path(__file__).parent.parent
-    test_exp_path = Path(__file__).parent.parent.parent / "test_data" / "test_splitter"
-    yaml_file = test_exp_path / "parameters_Run1.yaml"
-
-    # Check if test experiment exists
-    if not test_exp_path.exists():
-        print(f"❌ Test experiment not found: {test_exp_path}")
-        return False
-
-    modes = ["both", "sequence", "tracking"]
-    for mode in modes:
-        cmd = [
-            sys.executable,
-            "-m",
-            "openptv2.batch.pyptv_batch_plugins",
-            str(yaml_file),
-            "1000001",
-            "1000005",
-            "--mode",
-            mode,
-        ]
-        print(f"Running command: {' '.join(cmd)}")
-        try:
-            result = subprocess.run(
-                cmd,
-                capture_output=True,
-                text=True,
-                timeout=60,
-                cwd=gui_dir,
-                env=_get_env_with_pythonpath(),
-            )
-            print("STDOUT:")
-            print(result.stdout)
-            if result.stderr:
-                print("STDERR:")
-                print(result.stderr)
-            if result.returncode == 0:
-                print(f"✅ Batch processing completed successfully for mode: {mode}")
-            else:
-                print(
-                    f"❌ Process failed with return code: {result.returncode} for mode: {mode}"
-                )
-                pytest.fail(f"Batch processing failed for mode: {mode}")
-        except subprocess.TimeoutExpired:
-            pytest.fail(f"Process timed out for mode: {mode}")
-        except Exception as e:
-            pytest.fail(f"Error running process for mode {mode}: {e}")
-    assert True
-
-
-if __name__ == "__main__":
-    test_batch_plugins_runs()
-    print("\n🎉 Test passed!")
+    res_dir = splitter_copy.parent / "res"
+    if mode in ("sequence", "both"):
+        assert (res_dir / "rt_is.1000001").exists()
+    if mode in ("tracking", "both"):
+        assert (res_dir / "ptv_is.1000001").exists()

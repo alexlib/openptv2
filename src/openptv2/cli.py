@@ -6,7 +6,6 @@ Exposes subcommands for headless tracking, runtime validation, and launching the
 """
 
 import sys
-from pathlib import Path
 
 
 def print_help():
@@ -37,12 +36,29 @@ def main():
     if command == "track":
         # Headless batch sequence / tracking
         try:
-            from openptv2.batch.pyptv_batch import run_batch, parse_command_line_args, main as batch_main
-            
+            from openptv2.batch.pyptv_batch import main as batch_main
+            from openptv2.batch.pyptv_batch import parse_command_line_args
+
             # Re-parse sys.argv[2:] using pyptv_batch's parser
-            yaml_file, first_frame, last_frame, mode = parse_command_line_args(sys.argv[2:])
-            batch_main(yaml_file, first_frame, last_frame, mode=mode)
-            
+            (
+                yaml_file,
+                first_frame,
+                last_frame,
+                mode,
+                track3d,
+                sequence_plugin,
+                tracking_plugin,
+            ) = parse_command_line_args(sys.argv[2:])
+            batch_main(
+                yaml_file,
+                first_frame,
+                last_frame,
+                mode=mode,
+                track3d=track3d,
+                sequence_plugin=sequence_plugin,
+                tracking_plugin=tracking_plugin,
+            )
+
         except Exception as e:
             print(f"Tracking command failed: {e}")
             sys.exit(1)
@@ -54,7 +70,7 @@ def main():
             sys.argv = [sys.argv[0]] + sys.argv[2:]
             from openptv2.validate import main as validate_main
             sys.exit(validate_main())
-            
+
         except Exception as e:
             print(f"Validation command failed: {e}")
             sys.exit(1)
@@ -65,7 +81,7 @@ def main():
             print("Launching interactive OpenPTV GUI...")
             from openptv2.gui.pyptv_gui import main as gui_main
             gui_main()
-            
+
         except Exception as e:
             print(f"GUI launch failed: {e}")
             sys.exit(1)
