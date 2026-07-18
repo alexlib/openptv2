@@ -1,1 +1,0 @@
-../pyptv/standalone_calibration.py
