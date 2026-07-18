@@ -13,10 +13,6 @@
       
       
       
-        <link rel="prev" href="../tracking_visualization/">
-      
-      
-        <link rel="next" href="../../tests/">
       
       
         
@@ -27,7 +23,7 @@
     
     
       
-        <title>Debug Visualization - OpenPTV2 Documentation</title>
+        <title>Multimedia / mmlut strategy: measure, fix, and actually use the look-up table - OpenPTV2 Documentation</title>
       
     
     
@@ -78,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#tracking-debug-visualization-tutorial" class="md-skip">
+        <a href="#multimedia-mmlut-strategy-measure-fix-and-actually-use-the-look-up-table" class="md-skip">
           Skip to content
         </a>
       
@@ -112,7 +108,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Debug Visualization
+              Multimedia / mmlut strategy: measure, fix, and actually use the look-up table
             
           </span>
         </div>
@@ -280,13 +276,11 @@
   
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="../getting_started_tutorial/" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="../../tutorials/getting_started_tutorial/" class="md-tabs__link">
           
   
   
@@ -487,31 +481,28 @@
       
   
   
-    
   
   
-  
     
     
     
     
-      
-        
-        
       
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
         
           
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
             
   
   
@@ -529,7 +520,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             
@@ -547,7 +538,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../getting_started_tutorial/" class="md-nav__link">
+      <a href="../../tutorials/getting_started_tutorial/" class="md-nav__link">
         
   
   
@@ -575,7 +566,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../batch_processing/" class="md-nav__link">
+      <a href="../../tutorials/batch_processing/" class="md-nav__link">
         
   
   
@@ -603,7 +594,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tracking_visualization/" class="md-nav__link">
+      <a href="../../tutorials/tracking_visualization/" class="md-nav__link">
         
   
   
@@ -628,37 +619,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Debug Visualization
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../tutorials/tracking_debug_visualization/" class="md-nav__link">
         
   
   
@@ -674,253 +638,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#overview" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Overview
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#required-prerequisites" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Required Prerequisites
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#step-by-step-usage" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Step-by-Step Usage
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Step-by-Step Usage">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#step-1-open-pyptv-and-load-experiment" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Step 1: Open PyPTV and Load Experiment
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#step-2-initialize-system-required" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Step 2: Initialize System (Required)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#step-3-detect-particles-optional-but-recommended" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Step 3: Detect Particles (Optional but recommended)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#step-4-enable-debug-mode" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Step 4: Enable Debug Mode
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#step-5-click-on-a-particle" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Step 5: Click on a Particle
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#step-6-disable-debug-mode" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Step 6: Disable Debug Mode
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#what-can-go-wrong" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What Can Go Wrong
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="What Can Go Wrong">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#no-calibrations-available-run-init-first" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        "No calibrations available. Run Init first."
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#no-particle-found-near-x-y" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        "No particle found near (x, y)"
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#not-enough-frames-in-buffer" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        "Not enough frames in buffer"
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#nothing-happens-when-clicking" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Nothing happens when clicking
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#understanding-the-visualization" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Understanding the Visualization
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Understanding the Visualization">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#search-volume-rectangles" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Search Volume Rectangles
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#candidate-particles" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Candidate Particles
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#epipolar-lines" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Epipolar Lines
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#summary" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Summary
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1305,10 +1022,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#overview" class="md-nav__link">
+  <a href="#context" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Overview
+        Context
       
     </span>
   </a>
@@ -1316,10 +1033,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#required-prerequisites" class="md-nav__link">
+  <a href="#goal" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Required Prerequisites
+        Goal
       
     </span>
   </a>
@@ -1327,204 +1044,65 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#step-by-step-usage" class="md-nav__link">
+  <a href="#phase-1-measurement-first-no-behavior-change" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step-by-Step Usage
+        Phase 1 — Measurement first (no behavior change)
       
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Step-by-Step Usage">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#step-1-open-pyptv-and-load-experiment" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Step 1: Open PyPTV and Load Experiment
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#step-2-initialize-system-required" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Step 2: Initialize System (Required)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#step-3-detect-particles-optional-but-recommended" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Step 3: Detect Particles (Optional but recommended)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#step-4-enable-debug-mode" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Step 4: Enable Debug Mode
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#step-5-click-on-a-particle" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Step 5: Click on a Particle
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#step-6-disable-debug-mode" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Step 6: Disable Debug Mode
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#what-can-go-wrong" class="md-nav__link">
+  <a href="#phase-2-correctness-fixes-small-do-regardless-of-numbers" class="md-nav__link">
     <span class="md-ellipsis">
       
-        What Can Go Wrong
+        Phase 2 — Correctness fixes (small, do regardless of numbers)
       
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="What Can Go Wrong">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#no-calibrations-available-run-init-first" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        "No calibrations available. Run Init first."
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#no-particle-found-near-x-y" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        "No particle found near (x, y)"
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#not-enough-frames-in-buffer" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        "Not enough frames in buffer"
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#nothing-happens-when-clicking" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Nothing happens when clicking
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#understanding-the-visualization" class="md-nav__link">
+  <a href="#phase-3-use-the-lut-in-the-whole-pipeline-the-payoff" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Understanding the Visualization
+        Phase 3 — Use the LUT in the whole pipeline (the payoff)
       
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Understanding the Visualization">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#search-volume-rectangles" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Search Volume Rectangles
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#candidate-particles" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Candidate Particles
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#epipolar-lines" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Epipolar Lines
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#summary" class="md-nav__link">
+  <a href="#phase-4-optional-follow-ups-create-separate-dated-plans-if-the-numbers-justify" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Summary
+        Phase 4 — Optional follow-ups (create separate dated plans if the numbers justify)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#explicitly-out-of-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Explicitly out of scope
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verification
       
     </span>
   </a>
@@ -1551,152 +1129,168 @@
   
 
 
-<h1 id="tracking-debug-visualization-tutorial">Tracking Debug Visualization Tutorial<a class="headerlink" href="#tracking-debug-visualization-tutorial" title="Permanent link">&para;</a></h1>
-<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
-<p>The tracking debug visualization allows you to click on any detected particle and see:
-- Search volume boundaries for future frames (green/yellow/orange rectangles)
-- Candidate particles in the next frame (color-coded by distance)
-- Epipolar lines connecting to other cameras (cyan)</p>
-<h2 id="required-prerequisites">Required Prerequisites<a class="headerlink" href="#required-prerequisites" title="Permanent link">&para;</a></h2>
-<p>Before using the debug visualization, you need to have:
-1. <strong>Detected particles</strong> - Run detection to have particles in the frames
-2. <strong>Calibrations loaded</strong> - Run Init to load calibration files into memory</p>
-<h2 id="step-by-step-usage">Step-by-Step Usage<a class="headerlink" href="#step-by-step-usage" title="Permanent link">&para;</a></h2>
-<h3 id="step-1-open-pyptv-and-load-experiment">Step 1: Open PyPTV and Load Experiment<a class="headerlink" href="#step-1-open-pyptv-and-load-experiment" title="Permanent link">&para;</a></h3>
+<h1 id="multimedia-mmlut-strategy-measure-fix-and-actually-use-the-look-up-table">Multimedia / mmlut strategy: measure, fix, and actually use the look-up table<a class="headerlink" href="#multimedia-mmlut-strategy-measure-fix-and-actually-use-the-look-up-table" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p>Order: implement AFTER <code>2026-07-14-orientation-review-fixes.md</code>.</p>
+</blockquote>
+<h2 id="context">Context<a class="headerlink" href="#context" title="Permanent link">&para;</a></h2>
+<p>Ray tracing through refractive interfaces (air → glass → water) is the single most
+repeated geometric computation in PTV: every projection of a 3D point into a camera
+(<code>img_coord</code> / <code>flat_image_coord</code>) needs the radial-shift factor from
+<code>multimed_r_nlay_iterative</code> (<code>src/openptv2/algorithms/multimed.py:220</code>) — an
+iterative Snell solve, up to 40 iterations of <code>atan</code>/<code>asin</code>/<code>sin</code>/<code>tan</code> per call.
+The multimedia look-up table (<code>MmLut</code>, <code>src/openptv2/algorithms/calibration.py:165</code>)
+exists to amortize this: <code>init_mmlut</code> (<code>multimed.py:602</code>) precomputes the factor on
+an (r, z) grid (spacing <code>rw = 2.0</code> mm, hardcoded) per camera, and
+<code>get_mmf_from_mmlut</code> replaces the iterative solve with a bilinear interpolation.</p>
+<p><strong>Research findings (code audit, 2026-07-14):</strong></p>
 <ol>
-<li>Launch PyPTV (<code>openptv2-gui</code> or <code>pyptv</code>)</li>
-<li>Open your experiment YAML file</li>
+<li><strong>The LUT is only used by the tracker.</strong> The single call site of <code>init_mmlut</code> in
+   the pipeline is <code>tracking_run.py:40-50</code> (TrackingRun init). The correspondence
+   pipeline (<code>epi.py: epi_mm</code> → <code>flat_image_coord</code>, called per target per camera
+   pair inside <code>match_pairs</code>), 3D determination (<code>point_positions</code>), <code>sortgrid</code>,
+   the GUI sequence loop (<code>gui/ptv.py</code> — <code>py_start_proc_c</code> never initializes it),
+   and the batch pipeline all run with <code>cal.mmlut.data is None</code>, so <strong>every
+   projection outside tracking pays the full iterative solve</strong>. The consumers are
+   already LUT-aware (<code>imgcoord.py:396</code>: <code>mmlut = cal.mmlut if
+   cal.mmlut.is_initialized else None</code>), so this is purely a missing-init problem.</li>
+<li><strong>Suspected off-by-one in the LUT lookup bounds check.</strong> In both copies of the
+   lookup (<code>multimed.py:465 get_mmf_from_mmlut</code> and
+   <code>imgcoord.py:89 _get_mmf_from_mmlut_core</code>): <code>max_v = mmlut_nr * mmlut_nz</code> and the
+   vertex checks use <code>v4_x &gt; max_v</code>. <code>data</code> has exactly <code>nr * nz</code> elements (valid
+   indices <code>0 .. nr*nz - 1</code>), so index <code>== max_v</code> passes the check and reads one
+   element past the end. Reachable when <code>ir == nr - 1</code> and <code>iz == 0</code> (then
+   <code>v4_2 = nr*nz</code> exactly). Compiled with <code>boundscheck(False)</code> in
+   <code>imgcoord.py</code> this is a real out-of-bounds read. (Same quirk exists in liboptv
+   C; here it must be fixed, not preserved — it's memory safety, not numerics.)
+   Similarly audit <code>if ir &gt; mmlut_nr</code> / <code>if iz &gt; mmlut_nz</code> (should exclude the last
+   cell, e.g. <code>ir &gt;= nr - 1</code> handling) — write the edge-position test first, then fix.</li>
+<li><strong>The lookup is implemented twice</strong> (<code>multimed.get_mmf_from_mmlut</code> and
+   <code>imgcoord._get_mmf_from_mmlut_core</code>) — any bounds fix must land in both or,
+   better, one should delegate to the other.</li>
+<li><strong>No invalidation.</strong> <code>orient()</code> copies <code>cal.mmlut</code> back into <code>cal_in</code> on success
+   (<code>orientation.py:1040</code>), so a LUT built before recalibration silently survives a
+   calibration change and would give wrong factors. Today this is masked only
+   because the LUT is almost never initialized.</li>
+<li><strong>No numbers.</strong> There is no perf test quantifying (a) <code>init_mmlut</code> cost,
+   (b) per-projection speedup, (c) the break-even point vs. number of
+   tracers × frames × cameras, nor an accuracy test bounding the bilinear
+   interpolation error vs. the direct solve. The user's hypotheses to test:
+   savings depend on targets/frame, frame count, interface complexity
+   (<code>nlay</code>, <code>n1/n2/n3</code> values). Note the iterative solve short-circuits to 1.0
+   when <code>n1 == n2 == n3 == 1.0</code> (all-air), so the LUT buys nothing there.</li>
+<li><strong>Minor:</strong> <code>init_mmlut</code> stores <code>cal.mmlut.rw = int(rw)</code> (truncating cast; rw is
+   conceptually a float grid spacing); the <code>nlay &gt; 1</code> LUT fill is a pure-Python
+   double loop (the <code>nlay == 1</code> path uses compiled <code>init_mmlut_data_fast</code> from
+   <code>track_kernels_batch.py:382</code>).</li>
 </ol>
-<h3 id="step-2-initialize-system-required">Step 2: Initialize System (Required)<a class="headerlink" href="#step-2-initialize-system-required" title="Permanent link">&para;</a></h3>
-<p>Go to menu: <strong>Start → Init / Reload</strong></p>
-<p>This step is critical because it:
-- Loads calibration files into <code>mainGui.cals</code>
-- Creates parameter objects (cpar, vpar, tpar, etc.)
-- Without this, the debug visualization cannot work</p>
-<p>Expected console output:
-<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>Read all the parameters and calibrations successfully
-</span></code></pre></div></p>
-<h3 id="step-3-detect-particles-optional-but-recommended">Step 3: Detect Particles (Optional but recommended)<a class="headerlink" href="#step-3-detect-particles-optional-but-recommended" title="Permanent link">&para;</a></h3>
-<p>Go to menu: <strong>Preprocess → Image coord</strong></p>
-<p>This finds particles in your images. You should see blue crosses on the camera views.</p>
-<h3 id="step-4-enable-debug-mode">Step 4: Enable Debug Mode<a class="headerlink" href="#step-4-enable-debug-mode" title="Permanent link">&para;</a></h3>
-<p>Go to menu: <strong>Tracking → Debugging with display</strong></p>
-<p>You will see in the console:
-<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>Starting tracking debug mode
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>Debug mode ON - click on particles in camera views to visualize search volumes
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>Use &#39;Debugging with display&#39; again to turn off
-</span></code></pre></div></p>
-<h3 id="step-5-click-on-a-particle">Step 5: Click on a Particle<a class="headerlink" href="#step-5-click-on-a-particle" title="Permanent link">&para;</a></h3>
-<p><strong>Left-click</strong> on any particle (blue cross) in any camera view.</p>
-<p>The debug visualization only responds to <strong>left-clicks</strong>, not right-clicks. </p>
-<p>When you click successfully, you should see:</p>
+<h2 id="goal">Goal<a class="headerlink" href="#goal" title="Permanent link">&para;</a></h2>
+<p>Make the LUT the default fast path for the whole pipeline, safely (bounds,
+invalidation, accuracy), and prove the benefit with reproducible benchmarks so we
+know when it pays off.</p>
+<h2 id="phase-1-measurement-first-no-behavior-change">Phase 1 — Measurement first (no behavior change)<a class="headerlink" href="#phase-1-measurement-first-no-behavior-change" title="Permanent link">&para;</a></h2>
+<p>Create <code>tests/perf/test_mmlut_benchmark.py</code> (marker <code>@pytest.mark.perf</code>, excluded
+from default runs; follow the marker usage in <code>tests/unit/test_parallel_tracking.py</code>).
+Use <code>test_data/test_cavity</code> calibrations/parameters (real water/glass case) plus a
+synthetic all-air control. Measure with <code>time.perf_counter</code>, median of ≥5 repeats:</p>
 <ol>
-<li>
-<p><strong>Console output</strong> with detailed information:
-<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>[DEBUG] _tracking_debug_click called
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>[DEBUG] cals available: 4
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>[DEBUG] Click at camera 0: (440.0, 588.0)
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>[DEBUG] ptv_params: True
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>[DEBUG] track_params: True
-</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>[DEBUG] Creating tracker...
-</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>[DEBUG] Running tracker steps...
-</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>[DEBUG] Step 0: True
-</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>...
-</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>=== Selected particle 5 at (440.0, 588.0) in camera 0 ===
-</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>3D position: (12.34, 45.67, 100.00)
-</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>Search volumes drawn for frames t+1 (green), t+2 (yellow), t+3 (orange)
-</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>Epipolar lines (cyan) from particle to other cameras
-</span></code></pre></div></p>
-</li>
-<li>
-<p><strong>On camera views</strong> - You should see:</p>
-</li>
-<li><strong>Green rectangle</strong> on all cameras = search volume for frame t+1</li>
-<li><strong>Yellow rectangle</strong> on all cameras = search volume for frame t+2  </li>
-<li><strong>Orange rectangle</strong> on all cameras = search volume for frame t+3</li>
-<li><strong>Cyan epipolar lines</strong> from clicked particle to other cameras</li>
-<li><strong>Colored crosses</strong> in frame t+1 showing candidates:<ul>
-<li>Green = close to predicted position</li>
-<li>Yellow = within acceptable range</li>
-<li>Red = outside range</li>
+<li><strong>Init cost:</strong> <code>init_mmlut(vpar, cpar, cal)</code> per camera; record LUT dims (nr, nz).
+   Cases: nlay=1 water (n1=1, n2≈1.5, n3≈1.33), nlay=2, all-air.</li>
+<li><strong>Per-projection cost:</strong> <code>flat_image_coord</code> for N random in-volume points,
+   with <code>cal.mmlut.data = None</code> vs. initialized LUT. Report ns/projection and ratio.</li>
+<li><strong>Break-even model:</strong> compute and print <code>n_projections_to_amortize =
+   init_time / (t_direct - t_lut)</code>; express as tracers-per-frame × frames for a
+   4-camera setup (correspondence does ~2 projections per epipolar candidate per
+   camera pair; determination ~num_cams per point).</li>
+<li><strong>Accuracy:</strong> max and RMS |mmf_lut - mmf_direct| over a dense grid of in-volume
+   points, and the resulting pixel-space projection error (must stay ≪ detection
+   noise, e.g. &lt; 0.01 px). This validates <code>rw = 2.0</code> or motivates making it a
+   parameter.</li>
+</ol>
+<p>Persist results as printed table in the test output (no fixture files). These
+numbers decide whether Phase 3/4 items are worth it — record them in the PR
+description.</p>
+<h2 id="phase-2-correctness-fixes-small-do-regardless-of-numbers">Phase 2 — Correctness fixes (small, do regardless of numbers)<a class="headerlink" href="#phase-2-correctness-fixes-small-do-regardless-of-numbers" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Write a failing unit test in <code>tests/unit/test_multimed.py</code> that queries
+   <code>get_mmf_from_mmlut</code> at positions mapping to <code>ir == nr-1, iz == 0</code> and to the
+   exact far corner, asserting no OOB (run uncompiled AND compiled; in compiled
+   mode an OOB read won't crash reliably — assert the returned value equals the
+   uncompiled reference instead).</li>
+<li>Fix the vertex bound checks in BOTH lookups (<code>multimed.py</code> and <code>imgcoord.py</code>):
+   valid flat index range is <code>0 .. nr*nz - 1</code>; the interpolation cell must satisfy
+   <code>ir + 1 &lt;= nr - 1</code> and <code>iz + 1 &lt;= nz - 1</code>, else return 0.0 (caller falls back to
+   the iterative solve — existing semantics for out-of-LUT points).</li>
+<li>Deduplicate: make <code>multimed.get_mmf_from_mmlut</code> delegate to
+   <code>imgcoord._get_mmf_from_mmlut_core</code> (or move the core into <code>multimed.py</code> and
+   import it in <code>imgcoord.py</code> — pick the direction that avoids a circular import;
+   <code>imgcoord</code> already imports from <code>multimed</code>, so the core should live in
+   <code>multimed.py</code>).</li>
+<li><code>cal.mmlut.rw = rw</code> (keep float; <code>MmLut.rw</code> field type allows it — check the
+   dataclass field and the C-parity expectations in <code>tests/unit/test_multimed.py</code>).</li>
+<li><strong>Invalidation:</strong> add <code>Calibration.invalidate_mmlut()</code> (sets <code>mmlut.data = None</code>)
+   and call it at the end of a successful <code>orient()</code> and <code>raw_orient()</code> instead of
+   copying the stale LUT (in <code>orientation.py:1040</code>, replace
+   <code>cal_in.mmlut = copy.deepcopy(cal.mmlut)</code> with resetting the LUT). Add a unit
+   test: init LUT → run orient → <code>is_initialized</code> is False afterward.</li>
+</ol>
+<h2 id="phase-3-use-the-lut-in-the-whole-pipeline-the-payoff">Phase 3 — Use the LUT in the whole pipeline (the payoff)<a class="headerlink" href="#phase-3-use-the-lut-in-the-whole-pipeline-the-payoff" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Add one helper, <code>prepare_mmluts(vpar, cpar, cals)</code> in
+   <code>src/openptv2/algorithms/multimed.py</code>: for each cal with
+   <code>not cal.mmlut.is_initialized</code>, call <code>init_mmlut</code>. Skip entirely when
+   <code>cpar.mm.n1 == n2 == n3 == 1.0</code> (all-air: iterative solve already
+   short-circuits; building a LUT adds overhead for nothing).</li>
+<li>Call it at the natural pipeline entry points (mirror how <code>tracking_run.py:50</code>
+   already does it):</li>
+<li><code>gui/ptv.py: py_start_proc_c</code> after calibrations are loaded (covers GUI
+     sequence + correspondences),</li>
+<li>the batch pipeline entry (<code>openptv2/batch/pyptv_batch.py</code> and
+     <code>pyptv_batch_parallel.py</code>) where cals/params are loaded,</li>
+<li>keep <code>tracking_run.py</code> as is (it already guards on <code>is_initialized</code>).
+   Do NOT bury the init inside <code>correspondences()</code> itself — implicit heavy work in
+   a hot function is the wrong altitude; explicit init at run start matches the
+   existing tracker pattern.</li>
+<li>Parity guard: run the Phase 1 accuracy comparison as a fast unit test (small
+   grid) so the LUT path can never silently drift from the iterative path.</li>
+<li>Re-run the Phase 1 benchmark and record before/after wall time of one
+   <code>test_cavity</code> sequence run (correspondences over the 4 frames) in the PR.</li>
+</ol>
+<h2 id="phase-4-optional-follow-ups-create-separate-dated-plans-if-the-numbers-justify">Phase 4 — Optional follow-ups (create separate dated plans if the numbers justify)<a class="headerlink" href="#phase-4-optional-follow-ups-create-separate-dated-plans-if-the-numbers-justify" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Vectorize the <code>nlay &gt; 1</code> LUT fill (currently a Python double loop over nr × nz).</li>
+<li>Make <code>rw</code> configurable via <code>VolumePar</code>/YAML if Phase 1 shows accuracy or speed
+  would benefit from a different grid spacing.</li>
+<li>Persist LUTs to disk keyed by a hash of (calibration, mm params, volume) to skip
+  re-init across runs of the same experiment.</li>
+<li>Batch LUT lookup (array-in/array-out) for <code>point_positions</code>-style vectorized
+  callers.</li>
 </ul>
-</li>
-</ol>
-<h3 id="step-6-disable-debug-mode">Step 6: Disable Debug Mode<a class="headerlink" href="#step-6-disable-debug-mode" title="Permanent link">&para;</a></h3>
-<p>Go to menu: <strong>Tracking → Debugging with display</strong> again</p>
-<p>Console output:
-<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>Debug mode OFF
-</span></code></pre></div></p>
-<h2 id="what-can-go-wrong">What Can Go Wrong<a class="headerlink" href="#what-can-go-wrong" title="Permanent link">&para;</a></h2>
-<h3 id="no-calibrations-available-run-init-first">"No calibrations available. Run Init first."<a class="headerlink" href="#no-calibrations-available-run-init-first" title="Permanent link">&para;</a></h3>
-<p><strong>Cause</strong>: You haven't run Start → Init / Reload</p>
-<p><strong>Solution</strong>: Go to <strong>Start → Init / Reload</strong> and try again</p>
-<h3 id="no-particle-found-near-x-y">"No particle found near (x, y)"<a class="headerlink" href="#no-particle-found-near-x-y" title="Permanent link">&para;</a></h3>
-<p><strong>Cause</strong>: Clicked too far from any detected particle</p>
-<p><strong>Solution</strong>: Click directly on a blue cross (detected particle)</p>
-<h3 id="not-enough-frames-in-buffer">"Not enough frames in buffer"<a class="headerlink" href="#not-enough-frames-in-buffer" title="Permanent link">&para;</a></h3>
-<p><strong>Cause</strong>: Not enough frames in the sequence</p>
-<p><strong>Solution</strong>: Ensure your sequence has at least 2 frames</p>
-<h3 id="nothing-happens-when-clicking">Nothing happens when clicking<a class="headerlink" href="#nothing-happens-when-clicking" title="Permanent link">&para;</a></h3>
-<p><strong>Cause</strong>: Debug mode not properly enabled</p>
-<p><strong>Solution</strong>: 
-1. Check console for "Debug mode ON" message
-2. Make sure you clicked on a camera view (not the parameter panel)</p>
-<h2 id="understanding-the-visualization">Understanding the Visualization<a class="headerlink" href="#understanding-the-visualization" title="Permanent link">&para;</a></h2>
-<h3 id="search-volume-rectangles">Search Volume Rectangles<a class="headerlink" href="#search-volume-rectangles" title="Permanent link">&para;</a></h3>
-<p>The tracker predicts where a particle will be in future frames based on:
-- Current position
-- Velocity (change from previous frame)
-- Parameter limits (dvxmin, dvxmax, etc.)</p>
-<p>The rectangles show the search area:
-- <strong>Green (t+1)</strong>: Where to look in the next frame
-- <strong>Yellow (t+2)</strong>: Where to look 2 frames ahead
-- <strong>Orange (t+3)</strong>: Where to look 3 frames ahead</p>
-<p>The rectangle grows with frame offset because uncertainty increases.</p>
-<h3 id="candidate-particles">Candidate Particles<a class="headerlink" href="#candidate-particles" title="Permanent link">&para;</a></h3>
-<p>In frame t+1, particles in the search area are shown as crosses:
-- <strong>Green</strong>: Very close to predicted position (high probability of being the same particle)
-- <strong>Yellow</strong>: Within acceptable range (could be the same particle)
-- <strong>Red</strong>: Far from predicted position (low probability, but still in search area)</p>
-<h3 id="epipolar-lines">Epipolar Lines<a class="headerlink" href="#epipolar-lines" title="Permanent link">&para;</a></h3>
-<p>Cyan lines show where the clicked particle should appear in other cameras based on the calibration geometry. This helps verify correspondences.</p>
-<h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>Action</th>
-<th>Menu Path</th>
-<th>Purpose</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Init</td>
-<td>Start → Init / Reload</td>
-<td>Load calibrations (REQUIRED)</td>
-</tr>
-<tr>
-<td>Detect</td>
-<td>Preprocess → Image coord</td>
-<td>Find particles (optional but recommended)</td>
-</tr>
-<tr>
-<td>Enable Debug</td>
-<td>Tracking → Debugging with display</td>
-<td>Turn on debug mode</td>
-</tr>
-<tr>
-<td>Visualize</td>
-<td>Left-click on particle</td>
-<td>See search volumes and candidates</td>
-</tr>
-<tr>
-<td>Disable Debug</td>
-<td>Tracking → Debugging with display</td>
-<td>Turn off debug mode</td>
-</tr>
-</tbody>
-</table>
+<h2 id="explicitly-out-of-scope">Explicitly out of scope<a class="headerlink" href="#explicitly-out-of-scope" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Parallelizing the iterative ray trace itself (the LUT makes it a non-hot path).</li>
+<li>Changing the physical model (<code>multimed_r_nlay_iterative</code> numerics, n_iter=40,
+  tol=0.001) — parity with liboptv stands.</li>
+</ul>
+<h2 id="verification">Verification<a class="headerlink" href="#verification" title="Permanent link">&para;</a></h2>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Rebuild after any algorithms/*.py change (REQUIRED)</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>setup.py<span class="w"> </span>build_ext<span class="w"> </span>--inplace
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1"># Correctness</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>tests/unit/test_multimed.py<span class="w"> </span>tests/unit/test_multimed_coverage.py<span class="w"> </span>tests/unit/test_imgcoord*.py<span class="w"> </span>-v
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="c1"># Pipeline still works end to end (correspondences + tracking smoke)</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>tests/unit/test_track.py<span class="w"> </span>tests/unit/test_track3d.py<span class="w"> </span>tests/unit/test_correspondences.py<span class="w"> </span>-v<span class="w"> </span>--tb<span class="o">=</span>short
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="c1"># Benchmarks (report numbers in PR)</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>tests/perf/test_mmlut_benchmark.py<span class="w"> </span>-m<span class="w"> </span>perf<span class="w"> </span>-v<span class="w"> </span>-s
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="c1"># Lint</span>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>uv<span class="w"> </span>run<span class="w"> </span>ruff<span class="w"> </span>check<span class="w"> </span>src/openptv2/algorithms/multimed.py<span class="w"> </span>src/openptv2/algorithms/imgcoord.py<span class="w"> </span>tests/
+</span></code></pre></div>
+<p>Success criteria: no unit regressions; LUT-vs-direct projection error &lt; 0.01 px on
+test_cavity; measured per-projection speedup and break-even point documented; a
+test_cavity correspondence run is measurably faster with Phase 3 enabled.</p>
 
 
 
