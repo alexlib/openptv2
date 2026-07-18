@@ -694,10 +694,8 @@ class TestHybridFromFile:
         assert cal.ext_par.x0 != old_x0
         assert abs(cal.ext_par.x0 - 105.26320000) < 1e-5
 
-    def test_instance_method_with_add_file(self):
-        cal = Calibration()
-        cal.from_file(str(ORI_FILE), str(ADD_FILE))
-        assert cal.added_par.scx == 1.0
+    # (removed test_instance_method_with_add_file — byte-identical to
+    #  test_from_file_instance_method_with_add above)
 
 
 # ===========================================================================

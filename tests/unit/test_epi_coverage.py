@@ -147,17 +147,8 @@ def test_epi_mm_2d_reference():
     assert np.allclose(out, [0.0, 0.0, 0.0], atol=EPS)
 
 
-def test_epi_mm_reference():
-    cal1 = make_cal(10.0, 0.0, 100.0, 0.0, 0.0, 50.0)
-    cal2 = make_cal(-10.0, 0.0, 100.0, 0.0, 0.0, 50.0)
-    mmp = make_mm(1.0, 1.49, 1.33, 5.0)
-    vpar = make_vpar((-250.0, 250.0), (-50.0, -50.0), (50.0, 50.0))
-
-    xmin, ymin, xmax, ymax = epi_mm(10.0, 10.0, cal1, cal2, mmp, vpar)
-    assert np.abs(xmin - 26.44927852) < EPS
-    assert np.abs(xmax - 51.60078764) < EPS
-    assert np.abs(ymin - 10.08218486) < EPS
-    assert np.abs(ymax - 10.04378909) < EPS
+# epi_mm is covered by tests/unit/test_epi.py::test_epi_mm (identical case);
+# not duplicated here.
 
 
 # --------------------------------------------------------------------------

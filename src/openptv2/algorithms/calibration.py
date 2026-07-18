@@ -176,7 +176,7 @@ class MmLut:
     origin: np.ndarray = field(default_factory=lambda: np.zeros(3, dtype=np.float64))
     nr: cython.int = 0
     nz: cython.int = 0
-    rw: cython.int = 2
+    rw: cython.double = 2.0  # grid spacing [mm]; float so non-integer rw is exact
     data: Optional[np.ndarray] = None  # 1D array of size nr * nz
 
     @property
@@ -404,6 +404,15 @@ class Calibration:
     def get_rotation_matrix(self) -> np.ndarray:
         """Get rotation matrix as ndarray[3, 3]."""
         return self.ext_par.dm.copy()
+
+    def invalidate_mmlut(self) -> None:
+        """Drop the multimedia LUT so it is rebuilt on next use.
+
+        The LUT is a function of the calibration (exterior/glass) and the
+        multimedia parameters; any change to those makes a cached LUT wrong.
+        Call after a calibration is modified (e.g. after a successful
+        orientation fit)."""
+        self.mmlut.data = None
 
     def write(self, ori_file, add_file=None) -> None:
         """Write calibration to file(s)."""

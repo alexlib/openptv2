@@ -2,13 +2,13 @@ num_cams: 4
 plugins:
   available_tracking:
   - default
-  - ext_tracker_denis
+  - splitter_tracking
   available_sequence:
+  - contour_sequence
   - default
-  - ext_sequence_contour
-  - ext_sequence_denis
-  - ext_sequence_rembg
-  - ext_sequence_rembg_contour
+  - rembg_contour_sequence
+  - rembg_sequence
+  - splitter_sequence
   selected_tracking: default
   selected_sequence: default
 cal_ori:
@@ -29,20 +29,20 @@ cal_ori:
   cal_splitter: false
 criteria:
   X_lay:
-  - -40.0
-  - 40.0
+  - -40
+  - 40
   Zmax_lay:
-  - 20.0
-  - 20.0
+  - 20
+  - 20
   Zmin_lay:
-  - -20.0
-  - -20.0
+  - -20
+  - -20
   cn: 0.02
   cnx: 0.02
   cny: 0.02
   corrmin: 33.0
   csumg: 0.02
-  eps0: 0.06
+  eps0: 0.05
 detect_plate:
   gvth_1: 10
   gvth_2: 10
@@ -64,7 +64,6 @@ dumbbell:
   dumbbell_penalty_weight: 1.0
   dumbbell_scale: 25.0
   dumbbell_step: 1
-  dumbbell_fixed_camera: 0
 examine:
   Combine_Flag: false
   Examine_Flag: false
@@ -95,7 +94,7 @@ multi_planes:
 orient:
   cc: 0
   interf: 0
-  k1: 1
+  k1: 0
   k2: 0
   k3: 0
   p1: 0
@@ -131,9 +130,6 @@ ptv:
   pix_y: 0.012
   tiff_flag: true
   splitter: false
-  negative: false
-  parallel_preprocess: false
-  num_workers: 0
 sequence:
   base_name:
   - img/cam1.%d

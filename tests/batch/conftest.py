@@ -66,6 +66,25 @@ def test_cavity_integration_dir(test_data_dir):
     return test_data_dir
 
 
+@pytest.fixture
+def cavity_workdir(test_data_dir, tmp_path):
+    """Per-test writable copy of the cavity dataset under tmp_path.
+
+    Tests that emit YAML/txt/res artifacts must run against this instead of
+    the session ``test_data_dir`` so they never litter the checked-in
+    test_data/test_cavity. pytest removes tmp_path automatically."""
+    import shutil
+
+    dst = tmp_path / "test_cavity"
+    # Skip prior-run outputs so the copy is clean and cheap-ish.
+    shutil.copytree(
+        test_data_dir,
+        dst,
+        ignore=shutil.ignore_patterns("tmp*.yaml", "tmp*.txt", "res"),
+    )
+    return dst
+
+
 @pytest.fixture(scope="session")
 def small_dir():
     """Path to the test_cavity_small dataset."""

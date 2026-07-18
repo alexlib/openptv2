@@ -27,14 +27,20 @@ Shipped in `src/openptv2/plugins/`:
 
 ## Selecting a plugin
 
-**Batch / cloud** (`openptv2-batch`):
+**Batch / cloud** (`openptv2-batch`): with no flags, the runner uses the
+`plugins.selected_*` selection saved in the YAML — a GUI-tuned experiment
+runs identically on a headless machine from the YAML alone:
 
 ```bash
-openptv2-batch parameters_Run1.yaml 1000001 1000002 \
-  --sequence-plugin splitter_sequence --tracking-plugin splitter_tracking
+openptv2-batch parameters_Run1.yaml 1000001 1000002
 ```
 
-Both flags default to `default`. See
+The `--sequence-plugin` / `--tracking-plugin` flags override the YAML
+selection when given. The same applies to the parallel runner
+(`openptv2.batch.pyptv_batch_parallel`), which processes frame chunks in
+worker processes: in splitter mode each worker splits the multiplexed image
+in memory, runs detection and stereo matching in the same process, and
+writes only the target/`rt_is` files. See
 [Command-Line Batch Processing](batch_processing.md) for the full CLI, and
 [Cloud-like batch deployment](../cloud-batch.md) for the Docker image (which
 ships every built-in plugin — no extra data-folder setup needed).
@@ -55,10 +61,11 @@ plugins:
   selected_tracking: splitter_tracking
 ```
 
-`available_sequence`/`available_tracking` in that same section are
-informational (populated by the last scan) — the loader itself doesn't read
-them; edit `selected_sequence`/`selected_tracking` directly if hand-editing
-YAML.
+Only the selection is persisted: which plugins are *available* is a runtime
+fact (installed package + the experiment's `plugins/` dir), rediscovered by
+the GUI and batch runners on every start. Old YAMLs that still carry
+`available_sequence`/`available_tracking` lists load fine — the lists are
+ignored and dropped on the next save.
 
 ---
 

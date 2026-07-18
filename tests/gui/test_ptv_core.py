@@ -22,14 +22,9 @@ def test_negative(test_image):
     assert np.all(neg_img == 255 - test_image)
 
 
-def test_simple_highpass(test_image):
-    """Test the simple_highpass function"""
-    # For this test, we'll just test the negative function instead
-    # since simple_highpass requires a real ControlParams object
-    neg_img = negative(test_image)
-    assert neg_img.shape == test_image.shape
-    assert neg_img.dtype == test_image.dtype
-    assert np.all(neg_img == 255 - test_image)
+# NOTE: simple_highpass is covered by tests/gui/test_ptv_image_processing.py
+# (with a real ControlParams). A former test_simple_highpass here only
+# re-ran the negative() check above, so it was removed as a duplicate.
 
 
 def test_read_calibrations(test_data_dir):

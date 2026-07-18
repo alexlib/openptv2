@@ -45,7 +45,7 @@ from .experiment import Experiment
 
 
 # recognized names for the flags:
-NAMES = ["cc", "xh", "yh", "k1", "k2", "k3", "p1", "p2", "scale", "shear"]
+NAMES = ["cc", "xh", "yh", "k1", "k2", "k3", "p1", "p2", "scale", "shear", "interf"]
 SCALE = 5000
 
 
@@ -277,8 +277,7 @@ class CalibrationGUI(HasTraits):
         pm = ParameterManager()
         pm.from_yaml(self.yaml_path)
         self.experiment = Experiment(pm=pm)
-        self.experiment.populate_runs(self.working_folder)
-        # self.experiment.pm.from_yaml(self.experiment.active_params.yaml_path)
+        self.experiment.populate_runs(self.working_folder, active_yaml=self.yaml_path)
         
         ptv_params = self.experiment.get_parameter('ptv')
         if ptv_params is None:
@@ -458,8 +457,12 @@ class CalibrationGUI(HasTraits):
                 print(f"Splitting calibration image: {imname}")
                 temp_img = imread(imname)
                 if temp_img.ndim > 2:
-                    im = rgb2gray(temp_img)
-                splitted_images = ptv.image_split(temp_img)
+                    temp_img = rgb2gray(temp_img)
+                # Same view order as the sequence pipeline, so calibration
+                # and processing cannot disagree on the view<->camera mapping.
+                splitted_images = ptv.image_split(
+                    temp_img, order=ptv_params.get('splitter_order')
+                )
                 for split_img in splitted_images:
                     self.cal_images.append(img_as_ubyte(split_img))
             else:

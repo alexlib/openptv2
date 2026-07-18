@@ -85,7 +85,8 @@ def test_fully_verifiable_synthetic_tracker(tmp_path):
         
     # Load baseline parameter yaml file to ensure all required fields are present
     pm = ParameterManager()
-    pm.from_yaml(Path('/home/user/Documents/GitHub/openptv2/test_data/test_cavity/parameters_Run1.yaml'))
+    repo_root = Path(__file__).parent.parent.parent
+    pm.from_yaml(repo_root / "test_data" / "test_cavity" / "parameters_Run1.yaml")
     
     # Overwrite relevant values for our synthetic environment
     pm.parameters['ptv'] = {

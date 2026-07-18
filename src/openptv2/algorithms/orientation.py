@@ -530,7 +530,7 @@ def raw_orient(cal, cpar, nfix, fix, pix):
         True on success, False on failure.
     """
     from .imgcoord import img_coord_typed
-    from .trafo import pixel_to_metric, correct_brown_affin
+    from .trafo import pixel_to_metric
     from .lsqadj import ata, atl, matinv, matmul
 
     dm: cython.double = 0.0001
@@ -595,6 +595,8 @@ def raw_orient(cal, cpar, nfix, fix, pix):
 
     if stopflag:
         cal.ext_par.compute_rotation_matrix()
+        # Exterior orientation changed in place: drop any stale multimedia LUT.
+        cal.invalidate_mmlut()
 
     return bool(stopflag)
 
@@ -670,10 +672,6 @@ def orient(cal_in, cpar, nfix, fix, pix, flags, sigmabeta):
         ]
     )
 
-    safety_x = cal.glass_par.vec_x
-    safety_y = cal.glass_par.vec_y
-    safety_z = cal.glass_par.vec_z
-
     # Column scaling for the radial-distortion terms. The raw k1/k2/k3
     # design columns are xp*r^2, xp*r^4, xp*r^6 with r in mm, spanning ~6
     # orders of magnitude across the sensor, which makes the normal
@@ -701,6 +699,13 @@ def orient(cal_in, cpar, nfix, fix, pix, flags, sigmabeta):
         y[:] = 0.0
         P[:] = 1.0
         n = 0
+
+        # Re-capture per iteration: the numeric glass-derivative blocks below
+        # restore the glass vector to these values, so they must track the
+        # interface updates applied at the end of the previous iteration.
+        safety_x = cal.glass_par.vec_x
+        safety_y = cal.glass_par.vec_y
+        safety_z = cal.glass_par.vec_z
 
         for i in range(nfix):
             pnr_val = pix[i].pnr
@@ -992,10 +997,7 @@ def orient(cal_in, cpar, nfix, fix, pix, flags, sigmabeta):
         if flags.k1flag or flags.k2flag or flags.k3flag:
             from .trafo import radial_distortion_folds
 
-            r_max = 0.5 * float(
-                np.hypot(cpar.imx * cpar.pix_x, cpar.imy * cpar.pix_y)
-            )
-            r_fold = radial_distortion_folds(cal.added_par, r_max)
+            r_fold = radial_distortion_folds(cal.added_par, r_max_norm)
             if r_fold is not None:
                 import warnings
 
@@ -1014,7 +1016,7 @@ def orient(cal_in, cpar, nfix, fix, pix, flags, sigmabeta):
                     warnings.warn(
                         f"Fitted radial distortion is non-monotonic (folds "
                         f"at r={r_fold:.2f} mm, sensor half-diagonal "
-                        f"{r_max:.2f} mm): the model is over-fitted. "
+                        f"{r_max_norm:.2f} mm): the model is over-fitted. "
                         f"Refitting with {dropped} disabled.",
                         RuntimeWarning,
                         stacklevel=2,
@@ -1025,7 +1027,7 @@ def orient(cal_in, cpar, nfix, fix, pix, flags, sigmabeta):
                 warnings.warn(
                     f"Fitted radial distortion is non-monotonic: it folds at "
                     f"r={r_fold:.2f} mm, inside the sensor (half-diagonal "
-                    f"{r_max:.2f} mm), even with k1 alone. The result will "
+                    f"{r_max_norm:.2f} mm), even with k1 alone. The result will "
                     "corrupt undistortion and correspondence matching — "
                     "check the calibration data (target coverage, wrong "
                     "point correspondences).",
@@ -1037,7 +1039,9 @@ def orient(cal_in, cpar, nfix, fix, pix, flags, sigmabeta):
         cal_in.int_par = copy.deepcopy(cal.int_par)
         cal_in.glass_par = copy.deepcopy(cal.glass_par)
         cal_in.added_par = copy.deepcopy(cal.added_par)
-        cal_in.mmlut = copy.deepcopy(cal.mmlut)
+        # The calibration changed, so any cached multimedia LUT is now stale;
+        # drop it rather than copying the pre-fit LUT back into cal_in.
+        cal_in.invalidate_mmlut()
         return resi
     else:
         return None
@@ -1140,7 +1144,7 @@ def full_calibration(cal, ref_pts, img_pts, cpar, flags=None):
         cpar: ControlPar object.
         flags: list of flag name strings to enable. Recognized:
             'cc', 'xh', 'yh', 'k1', 'k2', 'k3', 'p1', 'p2',
-            'scale', 'shear'. If None, no flags enabled (raw-like).
+            'scale', 'shear', 'interf'. If None, no flags enabled (raw-like).
 
     Returns:
         (residuals, used, err_est) tuple:
@@ -1168,7 +1172,7 @@ def full_calibration(cal, ref_pts, img_pts, cpar, flags=None):
         p2flag=1 if "p2" in flags else 0,
         scxflag=1 if "scale" in flags else 0,
         sheflag=1 if "shear" in flags else 0,
-        interfflag=0,
+        interfflag=1 if "interf" in flags else 0,
     )
 
     ref_pts = np.ascontiguousarray(ref_pts, dtype=np.float64)

@@ -30,7 +30,6 @@ else:
 from .trafo import flat_to_dist as _flat_to_dist
 from .multimed import (
     multimed_nlay as _multimed_nlay,
-    get_mmf_from_mmlut as _get_mmf_from_mmlut,
     _multimed_nlay_core as _multimed_nlay_core,
 )
 
@@ -110,27 +109,22 @@ def _get_mmf_from_mmlut_core(
     ir: cython.int = int(sr)
     sr -= ir
 
-    # Check if point is inside LUT bounds
-    if ir > mmlut_nr:
+    # Bilinear interpolation needs the 4 cell corners
+    # (ir,iz)..(ir+1,iz+1) to be valid grid indices, i.e. ir+1 <= nr-1 and
+    # iz+1 <= nz-1. data has exactly nr*nz elements (indices 0..nr*nz-1);
+    # the old check `v4 > nr*nz` let the exact far corner read one element
+    # past the end (OOB under boundscheck(False)). Points outside the LUT
+    # cells return 0.0 so the caller falls back to the iterative solve.
+    # Keep in sync with multimed.get_mmf_from_mmlut.
+    if ir < 0 or ir + 1 > mmlut_nr - 1:
         return 0.0
-    if iz < 0 or iz > mmlut_nz:
+    if iz < 0 or iz + 1 > mmlut_nz - 1:
         return 0.0
 
-    # Get vertices of box for bilinear interpolation
     v4_0: cython.int = ir * mmlut_nz + iz
     v4_1: cython.int = ir * mmlut_nz + (iz + 1)
     v4_2: cython.int = (ir + 1) * mmlut_nz + iz
     v4_3: cython.int = (ir + 1) * mmlut_nz + (iz + 1)
-
-    max_v: cython.int = mmlut_nr * mmlut_nz
-    if v4_0 < 0 or v4_0 > max_v:
-        return 0.0
-    if v4_1 < 0 or v4_1 > max_v:
-        return 0.0
-    if v4_2 < 0 or v4_2 > max_v:
-        return 0.0
-    if v4_3 < 0 or v4_3 > max_v:
-        return 0.0
 
     # Bilinear interpolation
     mmf: cython.double = (

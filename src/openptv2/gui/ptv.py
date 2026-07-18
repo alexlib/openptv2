@@ -314,8 +314,18 @@ def preprocess_and_detect_all_parallel(exp, num_workers: int = None) -> None:
     print("Parallel target detection completed successfully.")
 
 
-def image_split(img: np.ndarray, order=[0, 1, 3, 2]) -> List[np.ndarray]:
-    """Split image into four quadrants."""
+DEFAULT_SPLITTER_ORDER = (0, 1, 3, 2)
+
+
+def image_split(img: np.ndarray, order=None) -> List[np.ndarray]:
+    """Split image into four quadrants, reordered by ``order``.
+
+    ``order`` maps output camera index to quadrant (TL, TR, BL, BR) and
+    comes from the ``ptv.splitter_order`` YAML parameter; the default is
+    the historical hardware order.
+    """
+    if order is None:
+        order = DEFAULT_SPLITTER_ORDER
     list_of_images = [
         img[: img.shape[0] // 2, : img.shape[1] // 2],
         img[: img.shape[0] // 2, img.shape[1] // 2 :],
@@ -556,6 +566,15 @@ def py_start_proc_c(
 
         cals = ptv_calibration._read_calibrations(cpar, num_cams)
 
+        # NOTE: the multimedia LUT is deliberately NOT pre-built here. The
+        # benchmark (tests/perf/test_mmlut_benchmark.py) shows that in the
+        # compiled runtime the iterative Snell solve is already fast, and the
+        # main correspondence path (epi.epi_mm -> flat_image_coord) does not
+        # even pass a LUT, so building one adds cost with no measured speedup.
+        # openptv2.algorithms.multimed.prepare_mmluts(vpar, cpar, cals) is
+        # available if a future efficient LUT call path (see the mmlut plan's
+        # Phase 4) makes it worthwhile. The tracker still builds its own LUT.
+
         return cpar, spar, vpar, track_par, tpar, cals, epar
 
     except IOError as e:
@@ -720,8 +739,86 @@ def run_tracking_plugin(exp) -> None:
     _run_tracking_plugin(exp.plugins.track_alg, exp)
 
 
+def _frame_image_name(base_name, frame: int) -> Path:
+    """Format a sequence base name into the image path for one frame."""
+    base_name = _safe_decode(base_name)
+    try:
+        return Path(base_name % frame)
+    except (TypeError, ValueError):
+        # No usable % placeholder: append the frame number (legacy naming).
+        base_path = Path(base_name)
+        return base_path.parent / f"{base_path.stem}_{frame:04d}{base_path.suffix}"
+
+
+def _read_gray_uint8(imname: Path) -> np.ndarray:
+    """Read an image as 2D uint8 grayscale."""
+    img = imread(imname)
+    if img.ndim > 2:
+        img = rgb2gray(img)
+    if img.dtype != np.uint8:
+        img = img_as_ubyte(img)
+    return img
+
+
+def read_frame_images(pm, img_base_names, num_cams, frame) -> List[np.ndarray]:
+    """Return the per-camera images for one frame, entirely in memory.
+
+    This is the single image-acquisition point of the sequence pipeline:
+
+    - splitter mode (``ptv.splitter``): read ONE multiplexed image (the
+      camera-0 base name), optionally negate the full frame, and split it
+      into ``num_cams`` views using ``ptv.splitter_order``. The split views
+      are never written to disk — detection and stereo matching consume
+      them directly.
+    - default mode: read one image file per camera, optionally negated.
+
+    In both modes the per-camera background mask (``masking`` section) is
+    subtracted per view afterwards.
+    """
+    ptv_params = pm.get_parameter("ptv") or {}
+    masking_params = pm.get_parameter("masking") or {}
+    apply_negative = ptv_params.get("negative", False)
+
+    if ptv_params.get("splitter", False):
+        imname = _frame_image_name(img_base_names[0], frame)
+        if not imname.exists():
+            raise FileNotFoundError(f"{imname} does not exist")
+        img = _read_gray_uint8(imname)
+        if apply_negative:
+            img = negative(img)
+        order = ptv_params.get("splitter_order") or list(DEFAULT_SPLITTER_ORDER)
+        images = [view.copy() for view in image_split(img, order=order)[:num_cams]]
+    else:
+        images = []
+        for i_cam in range(num_cams):
+            imname = _frame_image_name(img_base_names[i_cam], frame)
+            if not imname.exists():
+                raise FileNotFoundError(f"{imname} does not exist")
+            img = _read_gray_uint8(imname)
+            if apply_negative:
+                img = negative(img)
+            images.append(img)
+
+    if masking_params.get("mask_flag", False):
+        for i_cam in range(num_cams):
+            try:
+                background_name = masking_params["mask_base_name"] % (i_cam + 1)
+                background = imread(background_name)
+                images[i_cam] = np.clip(images[i_cam] - background, 0, 255).astype(
+                    np.uint8
+                )
+            except (ValueError, FileNotFoundError, TypeError):
+                print("failed to read the mask")
+
+    return images
+
+
 def py_sequence_loop(exp) -> None:
     """Run a sequence of detection, stereo-correspondence, and determination.
+
+    Splitter mode is handled transparently: when ``ptv.splitter`` is set,
+    each frame is one multiplexed image that is split in memory (see
+    read_frame_images) before detection.
 
     Args:
         exp: Either an Experiment object with pm attribute,
@@ -778,32 +875,14 @@ def py_sequence_loop(exp) -> None:
     for frame in range(first_frame, last_frame + 1):
         detections = []
         corrected = []
+        if not existing_target:
+            frame_images = read_frame_images(pm, img_base_names, num_cams, frame)
         for i_cam in range(num_cams):
             if existing_target:
                 targs = read_targets(short_file_bases[i_cam], frame)
             else:
-                imname = Path(img_base_names[i_cam] % frame)
-                if not imname.exists():
-                    raise FileNotFoundError(f"{imname} does not exist")
-                else:
-                    img = imread(imname)
-                    if img.ndim > 2:
-                        img = rgb2gray(img)
-                    if img.dtype != np.uint8:
-                        img = img_as_ubyte(img)
-                if pm.get_parameter("ptv").get("negative", False):
-                    print("Negative image")
-                    img = negative(img)
-                masking_params = pm.get_parameter("masking")
-                if masking_params and masking_params.get("mask_flag", False):
-                    try:
-                        background_name = masking_params["mask_base_name"] % (i_cam + 1)
-                        background = imread(background_name)
-                        img = np.clip(img - background, 0, 255).astype(np.uint8)
-                    except (ValueError, FileNotFoundError):
-                        print("failed to read the mask")
                 high_pass = simple_highpass(
-                    img,
+                    frame_images[i_cam],
                     cpar,
                     ptv_params_dict.get("highpass_size", DEFAULT_HIGHPASS_FILTER_SIZE),
                 )

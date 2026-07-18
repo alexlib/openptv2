@@ -26,14 +26,14 @@ cal_ori:
   cal_splitter: true
 criteria:
   X_lay:
-  - -30
-  - 50
+  - -30.0
+  - 50.0
   Zmax_lay:
-  - -15
-  - -15
+  - -15.0
+  - -15.0
   Zmin_lay:
-  - -80
-  - -80
+  - -80.0
+  - -80.0
   cn: 0.02
   cnx: 0.3
   cny: 0.3
@@ -127,6 +127,9 @@ ptv:
   pix_y: 0.02
   tiff_flag: true
   splitter: true
+  negative: false
+  parallel_preprocess: false
+  num_workers: 0
 sequence:
   base_name:
   - img/C001H001S000%d.tif
@@ -167,6 +170,7 @@ track:
   dvzmax: 1.9
   dvzmin: -1.9
   flagNewParticles: true
+  track_mode: 1
 man_ori_coordinates:
   camera_0:
     point_1:

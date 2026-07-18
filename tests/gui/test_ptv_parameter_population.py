@@ -182,12 +182,8 @@ class TestPopulateTrackPar:
         with pytest.raises(ValueError, match="Missing required tracking parameters"):
             _populate_track_par(track_params)
     
-    def test_populate_track_par_all_missing(self):
-        """Test tracking parameter population with empty dict"""
-        track_params = {}
-        
-        with pytest.raises(ValueError, match="Missing required tracking parameters"):
-            _populate_track_par(track_params)
+    # (removed test_populate_track_par_all_missing — identical to
+    #  tests/gui/test_populate_parameters.py::test_populate_track_par_minimal)
 
 
 class TestPopulateTpar:

@@ -77,12 +77,18 @@ def test_parameter_manager_yaml_plugins():
         
         assert 'selected_sequence' in plugins
         assert 'selected_tracking' in plugins
-        # Check that dummy plugins are listed
-        assert 'my_sequence_' in plugins['available_sequence']
-        assert 'my_tracker_' in plugins['available_tracking']
+        # Availability is a runtime fact and must NOT be persisted; the GUI
+        # and batch runners rediscover it on every start.
+        assert 'available_sequence' not in plugins
+        assert 'available_tracking' not in plugins
         # Check default selection
         assert plugins['selected_sequence'] == 'default'
         assert plugins['selected_tracking'] == 'default'
+        # Runtime discovery still sees the dummy local plugins
+        from openptv2.plugins import discover_available_plugins
+        discovered = discover_available_plugins(par_dir.parent / 'plugins')
+        assert 'my_sequence_' in discovered['available_sequence']
+        assert 'my_tracker_' in discovered['available_tracking']
 
 if __name__ == '__main__':
     test_parameter_manager_yaml_plugins()

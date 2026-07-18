@@ -40,14 +40,28 @@ tracking. Output (`ptv_is.*`, `rt_is.*`, `added.*`) is written to the
 experiment's `res/` directory. The run is verbose by default — per-frame
 correspondences and per-step tracking links/lost are printed to stdout.
 
-`--sequence-plugin`/`--tracking-plugin` select an alternate processing
-strategy instead of the core pipeline (`default`) — for example, an
-image-splitter dataset that multiplexes four views onto one sensor:
+With no plugin flags, the runner uses the `plugins.selected_*` selection
+saved in the experiment YAML by the GUI — the YAML alone fully describes
+the run, so a GUI-tuned splitter experiment needs nothing extra:
+
+```bash
+openptv2-batch /data/exp1/parameters_Run1.yaml 1000001 1000002
+```
+
+`--sequence-plugin`/`--tracking-plugin` override that selection — for
+example, an image-splitter dataset that multiplexes four views onto one
+sensor:
 
 ```bash
 openptv2-batch /data/exp1/parameters_Run1.yaml 1000001 1000002 \
   --sequence-plugin splitter_sequence --tracking-plugin splitter_tracking
 ```
+
+In splitter mode the multiplexed frame is split into per-camera views in
+memory (nothing intermediate is written to disk) and detection + stereo
+matching run in the same process — this also holds per worker in the
+parallel runner (`python -m openptv2.batch.pyptv_batch_parallel <yaml>
+<first> <last> <n_processes>`), which splits the frame range into chunks.
 
 `default` and every other plugin name go through the same
 `openptv2.plugins` loader — see `src/openptv2/plugins/` for the built-ins

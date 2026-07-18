@@ -28,7 +28,10 @@ else:
         atan as c_atan,
         sin as c_sin,
     )
-from .track_kernels import init_mmlut_data_fast as _init_mmlut_data_fast
+from .track_kernels import (
+    init_mmlut_data_fast as _init_mmlut_data_fast,
+    init_mmlut_data_nlay_fast as _init_mmlut_data_nlay_fast,
+)
 
 
 # Y-remap mode constants (for interlaced cameras)
@@ -483,10 +486,16 @@ def get_mmf_from_mmlut(
     ir = int(sr)
     sr -= ir
 
-    # Check if point is inside LUT bounds
-    if ir > mmlut_nr:
+    # Bilinear interpolation needs the 4 cell corners
+    # (ir,iz)..(ir+1,iz+1) to be valid grid indices, i.e. ir+1 <= nr-1 and
+    # iz+1 <= nz-1. data has exactly nr*nz elements (indices 0..nr*nz-1);
+    # the old check `v4 > nr*nz` let the exact far corner read one element
+    # past the end. Points outside the LUT cells return 0.0 so the caller
+    # falls back to the iterative solve.
+    # Keep in sync with imgcoord._get_mmf_from_mmlut_core.
+    if ir < 0 or ir + 1 > mmlut_nr - 1:
         return 0.0
-    if iz < 0 or iz > mmlut_nz:
+    if iz < 0 or iz + 1 > mmlut_nz - 1:
         return 0.0
 
     # Get vertices of box for bilinear interpolation
@@ -494,16 +503,6 @@ def get_mmf_from_mmlut(
     v4_1: cython.int = ir * mmlut_nz + (iz + 1)
     v4_2: cython.int = (ir + 1) * mmlut_nz + iz
     v4_3: cython.int = (ir + 1) * mmlut_nz + (iz + 1)
-
-    max_v: cython.int = mmlut_nr * mmlut_nz
-    if v4_0 < 0 or v4_0 > max_v:
-        return 0.0
-    if v4_1 < 0 or v4_1 > max_v:
-        return 0.0
-    if v4_2 < 0 or v4_2 > max_v:
-        return 0.0
-    if v4_3 < 0 or v4_3 > max_v:
-        return 0.0
 
     # Bilinear interpolation
     mmf = (
@@ -744,7 +743,7 @@ def init_mmlut(vpar, cpar, cal):
     cal.mmlut.origin = np.array([cal_t_x0, cal_t_y0, Zmin_t], dtype=np.float64)
     cal.mmlut.nr = nr
     cal.mmlut.nz = nz
-    cal.mmlut.rw = int(rw)
+    cal.mmlut.rw = rw
 
     if cal.mmlut.data is None:
         if cpar.mm.nlay == 1:
@@ -762,33 +761,51 @@ def init_mmlut(vpar, cpar, cal):
                 cpar.mm.d[0],
             )
         else:
-            Ri = np.arange(nr) * rw
-            Zi = Zmin_t + np.arange(nz) * rw
-            data = np.zeros(nr * nz, dtype=np.float64)
-            for i in range(nr):
-                for j in range(nz):
-                    xyz = np.array(
-                        [Ri[i] + cal_t_x0, cal_t_y0, Zi[j]], dtype=np.float64
-                    )
-                    data[i * nz + j] = multimed_r_nlay_iterative(
-                        xyz[0],
-                        xyz[1],
-                        xyz[2],
-                        cal_t_x0,
-                        cal_t_y0,
-                        cal_t_z0,
-                        cpar.mm.n1,
-                        cpar.mm.n2[0],
-                        cpar.mm.n3,
-                        cpar.mm.d[0],
-                        cpar.mm.nlay,
-                        mm_n2=cpar.mm.n2,
-                        mm_d=cpar.mm.d,
-                    )
+            n2_arr = np.ascontiguousarray(
+                cpar.mm.n2[: cpar.mm.nlay], dtype=np.float64
+            )
+            d_arr = np.ascontiguousarray(
+                cpar.mm.d[: cpar.mm.nlay], dtype=np.float64
+            )
+            data = _init_mmlut_data_nlay_fast(
+                nr,
+                nz,
+                rw,
+                cal_t_x0,
+                cal_t_y0,
+                cal_t_z0,
+                Zmin_t,
+                cpar.mm.n1,
+                cpar.mm.n3,
+                n2_arr,
+                d_arr,
+                cpar.mm.nlay,
+            )
 
         cal.mmlut.data = data
 
     return cal
+
+
+def prepare_mmluts(vpar, cpar, cals) -> None:
+    """Build the multimedia LUT for every camera that lacks one.
+
+    This is the explicit "init at run start" that lets the whole pipeline
+    (correspondences, 3D determination, sequence, tracking) use the fast
+    bilinear LUT instead of the iterative Snell solve on every projection.
+
+    - No-op for all-air setups (n1 == n2 == n3 == 1.0): the iterative solve
+      already short-circuits to 1.0, so a LUT would only add overhead.
+    - Idempotent: cameras whose LUT is already initialized are skipped, so it
+      is safe to call at several pipeline entry points.
+    """
+    mm = cpar.mm
+    n2_0 = mm.n2[0] if hasattr(mm.n2, "__getitem__") else mm.n2
+    if mm.n1 == 1.0 and n2_0 == 1.0 and mm.n3 == 1.0:
+        return
+    for cal in cals:
+        if not cal.mmlut.is_initialized:
+            init_mmlut(vpar, cpar, cal)
 
 
 def is_compiled() -> bool:

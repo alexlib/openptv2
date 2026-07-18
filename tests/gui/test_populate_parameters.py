@@ -79,14 +79,8 @@ class TestPopulateCpar:
             # Compare with encoded expected value
             assert actual_name == expected_name
 
-    def test_populate_cpar_missing_img_cal(self):
-        """Test behavior when required parameters are missing."""
-        ptv_params = {}  # No required parameters provided
-        num_cams = 2
-
-        # Should raise KeyError for first missing required parameter
-        with pytest.raises(ValueError, match="img_cal_list is too short"):
-            _populate_cpar(ptv_params, num_cams)
+    # (removed test_populate_cpar_missing_img_cal — byte-identical to
+    #  test_populate_cpar_minimal above)
 
 
 class TestPopulateSpar:

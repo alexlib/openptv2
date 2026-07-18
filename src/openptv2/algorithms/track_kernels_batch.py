@@ -430,3 +430,108 @@ def init_mmlut_data_fast(
                 mm_d0,
             )
     return data
+
+
+@cython.ccall
+@cython.boundscheck(False)
+@cython.wraparound(False)
+def init_mmlut_data_nlay_fast(
+    nr: cython.int,
+    nz: cython.int,
+    rw: cython.double,
+    cal_t_x0: cython.double,
+    cal_t_y0: cython.double,
+    cal_t_z0: cython.double,
+    Zmin_t: cython.double,
+    mm_n1: cython.double,
+    mm_n3: cython.double,
+    n2: cython.double[:],
+    d: cython.double[:],
+    nlay: cython.int,
+):
+    """Fill the mmlut data grid — multi-layer multimedia (nlay > 1).
+
+    Compiled counterpart of init_mmlut_data_fast for the general n-layer
+    case. Inlines the iterative Snell solve (multimed_r_nlay_iterative) with
+    typed n2[]/d[] memoryviews so the whole nr*nz grid is built in C instead
+    of a Python double loop that boxed every cell through the object API.
+
+    Args:
+        nr, nz: grid dimensions.
+        rw: grid cell size (mm).
+        cal_t_x0, cal_t_y0, cal_t_z0: transformed camera center.
+        Zmin_t: minimum Z of the translated grid.
+        mm_n1, mm_n3: outer refractive indices.
+        n2: (nlay,) refractive index per layer.
+        d: (nlay,) thickness per layer (d[0] is the glass distance).
+        nlay: number of layers.
+
+    Returns:
+        data: (nr * nz,) float64 array of radial shift factors.
+    """
+    i: cython.int
+    j: cython.int
+    k: cython.int
+    it: cython.int
+    R: cython.double
+    Z: cython.double
+    pos_x: cython.double
+    zout: cython.double
+    r: cython.double
+    rq: cython.double
+    beta1: cython.double
+    sin_beta1: cython.double
+    arg: cython.double
+    beta3: cython.double
+    rbeta: cython.double
+    rdiff: cython.double
+    d0: cython.double = d[0]
+    n_iter: cython.int = 40
+    tol: cython.double = 0.001
+
+    data = np.empty(nr * nz, dtype=np.float64)
+    for i in range(nr):
+        R = i * rw + cal_t_x0
+        pos_x = R
+        # dx = pos_x - cal_t_x0 (== i*rw), dy = cal_t_y0 - cal_t_y0 == 0
+        r = pos_x - cal_t_x0
+        for j in range(nz):
+            Z = Zmin_t + j * rw
+
+            zout = Z
+            for k in range(1, nlay):
+                zout += d[k]
+
+            rq = r
+            data[i * nz + j] = 1.0
+            for it in range(n_iter):
+                beta1 = c_atan(rq / (cal_t_z0 - Z))
+                sin_beta1 = c_sin(beta1)
+
+                arg = sin_beta1 * mm_n1 / mm_n3
+                if arg > 1.0:
+                    arg = 1.0
+                elif arg < -1.0:
+                    arg = -1.0
+                beta3 = c_asin(arg)
+
+                rbeta = (cal_t_z0 - d0) * c_tan(beta1) - zout * c_tan(beta3)
+                for k in range(nlay):
+                    arg = sin_beta1 * mm_n1 / n2[k]
+                    if arg > 1.0:
+                        arg = 1.0
+                    elif arg < -1.0:
+                        arg = -1.0
+                    rbeta += d[k] * c_tan(c_asin(arg))
+
+                rdiff = r - rbeta
+                rq += rdiff
+                if rdiff < 0.0:
+                    rdiff = -rdiff
+                if rdiff < tol:
+                    if r != 0.0:
+                        data[i * nz + j] = rq / r
+                    break
+            else:
+                data[i * nz + j] = 1.0
+    return data

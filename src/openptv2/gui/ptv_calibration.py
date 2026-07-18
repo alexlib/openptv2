@@ -23,7 +23,7 @@ from openptv2.tracking_framebuf import TargetArray
 from openptv2.transforms import convert_arr_pixel_to_metric
 
 # Calibration parameter names
-NAMES = ["cc", "xh", "yh", "k1", "k2", "k3", "p1", "p2", "scale", "shear"]
+NAMES = ["cc", "xh", "yh", "k1", "k2", "k3", "p1", "p2", "scale", "shear", "interf"]
 
 
 def _read_calibrations(cpar: ControlParams, num_cams: int) -> List[Calibration]:

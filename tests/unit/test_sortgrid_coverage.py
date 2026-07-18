@@ -80,10 +80,8 @@ def test_read_sortgrid_par_bad_content(tmp_path):
 # --- read_calblock ---
 
 
-def test_read_calblock_valid():
-    fix, num_points = read_calblock("test_data/calibration/calblock.txt")
-    assert num_points == 5
-    assert fix.shape == (5, 3)
+# happy-path read_calblock is covered by tests/unit/test_sortgrid.py;
+# only the edge cases (missing/empty) are exercised here.
 
 
 def test_read_calblock_missing(tmp_path):

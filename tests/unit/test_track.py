@@ -49,6 +49,16 @@ def read_all_calibration(num_cams, base_path="test_data/track"):
     return cals
 
 
+def _require_fixtures(*names):
+    """Skip when required fixture directories are absent from the current
+    directory. Some datasets (e.g. test_data/track) ship no res_orig/img_orig
+    on this checkout, so a missing fixture must be a skip, not a hard error.
+    Call after chdir into the dataset directory."""
+    missing = [n for n in names if not os.path.exists(n)]
+    if missing:
+        pytest.skip(f"missing fixture(s): {', '.join(missing)}")
+
+
 def test_predict():
     prev_pos = np.array([1.1, 0.6])
     curr_pos = np.array([2.0, -0.8])
@@ -376,6 +386,7 @@ def test_trackcorr_no_add():
     original = os.getcwd()
     try:
         os.chdir("test_data/track")
+        _require_fixtures("res_orig", "img_orig")
         if os.path.exists("res"):
             shutil.rmtree("res")
         if os.path.exists("img"):
@@ -429,6 +440,7 @@ def test_trackcorr_with_add():
     original = os.getcwd()
     try:
         os.chdir("test_data/track")
+        _require_fixtures("res_orig", "img_orig")
         if os.path.exists("res"):
             shutil.rmtree("res")
         if os.path.exists("img"):
@@ -483,6 +495,7 @@ def test_cavity():
     original = os.getcwd()
     try:
         os.chdir("test_data/test_cavity")
+        _require_fixtures("res_orig", "img_orig")
         if os.path.exists("res"):
             shutil.rmtree("res")
         if os.path.exists("img"):
@@ -562,6 +575,7 @@ def test_burgers():
     original = os.getcwd()
     try:
         os.chdir("test_data/burgers")
+        _require_fixtures("res_orig", "img_orig")
         if os.path.exists("res"):
             shutil.rmtree("res")
         if os.path.exists("img"):
@@ -631,6 +645,7 @@ def test_trackback():
     original = os.getcwd()
     try:
         os.chdir("test_data/track")
+        _require_fixtures("res_orig", "img_orig")
         if os.path.exists("res"):
             shutil.rmtree("res")
         if os.path.exists("img"):

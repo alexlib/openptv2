@@ -23,16 +23,18 @@ Notes:
 """
 
 import logging
-from pathlib import Path
+import multiprocessing
 import os
 import sys
 import time
-import multiprocessing
 from concurrent.futures import ProcessPoolExecutor, as_completed
-from typing import Union, List, Tuple
+from pathlib import Path
+from typing import List, Tuple, Union
 
-from openptv2.gui.ptv import py_start_proc_c, py_sequence_loop, generate_short_file_bases
-from openptv2.gui.experiment import Experiment
+from openptv2.batch.pyptv_batch import (
+    build_processing_experiment,
+    resolve_selected_plugins,
+)
 
 # Configure logging
 logging.basicConfig(
@@ -51,14 +53,24 @@ class ProcessingError(Exception):
 
 
 def run_sequence_chunk(
-    yaml_file: Union[str, Path], seq_first: int, seq_last: int
+    yaml_file: Union[str, Path],
+    seq_first: int,
+    seq_last: int,
+    sequence_plugin: str = "default",
 ) -> Tuple[int, int]:
     """Run sequence processing for a chunk of frames in a separate process.
+
+    The whole chunk is processed in this one process, in memory: images are
+    read (and, in splitter mode, split into per-camera views without writing
+    anything to disk), detection and stereo matching run, and only the
+    per-frame target and rt_is result files are written.
 
     Args:
         yaml_file: Path to the YAML parameter file
         seq_first: First frame number in the chunk
         seq_last: Last frame number in the chunk
+        sequence_plugin: Sequence plugin name (resolved by the parent from
+            the YAML ``plugins.selected_sequence`` or the CLI)
 
     Returns:
         Tuple of (seq_first, seq_last) indicating the processed range
@@ -66,7 +78,10 @@ def run_sequence_chunk(
     Raises:
         ProcessingError: If processing fails
     """
-    logger.info(f"Worker process starting: frames {seq_first} to {seq_last}")
+    logger.info(
+        f"Worker process starting: frames {seq_first} to {seq_last} "
+        f"(sequence plugin: {sequence_plugin})"
+    )
 
     try:
         yaml_file = Path(yaml_file).resolve()
@@ -78,47 +93,15 @@ def run_sequence_chunk(
         # Change to experiment directory
         os.chdir(exp_path)
 
-        # Create experiment and load YAML parameters
-        experiment = Experiment()
+        proc_exp = build_processing_experiment(yaml_file, seq_first, seq_last)
 
-        # Load parameters from YAML file
-        experiment.pm.from_yaml(yaml_file)
+        # default_naming output files are written relative to cwd
+        Path("res").mkdir(exist_ok=True)
 
-        # Initialize processing parameters using the experiment
-        cpar, spar, vpar, track_par, tpar, cals, epar = py_start_proc_c(experiment.pm)
+        from openptv2.plugins import run_sequence_plugin
 
-        # Set sequence parameters
-        spar.set_first(seq_first)
-        spar.set_last(seq_last)
+        run_sequence_plugin(sequence_plugin, proc_exp, exp_path / "plugins")
 
-        # Create a simple object to hold processing parameters for ptv.py functions
-        class ProcessingExperiment:
-            def __init__(
-                self, experiment, cpar, spar, vpar, track_par, tpar, cals, epar
-            ):
-                self.pm = experiment.pm
-                self.cpar = cpar
-                self.spar = spar
-                self.vpar = vpar
-                self.track_par = track_par
-                self.tpar = tpar
-                self.cals = cals
-                self.epar = epar
-                self.num_cams = experiment.pm.num_cams
-                self.detections = []
-                self.corrected = []
-
-        proc_exp = ProcessingExperiment(
-            experiment, cpar, spar, vpar, track_par, tpar, cals, epar
-        )
-
-        # Centralized: get target_filenames from ParameterManager
-        proc_exp.target_filenames = experiment.pm.get_target_filenames()
-
-        # Run sequence processing
-        py_sequence_loop(proc_exp)
-
-        # Only run sequence processing in parallel batch
         logger.info(f"Worker process completed: frames {seq_first} to {seq_last}")
         return (seq_first, seq_last)
 
@@ -190,7 +173,7 @@ def validate_experiment_setup(yaml_file: Path) -> Path:
     if not yaml_file.is_file():
         raise ProcessingError(f"Path is not a file: {yaml_file}")
 
-    if not yaml_file.suffix.lower() in [".yaml", ".yml"]:
+    if yaml_file.suffix.lower() not in [".yaml", ".yml"]:
         raise ProcessingError(f"File must have .yaml or .yml extension: {yaml_file}")
 
     # Get experiment directory (parent of YAML file)
@@ -265,6 +248,8 @@ def main(
     last: Union[str, int],
     n_processes: int = 2,
     mode: str = "both",
+    sequence_plugin: str = None,
+    tracking_plugin: str = None,
 ) -> None:
     """Run PyPTV parallel batch processing with modular mode support.
 
@@ -274,6 +259,10 @@ def main(
         last: Last frame number in the sequence
         n_processes: Number of parallel processes to use
         mode: Which steps to run: 'both', 'sequence', or 'tracking'
+        sequence_plugin: Sequence plugin name; None uses the YAML
+            ``plugins.selected_sequence`` selection
+        tracking_plugin: Tracking plugin name; None uses the YAML
+            ``plugins.selected_tracking`` selection
     Raises:
         ProcessingError: If processing fails
         ValueError: If parameters are invalid
@@ -314,6 +303,20 @@ def main(
         # Validate YAML file and experiment setup
         exp_path = validate_experiment_setup(yaml_file)
         logger.info(f"Experiment directory: {exp_path}")
+
+        # Resolve the plugin selection once (CLI wins, else the YAML
+        # plugins.selected_* saved by the GUI) and pass NAMES to the
+        # workers — plugin instances never cross process boundaries.
+        from openptv2.gui.parameter_manager import ParameterManager
+
+        pm = ParameterManager()
+        pm.from_yaml(yaml_file)
+        sequence_plugin, tracking_plugin = resolve_selected_plugins(
+            pm, sequence_plugin, tracking_plugin
+        )
+        logger.info(
+            f"Plugins: sequence={sequence_plugin}, tracking={tracking_plugin}"
+        )
         # Create results directory if it doesn't exist
         res_path = exp_path / "res"
         if not res_path.exists():
@@ -332,7 +335,11 @@ def main(
             with ProcessPoolExecutor(max_workers=n_processes, mp_context=ctx) as executor:
                 future_to_range = {
                     executor.submit(
-                        run_sequence_chunk, yaml_file, chunk_first, chunk_last
+                        run_sequence_chunk,
+                        yaml_file,
+                        chunk_first,
+                        chunk_last,
+                        sequence_plugin,
                     ): (chunk_first, chunk_last)
                     for chunk_first, chunk_last in ranges
                 }
@@ -366,7 +373,13 @@ def main(
             try:
                 from .pyptv_batch import run_batch
 
-                run_batch(yaml_file, seq_first, seq_last, mode="tracking")
+                run_batch(
+                    yaml_file,
+                    seq_first,
+                    seq_last,
+                    mode="tracking",
+                    tracking_plugin=tracking_plugin,
+                )
                 logger.info("Tracking step completed successfully.")
             except Exception as e:
                 logger.error(f"Tracking step failed: {e}")
@@ -382,7 +395,8 @@ def main(
 def parse_command_line_args():
     """Parse and validate command line arguments for pyptv_batch_parallel.py.
     Returns:
-        Tuple of (yaml_file_path, first_frame, last_frame, n_processes, mode)
+        Tuple of (yaml_file_path, first_frame, last_frame, n_processes, mode,
+        sequence_plugin, tracking_plugin)
     Raises:
         ValueError: If arguments are invalid
     """
@@ -403,6 +417,22 @@ def parse_command_line_args():
         help="Which steps to run: both (default), sequence, or tracking.",
     )
     parser.add_argument(
+        "--sequence-plugin",
+        default=None,
+        help=(
+            "Sequence plugin name. Default: the plugins.selected_sequence "
+            "saved in the YAML (falling back to the core pipeline)."
+        ),
+    )
+    parser.add_argument(
+        "--tracking-plugin",
+        default=None,
+        help=(
+            "Tracking plugin name. Default: the plugins.selected_tracking "
+            "saved in the YAML (falling back to the core pipeline)."
+        ),
+    )
+    parser.add_argument(
         "--debug-mode",
         action="store_true",
         help="Deprecated compatibility flag. Ignored in the single-engine runtime.",
@@ -420,7 +450,15 @@ def parse_command_line_args():
     last_frame = args.last_frame
     n_processes = args.n_processes
     mode = args.mode
-    return yaml_file, first_frame, last_frame, n_processes, mode
+    return (
+        yaml_file,
+        first_frame,
+        last_frame,
+        n_processes,
+        mode,
+        args.sequence_plugin,
+        args.tracking_plugin,
+    )
 
 
 if __name__ == "__main__":
@@ -439,10 +477,24 @@ if __name__ == "__main__":
     try:
         logger.info("Starting PyPTV parallel batch processing")
         logger.info(f"Command line arguments: {sys.argv}")
-        yaml_file, first_frame, last_frame, n_processes, mode = (
-            parse_command_line_args()
+        (
+            yaml_file,
+            first_frame,
+            last_frame,
+            n_processes,
+            mode,
+            sequence_plugin,
+            tracking_plugin,
+        ) = parse_command_line_args()
+        main(
+            yaml_file,
+            first_frame,
+            last_frame,
+            n_processes,
+            mode,
+            sequence_plugin=sequence_plugin,
+            tracking_plugin=tracking_plugin,
         )
-        main(yaml_file, first_frame, last_frame, n_processes, mode)
         logger.info("Parallel batch processing completed successfully")
     except (ValueError, ProcessingError) as e:
         logger.error(f"Parallel batch processing failed: {e}")

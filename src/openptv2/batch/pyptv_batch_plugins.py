@@ -58,7 +58,9 @@ def load_plugins_config(exp_path: Path):
         if plugins_params is not None:
             return {
                 "tracking": plugins_params.get('available_tracking', ['default']),
-                "sequence": plugins_params.get('available_sequence', ['default'])
+                "sequence": plugins_params.get('available_sequence', ['default']),
+                "selected_tracking": plugins_params.get('selected_tracking', 'default'),
+                "selected_sequence": plugins_params.get('selected_sequence', 'default'),
             }
     except Exception as e:
         print(f"Error loading plugins from YAML: {e}")
@@ -116,8 +118,13 @@ def main():
     plugins_config = load_plugins_config(yaml_file)
     print(f"Available tracking plugins: {plugins_config.get('tracking', ['default'])}")
     print(f"Available sequence plugins: {plugins_config.get('sequence', ['default'])}")
-    tracking_plugin = args.tracking or plugins_config.get('tracking', ['default'])[0]
-    sequence_plugin = args.sequence or plugins_config.get('sequence', ['default'])[0]
+    # Prefer the selection saved in the YAML over the first available name.
+    tracking_plugin = args.tracking or plugins_config.get(
+        'selected_tracking', plugins_config.get('tracking', ['default'])[0]
+    )
+    sequence_plugin = args.sequence or plugins_config.get(
+        'selected_sequence', plugins_config.get('sequence', ['default'])[0]
+    )
     run_batch(yaml_file, first_frame, last_frame, tracking_plugin, sequence_plugin, mode)
 
 

@@ -19,7 +19,7 @@ from .parameter_manager import ParameterManager
 from . import ptv
 
 
-NAMES: list[str] = ["cc", "xh", "yh", "k1", "k2", "k3", "p1", "p2", "scale", "shear"]
+NAMES: list[str] = ["cc", "xh", "yh", "k1", "k2", "k3", "p1", "p2", "scale", "shear", "interf"]
 
 
 def _as_bool(v) -> bool:

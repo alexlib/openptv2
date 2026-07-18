@@ -173,6 +173,20 @@ class ParameterManager:
             out['plugins'] = self.plugins_info
         out.update(filtered_params)
 
+        # Persist only the plugin *selection*. Which plugins are available is
+        # a runtime fact (installed package + local plugins/ dir), rediscovered
+        # by the GUI and batch runners on every start — persisting the lists
+        # produces stale YAML entries.
+        if isinstance(out.get('plugins'), dict):
+            out['plugins'] = {
+                'selected_tracking': out['plugins'].get(
+                    'selected_tracking', 'default'
+                ),
+                'selected_sequence': out['plugins'].get(
+                    'selected_sequence', 'default'
+                ),
+            }
+
         def convert(obj):
             if isinstance(obj, dict):
                 return {k: convert(v) for k, v in obj.items()}

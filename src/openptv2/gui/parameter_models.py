@@ -111,6 +111,9 @@ class PtvParams(BaseModel):
     pix_y: float = 0.012
     tiff_flag: bool = True
     splitter: bool = False
+    # Mapping from image quadrant (TL, TR, BL, BR) to camera index when
+    # splitter mode is on. The historical hardware default is [0, 1, 3, 2].
+    splitter_order: list[int] = [0, 1, 3, 2]
 
 
 class SequenceParams(BaseModel):

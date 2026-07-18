@@ -38,6 +38,16 @@ def read_all_calibration(num_cams, base_path="test_data/track"):
     return cals
 
 
+def _require_fixtures(*names):
+    """Skip when required fixture directories are absent from the current
+    directory. Some datasets (e.g. test_data/track) ship no res_orig/img_orig
+    on this checkout, so a missing fixture must be a skip, not a hard error.
+    Call after chdir into the dataset directory."""
+    missing = [n for n in names if not os.path.exists(n)]
+    if missing:
+        pytest.skip(f"missing fixture(s): {', '.join(missing)}")
+
+
 def test_find_candidates_in_3d_empty_frame():
     frm = Frame(num_cams=1, max_targets=10)
     frm.num_parts = 0
@@ -105,6 +115,7 @@ def test_track3d_no_add():
     try:
         test_dir = os.path.join(os.path.dirname(__file__), "../../test_data/track")
         os.chdir(test_dir)
+        _require_fixtures("res_orig", "img_orig")
         if os.path.exists("res"):
             shutil.rmtree("res")
         if os.path.exists("img"):
@@ -151,6 +162,7 @@ def track3d_test_cavity():
             os.path.dirname(__file__), "../../test_data/test_cavity"
         )
         os.chdir(test_dir)
+        _require_fixtures("res_orig", "img_orig")
         if os.path.exists("res"):
             shutil.rmtree("res")
         if os.path.exists("img"):
@@ -204,6 +216,7 @@ def test_tracker_full_forward_3d_test_cavity():
             os.path.dirname(__file__), "../../test_data/test_cavity"
         )
         os.chdir(test_dir)
+        _require_fixtures("res_orig", "img_orig")
         if os.path.exists("res"):
             shutil.rmtree("res")
         if os.path.exists("img"):

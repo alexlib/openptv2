@@ -12,7 +12,12 @@ from openptv2.algorithms.orientation import (
     weighted_dumbbell_precision,
 )
 from openptv2.algorithms.calibration import Calibration
-from openptv2.algorithms.parameters import ControlPar, OrientPar, MultimediaPar
+from openptv2.algorithms.parameters import (
+    ControlPar,
+    OrientPar,
+    MultimediaPar,
+    VolumePar,
+)
 from openptv2.algorithms.imgcoord import img_coord
 from openptv2.algorithms.trafo import metric_to_pixel
 from openptv2.algorithms.tracking_frame_buf import Target
@@ -179,6 +184,109 @@ def test_orient():
         + abs(cal.ext_par.kappa - org_cal.ext_par.kappa) / 180
     )
     assert abs(diff - 19.495073) < 1e-6
+
+
+def test_orient_interface_updates_accumulate():
+    """interfflag fit must accumulate glass-vector updates across iterations.
+
+    Regression: safety_x/y/z used to be captured once before the iteration
+    loop, so the numeric-derivative restores wiped each iteration's interface
+    update and the glass vector never moved.
+    """
+    fix = np.zeros((64, 3))
+    pt_id = 0
+    for ix in range(4):
+        for iy in range(4):
+            for iz in range(4):
+                fix[pt_id] = np.array([(ix * 10) - 60, iy * 5, iz * 5])
+                pt_id += 1
+
+    ori_file = "test_data/calibration/sym_cam1.tif.ori"
+    add_file = "test_data/calibration/cam1.tif.addpar"
+
+    cal = Calibration.from_file(ori_file, add_file)
+    cpar = ControlPar.from_yaml("test_data/parameters.yaml")
+
+    # Truth: the unmodified calibration. Synthesize exact observations from it.
+    pix = [Target() for _ in range(64)]
+    for i in range(64):
+        xp, yp = img_coord(fix[i], cal, cpar.mm)
+        x_pix, y_pix = metric_to_pixel(xp, yp, cpar)
+        pix[i].x = x_pix
+        pix[i].y = y_pix
+        pix[i].pnr = i
+
+    true_glass = np.array(
+        [cal.glass_par.vec_x, cal.glass_par.vec_y, cal.glass_par.vec_z]
+    )
+
+    # Start from a glass vector perturbed in the e1/e2 plane that the
+    # interface fit spans (any small tilt off the true direction works).
+    nGl = np.linalg.norm(true_glass)
+    cal.glass_par.vec_x += 0.02 * nGl
+    cal.glass_par.vec_y -= 0.01 * nGl
+    start_err = np.linalg.norm(
+        np.array([cal.glass_par.vec_x, cal.glass_par.vec_y, cal.glass_par.vec_z])
+        - true_glass
+    )
+
+    opar = OrientPar.from_file("test_data/parameters/orient.par")
+    opar.interfflag = 1
+
+    sigmabeta = np.zeros(20)
+    resi = orient(cal, cpar, 64, fix, pix, opar, sigmabeta)
+    assert resi is not None
+
+    end_err = np.linalg.norm(
+        np.array([cal.glass_par.vec_x, cal.glass_par.vec_y, cal.glass_par.vec_z])
+        - true_glass
+    )
+    # The fit must move the glass vector toward the truth. Before the fix the
+    # updates were wiped every iteration, so end_err stayed ~= start_err.
+    assert end_err < 0.5 * start_err
+
+
+def test_orient_invalidates_mmlut():
+    """A successful orient() must drop any cached multimedia LUT: the fit
+    changed the calibration, so a LUT built beforehand is now stale."""
+    from openptv2.algorithms.multimed import init_mmlut
+
+    fix = np.zeros((64, 3))
+    pt_id = 0
+    for ix in range(4):
+        for iy in range(4):
+            for iz in range(4):
+                fix[pt_id] = np.array([(ix * 10) - 60, iy * 5, iz * 5])
+                pt_id += 1
+
+    ori_file = "test_data/calibration/sym_cam1.tif.ori"
+    add_file = "test_data/calibration/cam1.tif.addpar"
+    cal = Calibration.from_file(ori_file, add_file)
+    cpar = ControlPar.from_yaml("test_data/parameters.yaml")
+
+    pix = [Target() for _ in range(64)]
+    for i in range(64):
+        xp, yp = img_coord(fix[i], cal, cpar.mm)
+        x_pix, y_pix = metric_to_pixel(xp, yp, cpar)
+        pix[i].x = x_pix
+        pix[i].y = y_pix
+        pix[i].pnr = i
+
+    # Build a LUT, then perturb so orient has something to converge on.
+    vpar = VolumePar.from_yaml("test_data/parameters.yaml")
+    cpar_lut = ControlPar.from_yaml("test_data/parameters.yaml")
+    cpar_lut.num_cams = 1
+    cal = init_mmlut(vpar, cpar_lut, cal)
+    assert cal.mmlut.is_initialized
+
+    cal.ext_par.x0 -= 5.0
+    cal.ext_par.kappa += 0.1
+
+    opar = OrientPar.from_file("test_data/parameters/orient.par")
+    sigmabeta = np.zeros(20)
+    resi = orient(cal, cpar, 64, fix, pix, opar, sigmabeta)
+    assert resi is not None
+    assert not cal.mmlut.is_initialized
 
 
 def test_ray_distance_midpoint():

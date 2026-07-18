@@ -602,7 +602,9 @@ class TreeMenuHandler(Handler):
                 temp_img = imread(imname)
                 if temp_img.ndim > 2:
                     temp_img = rgb2gray(temp_img)
-                splitted_images = ptv.image_split(temp_img)
+                splitted_images = ptv.image_split(
+                    temp_img, order=ptv_params.get("splitter_order")
+                )
                 for i, split_img in enumerate(splitted_images):
                     mainGui.orig_images[i] = img_as_ubyte(split_img)
         else:
@@ -1890,7 +1892,9 @@ class MainGUI(HasTraits):
                         _ = rgb2gray(_)
                     temp_img = np.max([temp_img, _], axis=0)
 
-            list_of_images = ptv.image_split(temp_img)
+            list_of_images = ptv.image_split(
+                temp_img, order=ptv_params.get("splitter_order")
+            )
             for cam_id in range(self.num_cams):
                 self.camera_list[cam_id].update_image(
                     img_as_ubyte(list_of_images[cam_id])
@@ -1947,7 +1951,9 @@ class MainGUI(HasTraits):
                 temp_img = imread(imname)
                 if temp_img.ndim > 2:
                     temp_img = rgb2gray(temp_img)
-                splitted_images = ptv.image_split(temp_img)
+                splitted_images = ptv.image_split(
+                    temp_img, order=ptv_params.get("splitter_order")
+                )
                 for i in range(self.num_cams):
                     self.camera_list[i].update_image(img_as_ubyte(splitted_images[i]))
             else:

@@ -269,13 +269,13 @@ def test_pyptv_batch_tracking_mode_only(test_data_dir):
             print(f"Correspondence file {corres_file} does not exist.")
 
 
-def test_pyptv_batch_tracking_mode_only_with_temp_yaml(test_data_dir):
+def test_pyptv_batch_tracking_mode_only_with_temp_yaml(cavity_workdir):
     """Test tracking mode only, using a temporary copy of the original YAML file. Print tracking parameters before running tracking."""
     import tempfile
     import shutil
     import yaml
 
-    test_dir = test_data_dir
+    test_dir = cavity_workdir
     orig_yaml = test_dir / "parameters_Run1.yaml"
     start_frame = 10000
     end_frame = 10001
@@ -316,7 +316,7 @@ def test_pyptv_batch_tracking_mode_only_with_temp_yaml(test_data_dir):
             print(f"Correspondence file {corres_file} does not exist.")
 
 
-def test_pyptv_batch_tracking_mode_only_with_temp_yaml_collect_results(test_data_dir):
+def test_pyptv_batch_tracking_mode_only_with_temp_yaml_collect_results(cavity_workdir):
     """Test tracking mode only, collect tracking parameters and average output in a pandas DataFrame, parsing 'Average over sequence' output from file. Print output for debugging if subprocess fails."""
     import tempfile
     import shutil
@@ -324,7 +324,7 @@ def test_pyptv_batch_tracking_mode_only_with_temp_yaml_collect_results(test_data
     import re
     import subprocess
 
-    test_dir = test_data_dir
+    test_dir = cavity_workdir
     orig_yaml = test_dir / "parameters_Run1.yaml"
     start_frame = 10000
     end_frame = 10001

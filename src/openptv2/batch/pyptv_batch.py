@@ -79,14 +79,73 @@ def validate_experiment_setup(yaml_file: Path) -> Path:
     return exp_path
 
 
+def resolve_selected_plugins(pm, sequence_plugin=None, tracking_plugin=None):
+    """Resolve plugin names: explicit argument wins, else the YAML
+    ``plugins.selected_*`` selection saved by the GUI, else "default".
+
+    This is what makes a GUI-tuned YAML self-contained: running the batch
+    with no plugin flags reproduces the GUI's plugin selection.
+    """
+    plugins_params = pm.parameters.get("plugins") or {}
+    if sequence_plugin is None:
+        sequence_plugin = plugins_params.get("selected_sequence") or "default"
+    if tracking_plugin is None:
+        tracking_plugin = plugins_params.get("selected_tracking") or "default"
+    return sequence_plugin, tracking_plugin
+
+
+class ProcessingExperiment:
+    """Minimal experiment-shaped object consumed by openptv2.gui.ptv
+    functions and by sequence/tracking plugins (which expect .pm, the
+    parameter objects, .cals and .target_filenames)."""
+
+    def __init__(self, pm, cpar, spar, vpar, track_par, tpar, cals, epar):
+        self.pm = pm
+        self.cpar = cpar
+        self.spar = spar
+        self.vpar = vpar
+        self.track_par = track_par
+        self.tpar = tpar
+        self.cals = cals
+        self.epar = epar
+        self.num_cams = pm.num_cams
+        # Attributes that may be set during processing
+        self.detections = []
+        self.corrected = []
+        self.target_filenames = pm.get_target_filenames()
+
+
+def build_processing_experiment(
+    yaml_file: Path, seq_first: int, seq_last: int
+) -> ProcessingExperiment:
+    """Load the YAML and construct the processing experiment for one run
+    (or one frame chunk of a parallel run — each worker builds its own)."""
+    from openptv2.gui.experiment import Experiment
+    from openptv2.gui.ptv import py_start_proc_c
+
+    experiment = Experiment()
+    print(f"Loading parameters from: {yaml_file}")
+    experiment.pm.from_yaml(yaml_file)
+
+    print(f"Initializing processing with num_cams = {experiment.pm.num_cams}")
+    cpar, spar, vpar, track_par, tpar, cals, epar = py_start_proc_c(experiment.pm)
+
+    spar.set_first(seq_first)
+    spar.set_last(seq_last)
+
+    return ProcessingExperiment(
+        experiment.pm, cpar, spar, vpar, track_par, tpar, cals, epar
+    )
+
+
 def run_batch(
     yaml_file: Path,
     seq_first: int,
     seq_last: int,
     mode: str = "both",
     track3d: bool = False,
-    sequence_plugin: str = "default",
-    tracking_plugin: str = "default",
+    sequence_plugin: str | None = None,
+    tracking_plugin: str | None = None,
 ) -> None:
     """Run batch processing for a sequence of frames.
 
@@ -96,8 +155,10 @@ def run_batch(
         yaml_file: Path to the YAML parameter file
         track3d: Whether to use 3D segment tracking (only affects the
             "default" tracking plugin; see openptv2.plugins.default_tracking)
-        sequence_plugin: Sequence plugin name (default: the core pipeline)
-        tracking_plugin: Tracking plugin name (default: the core pipeline)
+        sequence_plugin: Sequence plugin name; None (default) uses the
+            YAML ``plugins.selected_sequence`` selection
+        tracking_plugin: Tracking plugin name; None (default) uses the
+            YAML ``plugins.selected_tracking`` selection
 
     Raises:
         ProcessingError: If processing fails
@@ -115,46 +176,12 @@ def run_batch(
         # Change to experiment directory
         os.chdir(exp_path)
 
-        # Create experiment and load YAML parameters
-        from openptv2.gui.experiment import Experiment
-        experiment = Experiment()
+        proc_exp = build_processing_experiment(yaml_file, seq_first, seq_last)
 
-        # Load parameters from YAML file
-        print(f"Loading parameters from: {yaml_file}")
-        experiment.pm.from_yaml(yaml_file)
-
-        print(f"Initializing processing with num_cams = {experiment.pm.num_cams}")
-        from openptv2.gui.ptv import py_start_proc_c
-        cpar, spar, vpar, track_par, tpar, cals, epar = py_start_proc_c(experiment.pm)
-
-        # Set sequence parameters
-        spar.set_first(seq_first)
-        spar.set_last(seq_last)
-
-        # Create a simple object to hold processing parameters for ptv.py functions
-        class ProcessingExperiment:
-            def __init__(
-                self, experiment, cpar, spar, vpar, track_par, tpar, cals, epar
-            ):
-                self.pm = experiment.pm
-                self.cpar = cpar
-                self.spar = spar
-                self.vpar = vpar
-                self.track_par = track_par
-                self.tpar = tpar
-                self.cals = cals
-                self.epar = epar
-                self.num_cams = experiment.pm.num_cams  # Global number of cameras
-                # Initialize attributes that may be set during processing
-                self.detections = []
-                self.corrected = []
-
-        proc_exp = ProcessingExperiment(
-            experiment, cpar, spar, vpar, track_par, tpar, cals, epar
+        sequence_plugin, tracking_plugin = resolve_selected_plugins(
+            proc_exp.pm, sequence_plugin, tracking_plugin
         )
 
-        # Centralized: get target_filenames from ParameterManager
-        proc_exp.target_filenames = experiment.pm.get_target_filenames()
         if track3d:
             proc_exp.track3d = True
 
@@ -195,8 +222,8 @@ def main(
     repetitions: int = 1,
     mode: str = "both",
     track3d: bool = False,
-    sequence_plugin: str = "default",
-    tracking_plugin: str = "default",
+    sequence_plugin: str | None = None,
+    tracking_plugin: str | None = None,
 ) -> None:
     """Run PyPTV batch processing.
 
@@ -207,8 +234,10 @@ def main(
         repetitions: Number of times to repeat the processing (default: 1)
         mode: Which steps to run: both (default), sequence, or tracking
         track3d: Whether to use 3D segment tracking
-        sequence_plugin: Sequence plugin name (default: the core pipeline)
-        tracking_plugin: Tracking plugin name (default: the core pipeline)
+        sequence_plugin: Sequence plugin name; None uses the YAML
+            ``plugins.selected_sequence`` selection
+        tracking_plugin: Tracking plugin name; None uses the YAML
+            ``plugins.selected_tracking`` selection
 
     Raises:
         ProcessingError: If processing fails
@@ -326,13 +355,19 @@ def parse_command_line_args(
     )
     parser.add_argument(
         "--sequence-plugin",
-        default="default",
-        help="Sequence plugin name (default: the core pipeline)",
+        default=None,
+        help=(
+            "Sequence plugin name. Default: the plugins.selected_sequence "
+            "saved in the YAML (falling back to the core pipeline)."
+        ),
     )
     parser.add_argument(
         "--tracking-plugin",
-        default="default",
-        help="Tracking plugin name (default: the core pipeline)",
+        default=None,
+        help=(
+            "Tracking plugin name. Default: the plugins.selected_tracking "
+            "saved in the YAML (falling back to the core pipeline)."
+        ),
     )
     parser.add_argument(
         "--debug-mode",

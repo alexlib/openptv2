@@ -41,6 +41,7 @@ DEFAULT_PTV_OPTIONAL = {
     "chfield": 0,
     "allcam_flag": False,
     "splitter": False,
+    "splitter_order": [0, 1, 3, 2],
     # Multimedia parameters
     "mmp_n1": 1.0,
     "mmp_n2": 1.33,

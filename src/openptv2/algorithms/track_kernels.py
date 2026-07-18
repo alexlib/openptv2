@@ -125,4 +125,5 @@ from .track_kernels_tracking import (  # noqa: E402, F401
 from .track_kernels_batch import (  # noqa: E402, F401
     targ_rec_fast,
     init_mmlut_data_fast,
+    init_mmlut_data_nlay_fast,
 )

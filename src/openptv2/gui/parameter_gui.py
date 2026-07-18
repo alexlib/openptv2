@@ -17,6 +17,23 @@ DEFAULT_STRING = "---"
 DEFAULT_INT = -999
 DEFAULT_FLOAT = -999.0
 
+DEFAULT_SPLITTER_ORDER = [0, 1, 3, 2]
+
+
+def parse_splitter_order(text) -> list:
+    """Parse a '0,1,3,2'-style string into a permutation of [0, 1, 2, 3]."""
+    try:
+        order = [int(v) for v in str(text).replace(",", " ").split()]
+    except ValueError:
+        order = []
+    if sorted(order) != [0, 1, 2, 3]:
+        print(
+            f"Warning: invalid splitter order {text!r}; "
+            f"using default {DEFAULT_SPLITTER_ORDER}"
+        )
+        return list(DEFAULT_SPLITTER_ORDER)
+    return order
+
 
 # define handler function for main parameters
 class ParamHandler(Handler):
@@ -53,6 +70,7 @@ class ParamHandler(Handler):
                 'mmp_n3': main_params.Refr_Water,
                 'mmp_d': main_params.Thick_Glass,
                 'splitter': main_params.Splitter,
+                'splitter_order': parse_splitter_order(main_params.Splitter_Order),
                 'negative': main_params.Negative,
                 'parallel_preprocess': main_params.Parallel_Preprocess,
                 'num_workers': main_params.Num_Workers
@@ -320,6 +338,7 @@ class Main_Params(HasTraits):
     # hp_enable_flag = Bool()
     negative_image_flag = Bool()
     Splitter = Bool(label="Split images into 4?")
+    Splitter_Order = Str("0,1,3,2", label="Splitter view order (TL,TR,BL,BR)")
 
     tiff_flag = Bool()
     imx = Int()
@@ -396,6 +415,7 @@ class Main_Params(HasTraits):
         Group(
             Item(name="Num_Cam", width=30),
             Item(name="Splitter"),
+            Item(name="Splitter_Order", enabled_when="Splitter"),
             Item(name="Accept_OnlyAllCameras", enabled_when="all_enable_flag"),
             Item(name="pair_Flag", enabled_when="pair_enable_flag"),
             orientation="horizontal",
@@ -579,6 +599,11 @@ class Main_Params(HasTraits):
         self.pix_y = ptv_params['pix_y']
         self.chfield = int(ptv_params['chfield'])
         self.Negative = bool(ptv_params.get('negative', False))
+        self.Splitter = bool(ptv_params.get('splitter', False))
+        self.Splitter_Order = ",".join(
+            str(v)
+            for v in ptv_params.get('splitter_order', DEFAULT_SPLITTER_ORDER)
+        )
 
         targ_rec_params = pm.get_section('targ_rec')
         gvthres = targ_rec_params['gvthres']

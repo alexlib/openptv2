@@ -32,7 +32,7 @@ from .experiment import Experiment
 
 
 # recognized names for the flags:
-NAMES = ["cc", "xh", "yh", "k1", "k2", "k3", "p1", "p2", "scale", "shear"]
+NAMES = ["cc", "xh", "yh", "k1", "k2", "k3", "p1", "p2", "scale", "shear", "interf"]
 SCALE = 5000
 
 
