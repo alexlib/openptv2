@@ -1022,6 +1022,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#outcome-2026-07-19" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Outcome (2026-07-19)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#problem-statement" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1209,8 +1220,41 @@
 
 <h1 id="parameter-simplification-plan">Parameter Simplification Plan<a class="headerlink" href="#parameter-simplification-plan" title="Permanent link">&para;</a></h1>
 <p><strong>Branch</strong>: <code>refactor/parameter-simplification</code><br />
-<strong>Status</strong>: planning<br />
+<strong>Status</strong>: completed 2026-07-19 (see "Outcome" below — Steps 1–3 as adapted;
+Steps 4–6 resolved differently than written)<br />
 <strong>Author</strong>: Alex Liberzon  </p>
+<h2 id="outcome-2026-07-19">Outcome (2026-07-19)<a class="headerlink" href="#outcome-2026-07-19" title="Permanent link">&para;</a></h2>
+<p>The plan's invariants are in place, though the implementation evolved past the
+plan's letter:</p>
+<ul>
+<li><strong>Step 1 — done</strong> (earlier work): <code>Paramset</code> is thin (<code>name</code> + <code>yaml_path</code>,
+  no parameter copy); <code>_open_param_dialog</code> swaps in a local <code>ParameterManager</code>
+  loaded from the run's YAML and restores the original pm <em>by object
+  reference</em> in <code>finally</code> — the active pm object is never mutated, so the
+  hot-swap corruption class is gone.</li>
+<li><strong>Step 2 — done</strong> (earlier work): <code>Experiment.save_active()</code> is the single
+  save path; dialog handlers call it.</li>
+<li><strong>Step 3 — done, as pydantic instead of dataclasses</strong>: typed section models
+  live in <code>gui/parameter_models.py</code> (<code>AllParams</code> + one model per section).
+  As of 2026-07-19, <code>ParameterManager.from_yaml</code> <strong>normalizes through the
+  model</strong>: values are coerced to the declared field types at the load
+  boundary (<code>model_dump(exclude_unset=True)</code> — absent sections/keys stay
+  absent; unknown keys survive via <code>extra="allow"</code> on every section model).
+  Invalid files fall back to raw data with a warning, as before.
+  <code>pm.validated()</code> returns the fully typed <code>AllParams</code> for strict consumers.</li>
+<li><strong>Step 4 — resolved differently</strong>: the <code>Int</code> vs <code>Float</code> TraitError class of
+  bug is fixed twice over — criteria traits are declared <code>Float</code>, and the
+  load boundary now coerces. The full rewrite of trait bindings to dataclass
+  fields was <strong>not</strong> done: dict sections accessed via <code>get_section</code> /
+  <code>get_parameter</code> are the settled interface, and rewriting ~100 GUI call
+  sites has no remaining bug to fix.</li>
+<li><strong>Step 5 — dropped</strong>: <code>_populate_cpar</code>-style functions keep receiving dict
+  sections; those dicts are now type-coerced at the boundary, which was the
+  actual point.</li>
+<li><strong>Step 6 — dropped</strong>: <code>ParameterManager</code> still carries legacy <code>.par</code>
+  parsing and plugin scanning. No observed cost; split it out if/when it
+  bites.</li>
+</ul>
 <h2 id="problem-statement">Problem statement<a class="headerlink" href="#problem-statement" title="Permanent link">&para;</a></h2>
 <p>The current parameter pipeline has four layers that each hold a copy of the
 same data:</p>
