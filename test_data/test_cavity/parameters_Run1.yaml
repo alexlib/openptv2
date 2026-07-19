@@ -1,14 +1,5 @@
 num_cams: 4
 plugins:
-  available_tracking:
-  - default
-  - splitter_tracking
-  available_sequence:
-  - contour_sequence
-  - default
-  - rembg_contour_sequence
-  - rembg_sequence
-  - splitter_sequence
   selected_tracking: default
   selected_sequence: default
 cal_ori:

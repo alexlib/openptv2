@@ -5,16 +5,15 @@ from pathlib import Path
 
 import numpy as np
 
-from openptv2.imgcoord import image_coordinates
-from openptv2.transforms import convert_arr_metric_to_pixel
-
+from openptv2.gui import ptv
 from openptv2.gui.ground_truth import generate_ground_truth, save_ground_truth_npz
 from openptv2.gui.standalone_calibration import (
     get_flags_from_yaml,
     load_parameter_manager,
     run_standalone_calibration,
 )
-from openptv2.gui import ptv
+from openptv2.imgcoord import image_coordinates
+from openptv2.transforms import convert_arr_metric_to_pixel
 
 
 def _copy_tree(src: Path, dst: Path) -> None:
@@ -40,7 +39,11 @@ def test_standalone_calibration_full_cycle(tmp_path: Path):
 
     # 2) Run calibration using those correspondences.
     pm = load_parameter_manager(yaml_path)
-    flags = get_flags_from_yaml(pm)
+    # external_calibration (raw_orient) zeroes the distortion parameters,
+    # but the GT observations were generated with the non-zero .addpar of
+    # test_cavity. The fit must therefore be allowed to recover distortion,
+    # or the reprojection error floor is the (sub-pixel) distortion itself.
+    flags = sorted(set(get_flags_from_yaml(pm)) | {"k1", "k2", "k3", "p1", "p2"})
 
     cpar, *_ = ptv.py_start_proc_c(pm)
 

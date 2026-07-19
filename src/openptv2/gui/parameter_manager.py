@@ -207,15 +207,30 @@ class ParameterManager:
             yaml.safe_dump(data, f, default_flow_style=False, sort_keys=False)
 
     def from_yaml(self, file_path):
-        """Load parameters from a YAML file."""
+        """Load parameters from a YAML file.
+
+        When the file validates against AllParams, the stored dict is the
+        model's dump: values coerced to the declared field types (the fix for
+        the Int-trait-receives-float class of GUI bug). exclude_unset keeps
+        the dump limited to what the YAML actually contains — absent sections
+        and keys stay absent (the plugins section in particular must not be
+        invented; availability is a runtime fact). Unknown keys survive
+        (extra="allow" on all section models). On validation failure the raw
+        data is kept and a warning printed — same tolerant behavior as before.
+        """
         file_path = Path(file_path)
         with file_path.open('r') as f:
             data = yaml.safe_load(f)
 
         self.num_cams = data.get('num_cams')
-        self.parameters = data
+        try:
+            model = AllParams.model_validate(data)
+            self.parameters = model.model_dump(exclude_unset=True)
+            self.num_cams = model.num_cams
+        except Exception as exc:
+            print(f"Warning: parameter validation failed ({file_path}): {exc}")
+            self.parameters = data
         self.yaml_path = file_path
-        self._validate_warn(file_path)
 
 
     def to_directory(self, dir_path):

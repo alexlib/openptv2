@@ -1,8 +1,42 @@
 # Parameter Simplification Plan
 
 **Branch**: `refactor/parameter-simplification`  
-**Status**: planning  
+**Status**: completed 2026-07-19 (see "Outcome" below — Steps 1–3 as adapted;
+Steps 4–6 resolved differently than written)  
 **Author**: Alex Liberzon  
+
+## Outcome (2026-07-19)
+
+The plan's invariants are in place, though the implementation evolved past the
+plan's letter:
+
+- **Step 1 — done** (earlier work): `Paramset` is thin (`name` + `yaml_path`,
+  no parameter copy); `_open_param_dialog` swaps in a local `ParameterManager`
+  loaded from the run's YAML and restores the original pm *by object
+  reference* in `finally` — the active pm object is never mutated, so the
+  hot-swap corruption class is gone.
+- **Step 2 — done** (earlier work): `Experiment.save_active()` is the single
+  save path; dialog handlers call it.
+- **Step 3 — done, as pydantic instead of dataclasses**: typed section models
+  live in `gui/parameter_models.py` (`AllParams` + one model per section).
+  As of 2026-07-19, `ParameterManager.from_yaml` **normalizes through the
+  model**: values are coerced to the declared field types at the load
+  boundary (`model_dump(exclude_unset=True)` — absent sections/keys stay
+  absent; unknown keys survive via `extra="allow"` on every section model).
+  Invalid files fall back to raw data with a warning, as before.
+  `pm.validated()` returns the fully typed `AllParams` for strict consumers.
+- **Step 4 — resolved differently**: the `Int` vs `Float` TraitError class of
+  bug is fixed twice over — criteria traits are declared `Float`, and the
+  load boundary now coerces. The full rewrite of trait bindings to dataclass
+  fields was **not** done: dict sections accessed via `get_section` /
+  `get_parameter` are the settled interface, and rewriting ~100 GUI call
+  sites has no remaining bug to fix.
+- **Step 5 — dropped**: `_populate_cpar`-style functions keep receiving dict
+  sections; those dicts are now type-coerced at the boundary, which was the
+  actual point.
+- **Step 6 — dropped**: `ParameterManager` still carries legacy `.par`
+  parsing and plugin scanning. No observed cost; split it out if/when it
+  bites.
 
 ## Problem statement
 

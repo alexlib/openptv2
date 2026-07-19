@@ -1,10 +1,22 @@
 """Pydantic v2 models for parameter validation."""
 from __future__ import annotations
+
 from typing import Any
-from pydantic import BaseModel, field_validator, model_validator
+
+from pydantic import BaseModel, model_validator
 
 
-class CalOriParams(BaseModel):
+class SectionModel(BaseModel):
+    """Base for all parameter sections.
+
+    extra="allow" so normalizing a YAML through the model (ParameterManager
+    .from_yaml) can never silently drop keys the models don't know about.
+    """
+
+    model_config = {"extra": "allow"}
+
+
+class CalOriParams(SectionModel):
     chfield: int = 0
     fixp_name: str = ""
     img_cal_name: list[str] = []
@@ -24,7 +36,7 @@ class CalOriParams(BaseModel):
         return self
 
 
-class CriteriaParams(BaseModel):
+class CriteriaParams(SectionModel):
     X_lay: list[float] = [-40.0, 40.0]
     Zmax_lay: list[float] = [20.0, 20.0]
     Zmin_lay: list[float] = [-20.0, -20.0]
@@ -36,7 +48,7 @@ class CriteriaParams(BaseModel):
     eps0: float = 0.05
 
 
-class DetectPlateParams(BaseModel):
+class DetectPlateParams(SectionModel):
     gvth_1: int = 10
     gvth_2: int = 10
     gvth_3: int = 10
@@ -52,7 +64,7 @@ class DetectPlateParams(BaseModel):
     tol_dis: int = 500
 
 
-class DumbbellParams(BaseModel):
+class DumbbellParams(SectionModel):
     dumbbell_eps: float = 3.0
     dumbbell_gradient_descent: float = 0.05
     dumbbell_niter: int = 500
@@ -62,21 +74,21 @@ class DumbbellParams(BaseModel):
     dumbbell_fixed_camera: int = 0
 
 
-class ExamineParams(BaseModel):
+class ExamineParams(SectionModel):
     Combine_Flag: bool = False
     Examine_Flag: bool = False
 
 
-class ManOriParams(BaseModel):
+class ManOriParams(SectionModel):
     nr: list[int] = []
 
 
-class MultiPlanesParams(BaseModel):
+class MultiPlanesParams(SectionModel):
     n_planes: int = 1
     plane_name: list[str] = []
 
 
-class OrientParams(BaseModel):
+class OrientParams(SectionModel):
     cc: int = 0
     interf: int = 0
     k1: int = 0
@@ -91,11 +103,11 @@ class OrientParams(BaseModel):
     yh: int = 0
 
 
-class PftVersionParams(BaseModel):
+class PftVersionParams(SectionModel):
     Existing_Target: int = 0
 
 
-class PtvParams(BaseModel):
+class PtvParams(SectionModel):
     allcam_flag: bool = False
     chfield: int = 0
     hp_flag: bool = True
@@ -116,24 +128,24 @@ class PtvParams(BaseModel):
     splitter_order: list[int] = [0, 1, 3, 2]
 
 
-class SequenceParams(BaseModel):
+class SequenceParams(SectionModel):
     base_name: list[str] = []
     first: int = 0
     last: int = 0
 
 
-class ShakingParams(BaseModel):
+class ShakingParams(SectionModel):
     shaking_first_frame: int = 0
     shaking_last_frame: int = 0
     shaking_max_num_frames: int = 5
     shaking_max_num_points: int = 10
 
 
-class SortGridParams(BaseModel):
+class SortGridParams(SectionModel):
     radius: int = 20
 
 
-class TargRecParams(BaseModel):
+class TargRecParams(SectionModel):
     cr_sz: int = 2
     disco: int = 100
     gvthres: list[int] = []
@@ -146,7 +158,7 @@ class TargRecParams(BaseModel):
     sumg_min: int = 150
 
 
-class TrackParams(BaseModel):
+class TrackParams(SectionModel):
     angle: float = 120.0
     dacc: float = 5.5
     dvxmax: float = 15.5
@@ -159,37 +171,37 @@ class TrackParams(BaseModel):
     track_mode: int = 0
 
 
-class MaskingParams(BaseModel):
+class MaskingParams(SectionModel):
     mask_flag: bool = False
     mask_base_name: str = ""
 
 
-class UnsharpMaskParams(BaseModel):
+class UnsharpMaskParams(SectionModel):
     flag: bool = False
     size: int = 3
     strength: float = 1.0
 
 
-class PluginsParams(BaseModel):
+class PluginsParams(SectionModel):
     available_tracking: list[str] = ["default"]
     available_sequence: list[str] = ["default"]
     selected_tracking: str = "default"
     selected_sequence: str = "default"
 
 
-class ManOriPoint(BaseModel):
+class ManOriPoint(SectionModel):
     x: float
     y: float
 
 
-class ManOriCamera(BaseModel):
+class ManOriCamera(SectionModel):
     point_1: ManOriPoint = ManOriPoint(x=0.0, y=0.0)
     point_2: ManOriPoint = ManOriPoint(x=0.0, y=0.0)
     point_3: ManOriPoint = ManOriPoint(x=0.0, y=0.0)
     point_4: ManOriPoint = ManOriPoint(x=0.0, y=0.0)
 
 
-class AllParams(BaseModel):
+class AllParams(SectionModel):
     num_cams: int
     cal_ori: CalOriParams
     criteria: CriteriaParams = CriteriaParams()

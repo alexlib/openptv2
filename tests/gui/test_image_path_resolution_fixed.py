@@ -5,8 +5,7 @@ Test image path resolution functionality in PyPTV
 
 import os
 import sys
-import pytest
-import numpy as np
+import tempfile
 from pathlib import Path
 
 # Add pyptv to the path
@@ -34,7 +33,7 @@ def test_image_path_resolution(test_data_dir):
 
     # Check if sequence parameters have image information
     assert seq_params and isinstance(seq_params, dict), "No sequence parameters found"
-    
+
     base_name = seq_params.get("base_name", "")
     first_frame = seq_params.get("first", 1)
     last_frame = seq_params.get("last", 1)
@@ -137,10 +136,10 @@ def test_parameter_image_paths(test_data_dir):
 
 def test_working_directory_independence(test_data_dir):
     """Test that PyPTV works regardless of current working directory"""
-    print(f"\nTesting working directory independence")
+    print("\nTesting working directory independence")
 
     original_cwd = os.getcwd()
-    temp_dir = "/tmp"
+    temp_dir = tempfile.gettempdir()
 
     try:
         # Change to a different directory
@@ -177,7 +176,7 @@ def test_working_directory_independence(test_data_dir):
 
 def test_absolute_vs_relative_paths(test_data_dir):
     """Test behavior with absolute vs relative paths"""
-    print(f"\nTesting absolute vs relative path handling")
+    print("\nTesting absolute vs relative path handling")
 
     # Test with absolute path
     abs_path = os.path.abspath(test_data_dir)
