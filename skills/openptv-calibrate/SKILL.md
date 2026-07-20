@@ -212,6 +212,20 @@ one-off copies of these that lived inside dataset folders):
   point is a few pixels (`eps0 = N * pix_x` for N in 2-3), not the ~1px
   default some datasets ship with, which is usually too tight relative to
   the calibration's real reprojection RMS.
+- `estimate_eps0_from_calibration.py <dataset>` — same goal as `tune_eps0.py`
+  but usable *immediately after calibration, before any sequence frame
+  exists*: reuses `cal/calib_matches/camN_matches.txt` (calibration-plate
+  detections, from `dump_matches.py`) instead of real particle data. For
+  every calibration-body point ID detected in both cameras of a pair, computes
+  camera A's actual epipolar line in camera B (`epi_mm()`) and measures how
+  far camera B's real detection sits from it — the same residual real
+  correspondence search sees, driven purely by the calibration's own
+  cross-camera consistency. Prints per-pair and combined percentiles and
+  suggests `eps0 ≈ 1.5x` the combined p95. On a real dataset this landed
+  within ~10% of the value found by sweeping real particle data with
+  `tune_eps0.py` — a useful starting point, not a replacement for confirming
+  against real sequence data once it exists (the calibration plate's clean,
+  well-separated dots don't capture particle-image noise/occlusion/overlap).
 - `visualize_calibration_setup_template.py` — interactive marimo notebook:
   3D setup (world frame, ID-labeled calibration body, camera poses labeled
   by splitter quadrant, mouse-drag rotation via `mo.mpl.interactive`) plus
