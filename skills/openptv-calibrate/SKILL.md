@@ -7,9 +7,12 @@ description: >-
   experiment and does not know the steps. Inspects the dataset, guides creation
   of the manual-orientation seed (interactive mouse click-picker) if missing,
   runs external orientation -> sortgrid -> bundle adjustment, and verifies with
-  reprojection-overlay images and RMS. Triggers: "calibrate my cameras",
-  "calibrate test_cavity", "make the .ori files", "my PTV calibration is off",
-  "set up calibration".
+  reprojection-overlay images and RMS. Also covers image-splitter (4 views
+  tiled into one multiplexed frame) datasets: quadrant-order verification,
+  ID-labeled overlays, staged recalibration when the seed is degenerate, and
+  an interactive 3D setup viewer. Triggers: "calibrate my cameras", "calibrate
+  test_cavity", "make the .ori files", "my PTV calibration is off", "set up
+  calibration", "calibrate the splitter", "image splitter calibration".
 ---
 
 # openptv-calibrate
@@ -165,6 +168,111 @@ snapshot-refine for the next iteration.
 - `seed <dataset> --seed-json F` — write `man_ori.par` + `man_ori.dat` from JSON.
 - `run <dataset> --output F [--dry-run]` — calibrate, overlays, report JSON.
 - `snapshot-refine <dataset> [--tol-px N] [--frames F1,F2] [--dry-run]` — refine from tracking results.
+
+Standalone scripts (each takes `<dataset>` as `sys.argv[1]`; run with
+`uv run python skills/openptv-calibrate/scripts/<name>.py <dataset> ...` from
+the openptv2 checkout — no per-machine path edits needed, unlike earlier
+one-off copies of these that lived inside dataset folders):
+- `recalibrate_constrained.py <dataset>` — re-fit with addpar zeroed (no
+  distortion, `cc` fixed), only exterior + `xh,yh` free. Diagnostic: does an
+  odd-looking pose survive with distortion removed, or was it overfit?
+- `recalibrate_full.py <dataset>` — staged full recalibration: runs
+  `recalibrate_constrained` first, then re-enables `cc`+distortion from that
+  converged pose. **Also the recovery path when `calib.py run` fails with
+  "external_calibration did not converge"** (degenerate/reused man_ori seed)
+  — it starts from the existing on-disk `.ori` instead of reseeding, so it
+  works even when the seed itself is unusable, as long as a real (non-
+  placeholder) prior calibration already exists on disk.
+- `dump_matches.py <dataset>` — writes `cal/calib_matches/camN_matches.txt`
+  (id, detected px, reprojected px) and `camN_overlay_ids.png` (like the
+  usual overlay, but with the calibration-body point ID labeled next to each
+  dot). Run this after any calibration to get overlays you can actually debug
+  from — the default overlays (green/red dots, no IDs) don't let you tell
+  *which* point failed to detect or match.
+- `reproject_on_combined.py <dataset> <path-to-combined.tif> [--verify-order]`
+  — projects the calblock through every camera's calibration and places each
+  camera's points at the correct quadrant offset within the original
+  un-split multiplexed frame (all 4 cameras' fit visible on one image).
+  `--verify-order` empirically checks the current `ptv.splitter_order`
+  against the raw pixel data (and the alternate ordering) rather than
+  trusting the convention by assumption — **always run this once per new
+  rig** before believing any quadrant labels; wrong order gives ~70 grey-
+  level mean diff vs. ~1 for the correct one, so it's an unambiguous check.
+- `visualize_calibration_setup_template.py` — interactive marimo notebook:
+  3D setup (world frame, ID-labeled calibration body, camera poses labeled
+  by splitter quadrant, mouse-drag rotation via `mo.mpl.interactive`) plus
+  the same ID-labeled 2D overlays as `dump_matches.py`. This one must be
+  **copied into the dataset directory** first (it locates itself via
+  `mo.notebook_dir()`), then opened with the marimo-pair skill:
+  ```
+  cp skills/openptv-calibrate/scripts/visualize_calibration_setup_template.py \
+     <dataset>/visualize_calibration_setup.py
+  uv run marimo edit --sandbox --no-token <dataset>/visualize_calibration_setup.py
+  ```
+
+## Image-splitter datasets (4 views tiled into one multiplexed frame)
+
+A splitter rig records one combined image (e.g. 1024x1024) that's split into
+4 quadrants, one per camera — either live by openptv2 (`ptv.splitter: true`,
+`image_split()` in `openptv2/gui/ptv.py`) or offline by an external script
+(e.g. a MATLAB script writing `Cam1.NNNNNN.tif`..`Cam4.NNNNNN.tif` per frame,
+which is what pre-split `cal/cam_N.tif` calibration images usually mean).
+Recurring pitfalls found while calibrating two real splitter datasets:
+
+- **Quadrant order is `[top-left, top-right, bottom-left, bottom-right]` at
+  raw indices `[0,1,2,3]`** (`image_split`'s slice order), but
+  `ptv.splitter_order` (default `[0,1,3,2]`) remaps that into
+  cam1=TL, cam2=TR, **cam3=BR, cam4=BL** — a "clockwise" order, not simple
+  reading order. Do not assume; verify with
+  `reproject_on_combined.py ... --verify-order` against a real un-split
+  frame if one exists.
+- **Legacy `cam_N.tif` (underscore) vs. the tooling's `camN.tif` (no
+  underscore)** naming: both datasets seen so far had `parameters/ptv.par`
+  referencing `cam_N.tif` while this skill's scripts expect `camN.tif`. Fix
+  by copying (`cam_1.tif`→`cam1.tif`, same for `.ori`/`.addpar`/`_targets`)
+  before running `inspect` — and copy the calblock to
+  `cal/target_on_a_side.txt` too (`_calblock_path` looks for that name or a
+  `fixp_name` in the YAML). Sync new `.ori`/`.addpar` back to `cam_N.tif.*`
+  after calibrating, since that's what the dataset's own parameters
+  actually reference.
+- **Existing `camN.tif_targets` are often stale placeholders** (e.g. 2 points
+  from a manual dumbbell click, not real plate detection). `inspect`'s
+  `has_targets` only checks file existence, not content — always look at the
+  file content (`cat cal/cam1.tif_targets`) before trusting it. Real
+  detection: `openptv2.segmentation.target_recognition` with
+  `parameters/detect_plate.par` thresholds (not `targ_rec.par`, which is
+  tuned for smaller/dimmer particle targets, not the calibration plate's
+  larger dots).
+- **`external_calibration did not converge`**: usually a degenerate man_ori
+  seed — e.g. the same 4 point IDs reused unchanged across every camera, and
+  those 4 points nearly collinear (weak/singular pose solve). If the dataset
+  already has a real prior calibration on disk, skip reseeding entirely with
+  `recalibrate_full.py` (see above) rather than trying to fix the seed.
+- **A physically-implausible pose (huge, asymmetric camera-to-target
+  distances) can still show good per-camera RMS.** A shallow calibration
+  body (small z-depth vs. camera distance) has a weak constraint on
+  depth-along-viewing-axis; `recalibrate_constrained.py` (addpar removed) is
+  a useful diagnostic — if the asymmetry survives with cc/distortion fixed,
+  it's a real pose issue (bad seed or ambiguous geometry), not overfitting.
+- **Don't loosen detection thresholds to catch more points without
+  re-testing the full calibration.** Tightening `detect_plate.par`'s
+  `discont` from 20 down to 8 raised raw detection counts significantly, but
+  running the actual calibration on the richer detections made RMS *much*
+  worse (0.7px → 4px on one camera) — the extra detections were mostly noise
+  blobs or fragmented dots that `sortgrid` mismatched, corrupting the bundle
+  adjustment. If points are missing near the current thresholds, verify with
+  the flood-fill size check below before changing anything project-wide.
+- **Why a specific point isn't detected**: `detect_plate`'s flood-fill grows
+  each candidate blob outward (up to `discont` grey-level change per step),
+  then discards the result if its bounding box exceeds `nxmax`/`nymax`/
+  `nnmax` (tuned for an isolated ~7px dot). A dot near glare/reflection/a
+  bright fixture can flood into a much larger connected region and get
+  rejected entirely — and since the flood also marks every pixel it touched
+  as consumed, it silently steals neighboring dots' peaks too, so several
+  adjacent points vanish together. This is a real image/lighting limitation,
+  not a calibration bug — confirm it by re-flooding from that dot's expected
+  pixel location and checking the resulting bbox against the configured
+  bounds before concluding anything is broken.
 
 ## Common Mistakes
 - **Running outside the openptv2 venv** — imports fail. Always `uv run` from the
