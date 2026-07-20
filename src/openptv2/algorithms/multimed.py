@@ -581,6 +581,17 @@ def volumedimension(vpar, cpar, cal):
                     X = pos[0] + (Z - pos[2]) * a[0] / a[2]
                     Y = pos[1] + (Z - pos[2]) * a[1] / a[2]
 
+                    # A camera whose pose puts a corner ray past the glass/water
+                    # critical angle (total internal reflection) makes
+                    # ray_tracing legitimately return NaN for that corner. Skip
+                    # it rather than let it seed xmin/xmax/ymin/ymax: with the
+                    # old "first" flag, a NaN seed poisons every later
+                    # comparison (X > xmax is False when either is NaN), so one
+                    # bad camera silently wipes out the volume even when the
+                    # others are fine.
+                    if not (np.isfinite(X) and np.isfinite(Y)):
+                        continue
+
                     if first:
                         xmin = xmax = X
                         ymin = ymax = Y

@@ -102,6 +102,57 @@ def test_volumedimension():
     assert abs(zmax - 100.0000) < EPS
     assert abs(zmin + 100.0000) < EPS
 
+def test_volumedimension_ignores_nan_camera():
+    """Regression test: one camera whose corner ray hits total internal
+    reflection (ray_tracing legitimately returns NaN, e.g. an oblique pose
+    exceeding the glass/water critical angle) must not poison the bounds from
+    the other, well-behaved cameras.
+
+    Before the fix, volumedimension seeded xmin/xmax/ymin/ymax from whichever
+    corner ray was processed *first* with no finiteness check. If that first
+    value was NaN, every later comparison (`X > xmax`) is False when either
+    operand is NaN, so the NaN silently propagated to the final result even
+    though a later camera produced perfectly valid numbers.
+    """
+    import openptv2.algorithms.ray_tracing as ray_tracing_module
+
+    def fake_ray_tracing(x, y, ext_dm, ext_x0, ext_y0, ext_z0, int_cc,
+                          gx, gy, gz, n1, n2, n3, d):
+        if ext_x0 == 999.0:  # sentinel: the "bad" camera, processed first
+            return (np.array([np.nan, np.nan, np.nan]),
+                     np.array([np.nan, np.nan, np.nan]))
+        return np.array([0.0, 0.0, 50.0]), np.array([0.0, 0.0, -1.0])
+
+    orig = ray_tracing_module.ray_tracing
+    ray_tracing_module.ray_tracing = fake_ray_tracing
+    try:
+        cal_bad = Calibration(
+            ext_par=Exterior(x0=999.0, y0=0.0, z0=500.0),
+            int_par=Interior(cc=100.0),
+            glass_par=Glass(vec_x=0.0, vec_y=0.0, vec_z=50.0),
+            added_par=AddedPar(),
+        )
+        cal_good = Calibration(
+            ext_par=Exterior(x0=0.0, y0=0.0, z0=500.0),
+            int_par=Interior(cc=100.0),
+            glass_par=Glass(vec_x=0.0, vec_y=0.0, vec_z=50.0),
+            added_par=AddedPar(),
+        )
+        cpar = ControlPar(num_cams=2, imx=512, imy=512, pix_x=0.02, pix_y=0.02,
+                          mm=MmNp(nlay=1, n1=1.0, n2=[1.49], n3=1.41, d=[7.5]))
+        vpar = VolumePar(X_lay=[-20, 80], Zmin_lay=[-100, -100], Zmax_lay=[0, 0])
+
+        xmax, xmin, ymax, ymin, zmax, zmin = volumedimension(
+            vpar, cpar, [cal_bad, cal_good]
+        )
+    finally:
+        ray_tracing_module.ray_tracing = orig
+
+    assert np.isfinite([xmax, xmin, ymax, ymin]).all(), (
+        "a NaN-producing camera poisoned the whole measurement volume"
+    )
+
+
 def test_get_mmf_mmLUT():
     ori_file = "test_data/calibration/cam2.tif.ori"
     add_file = "test_data/calibration/cam2.tif.addpar"
