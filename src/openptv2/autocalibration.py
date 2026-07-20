@@ -8,7 +8,14 @@ point-picking required:
       -> refine loop (re-sortgrid with the improved orientation, refit)
       -> full_calibration (bundle adjustment; best distortion flag-set by RMS)
 
-Expected dataset layout (classic OpenPTV, e.g. test_data/test_cavity):
+Camera image/.ori/.addpar paths and the calblock path are resolved from the
+dataset YAML's cal_ori: block (img_cal_name, img_ori, fixp_name) when
+present via cam_files()/resolve_calblock() -- that's the same YAML the GUI
+and the dataset's own parameters/cal_ori.par read, so there is exactly one
+naming convention per dataset, not a separate "camN.tif" convention this
+module assumes regardless of what the dataset actually calls its files.
+Falls back to the classic cal/camN.tif convention when no YAML exists (e.g.
+test_data/test_cavity):
 
     <dataset>/
       parameters/ptv.par         # control params: cams, image size, pixel, mm
@@ -101,6 +108,59 @@ def _find_yaml(base: Path) -> Path | None:
         return pref
     cands = sorted(base.glob("parameters_*.yaml"))
     return cands[0] if cands else None
+
+
+def _cal_ori_yaml(base: Path) -> dict:
+    """The dataset YAML's cal_ori: block, or {} if there is no YAML / no block."""
+    yaml_path = _find_yaml(base)
+    if yaml_path is None:
+        return {}
+    y = yaml.safe_load(yaml_path.read_text()) or {}
+    return y.get("cal_ori") or {}
+
+
+def cam_files(base: Path, cam: int) -> tuple[Path, Path, Path]:
+    """Resolve (image, .ori, .addpar) paths for one camera.
+
+    The dataset YAML's cal_ori.img_cal_name / img_ori are the source of
+    truth when present (that's what the GUI and the dataset's own
+    parameters/cal_ori.par actually reference) -- reading them here instead
+    of assuming a fixed cal/camN.tif naming means the same files the GUI
+    calibrates are the ones this module reads and writes, with no separate
+    adapter-copy naming convention to keep in sync (and no risk of the two
+    silently drifting apart, as happened when the adapter copies for a real
+    dataset were cleaned up as apparent clutter and the corrupted GUI result
+    then had no local backup).
+
+    Falls back to cal/cam{cam+1}.tif(.ori/.addpar) when no YAML exists or it
+    doesn't have cal_ori.img_cal_name/img_ori for this camera (e.g. the
+    classic test_data/test_cavity fixture, which has no YAML at all).
+    """
+    cal_ori = _cal_ori_yaml(base)
+    img_cal_name = cal_ori.get("img_cal_name") or []
+    img_ori = cal_ori.get("img_ori") or []
+    if cam < len(img_cal_name) and cam < len(img_ori) and img_cal_name[cam] and img_ori[cam]:
+        img = base / img_cal_name[cam]
+        ori = base / img_ori[cam]
+        addpar = ori.with_suffix(ori.suffix + ".addpar") if ori.suffix != ".ori" else ori.with_suffix(".addpar")
+        # ori path is typically "....tif.ori"; addpar is the same stem with
+        # ".ori" replaced by ".addpar", not simply swapping the last suffix.
+        addpar = Path(str(ori)[: -len(".ori")] + ".addpar") if str(ori).endswith(".ori") else addpar
+        return img, ori, addpar
+    stem = base / "cal" / f"cam{cam + 1}.tif"
+    return stem, stem.with_suffix(".tif.ori"), stem.with_suffix(".tif.addpar")
+
+
+def resolve_calblock(base: Path) -> Path:
+    """Resolve the 3D calibration-body (calblock) path.
+
+    cal_ori.fixp_name in the dataset YAML is the source of truth when
+    present; falls back to the legacy cal/target_on_a_side.txt convention.
+    """
+    fixp_name = _cal_ori_yaml(base).get("fixp_name")
+    if fixp_name:
+        return base / fixp_name
+    return base / "cal" / "target_on_a_side.txt"
 
 
 @dataclass
@@ -210,15 +270,14 @@ def calibrate_camera(
     fix4: (4,3) 3D coords of the manual-orientation seed points.
     pix4: (4,2) pixel clicks for those seed points.
     """
-    ori = base / "cal" / f"cam{cam + 1}.tif.ori"
-    addpar = base / "cal" / f"cam{cam + 1}.tif.addpar"
+    img, ori, addpar = cam_files(base, cam)
 
     fix4 = np.asarray(fix4, float)
     pix4 = np.asarray(pix4, float)
     if pix4.shape[0] < 4 or fix4.shape[0] < 4:
         raise RuntimeError(f"cam{cam + 1}: need 4 seed points, got {pix4.shape[0]}")
 
-    pix = read_targets(str(base / "cal" / f"cam{cam + 1}.tif"), 0)
+    pix = read_targets(str(img), 0)
     if not pix:
         raise RuntimeError(f"cam{cam + 1}: no detected targets found")
 
@@ -284,7 +343,7 @@ def calibrate_dataset(
     """
     base = Path(dataset_dir).resolve()
 
-    calblock = base / "cal" / "target_on_a_side.txt"
+    calblock = resolve_calblock(base)
     fix, nfix = read_calblock(str(calblock))
 
     dp = _load_dataset_params(base, calblock)
@@ -306,12 +365,11 @@ def calibrate_dataset(
         if overlays:
             save_overlay(res, base, out)
         if write:
-            ori = base / "cal" / f"cam{cam + 1}.tif.ori"
-            addpar = base / "cal" / f"cam{cam + 1}.tif.addpar"
+            _, ori, addpar = cam_files(base, cam)
             import shutil
 
-            shutil.copy2(ori, ori.with_suffix(".ori.autobck"))
-            shutil.copy2(addpar, addpar.with_suffix(".addpar.autobck"))
+            shutil.copy2(ori, Path(str(ori) + ".autobck"))
+            shutil.copy2(addpar, Path(str(addpar) + ".autobck"))
             res.cal.write(str(ori).encode(), str(addpar).encode())
 
     return results
@@ -325,7 +383,7 @@ def save_overlay(res: CamResult, base: Path, outdir: Path) -> Path:
     import matplotlib.pyplot as plt
 
     fig, ax = plt.subplots(figsize=(8, 6.4))
-    img_path = base / "cal" / f"cam{res.cam + 1}.tif"
+    img_path, _, _ = cam_files(base, res.cam)
     try:
         import imageio.v3 as iio
 
