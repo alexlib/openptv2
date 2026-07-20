@@ -198,6 +198,20 @@ one-off copies of these that lived inside dataset folders):
   trusting the convention by assumption — **always run this once per new
   rig** before believing any quadrant labels; wrong order gives ~70 grey-
   level mean diff vs. ~1 for the correct one, so it's an unambiguous check.
+- `tune_eps0.py <dataset> [frame]` — visual assistance for picking
+  `criteria.par`'s `eps0` (epipolar-band half-width used by correspondence
+  matching, `find_candidate()` in `algorithms/epi.py` — unrelated to
+  calibration itself). Sweeps `eps0` against real detected targets from one
+  frame (needs `img/camN.<frame>_targets` and an existing calibration) and
+  plots quad/triplet/pair counts vs. `eps0`, colored to match the GUI's own
+  pair(yellow)/triplet(green)/quad(red) overlay. Pick the value at the
+  "knee" where the quad curve flattens — tighter throws away real matches
+  for no precision gain (they show up as green/triplet in the GUI, one
+  camera short of the 3D intersection); looser mainly inflates pairs/
+  triplets with spurious matches, not more real quads. A good starting
+  point is a few pixels (`eps0 = N * pix_x` for N in 2-3), not the ~1px
+  default some datasets ship with, which is usually too tight relative to
+  the calibration's real reprojection RMS.
 - `visualize_calibration_setup_template.py` — interactive marimo notebook:
   3D setup (world frame, ID-labeled calibration body, camera poses labeled
   by splitter quadrant, mouse-drag rotation via `mo.mpl.interactive`) plus
