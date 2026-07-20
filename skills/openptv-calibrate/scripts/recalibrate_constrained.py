@@ -1,13 +1,18 @@
 #!/usr/bin/env python
 """Re-fit calibration with distortion removed and focal length fixed.
 
-Starting from the current cal/camN.tif.ori/.addpar (already a converged
-fit, e.g. from `calib.py run`), this:
+Starting from the current calibration (already a converged fit, e.g. from
+`calib.py run`), this:
   1. Zeroes each camera's .addpar (k1=k2=k3=p1=p2=0, scx=1, she=0) -- "remove
      addpar".
   2. Re-runs sortgrid + bundle adjustment allowing only exterior orientation
      (x0,y0,z0,omega,phi,kappa -- always free in orient()) plus xh,yh. The
      focal length (cc) and all distortion/affine terms stay fixed.
+
+Camera image/.ori/.addpar paths and the calblock path are resolved from the
+dataset YAML's cal_ori: block via openptv2.autocalibration.cam_files() /
+resolve_calblock() -- the same files the GUI reads and writes, so there is
+no separate camN.tif naming convention to keep in sync by hand.
 
 Rationale: a multi-camera rig (e.g. an image-splitter setup) should look
 physically sensible about the calibration body's center; a full-distortion
@@ -30,20 +35,26 @@ from openptv2.algorithms.calibration import AddedPar, Calibration
 from openptv2.algorithms.orientation import full_calibration
 from openptv2.algorithms.sortgrid import read_calblock, sortgrid
 from openptv2.algorithms.tracking_frame_buf import read_targets
-from openptv2.autocalibration import _load_dataset_params, _matched_pairs, rms_px, save_overlay
+from openptv2.autocalibration import (
+    _load_dataset_params,
+    _matched_pairs,
+    cam_files,
+    resolve_calblock,
+    rms_px,
+    save_overlay,
+)
 
 FLAGS = ["xh", "yh"]  # exterior always free in orient(); cc/distortion/affine fixed
 REFINE_ITERS = 3
 
 
 def recalibrate_camera(cam, base, cpar, fix, nfix, eps):
-    ori = base / "cal" / f"cam{cam + 1}.tif.ori"
-    addpar = base / "cal" / f"cam{cam + 1}.tif.addpar"
+    img, ori, addpar = cam_files(base, cam)
 
     cal = Calibration.from_file(str(ori), str(addpar))
     cal.added_par = AddedPar()  # remove addpar: zero distortion, identity affine
 
-    pix = read_targets(str(base / "cal" / f"cam{cam + 1}.tif"), 0)
+    pix = read_targets(str(img), 0)
     if not pix:
         raise RuntimeError(f"cam{cam + 1}: no detected targets found")
 
@@ -73,7 +84,7 @@ def main():
         return 1
 
     base = Path(sys.argv[1]).resolve()
-    calblock = base / "cal" / "target_on_a_side.txt"
+    calblock = resolve_calblock(base)
     fix, nfix = read_calblock(str(calblock))
     dp = _load_dataset_params(base, calblock)
     cpar, num_cams, eps = dp.cpar, dp.num_cams, dp.eps
@@ -93,10 +104,9 @@ def main():
 
     print(f"{'cam':<6}{'matched':<10}{'RMS px':<10}")
     for cam in range(num_cams):
-        ori = base / "cal" / f"cam{cam + 1}.tif.ori"
-        addpar = base / "cal" / f"cam{cam + 1}.tif.addpar"
-        shutil.copy2(ori, ori.with_suffix(".ori.pre_constrained"))
-        shutil.copy2(addpar, addpar.with_suffix(".addpar.pre_constrained"))
+        _, ori, addpar = cam_files(base, cam)
+        shutil.copy2(ori, Path(str(ori) + ".pre_constrained"))
+        shutil.copy2(addpar, Path(str(addpar) + ".pre_constrained"))
 
         cal, n_matched, rms, ref, det, rep = recalibrate_camera(cam, base, cpar, fix, nfix, eps)
         cal.write(str(ori), str(addpar))
@@ -104,16 +114,6 @@ def main():
         res = _Res(cam=cam, rms=rms, matched=n_matched, nfix=nfix, flags=FLAGS, det=det, rep=rep)
         save_overlay(res, base, outdir)
         print(f"cam{cam + 1:<5}{n_matched}/{nfix:<6}{rms:<10.4f}")
-
-        # sync back to legacy cam_N naming, if this dataset uses it (its
-        # ptv.par may reference cam_N.tif rather than camN.tif)
-        legacy_ori = base / "cal" / f"cam_{cam + 1}.tif.ori"
-        legacy_addpar = base / "cal" / f"cam_{cam + 1}.tif.addpar"
-        if legacy_ori.exists():
-            shutil.copy2(legacy_ori, legacy_ori.with_suffix(".ori.pre_constrained"))
-            shutil.copy2(legacy_addpar, legacy_addpar.with_suffix(".addpar.pre_constrained"))
-            shutil.copy2(ori, legacy_ori)
-            shutil.copy2(addpar, legacy_addpar)
 
     print(f"\nOverlays written to {outdir}")
     return 0

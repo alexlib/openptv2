@@ -27,7 +27,7 @@ import yaml
 
 from openptv2.algorithms.calibration import Calibration
 from openptv2.algorithms.sortgrid import read_calblock
-from openptv2.autocalibration import _load_dataset_params, _reproject_px
+from openptv2.autocalibration import _load_dataset_params, _reproject_px, cam_files, resolve_calblock
 
 # raw quadrant slice offsets (row_offset, col_offset) for a half x half split
 QUADRANT_OFFSET = {
@@ -70,7 +70,7 @@ def verify_splitter_order(base: Path, combined_path: Path, num_cams: int) -> Non
         quads = image_split(combined_img, order=order)
         print(f"--- {label}: order={order} ---")
         for i in range(num_cams):
-            known_path = base / "cal" / f"cam{i + 1}.tif"
+            known_path, _, _ = cam_files(base, i)
             if not known_path.exists():
                 continue
             known = iio.imread(known_path)
@@ -96,7 +96,7 @@ def main():
     base = Path(sys.argv[1]).resolve()
     combined_path = Path(sys.argv[2])
 
-    calblock = base / "cal" / "target_on_a_side.txt"
+    calblock = resolve_calblock(base)
     fix, nfix = read_calblock(str(calblock))
     dp = _load_dataset_params(base, calblock)
     cpar, num_cams = dp.cpar, dp.num_cams
@@ -112,8 +112,7 @@ def main():
 
     colors = ["red", "cyan", "yellow", "magenta"]
     for cam in range(num_cams):
-        ori = base / "cal" / f"cam{cam + 1}.tif.ori"
-        addpar = base / "cal" / f"cam{cam + 1}.tif.addpar"
+        _, ori, addpar = cam_files(base, cam)
         cal = Calibration.from_file(str(ori), str(addpar))
         row_off, col_off = QUADRANT_OFFSET[quadrants[cam]]
 

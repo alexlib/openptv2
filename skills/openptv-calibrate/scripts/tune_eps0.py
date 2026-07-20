@@ -27,6 +27,7 @@ import numpy as np
 from openptv2.algorithms.calibration import Calibration
 from openptv2.algorithms.parameters import ControlPar, VolumePar
 from openptv2.correspondences import MatchedCoords, correspondences
+from openptv2.autocalibration import cam_files
 from openptv2.gui.ptv import read_targets
 
 # Reasonable default sweep in mm; override by editing if your pix size is
@@ -43,9 +44,9 @@ def sweep(base: Path, frame: int, eps0_values=None):
 
     cals = []
     for i in range(nc):
+        _, ori, addpar = cam_files(base, i)
         c = Calibration()
-        c.from_file(str(base / "cal" / f"cam{i + 1}.tif.ori"),
-                   str(base / "cal" / f"cam{i + 1}.tif.addpar"))
+        c.from_file(str(ori), str(addpar))
         cals.append(c)
 
     detections, corrected = [], []

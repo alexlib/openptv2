@@ -226,17 +226,21 @@ one-off copies of these that lived inside dataset folders):
   `tune_eps0.py` — a useful starting point, not a replacement for confirming
   against real sequence data once it exists (the calibration plate's clean,
   well-separated dots don't capture particle-image noise/occlusion/overlap).
-- `visualize_calibration_setup_template.py` — interactive marimo notebook:
-  3D setup (world frame, ID-labeled calibration body, camera poses labeled
-  by splitter quadrant, mouse-drag rotation via `mo.mpl.interactive`) plus
-  the same ID-labeled 2D overlays as `dump_matches.py`. This one must be
-  **copied into the dataset directory** first (it locates itself via
-  `mo.notebook_dir()`), then opened with the marimo-pair skill:
+- `visualize_calibration_setup.py` — interactive marimo notebook: 3D setup
+  (world frame, ID-labeled calibration body, camera poses labeled by
+  splitter quadrant, mouse-drag rotation via `mo.mpl.interactive`) plus the
+  same ID-labeled 2D overlays as `dump_matches.py`. Runs directly from this
+  checkout via marimo's own `--` CLI-args convention -- **no per-dataset
+  copy** (a copied notebook was itself, once, the last thing standing
+  between a corrupted calibration and its only local backup — don't
+  reintroduce that). Open with the marimo-pair skill:
   ```
-  cp skills/openptv-calibrate/scripts/visualize_calibration_setup_template.py \
-     <dataset>/visualize_calibration_setup.py
-  uv run marimo edit --sandbox --no-token <dataset>/visualize_calibration_setup.py
+  uv run marimo edit --sandbox --no-token \
+      skills/openptv-calibrate/scripts/visualize_calibration_setup.py \
+      -- --dataset "<dataset>"
   ```
+  (Still falls back to `mo.notebook_dir()` if no `--dataset` is given, so a
+  copy would work too — just don't make one on purpose.)
 
 ## Image-splitter datasets (4 views tiled into one multiplexed frame)
 
@@ -254,15 +258,26 @@ Recurring pitfalls found while calibrating two real splitter datasets:
   reading order. Do not assume; verify with
   `reproject_on_combined.py ... --verify-order` against a real un-split
   frame if one exists.
-- **Legacy `cam_N.tif` (underscore) vs. the tooling's `camN.tif` (no
-  underscore)** naming: both datasets seen so far had `parameters/ptv.par`
-  referencing `cam_N.tif` while this skill's scripts expect `camN.tif`. Fix
-  by copying (`cam_1.tif`→`cam1.tif`, same for `.ori`/`.addpar`/`_targets`)
-  before running `inspect` — and copy the calblock to
-  `cal/target_on_a_side.txt` too (`_calblock_path` looks for that name or a
-  `fixp_name` in the YAML). Sync new `.ori`/`.addpar` back to `cam_N.tif.*`
-  after calibrating, since that's what the dataset's own parameters
-  actually reference.
+- **Camera/calblock file paths come from the dataset YAML, not a fixed
+  `camN.tif` convention.** Both real splitter datasets seen so far had
+  `parameters/ptv.par`/`parameters_Run1.yaml` referencing `cam_N.tif`
+  (underscore) — a different name than the classic `camN.tif` convention
+  this skill's code originally assumed everywhere. Earlier versions of this
+  skill worked around that by copying `cam_N.tif` → `camN.tif` (and the
+  calblock to `cal/target_on_a_side.txt`) by hand, syncing results back
+  after every calibration. **Don't do that anymore** — it's exactly the kind
+  of fragile duplication that once caused real data loss (the adapter
+  copies got cleaned up as apparent clutter mid-session, and with them the
+  only local backup of a calibration that had just been corrupted by a
+  diverged manual GUI fit). `openptv2.autocalibration.cam_files(base, cam)`
+  and `resolve_calblock(base)` now resolve straight from the dataset YAML's
+  `cal_ori.img_cal_name` / `img_ori` / `fixp_name` (falling back to the
+  classic `camN.tif` convention only when no YAML exists), and every script
+  in this skill uses them — so there is exactly one copy of every file, the
+  one the GUI itself reads and writes. If you're extending this skill,
+  always resolve camera paths through `cam_files()`/`resolve_calblock()`
+  rather than hardcoding `cal/cam{N}.tif` — that hardcoding is the root
+  cause this whole pitfall came from.
 - **Existing `camN.tif_targets` are often stale placeholders** (e.g. 2 points
   from a manual dumbbell click, not real plate detection). `inspect`'s
   `has_targets` only checks file existence, not content — always look at the

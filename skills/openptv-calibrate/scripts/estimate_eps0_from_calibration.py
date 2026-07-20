@@ -32,6 +32,7 @@ from openptv2.algorithms.calibration import Calibration
 from openptv2.algorithms.epi import epi_mm
 from openptv2.algorithms.parameters import ControlPar, VolumePar
 from openptv2.algorithms.tracking_frame_buf import Target, TargetArray
+from openptv2.autocalibration import cam_files
 from openptv2.correspondences import MatchedCoords
 
 
@@ -75,9 +76,9 @@ def main():
 
     cals = []
     for i in range(num_cams):
+        _, ori, addpar = cam_files(base, i)
         c = Calibration()
-        c.from_file(str(base / "cal" / f"cam{i + 1}.tif.ori"),
-                   str(base / "cal" / f"cam{i + 1}.tif.addpar"))
+        c.from_file(str(ori), str(addpar))
         cals.append(c)
 
     matches = load_matches(base, num_cams)

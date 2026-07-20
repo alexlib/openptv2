@@ -1,10 +1,14 @@
 #!/usr/bin/env python
 """Dump per-camera matched calibration-body point IDs + detected/reprojected
-pixel coords for the *current* cal/camN.tif.ori/.addpar, and render an
-ID-labeled overlay PNG per camera (the overlays `calib.py run`/`recalibrate_*`
-produce only show green/red dots with no way to tell which calibration-body
-point is which -- useful when diagnosing why specific points fail to detect
-or match).
+pixel coords for the *current* calibration, and render an ID-labeled overlay
+PNG per camera (the overlays `calib.py run`/`recalibrate_*` produce only show
+green/red dots with no way to tell which calibration-body point is which --
+useful when diagnosing why specific points fail to detect or match).
+
+Camera image/.ori/.addpar paths and the calblock path are resolved from the
+dataset YAML's cal_ori: block via openptv2.autocalibration.cam_files() /
+resolve_calblock() -- the same files the GUI uses, not a separate camN.tif
+naming convention.
 
 Writes, per camera, into cal/calib_matches/:
   camN_matches.txt       "id det_x det_y rep_x rep_y"
@@ -20,17 +24,17 @@ from pathlib import Path
 from openptv2.algorithms.calibration import Calibration
 from openptv2.algorithms.sortgrid import read_calblock, sortgrid
 from openptv2.algorithms.tracking_frame_buf import read_targets
-from openptv2.autocalibration import _load_dataset_params, _reproject_px
+from openptv2.autocalibration import _load_dataset_params, _reproject_px, cam_files, resolve_calblock
 
 
-def render_overlay(base, cam, ids, det, rep, dest):
+def render_overlay(base, cam, img_path, ids, det, rep, dest):
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
     import imageio.v3 as iio
     import numpy as np
 
-    img = iio.imread(base / "cal" / f"cam{cam + 1}.tif")
+    img = iio.imread(img_path)
     rms = float(np.sqrt(np.mean(np.sum((det - rep) ** 2, axis=1)))) if len(det) else float("nan")
 
     fig, ax = plt.subplots(figsize=(8, 6.4))
@@ -56,7 +60,7 @@ def main():
         return 1
 
     base = Path(sys.argv[1]).resolve()
-    calblock = base / "cal" / "target_on_a_side.txt"
+    calblock = resolve_calblock(base)
     fix, nfix = read_calblock(str(calblock))
     dp = _load_dataset_params(base, calblock)
     cpar, num_cams, eps = dp.cpar, dp.num_cams, dp.eps
@@ -65,11 +69,10 @@ def main():
     outdir.mkdir(exist_ok=True)
 
     for cam in range(num_cams):
-        ori = base / "cal" / f"cam{cam + 1}.tif.ori"
-        addpar = base / "cal" / f"cam{cam + 1}.tif.addpar"
+        img, ori, addpar = cam_files(base, cam)
         cal = Calibration.from_file(str(ori), str(addpar))
 
-        pix = read_targets(str(base / "cal" / f"cam{cam + 1}.tif"), 0)
+        pix = read_targets(str(img), 0)
         sorted_pix = sortgrid(cal, cpar, nfix, fix, len(pix), eps, pix)
 
         ids, lines, det, rep = [], [], [], []
@@ -87,7 +90,7 @@ def main():
         dest.write_text("\n".join(lines) + "\n")
 
         overlay_dest = outdir / f"cam{cam + 1}_overlay_ids.png"
-        render_overlay(base, cam, ids, np.asarray(det), np.asarray(rep), overlay_dest)
+        render_overlay(base, cam, img, ids, np.asarray(det), np.asarray(rep), overlay_dest)
 
         print(f"cam{cam + 1}: {len(lines)} matches -> {dest}  overlay -> {overlay_dest}")
 

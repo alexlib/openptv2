@@ -54,13 +54,15 @@ def _num_cams(base: Path) -> int:
 
 
 def _cam_files(base: Path, cam: int) -> dict:
-    stem = base / "cal" / f"cam{cam + 1}.tif"
+    from openptv2.autocalibration import cam_files as _resolve_cam_files
+
+    img, ori, addpar = _resolve_cam_files(base, cam)
     return {
-        "cal_image": str(stem),
-        "cal_image_exists": stem.exists(),
-        "ori": (stem.with_suffix(".tif.ori")).exists(),
-        "addpar": (stem.with_suffix(".tif.addpar")).exists(),
-        "targets": (Path(str(stem) + "_targets")).exists(),
+        "cal_image": str(img),
+        "cal_image_exists": img.exists(),
+        "ori": ori.exists(),
+        "addpar": addpar.exists(),
+        "targets": Path(str(img) + "_targets").exists(),
     }
 
 
@@ -498,10 +500,11 @@ def cmd_snapshot_refine(args) -> int:
     seq_bases = [str(base / s.replace("%d", "")) for s in seq_raw]
 
     # load current calibrations
+    from openptv2.autocalibration import cam_files as _resolve_cam_files
+
     cals = []
     for cam in range(num_cams):
-        ori = base / "cal" / f"cam{cam + 1}.tif.ori"
-        addpar = base / "cal" / f"cam{cam + 1}.tif.addpar"
+        _, ori, addpar = _resolve_cam_files(base, cam)
         cals.append(Calibration.from_file(str(ori), str(addpar)))
 
     # discover tracking result frames
@@ -596,10 +599,9 @@ def cmd_snapshot_refine(args) -> int:
 
         if not args.dry_run:
             cals[cam] = best_cal
-            ori = base / "cal" / f"cam{cam + 1}.tif.ori"
-            addpar = base / "cal" / f"cam{cam + 1}.tif.addpar"
-            ori.rename(ori.with_suffix(".snpbck"))
-            addpar.rename(addpar.with_suffix(".addpar.snpbck"))
+            _, ori, addpar = _resolve_cam_files(base, cam)
+            ori.rename(Path(str(ori) + ".snpbck"))
+            addpar.rename(Path(str(addpar) + ".snpbck"))
             best_cal.write(str(ori), str(addpar))
 
     status = "dry-run" if args.dry_run else "written"

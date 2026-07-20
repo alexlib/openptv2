@@ -13,6 +13,11 @@ distortion only gets to explain residual error *after* the rigid pose is
 already right, it can't compensate for a bad pose by warping into an
 asymmetric solution the way a from-scratch full-flags fit could.
 
+Camera image/.ori/.addpar paths and the calblock path are resolved from the
+dataset YAML's cal_ori: block via openptv2.autocalibration.cam_files() /
+resolve_calblock() -- the same files the GUI reads and writes, so there is
+no separate camN.tif naming convention to keep in sync by hand.
+
 Also useful as a recovery path when `calib.py run` fails with
 "external_calibration did not converge": that happens when the man_ori seed
 points are degenerate (e.g. near-collinear, or the same 4 IDs reused
@@ -38,7 +43,14 @@ sys.path.insert(0, str(Path(__file__).parent))
 from openptv2.algorithms.orientation import full_calibration
 from openptv2.algorithms.sortgrid import read_calblock, sortgrid
 from openptv2.algorithms.tracking_frame_buf import read_targets
-from openptv2.autocalibration import _load_dataset_params, _matched_pairs, rms_px, save_overlay
+from openptv2.autocalibration import (
+    _load_dataset_params,
+    _matched_pairs,
+    cam_files,
+    resolve_calblock,
+    rms_px,
+    save_overlay,
+)
 
 from recalibrate_constrained import recalibrate_camera as fit_constrained
 
@@ -55,7 +67,8 @@ def calibrate_camera_full(cam, base, cpar, fix, nfix, eps):
 
     # Stage 2: only now allow cc + distortion to adjust, seeded from the
     # stage-1 pose (not from the raw manual-orientation seed).
-    pix = read_targets(str(base / "cal" / f"cam{cam + 1}.tif"), 0)
+    img, _, _ = cam_files(base, cam)
+    pix = read_targets(str(img), 0)
     sorted_pix = sortgrid(cal, cpar, nfix, fix, len(pix), eps, pix)
 
     best = None
@@ -82,7 +95,7 @@ def main():
         return 1
 
     base = Path(sys.argv[1]).resolve()
-    calblock = base / "cal" / "target_on_a_side.txt"
+    calblock = resolve_calblock(base)
     fix, nfix = read_calblock(str(calblock))
     dp = _load_dataset_params(base, calblock)
     cpar, num_cams, eps = dp.cpar, dp.num_cams, dp.eps
@@ -102,10 +115,9 @@ def main():
 
     print(f"{'cam':<6}{'matched':<10}{'stage1 RMS':<13}{'stage2 RMS':<13}{'flags'}")
     for cam in range(num_cams):
-        ori = base / "cal" / f"cam{cam + 1}.tif.ori"
-        addpar = base / "cal" / f"cam{cam + 1}.tif.addpar"
-        shutil.copy2(ori, ori.with_suffix(".ori.pre_full_staged"))
-        shutil.copy2(addpar, addpar.with_suffix(".addpar.pre_full_staged"))
+        _, ori, addpar = cam_files(base, cam)
+        shutil.copy2(ori, Path(str(ori) + ".pre_full_staged"))
+        shutil.copy2(addpar, Path(str(addpar) + ".pre_full_staged"))
 
         cal, n_matched, rms1, rms2, flags, ref, det, rep = calibrate_camera_full(
             cam, base, cpar, fix, nfix, eps
@@ -115,14 +127,6 @@ def main():
         res = _Res(cam=cam, rms=rms2, matched=n_matched, nfix=nfix, flags=flags, det=det, rep=rep)
         save_overlay(res, base, outdir)
         print(f"cam{cam + 1:<5}{n_matched}/{nfix:<6}{rms1:<13.4f}{rms2:<13.4f}{'+'.join(flags)}")
-
-        legacy_ori = base / "cal" / f"cam_{cam + 1}.tif.ori"
-        legacy_addpar = base / "cal" / f"cam_{cam + 1}.tif.addpar"
-        if legacy_ori.exists():
-            shutil.copy2(legacy_ori, legacy_ori.with_suffix(".ori.pre_full_staged"))
-            shutil.copy2(legacy_addpar, legacy_addpar.with_suffix(".addpar.pre_full_staged"))
-            shutil.copy2(ori, legacy_ori)
-            shutil.copy2(addpar, legacy_addpar)
 
     print(f"\nOverlays written to {outdir}")
     return 0

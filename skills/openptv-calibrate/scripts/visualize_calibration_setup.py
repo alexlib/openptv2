@@ -10,13 +10,14 @@
 # ///
 """Interactive 3D view of the calibrated multi-camera setup.
 
-TEMPLATE: this notebook locates its dataset via `mo.notebook_dir()`, so it
-must be COPIED into the target dataset's root directory (next to `cal/` and
-`parameters_Run1.yaml`) before opening it -- it will not work run in place
-from the skills/ directory. Then open with the marimo-pair skill:
-    cp skills/openptv-calibrate/scripts/visualize_calibration_setup_template.py \\
-       <dataset>/visualize_calibration_setup.py
-    uv run marimo edit --sandbox --no-token <dataset>/visualize_calibration_setup.py
+Runs directly from this skills/ checkout -- no per-dataset copy needed. Pass
+the dataset via --dataset after `--` (marimo's CLI-args convention); falls
+back to `mo.notebook_dir()` if omitted, so opening a copy still works too,
+but that is no longer the normal way to use this. Open with the marimo-pair
+skill:
+    uv run marimo edit --sandbox --no-token \\
+        skills/openptv-calibrate/scripts/visualize_calibration_setup.py \\
+        -- --dataset "<dataset>"
 
 Plots the calibration body (calblock points, each labeled with its point ID),
 the world coordinate frame at the origin, each camera's position +
@@ -36,18 +37,22 @@ app = marimo.App(width="medium")
 
 @app.cell
 def _():
+    from pathlib import Path
+
     import imageio.v3 as iio
     import marimo as mo
     import matplotlib.pyplot as plt
     import numpy as np
 
-    return iio, mo, np, plt
+    return Path, iio, mo, np, plt
 
 
 @app.cell
-def _(mo):
-    # This file lives inside the calibration dataset itself.
-    dataset_dir = mo.notebook_dir()
+def _(Path, mo):
+    # --dataset (after `--`) is the normal way to point this at a dataset;
+    # mo.notebook_dir() is only a fallback for a locally-copied notebook.
+    _dataset_arg = mo.cli_args().get("dataset")
+    dataset_dir = Path(_dataset_arg).resolve() if _dataset_arg else mo.notebook_dir()
     cal_dir = dataset_dir / "cal"
     return cal_dir, dataset_dir
 
@@ -74,10 +79,41 @@ def _(np):
 
 
 @app.cell
-def _(cal_dir, read_calblock, read_ori):
-    body = read_calblock(cal_dir / "target_on_a_side.txt")
-    ori_files = sorted(cal_dir.glob("cam[0-9].tif.ori"))
-    cams = [(p.stem.split(".")[0], *read_ori(p)) for p in ori_files]
+def _(dataset_dir, cal_dir):
+    # Camera image/.ori paths and the calblock path come from the dataset
+    # YAML's cal_ori: block when present -- the same files the GUI reads and
+    # writes, not a separate camN.tif naming convention that can silently
+    # drift out of sync with the real dataset (as happened once already:
+    # adapter copies under a camN.tif convention got cleaned up as apparent
+    # clutter, breaking every tool that assumed they'd always be there).
+    import yaml as _yaml_paths
+
+    _yaml_path = dataset_dir / "parameters_Run1.yaml"
+    _cfg = _yaml_paths.safe_load(_yaml_path.read_text()) if _yaml_path.exists() else {}
+    _cal_ori = _cfg.get("cal_ori") or {}
+    _img_cal_name = _cal_ori.get("img_cal_name") or []
+    _img_ori = _cal_ori.get("img_ori") or []
+    _fixp_name = _cal_ori.get("fixp_name")
+
+    if _img_cal_name and _img_ori:
+        cam_paths = [
+            (f"cam{i + 1}", dataset_dir / _img_cal_name[i], dataset_dir / _img_ori[i])
+            for i in range(len(_img_cal_name))
+        ]
+    else:
+        cam_paths = [
+            (p.stem.split(".")[0], cal_dir / (p.stem.split(".")[0] + ".tif"), p)
+            for p in sorted(cal_dir.glob("cam[0-9].tif.ori"))
+        ]
+
+    calblock_path = (dataset_dir / _fixp_name) if _fixp_name else (cal_dir / "target_on_a_side.txt")
+    return cam_paths, calblock_path
+
+
+@app.cell
+def _(calblock_path, cam_paths, read_calblock, read_ori):
+    body = read_calblock(calblock_path)
+    cams = [(name, *read_ori(ori)) for name, _, ori in cam_paths]
     return body, cams
 
 
@@ -134,14 +170,14 @@ def _(body, cam_quadrant, cams, mo, np, plt):
 
 
 @app.cell
-def _(cal_dir, np, read_ori):
+def _(cam_paths, np, read_ori):
     def test_ori_files_are_orthonormal():
         """Smoke test: parsed rotation matrices must be orthonormal (det ~= +-1)."""
-        for p in sorted(cal_dir.glob("cam[0-9].tif.ori")):
-            _, dm = read_ori(p)
+        for _, _, ori in cam_paths:
+            _, dm = read_ori(ori)
             det = np.linalg.det(dm)
-            assert abs(abs(det) - 1.0) < 1e-3, f"{p.name}: not a rotation matrix (det={det})"
-            assert np.allclose(dm @ dm.T, np.eye(3), atol=1e-3), f"{p.name}: not orthonormal"
+            assert abs(abs(det) - 1.0) < 1e-3, f"{ori.name}: not a rotation matrix (det={det})"
+            assert np.allclose(dm @ dm.T, np.eye(3), atol=1e-3), f"{ori.name}: not orthonormal"
 
     return
 
@@ -168,11 +204,12 @@ def _(cal_dir, np):
 
 
 @app.cell
-def _(cal_dir, cam_matches, iio, np, plt):
+def _(cam_paths, cam_matches, iio, np, plt):
     overlay_fig, overlay_axes = plt.subplots(2, 2, figsize=(14, 12))
+    _img_by_name = {name: img for name, img, _ in cam_paths}
 
     for _ax, (_cam_name, (_ids, _det, _rep)) in zip(overlay_axes.flat, sorted(cam_matches.items())):
-        _img = iio.imread(cal_dir / f"{_cam_name}.tif")
+        _img = iio.imread(_img_by_name[_cam_name])
         _ax.imshow(_img, cmap="gray")
         _ax.scatter(_det[:, 0], _det[:, 1], s=40, facecolors="none", edgecolors="lime",
                     linewidths=1.2, label="detected")
