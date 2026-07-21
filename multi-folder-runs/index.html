@@ -23,7 +23,7 @@
     
     
       
-        <title>Cloud-like batch deployment (headless, no GUI) - OpenPTV2 Documentation</title>
+        <title>Multi-folder experiments - OpenPTV2 Documentation</title>
       
     
     
@@ -74,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#cloud-like-batch-deployment-headless-no-gui" class="md-skip">
+        <a href="#multi-folder-experiments" class="md-skip">
           Skip to content
         </a>
       
@@ -108,7 +108,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Cloud-like batch deployment (headless, no GUI)
+              Multi-folder experiments
             
           </span>
         </div>
@@ -1022,10 +1022,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#install-one-command" class="md-nav__link">
+  <a href="#layout" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Install (one command)
+        Layout
       
     </span>
   </a>
@@ -1033,10 +1033,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#run-a-batch" class="md-nav__link">
+  <a href="#path-resolution-relative-to-the-yaml-not-to-cwd" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Run a batch
+        Path resolution: relative to the YAML, not to cwd
       
     </span>
   </a>
@@ -1044,10 +1044,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#free-threading-314t-measured-not-assumed" class="md-nav__link">
+  <a href="#preparing-one-shared-calibration-for-all-runs" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Free-threading (3.14t): measured, not assumed
+        Preparing one shared calibration for all runs
       
     </span>
   </a>
@@ -1055,10 +1055,38 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#docker" class="md-nav__link">
+  <a href="#preparing-the-yaml-files" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Docker
+        Preparing the YAML files
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Preparing the YAML files">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sample-vs-batch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sample vs. batch
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#checking-and-visualizing-the-calibration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Checking and visualizing the calibration
       
     </span>
   </a>
@@ -1066,10 +1094,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#several-runs-sharing-one-calibration" class="md-nav__link">
+  <a href="#running" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Several runs sharing one calibration
+        Running
       
     </span>
   </a>
@@ -1096,126 +1124,165 @@
   
 
 
-<h1 id="cloud-like-batch-deployment-headless-no-gui">Cloud-like batch deployment (headless, no GUI)<a class="headerlink" href="#cloud-like-batch-deployment-headless-no-gui" title="Permanent link">&para;</a></h1>
-<p>For running the tracking/sequence pipeline on a server or in a container —
-fast to deploy, no Qt, no display. The engine is the compiled Cython 3 runtime
-with OpenMP kernels; that is where the performance comes from.</p>
-<h2 id="install-one-command">Install (one command)<a class="headerlink" href="#install-one-command" title="Permanent link">&para;</a></h2>
-<p>The cloud profile is the <strong>default</strong> install (no GUI extras). Use a
-non-editable install so the compiled kernels land in <code>site-packages</code> and the
-source tree is not needed at runtime:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>uv<span class="w"> </span>venv<span class="w"> </span>--python<span class="w"> </span><span class="m">3</span>.14t<span class="w"> </span>/opt/venv<span class="w">          </span><span class="c1"># or 3.11–3.13; 3.14t = free-threaded</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nv">VIRTUAL_ENV</span><span class="o">=</span>/opt/venv<span class="w"> </span>uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>.
+<h1 id="multi-folder-experiments">Multi-folder experiments<a class="headerlink" href="#multi-folder-experiments" title="Permanent link">&para;</a></h1>
+<p>For an experiment that's really several runs sharing one calibration --
+multiple workpieces, repeated trials, whatever your acquisition splits into
+separate frame sequences. See <code>docs/cloud-batch.md</code> first for how a single
+<code>parameters_*.yaml</code> runs; this doc is about organizing and running several of
+them together, and the calibration/YAML-prep steps specific to that.</p>
+<p>This grew out of a real multi-workpiece dataset and the mistakes made
+setting it up -- the checklists below exist because each one bit us once.</p>
+<h2 id="layout">Layout<a class="headerlink" href="#layout" title="Permanent link">&para;</a></h2>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>&lt;experiment_root&gt;/
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>  &lt;shared_calibration&gt;/        one calibration, reused by every run below
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    cam_1.tif ... cam_N.tif            calibration images (what .ori/.addpar were fit to)
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    cam_1.tif.ori ... .addpar          exterior + interior/distortion params, per camera
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    &lt;calblock&gt;.txt                     3D calibration-body point coordinates (id x y z)
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    calib_matches/cam{1..N}_matches.txt   detected-vs-reprojected residuals (optional, enables RMS checks)
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>  run1/ run2/ .../              one per independent run
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    img/                               raw acquisition frames
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    parameters_&lt;name&gt;_sample.yaml      small frame range, for a quick check
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    parameters_&lt;name&gt;_batch.yaml       full frame range
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>    res/                               sequence/tracking output (created on first run)
 </span></code></pre></div>
-<p>This pulls <strong>18 packages</strong> (numpy, scipy, scikit-image, pydantic, pyyaml,
-imageio, traits, cython + deps) and compiles the extensions in ~7 s. No Qt,
-chaco, PySide6, or matplotlib. Verify:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>/opt/venv/bin/python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import openptv2; print(openptv2.get_runtime_info())&quot;</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="c1"># {&quot;engine&quot;: &quot;cython3-pure-python&quot;, &quot;compiled&quot;: true, &quot;package&quot;: &quot;openptv2&quot;}</span>
-</span></code></pre></div>
-<h2 id="run-a-batch">Run a batch<a class="headerlink" href="#run-a-batch" title="Permanent link">&para;</a></h2>
-<p><code>openptv2-batch</code> takes a YAML parameter file (frames default to its <code>sequence</code>
-section) or an experiment directory:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>openptv2-batch<span class="w"> </span>/data/exp1/parameters_Run1.yaml<span class="w">            </span><span class="c1"># frames from YAML</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>openptv2-batch<span class="w"> </span>/data/exp1/parameters_Run1.yaml<span class="w"> </span><span class="m">10001</span><span class="w"> </span><span class="m">10004</span><span class="w">  </span><span class="c1"># explicit range</span>
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>openptv2-batch<span class="w"> </span>/data/exp1<span class="w"> </span>--mode<span class="w"> </span>both<span class="w">                     </span><span class="c1"># dir; both=seq+track</span>
-</span></code></pre></div>
-<p><code>--mode {both,sequence,tracking}</code> selects the steps; <code>--track3d</code> uses 3D segment
-tracking. Output (<code>ptv_is.*</code>, <code>rt_is.*</code>, <code>added.*</code>) is written to the
-experiment's <code>res/</code> directory. The run is verbose by default — per-frame
-correspondences and per-step tracking links/lost are printed to stdout.</p>
-<p>With no plugin flags, the runner uses the <code>plugins.selected_*</code> selection
-saved in the experiment YAML by the GUI — the YAML alone fully describes
-the run, so a GUI-tuned splitter experiment needs nothing extra:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>openptv2-batch<span class="w"> </span>/data/exp1/parameters_Run1.yaml<span class="w"> </span><span class="m">1000001</span><span class="w"> </span><span class="m">1000002</span>
-</span></code></pre></div>
-<p><code>--sequence-plugin</code>/<code>--tracking-plugin</code> override that selection — for
-example, an image-splitter dataset that multiplexes four views onto one
-sensor:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>openptv2-batch<span class="w"> </span>/data/exp1/parameters_Run1.yaml<span class="w"> </span><span class="m">1000001</span><span class="w"> </span><span class="m">1000002</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span>--sequence-plugin<span class="w"> </span>splitter_sequence<span class="w"> </span>--tracking-plugin<span class="w"> </span>splitter_tracking
-</span></code></pre></div>
-<p>In splitter mode the multiplexed frame is split into per-camera views in
-memory (nothing intermediate is written to disk) and detection + stereo
-matching run in the same process — this also holds per worker in the
-parallel runner (<code>python -m openptv2.batch.pyptv_batch_parallel &lt;yaml&gt;
-&lt;first&gt; &lt;last&gt; &lt;n_processes&gt;</code>), which splits the frame range into chunks.</p>
-<p><code>default</code> and every other plugin name go through the same
-<code>openptv2.plugins</code> loader — see <code>src/openptv2/plugins/</code> for the built-ins
-(<code>splitter_sequence</code>/<code>splitter_tracking</code>, <code>contour_sequence</code>,
-<code>rembg_sequence</code>, <code>rembg_contour_sequence</code>) and how to add your own.</p>
-<h2 id="free-threading-314t-measured-not-assumed">Free-threading (3.14t): measured, not assumed<a class="headerlink" href="#free-threading-314t-measured-not-assumed" title="Permanent link">&para;</a></h2>
-<p>The <code>test_cavity</code> demo (4 frames, sequence + tracking) on free-threaded
-3.14.3, compiled Cython + OpenMP:</p>
-<table>
-<thead>
-<tr>
-<th>Mode</th>
-<th>Wall clock</th>
-<th>CPU</th>
-<th>Tracking result</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>GIL <strong>on</strong> (default)</td>
-<td><strong>4.6 s</strong></td>
-<td>127%</td>
-<td>particles 1195.0, links 772.3, lost 422.7</td>
-</tr>
-<tr>
-<td>GIL <strong>off</strong> (<code>PYTHON_GIL=0</code>)</td>
-<td>5.9 s</td>
-<td>200%</td>
-<td><em>identical</em></td>
-</tr>
-</tbody>
-</table>
-<p><strong>Free-threading does not speed up this batch — it is ~25% slower.</strong> The
-kernels are OpenMP-parallel Cython driven by a single Python process; there is
-no Python-level thread pool for a disabled GIL to unlock, so <code>PYTHON_GIL=0</code>
-only adds interpreter overhead. Two consequences:</p>
+<p><strong>Exactly one YAML pair per run.</strong> If a folder has more than
+<code>*_sample.yaml</code> + <code>*_batch.yaml</code>, one is stale. Cross-check against that
+folder's <code>parameters/*.par</code> (if present -- the GUI's own last-saved state,
+independent of any YAML) to see which one the GUI actually agrees with, and
+remove the other. An ambiguous duplicate left lying around means the next
+person -- or the next agent -- has no way to know which one is live.</p>
+<h2 id="path-resolution-relative-to-the-yaml-not-to-cwd">Path resolution: relative to the YAML, not to cwd<a class="headerlink" href="#path-resolution-relative-to-the-yaml-not-to-cwd" title="Permanent link">&para;</a></h2>
+<p>Both the GUI and <code>openptv2-batch</code> <code>os.chdir()</code> into the YAML file's own
+directory before doing anything else (<code>ParameterManager.from_yaml</code> itself
+does zero path resolution -- it just parses the file; every relative path in
+it is resolved by whatever the process's cwd happens to be when it's used).
+That has two consequences:</p>
 <ul>
-<li>The Cython modules <strong>re-enable the GIL on import</strong> (they don't declare
-  <code>Py_mod_gil</code> free-thread safety), printing a <code>RuntimeWarning</code>. That is
-  expected; the batch runs correctly.</li>
-<li>To scale across cores, run <strong>independent experiments/frame-ranges as separate
-  processes</strong> (multiprocessing / one container task per range). Separate
-  processes don't share a GIL, so free-threading buys nothing there either.</li>
+<li>A YAML living in <code>run1/</code> referencing <code>../&lt;shared_calibration&gt;/cam_1.tif.ori</code>
+  resolves correctly, one level up from <code>run1/</code>.</li>
+<li><strong>Output is also cwd-relative and NOT configurable.</strong> <code>res/rt_is.*</code>,
+  <code>ptv_is.*</code>, <code>added.*</code> are hardcoded relative paths (no YAML field
+  overrides them). If two YAMLs ever share the same parent directory, they
+  write to the <em>same</em> <code>res/</code> and silently clobber each other's results.
+  This is why each run needs <strong>its own folder</strong> -- don't try to save
+  "tidiness" by hoisting multiple runs' YAMLs into one shared directory;
+  that trades a real correctness risk for a cosmetic win. (Parallel
+  execution across runs is still fine -- separate folders means separate
+  cwd means separate <code>res/</code>, safe to run concurrently.)</li>
 </ul>
-<p>Use the standard interpreter (or 3.14t at its default GIL-on behavior). Only
-force <code>PYTHON_GIL=0</code> to experiment; revisit if the algorithms modules ever
-declare free-threading safety.</p>
-<h2 id="docker">Docker<a class="headerlink" href="#docker" title="Permanent link">&para;</a></h2>
-<p><code>Dockerfile.cloud</code> bakes exactly the install above (free-threaded 3.14t,
-<code>uv pip install .</code>, no GUI) plus two demos: <code>test_cavity</code> at
-<code>/demo/test_cavity</code> (default pipeline) and <code>test_splitter</code> at
-<code>/demo/test_splitter</code> (exercises the built-in splitter plugins, proving
-plugin support ships in this image with no extra data):</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>docker<span class="w"> </span>build<span class="w"> </span>-f<span class="w"> </span>Dockerfile.cloud<span class="w"> </span>-t<span class="w"> </span>openptv2-cloud<span class="w"> </span>.
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
-</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="c1"># zero-data smoke test on the baked demo (default pipeline):</span>
-</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>openptv2-cloud<span class="w"> </span>sh<span class="w"> </span>-c<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">  </span><span class="s2">&quot;cp -r /demo/test_cavity /tmp/c &amp;&amp; cd /tmp/c &amp;&amp; \</span>
-</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="s2">   openptv2-batch parameters_Run1.yaml 10001 10004&quot;</span>
-</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>
-</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="c1"># zero-data smoke test of a non-default plugin (image-splitter dataset):</span>
-</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>openptv2-cloud<span class="w"> </span>sh<span class="w"> </span>-c<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="w">  </span><span class="s2">&quot;cp -r /demo/test_splitter /tmp/s &amp;&amp; cd /tmp/s &amp;&amp; \</span>
-</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="s2">   openptv2-batch parameters_Run1.yaml 1000001 1000002 \</span>
-</span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="s2">   --sequence-plugin splitter_sequence --tracking-plugin splitter_tracking&quot;</span>
-</span><span id="__span-5-13"><a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a>
-</span><span id="__span-5-14"><a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a><span class="c1"># your own data (mounted at /data):</span>
-</span><span id="__span-5-15"><a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>-v<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$PWD</span><span class="s2">:/data&quot;</span><span class="w"> </span>openptv2-cloud<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-5-16"><a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a><span class="w">  </span>openptv2-batch<span class="w"> </span>/data/&lt;exp&gt;/parameters_Run1.yaml<span class="w"> </span>&lt;first&gt;<span class="w"> </span>&lt;last&gt;
+<h2 id="preparing-one-shared-calibration-for-all-runs">Preparing one shared calibration for all runs<a class="headerlink" href="#preparing-one-shared-calibration-for-all-runs" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Confirm it's actually the same physical rig setup.</strong> Compare exterior
+   camera positions (<code>cam_N.tif.ori</code>, first line: X Y Z in mm) against any
+   calibration already in the target experiment, if one exists. Tens of mm
+   apart in any camera means the rig moved (or it's a different rig/session
+   entirely) -- do not share, calibrate that experiment separately. This is
+   the single most consequential mistake to avoid: a calibration that loads
+   without error and even produces plausible-looking correspondence counts
+   can still be geometrically wrong for the wrong rig -- nothing in the
+   pipeline itself will tell you, you have to check (see below).</li>
+<li><strong>Match the acquisition modality</strong>, not just the rig position. A
+   calibration shot as 4 separate per-camera images (<code>ptv.splitter: false</code>)
+   is not automatically compatible with a run that multiplexes 4 views onto
+   one sensor (<code>ptv.splitter: true</code>) -- the "camera 1/2/3/4" identity in the
+   splitter case comes from <code>splitter_order</code> demuxing a combined frame, and
+   that quadrant-to-camera mapping has to agree with however the
+   calibration images were assigned their camera numbers. If unsure, find
+   evidence of the actual quadrant layout (a splitting script, a preview
+   image, anything that shows which physical quadrant is "camera 1") rather
+   than assuming the existing <code>splitter_order</code> value is correct.</li>
+<li><strong>Same calibration body</strong>, confirmed by diffing the calblock <code>.txt</code> files
+   byte-for-byte, not just by name.</li>
+<li>Once confirmed, point every run's YAML at the shared directory with a
+   relative path (see the layout above) -- don't duplicate the calibration
+   files into every run folder.</li>
+</ol>
+<h2 id="preparing-the-yaml-files">Preparing the YAML files<a class="headerlink" href="#preparing-the-yaml-files" title="Permanent link">&para;</a></h2>
+<p>Per run, starting from a copy of a known-good YAML in this dataset (or
+<code>test_data/test_cavity/parameters_Run1.yaml</code> as a generic template):</p>
+<ul>
+<li><strong><code>cal_ori</code></strong> (<code>fixp_name</code>, <code>img_cal_name</code>, <code>img_ori</code>) and <strong><code>ptv.img_cal</code></strong>
+  -- point at the shared calibration directory, relative to this YAML's own
+  location (see path resolution above).</li>
+<li><strong><code>man_ori.nr</code></strong> + <strong><code>man_ori_coordinates</code></strong> -- 4 calibration-body point
+  IDs visible in <em>every</em> camera (check each camera's
+  <code>calib_matches/cam{N}_matches.txt</code> -- an ID only appears there if it was
+  detected+matched in that camera; don't assume the same 4 IDs are visible
+  everywhere just because they're a round set like 1/16/32/46), plus their
+  actual per-camera pixel positions -- not copy-pasted from one camera to
+  another. This is the easiest calibration mistake to make silently: the
+  GUI's manual-orientation click doesn't validate that the point you clicked
+  is even the one you meant.</li>
+<li>**<code>sequence.base_name</code> + <code>first</code>/<code>last`` -- check this before anything
+  else if the sequence step fails.** These must match your *actual raw
+  filenames*, not a template default. In splitter mode the loader does</code>Path(base_name % frame)<code>, so</code>base_name<code>needs a real</code>%06d<code>-style
+  placeholder and</code>first<code>/</code>last<code>must be the literal numbers embedded in
+  your filenames. A copy-pasted template value (e.g. a</code>100001<code>-based
+  convention left over from a different naming scheme) fails with</code>FileNotFoundError<code>on the very first frame -- and only when you actually
+  run the sequence step; the calibration/detection GUI panels won't catch
+  it, since they only touch the calibration images. Verify with:
+  <div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>ls<span class="w"> </span>run1/img<span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span><span class="p">|</span><span class="w"> </span>sed<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;1p;$p&#39;</span><span class="w">   </span><span class="c1"># first and last real filename</span>
 </span></code></pre></div>
-<p>The image leaves the GIL enabled by default. Add <code>-e PYTHON_GIL=0</code> to force it
-off (see the table above first).</p>
-<h2 id="several-runs-sharing-one-calibration">Several runs sharing one calibration<a class="headerlink" href="#several-runs-sharing-one-calibration" title="Permanent link">&para;</a></h2>
-<p>For an experiment that splits into multiple runs/workpieces on one shared
-calibration -- folder layout, calibration-sharing checklist, YAML prep
-(including the splitter frame-naming gotcha), and <code>scripts/run_pipeline_multi.sh</code>
-for running them all -- see <code>docs/multi-folder-runs.md</code>.</p>
+  and match</code>sequence.first<code>/</code>last<code>to the numbers actually in those
+  filenames.</code>shaking.shaking_first_frame<code>/</code>shaking_last_frame<code>use the same
+  numbering -- keep them inside</code>[sequence.first, sequence.last]`.</li>
+</ul>
+<h3 id="sample-vs-batch">Sample vs. batch<a class="headerlink" href="#sample-vs-batch" title="Permanent link">&para;</a></h3>
+<p>Two YAMLs per run, identical except the frame range:</p>
+<ul>
+<li><code>parameters_&lt;name&gt;_sample.yaml</code> -- ~10 frames, for a fast GUI or CLI check
+  before committing to a full run.</li>
+<li><code>parameters_&lt;name&gt;_batch.yaml</code> -- the full range.</li>
+</ul>
+<p>Best-strategy order: fix the calibration and frame-naming issues above
+<em>first</em> (they're silent and easy to miss), then run the sample through the
+GUI and eyeball a tracked-particle overlay, <em>then</em> run the sample headlessly
+with <code>openptv2-batch</code> to confirm the CLI path agrees with what the GUI
+showed you, and only then run the full batch. A batch run just repeats
+whatever the sample did, at scale -- if the sample is wrong, the batch is
+the same wrong thing with more frames.</p>
+<h2 id="checking-and-visualizing-the-calibration">Checking and visualizing the calibration<a class="headerlink" href="#checking-and-visualizing-the-calibration" title="Permanent link">&para;</a></h2>
+<p>Don't rely on reprojection RMS alone -- a bundle adjustment can converge to
+a self-consistent but physically wrong pose (the classic cause: a
+manual-orientation seed click landed on the wrong calibration-body point,
+or a splitter quadrant/camera-identity mismatch per above). Two tools, same
+underlying checks (<code>openptv2.calibration_diagnostics</code>):</p>
+<p><strong>Headless / CI / scripted</strong> -- <code>scripts/calibration_diagnostics.py</code>:
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/calibration_diagnostics.py<span class="w"> </span>--models<span class="w"> </span><span class="s2">&quot;current=&lt;shared_calibration&gt;&quot;</span>
+</span></code></pre></div>
+Prints, per camera: distance to the calibration-body centroid, sight-line
+angle (&gt;15deg off is flagged -- a camera aimed away from the target even
+with good RMS at its matched points), reprojection RMS + match count when
+<code>calib_matches/</code> is present. Exits non-zero if anything is flagged, so it
+can gate a script or CI step. Compare two models (e.g. before/after
+recalibration, or two candidate calibrations) with a second <code>label=path</code> in
+<code>--models</code>.</p>
+<p><strong>Interactive</strong> -- <code>src/openptv2/gui/visualize_calibration_nb.py</code> (marimo
+notebook; needs the <code>viz</code> extra -- <code>uv run --extra viz</code> installs it on
+demand, no permanent dependency change needed for a one-off look):
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>uv<span class="w"> </span>run<span class="w"> </span>--extra<span class="w"> </span>viz<span class="w"> </span>marimo<span class="w"> </span>-y<span class="w"> </span>run<span class="w"> </span>src/openptv2/gui/visualize_calibration_nb.py<span class="w"> </span>--<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span>--models<span class="w"> </span><span class="s2">&quot;current=&lt;shared_calibration&gt;&quot;</span>
+</span></code></pre></div>
+Orbit-able 3D plot of camera poses + calibration body, with the same
+diagnostics rendered as a table below it. Also usable as a Claude Code skill
+(<code>.claude/skills/visualize-calibration/</code>) -- ask to "visualize the
+calibration" / "compare these two calibration models" / "visualize before
+and after full calibration" and it resolves the natural-language request
+into the right <code>--models</code>/<code>--calblock</code> args.</p>
+<h2 id="running">Running<a class="headerlink" href="#running" title="Permanent link">&para;</a></h2>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>scripts/run_pipeline_multi.sh<span class="w"> </span>&lt;experiment_root&gt;<span class="w"> </span>--sample<span class="w">              </span><span class="c1"># quick check, all runs</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>scripts/run_pipeline_multi.sh<span class="w"> </span>&lt;experiment_root&gt;<span class="w"> </span>--sample<span class="w"> </span>--folder<span class="w"> </span>run1<span class="w">  </span><span class="c1"># one run</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>scripts/run_pipeline_multi.sh<span class="w"> </span>&lt;experiment_root&gt;<span class="w">                       </span><span class="c1"># full batch, sequential</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>scripts/run_pipeline_multi.sh<span class="w"> </span>&lt;experiment_root&gt;<span class="w"> </span>--parallel<span class="w">            </span><span class="c1"># full batch, concurrent</span>
+</span></code></pre></div>
+<p>Auto-discovers run folders by looking for <code>parameters_Run1_&lt;variant&gt;.yaml</code>
+one level under <code>&lt;experiment_root&gt;</code> (override the prefix with <code>--pattern</code> if
+your YAMLs aren't named <code>parameters_Run1_*</code>). Each run gets its own
+<code>&lt;run&gt;/pipeline_&lt;variant&gt;.log</code> -- check it ends with <code>Batch processing
+completed successfully</code> and that per-frame correspondence counts look
+reasonable (hundreds, not near-zero -- near-zero across every frame usually
+means the calibration or detection thresholds are off, not just noise).</p>
 
 
 
