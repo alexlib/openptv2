@@ -123,3 +123,10 @@ docker run --rm -v "$PWD:/data" openptv2-cloud \
 
 The image leaves the GIL enabled by default. Add `-e PYTHON_GIL=0` to force it
 off (see the table above first).
+
+## Several runs sharing one calibration
+
+For an experiment that splits into multiple runs/workpieces on one shared
+calibration -- folder layout, calibration-sharing checklist, YAML prep
+(including the splitter frame-naming gotcha), and `scripts/run_pipeline_multi.sh`
+for running them all -- see `docs/multi-folder-runs.md`.

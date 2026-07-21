@@ -70,6 +70,8 @@ uv run python setup.py build_ext --inplace
 
 **Test data**: `test_data/` contains calibration files, parameter files, and fixture data used across all test suites. Tests import from `openptv2.algorithms.*` directly (e.g., `from openptv2.algorithms.vec_utils import ...`).
 
+**Batch/cloud running**: `docs/cloud-batch.md` (single run) and `docs/multi-folder-runs.md` (several runs sharing one calibration — folder layout, calibration-sharing checklist, YAML prep, `scripts/run_pipeline_multi.sh`). Calibration sanity checks (sight-line angle, cross-camera symmetry — catches a self-consistent-but-physically-wrong bundle adjustment that reprojection RMS alone misses) live in `openptv2.calibration_diagnostics`, used by both `scripts/calibration_diagnostics.py` (headless) and `src/openptv2/gui/visualize_calibration_nb.py` (interactive marimo viewer, also wired as the `visualize-calibration` Claude Code skill).
+
 ## Code Style
 
 - Python 3.11+, line length 88 (ruff configured)
