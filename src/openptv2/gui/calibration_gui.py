@@ -252,6 +252,7 @@ class CalibrationGUI(HasTraits):
     button_init_guess = Button()
     button_sort_grid = Button()
     button_sort_grid_init = Button()
+    exclude_ids_text = Str("")
     button_raw_orient = Button()
     button_fine_orient = Button()
     button_orient_part = Button()
@@ -340,6 +341,15 @@ class CalibrationGUI(HasTraits):
                         label="Sortgrid",
                         show_label=False,
                         enabled_when="pass_init",
+                    ),
+                    Item(
+                        name="exclude_ids_text",
+                        label="Exclude IDs",
+                        tooltip="Calibration-body point IDs to drop from "
+                                "matching/fitting, as cam:id pairs (1-indexed "
+                                "camera), e.g. '2:53,4:94,4:97'. "
+                                "Re-run Sortgrid to apply.",
+                        show_label=True,
                     ),
                     Item(
                         name="button_raw_orient",
@@ -672,6 +682,25 @@ class CalibrationGUI(HasTraits):
 
         self.status_text = "Initial guess finished."
 
+    def _parse_exclude_ids(self) -> dict:
+        """Parse the "Exclude IDs" text field: 'cam:id,cam:id,...' (1-indexed
+        camera) -> {cam_index (0-indexed): {id, ...}}. Silently skips
+        malformed entries rather than raising, since this runs on every
+        Sortgrid click and a typo mid-edit shouldn't crash the GUI."""
+        result: dict = {}
+        for pair in self.exclude_ids_text.split(","):
+            pair = pair.strip()
+            if not pair or ":" not in pair:
+                continue
+            cam_str, id_str = pair.split(":", 1)
+            try:
+                cam = int(cam_str.strip()) - 1
+                pid = int(id_str.strip())
+            except ValueError:
+                continue
+            result.setdefault(cam, set()).add(pid)
+        return result
+
     def _button_sort_grid_fired(self):
         if self.need_reset:
             self.reset_show_images()
@@ -684,8 +713,11 @@ class CalibrationGUI(HasTraits):
 
         self.cal_points = self._read_cal_points()
         self.sorted_targs = []
+        exclude_by_cam = self._parse_exclude_ids()
 
         print("_button_sort_grid_fired")
+        if exclude_by_cam:
+            print(f"Excluding IDs (cam-index: ids): {exclude_by_cam}")
 
         for i_cam in range(self.num_cams):
             targs = match_detection_to_ref(
@@ -694,12 +726,18 @@ class CalibrationGUI(HasTraits):
                 self.detections[i_cam],
                 self.cpar,
             )
+            exclude_ids = exclude_by_cam.get(i_cam, set())
             x, y, pnr = [], [], []
             for t in targs:
-                if t.pnr() != -999:
-                    pnr.append(self.cal_points["id"][t.pnr()])
-                    x.append(t.pos()[0])
-                    y.append(t.pos()[1])
+                if t.pnr() == -999:
+                    continue
+                cal_id = self.cal_points["id"][t.pnr()]
+                if cal_id in exclude_ids:
+                    t.set_pnr(-999)
+                    continue
+                pnr.append(cal_id)
+                x.append(t.pos()[0])
+                y.append(t.pos()[1])
 
             self.sorted_targs.append(targs)
             self.camera[i_cam]._plot.overlays = []
