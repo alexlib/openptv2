@@ -47,6 +47,7 @@ from .experiment import Experiment
 # recognized names for the flags:
 NAMES = ["cc", "xh", "yh", "k1", "k2", "k3", "p1", "p2", "scale", "shear", "interf"]
 SCALE = 5000
+LEFT_PANEL_ITEM_WIDTH = -200
 
 
 # -------------------------------------------
@@ -252,7 +253,7 @@ class CalibrationGUI(HasTraits):
     button_init_guess = Button()
     button_sort_grid = Button()
     button_sort_grid_init = Button()
-    exclude_ids_text = Str("")
+    exclude_ids_text = Str(" ")
     button_raw_orient = Button()
     button_fine_orient = Button()
     button_orient_part = Button()
@@ -305,111 +306,131 @@ class CalibrationGUI(HasTraits):
 
     view = View(
         HGroup(
-            VGroup(
                 VGroup(
                     Item(
                         name="button_showimg",
                         label="Load images/parameters",
                         show_label=False,
+                        width=LEFT_PANEL_ITEM_WIDTH,
                     ),
                     Item(
                         name="button_detection",
                         label="Detection",
                         show_label=False,
                         enabled_when="pass_init",
+                        width=LEFT_PANEL_ITEM_WIDTH,
                     ),
                     Item(
                         name="button_manual",
                         label="Manual orient.",
                         show_label=False,
                         enabled_when="pass_init",
+                        width=LEFT_PANEL_ITEM_WIDTH,
                     ),
                     Item(
                         name="button_file_orient",
                         label="Orient. with file",
                         show_label=False,
                         enabled_when="pass_init",
+                        width=LEFT_PANEL_ITEM_WIDTH,
                     ),
                     Item(
                         name="button_init_guess",
                         label="Show initial guess",
                         show_label=False,
                         enabled_when="pass_init",
+                        width=LEFT_PANEL_ITEM_WIDTH,
                     ),
                     Item(
                         name="button_sort_grid",
                         label="Sortgrid",
                         show_label=False,
                         enabled_when="pass_init",
-                    ),
-                    Item(
-                        name="exclude_ids_text",
-                        label="Exclude",
-                        tooltip="cam:id pairs to drop, e.g. '2:53,4:94'. "
-                                "Re-run Sortgrid to apply.",
-                        width=-80,
+                        width=LEFT_PANEL_ITEM_WIDTH,
                     ),
                     Item(
                         name="button_raw_orient",
                         label="Raw orientation",
                         show_label=False,
                         enabled_when="pass_sortgrid",
+                        width=LEFT_PANEL_ITEM_WIDTH,
                     ),
                     Item(
                         name="button_fine_orient",
                         label="Fine tuning",
                         show_label=False,
                         enabled_when="pass_raw_orient",
+                        width=LEFT_PANEL_ITEM_WIDTH,
                     ),
                     Item(
                         name="button_orient_dumbbell",
                         label="Orientation from dumbbell",
                         show_label=False,
                         enabled_when="pass_init",
+                        width=LEFT_PANEL_ITEM_WIDTH,
                     ),
                     Item(
                         name="button_restore_orient",
                         label="Restore ori files",
                         show_label=False,
                         enabled_when="pass_init",
+                        width=LEFT_PANEL_ITEM_WIDTH,
                     ),
-                    show_left=False,
-                ),
-                VGroup(
+                    Item(
+                        label="Exclude IDs:",
+                        show_label=False,
+                        width=LEFT_PANEL_ITEM_WIDTH,
+                    ),
+                    Item(
+                        name="exclude_ids_text",
+                        show_label=False,
+                        tooltip="Exclude Ids: cam:id pairs to drop, e.g. '2:53,4:94'. "
+                                "Re-run Sortgrid to apply.",
+                        resizable=True,
+                        width=LEFT_PANEL_ITEM_WIDTH,
+                    ),
                     Item(
                         name="button_edit_cal_parameters",
                         label="Edit calibration parameters",
                         show_label=False,
+                        width=LEFT_PANEL_ITEM_WIDTH,
                     ),
                     Item(
                         name="button_edit_ori_files",
                         label="Edit ori files",
                         show_label=False,
+                        width=LEFT_PANEL_ITEM_WIDTH,
                     ),
                     Item(
                         name="button_edit_addpar_files",
                         label="Edit addpar files",
                         show_label=False,
+                        width=LEFT_PANEL_ITEM_WIDTH,
                     ),
                     Item(
                         name="_",
                         label="",
                         show_label=False,
+                        width=LEFT_PANEL_ITEM_WIDTH,
                     ),
                     Item(
                         name="button_orient_part",
                         label="Orientation with particles",
                         show_label=False,
                         enabled_when="pass_init",
+                        width=LEFT_PANEL_ITEM_WIDTH,
                     ),                   
-                    show_left=False,                   
-                ),
-                Item(
-                    name="_cal_splitter",
-                    label="Split into 4?",
-                    show_label=True,
-                    padding=5,
-                ),                  
+                    Item(
+                        label="Split into 4 views?",
+                        show_label=False,
+                        width=LEFT_PANEL_ITEM_WIDTH,
+                    ),
+                    Item(
+                        name="_cal_splitter",
+                        show_label=False,
+                        width=LEFT_PANEL_ITEM_WIDTH,
+                    ),
+                    springy=False,
             ),
             Item(
                 "camera",
@@ -421,6 +442,8 @@ class CalibrationGUI(HasTraits):
                     page_name=".name",
                 ),
                 show_label=False,
+                width=-1000,
+                resizable=True,
             ),
             orientation="horizontal",
         ),
