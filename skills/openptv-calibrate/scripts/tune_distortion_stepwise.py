@@ -65,23 +65,61 @@ def _drop_excluded(sorted_pix, exclude_ids):
             t.pnr = -999
 
 
-def _fit_and_score(base_cal, fix, nfix, pix, cpar, eps, flags, exclude_ids=None):
-    """Fit a copy of base_cal with the given flags; return (cal, rms, n_matched) or None."""
-    cal = copy.deepcopy(base_cal)
-    sorted_pix = sortgrid(cal, cpar, nfix, fix, len(pix), eps, pix)
-    _drop_excluded(sorted_pix, exclude_ids)
-    if sum(1 for t in sorted_pix if t.pnr >= 0) < 6:
-        return None
-    try:
-        full_calibration(cal, fix, sorted_pix, cpar, flags)
-    except (ValueError, RuntimeError):
-        return None
-    sorted_pix2 = sortgrid(cal, cpar, nfix, fix, len(pix), eps, pix)
-    _drop_excluded(sorted_pix2, exclude_ids)
-    _, det, rep = _matched_pairs(cal, cpar, fix, sorted_pix2)
-    if len(det) < 6:
-        return None
-    return cal, rms_px(det, rep), len(det)
+def _fit_and_score(base_cal, fix, nfix, pix, cpar, eps, flags, exclude_ids=None,
+                    auto_reject_mad=None, max_rounds=8, verbose_prefix=None):
+    """Fit a copy of base_cal with the given flags; return (cal, rms, n_matched,
+    auto_excluded_ids) or None.
+
+    auto_reject_mad: if set, after each fit compute per-point residuals,
+    flag any point beyond `median + auto_reject_mad * MAD` (MAD = median
+    absolute deviation, scaled by 1.4826 to approximate a standard
+    deviation -- robust to the very outliers being rejected, unlike mean/std,
+    which the outliers themselves would inflate), add those IDs to the
+    exclusion set, and refit. Repeats until no new point is flagged (or
+    max_rounds) -- iterative sigma-clipping, not RANSAC: appropriate here
+    because we already have a good starting fit and a small outlier
+    fraction, not a majority-corrupt dataset needing random-subset bootstrap.
+    """
+    exclude_ids = set(exclude_ids or [])
+    auto_excluded: set[int] = set()
+
+    for round_i in range(max_rounds if auto_reject_mad else 1):
+        cal = copy.deepcopy(base_cal)
+        sorted_pix = sortgrid(cal, cpar, nfix, fix, len(pix), eps, pix)
+        _drop_excluded(sorted_pix, exclude_ids)
+        if sum(1 for t in sorted_pix if t.pnr >= 0) < 6:
+            return None
+        try:
+            full_calibration(cal, fix, sorted_pix, cpar, flags)
+        except (ValueError, RuntimeError):
+            return None
+        sorted_pix2 = sortgrid(cal, cpar, nfix, fix, len(pix), eps, pix)
+        _drop_excluded(sorted_pix2, exclude_ids)
+        ids_matched = [i + 1 for i, t in enumerate(sorted_pix2) if t.pnr >= 0]
+        _, det, rep = _matched_pairs(cal, cpar, fix, sorted_pix2)
+        if len(det) < 6:
+            return None
+
+        if not auto_reject_mad:
+            return cal, rms_px(det, rep), len(det), auto_excluded
+
+        err = np.sqrt(np.sum((det - rep) ** 2, axis=1))
+        med = np.median(err)
+        mad = np.median(np.abs(err - med)) * 1.4826
+        threshold = med + auto_reject_mad * max(mad, 1e-6)
+        new_bad = {pid for pid, e in zip(ids_matched, err) if e > threshold}
+        if not new_bad:
+            return cal, rms_px(det, rep), len(det), auto_excluded
+
+        if verbose_prefix:
+            print(f"{verbose_prefix}  round {round_i + 1}: median={med:.2f}px "
+                  f"MAD={mad:.2f}px threshold={threshold:.2f}px -> "
+                  f"rejecting {sorted(new_bad)}")
+        exclude_ids |= new_bad
+        auto_excluded |= new_bad
+
+    # Ran out of rounds -- return the last fit anyway.
+    return cal, rms_px(det, rep), len(det), auto_excluded
 
 
 def main() -> int:
@@ -95,6 +133,10 @@ def main() -> int:
     ap.add_argument("--exclude-ids", default="",
                      help="comma-separated cam:id pairs to drop from the fit, 1-indexed camera, "
                           "e.g. '2:53,4:94,4:97,4:87,4:48,4:96,3:104'")
+    ap.add_argument("--auto-reject-mad", type=float, default=None,
+                     help="iterative sigma-clipping: after each fit, reject points beyond "
+                          "median + N*MAD residual and refit, until stable (e.g. 4.0). "
+                          "Combines with --exclude-ids (manual exclusions always apply too).")
     ap.add_argument("--dry-run", action="store_true", help="report without writing .ori/.addpar")
     args = ap.parse_args()
 
@@ -143,11 +185,12 @@ def main() -> int:
         if exclude_ids:
             print(f"cam{cam + 1}: excluding IDs {sorted(exclude_ids)} from the fit")
 
-        result = _fit_and_score(cal0, fix, nfix, pix, cpar, eps, list(base_flags), exclude_ids)
+        result = _fit_and_score(cal0, fix, nfix, pix, cpar, eps, list(base_flags), exclude_ids,
+                                 args.auto_reject_mad, verbose_prefix=f"cam{cam + 1}:")
         if result is None:
             print(f"cam{cam + 1}: baseline ({base_flags}) failed to fit, skipping", file=sys.stderr)
             continue
-        best_cal, best_rms, best_n = result
+        best_cal, best_rms, best_n, all_auto_excluded = result
         print(f"\ncam{cam + 1}: baseline flags={base_flags}  RMS={best_rms:.4f}px  n={best_n}")
 
         accepted = list(base_flags)
@@ -158,7 +201,8 @@ def main() -> int:
             trial_results = {}
             for cand in remaining:
                 trial_flags = accepted + [cand]
-                r = _fit_and_score(cal0, fix, nfix, pix, cpar, eps, trial_flags, exclude_ids)
+                r = _fit_and_score(cal0, fix, nfix, pix, cpar, eps, trial_flags, exclude_ids,
+                                    args.auto_reject_mad)
                 if r is not None:
                     trial_results[cand] = r
 
@@ -167,7 +211,7 @@ def main() -> int:
 
             # pick the candidate giving the lowest RMS
             best_cand = min(trial_results, key=lambda c: trial_results[c][1])
-            cand_cal, cand_rms, cand_n = trial_results[best_cand]
+            cand_cal, cand_rms, cand_n, cand_auto_excluded = trial_results[best_cand]
             improve = (best_rms - cand_rms) / best_rms if best_rms > 0 else 0
 
             print(f"  + {best_cand}: RMS {best_rms:.4f} -> {cand_rms:.4f}px "
@@ -180,19 +224,23 @@ def main() -> int:
             accepted.append(best_cand)
             remaining.remove(best_cand)
             best_cal, best_rms, best_n = cand_cal, cand_rms, cand_n
+            all_auto_excluded |= cand_auto_excluded
             history.append((tuple(accepted), best_rms, best_n))
 
         # Final polish: one more fit with exactly the accepted set (already
         # what best_cal is, since it was fit with `accepted` -- but redo once
         # more from cal0 for a clean, single-source-of-truth final result).
-        final = _fit_and_score(cal0, fix, nfix, pix, cpar, eps, accepted, exclude_ids)
+        final = _fit_and_score(cal0, fix, nfix, pix, cpar, eps, accepted, exclude_ids,
+                                args.auto_reject_mad)
         if final is not None:
-            best_cal, best_rms, best_n = final
+            best_cal, best_rms, best_n, final_auto_excluded = final
+            all_auto_excluded |= final_auto_excluded
 
         cc_ok = abs(best_cal.int_par.cc - cc0) < 1e-9
         subpixel = "YES" if best_rms < 1.0 else "no"
+        auto_note = f"  auto-rejected={sorted(all_auto_excluded)}" if all_auto_excluded else ""
         print(f"cam{cam + 1}: FINAL flags={accepted}  RMS={best_rms:.4f}px  n={best_n}/{nfix}  "
-              f"subpixel={subpixel}  cc unchanged={cc_ok}")
+              f"subpixel={subpixel}  cc unchanged={cc_ok}{auto_note}")
 
         if not args.dry_run:
             suffix = f".pre_{'_'.join(accepted) if accepted else 'stepwise'}_bak"
