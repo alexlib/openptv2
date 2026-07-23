@@ -232,6 +232,17 @@ class ParameterManager:
             self.parameters = data
         self.yaml_path = file_path
 
+        # A dataset with no manual-orientation seed yet (e.g. a fresh
+        # calibration with no prior parameters/ directory) has no man_ori
+        # section at all -- get_section('man_ori') in the calibration
+        # parameter dialog raises KeyError on that, blocking the very
+        # "Manual orient." workflow meant to create the seed in the first
+        # place. Inject a harmless placeholder (4 dummy IDs per camera) so
+        # the dialog opens; clicking through "Manual orient." overwrites it.
+        if 'man_ori' not in self.parameters and self.num_cams:
+            self.parameters['man_ori'] = {'nr': [1, 2, 3, 4] * self.num_cams}
+            print("Info: Added default man_ori seed placeholder")
+
 
     def to_directory(self, dir_path):
         """Write parameters to a legacy directory as .par files."""
