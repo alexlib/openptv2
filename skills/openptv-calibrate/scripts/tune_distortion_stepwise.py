@@ -54,10 +54,22 @@ from openptv2.autocalibration import (
 FORBIDDEN = {"cc"}  # focal distance stays fixed, always
 
 
-def _fit_and_score(base_cal, fix, nfix, pix, cpar, eps, flags):
+def _drop_excluded(sorted_pix, exclude_ids):
+    """Mark specific calblock IDs (1-indexed, matching row i -> id i+1) as
+    unmatched, in place, so full_calibration/_matched_pairs ignore them --
+    same convention sortgrid itself uses for a point it couldn't match."""
+    if not exclude_ids:
+        return
+    for i, t in enumerate(sorted_pix):
+        if (i + 1) in exclude_ids and t.pnr >= 0:
+            t.pnr = -999
+
+
+def _fit_and_score(base_cal, fix, nfix, pix, cpar, eps, flags, exclude_ids=None):
     """Fit a copy of base_cal with the given flags; return (cal, rms, n_matched) or None."""
     cal = copy.deepcopy(base_cal)
     sorted_pix = sortgrid(cal, cpar, nfix, fix, len(pix), eps, pix)
+    _drop_excluded(sorted_pix, exclude_ids)
     if sum(1 for t in sorted_pix if t.pnr >= 0) < 6:
         return None
     try:
@@ -65,6 +77,7 @@ def _fit_and_score(base_cal, fix, nfix, pix, cpar, eps, flags):
     except (ValueError, RuntimeError):
         return None
     sorted_pix2 = sortgrid(cal, cpar, nfix, fix, len(pix), eps, pix)
+    _drop_excluded(sorted_pix2, exclude_ids)
     _, det, rep = _matched_pairs(cal, cpar, fix, sorted_pix2)
     if len(det) < 6:
         return None
@@ -79,6 +92,9 @@ def main() -> int:
                      help="comma-separated candidates to test, in priority order")
     ap.add_argument("--min-improve", type=float, default=0.03,
                      help="minimum relative RMS improvement to accept a candidate (default 0.03 = 3%%)")
+    ap.add_argument("--exclude-ids", default="",
+                     help="comma-separated cam:id pairs to drop from the fit, 1-indexed camera, "
+                          "e.g. '2:53,4:94,4:97,4:87,4:48,4:96,3:104'")
     ap.add_argument("--dry-run", action="store_true", help="report without writing .ori/.addpar")
     args = ap.parse_args()
 
@@ -88,6 +104,14 @@ def main() -> int:
         if f in FORBIDDEN:
             print(f"ERROR: '{f}' is forbidden -- focal distance (cc) stays fixed", file=sys.stderr)
             return 1
+
+    exclude_by_cam: dict[int, set[int]] = {}
+    for pair in args.exclude_ids.split(","):
+        pair = pair.strip()
+        if not pair:
+            continue
+        cam_str, id_str = pair.split(":")
+        exclude_by_cam.setdefault(int(cam_str) - 1, set()).add(int(id_str))
 
     base = Path(args.dataset).resolve()
     import os
@@ -115,8 +139,11 @@ def main() -> int:
 
         cal0 = Calibration.from_file(str(ori), str(addpar))
         cc0 = cal0.int_par.cc
+        exclude_ids = exclude_by_cam.get(cam)
+        if exclude_ids:
+            print(f"cam{cam + 1}: excluding IDs {sorted(exclude_ids)} from the fit")
 
-        result = _fit_and_score(cal0, fix, nfix, pix, cpar, eps, list(base_flags))
+        result = _fit_and_score(cal0, fix, nfix, pix, cpar, eps, list(base_flags), exclude_ids)
         if result is None:
             print(f"cam{cam + 1}: baseline ({base_flags}) failed to fit, skipping", file=sys.stderr)
             continue
@@ -131,7 +158,7 @@ def main() -> int:
             trial_results = {}
             for cand in remaining:
                 trial_flags = accepted + [cand]
-                r = _fit_and_score(cal0, fix, nfix, pix, cpar, eps, trial_flags)
+                r = _fit_and_score(cal0, fix, nfix, pix, cpar, eps, trial_flags, exclude_ids)
                 if r is not None:
                     trial_results[cand] = r
 
@@ -158,7 +185,7 @@ def main() -> int:
         # Final polish: one more fit with exactly the accepted set (already
         # what best_cal is, since it was fit with `accepted` -- but redo once
         # more from cal0 for a clean, single-source-of-truth final result).
-        final = _fit_and_score(cal0, fix, nfix, pix, cpar, eps, accepted)
+        final = _fit_and_score(cal0, fix, nfix, pix, cpar, eps, accepted, exclude_ids)
         if final is not None:
             best_cal, best_rms, best_n = final
 

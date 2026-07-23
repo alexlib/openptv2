@@ -43,15 +43,37 @@ from openptv2.autocalibration import (
 )
 
 
+def _drop_excluded(sorted_pix, exclude_ids):
+    """Mark specific calblock IDs (1-indexed, matching row i -> id i+1) as
+    unmatched, in place -- same convention sortgrid uses for a point it
+    couldn't match, so full_calibration/_matched_pairs ignore them too."""
+    if not exclude_ids:
+        return
+    for i, t in enumerate(sorted_pix):
+        if (i + 1) in exclude_ids and t.pnr >= 0:
+            t.pnr = -999
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("dataset")
     ap.add_argument("--flags", default="",
                      help="comma-separated extra free params, e.g. 'k1' or 'k1,p1,p2' "
                           "(default: none -- exterior only)")
+    ap.add_argument("--exclude-ids", default="",
+                     help="comma-separated cam:id pairs to drop from the fit, 1-indexed camera, "
+                          "e.g. '2:53,4:94,4:97,4:87,4:48,4:96,3:104'")
     ap.add_argument("--dry-run", action="store_true", help="report without writing .ori")
     args = ap.parse_args()
     flags = [f.strip() for f in args.flags.split(",") if f.strip()]
+
+    exclude_by_cam: dict[int, set[int]] = {}
+    for pair in args.exclude_ids.split(","):
+        pair = pair.strip()
+        if not pair:
+            continue
+        cam_str, id_str = pair.split(":")
+        exclude_by_cam.setdefault(int(cam_str) - 1, set()).add(int(id_str))
 
     base = Path(args.dataset).resolve()
 
@@ -81,6 +103,9 @@ def main() -> int:
         if not pix:
             print(f"cam{cam + 1}: no detected targets, skipping", file=sys.stderr)
             continue
+        exclude_ids = exclude_by_cam.get(cam)
+        if exclude_ids:
+            print(f"cam{cam + 1}: excluding IDs {sorted(exclude_ids)} from the fit")
 
         cal_current = Calibration.from_file(str(ori), str(addpar))
         cc_before = cal_current.int_par.cc
@@ -113,6 +138,8 @@ def main() -> int:
             else:
                 print(f"cam{cam + 1}: man_ori reseed did not converge", file=sys.stderr)
 
+        _drop_excluded(sorted_pix, exclude_ids)
+        n_matched = sum(1 for t in sorted_pix if t.pnr >= 0)
         if n_matched < 6:
             print(f"cam{cam + 1}: only {n_matched} matched (need >=6 for a stable "
                   f"6-DOF exterior fit) -- skipping", file=sys.stderr)
@@ -126,6 +153,7 @@ def main() -> int:
 
         # Re-sortgrid after the fit -- the pose moved, so re-match before scoring.
         sorted_pix2 = sortgrid(cal, cpar, nfix, fix, len(pix), eps, pix)
+        _drop_excluded(sorted_pix2, exclude_ids)
         _, det, rep = _matched_pairs(cal, cpar, fix, sorted_pix2)
         rms = rms_px(det, rep)
         n_matched = len(det)
