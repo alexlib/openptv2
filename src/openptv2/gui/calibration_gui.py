@@ -16,7 +16,7 @@ from skimage.util import img_as_ubyte
 from skimage.color import rgb2gray
 
 from traits.api import HasTraits, Str, Int, Bool, Instance, Button
-from traitsui.api import View, Item, HGroup, VGroup, ListEditor, TextEditor, Label
+from traitsui.api import View, Item, HGroup, VGroup, ListEditor
 from enable.component_editor import ComponentEditor
 
 from chaco.api import (
@@ -252,28 +252,7 @@ class CalibrationGUI(HasTraits):
     button_init_guess = Button()
     button_sort_grid = Button()
     button_sort_grid_init = Button()
-    button_edit_exclusions = Button()
     exclude_ids_text = Str("")
-
-    exclude_ids_view = View(
-        Label(
-            "Calibration-body point IDs to drop from matching/fitting, as "
-            "cam:id pairs (1-indexed camera), comma- or newline-separated.\n"
-            "Example: 2:53, 4:94, 4:97\n"
-            "Re-run Sortgrid after editing to apply."
-        ),
-        Item(
-            "exclude_ids_text",
-            style="custom",
-            show_label=False,
-            editor=TextEditor(multi_line=True),
-        ),
-        title="Exclude calibration-body point IDs",
-        width=420,
-        height=280,
-        resizable=True,
-        buttons=["OK"],
-    )
     button_raw_orient = Button()
     button_fine_orient = Button()
     button_orient_part = Button()
@@ -364,11 +343,11 @@ class CalibrationGUI(HasTraits):
                         enabled_when="pass_init",
                     ),
                     Item(
-                        name="button_edit_exclusions",
-                        label="Exclude IDs...",
-                        show_label=False,
-                        tooltip="Edit which calibration-body point IDs to drop "
-                                "from matching/fitting (opens a separate window).",
+                        name="exclude_ids_text",
+                        label="Exclude",
+                        tooltip="cam:id pairs to drop, e.g. '2:53,4:94'. "
+                                "Re-run Sortgrid to apply.",
+                        width=-80,
                     ),
                     Item(
                         name="button_raw_orient",
@@ -720,9 +699,6 @@ class CalibrationGUI(HasTraits):
                 continue
             result.setdefault(cam, set()).add(pid)
         return result
-
-    def _button_edit_exclusions_fired(self):
-        self.edit_traits(view="exclude_ids_view")
 
     def _button_sort_grid_fired(self):
         if self.need_reset:
