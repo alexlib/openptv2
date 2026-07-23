@@ -230,6 +230,21 @@ one-off copies of these that lived inside dataset folders):
   — it starts from the existing on-disk `.ori` instead of reseeding, so it
   works even when the seed itself is unusable, as long as a real (non-
   placeholder) prior calibration already exists on disk.
+- `recalibrate_exterior_only.py <dataset> [--dry-run]` — refine ONLY the 6
+  exterior DOF (position + angles); interior (cc/xh/yh) and distortion are
+  left exactly as they are on disk. For when interior was set by hand (e.g.
+  a known/measured focal length) and is trusted, and you just want a real
+  bundle-adjustment polish against all detected targets rather than
+  `calib.py run`'s always-reseed-with-cc/xh/yh-free behavior. Uses
+  `full_calibration(..., flags=[])` -- orient()'s "raw-like" mode. If the
+  on-disk pose is too far off for sortgrid's pixel-radius matching to find
+  anything, it automatically also tries reseeding exterior from the YAML's
+  `man_ori` seed (`external_calibration` solves pose directly from 4
+  correspondences, no close starting guess needed) and keeps whichever pose
+  sortgrid matches more points against -- verified on a real 4-camera
+  splitter rig where the hand-set poses for 3 of 4 cameras reprojected
+  hundreds of pixels off-frame; reseeding got all 4 to 72-81/135 matched,
+  RMS 1.5-2.9px, cc/xh/yh unchanged throughout.
 - `dump_matches.py <dataset>` — writes `cal/calib_matches/camN_matches.txt`
   (id, detected px, reprojected px) and `camN_overlay_ids.png` (like the
   usual overlay, but with the calibration-body point ID labeled next to each
