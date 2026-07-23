@@ -189,7 +189,7 @@ def _process_frame_worker(args: Tuple) -> int:
         else:
             img = imread(imname)
             if img.ndim > 2:
-                img = rgb2gray(img)
+                img = rgb2gray(img[:, :, :3])
             if img.dtype != np.uint8:
                 img = img_as_ubyte(img)
         if negative_flag:
@@ -754,7 +754,7 @@ def _read_gray_uint8(imname: Path) -> np.ndarray:
     """Read an image as 2D uint8 grayscale."""
     img = imread(imname)
     if img.ndim > 2:
-        img = rgb2gray(img)
+        img = rgb2gray(img[:, :, :3])
     if img.dtype != np.uint8:
         img = img_as_ubyte(img)
     return img
@@ -1155,7 +1155,7 @@ def py_sequence_loop_python(exp) -> None:
                 else:
                     img = imread(imname)
                     if img.ndim > 2:
-                        img = rgb2gray(img)
+                        img = rgb2gray(img[:, :, :3])
                     if img.dtype != np.uint8:
                         img = img_as_ubyte(img)
                 if pm.get_parameter("ptv").get("negative", False):

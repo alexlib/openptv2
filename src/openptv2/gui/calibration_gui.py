@@ -457,7 +457,7 @@ class CalibrationGUI(HasTraits):
                 print(f"Splitting calibration image: {imname}")
                 temp_img = imread(imname)
                 if temp_img.ndim > 2:
-                    temp_img = rgb2gray(temp_img)
+                    temp_img = rgb2gray(temp_img[:, :, :3])
                 # Same view order as the sequence pipeline, so calibration
                 # and processing cannot disagree on the view<->camera mapping.
                 splitted_images = ptv.image_split(

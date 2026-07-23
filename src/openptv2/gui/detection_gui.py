@@ -339,7 +339,7 @@ class DetectionGUI(HasTraits):
 
                 if self.raw_image.ndim > 2:
                     print("Converting image to grayscale")
-                    self.raw_image = rgb2gray(self.raw_image) 
+                    self.raw_image = rgb2gray(self.raw_image[:, :, :3])
                 
                 print("Converting image to 8-bit unsigned integer format")
                 self.raw_image = img_as_ubyte(self.raw_image)
