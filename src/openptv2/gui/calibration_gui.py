@@ -737,7 +737,16 @@ class CalibrationGUI(HasTraits):
         self.sorted_targs = []
         exclude_by_cam = self._parse_exclude_ids()
 
+        # Honor the configured sortgrid search radius (pixels). Without this
+        # the match falls back to match_detection_to_ref's hardcoded eps=25,
+        # which for a good initial guess is loose enough to snap a reference
+        # point onto a neighbouring detection -- the "shifted dots" symptom.
+        # 0/missing -> a tight default: better to drop a marginal match than
+        # mislabel it (raw orientation refines from the confident ones).
+        radius = int(self.get_parameter('sortgrid').get('radius', 0)) or 5
+
         print("_button_sort_grid_fired")
+        print(f"Sortgrid search radius: {radius} px")
         if exclude_by_cam:
             print(f"Excluding IDs (cam-index: ids): {exclude_by_cam}")
 
@@ -747,6 +756,7 @@ class CalibrationGUI(HasTraits):
                 self.cal_points["pos"],
                 self.detections[i_cam],
                 self.cpar,
+                eps=radius,
             )
             exclude_ids = exclude_by_cam.get(i_cam, set())
             x, y, pnr = [], [], []

@@ -245,6 +245,27 @@ one-off copies of these that lived inside dataset folders):
   splitter rig where the hand-set poses for 3 of 4 cameras reprojected
   hundreds of pixels off-frame; reseeding got all 4 to 72-81/135 matched,
   RMS 1.5-2.9px, cc/xh/yh unchanged throughout.
+- `robust_calibrate.py <dataset> [--dry-run] [--target 1.0] [--min-keep 0.6] [--mad K]`
+  — RANSAC/IRLS-style outlier rejection to reach a **sub-pixel** fit. A POLISH
+  step run AFTER any calibration (`calib.py run`, `recalibrate_*`, GUI): starts
+  from each camera's on-disk `.ori`/`.addpar`, sortgrids, then removes the
+  worst-reprojecting correspondences (greedy: drop worst, refit, until inlier
+  RMS ≤ `--target`; or `--mad K`: one-shot median+K·MAD cutoff) and refits the
+  full model over the survivors. A plain bundle adjustment is dragged by the
+  few points the pinhole+Brown model genuinely can't reproject (a mismatched
+  sortgrid ID, a splitter-prism-distorted edge dot, an occluded blob); dropping
+  them yields a clean fit over the points the model CAN represent. On a real
+  4-cam splitter rig this took all four cameras from 1.2–2.4px to ~0.98px.
+  **Trade-off (why it is not free accuracy, and why it is opt-in, not a silent
+  default):** rejecting a point because the model can't fit it can mean hiding
+  real model error at the frame edges rather than removing a bad measurement.
+  `--min-keep` (default 0.6) guards against trimming the pose loose, and the
+  printed `cover=` (surviving-points bbox as a fraction of the image) flags a
+  camera that collapsed to a central band — that camera is then only trustworthy
+  where its inliers are. **Always** re-run `reproject_on_combined.py` after: the
+  FULL calblock must still land on the dots (global pose preserved) even for a
+  trimmed camera. Greedy mode maximizes sub-pixel-ness (trims more); `--mad` is
+  gentler (keeps coverage, may not reach sub-pixel). Backups: `*.robustbck`.
 - `dump_matches.py <dataset>` — writes `cal/calib_matches/camN_matches.txt`
   (id, detected px, reprojected px) and `camN_overlay_ids.png` (like the
   usual overlay, but with the calibration-body point ID labeled next to each
