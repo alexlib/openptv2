@@ -246,6 +246,72 @@ def test_orient_interface_updates_accumulate():
     assert end_err < 0.5 * start_err
 
 
+def test_full_calibration_interf_flag_fits_glass_tilt():
+    """The high-level full_calibration('interf') flag must enable the glass-
+    interface tilt fit and pull a perturbed glass vector back toward truth.
+
+    This covers the string-flag -> OrientPar.interfflag mapping and the whole
+    GUI/skill path (CANDIDATE_FLAGS uses the same list), not just orient()'s
+    low-level interfflag which test_orient_interface_updates_accumulate covers.
+    Without 'interf' in the flags the glass vector must stay put.
+    """
+    from openptv2.algorithms.orientation import full_calibration
+
+    fix = np.zeros((64, 3))
+    pt_id = 0
+    for ix in range(4):
+        for iy in range(4):
+            for iz in range(4):
+                fix[pt_id] = np.array([(ix * 10) - 60, iy * 5, iz * 5])
+                pt_id += 1
+
+    ori_file = "test_data/calibration/sym_cam1.tif.ori"
+    add_file = "test_data/calibration/cam1.tif.addpar"
+    cpar = ControlPar.from_yaml("test_data/parameters.yaml")
+
+    truth = Calibration.from_file(ori_file, add_file)
+    true_glass = np.array(
+        [truth.glass_par.vec_x, truth.glass_par.vec_y, truth.glass_par.vec_z]
+    )
+
+    # Exact synthetic observations from the true calibration.
+    pix = [Target() for _ in range(64)]
+    for i in range(64):
+        xp, yp = img_coord(fix[i], truth, cpar.mm)
+        x_pix, y_pix = metric_to_pixel(xp, yp, cpar)
+        pix[i].x = x_pix
+        pix[i].y = y_pix
+        pix[i].pnr = i
+
+    nGl = np.linalg.norm(true_glass)
+
+    def _perturbed():
+        cal = Calibration.from_file(ori_file, add_file)
+        cal.glass_par.vec_x += 0.02 * nGl
+        cal.glass_par.vec_y -= 0.01 * nGl
+        return cal
+
+    def _glass_err(cal):
+        return np.linalg.norm(
+            np.array(
+                [cal.glass_par.vec_x, cal.glass_par.vec_y, cal.glass_par.vec_z]
+            )
+            - true_glass
+        )
+
+    start_err = _glass_err(_perturbed())
+
+    # With 'interf': the glass tilt is fit and the vector moves toward truth.
+    cal_on = _perturbed()
+    full_calibration(cal_on, fix, pix, cpar, ["cc", "xh", "yh", "interf"])
+    assert _glass_err(cal_on) < 0.5 * start_err
+
+    # Without 'interf': the glass vector must stay essentially put.
+    cal_off = _perturbed()
+    full_calibration(cal_off, fix, pix, cpar, ["cc", "xh", "yh"])
+    assert abs(_glass_err(cal_off) - start_err) < 1e-6
+
+
 def test_orient_invalidates_mmlut():
     """A successful orient() must drop any cached multimedia LUT: the fit
     changed the calibration, so a LUT built beforehand is now stale."""

@@ -878,7 +878,7 @@ class Calib_Params(HasTraits):
     p2 = Bool(False, label="p2")
     scale = Bool(False, label="scale")
     shear = Bool(False, label="shear")
-    interf = Bool(False, label="interfaces check box are available")
+    interf = Bool(False, label="interf (fit glass-interface tilt)")
 
     Group4_0 = Group(
         Item(name="Examine_Flag"), Item(name="Combine_Flag"), show_border=True
@@ -910,7 +910,11 @@ class Calib_Params(HasTraits):
         label="Affin transformation",
         show_border=True,
     )
-    Group4_4 = Group(Item(name="interf"))
+    Group4_4 = Group(
+        Item(name="interf"),
+        label="Glass-interface tilt",
+        show_border=True,
+    )
 
     Group4 = Group(
         Group(
