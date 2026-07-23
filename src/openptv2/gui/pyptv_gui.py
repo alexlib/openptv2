@@ -601,7 +601,7 @@ class TreeMenuHandler(Handler):
             if Path(imname).exists():
                 temp_img = imread(imname)
                 if temp_img.ndim > 2:
-                    temp_img = rgb2gray(temp_img)
+                    temp_img = rgb2gray(temp_img[:, :, :3])
                 splitted_images = ptv.image_split(
                     temp_img, order=ptv_params.get("splitter_order")
                 )
@@ -1922,7 +1922,7 @@ class MainGUI(HasTraits):
         try:
             temp_img = imread(img_name)
             if temp_img.ndim > 2:
-                temp_img = rgb2gray(temp_img)
+                temp_img = rgb2gray(temp_img[:, :, :3])
             temp_img = img_as_ubyte(temp_img)
         except IOError:
             print("Error reading file, setting zero image")
@@ -1950,7 +1950,7 @@ class MainGUI(HasTraits):
             if Path(imname).exists():
                 temp_img = imread(imname)
                 if temp_img.ndim > 2:
-                    temp_img = rgb2gray(temp_img)
+                    temp_img = rgb2gray(temp_img[:, :, :3])
                 splitted_images = ptv.image_split(
                     temp_img, order=ptv_params.get("splitter_order")
                 )
