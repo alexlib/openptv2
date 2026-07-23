@@ -69,10 +69,11 @@ class CamResult:
     nfix: int
     rms: float
     flags: list[str]
-    cal: Calibration
+    cal: Calibration | None
     ref: np.ndarray = field(repr=False)  # (n,3) matched 3D points
     det: np.ndarray = field(repr=False)  # (n,2) detected pixels
     rep: np.ndarray = field(repr=False)  # (n,2) reprojected pixels
+    error: str | None = None  # set instead of raising when this camera failed
 
 
 def _reproject_px(cal, mm, fix_xyz, cpar):
@@ -90,7 +91,10 @@ def _matched_pairs(cal, cpar, fix, sorted_pix):
         ref.append(fix[i])
         det.append((t.x, t.y))
         rep.append(_reproject_px(cal, cpar.mm, fix[i], cpar))
-    return np.asarray(ref), np.asarray(det), np.asarray(rep)
+    ref_arr = np.asarray(ref) if len(ref) else np.empty((0, 3))
+    det_arr = np.asarray(det) if len(det) else np.empty((0, 2))
+    rep_arr = np.asarray(rep) if len(rep) else np.empty((0, 2))
+    return ref_arr, det_arr, rep_arr
 
 
 def rms_px(det, rep) -> float:
@@ -199,14 +203,16 @@ def _cpar_from_ptv(ptv: dict, num_cams: int):
 def _seed_from_par(base: Path, num_cams: int, calblock: Path):
     """Fallback seed source: man_ori.par (IDs) + man_ori.dat (clicks)."""
     par = base / "parameters"
-    clicks = np.loadtxt(par / "man_ori.dat").reshape(-1, 2)
+    dat_file = (par / "man_ori.dat") if (par / "man_ori.dat").exists() else (base / "man_ori.dat")
+    par_file = (par / "man_ori.par") if (par / "man_ori.par").exists() else (base / "man_ori.par")
+    clicks = np.loadtxt(dat_file).reshape(-1, 2)
     ids_per_cam, clicks_per_cam = [], []
     for cam in range(num_cams):
-        fix4 = read_man_ori_fix(str(calblock), str(par / "man_ori.par"), cam)
+        fix4 = read_man_ori_fix(str(calblock), str(par_file), cam)
         if fix4 is None:
             raise RuntimeError(f"cam{cam + 1}: could not read man_ori.par IDs")
         # read_man_ori_fix returns 3D coords; recover the IDs from man_ori.par
-        toks = (par / "man_ori.par").read_text().split()
+        toks = par_file.read_text().split()
         ids_per_cam.append([int(toks[cam * 4 + i]) for i in range(4)])
         clicks_per_cam.append(clicks[cam * 4:(cam + 1) * 4])
     return ids_per_cam, clicks_per_cam
@@ -357,9 +363,20 @@ def calibrate_dataset(
     for cam in range(num_cams):
         ids = dp.ids_per_cam[cam]
         fix4 = np.asarray([fix[i - 1] for i in ids], dtype=float)
-        res = calibrate_camera(
-            cam, base, cpar, fix, nfix, eps, fix4, dp.clicks_per_cam[cam]
-        )
+        try:
+            res = calibrate_camera(
+                cam, base, cpar, fix, nfix, eps, fix4, dp.clicks_per_cam[cam]
+            )
+        except RuntimeError as exc:
+            # One camera's seed/initial-guess failing to converge (common on a
+            # freshly bootstrapped naive guess) shouldn't lose every other
+            # camera's result -- report it and keep going.
+            results.append(CamResult(
+                cam=cam, matched=0, nfix=nfix, rms=float("inf"), flags=[],
+                cal=None, ref=np.empty((0, 3)), det=np.empty((0, 2)),
+                rep=np.empty((0, 2)), error=str(exc),
+            ))
+            continue
         results.append(res)
 
         if overlays:

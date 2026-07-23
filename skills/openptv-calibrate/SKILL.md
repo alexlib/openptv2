@@ -60,6 +60,45 @@ uv run python $SK run     <dataset> --output /tmp/calib.json
 ```
 Then show the overlay PNGs in `<dataset>/cal/auto_calib/` and confirm the report.
 
+## Truly fresh dataset (no targets, no seed, no prior .ori/.addpar at all)
+A dataset that never went through calibration before is missing three things
+`inspect` now names explicitly in `problems`, each with its own fix:
+```
+uv run python $SK inspect <dataset> --output /tmp/inspect.json   # names all 3 gaps
+uv run python skills/openptv-calibrate/scripts/detect_targets.py <dataset>  # targets
+uv run python $SK init <dataset>                                  # initial guess
+# then step 2 (seed) below, then step 3 (run)
+```
+- `detect_targets.py` runs the same detection the GUI's calibration
+  "Detection" button uses (`detect_plate` thresholds from the dataset YAML),
+  closing the gap `inspect`'s own `has_targets` check used to dead-end on
+  ("targets must be detected first; stop (out of scope)") -- detection isn't
+  really *calibration*, it's a prerequisite this skill can now do for you.
+- `init` writes a naive default `.ori`/`.addpar` per camera missing one:
+  `external_calibration`'s exterior solve (`raw_orient`) needs a starting
+  interior-parameter guess (cc/xh/yh) as a fixed input even though it
+  recomputes the exterior pose from the 4 seed points -- there is no
+  calibration path that needs literally zero prior information. The default
+  guesses `cc` from sensor width (`imx * pix_x`, ~90deg FOV) and places the
+  camera on the -Z axis at `--distance` (default 500mm) with identity
+  rotation. **This mechanically unblocks `run` -- it does not reliably
+  produce a *useful* calibration.** On a real two-splitter-rig dataset tested
+  here, 3 of 4 cameras "converged" (`raw_orient` returned success) but
+  matched 0/135 calblock points once sortgrid ran -- the pose was numerically
+  stable but pointed nowhere near the actual target, and the 4th camera
+  didn't converge at all. **Always check `run --dry-run`'s `matched` count,
+  not just whether it raised** -- a converged-but-wrong pose is silent
+  otherwise. If nothing converges usefully, the missing ingredient is a rough
+  *orientation* guess (roughly which way each camera points), not more code:
+  ask the user for it, or seed `init` from a similar rig's prior calibration
+  if one exists (see "several runs sharing one calibration" in
+  `docs/multi-folder-runs.md`) rather than a blind default.
+- `calibrate_dataset` treats each camera independently: one camera failing
+  to converge no longer aborts the whole dataset's report (`CamResult.error`
+  is set instead of raising; `run`'s JSON report and printed summary show
+  per-camera pass/fail so you can see which cameras need attention without
+  losing the ones that worked).
+
 ## Workflow (checkpoint at every stage — pause for the user between each)
 `SK=skills/openptv-calibrate/scripts/calib.py`
 
@@ -163,6 +202,9 @@ snapshot-refine for the next iteration.
 ## Utility Scripts
 `scripts/calib.py <subcommand>` — all write to files; stdout is short status.
 - `inspect <dataset> --output F` — readiness JSON.
+- `init <dataset> [--distance MM]` — naive default `.ori`/`.addpar` for cameras
+  missing one entirely (see "Truly fresh dataset" above for what it can and
+  can't do).
 - `render <dataset> --output-dir D` — cal-image grids + labeled 3D body.
 - `pick <dataset> [--ids a,b,c,d]` — interactive mouse click-picker for the seed.
 - `seed <dataset> --seed-json F` — write `man_ori.par` + `man_ori.dat` from JSON.
@@ -173,6 +215,11 @@ Standalone scripts (each takes `<dataset>` as `sys.argv[1]`; run with
 `uv run python skills/openptv-calibrate/scripts/<name>.py <dataset> ...` from
 the openptv2 checkout — no per-machine path edits needed, unlike earlier
 one-off copies of these that lived inside dataset folders):
+- `detect_targets.py <dataset>` — detects calibration-plate targets for every
+  camera (`detect_plate` thresholds from the dataset YAML, same code path as
+  the GUI's calibration "Detection" button) and writes `cal/camN.tif_targets`.
+  Run this first on a fresh dataset, or whenever existing `_targets` files
+  turn out to be stale placeholders (see the pitfall below).
 - `recalibrate_constrained.py <dataset>` — re-fit with addpar zeroed (no
   distortion, `cc` fixed), only exterior + `xh,yh` free. Diagnostic: does an
   odd-looking pose survive with distortion removed, or was it overfit?

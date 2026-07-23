@@ -126,6 +126,13 @@ def cmd_inspect(args) -> int:
         num_cams and calblock.exists() and report["sortgrid_par"]
         and have_seed and have_targets and have_init
     )
+    if not have_init:
+        report["problems"].append(
+            "no initial guess (camN.tif.ori/.addpar missing for at least one camera) "
+            "-> external_calibration needs a starting interior-parameter guess "
+            "(cc/xh/yh) even for a from-scratch calibration; use `init` to write a "
+            "naive default, then verify convergence via `run --dry-run` overlays"
+        )
     if not have_seed:
         report["problems"].append(
             "no manual-orientation seed (man_ori.par/.dat or YAML configuration) -> use `pick` (mouse) "
@@ -228,6 +235,66 @@ def _initial_guess(base: Path, cam: int, cpar, pick_ids, clicks, ids_all, xyz_al
     xyz4 = xyz_all[idx]
     external_calibration(cal, np.asarray(xyz4, float), np.asarray(clicks, float), cpar)
     return cal, _reproject_grid(cal, cpar, xyz_all)
+
+
+# --- naive initial guess (for datasets with no prior .ori/.addpar at all) ---
+
+def cmd_init(args) -> int:
+    """Write a naive default .ori/.addpar for every camera missing one.
+
+    `external_calibration`'s exterior solve (raw_orient) needs a starting
+    interior-parameter guess (cc/xh/yh, distortion) even though it recomputes
+    the exterior pose from the 4 seed points -- there is no calibration path
+    that needs zero prior information. This writes a generic guess: camera
+    on the -Z axis at `--distance` mm looking at the origin (angles=0, i.e.
+    identity rotation -- correct only if the rig's world frame already has
+    +Z pointing from body to camera; if `run`'s external_calibration fails to
+    converge, the seed is more likely the cause than this guess, but a wildly
+    different rig geometry could need `--distance` adjusted), `cc` guessed
+    from the sensor width (`imx * pix_x`, i.e. ~90deg horizontal FOV -- a
+    common starting assumption, not a measurement), xh=yh=0, zero distortion.
+    Never overwrites an existing .ori/.addpar (use `run` for that, which
+    keeps *.autobck backups).
+    """
+    from openptv2.algorithms.calibration import Calibration
+    from openptv2.autocalibration import cam_files, _find_yaml
+
+    base = Path(args.dataset).resolve()
+    num_cams = _num_cams(base)
+    yaml_path = _find_yaml(base)
+    if yaml_path is None:
+        print("ERROR: no parameters_*.yaml found", file=sys.stderr)
+        return 1
+    import yaml
+    y = yaml.safe_load(yaml_path.read_text())
+    ptv = y["ptv"]
+    cc_guess = float(ptv["imx"]) * float(ptv["pix_x"])
+
+    written = []
+    for cam in range(num_cams):
+        _, ori, addpar = cam_files(base, cam)
+        if ori.exists() and addpar.exists():
+            continue
+        cal = Calibration(
+            pos=[0.0, 0.0, -args.distance],
+            angs=[0.0, 0.0, 0.0],
+            prim_point=[0.0, 0.0, cc_guess],
+            rad_dist=[0.0, 0.0, 0.0],
+            decent=[0.0, 0.0],
+            affine=[1.0, 0.0],
+            glass=[0.0, 0.0, 1.0],
+        )
+        ori.parent.mkdir(parents=True, exist_ok=True)
+        cal.write(str(ori), str(addpar))
+        written.append(f"cam{cam + 1}")
+
+    if not written:
+        print("Nothing to do: every camera already has .ori/.addpar.")
+    else:
+        print(f"Success! Wrote naive initial guess for: {', '.join(written)} "
+              f"(cc={cc_guess:.2f}mm, distance={args.distance}mm). "
+              "Verify convergence with `run --dry-run` before trusting it.")
+    return 0
 
 
 # --- render for seed picking ------------------------------------------------
@@ -440,19 +507,25 @@ def cmd_run(args) -> int:
     from openptv2.autocalibration import calibrate_dataset
 
     results = calibrate_dataset(args.dataset, write=not args.dry_run, overlays=True)
+    ok = [r for r in results if r.error is None]
+    failed = [r for r in results if r.error is not None]
     report = {
         "dataset": str(Path(args.dataset).resolve()),
         "written": not args.dry_run,
-        "mean_rms_px": float(np.mean([r.rms for r in results])),
+        "mean_rms_px": float(np.mean([r.rms for r in ok])) if ok else None,
         "cameras": [
             {
                 "cam": r.cam + 1,
                 "matched": r.matched,
                 "nfix": r.nfix,
-                "rms_px": round(r.rms, 4),
+                "rms_px": round(r.rms, 4) if r.error is None else None,
                 "flags": r.flags,
-                "overlay": str(Path(args.dataset).resolve() / "cal" / "auto_calib"
-                               / f"cam{r.cam + 1}_overlay.png"),
+                "error": r.error,
+                "overlay": (
+                    str(Path(args.dataset).resolve() / "cal" / "auto_calib"
+                        / f"cam{r.cam + 1}_overlay.png")
+                    if r.error is None else None
+                ),
             }
             for r in results
         ],
@@ -460,11 +533,18 @@ def cmd_run(args) -> int:
     Path(args.output).write_text(json.dumps(report, indent=2))
     print(f"Success! Calibration report written to: {args.output}")
     for c in report["cameras"]:
-        print(f"  cam{c['cam']}: matched {c['matched']}/{c['nfix']}  "
-              f"RMS={c['rms_px']}px  flags={'+'.join(c['flags'])}")
-    print(f"  mean RMS: {report['mean_rms_px']:.3f}px  "
-          f"({'written' if report['written'] else 'dry-run'})")
-    return 0
+        if c["error"]:
+            print(f"  cam{c['cam']}: FAILED - {c['error']}")
+        else:
+            print(f"  cam{c['cam']}: matched {c['matched']}/{c['nfix']}  "
+                  f"RMS={c['rms_px']}px  flags={'+'.join(c['flags'])}")
+    if report["mean_rms_px"] is not None:
+        print(f"  mean RMS ({len(ok)}/{len(results)} cameras): "
+              f"{report['mean_rms_px']:.3f}px  "
+              f"({'written' if report['written'] else 'dry-run'})")
+    else:
+        print("  no camera converged")
+    return 1 if failed else 0
 
 
 def cmd_snapshot_refine(args) -> int:
@@ -617,6 +697,12 @@ def main() -> int:
     p.add_argument("dataset")
     p.add_argument("--output", required=True)
     p.set_defaults(func=cmd_inspect)
+
+    p = sub.add_parser("init")
+    p.add_argument("dataset")
+    p.add_argument("--distance", type=float, default=500.0,
+                   help="naive camera-to-origin distance guess in mm (default 500)")
+    p.set_defaults(func=cmd_init)
 
     p = sub.add_parser("render")
     p.add_argument("dataset")
