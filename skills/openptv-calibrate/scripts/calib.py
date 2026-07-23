@@ -228,9 +228,15 @@ def _initial_guess(base: Path, cam: int, cpar, pick_ids, clicks, ids_all, xyz_al
     from openptv2.algorithms.calibration import Calibration
     from openptv2.algorithms.orientation import external_calibration
 
-    ori = base / "cal" / f"cam{cam + 1}.tif.ori"
-    addpar = base / "cal" / f"cam{cam + 1}.tif.addpar"
-    cal = Calibration.from_file(str(ori), str(addpar))
+    from openptv2.autocalibration import cam_files as _resolve_cam_files
+
+    _, ori, addpar = _resolve_cam_files(base, cam)
+    if ori.exists() and addpar.exists():
+        cal = Calibration.from_file(str(ori), str(addpar))
+    else:
+        cal = Calibration()
+        cal.set_primary_point([0.0, 0.0, 50.0])
+        cal.glass_par.d = cpar.mm.d[0]
     idx = [list(ids_all).index(i) for i in pick_ids]
     xyz4 = xyz_all[idx]
     external_calibration(cal, np.asarray(xyz4, float), np.asarray(clicks, float), cpar)
@@ -309,15 +315,17 @@ def cmd_render(args) -> int:
     outdir.mkdir(parents=True, exist_ok=True)
     num_cams = _num_cams(base)
 
+    from openptv2.autocalibration import cam_files as _resolve_cam_files
+
     written = []
     for cam in range(num_cams):
-        img = base / "cal" / f"cam{cam + 1}.tif"
+        img_path, _, _ = _resolve_cam_files(base, cam)
         fig, ax = plt.subplots(figsize=(9, 7.2))
         try:
             import imageio.v3 as iio
-            ax.imshow(iio.imread(img), cmap="gray")
+            ax.imshow(iio.imread(img_path), cmap="gray")
         except Exception:
-            ax.text(0.5, 0.5, f"cannot load {img.name}", ha="center")
+            ax.text(0.5, 0.5, f"cannot load {img_path.name}", ha="center")
         ax.set_title(f"cam{cam + 1}: read off pixel (x,y) of 4 known grid points")
         ax.grid(True, color="cyan", alpha=0.3, linewidth=0.5)
         fig.tight_layout()
@@ -452,8 +460,10 @@ def cmd_pick(args) -> int:
     print(f"Seed point IDs (click these, in order, on every camera): {pick_ids}")
 
     seeds: dict = {}
+    from openptv2.autocalibration import cam_files as _resolve_cam_files
     for cam in range(num_cams):
-        img = iio.imread(base / "cal" / f"cam{cam + 1}.tif")
+        img_path, _, _ = _resolve_cam_files(base, cam)
+        img = iio.imread(img_path)
         fig, (axi, axb) = plt.subplots(1, 2, figsize=(15, 7),
                                        gridspec_kw={"width_ratios": [1.6, 1]})
         axi.imshow(img, cmap="gray")

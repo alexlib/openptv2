@@ -273,6 +273,21 @@ one-off copies of these that lived inside dataset folders):
   `tune_eps0.py` — a useful starting point, not a replacement for confirming
   against real sequence data once it exists (the calibration plate's clean,
   well-separated dots don't capture particle-image noise/occlusion/overlap).
+- `plot_calblock_3d.py` — interactive marimo notebook: **just** the 3D
+  calibration body (fixp/calblock), IDs labeled, mouse-drag rotation. Needs
+  only the calblock -- no camera `.ori`/`.addpar` required, so use this
+  *first*, before any calibration exists, to help the user understand the
+  target's physical layout (which points are corners/edges, whether it's a
+  flat plate or a multi-plane staircase body, etc.) before picking manual-
+  orientation seed points. Accepts a dataset dir, a `parameters_*.yaml`, or a
+  calblock `.txt` directly:
+  ```
+  uv run marimo edit --sandbox --no-token \
+      skills/openptv-calibrate/scripts/plot_calblock_3d.py \
+      -- --target "<dataset-or-yaml-or-calblock.txt>"
+  ```
+  Once calibration exists (`.ori`/`.addpar` per camera), move on to
+  `visualize_calibration_setup.py` below for the full setup with camera poses.
 - `visualize_calibration_setup.py` — interactive marimo notebook: 3D setup
   (world frame, ID-labeled calibration body, camera poses labeled by
   splitter quadrant, mouse-drag rotation via `mo.mpl.interactive`) plus the
