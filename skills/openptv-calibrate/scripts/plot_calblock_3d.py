@@ -87,7 +87,7 @@ def _(body, calblock_path, ids, mo, np, plt):
 
     ax.scatter(body[:, 0], body[:, 1], body[:, 2], s=25, c=body[:, 2], cmap="viridis")
     for pid, (bx, by, bz) in zip(ids, body):
-        ax.text(bx, by, bz, str(pid), fontsize=5)
+        ax.text(bx, by, bz, str(pid), fontsize=9)
 
     ax.set_xlabel("X [mm]")
     ax.set_ylabel("Y [mm]")
