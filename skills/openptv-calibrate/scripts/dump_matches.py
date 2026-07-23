@@ -27,14 +27,12 @@ from openptv2.algorithms.tracking_frame_buf import read_targets
 from openptv2.autocalibration import _load_dataset_params, _reproject_px, cam_files, resolve_calblock, target_base
 
 
-def render_overlay(base, cam, img_path, ids, det, rep, dest):
+def render_overlay(base, cam, img, ids, det, rep, dest):
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
-    import imageio.v3 as iio
     import numpy as np
 
-    img = iio.imread(img_path)
     rms = float(np.sqrt(np.mean(np.sum((det - rep) ** 2, axis=1)))) if len(det) else float("nan")
 
     fig, ax = plt.subplots(figsize=(8, 6.4))
@@ -68,8 +66,30 @@ def main():
     outdir = base / "cal" / "calib_matches"
     outdir.mkdir(exist_ok=True)
 
+    # Splitter datasets share one raw combined frame across all 4 cameras
+    # (cam_files()'s image path is intentionally the same for each) -- split
+    # it once so each camera's overlay shows its own quadrant, not the whole
+    # multiplexed frame.
+    split_views = None
+    import yaml as _yaml
+    from openptv2.autocalibration import _find_yaml
+    _yaml_path = _find_yaml(base)
+    _ptv_params = _yaml.safe_load(_yaml_path.read_text())["ptv"] if _yaml_path else {}
+    if _ptv_params.get("splitter"):
+        import imageio.v3 as iio
+        from openptv2.gui.ptv import image_split
+
+        img0_path, _, _ = cam_files(base, 0)
+        raw = iio.imread(img0_path)
+        if raw.ndim > 2:
+            from skimage.color import rgb2gray
+            from skimage.util import img_as_ubyte
+
+            raw = img_as_ubyte(rgb2gray(raw[:, :, :3]))
+        split_views = image_split(raw, order=_ptv_params.get("splitter_order") or [0, 1, 3, 2])
+
     for cam in range(num_cams):
-        img, ori, addpar = cam_files(base, cam)
+        img_path, ori, addpar = cam_files(base, cam)
         cal = Calibration.from_file(str(ori), str(addpar))
 
         pix = read_targets(str(target_base(base, cam)), 0)
@@ -89,8 +109,14 @@ def main():
         dest = outdir / f"cam{cam + 1}_matches.txt"
         dest.write_text("\n".join(lines) + "\n")
 
+        if split_views is not None:
+            cam_img = split_views[cam]
+        else:
+            import imageio.v3 as iio
+            cam_img = iio.imread(img_path)
+
         overlay_dest = outdir / f"cam{cam + 1}_overlay_ids.png"
-        render_overlay(base, cam, img, ids, np.asarray(det), np.asarray(rep), overlay_dest)
+        render_overlay(base, cam, cam_img, ids, np.asarray(det), np.asarray(rep), overlay_dest)
 
         print(f"cam{cam + 1}: {len(lines)} matches -> {dest}  overlay -> {overlay_dest}")
 
