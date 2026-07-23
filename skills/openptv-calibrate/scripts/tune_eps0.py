@@ -27,7 +27,7 @@ import numpy as np
 from openptv2.algorithms.calibration import Calibration
 from openptv2.algorithms.parameters import ControlPar, VolumePar
 from openptv2.correspondences import MatchedCoords, correspondences
-from openptv2.autocalibration import cam_files
+from openptv2.autocalibration import cam_files, _find_yaml
 from openptv2.gui.ptv import read_targets
 
 # Reasonable default sweep in mm; override by editing if your pix size is
@@ -37,7 +37,9 @@ DEFAULT_SWEEP_MM = [0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.08, 0.10, 0.12, 0.15, 
 
 
 def sweep(base: Path, frame: int, eps0_values=None):
-    yaml_path = base / "parameters_Run1.yaml"
+    yaml_path = _find_yaml(base)
+    if yaml_path is None:
+        raise FileNotFoundError(f"no parameters_*.yaml found in {base}")
     cpar = ControlPar.from_yaml(str(yaml_path))
     vpar = VolumePar.from_yaml(str(yaml_path))
     nc = cpar.num_cams

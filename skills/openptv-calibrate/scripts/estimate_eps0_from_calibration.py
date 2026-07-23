@@ -32,7 +32,7 @@ from openptv2.algorithms.calibration import Calibration
 from openptv2.algorithms.epi import epi_mm
 from openptv2.algorithms.parameters import ControlPar, VolumePar
 from openptv2.algorithms.tracking_frame_buf import Target, TargetArray
-from openptv2.autocalibration import cam_files
+from openptv2.autocalibration import cam_files, _find_yaml
 from openptv2.correspondences import MatchedCoords
 
 
@@ -69,7 +69,10 @@ def main():
         return 1
 
     base = Path(sys.argv[1]).resolve()
-    yaml_path = base / "parameters_Run1.yaml"
+    yaml_path = _find_yaml(base)
+    if yaml_path is None:
+        print(f"ERROR: no parameters_*.yaml found in {base}", file=sys.stderr)
+        return 1
     cpar = ControlPar.from_yaml(str(yaml_path))
     vpar = VolumePar.from_yaml(str(yaml_path))
     num_cams = cpar.num_cams
