@@ -129,7 +129,13 @@ def main() -> int:
     ap.add_argument("--candidates", default="k2,k3,p1,p2,xh,yh",
                      help="comma-separated candidates to test, in priority order")
     ap.add_argument("--min-improve", type=float, default=0.03,
-                     help="minimum relative RMS improvement to accept a candidate (default 0.03 = 3%%)")
+                     help="minimum relative RMS improvement to accept a candidate (default 0.03 = 3%%). "
+                          "Ignored in --sequential mode, which accepts on ANY improvement.")
+    ap.add_argument("--sequential", action="store_true",
+                     help="try --candidates in the EXACT order given (not greedy best-first), "
+                          "one at a time on top of whatever was already accepted. Keep a candidate "
+                          "if it doesn't make RMS worse; revert (skip, don't stop) otherwise, then "
+                          "move on to the next candidate in the list regardless.")
     ap.add_argument("--exclude-ids", default="",
                      help="comma-separated cam:id pairs to drop from the fit, 1-indexed camera, "
                           "e.g. '2:53,4:94,4:97,4:87,4:48,4:96,3:104'")
@@ -194,38 +200,64 @@ def main() -> int:
         print(f"\ncam{cam + 1}: baseline flags={base_flags}  RMS={best_rms:.4f}px  n={best_n}")
 
         accepted = list(base_flags)
-        remaining = [c for c in candidates if c not in accepted]
         history = [(tuple(accepted), best_rms, best_n)]
 
-        while remaining:
-            trial_results = {}
-            for cand in remaining:
+        if args.sequential:
+            # Fixed order, one at a time: test candidate, keep it if RMS
+            # doesn't get worse, revert (skip) otherwise -- but always move
+            # on to the next candidate in the list, never stop early.
+            for cand in candidates:
+                if cand in accepted:
+                    continue
                 trial_flags = accepted + [cand]
                 r = _fit_and_score(cal0, fix, nfix, pix, cpar, eps, trial_flags, exclude_ids,
                                     args.auto_reject_mad)
-                if r is not None:
-                    trial_results[cand] = r
+                if r is None:
+                    print(f"  {cand}: fit failed  [reverted]")
+                    continue
+                cand_cal, cand_rms, cand_n, cand_auto_excluded = r
+                improve = (best_rms - cand_rms) / best_rms if best_rms > 0 else 0
+                worse = cand_rms > best_rms
+                print(f"  {cand}: RMS {best_rms:.4f} -> {cand_rms:.4f}px "
+                      f"({improve * 100:+.1f}%)  n={cand_n}"
+                      + ("  [reverted, worse]" if worse else "  [accepted]"))
+                if worse:
+                    continue
+                accepted.append(cand)
+                best_cal, best_rms, best_n = cand_cal, cand_rms, cand_n
+                all_auto_excluded |= cand_auto_excluded
+                history.append((tuple(accepted), best_rms, best_n))
+        else:
+            remaining = [c for c in candidates if c not in accepted]
+            while remaining:
+                trial_results = {}
+                for cand in remaining:
+                    trial_flags = accepted + [cand]
+                    r = _fit_and_score(cal0, fix, nfix, pix, cpar, eps, trial_flags, exclude_ids,
+                                        args.auto_reject_mad)
+                    if r is not None:
+                        trial_results[cand] = r
 
-            if not trial_results:
-                break
+                if not trial_results:
+                    break
 
-            # pick the candidate giving the lowest RMS
-            best_cand = min(trial_results, key=lambda c: trial_results[c][1])
-            cand_cal, cand_rms, cand_n, cand_auto_excluded = trial_results[best_cand]
-            improve = (best_rms - cand_rms) / best_rms if best_rms > 0 else 0
+                # pick the candidate giving the lowest RMS
+                best_cand = min(trial_results, key=lambda c: trial_results[c][1])
+                cand_cal, cand_rms, cand_n, cand_auto_excluded = trial_results[best_cand]
+                improve = (best_rms - cand_rms) / best_rms if best_rms > 0 else 0
 
-            print(f"  + {best_cand}: RMS {best_rms:.4f} -> {cand_rms:.4f}px "
-                  f"({improve * 100:+.1f}%)  n={cand_n}"
-                  + ("  [accepted]" if improve >= args.min_improve else "  [below threshold, stopping]"))
+                print(f"  + {best_cand}: RMS {best_rms:.4f} -> {cand_rms:.4f}px "
+                      f"({improve * 100:+.1f}%)  n={cand_n}"
+                      + ("  [accepted]" if improve >= args.min_improve else "  [below threshold, stopping]"))
 
-            if improve < args.min_improve:
-                break
+                if improve < args.min_improve:
+                    break
 
-            accepted.append(best_cand)
-            remaining.remove(best_cand)
-            best_cal, best_rms, best_n = cand_cal, cand_rms, cand_n
-            all_auto_excluded |= cand_auto_excluded
-            history.append((tuple(accepted), best_rms, best_n))
+                accepted.append(best_cand)
+                remaining.remove(best_cand)
+                best_cal, best_rms, best_n = cand_cal, cand_rms, cand_n
+                all_auto_excluded |= cand_auto_excluded
+                history.append((tuple(accepted), best_rms, best_n))
 
         # Final polish: one more fit with exactly the accepted set (already
         # what best_cal is, since it was fit with `accepted` -- but redo once
