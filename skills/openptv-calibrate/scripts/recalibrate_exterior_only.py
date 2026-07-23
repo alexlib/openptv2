@@ -1,22 +1,21 @@
 #!/usr/bin/env python
-"""Refine exterior orientation only (x,y,z + angles), interior/distortion fixed.
+"""Refine exterior orientation (x,y,z + angles) plus an explicit, small set
+of additional free parameters -- everything else stays exactly as it is on
+disk. Default (--flags empty) is exterior-only.
 
-For when the interior parameters (cc/xh/yh, distortion) were set by hand and
-are trusted -- e.g. cc fixed to a known/measured focal length -- and the
-current exterior pose is already roughly right (from a prior manual
-orientation or hand-tuning), and you just want a real bundle-adjustment
-polish against ALL detected targets rather than re-seeding from 4 clicks.
-
-Unlike `calib.py run` (which always re-derives exterior from a 4-point
-man_ori seed via external_calibration, then bundle-adjusts with cc/xh/yh
-free), this starts from the CURRENT .ori/.addpar as-is and calls
-`full_calibration(..., flags=[])` -- orient()'s "raw-like" mode, which
-adjusts only the 6 exterior DOF and leaves every interior/distortion
-parameter untouched (see full_calibration's docstring: "flags: ... If None,
-no flags enabled (raw-like)").
+For "one improvement at a time" calibration tuning: start from the current
+.ori/.addpar as-is (not a fresh 4-point reseed), bundle-adjust against ALL
+detected targets with only the named flags free (`full_calibration`'s flags
+list: cc, xh, yh, k1, k2, k3, p1, p2, scale, shear, interf -- see its
+docstring), and report the before/after RMS so you can judge whether that
+ONE parameter actually helped before adding another. Unlike `calib.py run`
+(which always re-derives exterior from a 4-point man_ori seed and always
+frees cc/xh/yh), nothing not named in --flags ever changes.
 
 Usage:
     uv run python skills/openptv-calibrate/scripts/recalibrate_exterior_only.py <dataset> [--dry-run]
+    uv run python skills/openptv-calibrate/scripts/recalibrate_exterior_only.py <dataset> --flags k1
+    uv run python skills/openptv-calibrate/scripts/recalibrate_exterior_only.py <dataset> --flags k1,p1,p2
 """
 from __future__ import annotations
 
@@ -47,8 +46,12 @@ from openptv2.autocalibration import (
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("dataset")
+    ap.add_argument("--flags", default="",
+                     help="comma-separated extra free params, e.g. 'k1' or 'k1,p1,p2' "
+                          "(default: none -- exterior only)")
     ap.add_argument("--dry-run", action="store_true", help="report without writing .ori")
     args = ap.parse_args()
+    flags = [f.strip() for f in args.flags.split(",") if f.strip()]
 
     base = Path(args.dataset).resolve()
 
@@ -116,7 +119,7 @@ def main() -> int:
             continue
 
         try:
-            full_calibration(cal, fix, sorted_pix, cpar, [])
+            full_calibration(cal, fix, sorted_pix, cpar, flags)
         except (ValueError, RuntimeError) as exc:
             print(f"cam{cam + 1}: full_calibration failed: {exc}", file=sys.stderr)
             continue
@@ -126,18 +129,24 @@ def main() -> int:
         _, det, rep = _matched_pairs(cal, cpar, fix, sorted_pix2)
         rms = rms_px(det, rep)
         n_matched = len(det)
-        interior_changed = (
-            abs(cal.int_par.cc - cc_before) > 1e-9
-            or abs(cal.int_par.xh - xh_before) > 1e-9
-            or abs(cal.int_par.yh - yh_before) > 1e-9
+        cc_yh_unchanged = (
+            abs(cal.int_par.cc - cc_before) < 1e-9
+            and abs(cal.int_par.xh - xh_before) < 1e-9
+            and abs(cal.int_par.yh - yh_before) < 1e-9
+        )
+        extra = "  ".join(
+            f"{name}={getattr(cal.added_par, name):.4e}"
+            for name in flags if hasattr(cal.added_par, name)
         )
         print(f"cam{cam + 1}: matched {n_matched}/{nfix}  RMS={rms:.3f}px  "
               f"pos {pos_before.round(2)} -> {cal.get_pos().round(2)}  "
-              f"cc={cal.int_par.cc:.3f} (unchanged={not interior_changed})")
+              f"cc/xh/yh unchanged={cc_yh_unchanged}"
+              + (f"  {extra}" if extra else ""))
 
         if not args.dry_run:
-            shutil.copy2(ori, str(ori) + ".pre_extonly_bak")
-            shutil.copy2(addpar, str(addpar) + ".pre_extonly_bak")
+            suffix = f".pre_{'_'.join(flags) if flags else 'extonly'}_bak"
+            shutil.copy2(ori, str(ori) + suffix)
+            shutil.copy2(addpar, str(addpar) + suffix)
             cal.write(str(ori), str(addpar))
 
     if args.dry_run:
