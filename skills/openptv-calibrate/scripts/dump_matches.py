@@ -24,7 +24,7 @@ from pathlib import Path
 from openptv2.algorithms.calibration import Calibration
 from openptv2.algorithms.sortgrid import read_calblock, sortgrid
 from openptv2.algorithms.tracking_frame_buf import read_targets
-from openptv2.autocalibration import _load_dataset_params, _reproject_px, cam_files, resolve_calblock
+from openptv2.autocalibration import _load_dataset_params, _reproject_px, cam_files, resolve_calblock, target_base
 
 
 def render_overlay(base, cam, img_path, ids, det, rep, dest):
@@ -72,7 +72,7 @@ def main():
         img, ori, addpar = cam_files(base, cam)
         cal = Calibration.from_file(str(ori), str(addpar))
 
-        pix = read_targets(str(img), 0)
+        pix = read_targets(str(target_base(base, cam)), 0)
         sorted_pix = sortgrid(cal, cpar, nfix, fix, len(pix), eps, pix)
 
         ids, lines, det, rep = [], [], [], []

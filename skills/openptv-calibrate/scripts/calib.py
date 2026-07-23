@@ -315,17 +315,36 @@ def cmd_render(args) -> int:
     outdir.mkdir(parents=True, exist_ok=True)
     num_cams = _num_cams(base)
 
-    from openptv2.autocalibration import cam_files as _resolve_cam_files
+    from openptv2.autocalibration import cam_files as _resolve_cam_files, _find_yaml
+
+    split_views = None
+    yaml_path = _find_yaml(base)
+    if yaml_path is not None:
+        import yaml as _yaml
+        ptv_params = _yaml.safe_load(yaml_path.read_text())["ptv"]
+        if ptv_params.get("splitter"):
+            import imageio.v3 as iio
+            from openptv2.gui.ptv import image_split
+            img0_path, _, _ = _resolve_cam_files(base, 0)
+            raw = iio.imread(img0_path)
+            if raw.ndim > 2:
+                from skimage.color import rgb2gray
+                from skimage.util import img_as_ubyte
+                raw = img_as_ubyte(rgb2gray(raw[:, :, :3]))
+            split_views = image_split(raw, order=ptv_params.get("splitter_order") or [0, 1, 3, 2])
 
     written = []
     for cam in range(num_cams):
-        img_path, _, _ = _resolve_cam_files(base, cam)
         fig, ax = plt.subplots(figsize=(9, 7.2))
         try:
-            import imageio.v3 as iio
-            ax.imshow(iio.imread(img_path), cmap="gray")
+            if split_views is not None:
+                ax.imshow(split_views[cam], cmap="gray")
+            else:
+                import imageio.v3 as iio
+                img_path, _, _ = _resolve_cam_files(base, cam)
+                ax.imshow(iio.imread(img_path), cmap="gray")
         except Exception:
-            ax.text(0.5, 0.5, f"cannot load {img_path.name}", ha="center")
+            ax.text(0.5, 0.5, f"cannot load cam{cam + 1}", ha="center")
         ax.set_title(f"cam{cam + 1}: read off pixel (x,y) of 4 known grid points")
         ax.grid(True, color="cyan", alpha=0.3, linewidth=0.5)
         fig.tight_layout()
@@ -436,8 +455,21 @@ def cmd_pick(args) -> int:
 
     base = Path(args.dataset).resolve()
     num_cams = _num_cams(base)
-    from openptv2.algorithms.parameters import ControlPar
-    cpar = ControlPar.from_file(base / "parameters" / "ptv.par")
+
+    from openptv2.autocalibration import _find_yaml
+    yaml_path = _find_yaml(base)
+    if yaml_path is not None:
+        import yaml as _yaml
+        from openptv2.autocalibration import _cpar_from_ptv
+        ptv_params = _yaml.safe_load(yaml_path.read_text())["ptv"]
+        cpar = _cpar_from_ptv(ptv_params, num_cams)
+    else:
+        from openptv2.algorithms.parameters import ControlPar
+        ptv_params = {}
+        cpar = ControlPar.from_file(base / "parameters" / "ptv.par")
+    splitter = bool(ptv_params.get("splitter"))
+    splitter_order = ptv_params.get("splitter_order") or [0, 1, 3, 2]
+
     ids_all, xyz_all = _calblock_map(base)
 
     try:
@@ -461,9 +493,27 @@ def cmd_pick(args) -> int:
 
     seeds: dict = {}
     from openptv2.autocalibration import cam_files as _resolve_cam_files
+
+    split_views = None
+    if splitter:
+        # One shared raw frame -- split it once into per-camera quadrant
+        # views so each camera's click step shows only its own view, not
+        # the whole multiplexed frame.
+        from openptv2.gui.ptv import image_split
+        img0_path, _, _ = _resolve_cam_files(base, 0)
+        raw = iio.imread(img0_path)
+        if raw.ndim > 2:
+            from skimage.color import rgb2gray
+            from skimage.util import img_as_ubyte
+            raw = img_as_ubyte(rgb2gray(raw[:, :, :3]))
+        split_views = image_split(raw, order=splitter_order)
+
     for cam in range(num_cams):
-        img_path, _, _ = _resolve_cam_files(base, cam)
-        img = iio.imread(img_path)
+        if split_views is not None:
+            img = split_views[cam]
+        else:
+            img_path, _, _ = _resolve_cam_files(base, cam)
+            img = iio.imread(img_path)
         fig, (axi, axb) = plt.subplots(1, 2, figsize=(15, 7),
                                        gridspec_kw={"width_ratios": [1.6, 1]})
         axi.imshow(img, cmap="gray")

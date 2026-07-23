@@ -139,12 +139,22 @@ def cam_files(base: Path, cam: int) -> tuple[Path, Path, Path]:
     Falls back to cal/cam{cam+1}.tif(.ori/.addpar) when no YAML exists or it
     doesn't have cal_ori.img_cal_name/img_ori for this camera (e.g. the
     classic test_data/test_cavity fixture, which has no YAML at all).
+
+    Splitter datasets (cal_ori.cal_splitter: true) put only camera 0's real
+    combined-frame path in img_cal_name; cameras 1+ use the '---' placeholder
+    (the same convention test_data/test_splitter's own committed YAML uses)
+    since there's no separate physical image per camera -- they all read the
+    same raw frame and split it in memory. img_ori is still fully specified
+    per camera (each gets its own .ori/.addpar/_targets), so a '---' image
+    entry falls back to img_cal_name[0] rather than being treated as a
+    literal (nonexistent) filename.
     """
     cal_ori = _cal_ori_yaml(base)
     img_cal_name = cal_ori.get("img_cal_name") or []
     img_ori = cal_ori.get("img_ori") or []
     if cam < len(img_cal_name) and cam < len(img_ori) and img_cal_name[cam] and img_ori[cam]:
-        img = base / img_cal_name[cam]
+        img_name = img_cal_name[cam] if img_cal_name[cam] != "---" else img_cal_name[0]
+        img = base / img_name
         ori = base / img_ori[cam]
         addpar = ori.with_suffix(ori.suffix + ".addpar") if ori.suffix != ".ori" else ori.with_suffix(".addpar")
         # ori path is typically "....tif.ori"; addpar is the same stem with
@@ -153,6 +163,24 @@ def cam_files(base: Path, cam: int) -> tuple[Path, Path, Path]:
         return img, ori, addpar
     stem = base / "cal" / f"cam{cam + 1}.tif"
     return stem, stem.with_suffix(".tif.ori"), stem.with_suffix(".tif.addpar")
+
+
+def target_base(base: Path, cam: int) -> Path:
+    """Resolve the per-camera base name for that camera's `_targets` file.
+
+    Always distinct per camera, even in splitter mode where `cam_files()`'s
+    image path is intentionally the SAME shared raw frame for every camera
+    (there's no separate physical image to read). Deriving the targets name
+    from `img` there would silently collide across all 4 cameras -- every
+    camera's detection would overwrite the same file, and calibration would
+    read cam N's detections back for every other camera too. Derive from
+    `.ori` instead (already guaranteed per-camera by cam_files()) by
+    stripping its suffix, e.g. cal/cam_1.tif.ori -> cal/cam_1.tif (then
+    read_targets/write_targets append the _targets suffix).
+    """
+    _, ori, _ = cam_files(base, cam)
+    ori_str = str(ori)
+    return Path(ori_str[: -len(".ori")]) if ori_str.endswith(".ori") else ori
 
 
 def resolve_calblock(base: Path) -> Path:
@@ -283,7 +311,7 @@ def calibrate_camera(
     if pix4.shape[0] < 4 or fix4.shape[0] < 4:
         raise RuntimeError(f"cam{cam + 1}: need 4 seed points, got {pix4.shape[0]}")
 
-    pix = read_targets(str(img), 0)
+    pix = read_targets(str(target_base(base, cam)), 0)
     if not pix:
         raise RuntimeError(f"cam{cam + 1}: no detected targets found")
 
