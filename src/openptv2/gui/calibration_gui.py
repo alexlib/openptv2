@@ -283,7 +283,15 @@ class CalibrationGUI(HasTraits):
         if ptv_params is None:
             raise ValueError("Failed to load PTV parameters")
         self.num_cams = self.experiment.get_n_cam()
-        
+
+        # Seed the "Split into 4?" checkbox from the YAML so it reflects
+        # actual state on load, rather than always starting unchecked while
+        # cal_ori.cal_splitter: true silently forces splitting regardless of
+        # what the checkbox shows or the user does with it (the two were
+        # OR'd together, so once the YAML said true the checkbox could only
+        # ever add splitting, never remove it).
+        self._cal_splitter = bool(self.get_parameter('cal_ori').get('cal_splitter'))
+
         # Initialize detections to prevent AttributeError
         self.detections = None
         
@@ -450,7 +458,7 @@ class CalibrationGUI(HasTraits):
 
         self.cal_images = []
 
-        if self.get_parameter('cal_ori').get('cal_splitter') or self._cal_splitter:
+        if self._cal_splitter:
             print("Using splitter in Calibration")
             imname = self.get_parameter('cal_ori')['img_cal_name'][0]
             if Path(imname).exists():
