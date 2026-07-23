@@ -532,12 +532,22 @@ class CalibrationGUI(HasTraits):
 
         print("Start manual orientation, click 4 times in 4 cameras and then press this button again")
         points_set = True
+        short_cams = []
         for i in range(self.num_cams):
             if len(self.camera[i]._x) < 4:
                 print(f"Camera {i} not enough points: {self.camera[i]._x}")
                 points_set = False
+                short_cams.append(i + 1)
             else:
                 print(f"Camera {i} has 4 points: {self.camera[i]._x}")
+
+        if not points_set:
+            self.status_text = (
+                f"NOT saved -- need 4 clicks in every camera; "
+                f"cam{'s' if len(short_cams) > 1 else ''} "
+                f"{', '.join(str(c) for c in short_cams)} "
+                f"{'have' if len(short_cams) > 1 else 'has'} fewer than 4."
+            )
 
         if points_set:
             # Save to YAML instead of man_ori.dat
