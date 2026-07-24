@@ -1209,17 +1209,36 @@ class CalibrationGUI(HasTraits):
                   f"{row['correct']:>8} {row['wrong']:>6}")
 
     def _button_tracer_selfcal_fired(self):
-        """Joint self-calibration on tracer particles (roadmap #2): couples the
-        cameras via free 3D particle positions from res/ptv_is.*, reaching the
-        depth the shallow plate can't. Reports cross-camera RCM before/after and,
-        when it improves, writes the refined .ori/.addpar (backups *.selfcalbck)
-        for the free cameras. Needs tracking results to exist first."""
+        """Joint self-calibration on tracer particles -- the modern "shaking":
+        couples the cameras via free 3D particle positions from res/ptv_is.*,
+        reaching the depth the shallow plate can't. Reads the `shaking` parameter
+        block (first/last frame, max frames, max points) so the user tunes it in
+        the calibration parameters dialog. Reports cross-camera RCM before/after
+        and, when it improves, writes the refined .ori/.addpar (backups via
+        _backup_ori_files) for the free cameras. Needs tracking results first."""
         from openptv2.autocalibration import tracer_self_calibrate
+
+        # Shaking parameters (optional block) drive the tracer self-calibration.
+        try:
+            shk = self.get_parameter('shaking')
+        except KeyError:
+            shk = {}
+        first = shk.get('shaking_first_frame')
+        last = shk.get('shaking_last_frame')
+        frames = None
+        if first is not None and last is not None and last >= first:
+            frames = list(range(int(first), int(last) + 1))
+            max_frames = shk.get('shaking_max_num_frames')
+            if max_frames and len(frames) > int(max_frames):
+                idx = np.linspace(0, len(frames) - 1, int(max_frames)).astype(int)
+                frames = [frames[i] for i in idx]
+        max_particles = int(shk.get('shaking_max_num_points') or 400)
 
         self.status_text = "Tracer self-calibration (this may take a moment)..."
         try:
             new_cals, info = tracer_self_calibrate(
-                self.working_folder, self.cpar, self.cals)
+                self.working_folder, self.cpar, self.cals,
+                frames=frames, max_particles=max_particles)
         except Exception as exc:  # noqa: BLE001 - must never crash the GUI
             self.status_text = f"tracer self-cal failed: {exc}"
             print(f"tracer self-cal failed: {exc}")
