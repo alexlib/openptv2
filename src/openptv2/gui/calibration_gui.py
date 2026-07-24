@@ -1242,7 +1242,7 @@ class CalibrationGUI(HasTraits):
             new_cals, info = tracer_self_calibrate(
                 self.working_folder, self.cpar, self.cals,
                 frames=frames, max_particles=max_particles,
-                tol_px=tol_px, hold_cam=hold_cam)
+                tol_px=tol_px, hold_cam=hold_cam, iters=3)
         except Exception as exc:  # noqa: BLE001 - must never crash the GUI
             self.status_text = f"tracer self-cal failed: {exc}"
             print(f"tracer self-cal failed: {exc}")

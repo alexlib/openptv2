@@ -54,6 +54,31 @@ def test_tracer_selfcal_runs_and_does_not_diverge():
 
 
 @pytest.mark.unit
+def test_tracer_selfcal_iterated_never_worsens():
+    """Iterated shaking (refine -> re-match -> repeat) accepts a pass only if RCM
+    improves, so the result never worsens and reports its accepted-iteration
+    count + trace."""
+    if not (SYNTH / "res").exists() or not list((SYNTH / "res").glob("ptv_is.*")):
+        pytest.skip("synthetic tracking results not present")
+    cwd = os.getcwd()
+    try:
+        base, cpar, cals = _load()
+        os.chdir(base)
+        _, info = tracer_self_calibrate(
+            base, cpar, cals, tol_px=3.0, max_particles=150, iters=4)
+    finally:
+        os.chdir(cwd)
+    assert "skipped" not in info, info
+    assert info["rcm_after"] <= info["rcm_before"] * 1.02
+    assert "iterations" in info and info["iterations"] >= 0
+    assert isinstance(info["rcm_trace"], list)
+    # every accepted pass in the trace strictly improved on the running best
+    accepted = [t for t in info["rcm_trace"] if t["accepted"]]
+    for a, b in zip(accepted, accepted[1:]):
+        assert b["rcm"] < a["rcm"]
+
+
+@pytest.mark.unit
 def test_tracer_selfcal_no_tracking_skips(tmp_path):
     class _Cpar:
         num_cams = 4
