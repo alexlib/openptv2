@@ -226,7 +226,9 @@ class CalHandler(Handler):
                 'shaking_first_frame': calib_params.shaking_first_frame,
                 'shaking_last_frame': calib_params.shaking_last_frame,
                 'shaking_max_num_points': calib_params.shaking_max_num_points,
-                'shaking_max_num_frames': calib_params.shaking_max_num_frames
+                'shaking_max_num_frames': calib_params.shaking_max_num_frames,
+                'shaking_tol_px': calib_params.shaking_tol_px,
+                'shaking_hold_cam': calib_params.shaking_hold_cam
             })
 
             # Update dumbbell.par
@@ -961,6 +963,8 @@ class Calib_Params(HasTraits):
     shaking_last_frame = Int(label="shaking last frame")
     shaking_max_num_points = Int(label="shaking max num points")
     shaking_max_num_frames = Int(label="shaking max num frames")
+    shaking_tol_px = Float(2.0, label="match tolerance (px)")
+    shaking_hold_cam = Int(1, label="held camera (1..N, fixes gauge)")
 
     Group6 = HGroup(
         VGroup(
@@ -970,6 +974,8 @@ class Calib_Params(HasTraits):
             Item(name="shaking_last_frame"),
             Item(name="shaking_max_num_points"),
             Item(name="shaking_max_num_frames"),
+            Item(name="shaking_tol_px"),
+            Item(name="shaking_hold_cam"),
         ),
         spring,
         label="Shaking calibration parameters",
@@ -1061,6 +1067,8 @@ class Calib_Params(HasTraits):
         self.shaking_last_frame = int(shaking_params['shaking_last_frame'])
         self.shaking_max_num_points = int(shaking_params['shaking_max_num_points'])
         self.shaking_max_num_frames = int(shaking_params['shaking_max_num_frames'])
+        self.shaking_tol_px = float(shaking_params.get('shaking_tol_px', 2.0))
+        self.shaking_hold_cam = int(shaking_params.get('shaking_hold_cam', 1))
 
     def __init__(self, experiment: Experiment):
         HasTraits.__init__(self)

@@ -1233,12 +1233,16 @@ class CalibrationGUI(HasTraits):
                 idx = np.linspace(0, len(frames) - 1, int(max_frames)).astype(int)
                 frames = [frames[i] for i in idx]
         max_particles = int(shk.get('shaking_max_num_points') or 400)
+        tol_px = float(shk.get('shaking_tol_px') or 2.0)
+        # held camera is 1-indexed in the dialog, 0-indexed internally
+        hold_cam = max(0, int(shk.get('shaking_hold_cam') or 1) - 1)
 
         self.status_text = "Tracer self-calibration (this may take a moment)..."
         try:
             new_cals, info = tracer_self_calibrate(
                 self.working_folder, self.cpar, self.cals,
-                frames=frames, max_particles=max_particles)
+                frames=frames, max_particles=max_particles,
+                tol_px=tol_px, hold_cam=hold_cam)
         except Exception as exc:  # noqa: BLE001 - must never crash the GUI
             self.status_text = f"tracer self-cal failed: {exc}"
             print(f"tracer self-cal failed: {exc}")
