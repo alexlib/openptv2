@@ -19,6 +19,16 @@ Commit `94ddf23` already unified plugin resolution: one loader
 `plugins/` dir, and "default" is itself a plugin, so GUI (`gui/ptv.py:709-720`) and
 batch (`batch/pyptv_batch.py:166-178`) share one dispatch path. That part is sound.
 
+> **Status (2026-07-24): the functional gaps below are CLOSED.** The parallel
+> runner (`batch/pyptv_batch_parallel.py`) now dispatches through the plugin layer
+> (`resolve_selected_plugins` + per-worker `run_sequence_plugin`, `--sequence-plugin`
+> CLI), both batch CLIs read `plugins.selected_*` from the YAML, and
+> `splitter_sequence.py` reads `ptv.splitter_order` from the YAML instead of a
+> hardcoded order. Covered by `tests/batch/test_pyptv_batch_parallel.py`,
+> `test_headless_plugins.py`, and `test_splitter_end_to_end.py` (all green). The
+> only non-functional item left is gap #3 (splitter_sequence still duplicates the
+> core loop) — a dedup refactor, not a blocker.
+
 **Research findings (code audit, 2026-07-14) — the remaining gaps:**
 
 1. **The parallel batch runner has zero plugin support.**
