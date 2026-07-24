@@ -32,6 +32,8 @@ modules; it is imported by `scripts/autocalibrate.py` and the test suite.
 """
 from __future__ import annotations
 
+import copy
+import dataclasses
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -480,6 +482,192 @@ def cross_camera_rcm(results: list[CamResult], cpar) -> dict | None:
         "p95": float(np.percentile(rcm, 95)),
         "max": float(np.max(rcm)),
     }
+
+
+# Distortion groups introduced one at a time by the greedy shaker, in this
+# fixed order (least to most entangled with exterior/depth).
+DIST_GROUPS = [
+    ("k1k2k3", "get_radial_distortion", "set_radial_distortion", 3),
+    ("p1p2", "get_decentering", "set_decentering", 2),
+    ("scaleshear", "get_affine", "set_affine_trans", 2),
+    ("glass", "get_glass_vec", "set_glass_vec", 3),
+]
+
+
+def joint_plate_bundle_adjust(results, cpar, *, reg_weight=1.0, max_nfev=100,
+                              shake_distortion=False, rcm_margin=0.0,
+                              verbose=False):
+    """Couple all cameras by jointly refining camera exteriors (pos+angles) and
+    the shared 3D plate points, minimizing total reprojection with the plate
+    points softly anchored to their nominal calblock coords (reg_weight). Unlike
+    per-camera resection this has a cross-camera term, so it can lower the
+    cross-camera RCM that reprojection RMS alone can't see. Distortion (k/p/scale/
+    shear/interf) is held fixed at the per-camera-fit values.
+
+    Mutates copies -- returns (new_results, info) where new_results is a list of
+    CamResult with updated .cal (and .rep/.rms recomputed), and info is a dict
+    {rcm_before, rcm_after, n_points, n_cams, cost_before, cost_after, success}.
+    Returns (results, {...'skipped': reason}) unchanged when < 2 valid cams or
+    < 4 common points (too few to constrain the joint fit)."""
+    from scipy.optimize import least_squares
+
+    from openptv2.algorithms.trafo import pixel_to_metric
+    from openptv2.imgcoord import image_coordinates
+
+    if reg_weight <= 0:
+        # The nominal-anchor term is the gauge fix: without it the joint fit has
+        # a 7-DOF similarity freedom (translate/rotate/scale cloud+cameras with
+        # zero reprojection change) and least_squares wanders silently.
+        raise ValueError("reg_weight must be > 0 (it fixes the 7-DOF gauge)")
+
+    new_results = [dataclasses.replace(r, cal=copy.deepcopy(r.cal)) for r in results]
+    valid = [r for r in new_results
+             if r.cal is not None and r.error is None and len(r.ref) > 0]
+    if len(valid) < 2:
+        return results, {"skipped": "need >=2 valid cameras"}
+
+    # Shared-point structure keyed by rounded 3D coord (mirrors cross_camera_rcm).
+    obs: dict[tuple, dict[int, tuple]] = {}
+    nominal: dict[tuple, np.ndarray] = {}
+    for r in valid:
+        for ref_row, det_row in zip(r.ref, r.det):
+            key = tuple(np.round(ref_row, 3))
+            mx, my = pixel_to_metric(det_row[0], det_row[1], cpar)
+            obs.setdefault(key, {})[r.cam] = (mx, my)
+            nominal[key] = np.asarray(ref_row, float)
+
+    keys = [k for k in obs if len(obs[k]) >= 2]
+    if len(keys) < 4:
+        return results, {"skipped": "need >=4 common points"}
+    key_index = {k: i for i, k in enumerate(keys)}
+    nominal_arr = np.array([nominal[k] for k in keys], float)  # (n_pts, 3)
+    n_pts = len(keys)
+
+    mm = cpar.mm
+    valid_cams = [r.cam for r in valid]
+    cal_by_cam = {r.cam: r.cal for r in valid}
+    # Per-camera: (point-row indices, observed metric coords) for its points.
+    cam_obs = {}
+    for cam in valid_cams:
+        rows, mets = [], []
+        for k in keys:
+            if cam in obs[k]:
+                rows.append(key_index[k])
+                mets.append(obs[k][cam])
+        cam_obs[cam] = (np.asarray(rows, int), np.asarray(mets, float))
+
+    n_cam_params = 6 * len(valid_cams)
+    sqrt_w = np.sqrt(reg_weight)
+
+    def _solve(active_groups, base_cals):
+        """Solve exterior+points (+ active distortion groups) starting from a
+        deepcopy of base_cals. Returns (trial_results, rcm_median, cost, success)
+        or None on solver error. Never mutates base_cals (fresh deepcopy), so a
+        rejected trial is simply discarded."""
+        cals = {c: copy.deepcopy(base_cals[c]) for c in valid_cams}
+        # Layout: exterior block, distortion block (group-major), point block.
+        x0 = []
+        for cam in valid_cams:
+            x0.extend(cals[cam].get_pos())
+            x0.extend(cals[cam].get_angles())
+        for _name, getter, _setter, _n in active_groups:
+            for cam in valid_cams:
+                x0.extend(getattr(cals[cam], getter)())
+        x0.extend(nominal_arr.ravel())
+        x0 = np.asarray(x0, float)
+        n_dist = sum(n for _n0, _g, _s, n in active_groups) * len(valid_cams)
+        pts_off = n_cam_params + n_dist
+
+        def _resid(x):
+            for i, cam in enumerate(valid_cams):
+                cals[cam].set_pos(x[i * 6:i * 6 + 3])
+                cals[cam].set_angles(x[i * 6 + 3:i * 6 + 6])
+            off = n_cam_params
+            for _name, _getter, setter, n in active_groups:
+                for cam in valid_cams:
+                    getattr(cals[cam], setter)(x[off:off + n])
+                    off += n
+            pts = x[pts_off:].reshape(n_pts, 3)
+            res = []
+            for cam in valid_cams:
+                rows, mets = cam_obs[cam]
+                proj = image_coordinates(pts[rows], cals[cam], mm)
+                res.append((proj - mets).ravel())
+            res.append((sqrt_w * (pts - nominal_arr)).ravel())
+            return np.nan_to_num(np.concatenate(res),
+                                 nan=1e6, posinf=1e6, neginf=-1e6)
+
+        try:
+            sol = least_squares(_resid, x0, max_nfev=max_nfev, method="trf",
+                                verbose=2 if verbose else 0)
+        except (ValueError, RuntimeError, np.linalg.LinAlgError):
+            return None
+        _resid(sol.x)  # leave cals set to the solution
+
+        trial = []
+        for r in new_results:
+            if r.cam in cals and r.error is None and len(r.ref) > 0:
+                cal = cals[r.cam]
+                rep = np.array([_reproject_px(cal, cpar.mm, row, cpar)
+                                for row in r.ref])
+                trial.append(dataclasses.replace(r, cal=cal, rep=rep,
+                                                 rms=rms_px(r.det, rep)))
+            else:
+                trial.append(r)
+        rcm = cross_camera_rcm(trial, cpar)
+        rcm_med = rcm["median"] if rcm else float("inf")
+        return trial, rcm_med, float(sol.cost * 2), bool(sol.success)
+
+    # cost_before: residual at the seed (points=nominal, exterior unmoved).
+    seed_res = []
+    for cam in valid_cams:
+        rows, mets = cam_obs[cam]
+        proj = image_coordinates(nominal_arr[rows], cal_by_cam[cam], mm)
+        seed_res.append((proj - mets).ravel())
+    x0_cost = float(np.sum(np.concatenate(seed_res) ** 2))
+
+    # Baseline: exterior + points only (the original behavior).
+    base = _solve([], cal_by_cam)
+    if base is None:
+        return results, {"skipped": "solver error"}
+    best_results, best_rcm, cost_after, success = base
+    rcm_exterior_only = best_rcm
+
+    rcm_initial = cross_camera_rcm(results, cpar)
+    rcm_before = rcm_initial["median"] if rcm_initial else None
+
+    shaken_groups: list[str] = []
+    rcm_trace: list[tuple] = []
+    accepted = []
+    if shake_distortion:
+        for group in DIST_GROUPS:
+            best_cals = {r.cam: r.cal for r in best_results if r.cam in cal_by_cam}
+            trial = _solve(accepted + [group], best_cals)
+            if trial is None:
+                rcm_trace.append((group[0], None, False))
+                continue
+            t_results, t_rcm, t_cost, t_success = trial
+            better = t_rcm < best_rcm - rcm_margin
+            rcm_trace.append((group[0], t_rcm, better))
+            if better:
+                best_results, best_rcm, cost_after, success = (
+                    t_results, t_rcm, t_cost, t_success)
+                accepted.append(group)
+                shaken_groups.append(group[0])
+
+    info = {
+        "rcm_before": rcm_before,
+        "rcm_after": best_rcm,
+        "rcm_exterior_only": rcm_exterior_only,
+        "shaken_groups": shaken_groups,
+        "rcm_trace": rcm_trace,
+        "n_points": n_pts,
+        "n_cams": len(valid_cams),
+        "cost_before": x0_cost,
+        "cost_after": cost_after,
+        "success": success,
+    }
+    return best_results, info
 
 
 def save_overlay(res: CamResult, base: Path, outdir: Path) -> Path:

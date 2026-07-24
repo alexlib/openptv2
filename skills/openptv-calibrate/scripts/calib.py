@@ -567,7 +567,9 @@ def cmd_run(args) -> int:
     from openptv2.autocalibration import (
         _load_dataset_params,
         calibrate_dataset,
+        cam_files,
         cross_camera_rcm,
+        joint_plate_bundle_adjust,
         resolve_calblock,
     )
 
@@ -600,6 +602,38 @@ def cmd_run(args) -> int:
     cpar = _load_dataset_params(base, resolve_calblock(base)).cpar
     rcm = cross_camera_rcm(results, cpar)
     report["cross_camera_rcm"] = rcm
+
+    if args.joint_ba:
+        ba_results, info = joint_plate_bundle_adjust(
+            results, cpar, shake_distortion=args.shake_distortion)
+        report["joint_ba"] = info
+        before, after = info.get("rcm_before"), info.get("rcm_after")
+        if "skipped" in info:
+            print(f"joint BA: skipped ({info['skipped']})")
+        elif before is not None and after is not None:
+            print(f"joint BA: cross-camera RCM median {before:.3f} -> "
+                  f"{after:.3f} mm")
+            if args.shake_distortion:
+                ext = info.get("rcm_exterior_only")
+                print(f"  distortion shaking: {ext:.3f} (exterior-only) -> "
+                      f"{after:.3f} mm, shaken groups: "
+                      f"{info.get('shaken_groups') or 'none'}")
+            improved = after < before
+            if improved and not args.dry_run:
+                import shutil
+                base_ = Path(args.dataset).resolve()
+                for r in ba_results:
+                    if r.error is not None or r.cal is None:
+                        continue
+                    _, ori, addpar = cam_files(base_, r.cam)
+                    shutil.copy2(ori, Path(str(ori) + ".jointba-bck"))
+                    shutil.copy2(addpar, Path(str(addpar) + ".jointba-bck"))
+                    r.cal.write(str(ori).encode(), str(addpar).encode())
+                print("  improved -> refined cals written")
+            elif improved:
+                print("  improved (dry-run, not written)")
+            else:
+                print("  did not improve -> cals unchanged")
 
     Path(args.output).write_text(json.dumps(report, indent=2))
     print(f"Success! Calibration report written to: {args.output}")
@@ -807,6 +841,13 @@ def main() -> int:
     p.add_argument("--dry-run", action="store_true")
     p.add_argument("--rcm-flag-mm", type=float, default=0.1,
                    help="warn if cross-camera RCM p95 exceeds this (mm, default 0.1)")
+    p.add_argument("--joint-ba", action="store_true",
+                   help="run joint plate bundle adjustment to lower cross-camera "
+                        "RCM (writes refined cals only if it improves)")
+    p.add_argument("--shake-distortion", action="store_true",
+                   help="with --joint-ba, greedily free distortion one group at "
+                        "a time, accepting a group only if cross-camera RCM "
+                        "improves")
     p.set_defaults(func=cmd_run)
 
     p = sub.add_parser("snapshot-refine",
