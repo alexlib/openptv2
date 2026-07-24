@@ -70,10 +70,36 @@ lowers RCM.
 uv run python skills/openptv-calibrate/scripts/calib.py run <dataset> \
     --output report.json --joint-ba          # preview: prints RCM before -> after
 uv run python skills/openptv-calibrate/scripts/calib.py run <dataset> \
+    --output report.json --joint-ba --shake-distortion   # + greedy distortion shaking
+uv run python skills/openptv-calibrate/scripts/calib.py run <dataset> \
     --output report.json --joint-ba --write  # writes refined .ori/.addpar IF improved
 ```
 
 `--write` only overwrites when RCM actually drops (backups: `*.jointba-bck`).
+
+### Distortion shaking (`--shake-distortion`)
+
+By default the joint BA holds distortion fixed and frees only exteriors + points.
+Freeing all of `k1,k2,k3 / p1,p2 / scale,shear / glass` at once alongside the
+exterior is **ill-conditioned** — the parameters trade off against each other
+(`cc/xh/yh` vs depth, `k`-terms vs principal point, glass vs exterior) and the fit
+goes unstable. `--shake-distortion` introduces them the safe way: **one group at a
+time**, in least- to most-entangled order, re-solving after each and **accepting a
+group only if cross-camera RCM strictly improves** — otherwise rolling it back.
+The report's `joint_ba` block records `shaken_groups` (which were accepted) and
+`rcm_trace` (per-group trial RCM + accept/reject), plus `rcm_exterior_only` so you
+can see the exterior-BA vs +distortion contributions separately.
+
+```python
+new_results, info = joint_plate_bundle_adjust(results, cpar, shake_distortion=True)
+print(info["rcm_exterior_only"], "->", info["rcm_after"], info["shaken_groups"])
+```
+
+On `TT13_aorta` shaking accepted `p1p2` + `glass` but moved RCM only
+0.076 → 0.074 mm — confirming that rig's RCM is a shallow-parallax + detection-noise
+**floor** the plate can't beat (neither exterior BA nor distortion helps). The
+gate/rollback is the point: it pays off on rigs where distortion genuinely is the
+ceiling, and it never destabilizes the fit chasing a group that doesn't help.
 
 ```python
 from openptv2.autocalibration import joint_plate_bundle_adjust
@@ -118,13 +144,15 @@ body as a cloud of 3D dots and closes the loop both ways:
    vector, the distortion terms, **and** the 3D cloud all float, minimizing (1)+(2)
    jointly, with the plate nominal as a soft prior. Real tracer particles (below)
    extend the cloud into the depth the plate can't reach.
-4. **Add parameters one group at a time.** Freeing exterior + glass + all of
-   `k1,k2,k3,p1,p2,scale,shear` + 3D points at once is **ill-conditioned** —
-   parameters trade off against each other (`cc` vs depth, `k`-terms vs principal
-   point) and the fit goes unstable. Instead **greedily**: free one new group,
-   re-solve, and **accept it only if RCM (on a held-out split) improves** — else
-   roll back. Same idea as the existing greedy `CANDIDATE_FLAGS`, but gated on
-   cross-camera RCM instead of single-camera RMS.
+4. **Add parameters one group at a time.** *(Shipped — `--shake-distortion`, see
+   above.)* Freeing exterior + glass + all of `k1,k2,k3,p1,p2,scale,shear` + 3D
+   points at once is **ill-conditioned** — parameters trade off against each other
+   (`cc` vs depth, `k`-terms vs principal point) and the fit goes unstable.
+   Instead **greedily**: free one new group, re-solve, and **accept it only if RCM
+   improves** — else roll back. Same idea as the existing greedy `CANDIDATE_FLAGS`,
+   but gated on cross-camera RCM instead of single-camera RMS. *(A held-out
+   fit/eval split for the RCM gate — to prevent overfitting distortion to the
+   plate — is the next refinement.)*
 
 ### #2 — tracer self-calibration ("shaking"), iterated
 
@@ -154,5 +182,6 @@ Lagrangian and Eulerian result, so it is worth measuring (RCM) and minimizing
 |---|---|---|---|---|
 | per-camera resection (default) | no | no | no | shipped |
 | joint plate BA (`--joint-ba`) | **yes** (shared points) | yes | yes, if exterior-limited | shipped (first cut) |
-| + backward/epipolar + one-at-a-time distortion shaking | yes | yes | further | TODO |
+| + one-at-a-time distortion shaking (`--shake-distortion`) | yes | yes | yes, if distortion-limited | **shipped** |
+| + backward/epipolar residual + held-out RCM gate | yes | yes | further | TODO |
 | tracer self-calibration (#2) | yes | yes (real particles at depth) | most, on shallow rigs | TODO |
