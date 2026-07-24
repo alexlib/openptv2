@@ -32,6 +32,8 @@ modules; it is imported by `scripts/autocalibrate.py` and the test suite.
 """
 from __future__ import annotations
 
+import copy
+import dataclasses
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -480,6 +482,123 @@ def cross_camera_rcm(results: list[CamResult], cpar) -> dict | None:
         "p95": float(np.percentile(rcm, 95)),
         "max": float(np.max(rcm)),
     }
+
+
+def joint_plate_bundle_adjust(results, cpar, *, reg_weight=1.0, max_nfev=100,
+                              verbose=False):
+    """Couple all cameras by jointly refining camera exteriors (pos+angles) and
+    the shared 3D plate points, minimizing total reprojection with the plate
+    points softly anchored to their nominal calblock coords (reg_weight). Unlike
+    per-camera resection this has a cross-camera term, so it can lower the
+    cross-camera RCM that reprojection RMS alone can't see. Distortion (k/p/scale/
+    shear/interf) is held fixed at the per-camera-fit values.
+
+    Mutates copies -- returns (new_results, info) where new_results is a list of
+    CamResult with updated .cal (and .rep/.rms recomputed), and info is a dict
+    {rcm_before, rcm_after, n_points, n_cams, cost_before, cost_after, success}.
+    Returns (results, {...'skipped': reason}) unchanged when < 2 valid cams or
+    < 4 common points (too few to constrain the joint fit)."""
+    from scipy.optimize import least_squares
+
+    from openptv2.algorithms.trafo import pixel_to_metric
+    from openptv2.imgcoord import image_coordinates
+
+    if reg_weight <= 0:
+        # The nominal-anchor term is the gauge fix: without it the joint fit has
+        # a 7-DOF similarity freedom (translate/rotate/scale cloud+cameras with
+        # zero reprojection change) and least_squares wanders silently.
+        raise ValueError("reg_weight must be > 0 (it fixes the 7-DOF gauge)")
+
+    new_results = [dataclasses.replace(r, cal=copy.deepcopy(r.cal)) for r in results]
+    valid = [r for r in new_results
+             if r.cal is not None and r.error is None and len(r.ref) > 0]
+    if len(valid) < 2:
+        return results, {"skipped": "need >=2 valid cameras"}
+
+    # Shared-point structure keyed by rounded 3D coord (mirrors cross_camera_rcm).
+    obs: dict[tuple, dict[int, tuple]] = {}
+    nominal: dict[tuple, np.ndarray] = {}
+    for r in valid:
+        for ref_row, det_row in zip(r.ref, r.det):
+            key = tuple(np.round(ref_row, 3))
+            mx, my = pixel_to_metric(det_row[0], det_row[1], cpar)
+            obs.setdefault(key, {})[r.cam] = (mx, my)
+            nominal[key] = np.asarray(ref_row, float)
+
+    keys = [k for k in obs if len(obs[k]) >= 2]
+    if len(keys) < 4:
+        return results, {"skipped": "need >=4 common points"}
+    key_index = {k: i for i, k in enumerate(keys)}
+    nominal_arr = np.array([nominal[k] for k in keys], float)  # (n_pts, 3)
+    n_pts = len(keys)
+
+    mm = cpar.mm
+    valid_cams = [r.cam for r in valid]
+    cal_by_cam = {r.cam: r.cal for r in valid}
+    # Per-camera: (point-row indices, observed metric coords) for its points.
+    cam_obs = {}
+    for cam in valid_cams:
+        rows, mets = [], []
+        for k in keys:
+            if cam in obs[k]:
+                rows.append(key_index[k])
+                mets.append(obs[k][cam])
+        cam_obs[cam] = (np.asarray(rows, int), np.asarray(mets, float))
+
+    # Seed parameter vector: camera block (6 per valid cam) then point block.
+    x0 = []
+    for cam in valid_cams:
+        cal = cal_by_cam[cam]
+        x0.extend(cal.get_pos())
+        x0.extend(cal.get_angles())
+    x0.extend(nominal_arr.ravel())
+    x0 = np.asarray(x0, float)
+    n_cam_params = 6 * len(valid_cams)
+    sqrt_w = np.sqrt(reg_weight)
+
+    def _resid(x):
+        for i, cam in enumerate(valid_cams):
+            cal = cal_by_cam[cam]
+            cal.set_pos(x[i * 6:i * 6 + 3])
+            cal.set_angles(x[i * 6 + 3:i * 6 + 6])
+        pts = x[n_cam_params:].reshape(n_pts, 3)
+        res = []
+        for cam in valid_cams:
+            rows, mets = cam_obs[cam]
+            proj = image_coordinates(pts[rows], cal_by_cam[cam], mm)
+            res.append((proj - mets).ravel())
+        res.append((sqrt_w * (pts - nominal_arr)).ravel())
+        return np.nan_to_num(np.concatenate(res), nan=1e6, posinf=1e6, neginf=-1e6)
+
+    cost_before = float(np.sum(_resid(x0) ** 2))
+    try:
+        sol = least_squares(_resid, x0, max_nfev=max_nfev, method="trf",
+                            verbose=2 if verbose else 0)
+    except (ValueError, RuntimeError, np.linalg.LinAlgError) as exc:
+        # A solver failure must not lose the whole run's report (this can be
+        # called mid-cmd_run after the per-camera report is built).
+        return results, {"skipped": f"solver error: {exc}"}
+    _resid(sol.x)  # leave copied cals set to the solution
+
+    # Recompute rep/rms for each valid CamResult with its refined cal.
+    for i, r in enumerate(new_results):
+        if r.cal is None or r.error is not None or len(r.ref) == 0:
+            continue
+        rep = np.array([_reproject_px(r.cal, cpar.mm, row, cpar) for row in r.ref])
+        new_results[i] = dataclasses.replace(r, rep=rep, rms=rms_px(r.det, rep))
+
+    rcm_before = cross_camera_rcm(results, cpar)
+    rcm_after = cross_camera_rcm(new_results, cpar)
+    info = {
+        "rcm_before": rcm_before["median"] if rcm_before else None,
+        "rcm_after": rcm_after["median"] if rcm_after else None,
+        "n_points": n_pts,
+        "n_cams": len(valid_cams),
+        "cost_before": cost_before,
+        "cost_after": float(sol.cost * 2),
+        "success": bool(sol.success),
+    }
+    return new_results, info
 
 
 def save_overlay(res: CamResult, base: Path, outdir: Path) -> Path:
