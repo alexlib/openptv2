@@ -164,6 +164,9 @@ Report per-camera `matched/nfix`, `RMS px`, `flags`. Interpret:
   view (check the overlay). It matters only if the RMS is also high.
 Show overlay PNGs from `<dataset>/cal/auto_calib/` (green = detected,
 red = reprojected; red should sit inside green).
+`run` also reports cross-camera RCM (mm) over calblock points seen by >=2
+cameras — a geometric consistency per-camera RMS can't see — and warns when its
+p95 exceeds `--rcm-flag-mm` (default 0.1).
 **Checkpoint:** confirm results look right before writing.
 
 ### 4. Write — commit the calibration
