@@ -615,7 +615,8 @@ def cmd_run(args) -> int:
               f"p50={rcm['median']:.3f}mm p95={rcm['p95']:.3f}mm "
               f"max={rcm['max']:.3f}mm")
         if rcm["p95"] > args.rcm_flag_mm:
-            print("⚠ cross-camera RCM high relative to per-camera RMS; consider a "
+            print("WARNING: cross-camera RCM high relative to per-camera RMS; "
+                  "consider a "
                   "tracer self-calibration / dumbbell pass (see roadmap).")
     else:
         print("cross-camera RCM: n/a (need >=2 cameras and >=3 common points)")
