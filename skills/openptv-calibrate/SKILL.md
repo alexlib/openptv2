@@ -266,6 +266,18 @@ one-off copies of these that lived inside dataset folders):
   FULL calblock must still land on the dots (global pose preserved) even for a
   trimmed camera. Greedy mode maximizes sub-pixel-ness (trims more); `--mad` is
   gentler (keeps coverage, may not reach sub-pixel). Backups: `*.robustbck`.
+- `detection_params_demo.py` — interactive marimo explainer for the target-
+  detection parameters (`gvthres`, `nnmin/nnmax`, `nxmax/nymax`, `sumg_min`,
+  and the confusing `disco`/`tol_dis`). Self-contained (pure
+  numpy/scipy/skimage, no compiled openptv2), so it runs in a sandbox; it
+  models the SAME semantics as `target_recognition` on a synthetic
+  calibration-like scene, one slider per parameter, live overlay of which
+  blobs survive and which rule rejected each. Includes a dedicated `disco`
+  demo (two overlapping dots) showing the split-vs-merge rule: a saddle deeper
+  than `disco` splits two overlapping particles, shallower merges them —
+  which is why `detect_plate` (high disco, plate dots) and `targ_rec` (low
+  disco, crowded particles) detect the same image differently. Open with:
+  `uv run marimo edit --sandbox skills/openptv-calibrate/scripts/detection_params_demo.py`
 - `dump_matches.py <dataset>` — writes `cal/calib_matches/camN_matches.txt`
   (id, detected px, reprojected px) and `camN_overlay_ids.png` (like the
   usual overlay, but with the calibration-body point ID labeled next to each

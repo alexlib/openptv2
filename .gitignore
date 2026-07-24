@@ -135,3 +135,6 @@ docs/superpowers/plans/2026-06-26-cython3-optimization.md
 **/cal/auto_calib/
 **/cal/seed_help/
 tests_execution_log.txt
+
+# marimo cache
+__marimo__/

@@ -55,6 +55,13 @@ CANDIDATE_FLAGS: list[list[str]] = [
     ["cc", "xh", "yh"],
     ["cc", "xh", "yh", "k1", "k2"],
     ["cc", "xh", "yh", "k1", "k2", "k3", "p1", "p2"],
+    # + the glass-interface tilt (interf). A tilted refractive wall bends rays
+    # into a keystone the radial+decentering Brown model can't represent; on a
+    # real splitter rig this recovered a camera stuck at 2.4px down to ~1.1px
+    # once the glass vector was allowed to tilt off the optical axis. Kept as a
+    # separate candidate so the best-RMS selection only adopts it when it
+    # actually helps (an untilted interface leaves the glass vector put).
+    ["cc", "xh", "yh", "k1", "k2", "k3", "p1", "p2", "interf"],
 ]
 
 REFINE_ITERS = 3  # sortgrid<->refit passes to grow the matched set
