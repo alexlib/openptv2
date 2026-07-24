@@ -107,6 +107,61 @@ def test_joint_ba_rejects_nonpositive_reg_weight():
 
 
 @pytest.mark.unit
+def test_shake_distortion_helps_or_neutral():
+    if not DATASET.exists():
+        pytest.skip("test_cavity dataset not present")
+    results, cpar = _build_results()
+    for cam in (0, 1):
+        pos = results[cam].cal.get_pos()
+        pos[0] += 1.5
+        pos[1] -= 1.0
+        results[cam].cal.set_pos(pos)
+
+    _, info = joint_plate_bundle_adjust(results, cpar, shake_distortion=True)
+    # Groups are only accepted on improvement, so the final can never be worse
+    # than the exterior-only baseline.
+    assert info["rcm_after"] <= info["rcm_exterior_only"] + 1e-9
+    assert isinstance(info["shaken_groups"], list)
+    # Each accepted group in the trace was strictly better than the running best.
+    running = info["rcm_exterior_only"]
+    for name, trial_rcm, accepted in info["rcm_trace"]:
+        if accepted:
+            assert trial_rcm < running
+            running = trial_rcm
+    print("shaken_groups:", info["shaken_groups"])
+    print("rcm_trace:", info["rcm_trace"])
+    print("exterior_only -> after:", info["rcm_exterior_only"], info["rcm_after"])
+
+    # No-shake path is unchanged: no groups shaken.
+    _, info0 = joint_plate_bundle_adjust(results, cpar, shake_distortion=False)
+    assert info0["shaken_groups"] == []
+
+
+@pytest.mark.unit
+def test_shake_distortion_gate_rejects_unhelpful():
+    """Detections come from a ZERO-distortion cal, only exterior is perturbed.
+    Distortion can't explain the residual, so the gate must reject groups (or at
+    least never accept one that didn't strictly reduce RCM)."""
+    if not DATASET.exists():
+        pytest.skip("test_cavity dataset not present")
+    results, cpar = _build_results()
+    for cam in (0, 1):
+        pos = results[cam].cal.get_pos()
+        pos[0] += 1.0
+        pos[1] -= 0.8
+        results[cam].cal.set_pos(pos)
+
+    _, info = joint_plate_bundle_adjust(results, cpar, shake_distortion=True)
+    # Gate correctness: every accepted group strictly reduced the running RCM.
+    running = info["rcm_exterior_only"]
+    for name, trial_rcm, accepted in info["rcm_trace"]:
+        if accepted:
+            assert trial_rcm < running
+            running = trial_rcm
+    assert info["rcm_after"] <= info["rcm_exterior_only"] + 1e-9
+
+
+@pytest.mark.unit
 def test_joint_ba_single_camera_skips():
     if not DATASET.exists():
         pytest.skip("test_cavity dataset not present")

@@ -604,7 +604,8 @@ def cmd_run(args) -> int:
     report["cross_camera_rcm"] = rcm
 
     if args.joint_ba:
-        ba_results, info = joint_plate_bundle_adjust(results, cpar)
+        ba_results, info = joint_plate_bundle_adjust(
+            results, cpar, shake_distortion=args.shake_distortion)
         report["joint_ba"] = info
         before, after = info.get("rcm_before"), info.get("rcm_after")
         if "skipped" in info:
@@ -612,6 +613,11 @@ def cmd_run(args) -> int:
         elif before is not None and after is not None:
             print(f"joint BA: cross-camera RCM median {before:.3f} -> "
                   f"{after:.3f} mm")
+            if args.shake_distortion:
+                ext = info.get("rcm_exterior_only")
+                print(f"  distortion shaking: {ext:.3f} (exterior-only) -> "
+                      f"{after:.3f} mm, shaken groups: "
+                      f"{info.get('shaken_groups') or 'none'}")
             improved = after < before
             if improved and not args.dry_run:
                 import shutil
@@ -838,6 +844,10 @@ def main() -> int:
     p.add_argument("--joint-ba", action="store_true",
                    help="run joint plate bundle adjustment to lower cross-camera "
                         "RCM (writes refined cals only if it improves)")
+    p.add_argument("--shake-distortion", action="store_true",
+                   help="with --joint-ba, greedily free distortion one group at "
+                        "a time, accepting a group only if cross-camera RCM "
+                        "improves")
     p.set_defaults(func=cmd_run)
 
     p = sub.add_parser("snapshot-refine",
