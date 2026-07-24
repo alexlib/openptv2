@@ -145,25 +145,67 @@ NOT relabel it "px"; only note pixel size for scale intuition).
 ## Roadmap — the follow-ups this unblocks
 
 Item #1 gives the **metric**. #2 and #3 are the two ways to *drive it down*, and
-OpenPTV already has the scaffolding for both (this is refinement, not a rewrite):
+OpenPTV already has the scaffolding for both (this is refinement, not a rewrite).
 
-- **#2 — tracer self-calibration ("shaking"), iterated (Shake-the-Box lineage).**
-  plate-calibrate → track → self-calibrate on triangulation disparity/RCM at real
-  depth → re-track → repeat. This is the highest-value fix for shallow-parallax
-  rigs like this one, because it uses real particles spanning the actual volume
-  the plate can't reach. Formalize the existing `calib.py snapshot-refine`
-  (`cmd_snapshot_refine`) into an iterated, first-class stage. Reuse
-  `weighted_dumbbell_precision` / `point_position`'s convergence measure as the
-  objective. Uses the RCM metric from #1 as its convergence/stopping criterion.
-- **#3 — joint plate bundle adjustment.** Optimize all four cameras' exterior
-  (+ optionally `interf` glass) *simultaneously* against the shared calblock,
-  minimizing total reprojection with the rigid-body constraint — coupling the
-  cameras, unlike per-camera resection. Scaffolding exists:
-  `src/openptv2/gui/ptv_calibration.py::full_scipy_calibration`,
-  `dumbbell_ba_residuals`, and `dumbbell_target_residuals` already wrap
-  `scipy.optimize`; this is a new residual assembling all cameras' reprojections
-  into one vector, not new geometry. Validate by the #1 RCM metric
-  (joint BA should lower RCM vs the per-camera fit at equal reprojection RMS).
+**Implementation status (2026-07-24):**
+- **#1 — DONE** (`autocalibration.cross_camera_rcm`, `calib.py run`, PR #21).
+- **#3 first cut — DONE** (`autocalibration.joint_plate_bundle_adjust`,
+  `calib.py run --joint-ba`, PR #22): frees every camera's exterior + the shared
+  3D plate points, holds distortion fixed, gauge-anchored to nominal. Drives the
+  synthetic-rig median RCM 0.77 mm → ~0; noise-floored above 1e-3 with 0.3 px
+  detection noise.
+- **#2 and the full #3 (below) — TODO.**
+
+### The full-blown bundle adjustment / self-calibration (target design)
+
+The user's framing, which is the plan of record for finishing #2/#3. Today we
+calibrate camera-by-camera on **reprojection only**. The full version treats the
+calibration body as a cloud of **3D dots** and closes the loop both ways:
+
+1. **Forward + backward residual.** Keep the forward reprojection residual
+   (3D→image, `image_coordinates` vs detected metric — already in the #3 first
+   cut) **and** add the backward one: back-project each camera's detection to a
+   ray (`ray_tracing`), and penalize the **ray-to-point / ray-to-ray miss
+   distance** — i.e. make RCM itself (from #1) a residual, not just a report.
+   `multi_cam_point_positions` already returns that miss distance; assembling it
+   per point is the new residual vector.
+2. **Epipolar-distance testing.** For every plate point seen in ≥2 cameras, the
+   epipolar residual (point-to-epipolar-line distance, `epi.py`) is a second,
+   image-space check that is cheap and stabilizing; include it as a low-weight
+   term so the fit stays consistent with the correspondence geometry that
+   tracking/stereo-matching will later use.
+3. **Full "shaking" of the calibration files** — the self-calibration proper:
+   let the camera exteriors, the glass/interface vector, the distortion terms,
+   **and** the 3D point cloud all float, minimizing (1)+(2) jointly. The plate
+   nominal coords remain a soft prior (gauge fix + trust in the manufactured
+   body); real tracer particles (#2) extend the cloud into the depth the plate
+   can't reach.
+4. **Add parameters ONE AT A TIME (stability).** This is the key discipline the
+   user called out and it is correct: introducing all of exterior + glass +
+   k1/k2/k3/p1/p2/scale/shear + 3D points at once is ill-conditioned (parameters
+   trade off against each other — e.g. cc vs. depth, k-terms vs. principal
+   point). Instead **greedily**: start from the per-camera fit, free one new
+   parameter group, re-solve, and **accept it only if the #1 RCM (and a held-out
+   split) actually improves** — otherwise roll it back. This mirrors the existing
+   `CANDIDATE_FLAGS` greedy selection in `autocalibration.py`, but gated on
+   cross-camera RCM instead of single-camera RMS. Same idea, cross-camera metric.
+5. **Payoff.** Lower RCM ⇒ tighter epipolar bands ⇒ fewer false correspondences
+   and better stereo-matching ⇒ longer, cleaner tracks and more accurate 3D
+   positions/velocities/accelerations downstream.
+
+**#2 — tracer self-calibration ("shaking"), iterated (Shake-the-Box lineage).**
+plate-calibrate → track → self-calibrate on triangulation disparity/RCM at real
+depth → re-track → repeat. Highest-value fix for shallow-parallax rigs, because
+it uses real particles spanning the actual measurement volume the plate can't
+reach. Formalize the existing `calib.py snapshot-refine` (`cmd_snapshot_refine`)
+into an iterated, first-class stage; reuse the residual from #3 with the tracer
+cloud in place of (or alongside) the plate cloud; RCM from #1 is the
+convergence/stopping criterion.
+
+**#3 remaining — extend `joint_plate_bundle_adjust`** with the backward/epipolar
+residual terms (1,2) and the one-at-a-time distortion+glass shaking (4), gated on
+RCM. Scaffolding: the #3 first cut, plus `ray_tracing`, `epi.py`,
+`multi_cam_point_positions`, and the greedy pattern in `calibrate_camera`.
 
 ## Files touched (item #1)
 
