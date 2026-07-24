@@ -260,6 +260,7 @@ class CalibrationGUI(HasTraits):
     button_orient_part = Button()
     button_orient_dumbbell = Button()
     button_restore_orient = Button()
+    button_suggest_eps0 = Button()
     button_checkpoint = Button()
     button_ap_figures = Button()
     button_edit_ori_files = Button()
@@ -373,6 +374,13 @@ class CalibrationGUI(HasTraits):
                     Item(
                         name="button_restore_orient",
                         label="Restore ori files",
+                        show_label=False,
+                        enabled_when="pass_init",
+                        width=LEFT_PANEL_ITEM_WIDTH,
+                    ),
+                    Item(
+                        name="button_suggest_eps0",
+                        label="Suggest eps0",
                         show_label=False,
                         enabled_when="pass_init",
                         width=LEFT_PANEL_ITEM_WIDTH,
@@ -1163,6 +1171,34 @@ class CalibrationGUI(HasTraits):
         """ Restores original orientation files from backup."""
         print("Restoring ORI files\n")
         self.restore_ori_files()
+
+    def _button_suggest_eps0_fired(self):
+        """Sweep the epipolar band on the current calibration and report the
+        eps0 that maximizes correct 4-camera quadruplets with no spurious ones.
+        Ground truth is the calblock: a quadruplet is correct only if all four
+        dots share one calblock ID (see autocalibration.suggest_eps0)."""
+        from openptv2.autocalibration import suggest_eps0
+
+        self.status_text = "Sweeping epipolar band (eps0)..."
+        try:
+            sug = suggest_eps0(self.working_folder, self.cpar, self.cals)
+        except Exception as exc:  # noqa: BLE001 - a suggestion must never crash the GUI
+            self.status_text = f"eps0 suggestion failed: {exc}"
+            print(f"eps0 suggestion failed: {exc}")
+            return
+        if not sug or sug.get("recommended") is None:
+            self.status_text = ("eps0 suggestion: n/a (needs 4 cameras, a "
+                                "criteria: block, and detected cal targets)")
+            return
+        msg = (f"Suggested eps0 = {sug['recommended']:.3f} "
+               f"({sug['max_correct']} correct quadruplets, 0 spurious; "
+               f"current {sug['current']:.3f}). Set criteria.eps0 in the YAML.")
+        self.status_text = msg
+        print(msg)
+        print(f"{'eps0':>7} {'quads':>6} {'correct':>8} {'wrong':>6}")
+        for row in sug["sweep"]:
+            print(f"{row['eps0']:>7.4f} {row['quads']:>6} "
+                  f"{row['correct']:>8} {row['wrong']:>6}")
 
     def reset_plots(self):
         """ Resets all plots in the camera windows."""
