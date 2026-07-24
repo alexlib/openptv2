@@ -261,6 +261,7 @@ class CalibrationGUI(HasTraits):
     button_orient_dumbbell = Button()
     button_restore_orient = Button()
     button_suggest_eps0 = Button()
+    button_tracer_selfcal = Button()
     button_checkpoint = Button()
     button_ap_figures = Button()
     button_edit_ori_files = Button()
@@ -381,6 +382,13 @@ class CalibrationGUI(HasTraits):
                     Item(
                         name="button_suggest_eps0",
                         label="Suggest eps0",
+                        show_label=False,
+                        enabled_when="pass_init",
+                        width=LEFT_PANEL_ITEM_WIDTH,
+                    ),
+                    Item(
+                        name="button_tracer_selfcal",
+                        label="Tracer self-cal",
                         show_label=False,
                         enabled_when="pass_init",
                         width=LEFT_PANEL_ITEM_WIDTH,
@@ -1199,6 +1207,40 @@ class CalibrationGUI(HasTraits):
         for row in sug["sweep"]:
             print(f"{row['eps0']:>7.4f} {row['quads']:>6} "
                   f"{row['correct']:>8} {row['wrong']:>6}")
+
+    def _button_tracer_selfcal_fired(self):
+        """Joint self-calibration on tracer particles (roadmap #2): couples the
+        cameras via free 3D particle positions from res/ptv_is.*, reaching the
+        depth the shallow plate can't. Reports cross-camera RCM before/after and,
+        when it improves, writes the refined .ori/.addpar (backups *.selfcalbck)
+        for the free cameras. Needs tracking results to exist first."""
+        from openptv2.autocalibration import tracer_self_calibrate
+
+        self.status_text = "Tracer self-calibration (this may take a moment)..."
+        try:
+            new_cals, info = tracer_self_calibrate(
+                self.working_folder, self.cpar, self.cals)
+        except Exception as exc:  # noqa: BLE001 - must never crash the GUI
+            self.status_text = f"tracer self-cal failed: {exc}"
+            print(f"tracer self-cal failed: {exc}")
+            return
+        if "skipped" in info:
+            self.status_text = (f"tracer self-cal: n/a ({info['skipped']}). "
+                                "Run the sequence + tracking first.")
+            return
+        before, after = info["rcm_before"] * 1000, info["rcm_after"] * 1000
+        msg = (f"Tracer self-cal: cross-camera RCM {before:.1f} -> {after:.1f} um "
+               f"({info['n_particles']} particles, cam{info['hold_cam'] + 1} held)")
+        print(msg)
+        if after < before:
+            self._backup_ori_files()
+            self.cals = new_cals
+            for cam in range(self.num_cams):
+                if cam != info["hold_cam"]:
+                    self._write_ori(cam, addpar_flag=True)
+            self.status_text = msg + " -- refined .ori written (backups *.bck)."
+        else:
+            self.status_text = msg + " -- no improvement; cals unchanged."
 
     def reset_plots(self):
         """ Resets all plots in the camera windows."""
