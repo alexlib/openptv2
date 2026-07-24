@@ -660,6 +660,27 @@ def cmd_run(args) -> int:
               f"({'written' if report['written'] else 'dry-run'})")
     else:
         print("  no camera converged")
+
+    if getattr(args, "suggest_eps0", False):
+        from openptv2.autocalibration import (
+            _load_dataset_params, resolve_calblock, suggest_eps0)
+        base = Path(args.dataset).resolve()
+        cpar = _load_dataset_params(base, resolve_calblock(base)).cpar
+        cals = [r.cal for r in sorted(ok, key=lambda r: r.cam)]
+        try:
+            sug = suggest_eps0(base, cpar, cals) if len(cals) == cpar.num_cams else None
+        except Exception as exc:  # noqa: BLE001 - suggestion must not fail the run
+            sug = None
+            print(f"  eps0 suggestion skipped: {exc}")
+        if sug and sug["recommended"] is not None:
+            report["eps0_suggestion"] = sug
+            Path(args.output).write_text(json.dumps(report, indent=2))
+            print(f"  epipolar band: current eps0={sug['current']:.3f} -> "
+                  f"SUGGESTED {sug['recommended']:.3f} "
+                  f"({sug['max_correct']} correct quadruplets, 0 spurious). "
+                  f"Set criteria.eps0 in the dataset YAML.")
+        elif getattr(args, "suggest_eps0", False):
+            print("  eps0 suggestion: n/a (needs 4 cameras + a criteria: block)")
     return 1 if failed else 0
 
 
@@ -848,6 +869,9 @@ def main() -> int:
                    help="with --joint-ba, greedily free distortion one group at "
                         "a time, accepting a group only if cross-camera RCM "
                         "improves")
+    p.add_argument("--suggest-eps0", action="store_true",
+                   help="after calibration, sweep the epipolar band and suggest "
+                        "the eps0 that maximizes correct 4-camera quadruplets")
     p.set_defaults(func=cmd_run)
 
     p = sub.add_parser("snapshot-refine",

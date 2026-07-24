@@ -57,8 +57,13 @@ Classic OpenPTV (e.g. `test_data/test_cavity`):
 SK=skills/openptv-calibrate/scripts/calib.py
 uv run python $SK inspect <dataset> --output /tmp/inspect.json
 uv run python $SK run     <dataset> --output /tmp/calib.json
+uv run python $SK run     <dataset> --output /tmp/calib.json --suggest-eps0
 ```
 Then show the overlay PNGs in `<dataset>/cal/auto_calib/` and confirm the report.
+`--suggest-eps0` sweeps the epipolar band after calibration and recommends the
+`criteria.eps0` that maximizes correct 4-camera quadruplets (ground-truthed
+against the calblock: a quadruplet is correct only if all four dots share one
+calblock ID) with zero spurious matches.
 
 ## Truly fresh dataset (no targets, no seed, no prior .ori/.addpar at all)
 A dataset that never went through calibration before is missing three things
