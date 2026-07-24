@@ -801,3 +801,235 @@ def suggest_eps0(base, cpar, cals, *, sweep=None, gt_radius=3.0):
         "current": current,
         "sweep": rows,
     }
+
+
+def _flat_targets_from_obs(obs_list, cals, cpar):
+    """Build the (n_pts, n_cams, 2) FLAT-metric array multi_cam_point_positions
+    wants, from a list of {cam: (px, py)} observation dicts. Cameras that didn't
+    see a point get the COORD_UNUSED sentinel."""
+    from openptv2.algorithms.orientation import COORD_UNUSED
+    from openptv2.algorithms.trafo import dist_to_flat, pixel_to_metric
+
+    n_cams = cpar.num_cams
+    targets = np.full((len(obs_list), n_cams, 2), COORD_UNUSED, dtype=np.float64)
+    for i, pix in enumerate(obs_list):
+        for cam, (px, py) in pix.items():
+            mx, my = pixel_to_metric(px, py, cpar)
+            cal = cals[cam]
+            fx, fy = dist_to_flat(
+                mx, my, cal.int_par.xh, cal.int_par.yh,
+                cal.added_par.k1, cal.added_par.k2, cal.added_par.k3,
+                cal.added_par.p1, cal.added_par.p2,
+                cal.added_par.scx, cal.added_par.she,
+            )
+            targets[i, cam] = (fx, fy)
+    return targets
+
+
+def _tracer_rcm_median(obs_list, cals, cpar):
+    """Median ray-convergence miss distance (mm) over tracer observations."""
+    from openptv2.orientation import multi_cam_point_positions
+
+    if len(obs_list) < 3:
+        return None
+    targets = _flat_targets_from_obs(obs_list, cals, cpar)
+    _pos, rcm = multi_cam_point_positions(targets, cpar, cals)
+    return float(np.median(rcm))
+
+
+def tracer_self_calibrate(base, cpar, cals, *, frames=None, tol_px=2.0,
+                          hold_cam=0, min_cams=2, max_particles=400,
+                          iters=1, max_nfev=100, verbose=False):
+    """Refine camera exteriors on TRACER particles that span the real volume.
+
+    The modern "shaking": the calibration plate is shallow and planar-ish, so a
+    plate fit can't constrain the along-ray (depth) direction shallow parallax
+    leaves loose. Tracer particles from the flow reach that depth. They are FREE
+    shared 3D points (seeded from the tracked positions); the 7-DOF gauge is fixed
+    by HOLDING one camera's exterior (`hold_cam`), not a nominal anchor. Minimizing
+    joint reprojection couples the cameras, lowering the cross-camera RCM the plate
+    leaves behind. Distortion held fixed.
+
+    ITERATED (`iters` > 1): after a fit improves the cameras, re-match particles to
+    detections with the refined calibration (recovering better correspondences) and
+    fit again -- accepting a pass only if the median tracer RCM improves, stopping
+    when it plateaus (refine -> re-match -> repeat).
+
+    Reads tracked 3D from res/ptv_is.* and matches each to the nearest detected
+    target per camera (within tol_px). Returns (new_cals, info) with rcm_before/
+    after (mm, median over particles seen in >=min_cams cams), n_particles, n_obs,
+    iterations, rcm_trace, success. Returns (cals, {skipped}) when there isn't
+    enough multi-camera tracer data.
+    """
+    import copy
+
+    from scipy import sparse
+    from scipy.optimize import least_squares
+
+    from openptv2.algorithms.tracking_frame_buf import read_targets
+    from openptv2.imgcoord import image_coordinates
+    from openptv2.algorithms.trafo import pixel_to_metric
+
+    base = Path(base)
+    yaml_path = _find_yaml(base)
+    if yaml_path is None:
+        return cals, {"skipped": "no parameters YAML"}
+    y = yaml.safe_load(yaml_path.read_text())
+    seq = (y.get("sequence") or {}).get("base_name")
+    if not seq:
+        return cals, {"skipped": "no sequence.base_name in YAML"}
+    seq_bases = [str(base / s.replace("%d", "")) for s in seq]
+
+    ptv_files = sorted((base / "res").glob("ptv_is.*"),
+                       key=lambda p: int(p.suffix.lstrip(".")))
+    if frames is not None:
+        wanted = set(frames)
+        ptv_files = [p for p in ptv_files if int(p.suffix.lstrip(".")) in wanted]
+    if not ptv_files:
+        return cals, {"skipped": "no res/ptv_is.* frames"}
+
+    n_cams = cpar.num_cams
+
+    # Load raw per-frame data ONCE (tracked 3D + per-camera detections), so the
+    # match->fit iterations re-associate without re-reading the files.
+    frame_data = []
+    for pf in ptv_files:
+        frame = int(pf.suffix.lstrip("."))
+        lines = pf.read_text().splitlines()
+        nn = int(lines[0])
+        pts = []
+        for line in lines[1:nn + 1]:
+            parts = line.split()
+            if len(parts) >= 5:
+                pts.append([float(parts[2]), float(parts[3]), float(parts[4])])
+        if not pts:
+            continue
+        det = []
+        for cam in range(n_cams):
+            tg = read_targets(seq_bases[cam], frame)
+            det.append(np.array([[t.x, t.y] for t in tg]) if tg
+                       else np.empty((0, 2)))
+        frame_data.append((np.asarray(pts, float), det))
+    if not frame_data:
+        return cals, {"skipped": "no tracked points in the selected frames"}
+
+    free_cams = [c for c in range(n_cams) if c != hold_cam]
+    n_cam_params = 6 * len(free_cams)
+
+    def _match(cur_cals):
+        """Associate tracked particles to detections with the CURRENT cals."""
+        obs, seed = [], []
+        for pts, det in frame_data:
+            for p in pts:
+                pix = {}
+                for cam in range(n_cams):
+                    d = det[cam]
+                    if len(d) == 0:
+                        continue
+                    proj = _reproject_px(cur_cals[cam], cpar.mm, p, cpar)
+                    j = int(np.argmin(np.hypot(d[:, 0] - proj[0],
+                                               d[:, 1] - proj[1])))
+                    if np.hypot(d[j, 0] - proj[0], d[j, 1] - proj[1]) <= tol_px:
+                        pix[cam] = (float(d[j, 0]), float(d[j, 1]))
+                if len(pix) >= min_cams:
+                    obs.append(pix)
+                    seed.append(p)
+        if len(obs) > max_particles:
+            idx = np.linspace(0, len(obs) - 1, max_particles).astype(int)
+            obs = [obs[i] for i in idx]
+            seed = [seed[i] for i in idx]
+        return obs, seed
+
+    def _fit(obs_list, seed_xyz, cur_cals):
+        """One joint fit: refine free-cam exteriors + free particle 3D. Returns
+        (fitted_cals, success) or None on solver error (cur_cals deep-copied)."""
+        cur = [copy.deepcopy(c) for c in cur_cals]
+        seed = np.asarray(seed_xyz, float)
+        n_pts = len(obs_list)
+        cam_rows, cam_mets = {}, {}
+        for cam in free_cams:
+            rows, mets = [], []
+            for i, pix in enumerate(obs_list):
+                if cam in pix:
+                    rows.append(i)
+                    mets.append(pixel_to_metric(*pix[cam], cpar))
+            cam_rows[cam] = np.asarray(rows, int)
+            cam_mets[cam] = np.asarray(mets, float).reshape(-1, 2)
+
+        x0 = []
+        for cam in free_cams:
+            x0.extend(cur[cam].get_pos())
+            x0.extend(cur[cam].get_angles())
+        x0.extend(seed.ravel())
+        x0 = np.asarray(x0, float)
+
+        def _resid(x):
+            pts = x[n_cam_params:].reshape(n_pts, 3)
+            res = []
+            for ci, cam in enumerate(free_cams):
+                cur[cam].set_pos(x[ci * 6:ci * 6 + 3])
+                cur[cam].set_angles(x[ci * 6 + 3:ci * 6 + 6])
+                rows = cam_rows[cam]
+                if len(rows) == 0:
+                    continue
+                proj = image_coordinates(pts[rows], cur[cam], cpar.mm)
+                res.append((proj - cam_mets[cam]).ravel())
+            return np.nan_to_num(np.concatenate(res) if res else np.zeros(1),
+                                 nan=1e6, posinf=1e6, neginf=-1e6)
+
+        n_res = 2 * sum(len(cam_rows[c]) for c in free_cams)
+        jac = sparse.lil_matrix((n_res, x0.size), dtype=np.int8)
+        r = 0
+        for ci, cam in enumerate(free_cams):
+            for row in cam_rows[cam]:
+                for k in range(2):
+                    jac[r + k, ci * 6:ci * 6 + 6] = 1
+                    jac[r + k, n_cam_params + 3 * row:n_cam_params + 3 * row + 3] = 1
+                r += 2
+        try:
+            sol = least_squares(_resid, x0, max_nfev=max_nfev, method="trf",
+                                jac_sparsity=jac.tocsr(),
+                                verbose=2 if verbose else 0)
+        except (ValueError, RuntimeError, np.linalg.LinAlgError):
+            return None
+        _resid(sol.x)  # leave `cur` set to the solution
+        return cur, bool(sol.success)
+
+    best_cals = [copy.deepcopy(c) for c in cals]
+    obs0, _ = _match(best_cals)
+    if len(obs0) < 10:
+        return cals, {"skipped": f"only {len(obs0)} multi-cam tracer particles"}
+    rcm_before = _tracer_rcm_median(obs0, best_cals, cpar)
+    best_rcm = rcm_before
+    trace = []
+    success = False
+
+    # Iterate: match -> fit, accepting a pass only if median tracer RCM improves.
+    for _ in range(max(1, iters)):
+        obs, seed = _match(best_cals)
+        if len(obs) < 10:
+            break
+        fit = _fit(obs, seed, best_cals)
+        if fit is None:
+            break
+        cand_cals, cand_success = fit
+        cand_rcm = _tracer_rcm_median(obs, cand_cals, cpar)
+        improved = cand_rcm is not None and (
+            best_rcm is None or cand_rcm < best_rcm - 1e-9)
+        trace.append({"rcm": cand_rcm, "n_particles": len(obs),
+                      "accepted": improved})
+        if not improved:
+            break
+        best_cals, best_rcm, success = cand_cals, cand_rcm, cand_success
+
+    obs_final, _ = _match(best_cals)
+    return best_cals, {
+        "rcm_before": rcm_before,
+        "rcm_after": best_rcm,
+        "n_particles": len(obs_final),
+        "n_obs": sum(len(p) for p in obs_final),
+        "hold_cam": hold_cam,
+        "iterations": len([t for t in trace if t["accepted"]]),
+        "rcm_trace": trace,
+        "success": success,
+    }
