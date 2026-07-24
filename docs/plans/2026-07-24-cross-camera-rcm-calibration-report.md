@@ -1,9 +1,10 @@
 # Report cross-camera ray-convergence (RCM) in the calibration output
 
 > Item #1 of a three-part "make calibration cross-camera-aware" roadmap.
-> Items #2 (tracer self-calibration / "shaking", iterated) and #3 (joint plate
-> bundle adjustment) are scoped at the end as follow-ups. Do #1 first — you must
-> *measure* RCM before #2/#3 can be shown to drive it down.
+> **Status: #1 done (PR #21), #3 joint-plate BA + distortion shaking done
+> (PR #22), #2 iterated tracer self-calibration done (PR #26).** Only the full-#3
+> backward/epipolar residual + held-out RCM gate remain (see status block below).
+> Do #1 first — you must *measure* RCM before #2/#3 can be shown to drive it down.
 
 ## Context — why this matters (measured, not hypothetical)
 
@@ -154,7 +155,20 @@ OpenPTV already has the scaffolding for both (this is refinement, not a rewrite)
   3D plate points, holds distortion fixed, gauge-anchored to nominal. Drives the
   synthetic-rig median RCM 0.77 mm → ~0; noise-floored above 1e-3 with 0.3 px
   detection noise.
-- **#2 and the full #3 (below) — TODO.**
+- **#3 distortion shaking — DONE** (`--shake-distortion`, PR #22): greedy
+  one-group-at-a-time distortion (k1k2k3 / p1p2 / scaleshear / glass) gated on
+  cross-camera RCM (point 4 below). On TT13 it accepts p1p2+glass but only moves
+  RCM ~2% — that rig is at its plate floor.
+- **#2 — DONE** (`autocalibration.tracer_self_calibrate`,
+  `calib.py tracer-selfcal`, GUI "Tracer self-cal" button, PR #26): coupled joint
+  fit over FREE tracer particles (from `res/ptv_is.*`) spanning the real volume,
+  gauge-fixed by holding one camera; **iterated** (refine → re-match → repeat,
+  accepting a pass only if median tracer RCM improves). On wp1 real data RCM
+  95→72 µm / 102.8→68.7 µm (~24–33%) — exactly what the plate BA couldn't do.
+  Driven by the `shaking` parameter block (+ `shaking_tol_px` / `shaking_hold_cam`).
+- **Full #3 (below), remaining — TODO:** the backward/epipolar residual (make RCM
+  itself a residual, points 1–2), a held-out fit/eval split for the RCM gate
+  (point 4), and per-point RCM overlays.
 
 ### The full-blown bundle adjustment / self-calibration (target design)
 
@@ -193,19 +207,20 @@ calibration body as a cloud of **3D dots** and closes the loop both ways:
    and better stereo-matching ⇒ longer, cleaner tracks and more accurate 3D
    positions/velocities/accelerations downstream.
 
-**#2 — tracer self-calibration ("shaking"), iterated (Shake-the-Box lineage).**
-plate-calibrate → track → self-calibrate on triangulation disparity/RCM at real
-depth → re-track → repeat. Highest-value fix for shallow-parallax rigs, because
-it uses real particles spanning the actual measurement volume the plate can't
-reach. Formalize the existing `calib.py snapshot-refine` (`cmd_snapshot_refine`)
-into an iterated, first-class stage; reuse the residual from #3 with the tracer
-cloud in place of (or alongside) the plate cloud; RCM from #1 is the
-convergence/stopping criterion.
+**#2 — tracer self-calibration ("shaking"), iterated (Shake-the-Box lineage) —
+DONE (PR #26).** `autocalibration.tracer_self_calibrate`: free tracer particles
+(from `res/ptv_is.*`) as shared 3D points spanning the real volume, gauge-fixed by
+holding one camera; iterated refine → re-match → repeat, accepting a pass only if
+median tracer RCM improves (RCM from #1 is the stopping criterion). Scales via
+particle subsampling + a sparse Jacobian. Exposed as `calib.py tracer-selfcal`
+(`--iters`) and the GUI "Tracer self-cal" button, driven by the `shaking`
+parameter block. wp1 real data: RCM ~95→72 µm / 102.8→68.7 µm.
 
-**#3 remaining — extend `joint_plate_bundle_adjust`** with the backward/epipolar
-residual terms (1,2) and the one-at-a-time distortion+glass shaking (4), gated on
-RCM. Scaffolding: the #3 first cut, plus `ray_tracing`, `epi.py`,
-`multi_cam_point_positions`, and the greedy pattern in `calibrate_camera`.
+**#3 remaining — extend the joint fits with the backward/epipolar residual terms
+(1,2)** — make RCM itself a residual (`ray_tracing` ray-miss) plus the epipolar
+term (`epi.py`) — and a **held-out fit/eval split** for the distortion-shaking RCM
+gate (4) to prevent overfitting. Scaffolding: `joint_plate_bundle_adjust` +
+`tracer_self_calibrate`, `ray_tracing`, `epi.py`, `multi_cam_point_positions`.
 
 ## Files touched (item #1)
 
