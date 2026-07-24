@@ -205,3 +205,45 @@ def parse_models_arg(models_spec: str) -> list[tuple[str, str]]:
         label, _, path = entry.partition("=")
         parsed.append((label.strip() or path.strip(), path.strip()))
     return parsed
+
+
+def save_residual_field_figure(det, rep, err, img, dest, scale=15.0, title=None):
+    """Save a reprojection-error VECTOR FIELD PNG for one camera.
+
+    Each residual (detected -> reprojected) is drawn as an arrow magnified
+    `scale`x for visibility (raw residuals are a few px on a 512px frame, too
+    small to read direction from at 1:1) and colored by TRUE magnitude, over
+    `img` (or a blank axis if img is None). The SPATIAL PATTERN is the
+    diagnostic, not any single number:
+      - radial in/out from center, growing with radius  -> radial distortion (k)
+      - quadrupole (flips across two perpendicular axes) -> decentering (p1/p2)
+      - all one direction/length                         -> pose / principal point
+      - a few big arrows, near-zero elsewhere            -> bad detections
+    Shared by plot_residual_field.py and the calibration GUI so the drawing
+    lives once. Returns `dest`.
+    """
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    import numpy as np
+
+    det = np.asarray(det, float)
+    rep = np.asarray(rep, float)
+    err = np.asarray(err, float)
+    fig, ax = plt.subplots(figsize=(8, 6.4))
+    if img is not None:
+        ax.imshow(img, cmap="gray")
+    else:
+        ax.invert_yaxis()
+    dx = (rep[:, 0] - det[:, 0]) * scale
+    dy = (rep[:, 1] - det[:, 1]) * scale
+    q = ax.quiver(det[:, 0], det[:, 1], dx, dy, err, cmap="autumn_r",
+                  angles="xy", scale_units="xy", scale=1, width=0.004)
+    fig.colorbar(q, ax=ax, label="reprojection error [px] (arrow direction/length "
+                                 f"magnified {scale:.0f}x, color = true magnitude)")
+    rms = float(np.sqrt(np.mean(err ** 2))) if len(err) else 0.0
+    ax.set_title(title or f"residual vector field  (n={len(det)}, RMS={rms:.2f}px)")
+    fig.tight_layout()
+    fig.savefig(str(dest), dpi=120)
+    plt.close(fig)
+    return dest

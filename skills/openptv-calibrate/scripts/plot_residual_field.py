@@ -89,20 +89,14 @@ def main() -> int:
             img_path, _, _ = cam_files(base, cam)
             img = iio.imread(img_path)
 
-        fig, ax = plt.subplots(figsize=(8, 6.4))
-        ax.imshow(img, cmap="gray")
-        dx = (rep[:, 0] - det[:, 0]) * args.scale
-        dy = (rep[:, 1] - det[:, 1]) * args.scale
-        q = ax.quiver(det[:, 0], det[:, 1], dx, dy, err, cmap="autumn_r",
-                      angles="xy", scale_units="xy", scale=1, width=0.004)
-        fig.colorbar(q, ax=ax, label="reprojection error [px] (arrow direction/length magnified "
-                                     f"{args.scale:.0f}x, color = true magnitude)")
-        ax.set_title(f"cam{cam + 1}  residual vector field  (n={len(ids)}, "
-                     f"RMS={np.sqrt(np.mean(err**2)):.2f}px)")
-        fig.tight_layout()
+        from openptv2.calibration_diagnostics import save_residual_field_figure
+
         dest = outdir / f"cam{cam + 1}_residual_field.png"
-        fig.savefig(dest, dpi=120)
-        plt.close(fig)
+        save_residual_field_figure(
+            det, rep, err, img, dest, scale=args.scale,
+            title=f"cam{cam + 1}  residual vector field  (n={len(ids)}, "
+                  f"RMS={np.sqrt(np.mean(err**2)):.2f}px)",
+        )
         print(f"cam{cam + 1}: wrote {dest}")
 
     return 0
