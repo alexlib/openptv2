@@ -698,3 +698,106 @@ def save_overlay(res: CamResult, base: Path, outdir: Path) -> Path:
     fig.savefig(dest, dpi=110)
     plt.close(fig)
     return dest
+
+
+def _pick_eps0(rows):
+    """Choose the recommended eps0 from sweep rows [{eps0, correct, wrong}, ...].
+
+    The knee: the LARGEST eps0 that is still spurious-free (wrong == 0) -- it
+    admits the most correct quadruplets without a single false one; widening
+    further only adds wrong matches. If no row is clean (noisy rig), fall back
+    to the eps0 maximizing (correct - 2*wrong). Returns (eps0, correct, wrong).
+    """
+    if not rows:
+        return None
+    clean = [r for r in rows if r["wrong"] == 0 and r["correct"] > 0]
+    if clean:
+        best = max(clean, key=lambda r: (r["correct"], r["eps0"]))
+        # largest eps0 that still achieves that max-correct while clean
+        tied = [r for r in clean if r["correct"] == best["correct"]]
+        pick = max(tied, key=lambda r: r["eps0"])
+    else:
+        pick = max(rows, key=lambda r: (r["correct"] - 2 * r["wrong"], -r["eps0"]))
+    return pick["eps0"], pick["correct"], pick["wrong"]
+
+
+def suggest_eps0(base, cpar, cals, *, sweep=None, gt_radius=3.0):
+    """Sweep the epipolar band (VolumePar.eps0) and recommend the value giving
+    the most CORRECT quadruplets with no spurious ones.
+
+    Ground truth is free right after calibration: each detected target's
+    calblock ID is known (reproject the calblock + nearest-neighbour within
+    gt_radius px), so a 4-camera correspondence is CORRECT iff all four linked
+    dots share one ID. Reuses the real correspondence engine, so the answer
+    reflects the actual matching, not a proxy.
+
+    Needs num_cams == 4 and a criteria: block in the dataset YAML
+    (X_lay/Zmin_lay/Zmax_lay/cn/cnx/cny/csumg/corrmin). Returns None otherwise.
+
+    Returns {"recommended", "max_correct", "current", "sweep": [{eps0, quads,
+    correct, wrong}, ...]}.
+    """
+    from openptv2.algorithms.correspondences import correct_frame, correspondences
+    from openptv2.algorithms.parameters import VolumePar
+    from openptv2.algorithms.tracking_frame_buf import Frame, read_targets
+
+    if cpar.num_cams != 4:
+        return None
+    y = yaml.safe_load(_find_yaml(base).read_text()) if _find_yaml(base) else {}
+    crit = y.get("criteria")
+    if not crit:
+        return None
+
+    fix, _ = read_calblock(str(resolve_calblock(base)))
+    fix = np.asarray(fix, float)
+
+    frm = Frame(4, 1000)
+    gt = []  # per-camera: detected-target-index -> calblock id (1-based) or -1
+    for c in range(4):
+        proj = np.array([_reproject_px(cals[c], cpar.mm, p, cpar) for p in fix])
+        pix = read_targets(str(target_base(base, c)), 0)
+        ids = np.full(len(pix), -1, dtype=int)
+        for k, t in enumerate(pix):
+            d = np.hypot(proj[:, 0] - t.x, proj[:, 1] - t.y)
+            j = int(d.argmin())
+            if d[j] <= gt_radius:
+                ids[k] = j + 1
+        frm.targets[c] = list(pix)
+        frm.num_targets[c] = len(pix)
+        gt.append(ids)
+
+    corrected = correct_frame(frm, cals, cpar, 0.0001)
+    base_vpar = dict(
+        X_lay=crit.get("X_lay", [-100, 100]),
+        Zmin_lay=crit.get("Zmin_lay", [-100, -100]),
+        Zmax_lay=crit.get("Zmax_lay", [100, 100]),
+        cn=crit.get("cn", 0.0), cnx=crit.get("cnx", 0.0), cny=crit.get("cny", 0.0),
+        csumg=crit.get("csumg", 0.0), corrmin=crit.get("corrmin", 0.0),
+    )
+    current = float(crit.get("eps0", 0.05)) or 0.05
+    if sweep is None:
+        sweep = list(np.geomspace(current * 0.2, current * 8.0, 15))
+
+    rows = []
+    for eps0 in sweep:
+        vpar = VolumePar(eps0=float(eps0), **base_vpar)
+        con, mc = correspondences(frm, corrected, vpar, cpar, cals)
+        correct = wrong = 0
+        for nt in con:
+            p = nt.p
+            if all(p[c] >= 0 for c in range(4)):
+                oids = [gt[c][corrected[c][p[c]].pnr] for c in range(4)]
+                if all(o != -1 for o in oids) and len(set(oids)) == 1:
+                    correct += 1
+                else:
+                    wrong += 1
+        rows.append({"eps0": round(float(eps0), 4), "quads": int(mc[0]),
+                     "correct": correct, "wrong": wrong})
+
+    pick = _pick_eps0(rows)
+    return {
+        "recommended": pick[0] if pick else None,
+        "max_correct": pick[1] if pick else 0,
+        "current": current,
+        "sweep": rows,
+    }
