@@ -944,8 +944,39 @@ class CalibrationGUI(HasTraits):
             self.camera[i_cam]._plot.overlays.clear()
             self.drawcross("orient_x", "orient_y", x, y, "orange", 5, i_cam=i_cam)
             self.camera[i_cam].drawquiver(x, y, u, v, "red")
+            # Honest, unamplified view of the fit: detected vs reprojected DOTS.
+            # The quiver above is scaled x5000, so even a good sub-pixel fit
+            # draws alarmingly long arrows; these dots show the real overlap.
+            self._plot_reprojection_dots(i_cam, targs)
 
         self.status_text = "Orientation finished."
+
+    def _plot_reprojection_dots(self, i_cam, targs):
+        """Overlay detected (green circles) vs reprojected (red dots) for the
+        matched calibration points -- the true, unamplified picture of the fit.
+        targs[i] corresponds to self.cal_points['pos'][i] (sortgrid aligns them),
+        so unmatched points (pnr == -999) are skipped."""
+        mm = self.cpar.get_multimedia_params()
+        dx, dy, rx, ry = [], [], [], []
+        for i in range(len(targs)):
+            pnr = targs[i].pnr() if callable(targs[i].pnr) else targs[i].pnr
+            if pnr == -999:
+                continue
+            pos = targs[i].pos()
+            dx.append(pos[0])
+            dy.append(pos[1])
+            proj = image_coordinates(
+                np.atleast_2d(self.cal_points["pos"][i]), self.cals[i_cam], mm
+            )
+            px = convert_arr_metric_to_pixel(proj, self.cpar)
+            rx.append(px[0][0])
+            ry.append(px[0][1])
+        self.camera[i_cam].drawcross(
+            "reproj_det_x", "reproj_det_y", dx, dy, "green", 8, marker="circle"
+        )
+        self.camera[i_cam].drawcross(
+            "reproj_rep_x", "reproj_rep_y", rx, ry, "red", 4, marker="dot"
+        )
 
     def _residuals_k(self, x, cal, XYZ, xy, cpar):
         cal.set_radial_distortion(x)
