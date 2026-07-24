@@ -684,6 +684,47 @@ def cmd_run(args) -> int:
     return 1 if failed else 0
 
 
+def cmd_tracer_selfcal(args) -> int:
+    """Joint self-calibration on tracer particles (roadmap #2)."""
+    import shutil
+
+    from openptv2.algorithms.calibration import Calibration
+    from openptv2.autocalibration import (
+        _load_dataset_params, cam_files, resolve_calblock, tracer_self_calibrate)
+
+    base = Path(args.dataset).resolve()
+    cpar = _load_dataset_params(base, resolve_calblock(base)).cpar
+    cals = [Calibration.from_file(*[str(p) for p in cam_files(base, c)[1:]])
+            for c in range(cpar.num_cams)]
+    frames = ([int(f) for f in args.frames.split(",")] if args.frames else None)
+    new_cals, info = tracer_self_calibrate(
+        base, cpar, cals, frames=frames, tol_px=args.tol_px,
+        hold_cam=args.hold_cam, max_particles=args.max_particles)
+    if "skipped" in info:
+        print(f"tracer self-calibration skipped: {info['skipped']}")
+        return 1
+    before, after = info["rcm_before"] * 1000, info["rcm_after"] * 1000
+    print(f"tracer self-calibration: RCM {before:.1f} -> {after:.1f} um "
+          f"({info['n_particles']} particles, {info['n_obs']} obs, "
+          f"cam{info['hold_cam'] + 1} held)")
+    improved = after < before
+    if improved and not args.dry_run:
+        for cam in range(cpar.num_cams):
+            if cam == args.hold_cam:
+                continue
+            _, ori, addpar = cam_files(base, cam)
+            shutil.copy2(ori, str(ori) + ".selfcalbck")
+            shutil.copy2(addpar, str(addpar) + ".selfcalbck")
+            new_cals[cam].write(str(ori).encode(), str(addpar).encode())
+        print(f"  wrote refined .ori/.addpar (backups *.selfcalbck) for "
+              f"{cpar.num_cams - 1} cameras")
+    elif not improved:
+        print("  no improvement; cals unchanged")
+    else:
+        print("  dry-run; cals unchanged")
+    return 0
+
+
 def cmd_snapshot_refine(args) -> int:
     """Refine calibration using 3D particle positions from tracking results."""
     import copy
@@ -884,6 +925,21 @@ def main() -> int:
     p.add_argument("--dry-run", action="store_true",
                    help="report without writing .ori/.addpar")
     p.set_defaults(func=cmd_snapshot_refine)
+
+    p = sub.add_parser("tracer-selfcal",
+                       help="joint self-calibration on tracer particles (couples "
+                            "cameras via free 3D points; lowers cross-camera RCM "
+                            "at real depth the plate can't reach)")
+    p.add_argument("dataset")
+    p.add_argument("--tol-px", type=float, default=2.0)
+    p.add_argument("--frames", default=None,
+                   help="comma-separated frame numbers (default: all)")
+    p.add_argument("--hold-cam", type=int, default=0,
+                   help="camera held fixed to fix the gauge (default 0)")
+    p.add_argument("--max-particles", type=int, default=400)
+    p.add_argument("--dry-run", action="store_true",
+                   help="report before/after RCM without writing .ori/.addpar")
+    p.set_defaults(func=cmd_tracer_selfcal)
 
     args = ap.parse_args()
     return args.func(args)
