@@ -46,7 +46,8 @@ from .experiment import Experiment
 
 # recognized names for the flags:
 NAMES = ["cc", "xh", "yh", "k1", "k2", "k3", "p1", "p2", "scale", "shear", "interf"]
-SCALE = 5000
+SCALE = 5000  # legacy fixed magnification; fallback only (see ARROW_TARGET_PX)
+ARROW_TARGET_PX = 25  # adaptive: scale residual arrows so the median is ~this long
 LEFT_PANEL_ITEM_WIDTH = -200
 
 
@@ -928,7 +929,7 @@ class CalibrationGUI(HasTraits):
             # image origin, which previously produced spurious lines from 0,0).
             # Note: targ_ix values run 0..n-1 and never equal -999, so the old
             # `if t != -999` filter never fired and let placeholders through.
-            x, y, u, v = [], [], [], []
+            x, y, resx, resy = [], [], [], []
             for i in range(len(targs)):
                 pnr = targs[i].pnr() if callable(targs[i].pnr) else targs[i].pnr
                 if pnr == -999:
@@ -938,14 +939,84 @@ class CalibrationGUI(HasTraits):
                 pos = targs[i].pos()
                 x.append(pos[0])
                 y.append(pos[1])
-                u.append(pos[0] + SCALE * residuals[i, 0])
-                v.append(pos[1] + SCALE * residuals[i, 1])
+                resx.append(residuals[i, 0])
+                resy.append(residuals[i, 1])
+
+            # ADAPTIVE arrow magnification. The fixed SCALE=5000 turned a good
+            # sub-pixel fit into 40-100px arrows that read as "way off"; instead
+            # scale so the MEDIAN residual arrow is ~ARROW_TARGET_PX long,
+            # regardless of the residual's units -- direction/relative-length
+            # (the actual diagnostic) is preserved, alarm removed.
+            mag = np.hypot(resx, resy) if x else np.array([])
+            med = float(np.median(mag[np.isfinite(mag)])) if len(mag) else 0.0
+            arrow_scale = (ARROW_TARGET_PX / med) if med > 0 else SCALE
+            u = [px + arrow_scale * rx for px, rx in zip(x, resx)]
+            v = [py + arrow_scale * ry for py, ry in zip(y, resy)]
 
             self.camera[i_cam]._plot.overlays.clear()
             self.drawcross("orient_x", "orient_y", x, y, "orange", 5, i_cam=i_cam)
             self.camera[i_cam].drawquiver(x, y, u, v, "red")
+            # Honest, unamplified view of the fit: detected vs reprojected DOTS,
+            # plus a saved color-by-magnitude residual-field PNG per camera.
+            self._plot_reprojection_dots(i_cam, targs)
 
         self.status_text = "Orientation finished."
+
+    def _plot_reprojection_dots(self, i_cam, targs):
+        """Overlay detected (green circles) vs reprojected (red dots) for the
+        matched calibration points -- the true, unamplified picture of the fit.
+        targs[i] corresponds to self.cal_points['pos'][i] (sortgrid aligns them),
+        so unmatched points (pnr == -999) are skipped."""
+        mm = self.cpar.get_multimedia_params()
+        dx, dy, rx, ry = [], [], [], []
+        for i in range(len(targs)):
+            pnr = targs[i].pnr() if callable(targs[i].pnr) else targs[i].pnr
+            if pnr == -999:
+                continue
+            pos = targs[i].pos()
+            dx.append(pos[0])
+            dy.append(pos[1])
+            proj = image_coordinates(
+                np.atleast_2d(self.cal_points["pos"][i]), self.cals[i_cam], mm
+            )
+            px = convert_arr_metric_to_pixel(proj, self.cpar)
+            rx.append(px[0][0])
+            ry.append(px[0][1])
+        self.camera[i_cam].drawcross(
+            "reproj_det_x", "reproj_det_y", dx, dy, "green", 8, marker="circle"
+        )
+        self.camera[i_cam].drawcross(
+            "reproj_rep_x", "reproj_rep_y", rx, ry, "red", 4, marker="dot"
+        )
+        self._save_residual_field(i_cam, dx, dy, rx, ry)
+
+    def _save_residual_field(self, i_cam, dx, dy, rx, ry):
+        """Save the color-by-magnitude residual VECTOR FIELD PNG (the spatial
+        pattern that reveals aberrations vs outliers) to
+        cal/calib_matches/camN_residual_field.png. Best-effort: a plotting
+        failure must not abort the calibration."""
+        if not dx:
+            return
+        try:
+            from openptv2.calibration_diagnostics import save_residual_field_figure
+
+            det = np.column_stack([dx, dy])
+            rep = np.column_stack([rx, ry])
+            err = np.hypot(det[:, 0] - rep[:, 0], det[:, 1] - rep[:, 1])
+            img = self.cal_images[i_cam] if i_cam < len(self.cal_images) else None
+            ori = self.get_parameter('cal_ori')['img_ori'][i_cam]
+            outdir = Path(ori).resolve().parent / "calib_matches"
+            outdir.mkdir(parents=True, exist_ok=True)
+            dest = outdir / f"cam{i_cam + 1}_residual_field.png"
+            rms = float(np.sqrt(np.mean(err ** 2)))
+            save_residual_field_figure(
+                det, rep, err, img, dest, scale=15.0,
+                title=f"cam{i_cam + 1}  residual vector field  (n={len(det)}, "
+                      f"RMS={rms:.2f}px)",
+            )
+            self.status_text = f"Residual field saved: {dest}"
+        except Exception as exc:  # noqa: BLE001 - diagnostics must never break calib
+            print(f"residual-field save skipped for cam{i_cam + 1}: {exc}")
 
     def _residuals_k(self, x, cal, XYZ, xy, cpar):
         cal.set_radial_distortion(x)
