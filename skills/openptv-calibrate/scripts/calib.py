@@ -564,7 +564,12 @@ def cmd_pick(args) -> int:
 def cmd_run(args) -> int:
     import numpy as np
 
-    from openptv2.autocalibration import calibrate_dataset
+    from openptv2.autocalibration import (
+        _load_dataset_params,
+        calibrate_dataset,
+        cross_camera_rcm,
+        resolve_calblock,
+    )
 
     results = calibrate_dataset(args.dataset, write=not args.dry_run, overlays=True)
     ok = [r for r in results if r.error is None]
@@ -590,6 +595,12 @@ def cmd_run(args) -> int:
             for r in results
         ],
     }
+
+    base = Path(args.dataset).resolve()
+    cpar = _load_dataset_params(base, resolve_calblock(base)).cpar
+    rcm = cross_camera_rcm(results, cpar)
+    report["cross_camera_rcm"] = rcm
+
     Path(args.output).write_text(json.dumps(report, indent=2))
     print(f"Success! Calibration report written to: {args.output}")
     for c in report["cameras"]:
@@ -598,6 +609,17 @@ def cmd_run(args) -> int:
         else:
             print(f"  cam{c['cam']}: matched {c['matched']}/{c['nfix']}  "
                   f"RMS={c['rms_px']}px  flags={'+'.join(c['flags'])}")
+    if rcm is not None:
+        print(f"cross-camera RCM ({rcm['n_common']} pts in all {cpar.num_cams} "
+              f"cams, {rcm['n_points']} in >=2): "
+              f"p50={rcm['median']:.3f}mm p95={rcm['p95']:.3f}mm "
+              f"max={rcm['max']:.3f}mm")
+        if rcm["p95"] > args.rcm_flag_mm:
+            print("WARNING: cross-camera RCM high relative to per-camera RMS; "
+                  "consider a "
+                  "tracer self-calibration / dumbbell pass (see roadmap).")
+    else:
+        print("cross-camera RCM: n/a (need >=2 cameras and >=3 common points)")
     if report["mean_rms_px"] is not None:
         print(f"  mean RMS ({len(ok)}/{len(results)} cameras): "
               f"{report['mean_rms_px']:.3f}px  "
@@ -783,6 +805,8 @@ def main() -> int:
     p.add_argument("dataset")
     p.add_argument("--output", required=True)
     p.add_argument("--dry-run", action="store_true")
+    p.add_argument("--rcm-flag-mm", type=float, default=0.1,
+                   help="warn if cross-camera RCM p95 exceeds this (mm, default 0.1)")
     p.set_defaults(func=cmd_run)
 
     p = sub.add_parser("snapshot-refine",

@@ -427,6 +427,61 @@ def calibrate_dataset(
     return results
 
 
+def cross_camera_rcm(results: list[CamResult], cpar) -> dict | None:
+    """Cross-camera ray-convergence miss distance (mm) over calblock points
+    seen by >= 2 cameras. None when < 2 cameras have a valid result or < 3
+    common points. Per-camera reprojection RMS cannot see cross-camera
+    inconsistency; this can."""
+    from openptv2.algorithms.orientation import COORD_UNUSED
+    from openptv2.algorithms.trafo import dist_to_flat, pixel_to_metric
+    from openptv2.orientation import multi_cam_point_positions
+
+    valid = [r for r in results
+             if r.cal is not None and r.error is None and len(r.ref) > 0]
+    if len(valid) < 2:
+        return None
+
+    n_cams = cpar.num_cams
+    cal_by_cam = {r.cam: r.cal for r in valid}
+
+    # 3D calblock point -> {cam: (px, py)}
+    point_pixels: dict[tuple, dict[int, tuple]] = {}
+    for r in valid:
+        for ref_row, det_row in zip(r.ref, r.det):
+            key = tuple(np.round(ref_row, 3))
+            point_pixels.setdefault(key, {})[r.cam] = (det_row[0], det_row[1])
+
+    seen = [pix for pix in point_pixels.values() if len(pix) >= 2]
+    if len(seen) < 3:
+        return None
+    n_common = sum(1 for pix in point_pixels.values() if len(pix) == n_cams)
+
+    targets = np.full((len(seen), n_cams, 2), COORD_UNUSED, dtype=np.float64)
+    for i, pix in enumerate(seen):
+        for cam, (px, py) in pix.items():
+            mx, my = pixel_to_metric(px, py, cpar)
+            cal = cal_by_cam[cam]
+            fx, fy = dist_to_flat(
+                mx, my, cal.int_par.xh, cal.int_par.yh,
+                cal.added_par.k1, cal.added_par.k2, cal.added_par.k3,
+                cal.added_par.p1, cal.added_par.p2,
+                cal.added_par.scx, cal.added_par.she,
+            )
+            targets[i, cam] = (fx, fy)
+
+    cals = [cal_by_cam.get(c) or next(iter(cal_by_cam.values()))
+            for c in range(n_cams)]
+    _pos, rcm = multi_cam_point_positions(targets, cpar, cals)
+    return {
+        "n_points": int(len(rcm)),
+        "n_common": int(n_common),
+        "median": float(np.median(rcm)),
+        "p90": float(np.percentile(rcm, 90)),
+        "p95": float(np.percentile(rcm, 95)),
+        "max": float(np.max(rcm)),
+    }
+
+
 def save_overlay(res: CamResult, base: Path, outdir: Path) -> Path:
     """Save a detected-vs-reprojected overlay PNG for one camera."""
     import matplotlib
