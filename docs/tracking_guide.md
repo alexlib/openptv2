@@ -256,3 +256,12 @@ from openptv2.plugins import run_tracking_plugin
 run_tracking_plugin("myptv_3d_tracking", experiment)
 ```
 
+---
+
+## 8. Developing Custom Tracking Plugins
+
+To create your own custom 2D or 3D particle tracking plugin or adapt external trackers (such as MyPTV, Trackpy, or custom machine learning models), see the comprehensive developer guide:
+
+* [**Developer Guide: Custom Tracking Plugins**](file:///C:/Users/alex/projects/openptv2/docs/developer_guide/custom_tracking_plugins.md)
+
+
