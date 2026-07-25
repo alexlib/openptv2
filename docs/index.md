@@ -12,6 +12,7 @@ Welcome to the openptv2 documentation.
 
 ### User Documentation
 
+- [Tracking Pipeline & Results Guide](tracking_guide.md) - Pipeline workflow, parameter guide, multi-pass tracking, and ptv_is.# output format
 - [Command-Line Batch Processing](tutorials/batch_processing.md) - Running `openptv2-batch` headlessly
 - [Sequence & Tracking Plugins](tutorials/plugins.md) - Built-in plugins, selecting one, writing your own
 - [Tracking Visualization](tutorials/tracking_visualization.md) - Preview tracking results

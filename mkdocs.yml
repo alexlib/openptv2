@@ -55,8 +55,8 @@ nav:
   - Home: index.md
   - Installation & Setup: installation.md
   - First Steps: first_steps.md
-  - Tutorials:
-    - End-to-End Tracking Tutorial: tutorials/getting_started_tutorial.md
+  - User Guides:
+    - Tracking Pipeline & Results: tracking_guide.md
     - Command-Line Batch Processing: tutorials/batch_processing.md
     - Tracking Visualization: tutorials/tracking_visualization.md
     - Debug Visualization: tutorials/tracking_debug_visualization.md
