@@ -221,3 +221,38 @@ To prepare tracking parameters in the GUI and run large-scale jobs in the cloud:
      if pm.parameters.get("track", {}).get("postprocess", True):
          tracker.postprocess()
      ```
+
+---
+
+## 7. Extra Tracking Plugins: MyPTV Trackers
+
+OpenPTV2 provides built-in plugin wrappers for **MyPTV** particle tracking algorithms, making it easy to swap tracking engines without modifying your dataset structure.
+
+### Available MyPTV Plugins
+
+| Plugin Name | Tracking Level | Algorithm & Features |
+| :--- | :--- | :--- |
+| **`myptv_3d_tracking`** | 3D Physical Space | Uses MyPTV's 3D kinematic velocity and acceleration predictor ($\mathbf{X}_{\text{pred}} = \mathbf{X}_t + \mathbf{V}_t \Delta t + \frac{1}{2}\mathbf{A}_t \Delta t^2$) coupled with SciPy Hungarian bipartite assignment (`scipy.optimize.linear_sum_assignment`) for global collision-free candidate matching and gap recovery. |
+| **`myptv_2d_tracking`** | 2D Pixel Space | Performs 2D frame-to-frame particle trajectory tracking directly in camera image coordinates $(x_i, y_i)$ for each camera view independently. Useful for 2D-PTV or pre-triangulation 2D trajectory stereo matching. |
+
+### How to Use
+
+#### 1. In the PyPTV GUI
+In the **Parameters** dialog under **Plugins**, select **`myptv_3d_tracking`** or **`myptv_2d_tracking`** from the **Tracking Plugin** (`track_alg`) dropdown menu.
+
+#### 2. In `parameters.yaml`
+Specify the tracking plugin in your YAML configuration:
+```yaml
+plugins:
+  selected_tracking: "myptv_3d_tracking"  # or "myptv_2d_tracking"
+  selected_sequence: "default"
+```
+
+#### 3. In Python CLI / Batch Execution
+```python
+from openptv2.plugins import run_tracking_plugin
+
+# Run MyPTV 3D tracking plugin programmatically
+run_tracking_plugin("myptv_3d_tracking", experiment)
+```
+
