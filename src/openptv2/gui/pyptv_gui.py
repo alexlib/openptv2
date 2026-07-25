@@ -807,7 +807,7 @@ class TreeMenuHandler(Handler):
         if hasattr(mainGui, "tracker") and mainGui.tracker is not None:
             mainGui.tracker.full_backward()
             track_cfg = mainGui.exp1.pm.parameters.get("track", {})
-            if track_cfg.get("postprocess", False):
+            if track_cfg.get("postprocess", True):
                 stats = mainGui.tracker.postprocess()
                 print(
                     f"Post-process links: {stats['links_before']} -> "

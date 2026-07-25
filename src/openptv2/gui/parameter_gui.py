@@ -267,7 +267,8 @@ class TrackHandler(Handler):
                 'dvzmin': track_params.dvzmin, 'dvzmax': track_params.dvzmax,
                 'angle': track_params.angle, 'dacc': track_params.dacc,
                 'flagNewParticles': track_params.flagNewParticles,
-                'track_mode': int(track_params.track_mode)
+                'track_mode': int(track_params.track_mode),
+                'postprocess': bool(track_params.postprocess),
             })
             
             # Save all changes to the YAML file through the experiment
@@ -286,6 +287,7 @@ class Tracking_Params(HasTraits):
     dacc = Float()
     flagNewParticles = Bool(True)
     track_mode = Enum(0, 1)
+    postprocess = Bool(True)
 
     def __init__(self, experiment: Experiment):
         super(Tracking_Params, self).__init__()
@@ -302,6 +304,7 @@ class Tracking_Params(HasTraits):
         self.dacc = tracking_params['dacc']
         self.flagNewParticles = bool(tracking_params['flagNewParticles'])
         self.track_mode = int(tracking_params.get('track_mode', 0))
+        self.postprocess = bool(tracking_params.get('postprocess', True))
 
     Tracking_Params_View = View(
         HGroup(
@@ -321,6 +324,7 @@ class Tracking_Params(HasTraits):
             Item(name="dacc", label="dacc:"),
         ),
         Item(name="flagNewParticles", label="Add new particles?"),
+        Item(name="postprocess", label="Enable Pass 3 Post-processing (reciprocity + cold start)?"),
         Item(name="track_mode", label="Tracking mode (0=Standard, 1=3D Seg):"),
         buttons=["Undo", "OK", "Cancel"],
         handler=TrackHandler(),

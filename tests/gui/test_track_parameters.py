@@ -72,5 +72,32 @@ def test_track_params_in_par_dir(par_dir):
         )
 
 
+def test_tracking_params_gui_postprocess(tmp_path):
+    from openptv2.gui.parameter_gui import Tracking_Params
+    from openptv2.gui.experiment import Experiment
+    from openptv2.gui.parameter_manager import ParameterManager
+
+    pm = ParameterManager()
+    pm.parameters = {
+        "num_cams": 1,
+        "track": {
+            "dvxmin": -10.0,
+            "dvxmax": 10.0,
+            "dvymin": -10.0,
+            "dvymax": 10.0,
+            "dvzmin": -10.0,
+            "dvzmax": 10.0,
+            "angle": 120.0,
+            "dacc": 5.0,
+            "flagNewParticles": True,
+            "track_mode": 0,
+            "postprocess": True,
+        },
+    }
+    exp = Experiment(pm=pm)
+    tp = Tracking_Params(experiment=exp)
+    assert tp.postprocess is True
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v", "--tb=short"])

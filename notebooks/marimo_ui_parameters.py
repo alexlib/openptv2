@@ -726,6 +726,10 @@ def _(mo, params, safe_bool, safe_float, sec):
         label="Add new particles?",
         value=safe_bool(_track.get("flagNewParticles"), True),
     )
+    ui_postprocess = mo.ui.checkbox(
+        label="Enable Pass 3 Post-processing (reciprocity + cold start)?",
+        value=safe_bool(_track.get("postprocess"), True),
+    )
 
     save_track_btn = mo.ui.run_button(label="Save Tracking Parameters")
 
@@ -734,6 +738,7 @@ def _(mo, params, safe_bool, safe_float, sec):
             mo.hstack([ui_dvxmin, ui_dvxmax, ui_dvymin, ui_dvymax], gap=1),
             mo.hstack([ui_dvzmin, ui_dvzmax, ui_angle, ui_dacc], gap=1),
             ui_new,
+            ui_postprocess,
             save_track_btn,
         ]
     )
@@ -749,6 +754,7 @@ def _(mo, params, safe_bool, safe_float, sec):
         ui_dvzmax,
         ui_dvzmin,
         ui_new,
+        ui_postprocess,
     )
 
 
@@ -846,6 +852,7 @@ def _(
     ui_pix_x,
     ui_pix_y,
     ui_pnfo,
+    ui_postprocess,
     ui_scale,
     ui_seq_first,
     ui_seq_last,
@@ -1062,6 +1069,7 @@ def _(
                 "angle": float(ui_angle.value),
                 "dacc": float(ui_dacc.value),
                 "flagNewParticles": bool(ui_new.value),
+                "postprocess": bool(ui_postprocess.value),
             }
         )
         exp.save_parameters()

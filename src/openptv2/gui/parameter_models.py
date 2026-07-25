@@ -169,6 +169,7 @@ class TrackParams(SectionModel):
     dvzmin: float = -15.5
     flagNewParticles: bool = True
     track_mode: int = 0
+    postprocess: bool = True
 
 
 class MaskingParams(SectionModel):
