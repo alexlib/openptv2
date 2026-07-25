@@ -733,15 +733,6 @@ def _(mo, params, safe_bool, safe_float, sec):
     ui_dacc = mo.ui.number(
         label="dacc", value=safe_float(_track.get("dacc"), 0.0), step=0.1
     )
-    ui_new = mo.ui.checkbox(
-        label="Add new particles?",
-        value=safe_bool(_track.get("flagNewParticles"), True),
-    )
-    ui_postprocess = mo.ui.checkbox(
-        label="Enable Pass 3 Post-processing (reciprocity + cold start)?",
-        value=safe_bool(_track.get("postprocess"), True),
-    )
-
     save_track_btn = mo.ui.run_button(label="Save Tracking Parameters")
 
     track_tab = mo.vstack(
@@ -749,8 +740,6 @@ def _(mo, params, safe_bool, safe_float, sec):
             ui_preset,
             mo.hstack([ui_dvxmin, ui_dvxmax, ui_dvymin, ui_dvymax], gap=1),
             mo.hstack([ui_dvzmin, ui_dvzmax, ui_angle, ui_dacc], gap=1),
-            ui_new,
-            ui_postprocess,
             save_track_btn,
         ]
     )

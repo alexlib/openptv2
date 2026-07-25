@@ -372,13 +372,6 @@ class Tracking_Params(HasTraits):
             show_border=True,
             label="Search Box & Kinematic Limits",
         ),
-        VGroup(
-            Item(name="flagNewParticles", label="Add new particles mid-sequence?", enabled_when="preset == 'custom_plugin'"),
-            Item(name="postprocess", label="Enable Pass 3 reciprocity pruning?", enabled_when="preset == 'custom_plugin'"),
-            Item(name="track_mode", label="Tracking mode (0=Standard, 1=3D Seg):", enabled_when="preset == 'custom_plugin'"),
-            show_border=True,
-            label="Advanced Strategy Overrides (Governed by Preset; Unlocked in Custom Plugin mode)",
-        ),
         buttons=["Undo", "OK", "Cancel"],
         handler=TrackHandler(),
         title="Tracking Parameters",
