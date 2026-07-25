@@ -43,6 +43,8 @@ BUILTIN_TRACKING_PLUGINS = {
     "two_directional": "openptv2.plugins.default_tracking",
     "fast_3d": "openptv2.plugins.default_tracking",
     "splitter_tracking": "openptv2.plugins.splitter_tracking",
+    "myptv_3d_tracking": "openptv2.plugins.myptv_3d_tracking",
+    "myptv_2d_tracking": "openptv2.plugins.myptv_2d_tracking",
 }
 
 LEGACY_ALIASES = {
