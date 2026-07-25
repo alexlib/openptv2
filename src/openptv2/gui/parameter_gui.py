@@ -272,6 +272,7 @@ class TrackHandler(Handler):
                 experiment.pm.parameters["plugins"] = {}
 
             preset_key = track_params.preset
+            existing_plugin = experiment.pm.parameters.get("plugins", {}).get("selected_tracking")
 
             t_dict, p_dict = apply_preset(
                 preset_key,
@@ -289,6 +290,7 @@ class TrackHandler(Handler):
                     "postprocess": bool(track_params.postprocess),
                 },
                 experiment.pm.parameters.get("plugins", {}),
+                custom_plugin_name=existing_plugin if preset_key == "custom_plugin" else None,
             )
 
             experiment.pm.parameters["track"].update(t_dict)
@@ -301,6 +303,7 @@ class TrackHandler(Handler):
 
 class Tracking_Params(HasTraits):
     preset = Enum(*[key for key, label in PRESET_CHOICES])
+    active_plugin = Str("default")
     dvxmin = Float()
     dvxmax = Float()
     dvymin = Float()
@@ -331,6 +334,7 @@ class Tracking_Params(HasTraits):
         self.track_mode = int(tracking_params.get("track_mode", 0))
         self.postprocess = bool(tracking_params.get("postprocess", True))
 
+        self.active_plugin = str(plugins_params.get("selected_tracking", "default"))
         self.preset = infer_preset(tracking_params, plugins_params)
 
     def _preset_changed(self, old, new):
@@ -348,6 +352,11 @@ class Tracking_Params(HasTraits):
                 editor=EnumEditor(
                     values={key: label for key, label in PRESET_CHOICES}
                 ),
+            ),
+            Item(
+                name="active_plugin",
+                style="readonly",
+                label="Active Selected Plugin:",
             ),
             show_border=True,
             label="Pipeline Strategy",

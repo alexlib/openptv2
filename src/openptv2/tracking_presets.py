@@ -54,7 +54,7 @@ PRESET_CONFIGS: Dict[str, Dict[str, Any]] = {
 def infer_preset(track_params: Dict[str, Any], plugins_params: Dict[str, Any] | None = None) -> str:
     """Infer preset / plugin pipeline name from track and plugins parameters."""
     selected_tracking = (plugins_params or {}).get("selected_tracking", "default")
-    if selected_tracking in ("full_multipass", "two_directional", "standard_forward", "fast_3d", "splitter_tracking", "myptv_3d_tracking", "myptv_2d_tracking"):
+    if selected_tracking in ("full_multipass", "two_directional", "standard_forward", "fast_3d"):
         return selected_tracking
     if selected_tracking != "default":
         return TrackingPreset.CUSTOM_PLUGIN.value
@@ -100,6 +100,8 @@ def apply_preset(
     elif preset_name == "custom_plugin":
         if custom_plugin_name:
             plugins_params["selected_tracking"] = custom_plugin_name
+        elif "selected_tracking" not in plugins_params:
+            plugins_params["selected_tracking"] = "default"
     else:
         plugins_params["selected_tracking"] = preset_name
 

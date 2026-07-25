@@ -55,3 +55,17 @@ def test_apply_preset_fast_3d():
     assert t_out["postprocess"] is False
     assert t_out["dvxmin"] == -5.0
     assert p_out["selected_tracking"] == "fast_3d"
+
+
+def test_myptv_custom_plugin_preset_preservation():
+    track_cfg = {"track_mode": 1, "flagNewParticles": False, "postprocess": False}
+    plugins_cfg = {"selected_tracking": "myptv_3d_tracking"}
+
+    # infer_preset MUST return custom_plugin (not fast_3d or default)
+    assert infer_preset(track_cfg, plugins_cfg) == "custom_plugin"
+
+    # apply_preset with custom_plugin MUST preserve myptv_3d_tracking
+    t_out, p_out = apply_preset("custom_plugin", track_cfg, plugins_cfg, custom_plugin_name="myptv_3d_tracking")
+    assert p_out["selected_tracking"] == "myptv_3d_tracking"
+    assert t_out["preset"] == "myptv_3d_tracking"
+
