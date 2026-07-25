@@ -61,6 +61,7 @@ DEFAULT_CRITERIA_OPTIONAL = {
 }
 
 DEFAULT_TRACK = {
+    "preset": "full_multipass",
     "dvxmin": -20,
     "dvxmax": 20,
     "dvymin": -20,
@@ -75,7 +76,9 @@ DEFAULT_TRACK = {
     "dnx": 0,
     "dny": 0,
     "angle": 10,
+    "flagNewParticles": True,
     "track_mode": 0,
+    "postprocess": True,
 }
 
 DEFAULT_DETECT_PLATE = {

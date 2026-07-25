@@ -7,6 +7,7 @@ from traitsui.api import (
     Handler,
     Group,
     Tabbed,
+    EnumEditor,
     spring,
 )
 
@@ -249,34 +250,57 @@ class CalHandler(Handler):
             print("Calibration parameters saved successfully!")
 
 
+from openptv2.tracking_presets import (
+    PRESET_CHOICES,
+    PRESET_CONFIGS,
+    apply_preset,
+    infer_preset,
+)
+
+
 class TrackHandler(Handler):
     def closed(self, info, is_ok):
         if is_ok:
             track_params = info.object
             experiment = track_params.experiment
-            
+
             print("Updating tracking parameters via Experiment...")
 
-            # Ensure track parameters section exists
-            if 'track' not in experiment.pm.parameters:
-                experiment.pm.parameters['track'] = {}
-                
-            experiment.pm.parameters['track'].update({
-                'dvxmin': track_params.dvxmin, 'dvxmax': track_params.dvxmax,
-                'dvymin': track_params.dvymin, 'dvymax': track_params.dvymax,
-                'dvzmin': track_params.dvzmin, 'dvzmax': track_params.dvzmax,
-                'angle': track_params.angle, 'dacc': track_params.dacc,
-                'flagNewParticles': track_params.flagNewParticles,
-                'track_mode': int(track_params.track_mode),
-                'postprocess': bool(track_params.postprocess),
-            })
-            
-            # Save all changes to the YAML file through the experiment
+            if "track" not in experiment.pm.parameters:
+                experiment.pm.parameters["track"] = {}
+            if "plugins" not in experiment.pm.parameters:
+                experiment.pm.parameters["plugins"] = {}
+
+            preset_key = track_params.preset
+
+            t_dict, p_dict = apply_preset(
+                preset_key,
+                {
+                    "dvxmin": track_params.dvxmin,
+                    "dvxmax": track_params.dvxmax,
+                    "dvymin": track_params.dvymin,
+                    "dvymax": track_params.dvymax,
+                    "dvzmin": track_params.dvzmin,
+                    "dvzmax": track_params.dvzmax,
+                    "angle": track_params.angle,
+                    "dacc": track_params.dacc,
+                    "flagNewParticles": track_params.flagNewParticles,
+                    "track_mode": int(track_params.track_mode),
+                    "postprocess": bool(track_params.postprocess),
+                },
+                experiment.pm.parameters.get("plugins", {}),
+            )
+
+            experiment.pm.parameters["track"].update(t_dict)
+            if p_dict:
+                experiment.pm.parameters["plugins"].update(p_dict)
+
             experiment.save_active()
             print("Tracking parameters saved successfully!")
 
 
 class Tracking_Params(HasTraits):
+    preset = Enum(*[key for key, label in PRESET_CHOICES])
     dvxmin = Float()
     dvxmax = Float()
     dvymin = Float()
@@ -292,40 +316,69 @@ class Tracking_Params(HasTraits):
     def __init__(self, experiment: Experiment):
         super(Tracking_Params, self).__init__()
         self.experiment = experiment
-        tracking_params = experiment.pm.get_section('track')
-        
-        self.dvxmin = tracking_params['dvxmin']
-        self.dvxmax = tracking_params['dvxmax']
-        self.dvymin = tracking_params['dvymin']
-        self.dvymax = tracking_params['dvymax']
-        self.dvzmin = tracking_params['dvzmin']
-        self.dvzmax = tracking_params['dvzmax']
-        self.angle = tracking_params['angle']
-        self.dacc = tracking_params['dacc']
-        self.flagNewParticles = bool(tracking_params['flagNewParticles'])
-        self.track_mode = int(tracking_params.get('track_mode', 0))
-        self.postprocess = bool(tracking_params.get('postprocess', True))
+        tracking_params = experiment.pm.parameters.get("track", {})
+        plugins_params = experiment.pm.parameters.get("plugins", {})
+
+        self.dvxmin = float(tracking_params.get("dvxmin", -10.0))
+        self.dvxmax = float(tracking_params.get("dvxmax", 10.0))
+        self.dvymin = float(tracking_params.get("dvymin", -10.0))
+        self.dvymax = float(tracking_params.get("dvymax", 10.0))
+        self.dvzmin = float(tracking_params.get("dvzmin", -10.0))
+        self.dvzmax = float(tracking_params.get("dvzmax", 10.0))
+        self.angle = float(tracking_params.get("angle", 120.0))
+        self.dacc = float(tracking_params.get("dacc", 5.0))
+        self.flagNewParticles = bool(tracking_params.get("flagNewParticles", True))
+        self.track_mode = int(tracking_params.get("track_mode", 0))
+        self.postprocess = bool(tracking_params.get("postprocess", True))
+
+        self.preset = infer_preset(tracking_params, plugins_params)
+
+    def _preset_changed(self, old, new):
+        if new in PRESET_CONFIGS:
+            cfg = PRESET_CONFIGS[new]
+            self.track_mode = cfg["track_mode"]
+            self.flagNewParticles = cfg["flagNewParticles"]
+            self.postprocess = cfg["postprocess"]
 
     Tracking_Params_View = View(
-        HGroup(
-            Item(name="dvxmin", label="dvxmin:"),
-            Item(name="dvxmax", label="dvxmax:"),
-        ),
-        HGroup(
-            Item(name="dvymin", label="dvymin:"),
-            Item(name="dvymax", label="dvymax:"),
-        ),
-        HGroup(
-            Item(name="dvzmin", label="dvzmin:"),
-            Item(name="dvzmax", label="dvzmax:"),
+        VGroup(
+            Item(
+                name="preset",
+                label="Tracking Strategy / Preset:",
+                editor=EnumEditor(
+                    values={key: label for key, label in PRESET_CHOICES}
+                ),
+            ),
+            show_border=True,
+            label="Pipeline Strategy",
         ),
         VGroup(
-            Item(name="angle", label="angle [gon]:"),
-            Item(name="dacc", label="dacc:"),
+            HGroup(
+                Item(name="dvxmin", label="dvxmin:"),
+                Item(name="dvxmax", label="dvxmax:"),
+            ),
+            HGroup(
+                Item(name="dvymin", label="dvymin:"),
+                Item(name="dvymax", label="dvymax:"),
+            ),
+            HGroup(
+                Item(name="dvzmin", label="dvzmin:"),
+                Item(name="dvzmax", label="dvzmax:"),
+            ),
+            HGroup(
+                Item(name="angle", label="Angle [gon]:"),
+                Item(name="dacc", label="dacc:"),
+            ),
+            show_border=True,
+            label="Search Box & Kinematic Limits",
         ),
-        Item(name="flagNewParticles", label="Add new particles?"),
-        Item(name="postprocess", label="Enable Pass 3 Post-processing (reciprocity + cold start)?"),
-        Item(name="track_mode", label="Tracking mode (0=Standard, 1=3D Seg):"),
+        VGroup(
+            Item(name="flagNewParticles", label="Add new particles mid-sequence?"),
+            Item(name="postprocess", label="Enable Pass 3 reciprocity pruning?"),
+            Item(name="track_mode", label="Tracking mode (0=Standard, 1=3D Seg):"),
+            show_border=True,
+            label="Advanced Strategy Overrides",
+        ),
         buttons=["Undo", "OK", "Cancel"],
         handler=TrackHandler(),
         title="Tracking Parameters",

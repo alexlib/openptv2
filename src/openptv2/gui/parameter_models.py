@@ -159,6 +159,7 @@ class TargRecParams(SectionModel):
 
 
 class TrackParams(SectionModel):
+    preset: str = "full_multipass"
     angle: float = 120.0
     dacc: float = 5.5
     dvxmax: float = 15.5

@@ -1,9 +1,11 @@
-"""Default tracking plugin: the core forward-tracking pipeline.
+"""Default tracking plugin: core tracking pipeline with preset support.
 
 Not a "real" plugin so much as the baseline algorithm wrapped in the same
 Tracking contract as every other plugin, so callers never special-case
 "default" — running the algorithm *is* running the plugin named "default".
 """
+
+from openptv2.tracking_presets import infer_preset
 
 
 class Tracking:
@@ -21,21 +23,38 @@ class Tracking:
 
         tracker = self.ptv.py_trackcorr_init(self.exp)
         # Side effect required for GUI "Track back"/postprocessing, which
-        # reads mainGui.tracker after a forward-tracking run. Harmless on
-        # batch ProcessingExperiment callers, which don't read it back.
+        # reads mainGui.tracker after a forward-tracking run.
         self.exp.tracker = tracker
 
-        force_3d = getattr(self.exp, "track3d", False)
-        if force_3d or self._track_mode() == 1:
-            tracker.full_forward_3d()
-        else:
-            tracker.full_forward()
+        pm = getattr(self.exp, "pm", None)
+        if pm is None and hasattr(self.exp, "exp1"):
+            pm = getattr(self.exp.exp1, "pm", None)
 
-    def _track_mode(self) -> int:
-        if hasattr(self.exp, "pm"):
-            pm = self.exp.pm
-        elif hasattr(self.exp, "exp1") and hasattr(self.exp.exp1, "pm"):
-            pm = self.exp.exp1.pm
+        track_cfg = pm.parameters.get("track", {}) if pm else {}
+        plugins_cfg = pm.parameters.get("plugins", {}) if pm else {}
+        preset = infer_preset(track_cfg, plugins_cfg)
+
+        force_3d = getattr(self.exp, "track3d", False)
+        track_mode = int(track_cfg.get("track_mode", 0))
+
+        if force_3d or track_mode == 1 or preset == "fast_3d":
+            print("Running Fast 3D-Only Tracking (Segment Mode)...")
+            tracker.full_forward_3d()
+        elif preset == "standard_forward":
+            print("Running Standard Forward Tracking...")
+            tracker.full_forward()
+        elif preset == "two_directional":
+            print("Running Two-Directional Tracking (Forward + Backward)...")
+            tracker.full_forward()
+            tracker.full_backward()
         else:
-            return 0
-        return pm.parameters.get("track", {}).get("track_mode", 0)
+            # full_multipass / default high accuracy
+            print("Running Full Multi-Pass Tracking (Forward + Backward + Postprocessing)...")
+            tracker.full_forward()
+            tracker.full_backward()
+            if track_cfg.get("postprocess", True):
+                stats = tracker.postprocess()
+                print(
+                    f"Post-process links: {stats.get('links_before', 0)} -> "
+                    f"{stats.get('links_after', 0)}"
+                )

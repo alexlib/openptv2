@@ -695,7 +695,18 @@ def _(list_get, mo, params, safe_bool, safe_float, safe_int, sec):
 
 @app.cell
 def _(mo, params, safe_bool, safe_float, sec):
+    from openptv2.tracking_presets import PRESET_CHOICES, infer_preset
+
     _track = sec(params, "track")
+    _plugins = sec(params, "plugins")
+
+    current_preset = infer_preset(_track, _plugins)
+
+    ui_preset = mo.ui.dropdown(
+        options={key: label for key, label in PRESET_CHOICES},
+        value=current_preset,
+        label="Tracking Strategy Preset",
+    )
 
     ui_dvxmin = mo.ui.number(
         label="dvxmin", value=safe_float(_track.get("dvxmin"), 0.0), step=0.1
@@ -735,6 +746,7 @@ def _(mo, params, safe_bool, safe_float, sec):
 
     track_tab = mo.vstack(
         [
+            ui_preset,
             mo.hstack([ui_dvxmin, ui_dvxmax, ui_dvymin, ui_dvymax], gap=1),
             mo.hstack([ui_dvzmin, ui_dvzmax, ui_angle, ui_dacc], gap=1),
             ui_new,
@@ -755,6 +767,7 @@ def _(mo, params, safe_bool, safe_float, sec):
         ui_dvzmin,
         ui_new,
         ui_postprocess,
+        ui_preset,
     )
 
 
@@ -853,6 +866,7 @@ def _(
     ui_pix_y,
     ui_pnfo,
     ui_postprocess,
+    ui_preset,
     ui_scale,
     ui_seq_first,
     ui_seq_last,
@@ -1057,8 +1071,13 @@ def _(
         messages.append("✅ Saved Calibration parameters")
 
     if save_track_btn.value:
+        from openptv2.tracking_presets import apply_preset
+
         _track_sec = _ensure_section("track")
-        _track_sec.update(
+        _plugins_sec = _ensure_section("plugins")
+
+        t_dict, p_dict = apply_preset(
+            ui_preset.value,
             {
                 "dvxmin": float(ui_dvxmin.value),
                 "dvxmax": float(ui_dvxmax.value),
@@ -1070,8 +1089,14 @@ def _(
                 "dacc": float(ui_dacc.value),
                 "flagNewParticles": bool(ui_new.value),
                 "postprocess": bool(ui_postprocess.value),
-            }
+            },
+            _plugins_sec,
         )
+
+        _track_sec.update(t_dict)
+        if p_dict:
+            _plugins_sec.update(p_dict)
+
         exp.save_parameters()
         messages.append("✅ Saved Tracking parameters")
 

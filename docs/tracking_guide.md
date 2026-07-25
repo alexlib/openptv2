@@ -47,6 +47,7 @@ Tracking configuration is stored under the `track:` section of your `parameters.
 
 ```yaml
 track:
+  preset: "full_multipass" # Preset: "fast_3d", "standard_forward", "full_multipass", or "custom_plugin"
   dvxmin: -10.0      # Min velocity search step in X [mm/frame]
   dvxmax: 10.0       # Max velocity search step in X [mm/frame]
   dvymin: -10.0      # Min velocity search step in Y [mm/frame]
@@ -63,10 +64,22 @@ plugins:
   selected_tracking: default  # Algorithm: "default" (trackcorr), "splitter_tracking", etc.
 ```
 
-### Parameter Explanations
+### High-Level Presets (`preset`)
+
+OpenPTV2 provides high-level preset profiles to simplify pipeline configuration:
+
+| Preset Key | Display Name | Pipeline Description | Recommended Use Case |
+| :--- | :--- | :--- | :--- |
+| **`fast_3d`** | Fast 3D-Only (No added particles) | Single-pass forward tracking (`track_mode=1`). Uses only 3D coordinates from `rt_is.#`. | Quick sanity checks, low density / low noise data. |
+| **`standard_forward`** | Fast Standard (Forward only, with added particles) | Single-pass forward tracking (`track_mode=0`, `flagNewParticles=true`). | Fast processing when backward tracking is not required. |
+| **`full_multipass`** | Standard 3-Pass (Forward + Backward + Post-process) | Full 3-pass pipeline: Forward $\rightarrow$ Backward $\rightarrow$ Pass 3 reciprocity pruning. | **Recommended for maximum accuracy & trajectory recovery.** |
+| **`custom_plugin`** | Custom Plugin / Splitter | Delegates pipeline execution to a user-specified plugin (e.g. `splitter_tracking`). | Quad-view splitters or specialized custom tracking algorithms. |
+
+### Detailed Parameter Reference
 
 | Parameter | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
+| **`preset`** | `str` | `"full_multipass"` | Active tracking strategy preset (`fast_3d`, `standard_forward`, `full_multipass`, `custom_plugin`). |
 | **`dvxmin` / `dvxmax`** | `float` | `-10.0` / `10.0` | Velocity search box along X axis in physical units [mm/frame]. Limits max displacement between frame $t$ and $t+1$. |
 | **`dvymin` / `dvymax`** | `float` | `-10.0` / `10.0` | Velocity search box along Y axis [mm/frame]. |
 | **`dvzmin` / `dvzmax`** | `float` | `-10.0` / `10.0` | Velocity search box along Z axis [mm/frame]. |
