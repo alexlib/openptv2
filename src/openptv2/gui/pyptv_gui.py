@@ -1244,8 +1244,7 @@ class Plugins(HasTraits):
         )
 
     def save(self):
-        """Persist the selection into pm.parameters (in-memory); the caller
-        is responsible for exp1.save_active() if it wants this on disk."""
+        """Persist the selection into pm.parameters and save to disk."""
         pm = getattr(self.experiment, "pm", None)
         if pm is None:
             return
@@ -1253,6 +1252,8 @@ class Plugins(HasTraits):
         plugins_params["selected_tracking"] = self.track_alg
         plugins_params["selected_sequence"] = self.sequence_alg
         pm.parameters["plugins"] = plugins_params
+        if self.experiment is not None and hasattr(self.experiment, "save_active"):
+            self.experiment.save_active()
         print(
             f"Saved plugin selections: tracking={self.track_alg}, "
             f"sequence={self.sequence_alg}"
