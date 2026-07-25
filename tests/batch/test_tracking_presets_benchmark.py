@@ -1,0 +1,167 @@
+import shutil
+import time
+import yaml
+from pathlib import Path
+import pytest
+
+from openptv2.batch.pyptv_batch import run_batch
+
+AORTA_SAMPLE_YAML = Path(
+    r"C:\Users\alex\Downloads\hidimaging_test\TT13_aorta\wp1\parameters_Run1_sample.yaml"
+)
+TEST_CAVITY_YAML = (
+    Path(__file__).parent.parent.parent
+    / "test_data"
+    / "test_cavity"
+    / "parameters_Run1.yaml"
+)
+
+
+def analyze_trajectories(res_dir: Path, first_frame: int, last_frame: int) -> dict:
+    """Parse ptv_is linkage files to extract trajectory metrics."""
+    frames = {}
+    for f in range(first_frame, last_frame + 1):
+        file_path = res_dir / f"ptv_is.{f}"
+        if not file_path.exists():
+            continue
+        lines = file_path.read_text().strip().splitlines()
+        if not lines:
+            continue
+        if len(lines[0].split()) == 1:
+            lines = lines[1:]
+        rows = []
+        for line in lines:
+            parts = line.split()
+            if len(parts) >= 2:
+                rows.append((int(parts[0]), int(parts[1])))
+        frames[f] = rows
+
+    total_links = 0
+    traj_lengths = []
+
+    for f in range(first_frame, last_frame + 1):
+        rows = frames.get(f, [])
+        for idx, (prev, next_idx) in enumerate(rows):
+            if next_idx >= 0:
+                total_links += 1
+            if prev == -1:
+                length = 1
+                curr_f = f
+                curr_next = next_idx
+                while curr_next >= 0 and (curr_f + 1) in frames:
+                    curr_f += 1
+                    next_rows = frames[curr_f]
+                    if curr_next < len(next_rows):
+                        length += 1
+                        curr_next = next_rows[curr_next][1]
+                    else:
+                        break
+                traj_lengths.append(length)
+
+    traj_count = len(traj_lengths)
+    mean_len = sum(traj_lengths) / traj_count if traj_count > 0 else 0.0
+    max_len = max(traj_lengths) if traj_count > 0 else 0
+    return {
+        "total_links": total_links,
+        "trajectories_count": traj_count,
+        "mean_length": round(mean_len, 2),
+        "max_length": max_len,
+    }
+
+
+def get_benchmark_dataset(use_aorta: bool = False):
+    """Returns (yaml_path, first_frame, last_frame, is_aorta_dataset).
+    By default uses test_cavity (5 frames, ~200 particles) for instant pytest execution (~0.5s).
+    Set use_aorta=True or environment variable USE_AORTA_BENCHMARK=1 for full aorta sample run.
+    """
+    import os
+    if (use_aorta or os.environ.get("USE_AORTA_BENCHMARK") == "1") and AORTA_SAMPLE_YAML.exists():
+        return AORTA_SAMPLE_YAML, 1, 5, True
+    return TEST_CAVITY_YAML, 10000, 10004, False
+
+
+@pytest.mark.parametrize("preset", ["fast_3d", "standard_forward", "full_multipass"])
+def test_tracking_preset_execution_and_benchmark(preset, tmp_path):
+    """Run batch mode for each preset, verify outputs, and print trajectory metrics."""
+    yaml_src, first_frame, last_frame, is_aorta = get_benchmark_dataset()
+    data_dir = yaml_src.parent
+
+    # Copy dataset into tmp_path sandbox
+    for item in data_dir.iterdir():
+        if item.is_dir():
+            shutil.copytree(item, tmp_path / item.name)
+        else:
+            shutil.copy2(item, tmp_path / item.name)
+
+    sandbox_yaml = tmp_path / yaml_src.name
+
+    # Override preset in sandboxed YAML
+    with open(sandbox_yaml, "r") as f:
+        cfg = yaml.safe_load(f)
+    cfg.setdefault("track", {})["preset"] = preset
+    with open(sandbox_yaml, "w") as f:
+        yaml.safe_dump(cfg, f)
+
+    t0 = time.perf_counter()
+    run_batch(sandbox_yaml, first_frame, last_frame, mode="tracking")
+    elapsed = time.perf_counter() - t0
+
+    stats = analyze_trajectories(tmp_path / "res", first_frame, last_frame)
+    stats["time_sec"] = round(elapsed, 3)
+
+    assert stats["total_links"] > 0, f"Preset {preset} yielded 0 links"
+    assert stats["trajectories_count"] > 0, f"Preset {preset} yielded 0 trajectories"
+
+    print(
+        f"\n[BENCHMARK] Preset: {preset:18s} | Dataset: {'Aorta' if is_aorta else 'Cavity'} | "
+        f"Time: {stats['time_sec']}s | Links: {stats['total_links']} | "
+        f"Trajectories: {stats['trajectories_count']} | Mean Len: {stats['mean_length']} | "
+        f"Max Len: {stats['max_length']}"
+    )
+
+
+
+def test_preset_comparison_summary_table(tmp_path, capsys):
+    """Runs all 3 presets and prints a Markdown comparison table suitable for documentation."""
+    yaml_src, first_frame, last_frame, is_aorta = get_benchmark_dataset()
+    data_dir = yaml_src.parent
+
+    results = {}
+    presets = ["fast_3d", "standard_forward", "full_multipass"]
+
+    for preset in presets:
+        preset_dir = tmp_path / preset
+        preset_dir.mkdir()
+        for item in data_dir.iterdir():
+            if item.is_dir():
+                shutil.copytree(item, preset_dir / item.name)
+            else:
+                shutil.copy2(item, preset_dir / item.name)
+
+        sandbox_yaml = preset_dir / yaml_src.name
+        with open(sandbox_yaml, "r") as f:
+            cfg = yaml.safe_load(f)
+        cfg.setdefault("track", {})["preset"] = preset
+        with open(sandbox_yaml, "w") as f:
+            yaml.safe_dump(cfg, f)
+
+        t0 = time.perf_counter()
+        run_batch(sandbox_yaml, first_frame, last_frame, mode="tracking")
+        elapsed = time.perf_counter() - t0
+
+        stats = analyze_trajectories(preset_dir / "res", first_frame, last_frame)
+        stats["time_sec"] = round(elapsed, 2)
+        results[preset] = stats
+
+    dataset_name = "TT13_aorta (10 frames)" if is_aorta else "test_cavity (5 frames)"
+    table_md = f"""
+### Tracking Pipeline Benchmark Comparison ({dataset_name})
+
+| Tracking Preset | Pipeline Description | Time (s) | Total Links | Trajectories Count | Mean Length | Max Length |
+| :--- | :--- | :---: | :---: | :---: | :---: | :---: |
+| **`fast_3d`** | Single-pass 3D Segment (`track_mode=1`) | {results['fast_3d']['time_sec']}s | {results['fast_3d']['total_links']:,} | {results['fast_3d']['trajectories_count']:,} | {results['fast_3d']['mean_length']} | {results['fast_3d']['max_length']} |
+| **`standard_forward`** | Single-pass Forward (`track_mode=0`) | {results['standard_forward']['time_sec']}s | {results['standard_forward']['total_links']:,} | {results['standard_forward']['trajectories_count']:,} | {results['standard_forward']['mean_length']} | {results['standard_forward']['max_length']} |
+| **`full_multipass`** | 3-Pass (Forward + Backward + Postprocess) | {results['full_multipass']['time_sec']}s | {results['full_multipass']['total_links']:,} | {results['full_multipass']['trajectories_count']:,} | {results['full_multipass']['mean_length']} | {results['full_multipass']['max_length']} |
+"""
+    print(table_md)
+    assert len(results) == 3
