@@ -14,7 +14,7 @@ def test_infer_preset_explicit():
 
 def test_infer_preset_from_custom_plugin():
     track_cfg = {"track_mode": 0, "postprocess": True}
-    plugins_cfg = {"selected_tracking": "splitter_tracking"}
+    plugins_cfg = {"selected_tracking": "my_custom_plugin"}
     assert infer_preset(track_cfg, plugins_cfg) == TrackingPreset.CUSTOM_PLUGIN.value
 
 
@@ -42,7 +42,7 @@ def test_apply_preset_full_multipass():
     assert t_out["flagNewParticles"] is True
     assert t_out["postprocess"] is True
     assert t_out["dvxmin"] == -10.0
-    assert p_out["selected_tracking"] == "default"
+    assert p_out["selected_tracking"] == "full_multipass"
 
 
 def test_apply_preset_fast_3d():
@@ -54,4 +54,4 @@ def test_apply_preset_fast_3d():
     assert t_out["flagNewParticles"] is False
     assert t_out["postprocess"] is False
     assert t_out["dvxmin"] == -5.0
-    assert p_out["selected_tracking"] == "default"
+    assert p_out["selected_tracking"] == "fast_3d"

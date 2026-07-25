@@ -38,6 +38,10 @@ BUILTIN_SEQUENCE_PLUGINS = {
 
 BUILTIN_TRACKING_PLUGINS = {
     "default": "openptv2.plugins.default_tracking",
+    "full_multipass": "openptv2.plugins.default_tracking",
+    "standard_forward": "openptv2.plugins.default_tracking",
+    "two_directional": "openptv2.plugins.default_tracking",
+    "fast_3d": "openptv2.plugins.default_tracking",
     "splitter_tracking": "openptv2.plugins.splitter_tracking",
 }
 

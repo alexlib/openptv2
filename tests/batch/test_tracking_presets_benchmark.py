@@ -95,10 +95,11 @@ def test_tracking_preset_execution_and_benchmark(preset, tmp_path):
 
     sandbox_yaml = tmp_path / yaml_src.name
 
-    # Override preset in sandboxed YAML
+    # Override preset and selected_tracking in sandboxed YAML
     with open(sandbox_yaml, "r") as f:
         cfg = yaml.safe_load(f)
     cfg.setdefault("track", {})["preset"] = preset
+    cfg.setdefault("plugins", {})["selected_tracking"] = preset
     with open(sandbox_yaml, "w") as f:
         yaml.safe_dump(cfg, f)
 
@@ -142,6 +143,7 @@ def test_preset_comparison_summary_table(tmp_path, capsys):
         with open(sandbox_yaml, "r") as f:
             cfg = yaml.safe_load(f)
         cfg.setdefault("track", {})["preset"] = preset
+        cfg.setdefault("plugins", {})["selected_tracking"] = preset
         with open(sandbox_yaml, "w") as f:
             yaml.safe_dump(cfg, f)
 

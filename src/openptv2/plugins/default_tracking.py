@@ -32,18 +32,22 @@ class Tracking:
 
         track_cfg = pm.parameters.get("track", {}) if pm else {}
         plugins_cfg = pm.parameters.get("plugins", {}) if pm else {}
-        preset = infer_preset(track_cfg, plugins_cfg)
+
+        selected_tracking = plugins_cfg.get("selected_tracking", "default")
+        if selected_tracking in ("fast_3d", "standard_forward", "two_directional", "full_multipass"):
+            active_pipeline = selected_tracking
+        else:
+            active_pipeline = infer_preset(track_cfg, plugins_cfg)
 
         force_3d = getattr(self.exp, "track3d", False)
-        track_mode = int(track_cfg.get("track_mode", 0))
 
-        if force_3d or track_mode == 1 or preset == "fast_3d":
+        if force_3d or active_pipeline == "fast_3d":
             print("Running Fast 3D-Only Tracking (Segment Mode)...")
             tracker.full_forward_3d()
-        elif preset == "standard_forward":
+        elif active_pipeline == "standard_forward":
             print("Running Standard Forward Tracking...")
             tracker.full_forward()
-        elif preset == "two_directional":
+        elif active_pipeline == "two_directional":
             print("Running Two-Directional Tracking (Forward + Backward)...")
             tracker.full_forward()
             tracker.full_backward()

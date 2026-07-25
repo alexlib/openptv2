@@ -52,15 +52,17 @@ PRESET_CONFIGS: Dict[str, Dict[str, Any]] = {
 
 
 def infer_preset(track_params: Dict[str, Any], plugins_params: Dict[str, Any] | None = None) -> str:
-    """Infer preset from track and plugins parameters if preset is not explicitly set."""
+    """Infer preset / plugin pipeline name from track and plugins parameters."""
+    selected_tracking = (plugins_params or {}).get("selected_tracking", "default")
+    if selected_tracking in ("full_multipass", "two_directional", "standard_forward", "fast_3d", "splitter_tracking"):
+        return selected_tracking
+    if selected_tracking != "default":
+        return TrackingPreset.CUSTOM_PLUGIN.value
+
     if "preset" in track_params and track_params["preset"]:
         p = str(track_params["preset"])
         if p in PRESET_MAP:
             return p
-
-    selected_tracking = (plugins_params or {}).get("selected_tracking", "default")
-    if selected_tracking != "default":
-        return TrackingPreset.CUSTOM_PLUGIN.value
 
     track_mode = int(track_params.get("track_mode", 0))
     if track_mode == 1:
@@ -81,18 +83,26 @@ def apply_preset(
     preset_name: str,
     track_params: Dict[str, Any],
     plugins_params: Dict[str, Any] | None = None,
+    custom_plugin_name: str | None = None,
 ) -> tuple[Dict[str, Any], Dict[str, Any]]:
-    """Apply preset values to track and plugins dicts while preserving velocity search bounds."""
+    """Apply tracking pipeline choice to track and plugins dicts while strictly preserving velocity search bounds."""
     track_params = dict(track_params)
     plugins_params = dict(plugins_params) if plugins_params else {}
-
-    track_params["preset"] = preset_name
 
     if preset_name in PRESET_CONFIGS:
         cfg = PRESET_CONFIGS[preset_name]
         track_params["track_mode"] = cfg["track_mode"]
         track_params["flagNewParticles"] = cfg["flagNewParticles"]
         track_params["postprocess"] = cfg["postprocess"]
-        plugins_params["selected_tracking"] = cfg["selected_tracking"]
+        plugins_params["selected_tracking"] = preset_name
+    elif preset_name == "splitter_tracking":
+        plugins_params["selected_tracking"] = "splitter_tracking"
+    elif preset_name == "custom_plugin":
+        if custom_plugin_name:
+            plugins_params["selected_tracking"] = custom_plugin_name
+    else:
+        plugins_params["selected_tracking"] = preset_name
+
+    track_params["preset"] = plugins_params.get("selected_tracking", "default")
 
     return track_params, plugins_params
