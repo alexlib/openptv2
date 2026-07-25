@@ -630,10 +630,21 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#parameter-explanations" class="md-nav__link">
+  <a href="#high-level-presets-preset" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Parameter Explanations
+        High-Level Presets (preset)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#detailed-parameter-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Detailed Parameter Reference
       
     </span>
   </a>
@@ -687,6 +698,56 @@
       
     </span>
   </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#empirical-strategy-benchmark-comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Empirical Strategy Benchmark Comparison
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Empirical Strategy Benchmark Comparison">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#overall-performance-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overall Performance Summary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#trajectory-seed-origin-breakdown-frame-1-vs-mid-sequence-entry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Trajectory Seed Origin Breakdown (Frame 1 vs. Mid-Sequence Entry)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-multi-pass-tracking-is-more-accurate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why Multi-Pass Tracking is More Accurate
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -1251,10 +1312,21 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#parameter-explanations" class="md-nav__link">
+  <a href="#high-level-presets-preset" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Parameter Explanations
+        High-Level Presets (preset)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#detailed-parameter-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Detailed Parameter Reference
       
     </span>
   </a>
@@ -1308,6 +1380,56 @@
       
     </span>
   </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#empirical-strategy-benchmark-comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Empirical Strategy Benchmark Comparison
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Empirical Strategy Benchmark Comparison">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#overall-performance-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overall Performance Summary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#trajectory-seed-origin-breakdown-frame-1-vs-mid-sequence-entry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Trajectory Seed Origin Breakdown (Frame 1 vs. Mid-Sequence Entry)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-multi-pass-tracking-is-more-accurate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why Multi-Pass Tracking is More Accurate
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -1434,22 +1556,61 @@
 <h2 id="2-parameter-reference-parametersyaml">2. Parameter Reference (<code>parameters.yaml</code>)<a class="headerlink" href="#2-parameter-reference-parametersyaml" title="Permanent link">&para;</a></h2>
 <p>Tracking configuration is stored under the <code>track:</code> section of your <code>parameters.yaml</code> file (and in <code>plugins:</code> for algorithm selection).</p>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nt">track</span><span class="p">:</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="nt">dvxmin</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-10.0</span><span class="w">      </span><span class="c1"># Min velocity search step in X [mm/frame]</span>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">  </span><span class="nt">dvxmax</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.0</span><span class="w">       </span><span class="c1"># Max velocity search step in X [mm/frame]</span>
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">  </span><span class="nt">dvymin</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-10.0</span><span class="w">      </span><span class="c1"># Min velocity search step in Y [mm/frame]</span>
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">  </span><span class="nt">dvymax</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.0</span><span class="w">       </span><span class="c1"># Max velocity search step in Y [mm/frame]</span>
-</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">  </span><span class="nt">dvzmin</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-10.0</span><span class="w">      </span><span class="c1"># Min velocity search step in Z [mm/frame]</span>
-</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">  </span><span class="nt">dvzmax</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.0</span><span class="w">       </span><span class="c1"># Max velocity search step in Z [mm/frame]</span>
-</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">  </span><span class="nt">angle</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">120.0</span><span class="w">       </span><span class="c1"># Max angular deviation between steps [gon] (400 gon = 360 deg)</span>
-</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">  </span><span class="nt">dacc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5.0</span><span class="w">          </span><span class="c1"># Max acceleration limit [mm/frame^2]</span>
-</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">  </span><span class="nt">flagNewParticles</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w">  </span><span class="c1"># Allow new unlinked particles to seed new tracks mid-sequence</span>
-</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">  </span><span class="nt">track_mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span><span class="w">      </span><span class="c1"># 0 = Standard (4-frame predictor), 1 = 3D Segment mode</span>
-</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">  </span><span class="nt">postprocess</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w">  </span><span class="c1"># Automatically run Pass 3 post-processing after backward tracking</span>
-</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>
-</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="nt">plugins</span><span class="p">:</span>
-</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="w">  </span><span class="nt">selected_tracking</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span><span class="w">  </span><span class="c1"># Algorithm: &quot;default&quot; (trackcorr), &quot;splitter_tracking&quot;, etc.</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="nt">preset</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;full_multipass&quot;</span><span class="w"> </span><span class="c1"># Preset: &quot;fast_3d&quot;, &quot;standard_forward&quot;, &quot;full_multipass&quot;, or &quot;custom_plugin&quot;</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">  </span><span class="nt">dvxmin</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-10.0</span><span class="w">      </span><span class="c1"># Min velocity search step in X [mm/frame]</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">  </span><span class="nt">dvxmax</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.0</span><span class="w">       </span><span class="c1"># Max velocity search step in X [mm/frame]</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">  </span><span class="nt">dvymin</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-10.0</span><span class="w">      </span><span class="c1"># Min velocity search step in Y [mm/frame]</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">  </span><span class="nt">dvymax</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.0</span><span class="w">       </span><span class="c1"># Max velocity search step in Y [mm/frame]</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">  </span><span class="nt">dvzmin</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-10.0</span><span class="w">      </span><span class="c1"># Min velocity search step in Z [mm/frame]</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">  </span><span class="nt">dvzmax</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.0</span><span class="w">       </span><span class="c1"># Max velocity search step in Z [mm/frame]</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">  </span><span class="nt">angle</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">120.0</span><span class="w">       </span><span class="c1"># Max angular deviation between steps [gon] (400 gon = 360 deg)</span>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">  </span><span class="nt">dacc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5.0</span><span class="w">          </span><span class="c1"># Max acceleration limit [mm/frame^2]</span>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">  </span><span class="nt">flagNewParticles</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w">  </span><span class="c1"># Allow new unlinked particles to seed new tracks mid-sequence</span>
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">  </span><span class="nt">track_mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span><span class="w">      </span><span class="c1"># 0 = Standard (4-frame predictor), 1 = 3D Segment mode</span>
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">  </span><span class="nt">postprocess</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w">  </span><span class="c1"># Automatically run Pass 3 post-processing after backward tracking</span>
+</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>
+</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="nt">plugins</span><span class="p">:</span>
+</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="w">  </span><span class="nt">selected_tracking</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span><span class="w">  </span><span class="c1"># Algorithm: &quot;default&quot; (trackcorr), &quot;splitter_tracking&quot;, etc.</span>
 </span></code></pre></div>
-<h3 id="parameter-explanations">Parameter Explanations<a class="headerlink" href="#parameter-explanations" title="Permanent link">&para;</a></h3>
+<h3 id="high-level-presets-preset">High-Level Presets (<code>preset</code>)<a class="headerlink" href="#high-level-presets-preset" title="Permanent link">&para;</a></h3>
+<p>OpenPTV2 provides high-level preset profiles to simplify pipeline configuration:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Preset Key</th>
+<th style="text-align: left;">Display Name</th>
+<th style="text-align: left;">Pipeline Description</th>
+<th style="text-align: left;">Recommended Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong><code>fast_3d</code></strong></td>
+<td style="text-align: left;">Fast 3D-Only (No added particles)</td>
+<td style="text-align: left;">Single-pass forward tracking (<code>track_mode=1</code>). Uses only 3D coordinates from <code>rt_is.#</code>.</td>
+<td style="text-align: left;">Quick sanity checks, low density / low noise data.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><code>standard_forward</code></strong></td>
+<td style="text-align: left;">Fast Standard (Forward only, with added particles)</td>
+<td style="text-align: left;">Single-pass forward tracking (<code>track_mode=0</code>, <code>flagNewParticles=true</code>).</td>
+<td style="text-align: left;">Fast processing when backward tracking is not required.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><code>full_multipass</code></strong></td>
+<td style="text-align: left;">Standard 3-Pass (Forward + Backward + Post-process)</td>
+<td style="text-align: left;">Full 3-pass pipeline: Forward $\rightarrow$ Backward $\rightarrow$ Pass 3 reciprocity pruning.</td>
+<td style="text-align: left;"><strong>Recommended for maximum accuracy &amp; trajectory recovery.</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><code>custom_plugin</code></strong></td>
+<td style="text-align: left;">Custom Plugin / Splitter</td>
+<td style="text-align: left;">Delegates pipeline execution to a user-specified plugin (e.g. <code>splitter_tracking</code>).</td>
+<td style="text-align: left;">Quad-view splitters or specialized custom tracking algorithms.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="detailed-parameter-reference">Detailed Parameter Reference<a class="headerlink" href="#detailed-parameter-reference" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
@@ -1460,6 +1621,12 @@
 </tr>
 </thead>
 <tbody>
+<tr>
+<td style="text-align: left;"><strong><code>preset</code></strong></td>
+<td style="text-align: left;"><code>str</code></td>
+<td style="text-align: left;"><code>"full_multipass"</code></td>
+<td style="text-align: left;">Active tracking strategy preset (<code>fast_3d</code>, <code>standard_forward</code>, <code>full_multipass</code>, <code>custom_plugin</code>).</td>
+</tr>
 <tr>
 <td style="text-align: left;"><strong><code>dvxmin</code> / <code>dvxmax</code></strong></td>
 <td style="text-align: left;"><code>float</code></td>
@@ -1542,6 +1709,103 @@
 <blockquote>
 <p><strong>Why use Pass 3?</strong> Backward tracking without post-processing can accumulate redundant or non-reciprocal links. Pass 3 ensures that only mutually consistent forward-backward links are retained.</p>
 </blockquote>
+<h3 id="empirical-strategy-benchmark-comparison">Empirical Strategy Benchmark Comparison<a class="headerlink" href="#empirical-strategy-benchmark-comparison" title="Permanent link">&para;</a></h3>
+<p>The tables below show typical trajectory recovery performance across the 3 main tracking strategy presets tested on a standard 4-camera dataset (<code>TT13_aorta</code>, 10 frames, ~1,858 particles/frame):</p>
+<h4 id="overall-performance-summary">Overall Performance Summary<a class="headerlink" href="#overall-performance-summary" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Tracking Preset</th>
+<th style="text-align: left;">Algorithm / Passes</th>
+<th style="text-align: center;">Total Links</th>
+<th style="text-align: center;">Trajectories Count</th>
+<th style="text-align: center;">OVERALL Mean Length</th>
+<th style="text-align: center;">Max Length</th>
+<th style="text-align: center;">Relative Time</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong><code>fast_3d</code></strong></td>
+<td style="text-align: left;">Fast 3D-Only (<code>track_mode=1</code>)</td>
+<td style="text-align: center;">14,010</td>
+<td style="text-align: center;">4,540</td>
+<td style="text-align: center;"><strong>4.09 frames</strong></td>
+<td style="text-align: center;">10</td>
+<td style="text-align: center;"><strong>1.0$\times$</strong> (Fastest)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><code>standard_forward</code></strong></td>
+<td style="text-align: left;">Fast Standard (Forward only)</td>
+<td style="text-align: center;">13,631</td>
+<td style="text-align: center;">4,919</td>
+<td style="text-align: center;"><strong>3.77 frames</strong></td>
+<td style="text-align: center;">10</td>
+<td style="text-align: center;"><strong>1.2$\times$</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><code>full_multipass</code></strong></td>
+<td style="text-align: left;">Standard 3-Pass (Forward + Backward + Postprocess)</td>
+<td style="text-align: center;">13,667</td>
+<td style="text-align: center;">4,883</td>
+<td style="text-align: center;"><strong>3.80 frames</strong></td>
+<td style="text-align: center;">10</td>
+<td style="text-align: center;"><strong>1.8$\times$</strong> (Most Accurate)</td>
+</tr>
+</tbody>
+</table>
+<h4 id="trajectory-seed-origin-breakdown-frame-1-vs-mid-sequence-entry">Trajectory Seed Origin Breakdown (Frame 1 vs. Mid-Sequence Entry)<a class="headerlink" href="#trajectory-seed-origin-breakdown-frame-1-vs-mid-sequence-entry" title="Permanent link">&para;</a></h4>
+<p>To understand why <code>fast_3d</code> shows a higher raw <em>overall</em> mean length than multi-pass tracking, we must inspect trajectories by their <strong>point of origin</strong>:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Tracking Preset</th>
+<th style="text-align: center;">Total Trajectories</th>
+<th style="text-align: center;">Frame 1 Seeds Count</th>
+<th style="text-align: center;">Frame 1 <strong>Mean Length</strong></th>
+<th style="text-align: center;">Mid-Entry Seeds Count</th>
+<th style="text-align: center;">Mid-Entry <strong>Mean Length</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong><code>fast_3d</code></strong></td>
+<td style="text-align: center;">4,540</td>
+<td style="text-align: center;">1,846</td>
+<td style="text-align: center;"><strong>6.80 frames</strong></td>
+<td style="text-align: center;">2,694</td>
+<td style="text-align: center;">2.23 frames</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><code>standard_forward</code></strong></td>
+<td style="text-align: center;">4,919</td>
+<td style="text-align: center;">1,846</td>
+<td style="text-align: center;"><strong>6.69 frames</strong></td>
+<td style="text-align: center;">3,073</td>
+<td style="text-align: center;">2.02 frames</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><code>full_multipass</code></strong></td>
+<td style="text-align: center;">4,883</td>
+<td style="text-align: center;">1,846</td>
+<td style="text-align: center;"><strong>6.72 frames</strong></td>
+<td style="text-align: center;">3,037</td>
+<td style="text-align: center;">2.03 frames</td>
+</tr>
+</tbody>
+</table>
+<h4 id="why-multi-pass-tracking-is-more-accurate">Why Multi-Pass Tracking is More Accurate<a class="headerlink" href="#why-multi-pass-tracking-is-more-accurate" title="Permanent link">&para;</a></h4>
+<ol>
+<li><strong>Mid-Sequence Particle Seeding (<code>flagNewParticles=true</code>)</strong>:</li>
+<li><code>standard_forward</code> and <code>full_multipass</code> seed unlinked particles entering the field of view mid-sequence (frames 2..10), capturing <strong>~379 additional short trajectories</strong> (3,037 vs 2,694).</li>
+<li>Adding these short 1- to 2-frame trajectories near domain boundaries increases the denominator and <strong>drags down the overall arithmetic mean</strong>, even though long trajectories are fully preserved.</li>
+<li><strong>True Trajectory Lengthening (<code>full_multipass</code> vs <code>standard_forward</code>)</strong>:</li>
+<li>Comparing long-term trajectories (Frame 1 seeds): <code>full_multipass</code> increases mean length from <strong>6.69 to 6.72 frames</strong> over forward-only tracking by repairing broken tracks during backward pass (<code>full_backward</code>).</li>
+<li><strong>Pass 3 Reciprocity Pruning</strong>:</li>
+<li><code>full_multipass</code> severs <strong>36 false unidirectional track fragments</strong> (reducing mid-entry count from 3,073 to 3,037) while increasing valid total links (from 13,631 to 13,667).</li>
+<li><strong>Preventing 3D "Cross-Over" Jumps in <code>fast_3d</code></strong>:</li>
+<li><code>fast_3d</code> tracks purely by 3D distance without 2D epipolar or candidate reciprocity checks. In dense regions, it can falsely "cross over" adjacent particles, artificially stitching two distinct tracks together. <code>full_multipass</code> enforces 2D+3D candidate reciprocity, ensuring 100% physical validity.</li>
+</ol>
 <hr />
 <h2 id="4-tracking-algorithms-plugins">4. Tracking Algorithms &amp; Plugins<a class="headerlink" href="#4-tracking-algorithms-plugins" title="Permanent link">&para;</a></h2>
 <p>OpenPTV2 supports extensible tracking algorithms selected via <code>plugins.selected_tracking</code>:</p>
