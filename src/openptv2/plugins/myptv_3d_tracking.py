@@ -1,14 +1,20 @@
 """MyPTV 3D tracking plugin for openptv2.
 
 Implements MyPTV's 3D kinematic prediction tracking algorithm:
+- Reads input reconstructed 3D particle positions from rt_is.# files (Frame objects)
 - 2-frame velocity-bounded initialization
 - Multi-frame polynomial position prediction with acceleration search bounds
-- Hungarian / nearest-neighbor distance matching
+- Hungarian / linear assignment distance matching
+- Writes output trajectory linkages to ptv_is.# files
 """
 
 from __future__ import annotations
+from pathlib import Path
 import numpy as np
 from scipy.optimize import linear_sum_assignment
+from scipy.spatial.distance import cdist
+
+from openptv2.algorithms.tracking_frame_buf import Frame
 
 
 class MyPTV3DTracker:
@@ -64,12 +70,10 @@ class MyPTV3DTracker:
             num_active = len(active_tracks)
 
             if num_active == 0 or num_cands == 0:
-                # Close lost tracks
                 for tr in active_tracks:
                     completed_tracks.append(tr)
                 active_tracks = []
 
-                # Initialize new tracks from candidate points
                 if num_cands > 0:
                     for p in cand_pts:
                         active_tracks.append({
@@ -82,27 +86,24 @@ class MyPTV3DTracker:
                         next_track_id += 1
                 continue
 
-            # Compute predictions and cost matrix
             BIG_COST = 1e9
-            cost_matrix = np.full((num_active, num_cands), BIG_COST, dtype=np.float64)
 
-            for i, tr in enumerate(active_tracks):
-                last_p = tr["pos"][-1]
-                t_len = len(tr["pos"])
+            # Prediction + search radius for every active track at once. A
+            # single-point track has no velocity estimate yet, so it predicts
+            # "no motion" and searches the wider v_max ball; a seeded track
+            # extrapolates its last velocity and searches a_max.
+            last_p = np.array([tr["pos"][-1] for tr in active_tracks])
+            last_v = np.array([tr["vel"][-1] for tr in active_tracks])
+            seeded = np.fromiter(
+                (len(tr["pos"]) > 1 for tr in active_tracks),
+                dtype=bool,
+                count=num_active,
+            )
+            pred = np.where(seeded[:, None], last_p + last_v, last_p)
+            radius = np.where(seeded, self.a_max, self.v_max)
 
-                if t_len == 1:
-                    # 2-frame initialization: search radius = v_max * dt
-                    p_pred = last_p
-                    search_radius = self.v_max * self.dt
-                else:
-                    # Multi-frame prediction: x_pred = x_t + v_t * dt
-                    last_v = tr["vel"][-1]
-                    p_pred = last_p + last_v * self.dt
-                    search_radius = max(self.a_max * (self.dt ** 2), self.v_max * self.dt * 0.5)
-
-                dists = np.linalg.norm(cand_pts - p_pred, axis=1)
-                valid = dists <= search_radius
-                cost_matrix[i, valid] = dists[valid]
+            dists = cdist(pred, cand_pts)
+            cost_matrix = np.where(dists <= radius[:, None], dists, BIG_COST)
 
             row_ind, col_ind = linear_sum_assignment(cost_matrix)
 
@@ -124,7 +125,6 @@ class MyPTV3DTracker:
                     matched_tracks.add(r)
                     matched_cands.add(c)
 
-            # Update unassigned tracks
             new_active = []
             for i, tr in enumerate(active_tracks):
                 if i not in matched_tracks:
@@ -136,7 +136,6 @@ class MyPTV3DTracker:
                 else:
                     new_active.append(tr)
 
-            # Start new tracks for unassigned candidate points
             for c in range(num_cands):
                 if c not in matched_cands:
                     new_active.append({
@@ -152,7 +151,6 @@ class MyPTV3DTracker:
 
         completed_tracks.extend(active_tracks)
 
-        # Convert to final list
         results = []
         for tr in completed_tracks:
             if len(tr["pos"]) >= 2:
@@ -178,6 +176,23 @@ class Tracking:
 
         print("Running MyPTV 3D Kinematic Prediction Tracking Plugin...")
 
+        cpar = getattr(self.exp, "cpar", None)
+        spar = getattr(self.exp, "spar", None)
+        cals = getattr(self.exp, "cals", getattr(self.exp, "cal", []))
+        res_dir = Path(getattr(self.exp, "res_dir", "res"))
+
+        if cpar is not None:
+            num_cams = cpar.num_cams
+        else:
+            num_cams = len(cals) if cals else 4
+
+        if spar is not None:
+            first_frame = spar.get_first()
+            last_frame = spar.get_last()
+        else:
+            first_frame = int(getattr(self.exp, "first_frame", 1))
+            last_frame = int(getattr(self.exp, "last_frame", 1))
+
         pm = getattr(self.exp, "pm", None)
         if pm is None and hasattr(self.exp, "exp1"):
             pm = getattr(self.exp.exp1, "pm", None)
@@ -187,9 +202,85 @@ class Tracking:
         dvxmax = float(track_cfg.get("dvxmax", 10.0))
         dacc = float(track_cfg.get("dacc", 50.0))
 
-        tracker = self.ptv.py_trackcorr_init(self.exp)
-        self.exp.tracker = tracker
+        max_targets = 10000
+        corres_base = str(res_dir / "rt_is")
+        linkage_base = str(res_dir / "ptv_is")
+        prio_base = str(res_dir / "added")
 
-        # Fallback to standard core tracker execution for C++ backend setup
-        tracker.full_forward()
+        frame_numbers = list(range(first_frame, last_frame + 1))
+        num_frames = len(frame_numbers)
+
+        # 1. Fill database using Frame objects reading ONLY input rt_is.# files
+        frames = []
+        frame_particles = []
+        for fn in frame_numbers:
+            frame = Frame(num_cams, max_targets)
+            frame.read(
+                corres_base,  # INPUT: res/rt_is
+                "",           # Do NOT read existing ptv_is as input
+                prio_file_base=prio_base,
+                target_file_base="",
+                frame_num=fn,
+            )
+            frames.append(frame)
+            frame_particles.append(frame.positions())
+
+        # 2. Run MyPTV 3D Kinematic Tracking
+        tracker = MyPTV3DTracker(v_max=dvxmax, a_max=dacc, max_gap=1, dt=1.0)
+        trajectories = tracker.track_frames(frame_particles)
+
+        # 3. Create link assignments on Frame objects
+        for tr in trajectories:
+            times = tr["time"]
+            for step_i in range(len(times) - 1):
+                f_curr = times[step_i]
+                f_next = times[step_i + 1]
+
+                if f_next != f_curr + 1:
+                    continue
+
+                pos_curr = tr["pos"][step_i]
+                pos_next = tr["pos"][step_i + 1]
+
+                pts_curr = frame_particles[f_curr]
+                pts_next = frame_particles[f_next]
+
+                if len(pts_curr) > 0 and len(pts_next) > 0:
+                    idx_curr = np.argmin(np.linalg.norm(pts_curr - pos_curr, axis=1))
+                    idx_next = np.argmin(np.linalg.norm(pts_next - pos_next, axis=1))
+
+                    frames[f_curr].path_next[idx_curr] = idx_next
+                    frames[f_next].path_prev[idx_next] = idx_curr
+
+        # 4. Sync SoA to Pathinfo & Write Frame database out to ptv_is.# (OUTPUT)
+        total_links = 0
+        total_particles = 0
+
+        for f_idx, fn in enumerate(frame_numbers):
+            frame = frames[f_idx]
+            total_particles += frame.num_parts
+
+            frame._sync_soa_to_path()
+            frame.write(
+                corres_base,    # res/rt_is
+                linkage_base,   # OUTPUT: res/ptv_is
+                prio_file_base=prio_base,
+                target_file_base="",
+                frame_num=fn,
+            )
+
+            if f_idx < num_frames - 1:
+                curr_c = frame.num_parts
+                next_c = frames[f_idx + 1].num_parts
+                step_links = np.sum(frame.path_next[:curr_c] >= 0)
+                total_links += step_links
+                lost_c = curr_c - step_links
+                print(f"step: {f_idx + 1}, curr: {curr_c}, next: {next_c}, links: {step_links}, lost: {lost_c}, add: 0")
+
+        n_steps = max(1, num_frames - 1)
+        avg_particles = total_particles / max(1, num_frames)
+        avg_links = total_links / n_steps
+        avg_lost = avg_particles - avg_links
+
+        print(f"Average over sequence, particles: {avg_particles:.1f}, links: {avg_links:.1f}, lost: {avg_lost:.1f}")
         print("MyPTV 3D Tracking completed successfully.")
