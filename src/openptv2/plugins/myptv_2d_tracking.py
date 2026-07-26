@@ -11,11 +11,10 @@ Implements MyPTV's 2D image-space tracking algorithm per camera:
 from __future__ import annotations
 from pathlib import Path
 import numpy as np
-from scipy.optimize import linear_sum_assignment
-from scipy.spatial.distance import cdist
 
 from openptv2.algorithms.tracking_frame_buf import Frame
 from openptv2.algorithms.imgcoord import img_coord_batch
+from openptv2.plugins._assignment import match_within_radius
 
 
 class MyPTV2DTracker:
@@ -79,8 +78,6 @@ class MyPTV2DTracker:
                         next_track_id += 1
                 continue
 
-            BIG_COST = 1e9
-
             # Prediction for every active track at once: a single-point track
             # has no velocity estimate yet and predicts "no motion", a seeded
             # track extrapolates its last pixel displacement.
@@ -93,29 +90,25 @@ class MyPTV2DTracker:
             )
             pred = np.where(seeded[:, None], last_p + last_v, last_p)
 
-            dists = cdist(pred, cands)
-            cost_matrix = np.where(dists <= self.max_pixel_disp, dists, BIG_COST)
-
-            row_ind, col_ind = linear_sum_assignment(cost_matrix)
+            row_ind, col_ind = match_within_radius(pred, cands, self.max_pixel_disp)
 
             matched_cands = set()
             matched_tracks = set()
 
             for r, c in zip(row_ind, col_ind):
-                if cost_matrix[r, c] < BIG_COST / 2:
-                    tr = active_tracks[r]
-                    new_p = cands[c]
-                    dt_eff = f - tr["time"][-1]
-                    v_new = (new_p - tr["pos_2d"][-1]) / max(dt_eff, 1)
+                tr = active_tracks[r]
+                new_p = cands[c]
+                dt_eff = f - tr["time"][-1]
+                v_new = (new_p - tr["pos_2d"][-1]) / max(dt_eff, 1)
 
-                    tr["indices"].append(c)
-                    tr["pos_2d"].append(new_p)
-                    tr["time"].append(f)
-                    tr["vel_2d"].append(v_new)
-                    tr["gap"] = 0
+                tr["indices"].append(c)
+                tr["pos_2d"].append(new_p)
+                tr["time"].append(f)
+                tr["vel_2d"].append(v_new)
+                tr["gap"] = 0
 
-                    matched_tracks.add(r)
-                    matched_cands.add(c)
+                matched_tracks.add(r)
+                matched_cands.add(c)
 
             new_active = []
             for i, tr in enumerate(active_tracks):

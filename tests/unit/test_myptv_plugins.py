@@ -46,6 +46,64 @@ def test_myptv_2d_tracker_synthetic_pixel_motion():
     assert lens == [8, 8]
 
 
+def _reference_match(pred, cands, radius):
+    """Dense big-M assignment — the definition match_within_radius optimises."""
+    from scipy.optimize import linear_sum_assignment
+    from scipy.spatial.distance import cdist
+
+    dists = cdist(pred, cands)
+    in_radius = dists <= np.broadcast_to(radius, (len(pred),))[:, None]
+    if not in_radius.any():
+        return set()
+    big = dists[in_radius].sum() + 1.0
+    rows, cols = linear_sum_assignment(np.where(in_radius, dists, big))
+    keep = in_radius[rows, cols]
+    return set(zip(rows[keep].tolist(), cols[keep].tolist()))
+
+
+@pytest.mark.parametrize("n_pred,n_cand,radius", [
+    (30, 30, 2.0),          # dense path, balanced
+    (30, 5, 2.0),           # dense path, far more tracks than candidates
+    (5, 30, 2.0),           # dense path, far more candidates than tracks
+    (40, 40, 0.05),         # dense path, radius so tight most rows have no edge
+    (450, 450, 1.5),        # over DENSE_CUTOFF -> component-decomposed path
+    (450, 450, 12.0),       # over cutoff, radius wide enough to fuse components
+])
+def test_match_within_radius_equals_dense_reference(n_pred, n_cand, radius):
+    """The KD-tree/component path must agree with the dense formulation."""
+    from openptv2.plugins._assignment import match_within_radius
+
+    rng = np.random.default_rng(7)
+    pred = rng.uniform(-20, 20, size=(n_pred, 3))
+    cands = rng.uniform(-20, 20, size=(n_cand, 3))
+
+    rows, cols = match_within_radius(pred, cands, radius)
+    got = set(zip(rows.tolist(), cols.tolist()))
+    expected = _reference_match(pred, cands, radius)
+
+    # Same number of links, and the same total displacement. Distinct pairings
+    # of equal cost are acceptable; a different link count is not.
+    assert len(got) == len(expected)
+    assert len(set(r for r, _ in got)) == len(got), "a track matched twice"
+    assert len(set(c for _, c in got)) == len(got), "a candidate matched twice"
+
+    def total(pairs):
+        return sum(float(np.linalg.norm(pred[r] - cands[c])) for r, c in pairs)
+
+    assert total(got) == pytest.approx(total(expected))
+
+
+def test_match_within_radius_per_track_radius():
+    """A per-prediction radius must gate each row independently."""
+    from openptv2.plugins._assignment import match_within_radius
+
+    pred = np.array([[0.0, 0.0, 0.0], [10.0, 0.0, 0.0]])
+    cands = np.array([[1.0, 0.0, 0.0], [12.0, 0.0, 0.0]])
+
+    rows, cols = match_within_radius(pred, cands, np.array([5.0, 0.5]))
+    assert set(zip(rows.tolist(), cols.tolist())) == {(0, 0)}
+
+
 def _crowded_frames_3d(n_particles=60, n_frames=15, seed=20260726):
     """Deterministic crowded field: rotation + noise + 5% turnover per frame.
 
