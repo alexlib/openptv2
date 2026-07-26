@@ -817,6 +817,95 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#7-extra-tracking-plugins-myptv-trackers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Extra Tracking Plugins: MyPTV Trackers
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Extra Tracking Plugins: MyPTV Trackers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#available-myptv-plugins" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Available MyPTV Plugins
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-to-use" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to Use
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How to Use">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-in-the-pyptv-gui" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. In the PyPTV GUI
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-in-parametersyaml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. In parameters.yaml
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-in-python-cli-batch-execution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. In Python CLI / Batch Execution
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-developing-custom-tracking-plugins" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Developing Custom Tracking Plugins
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1499,6 +1588,95 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#7-extra-tracking-plugins-myptv-trackers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Extra Tracking Plugins: MyPTV Trackers
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Extra Tracking Plugins: MyPTV Trackers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#available-myptv-plugins" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Available MyPTV Plugins
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-to-use" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to Use
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How to Use">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-in-the-pyptv-gui" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. In the PyPTV GUI
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-in-parametersyaml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. In parameters.yaml
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-in-python-cli-batch-execution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. In Python CLI / Batch Execution
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-developing-custom-tracking-plugins" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Developing Custom Tracking Plugins
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1870,6 +2048,52 @@
 </span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>    <span class="n">tracker</span><span class="o">.</span><span class="n">postprocess</span><span class="p">()</span>
 </span></code></pre></div></li>
 </ol>
+<hr />
+<h2 id="7-extra-tracking-plugins-myptv-trackers">7. Extra Tracking Plugins: MyPTV Trackers<a class="headerlink" href="#7-extra-tracking-plugins-myptv-trackers" title="Permanent link">&para;</a></h2>
+<p>OpenPTV2 provides built-in plugin wrappers for <strong>MyPTV</strong> particle tracking algorithms, making it easy to swap tracking engines without modifying your dataset structure.</p>
+<h3 id="available-myptv-plugins">Available MyPTV Plugins<a class="headerlink" href="#available-myptv-plugins" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Plugin Name</th>
+<th style="text-align: left;">Tracking Level</th>
+<th style="text-align: left;">Algorithm &amp; Features</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong><code>myptv_3d_tracking</code></strong></td>
+<td style="text-align: left;">3D Physical Space</td>
+<td style="text-align: left;">Uses MyPTV's 3D kinematic velocity and acceleration predictor ($\mathbf{X}_{\text{pred}} = \mathbf{X}_t + \mathbf{V}_t \Delta t + \frac{1}{2}\mathbf{A}_t \Delta t^2$) coupled with SciPy Hungarian bipartite assignment (<code>scipy.optimize.linear_sum_assignment</code>) for global collision-free candidate matching and gap recovery.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><code>myptv_2d_tracking</code></strong></td>
+<td style="text-align: left;">2D Pixel Space</td>
+<td style="text-align: left;">Performs 2D frame-to-frame particle trajectory tracking directly in camera image coordinates $(x_i, y_i)$ for each camera view independently. Useful for 2D-PTV or pre-triangulation 2D trajectory stereo matching.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="how-to-use">How to Use<a class="headerlink" href="#how-to-use" title="Permanent link">&para;</a></h3>
+<h4 id="1-in-the-pyptv-gui">1. In the PyPTV GUI<a class="headerlink" href="#1-in-the-pyptv-gui" title="Permanent link">&para;</a></h4>
+<p>In the <strong>Parameters</strong> dialog under <strong>Plugins</strong>, select <strong><code>myptv_3d_tracking</code></strong> or <strong><code>myptv_2d_tracking</code></strong> from the <strong>Tracking Plugin</strong> (<code>track_alg</code>) dropdown menu.</p>
+<h4 id="2-in-parametersyaml">2. In <code>parameters.yaml</code><a class="headerlink" href="#2-in-parametersyaml" title="Permanent link">&para;</a></h4>
+<p>Specify the tracking plugin in your YAML configuration:
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nt">plugins</span><span class="p">:</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">  </span><span class="nt">selected_tracking</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;myptv_3d_tracking&quot;</span><span class="w">  </span><span class="c1"># or &quot;myptv_2d_tracking&quot;</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">  </span><span class="nt">selected_sequence</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;default&quot;</span>
+</span></code></pre></div></p>
+<h4 id="3-in-python-cli-batch-execution">3. In Python CLI / Batch Execution<a class="headerlink" href="#3-in-python-cli-batch-execution" title="Permanent link">&para;</a></h4>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">openptv2.plugins</span><span class="w"> </span><span class="kn">import</span> <span class="n">run_tracking_plugin</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="c1"># Run MyPTV 3D tracking plugin programmatically</span>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="n">run_tracking_plugin</span><span class="p">(</span><span class="s2">&quot;myptv_3d_tracking&quot;</span><span class="p">,</span> <span class="n">experiment</span><span class="p">)</span>
+</span></code></pre></div>
+<hr />
+<h2 id="8-developing-custom-tracking-plugins">8. Developing Custom Tracking Plugins<a class="headerlink" href="#8-developing-custom-tracking-plugins" title="Permanent link">&para;</a></h2>
+<p>To create your own custom 2D or 3D particle tracking plugin or adapt external trackers (such as MyPTV, Trackpy, or custom machine learning models), see the comprehensive developer guide:</p>
+<ul>
+<li><a href="file:///C:/Users/alex/projects/openptv2/docs/developer_guide/custom_tracking_plugins.md"><strong>Developer Guide: Custom Tracking Plugins</strong></a></li>
+</ul>
 
 
 
