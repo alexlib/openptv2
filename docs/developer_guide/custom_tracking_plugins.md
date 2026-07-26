@@ -180,3 +180,55 @@ Custom plugins integrate automatically into the OpenPTV2 GUI:
   plugins:
     selected_tracking: "my_custom_tracker"
   ```
+
+## 7. Performance: Frame-to-Frame Assignment
+
+Linking predictions to candidates is the inner loop of any tracker, and it is
+where a plugin's cost is decided. The MyPTV plugins delegate it to
+`openptv2.plugins._assignment.match_within_radius`, which is reusable by your
+own plugin:
+
+```python
+from openptv2.plugins._assignment import match_within_radius
+
+# radius may be a scalar or one value per prediction
+rows, cols = match_within_radius(pred, candidates, radius)
+for r, c in zip(rows, cols):
+    ...  # every returned pair is within its radius
+```
+
+### Why not a dense Hungarian
+
+The direct formulation builds an `(n_pred, n_cand)` cost matrix with a big-M
+sentinel for out-of-radius pairs and hands it to `linear_sum_assignment`. That
+is exact but O(n³), and the matrix is almost entirely sentinel — a particle
+only ever competes with the handful of candidates inside its search ball.
+
+`match_within_radius` builds only the in-radius edges (KD-tree) and solves each
+connected component of that graph separately. Cross-component pairs are out of
+radius by construction, so the optimum decomposes and the result is **exact**,
+not a heuristic. Below a 150k-cell matrix (`DENSE_CUTOFF`, crossover measured
+at roughly 400×400) it uses the dense path instead, because the KD-tree and
+component analysis cost more than they save on small problems.
+
+### What governs the speedup
+
+Everything depends on the ratio of **search radius to mean nearest-neighbour
+particle spacing**. That ratio sets how connected the radius graph is, and a
+connected graph cannot be decomposed. Measured on a 2000-particle, 50-frame
+synthetic set:
+
+| Radius / spacing | Edges | Components | Largest | Speedup |
+|---|---|---|---|---|
+| 1.1 (3D) | 3.9k | 992 | 60 | 5.7× |
+| 0.96 (2D) | 3.1k | 918 | 52 | 3.7× |
+| 1.5 (2D) | 5.3k | 414 | 227 | 3.6× |
+| 2.2 (2D) | 9.7k | 32 | 4733 | 1.9× |
+| 4.4 (2D) | 32k | **1** | 32021 | 1.5× |
+
+At a ratio above ~2 the graph percolates into one giant component and the
+decomposition stops helping. This is not a limitation to engineer around: a
+radius several times the particle spacing means every prediction has ~15
+plausible candidates, so the *tracking* is ambiguous regardless of how fast the
+assignment runs. If your plugin is slow here, tighten the search bound — it will
+improve both runtime and link quality.
