@@ -8,7 +8,7 @@ image processing, calibration, tracking, and other utilities.
 import os
 import re
 from pathlib import Path
-from typing import List, Tuple
+from typing import List, Tuple, Union
 
 # Third-party imports
 import numpy as np
@@ -124,11 +124,13 @@ def _raise_output_write_error(output_path: Path, exc: OSError) -> None:
     raise OSError(f"Failed to write output file '{output_path}': {exc}") from exc
 
 
-def _ensure_directory_writable(directory: Path, label: str) -> Path:
+def _ensure_directory_writable(directory: Union[str, Path], label: str) -> Path:
     """Create and probe an output directory before writing generated files."""
     directory = Path(directory)
     print(f"Checking {label} directory {directory}")
-    probe_path = _prepare_output_path(str(directory / ".pyptv_write_probe"))
+    probe_path = _prepare_output_path(
+        str(directory / f".pyptv_write_probe_{os.getpid()}")
+    )
 
     try:
         with open(probe_path, "w", encoding="utf-8") as probe_file:

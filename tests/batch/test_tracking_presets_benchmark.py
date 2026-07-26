@@ -104,14 +104,21 @@ def test_tracking_preset_execution_and_benchmark(preset, tmp_path):
         yaml.safe_dump(cfg, f)
 
     t0 = time.perf_counter()
-    run_batch(sandbox_yaml, first_frame, last_frame, mode="tracking")
+    run_batch(sandbox_yaml, first_frame, last_frame, mode="both")
     elapsed = time.perf_counter() - t0
 
     stats = analyze_trajectories(tmp_path / "res", first_frame, last_frame)
     stats["time_sec"] = round(elapsed, 3)
 
-    assert stats["total_links"] > 0, f"Preset {preset} yielded 0 links"
+    # Outcome quality checks: verify that tracking produced healthy link yield and non-trivial trajectories
+    MIN_EXPECTED_LINKS = 500
+    assert (
+        stats["total_links"] >= MIN_EXPECTED_LINKS
+    ), f"Preset {preset} lost too many links! Yielded only {stats['total_links']} links (expected >= {MIN_EXPECTED_LINKS})"
     assert stats["trajectories_count"] > 0, f"Preset {preset} yielded 0 trajectories"
+    assert (
+        stats["mean_length"] >= 1.2
+    ), f"Preset {preset} trajectory mean length too short: {stats['mean_length']} (expected >= 1.2)"
 
     print(
         f"\n[BENCHMARK] Preset: {preset:18s} | Dataset: {'Aorta' if is_aorta else 'Cavity'} | "
@@ -148,7 +155,7 @@ def test_preset_comparison_summary_table(tmp_path, capsys):
             yaml.safe_dump(cfg, f)
 
         t0 = time.perf_counter()
-        run_batch(sandbox_yaml, first_frame, last_frame, mode="tracking")
+        run_batch(sandbox_yaml, first_frame, last_frame, mode="both")
         elapsed = time.perf_counter() - t0
 
         stats = analyze_trajectories(preset_dir / "res", first_frame, last_frame)
@@ -167,3 +174,7 @@ def test_preset_comparison_summary_table(tmp_path, capsys):
 """
     print(table_md)
     assert len(results) == 3
+    for p_name, p_stats in results.items():
+        assert (
+            p_stats["total_links"] >= 500
+        ), f"Preset {p_name} in summary comparison failed link retention: {p_stats['total_links']} links"

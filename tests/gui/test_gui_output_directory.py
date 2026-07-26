@@ -14,7 +14,7 @@ class TestEnsureResDirectoryReady:
 
         assert result == tmp_path / "res"
         assert result.is_dir()
-        assert not (result / ".pyptv_write_probe").exists()
+        assert not list(result.glob(".pyptv_write_probe*"))
         assert "Creating output directory" in output
         assert "is writable" in output
         assert "will overwrite files there" not in output

@@ -170,7 +170,7 @@ def test_image_files_exist(test_cavity_setup):
     for i, base_name in enumerate(base_names[:num_cams]):
         # Format the base name with frame number
         img_name = base_name % first_frame
-        img_path = Path(img_name)
+        img_path = setup["test_cavity_path"] / img_name
 
         assert img_path.exists(), f"Image file does not exist: {img_path.resolve()}"
 

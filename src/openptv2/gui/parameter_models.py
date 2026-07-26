@@ -205,7 +205,7 @@ class ManOriCamera(SectionModel):
 
 class AllParams(SectionModel):
     num_cams: int
-    cal_ori: CalOriParams
+    cal_ori: CalOriParams | None = None
     criteria: CriteriaParams = CriteriaParams()
     detect_plate: DetectPlateParams = DetectPlateParams()
     dumbbell: DumbbellParams = DumbbellParams()
@@ -228,11 +228,31 @@ class AllParams(SectionModel):
     model_config = {"extra": "allow"}
 
     @model_validator(mode="after")
+    def validate_physics_and_ranges(self) -> "AllParams":
+        n = self.num_cams
+        if n is not None and n <= 0:
+            raise ValueError(f"num_cams must be positive, got {n}")
+        if self.ptv.pix_x <= 0 or self.ptv.pix_y <= 0:
+            raise ValueError("ptv pixel sizes (pix_x, pix_y) must be positive")
+        if self.ptv.imx <= 0 or self.ptv.imy <= 0:
+            raise ValueError("ptv image dimensions (imx, imy) must be positive")
+        if self.ptv.mmp_n1 <= 0 or self.ptv.mmp_n2 <= 0 or self.ptv.mmp_n3 <= 0:
+            raise ValueError("ptv refractive indices (mmp_n1, mmp_n2, mmp_n3) must be positive")
+        if self.sequence.first > self.last_frame_or_zero():
+            raise ValueError(
+                f"sequence first frame ({self.sequence.first}) > last frame ({self.sequence.last})"
+            )
+        return self
+
+    def last_frame_or_zero(self) -> int:
+        return self.sequence.last if self.sequence.last != 0 else self.sequence.first
+
+    @model_validator(mode="after")
     def cam_list_lengths(self) -> "AllParams":
         n = self.num_cams
         if n and self.ptv.img_name and len(self.ptv.img_name) != n:
             raise ValueError(f"ptv.img_name length {len(self.ptv.img_name)} != num_cams {n}")
-        if n and self.cal_ori.img_cal_name and len(self.cal_ori.img_cal_name) != n:
+        if n and self.cal_ori and self.cal_ori.img_cal_name and len(self.cal_ori.img_cal_name) != n:
             raise ValueError(
                 f"cal_ori.img_cal_name length {len(self.cal_ori.img_cal_name)} != num_cams {n}"
             )

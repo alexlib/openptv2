@@ -50,7 +50,7 @@ from openptv2.algorithms.parameters import (
 # ---------------------------------------------------------------------------
 # Absolute paths to canned test data
 # ---------------------------------------------------------------------------
-TD = Path("/home/user/Documents/GitHub/openptv2/test_data")
+TD = Path(__file__).resolve().parents[2] / "test_data"
 PARAMS_YAML = TD / "parameters.yaml"
 PARAMS_DIR = TD / "parameters"
 VOLUME_PAR = TD / "volume_parameters" / "volume.par"

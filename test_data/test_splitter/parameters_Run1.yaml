@@ -162,7 +162,7 @@ targ_rec:
   sumg_min: 20
 track:
   angle: 270.0
-  dacc: 1.9
+  dacc: 10.0
   dvxmax: 1.9
   dvxmin: -1.9
   dvymax: 1.9

@@ -149,7 +149,7 @@ class TestOutputHelpers:
 
         assert result == output_dir
         assert output_dir.exists()
-        assert not (output_dir / '.pyptv_write_probe').exists()
+        assert not list(output_dir.glob(".pyptv_write_probe*"))
 
     def test_ensure_target_output_writable_checks_unique_directories(self, tmp_path):
         base_paths = [

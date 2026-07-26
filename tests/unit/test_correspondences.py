@@ -342,7 +342,7 @@ def test_determination_3d_cloud_is_physically_bounded():
 
     ds = Path(__file__).resolve().parents[2] / "test_data" / "test_cavity"
     yaml = ds / "parameters_Run1.yaml"
-    if not yaml.exists() or not (ds / "img_3" / "cam1.0001_targets").exists():
+    if not yaml.exists() or not (ds / "img" / "cam1.10001_targets").exists():
         pytest.skip("test_cavity fixture not available")
 
     cwd = os.getcwd()
@@ -359,7 +359,7 @@ def test_determination_3d_cloud_is_physically_bounded():
 
         detections, corrected = [], []
         for i in range(nc):
-            t = read_targets(f"img_3/cam{i+1}", 1)
+            t = read_targets(f"img/cam{i+1}", 10001)
             if len(t) > 0:
                 t.sort_y()
             detections.append(t)

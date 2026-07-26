@@ -319,7 +319,7 @@ class Tracking_Params(HasTraits):
     def __init__(self, experiment: Experiment):
         super(Tracking_Params, self).__init__()
         self.experiment = experiment
-        tracking_params = experiment.pm.parameters.get("track", {})
+        tracking_params = experiment.pm.get_section("track")
         plugins_params = experiment.pm.parameters.get("plugins", {})
 
         self.dvxmin = float(tracking_params.get("dvxmin", -10.0))

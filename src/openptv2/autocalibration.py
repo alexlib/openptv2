@@ -298,6 +298,39 @@ def _load_dataset_params(base: Path, calblock: Path) -> DatasetParams:
     return DatasetParams(cpar, num_cams, eps, ids_per_cam, clicks_per_cam, "par")
 
 
+def _tpar_from_dataset(base: Path):
+    """Load TargetPar from dataset YAML or legacy targ_rec.par."""
+    from openptv2.algorithms.parameters import TargetPar
+
+    yaml_path = _find_yaml(base)
+    if yaml_path is not None:
+        y = yaml.safe_load(yaml_path.read_text()) or {}
+        tr = y.get("targ_rec") or y.get("detect_plate") or {}
+        if tr:
+            gvthres = tr.get("gvthres") or [
+                tr.get("gvth_1", 10),
+                tr.get("gvth_2", 10),
+                tr.get("gvth_3", 10),
+                tr.get("gvth_4", 10),
+            ]
+            return TargetPar(
+                discont=int(tr.get("disco", tr.get("tol_dis", 100))),
+                nnmin=int(tr.get("nnmin", tr.get("min_npix", 4))),
+                nnmax=int(tr.get("nnmax", tr.get("max_npix", 100))),
+                nxmin=int(tr.get("nxmin", tr.get("min_npix_x", 2))),
+                nxmax=int(tr.get("nxmax", tr.get("max_npix_x", 100))),
+                nymin=int(tr.get("nymin", tr.get("min_npix_y", 2))),
+                nymax=int(tr.get("nymax", tr.get("max_npix_y", 100))),
+                sumg_min=int(tr.get("sumg_min", tr.get("sum_grey", 100))),
+                cr_sz=int(tr.get("cr_sz", tr.get("size_cross", 2))),
+                gvthres=list(map(int, gvthres)),
+            )
+    par = base / "parameters" / "targ_rec.par"
+    if par.exists():
+        return TargetPar.from_file(str(par))
+    return None
+
+
 def calibrate_camera(
     cam: int,
     base: Path,
@@ -321,6 +354,27 @@ def calibrate_camera(
         raise RuntimeError(f"cam{cam + 1}: need 4 seed points, got {pix4.shape[0]}")
 
     pix = read_targets(str(target_base(base, cam)), 0)
+    if not pix:
+        # Auto-detect targets from the calibration image if _targets file is missing
+        tpar = _tpar_from_dataset(base)
+        if tpar is not None and img.exists():
+            from imageio.v3 import imread
+            from skimage.color import rgb2gray
+            from skimage.util import img_as_ubyte
+            from openptv2.algorithms.tracking_frame_buf import write_targets
+            from openptv2.segmentation import target_recognition
+
+            raw_img = imread(img)
+            if raw_img.ndim == 3:
+                raw_img = rgb2gray(raw_img)
+            raw_img = img_as_ubyte(raw_img)
+            from openptv2.image_processing import preprocess_image
+            hp_img = preprocess_image(raw_img, cpar.hp_flag or 1, cpar, 25)
+            detected = target_recognition(hp_img, tpar, cam, cpar)
+            if detected:
+                write_targets(detected, len(detected), str(target_base(base, cam)), 0)
+                pix = read_targets(str(target_base(base, cam)), 0)
+
     if not pix:
         raise RuntimeError(f"cam{cam + 1}: no detected targets found")
 
