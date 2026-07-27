@@ -1,5 +1,8 @@
 """Interactive 3D visualization of particle trajectories using PyVista.
 
+NOTE: This branch fails with PyVista on Windows due to PySide6 / pyvistaqt
+QVTKRenderWindowInteractor integration issues with TraitsUI windows.
+
 Opens a TraitsUI window hosting an embedded, mouse-rotatable PyVista
 3D visualization of particle trajectories read from ptv_is files via flowtracks.
 """
