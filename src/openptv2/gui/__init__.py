@@ -18,13 +18,14 @@ submodule_mapping = {
     "pyptv_batch": "openptv2.batch.pyptv_batch",
     "pyptv_batch_parallel": "openptv2.batch.pyptv_batch_parallel",
     "pyptv_batch_plugins": "openptv2.batch.pyptv_batch_plugins",
+    "parameters": "openptv2.algorithms.parameters",
 }
 
 # The following modules have been flattened directly into openptv2.gui
 gui_submodules = [
     "ptv", "ptv_calibration", "flowtracks_utils", "parameter_manager", "experiment", "cli",
     "parameter_defaults", "parameter_gui", "calibration_gui", "detection_gui", "mask_gui",
-    "code_editor", "tracking_debug_utils", "parameters", "plot_3d_positions", "plot_3d_trajectories"
+    "code_editor", "tracking_debug_utils", "plot_3d_positions", "plot_3d_trajectories"
 ]
 for sub in gui_submodules:
     submodule_mapping[sub] = f"openptv2.gui.{sub}"
