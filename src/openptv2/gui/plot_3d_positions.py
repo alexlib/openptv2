@@ -18,6 +18,22 @@ from traitsui.qt.editor import Editor
 from . import ptv
 
 
+def _get_parent_widget(parent):
+    from PySide6.QtWidgets import QWidget
+
+    if isinstance(parent, QWidget):
+        return parent
+    if hasattr(parent, "parentWidget") and callable(parent.parentWidget):
+        p = parent.parentWidget()
+        if isinstance(p, QWidget):
+            return p
+    if hasattr(parent, "parent") and callable(parent.parent):
+        p = parent.parent()
+        if isinstance(p, QWidget):
+            return p
+    return None
+
+
 class _PyVistaEditor(Editor):
     """Embeds a PyVista QtInteractor inside a TraitsUI Item."""
 
@@ -26,10 +42,11 @@ class _PyVistaEditor(Editor):
     def init(self, parent):
         from pyvistaqt import QtInteractor
 
+        parent_widget = _get_parent_widget(parent)
         if isinstance(self.value, QtInteractor):
             self.control = self.value
         else:
-            interactor = QtInteractor(parent)
+            interactor = QtInteractor(parent=parent_widget)
             if callable(self.value):
                 self.value(interactor)
             self.control = interactor
