@@ -24,7 +24,7 @@ submodule_mapping = {
 gui_submodules = [
     "ptv", "ptv_calibration", "flowtracks_utils", "parameter_manager", "experiment", "cli",
     "parameter_defaults", "parameter_gui", "calibration_gui", "detection_gui", "mask_gui",
-    "code_editor", "tracking_debug_utils", "parameters"
+    "code_editor", "tracking_debug_utils", "parameters", "plot_3d_positions", "plot_3d_trajectories"
 ]
 for sub in gui_submodules:
     submodule_mapping[sub] = f"openptv2.gui.{sub}"

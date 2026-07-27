@@ -881,6 +881,46 @@ class TreeMenuHandler(Handler):
             return
         panel.configure_traits()
 
+    def visualize_3d_trajectories(self, info):
+        """Open an interactive 3D plot of trajectories after tracking (max 50 frames)."""
+        from pyface.api import information, warning
+
+        from .plot_3d_positions import compute_fov_bounds
+        from .plot_3d_trajectories import create_3d_trajectories_panel
+
+        mainGui = info.object
+        seq_params = mainGui.get_parameter("sequence")
+        seq_first = seq_params["first"]
+        seq_last = seq_params["last"]
+
+        res_dir = Path(mainGui.exp_path) / "res"
+        ptv_is_files = list(res_dir.glob("ptv_is.*"))
+        if not ptv_is_files:
+            warning(
+                info.ui.control,
+                f"No 3D trajectory files (ptv_is.*) found in {res_dir}.\n\n"
+                f"Run tracking first to generate trajectories.",
+            )
+            return
+
+        bounds = None
+        try:
+            bounds = compute_fov_bounds(mainGui.vpar, mainGui.cpar, mainGui.cals)
+        except Exception:
+            bounds = None
+
+        panel = create_3d_trajectories_panel(
+            mainGui.exp_path, seq_first, seq_last, bounds=bounds
+        )
+        if panel.figure.axes and not panel.figure.axes[0].lines:
+            information(
+                info.ui.control,
+                f"No 3D trajectories found in frame range {seq_first}..{seq_last}.",
+            )
+            return
+        panel.configure_traits()
+
+
     def detect_part_track(self, info):
         """track detected particles"""
         info.object.clear_plots(remove_background=False)
@@ -1119,6 +1159,11 @@ menu_bar = MenuBar(
         Action(
             name="Save Paraview files",
             action="ptv_is_to_paraview",
+            enabled_when="pass_init",
+        ),
+        Action(
+            name="Visualize 3D trajectories",
+            action="visualize_3d_trajectories",
             enabled_when="pass_init",
         ),
         name="Tracking",
