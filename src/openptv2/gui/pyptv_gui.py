@@ -873,7 +873,7 @@ class TreeMenuHandler(Handler):
             bounds = None
 
         panel = create_3d_positions_panel(rt_is_path, frame, bounds=bounds)
-        if panel.figure.axes and not panel.figure.axes[0].collections:
+        if hasattr(panel, "points") and len(panel.points) == 0:
             information(
                 info.ui.control,
                 f"{rt_is_path} contains no 3D positions to plot.",
@@ -912,7 +912,7 @@ class TreeMenuHandler(Handler):
         panel = create_3d_trajectories_panel(
             mainGui.exp_path, seq_first, seq_last, bounds=bounds
         )
-        if panel.figure.axes and not panel.figure.axes[0].lines:
+        if hasattr(panel, "trajectories") and len(panel.trajectories) == 0:
             information(
                 info.ui.control,
                 f"No 3D trajectories found in frame range {seq_first}..{seq_last}.",

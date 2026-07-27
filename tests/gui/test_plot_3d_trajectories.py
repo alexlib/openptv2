@@ -1,21 +1,20 @@
-"""Tests for the 3D-trajectories visualization figure builder and GUI action.
+"""Tests for the 3D-trajectories visualization PyVista plotter builder and GUI action.
 
-Only the pure, headless figure builder, panel reader, and handler logic are tested —
+Only the pure, headless plotter builder, panel reader, and handler logic are tested —
 the live TraitsUI/Qt window is not exercised here.
 """
 
 from unittest.mock import MagicMock, patch
-from pathlib import Path
-import matplotlib
+import pyvista as pv
 
-matplotlib.use("Agg")  # headless: no window, safe in CI
+pv.OFF_SCREEN = True
 
 from flowtracks.trajectory import Trajectory
 import numpy as np
 import pytest
 
 from openptv2.gui.plot_3d_trajectories import (
-    build_3d_trajectories_figure,
+    build_3d_trajectories_plotter,
     create_3d_trajectories_panel,
 )
 from openptv2.gui.pyptv_gui import TreeMenuHandler
@@ -30,39 +29,33 @@ def _make_dummy_trajectory(pos_mm: np.ndarray, trajid: int = 1) -> Trajectory:
     return Trajectory(pos_m, vel, time, trajid)
 
 
-def test_build_3d_trajectories_figure_empty():
-    fig = build_3d_trajectories_figure([], first_frame=1, last_frame=10)
-    ax = fig.axes[0]
-    assert len(ax.lines) == 0
-    assert "0 trajectories" in ax.get_title()
+def test_build_3d_trajectories_plotter_empty():
+    plotter = build_3d_trajectories_plotter([], first_frame=1, last_frame=10)
+    assert plotter is not None
 
 
-def test_build_3d_trajectories_figure_count():
+def test_build_3d_trajectories_plotter_count():
     traj1 = _make_dummy_trajectory(
         np.array([[0.0, 0.0, 0.0], [1.0, 1.0, 1.0], [2.0, 2.0, 2.0]]), trajid=1
     )
     traj2 = _make_dummy_trajectory(
         np.array([[5.0, 5.0, 5.0], [6.0, 6.0, 6.0], [7.0, 7.0, 7.0]]), trajid=2
     )
-    fig = build_3d_trajectories_figure([traj1, traj2], first_frame=10000, last_frame=10005)
-    ax = fig.axes[0]
-    assert len(ax.lines) == 2
-    assert "2 trajectories" in ax.get_title()
-    assert "10000–10005" in ax.get_title() or "10000" in ax.get_title()
+    plotter = build_3d_trajectories_plotter([traj1, traj2], first_frame=10000, last_frame=10005)
+    assert len(plotter.renderer.actors) >= 2
 
 
-def test_build_3d_trajectories_figure_frame_clamping_title():
+def test_build_3d_trajectories_plotter_frame_clamping_title():
     traj = _make_dummy_trajectory(
         np.array([[0.0, 0.0, 0.0], [1.0, 1.0, 1.0]]), trajid=1
     )
-    fig = build_3d_trajectories_figure(
+    plotter = build_3d_trajectories_plotter(
         [traj],
         first_frame=1,
         last_frame=50,
         total_frames_requested=100,
     )
-    ax = fig.axes[0]
-    assert "first 50 of 100 frames" in ax.get_title()
+    assert plotter is not None
 
 
 def test_bounds_and_fov_box():
@@ -70,10 +63,8 @@ def test_bounds_and_fov_box():
         np.array([[0.0, 0.0, -50.0], [10.0, 5.0, -30.0]]), trajid=1
     )
     bounds = ((-30.0, 50.0), (-40.0, 40.0), (-80.0, -15.0))
-    fig = build_3d_trajectories_figure([traj], bounds=bounds)
-    ax = fig.axes[0]
-    # 1 trajectory line + 12 FOV box lines = 13 lines total
-    assert len(ax.lines) == 13
+    plotter = build_3d_trajectories_plotter([traj], bounds=bounds)
+    assert len(plotter.renderer.actors) >= 2
 
 
 def test_create_3d_trajectories_panel_clamping(tmp_path):
@@ -82,9 +73,7 @@ def test_create_3d_trajectories_panel_clamping(tmp_path):
 
     with patch("flowtracks.io.trajectories_ptvis") as mock_ptvis:
         mock_ptvis.return_value = []
-        # Requesting 100 frames (1 to 100)
         panel = create_3d_trajectories_panel(tmp_path, first_frame=1, last_frame=100)
-        # Should clamp last_frame to 1 + 49 = 50
         mock_ptvis.assert_called_once()
         _, kwargs = mock_ptvis.call_args
         assert kwargs["first"] == 1

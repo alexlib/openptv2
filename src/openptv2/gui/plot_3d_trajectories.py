@@ -1,7 +1,7 @@
-"""Interactive 3D visualization of particle trajectories using flowtracks.
+"""Interactive 3D visualization of particle trajectories using PyVista.
 
-Opens a TraitsUI window hosting an embedded, mouse-rotatable matplotlib
-3D plot of particle trajectories read from ptv_is files via flowtracks.
+Opens a TraitsUI window hosting an embedded, mouse-rotatable PyVista
+3D visualization of particle trajectories read from ptv_is files via flowtracks.
 """
 
 from __future__ import annotations
@@ -12,11 +12,11 @@ from typing import Sequence
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib.figure import Figure
+import pyvista as pv
 from traits.api import HasTraits, Instance
 from traitsui.api import Item, View
 
-from .plot_3d_positions import MPLFigureEditor, _draw_fov_box, compute_fov_bounds
+from .plot_3d_positions import PyVistaEditor, compute_fov_bounds
 
 
 def _extract_xyz_mm(traj) -> np.ndarray:
@@ -26,7 +26,6 @@ def _extract_xyz_mm(traj) -> np.ndarray:
         if callable(p):
             p = p()
         arr = np.asarray(p, dtype=float).reshape(-1, 3)
-        # flowtracks Trajectory positions are stored in meters, convert to mm
         if arr.size > 0 and np.max(np.abs(arr)) < 100.0:
             arr = arr * 1000.0
         return arr
@@ -35,16 +34,17 @@ def _extract_xyz_mm(traj) -> np.ndarray:
         return arr
 
 
-def build_3d_trajectories_figure(
+def build_3d_trajectories_plotter(
     trajectories: Sequence,
     bounds=None,
     first_frame: int | None = None,
     last_frame: int | None = None,
     total_frames_requested: int | None = None,
-) -> Figure:
-    """Build a 3D line plot Figure for particle trajectories.
+    plotter: pv.Plotter | None = None,
+) -> pv.Plotter:
+    """Build a PyVista Plotter displaying 3D particle trajectories.
 
-    Pure function (no window): safe to call under the Agg backend in tests.
+    Pure function: safe to call off-screen in tests or headless environments.
 
     Args:
         trajectories: Sequence of flowtracks Trajectory objects or (N, 3) position arrays.
@@ -52,12 +52,13 @@ def build_3d_trajectories_figure(
         first_frame: first frame number displayed.
         last_frame: last frame number displayed.
         total_frames_requested: total frames requested by user before clamping to 50.
+        plotter: optional existing PyVista Plotter / QtInteractor instance.
 
     Returns:
-        A matplotlib Figure containing a 3D axes with plotted trajectories.
+        The populated PyVista Plotter instance.
     """
-    fig = Figure(figsize=(9, 7))
-    ax = fig.add_subplot(111, projection="3d")
+    if plotter is None:
+        plotter = pv.Plotter(off_screen=True)
 
     num_trajs = len(trajectories) if trajectories is not None else 0
 
@@ -69,33 +70,39 @@ def build_3d_trajectories_figure(
     if num_trajs > 0:
         for idx, traj in enumerate(trajectories):
             pos = _extract_xyz_mm(traj)
-            if pos.shape[0] > 0:
-                color = cmap(idx % 20)
-                ax.plot(
-                    pos[:, 0],
-                    pos[:, 1],
-                    pos[:, 2],
-                    marker="o",
-                    markersize=3,
-                    linewidth=1.5,
-                    color=color,
-                    alpha=0.8,
+            n_pts = pos.shape[0]
+            if n_pts >= 2:
+                rgb = cmap(idx % 20)[:3]
+                line = pv.lines_from_points(pos)
+                plotter.add_mesh(line, color=rgb, line_width=3)
+                plotter.add_mesh(
+                    pv.PolyData(pos),
+                    color=rgb,
+                    point_size=6,
+                    render_points_as_spheres=True,
+                )
+            elif n_pts == 1:
+                rgb = cmap(idx % 20)[:3]
+                plotter.add_mesh(
+                    pv.PolyData(pos),
+                    color=rgb,
+                    point_size=8,
+                    render_points_as_spheres=True,
                 )
 
     if bounds is not None:
         (xlo, xhi), (ylo, yhi), (zlo, zhi) = bounds
-        _draw_fov_box(ax, xlo, xhi, ylo, yhi, zlo, zhi)
-        mx = (xhi - xlo) * 0.05 or 1.0
-        my = (yhi - ylo) * 0.05 or 1.0
-        mz = (zhi - zlo) * 0.05 or 1.0
-        ax.set_xlim(xlo - mx, xhi + mx)
-        ax.set_ylim(ylo - my, yhi + my)
-        ax.set_zlim(zlo - mz, zhi + mz)
-        ax.legend(loc="upper left", fontsize=8)
+        box = pv.Box(bounds=[xlo, xhi, ylo, yhi, zlo, zhi])
+        plotter.add_mesh(
+            box,
+            style="wireframe",
+            color="#d1495b",
+            line_width=2.0,
+            label="field of view",
+        )
 
-    ax.set_xlabel("x (mm)")
-    ax.set_ylabel("y (mm)")
-    ax.set_zlabel("z (mm)")
+    plotter.add_axes(xlabel="x (mm)", ylabel="y (mm)", zlabel="z (mm)")
+    plotter.show_grid(xtitle="x (mm)", ytitle="y (mm)", ztitle="z (mm)")
 
     if first_frame is not None and last_frame is not None:
         if total_frames_requested is not None and total_frames_requested > 50:
@@ -111,17 +118,18 @@ def build_3d_trajectories_figure(
     else:
         title = f"3D trajectories ({num_trajs} trajectories)"
 
-    ax.set_title(title)
-    return fig
+    plotter.add_title(title, font_size=12)
+    plotter.reset_camera()
+    return plotter
 
 
 class Plot3DTrajectories(HasTraits):
-    """TraitsUI window hosting the embedded 3D matplotlib trajectories plot."""
+    """TraitsUI window hosting the embedded 3D PyVista plot for trajectories."""
 
-    figure = Instance(Figure)
+    plotter_builder = Instance(object)
 
     traits_view = View(
-        Item("figure", editor=MPLFigureEditor(), show_label=False),
+        Item("plotter_builder", editor=PyVistaEditor(), show_label=False),
         title="Visualize 3D trajectories",
         resizable=True,
         width=900,
@@ -150,6 +158,7 @@ def create_3d_trajectories_panel(
 
     try:
         from flowtracks.io import trajectories_ptvis
+
         trajectories = trajectories_ptvis(
             ptv_is_pattern,
             first=first_frame,
@@ -160,11 +169,16 @@ def create_3d_trajectories_panel(
     except Exception:
         trajectories = []
 
-    fig = build_3d_trajectories_figure(
-        trajectories,
-        bounds=bounds,
-        first_frame=first_frame,
-        last_frame=effective_last,
-        total_frames_requested=total_frames,
-    )
-    return Plot3DTrajectories(figure=fig)
+    def builder(interactor):
+        build_3d_trajectories_plotter(
+            trajectories,
+            bounds=bounds,
+            first_frame=first_frame,
+            last_frame=effective_last,
+            total_frames_requested=total_frames,
+            plotter=interactor,
+        )
+
+    panel = Plot3DTrajectories(plotter_builder=builder)
+    panel.trajectories = trajectories
+    return panel
