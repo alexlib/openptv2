@@ -39,9 +39,12 @@ classifiers = [
 # `scikit-image` are pulled in by the batch pipeline. No Qt/chaco here.
 dependencies = [
     "cython>=3.0.0,<4",
+    "google-genai>=2.14.0",
     "imageio>=2.19.0",
+    "nbformat>=5.10.4",
     "numpy>=2.0.0",
     "pydantic>=2.13.4",
+    "pydantic-ai-slim>=2.18.0",
     "pyyaml>=6.0",
     "scikit-image>=0.20.0",
     "scipy>=1.10.0",
@@ -76,6 +79,7 @@ rembg = [
 viz = [
     "marimo>=0.19.10",
     "matplotlib>=3.7.0",
+    "wigglystuff>=0.5.22",
 ]
 # Everything a contributor needs: the full GUI, test/lint/type tooling, the
 # marimo notebooks, and the docs toolchain.
