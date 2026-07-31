@@ -12,10 +12,10 @@ Run:  uv run python docs/tutorials/four_view_splitter/make_demo_assets.py
 
 from pathlib import Path
 
-import numpy as np
 import imageio.v3 as iio
 import matplotlib.pyplot as plt
-from matplotlib.patches import Rectangle, FancyArrowPatch
+import numpy as np
+from matplotlib.patches import FancyArrowPatch, Rectangle
 
 HERE = Path(__file__).parent
 IMG = HERE / "images"
