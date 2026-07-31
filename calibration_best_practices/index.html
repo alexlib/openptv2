@@ -13,6 +13,10 @@
       
       
       
+        <link rel="prev" href="../tracking_guide/">
+      
+      
+        <link rel="next" href="../tutorials/batch_processing/">
       
       
         
@@ -23,7 +27,7 @@
     
     
       
-        <title>Multi-folder experiments - OpenPTV2 Documentation</title>
+        <title>Calibration Best Practices - OpenPTV2 Documentation</title>
       
     
     
@@ -74,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#multi-folder-experiments" class="md-skip">
+        <a href="#calibration-best-practices-troubleshooting-guide" class="md-skip">
           Skip to content
         </a>
       
@@ -108,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Multi-folder experiments
+              Calibration Best Practices
             
           </span>
         </div>
@@ -276,10 +280,12 @@
   
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
+      <li class="md-tabs__item md-tabs__item--active">
         <a href="../tracking_guide/" class="md-tabs__link">
           
   
@@ -481,28 +487,31 @@
       
   
   
+    
   
   
+  
     
     
     
     
+      
+        
+        
       
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
         
           
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
-        
-          
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
             
   
   
@@ -520,7 +529,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             
@@ -563,10 +572,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../calibration_best_practices/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Calibration Best Practices
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -582,6 +618,131 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-core-playbook-6-step-calibration-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🚀 The Core Playbook: 6-Step Calibration Workflow
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🚀 The Core Playbook: 6-Step Calibration Workflow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-detect-targets-on-raw-images" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Detect Targets on Raw Images
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-seed-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Seed Verification
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-coarse-to-fine-search-radius-sortgrid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Coarse-to-Fine Search Radius (sortgrid)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-existing-orientation-ori-reuse" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Existing Orientation (.ori) Reuse
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-5-candidate-distortion-model-selection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5: Candidate Distortion Model Selection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-6-joint-plate-bundle-adjustment-rcm-check" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6: Joint Plate Bundle Adjustment &amp; RCM Check
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-view-splitter-rig-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ⚡ 4-View Splitter Rig Considerations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📊 Summary Checklist
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1050,55 +1211,77 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#layout" class="md-nav__link">
+  <a href="#the-core-playbook-6-step-calibration-workflow" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Layout
+        🚀 The Core Playbook: 6-Step Calibration Workflow
       
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#path-resolution-relative-to-the-yaml-not-to-cwd" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Path resolution: relative to the YAML, not to cwd
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#preparing-one-shared-calibration-for-all-runs" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Preparing one shared calibration for all runs
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#preparing-the-yaml-files" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Preparing the YAML files
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Preparing the YAML files">
+    <nav class="md-nav" aria-label="🚀 The Core Playbook: 6-Step Calibration Workflow">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#sample-vs-batch" class="md-nav__link">
+  <a href="#step-1-detect-targets-on-raw-images" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Sample vs. batch
+        Step 1: Detect Targets on Raw Images
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-seed-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Seed Verification
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-coarse-to-fine-search-radius-sortgrid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Coarse-to-Fine Search Radius (sortgrid)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-existing-orientation-ori-reuse" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Existing Orientation (.ori) Reuse
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-5-candidate-distortion-model-selection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5: Candidate Distortion Model Selection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-6-joint-plate-bundle-adjustment-rcm-check" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6: Joint Plate Bundle Adjustment &amp; RCM Check
       
     </span>
   </a>
@@ -1111,10 +1294,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#checking-and-visualizing-the-calibration" class="md-nav__link">
+  <a href="#4-view-splitter-rig-considerations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Checking and visualizing the calibration
+        ⚡ 4-View Splitter Rig Considerations
       
     </span>
   </a>
@@ -1122,10 +1305,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#running" class="md-nav__link">
+  <a href="#summary-checklist" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Running
+        📊 Summary Checklist
       
     </span>
   </a>
@@ -1152,165 +1335,97 @@
   
 
 
-<h1 id="multi-folder-experiments">Multi-folder experiments<a class="headerlink" href="#multi-folder-experiments" title="Permanent link">&para;</a></h1>
-<p>For an experiment that's really several runs sharing one calibration --
-multiple workpieces, repeated trials, whatever your acquisition splits into
-separate frame sequences. See <code>docs/cloud-batch.md</code> first for how a single
-<code>parameters_*.yaml</code> runs; this doc is about organizing and running several of
-them together, and the calibration/YAML-prep steps specific to that.</p>
-<p>This grew out of a real multi-workpiece dataset and the mistakes made
-setting it up -- the checklists below exist because each one bit us once.</p>
-<h2 id="layout">Layout<a class="headerlink" href="#layout" title="Permanent link">&para;</a></h2>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>&lt;experiment_root&gt;/
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>  &lt;shared_calibration&gt;/        one calibration, reused by every run below
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    cam_1.tif ... cam_N.tif            calibration images (what .ori/.addpar were fit to)
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    cam_1.tif.ori ... .addpar          exterior + interior/distortion params, per camera
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    &lt;calblock&gt;.txt                     3D calibration-body point coordinates (id x y z)
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    calib_matches/cam{1..N}_matches.txt   detected-vs-reprojected residuals (optional, enables RMS checks)
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>  run1/ run2/ .../              one per independent run
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    img/                               raw acquisition frames
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    parameters_&lt;name&gt;_sample.yaml      small frame range, for a quick check
-</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    parameters_&lt;name&gt;_batch.yaml       full frame range
-</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>    res/                               sequence/tracking output (created on first run)
-</span></code></pre></div>
-<p><strong>Exactly one YAML pair per run.</strong> If a folder has more than
-<code>*_sample.yaml</code> + <code>*_batch.yaml</code>, one is stale. Cross-check against that
-folder's <code>parameters/*.par</code> (if present -- the GUI's own last-saved state,
-independent of any YAML) to see which one the GUI actually agrees with, and
-remove the other. An ambiguous duplicate left lying around means the next
-person -- or the next agent -- has no way to know which one is live.</p>
-<h2 id="path-resolution-relative-to-the-yaml-not-to-cwd">Path resolution: relative to the YAML, not to cwd<a class="headerlink" href="#path-resolution-relative-to-the-yaml-not-to-cwd" title="Permanent link">&para;</a></h2>
-<p>Both the GUI and <code>openptv2-batch</code> <code>os.chdir()</code> into the YAML file's own
-directory before doing anything else (<code>ParameterManager.from_yaml</code> itself
-does zero path resolution -- it just parses the file; every relative path in
-it is resolved by whatever the process's cwd happens to be when it's used).
-That has two consequences:</p>
+<h1 id="calibration-best-practices-troubleshooting-guide">Calibration Best Practices &amp; Troubleshooting Guide<a class="headerlink" href="#calibration-best-practices-troubleshooting-guide" title="Permanent link">&para;</a></h1>
+<p>This guide compiles practical lessons, best practices, and troubleshooting workflows derived from real-world multi-camera and 4-view optical splitter datasets.</p>
+<hr />
+<h2 id="the-core-playbook-6-step-calibration-workflow">🚀 The Core Playbook: 6-Step Calibration Workflow<a class="headerlink" href="#the-core-playbook-6-step-calibration-workflow" title="Permanent link">&para;</a></h2>
+<p>When calibrating a complex multi-camera or splitter rig in OpenPTV, follow this systematic workflow:</p>
+<pre class="mermaid"><code>graph TD
+    A["1. Raw Image Detection&lt;br&gt;(hp_flag off)"] --&gt; B["2. Seed Verification&lt;br&gt;(4 manual points)"]
+    B --&gt; C["3. Coarse Sortgrid Pass&lt;br&gt;(radius = 15 px)"]
+    C --&gt; D["4. Coarse Exterior Resection&lt;br&gt;(cc, xh, yh)"]
+    D --&gt; E["5. Fine Sortgrid Pass&lt;br&gt;(radius = 5 px)"]
+    E --&gt; F["6. Flag Search &amp; Joint Bundle Adjust&lt;br&gt;(RMS &lt; 1.0 px, RCM &lt; 0.1 mm)"]</code></pre>
+<h3 id="step-1-detect-targets-on-raw-images">Step 1: Detect Targets on Raw Images<a class="headerlink" href="#step-1-detect-targets-on-raw-images" title="Permanent link">&para;</a></h3>
 <ul>
-<li>A YAML living in <code>run1/</code> referencing <code>../&lt;shared_calibration&gt;/cam_1.tif.ori</code>
-  resolves correctly, one level up from <code>run1/</code>.</li>
-<li><strong>Output is also cwd-relative and NOT configurable.</strong> <code>res/rt_is.*</code>,
-  <code>ptv_is.*</code>, <code>added.*</code> are hardcoded relative paths (no YAML field
-  overrides them). If two YAMLs ever share the same parent directory, they
-  write to the <em>same</em> <code>res/</code> and silently clobber each other's results.
-  This is why each run needs <strong>its own folder</strong> -- don't try to save
-  "tidiness" by hoisting multiple runs' YAMLs into one shared directory;
-  that trades a real correctness risk for a cosmetic win. (Parallel
-  execution across runs is still fine -- separate folders means separate
-  cwd means separate <code>res/</code>, safe to run concurrently.)</li>
+<li><strong>Do NOT apply high-pass filtering (<code>hp_flag</code>) to calibration plate images.</strong></li>
+<li>High-pass filtering creates ringing artifacts around bright calibration target dots, shifting the grey-weighted centroid and corrupting subpixel precision.</li>
+<li>High-pass filtering is for dim particle tracking images, not bright calibration plates.</li>
 </ul>
-<h2 id="preparing-one-shared-calibration-for-all-runs">Preparing one shared calibration for all runs<a class="headerlink" href="#preparing-one-shared-calibration-for-all-runs" title="Permanent link">&para;</a></h2>
-<ol>
-<li><strong>Confirm it's actually the same physical rig setup.</strong> Compare exterior
-   camera positions (<code>cam_N.tif.ori</code>, first line: X Y Z in mm) against any
-   calibration already in the target experiment, if one exists. Tens of mm
-   apart in any camera means the rig moved (or it's a different rig/session
-   entirely) -- do not share, calibrate that experiment separately. This is
-   the single most consequential mistake to avoid: a calibration that loads
-   without error and even produces plausible-looking correspondence counts
-   can still be geometrically wrong for the wrong rig -- nothing in the
-   pipeline itself will tell you, you have to check (see below).</li>
-<li><strong>Match the acquisition modality</strong>, not just the rig position. A
-   calibration shot as 4 separate per-camera images (<code>ptv.splitter: false</code>)
-   is not automatically compatible with a run that multiplexes 4 views onto
-   one sensor (<code>ptv.splitter: true</code>) -- the "camera 1/2/3/4" identity in the
-   splitter case comes from <code>splitter_order</code> demuxing a combined frame, and
-   that quadrant-to-camera mapping has to agree with however the
-   calibration images were assigned their camera numbers. If unsure, find
-   evidence of the actual quadrant layout (a splitting script, a preview
-   image, anything that shows which physical quadrant is "camera 1") rather
-   than assuming the existing <code>splitter_order</code> value is correct.</li>
-<li><strong>Same calibration body</strong>, confirmed by diffing the calblock <code>.txt</code> files
-   byte-for-byte, not just by name.</li>
-<li>Once confirmed, point every run's YAML at the shared directory with a
-   relative path (see the layout above) -- don't duplicate the calibration
-   files into every run folder.</li>
-</ol>
-<h2 id="preparing-the-yaml-files">Preparing the YAML files<a class="headerlink" href="#preparing-the-yaml-files" title="Permanent link">&para;</a></h2>
-<p>Per run, starting from a copy of a known-good YAML in this dataset (or
-<code>test_data/test_cavity/parameters_Run1.yaml</code> as a generic template):</p>
+<h3 id="step-2-seed-verification">Step 2: Seed Verification<a class="headerlink" href="#step-2-seed-verification" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong><code>cal_ori</code></strong> (<code>fixp_name</code>, <code>img_cal_name</code>, <code>img_ori</code>) and <strong><code>ptv.img_cal</code></strong>
-  -- point at the shared calibration directory, relative to this YAML's own
-  location (see path resolution above).</li>
-<li><strong><code>man_ori.nr</code></strong> + <strong><code>man_ori_coordinates</code></strong> -- 4 calibration-body point
-  IDs visible in <em>every</em> camera (check each camera's
-  <code>calib_matches/cam{N}_matches.txt</code> -- an ID only appears there if it was
-  detected+matched in that camera; don't assume the same 4 IDs are visible
-  everywhere just because they're a round set like 1/16/32/46), plus their
-  actual per-camera pixel positions -- not copy-pasted from one camera to
-  another. This is the easiest calibration mistake to make silently: the
-  GUI's manual-orientation click doesn't validate that the point you clicked
-  is even the one you meant.</li>
-<li>**<code>sequence.base_name</code> + <code>first</code>/<code>last`` -- check this before anything
-  else if the sequence step fails.** These must match your *actual raw
-  filenames*, not a template default. In splitter mode the loader does</code>Path(base_name % frame)<code>, so</code>base_name<code>needs a real</code>%06d<code>-style
-  placeholder and</code>first<code>/</code>last<code>must be the literal numbers embedded in
-  your filenames. A copy-pasted template value (e.g. a</code>100001<code>-based
-  convention left over from a different naming scheme) fails with</code>FileNotFoundError<code>on the very first frame -- and only when you actually
-  run the sequence step; the calibration/detection GUI panels won't catch
-  it, since they only touch the calibration images. Verify with:
-  <div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>ls<span class="w"> </span>run1/img<span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span><span class="p">|</span><span class="w"> </span>sed<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;1p;$p&#39;</span><span class="w">   </span><span class="c1"># first and last real filename</span>
-</span></code></pre></div>
-  and match</code>sequence.first<code>/</code>last<code>to the numbers actually in those
-  filenames.</code>shaking.shaking_first_frame<code>/</code>shaking_last_frame<code>use the same
-  numbering -- keep them inside</code>[sequence.first, sequence.last]`.</li>
+<li>Select 4 well-spread, unambiguous seed points per camera (<code>man_ori</code>).</li>
+<li>Ensure the initial reprojection overlay lands reasonably near the target dots before proceeding to full bundle adjustment.</li>
 </ul>
-<h3 id="sample-vs-batch">Sample vs. batch<a class="headerlink" href="#sample-vs-batch" title="Permanent link">&para;</a></h3>
-<p>Two YAMLs per run, identical except the frame range:</p>
+<h3 id="step-3-coarse-to-fine-search-radius-sortgrid">Step 3: Coarse-to-Fine Search Radius (<code>sortgrid</code>)<a class="headerlink" href="#step-3-coarse-to-fine-search-radius-sortgrid" title="Permanent link">&para;</a></h3>
 <ul>
-<li><code>parameters_&lt;name&gt;_sample.yaml</code> -- ~10 frames, for a fast GUI or CLI check
-  before committing to a full run.</li>
-<li><code>parameters_&lt;name&gt;_batch.yaml</code> -- the full range.</li>
+<li><strong>The Problem</strong>: Starting directly at a tight search radius ($\text{radius} = 3\text{--}5\text{ px}$) on an unrefined orientation guess drops outer target points and gets trapped in a sparse local minimum ($17\text{--}35$ points matched, $\text{RMS} &gt; 2.0\text{ px}$).</li>
+<li><strong>The Solution</strong>: </li>
+<li>First, execute a <strong>coarse pass</strong> at $\text{radius} = 15\text{ px}$. This captures $70\text{--}80$ target points across the entire plate.</li>
+<li>Fit coarse exterior parameters (<code>cc</code>, <code>xh</code>, <code>yh</code>) to pull the camera pose into global alignment.</li>
+<li>Second, execute the <strong>fine pass</strong> at the target tight radius ($\text{radius} = 5\text{ px}$) to select the clean inlier set at subpixel precision.</li>
 </ul>
-<p>Best-strategy order: fix the calibration and frame-naming issues above
-<em>first</em> (they're silent and easy to miss), then run the sample through the
-GUI and eyeball a tracked-particle overlay, <em>then</em> run the sample headlessly
-with <code>openptv2-batch</code> to confirm the CLI path agrees with what the GUI
-showed you, and only then run the full batch. A batch run just repeats
-whatever the sample did, at scale -- if the sample is wrong, the batch is
-the same wrong thing with more frames.</p>
-<h2 id="checking-and-visualizing-the-calibration">Checking and visualizing the calibration<a class="headerlink" href="#checking-and-visualizing-the-calibration" title="Permanent link">&para;</a></h2>
-<p>Don't rely on reprojection RMS alone -- a bundle adjustment can converge to
-a self-consistent but physically wrong pose (the classic cause: a
-manual-orientation seed click landed on the wrong calibration-body point,
-or a splitter quadrant/camera-identity mismatch per above). Two tools, same
-underlying checks (<code>openptv2.calibration_diagnostics</code>):</p>
-<p><strong>Headless / CI / scripted</strong> -- <code>scripts/calibration_diagnostics.py</code>:
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/calibration_diagnostics.py<span class="w"> </span>--models<span class="w"> </span><span class="s2">&quot;current=&lt;shared_calibration&gt;&quot;</span>
-</span></code></pre></div>
-Prints, per camera: distance to the calibration-body centroid, sight-line
-angle (&gt;15deg off is flagged -- a camera aimed away from the target even
-with good RMS at its matched points), reprojection RMS + match count when
-<code>calib_matches/</code> is present. Exits non-zero if anything is flagged, so it
-can gate a script or CI step. Compare two models (e.g. before/after
-recalibration, or two candidate calibrations) with a second <code>label=path</code> in
-<code>--models</code>.</p>
-<p><strong>Interactive</strong> -- <code>src/openptv2/gui/visualize_calibration_nb.py</code> (marimo
-notebook; needs the <code>viz</code> extra -- <code>uv run --extra viz</code> installs it on
-demand, no permanent dependency change needed for a one-off look):
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>uv<span class="w"> </span>run<span class="w"> </span>--extra<span class="w"> </span>viz<span class="w"> </span>marimo<span class="w"> </span>-y<span class="w"> </span>run<span class="w"> </span>src/openptv2/gui/visualize_calibration_nb.py<span class="w"> </span>--<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span>--models<span class="w"> </span><span class="s2">&quot;current=&lt;shared_calibration&gt;&quot;</span>
-</span></code></pre></div>
-Orbit-able 3D plot of camera poses + calibration body, with the same
-diagnostics rendered as a table below it. Also usable as a Claude Code skill
-(<code>.claude/skills/visualize-calibration/</code>) -- ask to "visualize the
-calibration" / "compare these two calibration models" / "visualize before
-and after full calibration" and it resolves the natural-language request
-into the right <code>--models</code>/<code>--calblock</code> args.</p>
-<h2 id="running">Running<a class="headerlink" href="#running" title="Permanent link">&para;</a></h2>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>scripts/run_pipeline_multi.sh<span class="w"> </span>&lt;experiment_root&gt;<span class="w"> </span>--sample<span class="w">              </span><span class="c1"># quick check, all runs</span>
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>scripts/run_pipeline_multi.sh<span class="w"> </span>&lt;experiment_root&gt;<span class="w"> </span>--sample<span class="w"> </span>--folder<span class="w"> </span>run1<span class="w">  </span><span class="c1"># one run</span>
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>scripts/run_pipeline_multi.sh<span class="w"> </span>&lt;experiment_root&gt;<span class="w">                       </span><span class="c1"># full batch, sequential</span>
-</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>scripts/run_pipeline_multi.sh<span class="w"> </span>&lt;experiment_root&gt;<span class="w"> </span>--parallel<span class="w">            </span><span class="c1"># full batch, concurrent</span>
-</span></code></pre></div>
-<p>Auto-discovers run folders by looking for <code>parameters_Run1_&lt;variant&gt;.yaml</code>
-one level under <code>&lt;experiment_root&gt;</code> (override the prefix with <code>--pattern</code> if
-your YAMLs aren't named <code>parameters_Run1_*</code>). Each run gets its own
-<code>&lt;run&gt;/pipeline_&lt;variant&gt;.log</code> -- check it ends with <code>Batch processing
-completed successfully</code> and that per-frame correspondence counts look
-reasonable (hundreds, not near-zero -- near-zero across every frame usually
-means the calibration or detection thresholds are off, not just noise).</p>
+<h3 id="step-4-existing-orientation-ori-reuse">Step 4: Existing Orientation (<code>.ori</code>) Reuse<a class="headerlink" href="#step-4-existing-orientation-ori-reuse" title="Permanent link">&para;</a></h3>
+<ul>
+<li>When re-calibrating or refining an existing dataset, <strong>reuse the existing <code>.ori</code> files</strong> as the initial guess.</li>
+<li>Resection from 4 manual clicks (<code>external_calibration</code>) is an analytic fallback for bootstrapping from scratch; reusing a previously converged <code>.ori</code> avoids 4-point pose perturbation on complex refractive paths.</li>
+</ul>
+<h3 id="step-5-candidate-distortion-model-selection">Step 5: Candidate Distortion Model Selection<a class="headerlink" href="#step-5-candidate-distortion-model-selection" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Evaluate candidate distortion flag sets greedily by reprojection RMS:</li>
+<li>Base: <code>["cc", "xh", "yh"]</code></li>
+<li>Radial: <code>+ ["k1", "k2"]</code></li>
+<li>Decentering &amp; Higher-order: <code>+ ["k3", "p1", "p2"]</code></li>
+<li>Glass Interface / Splitter Tilt: <code>+ ["interf"]</code></li>
+<li><em>Note</em>: Distortion terms must be initialized from the refined camera pose (<code>copy.deepcopy(cal)</code>), not reset back to the 4-point seed.</li>
+</ul>
+<h3 id="step-6-joint-plate-bundle-adjustment-rcm-check">Step 6: Joint Plate Bundle Adjustment &amp; RCM Check<a class="headerlink" href="#step-6-joint-plate-bundle-adjustment-rcm-check" title="Permanent link">&para;</a></h3>
+<ul>
+<li>After per-camera resection achieves subpixel RMS ($&lt; 1.0\text{ px}$), run <code>joint_plate_bundle_adjust</code> (<code>openptv2.autocalibration</code>).</li>
+<li>Evaluate <strong>Cross-Camera Ray-Convergence Miss (RCM)</strong> distance:</li>
+<li><strong>Reprojection RMS</strong> measures how well each camera reprojects onto its own image plane.</li>
+<li><strong>RCM</strong> measures whether rays from multiple cameras actually intersect in 3D object space.</li>
+<li>Target: <strong>RCM median $&lt; 0.10\text{ mm}$</strong> ($100\ \mu\text{m}$).</li>
+</ul>
+<hr />
+<h2 id="4-view-splitter-rig-considerations">⚡ 4-View Splitter Rig Considerations<a class="headerlink" href="#4-view-splitter-rig-considerations" title="Permanent link">&para;</a></h2>
+<p>On 4-view optical splitter rigs (<code>cal_splitter: true</code>):
+1. <strong>Shared Frame Multiplexing</strong>:
+   - All 4 camera channels share a single physical raw image (e.g. $1024 \times 1024$).
+   - Target recognition splits the frame into four sub-quadrants (e.g. $512 \times 512$).
+2. <strong>Target File Isolation</strong>:
+   - Derived per-camera target filenames (e.g., <code>cam_1.tif_targets</code>, <code>cam_2.tif_targets</code>) are derived from each camera's <code>.ori</code> path rather than the shared image path to prevent target file collisions.
+3. <strong>Refractive Wall / Glass Vector</strong>:
+   - Splitter optical paths often introduce slight keystone distortion due to mirror tilts and glass interfaces.
+   - Enabling the <code>interf</code> flag (glass interface vector tilt) allows the solver to absorb refractive wall tilt that Brown's radial/decentering model cannot represent.</p>
+<hr />
+<h2 id="summary-checklist">📊 Summary Checklist<a class="headerlink" href="#summary-checklist" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Objective</th>
+<th style="text-align: left;">Recommended Setting / Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Image Preprocessing</strong></td>
+<td style="text-align: left;">Raw image detection (<code>hp_flag = 0</code>)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Sortgrid Radius</strong></td>
+<td style="text-align: left;">Coarse ($15\text{ px}$) $\rightarrow$ Fine ($5\text{ px}$)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Outlier Rejection</strong></td>
+<td style="text-align: left;">Drop worst reprojecting points until inlier $\text{RMS} \le 1.0\text{ px}$</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Quality Criteria</strong></td>
+<td style="text-align: left;">Reprojection $\text{RMS} &lt; 1.0\text{ px}$ AND $\text{RCM} &lt; 0.10\text{ mm}$</td>
+</tr>
+</tbody>
+</table>
 
 
 

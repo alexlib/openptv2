@@ -566,6 +566,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../calibration_best_practices/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Calibration Best Practices
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../tutorials/batch_processing/" class="md-nav__link">
         
   
@@ -1184,6 +1212,10 @@
 <p>This page explains how OpenPTV calibrates today, why that leaves a cross-camera
 gap (<a href="../calibration-rms-vs-rcm/">RCM</a>), and how the <strong>joint bundle adjustment</strong>
 closes it — plus the roadmap to a full self-calibration.</p>
+<blockquote>
+<p>[!TIP]
+For a practical step-by-step playbook covering coarse-to-fine <code>sortgrid</code> search radii, 4-view optical splitters, and target detection, see the <a href="../calibration_best_practices/">Calibration Best Practices &amp; Troubleshooting Guide</a>.</p>
+</blockquote>
 <h2 id="1-what-openptv-does-today-per-camera-resection">1. What OpenPTV does today: per-camera resection<a class="headerlink" href="#1-what-openptv-does-today-per-camera-resection" title="Permanent link">&para;</a></h2>
 <p>The default calibration (<code>orient</code> / <code>full_calibration</code>, driven headlessly by
 <code>autocalibration.calibrate_dataset</code>) is <strong>space resection, one camera at a time</strong>:</p>
