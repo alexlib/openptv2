@@ -130,3 +130,7 @@ For an experiment that splits into multiple runs/workpieces on one shared
 calibration -- folder layout, calibration-sharing checklist, YAML prep
 (including the splitter frame-naming gotcha), and `scripts/run_pipeline_multi.sh`
 for running them all -- see `docs/multi-folder-runs.md`.
+
+Running these batches on Google Cloud (Cloud Batch / Cloud Run, GCS sync, the
+sample-run quality gate and the parallel per-run dispatcher) is the job of the
+separate `openptv-cloud` repository -- see its `docs/tutorials/` for setup.

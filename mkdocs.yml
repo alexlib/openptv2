@@ -57,6 +57,7 @@ nav:
   - First Steps: first_steps.md
   - User Guides:
     - Tracking Pipeline & Results: tracking_guide.md
+    - Calibration Best Practices: calibration_best_practices.md
     - Command-Line Batch Processing: tutorials/batch_processing.md
     - Tracking Visualization: tutorials/tracking_visualization.md
     - Debug Visualization: tutorials/tracking_debug_visualization.md

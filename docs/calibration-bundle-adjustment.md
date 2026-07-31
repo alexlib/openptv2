@@ -4,6 +4,9 @@ This page explains how OpenPTV calibrates today, why that leaves a cross-camera
 gap ([RCM](calibration-rms-vs-rcm.md)), and how the **joint bundle adjustment**
 closes it — plus the roadmap to a full self-calibration.
 
+> [!TIP]
+> For a practical step-by-step playbook covering coarse-to-fine `sortgrid` search radii, 4-view optical splitters, and target detection, see the [Calibration Best Practices & Troubleshooting Guide](calibration_best_practices.md).
+
 ## 1. What OpenPTV does today: per-camera resection
 
 The default calibration (`orient` / `full_calibration`, driven headlessly by
