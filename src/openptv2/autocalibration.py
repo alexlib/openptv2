@@ -364,7 +364,7 @@ def calibrate_camera(
             from openptv2.algorithms.tracking_frame_buf import write_targets
             from openptv2.segmentation import target_recognition
 
-            raw_img = imread(img)
+            raw_img = _cam_view(base, cam, imread(img))
             if raw_img.ndim == 3:
                 raw_img = rgb2gray(raw_img)
             raw_img = img_as_ubyte(raw_img)
@@ -384,11 +384,24 @@ def calibrate_camera(
             raise RuntimeError(f"cam{cam + 1}: external_calibration did not converge")
         return c
 
-    # Refine exterior: sortgrid -> fit -> re-sortgrid until matches stabilize.
-    cal = _seeded()
+    # Try existing .ori first if it yields reasonable matches, else fallback to external_calibration seed
+    cal = Calibration.from_file(str(ori), str(addpar))
+    sp_test = sortgrid(cal, cpar, nfix, fix, len(pix), max(15, eps), pix)
+    n_test = sum(1 for t in sp_test if t.pnr >= 0)
+    if n_test < 10:
+        cal = _seeded()
+
+    # Coarse sortgrid pass to align overall plate orientation
+    sp_coarse = sortgrid(cal, cpar, nfix, fix, len(pix), max(15, eps), pix)
+    try:
+        full_calibration(cal, fix, sp_coarse, cpar, ["cc", "xh", "yh"])
+    except (ValueError, RuntimeError):
+        pass
+
+    # Refine exterior at target radius: sortgrid -> fit -> re-sortgrid until matches stabilize.
     sorted_pix = sortgrid(cal, cpar, nfix, fix, len(pix), eps, pix)
     n_matched = sum(1 for t in sorted_pix if t.pnr >= 0)
-    for _ in range(REFINE_ITERS):
+    for _ in range(REFINE_ITERS + 2):
         try:
             full_calibration(cal, fix, sorted_pix, cpar, ["cc", "xh", "yh"])
         except (ValueError, RuntimeError):
@@ -401,10 +414,10 @@ def calibrate_camera(
             break
         n_matched = n
 
-    # Final bundle adjustment: pick the flag-set with lowest reprojection RMS.
+    # Final bundle adjustment: pick the flag-set with lowest reprojection RMS starting from refined cal.
     best = None
     for flags in CANDIDATE_FLAGS:
-        trial = _seeded()
+        trial = copy.deepcopy(cal)
         try:
             full_calibration(trial, fix, sorted_pix, cpar, flags)
         except (ValueError, RuntimeError):
@@ -724,6 +737,25 @@ def joint_plate_bundle_adjust(results, cpar, *, reg_weight=1.0, max_nfev=100,
     return best_results, info
 
 
+def _cam_view(base: Path, cam: int, raw):
+    """The image ONE camera actually sees, given the raw calibration frame.
+
+    On a splitter rig every camera shares the same multiplexed frame but its
+    targets, .ori and reprojections all live in that camera's own 512x512
+    quadrant. Drawing them over the full 1024x1024 raw frame puts every
+    camera's points in the top-left quadrant -- the overlay then looks wrong
+    even when the calibration is right. Detection already splits (see
+    detect_targets.py); this makes the overlay agree with it.
+    """
+    y = yaml.safe_load(_find_yaml(base).read_text()) if _find_yaml(base) else {}
+    ptv = y.get("ptv") or {}
+    if not ptv.get("splitter"):
+        return raw
+    from openptv2.gui.ptv import image_split
+
+    return image_split(raw, order=ptv.get("splitter_order") or [0, 1, 3, 2])[cam]
+
+
 def save_overlay(res: CamResult, base: Path, outdir: Path) -> Path:
     """Save a detected-vs-reprojected overlay PNG for one camera."""
     import matplotlib
@@ -736,7 +768,7 @@ def save_overlay(res: CamResult, base: Path, outdir: Path) -> Path:
     try:
         import imageio.v3 as iio
 
-        ax.imshow(iio.imread(img_path), cmap="gray")
+        ax.imshow(_cam_view(base, res.cam, iio.imread(img_path)), cmap="gray")
     except Exception:
         ax.invert_yaxis()
     ax.scatter(res.det[:, 0], res.det[:, 1], s=40, facecolors="none",
