@@ -9,11 +9,14 @@ Implements MyPTV's 2D image-space tracking algorithm per camera:
 """
 
 from __future__ import annotations
-from pathlib import Path
-import numpy as np
 
-from openptv2.algorithms.tracking_frame_buf import Frame
+from pathlib import Path
+
+import numpy as np
+from scipy.optimize import linear_sum_assignment
+
 from openptv2.algorithms.imgcoord import img_coord_batch
+from openptv2.algorithms.tracking_frame_buf import Frame
 from openptv2.plugins._assignment import match_within_radius
 
 

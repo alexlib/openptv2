@@ -1,46 +1,44 @@
-import os
 import copy
+import os
 import sys
-import yaml
 from pathlib import Path
+
 import numpy as np
-from traits.api import HasTraits, Int, Bool, Instance, List, Enum, Str
-from traitsui.api import (
-    View,
-    Item,
-    ListEditor,
-    Handler,
-    TreeEditor,
-    TreeNode,
-    Separator,
-    VGroup,
-    HGroup,
-    Group,
-    CodeEditor,
-    VSplit,
-)
-from traits.api import File
-from traitsui.api import FileEditor
-from traitsui.menu import Action, Menu, MenuBar
+import yaml
 from chaco.api import ArrayDataSource, ArrayPlotData, LinearMapper, Plot, gray
 from chaco.tools.api import PanTool, ZoomTool
 from chaco.tools.image_inspector_tool import ImageInspectorTool
 from enable.component_editor import ComponentEditor
-from skimage.util import img_as_ubyte
-from skimage.io import imread
 from skimage.color import rgb2gray
-from .experiment import Experiment, Paramset
-from .quiverplot import QuiverPlot
-from .detection_gui import DetectionGUI
-from .mask_gui import MaskGUI
-from .parameter_gui import Main_Params, Calib_Params, Tracking_Params
-from .parameter_manager import ParameterManager
+from skimage.io import imread
+from skimage.util import img_as_ubyte
+from traits.api import Bool, Enum, File, HasTraits, Instance, Int, List, Str
+from traitsui.api import (
+    FileEditor,
+    Handler,
+    HGroup,
+    Item,
+    ListEditor,
+    Separator,
+    TreeEditor,
+    TreeNode,
+    VGroup,
+    View,
+    VSplit,
+)
+from traitsui.menu import Action, Menu, MenuBar
+
 from openptv2 import __version__ as openptv_version
-from . import ptv
 from openptv2.epipolar import epipolar_curve
-from openptv2.imgcoord import image_coordinates
-from openptv2.transforms import convert_arr_metric_to_pixel
+
+from . import ptv
 from .calibration_gui import CalibrationGUI
+from .detection_gui import DetectionGUI
+from .experiment import Experiment, Paramset
+from .mask_gui import MaskGUI
+from .parameter_gui import Calib_Params, Main_Params, Tracking_Params
+from .parameter_manager import ParameterManager
+from .quiverplot import QuiverPlot
 from .tracking_viz_panel import create_tracking_viz_panel
 
 """PyPTV_GUI is the GUI for the OpenPTV (www.openptv.net) written in
@@ -1575,7 +1573,7 @@ class MainGUI(HasTraits):
         Strategy: Find closest matched point in sorted_pos, then draw
         its matched positions in other cameras and search volume for next frames.
         """
-        print(f"[DEBUG] _tracking_debug_click called")
+        print("[DEBUG] _tracking_debug_click called")
 
         if not hasattr(self, "cals") or not self.cals:
             print("[DEBUG] No calibrations available. Run Init first.")
@@ -1649,14 +1647,17 @@ class MainGUI(HasTraits):
 
     def _draw_tracking_debug_matches(self, cam_idx, point, match_idx, pos_type):
         """Draw matched points and search volume for the selected particle."""
+        from openptv2.algorithms.orientation import point_positions
+        from openptv2.algorithms.parameter_converters import (
+            convert_optv_calibrations,
+            get_track_par_tuple,
+        )
+        from openptv2.epipolar import epipolar_curve
+        from openptv2.gui import ptv
         from openptv2.gui.tracking_debug_utils import (
             compute_search_bounds_3d,
             project_search_volume_to_camera,
         )
-        from openptv2.gui import ptv
-        from openptv2.epipolar import epipolar_curve
-        from openptv2.algorithms.parameter_converters import get_track_par_tuple
-        from openptv2.algorithms.orientation import point_positions
 
         params = self.exp1.pm.parameters
         tpar = get_track_par_tuple(params)
@@ -1774,7 +1775,7 @@ class MainGUI(HasTraits):
                     )
 
             print(
-                f"[DEBUG] Search volumes drawn for t+1 (green), t+2 (yellow), t+3 (orange)"
+                "[DEBUG] Search volumes drawn for t+1 (green), t+2 (yellow), t+3 (orange)"
             )
         else:
             print("[DEBUG] Could not triangulate 3D position")
@@ -1784,11 +1785,11 @@ class MainGUI(HasTraits):
 
     def _draw_tracking_debug_visualization(self, tracker, particle_idx, pos_3d):
         """Draw search volumes and candidates for the selected particle."""
+        from openptv2.epipolar import epipolar_curve
         from openptv2.gui.tracking_debug_utils import (
             compute_search_bounds_3d,
             project_search_volume_to_camera,
         )
-        from openptv2.epipolar import epipolar_curve
 
         fb = tracker.run_info.fb
         cpar = tracker.run_info.cpar
@@ -1902,9 +1903,9 @@ class MainGUI(HasTraits):
                     )
 
         print(
-            f"Search volumes drawn for frames t+1 (green), t+2 (yellow), t+3 (orange)"
+            "Search volumes drawn for frames t+1 (green), t+2 (yellow), t+3 (orange)"
         )
-        print(f"Epipolar lines (cyan) from particle to other cameras")
+        print("Epipolar lines (cyan) from particle to other cameras")
 
         for cam in self.camera_list:
             cam._plot.request_redraw()

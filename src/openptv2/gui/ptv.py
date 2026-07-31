@@ -49,7 +49,9 @@ example from Tracker documentation:
 # PyPTV imports
 from . import ptv_calibration
 from .parameter_manager import ParameterManager
-from .ptv_calibration import (
+
+# Re-exported for callers that import them from this module (GUI + tests).
+from .ptv_calibration import (  # noqa: F401
     _read_calibrations,
     clone_calibration,
     full_scipy_calibration,
@@ -1610,5 +1612,3 @@ def read_rt_is_file(filename) -> List[List[float]]:
     except IOError as e:
         print(f"Can't open ascii file: {filename}")
         raise e
-
-    return new_cal
