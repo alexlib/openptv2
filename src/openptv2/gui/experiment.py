@@ -132,25 +132,22 @@ class Experiment(HasTraits):
         if not old_yaml.exists():
             raise FileNotFoundError(f"YAML file for parameter set '{old_name}' does not exist: {old_yaml}")
 
-        # Create new YAML file path
-        new_yaml = old_yaml.parent / f"parameters_{new_name}.yaml"
-        if new_yaml.exists():
+        clean_new = new_name[11:] if new_name.startswith("parameters_") else new_name
+        if old_yaml.name.startswith("parameters_"):
+            new_yaml = old_yaml.parent / f"parameters_{clean_new}.yaml"
+        else:
+            new_yaml = old_yaml.parent / f"{clean_new}{old_yaml.suffix if old_yaml.suffix else '.yaml'}"
+
+        if new_yaml.exists() and new_yaml != old_yaml:
             raise FileExistsError(f"YAML file for new name already exists: {new_yaml}")
 
-        # Rename the YAML file
-        old_yaml.rename(new_yaml)
-        print(f"Renamed YAML file from {old_yaml} to {new_yaml}")
+        if new_yaml != old_yaml:
+            old_yaml.rename(new_yaml)
+            print(f"Renamed YAML file from {old_yaml} to {new_yaml}")
 
         # Update paramset object
-        paramset_obj.name = new_name
+        paramset_obj.name = clean_new
         paramset_obj.yaml_path = new_yaml
-
-        # # Optionally, rename legacy directory if it exists
-        # old_legacy_dir = old_yaml.parent / f"parameters{old_name}"
-        # new_legacy_dir = old_yaml.parent / f"parameters{new_name}"
-        # if old_legacy_dir.exists() and old_legacy_dir.is_dir():
-        #     old_legacy_dir.rename(new_legacy_dir)
-        #     print(f"Renamed legacy directory from {old_legacy_dir} to {new_legacy_dir}")
 
         return paramset_obj, new_yaml
 

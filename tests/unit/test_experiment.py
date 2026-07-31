@@ -34,3 +34,23 @@ def test_save_parameters_removed():
     """save_parameters was the old API — must be gone."""
     assert not hasattr(Experiment, 'save_parameters'), \
         "save_parameters must be removed; use save_active()"
+
+
+def test_rename_paramset(tmp_path):
+    """test_rename_paramset renames the YAML file and updates Paramset metadata."""
+    old_yaml = tmp_path / "parameters_Run1.yaml"
+    old_yaml.write_text("num_cams: 4\n")
+
+    pm = ParameterManager()
+    exp = Experiment(pm=pm)
+    ps = Paramset(name="Run1", yaml_path=old_yaml)
+    exp.paramsets = [ps]
+
+    exp.rename_paramset("Run1", "Run2")
+
+    new_yaml = tmp_path / "parameters_Run2.yaml"
+    assert not old_yaml.exists()
+    assert new_yaml.exists()
+    assert ps.name == "Run2"
+    assert ps.yaml_path == new_yaml
+

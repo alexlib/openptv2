@@ -4,7 +4,7 @@ import sys
 import yaml
 from pathlib import Path
 import numpy as np
-from traits.api import HasTraits, Int, Bool, Instance, List, Enum
+from traits.api import HasTraits, Int, Bool, Instance, List, Enum, Str
 from traitsui.api import (
     View,
     Item,
@@ -528,10 +528,37 @@ class TreeMenuHandler(Handler):
         experiment.addParamset(new_name, new_yaml_path)
 
     def rename_set_params(self, editor, object):
-        print("Warning: This method is not implemented.")
-        print(
-            "Please open a folder, copy/paste the parameters directory, and rename it manually."
-        )
+        """rename_set_params renames the parameter set and its YAML file"""
+        paramset = object
+        experiment = editor.get_parent(object)
+        print(f"Renaming parameter set: {paramset.name}")
+
+        new_name = None
+        # Attempt PySide6 QInputDialog first if Qt is running
+        try:
+            from PySide6.QtWidgets import QInputDialog
+            text, ok = QInputDialog.getText(
+                None, "Rename Parameter Set", "Enter new run name:", text=paramset.name
+            )
+            if ok and text.strip():
+                new_name = text.strip()
+        except Exception:
+            pass
+
+        # Fallback to TraitsUI modal dialog
+        if new_name is None:
+            dlg = RenameRunDialog(new_name=paramset.name)
+            if dlg.configure_traits():
+                new_name = dlg.new_name.strip()
+
+        if new_name and new_name != paramset.name:
+            try:
+                experiment.rename_paramset(paramset.name, new_name)
+                # Force TraitsUI tree view update
+                experiment.trait_set(paramsets=list(experiment.paramsets))
+                print(f"Successfully renamed parameter set to '{new_name}'")
+            except Exception as e:
+                print(f"Error renaming parameter set: {e}")
 
     def delete_set_params(self, editor, object):
         """delete_set_params deletes the node and the YAML file of parameters"""
@@ -1045,6 +1072,18 @@ class TreeMenuHandler(Handler):
         export_ptv_is_to_paraview()
 
 
+class RenameRunDialog(HasTraits):
+    new_name = Str()
+
+    traits_view = View(
+        Item("new_name", label="New Run Name:"),
+        title="Rename Parameter Set",
+        kind="modal",
+        buttons=["OK", "Cancel"],
+        width=350,
+    )
+
+
 # ----------------------------------------------------------------
 # Actions associated with right mouse button clicks (treeeditor)
 # ---------------------------------------------------------------
@@ -1209,6 +1248,7 @@ tree_editor_exp = TreeEditor(
             label="name",
             menu=Menu(
                 CopySetParams,
+                RenameSetParams,
                 DeleteSetParams,
                 Separator(),
                 ConfigMainParams,
