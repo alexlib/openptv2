@@ -24,7 +24,13 @@ from pathlib import Path
 from openptv2.algorithms.calibration import Calibration
 from openptv2.algorithms.sortgrid import read_calblock, sortgrid
 from openptv2.algorithms.tracking_frame_buf import read_targets
-from openptv2.autocalibration import _load_dataset_params, _reproject_px, cam_files, resolve_calblock, target_base
+from openptv2.autocalibration import (
+    _load_dataset_params,
+    _reproject_px,
+    cam_files,
+    resolve_calblock,
+    target_base,
+)
 
 
 def render_overlay(base, cam, img, ids, det, rep, dest):
@@ -72,11 +78,13 @@ def main():
     # multiplexed frame.
     split_views = None
     import yaml as _yaml
+
     from openptv2.autocalibration import _find_yaml
     _yaml_path = _find_yaml(base)
     _ptv_params = _yaml.safe_load(_yaml_path.read_text())["ptv"] if _yaml_path else {}
     if _ptv_params.get("splitter"):
         import imageio.v3 as iio
+
         from openptv2.gui.ptv import image_split
 
         img0_path, _, _ = cam_files(base, 0)

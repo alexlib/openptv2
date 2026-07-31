@@ -1,21 +1,17 @@
-import copy
-import math
 import random
+
 import numpy as np
 import pytest
 
-from openptv2.algorithms.sortgrid import (
-    sortgrid,
-    nearest_neighbour_pix,
-    read_sortgrid_par,
-    read_calblock,
-)
 from openptv2.algorithms.calibration import Calibration
 from openptv2.algorithms.parameters import ControlPar
+from openptv2.algorithms.sortgrid import (
+    nearest_neighbour_pix,
+    read_calblock,
+    read_sortgrid_par,
+    sortgrid,
+)
 from openptv2.algorithms.tracking_frame_buf import Target, read_targets
-from openptv2.algorithms.imgcoord import img_coord
-from openptv2.algorithms.trafo import metric_to_pixel
-from pathlib import Path
 
 
 def _has_optv():
@@ -108,9 +104,9 @@ def test_sortgrid_does_not_mutate_input():
 def test_sortgrid_parity_with_cython():
     """Compare Python sortgrid against C/Cython match_detection_to_ref."""
     from optv.calibration import Calibration as CCalib
+    from optv.orientation import match_detection_to_ref
     from optv.parameters import ControlParams as CControlParams
     from optv.tracking_framebuf import TargetArray
-    from optv.orientation import match_detection_to_ref
 
     xyz_input = np.array(
         [
@@ -201,10 +197,10 @@ def test_sortgrid_parity_with_cython():
 def test_sortgrid_parity_shuffled():
     """Parity test with shuffled targets — mirrors the Cython test pattern."""
     from optv.calibration import Calibration as CCalib
+    from optv.imgcoord import image_coordinates
+    from optv.orientation import match_detection_to_ref
     from optv.parameters import ControlParams as CControlParams
     from optv.tracking_framebuf import TargetArray
-    from optv.orientation import match_detection_to_ref
-    from optv.imgcoord import image_coordinates
     from optv.transforms import convert_arr_metric_to_pixel
 
     xyz_input = np.array(

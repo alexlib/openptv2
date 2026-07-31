@@ -17,7 +17,6 @@ Design constraints
 * Prefer invariants and round-trips over guessed magic values.
 """
 
-from math import sin, cos
 from types import SimpleNamespace
 
 import numpy as np
@@ -26,42 +25,43 @@ import pytest
 # _*_out helpers are @cython.cfunc (cdef) — not importable from compiled .so.
 # Skip whole module when the compiled extension is active.
 from openptv2.algorithms.trafo import is_compiled as _trafo_is_compiled
+
 if _trafo_is_compiled():
     pytest.skip("pure-Python coverage tests only", allow_module_level=True)
 
 from openptv2.algorithms.trafo import (
+    DOUBLED,
+    DOUBLED_PLUS_ONE,
     # Module constants
     NO_REMAP,
-    DOUBLED_PLUS_ONE,
-    DOUBLED,
-    # Safe helpers — take memoryview *out* as parameter (no local C-array)
-    _old_pixel_to_metric_out,
-    _old_metric_to_pixel_out,
-    _distort_brown_affin_core_out,
-    distort_brown_affin_out,
     _correct_brown_affin_out,
     _correct_brown_affine_exact_out,
-    flat_to_dist_out,
-    # Batch / numpy functions (no C-array locals)
-    pixel_to_metric_batch,
-    metric_to_pixel_batch,
-    distort_brown_affine_batch,
+    _distort_brown_affin_core,
+    _distort_brown_affin_core_out,
+    _old_metric_to_pixel_out,
+    # Safe helpers — take memoryview *out* as parameter (no local C-array)
+    _old_pixel_to_metric_out,
+    correct_brown_affin,
     correct_brown_affine_batch,
+    correct_brown_affine_exact,
+    dist_to_flat,
+    dist_to_flat_out,
+    distort_brown_affin,
+    distort_brown_affin_out,
+    distort_brown_affine_batch,
+    flat_to_dist,
+    flat_to_dist_out,
+    # Trivial
+    is_compiled,
+    metric_to_pixel,
+    metric_to_pixel_batch,
+    old_metric_to_pixel,
     # Buggy in pure-Python mode (C-array local declarations).
     # Called only inside try/except to cover the first executable line of each.
     old_pixel_to_metric,
     pixel_to_metric,
-    old_metric_to_pixel,
-    metric_to_pixel,
-    _distort_brown_affin_core,
-    distort_brown_affin,
-    correct_brown_affin,
-    correct_brown_affine_exact,
-    flat_to_dist,
-    dist_to_flat_out,
-    dist_to_flat,
-    # Trivial
-    is_compiled,
+    # Batch / numpy functions (no C-array locals)
+    pixel_to_metric_batch,
 )
 
 EPS = 1e-9

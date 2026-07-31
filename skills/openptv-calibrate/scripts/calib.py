@@ -227,7 +227,6 @@ def _initial_guess(base: Path, cam: int, cpar, pick_ids, clicks, ids_all, xyz_al
 
     from openptv2.algorithms.calibration import Calibration
     from openptv2.algorithms.orientation import external_calibration
-
     from openptv2.autocalibration import cam_files as _resolve_cam_files
 
     _, ori, addpar = _resolve_cam_files(base, cam)
@@ -263,7 +262,7 @@ def cmd_init(args) -> int:
     keeps *.autobck backups).
     """
     from openptv2.algorithms.calibration import Calibration
-    from openptv2.autocalibration import cam_files, _find_yaml
+    from openptv2.autocalibration import _find_yaml, cam_files
 
     base = Path(args.dataset).resolve()
     num_cams = _num_cams(base)
@@ -315,7 +314,8 @@ def cmd_render(args) -> int:
     outdir.mkdir(parents=True, exist_ok=True)
     num_cams = _num_cams(base)
 
-    from openptv2.autocalibration import cam_files as _resolve_cam_files, _find_yaml
+    from openptv2.autocalibration import _find_yaml
+    from openptv2.autocalibration import cam_files as _resolve_cam_files
 
     split_views = None
     yaml_path = _find_yaml(base)
@@ -324,6 +324,7 @@ def cmd_render(args) -> int:
         ptv_params = _yaml.safe_load(yaml_path.read_text())["ptv"]
         if ptv_params.get("splitter"):
             import imageio.v3 as iio
+
             from openptv2.gui.ptv import image_split
             img0_path, _, _ = _resolve_cam_files(base, 0)
             raw = iio.imread(img0_path)
@@ -460,6 +461,7 @@ def cmd_pick(args) -> int:
     yaml_path = _find_yaml(base)
     if yaml_path is not None:
         import yaml as _yaml
+
         from openptv2.autocalibration import _cpar_from_ptv
         ptv_params = _yaml.safe_load(yaml_path.read_text())["ptv"]
         cpar = _cpar_from_ptv(ptv_params, num_cams)
@@ -663,7 +665,10 @@ def cmd_run(args) -> int:
 
     if getattr(args, "suggest_eps0", False):
         from openptv2.autocalibration import (
-            _load_dataset_params, resolve_calblock, suggest_eps0)
+            _load_dataset_params,
+            resolve_calblock,
+            suggest_eps0,
+        )
         base = Path(args.dataset).resolve()
         cpar = _load_dataset_params(base, resolve_calblock(base)).cpar
         cals = [r.cal for r in sorted(ok, key=lambda r: r.cam)]
@@ -690,7 +695,11 @@ def cmd_tracer_selfcal(args) -> int:
 
     from openptv2.algorithms.calibration import Calibration
     from openptv2.autocalibration import (
-        _load_dataset_params, cam_files, resolve_calblock, tracer_self_calibrate)
+        _load_dataset_params,
+        cam_files,
+        resolve_calblock,
+        tracer_self_calibrate,
+    )
 
     base = Path(args.dataset).resolve()
     cpar = _load_dataset_params(base, resolve_calblock(base)).cpar
@@ -738,7 +747,6 @@ def cmd_snapshot_refine(args) -> int:
     from openptv2.algorithms.orientation import full_calibration
     from openptv2.algorithms.tracking_frame_buf import read_targets
     from openptv2.autocalibration import (
-        CANDIDATE_FLAGS,
         _find_yaml,
         _load_dataset_params,
         _reproject_px,

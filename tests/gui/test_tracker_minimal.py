@@ -1,7 +1,9 @@
 import os
 import shutil
-import pytest
 from pathlib import Path
+
+import pytest
+
 from openptv2.gui.parameter_manager import ParameterManager
 from openptv2.gui.ptv import Tracker
 from openptv2.tracker import Tracker, default_naming

@@ -1,12 +1,12 @@
-import pytest
-import numpy as np
 import os
 import shutil
-from pathlib import Path
 
 from openptv2.calibration import Calibration
 from openptv2.parameters import (
-    ControlParams, VolumeParams, TrackingParams, SequenceParams
+    ControlParams,
+    SequenceParams,
+    TrackingParams,
+    VolumeParams,
 )
 from openptv2.tracker import Tracker
 
@@ -55,7 +55,7 @@ def test_tracker_3d_compat_loop():
 
         # Initialize the tracker
         tracker = Tracker(cpar, vpar, tpar, spar, cals)
-        
+
         # Test full forward 3D tracking
         tracker.full_forward_3d()
 

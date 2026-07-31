@@ -1,12 +1,8 @@
-import os
-import numpy as np
-import yaml
 import shutil
 from pathlib import Path
-from algorithms.track import Tracker, default_naming
-from algorithms.parameters import convert_track_par_to_tuple
-from algorithms.tracking_run import TrackingRun
-from algorithms.constants import TR_BUFSPACE, MAX_TARGETS
+
+import yaml
+from algorithms.track import Tracker
 
 CAVITY_DATA = Path("test_data/test_cavity")
 YAML_FILE = CAVITY_DATA / "parameters_Run1.yaml"
@@ -18,6 +14,7 @@ num_cams = params["num_cams"]
 
 # Setup work dir
 import tempfile
+
 work_dir = Path(tempfile.mkdtemp())
 print(f"Work dir: {work_dir}")
 res = work_dir / "res"
@@ -33,7 +30,12 @@ for f in res_orig.iterdir():
 (work_dir / "img").symlink_to(CAVITY_DATA.resolve() / "img", target_is_directory=True)
 
 from algorithms.calibration import read_calibration
-from algorithms.parameter_converters import get_control_par, get_volume_par, get_track_par_tuple, get_sequence_par
+from algorithms.parameter_converters import (
+    get_control_par,
+    get_sequence_par,
+    get_track_par_tuple,
+    get_volume_par,
+)
 
 cpar = get_control_par(params)
 vpar = get_volume_par(params)
@@ -60,7 +62,7 @@ naming = {
 tracker = Tracker(cpar, vpar, tpar, spar, cals, naming)
 tracker.full_forward()
 
-print(f"Results for cavity dataset:")
+print("Results for cavity dataset:")
 counts = []
 for f in sorted(res.iterdir()):
     if f.name.startswith("ptv_is."):

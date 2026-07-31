@@ -36,7 +36,6 @@ from openptv2.algorithms.track_kernels_batch import (  # noqa: E402
     targ_rec_fast,
 )
 
-
 # ── Calibration array builder ─────────────────────────────────────────────────
 # Layout mirrors pack_cal_array() in track_kernels.py:
 #  0-2:   ext x0, y0, z0

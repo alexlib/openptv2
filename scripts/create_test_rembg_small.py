@@ -20,13 +20,12 @@ import csv
 import shutil
 from pathlib import Path
 
-import numpy as np
 import imageio.v2 as imageio
+import numpy as np
 import yaml
 
 from openptv2.algorithms.calibration import Calibration
 from openptv2.algorithms.imgcoord import img_coord_batch
-from openptv2.algorithms.parameters import ControlPar, VolumePar
 from openptv2.algorithms.parameter_converters import get_control_par, get_volume_par
 from openptv2.algorithms.tracking_frame_buf import Target, TargetArray
 from openptv2.correspondences import MatchedCoords, correspondences

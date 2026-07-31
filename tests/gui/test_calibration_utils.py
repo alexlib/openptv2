@@ -3,18 +3,19 @@ Tests for the calibration utilities in pyptv/test_calibration.py
 """
 
 import os
-import pytest
-import numpy as np
 import tempfile
 from pathlib import Path
 
+import numpy as np
+import pytest
+
 # Import the functions from the original file
 from .test_calibration import (
-    read_dt_lsq,
-    read_calblock,
     pair_cal_points,
-    plot_cal_points,
     plot_cal_err_histogram,
+    plot_cal_points,
+    read_calblock,
+    read_dt_lsq,
 )
 
 

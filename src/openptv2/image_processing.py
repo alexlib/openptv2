@@ -1,7 +1,7 @@
 """Streamlined image preprocessing API."""
 
-import numpy as np
 from openptv2.algorithms.image_processing import prepare_image
+
 
 def preprocess_image(img, filter_hp, cpar, lowpass_dim=1, filter_file=None, output=None):
     """
@@ -19,7 +19,7 @@ def preprocess_image(img, filter_hp, cpar, lowpass_dim=1, filter_file=None, outp
         Processed image array
     """
     raw_cpar = cpar._cpar if hasattr(cpar, '_cpar') else cpar
-    
+
     if hasattr(raw_cpar, 'get_image_size'):
         imx, imy = raw_cpar.get_image_size()
     else:

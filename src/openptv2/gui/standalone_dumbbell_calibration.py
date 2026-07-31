@@ -22,16 +22,15 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable, Sequence
+from typing import Sequence
 
 import numpy as np
 from scipy.optimize import least_squares
 
-from openptv2.transforms import convert_arr_pixel_to_metric
-
-from openptv2.gui.parameter_manager import ParameterManager
 from openptv2.gui import ptv
-from openptv2.gui.ptv_calibration import dumbbell_ba_residuals, dumbbell_ba_jac_sparsity
+from openptv2.gui.parameter_manager import ParameterManager
+from openptv2.gui.ptv_calibration import dumbbell_ba_jac_sparsity, dumbbell_ba_residuals
+from openptv2.transforms import convert_arr_pixel_to_metric
 
 
 @dataclass(frozen=True)

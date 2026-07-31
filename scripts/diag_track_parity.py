@@ -1,11 +1,7 @@
-import os
-import numpy as np
-import yaml
 from pathlib import Path
-from algorithms.track import Tracker, default_naming
-from algorithms.parameters import convert_track_par_to_tuple
-from algorithms.tracking_run import TrackingRun
-from algorithms.constants import TR_BUFSPACE, MAX_TARGETS
+
+import yaml
+from algorithms.track import Tracker
 
 TRACK_DATA = Path("test_data/track")
 CONF_YAML = TRACK_DATA / "conf.yaml"
@@ -15,6 +11,7 @@ with open(CONF_YAML) as f:
 
 # Mock some paths
 import tempfile
+
 work_dir = Path(tempfile.mkdtemp())
 res_orig = TRACK_DATA / "res_orig"
 res = work_dir / "res"
@@ -28,7 +25,13 @@ for f in res_orig.iterdir():
 (work_dir / "cal").symlink_to(TRACK_DATA / "cal", target_is_directory=True)
 
 from algorithms.calibration import read_calibration
-from algorithms.parameters import ControlPar, MultimediaPar, SequencePar, VolumePar, TrackParTuple
+from algorithms.parameters import (
+    ControlPar,
+    MultimediaPar,
+    SequencePar,
+    TrackParTuple,
+    VolumePar,
+)
 
 scene = conf["scene"]
 corresp = conf["correspondences"]

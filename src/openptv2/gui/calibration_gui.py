@@ -6,43 +6,40 @@ http://opensource.org/licenses/MIT
 """
 
 import os
-import shutil
 import re
+import shutil
 from pathlib import Path
 from typing import Union
+
 import numpy as np
-from imageio.v3 import imread
-from skimage.util import img_as_ubyte
-from skimage.color import rgb2gray
-
-from traits.api import HasTraits, Str, Int, Bool, Instance, Button
-from traitsui.api import View, Item, HGroup, VGroup, ListEditor
-from enable.component_editor import ComponentEditor
-
 from chaco.api import (
-    Plot,
     ArrayPlotData,
+    Plot,
     gray,
 )
-
-from chaco.tools.image_inspector_tool import ImageInspectorTool
 from chaco.tools.better_zoom import BetterZoom as SimpleZoom
+from chaco.tools.image_inspector_tool import ImageInspectorTool
+from enable.component_editor import ComponentEditor
+from imageio.v3 import imread
+from skimage.color import rgb2gray
+from skimage.util import img_as_ubyte
+from traits.api import Bool, Button, HasTraits, Instance, Int, Str
+from traitsui.api import HGroup, Item, ListEditor, VGroup, View
 
-from .text_box_overlay import TextBoxOverlay
-from .code_editor import oriEditor, addparEditor
-
-
-from openptv2.imgcoord import image_coordinates
-from openptv2.transforms import convert_arr_metric_to_pixel
-from openptv2.orientation import match_detection_to_ref
-from openptv2.orientation import external_calibration, full_calibration
 from openptv2.calibration import Calibration
+from openptv2.imgcoord import image_coordinates
+from openptv2.orientation import (
+    external_calibration,
+    full_calibration,
+    match_detection_to_ref,
+)
 from openptv2.tracking_framebuf import TargetArray
-
+from openptv2.transforms import convert_arr_metric_to_pixel
 
 from . import ptv
+from .code_editor import addparEditor, oriEditor
 from .experiment import Experiment
-
+from .text_box_overlay import TextBoxOverlay
 
 # recognized names for the flags:
 NAMES = ["cc", "xh", "yh", "k1", "k2", "k3", "p1", "p2", "scale", "shear", "interf"]
@@ -129,8 +126,8 @@ class PlotWindow(HasTraits):
                 # self.py_rclick_delete(
                 #     self._click_tool.x, self._click_tool.y, self.cameraN
                 # )
-                # 
-                # 
+                #
+                #
                 # x = []
                 # y = []
                 # self.py_get_pix_N(x, y, self.cameraN)
@@ -283,7 +280,7 @@ class CalibrationGUI(HasTraits):
         pm.from_yaml(self.yaml_path)
         self.experiment = Experiment(pm=pm)
         self.experiment.populate_runs(self.working_folder, active_yaml=self.yaml_path)
-        
+
         ptv_params = self.experiment.get_parameter('ptv')
         if ptv_params is None:
             raise ValueError("Failed to load PTV parameters")
@@ -299,7 +296,7 @@ class CalibrationGUI(HasTraits):
 
         # Initialize detections to prevent AttributeError
         self.detections = None
-        
+
         self.camera = [PlotWindow() for i in range(self.num_cams)]
         for i in range(self.num_cams):
             self.camera[i].name = f"Camera{i + 1}"
@@ -436,7 +433,7 @@ class CalibrationGUI(HasTraits):
                         show_label=False,
                         enabled_when="pass_init",
                         width=LEFT_PANEL_ITEM_WIDTH,
-                    ),                   
+                    ),
                     Item(
                         label="Split into 4 views?",
                         show_label=False,
@@ -474,7 +471,7 @@ class CalibrationGUI(HasTraits):
 
     def _button_edit_cal_parameters_fired(self):
         from .parameter_gui import Calib_Params
-        
+
         # Create and show the calibration parameters GUI
         calib_params_gui = Calib_Params(experiment=self.experiment)
         calib_params_gui.edit_traits(view='Calib_Params_View', kind='livemodal')
@@ -565,11 +562,11 @@ class CalibrationGUI(HasTraits):
         # Get parameter dictionaries for py_detection_proc_c
         ptv_params = self.get_parameter('ptv')
         target_params_dict = {'detect_plate': self.get_parameter('detect_plate')}
-        
+
         self.detections, corrected = ptv.py_detection_proc_c(
             self.num_cams,
-            self.cal_images, 
-            ptv_params, 
+            self.cal_images,
+            ptv_params,
             target_params_dict
         )
 
@@ -584,7 +581,6 @@ class CalibrationGUI(HasTraits):
     def _button_manual_fired(self):
         """Manual orientation of cameras by clicking on 4 points"""
 
-        import filecmp
 
         print("Start manual orientation, click 4 times in 4 cameras and then press this button again")
         points_set = True
@@ -617,7 +613,7 @@ class CalibrationGUI(HasTraits):
                         'x': float(self.camera[i]._x[j]),
                         'y': float(self.camera[i]._y[j])
                     }
-            
+
             # Update only the man_ori_coordinates section in YAML
             self.experiment.pm.parameters['man_ori_coordinates'] = man_ori_coords
             self._save_man_ori_coordinates()
@@ -646,16 +642,16 @@ class CalibrationGUI(HasTraits):
 
         # Load from YAML instead of man_ori.dat
         man_ori_coords = self.experiment.pm.parameters.get('man_ori_coordinates', {})
-        
+
         if not man_ori_coords:
             self.status_text = "No manual orientation coordinates found in YAML parameters."
             return
-        
+
         for i in range(self.num_cams):
             cam_key = f'camera_{i}'
             self.camera[i]._x = []
             self.camera[i]._y = []
-            
+
             if cam_key in man_ori_coords:
                 for j in range(4):
                     point_key = f'point_{j + 1}'
@@ -1173,7 +1169,7 @@ class CalibrationGUI(HasTraits):
         self._backup_ori_files()
         ptv.py_calibration(12, self)
 
-        self.status_text = "Orientation with dumbbell finished."        
+        self.status_text = "Orientation with dumbbell finished."
 
     def _button_restore_orient_fired(self):
         """ Restores original orientation files from backup."""

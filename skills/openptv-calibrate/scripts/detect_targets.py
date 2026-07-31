@@ -20,15 +20,14 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "src"))
 
-import numpy as np
-from skimage.io import imread
+import yaml
 from skimage.color import rgb2gray
+from skimage.io import imread
 from skimage.util import img_as_ubyte
 
+from openptv2.algorithms.tracking_frame_buf import write_targets
 from openptv2.autocalibration import _find_yaml, cam_files, target_base
 from openptv2.gui.ptv import py_detection_proc_c
-from openptv2.algorithms.tracking_frame_buf import write_targets
-import yaml
 
 
 def main() -> int:

@@ -11,7 +11,7 @@ Verification command (run from repo root):
       --cov=/tmp/ppsrc/openptv2 \
       --cov-config=/tmp/covrc \
       --cov-report=term-missing \
-      -q 2>&1 | grep -E '(algorithms/track\.|TOTAL|passed|failed|error)'
+      -q 2>&1 | grep -E '(algorithms/track\\.|TOTAL|passed|failed|error)'
 """
 
 import os
@@ -27,6 +27,17 @@ if _is_compiled():
     pytest.skip("pure-Python coverage tests only", allow_module_level=True)
 
 import openptv2.algorithms.track as _track_mod
+from openptv2.algorithms.calibration import Calibration
+from openptv2.algorithms.constants import (
+    COORD_UNUSED,
+    PT_UNUSED,
+    TR_UNUSED,
+)
+from openptv2.algorithms.parameters import (
+    ControlPar,
+    TrackParTuple,
+    VolumePar,
+)
 from openptv2.algorithms.track import (
     MAX_CANDS,
     _make_foundpix,
@@ -60,17 +71,6 @@ from openptv2.algorithms.track import (
     trackback_c,
     trackcorr_c_finish,
     trackcorr_c_loop,
-)
-from openptv2.algorithms.calibration import Calibration
-from openptv2.algorithms.constants import (
-    COORD_UNUSED,
-    PT_UNUSED,
-    TR_UNUSED,
-)
-from openptv2.algorithms.parameters import (
-    ControlPar,
-    TrackParTuple,
-    VolumePar,
 )
 from openptv2.algorithms.tracking_frame_buf import Frame, Target
 

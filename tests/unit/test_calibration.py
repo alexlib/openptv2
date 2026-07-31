@@ -1,7 +1,14 @@
 import os
+
 import numpy as np
-import pytest
-from openptv2.algorithms.calibration import Calibration, Exterior, Interior, Glass, AddedPar
+
+from openptv2.algorithms.calibration import (
+    AddedPar,
+    Calibration,
+    Exterior,
+    Glass,
+    Interior,
+)
 
 EPS = 1e-6
 
@@ -22,7 +29,7 @@ def make_test_cal():
     int_par = Interior(xh=-2.4742, yh=3.2567, cc=100.0000)
     glass = Glass(vec_x=0.0001, vec_y=0.00001, vec_z=150.0)
     addp = AddedPar(k1=0., k2=0., k3=0., p1=0., p2=0., scx=1., she=0.)
-    
+
     cal = Calibration(ext_par=ext, int_par=int_par, glass_par=glass, added_par=addp)
     cal.ext_par.compute_rotation_matrix()
     return cal
@@ -31,9 +38,9 @@ def test_read_ori():
     correct_cal = make_test_cal()
     ori_file = "test_data/calibration/cam1.tif.ori"
     add_file = "test_data/calibration/cam1.tif.addpar"
-    
+
     cal = Calibration.from_file(ori_file, add_file)
-    
+
     assert np.allclose(cal.ext_par.x0, correct_cal.ext_par.x0)
     assert np.allclose(cal.ext_par.y0, correct_cal.ext_par.y0)
     assert np.allclose(cal.ext_par.z0, correct_cal.ext_par.z0)
@@ -45,7 +52,7 @@ def test_read_ori():
     assert np.allclose(cal.int_par.xh, correct_cal.int_par.xh)
     assert np.allclose(cal.int_par.yh, correct_cal.int_par.yh)
     assert np.allclose(cal.int_par.cc, correct_cal.int_par.cc)
-    
+
     assert np.allclose(cal.glass_par.vec_x, correct_cal.glass_par.vec_x)
     assert np.allclose(cal.glass_par.vec_y, correct_cal.glass_par.vec_y)
     assert np.allclose(cal.glass_par.vec_z, correct_cal.glass_par.vec_z)
@@ -62,11 +69,11 @@ def test_write_ori():
     correct_cal = make_test_cal()
     ori_file = "test_data/test.ori"
     add_file = "test_data/test.addpar"
-    
+
     correct_cal.to_file(ori_file, add_file)
-    
+
     cal = Calibration.from_file(ori_file, add_file)
-    
+
     assert np.allclose(cal.ext_par.x0, correct_cal.ext_par.x0)
     assert np.allclose(cal.ext_par.dm, correct_cal.ext_par.dm, atol=1e-6)
 

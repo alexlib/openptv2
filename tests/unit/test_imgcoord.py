@@ -1,8 +1,14 @@
 import math
-import numpy as np
-import pytest
 
-from openptv2.algorithms.calibration import Calibration, Exterior, Interior, Glass, AddedPar
+import numpy as np
+
+from openptv2.algorithms.calibration import (
+    AddedPar,
+    Calibration,
+    Exterior,
+    Glass,
+    Interior,
+)
 from openptv2.algorithms.imgcoord import flat_image_coord, img_coord
 from openptv2.algorithms.parameters import MmNp
 

@@ -9,21 +9,20 @@ Draws a vector or "quiver" plot of a set of random points.
 """
 
 # Major library imports
-from numpy import array, sort
-from numpy.random import random
-
-# Enthought library imports
-from enable.api import Component, ComponentEditor
-from traits.api import HasTraits, Instance, Int
-from traitsui.api import Item, View
-
 # Chaco imports
 from chaco.api import (
     ArrayPlotData,
-    Plot,
     OverlayPlotContainer,
+    Plot,
 )
 from chaco.tools.api import PanTool, ZoomTool
+
+# Enthought library imports
+from enable.api import Component, ComponentEditor
+from numpy import array, sort
+from numpy.random import random
+from traits.api import HasTraits, Instance, Int
+from traitsui.api import Item, View
 
 
 class PlotExample(HasTraits):

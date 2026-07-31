@@ -4,25 +4,23 @@ __generated_with = "0.20.2"
 app = marimo.App(width="full")
 
 with app.setup:
-    import marimo as mo
-    from openptv2 import epipolar_curve
-    from openptv2 import image_coordinates
-    from openptv2 import convert_arr_metric_to_pixel
-    from openptv2 import preprocess_image
-    from openptv2 import Calibration
-
-    from openptv2.gui.pyptv.parameter_manager import ParameterManager
-    from openptv2.gui.pyptv.experiment import Experiment
     from pathlib import Path
-    import matplotlib.pyplot as plt
-    import imageio.v3 as iio
-    import numpy as np
-    import matplotlib
-    from openptv2 import ControlParams, VolumeParams
-    from openptv2.gui.pyptv import ptv
 
-    from openptv2 import target_recognition
-    from openptv2 import MatchedCoords, correspondences
+    import imageio.v3 as iio
+    import marimo as mo
+    import matplotlib.pyplot as plt
+    import numpy as np
+    from openptv2.gui.pyptv import ptv
+    from openptv2.gui.pyptv.experiment import Experiment
+    from openptv2.gui.pyptv.parameter_manager import ParameterManager
+
+    from openptv2 import (
+        Calibration,
+        MatchedCoords,
+        correspondences,
+        epipolar_curve,
+        target_recognition,
+    )
 
 
 @app.cell
@@ -83,7 +81,7 @@ def _(num_cams, pm, yaml_path):
         # wait, the output of cal_ori shows img_ori: ['cal/run3/cam1.tif.ori', ...]
         ori_file_path = base_path / ori_names[i]
 
-        # In PTV, addpar file has .addpar extension but what is the exact name? 
+        # In PTV, addpar file has .addpar extension but what is the exact name?
         # Usually it's base name + .addpar, i.e., without .tif.ori?
         # Let's just check if it's ori_names[i] replacing .tif.ori with .addpar
         # or .ori with .addpar
@@ -252,7 +250,7 @@ def _(cals, cpar, images, num_cams, sorted_pos, vpar):
                     valid_mask_corr = (pts_epipolar_corr[:, 0] >= 0) & (pts_epipolar_corr[:, 0] <= img_w) & \
                                  (pts_epipolar_corr[:, 1] >= 0) & (pts_epipolar_corr[:, 1] <= img_h)
 
-                    # If you just want it not to exceed the axis visually, 
+                    # If you just want it not to exceed the axis visually,
                     # autoscale(False) and axis limits already handle it!
                     axes_flat_corr[j_other_corr].plot(pts_epipolar_corr[:, 0], pts_epipolar_corr[:, 1], color=colors_corr[clicked_i_corr], linewidth=1.5)
             except Exception as e:

@@ -10,15 +10,14 @@ Extracted from ptv.py to reduce god-module coupling.
 """
 
 import os
-from pathlib import Path
 from typing import List
 
 import numpy as np
-from scipy.optimize import least_squares, minimize
 from scipy import sparse
+from scipy.optimize import least_squares, minimize
 
 from openptv2.calibration import Calibration
-from openptv2.parameters import ControlParams, SequenceParams
+from openptv2.parameters import ControlParams
 from openptv2.tracking_framebuf import TargetArray
 from openptv2.transforms import convert_arr_pixel_to_metric
 
@@ -74,8 +73,8 @@ def full_scipy_calibration(
     cal: Calibration, XYZ: np.ndarray, targs: TargetArray, cpar: ControlParams, flags=[]
 ):
     """Full calibration using scipy.optimize"""
-    from openptv2.transforms import convert_arr_metric_to_pixel
     from openptv2.imgcoord import image_coordinates
+    from openptv2.transforms import convert_arr_metric_to_pixel
 
     def _residuals_k(x, cal, XYZ, xy, cpar):
         cal.set_radial_distortion(x)
@@ -549,8 +548,8 @@ def calib_dumbbell(cal_gui) -> None:
             raise ValueError("All frames filtered by dumbbell length eps")
 
     def _print_camera_residuals(label: str, metric_targets: np.ndarray) -> None:
-        from openptv2.orientation import multi_cam_point_positions
         from openptv2.imgcoord import image_coordinates
+        from openptv2.orientation import multi_cam_point_positions
 
         num_cams_local, num_frames_local, num_targs_local, _ = metric_targets.shape
         sums = np.zeros(num_cams_local, dtype=float)

@@ -5,8 +5,7 @@ This demo shows each of the four styles of the DirectoryEditor
 """
 
 # Imports:
-from traits.api import HasTraits, Directory
-
+from traits.api import Directory, HasTraits
 from traitsui.api import Item, View
 
 # Define the demo class:

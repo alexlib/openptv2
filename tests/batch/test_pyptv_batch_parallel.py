@@ -1,5 +1,7 @@
-import pytest
 from pathlib import Path
+
+import pytest
+
 from openptv2.batch import pyptv_batch_parallel
 
 
@@ -36,8 +38,10 @@ def test_pyptv_batch_parallel(test_data_dir):
 
 def test_pyptv_batch_parallel_validation_errors():
     """Test that proper validation errors are raised for parallel processing"""
-    from pathlib import Path
-    from openptv2.batch.pyptv_batch_parallel import ProcessingError, validate_experiment_setup
+    from openptv2.batch.pyptv_batch_parallel import (
+        ProcessingError,
+        validate_experiment_setup,
+    )
 
     # Test non-existent YAML file
     with pytest.raises(ProcessingError, match="YAML parameter file does not exist"):
@@ -51,7 +55,7 @@ def test_pyptv_batch_parallel_single_process(test_data_dir):
     """Test parallel processing with single process (should work like regular batch)"""
     test_dir = test_data_dir
     yaml_file = test_dir / "parameters_Run1.yaml"
-    
+
     # Test with single process
     start_frame = 10000
     end_frame = 10001  # Just one frame

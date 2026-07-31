@@ -7,7 +7,9 @@ and experiment configuration for PyPTV.
 
 import shutil
 from pathlib import Path
-from traits.api import HasTraits, Instance, List, Str, Bool, Any
+
+from traits.api import HasTraits, Instance, List, Str
+
 from .parameter_manager import ParameterManager
 
 
@@ -38,7 +40,7 @@ class Experiment(HasTraits):
     active_params = Instance(Paramset)
     paramsets = List(Instance(Paramset))
     pm = Instance(ParameterManager)
-    
+
     def __init__(self, pm: ParameterManager = None, **traits):
         super().__init__(**traits)
         self.paramsets = []
@@ -56,7 +58,7 @@ class Experiment(HasTraits):
     def get_parameter(self, key):
         """Get parameter with ParameterManager delegation"""
         return self.pm.get_parameter(key)
-    
+
     def load_parameters_for_active(self):
         """Load parameters from the active paramset's YAML into experiment.pm."""
         try:
@@ -102,7 +104,7 @@ class Experiment(HasTraits):
     def removeParamset(self, paramset):
         """Remove a parameter set from the experiment"""
         paramset_idx = self.getParamsetIdx(paramset)
-        
+
         paramset_obj = self.paramsets[paramset_idx]
         # Rename the YAML file to .bck
         yaml_path = getattr(paramset_obj, "yaml_path", None)
@@ -252,36 +254,36 @@ class Experiment(HasTraits):
         paramset_obj = next((ps for ps in self.paramsets if ps.name == run_name), None)
         if paramset_obj is None:
             raise ValueError(f"No parameter set found with name '{run_name}'")
-        
+
         src_yaml = paramset_obj.yaml_path
         if not src_yaml.exists():
             raise FileNotFoundError(f"YAML file for parameter set '{run_name}' does not exist: {src_yaml}")
-        
+
         # Create new name and path
         new_name = f"{run_name}_copy"
         new_yaml = src_yaml.parent / f"parameters_{new_name}.yaml"
-        
+
         if new_yaml.exists():
             raise FileExistsError(f"Duplicate YAML file already exists: {new_yaml}")
-        
+
         shutil.copy(src_yaml, new_yaml)
         print(f"Duplicated parameter set '{run_name}' to '{new_name}'")
-        
+
         self.addParamset(new_name, new_yaml)
         return new_yaml
 
     def create_new_paramset(self, name: str, exp_path: Path, copy_from_active: bool = True):
         """Create a new parameter set YAML file"""
         yaml_file = exp_path / f"parameters_{name}.yaml"
-        
+
         if yaml_file.exists():
             raise ValueError(f"Parameter set {name} already exists at {yaml_file}")
-        
+
         if copy_from_active and self.active_params is not None:
             # Copy from active parameter set
             shutil.copy(self.active_params.yaml_path, yaml_file)
             print(f"Created new parameter set {name} by copying from {self.active_params.name}")
-        
+
         self.addParamset(name, yaml_file)
         return yaml_file
 

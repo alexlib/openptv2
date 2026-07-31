@@ -159,7 +159,6 @@ def cmd_validate(args) -> int:
 
 
 def cmd_diff(args) -> int:
-    import yaml
     p1, p2 = Path(args.yaml1), Path(args.yaml2)
     d1 = _load(p1)
     d2 = _load(p2)

@@ -1,7 +1,9 @@
-import pytest
 from pathlib import Path
-from openptv2.gui.parameter_manager import ParameterManager
+
+import pytest
 import yaml
+
+from openptv2.gui.parameter_manager import ParameterManager
 
 TRACK_DIR = Path(__file__).parent.parent.parent / "test_data" / "test_cavity"
 

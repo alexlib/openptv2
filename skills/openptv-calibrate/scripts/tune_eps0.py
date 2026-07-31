@@ -22,12 +22,10 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-import numpy as np
-
 from openptv2.algorithms.calibration import Calibration
 from openptv2.algorithms.parameters import ControlPar, VolumePar
+from openptv2.autocalibration import _find_yaml, cam_files
 from openptv2.correspondences import MatchedCoords, correspondences
-from openptv2.autocalibration import cam_files, _find_yaml
 from openptv2.gui.ptv import read_targets
 
 # Reasonable default sweep in mm; override by editing if your pix size is

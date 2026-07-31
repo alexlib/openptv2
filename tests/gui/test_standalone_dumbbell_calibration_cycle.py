@@ -1,15 +1,17 @@
 from __future__ import annotations
 
-import pytest
-import shutil
 import re
+import shutil
 import subprocess
 import sys
 from pathlib import Path
 
 import numpy as np
 
-from openptv2.gui.dumbbell_ground_truth import DumbbellGTSpec, generate_dumbbell_target_files
+from openptv2.gui.dumbbell_ground_truth import (
+    DumbbellGTSpec,
+    generate_dumbbell_target_files,
+)
 
 
 def _copy_tree(src: Path, dst: Path) -> None:

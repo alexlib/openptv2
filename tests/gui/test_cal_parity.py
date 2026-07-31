@@ -7,9 +7,10 @@ Usage:
 
 import os
 import shutil
+from pathlib import Path
+
 import numpy as np
 import pytest
-from pathlib import Path
 
 
 def _prepare_test_data(test_dir):
@@ -99,7 +100,6 @@ def test_calibration_parameter_parity(cavity_dir):
             for j in range(len(test_pts)):
                 xo, yo = test_pts[j]
                 # optv transforms module
-                from optv.transforms import convert_arr_pixel_to_metric as o_ptm
 
             cpar_c = cpar.control_par if hasattr(cpar, 'control_par') else cpar
             metric_c = convert_arr_pixel_to_metric(test_pts, cpar_c)

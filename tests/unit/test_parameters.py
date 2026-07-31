@@ -1,8 +1,14 @@
 import os
+
 import numpy as np
-import pytest
+
 from openptv2.algorithms.parameters import (
-    SequencePar, TrackPar, VolumePar, ControlPar, MmNp, TargetPar
+    ControlPar,
+    MmNp,
+    SequencePar,
+    TargetPar,
+    TrackPar,
+    VolumePar,
 )
 
 TEST_DATA = os.path.join(os.path.dirname(__file__), '..', '..', 'test_data')

@@ -2,9 +2,7 @@
 
 import subprocess
 import sys
-import math
 from pathlib import Path
-import pytest
 
 
 def test_extended_acceleration_range():
@@ -186,7 +184,7 @@ def run_tracking_test(test_path, test_name):
 
     except subprocess.TimeoutExpired:
         return 0.0
-    except Exception as e:
+    except Exception:
         return 0.0
 
 

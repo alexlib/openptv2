@@ -18,13 +18,12 @@ app = marimo.App(width="full", auto_download=["ipynb"])
 
 @app.cell
 def _():
-    import marimo as mo
-    import numpy as np
-    import pandas as pd
-    import matplotlib.pyplot as plt
-
     from pathlib import Path
 
+    import marimo as mo
+    import matplotlib.pyplot as plt
+    import numpy as np
+    import pandas as pd
     from skimage.color import rgb2gray
     from skimage.io import imread
     from skimage.util import img_as_ubyte

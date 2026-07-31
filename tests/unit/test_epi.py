@@ -1,9 +1,15 @@
 import numpy as np
 import pytest
 
-from openptv2.algorithms.calibration import Calibration, Exterior, Interior, Glass, AddedPar
-from openptv2.algorithms.parameters import VolumePar, ControlPar, MmNp
-from openptv2.algorithms.epi import epi_mm_2d, epi_mm, epipolar_curve, find_candidate
+from openptv2.algorithms.calibration import (
+    AddedPar,
+    Calibration,
+    Exterior,
+    Glass,
+    Interior,
+)
+from openptv2.algorithms.epi import epi_mm, epi_mm_2d, epipolar_curve
+from openptv2.algorithms.parameters import ControlPar, MmNp, VolumePar
 
 EPS = 1e-5
 
@@ -136,9 +142,9 @@ def _has_optv():
 def test_epipolar_curve_parity():
     """Compare Python epipolar_curve against Cython binding."""
     from optv.calibration import Calibration as CCalibration
+    from optv.epipolar import epipolar_curve as c_epipolar_curve
     from optv.parameters import ControlParams as CControlParams
     from optv.parameters import VolumeParams as CVolumeParams
-    from optv.epipolar import epipolar_curve as c_epipolar_curve
 
     ori_tmpl = "test_data/calibration/sym_cam{}.tif.ori"
     add_file = "test_data/calibration/cam1.tif.addpar"

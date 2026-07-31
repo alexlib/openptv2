@@ -4,20 +4,18 @@
 import os
 import shutil
 import sys
-import numpy as np
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 os.chdir("test_data/track")
 
-from openptv2.algorithms.tracking_run import tr_new
+from openptv2.algorithms.calibration import Calibration
+from openptv2.algorithms.parameters import read_control_par
 from openptv2.algorithms.track import (
     track_forward_start,
     trackcorr_c_loop,
-    trackcorr_c_finish,
 )
-from openptv2.algorithms.parameters import read_control_par, read_sequence_par
-from openptv2.algorithms.calibration import Calibration
+from openptv2.algorithms.tracking_run import tr_new
 
 
 def read_all_calibration(num_cams, base_path="."):
@@ -60,13 +58,13 @@ run.tpar = run.tpar._replace(add=0)
 track_forward_start(run)
 
 fb = run.fb
-print(f"\nBuffer after track_forward_start:")
+print("\nBuffer after track_forward_start:")
 for i in range(4):
     f = fb.buf[i]
     print(f"  buf[{i}]: num_parts={f.num_parts}, num_targets={list(f.num_targets[:2])}")
 
 # For each particle in buf[1], check pixel projection
-print(f"\nParticle details in buf[1]:")
+print("\nParticle details in buf[1]:")
 for h in range(fb.buf[1].num_parts):
     print(f"  Particle {h}:")
     print(f"    path_x = {fb.buf[1].path_x[h]}")
@@ -80,7 +78,7 @@ for h in range(fb.buf[1].num_parts):
             )
 
 # Check what targets exist in buf[2] (next frame)
-print(f"\nTargets in buf[2]:")
+print("\nTargets in buf[2]:")
 for j in range(2):
     nt = fb.buf[2].num_targets[j]
     print(f"  cam{j}: {nt} targets")

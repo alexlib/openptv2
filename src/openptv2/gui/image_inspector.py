@@ -14,20 +14,19 @@ plot.  The underlying plot is similar to the one in cmap_image_plot.py.
 """
 
 # Major library imports
-from numpy import linspace, meshgrid, pi, sin
+# Chaco imports
+from chaco.api import ArrayPlotData, Plot, viridis
+from chaco.tools.api import PanTool, ZoomTool
+from chaco.tools.image_inspector_tool import (
+    ImageInspectorOverlay,
+    ImageInspectorTool,
+)
 
 # Enthought library imports
 from enable.api import Component, ComponentEditor
+from numpy import linspace, meshgrid, pi, sin
 from traits.api import HasTraits, Instance
-from traitsui.api import Item, Group, View
-
-# Chaco imports
-from chaco.api import ArrayPlotData, viridis, Plot
-from chaco.tools.api import PanTool, ZoomTool
-from chaco.tools.image_inspector_tool import (
-    ImageInspectorTool,
-    ImageInspectorOverlay,
-)
+from traitsui.api import Group, Item, View
 
 
 # ===============================================================================

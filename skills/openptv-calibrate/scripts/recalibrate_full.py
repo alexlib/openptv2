@@ -40,6 +40,8 @@ import numpy as np
 
 sys.path.insert(0, str(Path(__file__).parent))
 
+from recalibrate_constrained import recalibrate_camera as fit_constrained
+
 from openptv2.algorithms.orientation import full_calibration
 from openptv2.algorithms.sortgrid import read_calblock, sortgrid
 from openptv2.algorithms.tracking_frame_buf import read_targets
@@ -51,8 +53,6 @@ from openptv2.autocalibration import (
     rms_px,
     save_overlay,
 )
-
-from recalibrate_constrained import recalibrate_camera as fit_constrained
 
 CANDIDATE_FLAGS = [
     ["cc", "xh", "yh"],

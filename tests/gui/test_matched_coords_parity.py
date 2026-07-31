@@ -8,9 +8,10 @@ Usage:
 
 import os
 import shutil
+from pathlib import Path
+
 import numpy as np
 import pytest
-from pathlib import Path
 
 
 def _prepare_test_data(test_dir):
@@ -44,11 +45,12 @@ def test_matched_coords_parity(cavity_dir):
     os.chdir(cavity_dir)
 
     try:
+        from imageio.v3 import imread
+        from skimage.color import rgb2gray
+        from skimage.util import img_as_ubyte
+
         from openptv2.gui.experiment import Experiment
         from openptv2.gui.ptv import py_start_proc_c, simple_highpass
-        from imageio.v3 import imread
-        from skimage.util import img_as_ubyte
-        from skimage.color import rgb2gray
 
         yaml_file = cavity_dir / "parameters_Run1.yaml"
         exp = Experiment()
@@ -60,8 +62,9 @@ def test_matched_coords_parity(cavity_dir):
         targ_p = exp.pm.get_parameter("targ_rec")
         cal_p = exp.pm.get_parameter("cal_ori")
 
-        from openptv2.parameters import ControlParams as C, TargetParams as T
         from openptv2.calibration import Calibration as CalC
+        from openptv2.parameters import ControlParams as C
+        from openptv2.parameters import TargetParams as T
 
         cp_c = C(num_cams=num_cams)
         cp_c.set_image_size((ptv_p["imx"], ptv_p["imy"]))
@@ -147,7 +150,7 @@ def test_matched_coords_parity(cavity_dir):
                 mean_diff = np.mean(abs_diff)
                 print(f"    Max coord diff: {max_diff:.6f}, Mean diff: {mean_diff:.6f}")
                 if max_diff > 1e-4:
-                    print(f"    WARNING: large coordinate differences detected!")
+                    print("    WARNING: large coordinate differences detected!")
                     mismatches = np.sum(abs_diff > 1e-4, axis=0)
                     print(
                         f"    mismatches > 1e-4: x={mismatches[0]}, y={mismatches[1]}"

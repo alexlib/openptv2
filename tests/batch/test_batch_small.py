@@ -232,8 +232,8 @@ def test_rt_is_positions_vs_ground_truth(small_dir, small_yaml):
     print(f"  matched             : {total_matched}")
     print(f"  overall recall      : {overall_recall:.1%}  (min {GT_MIN_RECALL:.0%} — diagnostic only)")
     print(f"  median match dist   : {overall_median:.4f} mm")
-    print(f"\n  NOTE: wide coordinate ranges in rt_is suggest a calibration offset")
-    print(f"  in the cropped .ori files — investigate create_test_cavity_small.py")
+    print("\n  NOTE: wide coordinate ranges in rt_is suggest a calibration offset")
+    print("  in the cropped .ori files — investigate create_test_cavity_small.py")
 
     assert overall_recall >= GT_MIN_RECALL, \
         f"Recall {overall_recall:.1%} < {GT_MIN_RECALL:.0%} — pipeline produced degenerate output"
@@ -310,9 +310,9 @@ def test_full_tracking_link_counts(small_dir, small_yaml):
     print(f"\n  total forward links : {total_links}")
     if total_links < 10:
         print(f"\n  WARNING: very few links ({total_links}) — likely a calibration issue")
-        print(f"  in the cropped .ori files of test_cavity_small.")
-        print(f"  3D positions are in wrong coordinate space; tracker search radius misses.")
-        print(f"  See create_test_cavity_small.py principal-point correction.")
+        print("  in the cropped .ori files of test_cavity_small.")
+        print("  3D positions are in wrong coordinate space; tracker search radius misses.")
+        print("  See create_test_cavity_small.py principal-point correction.")
 
     # Minimum sanity: pipeline ran and produced some output (even if calibration is off)
     assert total_links >= 0, "Link count is negative — something is very wrong"
@@ -400,9 +400,9 @@ def test_tracking_trajectories_vs_ground_truth(small_dir, small_yaml):
     print(f"  GT full              : {GT_FULL}")
 
     if len(trajectories) == 0:
-        print(f"\n  WARNING: 0 trajectories reconstructed — tracker produced no links")
-        print(f"  Root cause: 3D positions in rt_is are in wrong coordinate space")
-        print(f"  due to a calibration issue in test_cavity_small's .ori files.")
+        print("\n  WARNING: 0 trajectories reconstructed — tracker produced no links")
+        print("  Root cause: 3D positions in rt_is are in wrong coordinate space")
+        print("  due to a calibration issue in test_cavity_small's .ori files.")
         print(f"  GT has {len(gt_trajs)} trajectories for reference.")
     else:
         print(f"\n  GT total: {len(gt_trajs)}  |  reconstructed: {len(trajectories)}")

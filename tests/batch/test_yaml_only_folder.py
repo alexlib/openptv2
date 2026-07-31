@@ -10,7 +10,6 @@ import os
 import shutil
 
 import numpy as np
-import pytest
 from imageio.v3 import imread
 
 from openptv2.batch import pyptv_batch

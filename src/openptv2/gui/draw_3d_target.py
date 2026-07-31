@@ -2,8 +2,9 @@
 # python .\draw_3d_target.py .\cal\pyramide_target.txt
 
 
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
+
 # %matplotlib tk
 
 

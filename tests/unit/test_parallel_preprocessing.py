@@ -208,7 +208,7 @@ def test_parallel_preprocessing_io_scaling_benchmark(temp_cavity_dir):
     assert len(times) == 3, "Must have timings for 1, 2, 4 workers"
 
     baseline = times[1]
-    print(f"\n── Preprocessing I/O Scaling ──")
+    print("\n── Preprocessing I/O Scaling ──")
     for nw in [2, 4]:
         speedup = baseline / times[nw]
         print(f"  {nw} workers: {speedup:.2f}× vs 1 worker")

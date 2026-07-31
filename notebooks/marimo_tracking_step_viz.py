@@ -16,11 +16,12 @@ app = marimo.App(width="full")
 
 @app.cell
 def _():
-    import marimo as mo
-    import numpy as np
-    import matplotlib.pyplot as plt
-    import matplotlib.patches as patches
     from pathlib import Path
+
+    import marimo as mo
+    import matplotlib.patches as patches
+    import matplotlib.pyplot as plt
+    import numpy as np
     import yaml
 
     return mo, np, plt, patches, Path, yaml
@@ -54,7 +55,8 @@ def _(mo):
 @app.cell
 def _(base_path, res_dir, yaml):
     """Run tracking with the single runtime + observer."""
-    import sys, os
+    import os
+    import sys
     sys.path.insert(0, str(base_path.parent.parent))
     os.chdir(str(base_path))
 
@@ -81,8 +83,9 @@ def _(base_path, res_dir, yaml):
 @app.cell
 def _(base_path):
     """Run tracking with the single runtime."""
-    from openptv2.gui.pyptv.ptv import py_start_proc_c
     from openptv2.gui.pyptv.parameter_manager import ParameterManager
+    from openptv2.gui.pyptv.ptv import py_start_proc_c
+
     from openptv2.tracker import Tracker, default_naming
 
     pm = ParameterManager(base_path / "parameters_Run1.yaml")

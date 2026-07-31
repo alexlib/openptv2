@@ -1,6 +1,6 @@
 import numpy as np
-import pytest
-from openptv2.algorithms.lsqadj import ata, atl, matinv, matmul
+
+from openptv2.algorithms.lsqadj import ata, atl, matinv
 
 EPS = 1e-5
 

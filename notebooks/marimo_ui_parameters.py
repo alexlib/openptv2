@@ -6,8 +6,9 @@ app = marimo.App(width="full", auto_download=["ipynb"])
 
 @app.cell
 def _():
-    import marimo as mo
     from pathlib import Path
+
+    import marimo as mo
 
     return Path, mo
 
@@ -37,8 +38,8 @@ def _(mo):
 
 @app.cell
 def _():
-    from openptv2.gui.pyptv.parameter_manager import ParameterManager
     from openptv2.gui.pyptv.experiment import Experiment
+    from openptv2.gui.pyptv.parameter_manager import ParameterManager
 
     return Experiment, ParameterManager
 

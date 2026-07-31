@@ -6,6 +6,7 @@ reprojection error (RMS) maps to a large 3D ray-miss (RCM) at shallow parallax.
     uv run python docs/figures/make_rms_vs_rcm_figure.py
 """
 import matplotlib
+
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np

@@ -18,8 +18,10 @@ def _find_yaml(dataset: Path) -> Path | None:
 def _load_core(base: Path):
     """Return (cpar, num_cams, cals, seq_bases, mm) for the dataset."""
     import yaml
+
     from openptv2.algorithms.calibration import Calibration
-    from openptv2.autocalibration import _find_yaml as ac_find_yaml, _load_dataset_params
+    from openptv2.autocalibration import _find_yaml as ac_find_yaml
+    from openptv2.autocalibration import _load_dataset_params
 
     yp = ac_find_yaml(base)
     if yp is None:
@@ -45,11 +47,14 @@ def _snapshot_refine_once(base: Path, tol_px: float, frames_filter: list[int] | 
     """Run one snapshot-refine pass. Returns per-cam (n_pts, rms_before, rms_after, flags)."""
     import numpy as np
     import yaml
+
     from openptv2.algorithms.calibration import Calibration
     from openptv2.algorithms.orientation import full_calibration
     from openptv2.algorithms.tracking_frame_buf import read_targets
     from openptv2.autocalibration import (
         _find_yaml as ac_find_yaml,
+    )
+    from openptv2.autocalibration import (
         _load_dataset_params,
         _reproject_px,
         rms_px,
@@ -230,7 +235,6 @@ def cmd_run(args) -> int:
 
 def cmd_status(args) -> int:
     """Show current cal-plate RMS vs latest snapshot RMS."""
-    import numpy as np
 
     base = Path(args.dataset).resolve()
     try:

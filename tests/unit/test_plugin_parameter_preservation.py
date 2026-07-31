@@ -3,16 +3,15 @@
 and that built-in plugins (fast_3d, standard_forward, full_multipass) resolve correctly.
 """
 
-from pathlib import Path
-import pytest
 from unittest.mock import MagicMock
 
+import pytest
+
 from openptv2.plugins.loader import (
-    resolve_plugin_module,
     BUILTIN_TRACKING_PLUGINS,
-    run_tracking_plugin,
+    resolve_plugin_module,
 )
-from openptv2.tracking_presets import apply_preset, infer_preset
+from openptv2.tracking_presets import apply_preset
 
 
 def test_builtin_plugins_registration():

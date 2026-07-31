@@ -5,10 +5,11 @@
 # this works with the branch called remove_static_background on pyptv github
 # https://github.com/alexlib/pyptv/
 
-import numpy as np
-import matplotlib.pyplot as plt
-import skimage.io as skio
 import pathlib
+
+import matplotlib.pyplot as plt
+import numpy as np
+import skimage.io as skio
 
 # Create static median background and store for PyPTV use as a mask
 # How to use in PyPTV:
@@ -31,7 +32,7 @@ for cam_num in range(4):
     first_img = skio.imread(filelist[0])
     image_array = np.empty((N, *first_img.shape), dtype=first_img.dtype)
     image_array[0] = first_img
-    
+
     for i, file in enumerate(filelist[1:N], start=1):
         image_array[i] = skio.imread(file)
 

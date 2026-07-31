@@ -1,6 +1,9 @@
+from unittest.mock import MagicMock, call, patch
+
 import pytest
-from unittest.mock import MagicMock, patch, call
+
 from openptv2.gui.pyptv_gui import TreeMenuHandler
+
 
 @pytest.fixture
 def mock_info():

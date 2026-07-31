@@ -16,7 +16,6 @@ pipelines head-to-head exposes the divergence.
 import os
 
 import numpy as np
-import pytest
 from imageio.v3 import imread
 from skimage.color import rgb2gray
 from skimage.util import img_as_ubyte
@@ -37,13 +36,13 @@ def _single_frame_reference(small_dir, small_yaml, frame):
     with py_pre_processing_c, detect with py_detection_proc_c, then match with
     correspondences(). Returns the total number of 3D correspondences.
     """
+    from openptv2.correspondences import correspondences
     from openptv2.gui.experiment import Experiment
     from openptv2.gui.ptv import (
         py_detection_proc_c,
         py_pre_processing_c,
         py_start_proc_c,
     )
-    from openptv2.correspondences import correspondences
 
     cwd0 = os.getcwd()
     os.chdir(small_dir)

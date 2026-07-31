@@ -1,13 +1,12 @@
 """Test tracking parameter propagation through the entire pipeline"""
 
-import pytest
-from pathlib import Path
-import subprocess
-import sys
-import tempfile
 import shutil
-import os
+import tempfile
+from pathlib import Path
+
+import pytest
 import yaml
+
 from openptv2.batch.pyptv_batch_plugins import run_batch
 
 # Whole module drives the full splitter batch pipeline (subprocess + tracking),

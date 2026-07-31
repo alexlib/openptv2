@@ -16,33 +16,43 @@ Usage:
 
 import math
 import shutil
-import numpy as np
-import yaml
 from pathlib import Path
 
+import numpy as np
 import pytest
+import yaml
 
-from openptv2.algorithms.parameters import (
-    ControlPar, VolumePar, TargetPar, SequencePar,
-    TrackPar, MmNp, convert_track_par_to_tuple,
-)
 from openptv2.algorithms.calibration import Calibration
-from openptv2.algorithms.segmentation import targ_rec
-from openptv2.algorithms.image_processing import prepare_image
 from openptv2.algorithms.correspondences import (
-    correspondences as algo_correspondences, correct_frame,
+    correct_frame,
 )
-from openptv2.algorithms.epi import Coord2d
-from openptv2.algorithms.tracking_frame_buf import (
-    Frame, Target, read_targets, write_targets,
+from openptv2.algorithms.correspondences import (
+    correspondences as algo_correspondences,
 )
+from openptv2.algorithms.image_processing import prepare_image
 from openptv2.algorithms.orientation import point_positions as algo_point_positions
+from openptv2.algorithms.parameters import (
+    ControlPar,
+    MmNp,
+    SequencePar,
+    TargetPar,
+    TrackPar,
+    VolumePar,
+    convert_track_par_to_tuple,
+)
+from openptv2.algorithms.segmentation import targ_rec
 from openptv2.algorithms.track import (
-    track_forward_start, trackcorr_c_loop, trackcorr_c_finish,
-    trackback_c, angle_acc,
+    track_forward_start,
+    trackback_c,
+    trackcorr_c_finish,
+    trackcorr_c_loop,
+)
+from openptv2.algorithms.tracking_frame_buf import (
+    Frame,
+    read_targets,
+    write_targets,
 )
 from openptv2.algorithms.tracking_run import TrackingRun
-
 
 CAVITY_DIR = Path(__file__).parent.parent.parent / "test_data" / "test_cavity"
 YAML_PATH = CAVITY_DIR / "parameters_Run1.yaml"
@@ -237,10 +247,9 @@ def cavity_work(tmp_path):
 @pytest.mark.slow
 def test_full_batch_pipeline(cavity_work, monkeypatch):
     """Full pipeline: detect → compare _targets → correspond → compare rt_is → track."""
-    import os
+    from skimage.color import rgb2gray
     from skimage.io import imread
     from skimage.util import img_as_ubyte
-    from skimage.color import rgb2gray
 
     cfg = cavity_work
     cpar, vpar, tpar = cfg["cpar"], cfg["vpar"], cfg["tpar"]
@@ -505,7 +514,7 @@ def test_full_batch_pipeline(cavity_work, monkeypatch):
     print(f"  TrackingRun: lmax={run.lmax:.2f}")
 
     track_forward_start(run)
-    print(f"  track_forward_start: loaded frames into buffer")
+    print("  track_forward_start: loaded frames into buffer")
 
     # Projection sanity check
     from openptv2.algorithms.track import point_to_pixel

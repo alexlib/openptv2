@@ -1,6 +1,8 @@
 import shutil
 from pathlib import Path
+
 import pytest
+
 from openptv2.gui.parameter_manager import ParameterManager
 
 
@@ -46,7 +48,7 @@ def test_cal_ori_roundtrip(src_dir, tmp_path):
         )
         assert len(new_lines) > 0, f"Output file {out_file} is empty!"
         assert orig_lines == new_lines, (
-            f"Mismatch between original and output cal_ori.par files"
+            "Mismatch between original and output cal_ori.par files"
         )
 
 

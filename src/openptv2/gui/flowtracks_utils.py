@@ -1,7 +1,9 @@
 import numpy as np
+from flowtracks.io import trajectories_ptvis  # Expose for testing/monkeypatching
+
 from openptv2.imgcoord import image_coordinates
 from openptv2.transforms import convert_arr_metric_to_pixel
-from flowtracks.io import trajectories_ptvis  # Expose for testing/monkeypatching
+
 
 def compute_flowtracks_trajectories_from_guiobj(guiobj):
     """

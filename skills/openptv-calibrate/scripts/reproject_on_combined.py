@@ -27,7 +27,12 @@ import yaml
 
 from openptv2.algorithms.calibration import Calibration
 from openptv2.algorithms.sortgrid import read_calblock
-from openptv2.autocalibration import _load_dataset_params, _reproject_px, cam_files, resolve_calblock
+from openptv2.autocalibration import (
+    _load_dataset_params,
+    _reproject_px,
+    cam_files,
+    resolve_calblock,
+)
 
 # raw quadrant slice offsets (row_offset, col_offset) for a half x half split
 QUADRANT_OFFSET = {
@@ -53,6 +58,7 @@ def verify_splitter_order(base: Path, combined_path: Path, num_cams: int) -> Non
     the correct order should show near-zero diff, a wrong one a large diff.
     """
     import imageio.v3 as iio
+
     from openptv2.gui.ptv import image_split
 
     combined_img = iio.imread(combined_path)

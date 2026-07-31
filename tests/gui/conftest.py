@@ -1,6 +1,7 @@
-import pytest
-import sys
 import importlib
+import sys
+
+import pytest
 
 # Register optv package and its submodules as aliases in sys.modules for legacy compatibility
 try:
@@ -17,11 +18,12 @@ except ImportError:
 
 # Register pyptv package and its submodules as aliases to openptv2.gui in sys.modules
 try:
+    import openptv2.gui.pyptv as _pyptv_base
+
     import openptv2
     import openptv2.gui as _gui
-    import openptv2.gui.pyptv as _pyptv_base
     sys.modules["pyptv"] = _pyptv_base
-    
+
     for sub, target in _gui.submodule_mapping.items():
         try:
             # Map the alias directly using the registered lazy shim
@@ -38,10 +40,8 @@ except ImportError:
     pass
 
 from pathlib import Path
-import shutil
 
 from tests._support import find_test_data_root
-
 
 TEST_DATA_ROOT = find_test_data_root(Path(__file__))
 

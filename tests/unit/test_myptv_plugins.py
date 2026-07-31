@@ -2,9 +2,10 @@
 
 import numpy as np
 import pytest
-from openptv2.plugins.myptv_3d_tracking import MyPTV3DTracker, Tracking as MyPTV3DTrackingPlugin
-from openptv2.plugins.myptv_2d_tracking import MyPTV2DTracker, Tracking as MyPTV2DTrackingPlugin
-from openptv2.plugins.loader import resolve_plugin_module, BUILTIN_TRACKING_PLUGINS
+
+from openptv2.plugins.loader import BUILTIN_TRACKING_PLUGINS, resolve_plugin_module
+from openptv2.plugins.myptv_2d_tracking import MyPTV2DTracker
+from openptv2.plugins.myptv_3d_tracking import MyPTV3DTracker
 
 
 def test_myptv_3d_tracker_synthetic_linear_motion():

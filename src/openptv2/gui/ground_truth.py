@@ -20,8 +20,8 @@ from openptv2.calibration import Calibration
 from openptv2.imgcoord import image_coordinates
 from openptv2.transforms import convert_arr_metric_to_pixel
 
-from .parameter_manager import ParameterManager
 from . import ptv
+from .parameter_manager import ParameterManager
 
 
 @dataclass(frozen=True)

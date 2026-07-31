@@ -84,17 +84,18 @@ This documentation is included to ensure all public functions in ptv.py are cove
 """
 
 # This file serves as documentation and can be run as a test to verify coverage
-import pytest
-from openptv2.gui import ptv
 import inspect
+
+from openptv2.gui import ptv
+
 
 def test_function_coverage_documentation():
     """Verify that this documentation matches actual test coverage"""
-    
+
     # Get all functions defined in ptv.py
     ptv_functions = [name for name, obj in inspect.getmembers(ptv, inspect.isfunction)
                      if obj.__module__.endswith('ptv')]
-    
+
     # Functions that should have tests (excluding private helpers)
     documented_functions = [
         'image_split', 'negative', 'simple_highpass',
@@ -105,11 +106,11 @@ def test_function_coverage_documentation():
         'run_sequence_plugin', 'run_tracking_plugin', 'py_sequence_loop',
         'py_trackcorr_init', 'py_calibration'
     ]
-    
+
     # Verify that documented functions actually exist
     for func_name in documented_functions:
         assert hasattr(ptv, func_name), f"Function {func_name} not found in ptv module"
-    
+
     print(f"✅ Verified {len(documented_functions)} functions have test coverage")
     print(f"📊 Total functions in ptv.py: {len(ptv_functions)}")
     print(f"🎯 Functions with tests: {len(documented_functions)}")

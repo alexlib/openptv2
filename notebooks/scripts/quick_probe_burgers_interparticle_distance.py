@@ -3,9 +3,10 @@ Quick probe script: Estimate interparticle distance and inter-frame displacement
 using the Burgers dataset and the project's rt_is file reader.
 """
 import os
+import sys
+
 import numpy as np
 
-import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), "../pyptv"))
 from gui.pyptv.ptv import read_rt_is_file
 

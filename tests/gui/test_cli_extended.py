@@ -2,11 +2,12 @@
 Extended tests for the CLI module
 """
 
-import pytest
-import sys
-from pathlib import Path
-import tempfile
 import shutil
+import sys
+import tempfile
+from pathlib import Path
+
+import pytest
 
 from openptv2.gui.cli import cli
 

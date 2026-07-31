@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """Test to debug tracking parameter translation bug in test_cavity."""
 
-import pytest
 import os
 from pathlib import Path
-from openptv2.gui.ptv import py_start_proc_c
+
+import pytest
+
 from openptv2.gui.parameter_manager import ParameterManager
+from openptv2.gui.ptv import py_start_proc_c
 
 
 class TestTrackingParameterBug:
@@ -159,7 +161,7 @@ class TestTrackingParameterBug:
             else:
                 print("\n✅ All parameter values seem reasonable")
 
-            print(f"\n=== Parameter translation test completed ===")
+            print("\n=== Parameter translation test completed ===")
 
             # Return the parameters for potential further analysis
             return {
@@ -187,7 +189,7 @@ class TestTrackingParameterBug:
         if not param_file.exists():
             pytest.skip(f"Parameter file not found: {param_file}")
 
-        print(f"\n=== COMPARISON: Loading test_splitter parameters ===")
+        print("\n=== COMPARISON: Loading test_splitter parameters ===")
 
         original_cwd = Path.cwd()
         os.chdir(test_splitter_path)
@@ -224,7 +226,7 @@ class TestTrackingParameterBug:
             vel_range_y = translated_params["dvymax"] - translated_params["dvymin"]
             vel_range_z = translated_params["dvzmax"] - translated_params["dvzmin"]
 
-            print(f"\n=== test_splitter velocity ranges ===")
+            print("\n=== test_splitter velocity ranges ===")
             print(f"  X range: {vel_range_x}")
             print(f"  Y range: {vel_range_y}")
             print(f"  Z range: {vel_range_z}")

@@ -1,12 +1,17 @@
 import sys
-import pytest
 
 sys.path.insert(0, ".")
-import numpy as np
 from pathlib import Path
+
+import numpy as np
+
 from openptv2.gui.experiment import Experiment
-from openptv2.gui.ptv import py_start_proc_c, _populate_cpar, _populate_tpar, _populate_spar
-from openptv2.gui.parameter_util import legacy_to_yaml
+from openptv2.gui.ptv import (
+    _populate_cpar,
+    _populate_spar,
+    _populate_tpar,
+    py_start_proc_c,
+)
 
 
 def test_parameter_translation_pipeline():
@@ -99,6 +104,7 @@ def test_parameter_translation_pipeline():
         from imageio.v3 import imread
         from skimage.color import rgb2gray
         from skimage.util import img_as_ubyte
+
         from openptv2.segmentation import target_recognition
 
         # Find first image

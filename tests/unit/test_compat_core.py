@@ -2,17 +2,21 @@
 Tests for compatibility layer core objects (Phase 1).
 """
 
-import pytest
-import numpy as np
 from pathlib import Path
+
+import numpy as np
+import pytest
 
 from openptv2.calibration import Calibration
 from openptv2.parameters import (
-    ControlParams, VolumeParams, TrackingParams,
-    SequenceParams, TargetParams, MultimediaParams
+    ControlParams,
+    MultimediaParams,
+    SequenceParams,
+    TargetParams,
+    TrackingParams,
+    VolumeParams,
 )
-from openptv2.tracking_framebuf import Target, TargetArray, Frame, CORRES_NONE
-
+from openptv2.tracking_framebuf import CORRES_NONE, Frame, Target, TargetArray
 
 # Test data paths
 TEST_DATA = Path(__file__).parent.parent.parent / "test_data" / "synthetic"

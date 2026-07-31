@@ -14,9 +14,10 @@ def _():
 def _():
     # from Yosef Meller's PBI
     import os
-    import shutil
-    import numpy as np
     from pathlib import Path
+
+    import numpy as np
+
     from . import parameter_manager as pm
 
     os.chdir(Path(__file__).parent.absolute())

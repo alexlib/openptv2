@@ -1,18 +1,24 @@
-import numpy as np
-import pytest
 from pathlib import Path
-from openptv2.algorithms.calibration import Calibration, Exterior, Interior, Glass, AddedPar
-from openptv2.algorithms.parameters import ControlPar, VolumePar, MmNp
+
+import numpy as np
+
+from openptv2.algorithms.calibration import (
+    AddedPar,
+    Calibration,
+    Exterior,
+    Glass,
+    Interior,
+)
 from openptv2.algorithms.multimed import (
-    init_mmlut,
     back_trans_point,
-    volumedimension,
     get_mmf_from_mmlut,
+    init_mmlut,
     multimed_nlay,
     multimed_r_nlay_iterative,
     trans_cam_point,
+    volumedimension,
 )
-from openptv2.algorithms.vec_utils import vec_set, vec_norm
+from openptv2.algorithms.parameters import ControlPar, MmNp, VolumePar
 
 EPS = 1e-6
 
@@ -32,7 +38,7 @@ def test_init_mmLUT():
     cpar.num_cams = 1
 
     cal = init_mmlut(vpar, cpar, cal)
-    
+
     nz = cal.mmlut.nz
 
     # data[0] is radial shift at r=0, z=Zmin (point on glass vector axis)
@@ -46,7 +52,7 @@ def test_init_mmLUT():
 
 def test_back_trans_Point():
     pos = np.array([100.0, 100.0, 0.0])
-    
+
     ext = Exterior(
         x0=0.0, y0=0.0, z0=100.0,
         omega=0.0, phi=0.0, kappa=0.0,
@@ -56,22 +62,22 @@ def test_back_trans_Point():
             [-0.3, 0.0, 1.0]
         ])
     )
-    
+
     glass_dir = np.array([0.0001, 0.00001, 1.0])
     mm = MmNp(nlay=1, n1=1.0, n2=[1.49, 0.0, 0.0], d=[5.0, 0.0, 0.0], n3=1.33)
-    
+
     pos_t, cross_p, cross_c, z0 = trans_cam_point(
         pos, ext.x0, ext.y0, ext.z0,
         glass_dir[0], glass_dir[1], glass_dir[2],
         mm.n1, mm.n2[0], mm.n3, mm.d[0]
     )
-    
+
     pos1 = back_trans_point(
         pos_t, cross_p, cross_c,
         glass_dir[0], glass_dir[1], glass_dir[2],
         mm.n1, mm.n2[0], mm.n3, mm.d[0]
     )
-    
+
     assert abs(pos1[0] - pos[0]) < EPS
     assert abs(pos1[1] - pos[1]) < EPS
     assert abs(pos1[2] - pos[2]) < EPS
@@ -94,7 +100,7 @@ def test_volumedimension():
     cpar.num_cams = 2
 
     xmax, xmin, ymax, ymin, zmax, zmin = volumedimension(vpar, cpar, cals)
-    
+
     assert abs(xmax - 73.02053752) < EPS
     assert abs(xmin + 46.80667189) < EPS
     assert abs(ymax - 51.04924925) < EPS
@@ -160,9 +166,9 @@ def test_get_mmf_mmLUT():
 
     vpar = VolumePar.from_yaml("test_data/parameters.yaml")
     cpar = ControlPar.from_yaml("test_data/parameters.yaml")
-    
+
     cal = init_mmlut(vpar, cpar, cal)
-    
+
     pos = np.array([1.0, 1.0, 1.0])
     mmf = get_mmf_from_mmlut(
         pos, cal.mmlut.origin, cal.mmlut.nr, cal.mmlut.nz, cal.mmlut.rw, cal.mmlut.data
@@ -177,22 +183,22 @@ def test_multimed_nlay():
     vpar = VolumePar.from_yaml("test_data/parameters.yaml")
     cpar = ControlPar.from_yaml("test_data/parameters.yaml")
     cpar.num_cams = 1
-    
+
     cal = init_mmlut(vpar, cpar, cal)
-    
+
     pos = np.array([1.23, 1.23, 1.23])
     correct_Xq = 0.74811917
     correct_Yq = 0.75977975
-    
+
     mmf = get_mmf_from_mmlut(
         pos, cal.mmlut.origin, cal.mmlut.nr, cal.mmlut.nz, cal.mmlut.rw, cal.mmlut.data
     )
-    
+
     Xq, Yq = multimed_nlay(
         pos[0], pos[1], pos[2], cal.ext_par.x0, cal.ext_par.y0, cal.ext_par.z0,
         cpar.mm.n1, cpar.mm.n2[0], cpar.mm.n3, cpar.mm.d[0], cpar.mm.nlay, mmf
     )
-    
+
     assert abs(Xq - correct_Xq) < EPS
     assert abs(Yq - correct_Yq) < EPS
 
@@ -366,7 +372,7 @@ def test_mmlut_matches_iterative_projection():
 def test_trans_Cam_Point():
     pos = np.array([100.0, 100.0, 0.0])
     sep_norm = np.linalg.norm(pos)
-    
+
     ext = Exterior(
         x0=0.0, y0=0.0, z0=100.0,
         omega=0.0, phi=0.0, kappa=0.0,
@@ -376,28 +382,28 @@ def test_trans_Cam_Point():
             [-0.3, 0.0, 1.0]
         ])
     )
-    
+
     glass_dir = np.array([0.0, 0.0, 50.0])
     mm = MmNp(nlay=1, n1=1.0, n2=[1.49, 0.0, 0.0], d=[5.0, 0.0, 0.0], n3=1.33)
-    
+
     pos_t, cross_p, cross_c, z0 = trans_cam_point(
         pos, ext.x0, ext.y0, ext.z0,
         glass_dir[0], glass_dir[1], glass_dir[2],
         mm.n1, mm.n2[0], mm.n3, mm.d[0]
     )
-    
+
     assert abs(pos_t[0] - sep_norm) < EPS
     assert abs(pos_t[1] - 0.0) < EPS
     assert abs(pos_t[2] + glass_dir[2]) < EPS
-    
+
     assert abs(cross_p[0] - pos[0]) < EPS
     assert abs(cross_p[1] - pos[1]) < EPS
     assert abs(cross_p[2] - glass_dir[2]) < EPS
-    
+
     assert abs(cross_c[0] + ext.x0) < EPS
     assert abs(cross_c[1] + ext.y0) < EPS
     assert abs(cross_c[2] - (glass_dir[2] + mm.d[0])) < EPS
-    
+
     assert abs(0.0 - 0.0) < EPS # correct_Ex_t x0
     assert abs(0.0 - 0.0) < EPS # correct_Ex_t y0
     assert abs(50.0 - z0) < EPS # correct_Ex_t z0

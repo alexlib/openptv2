@@ -1,9 +1,9 @@
 """Pytest version of ext_sequence_splitter plugin test (simplified)"""
 
 import shutil
+from pathlib import Path
 
 import pytest
-from pathlib import Path
 
 from openptv2.batch.pyptv_batch_plugins import run_batch
 

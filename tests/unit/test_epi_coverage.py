@@ -28,7 +28,6 @@ from openptv2.algorithms.epi import (
     Candidate,
     Coord2d,
     _quality_ratio,
-    epi_mm,
     epi_mm_2d,
     epipolar_curve,
     find_candidate,

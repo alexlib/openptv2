@@ -1,18 +1,17 @@
 """Overlay to display the data attached to a scatter point hovered over."""
 
-import pandas as pd
 import numpy as np
-
-from traits.api import Callable, HasTraits, Instance, observe
-from traitsui.api import View, Item
-from enable.api import ComponentEditor
+import pandas as pd
 from chaco.api import (
-    Plot,
     ArrayPlotData,
+    Plot,
     ScatterInspectorOverlay,
     TextBoxOverlay,
 )
 from chaco.tools.api import ScatterInspector
+from enable.api import ComponentEditor
+from traits.api import Callable, HasTraits, Instance, observe
+from traitsui.api import Item, View
 
 
 class DataframeScatterInspector(ScatterInspector):

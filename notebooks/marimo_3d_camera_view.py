@@ -24,10 +24,10 @@ def _(mo):
 
 @app.cell
 def _():
-    import numpy as np
-    import matplotlib.pyplot as plt
     import os
-    import glob
+
+    import matplotlib.pyplot as plt
+    import numpy as np
 
     return np, os, plt
 

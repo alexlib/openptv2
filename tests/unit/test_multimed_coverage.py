@@ -3,24 +3,24 @@
 Target: >= 90% pure-Python line coverage of multimed.py.
 All tests use analytic/invariant assertions — no guessed expected values.
 """
-import numpy as np
-import pytest
 from unittest.mock import patch
 
+import numpy as np
+import pytest
+
 from openptv2.algorithms.multimed import (
-    _multimed_r_1lay_iterative,
     _multimed_nlay_core,
+    _multimed_r_1lay_iterative,
+    back_trans_point,
+    get_mmf_from_mmlut,
+    init_mmlut,
+    is_compiled,
+    move_along_ray,
     multimed_nlay,
     multimed_r_nlay_iterative,
     trans_cam_point,
-    back_trans_point,
-    move_along_ray,
-    get_mmf_from_mmlut,
     volumedimension,
-    init_mmlut,
-    is_compiled,
 )
-
 
 # ── trafo monkeypatch helpers ─────────────────────────────────────────────────
 # pixel_to_metric and correct_brown_affin have _out: cython.double[2] bug in

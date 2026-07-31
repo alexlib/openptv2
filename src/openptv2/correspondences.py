@@ -2,6 +2,7 @@
 
 import numpy as np
 
+
 class MatchedCoords:
     """
     Wrapper for metric-corrected target coordinates.
@@ -31,8 +32,8 @@ class MatchedCoords:
         self._apply_corrections()
 
     def _apply_corrections(self):
-        from openptv2.transforms import convert_arr_pixel_to_metric, distorted_to_flat
         from openptv2.algorithms.epi import Coord2d
+        from openptv2.transforms import convert_arr_pixel_to_metric, distorted_to_flat
 
         num_targets = len(self._targets)
         if num_targets == 0:
@@ -100,12 +101,12 @@ class MatchedCoords:
 
         # Build mapping from pnr to coordinate
         pnr_to_coord = {c.pnr: (c.x, c.y) for c in self._corrected}
-        
+
         for i, p in enumerate(pnrs):
             if p in pnr_to_coord:
                 pos[i, 0] = pnr_to_coord[p][0]
                 pos[i, 1] = pnr_to_coord[p][1]
-                
+
         return pos
 
 

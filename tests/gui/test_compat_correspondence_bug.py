@@ -7,9 +7,10 @@ Usage:
 
 import os
 import shutil
+from pathlib import Path
+
 import numpy as np
 import pytest
-from pathlib import Path
 
 
 def _prepare_test_data(test_dir):
@@ -43,11 +44,12 @@ def test_compat_correspondences_parity(cavity_dir):
     os.chdir(cavity_dir)
 
     try:
+        from imageio.v3 import imread
+        from skimage.color import rgb2gray
+        from skimage.util import img_as_ubyte
+
         from openptv2.gui.experiment import Experiment
         from openptv2.gui.ptv import py_start_proc_c, simple_highpass
-        from imageio.v3 import imread
-        from skimage.util import img_as_ubyte
-        from skimage.color import rgb2gray
 
         yaml_file = cavity_dir / "parameters_Run1.yaml"
         exp = Experiment()
@@ -56,12 +58,16 @@ def test_compat_correspondences_parity(cavity_dir):
         cpar, spar, vpar, trk_par, tpar, cals_optv, epar = py_start_proc_c(exp.pm)
 
         # Build compat params
+        from openptv2.calibration import Calibration as CCal
         from openptv2.parameters import (
             ControlParams as C,
-            VolumeParams as V,
+        )
+        from openptv2.parameters import (
             TargetParams as T,
         )
-        from openptv2.calibration import Calibration as CCal
+        from openptv2.parameters import (
+            VolumeParams as V,
+        )
 
         ptv_p = exp.pm.get_parameter("ptv")
         seq_p = exp.pm.get_parameter("sequence")
@@ -142,12 +148,8 @@ def test_compat_correspondences_parity(cavity_dir):
         print(f"  OPTV: total={total_o}")
 
         # Build raw algorithms Frame + corrected from optv detections
-        from openptv2.algorithms.tracking_frame_buf import Frame as RawFrame
         from openptv2.algorithms.epi import Coord2d
-        from openptv2.transforms import (
-            distorted_to_flat,
-            convert_arr_pixel_to_metric,
-        )
+        from openptv2.algorithms.tracking_frame_buf import Frame as RawFrame
 
         raw_frm = RawFrame(num_cams=num_cams, max_targets=10000)
         raw_corrected = []
@@ -174,9 +176,9 @@ def test_compat_correspondences_parity(cavity_dir):
             )
 
         # Call raw algorithms correspondences
-        from openptv2.algorithms.correspondences import correspondences as raw_corr
-        from openptv2.algorithms.parameters import ControlPar, VolumePar, TargetPar
         from openptv2.algorithms.calibration import Calibration
+        from openptv2.algorithms.correspondences import correspondences as raw_corr
+        from openptv2.algorithms.parameters import ControlPar, VolumePar
 
         # Raw params from same data
         cpar_r = ControlPar(num_cams=num_cams)
@@ -214,11 +216,10 @@ def test_compat_correspondences_parity(cavity_dir):
         print(f"  RAW algs: total={mc_raw[3]} match_counts={mc_raw}")
 
         # --- COMPAT correspondences (calls raw under the hood) ---
-        print(f"\n  --- COMPAT LAYER ---")
-        from openptv2.correspondences import correspondences as comp_corr
+        print("\n  --- COMPAT LAYER ---")
         from openptv2.correspondences import MatchedCoords as comp_mc
+        from openptv2.correspondences import correspondences as comp_corr
         from openptv2.segmentation import target_recognition as comp_tr
-        from openptv2.tracking_framebuf import TargetArray, read_targets
 
         # Build detection + corrected using COMPAT APIs
         det_c, corr_c = [], []
@@ -243,7 +244,7 @@ def test_compat_correspondences_parity(cavity_dir):
         print(f"  COMPAT: total={total_c}")
 
         # Also test: compat correspondences but using OPTV detections
-        print(f"\n  --- COMPAT layer using OPTV detections ---")
+        print("\n  --- COMPAT layer using OPTV detections ---")
         det_w, corr_w = [], []
         for i_cam in range(num_cams):
             targs_o = det_o[i_cam]  # optv TargetArray
@@ -257,9 +258,9 @@ def test_compat_correspondences_parity(cavity_dir):
         print(f"  COMPAT+optv targets: total={total_w}")
 
         # Test: raw correspondences using COMPAT params (unwrap ._cal, ._cpar, etc)
-        print(f"\n  --- RAW algs using COMPAT-unwrapped params ---")
-        from openptv2.algorithms.tracking_frame_buf import Frame as RFrame
+        print("\n  --- RAW algs using COMPAT-unwrapped params ---")
         from openptv2.algorithms.epi import Coord2d
+        from openptv2.algorithms.tracking_frame_buf import Frame as RFrame
 
         r_frm = RFrame(num_cams=num_cams, max_targets=10000)
         r_corr = []

@@ -1,7 +1,7 @@
 """Tests for Experiment.save_active() — the single save entry point."""
+
 import yaml
-import pytest
-from pathlib import Path
+
 from openptv2.gui.experiment import Experiment, Paramset
 from openptv2.gui.parameter_manager import ParameterManager
 

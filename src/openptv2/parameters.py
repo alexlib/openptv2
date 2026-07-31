@@ -11,16 +11,6 @@ The parameter-file converter helpers (``get_control_par`` etc.) are re-exported
 here unchanged so ``openptv2.parameters.get_control_par`` keeps resolving.
 """
 
-from openptv2.algorithms.parameters import (
-    ControlPar as ControlParams,
-    MmNp as MultimediaParams,
-    SequencePar as SequenceParams,
-    TargetPar as TargetParams,
-    TrackPar as TrackingParams,
-    TrackParTuple,
-    VolumePar as VolumeParams,
-    convert_track_par_to_tuple,
-)
 from openptv2.algorithms.parameter_converters import (
     convert_optv_calibrations,
     get_all_params,
@@ -35,6 +25,28 @@ from openptv2.algorithms.parameter_converters import (
     get_target_par,
     get_track_par_tuple,
     get_volume_par,
+)
+from openptv2.algorithms.parameters import (
+    ControlPar as ControlParams,
+)
+from openptv2.algorithms.parameters import (
+    MmNp as MultimediaParams,
+)
+from openptv2.algorithms.parameters import (
+    SequencePar as SequenceParams,
+)
+from openptv2.algorithms.parameters import (
+    TargetPar as TargetParams,
+)
+from openptv2.algorithms.parameters import (
+    TrackPar as TrackingParams,
+)
+from openptv2.algorithms.parameters import (
+    TrackParTuple,
+    convert_track_par_to_tuple,
+)
+from openptv2.algorithms.parameters import (
+    VolumePar as VolumeParams,
 )
 
 __all__ = [

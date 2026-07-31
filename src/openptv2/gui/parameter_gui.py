@@ -1,18 +1,17 @@
-from traits.api import HasTraits, Str, Float, Int, List, Bool, Enum
+from traits.api import Bool, Enum, Float, HasTraits, Int, List, Str
 from traitsui.api import (
-    View,
-    Item,
-    HGroup,
-    VGroup,
-    Handler,
-    Group,
-    Tabbed,
     EnumEditor,
+    Group,
+    Handler,
+    HGroup,
+    Item,
+    Tabbed,
+    VGroup,
+    View,
     spring,
 )
 
 from .experiment import Experiment
-
 
 DEFAULT_STRING = "---"
 DEFAULT_INT = -999
@@ -42,7 +41,7 @@ class ParamHandler(Handler):
         if is_ok:
             main_params = info.object
             experiment = main_params.experiment
-            
+
             print("Updating parameters via Experiment...")
 
             # Update top-level num_cams
@@ -150,7 +149,7 @@ class CalHandler(Handler):
             # Update top-level num_cams
             # experiment.pm.parameters['num_cams'] = calib_params.n_img
 
-            # Update ptv.par with some parameters that for some reason 
+            # Update ptv.par with some parameters that for some reason
             # are stored in Calibration Parameters GUI
             experiment.pm.parameters['ptv'].update({
                 # 'tiff_flag': calib_params.tiff_head,
@@ -173,7 +172,7 @@ class CalHandler(Handler):
                 'fixp_name': calib_params.fixp_name,
                 'img_cal_name': img_cal_name, # see above
                 'img_ori': img_ori, # see above
-                #'tiff_flag': calib_params.tiff_head, 
+                #'tiff_flag': calib_params.tiff_head,
                 #'pair_flag': calib_params.pair_head,
                 #'chfield': calib_params.chfield,
                 'cal_splitter': calib_params._cal_splitter

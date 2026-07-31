@@ -17,8 +17,6 @@ Note: single_cam_point_positions reads ``vpar.Zmin_lay`` / ``vpar.Zmax_lay``
 """
 from __future__ import annotations
 
-import copy
-
 import numpy as np
 import pytest
 
@@ -29,6 +27,8 @@ if _is_compiled():
     pytest.skip("pure-Python coverage tests only", allow_module_level=True)
 
 # ── module-level imports ───────────────────────────────────────────────────────
+from openptv2.algorithms.calibration import Calibration
+from openptv2.algorithms.imgcoord import img_coord
 from openptv2.algorithms.orientation import (
     COORD_UNUSED,
     NPAR,
@@ -48,8 +48,6 @@ from openptv2.algorithms.orientation import (
     skew_midpoint,
     weighted_dumbbell_precision,
 )
-from openptv2.algorithms.calibration import Calibration
-from openptv2.algorithms.imgcoord import img_coord
 from openptv2.algorithms.parameters import ControlPar, MultimediaPar, OrientPar
 from openptv2.algorithms.tracking_frame_buf import Target
 from openptv2.algorithms.trafo import metric_to_pixel
@@ -905,7 +903,6 @@ def test_single_cam_normal_z_intercept():
 
 def test_single_cam_zero_direct_z(monkeypatch):
     """Patch ray_tracing to return a direction with direct[2]=0 → else branch."""
-    import openptv2.algorithms.orientation as ori_mod
     import openptv2.algorithms.ray_tracing as rt_mod
 
     orig_ray_tracing = rt_mod.ray_tracing

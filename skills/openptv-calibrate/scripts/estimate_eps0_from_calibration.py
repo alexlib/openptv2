@@ -32,7 +32,7 @@ from openptv2.algorithms.calibration import Calibration
 from openptv2.algorithms.epi import epi_mm
 from openptv2.algorithms.parameters import ControlPar, VolumePar
 from openptv2.algorithms.tracking_frame_buf import Target, TargetArray
-from openptv2.autocalibration import cam_files, _find_yaml
+from openptv2.autocalibration import _find_yaml, cam_files
 from openptv2.correspondences import MatchedCoords
 
 

@@ -2,17 +2,17 @@ import os
 import shutil
 import time
 from pathlib import Path
-import pytest
-import numpy as np
 
+import pytest
+
+from openptv2.algorithms.calibration import Calibration
+from openptv2.algorithms.parameters import ControlPar, SequencePar, TrackPar, VolumePar
 from openptv2.algorithms.track import (
     track_forward_start,
-    trackcorr_c_loop,
     trackcorr_c_finish,
+    trackcorr_c_loop,
 )
-from openptv2.algorithms.parameters import ControlPar, SequencePar, TrackPar, VolumePar
 from openptv2.algorithms.tracking_run import tr_new
-from openptv2.algorithms.calibration import Calibration
 
 
 def read_all_calibration(num_cams, base_path="."):
@@ -206,7 +206,7 @@ def test_parallel_tracking_speedup_scaling(temp_cavity_dir):
 
     # Report results
     baseline = times[1]
-    print(f"\n── Tracking Speedup Scaling (cavity, 5 frames) ──")
+    print("\n── Tracking Speedup Scaling (cavity, 5 frames) ──")
     print(f"{'Threads':>8} {'Time (s)':>10} {'Speedup':>8} {'npart':>8} {'nlinks':>8}")
     for nt in thread_counts:
         speedup = baseline / times[nt]

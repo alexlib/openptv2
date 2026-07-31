@@ -1,6 +1,6 @@
+import importlib
 import sys
 import types
-import importlib
 
 try:
     from traits.etsconfig.etsconfig import ETSConfig
@@ -34,11 +34,11 @@ class LazySubmodule(types.ModuleType):
     def __init__(self, name, target):
         super().__init__(name)
         self.__target = target
-        
+
     def __getattr__(self, attr):
         mod = importlib.import_module(self.__target)
         return getattr(mod, attr)
-        
+
     def __dir__(self):
         try:
             mod = importlib.import_module(self.__target)

@@ -3,9 +3,9 @@
 Test the new ParameterManager structure with global num_cams
 """
 
+import os
 import shutil
 import sys
-import os
 from pathlib import Path
 
 # Add pyptv to path
@@ -82,7 +82,7 @@ def test_parameter_manager_new_structure():
         pm2.to_directory(new_dir_path)
 
         # Check the generated files
-        print(f"Generated parameter files:")
+        print("Generated parameter files:")
         for par_file in sorted(new_dir_path.glob("*.par")):
             print(f"  {par_file.name}")
 

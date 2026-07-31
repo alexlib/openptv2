@@ -361,6 +361,7 @@ def calibrate_camera(
             from imageio.v3 import imread
             from skimage.color import rgb2gray
             from skimage.util import img_as_ubyte
+
             from openptv2.algorithms.tracking_frame_buf import write_targets
             from openptv2.segmentation import target_recognition
 
@@ -953,8 +954,8 @@ def tracer_self_calibrate(base, cpar, cals, *, frames=None, tol_px=2.0,
     from scipy.optimize import least_squares
 
     from openptv2.algorithms.tracking_frame_buf import read_targets
-    from openptv2.imgcoord import image_coordinates
     from openptv2.algorithms.trafo import pixel_to_metric
+    from openptv2.imgcoord import image_coordinates
 
     base = Path(base)
     yaml_path = _find_yaml(base)

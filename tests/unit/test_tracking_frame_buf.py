@@ -1,23 +1,23 @@
-import numpy as np
-import pytest
 import os
+
+import numpy as np
+
+from openptv2.algorithms.constants import NEXT_NONE, PREV_NONE
 from openptv2.algorithms.tracking_frame_buf import (
+    Corres,
+    Frame,
+    Pathinfo,
     Target,
-    read_targets,
-    write_targets,
+    compare_corres,
+    compare_path_info,
     compare_targets,
     read_path_frame,
-    write_path_frame,
-    Frame,
-    compare_path_info,
-    Pathinfo,
-    Corres,
-    compare_corres,
+    read_targets,
     register_link_candidate,
     reset_links,
-    Corres_dtype,
+    write_path_frame,
+    write_targets,
 )
-from openptv2.algorithms.constants import POSI, PT_UNUSED, PREV_NONE, NEXT_NONE
 
 TEST_DATA = os.path.join(os.path.dirname(__file__), "..", "..", "test_data")
 

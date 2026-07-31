@@ -1,8 +1,10 @@
 """Streamlined target recognition and binarization."""
 
 from collections import deque
+
 import numpy as np
-from openptv2.algorithms.tracking_frame_buf import TargetArray, Target
+
+from openptv2.algorithms.tracking_frame_buf import Target, TargetArray
 
 CORRES_NONE = -1
 

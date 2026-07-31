@@ -2,6 +2,8 @@ class RegularClass:
     pass
 
 from dataclasses import dataclass
+
+
 @dataclass
 class DataClass:
     x: int

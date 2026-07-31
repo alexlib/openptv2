@@ -8,13 +8,14 @@ This test demonstrates that:
 3. This causes different detection results
 """
 
-import numpy as np
 from pathlib import Path
-from openptv2.gui.experiment import Experiment
-from openptv2.gui.ptv import py_detection_proc_c, _populate_tpar
-from skimage.io import imread
+
 from skimage.color import rgb2gray
+from skimage.io import imread
 from skimage.util import img_as_ubyte
+
+from openptv2.gui.experiment import Experiment
+from openptv2.gui.ptv import _populate_tpar, py_detection_proc_c
 
 
 def test_detection_parameters_bug():
@@ -61,13 +62,13 @@ def test_detection_parameters_bug():
         }
         try:
             tpar_gui = _populate_tpar(target_params_gui, experiment.get_n_cam())
-            print(f"   GUI TargetParams created with default values (likely all zeros)")
+            print("   GUI TargetParams created with default values (likely all zeros)")
         except Exception as e:
             print(f"   GUI TargetParams creation failed: {e}")
     else:
         target_params_gui = {"targ_rec": targ_rec_params}
         tpar_gui = _populate_tpar(target_params_gui, experiment.get_n_cam())
-        print(f"   GUI TargetParams will have values from targ_rec")
+        print("   GUI TargetParams will have values from targ_rec")
     print()
 
     # Test sequence approach (correct)
@@ -81,7 +82,7 @@ def test_detection_parameters_bug():
         print("   ✅ Sequence will work - 'detect_plate' section exists!")
         target_params_seq = {"detect_plate": detect_plate_params}
         tpar_seq = _populate_tpar(target_params_seq, experiment.get_n_cam())
-        print(f"   Sequence TargetParams will have proper values")
+        print("   Sequence TargetParams will have proper values")
         print(
             f"   Grey thresholds: {[tpar_seq.get_grey_thresholds()[i] for i in range(4)]}"
         )

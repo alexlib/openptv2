@@ -63,7 +63,6 @@ from openptv2.autocalibration import (
     _matched_pairs,
     cam_files,
     resolve_calblock,
-    rms_px,
     target_base,
 )
 

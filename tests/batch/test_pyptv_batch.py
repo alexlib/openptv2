@@ -1,16 +1,15 @@
-import pytest
-from pathlib import Path
-from openptv2.batch import pyptv_batch
-import tempfile
-import shutil
-import yaml
-from scipy.optimize import minimize
-import pandas as pd
-import io
-import sys
-import re
-import subprocess
 import os
+import re
+import shutil
+import subprocess
+import sys
+import tempfile
+from pathlib import Path
+
+import pytest
+import yaml
+
+from openptv2.batch import pyptv_batch
 
 
 def _get_env_with_pythonpath() -> dict:
@@ -150,6 +149,7 @@ def test_pyptv_batch_with_repetitions(test_data_dir):
 def test_pyptv_batch_validation_errors():
     """Test that proper validation errors are raised"""
     from pathlib import Path
+
     from openptv2.batch.pyptv_batch import ProcessingError, validate_experiment_setup
 
     # Test non-existent YAML file
@@ -271,9 +271,7 @@ def test_pyptv_batch_tracking_mode_only(test_data_dir):
 
 def test_pyptv_batch_tracking_mode_only_with_temp_yaml(cavity_workdir):
     """Test tracking mode only, using a temporary copy of the original YAML file. Print tracking parameters before running tracking."""
-    import tempfile
     import shutil
-    import yaml
 
     test_dir = cavity_workdir
     orig_yaml = test_dir / "parameters_Run1.yaml"
@@ -318,11 +316,7 @@ def test_pyptv_batch_tracking_mode_only_with_temp_yaml(cavity_workdir):
 
 def test_pyptv_batch_tracking_mode_only_with_temp_yaml_collect_results(cavity_workdir):
     """Test tracking mode only, collect tracking parameters and average output in a pandas DataFrame, parsing 'Average over sequence' output from file. Print output for debugging if subprocess fails."""
-    import tempfile
     import shutil
-    import yaml
-    import re
-    import subprocess
 
     test_dir = cavity_workdir
     orig_yaml = test_dir / "parameters_Run1.yaml"

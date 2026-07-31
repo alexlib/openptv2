@@ -2,13 +2,12 @@
 import pytest
 from pydantic import ValidationError
 
+from openptv2.gui.parameter_manager import ParameterManager
 from openptv2.gui.parameter_models import (
     AllParams,
     CalOriParams,
     PtvParams,
 )
-from openptv2.gui.parameter_manager import ParameterManager
-
 
 # --- CalOriParams ---
 

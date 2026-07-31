@@ -2,19 +2,18 @@
 Editor for editing the cameras ori files
 """
 import os
+from pathlib import Path
 
 # Imports:
 from traits.api import (
-    HasTraits,
+    Button,
     Code,
+    HasTraits,
     Int,
     List,
-    Button,
 )
+from traitsui.api import Group, Item, ListEditor, View
 
-from traitsui.api import Item, Group, View, ListEditor
-
-from pathlib import Path
 from .experiment import Experiment
 
 
@@ -91,10 +90,10 @@ class oriEditor(HasTraits):
         """Initialize by reading parameters and filling the editor windows"""
         ptv_params = experiment.get_parameter('ptv')
         cal_ori_params = experiment.get_parameter('cal_ori')
-        
+
         if ptv_params is None or cal_ori_params is None:
             raise ValueError("Failed to load required parameters")
-            
+
         self.n_img = int(experiment.pm.num_cams)
         img_ori = cal_ori_params['img_ori']
 
@@ -129,10 +128,10 @@ class addparEditor(HasTraits):
         """Initialize by reading parameters and filling the editor windows"""
         ptv_params = experiment.get_parameter('ptv')
         cal_ori_params = experiment.get_parameter('cal_ori')
-        
+
         if ptv_params is None or cal_ori_params is None:
             raise ValueError("Failed to load required parameters")
-            
+
         self.n_img = int(experiment.pm.num_cams)
         img_ori = cal_ori_params['img_ori']
 

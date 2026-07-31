@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import os
+
 import openptv2 as optv
 from openptv2.calibration import Calibration
 from openptv2.parameters import ControlParams

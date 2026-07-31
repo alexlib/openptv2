@@ -7,9 +7,8 @@ This module provides session-scoped fixtures for test data setup and cleanup.
 
 
 
-import pytest
-import sys
 import importlib
+import sys
 
 # Register optv package and its submodules as aliases in sys.modules for legacy compatibility
 try:
@@ -26,10 +25,11 @@ except ImportError:
 
 # Register pyptv package and its submodules as aliases in sys.modules
 try:
-    import openptv2.gui as _gui
     import openptv2.gui.pyptv as _pyptv_base
+
+    import openptv2.gui as _gui
     sys.modules["pyptv"] = _pyptv_base
-    
+
     for sub, target in _gui.submodule_mapping.items():
         try:
             # Map the alias directly using the registered lazy shim

@@ -13,15 +13,19 @@ Run with:
 Compiled-mode safety: skip tests that depend on pure-Python internals.
 """
 
-import io
 import os
-import sys
-import tempfile
 from pathlib import Path
 
 import numpy as np
 import pytest
 
+from openptv2.algorithms.constants import (
+    CORRES_NONE,
+    NEXT_NONE,
+    POSI,
+    PREV_NONE,
+    PT_UNUSED,
+)
 from openptv2.algorithms.tracking_frame_buf import (
     CallableFloat,
     CallableInt,
@@ -30,8 +34,9 @@ from openptv2.algorithms.tracking_frame_buf import (
     Frame,
     FrameBuf,
     Pathinfo,
-    TargetArray,
     Target,
+    TargetArray,
+    _resolve_file_base,
     compare_corres,
     compare_path_info,
     compare_targets,
@@ -42,9 +47,7 @@ from openptv2.algorithms.tracking_frame_buf import (
     reset_links,
     write_path_frame,
     write_targets,
-    _resolve_file_base,
 )
-from openptv2.algorithms.constants import POSI, PT_UNUSED, CORRES_NONE, PREV_NONE, NEXT_NONE
 
 # ---------------------------------------------------------------------------
 # Module-level guard: skip this file when running compiled (.so) mode

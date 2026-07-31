@@ -4,11 +4,11 @@ __generated_with = "0.23.0"
 app = marimo.App(width="full")
 
 with app.setup:
-    import marimo as mo
-    import numpy as np
-    import matplotlib.pyplot as plt
     from pathlib import Path
-    from typing import Dict, List, Tuple, Any
+
+    import marimo as mo
+    import matplotlib.pyplot as plt
+    import numpy as np
     import yaml
 
 

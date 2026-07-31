@@ -1,12 +1,14 @@
 """Streamlined batch transformations and distortion corrections."""
 
 import numpy as np
+
 from openptv2.algorithms.trafo import (
-    pixel_to_metric_batch,
-    metric_to_pixel_batch,
     correct_brown_affine_batch,
     distort_brown_affine_batch,
+    metric_to_pixel_batch,
+    pixel_to_metric_batch,
 )
+
 
 def convert_arr_pixel_to_metric(input_arr, cpar, out=None):
     """

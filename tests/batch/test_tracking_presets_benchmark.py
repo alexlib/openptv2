@@ -1,8 +1,9 @@
 import shutil
 import time
-import yaml
 from pathlib import Path
+
 import pytest
+import yaml
 
 from openptv2.batch.pyptv_batch import run_batch
 

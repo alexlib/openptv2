@@ -1,8 +1,7 @@
-import os
-import shutil
-import tempfile
-import pytest
 from pathlib import Path
+
+import pytest
+
 from openptv2.gui.parameter_util import legacy_to_yaml, yaml_to_legacy
 
 

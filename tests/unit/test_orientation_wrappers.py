@@ -5,7 +5,6 @@ multi_cam_point_positions, and point_positions produce identical results
 to the optv (Cython) implementations.
 """
 
-import copy
 import random
 
 import numpy as np
@@ -20,9 +19,9 @@ from openptv2.algorithms.orientation import (
     multi_cam_point_positions,
     point_positions,
 )
-from openptv2.algorithms.parameters import ControlPar, VolumePar, MmNp
-from openptv2.algorithms.trafo import metric_to_pixel
+from openptv2.algorithms.parameters import ControlPar, MmNp, VolumePar
 from openptv2.algorithms.tracking_frame_buf import Target
+from openptv2.algorithms.trafo import metric_to_pixel
 
 
 @pytest.fixture
@@ -340,8 +339,8 @@ class TestCythonParity:
 
     def test_point_positions_parity(self):
         """Python multi_cam_point_positions matches optv point_positions."""
-        from optv.orientation import point_positions as optv_pp
         from optv.imgcoord import image_coordinates as optv_imgcoord
+        from optv.orientation import point_positions as optv_pp
 
         # Python objects
         py_cals = [
@@ -401,8 +400,8 @@ class TestCythonParity:
 
     def test_external_calibration_parity(self):
         """Python external_calibration matches optv external_calibration."""
-        from optv.orientation import external_calibration as optv_ext_cal
         from optv.imgcoord import image_coordinates as optv_imgcoord
+        from optv.orientation import external_calibration as optv_ext_cal
         from optv.transforms import convert_arr_metric_to_pixel as optv_m2p
 
         ori = "test_data/calibration/cam1.tif.ori"
@@ -469,10 +468,10 @@ class TestCythonParity:
 
     def test_full_calibration_parity(self):
         """Python full_calibration matches optv full_calibration."""
-        from optv.orientation import full_calibration as optv_full_cal
         from optv.imgcoord import image_coordinates as optv_imgcoord
-        from optv.transforms import convert_arr_metric_to_pixel as optv_m2p
+        from optv.orientation import full_calibration as optv_full_cal
         from optv.tracking_framebuf import TargetArray
+        from optv.transforms import convert_arr_metric_to_pixel as optv_m2p
 
         ori = "test_data/calibration/cam1.tif.ori"
         add = "test_data/calibration/cam2.tif.addpar"
@@ -550,10 +549,10 @@ class TestCythonParity:
 
     def test_match_detection_to_ref_parity(self):
         """Python match_detection_to_ref matches optv version."""
-        from optv.orientation import match_detection_to_ref as optv_match
         from optv.imgcoord import image_coordinates as optv_imgcoord
-        from optv.transforms import convert_arr_metric_to_pixel as optv_m2p
+        from optv.orientation import match_detection_to_ref as optv_match
         from optv.tracking_framebuf import TargetArray
+        from optv.transforms import convert_arr_metric_to_pixel as optv_m2p
 
         ori = "test_data/calibration/cam1.tif.ori"
         add = "test_data/calibration/cam2.tif.addpar"

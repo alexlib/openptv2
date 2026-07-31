@@ -1,10 +1,7 @@
-import os
-import shutil
-import tempfile
 import pandas as pd
-import numpy as np
-import pytest
+
 from openptv2.gui.flowtracks_utils import export_ptv_is_to_paraview
+
 
 def make_fake_ptv_is_files(tmpdir, n_frames=3, n_particles=2):
     """Create fake ptv_is.# files for testing export_ptv_is_to_paraview."""

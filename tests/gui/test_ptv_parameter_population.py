@@ -1,14 +1,26 @@
 """Unit tests for parameter population functions in ptv.py"""
 
 import pytest
-import numpy as np
-from openptv2.gui.ptv import _populate_cpar, _populate_spar, _populate_vpar, _populate_track_par, _populate_tpar
-from openptv2.parameters import ControlParams, SequenceParams, VolumeParams, TrackingParams, TargetParams
+
+from openptv2.gui.ptv import (
+    _populate_cpar,
+    _populate_spar,
+    _populate_tpar,
+    _populate_track_par,
+    _populate_vpar,
+)
+from openptv2.parameters import (
+    ControlParams,
+    SequenceParams,
+    TargetParams,
+    TrackingParams,
+    VolumeParams,
+)
 
 
 class TestPopulateCpar:
     """Test _populate_cpar function"""
-    
+
     def test_populate_cpar_basic(self):
         """Test basic control parameter population"""
         ptv_params = {
@@ -27,14 +39,14 @@ class TestPopulateCpar:
             'img_cal': ['cal1.tif', 'cal2.tif']
         }
         num_cams = 2
-        
+
         result = _populate_cpar(ptv_params, num_cams)
-        
+
         assert isinstance(result, ControlParams)
         assert result.get_image_size() == (1024, 768)
         assert result.get_pixel_size() == (0.01, 0.01)
         assert result.get_hp_flag() == 1
-    
+
     def test_populate_cpar_missing_required_params(self):
         """Test control parameter population with missing required parameters"""
         ptv_params = {
@@ -44,10 +56,10 @@ class TestPopulateCpar:
             'pix_y': 0.01,
         }
         num_cams = 2
-        
+
         with pytest.raises(ValueError, match="img_cal_list is too short"):
             _populate_cpar(ptv_params, num_cams)
-    
+
     def test_populate_cpar_invalid_img_cal_length(self):
         """Test with mismatched img_cal list length"""
         ptv_params = {
@@ -73,7 +85,7 @@ class TestPopulateCpar:
 
 class TestPopulateSpar:
     """Test _populate_spar function"""
-    
+
     def test_populate_spar_basic(self):
         """Test basic sequence parameter population"""
         seq_params = {
@@ -82,13 +94,13 @@ class TestPopulateSpar:
             'base_name': ['img1_%04d.tif', 'img2_%04d.tif']
         }
         num_cams = 2
-        
+
         result = _populate_spar(seq_params, num_cams)
-        
+
         assert isinstance(result, SequenceParams)
         assert result.get_first() == 1000
         assert result.get_last() == 1010
-    
+
     def test_populate_spar_missing_required_params(self):
         """Test sequence parameter population with missing required parameters"""
         seq_params = {
@@ -96,10 +108,10 @@ class TestPopulateSpar:
             # Missing 'last' and 'base_name'
         }
         num_cams = 2
-        
+
         with pytest.raises(ValueError, match="Missing required sequence parameters"):
             _populate_spar(seq_params, num_cams)
-    
+
     def test_populate_spar_invalid_base_name_length(self):
         """Test with mismatched base_name list length"""
         seq_params = {
@@ -108,14 +120,14 @@ class TestPopulateSpar:
             'base_name': ['img1_%04d.tif']  # Only 1 camera, but num_cams = 2
         }
         num_cams = 2
-        
+
         with pytest.raises(ValueError, match="base_name_list length"):
             _populate_spar(seq_params, num_cams)
 
 
 class TestPopulateVpar:
     """Test _populate_vpar function"""
-    
+
     def test_populate_vpar_basic(self):
         """Test basic volume parameter population"""
         crit_params = {
@@ -129,27 +141,27 @@ class TestPopulateVpar:
             'csumg': 0.02,
             'corrmin': 33.0
         }
-        
+
         result = _populate_vpar(crit_params)
-        
+
         assert isinstance(result, VolumeParams)
         assert result.get_eps0() == 0.1
         assert result.get_cn() == 0.5
-    
+
     def test_populate_vpar_missing_required_params(self):
         """Test volume parameter population with missing required parameters"""
         crit_params = {
             'X_lay': [0, 10],
             # Missing other required parameters
         }
-        
+
         with pytest.raises(KeyError):
             _populate_vpar(crit_params)
 
 
 class TestPopulateTrackPar:
     """Test _populate_track_par function"""
-    
+
     def test_populate_track_par_basic(self):
         """Test basic tracking parameter population"""
         track_params = {
@@ -163,14 +175,14 @@ class TestPopulateTrackPar:
             'dacc': 5.0,
             'flagNewParticles': 1
         }
-        
+
         result = _populate_track_par(track_params)
-        
+
         assert isinstance(result, TrackingParams)
         assert result.get_dvxmin() == -2.0
         assert result.get_dvxmax() == 2.0
         assert result.get_dacc() == 5.0
-    
+
     def test_populate_track_par_missing_required_params(self):
         """Test tracking parameter population with missing required parameters"""
         track_params = {
@@ -178,17 +190,17 @@ class TestPopulateTrackPar:
             'dvxmax': 2.0,
             # Missing other required parameters
         }
-        
+
         with pytest.raises(ValueError, match="Missing required tracking parameters"):
             _populate_track_par(track_params)
-    
+
     # (removed test_populate_track_par_all_missing — identical to
     #  tests/gui/test_populate_parameters.py::test_populate_track_par_minimal)
 
 
 class TestPopulateTpar:
     """Test _populate_tpar function"""
-    
+
     def test_populate_tpar_detect_plate(self):
         """Test target parameter population with detect_plate format"""
         targ_params = {
@@ -208,14 +220,14 @@ class TestPopulateTpar:
             }
         }
         num_cams = 4
-        
+
         result = _populate_tpar(targ_params, num_cams)
-        
+
         assert isinstance(result, TargetParams)
         grey_thresholds = result.get_grey_thresholds()
         assert len(grey_thresholds) == 4
         assert all(th == 50 for th in grey_thresholds)
-    
+
     def test_populate_tpar_targ_rec(self):
         """Test target parameter population with targ_rec format"""
         targ_params = {
@@ -232,14 +244,14 @@ class TestPopulateTpar:
             }
         }
         num_cams = 4
-        
+
         result = _populate_tpar(targ_params, num_cams)
-        
+
         assert isinstance(result, TargetParams)
         grey_thresholds = result.get_grey_thresholds()
         assert len(grey_thresholds) == 4
         assert all(th == 50 for th in grey_thresholds)
-    
+
     def test_populate_tpar_missing_detect_plate_params(self):
         """Test target parameter population with missing detect_plate parameters"""
         targ_params = {
@@ -250,20 +262,20 @@ class TestPopulateTpar:
             }
         }
         num_cams = 4
-        
+
         with pytest.raises(ValueError):
             _populate_tpar(targ_params, num_cams)
-    
+
     def test_populate_tpar_missing_section(self):
         """Test target parameter population with missing section"""
         targ_params = {
             'invalid_section': {}
         }
         num_cams = 4
-        
+
         with pytest.raises(ValueError, match="Target parameters must contain either"):
             _populate_tpar(targ_params, num_cams)
-    
+
     def test_populate_tpar_missing_grey_thresholds(self):
         """Test target parameter population with missing grey thresholds"""
         targ_params = {
@@ -282,7 +294,7 @@ class TestPopulateTpar:
             }
         }
         num_cams = 4
-        
+
         with pytest.raises(ValueError, match="Missing required grey threshold keys"):
             _populate_tpar(targ_params, num_cams)
 

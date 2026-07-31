@@ -9,11 +9,10 @@ Recall, and Trajectory Continuity across the tracking presets:
 
 import shutil
 import time
-import tempfile
 from pathlib import Path
+
 import numpy as np
 import yaml
-import pytest
 
 from openptv2.batch.pyptv_batch import run_batch
 

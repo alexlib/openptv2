@@ -10,8 +10,9 @@ Run via the coverage recipe:
       --cov-report=term-missing \
       -q
 """
-import pytest
 from unittest.mock import MagicMock, patch
+
+import pytest
 
 # ---------------------------------------------------------------------------
 # Skip when the compiled .so is active
@@ -22,10 +23,10 @@ if _is_compiled():
     pytest.skip("pure-Python coverage tests only", allow_module_level=True)
 
 from openptv2.algorithms.parameters import (
+    ControlPar,
     SequencePar,
     TrackPar,
     VolumePar,
-    ControlPar,
     convert_track_par_to_tuple,
 )
 from openptv2.algorithms.tracking_run import TrackingRun, tr_new

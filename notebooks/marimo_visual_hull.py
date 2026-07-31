@@ -17,8 +17,8 @@ app = marimo.App(width="medium")
 @app.cell
 def _():
     import marimo as mo
-    import numpy as np
     import matplotlib.pyplot as plt
+    import numpy as np
 
     return mo, np, plt
 
@@ -59,6 +59,7 @@ def _(load_btn, mo, np, yaml_input):
 
     from openptv2.gui.pyptv.parameter_manager import ParameterManager
     from openptv2.gui.pyptv.ptv import py_start_proc_c
+
     from openptv2 import image_coordinates
 
     yaml_path = Path(yaml_input.value).expanduser().resolve()

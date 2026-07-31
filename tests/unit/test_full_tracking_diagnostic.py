@@ -10,35 +10,45 @@ Usage:
 """
 
 import math
-import numpy as np
-import yaml
 from pathlib import Path
-from dataclasses import dataclass, field
 
+import numpy as np
 import pytest
+import yaml
 
-from openptv2.algorithms.parameters import (
-    ControlPar, VolumePar, TargetPar, SequencePar,
-    TrackPar, MmNp, convert_track_par_to_tuple,
-)
 from openptv2.algorithms.calibration import Calibration
-from openptv2.algorithms.segmentation import targ_rec
-from openptv2.algorithms.image_processing import prepare_image
 from openptv2.algorithms.correspondences import (
-    correspondences as algo_correspondences, correct_frame,
+    correct_frame,
+)
+from openptv2.algorithms.correspondences import (
+    correspondences as algo_correspondences,
 )
 from openptv2.algorithms.epi import Coord2d
-from openptv2.algorithms.tracking_frame_buf import (
-    Frame, Target, read_targets, write_targets,
-)
-from openptv2.algorithms.trafo import pixel_to_metric, dist_to_flat
+from openptv2.algorithms.image_processing import prepare_image
 from openptv2.algorithms.orientation import point_positions as algo_point_positions
+from openptv2.algorithms.parameters import (
+    ControlPar,
+    MmNp,
+    SequencePar,
+    TargetPar,
+    TrackPar,
+    VolumePar,
+    convert_track_par_to_tuple,
+)
+from openptv2.algorithms.segmentation import targ_rec
 from openptv2.algorithms.track import (
-    track_forward_start, trackcorr_c_loop, trackcorr_c_finish,
-    trackback_c, angle_acc,
+    angle_acc,
+    track_forward_start,
+    trackback_c,
+    trackcorr_c_finish,
+    trackcorr_c_loop,
+)
+from openptv2.algorithms.tracking_frame_buf import (
+    Frame,
+    write_targets,
 )
 from openptv2.algorithms.tracking_run import TrackingRun
-
+from openptv2.algorithms.trafo import dist_to_flat, pixel_to_metric
 
 # ---------------------------------------------------------------------------
 # helpers
@@ -203,8 +213,8 @@ def _correct_targets(targets, cpar, cal):
 @pytest.fixture
 def cavity_setup(tmp_path):
     """Load cavity parameters and calibrations."""
-    import shutil
     import os
+    import shutil
 
     if not YAML_PATH.exists():
         pytest.skip("Cavity test data not available")
@@ -241,10 +251,9 @@ def cavity_setup(tmp_path):
 @pytest.mark.slow
 def test_full_pipeline_diagnostic(cavity_setup, monkeypatch):
     """Run the complete pipeline with detailed logging at every stage."""
-    import os
+    from skimage.color import rgb2gray
     from skimage.io import imread
     from skimage.util import img_as_ubyte
-    from skimage.color import rgb2gray
 
     cfg = cavity_setup
     cpar = cfg["cpar"]
@@ -353,7 +362,7 @@ def test_full_pipeline_diagnostic(cavity_setup, monkeypatch):
     all_corresp = {}    # frame -> ndarray (num_cams, N)
 
     # Diagnostic: check epi_mm for first frame, first target in cam0→cam1
-    from openptv2.algorithms.epi import epi_mm, find_candidate
+    from openptv2.algorithms.epi import epi_mm
     first_corr = all_corrected[spar.first]
     if len(first_corr[0]) > 0:
         c = first_corr[0][0]
@@ -639,7 +648,7 @@ def test_full_pipeline_diagnostic(cavity_setup, monkeypatch):
     print(f"  TrackingRun created: lmax={run.lmax:.2f}")
 
     track_forward_start(run)
-    print(f"  track_forward_start done")
+    print("  track_forward_start done")
 
     # --- DIAGNOSTIC: quick projection sanity check ---
     from openptv2.algorithms.track import point_to_pixel

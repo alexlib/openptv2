@@ -1,27 +1,28 @@
-import numpy as np
-import pytest
 from pathlib import Path
 
+import numpy as np
+import pytest
+
+from openptv2.algorithms.calibration import Calibration
+from openptv2.algorithms.imgcoord import img_coord
 from openptv2.algorithms.orientation import (
-    read_man_ori_fix,
-    read_calblock,
-    raw_orient,
     orient,
-    skew_midpoint,
     point_position,
+    raw_orient,
+    read_calblock,
+    read_man_ori_fix,
+    skew_midpoint,
     weighted_dumbbell_precision,
 )
-from openptv2.algorithms.calibration import Calibration
 from openptv2.algorithms.parameters import (
     ControlPar,
-    OrientPar,
     MultimediaPar,
+    OrientPar,
     VolumePar,
 )
-from openptv2.algorithms.imgcoord import img_coord
-from openptv2.algorithms.trafo import metric_to_pixel
 from openptv2.algorithms.tracking_frame_buf import Target
-from openptv2.algorithms.vec_utils import vec_set, vec_cmp, vec_subt, vec_norm, vec_copy
+from openptv2.algorithms.trafo import metric_to_pixel
+from openptv2.algorithms.vec_utils import vec_cmp, vec_copy, vec_norm, vec_subt
 
 EPS = 1e-6
 
@@ -29,10 +30,10 @@ EPS = 1e-6
 def _has_optv():
     try:
         from optv.orientation import (
+            dumbbell_target_func,
             external_calibration,
             full_calibration,
             point_positions,
-            dumbbell_target_func,
         )
 
         return True
@@ -486,9 +487,9 @@ def _make_ref_pts_grid():
 def test_external_calibration_parity():
     """Compare Python raw_orient against C external_calibration."""
     from optv.calibration import Calibration as CCalib
-    from optv.parameters import ControlParams as CControlParams
-    from optv.orientation import external_calibration
     from optv.imgcoord import image_coordinates
+    from optv.orientation import external_calibration
+    from optv.parameters import ControlParams as CControlParams
     from optv.transforms import convert_arr_metric_to_pixel
 
     ori_file = "test_data/calibration/cam1.tif.ori"
@@ -551,11 +552,11 @@ def test_external_calibration_parity():
 def test_full_calibration_parity():
     """Compare Python orient against C full_calibration."""
     from optv.calibration import Calibration as CCalib
-    from optv.parameters import ControlParams as CControlParams
-    from optv.orientation import full_calibration
     from optv.imgcoord import image_coordinates
-    from optv.transforms import convert_arr_metric_to_pixel
+    from optv.orientation import full_calibration
+    from optv.parameters import ControlParams as CControlParams
     from optv.tracking_framebuf import TargetArray
+    from optv.transforms import convert_arr_metric_to_pixel
 
     ori_file = "test_data/calibration/cam1.tif.ori"
     add_file = "test_data/calibration/cam1.tif.addpar"
@@ -629,11 +630,11 @@ def test_full_calibration_parity():
 def test_full_calibration_with_flags_parity():
     """Compare Python orient with cc/xh flags against C full_calibration."""
     from optv.calibration import Calibration as CCalib
-    from optv.parameters import ControlParams as CControlParams
-    from optv.orientation import full_calibration
     from optv.imgcoord import image_coordinates
-    from optv.transforms import convert_arr_metric_to_pixel
+    from optv.orientation import full_calibration
+    from optv.parameters import ControlParams as CControlParams
     from optv.tracking_framebuf import TargetArray
+    from optv.transforms import convert_arr_metric_to_pixel
 
     ori_file = "test_data/calibration/cam1.tif.ori"
     add_file = "test_data/calibration/cam1.tif.addpar"
@@ -719,12 +720,14 @@ def test_full_calibration_with_flags_parity():
 def test_point_positions_parity():
     """Compare Python point_position against C point_positions (multi-cam)."""
     from optv.calibration import Calibration as CCalib
+    from optv.imgcoord import image_coordinates
+    from optv.orientation import point_positions
     from optv.parameters import (
         ControlParams as CControlParams,
+    )
+    from optv.parameters import (
         VolumeParams as CVolumeParams,
     )
-    from optv.orientation import point_positions
-    from optv.imgcoord import image_coordinates
 
     control_file = "test_data/control_parameters/control.par"
     volume_file = "test_data/corresp/criteria.par"
@@ -795,9 +798,9 @@ def test_point_positions_parity():
 def test_dumbbell_parity():
     """Compare Python weighted_dumbbell_precision against C dumbbell_target_func."""
     from optv.calibration import Calibration as CCalib
-    from optv.parameters import ControlParams as CControlParams
-    from optv.orientation import dumbbell_target_func
     from optv.imgcoord import flat_image_coordinates as c_flat_img_coord
+    from optv.orientation import dumbbell_target_func
+    from optv.parameters import ControlParams as CControlParams
 
     control_file = "test_data/control_parameters/control.par"
 

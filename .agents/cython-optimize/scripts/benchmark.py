@@ -23,7 +23,6 @@ If --compiled-module is omitted, only the plain-Python timing is reported
 (useful before you've built the extension yet, as a baseline).
 """
 import argparse
-import importlib
 import os
 import sys
 import timeit

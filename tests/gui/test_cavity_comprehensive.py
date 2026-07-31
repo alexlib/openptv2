@@ -1,19 +1,21 @@
-import sys
 import os
-import pytest
+import sys
 from pathlib import Path
+
 import numpy as np
+import pytest
 
 from openptv2.gui.parameter_manager import ParameterManager
 
 # Add pyptv to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from openptv2.gui.experiment import Experiment
-from openptv2.gui import ptv
-from skimage.io import imread
 from skimage.color import rgb2gray
+from skimage.io import imread
 from skimage.util import img_as_ubyte
+
+from openptv2.gui import ptv
+from openptv2.gui.experiment import Experiment
 
 
 @pytest.fixture
@@ -226,7 +228,7 @@ def test_pyptv_core_initialization(test_cavity_setup):
             f"Expected {experiment.pm.num_cams} calibrations, got {len(cals)}"
         )
 
-        print(f"Successfully initialized PyPTV core:")
+        print("Successfully initialized PyPTV core:")
         print(f"  - Camera parameters: {cpar}")
         print(f"  - Target parameters: {tpar}")
         print(f"  - Calibrations: {len(cals)} items")

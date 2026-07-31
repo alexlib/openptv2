@@ -1,10 +1,9 @@
 """Detailed tracking performance analysis"""
 
+import math
 import subprocess
 import sys
-import math
 from pathlib import Path
-import pytest
 
 
 def analyze_tracking_performance():
@@ -175,7 +174,7 @@ def check_tracking_parameters():
         vy_range = track_params["dvymax"] - track_params["dvymin"]
         vz_range = track_params["dvzmax"] - track_params["dvzmin"]
 
-        print(f"\n📏 Velocity Ranges:")
+        print("\n📏 Velocity Ranges:")
         print(f"X velocity range: {vx_range} (±{vx_range / 2})")
         print(f"Y velocity range: {vy_range} (±{vy_range / 2})")
         print(f"Z velocity range: {vz_range} (±{vz_range / 2})")

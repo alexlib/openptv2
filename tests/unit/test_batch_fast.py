@@ -10,16 +10,20 @@ import numpy as np
 import pytest
 
 from openptv2.algorithms.calibration import Calibration
-from openptv2.algorithms.parameters import ControlPar, VolumePar, MmNp
 from openptv2.algorithms.imgcoord import (
-    img_coord, img_coord_batch,
-    flat_image_coord, flat_image_coord_batch,
+    flat_image_coord,
+    flat_image_coord_batch,
+    img_coord,
+    img_coord_batch,
 )
-from openptv2.algorithms.ray_tracing import ray_tracing, ray_tracing_batch
 from openptv2.algorithms.orientation import point_position, point_position_batch
+from openptv2.algorithms.parameters import ControlPar, VolumePar
+from openptv2.algorithms.ray_tracing import ray_tracing, ray_tracing_batch
 from openptv2.algorithms.trafo import (
-    pixel_to_metric, pixel_to_metric_batch,
-    metric_to_pixel, metric_to_pixel_batch,
+    metric_to_pixel,
+    metric_to_pixel_batch,
+    pixel_to_metric,
+    pixel_to_metric_batch,
 )
 
 

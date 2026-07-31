@@ -22,13 +22,12 @@ app = marimo.App(width="full", auto_download=["ipynb"])
 @app.cell
 def _():
     import marimo as mo
-    import matplotlib.pyplot as plt
     import numpy as np
-    from wigglystuff import ChartPuck
-
     from imageio.v3 import imread
     from skimage.color import rgb2gray
     from skimage.util import img_as_ubyte
+    from wigglystuff import ChartPuck
+
     from openptv2.gui import ptv
 
 
@@ -37,7 +36,7 @@ def _():
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(f"""
+    mo.md("""
     ## Interactive Manual Orientation with `pyptv`
 
     This notebook demonstrates how to load parameters from a YAML file, display calibration images, and allow manual adjustment of orientation points (pucks).
@@ -54,6 +53,7 @@ def _(mo):
 @app.cell
 def _(test_yaml):
     from pathlib import Path
+
     from openptv2.gui.pyptv.parameter_manager import ParameterManager
 
     # Path to the YAML file - check LV calibration first, then fallback
@@ -126,51 +126,51 @@ def _(ChartPuck, img_as_ubyte, imread, mo, pm, ptv, rgb2gray, yaml_path):
         for _i in range(num_cams):
             _cam_key = f"camera_{_i}"
             _cam_coords = coords.get(_cam_key, {})
-    
+
             _quadrant = split_order[_i]
             _dx = (_quadrant % 2) * (W // 2)
             _dy = (_quadrant // 2) * (H // 2)
-    
+
             _start_idx = _i * 4
             _end_idx = _start_idx + 4
             if _end_idx <= len(man_ori_nr):
                 _cam_point_ids = man_ori_nr[_start_idx:_end_idx]
             else:
                 _cam_point_ids = list(range(1, 5))  # Fallback
-        
+
             for _pt_idx in range(1, 5):
                 _pt_key = f"point_{_pt_idx}"
                 _pt = _cam_coords.get(_pt_key, {"x": 100, "y": 100})
-        
+
                 # Map from split to unsplit
                 _x_val = _pt["x"] + _dx
                 _y_val = _pt["y"] + _dy
-        
+
                 x_init.append(_x_val)
                 y_init.append(_y_val)
-        
+
         def draw_single_view(ax, widget):
             ax.imshow(temp_img, cmap="gray")
             ax.axis("off")
-        
+
             _global_idx = 0
             for _i in range(num_cams):
                 _quadrant = split_order[_i]
                 _dx = (_quadrant % 2) * (W // 2)
                 _dy = (_quadrant // 2) * (H // 2)
-            
+
                 _start_idx = _i * 4
                 _end_idx = _start_idx + 4
                 if _end_idx <= len(man_ori_nr):
                     _cam_point_ids = man_ori_nr[_start_idx:_end_idx]
                 else:
                     _cam_point_ids = list(range(1, 5))
-                
+
                 for _pt_idx in range(1, 5):
                     if _global_idx < len(widget.x) and _global_idx < len(widget.y):
                         _x_val = widget.x[_global_idx]
                         _y_val = widget.y[_global_idx]
-                    
+
                         if _pt_idx - 1 < len(_cam_point_ids):
                             _pid = _cam_point_ids[_pt_idx - 1]
                             ax.text(
@@ -191,7 +191,7 @@ def _(ChartPuck, img_as_ubyte, imread, mo, pm, ptv, rgb2gray, yaml_path):
             x=x_init,
             y=y_init,
             puck_color=puck_colors,
-            puck_radius=15, 
+            puck_radius=15,
         )
 
         widget = mo.ui.anywidget(puck)
@@ -309,16 +309,16 @@ def _(
             _w = calibration_widgets["SingleView"]
             _x_vals = _w.x
             _y_vals = _w.y
-    
+
             _global_idx = 0
             for _i in range(num_cams):
                 _c_key = f"camera_{_i}"
                 _updated_coords[_c_key] = {}
-        
+
                 _quadrant = split_order[_i]
                 _dx = (_quadrant % 2) * (W // 2)
                 _dy = (_quadrant // 2) * (H // 2)
-        
+
                 for _p_idx in range(4):
                     if _global_idx < len(_x_vals) and _global_idx < len(_y_vals):
                         _updated_coords[_c_key][f"point_{_p_idx + 1}"] = {
@@ -401,7 +401,7 @@ def _(
                 images_to_use.append(None)
 
     # 2. Compute initial automatic centroids
-    from scipy.ndimage import label, center_of_mass
+    from scipy.ndimage import center_of_mass, label
     from skimage.filters import threshold_otsu
 
     _initial_detected = {}
@@ -468,7 +468,7 @@ def _(
         if _img is not None:
             _h, _w = _img.shape[:2]
             _cam_key = f"camera_{_i}"
-        
+
             def _make_draw_centroids(_image_data, _ckey):
                 def _draw(ax, widget):
                     ax.imshow(_image_data, cmap="gray")
@@ -486,7 +486,7 @@ def _(
                 n_classes=1,
                 mode="lasso",
             )
-        
+
             select_widgets[f"Camera {_i + 1}"] = _puck_select
 
     tabs_widget = mo.ui.tabs(select_widgets)
@@ -516,7 +516,7 @@ def _(
         if _selected_tab_label:
             _cam_idx = int(_selected_tab_label.split()[-1]) - 1
             _cam_key = f"camera_{_cam_idx}"
-        
+
             _widget_key = f"Camera {_cam_idx + 1}"
             if _widget_key in select_widgets:
                 _w = select_widgets[_widget_key]
@@ -525,24 +525,24 @@ def _(
                     _indices_to_delete = _w.get_indices(_pts[:, 0], _pts[:, 1])
                     if len(_indices_to_delete) > 0:
                         _new_pts = np.delete(_pts, _indices_to_delete, axis=0)
-                    
+
                         _updated_dict = dict(centroids_state())
                         _updated_dict[_cam_key] = _new_pts
                         set_centroids_state(_updated_dict)
-                    
+
                         _w.clear()
 
     def save_targets_callback(_):
         _ptv_params = pm.parameters.get("ptv", {})
         _img_cal_paths = _ptv_params.get("img_cal", [f"cal/cam_{k+1}.tif" for k in range(num_cams)])
-    
+
         for _i, _path in enumerate(_img_cal_paths):
             _cam_key = f"camera_{_i}"
             _pts = centroids_state().get(_cam_key, np.array([]))
-        
+
             _target_path = (base_dir / f"{_path}_targets").resolve()
             _target_path.parent.mkdir(parents=True, exist_ok=True)
-        
+
             with open(_target_path, "w") as f:
                 f.write(f"{len(_pts)}\n")
                 for _idx, _pt in enumerate(_pts):

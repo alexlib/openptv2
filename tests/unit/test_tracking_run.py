@@ -1,30 +1,30 @@
 """Tests for TrackingRun initialization and frame reading."""
 
 import os
-import pytest
+
 import numpy as np
 
-from openptv2.algorithms.tracking_run import TrackingRun, tr_new
-from openptv2.algorithms.tracking_frame_buf import (
-    FrameBuf,
-    Frame,
-    Target,
-    Corres,
-    Pathinfo,
-    read_targets,
-    read_path_frame,
-    write_targets,
-    write_path_frame,
-)
+from openptv2.algorithms.calibration import Calibration
+from openptv2.algorithms.constants import NEXT_NONE, POSI, PREV_NONE, PT_UNUSED
 from openptv2.algorithms.parameters import (
     ControlPar,
     SequencePar,
-    VolumePar,
     TrackPar,
+    VolumePar,
     convert_track_par_to_tuple,
 )
-from openptv2.algorithms.calibration import Calibration
-from openptv2.algorithms.constants import PREV_NONE, NEXT_NONE, POSI, PT_UNUSED
+from openptv2.algorithms.tracking_frame_buf import (
+    Corres,
+    Frame,
+    FrameBuf,
+    Pathinfo,
+    Target,
+    read_path_frame,
+    read_targets,
+    write_path_frame,
+    write_targets,
+)
+from openptv2.algorithms.tracking_run import TrackingRun, tr_new
 
 EPS = 1e-5
 

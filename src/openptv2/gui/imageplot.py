@@ -12,15 +12,15 @@ Draws a colormapped image plot
 # Major library imports
 
 # Enthought library imports
-from enable.api import Component, ComponentEditor
-from traits.api import HasTraits, Instance
-from traitsui.api import Item, Group, View
+import imageio
 
 # Chaco imports
-from chaco.api import ArrayPlotData, viridis, Plot, HPlotContainer, VPlotContainer
+from chaco.api import ArrayPlotData, HPlotContainer, Plot, VPlotContainer, viridis
 from chaco.tools.api import PanTool, ZoomTool
-import imageio
+from enable.api import Component, ComponentEditor
 from numpy import array
+from traits.api import HasTraits, Instance
+from traitsui.api import Group, Item, View
 
 
 # ===============================================================================

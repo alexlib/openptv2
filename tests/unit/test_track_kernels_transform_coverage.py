@@ -41,27 +41,26 @@ if _is_compiled():
 # Imports under test
 # ---------------------------------------------------------------------------
 from openptv2.algorithms.track_kernels_transform import (
-    _multimed_r_nlay_1layer,
-    _ray_tracing_out,
-    _point_position_out,
-    point_position_fast,
-    pixel_to_metric_fast,
-    _pixel_to_metric_out,
-    dist_to_flat_fast,
-    _dist_to_flat_out,
-    assess_new_position_fast,
+    COORD_UNUSED,
+    PT_UNUSED,
     _candsearch_in_pix_rest_nogil,
-    assess_new_position_fast_nogil,
-    metric_to_pixel_fast,
-    _metric_to_pixel_out,
+    _dist_to_flat_out,
     _flat_image_coord_fast,
     _img_coord_fast,
-    img_coord_batch_fast,
+    _metric_to_pixel_out,
+    _multimed_r_nlay_1layer,
+    _pixel_to_metric_out,
+    _point_position_out,
+    _ray_tracing_out,
+    assess_new_position_fast,
+    assess_new_position_fast_nogil,
+    dist_to_flat_fast,
     flat_image_coord_batch_fast,
-    PT_UNUSED,
-    COORD_UNUSED,
+    img_coord_batch_fast,
+    metric_to_pixel_fast,
+    pixel_to_metric_fast,
+    point_position_fast,
 )
-
 
 # ---------------------------------------------------------------------------
 # Helpers: build a minimal 31-element calibration flat array

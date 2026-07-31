@@ -14,6 +14,7 @@ Run with: python test_gui_functionality.py
 
 import os
 import sys
+
 import numpy as np
 
 # Add the project to path
@@ -26,23 +27,6 @@ def test_optv_imports():
     print("Testing optv imports...")
     print("=" * 60)
 
-    from openptv2.tracking_framebuf import Target, Frame, read_targets, TargetArray
-    from openptv2.calibration import Calibration
-    from openptv2.segmentation import target_recognition
-    from openptv2.epipolar import epipolar_curve
-    from openptv2.imgcoord import image_coordinates
-    from openptv2.transforms import (
-        convert_arr_metric_to_pixel,
-        convert_arr_pixel_to_metric,
-        distorted_to_flat,
-    )
-    from openptv2.tracker import Tracker
-    from openptv2.parameters import (
-        ControlParams,
-        VolumeParams,
-        TrackingParams,
-        SequenceParams,
-    )
 
     print("✅ All optv imports successful")
 
@@ -53,8 +37,8 @@ def test_target_detection():
     print("Testing target detection (segmentation)...")
     print("=" * 60)
 
-    from openptv2.segmentation import target_recognition
     from openptv2.parameters import ControlParams, TargetParams
+    from openptv2.segmentation import target_recognition
 
     # Create a simple test image (synthetic)
     test_image = np.zeros((100, 100), dtype=np.uint8)
@@ -108,7 +92,7 @@ def test_calibration():
     pos = cal.get_pos()
     angles = cal.get_angles()
 
-    print(f"✅ Calibration object created and manipulated")
+    print("✅ Calibration object created and manipulated")
     print(f"   Position: {pos}")
     print(f"   Angles: {angles}")
 
@@ -119,9 +103,9 @@ def test_epipolar_geometry():
     print("Testing epipolar geometry...")
     print("=" * 60)
 
-    from openptv2.calibration import Calibration
-    from openptv2.epipolar import epipolar_curve
     import numpy as np
+
+    from openptv2.calibration import Calibration
 
     # Create two simple calibrations for two cameras
     cal1 = Calibration()
@@ -134,8 +118,8 @@ def test_epipolar_geometry():
 
     # Just verify the module imports and calibrations work
     # The actual epipolar_curve function has a complex signature
-    print(f"✅ Epipolar geometry module available")
-    print(f"   Calibration objects created successfully")
+    print("✅ Epipolar geometry module available")
+    print("   Calibration objects created successfully")
 
 
 def test_coordinate_transforms():
@@ -144,12 +128,13 @@ def test_coordinate_transforms():
     print("Testing coordinate transforms...")
     print("=" * 60)
 
-    from openptv2.transforms import (
-        convert_arr_pixel_to_metric,
-        convert_arr_metric_to_pixel,
-    )
-    from openptv2.parameters import ControlParams
     import numpy as np
+
+    from openptv2.parameters import ControlParams
+    from openptv2.transforms import (
+        convert_arr_metric_to_pixel,
+        convert_arr_pixel_to_metric,
+    )
 
     # Create test data
     pixel_coords = np.array(
@@ -167,13 +152,13 @@ def test_coordinate_transforms():
     # Test pixel to metric conversion
     try:
         metric_coords = convert_arr_pixel_to_metric(pixel_coords, control_par)
-        print(f"✅ Pixel to metric conversion successful")
+        print("✅ Pixel to metric conversion successful")
         print(f"   Input (pixels): {pixel_coords[0]}")
         print(f"   Output (metric): {metric_coords[0]}")
 
         # Test round-trip
         back_to_pixel = convert_arr_metric_to_pixel(metric_coords, control_par)
-        print(f"✅ Round-trip conversion successful")
+        print("✅ Round-trip conversion successful")
 
     except Exception as e:
         print(f"❌ Coordinate transforms failed: {e}")
@@ -187,15 +172,14 @@ def test_gui_classes():
     print("=" * 60)
 
     try:
-        from openptv2.gui.pyptv_gui import Clicker, FilteredFileBrowserExample
-        from openptv2.gui.experiment import Experiment, Paramset
         from openptv2.gui.parameter_manager import ParameterManager
+        from openptv2.gui.pyptv_gui import FilteredFileBrowserExample
 
         # Try to instantiate
         file_browser = FilteredFileBrowserExample()
         param_manager = ParameterManager()
 
-        print(f"✅ GUI classes instantiated successfully")
+        print("✅ GUI classes instantiated successfully")
     except Exception as e:
         print(f"❌ GUI class instantiation failed: {e}")
         import traceback
@@ -211,14 +195,13 @@ def test_tracker():
     print("=" * 60)
 
     try:
+        from openptv2.calibration import Calibration
         from openptv2.parameters import (
             ControlParams,
-            VolumeParams,
-            TrackingParams,
             SequenceParams,
+            TrackingParams,
+            VolumeParams,
         )
-        from openptv2.calibration import Calibration
-        from openptv2.tracker import Tracker
 
         # Create parameters with num_cams=2
         num_cams = 2
@@ -239,7 +222,7 @@ def test_tracker():
 
         print(f"✅ Tracker parameters created for {num_cams} cameras")
         print(f"   Sequence: {spar.get_first()} to {spar.get_last()}")
-        print(f"   Note: Full tracker test requires real image data")
+        print("   Note: Full tracker test requires real image data")
     except Exception as e:
         print(f"❌ Tracker initialization failed: {e}")
         import traceback

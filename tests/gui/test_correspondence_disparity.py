@@ -8,9 +8,10 @@ Usage:
 
 import os
 import shutil
+from pathlib import Path
+
 import numpy as np
 import pytest
-from pathlib import Path
 
 
 def _prepare_test_data(test_dir):
@@ -33,8 +34,8 @@ def cavity_dir():
 
 
 def _build_raw_algo_params(exp_pm, num_cams):
-    from openptv2.algorithms.parameters import ControlPar, VolumePar, TargetPar
     from openptv2.algorithms.calibration import Calibration
+    from openptv2.algorithms.parameters import ControlPar, TargetPar, VolumePar
 
     ptv_p = exp_pm.get_parameter("ptv")
     crit_p = exp_pm.get_parameter("criteria")
@@ -100,11 +101,12 @@ def test_detection_parity(cavity_dir):
     os.chdir(cavity_dir)
 
     try:
+        from imageio.v3 import imread
+        from skimage.color import rgb2gray
+        from skimage.util import img_as_ubyte
+
         from openptv2.gui.experiment import Experiment
         from openptv2.gui.ptv import py_start_proc_c, simple_highpass
-        from imageio.v3 import imread
-        from skimage.util import img_as_ubyte
-        from skimage.color import rgb2gray
 
         yaml_file = cavity_dir / "parameters_Run1.yaml"
         exp = Experiment()
@@ -131,7 +133,6 @@ def test_detection_parity(cavity_dir):
             t_o = o_tr(high_pass, tpar, i_cam, cpar_optv)
 
             from openptv2.algorithms.segmentation import targ_rec
-            from openptv2.algorithms.tracking_frame_buf import TargetArray
 
             # Get grey threshold for this camera
             gv = tp_raw.gvthres[i_cam]
@@ -178,17 +179,17 @@ def test_correspondence_raw_vs_optv(cavity_dir):
     os.chdir(cavity_dir)
 
     try:
-        from openptv2.gui.experiment import Experiment
-        from openptv2.gui.ptv import py_start_proc_c, simple_highpass
         from imageio.v3 import imread
-        from skimage.util import img_as_ubyte
         from skimage.color import rgb2gray
+        from skimage.util import img_as_ubyte
+
         from openptv2.algorithms.correspondences import (
             correspondences as raw_corr,
-            correct_frame,
         )
-        from openptv2.algorithms.tracking_frame_buf import Frame as AlgoFrame
         from openptv2.algorithms.epi import Coord2d
+        from openptv2.algorithms.tracking_frame_buf import Frame as AlgoFrame
+        from openptv2.gui.experiment import Experiment
+        from openptv2.gui.ptv import py_start_proc_c, simple_highpass
 
         yaml_file = cavity_dir / "parameters_Run1.yaml"
         exp = Experiment()
@@ -202,7 +203,7 @@ def test_correspondence_raw_vs_optv(cavity_dir):
             print(
                 f"Frame {frame}: raw algo.correspondences() vs optv.correspondences()"
             )
-            print(f"  (both using identical optv-detected targets)")
+            print("  (both using identical optv-detected targets)")
             print(f"{'=' * 60}")
 
             detections, corrected_optv = [], []

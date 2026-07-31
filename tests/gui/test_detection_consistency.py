@@ -3,14 +3,13 @@ Test that GUI manual detection and sequence detection use the same parameters
 and produce consistent results.
 """
 
-import pytest
-import numpy as np
 from pathlib import Path
-from unittest.mock import patch, MagicMock
 
-from openptv2.gui.ptv import py_detection_proc_c, py_start_proc_c, _populate_tpar
-from openptv2.gui.parameter_manager import ParameterManager
+import numpy as np
+import pytest
+
 from openptv2.gui.experiment import Experiment
+from openptv2.gui.ptv import _populate_tpar, py_start_proc_c
 
 
 class TestDetectionConsistency:

@@ -13,8 +13,8 @@ Usage:
 """
 
 import csv
-import shutil
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -635,8 +635,8 @@ def test_step5_triangulation(rembg_small_dir):
     total = sum(len(v) for v in frame_positions.values())
     print(f"\n  Total 3D positions (all frames): {total}")
     assert total > 0, "Zero 3D positions — correspondence failed"
-    print(f"  NOTE: High ray-convergence distances expected — default detection")
-    print(f"  finds different targets than rembg-masked GT.")
+    print("  NOTE: High ray-convergence distances expected — default detection")
+    print("  finds different targets than rembg-masked GT.")
     print("\n  PASS")
 
 
@@ -930,9 +930,9 @@ def test_step9_rt_is_vs_ground_truth(rembg_small_dir, rembg_small_yaml):
     print(f"  matched             : {total_matched}")
     print(f"  overall recall      : {overall_recall:.1%}  (min {GT_MIN_RECALL:.0%})")
     print(f"  median match dist   : {overall_median:.2f} mm")
-    print(f"\n  NOTE: Pipeline uses default high-pass detection, while GT")
-    print(f"  was generated from rembg-masked images. Different targets →")
-    print(f"  different 3D positions. Low recall is expected.")
+    print("\n  NOTE: Pipeline uses default high-pass detection, while GT")
+    print("  was generated from rembg-masked images. Different targets →")
+    print("  different 3D positions. Low recall is expected.")
 
     assert overall_recall >= GT_MIN_RECALL, (
         f"Recall {overall_recall:.1%} < {GT_MIN_RECALL:.0%}"
@@ -1036,8 +1036,8 @@ def test_step10_trajectories_vs_ground_truth(rembg_small_dir, rembg_small_yaml):
             f"{ {l: lengths.count(l) for l in sorted(set(lengths))} }"
         )
     else:
-        print(f"  (no trajectory links — expected when default detection")
-        print(f"   finds different targets than rembg-based GT)")
+        print("  (no trajectory links — expected when default detection")
+        print("   finds different targets than rembg-based GT)")
 
     print(f"\n  GT total : {len(gt_trajs)}  (full={GT_FULL}, exit={GT_EXIT})")
     print(f"  pipeline : {len(trajectories)} trajectories ({full} full-length)")

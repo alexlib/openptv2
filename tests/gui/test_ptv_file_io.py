@@ -1,26 +1,28 @@
 """Unit tests for file I/O functions in ptv.py"""
 
-import pytest
-import numpy as np
 from pathlib import Path
-from unittest.mock import Mock, patch, mock_open
+from unittest.mock import Mock, mock_open, patch
+
+import numpy as np
+import pytest
+
 from openptv2.gui.ptv import (
     _ensure_directory_writable,
     _ensure_target_output_writable,
     _prepare_output_path,
     _raise_output_write_error,
+    extract_cam_ids,
+    generate_short_file_bases,
     py_correspondences_proc_c,
+    read_rt_is_file,
     read_targets,
     write_targets,
-    read_rt_is_file,
-    generate_short_file_bases,
-    extract_cam_ids,
 )
 
 
 class TestReadTargets:
     """Test read_targets function"""
-    
+
     def test_read_targets_valid_file(self):
         """Test reading targets from a valid file"""
         mock_file_content = "2\n1 100.5 200.5 30 25 15 150 0\n2 110.5 210.5 25 20 10 140 1\n"
@@ -30,7 +32,7 @@ class TestReadTargets:
             with patch('os.path.exists', return_value=True):
                 result = read_targets(short_file_bases[0], 10000)
                 assert result is not None
-    
+
     def test_read_targets_nonexistent_file(self):
         """Test reading targets from nonexistent file"""
         base_names = ['img_cam1_%04d.tif']
@@ -38,7 +40,7 @@ class TestReadTargets:
         with patch('os.path.exists', return_value=False):
             with pytest.raises(FileNotFoundError):
                 read_targets(short_file_bases[0], 10000)
-    
+
     def test_read_targets_empty_file(self):
         """Test reading targets from empty file"""
         base_names = ['img_cam1_%04d.tif']
@@ -47,7 +49,7 @@ class TestReadTargets:
             with patch('os.path.exists', return_value=True):
                 with pytest.raises(ValueError):
                     read_targets(short_file_bases[0], 10000)
-    
+
     def test_read_targets_invalid_format(self):
         """Test reading targets from file with invalid format"""
         mock_file_content = "1\n1 100.5 200.5 30\n"  # Only 4 columns instead of 8
@@ -71,7 +73,7 @@ class TestWriteTargets:
         mock_target.sum_grey_value.return_value = 150
         mock_target.tnr.return_value = 0
         return mock_target
-    
+
     def test_write_targets_basic(self, tmp_path):
         """Test writing targets to file"""
         targets = [self._make_target()]
@@ -83,7 +85,7 @@ class TestWriteTargets:
         assert result is True
         assert output_path.exists()
         assert output_path.read_text(encoding='utf-8').startswith('1\n')
-    
+
     def test_write_targets_empty_list(self, tmp_path):
         """Test writing empty target list"""
         targets = []
@@ -94,7 +96,7 @@ class TestWriteTargets:
         output_path = tmp_path / 'cam1.123456789_targets'
         assert result is True
         assert output_path.read_text(encoding='utf-8') == '0\n'
-    
+
     def test_write_targets_permission_error(self):
         """Test writing targets with permission error"""
         targets = [self._make_target()]
@@ -102,7 +104,7 @@ class TestWriteTargets:
         with patch('openptv2.gui.ptv.np.savetxt', side_effect=PermissionError('Permission denied')):
             with pytest.raises(PermissionError, match='Cannot write output file'):
                 write_targets(targets, 'cam1', 123456789)
-    
+
     def test_write_targets_invalid_path(self):
         """Test writing targets to invalid path"""
         targets = [self._make_target()]
@@ -325,7 +327,7 @@ class TestCleanBases:
 
 class TestFileBaseToFilename:
     """Test file_base_to_short_file_base function"""
-    
+
     def test_extract_cam_id(self):
         """Test extraction of cam_id from various base names"""
         test_cases = [
@@ -362,7 +364,7 @@ class TestFileBaseToFilename:
 
 class TestReadRtIsFile:
     """Test read_rt_is_file function"""
-    
+
     def test_read_rt_is_file_valid_content(self):
         """Test reading valid rt_is file content"""
         # Mock rt_is file content with proper format
@@ -372,23 +374,23 @@ class TestReadRtIsFile:
 """
         with patch('builtins.open', mock_open(read_data=mock_content)):
             result = read_rt_is_file('test.rt')
-            
+
             assert len(result) == 2
             assert result[0] == [100.5, 200.5, 50.0, 1, 2, 3, 4]
             assert result[1] == [110.5, 210.5, 60.0, 5, 6, 7, 8]
-    
+
     def test_read_rt_is_file_empty_file(self):
         """Test reading empty rt_is file raises ValueError"""
         mock_content = "0\n"
         with patch('builtins.open', mock_open(read_data=mock_content)):
             with pytest.raises(ValueError, match="Failed to read the number of rows"):
                 read_rt_is_file('empty.rt')
-    
+
     def test_read_rt_is_file_nonexistent_file(self):
         """Test reading nonexistent file raises IOError"""
         with pytest.raises(IOError):
             read_rt_is_file('nonexistent_file.rt')
-    
+
     def test_read_rt_is_file_invalid_format(self):
         """Test reading file with invalid format"""
         # Missing values in line
@@ -398,7 +400,7 @@ class TestReadRtIsFile:
         with patch('builtins.open', mock_open(read_data=mock_content)):
             with pytest.raises(ValueError, match="Incorrect number of values in line"):
                 read_rt_is_file('invalid.rt')
-    
+
     def test_read_rt_is_file_zero_rows_error(self):
         """Test file with zero rows raises ValueError"""
         mock_content = "0\n"

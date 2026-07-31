@@ -1,11 +1,12 @@
 """Test different tracking parameter values to improve link ratio"""
 
+import shutil
 import subprocess
 import sys
 import tempfile
-import shutil
-import yaml
 from pathlib import Path
+
+import yaml
 
 
 def run_tracking_with_different_parameters():

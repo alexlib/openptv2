@@ -1,7 +1,7 @@
 """Streamlined image coordinates projection API."""
 
-import numpy as np
-from openptv2.algorithms.imgcoord import img_coord_batch, flat_image_coord_batch
+from openptv2.algorithms.imgcoord import flat_image_coord_batch, img_coord_batch
+
 
 def image_coordinates(input_arr, cal, mm, output=None):
     """

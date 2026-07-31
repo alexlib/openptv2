@@ -15,14 +15,12 @@ app = marimo.App(width="medium")
 
 @app.cell
 def _():
-    import marimo as mo
 
     return
 
 
 @app.cell
 def _():
-    import openptv2
 
     return
 
@@ -38,8 +36,12 @@ def _():
     [1] https://nose.readthedocs.org/en/latest/
     """
 
-    import unittest, os, numpy as np
-    from openptv2.tracking_framebuf import read_targets, Target, TargetArray, Frame
+    import os
+    import unittest
+
+    import numpy as np
+
+    from openptv2.tracking_framebuf import Frame, Target, TargetArray, read_targets
 
 
     return Frame, Target, TargetArray, np, os, read_targets, unittest

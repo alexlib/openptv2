@@ -299,7 +299,7 @@ def validate_point_positions(
     rng = np.random.default_rng(42)
     positions_3d = rng.uniform(-20, 20, (10, 3))
     positions_3d[:, 2] = rng.uniform(60, 120, 10)
-    
+
     targets = np.empty((10, 4, 2), dtype=np.float64)
     for cam in range(4):
         targets[:, cam, :] = openptv2.image_coordinates(positions_3d, cals[cam], cpar.get_multimedia_params())

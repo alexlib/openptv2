@@ -1,20 +1,20 @@
-import numpy as np
-import pytest
 import os
 import shutil
-from pathlib import Path
 
-from openptv2.algorithms.track3d import find_candidates_in_3d, track3d_loop
-from openptv2.algorithms.track import track_forward_start, trackcorr_c_finish
-from openptv2.algorithms.tracking_frame_buf import Frame
-from openptv2.algorithms.tracking_run import tr_new
+import numpy as np
+import pytest
+
+from openptv2.algorithms.calibration import Calibration
 from openptv2.algorithms.parameters import (
     ControlPar,
     SequencePar,
     TrackPar,
     VolumePar,
 )
-from openptv2.algorithms.calibration import Calibration
+from openptv2.algorithms.track import track_forward_start, trackcorr_c_finish
+from openptv2.algorithms.track3d import find_candidates_in_3d, track3d_loop
+from openptv2.algorithms.tracking_frame_buf import Frame
+from openptv2.algorithms.tracking_run import tr_new
 
 EPS = 1e-5
 
@@ -284,14 +284,14 @@ def test_track3d_burgers_parity_with_cython():
         shutil.copytree("res_orig", "res")
         shutil.copytree("img_orig", "img")
 
-        from optv.tracker import Tracker
         from optv.calibration import Calibration as CCalib
         from optv.parameters import (
             ControlParams,
-            VolumeParams,
-            TrackingParams,
             SequenceParams,
+            TrackingParams,
+            VolumeParams,
         )
+        from optv.tracker import Tracker
 
         cpar_c = ControlParams(4)
         cpar_c.read_control_par("parameters/ptv.par")

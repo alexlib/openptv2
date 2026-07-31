@@ -1,24 +1,25 @@
 """Unit tests for utility and plugin functions in ptv.py"""
 
-import pytest
-import numpy as np
 import os
 from pathlib import Path
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import Mock, patch
+
+import numpy as np
+import pytest
+
+from openptv2.calibration import Calibration
 from openptv2.correspondences import MatchedCoords
+from openptv2.gui.experiment import Experiment
 from openptv2.gui.ptv import (
     _read_calibrations,
-    generate_short_file_bases,
-    py_pre_processing_c,
     py_determination_proc_c,
-    run_sequence_plugin,
-    run_tracking_plugin,
+    py_pre_processing_c,
     py_sequence_loop,
     py_trackcorr_init,
+    run_sequence_plugin,
+    run_tracking_plugin,
 )
-from openptv2.gui.experiment import Experiment
 from openptv2.parameters import ControlParams
-from openptv2.calibration import Calibration
 
 
 @pytest.fixture

@@ -1,7 +1,10 @@
 import numpy as np
-import pytest
 
-from openptv2.algorithms.calibration import Calibration, Exterior, Interior, Glass, AddedPar
+from openptv2.algorithms.calibration import (
+    Exterior,
+    Glass,
+    Interior,
+)
 from openptv2.algorithms.ray_tracing import ray_tracing
 
 EPS = 1e-5

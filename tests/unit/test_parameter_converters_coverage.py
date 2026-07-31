@@ -19,29 +19,28 @@ Fixed bugs (2026-07-10):
     get_multiplanes_par() now guards None with `or {}` (was crashing on None value).
 """
 
+
 import numpy as np
 import pytest
-from unittest.mock import MagicMock, patch
 
 from openptv2.algorithms.parameter_converters import (
-    _get_section,
     _check_required,
+    _get_section,
     _merge_with_defaults,
-    get_multimedia_par,
-    get_control_par,
-    get_sequence_par,
-    get_volume_par,
-    get_track_par_tuple,
-    get_target_par,
-    get_calibration_par,
-    get_orient_par,
-    get_multiplanes_par,
-    get_examine_par,
-    get_pft_version_par,
-    get_all_params,
     convert_optv_calibrations,
+    get_all_params,
+    get_calibration_par,
+    get_control_par,
+    get_examine_par,
+    get_multimedia_par,
+    get_multiplanes_par,
+    get_orient_par,
+    get_pft_version_par,
+    get_sequence_par,
+    get_target_par,
+    get_track_par_tuple,
+    get_volume_par,
 )
-
 
 # ===========================================================================
 # Helper: minimal valid param dict for tests requiring all required params
@@ -273,7 +272,6 @@ class TestGetControlPar:
         assert cpar.chfield == 2
 
     def test_multimedia_params_attached(self):
-        from openptv2.algorithms.parameters import MultimediaPar
         cpar = get_control_par(_base_params())
         assert cpar.mm is not None
 
@@ -757,7 +755,6 @@ class TestConvertOptvCalibrations:
         the happy-path code inside convert_optv_calibrations to run.
         """
         import openptv2.algorithms.calibration as cal_mod
-        from openptv2.algorithms.calibration import Calibration as RealCalibration
 
         # Build mock ext_par: a dict where values are 0-d numpy arrays
         def make_mock_ext_par():

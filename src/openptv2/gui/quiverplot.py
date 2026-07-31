@@ -1,18 +1,17 @@
 # Chaco relative imports
-from chaco.api import AbstractDataSource
-from chaco.api import ScatterPlot
+from chaco.api import AbstractDataSource, ScatterPlot
 
 # Enthought library imports
 from enable.api import ColorTrait
 from numpy import (
     array,
     compress,
+    invert,
+    isnan,
     matrix,
     newaxis,
     sqrt,
     transpose,
-    invert,
-    isnan,
 )
 from traits.api import Array, Enum, Float, Instance, Int
 

@@ -26,8 +26,8 @@ plot_cal_points(). The distribution of errors can the be examined with the
 plot_cal_err_histogram() function
 """
 
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 
 
 def read_dt_lsq(file_path):

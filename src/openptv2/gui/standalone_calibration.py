@@ -15,9 +15,8 @@ from openptv2.calibration import Calibration
 from openptv2.orientation import external_calibration, full_calibration
 from openptv2.tracking_framebuf import TargetArray
 
-from .parameter_manager import ParameterManager
 from . import ptv
-
+from .parameter_manager import ParameterManager
 
 NAMES: list[str] = ["cc", "xh", "yh", "k1", "k2", "k3", "p1", "p2", "scale", "shear", "interf"]
 

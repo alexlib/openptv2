@@ -7,7 +7,6 @@ cals (positions nudged ~1-2mm) while KEEPING the detections fixed -- so the
 per-camera fit is inconsistent and RCM > 0. A well-anchored joint BA should
 pull the cameras back toward the consistent geometry and lower RCM.
 """
-import copy
 from pathlib import Path
 
 import numpy as np

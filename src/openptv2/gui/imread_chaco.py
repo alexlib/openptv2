@@ -13,11 +13,15 @@ Loads and saves RGB images from disk
 import os
 import sys
 
-# Major library imports
+# Chaco imports
+from chaco.api import ArrayPlotData, ImageData, Plot, PlotGraphicsContext
+from chaco.tools.api import PanTool, ZoomTool
+from enable.api import ComponentEditor
+from traits.api import File, HasTraits, Instance
 
+# Major library imports
 # Enthought library imports
 from traits.util.resource import find_resource
-from traits.api import File, HasTraits, Instance
 from traitsui.api import (
     Action,
     CloseAction,
@@ -29,12 +33,6 @@ from traitsui.api import (
     Separator,
     View,
 )
-
-# Chaco imports
-from chaco.api import ArrayPlotData, ImageData, Plot, PlotGraphicsContext
-from enable.api import ComponentEditor
-from chaco.tools.api import PanTool, ZoomTool
-
 
 # -------------------------------------------------------------------------------
 # Class 'DemoView'

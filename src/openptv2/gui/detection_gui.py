@@ -8,31 +8,30 @@ http://opensource.org/licenses/MIT
 import os
 import sys
 from pathlib import Path
+
 import numpy as np
-
-from traits.api import HasTraits, Str, Int, Bool, Instance, Button, Range
-from traitsui.api import View, Item, HGroup, VGroup, ListEditor
-from enable.component_editor import ComponentEditor
 from chaco.api import (
-    Plot,
-    ArrayPlotData,
-    gray,
-    ImagePlot,
     ArrayDataSource,
+    ArrayPlotData,
+    ImagePlot,
     LinearMapper,
+    Plot,
+    gray,
 )
-
-from chaco.tools.image_inspector_tool import ImageInspectorTool
 from chaco.tools.better_zoom import BetterZoom as SimpleZoom
-
+from chaco.tools.image_inspector_tool import ImageInspectorTool
+from enable.component_editor import ComponentEditor
+from skimage.color import rgb2gray
 from skimage.io import imread
 from skimage.util import img_as_ubyte
-from skimage.color import rgb2gray
+from traits.api import Bool, Button, HasTraits, Instance, Int, Range, Str
+from traitsui.api import HGroup, Item, ListEditor, VGroup, View
 
 from openptv2.segmentation import target_recognition
+
 from . import ptv
-from .text_box_overlay import TextBoxOverlay
 from .quiverplot import QuiverPlot
+from .text_box_overlay import TextBoxOverlay
 
 
 # -------------------------------------------
@@ -258,7 +257,7 @@ class DetectionGUI(HasTraits):
     hp_flag = Bool(False, label="highpass")
     negative_flag = Bool(False, label="Negative")
     button_detection = Button(label="Detect dots")
-    
+
     # Default traits that will be updated when parameters are loaded
     grey_thresh = Range(1, 255, 40, mode="slider", label="Grey threshold")
     min_npix = Range(1, 100, 25, mode="slider", label="Min pixels")
@@ -269,7 +268,7 @@ class DetectionGUI(HasTraits):
     max_npix_y = Range(1, 100, 50, mode="slider", label="max npix in y")
     disco = Range(0, 255, 100, mode="slider", label="Discontinuity")
     sum_of_grey = Range(50, 200, 100, mode="slider", label="Sum of greyvalue")
-    
+
     # Range control fields - allow users to adjust slider limits
     # grey_thresh_min = Int(1, label="Min")
 #   # grey_thresh_max = Int(255, label="Max")
@@ -281,7 +280,7 @@ class DetectionGUI(HasTraits):
     disco_max = Int(255, label="Max")
     sum_of_grey_min = Int(10, label="Min")
     sum_of_grey_max = Int(500, label="Max")
-    
+
     # Buttons to apply range changes
     button_update_ranges = Button(label="Update Slider Ranges")
 
@@ -298,17 +297,17 @@ class DetectionGUI(HasTraits):
         super(DetectionGUI, self).__init__()
 
         self.working_directory = Path(working_directory)
-        
+
         # Initialize state variables
         self.parameters_loaded = False
         self.image_loaded = False
         self.raw_image = None
         self.processed_image = None
-        
+
         # Parameter structures (will be initialized when parameters are loaded)
         self.cpar = None
         self.tpar = None
-        
+
         # Detection parameters (hardcoded defaults)
         self.thresholds = [40, 0, 0, 0]
         self.pixel_count_bounds = [25, 400]
@@ -326,21 +325,21 @@ class DetectionGUI(HasTraits):
             if not self.working_directory.exists():
                 self.status_text = f"Error: Working directory {self.working_directory} does not exist"
                 return
-            
+
             # Set working directory
             os.chdir(self.working_directory)
             print(f"Working directory: {self.working_directory}")
 
             # 1. load the image using imread and self.image_name
             self.image_loaded = False
-            try: 
+            try:
                 self.raw_image = imread(self.image_name)
                 print("Image loaded successfully")
 
                 if self.raw_image.ndim > 2:
                     print("Converting image to grayscale")
                     self.raw_image = rgb2gray(self.raw_image[:, :, :3])
-                
+
                 print("Converting image to 8-bit unsigned integer format")
                 self.raw_image = img_as_ubyte(self.raw_image)
                 print(f"self.raw_image.shape: {self.raw_image.shape}")
@@ -354,13 +353,13 @@ class DetectionGUI(HasTraits):
 
             # Set up control parameters for detection:
             self.cpar = ptv.ControlParams(1)
-            self.cpar.set_image_size((self.raw_image.shape[1], self.raw_image.shape[0]))        
+            self.cpar.set_image_size((self.raw_image.shape[1], self.raw_image.shape[0]))
             self.cpar.set_pixel_size((0.01, 0.01))  # Default pixel size, can be overridden later
             self.cpar.set_hp_flag(self.hp_flag)
 
             # Initialize target parameters for detection
             self.tpar = ptv.TargetParams()
-            
+
             # Set hardcoded detection parameters
             self.tpar.set_grey_thresholds([10, 0, 0, 0])
             self.tpar.set_pixel_count_bounds([1, 50])
@@ -368,17 +367,17 @@ class DetectionGUI(HasTraits):
             self.tpar.set_ysize_bounds([1,15])
             self.tpar.set_min_sum_grey(100)
             self.tpar.set_max_discontinuity(100)
-            
+
             # Update trait ranges for real-time parameter adjustment
             if not self.parameters_loaded:
                 self._update_parameter_trait_ranges()
             else:
                 # Update existing trait values
                 self._update_trait_values()
-            
+
             self.parameters_loaded = True
             self.status_text = f"Parameters loaded for working directory {self.working_directory}"
-            
+
         except Exception as e:
             self.status_text = f"Error loading parameters: {str(e)}"
             print(f"Error loading parameters: {e}")
@@ -392,41 +391,41 @@ class DetectionGUI(HasTraits):
         # Update range control fields
         self.grey_thresh_min = 1
         self.grey_thresh_max = 255
-        
+
         self.trait("min_npix").handler.low = 0
         self.trait("min_npix").handler.high = self.pixel_count_bounds[0] + 50
         self.min_npix = self.pixel_count_bounds[0]
         self.min_npix_min = 1
         self.min_npix_max = self.pixel_count_bounds[0] + 50
-        
+
         self.trait("max_npix").handler.low = 1
         self.trait("max_npix").handler.high = self.pixel_count_bounds[1] + 100
         self.max_npix = self.pixel_count_bounds[1]
         self.max_npix_min = 1
         self.max_npix_max = self.pixel_count_bounds[1] + 100
-        
+
         self.trait("min_npix_x").handler.low = 1
         self.trait("min_npix_x").handler.high = self.xsize_bounds[0] + 20
         self.min_npix_x = self.xsize_bounds[0]
-        
+
         self.trait("max_npix_x").handler.low = 1
         self.trait("max_npix_x").handler.high = self.xsize_bounds[1] + 50
         self.max_npix_x = self.xsize_bounds[1]
-        
+
         self.trait("min_npix_y").handler.low = 1
         self.trait("min_npix_y").handler.high = self.ysize_bounds[0] + 20
         self.min_npix_y = self.ysize_bounds[0]
-        
+
         self.trait("max_npix_y").handler.low = 1
         self.trait("max_npix_y").handler.high = self.ysize_bounds[1] + 50
         self.max_npix_y = self.ysize_bounds[1]
-        
+
         self.trait("disco").handler.low = 0
         self.trait("disco").handler.high = 255
         self.disco = self.disco
         self.disco_min = 0
         self.disco_max = 255
-        
+
         self.trait("sum_of_grey").handler.low = self.sum_grey // 2
         self.trait("sum_of_grey").handler.high = self.sum_grey * 2
         self.sum_of_grey = self.sum_grey
@@ -458,21 +457,21 @@ class DetectionGUI(HasTraits):
         """Load raw image from file"""
 
         self._button_load_params()
-            
+
         try:
-            
+
             # Process image with current filter settings
             self._update_processed_image()
-            
+
             # Display image
             self.reset_show_images()
-            
+
             self.image_loaded = True
             self.status_text = f"Image loaded: {self.image_name}"
-            
+
             # Run initial detection
             # self._run_detection()
-            
+
         except Exception as e:
             self.status_text = f"Error loading image: {str(e)}"
             print(f"Error loading image {self.image_name}: {e}")
@@ -481,21 +480,21 @@ class DetectionGUI(HasTraits):
         """Update processed image based on current filter settings"""
         if self.raw_image is None:
             return
-            
+
         try:
             # Start with raw image
             im = self.raw_image.copy()
-            
+
             # Apply negative flag
             if self.negative_flag:
                 im = np.clip(255 - im.astype(np.uint8), 0, 255)
-            
+
             # Apply highpass filter if enabled
             if self.hp_flag:
                 im = ptv.preprocess_image(im, 0, self.cpar, 25)
-            
+
             self.processed_image = im.copy()
-            
+
         except Exception as e:
             self.status_text = f"Error processing image: {str(e)}"
             print(f"Error processing image: {e}")
@@ -573,7 +572,7 @@ class DetectionGUI(HasTraits):
 
 
     def _hp_flag_changed(self):
-        """Handle highpass flag change"""       
+        """Handle highpass flag change"""
         self._update_processed_image()
         self.reset_show_images()
 
@@ -692,7 +691,7 @@ class DetectionGUI(HasTraits):
         """Reprocess the current raw image with current filter settings"""
         if not hasattr(self, 'raw_image') or self.raw_image is None:
             return
-        
+
         try:
             # Start with the raw image
             im = self.raw_image.copy()
@@ -706,7 +705,7 @@ class DetectionGUI(HasTraits):
                 im = ptv.preprocess_image(im, 0, self.cpar, 25)
 
             self.processed_image = im.copy()
-            
+
         except Exception as e:
             self.status_text = f"Error processing image: {str(e)}"
             raise
@@ -716,13 +715,13 @@ class DetectionGUI(HasTraits):
         if not hasattr(self, 'processed_image') or self.processed_image is None:
             self.status_text = "No image loaded - load parameters and image first"
             return
-        
+
         if not self.parameters_loaded:
             self.status_text = "Parameters not loaded - load parameters first"
             return
-        
+
         self.status_text = "Running detection..."
-        
+
         try:
             # Run detection using current parameters
             targs = target_recognition(self.processed_image, self.tpar, 0, self.cpar)
@@ -738,7 +737,7 @@ class DetectionGUI(HasTraits):
 
             # Update status with detection results
             self.status_text = f"Detected {len(x)} particles"
-            
+
         except Exception as e:
             self.status_text = f"Detection error: {str(e)}"
             print(f"Detection error: {e}")
@@ -755,7 +754,7 @@ class DetectionGUI(HasTraits):
         """Reset and show the current processed image"""
         if not hasattr(self, 'processed_image') or self.processed_image is None:
             return
-            
+
         self.reset_plots()
         self.camera[0]._plot_data.set_data("imagedata", self.processed_image)
         self.camera[0]._img_plot = self.camera[0]._plot.img_plot(
@@ -778,7 +777,7 @@ class DetectionGUI(HasTraits):
                 self.grey_thresh = self.grey_thresh_min
             elif self.grey_thresh > self.grey_thresh_max:
                 self.grey_thresh = self.grey_thresh_max
-            
+
             # Update min_npix range
             self.trait("min_npix").handler.low = self.min_npix_min
             self.trait("min_npix").handler.high = self.min_npix_max
@@ -786,7 +785,7 @@ class DetectionGUI(HasTraits):
                 self.min_npix = self.min_npix_min
             elif self.min_npix > self.min_npix_max:
                 self.min_npix = self.min_npix_max
-            
+
             # Update max_npix range
             self.trait("max_npix").handler.low = self.max_npix_min
             self.trait("max_npix").handler.high = self.max_npix_max
@@ -794,7 +793,7 @@ class DetectionGUI(HasTraits):
                 self.max_npix = self.max_npix_min
             elif self.max_npix > self.max_npix_max:
                 self.max_npix = self.max_npix_max
-            
+
             # Update disco range
             self.trait("disco").handler.low = self.disco_min
             self.trait("disco").handler.high = self.disco_max
@@ -802,7 +801,7 @@ class DetectionGUI(HasTraits):
                 self.disco = self.disco_min
             elif self.disco > self.disco_max:
                 self.disco = self.disco_max
-            
+
             # Update sum_of_grey range
             self.trait("sum_of_grey").handler.low = self.sum_of_grey_min
             self.trait("sum_of_grey").handler.high = self.sum_of_grey_max
@@ -810,9 +809,9 @@ class DetectionGUI(HasTraits):
                 self.sum_of_grey = self.sum_of_grey_min
             elif self.sum_of_grey > self.sum_of_grey_max:
                 self.sum_of_grey = self.sum_of_grey_max
-            
+
             self.status_text = "Slider ranges updated successfully"
-            
+
         except Exception as e:
             self.status_text = f"Error updating ranges: {str(e)}"
 
@@ -823,8 +822,8 @@ if __name__ == "__main__":
     else:
         # Use provided working directory path
         working_dir = Path(sys.argv[1])
-    
+
     print(f"Loading PyPTV Detection GUI with working directory: {working_dir}")
-    
+
     detection_gui = DetectionGUI(working_dir)
     detection_gui.configure_traits()

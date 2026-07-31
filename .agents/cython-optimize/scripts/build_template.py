@@ -18,8 +18,6 @@ or:
 import argparse
 import os
 import sys
-import textwrap
-
 
 SETUP_TEMPLATE = """\
 from setuptools import setup

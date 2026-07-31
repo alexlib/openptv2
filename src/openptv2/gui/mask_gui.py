@@ -7,29 +7,26 @@ http://opensource.org/licenses/MIT
 
 import os
 from pathlib import Path
+
 import numpy as np
+from chaco.api import (
+    ArrayPlotData,
+    Plot,
+    PolygonPlot,
+    gray,
+)
+from chaco.tools.better_zoom import BetterZoom as SimpleZoom
+from chaco.tools.image_inspector_tool import ImageInspectorTool
+from enable.component_editor import ComponentEditor
+from skimage.color import rgb2gray
 from skimage.io import imread
 from skimage.util import img_as_ubyte
-from skimage.color import rgb2gray
+from traits.api import Bool, Button, HasTraits, Instance, Int, Str
+from traitsui.api import HGroup, Item, ListEditor, VGroup, View
 
-from traits.api import HasTraits, Str, Int, Bool, Instance, Button
-from traitsui.api import View, Item, HGroup, VGroup, ListEditor
-from enable.component_editor import ComponentEditor
-
-from chaco.api import (
-    Plot,
-    ArrayPlotData,
-    gray,
-    PolygonPlot,
-)
-
-from chaco.tools.image_inspector_tool import ImageInspectorTool
-from chaco.tools.better_zoom import BetterZoom as SimpleZoom
-
-from .text_box_overlay import TextBoxOverlay
 from . import ptv
 from .experiment import Experiment
-
+from .text_box_overlay import TextBoxOverlay
 
 # recognized names for the flags:
 NAMES = ["cc", "xh", "yh", "k1", "k2", "k3", "p1", "p2", "scale", "shear", "interf"]
@@ -260,7 +257,7 @@ class MaskGUI(HasTraits):
         self.experiment = experiment
         self.active_path = Path(experiment.active_params.yaml_path).parent
         self.working_folder = self.active_path.parent
-        
+
         os.chdir(self.working_folder)
         print(f"Inside a folder: {Path.cwd()}")
 

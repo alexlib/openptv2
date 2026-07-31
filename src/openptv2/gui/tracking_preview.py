@@ -1,16 +1,15 @@
 """Tracking preview functionality for the 'Tracking with display' feature."""
 
-import numpy as np
-from typing import Dict, List, Tuple, Optional
+from typing import Dict
+
 from openptv2 import (
-    Tracker,
     Calibration,
-    convert_track_par_to_tuple,
+    Tracker,
+    convert_optv_calibrations,
     get_control_par,
     get_sequence_par,
-    get_volume_par,
     get_track_par_tuple,
-    convert_optv_calibrations,
+    get_volume_par,
 )
 
 

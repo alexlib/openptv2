@@ -1,8 +1,19 @@
 import numpy as np
-import pytest
+
 from openptv2.algorithms.vec_utils import (
-    vec_init, vec_set, vec_copy, vec_subt, vec_add, vec_scalar_mul, vec_norm,
-    vec_diff_norm, vec_dot, vec_cross, vec_cmp, vec_approx_cmp, is_empty
+    is_empty,
+    vec_add,
+    vec_approx_cmp,
+    vec_cmp,
+    vec_copy,
+    vec_cross,
+    vec_diff_norm,
+    vec_dot,
+    vec_init,
+    vec_norm,
+    vec_scalar_mul,
+    vec_set,
+    vec_subt,
 )
 
 EPS = 1e-5

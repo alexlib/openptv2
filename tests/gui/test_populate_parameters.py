@@ -1,29 +1,27 @@
-import pytest
-import tempfile
+import shutil
 from pathlib import Path
 from unittest.mock import Mock, patch
-import numpy as np
-import shutil
-import filecmp
 
+import numpy as np
+import pytest
+
+from openptv2.calibration import Calibration
 from openptv2.gui.ptv import (
     _populate_cpar,
     _populate_spar,
-    _populate_vpar,
-    _populate_track_par,
     _populate_tpar,
+    _populate_track_par,
+    _populate_vpar,
     _read_calibrations,
     py_start_proc_c,
 )
-from openptv2.gui.parameter_manager import ParameterManager
 from openptv2.parameters import (
     ControlParams,
     SequenceParams,
-    VolumeParams,
-    TrackingParams,
     TargetParams,
+    TrackingParams,
+    VolumeParams,
 )
-from openptv2.calibration import Calibration
 
 
 class TestPopulateCpar:

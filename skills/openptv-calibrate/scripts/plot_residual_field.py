@@ -32,12 +32,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "src"))
 
 
 def main() -> int:
-    import numpy as np
     import matplotlib
+    import numpy as np
     matplotlib.use("Agg")
-    import matplotlib.pyplot as plt
-    import yaml
     import imageio.v3 as iio
+    import yaml
 
     from openptv2.autocalibration import _find_yaml, cam_files
 

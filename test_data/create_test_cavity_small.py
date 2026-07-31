@@ -9,8 +9,8 @@ import csv
 import shutil
 from pathlib import Path
 
-import numpy as np
 import imageio.v2 as imageio
+import numpy as np
 
 from openptv2.algorithms.calibration import Calibration
 from openptv2.algorithms.imgcoord import img_coord_batch

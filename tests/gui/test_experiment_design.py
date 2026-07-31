@@ -2,13 +2,14 @@
 Test the new Experiment-centric design with ParameterManager
 """
 
-import pytest
 import os
+import shutil
 import tempfile
 from pathlib import Path
-import shutil
 
-from openptv2.gui.experiment import Experiment, Paramset
+import pytest
+
+from openptv2.gui.experiment import Experiment
 from openptv2.gui.parameter_manager import ParameterManager
 
 
@@ -74,11 +75,11 @@ def temp_experiment_dir():
 def test_experiment_initialization():
     """Test that Experiment can be initialized properly"""
     exp = Experiment()
-    
+
     # Check that ParameterManager is initialized
     assert hasattr(exp, 'pm')
     assert isinstance(exp.pm, ParameterManager)
-    
+
     # Check initial state
     assert exp.active_params is None
     assert len(exp.paramsets) == 0
@@ -87,7 +88,7 @@ def test_experiment_initialization():
 def test_experiment_parameter_access():
     """Test parameter access through Experiment"""
     exp = Experiment()
-    
+
     # Initially, get_parameter should raise ValueError for non-existent parameters
     with pytest.raises(ValueError):
         exp.get_parameter('ptv')
@@ -96,18 +97,18 @@ def test_experiment_parameter_access():
 def test_experiment_populate_runs(temp_experiment_dir):
     """Test that Experiment can populate runs from directory"""
     exp = Experiment()
-    
+
     # Change to the experiment directory
     original_dir = os.getcwd()
     os.chdir(temp_experiment_dir)
-    
+
     try:
         exp.populate_runs(temp_experiment_dir)
-        
+
         # Check that parameter sets were loaded
         assert len(exp.paramsets) > 0
         assert exp.active_params is not None
-        
+
         # Check that parameters can be accessed
         ptv_params = exp.get_parameter('ptv')
         assert ptv_params is not None
@@ -115,13 +116,13 @@ def test_experiment_populate_runs(temp_experiment_dir):
         assert exp.get_n_cam() == 4  # num_cams from global level
         assert ptv_params['imx'] == 1280
         assert ptv_params['imy'] == 1024
-        
+
         # Check sequence parameters
         seq_params = exp.get_parameter('sequence')
         assert seq_params is not None
         assert seq_params['first'] == 10000
         assert seq_params['last'] == 10010
-        
+
     finally:
         os.chdir(original_dir)
 
@@ -129,29 +130,29 @@ def test_experiment_populate_runs(temp_experiment_dir):
 def test_experiment_parameter_saving(temp_experiment_dir):
     """Test that Experiment can save parameters to YAML"""
     exp = Experiment()
-    
+
     # Change to the experiment directory
     original_dir = os.getcwd()
     os.chdir(temp_experiment_dir)
-    
+
     try:
         exp.populate_runs(temp_experiment_dir)
-        
+
         # Save parameters
         exp.save_active()
-        
+
         # Check that YAML file was created
         yaml_path = exp.active_params.yaml_path
         assert yaml_path.exists()
-        
+
         # Check that parameters can be loaded from YAML
         exp2 = Experiment()
         exp2.pm.from_yaml(yaml_path)
-        
+
         ptv_params = exp2.pm.get_parameter('ptv')
         assert ptv_params is not None
         assert exp2.get_n_cam() == 4  # num_cams from global level, not ptv section
-        
+
     finally:
         os.chdir(original_dir)
 
@@ -159,11 +160,11 @@ def test_experiment_parameter_saving(temp_experiment_dir):
 def test_experiment_no_circular_dependency():
     """Test that there's no circular dependency between Experiment and GUI"""
     exp = Experiment()
-    
+
     # The experiment should not need to know about any GUI
     assert not hasattr(exp, 'main_gui')
     assert not hasattr(exp, 'gui')
-    
+
     # The experiment should be self-contained for parameter management
     assert hasattr(exp, 'pm')
     assert hasattr(exp, 'get_parameter')
@@ -173,37 +174,37 @@ def test_experiment_no_circular_dependency():
 def test_experiment_parameter_updates(temp_experiment_dir):
     """Test that parameter updates work correctly"""
     exp = Experiment()
-    
+
     # Change to the experiment directory
     original_dir = os.getcwd()
     os.chdir(temp_experiment_dir)
-    
+
     try:
         exp.populate_runs(temp_experiment_dir)
-        
+
         # Get initial parameters
         ptv_params = exp.get_parameter('ptv')
         original_imx = ptv_params['imx']
-        
+
         # Update parameters through the ParameterManager
         exp.pm.parameters['ptv']['imx'] = 1920
-        
+
         # Verify the change
         updated_params = exp.get_parameter('ptv')
         assert updated_params['imx'] == 1920
         assert updated_params['imx'] != original_imx
-        
+
         # Save and verify persistence
         exp.save_active()
-        
+
         # Load in a new experiment instance
         exp2 = Experiment()
         yaml_path = exp.active_params.yaml_path
         exp2.pm.from_yaml(yaml_path)
-        
+
         reloaded_params = exp2.pm.get_parameter('ptv')
         assert reloaded_params['imx'] == 1920
-        
+
     finally:
         os.chdir(original_dir)
 
@@ -211,22 +212,22 @@ def test_experiment_parameter_updates(temp_experiment_dir):
 def test_clean_design_principles():
     """Test that the design follows clean architecture principles"""
     exp = Experiment()
-    
+
     # 1. Experiment is the MODEL - owns data
     assert hasattr(exp, 'pm')
     assert hasattr(exp, 'paramsets')
     assert hasattr(exp, 'active_params')
-    
+
     # 2. Experiment has clear interface for parameter access
     assert callable(exp.get_parameter)
     assert callable(exp.save_active)
-    
+
     # 3. Experiment doesn't depend on GUI
     # We check that no GUI-related attributes are present
     gui_attributes = ['main_gui', 'gui', 'camera_list', 'view', 'plot']
     for attr in gui_attributes:
         assert not hasattr(exp, attr), f"Experiment should not have GUI attribute: {attr}"
-    
+
     # 4. ParameterManager is encapsulated within Experiment
     assert isinstance(exp.pm, ParameterManager)
 

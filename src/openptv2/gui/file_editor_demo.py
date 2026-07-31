@@ -1,5 +1,6 @@
-from traits.api import HasTraits, File
-from traitsui.api import View, Item, FileEditor
+from traits.api import File, HasTraits
+from traitsui.api import FileEditor, Item, View
+
 
 class FilteredFileBrowserExample(HasTraits):
     """

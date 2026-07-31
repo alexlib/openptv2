@@ -1,12 +1,11 @@
-import pytest
 import shutil
 from pathlib import Path
-from openptv2.batch import pyptv_batch
-from openptv2.gui.experiment import Experiment
-from openptv2.gui.parameter_manager import ParameterManager
-import filecmp
+
+import pytest
 import yaml
 
+from openptv2.batch import pyptv_batch
+from openptv2.gui.parameter_manager import ParameterManager
 
 TRACK_DIR = Path(__file__).parent.parent.parent / "test_data" / "pyptv_track"
 
@@ -33,7 +32,7 @@ def test_tracking_res_matches_orig(tmp_path, yaml_path, desc):
     For the given parameter set, clean and set up img/ and res/ folders, run tracking, and compare res/ to res_orig/.
     """
     # 1. Setup working directory
-    work_dir = tmp_path / f"track"
+    work_dir = tmp_path / "track"
     work_dir.mkdir(exist_ok=True)
     # copy everything from TRACK_DIR to work_dir
     shutil.copytree(TRACK_DIR, work_dir, dirs_exist_ok=True)

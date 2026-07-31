@@ -15,13 +15,12 @@ import shutil
 import sys
 from pathlib import Path
 
-from setuptools import setup, Extension, Command, find_namespace_packages
+import numpy
+from setuptools import Command, Extension, find_namespace_packages, setup
 from setuptools.command.build_ext import build_ext
 from setuptools.command.build_py import build_py
 from setuptools.command.develop import develop
 from setuptools.command.install import install
-
-import numpy
 
 # ---------------------------------------------------------------------------
 # Paths — always relative to this setup.py file (project root)

@@ -199,9 +199,9 @@ def _():
         targ_rec_fast = None
         HAS_OPTV = False
 
-    import numpy as np
-    import matplotlib.pyplot as plt
     import marimo as mo
+    import matplotlib.pyplot as plt
+    import numpy as np
 
     return HAS_OPTV, mo, np, plt, targ_rec_fast
 

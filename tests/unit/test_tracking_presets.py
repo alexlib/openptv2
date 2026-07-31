@@ -1,9 +1,7 @@
-import pytest
 from openptv2.tracking_presets import (
     TrackingPreset,
-    infer_preset,
     apply_preset,
-    PRESET_CONFIGS,
+    infer_preset,
 )
 
 

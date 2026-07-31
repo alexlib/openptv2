@@ -1,7 +1,8 @@
-import pytest
 import numpy as np
+
 from openptv2.calibration import Calibration
 from openptv2.gui.ptv import clone_calibration
+
 
 def test_clone_calibration_basic():
     cal = Calibration()
@@ -12,9 +13,9 @@ def test_clone_calibration_basic():
     if hasattr(cal, 'set_primary_point') and hasattr(cal, 'get_primary_point'):
         primary_point = np.array([4.0, 5.0, 6.0])
         cal.set_primary_point(primary_point)
-    
+
     cal2 = clone_calibration(cal)
-    assert not (cal is cal2)
+    assert cal is not cal2
     np.testing.assert_array_equal(cal.get_pos(), cal2.get_pos())
     np.testing.assert_array_equal(cal.get_angles(), cal2.get_angles())
     if hasattr(cal, 'get_primary_point'):
@@ -42,9 +43,9 @@ def test_clone_calibration_all_fields():
     if hasattr(cal, 'set_affine'):
         affine = np.array([1.0, 0.0])
         cal.set_affine(affine)
-    
+
     cal2 = clone_calibration(cal)
-    assert not (cal is cal2)
+    assert cal is not cal2
     np.testing.assert_array_equal(cal.get_pos(), cal2.get_pos())
     np.testing.assert_array_equal(cal.get_angles(), cal2.get_angles())
     if hasattr(cal, 'get_primary_point'):

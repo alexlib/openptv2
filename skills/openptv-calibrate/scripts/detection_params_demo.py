@@ -347,11 +347,11 @@ def _(mo):
 
 @app.cell
 def _():
+    import marimo as mo
+    import matplotlib.pyplot as plt
     import numpy as np
     from skimage.feature import peak_local_max
     from skimage.segmentation import watershed
-    import matplotlib.pyplot as plt
-    import marimo as mo
 
     return mo, np, peak_local_max, plt, watershed
 

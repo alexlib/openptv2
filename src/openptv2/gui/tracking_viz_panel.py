@@ -6,10 +6,10 @@ from the tracking preview functionality.
 """
 
 import numpy as np
-from traits.api import HasTraits, Int, Bool, Instance, List, Float, Str, Button
-from traitsui.api import View, Item, HGroup, VGroup, Group, Label, TextEditor, Spring
-from chaco.api import Plot, ArrayPlotData, LinearMapper
+from chaco.api import ArrayPlotData, Plot
 from enable.component_editor import ComponentEditor
+from traits.api import Button, Float, HasTraits, Instance, Int, Str
+from traitsui.api import Group, HGroup, Item, Label, Spring, TextEditor, VGroup, View
 
 from .tracking_preview import run_tracking_preview
 
@@ -411,13 +411,13 @@ class TrackingDebugPanel(HasTraits):
             params = pm.parameters
 
             from openptv2 import (
-                Tracker,
                 Calibration,
+                Tracker,
+                convert_optv_calibrations,
                 get_control_par,
                 get_sequence_par,
-                get_volume_par,
                 get_track_par_tuple,
-                convert_optv_calibrations,
+                get_volume_par,
             )
 
             cpar = get_control_par(params)

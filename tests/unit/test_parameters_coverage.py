@@ -10,7 +10,6 @@ Run with the ppsrc override for coverage:
 """
 from __future__ import annotations
 
-import tempfile
 from pathlib import Path
 
 import numpy as np
@@ -19,23 +18,23 @@ import pytest
 from openptv2.algorithms.parameters import (
     CalibrationPar,
     ControlPar,
+    # aliases
+    ControlParams,
     ExaminePar,
     MmNp,
     MultimediaPar,
+    MultimediaParams,
     MultiPlanesPar,
     OrientPar,
     PftVersionPar,
     SequencePar,
+    SequenceParams,
     TargetPar,
+    TargetParams,
+    TrackingParams,
     TrackPar,
     TrackParTuple,
     VolumePar,
-    # aliases
-    ControlParams,
-    MultimediaParams,
-    SequenceParams,
-    TargetParams,
-    TrackingParams,
     VolumeParams,
     _clean_name_list,
     _load_yaml_params,

@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+
 import numpy as np
 
 os.chdir("/home/user/Documents/GitHub/openptv2")

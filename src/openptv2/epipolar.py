@@ -2,6 +2,7 @@
 
 from openptv2.algorithms.epi import epipolar_curve as _epipolar_curve
 
+
 def epipolar_curve(point, cal1, cal2, num_points, cpar, vpar):
     """
     Calculate epipolar curve between two cameras.

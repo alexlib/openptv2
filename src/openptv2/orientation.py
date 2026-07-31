@@ -1,13 +1,26 @@
 """Compatibility and direct forwarder for orientation."""
 
 import numpy as np
+
 from openptv2.algorithms.orientation import (
     external_calibration as _external_calibration,
+)
+from openptv2.algorithms.orientation import (
     full_calibration as _full_calibration,
+)
+from openptv2.algorithms.orientation import (
     match_detection_to_ref as _match_detection_to_ref,
+)
+from openptv2.algorithms.orientation import (
     multi_cam_point_positions as _multi_cam_point_positions,
+)
+from openptv2.algorithms.orientation import (
     point_positions as _point_positions,
+)
+from openptv2.algorithms.orientation import (
     single_cam_point_positions as _single_cam_point_positions,
+)
+from openptv2.algorithms.orientation import (
     weighted_dumbbell_precision as _weighted_dumbbell_precision,
 )
 

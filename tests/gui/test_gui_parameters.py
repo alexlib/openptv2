@@ -4,14 +4,21 @@ Verifies that Main_Params, Calib_Params, and Tracking_Params correctly
 initialize from ParameterManager and save changes back.
 """
 
-import os
 import tempfile
-import pytest
 from pathlib import Path
 
-from openptv2.gui.parameter_manager import ParameterManager
+import pytest
+
 from openptv2.gui.experiment import Experiment
-from openptv2.gui.parameter_gui import Main_Params, Calib_Params, Tracking_Params, ParamHandler, CalHandler, TrackHandler
+from openptv2.gui.parameter_gui import (
+    CalHandler,
+    Calib_Params,
+    Main_Params,
+    ParamHandler,
+    TrackHandler,
+    Tracking_Params,
+)
+from openptv2.gui.parameter_manager import ParameterManager
 
 
 class DummyInfo:

@@ -27,12 +27,13 @@ Requirements:
 
 import argparse
 import os
-import sys
-import subprocess
 import shutil
-from pathlib import Path
+import subprocess
+import sys
 from datetime import datetime
-from typing import List, Dict, Tuple, Optional
+from pathlib import Path
+from typing import Dict, List, Optional, Tuple
+
 
 # Colors for terminal output
 class Colors:
@@ -91,7 +92,7 @@ def print_info(text: str):
 
 class TestResult:
     """Store test run results."""
-    def __init__(self, name: str, passed: bool, output: str, 
+    def __init__(self, name: str, passed: bool, output: str,
                  duration: float, error_type: Optional[str] = None):
         self.name = name
         self.passed = passed
@@ -102,13 +103,13 @@ class TestResult:
 
 class TestRunner:
     """Run tests for different components of openptv2."""
-    
+
     def __init__(self, project_root: Path, verbose: bool = False):
         self.project_root = project_root
         self.verbose = verbose
         self.results: Dict[str, List[TestResult]] = {}
         self.python = sys.executable  # Use the Python that's running this script
-        
+
     def _find_python(self) -> str:
         """Find Python executable."""
         # Check if we're in a virtual environment
@@ -116,28 +117,28 @@ class TestRunner:
             python = os.path.join(os.environ['VIRTUAL_ENV'], 'bin', 'python')
             if os.path.exists(python):
                 return python
-        
+
         # Try python3, then python
         for cmd in ['python3', 'python']:
             path = shutil.which(cmd)
             if path:
                 return path
-        
+
         return 'python'
-    
+
     def _run_pytest(self, test_dir: Path, cwd: Path, timeout: int = 300) -> Tuple[bool, str, float]:
         """Run pytest using the Python executable."""
         cmd = [self.python, '-m', 'pytest', str(test_dir), '-v', '-m', 'not slow', '--tb=short']
         if not self.verbose:
             cmd.append('--tb=line')
-        
+
         return self._run_command(cmd, cwd=cwd, timeout=timeout)
-    
-    def _run_command(self, cmd: List[str], cwd: Optional[Path] = None, 
+
+    def _run_command(self, cmd: List[str], cwd: Optional[Path] = None,
                      timeout: int = 300) -> Tuple[bool, str, float]:
         """Run a command and return success, output, and duration."""
         start_time = datetime.now()
-        
+
         try:
             result = subprocess.run(
                 cmd,
@@ -146,34 +147,34 @@ class TestRunner:
                 text=True,
                 timeout=timeout
             )
-            
+
             duration = (datetime.now() - start_time).total_seconds()
             output = result.stdout + result.stderr
             success = result.returncode == 0
-            
+
             return success, output, duration
-            
+
         except subprocess.TimeoutExpired:
             duration = (datetime.now() - start_time).total_seconds()
             return False, f"Command timed out after {timeout}s", duration
         except Exception as e:
             duration = (datetime.now() - start_time).total_seconds()
             return False, f"Command failed: {str(e)}", duration
-    
+
     def run_c_library_tests(self) -> List[TestResult]:
         """Run C library tests using CMake and CTest."""
         results = []
         lib_dir = self.project_root / 'lib'
-        
+
         if not lib_dir.exists():
             results.append(TestResult(
                 'C Library', False, 'lib/ directory not found', 0.0,
                 'MISSING_DIRECTORY'
             ))
             return results
-        
+
         print_subheader("C Library Tests (Check framework)")
-        
+
         # Check if cmake is available
         if not shutil.which('cmake'):
             results.append(TestResult(
@@ -182,17 +183,17 @@ class TestRunner:
             ))
             print_warning("cmake not found - skipping C library tests")
             return results
-        
+
         # Create build directory
         build_dir = lib_dir / 'build'
         build_dir.mkdir(exist_ok=True)
-        
+
         # Configure
         print_info("Configuring CMake...")
         success, output, duration = self._run_command(
             ['cmake', '..'], cwd=build_dir, timeout=60
         )
-        
+
         if not success:
             results.append(TestResult(
                 'C Library Configure', False, output, duration, 'CMAKE_CONFIG_FAILED'
@@ -201,13 +202,13 @@ class TestRunner:
             if self.verbose:
                 print_info(output[:500])
             return results
-        
+
         # Build
         print_info("Building C library...")
         success, output, duration = self._run_command(
             ['cmake', '--build', '.'], cwd=build_dir, timeout=120
         )
-        
+
         if not success:
             results.append(TestResult(
                 'C Library Build', False, output, duration, 'BUILD_FAILED'
@@ -216,13 +217,13 @@ class TestRunner:
             if self.verbose:
                 print_info(output[:500])
             return results
-        
+
         # Run tests
         print_info("Running CTest...")
         success, output, duration = self._run_command(
             ['ctest', '--output-on-failure'], cwd=build_dir, timeout=300
         )
-        
+
         if success:
             results.append(TestResult('C Library Tests', True, output, duration))
             print_success("C library tests passed")
@@ -231,12 +232,12 @@ class TestRunner:
                 'C Library Tests', False, output, duration, 'CTEST_FAILED'
             ))
             print_failure("C library tests failed")
-        
+
         if self.verbose:
             print_info(output[-1000:] if len(output) > 1000 else output)
-        
+
         return results
-    
+
     def run_bindings_tests(self) -> List[TestResult]:
         """Run Cython bindings tests."""
         results = []
@@ -257,7 +258,7 @@ class TestRunner:
         cmd = [self.python, '-m', 'pytest', '.', '-v', '--tb=short']
         if not self.verbose:
             cmd.append('--tb=line')
-        
+
         success, output, duration = self._run_command(cmd, cwd=tests_dir, timeout=300)
 
         if success:
@@ -273,7 +274,7 @@ class TestRunner:
             print_info(output[-1000:] if len(output) > 1000 else output)
 
         return results
-    
+
     def run_gui_tests(self) -> List[TestResult]:
         """Run GUI tests."""
         results = []
@@ -309,7 +310,7 @@ class TestRunner:
             print_info(output[-1000:] if len(output) > 1000 else output)
 
         return results
-    
+
     def run_algorithms_tests(self) -> List[TestResult]:
         """Run algorithms (Python) tests."""
         results = []
@@ -328,7 +329,7 @@ class TestRunner:
         tests_dir = algorithms_dir / 'tests'
         if not tests_dir.exists():
             results.append(TestResult(
-                'Algorithms', True, 
+                'Algorithms', True,
                 'algorithms/tests/ directory not found - no tests yet', 0.0,
                 'MISSING_TESTS'
             ))
@@ -375,7 +376,7 @@ class TestRunner:
         test_files = list(tests_dir.glob('**/test_*.py'))
         if not test_files:
             results.append(TestResult(
-                'Integration', False, 
+                'Integration', False,
                 'No test files found in tests/ - integration tests not implemented yet', 0.0,
                 'NO_TESTS'
             ))
@@ -385,60 +386,60 @@ class TestRunner:
         # Skip integration tests for now - they have import errors
         # Integration tests need proper setup with installed package
         results.append(TestResult(
-            'Integration', True, 
+            'Integration', True,
             'Integration tests not ready yet - import errors', 0.0,
             'NOT_READY'
         ))
         print_warning("Integration tests have import errors - skipping for now")
         return results
-    
+
     def run_all_tests(self, components: Optional[List[str]] = None) -> Dict[str, List[TestResult]]:
         """Run all tests or specified components."""
         if components is None:
             components = ['lib', 'bindings', 'gui', 'algorithms', 'integration']
-        
+
         print_header("openptv2 Full Test Suite")
         print_info(f"Python: {self.python}")
         print_info(f"Project: {self.project_root}")
         print_info(f"Components: {', '.join(components)}")
         print()
-        
+
         start_time = datetime.now()
-        
+
         if 'lib' in components:
             self.results['C Library'] = self.run_c_library_tests()
-        
+
         if 'bindings' in components:
             self.results['Bindings'] = self.run_bindings_tests()
-        
+
         if 'gui' in components:
             self.results['GUI'] = self.run_gui_tests()
-        
+
         if 'algorithms' in components:
             self.results['Algorithms'] = self.run_algorithms_tests()
-        
+
         if 'integration' in components:
             self.results['Integration'] = self.run_integration_tests()
-        
+
         total_duration = (datetime.now() - start_time).total_seconds()
-        
+
         self.print_summary(total_duration)
-        
+
         return self.results
-    
+
     def print_summary(self, total_duration: float):
         """Print test summary."""
         print_header("Test Summary")
-        
+
         total_components = 0
         total_passed = 0
         total_failed = 0
         total_skipped = 0
-        
+
         # Parse pytest output for actual test counts
         individual_tests_pass = 0
         individual_tests_fail = 0
-        
+
         for component, results in self.results.items():
             for result in results:
                 total_components += 1
@@ -463,23 +464,23 @@ class TestRunner:
                     match = re.search(r'(\d+) failed', result.output)
                     if match:
                         individual_tests_fail += int(match.group(1))
-        
+
         print()
         print(f"  Test Components: {total_components}")
         if individual_tests_pass > 0 or individual_tests_fail > 0:
             print(colorize(f"  Individual Tests: {individual_tests_pass + individual_tests_fail} "
-                          f"({individual_tests_pass} pass, {individual_tests_fail} fail)", 
+                          f"({individual_tests_pass} pass, {individual_tests_fail} fail)",
                           Colors.OKGREEN if individual_tests_fail == 0 else Colors.FAIL))
         print(colorize(f"  Components Passed: {total_passed}", Colors.OKGREEN))
         print(colorize(f"  Components Failed: {total_failed}", Colors.FAIL if total_failed > 0 else ''))
         print(colorize(f"  Components Skipped: {total_skipped}", Colors.WARNING if total_skipped > 0 else ''))
         print(f"  Duration:  {total_duration:.1f}s")
         print()
-        
+
         # Detailed results by component
         print("Results by component:")
         print()
-        
+
         for component, results in self.results.items():
             status = ""
             for result in results:
@@ -491,7 +492,7 @@ class TestRunner:
                     status = colorize("⊘ SKIP", Colors.WARNING)
                 else:
                     status = colorize("✗ FAIL", Colors.FAIL)
-                
+
                 # Show test count if available
                 test_count = ""
                 if result.passed:
@@ -499,9 +500,9 @@ class TestRunner:
                     match = re.search(r'(\d+) passed', result.output)
                     if match:
                         test_count = f" ({match.group(1)} tests)"
-                
+
                 print(f"  {component:20s} {status}{test_count}")
-                
+
                 if not result.passed and self.verbose and result.error_type not in \
                    ['MISSING_DIRECTORY', 'MISSING_CMAKE', 'MISSING_PYTEST', 'MISSING_NUMBA',
                     'MISSING_TESTS', 'NO_TESTS', 'NOT_READY']:
@@ -510,9 +511,9 @@ class TestRunner:
                     if len(error_output) > 200:
                         error_output = error_output[-200:]
                     print_info(f"    Error: {error_output.strip()[:100]}...")
-        
+
         print()
-        
+
         # Return code
         if total_failed > 0:
             print(colorize("Some tests FAILED!", Colors.FAIL))
@@ -537,7 +538,7 @@ Examples:
   python run_all_tests.py --verbose    # Show detailed output
         """
     )
-    
+
     parser.add_argument(
         '--lib', action='store_true',
         help='Run C library tests'
@@ -570,12 +571,12 @@ Examples:
         '--summary', action='store_true',
         help='Show summary only'
     )
-    
+
     args = parser.parse_args()
-    
+
     # Determine which components to run
     components = []
-    if args.all or not any([args.lib, args.bindings, args.gui, 
+    if args.all or not any([args.lib, args.bindings, args.gui,
                             args.algorithms, args.integration]):
         components = ['lib', 'bindings', 'gui', 'algorithms', 'integration']
     else:
@@ -589,22 +590,22 @@ Examples:
             components.append('algorithms')
         if args.integration:
             components.append('integration')
-    
+
     # Find project root
     project_root = Path(__file__).parent.absolute()
-    
+
     # Run tests
     runner = TestRunner(project_root, verbose=args.verbose)
     results = runner.run_all_tests(components)
-    
+
     # Exit with appropriate code
     total_failed = sum(
-        1 for component_results in results.values() 
-        for result in component_results 
-        if not result.passed and result.error_type not in 
+        1 for component_results in results.values()
+        for result in component_results
+        if not result.passed and result.error_type not in
         ['MISSING_DIRECTORY', 'MISSING_CMAKE', 'MISSING_PYTEST', 'MISSING_NUMBA']
     )
-    
+
     sys.exit(1 if total_failed > 0 else 0)
 
 

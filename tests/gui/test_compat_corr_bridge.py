@@ -7,9 +7,10 @@ Usage:
 
 import os
 import shutil
+from pathlib import Path
+
 import numpy as np
 import pytest
-from pathlib import Path
 
 
 def _prepare_test_data(test_dir):
@@ -43,11 +44,12 @@ def test_compat_bridge_correctness(cavity_dir):
     os.chdir(cavity_dir)
 
     try:
+        from imageio.v3 import imread
+        from skimage.color import rgb2gray
+        from skimage.util import img_as_ubyte
+
         from openptv2.gui.experiment import Experiment
         from openptv2.gui.ptv import py_start_proc_c, simple_highpass
-        from imageio.v3 import imread
-        from skimage.util import img_as_ubyte
-        from skimage.color import rgb2gray
 
         yaml_file = cavity_dir / "parameters_Run1.yaml"
         exp = Experiment()
@@ -61,12 +63,16 @@ def test_compat_bridge_correctness(cavity_dir):
         targ_p = exp.pm.get_parameter("targ_rec")
         cal_p = exp.pm.get_parameter("cal_ori")
 
+        from openptv2.calibration import Calibration as CalC
         from openptv2.parameters import (
             ControlParams as C,
-            VolumeParams as V,
+        )
+        from openptv2.parameters import (
             TargetParams as T,
         )
-        from openptv2.calibration import Calibration as CalC
+        from openptv2.parameters import (
+            VolumeParams as V,
+        )
 
         cp_c = C(num_cams=num_cams)
         cp_c.set_image_size((ptv_p["imx"], ptv_p["imy"]))
@@ -111,9 +117,9 @@ def test_compat_bridge_correctness(cavity_dir):
         frame = 10000
 
         # Get compat detections
-        from openptv2.segmentation import target_recognition as c_tr
-        from openptv2.correspondences import MatchedCoords as c_mc
         from openptv2.algorithms.tracking_frame_buf import Frame as RawFrame
+        from openptv2.correspondences import MatchedCoords as c_mc
+        from openptv2.segmentation import target_recognition as c_tr
 
         det_c, corr_c = [], []
         for i_cam in range(num_cams):
@@ -157,8 +163,8 @@ def test_compat_bridge_correctness(cavity_dir):
         )
 
         # --- Test 2: raw corr with raw params but compat detections ---
-        from openptv2.algorithms.parameters import ControlPar, VolumePar, TargetPar
         from openptv2.algorithms.calibration import Calibration
+        from openptv2.algorithms.parameters import ControlPar, VolumePar
 
         cpar_r = ControlPar(num_cams=num_cams)
         cpar_r.imx = ptv_p["imx"]
@@ -199,7 +205,7 @@ def test_compat_bridge_correctness(cavity_dir):
         )
 
         # --- COMPARE: frame/corrected from raw vs compat ---
-        print(f"\n  Frame comparison (compat build vs optv target based):")
+        print("\n  Frame comparison (compat build vs optv target based):")
         for cam in range(num_cams):
             print(
                 f"    cam{cam + 1}: num_targets={frame_a.num_targets[cam]} "

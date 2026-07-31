@@ -6,21 +6,25 @@ Both tracking algorithms run on the same data, and every resulting link is
 checked against the known correspondence.
 """
 
+import math
 import os
 import shutil
-import math
+from pathlib import Path
+
 import numpy as np
 import pytest
-from pathlib import Path
 
 from openptv2.algorithms.calibration import Calibration
 from openptv2.algorithms.parameters import ControlPar, SequencePar, TrackPar, VolumePar
-from openptv2.algorithms.tracking_run import tr_new
 from openptv2.algorithms.track import (
-    track_forward_start, trackcorr_c_loop, trackcorr_c_finish, trackback_c,
     point_to_pixel,
+    track_forward_start,
+    trackback_c,
+    trackcorr_c_finish,
+    trackcorr_c_loop,
 )
 from openptv2.algorithms.track3d import track3d_loop
+from openptv2.algorithms.tracking_run import tr_new
 
 TEST_DIR = Path(__file__).resolve().parent.parent.parent / "test_data" / "synthetic"
 FIRST, LAST = 10001, 10008
@@ -441,7 +445,7 @@ class TestSyntheticTrack3d:
                 for e in errors:
                     print(e)
 
-            assert n_wrong == 0, f"track3d produced wrong links:\n" + "\n".join(errors)
+            assert n_wrong == 0, "track3d produced wrong links:\n" + "\n".join(errors)
 
             max_jump, _ = _check_trajectory_distances(frames, "track3d")
             print(f"  max trajectory jump: {max_jump:.3f}")
@@ -538,7 +542,7 @@ class TestSyntheticTrackcorr:
                 for e in errors:
                     print(e)
 
-            assert n_wrong == 0, f"trackcorr produced wrong links:\n" + "\n".join(errors)
+            assert n_wrong == 0, "trackcorr produced wrong links:\n" + "\n".join(errors)
 
             max_jump, _ = _check_trajectory_distances(frames, "trackcorr")
             print(f"  max trajectory jump: {max_jump:.3f}")
@@ -739,7 +743,7 @@ class TestSyntheticForwardBackwardForward:
             print(f"\nFBF: correct={n_correct}, wrong={n_wrong}, missed={n_missed}")
             print(f"  fwd_nlinks={fwd_nlinks}, fbf_nlinks={run.nlinks}")
 
-            assert n_wrong == 0, f"FBF produced wrong links:\n" + "\n".join(errors)
+            assert n_wrong == 0, "FBF produced wrong links:\n" + "\n".join(errors)
             assert run.nlinks >= fwd_nlinks, (
                 f"FBF lost links: {run.nlinks} < forward-only {fwd_nlinks}"
             )

@@ -1,6 +1,8 @@
-import yaml
-from openptv2.gui.parameter_manager import ParameterManager
 from pathlib import Path
+
+import yaml
+
+from openptv2.gui.parameter_manager import ParameterManager
 
 
 def test_print_cavity_yaml():

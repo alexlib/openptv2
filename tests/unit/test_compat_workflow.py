@@ -2,19 +2,22 @@
 Tests for compatibility layer workflow (Phase 3: Correspondences & Tracker).
 """
 
-import pytest
-import numpy as np
 from pathlib import Path
 
-from openptv2.calibration import Calibration
-from openptv2.parameters import (
-    ControlParams, VolumeParams, TrackingParams, SequenceParams, TargetParams
-)
-from openptv2.tracking_framebuf import TargetArray, Target
-from openptv2.correspondences import MatchedCoords, correspondences
-from openptv2.tracker import Tracker, default_naming
-from openptv2.algorithms.tracking_frame_buf import Target as AlgoTarget
+import numpy as np
+import pytest
 
+from openptv2.algorithms.tracking_frame_buf import Target as AlgoTarget
+from openptv2.calibration import Calibration
+from openptv2.correspondences import MatchedCoords, correspondences
+from openptv2.parameters import (
+    ControlParams,
+    SequenceParams,
+    TrackingParams,
+    VolumeParams,
+)
+from openptv2.tracker import Tracker, default_naming
+from openptv2.tracking_framebuf import TargetArray
 
 # Test data paths
 TEST_DATA = Path(__file__).parent.parent.parent / "test_data" / "synthetic"

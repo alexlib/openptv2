@@ -24,11 +24,12 @@ def _(mo):
 def _():
     from pathlib import Path
 
-    import numpy as np
     import matplotlib.pyplot as plt
+    import numpy as np
     from mpl_toolkits.mplot3d import Axes3D  # noqa: F401
 
     from openptv2.calibration import Calibration
+
     from .parameter_manager import ParameterManager
 
     return Calibration, ParameterManager, Path, np, plt

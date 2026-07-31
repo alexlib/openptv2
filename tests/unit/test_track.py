@@ -1,40 +1,38 @@
-import numpy as np
-import pytest
 import os
 import shutil
-from pathlib import Path
 
-from openptv2.algorithms.track import (
-    predict,
-    search_volume_center_moving,
-    pos3d_in_bounds,
-    angle_acc,
-    candsearch_in_pix,
-    candsearch_in_pix_rest,
-    sort,
-    reset_foundpix_array,
-    copy_foundpix_array,
-    searchquader,
-    sort_candidates_by_freq,
-    track_forward_start,
-    trackcorr_c_loop,
-    trackcorr_c_finish,
-    trackback_c,
-    Foundpix_dtype,
-    MAX_CANDS,
-    _make_foundpix_array,
-)
-from openptv2.algorithms.tracking_frame_buf import Target
-from openptv2.algorithms.tracking_run import tr_new
+import numpy as np
+import pytest
+
+from openptv2.algorithms.calibration import Calibration
 from openptv2.algorithms.parameters import (
     ControlPar,
     SequencePar,
     TrackPar,
     TrackParTuple,
     VolumePar,
-    convert_track_par_to_tuple,
 )
-from openptv2.algorithms.calibration import Calibration
+from openptv2.algorithms.track import (
+    MAX_CANDS,
+    _make_foundpix_array,
+    angle_acc,
+    candsearch_in_pix,
+    candsearch_in_pix_rest,
+    copy_foundpix_array,
+    pos3d_in_bounds,
+    predict,
+    reset_foundpix_array,
+    search_volume_center_moving,
+    searchquader,
+    sort,
+    sort_candidates_by_freq,
+    track_forward_start,
+    trackback_c,
+    trackcorr_c_finish,
+    trackcorr_c_loop,
+)
+from openptv2.algorithms.tracking_frame_buf import Target
+from openptv2.algorithms.tracking_run import tr_new
 
 EPS = 1e-5
 

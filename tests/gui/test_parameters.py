@@ -2,12 +2,13 @@
 Unit tests for the parameters module
 """
 
-import pytest
 import os
+import shutil
 import tempfile
 from pathlib import Path
+
+import pytest
 import yaml
-import shutil
 
 from openptv2.gui.legacy_parameters import Parameters, PtvParams, SequenceParams
 from openptv2.gui.parameter_manager import ParameterManager
@@ -50,7 +51,7 @@ def test_parameters_base_class():
 def test_ptv_params(temp_params_dir):
     """Test the PtvParams class"""
     # Create parameters directory
-    params_dir = temp_params_dir 
+    params_dir = temp_params_dir
 
     # Create a test ptv.par file
     ptv_par_path = params_dir / "ptv.par"
@@ -151,7 +152,7 @@ def test_sequence_params(temp_params_dir):
 def test_parameter_manager(temp_params_dir):
     """Test the ParameterManager class"""
     params_dir = temp_params_dir
-    
+
     # Create dummy .par files
     with open(params_dir / "ptv.par", "w") as f:
         f.write("2\nimg1.tif\ncal1.ori\nimg2.tif\ncal2.ori\n1\n0\n1\n10\n10\n0.1\n0.1\n0\n1\n1\n1\n1\n")
@@ -193,4 +194,4 @@ def test_parameter_manager(temp_params_dir):
 
 
 if __name__ == "__main__":
-    pytest.main([__file__])    
+    pytest.main([__file__])

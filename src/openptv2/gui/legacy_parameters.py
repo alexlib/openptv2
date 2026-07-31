@@ -1,10 +1,7 @@
-from __future__ import print_function
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 
-
-from pathlib import Path
 import shutil
-import collections.abc
+from pathlib import Path
 from typing import Optional
 
 # import yaml
@@ -251,10 +248,10 @@ class PtvParams(Parameters):
 
 
 class CalOriParams(Parameters):
-    def __init__(self, 
+    def __init__(self,
                     n_img:int = 0,
                     fixp_name: str = "",
-                    img_cal_name: list[str] = [""], 
+                    img_cal_name: list[str] = [""],
                     img_ori: list[str] = [""],
                     tiff_flag: bool = False,
                     pair_flag: bool = False,
@@ -265,7 +262,7 @@ class CalOriParams(Parameters):
         self.n_img = n_img
         self.fixp_name = fixp_name
         self.img_cal_name = img_cal_name
-        self.img_ori = img_ori 
+        self.img_ori = img_ori
         self.tiff_flag = tiff_flag
         self.pair_flag = pair_flag
         self.chfield = chfield
@@ -505,8 +502,8 @@ class TargRecParams(Parameters):
 
 
 class ManOriParams(Parameters):
-    def __init__(self, 
-                 n_img: int = 0, 
+    def __init__(self,
+                 n_img: int = 0,
                  nr: list[int] = [0, 0, 0, 0],
                  path: Path = Parameters.default_path
                  ):
@@ -711,7 +708,7 @@ class OrientParams(Parameters):
             return False
 
 class TrackingParams(Parameters):
-    """Parameters for the tracking algorithm""" 
+    """Parameters for the tracking algorithm"""
     def __init__(
         self,
         dvxmin: float = 0.0,
@@ -752,13 +749,13 @@ class TrackingParams(Parameters):
             self.angle = float(g(f))
             self.dacc = float(g(f))
             self.flagNewParticles = int(g(f)) != 0
-            
+
             # Read track_mode if available (optional 10th line)
             try:
                 self.track_mode = int(g(f))
             except BaseException:
                 self.track_mode = 0
-                
+
             f.close()
         except BaseException:
             error(None, "%s not found" % self.filepath())
@@ -1018,9 +1015,9 @@ class MultiPlaneParams(Parameters):
 
 
 class SortGridParams(Parameters):
-    def __init__(self, 
-                 n_img: int = 0, 
-                 radius: int = 0, 
+    def __init__(self,
+                 n_img: int = 0,
+                 radius: int = 0,
                  path: Path = Parameters.default_path
                  ):
         Parameters.__init__(self, path)

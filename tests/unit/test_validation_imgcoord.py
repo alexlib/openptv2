@@ -1,26 +1,35 @@
-import sys
 import importlib.util
+import sys
 from pathlib import Path
+
 import numpy as np
 import pytest
 
 from openptv2.algorithms.calibration import Calibration as PyCalibration
-from openptv2.algorithms.parameters import MmNp as PyMmNp
 from openptv2.algorithms.imgcoord import (
-    img_coord as py_img_coord,
     flat_image_coord as py_flat_image_coord,
-    img_coord_batch as py_img_coord_batch,
+)
+from openptv2.algorithms.imgcoord import (
     flat_image_coord_batch as py_flat_image_coord_batch,
 )
+from openptv2.algorithms.imgcoord import (
+    img_coord as py_img_coord,
+)
+from openptv2.algorithms.imgcoord import (
+    img_coord_batch as py_img_coord_batch,
+)
+from openptv2.algorithms.parameters import MmNp as PyMmNp
 
 # Try to import legacy optv bindings
 try:
     from optv.calibration import Calibration as CCalib
-    from optv.parameters import MultimediaParams as CMultiParams
     from optv.imgcoord import (
-        image_coordinates as c_img_coord,
         flat_image_coordinates as c_flat_img_coord,
     )
+    from optv.imgcoord import (
+        image_coordinates as c_img_coord,
+    )
+    from optv.parameters import MultimediaParams as CMultiParams
 
     HAS_OPTV = True
 except ImportError:

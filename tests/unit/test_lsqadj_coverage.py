@@ -15,8 +15,7 @@ try:
 except Exception:
     pass
 
-from openptv2.algorithms.lsqadj import ata, atl, matinv, matmul, is_compiled
-
+from openptv2.algorithms.lsqadj import ata, atl, is_compiled, matinv, matmul
 
 # ---------------------------------------------------------------------------
 # is_compiled

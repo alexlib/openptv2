@@ -68,7 +68,9 @@ def cmd_run(args) -> int:
         fixed_cams = [int(c) for c in args.fixed_cams.split(",")]
 
     try:
-        from openptv2.gui.standalone_dumbbell_calibration import run_dumbbell_calibration
+        from openptv2.gui.standalone_dumbbell_calibration import (
+            run_dumbbell_calibration,
+        )
     except ImportError as e:
         print(f"ERROR: {e}\nRun from the openptv2 checkout with `uv run`.", file=sys.stderr)
         return 1
@@ -94,7 +96,7 @@ def cmd_run(args) -> int:
         print(f"ERROR: {e}", file=sys.stderr)
         return 1
 
-    print(f"\nResult:")
+    print("\nResult:")
     print(f"  Frames used:       {result.n_used} / {result.n_total}")
     print(f"  RMS before (px):   {result.rms_before:.4f}")
     print(f"  RMS after  (px):   {result.rms_after:.4f}")

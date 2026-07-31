@@ -5,14 +5,13 @@ the live TraitsUI/Qt window is not exercised here.
 """
 
 from unittest.mock import MagicMock, patch
-from pathlib import Path
+
 import matplotlib
 
 matplotlib.use("Agg")  # headless: no window, safe in CI
 
-from flowtracks.trajectory import Trajectory
 import numpy as np
-import pytest
+from flowtracks.trajectory import Trajectory
 
 from openptv2.gui.plot_3d_trajectories import (
     build_3d_trajectories_figure,

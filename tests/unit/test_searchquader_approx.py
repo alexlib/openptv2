@@ -5,14 +5,17 @@ of the search box, then expands by a safety margin (MARGIN=0.05 = 5%).
 For cameras with multimedia (has_mmlut), the original 8-corner path is used.
 """
 
+import pathlib
+import sys
+
 import numpy as np
 import pytest
-import sys
-import pathlib
 
-from openptv2.algorithms.track_kernels_search import _sorted_candidates_fast_out
 try:
-    from openptv2.algorithms.track_kernels_geom import _point_to_pixel_out, _pixel_jacobian
+    from openptv2.algorithms.track_kernels_geom import (
+        _pixel_jacobian,
+        _point_to_pixel_out,
+    )
 except ImportError:
     pytestmark = pytest.mark.skip(reason="track_kernels_geom does not implement _pixel_jacobian")
     _point_to_pixel_out = None
@@ -671,7 +674,7 @@ def test_tracking_parity():
     The 2% tolerance on nlinks already allows for small numerical differences
     from the approximation.
     """
-    import pathlib, subprocess
+    import subprocess
 
     root = pathlib.Path(__file__).resolve().parent.parent.parent
 

@@ -6,18 +6,17 @@ reused from tests/unit/test_sortgrid.py where possible.
 
 import numpy as np
 
-from openptv2.algorithms.sortgrid import (
-    sortgrid,
-    nearest_neighbour_pix,
-    _nearest_neighbour_arr,
-    read_sortgrid_par,
-    read_calblock,
-    is_compiled,
-)
 from openptv2.algorithms.calibration import Calibration
 from openptv2.algorithms.parameters import ControlPar
-from openptv2.algorithms.tracking_frame_buf import Target, read_targets
-
+from openptv2.algorithms.sortgrid import (
+    _nearest_neighbour_arr,
+    is_compiled,
+    nearest_neighbour_pix,
+    read_calblock,
+    read_sortgrid_par,
+    sortgrid,
+)
+from openptv2.algorithms.tracking_frame_buf import Target
 
 # --- nearest_neighbour_pix ---
 

@@ -1,5 +1,9 @@
 """Benchmark tracking pipeline."""
-import os, shutil, time, sys
+import os
+import shutil
+import sys
+import time
+
 sys.path.insert(0, 'src')
 
 os.chdir('test_data/track')
@@ -8,13 +12,14 @@ for d in ['res', 'img']:
 shutil.copytree('res_orig', 'res')
 shutil.copytree('img_orig', 'img')
 
+from openptv2.track import track_forward_start, trackcorr_c_loop
+from openptv2.tracking_run import tr_new
+
 from openptv2.calibration import Calibration
 from openptv2.parameters import get_control_par
-from openptv2.tracking_run import tr_new
-from openptv2.track import track_forward_start, trackcorr_c_loop
 
 cpar = get_control_par("parameters/ptv.par")
-calib = [Calibration.from_file(f"cal/cam{c+1}.tif.ori", f"cal/cam{c+1}.tif.addpar") 
+calib = [Calibration.from_file(f"cal/cam{c+1}.tif.ori", f"cal/cam{c+1}.tif.addpar")
          for c in range(cpar.num_cams)]
 
 run = tr_new("parameters/sequence.par", "parameters/track.par", "parameters/criteria.par",

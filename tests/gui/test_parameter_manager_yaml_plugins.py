@@ -1,9 +1,10 @@
 import tempfile
-import shutil
-import os
-import yaml
 from pathlib import Path
+
+import yaml
+
 from openptv2.gui.parameter_manager import ParameterManager
+
 
 def create_dummy_par_dir(tmpdir):
     tmp_dir = Path(tmpdir)
@@ -74,7 +75,7 @@ def test_parameter_manager_yaml_plugins():
         # Check plugins section
         assert 'plugins' in ydata
         plugins = ydata['plugins']
-        
+
         assert 'selected_sequence' in plugins
         assert 'selected_tracking' in plugins
         # Availability is a runtime fact and must NOT be persisted; the GUI

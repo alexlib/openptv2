@@ -1,8 +1,9 @@
+from pathlib import Path
+
 import numpy as np
 from algorithms.calibration import read_calibration
-from algorithms.track import point_to_pixel
 from algorithms.parameters import ControlPar, MultimediaPar
-from pathlib import Path
+from algorithms.track import point_to_pixel
 
 CAVITY_DATA = Path("test_data/test_cavity")
 ori = CAVITY_DATA / "cal/cam1.tif.ori"

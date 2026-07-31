@@ -13,9 +13,10 @@ app = marimo.App(width="medium")
 
 @app.cell
 def _():
-    import numpy as np
     import os
     import sys
+
+    import numpy as np
 
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
     from openptv2.gui.pyptv.ptv import read_rt_is_file
@@ -120,7 +121,6 @@ def _(data_dir, np, os, read_rt_is_file):
 @app.cell
 def _(frames, np):
     import matplotlib.pyplot as plt
-    from mpl_toolkits.mplot3d import Axes3D
 
 
     def create_3d_particle_plot(frames: list[np.ndarray]) -> plt.Figure:

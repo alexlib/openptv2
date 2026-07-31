@@ -4,6 +4,7 @@ import shutil
 import subprocess
 import sys
 from pathlib import Path
+
 import pytest
 
 
@@ -107,7 +108,7 @@ def test_optimized_performance(tmp_path):
     avg_links = total_links / frames_count
     link_ratio = avg_links / avg_particles * 100
 
-    print(f"\n📈 Performance Results:")
+    print("\n📈 Performance Results:")
     print(f"Average particles per frame: {avg_particles:.1f}")
     print(f"Average links per frame: {avg_links:.1f}")
     print(f"Link ratio: {link_ratio:.1f}%")

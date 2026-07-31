@@ -16,7 +16,7 @@ from matplotlib.figure import Figure
 from traits.api import HasTraits, Instance
 from traitsui.api import Item, View
 
-from .plot_3d_positions import MPLFigureEditor, _draw_fov_box, compute_fov_bounds
+from .plot_3d_positions import MPLFigureEditor, _draw_fov_box
 
 
 def _extract_xyz_mm(traj) -> np.ndarray:

@@ -1,7 +1,9 @@
-import pytest
-from openptv2.gui.parameter_manager import ParameterManager
 from pathlib import Path
+
+import pytest
+
 from openptv2.gui.experiment import Experiment
+from openptv2.gui.parameter_manager import ParameterManager
 
 TEST_DATA = Path(__file__).parent.parent.parent / "test_data"
 
@@ -73,8 +75,8 @@ def test_track_params_in_par_dir(par_dir):
 
 
 def test_tracking_params_gui_postprocess(tmp_path):
-    from openptv2.gui.parameter_gui import Tracking_Params
     from openptv2.gui.experiment import Experiment
+    from openptv2.gui.parameter_gui import Tracking_Params
     from openptv2.gui.parameter_manager import ParameterManager
 
     pm = ParameterManager()

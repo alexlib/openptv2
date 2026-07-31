@@ -10,14 +10,13 @@ Parameter units (from openptv2.algorithms/track.py):
 - dangle: unitless (compared directly as angle < dangle)
 """
 
-import numpy as np
-from typing import List, Tuple, Dict, Optional
 from dataclasses import dataclass
+from typing import List, Optional, Tuple
 
-from openptv2 import TrackingParams as TrackPar
-from openptv2 import ControlParams as ControlPar
-from openptv2 import VolumeParams as VolumePar
+import numpy as np
+
 from openptv2 import Calibration
+from openptv2 import ControlParams as ControlPar
 
 
 @dataclass
