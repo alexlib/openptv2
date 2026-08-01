@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 import numpy as np
@@ -175,16 +176,28 @@ class Sequence:
             else:
                 print_corresp = sorted_corresp
 
-            # Save rt_is
-            rt_is_filename = default_naming["corres"]
-            if isinstance(rt_is_filename, bytes):
-                rt_is_filename = rt_is_filename.decode("utf-8")
-            rt_is_filename = f"{rt_is_filename}.{frame}"
-            with open(rt_is_filename, "w", encoding="utf8") as rt_is:
-                rt_is.write(str(pos.shape[0]) + "\n")
-                for pix, pt in enumerate(pos):
-                    pt_args = (pix + 1,) + tuple(pt) + tuple(print_corresp[:, pix])
-                    rt_is.write("%4d %9.3f %9.3f %9.3f %4d %4d %4d %4d\n" % pt_args)
+            storage_mode = os.environ.get("OPENPTV_STORAGE", "zarr").lower()
+            if storage_mode in ("zarr", "zarr_only"):
+                from openptv2.storage import ZarrFrameStore
+
+                zarr_path = Path("res/run.zarr")
+                zarr_path.parent.mkdir(parents=True, exist_ok=True)
+                store = ZarrFrameStore(zarr_path, mode="a")
+                store.write_correspondences(
+                    frame=frame, pos_3d=pos, cam_target_ids=print_corresp.T
+                )
+
+            if storage_mode != "zarr_only":
+                # Save rt_is
+                rt_is_filename = default_naming["corres"]
+                if isinstance(rt_is_filename, bytes):
+                    rt_is_filename = rt_is_filename.decode("utf-8")
+                rt_is_filename = f"{rt_is_filename}.{frame}"
+                with open(rt_is_filename, "w", encoding="utf8") as rt_is:
+                    rt_is.write(str(pos.shape[0]) + "\n")
+                    for pix, pt in enumerate(pos):
+                        pt_args = (pix + 1,) + tuple(pt) + tuple(print_corresp[:, pix])
+                        rt_is.write("%4d %9.3f %9.3f %9.3f %4d %4d %4d %4d\n" % pt_args)
 
         # After processing all frames, save the areas data
         output_file = Path("res/mask_areas.csv")
