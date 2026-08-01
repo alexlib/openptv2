@@ -25,24 +25,21 @@ def calibrate_ext_only(dataset_dir: str):
     fix, nfix = read_calblock(str(calblock))
 
     dp = _load_dataset_params(base, calblock)
-    cpar, num_cams = dp.cpar, dp.num_cams
+    cpar, num_cams, eps = dp.cpar, dp.num_cams, dp.eps
+    eps = 25  # Increase radius for matching
 
     out = base / "cal" / "ext_cal_only"
     out.mkdir(parents=True, exist_ok=True)
 
     print(
-        "Calibrating only exterior orientation (6-DOF) for "
-        f"{num_cams} cameras in {base}..."
+        f"Calibrating only exterior orientation (6-DOF) for {num_cams} cameras in {base}..."
     )
-
-    R_B1_to_B2 = None
-    R_B2_to_B1 = None
-    t_B2_to_B1 = None
 
     for cam in range(num_cams):
         ids = dp.ids_per_cam[cam]
         fix4 = np.asarray([fix[i - 1] for i in ids], dtype=float)
         pix4 = dp.clicks_per_cam[cam]
+        img, ori, addpar = cam_files(base, cam)
 
         import glob
 
@@ -88,30 +85,24 @@ def calibrate_ext_only(dataset_dir: str):
             print(f"cam{cam + 1}: no detected targets found. skipping.")
             continue
 
-        img, ori, addpar = cam_files(base, cam)
         c = Calibration.from_file(str(ori), str(addpar))
 
         # Save old pose for transformation
         R_old = c.get_rotation_matrix()
         pos_old = c.get_pos()
 
-        # Apply transformation if we have it
-        if (
-            R_B1_to_B2 is not None
-            and R_B2_to_B1 is not None
-            and t_B2_to_B1 is not None
-        ):
-            R_new = R_old @ R_B1_to_B2
-            pos_new = R_B2_to_B1 @ pos_old + t_B2_to_B1
+        # Apply transformation if we have it (set at the end of a previous
+        # iteration; the locals() guard is invisible to ruff, hence the noqa).
+        if "R_B2_to_B1" in locals():
+            R_new = R_old @ R_B1_to_B2  # noqa: F821
+            pos_new = R_B2_to_B1 @ pos_old + t_B2_to_B1  # noqa: F821
             c.set_rotation_matrix(R_new)
             c.set_pos(pos_new)
             print(f"cam{cam + 1}: Applied rig transformation from cam1.")
 
         if not external_calibration(c, fix4, pix4, cpar):
             print(
-                "cam"
-                f"{cam + 1}: external_calibration did not converge. "
-                "Using initial guess."
+                f"cam{cam + 1}: external_calibration did not converge. Using initial guess."
             )
         else:
             print(f"cam{cam + 1}: After external_calibration, pos={c.get_pos()}")

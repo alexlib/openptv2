@@ -50,7 +50,6 @@ class NTupel:
 @cython.ccall
 def quicksort_target_y(pix):
     """Sort target list by y coordinate in place using Timsort."""
-    import operator
 
     pix.sort(key=operator.attrgetter("y"))
 
@@ -58,7 +57,6 @@ def quicksort_target_y(pix):
 @cython.ccall
 def quicksort_coord2d_x(crd):
     """Sort Coord2d list by x coordinate in place using Timsort."""
-    import operator
 
     crd.sort(key=operator.attrgetter("x"))
 

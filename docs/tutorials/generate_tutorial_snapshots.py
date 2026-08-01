@@ -28,7 +28,7 @@ def main():
     images_dir.mkdir(parents=True, exist_ok=True)
 
     cavity_dir = original_cwd / "test_data/test_cavity"
-    yaml_file = cavity_dir / "parameters_Run1.yaml"
+    cavity_dir / "parameters_Run1.yaml"
     ptv_is_pattern = str(cavity_dir / "res/ptv_is.%d")
 
     # 2. Load trajectories using flowtracks
@@ -153,9 +153,7 @@ def main():
 
         # Project 3D mm coords to 2D sensor metric coords
         projected = image_coordinates(
-            pos_3d_mm,
-            cals[cam_idx],
-            cpar.get_multimedia_params(),
+            pos_3d_mm, cals[cam_idx], cpar.get_multimedia_params()
         )
 
         # Convert sensor metric coords to pixel coordinates
@@ -208,8 +206,7 @@ def main():
     ax.set_xlabel("X [pixels]", fontsize=11, fontweight="bold")
     ax.set_ylabel("Y [pixels]", fontsize=11, fontweight="bold")
     ax.set_title(
-        f"2D Particle Detection & Trajectory Overlays "
-        f"(Camera 1, Frame {frame_number})",
+        f"2D Particle Detection & Trajectory Overlays (Camera 1, Frame {frame_number})",
         fontsize=13,
         fontweight="bold",
         pad=15,
@@ -217,10 +214,7 @@ def main():
 
     # Clean up axes style
     ax.legend(
-        loc="lower left",
-        framealpha=0.9,
-        facecolor="#ffffff",
-        edgecolor="#cccccc",
+        loc="lower left", framealpha=0.9, facecolor="#ffffff", edgecolor="#cccccc"
     )
     ax.grid(False)  # No grid for image overlays
 

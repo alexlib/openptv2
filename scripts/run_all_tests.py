@@ -441,8 +441,7 @@ class TestRunner:
                 TestResult(
                     "Integration",
                     False,
-                    "No test files found in tests/ - integration tests not "
-                    "implemented yet",
+                    "No test files found in tests/ - integration tests not implemented yet",
                     0.0,
                     "NO_TESTS",
                 )
@@ -551,8 +550,7 @@ class TestRunner:
         if individual_tests_pass > 0 or individual_tests_fail > 0:
             print(
                 colorize(
-                    "  Individual Tests: "
-                    f"{individual_tests_pass + individual_tests_fail} "
+                    f"  Individual Tests: {individual_tests_pass + individual_tests_fail} "
                     f"({individual_tests_pass} pass, {individual_tests_fail} fail)",
                     Colors.OKGREEN if individual_tests_fail == 0 else Colors.FAIL,
                 )

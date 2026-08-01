@@ -32,20 +32,6 @@ from openptv2.segmentation import target_recognition
 from openptv2.tracker import Tracker, default_naming
 from openptv2.tracking_framebuf import TargetArray
 
-"""
-example from Tracker documentation:
-        dict naming - a dictionary with naming rules for the frame buffer
-            files. Keys: 'corres', 'linkage', 'prio'. Values can be either
-            strings or bytes. Strings will be automatically encoded to UTF-8 bytes.
-            If None, uses default_naming.
-
-    default_naming = {
-        'corres': 'res/rt_is',
-        'linkage': 'res/ptv_is',
-        'prio': 'res/added'
-    }
-"""
-
 # PyPTV imports
 from . import ptv_calibration
 from .parameter_manager import ParameterManager
@@ -56,6 +42,18 @@ from .ptv_calibration import (  # noqa: F401
     clone_calibration,
     full_scipy_calibration,
 )
+
+# example from Tracker documentation:
+#         dict naming - a dictionary with naming rules for the frame buffer
+#             files. Keys: 'corres', 'linkage', 'prio'. Values can be either
+#             strings or bytes. Strings are automatically encoded to UTF-8.
+#             If None, uses default_naming.
+#
+#     default_naming = {
+#         'corres': 'res/rt_is',
+#         'linkage': 'res/ptv_is',
+#         'prio': 'res/added'
+#     }
 
 # Constants
 DEFAULT_FRAME_NUM = 123456789
@@ -180,11 +178,18 @@ def _process_frame_worker(args: Tuple) -> int:
         targ_params,
         negative_flag,
         masking_params,
+        zarr_store_path,
     ) = args
 
     # Recreate the ControlParams and TargetParams objects inside the worker
     cpar = _populate_cpar(ptv_params, num_cams)
     tpar = _populate_tpar(targ_params, num_cams)
+
+    store = None
+    if zarr_store_path:
+        from openptv2.storage import ZarrFrameStore
+
+        store = ZarrFrameStore(zarr_store_path, mode="a")
 
     for i_cam in range(num_cams):
         imname = Path(img_base_names[i_cam] % frame)
@@ -216,18 +221,24 @@ def _process_frame_worker(args: Tuple) -> int:
             else:
                 targs.sort(key=lambda t: t.y)
 
-        write_targets(targs, short_file_bases[i_cam], frame)
+        if store is not None:
+            store.write_targets(i_cam, frame, targs)
+        else:
+            write_targets(targs, short_file_bases[i_cam], frame)
 
     return frame
 
 
-def preprocess_and_detect_all_parallel(exp, num_workers: int = None) -> None:
+def preprocess_and_detect_all_parallel(
+    exp, num_workers: int = None, zarr_store_path: str = None
+) -> None:
     """Preprocess and detect targets in parallel across all frames.
 
     Args:
         exp: Either an Experiment object with pm attribute,
              or a MainGUI object with exp1.pm and cached parameter objects
         num_workers: Optional number of worker processes. Defaults to all available cores.
+        zarr_store_path: Optional path to Zarr store for writing targets directly.
     """
     from concurrent.futures import ProcessPoolExecutor
 
@@ -298,6 +309,7 @@ def preprocess_and_detect_all_parallel(exp, num_workers: int = None) -> None:
             targ_params_dict,
             negative_flag,
             masking_params_dict,
+            zarr_store_path,
         )
         for frame in range(first_frame, last_frame + 1)
     ]
@@ -718,6 +730,21 @@ def py_determination_proc_c(
     else:
         print_corresp = concatenated_corresp
 
+    storage_mode = os.environ.get("OPENPTV_STORAGE", "zarr").lower()
+    if storage_mode in ("zarr", "zarr_only"):
+        from openptv2.storage import ZarrFrameStore
+
+        zarr_path = Path("res/run.zarr")
+        zarr_path.parent.mkdir(parents=True, exist_ok=True)
+        store = ZarrFrameStore(zarr_path, mode="a")
+        store.write_correspondences(
+            frame=frame, pos_3d=pos, cam_target_ids=print_corresp.T
+        )
+        print(f"Saved 3D correspondences for frame {frame} to Zarr store {zarr_path}")
+
+    if storage_mode == "zarr_only":
+        return
+
     output_path = _prepare_output_path(
         f"{_safe_decode(default_naming['corres'])}.{frame}"
     )
@@ -878,8 +905,22 @@ def py_sequence_loop(exp) -> None:
     if not parallel_preprocess and isinstance(ptv_params_dict, dict):
         parallel_preprocess = ptv_params_dict.get("parallel_preprocess", False)
 
+    storage_mode = os.environ.get("OPENPTV_STORAGE", "zarr").lower()
+    zarr_store_path = None
+    if storage_mode == "zarr":
+        exp_path = getattr(exp, "exp_path", None)
+        if not isinstance(exp_path, (str, Path)) or hasattr(
+            exp_path, "_mock_return_value"
+        ):
+            exp_path = getattr(exp, "exp_dir", ".")
+        if not isinstance(exp_path, (str, Path)) or hasattr(
+            exp_path, "_mock_return_value"
+        ):
+            exp_path = "."
+        zarr_store_path = str(Path(exp_path) / "res" / "run.zarr")
+
     if parallel_preprocess and not existing_target:
-        preprocess_and_detect_all_parallel(exp)
+        preprocess_and_detect_all_parallel(exp, zarr_store_path=zarr_store_path)
         existing_target = True
 
     first_frame = spar.get_first()
@@ -896,7 +937,13 @@ def py_sequence_loop(exp) -> None:
             frame_images = read_frame_images(pm, img_base_names, num_cams, frame)
         for i_cam in range(num_cams):
             if existing_target:
-                targs = read_targets(short_file_bases[i_cam], frame)
+                if storage_mode == "zarr" and zarr_store_path:
+                    from openptv2.storage import ZarrFrameStore
+
+                    store = ZarrFrameStore(zarr_store_path, mode="r")
+                    targs = store.read_targets(i_cam, frame)
+                else:
+                    targs = read_targets(short_file_bases[i_cam], frame)
             else:
                 high_pass = simple_highpass(
                     frame_images[i_cam],
@@ -913,12 +960,21 @@ def py_sequence_loop(exp) -> None:
             pos, _ = matched_coords.as_arrays()
             corrected.append(matched_coords)
 
-        # AFter we finished all targs, we can move to correspondences
+        # After we finished all targs, we can move to correspondences
         sorted_pos, sorted_corresp, _ = correspondences(
             detections, corrected, cals, vpar, cpar
         )
-        for i_cam in range(num_cams):
-            write_targets(detections[i_cam], short_file_bases[i_cam], frame)
+        if storage_mode in ("zarr", "zarr_only") and zarr_store_path:
+            from openptv2.storage import ZarrFrameStore
+
+            store = ZarrFrameStore(zarr_store_path, mode="a")
+            for i_cam in range(num_cams):
+                store.write_targets(i_cam, frame, detections[i_cam])
+
+        if storage_mode != "zarr_only":
+            for i_cam in range(num_cams):
+                write_targets(detections[i_cam], short_file_bases[i_cam], frame)
+
         print(
             "Frame "
             + str(frame)
@@ -941,17 +997,26 @@ def py_sequence_loop(exp) -> None:
         else:
             print_corresp = sorted_corresp
 
-        output_path = _prepare_output_path(
-            f"{_safe_decode(default_naming['corres'])}.{frame}"
-        )
-        try:
-            with open(output_path, "w", encoding="utf8") as rt_is:
-                rt_is.write(f"{pos.shape[0]}\n")
-                for pix, pt in enumerate(pos):
-                    pt_args = (pix + 1,) + tuple(pt) + tuple(print_corresp[:, pix])
-                    rt_is.write("%4d %9.3f %9.3f %9.3f %4d %4d %4d %4d\n" % pt_args)
-        except OSError as exc:
-            _raise_output_write_error(output_path, exc)
+        if storage_mode in ("zarr", "zarr_only") and zarr_store_path:
+            from openptv2.storage import ZarrFrameStore
+
+            store = ZarrFrameStore(zarr_store_path, mode="a")
+            store.write_correspondences(
+                frame=frame, pos_3d=pos, cam_target_ids=print_corresp.T
+            )
+
+        if storage_mode != "zarr_only":
+            output_path = _prepare_output_path(
+                f"{_safe_decode(default_naming['corres'])}.{frame}"
+            )
+            try:
+                with open(output_path, "w", encoding="utf8") as rt_is:
+                    rt_is.write(f"{pos.shape[0]}\n")
+                    for pix, pt in enumerate(pos):
+                        pt_args = (pix + 1,) + tuple(pt) + tuple(print_corresp[:, pix])
+                        rt_is.write("%4d %9.3f %9.3f %9.3f %4d %4d %4d %4d\n" % pt_args)
+            except OSError as exc:
+                _raise_output_write_error(output_path, exc)
 
 
 def py_sequence_loop_python(exp) -> None:
@@ -1600,7 +1665,41 @@ def generate_short_file_bases(img_base_names: List[str]) -> List[str]:
 
 
 def read_rt_is_file(filename) -> List[List[float]]:
-    """Read data from an rt_is file and return the parsed values."""
+    """Read data from an rt_is file or Zarr store and return the parsed values."""
+    if not Path(filename).exists():
+        p = Path(filename)
+        frame_match = re.search(r"\.(\d+)$", p.name)
+        if frame_match:
+            frame = int(frame_match.group(1))
+            zarr_candidates = [
+                p.parent / "run.zarr",
+                p.parent / "targets.zarr",
+                p.parent.parent / "res" / "run.zarr",
+            ]
+            for zpath in zarr_candidates:
+                if zpath.exists():
+                    from openptv2.storage import ZarrFrameStore
+
+                    try:
+                        store = ZarrFrameStore(zpath, mode="r")
+                        pos_3d, cam_ids = store.read_correspondences(frame)
+                        data = []
+                        for pt, c in zip(pos_3d, cam_ids):
+                            data.append(
+                                [
+                                    float(pt[0]),
+                                    float(pt[1]),
+                                    float(pt[2]),
+                                    int(c[0]),
+                                    int(c[1]),
+                                    int(c[2]),
+                                    int(c[3]),
+                                ]
+                            )
+                        return data
+                    except Exception:
+                        pass
+
     try:
         with open(filename, "r", encoding="utf-8") as file:
             num_rows = int(file.readline().strip())

@@ -141,9 +141,7 @@ class TestSimpleHighpass:
 
         with patch("openptv2.gui.ptv.preprocess_image") as mock_preprocess:
             with patch("openptv2.gui.ptv.DEFAULT_NO_FILTER", 0):
-                with patch(
-                    "openptv2.gui.ptv.DEFAULT_HIGHPASS_FILTER_SIZE", 7
-                ):
+                with patch("openptv2.gui.ptv.DEFAULT_HIGHPASS_FILTER_SIZE", 7):
                     mock_preprocess.return_value = np.zeros((20, 20), dtype=np.uint8)
 
                     simple_highpass(img, self.cpar)

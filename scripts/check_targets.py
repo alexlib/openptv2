@@ -26,8 +26,6 @@ for i, t in enumerate(t2):
         closest_idx = i
 
 print(
-    f"Target in 10002 closest to (1204.73, 181.65): "
-    f"index={closest_idx}, pos={t2[closest_idx].x:.2f},"
-    f"{t2[closest_idx].y:.2f}, dist={closest_dist:.2f}"
+    f"Target in 10002 closest to (1204.73, 181.65): index={closest_idx}, pos={t2[closest_idx].x:.2f},{t2[closest_idx].y:.2f}, dist={closest_dist:.2f}"
 )
 print(f"Target 113 in 10002 pos: {t2[113].x:.2f},{t2[113].y:.2f}")

@@ -11,6 +11,13 @@ from traitsui.api import (
     spring,
 )
 
+from openptv2.tracking_presets import (
+    PRESET_CHOICES,
+    PRESET_CONFIGS,
+    apply_preset,
+    infer_preset,
+)
+
 from .experiment import Experiment
 
 DEFAULT_STRING = "---"
@@ -350,14 +357,6 @@ class CalHandler(Handler):
             # Save all changes to the YAML file through the experiment
             experiment.save_active()
             print("Calibration parameters saved successfully!")
-
-
-from openptv2.tracking_presets import (
-    PRESET_CHOICES,
-    PRESET_CONFIGS,
-    apply_preset,
-    infer_preset,
-)
 
 
 class TrackHandler(Handler):

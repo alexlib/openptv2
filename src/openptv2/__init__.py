@@ -1,5 +1,7 @@
 """Public OpenPTV2 API backed by the single Cython-backed algorithms runtime."""
 
+__version__ = "0.3.0"
+
 from .algorithms.parameter_converters import (
     convert_optv_calibrations,
     get_all_params,
@@ -52,7 +54,7 @@ from .transforms import (
     distorted_to_flat,
 )
 
-__version__ = "0.2.1"
+__version__ = "0.2.2"
 __author__ = "OpenPTV Community"
 __email__ = "openptv@googlegroups.com"
 

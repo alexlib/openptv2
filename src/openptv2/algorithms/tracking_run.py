@@ -48,6 +48,7 @@ class TrackingRun:
 
         from openptv2.algorithms.multimed import init_mmlut, volumedimension
 
+        from openptv2.algorithms.multimed import init_mmlut, volumedimension
         xmax, xmin, self.ymax, self.ymin, zmax, zmin = volumedimension(
             self.vpar, self.cpar, self.cal
         )

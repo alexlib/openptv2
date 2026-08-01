@@ -142,10 +142,10 @@ def main():
         )
 
     pyproject_content = PYPROJECT_TEMPLATE.format(numpy_requires=numpy_requires)
-    # Clean up trailing comma artifacts if numpy_requires is empty.
-    pyproject_content = pyproject_content.replace(
-        ", ]",
-        "]",
+    # Clean up trailing comma artifacts if numpy_requires is empty
+    pyproject_content = pyproject_content.replace(", ]", "]").replace(
+        '[build-system]\nrequires = ["setuptools>=61", "Cython>=3.0", ]',
+        '[build-system]\nrequires = ["setuptools>=61", "Cython>=3.0"]',
     )
 
     os.makedirs(args.out_dir, exist_ok=True)

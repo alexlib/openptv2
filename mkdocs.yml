@@ -56,6 +56,7 @@ nav:
   - Installation & Setup: installation.md
   - First Steps: first_steps.md
   - User Guides:
+    - Zarr & HDF5 Storage: zarr-hdf5-storage.md
     - Tracking Pipeline & Results: tracking_guide.md
     - Calibration Best Practices: calibration_best_practices.md
     - Command-Line Batch Processing: tutorials/batch_processing.md

@@ -342,8 +342,7 @@ for cam in range(1, NCAMS + 1):
     cal_crop = cal_img[oy : oy + CROP, ox : ox + CROP]
     imageio.imwrite(str(DST / f"cal/cam{cam}.tif"), cal_crop)
     print(
-        f"  cal/cam{cam}.tif: cropped [{oy}:{oy + CROP}, "
-        f"{ox}:{ox + CROP}] → {cal_crop.shape}"
+        f"  cal/cam{cam}.tif: cropped [{oy}:{oy + CROP}, {ox}:{ox + CROP}] → {cal_crop.shape}"
     )
 shutil.copy(
     str(SRC / "cal/target_on_a_side.txt"), str(DST / "cal/target_on_a_side.txt")

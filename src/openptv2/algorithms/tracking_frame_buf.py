@@ -3,6 +3,7 @@
 Translation of lib/src/tracking_frame_buf.c and lib/include/tracking_frame_buf.h.
 """
 
+import os
 from pathlib import Path
 
 import cython
@@ -187,6 +188,24 @@ def read_targets(file_base, frame_num):
                 )
             return targets
     except FileNotFoundError:
+        import re
+        p = Path(fname)
+        cam_match = re.search(r"cam(\d+)", p.name)
+        cam_idx = int(cam_match.group(1)) - 1 if cam_match else 0
+        zarr_candidates = [
+            p.parent / "run.zarr",
+            p.parent / "targets.zarr",
+            p.parent.parent / "res" / "run.zarr",
+        ]
+        for zpath in zarr_candidates:
+            if zpath.exists():
+                from openptv2.storage import ZarrFrameStore
+                try:
+                    store = ZarrFrameStore(zpath, mode="r")
+                    if store.has_targets(cam_idx, frame_num):
+                        return list(store.read_targets(cam_idx, frame_num))
+                except Exception:
+                    pass
         return []
 
 
@@ -337,6 +356,49 @@ def read_path_frame(corres_file_base, linkage_file_base, prio_file_base, frame_n
     try:
         corres_file = open(fname, "r")
     except FileNotFoundError:
+        # Fallback to Zarr store
+        p = Path(fname)
+        zarr_candidates = [
+            p.parent / "run.zarr",
+            p.parent / "targets.zarr",
+            p.parent.parent / "res" / "run.zarr",
+        ]
+        for zpath in zarr_candidates:
+            if zpath.exists():
+                from openptv2.storage import ZarrFrameStore
+
+                try:
+                    store = ZarrFrameStore(zpath, mode="r")
+                    pos_3d, cam_ids = store.read_correspondences(frame_num)
+
+                    link_name = (
+                        Path(linkage_file_base).name if linkage_file_base else "ptv_is"
+                    )
+                    if store.has_linkage(frame_num, link_name):
+                        prevs, nexts, _ = store.read_linkage(frame_num, link_name)
+                    else:
+                        prevs = np.full(len(pos_3d), PREV_NONE, dtype=np.int32)
+                        nexts = np.full(len(pos_3d), NEXT_NONE, dtype=np.int32)
+
+                    cor_buf = []
+                    path_buf = []
+                    for idx, (pt, c, pr, nx) in enumerate(
+                        zip(pos_3d, cam_ids, prevs, nexts)
+                    ):
+                        cor = Corres(nr=idx + 1, p=np.array(c, dtype=np.int32))
+                        path = Pathinfo(
+                            x=np.array(pt, dtype=np.float64),
+                            prev=int(pr),
+                            next_idx=int(nx),
+                            prio=4,
+                            finaldecis=1000000.0,
+                            inlist=0,
+                        )
+                        cor_buf.append(cor)
+                        path_buf.append(path)
+                    return cor_buf, path_buf
+                except Exception:
+                    pass
         return [], []
 
     corres_file.readline()  # number of points (read but use EOF)
@@ -505,6 +567,47 @@ def write_path_frame(
             prio_file.write(
                 f"{p.prev:4d} {p.next_idx:4d} {p.x[0]:10.3f} {p.x[1]:10.3f} {p.x[2]:10.3f} {p.prio:d}\n"
             )
+
+    storage_mode = os.environ.get("OPENPTV_STORAGE", "zarr").lower()
+    if storage_mode in ("zarr", "zarr_only"):
+        from openptv2.storage import ZarrFrameStore
+
+        zarr_path = Path("res/run.zarr")
+        if linkage_file_base:
+            zarr_path = Path(linkage_file_base).parent / "run.zarr"
+        zarr_path.parent.mkdir(parents=True, exist_ok=True)
+
+        try:
+            store = ZarrFrameStore(zarr_path, mode="a")
+            prevs = np.array([path_buf[pix].prev for pix in range(num_parts)], dtype=np.int32)
+            nexts = np.array([path_buf[pix].next_idx for pix in range(num_parts)], dtype=np.int32)
+            pos_3d = np.array([path_buf[pix].x for pix in range(num_parts)], dtype=np.float64)
+
+            if linkage_file_base:
+                link_name = Path(linkage_file_base).name
+                store.write_linkage(frame=frame_num, prev_ids=prevs, next_ids=nexts, pos_3d=pos_3d, linkage_name=link_name)
+
+            # Also extract camera IDs for correspondences
+            cam_ids = []
+            for pix in range(num_parts):
+                if (
+                    isinstance(cor_buf, (list, tuple))
+                    and len(cor_buf) == 2
+                    and isinstance(cor_buf[0], np.ndarray)
+                ):
+                    c_p = cor_buf[1][pix]
+                elif isinstance(cor_buf, list) and isinstance(cor_buf[0], Corres):
+                    c_p = cor_buf[pix].p
+                else:
+                    c_p = cor_buf[pix].p if hasattr(cor_buf[pix], "p") else np.zeros(4, dtype=np.int32)
+                cam_ids.append(c_p)
+
+            store.write_correspondences(frame=frame_num, pos_3d=pos_3d, cam_target_ids=np.array(cam_ids, dtype=np.int32))
+        except Exception:
+            pass
+
+    if storage_mode == "zarr_only":
+        return True
 
     corres_file.close()
     if linkage_file:

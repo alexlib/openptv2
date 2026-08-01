@@ -129,6 +129,7 @@ def main():
         )
 
     residuals_mm = np.array(residuals_mm)
+    residuals_mm / cpar.pix_x
 
     print(f"\nAll pairs combined ({len(residuals_mm)} point-pair observations):")
     for p in [50, 75, 90, 95, 99]:

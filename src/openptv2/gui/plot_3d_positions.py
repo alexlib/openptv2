@@ -12,6 +12,7 @@ recipe), keeping everything inside the TraitsUI/Qt event loop.
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Optional
 
 import numpy as np
 from matplotlib.figure import Figure
@@ -191,12 +192,31 @@ class Plot3DPositions(HasTraits):
     )
 
 
-def _read_positions(rt_is_path: Path) -> np.ndarray:
-    """Read an rt_is file and return its (N, 3) metric xyz positions.
+def _read_positions(rt_is_path: Path, frame: Optional[int] = None) -> np.ndarray:
+    """Read an rt_is file or Zarr store and return its (N, 3) metric xyz positions.
 
     A file that exists but holds zero particles is returned as an empty
     (0, 3) array. Missing/unreadable files propagate their OSError.
     """
+    if not rt_is_path.exists():
+        # Fallback to Zarr store in experiment or res folder
+        zarr_candidates = [
+            rt_is_path.parent / "run.zarr",
+            rt_is_path.parent / "targets.zarr",
+            rt_is_path.parent.parent / "targets.zarr",
+            rt_is_path.parent.parent / "targets_test.zarr",
+        ]
+        for zpath in zarr_candidates:
+            if zpath.exists() and frame is not None:
+                from openptv2.storage import ZarrFrameStore
+
+                try:
+                    store = ZarrFrameStore(zpath, mode="r")
+                    pos_3d, _ = store.read_correspondences(frame)
+                    return pos_3d
+                except Exception:
+                    pass
+
     try:
         rows = ptv.read_rt_is_file(str(rt_is_path))  # [[x, y, z, p0..p3], ...]
     except ValueError:
@@ -215,5 +235,5 @@ def create_3d_positions_panel(rt_is_path, frame, bounds=None) -> Plot3DPositions
         frame: frame identifier for the title.
         bounds: optional field-of-view axis limits (see build_3d_figure).
     """
-    points = _read_positions(Path(rt_is_path))
+    points = _read_positions(Path(rt_is_path), frame=frame)
     return Plot3DPositions(figure=build_3d_figure(points, frame, bounds=bounds))

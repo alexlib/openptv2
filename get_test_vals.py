@@ -10,8 +10,7 @@ from openptv2.algorithms.image_processing import (
 
 def print_array(arr, name):
     print(
-        f"{name} = np.array({arr.ravel().tolist()}, dtype=np.uint8)"
-        f".reshape({arr.shape})"
+        f"{name} = np.array({arr.ravel().tolist()}, dtype=np.uint8).reshape({arr.shape})"
     )
 
 

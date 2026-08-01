@@ -94,6 +94,8 @@ server (XQuartz / VcXsrv) and set `DISPLAY` accordingly.
 3.14t image for servers/Cloud Run. See [docs/cloud-batch.md](docs/cloud-batch.md)
 for the one-command install, `openptv2-batch` usage, and measured timings.
 
+**Zarr + HDF5 Cloud Storage:** OpenPTV2 includes a native, high-performance Zarr storage engine (`res/run.zarr`) replacing thousands of per-frame text files with a cloud-native chunked format. See [docs/zarr-hdf5-storage.md](docs/zarr-hdf5-storage.md) for usage, terminal inspection, and Flowtracks HDF5 export.
+
 ---
 
 ### For Developers (Build from Source)

@@ -8,7 +8,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "openptv2"
-version = "0.2.1"
+version = "0.3.0"
 description = "OpenPTV2 single-engine particle tracking with Cython 3 pure Python modules"
 readme = "README.md"
 license = "LGPL-3.0-or-later"
@@ -40,6 +40,7 @@ classifiers = [
 dependencies = [
     "cython>=3.0.0,<4",
     "google-genai>=2.14.0",
+    "h5py>=3.8.0",
     "imageio>=2.19.0",
     "nbformat>=5.10.4",
     "numpy>=2.0.0",
@@ -49,6 +50,7 @@ dependencies = [
     "scikit-image>=0.20.0",
     "scipy>=1.10.0",
     "traits>=6.4.0",
+    "zarr>=2.16.0",
 ]
 
 [project.optional-dependencies]
@@ -192,9 +194,35 @@ target-version = "py311"
 line-length = 88
 indent-width = 4
 
+# algorithms/ is a deliberate line-by-line translation of the C original: its
+# long lines and C-mirroring names are the house style, and ruff's isort splits
+# the `if cython.compiled:` conditional imports into one statement per symbol,
+# which would also force a full Cython rebuild of the in-place extensions.
+# notebooks/ are marimo files, where cells reference names defined in other
+# cells -- ruff sees one flat module and reports false undefined-name errors.
+extend-exclude = [
+    "src/openptv2/algorithms",
+    "notebooks",
+]
+
 [tool.ruff.lint]
 select = ["E", "W", "F", "I"]
-ignore = ["D1"]
+# E501: line length is not enforced anywhere in this codebase; leaving it on
+# kept `ruff check` permanently red and therefore useless as a gate.
+ignore = ["D1", "E501"]
+
+# src/ stays strict -- these carve-outs are for trees that are not shipped.
+[tool.ruff.lint.per-file-ignores]
+# F401: `import optv` / `import PySide6` inside a try/except is an availability
+#       probe for skipping a test, not an unused import.
+# E741: `l`, `I` mirror the matrix names in the C originals under test.
+# E402: imports after a sys.path tweak or an importorskip guard.
+"tests/**" = ["E402", "E741", "F401"]
+"scripts/**" = ["E402"]
+"skills/**" = ["E402", "F401"]
+"docs/**" = ["E402"]
+"test_data/**" = ["E402"]
+"test_dictoffset.py" = ["E402"]
 
 [dependency-groups]
 dev = [

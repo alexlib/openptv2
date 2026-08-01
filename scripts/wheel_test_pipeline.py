@@ -238,8 +238,10 @@ def create_clean_venv(venv_path: Path, verbose: bool = False) -> Tuple[bool, str
     # Determine python path
     if sys.platform == "win32":
         python_path = str(venv_path / "Scripts" / "python.exe")
+        str(venv_path / "Scripts" / "pip.exe")
     else:
         python_path = str(venv_path / "bin" / "python")
+        str(venv_path / "bin" / "pip")
 
     if not os.path.exists(python_path):
         print_failure(f"Python not found at {python_path}")
