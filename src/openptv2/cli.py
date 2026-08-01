@@ -17,6 +17,7 @@ def print_help():
     print()
     print("Available Commands:")
     print("  track       Run headless batch sequence and tracking processing")
+    print("  inspect     Inspect Zarr store data across all pipeline stages")
     print("  validate    Validate the single Cython runtime on bundled test data")
     print("  gui         Launch the interactive 3D-PTV GUI")
     print()
@@ -61,6 +62,23 @@ def main():
 
         except Exception as e:
             print(f"Tracking command failed: {e}")
+            sys.exit(1)
+
+    elif command in ("inspect", "peek"):
+        try:
+            if len(sys.argv) < 3:
+                print("Usage: openptv inspect <zarr_path> [--frame FRAME] [--cam CAM]")
+                sys.exit(1)
+            from openptv2.storage.zarr_store import inspect_zarr_store, ZarrFrameStore
+            zarr_path = sys.argv[2]
+            if "--frame" in sys.argv or "-f" in sys.argv:
+                sys.argv = [sys.argv[0]] + sys.argv[2:]
+                from openptv2.storage.zarr_store import main_cli
+                main_cli()
+            else:
+                print(inspect_zarr_store(zarr_path))
+        except Exception as e:
+            print(f"Inspection failed: {e}")
             sys.exit(1)
 
     elif command == "validate":

@@ -39,13 +39,10 @@ classifiers = [
 # `scikit-image` are pulled in by the batch pipeline. No Qt/chaco here.
 dependencies = [
     "cython>=3.0.0,<4",
-    "google-genai>=2.14.0",
     "h5py>=3.8.0",
     "imageio>=2.19.0",
-    "nbformat>=5.10.4",
     "numpy>=2.0.0",
     "pydantic>=2.13.4",
-    "pydantic-ai-slim>=2.18.0",
     "pyyaml>=6.0",
     "scikit-image>=0.20.0",
     "scipy>=1.10.0",

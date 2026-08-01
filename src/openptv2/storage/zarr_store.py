@@ -399,6 +399,76 @@ class ZarrFrameStore:
         )
 
 
+def inspect_zarr_store(zarr_path: Union[str, Path]) -> str:
+    """Inspect a Zarr store dataset across all pipeline stages and return a human-readable report."""
+    import zarr
+    import numpy as np
+
+    root = zarr.open_group(str(zarr_path), mode="r")
+    lines = []
+    lines.append("=" * 60)
+    lines.append(f"[INSPECT] Zarr Dataset Inspection: {zarr_path}")
+    lines.append("=" * 60)
+
+    # 1. Targets
+    if "targets" in root:
+        tgt_grp = root["targets"]
+        cams = sorted([k for k in tgt_grp.keys() if k.startswith("cam_")])
+        lines.append(f"[Targets]: {len(cams)} camera groups found ({', '.join(cams)})")
+        for cam in cams:
+            f_keys = sorted([k for k in tgt_grp[cam].keys() if k.startswith("frame_")])
+            if f_keys:
+                f_min = f_keys[0].split("_")[1]
+                f_max = f_keys[-1].split("_")[1]
+                lines.append(f"   - {cam}: {len(f_keys)} frames (Range: {f_min} .. {f_max})")
+    else:
+        lines.append("[Targets]: None")
+
+    # 2. Correspondences
+    if "correspondences" in root:
+        corr_grp = root["correspondences"]
+        f_keys = sorted([k for k in corr_grp.keys() if k.startswith("frame_")])
+        if f_keys:
+            f_min = f_keys[0].split("_")[1]
+            f_max = f_keys[-1].split("_")[1]
+            first_arr = np.asarray(corr_grp[f_keys[0]])
+            lines.append(f"[Correspondences]: {len(f_keys)} frames (Range: {f_min} .. {f_max}), ~{len(first_arr)} matches/frame")
+        else:
+            lines.append("[Correspondences]: Present (0 frames)")
+    else:
+        lines.append("[Correspondences]: None")
+
+    # 3. Trajectories
+    if "trajectories" in root:
+        traj_grp = root["trajectories"]
+        if "trajid" in traj_grp:
+            trids = np.asarray(traj_grp["trajid"])
+            times = np.asarray(traj_grp["time"])
+            pos = np.asarray(traj_grp["pos"])
+            u_ids = len(np.unique(trids))
+            lines.append(f"[Trajectories]: {u_ids} unique trajectories, {len(pos)} total points (Time: {times.min()} .. {times.max()})")
+            if "vel" in traj_grp:
+                vel = np.asarray(traj_grp["vel"])
+                v_mag = np.linalg.norm(vel, axis=1)
+                lines.append(f"   - Velocities present: min={v_mag.min():.4f}, max={v_mag.max():.4f}, mean={v_mag.mean():.4f} m/s")
+        else:
+            lines.append(f"[Trajectories]: Group present ({list(traj_grp.keys())})")
+    else:
+        lines.append("[Trajectories]: None")
+
+    # 4. Eulerian fields
+    if "eulerian" in root:
+        eul_grp = root["eulerian"]
+        vars_found = list(eul_grp.keys())
+        lines.append(f"[Eulerian Fields]: {len(vars_found)} variables ({', '.join(vars_found[:5])}...)")
+    else:
+        lines.append("[Eulerian Fields]: None")
+
+    lines.append("=" * 60)
+    report = "\n".join(lines)
+    return report
+
+
 def main_cli():
     """Command-line tool to inspect ZarrFrameStore datasets as human-readable text."""
     import argparse
@@ -407,7 +477,7 @@ def main_cli():
         description="Inspect ZarrFrameStore binary data as human-readable legacy ASCII text."
     )
     parser.add_argument("store_path", help="Path to .zarr directory")
-    parser.add_argument("--frame", "-f", type=int, required=True, help="Frame index")
+    parser.add_argument("--frame", "-f", type=int, default=None, help="Frame index for text dump")
     parser.add_argument(
         "--type",
         "-t",
@@ -420,8 +490,11 @@ def main_cli():
     )
 
     args = parser.parse_args()
-    store = ZarrFrameStore(args.store_path, mode="r")
-    store.dump_frame_text(frame=args.frame, dataset_type=args.type, cam_idx=args.cam)
+    if args.frame is None:
+        print(inspect_zarr_store(args.store_path))
+    else:
+        store = ZarrFrameStore(args.store_path, mode="r")
+        store.dump_frame_text(frame=args.frame, dataset_type=args.type, cam_idx=args.cam)
 
 
 if __name__ == "__main__":
