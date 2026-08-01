@@ -10,13 +10,13 @@ import skimage.io
 project_root = Path(__file__).parent.parent.parent.resolve()
 sys.path.insert(0, str(project_root))
 
-from flowtracks.io import trajectories_ptvis
-from gui.pyptv.experiment import Experiment
-from gui.pyptv.ptv import py_start_proc_c
+from flowtracks.io import trajectories_ptvis  # noqa: E402
+from gui.pyptv.experiment import Experiment  # noqa: E402
+from gui.pyptv.ptv import py_start_proc_c  # noqa: E402
 
-from openptv2.imgcoord import image_coordinates
-from openptv2.tracking_framebuf import read_targets
-from openptv2.transforms import convert_arr_metric_to_pixel
+from openptv2.imgcoord import image_coordinates  # noqa: E402
+from openptv2.tracking_framebuf import read_targets  # noqa: E402
+from openptv2.transforms import convert_arr_metric_to_pixel  # noqa: E402
 
 
 def main():
@@ -45,7 +45,7 @@ def main():
     os.chdir(cavity_dir)
     try:
         experiment = Experiment()
-        experiment.pm.from_yaml("parameters_Run1.yaml")
+        experiment.pm.from_yaml(str(yaml_file))
         cpar, spar, vpar, track_par, tpar, cals, epar = py_start_proc_c(experiment.pm)
     finally:
         os.chdir(original_cwd)
@@ -126,7 +126,8 @@ def main():
     ax.imshow(image, cmap="gray", origin="upper")
 
     # Load targets (detected particles) for Camera 1, Frame 10001
-    # NOTE: The file_base path must end with a dot so read_targets forms "cam1.10001_targets"
+    # NOTE: The file_base path must end with a dot so read_targets forms
+    # "cam1.10001_targets".
     targets = read_targets(str(cavity_dir / "img/cam1."), frame_number)
     print(f"Loaded {len(targets)} detected targets.")
 
