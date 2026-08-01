@@ -13,10 +13,10 @@
       
       
       
-        <link rel="prev" href="../tracking_guide/">
+        <link rel="prev" href="../first_steps/">
       
       
-        <link rel="next" href="../tutorials/batch_processing/">
+        <link rel="next" href="../tracking_guide/">
       
       
         
@@ -27,7 +27,7 @@
     
     
       
-        <title>Calibration Best Practices - OpenPTV2 Documentation</title>
+        <title>Zarr & HDF5 Storage - OpenPTV2 Documentation</title>
       
     
     
@@ -78,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#calibration-best-practices-troubleshooting-guide" class="md-skip">
+        <a href="#zarr-hdf5-storage-guide-in-openptv2" class="md-skip">
           Skip to content
         </a>
       
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Calibration Best Practices
+              Zarr & HDF5 Storage
             
           </span>
         </div>
@@ -286,7 +286,7 @@
     
     
       <li class="md-tabs__item md-tabs__item--active">
-        <a href="../zarr-hdf5-storage/" class="md-tabs__link">
+        <a href="./" class="md-tabs__link">
           
   
   
@@ -544,10 +544,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../zarr-hdf5-storage/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Zarr & HDF5 Storage
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -563,6 +590,165 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#why-zarr-hdf5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why Zarr + HDF5?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-architecture-inside-resrunzarr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data Architecture inside res/run.zarr
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#storage-modes-openptv_storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Storage Modes (OPENPTV_STORAGE)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Storage Modes (OPENPTV_STORAGE)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mode-comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mode Comparison
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-inspect-peek-in-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to Inspect &amp; "Peek In" Data
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How to Inspect &amp; &#34;Peek In&#34; Data">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-terminal-inspector-tool-cli" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Terminal Inspector Tool (CLI)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Terminal Inspector Tool (CLI)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example-output-rt_is-inspection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example Output (rt_is inspection):
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-python-inspection-api-zarrframestore" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Python Inspection API (ZarrFrameStore)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-direct-numpy-zarr-tree-access" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Direct NumPy / Zarr Tree Access
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-flowtracks-hdf5-export" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Flowtracks HDF5 Export
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#running-batch-processing-in-zarr-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Running Batch Processing in Zarr Mode
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -600,37 +786,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Calibration Best Practices
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../calibration_best_practices/" class="md-nav__link">
         
   
   
@@ -646,131 +805,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#the-core-playbook-6-step-calibration-workflow" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        🚀 The Core Playbook: 6-Step Calibration Workflow
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="🚀 The Core Playbook: 6-Step Calibration Workflow">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#step-1-detect-targets-on-raw-images" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Step 1: Detect Targets on Raw Images
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#step-2-seed-verification" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Step 2: Seed Verification
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#step-3-coarse-to-fine-search-radius-sortgrid" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Step 3: Coarse-to-Fine Search Radius (sortgrid)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#step-4-existing-orientation-ori-reuse" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Step 4: Existing Orientation (.ori) Reuse
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#step-5-candidate-distortion-model-selection" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Step 5: Candidate Distortion Model Selection
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#step-6-joint-plate-bundle-adjustment-rcm-check" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Step 6: Joint Plate Bundle Adjustment &amp; RCM Check
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#4-view-splitter-rig-considerations" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        ⚡ 4-View Splitter Rig Considerations
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#summary-checklist" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        📊 Summary Checklist
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1239,77 +1273,44 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#the-core-playbook-6-step-calibration-workflow" class="md-nav__link">
+  <a href="#why-zarr-hdf5" class="md-nav__link">
     <span class="md-ellipsis">
       
-        🚀 The Core Playbook: 6-Step Calibration Workflow
+        Why Zarr + HDF5?
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="🚀 The Core Playbook: 6-Step Calibration Workflow">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-architecture-inside-resrunzarr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data Architecture inside res/run.zarr
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#storage-modes-openptv_storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Storage Modes (OPENPTV_STORAGE)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Storage Modes (OPENPTV_STORAGE)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#step-1-detect-targets-on-raw-images" class="md-nav__link">
+  <a href="#mode-comparison" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 1: Detect Targets on Raw Images
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#step-2-seed-verification" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Step 2: Seed Verification
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#step-3-coarse-to-fine-search-radius-sortgrid" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Step 3: Coarse-to-Fine Search Radius (sortgrid)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#step-4-existing-orientation-ori-reuse" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Step 4: Existing Orientation (.ori) Reuse
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#step-5-candidate-distortion-model-selection" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Step 5: Candidate Distortion Model Selection
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#step-6-joint-plate-bundle-adjustment-rcm-check" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Step 6: Joint Plate Bundle Adjustment &amp; RCM Check
+        Mode Comparison
       
     </span>
   </a>
@@ -1322,21 +1323,88 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#4-view-splitter-rig-considerations" class="md-nav__link">
+  <a href="#how-to-inspect-peek-in-data" class="md-nav__link">
     <span class="md-ellipsis">
       
-        ⚡ 4-View Splitter Rig Considerations
+        How to Inspect &amp; "Peek In" Data
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How to Inspect &amp; &#34;Peek In&#34; Data">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-terminal-inspector-tool-cli" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Terminal Inspector Tool (CLI)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Terminal Inspector Tool (CLI)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example-output-rt_is-inspection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example Output (rt_is inspection):
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#summary-checklist" class="md-nav__link">
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-python-inspection-api-zarrframestore" class="md-nav__link">
     <span class="md-ellipsis">
       
-        📊 Summary Checklist
+        2. Python Inspection API (ZarrFrameStore)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-direct-numpy-zarr-tree-access" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Direct NumPy / Zarr Tree Access
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-flowtracks-hdf5-export" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Flowtracks HDF5 Export
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#running-batch-processing-in-zarr-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Running Batch Processing in Zarr Mode
       
     </span>
   </a>
@@ -1363,97 +1431,158 @@
   
 
 
-<h1 id="calibration-best-practices-troubleshooting-guide">Calibration Best Practices &amp; Troubleshooting Guide<a class="headerlink" href="#calibration-best-practices-troubleshooting-guide" title="Permanent link">&para;</a></h1>
-<p>This guide compiles practical lessons, best practices, and troubleshooting workflows derived from real-world multi-camera and 4-view optical splitter datasets.</p>
+<h1 id="zarr-hdf5-storage-guide-in-openptv2">Zarr + HDF5 Storage Guide in OpenPTV2<a class="headerlink" href="#zarr-hdf5-storage-guide-in-openptv2" title="Permanent link">&para;</a></h1>
+<p>OpenPTV2 includes a high-performance <strong>Zarr + HDF5 Storage System</strong> (<code>openptv2.storage.ZarrFrameStore</code>). This system replaces legacy per-frame ASCII text files (<code>*_targets</code>, <code>rt_is.*</code>, <code>ptv_is.*</code>, <code>added.*</code>) with a single, highly compressed, cloud-native Zarr dataset (<code>res/run.zarr</code>).</p>
 <hr />
-<h2 id="the-core-playbook-6-step-calibration-workflow">🚀 The Core Playbook: 6-Step Calibration Workflow<a class="headerlink" href="#the-core-playbook-6-step-calibration-workflow" title="Permanent link">&para;</a></h2>
-<p>When calibrating a complex multi-camera or splitter rig in OpenPTV, follow this systematic workflow:</p>
-<pre class="mermaid"><code>graph TD
-    A["1. Raw Image Detection&lt;br&gt;(hp_flag off)"] --&gt; B["2. Seed Verification&lt;br&gt;(4 manual points)"]
-    B --&gt; C["3. Coarse Sortgrid Pass&lt;br&gt;(radius = 15 px)"]
-    C --&gt; D["4. Coarse Exterior Resection&lt;br&gt;(cc, xh, yh)"]
-    D --&gt; E["5. Fine Sortgrid Pass&lt;br&gt;(radius = 5 px)"]
-    E --&gt; F["6. Flag Search &amp; Joint Bundle Adjust&lt;br&gt;(RMS &lt; 1.0 px, RCM &lt; 0.1 mm)"]</code></pre>
-<h3 id="step-1-detect-targets-on-raw-images">Step 1: Detect Targets on Raw Images<a class="headerlink" href="#step-1-detect-targets-on-raw-images" title="Permanent link">&para;</a></h3>
+<h2 id="why-zarr-hdf5">Why Zarr + HDF5?<a class="headerlink" href="#why-zarr-hdf5" title="Permanent link">&para;</a></h2>
 <ul>
-<li><strong>Do NOT apply high-pass filtering (<code>hp_flag</code>) to calibration plate images.</strong></li>
-<li>High-pass filtering creates ringing artifacts around bright calibration target dots, shifting the grey-weighted centroid and corrupting subpixel precision.</li>
-<li>High-pass filtering is for dim particle tracking images, not bright calibration plates.</li>
-</ul>
-<h3 id="step-2-seed-verification">Step 2: Seed Verification<a class="headerlink" href="#step-2-seed-verification" title="Permanent link">&para;</a></h3>
-<ul>
-<li>Select 4 well-spread, unambiguous seed points per camera (<code>man_ori</code>).</li>
-<li>Ensure the initial reprojection overlay lands reasonably near the target dots before proceeding to full bundle adjustment.</li>
-</ul>
-<h3 id="step-3-coarse-to-fine-search-radius-sortgrid">Step 3: Coarse-to-Fine Search Radius (<code>sortgrid</code>)<a class="headerlink" href="#step-3-coarse-to-fine-search-radius-sortgrid" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>The Problem</strong>: Starting directly at a tight search radius ($\text{radius} = 3\text{--}5\text{ px}$) on an unrefined orientation guess drops outer target points and gets trapped in a sparse local minimum ($17\text{--}35$ points matched, $\text{RMS} &gt; 2.0\text{ px}$).</li>
-<li><strong>The Solution</strong>: </li>
-<li>First, execute a <strong>coarse pass</strong> at $\text{radius} = 15\text{ px}$. This captures $70\text{--}80$ target points across the entire plate.</li>
-<li>Fit coarse exterior parameters (<code>cc</code>, <code>xh</code>, <code>yh</code>) to pull the camera pose into global alignment.</li>
-<li>Second, execute the <strong>fine pass</strong> at the target tight radius ($\text{radius} = 5\text{ px}$) to select the clean inlier set at subpixel precision.</li>
-</ul>
-<h3 id="step-4-existing-orientation-ori-reuse">Step 4: Existing Orientation (<code>.ori</code>) Reuse<a class="headerlink" href="#step-4-existing-orientation-ori-reuse" title="Permanent link">&para;</a></h3>
-<ul>
-<li>When re-calibrating or refining an existing dataset, <strong>reuse the existing <code>.ori</code> files</strong> as the initial guess.</li>
-<li>Resection from 4 manual clicks (<code>external_calibration</code>) is an analytic fallback for bootstrapping from scratch; reusing a previously converged <code>.ori</code> avoids 4-point pose perturbation on complex refractive paths.</li>
-</ul>
-<h3 id="step-5-candidate-distortion-model-selection">Step 5: Candidate Distortion Model Selection<a class="headerlink" href="#step-5-candidate-distortion-model-selection" title="Permanent link">&para;</a></h3>
-<ul>
-<li>Evaluate candidate distortion flag sets greedily by reprojection RMS:</li>
-<li>Base: <code>["cc", "xh", "yh"]</code></li>
-<li>Radial: <code>+ ["k1", "k2"]</code></li>
-<li>Decentering &amp; Higher-order: <code>+ ["k3", "p1", "p2"]</code></li>
-<li>Glass Interface / Splitter Tilt: <code>+ ["interf"]</code></li>
-<li><em>Note</em>: Distortion terms must be initialized from the refined camera pose (<code>copy.deepcopy(cal)</code>), not reset back to the 4-point seed.</li>
-</ul>
-<h3 id="step-6-joint-plate-bundle-adjustment-rcm-check">Step 6: Joint Plate Bundle Adjustment &amp; RCM Check<a class="headerlink" href="#step-6-joint-plate-bundle-adjustment-rcm-check" title="Permanent link">&para;</a></h3>
-<ul>
-<li>After per-camera resection achieves subpixel RMS ($&lt; 1.0\text{ px}$), run <code>joint_plate_bundle_adjust</code> (<code>openptv2.autocalibration</code>).</li>
-<li>Evaluate <strong>Cross-Camera Ray-Convergence Miss (RCM)</strong> distance:</li>
-<li><strong>Reprojection RMS</strong> measures how well each camera reprojects onto its own image plane.</li>
-<li><strong>RCM</strong> measures whether rays from multiple cameras actually intersect in 3D object space.</li>
-<li>Target: <strong>RCM median $&lt; 0.10\text{ mm}$</strong> ($100\ \mu\text{m}$).</li>
+<li><strong>Eliminates File System Bottlenecks</strong>: High-frame-rate, multi-camera PTV experiments typically produce tens of thousands of small text files. Zarr consolidates everything into a clean chunked store.</li>
+<li><strong>Cloud &amp; Cluster Parallelism</strong>: Multiple parallel worker processes or cloud nodes (e.g., AWS Lambda, GCP Cloud Run) can process different frames and write to distinct chunk keys simultaneously without file locking or storage contention.</li>
+<li><strong>Flowtracks &amp; HDF5 Native Bridge</strong>: Direct export to Flowtracks-compliant HDF5 files (<code>.h5</code>) for 3D Lagrangian trajectory analysis, turbulence statistics, and ParaView exports.</li>
+<li><strong>Transparent ASCII Inspection</strong>: Built-in CLI and Python inspectors allow humans to view binary Zarr frame data formatted as traditional ASCII text at any time.</li>
 </ul>
 <hr />
-<h2 id="4-view-splitter-rig-considerations">⚡ 4-View Splitter Rig Considerations<a class="headerlink" href="#4-view-splitter-rig-considerations" title="Permanent link">&para;</a></h2>
-<p>On 4-view optical splitter rigs (<code>cal_splitter: true</code>):
-1. <strong>Shared Frame Multiplexing</strong>:
-   - All 4 camera channels share a single physical raw image (e.g. $1024 \times 1024$).
-   - Target recognition splits the frame into four sub-quadrants (e.g. $512 \times 512$).
-2. <strong>Target File Isolation</strong>:
-   - Derived per-camera target filenames (e.g., <code>cam_1.tif_targets</code>, <code>cam_2.tif_targets</code>) are derived from each camera's <code>.ori</code> path rather than the shared image path to prevent target file collisions.
-3. <strong>Refractive Wall / Glass Vector</strong>:
-   - Splitter optical paths often introduce slight keystone distortion due to mirror tilts and glass interfaces.
-   - Enabling the <code>interf</code> flag (glass interface vector tilt) allows the solver to absorb refractive wall tilt that Brown's radial/decentering model cannot represent.</p>
-<hr />
-<h2 id="summary-checklist">📊 Summary Checklist<a class="headerlink" href="#summary-checklist" title="Permanent link">&para;</a></h2>
+<h2 id="data-architecture-inside-resrunzarr">Data Architecture inside <code>res/run.zarr</code><a class="headerlink" href="#data-architecture-inside-resrunzarr" title="Permanent link">&para;</a></h2>
+<p>Inside a <code>.zarr</code> directory (e.g., <code>res/run.zarr</code>), data is organized into logical subgroups:</p>
 <table>
 <thead>
 <tr>
-<th style="text-align: left;">Objective</th>
-<th style="text-align: left;">Recommended Setting / Action</th>
+<th style="text-align: left;">Zarr Path / Group</th>
+<th style="text-align: left;">Legacy Text Equivalent</th>
+<th style="text-align: left;">Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;"><strong>Image Preprocessing</strong></td>
-<td style="text-align: left;">Raw image detection (<code>hp_flag = 0</code>)</td>
+<td style="text-align: left;"><code>targets/cam_&lt;idx&gt;/frame_&lt;num&gt;</code></td>
+<td style="text-align: left;"><code>cam1.10000_targets</code></td>
+<td style="text-align: left;">2D detected targets per camera ($x, y, n, nx, ny, \text{sumg}, \text{tnr}$).</td>
 </tr>
 <tr>
-<td style="text-align: left;"><strong>Sortgrid Radius</strong></td>
-<td style="text-align: left;">Coarse ($15\text{ px}$) $\rightarrow$ Fine ($5\text{ px}$)</td>
+<td style="text-align: left;"><code>correspondences/frame_&lt;num&gt;</code></td>
+<td style="text-align: left;"><code>res/rt_is.10000</code></td>
+<td style="text-align: left;">3D stereo-matched particle coordinates ($x, y, z$ in mm) and camera target IDs.</td>
 </tr>
 <tr>
-<td style="text-align: left;"><strong>Outlier Rejection</strong></td>
-<td style="text-align: left;">Drop worst reprojecting points until inlier $\text{RMS} \le 1.0\text{ px}$</td>
+<td style="text-align: left;"><code>linkage/ptv_is/frame_&lt;num&gt;</code></td>
+<td style="text-align: left;"><code>res/ptv_is.10000</code></td>
+<td style="text-align: left;">3D particle tracking linkage links ($\text{prev}, \text{next}, x, y, z$).</td>
 </tr>
 <tr>
-<td style="text-align: left;"><strong>Quality Criteria</strong></td>
-<td style="text-align: left;">Reprojection $\text{RMS} &lt; 1.0\text{ px}$ AND $\text{RCM} &lt; 0.10\text{ mm}$</td>
+<td style="text-align: left;"><code>linkage/added/frame_&lt;num&gt;</code></td>
+<td style="text-align: left;"><code>res/added.10000</code></td>
+<td style="text-align: left;">Multi-pass tracking added particle linkages ($\text{prev}, \text{next}, x, y, z$).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>trajectories/</code></td>
+<td style="text-align: left;">Flowtracks dataset</td>
+<td style="text-align: left;">Consolidated particle tracks ($\text{pos}, \text{vel}, \text{acc}, \text{frame}, \text{trajid}$).</td>
 </tr>
 </tbody>
 </table>
+<hr />
+<h2 id="storage-modes-openptv_storage">Storage Modes (<code>OPENPTV_STORAGE</code>)<a class="headerlink" href="#storage-modes-openptv_storage" title="Permanent link">&para;</a></h2>
+<p>You can control storage behavior using the <code>OPENPTV_STORAGE</code> environment variable:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">OPENPTV_STORAGE</span><span class="o">=</span>zarr<span class="w">        </span><span class="c1"># DEFAULT mode</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">OPENPTV_STORAGE</span><span class="o">=</span>zarr_only<span class="w">   </span><span class="c1"># High-performance cloud mode</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="nb">export</span><span class="w"> </span><span class="nv">OPENPTV_STORAGE</span><span class="o">=</span>legacy<span class="w">      </span><span class="c1"># Legacy text-file-only mode</span>
+</span></code></pre></div>
+<h3 id="mode-comparison">Mode Comparison<a class="headerlink" href="#mode-comparison" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong><code>zarr</code> (DEFAULT)</strong>:</li>
+<li>Writes all targets, correspondences, and tracking linkages to <code>res/run.zarr</code>.</li>
+<li>
+<p><strong>Dual-writes</strong> legacy text files to disk so existing legacy tools, scripts, and tests continue to work without modification.</p>
+</li>
+<li>
+<p><strong><code>zarr_only</code> (Cloud Mode)</strong>:</p>
+</li>
+<li>Writes <strong>ONLY</strong> to <code>res/run.zarr</code>.</li>
+<li>
+<p><strong>Creates 0 text files on disk</strong>, completely eliminating disk write I/O overhead. Ideal for distributed cloud workflows (<code>openptv-cloud</code>).</p>
+</li>
+<li>
+<p><strong><code>legacy</code></strong>:</p>
+</li>
+<li>Writes only legacy ASCII text files (<code>*_targets</code>, <code>rt_is.*</code>, <code>ptv_is.*</code>).</li>
+</ol>
+<hr />
+<h2 id="how-to-inspect-peek-in-data">How to Inspect &amp; "Peek In" Data<a class="headerlink" href="#how-to-inspect-peek-in-data" title="Permanent link">&para;</a></h2>
+<h3 id="1-terminal-inspector-tool-cli">1. Terminal Inspector Tool (CLI)<a class="headerlink" href="#1-terminal-inspector-tool-cli" title="Permanent link">&para;</a></h3>
+<p>You do not need to write Python code to view frame data inside <code>res/run.zarr</code>. Use the built-in CLI inspector:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># View 2D targets for Camera 0 at Frame 10000</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>openptv2.storage.zarr_store<span class="w"> </span>res/run.zarr<span class="w"> </span>--frame<span class="w"> </span><span class="m">10000</span><span class="w"> </span>--type<span class="w"> </span>targets<span class="w"> </span>--cam<span class="w"> </span><span class="m">0</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1"># View 3D correspondences (rt_is) at Frame 10000</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>openptv2.storage.zarr_store<span class="w"> </span>res/run.zarr<span class="w"> </span>--frame<span class="w"> </span><span class="m">10000</span><span class="w"> </span>--type<span class="w"> </span>rt_is
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="c1"># View 3D tracking links (ptv_is) at Frame 10000</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>openptv2.storage.zarr_store<span class="w"> </span>res/run.zarr<span class="w"> </span>--frame<span class="w"> </span><span class="m">10000</span><span class="w"> </span>--type<span class="w"> </span>ptv_is
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="c1"># View added particles from multi-pass tracking at Frame 10000</span>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>openptv2.storage.zarr_store<span class="w"> </span>res/run.zarr<span class="w"> </span>--frame<span class="w"> </span><span class="m">10000</span><span class="w"> </span>--type<span class="w"> </span>added
+</span></code></pre></div>
+<h4 id="example-output-rt_is-inspection">Example Output (<code>rt_is</code> inspection):<a class="headerlink" href="#example-output-rt_is-inspection" title="Permanent link">&para;</a></h4>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>12
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>   0   -12.450    34.120   120.450    1    3    0   -1
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>   1    45.120   -10.330   118.900    2    1    5    4
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>...
+</span></code></pre></div>
+<hr />
+<h3 id="2-python-inspection-api-zarrframestore">2. Python Inspection API (<code>ZarrFrameStore</code>)<a class="headerlink" href="#2-python-inspection-api-zarrframestore" title="Permanent link">&para;</a></h3>
+<p>In Python, print or format any frame directly:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">openptv2.storage</span><span class="w"> </span><span class="kn">import</span> <span class="n">ZarrFrameStore</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="n">store</span> <span class="o">=</span> <span class="n">ZarrFrameStore</span><span class="p">(</span><span class="s2">&quot;res/run.zarr&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">)</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="c1"># Print 3D correspondences directly to console in legacy ASCII format</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="n">store</span><span class="o">.</span><span class="n">dump_frame_text</span><span class="p">(</span><span class="n">frame</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">dataset_type</span><span class="o">=</span><span class="s2">&quot;rt_is&quot;</span><span class="p">)</span>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="c1"># Print 2D targets for camera 0</span>
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="n">store</span><span class="o">.</span><span class="n">dump_frame_text</span><span class="p">(</span><span class="n">frame</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">dataset_type</span><span class="o">=</span><span class="s2">&quot;targets&quot;</span><span class="p">,</span> <span class="n">cam_idx</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="c1"># Get the formatted text as a string</span>
+</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="n">text_str</span> <span class="o">=</span> <span class="n">store</span><span class="o">.</span><span class="n">export_frame_text</span><span class="p">(</span><span class="n">frame</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">dataset_type</span><span class="o">=</span><span class="s2">&quot;ptv_is&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<hr />
+<h3 id="3-direct-numpy-zarr-tree-access">3. Direct NumPy / Zarr Tree Access<a class="headerlink" href="#3-direct-numpy-zarr-tree-access" title="Permanent link">&para;</a></h3>
+<p>Access raw arrays directly for custom analysis or inspect the tree structure:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">zarr</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="n">root</span> <span class="o">=</span> <span class="n">zarr</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;res/run.zarr&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">)</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="c1"># Print directory hierarchy</span>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="nb">print</span><span class="p">(</span><span class="n">root</span><span class="o">.</span><span class="n">tree</span><span class="p">())</span>
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="c1"># Read 3D particle positions as a NumPy array (N, 3)</span>
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="n">pos_3d</span> <span class="o">=</span> <span class="n">root</span><span class="p">[</span><span class="s2">&quot;correspondences/frame_10000/pos&quot;</span><span class="p">][:]</span>
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Frame 10000 3D positions shape:&quot;</span><span class="p">,</span> <span class="n">pos_3d</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</span></code></pre></div>
+<hr />
+<h3 id="4-flowtracks-hdf5-export">4. Flowtracks HDF5 Export<a class="headerlink" href="#4-flowtracks-hdf5-export" title="Permanent link">&para;</a></h3>
+<p>Export full trajectory datasets directly to Flowtracks-compliant HDF5 files (converting coordinates from mm to meters):</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">openptv2.storage</span><span class="w"> </span><span class="kn">import</span> <span class="n">ZarrFrameStore</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="n">store</span> <span class="o">=</span> <span class="n">ZarrFrameStore</span><span class="p">(</span><span class="s2">&quot;res/run.zarr&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">)</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="n">store</span><span class="o">.</span><span class="n">to_flowtracks_h5</span><span class="p">(</span><span class="s2">&quot;res/trajectories.h5&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<hr />
+<h2 id="running-batch-processing-in-zarr-mode">Running Batch Processing in Zarr Mode<a class="headerlink" href="#running-batch-processing-in-zarr-mode" title="Permanent link">&para;</a></h2>
+<p>To run batch sequence processing in Zarr mode from Python or CLI:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1"># Enable multi-process target detection + Zarr storage</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">OPENPTV_PARALLEL_PREPROCESS</span><span class="o">=</span>True
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="nb">export</span><span class="w"> </span><span class="nv">OPENPTV_STORAGE</span><span class="o">=</span>zarr_only
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="c1"># Run batch sequence</span>
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>pyptv_batch<span class="w"> </span>tests/test_cavity/parameters_Run1.yaml<span class="w"> </span><span class="m">10000</span><span class="w"> </span><span class="m">10004</span>
+</span></code></pre></div>
+<p>Or from Python API:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">openptv2.batch.pyptv_batch</span><span class="w"> </span><span class="kn">import</span> <span class="n">main</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;OPENPTV_STORAGE&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;zarr_only&quot;</span>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="n">main</span><span class="p">(</span><span class="s2">&quot;tests/test_cavity/parameters_Run1.yaml&quot;</span><span class="p">,</span> <span class="mi">10000</span><span class="p">,</span> <span class="mi">10004</span><span class="p">)</span>
+</span></code></pre></div>
 
 
 
