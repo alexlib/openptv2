@@ -731,7 +731,7 @@ def py_determination_proc_c(
         print_corresp = concatenated_corresp
 
     storage_mode = os.environ.get("OPENPTV_STORAGE", "zarr").lower()
-    if storage_mode == "zarr":
+    if storage_mode in ("zarr", "zarr_only"):
         from openptv2.storage import ZarrFrameStore
 
         zarr_path = Path("res/run.zarr")
@@ -741,6 +741,8 @@ def py_determination_proc_c(
             frame=frame, pos_3d=pos, cam_target_ids=print_corresp.T
         )
         print(f"Saved 3D correspondences for frame {frame} to Zarr store {zarr_path}")
+
+    if storage_mode == "zarr_only":
         return
 
     output_path = _prepare_output_path(
@@ -906,7 +908,8 @@ def py_sequence_loop(exp) -> None:
     storage_mode = os.environ.get("OPENPTV_STORAGE", "zarr").lower()
     zarr_store_path = None
     if storage_mode == "zarr":
-        zarr_store_path = str(Path(exp.exp_path) / "res" / "run.zarr")
+        exp_path = getattr(exp, "exp_path", getattr(exp, "exp_dir", "."))
+        zarr_store_path = str(Path(exp_path) / "res" / "run.zarr")
 
     if parallel_preprocess and not existing_target:
         preprocess_and_detect_all_parallel(exp, zarr_store_path=zarr_store_path)
@@ -953,13 +956,14 @@ def py_sequence_loop(exp) -> None:
         sorted_pos, sorted_corresp, _ = correspondences(
             detections, corrected, cals, vpar, cpar
         )
-        if storage_mode == "zarr" and zarr_store_path:
+        if storage_mode in ("zarr", "zarr_only") and zarr_store_path:
             from openptv2.storage import ZarrFrameStore
 
             store = ZarrFrameStore(zarr_store_path, mode="a")
             for i_cam in range(num_cams):
                 store.write_targets(i_cam, frame, detections[i_cam])
-        else:
+
+        if storage_mode != "zarr_only":
             for i_cam in range(num_cams):
                 write_targets(detections[i_cam], short_file_bases[i_cam], frame)
 
@@ -985,14 +989,15 @@ def py_sequence_loop(exp) -> None:
         else:
             print_corresp = sorted_corresp
 
-        if storage_mode == "zarr" and zarr_store_path:
+        if storage_mode in ("zarr", "zarr_only") and zarr_store_path:
             from openptv2.storage import ZarrFrameStore
 
             store = ZarrFrameStore(zarr_store_path, mode="a")
             store.write_correspondences(
                 frame=frame, pos_3d=pos, cam_target_ids=print_corresp.T
             )
-        else:
+
+        if storage_mode != "zarr_only":
             output_path = _prepare_output_path(
                 f"{_safe_decode(default_naming['corres'])}.{frame}"
             )
@@ -1652,7 +1657,41 @@ def generate_short_file_bases(img_base_names: List[str]) -> List[str]:
 
 
 def read_rt_is_file(filename) -> List[List[float]]:
-    """Read data from an rt_is file and return the parsed values."""
+    """Read data from an rt_is file or Zarr store and return the parsed values."""
+    if not Path(filename).exists():
+        p = Path(filename)
+        frame_match = re.search(r"\.(\d+)$", p.name)
+        if frame_match:
+            frame = int(frame_match.group(1))
+            zarr_candidates = [
+                p.parent / "run.zarr",
+                p.parent / "targets.zarr",
+                p.parent.parent / "res" / "run.zarr",
+            ]
+            for zpath in zarr_candidates:
+                if zpath.exists():
+                    from openptv2.storage import ZarrFrameStore
+
+                    try:
+                        store = ZarrFrameStore(zpath, mode="r")
+                        pos_3d, cam_ids = store.read_correspondences(frame)
+                        data = []
+                        for pt, c in zip(pos_3d, cam_ids):
+                            data.append(
+                                [
+                                    float(pt[0]),
+                                    float(pt[1]),
+                                    float(pt[2]),
+                                    int(c[0]),
+                                    int(c[1]),
+                                    int(c[2]),
+                                    int(c[3]),
+                                ]
+                            )
+                        return data
+                    except Exception:
+                        pass
+
     try:
         with open(filename, "r", encoding="utf-8") as file:
             num_rows = int(file.readline().strip())

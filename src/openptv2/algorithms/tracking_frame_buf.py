@@ -187,6 +187,24 @@ def read_targets(file_base, frame_num):
                 )
             return targets
     except FileNotFoundError:
+        import re
+        p = Path(fname)
+        cam_match = re.search(r"cam(\d+)", p.name)
+        cam_idx = int(cam_match.group(1)) - 1 if cam_match else 0
+        zarr_candidates = [
+            p.parent / "run.zarr",
+            p.parent / "targets.zarr",
+            p.parent.parent / "res" / "run.zarr",
+        ]
+        for zpath in zarr_candidates:
+            if zpath.exists():
+                from openptv2.storage import ZarrFrameStore
+                try:
+                    store = ZarrFrameStore(zpath, mode="r")
+                    if store.has_targets(cam_idx, frame_num):
+                        return list(store.read_targets(cam_idx, frame_num))
+                except Exception:
+                    pass
         return []
 
 
