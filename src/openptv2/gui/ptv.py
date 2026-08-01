@@ -261,6 +261,13 @@ def preprocess_and_detect_all_parallel(
 
     _ensure_target_output_writable(short_file_bases)
 
+    if zarr_store_path:
+        from openptv2.storage.zarr_store import ZarrFrameStore, _get_or_create_group
+        pre_store = ZarrFrameStore(zarr_store_path, mode="a")
+        targets_grp = _get_or_create_group(pre_store.root, "targets")
+        for icam in range(num_cams):
+            _get_or_create_group(targets_grp, f"cam_{icam}")
+
     # Extract clean python dicts for parameters
     if hasattr(pm, "parameters") and isinstance(pm.parameters, dict):
         ptv_params_dict = pm.parameters.get("ptv", {})

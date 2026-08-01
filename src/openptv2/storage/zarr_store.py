@@ -14,14 +14,22 @@ import zarr
 from openptv2.algorithms.tracking_frame_buf import Target, TargetArray
 
 
+import time
+
 def _get_or_create_group(parent: Any, name: str) -> Any:
     """Safely get or create a subgroup in a Zarr store handling concurrent workers."""
-    if name in parent:
-        return parent[name]
-    try:
-        return parent.create_group(name)
-    except Exception:
-        return parent[name]
+    for attempt in range(10):
+        try:
+            if name in parent:
+                return parent[name]
+            return parent.create_group(name)
+        except (PermissionError, OSError, Exception):
+            if attempt == 9:
+                try:
+                    return parent[name]
+                except Exception:
+                    raise
+            time.sleep(0.02 * (attempt + 1))
 
 
 class ZarrFrameStore:
@@ -93,11 +101,18 @@ class ZarrFrameStore:
                     arr_data[i] = [t[0], t[1], t[2], t[3], t[4], t[5], t[6], t[7]]
 
         # Store array for specific frame
-        cam_group.create_array(
-            name=f"frame_{frame}",
-            data=arr_data,
-            overwrite=True,
-        )
+        for attempt in range(10):
+            try:
+                cam_group.create_array(
+                    name=f"frame_{frame}",
+                    data=arr_data,
+                    overwrite=True,
+                )
+                break
+            except (PermissionError, OSError):
+                if attempt == 9:
+                    raise
+                time.sleep(0.02 * (attempt + 1))
 
     def read_targets(self, cam_idx: int, frame: int) -> TargetArray:
         """Read targets for a given camera and frame from Zarr as TargetArray.
