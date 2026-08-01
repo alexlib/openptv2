@@ -524,6 +524,48 @@ def write_path_frame(
                 f"{p.prev:4d} {p.next_idx:4d} {p.x[0]:10.3f} {p.x[1]:10.3f} {p.x[2]:10.3f} {p.prio:d}\n"
             )
 
+    storage_mode = os.environ.get("OPENPTV_STORAGE", "zarr").lower()
+    if storage_mode in ("zarr", "zarr_only"):
+        import os
+        from openptv2.storage import ZarrFrameStore
+
+        zarr_path = Path("res/run.zarr")
+        if linkage_file_base:
+            zarr_path = Path(linkage_file_base).parent / "run.zarr"
+        zarr_path.parent.mkdir(parents=True, exist_ok=True)
+
+        try:
+            store = ZarrFrameStore(zarr_path, mode="a")
+            prevs = np.array([path_buf[pix].prev for pix in range(num_parts)], dtype=np.int32)
+            nexts = np.array([path_buf[pix].next_idx for pix in range(num_parts)], dtype=np.int32)
+            pos_3d = np.array([path_buf[pix].x for pix in range(num_parts)], dtype=np.float64)
+
+            if linkage_file_base:
+                link_name = Path(linkage_file_base).name
+                store.write_linkage(frame=frame_num, prev_ids=prevs, next_ids=nexts, pos_3d=pos_3d, linkage_name=link_name)
+
+            # Also extract camera IDs for correspondences
+            cam_ids = []
+            for pix in range(num_parts):
+                if (
+                    isinstance(cor_buf, (list, tuple))
+                    and len(cor_buf) == 2
+                    and isinstance(cor_buf[0], np.ndarray)
+                ):
+                    c_p = cor_buf[1][pix]
+                elif isinstance(cor_buf, list) and isinstance(cor_buf[0], Corres):
+                    c_p = cor_buf[pix].p
+                else:
+                    c_p = cor_buf[pix].p if hasattr(cor_buf[pix], "p") else np.zeros(4, dtype=np.int32)
+                cam_ids.append(c_p)
+
+            store.write_correspondences(frame=frame_num, pos_3d=pos_3d, cam_target_ids=np.array(cam_ids, dtype=np.int32))
+        except Exception:
+            pass
+
+    if storage_mode == "zarr_only":
+        return True
+
     corres_file.close()
     if linkage_file:
         linkage_file.close()

@@ -207,6 +207,54 @@ class ZarrFrameStore:
                 "trajid", data=np.asarray(traj_ids, dtype=np.int32), overwrite=True
             )
 
+    # -------------------------------------------------------------------------
+    # Tracking Linkage Operations (res/ptv_is.YYYY, res/added.YYYY)
+    # -------------------------------------------------------------------------
+
+    def write_linkage(
+        self,
+        frame: int,
+        prev_ids: np.ndarray,
+        next_ids: np.ndarray,
+        pos_3d: np.ndarray,
+        linkage_name: str = "ptv_is",
+    ) -> None:
+        """Write frame linkage data (ptv_is / added) for tracking.
+
+        Args:
+            frame: Frame number.
+            prev_ids: Array of shape (N,) with previous frame particle indices.
+            next_ids: Array of shape (N,) with next frame particle indices.
+            pos_3d: Array of shape (N, 3) with 3D positions in mm.
+            linkage_name: 'ptv_is' or 'added'.
+        """
+        link_group = _get_or_create_group(self.root, f"linkage/{linkage_name}")
+        frame_group = _get_or_create_group(link_group, f"frame_{frame:05d}")
+
+        frame_group.create_array(
+            "prev", data=np.asarray(prev_ids, dtype=np.int32), overwrite=True
+        )
+        frame_group.create_array(
+            "next", data=np.asarray(next_ids, dtype=np.int32), overwrite=True
+        )
+        frame_group.create_array(
+            "pos", data=np.asarray(pos_3d, dtype=np.float64), overwrite=True
+        )
+
+    def read_linkage(
+        self, frame: int, linkage_name: str = "ptv_is"
+    ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+        """Read frame linkage data (prev_ids, next_ids, pos_3d)."""
+        frame_path = f"linkage/{linkage_name}/frame_{frame:05d}"
+        if frame_path not in self.root:
+            raise KeyError(f"No linkage '{linkage_name}' for frame {frame}")
+        fg = self.root[frame_path]
+        return fg["prev"][:], fg["next"][:], fg["pos"][:]
+
+    def has_linkage(self, frame: int, linkage_name: str = "ptv_is") -> bool:
+        """Check if linkage dataset exists for a frame."""
+        return f"linkage/{linkage_name}/frame_{frame:05d}" in self.root
+
     def to_flowtracks_h5(self, h5_path: Union[str, Path]) -> None:
         """Export Zarr trajectories to Flowtracks-compliant HDF5 file.
 
@@ -280,22 +328,37 @@ class ZarrFrameStore:
                 cam_str = " ".join(f"{cid:4d}" for cid in c)
                 lines.append(f"{idx:4d} {p[0]:9.3f} {p[1]:9.3f} {p[2]:9.3f} {cam_str}")
 
-        elif dataset_type.lower() in ("ptv_is", "trajectories"):
-            traj_group = self.root["trajectories"]
-            if "frame" not in traj_group or "pos" not in traj_group:
-                raise FileNotFoundError("No trajectory data stored")
-            frames = traj_group["frame"][:]
-            mask = frames == frame
-            pos = traj_group["pos"][mask]
-            ids = (
-                traj_group["trajid"][mask]
-                if "trajid" in traj_group
-                else np.arange(len(pos))
-            )
-
-            lines.append(f"{len(pos)}")
-            for pnr, p in zip(ids, pos):
-                lines.append(f"{int(pnr):4d} {p[0]:9.3f} {p[1]:9.3f} {p[2]:9.3f}")
+        elif dataset_type.lower() in ("ptv_is", "added", "trajectories"):
+            link_type = dataset_type.lower()
+            if link_type == "trajectories":
+                link_type = "ptv_is"
+            if self.has_linkage(frame, link_type):
+                prev_ids, next_ids, pos = self.read_linkage(frame, link_type)
+                lines.append(f"{len(pos)}")
+                for prev_i, next_i, p in zip(prev_ids, next_ids, pos):
+                    lines.append(
+                        f"{int(prev_i):4d} {int(next_i):4d} {p[0]:10.3f} {p[1]:10.3f} {p[2]:10.3f}"
+                    )
+            elif "trajectories" in self.root:
+                traj_group = self.root["trajectories"]
+                if "frame" in traj_group and "pos" in traj_group:
+                    frames = traj_group["frame"][:]
+                    mask = frames == frame
+                    pos = traj_group["pos"][mask]
+                    ids = (
+                        traj_group["trajid"][mask]
+                        if "trajid" in traj_group
+                        else np.arange(len(pos))
+                    )
+                    lines.append(f"{len(pos)}")
+                    for pnr, p in zip(ids, pos):
+                        lines.append(
+                            f"{int(pnr):4d} {p[0]:9.3f} {p[1]:9.3f} {p[2]:9.3f}"
+                        )
+            else:
+                raise FileNotFoundError(
+                    f"No '{dataset_type}' linkage data stored for frame {frame}"
+                )
 
         else:
             raise ValueError(
