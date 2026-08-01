@@ -355,6 +355,49 @@ def read_path_frame(corres_file_base, linkage_file_base, prio_file_base, frame_n
     try:
         corres_file = open(fname, "r")
     except FileNotFoundError:
+        # Fallback to Zarr store
+        p = Path(fname)
+        zarr_candidates = [
+            p.parent / "run.zarr",
+            p.parent / "targets.zarr",
+            p.parent.parent / "res" / "run.zarr",
+        ]
+        for zpath in zarr_candidates:
+            if zpath.exists():
+                from openptv2.storage import ZarrFrameStore
+
+                try:
+                    store = ZarrFrameStore(zpath, mode="r")
+                    pos_3d, cam_ids = store.read_correspondences(frame_num)
+
+                    link_name = (
+                        Path(linkage_file_base).name if linkage_file_base else "ptv_is"
+                    )
+                    if store.has_linkage(frame_num, link_name):
+                        prevs, nexts, _ = store.read_linkage(frame_num, link_name)
+                    else:
+                        prevs = np.full(len(pos_3d), PREV_NONE, dtype=np.int32)
+                        nexts = np.full(len(pos_3d), NEXT_NONE, dtype=np.int32)
+
+                    cor_buf = []
+                    path_buf = []
+                    for idx, (pt, c, pr, nx) in enumerate(
+                        zip(pos_3d, cam_ids, prevs, nexts)
+                    ):
+                        cor = Corres(nr=idx + 1, p=np.array(c, dtype=np.int32))
+                        path = Pathinfo(
+                            x=np.array(pt, dtype=np.float64),
+                            prev=int(pr),
+                            next_idx=int(nx),
+                            prio=4,
+                            finaldecis=1000000.0,
+                            inlist=0,
+                        )
+                        cor_buf.append(cor)
+                        path_buf.append(path)
+                    return cor_buf, path_buf
+                except Exception:
+                    pass
         return [], []
 
     corres_file.readline()  # number of points (read but use EOF)
