@@ -5,6 +5,7 @@ reprojection error (RMS) maps to a large 3D ray-miss (RCM) at shallow parallax.
 
     uv run python docs/figures/make_rms_vs_rcm_figure.py
 """
+
 import matplotlib
 
 matplotlib.use("Agg")
@@ -38,8 +39,8 @@ def rays(ax, half_angle_deg, title):
     # Intersection of the two perturbed rays: cam1 + t1 d1 == cam2 + t2 d2.
     A = np.column_stack([d1, -d2])
     t = np.linalg.solve(A, cam2 - cam1)
-    tri = cam1 + t[0] * d1                     # triangulated point
-    miss = np.linalg.norm(tri - target)        # 3D positioning error
+    tri = cam1 + t[0] * d1  # triangulated point
+    miss = np.linalg.norm(tri - target)  # 3D positioning error
 
     for cam, d, col in [(cam1, d1, "#1f77b4"), (cam2, d2, "#d62728")]:
         end = cam + (L + 3.0) * d
@@ -47,18 +48,37 @@ def rays(ax, half_angle_deg, title):
         ax.plot(*cam, "s", color=col, ms=8)
     # true (unperturbed) sight-lines, dashed
     for cam in (cam1, cam2):
-        ax.plot([cam[0], target[0]], [cam[1], target[1]], color="gray",
-                ls="--", lw=0.8, alpha=0.7)
+        ax.plot(
+            [cam[0], target[0]],
+            [cam[1], target[1]],
+            color="gray",
+            ls="--",
+            lw=0.8,
+            alpha=0.7,
+        )
 
     ax.plot(*target, "k*", ms=14, label="true 3D point")
     ax.plot(*tri, "o", color="orange", ms=9, label="triangulated point")
-    ax.annotate("", xy=tri, xytext=target,
-                arrowprops=dict(arrowstyle="<->", color="orange", lw=2))
-    ax.text(tri[0] + 0.2, 0.5 * (tri[1] + target[1]), f"RCM ≈ {miss:.2f}",
-            color="darkorange", ha="left", fontsize=10, fontweight="bold")
+    ax.annotate(
+        "",
+        xy=tri,
+        xytext=target,
+        arrowprops=dict(arrowstyle="<->", color="orange", lw=2),
+    )
+    ax.text(
+        tri[0] + 0.2,
+        0.5 * (tri[1] + target[1]),
+        f"RCM ≈ {miss:.2f}",
+        color="darkorange",
+        ha="left",
+        fontsize=10,
+        fontweight="bold",
+    )
 
-    ax.set_title(f"{title}\nstereo half-angle {half_angle_deg}°  ·  "
-                 f"same 2° image residual", fontsize=10)
+    ax.set_title(
+        f"{title}\nstereo half-angle {half_angle_deg}°  ·  same 2° image residual",
+        fontsize=10,
+    )
     ax.set_aspect("equal")
     ax.set_xlim(-4.5, 4.5)
     ax.set_ylim(-1.5, 8)
@@ -75,7 +95,9 @@ fig.suptitle(
     "Same reprojection error (RMS), very different 3D miss (RCM)\n"
     f"the shallow rig's rays miss ~{m_shallow / m_wide:.1f}× farther in depth "
     "for the identical in-image error",
-    fontsize=12, fontweight="bold")
+    fontsize=12,
+    fontweight="bold",
+)
 fig.tight_layout(rect=[0, 0, 1, 0.93])
 out = "docs/figures/rms_vs_rcm.png"
 fig.savefig(out, dpi=130)
