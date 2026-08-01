@@ -1,5 +1,4 @@
 import cython
-import numpy as np
 
 if cython.compiled:
     from cython.cimports.libc.math import sqrt as c_sqrt
@@ -87,9 +86,9 @@ def track3d_loop(run_info, step):
     """
     fb = run_info.fb
     tpar = run_info.tpar
-    prev = fb.buf[0]
+    fb.buf[0]
     curr = fb.buf[1]
-    nextf = fb.buf[2]
+    fb.buf[2]
     orig_parts = curr.num_parts
     dx = tpar.dvxmax
     dy = tpar.dvymax

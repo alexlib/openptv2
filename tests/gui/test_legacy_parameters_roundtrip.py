@@ -44,7 +44,11 @@ def test_legacy_parameters_roundtrip(tmp_path):
                 dest_lines = [line.strip() for line in f2]
 
                 # track.par may write an optional 10th line (track_mode, defaulting to 0)
-                if src_file.name == "track.par" and len(dest_lines) == len(src_lines) + 1 and dest_lines[-1] == "0":
+                if (
+                    src_file.name == "track.par"
+                    and len(dest_lines) == len(src_lines) + 1
+                    and dest_lines[-1] == "0"
+                ):
                     dest_lines = dest_lines[:-1]
 
                 assert src_lines == dest_lines, (

@@ -35,7 +35,7 @@ def _render_view(points_xy, jitter):
     """
     view = np.zeros((QUAD, QUAD), dtype=np.float64)
     yy, xx = np.mgrid[0:QUAD, 0:QUAD]
-    for (px, py) in points_xy:
+    for px, py in points_xy:
         cx = px + jitter[0]
         cy = py + jitter[1]
         if not (8 <= cx < QUAD - 8 and 8 <= cy < QUAD - 8):
@@ -74,11 +74,23 @@ def make_mapping_diagram(full):
     axL.imshow(full, cmap="gray", origin="upper")
     axL.axhline(QUAD, color="#ff5555", lw=1.5)
     axL.axvline(QUAD, color="#ff5555", lw=1.5)
-    labels = {(0, 0): "quadrant 0\n(top-left)", (0, 1): "quadrant 1\n(top-right)",
-              (1, 0): "quadrant 2\n(bottom-left)", (1, 1): "quadrant 3\n(bottom-right)"}
+    labels = {
+        (0, 0): "quadrant 0\n(top-left)",
+        (0, 1): "quadrant 1\n(top-right)",
+        (1, 0): "quadrant 2\n(bottom-left)",
+        (1, 1): "quadrant 3\n(bottom-right)",
+    }
     for (r, c), txt in labels.items():
-        axL.text(c * QUAD + QUAD / 2, r * QUAD + QUAD / 2, txt,
-                 color="#ffd166", ha="center", va="center", fontsize=11, weight="bold")
+        axL.text(
+            c * QUAD + QUAD / 2,
+            r * QUAD + QUAD / 2,
+            txt,
+            color="#ffd166",
+            ha="center",
+            va="center",
+            fontsize=11,
+            weight="bold",
+        )
     axL.set_title("Raw sensor image (1024x1024)\nsplit into four 512x512 quadrants")
     axL.set_xticks([0, QUAD, 2 * QUAD])
     axL.set_yticks([0, QUAD, 2 * QUAD])
@@ -93,16 +105,45 @@ def make_mapping_diagram(full):
     for cam_idx, quad_idx in enumerate(order):
         y = 8.5 - cam_idx * 2.2
         axR.add_patch(Rectangle((0.5, y - 0.6), 3.2, 1.4, fc="#2a3b4d", ec="#8ecae6"))
-        axR.text(2.1, y + 0.1, f"quadrant {quad_names[quad_idx]}",
-                 color="#8ecae6", ha="center", va="center", fontsize=10)
+        axR.text(
+            2.1,
+            y + 0.1,
+            f"quadrant {quad_names[quad_idx]}",
+            color="#8ecae6",
+            ha="center",
+            va="center",
+            fontsize=10,
+        )
         axR.add_patch(Rectangle((6.3, y - 0.6), 3.2, 1.4, fc="#3d2a4d", ec="#c39bd3"))
-        axR.text(7.9, y + 0.1, f"camera {cam_idx}\ncam_{cam_idx + 1}.tif.ori",
-                 color="#c39bd3", ha="center", va="center", fontsize=10)
-        axR.add_patch(FancyArrowPatch((3.8, y + 0.1), (6.2, y + 0.1),
-                                      arrowstyle="-|>", mutation_scale=16, color="#adb5bd"))
-    axR.text(5, 0.6, "order is dataset-specific: it maps each physical quadrant\n"
-                     "to the camera whose .ori/.addpar calibration describes it",
-             color="#6c757d", ha="center", va="center", fontsize=8, style="italic")
+        axR.text(
+            7.9,
+            y + 0.1,
+            f"camera {cam_idx}\ncam_{cam_idx + 1}.tif.ori",
+            color="#c39bd3",
+            ha="center",
+            va="center",
+            fontsize=10,
+        )
+        axR.add_patch(
+            FancyArrowPatch(
+                (3.8, y + 0.1),
+                (6.2, y + 0.1),
+                arrowstyle="-|>",
+                mutation_scale=16,
+                color="#adb5bd",
+            )
+        )
+    axR.text(
+        5,
+        0.6,
+        "order is dataset-specific: it maps each physical quadrant\n"
+        "to the camera whose .ori/.addpar calibration describes it",
+        color="#6c757d",
+        ha="center",
+        va="center",
+        fontsize=8,
+        style="italic",
+    )
 
     fig.tight_layout()
     out = IMG / "quadrant_mapping.png"

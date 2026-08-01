@@ -323,11 +323,20 @@ def test_detection_value_parity(cavity_dir):
 
             t_o = o_tr(hp, tpar, cam, cpar_o)
             t_a = targ_rec(
-                img=hp, gvthres=tp_a.gvthres[cam], discont=tp_a.discont,
-                nnmin=tp_a.nnmin, nnmax=tp_a.nnmax, nxmin=tp_a.nxmin,
-                nxmax=tp_a.nxmax, nymin=tp_a.nymin, nymax=tp_a.nymax,
-                sumg_min=tp_a.sumg_min, xmin=1, xmax=cp_a.imx - 1,
-                ymin=1, ymax=cp_a.imy - 1,
+                img=hp,
+                gvthres=tp_a.gvthres[cam],
+                discont=tp_a.discont,
+                nnmin=tp_a.nnmin,
+                nnmax=tp_a.nnmax,
+                nxmin=tp_a.nxmin,
+                nxmax=tp_a.nxmax,
+                nymin=tp_a.nymin,
+                nymax=tp_a.nymax,
+                sumg_min=tp_a.sumg_min,
+                xmin=1,
+                xmax=cp_a.imx - 1,
+                ymin=1,
+                ymax=cp_a.imy - 1,
             )
             assert len(t_o) == len(t_a), (
                 f"cam{cam + 1}: detection count {len(t_a)} != optv {len(t_o)}"
@@ -340,16 +349,17 @@ def test_detection_value_parity(cavity_dir):
                 (d.pos()[0], d.pos()[1], *d.count_pixels(), d.sum_grey_value())
                 for d in t_o
             )
-            arr_a = _rows(
-                (d.x, d.y, d.n, d.nx, d.ny, d.sumg) for d in t_a
-            )
+            arr_a = _rows((d.x, d.y, d.n, d.nx, d.ny, d.sumg) for d in t_a)
             # centroid x,y to sub-pixel; pixel-count/sumg exactly
             np.testing.assert_allclose(
-                arr_a[:, :2], arr_o[:, :2], atol=1e-4,
+                arr_a[:, :2],
+                arr_o[:, :2],
+                atol=1e-4,
                 err_msg=f"cam{cam + 1}: target centroids differ from optv",
             )
             np.testing.assert_array_equal(
-                arr_a[:, 2:].astype(int), arr_o[:, 2:].astype(int),
+                arr_a[:, 2:].astype(int),
+                arr_o[:, 2:].astype(int),
                 err_msg=f"cam{cam + 1}: target pixel stats differ from optv",
             )
     finally:
@@ -404,18 +414,30 @@ def test_correspondence_value_parity(cavity_dir):
                 t = o_tr(hp, tpar, cam, cpar_o)
                 t.sort_y()
                 dets_o.append(t)
-                our_targs.append(TargetArray([
-                    Target(pnr=d.pnr(), x=d.pos()[0], y=d.pos()[1],
-                           n=d.count_pixels()[0], nx=d.count_pixels()[1],
-                           ny=d.count_pixels()[2], sumg=d.sum_grey_value(),
-                           tnr=d.tnr())
-                    for d in t
-                ]))
+                our_targs.append(
+                    TargetArray(
+                        [
+                            Target(
+                                pnr=d.pnr(),
+                                x=d.pos()[0],
+                                y=d.pos()[1],
+                                n=d.count_pixels()[0],
+                                nx=d.count_pixels()[1],
+                                ny=d.count_pixels()[2],
+                                sumg=d.sum_grey_value(),
+                                tnr=d.tnr(),
+                            )
+                            for d in t
+                        ]
+                    )
+                )
 
-            corrected_o = [OptvMC(dets_o[c], cpar_o, cals_o[c])
-                           for c in range(num_cams)]
-            corrected_a = [OurMC(our_targs[c], cp_a, cals_a[c])
-                           for c in range(num_cams)]
+            corrected_o = [
+                OptvMC(dets_o[c], cpar_o, cals_o[c]) for c in range(num_cams)
+            ]
+            corrected_a = [
+                OurMC(our_targs[c], cp_a, cals_a[c]) for c in range(num_cams)
+            ]
 
             _sp_o, sc_o, _nt_o = optv_corr(dets_o, corrected_o, cals_o, vpar_o, cpar_o)
             _sp_a, sc_a, _nt_a = our_corr(our_targs, corrected_a, cals_a, vp_a, cp_a)

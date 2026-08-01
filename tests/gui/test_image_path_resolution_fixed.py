@@ -66,9 +66,7 @@ def test_image_path_resolution(test_data_dir):
         # Try relative path from current working directory
         rel_image_path = image_name
         print(f"Relative image path: {rel_image_path}")
-        print(
-            f"Relative image exists from cwd: {os.path.exists(rel_image_path)}"
-        )
+        print(f"Relative image exists from cwd: {os.path.exists(rel_image_path)}")
 
         # Try changing to experiment directory
         old_cwd = os.getcwd()
@@ -78,7 +76,9 @@ def test_image_path_resolution(test_data_dir):
             print(
                 f"Relative image exists from exp dir: {os.path.exists(rel_image_path)}"
             )
-            assert os.path.exists(rel_image_path), "Relative image does not exist from experiment directory"
+            assert os.path.exists(rel_image_path), (
+                "Relative image does not exist from experiment directory"
+            )
         finally:
             os.chdir(old_cwd)
     else:
@@ -159,7 +159,9 @@ def test_working_directory_independence(test_data_dir):
             os.chdir(temp_dir)  # Go back to temp dir
 
         print(f"Experiment initialization success: {success}")
-        assert success, "Failed to initialize experiment from non-standard working directory"
+        assert success, (
+            "Failed to initialize experiment from non-standard working directory"
+        )
 
         # Try to get parameters
         seq_params = exp.get_parameter("sequence")

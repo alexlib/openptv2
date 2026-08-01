@@ -13,6 +13,7 @@ number).
 Usage:
     uv run python skills/openptv-calibrate/scripts/detect_targets.py <dataset>
 """
+
 from __future__ import annotations
 
 import sys
@@ -41,6 +42,7 @@ def main() -> int:
     # without this, cam_files() resolves against the wrong cwd and every
     # "Calibration files not found" warning is a false alarm.
     import os
+
     os.chdir(base)
 
     yaml_path = _find_yaml(base)
@@ -60,7 +62,9 @@ def main() -> int:
         if raw.ndim > 2:
             raw = rgb2gray(raw[:, :, :3])
         raw = img_as_ubyte(raw)
-        images = image_split(raw, order=ptv_params.get("splitter_order") or [0, 1, 3, 2])
+        images = image_split(
+            raw, order=ptv_params.get("splitter_order") or [0, 1, 3, 2]
+        )
     else:
         images = []
         for cam in range(num_cams):

@@ -6,9 +6,10 @@ Translation of parameters from old C/C++ representation into modern Python.
 
 from __future__ import annotations
 
-import cython
 from collections import namedtuple
 from pathlib import Path
+
+import cython
 import numpy as np
 
 

@@ -55,13 +55,15 @@ class MyPTV3DTracker:
         # Frame 0 initialization
         if len(frame_particles[0]) > 0:
             for p in frame_particles[0]:
-                active_tracks.append({
-                    "id": next_track_id,
-                    "pos": [p],
-                    "time": [0],
-                    "vel": [np.zeros(3)],
-                    "gap": 0,
-                })
+                active_tracks.append(
+                    {
+                        "id": next_track_id,
+                        "pos": [p],
+                        "time": [0],
+                        "vel": [np.zeros(3)],
+                        "gap": 0,
+                    }
+                )
                 next_track_id += 1
 
         # Process frames 1 .. N-1
@@ -77,13 +79,15 @@ class MyPTV3DTracker:
 
                 if num_cands > 0:
                     for p in cand_pts:
-                        active_tracks.append({
-                            "id": next_track_id,
-                            "pos": [p],
-                            "time": [f],
-                            "vel": [np.zeros(3)],
-                            "gap": 0,
-                        })
+                        active_tracks.append(
+                            {
+                                "id": next_track_id,
+                                "pos": [p],
+                                "time": [f],
+                                "vel": [np.zeros(3)],
+                                "gap": 0,
+                            }
+                        )
                         next_track_id += 1
                 continue
 
@@ -133,13 +137,15 @@ class MyPTV3DTracker:
 
             for c in range(num_cands):
                 if c not in matched_cands:
-                    new_active.append({
-                        "id": next_track_id,
-                        "pos": [cand_pts[c]],
-                        "time": [f],
-                        "vel": [np.zeros(3)],
-                        "gap": 0,
-                    })
+                    new_active.append(
+                        {
+                            "id": next_track_id,
+                            "pos": [cand_pts[c]],
+                            "time": [f],
+                            "vel": [np.zeros(3)],
+                            "gap": 0,
+                        }
+                    )
                     next_track_id += 1
 
             active_tracks = new_active
@@ -149,12 +155,14 @@ class MyPTV3DTracker:
         results = []
         for tr in completed_tracks:
             if len(tr["pos"]) >= 2:
-                results.append({
-                    "id": tr["id"],
-                    "pos": np.array(tr["pos"]),
-                    "time": np.array(tr["time"]),
-                    "vel": np.array(tr["vel"]),
-                })
+                results.append(
+                    {
+                        "id": tr["id"],
+                        "pos": np.array(tr["pos"]),
+                        "time": np.array(tr["time"]),
+                        "vel": np.array(tr["vel"]),
+                    }
+                )
         return results
 
 
@@ -212,7 +220,7 @@ class Tracking:
             frame = Frame(num_cams, max_targets)
             frame.read(
                 corres_base,  # INPUT: res/rt_is
-                "",           # Do NOT read existing ptv_is as input
+                "",  # Do NOT read existing ptv_is as input
                 prio_file_base=prio_base,
                 target_file_base="",
                 frame_num=fn,
@@ -257,8 +265,8 @@ class Tracking:
 
             frame._sync_soa_to_path()
             frame.write(
-                corres_base,    # res/rt_is
-                linkage_base,   # OUTPUT: res/ptv_is
+                corres_base,  # res/rt_is
+                linkage_base,  # OUTPUT: res/ptv_is
                 prio_file_base=prio_base,
                 target_file_base="",
                 frame_num=fn,
@@ -270,12 +278,16 @@ class Tracking:
                 step_links = np.sum(frame.path_next[:curr_c] >= 0)
                 total_links += step_links
                 lost_c = curr_c - step_links
-                print(f"step: {f_idx + 1}, curr: {curr_c}, next: {next_c}, links: {step_links}, lost: {lost_c}, add: 0")
+                print(
+                    f"step: {f_idx + 1}, curr: {curr_c}, next: {next_c}, links: {step_links}, lost: {lost_c}, add: 0"
+                )
 
         n_steps = max(1, num_frames - 1)
         avg_particles = total_particles / max(1, num_frames)
         avg_links = total_links / n_steps
         avg_lost = avg_particles - avg_links
 
-        print(f"Average over sequence, particles: {avg_particles:.1f}, links: {avg_links:.1f}, lost: {avg_lost:.1f}")
+        print(
+            f"Average over sequence, particles: {avg_particles:.1f}, links: {avg_links:.1f}, lost: {avg_lost:.1f}"
+        )
         print("MyPTV 3D Tracking completed successfully.")

@@ -530,8 +530,8 @@ def raw_orient(cal, cpar, nfix, fix, pix):
         True on success, False on failure.
     """
     from .imgcoord import img_coord_typed
-    from .trafo import pixel_to_metric
     from .lsqadj import ata, atl, matinv, matmul
+    from .trafo import pixel_to_metric
 
     dm: cython.double = 0.0001
     drad: cython.double = 0.0001
@@ -618,9 +618,9 @@ def orient(cal_in, cpar, nfix, fix, pix, flags, sigmabeta):
         Array of residuals on success, None on failure.
     """
     from .imgcoord import img_coord_typed
-    from .trafo import pixel_to_metric
     from .lsqadj import ata, atl, matinv, matmul
-    from .vec_utils import vec_set, unit_vector, vec_norm
+    from .trafo import pixel_to_metric
+    from .vec_utils import unit_vector, vec_norm
 
     dm: cython.double = 0.00001
     drad: cython.double = 0.0000001

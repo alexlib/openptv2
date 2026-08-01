@@ -48,14 +48,16 @@ class MyPTV2DTracker:
 
         if len(frame_blobs[0]) > 0:
             for idx, p in enumerate(frame_blobs[0]):
-                active_tracks.append({
-                    "id": next_track_id,
-                    "indices": [idx],
-                    "pos_2d": [p],
-                    "time": [0],
-                    "vel_2d": [np.zeros(2)],
-                    "gap": 0,
-                })
+                active_tracks.append(
+                    {
+                        "id": next_track_id,
+                        "indices": [idx],
+                        "pos_2d": [p],
+                        "time": [0],
+                        "vel_2d": [np.zeros(2)],
+                        "gap": 0,
+                    }
+                )
                 next_track_id += 1
 
         for f in range(1, num_frames):
@@ -70,14 +72,16 @@ class MyPTV2DTracker:
 
                 if num_cands > 0:
                     for idx, p in enumerate(cands):
-                        active_tracks.append({
-                            "id": next_track_id,
-                            "indices": [idx],
-                            "pos_2d": [p],
-                            "time": [f],
-                            "vel_2d": [np.zeros(2)],
-                            "gap": 0,
-                        })
+                        active_tracks.append(
+                            {
+                                "id": next_track_id,
+                                "indices": [idx],
+                                "pos_2d": [p],
+                                "time": [f],
+                                "vel_2d": [np.zeros(2)],
+                                "gap": 0,
+                            }
+                        )
                         next_track_id += 1
                 continue
 
@@ -126,14 +130,16 @@ class MyPTV2DTracker:
 
             for c in range(num_cands):
                 if c not in matched_cands:
-                    new_active.append({
-                        "id": next_track_id,
-                        "indices": [c],
-                        "pos_2d": [cands[c]],
-                        "time": [f],
-                        "vel_2d": [np.zeros(2)],
-                        "gap": 0,
-                    })
+                    new_active.append(
+                        {
+                            "id": next_track_id,
+                            "indices": [c],
+                            "pos_2d": [cands[c]],
+                            "time": [f],
+                            "vel_2d": [np.zeros(2)],
+                            "gap": 0,
+                        }
+                    )
                     next_track_id += 1
 
             active_tracks = new_active
@@ -143,13 +149,15 @@ class MyPTV2DTracker:
         results = []
         for tr in completed_tracks:
             if len(tr["pos_2d"]) >= 2:
-                results.append({
-                    "id": tr["id"],
-                    "indices": tr["indices"],
-                    "pos_2d": np.array(tr["pos_2d"]),
-                    "time": np.array(tr["time"]),
-                    "vel_2d": np.array(tr["vel_2d"]),
-                })
+                results.append(
+                    {
+                        "id": tr["id"],
+                        "indices": tr["indices"],
+                        "pos_2d": np.array(tr["pos_2d"]),
+                        "time": np.array(tr["time"]),
+                        "vel_2d": np.array(tr["vel_2d"]),
+                    }
+                )
         return results
 
 
@@ -177,6 +185,7 @@ class Tracking:
         else:
             num_cams = len(cals) if cals else 4
             from openptv2.parameters import ControlParams
+
             mm = ControlParams().mm
 
         if spar is not None:
@@ -209,7 +218,7 @@ class Tracking:
             frame = Frame(num_cams, max_targets)
             frame.read(
                 corres_base,  # INPUT: res/rt_is
-                "",           # Do NOT read existing ptv_is as input
+                "",  # Do NOT read existing ptv_is as input
                 prio_file_base=prio_base,
                 target_file_base="",
                 frame_num=fn,
@@ -289,8 +298,8 @@ class Tracking:
 
             frame._sync_soa_to_path()
             frame.write(
-                corres_base,    # res/rt_is
-                linkage_base,   # OUTPUT: res/ptv_is
+                corres_base,  # res/rt_is
+                linkage_base,  # OUTPUT: res/ptv_is
                 prio_file_base=prio_base,
                 target_file_base="",
                 frame_num=fn,
@@ -302,12 +311,16 @@ class Tracking:
                 step_links = np.sum(frame.path_next[:curr_c] >= 0)
                 total_links += step_links
                 lost_c = curr_c - step_links
-                print(f"step: {f_idx + 1}, curr: {curr_c}, next: {next_c}, links: {step_links}, lost: {lost_c}, add: 0")
+                print(
+                    f"step: {f_idx + 1}, curr: {curr_c}, next: {next_c}, links: {step_links}, lost: {lost_c}, add: 0"
+                )
 
         n_steps = max(1, num_frames - 1)
         avg_particles = total_particles / max(1, num_frames)
         avg_links = total_links / n_steps
         avg_lost = avg_particles - avg_links
 
-        print(f"Average over sequence, particles: {avg_particles:.1f}, links: {avg_links:.1f}, lost: {avg_lost:.1f}")
+        print(
+            f"Average over sequence, particles: {avg_particles:.1f}, links: {avg_links:.1f}, lost: {avg_lost:.1f}"
+        )
         print("MyPTV 2D Tracking completed successfully.")

@@ -29,10 +29,7 @@ class TestCalibrationCompat:
     def test_from_file(self):
         """Test reading calibration from file (instance method, like optv)."""
         cal = Calibration()
-        cal.from_file(
-            str(CALIB_PATH) + ".ori",
-            str(CALIB_PATH) + ".addpar"
-        )
+        cal.from_file(str(CALIB_PATH) + ".ori", str(CALIB_PATH) + ".addpar")
         assert isinstance(cal, Calibration)
 
         # Test getters
@@ -203,7 +200,9 @@ class TestTrackingFrameBufCompat:
 
     def test_target_creation(self):
         """Test Target wrapper creation."""
-        targ = Target(pnr=5, x=100.0, y=200.0, n=50, nx=10, ny=10, sumg=1000, tnr=CORRES_NONE)
+        targ = Target(
+            pnr=5, x=100.0, y=200.0, n=50, nx=10, ny=10, sumg=1000, tnr=CORRES_NONE
+        )
 
         assert targ.pnr() == 5
         assert targ.x() == 100.0
@@ -249,7 +248,10 @@ class TestTrackingFrameBufCompat:
 
         # Test setting
         from openptv2.algorithms.tracking_frame_buf import Target as AlgoTarget
-        new_target = AlgoTarget(pnr=10, x=50.0, y=60.0, n=20, nx=5, ny=5, sumg=500, tnr=-1)
+
+        new_target = AlgoTarget(
+            pnr=10, x=50.0, y=60.0, n=20, nx=5, ny=5, sumg=500, tnr=-1
+        )
         ta[1] = new_target
         assert ta[1].pnr() == 10
 
@@ -258,7 +260,9 @@ class TestTrackingFrameBufCompat:
         from openptv2.algorithms.tracking_frame_buf import Target as AlgoTarget
 
         targets = [
-            AlgoTarget(pnr=i, x=float(i), y=100.0 - i*10, n=10, nx=3, ny=3, sumg=100, tnr=-1)
+            AlgoTarget(
+                pnr=i, x=float(i), y=100.0 - i * 10, n=10, nx=3, ny=3, sumg=100, tnr=-1
+            )
             for i in range(5)
         ]
         ta = TargetArray(targets)

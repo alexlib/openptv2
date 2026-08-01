@@ -34,7 +34,12 @@ class Tracking:
         plugins_cfg = pm.parameters.get("plugins", {}) if pm else {}
 
         selected_tracking = plugins_cfg.get("selected_tracking", "default")
-        if selected_tracking in ("fast_3d", "standard_forward", "two_directional", "full_multipass"):
+        if selected_tracking in (
+            "fast_3d",
+            "standard_forward",
+            "two_directional",
+            "full_multipass",
+        ):
             active_pipeline = selected_tracking
         else:
             active_pipeline = infer_preset(track_cfg, plugins_cfg)
@@ -53,7 +58,9 @@ class Tracking:
             tracker.full_backward()
         else:
             # full_multipass / default high accuracy
-            print("Running Full Multi-Pass Tracking (Forward + Backward + Postprocessing)...")
+            print(
+                "Running Full Multi-Pass Tracking (Forward + Backward + Postprocessing)..."
+            )
             tracker.full_forward()
             tracker.full_backward()
             if track_cfg.get("postprocess", True):

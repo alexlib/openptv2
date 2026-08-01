@@ -51,7 +51,7 @@ class ClickerTool(ImageInspectorTool):
         """
         if self.component is not None:
             if hasattr(self.component, "map_index"):
-                ndx = self.component.map_index((event.x, event.y)) # type: ignore
+                ndx = self.component.map_index((event.x, event.y))  # type: ignore
                 if ndx is not None:
                     x_index, y_index = ndx
                     self.x = x_index
@@ -63,7 +63,7 @@ class ClickerTool(ImageInspectorTool):
 
     def normal_right_down(self, event):
         if self.component is not None:
-            ndx = self.component.map_index((event.x, event.y)) # type: ignore
+            ndx = self.component.map_index((event.x, event.y))  # type: ignore
 
             x_index, y_index = ndx
             self.x = x_index
@@ -271,7 +271,7 @@ class DetectionGUI(HasTraits):
 
     # Range control fields - allow users to adjust slider limits
     # grey_thresh_min = Int(1, label="Min")
-#   # grey_thresh_max = Int(255, label="Max")
+    #   # grey_thresh_max = Int(255, label="Max")
     min_npix_min = Int(1, label="Min")
     min_npix_max = Int(100, label="Max")
     max_npix_min = Int(1, label="Min")
@@ -286,7 +286,7 @@ class DetectionGUI(HasTraits):
 
     def __init__(self, working_directory=None):
         """Initialize detection GUI with optional working directory.
-        
+
         Args:
             working_directory: Path to working directory. If None, uses current directory.
         """
@@ -323,7 +323,9 @@ class DetectionGUI(HasTraits):
 
         try:
             if not self.working_directory.exists():
-                self.status_text = f"Error: Working directory {self.working_directory} does not exist"
+                self.status_text = (
+                    f"Error: Working directory {self.working_directory} does not exist"
+                )
                 return
 
             # Set working directory
@@ -344,7 +346,6 @@ class DetectionGUI(HasTraits):
                 self.raw_image = img_as_ubyte(self.raw_image)
                 print(f"self.raw_image.shape: {self.raw_image.shape}")
 
-
                 self.image_loaded = True
             except Exception as e:
                 self.status_text = f"Error reading image: {str(e)}"
@@ -354,7 +355,9 @@ class DetectionGUI(HasTraits):
             # Set up control parameters for detection:
             self.cpar = ptv.ControlParams(1)
             self.cpar.set_image_size((self.raw_image.shape[1], self.raw_image.shape[0]))
-            self.cpar.set_pixel_size((0.01, 0.01))  # Default pixel size, can be overridden later
+            self.cpar.set_pixel_size(
+                (0.01, 0.01)
+            )  # Default pixel size, can be overridden later
             self.cpar.set_hp_flag(self.hp_flag)
 
             # Initialize target parameters for detection
@@ -363,8 +366,8 @@ class DetectionGUI(HasTraits):
             # Set hardcoded detection parameters
             self.tpar.set_grey_thresholds([10, 0, 0, 0])
             self.tpar.set_pixel_count_bounds([1, 50])
-            self.tpar.set_xsize_bounds([1,15])
-            self.tpar.set_ysize_bounds([1,15])
+            self.tpar.set_xsize_bounds([1, 15])
+            self.tpar.set_ysize_bounds([1, 15])
             self.tpar.set_min_sum_grey(100)
             self.tpar.set_max_discontinuity(100)
 
@@ -376,7 +379,9 @@ class DetectionGUI(HasTraits):
                 self._update_trait_values()
 
             self.parameters_loaded = True
-            self.status_text = f"Parameters loaded for working directory {self.working_directory}"
+            self.status_text = (
+                f"Parameters loaded for working directory {self.working_directory}"
+            )
 
         except Exception as e:
             self.status_text = f"Error loading parameters: {str(e)}"
@@ -434,23 +439,23 @@ class DetectionGUI(HasTraits):
 
     def _update_trait_values(self):
         """Update existing trait values when parameters are reloaded"""
-        if hasattr(self, 'grey_thresh'):
+        if hasattr(self, "grey_thresh"):
             self.grey_thresh = self.thresholds[0]
-        if hasattr(self, 'min_npix'):
+        if hasattr(self, "min_npix"):
             self.min_npix = self.pixel_count_bounds[0]
-        if hasattr(self, 'max_npix'):
+        if hasattr(self, "max_npix"):
             self.max_npix = self.pixel_count_bounds[1]
-        if hasattr(self, 'min_npix_x'):
+        if hasattr(self, "min_npix_x"):
             self.min_npix_x = self.xsize_bounds[0]
-        if hasattr(self, 'max_npix_x'):
+        if hasattr(self, "max_npix_x"):
             self.max_npix_x = self.xsize_bounds[1]
-        if hasattr(self, 'min_npix_y'):
+        if hasattr(self, "min_npix_y"):
             self.min_npix_y = self.ysize_bounds[0]
-        if hasattr(self, 'max_npix_y'):
+        if hasattr(self, "max_npix_y"):
             self.max_npix_y = self.ysize_bounds[1]
-        if hasattr(self, 'disco'):
+        if hasattr(self, "disco"):
             self.disco = self.disco
-        if hasattr(self, 'sum_of_grey'):
+        if hasattr(self, "sum_of_grey"):
             self.sum_of_grey = self.sum_grey
 
     def _button_load_image_fired(self):
@@ -459,7 +464,6 @@ class DetectionGUI(HasTraits):
         self._button_load_params()
 
         try:
-
             # Process image with current filter settings
             self._update_processed_image()
 
@@ -517,14 +521,20 @@ class DetectionGUI(HasTraits):
                     ),
                     HGroup(
                         Item(name="min_npix", enabled_when="parameters_loaded"),
-                        HGroup(Item(name="min_npix_min", width=20), Item(name="min_npix_max", width=60)),
+                        HGroup(
+                            Item(name="min_npix_min", width=20),
+                            Item(name="min_npix_max", width=60),
+                        ),
                     ),
                     Item(name="min_npix_x", enabled_when="parameters_loaded"),
                     Item(name="min_npix_y", enabled_when="parameters_loaded"),
                     HGroup(
                         Item(name="max_npix", enabled_when="parameters_loaded"),
                         VGroup(
-                            HGroup(Item(name="max_npix_min", width=60), Item(name="max_npix_max", width=60)),
+                            HGroup(
+                                Item(name="max_npix_min", width=60),
+                                Item(name="max_npix_max", width=60),
+                            ),
                             label="Range",
                         ),
                     ),
@@ -533,14 +543,20 @@ class DetectionGUI(HasTraits):
                     HGroup(
                         Item(name="disco", enabled_when="parameters_loaded"),
                         VGroup(
-                            HGroup(Item(name="disco_min", width=60), Item(name="disco_max", width=60)),
+                            HGroup(
+                                Item(name="disco_min", width=60),
+                                Item(name="disco_max", width=60),
+                            ),
                             label="Range",
                         ),
                     ),
                     HGroup(
                         Item(name="sum_of_grey", enabled_when="parameters_loaded"),
                         VGroup(
-                            HGroup(Item(name="sum_of_grey_min", width=60), Item(name="sum_of_grey_max", width=60)),
+                            HGroup(
+                                Item(name="sum_of_grey_min", width=60),
+                                Item(name="sum_of_grey_max", width=60),
+                            ),
                             label="Range",
                         ),
                     ),
@@ -569,13 +585,10 @@ class DetectionGUI(HasTraits):
         statusbar="status_text",
     )
 
-
-
     def _hp_flag_changed(self):
         """Handle highpass flag change"""
         self._update_processed_image()
         self.reset_show_images()
-
 
     def _negative_flag_changed(self):
         """Handle negative flag change"""
@@ -660,7 +673,7 @@ class DetectionGUI(HasTraits):
 
     def _run_detection_if_image_loaded(self):
         """Run detection if an image is loaded"""
-        if hasattr(self, 'processed_image') and self.processed_image is not None:
+        if hasattr(self, "processed_image") and self.processed_image is not None:
             self._button_detection_fired()
 
     def _button_showimg_fired(self):
@@ -689,7 +702,7 @@ class DetectionGUI(HasTraits):
 
     def _reprocess_current_image(self):
         """Reprocess the current raw image with current filter settings"""
-        if not hasattr(self, 'raw_image') or self.raw_image is None:
+        if not hasattr(self, "raw_image") or self.raw_image is None:
             return
 
         try:
@@ -712,7 +725,7 @@ class DetectionGUI(HasTraits):
 
     def _button_detection_fired(self):
         """Run particle detection on the current image"""
-        if not hasattr(self, 'processed_image') or self.processed_image is None:
+        if not hasattr(self, "processed_image") or self.processed_image is None:
             self.status_text = "No image loaded - load parameters and image first"
             return
 
@@ -752,7 +765,7 @@ class DetectionGUI(HasTraits):
 
     def reset_show_images(self):
         """Reset and show the current processed image"""
-        if not hasattr(self, 'processed_image') or self.processed_image is None:
+        if not hasattr(self, "processed_image") or self.processed_image is None:
             return
 
         self.reset_plots()
@@ -814,6 +827,7 @@ class DetectionGUI(HasTraits):
 
         except Exception as e:
             self.status_text = f"Error updating ranges: {str(e)}"
+
 
 if __name__ == "__main__":
     if len(sys.argv) == 1:

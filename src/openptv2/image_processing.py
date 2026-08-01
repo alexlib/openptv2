@@ -3,7 +3,9 @@
 from openptv2.algorithms.image_processing import prepare_image
 
 
-def preprocess_image(img, filter_hp, cpar, lowpass_dim=1, filter_file=None, output=None):
+def preprocess_image(
+    img, filter_hp, cpar, lowpass_dim=1, filter_file=None, output=None
+):
     """
     Preprocess image with high-pass and low-pass filters.
 
@@ -18,14 +20,14 @@ def preprocess_image(img, filter_hp, cpar, lowpass_dim=1, filter_file=None, outp
     Returns:
         Processed image array
     """
-    raw_cpar = cpar._cpar if hasattr(cpar, '_cpar') else cpar
+    raw_cpar = cpar._cpar if hasattr(cpar, "_cpar") else cpar
 
-    if hasattr(raw_cpar, 'get_image_size'):
+    if hasattr(raw_cpar, "get_image_size"):
         imx, imy = raw_cpar.get_image_size()
     else:
         imx, imy = raw_cpar.imx, raw_cpar.imy
 
-    if hasattr(raw_cpar, 'get_chfield'):
+    if hasattr(raw_cpar, "get_chfield"):
         chfield = raw_cpar.get_chfield()
     else:
         chfield = raw_cpar.chfield
@@ -37,12 +39,13 @@ def preprocess_image(img, filter_hp, cpar, lowpass_dim=1, filter_file=None, outp
         imy=imy,
         filter_hp=filter_hp,
         filter_file=filter_file,
-        chfield=chfield
+        chfield=chfield,
     )
 
     if output is not None:
         output[:] = result
         return output
     return result
+
 
 __all__ = ["preprocess_image"]

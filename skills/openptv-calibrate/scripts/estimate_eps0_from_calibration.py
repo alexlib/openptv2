@@ -20,6 +20,7 @@ Run with:
 Requires: cal/calib_matches/camN_matches.txt already exist -- run
 dump_matches.py first.
 """
+
 from __future__ import annotations
 
 import sys
@@ -55,10 +56,21 @@ def flat_coords(points_by_id: dict, cpar, cal) -> dict:
     """Run a {id: (x,y)} dict through the same pixel->metric->flat correction
     real correspondence matching uses, keeping the id association."""
     ids = list(points_by_id.keys())
-    targets = TargetArray([
-        Target(pnr=i, x=points_by_id[pid][0], y=points_by_id[pid][1], n=1, nx=1, ny=1, sumg=1, tnr=-1)
-        for i, pid in enumerate(ids)
-    ])
+    targets = TargetArray(
+        [
+            Target(
+                pnr=i,
+                x=points_by_id[pid][0],
+                y=points_by_id[pid][1],
+                n=1,
+                nx=1,
+                ny=1,
+                sumg=1,
+                tnr=-1,
+            )
+            for i, pid in enumerate(ids)
+        ]
+    )
     mc = MatchedCoords(targets, cpar, cal, reset_numbers=False)
     return {ids[c.pnr]: (c.x, c.y) for c in mc._corrected}
 
@@ -88,7 +100,9 @@ def main():
     flat = {cam: flat_coords(matches[cam], cpar, cals[cam]) for cam in range(num_cams)}
 
     residuals_mm = []
-    print(f"{'pair':<8}{'n common':<10}{'median(px)':<12}{'p90(px)':<10}{'p99(px)':<10}")
+    print(
+        f"{'pair':<8}{'n common':<10}{'median(px)':<12}{'p90(px)':<10}{'p99(px)':<10}"
+    )
     for i, j in combinations(range(num_cams), 2):
         common_ids = sorted(set(matches[i]) & set(matches[j]))
         if not common_ids:
@@ -107,26 +121,34 @@ def main():
             pair_res.append(d)
             residuals_mm.append(d)
         pair_res_px = np.array(pair_res) / cpar.pix_x
-        print(f"{'cam' + str(i + 1) + '-' + str(j + 1):<8}{len(common_ids):<10}"
-              f"{np.median(pair_res_px):<12.3f}{np.percentile(pair_res_px, 90):<10.3f}"
-              f"{np.percentile(pair_res_px, 99):<10.3f}")
+        print(
+            f"{'cam' + str(i + 1) + '-' + str(j + 1):<8}{len(common_ids):<10}"
+            f"{np.median(pair_res_px):<12.3f}{np.percentile(pair_res_px, 90):<10.3f}"
+            f"{np.percentile(pair_res_px, 99):<10.3f}"
+        )
 
     residuals_mm = np.array(residuals_mm)
-    residuals_px = residuals_mm / cpar.pix_x
+    residuals_mm / cpar.pix_x
 
     print(f"\nAll pairs combined ({len(residuals_mm)} point-pair observations):")
     for p in [50, 75, 90, 95, 99]:
-        print(f"  p{p}: {np.percentile(residuals_mm, p):.4f} mm "
-              f"({np.percentile(residuals_mm, p) / cpar.pix_x:.2f} px)")
+        print(
+            f"  p{p}: {np.percentile(residuals_mm, p):.4f} mm "
+            f"({np.percentile(residuals_mm, p) / cpar.pix_x:.2f} px)"
+        )
 
     suggested = np.percentile(residuals_mm, 95) * 1.5
-    print(f"\nSuggested eps0 (~1.5x the p95 epipolar residual, from calibration-plate "
-          f"points alone): {suggested:.4f} mm ({suggested / cpar.pix_x:.2f} px)")
-    print("This is a starting point derived purely from the calibration's own "
-          "cross-camera consistency, not from real particle density/noise -- "
-          "confirm it with tune_eps0.py against a real sequence frame once one "
-          "exists; particle images can behave differently (occlusion, overlap, "
-          "detection noise) than the calibration plate's clean, well-separated dots.")
+    print(
+        f"\nSuggested eps0 (~1.5x the p95 epipolar residual, from calibration-plate "
+        f"points alone): {suggested:.4f} mm ({suggested / cpar.pix_x:.2f} px)"
+    )
+    print(
+        "This is a starting point derived purely from the calibration's own "
+        "cross-camera consistency, not from real particle density/noise -- "
+        "confirm it with tune_eps0.py against a real sequence frame once one "
+        "exists; particle images can behave differently (occlusion, overlap, "
+        "detection noise) than the calibration plate's clean, well-separated dots."
+    )
     return 0
 
 

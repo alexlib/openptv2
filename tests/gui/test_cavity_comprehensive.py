@@ -336,7 +336,6 @@ def test_particle_detection(test_cavity_setup):
 
 def test_existing_trajectory_files(test_cavity_setup):
     """Test if trajectory files exist in res/ directory"""
-    setup = test_cavity_setup
 
     res_dir = Path("res")
     if res_dir.exists():

@@ -294,9 +294,7 @@ def test_full_calibration_interf_flag_fits_glass_tilt():
 
     def _glass_err(cal):
         return np.linalg.norm(
-            np.array(
-                [cal.glass_par.vec_x, cal.glass_par.vec_y, cal.glass_par.vec_z]
-            )
+            np.array([cal.glass_par.vec_x, cal.glass_par.vec_y, cal.glass_par.vec_z])
             - true_glass
         )
 
@@ -832,7 +830,7 @@ def test_dumbbell_parity():
     c_targs = np.array(c_targs).transpose(1, 0, 2)
 
     c_tf = dumbbell_target_func(c_targs, c_cpar, c_calibs, 35.0, 0.0)
-    c_tf_w = dumbbell_target_func(c_targs, c_cpar, c_calibs, 35.0, 1.0)
+    dumbbell_target_func(c_targs, c_cpar, c_calibs, 35.0, 1.0)
     c_tf_wrong = dumbbell_target_func(c_targs, c_cpar, c_calibs, 25.0, 1.0)
 
     # --- Python path ---
@@ -854,7 +852,7 @@ def test_dumbbell_parity():
         35.0,
         0.0,
     )
-    py_tf_w = weighted_dumbbell_precision(
+    weighted_dumbbell_precision(
         py_targs,
         len(points),
         num_cams,

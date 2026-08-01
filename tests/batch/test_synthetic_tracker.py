@@ -17,7 +17,7 @@ def _write_ori_file(path: Path, pos, angles, focal_len=100.0):
     cal.set_pos(pos)
     cal.set_angles(angles)
     cal.set_primary_point([0.0, 0.0, focal_len])
-    cal.set_glass_vec([0.0, 0.0, 50.0]) # Glass window interface at Z = 50 mm
+    cal.set_glass_vec([0.0, 0.0, 50.0])  # Glass window interface at Z = 50 mm
 
     # Format the .ori file content exactly as expected by the C reader
     r = cal.ext_par
@@ -40,6 +40,7 @@ def _write_ori_file(path: Path, pos, angles, focal_len=100.0):
     addpar_content = "0.0 0.0 0.0 0.0 0.0 1.0 0.0\n"
     addpar_path.write_text(addpar_content, encoding="utf-8")
     return cal
+
 
 def test_fully_verifiable_synthetic_tracker(tmp_path):
     """
@@ -70,18 +71,18 @@ def test_fully_verifiable_synthetic_tracker(tmp_path):
         [100.0, 100.0, 500.0],
         [-100.0, 100.0, 500.0],
         [-100.0, -100.0, 500.0],
-        [100.0, -100.0, 500.0]
+        [100.0, -100.0, 500.0],
     ]
     angles = [
         [0.2, -0.2, -0.78],
         [0.2, 0.2, 0.78],
         [-0.2, 0.2, 2.35],
-        [-0.2, -0.2, -2.35]
+        [-0.2, -0.2, -2.35],
     ]
 
     cals = []
     for i in range(4):
-        p = test_dir / "cal" / f"cam{i+1}.tif.ori"
+        p = test_dir / "cal" / f"cam{i + 1}.tif.ori"
         cals.append(_write_ori_file(p, positions[i], angles[i]))
 
     # Load baseline parameter yaml file to ensure all required fields are present
@@ -90,31 +91,48 @@ def test_fully_verifiable_synthetic_tracker(tmp_path):
     pm.from_yaml(repo_root / "test_data" / "test_cavity" / "parameters_Run1.yaml")
 
     # Overwrite relevant values for our synthetic environment
-    pm.parameters['ptv'] = {
-        'mmp_n1': 1.0, 'mmp_n2': 1.46, 'mmp_n3': 1.33, 'mmp_d': 5.0,
-        'mmp_nlay': 1, 'imx': 1024, 'imy': 1024,
-        'pix_x': 0.01, 'pix_y': 0.01,
-        'mmp_gvec_x': 0.0, 'mmp_gvec_y': 0.0, 'mmp_gvec_z': 1.0,
-        'num_cams': 4,
-        'img_name': [f"img/cam{i+1}.tif" for i in range(4)],
-        'img_cal': [f"cal/cam{i+1}.tif" for i in range(4)],
-        'allcam_flag': 1, 'tiff_flag': 1, 'chfield': 0, 'hp_flag': 1, 'splitter': 0
+    pm.parameters["ptv"] = {
+        "mmp_n1": 1.0,
+        "mmp_n2": 1.46,
+        "mmp_n3": 1.33,
+        "mmp_d": 5.0,
+        "mmp_nlay": 1,
+        "imx": 1024,
+        "imy": 1024,
+        "pix_x": 0.01,
+        "pix_y": 0.01,
+        "mmp_gvec_x": 0.0,
+        "mmp_gvec_y": 0.0,
+        "mmp_gvec_z": 1.0,
+        "num_cams": 4,
+        "img_name": [f"img/cam{i + 1}.tif" for i in range(4)],
+        "img_cal": [f"cal/cam{i + 1}.tif" for i in range(4)],
+        "allcam_flag": 1,
+        "tiff_flag": 1,
+        "chfield": 0,
+        "hp_flag": 1,
+        "splitter": 0,
     }
-    pm.parameters['pft_version'] = {
-        'Existing_Target': 1,
+    pm.parameters["pft_version"] = {
+        "Existing_Target": 1,
     }
-    pm.parameters['criteria']['eps0'] = 0.15
-    pm.parameters['track'] = {
-        'dvxmin': -15.5, 'dvxmax': 15.5,
-        'dvymin': -15.5, 'dvymax': 15.5,
-        'dvzmin': -15.5, 'dvzmax': 15.5,
-        'dacc': 5.5, 'angle': 120.0,
-        'flagNewParticles': 1, 'track_mode': 1
+    pm.parameters["criteria"]["eps0"] = 0.15
+    pm.parameters["track"] = {
+        "dvxmin": -15.5,
+        "dvxmax": 15.5,
+        "dvymin": -15.5,
+        "dvymax": 15.5,
+        "dvzmin": -15.5,
+        "dvzmax": 15.5,
+        "dacc": 5.5,
+        "angle": 120.0,
+        "flagNewParticles": 1,
+        "track_mode": 1,
     }
-    pm.parameters['sequence'] = {
-        'base_name': [f"img/cam{i+1}." for i in range(4)],
-        'first': 10001,
-        'last': 10005
+    pm.parameters["sequence"] = {
+        "base_name": [f"img/cam{i + 1}." for i in range(4)],
+        "first": 10001,
+        "last": 10005,
     }
 
     yaml_file = test_dir / "parameters.yaml"
@@ -131,7 +149,7 @@ def test_fully_verifiable_synthetic_tracker(tmp_path):
         # Traj 3: Constant fast velocity along Y (-3.5 mm/frame)
         lambda f: np.array([12.0, 6.0 - (f - 10001) * 3.5, 20.0]),
         # Traj 4: Accelerating particle along Z
-        lambda f: np.array([-10.0, -10.0, 5.0 + 0.5 * (f - 10001)**2])
+        lambda f: np.array([-10.0, -10.0, 5.0 + 0.5 * (f - 10001) ** 2]),
     ]
 
     num_particles = len(traj_defs)
@@ -157,14 +175,14 @@ def test_fully_verifiable_synthetic_tracker(tmp_path):
 
         # Write cam*_targets files for this frame
         for i in range(4):
-            targets_file = test_dir / "img" / f"cam{i+1}.{f}_targets"
+            targets_file = test_dir / "img" / f"cam{i + 1}.{f}_targets"
             target_arr = np.array(cam_targets[i])
             np.savetxt(
                 targets_file,
                 target_arr,
                 fmt="%4d %9.4f %9.4f %5d %5d %5d %5d %5d",
                 header=f"{num_particles}",
-                comments=""
+                comments="",
             )
 
         # Write corresponding rt_is file
@@ -173,7 +191,9 @@ def test_fully_verifiable_synthetic_tracker(tmp_path):
             fh.write(f"{num_particles}\n")
             for p_idx, pt in enumerate(pts_3d):
                 # Format: index, x, y, z, pnr_cam1, pnr_cam2, pnr_cam3, pnr_cam4
-                fh.write(f"{p_idx+1:4d} {pt[0]:9.3f} {pt[1]:9.3f} {pt[2]:9.3f} {p_idx:4d} {p_idx:4d} {p_idx:4d} {p_idx:4d}\n")
+                fh.write(
+                    f"{p_idx + 1:4d} {pt[0]:9.3f} {pt[1]:9.3f} {pt[2]:9.3f} {p_idx:4d} {p_idx:4d} {p_idx:4d} {p_idx:4d}\n"
+                )
 
     # 4. Execute pyptv-batch Tracking on the synthetic dataset
     print("\n--- Running Tracking on Symmetric Synthetic Dataset ---")
@@ -190,7 +210,9 @@ def test_fully_verifiable_synthetic_tracker(tmp_path):
         assert ptv_file.exists(), f"Tracking output {ptv_file.name} was not created!"
         lines = ptv_file.read_text().strip().splitlines()
         n = int(lines[0])
-        assert n == num_particles, f"Expected {num_particles} tracked particles in frame {f}, but got {n}"
+        assert n == num_particles, (
+            f"Expected {num_particles} tracked particles in frame {f}, but got {n}"
+        )
 
         frame_links = []
         for line in lines[1:]:
@@ -206,13 +228,25 @@ def test_fully_verifiable_synthetic_tracker(tmp_path):
     for p_idx in range(num_particles):
         # Frame 10001: prev should be -1 (start of track), next should be p_idx (linked forward)
         assert reconstructed[0][p_idx][0] == -1, f"Particle {p_idx} start error"
-        assert reconstructed[0][p_idx][1] == p_idx, f"Particle {p_idx} linkage error at 10001"
+        assert reconstructed[0][p_idx][1] == p_idx, (
+            f"Particle {p_idx} linkage error at 10001"
+        )
 
         # Frame 10002: prev should be p_idx, next should be p_idx (middle of track)
-        assert reconstructed[1][p_idx][0] == p_idx, f"Particle {p_idx} back-linkage error at frame 10002"
-        assert reconstructed[1][p_idx][1] == p_idx, f"Particle {p_idx} forward-linkage error at frame 10002"
+        assert reconstructed[1][p_idx][0] == p_idx, (
+            f"Particle {p_idx} back-linkage error at frame 10002"
+        )
+        assert reconstructed[1][p_idx][1] == p_idx, (
+            f"Particle {p_idx} forward-linkage error at frame 10002"
+        )
 
         # Frame 10003: prev should be p_idx, next should be p_idx (middle/forward of track to frame 10004)
-        assert reconstructed[2][p_idx][0] == p_idx, f"Particle {p_idx} back-linkage error at frame 10003"
-        assert reconstructed[2][p_idx][1] == p_idx, f"Particle {p_idx} forward-linkage error at frame 10003"
-    print("\n--- ASSERTION SUCCESS: 100% of Synthetic Trajectories Tracked Perfectly! ---")
+        assert reconstructed[2][p_idx][0] == p_idx, (
+            f"Particle {p_idx} back-linkage error at frame 10003"
+        )
+        assert reconstructed[2][p_idx][1] == p_idx, (
+            f"Particle {p_idx} forward-linkage error at frame 10003"
+        )
+    print(
+        "\n--- ASSERTION SUCCESS: 100% of Synthetic Trajectories Tracked Perfectly! ---"
+    )

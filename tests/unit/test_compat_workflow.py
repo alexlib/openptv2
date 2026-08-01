@@ -80,7 +80,9 @@ class TestMatchedCoordsCompat:
     def test_matched_coords_get_by_pnrs(self):
         """Test get_by_pnrs filtering."""
         targets = [
-            AlgoTarget(pnr=i, x=100.0 + i*10, y=200.0, n=10, nx=3, ny=3, sumg=500, tnr=-1)
+            AlgoTarget(
+                pnr=i, x=100.0 + i * 10, y=200.0, n=10, nx=3, ny=3, sumg=500, tnr=-1
+            )
             for i in range(5)
         ]
         ta = TargetArray(targets)
@@ -124,8 +126,8 @@ class TestCorrespondencesCompat:
         # Load calibrations
         cals = [
             _load_cal(
-                str(TEST_DATA / "cal" / f"cam{i+1}.tif.ori"),
-                str(TEST_DATA / "cal" / f"cam{i+1}.tif.addpar")
+                str(TEST_DATA / "cal" / f"cam{i + 1}.tif.ori"),
+                str(TEST_DATA / "cal" / f"cam{i + 1}.tif.addpar"),
             )
             for i in range(num_cams)
         ]
@@ -161,8 +163,8 @@ class TestTrackerCompat:
 
         cals = [
             _load_cal(
-                str(TEST_DATA / "cal" / f"cam{i+1}.tif.ori"),
-                str(TEST_DATA / "cal" / f"cam{i+1}.tif.addpar")
+                str(TEST_DATA / "cal" / f"cam{i + 1}.tif.ori"),
+                str(TEST_DATA / "cal" / f"cam{i + 1}.tif.addpar"),
             )
             for i in range(num_cams)
         ]
@@ -202,7 +204,7 @@ class TestTrackerCompat:
         cals = [
             _load_cal(
                 str(TEST_DATA / "cal" / "cam1.tif.ori"),
-                str(TEST_DATA / "cal" / "cam1.tif.addpar")
+                str(TEST_DATA / "cal" / "cam1.tif.addpar"),
             )
         ]
 
@@ -231,9 +233,9 @@ class TestTrackerCompat:
 
     def test_tracker_default_naming(self):
         """Test default file naming."""
-        assert 'corres' in default_naming
-        assert 'linkage' in default_naming
-        assert 'prio' in default_naming
+        assert "corres" in default_naming
+        assert "linkage" in default_naming
+        assert "prio" in default_naming
 
     def test_tracker_not_initialized_error(self):
         """Test error when calling methods before initialization."""

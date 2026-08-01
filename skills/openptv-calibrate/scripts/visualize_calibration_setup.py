@@ -106,7 +106,9 @@ def _(dataset_dir, cal_dir):
             for p in sorted(cal_dir.glob("cam[0-9].tif.ori"))
         ]
 
-    calblock_path = (dataset_dir / _fixp_name) if _fixp_name else (cal_dir / "target_on_a_side.txt")
+    calblock_path = (
+        (dataset_dir / _fixp_name) if _fixp_name else (cal_dir / "target_on_a_side.txt")
+    )
     return cam_paths, calblock_path
 
 
@@ -131,15 +133,23 @@ def _(body, cam_quadrant, cams, mo, np, plt):
         axes = (dm[:, 0], dm[:, 1], z)
         colors = ("r", "g", "b")
         for vec, c in zip(axes, colors):
-            ax.quiver(*origin, *(vec * length), color=c, linewidth=2,
-                      arrow_length_ratio=0.15)
+            ax.quiver(
+                *origin, *(vec * length), color=c, linewidth=2, arrow_length_ratio=0.15
+            )
         ax.text(*origin, "  " + label, fontsize=9, weight="bold")
 
     fig = plt.figure(figsize=(9, 8))
     ax = fig.add_subplot(111, projection="3d")
 
-    ax.scatter(body[:, 0], body[:, 1], body[:, 2], s=8, c="gray", alpha=0.6,
-               label="calibration body")
+    ax.scatter(
+        body[:, 0],
+        body[:, 1],
+        body[:, 2],
+        s=8,
+        c="gray",
+        alpha=0.6,
+        label="calibration body",
+    )
     for _pid, (_bx, _by, _bz) in enumerate(body, start=1):
         ax.text(_bx, _by, _bz, str(_pid), fontsize=4, color="dimgray")
 
@@ -148,7 +158,9 @@ def _(body, cam_quadrant, cams, mo, np, plt):
 
     plot_axes(ax, np.zeros(3), np.eye(3), axis_len * 1.5, "world")
     for name, pos, dm in cams:
-        cam_label = name + " (" + cam_quadrant[name] + ")" if name in cam_quadrant else name
+        cam_label = (
+            name + " (" + cam_quadrant[name] + ")" if name in cam_quadrant else name
+        )
         ax.scatter(*pos, s=60, c="k", marker="^")
         plot_axes(ax, pos, dm, axis_len, cam_label, flip_z=True)
 
@@ -176,8 +188,12 @@ def _(cam_paths, np, read_ori):
         for _, _, ori in cam_paths:
             _, dm = read_ori(ori)
             det = np.linalg.det(dm)
-            assert abs(abs(det) - 1.0) < 1e-3, f"{ori.name}: not a rotation matrix (det={det})"
-            assert np.allclose(dm @ dm.T, np.eye(3), atol=1e-3), f"{ori.name}: not orthonormal"
+            assert abs(abs(det) - 1.0) < 1e-3, (
+                f"{ori.name}: not a rotation matrix (det={det})"
+            )
+            assert np.allclose(dm @ dm.T, np.eye(3), atol=1e-3), (
+                f"{ori.name}: not orthonormal"
+            )
 
     return
 
@@ -197,9 +213,7 @@ def _(cal_dir, np):
         return np.array(ids), np.array(det), np.array(rep)
 
     match_files = sorted(cal_dir.glob("calib_matches/cam[0-9]_matches.txt"))
-    cam_matches = {
-        p.stem.split("_")[0]: read_matches(p) for p in match_files
-    }
+    cam_matches = {p.stem.split("_")[0]: read_matches(p) for p in match_files}
     return (cam_matches,)
 
 
@@ -208,17 +222,34 @@ def _(cam_paths, cam_matches, iio, np, plt):
     overlay_fig, overlay_axes = plt.subplots(2, 2, figsize=(14, 12))
     _img_by_name = {name: img for name, img, _ in cam_paths}
 
-    for _ax, (_cam_name, (_ids, _det, _rep)) in zip(overlay_axes.flat, sorted(cam_matches.items())):
+    for _ax, (_cam_name, (_ids, _det, _rep)) in zip(
+        overlay_axes.flat, sorted(cam_matches.items())
+    ):
         _img = iio.imread(_img_by_name[_cam_name])
         _ax.imshow(_img, cmap="gray")
-        _ax.scatter(_det[:, 0], _det[:, 1], s=40, facecolors="none", edgecolors="lime",
-                    linewidths=1.2, label="detected")
+        _ax.scatter(
+            _det[:, 0],
+            _det[:, 1],
+            s=40,
+            facecolors="none",
+            edgecolors="lime",
+            linewidths=1.2,
+            label="detected",
+        )
         _ax.scatter(_rep[:, 0], _rep[:, 1], s=8, c="red", label="reprojected")
         for _pid, (_x, _y) in zip(_ids, _det):
-            _ax.annotate(str(_pid), (_x, _y), fontsize=6, color="yellow",
-                         textcoords="offset points", xytext=(3, 3))
+            _ax.annotate(
+                str(_pid),
+                (_x, _y),
+                fontsize=6,
+                color="yellow",
+                textcoords="offset points",
+                xytext=(3, 3),
+            )
         _rms = float(np.sqrt(np.mean(np.sum((_det - _rep) ** 2, axis=1))))
-        _ax.set_title(f"{_cam_name}  RMS={_rms:.3f}px  n={len(_ids)}  (yellow = calibration-body point ID)")
+        _ax.set_title(
+            f"{_cam_name}  RMS={_rms:.3f}px  n={len(_ids)}  (yellow = calibration-body point ID)"
+        )
         _ax.legend(loc="upper right", fontsize=8, framealpha=0.7)
 
     plt.tight_layout()
@@ -237,7 +268,8 @@ def _(dataset_dir):
     splitter_order = (_cfg.get("ptv", {}) or {}).get("splitter_order") or [0, 1, 3, 2]
 
     cam_quadrant = {
-        f"cam{i + 1}": QUADRANT_NAMES[splitter_order[i]] for i in range(len(splitter_order))
+        f"cam{i + 1}": QUADRANT_NAMES[splitter_order[i]]
+        for i in range(len(splitter_order))
     }
     return (cam_quadrant,)
 

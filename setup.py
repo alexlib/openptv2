@@ -46,6 +46,7 @@ def _libomp_prefix():
     except Exception:
         return "/opt/homebrew/opt/libomp"
 
+
 # All 18 modules translated from the C library to Cython 3 Pure Python
 # Note: track_kernels.py is a shim re-exporting from sub-modules.
 ALGORITHMS_MODULES = [

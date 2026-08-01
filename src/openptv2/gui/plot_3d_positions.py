@@ -120,8 +120,12 @@ def _draw_fov_box(ax, x0, x1, y0, y1, z0, z1):
     first = True
     for xs, ys, zs in edges:
         ax.plot(
-            xs, ys, zs,
-            color="#d1495b", lw=1.2, alpha=0.8,
+            xs,
+            ys,
+            zs,
+            color="#d1495b",
+            lw=1.2,
+            alpha=0.8,
             label="field of view" if first else None,
         )
         first = False

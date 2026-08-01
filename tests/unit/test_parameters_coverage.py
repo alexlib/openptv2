@@ -8,6 +8,7 @@ Run with the ppsrc override for coverage:
       --cov-report=term-missing -q \
       2>&1 | grep -E "(parameters|TOTAL|PASSED|FAILED|ERROR|passed|failed|error)"
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -132,8 +133,17 @@ def test_track_par_tuple_fields():
 
 
 def test_convert_track_par_to_tuple_basic():
-    tp = TrackPar(dvxmin=1.0, dvxmax=2.0, dvymin=3.0, dvymax=4.0,
-                  dvzmin=5.0, dvzmax=6.0, dangle=7.0, dacc=8.0, add=1)
+    tp = TrackPar(
+        dvxmin=1.0,
+        dvxmax=2.0,
+        dvymin=3.0,
+        dvymax=4.0,
+        dvzmin=5.0,
+        dvzmax=6.0,
+        dangle=7.0,
+        dacc=8.0,
+        add=1,
+    )
     result = convert_track_par_to_tuple(tp)
     assert isinstance(result, TrackParTuple)
     assert result.dvxmin == 1.0
@@ -262,9 +272,18 @@ class TestTrackPar:
         assert tp.dny == 0.0
 
     def test_explicit_args(self):
-        tp = TrackPar(dvxmin=1.0, dvxmax=2.0, dvymin=3.0, dvymax=4.0,
-                      dvzmin=5.0, dvzmax=6.0, dangle=7.0, dacc=8.0,
-                      add=1, track_mode=1)
+        tp = TrackPar(
+            dvxmin=1.0,
+            dvxmax=2.0,
+            dvymin=3.0,
+            dvymax=4.0,
+            dvzmin=5.0,
+            dvzmax=6.0,
+            dangle=7.0,
+            dacc=8.0,
+            add=1,
+            track_mode=1,
+        )
         assert tp.dvxmin == 1.0
         assert tp.track_mode == 1
 
@@ -330,9 +349,16 @@ class TestTrackPar:
 
     def test_getters_setters(self):
         tp = TrackPar()
-        for attr, val in [("dvxmin", 1.1), ("dvxmax", 2.2), ("dvymin", 3.3),
-                          ("dvymax", 4.4), ("dvzmin", 5.5), ("dvzmax", 6.6),
-                          ("dangle", 7.7), ("dacc", 8.8)]:
+        for attr, val in [
+            ("dvxmin", 1.1),
+            ("dvxmax", 2.2),
+            ("dvymin", 3.3),
+            ("dvymax", 4.4),
+            ("dvzmin", 5.5),
+            ("dvzmax", 6.6),
+            ("dangle", 7.7),
+            ("dacc", 8.8),
+        ]:
             getattr(tp, f"set_{attr}")(val)
             assert abs(getattr(tp, f"get_{attr}")() - val) < 1e-9
 
@@ -373,9 +399,17 @@ class TestVolumePar:
         assert vp.eps0 == 0.0
 
     def test_explicit_args(self):
-        vp = VolumePar(X_lay=[-250, 250], Zmin_lay=[-100, -100],
-                       Zmax_lay=[100, 100], cnx=0.3, cny=0.3,
-                       cn=0.01, csumg=0.01, corrmin=33.0, eps0=1.0)
+        vp = VolumePar(
+            X_lay=[-250, 250],
+            Zmin_lay=[-100, -100],
+            Zmax_lay=[100, 100],
+            cnx=0.3,
+            cny=0.3,
+            cn=0.01,
+            csumg=0.01,
+            corrmin=33.0,
+            eps0=1.0,
+        )
         np.testing.assert_array_equal(vp.X_lay, [-250.0, 250.0])
         assert vp.corrmin == 33.0
 
@@ -466,15 +500,13 @@ class TestMmNp:
         np.testing.assert_array_equal(mm.d, [0.0, 0.0, 0.0])
 
     def test_explicit_args(self):
-        mm = MmNp(nlay=2, n1=1.5, n2=[1.49, 1.0, 1.0],
-                  d=[5.0, 0.0, 0.0], n3=1.33)
+        mm = MmNp(nlay=2, n1=1.5, n2=[1.49, 1.0, 1.0], d=[5.0, 0.0, 0.0], n3=1.33)
         assert mm.nlay == 2
         assert mm.n1 == 1.5
         assert mm.n3 == 1.33
 
     def test_copy_constructor_via_mm(self):
-        src = MmNp(nlay=2, n1=1.5, n2=[1.49, 1.0, 1.0],
-                   d=[5.0, 0.0, 0.0], n3=1.33)
+        src = MmNp(nlay=2, n1=1.5, n2=[1.49, 1.0, 1.0], d=[5.0, 0.0, 0.0], n3=1.33)
         dst = MmNp(_mm=src)
         assert dst.nlay == src.nlay
         assert dst.n1 == src.n1
@@ -560,9 +592,9 @@ class TestControlPar:
         assert cp.cal_img_base_name == ["", ""]
 
     def test_img_base_name_provided(self):
-        cp = ControlPar(num_cams=2,
-                        img_base_name=["a", "b"],
-                        cal_img_base_name=["ca", "cb"])
+        cp = ControlPar(
+            num_cams=2, img_base_name=["a", "b"], cal_img_base_name=["ca", "cb"]
+        )
         assert cp.img_base_name == ["a", "b"]
         assert cp.cal_img_base_name == ["ca", "cb"]
 
@@ -691,9 +723,18 @@ class TestTargetPar:
         assert tp.nnmax == 0
 
     def test_explicit_args(self):
-        tp = TargetPar(gvthres=[10, 20, 30, 40], discont=5,
-                       nnmin=2, nnmax=50, nxmin=3, nxmax=100,
-                       nymin=2, nymax=80, sumg_min=100, cr_sz=3)
+        tp = TargetPar(
+            gvthres=[10, 20, 30, 40],
+            discont=5,
+            nnmin=2,
+            nnmax=50,
+            nxmin=3,
+            nxmax=100,
+            nymin=2,
+            nymax=80,
+            sumg_min=100,
+            cr_sz=3,
+        )
         assert tp.discont == 5
         assert tp.nnmin == 2
         assert tp.sumg_min == 100
@@ -755,9 +796,18 @@ class TestTargetPar:
             TargetPar.from_file(f)
 
     def test_to_file_round_trip(self, tmp_path):
-        tp = TargetPar(gvthres=[3, 2, 2, 3], discont=5,
-                       nnmin=3, nnmax=100, nxmin=1, nxmax=20,
-                       nymin=1, nymax=20, sumg_min=3, cr_sz=2)
+        tp = TargetPar(
+            gvthres=[3, 2, 2, 3],
+            discont=5,
+            nnmin=3,
+            nnmax=100,
+            nxmin=1,
+            nxmax=20,
+            nymin=1,
+            nymax=20,
+            sumg_min=3,
+            cr_sz=2,
+        )
         f = tmp_path / "targ_out.par"
         tp.to_file(f)
         tp2 = TargetPar.from_file(f)
@@ -767,9 +817,18 @@ class TestTargetPar:
         assert tp2.cr_sz == tp.cr_sz
 
     def test_getters(self):
-        tp = TargetPar(gvthres=[1, 2, 3, 4], discont=5, nnmin=2, nnmax=50,
-                       nxmin=3, nxmax=100, nymin=2, nymax=80,
-                       sumg_min=100, cr_sz=3)
+        tp = TargetPar(
+            gvthres=[1, 2, 3, 4],
+            discont=5,
+            nnmin=2,
+            nnmax=50,
+            nxmin=3,
+            nxmax=100,
+            nymin=2,
+            nymax=80,
+            sumg_min=100,
+            cr_sz=3,
+        )
         arr = tp.get_grey_thresholds()
         np.testing.assert_array_equal(arr, [1, 2, 3, 4])
         arr_nocopy = tp.get_grey_thresholds(copy=False)
@@ -816,9 +875,20 @@ class TestOrientPar:
         assert op.interfflag == 0
 
     def test_explicit(self):
-        op = OrientPar(useflag=1, ccflag=1, xhflag=0, yhflag=0,
-                       k1flag=1, k2flag=0, k3flag=0, p1flag=0,
-                       p2flag=0, scxflag=0, sheflag=0, interfflag=1)
+        op = OrientPar(
+            useflag=1,
+            ccflag=1,
+            xhflag=0,
+            yhflag=0,
+            k1flag=1,
+            k2flag=0,
+            k3flag=0,
+            p1flag=0,
+            p2flag=0,
+            scxflag=0,
+            sheflag=0,
+            interfflag=1,
+        )
         assert op.useflag == 1
         assert op.interfflag == 1
 
@@ -853,8 +923,9 @@ class TestMultimediaPar:
         np.testing.assert_array_equal(mp.d, [0.0, 0.0, 0.0])
 
     def test_explicit_args(self):
-        mp = MultimediaPar(n1=1.5, n2=[1.49, 1.0, 1.0],
-                           d=[5.0, 0.0, 0.0], n3=1.33, nlay=2)
+        mp = MultimediaPar(
+            n1=1.5, n2=[1.49, 1.0, 1.0], d=[5.0, 0.0, 0.0], n3=1.33, nlay=2
+        )
         assert mp.n1 == 1.5
         assert mp.nlay == 2
 
@@ -883,10 +954,14 @@ class TestCalibrationPar:
         assert cp.chfield == 0
 
     def test_explicit(self):
-        cp = CalibrationPar(fixp_name="target.txt",
-                            img_cal_name=["cam1.tif", "cam2.tif"],
-                            img_ori=["cam1.ori", "cam2.ori"],
-                            tiff_flag=1, pair_flag=1, chfield=0)
+        cp = CalibrationPar(
+            fixp_name="target.txt",
+            img_cal_name=["cam1.tif", "cam2.tif"],
+            img_ori=["cam1.ori", "cam2.ori"],
+            tiff_flag=1,
+            pair_flag=1,
+            chfield=0,
+        )
         assert cp.fixp_name == "target.txt"
         assert len(cp.img_cal_name) == 2
 
@@ -1090,9 +1165,18 @@ def test_volume_par_from_yaml_missing_section(tmp_path):
 
 
 def test_target_par_roundtrip_no_cr_sz(tmp_path):
-    tp = TargetPar(gvthres=[1, 2, 3, 4], discont=0,
-                   nnmin=1, nnmax=10, nxmin=1, nxmax=10,
-                   nymin=1, nymax=10, sumg_min=50, cr_sz=0)
+    tp = TargetPar(
+        gvthres=[1, 2, 3, 4],
+        discont=0,
+        nnmin=1,
+        nnmax=10,
+        nxmin=1,
+        nxmax=10,
+        nymin=1,
+        nymax=10,
+        sumg_min=50,
+        cr_sz=0,
+    )
     f = tmp_path / "t.par"
     tp.to_file(f)
     content = f.read_text()

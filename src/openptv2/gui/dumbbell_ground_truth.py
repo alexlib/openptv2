@@ -101,7 +101,9 @@ def _write_two_targets(
 
 
 def _project_points_px(xyz: np.ndarray, cal, cpar) -> np.ndarray:
-    metric = image_coordinates(np.asarray(xyz, dtype=float), cal, cpar.get_multimedia_params())
+    metric = image_coordinates(
+        np.asarray(xyz, dtype=float), cal, cpar.get_multimedia_params()
+    )
     pix = convert_arr_metric_to_pixel(metric, cpar)
     return np.asarray(pix, dtype=float).reshape(-1, 2)
 
@@ -229,7 +231,9 @@ def generate_dumbbell_target_files(
             break
 
         if not ok:
-            raise RuntimeError(f"Failed to generate an in-FOV dumbbell for frame {frame}")
+            raise RuntimeError(
+                f"Failed to generate an in-FOV dumbbell for frame {frame}"
+            )
 
     return {
         "num_cams": num_cams,

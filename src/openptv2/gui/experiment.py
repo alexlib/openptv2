@@ -20,6 +20,7 @@ class Paramset(HasTraits):
     The authoritative parameters for any run live in its YAML file;
     the active run's parameters live in Experiment.pm.
     """
+
     name = Str()
     yaml_path = Path()
 
@@ -37,6 +38,7 @@ class Experiment(HasTraits):
     It delegates parameter management to ParameterManager while handling
     the organization of multiple parameter sets.
     """
+
     active_params = Instance(Paramset)
     paramsets = List(Instance(Paramset))
     pm = Instance(ParameterManager)
@@ -47,7 +49,7 @@ class Experiment(HasTraits):
         self.pm = pm if pm is not None else ParameterManager()
         self._override_save_path = None
         # If pm has a loaded YAML path, add it as a paramset and set active
-        yaml_path = getattr(self.pm, 'yaml_path', None)
+        yaml_path = getattr(self.pm, "yaml_path", None)
         if yaml_path is not None:
             paramset = Paramset(name=yaml_path.stem, yaml_path=yaml_path)
             self.paramsets.append(paramset)
@@ -65,11 +67,15 @@ class Experiment(HasTraits):
             print(f"Loading parameters from YAML: {self.active_params.yaml_path}")
             self.pm.from_yaml(self.active_params.yaml_path)
         except Exception as e:
-            raise IOError(f"Failed to load parameters from {self.active_params.yaml_path}: {e}")
+            raise IOError(
+                f"Failed to load parameters from {self.active_params.yaml_path}: {e}"
+            )
 
     def save_active(self):
         """Save experiment.pm to the active paramset's YAML file (or override path)."""
-        path = self._override_save_path or (self.active_params.yaml_path if self.active_params else None)
+        path = self._override_save_path or (
+            self.active_params.yaml_path if self.active_params else None
+        )
         if path is None:
             return
         self.pm.to_yaml(path)
@@ -109,12 +115,12 @@ class Experiment(HasTraits):
         # Rename the YAML file to .bck
         yaml_path = getattr(paramset_obj, "yaml_path", None)
         if yaml_path and isinstance(yaml_path, Path) and yaml_path.exists():
-            bck_path = yaml_path.with_suffix('.bck')
+            bck_path = yaml_path.with_suffix(".bck")
             yaml_path.rename(bck_path)
             print(f"Renamed YAML file to backup: {bck_path}")
 
         # Remove the corresponding legacy directory if it exists
-        paramset_name = getattr(paramset_obj, 'name', '')
+        paramset_name = getattr(paramset_obj, "name", "")
         if paramset_name and yaml_path:
             legacy_dir = yaml_path.parent / f"parameters{paramset_name}"
             if legacy_dir.exists() and legacy_dir.is_dir():
@@ -132,13 +138,18 @@ class Experiment(HasTraits):
 
         old_yaml = paramset_obj.yaml_path
         if not old_yaml.exists():
-            raise FileNotFoundError(f"YAML file for parameter set '{old_name}' does not exist: {old_yaml}")
+            raise FileNotFoundError(
+                f"YAML file for parameter set '{old_name}' does not exist: {old_yaml}"
+            )
 
         clean_new = new_name[11:] if new_name.startswith("parameters_") else new_name
         if old_yaml.name.startswith("parameters_"):
             new_yaml = old_yaml.parent / f"parameters_{clean_new}.yaml"
         else:
-            new_yaml = old_yaml.parent / f"{clean_new}{old_yaml.suffix if old_yaml.suffix else '.yaml'}"
+            new_yaml = (
+                old_yaml.parent
+                / f"{clean_new}{old_yaml.suffix if old_yaml.suffix else '.yaml'}"
+            )
 
         if new_yaml.exists() and new_yaml != old_yaml:
             raise FileExistsError(f"YAML file for new name already exists: {new_yaml}")
@@ -170,7 +181,8 @@ class Experiment(HasTraits):
         yaml_files = list(exp_path.glob("*parameters_*.yaml"))
 
         subdirs = [
-            d for d in exp_path.iterdir()
+            d
+            for d in exp_path.iterdir()
             if d.is_dir() and d.name.startswith("parameters")
         ]
 
@@ -247,7 +259,6 @@ class Experiment(HasTraits):
         if self.active_params is None:
             self.set_active(0)
 
-
     def duplicate_paramset(self, run_name: str):
         """Duplicate a parameter set by copying its YAML file to a new file with '_copy' appended to the name."""
         # Find the paramset by name
@@ -257,7 +268,9 @@ class Experiment(HasTraits):
 
         src_yaml = paramset_obj.yaml_path
         if not src_yaml.exists():
-            raise FileNotFoundError(f"YAML file for parameter set '{run_name}' does not exist: {src_yaml}")
+            raise FileNotFoundError(
+                f"YAML file for parameter set '{run_name}' does not exist: {src_yaml}"
+            )
 
         # Create new name and path
         new_name = f"{run_name}_copy"
@@ -272,7 +285,9 @@ class Experiment(HasTraits):
         self.addParamset(new_name, new_yaml)
         return new_yaml
 
-    def create_new_paramset(self, name: str, exp_path: Path, copy_from_active: bool = True):
+    def create_new_paramset(
+        self, name: str, exp_path: Path, copy_from_active: bool = True
+    ):
         """Create a new parameter set YAML file"""
         yaml_file = exp_path / f"parameters_{name}.yaml"
 
@@ -282,7 +297,9 @@ class Experiment(HasTraits):
         if copy_from_active and self.active_params is not None:
             # Copy from active parameter set
             shutil.copy(self.active_params.yaml_path, yaml_file)
-            print(f"Created new parameter set {name} by copying from {self.active_params.name}")
+            print(
+                f"Created new parameter set {name} by copying from {self.active_params.name}"
+            )
 
         self.addParamset(name, yaml_file)
         return yaml_file
@@ -306,7 +323,7 @@ class Experiment(HasTraits):
             print(f"Deleted YAML file: {yaml_path}")
 
         # Delete corresponding legacy directory if it exists
-        paramset_name = getattr(paramset_obj, 'name', '')
+        paramset_name = getattr(paramset_obj, "name", "")
         if paramset_name and yaml_path:
             legacy_dir = yaml_path.parent / f"parameters{paramset_name}"
             if legacy_dir.exists() and legacy_dir.is_dir():

@@ -17,6 +17,7 @@ Usage:
     uv run python skills/openptv-calibrate/scripts/recalibrate_exterior_only.py <dataset> --flags k1
     uv run python skills/openptv-calibrate/scripts/recalibrate_exterior_only.py <dataset> --flags k1,p1,p2
 """
+
 from __future__ import annotations
 
 import argparse
@@ -57,13 +58,21 @@ def _drop_excluded(sorted_pix, exclude_ids):
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("dataset")
-    ap.add_argument("--flags", default="",
-                     help="comma-separated extra free params, e.g. 'k1' or 'k1,p1,p2' "
-                          "(default: none -- exterior only)")
-    ap.add_argument("--exclude-ids", default="",
-                     help="comma-separated cam:id pairs to drop from the fit, 1-indexed camera, "
-                          "e.g. '2:53,4:94,4:97,4:87,4:48,4:96,3:104'")
-    ap.add_argument("--dry-run", action="store_true", help="report without writing .ori")
+    ap.add_argument(
+        "--flags",
+        default="",
+        help="comma-separated extra free params, e.g. 'k1' or 'k1,p1,p2' "
+        "(default: none -- exterior only)",
+    )
+    ap.add_argument(
+        "--exclude-ids",
+        default="",
+        help="comma-separated cam:id pairs to drop from the fit, 1-indexed camera, "
+        "e.g. '2:53,4:94,4:97,4:87,4:48,4:96,3:104'",
+    )
+    ap.add_argument(
+        "--dry-run", action="store_true", help="report without writing .ori"
+    )
     args = ap.parse_args()
     flags = [f.strip() for f in args.flags.split(",") if f.strip()]
 
@@ -78,6 +87,7 @@ def main() -> int:
     base = Path(args.dataset).resolve()
 
     import os
+
     os.chdir(base)
 
     yaml_path = _find_yaml(base)
@@ -85,6 +95,7 @@ def main() -> int:
         print(f"ERROR: no parameters_*.yaml found in {base}", file=sys.stderr)
         return 1
     import yaml
+
     y = yaml.safe_load(yaml_path.read_text())
     num_cams = int(y.get("num_cams") or y["ptv"].get("num_cams"))
     cpar = _cpar_from_ptv(y["ptv"], num_cams)
@@ -122,17 +133,26 @@ def main() -> int:
         # against -- the current pose isn't necessarily the better starting
         # point even when it's not badly wrong.
         if man_ori_nr and man_ori_coords and f"camera_{cam}" in man_ori_coords:
-            seed_ids = man_ori_nr[cam * 4:(cam + 1) * 4]
+            seed_ids = man_ori_nr[cam * 4 : (cam + 1) * 4]
             idx = [list(ids_all).index(i) for i in seed_ids]
             fix4 = fix[idx]
             cpts = man_ori_coords[f"camera_{cam}"]
-            pix4 = np.array([[cpts[f"point_{k}"]["x"], cpts[f"point_{k}"]["y"]] for k in range(1, 5)])
+            pix4 = np.array(
+                [
+                    [cpts[f"point_{k}"]["x"], cpts[f"point_{k}"]["y"]]
+                    for k in range(1, 5)
+                ]
+            )
             cal_seeded = Calibration.from_file(str(ori), str(addpar))
             if external_calibration(cal_seeded, fix4, pix4, cpar):
-                sorted_pix_seeded = sortgrid(cal_seeded, cpar, nfix, fix, len(pix), eps, pix)
+                sorted_pix_seeded = sortgrid(
+                    cal_seeded, cpar, nfix, fix, len(pix), eps, pix
+                )
                 n_seeded = sum(1 for t in sorted_pix_seeded if t.pnr >= 0)
-                print(f"cam{cam + 1}: current pose {n_matched} matched vs. "
-                      f"man_ori-seeded ({seed_ids}) {n_seeded} matched")
+                print(
+                    f"cam{cam + 1}: current pose {n_matched} matched vs. "
+                    f"man_ori-seeded ({seed_ids}) {n_seeded} matched"
+                )
                 if n_seeded > n_matched:
                     cal, sorted_pix, n_matched = cal_seeded, sorted_pix_seeded, n_seeded
             else:
@@ -141,8 +161,11 @@ def main() -> int:
         _drop_excluded(sorted_pix, exclude_ids)
         n_matched = sum(1 for t in sorted_pix if t.pnr >= 0)
         if n_matched < 6:
-            print(f"cam{cam + 1}: only {n_matched} matched (need >=6 for a stable "
-                  f"6-DOF exterior fit) -- skipping", file=sys.stderr)
+            print(
+                f"cam{cam + 1}: only {n_matched} matched (need >=6 for a stable "
+                f"6-DOF exterior fit) -- skipping",
+                file=sys.stderr,
+            )
             continue
 
         try:
@@ -164,12 +187,14 @@ def main() -> int:
         )
         extra = "  ".join(
             f"{name}={getattr(cal.added_par, name):.4e}"
-            for name in flags if hasattr(cal.added_par, name)
+            for name in flags
+            if hasattr(cal.added_par, name)
         )
-        print(f"cam{cam + 1}: matched {n_matched}/{nfix}  RMS={rms:.3f}px  "
-              f"pos {pos_before.round(2)} -> {cal.get_pos().round(2)}  "
-              f"cc/xh/yh unchanged={cc_yh_unchanged}"
-              + (f"  {extra}" if extra else ""))
+        print(
+            f"cam{cam + 1}: matched {n_matched}/{nfix}  RMS={rms:.3f}px  "
+            f"pos {pos_before.round(2)} -> {cal.get_pos().round(2)}  "
+            f"cc/xh/yh unchanged={cc_yh_unchanged}" + (f"  {extra}" if extra else "")
+        )
 
         if not args.dry_run:
             suffix = f".pre_{'_'.join(flags) if flags else 'extonly'}_bak"
@@ -180,7 +205,9 @@ def main() -> int:
     if args.dry_run:
         print("\n(dry run -- nothing written; drop --dry-run to write .ori/.addpar)")
     else:
-        print("\nWrote refined .ori/.addpar (originals backed up as *.pre_extonly_bak).")
+        print(
+            "\nWrote refined .ori/.addpar (originals backed up as *.pre_extonly_bak)."
+        )
     return 0
 
 

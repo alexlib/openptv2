@@ -62,14 +62,17 @@ def _reference_match(pred, cands, radius):
     return set(zip(rows[keep].tolist(), cols[keep].tolist()))
 
 
-@pytest.mark.parametrize("n_pred,n_cand,radius", [
-    (30, 30, 2.0),          # dense path, balanced
-    (30, 5, 2.0),           # dense path, far more tracks than candidates
-    (5, 30, 2.0),           # dense path, far more candidates than tracks
-    (40, 40, 0.05),         # dense path, radius so tight most rows have no edge
-    (450, 450, 1.5),        # over DENSE_CUTOFF -> component-decomposed path
-    (450, 450, 12.0),       # over cutoff, radius wide enough to fuse components
-])
+@pytest.mark.parametrize(
+    "n_pred,n_cand,radius",
+    [
+        (30, 30, 2.0),  # dense path, balanced
+        (30, 5, 2.0),  # dense path, far more tracks than candidates
+        (5, 30, 2.0),  # dense path, far more candidates than tracks
+        (40, 40, 0.05),  # dense path, radius so tight most rows have no edge
+        (450, 450, 1.5),  # over DENSE_CUTOFF -> component-decomposed path
+        (450, 450, 12.0),  # over cutoff, radius wide enough to fuse components
+    ],
+)
 def test_match_within_radius_equals_dense_reference(n_pred, n_cand, radius):
     """The KD-tree/component path must agree with the dense formulation."""
     from openptv2.plugins._assignment import match_within_radius

@@ -1,6 +1,7 @@
 class RegularClass:
     pass
 
+
 from dataclasses import dataclass
 
 
@@ -8,8 +9,10 @@ from dataclasses import dataclass
 class DataClass:
     x: int
 
+
 class SlottedClass:
-    __slots__ = ['x']
+    __slots__ = ["x"]
+
 
 print("RegularClass dictoffset:", RegularClass.__dictoffset__)
 print("DataClass dictoffset:", DataClass.__dictoffset__)

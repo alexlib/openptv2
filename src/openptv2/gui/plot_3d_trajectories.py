@@ -150,6 +150,7 @@ def create_3d_trajectories_panel(
 
     try:
         from flowtracks.io import trajectories_ptvis
+
         trajectories = trajectories_ptvis(
             ptv_is_pattern,
             first=first_frame,

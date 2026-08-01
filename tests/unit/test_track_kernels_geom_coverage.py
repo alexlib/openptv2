@@ -81,16 +81,22 @@ def _make_cal_array(
     cal[1] = ext_y0
     cal[2] = ext_z0
     # column-major order: dm[row, col]
-    cal[3] = dm[0, 0];  cal[4] = dm[1, 0];  cal[5] = dm[2, 0]
-    cal[6] = dm[0, 1];  cal[7] = dm[1, 1];  cal[8] = dm[2, 1]
-    cal[9] = dm[0, 2];  cal[10] = dm[1, 2]; cal[11] = dm[2, 2]
+    cal[3] = dm[0, 0]
+    cal[4] = dm[1, 0]
+    cal[5] = dm[2, 0]
+    cal[6] = dm[0, 1]
+    cal[7] = dm[1, 1]
+    cal[8] = dm[2, 1]
+    cal[9] = dm[0, 2]
+    cal[10] = dm[1, 2]
+    cal[11] = dm[2, 2]
     cal[12] = int_cc
     cal[13] = xh
     cal[14] = yh
     cal[15] = gx
     cal[16] = gy
     cal[17] = gz
-    cal[18] = g_len        # dist_o_glas
+    cal[18] = g_len  # dist_o_glas
     cal[19] = inv_dog
     cal[20] = mm_n1
     cal[21] = mm_n2_0
@@ -109,7 +115,7 @@ def _make_cal_array(
 # Shared pixel-space constants
 IMX_HALF = 640.0
 IMY_HALF = 512.0
-INV_PIX_X = 100.0   # px/mm  (pixel size = 0.01 mm)
+INV_PIX_X = 100.0  # px/mm  (pixel size = 0.01 mm)
 INV_PIX_Y = 100.0
 
 _EMPTY_MD = np.zeros(0, dtype=np.float64)
@@ -144,9 +150,16 @@ def test_multimed_denom_zero_returns_one():
     """pos_z == ext_z0 → denom == 0 → return 1.0."""
     # denom = ext_z0 - pos_z = 0
     r = _multimed_r_nlay_1layer(
-        1.0, 0.0, 100.0,   # pos_x, pos_y, pos_z
-        0.0, 0.0, 100.0,   # ext_x0, ext_y0, ext_z0  (same z → denom=0)
-        1.0, 1.5, 1.33, 2.0,
+        1.0,
+        0.0,
+        100.0,  # pos_x, pos_y, pos_z
+        0.0,
+        0.0,
+        100.0,  # ext_x0, ext_y0, ext_z0  (same z → denom=0)
+        1.0,
+        1.5,
+        1.33,
+        2.0,
     )
     assert r == 1.0
 
@@ -154,9 +167,16 @@ def test_multimed_denom_zero_returns_one():
 def test_multimed_r_zero_returns_one():
     """pos_x == ext_x0 and pos_y == ext_y0 → r == 0 → return 1.0."""
     r = _multimed_r_nlay_1layer(
-        0.0, 0.0, 0.0,
-        0.0, 0.0, 100.0,
-        1.0, 1.5, 1.33, 2.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        100.0,
+        1.0,
+        1.5,
+        1.33,
+        2.0,
     )
     assert r == 1.0
 
@@ -164,9 +184,16 @@ def test_multimed_r_zero_returns_one():
 def test_multimed_normal_convergence():
     """Normal case converges and returns finite positive value."""
     r = _multimed_r_nlay_1layer(
-        5.0, 0.0, 0.0,
-        0.0, 0.0, 100.0,
-        1.0, 1.5, 1.33, 2.0,
+        5.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        100.0,
+        1.0,
+        1.5,
+        1.33,
+        2.0,
     )
     assert isinstance(r, float)
     assert r > 0.0
@@ -176,9 +203,16 @@ def test_multimed_normal_convergence():
 def test_multimed_arg_clamp_high():
     """n1/n2 >> 1 → sin_beta1*n1/n2 > 1 → clamp to 1."""
     r = _multimed_r_nlay_1layer(
-        50.0, 0.0, 0.0,
-        0.0, 0.0, 100.0,
-        3.0, 1.0, 1.33, 2.0,   # n1=3, n2=1 → arg > 1
+        50.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        100.0,
+        3.0,
+        1.0,
+        1.33,
+        2.0,  # n1=3, n2=1 → arg > 1
     )
     assert isinstance(r, float)
 
@@ -186,9 +220,16 @@ def test_multimed_arg_clamp_high():
 def test_multimed_arg3_clamp_high():
     """n1/n3 >> 1 → arg3 > 1 → clamp."""
     r = _multimed_r_nlay_1layer(
-        50.0, 0.0, 0.0,
-        0.0, 0.0, 100.0,
-        3.0, 1.5, 1.0, 2.0,   # n1/n3 = 3
+        50.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        100.0,
+        3.0,
+        1.5,
+        1.0,
+        2.0,  # n1/n3 = 3
     )
     assert isinstance(r, float)
 
@@ -197,9 +238,16 @@ def test_multimed_negative_arg_clamp_low():
     """Negative sin value with high n ratio → clamp to -1."""
     # Arrange negative rq by making ext_x0 offset beyond pos
     r = _multimed_r_nlay_1layer(
-        -50.0, 0.0, 0.0,
-        0.0, 0.0, 100.0,
-        3.0, 1.0, 1.0, 2.0,
+        -50.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        100.0,
+        3.0,
+        1.0,
+        1.0,
+        2.0,
     )
     assert isinstance(r, float)
 
@@ -207,9 +255,16 @@ def test_multimed_negative_arg_clamp_low():
 def test_multimed_small_offset():
     """Very small radial offset still converges."""
     r = _multimed_r_nlay_1layer(
-        0.1, 0.0, 0.0,
-        0.0, 0.0, 100.0,
-        1.0, 1.5, 1.33, 2.0,
+        0.1,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        100.0,
+        1.0,
+        1.5,
+        1.33,
+        2.0,
     )
     assert np.isfinite(r)
     assert r > 0.0
@@ -225,8 +280,19 @@ def test_p2p_fast_on_axis_no_mmlut():
     cal = _make_cal_array()
     pos = np.array([0.0, 0.0, 0.0], dtype=np.float64)
     x, y = point_to_pixel_fast(
-        pos, cal, _EMPTY_MD, _EMPTY_MO, 0, 0, 0.0, 0,
-        IMX_HALF, IMY_HALF, INV_PIX_X, INV_PIX_Y, 0,
+        pos,
+        cal,
+        _EMPTY_MD,
+        _EMPTY_MO,
+        0,
+        0,
+        0.0,
+        0,
+        IMX_HALF,
+        IMY_HALF,
+        INV_PIX_X,
+        INV_PIX_Y,
+        0,
     )
     assert np.isfinite(x)
     assert np.isfinite(y)
@@ -237,8 +303,19 @@ def test_p2p_fast_off_axis():
     cal = _make_cal_array()
     pos = np.array([5.0, 3.0, 0.0], dtype=np.float64)
     x, y = point_to_pixel_fast(
-        pos, cal, _EMPTY_MD, _EMPTY_MO, 0, 0, 0.0, 0,
-        IMX_HALF, IMY_HALF, INV_PIX_X, INV_PIX_Y, 0,
+        pos,
+        cal,
+        _EMPTY_MD,
+        _EMPTY_MO,
+        0,
+        0,
+        0.0,
+        0,
+        IMX_HALF,
+        IMY_HALF,
+        INV_PIX_X,
+        INV_PIX_Y,
+        0,
     )
     assert np.isfinite(x)
     assert np.isfinite(y)
@@ -250,8 +327,19 @@ def test_p2p_fast_r_near_zero_branch():
     cal = _make_cal_array(xh=0.0, yh=0.0)
     pos = np.array([0.0, 0.0, 0.0], dtype=np.float64)
     x, y = point_to_pixel_fast(
-        pos, cal, _EMPTY_MD, _EMPTY_MO, 0, 0, 0.0, 0,
-        IMX_HALF, IMY_HALF, INV_PIX_X, INV_PIX_Y, 0,
+        pos,
+        cal,
+        _EMPTY_MD,
+        _EMPTY_MO,
+        0,
+        0,
+        0.0,
+        0,
+        IMX_HALF,
+        IMY_HALF,
+        INV_PIX_X,
+        INV_PIX_Y,
+        0,
     )
     assert np.isfinite(x)
     assert np.isfinite(y)
@@ -261,8 +349,19 @@ def test_p2p_fast_chfield_0():
     cal = _make_cal_array()
     pos = np.array([1.0, 1.0, 0.0], dtype=np.float64)
     x0, y0 = point_to_pixel_fast(
-        pos, cal, _EMPTY_MD, _EMPTY_MO, 0, 0, 0.0, 0,
-        IMX_HALF, IMY_HALF, INV_PIX_X, INV_PIX_Y, 0,
+        pos,
+        cal,
+        _EMPTY_MD,
+        _EMPTY_MO,
+        0,
+        0,
+        0.0,
+        0,
+        IMX_HALF,
+        IMY_HALF,
+        INV_PIX_X,
+        INV_PIX_Y,
+        0,
     )
     assert np.isfinite(y0)
 
@@ -272,12 +371,34 @@ def test_p2p_fast_chfield_1():
     cal = _make_cal_array()
     pos = np.array([1.0, 1.0, 0.0], dtype=np.float64)
     _, y0 = point_to_pixel_fast(
-        pos, cal, _EMPTY_MD, _EMPTY_MO, 0, 0, 0.0, 0,
-        IMX_HALF, IMY_HALF, INV_PIX_X, INV_PIX_Y, 0,
+        pos,
+        cal,
+        _EMPTY_MD,
+        _EMPTY_MO,
+        0,
+        0,
+        0.0,
+        0,
+        IMX_HALF,
+        IMY_HALF,
+        INV_PIX_X,
+        INV_PIX_Y,
+        0,
     )
     _, y1 = point_to_pixel_fast(
-        pos, cal, _EMPTY_MD, _EMPTY_MO, 0, 0, 0.0, 0,
-        IMX_HALF, IMY_HALF, INV_PIX_X, INV_PIX_Y, 1,
+        pos,
+        cal,
+        _EMPTY_MD,
+        _EMPTY_MO,
+        0,
+        0,
+        0.0,
+        0,
+        IMX_HALF,
+        IMY_HALF,
+        INV_PIX_X,
+        INV_PIX_Y,
+        1,
     )
     assert np.isfinite(y1)
     assert abs(y1 - (y0 - 1.0) * 0.5) < 1e-10
@@ -288,12 +409,34 @@ def test_p2p_fast_chfield_2():
     cal = _make_cal_array()
     pos = np.array([1.0, 1.0, 0.0], dtype=np.float64)
     _, y0 = point_to_pixel_fast(
-        pos, cal, _EMPTY_MD, _EMPTY_MO, 0, 0, 0.0, 0,
-        IMX_HALF, IMY_HALF, INV_PIX_X, INV_PIX_Y, 0,
+        pos,
+        cal,
+        _EMPTY_MD,
+        _EMPTY_MO,
+        0,
+        0,
+        0.0,
+        0,
+        IMX_HALF,
+        IMY_HALF,
+        INV_PIX_X,
+        INV_PIX_Y,
+        0,
     )
     _, y2 = point_to_pixel_fast(
-        pos, cal, _EMPTY_MD, _EMPTY_MO, 0, 0, 0.0, 0,
-        IMX_HALF, IMY_HALF, INV_PIX_X, INV_PIX_Y, 2,
+        pos,
+        cal,
+        _EMPTY_MD,
+        _EMPTY_MO,
+        0,
+        0,
+        0.0,
+        0,
+        IMX_HALF,
+        IMY_HALF,
+        INV_PIX_X,
+        INV_PIX_Y,
+        2,
     )
     assert np.isfinite(y2)
     assert abs(y2 - y0 * 0.5) < 1e-10
@@ -304,8 +447,19 @@ def test_p2p_fast_radial_distortion():
     cal = _make_cal_array(k1=0.001, k2=1e-5, k3=1e-8, p1=1e-4, p2=1e-4)
     pos = np.array([5.0, 3.0, 0.0], dtype=np.float64)
     x, y = point_to_pixel_fast(
-        pos, cal, _EMPTY_MD, _EMPTY_MO, 0, 0, 0.0, 0,
-        IMX_HALF, IMY_HALF, INV_PIX_X, INV_PIX_Y, 0,
+        pos,
+        cal,
+        _EMPTY_MD,
+        _EMPTY_MO,
+        0,
+        0,
+        0.0,
+        0,
+        IMX_HALF,
+        IMY_HALF,
+        INV_PIX_X,
+        INV_PIX_Y,
+        0,
     )
     assert np.isfinite(x)
     assert np.isfinite(y)
@@ -316,8 +470,19 @@ def test_p2p_fast_she_nonzero():
     cal = _make_cal_array(she=0.05, scx=0.99)
     pos = np.array([4.0, 2.0, 0.0], dtype=np.float64)
     x, y = point_to_pixel_fast(
-        pos, cal, _EMPTY_MD, _EMPTY_MO, 0, 0, 0.0, 0,
-        IMX_HALF, IMY_HALF, INV_PIX_X, INV_PIX_Y, 0,
+        pos,
+        cal,
+        _EMPTY_MD,
+        _EMPTY_MO,
+        0,
+        0,
+        0.0,
+        0,
+        IMX_HALF,
+        IMY_HALF,
+        INV_PIX_X,
+        INV_PIX_Y,
+        0,
     )
     assert np.isfinite(x)
     assert np.isfinite(y)
@@ -332,8 +497,19 @@ def test_p2p_fast_mmlut_hit_positive_mmf():
     mmlut_rw = 5.0
     pos = np.array([3.0, 2.0, 0.0], dtype=np.float64)
     x, y = point_to_pixel_fast(
-        pos, cal, mmlut_data, mmlut_origin, nr, nz, mmlut_rw, 1,
-        IMX_HALF, IMY_HALF, INV_PIX_X, INV_PIX_Y, 0,
+        pos,
+        cal,
+        mmlut_data,
+        mmlut_origin,
+        nr,
+        nz,
+        mmlut_rw,
+        1,
+        IMX_HALF,
+        IMY_HALF,
+        INV_PIX_X,
+        INV_PIX_Y,
+        0,
     )
     assert np.isfinite(x)
     assert np.isfinite(y)
@@ -348,8 +524,19 @@ def test_p2p_fast_mmlut_mmf_zero_fallback():
     mmlut_rw = 5.0
     pos = np.array([3.0, 0.0, 0.0], dtype=np.float64)
     x, y = point_to_pixel_fast(
-        pos, cal, mmlut_data, mmlut_origin, nr, nz, mmlut_rw, 1,
-        IMX_HALF, IMY_HALF, INV_PIX_X, INV_PIX_Y, 0,
+        pos,
+        cal,
+        mmlut_data,
+        mmlut_origin,
+        nr,
+        nz,
+        mmlut_rw,
+        1,
+        IMX_HALF,
+        IMY_HALF,
+        INV_PIX_X,
+        INV_PIX_Y,
+        0,
     )
     assert np.isfinite(x)
 
@@ -360,11 +547,22 @@ def test_p2p_fast_mmlut_out_of_bounds():
     nr, nz = 2, 2
     mmlut_data = np.ones(nr * nz, dtype=np.float64)
     mmlut_origin = np.zeros(3, dtype=np.float64)
-    mmlut_rw = 1.0   # tiny grid → ir > nr for large points
+    mmlut_rw = 1.0  # tiny grid → ir > nr for large points
     pos = np.array([200.0, 0.0, 0.0], dtype=np.float64)
     x, y = point_to_pixel_fast(
-        pos, cal, mmlut_data, mmlut_origin, nr, nz, mmlut_rw, 1,
-        IMX_HALF, IMY_HALF, INV_PIX_X, INV_PIX_Y, 0,
+        pos,
+        cal,
+        mmlut_data,
+        mmlut_origin,
+        nr,
+        nz,
+        mmlut_rw,
+        1,
+        IMX_HALF,
+        IMY_HALF,
+        INV_PIX_X,
+        INV_PIX_Y,
+        0,
     )
     assert np.isfinite(x)
 
@@ -374,8 +572,19 @@ def test_p2p_fast_matched_refractive_indices():
     cal = _make_cal_array(mm_n1=1.33, mm_n2_0=1.33, mm_n3=1.33)
     pos = np.array([5.0, 3.0, 0.0], dtype=np.float64)
     x, y = point_to_pixel_fast(
-        pos, cal, _EMPTY_MD, _EMPTY_MO, 0, 0, 0.0, 0,
-        IMX_HALF, IMY_HALF, INV_PIX_X, INV_PIX_Y, 0,
+        pos,
+        cal,
+        _EMPTY_MD,
+        _EMPTY_MO,
+        0,
+        0,
+        0.0,
+        0,
+        IMX_HALF,
+        IMY_HALF,
+        INV_PIX_X,
+        INV_PIX_Y,
+        0,
     )
     assert np.isfinite(x)
 
@@ -390,8 +599,20 @@ def test_p2p_out_basic_returns_zero():
     pos = np.array([0.0, 0.0, 0.0], dtype=np.float64)
     out = np.zeros(2, dtype=np.float64)
     ret = _point_to_pixel_out(
-        pos, cal, _EMPTY_MD, _EMPTY_MO, 0, 0, 0.0, 0,
-        IMX_HALF, IMY_HALF, INV_PIX_X, INV_PIX_Y, 0, out,
+        pos,
+        cal,
+        _EMPTY_MD,
+        _EMPTY_MO,
+        0,
+        0,
+        0.0,
+        0,
+        IMX_HALF,
+        IMY_HALF,
+        INV_PIX_X,
+        INV_PIX_Y,
+        0,
+        out,
     )
     assert ret == 0
     assert np.isfinite(out[0])
@@ -403,12 +624,35 @@ def test_p2p_out_matches_fast():
     pos = np.array([4.0, 2.0, 0.0], dtype=np.float64)
     out = np.zeros(2, dtype=np.float64)
     _point_to_pixel_out(
-        pos, cal, _EMPTY_MD, _EMPTY_MO, 0, 0, 0.0, 0,
-        IMX_HALF, IMY_HALF, INV_PIX_X, INV_PIX_Y, 0, out,
+        pos,
+        cal,
+        _EMPTY_MD,
+        _EMPTY_MO,
+        0,
+        0,
+        0.0,
+        0,
+        IMX_HALF,
+        IMY_HALF,
+        INV_PIX_X,
+        INV_PIX_Y,
+        0,
+        out,
     )
     x_f, y_f = point_to_pixel_fast(
-        pos, cal, _EMPTY_MD, _EMPTY_MO, 0, 0, 0.0, 0,
-        IMX_HALF, IMY_HALF, INV_PIX_X, INV_PIX_Y, 0,
+        pos,
+        cal,
+        _EMPTY_MD,
+        _EMPTY_MO,
+        0,
+        0,
+        0.0,
+        0,
+        IMX_HALF,
+        IMY_HALF,
+        INV_PIX_X,
+        INV_PIX_Y,
+        0,
     )
     assert abs(out[0] - x_f) < 1e-10
     assert abs(out[1] - y_f) < 1e-10
@@ -419,8 +663,20 @@ def test_p2p_out_chfield_1():
     pos = np.array([1.0, 1.0, 0.0], dtype=np.float64)
     out = np.zeros(2, dtype=np.float64)
     _point_to_pixel_out(
-        pos, cal, _EMPTY_MD, _EMPTY_MO, 0, 0, 0.0, 0,
-        IMX_HALF, IMY_HALF, INV_PIX_X, INV_PIX_Y, 1, out,
+        pos,
+        cal,
+        _EMPTY_MD,
+        _EMPTY_MO,
+        0,
+        0,
+        0.0,
+        0,
+        IMX_HALF,
+        IMY_HALF,
+        INV_PIX_X,
+        INV_PIX_Y,
+        1,
+        out,
     )
     assert np.isfinite(out[1])
 
@@ -430,8 +686,20 @@ def test_p2p_out_chfield_2():
     pos = np.array([1.0, 1.0, 0.0], dtype=np.float64)
     out = np.zeros(2, dtype=np.float64)
     _point_to_pixel_out(
-        pos, cal, _EMPTY_MD, _EMPTY_MO, 0, 0, 0.0, 0,
-        IMX_HALF, IMY_HALF, INV_PIX_X, INV_PIX_Y, 2, out,
+        pos,
+        cal,
+        _EMPTY_MD,
+        _EMPTY_MO,
+        0,
+        0,
+        0.0,
+        0,
+        IMX_HALF,
+        IMY_HALF,
+        INV_PIX_X,
+        INV_PIX_Y,
+        2,
+        out,
     )
     assert np.isfinite(out[1])
 
@@ -441,8 +709,20 @@ def test_p2p_out_distortion():
     pos = np.array([5.0, 3.0, 0.0], dtype=np.float64)
     out = np.zeros(2, dtype=np.float64)
     _point_to_pixel_out(
-        pos, cal, _EMPTY_MD, _EMPTY_MO, 0, 0, 0.0, 0,
-        IMX_HALF, IMY_HALF, INV_PIX_X, INV_PIX_Y, 0, out,
+        pos,
+        cal,
+        _EMPTY_MD,
+        _EMPTY_MO,
+        0,
+        0,
+        0.0,
+        0,
+        IMX_HALF,
+        IMY_HALF,
+        INV_PIX_X,
+        INV_PIX_Y,
+        0,
+        out,
     )
     assert np.isfinite(out[0])
     assert np.isfinite(out[1])
@@ -456,8 +736,20 @@ def test_p2p_out_mmlut_hit():
     pos = np.array([3.0, 0.0, 0.0], dtype=np.float64)
     out = np.zeros(2, dtype=np.float64)
     ret = _point_to_pixel_out(
-        pos, cal, mmlut_data, mmlut_origin, nr, nz, 5.0, 1,
-        IMX_HALF, IMY_HALF, INV_PIX_X, INV_PIX_Y, 0, out,
+        pos,
+        cal,
+        mmlut_data,
+        mmlut_origin,
+        nr,
+        nz,
+        5.0,
+        1,
+        IMX_HALF,
+        IMY_HALF,
+        INV_PIX_X,
+        INV_PIX_Y,
+        0,
+        out,
     )
     assert ret == 0
     assert np.isfinite(out[0])
@@ -468,8 +760,20 @@ def test_p2p_out_r_near_zero():
     pos = np.array([0.0, 0.0, 0.0], dtype=np.float64)
     out = np.zeros(2, dtype=np.float64)
     _point_to_pixel_out(
-        pos, cal, _EMPTY_MD, _EMPTY_MO, 0, 0, 0.0, 0,
-        IMX_HALF, IMY_HALF, INV_PIX_X, INV_PIX_Y, 0, out,
+        pos,
+        cal,
+        _EMPTY_MD,
+        _EMPTY_MO,
+        0,
+        0,
+        0.0,
+        0,
+        IMX_HALF,
+        IMY_HALF,
+        INV_PIX_X,
+        INV_PIX_Y,
+        0,
+        out,
     )
     # x_dist = y_dist = 0 when r < 1e-10
     assert np.isfinite(out[0])
@@ -483,8 +787,20 @@ def test_p2p_out_mmlut_out_of_bounds():
     pos = np.array([200.0, 0.0, 0.0], dtype=np.float64)
     out = np.zeros(2, dtype=np.float64)
     _point_to_pixel_out(
-        pos, cal, mmlut_data, mmlut_origin, nr, nz, 1.0, 1,
-        IMX_HALF, IMY_HALF, INV_PIX_X, INV_PIX_Y, 0, out,
+        pos,
+        cal,
+        mmlut_data,
+        mmlut_origin,
+        nr,
+        nz,
+        1.0,
+        1,
+        IMX_HALF,
+        IMY_HALF,
+        INV_PIX_X,
+        INV_PIX_Y,
+        0,
+        out,
     )
     assert np.isfinite(out[0])
 
@@ -497,8 +813,20 @@ def test_p2p_out_mmlut_mmf_zero():
     pos = np.array([3.0, 0.0, 0.0], dtype=np.float64)
     out = np.zeros(2, dtype=np.float64)
     _point_to_pixel_out(
-        pos, cal, mmlut_data, mmlut_origin, nr, nz, 5.0, 1,
-        IMX_HALF, IMY_HALF, INV_PIX_X, INV_PIX_Y, 0, out,
+        pos,
+        cal,
+        mmlut_data,
+        mmlut_origin,
+        nr,
+        nz,
+        5.0,
+        1,
+        IMX_HALF,
+        IMY_HALF,
+        INV_PIX_X,
+        INV_PIX_Y,
+        0,
+        out,
     )
     assert np.isfinite(out[0])
 
@@ -509,21 +837,41 @@ def test_p2p_out_mmlut_mmf_zero():
 
 
 def _std_quader():
-    return np.ascontiguousarray([
-        [-1.0, -1.0, -1.0], [-1.0, -1.0,  1.0],
-        [-1.0,  1.0, -1.0], [-1.0,  1.0,  1.0],
-        [ 1.0, -1.0, -1.0], [ 1.0, -1.0,  1.0],
-        [ 1.0,  1.0, -1.0], [ 1.0,  1.0,  1.0],
-    ], dtype=np.float64)
+    return np.ascontiguousarray(
+        [
+            [-1.0, -1.0, -1.0],
+            [-1.0, -1.0, 1.0],
+            [-1.0, 1.0, -1.0],
+            [-1.0, 1.0, 1.0],
+            [1.0, -1.0, -1.0],
+            [1.0, -1.0, 1.0],
+            [1.0, 1.0, -1.0],
+            [1.0, 1.0, 1.0],
+        ],
+        dtype=np.float64,
+    )
 
 
 def test_searchquader_single_cam_returns_shapes():
     cal = _make_cal_array()
     point = np.ascontiguousarray([0.0, 0.0, 0.0], dtype=np.float64)
     xr, xl, yd, yu = searchquader_fast(
-        point, _std_quader(), 1, [cal],
-        [_EMPTY_MD], [_EMPTY_MO], [0], [0], [0.0],
-        IMX_HALF, IMY_HALF, INV_PIX_X, INV_PIX_Y, 0, 1280.0, 1024.0,
+        point,
+        _std_quader(),
+        1,
+        [cal],
+        [_EMPTY_MD],
+        [_EMPTY_MO],
+        [0],
+        [0],
+        [0.0],
+        IMX_HALF,
+        IMY_HALF,
+        INV_PIX_X,
+        INV_PIX_Y,
+        0,
+        1280.0,
+        1024.0,
     )
     assert xr.shape == (1,) and xl.shape == (1,)
     assert yd.shape == (1,) and yu.shape == (1,)
@@ -533,13 +881,25 @@ def test_searchquader_single_cam_returns_shapes():
 
 def test_searchquader_two_cams():
     cal1 = _make_cal_array(ext_x0=-50.0)
-    cal2 = _make_cal_array(ext_x0= 50.0)
+    cal2 = _make_cal_array(ext_x0=50.0)
     point = np.ascontiguousarray([0.0, 0.0, 0.0], dtype=np.float64)
     xr, xl, yd, yu = searchquader_fast(
-        point, _std_quader(), 2, [cal1, cal2],
-        [_EMPTY_MD, _EMPTY_MD], [_EMPTY_MO, _EMPTY_MO],
-        [0, 0], [0, 0], [0.0, 0.0],
-        IMX_HALF, IMY_HALF, INV_PIX_X, INV_PIX_Y, 0, 1280.0, 1024.0,
+        point,
+        _std_quader(),
+        2,
+        [cal1, cal2],
+        [_EMPTY_MD, _EMPTY_MD],
+        [_EMPTY_MO, _EMPTY_MO],
+        [0, 0],
+        [0, 0],
+        [0.0, 0.0],
+        IMX_HALF,
+        IMY_HALF,
+        INV_PIX_X,
+        INV_PIX_Y,
+        0,
+        1280.0,
+        1024.0,
     )
     assert xr.shape == (2,)
 
@@ -554,10 +914,26 @@ def test_searchquader_with_output_buffers():
     yd_out = np.zeros(1, dtype=np.float64)
     yu_out = np.zeros(1, dtype=np.float64)
     xr, xl, yd, yu = searchquader_fast(
-        point, quader, 1, [cal],
-        [_EMPTY_MD], [_EMPTY_MO], [0], [0], [0.0],
-        IMX_HALF, IMY_HALF, INV_PIX_X, INV_PIX_Y, 0, 1280.0, 1024.0,
-        xr_out=xr_out, xl_out=xl_out, yd_out=yd_out, yu_out=yu_out,
+        point,
+        quader,
+        1,
+        [cal],
+        [_EMPTY_MD],
+        [_EMPTY_MO],
+        [0],
+        [0],
+        [0.0],
+        IMX_HALF,
+        IMY_HALF,
+        INV_PIX_X,
+        INV_PIX_Y,
+        0,
+        1280.0,
+        1024.0,
+        xr_out=xr_out,
+        xl_out=xl_out,
+        yd_out=yd_out,
+        yu_out=yu_out,
     )
     assert xr is xr_out
     assert xl is xl_out
@@ -567,16 +943,36 @@ def test_searchquader_boundary_clip():
     """Large corners project outside image → xl_i<0, yu_i<0, xr_i>imx, yd_i>imy clipped."""
     cal = _make_cal_array()
     point = np.ascontiguousarray([0.0, 0.0, 0.0], dtype=np.float64)
-    far_quader = np.ascontiguousarray([
-        [-800.0, -800.0, -10.0], [-800.0, -800.0,  10.0],
-        [-800.0,  800.0, -10.0], [-800.0,  800.0,  10.0],
-        [ 800.0, -800.0, -10.0], [ 800.0, -800.0,  10.0],
-        [ 800.0,  800.0, -10.0], [ 800.0,  800.0,  10.0],
-    ], dtype=np.float64)
+    far_quader = np.ascontiguousarray(
+        [
+            [-800.0, -800.0, -10.0],
+            [-800.0, -800.0, 10.0],
+            [-800.0, 800.0, -10.0],
+            [-800.0, 800.0, 10.0],
+            [800.0, -800.0, -10.0],
+            [800.0, -800.0, 10.0],
+            [800.0, 800.0, -10.0],
+            [800.0, 800.0, 10.0],
+        ],
+        dtype=np.float64,
+    )
     xr, xl, yd, yu = searchquader_fast(
-        point, far_quader, 1, [cal],
-        [_EMPTY_MD], [_EMPTY_MO], [0], [0], [0.0],
-        IMX_HALF, IMY_HALF, INV_PIX_X, INV_PIX_Y, 0, 1280.0, 1024.0,
+        point,
+        far_quader,
+        1,
+        [cal],
+        [_EMPTY_MD],
+        [_EMPTY_MO],
+        [0],
+        [0],
+        [0.0],
+        IMX_HALF,
+        IMY_HALF,
+        INV_PIX_X,
+        INV_PIX_Y,
+        0,
+        1280.0,
+        1024.0,
     )
     assert np.isfinite(xr[0])
 
@@ -587,9 +983,22 @@ def test_searchquader_zero_quader():
     point = np.ascontiguousarray([1.0, 0.0, 0.0], dtype=np.float64)
     quader = np.ascontiguousarray(np.zeros((8, 3), dtype=np.float64))
     xr, xl, yd, yu = searchquader_fast(
-        point, quader, 1, [cal],
-        [_EMPTY_MD], [_EMPTY_MO], [0], [0], [0.0],
-        IMX_HALF, IMY_HALF, INV_PIX_X, INV_PIX_Y, 0, 1280.0, 1024.0,
+        point,
+        quader,
+        1,
+        [cal],
+        [_EMPTY_MD],
+        [_EMPTY_MO],
+        [0],
+        [0],
+        [0.0],
+        IMX_HALF,
+        IMY_HALF,
+        INV_PIX_X,
+        INV_PIX_Y,
+        0,
+        1280.0,
+        1024.0,
     )
     assert xr.shape == (1,)
 
@@ -602,9 +1011,15 @@ def test_searchquader_zero_quader():
 def test_angle_acc_fast_same_vectors_zero():
     """v0 == v1 → angle = 0.0, acc = 0.0."""
     angle, acc = angle_acc_fast(
-        0.0, 0.0, 0.0,   # start
-        1.0, 0.0, 0.0,   # pred
-        1.0, 0.0, 0.0,   # cand  (same as pred)
+        0.0,
+        0.0,
+        0.0,  # start
+        1.0,
+        0.0,
+        0.0,  # pred
+        1.0,
+        0.0,
+        0.0,  # cand  (same as pred)
     )
     assert angle == 0.0
     assert acc == 0.0
@@ -613,9 +1028,15 @@ def test_angle_acc_fast_same_vectors_zero():
 def test_angle_acc_fast_opposite_vectors_200():
     """v0 == -v1 → angle = 200.0."""
     angle, acc = angle_acc_fast(
-        0.0, 0.0, 0.0,
-        1.0, 0.0, 0.0,
-        -1.0, 0.0, 0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        -1.0,
+        0.0,
+        0.0,
     )
     assert angle == 200.0
 
@@ -623,9 +1044,15 @@ def test_angle_acc_fast_opposite_vectors_200():
 def test_angle_acc_fast_90_degrees():
     """Perpendicular vectors → angle ≈ 100.0 (90° scaled to 200/π·rad)."""
     angle, acc = angle_acc_fast(
-        0.0, 0.0, 0.0,
-        1.0, 0.0, 0.0,
-        0.0, 1.0, 0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
     )
     assert abs(angle - 100.0) < 0.1
     assert np.isfinite(acc)
@@ -634,9 +1061,15 @@ def test_angle_acc_fast_90_degrees():
 def test_angle_acc_fast_norm0_zero():
     """start == pred → v0 = (0,0,0) → norm0 = 0 → angle = 0.0."""
     angle, acc = angle_acc_fast(
-        0.0, 0.0, 0.0,
-        0.0, 0.0, 0.0,
-        1.0, 0.0, 0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
     )
     assert angle == 0.0
 
@@ -644,9 +1077,15 @@ def test_angle_acc_fast_norm0_zero():
 def test_angle_acc_fast_norm1_zero():
     """start == cand → v1 = (0,0,0) → norm1 = 0 → angle = 0.0."""
     angle, acc = angle_acc_fast(
-        0.0, 0.0, 0.0,
-        1.0, 0.0, 0.0,
-        0.0, 0.0, 0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
     )
     assert angle == 0.0
 
@@ -655,9 +1094,15 @@ def test_angle_acc_fast_nearly_parallel():
     """Almost parallel vectors — dot may be > 1 in floating point → clamped."""
     eps = 1e-14
     angle, acc = angle_acc_fast(
-        0.0, 0.0, 0.0,
-        1.0, 0.0, 0.0,
-        1.0 + eps, 0.0, 0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        1.0 + eps,
+        0.0,
+        0.0,
     )
     assert 0.0 <= angle <= 200.0
 
@@ -665,9 +1110,15 @@ def test_angle_acc_fast_nearly_parallel():
 def test_angle_acc_fast_acceleration_value():
     """Acc is the distance between v1 and v0."""
     angle, acc = angle_acc_fast(
-        0.0, 0.0, 0.0,
-        1.0, 0.0, 0.0,
-        2.0, 0.0, 0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        2.0,
+        0.0,
+        0.0,
     )
     # v0=(1,0,0), v1=(2,0,0) → dx=1 → acc=1
     assert abs(acc - 1.0) < 1e-10
@@ -675,9 +1126,15 @@ def test_angle_acc_fast_acceleration_value():
 
 def test_angle_acc_fast_3d_vectors():
     angle, acc = angle_acc_fast(
-        0.0, 0.0, 0.0,
-        1.0, 1.0, 1.0,
-        1.0, -1.0, 0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        -1.0,
+        0.0,
     )
     assert 0.0 <= angle <= 200.0
     assert np.isfinite(acc)
@@ -687,9 +1144,15 @@ def test_angle_acc_fast_negative_dot_clamped():
     """Antiparallel but not exact → dot < -1 gets clamped to -1."""
     # Make two nearly-opposite unit vectors with floating-point excess
     angle, acc = angle_acc_fast(
-        0.0, 0.0, 0.0,
-        1.0, 0.0, 0.0,
-        -1.0, 1e-15, 0.0,   # nearly opposite, not exactly
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        -1.0,
+        1e-15,
+        0.0,  # nearly opposite, not exactly
     )
     assert 0.0 <= angle <= 200.0
 
@@ -701,9 +1164,7 @@ def test_angle_acc_fast_negative_dot_clamped():
 
 def test_angle_acc_out_returns_int_zero():
     out = np.zeros(2, dtype=np.float64)
-    ret = _angle_acc_out(
-        0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, out
-    )
+    ret = _angle_acc_out(0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, out)
     assert ret == 0
     assert out[0] == 0.0
     assert out[1] == 0.0

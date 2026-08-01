@@ -10,13 +10,13 @@ Provides:
   implementation, used only in tests).
 """
 
-import cython
 from dataclasses import dataclass
 
+import cython
 import numpy as np
 
-from .tracking_frame_buf import Target
 from .track_kernels import targ_rec_fast as _targ_rec_fast
+from .tracking_frame_buf import Target
 
 if cython.compiled:
     from cython.cimports.libc.math import sqrt as c_sqrt

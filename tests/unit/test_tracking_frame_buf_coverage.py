@@ -60,6 +60,7 @@ if is_compiled():
 # CallableInt / CallableFloat
 # ===========================================================================
 
+
 class TestCallableInt:
     def test_is_int(self):
         ci = CallableInt(5)
@@ -89,6 +90,7 @@ class TestCallableFloat:
 # ===========================================================================
 # Target
 # ===========================================================================
+
 
 class TestTarget:
     def test_default_init(self):
@@ -189,6 +191,7 @@ class TestTarget:
 # TargetArray
 # ===========================================================================
 
+
 class TestTargetArray:
     def test_init_int(self):
         ta = TargetArray(3)
@@ -210,7 +213,11 @@ class TestTargetArray:
         t3 = Target(y=2.0)
         ta = TargetArray([t1, t2, t3])
         ta.sort_y()
-        assert [t.c_y for t in ta] == [pytest.approx(1.0), pytest.approx(2.0), pytest.approx(3.0)]
+        assert [t.c_y for t in ta] == [
+            pytest.approx(1.0),
+            pytest.approx(2.0),
+            pytest.approx(3.0),
+        ]
 
     def test_write_and_read_targets(self, tmp_path):
         base = str(tmp_path / "tgt")
@@ -233,6 +240,7 @@ class TestTargetArray:
 # compare_targets
 # ===========================================================================
 
+
 class TestCompareTargets:
     def test_equal(self):
         t1 = Target(pnr=1, x=1.0, y=2.0, n=3, nx=4, ny=5, sumg=6, tnr=7)
@@ -254,6 +262,7 @@ class TestCompareTargets:
 # _resolve_file_base
 # ===========================================================================
 
+
 class TestResolveFileBase:
     def test_format_d_in_base(self):
         result = _resolve_file_base("/data/frame%d", 5)
@@ -272,11 +281,14 @@ class TestResolveFileBase:
 # read_targets / write_targets
 # ===========================================================================
 
+
 class TestReadWriteTargets:
     def test_write_then_read(self, tmp_path):
         base = str(tmp_path / "cam")
-        targets = [Target(pnr=i, x=float(i), y=float(i * 2), n=10, nx=5, ny=5, sumg=100, tnr=i)
-                   for i in range(3)]
+        targets = [
+            Target(pnr=i, x=float(i), y=float(i * 2), n=10, nx=5, ny=5, sumg=100, tnr=i)
+            for i in range(3)
+        ]
         ok = write_targets(targets, 3, base, 1)
         assert ok is True
         read = read_targets(base, 1)
@@ -321,6 +333,7 @@ class TestReadWriteTargets:
 # Corres
 # ===========================================================================
 
+
 class TestCorres:
     def test_default_init(self):
         c = Corres()
@@ -354,6 +367,7 @@ class TestCompareCorres:
 # Pathinfo
 # ===========================================================================
 
+
 class TestPathinfo:
     def test_default_init(self):
         p = Pathinfo()
@@ -365,8 +379,9 @@ class TestPathinfo:
         assert p.inlist == 0
 
     def test_custom_init(self):
-        p = Pathinfo(x=[1.0, 2.0, 3.0], prev=5, next_idx=6, prio=2,
-                     finaldecis=0.5, inlist=1)
+        p = Pathinfo(
+            x=[1.0, 2.0, 3.0], prev=5, next_idx=6, prio=2, finaldecis=0.5, inlist=1
+        )
         assert list(p.x) == [pytest.approx(1.0), pytest.approx(2.0), pytest.approx(3.0)]
         assert p.prev == 5
         assert p.next_idx == 6
@@ -420,6 +435,7 @@ class TestPathinfo:
 # ===========================================================================
 # compare_path_info
 # ===========================================================================
+
 
 class TestComparePathInfo:
     def _make(self, **kw):
@@ -483,6 +499,7 @@ class TestComparePathInfo:
 # register_link_candidate / reset_links
 # ===========================================================================
 
+
 class TestRegisterLinkCandidate:
     def test_basic(self):
         p = Pathinfo()
@@ -512,12 +529,15 @@ class TestResetLinks:
 # read_path_frame / write_path_frame
 # ===========================================================================
 
+
 def _make_corres_file(path, entries):
     """Write a corres file: header line then one entry per (x, y, z, p0..p3)."""
     with open(path, "w") as f:
         f.write(f"{len(entries)}\n")
         for i, (x, y, z, p0, p1, p2, p3) in enumerate(entries):
-            f.write(f"{i+1:4d} {x:9.3f} {y:9.3f} {z:9.3f} {p0:4d} {p1:4d} {p2:4d} {p3:4d}\n")
+            f.write(
+                f"{i + 1:4d} {x:9.3f} {y:9.3f} {z:9.3f} {p0:4d} {p1:4d} {p2:4d} {p3:4d}\n"
+            )
 
 
 def _make_linkage_file(path, entries):
@@ -549,7 +569,11 @@ class TestReadPathFrame:
         assert len(cor) == 1
         assert cor[0].nr == 1
         assert list(cor[0].p) == [0, 1, 2, 3]
-        assert list(path[0].x) == [pytest.approx(1.0), pytest.approx(2.0), pytest.approx(3.0)]
+        assert list(path[0].x) == [
+            pytest.approx(1.0),
+            pytest.approx(2.0),
+            pytest.approx(3.0),
+        ]
 
     def test_read_with_linkage(self, tmp_path):
         cbase = str(tmp_path / "rt_is")
@@ -744,6 +768,7 @@ class TestWritePathFrame:
 # Frame
 # ===========================================================================
 
+
 class TestFrame:
     def test_default_init(self):
         frm = Frame()
@@ -773,7 +798,11 @@ class TestFrame:
         frm.path_info[1].x[:] = [4.0, 5.0, 6.0]
         pos = frm.positions()
         assert pos.shape == (2, 3)
-        assert list(pos[0]) == [pytest.approx(1.0), pytest.approx(2.0), pytest.approx(3.0)]
+        assert list(pos[0]) == [
+            pytest.approx(1.0),
+            pytest.approx(2.0),
+            pytest.approx(3.0),
+        ]
 
     def test_target_positions_for_camera(self):
         frm = Frame(num_cams=1, max_targets=10)
@@ -804,7 +833,11 @@ class TestFrame:
 
         frm._sync_path_to_soa()
 
-        assert list(frm.path_x[0]) == [pytest.approx(1.0), pytest.approx(2.0), pytest.approx(3.0)]
+        assert list(frm.path_x[0]) == [
+            pytest.approx(1.0),
+            pytest.approx(2.0),
+            pytest.approx(3.0),
+        ]
         assert frm.path_prev[0] == 5
         assert frm.path_next[0] == 6
         assert frm.path_prio[0] == 3
@@ -880,12 +913,20 @@ class TestFrame:
         tbase = [str(tmp_path / "cam1.")]
 
         # Write files
-        write_targets([Target(pnr=0, x=1.0, y=2.0, n=1, nx=1, ny=1, sumg=50, tnr=0)],
-                      1, tbase[0], 2)
+        write_targets(
+            [Target(pnr=0, x=1.0, y=2.0, n=1, nx=1, ny=1, sumg=50, tnr=0)],
+            1,
+            tbase[0],
+            2,
+        )
         write_path_frame(
             [Corres(nr=1, p=[0, -1, -1, -1])],
             [Pathinfo(x=[1.0, 2.0, 3.0])],
-            1, cbase, lbase, None, 2
+            1,
+            cbase,
+            lbase,
+            None,
+            2,
         )
 
         frm = Frame(num_cams=1, max_targets=10)
@@ -899,12 +940,17 @@ class TestFrame:
         lbase = str(tmp_path / "ptv_is")
         tbase = str(tmp_path / "cam1.")
 
-        write_targets([Target(pnr=0, x=1.0, y=2.0, n=1, nx=1, ny=1, sumg=50, tnr=0)],
-                      1, tbase, 3)
+        write_targets(
+            [Target(pnr=0, x=1.0, y=2.0, n=1, nx=1, ny=1, sumg=50, tnr=0)], 1, tbase, 3
+        )
         write_path_frame(
             [Corres(nr=1, p=[0, -1, -1, -1])],
             [Pathinfo(x=[1.0, 2.0, 3.0])],
-            1, cbase, lbase, None, 3
+            1,
+            cbase,
+            lbase,
+            None,
+            3,
         )
 
         frm = Frame(num_cams=1, max_targets=10)
@@ -918,19 +964,26 @@ class TestFrame:
         pbase = str(tmp_path / "added")
         tbase = [str(tmp_path / "cam1.")]
 
-        write_targets([Target(pnr=0, x=1.0, y=2.0, n=1, nx=1, ny=1, sumg=50, tnr=0)],
-                      1, tbase[0], 4)
+        write_targets(
+            [Target(pnr=0, x=1.0, y=2.0, n=1, nx=1, ny=1, sumg=50, tnr=0)],
+            1,
+            tbase[0],
+            4,
+        )
         write_path_frame(
             [Corres(nr=1, p=[0, -1, -1, -1])],
             [Pathinfo(x=[1.0, 2.0, 3.0])],
-            1, cbase, lbase, pbase, 4
+            1,
+            cbase,
+            lbase,
+            pbase,
+            4,
         )
 
         frm = Frame(num_cams=1, max_targets=10)
-        ok = frm.read(cbase, lbase,
-                      prio_file_base=pbase,
-                      target_file_base=tbase,
-                      frame_num=4)
+        ok = frm.read(
+            cbase, lbase, prio_file_base=pbase, target_file_base=tbase, frame_num=4
+        )
         assert ok is True
 
     def test_read_legacy_target_file_base_preset_via_kwargs(self, tmp_path):
@@ -956,8 +1009,7 @@ class TestFrame:
         # is_legacy=True because remaining_args[1] is int.
         # target_file_base and frame_num are both already set via kwargs:
         # → 723->725 False branch ✓; 725->727 False branch ✓
-        ok = frm.read(cbase, lbase, 99, 99,
-                      target_file_base=tbase, frame_num=99)
+        ok = frm.read(cbase, lbase, 99, 99, target_file_base=tbase, frame_num=99)
         assert ok is False  # file doesn't exist
 
     def test_read_legacy_with_prio_in_args(self, tmp_path):
@@ -967,12 +1019,20 @@ class TestFrame:
         pbase = str(tmp_path / "added")
         tbase = [str(tmp_path / "cam1.")]
 
-        write_targets([Target(pnr=0, x=1.0, y=2.0, n=1, nx=1, ny=1, sumg=50, tnr=0)],
-                      1, tbase[0], 9)
+        write_targets(
+            [Target(pnr=0, x=1.0, y=2.0, n=1, nx=1, ny=1, sumg=50, tnr=0)],
+            1,
+            tbase[0],
+            9,
+        )
         write_path_frame(
             [Corres(nr=1, p=[0, -1, -1, -1])],
             [Pathinfo(x=[1.0, 2.0, 3.0])],
-            1, cbase, lbase, pbase, 9
+            1,
+            cbase,
+            lbase,
+            pbase,
+            9,
         )
 
         frm = Frame(num_cams=1, max_targets=10)
@@ -1052,7 +1112,8 @@ class TestFrame:
 
         # File doesn't exist → read returns False but no exception
         frm = Frame(
-            num_cams=1, max_targets=10,
+            num_cams=1,
+            max_targets=10,
             frame_num=1,
             corres_file_base=cbase,
             linkage_file_base=lbase,
@@ -1065,6 +1126,7 @@ class TestFrame:
 # ===========================================================================
 # FrameBuf
 # ===========================================================================
+
 
 class TestFrameBuf:
     def _make_fb(self, tmp_path):
@@ -1126,18 +1188,28 @@ class TestFrameBuf:
         # Prepare files
         write_targets(
             [Target(pnr=0, x=1.0, y=2.0, n=1, nx=1, ny=1, sumg=50, tnr=0)],
-            1, tbase[0], 5
+            1,
+            tbase[0],
+            5,
         )
         write_path_frame(
             [Corres(nr=1, p=[0, -1, -1, -1])],
             [Pathinfo(x=[1.0, 2.0, 3.0])],
-            1, cbase, lbase, pbase, 5
+            1,
+            cbase,
+            lbase,
+            pbase,
+            5,
         )
 
         fb = FrameBuf(
-            buf_len=3, num_cams=1, max_targets=10,
-            corres_file_base=cbase, linkage_file_base=lbase,
-            prio_file_base=pbase, target_file_base=tbase,
+            buf_len=3,
+            num_cams=1,
+            max_targets=10,
+            corres_file_base=cbase,
+            linkage_file_base=lbase,
+            prio_file_base=pbase,
+            target_file_base=tbase,
         )
         ok = fb.read_frame_at_end(5, read_links=True)
         assert ok is True
@@ -1150,6 +1222,7 @@ class TestFrameBuf:
 # ===========================================================================
 # Corres_dtype / is_compiled
 # ===========================================================================
+
 
 def test_corres_dtype():
     assert Corres_dtype is not None

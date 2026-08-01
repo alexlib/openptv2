@@ -93,18 +93,36 @@ def test_function_coverage_documentation():
     """Verify that this documentation matches actual test coverage"""
 
     # Get all functions defined in ptv.py
-    ptv_functions = [name for name, obj in inspect.getmembers(ptv, inspect.isfunction)
-                     if obj.__module__.endswith('ptv')]
+    ptv_functions = [
+        name
+        for name, obj in inspect.getmembers(ptv, inspect.isfunction)
+        if obj.__module__.endswith("ptv")
+    ]
 
     # Functions that should have tests (excluding private helpers)
     documented_functions = [
-        'image_split', 'negative', 'simple_highpass',
-        '_populate_cpar', '_populate_spar', '_populate_vpar', '_populate_track_par', '_populate_tpar',
-        'py_start_proc_c', 'py_detection_proc_c', 'py_correspondences_proc_c',
-        'read_targets', 'write_targets', 'read_rt_is_file',
-        '_read_calibrations', 'py_pre_processing_c', 'py_determination_proc_c',
-        'run_sequence_plugin', 'run_tracking_plugin', 'py_sequence_loop',
-        'py_trackcorr_init', 'py_calibration'
+        "image_split",
+        "negative",
+        "simple_highpass",
+        "_populate_cpar",
+        "_populate_spar",
+        "_populate_vpar",
+        "_populate_track_par",
+        "_populate_tpar",
+        "py_start_proc_c",
+        "py_detection_proc_c",
+        "py_correspondences_proc_c",
+        "read_targets",
+        "write_targets",
+        "read_rt_is_file",
+        "_read_calibrations",
+        "py_pre_processing_c",
+        "py_determination_proc_c",
+        "run_sequence_plugin",
+        "run_tracking_plugin",
+        "py_sequence_loop",
+        "py_trackcorr_init",
+        "py_calibration",
     ]
 
     # Verify that documented functions actually exist
@@ -114,7 +132,10 @@ def test_function_coverage_documentation():
     print(f"✅ Verified {len(documented_functions)} functions have test coverage")
     print(f"📊 Total functions in ptv.py: {len(ptv_functions)}")
     print(f"🎯 Functions with tests: {len(documented_functions)}")
-    print(f"📈 Coverage ratio: {len(documented_functions)/len(ptv_functions)*100:.1f}%")
+    print(
+        f"📈 Coverage ratio: {len(documented_functions) / len(ptv_functions) * 100:.1f}%"
+    )
+
 
 if __name__ == "__main__":
     test_function_coverage_documentation()

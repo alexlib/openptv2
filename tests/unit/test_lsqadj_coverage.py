@@ -21,6 +21,7 @@ from openptv2.algorithms.lsqadj import ata, atl, is_compiled, matinv, matmul
 # is_compiled
 # ---------------------------------------------------------------------------
 
+
 def test_is_compiled_returns_bool():
     result = is_compiled()
     assert isinstance(result, bool)
@@ -31,6 +32,7 @@ def test_is_compiled_returns_bool():
 # ---------------------------------------------------------------------------
 # ata  — A^T @ A
 # ---------------------------------------------------------------------------
+
 
 class TestAta:
     def test_identity(self):
@@ -47,9 +49,7 @@ class TestAta:
 
     def test_rectangular_m_rows_n_cols(self):
         """m=3 rows, n=2 cols — result is (2,2)."""
-        a = np.array([[1.0, 2.0, 99.0],
-                      [3.0, 4.0, 99.0],
-                      [5.0, 6.0, 99.0]])
+        a = np.array([[1.0, 2.0, 99.0], [3.0, 4.0, 99.0], [5.0, 6.0, 99.0]])
         result = ata(a, 3, 2)
         assert result.shape == (2, 2)
         sub = a[:, :2]
@@ -94,6 +94,7 @@ class TestAta:
 # ---------------------------------------------------------------------------
 # atl  — A^T @ l
 # ---------------------------------------------------------------------------
+
 
 class TestAtl:
     def test_basic(self):
@@ -160,6 +161,7 @@ class TestAtl:
 # matinv  — matrix inversion
 # ---------------------------------------------------------------------------
 
+
 class TestMatinv:
     def test_identity(self):
         a = np.eye(3)
@@ -219,6 +221,7 @@ class TestMatinv:
 # matmul  — matrix-vector product
 # ---------------------------------------------------------------------------
 
+
 class TestMatmul:
     def test_identity(self):
         b = np.eye(3)
@@ -241,9 +244,7 @@ class TestMatmul:
 
     def test_subslice_rows(self):
         """m < total rows — only first m rows used."""
-        b = np.array([[1.0, 0.0],
-                      [0.0, 1.0],
-                      [99.0, 99.0]])
+        b = np.array([[1.0, 0.0], [0.0, 1.0], [99.0, 99.0]])
         c = np.array([3.0, 4.0])
         result = matmul(b, c, 2, 2)
         assert result.shape == (2,)

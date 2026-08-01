@@ -13,9 +13,11 @@ import cython
 import numpy as np
 
 if cython.compiled:
-    from cython.cimports.libc.math import sqrt as c_sqrt, isnan as c_isnan
+    from cython.cimports.libc.math import isnan as c_isnan
+    from cython.cimports.libc.math import sqrt as c_sqrt
 else:
-    from math import sqrt as c_sqrt, isnan as c_isnan
+    from math import isnan as c_isnan
+    from math import sqrt as c_sqrt
 # Sentinel value for empty/unused cells (matches C's EMPTY_CELL = NaN)
 EMPTY_CELL = np.nan
 

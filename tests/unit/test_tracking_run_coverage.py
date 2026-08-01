@@ -10,6 +10,7 @@ Run via the coverage recipe:
       --cov-report=term-missing \
       -q
 """
+
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -46,17 +47,23 @@ _VOL_RETURN = (10.0, -10.0, 5.0, -5.0, 8.0, -8.0)
 # Minimal helpers
 # ---------------------------------------------------------------------------
 
+
 def _seq(num_cams=1):
-    return SequencePar(num_cams=num_cams, img_base_name=["img"] * num_cams,
-                       first=1, last=10)
+    return SequencePar(
+        num_cams=num_cams, img_base_name=["img"] * num_cams, first=1, last=10
+    )
 
 
 def _tpar():
     tp = TrackPar()
-    tp.dvxmin = -2.0; tp.dvxmax = 2.0
-    tp.dvymin = -2.0; tp.dvymax = 2.0
-    tp.dvzmin = -2.0; tp.dvzmax = 2.0
-    tp.dangle = 0.1; tp.dacc = 0.1
+    tp.dvxmin = -2.0
+    tp.dvxmax = 2.0
+    tp.dvymin = -2.0
+    tp.dvymax = 2.0
+    tp.dvzmin = -2.0
+    tp.dvzmax = 2.0
+    tp.dangle = 0.1
+    tp.dacc = 0.1
     tp.add = 1
     return tp
 
@@ -83,9 +90,11 @@ def _make_run(cal_list=None, num_cams=1):
     tpar_tuple = convert_track_par_to_tuple(_tpar())
     vpar = _vpar()
     cpar = _cpar(num_cams)
-    with patch(_FRAMEBUF) as fb, \
-         patch(_VOLDIM, return_value=_VOL_RETURN), \
-         patch(_INIT_MMLUT):
+    with (
+        patch(_FRAMEBUF) as fb,
+        patch(_VOLDIM, return_value=_VOL_RETURN),
+        patch(_INIT_MMLUT),
+    ):
         fb.return_value = MagicMock()
         run = TrackingRun(
             seq_par=seq,
@@ -107,6 +116,7 @@ def _make_run(cal_list=None, num_cams=1):
 # Tests
 # ---------------------------------------------------------------------------
 
+
 class TestIsCompiled:
     def test_returns_bool(self):
         result = _is_compiled()
@@ -126,6 +136,7 @@ class TestTrackingRunPostInit:
         """lmax = norm of (dvxmin-dvxmax, dvymin-dvymax, dvzmin-dvzmax)."""
         run = _make_run()
         import numpy as np
+
         expected = np.linalg.norm([-4.0, -4.0, -4.0])
         assert abs(run.lmax - expected) < 1e-10
 
@@ -143,13 +154,16 @@ class TestTrackingRunPostInit:
         tpar_tuple = convert_track_par_to_tuple(_tpar())
         vpar = _vpar()
         cpar = _cpar(1)
-        with patch(_FRAMEBUF) as fb, \
-             patch(_VOLDIM, return_value=_VOL_RETURN), \
-             patch(_INIT_MMLUT):
+        with (
+            patch(_FRAMEBUF) as fb,
+            patch(_VOLDIM, return_value=_VOL_RETURN),
+            patch(_INIT_MMLUT),
+        ):
             fb.return_value = MagicMock()
-            run = TrackingRun(seq, tpar_tuple, vpar, cpar, 4, 100,
-                              "c", "l", "p", cal, 0.1)
-        assert run.vpar.X_lay[1] == 10.0   # xmax
+            run = TrackingRun(
+                seq, tpar_tuple, vpar, cpar, 4, 100, "c", "l", "p", cal, 0.1
+            )
+        assert run.vpar.X_lay[1] == 10.0  # xmax
         assert run.vpar.X_lay[0] == -10.0  # xmin
         assert run.vpar.Zmax_lay[1] == 8.0
         assert run.vpar.Zmin_lay[0] == -8.0
@@ -161,12 +175,15 @@ class TestTrackingRunPostInit:
         tpar_tuple = convert_track_par_to_tuple(_tpar())
         vpar = _vpar()
         cpar = _cpar(1)
-        with patch(_FRAMEBUF) as fb, \
-             patch(_VOLDIM, return_value=_VOL_RETURN), \
-             patch(_INIT_MMLUT) as mock_im:
+        with (
+            patch(_FRAMEBUF) as fb,
+            patch(_VOLDIM, return_value=_VOL_RETURN),
+            patch(_INIT_MMLUT) as mock_im,
+        ):
             fb.return_value = MagicMock()
-            TrackingRun(seq, tpar_tuple, vpar, cpar, 4, 100,
-                        "c", "l", "p", [cal_uninit], 0.1)
+            TrackingRun(
+                seq, tpar_tuple, vpar, cpar, 4, 100, "c", "l", "p", [cal_uninit], 0.1
+            )
             assert mock_im.called
 
     def test_init_mmlut_not_called_for_initialized_cal(self):
@@ -176,12 +193,15 @@ class TestTrackingRunPostInit:
         tpar_tuple = convert_track_par_to_tuple(_tpar())
         vpar = _vpar()
         cpar = _cpar(1)
-        with patch(_FRAMEBUF) as fb, \
-             patch(_VOLDIM, return_value=_VOL_RETURN), \
-             patch(_INIT_MMLUT) as mock_im:
+        with (
+            patch(_FRAMEBUF) as fb,
+            patch(_VOLDIM, return_value=_VOL_RETURN),
+            patch(_INIT_MMLUT) as mock_im,
+        ):
             fb.return_value = MagicMock()
-            TrackingRun(seq, tpar_tuple, vpar, cpar, 4, 100,
-                        "c", "l", "p", [cal_init], 0.1)
+            TrackingRun(
+                seq, tpar_tuple, vpar, cpar, 4, 100, "c", "l", "p", [cal_init], 0.1
+            )
             mock_im.assert_not_called()
 
     def test_empty_cal_list(self):
@@ -198,12 +218,25 @@ class TestTrackingRunPostInit:
         tpar_tuple = convert_track_par_to_tuple(_tpar())
         vpar = _vpar()
         cpar = _cpar(1)
-        with patch(_FRAMEBUF) as fb, \
-             patch(_VOLDIM, return_value=_VOL_RETURN), \
-             patch(_INIT_MMLUT) as mock_im:
+        with (
+            patch(_FRAMEBUF) as fb,
+            patch(_VOLDIM, return_value=_VOL_RETURN),
+            patch(_INIT_MMLUT) as mock_im,
+        ):
             fb.return_value = MagicMock()
-            TrackingRun(seq, tpar_tuple, vpar, cpar, 4, 100,
-                        "c", "l", "p", [cal_a, cal_b, cal_c], 0.1)
+            TrackingRun(
+                seq,
+                tpar_tuple,
+                vpar,
+                cpar,
+                4,
+                100,
+                "c",
+                "l",
+                "p",
+                [cal_a, cal_b, cal_c],
+                0.1,
+            )
             assert mock_im.call_count == 2
 
     def test_framebuf_constructed_with_correct_args(self):
@@ -212,12 +245,15 @@ class TestTrackingRunPostInit:
         tpar_tuple = convert_track_par_to_tuple(_tpar())
         vpar = _vpar()
         cpar = _cpar(2)
-        with patch(_FRAMEBUF) as MockFB, \
-             patch(_VOLDIM, return_value=_VOL_RETURN), \
-             patch(_INIT_MMLUT):
+        with (
+            patch(_FRAMEBUF) as MockFB,
+            patch(_VOLDIM, return_value=_VOL_RETURN),
+            patch(_INIT_MMLUT),
+        ):
             MockFB.return_value = MagicMock()
-            TrackingRun(seq, tpar_tuple, vpar, cpar, 5, 200,
-                        "corr_", "link_", "prio_", [], 0.0)
+            TrackingRun(
+                seq, tpar_tuple, vpar, cpar, 5, 200, "corr_", "link_", "prio_", [], 0.0
+            )
             MockFB.assert_called_once_with(
                 5, 2, 200, "corr_", "link_", "prio_", seq.img_base_name
             )
@@ -229,15 +265,24 @@ class TestTrNew:
     def _run_tr_new(self, seq_par, tpar, vpar, cpar, cal=None):
         if cal is None:
             cal = [_cal(initialized=True)]
-        with patch(_FRAMEBUF) as fb, \
-             patch(_VOLDIM, return_value=_VOL_RETURN), \
-             patch(_INIT_MMLUT):
+        with (
+            patch(_FRAMEBUF) as fb,
+            patch(_VOLDIM, return_value=_VOL_RETURN),
+            patch(_INIT_MMLUT),
+        ):
             fb.return_value = MagicMock()
             return tr_new(
-                seq_par, tpar, vpar, cpar,
-                buf_len=4, max_targets=50,
-                corres_file_base="c", linkage_file_base="l",
-                prio_file_base="p", cal=cal, flatten_tol=0.0,
+                seq_par,
+                tpar,
+                vpar,
+                cpar,
+                buf_len=4,
+                max_targets=50,
+                corres_file_base="c",
+                linkage_file_base="l",
+                prio_file_base="p",
+                cal=cal,
+                flatten_tol=0.0,
             )
 
     def test_all_objects(self):
@@ -264,8 +309,10 @@ class TestTrNew:
         """seq_par as a str triggers SequencePar.from_file."""
         cpar_obj = _cpar(1)
         seq_obj = _seq(1)
-        with patch.object(ControlPar, "from_file", return_value=cpar_obj), \
-             patch.object(SequencePar, "from_file", return_value=seq_obj) as mock_sf:
+        with (
+            patch.object(ControlPar, "from_file", return_value=cpar_obj),
+            patch.object(SequencePar, "from_file", return_value=seq_obj) as mock_sf,
+        ):
             run = self._run_tr_new("/fake/seq.par", _tpar(), _vpar(), "/fake/ptv.par")
             mock_sf.assert_called_once()
         assert isinstance(run, TrackingRun)
@@ -292,13 +339,17 @@ class TestTrNew:
         seq_obj = _seq(1)
         tp = _tpar()
         vp = _vpar()
-        with patch.object(ControlPar, "from_file", return_value=cpar_obj), \
-             patch.object(SequencePar, "from_file", return_value=seq_obj), \
-             patch.object(TrackPar, "from_file", return_value=tp), \
-             patch.object(VolumePar, "from_file", return_value=vp):
+        with (
+            patch.object(ControlPar, "from_file", return_value=cpar_obj),
+            patch.object(SequencePar, "from_file", return_value=seq_obj),
+            patch.object(TrackPar, "from_file", return_value=tp),
+            patch.object(VolumePar, "from_file", return_value=vp),
+        ):
             run = self._run_tr_new(
-                "/fake/seq.par", "/fake/track.par",
-                "/fake/criteria.par", "/fake/ptv.par",
+                "/fake/seq.par",
+                "/fake/track.par",
+                "/fake/criteria.par",
+                "/fake/ptv.par",
             )
         assert isinstance(run, TrackingRun)
 

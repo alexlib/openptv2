@@ -66,8 +66,8 @@ def _make_cal(
     # exterior: camera position
     c[0], c[1], c[2] = x0, y0, z0
     # rotation matrix — identity (camera aligned with world axes)
-    c[3] = 1.0   # dm[0, 0]
-    c[7] = 1.0   # dm[1, 1]
+    c[3] = 1.0  # dm[0, 0]
+    c[7] = 1.0  # dm[1, 1]
     c[11] = 1.0  # dm[2, 2]
     # interior
     c[12] = cc
@@ -268,8 +268,7 @@ def test_point_position_batch_multiple_points():
 def test_point_position_batch_nonzero_targets():
     """Finite target coords still yield finite positions."""
     all_targets = np.array(
-        [[[1.0, 2.0], [-1.0, 2.0]],
-         [[0.5, 0.5], [-0.5, 0.5]]],
+        [[[1.0, 2.0], [-1.0, 2.0]], [[0.5, 0.5], [-0.5, 0.5]]],
         dtype=np.float64,
     )
     cal_arrays = _two_cams()
@@ -290,20 +289,42 @@ def _blank(h: int = 25, w: int = 25, bg: int = 0):
     return img, img0
 
 
-def _call_targ_rec(img, img0, *, gvthres=10, discont=5,
-                   nnmin=1, nnmax=100, nxmin=1, nxmax=20,
-                   nymin=1, nymax=20, sumg_min=0,
-                   xmin=2, ymin=2, xmax=22, ymax=22, max_targets=50):
+def _call_targ_rec(
+    img,
+    img0,
+    *,
+    gvthres=10,
+    discont=5,
+    nnmin=1,
+    nnmax=100,
+    nxmin=1,
+    nxmax=20,
+    nymin=1,
+    nymax=20,
+    sumg_min=0,
+    xmin=2,
+    ymin=2,
+    xmax=22,
+    ymax=22,
+    max_targets=50,
+):
     """Convenience wrapper with sensible defaults for a 25×25 image."""
     return targ_rec_fast(
-        img, img0,
-        gvthres=gvthres, discont=discont,
-        nnmin=nnmin, nnmax=nnmax,
-        nxmin=nxmin, nxmax=nxmax,
-        nymin=nymin, nymax=nymax,
+        img,
+        img0,
+        gvthres=gvthres,
+        discont=discont,
+        nnmin=nnmin,
+        nnmax=nnmax,
+        nxmin=nxmin,
+        nxmax=nxmax,
+        nymin=nymin,
+        nymax=nymax,
         sumg_min=sumg_min,
-        xmin=xmin, ymin=ymin,
-        xmax=xmax, ymax=ymax,
+        xmin=xmin,
+        ymin=ymin,
+        xmax=xmax,
+        ymax=ymax,
         max_targets=max_targets,
     )
 
@@ -323,7 +344,7 @@ def test_targ_rec_all_zero_image():
 def test_targ_rec_at_threshold_skipped():
     """gv == gvthres (not strictly above) → outer if skips the pixel."""
     img, img0 = _blank()
-    img[10, 10] = 10    # gvthres=10 → gv <= gvthres → skip
+    img[10, 10] = 10  # gvthres=10 → gv <= gvthres → skip
     img0[:] = img
     n, *_ = _call_targ_rec(img, img0)
     assert n == 0
@@ -336,10 +357,10 @@ def test_targ_rec_not_local_max():
     candidate at j=10 is considered.
     """
     img, img0 = _blank()
-    img[10, 10] = 50    # candidate
-    img[10, 11] = 60    # right neighbour higher → gv >= img[i, j+1] fails
+    img[10, 10] = 50  # candidate
+    img[10, 11] = 60  # right neighbour higher → gv >= img[i, j+1] fails
     img0[:] = img
-    n, *_ = _call_targ_rec(img, img0, xmax=11)   # j=11 outside scan window
+    n, *_ = _call_targ_rec(img, img0, xmax=11)  # j=11 outside scan window
     assert n == 0
 
 
@@ -349,10 +370,10 @@ def test_targ_rec_not_local_max_left():
     xmin=10 excludes j=9 from scanning as a peak.
     """
     img, img0 = _blank()
-    img[10, 10] = 50    # candidate
-    img[10, 9] = 60     # left higher; gv >= img[i, j-1] fails at j=10
+    img[10, 10] = 50  # candidate
+    img[10, 9] = 60  # left higher; gv >= img[i, j-1] fails at j=10
     img0[:] = img
-    n, *_ = _call_targ_rec(img, img0, xmin=10)   # j=9 outside scan window
+    n, *_ = _call_targ_rec(img, img0, xmin=10)  # j=9 outside scan window
     assert n == 0
 
 
@@ -362,10 +383,10 @@ def test_targ_rec_not_local_max_above():
     ymin=10 excludes i=9 from scanning as a peak.
     """
     img, img0 = _blank()
-    img[10, 10] = 50    # candidate
-    img[9, 10] = 60     # upper neighbour higher
+    img[10, 10] = 50  # candidate
+    img[9, 10] = 60  # upper neighbour higher
     img0[:] = img
-    n, *_ = _call_targ_rec(img, img0, ymin=10)   # i=9 outside scan window
+    n, *_ = _call_targ_rec(img, img0, ymin=10)  # i=9 outside scan window
     assert n == 0
 
 
@@ -375,10 +396,10 @@ def test_targ_rec_not_local_max_below():
     ymax=11 excludes i=11 from scanning as a peak.
     """
     img, img0 = _blank()
-    img[10, 10] = 50    # candidate
-    img[11, 10] = 60    # lower neighbour higher
+    img[10, 10] = 50  # candidate
+    img[11, 10] = 60  # lower neighbour higher
     img0[:] = img
-    n, *_ = _call_targ_rec(img, img0, ymax=11)   # i=11 outside scan window
+    n, *_ = _call_targ_rec(img, img0, ymax=11)  # i=11 outside scan window
     assert n == 0
 
 
@@ -388,10 +409,10 @@ def test_targ_rec_not_local_max_diagonal():
     ymin=10 excludes i=9 from scanning as its own peak.
     """
     img, img0 = _blank()
-    img[10, 10] = 50    # candidate
-    img[9, 9] = 60      # upper-left diagonal higher
+    img[10, 10] = 50  # candidate
+    img[9, 9] = 60  # upper-left diagonal higher
     img0[:] = img
-    n, *_ = _call_targ_rec(img, img0, ymin=10)   # i=9 outside scan window
+    n, *_ = _call_targ_rec(img, img0, ymin=10)  # i=9 outside scan window
     assert n == 0
 
 
@@ -400,7 +421,7 @@ def test_targ_rec_img0_zeroed_at_peak():
     img, img0 = _blank()
     img[10, 10] = 100
     img0[:] = img
-    img0[10, 10] = 0    # already consumed → skip
+    img0[10, 10] = 0  # already consumed → skip
     n, *_ = _call_targ_rec(img, img0)
     assert n == 0
 
@@ -430,9 +451,22 @@ def test_targ_rec_large_sumg_does_not_overflow_uint8():
     with warnings.catch_warnings():
         warnings.simplefilter("error")  # any overflow warning fails the test
         n, xs, ys, ns, nxs, nys, sumgs = _call_targ_rec(
-            img, img0, gvthres=5, discont=10,
-            nnmin=1, nnmax=2000, nxmin=1, nxmax=40, nymin=1, nymax=40,
-            sumg_min=0, xmin=1, ymin=1, xmax=39, ymax=39, max_targets=10,
+            img,
+            img0,
+            gvthres=5,
+            discont=10,
+            nnmin=1,
+            nnmax=2000,
+            nxmin=1,
+            nxmax=40,
+            nymin=1,
+            nymax=40,
+            sumg_min=0,
+            xmin=1,
+            ymin=1,
+            xmax=39,
+            ymax=39,
+            max_targets=10,
         )
     assert n == 1
     assert sumgs[0] > 255  # proves sumg was never narrowed to fit uint8
@@ -501,42 +535,42 @@ def test_targ_rec_single_isolated_peak():
 def test_targ_rec_bfs_expands_horizontally():
     """Two adjacent pixels (horizontal) → BFS merges → xb > xa, numpix=2."""
     img, img0 = _blank()
-    img[10, 10] = 100   # peak
-    img[10, 11] = 80    # right neighbour (lower)
+    img[10, 10] = 100  # peak
+    img[10, 11] = 80  # right neighbour (lower)
     img0[:] = img
     n, out_x, out_y, out_n, out_nx, out_ny, out_sumg = _call_targ_rec(img, img0)
     assert n == 1
-    assert out_n[0] == 2    # two pixels merged
-    assert out_nx[0] == 2   # width = 2
+    assert out_n[0] == 2  # two pixels merged
+    assert out_nx[0] == 2  # width = 2
 
 
 def test_targ_rec_bfs_expands_vertically():
     """Two adjacent pixels (vertical) → BFS merges → yb > ya, numpix=2."""
     img, img0 = _blank()
     img[10, 10] = 100
-    img[11, 10] = 80    # lower neighbour
+    img[11, 10] = 80  # lower neighbour
     img0[:] = img
     n, out_x, out_y, out_n, out_nx, out_ny, out_sumg = _call_targ_rec(img, img0)
     assert n == 1
     assert out_n[0] == 2
-    assert out_ny[0] == 2   # height = 2
+    assert out_ny[0] == 2  # height = 2
 
 
 def test_targ_rec_bfs_cross_shape():
     """5-pixel cross → BFS expands in all 4 directions; xa<x_peak, xb>x_peak, etc."""
     img, img0 = _blank()
     # cross centred at (12, 12)
-    img[12, 12] = 200   # peak
-    img[12, 11] = 80    # left  → xa updated
-    img[12, 13] = 80    # right → xb updated
-    img[11, 12] = 80    # up    → ya updated
-    img[13, 12] = 80    # down  → yb updated
+    img[12, 12] = 200  # peak
+    img[12, 11] = 80  # left  → xa updated
+    img[12, 13] = 80  # right → xb updated
+    img[11, 12] = 80  # up    → ya updated
+    img[13, 12] = 80  # down  → yb updated
     img0[:] = img
     n, out_x, out_y, out_n, out_nx, out_ny, out_sumg = _call_targ_rec(img, img0)
     assert n == 1
     assert out_n[0] == 5
-    assert out_nx[0] == 3   # width spans 11..13
-    assert out_ny[0] == 3   # height spans 11..13
+    assert out_nx[0] == 3  # width spans 11..13
+    assert out_ny[0] == 3  # height spans 11..13
 
 
 def test_targ_rec_multiple_isolated_peaks():
@@ -547,12 +581,21 @@ def test_targ_rec_multiple_isolated_peaks():
     img[20, 12] = 200
     img0[:] = img
     n, *_ = targ_rec_fast(
-        img, img0,
-        gvthres=10, discont=5,
-        nnmin=1, nnmax=100,
-        nxmin=1, nxmax=15, nymin=1, nymax=15,
+        img,
+        img0,
+        gvthres=10,
+        discont=5,
+        nnmin=1,
+        nnmax=100,
+        nxmin=1,
+        nxmax=15,
+        nymin=1,
+        nymax=15,
         sumg_min=0,
-        xmin=2, ymin=2, xmax=28, ymax=28,
+        xmin=2,
+        ymin=2,
+        xmax=28,
+        ymax=28,
         max_targets=10,
     )
     assert n == 3
@@ -565,12 +608,21 @@ def test_targ_rec_max_targets_break():
     img[20, 20] = 200
     img0[:] = img
     n, *_ = targ_rec_fast(
-        img, img0,
-        gvthres=10, discont=5,
-        nnmin=1, nnmax=100,
-        nxmin=1, nxmax=20, nymin=1, nymax=20,
+        img,
+        img0,
+        gvthres=10,
+        discont=5,
+        nnmin=1,
+        nnmax=100,
+        nxmin=1,
+        nxmax=20,
+        nymin=1,
+        nymax=20,
         sumg_min=0,
-        xmin=2, ymin=2, xmax=28, ymax=28,
+        xmin=2,
+        ymin=2,
+        xmax=28,
+        ymax=28,
         max_targets=1,
     )
     assert n == 1
@@ -579,8 +631,8 @@ def test_targ_rec_max_targets_break():
 def test_targ_rec_bfs_discont_blocks_growth():
     """Neighbour pixel differs from ref by more than discont → BFS stops."""
     img, img0 = _blank()
-    img[10, 10] = 200   # peak, gvref = 200
-    img[10, 11] = 11    # gv4 = 11 > gvthres=10 ✓
+    img[10, 10] = 200  # peak, gvref = 200
+    img[10, 11] = 11  # gv4 = 11 > gvthres=10 ✓
     #   gv4 <= gvref + discont = 205 ✓
     #   BUT gvref + discont >= img[yn4-1, xn4] = img[9, 11] = 0 ✓
     #   AND gvref + discont >= img[yn4+1, xn4] = img[11, 11] = 0 ✓
@@ -589,12 +641,21 @@ def test_targ_rec_bfs_discont_blocks_growth():
     # So this particular neighbour still merges. To block it we need discont=0:
     img0[:] = img
     n, out_x, out_y, out_n, *_ = targ_rec_fast(
-        img, img0,
-        gvthres=10, discont=0,  # discont=0 → gv4 <= gvref + 0 → 11 <= 200 still true
-        nnmin=1, nnmax=100,
-        nxmin=1, nxmax=20, nymin=1, nymax=20,
+        img,
+        img0,
+        gvthres=10,
+        discont=0,  # discont=0 → gv4 <= gvref + 0 → 11 <= 200 still true
+        nnmin=1,
+        nnmax=100,
+        nxmin=1,
+        nxmax=20,
+        nymin=1,
+        nymax=20,
         sumg_min=0,
-        xmin=2, ymin=2, xmax=22, ymax=22,
+        xmin=2,
+        ymin=2,
+        xmax=22,
+        ymax=22,
         max_targets=50,
     )
     # With discont=0, the peak (200) will be the BFS root; its neighbours have
@@ -616,9 +677,9 @@ def test_targ_rec_bfs_strict_discont_blocks():
       M is its own local max (40 >= 30) → detected as separate 1-pixel target.
     """
     img, img0 = _blank()
-    img[10, 10] = 50    # peak P; BFS root
-    img[10, 11] = 30    # N: merges into P cluster
-    img[10, 12] = 40    # M: blocked from N (40 > 35); own peak → n=2
+    img[10, 10] = 50  # peak P; BFS root
+    img[10, 11] = 30  # N: merges into P cluster
+    img[10, 12] = 40  # M: blocked from N (40 > 35); own peak → n=2
     img0[:] = img
     n, out_x, out_y, out_n, *_ = _call_targ_rec(img, img0)
     # P+N form one 2-pixel cluster; M is a separate 1-pixel target
@@ -632,7 +693,7 @@ def test_targ_rec_bfs_bounds_guard():
     img, img0 = _blank()
     # Place peak at the edge of the search window; neighbours are partially
     # outside → bounds guard fires → they are skipped.
-    img[2, 2] = 200     # row=ymin=2, col=xmin=2
+    img[2, 2] = 200  # row=ymin=2, col=xmin=2
     img0[:] = img
     n, *_ = _call_targ_rec(img, img0, xmin=2, ymin=2)
     # We just verify it runs without index errors
@@ -662,16 +723,25 @@ def test_targ_rec_bfs_large_blob():
     img[15:22, 15:22] = 200  # 7×7 = 49 pixels
     img0[:] = img
     n, out_x, out_y, out_n, out_nx, out_ny, out_sumg = targ_rec_fast(
-        img, img0,
-        gvthres=10, discont=250,   # large discont → BFS expands freely
-        nnmin=1, nnmax=500,
-        nxmin=1, nxmax=30, nymin=1, nymax=30,
+        img,
+        img0,
+        gvthres=10,
+        discont=250,  # large discont → BFS expands freely
+        nnmin=1,
+        nnmax=500,
+        nxmin=1,
+        nxmax=30,
+        nymin=1,
+        nymax=30,
         sumg_min=0,
-        xmin=2, ymin=2, xmax=38, ymax=38,
+        xmin=2,
+        ymin=2,
+        xmax=38,
+        ymax=38,
         max_targets=5,
     )
     assert n >= 1
-    assert out_n[0] >= 10   # large cluster
+    assert out_n[0] >= 10  # large cluster
     assert out_sumg[0] > 0
 
 
@@ -681,12 +751,21 @@ def test_targ_rec_bfs_nnmax_limits_counting():
     img[15:22, 15:22] = 200  # large blob; BFS caps at nnmax+1 pixels
     img0[:] = img
     n, out_x, out_y, out_n, *_ = targ_rec_fast(
-        img, img0,
-        gvthres=10, discont=250,
-        nnmin=1, nnmax=3,
-        nxmin=1, nxmax=30, nymin=1, nymax=30,
+        img,
+        img0,
+        gvthres=10,
+        discont=250,
+        nnmin=1,
+        nnmax=3,
+        nxmin=1,
+        nxmax=30,
+        nymin=1,
+        nymax=30,
         sumg_min=0,
-        xmin=2, ymin=2, xmax=38, ymax=38,
+        xmin=2,
+        ymin=2,
+        xmax=38,
+        ymax=38,
         max_targets=5,
     )
     # Target may be detected (numpix <= nnmax=3 check passes if merged exactly 3)
@@ -703,10 +782,17 @@ def test_init_mmlut_shape():
     """Output length == nr * nz."""
     nr, nz = 5, 7
     data = init_mmlut_data_fast(
-        nr=nr, nz=nz, rw=2.0,
-        cal_t_x0=0.0, cal_t_y0=0.0, cal_t_z0=100.0,
+        nr=nr,
+        nz=nz,
+        rw=2.0,
+        cal_t_x0=0.0,
+        cal_t_y0=0.0,
+        cal_t_z0=100.0,
         Zmin_t=-20.0,
-        mm_n1=1.0, mm_n2_0=1.0, mm_n3=1.0, mm_d0=0.0,
+        mm_n1=1.0,
+        mm_n2_0=1.0,
+        mm_n3=1.0,
+        mm_d0=0.0,
     )
     assert data.shape == (nr * nz,)
 
@@ -715,10 +801,17 @@ def test_init_mmlut_trivial_media_all_ones():
     """n1=n2=n3=1.0 → _multimed_r_nlay_1layer returns 1.0 for every cell."""
     nr, nz = 4, 6
     data = init_mmlut_data_fast(
-        nr=nr, nz=nz, rw=1.0,
-        cal_t_x0=0.0, cal_t_y0=0.0, cal_t_z0=100.0,
+        nr=nr,
+        nz=nz,
+        rw=1.0,
+        cal_t_x0=0.0,
+        cal_t_y0=0.0,
+        cal_t_z0=100.0,
         Zmin_t=-5.0,
-        mm_n1=1.0, mm_n2_0=1.0, mm_n3=1.0, mm_d0=0.0,
+        mm_n1=1.0,
+        mm_n2_0=1.0,
+        mm_n3=1.0,
+        mm_d0=0.0,
     )
     assert np.all(data == 1.0)
 
@@ -727,10 +820,17 @@ def test_init_mmlut_r0_cells_return_one():
     """First row (i=0) with cal_t_x0=0 → R=0, r=0 → returns 1.0 per cell."""
     nr, nz = 3, 4
     data = init_mmlut_data_fast(
-        nr=nr, nz=nz, rw=5.0,
-        cal_t_x0=0.0, cal_t_y0=0.0, cal_t_z0=100.0,
+        nr=nr,
+        nz=nz,
+        rw=5.0,
+        cal_t_x0=0.0,
+        cal_t_y0=0.0,
+        cal_t_z0=100.0,
         Zmin_t=-5.0,
-        mm_n1=1.0, mm_n2_0=1.49, mm_n3=1.33, mm_d0=5.0,
+        mm_n1=1.0,
+        mm_n2_0=1.49,
+        mm_n3=1.33,
+        mm_d0=5.0,
     )
     # Row 0: R = 0*5 + 0 = 0; pos_y = cal_t_y0 = 0; r = 0 → early 1.0 return
     assert data[0] == pytest.approx(1.0)
@@ -743,10 +843,17 @@ def test_init_mmlut_real_media_finite():
     """Water/glass media → values are finite for all grid cells."""
     nr, nz = 5, 8
     data = init_mmlut_data_fast(
-        nr=nr, nz=nz, rw=2.0,
-        cal_t_x0=5.0, cal_t_y0=0.0, cal_t_z0=100.0,
+        nr=nr,
+        nz=nz,
+        rw=2.0,
+        cal_t_x0=5.0,
+        cal_t_y0=0.0,
+        cal_t_z0=100.0,
         Zmin_t=-10.0,
-        mm_n1=1.0, mm_n2_0=1.49, mm_n3=1.33, mm_d0=5.0,
+        mm_n1=1.0,
+        mm_n2_0=1.49,
+        mm_n3=1.33,
+        mm_d0=5.0,
     )
     assert data.shape == (nr * nz,)
     assert np.all(np.isfinite(data))
@@ -756,10 +863,17 @@ def test_init_mmlut_nonzero_x0():
     """Non-zero cal_t_x0 shifts the R-grid; still fills correctly."""
     nr, nz = 3, 3
     data = init_mmlut_data_fast(
-        nr=nr, nz=nz, rw=1.0,
-        cal_t_x0=10.0, cal_t_y0=0.0, cal_t_z0=100.0,
+        nr=nr,
+        nz=nz,
+        rw=1.0,
+        cal_t_x0=10.0,
+        cal_t_y0=0.0,
+        cal_t_z0=100.0,
         Zmin_t=0.0,
-        mm_n1=1.0, mm_n2_0=1.0, mm_n3=1.0, mm_d0=0.0,
+        mm_n1=1.0,
+        mm_n2_0=1.0,
+        mm_n3=1.0,
+        mm_d0=0.0,
     )
     assert data.shape == (9,)
     assert np.all(data == 1.0)
@@ -768,10 +882,17 @@ def test_init_mmlut_nonzero_x0():
 def test_init_mmlut_1x1_grid():
     """Smallest valid grid: nr=1, nz=1."""
     data = init_mmlut_data_fast(
-        nr=1, nz=1, rw=1.0,
-        cal_t_x0=0.0, cal_t_y0=0.0, cal_t_z0=100.0,
+        nr=1,
+        nz=1,
+        rw=1.0,
+        cal_t_x0=0.0,
+        cal_t_y0=0.0,
+        cal_t_z0=100.0,
         Zmin_t=0.0,
-        mm_n1=1.0, mm_n2_0=1.49, mm_n3=1.33, mm_d0=5.0,
+        mm_n1=1.0,
+        mm_n2_0=1.49,
+        mm_n3=1.33,
+        mm_d0=5.0,
     )
     assert data.shape == (1,)
 
@@ -780,10 +901,17 @@ def test_init_mmlut_iterative_path():
     """Non-trivial R forces iterative solver; values differ from 1.0."""
     nr, nz = 4, 4
     data = init_mmlut_data_fast(
-        nr=nr, nz=nz, rw=10.0,
-        cal_t_x0=5.0, cal_t_y0=0.0, cal_t_z0=100.0,
+        nr=nr,
+        nz=nz,
+        rw=10.0,
+        cal_t_x0=5.0,
+        cal_t_y0=0.0,
+        cal_t_z0=100.0,
         Zmin_t=-20.0,
-        mm_n1=1.0, mm_n2_0=1.49, mm_n3=1.33, mm_d0=5.0,
+        mm_n1=1.0,
+        mm_n2_0=1.49,
+        mm_n3=1.33,
+        mm_d0=5.0,
     )
     # At least some cells should differ from 1.0 (non-degenerate geometry)
     assert not np.all(data == 1.0)

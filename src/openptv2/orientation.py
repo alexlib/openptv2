@@ -98,9 +98,7 @@ def full_calibration(cal, ref_pts, img_pts, cpar, flags=None):
     else:
         img_array = img_pts
 
-    return _full_calibration(
-        cal, ref_pts, img_array, cpar, flags
-    )
+    return _full_calibration(cal, ref_pts, img_array, cpar, flags)
 
 
 def match_detection_to_ref(cal, ref_pts, img_pts, cpar, eps=25):
@@ -125,9 +123,7 @@ def match_detection_to_ref(cal, ref_pts, img_pts, cpar, eps=25):
     else:
         targets = img_pts
 
-    matched = _match_detection_to_ref(
-        cal, ref_pts, targets, cpar, eps
-    )
+    matched = _match_detection_to_ref(cal, ref_pts, targets, cpar, eps)
 
     # Wrap result in TargetArray
     from openptv2.tracking_framebuf import TargetArray
@@ -163,9 +159,7 @@ def multi_cam_point_positions(targets, cpar, cals):
     # Unwrap calibrations
     unwrapped_cals = list(cals)
 
-    return _multi_cam_point_positions(
-        unwrapped_targets, cpar, unwrapped_cals
-    )
+    return _multi_cam_point_positions(unwrapped_targets, cpar, unwrapped_cals)
 
 
 def point_positions(targets, cpar, cals, vpar=None):
@@ -200,9 +194,7 @@ def point_positions(targets, cpar, cals, vpar=None):
     # Unwrap volume params
     unwrapped_vpar = vpar if vpar is not None else None
 
-    return _point_positions(
-        unwrapped_targets, cpar, unwrapped_cals, unwrapped_vpar
-    )
+    return _point_positions(unwrapped_targets, cpar, unwrapped_cals, unwrapped_vpar)
 
 
 def single_cam_point_positions(targets, cpar, cals, vpar):
@@ -234,9 +226,7 @@ def single_cam_point_positions(targets, cpar, cals, vpar):
     # Unwrap calibrations
     unwrapped_cals = list(cals)
 
-    return _single_cam_point_positions(
-        unwrapped_targets, cpar, unwrapped_cals, vpar
-    )
+    return _single_cam_point_positions(unwrapped_targets, cpar, unwrapped_cals, vpar)
 
 
 def dumbbell_target_func(targets, cpar, cals, db_length, db_weight):

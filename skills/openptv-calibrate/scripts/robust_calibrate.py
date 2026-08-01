@@ -42,6 +42,7 @@ Usage:
     uv run python skills/openptv-calibrate/scripts/robust_calibrate.py <dataset> --target 0.8 --min-keep 0.5
     uv run python skills/openptv-calibrate/scripts/robust_calibrate.py <dataset> --mad 2.5
 """
+
 from __future__ import annotations
 
 import argparse
@@ -84,8 +85,10 @@ def _fit(cal_path_ori, cal_path_addpar, fix, sp, cpar):
 
 def _mask_sp(sp, keep):
     """Rebuild the sorted-pix list with only kept indices matched."""
-    return [t if (t.pnr >= 0 and keep.get(i, False)) else Target(pnr=-999)
-            for i, t in enumerate(sp)]
+    return [
+        t if (t.pnr >= 0 and keep.get(i, False)) else Target(pnr=-999)
+        for i, t in enumerate(sp)
+    ]
 
 
 def robust_camera(cam, base, cpar, fix, nfix, eps, target, min_keep, mad_k):
@@ -103,7 +106,7 @@ def robust_camera(cam, base, cpar, fix, nfix, eps, target, min_keep, mad_k):
     # baseline fit over all matched points
     cal_all = _fit(ori, addpar, fix, sp, cpar)
     r0, _, _ = _residuals(cal_all, cpar, fix, sp)
-    n_all, rms_all = len(r0), float(np.sqrt((r0 ** 2).mean()))
+    n_all, rms_all = len(r0), float(np.sqrt((r0**2).mean()))
 
     keep = {i: True for i in matched_idx}
     n0 = len(matched_idx)
@@ -127,37 +130,55 @@ def robust_camera(cam, base, cpar, fix, nfix, eps, target, min_keep, mad_k):
             cal = _fit(ori, addpar, fix, sp_in, cpar)
             r, det, _ = _residuals(cal, cpar, fix, sp_in)
             idx_in = [i for i, t in enumerate(sp_in) if t.pnr >= 0]
-            if np.sqrt((r ** 2).mean()) <= target or len(idx_in) <= min_keep * n0:
+            if np.sqrt((r**2).mean()) <= target or len(idx_in) <= min_keep * n0:
                 break
             worst = idx_in[int(np.argmax(r))]
             keep[worst] = False
 
     n_in = len(r)
-    rms_in = float(np.sqrt((r ** 2).mean()))
+    rms_in = float(np.sqrt((r**2).mean()))
     d = np.hypot(det[:, 0] - cpar.imx / 2, det[:, 1] - cpar.imy / 2)
     core = float(np.sqrt((r[d < 120] ** 2).mean())) if (d < 120).any() else float("nan")
     cov_x = (det[:, 0].max() - det[:, 0].min()) / cpar.imx
     cov_y = (det[:, 1].max() - det[:, 1].min()) / cpar.imy
-    msg = (f"cam{cam + 1}: all {n_all}/{rms_all:.3f}px -> inliers {n_in}/{rms_in:.3f}px  "
-           f"(dropped {n_all - n_in})  core={core:.3f}  cover={cov_x:.2f}x{cov_y:.2f}")
+    msg = (
+        f"cam{cam + 1}: all {n_all}/{rms_all:.3f}px -> inliers {n_in}/{rms_in:.3f}px  "
+        f"(dropped {n_all - n_in})  core={core:.3f}  cover={cov_x:.2f}x{cov_y:.2f}"
+    )
     return (cal, ori, addpar), msg
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description=__doc__,
-                                 formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     ap.add_argument("dataset")
-    ap.add_argument("--target", type=float, default=1.0,
-                    help="sub-pixel inlier RMS goal in px (greedy mode, default 1.0)")
-    ap.add_argument("--min-keep", type=float, default=0.60,
-                    help="never keep fewer than this fraction of matched points (default 0.60)")
-    ap.add_argument("--mad", type=float, default=None,
-                    help="use one-shot median+K*MAD rejection instead of greedy target-RMS")
-    ap.add_argument("--dry-run", action="store_true", help="report without writing .ori/.addpar")
+    ap.add_argument(
+        "--target",
+        type=float,
+        default=1.0,
+        help="sub-pixel inlier RMS goal in px (greedy mode, default 1.0)",
+    )
+    ap.add_argument(
+        "--min-keep",
+        type=float,
+        default=0.60,
+        help="never keep fewer than this fraction of matched points (default 0.60)",
+    )
+    ap.add_argument(
+        "--mad",
+        type=float,
+        default=None,
+        help="use one-shot median+K*MAD rejection instead of greedy target-RMS",
+    )
+    ap.add_argument(
+        "--dry-run", action="store_true", help="report without writing .ori/.addpar"
+    )
     args = ap.parse_args()
 
     base = Path(args.dataset).resolve()
     import os
+
     os.chdir(base)
 
     yaml_path = _find_yaml(base)
@@ -165,6 +186,7 @@ def main() -> int:
         print(f"ERROR: no parameters_*.yaml found in {base}", file=sys.stderr)
         return 1
     import yaml
+
     y = yaml.safe_load(yaml_path.read_text())
     num_cams = int(y.get("num_cams") or y["ptv"].get("num_cams"))
     cpar = _cpar_from_ptv(y["ptv"], num_cams)
@@ -173,13 +195,16 @@ def main() -> int:
     calblock = resolve_calblock(base)
     fix, nfix = read_calblock(str(calblock))
 
-    print(f"nfix={nfix}  radius(eps)={eps}  "
-          f"mode={'MAD K=%s' % args.mad if args.mad is not None else 'target %.2fpx' % args.target}"
-          f"  min-keep={args.min_keep:.0%}")
+    print(
+        f"nfix={nfix}  radius(eps)={eps}  "
+        f"mode={'MAD K=%s' % args.mad if args.mad is not None else 'target %.2fpx' % args.target}"
+        f"  min-keep={args.min_keep:.0%}"
+    )
     writes = []
     for cam in range(num_cams):
-        res, msg = robust_camera(cam, base, cpar, fix, nfix, eps,
-                                 args.target, args.min_keep, args.mad)
+        res, msg = robust_camera(
+            cam, base, cpar, fix, nfix, eps, args.target, args.min_keep, args.mad
+        )
         print(msg)
         if res is not None:
             writes.append(res)
@@ -191,9 +216,13 @@ def main() -> int:
             shutil.copy2(ori, str(ori) + ".robustbck")
             shutil.copy2(addpar, str(addpar) + ".robustbck")
             cal.write(str(ori), str(addpar))
-        print(f"\nWrote {len(writes)} refined calibrations (originals backed up as *.robustbck).")
-        print("Verify: re-run reproject_on_combined.py -- the FULL calblock should still "
-              "land on the dots even for a trimmed camera.")
+        print(
+            f"\nWrote {len(writes)} refined calibrations (originals backed up as *.robustbck)."
+        )
+        print(
+            "Verify: re-run reproject_on_combined.py -- the FULL calblock should still "
+            "land on the dots even for a trimmed camera."
+        )
     return 0
 
 

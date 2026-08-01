@@ -22,6 +22,7 @@ from openptv2.algorithms.parameters import ControlPar, MmNp, VolumePar
 
 EPS = 1e-6
 
+
 def test_init_mmLUT():
     ori_file = "test_data/calibration/cam2.tif.ori"
     add_file = "test_data/calibration/cam2.tif.addpar"
@@ -50,37 +51,54 @@ def test_init_mmLUT():
 
     assert cal.mmlut.rw == 2
 
+
 def test_back_trans_Point():
     pos = np.array([100.0, 100.0, 0.0])
 
     ext = Exterior(
-        x0=0.0, y0=0.0, z0=100.0,
-        omega=0.0, phi=0.0, kappa=0.0,
-        dm=np.array([
-            [1.0, 0.2, -0.3],
-            [0.2, 1.0, 0.0],
-            [-0.3, 0.0, 1.0]
-        ])
+        x0=0.0,
+        y0=0.0,
+        z0=100.0,
+        omega=0.0,
+        phi=0.0,
+        kappa=0.0,
+        dm=np.array([[1.0, 0.2, -0.3], [0.2, 1.0, 0.0], [-0.3, 0.0, 1.0]]),
     )
 
     glass_dir = np.array([0.0001, 0.00001, 1.0])
     mm = MmNp(nlay=1, n1=1.0, n2=[1.49, 0.0, 0.0], d=[5.0, 0.0, 0.0], n3=1.33)
 
     pos_t, cross_p, cross_c, z0 = trans_cam_point(
-        pos, ext.x0, ext.y0, ext.z0,
-        glass_dir[0], glass_dir[1], glass_dir[2],
-        mm.n1, mm.n2[0], mm.n3, mm.d[0]
+        pos,
+        ext.x0,
+        ext.y0,
+        ext.z0,
+        glass_dir[0],
+        glass_dir[1],
+        glass_dir[2],
+        mm.n1,
+        mm.n2[0],
+        mm.n3,
+        mm.d[0],
     )
 
     pos1 = back_trans_point(
-        pos_t, cross_p, cross_c,
-        glass_dir[0], glass_dir[1], glass_dir[2],
-        mm.n1, mm.n2[0], mm.n3, mm.d[0]
+        pos_t,
+        cross_p,
+        cross_c,
+        glass_dir[0],
+        glass_dir[1],
+        glass_dir[2],
+        mm.n1,
+        mm.n2[0],
+        mm.n3,
+        mm.d[0],
     )
 
     assert abs(pos1[0] - pos[0]) < EPS
     assert abs(pos1[1] - pos[1]) < EPS
     assert abs(pos1[2] - pos[2]) < EPS
+
 
 def test_volumedimension():
     ori_file1 = "test_data/calibration/cam1.tif.ori"
@@ -108,6 +126,7 @@ def test_volumedimension():
     assert abs(zmax - 100.0000) < EPS
     assert abs(zmin + 100.0000) < EPS
 
+
 def test_volumedimension_ignores_nan_camera():
     """Regression test: one camera whose corner ray hits total internal
     reflection (ray_tracing legitimately returns NaN, e.g. an oblique pose
@@ -122,11 +141,14 @@ def test_volumedimension_ignores_nan_camera():
     """
     import openptv2.algorithms.ray_tracing as ray_tracing_module
 
-    def fake_ray_tracing(x, y, ext_dm, ext_x0, ext_y0, ext_z0, int_cc,
-                          gx, gy, gz, n1, n2, n3, d):
+    def fake_ray_tracing(
+        x, y, ext_dm, ext_x0, ext_y0, ext_z0, int_cc, gx, gy, gz, n1, n2, n3, d
+    ):
         if ext_x0 == 999.0:  # sentinel: the "bad" camera, processed first
-            return (np.array([np.nan, np.nan, np.nan]),
-                     np.array([np.nan, np.nan, np.nan]))
+            return (
+                np.array([np.nan, np.nan, np.nan]),
+                np.array([np.nan, np.nan, np.nan]),
+            )
         return np.array([0.0, 0.0, 50.0]), np.array([0.0, 0.0, -1.0])
 
     orig = ray_tracing_module.ray_tracing
@@ -144,8 +166,14 @@ def test_volumedimension_ignores_nan_camera():
             glass_par=Glass(vec_x=0.0, vec_y=0.0, vec_z=50.0),
             added_par=AddedPar(),
         )
-        cpar = ControlPar(num_cams=2, imx=512, imy=512, pix_x=0.02, pix_y=0.02,
-                          mm=MmNp(nlay=1, n1=1.0, n2=[1.49], n3=1.41, d=[7.5]))
+        cpar = ControlPar(
+            num_cams=2,
+            imx=512,
+            imy=512,
+            pix_x=0.02,
+            pix_y=0.02,
+            mm=MmNp(nlay=1, n1=1.0, n2=[1.49], n3=1.41, d=[7.5]),
+        )
         vpar = VolumePar(X_lay=[-20, 80], Zmin_lay=[-100, -100], Zmax_lay=[0, 0])
 
         xmax, xmin, ymax, ymin, zmax, zmin = volumedimension(
@@ -173,7 +201,8 @@ def test_get_mmf_mmLUT():
     mmf = get_mmf_from_mmlut(
         pos, cal.mmlut.origin, cal.mmlut.nr, cal.mmlut.nz, cal.mmlut.rw, cal.mmlut.data
     )
-    assert abs(mmf - 1.00382) < 1e-4 # In original test it's EPS but 1.00363 vs 1.00382
+    assert abs(mmf - 1.00382) < 1e-4  # In original test it's EPS but 1.00363 vs 1.00382
+
 
 def test_multimed_nlay():
     ori_file = "test_data/calibration/cam1.tif.ori"
@@ -195,8 +224,18 @@ def test_multimed_nlay():
     )
 
     Xq, Yq = multimed_nlay(
-        pos[0], pos[1], pos[2], cal.ext_par.x0, cal.ext_par.y0, cal.ext_par.z0,
-        cpar.mm.n1, cpar.mm.n2[0], cpar.mm.n3, cpar.mm.d[0], cpar.mm.nlay, mmf
+        pos[0],
+        pos[1],
+        pos[2],
+        cal.ext_par.x0,
+        cal.ext_par.y0,
+        cal.ext_par.z0,
+        cpar.mm.n1,
+        cpar.mm.n2[0],
+        cpar.mm.n3,
+        cpar.mm.d[0],
+        cpar.mm.nlay,
+        mmf,
     )
 
     assert abs(Xq - correct_Xq) < EPS
@@ -204,9 +243,16 @@ def test_multimed_nlay():
 
 
 def _multimed_r_nlay_reference(
-    pos_x, pos_y, pos_z,
-    ext_x0, ext_y0, ext_z0,
-    mm_n1, mm_n2, mm_n3, mm_d,
+    pos_x,
+    pos_y,
+    pos_z,
+    ext_x0,
+    ext_y0,
+    ext_z0,
+    mm_n1,
+    mm_n2,
+    mm_n3,
+    mm_d,
 ):
     zout = pos_z
     for i in range(1, len(mm_d)):
@@ -243,15 +289,29 @@ def test_multimed_r_nlay_iterative_uses_all_layers():
     mm_d = [5.0, 2.0]
 
     expected = _multimed_r_nlay_reference(
-        pos_x, pos_y, pos_z,
-        ext_x0, ext_y0, ext_z0,
-        mm_n1, mm_n2, mm_n3, mm_d,
+        pos_x,
+        pos_y,
+        pos_z,
+        ext_x0,
+        ext_y0,
+        ext_z0,
+        mm_n1,
+        mm_n2,
+        mm_n3,
+        mm_d,
     )
 
     actual = multimed_r_nlay_iterative(
-        pos_x, pos_y, pos_z,
-        ext_x0, ext_y0, ext_z0,
-        mm_n1, mm_n2[0], mm_n3, mm_d[0],
+        pos_x,
+        pos_y,
+        pos_z,
+        ext_x0,
+        ext_y0,
+        ext_z0,
+        mm_n1,
+        mm_n2[0],
+        mm_n3,
+        mm_d[0],
         mm_nlay=2,
         mm_n2=mm_n2,
         mm_d=mm_d,
@@ -319,9 +379,19 @@ def test_init_mmlut_data_nlay_fast_matches_iterative():
             R = i * rw + cal_t_x0
             Z = Zmin_t + j * rw
             ref = multimed_r_nlay_iterative(
-                R, cal_t_y0, Z, cal_t_x0, cal_t_y0, cal_t_z0,
-                n1, n2[0], n3, d[0], nlay,
-                mm_n2=list(n2), mm_d=list(d),
+                R,
+                cal_t_y0,
+                Z,
+                cal_t_x0,
+                cal_t_y0,
+                cal_t_z0,
+                n1,
+                n2[0],
+                n3,
+                d[0],
+                nlay,
+                mm_n2=list(n2),
+                mm_d=list(d),
             )
             assert abs(data[i * nz + j] - ref) < 1e-12, f"cell ({i},{j})"
 
@@ -374,22 +444,30 @@ def test_trans_Cam_Point():
     sep_norm = np.linalg.norm(pos)
 
     ext = Exterior(
-        x0=0.0, y0=0.0, z0=100.0,
-        omega=0.0, phi=0.0, kappa=0.0,
-        dm=np.array([
-            [1.0, 0.2, -0.3],
-            [0.2, 1.0, 0.0],
-            [-0.3, 0.0, 1.0]
-        ])
+        x0=0.0,
+        y0=0.0,
+        z0=100.0,
+        omega=0.0,
+        phi=0.0,
+        kappa=0.0,
+        dm=np.array([[1.0, 0.2, -0.3], [0.2, 1.0, 0.0], [-0.3, 0.0, 1.0]]),
     )
 
     glass_dir = np.array([0.0, 0.0, 50.0])
     mm = MmNp(nlay=1, n1=1.0, n2=[1.49, 0.0, 0.0], d=[5.0, 0.0, 0.0], n3=1.33)
 
     pos_t, cross_p, cross_c, z0 = trans_cam_point(
-        pos, ext.x0, ext.y0, ext.z0,
-        glass_dir[0], glass_dir[1], glass_dir[2],
-        mm.n1, mm.n2[0], mm.n3, mm.d[0]
+        pos,
+        ext.x0,
+        ext.y0,
+        ext.z0,
+        glass_dir[0],
+        glass_dir[1],
+        glass_dir[2],
+        mm.n1,
+        mm.n2[0],
+        mm.n3,
+        mm.d[0],
     )
 
     assert abs(pos_t[0] - sep_norm) < EPS
@@ -404,6 +482,6 @@ def test_trans_Cam_Point():
     assert abs(cross_c[1] + ext.y0) < EPS
     assert abs(cross_c[2] - (glass_dir[2] + mm.d[0])) < EPS
 
-    assert abs(0.0 - 0.0) < EPS # correct_Ex_t x0
-    assert abs(0.0 - 0.0) < EPS # correct_Ex_t y0
-    assert abs(50.0 - z0) < EPS # correct_Ex_t z0
+    assert abs(0.0 - 0.0) < EPS  # correct_Ex_t x0
+    assert abs(0.0 - 0.0) < EPS  # correct_Ex_t y0
+    assert abs(50.0 - z0) < EPS  # correct_Ex_t z0

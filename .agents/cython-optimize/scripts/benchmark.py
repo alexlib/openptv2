@@ -22,6 +22,7 @@ import the module under test — that's done automatically).
 If --compiled-module is omitted, only the plain-Python timing is reported
 (useful before you've built the extension yet, as a baseline).
 """
+
 import argparse
 import os
 import sys
@@ -53,27 +54,56 @@ def time_module(module_name, call_expr, setup_code, number, repeat):
 
 
 def main():
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--py-module", required=True, help="Importable name of the plain-Python module")
-    parser.add_argument("--compiled-module", default=None, help="Importable name of the compiled extension (optional)")
-    parser.add_argument("--setup", default="", help="Setup code defining variables used in --call")
-    parser.add_argument("--call", required=True, help="Expression to time, e.g. 'process(arg)'")
-    parser.add_argument("--number", type=int, default=10, help="Calls per timing sample")
-    parser.add_argument("--repeat", type=int, default=5, help="Number of timing samples (best is reported)")
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    parser.add_argument(
+        "--py-module", required=True, help="Importable name of the plain-Python module"
+    )
+    parser.add_argument(
+        "--compiled-module",
+        default=None,
+        help="Importable name of the compiled extension (optional)",
+    )
+    parser.add_argument(
+        "--setup", default="", help="Setup code defining variables used in --call"
+    )
+    parser.add_argument(
+        "--call", required=True, help="Expression to time, e.g. 'process(arg)'"
+    )
+    parser.add_argument(
+        "--number", type=int, default=10, help="Calls per timing sample"
+    )
+    parser.add_argument(
+        "--repeat",
+        type=int,
+        default=5,
+        help="Number of timing samples (best is reported)",
+    )
     args = parser.parse_args()
 
     print(f"Timing {args.py_module}.{args.call!r} ...")
-    py_best, py_samples = time_module(args.py_module, args.call, args.setup, args.number, args.repeat)
-    print(f"  plain Python: {py_best*1e3:.4f} ms/call (best of {args.repeat} runs of {args.number} calls)")
+    py_best, py_samples = time_module(
+        args.py_module, args.call, args.setup, args.number, args.repeat
+    )
+    print(
+        f"  plain Python: {py_best * 1e3:.4f} ms/call (best of {args.repeat} runs of {args.number} calls)"
+    )
 
     if args.compiled_module:
         print(f"Timing {args.compiled_module}.{args.call!r} ...")
-        c_best, c_samples = time_module(args.compiled_module, args.call, args.setup, args.number, args.repeat)
-        print(f"  compiled:     {c_best*1e3:.4f} ms/call (best of {args.repeat} runs of {args.number} calls)")
+        c_best, c_samples = time_module(
+            args.compiled_module, args.call, args.setup, args.number, args.repeat
+        )
+        print(
+            f"  compiled:     {c_best * 1e3:.4f} ms/call (best of {args.repeat} runs of {args.number} calls)"
+        )
         if c_best > 0:
             print(f"\nSpeedup: {py_best / c_best:.2f}x")
     else:
-        print("\n(no --compiled-module given — build the extension, then rerun with it to see the speedup)")
+        print(
+            "\n(no --compiled-module given — build the extension, then rerun with it to see the speedup)"
+        )
 
 
 if __name__ == "__main__":

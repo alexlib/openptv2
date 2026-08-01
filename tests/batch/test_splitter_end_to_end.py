@@ -56,9 +56,7 @@ def test_serial_and_parallel_splitter_runs_match(tmp_path):
     serial_yaml = _prepare_experiment(tmp_path, "serial")
     parallel_yaml = _prepare_experiment(tmp_path, "parallel")
 
-    images_before = sorted(
-        p.name for p in (serial_yaml.parent / "img").glob("*.tif")
-    )
+    images_before = sorted(p.name for p in (serial_yaml.parent / "img").glob("*.tif"))
 
     # No plugin flags anywhere: the YAML plugins.selected_* must drive both.
     run_batch(serial_yaml, FIRST, LAST, mode="sequence")
@@ -77,9 +75,7 @@ def test_serial_and_parallel_splitter_runs_match(tmp_path):
     assert found_any, "no correspondences found in any frame"
 
     # In-memory splitting: no split-view images may appear on disk.
-    images_after = sorted(
-        p.name for p in (serial_yaml.parent / "img").glob("*.tif")
-    )
+    images_after = sorted(p.name for p in (serial_yaml.parent / "img").glob("*.tif"))
     assert images_after == images_before
 
 

@@ -113,10 +113,7 @@ class TestImgCoordCompat:
 
     def test_image_coordinates(self):
         """Test 3D to 2D projection."""
-        cal = _load_cal(
-            str(CALIB_PATH) + ".ori",
-            str(CALIB_PATH) + ".addpar"
-        )
+        cal = _load_cal(str(CALIB_PATH) + ".ori", str(CALIB_PATH) + ".addpar")
         mm = MultimediaParams(n1=1.0, n3=1.0)
 
         # 3D points in front of camera
@@ -129,10 +126,7 @@ class TestImgCoordCompat:
 
     def test_flat_image_coordinates(self):
         """Test flat (undistorted) projection."""
-        cal = _load_cal(
-            str(CALIB_PATH) + ".ori",
-            str(CALIB_PATH) + ".addpar"
-        )
+        cal = _load_cal(str(CALIB_PATH) + ".ori", str(CALIB_PATH) + ".addpar")
         mm = MultimediaParams(n1=1.0, n3=1.0)
 
         positions = np.array([[0.0, 0.0, 100.0]])
@@ -220,20 +214,24 @@ class TestOrientationCompat:
         cpar.set_pixel_size((0.012, 0.012))
 
         # Use synthetic calibration target (4 corners)
-        ref_pts = np.array([
-            [0.0, 0.0, 0.0],
-            [100.0, 0.0, 0.0],
-            [100.0, 100.0, 0.0],
-            [0.0, 100.0, 0.0],
-        ])
+        ref_pts = np.array(
+            [
+                [0.0, 0.0, 0.0],
+                [100.0, 0.0, 0.0],
+                [100.0, 100.0, 0.0],
+                [0.0, 100.0, 0.0],
+            ]
+        )
 
         # Synthetic image points (rough projection)
-        img_pts = np.array([
-            [640.0, 512.0],
-            [740.0, 512.0],
-            [740.0, 612.0],
-            [640.0, 612.0],
-        ])
+        img_pts = np.array(
+            [
+                [640.0, 512.0],
+                [740.0, 512.0],
+                [740.0, 612.0],
+                [640.0, 612.0],
+            ]
+        )
 
         # Should run without error (may not converge with synthetic data)
         try:
@@ -251,11 +249,11 @@ class TestEpipolarCompat:
         """Test epipolar curve generation."""
         cal1 = _load_cal(
             str(TEST_DATA / "cal" / "cam1.tif") + ".ori",
-            str(TEST_DATA / "cal" / "cam1.tif") + ".addpar"
+            str(TEST_DATA / "cal" / "cam1.tif") + ".addpar",
         )
         cal2 = _load_cal(
             str(TEST_DATA / "cal" / "cam2.tif") + ".ori",
-            str(TEST_DATA / "cal" / "cam2.tif") + ".addpar"
+            str(TEST_DATA / "cal" / "cam2.tif") + ".addpar",
         )
 
         cpar = ControlParams(num_cams=4)

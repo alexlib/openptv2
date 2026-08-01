@@ -38,6 +38,8 @@ class TestEnsureResDirectoryReady:
             with pytest.MonkeyPatch.context() as monkeypatch:
                 monkeypatch.setattr(
                     "builtins.open",
-                    lambda *args, **kwargs: (_ for _ in ()).throw(PermissionError("denied")),
+                    lambda *args, **kwargs: (_ for _ in ()).throw(
+                        PermissionError("denied")
+                    ),
                 )
                 MainGUI.ensure_res_directory_ready(dummy_gui)

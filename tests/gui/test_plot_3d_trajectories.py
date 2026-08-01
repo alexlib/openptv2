@@ -43,7 +43,9 @@ def test_build_3d_trajectories_figure_count():
     traj2 = _make_dummy_trajectory(
         np.array([[5.0, 5.0, 5.0], [6.0, 6.0, 6.0], [7.0, 7.0, 7.0]]), trajid=2
     )
-    fig = build_3d_trajectories_figure([traj1, traj2], first_frame=10000, last_frame=10005)
+    fig = build_3d_trajectories_figure(
+        [traj1, traj2], first_frame=10000, last_frame=10005
+    )
     ax = fig.axes[0]
     assert len(ax.lines) == 2
     assert "2 trajectories" in ax.get_title()
@@ -82,7 +84,7 @@ def test_create_3d_trajectories_panel_clamping(tmp_path):
     with patch("flowtracks.io.trajectories_ptvis") as mock_ptvis:
         mock_ptvis.return_value = []
         # Requesting 100 frames (1 to 100)
-        panel = create_3d_trajectories_panel(tmp_path, first_frame=1, last_frame=100)
+        create_3d_trajectories_panel(tmp_path, first_frame=1, last_frame=100)
         # Should clamp last_frame to 1 + 49 = 50
         mock_ptvis.assert_called_once()
         _, kwargs = mock_ptvis.call_args
@@ -121,7 +123,9 @@ def test_visualize_3d_trajectories_success(tmp_path):
 
     with (
         patch("flowtracks.io.trajectories_ptvis", return_value=[traj]),
-        patch("openptv2.gui.plot_3d_trajectories.Plot3DTrajectories.configure_traits") as mock_config,
+        patch(
+            "openptv2.gui.plot_3d_trajectories.Plot3DTrajectories.configure_traits"
+        ) as mock_config,
     ):
         handler.visualize_3d_trajectories(mock_info)
         mock_config.assert_called_once()

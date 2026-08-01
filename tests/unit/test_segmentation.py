@@ -4,13 +4,36 @@ from openptv2.algorithms.segmentation import CORRES_NONE, targ_rec
 
 
 def test_peak_fit():
-    img = np.array([
-         0,   0,   0,   0, 0,
-         0, 255, 255, 255, 0,
-         0, 255, 255, 255, 0,
-         0, 255, 255, 255, 0,
-         0,   0,   0,   0, 0
-    ], dtype=np.uint8).reshape(5, 5)
+    img = np.array(
+        [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            255,
+            255,
+            255,
+            0,
+            0,
+            255,
+            255,
+            255,
+            0,
+            0,
+            255,
+            255,
+            255,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+        ],
+        dtype=np.uint8,
+    ).reshape(5, 5)
     # Parameters matching the C test
     gvthres = 250
     discont = 5
@@ -23,35 +46,63 @@ def test_peak_fit():
     sumg_min = 12
     # Run detection
     from openptv2.algorithms.segmentation import peak_fit
-    targets = peak_fit(img, gvthres, discont, nnmin, nnmax, nxmin, nxmax, nymin, nymax, sumg_min)
+
+    targets = peak_fit(
+        img, gvthres, discont, nnmin, nnmax, nxmin, nxmax, nymin, nymax, sumg_min
+    )
     assert len(targets) == 1
     assert targets[0].n == 9
 
     # Two objects
-    img1 = np.array([
-         0,   0,   0,   0, 0,
-         0, 255, 0, 0, 0,
-         0, 0, 0, 0, 0,
-         0, 0, 0, 251, 0,
-         0,   0,   0,   0, 0
-    ], dtype=np.uint8).reshape(5, 5)
+    img1 = np.array(
+        [0, 0, 0, 0, 0, 0, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 251, 0, 0, 0, 0, 0, 0],
+        dtype=np.uint8,
+    ).reshape(5, 5)
 
-    targets2 = peak_fit(img1, gvthres, discont, nnmin, nnmax, nxmin, nxmax, nymin, nymax, sumg_min)
+    targets2 = peak_fit(
+        img1, gvthres, discont, nnmin, nnmax, nxmin, nxmax, nymin, nymax, sumg_min
+    )
     assert len(targets2) == 2
 
     # Change threshold to exclude second object
     gvthres2 = 252
-    targets3 = peak_fit(img1, gvthres2, discont, nnmin, nnmax, nxmin, nxmax, nymin, nymax, sumg_min)
+    targets3 = peak_fit(
+        img1, gvthres2, discont, nnmin, nnmax, nxmin, nxmax, nymin, nymax, sumg_min
+    )
     assert len(targets3) == 1
 
+
 def test_targ_rec():
-    img = np.array([
-         0,   0,   0,   0, 0,
-         0, 255, 255, 255, 0,
-         0, 255, 255, 255, 0,
-         0, 255, 255, 255, 0,
-         0,   0,   0,   0, 0
-    ], dtype=np.uint8).reshape(5, 5)
+    img = np.array(
+        [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            255,
+            255,
+            255,
+            0,
+            0,
+            255,
+            255,
+            255,
+            0,
+            0,
+            255,
+            255,
+            255,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+        ],
+        dtype=np.uint8,
+    ).reshape(5, 5)
     # Parameters matching the C test
     gvthres = 250
     discont = 5
@@ -64,26 +115,29 @@ def test_targ_rec():
     sumg_min = 12
 
     # Run detection
-    targets = targ_rec(img, gvthres, discont, nnmin, nnmax, nxmin, nxmax, nymin, nymax, sumg_min)
+    targets = targ_rec(
+        img, gvthres, discont, nnmin, nnmax, nxmin, nxmax, nymin, nymax, sumg_min
+    )
     assert len(targets) == 1
     assert targets[0].n == 9
     assert targets[0].tnr == CORRES_NONE
 
     # Two objects
-    img1 = np.array([
-         0,   0,   0,   0, 0,
-         0, 255, 0, 0, 0,
-         0, 0, 0, 0, 0,
-         0, 0, 0, 251, 0,
-         0,   0,   0,   0, 0
-    ], dtype=np.uint8).reshape(5, 5)
+    img1 = np.array(
+        [0, 0, 0, 0, 0, 0, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 251, 0, 0, 0, 0, 0, 0],
+        dtype=np.uint8,
+    ).reshape(5, 5)
 
-    targets2 = targ_rec(img1, gvthres, discont, nnmin, nnmax, nxmin, nxmax, nymin, nymax, sumg_min)
+    targets2 = targ_rec(
+        img1, gvthres, discont, nnmin, nnmax, nxmin, nxmax, nymin, nymax, sumg_min
+    )
     assert len(targets2) == 2
 
     # Change threshold to exclude second object
     gvthres2 = 252
-    targets3 = targ_rec(img1, gvthres2, discont, nnmin, nnmax, nxmin, nxmax, nymin, nymax, sumg_min)
+    targets3 = targ_rec(
+        img1, gvthres2, discont, nnmin, nnmax, nxmin, nxmax, nymin, nymax, sumg_min
+    )
     assert len(targets3) == 1
 
 

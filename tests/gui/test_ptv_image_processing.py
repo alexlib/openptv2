@@ -37,9 +37,9 @@ class TestImageSplit:
         # Get the original quadrants (without custom ordering)
         original_quadrants = [
             img[: img.shape[0] // 2, : img.shape[1] // 2],  # top-left
-            img[: img.shape[0] // 2, img.shape[1] // 2:],   # top-right
-            img[img.shape[0] // 2:, : img.shape[1] // 2],   # bottom-left
-            img[img.shape[0] // 2:, img.shape[1] // 2:],    # bottom-right
+            img[: img.shape[0] // 2, img.shape[1] // 2 :],  # top-right
+            img[img.shape[0] // 2 :, : img.shape[1] // 2],  # bottom-left
+            img[img.shape[0] // 2 :, img.shape[1] // 2 :],  # bottom-right
         ]
 
         # Verify the custom order is applied correctly
@@ -85,12 +85,10 @@ class TestNegative:
 
     def test_negative_2d_image(self):
         """Test negative with 2D image"""
-        img = np.array([[0, 50, 100],
-                       [150, 200, 255]], dtype=np.uint8)
+        img = np.array([[0, 50, 100], [150, 200, 255]], dtype=np.uint8)
         result = negative(img)
 
-        expected = np.array([[255, 205, 155],
-                            [105, 55, 0]], dtype=np.uint8)
+        expected = np.array([[255, 205, 155], [105, 55, 0]], dtype=np.uint8)
         np.testing.assert_array_equal(result, expected)
 
 
@@ -107,7 +105,7 @@ class TestSimpleHighpass:
         """Test basic highpass filtering with mocked preprocess_image to avoid segfaults"""
         img = np.random.randint(0, 255, (50, 50), dtype=np.uint8)
 
-        with patch('openptv2.gui.ptv.preprocess_image') as mock_preprocess:
+        with patch("openptv2.gui.ptv.preprocess_image") as mock_preprocess:
             # Mock the preprocessing to return a safe result
             expected_result = np.zeros((50, 50), dtype=np.uint8)
             mock_preprocess.return_value = expected_result
@@ -125,11 +123,11 @@ class TestSimpleHighpass:
         """Test that simple_highpass has the correct function signature"""
         img = np.random.randint(100, 150, (30, 30), dtype=np.uint8)
 
-        with patch('openptv2.gui.ptv.preprocess_image') as mock_preprocess:
+        with patch("openptv2.gui.ptv.preprocess_image") as mock_preprocess:
             mock_preprocess.return_value = np.zeros((30, 30), dtype=np.uint8)
 
             # Test function can be called with expected arguments
-            result = simple_highpass(img, self.cpar)
+            simple_highpass(img, self.cpar)
 
             # Verify preprocess_image was called with the right parameters
             args, kwargs = mock_preprocess.call_args
@@ -141,9 +139,9 @@ class TestSimpleHighpass:
         """Test that simple_highpass uses the expected constants"""
         img = np.zeros((20, 20), dtype=np.uint8)
 
-        with patch('openptv2.gui.ptv.preprocess_image') as mock_preprocess:
-            with patch('openptv2.gui.ptv.DEFAULT_NO_FILTER', 0) as mock_no_filter:
-                with patch('openptv2.gui.ptv.DEFAULT_HIGHPASS_FILTER_SIZE', 7) as mock_filter_size:
+        with patch("openptv2.gui.ptv.preprocess_image") as mock_preprocess:
+            with patch("openptv2.gui.ptv.DEFAULT_NO_FILTER", 0):
+                with patch("openptv2.gui.ptv.DEFAULT_HIGHPASS_FILTER_SIZE", 7):
                     mock_preprocess.return_value = np.zeros((20, 20), dtype=np.uint8)
 
                     simple_highpass(img, self.cpar)

@@ -18,7 +18,19 @@ from openptv2.tracking_framebuf import TargetArray
 from . import ptv
 from .parameter_manager import ParameterManager
 
-NAMES: list[str] = ["cc", "xh", "yh", "k1", "k2", "k3", "p1", "p2", "scale", "shear", "interf"]
+NAMES: list[str] = [
+    "cc",
+    "xh",
+    "yh",
+    "k1",
+    "k2",
+    "k3",
+    "p1",
+    "p2",
+    "scale",
+    "shear",
+    "interf",
+]
 
 
 def _as_bool(v) -> bool:
@@ -44,7 +56,9 @@ def get_flags_from_yaml(pm: ParameterManager) -> list[str]:
     return [name for name in NAMES if _as_bool(orient.get(name, False))]
 
 
-def load_points_npz(npz_path: Path, *, num_cams: int) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+def load_points_npz(
+    npz_path: Path, *, num_cams: int
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Load correspondences from NPZ.
 
     Returns (xyz, xy, pnr)
@@ -180,7 +194,11 @@ def run_standalone_calibration(
     calibrations: list[Calibration] = []
 
     for cam in range(num_cams):
-        ori_path = (yaml_path.parent / ori_files[cam]).resolve() if not Path(ori_files[cam]).is_absolute() else Path(ori_files[cam])
+        ori_path = (
+            (yaml_path.parent / ori_files[cam]).resolve()
+            if not Path(ori_files[cam]).is_absolute()
+            else Path(ori_files[cam])
+        )
         cal = _load_or_init_calibration(ori_path)
 
         targs = targets_from_xy(xy[cam], pnr)

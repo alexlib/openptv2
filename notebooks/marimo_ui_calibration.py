@@ -8,7 +8,7 @@
 #     "scikit-image==0.26.0",
 #     "imageio",
 #     "pyyaml",
-#     "openptv2==0.2.1",
+#     "openptv2==0.2.2",
 #     "scipy==1.18.0",
 # ]
 # ///

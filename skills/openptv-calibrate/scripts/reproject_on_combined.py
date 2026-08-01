@@ -17,6 +17,7 @@ every new rig).
 Run with:
   uv run python skills/openptv-calibrate/scripts/reproject_on_combined.py <dataset> <path-to-combined.tif>
 """
+
 from __future__ import annotations
 
 import sys
@@ -68,9 +69,9 @@ def verify_splitter_order(base: Path, combined_path: Path, num_cams: int) -> Non
     }
     yaml_path = base / "parameters_Run1.yaml"
     cfg = yaml.safe_load(yaml_path.read_text()) if yaml_path.exists() else {}
-    candidates["current (from splitter_order)"] = (
-        (cfg.get("ptv", {}) or {}).get("splitter_order") or [0, 1, 3, 2]
-    )
+    candidates["current (from splitter_order)"] = (cfg.get("ptv", {}) or {}).get(
+        "splitter_order"
+    ) or [0, 1, 3, 2]
 
     for label, order in candidates.items():
         quads = image_split(combined_img, order=order)
@@ -91,12 +92,15 @@ def verify_splitter_order(base: Path, combined_path: Path, num_cams: int) -> Non
 def main():
     import imageio.v3 as iio
     import matplotlib
+
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
 
     if len(sys.argv) < 3:
-        print("Usage: reproject_on_combined.py <dataset> <path-to-combined.tif> [--verify-order]",
-              file=sys.stderr)
+        print(
+            "Usage: reproject_on_combined.py <dataset> <path-to-combined.tif> [--verify-order]",
+            file=sys.stderr,
+        )
         return 1
 
     base = Path(sys.argv[1]).resolve()
@@ -125,15 +129,28 @@ def main():
         pts = np.array([_reproject_px(cal, cpar.mm, p, cpar) for p in fix])
         ids = np.arange(1, len(fix) + 1)  # fix rows are in sequential-ID order
         # keep only points that land inside this camera's own quadrant frame
-        inside = (pts[:, 0] >= 0) & (pts[:, 0] < 512) & (pts[:, 1] >= 0) & (pts[:, 1] < 512)
+        inside = (
+            (pts[:, 0] >= 0) & (pts[:, 0] < 512) & (pts[:, 1] >= 0) & (pts[:, 1] < 512)
+        )
         pts, ids = pts[inside], ids[inside]
 
         x, y = pts[:, 0] + col_off, pts[:, 1] + row_off
-        ax.scatter(x, y, s=10, c=colors[cam % len(colors)],
-                   label=f"cam{cam + 1} ({quadrants[cam]})")
+        ax.scatter(
+            x,
+            y,
+            s=10,
+            c=colors[cam % len(colors)],
+            label=f"cam{cam + 1} ({quadrants[cam]})",
+        )
         for pid, px, py in zip(ids, x, y):
-            ax.annotate(str(pid), (px, py), fontsize=5, color=colors[cam % len(colors)],
-                       textcoords="offset points", xytext=(2, 2))
+            ax.annotate(
+                str(pid),
+                (px, py),
+                fontsize=5,
+                color=colors[cam % len(colors)],
+                textcoords="offset points",
+                xytext=(2, 2),
+            )
 
     # quadrant boundary lines
     ax.axhline(512, color="white", lw=0.8, alpha=0.6)

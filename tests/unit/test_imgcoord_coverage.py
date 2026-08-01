@@ -58,6 +58,7 @@ EPS = 1e-6
 # Shared fixtures / helpers
 # ---------------------------------------------------------------------------
 
+
 def _air_mm():
     """All-air multimedia params (no refraction)."""
     return MmNp(nlay=1, n1=1.0, n2=[1.0, 0.0, 0.0], d=[1.0, 0.0, 0.0], n3=1.0)
@@ -76,8 +77,12 @@ def _basic_cal(glass_z=20.0, xh=0.0, yh=0.0):
     """Camera at (0,0,40) looking down (identity rotation); glass at z=glass_z."""
     cal = Calibration()
     cal.ext_par = Exterior(
-        x0=0.0, y0=0.0, z0=40.0,
-        omega=0.0, phi=0.0, kappa=0.0,
+        x0=0.0,
+        y0=0.0,
+        z0=40.0,
+        omega=0.0,
+        phi=0.0,
+        kappa=0.0,
         dm=_identity_dm(),
     )
     cal.int_par = Interior(xh=xh, yh=yh, cc=10.0)
@@ -111,6 +116,7 @@ def _cal_with_mmlut(factor: float):
 # is_compiled
 # ---------------------------------------------------------------------------
 
+
 def test_is_compiled_false():
     assert _is_compiled() is False
 
@@ -118,6 +124,7 @@ def test_is_compiled_false():
 # ---------------------------------------------------------------------------
 # _flat_to_dist_core — internal cfunc, accessible in pure-Python
 # ---------------------------------------------------------------------------
+
 
 def test_flat_to_dist_core_near_zero():
     """r < 1e-10 → early return (0.0, 0.0)."""
@@ -138,7 +145,9 @@ def test_flat_to_dist_core_radial():
     """k1 distortion shrinks the projected radius."""
     k1 = -0.01
     flat_x, flat_y = 1.0, 0.0
-    x1, y1 = _flat_to_dist_core(flat_x, flat_y, 0.0, 0.0, k1, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0)
+    x1, y1 = _flat_to_dist_core(
+        flat_x, flat_y, 0.0, 0.0, k1, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0
+    )
     r2 = flat_x**2 + flat_y**2
     expected = flat_x * (1.0 + k1 * r2)
     assert abs(x1 - expected) < EPS
@@ -173,6 +182,7 @@ def test_flat_to_dist_core_scx():
 # _get_mmf_from_mmlut_core — internal cfunc, accessible in pure-Python
 # ---------------------------------------------------------------------------
 
+
 def _make_lut_data(nr, nz, fill=1.0):
     return np.full(nr * nz, fill, dtype=np.float64)
 
@@ -182,9 +192,15 @@ def test_get_mmf_ir_out_of_range():
     data = _make_lut_data(2, 3)
     # R / rw > nr: pos_x very large
     result = _get_mmf_from_mmlut_core(
-        1000.0, 0.0, 0.0,   # pos: R >> nr*rw
-        0.0, 0.0, 0.0,      # origin
-        2, 3, 1.0,          # nr, nz, rw
+        1000.0,
+        0.0,
+        0.0,  # pos: R >> nr*rw
+        0.0,
+        0.0,
+        0.0,  # origin
+        2,
+        3,
+        1.0,  # nr, nz, rw
         data,
     )
     assert result == 0.0
@@ -194,9 +210,15 @@ def test_get_mmf_iz_negative():
     """iz < 0 → return 0.0.  tz/rw < 0 gives negative iz."""
     data = _make_lut_data(2, 3)
     result = _get_mmf_from_mmlut_core(
-        0.0, 0.0, -1.0,    # pos_z=-1 → tz=-1, iz=int(-1)=-1
-        0.0, 0.0, 0.0,
-        2, 3, 1.0,
+        0.0,
+        0.0,
+        -1.0,  # pos_z=-1 → tz=-1, iz=int(-1)=-1
+        0.0,
+        0.0,
+        0.0,
+        2,
+        3,
+        1.0,
         data,
     )
     assert result == 0.0
@@ -206,9 +228,15 @@ def test_get_mmf_iz_out_of_range_high():
     """iz > mmlut_nz → return 0.0."""
     data = _make_lut_data(2, 3)
     result = _get_mmf_from_mmlut_core(
-        0.0, 0.0, 100.0,   # tz=100 → iz=100 >> nz=3
-        0.0, 0.0, 0.0,
-        2, 3, 1.0,
+        0.0,
+        0.0,
+        100.0,  # tz=100 → iz=100 >> nz=3
+        0.0,
+        0.0,
+        0.0,
+        2,
+        3,
+        1.0,
         data,
     )
     assert result == 0.0
@@ -223,9 +251,15 @@ def test_get_mmf_v4_2_out_of_range():
     # But wait: ir > mmlut_nr check: `ir > mmlut_nr` i.e. nr > nr == False.
     # So it proceeds to v4 checks.
     result = _get_mmf_from_mmlut_core(
-        float(nr), 0.0, 0.0,  # R = nr → sr = nr, ir = nr
-        0.0, 0.0, 0.0,
-        nr, nz, 1.0,
+        float(nr),
+        0.0,
+        0.0,  # R = nr → sr = nr, ir = nr
+        0.0,
+        0.0,
+        0.0,
+        nr,
+        nz,
+        1.0,
         data,
     )
     assert result == 0.0
@@ -238,9 +272,15 @@ def test_get_mmf_normal_bilinear():
     data = np.zeros(nr * nz, dtype=np.float64)
     data[0] = 0.5
     result = _get_mmf_from_mmlut_core(
-        0.0, 0.0, 0.0,
-        0.0, 0.0, 0.0,
-        nr, nz, 1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        nr,
+        nz,
+        1.0,
         data,
     )
     assert abs(result - 0.5) < EPS
@@ -251,15 +291,21 @@ def test_get_mmf_bilinear_interpolated():
     nr, nz = 3, 4
     data = np.zeros(nr * nz, dtype=np.float64)
     # ir=0, iz=0 → v4_0=0, v4_1=1, v4_2=4, v4_3=5
-    data[0] = 1.0   # (1-sr)*(1-sz)
-    data[1] = 2.0   # (1-sr)*sz
+    data[0] = 1.0  # (1-sr)*(1-sz)
+    data[1] = 2.0  # (1-sr)*sz
     data[nz] = 3.0  # sr*(1-sz)
     data[nz + 1] = 4.0  # sr*sz
     # sr = 0.5, sz = 0.5: result = 1*0.25 + 2*0.25 + 3*0.25 + 4*0.25 = 2.5
     result = _get_mmf_from_mmlut_core(
-        0.5, 0.0, 0.5,  # R=0.5 → sr=0.5; tz=0.5 → sz=0.5
-        0.0, 0.0, 0.0,
-        nr, nz, 1.0,
+        0.5,
+        0.0,
+        0.5,  # R=0.5 → sr=0.5; tz=0.5 → sz=0.5
+        0.0,
+        0.0,
+        0.0,
+        nr,
+        nz,
+        1.0,
         data,
     )
     assert abs(result - 2.5) < EPS
@@ -269,17 +315,35 @@ def test_get_mmf_bilinear_interpolated():
 # _flat_image_coord_core — internal cfunc
 # ---------------------------------------------------------------------------
 
+
 def test_flat_image_coord_core_zero_glass_denom_zero():
     """Zero glass vector, denom==0 → (0.0, 0.0)."""
     dm = _identity_dm()
     # Camera at (0,0,40), point at same position → dx=dy=dz=0 → denom=0
     x, y = _flat_image_coord_core(
-        0.0, 0.0, 40.0,    # pos == camera
-        0.0, 0.0, 40.0,    # ext_x0/y0/z0
-        dm, 10.0,
-        0.0, 0.0, 0.0,     # glass=0 → zero glass path
-        1.0, 1.0, 1.0, 1.0,
-        False, 0.0, 0.0, 0.0, 0, 0, 0.0, np.zeros(1, dtype=np.float64),
+        0.0,
+        0.0,
+        40.0,  # pos == camera
+        0.0,
+        0.0,
+        40.0,  # ext_x0/y0/z0
+        dm,
+        10.0,
+        0.0,
+        0.0,
+        0.0,  # glass=0 → zero glass path
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        False,
+        0.0,
+        0.0,
+        0.0,
+        0,
+        0,
+        0.0,
+        np.zeros(1, dtype=np.float64),
     )
     assert x == 0.0 and y == 0.0
 
@@ -291,12 +355,29 @@ def test_flat_image_coord_core_zero_glass_normal():
     # dx=10, dy=5, dz=-60; denom=dz=-60
     # x = -cc * dx / denom = -10*10/(-60) = 100/60
     x, y = _flat_image_coord_core(
-        10.0, 5.0, -20.0,
-        0.0, 0.0, 40.0,
-        dm, 10.0,
-        0.0, 0.0, 0.0,    # zero glass
-        1.0, 1.0, 1.0, 1.0,
-        False, 0.0, 0.0, 0.0, 0, 0, 0.0, np.zeros(1, dtype=np.float64),
+        10.0,
+        5.0,
+        -20.0,
+        0.0,
+        0.0,
+        40.0,
+        dm,
+        10.0,
+        0.0,
+        0.0,
+        0.0,  # zero glass
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        False,
+        0.0,
+        0.0,
+        0.0,
+        0,
+        0,
+        0.0,
+        np.zeros(1, dtype=np.float64),
     )
     assert abs(x - 10.0 / 6.0) < EPS
     assert abs(y - 5.0 / 6.0) < EPS
@@ -307,12 +388,29 @@ def test_flat_image_coord_core_with_glass_air():
     dm = _identity_dm()
     dummy_data = np.zeros(1, dtype=np.float64)
     x, y = _flat_image_coord_core(
-        10.0, 5.0, -20.0,
-        0.0, 0.0, 40.0,
-        dm, 10.0,
-        0.0, 0.0, 20.0,    # glass at z=20
-        1.0, 1.0, 1.0, 1.0,
-        False, 0.0, 0.0, 0.0, 0, 0, 0.0, dummy_data,
+        10.0,
+        5.0,
+        -20.0,
+        0.0,
+        0.0,
+        40.0,
+        dm,
+        10.0,
+        0.0,
+        0.0,
+        20.0,  # glass at z=20
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        False,
+        0.0,
+        0.0,
+        0.0,
+        0,
+        0,
+        0.0,
+        dummy_data,
     )
     assert abs(x - 10.0 / 6.0) < EPS
     assert abs(y - 5.0 / 6.0) < EPS
@@ -324,12 +422,29 @@ def test_flat_image_coord_core_with_glass_mmlut():
     nr, nz = 2, 3
     lut_data = np.ones(nr * nz, dtype=np.float64) * 0.8
     x, y = _flat_image_coord_core(
-        10.0, 5.0, -20.0,
-        0.0, 0.0, 40.0,
-        dm, 10.0,
-        0.0, 0.0, 20.0,
-        1.0, 1.0, 1.0, 1.0,
-        True, 0.0, 0.0, 0.0, nr, nz, 1.0, lut_data,
+        10.0,
+        5.0,
+        -20.0,
+        0.0,
+        0.0,
+        40.0,
+        dm,
+        10.0,
+        0.0,
+        0.0,
+        20.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        True,
+        0.0,
+        0.0,
+        0.0,
+        nr,
+        nz,
+        1.0,
+        lut_data,
     )
     # Result differs slightly from air case; just check it returns floats
     assert isinstance(x, float)
@@ -342,12 +457,29 @@ def test_flat_image_coord_core_mmlut_zero_mmf():
     nr, nz = 2, 3
     lut_data = np.zeros(nr * nz, dtype=np.float64)  # all zeros → mmf=0 → fallback
     x, y = _flat_image_coord_core(
-        10.0, 5.0, -20.0,
-        0.0, 0.0, 40.0,
-        dm, 10.0,
-        0.0, 0.0, 20.0,
-        1.0, 1.0, 1.0, 1.0,
-        True, 0.0, 0.0, 0.0, nr, nz, 1.0, lut_data,
+        10.0,
+        5.0,
+        -20.0,
+        0.0,
+        0.0,
+        40.0,
+        dm,
+        10.0,
+        0.0,
+        0.0,
+        20.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        True,
+        0.0,
+        0.0,
+        0.0,
+        nr,
+        nz,
+        1.0,
+        lut_data,
     )
     assert abs(x - 10.0 / 6.0) < EPS
     assert abs(y - 5.0 / 6.0) < EPS
@@ -359,12 +491,29 @@ def test_flat_image_coord_core_n_ve_zero():
     dummy_data = np.zeros(1, dtype=np.float64)
     # On-axis point (0,0, below glass) → tmp vector is zero → pos_t_0 = 0
     x, y = _flat_image_coord_core(
-        0.0, 0.0, -20.0,
-        0.0, 0.0, 40.0,
-        dm, 10.0,
-        0.0, 0.0, 20.0,
-        1.0, 1.0, 1.0, 1.0,
-        False, 0.0, 0.0, 0.0, 0, 0, 0.0, dummy_data,
+        0.0,
+        0.0,
+        -20.0,
+        0.0,
+        0.0,
+        40.0,
+        dm,
+        10.0,
+        0.0,
+        0.0,
+        20.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        False,
+        0.0,
+        0.0,
+        0.0,
+        0,
+        0,
+        0.0,
+        dummy_data,
     )
     assert abs(x) < EPS
     assert abs(y) < EPS
@@ -374,16 +523,25 @@ def test_flat_image_coord_core_n_ve_zero():
 # flat_image_coord — public ccall
 # ---------------------------------------------------------------------------
 
+
 def test_flat_image_coord_no_mmlut():
     pos = np.array([10.0, 5.0, -20.0])
     cal = _basic_cal()
     mm = _air_mm()
     x, y = flat_image_coord(
         pos,
-        cal.ext_par.x0, cal.ext_par.y0, cal.ext_par.z0,
-        cal.ext_par.dm, cal.int_par.cc,
-        cal.glass_par.vec_x, cal.glass_par.vec_y, cal.glass_par.vec_z,
-        mm.n1, mm.n2[0], mm.n3, mm.d[0],
+        cal.ext_par.x0,
+        cal.ext_par.y0,
+        cal.ext_par.z0,
+        cal.ext_par.dm,
+        cal.int_par.cc,
+        cal.glass_par.vec_x,
+        cal.glass_par.vec_y,
+        cal.glass_par.vec_z,
+        mm.n1,
+        mm.n2[0],
+        mm.n3,
+        mm.d[0],
     )
     assert abs(x - 10.0 / 6.0) < EPS
     assert abs(y - 5.0 / 6.0) < EPS
@@ -397,10 +555,18 @@ def test_flat_image_coord_with_mmlut():
     lut = _mmlut_with_factor(0.9)
     x, y = flat_image_coord(
         pos,
-        cal.ext_par.x0, cal.ext_par.y0, cal.ext_par.z0,
-        cal.ext_par.dm, cal.int_par.cc,
-        cal.glass_par.vec_x, cal.glass_par.vec_y, cal.glass_par.vec_z,
-        mm.n1, mm.n2[0], mm.n3, mm.d[0],
+        cal.ext_par.x0,
+        cal.ext_par.y0,
+        cal.ext_par.z0,
+        cal.ext_par.dm,
+        cal.int_par.cc,
+        cal.glass_par.vec_x,
+        cal.glass_par.vec_y,
+        cal.glass_par.vec_z,
+        mm.n1,
+        mm.n2[0],
+        mm.n3,
+        mm.d[0],
         mmlut=lut,
     )
     assert isinstance(x, float)
@@ -412,13 +578,21 @@ def test_flat_image_coord_mmlut_none_data():
     pos = np.array([10.0, 5.0, -20.0])
     cal = _basic_cal()
     mm = _air_mm()
-    empty_lut = MmLut()  # data=None → is_initialized=False → not passed
+    MmLut()  # data=None → is_initialized=False → not passed
     x, y = flat_image_coord(
         pos,
-        cal.ext_par.x0, cal.ext_par.y0, cal.ext_par.z0,
-        cal.ext_par.dm, cal.int_par.cc,
-        cal.glass_par.vec_x, cal.glass_par.vec_y, cal.glass_par.vec_z,
-        mm.n1, mm.n2[0], mm.n3, mm.d[0],
+        cal.ext_par.x0,
+        cal.ext_par.y0,
+        cal.ext_par.z0,
+        cal.ext_par.dm,
+        cal.int_par.cc,
+        cal.glass_par.vec_x,
+        cal.glass_par.vec_y,
+        cal.glass_par.vec_z,
+        mm.n1,
+        mm.n2[0],
+        mm.n3,
+        mm.d[0],
         mmlut=None,
     )
     assert abs(x - 10.0 / 6.0) < EPS
@@ -428,6 +602,7 @@ def test_flat_image_coord_mmlut_none_data():
 # img_coord — public function (two call paths)
 # ---------------------------------------------------------------------------
 
+
 def test_img_coord_explicit_params():
     """img_coord with all params explicit (ext_z0 is not None)."""
     pos = np.array([10.0, 5.0, -20.0])
@@ -435,14 +610,27 @@ def test_img_coord_explicit_params():
     mm = _air_mm()
     x, y = img_coord(
         pos,
-        cal.ext_par.x0, cal.ext_par.y0, cal.ext_par.z0,
-        cal.ext_par.dm, cal.int_par.cc,
-        cal.int_par.xh, cal.int_par.yh,
-        cal.glass_par.vec_x, cal.glass_par.vec_y, cal.glass_par.vec_z,
-        mm.n1, mm.n2[0], mm.n3, mm.d[0],
-        cal.added_par.k1, cal.added_par.k2, cal.added_par.k3,
-        cal.added_par.p1, cal.added_par.p2,
-        cal.added_par.scx, cal.added_par.she,
+        cal.ext_par.x0,
+        cal.ext_par.y0,
+        cal.ext_par.z0,
+        cal.ext_par.dm,
+        cal.int_par.cc,
+        cal.int_par.xh,
+        cal.int_par.yh,
+        cal.glass_par.vec_x,
+        cal.glass_par.vec_y,
+        cal.glass_par.vec_z,
+        mm.n1,
+        mm.n2[0],
+        mm.n3,
+        mm.d[0],
+        cal.added_par.k1,
+        cal.added_par.k2,
+        cal.added_par.k3,
+        cal.added_par.p1,
+        cal.added_par.p2,
+        cal.added_par.scx,
+        cal.added_par.she,
     )
     assert abs(x - 10.0 / 6.0) < EPS
     assert abs(y - 5.0 / 6.0) < EPS
@@ -474,12 +662,27 @@ def test_img_coord_list_input():
     mm = _air_mm()
     x, y = img_coord(
         [10.0, 5.0, -20.0],
-        cal.ext_par.x0, cal.ext_par.y0, cal.ext_par.z0,
-        cal.ext_par.dm, cal.int_par.cc,
-        cal.int_par.xh, cal.int_par.yh,
-        cal.glass_par.vec_x, cal.glass_par.vec_y, cal.glass_par.vec_z,
-        mm.n1, mm.n2[0], mm.n3, mm.d[0],
-        0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
+        cal.ext_par.x0,
+        cal.ext_par.y0,
+        cal.ext_par.z0,
+        cal.ext_par.dm,
+        cal.int_par.cc,
+        cal.int_par.xh,
+        cal.int_par.yh,
+        cal.glass_par.vec_x,
+        cal.glass_par.vec_y,
+        cal.glass_par.vec_z,
+        mm.n1,
+        mm.n2[0],
+        mm.n3,
+        mm.d[0],
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
     )
     assert abs(x - 10.0 / 6.0) < EPS
 
@@ -493,12 +696,27 @@ def test_img_coord_with_distortion():
     x_dist, y_dist = img_coord(pos, cal, mm)
     x_flat, _ = img_coord(
         pos,
-        cal.ext_par.x0, cal.ext_par.y0, cal.ext_par.z0,
-        cal.ext_par.dm, cal.int_par.cc,
-        0.0, 0.0,
-        cal.glass_par.vec_x, cal.glass_par.vec_y, cal.glass_par.vec_z,
-        mm.n1, mm.n2[0], mm.n3, mm.d[0],
-        0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
+        cal.ext_par.x0,
+        cal.ext_par.y0,
+        cal.ext_par.z0,
+        cal.ext_par.dm,
+        cal.int_par.cc,
+        0.0,
+        0.0,
+        cal.glass_par.vec_x,
+        cal.glass_par.vec_y,
+        cal.glass_par.vec_z,
+        mm.n1,
+        mm.n2[0],
+        mm.n3,
+        mm.d[0],
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
     )
     # With k1<0, distorted x < flat x (barrel)
     assert x_dist < x_flat
@@ -508,18 +726,34 @@ def test_img_coord_with_distortion():
 # _img_coord_params (tested indirectly but worth a direct call too)
 # ---------------------------------------------------------------------------
 
+
 def test_img_coord_params_direct():
     pos = np.ascontiguousarray([10.0, 5.0, -20.0], dtype=np.float64)
     cal = _basic_cal()
     mm = _air_mm()
     x, y = _img_coord_params(
         pos,
-        cal.ext_par.x0, cal.ext_par.y0, cal.ext_par.z0,
-        cal.ext_par.dm, cal.int_par.cc,
-        cal.int_par.xh, cal.int_par.yh,
-        cal.glass_par.vec_x, cal.glass_par.vec_y, cal.glass_par.vec_z,
-        mm.n1, mm.n2[0], mm.n3, mm.d[0],
-        0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
+        cal.ext_par.x0,
+        cal.ext_par.y0,
+        cal.ext_par.z0,
+        cal.ext_par.dm,
+        cal.int_par.cc,
+        cal.int_par.xh,
+        cal.int_par.yh,
+        cal.glass_par.vec_x,
+        cal.glass_par.vec_y,
+        cal.glass_par.vec_z,
+        mm.n1,
+        mm.n2[0],
+        mm.n3,
+        mm.d[0],
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
     )
     assert abs(x - 10.0 / 6.0) < EPS
 
@@ -531,12 +765,27 @@ def test_img_coord_params_with_mmlut():
     lut = _mmlut_with_factor(0.8)
     x, y = _img_coord_params(
         pos,
-        cal.ext_par.x0, cal.ext_par.y0, cal.ext_par.z0,
-        cal.ext_par.dm, cal.int_par.cc,
-        cal.int_par.xh, cal.int_par.yh,
-        cal.glass_par.vec_x, cal.glass_par.vec_y, cal.glass_par.vec_z,
-        mm.n1, mm.n2[0], mm.n3, mm.d[0],
-        0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
+        cal.ext_par.x0,
+        cal.ext_par.y0,
+        cal.ext_par.z0,
+        cal.ext_par.dm,
+        cal.int_par.cc,
+        cal.int_par.xh,
+        cal.int_par.yh,
+        cal.glass_par.vec_x,
+        cal.glass_par.vec_y,
+        cal.glass_par.vec_z,
+        mm.n1,
+        mm.n2[0],
+        mm.n3,
+        mm.d[0],
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
         mmlut=lut,
     )
     assert isinstance(x, float)
@@ -545,6 +794,7 @@ def test_img_coord_params_with_mmlut():
 # ---------------------------------------------------------------------------
 # img_coord_typed
 # ---------------------------------------------------------------------------
+
 
 def test_img_coord_typed_basic():
     pos = np.ascontiguousarray([10.0, 5.0, -20.0], dtype=np.float64)
@@ -567,6 +817,7 @@ def test_img_coord_typed_with_mmlut():
 # img_coord_batch — covers _img_coord_batch_impl branches
 # ---------------------------------------------------------------------------
 
+
 def test_img_coord_batch_single_point_air():
     """Batch with N=1, all-air: hits all-air fast path (radial_shift=1.0)."""
     positions = np.array([[10.0, 5.0, -20.0]], dtype=np.float64)
@@ -580,11 +831,14 @@ def test_img_coord_batch_single_point_air():
 
 def test_img_coord_batch_multiple_points():
     """N=3 points, all-air."""
-    positions = np.array([
-        [10.0, 5.0, -20.0],
-        [-5.0, 3.0, -20.0],
-        [0.0, 0.0, -20.0],
-    ], dtype=np.float64)
+    positions = np.array(
+        [
+            [10.0, 5.0, -20.0],
+            [-5.0, 3.0, -20.0],
+            [0.0, 0.0, -20.0],
+        ],
+        dtype=np.float64,
+    )
     cal = _basic_cal()
     mm = _air_mm()
     result = img_coord_batch(positions, cal, mm)
@@ -661,6 +915,7 @@ def test_img_coord_batch_mmlut_with_glass():
 # flat_image_coord_batch — covers _flat_image_coord_batch_impl branches
 # ---------------------------------------------------------------------------
 
+
 def test_flat_image_coord_batch_single_air():
     """Batch flat: N=1, all-air."""
     positions = np.array([[10.0, 5.0, -20.0]], dtype=np.float64)
@@ -674,11 +929,14 @@ def test_flat_image_coord_batch_single_air():
 
 def test_flat_image_coord_batch_multiple_points():
     """Batch flat: N=3."""
-    positions = np.array([
-        [10.0, 5.0, -20.0],
-        [-5.0, 3.0, -20.0],
-        [0.0, 0.0, -20.0],
-    ], dtype=np.float64)
+    positions = np.array(
+        [
+            [10.0, 5.0, -20.0],
+            [-5.0, 3.0, -20.0],
+            [0.0, 0.0, -20.0],
+        ],
+        dtype=np.float64,
+    )
     cal = _basic_cal()
     mm = _air_mm()
     result = flat_image_coord_batch(positions, cal, mm)
@@ -756,6 +1014,7 @@ def test_flat_image_coord_batch_mmlut_plus_glass():
 # Consistency cross-checks
 # ---------------------------------------------------------------------------
 
+
 def test_batch_matches_single_point():
     """img_coord_batch result matches img_coord for each point."""
     points = [
@@ -786,10 +1045,18 @@ def test_flat_batch_matches_single_point():
     for i, pt in enumerate(points):
         x, y = flat_image_coord(
             np.array(pt, dtype=np.float64),
-            cal.ext_par.x0, cal.ext_par.y0, cal.ext_par.z0,
-            cal.ext_par.dm, cal.int_par.cc,
-            cal.glass_par.vec_x, cal.glass_par.vec_y, cal.glass_par.vec_z,
-            mm.n1, mm.n2[0], mm.n3, mm.d[0],
+            cal.ext_par.x0,
+            cal.ext_par.y0,
+            cal.ext_par.z0,
+            cal.ext_par.dm,
+            cal.int_par.cc,
+            cal.glass_par.vec_x,
+            cal.glass_par.vec_y,
+            cal.glass_par.vec_z,
+            mm.n1,
+            mm.n2[0],
+            mm.n3,
+            mm.d[0],
         )
         assert abs(batch_result[i, 0] - x) < 1e-10
         assert abs(batch_result[i, 1] - y) < 1e-10
@@ -803,10 +1070,18 @@ def test_img_coord_vs_flat_with_no_distortion():
     x_img, y_img = img_coord(pos, cal, mm)
     x_flat, y_flat = flat_image_coord(
         pos,
-        cal.ext_par.x0, cal.ext_par.y0, cal.ext_par.z0,
-        cal.ext_par.dm, cal.int_par.cc,
-        cal.glass_par.vec_x, cal.glass_par.vec_y, cal.glass_par.vec_z,
-        mm.n1, mm.n2[0], mm.n3, mm.d[0],
+        cal.ext_par.x0,
+        cal.ext_par.y0,
+        cal.ext_par.z0,
+        cal.ext_par.dm,
+        cal.int_par.cc,
+        cal.glass_par.vec_x,
+        cal.glass_par.vec_y,
+        cal.glass_par.vec_z,
+        mm.n1,
+        mm.n2[0],
+        mm.n3,
+        mm.d[0],
     )
     assert abs(x_img - x_flat) < EPS
     assert abs(y_img - y_flat) < EPS

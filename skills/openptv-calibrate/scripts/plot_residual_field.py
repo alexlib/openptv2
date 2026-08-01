@@ -22,6 +22,7 @@ The SPATIAL PATTERN is the diagnostic, not any single number:
 Usage:
     uv run python skills/openptv-calibrate/scripts/plot_residual_field.py <dataset> [--scale 15]
 """
+
 from __future__ import annotations
 
 import argparse
@@ -34,6 +35,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "src"))
 def main() -> int:
     import matplotlib
     import numpy as np
+
     matplotlib.use("Agg")
     import imageio.v3 as iio
     import yaml
@@ -42,16 +44,24 @@ def main() -> int:
 
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("dataset")
-    ap.add_argument("--scale", type=float, default=15.0,
-                     help="arrow magnification factor (default 15x, purely visual)")
-    ap.add_argument("--output-dir", default=None,
-                     help="default: <dataset>/cal/calib_matches")
+    ap.add_argument(
+        "--scale",
+        type=float,
+        default=15.0,
+        help="arrow magnification factor (default 15x, purely visual)",
+    )
+    ap.add_argument(
+        "--output-dir", default=None, help="default: <dataset>/cal/calib_matches"
+    )
     args = ap.parse_args()
 
     base = Path(args.dataset).resolve()
     matches_dir = base / "cal" / "calib_matches"
     if not matches_dir.exists():
-        print(f"ERROR: {matches_dir} not found -- run dump_matches.py first", file=sys.stderr)
+        print(
+            f"ERROR: {matches_dir} not found -- run dump_matches.py first",
+            file=sys.stderr,
+        )
         return 1
 
     yaml_path = _find_yaml(base)
@@ -68,8 +78,11 @@ def main() -> int:
         if raw.ndim > 2:
             from skimage.color import rgb2gray
             from skimage.util import img_as_ubyte
+
             raw = img_as_ubyte(rgb2gray(raw[:, :, :3]))
-        split_views = image_split(raw, order=ptv_params.get("splitter_order") or [0, 1, 3, 2])
+        split_views = image_split(
+            raw, order=ptv_params.get("splitter_order") or [0, 1, 3, 2]
+        )
 
     outdir = Path(args.output_dir) if args.output_dir else matches_dir
 
@@ -92,9 +105,14 @@ def main() -> int:
 
         dest = outdir / f"cam{cam + 1}_residual_field.png"
         save_residual_field_figure(
-            det, rep, err, img, dest, scale=args.scale,
+            det,
+            rep,
+            err,
+            img,
+            dest,
+            scale=args.scale,
             title=f"cam{cam + 1}  residual vector field  (n={len(ids)}, "
-                  f"RMS={np.sqrt(np.mean(err**2)):.2f}px)",
+            f"RMS={np.sqrt(np.mean(err**2)):.2f}px)",
         )
         print(f"cam{cam + 1}: wrote {dest}")
 

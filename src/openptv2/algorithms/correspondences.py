@@ -9,10 +9,11 @@ Adjacency data is stored in flat typed memoryview arrays (not Python objects),
 so that the O(n^4) clique-finding loops compile to pure C pointer arithmetic.
 """
 
-import cython
 import operator
 
+import cython
 import numpy as np
+
 from .epi import MAXCAND
 
 NMAX = 20240
@@ -49,7 +50,6 @@ class NTupel:
 @cython.ccall
 def quicksort_target_y(pix):
     """Sort target list by y coordinate in place using Timsort."""
-    import operator
 
     pix.sort(key=operator.attrgetter("y"))
 
@@ -57,7 +57,6 @@ def quicksort_target_y(pix):
 @cython.ccall
 def quicksort_coord2d_x(crd):
     """Sort Coord2d list by x coordinate in place using Timsort."""
-    import operator
 
     crd.sort(key=operator.attrgetter("x"))
 
@@ -638,8 +637,7 @@ def take_best_candidates(
 def _correct_one_camera(cam, frm, calib, cpar, tol):
     """Process a single camera (module-level for pickling)."""
     from .epi import Coord2d
-    from .trafo import pixel_to_metric, dist_to_flat
-    import operator
+    from .trafo import dist_to_flat, pixel_to_metric
 
     cam_coords = []
     for part in range(frm.num_targets[cam]):
@@ -691,7 +689,7 @@ def correct_frame(frm, calib, cpar, tol):
             corrected.append(_correct_one_camera(cam, frm, calib, cpar, tol))
         return corrected
 
-    from concurrent.futures import ThreadPoolExecutor, as_completed
+    from concurrent.futures import ThreadPoolExecutor
 
     with ThreadPoolExecutor(max_workers=num_cams) as pool:
         futures = [

@@ -76,7 +76,10 @@ def get_benchmark_dataset(use_aorta: bool = False):
     Set use_aorta=True or environment variable USE_AORTA_BENCHMARK=1 for full aorta sample run.
     """
     import os
-    if (use_aorta or os.environ.get("USE_AORTA_BENCHMARK") == "1") and AORTA_SAMPLE_YAML.exists():
+
+    if (
+        use_aorta or os.environ.get("USE_AORTA_BENCHMARK") == "1"
+    ) and AORTA_SAMPLE_YAML.exists():
         return AORTA_SAMPLE_YAML, 1, 5, True
     return TEST_CAVITY_YAML, 10000, 10004, False
 
@@ -113,13 +116,13 @@ def test_tracking_preset_execution_and_benchmark(preset, tmp_path):
 
     # Outcome quality checks: verify that tracking produced healthy link yield and non-trivial trajectories
     MIN_EXPECTED_LINKS = 500
-    assert (
-        stats["total_links"] >= MIN_EXPECTED_LINKS
-    ), f"Preset {preset} lost too many links! Yielded only {stats['total_links']} links (expected >= {MIN_EXPECTED_LINKS})"
+    assert stats["total_links"] >= MIN_EXPECTED_LINKS, (
+        f"Preset {preset} lost too many links! Yielded only {stats['total_links']} links (expected >= {MIN_EXPECTED_LINKS})"
+    )
     assert stats["trajectories_count"] > 0, f"Preset {preset} yielded 0 trajectories"
-    assert (
-        stats["mean_length"] >= 1.2
-    ), f"Preset {preset} trajectory mean length too short: {stats['mean_length']} (expected >= 1.2)"
+    assert stats["mean_length"] >= 1.2, (
+        f"Preset {preset} trajectory mean length too short: {stats['mean_length']} (expected >= 1.2)"
+    )
 
     print(
         f"\n[BENCHMARK] Preset: {preset:18s} | Dataset: {'Aorta' if is_aorta else 'Cavity'} | "
@@ -127,7 +130,6 @@ def test_tracking_preset_execution_and_benchmark(preset, tmp_path):
         f"Trajectories: {stats['trajectories_count']} | Mean Len: {stats['mean_length']} | "
         f"Max Len: {stats['max_length']}"
     )
-
 
 
 def test_preset_comparison_summary_table(tmp_path, capsys):
@@ -169,13 +171,13 @@ def test_preset_comparison_summary_table(tmp_path, capsys):
 
 | Tracking Preset | Pipeline Description | Time (s) | Total Links | Trajectories Count | Mean Length | Max Length |
 | :--- | :--- | :---: | :---: | :---: | :---: | :---: |
-| **`fast_3d`** | Single-pass 3D Segment (`track_mode=1`) | {results['fast_3d']['time_sec']}s | {results['fast_3d']['total_links']:,} | {results['fast_3d']['trajectories_count']:,} | {results['fast_3d']['mean_length']} | {results['fast_3d']['max_length']} |
-| **`standard_forward`** | Single-pass Forward (`track_mode=0`) | {results['standard_forward']['time_sec']}s | {results['standard_forward']['total_links']:,} | {results['standard_forward']['trajectories_count']:,} | {results['standard_forward']['mean_length']} | {results['standard_forward']['max_length']} |
-| **`full_multipass`** | 3-Pass (Forward + Backward + Postprocess) | {results['full_multipass']['time_sec']}s | {results['full_multipass']['total_links']:,} | {results['full_multipass']['trajectories_count']:,} | {results['full_multipass']['mean_length']} | {results['full_multipass']['max_length']} |
+| **`fast_3d`** | Single-pass 3D Segment (`track_mode=1`) | {results["fast_3d"]["time_sec"]}s | {results["fast_3d"]["total_links"]:,} | {results["fast_3d"]["trajectories_count"]:,} | {results["fast_3d"]["mean_length"]} | {results["fast_3d"]["max_length"]} |
+| **`standard_forward`** | Single-pass Forward (`track_mode=0`) | {results["standard_forward"]["time_sec"]}s | {results["standard_forward"]["total_links"]:,} | {results["standard_forward"]["trajectories_count"]:,} | {results["standard_forward"]["mean_length"]} | {results["standard_forward"]["max_length"]} |
+| **`full_multipass`** | 3-Pass (Forward + Backward + Postprocess) | {results["full_multipass"]["time_sec"]}s | {results["full_multipass"]["total_links"]:,} | {results["full_multipass"]["trajectories_count"]:,} | {results["full_multipass"]["mean_length"]} | {results["full_multipass"]["max_length"]} |
 """
     print(table_md)
     assert len(results) == 3
     for p_name, p_stats in results.items():
-        assert (
-            p_stats["total_links"] >= 500
-        ), f"Preset {p_name} in summary comparison failed link retention: {p_stats['total_links']} links"
+        assert p_stats["total_links"] >= 500, (
+            f"Preset {p_name} in summary comparison failed link retention: {p_stats['total_links']} links"
+        )

@@ -4,13 +4,41 @@ import numpy as np
 
 if cython.compiled:
     from cython.cimports.libc.math import (
-        sqrt as c_sqrt, sin as c_sin, cos as c_cos, tan as c_tan,
-        asin as c_asin, acos as c_acos, atan as c_atan,
+        asin as c_asin,
+    )
+    from cython.cimports.libc.math import (
+        atan as c_atan,
+    )
+    from cython.cimports.libc.math import (
+        cos as c_cos,
+    )
+    from cython.cimports.libc.math import (
+        sin as c_sin,
+    )
+    from cython.cimports.libc.math import (
+        sqrt as c_sqrt,
+    )
+    from cython.cimports.libc.math import (
+        tan as c_tan,
     )
 else:
     from math import (
-        sqrt as c_sqrt, sin as c_sin, cos as c_cos, tan as c_tan,
-        asin as c_asin, acos as c_acos, atan as c_atan,
+        asin as c_asin,
+    )
+    from math import (
+        atan as c_atan,
+    )
+    from math import (
+        cos as c_cos,
+    )
+    from math import (
+        sin as c_sin,
+    )
+    from math import (
+        sqrt as c_sqrt,
+    )
+    from math import (
+        tan as c_tan,
     )
 
 

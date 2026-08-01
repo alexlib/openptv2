@@ -17,6 +17,7 @@ Always invoke via `uv run` from within the openptv2 checkout (so the project
 venv with the compiled algorithms is on the path):
     uv run python skills/openptv-calibrate/scripts/calib.py inspect <dataset> -h
 """
+
 from __future__ import annotations
 
 import argparse
@@ -26,8 +27,10 @@ from pathlib import Path
 
 # --- dataset layout ---------------------------------------------------------
 
+
 def _num_cams(base: Path) -> int:
     import yaml
+
     pref = base / "parameters_Run1.yaml"
     if pref.exists():
         try:
@@ -47,6 +50,7 @@ def _num_cams(base: Path) -> int:
         except Exception:
             pass
     from openptv2.algorithms.parameters import ControlPar
+
     ptv_path = base / "parameters" / "ptv.par"
     if ptv_path.exists():
         return ControlPar.from_file(ptv_path).num_cams
@@ -81,6 +85,7 @@ def cmd_inspect(args) -> int:
         report["problems"].append(f"missing 3D calibration body {calblock}")
 
     import yaml
+
     has_sortgrid = (par / "sortgrid.par").exists()
     yaml_path = None
     pref = base / "parameters_Run1.yaml"
@@ -123,8 +128,12 @@ def cmd_inspect(args) -> int:
     report["has_targets"] = have_targets
     report["has_initial_guess"] = have_init
     report["ready_headless"] = bool(
-        num_cams and calblock.exists() and report["sortgrid_par"]
-        and have_seed and have_targets and have_init
+        num_cams
+        and calblock.exists()
+        and report["sortgrid_par"]
+        and have_seed
+        and have_targets
+        and have_init
     )
     if not have_init:
         report["problems"].append(
@@ -145,16 +154,19 @@ def cmd_inspect(args) -> int:
 
     Path(args.output).write_text(json.dumps(report, indent=2))
     print(f"Success! Inspection written to: {args.output}")
-    print(f"ready_headless={report['ready_headless']}  "
-          f"problems={len(report['problems'])}")
+    print(
+        f"ready_headless={report['ready_headless']}  problems={len(report['problems'])}"
+    )
     return 0
 
 
 # --- shared helpers ---------------------------------------------------------
 
+
 def _calblock_path(base: Path) -> Path:
     """Resolve calblock path: YAML fixp_name first, then legacy names."""
     import yaml
+
     for yp in sorted(base.glob("parameters_*.yaml")):
         try:
             y = yaml.safe_load(yp.read_text()) or {}
@@ -168,11 +180,15 @@ def _calblock_path(base: Path) -> Path:
         p = base / "cal" / name
         if p.exists():
             return p
-    return base / "cal" / "target_on_a_side.txt"  # canonical missing path for error messages
+    return (
+        base / "cal" / "target_on_a_side.txt"
+    )  # canonical missing path for error messages
+
 
 def _calblock_map(base: Path):
     """Return (ids, xyz) for the 3D calibration body."""
     import numpy as np
+
     data = np.loadtxt(_calblock_path(base), ndmin=2)
     return data[:, 0].astype(int), data[:, 1:4]
 
@@ -194,17 +210,24 @@ def _draw_body_map(ax, ids, xyz, highlight=None) -> None:
     """Body point IDs in openptv2 axes: X left→right, Y bottom→top."""
     ax.scatter(xyz[:, 0], xyz[:, 1], s=25, c="k")
     for pid, p in zip(ids, xyz):
-        ax.annotate(str(pid), (p[0], p[1]), fontsize=6,
-                    textcoords="offset points", xytext=(2, 2))
+        ax.annotate(
+            str(pid),
+            (p[0], p[1]),
+            fontsize=6,
+            textcoords="offset points",
+            xytext=(2, 2),
+        )
     if highlight is not None:
         hp = xyz[list(ids).index(highlight)]
-        ax.scatter([hp[0]], [hp[1]], s=220, facecolors="none",
-                   edgecolors="red", linewidths=2.0)
+        ax.scatter(
+            [hp[0]], [hp[1]], s=220, facecolors="none", edgecolors="red", linewidths=2.0
+        )
     ax.set_xlabel("X  (left → right)")
     ax.set_ylabel("Y  (bottom → top)")
     ax.set_aspect("equal")
-    ax.set_title("3D body point IDs" if highlight is None
-                 else f"click point ID {highlight}")
+    ax.set_title(
+        "3D body point IDs" if highlight is None else f"click point ID {highlight}"
+    )
 
 
 def _reproject_grid(cal, cpar, xyz):
@@ -213,11 +236,15 @@ def _reproject_grid(cal, cpar, xyz):
 
     from openptv2.algorithms.imgcoord import img_coord
     from openptv2.algorithms.trafo import metric_to_pixel
+
     out = []
     for p in xyz:
         xp, yp = img_coord(p, cal, cpar.mm)
-        out.append(metric_to_pixel(xp, yp, cpar.imx, cpar.imy,
-                                   cpar.pix_x, cpar.pix_y, cpar.chfield))
+        out.append(
+            metric_to_pixel(
+                xp, yp, cpar.imx, cpar.imy, cpar.pix_x, cpar.pix_y, cpar.chfield
+            )
+        )
     return np.array(out)
 
 
@@ -243,6 +270,7 @@ def _initial_guess(base: Path, cam: int, cpar, pick_ids, clicks, ids_all, xyz_al
 
 
 # --- naive initial guess (for datasets with no prior .ori/.addpar at all) ---
+
 
 def cmd_init(args) -> int:
     """Write a naive default .ori/.addpar for every camera missing one.
@@ -271,6 +299,7 @@ def cmd_init(args) -> int:
         print("ERROR: no parameters_*.yaml found", file=sys.stderr)
         return 1
     import yaml
+
     y = yaml.safe_load(yaml_path.read_text())
     ptv = y["ptv"]
     cc_guess = float(ptv["imx"]) * float(ptv["pix_x"])
@@ -296,16 +325,20 @@ def cmd_init(args) -> int:
     if not written:
         print("Nothing to do: every camera already has .ori/.addpar.")
     else:
-        print(f"Success! Wrote naive initial guess for: {', '.join(written)} "
-              f"(cc={cc_guess:.2f}mm, distance={args.distance}mm). "
-              "Verify convergence with `run --dry-run` before trusting it.")
+        print(
+            f"Success! Wrote naive initial guess for: {', '.join(written)} "
+            f"(cc={cc_guess:.2f}mm, distance={args.distance}mm). "
+            "Verify convergence with `run --dry-run` before trusting it."
+        )
     return 0
 
 
 # --- render for seed picking ------------------------------------------------
 
+
 def cmd_render(args) -> int:
     import matplotlib
+
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
 
@@ -321,18 +354,23 @@ def cmd_render(args) -> int:
     yaml_path = _find_yaml(base)
     if yaml_path is not None:
         import yaml as _yaml
+
         ptv_params = _yaml.safe_load(yaml_path.read_text())["ptv"]
         if ptv_params.get("splitter"):
             import imageio.v3 as iio
 
             from openptv2.gui.ptv import image_split
+
             img0_path, _, _ = _resolve_cam_files(base, 0)
             raw = iio.imread(img0_path)
             if raw.ndim > 2:
                 from skimage.color import rgb2gray
                 from skimage.util import img_as_ubyte
+
                 raw = img_as_ubyte(rgb2gray(raw[:, :, :3]))
-            split_views = image_split(raw, order=ptv_params.get("splitter_order") or [0, 1, 3, 2])
+            split_views = image_split(
+                raw, order=ptv_params.get("splitter_order") or [0, 1, 3, 2]
+            )
 
     written = []
     for cam in range(num_cams):
@@ -342,6 +380,7 @@ def cmd_render(args) -> int:
                 ax.imshow(split_views[cam], cmap="gray")
             else:
                 import imageio.v3 as iio
+
                 img_path, _, _ = _resolve_cam_files(base, cam)
                 ax.imshow(iio.imread(img_path), cmap="gray")
         except Exception:
@@ -374,6 +413,7 @@ def cmd_render(args) -> int:
 
 # --- seed writing (shared) --------------------------------------------------
 
+
 def _write_seed(base: Path, seeds: dict, num_cams: int) -> None:
     """Write the manual-orientation seed.
 
@@ -398,6 +438,7 @@ def _write_seed(base: Path, seeds: dict, num_cams: int) -> None:
 
     # YAML (source of truth)
     import yaml
+
     for yp in sorted(base.glob("parameters_*.yaml")):
         y = yaml.safe_load(yp.read_text()) or {}
         nr = [pid for cam in per_cam for pid, _, _ in cam]
@@ -405,8 +446,7 @@ def _write_seed(base: Path, seeds: dict, num_cams: int) -> None:
         coords = {}
         for cam_idx, cam in enumerate(per_cam):
             coords[f"camera_{cam_idx}"] = {
-                f"point_{k + 1}": {"x": x, "y": yv}
-                for k, (_, x, yv) in enumerate(cam)
+                f"point_{k + 1}": {"x": x, "y": yv} for k, (_, x, yv) in enumerate(cam)
             }
         y["man_ori_coordinates"] = coords
         yp.write_text(yaml.safe_dump(y, sort_keys=False))
@@ -430,6 +470,7 @@ def cmd_seed(args) -> int:
 
 # --- interactive mouse click-picker -----------------------------------------
 
+
 def cmd_pick(args) -> int:
     """Guided mouse click-picker for the manual-orientation seed.
 
@@ -440,6 +481,7 @@ def cmd_pick(args) -> int:
     Writes man_ori.par + man_ori.dat. Falls back with guidance if no display.
     """
     import matplotlib
+
     for backend in ("TkAgg", "QtAgg", "MacOSX"):
         try:
             matplotlib.use(backend, force=True)
@@ -449,24 +491,29 @@ def cmd_pick(args) -> int:
     import matplotlib.pyplot as plt
 
     if matplotlib.get_backend().lower() in ("agg", ""):
-        print("ERROR: no interactive display available for clicking.\n"
-              "Use `render` to save images, then `seed` with a JSON of points.",
-              file=sys.stderr)
+        print(
+            "ERROR: no interactive display available for clicking.\n"
+            "Use `render` to save images, then `seed` with a JSON of points.",
+            file=sys.stderr,
+        )
         return 2
 
     base = Path(args.dataset).resolve()
     num_cams = _num_cams(base)
 
     from openptv2.autocalibration import _find_yaml
+
     yaml_path = _find_yaml(base)
     if yaml_path is not None:
         import yaml as _yaml
 
         from openptv2.autocalibration import _cpar_from_ptv
+
         ptv_params = _yaml.safe_load(yaml_path.read_text())["ptv"]
         cpar = _cpar_from_ptv(ptv_params, num_cams)
     else:
         from openptv2.algorithms.parameters import ControlPar
+
         ptv_params = {}
         cpar = ControlPar.from_file(base / "parameters" / "ptv.par")
     splitter = bool(ptv_params.get("splitter"))
@@ -502,11 +549,13 @@ def cmd_pick(args) -> int:
         # views so each camera's click step shows only its own view, not
         # the whole multiplexed frame.
         from openptv2.gui.ptv import image_split
+
         img0_path, _, _ = _resolve_cam_files(base, 0)
         raw = iio.imread(img0_path)
         if raw.ndim > 2:
             from skimage.color import rgb2gray
             from skimage.util import img_as_ubyte
+
             raw = img_as_ubyte(rgb2gray(raw[:, :, :3]))
         split_views = image_split(raw, order=splitter_order)
 
@@ -516,8 +565,9 @@ def cmd_pick(args) -> int:
         else:
             img_path, _, _ = _resolve_cam_files(base, cam)
             img = iio.imread(img_path)
-        fig, (axi, axb) = plt.subplots(1, 2, figsize=(15, 7),
-                                       gridspec_kw={"width_ratios": [1.6, 1]})
+        fig, (axi, axb) = plt.subplots(
+            1, 2, figsize=(15, 7), gridspec_kw={"width_ratios": [1.6, 1]}
+        )
         axi.imshow(img, cmap="gray")
 
         clicks = []
@@ -536,8 +586,14 @@ def cmd_pick(args) -> int:
                 return 1
             clicks.append(c[0])
             axi.plot(c[0][0], c[0][1], "+", color="yellow", markersize=12, mew=2)
-            axi.annotate(str(pid), c[0], color="yellow", fontsize=11,
-                         textcoords="offset points", xytext=(6, 6))
+            axi.annotate(
+                str(pid),
+                c[0],
+                color="yellow",
+                fontsize=11,
+                textcoords="offset points",
+                xytext=(6, 6),
+            )
             fig.canvas.draw_idle()
 
         # initial-guess overlay: external orientation from the 4 clicks
@@ -545,11 +601,15 @@ def cmd_pick(args) -> int:
             _, rep = _initial_guess(base, cam, cpar, pick_ids, clicks, ids_all, xyz_all)
             axi.scatter(rep[:, 0], rep[:, 1], s=10, c="red", label="initial guess")
             axi.legend(loc="upper right", framealpha=0.7)
-            axi.set_title(f"cam{cam + 1}: initial-guess overlay (red). "
-                          f"Press any key to accept & continue")
+            axi.set_title(
+                f"cam{cam + 1}: initial-guess overlay (red). "
+                f"Press any key to accept & continue"
+            )
         except Exception as e:  # seed too degenerate to orient
-            axi.set_title(f"cam{cam + 1}: could not orient from seed ({e}). "
-                          f"Press any key to continue")
+            axi.set_title(
+                f"cam{cam + 1}: could not orient from seed ({e}). "
+                f"Press any key to continue"
+            )
         fig.canvas.draw_idle()
         plt.waitforbuttonpress()
         plt.close(fig)
@@ -562,6 +622,7 @@ def cmd_pick(args) -> int:
 
 
 # --- run the calibration ----------------------------------------------------
+
 
 def cmd_run(args) -> int:
     import numpy as np
@@ -591,9 +652,14 @@ def cmd_run(args) -> int:
                 "flags": r.flags,
                 "error": r.error,
                 "overlay": (
-                    str(Path(args.dataset).resolve() / "cal" / "auto_calib"
-                        / f"cam{r.cam + 1}_overlay.png")
-                    if r.error is None else None
+                    str(
+                        Path(args.dataset).resolve()
+                        / "cal"
+                        / "auto_calib"
+                        / f"cam{r.cam + 1}_overlay.png"
+                    )
+                    if r.error is None
+                    else None
                 ),
             }
             for r in results
@@ -607,22 +673,25 @@ def cmd_run(args) -> int:
 
     if args.joint_ba:
         ba_results, info = joint_plate_bundle_adjust(
-            results, cpar, shake_distortion=args.shake_distortion)
+            results, cpar, shake_distortion=args.shake_distortion
+        )
         report["joint_ba"] = info
         before, after = info.get("rcm_before"), info.get("rcm_after")
         if "skipped" in info:
             print(f"joint BA: skipped ({info['skipped']})")
         elif before is not None and after is not None:
-            print(f"joint BA: cross-camera RCM median {before:.3f} -> "
-                  f"{after:.3f} mm")
+            print(f"joint BA: cross-camera RCM median {before:.3f} -> {after:.3f} mm")
             if args.shake_distortion:
                 ext = info.get("rcm_exterior_only")
-                print(f"  distortion shaking: {ext:.3f} (exterior-only) -> "
-                      f"{after:.3f} mm, shaken groups: "
-                      f"{info.get('shaken_groups') or 'none'}")
+                print(
+                    f"  distortion shaking: {ext:.3f} (exterior-only) -> "
+                    f"{after:.3f} mm, shaken groups: "
+                    f"{info.get('shaken_groups') or 'none'}"
+                )
             improved = after < before
             if improved and not args.dry_run:
                 import shutil
+
                 base_ = Path(args.dataset).resolve()
                 for r in ba_results:
                     if r.error is not None or r.cal is None:
@@ -643,23 +712,31 @@ def cmd_run(args) -> int:
         if c["error"]:
             print(f"  cam{c['cam']}: FAILED - {c['error']}")
         else:
-            print(f"  cam{c['cam']}: matched {c['matched']}/{c['nfix']}  "
-                  f"RMS={c['rms_px']}px  flags={'+'.join(c['flags'])}")
+            print(
+                f"  cam{c['cam']}: matched {c['matched']}/{c['nfix']}  "
+                f"RMS={c['rms_px']}px  flags={'+'.join(c['flags'])}"
+            )
     if rcm is not None:
-        print(f"cross-camera RCM ({rcm['n_common']} pts in all {cpar.num_cams} "
-              f"cams, {rcm['n_points']} in >=2): "
-              f"p50={rcm['median']:.3f}mm p95={rcm['p95']:.3f}mm "
-              f"max={rcm['max']:.3f}mm")
+        print(
+            f"cross-camera RCM ({rcm['n_common']} pts in all {cpar.num_cams} "
+            f"cams, {rcm['n_points']} in >=2): "
+            f"p50={rcm['median']:.3f}mm p95={rcm['p95']:.3f}mm "
+            f"max={rcm['max']:.3f}mm"
+        )
         if rcm["p95"] > args.rcm_flag_mm:
-            print("WARNING: cross-camera RCM high relative to per-camera RMS; "
-                  "consider a "
-                  "tracer self-calibration / dumbbell pass (see roadmap).")
+            print(
+                "WARNING: cross-camera RCM high relative to per-camera RMS; "
+                "consider a "
+                "tracer self-calibration / dumbbell pass (see roadmap)."
+            )
     else:
         print("cross-camera RCM: n/a (need >=2 cameras and >=3 common points)")
     if report["mean_rms_px"] is not None:
-        print(f"  mean RMS ({len(ok)}/{len(results)} cameras): "
-              f"{report['mean_rms_px']:.3f}px  "
-              f"({'written' if report['written'] else 'dry-run'})")
+        print(
+            f"  mean RMS ({len(ok)}/{len(results)} cameras): "
+            f"{report['mean_rms_px']:.3f}px  "
+            f"({'written' if report['written'] else 'dry-run'})"
+        )
     else:
         print("  no camera converged")
 
@@ -669,6 +746,7 @@ def cmd_run(args) -> int:
             resolve_calblock,
             suggest_eps0,
         )
+
         base = Path(args.dataset).resolve()
         cpar = _load_dataset_params(base, resolve_calblock(base)).cpar
         cals = [r.cal for r in sorted(ok, key=lambda r: r.cam)]
@@ -680,10 +758,12 @@ def cmd_run(args) -> int:
         if sug and sug["recommended"] is not None:
             report["eps0_suggestion"] = sug
             Path(args.output).write_text(json.dumps(report, indent=2))
-            print(f"  epipolar band: current eps0={sug['current']:.3f} -> "
-                  f"SUGGESTED {sug['recommended']:.3f} "
-                  f"({sug['max_correct']} correct quadruplets, 0 spurious). "
-                  f"Set criteria.eps0 in the dataset YAML.")
+            print(
+                f"  epipolar band: current eps0={sug['current']:.3f} -> "
+                f"SUGGESTED {sug['recommended']:.3f} "
+                f"({sug['max_correct']} correct quadruplets, 0 spurious). "
+                f"Set criteria.eps0 in the dataset YAML."
+            )
         elif getattr(args, "suggest_eps0", False):
             print("  eps0 suggestion: n/a (needs 4 cameras + a criteria: block)")
     return 1 if failed else 0
@@ -703,21 +783,31 @@ def cmd_tracer_selfcal(args) -> int:
 
     base = Path(args.dataset).resolve()
     cpar = _load_dataset_params(base, resolve_calblock(base)).cpar
-    cals = [Calibration.from_file(*[str(p) for p in cam_files(base, c)[1:]])
-            for c in range(cpar.num_cams)]
-    frames = ([int(f) for f in args.frames.split(",")] if args.frames else None)
+    cals = [
+        Calibration.from_file(*[str(p) for p in cam_files(base, c)[1:]])
+        for c in range(cpar.num_cams)
+    ]
+    frames = [int(f) for f in args.frames.split(",")] if args.frames else None
     new_cals, info = tracer_self_calibrate(
-        base, cpar, cals, frames=frames, tol_px=args.tol_px,
-        hold_cam=args.hold_cam, max_particles=args.max_particles,
-        iters=args.iters)
+        base,
+        cpar,
+        cals,
+        frames=frames,
+        tol_px=args.tol_px,
+        hold_cam=args.hold_cam,
+        max_particles=args.max_particles,
+        iters=args.iters,
+    )
     if "skipped" in info:
         print(f"tracer self-calibration skipped: {info['skipped']}")
         return 1
     before, after = info["rcm_before"] * 1000, info["rcm_after"] * 1000
-    print(f"tracer self-calibration: RCM {before:.1f} -> {after:.1f} um "
-          f"({info['n_particles']} particles, {info['n_obs']} obs, "
-          f"cam{info['hold_cam'] + 1} held, {info['iterations']} accepted "
-          f"iteration(s))")
+    print(
+        f"tracer self-calibration: RCM {before:.1f} -> {after:.1f} um "
+        f"({info['n_particles']} particles, {info['n_obs']} obs, "
+        f"cam{info['hold_cam'] + 1} held, {info['iterations']} accepted "
+        f"iteration(s))"
+    )
     improved = after < before
     if improved and not args.dry_run:
         for cam in range(cpar.num_cams):
@@ -727,8 +817,10 @@ def cmd_tracer_selfcal(args) -> int:
             shutil.copy2(ori, str(ori) + ".selfcalbck")
             shutil.copy2(addpar, str(addpar) + ".selfcalbck")
             new_cals[cam].write(str(ori).encode(), str(addpar).encode())
-        print(f"  wrote refined .ori/.addpar (backups *.selfcalbck) for "
-              f"{cpar.num_cams - 1} cameras")
+        print(
+            f"  wrote refined .ori/.addpar (backups *.selfcalbck) for "
+            f"{cpar.num_cams - 1} cameras"
+        )
     elif not improved:
         print("  no improvement; cals unchanged")
     else:
@@ -785,8 +877,7 @@ def cmd_snapshot_refine(args) -> int:
         return 1
     if args.frames:
         wanted = {int(f) for f in args.frames.split(",")}
-        ptv_is_files = [p for p in ptv_is_files
-                        if int(p.suffix.lstrip(".")) in wanted]
+        ptv_is_files = [p for p in ptv_is_files if int(p.suffix.lstrip(".")) in wanted]
 
     print(f"Using {len(ptv_is_files)} frames from res/ptv_is.*")
 
@@ -799,7 +890,7 @@ def cmd_snapshot_refine(args) -> int:
         lines = pf.read_text().splitlines()
         n = int(lines[0])
         pts3d = []
-        for line in lines[1: n + 1]:
+        for line in lines[1 : n + 1]:
             parts = line.split()
             if len(parts) >= 5:
                 pts3d.append([float(parts[2]), float(parts[3]), float(parts[4])])
@@ -811,8 +902,9 @@ def cmd_snapshot_refine(args) -> int:
             targets = read_targets(seq_bases[cam], frame)
             if not targets:
                 continue
-            proj = np.array([_reproject_px(cals[cam], cpar.mm, p, cpar)
-                             for p in pts3d_arr])
+            proj = np.array(
+                [_reproject_px(cals[cam], cpar.mm, p, cpar) for p in pts3d_arr]
+            )
             tgt_xy = np.array([[t.x, t.y] for t in targets])
             for i, pp in enumerate(proj):
                 d = np.linalg.norm(tgt_xy - pp, axis=1)
@@ -838,9 +930,9 @@ def cmd_snapshot_refine(args) -> int:
         # only accept a richer flag set if it genuinely reduces RMS and is NaN-free.
         # ponytail: no k3/p1/p2 — snapshot data is too noisy to constrain them
         SNAP_FLAGS = [
-            [],                             # extrinsics only
-            ["cc", "xh", "yh"],             # + principal point/distance
-            ["cc", "xh", "yh", "k1"],       # + 1st-order radial
+            [],  # extrinsics only
+            ["cc", "xh", "yh"],  # + principal point/distance
+            ["cc", "xh", "yh", "k1"],  # + 1st-order radial
             ["cc", "xh", "yh", "k1", "k2"],  # + 2nd-order radial
         ]
         best_cal, best_rms, best_flags = None, rms_before, None
@@ -858,12 +950,16 @@ def cmd_snapshot_refine(args) -> int:
                 continue
 
         if best_cal is None:
-            print(f"  cam{cam + 1}: {len(ref)} pts  before={rms_before:.3f}px  "
-                  f"no improvement (NaN or RMS did not decrease)")
+            print(
+                f"  cam{cam + 1}: {len(ref)} pts  before={rms_before:.3f}px  "
+                f"no improvement (NaN or RMS did not decrease)"
+            )
             continue
 
-        print(f"  cam{cam + 1}: {len(ref)} pts  before={rms_before:.3f}px  "
-              f"after={best_rms:.3f}px  flags={best_flags}")
+        print(
+            f"  cam{cam + 1}: {len(ref)} pts  before={rms_before:.3f}px  "
+            f"after={best_rms:.3f}px  flags={best_flags}"
+        )
 
         if not args.dry_run:
             cals[cam] = best_cal
@@ -888,8 +984,12 @@ def main() -> int:
 
     p = sub.add_parser("init")
     p.add_argument("dataset")
-    p.add_argument("--distance", type=float, default=500.0,
-                   help="naive camera-to-origin distance guess in mm (default 500)")
+    p.add_argument(
+        "--distance",
+        type=float,
+        default=500.0,
+        help="naive camera-to-origin distance guess in mm (default 500)",
+    )
     p.set_defaults(func=cmd_init)
 
     p = sub.add_parser("render")
@@ -911,47 +1011,83 @@ def main() -> int:
     p.add_argument("dataset")
     p.add_argument("--output", required=True)
     p.add_argument("--dry-run", action="store_true")
-    p.add_argument("--rcm-flag-mm", type=float, default=0.1,
-                   help="warn if cross-camera RCM p95 exceeds this (mm, default 0.1)")
-    p.add_argument("--joint-ba", action="store_true",
-                   help="run joint plate bundle adjustment to lower cross-camera "
-                        "RCM (writes refined cals only if it improves)")
-    p.add_argument("--shake-distortion", action="store_true",
-                   help="with --joint-ba, greedily free distortion one group at "
-                        "a time, accepting a group only if cross-camera RCM "
-                        "improves")
-    p.add_argument("--suggest-eps0", action="store_true",
-                   help="after calibration, sweep the epipolar band and suggest "
-                        "the eps0 that maximizes correct 4-camera quadruplets")
+    p.add_argument(
+        "--rcm-flag-mm",
+        type=float,
+        default=0.1,
+        help="warn if cross-camera RCM p95 exceeds this (mm, default 0.1)",
+    )
+    p.add_argument(
+        "--joint-ba",
+        action="store_true",
+        help="run joint plate bundle adjustment to lower cross-camera "
+        "RCM (writes refined cals only if it improves)",
+    )
+    p.add_argument(
+        "--shake-distortion",
+        action="store_true",
+        help="with --joint-ba, greedily free distortion one group at "
+        "a time, accepting a group only if cross-camera RCM "
+        "improves",
+    )
+    p.add_argument(
+        "--suggest-eps0",
+        action="store_true",
+        help="after calibration, sweep the epipolar band and suggest "
+        "the eps0 that maximizes correct 4-camera quadruplets",
+    )
     p.set_defaults(func=cmd_run)
 
-    p = sub.add_parser("snapshot-refine",
-                       help="refine calibration from tracking result 3D positions")
+    p = sub.add_parser(
+        "snapshot-refine", help="refine calibration from tracking result 3D positions"
+    )
     p.add_argument("dataset")
-    p.add_argument("--tol-px", type=float, default=5.0,
-                   help="match tolerance in pixels (default 5.0)")
-    p.add_argument("--frames", default=None,
-                   help="comma-separated frame numbers to use (default: all)")
-    p.add_argument("--dry-run", action="store_true",
-                   help="report without writing .ori/.addpar")
+    p.add_argument(
+        "--tol-px",
+        type=float,
+        default=5.0,
+        help="match tolerance in pixels (default 5.0)",
+    )
+    p.add_argument(
+        "--frames",
+        default=None,
+        help="comma-separated frame numbers to use (default: all)",
+    )
+    p.add_argument(
+        "--dry-run", action="store_true", help="report without writing .ori/.addpar"
+    )
     p.set_defaults(func=cmd_snapshot_refine)
 
-    p = sub.add_parser("tracer-selfcal",
-                       help="joint self-calibration on tracer particles (couples "
-                            "cameras via free 3D points; lowers cross-camera RCM "
-                            "at real depth the plate can't reach)")
+    p = sub.add_parser(
+        "tracer-selfcal",
+        help="joint self-calibration on tracer particles (couples "
+        "cameras via free 3D points; lowers cross-camera RCM "
+        "at real depth the plate can't reach)",
+    )
     p.add_argument("dataset")
     p.add_argument("--tol-px", type=float, default=2.0)
-    p.add_argument("--frames", default=None,
-                   help="comma-separated frame numbers (default: all)")
-    p.add_argument("--hold-cam", type=int, default=0,
-                   help="camera held fixed to fix the gauge (default 0)")
+    p.add_argument(
+        "--frames", default=None, help="comma-separated frame numbers (default: all)"
+    )
+    p.add_argument(
+        "--hold-cam",
+        type=int,
+        default=0,
+        help="camera held fixed to fix the gauge (default 0)",
+    )
     p.add_argument("--max-particles", type=int, default=400)
-    p.add_argument("--iters", type=int, default=3,
-                   help="iterated shaking: refine -> re-match -> repeat, stopping "
-                        "when RCM plateaus (default 3)")
-    p.add_argument("--dry-run", action="store_true",
-                   help="report before/after RCM without writing .ori/.addpar")
+    p.add_argument(
+        "--iters",
+        type=int,
+        default=3,
+        help="iterated shaking: refine -> re-match -> repeat, stopping "
+        "when RCM plateaus (default 3)",
+    )
+    p.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="report before/after RCM without writing .ori/.addpar",
+    )
     p.set_defaults(func=cmd_tracer_selfcal)
 
     args = ap.parse_args()

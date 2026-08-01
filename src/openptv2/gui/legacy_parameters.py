@@ -22,10 +22,11 @@ def g(f):
 
 # Base class for all parameters classes
 
+
 class Parameters:
     # default path of the directory of the param files
     default_path = Path(par_dir_prefix)
-    filename = 'tmp.par'
+    filename = "tmp.par"
 
     def __init__(self, path=None):
         if path is None:
@@ -35,13 +36,12 @@ class Parameters:
         self.path = path.resolve()
         self.exp_path = self.path.parent
 
-
-
-
     # returns the path to the specific params file
     def filepath(self):
-        if not hasattr(self, 'filename'):
-            raise NotImplementedError("Subclasses must define a class attribute 'filename'.")
+        if not hasattr(self, "filename"):
+            raise NotImplementedError(
+                "Subclasses must define a class attribute 'filename'."
+            )
         return self.path.joinpath(self.filename)
 
     # sets all variables of the param file (no actual writing to disk)
@@ -150,7 +150,6 @@ def copy_params_dir(src: Path, dest: Path):
     print("Successfully \n")
 
 
-
 class PtvParams(Parameters):
     def __init__(
         self,
@@ -173,7 +172,9 @@ class PtvParams(Parameters):
     ):
         Parameters.__init__(self, path)
         self.n_img = n_img
-        self.img_name = img_name if img_name is not None else ["" for _ in range(max_cam)]
+        self.img_name = (
+            img_name if img_name is not None else ["" for _ in range(max_cam)]
+        )
         self.img_cal = img_cal if img_cal is not None else ["" for _ in range(max_cam)]
         self.hp_flag = hp_flag
         self.allcam_flag = allcam_flag
@@ -248,16 +249,17 @@ class PtvParams(Parameters):
 
 
 class CalOriParams(Parameters):
-    def __init__(self,
-                    n_img:int = 0,
-                    fixp_name: str = "",
-                    img_cal_name: list[str] = [""],
-                    img_ori: list[str] = [""],
-                    tiff_flag: bool = False,
-                    pair_flag: bool = False,
-                    chfield: int = 0,
-                    path: Path=Parameters.default_path
-                 ):
+    def __init__(
+        self,
+        n_img: int = 0,
+        fixp_name: str = "",
+        img_cal_name: list[str] = [""],
+        img_ori: list[str] = [""],
+        tiff_flag: bool = False,
+        pair_flag: bool = False,
+        chfield: int = 0,
+        path: Path = Parameters.default_path,
+    ):
         Parameters.__init__(self, path)
         self.n_img = n_img
         self.fixp_name = fixp_name
@@ -319,7 +321,9 @@ class SequenceParams(Parameters):
     ):
         Parameters.__init__(self, path)
         self.n_img = n_img
-        self.base_name = base_name if base_name is not None else ["" for _ in range(n_img)]
+        self.base_name = (
+            base_name if base_name is not None else ["" for _ in range(n_img)]
+        )
         self.first = first
         self.last = last
 
@@ -431,7 +435,7 @@ class TargRecParams(Parameters):
     def __init__(
         self,
         n_img: int = 0,
-        gvthres: list[int] = [0,0,0,0],
+        gvthres: list[int] = [0, 0, 0, 0],
         disco: int = 0,
         nnmin: int = 0,
         nnmax: int = 0,
@@ -502,11 +506,12 @@ class TargRecParams(Parameters):
 
 
 class ManOriParams(Parameters):
-    def __init__(self,
-                 n_img: int = 0,
-                 nr: list[int] = [0, 0, 0, 0],
-                 path: Path = Parameters.default_path
-                 ):
+    def __init__(
+        self,
+        n_img: int = 0,
+        nr: list[int] = [0, 0, 0, 0],
+        path: Path = Parameters.default_path,
+    ):
         Parameters.__init__(self, path)
         self.n_img = int(n_img) if n_img is not None else 0
         self.nr = nr if nr is not None else []
@@ -534,6 +539,7 @@ class ManOriParams(Parameters):
         except BaseException:
             error(None, "Error writing %s." % self.filepath())
             return False
+
 
 class DetectPlateParams(Parameters):
     def __init__(
@@ -615,6 +621,7 @@ class DetectPlateParams(Parameters):
         except BaseException:
             error(None, "Error writing %s." % self.filepath())
             return False
+
 
 class OrientParams(Parameters):
     """
@@ -707,8 +714,10 @@ class OrientParams(Parameters):
             error(None, "Error writing %s." % self.filepath())
             return False
 
+
 class TrackingParams(Parameters):
     """Parameters for the tracking algorithm"""
+
     def __init__(
         self,
         dvxmin: float = 0.0,
@@ -780,9 +789,8 @@ class TrackingParams(Parameters):
             return False
 
 
-
 class PftVersionParams(Parameters):
-    def __init__(self, Existing_Target: int=0, path=None):
+    def __init__(self, Existing_Target: int = 0, path=None):
         Parameters.__init__(self, path)
         self.Existing_Target = Existing_Target
 
@@ -1015,11 +1023,9 @@ class MultiPlaneParams(Parameters):
 
 
 class SortGridParams(Parameters):
-    def __init__(self,
-                 n_img: int = 0,
-                 radius: int = 0,
-                 path: Path = Parameters.default_path
-                 ):
+    def __init__(
+        self, n_img: int = 0, radius: int = 0, path: Path = Parameters.default_path
+    ):
         Parameters.__init__(self, path)
         self.n_img = n_img
         self.radius = radius

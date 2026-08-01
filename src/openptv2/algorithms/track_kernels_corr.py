@@ -4,13 +4,17 @@ import numpy as np
 
 if cython.compiled:
     from cython.cimports.libc.math import (
-        sqrt as c_sqrt, sin as c_sin, cos as c_cos, tan as c_tan,
-        asin as c_asin, acos as c_acos, atan as c_atan,
+        acos as c_acos,
+    )
+    from cython.cimports.libc.math import (
+        sqrt as c_sqrt,
     )
 else:
     from math import (
-        sqrt as c_sqrt, sin as c_sin, cos as c_cos, tan as c_tan,
-        asin as c_asin, acos as c_acos, atan as c_atan,
+        acos as c_acos,
+    )
+    from math import (
+        sqrt as c_sqrt,
     )
 
 if cython.compiled:
@@ -47,9 +51,8 @@ else:
         _point_position_out,
         assess_new_position_fast_nogil,
     )
-from .track_kernels_geom import searchquader_fast
 from .track_kernels_search import _sorted_candidates_fast_out
-from .track_kernels_transform import assess_new_position_fast, point_position_fast
+from .track_kernels_transform import assess_new_position_fast
 
 cython.declare(
     PT_UNUSED=cython.int, POSI_K=cython.int, MAX_CANDS_K=cython.int,
@@ -1092,10 +1095,6 @@ def trackcorr_loop_fast(
     acc: cython.double
     angle: cython.double
     rr: cython.double
-    d13: cython.double = 0.0
-    d43: cython.double = 0.0
-    dl: cython.double = 0.0
-    d01: cython.double = 0.0
     quali_f: cython.int
     tid: cython.int
     idx_add: cython.int

@@ -2,6 +2,7 @@
 diverges (the coupled joint fit over free tracer particles, gauge-fixed by
 holding one camera). Real improvement is demonstrated on flow data with depth
 coverage the plate lacks; here we guard the plumbing + the no-worsen contract."""
+
 import os
 from pathlib import Path
 
@@ -41,7 +42,8 @@ def test_tracer_selfcal_runs_and_does_not_diverge():
         base, cpar, cals = _load()
         os.chdir(base)
         new_cals, info = tracer_self_calibrate(
-            base, cpar, cals, tol_px=3.0, max_particles=150)
+            base, cpar, cals, tol_px=3.0, max_particles=150
+        )
     finally:
         os.chdir(cwd)
     assert "skipped" not in info, info
@@ -65,7 +67,8 @@ def test_tracer_selfcal_iterated_never_worsens():
         base, cpar, cals = _load()
         os.chdir(base)
         _, info = tracer_self_calibrate(
-            base, cpar, cals, tol_px=3.0, max_particles=150, iters=4)
+            base, cpar, cals, tol_px=3.0, max_particles=150, iters=4
+        )
     finally:
         os.chdir(cwd)
     assert "skipped" not in info, info

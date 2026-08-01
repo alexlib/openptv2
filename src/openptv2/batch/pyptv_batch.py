@@ -208,6 +208,7 @@ def run_batch(
 
     except Exception as e:
         import traceback
+
         traceback.print_exc()
         raise ProcessingError(f"Batch processing failed: {e}")
     finally:
@@ -479,13 +480,13 @@ def main_cli() -> None:
 
 if __name__ == "__main__":
     """Entry point for command line execution.
-    
+
     Command line usage:
         python pyptv_batch.py <yaml_file> <first_frame> <last_frame>
-        
+
     Example:
         python pyptv_batch.py tests/test_cavity/parameters_Run1.yaml 10000 10004
-    
+
     Python API usage:
         from .pyptv_batch import main
         main("tests/test_cavity/parameters_Run1.yaml", 10000, 10004)

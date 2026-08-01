@@ -158,7 +158,9 @@ def _line_setup(n_pts=12):
     xs = [-22.0, -18.0, -14.0, -10.0, -6.0, -2.0, 2.0, 6.0, 10.0, 14.0, 18.0, 100.0]
     xs = xs[:n_pts]
     crd = [Coord2d(pnr=i, x=x, y=0.0) for i, x in enumerate(xs)]
-    pix = [Target(pnr=i, x=x, y=0.0, n=10, nx=5, ny=5, sumg=100) for i, x in enumerate(xs)]
+    pix = [
+        Target(pnr=i, x=x, y=0.0, n=10, nx=5, ny=5, sumg=100) for i, x in enumerate(xs)
+    ]
     return crd, pix, len(xs)
 
 
@@ -167,8 +169,23 @@ def test_find_candidate_finds_points_on_line(identity_brown):
     cp, ct, cc = _cand_arrays()
     # horizontal epipolar line y = 0 across the sensor
     count = find_candidate(
-        crd, pix, num, -25.0, 0.0, 25.0, 0.0, 10, 5, 5, 100, cp, ct, cc,
-        _fc_vpar(), _fc_cpar(), _fc_cal(),
+        crd,
+        pix,
+        num,
+        -25.0,
+        0.0,
+        25.0,
+        0.0,
+        10,
+        5,
+        5,
+        100,
+        cp,
+        ct,
+        cc,
+        _fc_vpar(),
+        _fc_cpar(),
+        _fc_cal(),
     )
     # 11 points lie exactly on the line and within bounds; the 12th (x=100)
     # is beyond xb + tol and terminates the scan.
@@ -189,13 +206,37 @@ def test_find_candidate_order_independent(identity_brown):
     fwd_arrays = _cand_arrays()
     rev_arrays = _cand_arrays()
     fwd = find_candidate(
-        *args, -25.0, 0.0, 25.0, 0.0, 10, 5, 5, 100, *fwd_arrays,
-        _fc_vpar(), _fc_cpar(), _fc_cal(), **kw,
+        *args,
+        -25.0,
+        0.0,
+        25.0,
+        0.0,
+        10,
+        5,
+        5,
+        100,
+        *fwd_arrays,
+        _fc_vpar(),
+        _fc_cpar(),
+        _fc_cal(),
+        **kw,
     )
     # reversed x endpoints -> triggers the xa > xb swap
     rev = find_candidate(
-        *args, 25.0, 0.0, -25.0, 0.0, 10, 5, 5, 100, *rev_arrays,
-        _fc_vpar(), _fc_cpar(), _fc_cal(), **kw,
+        *args,
+        25.0,
+        0.0,
+        -25.0,
+        0.0,
+        10,
+        5,
+        5,
+        100,
+        *rev_arrays,
+        _fc_vpar(),
+        _fc_cpar(),
+        _fc_cal(),
+        **kw,
     )
     assert fwd == rev
 
@@ -205,8 +246,23 @@ def test_find_candidate_ya_gt_yb_swap(identity_brown):
     cp, ct, cc = _cand_arrays()
     # ya > yb triggers the y-swap branch; tilted line still valid geometry
     count = find_candidate(
-        crd, pix, num, -25.0, 5.0, 25.0, -5.0, 10, 5, 5, 100, cp, ct, cc,
-        _fc_vpar(), _fc_cpar(), _fc_cal(),
+        crd,
+        pix,
+        num,
+        -25.0,
+        5.0,
+        25.0,
+        -5.0,
+        10,
+        5,
+        5,
+        100,
+        cp,
+        ct,
+        cc,
+        _fc_vpar(),
+        _fc_cpar(),
+        _fc_cal(),
     )
     assert 0 <= count <= num
 
@@ -216,8 +272,23 @@ def test_find_candidate_vertical_line(identity_brown):
     cp, ct, cc = _cand_arrays()
     # xa == xb hits the degenerate-slope guard (xb += 1e-10)
     count = find_candidate(
-        crd, pix, num, 0.0, -25.0, 0.0, 25.0, 10, 5, 5, 100, cp, ct, cc,
-        _fc_vpar(), _fc_cpar(), _fc_cal(),
+        crd,
+        pix,
+        num,
+        0.0,
+        -25.0,
+        0.0,
+        25.0,
+        10,
+        5,
+        5,
+        100,
+        cp,
+        ct,
+        cc,
+        _fc_vpar(),
+        _fc_cpar(),
+        _fc_cal(),
     )
     assert 0 <= count <= num
 
@@ -227,8 +298,23 @@ def test_find_candidate_line_outside_sensor(identity_brown):
     cp, ct, cc = _cand_arrays()
     # entire line left of the sensor -> -1
     count = find_candidate(
-        crd, pix, num, -100.0, 0.0, -60.0, 0.0, 10, 5, 5, 100, cp, ct, cc,
-        _fc_vpar(), _fc_cpar(), _fc_cal(),
+        crd,
+        pix,
+        num,
+        -100.0,
+        0.0,
+        -60.0,
+        0.0,
+        10,
+        5,
+        5,
+        100,
+        cp,
+        ct,
+        cc,
+        _fc_vpar(),
+        _fc_cpar(),
+        _fc_cal(),
     )
     assert count == -1
 
@@ -239,8 +325,23 @@ def test_find_candidate_pnr_out_of_range(identity_brown):
     pix = [Target(pnr=0, x=0.0, y=0.0, n=10, nx=5, ny=5, sumg=100)]
     cp, ct, cc = _cand_arrays()
     count = find_candidate(
-        crd, pix, 1, -5.0, 0.0, 5.0, 0.0, 10, 5, 5, 100, cp, ct, cc,
-        _fc_vpar(), _fc_cpar(), _fc_cal(),
+        crd,
+        pix,
+        1,
+        -5.0,
+        0.0,
+        5.0,
+        0.0,
+        10,
+        5,
+        5,
+        100,
+        cp,
+        ct,
+        cc,
+        _fc_vpar(),
+        _fc_cpar(),
+        _fc_cal(),
     )
     assert count == -1
 
@@ -251,8 +352,23 @@ def test_find_candidate_quality_rejected(identity_brown):
     pix = [Target(pnr=0, x=0.0, y=0.0, n=10000, nx=5, ny=5, sumg=100)]
     cp, ct, cc = _cand_arrays()
     count = find_candidate(
-        crd, pix, 1, -5.0, 0.0, 5.0, 0.0, 10, 5, 5, 100, cp, ct, cc,
-        _fc_vpar(), _fc_cpar(), _fc_cal(),
+        crd,
+        pix,
+        1,
+        -5.0,
+        0.0,
+        5.0,
+        0.0,
+        10,
+        5,
+        5,
+        100,
+        cp,
+        ct,
+        cc,
+        _fc_vpar(),
+        _fc_cpar(),
+        _fc_cal(),
     )
     assert count == 0
 
@@ -263,8 +379,23 @@ def test_find_candidate_off_band_skipped(identity_brown):
     pix = [Target(pnr=0, x=0.0, y=40.0, n=10, nx=5, ny=5, sumg=100)]
     cp, ct, cc = _cand_arrays()
     count = find_candidate(
-        crd, pix, 1, -5.0, 0.0, 5.0, 0.0, 10, 5, 5, 100, cp, ct, cc,
-        _fc_vpar(), _fc_cpar(), _fc_cal(),
+        crd,
+        pix,
+        1,
+        -5.0,
+        0.0,
+        5.0,
+        0.0,
+        10,
+        5,
+        5,
+        100,
+        cp,
+        ct,
+        cc,
+        _fc_vpar(),
+        _fc_cpar(),
+        _fc_cal(),
     )
     assert count == 0
 
@@ -275,8 +406,23 @@ def test_find_candidate_binary_search_forward_branch(identity_brown):
     crd, pix, num = _line_setup()
     cp, ct, cc = _cand_arrays()
     count = find_candidate(
-        crd, pix, num, 15.0, 0.0, 45.0, 0.0, 10, 5, 5, 100, cp, ct, cc,
-        _fc_vpar(), _fc_cpar(), _fc_cal(),
+        crd,
+        pix,
+        num,
+        15.0,
+        0.0,
+        45.0,
+        0.0,
+        10,
+        5,
+        5,
+        100,
+        cp,
+        ct,
+        cc,
+        _fc_vpar(),
+        _fc_cpar(),
+        _fc_cal(),
     )
     assert 0 <= count <= num
 
@@ -293,9 +439,7 @@ def test_find_candidate_binary_search_forward_branch(identity_brown):
 def passthrough_trafo(monkeypatch):
     monkeypatch.setattr(trafo, "pixel_to_metric", lambda x, y, cpar: (x, y))
     monkeypatch.setattr(trafo, "metric_to_pixel", lambda x, y, cpar: (x, y))
-    monkeypatch.setattr(
-        trafo, "dist_to_flat", lambda xp, yp, *a, **k: (xp, yp)
-    )
+    monkeypatch.setattr(trafo, "dist_to_flat", lambda xp, yp, *a, **k: (xp, yp))
 
 
 def test_epipolar_curve_shape(passthrough_trafo):
@@ -308,6 +452,10 @@ def test_epipolar_curve_shape(passthrough_trafo):
     num = 7
     line = epipolar_curve(
         np.array([cpar.imx / 2.0, cpar.imy / 2.0]),
-        orig_cal, proj_cal, num, cpar, vpar,
+        orig_cal,
+        proj_cal,
+        num,
+        cpar,
+        vpar,
     )
     assert line.shape == (num, 2)

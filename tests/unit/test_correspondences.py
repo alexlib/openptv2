@@ -169,11 +169,20 @@ class TestFourCameraMatching:
         )
 
         import numpy as np
+
         scratch_p = np.full((16, 4), -1, dtype=np.int32)
         scratch_corr = np.zeros(16, dtype=np.float64)
         matched = four_camera_matching(
-            p1_arr, n_arr, p2_arr, corr_arr, dist_arr, 16, 1.0,
-            scratch_p, scratch_corr, 16,
+            p1_arr,
+            n_arr,
+            p2_arr,
+            corr_arr,
+            dist_arr,
+            16,
+            1.0,
+            scratch_p,
+            scratch_corr,
+            16,
         )
         assert matched == 16
 
@@ -206,6 +215,7 @@ class TestThreeCameraMatching:
         )
 
         import numpy as np
+
         scratch_p = np.full((4 * 16, 4), -1, dtype=np.int32)
         scratch_corr = np.zeros(4 * 16, dtype=np.float64)
         tusage = np.zeros((cpar.num_cams, NMAX), dtype=np.int32)
@@ -252,6 +262,7 @@ class TestTwoCameraMatching:
         )
 
         import numpy as np
+
         scratch_p = np.full((4 * 16, 2), -1, dtype=np.int32)
         scratch_corr = np.zeros(4 * 16, dtype=np.float64)
         tusage = np.zeros((cpar.num_cams, NMAX), dtype=np.int32)
@@ -335,6 +346,7 @@ def test_determination_3d_cloud_is_physically_bounded():
     from openptv2.algorithms.parameters import ControlPar, VolumePar
     from openptv2.correspondences import MatchedCoords, correspondences
     from openptv2.orientation import point_positions
+
     # gui.ptv pulls in skimage (a GUI-optional dep not installed in the
     # cibuildwheel test env); skip cleanly there instead of erroring.
     pytest.importorskip("skimage")
@@ -354,12 +366,12 @@ def test_determination_3d_cloud_is_physically_bounded():
         cals = []
         for i in range(nc):
             c = Calibration()
-            c.from_file(f"cal/cam{i+1}.tif.ori", f"cal/cam{i+1}.tif.addpar")
+            c.from_file(f"cal/cam{i + 1}.tif.ori", f"cal/cam{i + 1}.tif.addpar")
             cals.append(c)
 
         detections, corrected = [], []
         for i in range(nc):
-            t = read_targets(f"img/cam{i+1}", 10001)
+            t = read_targets(f"img/cam{i + 1}", 10001)
             if len(t) > 0:
                 t.sort_y()
             detections.append(t)
@@ -367,9 +379,7 @@ def test_determination_3d_cloud_is_physically_bounded():
 
         _, sorted_corresp, _ = correspondences(detections, corrected, cals, vpar, cpar)
         concat = np.concatenate(sorted_corresp, axis=1)
-        flat = np.array(
-            [c.get_by_pnrs(concat[cam]) for cam, c in enumerate(corrected)]
-        )
+        flat = np.array([c.get_by_pnrs(concat[cam]) for cam, c in enumerate(corrected)])
         pos, _ = point_positions(flat.transpose(1, 0, 2), cpar, cals, vpar)
     finally:
         os.chdir(cwd)

@@ -35,7 +35,7 @@ def _():
 
     pm = ParameterManager()
     pm.from_yaml(yaml_path)
-    exp = Experiment(pm=pm)
+    Experiment(pm=pm)
 
     params = pm.parameters
     num_cams = int(params.get("num_cams", pm.num_cams or 0) or 0)
@@ -78,7 +78,7 @@ def _(num_cams, pm, yaml_path):
         cal = Calibration()
 
         # Try using the logic from ptv.py: base name from cal_ori.img_cal_name
-        cal_img_name = cal_ori.get('img_cal_name', cal_img_names)[i]
+        cal_ori.get('img_cal_name', cal_img_names)[i]
 
         # wait, the output of cal_ori shows img_ori: ['cal/run3/cam1.tif.ori', ...]
         ori_file_path = base_path / ori_names[i]
@@ -254,7 +254,7 @@ def _(cals, cpar, images, num_cams, sorted_pos, vpar):
                 if len(pts_epipolar_corr) > 1:
                     # Also we can mathematically filter to only those points inside the image
                     img_h, img_w = images[j_other_corr].shape[:2]
-                    valid_mask_corr = (pts_epipolar_corr[:, 0] >= 0) & (pts_epipolar_corr[:, 0] <= img_w) & \
+                    (pts_epipolar_corr[:, 0] >= 0) & (pts_epipolar_corr[:, 0] <= img_w) & \
                                  (pts_epipolar_corr[:, 1] >= 0) & (pts_epipolar_corr[:, 1] <= img_h)
 
                     # If you just want it not to exceed the axis visually,
@@ -266,7 +266,7 @@ def _(cals, cpar, images, num_cams, sorted_pos, vpar):
         fig_corr.canvas.draw_idle()
 
     # Connect the click event
-    cid_corr = fig_corr.canvas.mpl_connect('button_press_event', onclick_corr)
+    fig_corr.canvas.mpl_connect('button_press_event', onclick_corr)
 
     plt.tight_layout()
     # In Marimo, the last expression is displayed. If the user has an interactive backend,
@@ -278,7 +278,7 @@ def _(cals, cpar, images, num_cams, sorted_pos, vpar):
 @app.cell
 def _(cals, cpar, matched, sorted_corresp, sorted_pos, vpar):
     from openptv2 import point_positions
-    concatenated_pos = np.concatenate(sorted_pos, axis=1)
+    np.concatenate(sorted_pos, axis=1)
     concatenated_corresp = np.concatenate(sorted_corresp, axis=1)
 
     flat = np.array(
@@ -324,7 +324,7 @@ def _(cv2, pd):
         distance_in_world_units --float: The distance between pattern points in any world unit. (Default 1.0)
         figsize: To set the figure size of the matplotlib.pyplot (Default (8,8))
         debug_dir --str: Optional path to a directory to save the images  (Default None)
-                                     The images include : 
+                                     The images include :
                                      1.Points visulized on the calibration board
                                      2.Reprojection error plot
                                      3.Pattern centric and camera centric views of the calibration board
@@ -521,7 +521,7 @@ def _(cv2, pd):
 
 
             OUTPUT
-            Prints: 
+            Prints:
                 The calibration log
                 plots the reprojection error plot
 
@@ -671,14 +671,14 @@ def _(cv2, pd):
             User facing method to visualize the calibration board orientations in 3-D
             Plots both the pattern centric and the camera centric views
 
-            Keyword Arguments: 
+            Keyword Arguments:
             cam_width --float: width of cam in visualization (Default 20.0)
             cam_height --float: height of cam in visualization (Default 10.0)
             scale_focal --int: Focal length is scaled accordingly (Default 40)
 
             Output:
                 Plots the camera centric and pattern centric views of the chessboard in 3-D using matplotlib
-                Optionally saves these views in the debug directory if the constructor is initialized with 
+                Optionally saves these views in the debug directory if the constructor is initialized with
                 debug directory
 
             TIP: change the values of cam_width, cam_height for better visualizations
@@ -933,7 +933,7 @@ def visualize_views(camera_matrix,
     fig_size --tuple: The size of figure to display (Default (8,8))
                       it is recommended to leave this argument to default
 
-    save_dir --str: optional path to a saving directory to save the 
+    save_dir --str: optional path to a saving directory to save the
                     generated plot (Default None)
 
     Does not return anything

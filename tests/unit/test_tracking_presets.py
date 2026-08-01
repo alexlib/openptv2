@@ -63,7 +63,8 @@ def test_myptv_custom_plugin_preset_preservation():
     assert infer_preset(track_cfg, plugins_cfg) == "custom_plugin"
 
     # apply_preset with custom_plugin MUST preserve myptv_3d_tracking
-    t_out, p_out = apply_preset("custom_plugin", track_cfg, plugins_cfg, custom_plugin_name="myptv_3d_tracking")
+    t_out, p_out = apply_preset(
+        "custom_plugin", track_cfg, plugins_cfg, custom_plugin_name="myptv_3d_tracking"
+    )
     assert p_out["selected_tracking"] == "myptv_3d_tracking"
     assert t_out["preset"] == "myptv_3d_tracking"
-

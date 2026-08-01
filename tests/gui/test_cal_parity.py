@@ -66,7 +66,7 @@ def test_calibration_parameter_parity(cavity_dir):
             add_f = ori_f.replace(".ori", ".addpar")
             cal_c.from_file(ori_f, add_f)
 
-            rc = cal_c._cal if hasattr(cal_c, '_cal') else cal_c
+            cal_c._cal if hasattr(cal_c, "_cal") else cal_c
             pos_o = cal_o.get_pos()
             pos_c = cal_c.get_pos()
             print(f"\n  cam{i + 1}:")
@@ -101,7 +101,7 @@ def test_calibration_parameter_parity(cavity_dir):
                 xo, yo = test_pts[j]
                 # optv transforms module
 
-            cpar_c = cpar.control_par if hasattr(cpar, 'control_par') else cpar
+            cpar_c = cpar.control_par if hasattr(cpar, "control_par") else cpar
             metric_c = convert_arr_pixel_to_metric(test_pts, cpar_c)
 
             print(

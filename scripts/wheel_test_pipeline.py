@@ -181,6 +181,7 @@ def build_wheel(
     print_info("Building wheel using cibuildwheel...")
     # Targets only the current python version to avoid compiling unneeded versions
     import sys
+
     env_vars = {
         "CIBW_BUILD": f"cp{sys.version_info.major}{sys.version_info.minor}-*",
         "CIBW_SKIP": "musllinux*",
@@ -237,10 +238,10 @@ def create_clean_venv(venv_path: Path, verbose: bool = False) -> Tuple[bool, str
     # Determine python path
     if sys.platform == "win32":
         python_path = str(venv_path / "Scripts" / "python.exe")
-        pip_path = str(venv_path / "Scripts" / "pip.exe")
+        str(venv_path / "Scripts" / "pip.exe")
     else:
         python_path = str(venv_path / "bin" / "python")
-        pip_path = str(venv_path / "bin" / "pip")
+        str(venv_path / "bin" / "pip")
 
     if not os.path.exists(python_path):
         print_failure(f"Python not found at {python_path}")

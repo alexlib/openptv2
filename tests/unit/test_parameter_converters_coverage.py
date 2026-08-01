@@ -19,7 +19,6 @@ Fixed bugs (2026-07-10):
     get_multiplanes_par() now guards None with `or {}` (was crashing on None value).
 """
 
-
 import numpy as np
 import pytest
 
@@ -45,6 +44,7 @@ from openptv2.algorithms.parameter_converters import (
 # ===========================================================================
 # Helper: minimal valid param dict for tests requiring all required params
 # ===========================================================================
+
 
 def _base_params():
     return {
@@ -73,6 +73,7 @@ def _base_params():
 # ===========================================================================
 # _get_section
 # ===========================================================================
+
 
 class TestGetSection:
     def test_first_key_present(self):
@@ -103,6 +104,7 @@ class TestGetSection:
 # ===========================================================================
 # _check_required
 # ===========================================================================
+
 
 class TestCheckRequired:
     def test_all_required_present(self):
@@ -148,6 +150,7 @@ class TestCheckRequired:
 # _merge_with_defaults
 # ===========================================================================
 
+
 class TestMergeWithDefaults:
     def test_file_values_override_defaults(self):
         defaults = {"hp_flag": True, "chfield": 0}
@@ -187,9 +190,11 @@ class TestMergeWithDefaults:
 # get_multimedia_par
 # ===========================================================================
 
+
 class TestGetMultimediaPar:
     def test_defaults_when_no_ptv(self):
         from openptv2.algorithms.parameters import MultimediaPar
+
         mm = get_multimedia_par({})
         assert isinstance(mm, MultimediaPar)
         assert mm.n1 == 1.0
@@ -216,9 +221,11 @@ class TestGetMultimediaPar:
 # get_control_par
 # ===========================================================================
 
+
 class TestGetControlPar:
     def test_valid_params(self):
         from openptv2.algorithms.parameters import ControlPar
+
         p = _base_params()
         cpar = get_control_par(p)
         assert isinstance(cpar, ControlPar)
@@ -292,9 +299,11 @@ class TestGetControlPar:
 # get_sequence_par
 # ===========================================================================
 
+
 class TestGetSequencePar:
     def test_valid_params(self):
         from openptv2.algorithms.parameters import SequencePar
+
         p = _base_params()
         spar = get_sequence_par(p)
         assert isinstance(spar, SequencePar)
@@ -327,16 +336,23 @@ class TestGetSequencePar:
     def test_img_base_name(self):
         p = _base_params()
         spar = get_sequence_par(p)
-        assert spar.img_base_name == ["img/cam1.", "img/cam2.", "img/cam3.", "img/cam4."]
+        assert spar.img_base_name == [
+            "img/cam1.",
+            "img/cam2.",
+            "img/cam3.",
+            "img/cam4.",
+        ]
 
 
 # ===========================================================================
 # get_volume_par
 # ===========================================================================
 
+
 class TestGetVolumePar:
     def test_valid_criteria_key(self):
         from openptv2.algorithms.parameters import VolumePar
+
         p = _base_params()
         vpar = get_volume_par(p)
         assert isinstance(vpar, VolumePar)
@@ -345,6 +361,7 @@ class TestGetVolumePar:
     def test_volume_key_alias(self):
         """Accept 'volume' as alternative to 'criteria'."""
         from openptv2.algorithms.parameters import VolumePar
+
         params = {"volume": {"X_lay": [0.0, 5.0]}}
         vpar = get_volume_par(params)
         assert isinstance(vpar, VolumePar)
@@ -383,15 +400,17 @@ class TestGetVolumePar:
         assert vpar.corrmin == 0.0
 
     def test_optional_fields_custom(self):
-        params = {"criteria": {
-            "X_lay": [0, 1],
-            "cn": 0.5,
-            "cnx": 1.0,
-            "cny": 2.0,
-            "csumg": 3.0,
-            "eps0": 0.1,
-            "corrmin": 0.3,
-        }}
+        params = {
+            "criteria": {
+                "X_lay": [0, 1],
+                "cn": 0.5,
+                "cnx": 1.0,
+                "cny": 2.0,
+                "csumg": 3.0,
+                "eps0": 0.1,
+                "corrmin": 0.3,
+            }
+        }
         vpar = get_volume_par(params)
         assert vpar.cn == pytest.approx(0.5)
         assert vpar.cnx == pytest.approx(1.0)
@@ -401,9 +420,11 @@ class TestGetVolumePar:
 # get_track_par_tuple
 # ===========================================================================
 
+
 class TestGetTrackParTuple:
     def test_all_defaults_empty_params(self):
         from openptv2.algorithms.parameters import TrackParTuple
+
         tpar = get_track_par_tuple({})
         assert isinstance(tpar, TrackParTuple)
         assert tpar.dvxmin == -20
@@ -439,13 +460,23 @@ class TestGetTrackParTuple:
         assert tpar.dangle == 10  # default from DEFAULT_TRACK
 
     def test_all_fields_present(self):
-        params = {"track": {
-            "dvxmin": -1, "dvxmax": 1,
-            "dvymin": -2, "dvymax": 2,
-            "dvzmin": -3, "dvzmax": 3,
-            "angle": 5, "dacc": 1, "add": 1,
-            "dsumg": 0.5, "dn": 0.3, "dnx": 0.1, "dny": 0.2,
-        }}
+        params = {
+            "track": {
+                "dvxmin": -1,
+                "dvxmax": 1,
+                "dvymin": -2,
+                "dvymax": 2,
+                "dvzmin": -3,
+                "dvzmax": 3,
+                "angle": 5,
+                "dacc": 1,
+                "add": 1,
+                "dsumg": 0.5,
+                "dn": 0.3,
+                "dnx": 0.1,
+                "dny": 0.2,
+            }
+        }
         tpar = get_track_par_tuple(params)
         assert tpar.dvxmin == -1
         assert tpar.dvymin == -2
@@ -458,9 +489,11 @@ class TestGetTrackParTuple:
 # get_target_par
 # ===========================================================================
 
+
 class TestGetTargetPar:
     def test_all_defaults(self):
         from openptv2.algorithms.parameters import TargetPar
+
         targ = get_target_par({})
         assert isinstance(targ, TargetPar)
         assert targ.discont == 100
@@ -500,17 +533,19 @@ class TestGetTargetPar:
         assert targ.gvthres[0] == 40  # default
 
     def test_full_targ_rec_fields(self):
-        params = {"targ_rec": {
-            "discont": 5,
-            "nnmin": 1,
-            "nnmax": 200,
-            "nxmin": 1,
-            "nxmax": 50,
-            "nymin": 1,
-            "nymax": 50,
-            "sumg_min": 100,
-            "cr_sz": 3,
-        }}
+        params = {
+            "targ_rec": {
+                "discont": 5,
+                "nnmin": 1,
+                "nnmax": 200,
+                "nxmin": 1,
+                "nxmax": 50,
+                "nymin": 1,
+                "nymax": 50,
+                "sumg_min": 100,
+                "cr_sz": 3,
+            }
+        }
         targ = get_target_par(params)
         assert targ.discont == 5
         assert targ.cr_sz == 3
@@ -520,9 +555,11 @@ class TestGetTargetPar:
 # get_calibration_par
 # ===========================================================================
 
+
 class TestGetCalibrationPar:
     def test_basic_success(self):
         from openptv2.algorithms.parameters import CalibrationPar
+
         params = {
             "cal_ori": {
                 "img_cal_name": ["cam1.tif"],
@@ -537,6 +574,7 @@ class TestGetCalibrationPar:
     def test_calib_key_alias(self):
         """'calib' is an alternative key to 'cal_ori'."""
         from openptv2.algorithms.parameters import CalibrationPar
+
         params = {
             "calib": {
                 "img_cal_name": ["cam1.tif"],
@@ -566,6 +604,7 @@ class TestGetCalibrationPar:
 
     def test_optional_defaults(self):
         from openptv2.algorithms.parameters import CalibrationPar
+
         params = {
             "cal_ori": {
                 "img_cal_name": ["cam.tif"],
@@ -587,9 +626,11 @@ class TestGetCalibrationPar:
 # get_orient_par
 # ===========================================================================
 
+
 class TestGetOrientPar:
     def test_all_defaults(self):
         from openptv2.algorithms.parameters import OrientPar
+
         opar = get_orient_par({})
         assert isinstance(opar, OrientPar)
         assert opar.useflag == 0
@@ -607,10 +648,18 @@ class TestGetOrientPar:
 
     def test_all_flags(self):
         flags = {
-            "useflag": 1, "ccflag": 1, "xhflag": 1, "yhflag": 1,
-            "k1flag": 1, "k2flag": 1, "k3flag": 1,
-            "p1flag": 1, "p2flag": 1, "scxflag": 1,
-            "sheflag": 1, "interfflag": 1,
+            "useflag": 1,
+            "ccflag": 1,
+            "xhflag": 1,
+            "yhflag": 1,
+            "k1flag": 1,
+            "k2flag": 1,
+            "k3flag": 1,
+            "p1flag": 1,
+            "p2flag": 1,
+            "scxflag": 1,
+            "sheflag": 1,
+            "interfflag": 1,
         }
         opar = get_orient_par({"orient": flags})
         assert opar.k1flag == 1
@@ -621,9 +670,11 @@ class TestGetOrientPar:
 # get_multiplanes_par
 # ===========================================================================
 
+
 class TestGetMultiplanesPar:
     def test_defaults(self):
         from openptv2.algorithms.parameters import MultiPlanesPar
+
         mpar = get_multiplanes_par({})
         assert isinstance(mpar, MultiPlanesPar)
         assert mpar.num_planes == 0
@@ -637,6 +688,7 @@ class TestGetMultiplanesPar:
     def test_none_value_falls_back_to_defaults(self):
         """None value is now treated as missing — falls back to defaults."""
         from openptv2.algorithms.parameters import MultiPlanesPar
+
         result = get_multiplanes_par({"multi_planes": None})
         assert isinstance(result, MultiPlanesPar)
 
@@ -645,9 +697,11 @@ class TestGetMultiplanesPar:
 # get_examine_par
 # ===========================================================================
 
+
 class TestGetExaminePar:
     def test_defaults(self):
         from openptv2.algorithms.parameters import ExaminePar
+
         epar = get_examine_par({})
         assert isinstance(epar, ExaminePar)
         assert epar.examine_flag is False
@@ -668,9 +722,11 @@ class TestGetExaminePar:
 # get_pft_version_par
 # ===========================================================================
 
+
 class TestGetPftVersionPar:
     def test_defaults(self):
         from openptv2.algorithms.parameters import PftVersionPar
+
         ppar = get_pft_version_par({})
         assert isinstance(ppar, PftVersionPar)
         assert ppar.existing_target_flag == 0
@@ -688,6 +744,7 @@ class TestGetPftVersionPar:
 # ===========================================================================
 # get_all_params
 # ===========================================================================
+
 
 class TestGetAllParams:
     def test_full_params(self):
@@ -714,6 +771,7 @@ class TestGetAllParams:
 # convert_optv_calibrations
 # ===========================================================================
 
+
 class TestConvertOptvCalibrations:
     def test_empty_list_returns_empty_list(self):
         result = convert_optv_calibrations([])
@@ -728,13 +786,26 @@ class TestConvertOptvCalibrations:
         from openptv2.algorithms.calibration import Calibration
 
         class MockCal:
-            def get_pos(self): return [0.0, 0.0, 100.0]
-            def get_angles(self): return [0.0, 0.0, 0.0]
-            def get_primary_point(self): return [0.0, 0.0, 50.0]
-            def get_glass_vec(self): return np.zeros(3)
-            def get_radial_distortion(self): return [0.0, 0.0, 0.0]
-            def get_decentering(self): return [0.0, 0.0]
-            def get_affine(self): return [1.0, 0.0]
+            def get_pos(self):
+                return [0.0, 0.0, 100.0]
+
+            def get_angles(self):
+                return [0.0, 0.0, 0.0]
+
+            def get_primary_point(self):
+                return [0.0, 0.0, 50.0]
+
+            def get_glass_vec(self):
+                return np.zeros(3)
+
+            def get_radial_distortion(self):
+                return [0.0, 0.0, 0.0]
+
+            def get_decentering(self):
+                return [0.0, 0.0]
+
+            def get_affine(self):
+                return [1.0, 0.0]
 
         result = convert_optv_calibrations([MockCal()])
         # Should return one entry (from the except fallback)
@@ -743,7 +814,8 @@ class TestConvertOptvCalibrations:
 
     def test_multiple_cals_all_fallback(self):
         class FailCal:
-            def get_pos(self): raise RuntimeError("fail")
+            def get_pos(self):
+                raise RuntimeError("fail")
 
         result = convert_optv_calibrations([FailCal(), FailCal()])
         assert len(result) == 2
@@ -778,24 +850,45 @@ class TestConvertOptvCalibrations:
             def _create_default_interior():
                 return MockIntPar()
 
-            def __init__(self, ext_par=None, int_par=None, glass_par=None,
-                         added_par=None, **kwargs):
+            def __init__(
+                self,
+                ext_par=None,
+                int_par=None,
+                glass_par=None,
+                added_par=None,
+                **kwargs,
+            ):
                 pass
 
         def mock_rotation_matrix(ext_par):
             pass  # no-op
 
         monkeypatch.setattr(cal_mod, "Calibration", MockPyCal)
-        monkeypatch.setattr(cal_mod, "rotation_matrix", mock_rotation_matrix, raising=False)
+        monkeypatch.setattr(
+            cal_mod, "rotation_matrix", mock_rotation_matrix, raising=False
+        )
 
         class MockOptvCal:
-            def get_pos(self): return [1.0, 2.0, 300.0]
-            def get_angles(self): return [0.01, 0.02, 0.03]
-            def get_primary_point(self): return [0.5, -0.3, 50.0]
-            def get_glass_vec(self): return np.array([0.0, 0.0, 60.0])
-            def get_radial_distortion(self): return [1e-5, 2e-7, 0.0]
-            def get_decentering(self): return [1e-6, 2e-6]
-            def get_affine(self): return [1.0, 0.0]
+            def get_pos(self):
+                return [1.0, 2.0, 300.0]
+
+            def get_angles(self):
+                return [0.01, 0.02, 0.03]
+
+            def get_primary_point(self):
+                return [0.5, -0.3, 50.0]
+
+            def get_glass_vec(self):
+                return np.array([0.0, 0.0, 60.0])
+
+            def get_radial_distortion(self):
+                return [1e-5, 2e-7, 0.0]
+
+            def get_decentering(self):
+                return [1e-6, 2e-6]
+
+            def get_affine(self):
+                return [1.0, 0.0]
 
         result = convert_optv_calibrations([MockOptvCal()])
         assert len(result) == 1
@@ -806,7 +899,9 @@ class TestConvertOptvCalibrations:
         import openptv2.algorithms.calibration as cal_mod
 
         def make_mock_ext_par():
-            return {k: np.zeros(()) for k in ("x0", "y0", "z0", "omega", "phi", "kappa")}
+            return {
+                k: np.zeros(()) for k in ("x0", "y0", "z0", "omega", "phi", "kappa")
+            }
 
         class MockIntPar:
             xh = np.zeros(())
@@ -815,24 +910,43 @@ class TestConvertOptvCalibrations:
 
         class MockPyCal2:
             @staticmethod
-            def _create_default_exterior(): return make_mock_ext_par()
-            @staticmethod
-            def _create_default_interior(): return MockIntPar()
-            def __init__(self, **kwargs): pass
+            def _create_default_exterior():
+                return make_mock_ext_par()
 
-        def mock_rm(ext_par): pass
+            @staticmethod
+            def _create_default_interior():
+                return MockIntPar()
+
+            def __init__(self, **kwargs):
+                pass
+
+        def mock_rm(ext_par):
+            pass
 
         monkeypatch.setattr(cal_mod, "Calibration", MockPyCal2)
         monkeypatch.setattr(cal_mod, "rotation_matrix", mock_rm, raising=False)
 
         class MockOptvCal2:
-            def get_pos(self): return [0.0, 0.0, 100.0]
-            def get_angles(self): return [0.0, 0.0, 0.0]
-            def get_primary_point(self): return [0.0, 0.0, 50.0]
-            def get_glass_vec(self): return np.zeros(3)
-            def get_radial_distortion(self): return [0.0, 0.0, 0.0]
-            def get_decentering(self): return [0.0, 0.0]
-            def get_affine(self): return [1.0, 0.0]
+            def get_pos(self):
+                return [0.0, 0.0, 100.0]
+
+            def get_angles(self):
+                return [0.0, 0.0, 0.0]
+
+            def get_primary_point(self):
+                return [0.0, 0.0, 50.0]
+
+            def get_glass_vec(self):
+                return np.zeros(3)
+
+            def get_radial_distortion(self):
+                return [0.0, 0.0, 0.0]
+
+            def get_decentering(self):
+                return [0.0, 0.0]
+
+            def get_affine(self):
+                return [1.0, 0.0]
 
         result = convert_optv_calibrations([MockOptvCal2(), MockOptvCal2()])
         assert len(result) == 2

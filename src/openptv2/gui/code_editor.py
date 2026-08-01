@@ -1,6 +1,7 @@
 """
 Editor for editing the cameras ori files
 """
+
 import os
 from pathlib import Path
 
@@ -88,14 +89,14 @@ class oriEditor(HasTraits):
 
     def __init__(self, experiment: Experiment):
         """Initialize by reading parameters and filling the editor windows"""
-        ptv_params = experiment.get_parameter('ptv')
-        cal_ori_params = experiment.get_parameter('cal_ori')
+        ptv_params = experiment.get_parameter("ptv")
+        cal_ori_params = experiment.get_parameter("cal_ori")
 
         if ptv_params is None or cal_ori_params is None:
             raise ValueError("Failed to load required parameters")
 
         self.n_img = int(experiment.pm.num_cams)
-        img_ori = cal_ori_params['img_ori']
+        img_ori = cal_ori_params["img_ori"]
 
         for i in range(self.n_img):
             self.oriEditors.append(CodeEditor(Path(img_ori[i])))
@@ -126,14 +127,14 @@ class addparEditor(HasTraits):
 
     def __init__(self, experiment: Experiment):
         """Initialize by reading parameters and filling the editor windows"""
-        ptv_params = experiment.get_parameter('ptv')
-        cal_ori_params = experiment.get_parameter('cal_ori')
+        ptv_params = experiment.get_parameter("ptv")
+        cal_ori_params = experiment.get_parameter("cal_ori")
 
         if ptv_params is None or cal_ori_params is None:
             raise ValueError("Failed to load required parameters")
 
         self.n_img = int(experiment.pm.num_cams)
-        img_ori = cal_ori_params['img_ori']
+        img_ori = cal_ori_params["img_ori"]
 
         for i in range(self.n_img):
             self.addparEditors.append(

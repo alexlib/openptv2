@@ -13,7 +13,13 @@ def run_tracking_with_different_parameters():
     """Test tracking with progressively more relaxed velocity constraints"""
 
     base_test_path = Path(__file__).parent.parent.parent / "test_data" / "test_splitter"
-    script_path = Path(__file__).parent.parent.parent / "src" / "openptv2" / "batch" / "pyptv_batch_plugins.py"
+    script_path = (
+        Path(__file__).parent.parent.parent
+        / "src"
+        / "openptv2"
+        / "batch"
+        / "pyptv_batch_plugins.py"
+    )
 
     if not base_test_path.exists() or not script_path.exists():
         print("❌ Required files not found")

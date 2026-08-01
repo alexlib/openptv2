@@ -13,8 +13,6 @@ the C implementation's memory layout.
 """
 
 import cython
-
-
 import numpy as np
 
 

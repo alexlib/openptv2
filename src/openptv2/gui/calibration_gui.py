@@ -55,7 +55,6 @@ class ClickerTool(ImageInspectorTool):
     x = 0
     y = 0
 
-
     def __init__(self, *args, **kwargs):
         super(ClickerTool, self).__init__(*args, **kwargs)
 
@@ -71,7 +70,9 @@ class ClickerTool(ImageInspectorTool):
             self.right_changed = 1 - self.right_changed
             self.last_mouse_position = (event.x, event.y)
 
+
 # -------------------------------------------------------------
+
 
 class PlotWindow(HasTraits):
     _plot = Instance(Plot)
@@ -270,18 +271,21 @@ class CalibrationGUI(HasTraits):
         super(CalibrationGUI, self).__init__()
         self.need_reset = 0
         self.yaml_path = Path(yaml_path).resolve()
-        self.working_folder = self.yaml_path.parent  # Use the folder containing the YAML as working dir
+        self.working_folder = (
+            self.yaml_path.parent
+        )  # Use the folder containing the YAML as working dir
         os.chdir(self.working_folder)
         print(f"Calibration GUI working directory: {Path.cwd()}")
 
         # Create Experiment using the YAML file
         from .parameter_manager import ParameterManager
+
         pm = ParameterManager()
         pm.from_yaml(self.yaml_path)
         self.experiment = Experiment(pm=pm)
         self.experiment.populate_runs(self.working_folder, active_yaml=self.yaml_path)
 
-        ptv_params = self.experiment.get_parameter('ptv')
+        ptv_params = self.experiment.get_parameter("ptv")
         if ptv_params is None:
             raise ValueError("Failed to load PTV parameters")
         self.num_cams = self.experiment.get_n_cam()
@@ -292,7 +296,7 @@ class CalibrationGUI(HasTraits):
         # what the checkbox shows or the user does with it (the two were
         # OR'd together, so once the YAML said true the checkbox could only
         # ever add splitting, never remove it).
-        self._cal_splitter = bool(self.get_parameter('cal_ori').get('cal_splitter'))
+        self._cal_splitter = bool(self.get_parameter("cal_ori").get("cal_splitter"))
 
         # Initialize detections to prevent AttributeError
         self.detections = None
@@ -306,145 +310,145 @@ class CalibrationGUI(HasTraits):
 
     view = View(
         HGroup(
-                VGroup(
-                    Item(
-                        name="button_showimg",
-                        label="Load images/parameters",
-                        show_label=False,
-                        width=LEFT_PANEL_ITEM_WIDTH,
-                    ),
-                    Item(
-                        name="button_detection",
-                        label="Detection",
-                        show_label=False,
-                        enabled_when="pass_init",
-                        width=LEFT_PANEL_ITEM_WIDTH,
-                    ),
-                    Item(
-                        name="button_manual",
-                        label="Manual orient.",
-                        show_label=False,
-                        enabled_when="pass_init",
-                        width=LEFT_PANEL_ITEM_WIDTH,
-                    ),
-                    Item(
-                        name="button_file_orient",
-                        label="Orient. with file",
-                        show_label=False,
-                        enabled_when="pass_init",
-                        width=LEFT_PANEL_ITEM_WIDTH,
-                    ),
-                    Item(
-                        name="button_init_guess",
-                        label="Show initial guess",
-                        show_label=False,
-                        enabled_when="pass_init",
-                        width=LEFT_PANEL_ITEM_WIDTH,
-                    ),
-                    Item(
-                        name="button_sort_grid",
-                        label="Sortgrid",
-                        show_label=False,
-                        enabled_when="pass_init",
-                        width=LEFT_PANEL_ITEM_WIDTH,
-                    ),
-                    Item(
-                        name="button_raw_orient",
-                        label="Raw orientation",
-                        show_label=False,
-                        enabled_when="pass_sortgrid",
-                        width=LEFT_PANEL_ITEM_WIDTH,
-                    ),
-                    Item(
-                        name="button_fine_orient",
-                        label="Fine tuning",
-                        show_label=False,
-                        enabled_when="pass_raw_orient",
-                        width=LEFT_PANEL_ITEM_WIDTH,
-                    ),
-                    Item(
-                        name="button_orient_dumbbell",
-                        label="Orientation from dumbbell",
-                        show_label=False,
-                        enabled_when="pass_init",
-                        width=LEFT_PANEL_ITEM_WIDTH,
-                    ),
-                    Item(
-                        name="button_restore_orient",
-                        label="Restore ori files",
-                        show_label=False,
-                        enabled_when="pass_init",
-                        width=LEFT_PANEL_ITEM_WIDTH,
-                    ),
-                    Item(
-                        name="button_suggest_eps0",
-                        label="Suggest eps0",
-                        show_label=False,
-                        enabled_when="pass_init",
-                        width=LEFT_PANEL_ITEM_WIDTH,
-                    ),
-                    Item(
-                        name="button_tracer_selfcal",
-                        label="Tracer self-cal",
-                        show_label=False,
-                        enabled_when="pass_init",
-                        width=LEFT_PANEL_ITEM_WIDTH,
-                    ),
-                    Item(
-                        label="Exclude IDs:",
-                        show_label=False,
-                        width=LEFT_PANEL_ITEM_WIDTH,
-                    ),
-                    Item(
-                        name="exclude_ids_text",
-                        show_label=False,
-                        tooltip="Exclude Ids: cam:id pairs to drop, e.g. '2:53,4:94'. "
-                                "Re-run Sortgrid to apply.",
-                        resizable=True,
-                        width=LEFT_PANEL_ITEM_WIDTH,
-                    ),
-                    Item(
-                        name="button_edit_cal_parameters",
-                        label="Edit calibration parameters",
-                        show_label=False,
-                        width=LEFT_PANEL_ITEM_WIDTH,
-                    ),
-                    Item(
-                        name="button_edit_ori_files",
-                        label="Edit ori files",
-                        show_label=False,
-                        width=LEFT_PANEL_ITEM_WIDTH,
-                    ),
-                    Item(
-                        name="button_edit_addpar_files",
-                        label="Edit addpar files",
-                        show_label=False,
-                        width=LEFT_PANEL_ITEM_WIDTH,
-                    ),
-                    Item(
-                        name="_",
-                        label="",
-                        show_label=False,
-                        width=LEFT_PANEL_ITEM_WIDTH,
-                    ),
-                    Item(
-                        name="button_orient_part",
-                        label="Orientation with particles",
-                        show_label=False,
-                        enabled_when="pass_init",
-                        width=LEFT_PANEL_ITEM_WIDTH,
-                    ),
-                    Item(
-                        label="Split into 4 views?",
-                        show_label=False,
-                        width=LEFT_PANEL_ITEM_WIDTH,
-                    ),
-                    Item(
-                        name="_cal_splitter",
-                        show_label=False,
-                        width=LEFT_PANEL_ITEM_WIDTH,
-                    ),
-                    springy=False,
+            VGroup(
+                Item(
+                    name="button_showimg",
+                    label="Load images/parameters",
+                    show_label=False,
+                    width=LEFT_PANEL_ITEM_WIDTH,
+                ),
+                Item(
+                    name="button_detection",
+                    label="Detection",
+                    show_label=False,
+                    enabled_when="pass_init",
+                    width=LEFT_PANEL_ITEM_WIDTH,
+                ),
+                Item(
+                    name="button_manual",
+                    label="Manual orient.",
+                    show_label=False,
+                    enabled_when="pass_init",
+                    width=LEFT_PANEL_ITEM_WIDTH,
+                ),
+                Item(
+                    name="button_file_orient",
+                    label="Orient. with file",
+                    show_label=False,
+                    enabled_when="pass_init",
+                    width=LEFT_PANEL_ITEM_WIDTH,
+                ),
+                Item(
+                    name="button_init_guess",
+                    label="Show initial guess",
+                    show_label=False,
+                    enabled_when="pass_init",
+                    width=LEFT_PANEL_ITEM_WIDTH,
+                ),
+                Item(
+                    name="button_sort_grid",
+                    label="Sortgrid",
+                    show_label=False,
+                    enabled_when="pass_init",
+                    width=LEFT_PANEL_ITEM_WIDTH,
+                ),
+                Item(
+                    name="button_raw_orient",
+                    label="Raw orientation",
+                    show_label=False,
+                    enabled_when="pass_sortgrid",
+                    width=LEFT_PANEL_ITEM_WIDTH,
+                ),
+                Item(
+                    name="button_fine_orient",
+                    label="Fine tuning",
+                    show_label=False,
+                    enabled_when="pass_raw_orient",
+                    width=LEFT_PANEL_ITEM_WIDTH,
+                ),
+                Item(
+                    name="button_orient_dumbbell",
+                    label="Orientation from dumbbell",
+                    show_label=False,
+                    enabled_when="pass_init",
+                    width=LEFT_PANEL_ITEM_WIDTH,
+                ),
+                Item(
+                    name="button_restore_orient",
+                    label="Restore ori files",
+                    show_label=False,
+                    enabled_when="pass_init",
+                    width=LEFT_PANEL_ITEM_WIDTH,
+                ),
+                Item(
+                    name="button_suggest_eps0",
+                    label="Suggest eps0",
+                    show_label=False,
+                    enabled_when="pass_init",
+                    width=LEFT_PANEL_ITEM_WIDTH,
+                ),
+                Item(
+                    name="button_tracer_selfcal",
+                    label="Tracer self-cal",
+                    show_label=False,
+                    enabled_when="pass_init",
+                    width=LEFT_PANEL_ITEM_WIDTH,
+                ),
+                Item(
+                    label="Exclude IDs:",
+                    show_label=False,
+                    width=LEFT_PANEL_ITEM_WIDTH,
+                ),
+                Item(
+                    name="exclude_ids_text",
+                    show_label=False,
+                    tooltip="Exclude Ids: cam:id pairs to drop, e.g. '2:53,4:94'. "
+                    "Re-run Sortgrid to apply.",
+                    resizable=True,
+                    width=LEFT_PANEL_ITEM_WIDTH,
+                ),
+                Item(
+                    name="button_edit_cal_parameters",
+                    label="Edit calibration parameters",
+                    show_label=False,
+                    width=LEFT_PANEL_ITEM_WIDTH,
+                ),
+                Item(
+                    name="button_edit_ori_files",
+                    label="Edit ori files",
+                    show_label=False,
+                    width=LEFT_PANEL_ITEM_WIDTH,
+                ),
+                Item(
+                    name="button_edit_addpar_files",
+                    label="Edit addpar files",
+                    show_label=False,
+                    width=LEFT_PANEL_ITEM_WIDTH,
+                ),
+                Item(
+                    name="_",
+                    label="",
+                    show_label=False,
+                    width=LEFT_PANEL_ITEM_WIDTH,
+                ),
+                Item(
+                    name="button_orient_part",
+                    label="Orientation with particles",
+                    show_label=False,
+                    enabled_when="pass_init",
+                    width=LEFT_PANEL_ITEM_WIDTH,
+                ),
+                Item(
+                    label="Split into 4 views?",
+                    show_label=False,
+                    width=LEFT_PANEL_ITEM_WIDTH,
+                ),
+                Item(
+                    name="_cal_splitter",
+                    show_label=False,
+                    width=LEFT_PANEL_ITEM_WIDTH,
+                ),
+                springy=False,
             ),
             Item(
                 "camera",
@@ -474,7 +478,7 @@ class CalibrationGUI(HasTraits):
 
         # Create and show the calibration parameters GUI
         calib_params_gui = Calib_Params(experiment=self.experiment)
-        calib_params_gui.edit_traits(view='Calib_Params_View', kind='livemodal')
+        calib_params_gui.edit_traits(view="Calib_Params_View", kind="livemodal")
 
     def _button_showimg_fired(self):
 
@@ -489,14 +493,14 @@ class CalibrationGUI(HasTraits):
             self.epar,
         ) = ptv.py_start_proc_c(self.experiment.pm)
 
-        self.epar = self.get_parameter('examine')
-        ptv_params = self.experiment.pm.get_parameter('ptv')
+        self.epar = self.get_parameter("examine")
+        ptv_params = self.experiment.pm.get_parameter("ptv")
 
-        if self.epar['Combine_Flag'] is True: # type: ignore
+        if self.epar["Combine_Flag"] is True:  # type: ignore
             print("Combine Flag is On")
-            self.MultiParams = self.get_parameter('multi_planes')
-            for i in range(self.MultiParams['n_planes']):
-                print(self.MultiParams['plane_name'][i])
+            self.MultiParams = self.get_parameter("multi_planes")
+            for i in range(self.MultiParams["n_planes"]):
+                print(self.MultiParams["plane_name"][i])
 
             self.pass_raw_orient = True
             self.status_text = "Multiplane calibration."
@@ -505,7 +509,7 @@ class CalibrationGUI(HasTraits):
 
         if self._cal_splitter:
             print("Using splitter in Calibration")
-            imname = self.get_parameter('cal_ori')['img_cal_name'][0]
+            imname = self.get_parameter("cal_ori")["img_cal_name"][0]
             if Path(imname).exists():
                 print(f"Splitting calibration image: {imname}")
                 temp_img = imread(imname)
@@ -514,7 +518,7 @@ class CalibrationGUI(HasTraits):
                 # Same view order as the sequence pipeline, so calibration
                 # and processing cannot disagree on the view<->camera mapping.
                 splitted_images = ptv.image_split(
-                    temp_img, order=ptv_params.get('splitter_order')
+                    temp_img, order=ptv_params.get("splitter_order")
                 )
                 for split_img in splitted_images:
                     self.cal_images.append(img_as_ubyte(split_img))
@@ -522,11 +526,17 @@ class CalibrationGUI(HasTraits):
                 print(f"Calibration image not found: {imname}")
                 # Create zero images for each camera when calibration image not found
                 for _ in range(len(self.camera)):
-                    self.cal_images.append(img_as_ubyte(np.zeros((ptv_params['imy'], ptv_params['imx']), dtype=np.uint8)))
+                    self.cal_images.append(
+                        img_as_ubyte(
+                            np.zeros(
+                                (ptv_params["imy"], ptv_params["imx"]), dtype=np.uint8
+                            )
+                        )
+                    )
         else:
-            img_cal_names = self.get_parameter('cal_ori').get('img_cal_name', [])
+            img_cal_names = self.get_parameter("cal_ori").get("img_cal_name", [])
             for i, cam in enumerate(self.camera):
-                imname = img_cal_names[i] if i < len(img_cal_names) else ''
+                imname = img_cal_names[i] if i < len(img_cal_names) else ""
                 if Path(imname).exists():
                     im = imread(imname)
                     if im.ndim > 2:
@@ -534,14 +544,20 @@ class CalibrationGUI(HasTraits):
                     self.cal_images.append(img_as_ubyte(im))
                 else:
                     print(f"Calibration image not found: {imname}")
-                    self.cal_images.append(img_as_ubyte(np.zeros((ptv_params['imy'], ptv_params['imx']), dtype=np.uint8)))
+                    self.cal_images.append(
+                        img_as_ubyte(
+                            np.zeros(
+                                (ptv_params["imy"], ptv_params["imx"]), dtype=np.uint8
+                            )
+                        )
+                    )
 
         self.reset_show_images()
 
-        man_ori_params = self.get_parameter('man_ori')
+        man_ori_params = self.get_parameter("man_ori")
         for i in range(len(self.camera)):
             for j in range(4):
-                self.camera[i].man_ori[j] = man_ori_params['nr'][i*4+j]
+                self.camera[i].man_ori[j] = man_ori_params["nr"][i * 4 + j]
 
         self.pass_init = True
         self.status_text = "Initialization finished."
@@ -560,14 +576,11 @@ class CalibrationGUI(HasTraits):
         self.reset_show_images()
 
         # Get parameter dictionaries for py_detection_proc_c
-        ptv_params = self.get_parameter('ptv')
-        target_params_dict = {'detect_plate': self.get_parameter('detect_plate')}
+        ptv_params = self.get_parameter("ptv")
+        target_params_dict = {"detect_plate": self.get_parameter("detect_plate")}
 
         self.detections, corrected = ptv.py_detection_proc_c(
-            self.num_cams,
-            self.cal_images,
-            ptv_params,
-            target_params_dict
+            self.num_cams, self.cal_images, ptv_params, target_params_dict
         )
 
         x = [[i.pos()[0] for i in row] for row in self.detections]
@@ -581,8 +594,9 @@ class CalibrationGUI(HasTraits):
     def _button_manual_fired(self):
         """Manual orientation of cameras by clicking on 4 points"""
 
-
-        print("Start manual orientation, click 4 times in 4 cameras and then press this button again")
+        print(
+            "Start manual orientation, click 4 times in 4 cameras and then press this button again"
+        )
         points_set = True
         short_cams = []
         for i in range(self.num_cams):
@@ -605,17 +619,17 @@ class CalibrationGUI(HasTraits):
             # Save to YAML instead of man_ori.dat
             man_ori_coords = {}
             for i in range(self.num_cams):
-                cam_key = f'camera_{i}'
+                cam_key = f"camera_{i}"
                 man_ori_coords[cam_key] = {}
                 for j in range(4):
-                    point_key = f'point_{j + 1}'
+                    point_key = f"point_{j + 1}"
                     man_ori_coords[cam_key][point_key] = {
-                        'x': float(self.camera[i]._x[j]),
-                        'y': float(self.camera[i]._y[j])
+                        "x": float(self.camera[i]._x[j]),
+                        "y": float(self.camera[i]._y[j]),
                     }
 
             # Update only the man_ori_coordinates section in YAML
-            self.experiment.pm.parameters['man_ori_coordinates'] = man_ori_coords
+            self.experiment.pm.parameters["man_ori_coordinates"] = man_ori_coords
             self._save_man_ori_coordinates()
             self.status_text = "Manual orientation coordinates saved to YAML."
 
@@ -624,16 +638,19 @@ class CalibrationGUI(HasTraits):
         Save only the man_ori_coordinates section to the YAML file, without touching other parameters.
         """
         import yaml
-        yaml_path = getattr(self.experiment.pm, 'yaml_path', None)
+
+        yaml_path = getattr(self.experiment.pm, "yaml_path", None)
         if yaml_path is None:
             print("No YAML path found for saving man_ori_coordinates.")
             return
-        with open(yaml_path, 'r') as f:
+        with open(yaml_path, "r") as f:
             data = yaml.safe_load(f) or {}
-        data['man_ori_coordinates'] = self.experiment.pm.parameters['man_ori_coordinates']
-        with open(yaml_path, 'w') as f:
+        data["man_ori_coordinates"] = self.experiment.pm.parameters[
+            "man_ori_coordinates"
+        ]
+        with open(yaml_path, "w") as f:
             yaml.safe_dump(data, f, default_flow_style=False, sort_keys=False)
-        print('Saved man_ori_coordinates',data['man_ori_coordinates'])
+        print("Saved man_ori_coordinates", data["man_ori_coordinates"])
 
     def _button_file_orient_fired(self):
         if self.need_reset:
@@ -641,24 +658,26 @@ class CalibrationGUI(HasTraits):
             self.need_reset = 0
 
         # Load from YAML instead of man_ori.dat
-        man_ori_coords = self.experiment.pm.parameters.get('man_ori_coordinates', {})
+        man_ori_coords = self.experiment.pm.parameters.get("man_ori_coordinates", {})
 
         if not man_ori_coords:
-            self.status_text = "No manual orientation coordinates found in YAML parameters."
+            self.status_text = (
+                "No manual orientation coordinates found in YAML parameters."
+            )
             return
 
         for i in range(self.num_cams):
-            cam_key = f'camera_{i}'
+            cam_key = f"camera_{i}"
             self.camera[i]._x = []
             self.camera[i]._y = []
 
             if cam_key in man_ori_coords:
                 for j in range(4):
-                    point_key = f'point_{j + 1}'
+                    point_key = f"point_{j + 1}"
                     if point_key in man_ori_coords[cam_key]:
                         point_data = man_ori_coords[cam_key][point_key]
-                        self.camera[i]._x.append(float(point_data['x']))
-                        self.camera[i]._y.append(float(point_data['y']))
+                        self.camera[i]._x.append(float(point_data["x"]))
+                        self.camera[i]._y.append(float(point_data["y"]))
                     else:
                         # Default values if point not found
                         self.camera[i]._x.append(0.0)
@@ -671,10 +690,10 @@ class CalibrationGUI(HasTraits):
 
         self.status_text = "Manual orientation coordinates loaded from YAML."
 
-        man_ori_params = self.get_parameter('man_ori')
+        man_ori_params = self.get_parameter("man_ori")
         for i in range(self.num_cams):
             for j in range(4):
-                self.camera[i].man_ori[j] = man_ori_params['nr'][i*4+j]
+                self.camera[i].man_ori[j] = man_ori_params["nr"][i * 4 + j]
             self.status_text = "man_ori.par loaded."
             self.camera[i].left_clicked_event()
 
@@ -690,7 +709,7 @@ class CalibrationGUI(HasTraits):
         self.cals = []
         for i_cam in range(self.num_cams):
             cal = Calibration()
-            tmp = self.get_parameter('cal_ori')['img_ori'][i_cam]
+            tmp = self.get_parameter("cal_ori")["img_ori"][i_cam]
             cal.from_file(tmp, tmp.replace(".ori", ".addpar"))
             self.cals.append(cal)
 
@@ -756,7 +775,7 @@ class CalibrationGUI(HasTraits):
         # point onto a neighbouring detection -- the "shifted dots" symptom.
         # 0/missing -> a tight default: better to drop a marginal match than
         # mislabel it (raw orientation refines from the confident ones).
-        radius = int(self.get_parameter('sortgrid').get('radius', 0)) or 5
+        radius = int(self.get_parameter("sortgrid").get("radius", 0)) or 5
 
         print("_button_sort_grid_fired")
         print(f"Sortgrid search radius: {radius} px")
@@ -834,17 +853,19 @@ class CalibrationGUI(HasTraits):
 
         self._backup_ori_files()
 
-        orient_params = self.get_parameter('orient')
+        orient_params = self.get_parameter("orient")
         flags = [name for name in NAMES if orient_params.get(name) == 1]
 
         for i_cam in range(self.num_cams):
-            if self.epar.get('Combine_Flag', False):
+            if self.epar.get("Combine_Flag", False):
                 self.status_text = "Multiplane calibration."
                 all_known = []
                 all_detected = []
 
-                for i in range(self.MultiParams['n_planes']):
-                    match = re.search(r"cam[_-]?(\d)", self.get_parameter('cal_ori')['img_ori'][i_cam])
+                for i in range(self.MultiParams["n_planes"]):
+                    match = re.search(
+                        r"cam[_-]?(\d)", self.get_parameter("cal_ori")["img_ori"][i_cam]
+                    )
                     if match:
                         c = match.group(1)
                         print(
@@ -853,12 +874,12 @@ class CalibrationGUI(HasTraits):
                     else:
                         raise ValueError(
                             "Camera number not found in {}".format(
-                                self.get_parameter('cal_ori')['img_ori'][i_cam]
+                                self.get_parameter("cal_ori")["img_ori"][i_cam]
                             )
                         )
 
-                    file_known = self.MultiParams['plane_name'][i] + c + ".tif.fix"
-                    file_detected = self.MultiParams['plane_name'][i] + c + ".tif.crd"
+                    file_known = self.MultiParams["plane_name"][i] + c + ".tif.fix"
+                    file_detected = self.MultiParams["plane_name"][i] + c + ".tif.crd"
 
                     try:
                         known = np.loadtxt(file_known)
@@ -1016,15 +1037,20 @@ class CalibrationGUI(HasTraits):
             rep = np.column_stack([rx, ry])
             err = np.hypot(det[:, 0] - rep[:, 0], det[:, 1] - rep[:, 1])
             img = self.cal_images[i_cam] if i_cam < len(self.cal_images) else None
-            ori = self.get_parameter('cal_ori')['img_ori'][i_cam]
+            ori = self.get_parameter("cal_ori")["img_ori"][i_cam]
             outdir = Path(ori).resolve().parent / "calib_matches"
             outdir.mkdir(parents=True, exist_ok=True)
             dest = outdir / f"cam{i_cam + 1}_residual_field.png"
-            rms = float(np.sqrt(np.mean(err ** 2)))
+            rms = float(np.sqrt(np.mean(err**2)))
             save_residual_field_figure(
-                det, rep, err, img, dest, scale=15.0,
+                det,
+                rep,
+                err,
+                img,
+                dest,
+                scale=15.0,
                 title=f"cam{i_cam + 1}  residual vector field  (n={len(det)}, "
-                      f"RMS={rms:.2f}px)",
+                f"RMS={rms:.2f}px)",
             )
             self.status_text = f"Residual field saved: {dest}"
         except Exception as exc:  # noqa: BLE001 - diagnostics must never break calib
@@ -1086,7 +1112,7 @@ class CalibrationGUI(HasTraits):
                 f"Calibration parameters for camera {i_cam} contain NaNs. Aborting write operation."
             )
 
-        ori = self.get_parameter('cal_ori')['img_ori'][i_cam]
+        ori = self.get_parameter("cal_ori")["img_ori"][i_cam]
         if addpar_flag:
             addpar = ori.replace("ori", "addpar")
         else:
@@ -1094,11 +1120,13 @@ class CalibrationGUI(HasTraits):
 
         print("Saving:", ori, addpar)
         self.cals[i_cam].write(ori.encode(), addpar.encode())
-        if self.epar.get('Examine_Flag', False) and not self.epar.get('Combine_Flag', False):
+        if self.epar.get("Examine_Flag", False) and not self.epar.get(
+            "Combine_Flag", False
+        ):
             self.save_point_sets(i_cam)
 
     def save_point_sets(self, i_cam):
-        ori = self.get_parameter('cal_ori')['img_ori'][i_cam]
+        ori = self.get_parameter("cal_ori")["img_ori"][i_cam]
         txt_detected = ori.replace("ori", "crd")
         txt_matched = ori.replace("ori", "fix")
 
@@ -1117,17 +1145,15 @@ class CalibrationGUI(HasTraits):
         np.savetxt(txt_matched, known, fmt="%10.5f")
 
     def _button_orient_part_fired(self):
-        """ Orientation using a particle tracking method."""
+        """Orientation using a particle tracking method."""
         self._backup_ori_files()
         targs_all, targ_ix_all, residuals_all = ptv.py_calibration(10, self)
 
-        shaking_params = self.get_parameter('shaking')
-        seq_first = shaking_params['shaking_first_frame']
-        seq_last = shaking_params['shaking_last_frame']
+        shaking_params = self.get_parameter("shaking")
+        seq_first = shaking_params["shaking_first_frame"]
+        seq_last = shaking_params["shaking_last_frame"]
 
-        base_names = [
-            self.spar.get_img_base_name(i) for i in range(self.num_cams)
-        ]
+        base_names = [self.spar.get_img_base_name(i) for i in range(self.num_cams)]
 
         for i_cam in range(self.num_cams):
             targ_ix = targ_ix_all[i_cam]
@@ -1163,16 +1189,15 @@ class CalibrationGUI(HasTraits):
 
         self.status_text = "Orientation with particles finished."
 
-
     def _button_orient_dumbbell_fired(self):
-        """ Orientation using a dumbbell calibration method."""
+        """Orientation using a dumbbell calibration method."""
         self._backup_ori_files()
         ptv.py_calibration(12, self)
 
         self.status_text = "Orientation with dumbbell finished."
 
     def _button_restore_orient_fired(self):
-        """ Restores original orientation files from backup."""
+        """Restores original orientation files from backup."""
         print("Restoring ORI files\n")
         self.restore_ori_files()
 
@@ -1191,18 +1216,24 @@ class CalibrationGUI(HasTraits):
             print(f"eps0 suggestion failed: {exc}")
             return
         if not sug or sug.get("recommended") is None:
-            self.status_text = ("eps0 suggestion: n/a (needs 4 cameras, a "
-                                "criteria: block, and detected cal targets)")
+            self.status_text = (
+                "eps0 suggestion: n/a (needs 4 cameras, a "
+                "criteria: block, and detected cal targets)"
+            )
             return
-        msg = (f"Suggested eps0 = {sug['recommended']:.3f} "
-               f"({sug['max_correct']} correct quadruplets, 0 spurious; "
-               f"current {sug['current']:.3f}). Set criteria.eps0 in the YAML.")
+        msg = (
+            f"Suggested eps0 = {sug['recommended']:.3f} "
+            f"({sug['max_correct']} correct quadruplets, 0 spurious; "
+            f"current {sug['current']:.3f}). Set criteria.eps0 in the YAML."
+        )
         self.status_text = msg
         print(msg)
         print(f"{'eps0':>7} {'quads':>6} {'correct':>8} {'wrong':>6}")
         for row in sug["sweep"]:
-            print(f"{row['eps0']:>7.4f} {row['quads']:>6} "
-                  f"{row['correct']:>8} {row['wrong']:>6}")
+            print(
+                f"{row['eps0']:>7.4f} {row['quads']:>6} "
+                f"{row['correct']:>8} {row['wrong']:>6}"
+            )
 
     def _button_tracer_selfcal_fired(self):
         """Joint self-calibration on tracer particles -- the modern "shaking":
@@ -1216,40 +1247,50 @@ class CalibrationGUI(HasTraits):
 
         # Shaking parameters (optional block) drive the tracer self-calibration.
         try:
-            shk = self.get_parameter('shaking')
+            shk = self.get_parameter("shaking")
         except KeyError:
             shk = {}
-        first = shk.get('shaking_first_frame')
-        last = shk.get('shaking_last_frame')
+        first = shk.get("shaking_first_frame")
+        last = shk.get("shaking_last_frame")
         frames = None
         if first is not None and last is not None and last >= first:
             frames = list(range(int(first), int(last) + 1))
-            max_frames = shk.get('shaking_max_num_frames')
+            max_frames = shk.get("shaking_max_num_frames")
             if max_frames and len(frames) > int(max_frames):
                 idx = np.linspace(0, len(frames) - 1, int(max_frames)).astype(int)
                 frames = [frames[i] for i in idx]
-        max_particles = int(shk.get('shaking_max_num_points') or 400)
-        tol_px = float(shk.get('shaking_tol_px') or 2.0)
+        max_particles = int(shk.get("shaking_max_num_points") or 400)
+        tol_px = float(shk.get("shaking_tol_px") or 2.0)
         # held camera is 1-indexed in the dialog, 0-indexed internally
-        hold_cam = max(0, int(shk.get('shaking_hold_cam') or 1) - 1)
+        hold_cam = max(0, int(shk.get("shaking_hold_cam") or 1) - 1)
 
         self.status_text = "Tracer self-calibration (this may take a moment)..."
         try:
             new_cals, info = tracer_self_calibrate(
-                self.working_folder, self.cpar, self.cals,
-                frames=frames, max_particles=max_particles,
-                tol_px=tol_px, hold_cam=hold_cam, iters=3)
+                self.working_folder,
+                self.cpar,
+                self.cals,
+                frames=frames,
+                max_particles=max_particles,
+                tol_px=tol_px,
+                hold_cam=hold_cam,
+                iters=3,
+            )
         except Exception as exc:  # noqa: BLE001 - must never crash the GUI
             self.status_text = f"tracer self-cal failed: {exc}"
             print(f"tracer self-cal failed: {exc}")
             return
         if "skipped" in info:
-            self.status_text = (f"tracer self-cal: n/a ({info['skipped']}). "
-                                "Run the sequence + tracking first.")
+            self.status_text = (
+                f"tracer self-cal: n/a ({info['skipped']}). "
+                "Run the sequence + tracking first."
+            )
             return
         before, after = info["rcm_before"] * 1000, info["rcm_after"] * 1000
-        msg = (f"Tracer self-cal: cross-camera RCM {before:.1f} -> {after:.1f} um "
-               f"({info['n_particles']} particles, cam{info['hold_cam'] + 1} held)")
+        msg = (
+            f"Tracer self-cal: cross-camera RCM {before:.1f} -> {after:.1f} um "
+            f"({info['n_particles']} particles, cam{info['hold_cam'] + 1} held)"
+        )
         print(msg)
         if after < before:
             self._backup_ori_files()
@@ -1262,13 +1303,13 @@ class CalibrationGUI(HasTraits):
             self.status_text = msg + " -- no improvement; cals unchanged."
 
     def reset_plots(self):
-        """ Resets all plots in the camera windows."""
+        """Resets all plots in the camera windows."""
         for cam in self.camera:
             cam._plot.delplot(*cam._plot.plots.keys()[0:])
             cam._plot.overlays.clear()
 
     def reset_show_images(self):
-        """ Resets the images in all camera windows."""
+        """Resets the images in all camera windows."""
         for i, cam in enumerate(self.camera):
             cam._plot.delplot(*list(cam._plot.plots.keys())[0:])
             cam._plot.overlays = []
@@ -1283,17 +1324,17 @@ class CalibrationGUI(HasTraits):
             cam._plot.request_redraw()
 
     def _button_edit_ori_files_fired(self):
-        """ Opens the editor for orientation files."""
+        """Opens the editor for orientation files."""
         editor = oriEditor(experiment=self.experiment)
         editor.edit_traits(kind="livemodal")
 
     def _button_edit_addpar_files_fired(self):
-        """ Opens the editor for additional parameter files."""
+        """Opens the editor for additional parameter files."""
         editor = addparEditor(experiment=self.experiment)
         editor.edit_traits(kind="livemodal")
 
     def drawcross(self, str_x, str_y, x, y, color1, size1, i_cam=None):
-        """ Draws crosses on the camera plots."""
+        """Draws crosses on the camera plots."""
         if i_cam is None:
             for i in range(self.num_cams):
                 self.camera[i].drawcross(str_x, str_y, x[i], y[i], color1, size1)
@@ -1301,14 +1342,14 @@ class CalibrationGUI(HasTraits):
             self.camera[i_cam].drawcross(str_x, str_y, x, y, color1, size1)
 
     def _backup_ori_files(self):
-        for f in self.get_parameter('cal_ori')['img_ori'][: self.num_cams]:
+        for f in self.get_parameter("cal_ori")["img_ori"][: self.num_cams]:
             print(f"Backing up {f}")
             shutil.copyfile(f, f + ".bck")
             g = f.replace("ori", "addpar")
             shutil.copyfile(g, g + ".bck")
 
     def restore_ori_files(self):
-        for f in self.get_parameter('cal_ori')['img_ori'][: self.num_cams]:
+        for f in self.get_parameter("cal_ori")["img_ori"][: self.num_cams]:
             print(f"Restoring {f}")
             shutil.copyfile(f + ".bck", f)
             g = f.replace("ori", "addpar")
@@ -1317,7 +1358,7 @@ class CalibrationGUI(HasTraits):
     def _read_cal_points(self):
         return np.atleast_1d(
             np.loadtxt(
-                str(self.get_parameter('cal_ori')['fixp_name']),
+                str(self.get_parameter("cal_ori")["fixp_name"]),
                 dtype=[("id", "i4"), ("pos", "3f8")],
                 skiprows=0,
             )

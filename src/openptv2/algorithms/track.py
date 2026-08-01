@@ -5,45 +5,66 @@ import numpy as np
 
 if cython.compiled:
     from cython.cimports.libc.math import (
-        sqrt as c_sqrt,
-        sin as c_sin,
-        cos as c_cos,
         acos as c_acos,
     )
+    from cython.cimports.libc.math import (
+        cos as c_cos,
+    )
+    from cython.cimports.libc.math import (
+        sin as c_sin,
+    )
+    from cython.cimports.libc.math import (
+        sqrt as c_sqrt,
+    )
 else:
-    from math import sqrt as c_sqrt, sin as c_sin, cos as c_cos, acos as c_acos
+    from math import acos as c_acos
+    from math import cos as c_cos
+    from math import sin as c_sin
+    from math import sqrt as c_sqrt
 
 _M_PI: cython.double = 3.141592653589793
 
 from .constants import (
+    ADD_PART,
+    COORD_UNUSED,
+    CORRES_NONE,
     MAX_CANDS,
     PT_UNUSED,
-    TR_UNUSED,
-    CORRES_NONE,
-    PREV_NONE,
-    NEXT_NONE,
-    COORD_UNUSED,
     TR_BUFSPACE,
     TR_MAX_CAMS,
-    ADD_PART,
+    TR_UNUSED,
 )
-from .tracking_frame_buf import register_link_candidate, reset_links
 from .multimed import (
     multimed_r_nlay_iterative as _multimed_r_nlay_iterative,
 )
 from .track_kernels import (
-    pack_cal_array as _pack_cal_array,
-    pack_mmlut as _pack_mmlut,
-    point_to_pixel_fast as _point_to_pixel_fast_kernel,
     candsearch_in_pix_fast as _candsearch_in_pix_fast,
+)
+from .track_kernels import (
     candsearch_in_pix_rest_fast as _candsearch_in_pix_rest_fast,
+)
+from .track_kernels import (
+    pack_cal_array as _pack_cal_array,
+)
+from .track_kernels import (
+    pack_mmlut as _pack_mmlut,
+)
+from .track_kernels import (
+    point_to_pixel_fast as _point_to_pixel_fast_kernel,
+)
+from .track_kernels import (
     searchquader_fast as _searchquader_fast,
-    sort_candidates_by_freq_fast as _sort_candidates_by_freq_fast,
+)
+from .track_kernels import (
     sorted_candidates_fast as _sorted_candidates_fast,
-    point_position_fast as _point_position_fast,
-    trackcorr_loop_fast as _trackcorr_loop_fast,
+)
+from .track_kernels import (
     trackback_loop_fast as _trackback_loop_fast,
 )
+from .track_kernels import (
+    trackcorr_loop_fast as _trackcorr_loop_fast,
+)
+from .tracking_frame_buf import reset_links
 
 Foundpix_dtype = np.dtype(
     [
@@ -890,7 +911,7 @@ def assess_new_position(
     _fast_mmluts=None,
     _pix_info=None,
 ):
-    from .trafo import pixel_to_metric, dist_to_flat
+    from .trafo import dist_to_flat, pixel_to_metric
 
     left: cython.double = ADD_PART
     right: cython.double = ADD_PART
@@ -1025,7 +1046,6 @@ def _sync_soa_to_aos(frm):
 
 @cython.ccall
 def trackcorr_c_loop(run_info, step, num_threads=None):
-    from .orientation import point_position
     import os
 
     if num_threads is None:
@@ -1067,7 +1087,7 @@ def trackcorr_c_loop(run_info, step, num_threads=None):
     fb.buf[3]._sync_path_to_soa()
 
     # Target arrays are native 2D on Frame — pass directly
-    nt1 = np.array(fb.buf[1].num_targets[:nc], dtype=np.int32)
+    np.array(fb.buf[1].num_targets[:nc], dtype=np.int32)
     np2 = np.array([fb.buf[2].num_parts], dtype=np.int32)
     np3 = np.array([fb.buf[3].num_parts], dtype=np.int32)
     nt2 = np.array(fb.buf[2].num_targets[:nc], dtype=np.int32)
@@ -1193,7 +1213,6 @@ def trackcorr_c_finish(run_info, step):
 
 @cython.ccall
 def trackback_c(run_info):
-    from .orientation import point_position
 
     cal = run_info.cal
     seq_par = run_info.seq_par

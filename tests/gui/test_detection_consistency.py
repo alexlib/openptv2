@@ -76,7 +76,7 @@ class TestDetectionConsistency:
 
         # Get parameters
         pm = experiment.pm
-        ptv_params = pm.get_parameter("ptv")
+        pm.get_parameter("ptv")
         targ_rec_params = pm.get_parameter("targ_rec")
 
         # Manual GUI approach (what img_coord_action does)

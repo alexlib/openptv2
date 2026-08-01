@@ -451,7 +451,11 @@ class TrackingDebugPanel(HasTraits):
             track_mode = track_params.get("track_mode", 0)
 
             for _ in range(self.num_frames):
-                step_success = self.tracker.step_forward_3d() if track_mode == 1 else self.tracker.step_forward()
+                step_success = (
+                    self.tracker.step_forward_3d()
+                    if track_mode == 1
+                    else self.tracker.step_forward()
+                )
                 if not step_success:
                     break
 
@@ -687,9 +691,7 @@ class TrackingDebugPanel(HasTraits):
         self._print_candidate_details(volumes, pos_3d)
         print("=" * 60 + "\n")
 
-    def _print_candidate_details(
-        self, volumes: list, predicted_pos_3d: np.ndarray
-    ):
+    def _print_candidate_details(self, volumes: list, predicted_pos_3d: np.ndarray):
         """Print detailed information about each candidate."""
         fb = self.tracker.run_info.fb
         next_frame_idx = min(self.current_frame + 1, len(fb.buf) - 1)
@@ -802,9 +804,7 @@ class TrackingDebugPanel(HasTraits):
                         "cyan",
                     )
 
-    def _find_and_draw_candidates(
-        self, volumes: list, predicted_pos_3d: np.ndarray
-    ):
+    def _find_and_draw_candidates(self, volumes: list, predicted_pos_3d: np.ndarray):
         """Find and visualize candidate particles in frame t+1."""
         if self.main_gui is None:
             return
@@ -871,11 +871,13 @@ class TrackingDebugPanel(HasTraits):
         from openptv2 import flat_image_coordinates
 
         try:
-            pos_3d = np.array([[pos[0], pos[1], 0.0]])  # Shape (1, 3) for batch function
+            pos_3d = np.array(
+                [[pos[0], pos[1], 0.0]]
+            )  # Shape (1, 3) for batch function
             result = flat_image_coordinates(pos_3d, cals[cam_idx], cpar.mm)
             flat_x, flat_y = result[0]
         except Exception:
-            flat_x, flat_y = pos[0] / cpar.pix_x, pos[1] / cpar.pix_y
+            _flat_x, _flat_y = pos[0] / cpar.pix_x, pos[1] / cpar.pix_y
 
         center_3d = np.array([0.0, 0.0, 100.0])
         return center_3d

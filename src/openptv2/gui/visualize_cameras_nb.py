@@ -86,7 +86,6 @@ def _(Calibration, ParameterManager, Path, np):
 
         return calibs
 
-
     def set_axes_equal(ax, points: np.ndarray) -> None:
         mins = points.min(axis=0)
         maxs = points.max(axis=0)

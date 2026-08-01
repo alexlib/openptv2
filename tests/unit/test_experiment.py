@@ -32,8 +32,9 @@ def test_save_active_no_op_when_no_active(tmp_path):
 
 def test_save_parameters_removed():
     """save_parameters was the old API — must be gone."""
-    assert not hasattr(Experiment, 'save_parameters'), \
+    assert not hasattr(Experiment, "save_parameters"), (
         "save_parameters must be removed; use save_active()"
+    )
 
 
 def test_rename_paramset(tmp_path):
@@ -53,4 +54,3 @@ def test_rename_paramset(tmp_path):
     assert new_yaml.exists()
     assert ps.name == "Run2"
     assert ps.yaml_path == new_yaml
-

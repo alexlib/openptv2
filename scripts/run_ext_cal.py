@@ -26,22 +26,28 @@ def calibrate_ext_only(dataset_dir: str):
 
     dp = _load_dataset_params(base, calblock)
     cpar, num_cams, eps = dp.cpar, dp.num_cams, dp.eps
-    eps = 25 # Increase radius for matching
+    eps = 25  # Increase radius for matching
 
     out = base / "cal" / "ext_cal_only"
     out.mkdir(parents=True, exist_ok=True)
 
-    print(f"Calibrating only exterior orientation (6-DOF) for {num_cams} cameras in {base}...")
+    print(
+        f"Calibrating only exterior orientation (6-DOF) for {num_cams} cameras in {base}..."
+    )
 
     for cam in range(num_cams):
         ids = dp.ids_per_cam[cam]
         fix4 = np.asarray([fix[i - 1] for i in ids], dtype=float)
         pix4 = dp.clicks_per_cam[cam]
+        img, ori, addpar = cam_files(base, cam)
 
         import glob
+
         target_files = glob.glob(str(base / "img" / f"cam{cam + 1}.*_targets"))
         if not target_files:
-            print(f"cam{cam + 1}: no target files found matching cam{cam + 1}.*_targets")
+            print(
+                f"cam{cam + 1}: no target files found matching cam{cam + 1}.*_targets"
+            )
             continue
 
         target_file = target_files[0]
@@ -51,6 +57,7 @@ def calibrate_ext_only(dataset_dir: str):
         if not pix:
             # Auto-detect targets from the calibration image
             from openptv2.autocalibration import _tpar_from_dataset
+
             tpar = _tpar_from_dataset(base)
             if tpar is not None and img.exists():
                 from imageio.v3 import imread
@@ -68,30 +75,34 @@ def calibrate_ext_only(dataset_dir: str):
                 hp_img = preprocess_image(raw_img, cpar.hp_flag or 1, cpar, 25)
                 detected = target_recognition(hp_img, tpar, cam, cpar)
                 if detected:
-                    write_targets(detected, len(detected), str(target_base(base, cam)), 0)
+                    write_targets(
+                        detected, len(detected), str(target_base(base, cam)), 0
+                    )
                     pix = read_targets(str(target_base(base, cam)), 0)
 
         if not pix:
             print(f"cam{cam + 1}: no detected targets found. skipping.")
             continue
 
-        img, ori, addpar = cam_files(base, cam)
         c = Calibration.from_file(str(ori), str(addpar))
 
         # Save old pose for transformation
         R_old = c.get_rotation_matrix()
         pos_old = c.get_pos()
 
-        # Apply transformation if we have it
-        if 'R_B2_to_B1' in locals():
-            R_new = R_old @ R_B1_to_B2
-            pos_new = R_B2_to_B1 @ pos_old + t_B2_to_B1
+        # Apply transformation if we have it (set at the end of a previous
+        # iteration; the locals() guard is invisible to ruff, hence the noqa).
+        if "R_B2_to_B1" in locals():
+            R_new = R_old @ R_B1_to_B2  # noqa: F821
+            pos_new = R_B2_to_B1 @ pos_old + t_B2_to_B1  # noqa: F821
             c.set_rotation_matrix(R_new)
             c.set_pos(pos_new)
             print(f"cam{cam + 1}: Applied rig transformation from cam1.")
 
         if not external_calibration(c, fix4, pix4, cpar):
-            print(f"cam{cam + 1}: external_calibration did not converge. Using initial guess.")
+            print(
+                f"cam{cam + 1}: external_calibration did not converge. Using initial guess."
+            )
         else:
             print(f"cam{cam + 1}: After external_calibration, pos={c.get_pos()}")
 
@@ -125,7 +136,7 @@ def calibrate_ext_only(dataset_dir: str):
         r = rms_px(det, rep)
         if np.isnan(r):
             print(f"cam{cam + 1}: RMS is NaN. Resetting to inf")
-            r = float('inf')
+            r = float("inf")
         print(f"cam{cam + 1}: matched {n_matched}/{nfix} targets. RMS={r:6.3f}px")
 
         if r < 10.0:
@@ -136,6 +147,7 @@ def calibrate_ext_only(dataset_dir: str):
 
         res = CamResult(cam, n_matched, nfix, r, [], c, ref, det, rep)
         save_overlay(res, base, out)
+
 
 if __name__ == "__main__":
     calibrate_ext_only(sys.argv[1])

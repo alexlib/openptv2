@@ -1,4 +1,5 @@
 """openptv-params — inspect and mutate OpenPTV YAML parameter files without the GUI."""
+
 from __future__ import annotations
 
 import argparse
@@ -9,12 +10,16 @@ from pathlib import Path
 
 def _load(yaml_path: Path) -> dict:
     import yaml
+
     return yaml.safe_load(yaml_path.read_text())
 
 
 def _save(data: dict, yaml_path: Path) -> None:
     import yaml
-    yaml_path.write_text(yaml.safe_dump(data, default_flow_style=False, sort_keys=False))
+
+    yaml_path.write_text(
+        yaml.safe_dump(data, default_flow_style=False, sort_keys=False)
+    )
 
 
 def _backup(yaml_path: Path) -> Path:
@@ -33,8 +38,10 @@ def _find_yaml(dataset: Path) -> Path | None:
 
 # ── subcommands ──────────────────────────────────────────────────────────────
 
+
 def cmd_show(args) -> int:
     import yaml
+
     base = Path(args.dataset).resolve()
     yp = _find_yaml(base)
     if yp is None:
@@ -193,7 +200,9 @@ def main() -> int:
 
     p = sub.add_parser("show", help="print parameters (or one section) as YAML")
     p.add_argument("dataset")
-    p.add_argument("--section", default=None, help="restrict to one section (e.g. ptv, track)")
+    p.add_argument(
+        "--section", default=None, help="restrict to one section (e.g. ptv, track)"
+    )
     p.set_defaults(func=cmd_show)
 
     p = sub.add_parser("set", help="set one parameter field and rewrite YAML")

@@ -11,25 +11,43 @@ import numpy as np
 
 if cython.compiled:
     from cython.cimports.libc.math import (
-        sqrt as c_sqrt,
-        tan as c_tan,
         asin as c_asin,
-        sin as c_sin,
+    )
+    from cython.cimports.libc.math import (
         atan as c_atan,
+    )
+    from cython.cimports.libc.math import (
         cos as c_cos,
+    )
+    from cython.cimports.libc.math import (
+        sin as c_sin,
+    )
+    from cython.cimports.libc.math import (
+        sqrt as c_sqrt,
+    )
+    from cython.cimports.libc.math import (
+        tan as c_tan,
     )
 else:
     from math import (
-        sqrt as c_sqrt,
-        tan as c_tan,
         asin as c_asin,
-        sin as c_sin,
+    )
+    from math import (
         atan as c_atan,
+    )
+    from math import (
         cos as c_cos,
     )
-from .trafo import flat_to_dist as _flat_to_dist
+    from math import (
+        sin as c_sin,
+    )
+    from math import (
+        sqrt as c_sqrt,
+    )
+    from math import (
+        tan as c_tan,
+    )
 from .multimed import (
-    multimed_nlay as _multimed_nlay,
     _multimed_nlay_core as _multimed_nlay_core,
 )
 

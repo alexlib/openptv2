@@ -170,7 +170,7 @@ def _(images, img_xs, img_ys):
         img_xs = click_data["img_xs"]
         img_ys = click_data["img_ys"]
 
-        point = np.array([x, y])
+        np.array([x, y])
         min_dist = float("inf")
         found_idx = None
 

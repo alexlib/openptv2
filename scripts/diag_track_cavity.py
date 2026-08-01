@@ -43,7 +43,7 @@ tpar = get_track_par_tuple(params)
 spar = get_sequence_par(params)
 
 # Adjust sequence base names for work_dir
-spar.img_base_name = [str(work_dir / "img" / f"cam{i+1}") for i in range(num_cams)]
+spar.img_base_name = [str(work_dir / "img" / f"cam{i + 1}") for i in range(num_cams)]
 spar.first = 10001
 spar.last = 10004
 
@@ -51,7 +51,9 @@ cals = []
 for i in range(num_cams):
     ori_file = CAVITY_DATA / params["cal_ori"]["img_ori"][i]
     addpar_file = ori_file.with_suffix(".addpar")
-    cals.append(read_calibration(ori_file, addpar_file if addpar_file.exists() else None))
+    cals.append(
+        read_calibration(ori_file, addpar_file if addpar_file.exists() else None)
+    )
 
 naming = {
     "corres": str(res / "rt_is"),

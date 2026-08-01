@@ -16,6 +16,7 @@ Writes, per camera, into cal/calib_matches/:
 
 Run with: uv run python skills/openptv-calibrate/scripts/dump_matches.py <dataset>
 """
+
 from __future__ import annotations
 
 import sys
@@ -35,21 +36,41 @@ from openptv2.autocalibration import (
 
 def render_overlay(base, cam, img, ids, det, rep, dest):
     import matplotlib
+
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
     import numpy as np
 
-    rms = float(np.sqrt(np.mean(np.sum((det - rep) ** 2, axis=1)))) if len(det) else float("nan")
+    rms = (
+        float(np.sqrt(np.mean(np.sum((det - rep) ** 2, axis=1))))
+        if len(det)
+        else float("nan")
+    )
 
     fig, ax = plt.subplots(figsize=(8, 6.4))
     ax.imshow(img, cmap="gray")
-    ax.scatter(det[:, 0], det[:, 1], s=40, facecolors="none", edgecolors="lime",
-               linewidths=1.2, label="detected")
+    ax.scatter(
+        det[:, 0],
+        det[:, 1],
+        s=40,
+        facecolors="none",
+        edgecolors="lime",
+        linewidths=1.2,
+        label="detected",
+    )
     ax.scatter(rep[:, 0], rep[:, 1], s=8, c="red", label="reprojected")
     for pid, (x, y) in zip(ids, det):
-        ax.annotate(str(pid), (x, y), fontsize=6, color="yellow",
-                    textcoords="offset points", xytext=(3, 3))
-    ax.set_title(f"cam{cam + 1}  RMS={rms:.3f}px  n={len(ids)}  (yellow = calibration-body point ID)")
+        ax.annotate(
+            str(pid),
+            (x, y),
+            fontsize=6,
+            color="yellow",
+            textcoords="offset points",
+            xytext=(3, 3),
+        )
+    ax.set_title(
+        f"cam{cam + 1}  RMS={rms:.3f}px  n={len(ids)}  (yellow = calibration-body point ID)"
+    )
     ax.legend(loc="upper right", fontsize=8, framealpha=0.7)
     fig.tight_layout()
     fig.savefig(dest, dpi=110)
@@ -80,6 +101,7 @@ def main():
     import yaml as _yaml
 
     from openptv2.autocalibration import _find_yaml
+
     _yaml_path = _find_yaml(base)
     _ptv_params = _yaml.safe_load(_yaml_path.read_text())["ptv"] if _yaml_path else {}
     if _ptv_params.get("splitter"):
@@ -94,7 +116,9 @@ def main():
             from skimage.util import img_as_ubyte
 
             raw = img_as_ubyte(rgb2gray(raw[:, :, :3]))
-        split_views = image_split(raw, order=_ptv_params.get("splitter_order") or [0, 1, 3, 2])
+        split_views = image_split(
+            raw, order=_ptv_params.get("splitter_order") or [0, 1, 3, 2]
+        )
 
     for cam in range(num_cams):
         img_path, ori, addpar = cam_files(base, cam)
@@ -121,12 +145,17 @@ def main():
             cam_img = split_views[cam]
         else:
             import imageio.v3 as iio
+
             cam_img = iio.imread(img_path)
 
         overlay_dest = outdir / f"cam{cam + 1}_overlay_ids.png"
-        render_overlay(base, cam, cam_img, ids, np.asarray(det), np.asarray(rep), overlay_dest)
+        render_overlay(
+            base, cam, cam_img, ids, np.asarray(det), np.asarray(rep), overlay_dest
+        )
 
-        print(f"cam{cam + 1}: {len(lines)} matches -> {dest}  overlay -> {overlay_dest}")
+        print(
+            f"cam{cam + 1}: {len(lines)} matches -> {dest}  overlay -> {overlay_dest}"
+        )
 
     return 0
 

@@ -465,9 +465,12 @@ def test_point_to_pixel_packed_chfield0():
     pc = _pack_cal(cal, cpar.mm)
     pos = np.array([185.5, 3.2, 203.9])
     x, y = _point_to_pixel_packed(
-        pos, pc,
-        cpar.imx * 0.5, cpar.imy * 0.5,
-        1.0 / cpar.pix_x, 1.0 / cpar.pix_y,
+        pos,
+        pc,
+        cpar.imx * 0.5,
+        cpar.imy * 0.5,
+        1.0 / cpar.pix_x,
+        1.0 / cpar.pix_y,
         0,
     )
     assert isinstance(x, float)
@@ -480,9 +483,12 @@ def test_point_to_pixel_packed_chfield1():
     pc = _pack_cal(cal, cpar.mm)
     pos = np.array([185.5, 3.2, 203.9])
     x, y = _point_to_pixel_packed(
-        pos, pc,
-        cpar.imx * 0.5, cpar.imy * 0.5,
-        1.0 / cpar.pix_x, 1.0 / cpar.pix_y,
+        pos,
+        pc,
+        cpar.imx * 0.5,
+        cpar.imy * 0.5,
+        1.0 / cpar.pix_x,
+        1.0 / cpar.pix_y,
         1,
     )
     assert isinstance(x, float)
@@ -494,9 +500,12 @@ def test_point_to_pixel_packed_chfield2():
     pc = _pack_cal(cal, cpar.mm)
     pos = np.array([185.5, 3.2, 203.9])
     x, y = _point_to_pixel_packed(
-        pos, pc,
-        cpar.imx * 0.5, cpar.imy * 0.5,
-        1.0 / cpar.pix_x, 1.0 / cpar.pix_y,
+        pos,
+        pc,
+        cpar.imx * 0.5,
+        cpar.imy * 0.5,
+        1.0 / cpar.pix_x,
+        1.0 / cpar.pix_y,
         2,
     )
     assert isinstance(x, float)
@@ -515,9 +524,12 @@ def test_point_to_pixel_packed_with_mmlut_data():
     pc = _pack_cal(cal, cpar.mm)
     pos = np.array([185.5, 3.2, 203.9])
     x, y = _point_to_pixel_packed(
-        pos, pc,
-        cpar.imx * 0.5, cpar.imy * 0.5,
-        1.0 / cpar.pix_x, 1.0 / cpar.pix_y,
+        pos,
+        pc,
+        cpar.imx * 0.5,
+        cpar.imy * 0.5,
+        1.0 / cpar.pix_x,
+        1.0 / cpar.pix_y,
         0,
     )
     assert isinstance(x, float)
@@ -531,9 +543,12 @@ def test_point_to_pixel_packed_camera_center():
     pos = np.array([cal.ext_par.x0, cal.ext_par.y0, cal.ext_par.z0])
     try:
         _point_to_pixel_packed(
-            pos, pc,
-            cpar.imx * 0.5, cpar.imy * 0.5,
-            1.0 / cpar.pix_x, 1.0 / cpar.pix_y,
+            pos,
+            pc,
+            cpar.imx * 0.5,
+            cpar.imy * 0.5,
+            1.0 / cpar.pix_x,
+            1.0 / cpar.pix_y,
             0,
         )
     except (ZeroDivisionError, FloatingPointError):
@@ -546,9 +561,13 @@ def test_ptp_fast_returns_floats():
     fc, fm = _pack_cams_fast([cal], cpar.mm)
     pos = np.array([185.5, 3.2, 203.9])
     x, y = _ptp_fast(
-        pos, fc[0], fm[0],
-        cpar.imx * 0.5, cpar.imy * 0.5,
-        1.0 / cpar.pix_x, 1.0 / cpar.pix_y,
+        pos,
+        fc[0],
+        fm[0],
+        cpar.imx * 0.5,
+        cpar.imy * 0.5,
+        1.0 / cpar.pix_x,
+        1.0 / cpar.pix_y,
         0,
     )
     assert isinstance(x, float)
@@ -560,8 +579,14 @@ def test_point_to_pixel_fast():
     cpar = _read_cpar()
     pos = np.array([185.5, 3.2, 203.9])
     x, y = _point_to_pixel_fast(
-        pos, cal, cpar.imx, cpar.imy,
-        cpar.pix_x, cpar.pix_y, 0, cpar.mm,
+        pos,
+        cal,
+        cpar.imx,
+        cpar.imy,
+        cpar.pix_x,
+        cpar.pix_y,
+        0,
+        cpar.mm,
     )
     assert isinstance(x, float)
 
@@ -576,8 +601,17 @@ def test_point_to_pixel():
 def test_searchquader_returns_four_arrays():
     cpar = _read_cpar()
     calib = [_read_cal(c + 1) for c in range(cpar.num_cams)]
-    tpar = _make_tpar(dvxmin=-0.2, dvxmax=0.2, dvymin=-0.2, dvymax=0.2,
-                      dvzmin=-0.1, dvzmax=0.1, dangle=120.0, dacc=0.4, add=1)
+    tpar = _make_tpar(
+        dvxmin=-0.2,
+        dvxmax=0.2,
+        dvymin=-0.2,
+        dvymax=0.2,
+        dvzmin=-0.1,
+        dvzmax=0.1,
+        dangle=120.0,
+        dacc=0.4,
+        add=1,
+    )
     point = np.array([185.5, 3.2, 203.9])
     xr, xl, yd, yu = searchquader(point, tpar, cpar, calib)
     assert len(xr) == cpar.num_cams
@@ -587,8 +621,9 @@ def test_searchquader_returns_four_arrays():
 def test_searchquader_zero_velocity():
     cpar = _read_cpar(num_cams=1)
     calib = [_read_cal(1)]
-    tpar = _make_tpar(dvxmin=0.0, dvxmax=0.0, dvymin=0.0, dvymax=0.0,
-                      dvzmin=0.0, dvzmax=0.0)
+    tpar = _make_tpar(
+        dvxmin=0.0, dvxmax=0.0, dvymin=0.0, dvymax=0.0, dvzmin=0.0, dvzmax=0.0
+    )
     point = np.array([185.5, 3.2, 203.9])
     xr, xl, yd, yu = searchquader(point, tpar, cpar, calib)
     assert abs(xr[0] - xl[0]) < 1e-6
@@ -651,7 +686,8 @@ def test_add_particle_with_cand():
 
 def test_register_closest_neighbs_nothing_found(monkeypatch):
     monkeypatch.setattr(
-        _track_mod, "_candsearch_in_pix_fast",
+        _track_mod,
+        "_candsearch_in_pix_fast",
         lambda *a, **kw: (PT_UNUSED, PT_UNUSED, PT_UNUSED, PT_UNUSED),
     )
     cpar = _read_cpar(num_cams=2)
@@ -662,10 +698,20 @@ def test_register_closest_neighbs_nothing_found(monkeypatch):
     targ_tnr = np.full(20, PT_UNUSED, dtype=np.int32)
 
     register_closest_neighbs(
-        frm.targets[0], 0, 0, 640.0, 512.0,
-        10.0, 10.0, 10.0, 10.0,
-        reg, cpar,
-        _targ_x=targ_x, _targ_y=targ_y, _targ_tnr=targ_tnr,
+        frm.targets[0],
+        0,
+        0,
+        640.0,
+        512.0,
+        10.0,
+        10.0,
+        10.0,
+        10.0,
+        reg,
+        cpar,
+        _targ_x=targ_x,
+        _targ_y=targ_y,
+        _targ_tnr=targ_tnr,
     )
     assert all(reg[i][0] == TR_UNUSED for i in range(MAX_CANDS))
 
@@ -675,7 +721,8 @@ def test_register_closest_neighbs_one_found(monkeypatch):
     targ_tnr[2] = 7  # target index 2 has tnr=7
 
     monkeypatch.setattr(
-        _track_mod, "_candsearch_in_pix_fast",
+        _track_mod,
+        "_candsearch_in_pix_fast",
         lambda *a, **kw: (2, PT_UNUSED, PT_UNUSED, PT_UNUSED),
     )
     cpar = _read_cpar(num_cams=2)
@@ -685,17 +732,28 @@ def test_register_closest_neighbs_one_found(monkeypatch):
     targ_y = np.full(20, COORD_UNUSED)
 
     register_closest_neighbs(
-        frm.targets[0], 20, 0, 640.0, 512.0,
-        10.0, 10.0, 10.0, 10.0,
-        reg, cpar,
-        _targ_x=targ_x, _targ_y=targ_y, _targ_tnr=targ_tnr,
+        frm.targets[0],
+        20,
+        0,
+        640.0,
+        512.0,
+        10.0,
+        10.0,
+        10.0,
+        10.0,
+        reg,
+        cpar,
+        _targ_x=targ_x,
+        _targ_y=targ_y,
+        _targ_tnr=targ_tnr,
     )
     assert reg[0][0] == 7  # tnr of target at index 2
 
 
 def test_sorted_candidates_in_volume_returns_none(monkeypatch):
     monkeypatch.setattr(
-        _track_mod, "_sorted_candidates_fast",
+        _track_mod,
+        "_sorted_candidates_fast",
         lambda *a, **kw: (
             np.zeros(0, dtype=np.int32),
             np.zeros(0, dtype=np.int32),
@@ -722,7 +780,8 @@ def test_sorted_candidates_in_volume_returns_none(monkeypatch):
 
 def test_sorted_candidates_in_volume_returns_list(monkeypatch):
     monkeypatch.setattr(
-        _track_mod, "_sorted_candidates_fast",
+        _track_mod,
+        "_sorted_candidates_fast",
         lambda *a, **kw: (
             np.array([5], dtype=np.int32),
             np.array([2], dtype=np.int32),
@@ -745,7 +804,7 @@ def test_sorted_candidates_in_volume_returns_list(monkeypatch):
         _fast_tuples=ft,
     )
     assert result is not None
-    assert len(result) == 2          # 1 real candidate + sentinel
+    assert len(result) == 2  # 1 real candidate + sentinel
     assert result[0]["ftnr"] == 5
     assert result[0]["freq"] == 2
     assert result[-1]["ftnr"] == TR_UNUSED
@@ -753,7 +812,8 @@ def test_sorted_candidates_in_volume_returns_list(monkeypatch):
 
 def test_assess_new_position_no_cands(monkeypatch):
     monkeypatch.setattr(
-        _track_mod, "_candsearch_in_pix_rest_fast",
+        _track_mod,
+        "_candsearch_in_pix_rest_fast",
         lambda *a, **kw: (PT_UNUSED, 0),
     )
     cpar = _read_cpar(num_cams=1)
@@ -782,7 +842,8 @@ def test_assess_new_position_no_cands(monkeypatch):
 def test_assess_new_position_no_pix_info(monkeypatch):
     """Exercise the else-branch where _pix_info is None."""
     monkeypatch.setattr(
-        _track_mod, "_candsearch_in_pix_rest_fast",
+        _track_mod,
+        "_candsearch_in_pix_rest_fast",
         lambda *a, **kw: (PT_UNUSED, 0),
     )
     cpar = _read_cpar(num_cams=1)
@@ -810,7 +871,8 @@ def test_assess_new_position_no_pix_info(monkeypatch):
 def test_assess_new_position_candidate_found(monkeypatch):
     """When the rest-search finds index 0, valid_cams increments."""
     monkeypatch.setattr(
-        _track_mod, "_candsearch_in_pix_rest_fast",
+        _track_mod,
+        "_candsearch_in_pix_rest_fast",
         lambda *a, **kw: (0, 1),
     )
     cpar = _read_cpar(num_cams=1)
@@ -854,7 +916,8 @@ def test_track_forward_start():
 def test_trackcorr_c_loop_early_step(monkeypatch):
     """step < last-2 → read_frame_at_end branch."""
     monkeypatch.setattr(
-        _track_mod, "_trackcorr_loop_fast",
+        _track_mod,
+        "_trackcorr_loop_fast",
         lambda *a, **kw: (0, 0),
     )
     run = _make_run(num_cams=1)
@@ -866,7 +929,8 @@ def test_trackcorr_c_loop_early_step(monkeypatch):
 def test_trackcorr_c_loop_late_step(monkeypatch):
     """step >= last-2 → sets buf[-1].num_parts = 0."""
     monkeypatch.setattr(
-        _track_mod, "_trackcorr_loop_fast",
+        _track_mod,
+        "_trackcorr_loop_fast",
         lambda *a, **kw: (0, 0),
     )
     run = _make_run(num_cams=1)
@@ -884,7 +948,8 @@ def test_trackcorr_c_finish():
 def test_trackback_c_mocked(monkeypatch):
     """Cover trackback_c including both loop branches."""
     monkeypatch.setattr(
-        _track_mod, "_trackback_loop_fast",
+        _track_mod,
+        "_trackback_loop_fast",
         lambda *a, **kw: (0, 0),
     )
     run = _make_run(num_cams=1)
@@ -896,7 +961,8 @@ def test_trackback_c_mocked(monkeypatch):
 def test_trackback_c_read_old_frames(monkeypatch):
     """seq_par spans 5 steps → _bk_step > first+2 triggers extra read."""
     monkeypatch.setattr(
-        _track_mod, "_trackback_loop_fast",
+        _track_mod,
+        "_trackback_loop_fast",
         lambda *a, **kw: (0, 0),
     )
     run = _make_run(num_cams=1)

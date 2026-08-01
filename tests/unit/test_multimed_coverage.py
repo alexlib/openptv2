@@ -3,6 +3,7 @@
 Target: >= 90% pure-Python line coverage of multimed.py.
 All tests use analytic/invariant assertions — no guessed expected values.
 """
+
 from unittest.mock import patch
 
 import numpy as np
@@ -26,6 +27,7 @@ from openptv2.algorithms.multimed import (
 # pixel_to_metric and correct_brown_affin have _out: cython.double[2] bug in
 # pure-Python mode; patch them wherever multimed functions do a local import.
 
+
 def _mock_p2m(x, y, *args, **kwargs):
     return float(x) * 0.01 - 6.4, 5.12 - float(y) * 0.01
 
@@ -35,6 +37,7 @@ def _mock_cba(x, y, *args, **kwargs):
 
 
 # ── _multimed_r_1lay_iterative ────────────────────────────────────────────────
+
 
 def test_1lay_trivial_all_n_one():
     """Early return when n1 == n2 == n3 == 1.0."""
@@ -66,6 +69,7 @@ def test_1lay_arg_clamp_and_nonconvergence():
 
 # ── _multimed_nlay_core ───────────────────────────────────────────────────────
 
+
 def test_nlay_core_preset_mmf():
     """mmf > 0 and != 1.0 → radial_shift = mmf, Xq = pos_x * mmf."""
     mmf = 1.5
@@ -89,12 +93,20 @@ def test_nlay_core_mmf_zero_calls_iterative():
 
 # ── multimed_nlay ─────────────────────────────────────────────────────────────
 
+
 def test_multimed_nlay_with_mmf():
     """mmf != 1.0 → Xq = ext_x0 + (pos_x - ext_x0) * mmf."""
     Xq, Yq = multimed_nlay(
-        5.0, 3.0, 0.0,
-        0.0, 0.0, 100.0,
-        1.0, 1.49, 1.33, 5.0,
+        5.0,
+        3.0,
+        0.0,
+        0.0,
+        0.0,
+        100.0,
+        1.0,
+        1.49,
+        1.33,
+        5.0,
         mmf=2.0,
     )
     # ext = (0,0): Xq = 0 + (5-0)*2 = 10; Yq = 0 + (3-0)*2 = 6
@@ -105,9 +117,16 @@ def test_multimed_nlay_with_mmf():
 def test_multimed_nlay_iterative_trivial():
     """mmf == 1.0, all n=1 → shift=1, Xq=pos_x, Yq=pos_y."""
     Xq, Yq = multimed_nlay(
-        5.0, 3.0, 0.0,
-        0.0, 0.0, 100.0,
-        1.0, 1.0, 1.0, 5.0,
+        5.0,
+        3.0,
+        0.0,
+        0.0,
+        0.0,
+        100.0,
+        1.0,
+        1.0,
+        1.0,
+        5.0,
         mmf=1.0,
     )
     assert abs(Xq - 5.0) < 1e-12
@@ -117,9 +136,16 @@ def test_multimed_nlay_iterative_trivial():
 def test_multimed_nlay_mmf_zero_iterative():
     """mmf == 0 triggers the iterative path."""
     Xq, Yq = multimed_nlay(
-        4.0, 2.0, 0.0,
-        0.0, 0.0, 100.0,
-        1.0, 1.0, 1.0, 5.0,
+        4.0,
+        2.0,
+        0.0,
+        0.0,
+        0.0,
+        100.0,
+        1.0,
+        1.0,
+        1.0,
+        5.0,
         mmf=0.0,
     )
     assert abs(Xq - 4.0) < 1e-12
@@ -127,6 +153,7 @@ def test_multimed_nlay_mmf_zero_iterative():
 
 
 # ── multimed_r_nlay_iterative ─────────────────────────────────────────────────
+
 
 def test_r_nlay_trivial_all_n_one():
     """All n=1, single layer → immediate return 1.0."""
@@ -147,8 +174,18 @@ def test_r_nlay_r_zero_returns_one():
 def test_r_nlay_default_lists_converges():
     """mm_n2=None and mm_d=None → both default from mm_n2_0/mm_d0; converges."""
     result = multimed_r_nlay_iterative(
-        10.0, 5.0, 0.0, 0.0, 0.0, 100.0, 1.0, 1.49, 1.33, 5.0,
-        mm_n2=None, mm_d=None,
+        10.0,
+        5.0,
+        0.0,
+        0.0,
+        0.0,
+        100.0,
+        1.0,
+        1.49,
+        1.33,
+        5.0,
+        mm_n2=None,
+        mm_d=None,
     )
     assert isinstance(result, float)
     assert 0.8 < result < 1.2
@@ -157,8 +194,16 @@ def test_r_nlay_default_lists_converges():
 def test_r_nlay_two_layers_zout_loop():
     """mm_nlay=2 → zout accumulation loop runs; returns valid shift."""
     result = multimed_r_nlay_iterative(
-        10.0, 5.0, 0.0, 0.0, 0.0, 100.0,
-        1.0, 1.49, 1.33, 5.0,
+        10.0,
+        5.0,
+        0.0,
+        0.0,
+        0.0,
+        100.0,
+        1.0,
+        1.49,
+        1.33,
+        5.0,
         mm_nlay=2,
         mm_n2=[1.49, 1.37],
         mm_d=[5.0, 2.0],
@@ -171,13 +216,22 @@ def test_r_nlay_arg_clamp_diverges():
     """mm_n1 >> mm_n3 → arg > 1 clamped (it.1); oscillation → arg < -1 clamped
     (it.2+); 40 iterations exhaust → for-else or fallback fires."""
     result = multimed_r_nlay_iterative(
-        50.0, 0.0, 0.0, 0.0, 0.0, 100.0,
-        3.0, 3.0, 1.0, 5.0,
+        50.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        100.0,
+        3.0,
+        3.0,
+        1.0,
+        5.0,
     )
     assert isinstance(result, float)
 
 
 # ── trans_cam_point ───────────────────────────────────────────────────────────
+
 
 def test_trans_cam_point_shapes():
     """Output arrays have correct shapes."""
@@ -204,6 +258,7 @@ def test_trans_cam_point_z_glass_cross_p_xy():
 
 
 # ── back_trans_point ──────────────────────────────────────────────────────────
+
 
 def test_back_trans_point_roundtrip():
     """trans_cam_point → back_trans_point recovers original position."""
@@ -250,6 +305,7 @@ def test_back_trans_point_nve_nonzero():
 
 # ── move_along_ray ────────────────────────────────────────────────────────────
 
+
 def test_move_along_ray_45deg():
     """45-degree ray from origin: result[0] = glob_Z, result[2] = glob_Z."""
     vertex = np.array([0.0, 0.0, 0.0])
@@ -272,6 +328,7 @@ def test_move_along_ray_offset_vertex():
 
 
 # ── get_mmf_from_mmlut ────────────────────────────────────────────────────────
+
 
 def _flat_lut(nr=5, nz=10, rw=2.0, val=1.0, origin=(0.0, 0.0, -20.0)):
     """Uniform LUT — all data cells equal val."""
@@ -360,6 +417,7 @@ def test_get_mmf_v4_3_exceeds_max():
 
 # ── volumedimension ───────────────────────────────────────────────────────────
 
+
 def test_volumedimension_structural_invariants():
     """xmax>=xmin, ymax>=ymin, zmax>=zmin — no exact-value assertions."""
     from openptv2.algorithms.calibration import Calibration
@@ -378,8 +436,10 @@ def test_volumedimension_structural_invariants():
     cpar.mm.nlay = 1
     cpar.num_cams = 2
 
-    with patch("openptv2.algorithms.trafo.pixel_to_metric", side_effect=_mock_p2m), \
-         patch("openptv2.algorithms.trafo.correct_brown_affin", side_effect=_mock_cba):
+    with (
+        patch("openptv2.algorithms.trafo.pixel_to_metric", side_effect=_mock_p2m),
+        patch("openptv2.algorithms.trafo.correct_brown_affin", side_effect=_mock_cba),
+    ):
         xmax, xmin, ymax, ymin, zmax, zmin = volumedimension(vpar, cpar, [cal1, cal2])
 
     assert xmax >= xmin
@@ -389,9 +449,11 @@ def test_volumedimension_structural_invariants():
 
 # ── init_mmlut ────────────────────────────────────────────────────────────────
 
+
 def _load_cal_and_par():
     from openptv2.algorithms.calibration import Calibration
     from openptv2.algorithms.parameters import ControlPar, VolumePar
+
     cal = Calibration.from_file(
         "test_data/calibration/cam2.tif.ori",
         "test_data/calibration/cam2.tif.addpar",
@@ -406,8 +468,10 @@ def test_init_mmlut_nlay1_fast_path():
     cal, vpar, cpar = _load_cal_and_par()
     cpar.mm.nlay = 1
 
-    with patch("openptv2.algorithms.trafo.pixel_to_metric", side_effect=_mock_p2m), \
-         patch("openptv2.algorithms.trafo.correct_brown_affin", side_effect=_mock_cba):
+    with (
+        patch("openptv2.algorithms.trafo.pixel_to_metric", side_effect=_mock_p2m),
+        patch("openptv2.algorithms.trafo.correct_brown_affin", side_effect=_mock_cba),
+    ):
         cal = init_mmlut(vpar, cpar, cal)
 
     assert cal.mmlut.data is not None
@@ -424,8 +488,10 @@ def test_init_mmlut_nlay2_python_loop():
     cpar.mm.n2 = [1.49, 1.37, 0.0]
     cpar.mm.d = [5.0, 2.0, 0.0]
 
-    with patch("openptv2.algorithms.trafo.pixel_to_metric", side_effect=_mock_p2m), \
-         patch("openptv2.algorithms.trafo.correct_brown_affin", side_effect=_mock_cba):
+    with (
+        patch("openptv2.algorithms.trafo.pixel_to_metric", side_effect=_mock_p2m),
+        patch("openptv2.algorithms.trafo.correct_brown_affin", side_effect=_mock_cba),
+    ):
         cal = init_mmlut(vpar, cpar, cal)
 
     assert cal.mmlut.data is not None
@@ -438,8 +504,10 @@ def test_init_mmlut_already_initialized_skips():
     cal, vpar, cpar = _load_cal_and_par()
     cal.mmlut.data = np.array([1.0, 1.0, 1.0], dtype=np.float64)
 
-    with patch("openptv2.algorithms.trafo.pixel_to_metric", side_effect=_mock_p2m), \
-         patch("openptv2.algorithms.trafo.correct_brown_affin", side_effect=_mock_cba):
+    with (
+        patch("openptv2.algorithms.trafo.pixel_to_metric", side_effect=_mock_p2m),
+        patch("openptv2.algorithms.trafo.correct_brown_affin", side_effect=_mock_cba),
+    ):
         cal_out = init_mmlut(vpar, cpar, cal)
 
     # Data not replaced — stays at length 3
@@ -447,6 +515,7 @@ def test_init_mmlut_already_initialized_skips():
 
 
 # ── is_compiled ───────────────────────────────────────────────────────────────
+
 
 def test_is_compiled_returns_bool():
     """is_compiled() must return a bool (False in pure-Python, True compiled)."""

@@ -1,4 +1,5 @@
 """Compatibility forwarder for tracking_framebuf."""
+
 from openptv2.algorithms.tracking_frame_buf import (
     CORRES_NONE,
     Frame,

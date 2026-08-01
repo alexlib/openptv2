@@ -61,17 +61,25 @@ EPS = 1e-8
 # Shared helpers
 # ---------------------------------------------------------------------------
 
+
 def _make_cal(
     ext_xyz=(0.0, 0.0, 500.0),
-    dm=None,          # 3x3 rotation matrix, default identity
+    dm=None,  # 3x3 rotation matrix, default identity
     cc=100.0,
-    xh=0.0, yh=0.0,
+    xh=0.0,
+    yh=0.0,
     glass=(0.0, 0.0, 1.0),  # glass normal vector (gx, gy, gz)
-    n1=1.0, n2=1.0, n3=1.0,
+    n1=1.0,
+    n2=1.0,
+    n3=1.0,
     d0=0.0,
-    k1=0.0, k2=0.0, k3=0.0,
-    p1=0.0, p2=0.0,
-    scx=1.0, she=0.0,
+    k1=0.0,
+    k2=0.0,
+    k3=0.0,
+    p1=0.0,
+    p2=0.0,
+    scx=1.0,
+    she=0.0,
 ):
     """Build a 31-element packed cal array for _point_to_pixel_out tests."""
     gx, gy, gz = glass
@@ -83,9 +91,15 @@ def _make_cal(
     c[1] = ext_xyz[1]
     c[2] = ext_xyz[2]
     # dm stored column-major: dm[row, col] → c[row + col*3]
-    c[3] = dm[0, 0]; c[4] = dm[1, 0]; c[5] = dm[2, 0]
-    c[6] = dm[0, 1]; c[7] = dm[1, 1]; c[8] = dm[2, 1]
-    c[9] = dm[0, 2]; c[10] = dm[1, 2]; c[11] = dm[2, 2]
+    c[3] = dm[0, 0]
+    c[4] = dm[1, 0]
+    c[5] = dm[2, 0]
+    c[6] = dm[0, 1]
+    c[7] = dm[1, 1]
+    c[8] = dm[2, 1]
+    c[9] = dm[0, 2]
+    c[10] = dm[1, 2]
+    c[11] = dm[2, 2]
     c[12] = cc
     c[13] = xh
     c[14] = yh
@@ -98,18 +112,31 @@ def _make_cal(
     c[21] = n2
     c[22] = n3
     c[23] = d0
-    c[24] = k1; c[25] = k2; c[26] = k3
-    c[27] = p1; c[28] = p2
+    c[24] = k1
+    c[25] = k2
+    c[26] = k3
+    c[27] = p1
+    c[28] = p2
     c[29] = scx
     c[30] = she
     return c
 
 
-def _call_p2p(pos, cal, imx_half=512.0, imy_half=512.0,
-              inv_pix_x=1.0, inv_pix_y=1.0, chfield=0,
-              mmlut_data=None, mmlut_origin=None,
-              mmlut_nr=0, mmlut_nz=0, mmlut_rw=1.0,
-              has_mmlut=0):
+def _call_p2p(
+    pos,
+    cal,
+    imx_half=512.0,
+    imy_half=512.0,
+    inv_pix_x=1.0,
+    inv_pix_y=1.0,
+    chfield=0,
+    mmlut_data=None,
+    mmlut_origin=None,
+    mmlut_nr=0,
+    mmlut_nz=0,
+    mmlut_rw=1.0,
+    has_mmlut=0,
+):
     """Convenience wrapper for _point_to_pixel_out."""
     pos_arr = np.ascontiguousarray(pos, dtype=np.float64)
     cal_arr = np.ascontiguousarray(cal, dtype=np.float64)
@@ -121,10 +148,20 @@ def _call_p2p(pos, cal, imx_half=512.0, imy_half=512.0,
     md = np.ascontiguousarray(mmlut_data, dtype=np.float64)
     mo = np.ascontiguousarray(mmlut_origin, dtype=np.float64)
     ret = _point_to_pixel_out(
-        pos_arr, cal_arr, md, mo,
-        mmlut_nr, mmlut_nz, mmlut_rw, has_mmlut,
-        imx_half, imy_half, inv_pix_x, inv_pix_y,
-        chfield, out,
+        pos_arr,
+        cal_arr,
+        md,
+        mo,
+        mmlut_nr,
+        mmlut_nz,
+        mmlut_rw,
+        has_mmlut,
+        imx_half,
+        imy_half,
+        inv_pix_x,
+        inv_pix_y,
+        chfield,
+        out,
     )
     return ret, out
 
@@ -132,6 +169,7 @@ def _call_p2p(pos, cal, imx_half=512.0, imy_half=512.0,
 # ---------------------------------------------------------------------------
 # Module-level constants
 # ---------------------------------------------------------------------------
+
 
 def test_pt_unused_value():
     assert PT_UNUSED == -999
@@ -145,49 +183,47 @@ def test_tr_unused_k_value():
 # _multimed_r_nlay_1layer
 # ---------------------------------------------------------------------------
 
+
 class TestMultimedRNlay1Layer:
     def test_all_n_equal_one_returns_one(self):
-        r = _multimed_r_nlay_1layer(5.0, 3.0, 0.0, 0.0, 0.0, 100.0,
-                                     1.0, 1.0, 1.0, 0.0)
+        r = _multimed_r_nlay_1layer(5.0, 3.0, 0.0, 0.0, 0.0, 100.0, 1.0, 1.0, 1.0, 0.0)
         assert r == 1.0
 
     def test_denom_zero_returns_one(self):
         # pos_z == ext_z0 → denom = ext_z0 - pos_z = 0
-        r = _multimed_r_nlay_1layer(5.0, 0.0, 100.0, 0.0, 0.0, 100.0,
-                                     1.5, 1.33, 1.0, 2.0)
+        r = _multimed_r_nlay_1layer(
+            5.0, 0.0, 100.0, 0.0, 0.0, 100.0, 1.5, 1.33, 1.0, 2.0
+        )
         assert r == 1.0
 
     def test_r_zero_returns_one(self):
         # pos_x == ext_x0 and pos_y == ext_y0 → r = 0
-        r = _multimed_r_nlay_1layer(0.0, 0.0, 0.0, 0.0, 0.0, 100.0,
-                                     1.5, 1.33, 1.0, 2.0)
+        r = _multimed_r_nlay_1layer(0.0, 0.0, 0.0, 0.0, 0.0, 100.0, 1.5, 1.33, 1.0, 2.0)
         assert r == 1.0
 
     def test_convergent_same_medium(self):
         # n1 == n2 == n3 (but not all 1.0) → still converges
-        r = _multimed_r_nlay_1layer(10.0, 0.0, 0.0, 0.0, 0.0, 100.0,
-                                     1.33, 1.33, 1.33, 5.0)
+        r = _multimed_r_nlay_1layer(
+            10.0, 0.0, 0.0, 0.0, 0.0, 100.0, 1.33, 1.33, 1.33, 5.0
+        )
         # Should converge and return rq/r ≈ 1.0 (same media, no shift)
         assert isinstance(r, float)
 
     def test_convergent_with_refraction(self):
         # Standard water/glass scenario, should converge
-        r = _multimed_r_nlay_1layer(5.0, 3.0, 0.0, 0.0, 0.0, 100.0,
-                                     1.0, 1.33, 1.0, 5.0)
+        r = _multimed_r_nlay_1layer(5.0, 3.0, 0.0, 0.0, 0.0, 100.0, 1.0, 1.33, 1.0, 5.0)
         assert isinstance(r, float)
         assert r > 0.0
 
     def test_arg_clamped_high(self):
         # sin_beta1 * mm_n1 / mm_n2_0 > 1.0 → clamp to 1.0
         # Large r, small denom → large angle
-        r = _multimed_r_nlay_1layer(500.0, 0.0, 0.0, 0.0, 0.0, 10.0,
-                                     3.0, 1.0, 1.0, 2.0)
+        r = _multimed_r_nlay_1layer(500.0, 0.0, 0.0, 0.0, 0.0, 10.0, 3.0, 1.0, 1.0, 2.0)
         assert isinstance(r, float)
 
     def test_small_rdiff_breaks_early(self):
         # Normal convergent case
-        r = _multimed_r_nlay_1layer(2.0, 0.0, 0.0, 0.0, 0.0, 50.0,
-                                     1.0, 1.5, 1.0, 3.0)
+        r = _multimed_r_nlay_1layer(2.0, 0.0, 0.0, 0.0, 0.0, 50.0, 1.0, 1.5, 1.0, 3.0)
         assert isinstance(r, float)
         assert r > 0.0
 
@@ -195,6 +231,7 @@ class TestMultimedRNlay1Layer:
 # ---------------------------------------------------------------------------
 # _point_to_pixel_out
 # ---------------------------------------------------------------------------
+
 
 class TestPointToPixelOut:
     """Tests for the cfunc _point_to_pixel_out."""
@@ -280,7 +317,8 @@ class TestPointToPixelOut:
         mmlut_data = np.full(nr * nz, 1.5, dtype=np.float64)
         mmlut_origin = np.zeros(3, dtype=np.float64)
         ret, out = _call_p2p(
-            [10.0, 20.0, 5.0], self.cal,  # z=5 → pos_t_2=4 > 0
+            [10.0, 20.0, 5.0],
+            self.cal,  # z=5 → pos_t_2=4 > 0
             has_mmlut=1,
             mmlut_data=mmlut_data,
             mmlut_origin=mmlut_origin,
@@ -296,7 +334,8 @@ class TestPointToPixelOut:
         mmlut_data = np.ones(nr * nz, dtype=np.float64)
         mmlut_origin = np.zeros(3, dtype=np.float64)
         ret, out = _call_p2p(
-            [10.0, 20.0, 5.0], self.cal,  # z=5 → pos_t_2=4 > 0
+            [10.0, 20.0, 5.0],
+            self.cal,  # z=5 → pos_t_2=4 > 0
             has_mmlut=1,
             mmlut_data=mmlut_data,
             mmlut_origin=mmlut_origin,
@@ -312,7 +351,8 @@ class TestPointToPixelOut:
         mmlut_data = np.zeros(nr * nz, dtype=np.float64)
         mmlut_origin = np.zeros(3, dtype=np.float64)
         ret, out = _call_p2p(
-            [5.0, 5.0, 0.0], self.cal,
+            [5.0, 5.0, 0.0],
+            self.cal,
             has_mmlut=1,
             mmlut_data=mmlut_data,
             mmlut_origin=mmlut_origin,
@@ -329,7 +369,8 @@ class TestPointToPixelOut:
         mmlut_data = np.ones(nr * nz, dtype=np.float64)
         mmlut_origin = np.array([0.0, 0.0, 0.0], dtype=np.float64)
         ret, out = _call_p2p(
-            [1000.0, 0.0, 0.0], self.cal,
+            [1000.0, 0.0, 0.0],
+            self.cal,
             has_mmlut=1,
             mmlut_data=mmlut_data,
             mmlut_origin=mmlut_origin,
@@ -357,7 +398,8 @@ class TestPointToPixelOut:
             ext_xyz=(0.0, 0.0, 500.0),
             glass=(0.0, 0.0, 1.0),
             cc=100.0,
-            p1=0.001, p2=0.001,
+            p1=0.001,
+            p2=0.001,
         )
         _, out0 = _call_p2p([30.0, 30.0, 0.0], self.cal)
         _, out1 = _call_p2p([30.0, 30.0, 0.0], cal_tp)
@@ -376,7 +418,8 @@ class TestPointToPixelOut:
             ext_xyz=(0.0, 0.0, 500.0),
             glass=(0.0, 0.0, 1.0),
             cc=100.0,
-            k2=1e-4, k3=1e-6,
+            k2=1e-4,
+            k3=1e-6,
         )
         ret, out = _call_p2p([30.0, 30.0, 0.0], cal_k)
         assert ret == 0
@@ -389,7 +432,8 @@ class TestPointToPixelOut:
         # Make ir close to mmlut_nr so v0 is in bounds but v3 = v0+nz+1 is out
         # ir = mmlut_nr → v0 = nr*nz → v3 = nr*nz + nz + 1 > nr*nz
         ret, out = _call_p2p(
-            [2.5, 0.0, 0.0], self.cal,
+            [2.5, 0.0, 0.0],
+            self.cal,
             has_mmlut=1,
             mmlut_data=mmlut_data,
             mmlut_origin=mmlut_origin,
@@ -411,7 +455,8 @@ class TestPointToPixelOut:
         mmlut_data = np.ones(nr * nz, dtype=np.float64)
         mmlut_origin = np.zeros(3, dtype=np.float64)
         ret, out = _call_p2p(
-            [10.0, 20.0, 5.0], self.cal,
+            [10.0, 20.0, 5.0],
+            self.cal,
             has_mmlut=1,
             mmlut_data=mmlut_data,
             mmlut_origin=mmlut_origin,
@@ -431,7 +476,8 @@ class TestPointToPixelOut:
         mmlut_data = np.zeros(nr * nz, dtype=np.float64)
         mmlut_origin = np.zeros(3, dtype=np.float64)
         ret, out = _call_p2p(
-            [10.0, 20.0, 5.0], self.cal,
+            [10.0, 20.0, 5.0],
+            self.cal,
             has_mmlut=1,
             mmlut_data=mmlut_data,
             mmlut_origin=mmlut_origin,
@@ -445,6 +491,7 @@ class TestPointToPixelOut:
 # ---------------------------------------------------------------------------
 # candsearch_in_pix_fast
 # ---------------------------------------------------------------------------
+
 
 def _make_targets(xs, ys, tnrs):
     """Build aligned float64/int32 target arrays sorted by y."""
@@ -466,8 +513,7 @@ class TestCandsearchInPixFast:
         ty = np.zeros(0, dtype=np.float64)
         tnr = np.zeros(0, dtype=np.int32)
         p1, p2, p3, p4 = candsearch_in_pix_fast(
-            tx, ty, tnr, 0, 512.0, 512.0, 10.0, 10.0, 10.0, 10.0,
-            self.IMX, self.IMY, TR
+            tx, ty, tnr, 0, 512.0, 512.0, 10.0, 10.0, 10.0, 10.0, self.IMX, self.IMY, TR
         )
         assert all(p == PT_UNUSED for p in (p1, p2, p3, p4))
 
@@ -475,24 +521,33 @@ class TestCandsearchInPixFast:
         tx, ty, tnr = _make_targets([100.0], [100.0], [0])
         # Center far outside image
         p1, p2, p3, p4 = candsearch_in_pix_fast(
-            tx, ty, tnr, 1, 2000.0, 512.0, 10.0, 10.0, 10.0, 10.0,
-            self.IMX, self.IMY, TR
+            tx,
+            ty,
+            tnr,
+            1,
+            2000.0,
+            512.0,
+            10.0,
+            10.0,
+            10.0,
+            10.0,
+            self.IMX,
+            self.IMY,
+            TR,
         )
         assert all(p == PT_UNUSED for p in (p1, p2, p3, p4))
 
     def test_center_negative_returns_unused(self):
         tx, ty, tnr = _make_targets([100.0], [100.0], [0])
         p1, p2, p3, p4 = candsearch_in_pix_fast(
-            tx, ty, tnr, 1, -10.0, 512.0, 10.0, 10.0, 10.0, 10.0,
-            self.IMX, self.IMY, TR
+            tx, ty, tnr, 1, -10.0, 512.0, 10.0, 10.0, 10.0, 10.0, self.IMX, self.IMY, TR
         )
         assert all(p == PT_UNUSED for p in (p1, p2, p3, p4))
 
     def test_single_target_in_range(self):
         tx, ty, tnr = _make_targets([500.0], [500.0], [42])
         p1, p2, p3, p4 = candsearch_in_pix_fast(
-            tx, ty, tnr, 1, 500.0, 500.0, 20.0, 20.0, 20.0, 20.0,
-            self.IMX, self.IMY, TR
+            tx, ty, tnr, 1, 500.0, 500.0, 20.0, 20.0, 20.0, 20.0, self.IMX, self.IMY, TR
         )
         assert p1 == 0  # only one target, it's at index 0 after sort
         assert p2 == PT_UNUSED
@@ -501,8 +556,7 @@ class TestCandsearchInPixFast:
         # tnr == TR → skipped
         tx, ty, tnr = _make_targets([500.0], [500.0], [TR])
         p1, p2, p3, p4 = candsearch_in_pix_fast(
-            tx, ty, tnr, 1, 500.0, 500.0, 20.0, 20.0, 20.0, 20.0,
-            self.IMX, self.IMY, TR
+            tx, ty, tnr, 1, 500.0, 500.0, 20.0, 20.0, 20.0, 20.0, self.IMX, self.IMY, TR
         )
         assert all(p == PT_UNUSED for p in (p1, p2, p3, p4))
 
@@ -513,20 +567,28 @@ class TestCandsearchInPixFast:
         tnrs = [10, 11, 12, 13, 14, 15]
         tx, ty, tnr = _make_targets(xs, ys, tnrs)
         p1, p2, p3, p4 = candsearch_in_pix_fast(
-            tx, ty, tnr, len(xs), 500.0, 500.0, 30.0, 30.0, 30.0, 30.0,
-            self.IMX, self.IMY, TR
+            tx,
+            ty,
+            tnr,
+            len(xs),
+            500.0,
+            500.0,
+            30.0,
+            30.0,
+            30.0,
+            30.0,
+            self.IMX,
+            self.IMY,
+            TR,
         )
         found = [p for p in (p1, p2, p3, p4) if p != PT_UNUSED]
         assert len(found) >= 1
 
     def test_target_outside_search_area_excluded(self):
         # One target inside, one far outside search box
-        tx, ty, tnr = _make_targets(
-            [500.0, 900.0], [500.0, 900.0], [1, 2]
-        )
+        tx, ty, tnr = _make_targets([500.0, 900.0], [500.0, 900.0], [1, 2])
         p1, p2, p3, p4 = candsearch_in_pix_fast(
-            tx, ty, tnr, 2, 500.0, 500.0, 20.0, 20.0, 20.0, 20.0,
-            self.IMX, self.IMY, TR
+            tx, ty, tnr, 2, 500.0, 500.0, 20.0, 20.0, 20.0, 20.0, self.IMX, self.IMY, TR
         )
         # Only target 0 (at 500,500) is within ±20
         assert p1 == 0
@@ -539,8 +601,7 @@ class TestCandsearchInPixFast:
         tnrs = [10, 11, 12, 13, 14]
         tx, ty, tnr = _make_targets(xs, ys, tnrs)
         p1, p2, p3, p4 = candsearch_in_pix_fast(
-            tx, ty, tnr, 5, 500.0, 500.0, 10.0, 10.0, 10.0, 10.0,
-            self.IMX, self.IMY, TR
+            tx, ty, tnr, 5, 500.0, 500.0, 10.0, 10.0, 10.0, 10.0, self.IMX, self.IMY, TR
         )
         found = [p for p in (p1, p2, p3, p4) if p != PT_UNUSED]
         assert len(found) == 4
@@ -552,8 +613,7 @@ class TestCandsearchInPixFast:
         tnrs = [1, 2, 3]
         tx, ty, tnr = _make_targets(xs, ys, tnrs)
         p1, p2, p3, p4 = candsearch_in_pix_fast(
-            tx, ty, tnr, 3, 500.0, 500.0, 5.0, 5.0, 5.0, 10.0,
-            self.IMX, self.IMY, TR
+            tx, ty, tnr, 3, 500.0, 500.0, 5.0, 5.0, 5.0, 10.0, self.IMX, self.IMY, TR
         )
         # Should find at most 2 (within ymin=495..ymax=510)
         found = [p for p in (p1, p2, p3, p4) if p != PT_UNUSED]
@@ -563,8 +623,7 @@ class TestCandsearchInPixFast:
         # Center near left edge — xmin clamped to 0
         tx, ty, tnr = _make_targets([5.0], [512.0], [7])
         p1, p2, p3, p4 = candsearch_in_pix_fast(
-            tx, ty, tnr, 1, 5.0, 512.0, 100.0, 10.0, 10.0, 10.0,
-            self.IMX, self.IMY, TR
+            tx, ty, tnr, 1, 5.0, 512.0, 100.0, 10.0, 10.0, 10.0, self.IMX, self.IMY, TR
         )
         # Target at x=5 is within search window
         assert p1 != PT_UNUSED
@@ -573,8 +632,7 @@ class TestCandsearchInPixFast:
         """cent_y < du → ymin clamped to 0.0 (covers line 448)."""
         tx, ty, tnr = _make_targets([512.0], [5.0], [3])
         p1, p2, p3, p4 = candsearch_in_pix_fast(
-            tx, ty, tnr, 1, 512.0, 5.0, 10.0, 10.0, 20.0, 10.0,
-            self.IMX, self.IMY, TR
+            tx, ty, tnr, 1, 512.0, 5.0, 10.0, 10.0, 20.0, 10.0, self.IMX, self.IMY, TR
         )
         # cent_y=5, du=20 → ymin=-15 → clamped to 0; target at y=5 inside
         assert p1 != PT_UNUSED
@@ -583,8 +641,19 @@ class TestCandsearchInPixFast:
         """cent_y + dd > imy → ymax clamped to imy (covers line 450)."""
         tx, ty, tnr = _make_targets([512.0], [1020.0], [9])
         p1, p2, p3, p4 = candsearch_in_pix_fast(
-            tx, ty, tnr, 1, 512.0, 1020.0, 10.0, 10.0, 10.0, 20.0,
-            self.IMX, self.IMY, TR
+            tx,
+            ty,
+            tnr,
+            1,
+            512.0,
+            1020.0,
+            10.0,
+            10.0,
+            10.0,
+            20.0,
+            self.IMX,
+            self.IMY,
+            TR,
         )
         # cent_y=1020, dd=20 → ymax=1040 > 1024 → clamped; target at y=1020 inside
         assert p1 != PT_UNUSED
@@ -599,8 +668,7 @@ class TestCandsearchInPixFast:
         tnrs = np.arange(n, dtype=np.int32)
         tx, ty, tnr = _make_targets(xs, ys, tnrs)
         p1, p2, p3, p4 = candsearch_in_pix_fast(
-            tx, ty, tnr, n, 512.0, 190.0, 5.0, 5.0, 5.0, 5.0,
-            self.IMX, self.IMY, TR
+            tx, ty, tnr, n, 512.0, 190.0, 5.0, 5.0, 5.0, 5.0, self.IMX, self.IMY, TR
         )
         # Targets near y=190 should be found
         found = [p for p in (p1, p2, p3, p4) if p != PT_UNUSED]
@@ -611,8 +679,7 @@ class TestCandsearchInPixFast:
         # Target far in x but correct y → covers the tx-range False branch
         tx, ty, tnr = _make_targets([900.0], [500.0], [5])
         p1, p2, p3, p4 = candsearch_in_pix_fast(
-            tx, ty, tnr, 1, 500.0, 500.0, 10.0, 10.0, 10.0, 10.0,
-            self.IMX, self.IMY, TR
+            tx, ty, tnr, 1, 500.0, 500.0, 10.0, 10.0, 10.0, 10.0, self.IMX, self.IMY, TR
         )
         assert all(p == PT_UNUSED for p in (p1, p2, p3, p4))
 
@@ -624,8 +691,7 @@ class TestCandsearchInPixFast:
         tnrs = np.arange(n, dtype=np.int32)
         tx, ty, tnr = _make_targets(xs, ys, tnrs)
         p1, p2, p3, p4 = candsearch_in_pix_fast(
-            tx, ty, tnr, n, 500.0, 500.0, 20.0, 20.0, 20.0, 20.0,
-            self.IMX, self.IMY, TR
+            tx, ty, tnr, n, 500.0, 500.0, 20.0, 20.0, 20.0, 20.0, self.IMX, self.IMY, TR
         )
         found = [p for p in (p1, p2, p3, p4) if p != PT_UNUSED]
         assert len(found) == 4
@@ -635,6 +701,7 @@ class TestCandsearchInPixFast:
 # candsearch_in_pix_rest_fast
 # ---------------------------------------------------------------------------
 
+
 class TestCandsearchInPixRestFast:
     IMX, IMY = 1024.0, 1024.0
 
@@ -643,8 +710,7 @@ class TestCandsearchInPixRestFast:
         ty = np.zeros(0, dtype=np.float64)
         tnr = np.zeros(0, dtype=np.int32)
         idx, cnt = candsearch_in_pix_rest_fast(
-            tx, ty, tnr, 0, 512.0, 512.0, 10.0, 10.0, 10.0, 10.0,
-            self.IMX, self.IMY, TR
+            tx, ty, tnr, 0, 512.0, 512.0, 10.0, 10.0, 10.0, 10.0, self.IMX, self.IMY, TR
         )
         assert idx == PT_UNUSED
         assert cnt == 0
@@ -652,8 +718,19 @@ class TestCandsearchInPixRestFast:
     def test_out_of_bounds_center(self):
         tx, ty, tnr = _make_targets([100.0], [100.0], [TR])
         idx, cnt = candsearch_in_pix_rest_fast(
-            tx, ty, tnr, 1, 2000.0, 512.0, 10.0, 10.0, 10.0, 10.0,
-            self.IMX, self.IMY, TR
+            tx,
+            ty,
+            tnr,
+            1,
+            2000.0,
+            512.0,
+            10.0,
+            10.0,
+            10.0,
+            10.0,
+            self.IMX,
+            self.IMY,
+            TR,
         )
         assert idx == PT_UNUSED
         assert cnt == 0
@@ -662,8 +739,7 @@ class TestCandsearchInPixRestFast:
         # tnr == TR (unused) → eligible
         tx, ty, tnr = _make_targets([500.0], [500.0], [TR])
         idx, cnt = candsearch_in_pix_rest_fast(
-            tx, ty, tnr, 1, 500.0, 500.0, 20.0, 20.0, 20.0, 20.0,
-            self.IMX, self.IMY, TR
+            tx, ty, tnr, 1, 500.0, 500.0, 20.0, 20.0, 20.0, 20.0, self.IMX, self.IMY, TR
         )
         assert idx == 0
         assert cnt == 1
@@ -672,30 +748,23 @@ class TestCandsearchInPixRestFast:
         # tnr != TR → not eligible for rest search
         tx, ty, tnr = _make_targets([500.0], [500.0], [42])
         idx, cnt = candsearch_in_pix_rest_fast(
-            tx, ty, tnr, 1, 500.0, 500.0, 20.0, 20.0, 20.0, 20.0,
-            self.IMX, self.IMY, TR
+            tx, ty, tnr, 1, 500.0, 500.0, 20.0, 20.0, 20.0, 20.0, self.IMX, self.IMY, TR
         )
         assert idx == PT_UNUSED
         assert cnt == 0
 
     def test_finds_closest_of_two_unused(self):
-        tx, ty, tnr = _make_targets(
-            [500.0, 501.0], [500.0, 500.5], [TR, TR]
-        )
+        tx, ty, tnr = _make_targets([500.0, 501.0], [500.0, 500.5], [TR, TR])
         idx, cnt = candsearch_in_pix_rest_fast(
-            tx, ty, tnr, 2, 500.0, 500.0, 20.0, 20.0, 20.0, 20.0,
-            self.IMX, self.IMY, TR
+            tx, ty, tnr, 2, 500.0, 500.0, 20.0, 20.0, 20.0, 20.0, self.IMX, self.IMY, TR
         )
         assert idx != PT_UNUSED
         assert cnt == 1
 
     def test_ymax_break(self):
-        tx, ty, tnr = _make_targets(
-            [500.0, 500.0], [500.0, 600.0], [TR, TR]
-        )
+        tx, ty, tnr = _make_targets([500.0, 500.0], [500.0, 600.0], [TR, TR])
         idx, cnt = candsearch_in_pix_rest_fast(
-            tx, ty, tnr, 2, 500.0, 500.0, 5.0, 5.0, 5.0, 5.0,
-            self.IMX, self.IMY, TR
+            tx, ty, tnr, 2, 500.0, 500.0, 5.0, 5.0, 5.0, 5.0, self.IMX, self.IMY, TR
         )
         # Only target at y=500 is in window (ymax=505)
         assert idx == 0
@@ -703,8 +772,7 @@ class TestCandsearchInPixRestFast:
     def test_xmin_clamp(self):
         tx, ty, tnr = _make_targets([2.0], [512.0], [TR])
         idx, cnt = candsearch_in_pix_rest_fast(
-            tx, ty, tnr, 1, 2.0, 512.0, 200.0, 10.0, 10.0, 10.0,
-            self.IMX, self.IMY, TR
+            tx, ty, tnr, 1, 2.0, 512.0, 200.0, 10.0, 10.0, 10.0, self.IMX, self.IMY, TR
         )
         assert idx != PT_UNUSED
 
@@ -712,8 +780,7 @@ class TestCandsearchInPixRestFast:
         """cent_y < du → ymin clamped to 0.0 (covers line 564)."""
         tx, ty, tnr = _make_targets([512.0], [5.0], [TR])
         idx, cnt = candsearch_in_pix_rest_fast(
-            tx, ty, tnr, 1, 512.0, 5.0, 10.0, 10.0, 20.0, 10.0,
-            self.IMX, self.IMY, TR
+            tx, ty, tnr, 1, 512.0, 5.0, 10.0, 10.0, 20.0, 10.0, self.IMX, self.IMY, TR
         )
         assert idx != PT_UNUSED
 
@@ -721,8 +788,19 @@ class TestCandsearchInPixRestFast:
         """cent_y + dd > imy → ymax clamped to imy (covers line 566)."""
         tx, ty, tnr = _make_targets([512.0], [1020.0], [TR])
         idx, cnt = candsearch_in_pix_rest_fast(
-            tx, ty, tnr, 1, 512.0, 1020.0, 10.0, 10.0, 10.0, 20.0,
-            self.IMX, self.IMY, TR
+            tx,
+            ty,
+            tnr,
+            1,
+            512.0,
+            1020.0,
+            10.0,
+            10.0,
+            10.0,
+            20.0,
+            self.IMX,
+            self.IMY,
+            TR,
         )
         assert idx != PT_UNUSED
 
@@ -735,8 +813,7 @@ class TestCandsearchInPixRestFast:
         tnrs = np.full(n, TR, dtype=np.int32)
         tx, ty, tnr = _make_targets(xs, ys, tnrs)
         idx, cnt = candsearch_in_pix_rest_fast(
-            tx, ty, tnr, n, 512.0, 190.0, 5.0, 5.0, 5.0, 5.0,
-            self.IMX, self.IMY, TR
+            tx, ty, tnr, n, 512.0, 190.0, 5.0, 5.0, 5.0, 5.0, self.IMX, self.IMY, TR
         )
         assert idx != PT_UNUSED
 
@@ -748,8 +825,7 @@ class TestCandsearchInPixRestFast:
         tnrs = np.full(n, TR, dtype=np.int32)
         tx, ty, tnr = _make_targets(xs, ys, tnrs)
         idx, cnt = candsearch_in_pix_rest_fast(
-            tx, ty, tnr, n, 512.0, 505.0, 5.0, 5.0, 5.0, 5.0,
-            self.IMX, self.IMY, TR
+            tx, ty, tnr, n, 512.0, 505.0, 5.0, 5.0, 5.0, 5.0, self.IMX, self.IMY, TR
         )
         assert idx != PT_UNUSED
 
@@ -757,8 +833,7 @@ class TestCandsearchInPixRestFast:
         """Target in y window but not x window → False branch at tx check (covers 594->588)."""
         tx, ty, tnr = _make_targets([900.0], [500.0], [TR])
         idx, cnt = candsearch_in_pix_rest_fast(
-            tx, ty, tnr, 1, 500.0, 500.0, 10.0, 10.0, 10.0, 10.0,
-            self.IMX, self.IMY, TR
+            tx, ty, tnr, 1, 500.0, 500.0, 10.0, 10.0, 10.0, 10.0, self.IMX, self.IMY, TR
         )
         assert idx == PT_UNUSED
 
@@ -769,8 +844,7 @@ class TestCandsearchInPixRestFast:
         tnrs = np.full(n, TR, dtype=np.int32)
         tx, ty, tnr = _make_targets(xs, ys, tnrs)
         idx, cnt = candsearch_in_pix_rest_fast(
-            tx, ty, tnr, n, 500.0, 500.0, 15.0, 15.0, 15.0, 15.0,
-            self.IMX, self.IMY, TR
+            tx, ty, tnr, n, 500.0, 500.0, 15.0, 15.0, 15.0, 15.0, self.IMX, self.IMY, TR
         )
         assert idx != PT_UNUSED
         assert cnt == 1
@@ -779,6 +853,7 @@ class TestCandsearchInPixRestFast:
 # ---------------------------------------------------------------------------
 # sort_candidates_by_freq_fast
 # ---------------------------------------------------------------------------
+
 
 class TestSortCandidatesByFreqFast:
     NUM_CAMS = 4
@@ -812,8 +887,8 @@ class TestSortCandidatesByFreqFast:
     def test_same_candidate_two_cams(self):
         # Target 10 appears in cam0 slot0 and cam1 slot0
         vals = [-1] * 16
-        vals[0] = 10   # cam0 slot0
-        vals[4] = 10   # cam1 slot0
+        vals[0] = 10  # cam0 slot0
+        vals[4] = 10  # cam1 slot0
         ftnr, freq, whichcam = self._make_arrays(vals)
         nv = sort_candidates_by_freq_fast(
             ftnr, freq, whichcam, 16, self.NUM_CAMS, self.MAX_CANDS
@@ -823,9 +898,9 @@ class TestSortCandidatesByFreqFast:
     def test_same_candidate_all_cams(self):
         # Target 7 seen in all 4 cameras
         vals = [-1] * 16
-        vals[0] = 7   # cam0
-        vals[4] = 7   # cam1
-        vals[8] = 7   # cam2
+        vals[0] = 7  # cam0
+        vals[4] = 7  # cam1
+        vals[8] = 7  # cam2
         vals[12] = 7  # cam3
         ftnr, freq, whichcam = self._make_arrays(vals)
         nv = sort_candidates_by_freq_fast(
@@ -854,11 +929,11 @@ class TestSortCandidatesByFreqFast:
     def test_sorting_higher_freq_first(self):
         # Target A in 3 cams, target B in 2 cams — A should sort first
         vals = [-1] * 16
-        vals[0] = 20   # cam0: target A
-        vals[4] = 20   # cam1: target A
-        vals[8] = 20   # cam2: target A
-        vals[1] = 30   # cam0 slot1: target B
-        vals[5] = 30   # cam1 slot1: target B
+        vals[0] = 20  # cam0: target A
+        vals[4] = 20  # cam1: target A
+        vals[8] = 20  # cam2: target A
+        vals[1] = 30  # cam0 slot1: target B
+        vals[5] = 30  # cam1 slot1: target B
         ftnr, freq, whichcam = self._make_arrays(vals)
         nv = sort_candidates_by_freq_fast(
             ftnr, freq, whichcam, 16, self.NUM_CAMS, self.MAX_CANDS
@@ -898,9 +973,9 @@ class TestSortCandidatesByFreqFast:
     def test_freq_one_entry_after_another_gets_zeroed(self):
         # Second unique candidate at freq=1 is eliminated by dedup loop at j>i
         vals = [-1] * 16
-        vals[0] = 10   # cam0: target 10 in 2 cams → freq=2
-        vals[4] = 10   # cam1
-        vals[1] = 99   # cam0 slot1: target 99 in 1 cam → freq=1
+        vals[0] = 10  # cam0: target 10 in 2 cams → freq=2
+        vals[4] = 10  # cam1
+        vals[1] = 99  # cam0 slot1: target 99 in 1 cam → freq=1
         ftnr, freq, whichcam = self._make_arrays(vals)
         nv = sort_candidates_by_freq_fast(
             ftnr, freq, whichcam, 16, self.NUM_CAMS, self.MAX_CANDS
@@ -913,6 +988,7 @@ class TestSortCandidatesByFreqFast:
 # candsearch_in_pix_fast_nogil (cfunc — callable in pure Python)
 # ---------------------------------------------------------------------------
 
+
 class TestCandsearchInPixFastNogil:
     """Tests for the nogil cfunc variant. Pass a list for out_indices."""
 
@@ -924,8 +1000,20 @@ class TestCandsearchInPixFastNogil:
         tnr = np.array([0], dtype=np.int32)
         out = [0, 0, 0, 0]
         candsearch_in_pix_fast_nogil(
-            tx, ty, tnr, 1, 2000.0, 512.0, 10.0, 10.0, 10.0, 10.0,
-            self.IMX, self.IMY, TR, out
+            tx,
+            ty,
+            tnr,
+            1,
+            2000.0,
+            512.0,
+            10.0,
+            10.0,
+            10.0,
+            10.0,
+            self.IMX,
+            self.IMY,
+            TR,
+            out,
         )
         assert all(v == -999 for v in out)
 
@@ -935,8 +1023,20 @@ class TestCandsearchInPixFastNogil:
         tnr = np.zeros(0, dtype=np.int32)
         out = [0, 0, 0, 0]
         candsearch_in_pix_fast_nogil(
-            tx, ty, tnr, 0, 512.0, 512.0, 10.0, 10.0, 10.0, 10.0,
-            self.IMX, self.IMY, TR, out
+            tx,
+            ty,
+            tnr,
+            0,
+            512.0,
+            512.0,
+            10.0,
+            10.0,
+            10.0,
+            10.0,
+            self.IMX,
+            self.IMY,
+            TR,
+            out,
         )
         assert out[0] == -999
 
@@ -944,8 +1044,20 @@ class TestCandsearchInPixFastNogil:
         tx, ty, tnr = _make_targets([500.0], [500.0], [5])
         out = [-999, -999, -999, -999]
         candsearch_in_pix_fast_nogil(
-            tx, ty, tnr, 1, 500.0, 500.0, 20.0, 20.0, 20.0, 20.0,
-            self.IMX, self.IMY, TR, out
+            tx,
+            ty,
+            tnr,
+            1,
+            500.0,
+            500.0,
+            20.0,
+            20.0,
+            20.0,
+            20.0,
+            self.IMX,
+            self.IMY,
+            TR,
+            out,
         )
         assert out[0] == 0  # index 0 in sorted arrays
         assert out[1] == -999
@@ -954,8 +1066,20 @@ class TestCandsearchInPixFastNogil:
         tx, ty, tnr = _make_targets([500.0], [500.0], [TR])
         out = [-999, -999, -999, -999]
         candsearch_in_pix_fast_nogil(
-            tx, ty, tnr, 1, 500.0, 500.0, 20.0, 20.0, 20.0, 20.0,
-            self.IMX, self.IMY, TR, out
+            tx,
+            ty,
+            tnr,
+            1,
+            500.0,
+            500.0,
+            20.0,
+            20.0,
+            20.0,
+            20.0,
+            self.IMX,
+            self.IMY,
+            TR,
+            out,
         )
         assert out[0] == -999
 
@@ -967,8 +1091,20 @@ class TestCandsearchInPixFastNogil:
         tx, ty, tnr = _make_targets(xs, ys, tnrs)
         out = [-999, -999, -999, -999]
         candsearch_in_pix_fast_nogil(
-            tx, ty, tnr, n, 500.0, 500.0, 10.0, 10.0, 10.0, 10.0,
-            self.IMX, self.IMY, TR, out
+            tx,
+            ty,
+            tnr,
+            n,
+            500.0,
+            500.0,
+            10.0,
+            10.0,
+            10.0,
+            10.0,
+            self.IMX,
+            self.IMY,
+            TR,
+            out,
         )
         found = [v for v in out if v != -999]
         assert len(found) == 4
@@ -978,8 +1114,20 @@ class TestCandsearchInPixFastNogil:
         tx, ty, tnr = _make_targets([500.0, 500.5], [500.0, 500.5], [1, 2])
         out = [-999, -999, -999, -999]
         candsearch_in_pix_fast_nogil(
-            tx, ty, tnr, 2, 500.0, 500.0, 10.0, 10.0, 10.0, 10.0,
-            self.IMX, self.IMY, TR, out
+            tx,
+            ty,
+            tnr,
+            2,
+            500.0,
+            500.0,
+            10.0,
+            10.0,
+            10.0,
+            10.0,
+            self.IMX,
+            self.IMY,
+            TR,
+            out,
         )
         found = [v for v in out if v != -999]
         assert len(found) == 2
@@ -990,20 +1138,42 @@ class TestCandsearchInPixFastNogil:
         )
         out = [-999, -999, -999, -999]
         candsearch_in_pix_fast_nogil(
-            tx, ty, tnr, 3, 500.0, 500.0, 10.0, 10.0, 10.0, 10.0,
-            self.IMX, self.IMY, TR, out
+            tx,
+            ty,
+            tnr,
+            3,
+            500.0,
+            500.0,
+            10.0,
+            10.0,
+            10.0,
+            10.0,
+            self.IMX,
+            self.IMY,
+            TR,
+            out,
         )
         found = [v for v in out if v != -999]
         assert len(found) == 3
 
     def test_ymax_early_break(self):
-        tx, ty, tnr = _make_targets(
-            [500.0, 500.0], [502.0, 600.0], [1, 2]
-        )
+        tx, ty, tnr = _make_targets([500.0, 500.0], [502.0, 600.0], [1, 2])
         out = [-999, -999, -999, -999]
         candsearch_in_pix_fast_nogil(
-            tx, ty, tnr, 2, 500.0, 500.0, 5.0, 5.0, 5.0, 5.0,
-            self.IMX, self.IMY, TR, out
+            tx,
+            ty,
+            tnr,
+            2,
+            500.0,
+            500.0,
+            5.0,
+            5.0,
+            5.0,
+            5.0,
+            self.IMX,
+            self.IMY,
+            TR,
+            out,
         )
         found = [v for v in out if v != -999]
         assert len(found) <= 1
@@ -1016,8 +1186,20 @@ class TestCandsearchInPixFastNogil:
         tx, ty, tnr = _make_targets(xs, ys, tnrs)
         out = [-999, -999, -999, -999]
         candsearch_in_pix_fast_nogil(
-            tx, ty, tnr, n, 500.0, 500.0, 12.0, 12.0, 12.0, 12.0,
-            self.IMX, self.IMY, TR, out
+            tx,
+            ty,
+            tnr,
+            n,
+            500.0,
+            500.0,
+            12.0,
+            12.0,
+            12.0,
+            12.0,
+            self.IMX,
+            self.IMY,
+            TR,
+            out,
         )
         found = [v for v in out if v != -999]
         assert len(found) == 4
@@ -1027,8 +1209,20 @@ class TestCandsearchInPixFastNogil:
         tx, ty, tnr = _make_targets([512.0], [5.0], [1])
         out = [-999, -999, -999, -999]
         candsearch_in_pix_fast_nogil(
-            tx, ty, tnr, 1, 512.0, 5.0, 10.0, 10.0, 20.0, 10.0,
-            self.IMX, self.IMY, TR, out
+            tx,
+            ty,
+            tnr,
+            1,
+            512.0,
+            5.0,
+            10.0,
+            10.0,
+            20.0,
+            10.0,
+            self.IMX,
+            self.IMY,
+            TR,
+            out,
         )
         assert out[0] != -999
 
@@ -1037,8 +1231,20 @@ class TestCandsearchInPixFastNogil:
         tx, ty, tnr = _make_targets([512.0], [1020.0], [1])
         out = [-999, -999, -999, -999]
         candsearch_in_pix_fast_nogil(
-            tx, ty, tnr, 1, 512.0, 1020.0, 10.0, 10.0, 10.0, 20.0,
-            self.IMX, self.IMY, TR, out
+            tx,
+            ty,
+            tnr,
+            1,
+            512.0,
+            1020.0,
+            10.0,
+            10.0,
+            10.0,
+            20.0,
+            self.IMX,
+            self.IMY,
+            TR,
+            out,
         )
         assert out[0] != -999
 
@@ -1047,8 +1253,20 @@ class TestCandsearchInPixFastNogil:
         tx, ty, tnr = _make_targets([5.0], [512.0], [1])
         out = [-999, -999, -999, -999]
         candsearch_in_pix_fast_nogil(
-            tx, ty, tnr, 1, 5.0, 512.0, 100.0, 10.0, 10.0, 10.0,
-            self.IMX, self.IMY, TR, out
+            tx,
+            ty,
+            tnr,
+            1,
+            5.0,
+            512.0,
+            100.0,
+            10.0,
+            10.0,
+            10.0,
+            self.IMX,
+            self.IMY,
+            TR,
+            out,
         )
         assert out[0] != -999
 
@@ -1061,8 +1279,20 @@ class TestCandsearchInPixFastNogil:
         tx, ty, tnr = _make_targets(xs, ys, tnrs)
         out = [-999, -999, -999, -999]
         candsearch_in_pix_fast_nogil(
-            tx, ty, tnr, n, 512.0, 190.0, 5.0, 5.0, 5.0, 5.0,
-            self.IMX, self.IMY, TR, out
+            tx,
+            ty,
+            tnr,
+            n,
+            512.0,
+            190.0,
+            5.0,
+            5.0,
+            5.0,
+            5.0,
+            self.IMX,
+            self.IMY,
+            TR,
+            out,
         )
         found = [v for v in out if v != -999]
         assert len(found) >= 1
@@ -1076,8 +1306,20 @@ class TestCandsearchInPixFastNogil:
         tx, ty, tnr = _make_targets(xs, ys, tnrs)
         out = [-999, -999, -999, -999]
         candsearch_in_pix_fast_nogil(
-            tx, ty, tnr, n, 512.0, 505.0, 5.0, 5.0, 5.0, 5.0,
-            self.IMX, self.IMY, TR, out
+            tx,
+            ty,
+            tnr,
+            n,
+            512.0,
+            505.0,
+            5.0,
+            5.0,
+            5.0,
+            5.0,
+            self.IMX,
+            self.IMY,
+            TR,
+            out,
         )
         found = [v for v in out if v != -999]
         assert len(found) >= 1
@@ -1087,8 +1329,20 @@ class TestCandsearchInPixFastNogil:
         tx, ty, tnr = _make_targets([900.0], [500.0], [1])
         out = [-999, -999, -999, -999]
         candsearch_in_pix_fast_nogil(
-            tx, ty, tnr, 1, 500.0, 500.0, 10.0, 10.0, 10.0, 10.0,
-            self.IMX, self.IMY, TR, out
+            tx,
+            ty,
+            tnr,
+            1,
+            500.0,
+            500.0,
+            10.0,
+            10.0,
+            10.0,
+            10.0,
+            self.IMX,
+            self.IMY,
+            TR,
+            out,
         )
         assert all(v == -999 for v in out)
 
@@ -1096,6 +1350,7 @@ class TestCandsearchInPixFastNogil:
 # ---------------------------------------------------------------------------
 # sorted_candidates_fast — calls _sorted_candidates_fast_out which crashes
 # ---------------------------------------------------------------------------
+
 
 def _make_sorted_candidates_args(num_cams=1, max_cands=4, n_targ=5):
     """Build minimal args for sorted_candidates_fast."""
@@ -1107,9 +1362,7 @@ def _make_sorted_candidates_args(num_cams=1, max_cands=4, n_targ=5):
     cal_arrays = tuple(cal for _ in range(num_cams))
     mmlut_data = np.zeros(4, dtype=np.float64)
     mmlut_datas = tuple(mmlut_data for _ in range(num_cams))
-    mmlut_origins = tuple(
-        np.zeros(3, dtype=np.float64) for _ in range(num_cams)
-    )
+    mmlut_origins = tuple(np.zeros(3, dtype=np.float64) for _ in range(num_cams))
     mmlut_nrs = tuple(0 for _ in range(num_cams))
     mmlut_nzs = tuple(0 for _ in range(num_cams))
     mmlut_rws = tuple(1.0 for _ in range(num_cams))
@@ -1120,14 +1373,35 @@ def _make_sorted_candidates_args(num_cams=1, max_cands=4, n_targ=5):
     num_targets = np.zeros(num_cams, dtype=np.int32)
 
     return (
-        center, center_proj_x, center_proj_y,
-        num_cams, max_cands,
-        cal_arrays, mmlut_datas, mmlut_origins,
-        mmlut_nrs, mmlut_nzs, mmlut_rws,
-        targ_x, targ_y, targ_tnr, num_targets,
-        -1.0, 1.0, -1.0, 1.0, -1.0, 1.0,  # dv min/max
-        512.0, 512.0, 1.0, 1.0, 0,          # imx_half, imy_half, inv_pix, chfield
-        1024.0, 1024.0, -1,                  # imx, imy, tr_unused
+        center,
+        center_proj_x,
+        center_proj_y,
+        num_cams,
+        max_cands,
+        cal_arrays,
+        mmlut_datas,
+        mmlut_origins,
+        mmlut_nrs,
+        mmlut_nzs,
+        mmlut_rws,
+        targ_x,
+        targ_y,
+        targ_tnr,
+        num_targets,
+        -1.0,
+        1.0,
+        -1.0,
+        1.0,
+        -1.0,
+        1.0,  # dv min/max
+        512.0,
+        512.0,
+        1.0,
+        1.0,
+        0,  # imx_half, imy_half, inv_pix, chfield
+        1024.0,
+        1024.0,
+        -1,  # imx, imy, tr_unused
     )
 
 
@@ -1172,14 +1446,38 @@ class TestSortedCandidatesFastOutBug:
         whichcam_out = np.zeros((n, num_cams), dtype=np.int32)
 
         return (
-            center, center_proj_x, center_proj_y,
-            num_cams, max_cands,
-            cal_arr, md_arr, mo_arr, mnr_arr, mnz_arr, mrw_arr,
-            targ_x, targ_y, targ_tnr, num_targets,
-            -1.0, 1.0, -1.0, 1.0, -1.0, 1.0,
-            512.0, 512.0, 1.0, 1.0, 0,
-            1024.0, 1024.0, -1,
-            ftnr_out, freq_out, whichcam_out,
+            center,
+            center_proj_x,
+            center_proj_y,
+            num_cams,
+            max_cands,
+            cal_arr,
+            md_arr,
+            mo_arr,
+            mnr_arr,
+            mnz_arr,
+            mrw_arr,
+            targ_x,
+            targ_y,
+            targ_tnr,
+            num_targets,
+            -1.0,
+            1.0,
+            -1.0,
+            1.0,
+            -1.0,
+            1.0,
+            512.0,
+            512.0,
+            1.0,
+            1.0,
+            0,
+            1024.0,
+            1024.0,
+            -1,
+            ftnr_out,
+            freq_out,
+            whichcam_out,
         )
 
     def test_runs_without_error(self):
@@ -1223,16 +1521,38 @@ class TestSortedCandidatesFastOutNogil:
         whichcam_out = np.zeros((n, num_cams), dtype=np.int32)
 
         return (
-            center, center_proj_x, center_proj_y,
-            num_cams, max_cands,
+            center,
+            center_proj_x,
+            center_proj_y,
+            num_cams,
+            max_cands,
             cal_arr,
             *md_list,  # md0..md7
-            mo_arr, mnr_arr, mnz_arr, mrw_arr,
-            targ_x, targ_y, targ_tnr, num_targets,
-            -1.0, 1.0, -1.0, 1.0, -1.0, 1.0,
-            512.0, 512.0, 1.0, 1.0, 0,
-            1024.0, 1024.0, -1,
-            ftnr_out, freq_out, whichcam_out,
+            mo_arr,
+            mnr_arr,
+            mnz_arr,
+            mrw_arr,
+            targ_x,
+            targ_y,
+            targ_tnr,
+            num_targets,
+            -1.0,
+            1.0,
+            -1.0,
+            1.0,
+            -1.0,
+            1.0,
+            512.0,
+            512.0,
+            1.0,
+            1.0,
+            0,
+            1024.0,
+            1024.0,
+            -1,
+            ftnr_out,
+            freq_out,
+            whichcam_out,
         )
 
     def test_runs_without_error(self):
@@ -1247,6 +1567,7 @@ class TestSortedCandidatesFastOutNogil:
 # ---------------------------------------------------------------------------
 # Compiled-mode sanity check (this module should be skipped when compiled)
 # ---------------------------------------------------------------------------
+
 
 def test_module_skip_guard_works():
     """In pure-Python mode, is_compiled() returns False — module not skipped."""

@@ -1,4 +1,5 @@
 """openptv-particle-calib — iterative particle-based calibration refinement."""
+
 from __future__ import annotations
 
 import argparse
@@ -80,8 +81,9 @@ def _snapshot_refine_once(base: Path, tol_px: float, frames_filter: list[int] | 
         key=lambda p: int(p.suffix.lstrip(".")),
     )
     if frames_filter:
-        ptv_is_files = [p for p in ptv_is_files
-                        if int(p.suffix.lstrip(".")) in set(frames_filter)]
+        ptv_is_files = [
+            p for p in ptv_is_files if int(p.suffix.lstrip(".")) in set(frames_filter)
+        ]
 
     per_cam_ref: list[list] = [[] for _ in range(num_cams)]
     per_cam_det: list[list] = [[] for _ in range(num_cams)]
@@ -91,7 +93,7 @@ def _snapshot_refine_once(base: Path, tol_px: float, frames_filter: list[int] | 
         lines = pf.read_text().splitlines()
         n = int(lines[0])
         pts3d = []
-        for line in lines[1: n + 1]:
+        for line in lines[1 : n + 1]:
             parts = line.split()
             if len(parts) >= 5:
                 pts3d.append([float(parts[2]), float(parts[3]), float(parts[4])])
@@ -103,8 +105,9 @@ def _snapshot_refine_once(base: Path, tol_px: float, frames_filter: list[int] | 
             targets = read_targets(seq_bases[cam], frame)
             if not targets:
                 continue
-            proj = np.array([_reproject_px(cals[cam], cpar.mm, p, cpar)
-                              for p in pts3d_arr])
+            proj = np.array(
+                [_reproject_px(cals[cam], cpar.mm, p, cpar) for p in pts3d_arr]
+            )
             tgt_xy = np.array([[t.x, t.y] for t in targets])
             for i, pp in enumerate(proj):
                 d = np.linalg.norm(tgt_xy - pp, axis=1)
@@ -113,7 +116,12 @@ def _snapshot_refine_once(base: Path, tol_px: float, frames_filter: list[int] | 
                     per_cam_ref[cam].append(pts3d_arr[i])
                     per_cam_det[cam].append(tgt_xy[j])
 
-    SNAP_FLAGS = [[], ["cc", "xh", "yh"], ["cc", "xh", "yh", "k1"], ["cc", "xh", "yh", "k1", "k2"]]
+    SNAP_FLAGS = [
+        [],
+        ["cc", "xh", "yh"],
+        ["cc", "xh", "yh", "k1"],
+        ["cc", "xh", "yh", "k1", "k2"],
+    ]
 
     results = []
     new_cals = list(cals)
@@ -143,7 +151,9 @@ def _snapshot_refine_once(base: Path, tol_px: float, frames_filter: list[int] | 
             except Exception:
                 continue
 
-        results.append((len(ref), rms_before, best_rms if best_cal else rms_before, best_flags))
+        results.append(
+            (len(ref), rms_before, best_rms if best_cal else rms_before, best_flags)
+        )
         if best_cal is not None:
             new_cals[cam] = best_cal
 
@@ -159,8 +169,10 @@ def cmd_run(args) -> int:
         return 1
 
     if not (base / "res").is_dir() or not list((base / "res").glob("ptv_is.*")):
-        print("ERROR: no res/ptv_is.* tracking results found — run tracking first",
-              file=sys.stderr)
+        print(
+            "ERROR: no res/ptv_is.* tracking results found — run tracking first",
+            file=sys.stderr,
+        )
         return 1
 
     frames_filter = [int(f) for f in args.frames.split(",")] if args.frames else None
@@ -171,7 +183,10 @@ def cmd_run(args) -> int:
     try:
         from openptv2.algorithms.calibration import Calibration
     except ImportError as e:
-        print(f"ERROR: {e}\nRun from the openptv2 checkout with `uv run`.", file=sys.stderr)
+        print(
+            f"ERROR: {e}\nRun from the openptv2 checkout with `uv run`.",
+            file=sys.stderr,
+        )
         return 1
 
     print(f"Particle calibration: {base}")
@@ -187,7 +202,7 @@ def cmd_run(args) -> int:
         print(f"ERROR loading dataset: {e}", file=sys.stderr)
         return 1
 
-    cam_cols = "  ".join(f"cam{c+1:>6}" for c in range(num_cams))
+    cam_cols = "  ".join(f"cam{c + 1:>6}" for c in range(num_cams))
     print(f"{'iter':>4}  {cam_cols}  note")
     print("-" * (4 + 2 + num_cams * 9 + 8))
 
@@ -247,29 +262,46 @@ def cmd_status(args) -> int:
     for cam, (n, before, after, flags) in enumerate(results):
         b_str = f"{before:.3f}px" if not (before != before) else "   nan"
         a_str = f"{after:.3f}px" if not (after != after) else "   nan"
-        print(f"cam{cam+1:<3}  {n:>6}  {b_str:>10}  {a_str:>10}")
+        print(f"cam{cam + 1:<3}  {n:>6}  {b_str:>10}  {a_str:>10}")
     return 0
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description="openptv iterative particle-based calibration")
+    ap = argparse.ArgumentParser(
+        description="openptv iterative particle-based calibration"
+    )
     sub = ap.add_subparsers(dest="cmd", required=True)
 
     p = sub.add_parser("run", help="iterate snapshot-refine until convergence")
     p.add_argument("dataset")
-    p.add_argument("--max-iters", type=int, default=5,
-                   help="max refinement iterations (default 5)")
-    p.add_argument("--tol-rms", type=float, default=0.05,
-                   help="stop when mean RMS improvement < this value in px (default 0.05)")
-    p.add_argument("--tol-px", type=float, default=5.0,
-                   help="match tolerance for particle↔target pairing in px (default 5)")
-    p.add_argument("--frames", default=None,
-                   help="comma-separated frame numbers to use (default: all)")
-    p.add_argument("--dry-run", action="store_true",
-                   help="compute but do not write .ori/.addpar")
+    p.add_argument(
+        "--max-iters", type=int, default=5, help="max refinement iterations (default 5)"
+    )
+    p.add_argument(
+        "--tol-rms",
+        type=float,
+        default=0.05,
+        help="stop when mean RMS improvement < this value in px (default 0.05)",
+    )
+    p.add_argument(
+        "--tol-px",
+        type=float,
+        default=5.0,
+        help="match tolerance for particle↔target pairing in px (default 5)",
+    )
+    p.add_argument(
+        "--frames",
+        default=None,
+        help="comma-separated frame numbers to use (default: all)",
+    )
+    p.add_argument(
+        "--dry-run", action="store_true", help="compute but do not write .ori/.addpar"
+    )
     p.set_defaults(func=cmd_run)
 
-    p = sub.add_parser("status", help="show current vs potential snapshot RMS, no writing")
+    p = sub.add_parser(
+        "status", help="show current vs potential snapshot RMS, no writing"
+    )
     p.add_argument("dataset")
     p.add_argument("--tol-px", type=float, default=5.0)
     p.set_defaults(func=cmd_status)

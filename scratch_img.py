@@ -9,7 +9,7 @@ def filter_3_scipy(img, filt, imx, imy, min_brightness=8):
         raise ValueError("Filter kernel sum is zero")
 
     img_float = np.asarray(img, dtype=np.float64)
-    res = convolve(img_float, filt_arr, mode='constant', cval=0.0)
+    res = convolve(img_float, filt_arr, mode="constant", cval=0.0)
 
     res = np.trunc(res / filt_sum)
 
@@ -19,17 +19,20 @@ def filter_3_scipy(img, filt, imx, imy, min_brightness=8):
     res = np.clip(res, min_brightness, 255).astype(np.uint8)
     return res
 
+
 def lowpass_3_scipy(img, imx, imy):
     img_float = np.asarray(img, dtype=np.float64)
-    res = uniform_filter(img_float, size=3, mode='constant', cval=0.0)
+    res = uniform_filter(img_float, size=3, mode="constant", cval=0.0)
     return res.astype(np.uint8)
+
 
 def fast_box_blur_scipy(img, filt_span, imx, imy):
     size = 2 * filt_span + 1
     img_float = np.asarray(img, dtype=np.float64)
     # The original box blur is essentially a uniform filter.
-    res = uniform_filter(img_float, size=size, mode='constant', cval=0.0)
+    res = uniform_filter(img_float, size=size, mode="constant", cval=0.0)
     return res.astype(np.uint8)
+
 
 if __name__ == "__main__":
     from openptv2.algorithms.image_processing import fast_box_blur, filter_3, lowpass_3

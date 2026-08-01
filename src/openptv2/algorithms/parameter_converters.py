@@ -26,40 +26,34 @@ Usage:
 import numpy as np
 
 from openptv2.gui.parameter_defaults import (
+    DEFAULT_CAL_ORI,
+    DEFAULT_CAL_ORI_OPTIONAL,
+    DEFAULT_CRITERIA,
+    DEFAULT_CRITERIA_OPTIONAL,
+    DEFAULT_DETECT_PLATE,
+    DEFAULT_EXAMINE,
+    DEFAULT_MULTI_PLANES,
+    DEFAULT_ORIENT,
+    DEFAULT_PFT_VERSION,
     DEFAULT_PTV,
     DEFAULT_PTV_OPTIONAL,
     DEFAULT_SEQUENCE,
-    DEFAULT_CRITERIA,
-    DEFAULT_CRITERIA_OPTIONAL,
-    DEFAULT_TRACK,
-    DEFAULT_DETECT_PLATE,
     DEFAULT_TARG_REC,
-    DEFAULT_CAL_ORI,
-    DEFAULT_CAL_ORI_OPTIONAL,
-    DEFAULT_ORIENT,
-    DEFAULT_EXAMINE,
-    DEFAULT_PFT_VERSION,
-    DEFAULT_MULTI_PLANES,
-    DEFAULT_MASKING,
-    DEFAULT_UNSHARP_MASK,
-    DEFAULT_PLUGINS,
-    DEFAULT_DUMBELL,
-    DEFAULT_SHAKING,
-    DEFAULT_SORTGRID,
+    DEFAULT_TRACK,
 )
 
 from .parameters import (
-    ControlPar,
-    SequencePar,
-    VolumePar,
-    TrackParTuple,
-    TargetPar,
     CalibrationPar,
-    OrientPar,
-    MultiPlanesPar,
+    ControlPar,
     ExaminePar,
-    PftVersionPar,
     MultimediaPar,
+    MultiPlanesPar,
+    OrientPar,
+    PftVersionPar,
+    SequencePar,
+    TargetPar,
+    TrackParTuple,
+    VolumePar,
 )
 
 
@@ -77,8 +71,6 @@ def convert_optv_calibrations(cals):
     """
     from openptv2.algorithms.calibration import (
         Calibration as PythonCalibration,
-        Exterior,
-        Interior,
     )
 
     py_cals = []

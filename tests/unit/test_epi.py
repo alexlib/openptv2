@@ -27,7 +27,9 @@ def make_cal(x0, y0, z0, gx, gy, gz, cc=100.0):
 
 
 def make_mm(n1, n2_0, n3, d0):
-    return MmNp(nlay=1, n1=n1, n2=np.array([n2_0, 1.0, 1.0]), d=np.array([d0, 0.0, 0.0]), n3=n3)
+    return MmNp(
+        nlay=1, n1=n1, n2=np.array([n2_0, 1.0, 1.0]), d=np.array([d0, 0.0, 0.0]), n3=n3
+    )
 
 
 def make_vpar(X_lay, Zmin_lay, Zmax_lay):
@@ -121,8 +123,9 @@ def test_epipolar_curve_equatorial():
     vpar.Zmax_lay = np.array([10.0, 10.0])
 
     mid = np.array([cpar.imx / 2.0, cpar.imy / 2.0])
-    line = epipolar_curve(mid - np.array([100.0, 0.0]), orig_cal, proj_cal,
-                          5, cpar, vpar)
+    line = epipolar_curve(
+        mid - np.array([100.0, 0.0]), orig_cal, proj_cal, 5, cpar, vpar
+    )
 
     # x-coords should be monotonically decreasing
     np.testing.assert_array_equal(np.argsort(line[:, 0]), np.arange(5)[::-1])
@@ -133,6 +136,7 @@ def test_epipolar_curve_equatorial():
 def _has_optv():
     try:
         from optv.epipolar import epipolar_curve  # noqa: F401
+
         return True
     except ImportError:
         return False
@@ -183,13 +187,17 @@ def test_epipolar_curve_parity():
 
     mid = np.array([py_cpar.imx / 2.0, py_cpar.imy / 2.0])
 
-    for offset in [np.array([0.0, 0.0]), np.array([-100.0, 0.0]),
-                   np.array([50.0, -30.0])]:
+    for offset in [
+        np.array([0.0, 0.0]),
+        np.array([-100.0, 0.0]),
+        np.array([50.0, -30.0]),
+    ]:
         pt = mid + offset
         py_line = epipolar_curve(pt, py_orig, py_proj, 10, py_cpar, py_vpar)
         c_line = c_epipolar_curve(pt, c_orig, c_proj, 10, c_cpar, c_vpar)
-        np.testing.assert_allclose(py_line, c_line, atol=1e-4,
-                                   err_msg=f"Mismatch at offset {offset}")
+        np.testing.assert_allclose(
+            py_line, c_line, atol=1e-4, err_msg=f"Mismatch at offset {offset}"
+        )
 
 
 def test_epi_mm_perpendicular():

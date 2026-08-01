@@ -267,7 +267,7 @@ def main():
         write_ptv_is(RES_ORIG_DIR / f"ptv_is.{frame}", ptv_rows)
         write_added(RES_ORIG_DIR / f"added.{frame}", added_rows)
 
-        n_targets = sum(1 for _ in IMG_ORIG_DIR.glob(f"cam*.{frame:04d}_targets"))
+        sum(1 for _ in IMG_ORIG_DIR.glob(f"cam*.{frame:04d}_targets"))
 
     # Summary
     n_target_files = len(list(IMG_ORIG_DIR.glob("*_targets")))

@@ -14,11 +14,10 @@ Provides:
 - Image preparation for particle detection
 """
 
-import cython
-
-
-import numpy as np
 from pathlib import Path
+
+import cython
+import numpy as np
 
 
 @cython.ccall

@@ -1,4 +1,5 @@
 """Tests for Pydantic v2 parameter models."""
+
 import pytest
 from pydantic import ValidationError
 
@@ -10,6 +11,7 @@ from openptv2.gui.parameter_models import (
 )
 
 # --- CalOriParams ---
+
 
 def test_cal_ori_rejects_empty_img_cal_name():
     with pytest.raises(ValidationError, match="img_cal_name must not be empty"):
@@ -27,6 +29,7 @@ def test_cal_ori_valid():
 
 
 # --- AllParams ---
+
 
 def _minimal_all_params(num_cams=2):
     names = [f"cam{i}.tif" for i in range(num_cams)]
@@ -46,13 +49,16 @@ def test_all_params_cam_list_mismatch():
     with pytest.raises(ValidationError, match="num_cams"):
         AllParams(
             num_cams=2,
-            cal_ori=CalOriParams(img_cal_name=["a.tif", "b.tif", "c.tif"],
-                                 img_ori=["a.ori", "b.ori", "c.ori"]),
+            cal_ori=CalOriParams(
+                img_cal_name=["a.tif", "b.tif", "c.tif"],
+                img_ori=["a.ori", "b.ori", "c.ori"],
+            ),
             ptv=PtvParams(img_name=["a.tif", "b.tif"]),
         )
 
 
 # --- ParameterManager.validated() ---
+
 
 def test_validated_round_trips_yaml(tmp_path):
     pm = ParameterManager()
@@ -89,11 +95,19 @@ def test_validated_rejects_empty_cal_ori(tmp_path):
         "ptv": {
             "img_name": ["cam1", "cam2", "cam3", "cam4"],
             "img_cal": ["cal/cam1.tif"] * 4,
-            "imx": 1280, "imy": 1024,
-            "mmp_d": 6.0, "mmp_n1": 1.0, "mmp_n2": 1.33, "mmp_n3": 1.46,
-            "pix_x": 0.012, "pix_y": 0.012,
-            "tiff_flag": True, "splitter": False,
-            "allcam_flag": False, "chfield": 0, "hp_flag": True,
+            "imx": 1280,
+            "imy": 1024,
+            "mmp_d": 6.0,
+            "mmp_n1": 1.0,
+            "mmp_n2": 1.33,
+            "mmp_n3": 1.46,
+            "pix_x": 0.012,
+            "pix_y": 0.012,
+            "tiff_flag": True,
+            "splitter": False,
+            "allcam_flag": False,
+            "chfield": 0,
+            "hp_flag": True,
         },
     }
     yaml_file = tmp_path / "bad.yaml"
@@ -107,6 +121,7 @@ def test_validated_rejects_empty_cal_ori(tmp_path):
 
 
 # --- ParameterManager.get_section() ---
+
 
 def test_get_section_returns_dict():
     pm = ParameterManager()

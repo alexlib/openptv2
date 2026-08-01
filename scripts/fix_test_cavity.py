@@ -32,11 +32,17 @@ vpar = _build_volume_par(params["criteria"])
 
 # Fix calibration paths to be relative to TEST_DATA_DIR
 cal_ori_params = params["cal_ori"].copy()
-cal_ori_params["img_cal_name"] = [str(TEST_DATA_DIR / name) for name in cal_ori_params["img_cal_name"]]
-cal_ori_params["img_ori"] = [str(TEST_DATA_DIR / name) for name in cal_ori_params["img_ori"]]
+cal_ori_params["img_cal_name"] = [
+    str(TEST_DATA_DIR / name) for name in cal_ori_params["img_cal_name"]
+]
+cal_ori_params["img_ori"] = [
+    str(TEST_DATA_DIR / name) for name in cal_ori_params["img_ori"]
+]
 cals = _read_calibrations_py(cal_ori_params, num_cams)
 
-short_file_bases = [str(TEST_DATA_DIR / b) for b in _target_file_bases(spar.img_base_name, num_cams)]
+short_file_bases = [
+    str(TEST_DATA_DIR / b) for b in _target_file_bases(spar.img_base_name, num_cams)
+]
 
 for frame_num in range(spar.first, spar.last + 1):
     print(f"Processing frame {frame_num}...")
@@ -51,7 +57,7 @@ for frame_num in range(spar.first, spar.last + 1):
             t.pnr = tnum
 
         frm.num_targets[i_cam] = len(targs)
-        frm.targets[i_cam][:len(targs)] = targs
+        frm.targets[i_cam][: len(targs)] = targs
         detections.append(targs)
 
         mc = MatchedCoords(targs, cpar, cals[i_cam])
@@ -65,6 +71,7 @@ for frame_num in range(spar.first, spar.last + 1):
 
     # Calculate 3D positions
     from algorithms.track import fast_point_position
+
     # Prepare parameters for fast_point_position
     cal_ex_pos = np.array([[c.ext_par.x0, c.ext_par.y0, c.ext_par.z0] for c in cals])
     cal_ex_dm = np.array([c.ext_par.dm for c in cals])
@@ -75,9 +82,9 @@ for frame_num in range(spar.first, spar.last + 1):
     # Using global cpar.mm for all cameras
     mm_d_stack = np.array([[cpar.mm.d[0]] for _ in range(num_cams)])
     # SWAP TEST: n2 <-> n3
-    mm_n2_stack = np.array([[cpar.mm.n3] for _ in range(num_cams)]) # Using n3 as n2
+    mm_n2_stack = np.array([[cpar.mm.n3] for _ in range(num_cams)])  # Using n3 as n2
     mm_n1_stack = np.array([cpar.mm.n1 for _ in range(num_cams)])
-    mm_n3_stack = np.array([cpar.mm.n2[0] for _ in range(num_cams)]) # Using n2 as n3
+    mm_n3_stack = np.array([cpar.mm.n2[0] for _ in range(num_cams)])  # Using n2 as n3
 
     for i in range(frm.num_parts):
         t_pos = np.full((num_cams, 2), -1.0e10)
@@ -88,9 +95,28 @@ for frame_num in range(spar.first, spar.last + 1):
                 t_pos[cam, 0] = xm
                 t_pos[cam, 1] = ym
 
-        dist, pos3d = fast_point_position(t_pos, num_cams, cal_ex_pos, cal_ex_dm, cal_int_cc, cal_glass_par, mm_d_stack, mm_n1_stack, mm_n2_stack, mm_n3_stack)
+        dist, pos3d = fast_point_position(
+            t_pos,
+            num_cams,
+            cal_ex_pos,
+            cal_ex_dm,
+            cal_int_cc,
+            cal_glass_par,
+            mm_d_stack,
+            mm_n1_stack,
+            mm_n2_stack,
+            mm_n3_stack,
+        )
         frm.path_info[i].x = pos3d
 
     # Write rt_is
-    write_path_frame(frm.corres_nr, frm.corres_p, frm.path_info, frm.num_parts,
-                     str(RES_DIR / "rt_is"), str(RES_DIR / "ptv_is"), "", frame_num)
+    write_path_frame(
+        frm.corres_nr,
+        frm.corres_p,
+        frm.path_info,
+        frm.num_parts,
+        str(RES_DIR / "rt_is"),
+        str(RES_DIR / "ptv_is"),
+        "",
+        frame_num,
+    )

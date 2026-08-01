@@ -60,9 +60,9 @@ class TestPopulateCpar:
         assert cpar.get_num_cams() == 4
         assert cpar.get_image_size() == (1280, 1024)
         assert cpar.get_pixel_size() == (0.012, 0.012)
-        assert cpar.get_hp_flag() == True
-        assert cpar.get_allCam_flag() == False
-        assert cpar.get_tiff_flag() == True
+        assert cpar.get_hp_flag()
+        assert not cpar.get_allCam_flag()
+        assert cpar.get_tiff_flag()
         assert cpar.get_chfield() == 1
 
         # Test multimedia parameters
@@ -226,7 +226,7 @@ class TestPopulateTrackPar:
         assert track_par.get_dvzmax() == 15.5
         assert track_par.get_dangle() == 100.0
         assert track_par.get_dacc() == 0.5
-        assert track_par.get_add() == True
+        assert track_par.get_add()
 
 
 class TestPopulateTpar:
@@ -402,7 +402,9 @@ class TestReadCalibrations:
 
         # Mock Calibration instance to check file path usage
         mock_cal_instance = Mock()
-        with patch("openptv2.gui.ptv_calibration.Calibration", return_value=mock_cal_instance):
+        with patch(
+            "openptv2.gui.ptv_calibration.Calibration", return_value=mock_cal_instance
+        ):
             _read_calibrations(cpar, 2)
 
         # Check that from_file was called for each calibration file pair
@@ -832,7 +834,10 @@ class TestCalibrationReadWrite:
                 )
 
                 # For addpar files, they should be exactly identical (no floating point calculations)
-                assert Path(input_add_file.decode("utf-8")).read_text().strip() == Path(output_add_file.decode("utf-8")).read_text().strip(), f"ADDPAR round-trip failed for {cam_file}.addpar"
+                assert (
+                    Path(input_add_file.decode("utf-8")).read_text().strip()
+                    == Path(output_add_file.decode("utf-8")).read_text().strip()
+                ), f"ADDPAR round-trip failed for {cam_file}.addpar"
 
                 print(f"✓ Round-trip test passed for {cam_file}")
 

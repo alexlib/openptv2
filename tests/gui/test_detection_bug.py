@@ -61,13 +61,13 @@ def test_detection_parameters_bug():
             }
         }
         try:
-            tpar_gui = _populate_tpar(target_params_gui, experiment.get_n_cam())
+            _populate_tpar(target_params_gui, experiment.get_n_cam())
             print("   GUI TargetParams created with default values (likely all zeros)")
         except Exception as e:
             print(f"   GUI TargetParams creation failed: {e}")
     else:
         target_params_gui = {"targ_rec": targ_rec_params}
-        tpar_gui = _populate_tpar(target_params_gui, experiment.get_n_cam())
+        _populate_tpar(target_params_gui, experiment.get_n_cam())
         print("   GUI TargetParams will have values from targ_rec")
     print()
 
@@ -109,7 +109,7 @@ def test_detection_parameters_bug():
             img = rgb2gray(img)
         img = img_as_ubyte(img)
 
-        num_cams = experiment.get_n_cam()
+        experiment.get_n_cam()
         images = [img]  # Just test with first camera
 
         # Test GUI detection (with wrong parameters)

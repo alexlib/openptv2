@@ -54,7 +54,11 @@ def _(Path, mo):
 
     _target_arg = mo.cli_args().get("target")
     _target = Path(_target_arg).resolve() if _target_arg else mo.notebook_dir()
-    base = _target.parent if (_target.is_file() and _target.suffix in (".yaml", ".yml")) else _target
+    base = (
+        _target.parent
+        if (_target.is_file() and _target.suffix in (".yaml", ".yml"))
+        else _target
+    )
 
     yaml_path = _find_yaml(base)
     if yaml_path is None:
@@ -112,7 +116,9 @@ def _(mo, num_cams):
     cam_select = mo.ui.dropdown(
         options=[str(i + 1) for i in range(num_cams)], value="1", label="Camera"
     )
-    id_input = mo.ui.number(start=1, stop=100_000, value=1, label="Calibration-body point ID")
+    id_input = mo.ui.number(
+        start=1, stop=100_000, value=1, label="Calibration-body point ID"
+    )
     mo.hstack([cam_select, id_input])
     return cam_select, id_input
 
@@ -155,7 +161,9 @@ def _(cam_select, click_plot, get_points, id_input, mo, set_points):
         set_points(current)
         return _v + 1
 
-    add_button = mo.ui.button(label="Add point with this ID", value=0, on_click=_add_current_click)
+    add_button = mo.ui.button(
+        label="Add point with this ID", value=0, on_click=_add_current_click
+    )
 
     def _clear_camera(_v):
         current = dict(get_points())
@@ -163,7 +171,9 @@ def _(cam_select, click_plot, get_points, id_input, mo, set_points):
         set_points(current)
         return _v + 1
 
-    clear_button = mo.ui.button(label="Clear this camera's points", value=0, on_click=_clear_camera)
+    clear_button = mo.ui.button(
+        label="Clear this camera's points", value=0, on_click=_clear_camera
+    )
 
     mo.hstack([add_button, clear_button])
     return add_button, clear_button
@@ -172,7 +182,11 @@ def _(cam_select, click_plot, get_points, id_input, mo, set_points):
 @app.cell
 def _(click_plot, mo):
     _pts = click_plot.points
-    _msg = f"last click: x={_pts[-1]['x']:.1f}, y={_pts[-1]['y']:.1f}" if _pts else "no click yet -- click the image above"
+    _msg = (
+        f"last click: x={_pts[-1]['x']:.1f}, y={_pts[-1]['y']:.1f}"
+        if _pts
+        else "no click yet -- click the image above"
+    )
     mo.md(_msg)
     return
 
@@ -182,15 +196,28 @@ def _(body_ids, body_xyz, id_input, mo, plt):
     _fig, _ax = plt.subplots(figsize=(6, 5))
     _ax.scatter(body_xyz[:, 0], body_xyz[:, 1], s=25, c="lightgray")
     for _pid, _p in zip(body_ids, body_xyz):
-        _ax.annotate(str(_pid), (_p[0], _p[1]), fontsize=6,
-                     textcoords="offset points", xytext=(2, 2))
+        _ax.annotate(
+            str(_pid),
+            (_p[0], _p[1]),
+            fontsize=6,
+            textcoords="offset points",
+            xytext=(2, 2),
+        )
     if int(id_input.value) in set(body_ids.tolist()):
         _hp = body_xyz[list(body_ids).index(int(id_input.value))]
-        _ax.scatter([_hp[0]], [_hp[1]], s=220, facecolors="none",
-                    edgecolors="red", linewidths=2.0)
+        _ax.scatter(
+            [_hp[0]],
+            [_hp[1]],
+            s=220,
+            facecolors="none",
+            edgecolors="red",
+            linewidths=2.0,
+        )
         _ax.set_title(f"3D body -- ID {int(id_input.value)} circled in red")
     else:
-        _ax.set_title(f"ID {int(id_input.value)} is not in this calibration body!", color="red")
+        _ax.set_title(
+            f"ID {int(id_input.value)} is not in this calibration body!", color="red"
+        )
     _ax.set_xlabel("X (left -> right)")
     _ax.set_ylabel("Y (bottom -> top)")
     _ax.set_aspect("equal")
@@ -204,8 +231,10 @@ def _(cam_select, get_points, mo):
     _pts = get_points().get(cam_select.value, [])
     if _pts:
         points_table = mo.ui.table(
-            data=[{"#": i, "id": p["id"], "x": round(p["x"], 1), "y": round(p["y"], 1)}
-                  for i, p in enumerate(_pts)],
+            data=[
+                {"#": i, "id": p["id"], "x": round(p["x"], 1), "y": round(p["y"], 1)}
+                for i, p in enumerate(_pts)
+            ],
             label=f"cam{cam_select.value} points",
         )
     else:
@@ -244,13 +273,21 @@ def _(base, get_points, mo, num_cams):
         label="Write seed (man_ori) to YAML + .par/.dat", value=0, on_click=_write
     )
     _ready = all(len(get_points().get(str(c + 1), [])) == 4 for c in range(num_cams))
-    mo.vstack([
-        mo.md("Every camera needs exactly 4 points before this writes anything."
-              if not _ready else "Ready to write."),
-        write_button,
-        mo.md(f"Wrote man_ori seed for {num_cams} cameras to `{base}`."
-              if write_button.value else ""),
-    ])
+    mo.vstack(
+        [
+            mo.md(
+                "Every camera needs exactly 4 points before this writes anything."
+                if not _ready
+                else "Ready to write."
+            ),
+            write_button,
+            mo.md(
+                f"Wrote man_ori seed for {num_cams} cameras to `{base}`."
+                if write_button.value
+                else ""
+            ),
+        ]
+    )
     return
 
 

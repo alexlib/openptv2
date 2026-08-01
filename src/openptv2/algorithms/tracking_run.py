@@ -1,7 +1,9 @@
+from dataclasses import dataclass, field
+
 import cython
 import numpy as np
-from dataclasses import dataclass, field
-from openptv2.algorithms.parameters import SequencePar, TrackPar, VolumePar, ControlPar
+
+from openptv2.algorithms.parameters import ControlPar, SequencePar, TrackPar, VolumePar
 from openptv2.algorithms.tracking_frame_buf import FrameBuf
 
 
@@ -37,7 +39,7 @@ class TrackingRun:
             self.tpar.dvzmin - self.tpar.dvzmax
         ])
 
-        from openptv2.algorithms.multimed import volumedimension, init_mmlut
+        from openptv2.algorithms.multimed import init_mmlut, volumedimension
         xmax, xmin, self.ymax, self.ymin, zmax, zmin = volumedimension(
             self.vpar, self.cpar, self.cal)
         self.vpar.X_lay[1] = xmax
@@ -59,7 +61,10 @@ def tr_new(seq_par, tpar, vpar, cpar, buf_len, max_targets,
     passed, reads and constructs parameter objects automatically.
     """
     from openptv2.algorithms.parameters import (
-        SequencePar, TrackPar, VolumePar, ControlPar,
+        ControlPar,
+        SequencePar,
+        TrackPar,
+        VolumePar,
         convert_track_par_to_tuple,
     )
 

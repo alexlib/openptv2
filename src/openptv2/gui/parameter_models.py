@@ -1,4 +1,5 @@
 """Pydantic v2 models for parameter validation."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -237,7 +238,9 @@ class AllParams(SectionModel):
         if self.ptv.imx <= 0 or self.ptv.imy <= 0:
             raise ValueError("ptv image dimensions (imx, imy) must be positive")
         if self.ptv.mmp_n1 <= 0 or self.ptv.mmp_n2 <= 0 or self.ptv.mmp_n3 <= 0:
-            raise ValueError("ptv refractive indices (mmp_n1, mmp_n2, mmp_n3) must be positive")
+            raise ValueError(
+                "ptv refractive indices (mmp_n1, mmp_n2, mmp_n3) must be positive"
+            )
         if self.sequence.first > self.last_frame_or_zero():
             raise ValueError(
                 f"sequence first frame ({self.sequence.first}) > last frame ({self.sequence.last})"
@@ -251,8 +254,15 @@ class AllParams(SectionModel):
     def cam_list_lengths(self) -> "AllParams":
         n = self.num_cams
         if n and self.ptv.img_name and len(self.ptv.img_name) != n:
-            raise ValueError(f"ptv.img_name length {len(self.ptv.img_name)} != num_cams {n}")
-        if n and self.cal_ori and self.cal_ori.img_cal_name and len(self.cal_ori.img_cal_name) != n:
+            raise ValueError(
+                f"ptv.img_name length {len(self.ptv.img_name)} != num_cams {n}"
+            )
+        if (
+            n
+            and self.cal_ori
+            and self.cal_ori.img_cal_name
+            and len(self.cal_ori.img_cal_name) != n
+        ):
             raise ValueError(
                 f"cal_ori.img_cal_name length {len(self.cal_ori.img_cal_name)} != num_cams {n}"
             )

@@ -4,6 +4,7 @@
 Usage (from repo root):
     uv run python test_data/create_test_cavity_small.py
 """
+
 import copy
 import csv
 import shutil
@@ -17,29 +18,40 @@ from openptv2.algorithms.imgcoord import img_coord_batch
 from openptv2.algorithms.parameters import ControlPar
 
 # ── Config ────────────────────────────────────────────────────────────────────
-SRC      = Path("test_data/test_cavity")
-DST      = Path("test_data/test_cavity_small")
-RES_SRC  = SRC / "res_orig"          # C-reference tracking results (10001–10004)
-IMG_SRC  = SRC / "img"               # detected images + targets (all 5 frames)
-ALL_FRAMES  = list(range(10000, 10005))   # for images / targets
-FRAMES      = list(range(10001, 10005))   # for 3D ground truth (res_orig only)
-NCAMS    = 4
-CROP     = 256
+SRC = Path("test_data/test_cavity")
+DST = Path("test_data/test_cavity_small")
+RES_SRC = SRC / "res_orig"  # C-reference tracking results (10001–10004)
+IMG_SRC = SRC / "img"  # detected images + targets (all 5 frames)
+ALL_FRAMES = list(range(10000, 10005))  # for images / targets
+FRAMES = list(range(10001, 10005))  # for 3D ground truth (res_orig only)
+NCAMS = 4
+CROP = 256
 CENTROID = np.array([[0.0, 2.5, 2.5]])
-LINK_MM  = 3.0   # max inter-frame 3D distance (mm) for trajectory linking
-TGT_PX   = 5.0   # max pixel distance to match particle projection to a target
+LINK_MM = 3.0  # max inter-frame 3D distance (mm) for trajectory linking
+TGT_PX = 5.0  # max pixel distance to match particle projection to a target
 
 # ── I/O ───────────────────────────────────────────────────────────────────────
+
 
 def load_rt_is(path):
     """Return list of (label, x, y, z, t1, t2, t3, t4)."""
     lines = Path(path).read_text().strip().splitlines()
     n = int(lines[0])
     out = []
-    for line in lines[1:n + 1]:
+    for line in lines[1 : n + 1]:
         p = line.split()
-        out.append((int(p[0]), float(p[1]), float(p[2]), float(p[3]),
-                    int(p[4]), int(p[5]), int(p[6]), int(p[7])))
+        out.append(
+            (
+                int(p[0]),
+                float(p[1]),
+                float(p[2]),
+                float(p[3]),
+                int(p[4]),
+                int(p[5]),
+                int(p[6]),
+                int(p[7]),
+            )
+        )
     return out
 
 
@@ -48,10 +60,20 @@ def load_targets(path):
     lines = Path(path).read_text().strip().splitlines()
     n = int(lines[0])
     out = []
-    for line in lines[1:n + 1]:
+    for line in lines[1 : n + 1]:
         p = line.split()
-        out.append((int(p[0]), float(p[1]), float(p[2]),
-                    int(p[3]), int(p[4]), int(p[5]), int(p[6]), int(p[7])))
+        out.append(
+            (
+                int(p[0]),
+                float(p[1]),
+                float(p[2]),
+                int(p[3]),
+                int(p[4]),
+                int(p[5]),
+                int(p[6]),
+                int(p[7]),
+            )
+        )
     return out
 
 
@@ -59,8 +81,10 @@ def write_rt_is(path, rows):
     """rows: (label, x, y, z, t1, t2, t3, t4)."""
     lines = [str(len(rows))]
     for r in rows:
-        lines.append(f"{r[0]:4d}  {r[1]:12.6f}  {r[2]:12.6f}  {r[3]:12.6f}  "
-                     f"{r[4]:5d}  {r[5]:5d}  {r[6]:5d}  {r[7]:5d}")
+        lines.append(
+            f"{r[0]:4d}  {r[1]:12.6f}  {r[2]:12.6f}  {r[3]:12.6f}  "
+            f"{r[4]:5d}  {r[5]:5d}  {r[6]:5d}  {r[7]:5d}"
+        )
     Path(path).write_text("\n".join(lines) + "\n")
 
 
@@ -76,12 +100,15 @@ def write_targets(path, rows):
     """rows: (idx, x, y, sumg, nx, ny, npix, flag)."""
     lines = [str(len(rows))]
     for t in rows:
-        lines.append(f"{t[0]:4d}  {t[1]:10.4f}  {t[2]:10.4f}  "
-                     f"{t[3]:6d}  {t[4]:4d}  {t[5]:4d}  {t[6]:6d}  {t[7]:4d}")
+        lines.append(
+            f"{t[0]:4d}  {t[1]:10.4f}  {t[2]:10.4f}  "
+            f"{t[3]:6d}  {t[4]:4d}  {t[5]:4d}  {t[6]:6d}  {t[7]:4d}"
+        )
     Path(path).write_text("\n".join(lines) + "\n")
 
 
 # ── Projection ────────────────────────────────────────────────────────────────
+
 
 def to_pixels(positions, cal, cpar):
     """(N,3) mm → (N,2) full-image pixel coords."""
@@ -92,6 +119,7 @@ def to_pixels(positions, cal, cpar):
 
 
 # ── Trajectory helpers ────────────────────────────────────────────────────────
+
 
 def nn_match(pos_a, pos_b, threshold):
     """Greedy nearest-neighbour: (N,3),(M,3) → matches[i]=j or -1."""
@@ -114,7 +142,7 @@ def smooth_traj(frame_pos):
     valid = [(f, p) for f, p in frame_pos.items() if p is not None]
     if len(valid) < 2:
         return dict(frame_pos)
-    t   = np.array([f for f, _ in valid], dtype=float)
+    t = np.array([f for f, _ in valid], dtype=float)
     pts = np.array([p for _, p in valid])
     deg = min(2, len(valid) - 1)
     polys = [np.polyfit(t, pts[:, i], deg) for i in range(3)]
@@ -176,22 +204,24 @@ for i, cal in enumerate(cals):
     crop_offsets[cam] = (ox, oy)
     print(f"  cam{cam}: centroid → ({cx},{cy}) px   crop TL ({ox},{oy})")
 
-frame_data   = {f: load_rt_is(RES_SRC / f"rt_is.{f}") for f in FRAMES}
+frame_data = {f: load_rt_is(RES_SRC / f"rt_is.{f}") for f in FRAMES}
 frame_subset = {}
 
 for frame, rows in frame_data.items():
     if not rows:
         frame_subset[frame] = []
         continue
-    pos    = np.array([[r[1], r[2], r[3]] for r in rows])
+    pos = np.array([[r[1], r[2], r[3]] for r in rows])
     in_all = np.ones(len(rows), dtype=bool)
     for i, cal in enumerate(cals):
         cam = i + 1
         ox, oy = crop_offsets[cam]
         pxy = to_pixels(pos, cal, cpar)
         in_all &= (
-            (pxy[:, 0] >= ox) & (pxy[:, 0] < ox + CROP) &
-            (pxy[:, 1] >= oy) & (pxy[:, 1] < oy + CROP)
+            (pxy[:, 0] >= ox)
+            & (pxy[:, 0] < ox + CROP)
+            & (pxy[:, 1] >= oy)
+            & (pxy[:, 1] < oy + CROP)
         )
     frame_subset[frame] = [rows[k] for k in np.where(in_all)[0]]
     print(f"  frame {frame}: {len(rows)} total → {len(frame_subset[frame])} in window")
@@ -202,8 +232,8 @@ for frame, rows in frame_data.items():
 print("Phase 2: linking + smoothing trajectories")
 
 tid_counter = 0
-frame_tid   = {f: {} for f in FRAMES}   # frame -> {subset_row_idx: tid}
-traj_pos    = {}                          # tid -> {frame: [x,y,z] or None}
+frame_tid = {f: {} for f in FRAMES}  # frame -> {subset_row_idx: tid}
+traj_pos = {}  # tid -> {frame: [x,y,z] or None}
 
 # Seed from first frame
 for k, row in enumerate(frame_subset[FRAMES[0]]):
@@ -214,14 +244,14 @@ for k, row in enumerate(frame_subset[FRAMES[0]]):
 
 # Link forward frame by frame
 for fi in range(len(FRAMES) - 1):
-    fa, fb     = FRAMES[fi], FRAMES[fi + 1]
-    rows_a     = frame_subset[fa]
-    rows_b     = frame_subset[fb]
-    matched_b  = set()
+    fa, fb = FRAMES[fi], FRAMES[fi + 1]
+    rows_a = frame_subset[fa]
+    rows_b = frame_subset[fb]
+    matched_b = set()
 
     if rows_a and rows_b:
-        pos_a   = np.array([[r[1], r[2], r[3]] for r in rows_a])
-        pos_b   = np.array([[r[1], r[2], r[3]] for r in rows_b])
+        pos_a = np.array([[r[1], r[2], r[3]] for r in rows_a])
+        pos_b = np.array([[r[1], r[2], r[3]] for r in rows_b])
         matches = nn_match(pos_a, pos_b, LINK_MM)
         for ka, kb in enumerate(matches):
             tid = frame_tid[fa].get(ka)
@@ -240,8 +270,8 @@ for fi in range(len(FRAMES) - 1):
             frame_tid[fb][kb] = tid_counter
             tid_counter += 1
 
-smoothed    = {tid: smooth_traj(traj_pos[tid]) for tid in traj_pos}
-classes     = {tid: classify(traj_pos[tid])    for tid in traj_pos}
+smoothed = {tid: smooth_traj(traj_pos[tid]) for tid in traj_pos}
+classes = {tid: classify(traj_pos[tid]) for tid in traj_pos}
 class_count: dict[str, int] = {}
 for v in classes.values():
     class_count[v] = class_count.get(v, 0) + 1
@@ -266,8 +296,8 @@ for frame in ALL_FRAMES:
         ox, oy = crop_offsets[cam]
 
         img_src = IMG_SRC / f"cam{cam}.{frame}"
-        img     = imageio.imread(str(img_src))
-        crop    = img[oy:oy + CROP, ox:ox + CROP]
+        img = imageio.imread(str(img_src))
+        crop = img[oy : oy + CROP, ox : ox + CROP]
         imageio.imwrite(str(DST / f"img/cam{cam}.{frame}"), crop)
         shutil.copy(
             str(DST / f"img/cam{cam}.{frame}"),
@@ -275,7 +305,7 @@ for frame in ALL_FRAMES:
         )
 
         all_tgts = load_targets(IMG_SRC / f"cam{cam}.{frame}_targets")
-        new_idx  = 0
+        new_idx = 0
         for t in all_tgts:
             if ox <= t[1] < ox + CROP and oy <= t[2] < oy + CROP:
                 if frame in filtered_tgts:
@@ -309,10 +339,14 @@ for i, cal in enumerate(cals):
 for cam in range(1, NCAMS + 1):
     ox, oy = crop_offsets[cam]
     cal_img = imageio.imread(str(SRC / f"cal/cam{cam}.tif"))
-    cal_crop = cal_img[oy:oy + CROP, ox:ox + CROP]
+    cal_crop = cal_img[oy : oy + CROP, ox : ox + CROP]
     imageio.imwrite(str(DST / f"cal/cam{cam}.tif"), cal_crop)
-    print(f"  cal/cam{cam}.tif: cropped [{oy}:{oy+CROP}, {ox}:{ox+CROP}] → {cal_crop.shape}")
-shutil.copy(str(SRC / "cal/target_on_a_side.txt"), str(DST / "cal/target_on_a_side.txt"))
+    print(
+        f"  cal/cam{cam}.tif: cropped [{oy}:{oy + CROP}, {ox}:{ox + CROP}] → {cal_crop.shape}"
+    )
+shutil.copy(
+    str(SRC / "cal/target_on_a_side.txt"), str(DST / "cal/target_on_a_side.txt")
+)
 
 # Copy parameters; patch only imaX / imaY in ptv.par
 shutil.copytree(str(SRC / "parameters"), str(DST / "parameters"), dirs_exist_ok=True)
@@ -348,19 +382,19 @@ fi_of = {f: i for i, f in enumerate(FRAMES)}
 
 for frame in FRAMES:
     rows = frame_rows[frame]
-    fi   = fi_of[frame]
-    prev_f = FRAMES[fi - 1] if fi > 0               else None
+    fi = fi_of[frame]
+    prev_f = FRAMES[fi - 1] if fi > 0 else None
     next_f = FRAMES[fi + 1] if fi < len(FRAMES) - 1 else None
 
     # rt_is — match each particle projection to nearest target in each camera
     rt_rows = []
     for tid, x, y, z in rows:
         tidx = []
-        pos  = np.array([[x, y, z]])
+        pos = np.array([[x, y, z]])
         for ci, cal in enumerate(cals):
             cam = ci + 1
             ox, oy = crop_offsets[cam]
-            pxy    = to_pixels(pos, cal, cpar)[0]
+            pxy = to_pixels(pos, cal, cpar)[0]
             xc, yc = pxy[0] - ox, pxy[1] - oy
             tidx.append(nearest_tgt(xc, yc, filtered_tgts[frame][cam], TGT_PX))
         rt_rows.append((tid, x, y, z, tidx[0], tidx[1], tidx[2], tidx[3]))
@@ -389,7 +423,7 @@ with open(DST / "ground_truth/particles.csv", "w", newline="") as fh:
     w = csv.writer(fh)
     w.writerow(["particle_id", "frame", "X", "Y", "Z", "dx", "dy", "dz", "status"])
     for tid in sorted(smoothed):
-        fp     = smoothed[tid]
+        fp = smoothed[tid]
         status = classes[tid]
         for fi, frame in enumerate(FRAMES):
             pos = fp[frame]
@@ -398,26 +432,55 @@ with open(DST / "ground_truth/particles.csv", "w", newline="") as fh:
             nxt = fp[FRAMES[fi + 1]] if fi < len(FRAMES) - 1 else None
             if nxt:
                 dx, dy, dz = nxt[0] - pos[0], nxt[1] - pos[1], nxt[2] - pos[2]
-                w.writerow([tid, frame,
-                            f"{pos[0]:.6f}", f"{pos[1]:.6f}", f"{pos[2]:.6f}",
-                            f"{dx:.6f}", f"{dy:.6f}", f"{dz:.6f}", status])
+                w.writerow(
+                    [
+                        tid,
+                        frame,
+                        f"{pos[0]:.6f}",
+                        f"{pos[1]:.6f}",
+                        f"{pos[2]:.6f}",
+                        f"{dx:.6f}",
+                        f"{dy:.6f}",
+                        f"{dz:.6f}",
+                        status,
+                    ]
+                )
             else:
-                w.writerow([tid, frame,
-                            f"{pos[0]:.6f}", f"{pos[1]:.6f}", f"{pos[2]:.6f}",
-                            "", "", "", status])
+                w.writerow(
+                    [
+                        tid,
+                        frame,
+                        f"{pos[0]:.6f}",
+                        f"{pos[1]:.6f}",
+                        f"{pos[2]:.6f}",
+                        "",
+                        "",
+                        "",
+                        status,
+                    ]
+                )
 
 with open(DST / "ground_truth/trajectories.csv", "w", newline="") as fh:
     w = csv.writer(fh)
     w.writerow(["particle_id", "first_frame", "last_frame", "n_frames", "status"])
     for tid in sorted(smoothed):
-        fp    = smoothed[tid]
+        fp = smoothed[tid]
         valid = [f for f in FRAMES if fp[f] is not None]
         w.writerow([tid, valid[0], valid[-1], len(valid), classes[tid]])
 
 with open(DST / "ground_truth/projections.csv", "w", newline="") as fh:
     w = csv.writer(fh)
-    w.writerow(["particle_id", "frame", "cam",
-                "x_px_full", "y_px_full", "x_px_crop", "y_px_crop"])
+    w.writerow(
+        [
+            "particle_id",
+            "frame",
+            "cam",
+            "x_px_full",
+            "y_px_full",
+            "x_px_crop",
+            "y_px_crop",
+        ]
+    )
     for tid in sorted(smoothed):
         for frame in FRAMES:
             pos = smoothed[tid][frame]
@@ -428,13 +491,21 @@ with open(DST / "ground_truth/projections.csv", "w", newline="") as fh:
                 cam = ci + 1
                 ox, oy = crop_offsets[cam]
                 pxy = to_pixels(arr, cal, cpar)[0]
-                w.writerow([tid, frame, cam,
-                            f"{pxy[0]:.3f}", f"{pxy[1]:.3f}",
-                            f"{pxy[0] - ox:.3f}", f"{pxy[1] - oy:.3f}"])
+                w.writerow(
+                    [
+                        tid,
+                        frame,
+                        cam,
+                        f"{pxy[0]:.3f}",
+                        f"{pxy[1]:.3f}",
+                        f"{pxy[0] - ox:.3f}",
+                        f"{pxy[1] - oy:.3f}",
+                    ]
+                )
 
 # ── Summary ───────────────────────────────────────────────────────────────────
 print(f"\nDone → {DST}/")
-print(f"  Crop offsets: { {c: crop_offsets[c] for c in range(1, NCAMS+1)} }")
+print(f"  Crop offsets: { {c: crop_offsets[c] for c in range(1, NCAMS + 1)} }")
 print(f"  Trajectories: {len(traj_pos)} total  {class_count}")
 for frame in FRAMES:
     print(f"  frame {frame}: {len(frame_rows[frame])} particles")

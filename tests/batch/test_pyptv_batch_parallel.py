@@ -29,8 +29,12 @@ def test_pyptv_batch_parallel(test_data_dir):
 
     try:
         # Only 'both' and 'sequence' modes are valid for parallel batch; 'tracking' is serial only
-        pyptv_batch_parallel.main(yaml_file, start_frame, end_frame, n_processes, mode="both")
-        pyptv_batch_parallel.main(yaml_file, start_frame, end_frame, n_processes, mode="sequence")
+        pyptv_batch_parallel.main(
+            yaml_file, start_frame, end_frame, n_processes, mode="both"
+        )
+        pyptv_batch_parallel.main(
+            yaml_file, start_frame, end_frame, n_processes, mode="sequence"
+        )
     except Exception as e:
         _skip_if_frame_read_failure(e)
         pytest.fail(f"Parallel batch processing failed: {str(e)}")

@@ -25,6 +25,7 @@ These properties tell you how to set parameters: keep dvxmax comfortably above
 the true peak displacement (too tight -> track3d mislinks), and use dacc/dangle
 to reject physically implausible motion in trackcorr.
 """
+
 import shutil
 from pathlib import Path
 
@@ -58,13 +59,13 @@ def _load():
     for c in range(cpar.num_cams):
         cal = Calibration()
         cal.from_file(
-            str(FIX / f"cal/cam{c+1}.tif.ori"),
-            str(FIX / f"cal/cam{c+1}.tif.addpar"),
+            str(FIX / f"cal/cam{c + 1}.tif.ori"),
+            str(FIX / f"cal/cam{c + 1}.tif.addpar"),
         )
         cals.append(cal)
     # absolute %d target bases (read-only)
     for c in range(cpar.num_cams):
-        spar.set_img_base_name(c, str(FIX / f"img_orig/cam{c+1}.%d"))
+        spar.set_img_base_name(c, str(FIX / f"img_orig/cam{c + 1}.%d"))
     return cpar, vpar, spar, cals
 
 
@@ -113,6 +114,7 @@ def _run(tmp_path, mode, **overrides):
 # Ground truth at default parameters
 # --------------------------------------------------------------------------- #
 
+
 @pytest.mark.parametrize("mode", ["trackcorr", "track3d"])
 def test_default_recovers_full_ground_truth(tmp_path, mode):
     """Both engines link every particle to itself, with no wrong links."""
@@ -134,11 +136,12 @@ def test_modes_agree_at_default(tmp_path):
 # Parameter envelope — trackcorr enforces every gate and fails safe
 # --------------------------------------------------------------------------- #
 
+
 def test_tight_dvxmax_drops_fast_particle_no_wrong_links(tmp_path):
     """dvxmax below the FAST particle's displacement drops it; nothing wrong."""
     correct, wrong, lost = _run(tmp_path, "trackcorr", dvxmax=2.0, dvxmin=-2.0)
-    assert FAST in lost                     # the fast particle can no longer link
-    assert wrong == 0                       # trackcorr fails safe (no mislinks)
+    assert FAST in lost  # the fast particle can no longer link
+    assert wrong == 0  # trackcorr fails safe (no mislinks)
     assert correct < MAX_LINKS
 
 
@@ -161,6 +164,7 @@ def test_tight_dangle_drops_turn_particle(tmp_path):
 # The trackcorr vs track3d difference
 # --------------------------------------------------------------------------- #
 
+
 def test_track3d_ignores_dacc_and_dangle(tmp_path):
     """track3d links on 3D proximity only: dacc/dangle do not gate it here,
     so it still recovers all links where trackcorr would have dropped some."""
@@ -176,8 +180,8 @@ def test_track3d_can_mislink_under_tight_dvxmax(tmp_path):
     must be kept generous for the 3D engine."""
     c3, w3, _ = _run(tmp_path / "3d", "track3d", dvxmax=2.0, dvxmin=-2.0)
     c2, w2, _ = _run(tmp_path / "2d", "trackcorr", dvxmax=2.0, dvxmin=-2.0)
-    assert w3 >= 1        # track3d produces wrong links
-    assert w2 == 0        # trackcorr does not
+    assert w3 >= 1  # track3d produces wrong links
+    assert w2 == 0  # trackcorr does not
 
 
 def test_add_flag_creates_no_wrong_links(tmp_path):

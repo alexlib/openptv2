@@ -118,7 +118,7 @@ class TestMultiCamPointPositions:
         cpar.mm = MmNp(nlay=1, n1=1.0, n2=[1.0, 1.0, 1.0], d=[1.0, 0.0, 0.0], n3=1.0)
 
         points = np.array([[17, 42, 0], [17, 42, 0]], dtype=np.float64)
-        num_cams = len(symmetric_cals)
+        len(symmetric_cals)
 
         targs_plain = []
         for cam_cal in symmetric_cals:

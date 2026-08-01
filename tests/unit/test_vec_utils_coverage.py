@@ -51,7 +51,9 @@ def test_vec_subt_add_inverse():
 
 
 def test_vec_scalar_mul():
-    assert np.array_equal(vec_scalar_mul(np.array([1.0, 2.0, 3.0]), 2.0), [2.0, 4.0, 6.0])
+    assert np.array_equal(
+        vec_scalar_mul(np.array([1.0, 2.0, 3.0]), 2.0), [2.0, 4.0, 6.0]
+    )
 
 
 def test_vec_diff_norm():
