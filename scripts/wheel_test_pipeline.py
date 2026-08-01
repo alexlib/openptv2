@@ -436,9 +436,7 @@ def print_pipeline_summary(
     print_header("Pipeline Summary")
 
     build_status = (
-        colorize("PASS", Colors.OKGREEN)
-        if build_ok
-        else colorize("FAIL", Colors.FAIL)
+        colorize("PASS", Colors.OKGREEN) if build_ok else colorize("FAIL", Colors.FAIL)
     )
     print_info(f"{'Wheel Build:':<30} {build_status}")
     if wheel_path:
@@ -466,9 +464,7 @@ def print_pipeline_summary(
     print()
     print_info(f"{'Import Tests:':<30} {import_pass} passed, {import_fail} failed")
     test_status = (
-        colorize("PASS", Colors.OKGREEN)
-        if test_ok
-        else colorize("FAIL", Colors.FAIL)
+        colorize("PASS", Colors.OKGREEN) if test_ok else colorize("FAIL", Colors.FAIL)
     )
     print_info(f"{'Full Test Suite:':<30} {test_status}")
     print_info(f"{'Total Duration:':<30} {total_duration:.1f}s")

@@ -390,8 +390,7 @@ for frame in FRAMES:
         for idx, r in zip(filtered_indices, rows[filtered_indices])
     ]
     print(
-        f"  Frame {frame}: {rows.shape[0]} total → "
-        f"{len(frame_subset[frame])} in window"
+        f"  Frame {frame}: {rows.shape[0]} total → {len(frame_subset[frame])} in window"
     )
 
 # ══════════════════════════════════════════════════════════════════════════════
