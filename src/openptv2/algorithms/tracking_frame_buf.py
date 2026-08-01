@@ -3,6 +3,7 @@
 Translation of lib/src/tracking_frame_buf.c and lib/include/tracking_frame_buf.h.
 """
 
+import os
 from pathlib import Path
 
 import cython
@@ -569,7 +570,6 @@ def write_path_frame(
 
     storage_mode = os.environ.get("OPENPTV_STORAGE", "zarr").lower()
     if storage_mode in ("zarr", "zarr_only"):
-        import os
         from openptv2.storage import ZarrFrameStore
 
         zarr_path = Path("res/run.zarr")

@@ -1,5 +1,7 @@
 """Public OpenPTV2 API backed by the single Cython-backed algorithms runtime."""
 
+__version__ = "0.3.0"
+
 from .algorithms.parameter_converters import (
     convert_optv_calibrations,
     get_all_params,
