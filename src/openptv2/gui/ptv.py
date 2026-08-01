@@ -178,11 +178,18 @@ def _process_frame_worker(args: Tuple) -> int:
         targ_params,
         negative_flag,
         masking_params,
+        zarr_store_path,
     ) = args
 
     # Recreate the ControlParams and TargetParams objects inside the worker
     cpar = _populate_cpar(ptv_params, num_cams)
     tpar = _populate_tpar(targ_params, num_cams)
+
+    store = None
+    if zarr_store_path:
+        from openptv2.storage import ZarrFrameStore
+
+        store = ZarrFrameStore(zarr_store_path, mode="a")
 
     for i_cam in range(num_cams):
         imname = Path(img_base_names[i_cam] % frame)
@@ -214,18 +221,24 @@ def _process_frame_worker(args: Tuple) -> int:
             else:
                 targs.sort(key=lambda t: t.y)
 
-        write_targets(targs, short_file_bases[i_cam], frame)
+        if store is not None:
+            store.write_targets(i_cam, frame, targs)
+        else:
+            write_targets(targs, short_file_bases[i_cam], frame)
 
     return frame
 
 
-def preprocess_and_detect_all_parallel(exp, num_workers: int = None) -> None:
+def preprocess_and_detect_all_parallel(
+    exp, num_workers: int = None, zarr_store_path: str = None
+) -> None:
     """Preprocess and detect targets in parallel across all frames.
 
     Args:
         exp: Either an Experiment object with pm attribute,
              or a MainGUI object with exp1.pm and cached parameter objects
         num_workers: Optional number of worker processes. Defaults to all available cores.
+        zarr_store_path: Optional path to Zarr store for writing targets directly.
     """
     from concurrent.futures import ProcessPoolExecutor
 
@@ -296,6 +309,7 @@ def preprocess_and_detect_all_parallel(exp, num_workers: int = None) -> None:
             targ_params_dict,
             negative_flag,
             masking_params_dict,
+            zarr_store_path,
         )
         for frame in range(first_frame, last_frame + 1)
     ]
