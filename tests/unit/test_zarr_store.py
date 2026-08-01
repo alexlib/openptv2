@@ -156,3 +156,54 @@ def test_zarr_store_export_frame_text(tmp_path):
     assert "1" in text_out  # count line
     assert "12.3456" in text_out
     assert "78.9012" in text_out
+
+
+def test_py_sequence_loop_zarr_mode(tmp_path):
+    """Verify that setting OPENPTV_STORAGE=zarr causes py_sequence_loop to write directly to Zarr."""
+    import os
+    import shutil
+
+    from openptv2.gui import ptv
+    from openptv2.gui.experiment import Experiment
+
+    cavity_src = Path(__file__).parent.parent.parent / "test_data" / "test_cavity"
+    if not cavity_src.exists():
+        pytest.skip("test_cavity directory not found")
+
+    temp_dir = tmp_path / "test_cavity"
+    shutil.copytree(cavity_src, temp_dir)
+
+    old_cwd = os.getcwd()
+    os.chdir(temp_dir)
+    try:
+        yaml_file = temp_dir / "parameters_Run1.yaml"
+        exp = Experiment()
+        exp.exp_path = str(temp_dir)
+        exp.pm.from_yaml(yaml_file)
+        exp.target_filenames = exp.pm.get_target_filenames()
+
+        cpar, spar, vpar, track_par, tpar, cals, epar = ptv.py_start_proc_c(exp.pm)
+        exp.cpar = cpar
+        exp.spar = spar
+        exp.vpar = vpar
+        exp.track_par = track_par
+        exp.tpar = tpar
+        exp.cals = cals
+
+        spar.set_first(10000)
+        spar.set_last(10001)
+
+        os.environ["OPENPTV_STORAGE"] = "zarr"
+        ptv.py_sequence_loop(exp)
+
+        zarr_path = temp_dir / "res" / "run.zarr"
+        assert zarr_path.exists()
+
+        store = ZarrFrameStore(zarr_path, mode="r")
+        assert store.has_targets(cam_idx=0, frame=10000)
+
+        pos_3d, cam_ids = store.read_correspondences(10000)
+        assert len(pos_3d) > 0
+    finally:
+        os.environ.pop("OPENPTV_STORAGE", None)
+        os.chdir(old_cwd)

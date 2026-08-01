@@ -730,6 +730,19 @@ def py_determination_proc_c(
     else:
         print_corresp = concatenated_corresp
 
+    storage_mode = os.environ.get("OPENPTV_STORAGE", "legacy").lower()
+    if storage_mode == "zarr":
+        from openptv2.storage import ZarrFrameStore
+
+        zarr_path = Path("res/run.zarr")
+        zarr_path.parent.mkdir(parents=True, exist_ok=True)
+        store = ZarrFrameStore(zarr_path, mode="a")
+        store.write_correspondences(
+            frame=frame, pos_3d=pos, cam_target_ids=print_corresp.T
+        )
+        print(f"Saved 3D correspondences for frame {frame} to Zarr store {zarr_path}")
+        return
+
     output_path = _prepare_output_path(
         f"{_safe_decode(default_naming['corres'])}.{frame}"
     )
@@ -890,8 +903,13 @@ def py_sequence_loop(exp) -> None:
     if not parallel_preprocess and isinstance(ptv_params_dict, dict):
         parallel_preprocess = ptv_params_dict.get("parallel_preprocess", False)
 
+    storage_mode = os.environ.get("OPENPTV_STORAGE", "legacy").lower()
+    zarr_store_path = None
+    if storage_mode == "zarr":
+        zarr_store_path = str(Path(exp.exp_path) / "res" / "run.zarr")
+
     if parallel_preprocess and not existing_target:
-        preprocess_and_detect_all_parallel(exp)
+        preprocess_and_detect_all_parallel(exp, zarr_store_path=zarr_store_path)
         existing_target = True
 
     first_frame = spar.get_first()
@@ -908,7 +926,13 @@ def py_sequence_loop(exp) -> None:
             frame_images = read_frame_images(pm, img_base_names, num_cams, frame)
         for i_cam in range(num_cams):
             if existing_target:
-                targs = read_targets(short_file_bases[i_cam], frame)
+                if storage_mode == "zarr" and zarr_store_path:
+                    from openptv2.storage import ZarrFrameStore
+
+                    store = ZarrFrameStore(zarr_store_path, mode="r")
+                    targs = store.read_targets(i_cam, frame)
+                else:
+                    targs = read_targets(short_file_bases[i_cam], frame)
             else:
                 high_pass = simple_highpass(
                     frame_images[i_cam],
@@ -925,12 +949,20 @@ def py_sequence_loop(exp) -> None:
             pos, _ = matched_coords.as_arrays()
             corrected.append(matched_coords)
 
-        # AFter we finished all targs, we can move to correspondences
+        # After we finished all targs, we can move to correspondences
         sorted_pos, sorted_corresp, _ = correspondences(
             detections, corrected, cals, vpar, cpar
         )
-        for i_cam in range(num_cams):
-            write_targets(detections[i_cam], short_file_bases[i_cam], frame)
+        if storage_mode == "zarr" and zarr_store_path:
+            from openptv2.storage import ZarrFrameStore
+
+            store = ZarrFrameStore(zarr_store_path, mode="a")
+            for i_cam in range(num_cams):
+                store.write_targets(i_cam, frame, detections[i_cam])
+        else:
+            for i_cam in range(num_cams):
+                write_targets(detections[i_cam], short_file_bases[i_cam], frame)
+
         print(
             "Frame "
             + str(frame)
@@ -953,17 +985,25 @@ def py_sequence_loop(exp) -> None:
         else:
             print_corresp = sorted_corresp
 
-        output_path = _prepare_output_path(
-            f"{_safe_decode(default_naming['corres'])}.{frame}"
-        )
-        try:
-            with open(output_path, "w", encoding="utf8") as rt_is:
-                rt_is.write(f"{pos.shape[0]}\n")
-                for pix, pt in enumerate(pos):
-                    pt_args = (pix + 1,) + tuple(pt) + tuple(print_corresp[:, pix])
-                    rt_is.write("%4d %9.3f %9.3f %9.3f %4d %4d %4d %4d\n" % pt_args)
-        except OSError as exc:
-            _raise_output_write_error(output_path, exc)
+        if storage_mode == "zarr" and zarr_store_path:
+            from openptv2.storage import ZarrFrameStore
+
+            store = ZarrFrameStore(zarr_store_path, mode="a")
+            store.write_correspondences(
+                frame=frame, pos_3d=pos, cam_target_ids=print_corresp.T
+            )
+        else:
+            output_path = _prepare_output_path(
+                f"{_safe_decode(default_naming['corres'])}.{frame}"
+            )
+            try:
+                with open(output_path, "w", encoding="utf8") as rt_is:
+                    rt_is.write(f"{pos.shape[0]}\n")
+                    for pix, pt in enumerate(pos):
+                        pt_args = (pix + 1,) + tuple(pt) + tuple(print_corresp[:, pix])
+                        rt_is.write("%4d %9.3f %9.3f %9.3f %4d %4d %4d %4d\n" % pt_args)
+            except OSError as exc:
+                _raise_output_write_error(output_path, exc)
 
 
 def py_sequence_loop_python(exp) -> None:
