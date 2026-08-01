@@ -71,6 +71,7 @@ EPS = 1e-9
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _out2():
     """Return a zeroed float64 output buffer accepted as memoryview."""
     return np.zeros(2, dtype=np.float64)
@@ -78,9 +79,7 @@ def _out2():
 
 def _cpar(imx=1024, imy=1008, pix_x=0.01, pix_y=0.01, chfield=0):
     """Minimal camera-parameter namespace used by batch functions."""
-    return SimpleNamespace(
-        imx=imx, imy=imy, pix_x=pix_x, pix_y=pix_y, chfield=chfield
-    )
+    return SimpleNamespace(imx=imx, imy=imy, pix_x=pix_x, pix_y=pix_y, chfield=chfield)
 
 
 # ---------------------------------------------------------------------------
@@ -170,7 +169,9 @@ def test_pixel_metric_out_round_trip():
     _old_pixel_to_metric_out(700.0, 300.0, 1024, 1008, 0.01, 0.01, NO_REMAP, out_m)
     # Inverse: metric → pixel
     out_p = _out2()
-    _old_metric_to_pixel_out(out_m[0], out_m[1], 1024, 1008, 0.01, 0.01, NO_REMAP, out_p)
+    _old_metric_to_pixel_out(
+        out_m[0], out_m[1], 1024, 1008, 0.01, 0.01, NO_REMAP, out_p
+    )
     assert abs(out_p[0] - 700.0) < EPS
     assert abs(out_p[1] - 300.0) < EPS
 
@@ -224,8 +225,8 @@ def test_p2m_batch_multiple_rows():
     res = pixel_to_metric_batch(xy, cpar)
     assert res.shape == (2, 2)
     assert abs(res[0, 0]) < EPS
-    assert abs(res[1, 0] - 1.0) < EPS   # (612-512)*0.01
-    assert abs(res[1, 1] - 1.0) < EPS   # (504-404)*0.01
+    assert abs(res[1, 0] - 1.0) < EPS  # (612-512)*0.01
+    assert abs(res[1, 1] - 1.0) < EPS  # (504-404)*0.01
 
 
 # ---------------------------------------------------------------------------
@@ -293,7 +294,9 @@ def test_dba_core_out_radial_k1():
     """Radial k1: factor = 1 + k1*r2."""
     out = _out2()
     # x=1, y=0 → r=1, r2=1; radial_factor=1.01; x_dist=1.01
-    _distort_brown_affin_core_out(1.0, 0.0, 0.01, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, out)
+    _distort_brown_affin_core_out(
+        1.0, 0.0, 0.01, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, out
+    )
     assert abs(out[0] - 1.01) < EPS
     assert abs(out[1]) < EPS
 
@@ -313,7 +316,9 @@ def test_dba_core_out_decentering_p1():
     """Decentering p1 affects x_dist via tangential term."""
     out = _out2()
     # x=1, y=0, p1=0.01 → p1*(r2 + 2*x^2) = 0.01*(1+2) = 0.03 added to x_dist
-    _distort_brown_affin_core_out(1.0, 0.0, 0.0, 0.0, 0.0, 0.01, 0.0, 1.0, 0.0, 1.0, out)
+    _distort_brown_affin_core_out(
+        1.0, 0.0, 0.0, 0.0, 0.0, 0.01, 0.0, 1.0, 0.0, 1.0, out
+    )
     assert abs(out[0] - 1.03) < EPS  # 1*1 + 0.01*(1+2) = 1.03
 
 
@@ -495,7 +500,9 @@ def test_ftd_out_principal_point_shift():
     """flat_to_dist shifts by xh/yh before distorting."""
     out_no_shift = _out2()
     out_shift = _out2()
-    flat_to_dist_out(1.0, 2.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, out_no_shift)
+    flat_to_dist_out(
+        1.0, 2.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, out_no_shift
+    )
     flat_to_dist_out(1.0, 2.0, 0.1, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, out_shift)
     # With xh=yh=0.1 the input point is shifted before distortion
     assert abs(out_shift[0] - 1.1) < EPS
@@ -539,7 +546,13 @@ def test_cbab_round_trip_k1():
     distorted = distort_brown_affine_batch(xy, k1, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0)
     corrected = correct_brown_affine_batch(
         np.ascontiguousarray(distorted, dtype=np.float64),
-        k1, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
+        k1,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
     )
     np.testing.assert_allclose(corrected, xy, atol=0.005)
 
@@ -667,7 +680,9 @@ def test_dist_to_flat_out_entry():
     """Covers _scratch_mv = _scratch line of dist_to_flat_out (ccall, buggy)."""
     out = _out2()
     try:
-        dist_to_flat_out(1.0, 2.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1e-8, out)
+        dist_to_flat_out(
+            1.0, 2.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1e-8, out
+        )
     except UnboundLocalError:
         pass
 

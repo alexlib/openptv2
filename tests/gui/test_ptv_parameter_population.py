@@ -24,19 +24,19 @@ class TestPopulateCpar:
     def test_populate_cpar_basic(self):
         """Test basic control parameter population"""
         ptv_params = {
-            'imx': 1024,
-            'imy': 768,
-            'pix_x': 0.01,
-            'pix_y': 0.01,
-            'hp_flag': 1,
-            'allcam_flag': 0,
-            'tiff_flag': 1,
-            'chfield': 0,
-            'mmp_n1': 1.0,
-            'mmp_n2': 1.33,
-            'mmp_d': 5.0,
-            'mmp_n3': 1.49,
-            'img_cal': ['cal1.tif', 'cal2.tif']
+            "imx": 1024,
+            "imy": 768,
+            "pix_x": 0.01,
+            "pix_y": 0.01,
+            "hp_flag": 1,
+            "allcam_flag": 0,
+            "tiff_flag": 1,
+            "chfield": 0,
+            "mmp_n1": 1.0,
+            "mmp_n2": 1.33,
+            "mmp_d": 5.0,
+            "mmp_n3": 1.49,
+            "img_cal": ["cal1.tif", "cal2.tif"],
         }
         num_cams = 2
 
@@ -50,10 +50,10 @@ class TestPopulateCpar:
     def test_populate_cpar_missing_required_params(self):
         """Test control parameter population with missing required parameters"""
         ptv_params = {
-            'imx': 1024,
+            "imx": 1024,
             # Missing 'imy'
-            'pix_x': 0.01,
-            'pix_y': 0.01,
+            "pix_x": 0.01,
+            "pix_y": 0.01,
         }
         num_cams = 2
 
@@ -63,19 +63,19 @@ class TestPopulateCpar:
     def test_populate_cpar_invalid_img_cal_length(self):
         """Test with mismatched img_cal list length"""
         ptv_params = {
-            'imx': 1024,
-            'imy': 768,
-            'pix_x': 0.01,
-            'pix_y': 0.01,
-            'hp_flag': 1,
-            'allcam_flag': 0,
-            'tiff_flag': 1,
-            'chfield': 0,
-            'mmp_n1': 1.0,
-            'mmp_n2': 1.33,
-            'mmp_d': 5.0,
-            'mmp_n3': 1.49,
-            'img_cal': ['cal1.tif']  # Only 1 camera, but num_cams = 2
+            "imx": 1024,
+            "imy": 768,
+            "pix_x": 0.01,
+            "pix_y": 0.01,
+            "hp_flag": 1,
+            "allcam_flag": 0,
+            "tiff_flag": 1,
+            "chfield": 0,
+            "mmp_n1": 1.0,
+            "mmp_n2": 1.33,
+            "mmp_d": 5.0,
+            "mmp_n3": 1.49,
+            "img_cal": ["cal1.tif"],  # Only 1 camera, but num_cams = 2
         }
         num_cams = 2
 
@@ -89,9 +89,9 @@ class TestPopulateSpar:
     def test_populate_spar_basic(self):
         """Test basic sequence parameter population"""
         seq_params = {
-            'first': 1000,
-            'last': 1010,
-            'base_name': ['img1_%04d.tif', 'img2_%04d.tif']
+            "first": 1000,
+            "last": 1010,
+            "base_name": ["img1_%04d.tif", "img2_%04d.tif"],
         }
         num_cams = 2
 
@@ -104,7 +104,7 @@ class TestPopulateSpar:
     def test_populate_spar_missing_required_params(self):
         """Test sequence parameter population with missing required parameters"""
         seq_params = {
-            'first': 1000,
+            "first": 1000,
             # Missing 'last' and 'base_name'
         }
         num_cams = 2
@@ -115,9 +115,9 @@ class TestPopulateSpar:
     def test_populate_spar_invalid_base_name_length(self):
         """Test with mismatched base_name list length"""
         seq_params = {
-            'first': 1000,
-            'last': 1010,
-            'base_name': ['img1_%04d.tif']  # Only 1 camera, but num_cams = 2
+            "first": 1000,
+            "last": 1010,
+            "base_name": ["img1_%04d.tif"],  # Only 1 camera, but num_cams = 2
         }
         num_cams = 2
 
@@ -131,15 +131,15 @@ class TestPopulateVpar:
     def test_populate_vpar_basic(self):
         """Test basic volume parameter population"""
         crit_params = {
-            'X_lay': [0, 10],
-            'Zmin_lay': [-5, -3],
-            'Zmax_lay': [3, 5],
-            'eps0': 0.1,
-            'cn': 0.5,
-            'cnx': 0.3,
-            'cny': 0.3,
-            'csumg': 0.02,
-            'corrmin': 33.0
+            "X_lay": [0, 10],
+            "Zmin_lay": [-5, -3],
+            "Zmax_lay": [3, 5],
+            "eps0": 0.1,
+            "cn": 0.5,
+            "cnx": 0.3,
+            "cny": 0.3,
+            "csumg": 0.02,
+            "corrmin": 33.0,
         }
 
         result = _populate_vpar(crit_params)
@@ -151,7 +151,7 @@ class TestPopulateVpar:
     def test_populate_vpar_missing_required_params(self):
         """Test volume parameter population with missing required parameters"""
         crit_params = {
-            'X_lay': [0, 10],
+            "X_lay": [0, 10],
             # Missing other required parameters
         }
 
@@ -165,15 +165,15 @@ class TestPopulateTrackPar:
     def test_populate_track_par_basic(self):
         """Test basic tracking parameter population"""
         track_params = {
-            'dvxmin': -2.0,
-            'dvxmax': 2.0,
-            'dvymin': -2.0,
-            'dvymax': 2.0,
-            'dvzmin': -2.0,
-            'dvzmax': 2.0,
-            'angle': 0.5,
-            'dacc': 5.0,
-            'flagNewParticles': 1
+            "dvxmin": -2.0,
+            "dvxmax": 2.0,
+            "dvymin": -2.0,
+            "dvymax": 2.0,
+            "dvzmin": -2.0,
+            "dvzmax": 2.0,
+            "angle": 0.5,
+            "dacc": 5.0,
+            "flagNewParticles": 1,
         }
 
         result = _populate_track_par(track_params)
@@ -186,8 +186,8 @@ class TestPopulateTrackPar:
     def test_populate_track_par_missing_required_params(self):
         """Test tracking parameter population with missing required parameters"""
         track_params = {
-            'dvxmin': -2.0,
-            'dvxmax': 2.0,
+            "dvxmin": -2.0,
+            "dvxmax": 2.0,
             # Missing other required parameters
         }
 
@@ -204,19 +204,19 @@ class TestPopulateTpar:
     def test_populate_tpar_detect_plate(self):
         """Test target parameter population with detect_plate format"""
         targ_params = {
-            'detect_plate': {
-                'gvth_1': 50,
-                'gvth_2': 50,
-                'gvth_3': 50,
-                'gvth_4': 50,
-                'min_npix': 25,
-                'max_npix': 900,
-                'min_npix_x': 5,
-                'max_npix_x': 30,
-                'min_npix_y': 5,
-                'max_npix_y': 30,
-                'sum_grey': 20,
-                'tol_dis': 20
+            "detect_plate": {
+                "gvth_1": 50,
+                "gvth_2": 50,
+                "gvth_3": 50,
+                "gvth_4": 50,
+                "min_npix": 25,
+                "max_npix": 900,
+                "min_npix_x": 5,
+                "max_npix_x": 30,
+                "min_npix_y": 5,
+                "max_npix_y": 30,
+                "sum_grey": 20,
+                "tol_dis": 20,
             }
         }
         num_cams = 4
@@ -231,16 +231,16 @@ class TestPopulateTpar:
     def test_populate_tpar_targ_rec(self):
         """Test target parameter population with targ_rec format"""
         targ_params = {
-            'targ_rec': {
-                'gvthres': [50, 50, 50, 50],
-                'nnmin': 25,
-                'nnmax': 900,
-                'nxmin': 5,
-                'nxmax': 30,
-                'nymin': 5,
-                'nymax': 30,
-                'sumg_min': 20,
-                'disco': 20
+            "targ_rec": {
+                "gvthres": [50, 50, 50, 50],
+                "nnmin": 25,
+                "nnmax": 900,
+                "nxmin": 5,
+                "nxmax": 30,
+                "nymin": 5,
+                "nymax": 30,
+                "sumg_min": 20,
+                "disco": 20,
             }
         }
         num_cams = 4
@@ -255,9 +255,9 @@ class TestPopulateTpar:
     def test_populate_tpar_missing_detect_plate_params(self):
         """Test target parameter population with missing detect_plate parameters"""
         targ_params = {
-            'detect_plate': {
-                'gvth_1': 50,
-                'gvth_2': 50,
+            "detect_plate": {
+                "gvth_1": 50,
+                "gvth_2": 50,
                 # Missing required parameters
             }
         }
@@ -268,9 +268,7 @@ class TestPopulateTpar:
 
     def test_populate_tpar_missing_section(self):
         """Test target parameter population with missing section"""
-        targ_params = {
-            'invalid_section': {}
-        }
+        targ_params = {"invalid_section": {}}
         num_cams = 4
 
         with pytest.raises(ValueError, match="Target parameters must contain either"):
@@ -279,18 +277,18 @@ class TestPopulateTpar:
     def test_populate_tpar_missing_grey_thresholds(self):
         """Test target parameter population with missing grey thresholds"""
         targ_params = {
-            'detect_plate': {
-                'gvth_1': 50,
-                'gvth_2': 50,
+            "detect_plate": {
+                "gvth_1": 50,
+                "gvth_2": 50,
                 # Missing gvth_3 and gvth_4
-                'min_npix': 25,
-                'max_npix': 900,
-                'min_npix_x': 5,
-                'max_npix_x': 30,
-                'min_npix_y': 5,
-                'max_npix_y': 30,
-                'sum_grey': 20,
-                'tol_dis': 20
+                "min_npix": 25,
+                "max_npix": 900,
+                "min_npix_x": 5,
+                "max_npix_x": 30,
+                "min_npix_y": 5,
+                "max_npix_y": 30,
+                "sum_grey": 20,
+                "tol_dis": 20,
             }
         }
         num_cams = 4

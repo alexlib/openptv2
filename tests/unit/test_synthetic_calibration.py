@@ -226,7 +226,7 @@ class TestSyntheticFullCalibration:
 
     def test_no_matched_points_leaves_calibration_unchanged(self):
         """Zero valid targets leaves calibration unmodified (no crash)."""
-        expected = make_calibration()
+        make_calibration()
         cal = make_calibration()
         old_pos = cal.get_pos().copy()
         targets = [Target(pnr=-1, x=0.0, y=0.0)]  # pnr != index → skipped

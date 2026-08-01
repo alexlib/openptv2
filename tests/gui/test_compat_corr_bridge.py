@@ -149,10 +149,10 @@ def test_compat_bridge_correctness(cavity_dir):
             frame_a.num_targets[cam] = len(targets)
 
         corrected_a = [mc._corrected for mc in corr_c]
-        unwrapped_cals = [c._cal if hasattr(c, '_cal') else c for c in cals_c]
+        unwrapped_cals = [c._cal if hasattr(c, "_cal") else c for c in cals_c]
 
-        raw_vpar = vp_c._vpar if hasattr(vp_c, '_vpar') else vp_c
-        raw_cpar = cp_c._cpar if hasattr(cp_c, '_cpar') else cp_c
+        raw_vpar = vp_c._vpar if hasattr(vp_c, "_vpar") else vp_c
+        raw_cpar = cp_c._cpar if hasattr(cp_c, "_cpar") else cp_c
 
         ntupels_a, mc_a = raw_corr(
             frame_a, corrected_a, raw_vpar, raw_cpar, unwrapped_cals
@@ -217,13 +217,11 @@ def test_compat_bridge_correctness(cavity_dir):
                 f"\n  >>> MISMATCH: raw params ({mc_b[3]}) vs compat params ({mc_a[3]}) <<<"
             )
             # The parameter objects differ — check key fields
-            raw_cpar = cp_c._cpar if hasattr(cp_c, '_cpar') else cp_c
-            raw_vpar = vp_c._vpar if hasattr(vp_c, '_vpar') else vp_c
+            raw_cpar = cp_c._cpar if hasattr(cp_c, "_cpar") else cp_c
+            raw_vpar = vp_c._vpar if hasattr(vp_c, "_vpar") else vp_c
             print(f"  cpar_c.imx={raw_cpar.imx} cpar_r.imx={cpar_r.imx}")
             print(f"  cpar_c.imx==cpar_r.imx: {raw_cpar.imx == cpar_r.imx}")
-            print(
-                f"  vp_c.corrmin={raw_vpar.corrmin} vpar_r.corrmin={vpar_r.corrmin}"
-            )
+            print(f"  vp_c.corrmin={raw_vpar.corrmin} vpar_r.corrmin={vpar_r.corrmin}")
             print(f"  mm nlay: compat={raw_cpar.mm.nlay} raw={cpar_r.mm.nlay}")
             print(f"  mm n1: compat={raw_cpar.mm.n1} raw={cpar_r.mm.n1}")
             print(f"  mm n2: compat={raw_cpar.mm.n2} raw={cpar_r.mm.n2}")

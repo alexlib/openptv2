@@ -10,6 +10,7 @@
 # ]
 # ///
 
+# ruff: noqa: F821
 import marimo
 
 __generated_with = "0.19.9"

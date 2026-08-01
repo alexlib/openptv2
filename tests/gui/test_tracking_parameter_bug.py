@@ -247,8 +247,8 @@ class TestTrackingParameterBug:
 
         # This test will run after the other two and compare their results
         # For now, just run both and let the user compare the output
-        cavity_result = self._run_cavity_tracking_parameter_translation()
-        splitter_result = self._run_splitter_tracking_parameter_translation()
+        self._run_cavity_tracking_parameter_translation()
+        self._run_splitter_tracking_parameter_translation()
 
         print("\n=== COMPARISON COMPLETE ===")
         print(

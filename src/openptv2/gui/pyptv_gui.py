@@ -435,6 +435,7 @@ class TreeMenuHandler(Handler):
 
         except Exception:
             import traceback
+
             print(f"\nERROR opening parameters dialog for '{paramset.name}':")
             traceback.print_exc()
             print(f"YAML path: {getattr(paramset, 'yaml_path', 'unknown')}")
@@ -535,6 +536,7 @@ class TreeMenuHandler(Handler):
         # Attempt PySide6 QInputDialog first if Qt is running
         try:
             from PySide6.QtWidgets import QInputDialog
+
             text, ok = QInputDialog.getText(
                 None, "Rename Parameter Set", "Enter new run name:", text=paramset.name
             )
@@ -853,7 +855,11 @@ class TreeMenuHandler(Handler):
         mainGui = info.object
         frame = ptv.DEFAULT_FRAME_NUM
         ptv_params = mainGui.get_parameter("ptv")
-        if isinstance(ptv_params, dict) and "img_name" in ptv_params and ptv_params["img_name"]:
+        if (
+            isinstance(ptv_params, dict)
+            and "img_name" in ptv_params
+            and ptv_params["img_name"]
+        ):
             frame = ptv._extract_frame_num(ptv_params["img_name"][0])
 
         ptv.py_determination_proc_c(
@@ -876,7 +882,11 @@ class TreeMenuHandler(Handler):
         mainGui = info.object
         frame = ptv.DEFAULT_FRAME_NUM
         ptv_params = mainGui.get_parameter("ptv")
-        if isinstance(ptv_params, dict) and "img_name" in ptv_params and ptv_params["img_name"]:
+        if (
+            isinstance(ptv_params, dict)
+            and "img_name" in ptv_params
+            and ptv_params["img_name"]
+        ):
             frame = ptv._extract_frame_num(ptv_params["img_name"][0])
 
         rt_is_path = Path(mainGui.exp_path) / "res" / f"rt_is.{frame}"
@@ -944,7 +954,6 @@ class TreeMenuHandler(Handler):
             )
             return
         panel.configure_traits()
-
 
     def detect_part_track(self, info):
         """track detected particles"""
@@ -1319,9 +1328,7 @@ class Plugins(HasTraits):
         self.track_alg = selected_tracking
         self.sequence_alg = selected_sequence
 
-        print(
-            f"Available plugins: tracking={track_options}, sequence={seq_options}"
-        )
+        print(f"Available plugins: tracking={track_options}, sequence={seq_options}")
         print(
             f"Selected plugins: tracking={self.track_alg}, sequence={self.sequence_alg}"
         )
@@ -1539,7 +1546,9 @@ class MainGUI(HasTraits):
                 # look for points along epipolars for other cameras
                 from openptv2.gui import ptv
 
-                cpar = ptv._populate_cpar(self.exp1.pm.get_section("ptv"), self.num_cams)
+                cpar = ptv._populate_cpar(
+                    self.exp1.pm.get_section("ptv"), self.num_cams
+                )
                 vpar = ptv._populate_vpar(self.exp1.pm.get_section("criteria"))
 
                 for j in range(self.num_cams):
@@ -1902,9 +1911,7 @@ class MainGUI(HasTraits):
                         "cyan",
                     )
 
-        print(
-            "Search volumes drawn for frames t+1 (green), t+2 (yellow), t+3 (orange)"
-        )
+        print("Search volumes drawn for frames t+1 (green), t+2 (yellow), t+3 (orange)")
         print("Epipolar lines (cyan) from particle to other cameras")
 
         for cam in self.camera_list:

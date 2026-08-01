@@ -1,3 +1,4 @@
+# ruff: noqa: E731,F821
 """Sortgrid operations for PTV calibration.
 
 Translation of lib/src/sortgrid.c and lib/include/sortgrid.h.
@@ -16,8 +17,8 @@ if cython.compiled:
     from cython.cimports.libc.math import sqrt as c_sqrt
 else:
     from math import sqrt as c_sqrt
-from typing import Tuple
 from pathlib import Path
+from typing import Tuple
 
 from .tracking_frame_buf import Target
 
@@ -142,9 +143,11 @@ def sortgrid(
     if use_vec:
         pix_x = np.array([p.x for p in pix], dtype=np.float64)
         pix_y = np.array([p.y for p in pix], dtype=np.float64)
-        nn_func = lambda px, py: _nearest_neighbour_arr(pix_x, pix_y, px, py, feps)
+        def nn_func(px, py):
+            return _nearest_neighbour_arr(pix_x, pix_y, px, py, feps)
     else:
-        nn_func = lambda px, py: nearest_neighbour_pix(pix, px, py, feps)
+        def nn_func(px, py):
+            return nearest_neighbour_pix(pix, px, py, feps)
 
     for i in range(nfix):
         xp, yp = img_coord(fix[i], cal, mm)

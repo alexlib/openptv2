@@ -5,6 +5,7 @@ under ``parameters/``, keep only ``parameters_Run1.yaml``, and run the batch
 sequence. If it still reconstructs particles, the runtime is genuinely
 YAML-only and ``.par`` files are backward-compat scaffolding, not a dependency.
 """
+
 import shutil
 from pathlib import Path
 

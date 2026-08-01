@@ -46,7 +46,7 @@ for cam in range(1, 5):
     cal = Calibration()
     cal.from_file(
         ori_file=os.path.join(workdir, f"cal/cam{cam}.ori"),
-        addpar_file=os.path.join(workdir, f"cal/cam{cam}.addpar")
+        addpar_file=os.path.join(workdir, f"cal/cam{cam}.addpar"),
     )
     cals.append(cal)
 
@@ -61,7 +61,12 @@ from openptv2.parameters import load_params_from_yaml
 
 # Load parameters
 params = load_params_from_yaml(os.path.join(workdir, "parameters_Run1.yaml"))
-print("Velocity constraints: dvxmin =", params.track.dvxmin, "dvxmax =", params.track.dvxmax)
+print(
+    "Velocity constraints: dvxmin =",
+    params.track.dvxmin,
+    "dvxmax =",
+    params.track.dvxmax,
+)
 ```
 
 ### Step 3: Run Target Segmentation (Particle Detection)
@@ -102,7 +107,9 @@ Print and review the calculated 3D coordinates from the tracking trajectories.
 for path_id, trajectory in list(tracks.items())[:3]:
     print(f"\nTrajectory Path ID: {path_id}")
     for frame, pt in list(trajectory.items()):
-        print(f"  Frame {frame}: [X={pt['pos'][0]:.2f}, Y={pt['pos'][1]:.2f}, Z={pt['pos'][2]:.2f}]")
+        print(
+            f"  Frame {frame}: [X={pt['pos'][0]:.2f}, Y={pt['pos'][1]:.2f}, Z={pt['pos'][2]:.2f}]"
+        )
 ```
 
 ---
@@ -116,20 +123,20 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
 fig = plt.figure(figsize=(10, 8))
-ax = fig.add_subplot(111, projection='3d')
+ax = fig.add_subplot(111, projection="3d")
 
 # Draw each path with a unique color
 for path_id, trajectory in list(tracks.items())[:15]:  # Plot first 15 trajectories
-    x = [pt['pos'][0] for pt in trajectory.values()]
-    y = [pt['pos'][1] for pt in trajectory.values()]
-    z = [pt['pos'][2] for pt in trajectory.values()]
-    
-    ax.plot(x, y, z, marker='o', linestyle='-', linewidth=2, label=f"Path {path_id}")
+    x = [pt["pos"][0] for pt in trajectory.values()]
+    y = [pt["pos"][1] for pt in trajectory.values()]
+    z = [pt["pos"][2] for pt in trajectory.values()]
 
-ax.set_xlabel('X Physical Coordinate')
-ax.set_ylabel('Y Physical Coordinate')
-ax.set_zlabel('Z Physical Coordinate')
-ax.set_title('3D Trajectories - Cavity Flow Dataset')
+    ax.plot(x, y, z, marker="o", linestyle="-", linewidth=2, label=f"Path {path_id}")
+
+ax.set_xlabel("X Physical Coordinate")
+ax.set_ylabel("Y Physical Coordinate")
+ax.set_zlabel("Z Physical Coordinate")
+ax.set_title("3D Trajectories - Cavity Flow Dataset")
 plt.show()
 ```
 

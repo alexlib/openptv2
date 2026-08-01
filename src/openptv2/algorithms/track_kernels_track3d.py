@@ -1,4 +1,5 @@
 """Stereo-3D tracking loop — position-space only, no camera projections."""
+
 import cython
 import numpy as np
 

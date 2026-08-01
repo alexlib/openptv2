@@ -1,18 +1,22 @@
-
 import pytest
 
 from openptv2.gui.ptv import extract_cam_ids, generate_short_file_bases
 
 
-@pytest.mark.parametrize("img_bases, expected_cam_ids", [
-    (["cam1_%d.tif", "cam2_%03d.tif", "cam3.%d"], [1, 2, 3]),
-    (["cam4", "c5_%%d", "cam6_%04d"], [4, 5, 6]),
-    (["im7.%%03d", "cam8_%%d.tif", "cam9_%%05d"], [7, 8, 9]),
-    (["cam10", "cam11_10000", "Cam12_extra", "c13"], [10, 11, 12, 13]),
-])
+@pytest.mark.parametrize(
+    "img_bases, expected_cam_ids",
+    [
+        (["cam1_%d.tif", "cam2_%03d.tif", "cam3.%d"], [1, 2, 3]),
+        (["cam4", "c5_%%d", "cam6_%04d"], [4, 5, 6]),
+        (["im7.%%03d", "cam8_%%d.tif", "cam9_%%05d"], [7, 8, 9]),
+        (["cam10", "cam11_10000", "Cam12_extra", "c13"], [10, 11, 12, 13]),
+    ],
+)
 def test_extract_cam_ids_param(img_bases, expected_cam_ids):
     cam_ids = extract_cam_ids(img_bases)
-    assert cam_ids == expected_cam_ids, f"{img_bases} -> {cam_ids}, expected {expected_cam_ids}"
+    assert cam_ids == expected_cam_ids, (
+        f"{img_bases} -> {cam_ids}, expected {expected_cam_ids}"
+    )
 
 
 def test_generate_short_file_bases():

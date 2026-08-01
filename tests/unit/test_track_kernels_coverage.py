@@ -47,6 +47,7 @@ from openptv2.algorithms.track_kernels import (
 # Helpers: minimal stub objects
 # ---------------------------------------------------------------------------
 
+
 def _make_cal():
     """Build a minimal stub Calibration with all fields pack_cal_array reads."""
     ext = types.SimpleNamespace(
@@ -58,9 +59,13 @@ def _make_cal():
     int_ = types.SimpleNamespace(cc=100.0, xh=0.1, yh=0.2)
     glass = types.SimpleNamespace(vec_x=0.0, vec_y=0.0, vec_z=1.0)
     added = types.SimpleNamespace(
-        k1=0.01, k2=0.02, k3=0.03,
-        p1=0.04, p2=0.05,
-        scx=1.0, she=0.0,
+        k1=0.01,
+        k2=0.02,
+        k3=0.03,
+        p1=0.04,
+        p2=0.05,
+        scx=1.0,
+        she=0.0,
     )
     mmlut = types.SimpleNamespace(
         data=None,
@@ -93,6 +98,7 @@ def _make_mm():
 # is_compiled
 # ---------------------------------------------------------------------------
 
+
 def test_is_compiled_returns_false_in_pure_python():
     result = is_compiled()
     assert result is False
@@ -101,6 +107,7 @@ def test_is_compiled_returns_false_in_pure_python():
 # ---------------------------------------------------------------------------
 # pack_cal_array
 # ---------------------------------------------------------------------------
+
 
 def test_pack_cal_array_returns_float64_array_of_31():
     cal = _make_cal()
@@ -120,13 +127,13 @@ def test_pack_cal_array_position_values():
     assert c[1] == 2.0
     assert c[2] == 3.0
     # identity dm
-    assert c[3] == 1.0   # dm[0,0]
-    assert c[4] == 0.0   # dm[1,0]
-    assert c[5] == 0.0   # dm[2,0]
-    assert c[6] == 0.0   # dm[0,1]
-    assert c[7] == 1.0   # dm[1,1]
-    assert c[8] == 0.0   # dm[2,1]
-    assert c[9] == 0.0   # dm[0,2]
+    assert c[3] == 1.0  # dm[0,0]
+    assert c[4] == 0.0  # dm[1,0]
+    assert c[5] == 0.0  # dm[2,0]
+    assert c[6] == 0.0  # dm[0,1]
+    assert c[7] == 1.0  # dm[1,1]
+    assert c[8] == 0.0  # dm[2,1]
+    assert c[9] == 0.0  # dm[0,2]
     assert c[10] == 0.0  # dm[1,2]
     assert c[11] == 1.0  # dm[2,2]
 
@@ -136,8 +143,8 @@ def test_pack_cal_array_interior_params():
     mm = _make_mm()
     c = pack_cal_array(cal, mm)
     assert c[12] == 100.0  # cc
-    assert c[13] == 0.1    # xh
-    assert c[14] == 0.2    # yh
+    assert c[13] == 0.1  # xh
+    assert c[14] == 0.2  # yh
 
 
 def test_pack_cal_array_glass_params():
@@ -145,34 +152,34 @@ def test_pack_cal_array_glass_params():
     mm = _make_mm()
     c = pack_cal_array(cal, mm)
     # glass vec = (0, 0, 1) → dist_o_glas = 1.0
-    assert c[15] == 0.0    # gx
-    assert c[16] == 0.0    # gy
-    assert c[17] == 1.0    # gz
-    assert c[18] == pytest.approx(1.0)   # dist_o_glas
-    assert c[19] == pytest.approx(1.0)   # 1/dist_o_glas
+    assert c[15] == 0.0  # gx
+    assert c[16] == 0.0  # gy
+    assert c[17] == 1.0  # gz
+    assert c[18] == pytest.approx(1.0)  # dist_o_glas
+    assert c[19] == pytest.approx(1.0)  # 1/dist_o_glas
 
 
 def test_pack_cal_array_multimedia_params():
     cal = _make_cal()
     mm = _make_mm()
     c = pack_cal_array(cal, mm)
-    assert c[20] == mm.n1       # n1
-    assert c[21] == mm.n2[0]    # n2[0]
-    assert c[22] == mm.n3       # n3
-    assert c[23] == mm.d[0]     # d[0]
+    assert c[20] == mm.n1  # n1
+    assert c[21] == mm.n2[0]  # n2[0]
+    assert c[22] == mm.n3  # n3
+    assert c[23] == mm.d[0]  # d[0]
 
 
 def test_pack_cal_array_added_params():
     cal = _make_cal()
     mm = _make_mm()
     c = pack_cal_array(cal, mm)
-    assert c[24] == pytest.approx(0.01)   # k1
-    assert c[25] == pytest.approx(0.02)   # k2
-    assert c[26] == pytest.approx(0.03)   # k3
-    assert c[27] == pytest.approx(0.04)   # p1
-    assert c[28] == pytest.approx(0.05)   # p2
-    assert c[29] == pytest.approx(1.0)    # scx
-    assert c[30] == pytest.approx(0.0)    # she
+    assert c[24] == pytest.approx(0.01)  # k1
+    assert c[25] == pytest.approx(0.02)  # k2
+    assert c[26] == pytest.approx(0.03)  # k3
+    assert c[27] == pytest.approx(0.04)  # p1
+    assert c[28] == pytest.approx(0.05)  # p2
+    assert c[29] == pytest.approx(1.0)  # scx
+    assert c[30] == pytest.approx(0.0)  # she
 
 
 def test_pack_cal_array_nonunit_glass_vector():
@@ -184,6 +191,7 @@ def test_pack_cal_array_nonunit_glass_vector():
     mm = _make_mm()
     c = pack_cal_array(cal, mm)
     import math
+
     expected = math.sqrt(9.0 + 16.0)  # 5.0
     assert c[18] == pytest.approx(expected)
     assert c[19] == pytest.approx(1.0 / expected)
@@ -211,6 +219,7 @@ def test_pack_cal_array_nontrivial_dm():
 # ---------------------------------------------------------------------------
 # pack_mmlut — path 1: no real data (None)
 # ---------------------------------------------------------------------------
+
 
 def test_pack_mmlut_no_data_returns_synthetic():
     cal = _make_cal()
@@ -240,6 +249,7 @@ def test_pack_mmlut_empty_data_returns_synthetic():
 # ---------------------------------------------------------------------------
 # pack_mmlut — path 2: real data present
 # ---------------------------------------------------------------------------
+
 
 def test_pack_mmlut_with_real_data():
     cal = _make_cal()
@@ -281,6 +291,7 @@ def test_pack_mmlut_real_data_already_float64_no_copy():
 # ---------------------------------------------------------------------------
 # Re-exported symbols — existence checks (covers the import lines)
 # ---------------------------------------------------------------------------
+
 
 def test_reexported_callables_exist():
     """All re-exported names must be callable."""

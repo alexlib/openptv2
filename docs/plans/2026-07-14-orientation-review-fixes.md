@@ -89,9 +89,7 @@ lines or the unused X column 18 (`ga` derivative) — deliberate liboptv parity.
 **Where:** same file, inside `orient()`, in the `if stopflag:` block (lines ~995–997):
 
 ```python
-            r_max = 0.5 * float(
-                np.hypot(cpar.imx * cpar.pix_x, cpar.imy * cpar.pix_y)
-            )
+r_max = 0.5 * float(np.hypot(cpar.imx * cpar.pix_x, cpar.imy * cpar.pix_y))
 ```
 
 This is identical to `r_max_norm` computed at line 684. Delete these lines and use

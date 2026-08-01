@@ -57,6 +57,7 @@ def _(base_path, res_dir, yaml):
     """Run tracking with the single runtime + observer."""
     import os
     import sys
+
     sys.path.insert(0, str(base_path.parent.parent))
     os.chdir(str(base_path))
 
@@ -95,19 +96,26 @@ def _(base_path):
     tracker = Tracker(cpar, vpar, track_par, spar, cals, default_naming)
     tracker.full_forward()
 
-    print(f"Tracking complete: frames {spar.get_first()}–{spar.get_last()}, {num_cams} cams.")
-    # ponytail: per-particle observer not in Tracker API; add TrackingObserver to track.py if step-level debug is needed
+    print(
+        f"Tracking complete: frames {spar.get_first()}–{spar.get_last()}, "
+        f"{num_cams} cams."
+    )
+    # ponytail: per-particle observer not in Tracker API; add
+    # TrackingObserver to track.py if step-level debug is needed.
     return tracker, cpar, cals, num_cams
 
 
 @app.cell
 def _(mo):
-    mo.md("""
-    > **Note**: Per-particle step visualization requires a `TrackingObserver` callback
-    > in `openptv2.algorithms.track.Tracker`. The `Tracker` currently runs `full_forward()`
-    > without per-step hooks. Add a `TrackingObserver` class to `track.py` to re-enable
-    > the particle-level debugger below.
-    """)
+    mo.md(
+        """
+    > **Note**: Per-particle step visualization requires a
+    > `TrackingObserver` callback in `openptv2.algorithms.track.Tracker`.
+    > The `Tracker` currently runs `full_forward()` without per-step hooks.
+    > Add a `TrackingObserver` class to `track.py` to re-enable the
+    > particle-level debugger below.
+    """
+    )
     return
 
 

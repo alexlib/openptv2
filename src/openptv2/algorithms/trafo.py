@@ -13,9 +13,13 @@ import cython
 import numpy as np
 
 if cython.compiled:
-    from cython.cimports.libc.math import sqrt as c_sqrt, sin as c_sin, cos as c_cos
+    from cython.cimports.libc.math import cos as c_cos
+    from cython.cimports.libc.math import sin as c_sin
+    from cython.cimports.libc.math import sqrt as c_sqrt
 else:
-    from math import sqrt as c_sqrt, sin as c_sin, cos as c_cos
+    from math import cos as c_cos
+    from math import sin as c_sin
+    from math import sqrt as c_sqrt
 
 # Y-remap mode constants (for interlaced cameras)
 NO_REMAP: cython.int = 0

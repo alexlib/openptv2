@@ -15,9 +15,9 @@ feature/reduced-quader-search  (forked from main)
 ### Current algorithm (inlined in `_sorted_candidates_fast_out`)
 
 ```python
-for i in range(num_cams):                    # 4 cameras
-    for pt in range(8):                      # 8 corners
-        _point_to_pixel_out(qx, qy, qz, ...) # 32 projections total
+for i in range(num_cams):  # 4 cameras
+    for pt in range(8):  # 8 corners
+        _point_to_pixel_out(qx, qy, qz, ...)  # 32 projections total
 ```
 
 ### New algorithm
@@ -31,17 +31,25 @@ for i in range(num_cams):
     else:
         # FAST PATH: 2 diagonal corners + safety margin
         # Corner A: (px+dvxmin, py+dvymin, pz+dvzmin)
-        _point_to_pixel_out(px+dvxmin, py+dvymin, pz+dvzmin, ...)
-        xl_i = x_min = corner_x; xr_i = x_max = corner_x
-        yu_i = y_min = corner_y; yd_i = y_max = corner_y
+        _point_to_pixel_out(px + dvxmin, py + dvymin, pz + dvzmin, ...)
+        xl_i = x_min = corner_x
+        xr_i = x_max = corner_x
+        yu_i = y_min = corner_y
+        yd_i = y_max = corner_y
         # Corner B: (px+dvxmax, py+dvymax, pz+dvzmax)
-        _point_to_pixel_out(px+dvxmax, py+dvymax, pz+dvzmax, ...)
-        xl_i = min(x_min, corner_x); xr_i = max(x_max, corner_x)
-        yu_i = min(y_min, corner_y); yd_i = max(y_max, corner_y)
+        _point_to_pixel_out(px + dvxmax, py + dvymax, pz + dvzmax, ...)
+        xl_i = min(x_min, corner_x)
+        xr_i = max(x_max, corner_x)
+        yu_i = min(y_min, corner_y)
+        yd_i = max(y_max, corner_y)
         # Expand by safety margin to compensate for perspective non-linearity
         margin = 0.05  # 5%, tunable based on test results
-        dx = (xr_i - xl_i) * margin; dy = (yd_i - yu_i) * margin
-        xl_i -= dx; xr_i += dx; yu_i -= dy; yd_i += dy
+        dx = (xr_i - xl_i) * margin
+        dy = (yd_i - yu_i) * margin
+        xl_i -= dx
+        xr_i += dx
+        yu_i -= dy
+        yd_i += dy
 ```
 
 ### Rationale for 2 diagonal corners

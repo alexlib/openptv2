@@ -46,6 +46,7 @@ def _libomp_prefix():
     except Exception:
         return "/opt/homebrew/opt/libomp"
 
+
 # All 18 modules translated from the C library to Cython 3 Pure Python
 # Note: track_kernels.py is a shim re-exporting from sub-modules.
 ALGORITHMS_MODULES = [
@@ -116,7 +117,8 @@ def _cythonize_all():
     if targets:
         nthreads = os.cpu_count() or 1
         print(
-            f"[OpenPTV2] Running cythonize on {len(targets)} targets with {nthreads} threads..."
+            f"[OpenPTV2] Running cythonize on {len(targets)} targets "
+            f"with {nthreads} threads..."
         )
         directives = {
             "language_level": "3",
@@ -140,7 +142,8 @@ def _cythonize_all():
             compiler_directives=directives,
         )
     print(
-        f"[OpenPTV2] Cythonization of algorithms completed successfully in {time.time() - start_time:.2f} seconds."
+        f"[OpenPTV2] Cythonization of algorithms completed successfully "
+        f"in {time.time() - start_time:.2f} seconds."
     )
 
 
@@ -153,7 +156,8 @@ def _needs_rebuild():
             py_c = py_file.with_suffix(".c")
             if not py_c.exists() or py_file.stat().st_mtime > py_c.stat().st_mtime:
                 print(
-                    f"[OpenPTV2] Pure Python module modified: {mod}.py. Rebuild required."
+                    f"[OpenPTV2] Pure Python module modified: {mod}.py. "
+                    "Rebuild required."
                 )
                 return True
     return False
@@ -268,7 +272,8 @@ def get_extensions():
     is_dev = os.environ.get("DEV_BUILD", "0") in ("1", "true", "True")
     if is_dev:
         print(
-            "[OpenPTV2] Fast developer build mode enabled (using -O0 / /Od compiler flags)"
+            "[OpenPTV2] Fast developer build mode enabled "
+            "(using -O0 / /Od compiler flags)"
         )
 
     # Cython 3 Pure Python algorithms extensions only
@@ -367,7 +372,8 @@ class BuildExtWithPrepare(build_ext):
         super().finalize_options()
         import os
 
-        # We can compile extensions in parallel since generated C sources are pre-generated
+        # We can compile extensions in parallel since generated C sources
+        # are pre-generated.
         # and static before compiling begins.
         self.parallel = min(os.cpu_count() or 1, 8)
 
@@ -396,11 +402,13 @@ class BuildExtWithPrepare(build_ext):
             _cythonize_all()
         self._setup_ccache()
         print(
-            f"[OpenPTV2] Compiling and linking Cython extensions in parallel ({self.parallel} workers)..."
+            f"[OpenPTV2] Compiling and linking Cython extensions in "
+            f"parallel ({self.parallel} workers)..."
         )
         super().run()
         print(
-            f"[OpenPTV2] Cython extensions built successfully in {time.time() - start_time:.2f} seconds!"
+            f"[OpenPTV2] Cython extensions built successfully in "
+            f"{time.time() - start_time:.2f} seconds!"
         )
 
 

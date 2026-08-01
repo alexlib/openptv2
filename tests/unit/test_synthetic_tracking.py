@@ -35,6 +35,7 @@ NUM_CAMS = 4
 # Ground-truth trajectories
 # ---------------------------------------------------------------------------
 
+
 def _make_trajectories():
     """Return dict mapping particle_id -> list of (frame, x, y, z).
 
@@ -57,40 +58,42 @@ def _make_trajectories():
         pts = []
         for f in range(FIRST, LAST + 1):
             t = f - FIRST
-            pts.append((
-                f,
-                x0 + vx * t + 0.5 * ax * t * t,
-                y0 + vy * t + 0.5 * ay * t * t,
-                z0 + vz * t + 0.5 * az * t * t,
-            ))
+            pts.append(
+                (
+                    f,
+                    x0 + vx * t + 0.5 * ax * t * t,
+                    y0 + vy * t + 0.5 * ay * t * t,
+                    z0 + vz * t + 0.5 * az * t * t,
+                )
+            )
         trajs[pid] = pts
 
     # Straight lines — spread across the volume
-    _const_vel(0,   0,   0,   0,   1.0,  0.5,  0.2)
-    _const_vel(1, -30, -20,   5,   2.0,  1.0,  0.3)
-    _const_vel(2,  20, -10,  -5,  -1.0,  0.8,  0.1)
-    _const_vel(3, -10,  20,  10,   0.5, -1.5,  0.3)
-    _const_vel(4,  30,  30, -10,  -2.0, -1.0,  0.5)
+    _const_vel(0, 0, 0, 0, 1.0, 0.5, 0.2)
+    _const_vel(1, -30, -20, 5, 2.0, 1.0, 0.3)
+    _const_vel(2, 20, -10, -5, -1.0, 0.8, 0.1)
+    _const_vel(3, -10, 20, 10, 0.5, -1.5, 0.3)
+    _const_vel(4, 30, 30, -10, -2.0, -1.0, 0.5)
 
     # Curved trajectories (constant acceleration)
-    _const_acc(5, -20,   0,   5,   1.0,  0.0,  0.0,   0.3,  0.15, 0.05)
-    _const_acc(6,  10, -20,   0,   0.0,  2.0,  0.5,   0.15, -0.1, 0.03)
-    _const_acc(7,  -5,  10,  -5,   2.0, -1.0,  0.3,  -0.15,  0.2, 0.02)
+    _const_acc(5, -20, 0, 5, 1.0, 0.0, 0.0, 0.3, 0.15, 0.05)
+    _const_acc(6, 10, -20, 0, 0.0, 2.0, 0.5, 0.15, -0.1, 0.03)
+    _const_acc(7, -5, 10, -5, 2.0, -1.0, 0.3, -0.15, 0.2, 0.02)
 
     # Near-miss paths: pass close but don't actually cross (y offset = 4)
-    _const_vel(8, -10,   2,   3,   2.0,  0.0,  0.0)
-    _const_vel(9,  10,   6,   3,  -2.0,  0.0,  0.0)
+    _const_vel(8, -10, 2, 3, 2.0, 0.0, 0.0)
+    _const_vel(9, 10, 6, 3, -2.0, 0.0, 0.0)
 
     # Late entry — appears at frame 10003
-    _const_vel(10, 25,  15,   5,  -1.0, -0.5,  0.1, f_start=FIRST + 2)
+    _const_vel(10, 25, 15, 5, -1.0, -0.5, 0.1, f_start=FIRST + 2)
 
     # Close neighbors moving in parallel (separation = 3 units)
-    _const_vel(11,   5,  -5,   0,   1.5,  0.5,  0.1)
-    _const_vel(12,   5,  -2,   0,   1.5,  0.5,  0.1)
+    _const_vel(11, 5, -5, 0, 1.5, 0.5, 0.1)
+    _const_vel(12, 5, -2, 0, 1.5, 0.5, 0.1)
 
     # Actual crossing in x-y plane (same z, paths cross at t=3.5)
-    _const_vel(13, -14,  -8,  -3,   3.0,  1.0,  0.0)
-    _const_vel(14,   7,  -1,  -3,  -3.0,  1.0,  0.0)
+    _const_vel(13, -14, -8, -3, 3.0, 1.0, 0.0)
+    _const_vel(14, 7, -1, -3, -3.0, 1.0, 0.0)
 
     return trajs
 
@@ -113,12 +116,13 @@ def _build_frame_data(trajs):
 # File generation
 # ---------------------------------------------------------------------------
 
+
 def _load_calibrations():
     cals = []
     for cam in range(NUM_CAMS):
         cal = Calibration.from_file(
-            str(TEST_DIR / f"cal/cam{cam+1}.tif.ori"),
-            str(TEST_DIR / f"cal/cam{cam+1}.tif.addpar"),
+            str(TEST_DIR / f"cal/cam{cam + 1}.tif.ori"),
+            str(TEST_DIR / f"cal/cam{cam + 1}.tif.addpar"),
         )
         cals.append(cal)
     return cals
@@ -157,22 +161,22 @@ def _generate_test_files(frames, cals, cpar):
             cam_slot_to_targ[cam] = s2t
 
         # --- rt_is (correspondence) — cam indices point to sorted target positions ---
-        with open(res_dir / f"rt_is.{f_num}", 'w') as fh:
+        with open(res_dir / f"rt_is.{f_num}", "w") as fh:
             fh.write(f"{n}\n")
             for slot, (pid, x, y, z) in enumerate(particles):
                 cam_indices = " ".join(
                     f"{cam_slot_to_targ[cam][slot]:4d}" for cam in range(NUM_CAMS)
                 )
-                fh.write(f"{slot+1:4d} {x:9.3f} {y:9.3f} {z:9.3f} {cam_indices}\n")
+                fh.write(f"{slot + 1:4d} {x:9.3f} {y:9.3f} {z:9.3f} {cam_indices}\n")
 
         # --- ptv_is (linkage — initially unlinked) ---
-        with open(res_dir / f"ptv_is.{f_num}", 'w') as fh:
+        with open(res_dir / f"ptv_is.{f_num}", "w") as fh:
             fh.write(f"{n}\n")
             for slot, (pid, x, y, z) in enumerate(particles):
                 fh.write(f"  -1   -2 {x:10.3f} {y:10.3f} {z:10.3f}\n")
 
         # --- added (prio file — initially unlinked) ---
-        with open(res_dir / f"added.{f_num}", 'w') as fh:
+        with open(res_dir / f"added.{f_num}", "w") as fh:
             fh.write(f"{n}\n")
             for slot, (pid, x, y, z) in enumerate(particles):
                 fh.write(f"  -1   -2 {x:10.3f} {y:10.3f} {z:10.3f} 4\n")
@@ -180,7 +184,7 @@ def _generate_test_files(frames, cals, cpar):
         # --- target files per camera (y-sorted) ---
         for cam in range(NUM_CAMS):
             entries = cam_targ_entries[cam]
-            with open(img_dir / f"cam{cam+1}.{f_num}_targets", 'w') as fh:
+            with open(img_dir / f"cam{cam + 1}.{f_num}_targets", "w") as fh:
                 fh.write(f"{n}\n")
                 for targ_pnr, (orig_slot, px, py) in enumerate(entries):
                     fh.write(
@@ -193,6 +197,7 @@ def _generate_test_files(frames, cals, cpar):
 # Result parsing
 # ---------------------------------------------------------------------------
 
+
 def _parse_linkage(path):
     with open(path) as fh:
         lines = fh.readlines()
@@ -200,13 +205,15 @@ def _parse_linkage(path):
     result = []
     for i in range(1, n + 1):
         parts = lines[i].split()
-        result.append({
-            "prev": int(parts[0]),
-            "next": int(parts[1]),
-            "x": float(parts[2]),
-            "y": float(parts[3]),
-            "z": float(parts[4]),
-        })
+        result.append(
+            {
+                "prev": int(parts[0]),
+                "next": int(parts[1]),
+                "x": float(parts[2]),
+                "y": float(parts[3]),
+                "z": float(parts[4]),
+            }
+        )
     return result
 
 
@@ -348,7 +355,7 @@ def _check_trajectory_distances(frames, label):
                     dx = entry["x"] - next_data[nxt]["x"]
                     dy = entry["y"] - next_data[nxt]["y"]
                     dz = entry["z"] - next_data[nxt]["z"]
-                    dist = math.sqrt(dx*dx + dy*dy + dz*dz)
+                    dist = math.sqrt(dx * dx + dy * dy + dz * dz)
                     max_jump = max(max_jump, dist)
                     jumps.append((f_curr, slot, nxt, dist))
 
@@ -358,6 +365,7 @@ def _check_trajectory_distances(frames, label):
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture(scope="module")
 def synthetic_data():
@@ -403,6 +411,7 @@ def _setup_working_copy_res_only():
 # Tests
 # ---------------------------------------------------------------------------
 
+
 class TestSyntheticTrack3d:
     """Test track3d (3-frame, 3D distance only) on synthetic data."""
 
@@ -415,16 +424,23 @@ class TestSyntheticTrack3d:
             cpar = ControlPar.from_yaml("parameters.yaml")
             cals = [
                 Calibration.from_file(
-                    f"cal/cam{i+1}.tif.ori", f"cal/cam{i+1}.tif.addpar"
+                    f"cal/cam{i + 1}.tif.ori", f"cal/cam{i + 1}.tif.addpar"
                 )
                 for i in range(cpar.num_cams)
             ]
 
             run = tr_new(
-                SequencePar.from_yaml("parameters.yaml"), TrackPar.from_yaml("parameters.yaml"),
-                VolumePar.from_yaml("parameters.yaml"), ControlPar.from_yaml("parameters.yaml"),
-                4, 20000, "res/rt_is", "res/ptv_is", "res/added",
-                cals, 0.0001,
+                SequencePar.from_yaml("parameters.yaml"),
+                TrackPar.from_yaml("parameters.yaml"),
+                VolumePar.from_yaml("parameters.yaml"),
+                ControlPar.from_yaml("parameters.yaml"),
+                4,
+                20000,
+                "res/rt_is",
+                "res/ptv_is",
+                "res/added",
+                cals,
+                0.0001,
             )
             track_forward_start(run)
             for step in range(run.seq_par.first, run.seq_par.last):
@@ -464,16 +480,23 @@ class TestSyntheticTrack3d:
             cpar = ControlPar.from_yaml("parameters.yaml")
             cals = [
                 Calibration.from_file(
-                    f"cal/cam{i+1}.tif.ori", f"cal/cam{i+1}.tif.addpar"
+                    f"cal/cam{i + 1}.tif.ori", f"cal/cam{i + 1}.tif.addpar"
                 )
                 for i in range(cpar.num_cams)
             ]
 
             run = tr_new(
-                SequencePar.from_yaml("parameters.yaml"), TrackPar.from_yaml("parameters.yaml"),
-                VolumePar.from_yaml("parameters.yaml"), ControlPar.from_yaml("parameters.yaml"),
-                4, 20000, "res/rt_is", "res/ptv_is", "res/added",
-                cals, 0.0001,
+                SequencePar.from_yaml("parameters.yaml"),
+                TrackPar.from_yaml("parameters.yaml"),
+                VolumePar.from_yaml("parameters.yaml"),
+                ControlPar.from_yaml("parameters.yaml"),
+                4,
+                20000,
+                "res/rt_is",
+                "res/ptv_is",
+                "res/added",
+                cals,
+                0.0001,
             )
             track_forward_start(run)
             for step in range(run.seq_par.first, run.seq_par.last):
@@ -487,13 +510,13 @@ class TestSyntheticTrack3d:
             n_correct, n_wrong, n_missed, _ = _validate_tracking_result(
                 frames, gt_next, slot_to_pid, "track3d"
             )
-            total_expected = sum(
-                1 for v in gt_next.values() if v >= 0
-            )
+            total_expected = sum(1 for v in gt_next.values() if v >= 0)
             # Subtract links from last processed frame (track3d processes first..last-1)
             # and links for the last frame can't be established
             recovery_rate = n_correct / total_expected if total_expected > 0 else 0
-            print(f"\ntrack3d recovery: {n_correct}/{total_expected} = {recovery_rate:.1%}")
+            print(
+                f"\ntrack3d recovery: {n_correct}/{total_expected} = {recovery_rate:.1%}"
+            )
             assert recovery_rate > 0.7, f"track3d recovery too low: {recovery_rate:.1%}"
 
         finally:
@@ -512,16 +535,23 @@ class TestSyntheticTrackcorr:
             cpar = ControlPar.from_yaml("parameters.yaml")
             cals = [
                 Calibration.from_file(
-                    f"cal/cam{i+1}.tif.ori", f"cal/cam{i+1}.tif.addpar"
+                    f"cal/cam{i + 1}.tif.ori", f"cal/cam{i + 1}.tif.addpar"
                 )
                 for i in range(cpar.num_cams)
             ]
 
             run = tr_new(
-                SequencePar.from_yaml("parameters.yaml"), TrackPar.from_yaml("parameters.yaml"),
-                VolumePar.from_yaml("parameters.yaml"), ControlPar.from_yaml("parameters.yaml"),
-                4, 20000, "res/rt_is", "res/ptv_is", "res/added",
-                cals, 0.0001,
+                SequencePar.from_yaml("parameters.yaml"),
+                TrackPar.from_yaml("parameters.yaml"),
+                VolumePar.from_yaml("parameters.yaml"),
+                ControlPar.from_yaml("parameters.yaml"),
+                4,
+                20000,
+                "res/rt_is",
+                "res/ptv_is",
+                "res/added",
+                cals,
+                0.0001,
             )
             track_forward_start(run)
             for step in range(run.seq_par.first, run.seq_par.last):
@@ -536,7 +566,9 @@ class TestSyntheticTrackcorr:
                 frames, gt_next, slot_to_pid, "trackcorr"
             )
 
-            print(f"\ntrackcorr: correct={n_correct}, wrong={n_wrong}, missed={n_missed}")
+            print(
+                f"\ntrackcorr: correct={n_correct}, wrong={n_wrong}, missed={n_missed}"
+            )
             print(f"  npart={run.npart}, nlinks={run.nlinks}")
             if errors:
                 for e in errors:
@@ -546,7 +578,9 @@ class TestSyntheticTrackcorr:
 
             max_jump, _ = _check_trajectory_distances(frames, "trackcorr")
             print(f"  max trajectory jump: {max_jump:.3f}")
-            assert max_jump < 10.0, f"trackcorr: trajectory jump {max_jump:.3f} too large"
+            assert max_jump < 10.0, (
+                f"trackcorr: trajectory jump {max_jump:.3f} too large"
+            )
 
         finally:
             os.chdir(original)
@@ -561,16 +595,23 @@ class TestSyntheticTrackcorr:
             cpar = ControlPar.from_yaml("parameters.yaml")
             cals = [
                 Calibration.from_file(
-                    f"cal/cam{i+1}.tif.ori", f"cal/cam{i+1}.tif.addpar"
+                    f"cal/cam{i + 1}.tif.ori", f"cal/cam{i + 1}.tif.addpar"
                 )
                 for i in range(cpar.num_cams)
             ]
 
             run = tr_new(
-                SequencePar.from_yaml("parameters.yaml"), TrackPar.from_yaml("parameters.yaml"),
-                VolumePar.from_yaml("parameters.yaml"), ControlPar.from_yaml("parameters.yaml"),
-                4, 20000, "res/rt_is", "res/ptv_is", "res/added",
-                cals, 0.0001,
+                SequencePar.from_yaml("parameters.yaml"),
+                TrackPar.from_yaml("parameters.yaml"),
+                VolumePar.from_yaml("parameters.yaml"),
+                ControlPar.from_yaml("parameters.yaml"),
+                4,
+                20000,
+                "res/rt_is",
+                "res/ptv_is",
+                "res/added",
+                cals,
+                0.0001,
             )
             track_forward_start(run)
             for step in range(run.seq_par.first, run.seq_par.last):
@@ -586,8 +627,12 @@ class TestSyntheticTrackcorr:
             )
             total_expected = sum(1 for v in gt_next.values() if v >= 0)
             recovery_rate = n_correct / total_expected if total_expected > 0 else 0
-            print(f"\ntrackcorr recovery: {n_correct}/{total_expected} = {recovery_rate:.1%}")
-            assert recovery_rate > 0.7, f"trackcorr recovery too low: {recovery_rate:.1%}"
+            print(
+                f"\ntrackcorr recovery: {n_correct}/{total_expected} = {recovery_rate:.1%}"
+            )
+            assert recovery_rate > 0.7, (
+                f"trackcorr recovery too low: {recovery_rate:.1%}"
+            )
 
         finally:
             os.chdir(original)
@@ -611,15 +656,22 @@ class TestSyntheticComparison:
             cpar = ControlPar.from_yaml("parameters.yaml")
             cals = [
                 Calibration.from_file(
-                    f"cal/cam{i+1}.tif.ori", f"cal/cam{i+1}.tif.addpar"
+                    f"cal/cam{i + 1}.tif.ori", f"cal/cam{i + 1}.tif.addpar"
                 )
                 for i in range(cpar.num_cams)
             ]
             run_t3 = tr_new(
-                SequencePar.from_yaml("parameters.yaml"), TrackPar.from_yaml("parameters.yaml"),
-                VolumePar.from_yaml("parameters.yaml"), ControlPar.from_yaml("parameters.yaml"),
-                4, 20000, "res/rt_is", "res/ptv_is", "res/added",
-                cals, 0.0001,
+                SequencePar.from_yaml("parameters.yaml"),
+                TrackPar.from_yaml("parameters.yaml"),
+                VolumePar.from_yaml("parameters.yaml"),
+                ControlPar.from_yaml("parameters.yaml"),
+                4,
+                20000,
+                "res/rt_is",
+                "res/ptv_is",
+                "res/added",
+                cals,
+                0.0001,
             )
             track_forward_start(run_t3)
             for step in range(run_t3.seq_par.first, run_t3.seq_par.last):
@@ -634,15 +686,22 @@ class TestSyntheticComparison:
             _setup_working_copy()
             cals2 = [
                 Calibration.from_file(
-                    f"cal/cam{i+1}.tif.ori", f"cal/cam{i+1}.tif.addpar"
+                    f"cal/cam{i + 1}.tif.ori", f"cal/cam{i + 1}.tif.addpar"
                 )
                 for i in range(cpar.num_cams)
             ]
             run_tc = tr_new(
-                SequencePar.from_yaml("parameters.yaml"), TrackPar.from_yaml("parameters.yaml"),
-                VolumePar.from_yaml("parameters.yaml"), ControlPar.from_yaml("parameters.yaml"),
-                4, 20000, "res/rt_is", "res/ptv_is", "res/added",
-                cals2, 0.0001,
+                SequencePar.from_yaml("parameters.yaml"),
+                TrackPar.from_yaml("parameters.yaml"),
+                VolumePar.from_yaml("parameters.yaml"),
+                ControlPar.from_yaml("parameters.yaml"),
+                4,
+                20000,
+                "res/rt_is",
+                "res/ptv_is",
+                "res/added",
+                cals2,
+                0.0001,
             )
             track_forward_start(run_tc)
             for step in range(run_tc.seq_par.first, run_tc.seq_par.last):
@@ -653,9 +712,15 @@ class TestSyntheticComparison:
                 frames, gt_next, slot_to_pid, "trackcorr"
             )
 
-            print(f"\n{'Algorithm':<12} {'Correct':>8} {'Wrong':>6} {'Missed':>7} {'Links':>6}")
-            print(f"{'track3d':<12} {t3_correct:>8d} {t3_wrong:>6d} {t3_missed:>7d} {run_t3.nlinks:>6}")
-            print(f"{'trackcorr':<12} {tc_correct:>8d} {tc_wrong:>6d} {tc_missed:>7d} {run_tc.nlinks:>6}")
+            print(
+                f"\n{'Algorithm':<12} {'Correct':>8} {'Wrong':>6} {'Missed':>7} {'Links':>6}"
+            )
+            print(
+                f"{'track3d':<12} {t3_correct:>8d} {t3_wrong:>6d} {t3_missed:>7d} {run_t3.nlinks:>6}"
+            )
+            print(
+                f"{'trackcorr':<12} {tc_correct:>8d} {tc_wrong:>6d} {tc_missed:>7d} {run_tc.nlinks:>6}"
+            )
 
             if t3_errors:
                 print("\ntrack3d errors:")
@@ -686,16 +751,23 @@ class TestSyntheticForwardBackwardForward:
         cpar = ControlPar.from_yaml("parameters.yaml")
         cals = [
             Calibration.from_file(
-                f"cal/cam{i+1}.tif.ori", f"cal/cam{i+1}.tif.addpar"
+                f"cal/cam{i + 1}.tif.ori", f"cal/cam{i + 1}.tif.addpar"
             )
             for i in range(cpar.num_cams)
         ]
 
         run = tr_new(
-            SequencePar.from_yaml("parameters.yaml"), TrackPar.from_yaml("parameters.yaml"),
-            VolumePar.from_yaml("parameters.yaml"), ControlPar.from_yaml("parameters.yaml"),
-            4, 20000, "res/rt_is", "res/ptv_is", "res/added",
-            cals, 0.0001,
+            SequencePar.from_yaml("parameters.yaml"),
+            TrackPar.from_yaml("parameters.yaml"),
+            VolumePar.from_yaml("parameters.yaml"),
+            ControlPar.from_yaml("parameters.yaml"),
+            4,
+            20000,
+            "res/rt_is",
+            "res/ptv_is",
+            "res/added",
+            cals,
+            0.0001,
         )
         run.tpar = run.tpar._replace(add=add)
 
@@ -712,10 +784,17 @@ class TestSyntheticForwardBackwardForward:
         # Forward again
         _setup_working_copy_res_only()
         run2 = tr_new(
-            SequencePar.from_yaml("parameters.yaml"), TrackPar.from_yaml("parameters.yaml"),
-            VolumePar.from_yaml("parameters.yaml"), ControlPar.from_yaml("parameters.yaml"),
-            4, 20000, "res/rt_is", "res/ptv_is", "res/added",
-            cals, 0.0001,
+            SequencePar.from_yaml("parameters.yaml"),
+            TrackPar.from_yaml("parameters.yaml"),
+            VolumePar.from_yaml("parameters.yaml"),
+            ControlPar.from_yaml("parameters.yaml"),
+            4,
+            20000,
+            "res/rt_is",
+            "res/ptv_is",
+            "res/added",
+            cals,
+            0.0001,
         )
         run2.tpar = run2.tpar._replace(add=add)
         track_forward_start(run2)
@@ -763,16 +842,23 @@ class TestSyntheticForwardBackwardForward:
             cpar = ControlPar.from_yaml("parameters.yaml")
             cals = [
                 Calibration.from_file(
-                    f"cal/cam{i+1}.tif.ori", f"cal/cam{i+1}.tif.addpar"
+                    f"cal/cam{i + 1}.tif.ori", f"cal/cam{i + 1}.tif.addpar"
                 )
                 for i in range(cpar.num_cams)
             ]
 
             run = tr_new(
-                SequencePar.from_yaml("parameters.yaml"), TrackPar.from_yaml("parameters.yaml"),
-                VolumePar.from_yaml("parameters.yaml"), ControlPar.from_yaml("parameters.yaml"),
-                4, 20000, "res/rt_is", "res/ptv_is", "res/added",
-                cals, 0.0001,
+                SequencePar.from_yaml("parameters.yaml"),
+                TrackPar.from_yaml("parameters.yaml"),
+                VolumePar.from_yaml("parameters.yaml"),
+                ControlPar.from_yaml("parameters.yaml"),
+                4,
+                20000,
+                "res/rt_is",
+                "res/ptv_is",
+                "res/added",
+                cals,
+                0.0001,
             )
 
             # Forward

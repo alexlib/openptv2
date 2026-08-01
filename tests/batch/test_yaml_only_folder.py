@@ -71,6 +71,6 @@ def test_highpass_size_is_honored(small_dir, small_yaml):
     finally:
         os.chdir(cwd0)
 
-    assert not np.array_equal(
-        np.asarray(hp_small[0]), np.asarray(hp_large[0])
-    ), "highpass_size had no effect — the YAML parameter is not wired through"
+    assert not np.array_equal(np.asarray(hp_small[0]), np.asarray(hp_large[0])), (
+        "highpass_size had no effect — the YAML parameter is not wired through"
+    )

@@ -23,8 +23,9 @@ def _write_rt_is(path, rows):
     with open(path, "w", encoding="utf-8") as f:
         f.write(f"{len(rows)}\n")
         for i, (x, y, z) in enumerate(rows, start=1):
-            f.write("%4d %9.3f %9.3f %9.3f %4d %4d %4d %4d\n"
-                    % (i, x, y, z, 0, 1, 2, 3))
+            f.write(
+                "%4d %9.3f %9.3f %9.3f %4d %4d %4d %4d\n" % (i, x, y, z, 0, 1, 2, 3)
+            )
 
 
 def test_build_3d_figure_point_count():

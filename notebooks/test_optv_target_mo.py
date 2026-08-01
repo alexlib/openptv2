@@ -43,7 +43,6 @@ def _():
 
     from openptv2.tracking_framebuf import Frame, Target, TargetArray, read_targets
 
-
     return Frame, Target, TargetArray, np, os, read_targets, unittest
 
 
@@ -91,7 +90,10 @@ def _(Target, TargetArray, os, read_targets, unittest):
             tback = read_targets("test_data/round_trip.", 1)
 
             self.assertEqual(len(targs), len(tback))
-            self.assertEqual([targ.tnr() for targ in targs], [targ.tnr() for targ in tback])
+            self.assertEqual(
+                [targ.tnr() for targ in targs],
+                [targ.tnr() for targ in tback],
+            )
             self.assertEqual(
                 [targ.pos()[0] for targ in targs], [targ.pos()[0] for targ in tback]
             )
@@ -103,7 +105,6 @@ def _(Target, TargetArray, os, read_targets, unittest):
             filename = "test_data/round_trip.0001_targets"
             if os.path.exists(filename):
                 os.remove(filename)
-
 
     return
 
@@ -143,7 +144,6 @@ def _(Frame, np, unittest):
                 ]
             )
             np.testing.assert_array_equal(targs, targs_correct)
-
 
     if __name__ == "__main__":
         unittest.main()

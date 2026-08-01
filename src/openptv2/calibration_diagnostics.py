@@ -223,6 +223,7 @@ def save_residual_field_figure(det, rep, err, img, dest, scale=15.0, title=None)
     lives once. Returns `dest`.
     """
     import matplotlib
+
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
     import numpy as np
@@ -237,11 +238,25 @@ def save_residual_field_figure(det, rep, err, img, dest, scale=15.0, title=None)
         ax.invert_yaxis()
     dx = (rep[:, 0] - det[:, 0]) * scale
     dy = (rep[:, 1] - det[:, 1]) * scale
-    q = ax.quiver(det[:, 0], det[:, 1], dx, dy, err, cmap="autumn_r",
-                  angles="xy", scale_units="xy", scale=1, width=0.004)
-    fig.colorbar(q, ax=ax, label="reprojection error [px] (arrow direction/length "
-                                 f"magnified {scale:.0f}x, color = true magnitude)")
-    rms = float(np.sqrt(np.mean(err ** 2))) if len(err) else 0.0
+    q = ax.quiver(
+        det[:, 0],
+        det[:, 1],
+        dx,
+        dy,
+        err,
+        cmap="autumn_r",
+        angles="xy",
+        scale_units="xy",
+        scale=1,
+        width=0.004,
+    )
+    fig.colorbar(
+        q,
+        ax=ax,
+        label="reprojection error [px] (arrow direction/length "
+        f"magnified {scale:.0f}x, color = true magnitude)",
+    )
+    rms = float(np.sqrt(np.mean(err**2))) if len(err) else 0.0
     ax.set_title(title or f"residual vector field  (n={len(det)}, RMS={rms:.2f}px)")
     fig.tight_layout()
     fig.savefig(str(dest), dpi=120)

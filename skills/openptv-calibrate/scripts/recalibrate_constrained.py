@@ -1,3 +1,4 @@
+# ruff: noqa: E501
 #!/usr/bin/env python
 """Re-fit calibration with distortion removed and focal length fixed.
 
@@ -23,6 +24,7 @@ setup is a real pose problem or just an overfit.
 
 Run with: uv run python skills/openptv-calibrate/scripts/recalibrate_constrained.py <dataset>
 """
+
 from __future__ import annotations
 
 import shutil
@@ -108,10 +110,20 @@ def main():
         shutil.copy2(ori, Path(str(ori) + ".pre_constrained"))
         shutil.copy2(addpar, Path(str(addpar) + ".pre_constrained"))
 
-        cal, n_matched, rms, ref, det, rep = recalibrate_camera(cam, base, cpar, fix, nfix, eps)
+        cal, n_matched, rms, ref, det, rep = recalibrate_camera(
+            cam, base, cpar, fix, nfix, eps
+        )
         cal.write(str(ori), str(addpar))
 
-        res = _Res(cam=cam, rms=rms, matched=n_matched, nfix=nfix, flags=FLAGS, det=det, rep=rep)
+        res = _Res(
+            cam=cam,
+            rms=rms,
+            matched=n_matched,
+            nfix=nfix,
+            flags=FLAGS,
+            det=det,
+            rep=rep,
+        )
         save_overlay(res, base, outdir)
         print(f"cam{cam + 1:<5}{n_matched}/{nfix:<6}{rms:<10.4f}")
 

@@ -106,8 +106,9 @@ ceiling, and it never destabilizes the fit chasing a group that doesn't help.
 
 ```python
 from openptv2.autocalibration import joint_plate_bundle_adjust
+
 new_results, info = joint_plate_bundle_adjust(results, cpar)
-print(info["rcm_before"], "->", info["rcm_after"])   # median mm
+print(info["rcm_before"], "->", info["rcm_after"])  # median mm
 ```
 
 ### When it helps — and when it doesn't

@@ -75,7 +75,9 @@ def test_optimized_performance(tmp_path):
     ]
 
     print("🚀 Testing performance with optimized parameters...")
-    result = subprocess.run(cmd, capture_output=True, text=True, timeout=60, cwd=dest_path)
+    result = subprocess.run(
+        cmd, capture_output=True, text=True, timeout=60, cwd=dest_path
+    )
 
     assert result.returncode == 0, f"Test failed: {result.stderr}"
 

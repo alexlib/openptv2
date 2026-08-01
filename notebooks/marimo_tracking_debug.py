@@ -32,7 +32,6 @@ def _(base_path, res_dir):
 
     # res_dir = base_path / "res"
 
-
     params["sequence"]["output"] = str(res_dir)
     params["sequence"]["first"] = 10001
     params["sequence"]["last"] = 10004
@@ -152,7 +151,6 @@ def _(images, img_xs, img_ys):
         "fig": fig,
     }
 
-
     def onclick(event):
         if not event.inaxes:
             return
@@ -170,7 +168,6 @@ def _(images, img_xs, img_ys):
         img_xs = click_data["img_xs"]
         img_ys = click_data["img_ys"]
 
-        point = np.array([x, y])
         min_dist = float("inf")
         found_idx = None
 
@@ -200,7 +197,6 @@ def _(images, img_xs, img_ys):
         print(f"  {valid_cams} cameras, dist {min_dist:.1f}px")
         click_data["fig"].canvas.draw_idle()
 
-
     fig.canvas.mpl_connect("button_press_event", onclick)
     plt.tight_layout()
     mo.mpl.interactive(fig)
@@ -210,7 +206,8 @@ def _(images, img_xs, img_ys):
 @app.cell
 def _():
     print(
-        "Click on points to see correspondences. Red=4 cams, Green=3 cams, Yellow=2 cams"
+        "Click on points to see correspondences. "
+        "Red=4 cams, Green=3 cams, Yellow=2 cams"
     )
     return
 

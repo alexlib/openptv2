@@ -10,6 +10,7 @@ Run via:
 
 For normal (compiled) runs the module-level skip fires and the suite is a no-op.
 """
+
 import os
 import tempfile
 
@@ -39,6 +40,7 @@ from openptv2.algorithms.image_processing import (
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _solid(imy: int, imx: int, value: int = 100) -> np.ndarray:
     return np.full((imy, imx), value, dtype=np.uint8)
 
@@ -51,6 +53,7 @@ def _ramp(imy: int, imx: int) -> np.ndarray:
 # ===========================================================================
 # filter_3
 # ===========================================================================
+
 
 class TestFilter3:
     def test_zero_sum_raises(self):
@@ -114,10 +117,10 @@ class TestFilter3:
         img = np.zeros((5, 5), dtype=np.uint8)
         img[2, 2] = 255
         # filt_sum = 1, centre weight = 10 so total = 10*255 = 2550, buf = 2550
-        filt = np.array([[0, 0, 0], [0, 10, 0], [0, 0, 0]], dtype=np.float64)
+        np.array([[0, 0, 0], [0, 10, 0], [0, 0, 0]], dtype=np.float64)
         # filt_sum=10 → total/filt_sum = 255 → exactly 255, not > 255
         # Use unequal weights so filt_sum < max weight
-        filt2 = np.array([[0, 0, 0], [0, 9, 0], [0, 0, 1]], dtype=np.float64)
+        np.array([[0, 0, 0], [0, 9, 0], [0, 0, 1]], dtype=np.float64)
         # filt_sum=10, centre * 9 / 10 for a 255-pixel: 229 < 255
         # Instead: very large centre weight and filt_sum=1 → buf=255*big_num → clamp
         filt3 = np.array([[0, 0, 0], [0, 1000, 0], [0, 0, -999]], dtype=np.float64)
@@ -129,6 +132,7 @@ class TestFilter3:
 # ===========================================================================
 # lowpass_3
 # ===========================================================================
+
 
 class TestLowpass3:
     def test_solid_image(self):
@@ -165,6 +169,7 @@ class TestLowpass3:
 # ===========================================================================
 # fast_box_blur
 # ===========================================================================
+
 
 class TestFastBoxBlur:
     def test_solid_image(self):
@@ -228,6 +233,7 @@ class TestFastBoxBlur:
 # split
 # ===========================================================================
 
+
 class TestSplit:
     def test_half_selector_zero_returns_copy(self):
         img = _ramp(6, 8)
@@ -238,10 +244,10 @@ class TestSplit:
     def test_half_selector_one_odd_rows(self):
         img = np.zeros((6, 4), dtype=np.uint8)
         # Fill even vs odd rows with different values
-        img[0, :] = 10   # row 0 (even)
-        img[1, :] = 20   # row 1 (odd)
-        img[2, :] = 30   # row 2 (even)
-        img[3, :] = 40   # row 3 (odd)
+        img[0, :] = 10  # row 0 (even)
+        img[1, :] = 20  # row 1 (odd)
+        img[2, :] = 30  # row 2 (even)
+        img[3, :] = 40  # row 3 (odd)
         img[4, :] = 50
         img[5, :] = 60
         out = split(img, 1, 4, 6)
@@ -287,6 +293,7 @@ class TestSplit:
 # subtract_img
 # ===========================================================================
 
+
 class TestSubtractImg:
     def test_basic_subtraction(self):
         img1 = _solid(4, 4, 100)
@@ -323,6 +330,7 @@ class TestSubtractImg:
 # subtract_mask
 # ===========================================================================
 
+
 class TestSubtractMask:
     def test_full_mask(self):
         img = _solid(4, 4, 100)
@@ -341,8 +349,8 @@ class TestSubtractMask:
         mask = np.ones((4, 4), dtype=np.uint8)
         mask[1:3, 1:3] = 0
         out = subtract_mask(img, mask)
-        assert int(out[0, 0]) == 100   # unmasked
-        assert int(out[1, 1]) == 0     # masked
+        assert int(out[0, 0]) == 100  # unmasked
+        assert int(out[1, 1]) == 0  # masked
 
     def test_does_not_modify_original(self):
         img = _solid(4, 4, 100)
@@ -356,6 +364,7 @@ class TestSubtractMask:
 # ===========================================================================
 # prepare_image
 # ===========================================================================
+
 
 class TestPrepareImage:
     def _img(self, imy=10, imx=10, value=100):
@@ -378,7 +387,9 @@ class TestPrepareImage:
             np.savetxt(f, filt)
             fpath = f.name
         try:
-            out = prepare_image(img, dim_lp=1, imx=10, imy=10, filter_hp=2, filter_file=fpath)
+            out = prepare_image(
+                img, dim_lp=1, imx=10, imy=10, filter_hp=2, filter_file=fpath
+            )
             assert out.shape == (10, 10)
         finally:
             os.unlink(fpath)
@@ -428,6 +439,7 @@ class TestPrepareImage:
 # copy_images
 # ===========================================================================
 
+
 class TestCopyImages:
     def test_list_input_returns_copies(self):
         imgs = [_solid(4, 4, 10), _solid(4, 4, 20)]
@@ -469,13 +481,16 @@ class TestCopyImages:
 # is_compiled
 # ===========================================================================
 
+
 class TestIsCompiled:
     def test_returns_bool(self):
         from openptv2.algorithms.image_processing import is_compiled
+
         result = is_compiled()
         assert isinstance(result, bool)
 
     def test_returns_false_in_pure_python(self):
         from openptv2.algorithms.image_processing import is_compiled
+
         # In pure-Python mode (running from /tmp/ppsrc), cython.compiled is False
         assert is_compiled() is False

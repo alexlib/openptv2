@@ -23,11 +23,11 @@ NumPy slicing:
 ```python
 import cython
 
-view1D: cython.int[:] = exporting_object          # 1D view
-view3D: cython.int[:, :, :] = exporting_object     # 3D view
+view1D: cython.int[:] = exporting_object  # 1D view
+view3D: cython.int[:, :, :] = exporting_object  # 3D view
 
-def process_3d_buffer(view: cython.int[:, :, :]):
-    ...
+
+def process_3d_buffer(view: cython.int[:, :, :]): ...
 ```
 
 Any object exposing the PEP 3118 buffer protocol works as `exporting_object`
@@ -43,6 +43,7 @@ buffer, use `typing.Optional`:
 
 ```python
 import typing
+
 
 def process_buffer(
     input_view: cython.int[:, :],
@@ -126,6 +127,7 @@ released for the loop:
 ```python
 from cython.parallel import prange
 
+
 def func(x: cython.double[:], alpha: cython.double):
     i: cython.Py_ssize_t
     for i in prange(x.shape[0], nogil=True):
@@ -155,7 +157,7 @@ get the address of the first element (this does need contiguity):
 
 ```python
 def multiply_by_10(arr):
-    if not arr.flags['C_CONTIGUOUS']:
+    if not arr.flags["C_CONTIGUOUS"]:
         arr = np.ascontiguousarray(arr)
     arr_memview: cython.double[::1] = arr
     multiply_by_10_in_C(cython.address(arr_memview[0]), arr_memview.shape[0])

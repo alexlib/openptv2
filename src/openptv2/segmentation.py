@@ -186,9 +186,16 @@ def target_recognition(img, tpar, cam, cpar, subrange_x=None, subrange_y=None):
         return TargetArray([_empty_target()])
 
     targets = [
-        Target(pnr=i, x=float(xs[i]), y=float(ys[i]),
-               n=int(ns[i]), nx=int(nxs[i]), ny=int(nys[i]),
-               sumg=int(sumgs[i]), tnr=CORRES_NONE)
+        Target(
+            pnr=i,
+            x=float(xs[i]),
+            y=float(ys[i]),
+            n=int(ns[i]),
+            nx=int(nxs[i]),
+            ny=int(nys[i]),
+            sumg=int(sumgs[i]),
+            tnr=CORRES_NONE,
+        )
         for i in range(n)
     ]
     return TargetArray(targets)

@@ -153,6 +153,7 @@ def test_ray_tracing_large_xy():
 # ray_tracing — on-axis (norm_bp == 0 branch; ray along glass normal)
 # ---------------------------------------------------------------------------
 
+
 def test_ray_tracing_on_axis_norm_bp_zero_branch():
     """x=0, y=0 with identity dm and glass_dir=[0,0,1] → norm_bp=0 both times."""
     pos, direction = ray_tracing(x=0.0, y=0.0, **_standard_kwargs())
@@ -177,11 +178,22 @@ def test_ray_tracing_core_direct_off_axis():
     pos = np.zeros(3, dtype=np.float64)
     out = np.zeros(3, dtype=np.float64)
     _ray_tracing_core(
-        1.0, 0.5,
-        dm, EXT_X0, EXT_Y0, EXT_Z0, CC,
-        0.0, 0.0, 1.0,
-        MM_N1, MM_N2, MM_N3, MM_D,
-        pos, out,
+        1.0,
+        0.5,
+        dm,
+        EXT_X0,
+        EXT_Y0,
+        EXT_Z0,
+        CC,
+        0.0,
+        0.0,
+        1.0,
+        MM_N1,
+        MM_N2,
+        MM_N3,
+        MM_D,
+        pos,
+        out,
     )
     assert np.all(np.isfinite(pos))
     assert np.all(np.isfinite(out))
@@ -192,11 +204,22 @@ def test_ray_tracing_core_direct_on_axis():
     pos = np.zeros(3, dtype=np.float64)
     out = np.zeros(3, dtype=np.float64)
     _ray_tracing_core(
-        0.0, 0.0,
-        dm, EXT_X0, EXT_Y0, EXT_Z0, CC,
-        0.0, 0.0, 1.0,
-        MM_N1, MM_N2, MM_N3, MM_D,
-        pos, out,
+        0.0,
+        0.0,
+        dm,
+        EXT_X0,
+        EXT_Y0,
+        EXT_Z0,
+        CC,
+        0.0,
+        0.0,
+        1.0,
+        MM_N1,
+        MM_N2,
+        MM_N3,
+        MM_D,
+        pos,
+        out,
     )
     assert np.all(np.isfinite(pos))
     assert np.all(np.isfinite(out))
@@ -207,11 +230,22 @@ def test_ray_tracing_core_modifies_pos_and_out():
     pos = np.zeros(3, dtype=np.float64)
     out = np.zeros(3, dtype=np.float64)
     _ray_tracing_core(
-        1.0, 0.0,
-        dm, 0.0, 0.0, -50.0, 8.0,
-        0.0, 0.0, 1.0,
-        1.0, 1.5, 1.33, 3.0,
-        pos, out,
+        1.0,
+        0.0,
+        dm,
+        0.0,
+        0.0,
+        -50.0,
+        8.0,
+        0.0,
+        0.0,
+        1.0,
+        1.0,
+        1.5,
+        1.33,
+        3.0,
+        pos,
+        out,
     )
     # pos should not still be zeros
     assert not np.allclose(pos, 0.0)
@@ -396,12 +430,20 @@ def test_ray_tracing_batch_matches_individual_calls():
     dm = np.eye(3, dtype=np.float64)
     for i, (x, y) in enumerate(xys):
         pos_s, dir_s = ray_tracing(
-            x=x, y=y,
-            ext_dm=dm, ext_x0=cal.ext_par.x0, ext_y0=cal.ext_par.y0,
-            ext_z0=cal.ext_par.z0, int_cc=cal.int_par.cc,
-            glass_vec_x=cal.glass_par.vec_x, glass_vec_y=cal.glass_par.vec_y,
+            x=x,
+            y=y,
+            ext_dm=dm,
+            ext_x0=cal.ext_par.x0,
+            ext_y0=cal.ext_par.y0,
+            ext_z0=cal.ext_par.z0,
+            int_cc=cal.int_par.cc,
+            glass_vec_x=cal.glass_par.vec_x,
+            glass_vec_y=cal.glass_par.vec_y,
             glass_vec_z=cal.glass_par.vec_z,
-            mm_n1=mm.n1, mm_n2_0=mm.n2[0], mm_n3=mm.n3, mm_d0=mm.d[0],
+            mm_n1=mm.n1,
+            mm_n2_0=mm.n2[0],
+            mm_n3=mm.n3,
+            mm_d0=mm.d[0],
         )
         np.testing.assert_allclose(positions[i], pos_s, atol=1e-12)
         np.testing.assert_allclose(directions[i], dir_s, atol=1e-12)
@@ -429,11 +471,14 @@ def test_ray_tracing_batch_tilted_glass():
 def test_ray_tracing_rotated_camera():
     """Use a small rotation to exercise non-trivial dm path."""
     angle = math.radians(5.0)
-    dm = np.array([
-        [math.cos(angle), -math.sin(angle), 0.0],
-        [math.sin(angle),  math.cos(angle), 0.0],
-        [0.0,              0.0,             1.0],
-    ], dtype=np.float64)
+    dm = np.array(
+        [
+            [math.cos(angle), -math.sin(angle), 0.0],
+            [math.sin(angle), math.cos(angle), 0.0],
+            [0.0, 0.0, 1.0],
+        ],
+        dtype=np.float64,
+    )
     kw = _standard_kwargs()
     kw["ext_dm"] = dm
     pos, direction = ray_tracing(x=1.0, y=0.0, **kw)

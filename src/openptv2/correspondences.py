@@ -11,7 +11,7 @@ class MatchedCoords:
     """
 
     def __init__(self, targets, cpar, cal, tol=0.00001, reset_numbers=True):
-        self._targets = targets._targets if hasattr(targets, '_targets') else targets
+        self._targets = targets._targets if hasattr(targets, "_targets") else targets
         self._cpar = cpar
         self._cal = cal
         self._tol = tol
@@ -20,7 +20,7 @@ class MatchedCoords:
         if reset_numbers:
             for i in range(len(self._targets)):
                 t = self._targets[i]
-                if hasattr(t, 'set_pnr') and callable(t.set_pnr):
+                if hasattr(t, "set_pnr") and callable(t.set_pnr):
                     t.set_pnr(i)
                 else:
                     try:
@@ -40,20 +40,20 @@ class MatchedCoords:
             return
 
         targets_list = self._targets
-        if hasattr(self._targets, '_targets'):
+        if hasattr(self._targets, "_targets"):
             targets_list = self._targets._targets
 
         positions = []
         pnrs = []
         for i in range(num_targets):
             t = targets_list[i]
-            if hasattr(t, 'pos') and callable(t.pos):
+            if hasattr(t, "pos") and callable(t.pos):
                 pos_val = t.pos()
                 x_val, y_val = pos_val[0], pos_val[1]
             else:
                 x_val, y_val = t.x, t.y
 
-            if hasattr(t, 'pnr'):
+            if hasattr(t, "pnr"):
                 if callable(t.pnr):
                     pnr_val = t.pnr()
                 else:
@@ -74,8 +74,7 @@ class MatchedCoords:
 
         # Store as Coord2d objects and sort by x coordinate (matching C's quicksort_coord2d_x)
         self._corrected = [
-            Coord2d(x=flat[i, 0], y=flat[i, 1], pnr=pnrs[i])
-            for i in range(num_targets)
+            Coord2d(x=flat[i, 0], y=flat[i, 1], pnr=pnrs[i]) for i in range(num_targets)
         ]
         self._corrected.sort(key=lambda c: c.x)
 
@@ -97,6 +96,7 @@ class MatchedCoords:
         # COORD_UNUSED sentinel expected by point_position triangulation
         # (must match orientation.COORD_UNUSED, not PT_UNUSED=-999).
         from openptv2.algorithms.constants import COORD_UNUSED
+
         pos = np.full((len(pnrs), 2), COORD_UNUSED, dtype=np.float64)
 
         # Build mapping from pnr to coordinate
@@ -132,33 +132,39 @@ def correspondences(img_pts, flat_coords, cals, vparam, cparam):
     raw_vparam = vparam
     raw_cals = cals
 
-    num_cams = raw_cparam.get_num_cams() if hasattr(raw_cparam, 'get_num_cams') else raw_cparam.num_cams
+    num_cams = (
+        raw_cparam.get_num_cams()
+        if hasattr(raw_cparam, "get_num_cams")
+        else raw_cparam.num_cams
+    )
 
     # Build Frame object from img_pts
     frame = AlgoFrame(num_cams=num_cams, max_targets=1000)
 
     # Copy targets to frame
     for cam in range(num_cams):
-        if hasattr(img_pts[cam], '_targets'):
+        if hasattr(img_pts[cam], "_targets"):
             targets = img_pts[cam]._targets
         else:
             targets = img_pts[cam]
 
         converted_targets = []
         for t in targets:
-            if not hasattr(t, 'n'):
+            if not hasattr(t, "n"):
                 # Optv/Cython target
                 nx, ny = t.count_pixels()[1], t.count_pixels()[2]
-                converted_targets.append(AlgoTarget(
-                    pnr=t.pnr(),
-                    x=t.pos()[0],
-                    y=t.pos()[1],
-                    n=t.count_pixels()[0],
-                    nx=nx,
-                    ny=ny,
-                    sumg=t.sum_grey_value(),
-                    tnr=t.tnr()
-                ))
+                converted_targets.append(
+                    AlgoTarget(
+                        pnr=t.pnr(),
+                        x=t.pos()[0],
+                        y=t.pos()[1],
+                        n=t.count_pixels()[0],
+                        nx=nx,
+                        ny=ny,
+                        sumg=t.sum_grey_value(),
+                        tnr=t.tnr(),
+                    )
+                )
             else:
                 converted_targets.append(t)
 
@@ -166,7 +172,9 @@ def correspondences(img_pts, flat_coords, cals, vparam, cparam):
         frame.num_targets[cam] = len(targets)
 
     # Extract corrected coordinates
-    corrected = [mc._corrected if hasattr(mc, '_corrected') else mc for mc in flat_coords]
+    corrected = [
+        mc._corrected if hasattr(mc, "_corrected") else mc for mc in flat_coords
+    ]
 
     # Call algorithms correspondences
     ntupels, match_counts = _correspondences(
@@ -181,13 +189,13 @@ def correspondences(img_pts, flat_coords, cals, vparam, cparam):
     # Build pnr-to-target mapping for each camera to avoid wrong direct indexing on sorted lists
     pnr_to_targ_maps = []
     for cam in range(num_cams):
-        if hasattr(img_pts[cam], '_targets'):
+        if hasattr(img_pts[cam], "_targets"):
             targets = img_pts[cam]._targets
         else:
             targets = img_pts[cam]
         mapping = {}
         for t in targets:
-            if hasattr(t, 'pnr'):
+            if hasattr(t, "pnr"):
                 p_val = t.pnr() if callable(t.pnr) else t.pnr
             else:
                 p_val = 0
@@ -196,8 +204,12 @@ def correspondences(img_pts, flat_coords, cals, vparam, cparam):
 
     for clique_type in range(num_cams - 1):
         num_points = match_counts[4 - num_cams + clique_type]
-        clique_targs = np.full((num_cams, num_points, 2), -999.0, dtype=np.float64)  # PT_UNUSED = -999
-        clique_ids = np.full((num_cams, num_points), -1, dtype=np.intp)              # CORRES_NONE = -1
+        clique_targs = np.full(
+            (num_cams, num_points, 2), -999.0, dtype=np.float64
+        )  # PT_UNUSED = -999
+        clique_ids = np.full(
+            (num_cams, num_points), -1, dtype=np.intp
+        )  # CORRES_NONE = -1
 
         for cam in range(num_cams):
             for pt in range(num_points):
@@ -211,7 +223,7 @@ def correspondences(img_pts, flat_coords, cals, vparam, cparam):
                 if p1 > -1:
                     targ = pnr_to_targ_maps[cam].get(p1)
                     if targ is not None:
-                        if hasattr(targ, 'pos') and callable(targ.pos):
+                        if hasattr(targ, "pos") and callable(targ.pos):
                             pos_val = targ.pos()
                             x_val, y_val = pos_val[0], pos_val[1]
                         else:
@@ -230,7 +242,7 @@ def correspondences(img_pts, flat_coords, cals, vparam, cparam):
 
 
 def single_cam_correspondence(img_pts, flat_coords, cals):
-    if hasattr(img_pts[0], '_targets'):
+    if hasattr(img_pts[0], "_targets"):
         targets = img_pts[0]._targets
     else:
         targets = img_pts[0]

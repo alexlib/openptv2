@@ -139,9 +139,17 @@ def distorted_to_flat(input_arr, cal, out=None, tol=0.00001):
         # calibrations (e.g. image-splitter cameras); omitting it silently
         # shifts every coordinate by (xh, yh) and breaks correspondence.
         result[i, 0], result[i, 1] = dist_to_flat(
-            input_arr[i, 0], input_arr[i, 1],
-            ip.xh, ip.yh,
-            ap.k1, ap.k2, ap.k3, ap.p1, ap.p2, ap.scx, ap.she,
+            input_arr[i, 0],
+            input_arr[i, 1],
+            ip.xh,
+            ip.yh,
+            ap.k1,
+            ap.k2,
+            ap.k3,
+            ap.p1,
+            ap.p2,
+            ap.scx,
+            ap.she,
             tol,
         )
 

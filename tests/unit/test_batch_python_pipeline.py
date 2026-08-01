@@ -62,6 +62,7 @@ YAML_PATH = CAVITY_DIR / "parameters_Run1.yaml"
 # Parameter builders (YAML → algorithms dataclasses, no compat layer)
 # ---------------------------------------------------------------------------
 
+
 def _load_yaml(path):
     with open(path) as f:
         return yaml.safe_load(f)
@@ -79,8 +80,10 @@ def _build_cpar(params):
     )
     return ControlPar(
         num_cams=num_cams,
-        imx=ptv["imx"], imy=ptv["imy"],
-        pix_x=ptv["pix_x"], pix_y=ptv["pix_y"],
+        imx=ptv["imx"],
+        imy=ptv["imy"],
+        pix_x=ptv["pix_x"],
+        pix_y=ptv["pix_y"],
         hp_flag=1 if ptv.get("hp_flag", True) else 0,
         all_cam_flag=1 if ptv.get("allcam_flag", False) else 0,
         tiff_flag=1 if ptv.get("tiff_flag", True) else 0,
@@ -95,9 +98,12 @@ def _build_vpar(params):
         X_lay=crit.get("X_lay", [-100, 100]),
         Zmin_lay=crit.get("Zmin_lay", [-100, -100]),
         Zmax_lay=crit.get("Zmax_lay", [100, 100]),
-        cn=crit.get("cn", 0), cnx=crit.get("cnx", 0),
-        cny=crit.get("cny", 0), csumg=crit.get("csumg", 0),
-        eps0=crit.get("eps0", 0), corrmin=crit.get("corrmin", 0),
+        cn=crit.get("cn", 0),
+        cnx=crit.get("cnx", 0),
+        cny=crit.get("cny", 0),
+        csumg=crit.get("csumg", 0),
+        eps0=crit.get("eps0", 0),
+        corrmin=crit.get("corrmin", 0),
     )
 
 
@@ -106,13 +112,16 @@ def _build_tpar(params):
     gvthres = tr.get("gvthres", None)
     if gvthres is None:
         dp = params.get("detect_plate", {})
-        gvthres = [dp.get(f"gvth_{i+1}", 40) for i in range(4)]
+        gvthres = [dp.get(f"gvth_{i + 1}", 40) for i in range(4)]
     return TargetPar(
         gvthres=gvthres,
         discont=tr.get("disco", tr.get("discont", 5)),
-        nnmin=tr.get("nnmin", 1), nnmax=tr.get("nnmax", 500),
-        nxmin=tr.get("nxmin", 1), nxmax=tr.get("nxmax", 50),
-        nymin=tr.get("nymin", 1), nymax=tr.get("nymax", 50),
+        nnmin=tr.get("nnmin", 1),
+        nnmax=tr.get("nnmax", 500),
+        nxmin=tr.get("nxmin", 1),
+        nxmax=tr.get("nxmax", 50),
+        nymin=tr.get("nymin", 1),
+        nymax=tr.get("nymax", 50),
         sumg_min=tr.get("sumg_min", 10),
         cr_sz=tr.get("cr_sz", 3),
     )
@@ -121,9 +130,12 @@ def _build_tpar(params):
 def _build_track_par(params):
     tk = params.get("track", {})
     return TrackPar(
-        dvxmin=tk.get("dvxmin", -10), dvxmax=tk.get("dvxmax", 10),
-        dvymin=tk.get("dvymin", -10), dvymax=tk.get("dvymax", 10),
-        dvzmin=tk.get("dvzmin", -10), dvzmax=tk.get("dvzmax", 10),
+        dvxmin=tk.get("dvxmin", -10),
+        dvxmax=tk.get("dvxmax", 10),
+        dvymin=tk.get("dvymin", -10),
+        dvymax=tk.get("dvymax", 10),
+        dvzmin=tk.get("dvzmin", -10),
+        dvzmax=tk.get("dvzmax", 10),
         dangle=tk.get("angle", tk.get("dangle", 100)),
         dacc=tk.get("dacc", 2.0),
         add=1 if tk.get("flagNewParticles", False) else 0,
@@ -133,11 +145,13 @@ def _build_track_par(params):
 def _build_spar(params, exp_dir):
     seq = params.get("sequence", {})
     num_cams = params.get("num_cams", 4)
-    base = seq.get("base_name", [f"img/cam{i+1}.%d" for i in range(num_cams)])
+    base = seq.get("base_name", [f"img/cam{i + 1}.%d" for i in range(num_cams)])
     img_base = [str(exp_dir / b) for b in base]
     return SequencePar(
-        num_cams=num_cams, img_base_name=img_base,
-        first=seq.get("first", 10001), last=seq.get("last", 10004),
+        num_cams=num_cams,
+        img_base_name=img_base,
+        first=seq.get("first", 10001),
+        last=seq.get("last", 10004),
     )
 
 
@@ -160,19 +174,27 @@ HIGHPASS_DIM = 25
 
 def _detect_targets(img, tpar, cam_idx, cpar):
     hp = prepare_image(
-        img, dim_lp=HIGHPASS_DIM, imx=cpar.imx, imy=cpar.imy,
+        img,
+        dim_lp=HIGHPASS_DIM,
+        imx=cpar.imx,
+        imy=cpar.imy,
         filter_hp=0,
     )
     targets = targ_rec(
         img=hp,
         gvthres=int(tpar.gvthres[cam_idx]),
         discont=tpar.discont,
-        nnmin=tpar.nnmin, nnmax=tpar.nnmax,
-        nxmin=tpar.nxmin, nxmax=tpar.nxmax,
-        nymin=tpar.nymin, nymax=tpar.nymax,
+        nnmin=tpar.nnmin,
+        nnmax=tpar.nnmax,
+        nxmin=tpar.nxmin,
+        nxmax=tpar.nxmax,
+        nymin=tpar.nymin,
+        nymax=tpar.nymax,
         sumg_min=tpar.sumg_min,
-        xmin=1, xmax=cpar.imx - 1,
-        ymin=1, ymax=cpar.imy - 1,
+        xmin=1,
+        xmax=cpar.imx - 1,
+        ymin=1,
+        ymax=cpar.imy - 1,
     )
     # BUG FIX #2: sort by y, then reassign pnr = array position
     targets.sort(key=lambda t: t.y)
@@ -184,6 +206,7 @@ def _detect_targets(img, tpar, cam_idx, cpar):
 # ---------------------------------------------------------------------------
 # Fixture
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture
 def cavity_work(tmp_path):
@@ -229,20 +252,28 @@ def cavity_work(tmp_path):
     num_cams = params.get("num_cams", 4)
 
     seq = params.get("sequence", {})
-    base_names = seq.get("base_name", [f"img/cam{i+1}.%d" for i in range(num_cams)])
+    base_names = seq.get("base_name", [f"img/cam{i + 1}.%d" for i in range(num_cams)])
 
     return {
-        "params": params, "cpar": cpar, "vpar": vpar, "tpar": tpar,
-        "track_par": track_par, "spar": spar, "cals": cals,
-        "work_dir": work, "num_cams": num_cams,
+        "params": params,
+        "cpar": cpar,
+        "vpar": vpar,
+        "tpar": tpar,
+        "track_par": track_par,
+        "spar": spar,
+        "cals": cals,
+        "work_dir": work,
+        "num_cams": num_cams,
         "base_names": base_names,
-        "img_orig": img_orig, "res_orig": CAVITY_DIR / "res_orig",
+        "img_orig": img_orig,
+        "res_orig": CAVITY_DIR / "res_orig",
     }
 
 
 # ---------------------------------------------------------------------------
 # The test
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.slow
 def test_full_batch_pipeline(cavity_work, monkeypatch):
@@ -259,7 +290,7 @@ def test_full_batch_pipeline(cavity_work, monkeypatch):
     base_names = cfg["base_names"]
     img_orig = cfg["img_orig"]
     res_orig = cfg["res_orig"]
-    params = cfg["params"]
+    cfg["params"]
 
     monkeypatch.chdir(work_dir)
 
@@ -273,20 +304,27 @@ def test_full_batch_pipeline(cavity_work, monkeypatch):
     print(f"  image_size  = {cpar.imx} x {cpar.imy}")
     print(f"  pixel_size  = {cpar.pix_x} x {cpar.pix_y}")
     print(f"  hp_flag     = {cpar.hp_flag}")
-    print(f"  multimedia  = n1={cpar.mm.n1}, n2={cpar.mm.n2}, "
-          f"n3={cpar.mm.n3}, d={cpar.mm.d}")
-    print(f"  velocity    = x[{track_par.dvxmin}, {track_par.dvxmax}] "
-          f"y[{track_par.dvymin}, {track_par.dvymax}] "
-          f"z[{track_par.dvzmin}, {track_par.dvzmax}]")
+    print(
+        f"  multimedia  = n1={cpar.mm.n1}, n2={cpar.mm.n2}, "
+        f"n3={cpar.mm.n3}, d={cpar.mm.d}"
+    )
+    print(
+        f"  velocity    = x[{track_par.dvxmin}, {track_par.dvxmax}] "
+        f"y[{track_par.dvymin}, {track_par.dvymax}] "
+        f"z[{track_par.dvzmin}, {track_par.dvzmax}]"
+    )
     print(f"  dacc={track_par.dacc}  dangle={track_par.dangle}  add={track_par.add}")
-    print(f"  volume      = X_lay={vpar.X_lay} Zmin={vpar.Zmin_lay} "
-          f"Zmax={vpar.Zmax_lay}")
+    print(
+        f"  volume      = X_lay={vpar.X_lay} Zmin={vpar.Zmin_lay} Zmax={vpar.Zmax_lay}"
+    )
     print(f"  corrmin     = {vpar.corrmin}")
     print(f"  target      = gvthres={tpar.gvthres} discont={tpar.discont}")
     print(f"  frames      = {spar.first} to {spar.last}")
     for i, c in enumerate(cals):
-        print(f"  cal[{i}] pos  = ({c.ext_par.x0:.1f}, {c.ext_par.y0:.1f}, "
-              f"{c.ext_par.z0:.1f})")
+        print(
+            f"  cal[{i}] pos  = ({c.ext_par.x0:.1f}, {c.ext_par.y0:.1f}, "
+            f"{c.ext_par.z0:.1f})"
+        )
 
     # =======================================================================
     # STAGE 1: DETECTION — detect targets, write _targets, compare to ref
@@ -337,27 +375,36 @@ def test_full_batch_pipeline(cavity_work, monkeypatch):
                 det_xy = np.array([[t.x, t.y] for t in frame_dets[i_cam]])
                 ref_xy = np.array([[t.x, t.y] for t in ref_tgts])
                 for ri in range(n_ref):
-                    d = np.sqrt((det_xy[:, 0] - ref_xy[ri, 0])**2 +
-                                (det_xy[:, 1] - ref_xy[ri, 1])**2)
+                    d = np.sqrt(
+                        (det_xy[:, 0] - ref_xy[ri, 0]) ** 2
+                        + (det_xy[:, 1] - ref_xy[ri, 1]) ** 2
+                    )
                     if d.min() < 2.0:
                         matched_pos += 1
 
             if pct_diff < 5:
-                print(f"    cam{i_cam}: CLOSE det={n_det} ref={n_ref} "
-                      f"({pct_diff:.1f}% diff), "
-                      f"pos_match={matched_pos}/{n_ref}")
+                print(
+                    f"    cam{i_cam}: CLOSE det={n_det} ref={n_ref} "
+                    f"({pct_diff:.1f}% diff), "
+                    f"pos_match={matched_pos}/{n_ref}"
+                )
             else:
-                print(f"    cam{i_cam}: MISMATCH det={n_det} ref={n_ref} "
-                      f"({pct_diff:.1f}% diff), "
-                      f"pos_match={matched_pos}/{n_ref}")
+                print(
+                    f"    cam{i_cam}: MISMATCH det={n_det} ref={n_ref} "
+                    f"({pct_diff:.1f}% diff), "
+                    f"pos_match={matched_pos}/{n_ref}"
+                )
                 detection_mismatches.append(
-                    (frame, i_cam, n_det, n_ref, pct_diff, matched_pos))
+                    (frame, i_cam, n_det, n_ref, pct_diff, matched_pos)
+                )
 
     if detection_mismatches:
         print(f"\n  Detection mismatches (>5%): {len(detection_mismatches)}")
         for m in detection_mismatches:
-            print(f"    frame={m[0]} cam={m[1]}: det={m[2]} ref={m[3]} "
-                  f"({m[4]:.1f}%) pos_match={m[5]}")
+            print(
+                f"    frame={m[0]} cam={m[1]}: det={m[2]} ref={m[3]} "
+                f"({m[4]:.1f}%) pos_match={m[5]}"
+            )
 
     # =======================================================================
     # STAGE 2: CORRESPONDENCES — build Frame, correct, match, write rt_is
@@ -384,32 +431,45 @@ def test_full_batch_pipeline(cavity_work, monkeypatch):
 
         con, match_counts = algo_correspondences(frm, corr, vpar, cpar, cals)
         n_quads, n_trips, n_pairs, n_total = match_counts
-        print(f"  Frame {frame}: {n_total} correspondences "
-              f"(quads={n_quads}, triplets={n_trips}, pairs={n_pairs})")
+        print(
+            f"  Frame {frame}: {n_total} correspondences "
+            f"(quads={n_quads}, triplets={n_trips}, pairs={n_pairs})"
+        )
 
         if n_total > 0:
             valid = con[:n_total]
             corresp_corr = np.array([nt.p[:num_cams] for nt in valid]).T
 
             # BUG FIX #3: store target pnr, not corrected-list indices
-            corresp_tgt = np.array([
-                [corr[cam][nt.p[cam]].pnr if nt.p[cam] >= 0 else -1
-                 for cam in range(num_cams)]
-                for nt in valid
-            ]).T
+            corresp_tgt = np.array(
+                [
+                    [
+                        corr[cam][nt.p[cam]].pnr if nt.p[cam] >= 0 else -1
+                        for cam in range(num_cams)
+                    ]
+                    for nt in valid
+                ]
+            ).T
         else:
             corresp_corr = np.zeros((num_cams, 0), dtype=int)
             corresp_tgt = np.zeros((num_cams, 0), dtype=int)
 
         # 3D point positions
         if corresp_corr.shape[1] > 0:
-            flat_arr = np.array([
-                [[corr[cam][int(corresp_corr[cam, i])].x,
-                  corr[cam][int(corresp_corr[cam, i])].y]
-                 if corresp_corr[cam, i] >= 0 else [-999.0, -999.0]
-                 for i in range(corresp_corr.shape[1])]
-                for cam in range(num_cams)
-            ])
+            flat_arr = np.array(
+                [
+                    [
+                        [
+                            corr[cam][int(corresp_corr[cam, i])].x,
+                            corr[cam][int(corresp_corr[cam, i])].y,
+                        ]
+                        if corresp_corr[cam, i] >= 0
+                        else [-999.0, -999.0]
+                        for i in range(corresp_corr.shape[1])
+                    ]
+                    for cam in range(num_cams)
+                ]
+            )
             flat_arr = flat_arr.transpose(1, 0, 2)  # (N, num_cams, 2)
             pos, rcm = algo_point_positions(flat_arr, cpar, cals, vpar)
         else:
@@ -446,13 +506,17 @@ def test_full_batch_pipeline(cavity_work, monkeypatch):
             with open(ref_rt_is) as f:
                 ref_lines = f.readlines()
             n_ref = int(ref_lines[0].strip())
-            ref_pos = np.array([
-                [float(x) for x in ref_lines[i + 1].split()[1:4]]
-                for i in range(n_ref)
-            ])
+            ref_pos = np.array(
+                [
+                    [float(x) for x in ref_lines[i + 1].split()[1:4]]
+                    for i in range(n_ref)
+                ]
+            )
 
-            print(f"    rt_is compare: python={pos.shape[0]} vs ref={n_ref} "
-                  f"(delta={pos.shape[0] - n_ref})")
+            print(
+                f"    rt_is compare: python={pos.shape[0]} vs ref={n_ref} "
+                f"(delta={pos.shape[0] - n_ref})"
+            )
 
             if pos.shape[0] > 0 and n_ref > 0:
                 # For each ref point, find nearest python point
@@ -468,27 +532,31 @@ def test_full_batch_pipeline(cavity_work, monkeypatch):
                         match_5mm += 1
 
                 dists = np.array(dists)
-                print(f"    ref→python match: {match_1mm}/{n_ref} <1mm, "
-                      f"{match_5mm}/{n_ref} <5mm, "
-                      f"median={np.median(dists):.2f}mm")
+                print(
+                    f"    ref→python match: {match_1mm}/{n_ref} <1mm, "
+                    f"{match_5mm}/{n_ref} <5mm, "
+                    f"median={np.median(dists):.2f}mm"
+                )
                 if match_5mm < n_ref * 0.5:
                     rt_is_mismatches.append(
-                        (frame, pos.shape[0], n_ref, match_5mm, np.median(dists)))
+                        (frame, pos.shape[0], n_ref, match_5mm, np.median(dists))
+                    )
         else:
             print(f"    no reference rt_is for frame {frame}")
 
         # Log tnr assignment
         for i_cam in range(num_cams):
             n_tgt = frm.num_targets[i_cam]
-            tnr_set = sum(1 for j in range(n_tgt)
-                         if frm.targets[i_cam][j].tnr >= 0)
+            tnr_set = sum(1 for j in range(n_tgt) if frm.targets[i_cam][j].tnr >= 0)
             print(f"    cam{i_cam}: {tnr_set}/{n_tgt} targets mapped to 3D")
 
     if rt_is_mismatches:
         print(f"\n  rt_is mismatches: {len(rt_is_mismatches)}")
         for m in rt_is_mismatches:
-            print(f"    frame={m[0]}: python={m[1]} ref={m[2]} "
-                  f"matched={m[3]} median_dist={m[4]:.3f}")
+            print(
+                f"    frame={m[0]}: python={m[1]} ref={m[2]} "
+                f"matched={m[3]} median_dist={m[4]:.3f}"
+            )
 
     # =======================================================================
     # STAGE 3: TRACKING — forward + backward
@@ -518,6 +586,7 @@ def test_full_batch_pipeline(cavity_work, monkeypatch):
 
     # Projection sanity check
     from openptv2.algorithms.track import point_to_pixel
+
     fb = run.fb
     curr_slot = fb.buf[1]
     offsets = []
@@ -529,14 +598,17 @@ def test_full_batch_pipeline(cavity_work, monkeypatch):
             for j in range(curr_slot.num_targets[cam]):
                 if curr_slot.targets[cam][j].tnr == h:
                     t = curr_slot.targets[cam][j]
-                    offsets.append(math.sqrt((px - t.x)**2 + (py - t.y)**2))
+                    offsets.append(math.sqrt((px - t.x) ** 2 + (py - t.y) ** 2))
                     break
     if offsets:
-        print(f"  projection check: median={np.median(offsets):.1f}px, "
-              f"max={max(offsets):.1f}px (n={len(offsets)})")
+        print(
+            f"  projection check: median={np.median(offsets):.1f}px, "
+            f"max={max(offsets):.1f}px (n={len(offsets)})"
+        )
         assert np.median(offsets) < 50, (
             f"Projection mismatch too large: median={np.median(offsets):.1f}px "
-            f"(expect <50px). Likely index mapping bug.")
+            f"(expect <50px). Likely index mapping bug."
+        )
 
     # Forward tracking
     for step in range(spar.first, spar.last + 1):
@@ -588,10 +660,12 @@ def test_full_batch_pipeline(cavity_work, monkeypatch):
 
         pct_fwd = 100 * linked_fwd / n if n > 0 else 0
         pct_bwd = 100 * linked_bwd / n if n > 0 else 0
-        print(f"  Frame {frame}: {n} particles, "
-              f"fwd={linked_fwd} ({pct_fwd:.0f}%), "
-              f"bwd={linked_bwd} ({pct_bwd:.0f}%), "
-              f"isolated={isolated}")
+        print(
+            f"  Frame {frame}: {n} particles, "
+            f"fwd={linked_fwd} ({pct_fwd:.0f}%), "
+            f"bwd={linked_bwd} ({pct_bwd:.0f}%), "
+            f"isolated={isolated}"
+        )
 
     # =======================================================================
     # STAGE 5: DISPLACEMENT ANALYSIS for linked particles
@@ -609,14 +683,16 @@ def test_full_batch_pipeline(cavity_work, monkeypatch):
         with open(rt_path) as f:
             rl = f.readlines()
         n_curr = int(rl[0].strip())
-        pos_curr = np.array([[float(x) for x in rl[i+1].split()[1:4]]
-                             for i in range(n_curr)])
+        pos_curr = np.array(
+            [[float(x) for x in rl[i + 1].split()[1:4]] for i in range(n_curr)]
+        )
 
         with open(rt_next_path) as f:
             rl2 = f.readlines()
         n_next = int(rl2[0].strip())
-        pos_next = np.array([[float(x) for x in rl2[i+1].split()[1:4]]
-                             for i in range(n_next)])
+        pos_next = np.array(
+            [[float(x) for x in rl2[i + 1].split()[1:4]] for i in range(n_next)]
+        )
 
         with open(ptv_path) as f:
             pl = f.readlines()
@@ -624,7 +700,7 @@ def test_full_batch_pipeline(cavity_work, monkeypatch):
 
         linked_disps = []
         for i in range(n_ptv):
-            parts = pl[i+1].split()
+            parts = pl[i + 1].split()
             next_idx = int(parts[1])
             if 0 <= next_idx < n_next:
                 d = np.linalg.norm(pos_next[next_idx] - pos_curr[i])
@@ -633,10 +709,13 @@ def test_full_batch_pipeline(cavity_work, monkeypatch):
         if linked_disps:
             ld = np.array(linked_disps)
             print(f"  Frame {mid_frame}: {len(ld)} linked particles")
-            print(f"    displacement: min={ld.min():.3f} "
-                  f"med={np.median(ld):.3f} max={ld.max():.3f} mm")
+            print(
+                f"    displacement: min={ld.min():.3f} "
+                f"med={np.median(ld):.3f} max={ld.max():.3f} mm"
+            )
             assert np.median(ld) < 10.0, (
-                f"Median displacement {np.median(ld):.1f}mm unreasonably large")
+                f"Median displacement {np.median(ld):.1f}mm unreasonably large"
+            )
 
     # =======================================================================
     # SUMMARY
@@ -658,8 +737,10 @@ def test_full_batch_pipeline(cavity_work, monkeypatch):
     print(f"  rt_is mismatches: {len(rt_is_mismatches)}")
 
     assert total_fwd > 0, "No forward links — tracking failed"
-    print(f"\nAverage over sequence, particles: {avg_particles:.1f}, "
-          f"links: {avg_fwd:.1f}, lost: {avg_particles - avg_fwd:.1f}")
+    print(
+        f"\nAverage over sequence, particles: {avg_particles:.1f}, "
+        f"links: {avg_fwd:.1f}, lost: {avg_particles - avg_fwd:.1f}"
+    )
 
 
 if __name__ == "__main__":

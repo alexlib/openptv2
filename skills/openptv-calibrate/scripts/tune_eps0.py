@@ -17,6 +17,7 @@ Run with:
 Requires: <dataset>/img/camN.<frame>_targets already exist (run detection on
 a real sequence frame first) and a calibration already written to cal/.
 """
+
 from __future__ import annotations
 
 import sys
@@ -31,7 +32,20 @@ from openptv2.gui.ptv import read_targets
 # Reasonable default sweep in mm; override by editing if your pix size is
 # very different from ~0.02mm (each dataset's own pixel size is printed
 # alongside so you can read the eps0(px) column instead of picking blind).
-DEFAULT_SWEEP_MM = [0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.08, 0.10, 0.12, 0.15, 0.20, 0.30]
+DEFAULT_SWEEP_MM = [
+    0.01,
+    0.02,
+    0.03,
+    0.04,
+    0.05,
+    0.06,
+    0.08,
+    0.10,
+    0.12,
+    0.15,
+    0.20,
+    0.30,
+]
 
 
 def sweep(base: Path, frame: int, eps0_values=None):
@@ -65,8 +79,11 @@ def sweep(base: Path, frame: int, eps0_values=None):
     for eps0 in values:
         vpar.eps0 = eps0
         sorted_pos, _, _ = correspondences(detections, corrected, cals, vpar, cpar)
-        quad, trip, pair = (sorted_pos[0].shape[1], sorted_pos[1].shape[1],
-                            sorted_pos[2].shape[1])
+        quad, trip, pair = (
+            sorted_pos[0].shape[1],
+            sorted_pos[1].shape[1],
+            sorted_pos[2].shape[1],
+        )
         rows.append((eps0, eps0 / cpar.pix_x, quad, trip, pair))
 
     return rows, [len(d) for d in detections], cpar.pix_x
@@ -91,6 +108,7 @@ def main():
     # possible but not too small" point -- tighter loses real quads, looser
     # only adds risk (more pairs/triplets, no meaningful quad gain).
     import matplotlib
+
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
 
@@ -100,17 +118,23 @@ def main():
     pair = [r[4] for r in rows]
 
     fig, ax1 = plt.subplots(figsize=(9, 6))
-    ax1.plot(eps0_mm, quad, "o-", color="red", label="quadruplets (4 cams)", linewidth=2)
+    ax1.plot(
+        eps0_mm, quad, "o-", color="red", label="quadruplets (4 cams)", linewidth=2
+    )
     ax1.plot(eps0_mm, trip, "o-", color="green", label="triplets (3 cams)")
     ax1.plot(eps0_mm, pair, "o-", color="gold", label="pairs (2 cams)")
     ax1.set_xlabel("eps0 [mm]")
     ax1.set_ylabel("count")
-    ax1.set_title(f"Correspondence counts vs. eps0 -- frame {frame}\n"
-                  "(colors match the GUI's own pair/triplet/quad overlay colors)")
+    ax1.set_title(
+        f"Correspondence counts vs. eps0 -- frame {frame}\n"
+        "(colors match the GUI's own pair/triplet/quad overlay colors)"
+    )
     ax1.legend(loc="center right")
     ax1.grid(alpha=0.3)
 
-    ax2 = ax1.secondary_xaxis("top", functions=(lambda x: x / pix_x, lambda x: x * pix_x))
+    ax2 = ax1.secondary_xaxis(
+        "top", functions=(lambda x: x / pix_x, lambda x: x * pix_x)
+    )
     ax2.set_xlabel("eps0 [pixels]")
 
     fig.tight_layout()

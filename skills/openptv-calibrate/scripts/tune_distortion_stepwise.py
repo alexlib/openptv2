@@ -1,3 +1,4 @@
+# ruff: noqa: E501
 #!/usr/bin/env python
 """Greedy, one-parameter-at-a-time distortion tuning per camera.
 
@@ -25,6 +26,7 @@ Usage:
     uv run python skills/openptv-calibrate/scripts/tune_distortion_stepwise.py <dataset> [--dry-run]
     uv run python skills/openptv-calibrate/scripts/tune_distortion_stepwise.py <dataset> --base-flags k1 --candidates k2,k3,p1,p2,xh,yh
 """
+
 from __future__ import annotations
 
 import argparse
@@ -65,8 +67,19 @@ def _drop_excluded(sorted_pix, exclude_ids):
             t.pnr = -999
 
 
-def _fit_and_score(base_cal, fix, nfix, pix, cpar, eps, flags, exclude_ids=None,
-                    auto_reject_mad=None, max_rounds=8, verbose_prefix=None):
+def _fit_and_score(
+    base_cal,
+    fix,
+    nfix,
+    pix,
+    cpar,
+    eps,
+    flags,
+    exclude_ids=None,
+    auto_reject_mad=None,
+    max_rounds=8,
+    verbose_prefix=None,
+):
     """Fit a copy of base_cal with the given flags; return (cal, rms, n_matched,
     auto_excluded_ids) or None.
 
@@ -112,9 +125,11 @@ def _fit_and_score(base_cal, fix, nfix, pix, cpar, eps, flags, exclude_ids=None,
             return cal, rms_px(det, rep), len(det), auto_excluded
 
         if verbose_prefix:
-            print(f"{verbose_prefix}  round {round_i + 1}: median={med:.2f}px "
-                  f"MAD={mad:.2f}px threshold={threshold:.2f}px -> "
-                  f"rejecting {sorted(new_bad)}")
+            print(
+                f"{verbose_prefix}  round {round_i + 1}: median={med:.2f}px "
+                f"MAD={mad:.2f}px threshold={threshold:.2f}px -> "
+                f"rejecting {sorted(new_bad)}"
+            )
         exclude_ids |= new_bad
         auto_excluded |= new_bad
 
@@ -125,32 +140,56 @@ def _fit_and_score(base_cal, fix, nfix, pix, cpar, eps, flags, exclude_ids=None,
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("dataset")
-    ap.add_argument("--base-flags", default="k1", help="already-accepted flags (default: k1)")
-    ap.add_argument("--candidates", default="k2,k3,p1,p2,xh,yh",
-                     help="comma-separated candidates to test, in priority order")
-    ap.add_argument("--min-improve", type=float, default=0.03,
-                     help="minimum relative RMS improvement to accept a candidate (default 0.03 = 3%%). "
-                          "Ignored in --sequential mode, which accepts on ANY improvement.")
-    ap.add_argument("--sequential", action="store_true",
-                     help="try --candidates in the EXACT order given (not greedy best-first), "
-                          "one at a time on top of whatever was already accepted. Keep a candidate "
-                          "if it doesn't make RMS worse; revert (skip, don't stop) otherwise, then "
-                          "move on to the next candidate in the list regardless.")
-    ap.add_argument("--exclude-ids", default="",
-                     help="comma-separated cam:id pairs to drop from the fit, 1-indexed camera, "
-                          "e.g. '2:53,4:94,4:97,4:87,4:48,4:96,3:104'")
-    ap.add_argument("--auto-reject-mad", type=float, default=None,
-                     help="iterative sigma-clipping: after each fit, reject points beyond "
-                          "median + N*MAD residual and refit, until stable (e.g. 4.0). "
-                          "Combines with --exclude-ids (manual exclusions always apply too).")
-    ap.add_argument("--dry-run", action="store_true", help="report without writing .ori/.addpar")
+    ap.add_argument(
+        "--base-flags", default="k1", help="already-accepted flags (default: k1)"
+    )
+    ap.add_argument(
+        "--candidates",
+        default="k2,k3,p1,p2,xh,yh",
+        help="comma-separated candidates to test, in priority order",
+    )
+    ap.add_argument(
+        "--min-improve",
+        type=float,
+        default=0.03,
+        help="minimum relative RMS improvement to accept a candidate (default 0.03 = 3%%). "
+        "Ignored in --sequential mode, which accepts on ANY improvement.",
+    )
+    ap.add_argument(
+        "--sequential",
+        action="store_true",
+        help="try --candidates in the EXACT order given (not greedy best-first), "
+        "one at a time on top of whatever was already accepted. Keep a candidate "
+        "if it doesn't make RMS worse; revert (skip, don't stop) otherwise, then "
+        "move on to the next candidate in the list regardless.",
+    )
+    ap.add_argument(
+        "--exclude-ids",
+        default="",
+        help="comma-separated cam:id pairs to drop from the fit, 1-indexed camera, "
+        "e.g. '2:53,4:94,4:97,4:87,4:48,4:96,3:104'",
+    )
+    ap.add_argument(
+        "--auto-reject-mad",
+        type=float,
+        default=None,
+        help="iterative sigma-clipping: after each fit, reject points beyond "
+        "median + N*MAD residual and refit, until stable (e.g. 4.0). "
+        "Combines with --exclude-ids (manual exclusions always apply too).",
+    )
+    ap.add_argument(
+        "--dry-run", action="store_true", help="report without writing .ori/.addpar"
+    )
     args = ap.parse_args()
 
     base_flags = [f.strip() for f in args.base_flags.split(",") if f.strip()]
     candidates = [f.strip() for f in args.candidates.split(",") if f.strip()]
     for f in base_flags + candidates:
         if f in FORBIDDEN:
-            print(f"ERROR: '{f}' is forbidden -- focal distance (cc) stays fixed", file=sys.stderr)
+            print(
+                f"ERROR: '{f}' is forbidden -- focal distance (cc) stays fixed",
+                file=sys.stderr,
+            )
             return 1
 
     exclude_by_cam: dict[int, set[int]] = {}
@@ -163,6 +202,7 @@ def main() -> int:
 
     base = Path(args.dataset).resolve()
     import os
+
     os.chdir(base)
 
     yaml_path = _find_yaml(base)
@@ -170,6 +210,7 @@ def main() -> int:
         print(f"ERROR: no parameters_*.yaml found in {base}", file=sys.stderr)
         return 1
     import yaml
+
     y = yaml.safe_load(yaml_path.read_text())
     num_cams = int(y.get("num_cams") or y["ptv"].get("num_cams"))
     cpar = _cpar_from_ptv(y["ptv"], num_cams)
@@ -191,13 +232,28 @@ def main() -> int:
         if exclude_ids:
             print(f"cam{cam + 1}: excluding IDs {sorted(exclude_ids)} from the fit")
 
-        result = _fit_and_score(cal0, fix, nfix, pix, cpar, eps, list(base_flags), exclude_ids,
-                                 args.auto_reject_mad, verbose_prefix=f"cam{cam + 1}:")
+        result = _fit_and_score(
+            cal0,
+            fix,
+            nfix,
+            pix,
+            cpar,
+            eps,
+            list(base_flags),
+            exclude_ids,
+            args.auto_reject_mad,
+            verbose_prefix=f"cam{cam + 1}:",
+        )
         if result is None:
-            print(f"cam{cam + 1}: baseline ({base_flags}) failed to fit, skipping", file=sys.stderr)
+            print(
+                f"cam{cam + 1}: baseline ({base_flags}) failed to fit, skipping",
+                file=sys.stderr,
+            )
             continue
         best_cal, best_rms, best_n, all_auto_excluded = result
-        print(f"\ncam{cam + 1}: baseline flags={base_flags}  RMS={best_rms:.4f}px  n={best_n}")
+        print(
+            f"\ncam{cam + 1}: baseline flags={base_flags}  RMS={best_rms:.4f}px  n={best_n}"
+        )
 
         accepted = list(base_flags)
         history = [(tuple(accepted), best_rms, best_n)]
@@ -210,17 +266,28 @@ def main() -> int:
                 if cand in accepted:
                     continue
                 trial_flags = accepted + [cand]
-                r = _fit_and_score(cal0, fix, nfix, pix, cpar, eps, trial_flags, exclude_ids,
-                                    args.auto_reject_mad)
+                r = _fit_and_score(
+                    cal0,
+                    fix,
+                    nfix,
+                    pix,
+                    cpar,
+                    eps,
+                    trial_flags,
+                    exclude_ids,
+                    args.auto_reject_mad,
+                )
                 if r is None:
                     print(f"  {cand}: fit failed  [reverted]")
                     continue
                 cand_cal, cand_rms, cand_n, cand_auto_excluded = r
                 improve = (best_rms - cand_rms) / best_rms if best_rms > 0 else 0
                 worse = cand_rms > best_rms
-                print(f"  {cand}: RMS {best_rms:.4f} -> {cand_rms:.4f}px "
-                      f"({improve * 100:+.1f}%)  n={cand_n}"
-                      + ("  [reverted, worse]" if worse else "  [accepted]"))
+                print(
+                    f"  {cand}: RMS {best_rms:.4f} -> {cand_rms:.4f}px "
+                    f"({improve * 100:+.1f}%)  n={cand_n}"
+                    + ("  [reverted, worse]" if worse else "  [accepted]")
+                )
                 if worse:
                     continue
                 accepted.append(cand)
@@ -233,8 +300,17 @@ def main() -> int:
                 trial_results = {}
                 for cand in remaining:
                     trial_flags = accepted + [cand]
-                    r = _fit_and_score(cal0, fix, nfix, pix, cpar, eps, trial_flags, exclude_ids,
-                                        args.auto_reject_mad)
+                    r = _fit_and_score(
+                        cal0,
+                        fix,
+                        nfix,
+                        pix,
+                        cpar,
+                        eps,
+                        trial_flags,
+                        exclude_ids,
+                        args.auto_reject_mad,
+                    )
                     if r is not None:
                         trial_results[cand] = r
 
@@ -243,12 +319,20 @@ def main() -> int:
 
                 # pick the candidate giving the lowest RMS
                 best_cand = min(trial_results, key=lambda c: trial_results[c][1])
-                cand_cal, cand_rms, cand_n, cand_auto_excluded = trial_results[best_cand]
+                cand_cal, cand_rms, cand_n, cand_auto_excluded = trial_results[
+                    best_cand
+                ]
                 improve = (best_rms - cand_rms) / best_rms if best_rms > 0 else 0
 
-                print(f"  + {best_cand}: RMS {best_rms:.4f} -> {cand_rms:.4f}px "
-                      f"({improve * 100:+.1f}%)  n={cand_n}"
-                      + ("  [accepted]" if improve >= args.min_improve else "  [below threshold, stopping]"))
+                print(
+                    f"  + {best_cand}: RMS {best_rms:.4f} -> {cand_rms:.4f}px "
+                    f"({improve * 100:+.1f}%)  n={cand_n}"
+                    + (
+                        "  [accepted]"
+                        if improve >= args.min_improve
+                        else "  [below threshold, stopping]"
+                    )
+                )
 
                 if improve < args.min_improve:
                     break
@@ -262,17 +346,22 @@ def main() -> int:
         # Final polish: one more fit with exactly the accepted set (already
         # what best_cal is, since it was fit with `accepted` -- but redo once
         # more from cal0 for a clean, single-source-of-truth final result).
-        final = _fit_and_score(cal0, fix, nfix, pix, cpar, eps, accepted, exclude_ids,
-                                args.auto_reject_mad)
+        final = _fit_and_score(
+            cal0, fix, nfix, pix, cpar, eps, accepted, exclude_ids, args.auto_reject_mad
+        )
         if final is not None:
             best_cal, best_rms, best_n, final_auto_excluded = final
             all_auto_excluded |= final_auto_excluded
 
         cc_ok = abs(best_cal.int_par.cc - cc0) < 1e-9
         subpixel = "YES" if best_rms < 1.0 else "no"
-        auto_note = f"  auto-rejected={sorted(all_auto_excluded)}" if all_auto_excluded else ""
-        print(f"cam{cam + 1}: FINAL flags={accepted}  RMS={best_rms:.4f}px  n={best_n}/{nfix}  "
-              f"subpixel={subpixel}  cc unchanged={cc_ok}{auto_note}")
+        auto_note = (
+            f"  auto-rejected={sorted(all_auto_excluded)}" if all_auto_excluded else ""
+        )
+        print(
+            f"cam{cam + 1}: FINAL flags={accepted}  RMS={best_rms:.4f}px  n={best_n}/{nfix}  "
+            f"subpixel={subpixel}  cc unchanged={cc_ok}{auto_note}"
+        )
 
         if not args.dry_run:
             suffix = f".pre_{'_'.join(accepted) if accepted else 'stepwise'}_bak"

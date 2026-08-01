@@ -1,9 +1,12 @@
+# ruff: noqa: E501
 """Epipolar geometry for multi-camera correspondence matching.
 
 Translation of lib/src/epi.c and lib/include/epi.h.
 
 Computes epipolar lines and candidate matching between cameras.
 """
+
+from dataclasses import dataclass
 
 import cython
 import numpy as np
@@ -12,7 +15,6 @@ if cython.compiled:
     from cython.cimports.libc.math import sqrt as c_sqrt
 else:
     from math import sqrt as c_sqrt
-from dataclasses import dataclass
 
 MAXCAND: cython.int = 200
 
@@ -52,10 +54,10 @@ def epipolar_curve(
     image_point, origin_cal, project_cal, num_points: cython.int, cpar, vpar
 ) -> object:
     """Generate points along the epipolar line projected into a second camera."""
-    from .trafo import pixel_to_metric, metric_to_pixel, dist_to_flat
-    from .ray_tracing import ray_tracing
-    from .multimed import move_along_ray
     from .imgcoord import img_coord
+    from .multimed import move_along_ray
+    from .ray_tracing import ray_tracing
+    from .trafo import dist_to_flat, metric_to_pixel, pixel_to_metric
 
     # Extract multimedia parameters once — local doubles compile to C registers
     n1 = cpar.mm.n1
@@ -127,9 +129,9 @@ def epipolar_curve(
 )
 def epi_mm(xl: cython.double, yl: cython.double, cal1, cal2, mmp, vpar):
     """Compute epipolar line endpoints in second camera."""
-    from .ray_tracing import ray_tracing
-    from .multimed import move_along_ray
     from .imgcoord import flat_image_coord
+    from .multimed import move_along_ray
+    from .ray_tracing import ray_tracing
 
     n1 = mmp.n1
     n2_0 = mmp.n2[0]
@@ -213,8 +215,8 @@ def epi_mm(xl: cython.double, yl: cython.double, cal1, cal2, mmp, vpar):
 )
 def epi_mm_2d(xl: cython.double, yl: cython.double, cal, mmp, vpar) -> object:
     """Compute 3D position for single-camera multimedia case."""
-    from .ray_tracing import ray_tracing
     from .multimed import move_along_ray
+    from .ray_tracing import ray_tracing
 
     n1 = mmp.n1
     n2_0 = mmp.n2[0]

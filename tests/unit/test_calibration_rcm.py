@@ -7,6 +7,7 @@ camera's own calibration, so the four rays are as consistent as the committed
 bundle. Test B is the real regression guard: perturbing one camera's exterior
 must strictly increase the median RCM.
 """
+
 import copy
 from pathlib import Path
 
@@ -41,11 +42,19 @@ def results_and_cpar():
         _, ori, addpar = cam_files(base, cam)
         cal = Calibration.from_file(str(ori), str(addpar))
         det = np.array([_reproject_px(cal, cpar.mm, p, cpar) for p in fix])
-        results.append(CamResult(
-            cam=cam, matched=len(fix), nfix=len(fix), rms=0.0,
-            flags=["cc", "xh", "yh"], cal=cal, ref=fix.copy(),
-            det=det, rep=det.copy(),
-        ))
+        results.append(
+            CamResult(
+                cam=cam,
+                matched=len(fix),
+                nfix=len(fix),
+                rms=0.0,
+                flags=["cc", "xh", "yh"],
+                cal=cal,
+                ref=fix.copy(),
+                det=det,
+                rep=det.copy(),
+            )
+        )
     return results, cpar
 
 

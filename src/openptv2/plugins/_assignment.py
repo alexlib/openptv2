@@ -88,9 +88,7 @@ def match_within_radius(pred, cands, radius):
         return empty
 
     rows = np.repeat(np.arange(n_pred, dtype=np.intp), counts)
-    cols = np.fromiter(
-        (c for n in neighbours for c in n), dtype=np.intp, count=n_edges
-    )
+    cols = np.fromiter((c for n in neighbours for c in n), dtype=np.intp, count=n_edges)
     dists = np.linalg.norm(pred[rows] - cands[cols], axis=1)
 
     # Connected components of the bipartite graph, predictions indexed

@@ -1,3 +1,4 @@
+# ruff: noqa: E501
 #!/usr/bin/env python
 """Full (unconstrained) calibration, but staged: addpar (cc + distortion) is
 only switched on after position/angles/xh/yh have already converged.
@@ -28,6 +29,7 @@ calling external_calibration.
 
 Run with: uv run python skills/openptv-calibrate/scripts/recalibrate_full.py <dataset>
 """
+
 from __future__ import annotations
 
 import copy
@@ -63,7 +65,9 @@ CANDIDATE_FLAGS = [
 
 def calibrate_camera_full(cam, base, cpar, fix, nfix, eps):
     # Stage 1: converge position/angles/xh/yh with addpar forced to zero.
-    cal, n_matched, rms_stage1, _, _, _ = fit_constrained(cam, base, cpar, fix, nfix, eps)
+    cal, n_matched, rms_stage1, _, _, _ = fit_constrained(
+        cam, base, cpar, fix, nfix, eps
+    )
 
     # Stage 2: only now allow cc + distortion to adjust, seeded from the
     # stage-1 pose (not from the raw manual-orientation seed).
@@ -124,9 +128,19 @@ def main():
         )
         cal.write(str(ori), str(addpar))
 
-        res = _Res(cam=cam, rms=rms2, matched=n_matched, nfix=nfix, flags=flags, det=det, rep=rep)
+        res = _Res(
+            cam=cam,
+            rms=rms2,
+            matched=n_matched,
+            nfix=nfix,
+            flags=flags,
+            det=det,
+            rep=rep,
+        )
         save_overlay(res, base, outdir)
-        print(f"cam{cam + 1:<5}{n_matched}/{nfix:<6}{rms1:<13.4f}{rms2:<13.4f}{'+'.join(flags)}")
+        print(
+            f"cam{cam + 1:<5}{n_matched}/{nfix:<6}{rms1:<13.4f}{rms2:<13.4f}{'+'.join(flags)}"
+        )
 
     print(f"\nOverlays written to {outdir}")
     return 0

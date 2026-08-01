@@ -262,6 +262,7 @@ from openptv2 import Tracker, detect_targets
 
 # Load images
 from skimage import io
+
 images = [io.imread(f"cam1_{i:04d}.tif") for i in range(100)]
 
 # Detect particles

@@ -1,3 +1,4 @@
+# ruff: noqa: E501
 # /// script
 # requires-python = ">=3.12"
 # dependencies = [
@@ -16,8 +17,10 @@ target_recognition uses -- grey threshold, blob size/shape bounds, min sum-grey,
 and (the confusing one) the discontinuity `disco` that splits overlapping
 particles -- on a synthetic calibration-like image, with a slider per parameter.
 
-    uv run marimo edit --sandbox skills/openptv-calibrate/scripts/detection_params_demo.py
+    uv run marimo edit --sandbox
+    skills/openptv-calibrate/scripts/detection_params_demo.py
 """
+
 import marimo
 
 __generated_with = "0.20.4"
@@ -69,7 +72,9 @@ def _(np):
 
         def blob(cx, cy, amp, sx, sy=None):
             sy = sy or sx
-            return amp * np.exp(-(((xx - cx) ** 2) / (2 * sx**2) + ((yy - cy) ** 2) / (2 * sy**2)))
+            return amp * np.exp(
+                -(((xx - cx) ** 2) / (2 * sx**2) + ((yy - cy) ** 2) / (2 * sy**2))
+            )
 
         # regular grid of normal dots
         for gy in range(35, W - 20, 45):
@@ -115,7 +120,9 @@ def _(mo):
     nnmax = mo.ui.slider(50, 1200, value=400, label="max pixels (nnmax)")
     nxmax = mo.ui.slider(3, 40, value=18, label="max width (nxmax)")
     nymax = mo.ui.slider(3, 40, value=18, label="max height (nymax)")
-    sumg_min = mo.ui.slider(0, 3000, value=200, step=50, label="min sum-grey (sumg_min)")
+    sumg_min = mo.ui.slider(
+        0, 3000, value=200, step=50, label="min sum-grey (sumg_min)"
+    )
     disco = mo.ui.slider(1, 200, value=25, label="discontinuity (disco)")
     mo.vstack([gvthres, nnmin, nnmax, nxmax, nymax, sumg_min, disco])
     return disco, gvthres, nnmax, nnmin, nxmax, nymax, sumg_min
@@ -136,8 +143,9 @@ def _(np, peak_local_max, watershed):
         image and each label's peak grey value.
         """
         fg = img > int(gvthres)
-        peaks = peak_local_max(img, min_distance=2, labels=fg.astype(int),
-                               threshold_abs=int(gvthres) + 1)
+        peaks = peak_local_max(
+            img, min_distance=2, labels=fg.astype(int), threshold_abs=int(gvthres) + 1
+        )
         if len(peaks) == 0:
             return np.zeros(img.shape, int), {}
         markers = np.zeros(img.shape, int)
@@ -157,7 +165,9 @@ def _(np, peak_local_max, watershed):
                     b = lab[r2, c2]
                     if a and b and a != b:
                         key = (min(a, b), max(a, b))
-                        saddle[key] = max(saddle.get(key, 0), min(int(img[r, c]), int(img[r2, c2])))
+                        saddle[key] = max(
+                            saddle.get(key, 0), min(int(img[r, c]), int(img[r2, c2]))
+                        )
 
         parent = list(range(len(peaks) + 1))
 
@@ -168,7 +178,9 @@ def _(np, peak_local_max, watershed):
             return x
 
         for (a, b), sv in saddle.items():
-            if min(peakval[a], peakval[b]) - sv < float(disco):  # dip shallower than disco -> merge
+            if min(peakval[a], peakval[b]) - sv < float(
+                disco
+            ):  # dip shallower than disco -> merge
                 parent[find(a)] = find(b)
         merged = np.zeros_like(lab)
         for i in range(1, len(peaks) + 1):
@@ -233,8 +245,14 @@ def _(
     sumg_min,
 ):
     kept, rejected = detect(
-        scene, gvthres.value, disco.value, nnmin.value, nnmax.value,
-        nxmax.value, nymax.value, sumg_min.value,
+        scene,
+        gvthres.value,
+        disco.value,
+        nnmin.value,
+        nnmax.value,
+        nxmax.value,
+        nymax.value,
+        sumg_min.value,
     )
     fig, ax = plt.subplots(1, 2, figsize=(11, 5.4))
     for a in ax:
@@ -244,12 +262,30 @@ def _(
     ax[0].imshow((scene > gvthres.value), cmap="Reds", alpha=0.35)
     ax[1].set_title(f"KEPT (green)={len(kept)}   rejected (red)={len(rejected)}")
     for r in kept:
-        ax[1].scatter([r["cx"]], [r["cy"]], s=90, facecolors="none", edgecolors="lime", linewidths=1.6)
-    rej_colors = {"n<nnmin": "orange", "n>nnmax": "red", "nx>nxmax": "magenta",
-                  "ny>nymax": "cyan", "sumg<min": "yellow"}
+        ax[1].scatter(
+            [r["cx"]],
+            [r["cy"]],
+            s=90,
+            facecolors="none",
+            edgecolors="lime",
+            linewidths=1.6,
+        )
+    rej_colors = {
+        "n<nnmin": "orange",
+        "n>nnmax": "red",
+        "nx>nxmax": "magenta",
+        "ny>nymax": "cyan",
+        "sumg<min": "yellow",
+    }
     for r in rejected:
-        ax[1].scatter([r["cx"]], [r["cy"]], s=90, marker="x",
-                      c=rej_colors.get(r["why"], "red"), linewidths=1.6)
+        ax[1].scatter(
+            [r["cx"]],
+            [r["cy"]],
+            s=90,
+            marker="x",
+            c=rej_colors.get(r["why"], "red"),
+            linewidths=1.6,
+        )
     ax[1].scatter([], [], marker="x", c="orange", label="n<nnmin (noise speck)")
     ax[1].scatter([], [], marker="x", c="red", label="n>nnmax (too big)")
     ax[1].scatter([], [], marker="x", c="magenta", label="nx>nxmax (too wide)")
@@ -296,8 +332,12 @@ def _(disco2, np, plt, segment, sep):
     H = 60
     yy2, xx2 = np.mgrid[0:H, 0:H]
     c = H / 2
-    two = 190 * np.exp(-(((xx2 - (c - sep.value / 2)) ** 2) + (yy2 - c) ** 2) / (2 * 3.4**2))
-    two = two + 190 * np.exp(-(((xx2 - (c + sep.value / 2)) ** 2) + (yy2 - c) ** 2) / (2 * 3.4**2))
+    two = 190 * np.exp(
+        -(((xx2 - (c - sep.value / 2)) ** 2) + (yy2 - c) ** 2) / (2 * 3.4**2)
+    )
+    two = two + 190 * np.exp(
+        -(((xx2 - (c + sep.value / 2)) ** 2) + (yy2 - c) ** 2) / (2 * 3.4**2)
+    )
     two = two.astype(np.uint8)
 
     lab2, _pv2 = segment(two, 20, disco2.value)
@@ -308,12 +348,25 @@ def _(disco2, np, plt, segment, sep):
     dip_depth = peak - saddle
 
     fig2, ax2 = plt.subplots(1, 3, figsize=(12, 4))
-    ax2[0].imshow(two, cmap="gray"); ax2[0].set_title(f"image: peaks sep={sep.value}px\ndip depth = {dip_depth} grey levels"); ax2[0].axis("off")
+    ax2[0].imshow(two, cmap="gray")
+    ax2[0].set_title(
+        f"image: peaks sep={sep.value}px\ndip depth = {dip_depth} grey levels"
+    )
+    ax2[0].axis("off")
     ax2[1].plot(two[int(c), :], "-o", ms=3)
-    ax2[1].axhline(peak - disco2.value, color="red", ls="--", label=f"peak - disco ({peak - disco2.value})")
+    ax2[1].axhline(
+        peak - disco2.value,
+        color="red",
+        ls="--",
+        label=f"peak - disco ({peak - disco2.value})",
+    )
     ax2[1].axhline(saddle, color="green", ls=":", label=f"saddle ({saddle})")
-    ax2[1].set_title("horizontal profile through both peaks"); ax2[1].legend(fontsize=8); ax2[1].set_xlabel("x"); ax2[1].set_ylabel("grey")
-    ax2[2].imshow(lab2, cmap="tab10"); ax2[2].axis("off")
+    ax2[1].set_title("horizontal profile through both peaks")
+    ax2[1].legend(fontsize=8)
+    ax2[1].set_xlabel("x")
+    ax2[1].set_ylabel("grey")
+    ax2[2].imshow(lab2, cmap="tab10")
+    ax2[2].axis("off")
     verdict = "SPLIT → 2 targets" if ntarg >= 2 else "MERGED → 1 target"
     ax2[2].set_title(f"disco={disco2.value}: {verdict}")
     fig2.tight_layout()

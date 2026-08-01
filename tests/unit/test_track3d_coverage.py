@@ -95,9 +95,7 @@ def test_find_candidates_returns_closest_sorted():
 def test_find_candidates_more_than_max_cands():
     # 5 in-box candidates, max_cands=4: the farthest never beats a filled slot,
     # exercising the slot loop exhausting without a break.
-    frm = _pathinfo_frame(
-        [[5.0 + 0.1 * k, 5.0, 5.0] for k in range(1, 6)]
-    )
+    frm = _pathinfo_frame([[5.0 + 0.1 * k, 5.0, 5.0] for k in range(1, 6)])
     pos = np.array([5.0, 5.0, 5.0])
     idx = find_candidates_in_3d(frm, pos, 1.0, 1.0, 1.0, 4)
     assert idx == [0, 1, 2, 3]
@@ -137,9 +135,7 @@ def _make_run(tmp_path, prev, curr, nextf, first, last):
     fb.buf[2] = nextf
     tpar = types.SimpleNamespace(dvxmax=2.0, dvymax=2.0, dvzmax=2.0)
     seq_par = types.SimpleNamespace(first=first, last=last)
-    return types.SimpleNamespace(
-        fb=fb, tpar=tpar, npart=0, nlinks=0, seq_par=seq_par
-    )
+    return types.SimpleNamespace(fb=fb, tpar=tpar, npart=0, nlinks=0, seq_par=seq_par)
 
 
 def test_track3d_loop_no_read_branch(tmp_path):

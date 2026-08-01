@@ -14,6 +14,7 @@ SAME parameters — read from the dataset YAML — into both libraries:
 Because there is no standalone optv `multimed`/`ray_tracing` module, this is the
 way to parity-check refraction: it is exercised transitively here.
 """
+
 from pathlib import Path
 
 import numpy as np
@@ -32,6 +33,7 @@ def _has_optv() -> bool:
     try:
         import optv.imgcoord  # noqa: F401
         import optv.orientation  # noqa: F401
+
         return True
     except ImportError:
         return False
@@ -57,8 +59,10 @@ def test_multimedia_projection_and_triangulation_parity():
 
     num_cams, ptv, crit = _load_yaml_ptv()
     n1, n2, n3, d = (
-        float(ptv["mmp_n1"]), float(ptv["mmp_n2"]),
-        float(ptv["mmp_n3"]), float(ptv["mmp_d"]),
+        float(ptv["mmp_n1"]),
+        float(ptv["mmp_n2"]),
+        float(ptv["mmp_n3"]),
+        float(ptv["mmp_d"]),
     )
     assert n2 != 1.0 and n3 != 1.0, "expected real refraction in this dataset"
 
@@ -99,26 +103,28 @@ def test_multimedia_projection_and_triangulation_parity():
     # --- 1. forward projection parity (metric), refraction ON ---
     per_cam_metric = []
     for cam in range(num_cams):
-        c_xy = image_coordinates(xyz, c_cals[cam], c_mm)          # (npts, 2)
-        py_xy = np.array([img_coord(xyz[i], py_cals[cam], py_mm)
-                          for i in range(npts)])
+        c_xy = image_coordinates(xyz, c_cals[cam], c_mm)  # (npts, 2)
+        py_xy = np.array([img_coord(xyz[i], py_cals[cam], py_mm) for i in range(npts)])
         np.testing.assert_allclose(
-            py_xy, c_xy, atol=1e-6,
+            py_xy,
+            c_xy,
+            atol=1e-6,
             err_msg=f"cam{cam + 1}: img_coord (multimedia) differs from optv",
         )
         per_cam_metric.append(c_xy)
 
     # --- 2. triangulation parity + ground-truth recovery ---
-    c_targs = np.array(per_cam_metric).transpose(1, 0, 2)          # (npts, ncam, 2)
+    c_targs = np.array(per_cam_metric).transpose(1, 0, 2)  # (npts, ncam, 2)
     c_res, _c_rcm = point_positions(c_targs, c_cpar, c_cals, c_vpar)
 
-    py_res = np.array([
-        point_position(c_targs[i], num_cams, py_mm, py_cals)[0]
-        for i in range(npts)
-    ])
+    py_res = np.array(
+        [point_position(c_targs[i], num_cams, py_mm, py_cals)[0] for i in range(npts)]
+    )
 
     np.testing.assert_allclose(
-        py_res, c_res, atol=1e-6,
+        py_res,
+        c_res,
+        atol=1e-6,
         err_msg="point_positions (multimedia) differs from optv",
     )
     # Ground truth: project-then-triangulate must recover the body coords.
@@ -128,6 +134,8 @@ def test_multimedia_projection_and_triangulation_parity():
     # carries a realistic calibration. The parity checks above (1e-6 vs optv)
     # are the strict correctness guard; this only rejects gross errors.
     np.testing.assert_allclose(
-        py_res, xyz, atol=2.0,
+        py_res,
+        xyz,
+        atol=2.0,
         err_msg="round-trip did not recover known 3D body points",
     )

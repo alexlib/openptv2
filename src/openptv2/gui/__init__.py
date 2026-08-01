@@ -4,6 +4,7 @@ import types
 
 try:
     from traits.etsconfig.etsconfig import ETSConfig
+
     ETSConfig.toolkit = "qt"
 except ModuleNotFoundError:
     # Traits is an optional dependency for headless/non-GUI usage.
@@ -22,15 +23,30 @@ submodule_mapping = {
 
 # The following modules have been flattened directly into openptv2.gui
 gui_submodules = [
-    "ptv", "ptv_calibration", "flowtracks_utils", "parameter_manager", "experiment", "cli",
-    "parameter_defaults", "parameter_gui", "calibration_gui", "detection_gui", "mask_gui",
-    "code_editor", "tracking_debug_utils", "parameters", "plot_3d_positions", "plot_3d_trajectories"
+    "ptv",
+    "ptv_calibration",
+    "flowtracks_utils",
+    "parameter_manager",
+    "experiment",
+    "cli",
+    "parameter_defaults",
+    "parameter_gui",
+    "calibration_gui",
+    "detection_gui",
+    "mask_gui",
+    "code_editor",
+    "tracking_debug_utils",
+    "parameters",
+    "plot_3d_positions",
+    "plot_3d_trajectories",
 ]
 for sub in gui_submodules:
     submodule_mapping[sub] = f"openptv2.gui.{sub}"
 
+
 class LazySubmodule(types.ModuleType):
     """Lazy module shim that dynamically delegates to the new location on access."""
+
     def __init__(self, name, target):
         super().__init__(name)
         self.__target = target
@@ -46,14 +62,17 @@ class LazySubmodule(types.ModuleType):
         except ImportError:
             return []
 
+
 # Register all legacy submodules as lazy shims
 for old_sub, target in submodule_mapping.items():
     shim_sub = LazySubmodule(f"openptv2.gui.pyptv.{old_sub}", target)
     sys.modules[f"openptv2.gui.pyptv.{old_sub}"] = shim_sub
     setattr(pyptv_module, old_sub, shim_sub)
 
+
 def __getattr__(name):
     if name == "__version__":
         from .__version__ import __version__
+
         return __version__
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

@@ -11,21 +11,26 @@ from openptv2.algorithms.parameters import (
     VolumePar,
 )
 
-TEST_DATA = os.path.join(os.path.dirname(__file__), '..', '..', 'test_data')
+TEST_DATA = os.path.join(os.path.dirname(__file__), "..", "..", "test_data")
 
 
 def test_read_write_compare_targ_rec_par(tmp_path):
-    filename_read = os.path.join(TEST_DATA, "parameters", "targ_rec_all_different_fields.par")
+    filename_read = os.path.join(
+        TEST_DATA, "parameters", "targ_rec_all_different_fields.par"
+    )
     filename_write = os.path.join(str(tmp_path), "targ_out_read.par")
 
     targ_correct = TargetPar(
         gvthres=[1, 2, 3, 4],
         discont=5,
-        nnmin=6, nnmax=7,
-        nxmin=8, nxmax=9,
-        nymin=10, nymax=11,
+        nnmin=6,
+        nnmax=7,
+        nxmin=8,
+        nxmax=9,
+        nymin=10,
+        nymax=11,
         sumg_min=12,
-        cr_sz=13
+        cr_sz=13,
     )
     targ_read = TargetPar.from_file(filename_read)
     assert compare_target_par(targ_read, targ_correct)
@@ -47,8 +52,9 @@ def test_read_compare_sequence_par():
     seqp = SequencePar.from_file(test_file_path, num_cams)
     seqp2 = SequencePar(
         num_cams=num_cams,
-        img_base_name=[f"dumbbell/cam{i+1}_Scene77_4085" for i in range(num_cams)],
-        first=1000, last=2000,
+        img_base_name=[f"dumbbell/cam{i + 1}_Scene77_4085" for i in range(num_cams)],
+        first=1000,
+        last=2000,
     )
     for cam in range(num_cams):
         fname = f"dumbbell/cam{cam + 1}_Scene77_"
@@ -81,7 +87,12 @@ def test_read_volume_par():
         X_lay=(-250.0, 250.0),
         Zmin_lay=(-100.0, -100.0),
         Zmax_lay=(100.0, 100.0),
-        cnx=0.3, cny=0.3, cn=0.01, csumg=0.01, corrmin=33.0, eps0=1.0
+        cnx=0.3,
+        cny=0.3,
+        cn=0.01,
+        csumg=0.01,
+        corrmin=33.0,
+        eps0=1.0,
     )
     assert compare_volume_par(vpar, vpar_correct)
 
@@ -90,8 +101,8 @@ def test_read_control_par():
     cpar = ControlPar.from_file(os.path.join(TEST_DATA, "parameters", "ptv.par"))
     cpar_correct = ControlPar(
         num_cams=4,
-        img_base_name=[f"dumbbell/cam{i+1}_Scene77_4085" for i in range(4)],
-        cal_img_base_name=[f"cal/cam{i+1}.tif" for i in range(4)],
+        img_base_name=[f"dumbbell/cam{i + 1}_Scene77_4085" for i in range(4)],
+        cal_img_base_name=[f"cal/cam{i + 1}.tif" for i in range(4)],
         hp_flag=1,
         allCam_flag=0,
         tiff_flag=1,
@@ -100,7 +111,7 @@ def test_read_control_par():
         pix_x=0.017,
         pix_y=0.017,
         chfield=0,
-        mm=MmNp(nlay=1, n1=1.0, n2=[1.49, 1.0, 1.0], d=[5.0, 0.0, 0.0], n3=1.33)
+        mm=MmNp(nlay=1, n1=1.0, n2=[1.49, 1.0, 1.0], d=[5.0, 0.0, 0.0], n3=1.33),
     )
     assert compare_control_par(cpar, cpar_correct)
 
@@ -109,9 +120,12 @@ def compare_target_par(a, b):
     return (
         np.all(a.gvthres == b.gvthres)
         and a.discont == b.discont
-        and a.nnmin == b.nnmin and a.nnmax == b.nnmax
-        and a.nxmin == b.nxmin and a.nxmax == b.nxmax
-        and a.nymin == b.nymin and a.nymax == b.nymax
+        and a.nnmin == b.nnmin
+        and a.nnmax == b.nnmax
+        and a.nxmin == b.nxmin
+        and a.nxmax == b.nxmax
+        and a.nymin == b.nymin
+        and a.nymax == b.nymax
         and a.sumg_min == b.sumg_min
         and a.cr_sz == b.cr_sz
     )
@@ -119,8 +133,11 @@ def compare_target_par(a, b):
 
 def compare_mmnp(a, b):
     return (
-        a.nlay == b.nlay and np.allclose(a.n2, b.n2) and np.allclose(a.d, b.d)
-        and np.isclose(a.n1, b.n1) and np.isclose(a.n3, b.n3)
+        a.nlay == b.nlay
+        and np.allclose(a.n2, b.n2)
+        and np.allclose(a.d, b.d)
+        and np.isclose(a.n1, b.n1)
+        and np.isclose(a.n3, b.n3)
     )
 
 
@@ -128,7 +145,8 @@ def compare_sequence_par(a, b):
     return (
         a.num_cams == b.num_cams
         and a.img_base_name == b.img_base_name
-        and a.first == b.first and a.last == b.last
+        and a.first == b.first
+        and a.last == b.last
     )
 
 

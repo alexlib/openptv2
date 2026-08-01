@@ -371,7 +371,7 @@ def test_sort_candidates_by_freq():
     dest[1][1] = 0
     dest[1][2][:2] = [1, 1]
 
-    num_parts = sort_candidates_by_freq(dest, num_cams)
+    sort_candidates_by_freq(dest, num_cams)
 
     assert dest[0][0] == 2  # ftnr
     assert dest[0][1] == 2  # freq
@@ -688,7 +688,7 @@ def test_trackback():
             ]
         )
 
-        nlinks = trackback_c(run)
+        trackback_c(run)
         # Note: the C test checks nlinks - 1.043062 but comments it out.
         # We'll just run it to ensure it completes successfully.
 

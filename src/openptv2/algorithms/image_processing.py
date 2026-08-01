@@ -1,3 +1,4 @@
+# ruff: noqa: E501
 """Image processing operations using Cython-optimized kernels.
 
 Translation of lib/src/image_processing.c and lib/include/image_processing.h.
@@ -14,11 +15,10 @@ Provides:
 - Image preparation for particle detection
 """
 
-import cython
-
-
-import numpy as np
 from pathlib import Path
+
+import cython
+import numpy as np
 
 
 @cython.ccall

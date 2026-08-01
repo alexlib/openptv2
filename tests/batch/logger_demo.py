@@ -12,8 +12,7 @@ from io import StringIO
 
 # Configure logging similar to pyptv_batch.py
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
@@ -120,7 +119,7 @@ def demonstrate_log_capture():
     log_stream = StringIO()
     handler = logging.StreamHandler(log_stream)
     handler.setLevel(logging.INFO)
-    handler.setFormatter(logging.Formatter('%(levelname)s - %(message)s'))
+    handler.setFormatter(logging.Formatter("%(levelname)s - %(message)s"))
 
     # Add handler to capture output
     logger.addHandler(handler)
@@ -163,12 +162,10 @@ def demonstrate_different_configurations():
         # Configuration 1: Minimal console output
         print("1. Minimal console output (WARNING and above):")
         logging.basicConfig(
-            level=logging.WARNING,
-            format='%(levelname)s: %(message)s',
-            force=True
+            level=logging.WARNING, format="%(levelname)s: %(message)s", force=True
         )
 
-        test_logger = logging.getLogger('test1')
+        test_logger = logging.getLogger("test1")
         test_logger.info("This INFO won't show")
         test_logger.warning("This WARNING will show")
         test_logger.error("This ERROR will show")
@@ -181,11 +178,11 @@ def demonstrate_different_configurations():
 
         logging.basicConfig(
             level=logging.DEBUG,
-            format='%(asctime)s [%(levelname)8s] %(name)s: %(message)s',
-            force=True
+            format="%(asctime)s [%(levelname)8s] %(name)s: %(message)s",
+            force=True,
         )
 
-        test_logger2 = logging.getLogger('test2')
+        test_logger2 = logging.getLogger("test2")
         test_logger2.debug("Detailed debug message")
         test_logger2.info("Detailed info message")
 

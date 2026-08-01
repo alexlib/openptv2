@@ -255,15 +255,15 @@ one.
 The core of the sequence plugin (simplified):
 
 ```python
-full_image = imread(imname)                       # one 1024×1024 frame
+full_image = imread(imname)  # one 1024×1024 frame
 list_of_images = self.ptv.image_split(full_image, order=[0, 1, 3, 2])  # -> 4 views
 
 for i_cam in range(num_cams):
-    hp    = self.ptv.simple_highpass(list_of_images[i_cam], cpar)
+    hp = self.ptv.simple_highpass(list_of_images[i_cam], cpar)
     targs = self.ptv.target_recognition(hp, tpar, i_cam, cpar)  # detect
     targs.sort_y()
     detections.append(targs)
-    corrected.append(MatchedCoords(targs, cpar, cals[i_cam]))   # pixel->metric->flat
+    corrected.append(MatchedCoords(targs, cpar, cals[i_cam]))  # pixel->metric->flat
 
 sorted_pos, sorted_corresp, _ = correspondences(detections, corrected, cals, vpar, cpar)
 ```
@@ -312,7 +312,7 @@ run_batch(
     seq_last=1000002,
     sequence_plugin="ext_sequence_splitter",
     tracking_plugin="ext_tracker_splitter",
-    mode="sequence",     # "sequence" | "tracking" | "both"
+    mode="sequence",  # "sequence" | "tracking" | "both"
 )
 ```
 

@@ -122,10 +122,13 @@ Image preprocessing (high-pass filtering, image loading, and target detection/se
    ```python
    from concurrent.futures import ProcessPoolExecutor
 
+
    def preprocess_all_frames(frame_indices, run_params):
        with ProcessPoolExecutor() as executor:
            # Distribute frames across available CPU cores
-           executor.map(process_frame_image, frame_indices, [run_params]*len(frame_indices))
+           executor.map(
+               process_frame_image, frame_indices, [run_params] * len(frame_indices)
+           )
    ```
 
 #### Step 3: Handle Disk I/O & File Collisions

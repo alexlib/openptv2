@@ -4,6 +4,7 @@ from openptv2.algorithms.lsqadj import ata, atl, matinv
 
 EPS = 1e-5
 
+
 def test_matmul():
     a = np.array([1.0, 1.0, 1.0])
     b = np.zeros(3)
@@ -19,11 +20,13 @@ def test_matmul():
     f[:] = d[:3, :3] @ e[:3]
     assert np.allclose(f, expected_f, atol=EPS)
 
+
 def test_ata():
     a = np.array([[1, 0, 1], [2, 2, 4], [1, 2, 3], [2, 4, 3]], dtype=np.float64)
     expected = np.array([[10, 14, 18], [14, 24, 26], [18, 26, 35]], dtype=np.float64)
     b = ata(a, 4, 3)
     assert np.allclose(b, expected, atol=EPS)
+
 
 def test_atl():
     a = np.array([[1, 0, 1], [2, 2, 4], [1, 2, 3], [2, 4, 3]], dtype=np.float64)
@@ -32,12 +35,16 @@ def test_atl():
     u = atl(a, l, 4, 3)
     assert np.allclose(u, expected, atol=EPS)
 
+
 def test_matinv():
     c = np.array([[1, 2, 3], [0, 4, 5], [1, 0, 6]], dtype=np.float64)
-    expected = np.array([
-        [1.090909, -0.545455, -0.090909],
-        [0.227273, 0.136364, -0.227273],
-        [-0.181818, 0.090909, 0.181818]
-    ], dtype=np.float64)
+    expected = np.array(
+        [
+            [1.090909, -0.545455, -0.090909],
+            [0.227273, 0.136364, -0.227273],
+            [-0.181818, 0.090909, 0.181818],
+        ],
+        dtype=np.float64,
+    )
     inv = matinv(c, 3)
     assert np.allclose(inv, expected, atol=1e-5)

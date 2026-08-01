@@ -81,7 +81,11 @@ def _(cals, cpar, np, num_cams, plt, res_slider, side_slider):
         origins, dirs = [], []
         for cal in cals:
             ext = cal.ext_par
-            R = np.array(cal.get_rotation_matrix()) if hasattr(cal, "get_rotation_matrix") else np.eye(3)
+            R = (
+                np.array(cal.get_rotation_matrix())
+                if hasattr(cal, "get_rotation_matrix")
+                else np.eye(3)
+            )
             C = np.array([ext.x0, ext.y0, ext.z0])
             D = R.T @ np.array([0.0, 0.0, 1.0])
             origins.append(C)
@@ -89,10 +93,10 @@ def _(cals, cpar, np, num_cams, plt, res_slider, side_slider):
 
         S = np.zeros((3, 3))
         b = np.zeros(3)
-        for O, D in zip(origins, dirs):
-            M = np.eye(3) - np.outer(D, D)
+        for origin, direction in zip(origins, dirs):
+            M = np.eye(3) - np.outer(direction, direction)
             S += M
-            b += M @ O
+            b += M @ origin
         return np.linalg.solve(S, b)
 
     center = _find_convergence(cals)
@@ -101,9 +105,9 @@ def _(cals, cpar, np, num_cams, plt, res_slider, side_slider):
     res = res_slider.value
     ax_pts = np.linspace(-half, half, res)
     X, Y, Z = np.meshgrid(ax_pts, ax_pts, ax_pts)
-    pts = np.column_stack([X.ravel() + center[0],
-                           Y.ravel() + center[1],
-                           Z.ravel() + center[2]])
+    pts = np.column_stack(
+        [X.ravel() + center[0], Y.ravel() + center[1], Z.ravel() + center[2]]
+    )
 
     imx, imy = cpar.get_image_size()
     mask = np.ones(len(pts), dtype=bool)
@@ -121,20 +125,30 @@ def _(cals, cpar, np, num_cams, plt, res_slider, side_slider):
                 mask[i] = False
 
     visible = pts[mask]
-    print(f"Convergence center: {center.round(1)}, visible voxels: {mask.sum()}/{len(pts)}")
+    print(
+        "Convergence center: "
+        f"{center.round(1)}, visible voxels: {mask.sum()}/{len(pts)}"
+    )
 
     fig = plt.figure(figsize=(9, 7))
     ax = fig.add_subplot(111, projection="3d")
     if len(visible) > 0:
         sc = ax.scatter(
-            visible[:, 0], visible[:, 1], visible[:, 2],
-            s=6, c=visible[:, 2], cmap="viridis", alpha=0.6,
+            visible[:, 0],
+            visible[:, 1],
+            visible[:, 2],
+            s=6,
+            c=visible[:, 2],
+            cmap="viridis",
+            alpha=0.6,
         )
         fig.colorbar(sc, ax=ax, shrink=0.6, label="Z")
     ax.set_xlabel("X")
     ax.set_ylabel("Y")
     ax.set_zlabel("Z")
-    ax.set_title(f"Visual hull — {mask.sum()} voxels visible from all {num_cams} cameras")
+    ax.set_title(
+        f"Visual hull — {mask.sum()} voxels visible from all {num_cams} cameras"
+    )
     ax
     return
 

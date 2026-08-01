@@ -40,7 +40,6 @@ def _(Calibration, convert_arr_metric_to_pixel, image_coordinates, np):
         pos = inters + R * np.r_[s[1], -c[1] * s[0], c[1] * c[0]]
         return pos
 
-
     def get_polar_rep(pos, angs):
         """
         Returns the point of intersection with zero Z plane, and distance from it.
@@ -55,13 +54,11 @@ def _(Calibration, convert_arr_metric_to_pixel, image_coordinates, np):
 
         return inters[:2], R
 
-
     def gen_calib(inters, R, angs, glass_vec, prim_point, radial_dist, decent):
         pos = get_pos(inters, R, angs)
         return Calibration(
             pos, angs, prim_point, radial_dist, decent, np.r_[1, 0], glass_vec
         )
-
 
     def fitness(solution, calib_targs, calib_detect, glass_vec, cpar):
         """
@@ -89,9 +86,7 @@ def _(Calibration, convert_arr_metric_to_pixel, image_coordinates, np):
 
         # Compare known points' projections to detections:
         cal = gen_calib(inters, R, angs, glass_vec, prim_point, rad_dist, decent)
-        known_proj = image_coordinates(
-            calib_targs, cal, cpar.get_multimedia_params()
-        )
+        known_proj = image_coordinates(calib_targs, cal, cpar.get_multimedia_params())
         known_2d = convert_arr_metric_to_pixel(known_proj, cpar)
         dists = np.linalg.norm(
             known_2d[None, :, :] - calib_detect[:, None, :], axis=2

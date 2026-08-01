@@ -87,12 +87,16 @@ def _(mo):
     gvthres = mo.ui.slider(2, 150, value=10, label="grey threshold (gvthres / gvth)")
     disco = mo.ui.slider(1, 250, value=100, label="discontinuity (disco / tol_dis)")
     nnmin = mo.ui.slider(1, 80, value=15, label="min pixels (nnmin / min_npix)")
-    nnmax = mo.ui.slider(50, 2000, value=900, step=10, label="max pixels (nnmax / max_npix)")
+    nnmax = mo.ui.slider(
+        50, 2000, value=900, step=10, label="max pixels (nnmax / max_npix)"
+    )
     nxmin = mo.ui.slider(1, 20, value=5, label="min width (nxmin)")
     nxmax = mo.ui.slider(3, 60, value=30, label="max width (nxmax)")
     nymin = mo.ui.slider(1, 20, value=5, label="min height (nymin)")
     nymax = mo.ui.slider(3, 60, value=30, label="max height (nymax)")
-    sumg_min = mo.ui.slider(0, 4000, value=100, step=50, label="min sum-grey (sumg_min / sum_grey)")
+    sumg_min = mo.ui.slider(
+        0, 4000, value=100, step=50, label="min sum-grey (sumg_min / sum_grey)"
+    )
     mo.vstack([gvthres, disco, nnmin, nnmax, nxmin, nxmax, nymin, nymax, sumg_min])
     return disco, gvthres, nnmax, nnmin, nxmax, nxmin, nymax, nymin, sumg_min
 
@@ -149,19 +153,40 @@ def _(
         img = np.ascontiguousarray(real_img, dtype=np.uint8)
         imy, imx = img.shape
         res = targ_rec_fast(
-            img, img.copy(),
-            int(gvthres.value), int(disco.value), int(nnmin.value), int(nnmax.value),
-            int(nxmin.value), int(nxmax.value), int(nymin.value), int(nymax.value),
-            int(sumg_min.value), 1, 1, imx - 1, imy - 1, 20000,
+            img,
+            img.copy(),
+            int(gvthres.value),
+            int(disco.value),
+            int(nnmin.value),
+            int(nnmax.value),
+            int(nxmin.value),
+            int(nxmax.value),
+            int(nymin.value),
+            int(nymax.value),
+            int(sumg_min.value),
+            1,
+            1,
+            imx - 1,
+            imy - 1,
+            20000,
         )
         n, xs, ys = int(res[0]), res[1], res[2]
         fig, ax = plt.subplots(1, 2, figsize=(12, 6))
-        ax[0].imshow(img, cmap="gray"); ax[0].set_title("image"); ax[0].axis("off")
-        ax[1].imshow(img, cmap="gray"); ax[1].axis("off")
+        ax[0].imshow(img, cmap="gray")
+        ax[0].set_title("image")
+        ax[0].axis("off")
+        ax[1].imshow(img, cmap="gray")
+        ax[1].axis("off")
         ax[1].set_title(f"targ_rec_fast → {n} targets")
         if n:
-            ax[1].scatter(np.asarray(xs)[:n], np.asarray(ys)[:n], s=60,
-                          facecolors="none", edgecolors="lime", linewidths=1.3)
+            ax[1].scatter(
+                np.asarray(xs)[:n],
+                np.asarray(ys)[:n],
+                s=60,
+                facecolors="none",
+                edgecolors="lime",
+                linewidths=1.3,
+            )
         fig.tight_layout()
         return fig
 

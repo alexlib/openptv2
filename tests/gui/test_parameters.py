@@ -129,7 +129,9 @@ def test_sequence_params(temp_params_dir):
     os.chdir(temp_params_dir.parent)
 
     try:
-        sparams = SequenceParams(n_img=4, base_name=[], first=0, last=0, path=params_dir)
+        sparams = SequenceParams(
+            n_img=4, base_name=[], first=0, last=0, path=params_dir
+        )
         sparams.read()
 
         assert sparams.first == 10000
@@ -141,7 +143,9 @@ def test_sequence_params(temp_params_dir):
         sparams.last = 10009
         sparams.write()
 
-        sparams2 = SequenceParams(n_img=4, base_name=[], first=0, last=0, path=params_dir)
+        sparams2 = SequenceParams(
+            n_img=4, base_name=[], first=0, last=0, path=params_dir
+        )
         sparams2.read()
         assert sparams2.first == 10001
         assert sparams2.last == 10009
@@ -155,36 +159,38 @@ def test_parameter_manager(temp_params_dir):
 
     # Create dummy .par files
     with open(params_dir / "ptv.par", "w") as f:
-        f.write("2\nimg1.tif\ncal1.ori\nimg2.tif\ncal2.ori\n1\n0\n1\n10\n10\n0.1\n0.1\n0\n1\n1\n1\n1\n")
+        f.write(
+            "2\nimg1.tif\ncal1.ori\nimg2.tif\ncal2.ori\n1\n0\n1\n10\n10\n0.1\n0.1\n0\n1\n1\n1\n1\n"
+        )
     with open(params_dir / "sequence.par", "w") as f:
         f.write("img1\nimg2\n1\n2\n")
 
     pm = ParameterManager()
     pm.from_directory(params_dir)
 
-    assert 'ptv' in pm.parameters
+    assert "ptv" in pm.parameters
     # num_cams is now at global level, not in ptv section
     assert pm.get_n_cam() == 2
-    assert 'sequence' in pm.parameters
-    assert pm.parameters['sequence']['first'] == 1
+    assert "sequence" in pm.parameters
+    assert pm.parameters["sequence"]["first"] == 1
 
     # Test to_yaml
     yaml_path = temp_params_dir / "parameters.yaml"
     pm.to_yaml(yaml_path)
     assert yaml_path.exists()
 
-    with open(yaml_path, 'r') as f:
+    with open(yaml_path, "r") as f:
         data = yaml.safe_load(f)
     # num_cams should be at top level, not in ptv section
-    assert data['num_cams'] == 2
-    assert 'num_cams' not in data['ptv']  # Ensure it's not in ptv section
+    assert data["num_cams"] == 2
+    assert "num_cams" not in data["ptv"]  # Ensure it's not in ptv section
 
     # Test from_yaml
     pm2 = ParameterManager()
     pm2.from_yaml(yaml_path)
     # num_cams should be accessible via get_n_cam(), not from ptv section
     assert pm2.get_n_cam() == 2
-    assert 'num_cams' not in pm2.parameters['ptv']  # Ensure it's not in ptv section
+    assert "num_cams" not in pm2.parameters["ptv"]  # Ensure it's not in ptv section
 
     # Test to_directory
     new_params_dir = temp_params_dir / "new_params"

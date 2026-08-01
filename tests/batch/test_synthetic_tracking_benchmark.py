@@ -27,7 +27,7 @@ def create_synthetic_experiment(
     noise_std: float = 0.05,
 ):
     """Generates a synthetic dataset with known ground-truth 3D trajectories.
-    
+
     - num_continuous: Particles visible across all frames 1..N.
     - num_occluded: Particles that experience a 1-frame occlusion at frame 5 (gap in visibility).
     """
@@ -42,7 +42,6 @@ def create_synthetic_experiment(
     res_dir.mkdir(parents=True, exist_ok=True)
 
     np.random.seed(42)
-    gt_links = set()  # set of (frame, pnr_t, pnr_t1)
     gt_trajectories = {}
     next_id = 1
 
@@ -61,7 +60,11 @@ def create_synthetic_experiment(
                 y0 + vy * t + np.random.normal(0, noise_std),
                 z0 + vz * t + np.random.normal(0, noise_std),
             )
-        gt_trajectories[next_id] = {"type": "continuous", "pos": pos, "frames": list(range(start_frame, end_frame + 1))}
+        gt_trajectories[next_id] = {
+            "type": "continuous",
+            "pos": pos,
+            "frames": list(range(start_frame, end_frame + 1)),
+        }
         next_id += 1
 
     # 2. Occluded trajectories (missing at frame start_frame + 4)
@@ -70,7 +73,9 @@ def create_synthetic_experiment(
         x0, y0, z0 = np.random.uniform(-10, 10, 3)
         vx, vy, vz = np.random.uniform(-0.5, 0.5, 3)
         pos = {}
-        visible_frames = [f for f in range(start_frame, end_frame + 1) if f != gap_frame]
+        visible_frames = [
+            f for f in range(start_frame, end_frame + 1) if f != gap_frame
+        ]
         for f in visible_frames:
             t = f - start_frame
             pos[f] = (
@@ -78,7 +83,11 @@ def create_synthetic_experiment(
                 y0 + vy * t + np.random.normal(0, noise_std),
                 z0 + vz * t + np.random.normal(0, noise_std),
             )
-        gt_trajectories[next_id] = {"type": "occluded", "pos": pos, "frames": visible_frames}
+        gt_trajectories[next_id] = {
+            "type": "occluded",
+            "pos": pos,
+            "frames": visible_frames,
+        }
         next_id += 1
 
     # Write res/rt_is.#
@@ -93,7 +102,9 @@ def create_synthetic_experiment(
         with open(rt_file, "w") as fp:
             fp.write(f"{len(particles_in_frame)}\n")
             for idx, (tid, x, y, z) in enumerate(particles_in_frame, 1):
-                fp.write(f"{idx:4d} {x:10.4f} {y:10.4f} {z:10.4f} {tid:4d} {tid:4d} {tid:4d} {tid:4d}\n")
+                fp.write(
+                    f"{idx:4d} {x:10.4f} {y:10.4f} {z:10.4f} {tid:4d} {tid:4d} {tid:4d} {tid:4d}\n"
+                )
 
     # Update sequence parameter in YAML
     yaml_file = out_dir / "parameters_Run1.yaml"
@@ -196,7 +207,9 @@ def test_synthetic_tracking_comparison(tmp_path):
     print("\n" + "=" * 80)
     print("SYNTHETIC TRACKING BENCHMARK RESULTS")
     print("=" * 80)
-    print(f"{'Preset':18s} | {'Time (s)':8s} | {'Links':8s} | {'Trajectories':12s} | {'Mean Length':12s} | {'Max Length':10s}")
+    print(
+        f"{'Preset':18s} | {'Time (s)':8s} | {'Links':8s} | {'Trajectories':12s} | {'Mean Length':12s} | {'Max Length':10s}"
+    )
     print("-" * 80)
     for preset, res in results.items():
         print(

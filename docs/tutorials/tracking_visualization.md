@@ -9,7 +9,10 @@ There are two ways to use the tracking visualization:
 ### 1. Programmatic Usage
 
 ```python
-from gui.pyptv.tracking_viz_panel import show_tracking_preview, create_tracking_viz_panel
+from gui.pyptv.tracking_viz_panel import (
+    show_tracking_preview,
+    create_tracking_viz_panel,
+)
 
 # Option 1: Create and display panel directly
 panel = show_tracking_preview(main_gui, num_frames=10)

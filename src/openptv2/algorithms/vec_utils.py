@@ -13,16 +13,17 @@ import cython
 import numpy as np
 
 if cython.compiled:
-    from cython.cimports.libc.math import sqrt as c_sqrt, isnan as c_isnan
+    from cython.cimports.libc.math import isnan as c_isnan
+    from cython.cimports.libc.math import sqrt as c_sqrt
 else:
-    from math import sqrt as c_sqrt, isnan as c_isnan
+    from math import isnan as c_isnan
+    from math import sqrt as c_sqrt
 # Sentinel value for empty/unused cells (matches C's EMPTY_CELL = NaN)
 EMPTY_CELL = np.nan
 
 
 @cython.ccall
 @cython.inline
-
 def is_empty(x: cython.double) -> cython.bint:
     """Check if a value represents an empty cell (NaN)."""
     return c_isnan(x)
@@ -34,7 +35,6 @@ def is_empty(x: cython.double) -> cython.bint:
 
 
 @cython.ccall
-
 def vec_init() -> object:
     """Return a 3D vector initialized to NaN.
 
@@ -45,7 +45,6 @@ def vec_init() -> object:
 
 
 @cython.ccall
-
 def vec_set(x: cython.double, y: cython.double, z: cython.double) -> object:
     """Create a 3D vector from components.
 
@@ -63,7 +62,6 @@ def vec_set(x: cython.double, y: cython.double, z: cython.double) -> object:
 
 
 @cython.ccall
-
 def vec_copy(src: cython.double[:]) -> object:
     """Copy a 3D vector.
 
@@ -81,7 +79,6 @@ def vec_copy(src: cython.double[:]) -> object:
 
 
 @cython.ccall
-
 def vec_subt(from_vec: cython.double[:], sub: cython.double[:]) -> object:
     """Subtract two 3D vectors.
 
@@ -100,7 +97,6 @@ def vec_subt(from_vec: cython.double[:], sub: cython.double[:]) -> object:
 
 
 @cython.ccall
-
 def vec_add(vec1: cython.double[:], vec2: cython.double[:]) -> object:
     """Add two 3D vectors.
 
@@ -118,7 +114,6 @@ def vec_add(vec1: cython.double[:], vec2: cython.double[:]) -> object:
 
 
 @cython.ccall
-
 def vec_scalar_mul(vec: cython.double[:], scalar: cython.double) -> object:
     """Multiply a vector by a scalar.
 
@@ -138,7 +133,6 @@ def vec_scalar_mul(vec: cython.double[:], scalar: cython.double) -> object:
 
 @cython.ccall
 @cython.inline
-
 def vec_diff_norm(vec1: cython.double[:], vec2: cython.double[:]) -> cython.double:
     """Compute the norm of the difference between two vectors.
 
@@ -158,7 +152,6 @@ def vec_diff_norm(vec1: cython.double[:], vec2: cython.double[:]) -> cython.doub
 
 @cython.ccall
 @cython.inline
-
 def vec_norm(vec: cython.double[:]) -> cython.double:
     """Compute the Euclidean norm of a 3D vector.
 
@@ -173,7 +166,6 @@ def vec_norm(vec: cython.double[:]) -> cython.double:
 
 @cython.ccall
 @cython.inline
-
 def vec_dot(vec1: cython.double[:], vec2: cython.double[:]) -> cython.double:
     """Compute the dot product of two 3D vectors.
 
@@ -187,7 +179,6 @@ def vec_dot(vec1: cython.double[:], vec2: cython.double[:]) -> cython.double:
 
 
 @cython.ccall
-
 def vec_cross(vec1: cython.double[:], vec2: cython.double[:]) -> object:
     """Compute the cross product of two 3D vectors.
 
@@ -206,7 +197,6 @@ def vec_cross(vec1: cython.double[:], vec2: cython.double[:]) -> object:
 
 @cython.ccall
 @cython.inline
-
 def vec_cmp(vec1: cython.double[:], vec2: cython.double[:]) -> cython.bint:
     """Check exact equality of two vectors.
 
@@ -221,7 +211,6 @@ def vec_cmp(vec1: cython.double[:], vec2: cython.double[:]) -> cython.bint:
 
 @cython.ccall
 @cython.inline
-
 def vec_approx_cmp(
     vec1: cython.double[:], vec2: cython.double[:], eps: cython.double = 1e-10
 ) -> cython.bint:
@@ -242,7 +231,6 @@ def vec_approx_cmp(
 
 
 @cython.ccall
-
 def unit_vector(vec: cython.double[:]) -> object:
     """Normalize a vector to unit length.
 
@@ -267,6 +255,7 @@ def unit_vector(vec: cython.double[:]) -> object:
         out[2] = vec[2] / norm
     return out
 
+
 def is_compiled() -> bool:
     """Return whether this module is compiled to C."""
     return cython.compiled
@@ -275,6 +264,7 @@ def is_compiled() -> bool:
 # ---------------------------------------------------------------------------
 # Batch (SoA) vectorized operations
 # ---------------------------------------------------------------------------
+
 
 class Vec3dBatch:
     """Batch 3D vectors stored as Structure-of-Arrays.

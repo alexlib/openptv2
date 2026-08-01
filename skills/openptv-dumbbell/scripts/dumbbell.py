@@ -1,4 +1,5 @@
 """openptv-dumbbell — dumbbell calibration CLI for OpenPTV datasets."""
+
 from __future__ import annotations
 
 import argparse
@@ -17,6 +18,7 @@ def _find_yaml(dataset: Path) -> Path | None:
 def cmd_check(args) -> int:
     """Validate dumbbell section in the YAML."""
     import yaml
+
     yp = Path(args.yaml_or_dataset)
     if yp.is_dir():
         yp2 = _find_yaml(yp)
@@ -72,7 +74,10 @@ def cmd_run(args) -> int:
             run_dumbbell_calibration,
         )
     except ImportError as e:
-        print(f"ERROR: {e}\nRun from the openptv2 checkout with `uv run`.", file=sys.stderr)
+        print(
+            f"ERROR: {e}\nRun from the openptv2 checkout with `uv run`.",
+            file=sys.stderr,
+        )
         return 1
 
     step = args.step  # None means use YAML default
@@ -113,19 +118,35 @@ def main() -> int:
     sub = ap.add_subparsers(dest="cmd", required=True)
 
     p = sub.add_parser("check", help="validate dumbbell YAML section")
-    p.add_argument("yaml_or_dataset", help="parameters_*.yaml file or dataset directory")
+    p.add_argument(
+        "yaml_or_dataset", help="parameters_*.yaml file or dataset directory"
+    )
     p.set_defaults(func=cmd_check)
 
     p = sub.add_parser("run", help="run dumbbell calibration")
-    p.add_argument("yaml_or_dataset", help="parameters_*.yaml file or dataset directory")
-    p.add_argument("--step", type=int, default=None,
-                   help="frame stride (default: from YAML dumbbell.dumbbell_step)")
-    p.add_argument("--fixed-cams", default="",
-                   help="comma-separated 0-based camera indices to keep fixed")
-    p.add_argument("--maxiter", type=int, default=1000,
-                   help="max optimizer iterations (default 1000)")
-    p.add_argument("--dry-run", action="store_true",
-                   help="compute but do not write .ori/.addpar")
+    p.add_argument(
+        "yaml_or_dataset", help="parameters_*.yaml file or dataset directory"
+    )
+    p.add_argument(
+        "--step",
+        type=int,
+        default=None,
+        help="frame stride (default: from YAML dumbbell.dumbbell_step)",
+    )
+    p.add_argument(
+        "--fixed-cams",
+        default="",
+        help="comma-separated 0-based camera indices to keep fixed",
+    )
+    p.add_argument(
+        "--maxiter",
+        type=int,
+        default=1000,
+        help="max optimizer iterations (default 1000)",
+    )
+    p.add_argument(
+        "--dry-run", action="store_true", help="compute but do not write .ori/.addpar"
+    )
     p.set_defaults(func=cmd_run)
 
     args = ap.parse_args()

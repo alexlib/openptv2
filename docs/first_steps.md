@@ -33,7 +33,7 @@ info = openptv2.get_runtime_info()
 print(f"Engine: {info['engine']}")
 print(f"Compiled (Cython): {info['compiled']}")
 
-assert info['compiled'] is True, "Warning: Running in uncompiled mode!"
+assert info["compiled"] is True, "Warning: Running in uncompiled mode!"
 ```
 
 ### Step 2: Load Calibration Parameters
@@ -47,7 +47,7 @@ import numpy as np
 cal = Calibration()
 cal.from_file(
     ori_file="test_data/test_cavity/cal/cam1.ori",
-    addpar_file="test_data/test_cavity/cal/cam1.addpar"
+    addpar_file="test_data/test_cavity/cal/cam1.addpar",
 )
 
 print("Camera Position (3D physical):", cal.get_pos())

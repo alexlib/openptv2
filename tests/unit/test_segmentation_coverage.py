@@ -31,6 +31,7 @@ from openptv2.algorithms.segmentation import (
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _make_img(*shape, dtype=np.uint8):
     return np.zeros(shape, dtype=dtype)
 
@@ -38,6 +39,7 @@ def _make_img(*shape, dtype=np.uint8):
 # ---------------------------------------------------------------------------
 # is_compiled (line 437)
 # ---------------------------------------------------------------------------
+
 
 def test_is_compiled_returns_bool():
     result = is_compiled()
@@ -47,6 +49,7 @@ def test_is_compiled_returns_bool():
 # ---------------------------------------------------------------------------
 # Peak dataclass (line 51->exit)
 # ---------------------------------------------------------------------------
+
 
 def test_peak_post_init_skips_when_touch_already_set():
     """Line 51->exit: touch is not None, so __post_init__ does NOT overwrite it."""
@@ -65,6 +68,7 @@ def test_peak_default_touch_is_list():
 # _is_local_maximum (direct API)
 # ---------------------------------------------------------------------------
 
+
 def test_is_local_maximum_true():
     img = np.array([[0, 0, 0], [0, 255, 0], [0, 0, 0]], dtype=np.uint8)
     assert bool(_is_local_maximum(img, 1, 1)) is True
@@ -78,6 +82,7 @@ def test_is_local_maximum_false():
 # ---------------------------------------------------------------------------
 # check_touch direct (lines 85-92)
 # ---------------------------------------------------------------------------
+
 
 def _make_peak_with_touch():
     """Return a Peak with touch pre-allocated as [0,0,0,0]."""
@@ -130,12 +135,14 @@ def test_check_touch_cap_at_three():
 # targ_rec – explicit positive xmax/ymax (lines 132->134, 134->137)
 # ---------------------------------------------------------------------------
 
+
 def test_targ_rec_explicit_positive_xmax():
     """Line 132->134: xmax >= 0 branch (else-branch of 'if xmax < 0')."""
     img = _make_img(10, 10)
     img[4, 4] = 255
-    targets = targ_rec(img, 200, 5, 1, 20, 1, 10, 1, 10, 10,
-                       xmin=1, xmax=8, ymin=1, ymax=8)
+    targets = targ_rec(
+        img, 200, 5, 1, 20, 1, 10, 1, 10, 10, xmin=1, xmax=8, ymin=1, ymax=8
+    )
     assert len(targets) == 1
     assert targets[0].tnr == CORRES_NONE
 
@@ -144,8 +151,9 @@ def test_targ_rec_explicit_positive_ymax():
     """Line 134->137: ymax >= 0 branch."""
     img = _make_img(12, 12)
     img[5, 5] = 255
-    targets = targ_rec(img, 200, 5, 1, 20, 1, 10, 1, 10, 10,
-                       xmin=1, xmax=10, ymin=1, ymax=10)
+    targets = targ_rec(
+        img, 200, 5, 1, 20, 1, 10, 1, 10, 10, xmin=1, xmax=10, ymin=1, ymax=10
+    )
     assert len(targets) == 1
 
 
@@ -153,12 +161,14 @@ def test_targ_rec_explicit_positive_ymax():
 # peak_fit – explicit positive xmax/ymax (lines 203->205, 205->213)
 # ---------------------------------------------------------------------------
 
+
 def test_peak_fit_explicit_positive_xmax():
     """Lines 203->205: xmax >= 0 branch in peak_fit."""
     img = _make_img(10, 10)
     img[4, 4] = 255
-    targets = peak_fit(img, 200, 5, 1, 20, 1, 10, 1, 10, 10,
-                       xmin=1, xmax=8, ymin=1, ymax=8)
+    targets = peak_fit(
+        img, 200, 5, 1, 20, 1, 10, 1, 10, 10, xmin=1, xmax=8, ymin=1, ymax=8
+    )
     assert len(targets) == 1
 
 
@@ -166,8 +176,9 @@ def test_peak_fit_explicit_positive_ymax():
     """Lines 205->213: ymax >= 0 branch in peak_fit."""
     img = _make_img(12, 12)
     img[5, 5] = 255
-    targets = peak_fit(img, 200, 5, 1, 20, 1, 10, 1, 10, 10,
-                       xmin=1, xmax=10, ymin=1, ymax=10)
+    targets = peak_fit(
+        img, 200, 5, 1, 20, 1, 10, 1, 10, 10, xmin=1, xmax=10, ymin=1, ymax=10
+    )
     assert len(targets) == 1
 
 
@@ -175,11 +186,12 @@ def test_peak_fit_explicit_positive_ymax():
 # peak_fit – pixel above threshold but NOT local maximum (line 251)
 # ---------------------------------------------------------------------------
 
+
 def test_peak_fit_non_local_max_above_threshold():
     """Line 251: pixel > gvthres that fails _is_local_maximum is skipped."""
     img = _make_img(8, 8)
-    img[3, 3] = 255   # local maximum
-    img[3, 4] = 200   # above threshold but NOT a local max (255 > 200 at (3,3))
+    img[3, 3] = 255  # local maximum
+    img[3, 4] = 200  # above threshold but NOT a local max (255 > 200 at (3,3))
     targets = peak_fit(img, 150, 10, 1, 20, 1, 10, 1, 10, 10)
     # Exactly one target (the true local max at (3,3))
     assert len(targets) == 1
@@ -189,11 +201,12 @@ def test_peak_fit_non_local_max_above_threshold():
 # peak_fit – BFS boundary check and pass-2 boundary (lines 278, 330->327)
 # ---------------------------------------------------------------------------
 
+
 def test_peak_fit_bfs_hits_left_boundary():
     """Lines 278 and 330->327: peak at column 0 (xmin=0) causes BFS and
     pass-2 neighbour checks to encounter out-of-bounds coordinates."""
     img = _make_img(8, 8)
-    img[3, 0] = 255   # peak at leftmost column
+    img[3, 0] = 255  # peak at leftmost column
     # xmin=0 so the outer loop includes j=0; BFS from (3,0) tries col -1
     targets = peak_fit(img, 150, 5, 1, 20, 1, 10, 1, 10, 10, xmin=0)
     # 1 peak detected (tiny, no BFS growth)
@@ -204,11 +217,12 @@ def test_peak_fit_bfs_hits_left_boundary():
 # peak_fit – pass-2 xmin / ymin updates (lines 318, 322)
 # ---------------------------------------------------------------------------
 
+
 def test_peak_fit_bfs_updates_xmin():
     """Line 318: BFS grows LEFT of the local maximum, updating peak.xmin."""
     img = _make_img(8, 8)
-    img[3, 4] = 255   # local max at col 4
-    img[3, 3] = 200   # BFS grows left to col 3 -> peak.xmin updated from 4 to 3
+    img[3, 4] = 255  # local max at col 4
+    img[3, 3] = 200  # BFS grows left to col 3 -> peak.xmin updated from 4 to 3
     targets = peak_fit(img, 150, 60, 1, 20, 1, 10, 1, 10, 10)
     assert len(targets) == 1
     # Width spans cols 3-4 → nx == 2
@@ -218,8 +232,8 @@ def test_peak_fit_bfs_updates_xmin():
 def test_peak_fit_bfs_updates_ymin():
     """Line 322: BFS grows UP from the local maximum, updating peak.ymin."""
     img = _make_img(9, 8)
-    img[4, 3] = 255   # local max at row 4
-    img[3, 3] = 200   # BFS grows up to row 3 -> peak.ymin updated from 4 to 3
+    img[4, 3] = 255  # local max at row 4
+    img[3, 3] = 200  # BFS grows up to row 3 -> peak.ymin updated from 4 to 3
     targets = peak_fit(img, 150, 60, 1, 20, 1, 10, 1, 10, 10)
     assert len(targets) == 1
     assert targets[0].ny == 2
@@ -229,6 +243,7 @@ def test_peak_fit_bfs_updates_ymin():
 # peak_fit – reunification pass (lines 339-393, 399)
 # Using monkeypatch to pre-allocate touch so check_touch works in pure Python
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture()
 def patch_peak_touch(monkeypatch):
@@ -241,10 +256,13 @@ def patch_peak_touch(monkeypatch):
     """
     if is_compiled():
         pytest.skip("monkeypatch unavailable on compiled Cython extension type")
+
     def patched(self):
         if self.touch is None:
             self.touch = [0, 0, 0, 0]
+
     from openptv2.algorithms import segmentation
+
     monkeypatch.setattr(segmentation.Peak, "__post_init__", patched)
 
 
@@ -253,8 +271,8 @@ def test_peak_fit_reunification_two_diagonal_peaks(patch_peak_touch):
     (distance = sqrt(2) < 2) are unified into one target (line 399 also hit
     for the absorbed peak)."""
     img = _make_img(8, 8)
-    img[2, 2] = 255   # peak 1
-    img[3, 3] = 255   # peak 2 – diagonal, distance=sqrt(2) < 2 → unified
+    img[2, 2] = 255  # peak 1
+    img[3, 3] = 255  # peak 2 – diagonal, distance=sqrt(2) < 2 → unified
     targets = peak_fit(img, 150, 5, 1, 20, 1, 10, 1, 10, 10)
     assert len(targets) == 1
     # Unified target has n == 2 pixels
@@ -264,8 +282,8 @@ def test_peak_fit_reunification_two_diagonal_peaks(patch_peak_touch):
 def test_peak_fit_no_reunification_far_peaks(patch_peak_touch):
     """Lines 335-337: two peaks with n_touch==0 (not touching) both survive."""
     img = _make_img(10, 10)
-    img[2, 2] = 255   # peak 1
-    img[7, 7] = 255   # peak 2 – too far apart → no touch → no unification
+    img[2, 2] = 255  # peak 1
+    img[7, 7] = 255  # peak 2 – too far apart → no touch → no unification
     targets = peak_fit(img, 150, 5, 1, 20, 1, 10, 1, 10, 10)
     assert len(targets) == 2
 
@@ -274,10 +292,11 @@ def test_peak_fit_no_reunification_far_peaks(patch_peak_touch):
 # peak_fit – pass-4 edge filter (lines 403-406)
 # ---------------------------------------------------------------------------
 
+
 def test_peak_fit_edge_filter_left(tmp_path):
     """Lines 402-404: width > 32 and peak.xmin == xmin → target filtered out."""
     img = _make_img(10, 40)
-    img[4, 1] = 200   # at xmin=1 (left edge) in a 40-wide image (width=39>32)
+    img[4, 1] = 200  # at xmin=1 (left edge) in a 40-wide image (width=39>32)
     targets = peak_fit(img, 150, 5, 1, 20, 1, 10, 1, 10, 10)
     assert len(targets) == 0
 
@@ -289,8 +308,8 @@ def test_peak_fit_edge_filter_right():
     out of the underlying array bounds (img is 40 wide).
     """
     img = _make_img(10, 40)
-    img[4, 33] = 255   # local max
-    img[4, 34] = 200   # BFS grows to col 34 == xmax-1 → right-edge filter
+    img[4, 33] = 255  # local max
+    img[4, 34] = 200  # BFS grows to col 34 == xmax-1 → right-edge filter
     targets = peak_fit(img, 150, 80, 1, 20, 1, 10, 1, 10, 10, xmax=35)
     assert len(targets) == 0
 
@@ -307,10 +326,11 @@ def test_peak_fit_large_image_center_peak_not_filtered():
 # peak_fit – pass-4 output-criteria filter (line 411->397)
 # ---------------------------------------------------------------------------
 
+
 def test_peak_fit_sumg_filter_rejects_dim_peak():
     """Line 411->397: peak.sumg <= sumg_min → target rejected."""
     img = _make_img(8, 8)
-    img[3, 3] = 100   # dim peak; sumg=100 <= sumg_min=200 → filtered
+    img[3, 3] = 100  # dim peak; sumg=100 <= sumg_min=200 → filtered
     targets = peak_fit(img, 50, 5, 1, 20, 1, 10, 1, 10, 200)
     assert len(targets) == 0
 
@@ -328,6 +348,7 @@ def test_peak_fit_n_max_filter_rejects_large_region():
 # targ_rec – zero-detect path returns dummy target (existing, for completeness)
 # ---------------------------------------------------------------------------
 
+
 def test_targ_rec_returns_dummy_when_nothing_found():
     img = _make_img(8, 8)
     targets = targ_rec(img, 250, 5, 1, 10, 1, 10, 1, 10, 12)
@@ -341,13 +362,14 @@ def test_targ_rec_returns_dummy_when_nothing_found():
 # and xmax boundary-update (line 391)
 # ---------------------------------------------------------------------------
 
+
 def test_peak_fit_reunification_xmax_update(patch_peak_touch):
     """Lines 386->388 (xmin no-op) and 391 (xmax update):
     peaks at (2,4) and (3,3) — peak_i=(2,4) has xmin=4 > peak_j.xmin=3
     so xmin is NOT updated; but xmax=4 > peak_j.xmax=3 so xmax IS updated."""
     img = _make_img(8, 8)
-    img[2, 4] = 255   # detected first (row 2)
-    img[3, 3] = 255   # detected second (row 3) — diagonal to (2,4)
+    img[2, 4] = 255  # detected first (row 2)
+    img[3, 3] = 255  # detected second (row 3) — diagonal to (2,4)
     targets = peak_fit(img, 150, 5, 1, 20, 1, 10, 1, 10, 10)
     assert len(targets) == 1  # unified
 

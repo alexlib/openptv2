@@ -38,9 +38,11 @@ else:
 `cdef type var = value`). Two forms:
 
 ```python
-x = cython.declare(cython.int)                 # cdef int x
-y = cython.declare(cython.double, 0.57721)      # cdef double y = 0.57721
-cython.declare(x=cython.int, y=cython.double)   # cdef int x; cdef double y (function-call form)
+x = cython.declare(cython.int)  # cdef int x
+y = cython.declare(cython.double, 0.57721)  # cdef double y = 0.57721
+cython.declare(
+    x=cython.int, y=cython.double
+)  # cdef int x; cdef double y (function-call form)
 ```
 
 Inside a class body / `@cython.cclass`, `declare` sets attribute visibility:
@@ -48,9 +50,9 @@ Inside a class body / `@cython.cclass`, `declare` sets attribute visibility:
 ```python
 @cython.cclass
 class A:
-    cython.declare(a=cython.int, b=cython.int)      # private (default)
-    c = cython.declare(cython.int, visibility='public')
-    e = cython.declare(cython.int, visibility='readonly')
+    cython.declare(a=cython.int, b=cython.int)  # private (default)
+    c = cython.declare(cython.int, visibility="public")
+    e = cython.declare(cython.int, visibility="readonly")
 ```
 
 `@cython.locals(name=type, ...)` — types local variables and/or arguments:
@@ -112,7 +114,8 @@ def c_compare(a: cython.int, b: cython.int) -> cython.bint:
 
 ```python
 with cython.nogil:
-    pass                      # release the GIL for this block
+    pass  # release the GIL for this block
+
 
 @cython.nogil
 @cython.cfunc
@@ -120,8 +123,9 @@ with cython.nogil:
 def func_not_needing_the_gil() -> cython.int:
     return 1
 
+
 with cython.gil:
-    pass                      # (re)acquire the GIL for this block
+    pass  # (re)acquire the GIL for this block
 ```
 
 Note the asymmetry: the context manager form of `nogil` *releases* the GIL
@@ -141,6 +145,7 @@ it's actually invoked at interpreted time unless you guard it):
 
 ```python
 from cython.cimports.libc import math
+
 
 def use_libc_math():
     return math.ceil(5.5)
@@ -219,8 +224,8 @@ double, but `b: int` stays a full Python int object:
 def func():
     x: cython.int
     y: cython.double = 0.57721
-    a: float = 0.54321   # C double
-    b: int = 5            # Python int object, not a C int
+    a: float = 0.54321  # C double
+    b: int = 5  # Python int object, not a C int
 ```
 
 Global-variable annotations are currently ignored (would silently move the
@@ -262,11 +267,19 @@ without Cython installed at all (not even the shadow module), stub it:
 try:
     import cython
 except ImportError:
+
     class _fake_cython:
         compiled = False
-        def cfunc(self, func): return func
-        def ccall(self, func): return func
-        def __getattr__(self, type_name): return "object"
+
+        def cfunc(self, func):
+            return func
+
+        def ccall(self, func):
+            return func
+
+        def __getattr__(self, type_name):
+            return "object"
+
     cython = _fake_cython()
 ```
 
@@ -284,6 +297,7 @@ cdef extern from "math.h":
 ```python
 # mymodule.py
 import cython
+
 if not cython.compiled:
     from math import sin
 print(sin(0))

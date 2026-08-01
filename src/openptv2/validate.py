@@ -302,7 +302,9 @@ def validate_point_positions(
 
     targets = np.empty((10, 4, 2), dtype=np.float64)
     for cam in range(4):
-        targets[:, cam, :] = openptv2.image_coordinates(positions_3d, cals[cam], cpar.get_multimedia_params())
+        targets[:, cam, :] = openptv2.image_coordinates(
+            positions_3d, cals[cam], cpar.get_multimedia_params()
+        )
 
     positions, rcm = openptv2.multi_cam_point_positions(targets, cpar, cals)
 
@@ -326,15 +328,23 @@ def validate_point_positions(
         legacy_cals,
     )
 
-    pos_check = _compare_arrays("point_positions_pos", positions, legacy_positions, tolerance)
+    pos_check = _compare_arrays(
+        "point_positions_pos", positions, legacy_positions, tolerance
+    )
     if pos_check.failed:
-        return CheckResult("point_positions", "FAIL", f"Positions mismatch: {pos_check.detail}")
+        return CheckResult(
+            "point_positions", "FAIL", f"Positions mismatch: {pos_check.detail}"
+        )
 
     rcm_check = _compare_arrays("point_positions_rcm", rcm, legacy_rcm, tolerance)
     if rcm_check.failed:
-        return CheckResult("point_positions", "FAIL", f"RCM mismatch: {rcm_check.detail}")
+        return CheckResult(
+            "point_positions", "FAIL", f"RCM mismatch: {rcm_check.detail}"
+        )
 
-    max_diff = max(_max_abs_diff(positions, legacy_positions), _max_abs_diff(rcm, legacy_rcm))
+    max_diff = max(
+        _max_abs_diff(positions, legacy_positions), _max_abs_diff(rcm, legacy_rcm)
+    )
     return CheckResult("point_positions", "PASS", f"max abs diff {max_diff:.3e}")
 
 
@@ -398,7 +408,9 @@ def benchmark_against_legacy(
     bench_positions_3d = np.random.default_rng(42).uniform(-20, 20, (512, 3))
     bench_targets = np.empty((512, 4, 2), dtype=np.float64)
     for cam in range(4):
-        bench_targets[:, cam, :] = openptv2.image_coordinates(bench_positions_3d, cals[cam], mm)
+        bench_targets[:, cam, :] = openptv2.image_coordinates(
+            bench_positions_3d, cals[cam], mm
+        )
 
     openptv_pointpos = _benchmark_operation(
         lambda: openptv2.multi_cam_point_positions(bench_targets, cpar, cals),
@@ -473,8 +485,7 @@ def run_validation_suite(
 def main() -> int:
     parser = argparse.ArgumentParser(
         description=(
-            "Validate floating-point accuracy and benchmark the "
-            "single-engine runtime"
+            "Validate floating-point accuracy and benchmark the single-engine runtime"
         )
     )
     parser.add_argument(

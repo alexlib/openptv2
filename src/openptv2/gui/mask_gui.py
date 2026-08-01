@@ -261,7 +261,7 @@ class MaskGUI(HasTraits):
         os.chdir(self.working_folder)
         print(f"Inside a folder: {Path.cwd()}")
 
-        ptv_params = experiment.get_parameter('ptv')
+        ptv_params = experiment.get_parameter("ptv")
         if ptv_params is None:
             raise ValueError("Failed to load PTV parameters")
         self.num_cams = experiment.get_n_cam()
@@ -310,7 +310,7 @@ class MaskGUI(HasTraits):
 
     def _button_showimg_fired(self):
         print("Loading images \n")
-        ptv_params = self.experiment.get_parameter('ptv')
+        ptv_params = self.experiment.get_parameter("ptv")
         (
             self.cpar,
             self.spar,
@@ -322,9 +322,9 @@ class MaskGUI(HasTraits):
         ) = ptv.py_start_proc_c(self.experiment.pm)
 
         self.images = []
-        ptv_params = self.experiment.get_parameter('ptv')
+        ptv_params = self.experiment.get_parameter("ptv")
         for i, cam in enumerate(self.camera):
-            imname = ptv_params['img_name'][i] if ptv_params else ""
+            imname = ptv_params["img_name"][i] if ptv_params else ""
             im = imread(imname)
             if im.ndim > 2:
                 im = rgb2gray(im[:, :, :3])

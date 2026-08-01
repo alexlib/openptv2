@@ -10,14 +10,15 @@ def compute_flowtracks_trajectories_from_guiobj(guiobj):
     Compute 2D projected trajectories for each camera from a flowtracks dataset, using info.object from GUI.
     Returns dict with keys: heads_x, heads_y, tails_x, tails_y, ends_x, ends_y (each is a list of lists per camera)
     """
-    seq_params = guiobj.get_parameter('sequence')
-    seq_first = seq_params['first']
-    seq_last = seq_params['last']
-    base_names = seq_params['base_name']
+    seq_params = guiobj.get_parameter("sequence")
+    seq_first = seq_params["first"]
+    seq_last = seq_params["last"]
+    seq_params["base_name"]
 
     # Optionally: guiobj.overlay_set_images(base_names, seq_first, seq_last) # GUI should handle display
 
     from flowtracks.io import trajectories_ptvis
+
     dataset = trajectories_ptvis(
         "res/ptv_is.%d", first=seq_first, last=seq_last, xuap=False, traj_min_len=3
     )
@@ -39,9 +40,7 @@ def compute_flowtracks_trajectories_from_guiobj(guiobj):
                 cals[i_cam],
                 cpar.get_multimedia_params(),
             )
-            pos = convert_arr_metric_to_pixel(
-                projected, cpar
-            )
+            pos = convert_arr_metric_to_pixel(projected, cpar)
             head_x.append(pos[0, 0])
             head_y.append(pos[0, 1])
             tail_x.extend(list(pos[1:-1, 0]))
@@ -55,18 +54,25 @@ def compute_flowtracks_trajectories_from_guiobj(guiobj):
         ends_x.append(end_x)
         ends_y.append(end_y)
     return dict(
-        heads_x=heads_x, heads_y=heads_y,
-        tails_x=tails_x, tails_y=tails_y,
-        ends_x=ends_x, ends_y=ends_y
+        heads_x=heads_x,
+        heads_y=heads_y,
+        tails_x=tails_x,
+        tails_y=tails_y,
+        ends_x=ends_x,
+        ends_y=ends_y,
     )
 
-def export_ptv_is_to_paraview(ptv_is_pattern="res/ptv_is.%d", output_dir="./res", xuap=False):
+
+def export_ptv_is_to_paraview(
+    ptv_is_pattern="res/ptv_is.%d", output_dir="./res", xuap=False
+):
     """
     Reads ptv_is.# files and exports per-frame CSVs for Paraview visualization.
     Each output file is named ptv_<frame>.txt and contains columns:
     particle, x, y, z, dx, dy, dz
     """
     import pandas as pd
+
     dataset = trajectories_ptvis(ptv_is_pattern, xuap=xuap)
     dataframes = []
     for traj in dataset:
@@ -90,4 +96,6 @@ def export_ptv_is_to_paraview(ptv_is_pattern="res/ptv_is.%d", output_dir="./res"
             columns=["particle", "x", "y", "z", "dx", "dy", "dz"],
             index=False,
         )
-    print(f"Saving trajectories to Paraview finished. {len(df_grouped)} frames exported.")
+    print(
+        f"Saving trajectories to Paraview finished. {len(df_grouped)} frames exported."
+    )

@@ -32,7 +32,7 @@ def main():
         cal = Calibration()
         cal.from_file(
             str(test_dir / f"cal/cam{cam_num}.tif.ori"),
-            str(test_dir / f"cal/cam{cam_num}.tif.addpar")
+            str(test_dir / f"cal/cam{cam_num}.tif.addpar"),
         )
 
         # 3. Collect 3D coordinates and 2D projections (in pixels!)
@@ -45,9 +45,9 @@ def main():
 
             # Find matching projection for this camera and particle
             df_match = df_projections[
-                (df_projections["frame"] == frame) &
-                (df_projections["cam"] == cam_num) &
-                (df_projections["particle_id"] == pid)
+                (df_projections["frame"] == frame)
+                & (df_projections["cam"] == cam_num)
+                & (df_projections["particle_id"] == pid)
             ]
 
             if not df_match.empty:
@@ -78,9 +78,10 @@ def main():
         # Save refined orientation
         cal.write(
             str(test_dir / f"cal/cam{cam_num}.tif.ori"),
-            str(test_dir / f"cal/cam{cam_num}.tif.addpar")
+            str(test_dir / f"cal/cam{cam_num}.tif.addpar"),
         )
         print(f"Saved refined calibration files for Cam {cam_num}.")
+
 
 if __name__ == "__main__":
     main()

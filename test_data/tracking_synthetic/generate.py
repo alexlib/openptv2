@@ -18,6 +18,7 @@ Files written (committed as ground truth; image bases use %d notation):
 
 Regenerate with:  uv run python test_data/tracking_synthetic/generate.py
 """
+
 import os
 
 import numpy as np
@@ -43,7 +44,7 @@ def trajectories():
     ys = [-14.0, 0.0, 14.0]
     base = np.array([[x, y, 0.0] for y in ys for x in xs], dtype=float)  # 12 pts
     N = len(base)
-    calm_v = np.array([1.5, 0.8, 0.3])   # gentle uniform drift, well within gates
+    calm_v = np.array([1.5, 0.8, 0.3])  # gentle uniform drift, well within gates
 
     frames = {}
     for t in range(LAST - FIRST + 1):
@@ -75,7 +76,7 @@ def main():
     cals = []
     for c in range(NCAM):
         cal = Calibration()
-        cal.from_file(f"cal/cam{c+1}.tif.ori", f"cal/cam{c+1}.tif.addpar")
+        cal.from_file(f"cal/cam{c + 1}.tif.ori", f"cal/cam{c + 1}.tif.addpar")
         cals.append(cal)
 
     frames, N = trajectories()
@@ -94,22 +95,26 @@ def main():
         corres_p = np.full((N, NCAM), -1, dtype=int)
         for c in range(NCAM):
             order = np.argsort(pix[c, :, 1], kind="stable")  # sort targets by y
-            with open(f"img_orig/cam{c+1}.{fr}_targets", "w") as f:
+            with open(f"img_orig/cam{c + 1}.{fr}_targets", "w") as f:
                 f.write(f"{N}\n")
                 for pnr, p in enumerate(order):
                     x, y = pix[c, p]
                     # tnr = particle id (== rt_is row), the correspondence back-ref
-                    f.write("%4d %9.4f %9.4f %5d %5d %5d %5d %5d\n"
-                            % (pnr, x, y, 100, 10, 10, 1000, p))
+                    f.write(
+                        "%4d %9.4f %9.4f %5d %5d %5d %5d %5d\n"
+                        % (pnr, x, y, 100, 10, 10, 1000, p)
+                    )
                     corres_p[p, c] = pnr
 
         with open(f"res_orig/rt_is.{fr}", "w") as f:
             f.write(f"{N}\n")
             for p in range(N):
-                f.write("%4d %9.3f %9.3f %9.3f %4d %4d %4d %4d\n"
-                        % (p + 1, P[p, 0], P[p, 1], P[p, 2], *corres_p[p]))
+                f.write(
+                    "%4d %9.3f %9.3f %9.3f %4d %4d %4d %4d\n"
+                    % (p + 1, P[p, 0], P[p, 1], P[p, 2], *corres_p[p])
+                )
 
-    print(f"generated {N} particles x {LAST-FIRST+1} frames in {HERE}")
+    print(f"generated {N} particles x {LAST - FIRST + 1} frames in {HERE}")
 
 
 if __name__ == "__main__":

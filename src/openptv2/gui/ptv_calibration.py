@@ -193,11 +193,10 @@ def dumbbell_target_func(targets, cpar, calibs, db_length, db_weight):
 
     num_cams = cpar.get_num_cams()
     num_targs = targets.shape[1]
-    multimed_pars = cpar.get_multimedia_params()
+    cpar.get_multimedia_params()
 
     # Prepare the result arrays
-    res = [np.zeros((num_cams, 3)) for _ in range(2)]
-    res_current = None
+    [np.zeros((num_cams, 3)) for _ in range(2)]
     dtot = 0.0
     len_err_tot = 0.0
     dist = 0.0
@@ -746,18 +745,12 @@ def calib_particles(exp):
         num_cams = pm.num_cams
         cpar = exp.cpar
         spar = exp.spar
-        vpar = exp.vpar
-        tpar = exp.tpar
-        cals = exp.cals
     elif hasattr(exp, "exp1") and hasattr(exp.exp1, "pm"):
         # MainGUI object - ensure parameter objects are initialized
         pm = exp.exp1.pm
         num_cams = exp.num_cams
         cpar = exp.cpar
         spar = exp.spar
-        vpar = exp.vpar
-        tpar = exp.tpar
-        cals = exp.cals
     else:
         raise ValueError("Object must have either pm or exp1.pm attribute")
 

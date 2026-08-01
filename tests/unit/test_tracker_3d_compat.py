@@ -25,7 +25,7 @@ def read_all_calibration(num_cams, base_path="test_data/track"):
 def test_tracker_3d_compat_loop():
     original = os.getcwd()
     try:
-        test_dir = os.path.join(os.path.dirname(__file__), '../../test_data/track')
+        test_dir = os.path.join(os.path.dirname(__file__), "../../test_data/track")
         os.chdir(test_dir)
         if os.path.exists("res"):
             shutil.rmtree("res")
@@ -71,7 +71,7 @@ def test_tracker_3d_compat_loop():
 def test_tracker_3d_compat_step_forward():
     original = os.getcwd()
     try:
-        test_dir = os.path.join(os.path.dirname(__file__), '../../test_data/track')
+        test_dir = os.path.join(os.path.dirname(__file__), "../../test_data/track")
         os.chdir(test_dir)
         if os.path.exists("res"):
             shutil.rmtree("res")

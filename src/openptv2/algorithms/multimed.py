@@ -14,25 +14,42 @@ import numpy as np
 
 if cython.compiled:
     from cython.cimports.libc.math import (
-        sqrt as c_sqrt,
-        tan as c_tan,
         asin as c_asin,
+    )
+    from cython.cimports.libc.math import (
         atan as c_atan,
+    )
+    from cython.cimports.libc.math import (
         sin as c_sin,
+    )
+    from cython.cimports.libc.math import (
+        sqrt as c_sqrt,
+    )
+    from cython.cimports.libc.math import (
+        tan as c_tan,
     )
 else:
     from math import (
-        sqrt as c_sqrt,
-        tan as c_tan,
         asin as c_asin,
+    )
+    from math import (
         atan as c_atan,
+    )
+    from math import (
         sin as c_sin,
+    )
+    from math import (
+        sqrt as c_sqrt,
+    )
+    from math import (
+        tan as c_tan,
     )
 from .track_kernels import (
     init_mmlut_data_fast as _init_mmlut_data_fast,
+)
+from .track_kernels import (
     init_mmlut_data_nlay_fast as _init_mmlut_data_nlay_fast,
 )
-
 
 # Y-remap mode constants (for interlaced cameras)
 NO_REMAP: cython.int = 0
@@ -528,8 +545,8 @@ def volumedimension(vpar, cpar, cal):
     Returns:
         (xmax, xmin, ymax, ymin, zmax, zmin) volume bounds.
     """
-    from .trafo import pixel_to_metric, correct_brown_affin
     from .ray_tracing import ray_tracing
+    from .trafo import correct_brown_affin, pixel_to_metric
 
     xc = [0.0, float(cpar.imx)]
     yc = [0.0, float(cpar.imy)]
@@ -622,8 +639,8 @@ def init_mmlut(vpar, cpar, cal):
     Returns:
         The modified Calibration object.
     """
-    from .trafo import pixel_to_metric, correct_brown_affin
     from .ray_tracing import ray_tracing
+    from .trafo import correct_brown_affin, pixel_to_metric
 
     rw = 2.0
 
@@ -772,12 +789,8 @@ def init_mmlut(vpar, cpar, cal):
                 cpar.mm.d[0],
             )
         else:
-            n2_arr = np.ascontiguousarray(
-                cpar.mm.n2[: cpar.mm.nlay], dtype=np.float64
-            )
-            d_arr = np.ascontiguousarray(
-                cpar.mm.d[: cpar.mm.nlay], dtype=np.float64
-            )
+            n2_arr = np.ascontiguousarray(cpar.mm.n2[: cpar.mm.nlay], dtype=np.float64)
+            d_arr = np.ascontiguousarray(cpar.mm.d[: cpar.mm.nlay], dtype=np.float64)
             data = _init_mmlut_data_nlay_fast(
                 nr,
                 nz,

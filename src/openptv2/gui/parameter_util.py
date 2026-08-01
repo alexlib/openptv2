@@ -22,24 +22,26 @@ from .experiment import Experiment
 from .parameter_manager import ParameterManager
 
 
-def legacy_to_yaml(parameters_dir: Union[str, Path],
-                   yaml_file: Optional[Union[str, Path]] = None,
-                   backup_legacy: bool = True) -> Path:
+def legacy_to_yaml(
+    parameters_dir: Union[str, Path],
+    yaml_file: Optional[Union[str, Path]] = None,
+    backup_legacy: bool = True,
+) -> Path:
     """
     Convert legacy parameter directory to parameters.yaml file.
-    
+
     This function reads all .par files from the specified parameters folder,
-    along with plugins.json and man_ori.dat if present, and creates 
+    along with plugins.json and man_ori.dat if present, and creates
     a single parameters.yaml file.
-    
+
     Args:
         parameters_dir: Path to parameters folder containing .par files
         yaml_file: Output YAML file path (default: parameters.yaml in parent of parameters_dir)
         backup_legacy: Whether to backup the parameters directory before conversion
-        
+
     Returns:
         Path to the created YAML file
-        
+
     Example:
         >>> legacy_to_yaml("./tests/test_cavity/parameters", "new_params.yaml")
         Path("new_params.yaml")
@@ -90,7 +92,6 @@ def legacy_to_yaml(parameters_dir: Union[str, Path],
     experiment = Experiment()
     experiment.pm = manager
 
-
     # Migrate man_ori.dat if it exists in the parameters folder
     # man_ori_dat = parameters_dir / "man_ori.dat"
     # if man_ori_dat.exists():
@@ -117,23 +118,23 @@ def legacy_to_yaml(parameters_dir: Union[str, Path],
     return yaml_file
 
 
-def yaml_to_legacy(yaml_file: Union[str, Path],
-                   output_dir: Union[str, Path],
-                   overwrite: bool = False) -> Path:
+def yaml_to_legacy(
+    yaml_file: Union[str, Path], output_dir: Union[str, Path], overwrite: bool = False
+) -> Path:
     """
     Convert parameters.yaml back to legacy parameter format.
-    
+
     This function reads a parameters.yaml file and creates .par files,
     plugins.json, and man_ori.dat in the specified output directory.
-    
+
     Args:
         yaml_file: Path to the parameters.yaml file
         output_dir: Directory to create legacy parameter files
         overwrite: Whether to overwrite existing directory
-        
+
     Returns:
         Path to the created legacy directory
-        
+
     Example:
         >>> yaml_to_legacy("params.yaml", "legacy_params/")
         Path("legacy_params")
@@ -146,7 +147,9 @@ def yaml_to_legacy(yaml_file: Union[str, Path],
 
     if output_dir.exists():
         if not overwrite:
-            raise ValueError(f"Output directory already exists: {output_dir}. Use overwrite=True to replace.")
+            raise ValueError(
+                f"Output directory already exists: {output_dir}. Use overwrite=True to replace."
+            )
         shutil.rmtree(output_dir)
 
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -187,22 +190,22 @@ def yaml_to_legacy(yaml_file: Union[str, Path],
     #         json.dump(plugins_data, f, indent=2)
 
     # Extract and save man_ori.dat if manual orientation coordinates exist
-    man_ori_coords = manager.get_parameter('man_ori_coordinates')
+    man_ori_coords = manager.get_parameter("man_ori_coordinates")
     if man_ori_coords:
         man_ori_path = output_dir / "man_ori.dat"
         print(f"📍 Creating man_ori.dat at {man_ori_path}")
 
-        with open(man_ori_path, 'w') as f:
+        with open(man_ori_path, "w") as f:
             num_cams = manager.get_n_cam()  # Use the num_cams attribute directly
             for cam_idx in range(num_cams):
-                cam_key = f'camera_{cam_idx}'
+                cam_key = f"camera_{cam_idx}"
                 if cam_key in man_ori_coords:
                     for point_idx in range(4):
-                        point_key = f'point_{point_idx + 1}'
+                        point_key = f"point_{point_idx + 1}"
                         if point_key in man_ori_coords[cam_key]:
                             coords = man_ori_coords[cam_key][point_key]
-                            x = coords.get('x', 0.0)
-                            y = coords.get('y', 0.0)
+                            x = coords.get("x", 0.0)
+                            y = coords.get("y", 0.0)
                             f.write(f"{x:.6f} {y:.6f}\n")
                         else:
                             f.write("0.000000 0.000000\n")
@@ -232,60 +235,51 @@ def main():
 Examples:
   # Convert legacy parameters folder to YAML
   python parameter_util.py legacy-to-yaml ./tests/test_cavity/parameters
-  
+
   # Convert legacy parameters to specific YAML file
   python parameter_util.py legacy-to-yaml ./tests/test_cavity/parameters --output params.yaml
-  
+
   # Convert YAML back to legacy format
   python parameter_util.py yaml-to-legacy params.yaml legacy_output/
-  
+
   # Convert with overwrite
   python parameter_util.py yaml-to-legacy params.yaml legacy_output/ --overwrite
-        """
+        """,
     )
 
-    subparsers = parser.add_subparsers(dest='command', help='Available commands')
+    subparsers = parser.add_subparsers(dest="command", help="Available commands")
 
     # Legacy to YAML command
     legacy_parser = subparsers.add_parser(
-        'legacy-to-yaml',
-        help='Convert legacy parameter directory to YAML'
+        "legacy-to-yaml", help="Convert legacy parameter directory to YAML"
     )
     legacy_parser.add_argument(
-        'parameters_dir',
+        "parameters_dir",
         type=Path,
-        help='Path to parameters folder containing .par files'
+        help="Path to parameters folder containing .par files",
     )
     legacy_parser.add_argument(
-        '--output', '-o',
+        "--output",
+        "-o",
         type=Path,
-        help='Output YAML file (default: parameters.yaml in legacy_dir)'
+        help="Output YAML file (default: parameters.yaml in legacy_dir)",
     )
     legacy_parser.add_argument(
-        '--no-backup',
-        action='store_true',
-        help='Skip creating backup of legacy directory'
+        "--no-backup",
+        action="store_true",
+        help="Skip creating backup of legacy directory",
     )
 
     # YAML to legacy command
     yaml_parser = subparsers.add_parser(
-        'yaml-to-legacy',
-        help='Convert YAML file to legacy parameter format'
+        "yaml-to-legacy", help="Convert YAML file to legacy parameter format"
+    )
+    yaml_parser.add_argument("yaml_file", type=Path, help="Input YAML file")
+    yaml_parser.add_argument(
+        "output_dir", type=Path, help="Output directory for legacy files"
     )
     yaml_parser.add_argument(
-        'yaml_file',
-        type=Path,
-        help='Input YAML file'
-    )
-    yaml_parser.add_argument(
-        'output_dir',
-        type=Path,
-        help='Output directory for legacy files'
-    )
-    yaml_parser.add_argument(
-        '--overwrite',
-        action='store_true',
-        help='Overwrite existing output directory'
+        "--overwrite", action="store_true", help="Overwrite existing output directory"
     )
 
     args = parser.parse_args()
@@ -295,19 +289,15 @@ Examples:
         return
 
     try:
-        if args.command == 'legacy-to-yaml':
+        if args.command == "legacy-to-yaml":
             yaml_file = legacy_to_yaml(
-                args.parameters_dir,
-                args.output,
-                backup_legacy=not args.no_backup
+                args.parameters_dir, args.output, backup_legacy=not args.no_backup
             )
             print(f"\n🎉 Success! YAML file created: {yaml_file}")
 
-        elif args.command == 'yaml-to-legacy':
+        elif args.command == "yaml-to-legacy":
             output_dir = yaml_to_legacy(
-                args.yaml_file,
-                args.output_dir,
-                overwrite=args.overwrite
+                args.yaml_file, args.output_dir, overwrite=args.overwrite
             )
             print(f"\n🎉 Success! Legacy files created in: {output_dir}")
 

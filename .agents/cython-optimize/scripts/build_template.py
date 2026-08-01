@@ -15,6 +15,7 @@ Build with:
 or:
     python setup.py build_ext --inplace
 """
+
 import argparse
 import os
 import sys
@@ -101,18 +102,13 @@ def main():
     package_name = module_name.replace("_", "-")
 
     numpy_import = "import numpy\n" if args.numpy else ""
-    numpy_include = (
-        "    include_dirs=[numpy.get_include()],\n" if args.numpy else ""
-    )
     numpy_requires = '"numpy"' if args.numpy else ""
 
     if args.openmp:
         extra_compile_args = (
             "        extra_compile_args=['-fopenmp'],  # use '/openmp' on MSVC\n"
         )
-        extra_link_args = (
-            "        extra_link_args=['-fopenmp'],  # omit on MSVC\n"
-        )
+        extra_link_args = "        extra_link_args=['-fopenmp'],  # omit on MSVC\n"
         include_dirs = (
             "        include_dirs=[numpy.get_include()],\n" if args.numpy else ""
         )
@@ -146,8 +142,11 @@ def main():
         )
 
     pyproject_content = PYPROJECT_TEMPLATE.format(numpy_requires=numpy_requires)
-    # Clean up trailing comma artifacts if numpy_requires is empty
-    pyproject_content = pyproject_content.replace(', ]', ']').replace('[build-system]\nrequires = ["setuptools>=61", "Cython>=3.0", ]', '[build-system]\nrequires = ["setuptools>=61", "Cython>=3.0"]')
+    # Clean up trailing comma artifacts if numpy_requires is empty.
+    pyproject_content = pyproject_content.replace(
+        ", ]",
+        "]",
+    )
 
     os.makedirs(args.out_dir, exist_ok=True)
     setup_path = os.path.join(args.out_dir, "setup.py")

@@ -351,7 +351,8 @@ else:
     centroid_3d = all_positions.mean(axis=0, keepdims=True)
     print(
         f"  Mean 3D position from {len(all_positions)} particles: "
-        f"({centroid_3d[0, 0]:.1f}, {centroid_3d[0, 1]:.1f}, {centroid_3d[0, 2]:.1f}) mm"
+        f"({centroid_3d[0, 0]:.1f}, {centroid_3d[0, 1]:.1f}, "
+        f"{centroid_3d[0, 2]:.1f}) mm"
     )
 
 crop_offsets = {}
@@ -389,7 +390,8 @@ for frame in FRAMES:
         for idx, r in zip(filtered_indices, rows[filtered_indices])
     ]
     print(
-        f"  Frame {frame}: {rows.shape[0]} total → {len(frame_subset[frame])} in window"
+        f"  Frame {frame}: {rows.shape[0]} total → "
+        f"{len(frame_subset[frame])} in window"
     )
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -505,7 +507,8 @@ for cam in range(1, NCAMS + 1):
     cal_crop = cal_img[oy : oy + CROP, ox : ox + CROP]
     imageio.imwrite(str(DST / f"cal/cam{cam}.tif"), cal_crop)
     print(
-        f"  cal/cam{cam}.tif: cropped [{oy}:{oy + CROP}, {ox}:{ox + CROP}] → {cal_crop.shape}"
+        f"  cal/cam{cam}.tif: cropped [{oy}:{oy + CROP}, "
+        f"{ox}:{ox + CROP}] → {cal_crop.shape}"
     )
 
 # Copy calibration target file

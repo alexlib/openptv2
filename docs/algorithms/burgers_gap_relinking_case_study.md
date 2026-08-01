@@ -228,9 +228,10 @@ if curr_path_inf.inlist == 0 and curr_path_inf.prev_frame >= 0:
 
 # Level 2: Check for linked neighbors
 for j in range(num_parts):
-    if j == P2_idx: continue
+    if j == P2_idx:
+        continue
     nbr = buf[1].path_info[j]
-    if (distance_to_nbr < (dx, dy, dz) and nbr.prev_frame >= 0):
+    if distance_to_nbr < (dx, dy, dz) and nbr.prev_frame >= 0:
         velocity += ...
         n_velocity += 1
 
@@ -241,7 +242,7 @@ if n_velocity == 0:  # All other particles > 0.5 mm away (no neighbors)
 curr_pi = buf[1].path_info[P2_idx]  # prev_frame = -1
 if curr_pi.prev_frame >= 0 or curr_pi.next_frame >= 0:
     continue  # FALSE → proceed
-    
+
 predicted = curr_pi.x.copy()  # (4.277, 3.289, 2.906)
 
 cand_indices = find_candidates_in_3d(buf[2], predicted, (dx, dy, dz))

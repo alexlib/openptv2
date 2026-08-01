@@ -76,11 +76,12 @@ A plugin module defines a `Sequence` class, a `Tracking` class, or both:
 ```python
 class Sequence:
     def __init__(self, ptv=None, exp=None):
-        self.ptv = ptv    # the openptv2.gui.ptv module, injected by the loader
-        self.exp = exp    # the active experiment (has .cpar, .spar, .vpar, .tpar, .cals, ...)
+        self.ptv = ptv  # the openptv2.gui.ptv module, injected by the loader
+        self.exp = (
+            exp  # the active experiment (has .cpar, .spar, .vpar, .tpar, .cals, ...)
+        )
 
-    def do_sequence(self) -> None:
-        ...  # detect targets, write res/rt_is.<frame>
+    def do_sequence(self) -> None: ...  # detect targets, write res/rt_is.<frame>
 
 
 class Tracking:
@@ -88,8 +89,9 @@ class Tracking:
         self.ptv = ptv
         self.exp = exp
 
-    def do_tracking(self) -> None:
-        ...  # link targets across frames, write res/ptv_is.<frame>
+    def do_tracking(
+        self,
+    ) -> None: ...  # link targets across frames, write res/ptv_is.<frame>
 ```
 
 Both classes are instantiated as `Cls(ptv=<module>, exp=<experiment>)` and

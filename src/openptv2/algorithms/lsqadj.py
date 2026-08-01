@@ -1,3 +1,4 @@
+# ruff: noqa: E741
 """Matrix operations for least-squares adjustment.
 
 Translation of lib/src/lsqadj.c and lib/include/lsqadj.h.
@@ -13,8 +14,6 @@ the C implementation's memory layout.
 """
 
 import cython
-
-
 import numpy as np
 
 

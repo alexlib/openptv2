@@ -50,4 +50,5 @@ def flat_image_coordinates(input_arr, cal, mm, output=None):
         return output
     return result
 
+
 __all__ = ["flat_image_coordinates", "image_coordinates"]

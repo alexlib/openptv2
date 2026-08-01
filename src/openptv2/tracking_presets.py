@@ -5,15 +5,18 @@ from typing import Any, Dict
 
 
 class TrackingPreset(str, Enum):
-    FULL_MULTIPASS = "full_multipass"        # Forward + Backward + Reciprocity Postprocessing
-    TWO_DIRECTIONAL = "two_directional"      # Forward + Backward
-    STANDARD_FORWARD = "standard_forward"    # Standard Forward Pass (2D+3D)
-    FAST_3D = "fast_3d"                      # Fast 3D Position-Only (Segment Mode)
-    CUSTOM_PLUGIN = "custom_plugin"          # Custom / Plugin Algorithm (Splitter, rembg, etc.)
+    FULL_MULTIPASS = "full_multipass"  # Forward + Backward + Reciprocity Postprocessing
+    TWO_DIRECTIONAL = "two_directional"  # Forward + Backward
+    STANDARD_FORWARD = "standard_forward"  # Standard Forward Pass (2D+3D)
+    FAST_3D = "fast_3d"  # Fast 3D Position-Only (Segment Mode)
+    CUSTOM_PLUGIN = "custom_plugin"  # Custom / Plugin Algorithm (Splitter, rembg, etc.)
 
 
 PRESET_CHOICES = [
-    ("full_multipass", "High Accuracy Multi-Pass (Forward + Backward + Reciprocity) [Recommended]"),
+    (
+        "full_multipass",
+        "High Accuracy Multi-Pass (Forward + Backward + Reciprocity) [Recommended]",
+    ),
     ("two_directional", "Two-Directional (Forward + Backward)"),
     ("standard_forward", "Standard Forward (2D + 3D)"),
     ("fast_3d", "Fast 3D-Only (Segment / Position Centroids)"),
@@ -51,10 +54,17 @@ PRESET_CONFIGS: Dict[str, Dict[str, Any]] = {
 }
 
 
-def infer_preset(track_params: Dict[str, Any], plugins_params: Dict[str, Any] | None = None) -> str:
+def infer_preset(
+    track_params: Dict[str, Any], plugins_params: Dict[str, Any] | None = None
+) -> str:
     """Infer preset / plugin pipeline name from track and plugins parameters."""
     selected_tracking = (plugins_params or {}).get("selected_tracking", "default")
-    if selected_tracking in ("full_multipass", "two_directional", "standard_forward", "fast_3d"):
+    if selected_tracking in (
+        "full_multipass",
+        "two_directional",
+        "standard_forward",
+        "fast_3d",
+    ):
         return selected_tracking
     if selected_tracking != "default":
         return TrackingPreset.CUSTOM_PLUGIN.value

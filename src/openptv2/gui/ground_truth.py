@@ -27,7 +27,7 @@ from .parameter_manager import ParameterManager
 @dataclass(frozen=True)
 class GroundTruthData:
     xyz: np.ndarray  # (N,3)
-    xy: np.ndarray   # (C,N,2)
+    xy: np.ndarray  # (C,N,2)
     pnr: np.ndarray  # (N,)
 
 

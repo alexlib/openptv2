@@ -171,58 +171,65 @@ The following code illustrates how to represent the refractive ray field using P
 import numpy as np
 from scipy.spatial.transform import Rotation as R
 
+
 class PluckerRayField:
     def __init__(self, omega: float, phi: float, kappa: float, translation: np.ndarray):
         """
-        Base camera representation. The Plücker rays are defined inside the 
+        Base camera representation. The Plücker rays are defined inside the
         refractive medium (water) where the paths are straight.
         """
-        self.R_cam = R.from_euler('xyz', [omega, phi, kappa]).as_matrix()
+        self.R_cam = R.from_euler("xyz", [omega, phi, kappa]).as_matrix()
         self.t_cam = np.array(translation, dtype=float)
-        
+
         # 6x6 Adjoint Transformation Matrix for Plücker lines (SE3 transformation)
         # Transforming from Local Camera coordinates to World coordinates
-        t_cross = np.array([
-            [0, -self.t_cam[2], self.t_cam[1]],
-            [self.t_cam[2], 0, -self.t_cam[0]],
-            [-self.t_cam[1], self.t_cam[0], 0]
-        ])
-        
+        t_cross = np.array(
+            [
+                [0, -self.t_cam[2], self.t_cam[1]],
+                [self.t_cam[2], 0, -self.t_cam[0]],
+                [-self.t_cam[1], self.t_cam[0], 0],
+            ]
+        )
+
         self.Adjoint_T = np.zeros((6, 6))
         self.Adjoint_T[0:3, 0:3] = self.R_cam
         self.Adjoint_T[3:6, 0:3] = t_cross @ self.R_cam
         self.Adjoint_T[3:6, 3:6] = self.R_cam
 
-    def get_plucker_ray(self, u: float, v: float, d: float, n_water: float = 1.333) -> np.ndarray:
+    def get_plucker_ray(
+        self, u: float, v: float, d: float, n_water: float = 1.333
+    ) -> np.ndarray:
         """
-        Computes the Plücker coordinates of the ray inside the water 
+        Computes the Plücker coordinates of the ray inside the water
         for a given pixel (u, v), accounting for flat refractive geometry.
         """
         # 1. Local ray direction in air (before interface)
         v_air = np.array([u, v, 1.0])
         v_air /= np.linalg.norm(v_air)
-        
+
         # 2. Compute the refraction on the flat interface (Snell's Law)
         # For simplicity, assuming interface normal along Z axis in local frame
-        sin_theta_air = np.sqrt(v_air[0]**2 + v_air[1]**2)
+        sin_theta_air = np.sqrt(v_air[0] ** 2 + v_air[1] ** 2)
         sin_theta_water = sin_theta_air / n_water
-        
+
         # Local ray direction inside the water
-        v_water_local = np.array([
-            v_air[0] * (sin_theta_water / (sin_theta_air + 1e-9)),
-            v_air[1] * (sin_theta_water / (sin_theta_air + 1e-9)),
-            np.sqrt(1.0 - sin_theta_water**2)
-        ])
-        
+        v_water_local = np.array(
+            [
+                v_air[0] * (sin_theta_water / (sin_theta_air + 1e-9)),
+                v_air[1] * (sin_theta_water / (sin_theta_air + 1e-9)),
+                np.sqrt(1.0 - sin_theta_water**2),
+            ]
+        )
+
         # 3. Compute point of refraction on the interface (at distance d from camera center)
         # local z = d (location of the flat glass interface)
         scale = d / (v_air[2] + 1e-9)
         p_refraction_local = v_air * scale
-        
+
         # 4. Form local Plücker coordinates: {v_local | m_local}
         m_water_local = np.cross(p_refraction_local, v_water_local)
         L_local = np.concatenate([v_water_local, m_water_local])
-        
+
         # 5. Transform Plücker coordinate to World frame using the 6x6 Adjoint
         L_world = self.Adjoint_T @ L_local
         return L_world
@@ -230,23 +237,23 @@ class PluckerRayField:
 
 def compute_ray_distance_plucker(L1: np.ndarray, L2: np.ndarray) -> float:
     """
-    Computes the shortest Euclidean distance between two 3D rays 
+    Computes the shortest Euclidean distance between two 3D rays
     using their Plücker representations. Very fast and non-iterative.
     """
     v1, m1 = L1[0:3], L1[3:6]
     v2, m2 = L2[0:3], L2[3:6]
-    
+
     # Reciprocal product (numerator of distance formula)
     reciprocal_product = np.dot(v1, m2) + np.dot(v2, m1)
-    
+
     # Cross product of directions (denominator)
     v1_xv2 = np.cross(v1, v2)
     denom = np.linalg.norm(v1_xv2)
-    
+
     if denom < 1e-9:
         # Parallel rays fallback
         return np.linalg.norm(np.cross(v1, m2 - m1))
-        
+
     return np.abs(reciprocal_product) / denom
 
 
@@ -255,16 +262,20 @@ def compute_ray_distance_plucker(L1: np.ndarray, L2: np.ndarray) -> float:
 # =====================================================================
 if __name__ == "__main__":
     # Define two cameras looking at a common particle inside a water volume
-    cam1 = PluckerRayField(omega=0.0, phi=0.1, kappa=0.0, translation=[-100.0, 0.0, 500.0])
-    cam2 = PluckerRayField(omega=0.0, phi=-0.1, kappa=0.0, translation=[100.0, 0.0, 500.0])
-    
+    cam1 = PluckerRayField(
+        omega=0.0, phi=0.1, kappa=0.0, translation=[-100.0, 0.0, 500.0]
+    )
+    cam2 = PluckerRayField(
+        omega=0.0, phi=-0.1, kappa=0.0, translation=[100.0, 0.0, 500.0]
+    )
+
     # Compute Plücker rays in water for a matching particle projection
     L1 = cam1.get_plucker_ray(u=0.02, v=0.01, d=40.0)
     L2 = cam2.get_plucker_ray(u=-0.02, v=0.01, d=40.0)
-    
+
     # Verify the internal orthogonality constraint (v^T * m == 0)
     print(f"Orthogonality check Cam 1: {np.dot(L1[0:3], L1[3:6]):.3e}")
-    
+
     # Epipolar match check (shortest 3D distance between rays)
     dist = compute_ray_distance_plucker(L1, L2)
     print(f"3D Distance between rays: {dist:.6f} mm")

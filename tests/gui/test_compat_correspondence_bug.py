@@ -70,7 +70,7 @@ def test_compat_correspondences_parity(cavity_dir):
         )
 
         ptv_p = exp.pm.get_parameter("ptv")
-        seq_p = exp.pm.get_parameter("sequence")
+        exp.pm.get_parameter("sequence")
         crit_p = exp.pm.get_parameter("criteria")
         targ_p = exp.pm.get_parameter("targ_rec")
         cal_p = exp.pm.get_parameter("cal_ori")

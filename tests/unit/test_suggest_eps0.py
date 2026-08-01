@@ -3,6 +3,7 @@
 Also an integration test of suggest_eps0 on the test_data/test_splitter fixture
 (4-camera splitter with a committed calblock + detected cal targets).
 """
+
 from pathlib import Path
 
 import pytest
@@ -25,7 +26,7 @@ def test_pick_knee_from_tt13_shape():
         {"eps0": 0.012, "correct": 2, "wrong": 0},
         {"eps0": 0.045, "correct": 23, "wrong": 0},
         {"eps0": 0.058, "correct": 31, "wrong": 0},
-        {"eps0": 0.076, "correct": 34, "wrong": 0},   # <- knee
+        {"eps0": 0.076, "correct": 34, "wrong": 0},  # <- knee
         {"eps0": 0.099, "correct": 34, "wrong": 2},
         {"eps0": 0.480, "correct": 34, "wrong": 20},
     ]
@@ -39,7 +40,7 @@ def test_pick_largest_clean_when_correct_still_rising():
     rows = [
         {"eps0": 0.02, "correct": 5, "wrong": 0},
         {"eps0": 0.05, "correct": 12, "wrong": 0},
-        {"eps0": 0.10, "correct": 20, "wrong": 0},   # <- largest clean, max correct
+        {"eps0": 0.10, "correct": 20, "wrong": 0},  # <- largest clean, max correct
         {"eps0": 0.20, "correct": 20, "wrong": 4},
     ]
     assert _pick_eps0(rows)[0] == 0.10
@@ -49,9 +50,9 @@ def test_pick_largest_clean_when_correct_still_rising():
 def test_pick_falls_back_when_never_clean():
     # No spurious-free row -> maximize correct - 2*wrong.
     rows = [
-        {"eps0": 0.05, "correct": 10, "wrong": 1},   # 10 - 2 = 8
-        {"eps0": 0.10, "correct": 15, "wrong": 2},   # 15 - 4 = 11 <- best
-        {"eps0": 0.20, "correct": 16, "wrong": 6},   # 16 - 12 = 4
+        {"eps0": 0.05, "correct": 10, "wrong": 1},  # 10 - 2 = 8
+        {"eps0": 0.10, "correct": 15, "wrong": 2},  # 15 - 4 = 11 <- best
+        {"eps0": 0.20, "correct": 16, "wrong": 6},  # 16 - 12 = 4
     ]
     assert _pick_eps0(rows)[0] == 0.10
 
@@ -92,4 +93,5 @@ def test_suggest_eps0_on_test_splitter():
 def test_suggest_eps0_non_four_camera_returns_none():
     class _Cpar:
         num_cams = 3
+
     assert suggest_eps0(SPLITTER.resolve(), _Cpar(), []) is None

@@ -9,23 +9,21 @@ from .parameter_models import AllParams
 
 
 class ParameterManager:
-
     def get_target_filenames(self):
         """Return the list of target_filenames for the current experiment, based on YAML parameters and splitter mode."""
-        seq_params = self.parameters.get('sequence')
-        ptv_params = self.parameters.get('ptv')
-        base_names = seq_params.get('base_name')
+        seq_params = self.parameters.get("sequence")
+        ptv_params = self.parameters.get("ptv")
+        base_names = seq_params.get("base_name")
         num_cams = self.num_cams
         # Splitter mode: one base_name, output cam1, cam2, ... in same folder
-        if ptv_params.get('splitter', False):
+        if ptv_params.get("splitter", False):
             if not base_names:
                 return []
             img_path = Path(base_names[0]).parent
-            return [img_path / f'cam{i+1}' for i in range(num_cams)]
+            return [img_path / f"cam{i + 1}" for i in range(num_cams)]
         # Non-splitter: one base_name per camera
         else:
-            return [Path(bn).parent / f'cam{i+1}' for i, bn in enumerate(base_names)]
-
+            return [Path(bn).parent / f"cam{i + 1}" for i, bn in enumerate(base_names)]
 
     def __init__(self):
         self.parameters = {}
@@ -34,21 +32,32 @@ class ParameterManager:
         self.plugins_info = {}  # Initialize plugins_info
 
     def _get_class_map(self):
-        dummy_path = Path('.')
+        dummy_path = Path(".")
         class_map = {}
         # Map .par filenames to legacy parameter classes
         for cls in [
-            legacy_params.PtvParams, legacy_params.CriteriaParams, legacy_params.DetectPlateParams,
-            legacy_params.OrientParams, legacy_params.TrackingParams, legacy_params.PftVersionParams,
-            legacy_params.ExamineParams, legacy_params.DumbbellParams, legacy_params.ShakingParams
+            legacy_params.PtvParams,
+            legacy_params.CriteriaParams,
+            legacy_params.DetectPlateParams,
+            legacy_params.OrientParams,
+            legacy_params.TrackingParams,
+            legacy_params.PftVersionParams,
+            legacy_params.ExamineParams,
+            legacy_params.DumbbellParams,
+            legacy_params.ShakingParams,
         ]:
             class_map[cls(path=dummy_path).filename] = cls
         for cls in [
-            legacy_params.CalOriParams, legacy_params.SequenceParams, legacy_params.TargRecParams,
-            legacy_params.MultiPlaneParams, legacy_params.SortGridParams
+            legacy_params.CalOriParams,
+            legacy_params.SequenceParams,
+            legacy_params.TargRecParams,
+            legacy_params.MultiPlaneParams,
+            legacy_params.SortGridParams,
         ]:
             class_map[cls(n_img=0, path=dummy_path).filename] = cls
-        class_map[legacy_params.ManOriParams(n_img=0, nr=[], path=dummy_path).filename] = legacy_params.ManOriParams
+        class_map[
+            legacy_params.ManOriParams(n_img=0, nr=[], path=dummy_path).filename
+        ] = legacy_params.ManOriParams
         return class_map
 
     def from_directory(self, dir_path) -> dict:
@@ -65,7 +74,14 @@ class ParameterManager:
             filename = par_file.name
             if filename in self._class_map:
                 cls = self._class_map[filename]
-                if filename in ["cal_ori.par", "sequence.par", "targ_rec.par", "man_ori.par", "multi_planes.par", "sortgrid.par"]:
+                if filename in [
+                    "cal_ori.par",
+                    "sequence.par",
+                    "targ_rec.par",
+                    "man_ori.par",
+                    "multi_planes.par",
+                    "sortgrid.par",
+                ]:
                     if filename == "man_ori.par":
                         obj = cls(n_img=self.num_cams, nr=[], path=dir_path)
                     else:
@@ -75,12 +91,24 @@ class ParameterManager:
                 obj.read()
                 # Only include attributes that are actual parameters (not class/static fields)
                 # Use the class's 'fields' property if available, else filter by excluding known non-parameter fields
-                if hasattr(obj, 'fields') and isinstance(obj.fields, (list, tuple)):
+                if hasattr(obj, "fields") and isinstance(obj.fields, (list, tuple)):
                     d = {k: getattr(obj, k) for k in obj.fields if hasattr(obj, k)}
                 else:
-                    d = {k: getattr(obj, k) for k in dir(obj)
-                         if not k.startswith('_') and not callable(getattr(obj, k))
-                         and k not in ['path', 'exp_path', 'default_path', 'filename', 'fields', 'n_img']}
+                    d = {
+                        k: getattr(obj, k)
+                        for k in dir(obj)
+                        if not k.startswith("_")
+                        and not callable(getattr(obj, k))
+                        and k
+                        not in [
+                            "path",
+                            "exp_path",
+                            "default_path",
+                            "filename",
+                            "fields",
+                            "n_img",
+                        ]
+                    }
                 self.parameters[par_file.stem] = d
 
         # # Debug print for tracking parameters after loading from directory
@@ -97,94 +125,102 @@ class ParameterManager:
         if man_ori_dat.exists():
             coords = {}
             try:
-                with man_ori_dat.open('r') as f:
+                with man_ori_dat.open("r") as f:
                     lines = [line.strip() for line in f if line.strip()]
                 num_cams = self.num_cams
                 for cam_idx in range(num_cams):
-                    cam_key = f'camera_{cam_idx}'
+                    cam_key = f"camera_{cam_idx}"
                     coords[cam_key] = {}
                     for pt_idx in range(4):
                         line_idx = cam_idx * 4 + pt_idx
                         if line_idx < len(lines):
                             x_str, y_str = lines[line_idx].split()
-                            coords[cam_key][f'point_{pt_idx+1}'] = {'x': float(x_str), 'y': float(y_str)}
+                            coords[cam_key][f"point_{pt_idx + 1}"] = {
+                                "x": float(x_str),
+                                "y": float(y_str),
+                            }
                         else:
-                            coords[cam_key][f'point_{pt_idx+1}'] = {'x': 0.0, 'y': 0.0}
-                self.parameters['man_ori_coordinates'] = coords
+                            coords[cam_key][f"point_{pt_idx + 1}"] = {
+                                "x": 0.0,
+                                "y": 0.0,
+                            }
+                self.parameters["man_ori_coordinates"] = coords
             except Exception as e:
                 print(f"Warning: Failed to read man_ori.dat: {e}")
 
         # Ensure splitter and cal_splitter are present in ptv and cal_ori after reading
-        if 'ptv' in self.parameters:
-            self.parameters['ptv']['splitter'] = getattr(self, 'splitter', False)
-        if 'cal_ori' in self.parameters:
-            self.parameters['cal_ori']['cal_splitter'] = getattr(self, 'cal_splitter', False)
+        if "ptv" in self.parameters:
+            self.parameters["ptv"]["splitter"] = getattr(self, "splitter", False)
+        if "cal_ori" in self.parameters:
+            self.parameters["cal_ori"]["cal_splitter"] = getattr(
+                self, "cal_splitter", False
+            )
 
         # Fallback: if cal_ori image lists are empty but ptv.img_cal has values, copy them
         # (happens when num_cams was 0 during cal_ori.par conversion)
-        cal_ori = self.parameters.get('cal_ori', {})
-        ptv = self.parameters.get('ptv', {})
-        if not cal_ori.get('img_cal_name') and ptv.get('img_cal'):
-            cal_ori['img_cal_name'] = list(ptv['img_cal'])
-            cal_ori['img_ori'] = [f"{p}.ori" for p in ptv['img_cal']]
+        cal_ori = self.parameters.get("cal_ori", {})
+        ptv = self.parameters.get("ptv", {})
+        if not cal_ori.get("img_cal_name") and ptv.get("img_cal"):
+            cal_ori["img_cal_name"] = list(ptv["img_cal"])
+            cal_ori["img_ori"] = [f"{p}.ori" for p in ptv["img_cal"]]
             print("Info: Populated cal_ori img_cal_name/img_ori from ptv.img_cal")
 
         # Default masking parameters
-        if 'masking' not in self.parameters:
-            self.parameters['masking'] = {
-                'mask_flag': False,
-                'mask_base_name': ''
-            }
+        if "masking" not in self.parameters:
+            self.parameters["masking"] = {"mask_flag": False, "mask_base_name": ""}
             print("Info: Added default masking parameters")
         # Default unsharp mask parameters
-        if 'unsharp_mask' not in self.parameters:
-            self.parameters['unsharp_mask'] = {
-                'flag': False,
-                'size': 3,
-                'strength': 1.0
+        if "unsharp_mask" not in self.parameters:
+            self.parameters["unsharp_mask"] = {
+                "flag": False,
+                "size": 3,
+                "strength": 1.0,
             }
             print("Info: Added default unsharp mask parameters")
 
         # Plugins — always use scan_plugins_dir (handles missing dir gracefully)
-        self.parameters['plugins'] = scan_plugins_dir(dir_path.parent / 'plugins')
+        self.parameters["plugins"] = scan_plugins_dir(dir_path.parent / "plugins")
 
         self._validate_warn(dir_path)
 
     def to_yaml(self, file_path) -> dict:
         """Write parameters to a YAML file."""
         file_path = Path(file_path)
-        out = {'num_cams': self.num_cams}
+        out = {"num_cams": self.num_cams}
         # Remove 'default_path' and 'filename' from all parameter dicts (all classes)
         filtered_params = {}
         for k, v in self.parameters.items():
             if isinstance(v, dict):
-                filtered_params[k] = {ik: iv for ik, iv in v.items() if ik not in ('default_path', 'filename')}
+                filtered_params[k] = {
+                    ik: iv
+                    for ik, iv in v.items()
+                    if ik not in ("default_path", "filename")
+                }
             else:
                 filtered_params[k] = v
 
         # Insert splitter under ptv, cal_splitter under cal_ori only if not already present
-        if 'ptv' in filtered_params and 'splitter' not in filtered_params['ptv']:
-            filtered_params['ptv']['splitter'] = False
-        if 'cal_ori' in filtered_params and 'cal_splitter' not in filtered_params['cal_ori']:
-            filtered_params['cal_ori']['cal_splitter'] = False
+        if "ptv" in filtered_params and "splitter" not in filtered_params["ptv"]:
+            filtered_params["ptv"]["splitter"] = False
+        if (
+            "cal_ori" in filtered_params
+            and "cal_splitter" not in filtered_params["cal_ori"]
+        ):
+            filtered_params["cal_ori"]["cal_splitter"] = False
 
         # Add plugins section if available
-        if hasattr(self, 'plugins_info'):
-            out['plugins'] = self.plugins_info
+        if hasattr(self, "plugins_info"):
+            out["plugins"] = self.plugins_info
         out.update(filtered_params)
 
         # Persist only the plugin *selection*. Which plugins are available is
         # a runtime fact (installed package + local plugins/ dir), rediscovered
         # by the GUI and batch runners on every start — persisting the lists
         # produces stale YAML entries.
-        if isinstance(out.get('plugins'), dict):
-            out['plugins'] = {
-                'selected_tracking': out['plugins'].get(
-                    'selected_tracking', 'default'
-                ),
-                'selected_sequence': out['plugins'].get(
-                    'selected_sequence', 'default'
-                ),
+        if isinstance(out.get("plugins"), dict):
+            out["plugins"] = {
+                "selected_tracking": out["plugins"].get("selected_tracking", "default"),
+                "selected_sequence": out["plugins"].get("selected_sequence", "default"),
             }
 
         def convert(obj):
@@ -201,7 +237,7 @@ class ParameterManager:
 
         # import traceback
 
-        with file_path.open('w') as f:
+        with file_path.open("w") as f:
             print(f"[DEBUG] Writing to {file_path} at step:")
             # traceback.print_stack(limit=5)
             yaml.safe_dump(data, f, default_flow_style=False, sort_keys=False)
@@ -219,10 +255,10 @@ class ParameterManager:
         data is kept and a warning printed — same tolerant behavior as before.
         """
         file_path = Path(file_path)
-        with file_path.open('r') as f:
+        with file_path.open("r") as f:
             data = yaml.safe_load(f)
 
-        self.num_cams = data.get('num_cams')
+        self.num_cams = data.get("num_cams")
         try:
             model = AllParams.model_validate(data)
             self.parameters = model.model_dump(exclude_unset=True)
@@ -239,10 +275,9 @@ class ParameterManager:
         # "Manual orient." workflow meant to create the seed in the first
         # place. Inject a harmless placeholder (4 dummy IDs per camera) so
         # the dialog opens; clicking through "Manual orient." overwrites it.
-        if 'man_ori' not in self.parameters and self.num_cams:
-            self.parameters['man_ori'] = {'nr': [1, 2, 3, 4] * self.num_cams}
+        if "man_ori" not in self.parameters and self.num_cams:
+            self.parameters["man_ori"] = {"nr": [1, 2, 3, 4] * self.num_cams}
             print("Info: Added default man_ori seed placeholder")
-
 
     def to_directory(self, dir_path):
         """Write parameters to a legacy directory as .par files."""
@@ -253,7 +288,14 @@ class ParameterManager:
             filename = f"{name}.par"
             if filename in self._class_map:
                 cls = self._class_map[filename]
-                if filename in ["cal_ori.par", "sequence.par", "targ_rec.par", "man_ori.par", "multi_planes.par", "sortgrid.par"]:
+                if filename in [
+                    "cal_ori.par",
+                    "sequence.par",
+                    "targ_rec.par",
+                    "man_ori.par",
+                    "multi_planes.par",
+                    "sortgrid.par",
+                ]:
                     if filename == "man_ori.par":
                         obj = cls(n_img=self.num_cams, nr=[], path=dir_path)
                     else:
@@ -262,37 +304,41 @@ class ParameterManager:
                     obj = cls(path=dir_path)
                 # Special handling for cal_ori.par to ensure correct list lengths and repeat last value if needed
                 if filename == "cal_ori.par":
-                    if 'img_cal_name' in data and isinstance(data['img_cal_name'], list):
-                        L = data['img_cal_name']
+                    if "img_cal_name" in data and isinstance(
+                        data["img_cal_name"], list
+                    ):
+                        L = data["img_cal_name"]
                         if len(L) < self.num_cams:
                             last = L[-1] if L else ""
                             L = L + [last for _ in range(self.num_cams - len(L))]
-                        data['img_cal_name'] = L[:self.num_cams]
-                    if 'img_ori' in data and isinstance(data['img_ori'], list):
-                        L = data['img_ori']
+                        data["img_cal_name"] = L[: self.num_cams]
+                    if "img_ori" in data and isinstance(data["img_ori"], list):
+                        L = data["img_ori"]
                         if len(L) < self.num_cams:
                             last = L[-1] if L else ""
                             L = L + [last for _ in range(self.num_cams - len(L))]
-                        data['img_ori'] = L[:self.num_cams]
+                        data["img_ori"] = L[: self.num_cams]
                 for k, v in data.items():
                     if hasattr(obj, k):
                         setattr(obj, k, v)
-                if hasattr(obj, 'n_img'):
+                if hasattr(obj, "n_img"):
                     obj.n_img = self.num_cams
                 obj.write()
 
         # Write man_ori.dat if 'man_ori_coordinates' is present in parameters
-        coords = self.parameters.get('man_ori_coordinates')
+        coords = self.parameters.get("man_ori_coordinates")
         if coords:
             man_ori_dat = dir_path / "man_ori.dat"
             try:
-                with man_ori_dat.open('w') as f:
+                with man_ori_dat.open("w") as f:
                     num_cams = self.num_cams
                     for cam_idx in range(num_cams):
-                        cam_key = f'camera_{cam_idx}'
+                        cam_key = f"camera_{cam_idx}"
                         for pt_idx in range(4):
-                            pt_key = f'point_{pt_idx+1}'
-                            pt = coords.get(cam_key, {}).get(pt_key, {'x': 0.0, 'y': 0.0})
+                            pt_key = f"point_{pt_idx + 1}"
+                            pt = coords.get(cam_key, {}).get(
+                                pt_key, {"x": 0.0, "y": 0.0}
+                            )
                             f.write(f"{pt['x']} {pt['y']}\n")
             except Exception as e:
                 print(f"Warning: Failed to write man_ori.dat: {e}")
@@ -315,23 +361,35 @@ class ParameterManager:
         """Get a specific parameter by name, returning None if not found."""
         parameter = self.parameters.get(name, None)
         if parameter is None:
-            raise ValueError(f'{name} returns None')
+            raise ValueError(f"{name} returns None")
         return parameter
 
     def get_section(self, section: str) -> dict:
         """Return the named parameter section dict; raise KeyError if missing."""
         if section not in self.parameters:
-            raise KeyError(f"Parameter section '{section}' not found. Available: {list(self.parameters)}")
+            raise KeyError(
+                f"Parameter section '{section}' not found. Available: {list(self.parameters)}"
+            )
         return self.parameters[section]
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     import argparse
-    parser = argparse.ArgumentParser(description="Convert between .par directory and YAML file.")
-    parser.add_argument('source', type=Path, help="Source directory or YAML file.")
-    parser.add_argument('destination', type=Path, help="Destination YAML file or directory.")
+
+    parser = argparse.ArgumentParser(
+        description="Convert between .par directory and YAML file."
+    )
+    parser.add_argument("source", type=Path, help="Source directory or YAML file.")
+    parser.add_argument(
+        "destination", type=Path, help="Destination YAML file or directory."
+    )
     group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument('--to-yaml', action='store_true', help="Convert directory to YAML.")
-    group.add_argument('--to-dir', action='store_true', help="Convert YAML to directory.")
+    group.add_argument(
+        "--to-yaml", action="store_true", help="Convert directory to YAML."
+    )
+    group.add_argument(
+        "--to-dir", action="store_true", help="Convert YAML to directory."
+    )
     args = parser.parse_args()
     pm = ParameterManager()
     if args.to_yaml:

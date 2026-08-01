@@ -249,7 +249,9 @@ class TestCalibrationConstruction:
         glass = Glass(vec_z=1.0)
         added = AddedPar(k1=1e-4)
         mm = MmLut()
-        cal = Calibration(ext_par=ext, int_par=int_p, glass_par=glass, added_par=added, mmlut=mm)
+        cal = Calibration(
+            ext_par=ext, int_par=int_p, glass_par=glass, added_par=added, mmlut=mm
+        )
         assert cal.ext_par.x0 == 1.0
         assert cal.int_par.cc == 50.0
         assert cal.added_par.k1 == 1e-4
@@ -318,7 +320,7 @@ class TestCalibrationConstruction:
         glass = Glass(vec_x=0.0, vec_y=0.0, vec_z=0.0)
         with warnings.catch_warnings(record=True) as caught:
             warnings.simplefilter("always")
-            cal = Calibration(glass_par=glass)
+            Calibration(glass_par=glass)
         assert len(caught) >= 1
 
 
@@ -705,6 +707,7 @@ class TestHybridFromFile:
 
 def test_is_compiled_returns_bool():
     from openptv2.algorithms.calibration import is_compiled
+
     result = is_compiled()
     assert isinstance(result, bool)
     assert result is False  # pure-Python mode
@@ -785,6 +788,7 @@ class TestMissingLineCoverage:
 
     def test_init_ext_par_none_branch(self):
         """Force self.ext_par to be None before the line-299 check."""
+
         # The only way to get there is if ext_par ends up None; we do this
         # by subclassing and calling super().__init__ with a patched path.
         # Simpler: just verify that setting ext_par=None inside init still works.
@@ -807,12 +811,15 @@ class TestMissingLineCoverage:
 
 
 class TestSymCamFiles:
-    @pytest.mark.parametrize("fname", [
-        "sym_cam1.tif.ori",
-        "sym_cam2.tif.ori",
-        "sym_cam3.tif.ori",
-        "sym_cam4.tif.ori",
-    ])
+    @pytest.mark.parametrize(
+        "fname",
+        [
+            "sym_cam1.tif.ori",
+            "sym_cam2.tif.ori",
+            "sym_cam3.tif.ori",
+            "sym_cam4.tif.ori",
+        ],
+    )
     def test_load_sym_cam(self, fname):
         ori = CAL_DIR / fname
         cal = Calibration.from_file(str(ori))

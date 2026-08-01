@@ -24,6 +24,7 @@ def convert_dir(dir_path):
     pm.to_yaml(yaml_file)
     print(f"  -> {yaml_file}")
 
+
 if __name__ == "__main__":
     test_data = Path("test_data")
     for p in test_data.rglob("parameters*"):

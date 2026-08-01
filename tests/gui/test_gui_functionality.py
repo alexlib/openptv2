@@ -27,7 +27,6 @@ def test_optv_imports():
     print("Testing optv imports...")
     print("=" * 60)
 
-
     print("✅ All optv imports successful")
 
 
@@ -157,7 +156,7 @@ def test_coordinate_transforms():
         print(f"   Output (metric): {metric_coords[0]}")
 
         # Test round-trip
-        back_to_pixel = convert_arr_metric_to_pixel(metric_coords, control_par)
+        convert_arr_metric_to_pixel(metric_coords, control_par)
         print("✅ Round-trip conversion successful")
 
     except Exception as e:
@@ -176,8 +175,8 @@ def test_gui_classes():
         from openptv2.gui.pyptv_gui import FilteredFileBrowserExample
 
         # Try to instantiate
-        file_browser = FilteredFileBrowserExample()
-        param_manager = ParameterManager()
+        FilteredFileBrowserExample()
+        ParameterManager()
 
         print("✅ GUI classes instantiated successfully")
     except Exception as e:
@@ -209,8 +208,8 @@ def test_tracker():
         cpar.set_image_size((1024, 1024))
         cpar.set_pixel_size((0.01, 0.01))
 
-        vpar = VolumeParams()
-        tpar = TrackingParams()
+        VolumeParams()
+        TrackingParams()
         spar = SequenceParams()
 
         # Set sequence range
@@ -218,7 +217,7 @@ def test_tracker():
         spar.set_last(2)
 
         # Create dummy calibration
-        cals = [Calibration() for _ in range(num_cams)]
+        [Calibration() for _ in range(num_cams)]
 
         print(f"✅ Tracker parameters created for {num_cams} cameras")
         print(f"   Sequence: {spar.get_first()} to {spar.get_last()}")

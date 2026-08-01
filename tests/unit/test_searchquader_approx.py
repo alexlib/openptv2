@@ -17,7 +17,9 @@ try:
         _point_to_pixel_out,
     )
 except ImportError:
-    pytestmark = pytest.mark.skip(reason="track_kernels_geom does not implement _pixel_jacobian")
+    pytestmark = pytest.mark.skip(
+        reason="track_kernels_geom does not implement _pixel_jacobian"
+    )
     _point_to_pixel_out = None
     _pixel_jacobian = None
 
@@ -515,7 +517,7 @@ def test_2corner_contains_8corner(cavity_cal, test_positions, has_mmlut):
         if len(has_mmlut_cam) == 0:
             pytest.skip("No multimedia camera in calibration data")
 
-    num_cams = cal_arr.shape[0]
+    cal_arr.shape[0]
     violations = []
 
     for i, (px, py, pz) in enumerate(test_positions):

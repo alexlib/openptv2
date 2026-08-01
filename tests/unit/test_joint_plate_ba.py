@@ -7,6 +7,7 @@ cals (positions nudged ~1-2mm) while KEEPING the detections fixed -- so the
 per-camera fit is inconsistent and RCM > 0. A well-anchored joint BA should
 pull the cameras back toward the consistent geometry and lower RCM.
 """
+
 from pathlib import Path
 
 import numpy as np
@@ -38,11 +39,19 @@ def _build_results():
         cal = Calibration.from_file(str(ori), str(addpar))
         # detections from the TRUE cal -> consistent geometry
         det = np.array([_reproject_px(cal, cpar.mm, p, cpar) for p in fix])
-        results.append(CamResult(
-            cam=cam, matched=len(fix), nfix=len(fix), rms=0.0,
-            flags=["cc", "xh", "yh"], cal=cal, ref=fix.copy(),
-            det=det, rep=det.copy(),
-        ))
+        results.append(
+            CamResult(
+                cam=cam,
+                matched=len(fix),
+                nfix=len(fix),
+                rms=0.0,
+                flags=["cc", "xh", "yh"],
+                cal=cal,
+                ref=fix.copy(),
+                det=det,
+                rep=det.copy(),
+            )
+        )
     return results, cpar
 
 

@@ -15,6 +15,7 @@ Launch with::
 Note: single_cam_point_positions reads ``vpar.Zmin_lay`` / ``vpar.Zmax_lay``
 (capital-Z, matching VolumePar); the duck-typed _MockVpar mirrors those names.
 """
+
 from __future__ import annotations
 
 import numpy as np
@@ -63,6 +64,7 @@ PARAMS_YAML = "test_data/parameters.yaml"
 
 # ── helpers ────────────────────────────────────────────────────────────────────
 
+
 def _mm():
     return MultimediaPar(n1=1.0, n2=[1.0], d=[1.0], n3=1.0)
 
@@ -96,6 +98,7 @@ def _project_targets(fix, cal, cpar, dy=0.0):
 # is_compiled
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 def test_is_compiled_false():
     assert _is_compiled() is False
 
@@ -103,6 +106,7 @@ def test_is_compiled_false():
 # ─────────────────────────────────────────────────────────────────────────────
 # skew_midpoint  (covers _skew_midpoint_core too)
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 def test_skew_midpoint_skew_rays():
     """Standard skew-ray case: known geometry."""
@@ -139,6 +143,7 @@ def test_skew_midpoint_intersecting_rays():
 # ─────────────────────────────────────────────────────────────────────────────
 # point_position_batch
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 def _4cam_targets(point, cals, mm):
     targets = np.zeros((1, 4, 2))
@@ -236,6 +241,7 @@ def test_ppb_hasattr_cal_wrapper():
 # point_position  (thin wrapper around batch)
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 def test_point_position_basic():
     cals = _sym_cals()
     mm = _mm()
@@ -253,6 +259,7 @@ def test_point_position_basic():
 # ─────────────────────────────────────────────────────────────────────────────
 # weighted_dumbbell_precision
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 def _dumbbell_targets(pts, cals, mm):
     n = len(pts)
@@ -313,6 +320,7 @@ def test_dumbbell_weight_nonzero():
 # num_deriv_exterior
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 def test_num_deriv_exterior_shape_and_nonzero():
     cal = Calibration.from_file(SYM_TMPL.format(1), CAL1_ADD)
     cpar = ControlPar.from_yaml(PARAMS_YAML)
@@ -338,6 +346,7 @@ def test_num_deriv_exterior_position_vs_angle():
 # ─────────────────────────────────────────────────────────────────────────────
 # raw_orient
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 def test_raw_orient_converges():
     fix4 = read_man_ori_fix(CALBLOCK, MAN_ORI, 0)
@@ -385,6 +394,7 @@ def test_raw_orient_callable_x_y():
 # ─────────────────────────────────────────────────────────────────────────────
 # orient – main bundle-adjustment function
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 def _orient_setup(sym_cam=1, dy=0.0):
     """Return (fix, pix, cal, cpar) starting from perfect data."""
@@ -578,6 +588,7 @@ def test_orient_returns_none_when_forced(monkeypatch):
 # read_man_ori_fix  (all failure paths)
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 def test_rmof_success():
     fix4 = read_man_ori_fix(CALBLOCK, MAN_ORI, 0)
     assert fix4 is not None
@@ -635,6 +646,7 @@ def test_rmof_cam_index_nonzero():
 # read_calblock  (delegates to sortgrid.read_calblock)
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 def test_read_calblock_success():
     fix, num_fix = read_calblock(CALBLOCK)
     assert num_fix > 0
@@ -644,6 +656,7 @@ def test_read_calblock_success():
 # ─────────────────────────────────────────────────────────────────────────────
 # external_calibration  (wrapper around raw_orient)
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 def test_external_calibration_success():
     fix4 = read_man_ori_fix(CALBLOCK, MAN_ORI, 0)
@@ -665,6 +678,7 @@ def test_external_calibration_success():
 # ─────────────────────────────────────────────────────────────────────────────
 # full_calibration  (wrapper around orient)
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 def test_fc_no_flags():
     fix = _grid_fix(64)
@@ -789,6 +803,7 @@ def test_fc_raises_on_nonconvergence(monkeypatch):
 # match_detection_to_ref  (delegates to sortgrid)
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 def test_match_detection_to_ref_basic():
     fix = _grid_fix(64)
     cal = Calibration.from_file(SYM_TMPL.format(1), CAL1_ADD)
@@ -802,6 +817,7 @@ def test_match_detection_to_ref_basic():
 # ─────────────────────────────────────────────────────────────────────────────
 # multi_cam_point_positions
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 def test_multi_cam_point_positions_basic():
     cals = _sym_cals()
@@ -829,9 +845,11 @@ def test_multi_cam_point_positions_basic():
 # point_positions  (dispatcher)
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class _MockVpar:
     """Duck-typed VolumePar exposing Zmin_lay / Zmax_lay (matches VolumePar and
     single_cam_point_positions, which reads the capital-Z attributes)."""
+
     Zmin_lay = np.array([-10.0, -10.0])
     Zmax_lay = np.array([10.0, 10.0])
 
@@ -882,6 +900,7 @@ def test_point_positions_single_cam():
 # ─────────────────────────────────────────────────────────────────────────────
 # single_cam_point_positions
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 def test_single_cam_normal_z_intercept():
     """Ray has non-zero z component → z-plane intersection branch."""

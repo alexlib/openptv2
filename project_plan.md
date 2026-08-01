@@ -68,8 +68,11 @@ test_data/test_cavity_small/
    Use `Calibration.from_file()` from `algorithms/calibration.py`:
    ```python
    from openptv2.algorithms.calibration import Calibration
-   cals = [Calibration.from_file(f"cal/cam{i}.tif.ori", f"cal/cam{i}.tif.addpar")
-           for i in range(1, 5)]
+
+   cals = [
+       Calibration.from_file(f"cal/cam{i}.tif.ori", f"cal/cam{i}.tif.addpar")
+       for i in range(1, 5)
+   ]
    ```
    Load `ControlParams` from `parameters/ptv.par` to obtain pixel pitch (0.012 mm/px), sensor size (1280×1024), and refractive indices.
 
@@ -85,6 +88,7 @@ test_data/test_cavity_small/
    Or use `point_to_pixel` from `algorithms/track.py`:
    ```python
    from openptv2.algorithms.track import point_to_pixel
+
    x_px, y_px = point_to_pixel(point_xyz, cal, cpar)
    ```
 
@@ -124,9 +128,10 @@ test_data/test_cavity_small/
    For each camera `c` and frame `f`, crop raw images using offsets:
    ```python
    import imageio
+
    img = imageio.imread(f"img/cam{c}.{f}")  # 1280×1024
    ox, oy = crop_offset[c]
-   crop = img[oy:oy+256, ox:ox+256]
+   crop = img[oy : oy + 256, ox : ox + 256]
    imageio.imwrite(f"test_cavity_small/img/cam{c}.{f}", crop)
    ```
 

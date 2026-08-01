@@ -1,3 +1,4 @@
+# ruff: noqa: E741
 """Particle detection via thresholding and peak fitting.
 
 Translation of lib/src/segmentation.c and lib/include/segmentation.h.
@@ -10,13 +11,13 @@ Provides:
   implementation, used only in tests).
 """
 
-import cython
 from dataclasses import dataclass
 
+import cython
 import numpy as np
 
-from .tracking_frame_buf import Target
 from .track_kernels import targ_rec_fast as _targ_rec_fast
+from .tracking_frame_buf import Target
 
 if cython.compiled:
     from cython.cimports.libc.math import sqrt as c_sqrt
@@ -29,7 +30,6 @@ CORRES_NONE = -1
 
 @cython.cclass
 @dataclass
-
 class Peak:
     """Detected peak for connectivity analysis."""
 
@@ -53,7 +53,6 @@ class Peak:
 
 
 @cython.ccall
-
 def _is_local_maximum(
     img: cython.uchar[:, :], i: cython.int, j: cython.int
 ) -> cython.bint:
@@ -75,7 +74,6 @@ def _is_local_maximum(
 
 
 @cython.ccall
-
 def check_touch(tpeak: Peak, p1: cython.int, p2: cython.int):
     """Check whether p1, p2 are already marked as touching and mark them otherwise."""
     if p2 == 0 or p2 == p1:
@@ -93,7 +91,6 @@ def check_touch(tpeak: Peak, p1: cython.int, p2: cython.int):
 
 
 @cython.ccall
-
 def targ_rec(
     img: cython.uchar[:, :],
     gvthres: cython.int,
@@ -180,7 +177,6 @@ def targ_rec(
 @cython.ccall
 @cython.boundscheck(False)
 @cython.wraparound(False)
-
 def peak_fit(
     img: cython.uchar[:, :],
     gvthres: cython.int,
@@ -431,6 +427,7 @@ def peak_fit(
             )
 
     return targets
+
 
 def is_compiled() -> bool:
     """Return whether this module is compiled to C."""

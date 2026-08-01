@@ -154,17 +154,18 @@ Create typed dataclasses for each parameter section:
 class PtvParams:
     num_cams: int = 4
     mmp_n1: float = 1.0
-    mmp_n2: float = 1.46   # glass
-    mmp_n3: float = 1.33   # water
+    mmp_n2: float = 1.46  # glass
+    mmp_n3: float = 1.33  # water
     imx: int = 1280
     imy: int = 1024
     pix_x: float = 0.010
     pix_y: float = 0.010
     ...
 
+
 @dataclass
 class CriteriaParams:
-    Xmin: float = -40.0    # Float, not Int — this is the fix for the TraitError
+    Xmin: float = -40.0  # Float, not Int — this is the fix for the TraitError
     Xmax: float = 40.0
     Ymin: float = -40.0
     Ymax: float = 40.0
@@ -172,12 +173,14 @@ class CriteriaParams:
     Zmax1: float = 40.0
     ...
 
+
 @dataclass
 class SequenceParams:
     first: int = 1
     last: int = 100
     base_name: list[str] = field(default_factory=list)
     ...
+
 
 @dataclass
 class AllParams:

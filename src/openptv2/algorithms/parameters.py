@@ -6,9 +6,10 @@ Translation of parameters from old C/C++ representation into modern Python.
 
 from __future__ import annotations
 
-import cython
 from collections import namedtuple
 from pathlib import Path
+
+import cython
 import numpy as np
 
 
@@ -34,6 +35,7 @@ def _clean_name_list(names, num_cams: int) -> list[str]:
     if not out and num_cams > 0:
         out = [""] * num_cams
     return out
+
 
 # TrackParTuple for test compatibility
 TrackParTuple = namedtuple(

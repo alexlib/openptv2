@@ -76,12 +76,14 @@ def test_mmlut_benchmark():
     # --- 1. init cost per camera ---
     init_times = []
     for i in range(cpar.num_cams):
+
         def _do_init(i=i):
             cal = Calibration.from_file(
                 f"{CAVITY}/cal/cam{i + 1}.tif.ori",
                 f"{CAVITY}/cal/cam{i + 1}.tif.addpar",
             )
             init_mmlut(vpar, cpar, cal)
+
         init_times.append(_median(_do_init))
     for i, cal in enumerate(cals):
         init_mmlut(vpar, cpar, cal)
@@ -108,9 +110,19 @@ def test_mmlut_benchmark():
     def _mmf_iter_all():
         for k in range(n_proj):
             multimed_r_nlay_iterative(
-                pts[k][0], pts[k][1], pts[k][2], ex0, ey0, ez0,
-                mm.n1, mm.n2[0], mm.n3, mm.d[0], mm.nlay,
-                mm_n2=mm.n2, mm_d=mm.d,
+                pts[k][0],
+                pts[k][1],
+                pts[k][2],
+                ex0,
+                ey0,
+                ez0,
+                mm.n1,
+                mm.n2[0],
+                mm.n3,
+                mm.d[0],
+                mm.nlay,
+                mm_n2=mm.n2,
+                mm_d=mm.d,
             )
 
     t_lut = _median(_mmf_lut_all, repeats=9) / n_proj
@@ -156,15 +168,29 @@ def test_mmlut_benchmark():
         dy = p[1] - cal.ext_par.y0
         # mmf via LUT
         mmf_lut = get_mmf_from_mmlut(
-            p, cal.mmlut.origin, cal.mmlut.nr, cal.mmlut.nz,
-            cal.mmlut.rw, cal.mmlut.data,
+            p,
+            cal.mmlut.origin,
+            cal.mmlut.nr,
+            cal.mmlut.nz,
+            cal.mmlut.rw,
+            cal.mmlut.data,
         )
         if mmf_lut == 0.0:
             continue  # outside LUT → falls back to iterative → exact
         mmf_dir = multimed_r_nlay_iterative(
-            p[0], p[1], p[2], cal.ext_par.x0, cal.ext_par.y0, cal.ext_par.z0,
-            mm.n1, mm.n2[0], mm.n3, mm.d[0], mm.nlay,
-            mm_n2=mm.n2, mm_d=mm.d,
+            p[0],
+            p[1],
+            p[2],
+            cal.ext_par.x0,
+            cal.ext_par.y0,
+            cal.ext_par.z0,
+            mm.n1,
+            mm.n2[0],
+            mm.n3,
+            mm.d[0],
+            mm.nlay,
+            mm_n2=mm.n2,
+            mm_d=mm.d,
         )
         diffs_mmf.append(abs(mmf_lut - mmf_dir))
         del dx, dy
@@ -182,7 +208,7 @@ def test_mmlut_benchmark():
     print(
         f"accuracy: |mmf_lut-mmf_dir| max {max_mmf:.2e} rms {rms_mmf:.2e}; "
         f"projection error max {diffs_px.max():.4f} px "
-        f"rms {np.sqrt(np.mean(diffs_px ** 2)):.4f} px"
+        f"rms {np.sqrt(np.mean(diffs_px**2)):.4f} px"
     )
 
     # The LUT must not move projections enough to change correspondences.
@@ -219,9 +245,19 @@ def test_nlay_lut_fill_speedup():
                 R = i * rw + cal_t_x0
                 Z = Zmin_t + j * rw
                 data[i * nz + j] = multimed_r_nlay_iterative(
-                    R, cal_t_y0, Z, cal_t_x0, cal_t_y0, cal_t_z0,
-                    n1, n2[0], n3, d[0], nlay,
-                    mm_n2=n2_list, mm_d=d_list,
+                    R,
+                    cal_t_y0,
+                    Z,
+                    cal_t_x0,
+                    cal_t_y0,
+                    cal_t_z0,
+                    n1,
+                    n2[0],
+                    n3,
+                    d[0],
+                    nlay,
+                    mm_n2=n2_list,
+                    mm_d=d_list,
                 )
         return data
 

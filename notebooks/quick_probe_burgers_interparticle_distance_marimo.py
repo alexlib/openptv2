@@ -5,6 +5,7 @@
 # ]
 # ///
 
+# ruff: noqa: E501
 import marimo
 
 __generated_with = "0.23.0"
@@ -46,7 +47,6 @@ def _(os):
         ]
 
         return files_map
-
 
     file_listings = list_files_in_and_above(".")
     print(f"Files in current directory: {file_listings['current_dir']}")
@@ -112,16 +112,13 @@ def _(data_dir, np, os, read_rt_is_file):
             f"Inter-frame displacement: min={all_disp.min():.2f}, max={all_disp.max():.2f}, mean={all_disp.mean():.2f} mm"
         )
     else:
-        print(
-            "Inter-frame displacement: not computed (mismatched particle counts)"
-        )
+        print("Inter-frame displacement: not computed (mismatched particle counts)")
     return (frames,)
 
 
 @app.cell
 def _(frames, np):
     import matplotlib.pyplot as plt
-
 
     def create_3d_particle_plot(frames: list[np.ndarray]) -> plt.Figure:
         """Creates an interactive 3D scatter plot of particle data frames using matplotlib."""
@@ -152,7 +149,6 @@ def _(frames, np):
         ax.legend()
 
         return fig
-
 
     # Generate plot
     particle_plot = create_3d_particle_plot(frames)

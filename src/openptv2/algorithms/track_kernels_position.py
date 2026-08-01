@@ -1,16 +1,16 @@
+# ruff: noqa: F842
 """3D position reconstruction via multi-camera ray tracing and assess_new_position."""
+
 import cython
 import numpy as np
 
 if cython.compiled:
     from cython.cimports.libc.math import (
-        sqrt as c_sqrt, sin as c_sin, cos as c_cos, tan as c_tan,
-        asin as c_asin, acos as c_acos, atan as c_atan,
+        sqrt as c_sqrt,
     )
 else:
     from math import (
-        sqrt as c_sqrt, sin as c_sin, cos as c_cos, tan as c_tan,
-        asin as c_asin, acos as c_acos, atan as c_atan,
+        sqrt as c_sqrt,
     )
 
 if cython.compiled:
@@ -27,13 +27,25 @@ else:
     )
 
 cython.declare(
-    PT_UNUSED=cython.int, POSI_K=cython.int, MAX_CANDS_K=cython.int,
-    TR_UNUSED_K=cython.int, CORRES_NONE_K=cython.int, PREV_NONE_K=cython.int,
-    NEXT_NONE_K=cython.int, COORD_UNUSED_K=cython.double, ADD_PART_K=cython.double,
+    PT_UNUSED=cython.int,
+    POSI_K=cython.int,
+    MAX_CANDS_K=cython.int,
+    TR_UNUSED_K=cython.int,
+    CORRES_NONE_K=cython.int,
+    PREV_NONE_K=cython.int,
+    NEXT_NONE_K=cython.int,
+    COORD_UNUSED_K=cython.double,
+    ADD_PART_K=cython.double,
 )
-PT_UNUSED = -999; POSI_K = 80; MAX_CANDS_K = 4; TR_UNUSED_K = -1
-CORRES_NONE_K = -1; PREV_NONE_K = -1; NEXT_NONE_K = -2
-COORD_UNUSED_K = -1e10; ADD_PART_K = 3.0
+PT_UNUSED = -999
+POSI_K = 80
+MAX_CANDS_K = 4
+TR_UNUSED_K = -1
+CORRES_NONE_K = -1
+PREV_NONE_K = -1
+NEXT_NONE_K = -2
+COORD_UNUSED_K = -1e10
+ADD_PART_K = 3.0
 
 
 @cython.ccall

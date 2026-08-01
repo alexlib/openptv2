@@ -106,11 +106,17 @@ uv run python skills/openptv-calibrate/scripts/calib.py run <dataset> \
 
 ```python
 from openptv2.autocalibration import (
-    calibrate_dataset, cross_camera_rcm,
-    _load_dataset_params, resolve_calblock)
-results = calibrate_dataset("<dataset>")                  # per-camera RMS in results[i].rms
+    calibrate_dataset,
+    cross_camera_rcm,
+    _load_dataset_params,
+    resolve_calblock,
+)
+
+results = calibrate_dataset("<dataset>")  # per-camera RMS in results[i].rms
 cpar = _load_dataset_params("<dataset>", resolve_calblock("<dataset>")).cpar
-print(cross_camera_rcm(results, cpar))   # {n_points, n_common, median, p90, p95, max} in mm
+print(
+    cross_camera_rcm(results, cpar)
+)  # {n_points, n_common, median, p90, p95, max} in mm
 ```
 
 `--rcm-flag-mm` (default 0.1) sets the threshold above which `run` warns that RCM

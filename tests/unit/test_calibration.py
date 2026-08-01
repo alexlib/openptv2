@@ -12,27 +12,36 @@ from openptv2.algorithms.calibration import (
 
 EPS = 1e-6
 
+
 def compare_matrix(m1, m2, eps=EPS):
     return np.allclose(m1, m2, atol=eps)
+
 
 def make_test_cal():
     # Helper to generate test_cal like in C
     ext = Exterior(
-        x0=105.2632, y0=102.7458, z0=403.8822,
-        omega=-0.2383291, phi=0.2442810, kappa=0.0552577,
-        dm=np.array([
-            [0.9688305, -0.0535899, 0.2418587],
-            [-0.0033422, 0.9734041, 0.2290704],
-            [-0.2477021, -0.2227387, 0.9428845]
-        ])
+        x0=105.2632,
+        y0=102.7458,
+        z0=403.8822,
+        omega=-0.2383291,
+        phi=0.2442810,
+        kappa=0.0552577,
+        dm=np.array(
+            [
+                [0.9688305, -0.0535899, 0.2418587],
+                [-0.0033422, 0.9734041, 0.2290704],
+                [-0.2477021, -0.2227387, 0.9428845],
+            ]
+        ),
     )
     int_par = Interior(xh=-2.4742, yh=3.2567, cc=100.0000)
     glass = Glass(vec_x=0.0001, vec_y=0.00001, vec_z=150.0)
-    addp = AddedPar(k1=0., k2=0., k3=0., p1=0., p2=0., scx=1., she=0.)
+    addp = AddedPar(k1=0.0, k2=0.0, k3=0.0, p1=0.0, p2=0.0, scx=1.0, she=0.0)
 
     cal = Calibration(ext_par=ext, int_par=int_par, glass_par=glass, added_par=addp)
     cal.ext_par.compute_rotation_matrix()
     return cal
+
 
 def test_read_ori():
     correct_cal = make_test_cal()
@@ -65,6 +74,7 @@ def test_read_ori():
     assert np.allclose(cal.added_par.scx, correct_cal.added_par.scx)
     assert np.allclose(cal.added_par.she, correct_cal.added_par.she)
 
+
 def test_write_ori():
     correct_cal = make_test_cal()
     ori_file = "test_data/test.ori"
@@ -80,13 +90,14 @@ def test_write_ori():
     os.remove(ori_file)
     os.remove(add_file)
 
+
 def test_rotation_angles():
     # omega
     ex = Exterior()
     ex.omega = np.pi / 2.0
     ex.phi = 0.0
     ex.kappa = 0.0
-    rotx = np.array([[1., 0., 0.], [0., 0., -1.], [0., 1., 0.]])
+    rotx = np.array([[1.0, 0.0, 0.0], [0.0, 0.0, -1.0], [0.0, 1.0, 0.0]])
     ex.compute_rotation_matrix()
     assert compare_matrix(ex.dm, rotx)
 
@@ -95,7 +106,7 @@ def test_rotation_angles():
     ex.omega = 0.0
     ex.phi = np.pi / 2.0
     ex.kappa = 0.0
-    roty = np.array([[0., 0., 1.], [0., 1., 0.], [-1., 0., 0.]])
+    roty = np.array([[0.0, 0.0, 1.0], [0.0, 1.0, 0.0], [-1.0, 0.0, 0.0]])
     ex.compute_rotation_matrix()
     assert compare_matrix(ex.dm, roty)
 
@@ -104,6 +115,6 @@ def test_rotation_angles():
     ex.omega = 0.0
     ex.phi = 0.0
     ex.kappa = np.pi / 2.0
-    rotz = np.array([[0., -1., 0.], [1., 0., 0.], [0., 0., 1.]])
+    rotz = np.array([[0.0, -1.0, 0.0], [1.0, 0.0, 0.0], [0.0, 0.0, 1.0]])
     ex.compute_rotation_matrix()
     assert compare_matrix(ex.dm, rotz)

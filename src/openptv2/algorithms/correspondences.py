@@ -9,10 +9,11 @@ Adjacency data is stored in flat typed memoryview arrays (not Python objects),
 so that the O(n^4) clique-finding loops compile to pure C pointer arithmetic.
 """
 
-import cython
 import operator
 
+import cython
 import numpy as np
+
 from .epi import MAXCAND
 
 NMAX = 20240
@@ -370,10 +371,10 @@ def four_camera_matching(
                 c23_p3: cython.double[:] = corr_arr[2, 3, p3]
                 d23_p3: cython.double[:] = dist_arr[2, 3, p3]
 
-                for l in range(n_03_i):
-                    p4: cython.int = p2_03_i[l]
-                    c03: cython.double = c03_i[l]
-                    d03: cython.double = d03_i[l]
+                for target_idx in range(n_03_i):
+                    p4: cython.int = p2_03_i[target_idx]
+                    c03: cython.double = c03_i[target_idx]
+                    d03: cython.double = d03_i[target_idx]
 
                     corr_partial: cython.double = c01 + c02 + c03
                     dist_partial: cython.double = d01 + d02 + d03
@@ -638,8 +639,7 @@ def take_best_candidates(
 def _correct_one_camera(cam, frm, calib, cpar, tol):
     """Process a single camera (module-level for pickling)."""
     from .epi import Coord2d
-    from .trafo import pixel_to_metric, dist_to_flat
-    import operator
+    from .trafo import dist_to_flat, pixel_to_metric
 
     cam_coords = []
     for part in range(frm.num_targets[cam]):
@@ -691,7 +691,7 @@ def correct_frame(frm, calib, cpar, tol):
             corrected.append(_correct_one_camera(cam, frm, calib, cpar, tol))
         return corrected
 
-    from concurrent.futures import ThreadPoolExecutor, as_completed
+    from concurrent.futures import ThreadPoolExecutor
 
     with ThreadPoolExecutor(max_workers=num_cams) as pool:
         futures = [
@@ -846,7 +846,14 @@ def correspondences(frm, corrected, vpar, cpar, calib):
             tusage,
         )
         match_counts[1] = take_best_candidates(
-            con0_p, con0_corr, con_p, con_corr, num_cams, match0, tusage, match_counts[3]
+            con0_p,
+            con0_corr,
+            con_p,
+            con_corr,
+            num_cams,
+            match0,
+            tusage,
+            match_counts[3],
         )
         match_counts[3] += match_counts[1]
 
@@ -867,7 +874,14 @@ def correspondences(frm, corrected, vpar, cpar, calib):
             tusage,
         )
         match_counts[2] = take_best_candidates(
-            con0_p, con0_corr, con_p, con_corr, num_cams, match0, tusage, match_counts[3]
+            con0_p,
+            con0_corr,
+            con_p,
+            con_corr,
+            num_cams,
+            match0,
+            tusage,
+            match_counts[3],
         )
         match_counts[3] += match_counts[2]
 

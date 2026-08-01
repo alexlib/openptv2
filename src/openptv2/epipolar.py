@@ -18,18 +18,12 @@ def epipolar_curve(point, cal1, cal2, num_points, cpar, vpar):
     Returns:
         ndarray[num_points, 2]: Points on epipolar curve
     """
-    raw_cal1 = cal1._cal if hasattr(cal1, '_cal') else cal1
-    raw_cal2 = cal2._cal if hasattr(cal2, '_cal') else cal2
-    raw_cpar = cpar._cpar if hasattr(cpar, '_cpar') else cpar
-    raw_vpar = vpar._vpar if hasattr(vpar, '_vpar') else vpar
+    raw_cal1 = cal1._cal if hasattr(cal1, "_cal") else cal1
+    raw_cal2 = cal2._cal if hasattr(cal2, "_cal") else cal2
+    raw_cpar = cpar._cpar if hasattr(cpar, "_cpar") else cpar
+    raw_vpar = vpar._vpar if hasattr(vpar, "_vpar") else vpar
 
-    return _epipolar_curve(
-        point,
-        raw_cal1,
-        raw_cal2,
-        num_points,
-        raw_cpar,
-        raw_vpar
-    )
+    return _epipolar_curve(point, raw_cal1, raw_cal2, num_points, raw_cpar, raw_vpar)
+
 
 __all__ = ["epipolar_curve"]

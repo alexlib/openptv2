@@ -77,6 +77,7 @@ Below is a complete, annotated example based on our MyPTV 3D tracking plugin imp
 import numpy as np
 from scipy.optimize import linear_sum_assignment
 
+
 class Custom3DTracker:
     def __init__(self, v_max: float = 10.0, a_max: float = 50.0, dt: float = 0.1):
         self.v_max = v_max
@@ -94,19 +95,29 @@ class Custom3DTracker:
 
         # Frame 0 initialization
         for p in frame_particles[0]:
-            active_tracks.append({"id": next_id, "pos": [p], "time": [0], "vel": [np.zeros(3)]})
+            active_tracks.append(
+                {"id": next_id, "pos": [p], "time": [0], "vel": [np.zeros(3)]}
+            )
             next_id += 1
 
         # Process frames 1 .. N-1
         for f in range(1, num_frames):
             cands = frame_particles[f]
-            cost_matrix = np.full((len(active_tracks), len(cands)), 1e9, dtype=np.float64)
+            cost_matrix = np.full(
+                (len(active_tracks), len(cands)), 1e9, dtype=np.float64
+            )
 
             # Build prediction cost matrix
             for i, tr in enumerate(active_tracks):
                 last_p = tr["pos"][-1]
-                p_pred = last_p + tr["vel"][-1] * self.dt if len(tr["pos"]) > 1 else last_p
-                search_r = self.a_max * (self.dt ** 2) if len(tr["pos"]) > 1 else self.v_max * self.dt
+                p_pred = (
+                    last_p + tr["vel"][-1] * self.dt if len(tr["pos"]) > 1 else last_p
+                )
+                search_r = (
+                    self.a_max * (self.dt**2)
+                    if len(tr["pos"]) > 1
+                    else self.v_max * self.dt
+                )
 
                 dists = np.linalg.norm(cands - p_pred, axis=1)
                 valid = dists <= search_r

@@ -1,3 +1,4 @@
+# ruff: noqa: E402
 from pathlib import Path
 
 import yaml
@@ -18,6 +19,7 @@ res = work_dir / "res"
 res.mkdir()
 for f in res_orig.iterdir():
     import shutil
+
     shutil.copy2(f, res / f.name)
 
 # Symlink newpart
@@ -38,14 +40,15 @@ corresp = conf["correspondences"]
 tracking = conf["tracking"]
 vel = tracking["velocity_lims"]
 
-cals = [read_calibration(c["ori_file"], c.get("addpar_file"))
-        for c in conf["cameras"]]
+cals = [read_calibration(c["ori_file"], c.get("addpar_file")) for c in conf["cameras"]]
 
 mm = MultimediaPar(nlay=1, n1=1, n2=[1], d=[0], n3=1)
 cpar = ControlPar(
     num_cams=4,
-    imx=scene["image_size"][0], imy=scene["image_size"][1],
-    pix_x=scene["pixel_size"][0], pix_y=scene["pixel_size"][1],
+    imx=scene["image_size"][0],
+    imy=scene["image_size"][1],
+    pix_x=scene["pixel_size"][0],
+    pix_y=scene["pixel_size"][1],
     mm=mm,
 )
 vpar = VolumePar(
@@ -60,16 +63,22 @@ vpar = VolumePar(
     corrmin=corresp.get("min_correlation", 0),
 )
 tpar = TrackParTuple(
-    dvxmin=vel[0][0], dvxmax=vel[0][1],
-    dvymin=vel[1][0], dvymax=vel[1][1],
-    dvzmin=vel[2][0], dvzmax=vel[2][1],
+    dvxmin=vel[0][0],
+    dvxmax=vel[0][1],
+    dvymin=vel[1][0],
+    dvymax=vel[1][1],
+    dvzmin=vel[2][0],
+    dvzmax=vel[2][1],
     dangle=tracking["angle_lim"],
     dacc=tracking["accel_lim"],
     add=tracking.get("add_particle", 0),
-    dsumg=0.0, dn=0.0, dnx=0.0, dny=0.0,
+    dsumg=0.0,
+    dn=0.0,
+    dnx=0.0,
+    dny=0.0,
 )
 seq = conf["sequence"]
-img_base = [str(work_dir / "newpart" / f"cam{i+1}.") for i in range(4)]
+img_base = [str(work_dir / "newpart" / f"cam{i + 1}.") for i in range(4)]
 spar = SequencePar(img_base_name=img_base, first=seq["first"], last=seq["last"])
 
 naming = {

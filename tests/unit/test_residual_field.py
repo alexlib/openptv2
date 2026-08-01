@@ -1,4 +1,5 @@
 """save_residual_field_figure writes a PNG (smoke test, no display)."""
+
 from pathlib import Path
 
 import numpy as np

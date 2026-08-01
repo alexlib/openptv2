@@ -63,8 +63,9 @@ def _make_flat_arrays(num_cams, max_t):
     return p1_arr, n_arr, p2_arr, corr_arr, dist_arr
 
 
-def _fill_perfect_pairs(p1_arr, n_arr, p2_arr, corr_arr, dist_arr,
-                         num_cams, n_targets, corr=2.0, dist=1.0):
+def _fill_perfect_pairs(
+    p1_arr, n_arr, p2_arr, corr_arr, dist_arr, num_cams, n_targets, corr=2.0, dist=1.0
+):
     """Fill every camera pair with perfect 1:1 candidates."""
     for c1 in range(num_cams - 1):
         for c2 in range(c1 + 1, num_cams):
@@ -107,11 +108,25 @@ def _mock_dist_to_flat(xm, ym, xh, yh, k1, k2, k3, p1, p2, scx, she, tol):
     return xm, ym
 
 
-def _mock_find_candidate_one(corrected_i2, targets_i2, n2,
-                              xmin, ymin, xmax, ymax,
-                              n, nx, ny, sumg,
-                              cand_pnr, cand_tol, cand_corr,
-                              vpar, cpar, calib_i2):
+def _mock_find_candidate_one(
+    corrected_i2,
+    targets_i2,
+    n2,
+    xmin,
+    ymin,
+    xmax,
+    ymax,
+    n,
+    nx,
+    ny,
+    sumg,
+    cand_pnr,
+    cand_tol,
+    cand_corr,
+    vpar,
+    cpar,
+    calib_i2,
+):
     """Always returns 1 candidate: target index 0."""
     cand_pnr[0] = 0
     cand_tol[0] = 1.0
@@ -249,8 +264,10 @@ def test_is_compiled_pure_python():
 
 def _scratch(alloc, num_cams):
     """Allocate (scratch_p, scratch_corr) for a matcher's output."""
-    return (np.full((alloc, num_cams), -1, dtype=np.int32),
-            np.zeros(alloc, dtype=np.float64))
+    return (
+        np.full((alloc, num_cams), -1, dtype=np.int32),
+        np.zeros(alloc, dtype=np.float64),
+    )
 
 
 def _tusage(num_cams):
@@ -267,8 +284,12 @@ class TestFourCameraMatching:
         arrays = self._make(1)
         sp, sc = _scratch(10, 4)
         matched = four_camera_matching(
-            *arrays, base_target_count=1, accept_corr=1.0,
-            scratch_p=sp, scratch_corr=sc, scratch_size=10,
+            *arrays,
+            base_target_count=1,
+            accept_corr=1.0,
+            scratch_p=sp,
+            scratch_corr=sc,
+            scratch_size=10,
         )
         assert matched == 1
         assert sp[0, 0] == 0
@@ -278,8 +299,12 @@ class TestFourCameraMatching:
         arrays = self._make(1)
         sp, sc = _scratch(10, 4)
         matched = four_camera_matching(
-            *arrays, base_target_count=1, accept_corr=10.0,
-            scratch_p=sp, scratch_corr=sc, scratch_size=10,
+            *arrays,
+            base_target_count=1,
+            accept_corr=10.0,
+            scratch_p=sp,
+            scratch_corr=sc,
+            scratch_size=10,
         )
         assert matched == 0
 
@@ -287,27 +312,50 @@ class TestFourCameraMatching:
         arrays = self._make(2)
         sp, sc = _scratch(5, 4)
         matched = four_camera_matching(
-            *arrays, base_target_count=2, accept_corr=1.0,
-            scratch_p=sp, scratch_corr=sc, scratch_size=1,
+            *arrays,
+            base_target_count=2,
+            accept_corr=1.0,
+            scratch_p=sp,
+            scratch_corr=sc,
+            scratch_size=1,
         )
         assert matched == 1
 
     def test_inconsistent_cross_pair_no_match(self):
         """cam1->cam2 points to target 1 but cam0->cam2 points to target 0 -> no clique."""
         p1_arr, n_arr, p2_arr, corr_arr, dist_arr = _make_flat_arrays(4, 2)
-        p1_arr[0, 1, 0] = 0; n_arr[0, 1, 0] = 1
-        p2_arr[0, 1, 0, 0] = 0; corr_arr[0, 1, 0, 0] = 2.0; dist_arr[0, 1, 0, 0] = 1.0
-        p1_arr[0, 2, 0] = 0; n_arr[0, 2, 0] = 1
-        p2_arr[0, 2, 0, 0] = 0; corr_arr[0, 2, 0, 0] = 2.0; dist_arr[0, 2, 0, 0] = 1.0
-        p1_arr[0, 3, 0] = 0; n_arr[0, 3, 0] = 1
-        p2_arr[0, 3, 0, 0] = 0; corr_arr[0, 3, 0, 0] = 2.0; dist_arr[0, 3, 0, 0] = 1.0
-        p1_arr[1, 2, 0] = 0; n_arr[1, 2, 0] = 1
-        p2_arr[1, 2, 0, 0] = 1; corr_arr[1, 2, 0, 0] = 2.0; dist_arr[1, 2, 0, 0] = 1.0
+        p1_arr[0, 1, 0] = 0
+        n_arr[0, 1, 0] = 1
+        p2_arr[0, 1, 0, 0] = 0
+        corr_arr[0, 1, 0, 0] = 2.0
+        dist_arr[0, 1, 0, 0] = 1.0
+        p1_arr[0, 2, 0] = 0
+        n_arr[0, 2, 0] = 1
+        p2_arr[0, 2, 0, 0] = 0
+        corr_arr[0, 2, 0, 0] = 2.0
+        dist_arr[0, 2, 0, 0] = 1.0
+        p1_arr[0, 3, 0] = 0
+        n_arr[0, 3, 0] = 1
+        p2_arr[0, 3, 0, 0] = 0
+        corr_arr[0, 3, 0, 0] = 2.0
+        dist_arr[0, 3, 0, 0] = 1.0
+        p1_arr[1, 2, 0] = 0
+        n_arr[1, 2, 0] = 1
+        p2_arr[1, 2, 0, 0] = 1
+        corr_arr[1, 2, 0, 0] = 2.0
+        dist_arr[1, 2, 0, 0] = 1.0
         sp, sc = _scratch(5, 4)
         matched = four_camera_matching(
-            p1_arr, n_arr, p2_arr, corr_arr, dist_arr,
-            base_target_count=1, accept_corr=1.0,
-            scratch_p=sp, scratch_corr=sc, scratch_size=5,
+            p1_arr,
+            n_arr,
+            p2_arr,
+            corr_arr,
+            dist_arr,
+            base_target_count=1,
+            accept_corr=1.0,
+            scratch_p=sp,
+            scratch_corr=sc,
+            scratch_size=5,
         )
         assert matched == 0
 
@@ -316,9 +364,16 @@ class TestFourCameraMatching:
         p1_arr[0, 1, 0] = 0  # p1 set but n=0 -> inner loops don't execute
         sp, sc = _scratch(5, 4)
         matched = four_camera_matching(
-            p1_arr, n_arr, p2_arr, corr_arr, dist_arr,
-            base_target_count=1, accept_corr=1.0,
-            scratch_p=sp, scratch_corr=sc, scratch_size=5,
+            p1_arr,
+            n_arr,
+            p2_arr,
+            corr_arr,
+            dist_arr,
+            base_target_count=1,
+            accept_corr=1.0,
+            scratch_p=sp,
+            scratch_corr=sc,
+            scratch_size=5,
         )
         assert matched == 0
 
@@ -338,8 +393,14 @@ class TestThreeCameraMatching:
         arrays = self._make(3, 1)
         sp, sc = _scratch(10, 3)
         matched = three_camera_matching(
-            *arrays, num_cams=3, target_counts=[1, 1, 1], accept_corr=1.0,
-            scratch_p=sp, scratch_corr=sc, scratch_size=10, tusage=_tusage(3),
+            *arrays,
+            num_cams=3,
+            target_counts=[1, 1, 1],
+            accept_corr=1.0,
+            scratch_p=sp,
+            scratch_corr=sc,
+            scratch_size=10,
+            tusage=_tusage(3),
         )
         assert matched == 1
         assert sp[0, 0] == 0
@@ -351,8 +412,14 @@ class TestThreeCameraMatching:
         arrays = self._make(4, 1)
         sp, sc = _scratch(10, 4)
         three_camera_matching(
-            *arrays, num_cams=4, target_counts=[1, 1, 1, 1], accept_corr=1.0,
-            scratch_p=sp, scratch_corr=sc, scratch_size=10, tusage=_tusage(4),
+            *arrays,
+            num_cams=4,
+            target_counts=[1, 1, 1, 1],
+            accept_corr=1.0,
+            scratch_p=sp,
+            scratch_corr=sc,
+            scratch_size=10,
+            tusage=_tusage(4),
         )
         found_minus2 = any(sp[0, c] == -2 for c in range(4))
         assert found_minus2
@@ -361,8 +428,14 @@ class TestThreeCameraMatching:
         arrays = self._make(3, 1)
         sp, sc = _scratch(10, 3)
         matched = three_camera_matching(
-            *arrays, num_cams=3, target_counts=[1, 1, 1], accept_corr=10.0,
-            scratch_p=sp, scratch_corr=sc, scratch_size=10, tusage=_tusage(3),
+            *arrays,
+            num_cams=3,
+            target_counts=[1, 1, 1],
+            accept_corr=10.0,
+            scratch_p=sp,
+            scratch_corr=sc,
+            scratch_size=10,
+            tusage=_tusage(3),
         )
         assert matched == 0
 
@@ -372,8 +445,14 @@ class TestThreeCameraMatching:
         tu = _tusage(3)
         tu[0, 0] = 1
         matched = three_camera_matching(
-            *arrays, num_cams=3, target_counts=[1, 1, 1], accept_corr=1.0,
-            scratch_p=sp, scratch_corr=sc, scratch_size=10, tusage=tu,
+            *arrays,
+            num_cams=3,
+            target_counts=[1, 1, 1],
+            accept_corr=1.0,
+            scratch_p=sp,
+            scratch_corr=sc,
+            scratch_size=10,
+            tusage=tu,
         )
         assert matched == 0
 
@@ -383,8 +462,14 @@ class TestThreeCameraMatching:
         tu = _tusage(3)
         tu[1, 0] = 1
         matched = three_camera_matching(
-            *arrays, num_cams=3, target_counts=[1, 1, 1], accept_corr=1.0,
-            scratch_p=sp, scratch_corr=sc, scratch_size=10, tusage=tu,
+            *arrays,
+            num_cams=3,
+            target_counts=[1, 1, 1],
+            accept_corr=1.0,
+            scratch_p=sp,
+            scratch_corr=sc,
+            scratch_size=10,
+            tusage=tu,
         )
         assert matched == 0
 
@@ -394,8 +479,14 @@ class TestThreeCameraMatching:
         tu = _tusage(3)
         tu[2, 0] = 1
         matched = three_camera_matching(
-            *arrays, num_cams=3, target_counts=[1, 1, 1], accept_corr=1.0,
-            scratch_p=sp, scratch_corr=sc, scratch_size=10, tusage=tu,
+            *arrays,
+            num_cams=3,
+            target_counts=[1, 1, 1],
+            accept_corr=1.0,
+            scratch_p=sp,
+            scratch_corr=sc,
+            scratch_size=10,
+            tusage=tu,
         )
         assert matched == 0
 
@@ -403,8 +494,14 @@ class TestThreeCameraMatching:
         arrays = self._make(3, 2)
         sp, sc = _scratch(5, 3)
         matched = three_camera_matching(
-            *arrays, num_cams=3, target_counts=[2, 2, 2], accept_corr=1.0,
-            scratch_p=sp, scratch_corr=sc, scratch_size=1, tusage=_tusage(3),
+            *arrays,
+            num_cams=3,
+            target_counts=[2, 2, 2],
+            accept_corr=1.0,
+            scratch_p=sp,
+            scratch_corr=sc,
+            scratch_size=1,
+            tusage=_tusage(3),
         )
         assert matched == 1
 
@@ -424,8 +521,14 @@ class TestConsistentPairMatching:
         arrays = self._make(1)
         sp, sc = _scratch(10, 2)
         matched = consistent_pair_matching(
-            *arrays, num_cams=2, target_counts=[1, 1], accept_corr=1.0,
-            scratch_p=sp, scratch_corr=sc, scratch_size=10, tusage=_tusage(2),
+            *arrays,
+            num_cams=2,
+            target_counts=[1, 1],
+            accept_corr=1.0,
+            scratch_p=sp,
+            scratch_corr=sc,
+            scratch_size=10,
+            tusage=_tusage(2),
         )
         assert matched == 1
         assert sp[0, 0] == 0
@@ -435,8 +538,14 @@ class TestConsistentPairMatching:
         arrays = self._make(1)
         sp, sc = _scratch(10, 2)
         consistent_pair_matching(
-            *arrays, num_cams=2, target_counts=[1, 1], accept_corr=1.0,
-            scratch_p=sp, scratch_corr=sc, scratch_size=10, tusage=_tusage(2),
+            *arrays,
+            num_cams=2,
+            target_counts=[1, 1],
+            accept_corr=1.0,
+            scratch_p=sp,
+            scratch_corr=sc,
+            scratch_size=10,
+            tusage=_tusage(2),
         )
         assert sp[0, 0] == 0
         assert sp[0, 1] == 0
@@ -446,9 +555,18 @@ class TestConsistentPairMatching:
         n_arr[0, 1, 0] = 2  # ambiguous
         sp, sc = _scratch(10, 2)
         matched = consistent_pair_matching(
-            p1_arr, n_arr, p2_arr, corr_arr, dist_arr,
-            num_cams=2, target_counts=[1, 1], accept_corr=1.0,
-            scratch_p=sp, scratch_corr=sc, scratch_size=10, tusage=_tusage(2),
+            p1_arr,
+            n_arr,
+            p2_arr,
+            corr_arr,
+            dist_arr,
+            num_cams=2,
+            target_counts=[1, 1],
+            accept_corr=1.0,
+            scratch_p=sp,
+            scratch_corr=sc,
+            scratch_size=10,
+            tusage=_tusage(2),
         )
         assert matched == 0
 
@@ -456,8 +574,14 @@ class TestConsistentPairMatching:
         arrays = self._make(1)
         sp, sc = _scratch(10, 2)
         matched = consistent_pair_matching(
-            *arrays, num_cams=2, target_counts=[1, 1], accept_corr=10.0,
-            scratch_p=sp, scratch_corr=sc, scratch_size=10, tusage=_tusage(2),
+            *arrays,
+            num_cams=2,
+            target_counts=[1, 1],
+            accept_corr=10.0,
+            scratch_p=sp,
+            scratch_corr=sc,
+            scratch_size=10,
+            tusage=_tusage(2),
         )
         assert matched == 0
 
@@ -467,8 +591,14 @@ class TestConsistentPairMatching:
         tu = _tusage(2)
         tu[0, 0] = 1
         matched = consistent_pair_matching(
-            *arrays, num_cams=2, target_counts=[1, 1], accept_corr=1.0,
-            scratch_p=sp, scratch_corr=sc, scratch_size=10, tusage=tu,
+            *arrays,
+            num_cams=2,
+            target_counts=[1, 1],
+            accept_corr=1.0,
+            scratch_p=sp,
+            scratch_corr=sc,
+            scratch_size=10,
+            tusage=tu,
         )
         assert matched == 0
 
@@ -478,8 +608,14 @@ class TestConsistentPairMatching:
         tu = _tusage(2)
         tu[1, 0] = 1
         matched = consistent_pair_matching(
-            *arrays, num_cams=2, target_counts=[1, 1], accept_corr=1.0,
-            scratch_p=sp, scratch_corr=sc, scratch_size=10, tusage=tu,
+            *arrays,
+            num_cams=2,
+            target_counts=[1, 1],
+            accept_corr=1.0,
+            scratch_p=sp,
+            scratch_corr=sc,
+            scratch_size=10,
+            tusage=tu,
         )
         assert matched == 0
 
@@ -487,8 +623,14 @@ class TestConsistentPairMatching:
         arrays = self._make(2)
         sp, sc = _scratch(5, 2)
         matched = consistent_pair_matching(
-            *arrays, num_cams=2, target_counts=[2, 2], accept_corr=1.0,
-            scratch_p=sp, scratch_corr=sc, scratch_size=1, tusage=_tusage(2),
+            *arrays,
+            num_cams=2,
+            target_counts=[2, 2],
+            accept_corr=1.0,
+            scratch_p=sp,
+            scratch_corr=sc,
+            scratch_size=1,
+            tusage=_tusage(2),
         )
         assert matched == 1
 
@@ -498,9 +640,18 @@ class TestConsistentPairMatching:
         _fill_perfect_pairs(p1_arr, n_arr, p2_arr, corr_arr, dist_arr, 4, 1)
         sp, sc = _scratch(20, 4)
         matched = consistent_pair_matching(
-            p1_arr, n_arr, p2_arr, corr_arr, dist_arr,
-            num_cams=4, target_counts=[1, 1, 1, 1], accept_corr=1.0,
-            scratch_p=sp, scratch_corr=sc, scratch_size=20, tusage=_tusage(4),
+            p1_arr,
+            n_arr,
+            p2_arr,
+            corr_arr,
+            dist_arr,
+            num_cams=4,
+            target_counts=[1, 1, 1, 1],
+            accept_corr=1.0,
+            scratch_p=sp,
+            scratch_corr=sc,
+            scratch_size=20,
+            tusage=_tusage(4),
         )
         assert matched >= 1
 
@@ -512,7 +663,9 @@ class TestConsistentPairMatching:
 
 class TestTakeBestCandidates:
     def test_sorts_descending_corr(self):
-        src_p = np.array([[0, 1, -2, -2], [2, 3, -2, -2], [4, 5, -2, -2]], dtype=np.int32)
+        src_p = np.array(
+            [[0, 1, -2, -2], [2, 3, -2, -2], [4, 5, -2, -2]], dtype=np.int32
+        )
         src_corr = np.array([1.0, 3.0, 2.0], dtype=np.float64)
         dst_p, dst_corr = _scratch(5, 4)
         taken = take_best_candidates(
@@ -529,9 +682,7 @@ class TestTakeBestCandidates:
         dst_p, dst_corr = _scratch(5, 4)
         tu = _tusage(4)
         tu[0, 0] = 1  # cam0 target0 used -> first candidate skipped
-        taken = take_best_candidates(
-            src_p, src_corr, dst_p, dst_corr, 4, 2, tu, 0
-        )
+        taken = take_best_candidates(src_p, src_corr, dst_p, dst_corr, 4, 2, tu, 0)
         assert taken == 1
         assert dst_p[0, 0] == 2
 
@@ -563,6 +714,7 @@ class TestTakeBestCandidates:
         assert tu[0, 0] == 0  # cam0 target0 NOT marked (slot was -1)
         assert tu[1, 0] == 1  # cam1 target0 marked
 
+
 # ---------------------------------------------------------------------------
 # correct_frame  (monkeypatch trafo)
 # ---------------------------------------------------------------------------
@@ -571,10 +723,12 @@ class TestTakeBestCandidates:
 class TestCorrectFrame:
     def test_single_camera_sequential_path(self, monkeypatch):
         """num_cams<=1 → sequential branch in correct_frame."""
-        monkeypatch.setattr("openptv2.algorithms.trafo.pixel_to_metric",
-                            _mock_pixel_to_metric)
-        monkeypatch.setattr("openptv2.algorithms.trafo.dist_to_flat",
-                            _mock_dist_to_flat)
+        monkeypatch.setattr(
+            "openptv2.algorithms.trafo.pixel_to_metric", _mock_pixel_to_metric
+        )
+        monkeypatch.setattr(
+            "openptv2.algorithms.trafo.dist_to_flat", _mock_dist_to_flat
+        )
         cpar = ControlPar.from_yaml(PARAM_YAML)
         cpar.num_cams = 1
         calib = _load_calib(1)
@@ -588,10 +742,12 @@ class TestCorrectFrame:
 
     def test_two_camera_parallel_path(self, monkeypatch):
         """num_cams>1 → ThreadPoolExecutor branch."""
-        monkeypatch.setattr("openptv2.algorithms.trafo.pixel_to_metric",
-                            _mock_pixel_to_metric)
-        monkeypatch.setattr("openptv2.algorithms.trafo.dist_to_flat",
-                            _mock_dist_to_flat)
+        monkeypatch.setattr(
+            "openptv2.algorithms.trafo.pixel_to_metric", _mock_pixel_to_metric
+        )
+        monkeypatch.setattr(
+            "openptv2.algorithms.trafo.dist_to_flat", _mock_dist_to_flat
+        )
         cpar = ControlPar.from_yaml(PARAM_YAML)
         cpar.num_cams = 2
         calib = _load_calib(2)
@@ -602,10 +758,12 @@ class TestCorrectFrame:
         assert len(corrected[1]) == 1
 
     def test_pnr_preserved(self, monkeypatch):
-        monkeypatch.setattr("openptv2.algorithms.trafo.pixel_to_metric",
-                            _mock_pixel_to_metric)
-        monkeypatch.setattr("openptv2.algorithms.trafo.dist_to_flat",
-                            _mock_dist_to_flat)
+        monkeypatch.setattr(
+            "openptv2.algorithms.trafo.pixel_to_metric", _mock_pixel_to_metric
+        )
+        monkeypatch.setattr(
+            "openptv2.algorithms.trafo.dist_to_flat", _mock_dist_to_flat
+        )
         cpar = ControlPar.from_yaml(PARAM_YAML)
         cpar.num_cams = 1
         calib = _load_calib(1)
@@ -615,10 +773,12 @@ class TestCorrectFrame:
         assert corrected[0][0].pnr == 7
 
     def test_output_x_sorted(self, monkeypatch):
-        monkeypatch.setattr("openptv2.algorithms.trafo.pixel_to_metric",
-                            _mock_pixel_to_metric)
-        monkeypatch.setattr("openptv2.algorithms.trafo.dist_to_flat",
-                            _mock_dist_to_flat)
+        monkeypatch.setattr(
+            "openptv2.algorithms.trafo.pixel_to_metric", _mock_pixel_to_metric
+        )
+        monkeypatch.setattr(
+            "openptv2.algorithms.trafo.dist_to_flat", _mock_dist_to_flat
+        )
         cpar = ControlPar.from_yaml(PARAM_YAML)
         cpar.num_cams = 1
         calib = _load_calib(1)
@@ -638,12 +798,16 @@ class TestCorrectFrame:
 
 class TestCorrespondences:
     def _setup(self, monkeypatch, num_cams=2, find_cand=None, allCam=0, corrmin=0.001):
-        monkeypatch.setattr("openptv2.algorithms.epi.find_candidate",
-                            find_cand or _mock_find_candidate_zero)
-        monkeypatch.setattr("openptv2.algorithms.trafo.pixel_to_metric",
-                            _mock_pixel_to_metric)
-        monkeypatch.setattr("openptv2.algorithms.trafo.dist_to_flat",
-                            _mock_dist_to_flat)
+        monkeypatch.setattr(
+            "openptv2.algorithms.epi.find_candidate",
+            find_cand or _mock_find_candidate_zero,
+        )
+        monkeypatch.setattr(
+            "openptv2.algorithms.trafo.pixel_to_metric", _mock_pixel_to_metric
+        )
+        monkeypatch.setattr(
+            "openptv2.algorithms.trafo.dist_to_flat", _mock_dist_to_flat
+        )
         cpar = ControlPar.from_yaml(PARAM_YAML)
         vpar = VolumePar.from_yaml(PARAM_YAML)
         cpar.num_cams = num_cams
@@ -664,7 +828,8 @@ class TestCorrespondences:
     def test_2cam_one_pair_found(self, monkeypatch):
         """2-cam, find_candidate=1 → 1 pair."""
         frm, corrected, vpar, cpar, calib = self._setup(
-            monkeypatch, 2, _mock_find_candidate_one)
+            monkeypatch, 2, _mock_find_candidate_one
+        )
         con, mc = correspondences(frm, corrected, vpar, cpar, calib)
         assert mc[2] == 1
         assert mc[3] == 1
@@ -672,21 +837,24 @@ class TestCorrespondences:
     def test_2cam_tnr_updated(self, monkeypatch):
         """Target track numbers should be set after matching."""
         frm, corrected, vpar, cpar, calib = self._setup(
-            monkeypatch, 2, _mock_find_candidate_one)
+            monkeypatch, 2, _mock_find_candidate_one
+        )
         correspondences(frm, corrected, vpar, cpar, calib)
         assert frm.targets[0][0].tnr == 0
 
     def test_3cam_triplet_branch(self, monkeypatch):
         """3-cam → three_camera_matching branch runs."""
         frm, corrected, vpar, cpar, calib = self._setup(
-            monkeypatch, 3, _mock_find_candidate_one)
+            monkeypatch, 3, _mock_find_candidate_one
+        )
         con, mc = correspondences(frm, corrected, vpar, cpar, calib)
         assert mc[3] >= 1
 
     def test_4cam_quadruplet_branch(self, monkeypatch):
         """4-cam → four_camera_matching branch runs."""
         frm, corrected, vpar, cpar, calib = self._setup(
-            monkeypatch, 4, _mock_find_candidate_one)
+            monkeypatch, 4, _mock_find_candidate_one
+        )
         con, mc = correspondences(frm, corrected, vpar, cpar, calib)
         assert mc[0] >= 1  # quadruplet found
         assert mc[3] >= 1
@@ -694,7 +862,8 @@ class TestCorrespondences:
     def test_4cam_allcam_flag_1_skips_trips_pairs(self, monkeypatch):
         """4-cam allCam_flag=1 → only quads, triplet and pair branches skipped."""
         frm, corrected, vpar, cpar, calib = self._setup(
-            monkeypatch, 4, _mock_find_candidate_one, allCam=1)
+            monkeypatch, 4, _mock_find_candidate_one, allCam=1
+        )
         con, mc = correspondences(frm, corrected, vpar, cpar, calib)
         assert mc[1] == 0  # no triplets
         assert mc[2] == 0  # no pairs
@@ -713,12 +882,15 @@ class TestCorrespondences:
 
     def test_pt_unused_skipped_in_adjacency(self, monkeypatch):
         """corrected coord with x==PT_UNUSED should be skipped by _build_adjacency_for_pair."""
-        monkeypatch.setattr("openptv2.algorithms.epi.find_candidate",
-                            _mock_find_candidate_one)
-        monkeypatch.setattr("openptv2.algorithms.trafo.pixel_to_metric",
-                            _mock_pixel_to_metric)
-        monkeypatch.setattr("openptv2.algorithms.trafo.dist_to_flat",
-                            _mock_dist_to_flat)
+        monkeypatch.setattr(
+            "openptv2.algorithms.epi.find_candidate", _mock_find_candidate_one
+        )
+        monkeypatch.setattr(
+            "openptv2.algorithms.trafo.pixel_to_metric", _mock_pixel_to_metric
+        )
+        monkeypatch.setattr(
+            "openptv2.algorithms.trafo.dist_to_flat", _mock_dist_to_flat
+        )
         cpar = ControlPar.from_yaml(PARAM_YAML)
         vpar = VolumePar.from_yaml(PARAM_YAML)
         cpar.num_cams = 2

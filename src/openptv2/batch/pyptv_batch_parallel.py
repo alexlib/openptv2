@@ -314,9 +314,7 @@ def main(
         sequence_plugin, tracking_plugin = resolve_selected_plugins(
             pm, sequence_plugin, tracking_plugin
         )
-        logger.info(
-            f"Plugins: sequence={sequence_plugin}, tracking={tracking_plugin}"
-        )
+        logger.info(f"Plugins: sequence={sequence_plugin}, tracking={tracking_plugin}")
         # Create results directory if it doesn't exist
         res_path = exp_path / "res"
         if not res_path.exists():
@@ -330,9 +328,12 @@ def main(
             failed_chunks = 0
             # Use 'fork' on Unix-like systems to avoid pytest execution/import issues in spawned processes
             import platform
+
             start_method = "fork" if platform.system() != "Windows" else "spawn"
             ctx = multiprocessing.get_context(start_method)
-            with ProcessPoolExecutor(max_workers=n_processes, mp_context=ctx) as executor:
+            with ProcessPoolExecutor(
+                max_workers=n_processes, mp_context=ctx
+            ) as executor:
                 future_to_range = {
                     executor.submit(
                         run_sequence_chunk,
@@ -463,13 +464,13 @@ def parse_command_line_args():
 
 if __name__ == "__main__":
     """Entry point for command line execution.
-    
+
     Command line usage:
         python pyptv_batch_parallel.py <yaml_file> <first_frame> <last_frame> <n_processes> [--mode both|sequence|tracking]
-    
+
     Example:
         python pyptv_batch_parallel.py tests/test_cavity/parameters_Run1.yaml 10000 10004 4 --mode both
-    
+
     Python API usage:
         from .pyptv_batch_parallel import main
         main("tests/test_cavity/parameters_Run1.yaml", 10000, 10004, n_processes=4, mode="both")

@@ -66,16 +66,29 @@ from openptv2.algorithms.track_kernels_transform import (
 # Helpers: build a minimal 31-element calibration flat array
 # ---------------------------------------------------------------------------
 
+
 def _make_cal_arr(
-    x0=0.0, y0=0.0, z0=100.0,
+    x0=0.0,
+    y0=0.0,
+    z0=100.0,
     dm=None,
     cc=10.0,
-    xh=0.0, yh=0.0,
-    gx=0.0, gy=0.0, gz=50.0,
-    n1=1.0, n2_0=1.0, n3=1.0, d0=0.0,
-    k1=0.0, k2=0.0, k3=0.0,
-    p1=0.0, p2=0.0,
-    scx=1.0, she=0.0,
+    xh=0.0,
+    yh=0.0,
+    gx=0.0,
+    gy=0.0,
+    gz=50.0,
+    n1=1.0,
+    n2_0=1.0,
+    n3=1.0,
+    d0=0.0,
+    k1=0.0,
+    k2=0.0,
+    k3=0.0,
+    p1=0.0,
+    p2=0.0,
+    scx=1.0,
+    she=0.0,
 ):
     """Build the 31-element cal array used by the kernel functions."""
     if dm is None:
@@ -84,19 +97,37 @@ def _make_cal_arr(
     if dist_o_glas == 0.0:
         dist_o_glas = 1.0  # avoid divide-by-zero
     c = np.zeros(31, dtype=np.float64)
-    c[0] = x0;   c[1] = y0;   c[2] = z0
-    c[3]  = dm[0, 0]; c[4]  = dm[1, 0]; c[5]  = dm[2, 0]
-    c[6]  = dm[0, 1]; c[7]  = dm[1, 1]; c[8]  = dm[2, 1]
-    c[9]  = dm[0, 2]; c[10] = dm[1, 2]; c[11] = dm[2, 2]
+    c[0] = x0
+    c[1] = y0
+    c[2] = z0
+    c[3] = dm[0, 0]
+    c[4] = dm[1, 0]
+    c[5] = dm[2, 0]
+    c[6] = dm[0, 1]
+    c[7] = dm[1, 1]
+    c[8] = dm[2, 1]
+    c[9] = dm[0, 2]
+    c[10] = dm[1, 2]
+    c[11] = dm[2, 2]
     c[12] = cc
-    c[13] = xh;  c[14] = yh
-    c[15] = gx;  c[16] = gy;  c[17] = gz
+    c[13] = xh
+    c[14] = yh
+    c[15] = gx
+    c[16] = gy
+    c[17] = gz
     c[18] = dist_o_glas
     c[19] = 1.0 / dist_o_glas
-    c[20] = n1;  c[21] = n2_0;  c[22] = n3;  c[23] = d0
-    c[24] = k1;  c[25] = k2;  c[26] = k3
-    c[27] = p1;  c[28] = p2
-    c[29] = scx; c[30] = she
+    c[20] = n1
+    c[21] = n2_0
+    c[22] = n3
+    c[23] = d0
+    c[24] = k1
+    c[25] = k2
+    c[26] = k3
+    c[27] = p1
+    c[28] = p2
+    c[29] = scx
+    c[30] = she
     return c
 
 
@@ -113,23 +144,36 @@ def _make_cal_arr_batch(num_cams=2, **kwargs):
 # 1. _multimed_r_nlay_1layer
 # ---------------------------------------------------------------------------
 
+
 class TestMultimedRNlay1layer:
     def test_all_ones_returns_one(self):
         """When n1==n2==n3==1.0 the function shortcuts to 1.0."""
         result = _multimed_r_nlay_1layer(
-            1.0, 0.0, 0.0,   # pos
-            0.0, 0.0, 10.0,  # ext
-            1.0, 1.0, 1.0,   # n1, n2, n3
-            0.5,             # d0
+            1.0,
+            0.0,
+            0.0,  # pos
+            0.0,
+            0.0,
+            10.0,  # ext
+            1.0,
+            1.0,
+            1.0,  # n1, n2, n3
+            0.5,  # d0
         )
         assert result == 1.0
 
     def test_denom_zero_returns_one(self):
         """pos_z == ext_z0 → denom = 0 → returns 1.0."""
         result = _multimed_r_nlay_1layer(
-            1.0, 0.0, 10.0,  # pos_z == ext_z0 == 10.0
-            0.0, 0.0, 10.0,
-            1.0, 1.5, 1.33,
+            1.0,
+            0.0,
+            10.0,  # pos_z == ext_z0 == 10.0
+            0.0,
+            0.0,
+            10.0,
+            1.0,
+            1.5,
+            1.33,
             1.0,
         )
         assert result == 1.0
@@ -137,9 +181,15 @@ class TestMultimedRNlay1layer:
     def test_r_zero_returns_one(self):
         """pos_x == ext_x0 and pos_y == ext_y0 → r==0 → returns 1.0 at end."""
         result = _multimed_r_nlay_1layer(
-            0.0, 0.0, 0.0,   # pos: same x,y as ext
-            0.0, 0.0, 50.0,
-            1.0, 1.5, 1.33,
+            0.0,
+            0.0,
+            0.0,  # pos: same x,y as ext
+            0.0,
+            0.0,
+            50.0,
+            1.0,
+            1.5,
+            1.33,
             2.0,
         )
         assert result == 1.0
@@ -147,9 +197,15 @@ class TestMultimedRNlay1layer:
     def test_normal_refraction_shift(self):
         """Non-trivial refractive indices → result != 1.0."""
         result = _multimed_r_nlay_1layer(
-            5.0, 0.0, 0.0,
-            0.0, 0.0, 50.0,
-            1.0, 1.5, 1.33,
+            5.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            50.0,
+            1.0,
+            1.5,
+            1.33,
             2.0,
         )
         assert isinstance(result, float)
@@ -159,9 +215,15 @@ class TestMultimedRNlay1layer:
         """Force sin_beta1 * n1 / n2 > 1.0 to exercise the arg clamp branch."""
         # Very small n2 → arg > 1.0
         result = _multimed_r_nlay_1layer(
-            20.0, 0.0, 0.0,
-            0.0, 0.0, 5.0,
-            3.0, 0.1, 1.0,   # huge n1/n2 ratio
+            20.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            5.0,
+            3.0,
+            0.1,
+            1.0,  # huge n1/n2 ratio
             0.5,
         )
         assert isinstance(result, float)
@@ -169,9 +231,15 @@ class TestMultimedRNlay1layer:
     def test_arg_clamp_low(self):
         """Negative arg3 < -1.0 exercises the lower clamp."""
         result = _multimed_r_nlay_1layer(
-            -20.0, 0.0, 0.0,
-            0.0, 0.0, 5.0,
-            3.0, 1.0, 0.1,
+            -20.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            5.0,
+            3.0,
+            1.0,
+            0.1,
             0.5,
         )
         assert isinstance(result, float)
@@ -180,9 +248,15 @@ class TestMultimedRNlay1layer:
         """If the iteration doesn't converge (loop exhausts), returns 1.0."""
         # Edge case: very large displacement
         result = _multimed_r_nlay_1layer(
-            1e6, 0.0, 0.0,
-            0.0, 0.0, 1.0,
-            1.0, 1.5, 0.5,
+            1e6,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.5,
+            0.5,
             0.5,
         )
         # We can't force non-convergence easily without patching, but
@@ -194,12 +268,20 @@ class TestMultimedRNlay1layer:
 # 2. _ray_tracing_out
 # ---------------------------------------------------------------------------
 
+
 class TestRayTracingOut:
     def _cal(self, gx=0.0, gy=0.0, gz=50.0):
         return _make_cal_arr(
-            x0=0.0, y0=0.0, z0=100.0,
-            gz=gz, gy=gy, gx=gx,
-            n1=1.0, n2_0=1.5, n3=1.0, d0=5.0,
+            x0=0.0,
+            y0=0.0,
+            z0=100.0,
+            gz=gz,
+            gy=gy,
+            gx=gx,
+            n1=1.0,
+            n2_0=1.5,
+            n3=1.0,
+            d0=5.0,
         )
 
     def test_basic_call(self):
@@ -219,9 +301,16 @@ class TestRayTracingOut:
     def test_gn_zero_branch(self):
         """gx=gy=gz=0 → gn==0 → gd0/gd1/gd2 are set to 0.0."""
         cal = _make_cal_arr(
-            x0=0.0, y0=0.0, z0=100.0,
-            gx=0.0, gy=0.0, gz=0.0,
-            n1=1.0, n2_0=1.5, n3=1.0, d0=5.0,
+            x0=0.0,
+            y0=0.0,
+            z0=100.0,
+            gx=0.0,
+            gy=0.0,
+            gz=0.0,
+            n1=1.0,
+            n2_0=1.5,
+            n3=1.0,
+            d0=5.0,
         )
         out = np.zeros(6, dtype=np.float64)
         # This may produce unusual but not erroneous results
@@ -264,6 +353,7 @@ class TestRayTracingOut:
 # original source bug is NOT fixed.
 # ---------------------------------------------------------------------------
 
+
 def _make_cal_arr_two_cams():
     """Return a (2, 31) cal_arr for two cameras at different positions with
     different rotation matrices so their ray directions are non-parallel."""
@@ -271,9 +361,9 @@ def _make_cal_arr_two_cams():
     c0 = _make_cal_arr(x0=0.0, y0=0.0, z0=100.0, cc=10.0)
     # Camera 1: at (50, 0, 100), 90° rotation around Y so it looks along +x
     # dm columns: x-col=(0,0,-1), y-col=(0,1,0), z-col=(1,0,0)
-    dm1 = np.array([[0.0, 0.0, 1.0],
-                    [0.0, 1.0, 0.0],
-                    [-1.0, 0.0, 0.0]], dtype=np.float64)
+    dm1 = np.array(
+        [[0.0, 0.0, 1.0], [0.0, 1.0, 0.0], [-1.0, 0.0, 0.0]], dtype=np.float64
+    )
     c1 = _make_cal_arr(x0=50.0, y0=0.0, z0=100.0, dm=dm1, cc=10.0)
     cal_arr = np.empty((2, 31), dtype=np.float64, order="C")
     cal_arr[0] = c0
@@ -365,6 +455,7 @@ class TestPointPositionFast:
 # 4. pixel_to_metric_fast
 # ---------------------------------------------------------------------------
 
+
 class TestPixelToMetricFast:
     def test_chfield_zero(self):
         x_m, y_m = pixel_to_metric_fast(512.0, 384.0, 1024, 768, 0.01, 0.01, 0)
@@ -402,6 +493,7 @@ class TestPixelToMetricFast:
 # 5. _pixel_to_metric_out
 # ---------------------------------------------------------------------------
 
+
 class TestPixelToMetricOut:
     def test_chfield_zero(self):
         out = np.zeros(2, dtype=np.float64)
@@ -432,6 +524,7 @@ class TestPixelToMetricOut:
 # ---------------------------------------------------------------------------
 # 6. dist_to_flat_fast
 # ---------------------------------------------------------------------------
+
 
 class TestDistToFlatFast:
     def test_r_near_zero_returns_minus_xh_yh(self):
@@ -490,6 +583,7 @@ class TestDistToFlatFast:
 # 7. _dist_to_flat_out
 # ---------------------------------------------------------------------------
 
+
 class TestDistToFlatOut:
     def test_r_near_zero(self):
         """r < 1e-10 → out[0] = -xh, out[1] = -yh."""
@@ -523,6 +617,7 @@ class TestDistToFlatOut:
 # 8. metric_to_pixel_fast
 # ---------------------------------------------------------------------------
 
+
 class TestMetricToPixelFast:
     def test_chfield_zero(self):
         """metric_to_pixel_fast is inverse of pixel_to_metric_fast."""
@@ -553,6 +648,7 @@ class TestMetricToPixelFast:
 # 9. _metric_to_pixel_out
 # ---------------------------------------------------------------------------
 
+
 class TestMetricToPixelOut:
     def test_chfield_zero(self):
         out = np.zeros(2, dtype=np.float64)
@@ -574,6 +670,7 @@ class TestMetricToPixelOut:
 # ---------------------------------------------------------------------------
 # 10. _flat_image_coord_fast
 # ---------------------------------------------------------------------------
+
 
 class TestFlatImageCoordFast:
     def _pos(self, x=0.0, y=0.0, z=0.0):
@@ -635,8 +732,9 @@ class TestFlatImageCoordFast:
     def test_radial_shift_one_fallback(self):
         """When mmlut lookup gives radial_shift still == 1.0, falls through to
         _multimed_r_nlay_1layer."""
-        cal = _make_cal_arr(x0=0.0, y0=0.0, z0=100.0, gz=50.0,
-                            n1=1.0, n2_0=1.5, n3=1.33, d0=2.0)
+        cal = _make_cal_arr(
+            x0=0.0, y0=0.0, z0=100.0, gz=50.0, n1=1.0, n2_0=1.5, n3=1.33, d0=2.0
+        )
         pos = self._pos(2.0, 1.0, -5.0)
         mmlut_data, mmlut_origin, nr, nz, rw = self._empty_mmlut()
         x, y = _flat_image_coord_fast(pos, cal, mmlut_data, mmlut_origin, nr, nz, rw)
@@ -646,6 +744,7 @@ class TestFlatImageCoordFast:
 # ---------------------------------------------------------------------------
 # 11. _img_coord_fast
 # ---------------------------------------------------------------------------
+
 
 class TestImgCoordFast:
     def _empty_mmlut(self):
@@ -661,8 +760,15 @@ class TestImgCoordFast:
 
     def test_normal_case(self):
         cal = _make_cal_arr(
-            x0=0.0, y0=0.0, z0=100.0, gz=50.0,
-            xh=0.0, yh=0.0, k1=0.001, scx=1.0, she=0.0
+            x0=0.0,
+            y0=0.0,
+            z0=100.0,
+            gz=50.0,
+            xh=0.0,
+            yh=0.0,
+            k1=0.001,
+            scx=1.0,
+            she=0.0,
         )
         pos = np.array([1.0, 2.0, 0.0], dtype=np.float64)
         mmlut_data, mmlut_origin, nr, nz, rw = self._empty_mmlut()
@@ -671,9 +777,7 @@ class TestImgCoordFast:
         assert isinstance(yd, float)
 
     def test_with_she_nonzero(self):
-        cal = _make_cal_arr(
-            x0=0.0, y0=0.0, z0=100.0, gz=50.0, she=0.05
-        )
+        cal = _make_cal_arr(x0=0.0, y0=0.0, z0=100.0, gz=50.0, she=0.05)
         pos = np.array([2.0, 1.0, 0.0], dtype=np.float64)
         mmlut_data, mmlut_origin, nr, nz, rw = self._empty_mmlut()
         xd, yd = _img_coord_fast(pos, cal, mmlut_data, mmlut_origin, nr, nz, rw)
@@ -683,6 +787,7 @@ class TestImgCoordFast:
 # ---------------------------------------------------------------------------
 # 12. img_coord_batch_fast
 # ---------------------------------------------------------------------------
+
 
 class TestImgCoordBatchFast:
     def _empty_mmlut(self):
@@ -709,11 +814,15 @@ class TestImgCoordBatchFast:
 
     def test_multiple_points(self):
         cal = _make_cal_arr(gz=50.0)
-        positions = np.array([
-            [1.0, 0.0, 0.0],
-            [2.0, 1.0, -5.0],
-            [0.5, -0.5, 3.0],
-        ], dtype=np.float64, order="C")
+        positions = np.array(
+            [
+                [1.0, 0.0, 0.0],
+                [2.0, 1.0, -5.0],
+                [0.5, -0.5, 3.0],
+            ],
+            dtype=np.float64,
+            order="C",
+        )
         mmlut_data, mmlut_origin, nr, nz, rw = self._empty_mmlut()
         result = img_coord_batch_fast(
             positions, cal, mmlut_data, mmlut_origin, nr, nz, rw
@@ -724,6 +833,7 @@ class TestImgCoordBatchFast:
 # ---------------------------------------------------------------------------
 # 13. flat_image_coord_batch_fast
 # ---------------------------------------------------------------------------
+
 
 class TestFlatImageCoordBatchFast:
     def _empty_mmlut(self):
@@ -749,12 +859,16 @@ class TestFlatImageCoordBatchFast:
 
     def test_multiple_points(self):
         cal = _make_cal_arr(gz=50.0)
-        positions = np.array([
-            [1.0, 0.0, 0.0],
-            [0.0, 1.0, 0.0],
-            [2.0, 2.0, -10.0],
-            [0.0, 0.0, 5.0],
-        ], dtype=np.float64, order="C")
+        positions = np.array(
+            [
+                [1.0, 0.0, 0.0],
+                [0.0, 1.0, 0.0],
+                [2.0, 2.0, -10.0],
+                [0.0, 0.0, 5.0],
+            ],
+            dtype=np.float64,
+            order="C",
+        )
         mmlut_data, mmlut_origin, nr, nz, rw = self._empty_mmlut()
         result = flat_image_coord_batch_fast(
             positions, cal, mmlut_data, mmlut_origin, nr, nz, rw
@@ -765,6 +879,7 @@ class TestFlatImageCoordBatchFast:
 # ---------------------------------------------------------------------------
 # 14. _candsearch_in_pix_rest_nogil
 # ---------------------------------------------------------------------------
+
 
 class TestCandsearchInPixRestNogil:
     TR_UNUSED = -1
@@ -780,8 +895,19 @@ class TestCandsearchInPixRestNogil:
     def test_no_targets(self):
         tx, ty, ttnr, n = self._make_targets([], [], [])
         result = _candsearch_in_pix_rest_nogil(
-            tx, ty, ttnr, n, 100.0, 100.0, 10.0, 10.0, 10.0, 10.0,
-            self.IMX, self.IMY, self.TR_UNUSED
+            tx,
+            ty,
+            ttnr,
+            n,
+            100.0,
+            100.0,
+            10.0,
+            10.0,
+            10.0,
+            10.0,
+            self.IMX,
+            self.IMY,
+            self.TR_UNUSED,
         )
         assert result == self.TR_UNUSED
 
@@ -790,8 +916,19 @@ class TestCandsearchInPixRestNogil:
         tx, ty, ttnr, n = self._make_targets([100.0], [100.0], [self.TR_UNUSED])
         # cent outside image
         result = _candsearch_in_pix_rest_nogil(
-            tx, ty, ttnr, n, -10.0, 100.0, 10.0, 10.0, 10.0, 10.0,
-            self.IMX, self.IMY, self.TR_UNUSED
+            tx,
+            ty,
+            ttnr,
+            n,
+            -10.0,
+            100.0,
+            10.0,
+            10.0,
+            10.0,
+            10.0,
+            self.IMX,
+            self.IMY,
+            self.TR_UNUSED,
         )
         assert result == self.TR_UNUSED
 
@@ -801,19 +938,43 @@ class TestCandsearchInPixRestNogil:
             [100.0, 105.0], [100.0, 100.0], [self.TR_UNUSED, self.TR_UNUSED]
         )
         result = _candsearch_in_pix_rest_nogil(
-            tx, ty, ttnr, n, 100.0, 100.0, 20.0, 20.0, 20.0, 20.0,
-            self.IMX, self.IMY, self.TR_UNUSED
+            tx,
+            ty,
+            ttnr,
+            n,
+            100.0,
+            100.0,
+            20.0,
+            20.0,
+            20.0,
+            20.0,
+            self.IMX,
+            self.IMY,
+            self.TR_UNUSED,
         )
         assert result == 0  # index 0 is closest
 
     def test_skips_used_target(self):
         """Target already used (tnr != TR_UNUSED) is skipped."""
         tx, ty, ttnr, n = self._make_targets(
-            [100.0, 110.0], [100.0, 100.0], [5, self.TR_UNUSED]  # 5 = already used
+            [100.0, 110.0],
+            [100.0, 100.0],
+            [5, self.TR_UNUSED],  # 5 = already used
         )
         result = _candsearch_in_pix_rest_nogil(
-            tx, ty, ttnr, n, 100.0, 100.0, 20.0, 20.0, 20.0, 20.0,
-            self.IMX, self.IMY, self.TR_UNUSED
+            tx,
+            ty,
+            ttnr,
+            n,
+            100.0,
+            100.0,
+            20.0,
+            20.0,
+            20.0,
+            20.0,
+            self.IMX,
+            self.IMY,
+            self.TR_UNUSED,
         )
         assert result == 1
 
@@ -821,8 +982,19 @@ class TestCandsearchInPixRestNogil:
         """Candidate within image but outside search box → TR_UNUSED."""
         tx, ty, ttnr, n = self._make_targets([200.0], [200.0], [self.TR_UNUSED])
         result = _candsearch_in_pix_rest_nogil(
-            tx, ty, ttnr, n, 100.0, 100.0, 5.0, 5.0, 5.0, 5.0,
-            self.IMX, self.IMY, self.TR_UNUSED
+            tx,
+            ty,
+            ttnr,
+            n,
+            100.0,
+            100.0,
+            5.0,
+            5.0,
+            5.0,
+            5.0,
+            self.IMX,
+            self.IMY,
+            self.TR_UNUSED,
         )
         assert result == self.TR_UNUSED
 
@@ -830,8 +1002,19 @@ class TestCandsearchInPixRestNogil:
         """cent near edges → xmin/xmax/ymin/ymax clamped to image bounds."""
         tx, ty, ttnr, n = self._make_targets([2.0], [2.0], [self.TR_UNUSED])
         result = _candsearch_in_pix_rest_nogil(
-            tx, ty, ttnr, n, 1.0, 1.0, 50.0, 50.0, 50.0, 50.0,
-            self.IMX, self.IMY, self.TR_UNUSED
+            tx,
+            ty,
+            ttnr,
+            n,
+            1.0,
+            1.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            self.IMX,
+            self.IMY,
+            self.TR_UNUSED,
         )
         assert result == 0
 
@@ -845,8 +1028,19 @@ class TestCandsearchInPixRestNogil:
         ty = np.array(ys, dtype=np.float64)
         ttnr = np.array(tnrs, dtype=np.int32)
         result = _candsearch_in_pix_rest_nogil(
-            tx, ty, ttnr, N, 250.0, 250.0, 30.0, 30.0, 30.0, 30.0,
-            self.IMX, self.IMY, self.TR_UNUSED
+            tx,
+            ty,
+            ttnr,
+            N,
+            250.0,
+            250.0,
+            30.0,
+            30.0,
+            30.0,
+            30.0,
+            self.IMX,
+            self.IMY,
+            self.TR_UNUSED,
         )
         assert result != self.TR_UNUSED
 
@@ -856,8 +1050,19 @@ class TestCandsearchInPixRestNogil:
             [100.0, 100.0], [500.0, 600.0], [self.TR_UNUSED, self.TR_UNUSED]
         )
         result = _candsearch_in_pix_rest_nogil(
-            tx, ty, ttnr, n, 100.0, 100.0, 10.0, 10.0, 10.0, 10.0,
-            self.IMX, self.IMY, self.TR_UNUSED
+            tx,
+            ty,
+            ttnr,
+            n,
+            100.0,
+            100.0,
+            10.0,
+            10.0,
+            10.0,
+            10.0,
+            self.IMX,
+            self.IMY,
+            self.TR_UNUSED,
         )
         assert result == self.TR_UNUSED
 
@@ -865,6 +1070,7 @@ class TestCandsearchInPixRestNogil:
 # ---------------------------------------------------------------------------
 # 15. assess_new_position_fast
 # ---------------------------------------------------------------------------
+
 
 class TestAssessNewPositionFast:
     """Tests for assess_new_position_fast with use_proj=True (simplest path)."""
@@ -880,15 +1086,23 @@ class TestAssessNewPositionFast:
 
     def _make_empty_targets(self, num_cams, max_t=10):
         """All targets are COORD_UNUSED (no candidates found)."""
-        targ_x = np.full((num_cams, max_t), self.COORD_UNUSED_V, dtype=np.float64, order="C")
-        targ_y = np.full((num_cams, max_t), self.COORD_UNUSED_V, dtype=np.float64, order="C")
+        targ_x = np.full(
+            (num_cams, max_t), self.COORD_UNUSED_V, dtype=np.float64, order="C"
+        )
+        targ_y = np.full(
+            (num_cams, max_t), self.COORD_UNUSED_V, dtype=np.float64, order="C"
+        )
         targ_tnr = np.full((num_cams, max_t), self.TR_UNUSED, dtype=np.int32, order="C")
         return targ_x, targ_y, targ_tnr
 
     def _make_real_targets(self, num_cams, max_t=10):
         """Put some real targets near the image centre."""
-        targ_x = np.full((num_cams, max_t), self.COORD_UNUSED_V, dtype=np.float64, order="C")
-        targ_y = np.full((num_cams, max_t), self.COORD_UNUSED_V, dtype=np.float64, order="C")
+        targ_x = np.full(
+            (num_cams, max_t), self.COORD_UNUSED_V, dtype=np.float64, order="C"
+        )
+        targ_y = np.full(
+            (num_cams, max_t), self.COORD_UNUSED_V, dtype=np.float64, order="C"
+        )
         targ_tnr = np.full((num_cams, max_t), self.TR_UNUSED, dtype=np.int32, order="C")
         for cam in range(num_cams):
             # Place one target near the centre
@@ -912,20 +1126,43 @@ class TestAssessNewPositionFast:
         num_cams = 2
         pos = np.array([0.0, 0.0, 0.0], dtype=np.float64)
         add_part = 3.0
-        cal_arr, md_arr, mo_arr, mnr_arr, mnz_arr, mrw_arr = self._make_cal_and_support(num_cams)
+        cal_arr, md_arr, mo_arr, mnr_arr, mnz_arr, mrw_arr = self._make_cal_and_support(
+            num_cams
+        )
         targ_x, targ_y, targ_tnr = self._make_empty_targets(num_cams)
         num_targets = [0, 0]
         proj_x = np.array([-9999.0, -9999.0], dtype=np.float64)  # outside image
         proj_y = np.array([-9999.0, -9999.0], dtype=np.float64)
 
         targ_pos, cand_inds, valid_cams = assess_new_position_fast(
-            pos, num_cams, add_part,
-            cal_arr, md_arr, mo_arr, mnr_arr, mnz_arr, mrw_arr,
-            targ_x, targ_y, targ_tnr, num_targets,
-            self.IMX_HALF, self.IMY_HALF, self.INV_PIX_X, self.INV_PIX_Y, 0,
-            self.IMX, self.IMY, self.PIX_X, self.PIX_Y, 1e-5,
-            self.TR_UNUSED, self.COORD_UNUSED_V,
-            True, proj_x, proj_y,
+            pos,
+            num_cams,
+            add_part,
+            cal_arr,
+            md_arr,
+            mo_arr,
+            mnr_arr,
+            mnz_arr,
+            mrw_arr,
+            targ_x,
+            targ_y,
+            targ_tnr,
+            num_targets,
+            self.IMX_HALF,
+            self.IMY_HALF,
+            self.INV_PIX_X,
+            self.INV_PIX_Y,
+            0,
+            self.IMX,
+            self.IMY,
+            self.PIX_X,
+            self.PIX_Y,
+            1e-5,
+            self.TR_UNUSED,
+            self.COORD_UNUSED_V,
+            True,
+            proj_x,
+            proj_y,
         )
         assert valid_cams == 0
 
@@ -934,20 +1171,43 @@ class TestAssessNewPositionFast:
         num_cams = 2
         pos = np.array([0.0, 0.0, 0.0], dtype=np.float64)
         add_part = 50.0
-        cal_arr, md_arr, mo_arr, mnr_arr, mnz_arr, mrw_arr = self._make_cal_and_support(num_cams)
+        cal_arr, md_arr, mo_arr, mnr_arr, mnz_arr, mrw_arr = self._make_cal_and_support(
+            num_cams
+        )
         targ_x, targ_y, targ_tnr = self._make_real_targets(num_cams, max_t=10)
         num_targets = [1, 1]
         proj_x = np.array([512.0, 512.0], dtype=np.float64)
         proj_y = np.array([384.0, 384.0], dtype=np.float64)
 
         targ_pos, cand_inds, valid_cams = assess_new_position_fast(
-            pos, num_cams, add_part,
-            cal_arr, md_arr, mo_arr, mnr_arr, mnz_arr, mrw_arr,
-            targ_x, targ_y, targ_tnr, num_targets,
-            self.IMX_HALF, self.IMY_HALF, self.INV_PIX_X, self.INV_PIX_Y, 0,
-            self.IMX, self.IMY, self.PIX_X, self.PIX_Y, 1e-5,
-            self.TR_UNUSED, self.COORD_UNUSED_V,
-            True, proj_x, proj_y,
+            pos,
+            num_cams,
+            add_part,
+            cal_arr,
+            md_arr,
+            mo_arr,
+            mnr_arr,
+            mnz_arr,
+            mrw_arr,
+            targ_x,
+            targ_y,
+            targ_tnr,
+            num_targets,
+            self.IMX_HALF,
+            self.IMY_HALF,
+            self.INV_PIX_X,
+            self.INV_PIX_Y,
+            0,
+            self.IMX,
+            self.IMY,
+            self.PIX_X,
+            self.PIX_Y,
+            1e-5,
+            self.TR_UNUSED,
+            self.COORD_UNUSED_V,
+            True,
+            proj_x,
+            proj_y,
         )
         assert valid_cams > 0
 
@@ -956,23 +1216,48 @@ class TestAssessNewPositionFast:
         num_cams = 2
         pos = np.array([0.0, 0.0, 0.0], dtype=np.float64)
         add_part = 3.0
-        cal_arr, md_arr, mo_arr, mnr_arr, mnz_arr, mrw_arr = self._make_cal_and_support(num_cams)
+        cal_arr, md_arr, mo_arr, mnr_arr, mnz_arr, mrw_arr = self._make_cal_and_support(
+            num_cams
+        )
         targ_x, targ_y, targ_tnr = self._make_empty_targets(num_cams)
         num_targets = [0, 0]
         proj_x = np.array([-9999.0, -9999.0], dtype=np.float64)
         proj_y = np.array([-9999.0, -9999.0], dtype=np.float64)
-        targ_pos_out = np.full((num_cams, 2), self.COORD_UNUSED_V, dtype=np.float64, order="C")
+        targ_pos_out = np.full(
+            (num_cams, 2), self.COORD_UNUSED_V, dtype=np.float64, order="C"
+        )
         cand_inds_out = np.full(num_cams, self.TR_UNUSED, dtype=np.int32)
         scratch = np.zeros(2, dtype=np.float64)
 
         targ_pos, cand_inds, valid_cams = assess_new_position_fast(
-            pos, num_cams, add_part,
-            cal_arr, md_arr, mo_arr, mnr_arr, mnz_arr, mrw_arr,
-            targ_x, targ_y, targ_tnr, num_targets,
-            self.IMX_HALF, self.IMY_HALF, self.INV_PIX_X, self.INV_PIX_Y, 0,
-            self.IMX, self.IMY, self.PIX_X, self.PIX_Y, 1e-5,
-            self.TR_UNUSED, self.COORD_UNUSED_V,
-            True, proj_x, proj_y,
+            pos,
+            num_cams,
+            add_part,
+            cal_arr,
+            md_arr,
+            mo_arr,
+            mnr_arr,
+            mnz_arr,
+            mrw_arr,
+            targ_x,
+            targ_y,
+            targ_tnr,
+            num_targets,
+            self.IMX_HALF,
+            self.IMY_HALF,
+            self.INV_PIX_X,
+            self.INV_PIX_Y,
+            0,
+            self.IMX,
+            self.IMY,
+            self.PIX_X,
+            self.PIX_Y,
+            1e-5,
+            self.TR_UNUSED,
+            self.COORD_UNUSED_V,
+            True,
+            proj_x,
+            proj_y,
             targ_pos_out=targ_pos_out,
             cand_inds_out=cand_inds_out,
             scratch=scratch,
@@ -986,7 +1271,9 @@ class TestAssessNewPositionFast:
         num_cams = 1
         pos = np.array([0.0, 0.0, 0.0], dtype=np.float64)
         add_part = 50.0
-        cal_arr, md_arr, mo_arr, mnr_arr, mnz_arr, mrw_arr = self._make_cal_and_support(num_cams)
+        cal_arr, md_arr, mo_arr, mnr_arr, mnz_arr, mrw_arr = self._make_cal_and_support(
+            num_cams
+        )
         targ_x, targ_y, targ_tnr = self._make_real_targets(num_cams, max_t=5)
         num_targets = [1]
         proj_x = np.array([512.0], dtype=np.float64)
@@ -994,13 +1281,34 @@ class TestAssessNewPositionFast:
 
         for chfield in [0, 1, 2]:
             targ_pos, cand_inds, valid_cams = assess_new_position_fast(
-                pos, num_cams, add_part,
-                cal_arr, md_arr, mo_arr, mnr_arr, mnz_arr, mrw_arr,
-                targ_x, targ_y, targ_tnr, num_targets,
-                self.IMX_HALF, self.IMY_HALF, self.INV_PIX_X, self.INV_PIX_Y, chfield,
-                self.IMX, self.IMY, self.PIX_X, self.PIX_Y, 1e-5,
-                self.TR_UNUSED, self.COORD_UNUSED_V,
-                True, proj_x, proj_y,
+                pos,
+                num_cams,
+                add_part,
+                cal_arr,
+                md_arr,
+                mo_arr,
+                mnr_arr,
+                mnz_arr,
+                mrw_arr,
+                targ_x,
+                targ_y,
+                targ_tnr,
+                num_targets,
+                self.IMX_HALF,
+                self.IMY_HALF,
+                self.INV_PIX_X,
+                self.INV_PIX_Y,
+                chfield,
+                self.IMX,
+                self.IMY,
+                self.PIX_X,
+                self.PIX_Y,
+                1e-5,
+                self.TR_UNUSED,
+                self.COORD_UNUSED_V,
+                True,
+                proj_x,
+                proj_y,
             )
             assert isinstance(valid_cams, int)
 
@@ -1008,6 +1316,7 @@ class TestAssessNewPositionFast:
 # ---------------------------------------------------------------------------
 # 16. assess_new_position_fast_nogil
 # ---------------------------------------------------------------------------
+
 
 class TestAssessNewPositionFastNogil:
     TR_UNUSED = -1
@@ -1023,8 +1332,12 @@ class TestAssessNewPositionFastNogil:
         mrw_arr = np.zeros(num_cams, dtype=np.float64)
         num_targets = np.zeros(num_cams, dtype=np.int32)
 
-        targ_x = np.full((num_cams, max_t), self.COORD_UNUSED_V, dtype=np.float64, order="C")
-        targ_y = np.full((num_cams, max_t), self.COORD_UNUSED_V, dtype=np.float64, order="C")
+        targ_x = np.full(
+            (num_cams, max_t), self.COORD_UNUSED_V, dtype=np.float64, order="C"
+        )
+        targ_y = np.full(
+            (num_cams, max_t), self.COORD_UNUSED_V, dtype=np.float64, order="C"
+        )
         targ_tnr = np.full((num_cams, max_t), self.TR_UNUSED, dtype=np.int32, order="C")
 
         if with_targets:
@@ -1040,47 +1353,128 @@ class TestAssessNewPositionFastNogil:
         cand_inds_out = np.full(num_cams, self.TR_UNUSED, dtype=np.int32)
         scratch = np.zeros(2, dtype=np.float64)
         return (
-            cal_arr, mo_arr, mnr_arr, mnz_arr, mrw_arr, num_targets,
-            targ_x, targ_y, targ_tnr, proj_x, proj_y,
-            targ_pos_out, cand_inds_out, scratch,
+            cal_arr,
+            mo_arr,
+            mnr_arr,
+            mnz_arr,
+            mrw_arr,
+            num_targets,
+            targ_x,
+            targ_y,
+            targ_tnr,
+            proj_x,
+            proj_y,
+            targ_pos_out,
+            cand_inds_out,
+            scratch,
         )
 
     def test_no_candidates(self):
         num_cams = 2
-        (cal_arr, mo_arr, mnr_arr, mnz_arr, mrw_arr, num_targets,
-         targ_x, targ_y, targ_tnr, proj_x, proj_y,
-         targ_pos_out, cand_inds_out, scratch) = self._setup(num_cams)
+        (
+            cal_arr,
+            mo_arr,
+            mnr_arr,
+            mnz_arr,
+            mrw_arr,
+            num_targets,
+            targ_x,
+            targ_y,
+            targ_tnr,
+            proj_x,
+            proj_y,
+            targ_pos_out,
+            cand_inds_out,
+            scratch,
+        ) = self._setup(num_cams)
 
         pos = np.array([0.0, 0.0, 0.0], dtype=np.float64)
         valid_cams = assess_new_position_fast_nogil(
-            pos, num_cams, 3.0, cal_arr, mo_arr,
-            mnr_arr, mnz_arr, mrw_arr,
-            targ_x, targ_y, targ_tnr, num_targets,
-            512.0, 384.0, 100.0, 100.0, 0,
-            self.IMX, self.IMY, self.PIX_X, self.PIX_Y, 1e-5,
-            self.TR_UNUSED, self.COORD_UNUSED_V,
-            proj_x, proj_y, targ_pos_out, cand_inds_out, scratch,
+            pos,
+            num_cams,
+            3.0,
+            cal_arr,
+            mo_arr,
+            mnr_arr,
+            mnz_arr,
+            mrw_arr,
+            targ_x,
+            targ_y,
+            targ_tnr,
+            num_targets,
+            512.0,
+            384.0,
+            100.0,
+            100.0,
+            0,
+            self.IMX,
+            self.IMY,
+            self.PIX_X,
+            self.PIX_Y,
+            1e-5,
+            self.TR_UNUSED,
+            self.COORD_UNUSED_V,
+            proj_x,
+            proj_y,
+            targ_pos_out,
+            cand_inds_out,
+            scratch,
         )
         assert valid_cams == 0
 
     def test_with_candidates(self):
         num_cams = 2
-        (cal_arr, mo_arr, mnr_arr, mnz_arr, mrw_arr, num_targets,
-         targ_x, targ_y, targ_tnr, proj_x, proj_y,
-         targ_pos_out, cand_inds_out, scratch) = self._setup(num_cams, with_targets=True)
+        (
+            cal_arr,
+            mo_arr,
+            mnr_arr,
+            mnz_arr,
+            mrw_arr,
+            num_targets,
+            targ_x,
+            targ_y,
+            targ_tnr,
+            proj_x,
+            proj_y,
+            targ_pos_out,
+            cand_inds_out,
+            scratch,
+        ) = self._setup(num_cams, with_targets=True)
 
         proj_x[:] = 512.0
         proj_y[:] = 384.0
 
         pos = np.array([0.0, 0.0, 0.0], dtype=np.float64)
         valid_cams = assess_new_position_fast_nogil(
-            pos, num_cams, 50.0, cal_arr, mo_arr,
-            mnr_arr, mnz_arr, mrw_arr,
-            targ_x, targ_y, targ_tnr, num_targets,
-            512.0, 384.0, 100.0, 100.0, 0,
-            self.IMX, self.IMY, self.PIX_X, self.PIX_Y, 1e-5,
-            self.TR_UNUSED, self.COORD_UNUSED_V,
-            proj_x, proj_y, targ_pos_out, cand_inds_out, scratch,
+            pos,
+            num_cams,
+            50.0,
+            cal_arr,
+            mo_arr,
+            mnr_arr,
+            mnz_arr,
+            mrw_arr,
+            targ_x,
+            targ_y,
+            targ_tnr,
+            num_targets,
+            512.0,
+            384.0,
+            100.0,
+            100.0,
+            0,
+            self.IMX,
+            self.IMY,
+            self.PIX_X,
+            self.PIX_Y,
+            1e-5,
+            self.TR_UNUSED,
+            self.COORD_UNUSED_V,
+            proj_x,
+            proj_y,
+            targ_pos_out,
+            cand_inds_out,
+            scratch,
         )
         assert valid_cams > 0
 
@@ -1088,20 +1482,55 @@ class TestAssessNewPositionFastNogil:
         """Exercise chfield 1 and 2 in the undistort pass."""
         num_cams = 1
         for chfield in [1, 2]:
-            (cal_arr, mo_arr, mnr_arr, mnz_arr, mrw_arr, num_targets,
-             targ_x, targ_y, targ_tnr, proj_x, proj_y,
-             targ_pos_out, cand_inds_out, scratch) = self._setup(num_cams, with_targets=True)
+            (
+                cal_arr,
+                mo_arr,
+                mnr_arr,
+                mnz_arr,
+                mrw_arr,
+                num_targets,
+                targ_x,
+                targ_y,
+                targ_tnr,
+                proj_x,
+                proj_y,
+                targ_pos_out,
+                cand_inds_out,
+                scratch,
+            ) = self._setup(num_cams, with_targets=True)
             proj_x[:] = 512.0
             proj_y[:] = 384.0
             pos = np.array([0.0, 0.0, 0.0], dtype=np.float64)
             valid_cams = assess_new_position_fast_nogil(
-                pos, num_cams, 50.0, cal_arr, mo_arr,
-                mnr_arr, mnz_arr, mrw_arr,
-                targ_x, targ_y, targ_tnr, num_targets,
-                512.0, 384.0, 100.0, 100.0, chfield,
-                self.IMX, self.IMY, self.PIX_X, self.PIX_Y, 1e-5,
-                self.TR_UNUSED, self.COORD_UNUSED_V,
-                proj_x, proj_y, targ_pos_out, cand_inds_out, scratch,
+                pos,
+                num_cams,
+                50.0,
+                cal_arr,
+                mo_arr,
+                mnr_arr,
+                mnz_arr,
+                mrw_arr,
+                targ_x,
+                targ_y,
+                targ_tnr,
+                num_targets,
+                512.0,
+                384.0,
+                100.0,
+                100.0,
+                chfield,
+                self.IMX,
+                self.IMY,
+                self.PIX_X,
+                self.PIX_Y,
+                1e-5,
+                self.TR_UNUSED,
+                self.COORD_UNUSED_V,
+                proj_x,
+                proj_y,
+                targ_pos_out,
+                cand_inds_out,
+                scratch,
             )
             assert isinstance(valid_cams, int)
 
@@ -1109,6 +1538,7 @@ class TestAssessNewPositionFastNogil:
 # ---------------------------------------------------------------------------
 # 17. Module-level constants
 # ---------------------------------------------------------------------------
+
 
 def test_constants():
     assert PT_UNUSED == -999
@@ -1118,6 +1548,7 @@ def test_constants():
 # ---------------------------------------------------------------------------
 # 18. Roundtrip: pixel_to_metric / metric_to_pixel inverse
 # ---------------------------------------------------------------------------
+
 
 def test_pixel_metric_pixel_roundtrip():
     """metric_to_pixel(pixel_to_metric(px, py)) == (px, py) for chfield 0."""
@@ -1133,6 +1564,7 @@ def test_pixel_metric_pixel_roundtrip():
 # 19. dist_to_flat / _dist_to_flat_out consistency
 # ---------------------------------------------------------------------------
 
+
 def test_dist_to_flat_fast_and_out_agree():
     """fast and _out variants give same result."""
     args = (2.5, -1.0, 0.1, -0.2, 0.001, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1e-8)
@@ -1146,6 +1578,7 @@ def test_dist_to_flat_fast_and_out_agree():
 # ---------------------------------------------------------------------------
 # 20. _pixel_to_metric_out / pixel_to_metric_fast consistency
 # ---------------------------------------------------------------------------
+
 
 def test_pixel_to_metric_out_and_fast_agree():
     """_out and fast variants give same result for all chfields."""
@@ -1161,6 +1594,7 @@ def test_pixel_to_metric_out_and_fast_agree():
 # 21. _metric_to_pixel_out / metric_to_pixel_fast consistency
 # ---------------------------------------------------------------------------
 
+
 def test_metric_to_pixel_out_and_fast_agree():
     """_out and fast variants give same result for all chfields."""
     for chfield in [0, 1, 2]:
@@ -1175,15 +1609,20 @@ def test_metric_to_pixel_out_and_fast_agree():
 # 22. img_coord_batch_fast vs _img_coord_fast element-wise
 # ---------------------------------------------------------------------------
 
+
 def test_img_coord_batch_matches_elementwise():
     """batch result == repeated scalar calls."""
     cal = _make_cal_arr(gz=50.0, k1=0.001)
     mmlut_data = np.array([], dtype=np.float64)
     mmlut_origin = np.zeros(3, dtype=np.float64)
-    positions = np.array([
-        [1.0, 0.0, 0.0],
-        [0.0, 2.0, -5.0],
-    ], dtype=np.float64, order="C")
+    positions = np.array(
+        [
+            [1.0, 0.0, 0.0],
+            [0.0, 2.0, -5.0],
+        ],
+        dtype=np.float64,
+        order="C",
+    )
     result = img_coord_batch_fast(positions, cal, mmlut_data, mmlut_origin, 0, 0, 1.0)
     for i in range(len(positions)):
         xi, yi = _img_coord_fast(positions[i], cal, mmlut_data, mmlut_origin, 0, 0, 1.0)
@@ -1195,18 +1634,27 @@ def test_img_coord_batch_matches_elementwise():
 # 23. flat_image_coord_batch_fast vs _flat_image_coord_fast element-wise
 # ---------------------------------------------------------------------------
 
+
 def test_flat_image_coord_batch_matches_elementwise():
     """batch result == repeated scalar calls."""
     cal = _make_cal_arr(gz=50.0)
     mmlut_data = np.array([], dtype=np.float64)
     mmlut_origin = np.zeros(3, dtype=np.float64)
-    positions = np.array([
-        [0.5, -0.5, 0.0],
-        [2.0, 1.0, -3.0],
-    ], dtype=np.float64, order="C")
-    result = flat_image_coord_batch_fast(positions, cal, mmlut_data, mmlut_origin, 0, 0, 1.0)
+    positions = np.array(
+        [
+            [0.5, -0.5, 0.0],
+            [2.0, 1.0, -3.0],
+        ],
+        dtype=np.float64,
+        order="C",
+    )
+    result = flat_image_coord_batch_fast(
+        positions, cal, mmlut_data, mmlut_origin, 0, 0, 1.0
+    )
     for i in range(len(positions)):
-        xi, yi = _flat_image_coord_fast(positions[i], cal, mmlut_data, mmlut_origin, 0, 0, 1.0)
+        xi, yi = _flat_image_coord_fast(
+            positions[i], cal, mmlut_data, mmlut_origin, 0, 0, 1.0
+        )
         assert math.isclose(result[i, 0], xi, rel_tol=1e-12)
         assert math.isclose(result[i, 1], yi, rel_tol=1e-12)
 
@@ -1214,6 +1662,7 @@ def test_flat_image_coord_batch_matches_elementwise():
 # ---------------------------------------------------------------------------
 # 24. dist_to_flat_fast / _dist_to_flat_out loop-exhaustion branches (596->618, 665->680)
 # ---------------------------------------------------------------------------
+
 
 def test_dist_to_flat_fast_loop_exhaustion():
     """tol=0.0 prevents the break from firing → all 50 iterations run (596->618 branch)."""
@@ -1236,6 +1685,7 @@ def test_dist_to_flat_out_loop_exhaustion():
 # 25. _candsearch_in_pix_rest_nogil: xmax > imx and ymax > imy clamps (888, 892)
 # ---------------------------------------------------------------------------
 
+
 def test_candsearch_xmax_ymax_clamp():
     """Search box extends beyond image → xmax=imx, ymax=imy clamps triggered (lines 888, 892)."""
     imx, imy = 1024.0, 768.0
@@ -1245,10 +1695,19 @@ def test_candsearch_xmax_ymax_clamp():
     ty = np.array([700.0], dtype=np.float64)
     ttnr = np.array([tr_unused], dtype=np.int32)
     result = _candsearch_in_pix_rest_nogil(
-        tx, ty, ttnr, 1,
-        1000.0, 700.0,   # cent near top-right
-        200.0, 200.0, 200.0, 200.0,  # large dl/dr/du/dd → xmax and ymax overflow
-        imx, imy, tr_unused,
+        tx,
+        ty,
+        ttnr,
+        1,
+        1000.0,
+        700.0,  # cent near top-right
+        200.0,
+        200.0,
+        200.0,
+        200.0,  # large dl/dr/du/dd → xmax and ymax overflow
+        imx,
+        imy,
+        tr_unused,
     )
     # Target is at the centre of the search box → should be found
     assert result == 0
@@ -1257,6 +1716,7 @@ def test_candsearch_xmax_ymax_clamp():
 # ---------------------------------------------------------------------------
 # 26. _flat_image_coord_fast: branch 1262->1271 (v3 > mmlut_nr*mmlut_nz)
 # ---------------------------------------------------------------------------
+
 
 def test_flat_image_coord_fast_lut_boundary_branch():
     """ir == mmlut_nr AND iz in [0,nz] → v3 > mmlut_nr*mmlut_nz → inner if False → 1262->1271.
@@ -1281,6 +1741,7 @@ def test_flat_image_coord_fast_lut_boundary_branch():
 # 27. assess_new_position_fast: use_proj=False path (lines 765-783)
 # ---------------------------------------------------------------------------
 
+
 def test_assess_new_position_fast_use_proj_false():
     """use_proj=False → _point_to_pixel_out called to compute projection."""
     num_cams = 1
@@ -1301,13 +1762,33 @@ def test_assess_new_position_fast_use_proj_false():
     proj_y = np.empty(0, dtype=np.float64)
 
     targ_pos, cand_inds, valid_cams = assess_new_position_fast(
-        pos, num_cams, add_part,
-        cal_arr, md_arr, mo_arr, mnr_arr, mnz_arr, mrw_arr,
-        targ_x, targ_y, targ_tnr, num_targets,
-        512.0, 384.0, 100.0, 100.0, 0,
-        1024, 768, 0.01, 0.01, 1e-5,
-        -1, COORD_UNUSED,
+        pos,
+        num_cams,
+        add_part,
+        cal_arr,
+        md_arr,
+        mo_arr,
+        mnr_arr,
+        mnz_arr,
+        mrw_arr,
+        targ_x,
+        targ_y,
+        targ_tnr,
+        num_targets,
+        512.0,
+        384.0,
+        100.0,
+        100.0,
+        0,
+        1024,
+        768,
+        0.01,
+        0.01,
+        1e-5,
+        -1,
+        COORD_UNUSED,
         False,  # use_proj=False → exercises lines 765-783
-        proj_x, proj_y,
+        proj_x,
+        proj_y,
     )
     assert isinstance(valid_cams, int)

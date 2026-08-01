@@ -69,6 +69,7 @@ def main():
             # We must trick validate's argparser into parsing sys.argv[2:] instead of sys.argv
             sys.argv = [sys.argv[0]] + sys.argv[2:]
             from openptv2.validate import main as validate_main
+
             sys.exit(validate_main())
 
         except Exception as e:
@@ -80,6 +81,7 @@ def main():
         try:
             print("Launching interactive OpenPTV GUI...")
             from openptv2.gui.pyptv_gui import main as gui_main
+
             gui_main()
 
         except Exception as e:

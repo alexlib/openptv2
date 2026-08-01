@@ -13,6 +13,7 @@
 # ]
 # ///
 
+# ruff: noqa: E501
 import marimo
 
 __generated_with = "0.23.15"
@@ -29,7 +30,6 @@ def _():
     from wigglystuff import ChartPuck
 
     from openptv2.gui import ptv
-
 
     return ChartPuck, img_as_ubyte, imread, mo, np, ptv, rgb2gray
 
@@ -57,7 +57,9 @@ def _(test_yaml):
     from openptv2.gui.pyptv.parameter_manager import ParameterManager
 
     # Path to the YAML file - check LV calibration first, then fallback
-    lv_yaml = Path(r"C:\Users\alex\Downloads\hidimaging_test\LV\calibration\parameters_Run_Cal.yaml")
+    lv_yaml = Path(
+        r"C:\Users\alex\Downloads\hidimaging_test\LV\calibration\parameters_Run_Cal.yaml"
+    )
 
     yaml_path = lv_yaml if lv_yaml.exists() else test_yaml
 
@@ -176,7 +178,7 @@ def _(ChartPuck, img_as_ubyte, imread, mo, pm, ptv, rgb2gray, yaml_path):
                             ax.text(
                                 _x_val + 20,
                                 _y_val + 20,
-                                f"C{_i+1}: {_pid}",
+                                f"C{_i + 1}: {_pid}",
                                 color="yellow",
                                 fontsize=14,
                                 fontweight="bold",
@@ -198,8 +200,12 @@ def _(ChartPuck, img_as_ubyte, imread, mo, pm, ptv, rgb2gray, yaml_path):
         calibration_widgets["SingleView"] = widget
 
         # Also save the split images so that calibration has them
-        split_images = [img_as_ubyte(img) for img in ptv.image_split(temp_img, order=split_order)]
-        img_cal_paths = ptv_params.get("img_cal", [f"cal/cam_{k+1}.tif" for k in range(num_cams)])
+        split_images = [
+            img_as_ubyte(img) for img in ptv.image_split(temp_img, order=split_order)
+        ]
+        img_cal_paths = ptv_params.get(
+            "img_cal", [f"cal/cam_{k + 1}.tif" for k in range(num_cams)]
+        )
         for _i, _img_data in enumerate(split_images):
             if _i < len(img_cal_paths):
                 _out_path = (base_dir / img_cal_paths[_i]).resolve()
@@ -243,7 +249,9 @@ def _(ChartPuck, img_as_ubyte, imread, mo, pm, ptv, rgb2gray, yaml_path):
                     ax.imshow(_img, cmap="gray")
                     ax.axis("off")
                     for _pt_idx in range(1, 5):
-                        if (_pt_idx - 1) < len(widget.x) and (_pt_idx - 1) < len(widget.y):
+                        if (_pt_idx - 1) < len(widget.x) and (_pt_idx - 1) < len(
+                            widget.y
+                        ):
                             _x_val = widget.x[_pt_idx - 1]
                             _y_val = widget.y[_pt_idx - 1]
                             if (_pt_idx - 1) < len(_ids):
@@ -256,6 +264,7 @@ def _(ChartPuck, img_as_ubyte, imread, mo, pm, ptv, rgb2gray, yaml_path):
                                     fontsize=12,
                                     fontweight="bold",
                                 )
+
                 return _draw
 
             puck = ChartPuck.from_callback(
@@ -387,7 +396,9 @@ def _(
         _temp_img = imread(first_img_path)
         if _temp_img.ndim > 2:
             _temp_img = rgb2gray(_temp_img[:, :, :3])
-        images_to_use = [img_as_ubyte(img) for img in ptv.image_split(_temp_img, order=split_order)]
+        images_to_use = [
+            img_as_ubyte(img) for img in ptv.image_split(_temp_img, order=split_order)
+        ]
     else:
         for _i in range(num_cams):
             _img_name = cal_images[_i] if _i < len(cal_images) else ""
@@ -416,7 +427,7 @@ def _(
             _labeled, _num = label(_binary)
             _centroids = []
             for _j in range(1, _num + 1):
-                _mask = (_labeled == _j)
+                _mask = _labeled == _j
                 _size = np.sum(_mask)
                 if 4 <= _size <= 1000:
                     _cy, _cx = center_of_mass(_norm_img, _labeled, _j)
@@ -429,11 +440,7 @@ def _(
     centroids_state, set_centroids_state = mo.state(_initial_detected)
 
     threshold_slider = mo.ui.slider(
-        start=0.01,
-        stop=1.0,
-        step=0.01,
-        value=0.2,
-        label="Manual Detection Threshold"
+        start=0.01, stop=1.0, step=0.01, value=0.2, label="Manual Detection Threshold"
     )
     return (
         center_of_mass,
@@ -476,6 +483,7 @@ def _(
                     _pts = centroids_state().get(_ckey, np.array([]))
                     if len(_pts) > 0:
                         ax.scatter(_pts[:, 0], _pts[:, 1], color="red", s=15, alpha=0.8)
+
                 return _draw
 
             _puck_select = ChartMultiSelect.from_callback(
@@ -501,7 +509,7 @@ def _(
                 _labeled, _num = label(_binary)
                 _centroids = []
                 for _j in range(1, _num + 1):
-                    _mask = (_labeled == _j)
+                    _mask = _labeled == _j
                     _size = np.sum(_mask)
                     if 4 <= _size <= 1000:
                         _cy, _cx = center_of_mass(_norm_img, _labeled, _j)
@@ -534,7 +542,9 @@ def _(
 
     def save_targets_callback(_):
         _ptv_params = pm.parameters.get("ptv", {})
-        _img_cal_paths = _ptv_params.get("img_cal", [f"cal/cam_{k+1}.tif" for k in range(num_cams)])
+        _img_cal_paths = _ptv_params.get(
+            "img_cal", [f"cal/cam_{k + 1}.tif" for k in range(num_cams)]
+        )
 
         for _i, _path in enumerate(_img_cal_paths):
             _cam_key = f"camera_{_i}"
@@ -547,32 +557,34 @@ def _(
                 f.write(f"{len(_pts)}\n")
                 for _idx, _pt in enumerate(_pts):
                     _cx, _cy = _pt
-                    f.write(f"   {_idx:d}  {_cx:8.4f}  {_cy:8.4f}    50     8     8  5000    -1\n")
+                    f.write(
+                        f"   {_idx:d}  {_cx:8.4f}  {_cy:8.4f}    50     8     8  5000    -1\n"
+                    )
         print("Successfully saved target files for all cameras!")
 
     # Define buttons with callbacks
     detect_btn = mo.ui.button(
         label="Detect Centroids on All Camera Views",
         kind="success",
-        on_click=detect_centroids_callback
+        on_click=detect_centroids_callback,
     )
 
     delete_btn = mo.ui.button(
         label="Delete Selected Centroids in Current Tab",
         kind="danger",
-        on_click=delete_selected_centroids
+        on_click=delete_selected_centroids,
     )
 
     save_targets_btn = mo.ui.button(
         label="Save Filtered Centroids as OpenPTV Targets",
         kind="neutral",
-        on_click=save_targets_callback
+        on_click=save_targets_callback,
     )
 
     counts_md = []
     for _i in range(len(images_to_use)):
         _pts = centroids_state().get(f"camera_{_i}", [])
-        counts_md.append(f"**Camera {_i+1}**: {len(_pts)} dots")
+        counts_md.append(f"**Camera {_i + 1}**: {len(_pts)} dots")
 
     info_md = mo.md(f"""
     ### Centroid Detection and Spurious Points Filtering
@@ -588,12 +600,14 @@ def _(
     {" | ".join(counts_md)}
     """)
 
-    mo.vstack([
-        info_md,
-        mo.hstack([threshold_slider, detect_btn]),
-        tabs_widget,
-        mo.hstack([delete_btn, save_targets_btn])
-    ])
+    mo.vstack(
+        [
+            info_md,
+            mo.hstack([threshold_slider, detect_btn]),
+            tabs_widget,
+            mo.hstack([delete_btn, save_targets_btn]),
+        ]
+    )
     return
 
 

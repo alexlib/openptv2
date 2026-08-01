@@ -595,7 +595,7 @@ def test_step5_triangulation(rembg_small_dir):
             frame_positions[frame] = np.empty((0, 3))
             continue
 
-        all_pos = np.concatenate(sorted_pos, axis=1)
+        np.concatenate(sorted_pos, axis=1)
         all_corresp = np.concatenate(sorted_corresp, axis=1)
 
         flat = np.array(
@@ -810,7 +810,6 @@ def test_step8_full_pipeline(rembg_small_dir, rembg_small_yaml):
 
     # Validate output files
     _sep("Output file summary")
-    framewise_ok = True
     for frame in FRAMES:
         for prefix in ("rt_is", "ptv_is", "added"):
             p = res_dir / f"{prefix}.{frame}"

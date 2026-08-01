@@ -3,7 +3,8 @@
 Translation of lib/src/calibration.c and lib/include/calibration.h.
 
 Provides:
-- Exterior: camera position (x0, y0, z0) and angles (omega, phi, kappa) + rotation matrix
+- Exterior: camera position (x0, y0, z0) and angles (omega, phi, kappa) +
+  rotation matrix
 - Interior: principal point (xh, yh) and camera constant (cc)
 - Glass: glass interface normal vector and refractive properties
 - AddedPar: Brown distortion parameters (k1, k2, k3, p1, p2, scx, she)
@@ -13,12 +14,11 @@ Provides:
 
 from __future__ import annotations
 
-import cython
-
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional
 
+import cython
 import numpy as np
 
 
@@ -186,7 +186,8 @@ class MmLut:
 
 
 class hybrid_from_file:
-    """A descriptor that allows from_file to be called as a classmethod or instance method."""
+    """A descriptor that allows from_file to be called as a classmethod or
+    instance method."""
 
     def __get__(self, obj, cls):
         if obj is None:

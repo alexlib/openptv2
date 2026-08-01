@@ -138,9 +138,9 @@ This sync-back is a small O(nc) cost and only needed when particle addition occu
 pix = [Target(pnr=i, x=..., y=..., n=..., nx=..., ny=..., sumg=..., tnr=...), ...]
 
 # Accessed in nearest_neighbour_pix (L27-50):
-for p in pix:                         # Python iteration
-    if ymin < p.y < ymax and ...:      # Python attribute access
-        d = sqrt((x-p.x)**2 + (y-p.y)**2)
+for p in pix:  # Python iteration
+    if ymin < p.y < ymax and ...:  # Python attribute access
+        d = sqrt((x - p.x) ** 2 + (y - p.y) ** 2)
 ```
 
 ### Target Pattern

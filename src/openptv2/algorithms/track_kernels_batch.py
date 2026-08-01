@@ -1,3 +1,4 @@
+# ruff: noqa: E402,E501
 """Compiled kernels for the tracking hot path.
 
 Auto-generated split from track_kernels.py.
@@ -8,23 +9,29 @@ import numpy as np
 
 if cython.compiled:
     from cython.cimports.libc.math import (
-        sqrt as c_sqrt,
-        sin as c_sin,
-        cos as c_cos,
-        tan as c_tan,
         asin as c_asin,
-        acos as c_acos,
+    )
+    from cython.cimports.libc.math import (
         atan as c_atan,
+    )
+    from cython.cimports.libc.math import (
+        sin as c_sin,
+    )
+    from cython.cimports.libc.math import (
+        tan as c_tan,
     )
 else:
     from math import (
-        sqrt as c_sqrt,
-        sin as c_sin,
-        cos as c_cos,
-        tan as c_tan,
         asin as c_asin,
-        acos as c_acos,
+    )
+    from math import (
         atan as c_atan,
+    )
+    from math import (
+        sin as c_sin,
+    )
+    from math import (
+        tan as c_tan,
     )
 
 _M_PI: cython.double = 3.141592653589793

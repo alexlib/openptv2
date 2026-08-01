@@ -30,6 +30,7 @@ test_data/test_cavity):
 This module is pure-Python orchestration over the compiled `algorithms`
 modules; it is imported by `scripts/autocalibrate.py` and the test suite.
 """
+
 from __future__ import annotations
 
 import copy
@@ -161,14 +162,27 @@ def cam_files(base: Path, cam: int) -> tuple[Path, Path, Path]:
     cal_ori = _cal_ori_yaml(base)
     img_cal_name = cal_ori.get("img_cal_name") or []
     img_ori = cal_ori.get("img_ori") or []
-    if cam < len(img_cal_name) and cam < len(img_ori) and img_cal_name[cam] and img_ori[cam]:
+    if (
+        cam < len(img_cal_name)
+        and cam < len(img_ori)
+        and img_cal_name[cam]
+        and img_ori[cam]
+    ):
         img_name = img_cal_name[cam] if img_cal_name[cam] != "---" else img_cal_name[0]
         img = base / img_name
         ori = base / img_ori[cam]
-        addpar = ori.with_suffix(ori.suffix + ".addpar") if ori.suffix != ".ori" else ori.with_suffix(".addpar")
+        addpar = (
+            ori.with_suffix(ori.suffix + ".addpar")
+            if ori.suffix != ".ori"
+            else ori.with_suffix(".addpar")
+        )
         # ori path is typically "....tif.ori"; addpar is the same stem with
         # ".ori" replaced by ".addpar", not simply swapping the last suffix.
-        addpar = Path(str(ori)[: -len(".ori")] + ".addpar") if str(ori).endswith(".ori") else addpar
+        addpar = (
+            Path(str(ori)[: -len(".ori")] + ".addpar")
+            if str(ori).endswith(".ori")
+            else addpar
+        )
         return img, ori, addpar
     stem = base / "cal" / f"cam{cam + 1}.tif"
     return stem, stem.with_suffix(".tif.ori"), stem.with_suffix(".tif.addpar")
@@ -209,9 +223,9 @@ class DatasetParams:
     cpar: object
     num_cams: int
     eps: int
-    ids_per_cam: list[list[int]]      # 4 calibration-point IDs per camera
+    ids_per_cam: list[list[int]]  # 4 calibration-point IDs per camera
     clicks_per_cam: list[np.ndarray]  # (4,2) pixel seed clicks per camera
-    source: str                        # "yaml" or "par"
+    source: str  # "yaml" or "par"
 
 
 def _cpar_from_ptv(ptv: dict, num_cams: int):
@@ -240,8 +254,16 @@ def _cpar_from_ptv(ptv: dict, num_cams: int):
 def _seed_from_par(base: Path, num_cams: int, calblock: Path):
     """Fallback seed source: man_ori.par (IDs) + man_ori.dat (clicks)."""
     par = base / "parameters"
-    dat_file = (par / "man_ori.dat") if (par / "man_ori.dat").exists() else (base / "man_ori.dat")
-    par_file = (par / "man_ori.par") if (par / "man_ori.par").exists() else (base / "man_ori.par")
+    dat_file = (
+        (par / "man_ori.dat")
+        if (par / "man_ori.dat").exists()
+        else (base / "man_ori.dat")
+    )
+    par_file = (
+        (par / "man_ori.par")
+        if (par / "man_ori.par").exists()
+        else (base / "man_ori.par")
+    )
     clicks = np.loadtxt(dat_file).reshape(-1, 2)
     ids_per_cam, clicks_per_cam = [], []
     for cam in range(num_cams):
@@ -251,7 +273,7 @@ def _seed_from_par(base: Path, num_cams: int, calblock: Path):
         # read_man_ori_fix returns 3D coords; recover the IDs from man_ori.par
         toks = par_file.read_text().split()
         ids_per_cam.append([int(toks[cam * 4 + i]) for i in range(4)])
-        clicks_per_cam.append(clicks[cam * 4:(cam + 1) * 4])
+        clicks_per_cam.append(clicks[cam * 4 : (cam + 1) * 4])
     return ids_per_cam, clicks_per_cam
 
 
@@ -274,20 +296,27 @@ def _load_dataset_params(base: Path, calblock: Path) -> DatasetParams:
             nr = [int(v) for v in mo["nr"]]
             ids_per_cam, clicks_per_cam = [], []
             for cam in range(num_cams):
-                ids_per_cam.append(nr[cam * 4:(cam + 1) * 4])
+                ids_per_cam.append(nr[cam * 4 : (cam + 1) * 4])
                 pts = coords[f"camera_{cam}"]
                 clicks_per_cam.append(
-                    np.array([[pts[f"point_{k}"]["x"], pts[f"point_{k}"]["y"]]
-                              for k in range(1, 5)], dtype=float)
+                    np.array(
+                        [
+                            [pts[f"point_{k}"]["x"], pts[f"point_{k}"]["y"]]
+                            for k in range(1, 5)
+                        ],
+                        dtype=float,
+                    )
                 )
-            return DatasetParams(cpar, num_cams, eps, ids_per_cam,
-                                 clicks_per_cam, "yaml")
+            return DatasetParams(
+                cpar, num_cams, eps, ids_per_cam, clicks_per_cam, "yaml"
+            )
         # YAML present but lacks a usable seed/sortgrid -> fall back for those
         if not eps:
             eps = int((base / "parameters" / "sortgrid.par").read_text().strip())
         ids_per_cam, clicks_per_cam = _seed_from_par(base, num_cams, calblock)
-        return DatasetParams(cpar, num_cams, eps, ids_per_cam, clicks_per_cam,
-                             "yaml+par-seed")
+        return DatasetParams(
+            cpar, num_cams, eps, ids_per_cam, clicks_per_cam, "yaml+par-seed"
+        )
 
     # No YAML at all: pure legacy .par path.
     par = base / "parameters"
@@ -370,6 +399,7 @@ def calibrate_camera(
                 raw_img = rgb2gray(raw_img)
             raw_img = img_as_ubyte(raw_img)
             from openptv2.image_processing import preprocess_image
+
             hp_img = preprocess_image(raw_img, cpar.hp_flag or 1, cpar, 25)
             detected = target_recognition(hp_img, tpar, cam, cpar)
             if detected:
@@ -476,11 +506,20 @@ def calibrate_dataset(
             # One camera's seed/initial-guess failing to converge (common on a
             # freshly bootstrapped naive guess) shouldn't lose every other
             # camera's result -- report it and keep going.
-            results.append(CamResult(
-                cam=cam, matched=0, nfix=nfix, rms=float("inf"), flags=[],
-                cal=None, ref=np.empty((0, 3)), det=np.empty((0, 2)),
-                rep=np.empty((0, 2)), error=str(exc),
-            ))
+            results.append(
+                CamResult(
+                    cam=cam,
+                    matched=0,
+                    nfix=nfix,
+                    rms=float("inf"),
+                    flags=[],
+                    cal=None,
+                    ref=np.empty((0, 3)),
+                    det=np.empty((0, 2)),
+                    rep=np.empty((0, 2)),
+                    error=str(exc),
+                )
+            )
             continue
         results.append(res)
 
@@ -506,8 +545,9 @@ def cross_camera_rcm(results: list[CamResult], cpar) -> dict | None:
     from openptv2.algorithms.trafo import dist_to_flat, pixel_to_metric
     from openptv2.orientation import multi_cam_point_positions
 
-    valid = [r for r in results
-             if r.cal is not None and r.error is None and len(r.ref) > 0]
+    valid = [
+        r for r in results if r.cal is not None and r.error is None and len(r.ref) > 0
+    ]
     if len(valid) < 2:
         return None
 
@@ -532,15 +572,21 @@ def cross_camera_rcm(results: list[CamResult], cpar) -> dict | None:
             mx, my = pixel_to_metric(px, py, cpar)
             cal = cal_by_cam[cam]
             fx, fy = dist_to_flat(
-                mx, my, cal.int_par.xh, cal.int_par.yh,
-                cal.added_par.k1, cal.added_par.k2, cal.added_par.k3,
-                cal.added_par.p1, cal.added_par.p2,
-                cal.added_par.scx, cal.added_par.she,
+                mx,
+                my,
+                cal.int_par.xh,
+                cal.int_par.yh,
+                cal.added_par.k1,
+                cal.added_par.k2,
+                cal.added_par.k3,
+                cal.added_par.p1,
+                cal.added_par.p2,
+                cal.added_par.scx,
+                cal.added_par.she,
             )
             targets[i, cam] = (fx, fy)
 
-    cals = [cal_by_cam.get(c) or next(iter(cal_by_cam.values()))
-            for c in range(n_cams)]
+    cals = [cal_by_cam.get(c) or next(iter(cal_by_cam.values())) for c in range(n_cams)]
     _pos, rcm = multi_cam_point_positions(targets, cpar, cals)
     return {
         "n_points": int(len(rcm)),
@@ -562,9 +608,16 @@ DIST_GROUPS = [
 ]
 
 
-def joint_plate_bundle_adjust(results, cpar, *, reg_weight=1.0, max_nfev=100,
-                              shake_distortion=False, rcm_margin=0.0,
-                              verbose=False):
+def joint_plate_bundle_adjust(
+    results,
+    cpar,
+    *,
+    reg_weight=1.0,
+    max_nfev=100,
+    shake_distortion=False,
+    rcm_margin=0.0,
+    verbose=False,
+):
     """Couple all cameras by jointly refining camera exteriors (pos+angles) and
     the shared 3D plate points, minimizing total reprojection with the plate
     points softly anchored to their nominal calblock coords (reg_weight). Unlike
@@ -589,8 +642,11 @@ def joint_plate_bundle_adjust(results, cpar, *, reg_weight=1.0, max_nfev=100,
         raise ValueError("reg_weight must be > 0 (it fixes the 7-DOF gauge)")
 
     new_results = [dataclasses.replace(r, cal=copy.deepcopy(r.cal)) for r in results]
-    valid = [r for r in new_results
-             if r.cal is not None and r.error is None and len(r.ref) > 0]
+    valid = [
+        r
+        for r in new_results
+        if r.cal is not None and r.error is None and len(r.ref) > 0
+    ]
     if len(valid) < 2:
         return results, {"skipped": "need >=2 valid cameras"}
 
@@ -648,12 +704,12 @@ def joint_plate_bundle_adjust(results, cpar, *, reg_weight=1.0, max_nfev=100,
 
         def _resid(x):
             for i, cam in enumerate(valid_cams):
-                cals[cam].set_pos(x[i * 6:i * 6 + 3])
-                cals[cam].set_angles(x[i * 6 + 3:i * 6 + 6])
+                cals[cam].set_pos(x[i * 6 : i * 6 + 3])
+                cals[cam].set_angles(x[i * 6 + 3 : i * 6 + 6])
             off = n_cam_params
             for _name, _getter, setter, n in active_groups:
                 for cam in valid_cams:
-                    getattr(cals[cam], setter)(x[off:off + n])
+                    getattr(cals[cam], setter)(x[off : off + n])
                     off += n
             pts = x[pts_off:].reshape(n_pts, 3)
             res = []
@@ -662,12 +718,12 @@ def joint_plate_bundle_adjust(results, cpar, *, reg_weight=1.0, max_nfev=100,
                 proj = image_coordinates(pts[rows], cals[cam], mm)
                 res.append((proj - mets).ravel())
             res.append((sqrt_w * (pts - nominal_arr)).ravel())
-            return np.nan_to_num(np.concatenate(res),
-                                 nan=1e6, posinf=1e6, neginf=-1e6)
+            return np.nan_to_num(np.concatenate(res), nan=1e6, posinf=1e6, neginf=-1e6)
 
         try:
-            sol = least_squares(_resid, x0, max_nfev=max_nfev, method="trf",
-                                verbose=2 if verbose else 0)
+            sol = least_squares(
+                _resid, x0, max_nfev=max_nfev, method="trf", verbose=2 if verbose else 0
+            )
         except (ValueError, RuntimeError, np.linalg.LinAlgError):
             return None
         _resid(sol.x)  # leave cals set to the solution
@@ -676,10 +732,12 @@ def joint_plate_bundle_adjust(results, cpar, *, reg_weight=1.0, max_nfev=100,
         for r in new_results:
             if r.cam in cals and r.error is None and len(r.ref) > 0:
                 cal = cals[r.cam]
-                rep = np.array([_reproject_px(cal, cpar.mm, row, cpar)
-                                for row in r.ref])
-                trial.append(dataclasses.replace(r, cal=cal, rep=rep,
-                                                 rms=rms_px(r.det, rep)))
+                rep = np.array(
+                    [_reproject_px(cal, cpar.mm, row, cpar) for row in r.ref]
+                )
+                trial.append(
+                    dataclasses.replace(r, cal=cal, rep=rep, rms=rms_px(r.det, rep))
+                )
             else:
                 trial.append(r)
         rcm = cross_camera_rcm(trial, cpar)
@@ -719,7 +777,11 @@ def joint_plate_bundle_adjust(results, cpar, *, reg_weight=1.0, max_nfev=100,
             rcm_trace.append((group[0], t_rcm, better))
             if better:
                 best_results, best_rcm, cost_after, success = (
-                    t_results, t_rcm, t_cost, t_success)
+                    t_results,
+                    t_rcm,
+                    t_cost,
+                    t_success,
+                )
                 accepted.append(group)
                 shaken_groups.append(group[0])
 
@@ -772,8 +834,15 @@ def save_overlay(res: CamResult, base: Path, outdir: Path) -> Path:
         ax.imshow(_cam_view(base, res.cam, iio.imread(img_path)), cmap="gray")
     except Exception:
         ax.invert_yaxis()
-    ax.scatter(res.det[:, 0], res.det[:, 1], s=40, facecolors="none",
-               edgecolors="lime", linewidths=1.2, label="detected")
+    ax.scatter(
+        res.det[:, 0],
+        res.det[:, 1],
+        s=40,
+        facecolors="none",
+        edgecolors="lime",
+        linewidths=1.2,
+        label="detected",
+    )
     ax.scatter(res.rep[:, 0], res.rep[:, 1], s=8, c="red", label="reprojected")
     ax.set_title(
         f"cam{res.cam + 1}  RMS={res.rms:.3f}px  n={res.matched}/{res.nfix}  "
@@ -858,8 +927,11 @@ def suggest_eps0(base, cpar, cals, *, sweep=None, gt_radius=3.0):
         X_lay=crit.get("X_lay", [-100, 100]),
         Zmin_lay=crit.get("Zmin_lay", [-100, -100]),
         Zmax_lay=crit.get("Zmax_lay", [100, 100]),
-        cn=crit.get("cn", 0.0), cnx=crit.get("cnx", 0.0), cny=crit.get("cny", 0.0),
-        csumg=crit.get("csumg", 0.0), corrmin=crit.get("corrmin", 0.0),
+        cn=crit.get("cn", 0.0),
+        cnx=crit.get("cnx", 0.0),
+        cny=crit.get("cny", 0.0),
+        csumg=crit.get("csumg", 0.0),
+        corrmin=crit.get("corrmin", 0.0),
     )
     current = float(crit.get("eps0", 0.05)) or 0.05
     if sweep is None:
@@ -878,8 +950,14 @@ def suggest_eps0(base, cpar, cals, *, sweep=None, gt_radius=3.0):
                     correct += 1
                 else:
                     wrong += 1
-        rows.append({"eps0": round(float(eps0), 4), "quads": int(mc[0]),
-                     "correct": correct, "wrong": wrong})
+        rows.append(
+            {
+                "eps0": round(float(eps0), 4),
+                "quads": int(mc[0]),
+                "correct": correct,
+                "wrong": wrong,
+            }
+        )
 
     pick = _pick_eps0(rows)
     return {
@@ -904,10 +982,17 @@ def _flat_targets_from_obs(obs_list, cals, cpar):
             mx, my = pixel_to_metric(px, py, cpar)
             cal = cals[cam]
             fx, fy = dist_to_flat(
-                mx, my, cal.int_par.xh, cal.int_par.yh,
-                cal.added_par.k1, cal.added_par.k2, cal.added_par.k3,
-                cal.added_par.p1, cal.added_par.p2,
-                cal.added_par.scx, cal.added_par.she,
+                mx,
+                my,
+                cal.int_par.xh,
+                cal.int_par.yh,
+                cal.added_par.k1,
+                cal.added_par.k2,
+                cal.added_par.k3,
+                cal.added_par.p1,
+                cal.added_par.p2,
+                cal.added_par.scx,
+                cal.added_par.she,
             )
             targets[i, cam] = (fx, fy)
     return targets
@@ -924,9 +1009,20 @@ def _tracer_rcm_median(obs_list, cals, cpar):
     return float(np.median(rcm))
 
 
-def tracer_self_calibrate(base, cpar, cals, *, frames=None, tol_px=2.0,
-                          hold_cam=0, min_cams=2, max_particles=400,
-                          iters=1, max_nfev=100, verbose=False):
+def tracer_self_calibrate(
+    base,
+    cpar,
+    cals,
+    *,
+    frames=None,
+    tol_px=2.0,
+    hold_cam=0,
+    min_cams=2,
+    max_particles=400,
+    iters=1,
+    max_nfev=100,
+    verbose=False,
+):
     """Refine camera exteriors on TRACER particles that span the real volume.
 
     The modern "shaking": the calibration plate is shallow and planar-ish, so a
@@ -967,8 +1063,9 @@ def tracer_self_calibrate(base, cpar, cals, *, frames=None, tol_px=2.0,
         return cals, {"skipped": "no sequence.base_name in YAML"}
     seq_bases = [str(base / s.replace("%d", "")) for s in seq]
 
-    ptv_files = sorted((base / "res").glob("ptv_is.*"),
-                       key=lambda p: int(p.suffix.lstrip(".")))
+    ptv_files = sorted(
+        (base / "res").glob("ptv_is.*"), key=lambda p: int(p.suffix.lstrip("."))
+    )
     if frames is not None:
         wanted = set(frames)
         ptv_files = [p for p in ptv_files if int(p.suffix.lstrip(".")) in wanted]
@@ -985,7 +1082,7 @@ def tracer_self_calibrate(base, cpar, cals, *, frames=None, tol_px=2.0,
         lines = pf.read_text().splitlines()
         nn = int(lines[0])
         pts = []
-        for line in lines[1:nn + 1]:
+        for line in lines[1 : nn + 1]:
             parts = line.split()
             if len(parts) >= 5:
                 pts.append([float(parts[2]), float(parts[3]), float(parts[4])])
@@ -994,8 +1091,7 @@ def tracer_self_calibrate(base, cpar, cals, *, frames=None, tol_px=2.0,
         det = []
         for cam in range(n_cams):
             tg = read_targets(seq_bases[cam], frame)
-            det.append(np.array([[t.x, t.y] for t in tg]) if tg
-                       else np.empty((0, 2)))
+            det.append(np.array([[t.x, t.y] for t in tg]) if tg else np.empty((0, 2)))
         frame_data.append((np.asarray(pts, float), det))
     if not frame_data:
         return cals, {"skipped": "no tracked points in the selected frames"}
@@ -1014,8 +1110,7 @@ def tracer_self_calibrate(base, cpar, cals, *, frames=None, tol_px=2.0,
                     if len(d) == 0:
                         continue
                     proj = _reproject_px(cur_cals[cam], cpar.mm, p, cpar)
-                    j = int(np.argmin(np.hypot(d[:, 0] - proj[0],
-                                               d[:, 1] - proj[1])))
+                    j = int(np.argmin(np.hypot(d[:, 0] - proj[0], d[:, 1] - proj[1])))
                     if np.hypot(d[j, 0] - proj[0], d[j, 1] - proj[1]) <= tol_px:
                         pix[cam] = (float(d[j, 0]), float(d[j, 1]))
                 if len(pix) >= min_cams:
@@ -1054,15 +1149,19 @@ def tracer_self_calibrate(base, cpar, cals, *, frames=None, tol_px=2.0,
             pts = x[n_cam_params:].reshape(n_pts, 3)
             res = []
             for ci, cam in enumerate(free_cams):
-                cur[cam].set_pos(x[ci * 6:ci * 6 + 3])
-                cur[cam].set_angles(x[ci * 6 + 3:ci * 6 + 6])
+                cur[cam].set_pos(x[ci * 6 : ci * 6 + 3])
+                cur[cam].set_angles(x[ci * 6 + 3 : ci * 6 + 6])
                 rows = cam_rows[cam]
                 if len(rows) == 0:
                     continue
                 proj = image_coordinates(pts[rows], cur[cam], cpar.mm)
                 res.append((proj - cam_mets[cam]).ravel())
-            return np.nan_to_num(np.concatenate(res) if res else np.zeros(1),
-                                 nan=1e6, posinf=1e6, neginf=-1e6)
+            return np.nan_to_num(
+                np.concatenate(res) if res else np.zeros(1),
+                nan=1e6,
+                posinf=1e6,
+                neginf=-1e6,
+            )
 
         n_res = 2 * sum(len(cam_rows[c]) for c in free_cams)
         jac = sparse.lil_matrix((n_res, x0.size), dtype=np.int8)
@@ -1070,13 +1169,18 @@ def tracer_self_calibrate(base, cpar, cals, *, frames=None, tol_px=2.0,
         for ci, cam in enumerate(free_cams):
             for row in cam_rows[cam]:
                 for k in range(2):
-                    jac[r + k, ci * 6:ci * 6 + 6] = 1
-                    jac[r + k, n_cam_params + 3 * row:n_cam_params + 3 * row + 3] = 1
+                    jac[r + k, ci * 6 : ci * 6 + 6] = 1
+                    jac[r + k, n_cam_params + 3 * row : n_cam_params + 3 * row + 3] = 1
                 r += 2
         try:
-            sol = least_squares(_resid, x0, max_nfev=max_nfev, method="trf",
-                                jac_sparsity=jac.tocsr(),
-                                verbose=2 if verbose else 0)
+            sol = least_squares(
+                _resid,
+                x0,
+                max_nfev=max_nfev,
+                method="trf",
+                jac_sparsity=jac.tocsr(),
+                verbose=2 if verbose else 0,
+            )
         except (ValueError, RuntimeError, np.linalg.LinAlgError):
             return None
         _resid(sol.x)  # leave `cur` set to the solution
@@ -1102,9 +1206,9 @@ def tracer_self_calibrate(base, cpar, cals, *, frames=None, tol_px=2.0,
         cand_cals, cand_success = fit
         cand_rcm = _tracer_rcm_median(obs, cand_cals, cpar)
         improved = cand_rcm is not None and (
-            best_rcm is None or cand_rcm < best_rcm - 1e-9)
-        trace.append({"rcm": cand_rcm, "n_particles": len(obs),
-                      "accepted": improved})
+            best_rcm is None or cand_rcm < best_rcm - 1e-9
+        )
+        trace.append({"rcm": cand_rcm, "n_particles": len(obs), "accepted": improved})
         if not improved:
             break
         best_cals, best_rcm, success = cand_cals, cand_rcm, cand_success

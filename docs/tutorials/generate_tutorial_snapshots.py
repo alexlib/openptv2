@@ -10,13 +10,13 @@ import skimage.io
 project_root = Path(__file__).parent.parent.parent.resolve()
 sys.path.insert(0, str(project_root))
 
-from flowtracks.io import trajectories_ptvis
-from gui.pyptv.experiment import Experiment
-from gui.pyptv.ptv import py_start_proc_c
+from flowtracks.io import trajectories_ptvis  # noqa: E402
+from gui.pyptv.experiment import Experiment  # noqa: E402
+from gui.pyptv.ptv import py_start_proc_c  # noqa: E402
 
-from openptv2.imgcoord import image_coordinates
-from openptv2.tracking_framebuf import read_targets
-from openptv2.transforms import convert_arr_metric_to_pixel
+from openptv2.imgcoord import image_coordinates  # noqa: E402
+from openptv2.tracking_framebuf import read_targets  # noqa: E402
+from openptv2.transforms import convert_arr_metric_to_pixel  # noqa: E402
 
 
 def main():
@@ -45,7 +45,7 @@ def main():
     os.chdir(cavity_dir)
     try:
         experiment = Experiment()
-        experiment.pm.from_yaml("parameters_Run1.yaml")
+        experiment.pm.from_yaml(str(yaml_file))
         cpar, spar, vpar, track_par, tpar, cals, epar = py_start_proc_c(experiment.pm)
     finally:
         os.chdir(original_cwd)
@@ -53,7 +53,7 @@ def main():
     # 4. Generate Snapshot 1: 3D Trajectories (Matplotlib)
     print("Generating 3D trajectory plot...")
     fig = plt.figure(figsize=(10, 8), dpi=150)
-    ax = fig.add_subplot(111, projection='3d')
+    ax = fig.add_subplot(111, projection="3d")
 
     # Select the first 25 trajectories to plot
     plot_trajs = trajs[:25]
@@ -67,24 +67,35 @@ def main():
         pos = np.array(traj.pos()) * 1000.0
 
         ax.plot(
-            pos[:, 0], pos[:, 1], pos[:, 2],
-            marker='o', markersize=4, linestyle='-', linewidth=2,
-            color=cmap(idx % num_colors), label=f"Path {traj.trajid}"
+            pos[:, 0],
+            pos[:, 1],
+            pos[:, 2],
+            marker="o",
+            markersize=4,
+            linestyle="-",
+            linewidth=2,
+            color=cmap(idx % num_colors),
+            label=f"Path {traj.trajid}",
         )
 
-    ax.set_xlabel('X [mm]', fontsize=11, fontweight='bold', labelpad=10)
-    ax.set_ylabel('Y [mm]', fontsize=11, fontweight='bold', labelpad=10)
-    ax.set_zlabel('Z [mm]', fontsize=11, fontweight='bold', labelpad=10)
-    ax.set_title('3D Particle Trajectories - Cavity Flow Dataset', fontsize=14, fontweight='bold', pad=15)
+    ax.set_xlabel("X [mm]", fontsize=11, fontweight="bold", labelpad=10)
+    ax.set_ylabel("Y [mm]", fontsize=11, fontweight="bold", labelpad=10)
+    ax.set_zlabel("Z [mm]", fontsize=11, fontweight="bold", labelpad=10)
+    ax.set_title(
+        "3D Particle Trajectories - Cavity Flow Dataset",
+        fontsize=14,
+        fontweight="bold",
+        pad=15,
+    )
 
     # Make the grid styling clean and modern
-    ax.grid(True, linestyle='--', alpha=0.5)
+    ax.grid(True, linestyle="--", alpha=0.5)
     ax.xaxis.pane.fill = False
     ax.yaxis.pane.fill = False
     ax.zaxis.pane.fill = False
-    ax.xaxis.pane.set_edgecolor('w')
-    ax.yaxis.pane.set_edgecolor('w')
-    ax.zaxis.pane.set_edgecolor('w')
+    ax.xaxis.pane.set_edgecolor("w")
+    ax.yaxis.pane.set_edgecolor("w")
+    ax.zaxis.pane.set_edgecolor("w")
 
     # Add a legend but limit entries to make it clean
     if len(plot_trajs) <= 10:
@@ -92,7 +103,7 @@ def main():
 
     plt.tight_layout()
     output_3d_path = images_dir / "trajectory_3d.png"
-    plt.savefig(output_3d_path, bbox_inches='tight', dpi=150)
+    plt.savefig(output_3d_path, bbox_inches="tight", dpi=150)
     plt.close()
     print(f"Saved 3D trajectory plot to: {output_3d_path}")
 
@@ -112,10 +123,11 @@ def main():
     fig, ax = plt.subplots(figsize=(10, 8), dpi=150)
 
     # Plot image in grayscale with some contrast enhancement
-    ax.imshow(image, cmap='gray', origin='upper')
+    ax.imshow(image, cmap="gray", origin="upper")
 
     # Load targets (detected particles) for Camera 1, Frame 10001
-    # NOTE: The file_base path must end with a dot so read_targets forms "cam1.10001_targets"
+    # NOTE: The file_base path must end with a dot so read_targets forms
+    # "cam1.10001_targets".
     targets = read_targets(str(cavity_dir / "img/cam1."), frame_number)
     print(f"Loaded {len(targets)} detected targets.")
 
@@ -123,9 +135,14 @@ def main():
     target_x = [t.x() for t in targets]
     target_y = [t.y() for t in targets]
     ax.scatter(
-        target_x, target_y,
-        color='#00BFFF', marker='+', s=40, linewidths=1.2,
-        label='Detected Particle Targets', alpha=0.85
+        target_x,
+        target_y,
+        color="#00BFFF",
+        marker="+",
+        s=40,
+        linewidths=1.2,
+        label="Detected Particle Targets",
+        alpha=0.85,
     )
 
     # Project 3D trajectories to Camera 1 2D image coordinates and plot them
@@ -135,46 +152,85 @@ def main():
         pos_3d_mm = np.array(traj.pos()) * 1000.0
 
         # Project 3D mm coords to 2D sensor metric coords
-        projected = image_coordinates(pos_3d_mm, cals[cam_idx], cpar.get_multimedia_params())
+        projected = image_coordinates(
+            pos_3d_mm,
+            cals[cam_idx],
+            cpar.get_multimedia_params(),
+        )
 
         # Convert sensor metric coords to pixel coordinates
         pixels = convert_arr_metric_to_pixel(projected, cpar)
 
         # Draw projected trajectory line
         ax.plot(
-            pixels[:, 0], pixels[:, 1],
-            linestyle='-', linewidth=1.5, color='#FF4500',
-            alpha=0.8
+            pixels[:, 0],
+            pixels[:, 1],
+            linestyle="-",
+            linewidth=1.5,
+            color="#FF4500",
+            alpha=0.8,
         )
         # Draw head/endpoints
         ax.scatter(
-            pixels[-1, 0], pixels[-1, 1],
-            color='#FFD700', marker='o', s=15, edgecolors='black',
-            linewidths=0.5, alpha=0.9
+            pixels[-1, 0],
+            pixels[-1, 1],
+            color="#FFD700",
+            marker="o",
+            s=15,
+            edgecolors="black",
+            linewidths=0.5,
+            alpha=0.9,
         )
         projected_count += 1
 
     # Dummy handle for trajectories in legend
-    ax.plot([], [], color='#FF4500', linestyle='-', linewidth=1.5, label='Projected 3D Trajectories')
-    ax.scatter([], [], color='#FFD700', marker='o', s=25, edgecolors='black', label='Trajectory Endpoints')
+    ax.plot(
+        [],
+        [],
+        color="#FF4500",
+        linestyle="-",
+        linewidth=1.5,
+        label="Projected 3D Trajectories",
+    )
+    ax.scatter(
+        [],
+        [],
+        color="#FFD700",
+        marker="o",
+        s=25,
+        edgecolors="black",
+        label="Trajectory Endpoints",
+    )
 
     imx, imy = cpar.get_image_size()
     ax.set_xlim(0, imx)
     ax.set_ylim(imy, 0)  # Invert y-axis to match image/pixel space coordinates
-    ax.set_xlabel('X [pixels]', fontsize=11, fontweight='bold')
-    ax.set_ylabel('Y [pixels]', fontsize=11, fontweight='bold')
-    ax.set_title(f'2D Particle Detection & Trajectory Overlays (Camera 1, Frame {frame_number})', fontsize=13, fontweight='bold', pad=15)
+    ax.set_xlabel("X [pixels]", fontsize=11, fontweight="bold")
+    ax.set_ylabel("Y [pixels]", fontsize=11, fontweight="bold")
+    ax.set_title(
+        f"2D Particle Detection & Trajectory Overlays "
+        f"(Camera 1, Frame {frame_number})",
+        fontsize=13,
+        fontweight="bold",
+        pad=15,
+    )
 
     # Clean up axes style
-    ax.legend(loc='lower left', framealpha=0.9, facecolor='#ffffff', edgecolor='#cccccc')
-    ax.grid(False) # No grid for image overlays
+    ax.legend(
+        loc="lower left",
+        framealpha=0.9,
+        facecolor="#ffffff",
+        edgecolor="#cccccc",
+    )
+    ax.grid(False)  # No grid for image overlays
 
     plt.tight_layout()
     output_2d_path = images_dir / "camera_projection_2d.png"
-    plt.savefig(output_2d_path, bbox_inches='tight', dpi=150)
+    plt.savefig(output_2d_path, bbox_inches="tight", dpi=150)
     plt.close()
     print(f"Saved 2D projection plot to: {output_2d_path}")
     print("All tutorial snapshots generated successfully!")
+
 
 if __name__ == "__main__":
     main()

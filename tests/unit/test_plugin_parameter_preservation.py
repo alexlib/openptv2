@@ -16,7 +16,14 @@ from openptv2.tracking_presets import apply_preset
 
 def test_builtin_plugins_registration():
     """Verify that all standard tracking pipelines are registered in BUILTIN_TRACKING_PLUGINS."""
-    expected_plugins = ["default", "full_multipass", "standard_forward", "two_directional", "fast_3d", "splitter_tracking"]
+    expected_plugins = [
+        "default",
+        "full_multipass",
+        "standard_forward",
+        "two_directional",
+        "fast_3d",
+        "splitter_tracking",
+    ]
     for plugin_name in expected_plugins:
         assert plugin_name in BUILTIN_TRACKING_PLUGINS
         mod = resolve_plugin_module(plugin_name, BUILTIN_TRACKING_PLUGINS)
@@ -24,7 +31,10 @@ def test_builtin_plugins_registration():
         assert hasattr(mod, "Tracking")
 
 
-@pytest.mark.parametrize("preset_name", ["fast_3d", "standard_forward", "full_multipass", "splitter_tracking"])
+@pytest.mark.parametrize(
+    "preset_name",
+    ["fast_3d", "standard_forward", "full_multipass", "splitter_tracking"],
+)
 def test_apply_preset_preserves_kinematic_bounds(preset_name):
     """Verify that applying a preset or plugin choice does not touch or overwrite kinematic search limits."""
     custom_track = {
@@ -39,7 +49,9 @@ def test_apply_preset_preserves_kinematic_bounds(preset_name):
     }
     plugins_cfg = {}
 
-    updated_track, updated_plugins = apply_preset(preset_name, custom_track, plugins_cfg)
+    updated_track, updated_plugins = apply_preset(
+        preset_name, custom_track, plugins_cfg
+    )
 
     # Check that every single custom kinematic limit is preserved without modification
     assert updated_track["dvxmin"] == -42.5
@@ -70,7 +82,10 @@ def test_custom_plugin_name_preserves_kinematic_bounds():
     plugins_cfg = {}
 
     updated_track, updated_plugins = apply_preset(
-        "custom_plugin", custom_track, plugins_cfg, custom_plugin_name="my_research_plugin"
+        "custom_plugin",
+        custom_track,
+        plugins_cfg,
+        custom_plugin_name="my_research_plugin",
     )
 
     assert updated_plugins["selected_tracking"] == "my_research_plugin"

@@ -1,19 +1,26 @@
+# ruff: noqa: F842,E501
 """Forward and backward 2D→3D tracking loops with CAS-atomic particle linking."""
+
 import cython
 import numpy as np
 
 if cython.compiled:
     from cython.cimports.libc.math import (
-        sqrt as c_sqrt, sin as c_sin, cos as c_cos, tan as c_tan,
-        asin as c_asin, acos as c_acos, atan as c_atan,
+        acos as c_acos,
+    )
+    from cython.cimports.libc.math import (
+        sqrt as c_sqrt,
     )
 else:
     from math import (
-        sqrt as c_sqrt, sin as c_sin, cos as c_cos, tan as c_tan,
-        asin as c_asin, acos as c_acos, atan as c_atan,
+        acos as c_acos,
+    )
+    from math import (
+        sqrt as c_sqrt,
     )
 
 if cython.compiled:
+
     @cython.cfunc
     @cython.cname("__sync_bool_compare_and_swap")
     @cython.nogil
@@ -23,9 +30,12 @@ if cython.compiled:
         ptr: cython.pointer(cython.int), oldval: cython.int, newval: cython.int
     ) -> cython.int: ...
 
+
 if not cython.compiled:
+
     def __sync_bool_compare_and_swap(ptr, oldval, newval):
         return True
+
 
 from cython.parallel import prange, threadid
 
@@ -47,18 +57,29 @@ else:
         _point_position_out,
         assess_new_position_fast_nogil,
     )
-from .track_kernels_geom import searchquader_fast
 from .track_kernels_search import _sorted_candidates_fast_out
-from .track_kernels_transform import assess_new_position_fast, point_position_fast
+from .track_kernels_transform import assess_new_position_fast
 
 cython.declare(
-    PT_UNUSED=cython.int, POSI_K=cython.int, MAX_CANDS_K=cython.int,
-    TR_UNUSED_K=cython.int, CORRES_NONE_K=cython.int, PREV_NONE_K=cython.int,
-    NEXT_NONE_K=cython.int, COORD_UNUSED_K=cython.double, ADD_PART_K=cython.double,
+    PT_UNUSED=cython.int,
+    POSI_K=cython.int,
+    MAX_CANDS_K=cython.int,
+    TR_UNUSED_K=cython.int,
+    CORRES_NONE_K=cython.int,
+    PREV_NONE_K=cython.int,
+    NEXT_NONE_K=cython.int,
+    COORD_UNUSED_K=cython.double,
+    ADD_PART_K=cython.double,
 )
-PT_UNUSED = -999; POSI_K = 80; MAX_CANDS_K = 4; TR_UNUSED_K = -1
-CORRES_NONE_K = -1; PREV_NONE_K = -1; NEXT_NONE_K = -2
-COORD_UNUSED_K = -1e10; ADD_PART_K = 3.0
+PT_UNUSED = -999
+POSI_K = 80
+MAX_CANDS_K = 4
+TR_UNUSED_K = -1
+CORRES_NONE_K = -1
+PREV_NONE_K = -1
+NEXT_NONE_K = -2
+COORD_UNUSED_K = -1e10
+ADD_PART_K = 3.0
 
 
 @cython.ccall
@@ -1092,10 +1113,6 @@ def trackcorr_loop_fast(
     acc: cython.double
     angle: cython.double
     rr: cython.double
-    d13: cython.double = 0.0
-    d43: cython.double = 0.0
-    dl: cython.double = 0.0
-    d01: cython.double = 0.0
     quali_f: cython.int
     tid: cython.int
     idx_add: cython.int

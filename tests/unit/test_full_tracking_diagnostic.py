@@ -77,8 +77,10 @@ def _build_cpar(params):
     )
     cpar = ControlPar(
         num_cams=num_cams,
-        imx=ptv["imx"], imy=ptv["imy"],
-        pix_x=ptv["pix_x"], pix_y=ptv["pix_y"],
+        imx=ptv["imx"],
+        imy=ptv["imy"],
+        pix_x=ptv["pix_x"],
+        pix_y=ptv["pix_y"],
         hp_flag=1 if ptv.get("hp_flag", True) else 0,
         all_cam_flag=1 if ptv.get("allcam_flag", False) else 0,
         tiff_flag=1 if ptv.get("tiff_flag", True) else 0,
@@ -110,8 +112,10 @@ def _build_tpar(params):
     if gvthres is None:
         dp = params.get("detect_plate", {})
         gvthres = [
-            dp.get("gvth_1", 40), dp.get("gvth_2", 40),
-            dp.get("gvth_3", 40), dp.get("gvth_4", 40),
+            dp.get("gvth_1", 40),
+            dp.get("gvth_2", 40),
+            dp.get("gvth_3", 40),
+            dp.get("gvth_4", 40),
         ]
     return TargetPar(
         gvthres=gvthres,
@@ -145,7 +149,7 @@ def _build_track_par(params):
 def _build_spar(params, exp_dir):
     seq = params.get("sequence", {})
     num_cams = params.get("num_cams", 4)
-    base = seq.get("base_name", ["img/cam%d." % (i+1) for i in range(num_cams)])
+    base = seq.get("base_name", ["img/cam%d." % (i + 1) for i in range(num_cams)])
     img_base = [str(exp_dir / b) for b in base]
     return SequencePar(
         num_cams=num_cams,
@@ -170,19 +174,27 @@ def _load_calibrations(params, exp_dir):
 def _detect_targets(img, tpar, cam_idx, cpar):
     """Run highpass + target recognition on one image. Returns list of Target."""
     hp = prepare_image(
-        img, dim_lp=1, imx=cpar.imx, imy=cpar.imy,
+        img,
+        dim_lp=1,
+        imx=cpar.imx,
+        imy=cpar.imy,
         filter_hp=1 if cpar.hp_flag else 0,
     )
     targets = targ_rec(
         img=hp,
         gvthres=int(tpar.gvthres[cam_idx]),
         discont=tpar.discont,
-        nnmin=tpar.nnmin, nnmax=tpar.nnmax,
-        nxmin=tpar.nxmin, nxmax=tpar.nxmax,
-        nymin=tpar.nymin, nymax=tpar.nymax,
+        nnmin=tpar.nnmin,
+        nnmax=tpar.nnmax,
+        nxmin=tpar.nxmin,
+        nxmax=tpar.nxmax,
+        nymin=tpar.nymin,
+        nymax=tpar.nymax,
         sumg_min=tpar.sumg_min,
-        xmin=1, xmax=cpar.imx - 1,
-        ymin=1, ymax=cpar.imy - 1,
+        xmin=1,
+        xmax=cpar.imx - 1,
+        ymin=1,
+        ymax=cpar.imy - 1,
     )
     targets.sort(key=lambda t: t.y)
     for j, t in enumerate(targets):
@@ -196,11 +208,23 @@ def _correct_targets(targets, cpar, cal):
     ap = cal.added_par
     ip = cal.int_par
     for t in targets:
-        mx, my = pixel_to_metric(t.x, t.y, cpar.imx, cpar.imy,
-                                 cpar.pix_x, cpar.pix_y, cpar.chfield)
-        fx, fy = dist_to_flat(mx, my, ip.xh, ip.yh,
-                              ap.k1, ap.k2, ap.k3, ap.p1, ap.p2,
-                              ap.scx, ap.she, tol=1e-5)
+        mx, my = pixel_to_metric(
+            t.x, t.y, cpar.imx, cpar.imy, cpar.pix_x, cpar.pix_y, cpar.chfield
+        )
+        fx, fy = dist_to_flat(
+            mx,
+            my,
+            ip.xh,
+            ip.yh,
+            ap.k1,
+            ap.k2,
+            ap.k3,
+            ap.p1,
+            ap.p2,
+            ap.scx,
+            ap.she,
+            tol=1e-5,
+        )
         corrected.append(Coord2d(x=fx, y=fy, pnr=t.pnr))
     corrected.sort(key=lambda c: c.x)
     return corrected
@@ -209,6 +233,7 @@ def _correct_targets(targets, cpar, cal):
 # ---------------------------------------------------------------------------
 # The test
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture
 def cavity_setup(tmp_path):
@@ -240,9 +265,15 @@ def cavity_setup(tmp_path):
     original = os.getcwd()
     try:
         yield {
-            "params": params, "cpar": cpar, "vpar": vpar, "tpar": tpar,
-            "track_par": track_par, "spar": spar, "cals": cals,
-            "work_dir": work, "num_cams": params.get("num_cams", 4),
+            "params": params,
+            "cpar": cpar,
+            "vpar": vpar,
+            "tpar": tpar,
+            "track_par": track_par,
+            "spar": spar,
+            "cals": cals,
+            "work_dir": work,
+            "num_cams": params.get("num_cams", 4),
         }
     finally:
         os.chdir(original)
@@ -278,19 +309,25 @@ def test_full_pipeline_diagnostic(cavity_setup, monkeypatch):
     print(f"  image_size  = {cpar.imx} x {cpar.imy}")
     print(f"  pixel_size  = {cpar.pix_x} x {cpar.pix_y}")
     print(f"  hp_flag     = {cpar.hp_flag}")
-    print(f"  multimedia  = n1={cpar.mm.n1}, n2={cpar.mm.n2}, "
-          f"n3={cpar.mm.n3}, d={cpar.mm.d}, nlay={cpar.mm.nlay}")
-    print(f"  velocity    = x[{track_par.dvxmin}, {track_par.dvxmax}] "
-          f"y[{track_par.dvymin}, {track_par.dvymax}] "
-          f"z[{track_par.dvzmin}, {track_par.dvzmax}]")
-    print(f"  dacc={track_par.dacc}  dangle={track_par.dangle}  "
-          f"add={track_par.add}")
-    print(f"  volume      = X_lay={vpar.X_lay} Zmin={vpar.Zmin_lay} "
-          f"Zmax={vpar.Zmax_lay}")
+    print(
+        f"  multimedia  = n1={cpar.mm.n1}, n2={cpar.mm.n2}, "
+        f"n3={cpar.mm.n3}, d={cpar.mm.d}, nlay={cpar.mm.nlay}"
+    )
+    print(
+        f"  velocity    = x[{track_par.dvxmin}, {track_par.dvxmax}] "
+        f"y[{track_par.dvymin}, {track_par.dvymax}] "
+        f"z[{track_par.dvzmin}, {track_par.dvzmax}]"
+    )
+    print(f"  dacc={track_par.dacc}  dangle={track_par.dangle}  add={track_par.add}")
+    print(
+        f"  volume      = X_lay={vpar.X_lay} Zmin={vpar.Zmin_lay} Zmax={vpar.Zmax_lay}"
+    )
     print(f"  volume crit = cn={vpar.cn} cnx={vpar.cnx} cny={vpar.cny}")
     print(f"  target      = gvthres={tpar.gvthres} discont={tpar.discont}")
-    print(f"                nn=[{tpar.nnmin},{tpar.nnmax}] "
-          f"nx=[{tpar.nxmin},{tpar.nxmax}] ny=[{tpar.nymin},{tpar.nymax}]")
+    print(
+        f"                nn=[{tpar.nnmin},{tpar.nnmax}] "
+        f"nx=[{tpar.nxmin},{tpar.nxmax}] ny=[{tpar.nymin},{tpar.nymax}]"
+    )
     print(f"  frames      = {spar.first} to {spar.last}")
     for i, c in enumerate(cals):
         pos = np.array([c.ext_par.x0, c.ext_par.y0, c.ext_par.z0])
@@ -303,11 +340,11 @@ def test_full_pipeline_diagnostic(cavity_setup, monkeypatch):
     print("STAGE 1: TARGET DETECTION")
     print("=" * 70)
 
-    all_detections = {}   # frame -> [list_of_targets_per_cam]
-    all_corrected = {}    # frame -> [list_of_Coord2d_per_cam]
+    all_detections = {}  # frame -> [list_of_targets_per_cam]
+    all_corrected = {}  # frame -> [list_of_Coord2d_per_cam]
 
     seq = params.get("sequence", {})
-    base_names = seq.get("base_name", [f"img/cam{i+1}.%d" for i in range(num_cams)])
+    base_names = seq.get("base_name", [f"img/cam{i + 1}.%d" for i in range(num_cams)])
 
     for frame in range(spar.first, spar.last + 1):
         frame_dets = []
@@ -326,8 +363,10 @@ def test_full_pipeline_diagnostic(cavity_setup, monkeypatch):
             frame_dets.append(targets)
 
         counts = [len(d) for d in frame_dets]
-        print(f"  Frame {frame}: detected {counts} targets per camera, "
-              f"total={sum(counts)}")
+        print(
+            f"  Frame {frame}: detected {counts} targets per camera, "
+            f"total={sum(counts)}"
+        )
 
         # Build Frame object and use correct_frame for proper correction
         max_tgt = max(len(d) for d in frame_dets) + 10
@@ -344,9 +383,11 @@ def test_full_pipeline_diagnostic(cavity_setup, monkeypatch):
                 if len(frame_corr[i_cam]) > 0:
                     c0 = frame_corr[i_cam][0]
                     cn = frame_corr[i_cam][-1]
-                    print(f"    cam{i_cam}: corrected x-sorted: "
-                          f"[0]=({c0.x:.2f},{c0.y:.2f} pnr={c0.pnr}) "
-                          f"[-1]=({cn.x:.2f},{cn.y:.2f} pnr={cn.pnr})")
+                    print(
+                        f"    cam{i_cam}: corrected x-sorted: "
+                        f"[0]=({c0.x:.2f},{c0.y:.2f} pnr={c0.pnr}) "
+                        f"[-1]=({cn.x:.2f},{cn.y:.2f} pnr={cn.pnr})"
+                    )
 
         all_detections[frame] = frame_dets
         all_corrected[frame] = frame_corr
@@ -359,15 +400,15 @@ def test_full_pipeline_diagnostic(cavity_setup, monkeypatch):
     print("=" * 70)
 
     all_positions = {}  # frame -> ndarray (N, 3)
-    all_corresp = {}    # frame -> ndarray (num_cams, N)
+    all_corresp = {}  # frame -> ndarray (num_cams, N)
 
     # Diagnostic: check epi_mm for first frame, first target in cam0→cam1
     from openptv2.algorithms.epi import epi_mm
+
     first_corr = all_corrected[spar.first]
     if len(first_corr[0]) > 0:
         c = first_corr[0][0]
-        xmin, ymin, xmax, ymax = epi_mm(
-            c.x, c.y, cals[0], cals[1], cpar.mm, vpar)
+        xmin, ymin, xmax, ymax = epi_mm(c.x, c.y, cals[0], cals[1], cpar.mm, vpar)
         print(f"  epi_mm cam0→cam1 for target ({c.x:.2f},{c.y:.2f}):")
         print(f"    band: x=[{xmin:.2f},{xmax:.2f}] y=[{ymin:.2f},{ymax:.2f}]")
         band_w = xmax - xmin
@@ -396,8 +437,10 @@ def test_full_pipeline_diagnostic(cavity_setup, monkeypatch):
         con, match_counts = algo_correspondences(frm, corr, vpar, cpar, cals)
 
         n_quads, n_trips, n_pairs, n_total = match_counts
-        print(f"  Frame {frame}: {n_total} correspondences "
-              f"(quads={n_quads}, triplets={n_trips}, pairs={n_pairs})")
+        print(
+            f"  Frame {frame}: {n_total} correspondences "
+            f"(quads={n_quads}, triplets={n_trips}, pairs={n_pairs})"
+        )
 
         if n_total > 0:
             valid = con[:n_total]
@@ -405,27 +448,35 @@ def test_full_pipeline_diagnostic(cavity_setup, monkeypatch):
             corresp_corr = np.array([nt.p[:num_cams] for nt in valid]).T
             # corresp_tgt: target pnr values (for rt_is file — tracker
             # uses these to index into targ_x/targ_y arrays)
-            corresp_tgt = np.array([
-                [corr[cam][nt.p[cam]].pnr if nt.p[cam] >= 0 else -1
-                 for cam in range(num_cams)]
-                for nt in valid
-            ]).T
+            corresp_tgt = np.array(
+                [
+                    [
+                        corr[cam][nt.p[cam]].pnr if nt.p[cam] >= 0 else -1
+                        for cam in range(num_cams)
+                    ]
+                    for nt in valid
+                ]
+            ).T
         else:
             corresp_corr = np.zeros((num_cams, 0), dtype=int)
             corresp_tgt = np.zeros((num_cams, 0), dtype=int)
 
         # 3D point positions (use corrected-list indices)
         if corresp_corr.shape[1] > 0:
-            flat = np.array([
-                [corr[cam][int(corresp_corr[cam, i])] if corresp_corr[cam, i] >= 0
-                 else Coord2d(x=-999, y=-999, pnr=-1)
-                 for i in range(corresp_corr.shape[1])]
-                for cam in range(num_cams)
-            ])
-            flat_arr = np.array([
-                [[c.x, c.y] for c in cam_coords]
-                for cam_coords in flat
-            ])
+            flat = np.array(
+                [
+                    [
+                        corr[cam][int(corresp_corr[cam, i])]
+                        if corresp_corr[cam, i] >= 0
+                        else Coord2d(x=-999, y=-999, pnr=-1)
+                        for i in range(corresp_corr.shape[1])
+                    ]
+                    for cam in range(num_cams)
+                ]
+            )
+            flat_arr = np.array(
+                [[[c.x, c.y] for c in cam_coords] for cam_coords in flat]
+            )
             flat_arr = flat_arr.transpose(1, 0, 2)  # (N, num_cams, 2)
             pos, rcm = algo_point_positions(flat_arr, cpar, cals, vpar)
         else:
@@ -454,13 +505,16 @@ def test_full_pipeline_diagnostic(cavity_setup, monkeypatch):
                 tnr_vals = [frm.targets[i_cam][j].tnr for j in range(n_tgt)]
                 tnr_set = sum(1 for v in tnr_vals if v >= 0)
                 tnr_neg = sum(1 for v in tnr_vals if v < 0)
-                print(f"    cam{i_cam}: {tnr_set}/{n_tgt} targets have "
-                      f"tnr>=0 (mapped to 3D particle), {tnr_neg} unmatched")
+                print(
+                    f"    cam{i_cam}: {tnr_set}/{n_tgt} targets have "
+                    f"tnr>=0 (mapped to 3D particle), {tnr_neg} unmatched"
+                )
                 if tnr_set > 0:
                     valid_tnrs = sorted([v for v in tnr_vals if v >= 0])
-                    print(f"      tnr range: {valid_tnrs[0]}..{valid_tnrs[-1]}, "
-                          f"max_tnr={max(valid_tnrs)}")
-
+                    print(
+                        f"      tnr range: {valid_tnrs[0]}..{valid_tnrs[-1]}, "
+                        f"max_tnr={max(valid_tnrs)}"
+                    )
 
         # Write _targets files for tracking — MUST use frm.targets (not dets)
         # because correspondences() sets targets[cam][pnr].tnr = corr_index,
@@ -470,8 +524,10 @@ def test_full_pipeline_diagnostic(cavity_setup, monkeypatch):
             n_tgt = frm.num_targets[i_cam]
             tgt_list = [frm.targets[i_cam][j] for j in range(n_tgt)]
             write_targets(
-                tgt_list, n_tgt,
-                str(work_dir / file_base), frame,
+                tgt_list,
+                n_tgt,
+                str(work_dir / file_base),
+                frame,
             )
 
     # ---------------------------------------------------------------
@@ -501,22 +557,29 @@ def test_full_pipeline_diagnostic(cavity_setup, monkeypatch):
         for j in range(len(pos_curr)):
             disp = pos_next - pos_curr[j]
             mask = (
-                (dvx[0] < disp[:, 0]) & (disp[:, 0] < dvx[1]) &
-                (dvy[0] < disp[:, 1]) & (disp[:, 1] < dvy[1]) &
-                (dvz[0] < disp[:, 2]) & (disp[:, 2] < dvz[1])
+                (dvx[0] < disp[:, 0])
+                & (disp[:, 0] < dvx[1])
+                & (dvy[0] < disp[:, 1])
+                & (disp[:, 1] < dvy[1])
+                & (dvz[0] < disp[:, 2])
+                & (disp[:, 2] < dvz[1])
             )
             nn_counts.append(mask.sum())
             if mask.sum() > 0:
                 in_bounds += 1
 
         nn_arr = np.array(nn_counts)
-        print(f"  {f_curr}→{f_next}: {len(pos_curr)} particles, "
-              f"{in_bounds} ({100*in_bounds/len(pos_curr):.0f}%) have >=1 "
-              f"neighbor in bounds")
+        print(
+            f"  {f_curr}→{f_next}: {len(pos_curr)} particles, "
+            f"{in_bounds} ({100 * in_bounds / len(pos_curr):.0f}%) have >=1 "
+            f"neighbor in bounds"
+        )
         if len(nn_arr) > 0:
-            print(f"    neighbors in bounds: "
-                  f"min={nn_arr.min()} median={int(np.median(nn_arr))} "
-                  f"max={nn_arr.max()} mean={nn_arr.mean():.1f}")
+            print(
+                f"    neighbors in bounds: "
+                f"min={nn_arr.min()} median={int(np.median(nn_arr))} "
+                f"max={nn_arr.max()} mean={nn_arr.mean():.1f}"
+            )
 
         # 4-frame check: for particles with candidates in f_next,
         # check if those candidates also have candidates in f_next+1
@@ -529,9 +592,12 @@ def test_full_pipeline_diagnostic(cavity_setup, monkeypatch):
             for j in range(len(pos_curr)):
                 disp = pos_next - pos_curr[j]
                 cand_mask = (
-                    (dvx[0] < disp[:, 0]) & (disp[:, 0] < dvx[1]) &
-                    (dvy[0] < disp[:, 1]) & (disp[:, 1] < dvy[1]) &
-                    (dvz[0] < disp[:, 2]) & (disp[:, 2] < dvz[1])
+                    (dvx[0] < disp[:, 0])
+                    & (disp[:, 0] < dvx[1])
+                    & (dvy[0] < disp[:, 1])
+                    & (disp[:, 1] < dvy[1])
+                    & (dvz[0] < disp[:, 2])
+                    & (disp[:, 2] < dvz[1])
                 )
                 if cand_mask.sum() == 0:
                     continue
@@ -545,9 +611,12 @@ def test_full_pipeline_diagnostic(cavity_setup, monkeypatch):
                 predicted = 2 * best_cand - pos_curr[j]
                 disp2 = pos_nn - predicted
                 conf_mask = (
-                    (dvx[0] < disp2[:, 0]) & (disp2[:, 0] < dvx[1]) &
-                    (dvy[0] < disp2[:, 1]) & (disp2[:, 1] < dvy[1]) &
-                    (dvz[0] < disp2[:, 2]) & (disp2[:, 2] < dvz[1])
+                    (dvx[0] < disp2[:, 0])
+                    & (disp2[:, 0] < dvx[1])
+                    & (dvy[0] < disp2[:, 1])
+                    & (disp2[:, 1] < dvy[1])
+                    & (dvz[0] < disp2[:, 2])
+                    & (disp2[:, 2] < dvz[1])
                 )
                 if conf_mask.sum() > 0:
                     confirmed += 1
@@ -556,9 +625,11 @@ def test_full_pipeline_diagnostic(cavity_setup, monkeypatch):
 
             total_with_cands = confirmed + no_confirm
             if total_with_cands > 0:
-                print(f"    4-frame check ({f_curr}→{f_next}→{f_nn}): "
-                      f"{confirmed}/{total_with_cands} "
-                      f"({100*confirmed/total_with_cands:.0f}%) confirmed")
+                print(
+                    f"    4-frame check ({f_curr}→{f_next}→{f_nn}): "
+                    f"{confirmed}/{total_with_cands} "
+                    f"({100 * confirmed / total_with_cands:.0f}%) confirmed"
+                )
 
         # acc/angle analysis for the best candidate pairs
         if i + 2 < len(frames):
@@ -572,9 +643,12 @@ def test_full_pipeline_diagnostic(cavity_setup, monkeypatch):
             for j in range(len(pos_curr)):
                 disp = pos_next - pos_curr[j]
                 cand_mask = (
-                    (dvx[0] < disp[:, 0]) & (disp[:, 0] < dvx[1]) &
-                    (dvy[0] < disp[:, 1]) & (disp[:, 1] < dvy[1]) &
-                    (dvz[0] < disp[:, 2]) & (disp[:, 2] < dvz[1])
+                    (dvx[0] < disp[:, 0])
+                    & (disp[:, 0] < dvx[1])
+                    & (dvy[0] < disp[:, 1])
+                    & (disp[:, 1] < dvy[1])
+                    & (dvz[0] < disp[:, 2])
+                    & (disp[:, 2] < dvz[1])
                 )
                 if cand_mask.sum() == 0:
                     continue
@@ -587,9 +661,12 @@ def test_full_pipeline_diagnostic(cavity_setup, monkeypatch):
                 predicted = 2 * best_cand - pos_curr[j]
                 disp2 = pos_nn - predicted
                 conf_mask = (
-                    (dvx[0] < disp2[:, 0]) & (disp2[:, 0] < dvx[1]) &
-                    (dvy[0] < disp2[:, 1]) & (disp2[:, 1] < dvy[1]) &
-                    (dvz[0] < disp2[:, 2]) & (disp2[:, 2] < dvz[1])
+                    (dvx[0] < disp2[:, 0])
+                    & (disp2[:, 0] < dvx[1])
+                    & (dvy[0] < disp2[:, 1])
+                    & (disp2[:, 1] < dvy[1])
+                    & (dvz[0] < disp2[:, 2])
+                    & (disp2[:, 2] < dvz[1])
                 )
                 if conf_mask.sum() == 0:
                     continue
@@ -603,8 +680,9 @@ def test_full_pipeline_diagnostic(cavity_setup, monkeypatch):
                 acc_vals.append(acc)
                 angle_vals.append(ang)
 
-                passes = ((acc < track_par.dacc and ang < track_par.dangle)
-                          or acc < track_par.dacc * 0.1)
+                passes = (
+                    acc < track_par.dacc and ang < track_par.dangle
+                ) or acc < track_par.dacc * 0.1
                 if passes:
                     acc_ok += 1
                 else:
@@ -612,16 +690,22 @@ def test_full_pipeline_diagnostic(cavity_setup, monkeypatch):
 
             total_checked = acc_ok + acc_fail
             if total_checked > 0:
-                print(f"    acc/angle check: {acc_ok}/{total_checked} "
-                      f"({100*acc_ok/total_checked:.0f}%) pass "
-                      f"(dacc={track_par.dacc}, dangle={track_par.dangle})")
+                print(
+                    f"    acc/angle check: {acc_ok}/{total_checked} "
+                    f"({100 * acc_ok / total_checked:.0f}%) pass "
+                    f"(dacc={track_par.dacc}, dangle={track_par.dangle})"
+                )
                 if acc_vals:
-                    print(f"    acc  : min={min(acc_vals):.3f} "
-                          f"med={np.median(acc_vals):.3f} "
-                          f"max={max(acc_vals):.3f}")
-                    print(f"    angle: min={min(angle_vals):.1f} "
-                          f"med={np.median(angle_vals):.1f} "
-                          f"max={max(angle_vals):.1f}")
+                    print(
+                        f"    acc  : min={min(acc_vals):.3f} "
+                        f"med={np.median(acc_vals):.3f} "
+                        f"max={max(acc_vals):.3f}"
+                    )
+                    print(
+                        f"    angle: min={min(angle_vals):.1f} "
+                        f"med={np.median(angle_vals):.1f} "
+                        f"max={max(angle_vals):.1f}"
+                    )
 
     # ---------------------------------------------------------------
     # STAGE 4: ACTUAL TRACKING
@@ -652,11 +736,14 @@ def test_full_pipeline_diagnostic(cavity_setup, monkeypatch):
 
     # --- DIAGNOSTIC: quick projection sanity check ---
     from openptv2.algorithms.track import point_to_pixel
+
     fb = run.fb
     curr_slot = fb.buf[1]
     next_slot = fb.buf[2]
-    print(f"  frame buffer: curr={curr_slot.num_parts} particles, "
-          f"next={next_slot.num_parts} particles")
+    print(
+        f"  frame buffer: curr={curr_slot.num_parts} particles, "
+        f"next={next_slot.num_parts} particles"
+    )
 
     # Verify projection consistency for first 5 particles
     offsets = []
@@ -668,12 +755,14 @@ def test_full_pipeline_diagnostic(cavity_setup, monkeypatch):
             for j in range(curr_slot.num_targets[cam]):
                 if curr_slot.targets[cam][j].tnr == h:
                     t = curr_slot.targets[cam][j]
-                    offsets.append(math.sqrt((px - t.x)**2 + (py - t.y)**2))
+                    offsets.append(math.sqrt((px - t.x) ** 2 + (py - t.y) ** 2))
                     break
     if offsets:
-        print(f"  projection check (3D→2D vs target): "
-              f"median={np.median(offsets):.1f}px, "
-              f"max={max(offsets):.1f}px (n={len(offsets)})")
+        print(
+            f"  projection check (3D→2D vs target): "
+            f"median={np.median(offsets):.1f}px, "
+            f"max={max(offsets):.1f}px (n={len(offsets)})"
+        )
 
     # Count valid tnr in next frame
     for cam in range(num_cams):
@@ -727,10 +816,12 @@ def test_full_pipeline_diagnostic(cavity_setup, monkeypatch):
 
         pct_fwd = 100 * linked_fwd / n if n > 0 else 0
         pct_bwd = 100 * linked_bwd / n if n > 0 else 0
-        print(f"  Frame {frame}: {n} particles, "
-              f"fwd_linked={linked_fwd} ({pct_fwd:.0f}%), "
-              f"bwd_linked={linked_bwd} ({pct_bwd:.0f}%), "
-              f"isolated={unlinked}")
+        print(
+            f"  Frame {frame}: {n} particles, "
+            f"fwd_linked={linked_fwd} ({pct_fwd:.0f}%), "
+            f"bwd_linked={linked_bwd} ({pct_bwd:.0f}%), "
+            f"isolated={unlinked}"
+        )
 
     # ---------------------------------------------------------------
     # STAGE 6: COMPARE LINKED vs UNLINKED — WHY DID THEY FAIL?
@@ -750,18 +841,19 @@ def test_full_pipeline_diagnostic(cavity_setup, monkeypatch):
         with open(rt_path) as f:
             rt_lines = f.readlines()
         n_curr = int(rt_lines[0].strip())
-        pos_curr = np.array([
-            [float(x) for x in rt_lines[i+1].split()[1:4]]
-            for i in range(n_curr)
-        ])
+        pos_curr = np.array(
+            [[float(x) for x in rt_lines[i + 1].split()[1:4]] for i in range(n_curr)]
+        )
 
         with open(rt_next_path) as f:
             rt_lines_next = f.readlines()
         n_next = int(rt_lines_next[0].strip())
-        pos_next_rt = np.array([
-            [float(x) for x in rt_lines_next[i+1].split()[1:4]]
-            for i in range(n_next)
-        ])
+        pos_next_rt = np.array(
+            [
+                [float(x) for x in rt_lines_next[i + 1].split()[1:4]]
+                for i in range(n_next)
+            ]
+        )
 
         # Read ptv_is links
         with open(ptv_path) as f:
@@ -771,7 +863,7 @@ def test_full_pipeline_diagnostic(cavity_setup, monkeypatch):
         linked_disps = []
         unlinked_nn_dists = []
         for i in range(n_ptv):
-            parts = ptv_lines[i+1].split()
+            parts = ptv_lines[i + 1].split()
             next_idx = int(parts[1])
             if next_idx >= 0 and next_idx < n_next:
                 d = np.linalg.norm(pos_next_rt[next_idx] - pos_curr[i])
@@ -783,18 +875,28 @@ def test_full_pipeline_diagnostic(cavity_setup, monkeypatch):
         if linked_disps:
             ld = np.array(linked_disps)
             print(f"  Frame {mid_frame} linked particles ({len(ld)}):")
-            print(f"    displacement: min={ld.min():.3f} "
-                  f"med={np.median(ld):.3f} max={ld.max():.3f}")
+            print(
+                f"    displacement: min={ld.min():.3f} "
+                f"med={np.median(ld):.3f} max={ld.max():.3f}"
+            )
 
         if unlinked_nn_dists:
             ud = np.array(unlinked_nn_dists)
             print(f"  Frame {mid_frame} unlinked particles ({len(ud)}):")
-            print(f"    NN dist to next frame: min={ud.min():.3f} "
-                  f"med={np.median(ud):.3f} max={ud.max():.3f}")
-            in_bounds = (ud < min(abs(track_par.dvxmax), abs(track_par.dvymax),
-                                  abs(track_par.dvzmax))).sum()
-            print(f"    within velocity bounds: {in_bounds}/{len(ud)} "
-                  f"({100*in_bounds/len(ud):.0f}%)")
+            print(
+                f"    NN dist to next frame: min={ud.min():.3f} "
+                f"med={np.median(ud):.3f} max={ud.max():.3f}"
+            )
+            in_bounds = (
+                ud
+                < min(
+                    abs(track_par.dvxmax), abs(track_par.dvymax), abs(track_par.dvzmax)
+                )
+            ).sum()
+            print(
+                f"    within velocity bounds: {in_bounds}/{len(ud)} "
+                f"({100 * in_bounds / len(ud):.0f}%)"
+            )
 
     print("\n" + "=" * 70)
     print("DIAGNOSTIC COMPLETE")

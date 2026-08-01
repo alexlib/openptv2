@@ -12,9 +12,9 @@ from openptv2.algorithms.tracking_run import TrackingRun
 
 # Default file naming (matches optv)
 default_naming = {
-    'corres': 'res/rt_is',
-    'linkage': 'res/ptv_is',
-    'prio': 'res/added',
+    "corres": "res/rt_is",
+    "linkage": "res/ptv_is",
+    "prio": "res/added",
 }
 
 
@@ -76,9 +76,9 @@ class Tracker:
             cpar=self._cpar_algo,
             buf_len=4,  # Standard buffer length
             max_targets=10000,  # Generous max
-            corres_file_base=self._naming['corres'],
-            linkage_file_base=self._naming['linkage'],
-            prio_file_base=self._naming['prio'],
+            corres_file_base=self._naming["corres"],
+            linkage_file_base=self._naming["linkage"],
+            prio_file_base=self._naming["prio"],
             cal=self._cals_algo,
             flatten_tol=self._flatten_tol,
         )

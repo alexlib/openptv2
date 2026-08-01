@@ -7,8 +7,11 @@ def test_numpy_version():
     min_version = "2.0.0"
     max_version = "2.7"
     np_version = np.__version__
-    assert version.parse(min_version) <= version.parse(np_version) < version.parse(max_version), \
-        f"Expected numpy >={min_version} <{max_version}, got {np_version}"
+    assert (
+        version.parse(min_version)
+        <= version.parse(np_version)
+        < version.parse(max_version)
+    ), f"Expected numpy >={min_version} <{max_version}, got {np_version}"
 
 
 def test_runtime_available():

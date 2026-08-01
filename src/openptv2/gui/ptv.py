@@ -33,8 +33,8 @@ from openptv2.tracker import Tracker, default_naming
 from openptv2.tracking_framebuf import TargetArray
 
 """
-example from Tracker documentation: 
-        dict naming - a dictionary with naming rules for the frame buffer 
+example from Tracker documentation:
+        dict naming - a dictionary with naming rules for the frame buffer
             files. Keys: 'corres', 'linkage', 'prio'. Values can be either
             strings or bytes. Strings will be automatically encoded to UTF-8 bytes.
             If None, uses default_naming.
@@ -43,7 +43,7 @@ example from Tracker documentation:
         'corres': 'res/rt_is',
         'linkage': 'res/ptv_is',
         'prio': 'res/added'
-    }            
+    }
 """
 
 # PyPTV imports
@@ -345,7 +345,9 @@ def negative(img: np.ndarray) -> np.ndarray:
     return 255 - img
 
 
-def simple_highpass(img: np.ndarray, cpar: ControlParams, filter_size: int = None) -> np.ndarray:
+def simple_highpass(
+    img: np.ndarray, cpar: ControlParams, filter_size: int = None
+) -> np.ndarray:
     """Apply a simple highpass filter to an image using liboptv preprocess_image."""
     if filter_size is None:
         filter_size = DEFAULT_HIGHPASS_FILTER_SIZE
@@ -598,7 +600,9 @@ def py_pre_processing_c(
         img_lp = img.copy()
         processed_images.append(
             simple_highpass(
-                img_lp, cpar, ptv_params.get("highpass_size", DEFAULT_HIGHPASS_FILTER_SIZE)
+                img_lp,
+                cpar,
+                ptv_params.get("highpass_size", DEFAULT_HIGHPASS_FILTER_SIZE),
             )
         )
 
@@ -642,7 +646,9 @@ def py_detection_proc_c(
     with ThreadPoolExecutor(max_workers=num_cams) as pool:
         detections = list(pool.map(_detect, enumerate(list_of_images)))
 
-    corrected = [MatchedCoords(targs, cpar, cals[i]) for i, targs in enumerate(detections)]
+    corrected = [
+        MatchedCoords(targs, cpar, cals[i]) for i, targs in enumerate(detections)
+    ]
 
     return detections, corrected
 
@@ -694,7 +700,7 @@ def py_determination_proc_c(
     frame: int = DEFAULT_FRAME_NUM,
 ) -> None:
     """Calculate 3D positions from 2D correspondences and save to file."""
-    concatenated_pos = np.concatenate(sorted_pos, axis=1)
+    np.concatenate(sorted_pos, axis=1)
     concatenated_corresp = np.concatenate(sorted_corresp, axis=1)
 
     flat = np.array(
@@ -854,14 +860,21 @@ def py_sequence_loop(exp) -> None:
     existing_target = pm.get_parameter("pft_version").get("Existing_Target", False)
 
     # Check if we should run parallel preprocessing (Approach C)
-    ptv_params_dict = pm.parameters.get("ptv", {}) if hasattr(pm, "parameters") and isinstance(pm.parameters, dict) else {}
+    ptv_params_dict = (
+        pm.parameters.get("ptv", {})
+        if hasattr(pm, "parameters") and isinstance(pm.parameters, dict)
+        else {}
+    )
     if not isinstance(ptv_params_dict, dict):
         try:
             ptv_params_dict = pm.get_parameter("ptv")
         except ValueError:
             ptv_params_dict = {}
 
-    parallel_preprocess = os.environ.get("OPENPTV_PARALLEL_PREPROCESS", "").lower() in ("true", "1")
+    parallel_preprocess = os.environ.get("OPENPTV_PARALLEL_PREPROCESS", "").lower() in (
+        "true",
+        "1",
+    )
     if not parallel_preprocess and isinstance(ptv_params_dict, dict):
         parallel_preprocess = ptv_params_dict.get("parallel_preprocess", False)
 
@@ -988,14 +1001,21 @@ def py_sequence_loop_python(exp) -> None:
     existing_target = pm.get_parameter("pft_version").get("Existing_Target", False)
 
     # Check if we should run parallel preprocessing (Approach C)
-    ptv_params_dict = pm.parameters.get("ptv", {}) if hasattr(pm, "parameters") and isinstance(pm.parameters, dict) else {}
+    ptv_params_dict = (
+        pm.parameters.get("ptv", {})
+        if hasattr(pm, "parameters") and isinstance(pm.parameters, dict)
+        else {}
+    )
     if not isinstance(ptv_params_dict, dict):
         try:
             ptv_params_dict = pm.get_parameter("ptv")
         except ValueError:
             ptv_params_dict = {}
 
-    parallel_preprocess = os.environ.get("OPENPTV_PARALLEL_PREPROCESS", "").lower() in ("true", "1")
+    parallel_preprocess = os.environ.get("OPENPTV_PARALLEL_PREPROCESS", "").lower() in (
+        "true",
+        "1",
+    )
     if not parallel_preprocess and isinstance(ptv_params_dict, dict):
         parallel_preprocess = ptv_params_dict.get("parallel_preprocess", False)
 
@@ -1277,7 +1297,7 @@ def py_sequence_loop_python(exp) -> None:
                 _raise_output_write_error(output_path, exc)
 
         concatenated_corresp = np.concatenate(sorted_corresp, axis=1)
-        concatenated_pos = np.concatenate(sorted_pos, axis=1)
+        np.concatenate(sorted_pos, axis=1)
 
         # Look up corrected coords for correspondence matches and compute 3D positions
         if concatenated_corresp.shape[1] > 0:

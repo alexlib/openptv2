@@ -39,30 +39,36 @@ def create_test_experiment_directory():
     logger.info(f"Created test experiment directory: {exp_path}")
     return exp_path, temp_dir
 
+
 def demonstrate_chunk_ranges():
     """Demonstrate frame range chunking functionality."""
     logger.info("=== Demonstrating Frame Range Chunking ===")
 
     test_cases = [
-        (1000, 1019, 4),   # 20 frames, 4 processes
-        (1000, 1010, 3),   # 11 frames, 3 processes
-        (1000, 1005, 8),   # 6 frames, 8 processes (more processes than frames)
-        (1000, 1000, 2),   # 1 frame, 2 processes
+        (1000, 1019, 4),  # 20 frames, 4 processes
+        (1000, 1010, 3),  # 11 frames, 3 processes
+        (1000, 1005, 8),  # 6 frames, 8 processes (more processes than frames)
+        (1000, 1000, 2),  # 1 frame, 2 processes
     ]
 
     for first, last, n_processes in test_cases:
         total_frames = last - first + 1
-        logger.info(f"Chunking {total_frames} frames ({first}-{last}) into {n_processes} processes:")
+        logger.info(
+            f"Chunking {total_frames} frames ({first}-{last}) into {n_processes} processes:"
+        )
 
         try:
             ranges = chunk_ranges(first, last, n_processes)
             for i, (chunk_first, chunk_last) in enumerate(ranges):
                 chunk_size = chunk_last - chunk_first + 1
-                logger.info(f"  Process {i+1}: frames {chunk_first}-{chunk_last} ({chunk_size} frames)")
+                logger.info(
+                    f"  Process {i + 1}: frames {chunk_first}-{chunk_last} ({chunk_size} frames)"
+                )
         except Exception as e:
             logger.error(f"  Error: {e}")
 
         logger.info("")
+
 
 def demonstrate_cpu_optimization():
     """Demonstrate CPU count detection and optimization recommendations."""
@@ -90,6 +96,7 @@ def demonstrate_cpu_optimization():
 
     logger.info("")
 
+
 def demonstrate_error_handling():
     """Demonstrate error handling in parallel processing."""
     logger.info("=== Error Handling Demonstration ===")
@@ -114,6 +121,7 @@ def demonstrate_error_handling():
         logger.info(f"✓ Caught directory validation error: {e}")
 
     logger.info("")
+
 
 def simulate_parallel_processing():
     """Simulate the parallel processing workflow."""
@@ -146,7 +154,9 @@ def simulate_parallel_processing():
 
             for i, (chunk_first, chunk_last) in enumerate(ranges):
                 chunk_size = chunk_last - chunk_first + 1
-                logger.info(f"    Process {i+1}: {chunk_first}-{chunk_last} ({chunk_size} frames)")
+                logger.info(
+                    f"    Process {i + 1}: {chunk_first}-{chunk_last} ({chunk_size} frames)"
+                )
 
         logger.info("\n✓ Simulated processing setup completed")
 
@@ -154,6 +164,7 @@ def simulate_parallel_processing():
         logger.error(f"Simulation failed: {e}")
     finally:
         shutil.rmtree(temp_dir)
+
 
 def demonstrate_performance_considerations():
     """Demonstrate performance considerations for parallel processing."""
@@ -188,6 +199,7 @@ def demonstrate_performance_considerations():
 
     logger.info("")
 
+
 def main_demo():
     """Run all demonstrations."""
     logger.info("PyPTV Parallel Batch Processing Demonstration")
@@ -208,11 +220,11 @@ def main_demo():
     logger.info(f"CPU cores available: {multiprocessing.cpu_count()}")
     logger.info(f"Running from: {sys.executable}")
 
+
 if __name__ == "__main__":
     # Configure logging to show all messages
     logging.basicConfig(
-        level=logging.DEBUG,
-        format='%(asctime)s - %(levelname)s - %(message)s'
+        level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s"
     )
 
     try:

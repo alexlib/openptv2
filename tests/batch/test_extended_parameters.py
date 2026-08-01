@@ -130,7 +130,13 @@ def test_velocity_parameter_interaction():
 def run_tracking_test(test_path, test_name):
     """Run a single tracking test and return the link ratio"""
 
-    script_path = Path(__file__).parent.parent.parent / "src" / "openptv2" / "batch" / "pyptv_batch_plugins.py"
+    script_path = (
+        Path(__file__).parent.parent.parent
+        / "src"
+        / "openptv2"
+        / "batch"
+        / "pyptv_batch_plugins.py"
+    )
     yaml_file = test_path / "parameters_Run1.yaml"
     cmd = [
         sys.executable,

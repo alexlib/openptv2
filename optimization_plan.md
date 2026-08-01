@@ -20,7 +20,7 @@ This document is the single authoritative plan for all performance optimization 
 All 24 modules in `src/openptv2/algorithms/` compile to C extensions via Cython 3 Pure Python mode (Cython >=3.0.10, currently 3.2.8). The build uses these global compiler directives:
 
 ```python
-compiler_directives={
+compiler_directives = {
     "language_level": "3",
     "boundscheck": False,
     "wraparound": False,
@@ -362,7 +362,7 @@ Change `double[:, :]` → `double[:, ::1]` for SIMD enablement:
 verts_x = np.empty(num_cams, dtype=np.float64)
 
 # After: C stack array — zero malloc, zero Python overhead
-verts_x: cython.double[4]   # size must be a compile-time constant literal
+verts_x: cython.double[4]  # size must be a compile-time constant literal
 ```
 
 **Constraint:** Size must be a compile-time integer literal or a module-level `cython.declare`d constant. For `num_cams=4` (fixed in this codebase) use `cython.double[4]` directly. For genuinely variable sizes keep the caller-allocated `out` memoryview pattern.
@@ -395,17 +395,14 @@ All 27 `test_cclasses.py` tests pass (was 14 failing before conversion). Exposed
 ```python
 import cython
 
+
 # Replace @dataclass or standard class with @cython.cclass
 @cython.cclass
 class Coord2d:
     # Explicitly declare all attributes and their C types
     # visibility='public' allows Python code to read/write them
-    cython.declare(
-        x=cython.double,
-        y=cython.double,
-        visibility='public'
-    )
-    
+    cython.declare(x=cython.double, y=cython.double, visibility="public")
+
     def __init__(self, x: float, y: float):
         self.x = x
         self.y = x
@@ -472,7 +469,7 @@ import numpy as np
 lp = LineProfiler()
 lp.add_function(trackcorr_loop_fast)
 # ... setup inputs ...
-lp.runctx('trackcorr_loop_fast(...)', globals(), locals())
+lp.runctx("trackcorr_loop_fast(...)", globals(), locals())
 lp.print_stats()
 ```
 ```bash

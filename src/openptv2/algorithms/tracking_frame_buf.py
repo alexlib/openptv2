@@ -3,13 +3,12 @@
 Translation of lib/src/tracking_frame_buf.c and lib/include/tracking_frame_buf.h.
 """
 
-import cython
-
-
-import numpy as np
 from pathlib import Path
 
-from .constants import POSI, PT_UNUSED, CORRES_NONE, PREV_NONE, NEXT_NONE, COORD_UNUSED
+import cython
+import numpy as np
+
+from .constants import COORD_UNUSED, CORRES_NONE, NEXT_NONE, POSI, PREV_NONE, PT_UNUSED
 
 
 class CallableInt(int):
@@ -340,7 +339,7 @@ def read_path_frame(corres_file_base, linkage_file_base, prio_file_base, frame_n
     except FileNotFoundError:
         return [], []
 
-    header = corres_file.readline()  # number of points (read but use EOF)
+    corres_file.readline()  # number of points (read but use EOF)
 
     linkage_file = None
     if linkage_file_base:
@@ -481,7 +480,7 @@ def write_path_frame(
             and len(cor_buf) == 2
             and isinstance(cor_buf[0], np.ndarray)
         ):
-            c_nr = int(cor_buf[0][pix])
+            int(cor_buf[0][pix])
             c_p = cor_buf[1][pix]
         elif isinstance(cor_buf, list) and isinstance(cor_buf[0], Corres):
             c_p = cor_buf[pix].p

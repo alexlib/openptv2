@@ -45,8 +45,8 @@ def _run_parameter_access_performance():
         start_time = time.perf_counter()
         for i in range(1000):
             ptv_params = pm.parameters.get("ptv", {})
-            num_cams = ptv_params.get("num_cams", 0)
-            img_names = ptv_params.get("img_name", [])
+            ptv_params.get("num_cams", 0)
+            ptv_params.get("img_name", [])
         direct_time = time.perf_counter() - start_time
         print(f"Direct access (1000 iterations): {direct_time:.4f} seconds")
 
@@ -56,8 +56,8 @@ def _run_parameter_access_performance():
         start_time = time.perf_counter()
         for i in range(1000):
             ptv_params = experiment.pm.parameters.get("ptv", {})
-            num_cams = ptv_params.get("num_cams", 0)
-            img_names = ptv_params.get("img_name", [])
+            ptv_params.get("num_cams", 0)
+            ptv_params.get("img_name", [])
         delegation_time = time.perf_counter() - start_time
         print(f"Experiment delegation (1000 iterations): {delegation_time:.4f} seconds")
 
@@ -67,8 +67,8 @@ def _run_parameter_access_performance():
 
         start_time = time.perf_counter()
         for i in range(1000):
-            num_cams = cached_ptv_params.get("num_cams", 0)
-            img_names = cached_ptv_params.get("img_name", [])
+            cached_ptv_params.get("num_cams", 0)
+            cached_ptv_params.get("img_name", [])
         cached_time = time.perf_counter() - start_time
         print(f"Cached access (1000 iterations): {cached_time:.4f} seconds")
 

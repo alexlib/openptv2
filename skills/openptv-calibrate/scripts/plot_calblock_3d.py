@@ -94,7 +94,13 @@ def _(body, calblock_path, ids, mo, np, plt):
     ax.set_zlabel("Z [mm]")
     ax.set_title(f"{calblock_path.name} -- {len(ids)} points  (drag to rotate)")
     try:
-        ax.set_box_aspect((float(np.ptp(body[:, 0])), float(np.ptp(body[:, 1])), float(np.ptp(body[:, 2]))))
+        ax.set_box_aspect(
+            (
+                float(np.ptp(body[:, 0])),
+                float(np.ptp(body[:, 1])),
+                float(np.ptp(body[:, 2])),
+            )
+        )
     except (AttributeError, ValueError):
         pass
     plt.tight_layout()

@@ -256,7 +256,11 @@ Target: ≥90% coverage on the ~330-line file.
 4. Gut `track_kernels_tracking.py` to a compatibility shim (~30 lines):
    ```python
    """Compatibility re-export — content split into focused sub-modules 2026-07-10."""
-   from .track_kernels_pixel import candsearch_in_pix_fast_nogil, assess_new_position_fast_nogil  # noqa: F401
+
+   from .track_kernels_pixel import (
+       candsearch_in_pix_fast_nogil,
+       assess_new_position_fast_nogil,
+   )  # noqa: F401
    from .track_kernels_corr import trackcorr_loop_fast, trackback_loop_fast  # noqa: F401
    from .track_kernels_track3d import track3d_loop_fast  # noqa: F401
    ```

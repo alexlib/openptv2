@@ -181,6 +181,7 @@ def build_wheel(
     print_info("Building wheel using cibuildwheel...")
     # Targets only the current python version to avoid compiling unneeded versions
     import sys
+
     env_vars = {
         "CIBW_BUILD": f"cp{sys.version_info.major}{sys.version_info.minor}-*",
         "CIBW_SKIP": "musllinux*",
@@ -237,10 +238,8 @@ def create_clean_venv(venv_path: Path, verbose: bool = False) -> Tuple[bool, str
     # Determine python path
     if sys.platform == "win32":
         python_path = str(venv_path / "Scripts" / "python.exe")
-        pip_path = str(venv_path / "Scripts" / "pip.exe")
     else:
         python_path = str(venv_path / "bin" / "python")
-        pip_path = str(venv_path / "bin" / "pip")
 
     if not os.path.exists(python_path):
         print_failure(f"Python not found at {python_path}")
@@ -311,7 +310,10 @@ def run_import_tests(python_path: str, verbose: bool = False) -> list[dict]:
         },
         {
             "name": "openptv2 unified imports",
-            "cmd": "from openptv2 import Target, Tracker, Calibration, MatchedCoords; print('unified imports OK')",
+            "cmd": (
+                "from openptv2 import Target, Tracker, Calibration, "
+                "MatchedCoords; print('unified imports OK')"
+            ),
         },
         {
             "name": "openptv2 version",
@@ -327,7 +329,12 @@ def run_import_tests(python_path: str, verbose: bool = False) -> list[dict]:
         },
         {
             "name": "openptv2 binary wheel verification (is_compiled)",
-            "cmd": "from algorithms.image_processing import is_compiled; assert is_compiled() is True, 'Error: The installed package is running uncompiled un-optimized Python code rather than compiled Cython binary wheel extensions!'",
+            "cmd": (
+                "from algorithms.image_processing import is_compiled; "
+                "assert is_compiled() is True, 'Error: The installed package "
+                "is running uncompiled un-optimized Python code rather than "
+                "compiled Cython binary wheel extensions!'"
+            ),
         },
     ]
 
@@ -426,15 +433,21 @@ def print_pipeline_summary(
     """Print a summary of the entire pipeline."""
     print_header("Pipeline Summary")
 
-    print_info(
-        f"{'Wheel Build:':<30} {colorize('PASS', Colors.OKGREEN) if build_ok else colorize('FAIL', Colors.FAIL)}"
+    build_status = (
+        colorize("PASS", Colors.OKGREEN)
+        if build_ok
+        else colorize("FAIL", Colors.FAIL)
     )
+    print_info(f"{'Wheel Build:':<30} {build_status}")
     if wheel_path:
         print_info(f"{'Wheel File:':<30} {wheel_path.name}")
 
-    print_info(
-        f"{'Clean Install:':<30} {colorize('PASS', Colors.OKGREEN) if install_ok else colorize('FAIL', Colors.FAIL)}"
+    install_status = (
+        colorize("PASS", Colors.OKGREEN)
+        if install_ok
+        else colorize("FAIL", Colors.FAIL)
     )
+    print_info(f"{'Clean Install:':<30} {install_status}")
 
     print()
     print_info("Import Tests:")
@@ -450,9 +463,12 @@ def print_pipeline_summary(
 
     print()
     print_info(f"{'Import Tests:':<30} {import_pass} passed, {import_fail} failed")
-    print_info(
-        f"{'Full Test Suite:':<30} {colorize('PASS', Colors.OKGREEN) if test_ok else colorize('FAIL', Colors.FAIL)}"
+    test_status = (
+        colorize("PASS", Colors.OKGREEN)
+        if test_ok
+        else colorize("FAIL", Colors.FAIL)
     )
+    print_info(f"{'Full Test Suite:':<30} {test_status}")
     print_info(f"{'Total Duration:':<30} {total_duration:.1f}s")
 
     print()
@@ -469,14 +485,16 @@ def main():
     parser = argparse.ArgumentParser(
         description="openptv2 Wheel Build, Install & Test Pipeline",
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="""
-Examples:
-  python wheel_test_pipeline.py              # Full pipeline
-  python wheel_test_pipeline.py --build-only # Only build wheel
-  python wheel_test_pipeline.py --install-only dist/openptv2-*.whl  # Install & test existing wheel
-  python wheel_test_pipeline.py --skip-build # Skip build, use latest wheel in dist/
-  python wheel_test_pipeline.py --verbose    # Show detailed output
-        """,
+        epilog=(
+            "Examples:\n"
+            "  python wheel_test_pipeline.py              # Full pipeline\n"
+            "  python wheel_test_pipeline.py --build-only # Only build wheel\n"
+            "  python wheel_test_pipeline.py --install-only "
+            "dist/openptv2-*.whl  # Install & test existing wheel\n"
+            "  python wheel_test_pipeline.py --skip-build "
+            "# Skip build, use latest wheel in dist/\n"
+            "  python wheel_test_pipeline.py --verbose    # Show detailed output"
+        ),
     )
 
     parser.add_argument(
