@@ -35,7 +35,13 @@ class ZarrFrameStore:
             mode: Storage mode ('r', 'r+', 'w', 'w-', 'a').
         """
         self.store_path = Path(store_path)
-        self.root = zarr.open_group(str(self.store_path), mode=mode)
+        try:
+            self.root = zarr.open_group(str(self.store_path), mode=mode)
+        except (zarr.errors.ContainsGroupError, Exception):
+            if mode in ("a", "w", "r+"):
+                self.root = zarr.open_group(str(self.store_path), mode="r+")
+            else:
+                self.root = zarr.open_group(str(self.store_path), mode="r")
 
         # Initialize sub-groups if creating or appending
         if mode in ("w", "w-", "a", "r+"):

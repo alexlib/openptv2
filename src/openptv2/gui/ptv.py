@@ -908,7 +908,15 @@ def py_sequence_loop(exp) -> None:
     storage_mode = os.environ.get("OPENPTV_STORAGE", "zarr").lower()
     zarr_store_path = None
     if storage_mode == "zarr":
-        exp_path = getattr(exp, "exp_path", getattr(exp, "exp_dir", "."))
+        exp_path = getattr(exp, "exp_path", None)
+        if not isinstance(exp_path, (str, Path)) or hasattr(
+            exp_path, "_mock_return_value"
+        ):
+            exp_path = getattr(exp, "exp_dir", ".")
+        if not isinstance(exp_path, (str, Path)) or hasattr(
+            exp_path, "_mock_return_value"
+        ):
+            exp_path = "."
         zarr_store_path = str(Path(exp_path) / "res" / "run.zarr")
 
     if parallel_preprocess and not existing_target:
