@@ -730,7 +730,7 @@ def py_determination_proc_c(
     else:
         print_corresp = concatenated_corresp
 
-    storage_mode = os.environ.get("OPENPTV_STORAGE", "legacy").lower()
+    storage_mode = os.environ.get("OPENPTV_STORAGE", "zarr").lower()
     if storage_mode == "zarr":
         from openptv2.storage import ZarrFrameStore
 
@@ -903,7 +903,7 @@ def py_sequence_loop(exp) -> None:
     if not parallel_preprocess and isinstance(ptv_params_dict, dict):
         parallel_preprocess = ptv_params_dict.get("parallel_preprocess", False)
 
-    storage_mode = os.environ.get("OPENPTV_STORAGE", "legacy").lower()
+    storage_mode = os.environ.get("OPENPTV_STORAGE", "zarr").lower()
     zarr_store_path = None
     if storage_mode == "zarr":
         zarr_store_path = str(Path(exp.exp_path) / "res" / "run.zarr")
