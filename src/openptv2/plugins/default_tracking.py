@@ -35,6 +35,7 @@ class Tracking:
 
         selected_tracking = plugins_cfg.get("selected_tracking", "default")
         if selected_tracking in (
+            "fast",
             "fast_3d",
             "standard_forward",
             "two_directional",
@@ -46,7 +47,7 @@ class Tracking:
 
         force_3d = getattr(self.exp, "track3d", False)
 
-        if force_3d or active_pipeline == "fast_3d":
+        if force_3d or active_pipeline in ("fast", "fast_3d"):
             print("Running Fast 3D-Only Tracking (Segment Mode)...")
             tracker.full_forward_3d()
         elif active_pipeline == "standard_forward":

@@ -78,6 +78,7 @@ ALGORITHMS_MODULES = [
     "track_kernels_corr",  # forward/backward tracking loops + CAS
     "track_kernels_tracking",  # compatibility shim (re-exports above)
     "track_kernels_batch",  # batch processing + detection
+    "track_kernels_hybrid",  # Cython 3 compiled hybrid tracking loop kernel
 ]
 
 

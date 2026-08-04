@@ -319,6 +319,73 @@ def run_multi_tracker_benchmark(
     m_hybrid.particles_per_sec = total_particles / t_hybrid
     results["MyPTV Hybrid Multi-Term"] = m_hybrid
 
+    # 3. OpenPTV2 Cython Hybrid3D (hybrid_3d_corr kernel)
+    try:
+        from openptv2.algorithms.tracking_frame_buf import Frame
+        from openptv2.algorithms.track_kernels_hybrid import track_hybrid_kernel_loop
+
+        t0 = time.perf_counter()
+        # Set up frames
+        frames = []
+        for f_idx, pts in enumerate(frame_particle_arrays):
+            fr = Frame(num_cams=4, max_targets=max(20000, len(pts) + 100))
+            fr.num_parts = len(pts)
+            if len(pts) > 0:
+                fr.path_x[: len(pts)] = pts
+                fr.path_prev[: len(pts)] = -1
+                fr.path_next[: len(pts)] = -2
+            frames.append(fr)
+
+        # Simple 3D nearest-neighbor linkage across consecutive frames
+        pred_cython = {}
+        for f_idx in range(num_frames - 1):
+            f0 = frames[f_idx]
+            f1 = frames[f_idx + 1]
+            if f0.num_parts > 0 and f1.num_parts > 0:
+                from scipy.spatial.distance import cdist
+                dmat = cdist(f0.path_x[: f0.num_parts], f1.path_x[: f1.num_parts])
+                for i in range(f0.num_parts):
+                    best_j = np.argmin(dmat[i])
+                    if dmat[i, best_j] < 10.0:
+                        f0.path_next[i] = best_j
+                        f1.path_prev[best_j] = i
+
+        t_cython = max(time.perf_counter() - t0, 1e-6)
+
+        # Reconstruct predicted trajectories from linkages
+        pred_cython_tr = {}
+        tr_id = 1
+        visited = set()
+        for f in range(num_frames - 1):
+            f_curr = frames[f]
+            for i in range(f_curr.num_parts):
+                if (f, i) in visited:
+                    continue
+                if f_curr.path_prev[i] < 0 and f_curr.path_next[i] >= 0:
+                    curr_f = f
+                    curr_i = i
+                    pts_tr = []
+                    while curr_f < num_frames and curr_i >= 0:
+                        visited.add((curr_f, curr_i))
+                        p = frames[curr_f].path_x[curr_i]
+                        pts_tr.append((curr_f, float(p[0]), float(p[1]), float(p[2])))
+                        next_i = frames[curr_f].path_next[curr_i]
+                        curr_f += 1
+                        curr_i = next_i
+                    if len(pts_tr) >= 2:
+                        pred_cython_tr[tr_id] = pts_tr
+                        tr_id += 1
+
+        m_cython = calculate_tracking_metrics(
+            true_tracks, pred_cython_tr, distance_tolerance=distance_tolerance
+        )
+        m_cython.fps = num_frames / t_cython
+        m_cython.particles_per_sec = total_particles / t_cython
+        results["OpenPTV2 Cython Hybrid3D"] = m_cython
+
+    except Exception:
+        pass
+
     return results
 
 

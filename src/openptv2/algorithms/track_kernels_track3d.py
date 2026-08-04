@@ -87,12 +87,13 @@ def track3d_loop_fast(
     dy: cython.double,
     dz: cython.double,
     max_cands: cython.int,
+    dacc: cython.double = 0.0,
 ):
     """Full track3d loop (3 levels) — single compiled entry.
 
-    Level 1: particles with previous links — predict from velocity.
-    Level 2: no prev link — average velocity from neighbors.
-    Level 3: no prev link, no neighbor info — use current position.
+    Level 1: particles with previous links — predict from velocity (search box = dacc).
+    Level 2: no prev link — average velocity from neighbors (search box = dacc).
+    Level 3: no prev link, no neighbor info — use current position (search box = dx,dy,dz).
 
     Returns count1 (number of links established).
     """
@@ -123,8 +124,16 @@ def track3d_loop_fast(
     cz: cython.double
     pj: cython.int
     inv_nvel: cython.double
+    ax: cython.double
+    ay: cython.double
+    az: cython.double
+
     count1 = 0
     np2 = num_parts_2
+    ax = dacc if dacc > 0.0 else dx
+    ay = dacc if dacc > 0.0 else dy
+    az = dacc if dacc > 0.0 else dz
+
     _cand_inds = np.empty(max_cands, dtype=np.int32)
     _cand_dists = np.empty(max_cands, dtype=np.float64)
     _decis_vals = np.empty(max_cands, dtype=np.float64)
@@ -153,9 +162,9 @@ def track3d_loop_fast(
             pred_x,
             pred_y,
             pred_z,
-            dx,
-            dy,
-            dz,
+            ax,
+            ay,
+            az,
             max_cands,
             cand_inds,
             cand_dists,
@@ -188,11 +197,17 @@ def track3d_loop_fast(
                             decis_inds[sj - 1],
                         )
 
-        if path_prev_2[decis_inds[0]] < 0:
-            path_next_1[i] = decis_inds[0]
-            path_prev_2[decis_inds[0]] = i
-            count1 += 1
-        else:
+        cand_assigned = 0
+        for ci in range(n_decis):
+            k = decis_inds[ci]
+            if path_prev_2[k] < 0:
+                path_next_1[i] = k
+                path_prev_2[k] = i
+                count1 += 1
+                cand_assigned = 1
+                break
+
+        if not cand_assigned:
             path_next_1[i] = -1
 
     # ===== Level 2: No previous link, neighbor velocity =====
@@ -237,9 +252,9 @@ def track3d_loop_fast(
             pred_x,
             pred_y,
             pred_z,
-            dx,
-            dy,
-            dz,
+            ax,
+            ay,
+            az,
             max_cands,
             cand_inds,
             cand_dists,
@@ -272,11 +287,17 @@ def track3d_loop_fast(
                             decis_inds[sj - 1],
                         )
 
-        if path_prev_2[decis_inds[0]] < 0:
-            path_next_1[i] = decis_inds[0]
-            path_prev_2[decis_inds[0]] = i
-            count1 += 1
-        else:
+        cand_assigned = 0
+        for ci in range(n_decis):
+            k = decis_inds[ci]
+            if path_prev_2[k] < 0:
+                path_next_1[i] = k
+                path_prev_2[k] = i
+                count1 += 1
+                cand_assigned = 1
+                break
+
+        if not cand_assigned:
             path_next_1[i] = -1
 
     # ===== Level 3: No previous link, no neighbors — static prediction =====
@@ -329,11 +350,17 @@ def track3d_loop_fast(
                             decis_inds[sj - 1],
                         )
 
-        if path_prev_2[decis_inds[0]] < 0:
-            path_next_1[i] = decis_inds[0]
-            path_prev_2[decis_inds[0]] = i
-            count1 += 1
-        else:
+        cand_assigned = 0
+        for ci in range(n_decis):
+            k = decis_inds[ci]
+            if path_prev_2[k] < 0:
+                path_next_1[i] = k
+                path_prev_2[k] = i
+                count1 += 1
+                cand_assigned = 1
+                break
+
+        if not cand_assigned:
             path_next_1[i] = -1
 
     return count1

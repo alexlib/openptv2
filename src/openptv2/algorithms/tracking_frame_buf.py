@@ -894,16 +894,17 @@ class Frame:
         if not ok:
             return False
 
-        for cam in range(self.num_cams):
-            if self.num_targets[cam] > 0:
-                ok = write_targets(
-                    self.targets[cam],
-                    self.num_targets[cam],
-                    target_file_base[cam],
-                    frame_num,
-                )
-                if not ok:
-                    return False
+        if target_file_base and len(target_file_base) >= self.num_cams:
+            for cam in range(self.num_cams):
+                if self.num_targets[cam] > 0:
+                    ok = write_targets(
+                        self.targets[cam],
+                        self.num_targets[cam],
+                        target_file_base[cam],
+                        frame_num,
+                    )
+                    if not ok:
+                        return False
 
         return True
 
